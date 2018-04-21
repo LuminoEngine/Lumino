@@ -42,14 +42,15 @@ TEST_F(Test_IO_CommandLineParser, Help)
 	auto* sizeOption = parser.addValueOption("", "size", "buffer size.");
 	auto* depthOption = parser.addValueOption("d", "depth", "depth level.", "0");
 	auto* langOption = parser.addNamedValueOption("", "lang", "language.", { "cpp", "cs", "py" }, "cpp");
-	auto settingArg = parser.addPositionalArgument("setting-file", "setting file path.");
-
+	auto* settingArg = parser.addPositionalArgument("setting-file", "setting file path.");
 
 	auto* initCommand = parser.addCommand(_T("init"), _T("create new database."));
 	auto* sharedOption = initCommand->addFlagOption("s", "shared", "add shared attribute.");
+	auto* filesOption = initCommand->addListPositionalArgument("files", "input file list.");
 
 	auto* analyzeCommand = parser.addCommand(_T("analyze"), _T("analyze database."));
 	auto* modeOption = analyzeCommand->addNamedValueOption("", "mode", "analyze mode.", { "normal", "fast" });
+	//auto* filesOption = initCommand->addFlagOption("s", "shared", "add shared attribute.");
 
 
 	char* args[] =
@@ -65,6 +66,7 @@ TEST_F(Test_IO_CommandLineParser, Help)
 	parser.printHelp();
 
 	std::cout << initCommand->buildHelpText();
+	//std::cout << analyzeCommand->buildHelpText();
 }
 
 //# writing test

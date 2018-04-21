@@ -135,6 +135,7 @@ void CommandLineOption::makeDislayParamsName(String* shortName, String* longName
 // CommandLinePositionalArgument
 
 CommandLinePositionalArgument::CommandLinePositionalArgument()
+	: m_isList(false)
 {
 }
 
@@ -142,6 +143,27 @@ CommandLinePositionalArgument::~CommandLinePositionalArgument()
 {
 }
 
+String CommandLinePositionalArgument::helpDescriptionCaption() const
+{
+	String caption = name();
+	if (isList()) {
+		caption += _T("...");
+	}
+	return caption;
+}
+
+String CommandLinePositionalArgument::helpDescriptionText() const
+{
+	return m_description;
+
+	//if (isList()) {
+	//	String additional;
+	//	if (m_maxValues)
+	//}
+	//else {
+	//	return m_description;
+	//}
+}
 
 //==============================================================================
 // CommandLineCommandBase
@@ -164,8 +186,8 @@ void CommandLineCommandBase::buildHelpDescriptionText(StringWriter* writer) cons
 	int argsCaptionsColumnWidth = 0;
 	for (auto& arg : positionalArguments())
 	{
-		String caption = arg->name();
-		argsDescriptions.add({ caption, arg->description() });
+		String caption = arg->helpDescriptionCaption();
+		argsDescriptions.add({ caption, arg->helpDescriptionText() });
 		argsCaptionsColumnWidth = std::max(argsCaptionsColumnWidth, caption.length());
 	}
 	argsCaptionsColumnWidth += 2;
@@ -269,7 +291,13 @@ String CommandLineCommandBase::buildHelpText() const
 	if (!args.isEmpty()) {
 		for (auto& a : args) {
 			sw.write(_T(" "));
-			sw.write(a->name());
+			if (a->isList()) {
+				sw.write(a->name());
+				sw.write(_T("..."));
+			}
+			else {
+				sw.write(a->name());
+			}
 		}
 	}
 	if (!commands.isEmpty()) {

@@ -20,6 +20,15 @@ enum class CommandLineOptionFlags
 };
 LN_FLAGS_OPERATORS(CommandLineOptionFlags);
 
+//enum class CommandLinePositionalArgumentFlags
+//{
+//	None = 0x0000,
+//
+//	/** オプションをフラグとして扱います。フラグは値を持ちません。 */
+//	Flag = 0x0001,
+//};
+//LN_FLAGS_OPERATORS(CommandLineOptionFlags);
+
 class CommandLineOption
 	: public RefObject
 {
@@ -71,18 +80,25 @@ class CommandLinePositionalArgument
 public:
 	String name() const { return m_name; }
 	String description() const { return m_description; }
-	int maxValues() const { return 1; }
+	//int maxValues() const { return m_maxValues; }
+
+	bool isList() const { return m_isList; }
+	String helpDescriptionCaption() const;
+	String helpDescriptionText() const;
 
 private:
 	CommandLinePositionalArgument();
 	virtual ~CommandLinePositionalArgument();
 	void setName(const String& value) { m_name = value; }
 	void setDescription(const String& value) { m_description = value; }
+	void setListType(bool value) { m_isList = value; }
 	void addValue(const String& value) { m_values.add(value); }
 
 	String m_name;
 	String m_description;
 	List<String> m_values;
+	//int m_maxValues;
+	bool m_isList;
 
 	friend class CommandLineCommandBase;
 	friend class CommandLineCommand;	// TODO:
@@ -143,9 +159,31 @@ protected:
 
 	CommandLinePositionalArgument* addPositionalArgumentInternal(const String& name, const String& description)
 	{
+		if (!m_positionalArguments.isEmpty()) {
+			if (LN_REQUIRE(!m_positionalArguments.back()->isList(), "List positional argument has already been added.")) {
+				return nullptr;
+			}
+		}
+
 		auto pa = Ref<CommandLinePositionalArgument>(LN_NEW CommandLinePositionalArgument(), false);
 		pa->setName(name);
 		pa->setDescription(description);
+		m_positionalArguments.add(pa);
+		return pa;
+	}
+
+	CommandLinePositionalArgument* addListPositionalArgumentInternal(const String& name, const String& description)
+	{
+		if (!m_positionalArguments.isEmpty()) {
+			if (LN_REQUIRE(!m_positionalArguments.back()->isList(), "List positional argument has already been added.")) {
+				return nullptr;
+			}
+		}
+
+		auto pa = Ref<CommandLinePositionalArgument>(LN_NEW CommandLinePositionalArgument(), false);
+		pa->setName(name);
+		pa->setDescription(description);
+		pa->setListType(true);
 		m_positionalArguments.add(pa);
 		return pa;
 	}
@@ -215,6 +253,15 @@ public:
 		return addNamedValueOptionInternal(shortName, longName, description, namedValues, defaultValue);
 	}
 
+	CommandLinePositionalArgument* addPositionalArgument(const String& name, const String& description)
+	{
+		return addPositionalArgumentInternal(name, description);
+	}
+
+	CommandLinePositionalArgument* addListPositionalArgument(const String& name, const String& description)
+	{
+		return addListPositionalArgumentInternal(name, description);
+	}
 
 
 	static bool parse(
@@ -310,7 +357,7 @@ public:
 		int requires = 0;
 		for (auto& pa : positionalArguments)
 		{
-			requires += (pa->maxValues() < 0) ? 1 : pa->maxValues();
+			requires += 1;//(pa->isList()) ? 1 : pa->maxValues();
 		}
 		if (positionalArguments.size() < requires)
 		{
@@ -322,7 +369,7 @@ public:
 		int iOther = 0;
 		for (auto& pa : positionalArguments)
 		{
-			int count = (pa->maxValues() < 0) ? INT_MAX : pa->maxValues();
+			int count = (pa->isList()) ? INT_MAX : 1;
 			for (int i = 0; i < count && iOther < otherArgs.size(); i++)
 			{
 				pa->addValue(otherArgs[iOther]);
@@ -404,6 +451,11 @@ public:
 	CommandLinePositionalArgument* addPositionalArgument(const String& name, const String& description)
 	{
 		return addPositionalArgumentInternal(name, description);
+	}
+
+	CommandLinePositionalArgument* addListPositionalArgument(const String& name, const String& description)
+	{
+		return addListPositionalArgumentInternal(name, description);
 	}
 
 
