@@ -3,12 +3,12 @@
 namespace ln {
 namespace detail {
 
-class GraphicsManager
+class Manager
 	: public RefObject
 {
 public:
-	GraphicsManager();
-	virtual ~GraphicsManager();
+	Manager();
+	virtual ~Manager();
 
 	void initialize();
 	void dispose();

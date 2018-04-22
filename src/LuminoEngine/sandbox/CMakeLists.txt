@@ -3,7 +3,7 @@ project(LuminoEngine_Sandbox)
 
 set(LN_SOURCES
 	Common.hpp
-	Main.cpp
+	SandboxMain.cpp
 )
 
 include_directories(
@@ -11,5 +11,5 @@ include_directories(
 )
 
 add_executable(${PROJECT_NAME} ${LN_SOURCES})
-target_link_libraries(${PROJECT_NAME} LuminoCore)
+target_link_libraries(${PROJECT_NAME} LuminoCore LuminoEngine)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
