@@ -378,7 +378,11 @@ bool CommandLineParser::process(int argc, char** argv)
 	}
 
 	if (hasHelp) {
-		printHelp(helpTargetCommandIndex >= 0 ? argList[helpTargetCommandIndex] : StringRef());
+		StringRef name;
+		if (helpTargetCommandIndex >= 0) {
+			name = argList[helpTargetCommandIndex];
+		}
+		printHelp(name);
 	}
 	else if (!parse(argList))
 	{
