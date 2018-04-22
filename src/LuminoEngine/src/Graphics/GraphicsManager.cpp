@@ -9,10 +9,6 @@ GraphicsManager::GraphicsManager()
 {
 }
 
-GraphicsManager::~GraphicsManager()
-{
-}
-
 void GraphicsManager::initialize()
 {
 }

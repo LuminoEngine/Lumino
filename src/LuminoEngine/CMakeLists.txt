@@ -32,8 +32,12 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/GeometryStructs.hpp
 	src/Graphics/Internal.hpp
 	src/Graphics/GeometryStructs.cpp
+	src/Graphics/GraphicsDeviceContext.cpp
+	src/Graphics/GraphicsDeviceContext.hpp
 	src/Graphics/GraphicsManager.cpp
 	src/Graphics/GraphicsManager.hpp
+	src/Graphics/OpenGLDeviceContext.cpp
+	src/Graphics/OpenGLDeviceContext.hpp
 )
 
 # Grouping.

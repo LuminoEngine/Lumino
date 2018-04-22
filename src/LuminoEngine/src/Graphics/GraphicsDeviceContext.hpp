@@ -3,15 +3,15 @@
 namespace ln {
 namespace detail {
 
-class GraphicsManager
+class GraphicsDeviceContext
 	: public RefObject
 {
 public:
-	GraphicsManager();
-	virtual ~GraphicsManager() = default;
+	GraphicsDeviceContext();
+	virtual ~GraphicsDeviceContext() = default;
 
 	void initialize();
-	void dispose();
+	virtual void dispose();
 };
 
 } // namespace detail
