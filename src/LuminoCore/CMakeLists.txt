@@ -189,6 +189,7 @@ source_group("Serialization"	FILES ${LN_SOURCES_Serialization})
 source_group("Testing"			FILES ${LN_SOURCES_Testing})
 
 set(LN_SOURCES
+	include/LuminoCore.hpp
 	src/LuminoCore.PCH.cpp
 	src/LuminoCore.PCH.h
 	${LN_SOURCES_Base}
