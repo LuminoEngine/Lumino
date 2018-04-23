@@ -2,6 +2,8 @@
 #include "Internal.hpp"
 #include "OpenGLDeviceContext.hpp"
 
+#include "GLFWContext.hpp"
+
 #define LN_MACRO_BLOCK_BEGIN for(;;) {
 #define LN_MACRO_BLOCK_END break; }
 
@@ -52,11 +54,16 @@ OpenGLDeviceContext::OpenGLDeviceContext()
 
 void OpenGLDeviceContext::initialize()
 {
-	m_glContext =
+	m_glContext = makeRef<GLFWContext>();
 }
 
 void OpenGLDeviceContext::dispose()
 {
+}
+
+Ref<ISwapChain> OpenGLDeviceContext::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
+{
+	return m_glContext->createSwapChain(window, backbufferSize);
 }
 
 void OpenGLDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)

@@ -5,6 +5,9 @@
 namespace ln {
 namespace detail {
 
+//=============================================================================
+// GraphicsDeviceContext
+
 GraphicsDeviceContext::GraphicsDeviceContext()
 {
 }

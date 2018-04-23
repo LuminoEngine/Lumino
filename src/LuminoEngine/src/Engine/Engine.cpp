@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "EngineManager.hpp"
-#include "EngineDomain.hpp"
+//#include "EngineDomain.hpp"
 #include <Lumino/Engine/Engine.hpp>
 
 namespace ln {

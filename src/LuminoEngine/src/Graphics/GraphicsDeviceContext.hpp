@@ -1,4 +1,4 @@
-﻿#pragma onc
+﻿#pragma once
 
 namespace ln {
 namespace detail {

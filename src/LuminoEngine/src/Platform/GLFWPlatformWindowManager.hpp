@@ -15,6 +15,8 @@ public:
 	void initialize(const WindowCreationSettings& settings);
 	virtual void dispose() override;
 
+	GLFWwindow* glfwWindow() const { return m_glfwWindow; }
+
 private:
 	static void window_close_callback(GLFWwindow* window);
 	static void window_focus_callback(GLFWwindow* window, int focused);	// window activate/diactivate

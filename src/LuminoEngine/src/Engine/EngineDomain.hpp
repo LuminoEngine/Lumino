@@ -3,17 +3,17 @@
 
 namespace ln
 {
-class Application;
-class PhysicsWorld;
-class SceneGraphManager;
-class SceneGraph2D;
-class SceneGraph3D;
-class World2D;
-class World3D;
-class EngineManager;
+//class Application;
+//class PhysicsWorld;
+//class SceneGraphManager;
+//class SceneGraph2D;
+//class SceneGraph3D;
+//class World2D;
+//class World3D;
 
 namespace detail
 {
+class EngineManager;
 class ArchiveManager;
 class AnimationManager;
 class GraphicsManager;
@@ -25,6 +25,7 @@ class EngineDomain
 public:
 	static void release();
 	static EngineManager* engineManager();
+	static GraphicsManager* graphicsManager();
 
 	//static Application* application;
 

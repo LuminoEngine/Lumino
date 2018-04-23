@@ -9,11 +9,13 @@ set(LN_SOURCES_Engine
 	include/Lumino/Engine/Common.hpp
 	include/Lumino/Engine/Engine.hpp
 	include/Lumino/Engine/EngineSettings.hpp
+	include/Lumino/Engine/Object.hpp
 	src/Engine/Internal.hpp
 	src/Engine/Engine.cpp
 	src/Engine/EngineDomain.hpp
 	src/Engine/EngineManager.cpp
 	src/Engine/EngineManager.hpp
+	src/Engine/Object.cpp
 )
 
 set(LN_SOURCES_Platform
@@ -32,6 +34,7 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/Common.hpp
 	include/Lumino/Graphics/ColorStructs.hpp
 	include/Lumino/Graphics/GeometryStructs.hpp
+	include/Lumino/Graphics/SwapChain.hpp
 	src/Graphics/Internal.hpp
 	src/Graphics/ColorStructs.cpp
 	src/Graphics/GeometryStructs.cpp
@@ -43,12 +46,22 @@ set(LN_SOURCES_Graphics
 	src/Graphics/GraphicsManager.hpp
 	src/Graphics/OpenGLDeviceContext.cpp
 	src/Graphics/OpenGLDeviceContext.hpp
+	src/Graphics/SwapChain.cpp
+)
+
+set(LN_SOURCES_UI
+	include/Lumino/UI/Common.hpp
+	include/Lumino/UI/UIFrameWindow.hpp
+	src/UI/UIFrameWindow.cpp
+	src/UI/UIManager.cpp
+	src/UI/UIManager.hpp
 )
 
 # Grouping.
 source_group("Engine"				FILES ${LN_SOURCES_Engine})
 source_group("Platform"				FILES ${LN_SOURCES_Platform})
 source_group("Graphics"				FILES ${LN_SOURCES_Graphics})
+source_group("UI"					FILES ${LN_SOURCES_UI})
 
 set(LN_SOURCES
 	src/LuminoEngine.PCH.cpp
@@ -57,6 +70,7 @@ set(LN_SOURCES
 	${LN_SOURCES_Engine}
 	${LN_SOURCES_Platform}
 	${LN_SOURCES_Graphics}
+	${LN_SOURCES_UI}
 )
 
 #------------------------------------------------------------------------------

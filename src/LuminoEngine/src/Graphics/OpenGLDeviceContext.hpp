@@ -7,6 +7,22 @@ namespace ln {
 namespace detail {
 class GLContext;
 
+/*
+	Note:
+
+	OpenGLDeviceContext はマルチスレッドレンダリングをサポートしない。
+	大きな理由は、マルチスレッドでの動作がちゃんと規格化されていないから。
+	プラットフォーム間での差が激しく、カバーしきれない。
+
+	他、
+	- Emscripten で使うときはそもそもスレッドが使えない。
+	- GLFW で共有コンテキストを作るときは必ずウィンドウを作る必要がある。
+
+	特に Emscripten で使うときの環境の制約が大きいかも。
+	素直にシングルスレッドで動作するデバイスとして位置づけたい。
+
+	マルチスレッドレンダリングやるなら Vulkan、DX12 などを使おう。
+*/
 class OpenGLDeviceContext
 	: public GraphicsDeviceContext
 {
@@ -38,6 +54,10 @@ class GLContext
 public:
 	GLContext() = default;
 	virtual ~GLContext() = default;
+
+	virtual Ref<GLSwapChain> createSwapChain(PlatformWindow* window, const SizeI& backbufferSize) = 0;
+	virtual void makeCurrent(GLSwapChain* swapChain) = 0;
+	virtual void swap(GLSwapChain* swapChain) = 0;
 };
 
 } // namespace detail

@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "../Platform/PlatformManager.hpp"
+#include "../Graphics/GraphicsManager.hpp"
 #include "EngineManager.hpp"
 #include "EngineDomain.hpp"
 
@@ -202,6 +203,11 @@ EngineManager* EngineDomain::engineManager()
 	}
 
 	return g_engineManager;
+}
+
+GraphicsManager* EngineDomain::graphicsManager()
+{
+	return engineManager()->graphicsManager();
 }
 
 } // namespace detail

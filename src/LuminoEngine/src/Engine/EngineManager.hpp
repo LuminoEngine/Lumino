@@ -57,6 +57,9 @@ public:
 	bool isExitRequested() const { return m_exitRequested; }
 	void exit();
 
+	const Ref<PlatformManager>& platformManager() const { return m_platformManager; }
+	const Ref<GraphicsManager>& graphicsManager() const { return m_graphicsManager; }
+
 private:
 	virtual bool onPlatformEvent(const PlatformEventArgs& e) override;
 
@@ -67,7 +70,7 @@ private:
 	//Ref<InputManager>				m_inputManager;
 	//Ref<AudioManager>				m_audioManager;
 	//Ref<PhysicsManager>		m_physicsManager;
-	//Ref<GraphicsManager>			m_graphicsManager;
+	Ref<GraphicsManager>			m_graphicsManager;
 	//Ref<EffectManager>				m_effectManager;
 	//Ref<ModelManager>				m_modelManager;
 	//Ref<AssetsManager>						m_assetsManager;
