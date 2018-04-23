@@ -29,9 +29,14 @@ set(LN_SOURCES_Platform
 )
 
 set(LN_SOURCES_Graphics
+	include/Lumino/Graphics/Common.hpp
+	include/Lumino/Graphics/ColorStructs.hpp
 	include/Lumino/Graphics/GeometryStructs.hpp
 	src/Graphics/Internal.hpp
+	src/Graphics/ColorStructs.cpp
 	src/Graphics/GeometryStructs.cpp
+	src/Graphics/GLFWContext.cpp
+	src/Graphics/GLFWContext.hpp
 	src/Graphics/GraphicsDeviceContext.cpp
 	src/Graphics/GraphicsDeviceContext.hpp
 	src/Graphics/GraphicsManager.cpp
