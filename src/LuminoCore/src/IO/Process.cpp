@@ -14,11 +14,37 @@ namespace ln {
 Process::Process()
 	: m_impl(makeRef<detail::ProcessImpl>())
 	, m_startInfo()
+	, m_stdinEncoding(nullptr)
+	, m_stdoutEncoding(nullptr)
+	, m_stderrEncoding(nullptr)
 {
+	createRedirectStreams();
+}
+
+Process::Process(const String& program, const List<String>& arguments)
+	: Process()
+{
+	setProgram(program);
+	setArguments(arguments);
 }
 
 Process::~Process()
 {
+}
+
+StreamWriter* Process::stdinWriter() const
+{
+	return m_stdinWriter;
+}
+
+StreamReader* Process::stdoutReader() const
+{
+	return m_stdoutReader;
+}
+
+StreamReader* Process::stderrReader() const
+{
+	return m_stderrReader;
 }
 
 void Process::start()
@@ -41,6 +67,30 @@ int Process::exitCode()
 	int n = 1;
 	m_impl->getStatus(&n);
 	return n;
+}
+
+void Process::createRedirectStreams()
+{
+	if (!m_stdinWriter)
+	{
+		m_startInfo.stdinPipe = makeRef<detail::PipeImpl>();
+		m_startInfo.stdinPipe->init();
+		m_stdinWriter = makeRef<StreamWriter>(m_startInfo.stdinPipe);
+	}
+
+	//if (!m_stdoutReader)
+	//{
+	//	m_startInfo.stdoutPipe = makeRef<detail::PipeImpl>();
+	//	m_startInfo.stdoutPipe->init();
+	//	m_stdoutReader = makeRef<StreamReader>(m_startInfo.stdoutPipe);
+	//}
+
+	//if (!m_stderrReader)
+	//{
+	//	m_startInfo.stderrPipe = makeRef<detail::PipeImpl>();
+	//	m_startInfo.stderrPipe->init();
+	//	m_stderrReader = makeRef<StreamReader>(m_startInfo.stderrPipe);
+	//}
 }
 
 #if 0

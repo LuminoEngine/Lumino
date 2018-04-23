@@ -19,13 +19,13 @@ namespace ln {
 namespace detail {
 
 //==============================================================================
-// UnixPipe
+// PipeImpl
 
-class UnixPipe : public Stream
+class PipeImpl : public Stream
 {
 public:
-	UnixPipe();
-	virtual ~UnixPipe();
+	PipeImpl();
+	virtual ~PipeImpl();
 
 	void init();
 	int readBytes(void* buffer, int length);
@@ -51,18 +51,18 @@ private:
 	int m_writeFD;
 };
 
-UnixPipe::UnixPipe()
+PipeImpl::PipeImpl()
 	: m_readFD(-1)
 	, m_writeFD(-1)
 {
 }
 
-UnixPipe::~UnixPipe()
+PipeImpl::~PipeImpl()
 {
 	closeBoth();
 }
 
-void UnixPipe::init()
+void PipeImpl::init()
 {
 	int fds[2];
 	int result = pipe(fds);
@@ -72,7 +72,7 @@ void UnixPipe::init()
 	m_writeFD = fds[1];
 }
 
-int UnixPipe::readBytes(void* buffer, int length)
+int PipeImpl::readBytes(void* buffer, int length)
 {
 	int n;
 	do
@@ -85,7 +85,7 @@ int UnixPipe::readBytes(void* buffer, int length)
 	return n;
 }
 
-int UnixPipe::writeBytes(const void* buffer, int length)
+int PipeImpl::writeBytes(const void* buffer, int length)
 {
 	int n;
 	do
@@ -98,7 +98,7 @@ int UnixPipe::writeBytes(const void* buffer, int length)
 	return n;
 }
 
-void UnixPipe::closeRead()
+void PipeImpl::closeRead()
 {
 	if (m_readFD != -1)
 	{
@@ -107,7 +107,7 @@ void UnixPipe::closeRead()
 	}
 }
 
-void UnixPipe::closeWrite()
+void PipeImpl::closeWrite()
 {
 	if (m_writeFD != -1)
 	{
@@ -116,7 +116,7 @@ void UnixPipe::closeWrite()
 	}
 }
 
-void UnixPipe::closeBoth()
+void PipeImpl::closeBoth()
 {
 	closeRead();
 	closeWrite();
@@ -137,9 +137,9 @@ public:
 	
 private:
 	pid_t   m_pid;
-	Ref<UnixPipe> m_stdinPipe;
-	Ref<UnixPipe> m_stdoutPipe;
-	Ref<UnixPipe> m_stderrPipe;
+	//Ref<PipeImpl> m_stdinPipe;
+	//Ref<PipeImpl> startInfo.stdoutPipe;
+	//Ref<PipeImpl> startInfo.stderrPipe;
 };
 	
 ProcessImpl::ProcessImpl()
@@ -178,12 +178,12 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo)
 		}
 
 		// redirection
-		if (m_stdinPipe) dup2(m_stdinPipe->readFD(), STDIN_FILENO);
-		if (m_stdoutPipe) dup2(outPipe->writeFD(), STDOUT_FILENO);
-		if (m_stderrPipe) dup2(errPipe->writeFD(), STDERR_FILENO);
-		if (m_stdinPipe) m_stdinPipe->closeBoth();
-		if (m_stdoutPipe) m_stdoutPipe->closeBoth();
-		if (m_stderrPipe) m_stderrPipe->closeBoth();
+		if (startInfo.stdinPipe) dup2(startInfo.stdinPipe->readFD(), STDIN_FILENO);
+		if (startInfo.stdoutPipe) dup2(outPipe->writeFD(), STDOUT_FILENO);
+		if (startInfo.stderrPipe) dup2(errPipe->writeFD(), STDERR_FILENO);
+		if (startInfo.stdinPipe) startInfo.stdinPipe->closeBoth();
+		if (startInfo.stdoutPipe) startInfo.stdoutPipe->closeBoth();
+		if (startInfo.stderrPipe) startInfo.stderrPipe->closeBoth();
 		
 		execve(argv[0], argv, environ);
 		

@@ -23,5 +23,17 @@ TEST_F(Test_IO_Process, SimpleRun)
 //# redirect test
 TEST_F(Test_IO_Process, Redirect)
 {
-
+	//* [ ] 
+	{
+		Process proc1(_T("LuminoCore_Test"), { _T("proctest2") });
+		StreamWriter* w1 = proc1.stdinWriter();
+		StreamReader* r1 = proc1.stdoutReader();
+		StreamReader* r2 = proc1.stderrReader();
+		proc1.start();
+		w1->writeLine("test");	// 改行が必要
+		String sr1 = r1->readToEnd();
+		String sr2 = r2->readToEnd();
+		ASSERT_EQ(_LT("[test]"), sr1);
+		ASSERT_EQ(_LT("err:test"), sr2);
+	}
 }

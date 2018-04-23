@@ -57,6 +57,7 @@ class Process : public RefObject
 {
 public:
 	Process();
+	Process(const String& program, const List<String>& arguments);
 	virtual ~Process();
 	
 public:
@@ -70,6 +71,13 @@ public:
 		@details	Start() の前に設定する必要があります。
 	*/
 	void setWorkingDirectory(const Path& directoryPath) { m_startInfo.workingDirectory = directoryPath; }
+
+	StreamWriter* stdinWriter() const;
+
+	StreamReader* stdoutReader() const;
+
+	StreamReader* stderrReader() const;
+
 	
 	///**
 	//	@brief		標準入力をリダイレクトするかを設定します。 (規定値:false)
@@ -187,6 +195,8 @@ public:
 	static int execute(const Path& program, const String& args = String(), String* outStdOutput = nullptr, String* outStdError = nullptr);
 
 private:
+	void createRedirectStreams();
+
 	//void disposeProcess();
 	//void thread_ReadStdOutput();
 	//void thread_ReadStdError();
@@ -194,6 +204,15 @@ private:
 	Ref<detail::ProcessImpl> m_impl;
 
 	detail::ProcessStartInfo	m_startInfo;
+
+	TextEncoding*					m_stdinEncoding;
+	TextEncoding*					m_stdoutEncoding;
+	TextEncoding*					m_stderrEncoding;
+
+	Ref<StreamWriter> m_stdinWriter;
+	Ref<StreamReader> m_stdoutReader;
+	Ref<StreamReader> m_stderrReader;
+
 
 //	Path					m_workingDirectory;
 //	bool						m_redirectStandardInput;
