@@ -6,6 +6,12 @@
 namespace ln {
 namespace detail {
 
+/*
+	Note:
+		Pipe は初期値継承不可で作る。
+		start 時に、子側に渡すハンドルを継承可能で複製する。
+		こうするとリソース管理が少し簡単になる。
+*/
 
 //==============================================================================
 // PipeImpl
@@ -35,7 +41,7 @@ public:
 	virtual void seek(int64_t offset, SeekOrigin origin) override { LN_UNREACHABLE(); }
 	virtual void flush() override {}
 
-public:
+private:
 	HANDLE m_readHandle;
 	HANDLE m_writeHandle;
 };
@@ -51,7 +57,7 @@ void PipeImpl::init()
 	SECURITY_ATTRIBUTES attr;
 	attr.nLength = sizeof(attr);
 	attr.lpSecurityDescriptor = NULL;
-	attr.bInheritHandle = TRUE;
+	attr.bInheritHandle = FALSE;
 
 	BOOL result = ::CreatePipe(&m_readHandle, &m_writeHandle, &attr, 0);
 	if (LN_ENSURE(result)) return;
@@ -177,22 +183,17 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo)
 
 	BOOL inheritHandles = FALSE;
 
-
-	HANDLE newStdInWriteHandle = NULL;
-	HANDLE newStdOutReadHandle = NULL;
-	HANDLE newStdErrReadHandle = NULL;
-
 	// stdin redirect
 	if (startInfo.stdinPipe)
 	{
-		::DuplicateHandle(hProcess, startInfo.stdinPipe->writeHandle(), hProcess, &newStdInWriteHandle, 0, FALSE, DUPLICATE_SAME_ACCESS);
+		::DuplicateHandle(hProcess, startInfo.stdinPipe->readHandle(), hProcess, &startupInfo.hStdInput, 0, TRUE, DUPLICATE_SAME_ACCESS);
 		inheritHandles = TRUE;
 	}
-	//else if (::GetStdHandle(STD_INPUT_HANDLE))
-	//{
-	//	::DuplicateHandle(hProcess, ::GetStdHandle(STD_INPUT_HANDLE), hProcess, &startupInfo.hStdInput, 0, FALSE, DUPLICATE_SAME_ACCESS);
-	//	inheritHandles = TRUE;
-	//}
+	else if (::GetStdHandle(STD_INPUT_HANDLE))
+	{
+		::DuplicateHandle(hProcess, ::GetStdHandle(STD_INPUT_HANDLE), hProcess, &startupInfo.hStdInput, 0, TRUE, DUPLICATE_SAME_ACCESS);
+		inheritHandles = TRUE;
+	}
 	else
 	{
 		startupInfo.hStdInput = NULL;
@@ -201,14 +202,14 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo)
 	// stdout redirect
 	if (startInfo.stdoutPipe)
 	{
-		::DuplicateHandle(hProcess, startInfo.stdoutPipe->readHandle(), hProcess, &newStdOutReadHandle, 0, FALSE, DUPLICATE_SAME_ACCESS);
+		::DuplicateHandle(hProcess, startInfo.stdoutPipe->writeHandle(), hProcess, &startupInfo.hStdOutput, 0, TRUE, DUPLICATE_SAME_ACCESS);
 		inheritHandles = TRUE;
 	}
-	//else if (::GetStdHandle(STD_OUTPUT_HANDLE))
-	//{
-	//	::DuplicateHandle(hProcess, ::GetStdHandle(STD_OUTPUT_HANDLE), hProcess, &startupInfo.hStdOutput, 0, FALSE, DUPLICATE_SAME_ACCESS);
-	//	inheritHandles = TRUE;
-	//}
+	else if (::GetStdHandle(STD_OUTPUT_HANDLE))
+	{
+		::DuplicateHandle(hProcess, ::GetStdHandle(STD_OUTPUT_HANDLE), hProcess, &startupInfo.hStdOutput, 0, TRUE, DUPLICATE_SAME_ACCESS);
+		inheritHandles = TRUE;
+	}
 	else
 	{
 		startupInfo.hStdOutput = NULL;
@@ -217,45 +218,24 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo)
 	// stderr redirect
 	if (startInfo.stderrPipe)
 	{
-		::DuplicateHandle(hProcess, startInfo.stderrPipe->readHandle(), hProcess, &newStdErrReadHandle, 0, FALSE, DUPLICATE_SAME_ACCESS);
+		::DuplicateHandle(hProcess, startInfo.stderrPipe->writeHandle(), hProcess, &startupInfo.hStdError, 0, TRUE, DUPLICATE_SAME_ACCESS);
 		inheritHandles = TRUE;
 	}
-	//else if (::GetStdHandle(STD_ERROR_HANDLE))
-	//{
-	//	::DuplicateHandle(hProcess, ::GetStdHandle(STD_ERROR_HANDLE), hProcess, &startupInfo.hStdError, 0, FALSE, DUPLICATE_SAME_ACCESS);
-	//	inheritHandles = TRUE;
-	//}
+	else if (::GetStdHandle(STD_ERROR_HANDLE))
+	{
+		::DuplicateHandle(hProcess, ::GetStdHandle(STD_ERROR_HANDLE), hProcess, &startupInfo.hStdError, 0, TRUE, DUPLICATE_SAME_ACCESS);
+		inheritHandles = TRUE;
+	}
 	else
 	{
 		startupInfo.hStdError = 0;
 	}
 
 	// close duplicate source
-	if (startInfo.stdinPipe) {
-		startInfo.stdinPipe->closeWrite();
-		startInfo.stdinPipe->m_writeHandle = newStdInWriteHandle;
-		startupInfo.hStdInput = startInfo.stdinPipe->readHandle();
-	}
-	if (startInfo.stdoutPipe) {
-		startInfo.stdoutPipe->closeRead();
-		startInfo.stdoutPipe->m_readHandle = newStdOutReadHandle;
-		startupInfo.hStdOutput = startInfo.stdoutPipe->writeHandle();
-	}
-	if (startInfo.stderrPipe) {
-		startInfo.stderrPipe->closeRead();
-		startInfo.stderrPipe->m_readHandle = newStdErrReadHandle;
-		startupInfo.hStdError = startInfo.stderrPipe->writeHandle();
-	}
+	if (startInfo.stdinPipe) startInfo.stdinPipe->closeRead();
+	if (startInfo.stdoutPipe) startInfo.stdoutPipe->closeWrite();
+	if (startInfo.stderrPipe) startInfo.stderrPipe->closeWrite();
 
-
-		//STARTUPINFO si;
-		//ZeroMemory(&si, sizeof(si));
-		//si.cb = sizeof(si);
-		//si.dwFlags = STARTF_USESTDHANDLES;
-		////si.hStdInput = m_hInputRead;			// 子プロセスの標準入力はここから読み取る
-		////si.hStdOutput = m_hOutputWrite;		// 子プロセスの標準出力はここへ
-		////si.hStdError = m_hErrorWrite;		// 子プロセスの標準エラーはここへ
-		//si.wShowWindow = SW_HIDE;
 
 	if (inheritHandles)
 	{
@@ -304,21 +284,21 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo)
 	}
 
 
-	
-	if (startInfo.stdinPipe) {
-		startInfo.stdinPipe->closeRead();
-	}
-	if (startInfo.stdoutPipe) {
-		startInfo.stdoutPipe->closeWrite();
-	}
-	if (startInfo.stderrPipe) {
-		startInfo.stderrPipe->closeWrite();
-	}
+	//
+	//if (startInfo.stdinPipe) {
+	//	startInfo.stdinPipe->closeRead();
+	//}
+	//if (startInfo.stdoutPipe) {
+	//	startInfo.stdoutPipe->closeWrite();
+	//}
+	//if (startInfo.stderrPipe) {
+	//	startInfo.stderrPipe->closeWrite();
+	//}
 
 	::CloseHandle(m_processInfo.hThread);
-	//if (startupInfo.hStdInput) CloseHandle(startupInfo.hStdInput);
-	//if (startupInfo.hStdOutput) CloseHandle(startupInfo.hStdOutput);
-	//if (startupInfo.hStdError) CloseHandle(startupInfo.hStdError);
+	if (startupInfo.hStdInput) CloseHandle(startupInfo.hStdInput);
+	if (startupInfo.hStdOutput) CloseHandle(startupInfo.hStdOutput);
+	if (startupInfo.hStdError) CloseHandle(startupInfo.hStdError);
 }
 
 bool ProcessImpl::waitForExit(int timeoutMSec)
