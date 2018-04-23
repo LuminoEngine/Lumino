@@ -321,4 +321,11 @@ bool operator!=(const Ref<T>& left, std::nullptr_t right) LN_NOEXCEPT
 }
 
 
+
+template<class T, class... TArgs>
+inline Ref<T> makeRef(TArgs&&... args)
+{
+	return Ref<T>(LN_NEW T(std::forward<TArgs>(args)...), false);
+}
+
 } // namespace ln

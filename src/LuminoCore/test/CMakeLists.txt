@@ -16,6 +16,7 @@ set(LN_SOURCES
 	Test_IO_FileStream.cpp
 	Test_IO_FileSystem.cpp
 	Test_IO_Path.cpp
+	Test_IO_Process.cpp
 	Test_IO_TextWriter.cpp
 	Test_Json_JsonReader.cpp
 	Test_Json_JsonWriter.cpp

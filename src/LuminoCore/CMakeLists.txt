@@ -51,6 +51,7 @@ set(LN_SOURCES_IO
 	include/Lumino/IO/FileStream.hpp
 	include/Lumino/IO/FileSystem.hpp
 	include/Lumino/IO/Path.hpp
+	include/Lumino/IO/Process.hpp
 	include/Lumino/IO/Stream.hpp
 	include/Lumino/IO/StreamReader.hpp
 	include/Lumino/IO/StreamWriter.hpp
@@ -61,12 +62,15 @@ set(LN_SOURCES_IO
 	src/IO/Internal.hpp
 	src/IO/CommandLineParser.cpp
 	src/IO/FileStream.cpp
-	src/IO/Path.cpp
 	src/IO/FileSystem.cpp
 	src/IO/FileSystem_Unix.hpp
 	src/IO/FileSystem_Win32.hpp
+	src/IO/Path.cpp
 	src/IO/PathHelper.cpp
 	src/IO/PathHelper.hpp
+	src/IO/Process.cpp
+	src/IO/Process_Unix.hpp
+	src/IO/Process_Win32.hpp
 	src/IO/Stream.cpp
 	src/IO/StreamReader.cpp
 	src/IO/StreamWriter.cpp

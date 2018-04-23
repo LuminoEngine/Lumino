@@ -153,8 +153,27 @@ int main(int argc, char** argv)
 
 #else
 
+bool testProcess(int argc, char** argv, int* outExitCode)
+{
+	if (argc >= 2)
+	{
+		if (strcmp(argv[1], "proctest1") == 0) {
+			*outExitCode = 2;
+			return true;
+		}
+	}
+	return false;
+}
+
 int main(int argc, char** argv)
 {
+	{
+		int exitCode;
+		if (testProcess(argc, argv, &exitCode)) {
+			return exitCode;
+		}
+	}
+
 #ifdef _WIN32
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
@@ -177,7 +196,7 @@ int main(int argc, char** argv)
 	{
 		argv[0],
 		"--gtest_break_on_failure",
-		"--gtest_filter=Test_IO_CommandLineParser.Help"
+		"--gtest_filter=Test_IO_Process.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 
