@@ -35,13 +35,18 @@ static void StaticCallback01_1(int v)
 	g_Value += v;
 }
 
+using EventHandler = std::function<void(int)>;
+using EventHandler2 = std::function<void(int, int)>;
+using EventHandler3 = std::function<void(int, int, int)>;
+using EventHandler4 = std::function<void(int, int, int, int)>;
+
 //## static function callback
 TEST_F(Test_Base_EventConnection, StaticFuncCallback)
 {
 	//* [ ] can add static function by connect()
 	{
 		g_Value = 0;
-		Event<void(int)> event1;
+		Event<EventHandler> event1;
 		event1.connect(StaticCallback01_1);
 		event1.raise(5);
 		ASSERT_EQ(5, g_Value);
@@ -49,7 +54,7 @@ TEST_F(Test_Base_EventConnection, StaticFuncCallback)
 	//* [ ] can add static function by +=
 	{
 		g_Value = 0;
-		Event<void(int)> event1;
+		Event<EventHandler> event1;
 		event1 += StaticCallback01_1;
 		event1.raise(5);
 		ASSERT_EQ(5, g_Value);
@@ -57,7 +62,7 @@ TEST_F(Test_Base_EventConnection, StaticFuncCallback)
 	//* [ ] can disconnect static function
 	{
 		g_Value = 0;
-		Event<void(int)> event1;
+		Event<EventHandler> event1;
 		auto conn = event1.connect(StaticCallback01_1);
 		event1.raise(5);
 		conn.disconnect();
@@ -70,7 +75,7 @@ TEST_F(Test_Base_EventConnection, StaticFuncCallback)
 TEST_F(Test_Base_EventConnection, Basic)
 {
 	Class1 c1, c2;
-	Event<void(int)> ev01;
+	Event<EventHandler> ev01;
 
 	//* [ ] can add member function by connect()
 	{
@@ -108,22 +113,22 @@ TEST_F(Test_Base_EventConnection, MultiArgs)
 	Class1 c1;
 	g_Value = 0;
 
-	Event<void(int)> ev01;
+	Event<EventHandler> ev01;
 	ev01.connect(ln::bind(&c1, &Class1::Callback01_1));
 	ev01.raise(5);
 	ASSERT_EQ(5, g_Value);
 
-	Event<void(int, int)> ev02;
+	Event<EventHandler2> ev02;
 	ev02.connect(ln::bind(&c1, &Class1::Callback02_1));
 	ev02.raise(6, 6);
 	ASSERT_EQ(11, g_Value);
 
-	Event<void(int, int, int)> ev03;
+	Event<EventHandler3> ev03;
 	ev03.connect(ln::bind(&c1, &Class1::Callback03_1));
 	ev03.raise(7, 7, 7);
 	ASSERT_EQ(18, g_Value);
 
-	Event<void(int, int, int, int)> ev04;
+	Event<EventHandler4> ev04;
 	ev04.connect(ln::bind(&c1, &Class1::Callback04_1));
 	ev04.raise(8, 8, 8, 8);
 	ASSERT_EQ(26, g_Value);
@@ -134,7 +139,7 @@ TEST_F(Test_Base_EventConnection, raise)
 {
 	g_Value = 0;
 	Class1 c1;
-	Event<void(int)> ev01;
+	Event<EventHandler> ev01;
 	EventConnection conn;
 
 	//* [ ] 1つのイベントハンドラを呼び出せること。

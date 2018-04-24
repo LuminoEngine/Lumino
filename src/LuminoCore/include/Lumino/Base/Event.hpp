@@ -59,7 +59,7 @@ class Event;
 
 /** イベントがトリガーされたときに通知を受け取るメソッドコールバックを登録するためのクラスです。 */
 template<class TReturn, class... TArgs>
-class Event<TReturn(TArgs...)>
+class Event< std::function<TReturn(TArgs...)> >
 {
 public:
     using DelegateType = std::function<TReturn(TArgs...)>;
