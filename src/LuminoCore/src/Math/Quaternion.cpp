@@ -144,17 +144,6 @@ bool Quaternion::isNaNOrInf() const
     return Math::isNaNOrInf(x) || Math::isNaNOrInf(y) || Math::isNaNOrInf(z) || Math::isNaNOrInf(w);
 }
 
-void Quaternion::print(const char* format, FILE* stream) const
-{
-    if (!format) {
-        format = "%f, %f, %f, %f\n";
-    }
-    if (!stream) {
-        stream = stdout;
-    }
-    fprintf(stream, format, x, y, z, w);
-}
-
 // static
 Quaternion Quaternion::normalize(const Quaternion& qua)
 {

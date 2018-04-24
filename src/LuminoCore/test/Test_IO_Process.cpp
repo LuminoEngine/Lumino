@@ -36,4 +36,12 @@ TEST_F(Test_IO_Process, Redirect)
 		ASSERT_EQ(_LT("[test]"), sr1);
 		ASSERT_EQ(_LT("err:test"), sr2);
 	}
+	//* [ ] UTF8文字列が標準出力されたとき、文字コード変換エラーになっていた。
+	{
+		Process proc(_T("LuminoCore_Test"), { _T("proctest3") }, TextEncoding::utf8Encoding());
+		StreamReader* r1 = proc.stdoutReader();
+		proc.start();
+		String str = r1->readToEnd();
+		ASSERT_EQ(_LT("あ"), str);
+	}
 }

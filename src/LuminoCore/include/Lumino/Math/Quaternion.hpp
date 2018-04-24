@@ -59,6 +59,12 @@ public:
      */
     void set(float x, float y, float z, float w);
 
+	/** Returns pointer to the first element. */
+	float* data() LN_NOEXCEPT { return &x; }
+
+	/** Returns pointer to the first element. */
+	const float* data() const LN_NOEXCEPT { return &x; }
+
     /**
      * このクォータニオンの長さを返します。
      */
@@ -138,15 +144,6 @@ public:
      * 要素のいずれかが NaN または Inf かを判別します。
      */
     bool isNaNOrInf() const;
-
-    /**
-     * デバッグ用に文字列を標準出力します。
-     * @param[in] 	format  : 書式指定文字列
-     * @param[in] 	stream  : 出力先ストリーム
-     * 
-     * format が NULL の場合、書式は "(%f, %f, %f, %f)\n" を使用します。
-     */
-    void print(const char* format = nullptr, FILE* stream = nullptr) const;
 
 public:
     /**
@@ -462,6 +459,12 @@ inline bool Quaternion::operator==(const Quaternion& v) const
 inline bool Quaternion::operator!=(const Quaternion& v) const
 {
     return (x != v.x || y != v.y || z != v.z || w != v.w);
+}
+
+inline std::ostream& operator<<(std::ostream& s, const Quaternion& v)
+{
+	s << v.x << ' ' << v.y << ' ' << v.z << ' ' << v.w;
+	return s;
 }
 
 } // namespace ln

@@ -21,11 +21,16 @@ Process::Process()
 	createRedirectStreams();
 }
 
-Process::Process(const String& program, const List<String>& arguments)
-	: Process()
+Process::Process(const String& program, const List<String>& arguments, TextEncoding* encoding)
+	: m_impl(makeRef<detail::ProcessImpl>())
+	, m_startInfo()
+	, m_stdinEncoding(encoding)
+	, m_stdoutEncoding(encoding)
+	, m_stderrEncoding(encoding)
 {
 	setProgram(program);
 	setArguments(arguments);
+	createRedirectStreams();
 }
 
 Process::~Process()
@@ -75,22 +80,22 @@ void Process::createRedirectStreams()
 	{
 		m_startInfo.stdinPipe = makeRef<detail::PipeImpl>();
 		m_startInfo.stdinPipe->init();
-		m_stdinWriter = makeRef<StreamWriter>(m_startInfo.stdinPipe);
+		m_stdinWriter = makeRef<StreamWriter>(m_startInfo.stdinPipe, m_stdinEncoding);
 	}
 
-	//if (!m_stdoutReader)
-	//{
-	//	m_startInfo.stdoutPipe = makeRef<detail::PipeImpl>();
-	//	m_startInfo.stdoutPipe->init();
-	//	m_stdoutReader = makeRef<StreamReader>(m_startInfo.stdoutPipe);
-	//}
+	if (!m_stdoutReader)
+	{
+		m_startInfo.stdoutPipe = makeRef<detail::PipeImpl>();
+		m_startInfo.stdoutPipe->init();
+		m_stdoutReader = makeRef<StreamReader>(m_startInfo.stdoutPipe, m_stdoutEncoding);
+	}
 
-	//if (!m_stderrReader)
-	//{
-	//	m_startInfo.stderrPipe = makeRef<detail::PipeImpl>();
-	//	m_startInfo.stderrPipe->init();
-	//	m_stderrReader = makeRef<StreamReader>(m_startInfo.stderrPipe);
-	//}
+	if (!m_stderrReader)
+	{
+		m_startInfo.stderrPipe = makeRef<detail::PipeImpl>();
+		m_startInfo.stderrPipe->init();
+		m_stderrReader = makeRef<StreamReader>(m_startInfo.stderrPipe, m_stderrEncoding);
+	}
 }
 
 #if 0

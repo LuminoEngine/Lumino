@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 #include <limits.h>
 #include <math.h>
+#include "Common.hpp"
 
 #include <Lumino/Math/Math.hpp>
 #include <Lumino/Math/Vector2.hpp>

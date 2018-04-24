@@ -117,17 +117,6 @@ void Plane::transform(const Matrix& mat)
     distance = (((x * t.m41) + (y * t.m42)) + (z * t.m43)) + (d * t.m44);
 }
 
-void Plane::print(const char* format, FILE* stream) const
-{
-    if (!format) {
-        format = "%f, %f, %f, %f\n";
-    }
-    if (!stream) {
-        stream = stdout;
-    }
-    fprintf(stream, format, normal.x, normal.y, normal.z, distance);
-}
-
 Plane Plane::normalize(const Plane& plane)
 {
     float t = 1.0f / Asm::sqrt((plane.normal.x * plane.normal.x) + (plane.normal.y * plane.normal.y) + (plane.normal.z * plane.normal.z));

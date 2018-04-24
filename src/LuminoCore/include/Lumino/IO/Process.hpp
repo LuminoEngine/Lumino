@@ -57,7 +57,7 @@ class Process : public RefObject
 {
 public:
 	Process();
-	Process(const String& program, const List<String>& arguments);
+	Process(const String& program, const List<String>& arguments, TextEncoding* encoding = nullptr);
 	virtual ~Process();
 	
 public:
@@ -78,6 +78,27 @@ public:
 
 	StreamReader* stderrReader() const;
 
+
+	///**
+	//	@brief		標準入力のエンコーディングを設定します。
+	//	@details	Start() の前に設定する必要があります。
+	//				規定値は Encoding::GetGetSystemMultiByteEncoding() です。
+	//*/
+	//void setStandardInputEncoding(Encoding* encoding) LN_NOEXCEPT{ m_standardInputEncoding = encoding; }
+	//	
+	///**
+	//	@brief		標準出力のエンコーディングを設定します。
+	//	@details	Start() の前に設定する必要があります。
+	//				規定値は Encoding::GetGetSystemMultiByteEncoding() です。
+	//*/
+	//void setStandardOutputEncoding(Encoding* encoding) LN_NOEXCEPT { m_standardOutputEncoding = encoding; }
+
+	///**
+	//	@brief		標準エラー出力のエンコーディングを設定します。
+	//	@details	Start() の前に設定する必要があります。
+	//				規定値は Encoding::GetGetSystemMultiByteEncoding() です。
+	//*/
+	//void setStandardErrorEncoding(Encoding* encoding) LN_NOEXCEPT{ m_standardErrorEncoding = encoding; }
 	
 	///**
 	//	@brief		標準入力をリダイレクトするかを設定します。 (規定値:false)

@@ -166,13 +166,15 @@ bool testProcess(int argc, char** argv, int* outExitCode)
 			scanf("%s", &str);
 			printf("[%s]", str);			// [ ] をつけて出力
 			fprintf(stderr, "err:%s", str);	// err:をつけて出力
-			return 0;
+			*outExitCode = 0;
+			return true;
 		}
 		else if (strcmp(argv[1], "proctest3") == 0)
 		{
 			unsigned char str[4] = { 0xE3, 0x81, 0x82, 0x00 };	// UTF8 'あ'
 			printf((char*)str);
-			return 0;
+			*outExitCode = 0;
+			return true;
 		}
 	}
 	return false;
@@ -209,7 +211,7 @@ int main(int argc, char** argv)
 	{
 		argv[0],
 		"--gtest_break_on_failure",
-		"--gtest_filter=Test_IO_Process.Redirect"
+		"--gtest_filter=Test_Matrix.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 

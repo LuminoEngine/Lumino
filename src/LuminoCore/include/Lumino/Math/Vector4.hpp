@@ -56,6 +56,12 @@ public:
      */
     void set(float x, float y, float z, float w);
 
+	/** Returns pointer to the first element. */
+	float* data() LN_NOEXCEPT { return &x; }
+
+	/** Returns pointer to the first element. */
+	const float* data() const LN_NOEXCEPT { return &x; }
+
     /**
      * このベクトルの X Y 要素を Vector2 として返します。
      */
@@ -426,6 +432,12 @@ inline bool Vector4::operator==(const Vector4& v) const
 inline bool Vector4::operator!=(const Vector4& v) const
 {
     return (x != v.x || y != v.y || z != v.z || w != v.w);
+}
+
+inline std::ostream& operator<<(std::ostream& s, const Vector4& v)
+{
+	s << v.x << ' ' << v.y << ' ' << v.z << ' ' << v.w;
+	return s;
 }
 
 } // namespace ln

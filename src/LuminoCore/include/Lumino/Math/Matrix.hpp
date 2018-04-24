@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2018 lriki. Distributed under the MIT license.
 #pragma once
 
-#include <stdio.h>
 #include "Common.hpp"
 #include "Vector4.hpp"
 
@@ -86,6 +85,12 @@ public:
 
     /** この行列の行要素を取得します。 */
     const Vector4& row(int index) const;
+
+	/** Returns pointer to the first element. */
+	float* data() LN_NOEXCEPT { return &m11; }
+
+	/** Returns pointer to the first element. */
+	const float* data() const LN_NOEXCEPT { return &m11; }
 
     /**
 	 * この行列を平行移動します。
@@ -234,7 +239,6 @@ public:
 	/** 行列の要素にアクセスします。 */
 	float & operator()(int row, int column);
 
-	void print(const char* format, FILE* stream) const;
 public:
     /**
      * 2つの行列の積を計算します。
@@ -510,6 +514,11 @@ inline void Matrix::setRow(int index, const Vector4& row)
 inline const Vector4& Matrix::row(int index) const
 {
     return (Vector4&)m[index][0];
+}
+
+inline std::ostream& operator<<(std::ostream& s, const Matrix& v)
+{
+	return detail::MathHelper::outputStream(s, v.data(), 16);
 }
 
 } // namespace ln

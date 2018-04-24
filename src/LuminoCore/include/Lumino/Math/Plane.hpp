@@ -107,15 +107,6 @@ public:
      */
     void transform(const Matrix& mat);
 
-    /**
-     * デバッグ用に文字列を標準出力します。
-     * @param[in]   format  : 書式指定文字列
-     * @param[in]   stream  : 出力先ストリーム
-     * 
-     * format が NULL の場合、書式は "%f, %f, %f, %f\n" を使用します。
-     */
-    void print(const char* format = NULL, FILE* stream = NULL) const;
-
 public:
     /**
      * 正規化した平面を返します。
@@ -171,6 +162,12 @@ inline bool Plane::checkInsideLower(const Vector3& point) const
 inline bool Plane::checkInside(const Vector3& point, float radius) const
 {
     return (Plane::dotCoord(*this, point) - radius < 0.0f);
+}
+
+inline std::ostream& operator<<(std::ostream& s, const Plane& v)
+{
+	s << v.normal.x << ' ' << v.normal.y << ' ' << v.normal.z << ' ' << v.distance;
+	return s;
 }
 
 } // namespace ln
