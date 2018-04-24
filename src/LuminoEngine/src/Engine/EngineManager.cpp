@@ -1,7 +1,10 @@
 ﻿
 #include "Internal.hpp"
+
+#include <Lumino/UI/UIFrameWindow.hpp>
 #include "../Platform/PlatformManager.hpp"
 #include "../Graphics/GraphicsManager.hpp"
+#include "../UI/UIManager.hpp"
 #include "EngineManager.hpp"
 #include "EngineDomain.hpp"
 
@@ -48,14 +51,13 @@ EngineManager::EngineManager()
 void EngineManager::initialize()
 {
 	initializeAllManagers();
+
+	m_mainWindow = newObject<UIFrameWindow>(m_settings.mainWindowSize);
 }
 
 void EngineManager::dispose()
 {
-	if (m_mainWindow) {
-		m_mainWindow->detachEventListener(this);
-		m_platformManager->windowManager()->destroyWindow(m_mainWindow);
-	}
+	if (m_mainWindow) m_mainWindow->dispose();
 	if (m_platformManager) m_platformManager->dispose();
 }
 
@@ -84,18 +86,10 @@ void EngineManager::initializePlatformManager()
 	{
 		initializeCommon();
 
-		PlatformManager::Settings data;
-		data.mainWindowSettings.title = m_settings.mainWindowTitle;
-		data.mainWindowSettings.clientSize = m_settings.mainWindowSize;
-		data.mainWindowSettings.fullscreen = false;
-		data.mainWindowSettings.resizable = true;
-		//data.mainWindowSettings.userWindow = m_settings.userMainWindow;
+		PlatformManager::Settings settings;
 
 		m_platformManager = Ref<PlatformManager>::makeRef();
-		m_platformManager->initialize(data);
-
-		m_mainWindow = m_platformManager->windowManager()->createWindow(data.mainWindowSettings);
-		m_mainWindow->attachEventListener(this);
+		m_platformManager->initialize(settings);
 	}
 }
 
@@ -133,6 +127,13 @@ void EngineManager::initializeAssetsManager()
 
 void EngineManager::initializeUIManager()
 {
+	if (!m_uiManager)
+	{
+		UIManager::Settings settings;
+		
+		m_uiManager = makeRef<UIManager>();
+		m_uiManager->initialize(settings);
+	}
 }
 
 bool EngineManager::updateUnitily()
@@ -203,6 +204,11 @@ EngineManager* EngineDomain::engineManager()
 	}
 
 	return g_engineManager;
+}
+
+PlatformManager* EngineDomain::platformManager()
+{
+	return engineManager()->platformManager();
 }
 
 GraphicsManager* EngineDomain::graphicsManager()

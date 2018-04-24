@@ -51,6 +51,7 @@ set(LN_SOURCES_Graphics
 
 set(LN_SOURCES_UI
 	include/Lumino/UI/Common.hpp
+	include/Lumino/UI/UIEvents.hpp
 	include/Lumino/UI/UIFrameWindow.hpp
 	src/UI/UIFrameWindow.cpp
 	src/UI/UIManager.cpp

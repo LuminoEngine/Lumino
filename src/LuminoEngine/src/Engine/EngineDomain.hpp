@@ -14,10 +14,11 @@ namespace ln
 namespace detail
 {
 class EngineManager;
-class ArchiveManager;
+class PlatformManager;
 class AnimationManager;
 class GraphicsManager;
 class ModelManager;
+class ArchiveManager;
 class UIManager;
 
 class EngineDomain
@@ -25,6 +26,7 @@ class EngineDomain
 public:
 	static void release();
 	static EngineManager* engineManager();
+	static PlatformManager* platformManager();
 	static GraphicsManager* graphicsManager();
 
 	//static Application* application;

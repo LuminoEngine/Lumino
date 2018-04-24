@@ -3,6 +3,8 @@
 #include <Lumino/Platform/PlatformEvent.hpp>
 
 namespace ln {
+class UIFrameWindow;
+
 namespace detail {
 class PlatformManager;
 class AnimationManager;
@@ -15,8 +17,6 @@ class EffectManager;
 class ModelManager;
 class AssetsManager;
 class UIManager;
-
-class PlatformWindow;	// TODO: UIManager ができ次第、UIMainWindow に移す
 
 struct EngineSettings
 {
@@ -74,8 +74,8 @@ private:
 	//Ref<EffectManager>				m_effectManager;
 	//Ref<ModelManager>				m_modelManager;
 	//Ref<AssetsManager>						m_assetsManager;
-	//Ref<UIManager>					m_uiManager;
-	Ref<PlatformWindow> m_mainWindow;	// TODO: UIManager ができ次第、UIMainWindow に移す
+	Ref<UIManager>					m_uiManager;
+	Ref<UIFrameWindow> m_mainWindow;
 
 	bool m_exitRequested;
 };

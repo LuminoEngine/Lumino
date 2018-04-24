@@ -9,7 +9,7 @@ UIManager::UIManager()
 {
 }
 
-void UIManager::initialize()
+void UIManager::initialize(const Settings& settings)
 {
 }
 
