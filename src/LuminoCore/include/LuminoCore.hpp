@@ -24,6 +24,7 @@
 #include "Lumino/IO/FileStream.hpp"
 #include "Lumino/IO/FileSystem.hpp"
 #include "Lumino/IO/Path.hpp"
+#include "Lumino/IO/Process.hpp"
 #include "Lumino/IO/Stream.hpp"
 #include "Lumino/IO/StreamReader.hpp"
 #include "Lumino/IO/StreamWriter.hpp"
@@ -48,6 +49,9 @@
 #include "Lumino/Text/Common.hpp"
 #include "Lumino/Text/Encoding.hpp"
 #include "Lumino/Text/EncodingConverter.hpp"
+
+#include "Lumino/Json/JsonReader.h"
+#include "Lumino/Json/JsonWriter.hpp"
 
 #include "Lumino/Serialization/Common.hpp"
 #include "Lumino/Serialization/ArchiveStore.hpp"
