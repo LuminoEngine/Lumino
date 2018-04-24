@@ -71,7 +71,7 @@ public:
 	static bool const value = !type::value;
 };
 
-// void serialize(Archive& ar) をメンバ関数として持っているか
+// lumino_class_version をメンバとして持っているか
 template<typename T>
 class has_static_member_class_version
 {

@@ -74,6 +74,18 @@ int Process::exitCode()
 	return n;
 }
 
+int Process::execute(const Path& program, const List<String>& args, String* outStdOutput, String* outStdError)
+{
+	Process proc(program, args);
+	StreamReader* stdoutReader = proc.stderrReader();
+	StreamReader* stderrReader = proc.stderrReader();
+	proc.start();
+	proc.wait();
+	if (outStdOutput) *outStdOutput = stdoutReader->readToEnd();
+	if (outStdError) *outStdError = stderrReader->readToEnd();
+	return proc.exitCode();
+}
+
 void Process::createRedirectStreams()
 {
 	if (!m_stdinWriter)

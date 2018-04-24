@@ -35,4 +35,11 @@ CaseSensitivity Environment::pathCaseSensitivity()
 #endif
 }
 
+String Environment::specialFolderPath(SpecialFolder specialFolder)
+{
+	PlatformEnvironment::StringType path;
+	PlatformEnvironment::getSpecialFolderPath(specialFolder, &path);
+	return String::fromStdString(path);
+}
+
 } // namespace ln

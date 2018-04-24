@@ -383,6 +383,7 @@ bool CommandLineParser::process(int argc, char** argv)
 			name = argList[helpTargetCommandIndex];
 		}
 		printHelp(name);
+		return false;
 	}
 	else if (!parse(argList))
 	{

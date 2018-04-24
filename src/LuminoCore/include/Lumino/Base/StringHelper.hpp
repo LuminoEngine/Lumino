@@ -135,6 +135,14 @@ public:
 	}
 
 	/**
+		@brief		ワイルドカード('*', '?')を考慮して文字列を比較する
+		@param[in]	puttern		: ワイルドカードを含むパターン文字列
+		@param[in]	str			: 比較対象の文字列
+	*/
+	template<typename TChar>
+	static bool match(const TChar* pattern, const TChar* str);
+
+	/**
 		@brief		文字列を整数値に変換します。
 		@param[in]	str			: 変換元の文字列
 		@param[in]	len			: str の文字数 (-1 を指定すると \0 まで変換する)

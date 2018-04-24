@@ -211,9 +211,8 @@ public:
 		@param[out]	outStdOutput	: 標準出力をリダイレクトし文字列として受け取る場合、その文字列を格納する変数のポインタを指定する
 		@param[out]	outStdError		: 標準エラー出力をリダイレクトし文字列として受け取る場合、その文字列を格納する変数のポインタを指定する
 		@return		プロセスの終了コード
-		@exception	FileNotFoundException	: program が見つからなかった。
 	*/
-	static int execute(const Path& program, const String& args = String(), String* outStdOutput = nullptr, String* outStdError = nullptr);
+	static int execute(const Path& program, const List<String>& args = List<String>(), String* outStdOutput = nullptr, String* outStdError = nullptr);
 
 private:
 	void createRedirectStreams();

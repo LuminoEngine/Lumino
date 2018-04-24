@@ -11,7 +11,7 @@
 
 namespace ln {
 
-// non‐intrusive
+	// non‐intrusive
 #define LN_SERIALIZE_CLASS_VERSION_NI(type, version) \
 	namespace ln { namespace detail { \
 		template<> struct SerializeClassVersionInfo<type> \
@@ -21,6 +21,8 @@ namespace ln {
 	} }
 
 #define LN_SERIALIZE_CLASS_VERSION(version) \
+	template<typename T> friend class ::ln::detail::has_member_serialize_function; \
+	template<typename T> friend class ::ln::detail::non_member_serialize_function; \
 	friend class ::ln::Archive; \
 	static const int lumino_class_version = version;
 
@@ -351,12 +353,16 @@ private:
 	void processLoad(NameValuePair<TValue>& nvp)
 	{
 		preReadValue();
-		moveState(NodeHeadState::Object);	// BaseClass は Object のシリアライズの一部なので、親ノードは必ず Object
 
-		m_store->setNextName(nvp.name);
-		m_nextReadValueDefault = &nvp;
-		readValue(*nvp.value);
-		postReadValue();
+		if (m_store->hasKey(nvp.name))	// preReadValue() で Store の状態がコンテナ内に入るので、そのあとで存在確認
+		{
+			moveState(NodeHeadState::Object);	// BaseClass は Object のシリアライズの一部なので、親ノードは必ず Object
+
+			m_store->setNextName(nvp.name);
+			m_nextReadValueDefault = &nvp;
+			readValue(*nvp.value);
+			postReadValue();
+		}
 	}
 
 	template<typename TValue>
@@ -543,7 +549,7 @@ public:
 		m_processing = false;
 	}
 
-	String toString(JsonFormatting formatting = JsonFormatting::None);
+	String toString(JsonFormatting formatting = JsonFormatting::Indented);
 
 private:
 	tr::JsonDocument2	m_localDoc;
@@ -586,7 +592,7 @@ public:
 	 * @return		JSON 文字列
 	 */
 	template<typename TValue>
-	static String serialize(TValue&& value, JsonFormatting formatting = JsonFormatting::None)
+	static String serialize(TValue&& value, JsonFormatting formatting = JsonFormatting::Indented)
 	{
 		JsonTextOutputArchive ar;
 		ar.save(std::forward<TValue>(value));

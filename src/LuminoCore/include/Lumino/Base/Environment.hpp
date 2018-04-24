@@ -32,6 +32,9 @@ public:
 
 	/** パス文字列の大文字と小文字を区別するかを確認します。 */
 	static CaseSensitivity pathCaseSensitivity();
+
+	/** システムの特別なフォルダのパスを取得します。 */
+	static String specialFolderPath(SpecialFolder specialFolder);
 };
 
 } // namespace ln

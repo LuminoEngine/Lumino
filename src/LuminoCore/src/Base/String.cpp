@@ -465,6 +465,25 @@ String String::concat(const StringRef& str1, const StringRef& str2, const String
 	return s;
 }
 
+String String::join(const List<String>& list, const StringRef& delim)
+{
+	if (list.isEmpty()) return String();
+
+	int len = delim.length() * (list.size() - 1);
+	for (auto& str : list) {
+		len += str.length();
+	}
+
+	String s;
+	s.reserve(len);
+	s.append(list[0]);
+	for (int i = 1; i < list.size(); i++) {
+		s.append(delim);
+		s.append(list[i]);
+	}
+	return s;
+}
+
 int String::compare(const String& str1, const String& str2, CaseSensitivity cs)
 {
 	return StringHelper::compare(str1.c_str(), str1.length(), str2.c_str(), str2.length(), std::max(str1.length(), str2.length()), cs);

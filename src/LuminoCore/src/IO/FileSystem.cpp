@@ -418,7 +418,6 @@ FileAttribute FileSystemInternal::getAttribute(const wchar_t* filePath, int len)
 {
 	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath, len);
 	FileAttribute attr;
-	bool r = PlatformFileSystem::getAttribute(localPath.c_str(), &attr);
 	if (!PlatformFileSystem::getAttribute(localPath.c_str(), &attr)) return FileAttribute::None;
 	return attr;
 }
@@ -426,7 +425,6 @@ FileAttribute FileSystemInternal::getAttribute(const char16_t* filePath, int len
 {
 	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath, len);
 	FileAttribute attr;
-	bool r = PlatformFileSystem::getAttribute(localPath.c_str(), &attr);
 	if (!PlatformFileSystem::getAttribute(localPath.c_str(), &attr)) return FileAttribute::None;
 	return attr;
 }

@@ -235,6 +235,8 @@ public:
 	static String concat(const StringRef& str1, const StringRef& str2, const StringRef& str3);
 	static String concat(const StringRef& str1, const StringRef& str2, const StringRef& str3, const StringRef& str4);
 
+	static String join(const List<String>& list, const StringRef& delim);	// TODO: Range
+
 	/**
 		@brief		複合書式文字列と可変長引数リストから文字列を生成します。
 		@param[in]	locale		: ロケール

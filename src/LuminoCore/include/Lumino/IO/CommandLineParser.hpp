@@ -45,7 +45,7 @@ public:
 	void setDefaultValue(const String& value) { m_defaultValue = value; }
 	void setFlags(CommandLineOptionFlags value) { m_flags = value; }
 
-	bool isSet() const { return m_isSet; }
+	bool isSet() const { return m_isSet; }	// TODO: hasValue
 	String value() const { return (m_values.isEmpty()) ? String() : m_values[0]; }
 
 	String helpUsageParams() const;
@@ -81,6 +81,9 @@ public:
 	String name() const { return m_name; }
 	String description() const { return m_description; }
 	//int maxValues() const { return m_maxValues; }
+
+	bool hasValue() const { return !m_values.isEmpty(); }
+	const String& value() const { return m_values[0]; }
 
 	bool isList() const { return m_isList; }
 	bool isOptional() const { return m_flags.hasFlag(CommandLinePositionalArgumentFlags::Optional); }

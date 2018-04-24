@@ -585,6 +585,25 @@ static NumberConversionResult StrToNumInternal(
 }
 
 template<typename TChar>
+bool StringHelper::match(const TChar* pattern, const TChar* str)
+{
+	switch (*pattern)
+	{
+	case '\0':
+		return '\0' == *str;
+	case '*':
+		return match(pattern + 1, str) || (('\0' != *str) && match(pattern, str + 1));
+	case '?':
+		return ('\0' != *str) && match(pattern + 1, str + 1);
+	default:
+		return (*pattern == *str) && match(pattern + 1, str + 1);
+	}
+}
+template bool StringHelper::match<char>(const char* pattern, const char* str);
+template bool StringHelper::match<wchar_t>(const wchar_t* pattern, const wchar_t* str);
+template bool StringHelper::match<char16_t>(const char16_t* pattern, const char16_t* str);
+
+template<typename TChar>
 int8_t StringHelper::toInt8(const TChar* str, int len, int base, const TChar** outEndPtr, NumberConversionResult* outResult)
 {
 	uint8_t n;
