@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include "../IO/Path.hpp"
-//#include "../Base/Uuid.hpp"
+#include "../Base/Uuid.hpp"
 
 namespace ln {
 
@@ -48,19 +48,19 @@ inline void serialize(Archive& ar, Path& value)
 	}
 }
 
-//inline void serialize(Archive& ar, Uuid& value)
-//{
-//	if (ar.isSaving())
-//	{
-//		String str = value.toString();
-//		ar.makeStringTag(&str);
-//	}
-//	else
-//	{
-//		String str;
-//		ar.makeStringTag(&str);
-//		value = Uuid(str);
-//	}
-//}
+inline void serialize(Archive& ar, Uuid& value)
+{
+	if (ar.isSaving())
+	{
+		String str = value.toString();
+		ar.makeStringTag(&str);
+	}
+	else
+	{
+		String str;
+		ar.makeStringTag(&str);
+		value = Uuid(str);
+	}
+}
 
 } // namespace ln

@@ -26,6 +26,8 @@ set(LN_SOURCES_Base
 	include/Lumino/Base/String.hpp
 	include/Lumino/Base/StringFormat.inl
 	include/Lumino/Base/StringHelper.hpp
+	include/Lumino/Base/Uuid.hpp
+	include/Lumino/Base/Variant.hpp
 	src/Base/Internal.hpp
 	src/Base/Assertion.cpp
 	src/Base/Buffer.cpp
@@ -43,6 +45,8 @@ set(LN_SOURCES_Base
 	src/Base/String.cpp
 	src/Base/StringHelper.cpp
 	src/Base/StringRef.cpp
+	src/Base/Uuid.cpp
+	src/Base/Variant.cpp
 )
 
 set(LN_SOURCES_IO

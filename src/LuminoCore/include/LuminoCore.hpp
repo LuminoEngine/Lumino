@@ -18,6 +18,8 @@
 #include "Lumino/Base/StlHelper.hpp"
 #include "Lumino/Base/String.hpp"
 #include "Lumino/Base/StringHelper.hpp"
+#include "Lumino/Base/Uuid.hpp"
+#include "Lumino/Base/Variant.hpp"
 
 #include "Lumino/IO/Common.hpp"
 #include "Lumino/IO/CommandLineParser.hpp"
