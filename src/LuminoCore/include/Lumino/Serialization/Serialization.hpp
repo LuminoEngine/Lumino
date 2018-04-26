@@ -354,7 +354,7 @@ private:
 	{
 		preReadValue();
 
-		if (m_store->hasKey(nvp.name))	// preReadValue() で Store の状態がコンテナ内に入るので、そのあとで存在確認
+		if (m_store->hasKey(nvp.name) || nvp.hasDefaultValue())	// preReadValue() で Store の状態がコンテナ内に入るので、そのあとで存在確認
 		{
 			moveState(NodeHeadState::Object);	// BaseClass は Object のシリアライズの一部なので、親ノードは必ず Object
 
