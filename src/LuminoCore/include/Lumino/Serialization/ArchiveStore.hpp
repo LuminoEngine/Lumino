@@ -53,10 +53,11 @@ public:
 	//-----------------------------------------------------------------------------
 	// Load
 	ArchiveContainerType getContainerType() const { return onGetContainerType(); }// { return m_nodeStack.top().m_readingNodeType; }
-	int getArrayElementCount() const { return onReadArrayElementCount(); }
+	int getContainerElementCount() const { return onReadContainerElementCount(); }
 	void setNextIndex(int index) { m_nextIndex = index; }	// setNextName() と同じように使う Array 版
 	int getNextIndex() const { return m_nextIndex; }
 	virtual bool hasKey(const String& name) const = 0;
+	virtual const String& getKey(int index) const = 0;
 	bool readContainer()
 	{
 		int dummy;
@@ -87,7 +88,7 @@ protected:
 
 	virtual bool onReadContainer(int* outElementCount) = 0;
 	virtual void onReadContainerEnd() = 0;
-	virtual int onReadArrayElementCount() const = 0;
+	virtual int onReadContainerElementCount() const = 0;
 	virtual bool onReadValueBool(bool* outValue) = 0;
 	virtual bool onReadValueInt64(int64_t* outValue) = 0;
 	virtual bool onReadValueDouble(double* outValue) = 0;
@@ -235,6 +236,20 @@ protected:
 		}
 	}
 
+	virtual const String& getKey(int index) const override
+	{
+		if (checkTopType(tr::JsonValueType::Object))
+		{
+			return static_cast<tr::JsonObject2*>(m_nodeStack.top())->getKey(index);
+		}
+		else
+		{
+			LN_NOTIMPLEMENTED();
+			static const String empty;
+			return empty;
+		}
+	}
+
 	virtual bool onReadContainer(int* outElementCount) override
 	{
 		tr::JsonElement2* element;
@@ -278,10 +293,10 @@ protected:
 		m_nodeStack.pop();
 	}
 
-	virtual int onReadArrayElementCount() const override
+	virtual int onReadContainerElementCount() const override
 	{
 		if (m_nodeStack.top()->getType() == tr::JsonValueType::Object)
-			return -1;
+			return static_cast<tr::JsonObject2*>(m_nodeStack.top())->size();
 		else if (m_nodeStack.top()->getType() == tr::JsonValueType::Array)
 			return static_cast<tr::JsonArray2*>(m_nodeStack.top())->getElementCount();
 		else

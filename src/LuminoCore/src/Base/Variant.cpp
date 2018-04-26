@@ -221,7 +221,7 @@ void Variant::assign(double value)
 void Variant::assign(const String& value)
 {
 	m_type = VariantType::String;
-	v_String = value;
+	new(&v_String) String(value);
 }
 
 void Variant::copy(const Variant& value)

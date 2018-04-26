@@ -238,7 +238,7 @@ inline bool notifyException(const char* file, int line, const char* exprString, 
 #else
 	throw e;
 #endif
-	return false;
+	return true;
 }
 
 } // namespace detail

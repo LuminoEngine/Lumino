@@ -252,6 +252,9 @@ public:
 
 	JsonElement2* find(const StringRef& name) const;
 
+	int size() const { return m_memberList.size(); }
+	const String& getKey(int index) const { return m_memberList[index].name; }
+
 protected:
 	JsonObject2(JsonDocument2* ownerDoc);
 	virtual ~JsonObject2();

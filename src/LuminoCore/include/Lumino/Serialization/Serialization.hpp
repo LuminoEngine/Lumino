@@ -103,7 +103,35 @@ public:
 			// ArrayContainer としてデシリアライズしている場合、この時点で size を返したいので、store を ArrayContainer まで移動して size を得る必要がある
 			preReadValue();
 			if (LN_REQUIRE(m_store->getContainerType() == ArchiveContainerType::Array)) return;
-			if (outSize) *outSize = m_store->getArrayElementCount();
+			if (outSize) *outSize = m_store->getContainerElementCount();
+		}
+	}
+
+	// 普通の nvp ではなく、キー名も自分で制御したいときに使う
+	void makeObjectTag(int* outSize)
+	{
+		if (isSaving())
+		{
+			moveState(NodeHeadState::Object);
+		}
+		else if (isLoading())
+		{
+			// store を Container まで移動して size を得る必要がある
+			preReadValue();
+			if (LN_REQUIRE(m_store->getContainerType() == ArchiveContainerType::Object)) return;
+			if (outSize) *outSize = m_store->getContainerElementCount();
+		}
+	}
+	template<class TKey, class TValue>
+	void makeObjectMember(TKey& key, TValue& value)
+	{
+		if (isSaving())
+		{
+		}
+		else
+		{
+			key = m_store->getKey(m_nodeInfoStack.top().arrayIndex);
+			processLoad(makeNVP(key, value));
 		}
 	}
 
@@ -420,9 +448,10 @@ private:
 	{
 		if (!m_nodeInfoStack.empty())
 		{
+			m_nodeInfoStack.top().arrayIndex++;
+
 			if (m_store->getContainerType() == ArchiveContainerType::Array)
 			{
-				m_nodeInfoStack.top().arrayIndex++;
 				m_store->setNextIndex(m_nodeInfoStack.top().arrayIndex);
 			}
 		}

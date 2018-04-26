@@ -20,6 +20,19 @@ enum class SpecialFolder
 	Temporary,
 };
 
+/** システムの特別なフォルダパス を取得する際の動作 */
+enum class SpecialFolderOption
+{
+	/** フォルダパスが存在しなければ、空の文字列を返します。 */
+	None,
+
+	/** フォルダパスが存在しなければ、フォルダを作成します。 */
+	Create,
+
+	/** フォルダパスの存在を確認せずにパスを返します。 */
+	DoNotVerify,
+};
+
 class Environment
 {
 public:
@@ -35,6 +48,10 @@ public:
 
 	/** システムの特別なフォルダのパスを取得します。 */
 	static String specialFolderPath(SpecialFolder specialFolder);
+
+	///** システムの特別なフォルダのパスを取得します。 */
+	//static String getSpecialFolderPath(SpecialFolder specialFolder, const StringRef& relativePath, SpecialFolderOption option = SpecialFolderOption::None);
+
 };
 
 } // namespace ln
