@@ -13,11 +13,8 @@
 #include "Internal.hpp"
 #include "PathHelper.hpp"
 #include <Lumino/Base/Environment.hpp>
+#include <Lumino/IO/FileSystem.hpp>
 #include <Lumino/IO/Path.hpp>
-//#include <Lumino/Base/String.h>
-//#include <Lumino/IO/FileSystem.h>
-//#include <Lumino/IO/PathName.h>
-//#include <Lumino/IO/DirectoryUtils.h>
 
 namespace ln {
 
@@ -258,10 +255,38 @@ int Path::compare(const StringRef& path1, const StringRef& path2)
     return detail::PathTraits::comparePathString(path1.getBegin(), path1.length(), path2.getBegin(), path2.length());
 }
 
-    //int Path::compare(const StringRef& path) const
-    //{
-    //    return detail::PathTraits::comparePathString(m_path.c_str(), m_path.length(), path.getBegin(), path.length());
-    //}
+Path Path::getSpecialFolderPath(SpecialFolder specialFolder, const StringRef& relativeDirPath, SpecialFolderOption option)
+{
+	if (!relativeDirPath.IsNullOrEmpty()) {
+		if (LN_REQUIRE(!detail::PathTraits::isAbsolutePath(relativeDirPath.getBegin(), relativeDirPath.length()))) return Path();
+	}
+
+	Path path2(Environment::specialFolderPath(specialFolder));
+	if (!relativeDirPath.IsNullOrEmpty()) {
+		path2.append(relativeDirPath);
+	}
+
+	switch (option)
+	{
+	case SpecialFolderOption::None:
+		if (ln::FileSystem::existsDirectory(path2))
+			return path2;
+		else
+			return Path();
+	
+	case SpecialFolderOption::Create:
+		if (!ln::FileSystem::existsDirectory(path2))
+			ln::FileSystem::createDirectory(path2);
+		return path2;
+	
+	case SpecialFolderOption::DoNotVerify:
+		return path2;
+	
+	default:
+		LN_UNREACHABLE();
+		return Path();
+	}
+}
 
 #if 0
 //==============================================================================

@@ -34,6 +34,8 @@ public:
 	NameValuePair(const StringRef& n, TValue* v) : name(n), value(v), defaultValue(nullptr) {}
 	NameValuePair(const StringRef& n, TValue* v, const TValue& defaultValue) : name(n), value(v), defaultValue(&defaultValue) {}
 
+	bool hasDefaultValue() const { return defaultValue != nullptr; }
+
 private:
 	NameValuePair & operator=(NameValuePair const &) = delete;
 };

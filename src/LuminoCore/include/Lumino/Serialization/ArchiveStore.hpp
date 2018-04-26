@@ -13,6 +13,17 @@ enum class ArchiveContainerType
 	Array,
 };
 
+enum class ArchiveNodeType
+{
+	Null,
+	Bool,
+	Int64,
+	Double,
+	String,
+	Object,
+	Array,
+};
+
 class ArchiveStore
 {
 public:
@@ -60,6 +71,7 @@ public:
 	bool readValue(int64_t* outValue) { bool r = onReadValueInt64(outValue); postRead(); return r; }
 	bool readValue(double* outValue) { bool r = onReadValueDouble(outValue); postRead(); return r; }
 	bool readValue(String* outValue) { bool r = onReadValueString(outValue); postRead(); return r; }
+	virtual ArchiveNodeType getReadingValueType() = 0;	// 次に readValue で読まれる(setNextXXXX されている)値の型を取得
 
 protected:
 	virtual ArchiveContainerType onGetContainerType() const = 0;
@@ -357,10 +369,30 @@ protected:
 		return true;
 	}
 
+	virtual ArchiveNodeType getReadingValueType() override
+	{
+		tr::JsonValue2* v = readValueHelper();
+		if (!v) return ArchiveNodeType::Null;
+
+		switch (v->getType())
+		{
+		case tr::JsonValueType::Null: return ArchiveNodeType::Null;
+		case tr::JsonValueType::Bool: return ArchiveNodeType::Bool;
+		case tr::JsonValueType::Int32: return ArchiveNodeType::Int64;
+		case tr::JsonValueType::Int64: return ArchiveNodeType::Int64;
+		case tr::JsonValueType::Float: return ArchiveNodeType::Double;
+		case tr::JsonValueType::Double: return ArchiveNodeType::Double;
+		case tr::JsonValueType::String: return ArchiveNodeType::String;
+		case tr::JsonValueType::Array: return ArchiveNodeType::Array;
+		case tr::JsonValueType::Object: return ArchiveNodeType::Object;
+		default: return ArchiveNodeType::Null;
+		}
+	}
+
 private:
 	bool checkTopType(tr::JsonValueType t) const { return m_nodeStack.top()->getType() == t; }
 
-	std::stack<tr::JsonElement2*>	m_nodeStack;
+	std::stack<tr::JsonElement2*>	m_nodeStack;	// Value 型は積まれない。コンテナのみ。
 	Ref<tr::JsonDocument2>			m_localDoc;
 };
 

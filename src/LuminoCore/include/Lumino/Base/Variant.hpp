@@ -57,6 +57,8 @@ public:
 
 	VariantType type() const { return m_type; }
 
+	bool isNumeric() const;
+
 	template<typename TValue>
 	TValue get() const;
 
@@ -130,7 +132,7 @@ public:
 	static T convertToNumeric(const Variant& value);
 
 
-	//static bool getRawBool(const Variant& value) { return value.v_Bool; }
+	static bool getRawBool(const Variant& value) { return value.v_Bool; }
 	//static Char getRawBool(const Variant& value) { return value.v_Char; }
 	//static int8_t getRawBool(const Variant& value) { return value.v_Int8; }
 	//static int16_t getRawBool(const Variant& value) { return value.v_Int16; }
@@ -178,7 +180,10 @@ T VariantHelper::convertToNumeric(const Variant& value)
 
 } // namespace detail
 
-
+inline bool Variant::isNumeric() const
+{
+	return detail::VariantHelper::canConvertToNumeric(*this);
+}
 
 template<typename TValue>
 struct VariantValueTraits
@@ -187,6 +192,12 @@ struct VariantValueTraits
 	static TValue convert(const Variant& value) { return TValue(); }
 };
 
+template<>
+struct VariantValueTraits<bool>
+{
+	static bool canConvertFrom(const Variant& value) { return value.type() == VariantType::Bool; }
+	static bool convert(const Variant& value) { return detail::VariantHelper::getRawBool(value); }
+};
 template<>
 struct VariantValueTraits<int8_t>
 {

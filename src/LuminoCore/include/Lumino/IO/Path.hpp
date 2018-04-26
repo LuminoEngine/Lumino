@@ -2,6 +2,7 @@
 #pragma once
 
 #include "../Base/String.hpp"
+#include "../Base/Environment.hpp"
 #include "Common.hpp"
 
 namespace ln {
@@ -196,17 +197,11 @@ public:
     static int compare(const StringRef& path1, const StringRef& path2);
 
 public:
+
+    /** システムの特別なフォルダのパスを取得します。 */
+    static Path getSpecialFolderPath(SpecialFolder specialFolder, const StringRef& relativeDirPath = StringRef(), SpecialFolderOption option = SpecialFolderOption::Create);
+
 #if 0
-
-    /**
-        @brief        システムの特別なフォルダのパスを取得します。
-        @param[in]    specialFolder    : フォルダの種類
-        @param[in]    childDir        : specialFolder が示すパスの子フォルダとして結合するパス
-        @param[in]    option            : 取得オプション
-        @exception    ArgumentException    childDir が絶対パスです。
-    */
-    static Path getSpecialFolderPath(SpecialFolder specialFolder, const Char* childDir = NULL, SpecialFolderOption option = SpecialFolderOption::Create);
-
     /**    
         @brief        あるフォルダ内でユニークなファイルパス(絶対パス)を生成して返す
         @param[in]    directory    : フォルダパス

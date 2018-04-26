@@ -1,6 +1,8 @@
 ﻿#include "Common.hpp"
 #include <Lumino/Json/JsonDocument.h>
 #include <Lumino/Serialization/Serialization.hpp>
+#include <Lumino/Base/Variant.hpp>
+#include <Lumino/Math/Math.hpp>
 
 //==============================================================================
 //# シリアライズのテスト
@@ -59,7 +61,7 @@ TEST_F(Test_Serialization2, Examples)
 		docs1.fileList.add("file1.md");
 		docs1.fileList.add("file2.md");
 
-		String json = JsonSerializer::serialize(docs1);
+		String json = JsonSerializer::serialize(docs1, JsonFormatting::None);
 		ASSERT_EQ(_T("{\"caption\":\"note\",\"fileList\":[\"file1.md\",\"file2.md\"]}"), json);
 
 
@@ -173,7 +175,7 @@ TEST_F(Test_Serialization2, SimpleSave)
 		Archive ar(&s, ArchiveMode::Load);
 
 
-		ar.process(LN_NVP(t2));
+		ar.process(t2);
 	}
 
 	//- [ ] 空オブジェクトの Save
@@ -673,3 +675,245 @@ TEST_F(Test_Serialization2, DefaultValue)
 	}
 }
 
+
+namespace ln {
+void serialize(Archive& ar, Variant& value)
+{
+	ArchiveNodeType type;
+	ar.makeVariantTag(&type);
+
+	if (ar.isSaving())
+	{
+		switch (value.type())
+		{
+			case VariantType::Null:
+			{
+				LN_NOTIMPLEMENTED();
+				break;
+			}
+			case VariantType::Bool:
+			{
+				auto v = value.get<bool>();
+				ar.process(v);
+				break;
+			}
+			case VariantType::Char:
+			{
+				LN_NOTIMPLEMENTED();
+				break;
+			}
+			case VariantType::Int8:
+			{
+				auto v = value.get<int8_t>();
+				ar.process(v);
+				break;
+			}
+			case VariantType::Int16:
+			{
+				auto v = value.get<int16_t>();
+				ar.process(v);
+				break;
+			}
+			case VariantType::Int32:
+			{
+				auto v = value.get<int32_t>();
+				ar.process(v);
+				break;
+			}
+			case VariantType::Int64:
+			{
+				auto v = value.get<int64_t>();
+				ar.process(v);
+				break;
+			}
+			case VariantType::UInt8:
+			{
+				auto v = value.get<uint8_t>();
+				ar.process(v);
+				break;
+			}
+			case VariantType::UInt16:
+			{
+				auto v = value.get<uint16_t>();
+				ar.process(v);
+				break;
+			}
+			case VariantType::UInt32:
+			{
+				auto v = value.get<uint32_t>();
+				ar.process(v);
+				break;
+			}
+			case VariantType::UInt64:
+			{
+				auto v = value.get<uint64_t>();
+				ar.process(v);
+				break;
+			}
+			case VariantType::Float:
+			{
+				auto v = value.get<float>();
+				ar.process(v);
+				break;
+			}
+			case VariantType::Double:
+			{
+				auto v = value.get<double>();
+				ar.process(v);
+				break;
+			}
+			case VariantType::String:
+			{
+				auto v = value.get<String>();
+				ar.process(v);
+				break;
+			}
+			default:
+				LN_UNREACHABLE();
+				break;
+		}
+	}
+	else
+	{
+		switch (type)
+		{
+			case ln::ArchiveNodeType::Null:
+			{
+				value.clear();
+				break;
+			}
+			case ln::ArchiveNodeType::Bool:
+			{
+				bool v;
+				ar.process(v);
+				value = v;
+				break;
+			}
+			case ln::ArchiveNodeType::Int64:
+			{
+				int64_t v;
+				ar.process(v);
+				value = v;
+				break;
+			}
+			case ln::ArchiveNodeType::Double:
+			{
+				double v;
+				ar.process(v);
+				value = v;
+				break;
+			}
+			case ln::ArchiveNodeType::String:
+			{
+				String v;
+				ar.process(v);
+				value = v;
+				break;
+			}
+			case ln::ArchiveNodeType::Object:
+			{
+				LN_NOTIMPLEMENTED();
+				break;
+			}
+			case ln::ArchiveNodeType::Array:
+			{
+				LN_NOTIMPLEMENTED();
+				break;
+			}
+			default:
+				LN_UNREACHABLE();
+				break;
+		}
+	}
+}
+}
+
+
+//------------------------------------------------------------------------------
+//## Variant serialization
+TEST_F(Test_Serialization2, VariantTest)
+{
+	String json = _T("{\"v_Int32\":100}");
+
+	struct Data
+	{
+		//Variant v_Null;	// TODO:
+		Variant v_Bool;
+		//Variant v_Char,	// TODO:
+		Variant v_Int8;
+		Variant v_Int16;
+		Variant v_Int32;
+		Variant v_Int64;
+		Variant v_UInt8;
+		Variant v_UInt16;
+		Variant v_UInt32;
+		Variant v_UInt64;
+		Variant v_Float;
+		Variant v_Double;
+		Variant v_String;
+
+		void serialize(Archive& ar)
+		{
+			ar & LN_NVP(v_Bool);
+			ar & LN_NVP(v_Int8);
+			ar & LN_NVP(v_Int16);
+			ar & LN_NVP(v_Int32);
+			ar & LN_NVP(v_Int64);
+			ar & LN_NVP(v_UInt8);
+			ar & LN_NVP(v_UInt16);
+			ar & LN_NVP(v_UInt32);
+			ar & LN_NVP(v_UInt64);
+			ar & LN_NVP(v_Float);
+			ar & LN_NVP(v_Double);
+			ar & LN_NVP(v_String);
+		}
+	};
+
+	//{
+	//	JsonTextInputArchive ar(json);
+	//	Data data;
+	//	ar.process(data);
+	//	//ASSERT_EQ(1, t.x);
+	//	//ASSERT_EQ(55, t.z);
+	//}
+
+	//* [ ] Save
+	{
+		JsonTextOutputArchive ar;
+		Data data;
+		data.v_Bool = true;
+		data.v_Int8 = 1;
+		data.v_Int16 = 2;
+		data.v_Int32 = 3;
+		data.v_Int64 = 4;
+		data.v_UInt8 = 5;
+		data.v_UInt16 = 6;
+		data.v_UInt32 = 7;
+		data.v_UInt64 = 8;
+		data.v_Float = 9;
+		data.v_Double = 10;
+		data.v_String = _T("11");
+		ar.process(data);
+		json = ar.toString(JsonFormatting::None);
+	}
+
+	//* [ ] Load
+	{
+		JsonTextInputArchive ar(json);
+		Data data;
+		ar.process(data);
+		ASSERT_EQ(true, data.v_Bool.get<bool>());
+		ASSERT_EQ(1, data.v_Int8.get<int8_t>());
+		ASSERT_EQ(2, data.v_Int16.get<int16_t>());
+		ASSERT_EQ(3, data.v_Int32.get<int32_t>());
+		ASSERT_EQ(4, data.v_Int64.get<int64_t>());
+		ASSERT_EQ(5, data.v_UInt8.get<uint8_t>());
+		ASSERT_EQ(6, data.v_UInt16.get<uint16_t>());
+		ASSERT_EQ(7, data.v_UInt32.get<uint32_t>());
+		ASSERT_EQ(8, data.v_UInt64.get<uint64_t>());
+		ASSERT_EQ(true, Math::nearEqual(9, data.v_Float.get<float>()));
+		ASSERT_EQ(true, Math::nearEqual(10, data.v_Double.get<double>()));
+		ASSERT_EQ(_T("11"), data.v_String.get<String>());
+	}
+
+}

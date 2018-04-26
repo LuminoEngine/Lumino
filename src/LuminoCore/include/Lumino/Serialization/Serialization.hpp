@@ -117,6 +117,21 @@ public:
 		process(*str);
 	}
 
+	// type: in,out
+	void makeVariantTag(ArchiveNodeType* type)
+	{
+		if (isSaving())
+		{
+			moveState(NodeHeadState::Value);
+		}
+		else if (isLoading())
+		{
+			moveState(NodeHeadState::Value);
+			*type = m_store->getReadingValueType();
+		}
+
+	}
+
 protected:
 
 	Archive()
