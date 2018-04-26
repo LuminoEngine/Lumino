@@ -6,6 +6,7 @@
 
 namespace ln {
 namespace detail { class PlatformWindow; }
+class SwapChain;
 
 class LN_API UIFrameWindow
 	: public Object
@@ -14,7 +15,6 @@ class LN_API UIFrameWindow
 public:
 
 	void dispose();
-
 
 
 LN_CONSTRUCT_ACCESS:
@@ -27,6 +27,7 @@ private:
 
 	detail::UIManager* m_manager;
 	Ref<detail::PlatformWindow>	m_platformWindow;
+	Ref<SwapChain>	m_swapChain;
 
 	Event<UIEventHandler> m_onClosed;
 };
