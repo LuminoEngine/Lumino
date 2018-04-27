@@ -627,7 +627,7 @@ void JsonObject2::onSave(JsonWriter* writer)
 
 	for (auto& m : m_memberList)
 	{
-		writer->writePropertyName(m.name.c_str(), m.name.length());
+		writer->writePropertyName(StringRef(m.name));
 		m.value->save(writer);
 	}
 

@@ -37,20 +37,57 @@ Process::~Process()
 {
 }
 
-StreamWriter* Process::stdinWriter() const
+StreamWriter* Process::openStdin()
 {
+	if (!m_stdinWriter)
+	{
+		m_startInfo.stdinPipe = makeRef<detail::PipeImpl>();
+		m_startInfo.stdinPipe->init();
+		m_stdinWriter = makeRef<StreamWriter>(m_startInfo.stdinPipe, m_stdinEncoding);
+	}
+
 	return m_stdinWriter;
 }
 
-StreamReader* Process::stdoutReader() const
+StreamReader* Process::openStdout()
 {
+	if (!m_stdoutReader)
+	{
+		m_startInfo.stdoutPipe = makeRef<detail::PipeImpl>();
+		m_startInfo.stdoutPipe->init();
+		m_stdoutReader = makeRef<StreamReader>(m_startInfo.stdoutPipe, m_stdoutEncoding);
+	}
+
 	return m_stdoutReader;
 }
 
-StreamReader* Process::stderrReader() const
+StreamReader* Process::openStderr()
 {
+	if (!m_stderrReader)
+	{
+		m_startInfo.stderrPipe = makeRef<detail::PipeImpl>();
+		m_startInfo.stderrPipe->init();
+		m_stderrReader = makeRef<StreamReader>(m_startInfo.stderrPipe, m_stderrEncoding);
+	}
+
 	return m_stderrReader;
 }
+
+
+//StreamWriter* Process::stdinWriter() const
+//{
+//	return m_stdinWriter;
+//}
+//
+//StreamReader* Process::stdoutReader() const
+//{
+//	return m_stdoutReader;
+//}
+//
+//StreamReader* Process::stderrReader() const
+//{
+//	return m_stderrReader;
+//}
 
 void Process::start()
 {
@@ -77,37 +114,37 @@ int Process::exitCode()
 int Process::execute(const Path& program, const List<String>& args, String* outStdOutput, String* outStdError)
 {
 	Process proc(program, args);
-	StreamReader* stdoutReader = proc.stderrReader();
-	StreamReader* stderrReader = proc.stderrReader();
+	StreamReader* stdoutReader = (outStdOutput) ? proc.openStdout() : nullptr;
+	StreamReader* stderrReader = (outStdError) ? proc.openStderr() : nullptr;
 	proc.start();
 	proc.wait();
-	if (outStdOutput) *outStdOutput = stdoutReader->readToEnd();
-	if (outStdError) *outStdError = stderrReader->readToEnd();
+	if (stdoutReader && outStdOutput) *outStdOutput = stdoutReader->readToEnd();
+	if (stderrReader && outStdError) *outStdError = stderrReader->readToEnd();
 	return proc.exitCode();
 }
 
 void Process::createRedirectStreams()
 {
-	if (!m_stdinWriter)
-	{
-		m_startInfo.stdinPipe = makeRef<detail::PipeImpl>();
-		m_startInfo.stdinPipe->init();
-		m_stdinWriter = makeRef<StreamWriter>(m_startInfo.stdinPipe, m_stdinEncoding);
-	}
+	//if (!m_stdinWriter)
+	//{
+	//	m_startInfo.stdinPipe = makeRef<detail::PipeImpl>();
+	//	m_startInfo.stdinPipe->init();
+	//	m_stdinWriter = makeRef<StreamWriter>(m_startInfo.stdinPipe, m_stdinEncoding);
+	//}
 
-	if (!m_stdoutReader)
-	{
-		m_startInfo.stdoutPipe = makeRef<detail::PipeImpl>();
-		m_startInfo.stdoutPipe->init();
-		m_stdoutReader = makeRef<StreamReader>(m_startInfo.stdoutPipe, m_stdoutEncoding);
-	}
+	//if (!m_stdoutReader)
+	//{
+	//	m_startInfo.stdoutPipe = makeRef<detail::PipeImpl>();
+	//	m_startInfo.stdoutPipe->init();
+	//	m_stdoutReader = makeRef<StreamReader>(m_startInfo.stdoutPipe, m_stdoutEncoding);
+	//}
 
-	if (!m_stderrReader)
-	{
-		m_startInfo.stderrPipe = makeRef<detail::PipeImpl>();
-		m_startInfo.stderrPipe->init();
-		m_stderrReader = makeRef<StreamReader>(m_startInfo.stderrPipe, m_stderrEncoding);
-	}
+	//if (!m_stderrReader)
+	//{
+	//	m_startInfo.stderrPipe = makeRef<detail::PipeImpl>();
+	//	m_startInfo.stderrPipe->init();
+	//	m_stderrReader = makeRef<StreamReader>(m_startInfo.stderrPipe, m_stderrEncoding);
+	//}
 }
 
 #if 0

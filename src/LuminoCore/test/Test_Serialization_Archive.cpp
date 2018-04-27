@@ -125,6 +125,34 @@ TEST_F(Test_Serialization2, ExtraTypes)
 		ASSERT_EQ(2, data2.list3[1].a);
 		ASSERT_EQ(3, data2.list3[2].a);
 	}
+
+	//* [ ] Ref<>
+	{
+		struct Data1 : public ln::RefObject
+		{
+			Ref<Data1> child;
+			int value;
+
+			void serialize(Archive& ar)
+			{
+				ar & LN_NVP(child);
+				ar & LN_NVP(value);
+			}
+		};
+
+		// save
+		Data1 data1;
+		data1.value = 1;
+		data1.child = makeRef<Data1>();
+		data1.child->value = 2;
+		String json = JsonSerializer::serialize(data1);
+
+		// load
+		Data1 data2;
+		JsonSerializer::deserialize(json, data2);
+		ASSERT_EQ(1, data2.value);
+		ASSERT_EQ(2, data2.child->value);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -697,6 +725,7 @@ TEST_F(Test_Serialization2, VariantTest)
 		Variant v_Float;
 		Variant v_Double;
 		Variant v_String;
+		Variant v_List;
 
 		void serialize(Archive& ar)
 		{
@@ -712,6 +741,7 @@ TEST_F(Test_Serialization2, VariantTest)
 			ar & LN_NVP(v_Float);
 			ar & LN_NVP(v_Double);
 			ar & LN_NVP(v_String);
+			ar & LN_NVP(v_List);
 		}
 	};
 
@@ -731,6 +761,7 @@ TEST_F(Test_Serialization2, VariantTest)
 		data.v_Float = 9;
 		data.v_Double = 10;
 		data.v_String = _T("11");
+		data.v_List = Variant({1, 2, 3});
 		ar.process(data);
 		json = ar.toString(JsonFormatting::None);
 	}
@@ -752,6 +783,9 @@ TEST_F(Test_Serialization2, VariantTest)
 		ASSERT_EQ(true, Math::nearEqual(9, data.v_Float.get<float>()));
 		ASSERT_EQ(true, Math::nearEqual(10, data.v_Double.get<double>()));
 		ASSERT_EQ(_T("11"), data.v_String.get<String>());
+		ASSERT_EQ(3, data.v_List.list().size());
+		ASSERT_EQ(1, data.v_List.list()[0].get<int32_t>());
+		ASSERT_EQ(2, data.v_List.list()[1].get<int32_t>());
+		ASSERT_EQ(3, data.v_List.list()[2].get<int32_t>());
 	}
-
 }

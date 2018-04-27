@@ -72,14 +72,13 @@ void JsonWriter::writeEndArray()
     }
 }
 
-void JsonWriter::writePropertyName(const Char* str, int length)
+void JsonWriter::writePropertyName(const StringRef& str)
 {
     if (LN_REQUIRE(m_levelStack.size() >= 1))
         return;
-    length = (length <= -1) ? (int)StringHelper::strlen(str) : length;
 
     autoComplete(JsonToken::PropertyName);
-    onKey(str, length);
+    onKey(str.getBegin(), str.length());
     m_levelStack.top().justSawKey = true;
 }
 

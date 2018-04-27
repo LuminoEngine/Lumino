@@ -96,6 +96,23 @@ Variant::Variant(const String& value)
 {
 }
 
+Variant::Variant(List<Variant>* value)
+	: m_type(VariantType::List)
+	, v_List(value)
+{
+}
+
+Variant::Variant(const Ref<List<Variant>>& value)
+	: m_type(VariantType::List)
+	, v_List(value)
+{
+}
+
+Variant::Variant(const List<Variant>& value)
+	: Variant(Ref<List<Variant>>(LN_NEW List<Variant>(value), false))
+{
+}
+
 Variant::Variant(const Variant& value)
 	: m_type(VariantType::Null)
 {
@@ -128,6 +145,9 @@ void Variant::clear() LN_NOEXCEPT
 	case VariantType::String:
 		v_String.~String();
 		break;
+	case VariantType::List:
+		v_List.~Ref();
+		break;
 	default:
 		assert(0);
 		break;
@@ -144,6 +164,18 @@ Variant& Variant::operator=(const Variant& rhs)
 		copy(rhs);
 	}
 	return *this;
+}
+
+List<Variant>& Variant::list()
+{
+	assert(m_type == VariantType::List);
+	return *v_List;
+}
+
+const List<Variant>& Variant::list() const
+{
+	assert(m_type == VariantType::List);
+	return *v_List;
 }
 
 void Variant::assign(bool value)
@@ -224,6 +256,12 @@ void Variant::assign(const String& value)
 	new(&v_String) String(value);
 }
 
+void Variant::assign(const Ref<List<Variant>>& value)
+{
+	m_type = VariantType::List;
+	new(&v_List) Ref<List<Variant>>(value);
+}
+
 void Variant::copy(const Variant& value)
 {
 	switch (value.m_type)
@@ -268,6 +306,9 @@ void Variant::copy(const Variant& value)
 		break;
 	case VariantType::String:
 		assign(value.v_String);
+		break;
+	case VariantType::List:
+		assign(value.v_List);
 		break;
 	default:
 		assert(0);

@@ -145,6 +145,11 @@ public:
 		process(*str);
 	}
 
+	void makeSmartPtrTag()
+	{
+		moveState(NodeHeadState::Value);
+	}
+
 	// type: in,out
 	void makeVariantTag(ArchiveNodeType* type)
 	{

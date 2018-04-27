@@ -26,9 +26,9 @@ TEST_F(Test_IO_Process, Redirect)
 	//* [ ] 
 	{
 		Process proc1(_T("LuminoCore_Test"), { _T("proctest2") });
-		StreamWriter* w1 = proc1.stdinWriter();
-		StreamReader* r1 = proc1.stdoutReader();
-		StreamReader* r2 = proc1.stderrReader();
+		StreamWriter* w1 = proc1.openStdin();
+		StreamReader* r1 = proc1.openStdout();
+		StreamReader* r2 = proc1.openStderr();
 		proc1.start();
 		w1->writeLine("test");	// 改行が必要
 		String sr1 = r1->readToEnd();
@@ -39,7 +39,7 @@ TEST_F(Test_IO_Process, Redirect)
 	//* [ ] UTF8文字列が標準出力されたとき、文字コード変換エラーになっていた。
 	{
 		Process proc(_T("LuminoCore_Test"), { _T("proctest3") }, TextEncoding::utf8Encoding());
-		StreamReader* r1 = proc.stdoutReader();
+		StreamReader* r1 = proc.openStdout();
 		proc.start();
 		String str = r1->readToEnd();
 		ASSERT_EQ(_LT("あ"), str);

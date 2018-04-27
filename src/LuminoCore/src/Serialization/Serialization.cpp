@@ -23,9 +23,9 @@ namespace ln {
 //==============================================================================
 // Archive
 
-const String Archive::ClassNameKey = _TT("lumino_class_name");
-const String Archive::ClassVersionKey = _TT("lumino_class_version");
-const String Archive::ClassBaseKey = _TT("lumino_base_class");
+const String Archive::ClassNameKey = _TT("__ln_class_name");
+const String Archive::ClassVersionKey = _TT("__ln_class_version");
+const String Archive::ClassBaseKey = _TT("__ln_base_class");
 
 //==============================================================================
 // JsonTextOutputArchive

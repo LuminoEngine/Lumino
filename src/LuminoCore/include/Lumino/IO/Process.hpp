@@ -72,11 +72,11 @@ public:
 	*/
 	void setWorkingDirectory(const Path& directoryPath) { m_startInfo.workingDirectory = directoryPath; }
 
-	StreamWriter* stdinWriter() const;
+	StreamWriter* openStdin();
 
-	StreamReader* stdoutReader() const;
+	StreamReader* openStdout();
 
-	StreamReader* stderrReader() const;
+	StreamReader* openStderr();
 
 
 	///**

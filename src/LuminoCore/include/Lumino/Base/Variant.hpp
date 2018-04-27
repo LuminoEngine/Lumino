@@ -26,6 +26,7 @@ enum class VariantType
 	Float,
 	Double,
 	String,
+	List,
 };
 
 class Variant
@@ -49,7 +50,18 @@ public:
 	Variant(const Char* value);
 	Variant(const String& value);
 	Variant(const Variant& value);
+	Variant(List<Variant>* value);
+	Variant(const List<Variant>& value);
+	Variant(const Ref<List<Variant>>& value);
 	~Variant();
+
+	template<class T>
+	Variant(const List<T>& list)
+		: Variant(makeRef<List<Variant>>())
+	{
+		auto& tl = Variant::list();
+		for (auto& item : list) tl.add(item);
+	}
 
 	void clear() LN_NOEXCEPT;
 
@@ -61,6 +73,10 @@ public:
 
 	template<typename TValue>
 	TValue get() const;
+
+	/** utility *get<Ref<List<Variantl>>>() */
+	List<Variant>& list();
+	const List<Variant>& list() const;
 
 	Variant& operator=(const Variant& rhs);
 
@@ -78,6 +94,7 @@ private:
 	void assign(float value);
 	void assign(double value);
 	void assign(const String& value);
+	void assign(const Ref<List<Variant>>& value);
 	void copy(const Variant& value);
 
 	VariantType	m_type;
@@ -97,6 +114,7 @@ private:
 		float v_Float;
 		double v_Double;
 		String v_String;
+		Ref<List<Variant>> v_List;
 	};
 
 	friend class detail::VariantHelper;

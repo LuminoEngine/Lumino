@@ -9,19 +9,23 @@ namespace ln {
 template<typename TValue>
 void serialize(Archive& ar, Ref<TValue>& value)
 {
+	ar.makeSmartPtrTag();
+
 	if (ar.isLoading())
 	{
 		if (!value)
 		{
 			value = makeRef<TValue>();
 		}
-		value->serialize(ar);
+		ar.process(*value.get());
+		//value->serialize(ar);
 	}
 	else
 	{
 		if (value)
 		{
-			value->serialize(ar);
+			//value->serialize(ar);
+			ar.process(*value.get());
 		}
 	}
 }
@@ -164,6 +168,12 @@ inline void serialize(Archive& ar, Variant& value)
 			ar.process(v);
 			break;
 		}
+		case VariantType::List:
+		{
+			List<Variant>& v = value.list();
+			ar.process(v);
+			break;
+		}
 		default:
 			LN_UNREACHABLE();
 			break;
@@ -213,7 +223,9 @@ inline void serialize(Archive& ar, Variant& value)
 		}
 		case ln::ArchiveNodeType::Array:
 		{
-			LN_NOTIMPLEMENTED();
+			auto v = makeRef<List<Variant>>();
+			ar.process(v);
+			value = v;
 			break;
 		}
 		default:

@@ -172,8 +172,8 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo)
 	HANDLE hProcess = ::GetCurrentProcess();
 
 	STARTUPINFOW startupInfo;
-	::GetStartupInfoW(&startupInfo);
 	startupInfo.cb = sizeof(STARTUPINFOW);
+	::GetStartupInfoW(&startupInfo);
 	startupInfo.lpReserved = NULL;
 	startupInfo.lpDesktop = NULL;
 	startupInfo.lpTitle = NULL;
@@ -182,14 +182,16 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo)
 	startupInfo.lpReserved2 = NULL;
 
 	BOOL inheritHandles = FALSE;
+	DWORD creationFlags = 0;
 
 	// stdin redirect
 	if (startInfo.stdinPipe)
 	{
 		::DuplicateHandle(hProcess, startInfo.stdinPipe->readHandle(), hProcess, &startupInfo.hStdInput, 0, TRUE, DUPLICATE_SAME_ACCESS);
 		inheritHandles = TRUE;
+		creationFlags |= CREATE_NO_WINDOW;
 	}
-	else if (::GetStdHandle(STD_INPUT_HANDLE))
+	else if (::GetStdHandle(STD_INPUT_HANDLE) != INVALID_HANDLE_VALUE)
 	{
 		::DuplicateHandle(hProcess, ::GetStdHandle(STD_INPUT_HANDLE), hProcess, &startupInfo.hStdInput, 0, TRUE, DUPLICATE_SAME_ACCESS);
 		inheritHandles = TRUE;
@@ -204,8 +206,9 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo)
 	{
 		::DuplicateHandle(hProcess, startInfo.stdoutPipe->writeHandle(), hProcess, &startupInfo.hStdOutput, 0, TRUE, DUPLICATE_SAME_ACCESS);
 		inheritHandles = TRUE;
+		creationFlags |= CREATE_NO_WINDOW;
 	}
-	else if (::GetStdHandle(STD_OUTPUT_HANDLE))
+	else if (::GetStdHandle(STD_OUTPUT_HANDLE) != INVALID_HANDLE_VALUE)
 	{
 		::DuplicateHandle(hProcess, ::GetStdHandle(STD_OUTPUT_HANDLE), hProcess, &startupInfo.hStdOutput, 0, TRUE, DUPLICATE_SAME_ACCESS);
 		inheritHandles = TRUE;
@@ -220,8 +223,9 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo)
 	{
 		::DuplicateHandle(hProcess, startInfo.stderrPipe->writeHandle(), hProcess, &startupInfo.hStdError, 0, TRUE, DUPLICATE_SAME_ACCESS);
 		inheritHandles = TRUE;
+		creationFlags |= CREATE_NO_WINDOW;
 	}
-	else if (::GetStdHandle(STD_ERROR_HANDLE))
+	else if (::GetStdHandle(STD_ERROR_HANDLE) != INVALID_HANDLE_VALUE)
 	{
 		::DuplicateHandle(hProcess, ::GetStdHandle(STD_ERROR_HANDLE), hProcess, &startupInfo.hStdError, 0, TRUE, DUPLICATE_SAME_ACCESS);
 		inheritHandles = TRUE;
@@ -267,7 +271,7 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo)
 		NULL,
 		NULL,
 		inheritHandles,
-		CREATE_NO_WINDOW,
+		creationFlags,//CREATE_NO_WINDOW/* | DETACHED_PROCESS*/,
 		NULL,
 		(workingDirectory.empty()) ? NULL : workingDirectory.c_str(),
 		&startupInfo,

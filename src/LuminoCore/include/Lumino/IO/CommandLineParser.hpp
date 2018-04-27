@@ -489,6 +489,8 @@ public:
 
 	bool hasCommand(const CommandLineCommand* command) const;
 
+	CommandLineCommand* command() const { return m_activeCommand; }
+
 	bool isSet(const CommandLineOption* option) const;
 
 	/** ヘルプ情報を標準出力します。 */

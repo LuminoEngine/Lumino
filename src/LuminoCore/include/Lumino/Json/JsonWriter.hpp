@@ -19,7 +19,7 @@ public:
     void writeEndObject();
     void writeStartArray();
     void writeEndArray();
-    void writePropertyName(const Char* str, int length = -1);
+	void writePropertyName(const StringRef& str);
     void writeNull();
     void writeBool(bool value);
     void writeInt32(int32_t value);
