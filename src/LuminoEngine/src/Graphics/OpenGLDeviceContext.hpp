@@ -27,10 +27,15 @@ class OpenGLDeviceContext
 	: public IGraphicsDeviceContext
 {
 public:
+	struct Settings
+	{
+		PlatformWindow* mainWindow = nullptr;
+	};
+
 	OpenGLDeviceContext();
 	virtual ~OpenGLDeviceContext() = default;
 
-	void initialize();
+	void initialize(const Settings& settings);
 	void dispose();
 
 protected:

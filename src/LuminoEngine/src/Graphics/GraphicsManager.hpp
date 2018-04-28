@@ -4,6 +4,7 @@ namespace ln {
 class GraphicsContext;
 
 namespace detail {
+class PlatformWindow;
 class IGraphicsDeviceContext;
 
 class GraphicsManager
@@ -12,6 +13,7 @@ class GraphicsManager
 public:
 	struct Settings
 	{
+		PlatformWindow* mainWindow = nullptr;
 	};
 
 	GraphicsManager();

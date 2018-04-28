@@ -52,7 +52,7 @@ void EngineManager::initialize()
 {
 	initializeAllManagers();
 
-	m_mainWindow = newObject<UIFrameWindow>(m_settings.mainWindowSize);
+	m_mainWindow = newObject<UIFrameWindow>(m_platformManager->mainWindow(), m_settings.mainBackBufferSize);
 }
 
 void EngineManager::dispose()
@@ -87,6 +87,11 @@ void EngineManager::initializePlatformManager()
 		initializeCommon();
 
 		PlatformManager::Settings settings;
+		settings.mainWindowSettings.title = m_settings.mainWindowTitle;
+		settings.mainWindowSettings.clientSize = m_settings.mainWindowSize;
+		settings.mainWindowSettings.fullscreen = false;
+		settings.mainWindowSettings.resizable = true;
+		//settings.mainWindowSettings.userWindow = m_settings.userMainWindow;
 
 		m_platformManager = Ref<PlatformManager>::makeRef();
 		m_platformManager->initialize(settings);
@@ -113,9 +118,10 @@ void EngineManager::initializeGraphicsManager()
 {
 	if (!m_graphicsManager)
 	{
-		initializeCommon();
+		initializePlatformManager();
 
 		GraphicsManager::Settings settings;
+		settings.mainWindow = m_platformManager->mainWindow();
 
 		m_graphicsManager = Ref<GraphicsManager>::makeRef();
 		m_graphicsManager->initialize(settings);

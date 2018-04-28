@@ -76,6 +76,7 @@ private:
 	//Ref<ModelManager>				m_modelManager;
 	//Ref<AssetsManager>						m_assetsManager;
 	Ref<UIManager>					m_uiManager;
+
 	Ref<UIFrameWindow> m_mainWindow;
 
 	bool m_exitRequested;

@@ -16,21 +16,10 @@ UIFrameWindow::~UIFrameWindow()
 {
 }
 
-void UIFrameWindow::initialize(const SizeI& size)
+void UIFrameWindow::initialize(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize)
 {
 	m_manager = detail::EngineDomain::uiManager();
-
-	detail::WindowCreationSettings settings;
-	//settings.title = m_settings.mainWindowTitle;
-	settings.clientSize = size;
-	settings.fullscreen = false;
-	settings.resizable = true;
-	//settings.mainWindowSettings.userWindow = m_settings.userMainWindow;
-
-	m_platformWindow = detail::EngineDomain::platformManager()->windowManager()->createWindow(settings);
-	m_platformWindow->attachEventListener(this);
-
-	m_swapChain = newObject<SwapChain>(m_platformWindow, size);
+	m_swapChain = newObject<SwapChain>(platformMainWindow, backbufferSize);
 }
 
 void UIFrameWindow::dispose()

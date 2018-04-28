@@ -17,6 +17,8 @@ void PlatformManager::initialize(const Settings& settings)
 	windowManager->initialize();
 
 	m_windowManager = windowManager;
+
+	m_mainWindow = m_windowManager->createWindow(settings.mainWindowSettings);
 }
 
 void PlatformManager::dispose()

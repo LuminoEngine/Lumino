@@ -17,6 +17,15 @@ GLFWSwapChain::GLFWSwapChain(GLFWPlatformWindow* window)
 //=============================================================================
 // GLFWContext
 
+void GLFWContext::initialize(PlatformWindow* window)
+{
+	auto* glfwWindow = dynamic_cast<GLFWPlatformWindow*>(window);
+	LN_CHECK(glfwWindow);
+	m_mainWindow = glfwWindow;
+
+	glfwMakeContextCurrent(m_mainWindow->glfwWindow());
+}
+
 Ref<GLSwapChain> GLFWContext::createSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
 {
 	auto* glfwWindow = dynamic_cast<GLFWPlatformWindow*>(window);

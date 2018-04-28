@@ -52,9 +52,12 @@ OpenGLDeviceContext::OpenGLDeviceContext()
 {
 }
 
-void OpenGLDeviceContext::initialize()
+void OpenGLDeviceContext::initialize(const Settings& settings)
 {
-	m_glContext = makeRef<GLFWContext>();
+
+	auto glfwContext = makeRef<GLFWContext>();
+	glfwContext->initialize(settings.mainWindow);
+	m_glContext = glfwContext;
 }
 
 void OpenGLDeviceContext::dispose()
@@ -63,12 +66,12 @@ void OpenGLDeviceContext::dispose()
 
 void OpenGLDeviceContext::onEnterMainThread()
 {
-	m_glContext->makeCurrent();
+	//m_glContext->makeCurrent();
 }
 
 void OpenGLDeviceContext::onLeaveMainThread()
 {
-	m_glContext->makeCurrent();
+	//m_glContext->makeCurrent();
 }
 
 Ref<ISwapChain> OpenGLDeviceContext::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize)

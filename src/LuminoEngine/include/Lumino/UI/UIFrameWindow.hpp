@@ -3,6 +3,7 @@
 #include "Common.hpp"
 #include "UIEvents.hpp"
 #include "../Platform/PlatformEvent.hpp"
+#include "../Graphics/GeometryStructs.hpp"
 
 namespace ln {
 namespace detail { class PlatformWindow; }
@@ -23,7 +24,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIFrameWindow();
 	virtual ~UIFrameWindow();
-	void initialize(const SizeI& size);
+	void initialize(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
 
 private:
 	virtual bool onPlatformEvent(const detail::PlatformEventArgs& e) override;
