@@ -16,6 +16,9 @@ public:
 
 	void dispose();
 
+	void renderContents();
+	void present();
+
 
 LN_CONSTRUCT_ACCESS:
 	UIFrameWindow();

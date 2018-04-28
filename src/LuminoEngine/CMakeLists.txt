@@ -34,7 +34,7 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/Common.hpp
 	include/Lumino/Graphics/ColorStructs.hpp
 	include/Lumino/Graphics/GeometryStructs.hpp
-	include/Lumino/Graphics/SwapChain.hpp
+	include/Lumino/Graphics/GraphicsContext.hpp
 	src/Graphics/Internal.hpp
 	src/Graphics/ColorStructs.cpp
 	src/Graphics/GeometryStructs.cpp
@@ -46,7 +46,7 @@ set(LN_SOURCES_Graphics
 	src/Graphics/GraphicsManager.hpp
 	src/Graphics/OpenGLDeviceContext.cpp
 	src/Graphics/OpenGLDeviceContext.hpp
-	src/Graphics/SwapChain.cpp
+	src/Graphics/GraphicsContext.cpp
 )
 
 set(LN_SOURCES_UI
@@ -74,13 +74,15 @@ set(LN_SOURCES
 	${LN_SOURCES_UI}
 )
 
+ find_package(OpenGL)
+
 #------------------------------------------------------------------------------
 # Targets
 
 
 add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES})
-target_link_libraries(${PROJECT_NAME} LuminoCore glfw)
+target_link_libraries(${PROJECT_NAME} LuminoCore glfw ${OPENGL_LIBRARY})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
 

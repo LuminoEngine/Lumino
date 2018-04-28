@@ -59,6 +59,7 @@ public:
 
 	const Ref<PlatformManager>& platformManager() const { return m_platformManager; }
 	const Ref<GraphicsManager>& graphicsManager() const { return m_graphicsManager; }
+	const Ref<UIManager>& uiManager() const { return m_uiManager; }
 
 private:
 	virtual bool onPlatformEvent(const PlatformEventArgs& e) override;

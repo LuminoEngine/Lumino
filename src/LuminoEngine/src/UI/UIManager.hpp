@@ -3,6 +3,7 @@
 namespace ln {
 namespace detail {
 class PlatformManager;
+class GraphicsManager;
 
 class UIManager
 	: public RefObject
@@ -10,7 +11,7 @@ class UIManager
 public:
 	struct Settings
 	{
-		//PlatformManager* platformManager;
+		GraphicsManager* graphicsManager;
 	};
 
 	UIManager();
@@ -19,7 +20,10 @@ public:
 	void initialize(const Settings& settings);
 	void dispose();
 
+	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
+
 private:
+	GraphicsManager* m_graphicsManager;
 	//PlatformManager* platformManager;
 };
 

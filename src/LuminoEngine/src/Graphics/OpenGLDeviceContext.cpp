@@ -61,6 +61,16 @@ void OpenGLDeviceContext::dispose()
 {
 }
 
+void OpenGLDeviceContext::onEnterMainThread()
+{
+	m_glContext->makeCurrent();
+}
+
+void OpenGLDeviceContext::onLeaveMainThread()
+{
+	m_glContext->makeCurrent();
+}
+
 Ref<ISwapChain> OpenGLDeviceContext::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
 {
 	return m_glContext->createSwapChain(window, backbufferSize);
@@ -91,6 +101,11 @@ void OpenGLDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, f
 	}
 
 	GL_CHECK(glClear(glflags));
+}
+
+void OpenGLDeviceContext::onPresent(ISwapChain* swapChain)
+{
+	m_glContext->swap(static_cast<GLSwapChain*>(swapChain));
 }
 
 } // namespace detail

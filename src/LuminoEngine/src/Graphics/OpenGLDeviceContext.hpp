@@ -24,7 +24,7 @@ class GLContext;
 	マルチスレッドレンダリングやるなら Vulkan、DX12 などを使おう。
 */
 class OpenGLDeviceContext
-	: public GraphicsDeviceContext
+	: public IGraphicsDeviceContext
 {
 public:
 	OpenGLDeviceContext();
@@ -34,8 +34,11 @@ public:
 	void dispose();
 
 protected:
+	virtual void onEnterMainThread() override;
+	virtual void onLeaveMainThread() override;
 	virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
+	virtual void onPresent(ISwapChain* swapChain) override;
 
 private:
 	Ref<GLContext> m_glContext;

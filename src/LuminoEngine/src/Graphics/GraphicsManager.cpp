@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <Lumino/Graphics/GraphicsContext.hpp>
 #include "GraphicsManager.hpp"
 #include "OpenGLDeviceContext.hpp"
 
@@ -10,14 +11,18 @@ GraphicsManager::GraphicsManager()
 {
 }
 
-void GraphicsManager::initialize()
+void GraphicsManager::initialize(const Settings& settings)
 {
-	m_deviceContext = makeRef<OpenGLDeviceContext>();
-	m_deviceContext->initialize();
+	auto ctx = makeRef<OpenGLDeviceContext>();
+	ctx->initialize();
+	m_deviceContext = ctx;
+
+	m_graphicsContext = newObject<GraphicsContext>(m_deviceContext);
 }
 
 void GraphicsManager::dispose()
 {
+	m_graphicsContext->dispose();
 	m_deviceContext->dispose();
 }
 

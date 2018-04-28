@@ -1,23 +1,31 @@
 ﻿#pragma once
 
 namespace ln {
+class GraphicsContext;
+
 namespace detail {
-class GraphicsDeviceContext;
+class IGraphicsDeviceContext;
 
 class GraphicsManager
 	: public RefObject
 {
 public:
+	struct Settings
+	{
+	};
+
 	GraphicsManager();
 	virtual ~GraphicsManager() = default;
 
-	void initialize();
+	void initialize(const Settings& settings);
 	void dispose();
 
-	const Ref<GraphicsDeviceContext>& deviceContext() const { return m_deviceContext; }
+	const Ref<IGraphicsDeviceContext>& deviceContext() const { return m_deviceContext; }
+	const Ref<GraphicsContext>& graphicsContext() const { return m_graphicsContext; }
 
 private:
-	Ref<GraphicsDeviceContext> m_deviceContext;
+	Ref<IGraphicsDeviceContext> m_deviceContext;
+	Ref<GraphicsContext> m_graphicsContext;
 };
 
 } // namespace detail

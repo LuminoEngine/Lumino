@@ -111,6 +111,15 @@ void EngineManager::initializePhysicsManager()
 
 void EngineManager::initializeGraphicsManager()
 {
+	if (!m_graphicsManager)
+	{
+		initializeCommon();
+
+		GraphicsManager::Settings settings;
+
+		m_graphicsManager = Ref<GraphicsManager>::makeRef();
+		m_graphicsManager->initialize(settings);
+	}
 }
 
 void EngineManager::initializeEffectManager()
@@ -129,7 +138,10 @@ void EngineManager::initializeUIManager()
 {
 	if (!m_uiManager)
 	{
+		initializeGraphicsManager();
+
 		UIManager::Settings settings;
+		settings.graphicsManager = m_graphicsManager;
 		
 		m_uiManager = makeRef<UIManager>();
 		m_uiManager->initialize(settings);
@@ -153,10 +165,18 @@ void EngineManager::updateFrame()
 
 void EngineManager::renderFrame()
 {
+	if (m_mainWindow) {
+		m_mainWindow->renderContents();
+	}
 }
 
 void EngineManager::presentFrame()
 {
+	if (m_mainWindow) {
+		m_mainWindow->present();
+	}
+
+	::Sleep(1);
 }
 
 void EngineManager::resetFrameDelay()
@@ -214,6 +234,12 @@ PlatformManager* EngineDomain::platformManager()
 GraphicsManager* EngineDomain::graphicsManager()
 {
 	return engineManager()->graphicsManager();
+}
+
+
+UIManager* EngineDomain::uiManager()
+{
+	return engineManager()->uiManager();
 }
 
 } // namespace detail

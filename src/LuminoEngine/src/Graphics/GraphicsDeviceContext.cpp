@@ -6,28 +6,41 @@ namespace ln {
 namespace detail {
 
 //=============================================================================
-// GraphicsDeviceContext
+// IGraphicsDeviceContext
 
-GraphicsDeviceContext::GraphicsDeviceContext()
+IGraphicsDeviceContext::IGraphicsDeviceContext()
 {
 }
 
-void GraphicsDeviceContext::initialize()
+void IGraphicsDeviceContext::initialize()
 {
 }
 
-void GraphicsDeviceContext::dispose()
+void IGraphicsDeviceContext::dispose()
 {
 }
 
-Ref<ISwapChain> GraphicsDeviceContext::createSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
+void IGraphicsDeviceContext::enterMainThread()
+{
+}
+
+void IGraphicsDeviceContext::leaveMainThread()
+{
+}
+
+Ref<ISwapChain> IGraphicsDeviceContext::createSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
 {
 	return onCreateSwapChain(window, backbufferSize);
 }
 
-void GraphicsDeviceContext::clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
+void IGraphicsDeviceContext::clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
 	onClearBuffers(flags, color, z, stencil);
+}
+
+void IGraphicsDeviceContext::present(ISwapChain* swapChain)
+{
+	onPresent(swapChain);
 }
 
 } // namespace detail

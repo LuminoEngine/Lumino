@@ -28,6 +28,7 @@ public:
 	static EngineManager* engineManager();
 	static PlatformManager* platformManager();
 	static GraphicsManager* graphicsManager();
+	static UIManager* uiManager();
 
 	//static Application* application;
 
