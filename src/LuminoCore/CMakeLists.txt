@@ -166,6 +166,11 @@ set(LN_SOURCES_Text
 
 set(LN_SOURCES_Threading
 	include/Lumino/Threading/Common.hpp
+	include/Lumino/Threading/Thread.hpp
+	src/Threading/Internal.hpp
+	src/Threading/Thread_POSIX.hpp
+	src/Threading/Thread_Win32.hpp
+	src/Threading/Thread.cpp
 )
 
 set(LN_SOURCES_Xml

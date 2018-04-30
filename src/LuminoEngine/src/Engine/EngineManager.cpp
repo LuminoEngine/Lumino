@@ -182,7 +182,7 @@ void EngineManager::presentFrame()
 		m_mainWindow->present();
 	}
 
-	::Sleep(1);
+	Thread::sleep(1);
 }
 
 void EngineManager::resetFrameDelay()

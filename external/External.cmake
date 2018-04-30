@@ -29,8 +29,10 @@ set(LN_SOURCES_gtest
 
 #--------------------------------------
 # glfw
-set(GLFW_BUILD_EXAMPLES OFF)
-set(GLFW_BUILD_TESTS OFF)
-set(GLFW_BUILD_DOCS OFF)
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/glfw-3.2.1)
-ln_add_dependencies_common_property(glfw "${CMAKE_CURRENT_LIST_DIR}/glfw-3.2.1/include")
+if (NOT DEFINED EMSCRIPTEN)
+	set(GLFW_BUILD_EXAMPLES OFF)
+	set(GLFW_BUILD_TESTS OFF)
+	set(GLFW_BUILD_DOCS OFF)
+	add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/glfw-3.2.1)
+	ln_add_dependencies_common_property(glfw "${CMAKE_CURRENT_LIST_DIR}/glfw-3.2.1/include")
+endif()

@@ -289,6 +289,8 @@ private:
 				break;
 			case NodeHeadState::ContainerOpend:
 				break;
+			default:
+				break;
 			}
 		}
 	}

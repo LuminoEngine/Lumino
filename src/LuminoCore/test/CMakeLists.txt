@@ -46,7 +46,7 @@ include_directories(
 )
 
 
-add_executable(LuminoCore_Test ${LN_SOURCES})
+add_executable(${PROJECT_NAME} ${LN_SOURCES})
 target_link_libraries(${PROJECT_NAME} LuminoCore)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 

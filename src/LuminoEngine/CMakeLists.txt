@@ -74,7 +74,7 @@ set(LN_SOURCES
 	${LN_SOURCES_UI}
 )
 
- find_package(OpenGL)
+find_package(OpenGL)
 
 #------------------------------------------------------------------------------
 # Targets

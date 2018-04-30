@@ -39,8 +39,8 @@ public:
 	// Stream interface
 	virtual bool canRead() const override { return true; }
 	virtual bool canWrite() const override { return true; }
-	virtual int64_t length() const override { LN_UNREACHABLE(); }
-	virtual int64_t position() const override { LN_UNREACHABLE(); }
+	virtual int64_t length() const override { LN_UNREACHABLE(); return 0; }
+	virtual int64_t position() const override { LN_UNREACHABLE(); return 0; }
 	virtual size_t read(void* buffer, size_t byteCount) override { return readBytes(buffer, byteCount); }
 	virtual void write(const void* buffer, size_t byteCount) override { writeBytes(buffer, byteCount); }
 	virtual void seek(int64_t offset, SeekOrigin origin) override { LN_UNREACHABLE(); }

@@ -52,7 +52,11 @@
 #include "Lumino/Text/Encoding.hpp"
 #include "Lumino/Text/EncodingConverter.hpp"
 
-#include "Lumino/Json/JsonReader.hpp"
+#include "Lumino/Threading/Common.hpp"
+#include "Lumino/Threading/Thread.hpp"
+
+#include "Lumino/Json/Common.hpp"
+#include "Lumino/Json/JsonReader.h"
 #include "Lumino/Json/JsonWriter.hpp"
 
 #include "Lumino/Serialization/Common.hpp"

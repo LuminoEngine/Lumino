@@ -23,6 +23,11 @@ public:
 		LN_NOTIMPLEMENTED();
 		return StringType();
 	}
+
+	static void getSpecialFolderPath(SpecialFolder specialFolder, StringType* outPath)
+	{
+		LN_NOTIMPLEMENTED();
+	}
 };
 
 } // namespace ln
