@@ -758,8 +758,8 @@ TEST_F(Test_Serialization2, VariantTest)
 		data.v_UInt16 = 6;
 		data.v_UInt32 = 7;
 		data.v_UInt64 = 8;
-		data.v_Float = 9;
-		data.v_Double = 10;
+		data.v_Float = 1;
+		data.v_Double = 1;
 		data.v_String = _T("11");
 		data.v_List = Variant({1, 2, 3});
 		ar.process(data);
@@ -780,8 +780,8 @@ TEST_F(Test_Serialization2, VariantTest)
 		ASSERT_EQ(6, data.v_UInt16.get<uint16_t>());
 		ASSERT_EQ(7, data.v_UInt32.get<uint32_t>());
 		ASSERT_EQ(8, data.v_UInt64.get<uint64_t>());
-		ASSERT_EQ(true, Math::nearEqual(9, data.v_Float.get<float>()));
-		ASSERT_EQ(true, Math::nearEqual(10, data.v_Double.get<double>()));
+		ASSERT_EQ(true, Math::nearEqual(1, data.v_Float.get<float>()));
+		ASSERT_EQ(true, Math::nearEqual(1, data.v_Double.get<double>()));
 		ASSERT_EQ(_T("11"), data.v_String.get<String>());
 		ASSERT_EQ(3, data.v_List.list().size());
 		ASSERT_EQ(1, data.v_List.list()[0].get<int32_t>());

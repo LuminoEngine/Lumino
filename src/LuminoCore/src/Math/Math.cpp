@@ -60,7 +60,7 @@ void Math::sinCos(float value, float* outSin, float* outCos)
 
 bool Math::nearEqual(float value1, float value2)
 {
-    return ((value2 - FLT_EPSILON) <= value1) && (value1 <= (value2 + FLT_EPSILON));
+    return (((value2 - FLT_EPSILON) < value1) && (value1 < (value2 + FLT_EPSILON)));
 }
 
 bool Math::isNaN(float value)

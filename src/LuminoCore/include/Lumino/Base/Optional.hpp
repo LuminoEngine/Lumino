@@ -22,60 +22,51 @@ template<typename T>
 class Optional
 {
 public:
+	/** 有効値を保持していない状態で構築します。 */
     LN_CONSTEXPR Optional() LN_NOEXCEPT;
-    LN_CONSTEXPR Optional(std::nullptr_t) LN_NOEXCEPT;
-	LN_CONSTEXPR Optional(const Optional<T>& other)
-		: m_value(other.m_value)
-		, m_hasValue(other.m_hasValue)
-	{
-	}
 
+	/** 有効値を保持していない状態で構築します。 */
+    LN_CONSTEXPR Optional(std::nullptr_t) LN_NOEXCEPT;
+
+	/** コピーコンストラクタ */
+	LN_CONSTEXPR Optional(const Optional<T>& other);
+
+	/** ムーブコンストラクタ */
 	LN_CONSTEXPR Optional(Optional&& other) LN_NOEXCEPT;
+
+	/** 受け取った値を有効値として保持して構築します。 */
     Optional(const T& value);
+
+	/** 受け取った値を有効値として保持して構築します。 */
     Optional(T&& value);
 
+	/** T に変換可能な型 U を持つ Optional をコピーして構築します。 */
 	template <class U>
 	explicit Optional(const Optional<U>& rhs)
 		: m_value(std::forward<U>(rhs.m_value)), m_hasValue(rhs.m_hasValue)
 	{}
 
+	/** T に変換可能な型 U を持つ Optional をムーブして構築します。 */
 	template <class U>
 	explicit Optional(Optional<U>&& rhs)
 		: m_value(std::forward<U>(rhs.m_value)), m_hasValue(rhs.m_hasValue)
 	{}
 
-	// non-explicitコンストラクタ
-	template<class U,
-		typename std::enable_if<
-		std::is_constructible<T, U>::value &&
-		std::is_convertible<U, T>::value
-		, bool>::type = false
-	>
-	//template<class U = T>
+	/** T に変換可能な型 U の値から構築します。 */
+	template<class U, typename std::enable_if<std::is_constructible<T, U>::value && std::is_convertible<U, T>::value, bool>::type = false>
 	LN_CONSTEXPR Optional(U&& value)
 		: m_value(std::forward<U>(value)), m_hasValue(true)
 	{
+		// Note: Perfect Initialization
 	}
 
-
-	// explicitコンストラクタ
-	template<class U,
-		typename std::enable_if<
-		std::is_constructible<T, U>::value &&
-		!std::is_convertible<U, T>::value
-		, bool>::type = false
-	>
+	/** T に変換可能な型 U の値から構築します。 */
+	template<class U, typename std::enable_if< std::is_constructible<T, U>::value && !std::is_convertible<U, T>::value, bool>::type = false>
 	explicit LN_CONSTEXPR Optional(U&& value)
 		: m_value(std::forward<U>(value)), m_hasValue(true)
 	{
+		// Note: Perfect Initialization
 	}
-
-
-	//template <class U>
-	//explicit Optional(const Optional<U>& rhs)
-	//	: m_value(rhs.m_value), m_hasValue(rhs.m_hasValue)
-	//{
-	//}
 
     Optional& operator=(const Optional& other);
     Optional& operator=(Optional&& other) LN_NOEXCEPT;
@@ -181,12 +172,11 @@ LN_CONSTEXPR Optional<T>::Optional(std::nullptr_t) LN_NOEXCEPT
 {
 }
 
-//template<class T>
-//LN_CONSTEXPR Optional<T>::Optional(const Optional& other)
-//    : m_value(other.m_value)
-//    , m_hasValue(other.m_hasValue)
-//{
-//}
+template<class T>
+LN_CONSTEXPR Optional<T>::Optional(const Optional<T>& other)
+	: m_value(other.m_value)
+	, m_hasValue(other.m_hasValue)
+{}
 
 template<class T>
 LN_CONSTEXPR Optional<T>::Optional(Optional&& other) LN_NOEXCEPT
