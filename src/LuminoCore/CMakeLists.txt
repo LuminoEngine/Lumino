@@ -257,3 +257,6 @@ ln_add_pch(${PROJECT_NAME} "src/LuminoCore.PCH.h" "src/LuminoCore.PCH.cpp")
 #if (LN_BUILD_TESTS)
 	add_subdirectory(test)
 #endif()
+
+install(TARGETS ${PROJECT_NAME} DESTINATION lib/Debug CONFIGURATIONS Debug)
+install(TARGETS ${PROJECT_NAME} DESTINATION lib/Release CONFIGURATIONS Release)
