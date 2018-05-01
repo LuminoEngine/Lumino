@@ -56,7 +56,7 @@ namespace LuminoBuild
                 Console.ResetColor(); // 色のリセット
             }
         }
-        
+
         public void DoRule(string name)
         {
             var rule = Rules.Find((r) => r.Name == name);
@@ -131,6 +131,7 @@ namespace LuminoBuild
             }
         }
     }
+
 
     /// <summary>
     /// ビルドタスク

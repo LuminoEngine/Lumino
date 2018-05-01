@@ -12,7 +12,7 @@ namespace LuminoBuild
             // default
             if (args.Length == 0)
             {
-                args = new string[] { "MakeVSProjects" };
+                args = new string[] { "BuildEngine" };
             }
 
             Assembly thisAssembly = Assembly.GetEntryAssembly();
@@ -42,6 +42,7 @@ namespace LuminoBuild
 
             builder.Tasks = new List<LuminoBuild.BuildTask>();
             builder.Tasks.Add(new Tasks.MakeVSProjects());
+            builder.Tasks.Add(new Tasks.BuildEngine());
 
             if (args.Length >= 1)
             {
