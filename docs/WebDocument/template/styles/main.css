@@ -155,7 +155,18 @@ svg:hover path {
 
 .content {
   font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  font-size: 16px;
+  font-size: 14px;
+}
+
+.content h1,
+.content h2,
+.content h3,
+.content h4,
+.content h5,
+.content h6 {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  line-height: 1.25;
 }
 
 .content h1 {
@@ -193,4 +204,8 @@ svg:hover path {
 .content img {
   font-size: 0.85em;
   border: 1px solid #dadcdf;
+}
+
+.content p {
+  margin-bottom: 16px;
 }

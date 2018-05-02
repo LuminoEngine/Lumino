@@ -1,11 +1,12 @@
 ﻿#include "Common.hpp"
+#include <Lumino/IO/FileSystem.hpp>
 #include <Lumino/IO/CommandLineParser.hpp>
 
 //==============================================================================
 //# CommandLineParser
 class Test_IO_CommandLineParser : public ::testing::Test { };
 
-//#  
+//# simple example
 TEST_F(Test_IO_CommandLineParser, SimpleOptions)
 {
 	ln::CommandLineParser parser;
@@ -14,7 +15,7 @@ TEST_F(Test_IO_CommandLineParser, SimpleOptions)
 	auto* depthOption = parser.addValueOption("d", "depth", "depth level.", "0");
 	auto* langOption = parser.addNamedValueOption("", "lang", "language.", {"cpp", "cs", "py"}, "cpp");
 
-	char* args[] =
+	char* argv[] =
 	{
 		"<program>",
 		"-f",
@@ -22,12 +23,180 @@ TEST_F(Test_IO_CommandLineParser, SimpleOptions)
 		"-d",
 		"--lang=cs",
 	};
-	int argc = sizeof(args) / sizeof(char*);
-
-	parser.printHelp();
+	int argc = sizeof(argv) / sizeof(char*);
+	
+	ASSERT_EQ(true, parser.process(argc, argv));
+	ASSERT_EQ(true, parser.has(forceOption));
+	ASSERT_EQ(true, parser.has(sizeOption));
+	ASSERT_EQ(true, parser.has(depthOption));
+	ASSERT_EQ(true, parser.has(langOption));
 }
 
-//#  
+//# 
+TEST_F(Test_IO_CommandLineParser, Commands)
+{
+	ln::CommandLineParser parser;
+	auto initCommand = parser.addCommand(_T("init"), _T("init description."));
+	auto forceOption1 = initCommand->addFlagOption(_T("f"), _T("force"), _T("force description."));
+
+	auto addCommand = parser.addCommand(_T("add"), _T("add description."));
+	auto forceOption2 = addCommand->addFlagOption(_T("f"), _T("force"), _T("force description."));
+
+	char* argv[] =
+	{
+		"<program>",
+		"init",
+		"-f",
+	};
+	int argc = sizeof(argv) / sizeof(char*);
+
+	ASSERT_EQ(true, parser.process(argc, argv));
+	ASSERT_EQ(true, parser.has(initCommand));
+	ASSERT_EQ(true, parser.has(forceOption1));
+	ASSERT_EQ(false, parser.has(addCommand));
+	ASSERT_EQ(false, parser.has(forceOption2));
+}
+
+//# check options
+TEST_F(Test_IO_CommandLineParser, Options)
+{
+	//* [ ] without default values (short names)
+	{
+		ln::CommandLineParser parser;
+		auto* flagOption = parser.addFlagOption("f", "flag", "description.");
+		auto* valueOption = parser.addValueOption("v", "value", "description.");
+		auto* namedValueOption = parser.addNamedValueOption("n", "named-value", "description.", { "abc", "def", "ghi" });
+
+		char* argv[] =
+		{
+			"<program>",
+			"-f",
+			"-v", "100",
+			"-n", "ghi",
+		};
+		int argc = sizeof(argv) / sizeof(char*);
+
+		ASSERT_EQ(true, parser.process(argc, argv));
+		ASSERT_EQ(true, parser.has(flagOption));
+		ASSERT_EQ(true, parser.has(valueOption));
+		ASSERT_EQ(true, parser.has(namedValueOption));
+		ASSERT_EQ(_T("100"), valueOption->value());
+		ASSERT_EQ(_T("ghi"), namedValueOption->value());
+	}
+	//* [ ] without default values (long names)
+	{
+		ln::CommandLineParser parser;
+		auto* flagOption = parser.addFlagOption("f", "flag", "description.");
+		auto* valueOption = parser.addValueOption("v", "value", "description.");
+		auto* namedValueOption = parser.addNamedValueOption("n", "named-value", "description.", { "abc", "def", "ghi" });
+
+		char* argv[] =
+		{
+			"<program>",
+			"--flag",
+			"--value=100",
+			"--named-value=abc",
+		};
+		int argc = sizeof(argv) / sizeof(char*);
+
+		ASSERT_EQ(true, parser.process(argc, argv));
+		ASSERT_EQ(true, parser.has(flagOption));
+		ASSERT_EQ(true, parser.has(valueOption));
+		ASSERT_EQ(true, parser.has(namedValueOption));
+		ASSERT_EQ(_T("100"), valueOption->value());
+		ASSERT_EQ(_T("abc"), namedValueOption->value());
+	}
+	//* [ ] with default values
+	{
+		ln::CommandLineParser parser;
+		auto* flagOption = parser.addFlagOption("f", "flag", "description.");
+		auto* valueOption = parser.addValueOption("v", "value", "description.", "5");
+		auto* namedValueOption = parser.addNamedValueOption("n", "named-value", "description.", { "abc", "def", "ghi" }, "def");
+
+		char* argv[] =
+		{
+			"<program>",
+			"-v",
+			"-n",
+		};
+		int argc = sizeof(argv) / sizeof(char*);
+
+		ASSERT_EQ(true, parser.process(argc, argv));
+		ASSERT_EQ(false, parser.has(flagOption));
+		ASSERT_EQ(true, parser.has(valueOption));
+		ASSERT_EQ(true, parser.has(namedValueOption));
+		ASSERT_EQ(_T("5"), valueOption->value());
+		ASSERT_EQ(_T("def"), namedValueOption->value());
+	}
+}
+
+TEST_F(Test_IO_CommandLineParser, PositionalArgument)
+{
+	//* [ ] get value from PositionalArgument
+	{
+		ln::CommandLineParser parser;
+		auto* srcArg = parser.addPositionalArgument("source", "description.");
+		auto* dstArg = parser.addPositionalArgument("destination", "description.");
+
+		char* argv[] =
+		{
+			"<program>",
+			"file1",
+			"file2",
+		};
+		int argc = sizeof(argv) / sizeof(char*);
+
+		ASSERT_EQ(true, parser.process(argc, argv));
+		ASSERT_EQ(_T("file1"), srcArg->value());
+		ASSERT_EQ(_T("file2"), dstArg->value());
+	}
+
+	//* [ ] PositionalArgument list
+	{
+		ln::CommandLineParser parser;
+		auto* inputsArg = parser.addListPositionalArgument("inputs", "description.");
+
+		char* argv[] =
+		{
+			"<program>",
+			"file1",
+			"file2",
+			"file3",
+		};
+		int argc = sizeof(argv) / sizeof(char*);
+
+		ASSERT_EQ(true, parser.process(argc, argv));
+		ASSERT_EQ(3, inputsArg->values().size());
+		ASSERT_EQ(_T("file1"), inputsArg->values()[0]);
+		ASSERT_EQ(_T("file2"), inputsArg->values()[1]);
+		ASSERT_EQ(_T("file3"), inputsArg->values()[2]);
+	}
+
+	//* [ ] mixied PositionalArgument list
+	{
+		ln::CommandLineParser parser;
+		auto* analyzeCommand = parser.addCommand("analyze", "description.");
+		auto* settingsArg = parser.addPositionalArgument("settings", "description.");
+		auto* inputsArg = parser.addListPositionalArgument("inputs", "description.");
+
+		char* argv[] =
+		{
+			"<program>",
+			"settingfile",
+			"file1",
+			"file2",
+		};
+		int argc = sizeof(argv) / sizeof(char*);
+
+		ASSERT_EQ(true, parser.process(argc, argv));
+		ASSERT_EQ(_T("settingfile"), settingsArg->value());
+		ASSERT_EQ(2, inputsArg->values().size());
+		ASSERT_EQ(_T("file1"), inputsArg->values()[0]);
+		ASSERT_EQ(_T("file2"), inputsArg->values()[1]);
+	}
+}
+
+//# 
 TEST_F(Test_IO_CommandLineParser, Help)
 {
 
@@ -52,7 +221,6 @@ TEST_F(Test_IO_CommandLineParser, Help)
 	auto* modeOption = analyzeCommand->addNamedValueOption("", "mode", "analyze mode.", { "normal", "fast" });
 	auto* reportOption = analyzeCommand->addListPositionalArgument("report", "report list.", CommandLinePositionalArgumentFlags::Optional);
 
-
 	char* argv[] =
 	{
 		"<program>",
@@ -73,6 +241,37 @@ TEST_F(Test_IO_CommandLineParser, Help)
 	//std::cout << analyzeCommand->buildHelpText();
 }
 
+TEST_F(Test_IO_CommandLineParser, Example2)
+{
+	char* argv[] =
+	{
+		"<program>",
+		//"help",
+		//"--force",
+		//"file1.txt",
+		//"file2.txt",
+		"-v",
+	};
+	int argc = sizeof(argv) / sizeof(char*);
+
+
+	ln::CommandLineParser parser;
+	parser.addHelpOption();
+	parser.addVersionOption(_T("1.0.0"));
+	parser.setApplicationDescription(_T("This is open-source software under MIT License."));
+
+	auto* forceOpt = parser.addFlagOption("f", "force", "Overwrite file.");
+	auto* sourceArg = parser.addPositionalArgument("SOURCE", "source filename.");
+	auto* destArg = parser.addPositionalArgument("DEST", "destination filename.");
+
+	if (parser.process(argc, argv))
+	{
+		//ln::FileSystem::copyFile(sourceArg->value(), destArg->value(), parser.has(forceOpt));
+	}
+
+}
+
+#if 0
 //# writing test
 TEST_F(Test_IO_CommandLineParser, Basic)
 {
@@ -108,8 +307,8 @@ TEST_F(Test_IO_CommandLineParser, Basic)
 	parser.printHelp();
 
 	ASSERT_EQ(true, parser.process(argc, args));
-	ASSERT_EQ(false, parser.hasCommand(initCommand));
-	ASSERT_EQ(true, parser.hasCommand(analyzeCommand));
+	ASSERT_EQ(false, parser.has(initCommand));
+	ASSERT_EQ(true, parser.has(analyzeCommand));
 	ASSERT_EQ(true, forceOption->isSet());
 	ASSERT_EQ(_T("dir1"), dirOption->value());
 
@@ -119,4 +318,5 @@ TEST_F(Test_IO_CommandLineParser, Basic)
 	//c.addInputFile(fileOption->value());
 	//c.analyzeAllFiles();
 }
+#endif
 

@@ -45,8 +45,9 @@ public:
 	void setDefaultValue(const String& value) { m_defaultValue = value; }
 	void setFlags(CommandLineOptionFlags value) { m_flags = value; }
 
-	bool isSet() const { return m_isSet; }	// TODO: hasValue
-	String value() const { return (m_values.isEmpty()) ? String() : m_values[0]; }
+	bool isSet() const { return m_isSet; }
+	bool hasValue() const { return !m_values.isEmpty(); }
+	String value() const { return (m_values.isEmpty()) ? m_defaultValue : m_values[0]; }
 
 	String helpUsageParams() const;
 	String helpDescriptionCaption() const;
@@ -57,6 +58,9 @@ private:
 	virtual ~CommandLineOption();
 	void addValue(const String& value) { m_values.add(value); }
 	void set(bool value) { m_isSet = value; }
+	bool isFlagOption() const { return testFlag(m_flags, CommandLineOptionFlags::Flag); }
+	bool isValueOption() const { return !testFlag(m_flags, CommandLineOptionFlags::Flag); }
+	bool isRequired() const { return isValueOption() && m_defaultValue.isEmpty(); }
 
 	void makeDislayParamsName(String* shortName, String* longName) const;
 
@@ -84,6 +88,7 @@ public:
 
 	bool hasValue() const { return !m_values.isEmpty(); }
 	const String& value() const { return m_values[0]; }
+	const List<String>& values() const { return m_values; }
 
 	bool isList() const { return m_isList; }
 	bool isOptional() const { return m_flags.hasFlag(CommandLinePositionalArgumentFlags::Optional); }
@@ -119,7 +124,7 @@ public:
 	const List<Ref<CommandLinePositionalArgument>>& positionalArguments() const { return m_positionalArguments; }
 	const List<Ref<CommandLineOption>>& options() const { return m_options; }
 
-	String buildHelpText() const;
+	virtual String buildHelpText() const;
 
 protected:
 	const String& internalName() const { return m_name; }
@@ -203,8 +208,10 @@ protected:
 
 	const List<Ref<CommandLineCommand>>& getCommandsInternal() const { return m_commands; }
 
+	void buildHelpUsageText(StringWriter* writer) const;
 	void buildHelpDescriptionText(StringWriter* writer) const;
 
+	bool verify();
 
 private:
 	bool isRootCommand() const { return m_name.isEmpty(); }
@@ -281,6 +288,7 @@ public:
 		const List<String>& args, int start, int* outNext, String* outMessage)
 	{
 		List<String> otherArgs;
+		CommandLineOption* lastValuedShortOption = nullptr;
 		int iArg = start;
 		for (; iArg < args.size(); iArg++)
 		{
@@ -304,7 +312,7 @@ public:
 			const Char* nameEnd = nameBegin;
 			while (nameEnd < end)
 			{
-				if (isalnum(*nameEnd) || *nameEnd == '_')
+				if (isalnum(*nameEnd) || *nameEnd == '_' || *nameEnd == '-')
 					nameEnd++;
 				else
 					break;
@@ -325,6 +333,10 @@ public:
 					}
 
 					(*option)->set(true);
+
+					if ((*option)->isValueOption()) {
+						lastValuedShortOption = (*option);
+					}
 				}
 			}
 			else if (prefix == 2)
@@ -345,6 +357,8 @@ public:
 				{
 					(*option)->addValue(String(nameEnd + 1, end));
 				}
+
+				lastValuedShortOption = nullptr;
 			}
 			else
 			{
@@ -359,7 +373,18 @@ public:
 					}
 				}
 
-				otherArgs.add(arg);
+				// arg is any value
+
+				if (lastValuedShortOption)
+				{
+					lastValuedShortOption->addValue(arg);
+					lastValuedShortOption = nullptr;
+				}
+				else
+				{
+					// might PositionalArguments
+					otherArgs.add(arg);
+				}
 			}
 		}
 
@@ -414,14 +439,6 @@ class CommandLineParser
 	: public CommandLineCommandBase
 {
 public:
-	/*
-	usage: git [--version] [--help] [-C <path>] [-c name=value]
-           [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path]
-           [-p | --paginate | --no-pager] [--no-replace-objects] [--bare]
-           [--git-dir=<path>] [--work-tree=<path>] [--namespace=<name>]
-           <command> [<args>]
-
-	*/
 
 	CommandLineParser();
 	~CommandLineParser();
@@ -468,7 +485,25 @@ public:
 		return addListPositionalArgumentInternal(name, description, flags);
 	}
 
-	void setHelpEnabled();
+
+
+	CommandLineOption* addHelpOption()
+	{
+		m_helpOption = addFlagOption(_T("h"), _T("help"), _T("Display this help."));
+		return m_helpOption;
+	}
+
+	CommandLineOption* addVersionOption(const StringRef& versionText)
+	{
+		m_versionText = versionText;
+		m_versionOption = addFlagOption(_T("v"), _T("version"), _T("Display version."));
+		return m_versionOption;
+	}
+
+	void setApplicationDescription(const StringRef& description) { m_applicationDescription = description; }
+
+
+	//void setHelpEnabled();
 
 	//void addOption(const CommandLineOption& option)
 	//{
@@ -484,17 +519,26 @@ public:
 
 	Optional<Ref<CommandLineCommand>> findCommand(const StringRef& commandName) const;
 
-	/** コマンドライン引数を解析します。--help や --version の指定がある場合は標準出力します。 */
+	/** コマンドライン引数を解析します。 */
 	bool process(int argc, char** argv);
 
-	bool hasCommand(const CommandLineCommand* command) const;
+	bool has(const CommandLineCommand* command) const;
+	bool has(const CommandLineOption* command) const;
+
+	//bool hasCommand(const CommandLineCommand* command) const;
+
+	bool hasError() const { return !m_message.isEmpty(); }
 
 	CommandLineCommand* command() const { return m_activeCommand; }
 
-	bool isSet(const CommandLineOption* option) const;
+	//bool isSet(const CommandLineOption* option) const;
 
 	/** ヘルプ情報を標準出力します。 */
 	void printHelp(const StringRef& commandName = StringRef()) const;
+
+	void printVersion() const;
+
+	virtual String buildHelpText() const override;
 
 private:
 	bool parse(const List<String>& args);
@@ -504,6 +548,10 @@ private:
 	//List<Ref<CommandLineCommand>> m_commands;
 	String m_message;
 	CommandLineCommand* m_activeCommand;
+	CommandLineOption* m_helpOption;
+	CommandLineOption* m_versionOption;
+	String m_versionText;
+	String m_applicationDescription;
 };
 
 } // namespace ln

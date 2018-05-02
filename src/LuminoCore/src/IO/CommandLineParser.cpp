@@ -169,18 +169,77 @@ String CommandLinePositionalArgument::helpDescriptionText() const
 //==============================================================================
 // CommandLineCommandBase
 
+void CommandLineCommandBase::buildHelpUsageText(StringWriter* writer) const
+{
+	const auto& commands = getCommandsInternal();
+	const auto& args = positionalArguments();
+	Path appPath = Environment::executablePath();
+
+	writer->writeLine(_T("usage:"));
+	writer->write(_T("  "));
+	writer->write(appPath.fileNameWithoutExtension());
+
+	if (!internalName().isEmpty()) {	// root is empty
+		writer->write(_T(" "));
+		writer->write(internalName());
+	}
+	if (!options().isEmpty()) {
+		writer->write(_T(" [options...]"));
+	}
+	if (!args.isEmpty()) {
+		for (auto& a : args) {
+			writer->write(_T(" "));
+			if (a->isOptional()) {
+				writer->write(_T("["));
+			}
+			if (a->isList()) {
+				writer->write(a->name());
+				writer->write(_T("..."));
+			}
+			else {
+				writer->write(a->name());
+			}
+			if (a->isOptional()) {
+				writer->write(_T("]"));
+			}
+		}
+	}
+	if (!commands.isEmpty()) {
+		writer->write(_T(" <command> [<args>]"));
+	}
+	writer->writeLine();
+	writer->writeLine();
+}
+
 void CommandLineCommandBase::buildHelpDescriptionText(StringWriter* writer) const
 {
+	// collect required options
+	List<std::pair<String, String>> requiredDescriptions;
+	int requiredDescriptionColumnWidth = 0;
+	for (auto& opt : options())
+	{
+		if (opt->isRequired())
+		{
+			String caption = opt->helpDescriptionCaption();
+			requiredDescriptions.add({ caption, opt->helpDescriptionText() });
+			requiredDescriptionColumnWidth = std::max(requiredDescriptionColumnWidth, caption.length());
+		}
+	}
+	requiredDescriptionColumnWidth += 3;
+
 	// collect options
 	List<std::pair<String, String>> optionDescriptions;
 	int optionsDescriptionColumnWidth = 0;
 	for (auto& opt : options())
 	{
-		String caption = opt->helpDescriptionCaption();
-		optionDescriptions.add({ caption, opt->helpDescriptionText() });
-		optionsDescriptionColumnWidth = std::max(optionsDescriptionColumnWidth, caption.length());
+		if (!opt->isRequired())
+		{
+			String caption = opt->helpDescriptionCaption();
+			optionDescriptions.add({ caption, opt->helpDescriptionText() });
+			optionsDescriptionColumnWidth = std::max(optionsDescriptionColumnWidth, caption.length());
+		}
 	}
-	optionsDescriptionColumnWidth += 2;
+	optionsDescriptionColumnWidth += 3;
 
 	// collect positional arguments
 	List<std::pair<String, String>> argsDescriptions;
@@ -191,7 +250,7 @@ void CommandLineCommandBase::buildHelpDescriptionText(StringWriter* writer) cons
 		argsDescriptions.add({ caption, arg->helpDescriptionText() });
 		argsCaptionsColumnWidth = std::max(argsCaptionsColumnWidth, caption.length());
 	}
-	argsCaptionsColumnWidth += 2;
+	argsCaptionsColumnWidth += 3;
 
 	// collect commands
 	List<std::pair<String, String>> commandDescriptions;
@@ -202,7 +261,7 @@ void CommandLineCommandBase::buildHelpDescriptionText(StringWriter* writer) cons
 		commandDescriptions.add({ caption, cmd->description() });
 		commandCaptionsColumnWidth = std::max(commandCaptionsColumnWidth, caption.length());
 	}
-	commandCaptionsColumnWidth += 2;
+	commandCaptionsColumnWidth += 3;
 
 #if 1
 	int maxWidth = std::max({optionsDescriptionColumnWidth, argsCaptionsColumnWidth, commandCaptionsColumnWidth});
@@ -211,20 +270,36 @@ void CommandLineCommandBase::buildHelpDescriptionText(StringWriter* writer) cons
 	commandCaptionsColumnWidth = maxWidth;
 #endif
 
+	// write required
+	if (!requiredDescriptions.isEmpty())
+	{
+		writer->writeLine(_T("options (required):"));
+		for (auto& desc : requiredDescriptions)
+		{
+			String blank = String(optionsDescriptionColumnWidth - desc.first.length(), ' ');
+			writer->write(_T("  "));
+			writer->write(desc.first);
+			writer->write(blank);
+			//writer->write(_T(": "));
+			writer->write(desc.second);
+			writer->writeLine();
+		}
+		writer->writeLine();
+	}
+
 	// write options
 	if (!optionDescriptions.isEmpty())
 	{
-		writer->writeLine(_T("Options:"));
+		writer->writeLine(_T("options:"));
 		for (auto& desc : optionDescriptions)
 		{
 			String blank = String(optionsDescriptionColumnWidth - desc.first.length(), ' ');
 			writer->write(_T("  "));
 			writer->write(desc.first);
 			writer->write(blank);
-			writer->write(_T(": "));
+			//writer->write(_T(": "));
 			writer->write(desc.second);
 			writer->writeLine();
-
 		}
 		writer->writeLine();
 	}
@@ -232,14 +307,14 @@ void CommandLineCommandBase::buildHelpDescriptionText(StringWriter* writer) cons
 	// write positional arguments
 	if (!argsDescriptions.isEmpty())
 	{
-		writer->writeLine(_T("Arguments:"));
+		writer->writeLine(_T("arguments:"));
 		for (auto& desc : argsDescriptions)
 		{
 			String blank = String(argsCaptionsColumnWidth - desc.first.length(), ' ');
 			writer->write(_T("  "));
 			writer->write(desc.first);
 			writer->write(blank);
-			writer->write(_T(": "));
+			//writer->write(_T(": "));
 			writer->write(desc.second);
 			writer->writeLine();
 		}
@@ -249,14 +324,14 @@ void CommandLineCommandBase::buildHelpDescriptionText(StringWriter* writer) cons
 	// write commands
 	if (!commandDescriptions.isEmpty())
 	{
-		writer->writeLine(_T("Commands:"));
+		writer->writeLine(_T("commands:"));
 		for (auto& desc : commandDescriptions)
 		{
 			String blank = String(commandCaptionsColumnWidth - desc.first.length(), ' ');
 			writer->write(_T("  "));
 			writer->write(desc.first);
 			writer->write(blank);
-			writer->write(_T(": "));
+			//writer->write(_T(": "));
 			writer->write(desc.second);
 			writer->writeLine();
 		}
@@ -267,65 +342,33 @@ void CommandLineCommandBase::buildHelpDescriptionText(StringWriter* writer) cons
 
 String CommandLineCommandBase::buildHelpText() const
 {
-	const auto& commands = getCommandsInternal();
-	const auto& args = positionalArguments();
-
-
-	String usageParams;
-
-	Path appPath = Environment::executablePath();
-
 	StringWriter sw;
 
-
-	sw.writeLine(_T("Usage:"));
-	sw.write(_T("  "));
-	sw.write(appPath.fileNameWithoutExtension());
-
-	if (!internalName().isEmpty()) {	// root is empty
-		sw.write(_T(" "));
-		sw.write(internalName());
-	}
-	if (!options().isEmpty()) {
-		sw.write(_T(" [options...]"));
-	}
-	if (!args.isEmpty()) {
-		for (auto& a : args) {
-			sw.write(_T(" "));
-			if (a->isOptional()) {
-				sw.write(_T("["));
-			}
-			if (a->isList()) {
-				sw.write(a->name());
-				sw.write(_T("..."));
-			}
-			else {
-				sw.write(a->name());
-			}
-			if (a->isOptional()) {
-				sw.write(_T("]"));
-			}
-		}
-	}
-	if (!commands.isEmpty()) {
-		sw.write(_T(" <command> [<args>]"));
-	}
-	sw.writeLine();
-	sw.writeLine();
-
-
-
+	buildHelpUsageText(&sw);
 	buildHelpDescriptionText(&sw);
-
-	if (isRootCommand())
-	{
-		Path appPath = Environment::executablePath();
-		sw.writeLine(_T("See '{0} help <command>' to read about a specific command."), appPath.fileNameWithoutExtension());
-	}
-
 	sw.writeLine();
 
 	return sw.toString();
+}
+
+bool CommandLineCommandBase::verify()
+{
+	for (auto& opt : options())
+	{
+		if (opt->isRequired() &&! opt->hasValue())
+		{
+			return false;
+		}
+	}
+
+	for (auto& arg : positionalArguments())
+	{
+		if (arg->values().isEmpty()) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 //==============================================================================
@@ -339,12 +382,15 @@ CommandLineCommand::~CommandLineCommand()
 {
 }
 
-
 //==============================================================================
 // CommandLineParser
 
 CommandLineParser::CommandLineParser()
 	: m_activeCommand(nullptr)
+	, m_helpOption(nullptr)
+	, m_versionOption(nullptr)
+	, m_versionText(_T("no version"))
+	, m_applicationDescription()
 {
 }
 
@@ -391,6 +437,30 @@ bool CommandLineParser::process(int argc, char** argv)
 		return false;
 	}
 
+
+	if (has(m_helpOption))
+	{
+		printHelp();
+		return false;
+	}
+	if (has(m_versionOption))
+	{
+		printVersion();
+		return false;
+	}
+
+
+	if (m_activeCommand) {
+		if (!m_activeCommand->verify()) {
+			printHelp(m_activeCommand->name());
+			return false;
+		}
+	}
+	if (!verify()) {
+		printHelp();
+		return false;
+	}
+
 	return true;
 }
 
@@ -427,13 +497,14 @@ bool CommandLineParser::parse(const List<String>& args)
 	return true;
 }
 
-bool CommandLineParser::hasCommand(const CommandLineCommand* command) const
+bool CommandLineParser::has(const CommandLineCommand* command) const
 {
 	return command && command == m_activeCommand;
 }
 
-bool CommandLineParser::isSet(const CommandLineOption* option) const
+bool CommandLineParser::has(const CommandLineOption* option) const
 {
+	if (LN_REQUIRE(option)) return false;
 	return option->isSet();
 }
 
@@ -442,12 +513,12 @@ void CommandLineParser::printHelp(const StringRef& commandName) const
 	if (!commandName.IsNullOrEmpty()) {
 		Optional<Ref<CommandLineCommand>> command = findCommand(commandName);
 		if (command) {
-			std::cout << (*command)->buildHelpText();
+			std::cout << (*command)->buildHelpText() << std::endl;
 			return;
 		}
 	}
 
-	std::cout << buildHelpText().toStdString();
+	std::cout << buildHelpText().toStdString() << std::endl;
 	//const auto& commands = getCommandsInternal();
 	//const auto& args = positionalArguments();
 
@@ -491,6 +562,39 @@ void CommandLineParser::printHelp(const StringRef& commandName) const
 	//sw.writeLine();
 
 	//std::cout << sw.toString().toStdString();
+}
+
+void CommandLineParser::printVersion() const
+{
+	std::cout << m_versionText.toStdString() << std::endl;
+}
+
+String CommandLineParser::buildHelpText() const
+{
+	const auto& commands = getCommandsInternal();
+	Path appPath = Environment::executablePath();
+
+	StringWriter sw;
+
+	buildHelpUsageText(&sw);
+
+	if (!m_applicationDescription.isEmpty())
+	{
+		sw.writeLine(m_applicationDescription);
+		sw.writeLine();
+	}
+
+	buildHelpDescriptionText(&sw);
+
+	if (!commands.isEmpty())
+	{
+		Path appPath = Environment::executablePath();
+		sw.writeLine(_T("See '{0} help <command>' to read about a specific command."), appPath.fileNameWithoutExtension());
+	}
+
+	sw.writeLine();
+
+	return sw.toString();
 }
 
 } // namespace ln
