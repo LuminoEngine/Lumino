@@ -382,6 +382,148 @@ CommandLineCommand::~CommandLineCommand()
 {
 }
 
+bool CommandLineCommand::parse(
+	const List<Ref<CommandLineOption>>& options,
+	const List<Ref<CommandLinePositionalArgument>>& positionalArguments,
+	const List<Ref<CommandLineCommand>>* commands,
+	const List<String>& args, int start, int* outNext, String* outMessage)
+{
+	List<String> otherArgs;
+	CommandLineOption* lastValuedShortOption = nullptr;
+	int iArg = start;
+	for (; iArg < args.size(); iArg++)
+	{
+		// check short-name or long-name
+		int prefix = 0;
+		auto& arg = args[iArg];
+		const Char* nameBegin = &arg[0];
+		const Char* end = nameBegin + arg.length();
+		if (arg.length() >= 2 && arg[0] == '-' && arg[1] == '-')
+		{
+			nameBegin += 2;
+			prefix = 2;
+		}
+		else if (arg.length() >= 1 && arg[0] == '-')
+		{
+			nameBegin += 1;
+			prefix = 1;
+		}
+
+		// find name end
+		const Char* nameEnd = nameBegin;
+		while (nameEnd < end)
+		{
+			if (isalnum(*nameEnd) || *nameEnd == '_' || *nameEnd == '-')
+				nameEnd++;
+			else
+				break;
+		}
+
+		if (prefix == 1)
+		{
+			const Char* flag = nameBegin;
+			for (; flag < nameEnd; flag++)
+			{
+				// find Option
+				StringRef nameRef(flag, 1);
+				Optional<Ref<CommandLineOption>> option = options.findIf([nameRef](const Ref<CommandLineOption>& opt) { return opt->shortName() == nameRef; });
+				if (!option)
+				{
+					*outMessage = String::format(_T("'{0}' is invalid flag option."), nameRef);
+					return false;
+				}
+
+				(*option)->set(true);
+
+				if ((*option)->isValueOption()) {
+					lastValuedShortOption = (*option);
+				}
+			}
+		}
+		else if (prefix == 2)
+		{
+			// find Option
+			StringRef nameRef(nameBegin, nameEnd);
+			Optional<Ref<CommandLineOption>> option = options.findIf([nameRef](const Ref<CommandLineOption>& opt) { return opt->longName() == nameRef; });
+			if (!option)
+			{
+				*outMessage = String::format(_T("'{0}' is invalid option."), nameRef);
+				return false;
+			}
+
+			(*option)->set(true);
+
+			// get value
+			if (*nameEnd == '=')
+			{
+				(*option)->addValue(String(nameEnd + 1, end));
+			}
+
+			lastValuedShortOption = nullptr;
+		}
+		else
+		{
+			if (commands)
+			{
+				StringRef nameRef(nameBegin, nameEnd);
+				Optional<Ref<CommandLineCommand>> command = commands->findIf([nameRef](const Ref<CommandLineCommand>& cmd) { return cmd->name() == nameRef; });
+				if (command)
+				{
+					// to analyze command
+					break;
+				}
+			}
+
+			// arg is any value
+
+			if (lastValuedShortOption)
+			{
+				lastValuedShortOption->addValue(arg);
+				lastValuedShortOption = nullptr;
+			}
+			else
+			{
+				// might PositionalArguments
+				otherArgs.add(arg);
+			}
+		}
+	}
+
+	// check positionalArguments min count
+	int requires = 0;
+	for (auto& pa : positionalArguments)
+	{
+		requires += 1;//(pa->isList()) ? 1 : pa->maxValues();
+	}
+	if (positionalArguments.size() < requires)
+	{
+		*outMessage = String::format(_T("requires {0} arguments, but {1} was provided."), requires, positionalArguments.size());
+		return false;
+	}
+
+	// set otherArgs to positionalArguments
+	int iOther = 0;
+	for (auto& pa : positionalArguments)
+	{
+		int count = (pa->isList()) ? INT_MAX : 1;
+		for (int i = 0; i < count && iOther < otherArgs.size(); i++)
+		{
+			pa->addValue(otherArgs[iOther]);
+			iOther++;
+		}
+	}
+	if (iOther < otherArgs.size())
+	{
+		// 引数余り
+		*outMessage = String::format(_T("requires {0} arguments, but {1} was provided."), requires, positionalArguments.size());
+		return false;
+	}
+
+	*outNext = iArg;
+	return true;
+}
+
+
 //==============================================================================
 // CommandLineParser
 
