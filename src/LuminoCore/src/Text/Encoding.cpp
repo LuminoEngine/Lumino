@@ -169,7 +169,7 @@ const Ref<TextEncoding>& TextEncoding::detectEncodingSimple(const char* str, int
     // check UTF8 BOM
     if (length >= 3) {
         const byte_t bom[] = {0xEF, 0xBB, 0xBF};
-        if (memcmp(str, bom, 3) == 0) {
+        if (memcmp(static_cast<const void*>(str), static_cast<const void*>(bom), 3) == 0) {
             return getEncoding(EncodingType::UTF8);
         }
     }
@@ -224,7 +224,7 @@ size_t TextEncoding::checkPreamble(const void* buffer, size_t bufferSize) const
         return 0;
     }
 
-    if (memcmp(buffer, bom, bomLen) == 0) {
+    if (memcmp(buffer, static_cast<const void*>(bom), bomLen) == 0) {
         return bomLen;
     }
     return 0;

@@ -21,6 +21,8 @@ set(LN_SOURCES_Engine
 set(LN_SOURCES_Platform
 	include/Lumino/Platform/PlatformEvent.hpp
 	src/Platform/Internal.hpp
+	src/Platform/EmptyPlatformWindowManager.cpp
+	src/Platform/EmptyPlatformWindowManager.hpp
 	src/Platform/GLFWPlatformWindowManager.cpp
 	src/Platform/GLFWPlatformWindowManager.hpp
 	src/Platform/PlatformEvent.cpp

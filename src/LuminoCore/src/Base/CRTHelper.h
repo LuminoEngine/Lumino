@@ -6,6 +6,7 @@
 
 #if defined(LN_GNUC) || defined(__CYGWIN__)
 
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>

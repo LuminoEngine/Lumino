@@ -1,39 +1,28 @@
 ﻿#pragma once
 
-#ifdef LN_GLFW
-
-#include <GLFW/glfw3.h>
 #include "PlatformWindowManager.hpp"
 
 namespace ln {
 namespace detail {
 
-class GLFWPlatformWindow
+class EmptyPlatformWindow
 	: public PlatformWindow
 {
 public:
-	GLFWPlatformWindow();
-	virtual ~GLFWPlatformWindow();
-
+	EmptyPlatformWindow();
+	virtual ~EmptyPlatformWindow();
 	void initialize(const WindowCreationSettings& settings);
 	virtual void dispose() override;
 
-	GLFWwindow* glfwWindow() const { return m_glfwWindow; }
-
 private:
-	static void window_close_callback(GLFWwindow* window);
-	static void window_focus_callback(GLFWwindow* window, int focused);	// window activate/diactivate
-	static void window_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-
-	GLFWwindow* m_glfwWindow;
 };
 
-class GLFWPlatformWindowManager
+class EmptyPlatformWindowManager
 	: public PlatformWindowManager
 {
 public:
-	GLFWPlatformWindowManager();
-	virtual ~GLFWPlatformWindowManager();
+	EmptyPlatformWindowManager();
+	virtual ~EmptyPlatformWindowManager();
 
 	void initialize();
 	virtual void dispose() override;
@@ -44,5 +33,3 @@ public:
 
 } // namespace detail
 } // namespace ln
-
-#endif

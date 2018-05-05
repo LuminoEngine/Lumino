@@ -1,4 +1,6 @@
 ﻿
+#ifdef LN_GLFW
+
 #include "Internal.hpp"
 #include "../Platform/GLFWPlatformWindowManager.hpp"
 #include "GLFWContext.hpp"
@@ -47,3 +49,4 @@ void GLFWContext::swap(GLSwapChain* swapChain)
 } // namespace detail
 } // namespace ln
 
+#endif

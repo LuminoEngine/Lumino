@@ -4,6 +4,7 @@
 
 #if defined(LN_OS_WIN32)
 #include <objbase.h>
+#elif defined(__ANDROID__)
 #else
 #include <uuid/uuid.h>
 #endif
@@ -66,6 +67,12 @@ Uuid Uuid::generate()
 		guid.Data4[7],
 	};
 	return Uuid(bytes);
+
+#elif defined(LN_ANDROID)
+	// Android NDK は uuid サポートしていない。
+	// 作るとしたら https://github.com/graeme-hill/crossguid/blob/master/src/guid.cpp
+	// のように、JVMEnv の構造体のポインタをもらわないとならない。
+	LN_NOTIMPLEMENTED();
 #else
 	uuid_t id;
 	uuid_generate(id);

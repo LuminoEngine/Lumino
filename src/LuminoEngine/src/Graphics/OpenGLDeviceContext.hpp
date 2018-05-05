@@ -1,6 +1,11 @@
 ﻿#pragma once
 
+#ifdef LN_GRAPHICS_OPENGLES
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+#else
 #include <GL/gl.h>
+#endif
 #include "GraphicsDeviceContext.hpp"
 
 namespace ln {
@@ -36,7 +41,7 @@ public:
 	virtual ~OpenGLDeviceContext() = default;
 
 	void initialize(const Settings& settings);
-	void dispose();
+	virtual void dispose() override;
 
 protected:
 	virtual void onEnterMainThread() override;
@@ -66,6 +71,26 @@ public:
 	virtual Ref<GLSwapChain> createSwapChain(PlatformWindow* window, const SizeI& backbufferSize) = 0;
 	virtual void makeCurrent(GLSwapChain* swapChain) = 0;
 	virtual void swap(GLSwapChain* swapChain) = 0;
+};
+
+class EmptyGLContext
+	: public GLContext
+{
+public:
+	EmptyGLContext() = default;
+	virtual ~EmptyGLContext() = default;
+
+	virtual Ref<GLSwapChain> createSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
+	virtual void makeCurrent(GLSwapChain* swapChain) override;
+	virtual void swap(GLSwapChain* swapChain) override;
+};
+
+class EmptyGLSwapChain
+	: public GLSwapChain
+{
+public:
+	EmptyGLSwapChain() = default;
+	virtual ~EmptyGLSwapChain() = default;
 };
 
 } // namespace detail

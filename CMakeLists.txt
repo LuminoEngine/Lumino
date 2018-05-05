@@ -5,6 +5,20 @@ project (Lumino)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 enable_testing()
 
+if (ANDROID_ABI)
+    set(LN_ANDROID ON)
+    message(${ANDROID_SYSROOT})
+
+    if(${ANDROID_ABI} STREQUAL "armeabi-v7a")
+        include_directories(${ANDROID_SYSROOT}/usr/include/arm-linux-androideabi)
+    elseif(${ANDROID_ABI} STREQUAL "arm64-v8a")
+        include_directories(${ANDROID_SYSROOT}/usr/include/aarch64-linux-android)
+    else()
+        include_directories(${ANDROID_SYSROOT}/usr/include/arm-linux-androideabi)
+    endif()
+endif()
+
+
 #------------------------------------------------------------------------------
 # options
 
@@ -26,6 +40,14 @@ set(LUMINO_INCLUDE_DIRECTORIES
 if (DEFINED EMSCRIPTEN)
     include_directories("${EMSCRIPTEN_ROOT_PATH}/system/lib/libcxxabi/include")
     set(CMAKE_EXECUTABLE_SUFFIX .html)
+endif()
+
+if (WIN32)
+    add_definitions(-DLN_GLFW)
+endif()
+
+if (LN_ANDROID)
+    add_definitions(-DLN_GRAPHICS_OPENGLES)
 endif()
 
 #------------------------------------------------------------------------------

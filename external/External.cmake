@@ -29,7 +29,7 @@ set(LN_SOURCES_gtest
 
 #--------------------------------------
 # glfw
-if (NOT DEFINED EMSCRIPTEN)
+if (WIN32)
 	set(GLFW_BUILD_EXAMPLES OFF)
 	set(GLFW_BUILD_TESTS OFF)
 	set(GLFW_BUILD_DOCS OFF)

@@ -14,6 +14,10 @@
 		LN_ENSURE(0 == gl_err, #call "; GL error 0x%x: %s", gl_err, OpenGLHelper::glEnumName(gl_err) ); \
 	LN_MACRO_BLOCK_END
 
+#ifdef LN_GRAPHICS_OPENGLES
+#define glClearDepth glClearDepthf
+#endif
+
 namespace ln {
 namespace detail {
 
@@ -48,16 +52,25 @@ public:
 };
 
 
+//=============================================================================
+// OpenGLDeviceContext
+
 OpenGLDeviceContext::OpenGLDeviceContext()
 {
 }
 
 void OpenGLDeviceContext::initialize(const Settings& settings)
 {
-
+#ifdef LN_GLFW
 	auto glfwContext = makeRef<GLFWContext>();
 	glfwContext->initialize(settings.mainWindow);
 	m_glContext = glfwContext;
+#endif
+	if (!m_glContext)
+	{
+		auto glfwContext = makeRef<EmptyGLContext>();
+		m_glContext = glfwContext;
+	}
 }
 
 void OpenGLDeviceContext::dispose()
@@ -109,6 +122,22 @@ void OpenGLDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, f
 void OpenGLDeviceContext::onPresent(ISwapChain* swapChain)
 {
 	m_glContext->swap(static_cast<GLSwapChain*>(swapChain));
+}
+
+//=============================================================================
+// EmptyGLContext
+
+Ref<GLSwapChain> EmptyGLContext::createSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
+{
+	return makeRef<EmptyGLSwapChain>();
+}
+
+void EmptyGLContext::makeCurrent(GLSwapChain* swapChain)
+{
+}
+
+void EmptyGLContext::swap(GLSwapChain* swapChain)
+{
 }
 
 } // namespace detail

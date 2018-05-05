@@ -14,6 +14,9 @@
 #if defined(__EMSCRIPTEN__)
 #define LN_EMSCRIPTEN
 #define LN_OS_FAMILY_UNIX
+#elif defined(__ANDROID__)
+#define LN_ANDROID
+#define LN_OS_FAMILY_UNIX
 #elif (defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__CYGWIN__) || defined(Q_OS_WIN))
 #define LN_OS_WIN32
 #elif defined(__APPLE__) || defined(__APPLE_CC__) || defined(__OSX__)
@@ -95,7 +98,7 @@
 #define _TT(x) u##x
 #define _LT(x) __LT(x)
 #define TTCHAR char16_t
-#define _U(x) (u##x)
+//#define _U(x) (u##x)
 namespace ln {
 using Char = char16_t;
 }
@@ -105,7 +108,7 @@ using Char = char16_t;
 #define _TT(x) L##x
 #define _LT(x) __LT(x)
 #define TTCHAR wchar_t
-#define _U(x) (L##x)
+//#define _U(x) (L##x)
 namespace ln {
 using Char = wchar_t;
 }

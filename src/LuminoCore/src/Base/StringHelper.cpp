@@ -1,4 +1,5 @@
 ﻿
+#include <errno.h>
 #include <stdarg.h>
 #include <wchar.h>
 #include <math.h>
@@ -964,4 +965,9 @@ template void UStringHelper::toStringInt8<char16_t>(int8_t v, char16_t* outStr, 
 } // namespace detail
 } // namespace ln
 
-
+#ifdef LN_ANDROID
+extern "C"
+double strtod_l(const char* s, char** end_ptr, locale_t) {
+  return strtod(s, end_ptr);
+}
+#endif

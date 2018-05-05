@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include "EmptyPlatformWindowManager.hpp"
 #include "GLFWPlatformWindowManager.hpp"
 #include "PlatformManager.hpp"
 
@@ -13,10 +14,18 @@ PlatformManager::PlatformManager()
 
 void PlatformManager::initialize(const Settings& settings)
 {
+#ifdef LN_GLFW
 	auto windowManager = Ref<GLFWPlatformWindowManager>::makeRef();
 	windowManager->initialize();
-
 	m_windowManager = windowManager;
+#endif
+
+	if (!m_windowManager)
+	{
+		auto windowManager = Ref<EmptyPlatformWindowManager>::makeRef();
+		windowManager->initialize();
+		m_windowManager = windowManager;
+	}
 
 	m_mainWindow = m_windowManager->createWindow(settings.mainWindowSettings);
 }

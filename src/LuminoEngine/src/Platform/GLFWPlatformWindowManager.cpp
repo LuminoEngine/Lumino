@@ -1,4 +1,6 @@
 ﻿
+#ifdef LN_GLFW
+
 #include "Internal.hpp"
 #include "GLFWPlatformWindowManager.hpp"
 
@@ -242,3 +244,4 @@ void GLFWPlatformWindowManager::processSystemEventQueue()
 } // namespace detail
 } // namespace ln
 
+#endif

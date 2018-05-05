@@ -1,4 +1,5 @@
 ﻿#pragma once
+#ifdef LN_GLFW
 
 #include "OpenGLDeviceContext.hpp"
 
@@ -38,3 +39,4 @@ private:
 } // namespace detail
 } // namespace ln
 
+#endif
