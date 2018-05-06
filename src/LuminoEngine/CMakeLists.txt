@@ -76,17 +76,45 @@ set(LN_SOURCES
 	${LN_SOURCES_UI}
 )
 
+set(LN_SOURCES_SharedLib
+	src/SharedLib/DllMain.cpp
+)
+
 find_package(OpenGL)
+
+
+if (WIN32)
+	list(APPEND LN_PLATFORM_LIBS "imagehlp.lib")
+	list(APPEND LN_PLATFORM_LIBS "Shlwapi.lib")
+	list(APPEND LN_PLATFORM_LIBS glfw)
+
+elseif (APPLE)
+	
+elseif (UNIX)
+	
+endif()
+
+if (LN_ANDROID)
+	list(APPEND LN_PLATFORM_LIBS GLESv2)
+endif()
+
 
 #------------------------------------------------------------------------------
 # Targets
 
+add_library(${PROJECT_NAME}-static STATIC ${LN_SOURCES})
+target_include_directories(${PROJECT_NAME}-static PUBLIC "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES})
+target_link_libraries(${PROJECT_NAME}-static LuminoCore ${LN_PLATFORM_LIBS} ${OPENGL_LIBRARY})
+set_target_properties(${PROJECT_NAME}-static PROPERTIES FOLDER "Lumino")
+ln_add_pch(${PROJECT_NAME}-static "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
 
-add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
+add_library(${PROJECT_NAME} SHARED ${LN_SOURCES_SharedLib})
 target_include_directories(${PROJECT_NAME} PUBLIC "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES})
-target_link_libraries(${PROJECT_NAME} LuminoCore glfw ${OPENGL_LIBRARY})
+target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive ${PROJECT_NAME}-static -Wl,--no-whole-archive)
+#target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-static)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
-ln_add_pch(${PROJECT_NAME} "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
+
+
 
 # Unit test.
 if (LN_BUILD_TESTS)

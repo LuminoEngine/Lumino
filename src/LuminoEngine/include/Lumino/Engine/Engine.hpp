@@ -4,7 +4,7 @@ namespace ln {
 
 /** アプリケーション全体にかかわる処理を行います。 */
 LN_CLASS(Static)
-class Engine
+class LN_API Engine
 {
 public:
 
