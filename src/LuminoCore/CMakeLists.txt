@@ -262,9 +262,9 @@ ln_add_pch(${PROJECT_NAME} "src/LuminoCore.PCH.h" "src/LuminoCore.PCH.cpp")
 #)
 
 # Unit test.
-#if (LN_BUILD_TESTS)
+if (LN_BUILD_TESTS)
 	add_subdirectory(test)
-#endif()
+endif()
 
 #------------------------------------------------------------------------------
 # Install

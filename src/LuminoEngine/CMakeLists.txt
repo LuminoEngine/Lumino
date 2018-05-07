@@ -110,8 +110,8 @@ ln_add_pch(${PROJECT_NAME}-static "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH
 
 add_library(${PROJECT_NAME} SHARED ${LN_SOURCES_SharedLib})
 target_include_directories(${PROJECT_NAME} PUBLIC "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES})
-target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive ${PROJECT_NAME}-static -Wl,--no-whole-archive)
-#target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-static)
+#target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive ${PROJECT_NAME}-static -Wl,--no-whole-archive)
+target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-static)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 
 

@@ -10,8 +10,9 @@
 #include <Lumino/IO/Process.hpp>
 
 #if defined(LN_OS_MAC)
-#include <crt_externs.h>
-#define environ (*_NSGetEnviron())
+//#include <crt_externs.h>
+//#define environ (*_NSGetEnviron())
+extern char **environ;
 #else
 extern char **environ;
 #endif

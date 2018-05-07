@@ -1,4 +1,4 @@
-﻿
+
 #include <errno.h>
 #include <stdarg.h>
 #include <wchar.h>
@@ -227,10 +227,10 @@ int StringHelper::compare(const TChar* str1, int str1Len, const TChar* str2, int
 	}
 
 	// 必要があれば文字数カウント
-	str1Len = (str1Len < 0) ? strlen(str1) : str1Len;
-	str2Len = (str2Len < 0) ? strlen(str2) : str2Len;
-	int minCount = LN_MIN(str1Len, str2Len);
-	int maxCount = LN_MAX(str1Len, str2Len);
+	str1Len = (str1Len < 0) ? static_cast<int>(strlen(str1)) : str1Len;
+	str2Len = (str2Len < 0) ? static_cast<int>(strlen(str2)) : str2Len;
+	int minCount = std::min(str1Len, str2Len);
+	int maxCount = std::max(str1Len, str2Len);
 
 	// チェックする文字数
 	if (count < 0)

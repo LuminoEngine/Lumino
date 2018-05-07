@@ -1,4 +1,4 @@
-﻿/*
+/*
 	VC++ CRT の関数を Linux 用に実装したもの。
 */
 
@@ -85,7 +85,7 @@ inline errno_t mbstowcs_s( size_t *pConvertedChars, wchar_t *wcstr, size_t sizeI
 	if (mbstr == NULL)
 		return EINVAL;
 		
-	int len = strlen(mbstr);
+	size_t len = strlen(mbstr);
 	if (len > count)
 		return ERANGE;
 	
@@ -200,7 +200,7 @@ inline errno_t strcpy_s(
 	if (!strDestination || !strSource) {
 		return EINVAL;
 	}
-	int len = strlen(strSource);
+	size_t len = strlen(strSource);
 	if (numberOfElements < len + 1) {
 		return ERANGE;
 	}

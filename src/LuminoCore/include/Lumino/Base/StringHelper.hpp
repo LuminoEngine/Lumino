@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2018 lriki. Distributed under the MIT license.
+// Copyright (c) 2018 lriki. Distributed under the MIT license.
 
 #pragma once
 
@@ -35,7 +35,6 @@ public:
 		LN_DCHECK(src);
 		if (dstLen == 0) return;
 		dstLen--;
-		TChar* end = dst + dstLen;
 		while (dstLen && *src)
 		{
 			dstLen--;
@@ -101,7 +100,7 @@ public:
 		if (LN_REQUIRE(begin <= end)) return;
 		if (LN_REQUIRE(delim != nullptr)) return;
 
-		delimLen = (delimLen < 0) ? strlen(delim) : delimLen;
+		delimLen = (delimLen < 0) ? static_cast<int>(strlen(delim)) : delimLen;
 		const TChar* cur = begin;
 		const TChar* tokenBegin = begin;
 

@@ -1,11 +1,11 @@
-﻿/*
+/*
     # Note: "String base" vs "Entity name array"
     Path クラスとしては String をラップするだけにしたい。Lumino の用途としては読み取り操作が多い。
     エンティティ分割は Uri クラスで。
 
     # Note: "dir/"
     "dir/" は、「dir 内の無名ファイルをさしている」みたいなイメージ。
-    "dir/*" にマッチする。
+    "dir/XXXX" にマッチする。
     それでいいのかはいろいろ意見あるだろうけど・・・。
 */
 

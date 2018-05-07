@@ -54,6 +54,10 @@ if (LN_ANDROID)
     add_definitions(-DLN_GRAPHICS_OPENGLES)
 endif()
 
+if (DEFINED IOS_PLATFORM)
+    add_definitions(-DLN_GRAPHICS_OPENGLES)
+endif()
+
 #------------------------------------------------------------------------------
 
 include(external/External.cmake)

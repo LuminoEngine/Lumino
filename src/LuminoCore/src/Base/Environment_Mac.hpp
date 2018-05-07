@@ -3,7 +3,6 @@
 
 namespace ln {
 
-// Unix
 class PlatformEnvironment
 {
 public:
@@ -24,11 +23,15 @@ public:
 		LN_NOTIMPLEMENTED();
 		return StringType();
 	}
-	
-#ifdef LN_OS_MAC
+
 	static void getSpecialFolderPath(SpecialFolder specialFolder, StringType* outPath)
 	{
+		LN_NOTIMPLEMENTED();
+	}
+	
 #if 0
+	void getSpecialFolderPath(SpecialFolder specialFolder, LocalStringConverter<CharType>* out)
+	{
 		short domain = kOnAppropriateDisk;
 		
 		OSType type = kDesktopFolderType;
@@ -61,7 +64,6 @@ public:
 		
 		String path = String::fromCString((const char*)buf.getConstData(), buf.getSize());
 		StringTraits::tstrcpy(outPath, LN_MAX_PATH, path.c_str());
-#endif
 	}
 #endif
 };
