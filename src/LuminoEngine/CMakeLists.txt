@@ -80,10 +80,10 @@ set(LN_SOURCES_SharedLib
 	src/SharedLib/DllMain.cpp
 )
 
-find_package(OpenGL)
 
 
 if (WIN32)
+	find_package(OpenGL)
 	list(APPEND LN_PLATFORM_LIBS "imagehlp.lib")
 	list(APPEND LN_PLATFORM_LIBS "Shlwapi.lib")
 	list(APPEND LN_PLATFORM_LIBS glfw)
@@ -98,6 +98,17 @@ if (LN_ANDROID)
 	list(APPEND LN_PLATFORM_LIBS GLESv2)
 endif()
 
+if (LN_IOS)
+
+	FIND_LIBRARY( OPENGLES_FRAMEWORKS OpenGLES )
+
+	#message(${OPENGLES_FRAMEWORKS})
+
+	if(OPENGLES_FRAMEWORKS)
+		list(APPEND LN_PLATFORM_LIBS "-framework OpenGLES")
+	endif()
+endif()
+
 
 #------------------------------------------------------------------------------
 # Targets
@@ -108,11 +119,13 @@ target_link_libraries(${PROJECT_NAME}-static LuminoCore ${LN_PLATFORM_LIBS} ${OP
 set_target_properties(${PROJECT_NAME}-static PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME}-static "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
 
-add_library(${PROJECT_NAME} SHARED ${LN_SOURCES_SharedLib})
+add_library(${PROJECT_NAME} SHARED ${LN_SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES})
 #target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive ${PROJECT_NAME}-static -Wl,--no-whole-archive)
-target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-static)
+#target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-static)
+target_link_libraries(${PROJECT_NAME} LuminoCore ${LN_PLATFORM_LIBS} ${OPENGL_LIBRARY})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
+ln_add_pch(${PROJECT_NAME} "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
 
 
 

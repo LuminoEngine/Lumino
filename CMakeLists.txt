@@ -55,6 +55,7 @@ if (LN_ANDROID)
 endif()
 
 if (DEFINED IOS_PLATFORM)
+    set(LN_IOS ON)
     add_definitions(-DLN_GRAPHICS_OPENGLES)
 endif()
 
