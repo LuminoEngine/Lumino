@@ -75,7 +75,7 @@ bool JsonHelper::isValueType(JsonValueType type)
 }
 
 //------------------------------------------------------------------------------
-JsonParseResult JsonHelper::loadElement(JsonDocument2* doc, JsonReader2* reader, JsonElement2** outElement)
+JsonParseResult JsonHelper::loadElement(JsonDocument2* doc, JsonReader* reader, JsonElement2** outElement)
 {
 	if (LN_REQUIRE(doc != nullptr)) return JsonParseResult::Error;
 	if (LN_REQUIRE(reader != nullptr)) return JsonParseResult::Error;
@@ -307,7 +307,7 @@ void JsonValue2::onSave(JsonWriter* writer)
 }
 
 //------------------------------------------------------------------------------
-JsonParseResult JsonValue2::onLoad(JsonReader2* reader)
+JsonParseResult JsonValue2::onLoad(JsonReader* reader)
 {
 	if (LN_REQUIRE(reader != nullptr)) return JsonParseResult::Error;
 
@@ -442,7 +442,7 @@ void JsonArray2::onSave(JsonWriter* writer)
 }
 
 //------------------------------------------------------------------------------
-JsonParseResult JsonArray2::onLoad(JsonReader2* reader)
+JsonParseResult JsonArray2::onLoad(JsonReader* reader)
 {
 	if (LN_REQUIRE(reader != nullptr)) return JsonParseResult::Error;
 
@@ -635,7 +635,7 @@ void JsonObject2::onSave(JsonWriter* writer)
 }
 
 //------------------------------------------------------------------------------
-JsonParseResult JsonObject2::onLoad(JsonReader2* reader)
+JsonParseResult JsonObject2::onLoad(JsonReader* reader)
 {
 	if (LN_REQUIRE(reader != nullptr)) return JsonParseResult::Error;
 
@@ -831,7 +831,7 @@ JsonDocument2::~JsonDocument2()
 void JsonDocument2::parse(const String& text)
 {
 	StringReader textReader(text);
-	JsonReader2 jr(&textReader);
+	JsonReader jr(&textReader);
 	parseInternal(&jr);
 }
 
@@ -849,7 +849,7 @@ void JsonDocument2::parse(const String& text)
 //{
 //	LN_FAIL_CHECK_ARG(textReader != nullptr) return;
 //
-//	JsonReader2 reader(textReader);
+//	JsonReader reader(textReader);
 //	reader.Read();
 //}
 
@@ -867,7 +867,7 @@ void JsonDocument2::save(const StringRef& filePath, JsonFormatting formatting)
 void JsonDocument2::load(const StringRef& filePath)
 {
 	StreamReader r(filePath.getBegin());	// TODO: end
-	JsonReader2 jr(&r);
+	JsonReader jr(&r);
 	parseInternal(&jr);
 }
 
@@ -885,7 +885,7 @@ String JsonDocument2::toString(JsonFormatting formatting)
 //ISerializeElement* JsonDocument2::getRootObject() { return this; }
 
 //------------------------------------------------------------------------------
-void JsonDocument2::parseInternal(JsonReader2* reader)
+void JsonDocument2::parseInternal(JsonReader* reader)
 {
 	bool result = reader->read();
 	if (LN_ENSURE(result)) return;

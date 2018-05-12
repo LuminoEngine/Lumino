@@ -90,7 +90,7 @@ TEST_F(Test_Json_JsonWriter, Issues_Escape)
 	//{
 
 	//	StringReader r(ss);
-	//	JsonReader2 jr(&r);
+	//	JsonReader jr(&r);
 	//	jr.read();	// StartObject
 	//	jr.read();	// PropName
 	//	jr.read();	// String

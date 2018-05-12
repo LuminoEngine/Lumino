@@ -7,12 +7,7 @@
 
 namespace ln {
 namespace tr {
-
-
-
-
-namespace detail
-{
+namespace detail {
 
 class PositioningTextReader
 	: public TextReader
@@ -40,13 +35,13 @@ private:
 
 } // namespace detail
 
-
-class JsonReader2
+/** SAXスタイルの JSON リーダーです。 */
+class JsonReader
 {
 public:
-	JsonReader2(const String& text);
-	JsonReader2(TextReader* textReader);
-	~JsonReader2();
+	JsonReader(const String& text);
+	JsonReader(TextReader* textReader);
+	~JsonReader();
 
 public:
 	
@@ -154,7 +149,7 @@ private:
 	std::stack<ParserState>		m_stateStack;
 	JsonError2				m_error;
 
-	JsonReader2();
+	JsonReader();
 	bool skipWhitespace();
 	bool parseValue();
 	bool parseNull();

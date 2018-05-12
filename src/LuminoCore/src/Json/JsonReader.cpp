@@ -7,10 +7,10 @@
 
 namespace ln {
 namespace tr {
+namespace detail {
 
-
-namespace detail
-{
+//==============================================================================
+// PositioningTextReader
 
 PositioningTextReader::PositioningTextReader(TextReader* innter)
 {
@@ -97,36 +97,35 @@ void PositioningTextReader::advancePosition(Char ch)
 
 //==============================================================================
 // JsonReader
-//==============================================================================
 
 //------------------------------------------------------------------------------
-JsonReader2::JsonReader2()
+JsonReader::JsonReader()
 	: m_reader()
 {
 }
 
 //------------------------------------------------------------------------------
-JsonReader2::JsonReader2(const String& text)
-	: JsonReader2()
+JsonReader::JsonReader(const String& text)
+	: JsonReader()
 {
 	Ref<StringReader> r(LN_NEW StringReader(text), false);
 	m_reader.attach(LN_NEW detail::PositioningTextReader(r));
 }
 
 //------------------------------------------------------------------------------
-JsonReader2::JsonReader2(TextReader* textReader)
-	: JsonReader2()
+JsonReader::JsonReader(TextReader* textReader)
+	: JsonReader()
 {
 	m_reader.attach(LN_NEW detail::PositioningTextReader(textReader));
 }
 
 //------------------------------------------------------------------------------
-JsonReader2::~JsonReader2()
+JsonReader::~JsonReader()
 {
 }
 
 //------------------------------------------------------------------------------
-bool JsonReader2::read()
+bool JsonReader::read()
 {
 	m_textCache.clear();
 
@@ -159,65 +158,65 @@ bool JsonReader2::read()
 
 
 //------------------------------------------------------------------------------
-JsonToken JsonReader2::getTokenType() const
+JsonToken JsonReader::getTokenType() const
 {
 	return m_currentToken.type;
 }
 
 //------------------------------------------------------------------------------
-const String& JsonReader2::getValue() const
+const String& JsonReader::getValue() const
 {
 	return m_value;
 }
 
 //------------------------------------------------------------------------------
-const String& JsonReader2::getPropertyName() const
+const String& JsonReader::getPropertyName() const
 {
 	return m_currentState.propertyName;
 }
 
 //------------------------------------------------------------------------------
-bool JsonReader2::getBoolValue() const
+bool JsonReader::getBoolValue() const
 {
 	if (LN_REQUIRE(m_currentToken.type == JsonToken::Boolean)) return false;
 	return m_valueData.m_bool;
 }
 
 //------------------------------------------------------------------------------
-int32_t JsonReader2::getInt32Value() const
+int32_t JsonReader::getInt32Value() const
 {
 	if (LN_REQUIRE(m_currentToken.type == JsonToken::Int32)) return 0;
 	return m_valueData.m_int32;
 }
 
 //------------------------------------------------------------------------------
-int64_t JsonReader2::getInt64Value() const
+int64_t JsonReader::getInt64Value() const
 {
 	if (LN_REQUIRE(m_currentToken.type == JsonToken::Int64)) return 0;
 	return m_valueData.m_int64;
 }
 
 //------------------------------------------------------------------------------
-float JsonReader2::getFloatValue() const
+float JsonReader::getFloatValue() const
 {
 	if (LN_REQUIRE(m_currentToken.type == JsonToken::Float)) return 0;
 	return m_valueData.m_float;
 }
 
 //------------------------------------------------------------------------------
-double JsonReader2::getDoubleValue() const
+double JsonReader::getDoubleValue() const
 {
 	if (LN_REQUIRE(m_currentToken.type == JsonToken::Double)) return 0;
 	return m_valueData.m_double;
 }
 
 //------------------------------------------------------------------------------
-const JsonError2& JsonReader2::getError() const
+const JsonError2& JsonReader::getError() const
 {
 	return m_error;
 }
 
-void JsonReader2::readAsStartObject()
+void JsonReader::readAsStartObject()
 {
 	if (!read() || getTokenType() != JsonToken::StartObject)
 	{
@@ -225,7 +224,7 @@ void JsonReader2::readAsStartObject()
 	}
 }
 
-void JsonReader2::readAsEndObject()
+void JsonReader::readAsEndObject()
 {
 	if (!read() || getTokenType() != JsonToken::EndObject)
 	{
@@ -233,7 +232,7 @@ void JsonReader2::readAsEndObject()
 	}
 }
 
-void JsonReader2::readAsStartArray()
+void JsonReader::readAsStartArray()
 {
 	if (!read() || getTokenType() != JsonToken::StartArray)
 	{
@@ -241,7 +240,7 @@ void JsonReader2::readAsStartArray()
 	}
 }
 
-void JsonReader2::readAsEndArray()
+void JsonReader::readAsEndArray()
 {
 	if (!read() || getTokenType() != JsonToken::EndArray)
 	{
@@ -249,7 +248,7 @@ void JsonReader2::readAsEndArray()
 	}
 }
 
-bool JsonReader2::readAsBool()
+bool JsonReader::readAsBool()
 {
 	if (!read() || getTokenType() != JsonToken::Boolean)
 	{
@@ -259,7 +258,7 @@ bool JsonReader2::readAsBool()
 	return getValue()[0] == 't';
 }
 
-const String& JsonReader2::readAsPropertyName()
+const String& JsonReader::readAsPropertyName()
 {
 	if (!read() || getTokenType() != JsonToken::PropertyName)
 	{
@@ -269,7 +268,7 @@ const String& JsonReader2::readAsPropertyName()
 	return getValue();
 }
 
-const String& JsonReader2::readAsString()
+const String& JsonReader::readAsString()
 {
 	if (!read() || getTokenType() != JsonToken::String)
 	{
@@ -280,7 +279,7 @@ const String& JsonReader2::readAsString()
 }
 
 //------------------------------------------------------------------------------
-bool JsonReader2::skipWhitespace()
+bool JsonReader::skipWhitespace()
 {
 	while (m_reader->peek() == ' ' || m_reader->peek() == '\n' || m_reader->peek() == '\r' || m_reader->peek() == '\t') {
 		m_reader->read();
@@ -289,7 +288,7 @@ bool JsonReader2::skipWhitespace()
 }
 
 //------------------------------------------------------------------------------
-bool JsonReader2::parseValue()
+bool JsonReader::parseValue()
 {
 	if (!skipWhitespace()) return false;
 
@@ -348,7 +347,7 @@ bool JsonReader2::parseValue()
 }
 
 //------------------------------------------------------------------------------
-bool JsonReader2::parseNull()
+bool JsonReader::parseNull()
 {
 	m_reader->read();	// skip 'n'
 	if (m_reader->read() == 'u' &&
@@ -366,7 +365,7 @@ bool JsonReader2::parseNull()
 }
 
 //------------------------------------------------------------------------------
-bool JsonReader2::parseTrue()
+bool JsonReader::parseTrue()
 {
 	m_reader->read();	// skip 't'
 	if (m_reader->read() == 'r' &&
@@ -385,7 +384,7 @@ bool JsonReader2::parseTrue()
 }
 
 //------------------------------------------------------------------------------
-bool JsonReader2::parseFalse()
+bool JsonReader::parseFalse()
 {
 	m_reader->read();	// skip 'f'
 	if (m_reader->read() == 'a' &&
@@ -405,7 +404,7 @@ bool JsonReader2::parseFalse()
 }
 
 //------------------------------------------------------------------------------
-bool JsonReader2::parseNumber()
+bool JsonReader::parseNumber()
 {
 	// 数値として使える文字を m_textCache に入れていく
 	int len = 0;
@@ -560,7 +559,7 @@ bool JsonReader2::parseNumber()
 }
 
 //------------------------------------------------------------------------------
-bool JsonReader2::parseObject()
+bool JsonReader::parseObject()
 {
 	if (!skipWhitespace()) return false;
 
@@ -576,7 +575,7 @@ bool JsonReader2::parseObject()
 }
 
 //------------------------------------------------------------------------------
-bool JsonReader2::tryParsePropertyName()
+bool JsonReader::tryParsePropertyName()
 {
 	/*
 		::member = string name-separator value
@@ -618,7 +617,7 @@ bool JsonReader2::tryParsePropertyName()
 }
 
 //------------------------------------------------------------------------------
-bool JsonReader2::parseString(bool isKey)
+bool JsonReader::parseString(bool isKey)
 {
 	/*
 		 string = quotation-mark *char quotation-mark
@@ -749,7 +748,7 @@ bool JsonReader2::parseString(bool isKey)
 }
 
 //------------------------------------------------------------------------------
-bool JsonReader2::ParsePostValue(bool* outSkip)
+bool JsonReader::ParsePostValue(bool* outSkip)
 {
 	*outSkip = false;
 	if (!skipWhitespace()) return false;
@@ -782,7 +781,7 @@ bool JsonReader2::ParsePostValue(bool* outSkip)
 //------------------------------------------------------------------------------
 // 現在位置の状態を newToken にする
 //------------------------------------------------------------------------------
-bool JsonReader2::setToken(JsonToken newToken, const Char* value, int valueLen)
+bool JsonReader::setToken(JsonToken newToken, const Char* value, int valueLen)
 {
 	m_currentToken.type = newToken;
 	//m_currentToken.valuePos = valuePos;
@@ -858,20 +857,20 @@ bool JsonReader2::setToken(JsonToken newToken, const Char* value, int valueLen)
 }
 
 //------------------------------------------------------------------------------
-void JsonReader2::pushState(/*ContainerType containerType*/)
+void JsonReader::pushState(/*ContainerType containerType*/)
 {
 	m_stateStack.push(m_currentState);
 }
 
 //------------------------------------------------------------------------------
-void JsonReader2::popState()
+void JsonReader::popState()
 {
 	m_currentState = m_stateStack.top();
 	m_stateStack.pop();
 }
 
 //------------------------------------------------------------------------------
-void JsonReader2::setError(JsonParseError2 code, const String& message)
+void JsonReader::setError(JsonParseError2 code, const String& message)
 {
 	m_error.code = code;
 	m_error.message = message;

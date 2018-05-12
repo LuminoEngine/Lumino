@@ -8,7 +8,7 @@
 namespace ln {
 class JsonWriter;
 namespace tr {
-class JsonReader2;
+class JsonReader;
 class JsonElement2;
 class JsonObject2;
 class JsonDocument2;
@@ -65,7 +65,7 @@ class JsonHelper
 public:
 	static bool isValueType(JsonToken type);
 	static bool isValueType(JsonValueType type);
-	static JsonParseResult loadElement(JsonDocument2* doc, JsonReader2* reader, JsonElement2** outElement);
+	static JsonParseResult loadElement(JsonDocument2* doc, JsonReader* reader, JsonElement2** outElement);
 
 };
 } // namespace detail
@@ -84,7 +84,7 @@ protected:
 	JsonElement2(JsonDocument2* owner);
 	virtual ~JsonElement2();
 	virtual void onSave(JsonWriter* writer) = 0;
-	virtual JsonParseResult onLoad(JsonReader2* reader) = 0;
+	virtual JsonParseResult onLoad(JsonReader* reader) = 0;
 
 	// ISerializeElement interface
 	//virtual void setValueString(const StringRef& name, const String& value) override {}
@@ -121,7 +121,7 @@ LN_INTERNAL_ACCESS:
 	JsonDocument2* getOwnerDocument() const { return m_ownerDoc; }
 	void setType(JsonValueType type) { m_type = type; }
 	void save(JsonWriter* writer) { onSave(writer); }
-	JsonParseResult load(JsonReader2* reader) { return onLoad(reader); }
+	JsonParseResult load(JsonReader* reader) { return onLoad(reader); }
 
 private:
 	JsonDocument2*	m_ownerDoc;
@@ -174,7 +174,7 @@ private:
 	void checkRelease();
 
 	virtual void onSave(JsonWriter* writer) override;
-	virtual JsonParseResult onLoad(JsonReader2* reader) override;
+	virtual JsonParseResult onLoad(JsonReader* reader) override;
 
 	union
 	{
@@ -224,7 +224,7 @@ private:
 	JsonArray2(JsonDocument2* ownerDoc);
 	virtual ~JsonArray2();
 	virtual void onSave(JsonWriter* writer) override;
-	virtual JsonParseResult onLoad(JsonReader2* reader) override;
+	virtual JsonParseResult onLoad(JsonReader* reader) override;
 
 	List<JsonElement2*>	m_itemList;
 
@@ -259,7 +259,7 @@ protected:
 	JsonObject2(JsonDocument2* ownerDoc);
 	virtual ~JsonObject2();
 	virtual void onSave(JsonWriter* writer) override;
-	virtual JsonParseResult onLoad(JsonReader2* reader) override;
+	virtual JsonParseResult onLoad(JsonReader* reader) override;
 
 	//// ISerializElement interface
 	//virtual SerializationElementType getSerializationElementType() const override { return SerializationElementType::Object; }
@@ -365,7 +365,7 @@ LN_INTERNAL_ACCESS:
 	}
 
 private:
-	void parseInternal(JsonReader2* reader);
+	void parseInternal(JsonReader* reader);
 
 	detail::JsonElementCache	m_cache;
 };
