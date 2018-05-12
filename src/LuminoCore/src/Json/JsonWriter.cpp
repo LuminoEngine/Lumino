@@ -76,6 +76,8 @@ void JsonWriter::writePropertyName(const StringRef& str)
 {
     if (LN_REQUIRE(m_levelStack.size() >= 1))
         return;
+    if (LN_REQUIRE(!m_levelStack.top().inArray))
+        return;
 
     autoComplete(JsonToken::PropertyName);
     onKey(str.getBegin(), str.length());
@@ -139,7 +141,7 @@ void JsonWriter::writeDouble(double value)
     m_levelStack.top().valueCount++;
 }
 
-void JsonWriter::writeString(const StringRef& str) // TODO: StringRef
+void JsonWriter::writeString(const StringRef& str)
 {
     if (LN_REQUIRE(m_levelStack.size() >= 1))
         return;
@@ -275,38 +277,46 @@ void JsonWriter::onString(const Char* str, int length)
     // TODO: 1文字ずつじゃ少し重いか・・・？
     for (int i = 0; i < length; i++) {
         switch (str[i]) {
-            case '"':
-                m_textWriter->write(_T('\\'));
-                m_textWriter->write(_T('"'));
+            case '"': {
+                Char s[] = {'\\', '"'};
+                m_textWriter->write(s, 2);
                 break;
-            case '\\':
-                m_textWriter->write(_T('\\'));
-                m_textWriter->write(_T('\\'));
+            }
+            case '\\': {
+                Char s[] = {'\\', '\\'};
+                m_textWriter->write(s, 2);
                 break;
-            case '/':
-                m_textWriter->write(_T('\\'));
-                m_textWriter->write(_T('/'));
+            }
+            case '/': {
+                Char s[] = {'\\', '/'};
+                m_textWriter->write(s, 2);
                 break;
-            case '\b':
-                m_textWriter->write(_T('\\'));
-                m_textWriter->write(_T('b'));
+            }
+            case '\b': {
+                Char s[] = {'\\', 'b'};
+                m_textWriter->write(s, 2);
                 break;
-            case '\f':
-                m_textWriter->write(_T('\\'));
-                m_textWriter->write(_T('f'));
+            }
+            case '\f': {
+                Char s[] = {'\\', 'f'};
+                m_textWriter->write(s, 2);
                 break;
-            case '\n':
-                m_textWriter->write(_T('\\'));
-                m_textWriter->write(_T('n'));
+            }
+            case '\n': {
+                Char s[] = {'\\', 'n'};
+                m_textWriter->write(s, 2);
                 break;
-            case '\r':
-                m_textWriter->write(_T('\\'));
-                m_textWriter->write(_T('r'));
+            }
+            case '\r': {
+                Char s[] = {'\\', 'r'};
+                m_textWriter->write(s, 2);
                 break;
-            case '\t':
-                m_textWriter->write(_T('\\'));
-                m_textWriter->write(_T('t'));
+            }
+            case '\t': {
+                Char s[] = {'\\', 't'};
+                m_textWriter->write(s, 2);
                 break;
+            }
             default:
                 m_textWriter->write(str[i]);
                 break;
