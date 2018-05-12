@@ -121,6 +121,7 @@ ln_add_pch(${PROJECT_NAME}-static "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH
 
 add_library(${PROJECT_NAME} SHARED ${LN_SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES})
+target_compile_definitions(${PROJECT_NAME} PUBLIC LUMINO_BUILD_DLL=1)
 #target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive ${PROJECT_NAME}-static -Wl,--no-whole-archive)
 #target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-static)
 target_link_libraries(${PROJECT_NAME} LuminoCore ${LN_PLATFORM_LIBS} ${OPENGL_LIBRARY})
@@ -135,3 +136,12 @@ if (LN_BUILD_TESTS)
 	add_subdirectory(sandbox)
 endif()
 
+#------------------------------------------------------------------------------
+# Install
+
+install(TARGETS ${PROJECT_NAME} DESTINATION lib/Debug CONFIGURATIONS Debug)
+install(TARGETS ${PROJECT_NAME} DESTINATION lib/Release CONFIGURATIONS Release)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include DESTINATION .)
+
+install(TARGETS ${PROJECT_NAME}-static DESTINATION lib/Debug CONFIGURATIONS Debug)
+install(TARGETS ${PROJECT_NAME}-static DESTINATION lib/Release CONFIGURATIONS Release)

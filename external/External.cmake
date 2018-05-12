@@ -30,9 +30,10 @@ set(LN_SOURCES_gtest
 #--------------------------------------
 # glfw
 if (WIN32)
-	set(GLFW_BUILD_EXAMPLES OFF)
-	set(GLFW_BUILD_TESTS OFF)
-	set(GLFW_BUILD_DOCS OFF)
+	set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "")
+	set(GLFW_BUILD_TESTS OFF CACHE BOOL "")
+	set(GLFW_BUILD_DOCS OFF CACHE BOOL "")
+	set(GLFW_INSTALL OFF CACHE BOOL "")
 	add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/glfw-3.2.1)
 	ln_add_dependencies_common_property(glfw "${CMAKE_CURRENT_LIST_DIR}/glfw-3.2.1/include")
 endif()
