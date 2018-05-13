@@ -17,6 +17,8 @@ namespace LuminoBuild.Tasks
             string bundlePythonDir = Path.Combine(emInstallDir, "python", "2.7.5.3_64bit");
             string emcmake = Path.Combine(emRootDir, Utils.IsWin32 ? "emcmake.bat" : "emcmake");
 
+            string cmakeOutputDir = Path.Combine(builder.LuminoBuildDir, "Package", "Emscripten");
+
             string path = Environment.GetEnvironmentVariable("PATH");
             path = bundlePythonDir + ";" + path;
 
@@ -29,8 +31,9 @@ namespace LuminoBuild.Tasks
             Directory.CreateDirectory(buildDir);
             Directory.SetCurrentDirectory(buildDir);
 
-            Utils.CallProcess(emcmake, $"cmake {builder.LuminoRootDir} -G \"MinGW Makefiles\"", environmentVariables);
+            Utils.CallProcess(emcmake, $"cmake {builder.LuminoRootDir} -DCMAKE_INSTALL_PREFIX={cmakeOutputDir} -G \"MinGW Makefiles\"", environmentVariables);
             Utils.CallProcess("cmake", $"--build {buildDir}", environmentVariables);
+            Utils.CallProcess("cmake", $"--build {buildDir} --target install", environmentVariables);
         }
     }
 }
