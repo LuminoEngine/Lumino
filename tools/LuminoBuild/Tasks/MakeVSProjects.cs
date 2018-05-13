@@ -34,7 +34,6 @@ namespace LuminoBuild.Tasks
 
         public override void Build(Builder builder)
         {
-            string oldCD = Directory.GetCurrentDirectory();
 
             if (Utils.IsWin32)
             {
@@ -54,7 +53,6 @@ namespace LuminoBuild.Tasks
                 throw new NotImplementedException();
             }
 
-            Directory.SetCurrentDirectory(oldCD);
         }
     }
 }

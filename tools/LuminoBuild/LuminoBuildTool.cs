@@ -105,7 +105,15 @@ namespace LuminoBuild
                 if (task.Buildable)
                 {
                     Logger.WriteLine("[{0}] Task started.", task.CommandName);
-                    task.Build(this);
+                    string oldCD = Directory.GetCurrentDirectory();
+                    try
+                    {
+                        task.Build(this);
+                    }
+                    finally
+                    {
+                        Directory.SetCurrentDirectory(oldCD);
+                    }
                     Logger.WriteLine("[{0}] Task succeeded.", task.CommandName);
                 }
             }
@@ -119,18 +127,18 @@ namespace LuminoBuild
             }
         }
 
-        public void Build()
-        {
-            foreach (var rule in Tasks)
-            {
-                if (rule.Buildable)
-                {
-                    Logger.WriteLine("[{0}] Rule started.", rule.CommandName);
-                    rule.Build(this);
-                    Logger.WriteLine("[{0}] Rule succeeded.", rule.CommandName);
-                }
-            }
-        }
+        //public void Build()
+        //{
+        //    foreach (var rule in Tasks)
+        //    {
+        //        if (rule.Buildable)
+        //        {
+        //            Logger.WriteLine("[{0}] Rule started.", rule.CommandName);
+        //            rule.Build(this);
+        //            Logger.WriteLine("[{0}] Rule succeeded.", rule.CommandName);
+        //        }
+        //    }
+        //}
     }
 
 
@@ -321,23 +329,49 @@ namespace LuminoBuild
             }
         }
 
-		public static string CallProcess(string program, string args = "")
+		public static string CallProcess(string program, string args = ""/*, bool useShell = false*/, Dictionary<string, string> environmentVariables = null)
 		{
-			using (Process p = new Process())
+            Logger.WriteLine($"{program} {args}");
+
+
+            using (Process p = new Process())
 			{
                 var sb = new StringBuilder();
 				p.StartInfo.Arguments = args;
 				p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
 				p.StartInfo.UseShellExecute = false;
 				p.StartInfo.FileName = program;
-				p.StartInfo.RedirectStandardOutput = true;
-				p.OutputDataReceived += (object sender, DataReceivedEventArgs e) => { Console.WriteLine(e.Data); sb.Append(e.Data); };
-				p.StartInfo.RedirectStandardError = true;
-				p.ErrorDataReceived += (object sender, DataReceivedEventArgs e) => { Console.WriteLine(e.Data); };
+
+                if (!p.StartInfo.UseShellExecute)
+                {
+                    p.StartInfo.RedirectStandardOutput = true;
+                    p.OutputDataReceived += (object sender, DataReceivedEventArgs e) => { Console.WriteLine(e.Data); sb.Append(e.Data); };
+                    p.StartInfo.RedirectStandardError = true;
+                    p.ErrorDataReceived += (object sender, DataReceivedEventArgs e) => { Console.WriteLine(e.Data); };
+                }
+
+                if (environmentVariables != null)
+                {
+                    foreach (var pair in environmentVariables)
+                    {
+                        if (p.StartInfo.EnvironmentVariables.ContainsKey(pair.Key))
+                        {
+                            p.StartInfo.EnvironmentVariables[pair.Key] = pair.Value;
+                        }
+                        else
+                        {
+                            p.StartInfo.EnvironmentVariables.Add(pair.Key, pair.Value);
+                        }
+                    }
+                }
 
 				p.Start();
-				p.BeginOutputReadLine();
-				p.BeginErrorReadLine();
+
+                if (!p.StartInfo.UseShellExecute)
+                {
+                    p.BeginOutputReadLine();
+                    p.BeginErrorReadLine();
+                }
 
 				p.WaitForExit();
 

@@ -49,8 +49,11 @@ namespace LuminoBuild
             builder.Tasks.Add(new Tasks.MakeNuGetPackage_Core());
             builder.Rules.Add(new Rules.MakePackage());
             builder.Tasks.Add(new Tasks.BuildAndroidJNI());
+            builder.Tasks.Add(new Tasks.BuildEmscripten());
 
             
+
+
 
             if (args.Length >= 1)
             {

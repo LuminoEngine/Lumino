@@ -27,6 +27,7 @@
     <Compile Include="tools/LuminoBuild/Tasks/BuildEngine_macOS.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/MakeNuGetPackage_Core.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildAndroidJNI.cs" />
+    <Compile Include="tools/LuminoBuild/Tasks/BuildEmscripten.cs" />
   </ItemGroup>
   
 </Project>
