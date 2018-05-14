@@ -1,5 +1,5 @@
 ﻿#include "Common.hpp"
-#include <Lumino/Json/JsonDocument.h>
+#include <Lumino/Json/JsonDocument.hpp>
 #include <Lumino/Serialization/Serialization.hpp>
 #include <Lumino/Base/Variant.hpp>
 #include <Lumino/Math/Math.hpp>

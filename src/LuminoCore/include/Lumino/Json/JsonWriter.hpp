@@ -14,10 +14,10 @@ public:
     JsonWriter(TextWriter* textWriter);
     virtual ~JsonWriter();
 
-	/** 出力する JSON 文字列の整形方法を設定します。 */
+    /** 出力する JSON 文字列の整形方法を設定します。 */
     void setFormatting(JsonFormatting formatting);
 
-	/** JSON object の開始トークンを書き込みます。 */
+    /** JSON object の開始トークンを書き込みます。 */
     void writeStartObject();
 
     /** JSON object の終了トークンを書き込みます。 */

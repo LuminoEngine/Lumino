@@ -2,7 +2,7 @@
 #pragma once
 #include <stack>
 #include "String.h"
-#include "../Json/JsonDocument.h"
+#include "../Json/JsonDocument.hpp"
 
 namespace ln {
 class Archive;

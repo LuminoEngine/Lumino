@@ -6,7 +6,9 @@
 #include "JsonDiagnostics.hpp"
 
 namespace ln {
-namespace detail { class PositioningTextReader; }
+namespace detail {
+class PositioningTextReader;
+}
 
 /** SAXスタイルの JSON リーダーです。 */
 class JsonReader
