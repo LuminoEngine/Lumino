@@ -63,7 +63,7 @@ namespace detail {
 class JsonHelper
 {
 public:
-	static bool isValueType(JsonToken type);
+	static bool isValueType(JsonNode type);
 	static bool isValueType(JsonValueType type);
 	static JsonParseResult loadElement(JsonDocument2* doc, JsonReader* reader, JsonElement2** outElement);
 

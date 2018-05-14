@@ -1,4 +1,20 @@
 
+#include "Internal.hpp"
+#include <Lumino/Json/JsonDiagnostics.h>
+
+namespace ln {
+namespace tr {
+
+JsonError2::JsonError2()
+	: code(JsonDiagCode::None)
+	, line(0)
+    , column(0)
+    , message()
+{
+}
+
+} // namespace tr
+} // namespace ln
 
 //#include "../Base/EnumExtension.h"
 //#include "../Base/String.h"

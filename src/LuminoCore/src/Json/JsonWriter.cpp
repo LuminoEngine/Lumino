@@ -27,7 +27,7 @@ void JsonWriter::setFormatting(JsonFormatting formatting)
 
 void JsonWriter::writeStartObject()
 {
-    autoComplete(JsonToken::StartObject);
+    autoComplete(JsonNode::StartObject);
     m_levelStack.push(Level(false));
     onStartObject();
 }
@@ -39,7 +39,7 @@ void JsonWriter::writeEndObject()
     if (LN_REQUIRE(!m_levelStack.top().inArray))
         return;
 
-    autoComplete(JsonToken::EndObject);
+    autoComplete(JsonNode::EndObject);
     m_levelStack.pop();
     onEndObject();
 
@@ -52,7 +52,7 @@ void JsonWriter::writeEndObject()
 
 void JsonWriter::writeStartArray()
 {
-    autoComplete(JsonToken::StartArray);
+    autoComplete(JsonNode::StartArray);
     m_levelStack.push(Level(true));
     onStartArray();
 }
@@ -62,7 +62,7 @@ void JsonWriter::writeEndArray()
     if (LN_REQUIRE(m_levelStack.top().inArray))
         return;
 
-    autoComplete(JsonToken::EndArray);
+    autoComplete(JsonNode::EndArray);
     m_levelStack.pop();
     onEndArray();
 
@@ -79,7 +79,7 @@ void JsonWriter::writePropertyName(const StringRef& str)
     if (LN_REQUIRE(!m_levelStack.top().inArray))
         return;
 
-    autoComplete(JsonToken::PropertyName);
+    autoComplete(JsonNode::PropertyName);
     onKey(str.getBegin(), str.length());
     m_levelStack.top().justSawKey = true;
 }
@@ -89,7 +89,7 @@ void JsonWriter::writeNull()
     if (LN_REQUIRE(m_levelStack.size() >= 1))
         return;
 
-    autoComplete(JsonToken::Null);
+    autoComplete(JsonNode::Null);
     onNull();
     m_levelStack.top().valueCount++;
 }
@@ -99,7 +99,7 @@ void JsonWriter::writeBool(bool value)
     if (LN_REQUIRE(m_levelStack.size() >= 1))
         return;
 
-    autoComplete(JsonToken::Boolean);
+    autoComplete(JsonNode::Boolean);
     onBool(value);
     m_levelStack.top().valueCount++;
 }
@@ -108,7 +108,7 @@ void JsonWriter::writeInt32(int32_t value)
 {
     if (LN_REQUIRE(m_levelStack.size() >= 1))
         return;
-    autoComplete(JsonToken::Int32);
+    autoComplete(JsonNode::Int32);
     onInt32(value);
     m_levelStack.top().valueCount++;
 }
@@ -117,7 +117,7 @@ void JsonWriter::writeInt64(int64_t value)
 {
     if (LN_REQUIRE(m_levelStack.size() >= 1))
         return;
-    autoComplete(JsonToken::Int64);
+    autoComplete(JsonNode::Int64);
     onInt64(value);
     m_levelStack.top().valueCount++;
 }
@@ -126,7 +126,7 @@ void JsonWriter::writeFloat(float value)
 {
     if (LN_REQUIRE(m_levelStack.size() >= 1))
         return;
-    autoComplete(JsonToken::Float);
+    autoComplete(JsonNode::Float);
     onFloat(value);
     m_levelStack.top().valueCount++;
 }
@@ -136,7 +136,7 @@ void JsonWriter::writeDouble(double value)
     if (LN_REQUIRE(m_levelStack.size() >= 1))
         return;
 
-    autoComplete(JsonToken::Double);
+    autoComplete(JsonNode::Double);
     onDouble(value);
     m_levelStack.top().valueCount++;
 }
@@ -146,7 +146,7 @@ void JsonWriter::writeString(const StringRef& str)
     if (LN_REQUIRE(m_levelStack.size() >= 1))
         return;
 
-    autoComplete(JsonToken::String);
+    autoComplete(JsonNode::String);
     onString(str.getBegin(), str.length());
     m_levelStack.top().valueCount++;
 }
@@ -156,12 +156,12 @@ bool JsonWriter::isComplete() const
     return m_levelStack.empty();
 }
 
-void JsonWriter::autoComplete(JsonToken token)
+void JsonWriter::autoComplete(JsonNode token)
 {
     if (!m_levelStack.empty()) {
         Level& level = m_levelStack.top();
 
-        if (token != JsonToken::EndObject && token != JsonToken::EndArray) {
+        if (token != JsonNode::EndObject && token != JsonNode::EndArray) {
             if (level.justSawKey) {
                 onPrefix(PrefixType::Key, level.valueCount);
             } else if (level.valueCount > 0) {
@@ -179,13 +179,13 @@ void JsonWriter::autoComplete(JsonToken token)
             }
 
             if (!level.justSawKey) {
-                if (token == JsonToken::StartObject || token == JsonToken::StartArray || token == JsonToken::PropertyName) {
+                if (token == JsonNode::StartObject || token == JsonNode::StartArray || token == JsonNode::PropertyName) {
                     m_textWriter->writeLine();
                     for (int i = 0; i < m_levelStack.size(); i++) {
                         m_textWriter->write(_LT(' '));
                         m_textWriter->write(_LT(' '));
                     }
-                } else if (token == JsonToken::EndObject || (token == JsonToken::EndArray && level.justSawContainerEnd)) {
+                } else if (token == JsonNode::EndObject || (token == JsonNode::EndArray && level.justSawContainerEnd)) {
                     m_textWriter->writeLine();
                     for (int i = 0; i < ((int)m_levelStack.size()) - 1; i++) {
                         m_textWriter->write(_LT(' '));

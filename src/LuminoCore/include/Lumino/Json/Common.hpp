@@ -4,9 +4,10 @@
 
 namespace ln {
 
-enum class JsonToken
+enum class JsonNode
 {
-	None = 0,
+    /** 無効値 */
+	None,
 
 	/** オブジェクト定義の開始 ('{') */
 	StartObject,

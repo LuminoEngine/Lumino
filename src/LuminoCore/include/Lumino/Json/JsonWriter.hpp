@@ -77,7 +77,7 @@ protected:
     void onString(const Char* str, int length);
 
 private:
-    void autoComplete(JsonToken token);
+    void autoComplete(JsonNode token);
 
     struct Level
     {

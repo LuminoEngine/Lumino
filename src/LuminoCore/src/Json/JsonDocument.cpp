@@ -49,16 +49,16 @@ namespace tr {
 namespace detail {
 
 //------------------------------------------------------------------------------
-bool JsonHelper::isValueType(JsonToken type)
+bool JsonHelper::isValueType(JsonNode type)
 {
 	return
-		type == JsonToken::Null ||
-		type == JsonToken::Boolean ||
-		type == JsonToken::Int32 ||
-		type == JsonToken::Int64 ||
-		type == JsonToken::Float ||
-		type == JsonToken::Double ||
-		type == JsonToken::String;
+		type == JsonNode::Null ||
+		type == JsonNode::Boolean ||
+		type == JsonNode::Int32 ||
+		type == JsonNode::Int64 ||
+		type == JsonNode::Float ||
+		type == JsonNode::Double ||
+		type == JsonNode::String;
 }
 
 //------------------------------------------------------------------------------
@@ -81,15 +81,15 @@ JsonParseResult JsonHelper::loadElement(JsonDocument2* doc, JsonReader* reader, 
 	if (LN_REQUIRE(reader != nullptr)) return JsonParseResult::Error;
 	if (LN_REQUIRE(outElement != nullptr)) return JsonParseResult::Error;
 
-	JsonToken type = reader->getTokenType();
-	if (type == JsonToken::StartObject)
+	JsonNode type = reader->nodeType();
+	if (type == JsonNode::StartObject)
 	{
 		auto* value = doc->newElement<JsonObject2>();
 		JsonParseResult result = value->load(reader);
 		if (result != JsonParseResult::Success) return result;
 		*outElement = value;
 	}
-	else if (type == JsonToken::StartArray)
+	else if (type == JsonNode::StartArray)
 	{
 		auto* value = doc->newElement<JsonArray2>();
 		JsonParseResult result = value->load(reader);
@@ -311,28 +311,28 @@ JsonParseResult JsonValue2::onLoad(JsonReader* reader)
 {
 	if (LN_REQUIRE(reader != nullptr)) return JsonParseResult::Error;
 
-	switch (reader->getTokenType())
+	switch (reader->nodeType())
 	{
-		case JsonToken::Int32:
-			setInt32(reader->getInt32Value());
+		case JsonNode::Int32:
+			setInt32(reader->int32Value());
 			break;
-		case JsonToken::Int64:
-			setInt64(reader->getInt64Value());
+		case JsonNode::Int64:
+			setInt64(reader->int64Value());
 			break;
-		case JsonToken::Float:
-			setFloat(reader->getFloatValue());
+		case JsonNode::Float:
+			setFloat(reader->floatValue());
 			break;
-		case JsonToken::Double:
-			setDouble(reader->getDoubleValue());
+		case JsonNode::Double:
+			setDouble(reader->doubleValue());
 			break;
-		case JsonToken::Null:
+		case JsonNode::Null:
 			setNull();
 			break;
-		case JsonToken::Boolean:
-			setBool(reader->getBoolValue());
+		case JsonNode::Boolean:
+			setBool(reader->boolValue());
 			break;
-		case JsonToken::String:
-			setString(reader->getValue());
+		case JsonNode::String:
+			setString(reader->value());
 			break;
 		default:
 			LN_UNREACHABLE();
@@ -450,7 +450,8 @@ JsonParseResult JsonArray2::onLoad(JsonReader* reader)
 
 	while (reader->read())
 	{
-		if (reader->getTokenType() == JsonToken::EndArray) return JsonParseResult::Success;	// end scope
+        if (reader->nodeType() == JsonNode::EndArray)
+            return JsonParseResult::Success; // end scope
 
 		// member value
 		JsonElement2* element;
@@ -643,11 +644,14 @@ JsonParseResult JsonObject2::onLoad(JsonReader* reader)
 
 	while (reader->read())
 	{
-		if (reader->getTokenType() == JsonToken::EndObject) return JsonParseResult::Success;	// end scope
+        if (reader->nodeType() == JsonNode::EndObject)
+            return JsonParseResult::Success; // end scope
 
 		// member name
-		if (reader->getTokenType() != JsonToken::PropertyName) return JsonParseResult::Error;
-		String name = reader->getValue();
+        if (reader->nodeType() != JsonNode::PropertyName)
+            return JsonParseResult::Error;
+
+		String name = reader->value();
 
 		// member value
 		if (!reader->read()) return JsonParseResult::Error;
@@ -890,8 +894,8 @@ void JsonDocument2::parseInternal(JsonReader* reader)
 	bool result = reader->read();
 	if (LN_ENSURE(result)) return;
 
-	JsonToken type = reader->getTokenType();
-	if (LN_ENSURE(type == JsonToken::StartObject)) return;
+	JsonNode type = reader->nodeType();
+	if (LN_ENSURE(type == JsonNode::StartObject)) return;
 
 	JsonElement2::load(reader);
 }
