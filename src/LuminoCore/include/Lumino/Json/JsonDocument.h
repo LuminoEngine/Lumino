@@ -201,12 +201,9 @@ private:
 } // namespace detail
 
 
-/**
-	@brief	JSON データのルート要素です。
-*/
+/** JSON ドキュメントのルート要素です。 */
 class JsonDocument2
-	: public JsonObject
-	//, public ISerializationeStore
+	: public RefObject
 {
 public:
 	JsonDocument2();
@@ -229,12 +226,18 @@ public:
 
 	//void Load();
 
+	void setRootArray();
+	void setRootObject();
+
 	void save(const StringRef& filePath, JsonFormatting formatting = JsonFormatting::None);
 
 	void load(const StringRef& filePath);
 
 
+	JsonElement* rootElement() const { return m_rootElement; }
+
 	String toString(JsonFormatting formatting = JsonFormatting::None);
+
 
 protected:
 	//virtual ISerializeElement* getRootObject() override;
@@ -252,6 +255,7 @@ private:
 	void parseInternal(JsonReader* reader);
 
 	detail::JsonElementCache	m_cache;
+	JsonElement* m_rootElement;
 };
 
 } // namespace tr

@@ -817,7 +817,8 @@ JsonElement* JsonElementCache::alloc(size_t size)
 
 //------------------------------------------------------------------------------
 JsonDocument2::JsonDocument2()
-	: JsonObject(this)
+	//: JsonObject(this)
+	: m_rootElement(nullptr)
 {
 	m_cache.initialize();
 }
@@ -826,9 +827,19 @@ JsonDocument2::JsonDocument2()
 JsonDocument2::~JsonDocument2()
 {
 	// m_cache 削除前にクリアする必要がある
-	clear();
+	//clear();
 
 	m_cache.finalize();
+}
+
+void JsonDocument2::setRootArray()
+{
+	m_rootElement = newElement<JsonArray>();
+}
+
+void JsonDocument2::setRootObject()
+{
+	m_rootElement = newElement<JsonObject>();
 }
 
 //------------------------------------------------------------------------------
@@ -864,7 +875,7 @@ void JsonDocument2::save(const StringRef& filePath, JsonFormatting formatting)
 	StreamWriter w(filePath);
 	JsonWriter jw(&w);
 	jw.setFormatting(formatting);
-	JsonElement::save(&jw);
+	m_rootElement->save(&jw);
 }
 
 //------------------------------------------------------------------------------
@@ -881,7 +892,7 @@ String JsonDocument2::toString(JsonFormatting formatting)
 	StringWriter w;
 	JsonWriter jw(&w);
 	jw.setFormatting(formatting);
-	JsonElement::save(&jw);
+	m_rootElement->save(&jw);
 	return w.toString();
 }
 
@@ -895,9 +906,37 @@ void JsonDocument2::parseInternal(JsonReader* reader)
 	if (LN_ENSURE(result)) return;
 
 	JsonNode type = reader->nodeType();
-	if (LN_ENSURE(type == JsonNode::StartObject)) return;
 
-	JsonElement::load(reader);
+	switch (type)
+	{
+        case JsonNode::StartObject: {
+            auto* value = newElement<JsonObject>();
+            value->load(reader);
+            m_rootElement = value;
+            break;
+        }
+        case JsonNode::StartArray: {
+            auto* value = newElement<JsonArray>();
+            value->load(reader);
+            m_rootElement = value;
+            break;
+        }
+        case JsonNode::Int32:
+        case JsonNode::Int64:
+        case JsonNode::Float:
+        case JsonNode::Double:
+        case JsonNode::Null:
+        case JsonNode::Boolean:
+		case JsonNode::String: {
+            auto* value = newElement<JsonValue>();
+            value->load(reader);
+            m_rootElement = value;
+            break;
+        }
+		default:
+			LN_ENSURE(0);
+			return;
+	}
 }
 
 

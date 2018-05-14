@@ -149,8 +149,8 @@ protected:
 	{
 		if (m_nodeStack.empty())
 		{
-			// TODO: 今 JsonDocument2 はルート Array に対応していないのでこんな感じ。
-			m_nodeStack.push(m_localDoc);
+			m_localDoc->setRootObject();
+			m_nodeStack.push(m_localDoc->rootElement());
 		}
 		else if (m_nodeStack.top()->type() == tr::JsonElementType::Object)
 		{
@@ -255,9 +255,9 @@ protected:
 		tr::JsonElement* element;
 		if (m_nodeStack.empty())
 		{
-			// TODO: 今 JsonDocument2 はルート Array に対応していないのでこんな感じ。
-			m_nodeStack.push(m_localDoc);
-			element = m_localDoc;
+			element = m_localDoc->rootElement();
+			if (!element) return false;
+			m_nodeStack.push(element);
 		}
 		else if (checkTopType(tr::JsonElementType::Object))
 		{
