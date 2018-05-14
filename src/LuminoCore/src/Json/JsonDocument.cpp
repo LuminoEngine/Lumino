@@ -12,36 +12,6 @@
 #include <Lumino/Json/JsonDocument.h>
 
 namespace ln {
-namespace tr {
-
-////==============================================================================
-//// JsonDocument
-////==============================================================================
-//
-////------------------------------------------------------------------------------
-//void JsonDocument::parse(const String& text)
-//{
-//	StringReader textReader(text);
-//	parse(&textReader);
-//}
-//void JsonDocument::parse(const Char* text, int len)
-//{
-//	if (LN_REQUIRE(text != nullptr)) return;
-//
-//	StringReader textReader(String(text, (len < 0) ? (int)StringTraits::tcslen(text) : len));
-//	parse(&textReader);
-//}
-//
-////------------------------------------------------------------------------------
-//void JsonDocument::parse(TextReader* textReader)
-//{
-//	JsonDOMHandler handler(this);
-//	JsonReader reader(&handler);
-//	reader.parse(textReader);
-//	handler.build();
-//}
-//
-
 
 //==============================================================================
 // JsonHelper
@@ -75,7 +45,7 @@ bool JsonHelper::isValueType(JsonElementType type)
 }
 
 //------------------------------------------------------------------------------
-JsonParseResult JsonHelper::loadElement(JsonDocument2* doc, JsonReader* reader, JsonElement** outElement)
+JsonParseResult JsonHelper::loadElement(JsonDocument* doc, JsonReader* reader, JsonElement** outElement)
 {
 	if (LN_REQUIRE(doc != nullptr)) return JsonParseResult::Error;
 	if (LN_REQUIRE(reader != nullptr)) return JsonParseResult::Error;
@@ -116,7 +86,7 @@ JsonParseResult JsonHelper::loadElement(JsonDocument2* doc, JsonReader* reader, 
 // JsonElement
 //==============================================================================
 //------------------------------------------------------------------------------
-JsonElement::JsonElement(JsonDocument2* owner)
+JsonElement::JsonElement(JsonDocument* owner)
 	: m_ownerDoc(owner)
 	, m_type(JsonElementType::Null)
 {
@@ -149,7 +119,7 @@ JsonElement::~JsonElement()
 // JsonObject
 //==============================================================================
 //------------------------------------------------------------------------------
-JsonValue::JsonValue(JsonDocument2* ownerDoc)
+JsonValue::JsonValue(JsonDocument* ownerDoc)
 	: JsonElement(ownerDoc)
 {
 }
@@ -346,7 +316,7 @@ JsonParseResult JsonValue::onLoad(JsonReader* reader)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-JsonArray::JsonArray(JsonDocument2* ownerDoc)
+JsonArray::JsonArray(JsonDocument* ownerDoc)
 	: JsonElement(ownerDoc)
 {
 	setType(JsonElementType::Array);
@@ -360,7 +330,7 @@ JsonArray::~JsonArray()
 //------------------------------------------------------------------------------
 void JsonArray::addNullValue()
 {
-	auto ptr = getOwnerDocument()->newElement<JsonValue>();
+	auto ptr = ownerDocument()->newElement<JsonValue>();
 	ptr->setNullValue();
 	m_itemList.add(ptr);
 }
@@ -368,7 +338,7 @@ void JsonArray::addNullValue()
 //------------------------------------------------------------------------------
 void JsonArray::addBoolValue(bool value)
 {
-	auto ptr = getOwnerDocument()->newElement<JsonValue>();
+	auto ptr = ownerDocument()->newElement<JsonValue>();
 	ptr->setBoolValue(value);
 	m_itemList.add(ptr);
 }
@@ -376,7 +346,7 @@ void JsonArray::addBoolValue(bool value)
 //------------------------------------------------------------------------------
 void JsonArray::addInt32Value(int32_t value)
 {
-	auto ptr = getOwnerDocument()->newElement<JsonValue>();
+	auto ptr = ownerDocument()->newElement<JsonValue>();
 	ptr->setInt64Value(value);
 	m_itemList.add(ptr);
 }
@@ -384,7 +354,7 @@ void JsonArray::addInt32Value(int32_t value)
 //------------------------------------------------------------------------------
 void JsonArray::addInt64Value(int64_t value)
 {
-	auto ptr = getOwnerDocument()->newElement<JsonValue>();
+	auto ptr = ownerDocument()->newElement<JsonValue>();
 	ptr->setInt64Value(value);
 	m_itemList.add(ptr);
 }
@@ -392,7 +362,7 @@ void JsonArray::addInt64Value(int64_t value)
 //------------------------------------------------------------------------------
 void JsonArray::addFloatValue(float value)
 {
-	auto ptr = getOwnerDocument()->newElement<JsonValue>();
+	auto ptr = ownerDocument()->newElement<JsonValue>();
 	ptr->setFloatValue(value);
 	m_itemList.add(ptr);
 }
@@ -400,7 +370,7 @@ void JsonArray::addFloatValue(float value)
 //------------------------------------------------------------------------------
 void JsonArray::addDoubleValue(double value)
 {
-	auto ptr = getOwnerDocument()->newElement<JsonValue>();
+	auto ptr = ownerDocument()->newElement<JsonValue>();
 	ptr->setDoubleValue(value);
 	m_itemList.add(ptr);
 }
@@ -408,7 +378,7 @@ void JsonArray::addDoubleValue(double value)
 //------------------------------------------------------------------------------
 void JsonArray::addStringValue(const StringRef& value)
 {
-	auto ptr = getOwnerDocument()->newElement<JsonValue>();
+	auto ptr = ownerDocument()->newElement<JsonValue>();
 	ptr->setStringValue(value);
 	m_itemList.add(ptr);
 }
@@ -416,7 +386,7 @@ void JsonArray::addStringValue(const StringRef& value)
 //------------------------------------------------------------------------------
 JsonArray* JsonArray::addArray()
 {
-	auto ptr = getOwnerDocument()->newElement<JsonArray>();
+	auto ptr = ownerDocument()->newElement<JsonArray>();
 	m_itemList.add(ptr);
 	return ptr;
 }
@@ -424,7 +394,7 @@ JsonArray* JsonArray::addArray()
 //------------------------------------------------------------------------------
 JsonObject* JsonArray::addObject()
 {
-	auto ptr = getOwnerDocument()->newElement<JsonObject>();
+	auto ptr = ownerDocument()->newElement<JsonObject>();
 	m_itemList.add(ptr);
 	return ptr;
 }
@@ -455,7 +425,7 @@ JsonParseResult JsonArray::onLoad(JsonReader* reader)
 
 		// member value
 		JsonElement* element;
-		JsonParseResult result = detail::JsonHelper::loadElement(getOwnerDocument(), reader, &element);
+		JsonParseResult result = detail::JsonHelper::loadElement(ownerDocument(), reader, &element);
 		if (result != JsonParseResult::Success) return result;
 		m_itemList.add(element);
 	}
@@ -504,7 +474,7 @@ JsonParseResult JsonArray::onLoad(JsonReader* reader)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-JsonObject::JsonObject(JsonDocument2* ownerDoc)
+JsonObject::JsonObject(JsonDocument* ownerDoc)
 	: JsonElement(ownerDoc)
 {
 	setType(JsonElementType::Object);
@@ -570,7 +540,7 @@ JsonArray* JsonObject::addArray(const StringRef& name)
 		}
 	}
 
-	auto* ptr = getOwnerDocument()->newElement<JsonArray>();
+	auto* ptr = ownerDocument()->newElement<JsonArray>();
 	m_memberList.add({ name, ptr });
 	return ptr;
 }
@@ -589,7 +559,7 @@ JsonObject* JsonObject::addObject(const StringRef& name)
 		}
 	}
 
-	auto* ptr = getOwnerDocument()->newElement<JsonObject>();
+	auto* ptr = ownerDocument()->newElement<JsonObject>();
 	m_memberList.add({ name, ptr });
 	return ptr;
 
@@ -598,7 +568,7 @@ JsonObject* JsonObject::addObject(const StringRef& name)
 	//Member* m = m_memberList.find([name](const Member& m) { return m.name == name; });
 	//if (m == nullptr || m->value->type() != JsonElementType::Object)
 	//{
-	//	auto* ptr = getOwnerDocument()->newElement<JsonObject>();
+	//	auto* ptr = ownerDocument()->newElement<JsonObject>();
 	//	m_memberList.add({ name, ptr });
 	//	return ptr;
 	//}
@@ -656,7 +626,7 @@ JsonParseResult JsonObject::onLoad(JsonReader* reader)
 		// member value
 		if (!reader->read()) return JsonParseResult::Error;
 		JsonElement* element;
-		JsonParseResult result = detail::JsonHelper::loadElement(getOwnerDocument(), reader, &element);
+		JsonParseResult result = detail::JsonHelper::loadElement(ownerDocument(), reader, &element);
 		if (result != JsonParseResult::Success) return result;
 		m_memberList.add({ name, element });
 	}
@@ -677,13 +647,13 @@ JsonValue* JsonObject::getValue(const StringRef& name)
 		}
 	}
 
-	auto* ptr = getOwnerDocument()->newElement<JsonValue>();
+	auto* ptr = ownerDocument()->newElement<JsonValue>();
 	m_memberList.add({ name, ptr });
 	return ptr;
 	//Member* m = m_memberList.find([name](const Member& m) { return m.name == name; });
 	//if (m == nullptr || !detail::JsonHelper::isValueType(m->value->type()))
 	//{
-	//	auto* ptr = getOwnerDocument()->newElement<JsonValue>();
+	//	auto* ptr = ownerDocument()->newElement<JsonValue>();
 	//	m_memberList.add({ name, ptr });
 	//	return ptr;
 	//}
@@ -812,11 +782,11 @@ JsonElement* JsonElementCache::alloc(size_t size)
 } // namespace detail
 
 //==============================================================================
-// JsonDocument2
+// JsonDocument
 //==============================================================================
 
 //------------------------------------------------------------------------------
-JsonDocument2::JsonDocument2()
+JsonDocument::JsonDocument()
 	//: JsonObject(this)
 	: m_rootElement(nullptr)
 {
@@ -824,7 +794,7 @@ JsonDocument2::JsonDocument2()
 }
 
 //------------------------------------------------------------------------------
-JsonDocument2::~JsonDocument2()
+JsonDocument::~JsonDocument()
 {
 	// m_cache 削除前にクリアする必要がある
 	//clear();
@@ -832,18 +802,18 @@ JsonDocument2::~JsonDocument2()
 	m_cache.finalize();
 }
 
-void JsonDocument2::setRootArray()
+void JsonDocument::setRootArray()
 {
 	m_rootElement = newElement<JsonArray>();
 }
 
-void JsonDocument2::setRootObject()
+void JsonDocument::setRootObject()
 {
 	m_rootElement = newElement<JsonObject>();
 }
 
 //------------------------------------------------------------------------------
-void JsonDocument2::parse(const String& text)
+void JsonDocument::parse(const String& text)
 {
 	StringReader textReader(text);
 	JsonReader jr(&textReader);
@@ -851,7 +821,7 @@ void JsonDocument2::parse(const String& text)
 }
 
 ////------------------------------------------------------------------------------
-//void JsonDocument2::Parse(const TCHAR* text, int len)
+//void JsonDocument::Parse(const TCHAR* text, int len)
 //{
 //	LN_FAIL_CHECK_ARG(text != nullptr) return;
 //
@@ -860,7 +830,7 @@ void JsonDocument2::parse(const String& text)
 //}
 //
 ////------------------------------------------------------------------------------
-//void JsonDocument2::Parse(TextReader* textReader)
+//void JsonDocument::Parse(TextReader* textReader)
 //{
 //	LN_FAIL_CHECK_ARG(textReader != nullptr) return;
 //
@@ -870,7 +840,7 @@ void JsonDocument2::parse(const String& text)
 
 
 //------------------------------------------------------------------------------
-void JsonDocument2::save(const StringRef& filePath, JsonFormatting formatting)
+void JsonDocument::save(const StringRef& filePath, JsonFormatting formatting)
 {
 	StreamWriter w(filePath);
 	JsonWriter jw(&w);
@@ -879,7 +849,7 @@ void JsonDocument2::save(const StringRef& filePath, JsonFormatting formatting)
 }
 
 //------------------------------------------------------------------------------
-void JsonDocument2::load(const StringRef& filePath)
+void JsonDocument::load(const StringRef& filePath)
 {
 	StreamReader r(filePath.getBegin());	// TODO: end
 	JsonReader jr(&r);
@@ -887,7 +857,7 @@ void JsonDocument2::load(const StringRef& filePath)
 }
 
 //------------------------------------------------------------------------------
-String JsonDocument2::toString(JsonFormatting formatting)
+String JsonDocument::toString(JsonFormatting formatting)
 {
 	StringWriter w;
 	JsonWriter jw(&w);
@@ -897,10 +867,10 @@ String JsonDocument2::toString(JsonFormatting formatting)
 }
 
 //------------------------------------------------------------------------------
-//ISerializeElement* JsonDocument2::getRootObject() { return this; }
+//ISerializeElement* JsonDocument::getRootObject() { return this; }
 
 //------------------------------------------------------------------------------
-void JsonDocument2::parseInternal(JsonReader* reader)
+void JsonDocument::parseInternal(JsonReader* reader)
 {
 	bool result = reader->read();
 	if (LN_ENSURE(result)) return;
@@ -939,6 +909,4 @@ void JsonDocument2::parseInternal(JsonReader* reader)
 	}
 }
 
-
-} // namespace tr
 } // namespace ln

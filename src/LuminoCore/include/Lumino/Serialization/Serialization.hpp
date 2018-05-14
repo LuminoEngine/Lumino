@@ -601,7 +601,7 @@ public:
 	String toString(JsonFormatting formatting = JsonFormatting::Indented);
 
 private:
-	tr::JsonDocument2	m_localDoc;
+	JsonDocument	m_localDoc;
 	JsonArchiveStore	m_localStore;
 	bool				m_processing;
 };
@@ -623,7 +623,7 @@ public:
 	}
 
 private:
-	tr::JsonDocument2	m_localDoc;
+	JsonDocument	m_localDoc;
 	JsonArchiveStore	m_localStore;
 	bool				m_processing;
 };

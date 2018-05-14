@@ -6,11 +6,12 @@
 namespace ln {
 class JsonWriter;
 class JsonReader;
-namespace tr {
 class JsonElement;
+class JsonArray;
 class JsonObject;
-class JsonDocument2;
+class JsonDocument;
 namespace detail { class JsonElementCache; }
+namespace detail { class JsonHelper; }
 
 /** Json の値の型を示します。*/
 enum class JsonElementType
@@ -32,25 +33,27 @@ class JsonElement
 {
 public:
 	JsonElementType type() const { return m_type; }
+	JsonDocument* ownerDocument() const { return m_ownerDoc; }
 
 protected:
-	JsonElement(JsonDocument2* owner);
+	JsonElement(JsonDocument* owner);
 	virtual ~JsonElement();
 	virtual void onSave(JsonWriter* writer) = 0;
 	virtual JsonParseResult onLoad(JsonReader* reader) = 0;
-
-LN_INTERNAL_ACCESS:
-	JsonDocument2* getOwnerDocument() const { return m_ownerDoc; }
 	void setType(JsonElementType type) { m_type = type; }
+
+private:
 	void save(JsonWriter* writer) { onSave(writer); }
 	JsonParseResult load(JsonReader* reader) { return onLoad(reader); }
 
-private:
-	JsonDocument2*	m_ownerDoc;
+	JsonDocument*	m_ownerDoc;
 	JsonElementType	m_type;
 
 	friend class JsonObject;
+	friend class JsonArray;
+	friend class JsonDocument;
 	friend class detail::JsonElementCache;
+	friend class detail::JsonHelper;
 };
 
 /** JSON のプリミティブな値を表します。 */
@@ -75,7 +78,7 @@ public:
 	const String& stringValue() const;
 
 private:
-	JsonValue(JsonDocument2* ownerDoc);
+	JsonValue(JsonDocument* ownerDoc);
 	virtual ~JsonValue();
 	void checkRelease();
 
@@ -92,7 +95,7 @@ private:
 		String*	m_string;
 	};
 
-	friend class JsonDocument2;
+	friend class JsonDocument;
 };
 
 /** JSON の配列を表します。 */
@@ -115,14 +118,14 @@ public:
 	JsonElement* element(int index) const { return m_itemList.at(index); }
 
 private:
-	JsonArray(JsonDocument2* ownerDoc);
+	JsonArray(JsonDocument* ownerDoc);
 	virtual ~JsonArray();
 	virtual void onSave(JsonWriter* writer) override;
 	virtual JsonParseResult onLoad(JsonReader* reader) override;
 
 	List<JsonElement*>	m_itemList;
 
-	friend class JsonDocument2;
+	friend class JsonDocument;
 };
 
 /** JSON のオブジェクトを表します。 */
@@ -147,15 +150,13 @@ public:
 	const String& memberKey(int index) const { return m_memberList[index].name; }
 
 protected:
-	JsonObject(JsonDocument2* ownerDoc);
+	JsonObject(JsonDocument* ownerDoc);
 	virtual ~JsonObject();
 	virtual void onSave(JsonWriter* writer) override;
 	virtual JsonParseResult onLoad(JsonReader* reader) override;
 
-LN_INTERNAL_ACCESS:
-	void clear() { m_memberList.clear(); }
-
 private:
+	void clear() { m_memberList.clear(); }
 	JsonValue* getValue(const StringRef& name);
 
 	struct Member
@@ -166,7 +167,7 @@ private:
 
 	List<Member>	m_memberList;
 
-	friend class JsonDocument2;
+	friend class JsonDocument;
 };
 
 namespace detail {
@@ -176,7 +177,7 @@ class JsonHelper
 public:
     static bool isValueType(JsonNode type);
     static bool isValueType(JsonElementType type);
-    static JsonParseResult loadElement(JsonDocument2* doc, JsonReader* reader, JsonElement** outElement);
+    static JsonParseResult loadElement(JsonDocument* doc, JsonReader* reader, JsonElement** outElement);
 };
 
 class JsonElementCache
@@ -202,47 +203,35 @@ private:
 
 
 /** JSON ドキュメントのルート要素です。 */
-class JsonDocument2
+class JsonDocument
 	: public RefObject
 {
 public:
-	JsonDocument2();
-	virtual ~JsonDocument2();
+	JsonDocument();
+	virtual ~JsonDocument();
 
-	///*
-	//	@brief	指定した JSON 形式文字列を解析し、ドキュメントを構築します。
-	//*/
+	/** 指定した JSON 形式文字列を解析し、ドキュメントを構築します。 */
 	void parse(const String& text);
 
-	///*
-	//	@brief	指定した JSON 形式文字列を解析し、ドキュメントを構築します。
-	//*/
-	//void Parse(const TCHAR* text, int len = -1);
-
-	///*
-	//	@brief	指定した TextReader から JSON 形式文字列を解析し、ドキュメントを構築します。
-	//*/
-	//void Parse(TextReader* textReader);
-
-	//void Load();
-
-	void setRootArray();
-	void setRootObject();
-
-	void save(const StringRef& filePath, JsonFormatting formatting = JsonFormatting::None);
-
-	void load(const StringRef& filePath);
-
-
+	/** ルート要素を取得します。 */
 	JsonElement* rootElement() const { return m_rootElement; }
 
+	/** ルート要素として新しい JsonArray を設定します。 */
+	void setRootArray();
+
+	/** ルート要素として新しい JsonObject を設定します。 */
+	void setRootObject();
+
+	/** JSON 文字列としてファイルに保存します。 */
+	void save(const StringRef& filePath, JsonFormatting formatting = JsonFormatting::None);
+
+	/** JSON ファイルを読み込み、ドキュメントを構築します。 */
+	void load(const StringRef& filePath);
+
+	/** JSON 文字列を生成します。 */
 	String toString(JsonFormatting formatting = JsonFormatting::None);
 
-
-protected:
-	//virtual ISerializeElement* getRootObject() override;
-
-LN_INTERNAL_ACCESS:
+private:
 	template<class T>
 	T* newElement()
 	{
@@ -251,12 +240,15 @@ LN_INTERNAL_ACCESS:
 		return buf;
 	}
 
-private:
 	void parseInternal(JsonReader* reader);
 
 	detail::JsonElementCache	m_cache;
 	JsonElement* m_rootElement;
+
+	friend class JsonObject;
+	friend class JsonArray;
+	friend class detail::JsonElementCache;
+	friend class detail::JsonHelper;
 };
 
-} // namespace tr
 } // namespace ln

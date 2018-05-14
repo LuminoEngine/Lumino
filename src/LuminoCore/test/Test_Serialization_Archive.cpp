@@ -182,7 +182,7 @@ TEST_F(Test_Serialization2, SimpleSave)
 	};
 
 	//- [ ] Save
-	tr::JsonDocument2 doc;
+	JsonDocument doc;
 	JsonArchiveStore s(&doc);
 	Archive ar(&s, ArchiveMode::Save);
 
@@ -197,7 +197,7 @@ TEST_F(Test_Serialization2, SimpleSave)
 	{
 		t2.x = 1;
 
-		tr::JsonDocument2 doc;
+		JsonDocument doc;
 		doc.parse(json);
 		JsonArchiveStore s(&doc);
 		Archive ar(&s, ArchiveMode::Load);
@@ -208,7 +208,7 @@ TEST_F(Test_Serialization2, SimpleSave)
 
 	//- [ ] 空オブジェクトの Save
 	{
-		tr::JsonDocument2 doc;
+		JsonDocument doc;
 		JsonArchiveStore s(&doc);
 		Archive ar(&s, ArchiveMode::Save);
 
@@ -221,7 +221,7 @@ TEST_F(Test_Serialization2, SimpleSave)
 
 	//- [ ] 空オブジェクトの Load
 	{
-		tr::JsonDocument2 doc;
+		JsonDocument doc;
 		doc.parse(json);
 		JsonArchiveStore s(&doc);
 		Archive ar(&s, ArchiveMode::Load);
