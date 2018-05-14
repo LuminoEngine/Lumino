@@ -5,7 +5,7 @@
 #include <stack>
 #include <unordered_map>
 #include "String.h"
-#include "../Json/JsonDocument.h"
+#include "../Json/JsonDocument.hpp"
 #include "Common.hpp"
 #include "ArchiveStore.hpp"
 
