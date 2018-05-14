@@ -57,7 +57,7 @@ public:
 	void setNextIndex(int index) { m_nextIndex = index; }	// setNextName() と同じように使う Array 版
 	int getNextIndex() const { return m_nextIndex; }
 	virtual bool hasKey(const String& name) const = 0;
-	virtual const String& getKey(int index) const = 0;
+	virtual const String& memberKey(int index) const = 0;
 	bool readContainer()
 	{
 		int dummy;
@@ -136,9 +136,9 @@ public:
 protected:
 	virtual ArchiveContainerType onGetContainerType() const override
 	{
-		if (m_nodeStack.top()->getType() == tr::JsonValueType::Object)
+		if (m_nodeStack.top()->type() == tr::JsonElementType::Object)
 			return ArchiveContainerType::Object;
-		else if (m_nodeStack.top()->getType() == tr::JsonValueType::Array)
+		else if (m_nodeStack.top()->type() == tr::JsonElementType::Array)
 			return ArchiveContainerType::Array;
 		else
 			LN_UNREACHABLE();
@@ -152,15 +152,15 @@ protected:
 			// TODO: 今 JsonDocument2 はルート Array に対応していないのでこんな感じ。
 			m_nodeStack.push(m_localDoc);
 		}
-		else if (m_nodeStack.top()->getType() == tr::JsonValueType::Object)
+		else if (m_nodeStack.top()->type() == tr::JsonElementType::Object)
 		{
 			if (LN_REQUIRE(hasNextName())) return;
-			tr::JsonObject2* v = static_cast<tr::JsonObject2*>(m_nodeStack.top())->addMemberObject(getNextName());
+			tr::JsonObject* v = static_cast<tr::JsonObject*>(m_nodeStack.top())->addObject(getNextName());
 			m_nodeStack.push(v);
 		}
-		else if (m_nodeStack.top()->getType() == tr::JsonValueType::Array)
+		else if (m_nodeStack.top()->type() == tr::JsonElementType::Array)
 		{
-			tr::JsonObject2* v = static_cast<tr::JsonArray2*>(m_nodeStack.top())->addObject();
+			tr::JsonObject* v = static_cast<tr::JsonArray*>(m_nodeStack.top())->addObject();
 			m_nodeStack.push(v);
 		}
 		else
@@ -171,15 +171,15 @@ protected:
 
 	virtual void onWriteArray() override
 	{
-		if (checkTopType(tr::JsonValueType::Object))
+		if (checkTopType(tr::JsonElementType::Object))
 		{
 			if (LN_REQUIRE(hasNextName())) return;
-			tr::JsonArray2* v = static_cast<tr::JsonObject2*>(m_nodeStack.top())->addMemberArray(getNextName());
+			tr::JsonArray* v = static_cast<tr::JsonObject*>(m_nodeStack.top())->addArray(getNextName());
 			m_nodeStack.push(v);
 		}
-		else if (checkTopType(tr::JsonValueType::Array))
+		else if (checkTopType(tr::JsonElementType::Array))
 		{
-			tr::JsonArray2* v = static_cast<tr::JsonArray2*>(m_nodeStack.top())->addArray();
+			tr::JsonArray* v = static_cast<tr::JsonArray*>(m_nodeStack.top())->addArray();
 			m_nodeStack.push(v);
 		}
 		else
@@ -201,14 +201,14 @@ protected:
 #define ON_WRITE_VALUE_FUNC(type, name) \
 	virtual void onWriteValue##name(type value) override \
 	{ \
-		if (checkTopType(tr::JsonValueType::Object)) \
+		if (checkTopType(tr::JsonElementType::Object)) \
 		{ \
 			if (LN_REQUIRE(hasNextName())) return; \
-			static_cast<tr::JsonObject2*>(m_nodeStack.top())->addMember##name(getNextName(), value); \
+			static_cast<tr::JsonObject*>(m_nodeStack.top())->add##name##Value(getNextName(), value); \
 		} \
-		else if (checkTopType(tr::JsonValueType::Array)) \
+		else if (checkTopType(tr::JsonElementType::Array)) \
 		{ \
-			static_cast<tr::JsonArray2*>(m_nodeStack.top())->add##name(value); \
+			static_cast<tr::JsonArray*>(m_nodeStack.top())->add##name##Value(value); \
 		} \
 		else \
 		{ \
@@ -225,9 +225,9 @@ protected:
 
 	virtual bool hasKey(const String& name) const override
 	{
-		if (checkTopType(tr::JsonValueType::Object))
+		if (checkTopType(tr::JsonElementType::Object))
 		{
-			return static_cast<tr::JsonObject2*>(m_nodeStack.top())->find(name) != nullptr;
+			return static_cast<tr::JsonObject*>(m_nodeStack.top())->find(name) != nullptr;
 		}
 		else
 		{
@@ -236,11 +236,11 @@ protected:
 		}
 	}
 
-	virtual const String& getKey(int index) const override
+	virtual const String& memberKey(int index) const override
 	{
-		if (checkTopType(tr::JsonValueType::Object))
+		if (checkTopType(tr::JsonElementType::Object))
 		{
-			return static_cast<tr::JsonObject2*>(m_nodeStack.top())->getKey(index);
+			return static_cast<tr::JsonObject*>(m_nodeStack.top())->memberKey(index);
 		}
 		else
 		{
@@ -252,33 +252,33 @@ protected:
 
 	virtual bool onReadContainer(int* outElementCount) override
 	{
-		tr::JsonElement2* element;
+		tr::JsonElement* element;
 		if (m_nodeStack.empty())
 		{
 			// TODO: 今 JsonDocument2 はルート Array に対応していないのでこんな感じ。
 			m_nodeStack.push(m_localDoc);
 			element = m_localDoc;
 		}
-		else if (checkTopType(tr::JsonValueType::Object))
+		else if (checkTopType(tr::JsonElementType::Object))
 		{
 			if (LN_REQUIRE(hasNextName())) return false;
-			element = static_cast<tr::JsonObject2*>(m_nodeStack.top())->find(getNextName());
+			element = static_cast<tr::JsonObject*>(m_nodeStack.top())->find(getNextName());
 			if (!element) return false;
 			m_nodeStack.push(element);
 		}
-		else if (checkTopType(tr::JsonValueType::Array))
+		else if (checkTopType(tr::JsonElementType::Array))
 		{
-			element = static_cast<tr::JsonArray2*>(m_nodeStack.top())->getElement(getNextIndex());
+			element = static_cast<tr::JsonArray*>(m_nodeStack.top())->element(getNextIndex());
 			m_nodeStack.push(element);
 		}
 
-		if (element->getType() == tr::JsonValueType::Object)
+		if (element->type() == tr::JsonElementType::Object)
 		{
 			*outElementCount = -1;
 		}
-		else if (element->getType() == tr::JsonValueType::Array)
+		else if (element->type() == tr::JsonElementType::Array)
 		{
-			*outElementCount = static_cast<tr::JsonArray2*>(element)->getElementCount();
+			*outElementCount = static_cast<tr::JsonArray*>(element)->elementCount();
 		}
 		else
 		{
@@ -295,31 +295,31 @@ protected:
 
 	virtual int onReadContainerElementCount() const override
 	{
-		if (m_nodeStack.top()->getType() == tr::JsonValueType::Object)
-			return static_cast<tr::JsonObject2*>(m_nodeStack.top())->size();
-		else if (m_nodeStack.top()->getType() == tr::JsonValueType::Array)
-			return static_cast<tr::JsonArray2*>(m_nodeStack.top())->getElementCount();
+		if (m_nodeStack.top()->type() == tr::JsonElementType::Object)
+			return static_cast<tr::JsonObject*>(m_nodeStack.top())->memberCount();
+		else if (m_nodeStack.top()->type() == tr::JsonElementType::Array)
+			return static_cast<tr::JsonArray*>(m_nodeStack.top())->elementCount();
 		else
 			LN_UNREACHABLE();
 		return -1;
 	}
 
-	tr::JsonValue2* readValueHelper()
+	tr::JsonValue* readValueHelper()
 	{
-		if (checkTopType(tr::JsonValueType::Object))
+		if (checkTopType(tr::JsonElementType::Object))
 		{
 			if (LN_REQUIRE(hasNextName())) return nullptr;
-			tr::JsonElement2* v = static_cast<tr::JsonObject2*>(m_nodeStack.top())->find(getNextName());
-			return static_cast<tr::JsonValue2*>(v);
-			//if (LN_ENSURE(v->getType() == tr::JsonValueType::internalName)) return;
-			//*outValue = static_cast<type>(static_cast<tr::JsonValue2*>(v)->get##internalName());
+			tr::JsonElement* v = static_cast<tr::JsonObject*>(m_nodeStack.top())->find(getNextName());
+			return static_cast<tr::JsonValue*>(v);
+			//if (LN_ENSURE(v->type() == tr::JsonElementType::internalName)) return;
+			//*outValue = static_cast<type>(static_cast<tr::JsonValue*>(v)->get##internalName());
 		}
-		else if (checkTopType(tr::JsonValueType::Array))
+		else if (checkTopType(tr::JsonElementType::Array))
 		{
-			tr::JsonElement2* v = static_cast<tr::JsonArray2*>(m_nodeStack.top())->getElement(getNextIndex());
-			//if (LN_ENSURE(v->getType() == tr::JsonValueType::internalName)) return;
-			return static_cast<tr::JsonValue2*>(v);
-			//*outValue = static_cast<type>(static_cast<tr::JsonValue2*>(v)->get##internalName());
+			tr::JsonElement* v = static_cast<tr::JsonArray*>(m_nodeStack.top())->element(getNextIndex());
+			//if (LN_ENSURE(v->type() == tr::JsonElementType::internalName)) return;
+			return static_cast<tr::JsonValue*>(v);
+			//*outValue = static_cast<type>(static_cast<tr::JsonValue*>(v)->get##internalName());
 		}
 		else
 		{
@@ -330,11 +330,11 @@ protected:
 
 	virtual bool onReadValueBool(bool* outValue) override
 	{
-		tr::JsonValue2* v = readValueHelper();
+		tr::JsonValue* v = readValueHelper();
 		if (!v) return false;
 
-		if (v->getType() == tr::JsonValueType::Bool)
-			*outValue = v->getBool();
+		if (v->type() == tr::JsonElementType::Bool)
+			*outValue = v->boolValue();
 		else
 			LN_UNREACHABLE();
 
@@ -343,13 +343,13 @@ protected:
 
 	virtual bool onReadValueInt64(int64_t* outValue) override
 	{
-		tr::JsonValue2* v = readValueHelper();
+		tr::JsonValue* v = readValueHelper();
 		if (!v) return false;
 
-		if (v->getType() == tr::JsonValueType::Int32)
-			*outValue = v->getInt32();
-		else if (v->getType() == tr::JsonValueType::Int64)
-			*outValue = v->getInt64();
+		if (v->type() == tr::JsonElementType::Int32)
+			*outValue = v->int32Value();
+		else if (v->type() == tr::JsonElementType::Int64)
+			*outValue = v->int64Value();
 		else
 			LN_UNREACHABLE();
 
@@ -358,13 +358,13 @@ protected:
 
 	virtual bool onReadValueDouble(double* outValue) override
 	{
-		tr::JsonValue2* v = readValueHelper();
+		tr::JsonValue* v = readValueHelper();
 		if (!v) return false;
 
-		if (v->getType() == tr::JsonValueType::Float)
-			*outValue = v->getFloat();
-		else if (v->getType() == tr::JsonValueType::Double)
-			*outValue = v->getDouble();
+		if (v->type() == tr::JsonElementType::Float)
+			*outValue = v->floatValue();
+		else if (v->type() == tr::JsonElementType::Double)
+			*outValue = v->doubleValue();
 		else
 			LN_UNREACHABLE();
 
@@ -373,11 +373,11 @@ protected:
 
 	virtual bool onReadValueString(String* outValue) override
 	{
-		tr::JsonValue2* v = readValueHelper();
+		tr::JsonValue* v = readValueHelper();
 		if (!v) return false;
 
-		if (v->getType() == tr::JsonValueType::String)
-			*outValue = v->getString();
+		if (v->type() == tr::JsonElementType::String)
+			*outValue = v->stringValue();
 		else
 			LN_UNREACHABLE();
 
@@ -386,28 +386,28 @@ protected:
 
 	virtual ArchiveNodeType getReadingValueType() override
 	{
-		tr::JsonValue2* v = readValueHelper();
+		tr::JsonValue* v = readValueHelper();
 		if (!v) return ArchiveNodeType::Null;
 
-		switch (v->getType())
+		switch (v->type())
 		{
-		case tr::JsonValueType::Null: return ArchiveNodeType::Null;
-		case tr::JsonValueType::Bool: return ArchiveNodeType::Bool;
-		case tr::JsonValueType::Int32: return ArchiveNodeType::Int64;
-		case tr::JsonValueType::Int64: return ArchiveNodeType::Int64;
-		case tr::JsonValueType::Float: return ArchiveNodeType::Double;
-		case tr::JsonValueType::Double: return ArchiveNodeType::Double;
-		case tr::JsonValueType::String: return ArchiveNodeType::String;
-		case tr::JsonValueType::Array: return ArchiveNodeType::Array;
-		case tr::JsonValueType::Object: return ArchiveNodeType::Object;
+		case tr::JsonElementType::Null: return ArchiveNodeType::Null;
+		case tr::JsonElementType::Bool: return ArchiveNodeType::Bool;
+		case tr::JsonElementType::Int32: return ArchiveNodeType::Int64;
+		case tr::JsonElementType::Int64: return ArchiveNodeType::Int64;
+		case tr::JsonElementType::Float: return ArchiveNodeType::Double;
+		case tr::JsonElementType::Double: return ArchiveNodeType::Double;
+		case tr::JsonElementType::String: return ArchiveNodeType::String;
+		case tr::JsonElementType::Array: return ArchiveNodeType::Array;
+		case tr::JsonElementType::Object: return ArchiveNodeType::Object;
 		default: return ArchiveNodeType::Null;
 		}
 	}
 
 private:
-	bool checkTopType(tr::JsonValueType t) const { return m_nodeStack.top()->getType() == t; }
+	bool checkTopType(tr::JsonElementType t) const { return m_nodeStack.top()->type() == t; }
 
-	std::stack<tr::JsonElement2*>	m_nodeStack;	// Value 型は積まれない。コンテナのみ。
+	std::stack<tr::JsonElement*>	m_nodeStack;	// Value 型は積まれない。コンテナのみ。
 	Ref<tr::JsonDocument2>			m_localDoc;
 };
 

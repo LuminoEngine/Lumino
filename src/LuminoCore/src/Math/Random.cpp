@@ -66,7 +66,7 @@ int Random::getIntWidth(int median, int width)
     return getIntRange(median - width, median + width);
 }
 
-float Random::getFloat()
+float Random::floatValue()
 {
     int r = getInt();
     r = (r & 0x007fffff) | 0x3f800000; // 0x3f800000 は指数部が 1111111で、これは指数1を示す。r & 0x007fffff で仮数部を適当に決めている。
@@ -74,16 +74,16 @@ float Random::getFloat()
     return f - 1.f;
 }
 
-float Random::getFloat(float maxValue)
+float Random::floatValue(float maxValue)
 {
-    float r = getFloat();
+    float r = floatValue();
     r *= maxValue;
     return r;
 }
 
 float Random::getFloatRange(float minValue, float maxValue)
 {
-    float r = getFloat();
+    float r = floatValue();
     r *= (maxValue - minValue);
     r += minValue;
     return r;

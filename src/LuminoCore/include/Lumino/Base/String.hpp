@@ -26,6 +26,8 @@ namespace detail { struct StringLockContext; }
 class String
 {
 public:
+    static const String Empty;
+
 	String();
 	~String();
 	String(const String& str);

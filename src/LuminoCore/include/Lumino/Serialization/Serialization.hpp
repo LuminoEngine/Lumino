@@ -130,7 +130,7 @@ public:
 		}
 		else
 		{
-			key = m_store->getKey(m_nodeInfoStack.top().arrayIndex);
+			key = m_store->memberKey(m_nodeInfoStack.top().arrayIndex);
 			processLoad(makeNVP(key, value));
 		}
 	}

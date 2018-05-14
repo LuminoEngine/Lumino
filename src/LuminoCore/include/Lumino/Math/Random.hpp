@@ -64,14 +64,14 @@ public:
      * 実数ランダム値を返します。
      * @return  0.0 以上 1.0 未満の実数値
      */
-    float getFloat();
+    float floatValue();
 
     /**
      * 指定した最大値より小さい実数ランダム値を返します。(0 <= 値 < maxValue)
      * @param[in]   maxValue    : 上限値
      * @return      0 以上で maxValue より小さい実数値
      */
-    float getFloat(float maxValue);
+    float floatValue(float maxValue);
 
     /**
      * 指定した範囲内の実数ランダム値を返します。(minValue <= 値 < maxValue)
