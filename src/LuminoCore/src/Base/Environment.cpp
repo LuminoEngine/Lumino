@@ -7,8 +7,7 @@
 #include <Shlobj.h>
 #include "Environment_Win32.hpp"
 #elif defined(LN_OS_MAC)
-#include <mach/mach_time.h>
-#include <CoreServices/CoreServices.h>
+#include "Environment_Mac.hpp"
 #else
 #include "Environment_Linux.hpp"
 #endif

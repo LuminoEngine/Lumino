@@ -60,6 +60,8 @@ public:
 	 * 例えば LogLevel::Warning を指定した場合、Fatal, Error, Warning のレベルについてログを生成します。
 	 */
 	static void setLevel(LogLevel level);
+
+	static bool hasAnyAdapter();
 };
 
 namespace detail {

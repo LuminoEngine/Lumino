@@ -148,7 +148,13 @@ void printError(const Exception& e)
 	char buf[BUFFER_SIZE] = {};
 	int len = snprintf(buf, BUFFER_SIZE, "%s(%d):\"%s\" ", e.m_sourceFilePath, e.m_sourceFileLine, e.m_assertionMessage);
 	convertChar16ToLocalChar(e.getMessage(), BUFFER_SIZE, buf + len, BUFFER_SIZE - len);
-	LN_LOG_ERROR << buf;
+
+	if (GlobalLogger::hasAnyAdapter()) {
+		LN_LOG_ERROR << buf;
+	}
+	else {
+		printf("%s\n", buf);
+	}
 }
 
 void Exception_setSourceLocationInfo(Exception& e, const char* filePath, int fileLine, const char* assertionMessage)

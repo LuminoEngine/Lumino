@@ -300,4 +300,9 @@ void GlobalLogger::addStdErrAdapter()
         std::make_shared<detail::StdErrLoggerAdapter>());
 }
 
+bool GlobalLogger::hasAnyAdapter()
+{
+	return !detail::LoggerInterface::getInstance()->m_impl->m_adapters.empty();
+}
+
 } // namespace ln
