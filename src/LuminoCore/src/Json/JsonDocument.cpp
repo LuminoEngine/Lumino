@@ -7,7 +7,7 @@
 #include <Lumino/IO/StreamReader.hpp>
 #include <Lumino/IO/StreamWriter.hpp>
 #include <Lumino/IO/StringWriter.hpp>
-#include <Lumino/Json/JsonReader.h>
+#include <Lumino/Json/JsonReader.hpp>
 #include <Lumino/Json/JsonWriter.hpp>
 #include <Lumino/Json/JsonDocument.h>
 

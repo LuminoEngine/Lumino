@@ -1,12 +1,11 @@
-﻿
+﻿// Copyright (c) 2018 lriki. Distributed under the MIT license.
 #pragma once
 #include <stack>
 #include "../IO/TextReader.hpp"
 #include "Common.hpp"
-#include "JsonDiagnostics.h"
+#include "JsonDiagnostics.hpp"
 
 namespace ln {
-namespace tr {
 namespace detail { class PositioningTextReader; }
 
 /** SAXスタイルの JSON リーダーです。 */
@@ -38,22 +37,23 @@ public:
     /** 現在のプロパティ (Object のメンバ) の名前を取得します。 */
     const String& propertyName() const;
 
-    /** 現在のノードが Bool である場合、パース結果の bool 値を取得できます。*/
+    /** 現在のノードが Bool である場合、パース結果の bool 値を取得できます。 */
     bool boolValue() const;
 
-    /** 現在のノードが Int32 である場合、パース結果の int32_t 値を取得できます。*/
+    /** 現在のノードが Int32 である場合、パース結果の int32_t 値を取得できます。 */
     int32_t int32Value() const;
 
-    /** 現在のノードが Int64 である場合、パース結果の int64_t 値を取得できます。*/
+    /** 現在のノードが Int64 である場合、パース結果の int64_t 値を取得できます。 */
     int64_t int64Value() const;
 
-    /** 現在のノードが Float である場合、パース結果の float 値を取得できます。*/
+    /** 現在のノードが Float である場合、パース結果の float 値を取得できます。 */
     float floatValue() const;
 
-    /** 現在のノードが Double である場合、パース結果の double 値を取得できます。*/
+    /** 現在のノードが Double である場合、パース結果の double 値を取得できます。 */
     double doubleValue() const;
 
-    const JsonError2& getError() const;
+    /** JSON 解析の診断情報を取得します。 */
+    const JsonDiag& diag() const;
 
 private:
     enum class ResultState
@@ -103,7 +103,7 @@ private:
     String m_value;
     List<Char> m_textCache;
     std::stack<ParserState> m_stateStack;
-    JsonError2 m_error;
+    JsonDiag m_diag;
 
     JsonReader();
     bool skipWhitespace();
@@ -150,5 +150,4 @@ private:
 };
 
 } // namespace detail
-} // namespace tr
 } // namespace ln

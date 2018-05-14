@@ -52,7 +52,7 @@
 #include "Lumino/Text/Encoding.hpp"
 #include "Lumino/Text/EncodingConverter.hpp"
 
-#include "Lumino/Json/JsonReader.h"
+#include "Lumino/Json/JsonReader.hpp"
 #include "Lumino/Json/JsonWriter.hpp"
 
 #include "Lumino/Serialization/Common.hpp"

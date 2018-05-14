@@ -3,12 +3,11 @@
 //#include "../Base/Serialization.h"
 #include "../IO/TextReader.hpp"
 #include "Common.hpp"
-#include "JsonValue.h"
 
 namespace ln {
 class JsonWriter;
-namespace tr {
 class JsonReader;
+namespace tr {
 class JsonElement2;
 class JsonObject2;
 class JsonDocument2;

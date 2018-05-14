@@ -1,10 +1,7 @@
 ﻿#include "Common.hpp"
-//#include <Lumino/IO/FileSystem.h>
 #include <Lumino/IO/StreamReader.hpp>
 #include <Lumino/IO/StringReader.hpp>
-//#include <Lumino/Text/Encoding.h>
-#include <Lumino/Json/JsonReader.h>
-using namespace ln::tr;
+#include <Lumino/Json/JsonReader.hpp>
 
 class Test_Json_JsonReader : public ::testing::Test {};
 
@@ -153,7 +150,7 @@ TEST_F(Test_Json_JsonReader, Integrate)
 		StreamReader r(LN_LOCALFILE(_TT("TestData/JSONExample2.json")));
 		JsonReader jr(&r);
 		while (jr.read());
-		ASSERT_EQ(JsonDiagCode::NoError, jr.getError().code);
+		ASSERT_EQ(JsonDiagCode::None, jr.diag().code);
 		ASSERT_EQ(true, r.isEOF());
 	}
 	// <Integrate> オフィシャルページのサンプル3
@@ -161,7 +158,7 @@ TEST_F(Test_Json_JsonReader, Integrate)
 		StreamReader r(LN_LOCALFILE(_TT("TestData/JSONExample3.json")));
 		JsonReader jr(&r);
 		while (jr.read());
-		ASSERT_EQ(JsonDiagCode::NoError, jr.getError().code);
+		ASSERT_EQ(JsonDiagCode::None, jr.diag().code);
 		ASSERT_EQ(true, r.isEOF());
 	}
 	// <Integrate> オフィシャルページのサンプル4
@@ -169,7 +166,7 @@ TEST_F(Test_Json_JsonReader, Integrate)
 		StreamReader r(LN_LOCALFILE(_TT("TestData/JSONExample4.json")));
 		JsonReader jr(&r);
 		while (jr.read());
-		ASSERT_EQ(JsonDiagCode::NoError, jr.getError().code);
+		ASSERT_EQ(JsonDiagCode::None, jr.diag().code);
 		ASSERT_EQ(true, r.isEOF());
 	}
 	// <Integrate> オフィシャルページのサンプル5
@@ -177,7 +174,7 @@ TEST_F(Test_Json_JsonReader, Integrate)
 		StreamReader r(LN_LOCALFILE(_TT("TestData/JSONExample5.json")));
 		JsonReader jr(&r);
 		while (jr.read());
-		ASSERT_EQ(JsonDiagCode::NoError, jr.getError().code);
+		ASSERT_EQ(JsonDiagCode::None, jr.diag().code);
 		ASSERT_EQ(true, r.isEOF());
 	}
 }
@@ -189,45 +186,45 @@ TEST_F(Test_Json_JsonReader, Error)
 	{
 		JsonReader reader(_LT("{\""));
 		while (reader.read());
-		ASSERT_EQ(JsonDiagCode::UnterminatedString, reader.getError().code);
+		ASSERT_EQ(JsonDiagCode::UnterminatedString, reader.diag().code);
 	}
 	// <Test> InvalidStringChar
 	{
 		JsonReader reader(_LT("{\"\a\"}"));
 		while (reader.read());
-		ASSERT_EQ(JsonDiagCode::InvalidStringChar, reader.getError().code);
+		ASSERT_EQ(JsonDiagCode::InvalidStringChar, reader.diag().code);
 	}
 	// <Test> InvalidStringEscape
 	{
 		JsonReader reader(_LT("{\"\\a\"}"));
 		while (reader.read());
-		ASSERT_EQ(JsonDiagCode::InvalidStringEscape, reader.getError().code);
+		ASSERT_EQ(JsonDiagCode::InvalidStringEscape, reader.diag().code);
 	}
 	// <Test> InvalidObjectClosing
 	{
 		JsonReader reader(_LT("{\"\":\"\",}"));
 		while (reader.read());
-		ASSERT_EQ(JsonDiagCode::InvalidObjectClosing, reader.getError().code);
-		ASSERT_EQ(7, reader.getError().column);	// } の位置
+		ASSERT_EQ(JsonDiagCode::InvalidObjectClosing, reader.diag().code);
+		ASSERT_EQ(7, reader.diag().column);	// } の位置
 	}
 	// <Test> ArrayInvalidClosing
 	{
 		JsonReader reader(_LT("[\"\",]"));
 		while (reader.read());
-		ASSERT_EQ(JsonDiagCode::ArrayInvalidClosing, reader.getError().code);
-		ASSERT_EQ(4, reader.getError().column);	// ] の位置
+		ASSERT_EQ(JsonDiagCode::ArrayInvalidClosing, reader.diag().code);
+		ASSERT_EQ(4, reader.diag().column);	// ] の位置
 	}
 	// <Test> ValueInvalid
 	{
 		JsonReader reader(_LT("[n]"));
 		while (reader.read());
-		ASSERT_EQ(JsonDiagCode::ValueInvalid, reader.getError().code);
+		ASSERT_EQ(JsonDiagCode::ValueInvalid, reader.diag().code);
 		JsonReader reader2(_LT("[t]"));
 		while (reader2.read());
-		ASSERT_EQ(JsonDiagCode::ValueInvalid, reader.getError().code);
+		ASSERT_EQ(JsonDiagCode::ValueInvalid, reader.diag().code);
 		JsonReader reader3(_LT("[f]"));
 		while (reader3.read());
-		ASSERT_EQ(JsonDiagCode::ValueInvalid, reader.getError().code);
+		ASSERT_EQ(JsonDiagCode::ValueInvalid, reader.diag().code);
 	}
 }
 
@@ -239,7 +236,7 @@ TEST_F(Test_Json_JsonReader, Issues)
 		StringReader r(_LT(R"([{"tags": ["dolor"]},"end"])"));
 		JsonReader jr(&r);
 		while (jr.read());
-		ASSERT_EQ(JsonDiagCode::NoError, jr.getError().code);
+		ASSERT_EQ(JsonDiagCode::None, jr.diag().code);
 		ASSERT_EQ(true, r.isEOF());
 	}
 	// <Issue> プロパティの値が配列だと、次のプロパティの解析で終了してしまう。
@@ -247,7 +244,7 @@ TEST_F(Test_Json_JsonReader, Issues)
 		StringReader r(_LT(R"({"tags": [],"friends":"10"})"));
 		JsonReader jr(&r);
 		while (jr.read());
-		ASSERT_EQ(JsonDiagCode::NoError, jr.getError().code);
+		ASSERT_EQ(JsonDiagCode::None, jr.diag().code);
 		ASSERT_EQ(true, r.isEOF());
 	}
 }

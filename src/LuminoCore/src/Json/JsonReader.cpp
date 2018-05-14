@@ -3,10 +3,9 @@
 #include <float.h>
 #include <Lumino/Base/String.hpp>
 #include <Lumino/IO/StringReader.hpp>
-#include <Lumino/Json/JsonReader.h>
+#include <Lumino/Json/JsonReader.hpp>
 
 namespace ln {
-namespace tr {
 namespace detail {
 
 //==============================================================================
@@ -19,7 +18,6 @@ PositioningTextReader::PositioningTextReader(TextReader* innter)
 	m_line = 0;
 	m_column = 0;
 	m_lastCR = false;
-	//m_matched = 0;
 }
 
 int PositioningTextReader::peek()
@@ -197,12 +195,11 @@ double JsonReader::doubleValue() const
 	return m_valueData.m_double;
 }
 
-const JsonError2& JsonReader::getError() const
+const JsonDiag& JsonReader::diag() const
 {
-	return m_error;
+	return m_diag;
 }
 
-//------------------------------------------------------------------------------
 bool JsonReader::skipWhitespace()
 {
 	while (m_reader->peek() == ' ' || m_reader->peek() == '\n' || m_reader->peek() == '\r' || m_reader->peek() == '\t') {
@@ -211,66 +208,44 @@ bool JsonReader::skipWhitespace()
 	return !m_reader->isEOF();	// スキップした後に EOF にたどり着いたら false
 }
 
-//------------------------------------------------------------------------------
 bool JsonReader::parseValue()
 {
 	if (!skipWhitespace()) return false;
 
-	//while (true)
+	Char ch = m_reader->peek();
+	switch (ch)
 	{
-		//if (m_reader->IsEOF())
-		//{
-		//	return false;
-		//}
+		case '{':
+			setNode(JsonNode::StartObject);
+			m_reader->read();
+			return true;
+		case '[':
+			setNode(JsonNode::StartArray);
+			m_reader->read();
+			return true;
+		case ']':	// 空配列
+			setNode(JsonNode::EndArray);
+			m_reader->read();
+			return true;
+		case '"':
+			return parseString(false);
+		case 'n':
+			return parseNull();
+		case 't':
+			return parseTrue();
+		case 'f':
+			return parseFalse();
+		default:
+			if (isdigit(ch) || ch == '-' || ch == '.')
+			{
+				return parseNumber();
+			}
 
-		Char ch = m_reader->peek();
-		switch (ch)
-		{
-			//case ' ':
-			//case '\t':
-			//	m_reader->Read();	// 空白は消費するだけ
-			//	break;
-			case '{':
-				setNode(JsonNode::StartObject);
-				m_reader->read();
-				return true;
-			case '[':
-				setNode(JsonNode::StartArray);
-				m_reader->read();
-				return true;
-			case ']':	// 空配列
-				setNode(JsonNode::EndArray);
-				m_reader->read();
-				return true;
-			case '"':
-				return parseString(false);
-
-			case 'n':
-				return parseNull();
-			case 't':
-				return parseTrue();
-			case 'f':
-				return parseFalse();
-				//case 't': return ParseTrue();			// true かもしれない
-				//case 'f': return ParseFalse();			// false かもしれない
-				//case '"': return ParseString(false);	// 文字列かもしれない
-				//case '[': return ParseArray();			// 配列かもしれない
-				//case '{': return ParseObject();			// オブジェクトかもしれない
-				//default: return ParseNumber();			// 数値かもしれない
-
-			default:
-				if (isdigit(ch) || ch == '-' || ch == '.')
-				{
-					return parseNumber();
-				}
-				return false;	// TODO
-
-			
-		}
+			setError(JsonDiagCode::UnexpectedToken);
+			return false;
 	}
 }
 
-//------------------------------------------------------------------------------
 bool JsonReader::parseNull()
 {
 	m_reader->read();	// skip 'n'
@@ -288,7 +263,6 @@ bool JsonReader::parseNull()
 	}
 }
 
-//------------------------------------------------------------------------------
 bool JsonReader::parseTrue()
 {
 	m_reader->read();	// skip 't'
@@ -307,7 +281,6 @@ bool JsonReader::parseTrue()
 	}
 }
 
-//------------------------------------------------------------------------------
 bool JsonReader::parseFalse()
 {
 	m_reader->read();	// skip 'f'
@@ -327,7 +300,6 @@ bool JsonReader::parseFalse()
 	}
 }
 
-//------------------------------------------------------------------------------
 bool JsonReader::parseNumber()
 {
 	// 数値として使える文字を m_textCache に入れていく
@@ -424,7 +396,6 @@ bool JsonReader::parseNumber()
 	}
 }
 
-//------------------------------------------------------------------------------
 bool JsonReader::parseObject()
 {
 	if (!skipWhitespace()) return false;
@@ -440,7 +411,6 @@ bool JsonReader::parseObject()
 	}
 }
 
-//------------------------------------------------------------------------------
 bool JsonReader::tryParsePropertyName()
 {
 	/*
@@ -479,10 +449,8 @@ bool JsonReader::tryParsePropertyName()
 	{
 		return false;
 	}
-
 }
 
-//------------------------------------------------------------------------------
 bool JsonReader::parseString(bool isKey)
 {
 	/*
@@ -596,24 +564,9 @@ bool JsonReader::parseString(bool isKey)
 		}
 	}
 
-	//// Handler に通知
-	//bool cont = false;
-	//if (isKey) {
-	//	cont = m_handler->OnKey((Char*)m_tmpStream.getBuffer(), ((int)m_tmpStream.GetPosition()) / sizeof(TCHAR));
-	//}
-	//else {
-	//	cont = m_handler->OnString((Char*)m_tmpStream.getBuffer(), ((int)m_tmpStream.GetPosition()) / sizeof(TCHAR));
-	//}
-	//if (!cont)
-	//{
-	//	// 中断
-	//	m_error.SetError(JsonParseError::Termination, m_currentCharCount);
-	//	return false;
-	//}
 	return true;
 }
 
-//------------------------------------------------------------------------------
 bool JsonReader::ParsePostValue(bool* outSkip)
 {
 	*outSkip = false;
@@ -650,7 +603,7 @@ bool JsonReader::setNode(JsonNode node, const Char* value, int valueLen)
     m_currentNode = node;
 	if (value != nullptr && valueLen > 0)
 	{
-		m_value = String(value, valueLen/*&m_textCache[0], m_textCache.GetCount()*/);
+		m_value = String(value, valueLen);
 	}
 	else
 	{
@@ -659,8 +612,6 @@ bool JsonReader::setNode(JsonNode node, const Char* value, int valueLen)
 
 	switch (m_currentNode)
 	{
-		//case State::Start:
-		//	break;
 		case JsonNode::StartObject:
 			m_currentState.state = State::ObjectStart;
 			pushState();
@@ -718,27 +669,23 @@ bool JsonReader::setNode(JsonNode node, const Char* value, int valueLen)
 	return true;
 }
 
-//------------------------------------------------------------------------------
-void JsonReader::pushState(/*ContainerType containerType*/)
+void JsonReader::pushState()
 {
 	m_stateStack.push(m_currentState);
 }
 
-//------------------------------------------------------------------------------
 void JsonReader::popState()
 {
 	m_currentState = m_stateStack.top();
 	m_stateStack.pop();
 }
 
-//------------------------------------------------------------------------------
 void JsonReader::setError(JsonDiagCode code, const String& message)
 {
-	m_error.code = code;
-	m_error.message = message;
-	m_error.line = m_reader->getLineNumber();
-	m_error.column = m_reader->getColumnNumber();
+	m_diag.code = code;
+	m_diag.message = message;
+	m_diag.line = m_reader->getLineNumber();
+	m_diag.column = m_reader->getColumnNumber();
 }
 
-} // namespace tr
 } // namespace ln
