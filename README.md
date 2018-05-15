@@ -18,7 +18,7 @@ How to build
 
 on Developer Command Prompt for VS2017
 ```
-> dotnet run
+> dotnet run -- MakeVSProjects
 ```
 
 After this, please check in the "build/..." folder.

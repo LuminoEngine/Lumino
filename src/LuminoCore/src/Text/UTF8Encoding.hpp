@@ -9,6 +9,8 @@ class UTF8Encoding : public TextEncoding
 public:
     using UTF8 = uint8_t;
 
+	static const byte_t BOM[3];
+
     UTF8Encoding(bool byteOrderMark);
     virtual ~UTF8Encoding(){};
 

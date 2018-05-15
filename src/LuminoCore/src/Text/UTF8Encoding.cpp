@@ -8,6 +8,8 @@ namespace ln {
 //==============================================================================
 // UTF8Encoding
 
+const byte_t UTF8Encoding::BOM[] = { 0xEF, 0xBB, 0xBF };
+
 UTF8Encoding::UTF8Encoding(bool byteOrderMark)
     : m_byteOrderMark(byteOrderMark)
 {
