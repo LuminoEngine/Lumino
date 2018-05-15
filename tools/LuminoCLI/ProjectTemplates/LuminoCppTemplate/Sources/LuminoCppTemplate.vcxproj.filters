@@ -4,13 +4,13 @@
     <ClInclude Include="Application.h">
       <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="Win32\targetver.h">
+    <ClInclude Include="..\Build\Win32\PCH.h">
       <Filter>Win32</Filter>
     </ClInclude>
-    <ClInclude Include="Win32\Resource.h">
+    <ClInclude Include="..\Build\Win32\Resource.h">
       <Filter>Win32</Filter>
     </ClInclude>
-    <ClInclude Include="Win32\PCH.h">
+    <ClInclude Include="..\Build\Win32\targetver.h">
       <Filter>Win32</Filter>
     </ClInclude>
   </ItemGroup>
@@ -18,7 +18,7 @@
     <ClCompile Include="Application.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="Win32\PCH.cpp">
+    <ClCompile Include="..\Build\Win32\PCH.cpp">
       <Filter>Win32</Filter>
     </ClCompile>
   </ItemGroup>
@@ -31,15 +31,15 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Win32\small.ico">
+    <Image Include="..\Build\Win32\app.ico">
       <Filter>Win32</Filter>
     </Image>
-    <Image Include="Win32\app.ico">
+    <Image Include="..\Build\Win32\small.ico">
       <Filter>Win32</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Win32\Resource.rc">
+    <ResourceCompile Include="..\Build\Win32\Resource.rc">
       <Filter>Win32</Filter>
     </ResourceCompile>
   </ItemGroup>
