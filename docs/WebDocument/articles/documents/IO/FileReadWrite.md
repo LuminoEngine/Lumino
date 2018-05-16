@@ -26,7 +26,14 @@ StreamReader reader("file.txt", TextEncoding::utf16Encoding());
 ----------
 
 ```cpp
-
+StreamWriter writer("file.txt");
+writer.write("Hello ");
+writer.writeLine("Lumino!");
+writer.writeLine(12345);
 ```
 
+file.txt には次のように出力されます。
+
+> Hello Lumino!
+> 12345
 

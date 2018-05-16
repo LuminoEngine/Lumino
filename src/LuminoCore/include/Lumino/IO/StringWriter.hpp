@@ -18,8 +18,8 @@ public:
     String toString() const;
 
 private:
-    virtual void flash() override;
-    virtual void writeOverride(const void* data, size_t byteCount) override;
+    virtual void onWriteOverride(const void* data, size_t byteCount) override;
+	virtual void onFlush() override;
 
     std::vector<byte_t> m_builder;
 };

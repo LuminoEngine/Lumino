@@ -22,7 +22,7 @@ TEST_F(Test_IO_FileStream, getFileSize)
 
 	//* [ ] ファイルが開かれていてもサイズを取得できる。
 	{
-		auto f = FileStream::create(filePath, FileOpenMode::write | FileOpenMode::append);
+		auto f = FileStream::create(filePath, FileOpenMode::Write | FileOpenMode::Append);
 		ASSERT_EQ(3, FileSystem::getFileSize(filePath));
 	}
 }
@@ -31,7 +31,7 @@ TEST_F(Test_IO_FileStream, getFileSize)
 //## FileNotFound test
 TEST_F(Test_IO_FileStream, FileNotFound)
 {
-	auto f1 = FileStream::create(_T("aaa"), FileOpenMode::read);
+	auto f1 = FileStream::create(_T("aaa"), FileOpenMode::Read);
 	ASSERT_EQ(false, valid(f1));
 
 	//auto f2 = FileStream(_T("bbb"), FileOpenMode::read);
@@ -49,7 +49,7 @@ TEST_F(Test_IO_FileStream, open)
 
 	// Write
 	{
-		auto file1 = FileStream::create(filePath, FileOpenMode::write);
+		auto file1 = FileStream::create(filePath, FileOpenMode::Write);
 		ASSERT_EQ(true, valid(file1));
 		ASSERT_EQ(0, file1->length());	// 空ファイルになる
 		file1->write("A", 1);
@@ -57,14 +57,14 @@ TEST_F(Test_IO_FileStream, open)
 	}
 	// Write | Truncate (↑と同じ動作)
 	{
-		auto file1 = FileStream::create(filePath, FileOpenMode::write | FileOpenMode::Truncate);
+		auto file1 = FileStream::create(filePath, FileOpenMode::Write | FileOpenMode::Truncate);
 		ASSERT_EQ(0, file1->length());	// 空ファイルになる
 		file1->write("B", 1);
 		ASSERT_EQ(1, file1->length());
 	}
 	// Write | Append
 	{
-		auto file1 = FileStream::create(filePath, FileOpenMode::write | FileOpenMode::append);
+		auto file1 = FileStream::create(filePath, FileOpenMode::Write | FileOpenMode::Append);
 		ASSERT_EQ(1, file1->length());	// "B" が書かれている
 		file1->write("C", 1);
 		ASSERT_EQ(2, file1->length());
@@ -89,7 +89,7 @@ TEST_F(Test_IO_FileStream, open)
 	}
 	// ReadWrite | Append
 	{
-		auto file1 = FileStream::create(filePath, FileOpenMode::ReadWrite | FileOpenMode::append);
+		auto file1 = FileStream::create(filePath, FileOpenMode::ReadWrite | FileOpenMode::Append);
 		ASSERT_EQ(2, file1->length());	// "DC" が書かれている
 		file1->write("E", 1);
 		file1->seek(0, SeekOrigin::Begin);
@@ -109,7 +109,7 @@ TEST_F(Test_IO_FileStream, open)
 	}
 	// Read | Truncate
 	{
-		auto file1 = FileStream::create(filePath, FileOpenMode::read);
+		auto file1 = FileStream::create(filePath, FileOpenMode::Read);
 		char buf[2] = { 0 };
 		file1->read(buf, 1);
 		ASSERT_STREQ("F", buf);
@@ -123,19 +123,19 @@ TEST_F(Test_IO_FileStream, FileOpenMode_Deferring)
 
 	// Write
 	{
-		auto file1 = FileStream::create(filePath, FileOpenMode::write | FileOpenMode::Deferring);
+		auto file1 = FileStream::create(filePath, FileOpenMode::Write | FileOpenMode::Deferring);
 		ASSERT_EQ(0, file1->length());	// 空ファイルになる
 		file1->write("A", 1);
 	}
 	// Write | Truncate (↑と同じ動作)
 	{
-		auto file1 = FileStream::create(filePath, FileOpenMode::write | FileOpenMode::Truncate | FileOpenMode::Deferring);
+		auto file1 = FileStream::create(filePath, FileOpenMode::Write | FileOpenMode::Truncate | FileOpenMode::Deferring);
 		ASSERT_EQ(0, file1->length());	// 空ファイルになる
 		file1->write("B", 1);
 	}
 	// Write | Append
 	{
-		auto file1 = FileStream::create(filePath, FileOpenMode::write | FileOpenMode::append | FileOpenMode::Deferring);
+		auto file1 = FileStream::create(filePath, FileOpenMode::Write | FileOpenMode::Append | FileOpenMode::Deferring);
 		ASSERT_EQ(1, file1->length());	// "B" が書かれている
 		file1->write("C", 1);
 	}
@@ -153,7 +153,7 @@ TEST_F(Test_IO_FileStream, FileOpenMode_Deferring)
 	}
 	// ReadWrite | Append
 	{
-		auto file1 = FileStream::create(filePath, FileOpenMode::ReadWrite | FileOpenMode::append | FileOpenMode::Deferring);
+		auto file1 = FileStream::create(filePath, FileOpenMode::ReadWrite | FileOpenMode::Append | FileOpenMode::Deferring);
 		ASSERT_EQ(2, file1->length());	// "DC" が書かれている
 		file1->write("E", 1);
 		file1->seek(0, SeekOrigin::Begin);
@@ -173,7 +173,7 @@ TEST_F(Test_IO_FileStream, FileOpenMode_Deferring)
 	}
 	// Read | Truncate
 	{
-		auto file1 = FileStream::create(filePath, FileOpenMode::read | FileOpenMode::Deferring);
+		auto file1 = FileStream::create(filePath, FileOpenMode::Read | FileOpenMode::Deferring);
 		char buf[2] = { 0 };
 		file1->read(buf, 1);
 		ASSERT_STREQ("F", buf);

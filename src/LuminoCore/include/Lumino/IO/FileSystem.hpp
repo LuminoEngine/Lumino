@@ -252,5 +252,4 @@ public:
 };
 
 } // namespace detail
-
 } // namespace ln

@@ -211,7 +211,7 @@ int main(int argc, char** argv)
 	{
 		argv[0],
 		"--gtest_break_on_failure",
-		//"--gtest_filter=t1/Test_IO_StreamReader_P2.*"
+		//"--gtest_filter=Test_IO_TextWriter.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 

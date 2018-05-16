@@ -8,40 +8,36 @@ namespace ln {
 
 //==============================================================================
 // StreamWriter
-//==============================================================================
 
-//------------------------------------------------------------------------------
 StreamWriter::StreamWriter(Stream* stream, TextEncoding* encoding)
 {
 	init(stream, encoding);
 }
 
-//------------------------------------------------------------------------------
-StreamWriter::StreamWriter(const Path& filePath, TextEncoding* encoding, FileWriteMode mode)
+StreamWriter::StreamWriter(const Path& filePath, FileWriteMode mode, TextEncoding* encoding)
 {
-	// モード選択
 	FileOpenMode openMode;
 	if (mode == FileWriteMode::Truncate) {
-		openMode = FileOpenMode::write | FileOpenMode::Truncate;
+		openMode = FileOpenMode::Write | FileOpenMode::Truncate;
 	}
 	else {
-		openMode = FileOpenMode::write | FileOpenMode::append;
+		openMode = FileOpenMode::Write | FileOpenMode::Append;
 	}
 
 	Ref<FileStream> stream = FileStream::create(filePath.c_str(), openMode);
 	init(stream, encoding);
 }
 
-//------------------------------------------------------------------------------
 StreamWriter::~StreamWriter()
 {
 }
 
-//------------------------------------------------------------------------------
 void StreamWriter::init(Stream* stream, TextEncoding* encoding)
 {
+	if (LN_ENSURE(stream)) return;
+
 	// encoding 未指定であれば UTF8 とする
-	if (encoding == NULL) {
+	if (encoding == nullptr) {
 		encoding = TextEncoding::utf8Encoding();
 	}
 
@@ -49,16 +45,17 @@ void StreamWriter::init(Stream* stream, TextEncoding* encoding)
 	setEncoding(encoding);
 }
 
-//------------------------------------------------------------------------------
-void StreamWriter::flash()
+void StreamWriter::onWriteOverride(const void* data, size_t byteCount)
 {
-	m_stream->flush();
+	if (data && byteCount > 0)
+	{
+		m_stream->write(data, byteCount);
+	}
 }
 
-//------------------------------------------------------------------------------
-void StreamWriter::writeOverride(const void* data, size_t byteCount)
+void StreamWriter::onFlush()
 {
-	m_stream->write(data, byteCount);
+	m_stream->flush();
 }
 
 } // namespace ln

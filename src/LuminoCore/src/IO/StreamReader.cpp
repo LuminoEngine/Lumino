@@ -15,7 +15,7 @@ StreamReader::StreamReader(Stream* stream, TextEncoding* encoding)
 
 StreamReader::StreamReader(const StringRef& filePath, TextEncoding* encoding)
 {
-    auto stream = FileStream::create(filePath, FileOpenMode::read);
+    auto stream = FileStream::create(filePath, FileOpenMode::Read);
     initReader(stream, encoding);
 }
 

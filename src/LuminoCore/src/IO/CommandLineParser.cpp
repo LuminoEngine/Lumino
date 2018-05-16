@@ -731,7 +731,7 @@ String CommandLineParser::buildHelpText() const
 	if (!commands.isEmpty())
 	{
 		Path appPath = Environment::executablePath();
-		sw.writeLine(_T("See '{0} help <command>' to read about a specific command."), appPath.fileNameWithoutExtension());
+		sw.writeLineFormat(_T("See '{0} help <command>' to read about a specific command."), appPath.fileNameWithoutExtension());
 	}
 
 	sw.writeLine();

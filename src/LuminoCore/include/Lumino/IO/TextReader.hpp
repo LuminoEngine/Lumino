@@ -10,8 +10,6 @@ class TextReader
     : public RefObject
 {
 public:
-    virtual ~TextReader();
-
     /**
 	 * 現在位置の文字を取得します。
 	 * 
@@ -48,6 +46,9 @@ public:
 
     /** 現在位置が EOF に到達しているかを確認します。 */
     virtual bool isEOF() = 0;
+
+protected:
+	virtual ~TextReader();
 };
 
 } // namespace ln

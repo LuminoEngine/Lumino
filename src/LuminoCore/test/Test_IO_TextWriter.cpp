@@ -64,5 +64,14 @@ TEST_F(Test_IO_TextWriter, write)
 		String s = writer.toString();
 		ASSERT_EQ(_LT("ab\ndef\ng\n32767\n2147483647\n9223372036854775807\n65535\n4294967295\n18446744073709551615\n100.000000\n100.000000\n"), s);
 	}
+	//* [ ] format string test
+	{
+		StringWriter writer;
+		writer.setNewLine(_T("\n"));
+		writer.writeFormat(_T("{0}-{1}"), 10, _T("A"));
+		writer.writeLineFormat(_T("{0}:{1}"), 20, _T("B"));
+		String s = writer.toString();
+		ASSERT_EQ(_LT("10-A20:B\n"), s);
+	}
 }
 

@@ -6,9 +6,7 @@ namespace ln {
 
 //==============================================================================
 // StringReader
-//==============================================================================
 
-//------------------------------------------------------------------------------
 StringReader::StringReader(const String& str)
 	: m_src(str)
 	, m_range(m_src)
@@ -16,7 +14,6 @@ StringReader::StringReader(const String& str)
 {
 }
 
-//------------------------------------------------------------------------------
 StringReader::StringReader(const Char* str)
 	: m_src(str)
 	, m_range(m_src)
@@ -24,7 +21,6 @@ StringReader::StringReader(const Char* str)
 {
 }
 
-//------------------------------------------------------------------------------
 StringReader::StringReader(const StringRef& str)
 	: m_src()
 	, m_range(str)
@@ -32,12 +28,10 @@ StringReader::StringReader(const StringRef& str)
 {
 }
 
-//------------------------------------------------------------------------------
 StringReader::~StringReader()
 {
 }
 
-//------------------------------------------------------------------------------
 int StringReader::peek()
 {
 	if (m_pos >= m_range.length()) {
@@ -46,7 +40,6 @@ int StringReader::peek()
 	return m_range[m_pos];
 }
 
-//------------------------------------------------------------------------------
 int StringReader::read()
 {
 	if (m_pos >= m_range.length()) {
@@ -55,7 +48,6 @@ int StringReader::read()
 	return m_range[m_pos++];
 }
 
-//------------------------------------------------------------------------------
 bool StringReader::readLine(String* line)
 {
 	int i = m_pos;
@@ -77,7 +69,7 @@ bool StringReader::readLine(String* line)
 	// i は EOF にたどり着いた。そして、読み取る文字があれば読む。
 	if (i > m_pos)
 	{
-		if (line != NULL) {
+		if (line) {
 			*line = m_range.mid(m_pos, i - m_pos);
 		}
 		m_pos = i;
@@ -88,7 +80,6 @@ bool StringReader::readLine(String* line)
 	return false;
 }
 
-//------------------------------------------------------------------------------
 String StringReader::readToEnd()
 {
 	String s;
@@ -102,13 +93,6 @@ String StringReader::readToEnd()
 	return s;
 }
 
-//------------------------------------------------------------------------------
-//int StringReader::GetPosition() const
-//{
-//	return m_pos;
-//}
-
-//------------------------------------------------------------------------------
 bool StringReader::isEOF()
 {
 	return (m_pos >= m_range.length());

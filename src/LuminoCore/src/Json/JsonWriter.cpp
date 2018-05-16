@@ -238,15 +238,15 @@ void JsonWriter::onKey(const Char* str, int length)
 
 void JsonWriter::onNull()
 {
-    m_textWriter->write(_LT("null"), 4);
+    m_textWriter->write(StringRef(_LT("null"), 4));
 }
 
 void JsonWriter::onBool(bool value)
 {
     if (value) {
-        m_textWriter->write(_LT("true"), 4);
+        m_textWriter->write(StringRef(_LT("true"), 4));
     } else {
-        m_textWriter->write(_LT("false"), 5);
+        m_textWriter->write(StringRef(_LT("false"), 5));
     }
 }
 
@@ -272,49 +272,48 @@ void JsonWriter::onDouble(double value)
 
 void JsonWriter::onString(const Char* str, int length)
 {
-    m_textWriter->write(_TT("\""), 1);
+    m_textWriter->write('"');
 
-    // TODO: 1文字ずつじゃ少し重いか・・・？
     for (int i = 0; i < length; i++) {
         switch (str[i]) {
             case '"': {
                 Char s[] = {'\\', '"'};
-                m_textWriter->write(s, 2);
+                m_textWriter->write(StringRef(s, 2));
                 break;
             }
             case '\\': {
                 Char s[] = {'\\', '\\'};
-                m_textWriter->write(s, 2);
+                m_textWriter->write(StringRef(s, 2));
                 break;
             }
             case '/': {
                 Char s[] = {'\\', '/'};
-                m_textWriter->write(s, 2);
+                m_textWriter->write(StringRef(s, 2));
                 break;
             }
             case '\b': {
                 Char s[] = {'\\', 'b'};
-                m_textWriter->write(s, 2);
+                m_textWriter->write(StringRef(s, 2));
                 break;
             }
             case '\f': {
                 Char s[] = {'\\', 'f'};
-                m_textWriter->write(s, 2);
+                m_textWriter->write(StringRef(s, 2));
                 break;
             }
             case '\n': {
                 Char s[] = {'\\', 'n'};
-                m_textWriter->write(s, 2);
+                m_textWriter->write(StringRef(s, 2));
                 break;
             }
             case '\r': {
                 Char s[] = {'\\', 'r'};
-                m_textWriter->write(s, 2);
+                m_textWriter->write(StringRef(s, 2));
                 break;
             }
             case '\t': {
                 Char s[] = {'\\', 't'};
-                m_textWriter->write(s, 2);
+                m_textWriter->write(StringRef(s, 2));
                 break;
             }
             default:
@@ -323,7 +322,7 @@ void JsonWriter::onString(const Char* str, int length)
         }
     }
 
-    m_textWriter->write(_TT("\""), 1);
+    m_textWriter->write('"');
 }
 
 } // namespace ln

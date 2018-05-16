@@ -32,16 +32,16 @@ enum class FileOpenMode : ln::FlagsType
 	None = 0x0000,
 
 	/** 読み取りアクセス */
-	read = 0x0001,
+	Read = 0x0001,
 
 	/** 書き込みアクセス */
-	write = 0x0002,
+	Write = 0x0002,
 
 	/** 読み取り及び書き込みアクセス */
-	ReadWrite = read | write,
+	ReadWrite = Read | Write,
 
 	/** ファイルを開き、ファイルの末尾をシークする (追記モード) */
-	append = 0x0004,
+	Append = 0x0004,
 
 	/** ファイルが存在する場合、サイズを 0 にする */
 	Truncate = 0x0008,

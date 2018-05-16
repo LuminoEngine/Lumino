@@ -60,7 +60,7 @@ bool FileStream::open(const StringRef& filePath, FileOpenMode openMode)
 	{
 		open();
 
-		if (m_openModeFlags.hasFlag(FileOpenMode::append)) {
+		if (m_openModeFlags.hasFlag(FileOpenMode::Append)) {
 			m_writeLen = FileSystem::getFileSize(m_stream);
 		}
 
@@ -81,12 +81,12 @@ void FileStream::close()
 
 bool FileStream::canRead() const
 {
-	return (m_openModeFlags.hasFlag(FileOpenMode::read));
+	return (m_openModeFlags.hasFlag(FileOpenMode::Read));
 }
 
 bool FileStream::canWrite() const
 {
-	return (m_openModeFlags.hasFlag(FileOpenMode::write));
+	return (m_openModeFlags.hasFlag(FileOpenMode::Write));
 }
 
 int64_t FileStream::length() const
@@ -158,7 +158,7 @@ void FileStream::open() const
 	const Char* mode = NULL;
 	if (m_openModeFlags.hasFlag(FileOpenMode::ReadWrite))
 	{
-		if (m_openModeFlags.hasFlag(FileOpenMode::append)) {
+		if (m_openModeFlags.hasFlag(FileOpenMode::Append)) {
 			mode = _TT("a+b");		// 読み取りと書き込み (末尾に追加する)
 		}
 		else if (m_openModeFlags.hasFlag(FileOpenMode::Truncate)) {
@@ -168,9 +168,9 @@ void FileStream::open() const
 			mode = _TT("r+b");		// 読み取りと書き込み (ファイルが存在しない場合はエラー)
 		}
 	}
-	else if (m_openModeFlags.hasFlag(FileOpenMode::write))
+	else if (m_openModeFlags.hasFlag(FileOpenMode::Write))
 	{
-		if (m_openModeFlags.hasFlag(FileOpenMode::append)) {
+		if (m_openModeFlags.hasFlag(FileOpenMode::Append)) {
 			mode = _TT("ab");		// 書き込み (末尾に追加する。ファイルが無ければ新規作成)
 		}
 		else if (m_openModeFlags.hasFlag(FileOpenMode::Truncate)) {
@@ -180,9 +180,9 @@ void FileStream::open() const
 			mode = _TT("wb");		// 書き込み (モード省略。Truncate)
 		}
 	}
-	else if (m_openModeFlags.hasFlag(FileOpenMode::read))
+	else if (m_openModeFlags.hasFlag(FileOpenMode::Read))
 	{
-		if (m_openModeFlags.hasFlag(FileOpenMode::append)) {
+		if (m_openModeFlags.hasFlag(FileOpenMode::Append)) {
 			mode = NULL;			// 読み込みなのに末尾追加はできない
 		}
 		else if (m_openModeFlags.hasFlag(FileOpenMode::Truncate)) {
