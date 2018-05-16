@@ -16,7 +16,6 @@ class StreamReader
     : public TextReader
 {
 public:
-
     /**
 	 * 指定したストリーム用の StreamReader を構築します。
 	 *

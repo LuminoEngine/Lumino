@@ -23,12 +23,11 @@ String StringWriter::toString() const
 
 void StringWriter::onWriteOverride(const void* data, size_t byteCount)
 {
-	if (data && byteCount > 0)
-	{
-		auto* begin = (const byte_t*)data;
-		auto* end = begin + byteCount;
-		m_builder.insert(m_builder.end(), begin, end);
-	}
+    if (data && byteCount > 0) {
+        auto* begin = (const byte_t*)data;
+        auto* end = begin + byteCount;
+        m_builder.insert(m_builder.end(), begin, end);
+    }
 }
 
 void StringWriter::onFlush()

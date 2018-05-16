@@ -19,7 +19,7 @@ public:
 
 private:
     virtual void onWriteOverride(const void* data, size_t byteCount) override;
-	virtual void onFlush() override;
+    virtual void onFlush() override;
 
     std::vector<byte_t> m_builder;
 };
