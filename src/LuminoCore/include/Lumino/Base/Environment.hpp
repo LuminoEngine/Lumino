@@ -49,9 +49,8 @@ public:
 	/** システムの特別なフォルダのパスを取得します。 */
 	static String specialFolderPath(SpecialFolder specialFolder);
 
-	///** システムの特別なフォルダのパスを取得します。 */
-	//static String getSpecialFolderPath(SpecialFolder specialFolder, const StringRef& relativePath, SpecialFolderOption option = SpecialFolderOption::None);
-
+	/** 環境変数の値を取得します。 */
+	static Optional<String> getEnvironmentVariable(const StringRef& variableName);
 };
 
 } // namespace ln

@@ -6,6 +6,7 @@ set(LN_SOURCES
 	Common.hpp
 	Main.cpp
 	Test_Base_EnumFlags.cpp
+	Test_Base_Environment.cpp
 	Test_Base_Event.cpp
 	Test_Base_Formatter.cpp
 	Test_Base_List.cpp

@@ -299,12 +299,6 @@ uint64_t FileSystem::getFileSize(const StringRef& filePath)
 	return PlatformFileSystem::getFileSize(localPath.c_str());
 }
 
-uint64_t FileSystem::getFileSize(FILE* stream)
-{
-	return PlatformFileSystem::getFileSize(stream);
-}
-
-
 ByteBuffer FileSystem::readAllBytes(const StringRef& filePath)
 {
 	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath.getBegin(), filePath.length());
@@ -312,7 +306,7 @@ ByteBuffer FileSystem::readAllBytes(const StringRef& filePath)
 	FILE* fp = PlatformFileSystem::fopen(localPath.c_str(), mode);
 	if (LN_ENSURE_IO(fp, localPath.c_str())) return ByteBuffer();
 
-	size_t size = (size_t)getFileSize(fp);
+	size_t size = (size_t)detail::FileSystemInternal::getFileSize(fp);
 	ByteBuffer buffer(size);
 	fread(buffer.getData(), 1, size, fp);
 
@@ -368,7 +362,7 @@ void FileSystem::writeAllBytes(const StringRef& filePath, const void* buffer, si
 }
 
 //------------------------------------------------------------------------------
-void FileSystem::writeAllText(const Char* filePath, const String& str, TextEncoding* encoding)
+void FileSystem::writeAllText(const StringRef& filePath, const String& str, TextEncoding* encoding)
 {
 	encoding = (encoding == nullptr) ? TextEncoding::utf8Encoding() : encoding;
 
@@ -717,6 +711,11 @@ FILE* FileSystemInternal::fopen(const char16_t* path, int pathLen, const char16_
 	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(path, pathLen);
 	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localMode(mode, modeLen);
 	return PlatformFileSystem::fopen(localPath.c_str(), localMode.c_str());
+}
+
+uint64_t FileSystemInternal::getFileSize(FILE* stream)
+{
+	return PlatformFileSystem::getFileSize(stream);
 }
 
 // 現在の位置とデータ(ファイル)サイズ、オフセット、基準(SEEK_xxxx)を受け取って、新しいシーク位置を返す

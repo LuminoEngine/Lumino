@@ -53,6 +53,7 @@ private:
 
 } // namespace detail
 
+/** ファイルリストを STL の範囲ベースのインターフェイスとして列挙するためのクラスです。 */
 class DirectoryIteratorRange
 {
 public:
@@ -151,8 +152,6 @@ public:
 	/** ファイルサイズを取得します。 */
 	static uint64_t getFileSize(const StringRef& filePath);
 
-	/** ファイルサイズを取得します。 */
-	static uint64_t getFileSize(FILE* stream);
 
 	/** ファイルの内容をすべて読み込みます。 (バイナリ形式)  */
 	static ByteBuffer readAllBytes(const StringRef& filePath);
@@ -180,7 +179,7 @@ public:
 
 	/// 文字列をテキストファイルとして書き出す
 	/// encoding 省略時は UTF8 (BOM 無し)
-	static void writeAllText(const Char* filePath, const String& str, TextEncoding* encoding = nullptr);
+	static void writeAllText(const StringRef& filePath, const String& str, TextEncoding* encoding = nullptr);
 
 
 	//static tr::Enumerator<PathName> getFiles(const StringRef& dirPath, const StringRef& pattern = StringRef());
@@ -194,9 +193,6 @@ public:
 private:
 	static bool mkdir(const char* path);
 	static bool mkdir(const wchar_t* path);
-	static bool getAttributeInternal(const char* path, FileAttribute* outAttr);
-	static bool getAttributeInternal(const wchar_t* path, FileAttribute* outAttr);
-	template<typename TChar> static void createDirectoryInternal(const TChar* path);
 };
 
 namespace detail {
@@ -248,6 +244,7 @@ public:
 	static FILE* fopen(const wchar_t* path, int pathLen, const wchar_t* mode, int modeLen);
 	static FILE* fopen(const char16_t* path, int pathLen, const char16_t* mode, int modeLen);
 
+	static uint64_t getFileSize(FILE* stream);
 	static int64_t calcSeekPoint(int64_t curPoint, int64_t maxSize, int64_t offset, int origin);
 };
 

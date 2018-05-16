@@ -61,7 +61,7 @@ bool FileStream::open(const StringRef& filePath, FileOpenMode openMode)
 		open();
 
 		if (m_openModeFlags.hasFlag(FileOpenMode::Append)) {
-			m_writeLen = FileSystem::getFileSize(m_stream);
+			m_writeLen = detail::FileSystemInternal::getFileSize(m_stream);
 		}
 
 	}
@@ -92,7 +92,7 @@ bool FileStream::canWrite() const
 int64_t FileStream::length() const
 {
 	checkOpen();
-	int64_t rawLen = FileSystem::getFileSize(m_stream);
+	int64_t rawLen = detail::FileSystemInternal::getFileSize(m_stream);
 	return (rawLen < m_writeLen) ? m_writeLen : rawLen;
 }
 
