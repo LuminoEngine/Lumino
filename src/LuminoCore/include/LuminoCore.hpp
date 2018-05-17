@@ -59,3 +59,26 @@
 #include "Lumino/Serialization/ArchiveStore.hpp"
 #include "Lumino/Serialization/Serialization.hpp"
 
+#ifdef _MSC_VER
+
+#ifdef _DEBUG
+#define LN_MSVC_BUILD_CONFIG "Debug"
+#else
+#define LN_MSVC_BUILD_CONFIG "Release"
+#endif
+
+#ifdef _WIN64
+#define LN_MSVC_BUILD_ARCH "x64"
+#else
+#define LN_MSVC_BUILD_ARCH "x86"
+#endif
+
+#ifdef _DLL
+#define LN_MSVC_BUILD_RUNTIMELIBRARY "MD"
+#else
+#define LN_MSVC_BUILD_RUNTIMELIBRARY "MT"
+#endif
+
+#pragma comment(lib, "MSVC2017-" LN_MSVC_BUILD_ARCH "-" LN_MSVC_BUILD_RUNTIMELIBRARY "/" LN_MSVC_BUILD_CONFIG "/LuminoCore.lib")
+
+#endif

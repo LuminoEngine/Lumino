@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>LuminoCore</id>
+    <version>0.5.0-pre</version>
+    <authors>lriki</authors>
+    <owners>lriki</owners>
+    <licenseUrl>https://github.com/lriki/Lumino/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/lriki/Lumino</projectUrl>
+    <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Portable C ++ class library</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2018 lriki</copyright>
+    <tags>C++</tags>
+  </metadata>
+</package>

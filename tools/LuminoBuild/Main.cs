@@ -12,7 +12,7 @@ namespace LuminoBuild
             // default
             if (args.Length == 0)
             {
-                args = new string[] { "BuildEngine" };
+                args = new string[] { "MakeNuGetPackage_Core" };
             }
 
             Assembly thisAssembly = Assembly.GetEntryAssembly();
@@ -43,6 +43,8 @@ namespace LuminoBuild
             builder.Tasks = new List<LuminoBuild.BuildTask>();
             builder.Tasks.Add(new Tasks.MakeVSProjects());
             builder.Tasks.Add(new Tasks.BuildEngine());
+            builder.Tasks.Add(new Tasks.MakeNuGetPackage_Core());
+            builder.Rules.Add(new Rules.MakePackage());
 
             if (args.Length >= 1)
             {

@@ -21,6 +21,8 @@
     <Compile Include="tools/LuminoBuild/LuminoBuildTool.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/MakeVSProjects.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildEngine.cs" />
+    <Compile Include="tools\LuminoBuild\Rules\MakePackage.cs" />
+    <Compile Include="tools\LuminoBuild\Tasks\MakeNuGetPackage_Core.cs" />
   </ItemGroup>
   
 </Project>
