@@ -197,6 +197,8 @@ public:
     static int compare(const StringRef& path1, const StringRef& path2);
 
 public:
+	template<class... TArgs>
+	static Path combine(TArgs&&... args);
 
     /** システムの特別なフォルダのパスを取得します。 */
     static Path getSpecialFolderPath(SpecialFolder specialFolder, const StringRef& relativeDirPath = StringRef(), SpecialFolderOption option = SpecialFolderOption::Create);
@@ -224,6 +226,28 @@ private:
 
     String m_path;
 };
+
+namespace detail {
+
+template <class T>
+inline Path combinePathImpl(T&& s)
+{
+	return s;
+}
+
+template <class T1, class T2, class... TRest>
+inline Path combinePathImpl(T1&& parent, T2&& local, TRest&&... rest)
+{
+	return combinePathImpl(Path(std::forward<T1>(parent), std::forward<T2>(local)), std::forward<TRest>(rest)...);
+}
+
+} // namespace detail
+
+template<class... TArgs>
+inline Path Path::combine(TArgs&&... args)
+{
+	return detail::combinePathImpl(std::forward<TArgs>(args)...);
+}
 
 inline bool operator==(const Path& lhs, const Path& rhs) { return Path::compare(lhs, rhs) == 0; }
 inline bool operator!=(const Path& lhs, const Path& rhs) { return !operator==(lhs, rhs); }

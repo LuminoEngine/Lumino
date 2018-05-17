@@ -112,6 +112,7 @@ public:
 
     /** 値を取得します。 */
     LN_CONSTEXPR const T&& value() const &&;
+
     /** 値を取得します。値を保持していない場合は指定された既定値を返します。 */
     template<class U>
     LN_CONSTEXPR T valueOr(U&& defaultValue) const &;

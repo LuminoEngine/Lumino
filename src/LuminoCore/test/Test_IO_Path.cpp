@@ -53,11 +53,20 @@ TEST_F(Test_IO_Path, Concat)
 		ASSERT_EQ(_TT("dir1/dir2/../file1.txt"), path.str());
 #endif
 	}
-	// <Test> 
 	//* [ ] with empty path
 	{
 		Path path1(Path(), _TT("a/b.txt"));
 		//ASSERT_EQ(_TT("a/b.txt"), path1.str());
+	}
+
+	//* [ ] combine
+	{
+		auto path = Path::combine(_T("dir1"), _T("dir2"), _T("file.txt"));
+#ifdef LN_OS_WIN32
+		ASSERT_EQ(_TT("dir1\\dir2\\file.txt"), path.str());
+#else
+		ASSERT_EQ(_TT("dir1/dir2/file.txt"), path.str());
+#endif
 	}
 }
 
