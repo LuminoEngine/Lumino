@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>LuminoCore</id>
+    <id>Lumino.Core</id>
     <version>0.5.0-pre</version>
     <authors>lriki</authors>
     <owners>lriki</owners>
     <licenseUrl>https://github.com/lriki/Lumino/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/lriki/Lumino</projectUrl>
-    <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>
+    <iconUrl>https://github.com/lriki/Lumino/raw/master/Documentation/Logo/icon64.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Portable C ++ class library</description>
+    <description>Portable C++ class library</description>
     <releaseNotes></releaseNotes>
     <copyright>Copyright 2018 lriki</copyright>
     <tags>C++</tags>
