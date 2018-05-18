@@ -180,8 +180,16 @@ bool testProcess(int argc, char** argv, int* outExitCode)
 	return false;
 }
 
+
+bool myErrorHandler(Exception& e) {
+	ln::detail::printError(e);
+	return true;
+}
+
 int main(int argc, char** argv)
 {
+	ln::Exception::setNotificationHandler(myErrorHandler);
+
 	{
 		int exitCode;
 		if (testProcess(argc, argv, &exitCode)) {
@@ -211,7 +219,7 @@ int main(int argc, char** argv)
 	{
 		argv[0],
 		"--gtest_break_on_failure",
-		"--gtest_filter=Test_IO_Path.*"
+		//"--gtest_filter=Test_IO_Path.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 

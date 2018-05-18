@@ -149,7 +149,7 @@ public:
 		fclose(fpSrc);
 	}
 
-	static void deleteFile(const char* filePath)
+	static void removeFile(const char* filePath)
 	{
 		int ret = remove(filePath);
 		if (LN_ENSURE(ret != -1, filePath)) return;

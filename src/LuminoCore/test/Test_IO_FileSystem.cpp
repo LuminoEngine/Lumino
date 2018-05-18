@@ -1,4 +1,4 @@
-#include "Common.hpp"
+ï»¿#include "Common.hpp"
 #include <Lumino/IO/FileSystem.hpp>
 
 //==============================================================================
@@ -41,24 +41,24 @@ TEST_F(Test_IO_FileSystem, FileCopyDelete)
 	FileSystem::writeAllText(src1.c_str(), _TT("a"));
 	FileSystem::writeAllText(src2.c_str(), _TT("ab"));
 
-	// Å‰‚ÍƒRƒs[æƒtƒ@ƒCƒ‹‚ğÁ‚µ‚Ä‚¨‚­
-	FileSystem::deleteFile(dest);
+	// æœ€åˆã¯ã‚³ãƒ”ãƒ¼å…ˆãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ¶ˆã—ã¦ãŠã
+	FileSystem::removeFile(dest);
 	ASSERT_FALSE(FileSystem::existsFile(dest));
 
-	//* [ ] ƒRƒs[AƒRƒs[‚µ‚½ƒtƒ@ƒCƒ‹(ƒTƒCƒY)‚ª“¯‚¶
-	FileSystem::copyFile(src1, dest, false);
+	//* [ ] ã‚³ãƒ”ãƒ¼ã€ã‚³ãƒ”ãƒ¼ã—ãŸãƒ•ã‚¡ã‚¤ãƒ«(ã‚µã‚¤ã‚º)ãŒåŒã˜
+	FileSystem::copyFile(src1, dest, FileCopyOption::None);
 	ASSERT_EQ(src1Size, FileSystem::getFileSize(dest));
 
-	//* [ ] ã‘‚«‚µ‚æ‚¤‚Æ‚·‚é‚ªA•Ï‰»‚È‚µ
+	//* [ ] ä¸Šæ›¸ãã—ã‚ˆã†ã¨ã™ã‚‹ãŒã€å¤‰åŒ–ãªã—
 	//FileSystem::copyFile(src2, dest, false);
 	//ASSERT_EQ(src1Size, FileSystem::getFileSize(dest));
 
-	//* [ ] ã‘‚«‹–‰Â‚ÅƒRƒs[AƒRƒs[‚µ‚½ƒtƒ@ƒCƒ‹(ƒTƒCƒY)‚ª“¯‚¶
-	FileSystem::copyFile(src2, dest, true);
+	//* [ ] ä¸Šæ›¸ãè¨±å¯ã§ã‚³ãƒ”ãƒ¼ã€ã‚³ãƒ”ãƒ¼ã—ãŸãƒ•ã‚¡ã‚¤ãƒ«(ã‚µã‚¤ã‚º)ãŒåŒã˜
+	FileSystem::copyFile(src2, dest, FileCopyOption::Overwrite);
 	ASSERT_EQ(src2Size, FileSystem::getFileSize(dest));
 
-	//* [ ] ƒtƒ@ƒCƒ‹íœ
-	FileSystem::deleteFile(dest);
+	//* [ ] ãƒ•ã‚¡ã‚¤ãƒ«å‰Šé™¤
+	FileSystem::removeFile(dest);
 	ASSERT_FALSE(FileSystem::existsFile(dest));
 }
 
@@ -70,7 +70,7 @@ TEST_F(Test_IO_FileSystem, DirectoryCreateCopyDelete)
 	ASSERT_EQ(true, FileSystem::existsDirectory(LN_TEMPFILE("dir1")));
 
 	//* [ ] delete directory
-	FileSystem::deleteDirectory(LN_TEMPFILE("dir1"));
+	FileSystem::removeDirectory(LN_TEMPFILE("dir1"));
 	ASSERT_EQ(false, FileSystem::existsDirectory(LN_TEMPFILE("dir1")));
 
 	//* [ ] create directory (recursive)
@@ -78,7 +78,7 @@ TEST_F(Test_IO_FileSystem, DirectoryCreateCopyDelete)
 	ASSERT_EQ(true, FileSystem::existsDirectory(LN_TEMPFILE("dir1/dir2")));
 
 	//* [ ] delete directory (recursive)
-	FileSystem::deleteDirectory(LN_TEMPFILE("dir1"), true);
+	FileSystem::removeDirectory(LN_TEMPFILE("dir1"), true);
 	ASSERT_EQ(false, FileSystem::existsDirectory(LN_TEMPFILE("dir1")));
 
 	//* [ ] copy directory (recursive)
@@ -96,7 +96,7 @@ TEST_F(Test_IO_FileSystem, DirectoryCreateCopyDelete)
 		ASSERT_EQ(true, FileSystem::existsFile(LN_TEMPFILE("Test_IO_FileSystem/CopyDirectory2/file1.txt")));
 		ASSERT_EQ(true, FileSystem::existsFile(LN_TEMPFILE("Test_IO_FileSystem/CopyDirectory2/dir2/file2.txt")));
 
-		FileSystem::deleteDirectory(LN_TEMPFILE("Test_IO_FileSystem"), true);
+		FileSystem::removeDirectory(LN_TEMPFILE("Test_IO_FileSystem"), true);
 		ASSERT_EQ(false, FileSystem::existsDirectory(LN_TEMPFILE("Test_IO_FileSystem")));
 	}
 }
@@ -190,7 +190,7 @@ TEST_F(Test_IO_FileSystem, GetFilesOrDirectory)
 		ASSERT_EQ(true, list.containsIf([](const Path& path) { return path.str().contains(_TT("dir4")); }));
 	}
 
-	FileSystem::deleteDirectory(LN_TEMPFILE("GetFilesTest1"), true);
+	FileSystem::removeDirectory(LN_TEMPFILE("GetFilesTest1"), true);
 }
 
 #endif

@@ -10,21 +10,6 @@
 
 namespace ln {
 
-//==============================================================================
-// Assertion
-
-static Assertion::NotifyVerificationHandler	g_notifyVerificationHandler = nullptr;
-
-void Assertion::setNotifyVerificationHandler(NotifyVerificationHandler handler)
-{
-	g_notifyVerificationHandler = handler;
-}
-
-Assertion::NotifyVerificationHandler Assertion::getNotifyVerificationHandler()
-{
-	return g_notifyVerificationHandler;
-}
-
 namespace detail
 {
 
@@ -165,9 +150,21 @@ void Exception_setSourceLocationInfo(Exception& e, const char* filePath, int fil
 } // namespace detail
 
 
-  //==============================================================================
-  // Exception
-  //==============================================================================
+//==============================================================================
+// Exception
+
+static Exception::NotifyVerificationHandler	g_notifyVerificationHandler = nullptr;
+
+void Exception::setNotificationHandler(NotifyVerificationHandler handler)
+{
+	g_notifyVerificationHandler = handler;
+}
+
+Exception::NotifyVerificationHandler Exception::notificationHandler()
+{
+	return g_notifyVerificationHandler;
+}
+
 static void safeCharToUChar(const char* src, Char* dst, int dstSize) LN_NOEXCEPT
 {
 	// TODO: 日本語対応

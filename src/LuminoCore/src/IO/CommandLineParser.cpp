@@ -580,12 +580,12 @@ bool CommandLineParser::process(int argc, char** argv)
 	}
 
 
-	if (has(m_helpOption))
+	if (m_helpOption && has(m_helpOption))
 	{
 		printHelp();
 		return false;
 	}
-	if (has(m_versionOption))
+	if (m_versionOption && has(m_versionOption))
 	{
 		printVersion();
 		return false;

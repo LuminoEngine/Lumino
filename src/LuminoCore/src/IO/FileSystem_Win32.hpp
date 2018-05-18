@@ -58,7 +58,7 @@ public:
 		if (LN_ENSURE(r != FALSE, detail::Win32Helper::getWin32ErrorMessage(::GetLastError()))) return;
 	}
 
-	static void deleteFile(const wchar_t* filePath)
+	static void removeFile(const wchar_t* filePath)
 	{
 		BOOL r = ::DeleteFileW(filePath);
 		if (LN_ENSURE(r != FALSE, detail::Win32Helper::getWin32ErrorMessage(::GetLastError()))) return;

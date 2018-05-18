@@ -95,15 +95,6 @@ class String;
 #endif
 
 
-class Assertion
-{
-public:
-	using NotifyVerificationHandler = bool(*)(Exception& e);
-
-	static void setNotifyVerificationHandler(NotifyVerificationHandler handler);
-	static NotifyVerificationHandler getNotifyVerificationHandler();
-};
-
 
 namespace detail {
 
@@ -131,6 +122,12 @@ public:
 	
 	/** 例外のコピーを作成します。 */
 	virtual Exception* copy() const;
+
+
+	using NotifyVerificationHandler = bool(*)(Exception& e);
+
+	static void setNotificationHandler(NotifyVerificationHandler handler);
+	static NotifyVerificationHandler notificationHandler();
 
 protected:
 	void setCaption(const Char* caption);
@@ -231,13 +228,10 @@ inline bool notifyException(const char* file, int line, const char* exprString, 
 	errorPrintf(str, BUFFER_SIZE, args...);
 	TException e(str);
 	detail::Exception_setSourceLocationInfo(e, file, line, exprString);
-	auto h = Assertion::getNotifyVerificationHandler();
+	auto h = Exception::notificationHandler();
 	if (h != nullptr && h(e)) return true;
-#if 1
 	printError(e);
-#else
 	throw e;
-#endif
 	return true;
 }
 
