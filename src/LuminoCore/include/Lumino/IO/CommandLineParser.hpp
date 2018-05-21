@@ -273,11 +273,11 @@ private:
 	friend class CommandLineParser;
 };
 
+/** コマンドライン引数を解析するための機能を提供します。 */
 class CommandLineParser
 	: public CommandLineCommandBase
 {
 public:
-
 	CommandLineParser();
 	~CommandLineParser();
 
