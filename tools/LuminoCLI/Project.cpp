@@ -30,7 +30,28 @@ Result CppProjectLanguageContext::applyTemplates()
 {
 	auto projectTemplatesDir = project()->workspace()->environmentSettings()->projectTemplatesDirPath();
 
+	// Common
+	{
+		ln::String files[] = {
+			"CMakeLists.txt",
+			"LuminoCppTemplate.sln",
+			"Sources/Application.cpp",
+			"Sources/Application.h",
+			"Sources/LuminoCppTemplate.vcxproj",
+			"Sources/LuminoCppTemplate.vcxproj.filters",
+		};
+
+		auto destRoot = project()->rootDirPath();
+		auto srcRoot = ln::Path(projectTemplatesDir, _T("LuminoCppTemplate/LuminoCppTemplate"));
+
+		for (auto& file : files)
+		{
+			ln::FileSystem::copyFile(ln::Path(srcRoot, file), ln::Path(destRoot, file), ln::FileCopyOption::Overwrite);
+		}
+	}
+
 	// Win32
+	if (0)
 	{
 		ln::String files[] = {
 			"LuminoCppTemplate.cpp",
@@ -52,7 +73,7 @@ Result CppProjectLanguageContext::applyTemplates()
 
 		for (auto& file : files)
 		{
-			ln::FileSystem::copyFile(ln::Path(srcRoot, file), ln::Path(destRoot, file), true);
+			ln::FileSystem::copyFile(ln::Path(srcRoot, file), ln::Path(destRoot, file), ln::FileCopyOption::Overwrite);
 		}
 	}
 
