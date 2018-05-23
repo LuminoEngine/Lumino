@@ -63,6 +63,7 @@
 #include "Lumino/Serialization/ArchiveStore.hpp"
 #include "Lumino/Serialization/Serialization.hpp"
 
+#ifndef LN_MSVC_DISABLE_LIBRARY_LINK
 #ifdef _MSC_VER
 
 #ifdef _DEBUG
@@ -85,4 +86,5 @@
 
 #pragma comment(lib, "MSVC2017-" LN_MSVC_BUILD_ARCH "-" LN_MSVC_BUILD_RUNTIMELIBRARY "/" LN_MSVC_BUILD_CONFIG "/LuminoCore.lib")
 
+#endif
 #endif

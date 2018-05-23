@@ -1,4 +1,5 @@
 ﻿
+#define LN_MSVC_DISABLE_LIBRARY_LINK
 #include <LuminoEngine.hpp>
 #include "Common.hpp"
 using namespace ln;

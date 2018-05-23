@@ -42,7 +42,7 @@ Result CppProjectLanguageContext::applyTemplates()
 		};
 
 		auto destRoot = project()->rootDirPath();
-		auto srcRoot = ln::Path(projectTemplatesDir, _T("LuminoCppTemplate/LuminoCppTemplate"));
+		auto srcRoot = ln::Path(projectTemplatesDir, _T("LuminoCppTemplate"));
 
 		for (auto& file : files)
 		{
