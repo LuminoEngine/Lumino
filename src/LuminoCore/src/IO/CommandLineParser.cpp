@@ -169,6 +169,80 @@ String CommandLinePositionalArgument::helpDescriptionText() const
 //==============================================================================
 // CommandLineCommandBase
 
+CommandLineOption* CommandLineCommandBase::addFlagOptionInternal(const StringRef& shortName, const StringRef& longName, const StringRef& description)
+{
+	auto option = Ref<CommandLineOption>(LN_NEW CommandLineOption(), false);
+	option->setShortName(shortName);
+	option->setLongName(longName);
+	option->setDescription(description);
+	option->setFlags(CommandLineOptionFlags::Flag);
+	m_options.add(option);
+	return option;
+}
+
+CommandLineOption* CommandLineCommandBase::addValueOptionInternal(const StringRef& shortName, const StringRef& longName, const StringRef& description, const StringRef& defaultValue)
+{
+	auto option = Ref<CommandLineOption>(LN_NEW CommandLineOption(), false);
+	option->setShortName(shortName);
+	option->setLongName(longName);
+	option->setDescription(description);
+	option->setDefaultValue(defaultValue);
+	option->setFlags(CommandLineOptionFlags::None);
+	m_options.add(option);
+	return option;
+}
+
+CommandLineOption* CommandLineCommandBase::addNamedValueOptionInternal(const StringRef& shortName, const StringRef& longName, const StringRef& description, const List<String>& namedValues, const StringRef& defaultValue)
+{
+	auto option = Ref<CommandLineOption>(LN_NEW CommandLineOption(), false);
+	option->setShortName(shortName);
+	option->setLongName(longName);
+	option->setDescription(description);
+	option->setNamedValues(namedValues);
+	option->setDefaultValue(defaultValue);
+	option->setFlags(CommandLineOptionFlags::None);
+	m_options.add(option);
+	return option;
+}
+
+CommandLinePositionalArgument* CommandLineCommandBase::addPositionalArgumentInternal(const String& name, const String& description, CommandLinePositionalArgumentFlags flags)
+{
+	if (!m_positionalArguments.isEmpty()) {
+		if (LN_REQUIRE(!m_positionalArguments.back()->isList(), "List positional argument has already been added.")) {
+			return nullptr;
+		}
+	}
+
+	auto pa = Ref<CommandLinePositionalArgument>(LN_NEW CommandLinePositionalArgument(), false);
+	pa->setName(name);
+	pa->setDescription(description);
+	pa->setFlags(flags);
+	m_positionalArguments.add(pa);
+	return pa;
+}
+
+CommandLinePositionalArgument* CommandLineCommandBase::addListPositionalArgumentInternal(const String& name, const String& description, CommandLinePositionalArgumentFlags flags)
+{
+	if (!m_positionalArguments.isEmpty()) {
+		if (LN_REQUIRE(!m_positionalArguments.back()->isList(), "List positional argument has already been added.")) {
+			return nullptr;
+		}
+	}
+
+	auto pa = Ref<CommandLinePositionalArgument>(LN_NEW CommandLinePositionalArgument(), false);
+	pa->setName(name);
+	pa->setDescription(description);
+	pa->setFlags(flags);
+	pa->setListType(true);
+	m_positionalArguments.add(pa);
+	return pa;
+}
+
+void CommandLineCommandBase::addCommandInternal(CommandLineCommand* command)
+{
+	m_commands.add(command);
+}
+
 void CommandLineCommandBase::buildHelpUsageText(StringWriter* writer) const
 {
 	const auto& commands = getCommandsInternal();
@@ -382,6 +456,31 @@ CommandLineCommand::~CommandLineCommand()
 {
 }
 
+CommandLineOption* CommandLineCommand::addFlagOption(const StringRef& shortName, const StringRef& longName, const StringRef& description)
+{
+	return addFlagOptionInternal(shortName, longName, description);
+}
+
+CommandLineOption* CommandLineCommand::addValueOption(const StringRef& shortName, const StringRef& longName, const StringRef& description, const StringRef& defaultValue)
+{
+	return addValueOptionInternal(shortName, longName, description, defaultValue);
+}
+
+CommandLineOption* CommandLineCommand::addNamedValueOption(const StringRef& shortName, const StringRef& longName, const StringRef& description, const List<String>& namedValues, const StringRef& defaultValue)
+{
+	return addNamedValueOptionInternal(shortName, longName, description, namedValues, defaultValue);
+}
+
+CommandLinePositionalArgument* CommandLineCommand::addPositionalArgument(const String& name, const String& description, CommandLinePositionalArgumentFlags flags)
+{
+	return addPositionalArgumentInternal(name, description, flags);
+}
+
+CommandLinePositionalArgument* CommandLineCommand::addListPositionalArgument(const String& name, const String& description, CommandLinePositionalArgumentFlags flags)
+{
+	return addListPositionalArgumentInternal(name, description, flags);
+}
+
 bool CommandLineCommand::parse(
 	const List<Ref<CommandLineOption>>& options,
 	const List<Ref<CommandLinePositionalArgument>>& positionalArguments,
@@ -540,6 +639,59 @@ CommandLineParser::~CommandLineParser()
 {
 }
 
+
+CommandLineCommand* CommandLineParser::addCommand(const String& name, const String& description)
+{
+	auto command = Ref<CommandLineCommand>(LN_NEW CommandLineCommand(), false);
+	command->setName(name);
+	command->setDescription(description);
+	addCommandInternal(command);
+	return command;
+}
+
+CommandLineOption* CommandLineParser::addFlagOption(const StringRef& shortName, const StringRef& longName, const StringRef& description)
+{
+	return addFlagOptionInternal(shortName, longName, description);
+}
+
+CommandLineOption* CommandLineParser::addValueOption(const StringRef& shortName, const StringRef& longName, const StringRef& description, const StringRef& defaultValue)
+{
+	return addValueOptionInternal(shortName, longName, description, defaultValue);
+}
+
+CommandLineOption* CommandLineParser::addNamedValueOption(const StringRef& shortName, const StringRef& longName, const StringRef& description, const List<String>& namedValues, const StringRef& defaultValue)
+{
+	return addNamedValueOptionInternal(shortName, longName, description, namedValues, defaultValue);
+}
+
+CommandLinePositionalArgument* CommandLineParser::addPositionalArgument(const String& name, const String& description, CommandLinePositionalArgumentFlags flags)
+{
+	return addPositionalArgumentInternal(name, description, flags);
+}
+
+CommandLinePositionalArgument* CommandLineParser::addListPositionalArgument(const String& name, const String& description, CommandLinePositionalArgumentFlags flags)
+{
+	return addListPositionalArgumentInternal(name, description, flags);
+}
+
+CommandLineOption* CommandLineParser::addVersionOption(const StringRef& versionText)
+{
+	m_versionText = versionText;
+	m_versionOption = addFlagOption(_T("v"), _T("version"), _T("Display version."));
+	return m_versionOption;
+}
+
+CommandLineOption* CommandLineParser::addHelpOption()
+{
+	m_helpOption = addFlagOption(_T("h"), _T("help"), _T("Display this help."));
+	return m_helpOption;
+}
+
+void CommandLineParser::setApplicationDescription(const StringRef& description)
+{
+	m_applicationDescription = description;
+}
+
 Optional<Ref<CommandLineCommand>> CommandLineParser::findCommand(const StringRef& commandName) const
 {
 	const auto& commands = getCommandsInternal();
@@ -650,6 +802,11 @@ bool CommandLineParser::has(const CommandLineOption* option) const
 	return option->isSet();
 }
 
+void CommandLineParser::printVersion() const
+{
+	std::cout << m_versionText.toStdString() << std::endl;
+}
+
 void CommandLineParser::printHelp(const StringRef& commandName) const
 {
 	if (!commandName.IsNullOrEmpty()) {
@@ -704,11 +861,6 @@ void CommandLineParser::printHelp(const StringRef& commandName) const
 	//sw.writeLine();
 
 	//std::cout << sw.toString().toStdString();
-}
-
-void CommandLineParser::printVersion() const
-{
-	std::cout << m_versionText.toStdString() << std::endl;
 }
 
 String CommandLineParser::buildHelpText() const

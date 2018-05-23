@@ -33,6 +33,7 @@ enum class CommandLinePositionalArgumentFlags
 };
 LN_FLAGS_OPERATORS(CommandLinePositionalArgumentFlags);
 
+/** コマンドライン引数のオプション情報です。オプションは - または -- で始まります。 */
 class CommandLineOption
 	: public RefObject
 {
@@ -81,6 +82,7 @@ private:
 	friend class CommandLineCommand;
 };
 
+/** コマンドライン引数の位置引数情報です。 */
 class CommandLinePositionalArgument
 	: public RefObject
 {
@@ -116,7 +118,7 @@ private:
 	friend class CommandLineCommand;
 };
 
-
+/** コマンドライン引数をグループ化するためのベースクラスです。 */
 class CommandLineCommandBase
 	: public RefObject
 {
@@ -132,79 +134,12 @@ protected:
 	void setInternalName(const String& value) { m_name = value; }
 	void setInternalDescription(const String& value) { m_description = value; }
 
-	CommandLineOption* addFlagOptionInternal(const StringRef& shortName, const StringRef& longName, const StringRef& description)
-	{
-		auto option = Ref<CommandLineOption>(LN_NEW CommandLineOption(), false);
-		option->setShortName(shortName);
-		option->setLongName(longName);
-		option->setDescription(description);
-		option->setFlags(CommandLineOptionFlags::Flag);
-		m_options.add(option);
-		return option;
-	}
-
-	CommandLineOption* addValueOptionInternal(const StringRef& shortName, const StringRef& longName, const StringRef& description, const StringRef& defaultValue = StringRef())
-	{
-		auto option = Ref<CommandLineOption>(LN_NEW CommandLineOption(), false);
-		option->setShortName(shortName);
-		option->setLongName(longName);
-		option->setDescription(description);
-		option->setDefaultValue(defaultValue);
-		option->setFlags(CommandLineOptionFlags::None);
-		m_options.add(option);
-		return option;
-	}
-
-	CommandLineOption* addNamedValueOptionInternal(const StringRef& shortName, const StringRef& longName, const StringRef& description, const List<String>& namedValues, const StringRef& defaultValue = StringRef())
-	{
-		auto option = Ref<CommandLineOption>(LN_NEW CommandLineOption(), false);
-		option->setShortName(shortName);
-		option->setLongName(longName);
-		option->setDescription(description);
-		option->setNamedValues(namedValues);
-		option->setDefaultValue(defaultValue);
-		option->setFlags(CommandLineOptionFlags::None);
-		m_options.add(option);
-		return option;
-	}
-
-	CommandLinePositionalArgument* addPositionalArgumentInternal(const String& name, const String& description, CommandLinePositionalArgumentFlags flags)
-	{
-		if (!m_positionalArguments.isEmpty()) {
-			if (LN_REQUIRE(!m_positionalArguments.back()->isList(), "List positional argument has already been added.")) {
-				return nullptr;
-			}
-		}
-
-		auto pa = Ref<CommandLinePositionalArgument>(LN_NEW CommandLinePositionalArgument(), false);
-		pa->setName(name);
-		pa->setDescription(description);
-		pa->setFlags(flags);
-		m_positionalArguments.add(pa);
-		return pa;
-	}
-
-	CommandLinePositionalArgument* addListPositionalArgumentInternal(const String& name, const String& description, CommandLinePositionalArgumentFlags flags)
-	{
-		if (!m_positionalArguments.isEmpty()) {
-			if (LN_REQUIRE(!m_positionalArguments.back()->isList(), "List positional argument has already been added.")) {
-				return nullptr;
-			}
-		}
-
-		auto pa = Ref<CommandLinePositionalArgument>(LN_NEW CommandLinePositionalArgument(), false);
-		pa->setName(name);
-		pa->setDescription(description);
-		pa->setFlags(flags);
-		pa->setListType(true);
-		m_positionalArguments.add(pa);
-		return pa;
-	}
-
-	void addCommandInternal(CommandLineCommand* command)
-	{
-		m_commands.add(command);
-	}
+	CommandLineOption* addFlagOptionInternal(const StringRef& shortName, const StringRef& longName, const StringRef& description);
+	CommandLineOption* addValueOptionInternal(const StringRef& shortName, const StringRef& longName, const StringRef& description, const StringRef& defaultValue = StringRef());
+	CommandLineOption* addNamedValueOptionInternal(const StringRef& shortName, const StringRef& longName, const StringRef& description, const List<String>& namedValues, const StringRef& defaultValue = StringRef());
+	CommandLinePositionalArgument* addPositionalArgumentInternal(const String& name, const String& description, CommandLinePositionalArgumentFlags flags);
+	CommandLinePositionalArgument* addListPositionalArgumentInternal(const String& name, const String& description, CommandLinePositionalArgumentFlags flags);
+	void addCommandInternal(CommandLineCommand* command);
 
 	const List<Ref<CommandLineCommand>>& getCommandsInternal() const { return m_commands; }
 
@@ -223,6 +158,7 @@ private:
 	List<Ref<CommandLineCommand>> m_commands;
 };
 
+/** コマンドライン引数から個別の処理を指定するためのコマンドを表します。コマンドはオプションと位置引数をグループ化します。 */
 class CommandLineCommand
 	: public CommandLineCommandBase
 {
@@ -233,32 +169,11 @@ public:
 	void setName(const String& value) { setInternalName(value); }
 	void setDescription(const String& value) { setInternalDescription(value); }
 
-
-	CommandLineOption* addFlagOption(const StringRef& shortName, const StringRef& longName, const StringRef& description)
-	{
-		return addFlagOptionInternal(shortName, longName, description);
-	}
-
-	CommandLineOption* addValueOption(const StringRef& shortName, const StringRef& longName, const StringRef& description, const StringRef& defaultValue = StringRef())
-	{
-		return addValueOptionInternal(shortName, longName, description, defaultValue);
-	}
-
-	CommandLineOption* addNamedValueOption(const StringRef& shortName, const StringRef& longName, const StringRef& description, const List<String>& namedValues, const StringRef& defaultValue = StringRef())
-	{
-		return addNamedValueOptionInternal(shortName, longName, description, namedValues, defaultValue);
-	}
-
-	CommandLinePositionalArgument* addPositionalArgument(const String& name, const String& description, CommandLinePositionalArgumentFlags flags = CommandLinePositionalArgumentFlags::None)
-	{
-		return addPositionalArgumentInternal(name, description, flags);
-	}
-
-	CommandLinePositionalArgument* addListPositionalArgument(const String& name, const String& description, CommandLinePositionalArgumentFlags flags = CommandLinePositionalArgumentFlags::None)
-	{
-		return addListPositionalArgumentInternal(name, description, flags);
-	}
-
+	CommandLineOption* addFlagOption(const StringRef& shortName, const StringRef& longName, const StringRef& description);
+	CommandLineOption* addValueOption(const StringRef& shortName, const StringRef& longName, const StringRef& description, const StringRef& defaultValue = StringRef());
+	CommandLineOption* addNamedValueOption(const StringRef& shortName, const StringRef& longName, const StringRef& description, const List<String>& namedValues, const StringRef& defaultValue = StringRef());
+	CommandLinePositionalArgument* addPositionalArgument(const String& name, const String& description, CommandLinePositionalArgumentFlags flags = CommandLinePositionalArgumentFlags::None);
+	CommandLinePositionalArgument* addListPositionalArgument(const String& name, const String& description, CommandLinePositionalArgumentFlags flags = CommandLinePositionalArgumentFlags::None);
 
 private:
 	CommandLineCommand();
@@ -279,107 +194,59 @@ class CommandLineParser
 {
 public:
 	CommandLineParser();
-	~CommandLineParser();
+	virtual ~CommandLineParser();
 
+	CommandLineCommand* addCommand(const String& name, const String& description);
 
+	CommandLineOption* addFlagOption(const StringRef& shortName, const StringRef& longName, const StringRef& description);
 
-	CommandLineCommand* addCommand(const String& name, const String& description)
-	{
-		auto command = Ref<CommandLineCommand>(LN_NEW CommandLineCommand(), false);
-		command->setName(name);
-		command->setDescription(description);
-		addCommandInternal(command);
-		return command;
-	}
+	CommandLineOption* addValueOption(const StringRef& shortName, const StringRef& longName, const StringRef& description, const StringRef& defaultValue = StringRef());
 
+	CommandLineOption* addNamedValueOption(const StringRef& shortName, const StringRef& longName, const StringRef& description, const List<String>& namedValues, const StringRef& defaultValue = StringRef());
 
+	CommandLinePositionalArgument* addPositionalArgument(const String& name, const String& description, CommandLinePositionalArgumentFlags flags = CommandLinePositionalArgumentFlags::None);
 
-	CommandLineOption* addFlagOption(const StringRef& shortName, const StringRef& longName, const StringRef& description)
-	{
-		return addFlagOptionInternal(shortName, longName, description);
-	}
+	CommandLinePositionalArgument* addListPositionalArgument(const String& name, const String& description, CommandLinePositionalArgumentFlags flags = CommandLinePositionalArgumentFlags::None);
 
-	CommandLineOption* addValueOption(const StringRef& shortName, const StringRef& longName, const StringRef& description, const StringRef& defaultValue = StringRef())
-	{
-		return addValueOptionInternal(shortName, longName, description, defaultValue);
-	}
+	/** バージョンを表示するためのオプションを追加します。-v, --version が定義されます。 */
+	CommandLineOption* addVersionOption(const StringRef& versionText);
 
-	CommandLineOption* addNamedValueOption(const StringRef& shortName, const StringRef& longName, const StringRef& description, const List<String>& namedValues, const StringRef& defaultValue = StringRef())
-	{
-		return addNamedValueOptionInternal(shortName, longName, description, namedValues, defaultValue);
-	}
+	/** ヘルプを表示するためのオプションを追加します。-h, --help が定義されます。 */
+	CommandLineOption* addHelpOption();
 
-	CommandLinePositionalArgument* addPositionalArgument(const String& name, const String& description, CommandLinePositionalArgumentFlags flags = CommandLinePositionalArgumentFlags::None)
-	{
-		return addPositionalArgumentInternal(name, description, flags);
-	}
+	/** アプリケーションの説明を追加します。この説明はヘルプに表示されます。 */
+	void setApplicationDescription(const StringRef& description);
 
-	CommandLinePositionalArgument* addListPositionalArgument(const String& name, const String& description, CommandLinePositionalArgumentFlags flags = CommandLinePositionalArgumentFlags::None)
-	{
-		return addListPositionalArgumentInternal(name, description, flags);
-	}
-
-
-
-	CommandLineOption* addHelpOption()
-	{
-		m_helpOption = addFlagOption(_T("h"), _T("help"), _T("Display this help."));
-		return m_helpOption;
-	}
-
-	CommandLineOption* addVersionOption(const StringRef& versionText)
-	{
-		m_versionText = versionText;
-		m_versionOption = addFlagOption(_T("v"), _T("version"), _T("Display version."));
-		return m_versionOption;
-	}
-
-	void setApplicationDescription(const StringRef& description) { m_applicationDescription = description; }
-
-
-	//void setHelpEnabled();
-
-	//void addOption(const CommandLineOption& option)
-	//{
-	//	auto command = Ref<CommandLineOption>(LN_NEW CommandLineCommand(), false);
-	//	command->setName(name);
-	//	command->setDescription(description);
-	//	m_commands.add(command);
-	//	return command;
-	//}
-
-
-	void addOption(const CommandLineOption& option);
-
-	Optional<Ref<CommandLineCommand>> findCommand(const StringRef& commandName) const;
-
-	/** コマンドライン引数を解析します。 */
+	/**
+	 * コマンドライン引数の解析を実行します。
+	 *
+	 * オプションや位置引数の解析に加えて、組み込みオプションと解析エラーも処理します。
+	 * 組み込みオプションはバージョン表示 (addVersionOption() により定義する) と ヘルプ表示 (addHelpOption() により定義する) です。
+	 *
+	 * 組み込みオプションと解析エラーが処理された場合、false を返します。この時は対応するメッセージが出力されています。
+	 * true を返した場合は各オプションや位置引数の値を読み取り、処理を継続することができます。
+	 */
 	bool process(int argc, char** argv);
 
 	bool has(const CommandLineCommand* command) const;
 	bool has(const CommandLineOption* command) const;
 
-	//bool hasCommand(const CommandLineCommand* command) const;
+	CommandLineCommand* command() const { return m_activeCommand; }
 
 	bool hasError() const { return !m_message.isEmpty(); }
 
-	CommandLineCommand* command() const { return m_activeCommand; }
-
-	//bool isSet(const CommandLineOption* option) const;
+	/** バージョン情報を標準出力します。 */
+	void printVersion() const;
 
 	/** ヘルプ情報を標準出力します。 */
 	void printHelp(const StringRef& commandName = StringRef()) const;
 
-	void printVersion() const;
-
 	virtual String buildHelpText() const override;
 
 private:
+	Optional<Ref<CommandLineCommand>> findCommand(const StringRef& commandName) const;
 	bool parse(const List<String>& args);
 
-	//List<Ref<CommandLinePositionalArgument>> m_rootPositionalArguments;
-	//List<Ref<CommandLineOption>> m_rootOptions;
-	//List<Ref<CommandLineCommand>> m_commands;
 	String m_message;
 	CommandLineCommand* m_activeCommand;
 	CommandLineOption* m_helpOption;
