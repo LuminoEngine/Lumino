@@ -9,7 +9,13 @@ int main(int argc, char** argv)
 	ln::Process::execute(
 		_T("D:\\ProgramFiles\\Emscripten\\python\\2.7.5.3_64bit\\python.exe"),
 		
-		{ _T("D:\\ProgramFiles\\Emscripten\\emscripten\\1.35.0\\emcmake"), _T("cmake"), _T(".."), _T("-G"), _T("\"MinGW Makefiles\"") }/*, &s1, &s2*/);
+		{ _T("D:\\ProgramFiles\\Emscripten\\emscripten\\1.35.0\\emcmake"), _T("cmake"), _T(".."), _T("-G"), _T("\"MinGW Makefiles\""),
+		
+		//_T("-DCMAKE_LIBRARY_PATH=\"D:\\Proj\\LN\\Lumino\\build\\Package\\lib\\Emscripten\\lib\"")
+		//_T("-DCMAKE_LIBRARY_PATH=\"D:\\Proj\\LN\\Lumino\\build\\Package\\lib\\Emscripten\"")
+
+		_T("-DLUMINO_ROOT=\"D:\\Proj\\LN\\Lumino\\build\\Package\"")
+		}/*, &s1, &s2*/);
 
 	return 0;
 

@@ -46,12 +46,16 @@ namespace LuminoBuild
             builder.Tasks.Add(new Tasks.BuildEngine_Linux());
             builder.Tasks.Add(new Tasks.BuildEngine_macOS());
             builder.Tasks.Add(new Tasks.BuildDocuments());
+            builder.Tasks.Add(new Tasks.BuildEngineWin32());
             builder.Tasks.Add(new Tasks.MakeNuGetPackage_Core());
+            builder.Tasks.Add(new Tasks.BuildEngineAndroidJNI());
+            builder.Tasks.Add(new Tasks.BuildEngineEmscripten());
+            builder.Tasks.Add(new Tasks.MakeEnginePackage());
             builder.Rules.Add(new Rules.MakePackage());
-            builder.Tasks.Add(new Tasks.BuildAndroidJNI());
-            builder.Tasks.Add(new Tasks.BuildEmscripten());
 
-            
+
+
+
 
 
 

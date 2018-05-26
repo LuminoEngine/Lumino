@@ -20,14 +20,15 @@
     <Compile Include="tools/LuminoBuild/Main.cs" />
     <Compile Include="tools/LuminoBuild/LuminoBuildTool.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/MakeVSProjects.cs" />
-    <Compile Include="tools/LuminoBuild/Tasks/BuildEngine.cs" />
+    <Compile Include="tools\LuminoBuild\Tasks\BuildEngineWin32.cs" />
     <Compile Include="tools/LuminoBuild/Rules/MakePackage.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildDocuments.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildEngine_Linux.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildEngine_macOS.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/MakeNuGetPackage_Core.cs" />
-    <Compile Include="tools/LuminoBuild/Tasks/BuildAndroidJNI.cs" />
-    <Compile Include="tools/LuminoBuild/Tasks/BuildEmscripten.cs" />
+    <Compile Include="tools\LuminoBuild\Tasks\BuildEngineAndroidJNI.cs" />
+    <Compile Include="tools\LuminoBuild\Tasks\BuildEngineEmscripten.cs" />
+    <Compile Include="tools\LuminoBuild\Tasks\MakeEnginePackage.cs" />
   </ItemGroup>
   
 </Project>

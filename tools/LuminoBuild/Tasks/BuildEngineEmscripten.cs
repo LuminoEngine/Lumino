@@ -4,9 +4,9 @@ using System.IO;
 
 namespace LuminoBuild.Tasks
 {
-    class BuildEmscripten : BuildTask
+    class BuildEngineEmscripten : BuildTask
     {
-        public override string CommandName { get { return "BuildEmscripten"; } }
+        public override string CommandName { get { return "BuildEngineEmscripten"; } }
 
         public override string Description { get { return "Build Emscripten"; } }
 
@@ -17,7 +17,7 @@ namespace LuminoBuild.Tasks
             string bundlePythonDir = Path.Combine(emInstallDir, "python", "2.7.5.3_64bit");
             string emcmake = Path.Combine(emRootDir, Utils.IsWin32 ? "emcmake.bat" : "emcmake");
 
-            string cmakeOutputDir = Path.Combine(builder.LuminoBuildDir, "Package", "Emscripten");
+            string cmakeOutputDir = Path.Combine(builder.LuminoBuildDir, "CMakeInstallTemp", "Emscripten");
 
             string path = Environment.GetEnvironmentVariable("PATH");
             path = bundlePythonDir + ";" + path;
