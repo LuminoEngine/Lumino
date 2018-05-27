@@ -7,10 +7,12 @@ project(LuminoEngine)
 
 set(LN_SOURCES_Engine
 	include/Lumino/Engine/Common.hpp
+	include/Lumino/Engine/Application.hpp
 	include/Lumino/Engine/Engine.hpp
 	include/Lumino/Engine/EngineSettings.hpp
 	include/Lumino/Engine/Object.hpp
 	src/Engine/Internal.hpp
+	src/Engine/Application.cpp
 	src/Engine/Engine.cpp
 	src/Engine/EngineDomain.hpp
 	src/Engine/EngineManager.cpp

@@ -14,7 +14,9 @@ int main(int argc, char** argv)
 		//_T("-DCMAKE_LIBRARY_PATH=\"D:\\Proj\\LN\\Lumino\\build\\Package\\lib\\Emscripten\\lib\"")
 		//_T("-DCMAKE_LIBRARY_PATH=\"D:\\Proj\\LN\\Lumino\\build\\Package\\lib\\Emscripten\"")
 
-		_T("-DLUMINO_ROOT=\"D:\\Proj\\LN\\Lumino\\build\\Package\"")
+		//_T("-DLUMINO_ROOT=\"D:\\Proj\\LN\\Lumino\\build\\Package\"")
+		_T("-DCMAKE_PREFIX_PATH=\"D:\\Proj\\LN\\Lumino\\build\\EnginePackage\"")
+		
 		}/*, &s1, &s2*/);
 
 	return 0;

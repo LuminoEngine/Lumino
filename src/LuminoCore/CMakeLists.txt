@@ -268,7 +268,26 @@ endif()
 #------------------------------------------------------------------------------
 # Install
 
+
+ install(TARGETS ${PROJECT_NAME} EXPORT LuminoTargets DESTINATION lib)
+
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)
 install(TARGETS ${PROJECT_NAME} DESTINATION lib/Debug CONFIGURATIONS Debug)
 install(TARGETS ${PROJECT_NAME} DESTINATION lib/Release CONFIGURATIONS Release)
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include DESTINATION .)
+
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+    "Config.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/LuminoConfig.cmake"
+    INSTALL_DESTINATION "lib/cmake/Lumino"
+)
+
+install(EXPORT LuminoTargets FILE LuminoTargets.cmake
+        EXPORT_LINK_INTERFACE_LIBRARIES
+        DESTINATION "lib/cmake/Lumino")
+
+install(
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/LuminoConfig.cmake"
+    DESTINATION "lib/cmake/Lumino"
+)
