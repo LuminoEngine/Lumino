@@ -35,26 +35,29 @@ TEST_F(Test_IO_CommandLineParser, SimpleOptions)
 //# 
 TEST_F(Test_IO_CommandLineParser, Commands)
 {
-	ln::CommandLineParser parser;
-	auto initCommand = parser.addCommand(_T("init"), _T("init description."));
-	auto forceOption1 = initCommand->addFlagOption(_T("f"), _T("force"), _T("force description."));
-
-	auto addCommand = parser.addCommand(_T("add"), _T("add description."));
-	auto forceOption2 = addCommand->addFlagOption(_T("f"), _T("force"), _T("force description."));
-
-	char* argv[] =
+	//* [ ] コマンドが has で定義確認できることのテスト
 	{
-		"<program>",
-		"init",
-		"-f",
-	};
-	int argc = sizeof(argv) / sizeof(char*);
+		ln::CommandLineParser parser;
+		auto initCommand = parser.addCommand(_T("init"), _T("init description."));
+		auto forceOption1 = initCommand->addFlagOption(_T("f"), _T("force"), _T("force description."));
 
-	ASSERT_EQ(true, parser.process(argc, argv));
-	ASSERT_EQ(true, parser.has(initCommand));
-	ASSERT_EQ(true, parser.has(forceOption1));
-	ASSERT_EQ(false, parser.has(addCommand));
-	ASSERT_EQ(false, parser.has(forceOption2));
+		auto addCommand = parser.addCommand(_T("add"), _T("add description."));
+		auto forceOption2 = addCommand->addFlagOption(_T("f"), _T("force"), _T("force description."));
+
+		char* argv[] =
+		{
+			"<program>",
+			"init",
+			"-f",
+		};
+		int argc = sizeof(argv) / sizeof(char*);
+
+		ASSERT_EQ(true, parser.process(argc, argv));
+		ASSERT_EQ(true, parser.has(initCommand));
+		ASSERT_EQ(true, parser.has(forceOption1));
+		ASSERT_EQ(false, parser.has(addCommand));
+		ASSERT_EQ(false, parser.has(forceOption2));
+	}
 }
 
 //# check options
@@ -234,23 +237,16 @@ TEST_F(Test_IO_CommandLineParser, Help)
 	int argc = sizeof(argv) / sizeof(char*);
 
 	parser.process(argc, argv);
-
-	//parser.printHelp();
-
-	//std::cout << initCommand->buildHelpText();
-	//std::cout << analyzeCommand->buildHelpText();
 }
 
-TEST_F(Test_IO_CommandLineParser, Example2)
+TEST_F(Test_IO_CommandLineParser, DocExample)
 {
 	char* argv[] =
 	{
 		"<program>",
-		//"help",
-		//"--force",
-		//"file1.txt",
-		//"file2.txt",
-		"-v",
+		"--force",
+		"file1.txt",
+		"file2.txt",
 	};
 	int argc = sizeof(argv) / sizeof(char*);
 
@@ -264,11 +260,10 @@ TEST_F(Test_IO_CommandLineParser, Example2)
 	auto* sourceArg = parser.addPositionalArgument("SOURCE", "source filename.");
 	auto* destArg = parser.addPositionalArgument("DEST", "destination filename.");
 
-	if (parser.process(argc, argv))
-	{
-		//ln::FileSystem::copyFile(sourceArg->value(), destArg->value(), parser.has(forceOpt));
-	}
-
+	ASSERT_EQ(true, parser.process(argc, argv));
+	ASSERT_EQ(true, parser.has(forceOpt));
+	ASSERT_EQ(_T("file1.txt"), sourceArg->value());
+	ASSERT_EQ(_T("file2.txt"), destArg->value());
 }
 
 #if 0

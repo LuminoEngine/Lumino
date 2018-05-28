@@ -2,11 +2,12 @@
 #pragma once
 #include <atomic>
 #include <cassert>
+#include <type_traits>
 #include "Common.hpp"
 
 namespace ln {
 class RefObjectHelper;
-template <class T> class Ref;
+template<class T> class Ref;
 
 // increment reference count
 #ifndef LN_SAFE_RETAIN
@@ -93,173 +94,119 @@ public:
 };
 
 /** RefObject 用 スマートポインタ */
-template <class T>
+template<class T>
 class Ref
 {
 public:
-	typedef T* PtrType;
 
-public:
+	/** 参照を持たない空の Ref を構築します。 */
+	LN_CONSTEXPR Ref() LN_NOEXCEPT;
 
-	template<typename... TArgs>
-	static Ref<T> makeRef(TArgs... args)
-	{
-		return Ref<T>(LN_NEW T(args...), false);
-	}
-    
-    template<class T2>
-    static Ref<T> staticCast(const Ref<T2>& other)
-    {
-        T* ptr = static_cast<T*>(other.get());
-        return Ref<T>(ptr, true);
-    }
+	/** 参照を持たない空の Ref を構築します。 */
+	LN_CONSTEXPR Ref(std::nullptr_t) LN_NOEXCEPT;
+	
+	/** 生ポインタの所有権を受け取ります。 */
+	Ref(T* ptr);
 
-	/** コンストラクタ */
-	Ref();
+	/** 生ポインタの所有権を受け取ります。retain が false の場合、参照カウントをインクリメントせずに参照します。 */
+	Ref(T* ptr, bool retain);
 
-	/**
-		@brief		コンストラクタ
-		@param[in]	ptr		: 管理対象としてセットする ReferenceObject インスタンスのポインタ
-		@param[in]	retain	: true の場合、セットされた ReferenceObject の参照カウントをインクリメントする
-	*/
-	Ref(T* ptr, bool retain = true);
+	/** 他の Ref と、参照を共有します。(コピーコンストラクタ) */
+	Ref(const Ref& ref) LN_NOEXCEPT;
 
-	template <class Y>
-	Ref(const Ref<Y>& r) LN_NOEXCEPT
-		: m_ptr(r.get())
-	{
-		LN_SAFE_RETAIN(m_ptr);
-	}
+	/** 他の Ref と、参照を共有します。 */
+	template<class Y>
+	Ref(const Ref<Y>& ref) LN_NOEXCEPT;
 
-	/** コピーコンストラクタ */
-	Ref(const Ref<T>& obj);
+	/** 他の Ref から参照をムーブします。 */
+	Ref(Ref&& ref) LN_NOEXCEPT;
+	
+	/** 他の Ref から参照をムーブします。 */
+	template<class Y>
+	Ref(Ref<Y>&& ref) LN_NOEXCEPT;
 
-	/** デストラクタ */
+	/** 保持しているオブジェクトの参照を開放します。 */
 	~Ref();
 
-public:
-
 	/**
-		@brief		ReferenceObject インスタンスのポインタを管理対象としてセットする
-		@param[in]	ptr		: 管理対象としてセットする ReferenceObject インスタンスのポインタ
-		@param[in]	retain	: true の場合、セットされた ReferenceObject の参照カウントをインクリメントする
-	*/
-	void attach(T* ptr, bool retain = false)
-    {
-		if (ptr == m_ptr) return;
-        safeRelease();
-		m_ptr = ptr;
-		if (retain) safeAddRef();
-    }
+	 * 保持しているオブジェクトの所有権を放棄し、指定されたオブジェクトの参照を設定します。
+	 *
+	 * @param[in]	ptr		: 管理対象としてセットするオブジェクト
+	 * @param[in]	retain	: 参照カウントをインクリメントするかどうか。false の場合、参照カウントをインクリメントせずに参照します。
+	 */
+	void reset(T* ptr, bool retain = true);
 
-	/**
-		@brief		管理対象オブジェクトの参照カウントをインクリメントする
-	*/
+	/** 保持しているオブジェクトの参照を放棄します。 */
+	void reset();
+
+	/** 2つの Ref オブジェクトを入れ替えます。 */
+	void swap(Ref<T>& other);
+
+	/** 保持しているオブジェクトの参照を放棄します。参照カウントはデクリメントしません。 */
+	T* detach();
+
+	/** 保持しているオブジェクトへのポインタを取得します。 */
+	T* get() const;
+
+	/** 保持しているオブジェクトの所有権を放棄し、他の Ref が持つ参照を共有します。 */
+	Ref& operator=(const Ref& ref) LN_NOEXCEPT;
+
+	/** 保持しているオブジェクトの所有権を放棄し、他の Ref が持つ参照を共有します。 */
+	template<class Y>
+	Ref& operator=(const Ref<Y>& ref) LN_NOEXCEPT;
+
+	/** 保持しているオブジェクトの所有権を放棄し、他の Ref が持つをムーブします。 */
+	Ref& operator=(Ref&& ref) LN_NOEXCEPT;
+
+	/** 保持しているオブジェクトの所有権を放棄し、他の Ref が持つをムーブします。 */
+	template<class Y>
+	Ref& operator=(Ref<Y>&& ref) LN_NOEXCEPT;
+
+	/** ポインタを間接参照します。 */
+	T& operator*() const LN_NOEXCEPT;
+
+	/** ポインタを通してオブジェクトにアクセスします。 */
+	T* operator->() const LN_NOEXCEPT;
+
+	/** 有効なポインタを保持しているかを確認します。 */
+	explicit operator bool() const LN_NOEXCEPT { return (m_ptr != nullptr); }
+
+	/** オブジェクトのポインタへの変換をサポートします。 */
+	operator T* () const { return static_cast<T*>(m_ptr); }    // ここでコンパイルエラーとなる場合、T の定義があるヘッダファイルを include しているか確認すること。
+
+protected:
 	void safeAddRef()
-	{ 
+	{
 		LN_SAFE_RETAIN(m_ptr);
 	}
 
-	/**
-		@brief		管理対象オブジェクトの参照カウントをデクリメントし、管理対象から外す
-	*/
-    void safeRelease()
+	void safeRelease()
 	{
 		LN_SAFE_RELEASE(m_ptr);
 	}
 
-	T* detachMove()
-	{
-		RefObject* ptr = m_ptr;
-		m_ptr = nullptr;
-		return static_cast<T*>(ptr);
-	}
-
-	/**
-		@brief		管理対象オブジェクトへのポインタが nullptr であるかを確認する
-	*/
-	bool isNull() const { return (m_ptr == nullptr); }
-
-	/**
-		@brief		管理対象オブジェクトへのポインタを取得する
-	*/
-    T* get() const	{ return static_cast<T*>(m_ptr); }
-
-
-	/// operator=
-	Ref<T>& operator = (const Ref<T>& ptr)
-	{
-		LN_REFOBJ_SET(m_ptr, ptr.m_ptr);
-		return *this;
-	}
-
-	/// operator=
-	//Ref<T>& operator = (T* ptr)
-	//{
-	//	LN_REFOBJ_SET(m_ptr, ptr);
-	//	return *this;
-	//}
-
-	/// operator!
-    bool operator ! () const { return (m_ptr == nullptr); }
-    
-    /// operator== 
-    //bool operator == (std::nullptr_t ptr) const { return (mPtr == ptr); }
-    //bool operator == (const T* ptr) const { return (mPtr == ptr); }
-	//bool operator == (T* ptr) { return (mPtr == ptr); }
-	//bool operator == (const Ref<T>& ptr) const { return (mPtr == ptr.mPtr); }
-
-    /// operator!=
-    //bool operator != ( const T* ptr ) const { return ( mPtr != ptr ); }
-	//bool operator != (std::nullptr_t ptr) const { return (mPtr != ptr); }
-	//bool operator != (const T* ptr) const { return (mPtr != ptr); }
-	//bool operator != (const Ref<T>& ptr) const { return (mPtr != ptr.mPtr); }
-
-    // operator<
-    bool operator < (const T* ptr) const { return m_ptr < ptr; }
-
-	/// operator*
-    T& operator* ()
-    {
-		assert(m_ptr != nullptr);
-        return *static_cast<T*>(m_ptr);
-    }
-
-	/// operator*
-    const T& operator* () const
-    {
-		assert(m_ptr != nullptr);
-        return *static_cast<T*>(m_ptr);
-	}
-
-	/// ->
-    T* operator -> () const
-    {
-		assert(m_ptr != nullptr );
-        return static_cast<T*>(m_ptr);
-    }
-
-    /// convert
-	operator T*			() const
-	{
-		// ここでコンパイルエラーとなる場合、T の定義があるヘッダファイルを include しているか確認すること。
-		return static_cast<T*>(m_ptr);
-	}
-    //operator const T*	() const { return static_cast<T*>(m_ptr); }
-
-protected:
 	RefObject* m_ptr;
+	template<class T> friend class Ref;
 };
 
-
-//------------------------------------------------------------------------------
-template<typename T>
-Ref<T>::Ref()
+template<class T>
+LN_CONSTEXPR Ref<T>::Ref() LN_NOEXCEPT
 	: m_ptr(nullptr)
 {}
 
-//------------------------------------------------------------------------------
-template<typename T>
+template<class T>
+LN_CONSTEXPR Ref<T>::Ref(std::nullptr_t) LN_NOEXCEPT
+	: m_ptr(nullptr)
+{
+}
+
+template<class T>
+Ref<T>::Ref(T* ptr)
+	: Ref(ptr, true)
+{
+}
+
+template<class T>
 Ref<T>::Ref(T* ptr, bool retain)
 	: m_ptr(ptr)
 {
@@ -269,65 +216,260 @@ Ref<T>::Ref(T* ptr, bool retain)
 	}
 }
 
-//------------------------------------------------------------------------------
-template<typename T>
-Ref<T>::Ref(const Ref<T>& obj)
-	: m_ptr(obj.m_ptr)
+template<class T>
+Ref<T>::Ref(const Ref& ref) LN_NOEXCEPT
+	: m_ptr(ref.m_ptr)
 {
 	LN_SAFE_RETAIN(m_ptr);
 }
 
-//------------------------------------------------------------------------------
-template<typename T>
+template<class T>
+template<class Y>
+Ref<T>::Ref(const Ref<Y>& ref) LN_NOEXCEPT
+	: m_ptr(ref.get())
+{
+	LN_SAFE_RETAIN(m_ptr);
+}
+
+template<class T>
+Ref<T>::Ref(Ref&& ref) LN_NOEXCEPT
+{
+	m_ptr = ref.m_ptr;
+	ref.m_ptr = nullptr;
+}
+
+template<class T>
+template<class Y>
+Ref<T>::Ref(Ref<Y>&& ref) LN_NOEXCEPT
+{
+	m_ptr = ref.m_ptr;
+	ref.m_ptr = nullptr;
+}
+
+template<class T>
 Ref<T>::~Ref()
 {
 	LN_SAFE_RELEASE(m_ptr);
 }
 
-//------------------------------------------------------------------------------
-template<typename T1, typename T2>
-bool operator==(const Ref<T1>& left, const Ref<T2>& right) LN_NOEXCEPT
+template<class T>
+void Ref<T>::reset(T* ptr, bool retain = true)
 {
-	return (left.get() == right.get());
+	if (ptr != m_ptr)
+	{
+		safeRelease();
+		m_ptr = ptr;
+		if (retain) {
+			safeAddRef();
+		}
+	}
 }
 
-//------------------------------------------------------------------------------
-template<typename T>
-bool operator==(std::nullptr_t left, const Ref<T>& right) LN_NOEXCEPT
+template<class T>
+void Ref<T>::reset()
 {
-	return ((T*)0 == right.get());
+	safeRelease();
 }
 
-//------------------------------------------------------------------------------
-template<typename T>
-bool operator==(const Ref<T>& left, std::nullptr_t right) LN_NOEXCEPT
+template<class T>
+void Ref<T>::swap(Ref<T>& other)
 {
-	return (left.get() == (T*)0);
+	if (&other != this)
+	{
+		T* t = m_ptr;
+		m_ptr = other.m_ptr;
+		other.m_ptr = t;
+	}
 }
 
-//------------------------------------------------------------------------------
-template<typename T1, typename T2>
-bool operator!=(const Ref<T1>& left, const Ref<T2>& right) LN_NOEXCEPT
+template<class T>
+T* Ref<T>::detach()
 {
-	return (left.get() != right.get());
+	RefObject* ptr = m_ptr;
+	m_ptr = nullptr;
+	return static_cast<T*>(ptr);
 }
 
-//------------------------------------------------------------------------------
-template<typename T>
-bool operator!=(std::nullptr_t left, const Ref<T>& right) LN_NOEXCEPT
+template<class T>
+T* Ref<T>::get() const
 {
-	return ((T*)0 != right.get());
+	return static_cast<T*>(m_ptr);
 }
 
-//------------------------------------------------------------------------------
-template<typename T>
-bool operator!=(const Ref<T>& left, std::nullptr_t right) LN_NOEXCEPT
+template<class T>
+Ref<T>& Ref<T>::operator=(const Ref<T>& ref) LN_NOEXCEPT
 {
-	return (left.get() != (T*)0);
+	LN_REFOBJ_SET(m_ptr, ref.m_ptr);
+	return *this;
 }
 
+template<class T>
+template<class Y>
+Ref<T>& Ref<T>::operator=(const Ref<Y>& ref) LN_NOEXCEPT
+{
+	LN_REFOBJ_SET(m_ptr, ref.m_ptr);
+	return *this;
+}
 
+template<class T>
+Ref<T>& Ref<T>::operator=(Ref&& ref) LN_NOEXCEPT
+{
+	if (&ref != this)
+	{
+		LN_SAFE_RELEASE(m_ptr);
+		m_ptr = ref.m_ptr;
+		ref.m_ptr = nullptr;
+	}
+	return *this;
+}
 
+template<class T>
+template<class Y>
+Ref<T>& Ref<T>::operator=(Ref<Y>&& ref) LN_NOEXCEPT
+{
+	LN_SAFE_RELEASE(m_ptr);
+	m_ptr = ref.m_ptr;
+	ref.m_ptr = nullptr;
+	return *this;
+}
+
+template<class T>
+T& Ref<T>::operator*() const LN_NOEXCEPT
+{
+	assert(m_ptr != nullptr);
+	return *static_cast<T*>(m_ptr);
+}
+
+template<class T>
+T* Ref<T>::operator->() const LN_NOEXCEPT
+{
+	assert(m_ptr != nullptr);
+	return static_cast<T*>(m_ptr);
+}
+
+template<class T, class U>
+bool operator==(const Ref<T>& lhs, const Ref<U>& rhs) LN_NOEXCEPT
+{
+	return (lhs.get() == rhs.get());
+}
+
+template<class T>
+bool operator==(const Ref<T>& lhs, nullptr_t) LN_NOEXCEPT
+{
+	return (lhs.get() == nullptr);
+}
+
+template<class T>
+bool operator==(nullptr_t, const Ref<T>& rhs) LN_NOEXCEPT
+{
+	return (nullptr == rhs.get());
+}
+
+template<class T, class U>
+bool operator!=(const Ref<T>& lhs, const Ref<U>& rhs) LN_NOEXCEPT
+{
+	return (lhs.get() != rhs.get());
+}
+
+template<class T>
+bool operator!=(const Ref<T>& lhs, nullptr_t) LN_NOEXCEPT
+{
+	return (lhs.get() != nullptr);
+}
+
+template<class T>
+bool operator!=(nullptr_t, const Ref<T>& rhs) LN_NOEXCEPT
+{
+	return (nullptr != rhs.get());
+}
+
+template<class T, class U>
+bool operator<(const Ref<T>& lhs, const Ref<U>& rhs) LN_NOEXCEPT
+{
+	return (lhs.get() < rhs.get());
+}
+
+template<class T>
+bool operator<(const Ref<T>& lhs, nullptr_t) LN_NOEXCEPT
+{
+	return (lhs.get() < nullptr);
+}
+
+template<class T>
+bool operator<(nullptr_t, const Ref<T>& rhs) LN_NOEXCEPT
+{
+	return (nullptr < rhs.get());
+}
+
+template<class T, class U>
+bool operator<=(const Ref<T>& lhs, const Ref<U>& rhs) LN_NOEXCEPT
+{
+	return (lhs.get() <= rhs.get());
+}
+
+template<class T>
+bool operator<=(const Ref<T>& lhs, nullptr_t) LN_NOEXCEPT
+{
+	return (lhs.get() <= nullptr);
+}
+
+template<class T>
+bool operator<=(nullptr_t, const Ref<T>& rhs) LN_NOEXCEPT
+{
+	return (nullptr <= rhs.get());
+}
+
+template<class T, class U>
+bool operator>(const Ref<T>& lhs, const Ref<U>& rhs) LN_NOEXCEPT
+{
+	return (lhs.get() > rhs.get());
+}
+
+template<class T>
+bool operator>(const Ref<T>& lhs, nullptr_t) LN_NOEXCEPT
+{
+	return (lhs.get() > nullptr);
+}
+
+template<class T>
+bool operator>(nullptr_t, const Ref<T>& rhs) LN_NOEXCEPT
+{
+	return (nullptr > rhs.get());
+}
+
+template<class T, class U>
+bool operator>=(const Ref<T>& lhs, const Ref<U>& rhs) LN_NOEXCEPT
+{
+	return (lhs.get() >= rhs.get());
+}
+
+template<class T>
+bool operator>=(const Ref<T>& lhs, nullptr_t) LN_NOEXCEPT
+{
+	return (lhs.get() >= nullptr);
+}
+
+template<class T>
+bool operator>=(nullptr_t, const Ref<T>& rhs) LN_NOEXCEPT
+{
+	return (nullptr >= rhs.get());
+}
+
+/** Cast between RefPtr types statically. */
+template<class T, class U>
+Ref<T> static_pointer_cast(const Ref<U>& ref)
+{
+	return Ref<T>(static_cast<T*>(ref.get()));
+}
+
+/** Cast between RefPtr types dynamically. */
+template<class T, class U>
+Ref<T> dynamic_pointer_cast(const Ref<U>& ref)
+{
+	return Ref<T>(dynamic_cast<T*>(ref.get()));
+}
+
+/** Ref を構築します。受け取った引数リストを型 T のコンストラクタへ渡してオブジェクトを構築します。 */
 template<class T, class... TArgs>
 inline Ref<T> makeRef(TArgs&&... args)
 {

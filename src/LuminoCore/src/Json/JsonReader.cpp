@@ -102,13 +102,13 @@ JsonReader::JsonReader(const String& text)
     : JsonReader()
 {
     Ref<StringReader> r(LN_NEW StringReader(text), false);
-    m_reader.attach(LN_NEW detail::PositioningTextReader(r));
+    m_reader.reset(LN_NEW detail::PositioningTextReader(r), false);
 }
 
 JsonReader::JsonReader(TextReader* textReader)
     : JsonReader()
 {
-    m_reader.attach(LN_NEW detail::PositioningTextReader(textReader));
+    m_reader.reset(LN_NEW detail::PositioningTextReader(textReader), false);
 }
 
 JsonReader::~JsonReader()
