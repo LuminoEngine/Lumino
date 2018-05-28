@@ -56,152 +56,151 @@ namespace ln {
 class ScopedLocaleRAII
 {
 public:
-	ScopedLocaleRAII(NativeLocale_t loc) {}
+    ScopedLocaleRAII(NativeLocale_t loc) {}
 };
 
 static NativeLocale_t CreateNativeLocale(const wchar_t* locale)
 {
-	return _wcreate_locale(LC_ALL, locale);
+    return _wcreate_locale(LC_ALL, locale);
 }
 
 static void GetNativeDefaultLocale(NativeLocale_t* outLocale, std::wstring* outName)
 {
-	// setlocale を使用した方法は Windows でも可能だが、取得できるのは必ずシステムロケールになってしまう。
-	// Qt 等のほかのフレームワークでもユーザーロケールを優先しているし、
-	// Office 等のメジャーなツールもユーザーロケールでUIを表示している。
-	// これらに合わせておく。
-	WCHAR strNameBuffer[LOCALE_NAME_MAX_LENGTH];
-	LCID  lcid = ::GetUserDefaultLCID();
-	if (LCIDToLocaleName(lcid, strNameBuffer, LOCALE_NAME_MAX_LENGTH, 0) == 0)
-	{
-		// エラーが発生したら変わりに "C" を使う
-		*outLocale = _wcreate_locale(LC_ALL, L"C");
-		*outName = L"C";
-		return;
-	}
-	*outLocale = _wcreate_locale(LC_ALL, strNameBuffer);
-	*outName = strNameBuffer;
+    // setlocale を使用した方法は Windows でも可能だが、取得できるのは必ずシステムロケールになってしまう。
+    // Qt 等のほかのフレームワークでもユーザーロケールを優先しているし、
+    // Office 等のメジャーなツールもユーザーロケールでUIを表示している。
+    // これらに合わせておく。
+    WCHAR strNameBuffer[LOCALE_NAME_MAX_LENGTH];
+    LCID lcid = ::GetUserDefaultLCID();
+    if (LCIDToLocaleName(lcid, strNameBuffer, LOCALE_NAME_MAX_LENGTH, 0) == 0) {
+        // エラーが発生したら変わりに "C" を使う
+        *outLocale = _wcreate_locale(LC_ALL, L"C");
+        *outName = L"C";
+        return;
+    }
+    *outLocale = _wcreate_locale(LC_ALL, strNameBuffer);
+    *outName = strNameBuffer;
 }
 
 #else
 class ScopedLocaleRAII
 {
-	locale_t m_old;
+    locale_t m_old;
+
 public:
-	ScopedLocaleRAII(NativeLocale_t loc)
-	{
-		m_old = uselocale(loc);
-	}
-	~ScopedLocaleRAII()
-	{
-		uselocale(m_old);
-	}
+    ScopedLocaleRAII(NativeLocale_t loc)
+    {
+        m_old = uselocale(loc);
+    }
+    ~ScopedLocaleRAII()
+    {
+        uselocale(m_old);
+    }
 };
 static NativeLocale_t CreateNativeLocale(const char* locale)
 {
-	return newlocale(LC_ALL_MASK, locale, NULL);
+    return newlocale(LC_ALL_MASK, locale, NULL);
 }
 static void GetNativeDefaultLocale(NativeLocale_t* outLocale, std::string* outName)
 {
-	//// How Programs Set the Locale
-	//// http://www.gnu.org/software/libc/manual/html_node/Setting-the-Locale.html
-	//StringA oldLocale = setlocale(LC_ALL, NULL);
-	//char* newLocale = setlocale(LC_ALL, "");
-	//setlocale(LC_ALL, oldLocale.c_str());
+    //// How Programs Set the Locale
+    //// http://www.gnu.org/software/libc/manual/html_node/Setting-the-Locale.html
+    //StringA oldLocale = setlocale(LC_ALL, NULL);
+    //char* newLocale = setlocale(LC_ALL, "");
+    //setlocale(LC_ALL, oldLocale.c_str());
 
-	*outLocale = newlocale(LC_ALL_MASK, "", NULL);
-	*outName = "";
+    *outLocale = newlocale(LC_ALL_MASK, "", NULL);
+    *outName = "";
 }
 #endif
 
 static void FreeNativeLocale(NativeLocale_t locale)
 {
 #ifdef LN_OS_WIN32
-	_free_locale(locale);
+    _free_locale(locale);
 #else
-	freelocale(locale);
+    freelocale(locale);
 #endif
 }
 
 Locale::Locale()
-	: m_nativeLocale(0)
-	, m_nativeName()
+    : m_nativeLocale(0)
+    , m_nativeName()
 {
-	GetNativeDefaultLocale(&m_nativeLocale, &m_nativeName);
-	m_stdLocale = std::locale(detail::StdStringHelper::makeStdString(m_nativeName.c_str()));
+    GetNativeDefaultLocale(&m_nativeLocale, &m_nativeName);
+    m_stdLocale = std::locale(detail::StdStringHelper::makeStdString(m_nativeName.c_str()));
 }
 
 Locale::Locale(const Char* name)
-: m_nativeLocale(0)
+    : m_nativeLocale(0)
 #if defined(LN_OS_WIN32)
-	, m_nativeName(String(name).toStdWString())
+    , m_nativeName(String(name).toStdWString())
 #else
-	, m_nativeName(String(name).toStdString())
+    , m_nativeName(String(name).toStdString())
 #endif
 {
-	m_nativeLocale = CreateNativeLocale(m_nativeName.c_str());
-	m_stdLocale = std::locale(detail::StdStringHelper::makeStdString(m_nativeName.c_str()));
+    m_nativeLocale = CreateNativeLocale(m_nativeName.c_str());
+    m_stdLocale = std::locale(detail::StdStringHelper::makeStdString(m_nativeName.c_str()));
 }
 
 Locale::Locale(const Locale& locale)
-	: m_nativeLocale(0)
-	, m_nativeName(locale.m_nativeName)
+    : m_nativeLocale(0)
+    , m_nativeName(locale.m_nativeName)
 {
-	m_nativeLocale = CreateNativeLocale(m_nativeName.c_str());
-	m_stdLocale = locale.m_stdLocale;
+    m_nativeLocale = CreateNativeLocale(m_nativeName.c_str());
+    m_stdLocale = locale.m_stdLocale;
 }
 
 Locale& Locale::operator=(const Locale& locale)
 {
-	m_nativeName = locale.m_nativeName;
-	m_nativeLocale = CreateNativeLocale(m_nativeName.c_str());
-	m_stdLocale = locale.m_stdLocale;
-	return (*this);
+    m_nativeName = locale.m_nativeName;
+    m_nativeLocale = CreateNativeLocale(m_nativeName.c_str());
+    m_stdLocale = locale.m_stdLocale;
+    return (*this);
 }
 
 Locale::~Locale()
 {
-	release();
+    release();
 }
 
 void Locale::release()
 {
-	FreeNativeLocale(m_nativeLocale);
+    FreeNativeLocale(m_nativeLocale);
 }
 
 const std::locale& Locale::stdLocale() const
 {
-	return m_stdLocale;
+    return m_stdLocale;
 }
 
 NativeLocale_t Locale::nativeLocale() const
 {
-	return m_nativeLocale;
+    return m_nativeLocale;
 }
 
 const Locale& Locale::getDefault()
 {
-	static Locale locale;
-	return locale;
+    static Locale locale;
+    return locale;
 }
 
 const Locale& Locale::getC()
 {
-	static Locale locale;
-	static bool init = false;
-	if (!init)
-	{
-		locale.m_stdLocale = std::locale("C");
+    static Locale locale;
+    static bool init = false;
+    if (!init) {
+        locale.m_stdLocale = std::locale("C");
 #ifdef LN_OS_WIN32
-		locale.m_nativeLocale = CreateNativeLocale(L"C");
-		locale.m_nativeName = L"C";
+        locale.m_nativeLocale = CreateNativeLocale(L"C");
+        locale.m_nativeName = L"C";
 #else
-		locale.m_nativeLocale = CreateNativeLocale("C");
-		locale.m_nativeName = "C";
+        locale.m_nativeLocale = CreateNativeLocale("C");
+        locale.m_nativeName = "C";
 #endif
-		init = true;
-	}
-	return locale;
+        init = true;
+    }
+    return locale;
 }
 
 } // namespace ln
