@@ -30,7 +30,7 @@ int32_t RefObject::getReferenceCount() const
 	return m_referenceCount;
 }
 
-int32_t RefObject::addRef()
+int32_t RefObject::retain()
 {
 	return m_referenceCount++;
 }
@@ -56,6 +56,27 @@ void RefObject::releaseInternal()
 		finalize();
 		delete this;
 	}
+}
+
+//==============================================================================
+// RefObjectHelper
+
+int32_t RefObjectHelper::getReferenceCount(RefObject* obj)
+{
+	if (LN_REQUIRE(obj)) return 0;
+	return obj->getReferenceCount();
+}
+
+int32_t RefObjectHelper::retain(RefObject* obj)
+{
+	if (LN_REQUIRE(obj)) return 0;
+	return obj->retain();
+}
+
+int32_t RefObjectHelper::release(RefObject* obj)
+{
+	if (LN_REQUIRE(obj)) return 0;
+	return obj->release();
 }
 
 } // namespace ln

@@ -5,8 +5,7 @@
 #include "../Base/EnumFlags.hpp"
 #include "../Base/RefObject.hpp"
 
-namespace ln
-{
+namespace ln {
 class StringWriter;
 class CommandLineCommand;
 class CommandLineParser;
@@ -196,16 +195,22 @@ public:
 	CommandLineParser();
 	virtual ~CommandLineParser();
 
+	/** コマンドを追加します。 */
 	CommandLineCommand* addCommand(const String& name, const String& description);
 
+	/** フラグオプションを追加します。 */
 	CommandLineOption* addFlagOption(const StringRef& shortName, const StringRef& longName, const StringRef& description);
 
+	/** 値を持つオプションを追加します。 */
 	CommandLineOption* addValueOption(const StringRef& shortName, const StringRef& longName, const StringRef& description, const StringRef& defaultValue = StringRef());
 
+	/** 列挙型のように、あらかじめ決められた値を指定する必要があるオプションを追加します。 */
 	CommandLineOption* addNamedValueOption(const StringRef& shortName, const StringRef& longName, const StringRef& description, const List<String>& namedValues, const StringRef& defaultValue = StringRef());
 
+	/** 位置引数を追加します。 */
 	CommandLinePositionalArgument* addPositionalArgument(const String& name, const String& description, CommandLinePositionalArgumentFlags flags = CommandLinePositionalArgumentFlags::None);
 
+	/** 複数の値を受け取ることができる位置引数を追加します。 */
 	CommandLinePositionalArgument* addListPositionalArgument(const String& name, const String& description, CommandLinePositionalArgumentFlags flags = CommandLinePositionalArgumentFlags::None);
 
 	/** バージョンを表示するためのオプションを追加します。-v, --version が定義されます。 */
@@ -228,12 +233,14 @@ public:
 	 */
 	bool process(int argc, char** argv);
 
-	bool has(const CommandLineCommand* command) const;
-	bool has(const CommandLineOption* command) const;
-
-	CommandLineCommand* command() const { return m_activeCommand; }
-
+	/** 解析したコマンドライン引数の構文に問題があったかを確認します。 */
 	bool hasError() const { return !m_message.isEmpty(); }
+
+	/** 指定したコマンドが、process によって解析したコマンドライン引数に含まれていたかを確認します。 */
+	bool has(const CommandLineCommand* command) const;
+
+	/** 指定したオプションが、process によって解析したコマンドライン引数に含まれていたかを確認します。 */
+	bool has(const CommandLineOption* command) const;
 
 	/** バージョン情報を標準出力します。 */
 	void printVersion() const;
@@ -244,6 +251,7 @@ public:
 	virtual String buildHelpText() const override;
 
 private:
+	CommandLineCommand* command() const { return m_activeCommand; }
 	Optional<Ref<CommandLineCommand>> findCommand(const StringRef& commandName) const;
 	bool parse(const List<String>& args);
 

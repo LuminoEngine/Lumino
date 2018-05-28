@@ -5,10 +5,12 @@
 #include "Common.hpp"
 
 namespace ln {
-	
+class RefObjectHelper;
+template <class T> class Ref;
+
 // increment reference count
-#ifndef LN_SAFE_ADDREF
-#define LN_SAFE_ADDREF( p ) { if ( p ) { (p)->addRef(); } }
+#ifndef LN_SAFE_RETAIN
+#define LN_SAFE_RETAIN( p ) { if ( p ) { (p)->retain(); } }
 #endif
 
 // decrement reference count
@@ -21,51 +23,48 @@ namespace ln {
 { \
 	if (a != b) \
 	{ \
-		LN_SAFE_ADDREF(b); \
+		LN_SAFE_RETAIN(b); \
 		if (a) (a)->release(); \
 		(a) = (b); \
 	} \
 }
 
 /**
-	@brief	参照カウントを持つクラスの基底
-*/
+ * 参照カウントを持つオブジェクトのベースクラスです。
+ *
+ * 一般的なケースでは、ln::makeRef 関数によりインスタンスを作成し、RefObject 用のスマートポインタである Ref クラスを使用して参照を管理します。
+ * 参照を直接操作したい場合は RefObjectHelper クラスを使用します。
+ */
 class RefObject
 {
 protected:
 	RefObject();
 	virtual ~RefObject();
 
-	/** 参照がなくなったときに呼び出されます。実装コードでは仮想関数を呼び出すことができます。主にデストラクタの制限を回避するために使用します。 */
+	/** 参照がなくなり、オブジェクトが削除されようとしているときに呼び出されます。実装コードでは仮想関数を呼び出すことができます。主にデストラクタの制限を回避するために使用します。 */
 	virtual void finalize();
 
 	// experimental
 	void setValidObject(bool valid = true) { m_ojectFlags = valid; }
 	bool isValidObject() const { return m_ojectFlags; }
 
-public:
-
-	/** 参照カウントを取得します。*/
-	virtual int32_t getReferenceCount() const;
-
-	/** 参照カウントをインクリメントします。*/
-	virtual int32_t addRef();
-
-	/** 参照カウントをデクリメントします。*/
-	virtual int32_t release();
-
-protected:
-	std::atomic<int32_t>					m_referenceCount;	///< 参照カウント	TODO: atomic<> の方が高速
-
 private:
-	LN_DISALLOW_COPY_AND_ASSIGN(RefObject);
+	RefObject(const RefObject&) = delete;
+	void operator=(const RefObject&) = delete;
 	void releaseInternal();
+	int32_t getReferenceCount() const;
+	int32_t retain();
+	int32_t release();
 
-	std::atomic<int32_t>	m_internalReferenceCount;
+	std::atomic<int32_t> m_referenceCount;
+	std::atomic<int32_t> m_internalReferenceCount;
 	uint32_t m_ojectFlags;
 
 	friend bool valid(const RefObject* obj);
 	friend bool valid(const RefObject& obj);
+
+	friend class RefObjectHelper;
+	template<class T> friend class Ref;
 };
 
 inline bool valid(const RefObject* obj)
@@ -78,17 +77,24 @@ inline bool valid(const RefObject& obj)
 	return obj.isValidObject();
 }
 
-//namespace detail
-//{
-class RefPtrBase {};
 
-//} // namespace detail
+/** RefObject 参照を直接操作します。 */
+class RefObjectHelper
+{
+public:
+	/** 指定された RefObject の参照カウントを取得します。 */
+	static int32_t getReferenceCount(RefObject* obj);
 
-/**
-	@brief		RefObject 用 スマートポインタ
-*/
+	/** 指定された RefObject の参照カウントをインクリメントします。 */
+	static int32_t retain(RefObject* obj);
+
+	/** 指定された RefObject の参照カウントをデクリメントします。0 になった場合、RefObject は削除されます。 */
+	static int32_t release(RefObject* obj);
+};
+
+/** RefObject 用 スマートポインタ */
 template <class T>
-class Ref : public /*detail::*/RefPtrBase
+class Ref
 {
 public:
 	typedef T* PtrType;
@@ -114,15 +120,15 @@ public:
 	/**
 		@brief		コンストラクタ
 		@param[in]	ptr		: 管理対象としてセットする ReferenceObject インスタンスのポインタ
-		@param[in]	addRef	: true の場合、セットされた ReferenceObject の参照カウントをインクリメントする
+		@param[in]	retain	: true の場合、セットされた ReferenceObject の参照カウントをインクリメントする
 	*/
-	Ref(T* ptr, bool addRef = true);
+	Ref(T* ptr, bool retain = true);
 
 	template <class Y>
 	Ref(const Ref<Y>& r) LN_NOEXCEPT
 		: m_ptr(r.get())
 	{
-		LN_SAFE_ADDREF(m_ptr);
+		LN_SAFE_RETAIN(m_ptr);
 	}
 
 	/** コピーコンストラクタ */
@@ -136,14 +142,14 @@ public:
 	/**
 		@brief		ReferenceObject インスタンスのポインタを管理対象としてセットする
 		@param[in]	ptr		: 管理対象としてセットする ReferenceObject インスタンスのポインタ
-		@param[in]	addRef	: true の場合、セットされた ReferenceObject の参照カウントをインクリメントする
+		@param[in]	retain	: true の場合、セットされた ReferenceObject の参照カウントをインクリメントする
 	*/
-	void attach(T* ptr, bool addRef = false)
+	void attach(T* ptr, bool retain = false)
     {
 		if (ptr == m_ptr) return;
         safeRelease();
 		m_ptr = ptr;
-		if (addRef) safeAddRef();
+		if (retain) safeAddRef();
     }
 
 	/**
@@ -151,7 +157,7 @@ public:
 	*/
 	void safeAddRef()
 	{ 
-		LN_SAFE_ADDREF(m_ptr);
+		LN_SAFE_RETAIN(m_ptr);
 	}
 
 	/**
@@ -254,12 +260,12 @@ Ref<T>::Ref()
 
 //------------------------------------------------------------------------------
 template<typename T>
-Ref<T>::Ref(T* ptr, bool addRef)
+Ref<T>::Ref(T* ptr, bool retain)
 	: m_ptr(ptr)
 {
-	if (addRef)
+	if (retain)
 	{
-		LN_SAFE_ADDREF(m_ptr);
+		LN_SAFE_RETAIN(m_ptr);
 	}
 }
 
@@ -268,7 +274,7 @@ template<typename T>
 Ref<T>::Ref(const Ref<T>& obj)
 	: m_ptr(obj.m_ptr)
 {
-	LN_SAFE_ADDREF(m_ptr);
+	LN_SAFE_RETAIN(m_ptr);
 }
 
 //------------------------------------------------------------------------------

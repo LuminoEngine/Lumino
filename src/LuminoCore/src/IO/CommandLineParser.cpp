@@ -6,8 +6,7 @@
 #include <Lumino/IO/StringWriter.hpp>
 #include <Lumino/IO/CommandLineParser.hpp>
 
-namespace ln
-{
+namespace ln {
 
 //==============================================================================
 // CommandLineOption
@@ -156,14 +155,6 @@ String CommandLinePositionalArgument::helpDescriptionCaption() const
 String CommandLinePositionalArgument::helpDescriptionText() const
 {
 	return m_description;
-
-	//if (isList()) {
-	//	String additional;
-	//	if (m_maxValues)
-	//}
-	//else {
-	//	return m_description;
-	//}
 }
 
 //==============================================================================
@@ -354,7 +345,6 @@ void CommandLineCommandBase::buildHelpDescriptionText(StringWriter* writer) cons
 			writer->write(_T("  "));
 			writer->write(desc.first);
 			writer->write(blank);
-			//writer->write(_T(": "));
 			writer->write(desc.second);
 			writer->writeLine();
 		}
@@ -371,7 +361,6 @@ void CommandLineCommandBase::buildHelpDescriptionText(StringWriter* writer) cons
 			writer->write(_T("  "));
 			writer->write(desc.first);
 			writer->write(blank);
-			//writer->write(_T(": "));
 			writer->write(desc.second);
 			writer->writeLine();
 		}
@@ -388,7 +377,6 @@ void CommandLineCommandBase::buildHelpDescriptionText(StringWriter* writer) cons
 			writer->write(_T("  "));
 			writer->write(desc.first);
 			writer->write(blank);
-			//writer->write(_T(": "));
 			writer->write(desc.second);
 			writer->writeLine();
 		}
@@ -405,7 +393,6 @@ void CommandLineCommandBase::buildHelpDescriptionText(StringWriter* writer) cons
 			writer->write(_T("  "));
 			writer->write(desc.first);
 			writer->write(blank);
-			//writer->write(_T(": "));
 			writer->write(desc.second);
 			writer->writeLine();
 		}
@@ -592,7 +579,7 @@ bool CommandLineCommand::parse(
 	int requires = 0;
 	for (auto& pa : positionalArguments)
 	{
-		requires += 1;//(pa->isList()) ? 1 : pa->maxValues();
+		requires += 1;
 	}
 	if (positionalArguments.size() < requires)
 	{
@@ -818,49 +805,6 @@ void CommandLineParser::printHelp(const StringRef& commandName) const
 	}
 
 	std::cout << buildHelpText().toStdString() << std::endl;
-	//const auto& commands = getCommandsInternal();
-	//const auto& args = positionalArguments();
-
-
-	//String usageParams;
-
-	//Path appPath = Environment::executablePath();
-
-	//StringWriter sw;
-	//
-
-	//sw.writeLine(_T("Usage:"));
-	//sw.write(_T("  "));
-	//sw.write(appPath.fileNameWithoutExtension());
-
-	//if (!internalName().isEmpty()) {	// root is empty
-	//	sw.write(_T(" "));
-	//	sw.write(internalName());
-	//}
-	//if (!options().isEmpty()) {
-	//	sw.write(_T(" [options...]"));
-	//}
-	//if (!args.isEmpty()) {
-	//	for (auto& a : args) {
-	//		sw.write(_T(" "));
-	//		sw.write(a->name());
-	//	}
-	//}
-	//if (!commands.isEmpty()) {
-	//	sw.write(_T(" <command> [<args>]"));
-	//}
-	//sw.writeLine();
-	//sw.writeLine();
-
-
-
-	//buildHelpDescriptionText(&sw);
-
-
-	//sw.writeLine(_T("See '{0} help <command>' to read about a specific command."), appPath.fileNameWithoutExtension());
-	//sw.writeLine();
-
-	//std::cout << sw.toString().toStdString();
 }
 
 String CommandLineParser::buildHelpText() const

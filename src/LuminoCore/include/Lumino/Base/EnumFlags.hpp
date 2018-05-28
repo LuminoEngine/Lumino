@@ -53,6 +53,7 @@ public:
         m_bits &= ~static_cast<BitsType>(value);
     }
 
+	/** 値を取得します。 */
     EnumType get() const
     {
         return static_cast<EnumType>(m_bits);
@@ -82,37 +83,40 @@ public:
         return *this;
     }
 
+	Flags<EnumType> operator~() const
+	{
+		Flags<EnumType> result(*this);
+		result.m_bits = (BitsType)~m_bits;
+		return result;
+	}
+
+	explicit operator BitsType() const
+	{
+		return m_bits;
+	}
+
+	operator EnumType() const
+	{
+		return static_cast<EnumType>(m_bits);
+	}
+
+	/** フラグを保持していないことを確認します。 */
     bool operator!() const
     {
         return !m_bits;
     }
 
-    Flags<EnumType> operator~() const
-    {
-        Flags<EnumType> result(*this);
-        result.m_bits = (BitsType)~m_bits;
-        return result;
-    }
-
+	/** いずれかのフラグを保持しているかを確認します。 */
     explicit operator bool() const
     {
         return !!m_bits;
-    }
-
-    explicit operator BitsType() const
-    {
-        return m_bits;
-    }
-
-    operator EnumType() const
-    {
-        return static_cast<EnumType>(m_bits);
     }
 
 public:
     BitsType m_bits;
 };
 
+/** ビットフラグを想定した enum class 値について、lhs が rhs で指定されたビットを持っているかを確認します。 */
 template<typename TEnumType>
 static bool testFlag(TEnumType lhs, TEnumType rhs)
 {

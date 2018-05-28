@@ -169,12 +169,12 @@ void Locale::release()
 	FreeNativeLocale(m_nativeLocale);
 }
 
-const std::locale& Locale::getStdLocale() const
+const std::locale& Locale::stdLocale() const
 {
 	return m_stdLocale;
 }
 
-NativeLocale_t Locale::getNativeLocale() const
+NativeLocale_t Locale::nativeLocale() const
 {
 	return m_nativeLocale;
 }
@@ -202,20 +202,6 @@ const Locale& Locale::getC()
 		init = true;
 	}
 	return locale;
-}
-
-//==============================================================================
-// GenericLocalizer
-
-template<typename TChar>
-GenericLocalizer<TChar>::GenericLocalizer(const Locale& locale)
-	: m_locale(locale)
-{
-}
-
-template<typename TChar>
-int GenericLocalizer<TChar>::format(TChar* outBuf, int outBufLength, const TChar* format, ...)
-{
 }
 
 } // namespace ln

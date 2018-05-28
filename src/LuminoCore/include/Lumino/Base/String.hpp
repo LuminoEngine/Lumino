@@ -742,7 +742,7 @@ public:
 	}
 
 	bool isShared() const LN_NOEXCEPT { return (m_refCount > 1); }
-	void addRef() { ++m_refCount; }
+	void retain() { ++m_refCount; }
 	void release()
 	{
 		--m_refCount;

@@ -586,7 +586,7 @@ void String::copy(const String& str)
 			{
 				// SSO -> NonSSO
 				m_data.core = str.m_data.core;
-				LN_SAFE_ADDREF(m_data.core);
+				LN_SAFE_RETAIN(m_data.core);
 				setNonSSO();
 			}
 		}
@@ -603,7 +603,7 @@ void String::copy(const String& str)
 				// NonSSO -> NonSSO
 				release();
 				m_data.core = str.m_data.core;
-				LN_SAFE_ADDREF(m_data.core);
+				LN_SAFE_RETAIN(m_data.core);
 			}
 		}
 	}

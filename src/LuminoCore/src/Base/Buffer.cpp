@@ -35,7 +35,7 @@ bool ByteBuffer::ByteBufferCore::isShared() const
 {
 	return (m_refCount > 1);
 }
-void ByteBuffer::ByteBufferCore::addRef()
+void ByteBuffer::ByteBufferCore::retain()
 {
 	++m_refCount;
 }

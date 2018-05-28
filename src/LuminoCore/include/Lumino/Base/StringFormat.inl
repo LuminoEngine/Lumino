@@ -396,7 +396,7 @@ template<typename TChar>
 bool formatInternal(const Locale& locale, GenericFormatStringBuilder<TChar>* outStr, const TChar* format, int formatLen, const FormatList<TChar>& args)
 {
 	GenericStringFormatter<TChar> formatter;
-	formatter.m_locale = &locale.getStdLocale();
+	formatter.m_locale = &locale.stdLocale();
 	const TChar* pos = format;
 	const TChar* end = format + formatLen;
 	TChar ch;

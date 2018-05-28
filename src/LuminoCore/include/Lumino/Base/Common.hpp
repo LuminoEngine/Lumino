@@ -218,8 +218,8 @@ using byte_t = unsigned char;
 
 // This should be used within the private: declaration of the class
 #define LN_DISALLOW_COPY_AND_ASSIGN(typeName) \
-	typeName(const typeName&); \
-	void operator=(const typeName&)
+	typeName(const typeName&) = delete; \
+	void operator=(const typeName&) = delete
 
 // increment COM reference count
 #define LN_COM_SAFE_ADDREF(p)	{ if (p) { (p)->AddRef(); } }

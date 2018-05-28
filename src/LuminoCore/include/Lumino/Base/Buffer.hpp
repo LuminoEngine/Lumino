@@ -188,7 +188,7 @@ private:
 		ByteBufferCore(byte_t* sharedBuffer);
 		~ByteBufferCore();
 		inline bool isShared() const;
-		inline void addRef();
+		inline void retain();
 		inline void release();
 
 		byte_t*		m_buffer;
