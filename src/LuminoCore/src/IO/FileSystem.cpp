@@ -714,9 +714,9 @@ private:
     {
         if (m_stack.empty()) {
             detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(m_path.c_str(), m_path.length());
-            m_stack.push_back(Ref<PlatformFileFinder>::makeRef(localPath.c_str(), localPath.getLength(), FileAttribute::All, nullptr, 0 /*, m_filterAttr | FileAttribute::Directory, m_searchPattern.c_str(), m_searchPattern.length()*/));
+            m_stack.push_back(makeRef<PlatformFileFinder>(localPath.c_str(), localPath.getLength(), FileAttribute::All, nullptr, 0 /*, m_filterAttr | FileAttribute::Directory, m_searchPattern.c_str(), m_searchPattern.length()*/));
         } else {
-            m_stack.push_back(Ref<PlatformFileFinder>::makeRef(m_stack.back()->getCurrent().c_str(), m_stack.back()->getCurrent().length(), FileAttribute::All, nullptr, 0 /*, m_filterAttr | FileAttribute::Directory, m_searchPattern.c_str(), m_searchPattern.length()*/));
+            m_stack.push_back(makeRef<PlatformFileFinder>(m_stack.back()->getCurrent().c_str(), m_stack.back()->getCurrent().length(), FileAttribute::All, nullptr, 0 /*, m_filterAttr | FileAttribute::Directory, m_searchPattern.c_str(), m_searchPattern.length()*/));
         }
     }
 
@@ -746,7 +746,7 @@ DirectoryIterator2::DirectoryIterator2()
 DirectoryIterator2::DirectoryIterator2(const StringRef& dirPath, const StringRef& pattern, SearchOption searchOption, SearchTargetEntity targetEntity)
     : m_impl()
 {
-    m_impl = Ref<DirectoryIterator2Impl>::makeRef(dirPath, pattern, searchOption, targetEntity);
+    m_impl = makeRef<DirectoryIterator2Impl>(dirPath, pattern, searchOption, targetEntity);
     m_impl->setup();
     m_current = m_impl->currentPath();
 }
