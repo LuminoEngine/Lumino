@@ -1,5 +1,7 @@
 - name: Lumino の概要
   items:
+    - name: メモリ管理
+      href: Base/MemoryManagement.md
     - name: エラーハンドリング
       href: Summary/ErrorHandling.md
 
