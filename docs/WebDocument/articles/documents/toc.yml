@@ -3,10 +3,6 @@
   items:
     - name: 動作環境
       href: Requirements.md
-
-- name: Lumino を使い始める
-  href: GettingStarted/Index.md
-  items:
     - name: Lumino をインストールする
       href: GettingStarted/Install.md
 

@@ -209,3 +209,13 @@ svg:hover path {
 .content p {
   margin-bottom: 16px;
 }
+
+
+.alert h5 {
+  margin-top: 0px;
+  margin-bottom: 4px;
+}
+
+.alert p {
+  margin-bottom: 0px;
+}

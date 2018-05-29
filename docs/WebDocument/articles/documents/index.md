@@ -1,4 +1,4 @@
-Lumino
+Lumino Documentation
 ====================
 
 これらのページには、Lumino の使用方法に関する情報が含まれています。
