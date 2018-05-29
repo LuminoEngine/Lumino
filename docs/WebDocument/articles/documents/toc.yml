@@ -1,9 +1,14 @@
-- name: Lumino の概要
+- name: Lumino について
+  href: Index.md
   items:
-    - name: メモリ管理
-      href: Base/MemoryManagement.md
-    - name: エラーハンドリング
-      href: Summary/ErrorHandling.md
+    - name: 動作環境
+      href: Requirements.md
+
+- name: Lumino を使い始める
+  href: GettingStarted/Index.md
+  items:
+    - name: Lumino をインストールする
+      href: GettingStarted/Install.md
 
 - name: Core
   items:

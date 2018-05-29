@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include <Lumino/Text/Encoding.hpp>
+#include <Lumino/Base/String.hpp>
 
 namespace ln {
 
@@ -10,17 +11,18 @@ public:
     using UTF8 = uint8_t;
 
 	static const byte_t BOM[3];
+	static const String Name;
 
     UTF8Encoding(bool byteOrderMark);
     virtual ~UTF8Encoding(){};
 
     // override TextEncoding
-    virtual const Char* getName() const override { return _TT("UTF-8"); }
-    virtual int getMinByteCount() const override { return 1; }
-    virtual int getMaxByteCount() const override { return 6; }
-    virtual TextDecoder* createDecoder() const override { return LN_NEW UTF8Decoder(m_byteOrderMark); }
-    virtual TextEncoder* createEncoder() const override { return LN_NEW UTF8Encoder(m_byteOrderMark); }
-    virtual byte_t* getPreamble() const override;
+    virtual const String& name() const override { return Name; }
+    virtual int minByteCount() const override { return 1; }
+    virtual int maxByteCount() const override { return 6; }
+    virtual TextDecoder* createDecoder() override { return LN_NEW UTF8Decoder(this, m_byteOrderMark); }
+    virtual TextEncoder* createEncoder() override { return LN_NEW UTF8Encoder(this, m_byteOrderMark); }
+    virtual byte_t* preamble() const override;
     virtual int getCharacterCount(const void* buffer, size_t bufferSize) const override;
     virtual int getLeadExtraLength(const void* buffer, size_t bufferSize) const override;
 
@@ -32,13 +34,12 @@ public:
     class UTF8Decoder : public TextDecoder
     {
     public:
-        UTF8Decoder(bool byteOrderMark)
+        UTF8Decoder(TextEncoding* encoding, bool byteOrderMark)
+			: TextDecoder(encoding)
         {
             m_byteOrderMark = byteOrderMark;
             reset();
         }
-        virtual int getMinByteCount() override { return 1; }
-        virtual int getMaxByteCount() override { return 6; }
         virtual bool canRemain() override { return true; }
         virtual bool convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, DecodeResult* outResult) override;
         virtual int usedDefaultCharCount() override { return mUsedDefaultCharCount; }
@@ -67,13 +68,12 @@ public:
     class UTF8Encoder : public TextEncoder
     {
     public:
-        UTF8Encoder(bool byteOrderMark)
+        UTF8Encoder(TextEncoding* encoding, bool byteOrderMark)
+			: TextEncoder(encoding)
         {
             m_byteOrderMark = byteOrderMark;
             reset();
         }
-        virtual int getMinByteCount() override { return 1; }
-        virtual int getMaxByteCount() override { return 6; }
         virtual bool canRemain() override { return true; }
         virtual bool convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, EncodeResult* outResult) override;
         virtual int usedDefaultCharCount() override { return mUsedDefaultCharCount; }

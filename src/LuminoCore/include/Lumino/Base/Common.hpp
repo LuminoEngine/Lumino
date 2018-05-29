@@ -241,6 +241,14 @@ using byte_t = unsigned char;
 #define LN_NOEXCEPT noexcept
 #endif
 
+#ifndef LN_MAX
+#define LN_MAX(a,b)            (((a) > (b)) ? (a) : (b))
+#endif
+
+#ifndef LN_MIN
+#define LN_MIN(a,b)            (((a) < (b)) ? (a) : (b))
+#endif
+
 //----------------------------------------------------------------------
 // Binding / Refrection
 #define LN_CLASS(...)

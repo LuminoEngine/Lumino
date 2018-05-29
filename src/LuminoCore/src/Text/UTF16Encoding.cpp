@@ -8,6 +8,10 @@ namespace ln {
 //==============================================================================
 // UTF16Encoding
 
+// .NET に合わせてみる
+const String UTF16Encoding::NameLE = _T("UTF-16");
+const String UTF16Encoding::NameBE = _T("UTF-16BE");
+
 UTF16Encoding::UTF16Encoding(bool bigEndian, bool byteOrderMark)
     : m_bigEndian(bigEndian)
     , m_byteOrderMark(byteOrderMark)
@@ -17,7 +21,7 @@ UTF16Encoding::UTF16Encoding(bool bigEndian, bool byteOrderMark)
     }
 }
 
-byte_t* UTF16Encoding::getPreamble() const
+byte_t* UTF16Encoding::preamble() const
 {
     static byte_t bom[] = {0x00};
     LN_NOTIMPLEMENTED();

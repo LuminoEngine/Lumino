@@ -270,7 +270,7 @@ Ref<T>::~Ref()
 }
 
 template<class T>
-void Ref<T>::reset(T* ptr, bool retain = true)
+void Ref<T>::reset(T* ptr, bool retain)
 {
     if (ptr != m_ptr) {
         safeRelease();

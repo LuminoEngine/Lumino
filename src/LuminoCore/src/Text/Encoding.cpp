@@ -22,7 +22,7 @@ namespace ln {
 // TextEncoding
 
 TextEncoding::TextEncoding()
-    : mFallbackReplacementChar((uint32_t)'?')
+    : m_fallbackReplacementChar((uint32_t)'?')
 {
 }
 
@@ -30,59 +30,63 @@ TextEncoding::~TextEncoding()
 {
 }
 
-TextEncoding* TextEncoding::systemMultiByteEncoding()
+const Ref<TextEncoding>& TextEncoding::systemMultiByteEncoding()
 {
 #ifdef LN_OS_WIN32
     static Win32CodePageEncoding systemEncoding(CP_THREAD_ACP);
-    return &systemEncoding;
 #else
     static UTF8Encoding systemEncoding(false);
-    return &systemEncoding;
 #endif
+	static Ref<TextEncoding> ref(&systemEncoding);
+	return ref;
 }
 
-TextEncoding* TextEncoding::wideCharEncoding()
+const Ref<TextEncoding>& TextEncoding::wideCharEncoding()
 {
 #if defined(LN_WCHAR_16)
     static UTF16Encoding wideEncoding(false, false);
-    return &wideEncoding;
 #elif defined(LN_WCHAR_32)
     static UTF32Encoding wideEncoding(false, false);
-    return &wideEncoding;
 #else
 #error "Invalid wchar_t size."
 #endif
+	static Ref<TextEncoding> ref(&wideEncoding);
+	return ref;
 }
 
-TextEncoding* TextEncoding::tcharEncoding()
+const Ref<TextEncoding>& TextEncoding::tcharEncoding()
 {
 	return utf16Encoding();
 }
 
-TextEncoding* TextEncoding::utf8Encoding()
+const Ref<TextEncoding>& TextEncoding::utf8Encoding()
 {
     static UTF8Encoding encoding(false);
-    return &encoding;
+	static Ref<TextEncoding> ref(&encoding);
+	return ref;
 }
 
-TextEncoding* TextEncoding::utf16Encoding()
+const Ref<TextEncoding>& TextEncoding::utf16Encoding()
 {
     static UTF16Encoding encoding(false, false);
-    return &encoding;
+	static Ref<TextEncoding> ref(&encoding);
+	return ref;
 }
 
-TextEncoding* TextEncoding::utf32Encoding()
+const Ref<TextEncoding>& TextEncoding::utf32Encoding()
 {
     static UTF32Encoding encoding(false, false);
-    return &encoding;
+	static Ref<TextEncoding> ref(&encoding);
+	return ref;
 }
 
-TextEncoding* TextEncoding::getEncoding(EncodingType type)
+const Ref<TextEncoding>& TextEncoding::getEncoding(EncodingType type)
 {
     switch (type) {
         case EncodingType::ASCII: {
             static ASCIIEncoding asciiEncoding;
-            return &asciiEncoding;
+			static Ref<TextEncoding> ref(&asciiEncoding);
+			return ref;
         }
         //case EncodingType::SJIS:
         //{
@@ -111,7 +115,8 @@ TextEncoding* TextEncoding::getEncoding(EncodingType type)
         //}
         case EncodingType::UTF8: {
             static UTF8Encoding utf8BOMEncoding(true);
-            return &utf8BOMEncoding;
+			static Ref<TextEncoding> ref(&utf8BOMEncoding);
+			return ref;
         }
         default:
             LN_UNREACHABLE();
@@ -120,22 +125,22 @@ TextEncoding* TextEncoding::getEncoding(EncodingType type)
 }
 
 template<>
-TextEncoding* TextEncoding::getEncodingTemplate<char>()
+const Ref<TextEncoding>& TextEncoding::getEncodingTemplate<char>()
 {
     return systemMultiByteEncoding();
 }
 template<>
-TextEncoding* TextEncoding::getEncodingTemplate<wchar_t>()
+const Ref<TextEncoding>& TextEncoding::getEncodingTemplate<wchar_t>()
 {
     return wideCharEncoding();
 }
 template<>
-TextEncoding* TextEncoding::getEncodingTemplate<char16_t>()
+const Ref<TextEncoding>& TextEncoding::getEncodingTemplate<char16_t>()
 {
     return utf16Encoding();
 }
 template<>
-TextEncoding* TextEncoding::getEncodingTemplate<char32_t>()
+const Ref<TextEncoding>& TextEncoding::getEncodingTemplate<char32_t>()
 {
     return utf32Encoding();
 }
@@ -148,14 +153,14 @@ size_t TextEncoding::getConversionRequiredByteCount(TextEncoding* from, TextEnco
         return 0;
 
     // from に入っている最悪パターンの文字数
-    size_t srcMaxCharCount = fromByteCount / from->getMinByteCount();
+    size_t srcMaxCharCount = fromByteCount / from->minByteCount();
     srcMaxCharCount += 1; // TextDecoder・TextEncoder の状態保存により前回の余り文字が1つ追加されるかもしれない
 
     // 出力バッファに必要な最大バイト数
-    return srcMaxCharCount * to->getMaxByteCount();
+    return srcMaxCharCount * to->maxByteCount();
 }
 
-TextEncoding* TextEncoding::detectEncodingSimple(const char* str, int length, bool strict)
+const Ref<TextEncoding>& TextEncoding::detectEncodingSimple(const char* str, int length, bool strict)
 {
     if (LN_REQUIRE(str))
         return nullptr;
@@ -212,7 +217,7 @@ size_t TextEncoding::checkPreamble(const void* buffer, size_t bufferSize) const
     if (LN_REQUIRE(buffer == nullptr))
         return 0;
 
-    const char* bom = (const char*)getPreamble();
+    const char* bom = (const char*)preamble();
     size_t bomLen = strlen(bom);
     if (bufferSize < bomLen) {
         return 0;
@@ -224,12 +229,12 @@ size_t TextEncoding::checkPreamble(const void* buffer, size_t bufferSize) const
     return 0;
 }
 
-String TextEncoding::decode(const byte_t* bytes, int length, int* outUsedDefaultCharCount) const
+String TextEncoding::decode(const byte_t* bytes, int length, int* outUsedDefaultCharCount)
 {
 	// TODO: this が UTF16 なら memcpy でよい
 
 	// 入力に入っている最悪パターンの文字数
-	size_t srcMaxCharCount = length / getMinByteCount();
+	size_t srcMaxCharCount = length / minByteCount();
 	srcMaxCharCount += 1;									// Decoder・Encoder の状態保存により前回の余り文字が1つ追加されるかもしれない
 	srcMaxCharCount += 1; 	// \0 の分
 
@@ -259,12 +264,12 @@ String TextEncoding::decode(const byte_t* bytes, int length, int* outUsedDefault
 	return String((Char*)output.data(), output.size() / sizeof(Char));
 }
 
-std::vector<byte_t> TextEncoding::encode(const String& str, int* outUsedDefaultCharCount) const
+std::vector<byte_t> TextEncoding::encode(const String& str, int* outUsedDefaultCharCount)
 {
 	return encode(str.c_str(), str.length(), outUsedDefaultCharCount);
 }
 
-std::vector<byte_t> TextEncoding::encode(const Char* str, int length, int* outUsedDefaultCharCount) const
+std::vector<byte_t> TextEncoding::encode(const Char* str, int length, int* outUsedDefaultCharCount)
 {
 	// TODO: this が UTF16 なら memcpy でよい
 
@@ -272,12 +277,12 @@ std::vector<byte_t> TextEncoding::encode(const Char* str, int length, int* outUs
 	size_t srcMaxCharCount = length;
 
 	// 出力バッファに必要な最大バイト数
-	size_t outputMaxByteCount = srcMaxCharCount * getMaxByteCount();
+	size_t outputMaxByteCount = srcMaxCharCount * maxByteCount();
 
 	// 出力バッファ作成
-	std::vector<byte_t> output(outputMaxByteCount + getMaxByteCount());	// \0 強制格納に備え、1文字分余裕のあるサイズを指定する
+	std::vector<byte_t> output(outputMaxByteCount + maxByteCount());	// \0 強制格納に備え、1文字分余裕のあるサイズを指定する
 
-																		// convert
+	// convert
 	std::unique_ptr<TextEncoder> encoder(createEncoder());
 	TextEncoder::EncodeResult result;
 	encoder->convertFromUTF16(
@@ -298,9 +303,11 @@ std::vector<byte_t> TextEncoding::encode(const Char* str, int length, int* outUs
 //==============================================================================
 // TextDecoder
 
-TextDecoder::TextDecoder()
-    : mFallbackReplacementChar(0)
+TextDecoder::TextDecoder(TextEncoding* encoding)
+    : /*m_fallbackReplacementChar(0)
+	, */m_encoding(encoding)
 {
+	LN_REQUIRE(encoding);
 }
 
 TextDecoder::~TextDecoder()
@@ -310,9 +317,11 @@ TextDecoder::~TextDecoder()
 //==============================================================================
 // TextEncoder
 
-TextEncoder::TextEncoder()
-    : mFallbackReplacementChar(0)
+TextEncoder::TextEncoder(TextEncoding* encoding)
+    : /*m_fallbackReplacementChar(0)
+	, */m_encoding(encoding)
 {
+	LN_REQUIRE(encoding);
 }
 
 TextEncoder::~TextEncoder()

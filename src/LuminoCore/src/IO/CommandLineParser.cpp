@@ -273,7 +273,7 @@ void CommandLineCommandBase::buildHelpDescriptionText(StringWriter* writer) cons
         if (opt->isRequired()) {
             String caption = opt->helpDescriptionCaption();
             requiredDescriptions.add({caption, opt->helpDescriptionText()});
-            requiredDescriptionColumnWidth = std::max(requiredDescriptionColumnWidth, caption.length());
+            requiredDescriptionColumnWidth = LN_MAX(requiredDescriptionColumnWidth, caption.length());
         }
     }
     requiredDescriptionColumnWidth += 3;
@@ -285,7 +285,7 @@ void CommandLineCommandBase::buildHelpDescriptionText(StringWriter* writer) cons
         if (!opt->isRequired()) {
             String caption = opt->helpDescriptionCaption();
             optionDescriptions.add({caption, opt->helpDescriptionText()});
-            optionsDescriptionColumnWidth = std::max(optionsDescriptionColumnWidth, caption.length());
+            optionsDescriptionColumnWidth = LN_MAX(optionsDescriptionColumnWidth, caption.length());
         }
     }
     optionsDescriptionColumnWidth += 3;
@@ -296,7 +296,7 @@ void CommandLineCommandBase::buildHelpDescriptionText(StringWriter* writer) cons
     for (auto& arg : positionalArguments()) {
         String caption = arg->helpDescriptionCaption();
         argsDescriptions.add({caption, arg->helpDescriptionText()});
-        argsCaptionsColumnWidth = std::max(argsCaptionsColumnWidth, caption.length());
+        argsCaptionsColumnWidth = LN_MAX(argsCaptionsColumnWidth, caption.length());
     }
     argsCaptionsColumnWidth += 3;
 
@@ -306,7 +306,7 @@ void CommandLineCommandBase::buildHelpDescriptionText(StringWriter* writer) cons
     for (auto& cmd : m_commands) {
         String caption = cmd->name();
         commandDescriptions.add({caption, cmd->description()});
-        commandCaptionsColumnWidth = std::max(commandCaptionsColumnWidth, caption.length());
+        commandCaptionsColumnWidth = LN_MAX(commandCaptionsColumnWidth, caption.length());
     }
     commandCaptionsColumnWidth += 3;
 

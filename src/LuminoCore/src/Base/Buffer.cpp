@@ -194,7 +194,7 @@ void ByteBuffer::resize(size_t size, bool zeroClear)
 		// 元のバッファがあればコピー。その後元のバッファを破棄
 		if (newBuf != m_core)
 		{
-			memcpy_s(newBuf->m_buffer, size, m_core->m_buffer, std::min(size, m_size));
+			memcpy_s(newBuf->m_buffer, size, m_core->m_buffer, LN_MIN(size, m_size));
 			free();
 		}
 

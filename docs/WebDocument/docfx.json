@@ -77,7 +77,8 @@
       "_appTitle": "Lumino website",
       "_appFooter": "Copyright © 2017 lriki",
       "_appLogoPath": "logo.png",
-      "_appFaviconPath": "favicon.ico"
+      "_appFaviconPath": "favicon.ico",
+      "_disableContribution": true
     }
   }
 }

@@ -9,13 +9,14 @@ namespace ln {
 // UTF8Encoding
 
 const byte_t UTF8Encoding::BOM[] = { 0xEF, 0xBB, 0xBF };
+const String UTF8Encoding::Name = _T("UTF-8");
 
 UTF8Encoding::UTF8Encoding(bool byteOrderMark)
     : m_byteOrderMark(byteOrderMark)
 {
 }
 
-byte_t* UTF8Encoding::getPreamble() const
+byte_t* UTF8Encoding::preamble() const
 {
     static byte_t bom[] = {0xEF, 0xBB, 0xBF, 0x00};
     return bom;
@@ -49,7 +50,7 @@ bool UTF8Encoding::UTF8Decoder::convertToUTF16(const byte_t* input, size_t input
     // 変換設定
     UTFConversionOptions options;
     memset(&options, 0, sizeof(options));
-    options.ReplacementChar = mFallbackReplacementChar;
+    options.ReplacementChar = encoding()->fallbackReplacementChar();
 
     // BOM 付きの場合は取り除く (バッファ縮小)
     if (m_byteOrderMark) {
@@ -150,7 +151,7 @@ bool UTF8Encoding::UTF8Encoder::convertFromUTF16(const UTF16* input, size_t inpu
     // 変換設定
     UTFConversionOptions options;
     memset(&options, 0, sizeof(options));
-    options.ReplacementChar = mFallbackReplacementChar;
+    options.ReplacementChar = encoding()->fallbackReplacementChar();
 
     const UTF16* srcPos = input;
     const UTF16* srcEnd = input + inputElementSize;

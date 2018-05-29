@@ -487,7 +487,7 @@ String String::join(const List<String>& list, const StringRef& delim)
 
 int String::compare(const String& str1, const String& str2, CaseSensitivity cs)
 {
-	return StringHelper::compare(str1.c_str(), str1.length(), str2.c_str(), str2.length(), std::max(str1.length(), str2.length()), cs);
+	return StringHelper::compare(str1.c_str(), str1.length(), str2.c_str(), str2.length(), LN_MAX(str1.length(), str2.length()), cs);
 }
 
 int String::compare(const StringRef& str1, int index1, const StringRef& str2, int index2, int length, CaseSensitivity cs)
@@ -642,7 +642,7 @@ Char* String::lockBuffer(int requestSize, detail::StringLockContext* context)
 			// SSO -> NonSSO
 			std::unique_ptr<detail::UStringCore> core(LN_NEW detail::UStringCore());
 			core->reserve(requestSize);
-			memcpy(core->get(), m_data.sso.buffer, std::min(getSSOLength(), requestSize) * sizeof(Char));
+			memcpy(core->get(), m_data.sso.buffer, LN_MIN(getSSOLength(), requestSize) * sizeof(Char));
 			//core->get()[requestSize] = '\0';
 			//m_data.core = core.get();
 			context->newCore = core.get();	// 自己代入対策。unlock で メンバ変数に設定する
@@ -667,7 +667,7 @@ Char* String::lockBuffer(int requestSize, detail::StringLockContext* context)
 				{
 					detail::UStringCore* oldCore = m_data.core;
 					setSSO();
-					memcpy(m_data.sso.buffer, oldCore->get(), std::min(oldCore->length(), requestSize) * sizeof(Char));
+					memcpy(m_data.sso.buffer, oldCore->get(), LN_MIN(oldCore->length(), requestSize) * sizeof(Char));
 					//oldCore->release();
 					context->oldCore = oldCore;	// release old buffer (on unlock)
 				}
@@ -686,7 +686,7 @@ Char* String::lockBuffer(int requestSize, detail::StringLockContext* context)
 						detail::UStringCore* oldCore = m_data.core;
 						m_data.core = LN_NEW detail::UStringCore();
 						m_data.core->reserve(requestSize);
-						memcpy(m_data.core->get(), oldCore->get(), std::min(oldCore->length(), requestSize) * sizeof(Char));
+						memcpy(m_data.core->get(), oldCore->get(), LN_MIN(oldCore->length(), requestSize) * sizeof(Char));
 						//oldCore->release();
 						context->oldCore = oldCore;	// release old buffer (on unlock)
 					}
@@ -1044,7 +1044,7 @@ int UStringConvert::convertNativeString(const char* src, int srcLen, char* dst, 
 	if (!dst || dstSize <= 0) return 0;
 	if (src && srcLen >= 0)
 	{
-		int len = std::min(srcLen, dstSize - 1);
+		int len = LN_MIN(srcLen, dstSize - 1);
 		memcpy_s(dst, dstSize, src, len);
 		dst[len] = '\0';
 		return len;

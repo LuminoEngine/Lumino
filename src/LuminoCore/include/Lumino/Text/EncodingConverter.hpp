@@ -1,60 +1,39 @@
-﻿
+﻿// Copyright (c) 2018 lriki. Distributed under the MIT license.
 #pragma once
 #include "../Base/Buffer.hpp"
 #include "Encoding.hpp"
 
 namespace ln {
 
-/**
-	@brief		テキスト間のエンコーディングの変換を行うクラスです。
-	@details	同じエンコーディングで何回も変換する際、効率的に変換を行うことができます。
-*/
+/** テキスト間のエンコーディングの変換を行うクラスです。同じエンコーディングで何回も変換する際、効率的に変換を行うことができます。 */
 class EncodingConverter
 {
 public:
 	EncodingConverter();
 	~EncodingConverter();
 
-public:
-
-	/**
-		@brief		変換先テキストのエンコーディングを設定します。
-	*/
+	/** 変換先テキストのエンコーディングを設定します。 */
 	void setDestinationEncoding(TextEncoding* encoding);
 
-	/**
-		@brief		変換先テキストのエンコーディングを取得します。
-	*/
+	/** 変換先テキストのエンコーディングを取得します。 */
 	TextEncoding* getDestinationEncoding() const;
 
-	/**
-		@brief		変換元テキストのエンコーディングを設定します。
-	*/
+	/** 変換元テキストのエンコーディングを設定します。 */
 	void getSourceEncoding(TextEncoding* encoding);
 
-	/**
-		@brief		変換元テキストのエンコーディングを取得します。
-	*/
+	/** 変換元テキストのエンコーディングを取得します。 */
 	TextEncoding* getSourceEncoding() const;
 
-	/**
-		@brief		変換のオプションを設定します。
-	*/
+	/** 変換のオプションを設定します。 */
 	void setConversionOptions(const EncodingConversionOptions& options);
 
-	/**
-		@brief		テキストを変換します。
-	*/
-	const ByteBuffer& convert(const void* data, size_t byteCount, EncodingConversionResult* outResult = NULL);
+	/** テキストを変換します。 */
+	const ByteBuffer& convert(const void* data, size_t byteCount, EncodingConversionResult* outResult = nullptr);
 
-	/**
-		@brief		最後に呼び出した convert() で変換されたバッファを取得します。これは convert() の戻り値と同一です。
-	*/
+	/** 最後に呼び出した convert() で変換されたバッファを取得します。これは convert() の戻り値と同一です。 */
 	const ByteBuffer& getLastBuffer() const;
 
-	/**
-		@brief		最後に呼び出した convert() の EncodingConversionResult を取得します。
-	*/
+	/** 最後に呼び出した convert() の EncodingConversionResult を取得します。 */
 	const EncodingConversionResult& getLastResult() const;
 
 private:
@@ -65,7 +44,6 @@ private:
 		void* dest_, size_t destByteCount, TextEncoder* destEncoder,
 		EncodingConversionResult* outResult);
 
-private:
 	LN_DISALLOW_COPY_AND_ASSIGN(EncodingConverter);
 	TextEncoding*					m_dstEncoding;
 	TextEncoding*					m_srcEncoding;

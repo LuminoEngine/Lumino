@@ -1,26 +1,23 @@
 ﻿
-#include <algorithm>
 #include "Internal.hpp"
+#include <algorithm>
 #include <Lumino/Text/EncodingConverter.hpp>
 
 namespace ln {
 
 //==============================================================================
 // EncodingConverter
-//==============================================================================
 
-//------------------------------------------------------------------------------
 EncodingConverter::EncodingConverter()
-	: m_dstEncoding(NULL)
-	, m_srcEncoding(NULL)
-	, m_dstEncoder(NULL)
-	, m_srcDecoder(NULL)
+	: m_dstEncoding(nullptr)
+	, m_srcEncoding(nullptr)
+	, m_dstEncoder(nullptr)
+	, m_srcDecoder(nullptr)
 	, m_encodingModified(false)
 {
 	m_options.NullTerminated = false;
 }
 
-//------------------------------------------------------------------------------
 EncodingConverter::~EncodingConverter()
 {
 	if (m_dstEncoder) {
@@ -31,39 +28,33 @@ EncodingConverter::~EncodingConverter()
 	}
 }
 
-//------------------------------------------------------------------------------
 void EncodingConverter::setDestinationEncoding(TextEncoding* encoding)
 {
 	m_dstEncoding = encoding;
 	m_encodingModified = true;
 }
 
-//------------------------------------------------------------------------------
 TextEncoding* EncodingConverter::getDestinationEncoding() const
 {
 	return m_dstEncoding;
 }
 
-//------------------------------------------------------------------------------
 void EncodingConverter::getSourceEncoding(TextEncoding* encoding)
 {
 	m_srcEncoding = encoding;
 	m_encodingModified = true;
 }
 
-//------------------------------------------------------------------------------
 TextEncoding* EncodingConverter::getSourceEncoding() const
 {
 	return m_srcEncoding;
 }
 
-//------------------------------------------------------------------------------
 void EncodingConverter::setConversionOptions(const EncodingConversionOptions& options)
 {
 	m_options = options;
 }
 
-//------------------------------------------------------------------------------
 const ByteBuffer& EncodingConverter::convert(const void* data, size_t byteCount, EncodingConversionResult* outResult)
 {
 	checkUpdateEncoderDecoder();
@@ -71,7 +62,7 @@ const ByteBuffer& EncodingConverter::convert(const void* data, size_t byteCount,
 	// 変換するのに必要なバイト数で領域確保
 	size_t size = TextEncoding::getConversionRequiredByteCount(m_srcEncoding, m_dstEncoding, byteCount);
 	if (m_options.NullTerminated) {
-		size += m_dstEncoding->getMinByteCount();
+		size += m_dstEncoding->minByteCount();
 	}
 	m_outputBuffer.resize(size, false);
 
@@ -81,13 +72,10 @@ const ByteBuffer& EncodingConverter::convert(const void* data, size_t byteCount,
 
 	if (m_srcDecoder->canRemain())
 	{
-		//EncodingConversionResult localResult;
-		//if (outResult == NULL) { outResult = &localResult; }	// outResult が NULL でも結果を受け取りたい
-
 		convertDecoderRemain(data, byteCount, m_srcDecoder, m_outputBuffer.getData(), size, m_dstEncoder, &m_lastResult);
 		m_outputBuffer.resize(m_lastResult.BytesUsed);	// 余分に確保されているので、見かけ上のサイズを実際に文字のあるサイズにする
 
-		if (outResult != NULL) { *outResult = m_lastResult; }
+		if (outResult != nullptr) { *outResult = m_lastResult; }
 	}
 	// デコーダが変換状態を保持できない場合はやむを得ないので一時メモリを確保し、ソースバッファ全体を一度に変換する。
 	else
@@ -114,7 +102,7 @@ const ByteBuffer& EncodingConverter::convert(const void* data, size_t byteCount,
 		m_lastResult.BytesUsed = encodeResult.outputByteCount;
 		m_lastResult.CharsUsed = encodeResult.outputCharCount;
 		m_lastResult.UsedDefaultChar = (m_srcDecoder->usedDefaultCharCount() > 0 || m_dstEncoder->usedDefaultCharCount() > 0);
-		if (outResult != NULL) 
+		if (outResult != nullptr) 
 		{
 			outResult->BytesUsed = m_lastResult.BytesUsed;
 			outResult->CharsUsed = m_lastResult.CharsUsed;
@@ -124,19 +112,16 @@ const ByteBuffer& EncodingConverter::convert(const void* data, size_t byteCount,
 	return m_outputBuffer;
 }
 
-//------------------------------------------------------------------------------
 const ByteBuffer& EncodingConverter::getLastBuffer() const
 {
 	return m_outputBuffer;
 }
 
-//------------------------------------------------------------------------------
 const EncodingConversionResult& EncodingConverter::getLastResult() const
 {
 	return m_lastResult;
 }
 
-//------------------------------------------------------------------------------
 void EncodingConverter::checkUpdateEncoderDecoder()
 {
 	if (m_encodingModified)
@@ -153,7 +138,6 @@ void EncodingConverter::checkUpdateEncoderDecoder()
 	}
 }
 
-//------------------------------------------------------------------------------
 void EncodingConverter::convertDecoderRemain(
 	const void* src_, size_t srcByteCount, TextDecoder* srcDecoder,
 	void* dest_, size_t destByteCount, TextEncoder* destEncoder,
@@ -181,7 +165,7 @@ void EncodingConverter::convertDecoderRemain(
 		}
 
 		// UTF16 へ
-		size_t srcBytes = std::min(srcByteCount - srcPos, BufferingElements);
+		size_t srcBytes = LN_MIN(srcByteCount - srcPos, BufferingElements);
 		TextDecoder::DecodeResult decodeResult;
 		srcDecoder->convertToUTF16(
 			&src[srcPos],

@@ -228,8 +228,8 @@ int StringHelper::compare(const TChar* str1, int str1Len, const TChar* str2, int
 	// 必要があれば文字数カウント
 	str1Len = (str1Len < 0) ? strlen(str1) : str1Len;
 	str2Len = (str2Len < 0) ? strlen(str2) : str2Len;
-	int minCount = std::min(str1Len, str2Len);
-	int maxCount = std::max(str1Len, str2Len);
+	int minCount = LN_MIN(str1Len, str2Len);
+	int maxCount = LN_MAX(str1Len, str2Len);
 
 	// チェックする文字数
 	if (count < 0)
@@ -239,7 +239,7 @@ int StringHelper::compare(const TChar* str1, int str1Len, const TChar* str2, int
 	else
 	{
 		maxCount = count;
-		count = std::min(minCount, count);
+		count = LN_MIN(minCount, count);
 	}
 
 	if (cs == CaseSensitivity::CaseSensitive)
@@ -408,7 +408,7 @@ void StringHelper::left(const TChar* str, int count, const TChar** outBegin, con
 	}
 
 	int len = (int)strlen(str);
-	len = std::min(len, count);
+	len = LN_MIN(len, count);
 	*outBegin = str;
 	*outEnd = str + len;
 }

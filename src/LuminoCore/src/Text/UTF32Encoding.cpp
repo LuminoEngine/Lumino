@@ -8,6 +8,9 @@ namespace ln {
 //==============================================================================
 // UTF32Encoding
 
+const String UTF32Encoding::NameLE = _T("UTF-32LE");
+const String UTF32Encoding::NameBE = _T("UTF-32BE");
+
 UTF32Encoding::UTF32Encoding(bool bigEndian, bool byteOrderMark)
     : m_bigEndian(bigEndian)
     , m_byteOrderMark(byteOrderMark)
@@ -17,7 +20,7 @@ UTF32Encoding::UTF32Encoding(bool bigEndian, bool byteOrderMark)
     }
 }
 
-byte_t* UTF32Encoding::getPreamble() const
+byte_t* UTF32Encoding::preamble() const
 {
     static byte_t bom[] = {0x00};
     LN_NOTIMPLEMENTED();
@@ -37,7 +40,7 @@ bool UTF32Encoding::UTF32Decoder::convertToUTF16(const byte_t* input, size_t inp
 
     UTFConversionOptions options;
     memset(&options, 0, sizeof(options));
-    options.ReplacementChar = mFallbackReplacementChar;
+    options.ReplacementChar = encoding()->fallbackReplacementChar();
 
     const byte_t* itr = input;
     const byte_t* end = itr + inputByteSize;
@@ -80,7 +83,7 @@ bool UTF32Encoding::UTF32Encoder::convertFromUTF16(const UTF16* input, size_t in
     // 変換設定
     UTFConversionOptions options;
     memset(&options, 0, sizeof(options));
-    options.ReplacementChar = mFallbackReplacementChar;
+    options.ReplacementChar = encoding()->fallbackReplacementChar();
 
     const UTF16* itr = input;
     const UTF16* end = itr + inputElementSize;

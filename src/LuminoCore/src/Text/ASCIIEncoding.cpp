@@ -7,6 +7,8 @@ namespace ln {
 //==============================================================================
 // ASCIIEncoding
 
+const String ASCIIEncoding::Name = _T("US-ASCII");
+
 ASCIIEncoding::ASCIIEncoding()
 {
 }
@@ -17,6 +19,8 @@ bool ASCIIEncoding::ASCIIDecoder::convertToUTF16(const byte_t* input, size_t inB
     LN_DCHECK(output);
     LN_DCHECK(outResult);
 
+	uint32_t fallbackReplacementChar = encoding()->fallbackReplacementChar();
+
     size_t i = 0;
     for (; i < inBufferByteCount; ++i) {
         byte_t ch = input[i];
@@ -26,8 +30,8 @@ bool ASCIIEncoding::ASCIIDecoder::convertToUTF16(const byte_t* input, size_t inB
             output[i] = static_cast<UTF16>(ch);
         }
         // 代替文字が指定されていればそれを使う
-        else if (mFallbackReplacementChar != 0x00) {
-            output[i] = static_cast<UTF16>(mFallbackReplacementChar);
+        else if (fallbackReplacementChar != 0x00) {
+            output[i] = static_cast<UTF16>(fallbackReplacementChar);
         }
         // ASCII 外で代替文字も無ければエラー
         else {
@@ -48,6 +52,8 @@ bool ASCIIEncoding::ASCIIEncoder::convertFromUTF16(const UTF16* input, size_t in
     LN_DCHECK(output);
     LN_DCHECK(outResult);
 
+	uint32_t fallbackReplacementChar = encoding()->fallbackReplacementChar();
+
     for (size_t i = 0; i < inputElementSize; ++i) {
         UTF16 ch = input[i];
 
@@ -56,8 +62,8 @@ bool ASCIIEncoding::ASCIIEncoder::convertFromUTF16(const UTF16* input, size_t in
             output[i] = static_cast<byte_t>(ch);
         }
         // 代替文字が指定されていればそれを使う
-        else if (mFallbackReplacementChar != 0x00) {
-            output[i] = static_cast<byte_t>(mFallbackReplacementChar);
+        else if (fallbackReplacementChar != 0x00) {
+            output[i] = static_cast<byte_t>(fallbackReplacementChar);
         }
         // ASCII 外で代替文字も無ければエラー
         else {

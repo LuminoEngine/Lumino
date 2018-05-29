@@ -135,7 +135,7 @@ void GenericFormatStringBuilder<TChar>::appendIntenal(const TChar* str, int leng
 		// バッファが足りなければ拡張する
 		if (m_bufferUsed + byteCount > m_buffer.getSize())
 		{
-			size_t newSize = m_buffer.getSize() + std::max(m_buffer.getSize(), byteCount);	// 最低でも byteCount 分を拡張する
+			size_t newSize = m_buffer.getSize() + LN_MAX(m_buffer.getSize(), byteCount);	// 最低でも byteCount 分を拡張する
 			m_buffer.resize(newSize, false);
 		}
 

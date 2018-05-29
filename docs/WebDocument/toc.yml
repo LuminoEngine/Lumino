@@ -1,7 +1,3 @@
-- name: ダウンロード
-  href: articles/downloads/index.md
-- name: 学習
-  href: articles/learning/samples/index.md
 - name: ドキュメント
   href: articles/documents/index.md
 - name: サポート

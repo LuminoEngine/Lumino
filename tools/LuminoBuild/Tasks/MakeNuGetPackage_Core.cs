@@ -52,16 +52,16 @@ namespace LuminoBuild.Tasks
                 ),
                 // nuget --------
                 (
-                    Path.Combine(builder.LuminoRootDir, "src", "LuminoCore", "NuGet", "LuminoCore.props"),
-                    Path.Combine(nativeDir, "LuminoCore.props")
+                    Path.Combine(builder.LuminoRootDir, "src", "LuminoCore", "NuGet", "Lumino.Core.props"),
+                    Path.Combine(nativeDir, "Lumino.Core.props")
                 ),
                 (
-                    Path.Combine(builder.LuminoRootDir, "src", "LuminoCore", "NuGet", "LuminoCore.targets"),
-                    Path.Combine(nativeDir, "LuminoCore.targets")
+                    Path.Combine(builder.LuminoRootDir, "src", "LuminoCore", "NuGet", "Lumino.Core.targets"),
+                    Path.Combine(nativeDir, "Lumino.Core.targets")
                 ),
                 (
-                    Path.Combine(builder.LuminoRootDir, "src", "LuminoCore", "NuGet", "LuminoCore.nuspec"),
-                    Path.Combine(nugetroot, "LuminoCore.nuspec")
+                    Path.Combine(builder.LuminoRootDir, "src", "LuminoCore", "NuGet", "Lumino.Core.nuspec"),
+                    Path.Combine(nugetroot, "Lumino.Core.nuspec")
                 ),
             };
 
@@ -76,7 +76,7 @@ namespace LuminoBuild.Tasks
             }
 
             Directory.SetCurrentDirectory(nugetroot);
-            Utils.CallProcess("nuget", "pack LuminoCore.nuspec");
+            Utils.CallProcess("nuget", "pack Lumino.Core.nuspec");
         }
     }
 }

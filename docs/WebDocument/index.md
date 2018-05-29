@@ -20,8 +20,8 @@ footer{
     Intuitive Framework for Real Time Graphics
     </div>
     <div class="buttons-unit">
-      <a href="articles/downloads/GettingStarted.md" class="button"><i class="glyphicon glyphicon-send"></i>Getting Started</a>
-      <a href="articles/downloads/index.md" class="button"><i class="glyphicon glyphicon-download"></i>Download Latest</a>
+      <a href="articles/documents/index.md" class="button"><i class="glyphicon glyphicon-send"></i>Getting Started</a>
+      <!-- <a href="articles/downloads/index.md" class="button"><i class="glyphicon glyphicon-download"></i>Download Latest</a> -->
     </div>
   </div>
 </div>

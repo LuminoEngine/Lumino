@@ -48,15 +48,15 @@ int Win32CodePageEncoding::getLeadExtraLength(const void* buffer, size_t bufferS
 //==============================================================================
 // Win32CodePageEncoding::Win32CodePageDecoder
 
-Win32CodePageEncoding::Win32CodePageDecoder::Win32CodePageDecoder(const CPINFOEX& cpInfo)
-    : m_codePage(cpInfo.CodePage)
-    , m_maxByteCount(cpInfo.MaxCharSize)
+Win32CodePageEncoding::Win32CodePageDecoder::Win32CodePageDecoder(TextEncoding* encoding, const CPINFOEX& cpInfo)
+    : TextDecoder(encoding)
+	, m_codePage(cpInfo.CodePage)
     , m_lastLeadByte(0)
     , m_usedDefaultCharCount(0)
     , m_canRemain(false)
 {
     // 2文字マルチバイト文字コードだが、先行バイトの分かるものであれば状態を保持しながら変換ができる。
-    if (m_maxByteCount == 2 && cpInfo.LeadByte[0] != '\0') {
+    if (cpInfo.MaxCharSize == 2 && cpInfo.LeadByte[0] != '\0') {
         m_canRemain = true;
     }
     reset();
@@ -143,9 +143,9 @@ bool Win32CodePageEncoding::Win32CodePageDecoder::convertToUTF16(const byte_t* i
 //==============================================================================
 // Win32CodePageEncoding::Win32CodePageEncoder
 
-Win32CodePageEncoding::Win32CodePageEncoder::Win32CodePageEncoder(const CPINFOEX& cpInfo)
-    : m_codePage(cpInfo.CodePage)
-    , m_maxByteCount(cpInfo.MaxCharSize)
+Win32CodePageEncoding::Win32CodePageEncoder::Win32CodePageEncoder(TextEncoding* encoding, const CPINFOEX& cpInfo)
+    : TextEncoder(encoding)
+	, m_codePage(cpInfo.CodePage)
     , m_usedDefaultCharCount(0)
     , m_canRemain(false)
 {
@@ -172,7 +172,7 @@ bool Win32CodePageEncoding::Win32CodePageEncoder::convertFromUTF16(const UTF16* 
 
     // マッピングできない文字をデフォルト文字に変換する設定をいろいろ
     DWORD dwFlags = 0;
-    char chDefault = (char)mFallbackReplacementChar;
+    char chDefault = (char)encoding()->fallbackReplacementChar();
     BOOL bUsedDefaultChar = FALSE;
     LPCSTR pDefault = NULL;
     if (chDefault != '\0') {

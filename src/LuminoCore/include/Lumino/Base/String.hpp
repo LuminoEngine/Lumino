@@ -770,7 +770,7 @@ public:
 
 			if (oldStr != nullptr)
 			{
-				memcpy(m_str, oldStr, std::min(length, oldLen) * sizeof(Char));
+				memcpy(m_str, oldStr, LN_MIN(length, oldLen) * sizeof(Char));
 				delete oldStr;
 			}
 		}
@@ -854,10 +854,10 @@ inline bool operator!=(const Char* lhs, const String& rhs) { return !operator==(
 inline bool operator!=(const String& lhs, const String& rhs) { return !operator==(lhs, rhs); }
 inline bool operator!=(const String& lhs, const Char* rhs) { return !operator==(lhs, rhs); }
 
-inline bool operator<(const String& lhs, const String& rhs) { return String::compare(lhs, 0, rhs, 0, std::max(lhs.length(), rhs.length()), CaseSensitivity::CaseSensitive) < 0; }
+inline bool operator<(const String& lhs, const String& rhs) { return String::compare(lhs, 0, rhs, 0, LN_MAX(lhs.length(), rhs.length()), CaseSensitivity::CaseSensitive) < 0; }
 inline bool operator<(const Char* lhs, const String& rhs) { return String::compare(lhs, 0, rhs, 0, -1, CaseSensitivity::CaseSensitive) < 0; }
 inline bool operator<(const String& lhs, const Char* rhs) { return String::compare(lhs, 0, rhs, 0, -1, CaseSensitivity::CaseSensitive) < 0; }
-inline bool operator>(const String& lhs, const String& rhs) { return String::compare(lhs, 0, rhs, 0, std::max(lhs.length(), rhs.length()), CaseSensitivity::CaseSensitive) > 0; }
+inline bool operator>(const String& lhs, const String& rhs) { return String::compare(lhs, 0, rhs, 0, LN_MAX(lhs.length(), rhs.length()), CaseSensitivity::CaseSensitive) > 0; }
 inline bool operator>(const Char* lhs, const String& rhs) { return String::compare(lhs, 0, rhs, 0, -1, CaseSensitivity::CaseSensitive) > 0; }
 inline bool operator>(const String& lhs, const Char* rhs) { return String::compare(lhs, 0, rhs, 0, -1, CaseSensitivity::CaseSensitive) > 0; }
 
@@ -898,7 +898,7 @@ inline std::wostream& operator<<(std::wostream& os, const String& str) { os << s
 //==============================================================================
 inline String operator+(const StringRef& lhs, const StringRef& rhs) { return String::concat(lhs, rhs); }
 
-inline bool operator==(const StringRef& lhs, const StringRef& rhs) { return String::compare(lhs, 0, rhs, 0, std::max(lhs.length(), rhs.length())) == 0; }
+inline bool operator==(const StringRef& lhs, const StringRef& rhs) { return String::compare(lhs, 0, rhs, 0, LN_MAX(lhs.length(), rhs.length())) == 0; }
 inline bool operator==(const Char* lhs, const StringRef& rhs) { return String::compare(StringRef(lhs), 0, rhs, 0, -1) == 0; }
 inline bool operator==(const StringRef& lhs, const Char* rhs) { return String::compare(lhs, 0, StringRef(rhs), 0, -1) == 0; }
 inline bool operator!=(const StringRef& lhs, const StringRef& rhs) { return !operator==(lhs, rhs); }

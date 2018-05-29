@@ -236,7 +236,7 @@ void TextWriter::writeInternal(const Char* str, int len)
 {
     // write BOM if needed
     if (!m_writtenPreamble) {
-        const byte_t* bom = m_converter.getDestinationEncoding()->getPreamble();
+        const byte_t* bom = m_converter.getDestinationEncoding()->preamble();
         size_t len = strlen((char*)bom);
         if (len > 0) {
             onWriteOverride(bom, len);

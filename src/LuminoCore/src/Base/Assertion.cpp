@@ -27,7 +27,7 @@ void convertWCharToChar16(const wchar_t* inStr, size_t inStrLen, char16_t* outSt
 {
 #if WCHAR_MAX <= 0xffff	// wchar_t == char16_t
 	// assumed windows
-	memcmp(outStr, inStr, sizeof(char16_t) * std::max(inStrLen, outStrLen));
+	memcmp(outStr, inStr, sizeof(char16_t) * LN_MAX(inStrLen, outStrLen));
 #elif WCHAR_MAX <= 0xffffffff
 	// assumed unix
 	ln::UTFConversionOptions opt;
@@ -42,7 +42,7 @@ void convertChar16ToWChar(const char16_t* inStr, size_t inStrLen, wchar_t* outSt
 {
 #if WCHAR_MAX <= 0xffff	// wchar_t == char16_t
 	// assumed windows
-	memcmp(outStr, inStr, sizeof(wchar_t) * std::max(inStrLen, outStrLen));
+	memcmp(outStr, inStr, sizeof(wchar_t) * LN_MAX(inStrLen, outStrLen));
 #elif WCHAR_MAX <= 0xffffffff
 	// assumed unix
 	ln::UTFConversionOptions opt;
@@ -109,7 +109,7 @@ void errorPrintf(Char* buf, size_t bufSize, const wchar_t* format, ...)
 void errorPrintf(Char* buf, size_t bufSize, const char16_t* format)
 {
 #ifdef LN_USTRING16
-	memcpy(buf, format, sizeof(Char) * std::max(bufSize, StringHelper::strlen(format)));
+	memcpy(buf, format, sizeof(Char) * LN_MAX(bufSize, StringHelper::strlen(format)));
 #else
 	convertChar16ToWChar(format, StringHelper::strlen(format), buf, bufSize - 1);
 #endif
