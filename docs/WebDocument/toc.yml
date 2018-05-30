@@ -1,5 +1,7 @@
 - name: ドキュメント
   href: articles/documents/index.md
+- name: API リファレンス
+  href: articles/documents/index.md
 - name: サポート
   href: articles/supports/index.md
 - name: ライセンス

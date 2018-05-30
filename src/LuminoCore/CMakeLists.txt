@@ -13,6 +13,7 @@ set(LN_SOURCES_Base
 	include/Lumino/Base/Assertion.hpp
 	include/Lumino/Base/Buffer.hpp
 	include/Lumino/Base/CRCHash.hpp
+	include/Lumino/Base/ElapsedTimer.hpp
 	include/Lumino/Base/EnumFlags.hpp
 	include/Lumino/Base/Environment.hpp
 	include/Lumino/Base/Event.hpp
@@ -33,6 +34,10 @@ set(LN_SOURCES_Base
 	src/Base/Buffer.cpp
 	src/Base/CRCHash.cpp
 	src/Base/CRTHelper.h
+	src/Base/ElapsedTimer.cpp
+	src/Base/ElapsedTimer_Linux.hpp
+	src/Base/ElapsedTimer_Mac.hpp
+	src/Base/ElapsedTimer_Win32.hpp
 	src/Base/Environment.cpp
 	src/Base/Environment_Linux.hpp
 	src/Base/Environment_Mac.hpp
