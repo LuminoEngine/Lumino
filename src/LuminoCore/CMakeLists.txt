@@ -220,7 +220,7 @@ set(LN_SOURCES
 
 set(LN_INCLUDE_DIRECTORIES
 	${PROJECT_SOURCE_DIR}/include)
-include_directories(${LN_INCLUDE_DIRECTORIES})
+#include_directories(${LN_INCLUDE_DIRECTORIES})
 
 #------------------------------------------------------------------------------
 # Apply options
@@ -241,6 +241,7 @@ endif()
 
 #------------------------------------------------------------------------------
 # Targets
+set(CMAKE_DEBUG_POSTFIX "-debug")
 
 #set(CMAKE_CXX_STANDARD 14)
 #set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -250,6 +251,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
+target_include_directories(${PROJECT_NAME} PUBLIC ${LN_INCLUDE_DIRECTORIES})
 target_link_libraries(${PROJECT_NAME} ${LN_LINK_LIBS})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "src/LuminoCore.PCH.h" "src/LuminoCore.PCH.cpp")
@@ -260,6 +262,10 @@ ln_add_pch(${PROJECT_NAME} "src/LuminoCore.PCH.h" "src/LuminoCore.PCH.cpp")
 #    CXX_EXTENSIONS NO
 #)
 
+#target_include_directories(${PROJECT_NAME} PUBLIC
+##                           $<BUILD_INTERFACE:${LN_INCLUDE_DIRECTORIES}>
+#                           $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include7>)
+
 # Unit test.
 if (LN_BUILD_TESTS)
 	add_subdirectory(test)
@@ -268,26 +274,38 @@ endif()
 #------------------------------------------------------------------------------
 # Install
 
+#install(TARGETS ${PROJECT_NAME} EXPORT LuminoTargets DESTINATION lib2)
+#install(TARGETS ${PROJECT_NAME} EXPORT LuminoTargets DESTINATION lib2/Release CONFIGURATIONS Release)
+# 5. ターゲットのインストール指定
+install(TARGETS ${PROJECT_NAME}
+    EXPORT LuminoCoreTargets                         # 5.a EXPORT オプションで エクスポート名を指定する
+    ARCHIVE        DESTINATION lib2            # 5.b ライブラリのインストール先
+    INCLUDES       DESTINATION include        # 5.c エクスポート時にincludeパスに含めるパスを指定する
+    )   # ヘッダのインストール先
 
- install(TARGETS ${PROJECT_NAME} EXPORT LuminoTargets DESTINATION lib)
 
-install(TARGETS ${PROJECT_NAME} DESTINATION lib)
-install(TARGETS ${PROJECT_NAME} DESTINATION lib/Debug CONFIGURATIONS Debug)
-install(TARGETS ${PROJECT_NAME} DESTINATION lib/Release CONFIGURATIONS Release)
+#install(TARGETS ${PROJECT_NAME} DESTINATION lib)
+#install(TARGETS ${PROJECT_NAME} DESTINATION lib/Debug CONFIGURATIONS Debug)
+#install(TARGETS ${PROJECT_NAME} DESTINATION lib/Release CONFIGURATIONS Release)
+
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include DESTINATION .)
 
-include(CMakePackageConfigHelpers)
-configure_package_config_file(
-    "Config.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/LuminoConfig.cmake"
-    INSTALL_DESTINATION "lib/cmake/Lumino"
-)
+#include(CMakePackageConfigHelpers)
+#configure_package_config_file(
+#    "LuminoCoreConfig.cmake.in"
+#    "${CMAKE_CURRENT_BINARY_DIR}/LuminoCoreConfig.cmake"
+#    INSTALL_DESTINATION "lib/cmake/Lumino"
+#)
 
-install(EXPORT LuminoTargets FILE LuminoTargets.cmake
-        EXPORT_LINK_INTERFACE_LIBRARIES
-        DESTINATION "lib/cmake/Lumino")
+# Targets.cmake へ Export 情報を出力
+install(
+	EXPORT LuminoCoreTargets
+	FILE LuminoCoreTargets.cmake
+	EXPORT_LINK_INTERFACE_LIBRARIES
+	DESTINATION "lib/cmake/Lumino")
 
 install(
-    FILES "${CMAKE_CURRENT_BINARY_DIR}/LuminoConfig.cmake"
-    DESTINATION "lib/cmake/Lumino"
-)
+    FILES "LuminoCoreConfig.cmake"
+    DESTINATION "lib/cmake/Lumino")
+
+#set_target_properties(${PROJECT_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "include")
