@@ -12,7 +12,7 @@ namespace LuminoBuild
             // default
             if (args.Length == 0)
             {
-                args = new string[] { "MakeNuGetPackage_Core" };
+                args = new string[] { "BuildDocuments" };
             }
 
             Assembly thisAssembly = Assembly.GetEntryAssembly();
@@ -31,7 +31,7 @@ namespace LuminoBuild
             builder.LuminoBindingsDir = builder.LuminoRootDir + "bindings/";
             builder.LuminoLibDir = builder.LuminoRootDir + "lib/";
             builder.LuminoToolsDir = builder.LuminoRootDir + "tools/";
-            builder.LuminoDocDir = builder.LuminoRootDir + "doc/";
+            builder.LuminoDocDir = builder.LuminoRootDir + "docs/";
             builder.LuminoPackageDir = builder.LuminoRootDir + "package/";
             builder.LuminoPackageSourceDir = builder.LuminoRootDir + "package/PackageSource/";
             builder.LuminoPackageReleaseDir = builder.LuminoRootDir + "package/Release/Lumino/";
@@ -43,6 +43,7 @@ namespace LuminoBuild
             builder.Tasks = new List<LuminoBuild.BuildTask>();
             builder.Tasks.Add(new Tasks.MakeVSProjects());
             builder.Tasks.Add(new Tasks.BuildEngine());
+            builder.Tasks.Add(new Tasks.BuildDocuments());
             builder.Tasks.Add(new Tasks.MakeNuGetPackage_Core());
             builder.Rules.Add(new Rules.MakePackage());
 

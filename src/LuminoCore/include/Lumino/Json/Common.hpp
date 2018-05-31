@@ -3,6 +3,7 @@
 
 namespace ln {
 
+/** Json を構成するノードの種類 */
 enum class JsonNode
 {
     /** 無効値 */

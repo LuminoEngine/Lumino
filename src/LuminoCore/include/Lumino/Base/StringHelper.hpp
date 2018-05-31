@@ -136,8 +136,8 @@ public:
 
 	/**
 		@brief		ワイルドカード('*', '?')を考慮して文字列を比較する
-		@param[in]	puttern		: ワイルドカードを含むパターン文字列
-		@param[in]	str			: 比較対象の文字列
+		@param[in]	pattern  : ワイルドカードを含むパターン文字列
+		@param[in]	str  : 比較対象の文字列
 	*/
 	template<typename TChar>
 	static bool match(const TChar* pattern, const TChar* str);
@@ -163,25 +163,25 @@ public:
 	*/
 	template<typename TChar>
 	static int8_t toInt8(const TChar* str, int len = -1, int base = 0, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
-	/// @copydoc ToInt8
+	/// @copydoc toInt8
 	template<typename TChar>
 	static uint8_t toUInt8(const TChar* str, int len = -1, int base = 0, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
-	/// @copydoc ToInt8
+	/// @copydoc toInt8
 	template<typename TChar>
 	static int16_t toInt16(const TChar* str, int len = -1, int base = 0, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
-	/// @copydoc ToInt8
+	/// @copydoc toInt8
 	template<typename TChar>
 	static uint16_t toUInt16(const TChar* str, int len = -1, int base = 0, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
-	/// @copydoc ToInt8
+	/// @copydoc toInt8
 	template<typename TChar>
 	static int32_t toInt32(const TChar* str, int len = -1, int base = 0, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
-	/// @copydoc ToInt8
+	/// @copydoc toInt8
 	template<typename TChar>
 	static uint32_t toUInt32(const TChar* str, int len = -1, int base = 0, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
-	/// @copydoc ToInt8
+	/// @copydoc toInt8
 	template<typename TChar>
 	static int64_t toInt64(const TChar* str, int len = -1, int base = 0, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
-	/// @copydoc ToInt8
+	/// @copydoc toInt8
 	template<typename TChar>
 	static uint64_t toUInt64(const TChar* str, int len = -1, int base = 0, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
 

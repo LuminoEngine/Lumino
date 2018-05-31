@@ -9,8 +9,8 @@ namespace ln {
  * 
  * SpecialFolder   | Windows                   | OS X    | Linux
  * ----------------|---------------------------|---------|---------
- * ApplicationData | <USER>/AppData/Roaming    |         | ~/.local/share, /usr/local/share, /usr/share/
- * Temporary       | <USER>/AppData/Local/Temp |         | /tmp
+ * ApplicationData | \<USER\>/AppData/Roaming    |         | ~/.local/share, /usr/local/share, /usr/share/
+ * Temporary       | \<USER\>/AppData/Local/Temp |         | /tmp
  */
 enum class SpecialFolder
 {

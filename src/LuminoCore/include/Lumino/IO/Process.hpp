@@ -78,94 +78,16 @@ public:
 
 	StreamReader* openStderr();
 
-
-	///**
-	//	@brief		標準入力のエンコーディングを設定します。
-	//	@details	Start() の前に設定する必要があります。
-	//				規定値は Encoding::GetGetSystemMultiByteEncoding() です。
-	//*/
-	//void setStandardInputEncoding(Encoding* encoding) LN_NOEXCEPT{ m_standardInputEncoding = encoding; }
-	//	
-	///**
-	//	@brief		標準出力のエンコーディングを設定します。
-	//	@details	Start() の前に設定する必要があります。
-	//				規定値は Encoding::GetGetSystemMultiByteEncoding() です。
-	//*/
-	//void setStandardOutputEncoding(Encoding* encoding) LN_NOEXCEPT { m_standardOutputEncoding = encoding; }
-
-	///**
-	//	@brief		標準エラー出力のエンコーディングを設定します。
-	//	@details	Start() の前に設定する必要があります。
-	//				規定値は Encoding::GetGetSystemMultiByteEncoding() です。
-	//*/
-	//void setStandardErrorEncoding(Encoding* encoding) LN_NOEXCEPT{ m_standardErrorEncoding = encoding; }
-	
-	///**
-	//	@brief		標準入力をリダイレクトするかを設定します。 (規定値:false)
-	//	@details	Start() の前に設定する必要があります。
-	//*/
-	//void setRedirectStandardInput(bool enabled);
-
-	///**
-	//	@brief		標準出力をリダイレクトするかを設定します。 (規定値:false)
-	//	@details	Start() の前に設定する必要があります。
-	//*/
-	//void setRedirectStandardOutput(bool enabled);
-
-	///**
-	//	@brief		標準エラー出力をリダイレクトするかを設定します。 (規定値:false)
-	//	@details	Start() の前に設定する必要があります。
-	//*/
-	//void setRedirectStandardError(bool enabled);
-
-	///**
-	//	@brief		標準入力のエンコーディングを設定します。
-	//	@details	Start() の前に設定する必要があります。
-	//				規定値は Encoding::GetGetSystemMultiByteEncoding() です。
-	//*/
-	//void setStandardInputEncoding(Encoding* encoding) LN_NOEXCEPT{ m_standardInputEncoding = encoding; }
-	//	
-	///**
-	//	@brief		標準出力のエンコーディングを設定します。
-	//	@details	Start() の前に設定する必要があります。
-	//				規定値は Encoding::GetGetSystemMultiByteEncoding() です。
-	//*/
-	//void setStandardOutputEncoding(Encoding* encoding) LN_NOEXCEPT { m_standardOutputEncoding = encoding; }
-
-	///**
-	//	@brief		標準エラー出力のエンコーディングを設定します。
-	//	@details	Start() の前に設定する必要があります。
-	//				規定値は Encoding::GetGetSystemMultiByteEncoding() です。
-	//*/
-	//void setStandardErrorEncoding(Encoding* encoding) LN_NOEXCEPT{ m_standardErrorEncoding = encoding; }
-	//	
-	///**
-	//	@brief		標準出力を Stream へリダイレクトする場合、リダイレクト先の Stream を設定します。
-	//	@details	リダイレクト先の Stream が設定されている場合、GetStandardOutput() を呼び出すことはできません。
-	//				Start() の前に設定する必要があります。
-	//*/
-	//void setStandardOutputStream(Stream* stream) LN_NOEXCEPT{ m_standardOutputExternalStream = stream; }
-
 	/**
 		@brief		プログラムのファイルパスとコマンドライン引数を指定してプロセスを起動します。
-		@param[in]	program	: プログラム名または実行ファイルパス
-		@param[in]	args	: コマンドライン引数
+
 		@exception	FileNotFoundException	program が見つからなかった。
 	*/
 	void start();
 
-	///**
-	//	@brief		プログラムのファイルパスとコマンドライン引数を指定してプロセスを起動します。
-	//	@param[in]	program	: プログラム名または実行ファイルパス
-	//	@param[in]	args	: コマンドライン引数
-	//	@exception	FileNotFoundException	program が見つからなかった。
-	//	@details	指定されたコマンドライン引数の各要素は、要素に空白が含まれる場合その前後に " を付加した状態でプロセスの起動に使用します。
-	//*/
-	//void start(const Path& program, const List<String>& args);
-
 	/**
 		@brief		プロセスの終了を待機します。
-		@param[in]	timeoutMSec	: タイムアウト時間 (ミリ秒)
+		@param[in]	timeoutMilliseconds	: タイムアウト時間 (ミリ秒)
 		@return		true:正常終了  false:タイムアウトした
 	*/
 	bool wait(int timeoutMilliseconds = -1);
@@ -183,25 +105,6 @@ public:
 	*/
 	int exitCode();
 
-	///**
-	//	@brief		標準入力の書き込みに使用されるストリームを取得します。
-	//*/
-	//StreamWriter* getStandardInput() const;
-
-	///**
-	//	@brief		標準出力の読み取りに使用されるストリームを取得します。
-	//	@details	この関数は同期的な読み取りを行う際に使用します。
-	//				取得した StreamReader の ReadLine() や ReadToEnd() は、子プロセスが標準出力に書き込みを行うか、プロセスが終了するまで待機し、
-	//				プロセスが終了することで EOF となります。
-	//*/
-	//StreamReader* getStandardOutput() const;
-
-	///**
-	//	@brief		標準エラー出力の読み取りに使用されるストリームを取得します。
-	//	@see		GetStandardOutput()
-	//*/
-	//StreamReader* getStandardError() const;
-
 public:
 
 	/**
@@ -217,9 +120,6 @@ public:
 private:
 	void createRedirectStreams();
 
-	//void disposeProcess();
-	//void thread_ReadStdOutput();
-	//void thread_ReadStdError();
 
 	Ref<detail::ProcessImpl> m_impl;
 
@@ -233,26 +133,6 @@ private:
 	Ref<StreamReader> m_stdoutReader;
 	Ref<StreamReader> m_stderrReader;
 
-
-//	Path					m_workingDirectory;
-//	bool						m_redirectStandardInput;
-//	bool						m_redirectStandardOutput;
-//	bool						m_redirectStandardError;
-//	TextEncoding*					m_standardInputEncoding;
-//	TextEncoding*					m_standardOutputEncoding;
-//	TextEncoding*					m_standardErrorEncoding;
-//	Stream*						m_standardOutputExternalStream;
-//	Ref<StreamWriter>		m_standardInputWriter;
-//	Ref<StreamReader>		m_standardOutputReader;
-//	Ref<StreamReader>		m_standardErrorReader;
-//
-//	bool						m_runningReadThread;
-//	bool						m_runningErrorReadThread;
-//
-//#ifdef _WIN32
-//#else
-//    pid_t   m_pid;	// TODO:PImplにしたのでいらないかも
-//#endif
 };
 
 

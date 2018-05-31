@@ -103,13 +103,13 @@ public:
         }
     }
 
-    /** @copydoc connect */
+	/** このイベントからの通知を受けるコールバックを登録します。 */
     EventConnection operator+=(const DelegateType& handler)
     {
         return connectInternal(handler);
     }
 
-    /** @copydoc raise */
+	/** 登録されているすべてのコールバックへイベントを通知します。 */
     void operator()(TArgs... args)
     {
         raise(std::forward<TArgs>(args)...);

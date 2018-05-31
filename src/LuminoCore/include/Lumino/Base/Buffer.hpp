@@ -77,6 +77,7 @@ public:
 	/**
 		@brief		バッファの再割り当てを行います。
 		@param[in]	size		: バッファのバイト数
+		@param[in]	zeroClear		: 
 	*/
 	void alloc(size_t size, bool zeroClear = true);
 

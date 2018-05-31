@@ -28,8 +28,12 @@ public:
 
     /** 指定されたパス文字列から Path を構築します。 */
     Path(const Char* path);
-    Path(const String& path);    /**< @copydoc */
-    Path(const StringRef& path); /**< @copydoc */
+
+	/** 指定されたパス文字列から Path を構築します。 */
+    Path(const String& path);
+
+    /** 指定されたパス文字列から Path を構築します。 */
+    Path(const StringRef& path);
 
     /** 指定されたパス文字列を連結して Path を構築します。relativePath が絶対パスである場合、basePath は無視されます。 */
     Path(const Path& basePath, const Char* relativePath);
@@ -121,7 +125,7 @@ public:
 
     /**
      * ファイルの拡張子を取得します。
-     * @param[in]    withDot　: true の場合、結果は '.' を含み、false の場合は含まない
+     * @param[in]    withDot : true の場合、結果は '.' を含み、false の場合は含まない
      * ~~~
      * "file.txt"           => ".txt"
      * "file.tmp.txt"       => ".txt"

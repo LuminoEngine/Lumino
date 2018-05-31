@@ -14,7 +14,7 @@ public:
     /**
 	 * 指定したストリームへ書き込む StreamWriter を構築します。
 	 *
-	 * @param[in]	filePath	: 書き込み先ファイルのパス
+	 * @param[in]	stream	: 書き込み先ストリーム
 	 * @param[in]	encoding	: 書き込み時に使用するエンコーディング
 	 *
 	 * encoding を省略した場合は UTF-8 文字列として書き込みます。

@@ -1,7 +1,7 @@
 - name: ドキュメント
   href: articles/documents/index.md
 - name: API リファレンス
-  href: articles/documents/index.md
+  href: articles/reference-cpp/index.html
 - name: サポート
   href: articles/supports/index.md
 - name: ライセンス
