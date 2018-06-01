@@ -313,7 +313,7 @@ public:
 	{
 		auto& f = *static_cast<GenericStringFormatter<TChar>*>(formatter);
 		const StringRef* ref = static_cast<const StringRef*>(value);
-		f.m_sb.appendString(ref->getBegin(), ref->length());
+		f.m_sb.appendString(ref->data(), ref->length());
 	}
 
 	// user-defined type
@@ -395,6 +395,16 @@ static FormatListN<TChar, sizeof...(TArgs)> makeArgList(const TArgs&... args)
 template<typename TChar>
 bool formatInternal(const Locale& locale, GenericFormatStringBuilder<TChar>* outStr, const TChar* format, int formatLen, const FormatList<TChar>& args)
 {
+	enum NumberingState
+	{
+		Prologue,
+		Manual,
+		Auto,
+	};
+
+	NumberingState numberingState = NumberingState::Prologue;
+	int autoNumberingIndex = -1;
+
 	GenericStringFormatter<TChar> formatter;
 	formatter.m_locale = &locale.stdLocale();
 	const TChar* pos = format;
@@ -402,7 +412,7 @@ bool formatInternal(const Locale& locale, GenericFormatStringBuilder<TChar>* out
 	TChar ch;
 	while (pos < end)
 	{
-		// { を見つけるまで回るループ
+		// find '{' roop
 		while (pos < end)
 		{
 			ch = *pos;
@@ -410,7 +420,7 @@ bool formatInternal(const Locale& locale, GenericFormatStringBuilder<TChar>* out
 
 			if (ch == '}')
 			{
-				if (pos < end && *pos == '}') 	// } のエスケープ "}}"
+				if (pos < end && *pos == '}') 	// "}}" escape
 				{
 					++pos;
 				}
@@ -423,7 +433,7 @@ bool formatInternal(const Locale& locale, GenericFormatStringBuilder<TChar>* out
 			}
 			if (ch == '{')
 			{
-				if (pos < end && *pos == '{') 	// { のエスケープ "{{"
+				if (pos < end && *pos == '{')  // "{{" escape
 				{
 					++pos;
 				}
@@ -445,40 +455,65 @@ bool formatInternal(const Locale& locale, GenericFormatStringBuilder<TChar>* out
 		if (pos >= end) { break; }
 
 		// 次の文字は必ず数字でなければならない
+		NumberingState requireNumberingState;
 		if ('0' <= *pos && *pos <= '9')
 		{
+			requireNumberingState = NumberingState::Manual;
 		}
 		else
 		{
-			formatter.reportError("expected number", format - pos);
+			requireNumberingState = NumberingState::Auto;
+		}
+
+		if (numberingState == NumberingState::Prologue)
+		{
+			numberingState = requireNumberingState;
+		}
+		else if (numberingState == NumberingState::Manual && requireNumberingState == NumberingState::Auto) {
+			formatter.reportError("cannot switch from manual field specification to automatic field numbering", format - pos);
 			return false;
+		}
+		else if (numberingState == NumberingState::Auto && requireNumberingState == NumberingState::Manual) {
+			formatter.reportError("cannot switch from automatic field numbering to manual field specification", format - pos);
+			return false;
+		}
+		else {
+			// numberingState equals requireNumberingState
 		}
 
 		//-----------------------------------------------------------
-		// Index コンポーネント (型引数のインデックスを取り出す)
+		// Index component
 		int index = 0;
-		do
+		if (numberingState == NumberingState::Manual)
 		{
-			index = (index * 10) + ((*pos) - '0');
-			++pos;
-			if (pos >= end)
+			do
 			{
-				// Error: インデックス解析中に \0 になった
-				formatter.reportError("expected index number", format - pos);
+				index = (index * 10) + ((*pos) - '0');
+				++pos;
+				if (pos >= end)
+				{
+					// Error: インデックス解析中に \0 になった
+					formatter.reportError("expected index number", format - pos);
+					return false;
+				}
+
+			} while ((*pos) >= '0' && (*pos) <= '9');
+
+			if (index >= args.getCount())
+			{
+				// Error: 引数の数よりも大きいインデックスがある
+				formatter.reportError("index is out of args range", format - pos);
 				return false;
 			}
-
-		} while ((*pos) >= '0' && (*pos) <= '9');
-
-		if (index >= args.getCount())
+		}
+		else
 		{
-			// Error: 引数の数よりも大きいインデックスがある
-			formatter.reportError("index is out of args range", format - pos);
-			return false;
+			autoNumberingIndex++;
+			index = autoNumberingIndex;
 		}
 
 		//-----------------------------------------------------------
-		// Alignment コンポーネント
+		// Alignment component
 		while (pos < end && *pos == ' ') { pos++; }	// 先頭の空白を無視
 		bool leftJustify = false;					// 左詰めにするか？
 		int width = 0;
@@ -530,8 +565,8 @@ bool formatInternal(const Locale& locale, GenericFormatStringBuilder<TChar>* out
 		}
 
 		//-----------------------------------------------------------
-		// FormatString コンポーネント
-		while (pos < end && *pos == ' ') { pos++; }	// 先頭の空白を無視
+		// FormatString component
+		while (pos < end && *pos == ' ') { pos++; }	// ignore head space
 		const TChar* fmtBegin = nullptr;
 		const TChar* fmtEnd = nullptr;
 		const TChar* fmtParamEnd = nullptr;
@@ -622,7 +657,6 @@ static inline int formatFixed(TChar* buffer, size_t bufferSize, const Locale& lo
 
 //==============================================================================
 // String
-//==============================================================================
 
 template<typename... TArgs>
 inline String String::format(const StringRef& format, TArgs&&... args)

@@ -39,4 +39,3 @@ uint64_t ElapsedTimer::elapsedNanoseconds() const LN_NOEXCEPT
 }
 
 } // namespace ln
-

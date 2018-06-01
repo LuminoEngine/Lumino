@@ -400,6 +400,41 @@ template bool StringHelper::endsWith<wchar_t>(const wchar_t* str1, int len1, con
 template bool StringHelper::endsWith<char16_t>(const char16_t* str1, int len1, const char16_t* str2, int len2, CaseSensitivity cs);
 
 template<typename TChar>
+void StringHelper::substr(const TChar* str, int len, int start, int count, const TChar** outBegin, const TChar** outEnd)
+{
+	if (start < 0)
+	{
+		start = 0;
+	}
+	if (count < 0)
+	{
+		count = len - start;
+	}
+	if (start + count > len)
+	{
+		count = len - start;
+	}
+	if (start > len)
+	{
+		count = 0;
+	}
+
+	if (start == 0 && count == len)
+	{
+		*outBegin = str;
+		*outEnd = str + len;
+	}
+	else
+	{
+		*outBegin = str + start;
+		*outEnd = str + start + count;
+	}
+}
+template void StringHelper::substr<char>(const char* str, int len, int start, int count, const char** outBegin, const char** outEnd);
+template void StringHelper::substr<wchar_t>(const wchar_t* str, int len, int start, int count, const wchar_t** outBegin, const wchar_t** outEnd);
+template void StringHelper::substr<char16_t>(const char16_t* str, int len, int start, int count, const char16_t** outBegin, const char16_t** outEnd);
+
+template<typename TChar>
 void StringHelper::left(const TChar* str, int count, const TChar** outBegin, const TChar** outEnd)
 {
 	if (count < 0)

@@ -21,534 +21,520 @@ namespace detail { struct StringLockContext; }
 
 
 /**
-	@brief		文字列を表すクラスです。				
-*/
+ * Unicode 文字列を表します。
+ * 
+ * String クラスは環境に依らず、UTF-16 コードで表現される文字の配列です。
+ * 文字は Char 型で表される 2Byte 値です。65535を 超えるコード値の文字は、サロゲートペア、つまり2つの連続した文字で格納されます。
+ * 
+ * 文字列はメモリ上に連続的に確保され Null 終端文字を格納します。
+ */
 class String
 {
 public:
     static const String Empty;
 
-	String();
-	~String();
-	String(const String& str);
-	String(String&& str) LN_NOEXCEPT;
-	String& operator=(const String& str);
-	String& operator=(String&& str) LN_NOEXCEPT;
+    String();
+    ~String();
+    String(const String& str);
+    String(String&& str) LN_NOEXCEPT;
+    String& operator=(const String& str);
+    String& operator=(String&& str) LN_NOEXCEPT;
 
-	String(const String& str, int begin);
-	String(const String& str, int begin, int length);
-	String(const Char* str);
-	String(const Char* str, int length);
-	String(const Char* begin, const Char* end);
-	String(int count, Char ch);
-	String(const StringRef& str);
-	String(const Path& path);
-	// TODO: Path&&
+    String(const String& str, int begin);
+    String(const String& str, int begin, int length);
+    String(const Char* str);
+    String(const Char* str, int length);
+    String(const Char* begin, const Char* end);
+    String(int count, Char ch);
+    String(const StringRef& str);
+    String(const Path& path);
 
 #ifdef LN_STRING_FUZZY_CONVERSION
-	String(const char* str);
+    String(const char* str);
 #ifdef LN_USTRING16
-	String(const wchar_t* str);
+    String(const wchar_t* str);
 #endif
 #endif
 
-	/** 文字列が空であるかを確認します。 */
-	bool isEmpty() const;
+    /** 文字列が空であるかを確認します。 */
+    bool isEmpty() const LN_NOEXCEPT;
 
-	/** C 言語としての文字列表現を取得します。 */
-	const Char* c_str() const;
+    /** C 言語としての文字列表現を取得します。 */
+    const Char* c_str() const LN_NOEXCEPT;
 
-	/** 文字列の長さを取得します。 */
-	int length() const;
+    /** 文字列の長さを取得します。 */
+    int length() const LN_NOEXCEPT;
 
-	/** メモリを再確保せずに格納できる最大の要素数を取得します。 */
-	int capacity() const;
+    /** メモリを再確保せずに格納できる最大の要素数を取得します。 */
+    int capacity() const LN_NOEXCEPT;
 
-	/** 文字列をクリアします。 */
-	void clear();
+    /** 文字列をクリアします。 */
+    void clear();
 
-	/** 文字列の長さを変更します。 */
-	void resize(int newLength);
-	void resize(int newLength, Char ch);
+    /** 文字列の長さを変更します。 */
+    void resize(int newLength);
 
-	/** サイズ変更の予定を指示します。 */
-	void reserve(int size);
+    /** 文字列の長さを変更します。増大した領域を ch で置き換えます。 */
+    void resize(int newLength, Char ch);
 
-	void assign(const Char* str);
-	void assign(const Char* str, int length);
-	void assign(int count, Char ch);
-	void assign(const StringRef& str);
+    /** サイズ変更の予定を指示します。 */
+    void reserve(int size);
 
-	void append(const Char* str, int length);
-	void append(const String& str);
-	
-	/**
-		@brief		指定した文字列がこの文字列内に存在するかを判断します。
-		@param[in]	str		: 検索文字列
-		@param[in]	cs		: 大文字と小文字の区別設定
-		@return		文字列が存在すれば true。str が空文字列である場合は必ず true となります。
-	*/
-	bool contains(const StringRef& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
-	bool contains(Char ch, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;					/**< @overload contains */
+    /** 文字列の再代入します。 */
+    void assign(const Char* str);
+    void assign(const Char* str, int length);   /**< @overload assign */
+    void assign(int count, Char ch);            /**< @overload assign */
+    void assign(const StringRef& str);          /**< @overload assign */
 
-	/**
-		@brief		文字列を検索し、見つかった最初の文字のインデックスを返します。
-		@param[in]	str			: 検索文字列
-		@param[in]	startIndex	: 検索を開始するインデックス (省略した場合は先頭から)
-		@param[in]	cs			: 大文字と小文字の区別設定
-		@return		見つからなかった場合は -1。str が空文字列である場合は 0。
-	*/
-	int indexOf(const StringRef& str, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
-	int indexOf(Char ch, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+    /** 指定された文字列を追加します。 */
+    void append(const Char* str, int length);
+    void append(const String& str);             /**< @overload append */
+    
+    /**
+     * 指定した文字列がこの文字列内に存在するかを判断します。
+     * 
+     * @param[in]    str        : 検索文字列
+     * @param[in]    cs        : 大文字と小文字の区別設定
+     * @return        文字列が存在すれば true。str が空文字列である場合は必ず true となります。
+     */
+    bool contains(const StringRef& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+    bool contains(Char ch, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;                    /**< @overload contains */
 
-	/**
-		@brief		文字列を検索し、最後に見つかったインデックスを返します。
-		@param[in]	str			: 検索文字列
-		@param[in]	startIndex	: 検索を開始するインデックス (-1 を指定すると、文字列の末尾から検索を開始する)
-		@param[in]	count		: 検索する文字数 (-1 を指定すると、文字列の先頭まで検索する)
-		@param[in]	cs			: 大文字と小文字の区別設定
-		@return		見つかった文字列の開始インデックス。見つからなかった場合は -1。
-		@details	startIndex の位置から文字列の先頭に向かう count 文字分の領域から str を検索します。
-		@code
-					String str = "abcdef";
-					str.LastIndexOf("de");			// => 3
-					str.LastIndexOf("bc", 2);		// => 1
-					str.LastIndexOf("cd", 2);		// => -1	(検索範囲 "abc" の中に "cd" は存在しない)
-					str.LastIndexOf("cd", 4, 3);	// => 2		(検索範囲 "cde" の中に "cd" は存在する)
-					str.LastIndexOf("bc", 4, 3);	// => -1	(検索範囲 "cde" の中に "bc" は存在しない)
-		@endcode
-	*/
-	int lastIndexOf(const StringRef& str, int startIndex = -1, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
-	int lastIndexOf(Char ch, int startIndex = -1, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;	/**< @overload lastIndexOf */
+    /**
+     * 文字列を検索し、見つかった最初の文字のインデックスを返します。
+     * 
+     * @param[in]    str            : 検索文字列
+     * @param[in]    startIndex    : 検索を開始するインデックス (省略した場合は先頭から)
+     * @param[in]    cs            : 大文字と小文字の区別設定
+     * @return        見つからなかった場合は -1。str が空文字列である場合は 0。
+     */
+    int indexOf(const StringRef& str, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+    int indexOf(Char ch, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 
-	/**
-		@brief		この文字列の先頭が、指定した文字列と一致するかを判断します。
-		@param[in]	str			: 検索文字列
-		@details	str が空文字の場合は必ず true が返ります。
-	*/
-	bool startsWith(const StringRef& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
-	bool startsWith(Char ch, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;				/**< @overload startsWith */
+    /**
+     * 文字列を検索し、最後に見つかったインデックスを返します。
+     * 
+     * @param[in]    str        : 検索文字列
+     * @param[in]    startIndex : 検索を開始するインデックス (-1 を指定すると、文字列の末尾から検索を開始する)
+     * @param[in]    count      : 検索する文字数 (-1 を指定すると、文字列の先頭まで検索する)
+     * @param[in]    cs         : 大文字と小文字の区別設定
+     * @return        見つかった文字列の開始インデックス。見つからなかった場合は -1。
+     * 
+     * startIndex の位置から文字列の先頭に向かう count 文字分の領域から str を検索します。
+     * ~~~
+     * String str = "abcdef";
+     * str.LastIndexOf("de");       // => 3
+     * str.LastIndexOf("bc", 2);    // => 1
+     * str.LastIndexOf("cd", 2);    // => -1    (検索範囲 "abc" の中に "cd" は存在しない)
+     * str.LastIndexOf("cd", 4, 3); // => 2     (検索範囲 "cde" の中に "cd" は存在する)
+     * str.LastIndexOf("bc", 4, 3); // => -1    (検索範囲 "cde" の中に "bc" は存在しない)
+     * ~~~
+     */
+    int lastIndexOf(const StringRef& str, int startIndex = -1, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+    int lastIndexOf(Char ch, int startIndex = -1, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;    /**< @overload lastIndexOf */
 
-	/**
-		@brief		この文字列の末尾が、指定した文字列と一致するかを判断します。
-		@param[in]	str			: 検索文字列
-		@details	str が空文字の場合は必ず true が返ります。
-		@code
-					str = "file.txt";
-					if (str.EndsWith(".txt")) {
-						// 一致した
-					}
-		@endcode
-	*/
-	bool endsWith(const StringRef& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
-	bool endsWith(Char ch, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;					/**< @overload endsWith */
+    /**
+     * この文字列の先頭が、指定した文字列と一致するかを判断します。
+     * 
+     * @param[in]    str            : 検索文字列
+     * 
+     * str が空文字の場合は必ず true が返ります。
+     */
+    bool startsWith(const StringRef& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+    bool startsWith(Char ch, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;                /**< @overload startsWith */
 
-	/**
-		@brief		文字列の部分文字列を抽出します。
-		@param[in]	start	: 開始文字インデックス
-		@param[in]	count	: 文字数 (-1 の場合、末尾まで抽出する)
-		@return		抽出された文字列
-		@code
-					String s("abcdef");
-					s.Mid(2, 3)		=> "cde";
-		@endcode
-	*/
-	StringRef substring(int start, int count = -1) const;
+    /**
+     * この文字列の末尾が、指定した文字列と一致するかを判断します。
+     * 
+     * @param[in]    str            : 検索文字列
+     * 
+     * str が空文字の場合は必ず true が返ります。
+     * ~~~
+     * str = "file.txt";
+     * if (str.EndsWith(".txt")) {
+     *     // 一致した
+     * }
+     * ~~~
+     */
+    bool endsWith(const StringRef& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+    bool endsWith(Char ch, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;      /**< @overload endsWith */
 
-	/**
-		@brief		文字列の左側(先頭)から指定した文字数を抽出します。
-		@param[in]	str		: 対象の文字列
-		@param[in]	count	: 文字数
-		@return		抽出された文字列
-		@code
-					String s(_T("abcdef"));
-					s.Left(2)		=> _T("ab");
-		@endcode
-	*/
-	String left(int count) const;
+    /**
+     * 文字列の部分文字列を抽出します。
+     * 
+     * @param[in]   start   : 開始文字インデックス
+     * @param[in]   count   : 文字数 (-1 の場合、末尾まで抽出する)
+     * @return      抽出された文字列
+     * 
+     * ~~~
+     * String s("abcdef");
+     * s.substr(2, 3);      // => "cde";
+     * ~~~
+     */
+    StringRef substr(int start, int count = -1) const;
 
-	/**
-		@brief		文字列の右側(末尾)から指定した文字数を抽出します。
-		@param[in]	str		: 対象の文字列
-		@param[in]	count	: 文字数
-		@return		抽出された文字列
-		@code
-					String s(_T("abcdef"));
-					s.Right(2)		=> _T("ef");
-		@endcode
-	*/
-	String right(int count) const;
+    /**
+     * 文字列の左側(先頭)から指定した文字数を抽出します。
+     * 
+     * @param[in]    str        : 対象の文字列
+     * @param[in]    count    : 文字数
+     * @return        抽出された文字列
+     * 
+     * ~~~
+     * String s("abcdef");
+     * s.left(2);           // => "ab";
+     * ~~~
+     */
+    String left(int count) const;   // TODO: StringRef
 
-	/** 文字列の先頭と末尾の空白を全て削除します。 */
-	String trim() const;
+    /**
+     * 文字列の右側(末尾)から指定した文字数を抽出します。
+     * 
+     * @param[in]    str        : 対象の文字列
+     * @param[in]    count    : 文字数
+     * @return        抽出された文字列
+     * 
+     * ~~~
+     * String s("abcdef");
+     * s.right(2);          // => "ef";
+     * ~~~
+     */
+    String right(int count) const;   // TODO: StringRef
 
-	/** 小文字を大文字に変換します。(ロケールの影響を受けません) */
-	String toUpper() const;
+    /** 文字列の先頭と末尾の空白を全て削除した文字列を返します。 */
+    String trim() const;
 
-	/** 大文字を小文字に変換します。(ロケールの影響を受けません) */
-	String toLower() const;
+    /** 小文字を大文字に変換した文字列を返します。(ロケールの影響を受けません) */
+    String toUpper() const;
 
-	/** 先頭の文字を大文字、以降を小文字に変換します。(ロケールの影響を受けません) */
-	String toTitleCase() const;
+    /** 大文字を小文字に変換した文字列を返します。(ロケールの影響を受けません) */
+    String toLower() const;
 
-	/**
-		@brief		この文字列から指定した文字をすべて取り除いた新しい文字列を返します。
-		@param[in]	str		: 削除する文字列
-		@param[in]	cs		: 大文字と小文字の区別設定
-	*/
-	String remove(const StringRef& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
-	String remove(Char ch, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
-	
-	/**
-		@brief		文字列の置換を行います。
-		@param[in]	from	: 置換される文字列
-		@param[in]	to		: from を置換する文字列
-		@return		置換結果の文字列
-		@details	from に一致するすべての文字列を to に置換します。
-	*/
-	String replace(const StringRef& from, const StringRef& to, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
-	
-	/**
-		@brief		文字列をデリミタで分割します。
-		@param[in]	delim	: デリミタ文字列
-		@param[in]	option	: 分割方法
-		@return		分割結果の文字列配列
-		@detail		分割が発生しない場合は文字列全体を持つ要素数1の配列を返します。
-					
-					~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-					auto tokens = String("a,b,c").split(",");		// => ["a", "b", "c"]
-					auto tokens = String("a").split(",");			// => ["a"]
-					auto tokens = String(",").split(",");			// => ["", ""]
-					auto tokens = String("a::b").split("::");		// => ["a", "b"]
-					~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	*/
-	List<String> split(const StringRef& delim, StringSplitOptions option = StringSplitOptions::None) const;
+    /** 先頭の文字を大文字、以降を小文字に変換した文字列を返します。(ロケールの影響を受けません) */
+    String toTitleCase() const;
 
-	/** ローカルの char 型文字列表現に変換します。 */
-	std::string toStdString() const;
+    /**
+     * この文字列から指定した文字をすべて取り除いた新しい文字列を返します。
+     * 
+     * @param[in]   str     : 削除する文字列
+     * @param[in]   cs      : 大文字と小文字の区別設定
+     */
+    String remove(const StringRef& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+    String remove(Char ch, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;      /**< @overload remove */
+    
+    /**
+     * 文字列の置換を行います。
+     * 
+     * @param[in]   from    : 置換される文字列
+     * @param[in]   to      : from を置換する文字列
+     * @return      置換結果の文字列
+     * 
+     * from に一致するすべての文字列を to に置換します。
+     */
+    String replace(const StringRef& from, const StringRef& to, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+    
+    /**
+     * 文字列をデリミタで分割します。
+     * 
+     * @param[in]   delim   : デリミタ文字列
+     * @param[in]   option  : 分割方法
+     * @return      分割結果の文字列配列
+     * 
+     * 分割が発生しない場合は文字列全体を持つ要素数1の配列を返します。
+     * ~~~
+     * auto tokens = String("a,b,c").split(",");        // => ["a", "b", "c"]
+     * auto tokens = String("a").split(",");            // => ["a"]
+     * auto tokens = String(",").split(",");            // => ["", ""]
+     * auto tokens = String("a::b").split("::");        // => ["a", "b"]
+     * ~~~
+     */
+    List<String> split(const StringRef& delim, StringSplitOptions option = StringSplitOptions::None) const;
 
-	/** ローカルの wchar_t 型文字列表現に変換します。 */
-	std::wstring toStdWString() const;
+    /**
+     * この文字列を整数値に変換します。
+     * 
+     * @param[in]   base    : 基数 (0、2、8、10、16 のいずれかであること)
+     * @return      変換結果の数値
+     * 
+     * 次の書式に従い、文字列を数値に変換します。
+     * 
+     * [whitespace] [{+ | – }] [0 [{ x | X }]] [digits | letters]
+     * 
+     * 16 進数値のアルファベットは大文字と小文字を区別しません。
+     * 
+     * 基数に 0 を指定すると、文字列の先頭文字から基数を自動判別します。
+     * "0x" または "0X" であれば 16 進数、"0" であれば 8 進数、それ以外であれば 10 進数です。
+     * 基数に 8 または 16 が指定されている際、文字列の先頭は "0" または "0x" である必要はありません。
+     */
+    int toInt(int base = 0);
+    int8_t    toInt8(int base = 0);
+    int16_t    toInt16(int base = 0);    /**< @copydoc toInt */
+    int32_t    toInt32(int base = 0);    /**< @copydoc toInt */
+    int64_t    toInt64(int base = 0);    /**< @copydoc toInt */
+    uint8_t    toUInt8(int base = 0);    /**< @copydoc toInt */
+    uint16_t    toUInt16(int base = 0);    /**< @copydoc toInt */
+    uint32_t    toUInt32(int base = 0);    /**< @copydoc toInt */
+    uint64_t    toUInt64(int base = 0);    /**< @copydoc toInt */
 
-
-	/** 指定した文字列を連結します。 */
-	static String concat(const StringRef& str1, const StringRef& str2);
-	static String concat(const StringRef& str1, const StringRef& str2, const StringRef& str3);
-	static String concat(const StringRef& str1, const StringRef& str2, const StringRef& str3, const StringRef& str4);
-
-	static String join(const List<String>& list, const StringRef& delim);	// TODO: Range
-
-	/**
-		@brief		複合書式文字列と可変長引数リストから文字列を生成します。
-		@param[in]	format		: 書式文字列
-		@param[in]	...			: 引数リスト
-	*/
-	template<typename... TArgs>
-	static String format(const StringRef& format, TArgs&&... args);
-	template<typename... TArgs>
-	static String format(const Locale& locale, const StringRef& format, TArgs&&... args);	/**< @overload format */
-
-	
-	/**
-		@brief		この文字列と、指定した文字列を比較します。
-		@param[in]	str1		: 比較文字列
-		@param[in]	index1		: str1 内の部分文字列の開始位置
-		@param[in]	str2		: 比較文字列
-		@param[in]	index2		: str2 内の部分文字列の開始位置
-		@param[in]	length		: 比較する文字数 (-1 の場合、GetLength() の値を使用します)
-		@param[in]	cs			: 大文字と小文字の区別設定
-		@return		str1 が str2 より小さい → 0 より小さい値
-					str1 と str2 が等しい   → 0
-					str1 が str2 より大きい → 0 より大きい値
-	*/
-	static int compare(const String& str1, const String& str2, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
-	static int compare(const StringRef& str1, int index1, const StringRef& str2, int index2, int length = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
-
-	static String fromCString(const char* str, int length = -1, TextEncoding* encoding = nullptr);
-	static String fromCString(const wchar_t* str, int length = -1);
-
-	static String fromStdString(const std::string& str, TextEncoding* encoding = nullptr);
-	static String fromStdString(const std::wstring& str);
-	
-	/**
-		@brief		数値を文字列に変換します。
-		@param[in]	value		: 数値
-		@param[in]	format		: 書式
-		@param[in]	precision	: 小数の精度 (小数部の桁数)
-		@detail
-			- 'D' または 'd' : 10進数
-			- 'X' または 'x' : 16進数
-			- 'F' または 'f' : 小数
-			- 'E' または 'e' : 小数 (指数表記)
-	*/
-	static String fromNumber(int32_t value, Char format = 'D');
-	static String fromNumber(int64_t value, Char format = 'D');						/**< @overload fromNumber */
-	static String fromNumber(uint32_t value, Char format = 'D');					/**< @overload fromNumber */
-	static String fromNumber(uint64_t value, Char format = 'D');					/**< @overload fromNumber */
-	static String fromNumber(float value, Char format = 'F', int precision = 6);	/**< @overload fromNumber */
-	static String fromNumber(double value, Char format = 'F', int precision = 6);	/**< @overload fromNumber */
-
-	/** @name STL interface */
-	/** @{ */
-	//typedef Char* iterator;
-	//typedef const Char* const_iterator;
-
-	//iterator begin();
-	//const_iterator begin() const;
-	//iterator end();
-	//const_iterator end() const;
-
-	/** @{ */
+    /**
+     * この文字列を整数値に変換し、成否を返します。
+     * 
+     * @param[in]   outValue    : 結果を格納する変数のポインタ (nullptr を指定すると成否のみを返す)
+     * @param[in]   base        : 基数 (0、2、8、10、16 のいずれかであること)
+     * @return      正常に変換された場合は true。それ以外の場合は false。
+     * @see         toInt
+     */
+    bool        tryToInt(int8_t* outValue, int base = 0);
+    bool        tryToInt8(int8_t* outValue, int base = 0);
+    bool        tryToInt16(int16_t* outValue, int base = 0);        /**< @copydoc tryToInt */
+    bool        tryToInt32(int32_t* outValue, int base = 0);        /**< @copydoc tryToInt */
+    bool        tryToInt64(int64_t* outValue, int base = 0);        /**< @copydoc tryToInt */
+    bool        tryToUInt8(uint8_t* outValue, int base = 0);        /**< @copydoc tryToInt */
+    bool        tryToUInt16(uint16_t* outValue, int base = 0);        /**< @copydoc tryToInt */
+    bool        tryToUInt32(uint32_t* outValue, int base = 0);        /**< @copydoc tryToInt */
+    bool        tryToUInt64(uint64_t* outValue, int base = 0);        /**< @copydoc tryToInt */
 
 
+    /** ローカルの std::string 型文字列へ変換します。 */
+    std::string toStdString() const;
 
-	/// 現在の環境で定義されている改行文字列を取得する
-	static const String& getNewLine();
+    /** ローカルの std::wstring 型文字列へ変換します。 */
+    std::wstring toStdWString() const;
 
-	/// 空文字列を取得する
-	static const String& getEmpty();
+    /** 指定した文字列を連結します。 */
+    static String concat(const StringRef& str1, const StringRef& str2);
+    static String concat(const StringRef& str1, const StringRef& str2, const StringRef& str3);                          /**< @overload concat */
+    static String concat(const StringRef& str1, const StringRef& str2, const StringRef& str3, const StringRef& str4);   /**< @overload concat */
 
-	int getByteCount() const { return length() * sizeof(Char); }
+    /** 指定した文字列リストを結合した 1 つの文字列を生成します。各要素の間には、指定した区切り記号が挿入されます。 */
+    static String join(const List<String>& list, const StringRef& delim);    // TODO: Range
 
-	uint32_t getHashCode() const;
+    /** 複合書式文字列と可変長引数リストから文字列を生成します。 */
+    template<typename... TArgs>
+    static String format(const StringRef& format, TArgs&&... args);
+    template<typename... TArgs>
+    static String format(const Locale& locale, const StringRef& format, TArgs&&... args);    /**< @overload format */
 
-	bool isSSO() const LN_NOEXCEPT { return !detail::getLSB<0>(static_cast<uint8_t>(m_data.sso.length)); }
-	bool isNonSSO() const LN_NOEXCEPT { return detail::getLSB<0>(static_cast<uint8_t>(m_data.sso.length)); }
+    /**
+     * 指定した2つの文字列を比較します。
+     * 
+     * @param[in]   str1        : 比較文字列
+     * @param[in]   index1      : str1 内の部分文字列の開始位置
+     * @param[in]   str2        : 比較文字列
+     * @param[in]   index2      : str2 内の部分文字列の開始位置
+     * @param[in]   length      : 比較する文字数 (-1 の場合、GetLength() の値を使用します)
+     * @param[in]   cs          : 大文字と小文字の区別設定
+     * 
+     * @return
+     *  - str1 が str2 より小さい → 0 より小さい値
+     *  - str1 と str2 が等しい   → 0
+     *  - str1 が str2 より大きい → 0 より大きい値
+     */
+    static int compare(const String& str1, const String& str2, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
+    static int compare(const StringRef& str1, int index1, const StringRef& str2, int index2, int length = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive); /**< @overload compare */
 
-	CharRef operator[](int index);
-	const Char& operator[](int index) const;
+    /** ローカルの char 文字列を String へ変換します。 */
+    static String fromCString(const char* str, int length = -1, TextEncoding* encoding = nullptr);
 
-	String& operator=(const StringRef& rhs);
-	String& operator=(const Char* rhs);
-	String& operator=(Char ch);
-	String& operator=(const Path& rhs);
+    /** ローカルの wchar_t 文字列を String へ変換します。 */
+    static String fromCString(const wchar_t* str, int length = -1);
 
-	String& operator+=(const String& rhs);
-	String& operator+=(const StringRef& rhs);
-	String& operator+=(const Char* rhs);
-	String& operator+=(Char rhs);
+    /** ローカルの std::string 型文字列を String へ変換します。 */
+    static String fromStdString(const std::string& str, TextEncoding* encoding = nullptr);
+
+    /** ローカルの std::wstring 型文字列を String へ変換します。 */
+    static String fromStdString(const std::wstring& str);
+
+    /**
+     * 数値を文字列に変換します。
+     * 
+     * @param[in]   value       : 数値
+     * @param[in]   format      : 書式
+     * @param[in]   precision   : 小数の精度 (小数部の桁数)
+     * 
+     * - 'D' または 'd' : 10進数
+     * - 'X' または 'x' : 16進数
+     * - 'F' または 'f' : 小数
+     * - 'E' または 'e' : 小数 (指数表記)
+     */
+    static String fromNumber(int32_t value, Char format = 'D');
+    static String fromNumber(int64_t value, Char format = 'D');                     /**< @overload fromNumber */
+    static String fromNumber(uint32_t value, Char format = 'D');                    /**< @overload fromNumber */
+    static String fromNumber(uint64_t value, Char format = 'D');                    /**< @overload fromNumber */
+    static String fromNumber(float value, Char format = 'F', int precision = 6);    /**< @overload fromNumber */
+    static String fromNumber(double value, Char format = 'F', int precision = 6);   /**< @overload fromNumber */
+
+    /** 任意の位置の要素へアクセスします。 */
+    CharRef operator[](int index);
+
+    /** 任意の位置の要素へアクセスします。 */
+    const Char& operator[](int index) const LN_NOEXCEPT;
+
+    String& operator=(const StringRef& rhs);
+    String& operator=(const Char* rhs);
+    String& operator=(Char ch);
+    String& operator=(const Path& rhs);
+
+    String& operator+=(const String& rhs);
+    String& operator+=(const StringRef& rhs);
+    String& operator+=(const Char* rhs);
+    String& operator+=(Char rhs);
 
 #ifdef LN_STRING_FUZZY_CONVERSION
-	String& operator=(const char* rhs);
-	String& operator+=(const char* rhs);
+    String& operator=(const char* rhs);
+    String& operator+=(const char* rhs);
 #endif
+
+    /** 現在の環境で定義されている改行文字列を取得します。 */
+    static const String& newLine();
 
 private:
-	static std::size_t const SSOCapacity = 15;
+    static std::size_t const SSOCapacity = 15;
 
-	// resource management
-	void init() LN_NOEXCEPT;
-	void release() LN_NOEXCEPT;
-	void copy(const String& str);
-	void move(String&& str) LN_NOEXCEPT;
-	Char* lockBuffer(int requestSize, detail::StringLockContext* context);
-	void unlockBuffer(int confirmedSize, detail::StringLockContext* context);
-	Char* getBuffer();
-	const Char* getBuffer() const;
+    // resource management
+    void init() LN_NOEXCEPT;
+    void release() LN_NOEXCEPT;
+    void copy(const String& str);
+    void move(String&& str) LN_NOEXCEPT;
+    Char* lockBuffer(int requestSize, detail::StringLockContext* context);
+    void unlockBuffer(int confirmedSize, detail::StringLockContext* context);
+    Char* getBuffer();
+    const Char* getBuffer() const LN_NOEXCEPT;
 
-	// sso operation
-	void setSSOLength(int len);
-	int getSSOLength() const;
-	void setSSO();
-	void setNonSSO();
+    // sso operation
+    void setSSOLength(int len);
+    int getSSOLength() const LN_NOEXCEPT;
+    void setSSO();
+    void setNonSSO();
+    bool isSSO() const LN_NOEXCEPT { return !detail::getLSB<0>(static_cast<uint8_t>(m_data.sso.length)); }
+    bool isNonSSO() const LN_NOEXCEPT { return detail::getLSB<0>(static_cast<uint8_t>(m_data.sso.length)); }
 
-	// utils
-	template<typename TChar> void assignFromCStr(const TChar* str, int length = -1, bool* outUsedDefaultChar = nullptr, TextEncoding* encoding = nullptr);
-	void setAt(int index, Char ch);
+    // utils
+    template<typename TChar> void assignFromCStr(const TChar* str, int length = -1, bool* outUsedDefaultChar = nullptr, TextEncoding* encoding = nullptr);
+    void setAt(int index, Char ch);
+    int getByteCount() const { return length() * sizeof(Char); }
+    uint32_t getHashCode() const;
 
-	static ByteBuffer convertTo(const String& str, const TextEncoding* encoding, bool* outUsedDefaultChar = nullptr);
+    static ByteBuffer convertTo(const String& str, const TextEncoding* encoding, bool* outUsedDefaultChar = nullptr);
 
-	union Data
-	{
-		detail::UStringCore*	core;
+    union Data
+    {
+        detail::UStringCore*    core;
 
-		struct SSO
-		{
-			Char		buffer[SSOCapacity];
-			Char		length;	// ---xxxxy	: x=size y:flag(0=sso,1=non sso)
-		} sso;
-	} m_data;
+        struct SSO
+        {
+            Char        buffer[SSOCapacity];
+            Char        length;    // ---xxxxy    : x=size y:flag(0=sso,1=non sso)
+        } sso;
+    } m_data;
 
-	friend class CharRef;
+    friend class CharRef;
 };
 
 /** String のヘルパーです。 = 演算子による更新を参照元の String に伝えます。 */
 class CharRef
 {
 public:
-	operator Char() const
-	{
-		return m_str.c_str()[m_index];
-	}
+    operator Char() const
+    {
+        return m_str.c_str()[m_index];
+    }
 
-	CharRef& operator=(Char ch)
-	{
-		m_str.setAt(m_index, ch);
-		return *this;
-	}
+    CharRef& operator=(Char ch)
+    {
+        m_str.setAt(m_index, ch);
+        return *this;
+    }
 
 private:
-	CharRef(String& str, int index)
-		: m_str(str)
-		, m_index(index)
-	{}
+    CharRef(String& str, int index)
+        : m_str(str)
+        , m_index(index)
+    {}
 
-	String& m_str;
-	int m_index;
+    String& m_str;
+    int m_index;
 
-	friend class String;
+    friend class String;
 };
 
-/**
-	@brief		ある文字列に対する部分文字列の参照を保持します。
-*/
+/** ある文字列に対する部分文字列の参照を保持します。 */
 class StringRef
 {
 public:
-	StringRef()
-	{
-		m_string = nullptr;
-		m_str = nullptr;
-		m_len = 0;
-		m_localAlloc = false;
-	}
 
-	StringRef(const String& str)
-		: StringRef()
-	{
-		m_string = &str;
-		m_str = str.c_str();
-		m_len = str.length();
-	}
+	/** 空の StringRef を構築します。 */
+	StringRef() LN_NOEXCEPT;
 
-	StringRef(const String& str, int startIndex)
-		: StringRef()
-	{
-		m_string = &str;
-		m_str = str.c_str() + startIndex;
-		m_len = str.length() - startIndex;
-	}
+	/** 別の StringRef と同じ文字列を参照します。(コピーコンストラクタ) */
+	StringRef(const StringRef& str) LN_NOEXCEPT;
 
-	StringRef(const String& str, int startIndex, int len)
-		: StringRef()
-	{
-		m_str = str.c_str() + startIndex;
-		m_len = len;
-	}
+	/** 指定された文字列の全体を参照します。 */
+	StringRef(const String& str);
 
-	StringRef(const Char* str)
-		: StringRef()
-	{
-		m_str = str;
-		m_len = detail::UStringHelper::strlen(str);
-	}
+	/** 文字列と長さを受け取り、その範囲を参照します。 */
+	StringRef(const String& str, int len);
 
-	StringRef(const Char* str, int len)
-		: StringRef()
-	{
-		m_str = str;
-		m_len = len;
-	}
+	/** 文字列と開始インデックスと長さを受け取り、その範囲を参照します。 */
+	StringRef(const String& str, int startIndex, int len);
 
-	StringRef(const Char* begin, const Char* end)
-		: StringRef()
-	{
-		m_str = begin;
-		m_len = end - begin;
-	}
+	/** 指定された文字列の全体を参照します。 */
+	StringRef(const Char* str);
 
-	StringRef(const Path& path);
+	/** 文字列と長さを受け取り、その範囲を参照します。 */
+	StringRef(const Char* str, int len);
 
-	StringRef(const StringRef& str)
-		: StringRef()
-	{
-		m_str = str.data();
-		m_len = str.length();
-	}
+	/** 文字列の範囲を参照します。 */
+	StringRef(const Char* begin, const Char* end);
 
-	StringRef& operator=(const StringRef& str) = default;
-
-	~StringRef()
-	{
-		clear();
-	}
+	/** 指定された Path 全体を参照します。 */
+    StringRef(const Path& path);
 
 #ifdef LN_STRING_FUZZY_CONVERSION
-	StringRef(const char* str)
-		: StringRef()
-	{
-		m_string = new String(str);
-		m_str = m_string->c_str();
-		m_len = m_string->length();
-		m_localAlloc = true;
-	}
+	/** 指定された文字列の全体を参照します。 */
+	StringRef(const char* str);
 #ifdef LN_USTRING16
-	StringRef(const wchar_t* str)
-		: StringRef()
-	{
-		m_string = new String(str);
-		m_str = m_string->c_str();
-		m_len = m_string->length();
-		m_localAlloc = true;
-	}
+	/** 指定された文字列の全体を参照します。 */
+	StringRef(const wchar_t* str);
 #endif
 #endif
 
-	int length() const
-	{
-		return m_len;
-	}
+    /** 文字列の長さを取得します。 */
+    LN_CONSTEXPR int length() const LN_NOEXCEPT { return m_len; }
+    
+    /** 文字列が空かどうかを判定します。 */
+    LN_CONSTEXPR bool isEmpty() const LN_NOEXCEPT { return (data() == nullptr || length() <= 0); }
 
-	const Char* data() const
-	{
-		return m_str;
-	}
+    /** 文字配列を取得します。 */
+    LN_CONSTEXPR const Char* data() const LN_NOEXCEPT { return m_str; }
 
-	const Char* end() const
-	{
-		return data() + length();
-	}
+	/** この文字列の末尾が、指定した文字列と一致するかを判断します。 */
+	bool endsWith(const StringRef& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 
-	bool endsWith(const StringRef& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const
-	{
-		if (IsNullOrEmpty() || str.IsNullOrEmpty()) {
-			return false;
-		}
-		return StringHelper::endsWith(data(), length(), str.data(), str.length(), cs);
-	}
+	/** 文字列の部分文字列を抽出します。 */
+	StringRef substr(int start, int count) const;
 
-	String mid(int start, int count) const;
+    /** ローカルの std::string 型文字列へ変換します。 */
+    std::string toStdString() const;
 
-	bool IsNullOrEmpty() const { return (data() == nullptr || length() <= 0); }
+    /** ローカルの std::wstring 型文字列へ変換します。 */
+    std::wstring toStdWString() const;
 
-	const Char& operator[](int index) const { return *(data() + index); }
+    /** 任意の位置の要素にアクセスします。 */
+    LN_CONSTEXPR const Char& operator[](int index) const { return *(data() + index); }
 
-	size_t getHashCode() const;
-
-	// TODO: internal
-	const Char* getBegin() const { return data(); }
-	const Char* getEnd() const { return end(); }
-
-	std::string toStdString() const;
-	std::wstring toStdWString() const;
+	~StringRef() { clear(); }
+	StringRef& operator=(const StringRef& str);
+	StringRef& operator=(StringRef&& str);
 
 private:
-	const String*	m_string;
-	const Char*	m_str;
-	int				m_len;
-	bool			m_localAlloc;
-
-	void clear()
-	{
-		if (m_localAlloc)
-		{
-			delete m_string;
-			m_localAlloc = false;
-		}
-		m_string = nullptr;
-		m_str = nullptr;
-		m_len = 0;
-	}
+    size_t getHashCode() const;
+	void clear();
+    
+    const String*    m_string;
+    const Char*    m_str;
+    int                m_len;
+    bool            m_localAlloc;
 };
 
 
@@ -560,78 +546,78 @@ template<typename TChar>
 class GenericFormatStringRef
 {
 public:
-	GenericFormatStringRef();
-	GenericFormatStringRef(const TChar* begin, const TChar* end);
-	GenericFormatStringRef(const GenericFormatStringRef& str);
+    GenericFormatStringRef();
+    GenericFormatStringRef(const TChar* begin, const TChar* end);
+    GenericFormatStringRef(const GenericFormatStringRef& str);
 
-	bool isEmpty() const { return m_length == 0; }
-	int length() const { return m_length; }
-	const TChar* begin() const { return m_str; }
-	const TChar* end() const { return m_str + m_length; }
+    bool isEmpty() const { return m_length == 0; }
+    int length() const { return m_length; }
+    const TChar* begin() const { return m_str; }
+    const TChar* end() const { return m_str + m_length; }
 
-	const TChar& operator[](int index) const { return *(m_str + index); }
+    const TChar& operator[](int index) const { return *(m_str + index); }
 
 private:
-	const TChar*	m_str;
-	int				m_length;
+    const TChar*    m_str;
+    int                m_length;
 };
 
 template<typename TChar>
 class GenericFormatStringBuilder
 {
 public:
-	GenericFormatStringBuilder();
-	GenericFormatStringBuilder(TChar* buffer, size_t bufferSize);
+    GenericFormatStringBuilder();
+    GenericFormatStringBuilder(TChar* buffer, size_t bufferSize);
 
-	void clear();
-	void appendChar(TChar ch);
-	void appendChar(TChar ch, int count);
-	void appendString(const TChar* str);
-	void appendString(const TChar* str, int length);
-	void appendString(const String& str);
-	const TChar* c_str() const;
-	int length() const;
-	bool isFixedBufferOver() const { return m_fixedBufferOver; }
+    void clear();
+    void appendChar(TChar ch);
+    void appendChar(TChar ch, int count);
+    void appendString(const TChar* str);
+    void appendString(const TChar* str, int length);
+    void appendString(const String& str);
+    const TChar* c_str() const;
+    int length() const;
+    bool isFixedBufferOver() const { return m_fixedBufferOver; }
 
 private:
-	void appendIntenal(const TChar* str, int length);
+    void appendIntenal(const TChar* str, int length);
 
-	ByteBuffer	m_buffer;
-	size_t		m_bufferUsed;
-	byte_t*		m_fixedBuffer;
-	size_t		m_fixedBufferSize;
-	bool		m_fixedBufferOver;
+    ByteBuffer    m_buffer;
+    size_t        m_bufferUsed;
+    byte_t*        m_fixedBuffer;
+    size_t        m_fixedBufferSize;
+    bool        m_fixedBufferOver;
 };
 
 template<typename TChar>
 class GenericStringFormatter
 {
 public:
-	GenericStringFormatter()
-		: m_error()
-		, m_errorPos(0)
-	{}
-	~GenericStringFormatter() {}
+    GenericStringFormatter()
+        : m_error()
+        , m_errorPos(0)
+    {}
+    ~GenericStringFormatter() {}
 
-	void reportError(const char* message, int pos) { m_error = message; m_errorPos = pos; }
-	bool hasError() const { return !m_error.empty(); }
+    void reportError(const char* message, int pos) { m_error = message; m_errorPos = pos; }
+    bool hasError() const { return !m_error.empty(); }
 
-public:	// TODO
-	const std::locale* m_locale;
-	GenericFormatStringBuilder<TChar>	m_sb;
-	GenericFormatStringRef<TChar>	m_formatString;
-	GenericFormatStringRef<TChar>	m_precision;
+public:    // TODO
+    const std::locale* m_locale;
+    GenericFormatStringBuilder<TChar>    m_sb;
+    GenericFormatStringRef<TChar>    m_formatString;
+    GenericFormatStringRef<TChar>    m_precision;
 
 private:
-	std::string	m_error;
-	int			m_errorPos;
+    std::string    m_error;
+    int            m_errorPos;
 };
 
 template<typename Formatter>
 void formatArg(Formatter&, ...)
 {
-	assert(0);
-	//static_assert(false, "[Lumino format string error] Cannot format argument. Please overload formatArg.");
+    //assert(0);
+    static_assert(false, "[Lumino format string error] Cannot format argument. Please overload formatArg.");
 }
 
 } // namespace fmt
@@ -644,76 +630,76 @@ class UStringCore
 {
 public:
 
-	UStringCore()
-		: m_refCount(1)
-		, m_str(nullptr)
-		, m_capacity(0)
-		, m_length(0)
-	{}
+    UStringCore()
+        : m_refCount(1)
+        , m_str(nullptr)
+        , m_capacity(0)
+        , m_length(0)
+    {}
 
-	~UStringCore()
-	{
-		delete[] m_str;
-	}
+    ~UStringCore()
+    {
+        delete[] m_str;
+    }
 
-	bool isShared() const LN_NOEXCEPT { return (m_refCount > 1); }
-	void retain() { ++m_refCount; }
-	void release()
-	{
-		--m_refCount;
-		if (m_refCount == 0)
-		{
-			delete this;
-		}
-	}
+    bool isShared() const LN_NOEXCEPT { return (m_refCount > 1); }
+    void retain() { ++m_refCount; }
+    void release()
+    {
+        --m_refCount;
+        if (m_refCount == 0)
+        {
+            delete this;
+        }
+    }
 
-	Char* get() LN_NOEXCEPT { return m_str; }
-	const Char* get() const LN_NOEXCEPT { return m_str; }
-	int length() const LN_NOEXCEPT { return m_length; }
-	int capacity() const { return m_capacity; }
-	void reserve(int length)
-	{
-		LN_DCHECK(length >= 0);
-		int size = length + 1;
-		if (m_capacity < size)
-		{
-			Char* oldStr = m_str;
-			int oldLen = m_length;
+    Char* get() LN_NOEXCEPT { return m_str; }
+    const Char* get() const LN_NOEXCEPT { return m_str; }
+    int length() const LN_NOEXCEPT { return m_length; }
+    int capacity() const { return m_capacity; }
+    void reserve(int length)
+    {
+        LN_DCHECK(length >= 0);
+        int size = length + 1;
+        if (m_capacity < size)
+        {
+            Char* oldStr = m_str;
+            int oldLen = m_length;
 
-			m_str = LN_NEW Char[size];
-			m_capacity = length;
+            m_str = LN_NEW Char[size];
+            m_capacity = length;
 
-			if (oldStr != nullptr)
-			{
-				memcpy(m_str, oldStr, LN_MIN(length, oldLen) * sizeof(Char));
-				delete oldStr;
-			}
-		}
-	}
-	void fixLength(int length)
-	{
-		m_str[length] = '\0';
-		m_length = length;
-	}
-	void resize(int length)
-	{
-		reserve(length);
-		fixLength(length);
-	}
-	void clear()
-	{
-		if (m_str != nullptr)
-		{
-			m_str[0] = '\0';
-		}
-		m_length = 0;
-	}
+            if (oldStr != nullptr)
+            {
+                memcpy(m_str, oldStr, LN_MIN(length, oldLen) * sizeof(Char));
+                delete oldStr;
+            }
+        }
+    }
+    void fixLength(int length)
+    {
+        m_str[length] = '\0';
+        m_length = length;
+    }
+    void resize(int length)
+    {
+        reserve(length);
+        fixLength(length);
+    }
+    void clear()
+    {
+        if (m_str != nullptr)
+        {
+            m_str[0] = '\0';
+        }
+        m_length = 0;
+    }
 
 private:
-	std::atomic<int>	m_refCount;
-	Char*				m_str;
-	int					m_capacity;
-	int					m_length;
+    std::atomic<int>    m_refCount;
+    Char*                m_str;
+    int                    m_capacity;
+    int                    m_length;
 };
 
 } // namespace detail
@@ -722,29 +708,23 @@ private:
 // String
 //==============================================================================
 
-inline const Char* String::c_str() const
+inline const Char* String::c_str() const LN_NOEXCEPT
 {
-	return (isSSO()) ? m_data.sso.buffer : ((m_data.core) ? m_data.core->get() : _TT(""));
+    return (isSSO()) ? m_data.sso.buffer : ((m_data.core) ? m_data.core->get() : _TT(""));
 }
 
-inline int String::length() const
+inline int String::length() const LN_NOEXCEPT
 {
-	return (isSSO()) ? getSSOLength() : ((m_data.core) ? m_data.core->length() : 0);
+    return (isSSO()) ? getSSOLength() : ((m_data.core) ? m_data.core->length() : 0);
 }
 
-inline int String::capacity() const
+inline int String::capacity() const LN_NOEXCEPT
 {
-	//return (isSSO() || !m_data.core) ? SSOCapacity : m_data.core->capacity();
-	return (isSSO()) ? SSOCapacity : ((m_data.core) ? m_data.core->capacity() : 0);
+    return (isSSO()) ? SSOCapacity : ((m_data.core) ? m_data.core->capacity() : 0);
 }
-
-//inline String::iterator String::begin() { return (isSSO()) ? m_data.sso.buffer : ((m_data.core) ? m_data.core->get() : u""); }
-//inline String::const_iterator String::begin() const { return c_str(); }
-//inline String::iterator String::end() { return begin() + length(); }
-//inline String::const_iterator String::end() const { return begin() + length(); }
 
 inline CharRef String::operator[](int index) { return CharRef(*this, index); }
-inline const Char& String::operator[](int index) const { return getBuffer()[index]; }	// TODO: check range
+inline const Char& String::operator[](int index) const LN_NOEXCEPT { return getBuffer()[index]; }    // TODO: check range
 
 inline String& String::operator=(const StringRef& rhs) { assign(rhs); return *this; }
 inline String& String::operator=(const Char* rhs) { assign(rhs); return *this; }
@@ -810,7 +790,6 @@ inline std::wostream& operator<<(std::wostream& os, const String& str) { os << s
 
 //==============================================================================
 // StringRef
-//==============================================================================
 inline String operator+(const StringRef& lhs, const StringRef& rhs) { return String::concat(lhs, rhs); }
 
 inline bool operator==(const StringRef& lhs, const StringRef& rhs) { return String::compare(lhs, 0, rhs, 0, LN_MAX(lhs.length(), rhs.length())) == 0; }
@@ -819,57 +798,6 @@ inline bool operator==(const StringRef& lhs, const Char* rhs) { return String::c
 inline bool operator!=(const StringRef& lhs, const StringRef& rhs) { return !operator==(lhs, rhs); }
 inline bool operator!=(const Char* lhs, const StringRef& rhs) { return !operator==(lhs, rhs); }
 inline bool operator!=(const StringRef& lhs, const Char* rhs) { return !operator==(lhs, rhs); }
-
-
-//==============================================================================
-// String globals
-//==============================================================================
-
-
-/**
-	@brief		この文字列を整数値に変換します。
-	@param[in]	str		: 
-	@param[in]	base		: 基数 (0、2、8、10、16 のいずれかであること)
-	@return		変換結果の数値
-	@details	次の書式に従い、文字列を数値に変換します。<br>
-				[whitespace] [{+ | – }] [0 [{ x | X }]] [digits | letters]		<br>
-				16 進数値のアルファベットは大文字と小文字を区別しません。		<br><br>
-					
-				基数に 0 を指定すると、文字列の先頭文字から基数を自動判別します。<br>
-				"0x" または "0X" であれば 16 進数、"0" であれば 8 進数、それ以外であれば 10 進数です。
-				基数に 8 または 16 が指定されている際、文字列の先頭は "0" または "0x" である必要はありません。
-
-	@exception	InvalidFormatException	指定された基数に対して有効な桁を示す数字以外の文字が含まれていました。または、書式の前後に空白以外の文字が存在しました。
-	@exception	OverflowException		数値に変換する際にオーバーフローが発生しました。
-*/
-extern int8_t	toInt8(const String& str, int base = 0);
-extern int16_t	toInt16(const String& str, int base = 0);	/**< @copydoc toInt8 */
-extern int32_t	toInt32(const String& str, int base = 0);	/**< @copydoc toInt8 */
-extern int64_t	toInt64(const String& str, int base = 0);	/**< @copydoc toInt8 */
-extern uint8_t	toUInt8(const String& str, int base = 0);	/**< @copydoc toInt8 */
-extern uint16_t	toUInt16(const String& str, int base = 0);	/**< @copydoc toInt8 */
-extern uint32_t	toUInt32(const String& str, int base = 0);	/**< @copydoc toInt8 */
-extern uint64_t	toUInt64(const String& str, int base = 0);	/**< @copydoc toInt8 */
-
-/**
-	@brief		この文字列を整数値に変換し、成否を返します。
-	@param[in]	str	: 
-	@param[in]	outValue	: 結果を格納する変数のポインタ (NULL を指定すると成否のみを返す)
-	@param[in]	base		: 基数 (0、2、8、10、16 のいずれかであること)
-	@return		正常に変換された場合は true。それ以外の場合は false。
-	@details	例外が発生しない点を除けば ToInt8 等と同様です。
-				大量のループの内部等、例外によるパフォーマンスへの影響が懸念される場合に使用してください。
-	@see		ToInt8
-*/
-extern bool		tryToInt8(const String& str, int8_t* outValue, int base = 0);
-extern bool		tryToInt16(const String& str, int16_t* outValue, int base = 0);		/**< @copydoc tryToInt8 */
-extern bool		tryToInt32(const String& str, int32_t* outValue, int base = 0);		/**< @copydoc tryToInt8 */
-extern bool		tryToInt64(const String& str, int64_t* outValue, int base = 0);		/**< @copydoc tryToInt8 */
-extern bool		tryToUInt8(const String& str, uint8_t* outValue, int base = 0);		/**< @copydoc tryToInt8 */
-extern bool		tryToUInt16(const String& str, uint16_t* outValue, int base = 0);		/**< @copydoc tryToInt8 */
-extern bool		tryToUInt32(const String& str, uint32_t* outValue, int base = 0);		/**< @copydoc tryToInt8 */
-extern bool		tryToUInt64(const String& str, uint64_t* outValue, int base = 0);		/**< @copydoc tryToInt8 */
-
 
 } // namespace ln
 

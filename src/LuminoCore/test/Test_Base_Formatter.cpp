@@ -171,6 +171,11 @@ TEST_F(Test_Base_Formatter, Basic)
 	}
 }
 
+TEST_F(Test_Base_Formatter, AutomaticFieldNumbering)
+{
+	ASSERT_EQ(_TT("1-2"), String::format(_TT("{}-{}"), 1, 2));
+}
+
 //---------------------------------------------------------------------
 TEST_F(Test_Base_Formatter, Illigal)
 {

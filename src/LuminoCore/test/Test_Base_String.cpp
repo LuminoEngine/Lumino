@@ -488,9 +488,9 @@ TEST_F(Test_Base_String, substring)
 	// <Test> substring
 	{
 		String str1(_TT("abcdef"));
-		ASSERT_EQ(_TT("ab"), str1.substring(0, 2));
-		ASSERT_EQ(_TT("ef"), str1.substring(str1.length() - 2));
-		ASSERT_EQ(_TT("cde"), str1.substring(2, 3));
+		ASSERT_EQ(_TT("ab"), str1.substr(0, 2));
+		ASSERT_EQ(_TT("ef"), str1.substr(str1.length() - 2));
+		ASSERT_EQ(_TT("cde"), str1.substr(2, 3));
 	}
 	// <Test> left
 	{
@@ -844,14 +844,14 @@ TEST_F(Test_Base_String, ConvertNumeric)
 {
 	//-[ ] 文字列 > 数値
 	{
-		ASSERT_EQ(10, toInt8(_LT("10")));
-		ASSERT_EQ(10, toInt16(_LT("10")));
-		ASSERT_EQ(10, toInt32(_LT("10")));
-		ASSERT_EQ(10, toInt64(_LT("10")));
-		ASSERT_EQ(10, toUInt8(_LT("10")));
-		ASSERT_EQ(10, toUInt16(_LT("10")));
-		ASSERT_EQ(10, toUInt32(_LT("10")));
-		ASSERT_EQ(10, toUInt64(_LT("10")));
+		ASSERT_EQ(10, String(_LT("10")).toInt8());
+		ASSERT_EQ(10, String(_LT("10")).toInt16());
+		ASSERT_EQ(10, String(_LT("10")).toInt32());
+		ASSERT_EQ(10, String(_LT("10")).toInt64());
+		ASSERT_EQ(10, String(_LT("10")).toUInt8());
+		ASSERT_EQ(10, String(_LT("10")).toUInt16());
+		ASSERT_EQ(10, String(_LT("10")).toUInt32());
+		ASSERT_EQ(10, String(_LT("10")).toUInt64());
 	}
 
 	//-[ ] 数値 > 文字列
@@ -972,21 +972,21 @@ TEST_F(Test_Base_String, SelfAssign)
 	//- [ ] NonSSO -> NonSSO 
 	{
 		String str = _LT("1234567890abcdefg");
-		StringRef r1 = str.substring(1);
+		StringRef r1 = str.substr(1);
 		str = r1;
 		ASSERT_EQ("234567890abcdefg", str);
 	}
 	//- [ ] SSO -> SSO 
 	{
 		String str = _LT("123");
-		StringRef r1 = str.substring(1);
+		StringRef r1 = str.substr(1);
 		str = r1;
 		ASSERT_EQ("23", str);
 	}
 	//- [ ] NonSSO -> SSO 
 	{
 		String str = _LT("1234567890abcdefg");
-		StringRef r1 = str.substring(10);
+		StringRef r1 = str.substr(10);
 		str = r1;
 		ASSERT_EQ("abcdefg", str);
 	}

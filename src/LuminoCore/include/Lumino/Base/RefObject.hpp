@@ -115,6 +115,9 @@ template<class T>
 class Ref
 {
 public:
+	/** null 値を表します。 */
+	static const Ref<T> Null;
+
     /** 参照を持たない空の Ref を構築します。 */
     LN_CONSTEXPR Ref() LN_NOEXCEPT;
 
@@ -205,6 +208,9 @@ protected:
     template<class T>
     friend class Ref;
 };
+
+template<class T>
+const Ref<T> Ref<T>::Null;
 
 template<class T>
 LN_CONSTEXPR Ref<T>::Ref() LN_NOEXCEPT

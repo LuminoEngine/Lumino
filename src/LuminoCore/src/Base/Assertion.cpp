@@ -131,7 +131,11 @@ void printError(const Exception& e)
 {
 	const size_t BUFFER_SIZE = 512;
 	char buf[BUFFER_SIZE] = {};
-	int len = snprintf(buf, BUFFER_SIZE, "%s(%d):\"%s\" ", e.m_sourceFilePath, e.m_sourceFileLine, e.m_assertionMessage);
+	int len = snprintf(
+		buf, BUFFER_SIZE, "%s(%d):\"%s\" ",
+		ExceptionHelper::getSourceFilePath(e),
+		ExceptionHelper::getSourceFileLine(e),
+		ExceptionHelper::getAssertionMessage(e));
 	convertChar16ToLocalChar(e.getMessage(), BUFFER_SIZE, buf + len, BUFFER_SIZE - len);
 
 	if (GlobalLogger::hasAnyAdapter()) {
@@ -153,14 +157,14 @@ void Exception_setSourceLocationInfo(Exception& e, const char* filePath, int fil
 //==============================================================================
 // Exception
 
-static Exception::NotifyVerificationHandler	g_notifyVerificationHandler = nullptr;
+static Exception::NotificationHandler	g_notifyVerificationHandler = nullptr;
 
-void Exception::setNotificationHandler(NotifyVerificationHandler handler)
+void Exception::setNotificationHandler(NotificationHandler handler)
 {
 	g_notifyVerificationHandler = handler;
 }
 
-Exception::NotifyVerificationHandler Exception::notificationHandler()
+Exception::NotificationHandler Exception::notificationHandler()
 {
 	return g_notifyVerificationHandler;
 }

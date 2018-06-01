@@ -109,19 +109,19 @@ bool Path::hasExtension(const StringRef& ext) const
     const Char* begin = m_path.c_str();
     const Char* end = m_path.c_str() + m_path.length();
     StringRef thisExt(detail::PathTraits::getExtensionBegin(begin, end, false), end); // . は除く
-    if (thisExt.IsNullOrEmpty()) {
+    if (thisExt.isEmpty()) {
         return false;
-    } else if (ext.IsNullOrEmpty()) {
-        return !thisExt.IsNullOrEmpty();
+    } else if (ext.isEmpty()) {
+        return !thisExt.isEmpty();
     } else {
         StringRef otherExt = ext;
         if (otherExt[0] == '.') {
-            otherExt = StringRef(detail::PathTraits::getExtensionBegin(ext.getBegin(), ext.getEnd(), false), ext.getEnd()); // . は除く
+            otherExt = StringRef(detail::PathTraits::getExtensionBegin(ext.data(), ext.data() + ext.length(), false), ext.data() + ext.length()); // . は除く
         }
         if (thisExt.length() != otherExt.length()) {
             return false;
         }
-        return StringHelper::endsWith(thisExt.getBegin(), thisExt.length(), otherExt.getBegin(), otherExt.length(), Environment::pathCaseSensitivity());
+        return StringHelper::endsWith(thisExt.data(), thisExt.length(), otherExt.data(), otherExt.length(), Environment::pathCaseSensitivity());
     }
 }
 
@@ -252,17 +252,17 @@ void Path::append(const StringRef& path)
 
 int Path::compare(const StringRef& path1, const StringRef& path2)
 {
-    return detail::PathTraits::comparePathString(path1.getBegin(), path1.length(), path2.getBegin(), path2.length());
+    return detail::PathTraits::comparePathString(path1.data(), path1.length(), path2.data(), path2.length());
 }
 
 Path Path::getSpecialFolderPath(SpecialFolder specialFolder, const StringRef& relativeDirPath, SpecialFolderOption option)
 {
-	if (!relativeDirPath.IsNullOrEmpty()) {
-		if (LN_REQUIRE(!detail::PathTraits::isAbsolutePath(relativeDirPath.getBegin(), relativeDirPath.length()))) return Path();
+	if (!relativeDirPath.isEmpty()) {
+		if (LN_REQUIRE(!detail::PathTraits::isAbsolutePath(relativeDirPath.data(), relativeDirPath.length()))) return Path();
 	}
 
 	Path path2(Environment::specialFolderPath(specialFolder));
-	if (!relativeDirPath.IsNullOrEmpty()) {
+	if (!relativeDirPath.isEmpty()) {
 		path2.append(relativeDirPath);
 	}
 

@@ -134,7 +134,7 @@ String::String(const wchar_t* str)
 #endif
 #endif
 
-bool String::isEmpty() const
+bool String::isEmpty() const LN_NOEXCEPT
 {
 	if (isSSO())
 	{
@@ -232,33 +232,12 @@ bool String::endsWith(Char ch, CaseSensitivity cs) const
 	return StringHelper::endsWith(c_str(), length(), &ch, 1, cs);
 }
 
-StringRef String::substring(int start, int count) const
+StringRef String::substr(int start, int count) const
 {
-	int len = length();
-
-	if (start < 0)
-	{
-		start = 0;
-	}
-	if (count < 0)
-	{
-		count = len - start;
-	}
-	if (start + count > len)
-	{
-		count = len - start;
-	}
-	if (start > len)
-	{
-		count = 0;
-	}
-
-	if (start == 0 && count == len)
-	{
-		return StringRef(c_str());
-	}
-
-	return StringRef(c_str() + start, count);
+	const Char* begin;
+	const Char* end;
+	StringHelper::substr(c_str(), length(), start, count, &begin, &end);
+	return StringRef(begin, end);
 }
 
 String String::left(int count) const
@@ -395,6 +374,51 @@ List<String> String::split(const StringRef& delim, StringSplitOptions option) co
 		[&result](const Char* begin, const Char* end) { result.add(String(begin, end - begin)); });
 	return result;
 }
+
+#define TO_INT_DEF(type, func) \
+	const Char* begin; \
+	const Char* end; \
+	int len; \
+	NumberConversionResult res; \
+	StringHelper::trim(c_str(), length(), &begin, &len); \
+	type num = StringHelper::func(begin, len, base, &end, &res); \
+	if (res == NumberConversionResult::ArgsError)	{ LN_ENSURE(0); } \
+	if (res == NumberConversionResult::FormatError)	{ LN_ENSURE(0); } \
+	if (res == NumberConversionResult::Overflow)	{ LN_ENSURE(0); } \
+	LN_ENSURE(end == begin + len); \
+	return num;
+int String::toInt(int base) { TO_INT_DEF(int32_t, toInt32); }
+int8_t String::toInt8(int base) { TO_INT_DEF(int8_t, toInt8); }
+int16_t String::toInt16(int base) { TO_INT_DEF(int16_t, toInt16); }
+int32_t String::toInt32(int base) { TO_INT_DEF(int32_t, toInt32); }
+int64_t String::toInt64(int base) { TO_INT_DEF(int64_t, toInt64); }
+uint8_t String::toUInt8(int base) { TO_INT_DEF(uint8_t, toUInt8); }
+uint16_t String::toUInt16(int base) { TO_INT_DEF(uint16_t, toUInt16); }
+uint32_t String::toUInt32(int base) { TO_INT_DEF(uint32_t, toUInt32); }
+uint64_t String::toUInt64(int base) { TO_INT_DEF(uint64_t, toUInt64); }
+#undef TO_INT_DEF
+
+#define TRY_TO_INT_DEF(type, func) \
+	const Char* begin; \
+	const Char* end; \
+	int len; \
+	NumberConversionResult res; \
+	StringHelper::trim(c_str(), length(), &begin, &len); \
+	type num = StringHelper::func(begin, len, base, &end, &res); \
+	if (end != begin + len) { return false; } \
+	if (res != NumberConversionResult::Success) { return false; } \
+	if (outValue != nullptr) { *outValue = num; } \
+	return true;
+bool String::tryToInt(int8_t* outValue, int base) { TRY_TO_INT_DEF(int8_t, toInt32); }
+bool String::tryToInt8(int8_t* outValue, int base) { TRY_TO_INT_DEF(int8_t, toInt8); }
+bool String::tryToInt16(int16_t* outValue, int base) { TRY_TO_INT_DEF(int16_t, toInt16); }
+bool String::tryToInt32(int32_t* outValue, int base) { TRY_TO_INT_DEF(int32_t, toInt32); }
+bool String::tryToInt64(int64_t* outValue, int base) { TRY_TO_INT_DEF(int64_t, toInt64); }
+bool String::tryToUInt8(uint8_t* outValue, int base) { TRY_TO_INT_DEF(uint8_t, toUInt8); }
+bool String::tryToUInt16(uint16_t* outValue, int base) { TRY_TO_INT_DEF(uint16_t, toUInt16); }
+bool String::tryToUInt32(uint32_t* outValue, int base) { TRY_TO_INT_DEF(uint32_t, toUInt32); }
+bool String::tryToUInt64(uint64_t* outValue, int base) { TRY_TO_INT_DEF(uint64_t, toUInt64); }
+#undef TRY_TO_INT_DEF
 
 std::string String::toStdString() const
 {
@@ -735,7 +759,7 @@ Char* String::getBuffer()
 	return (isSSO()) ? m_data.sso.buffer : m_data.core->get();
 }
 
-const Char* String::getBuffer() const
+const Char* String::getBuffer() const LN_NOEXCEPT
 {
 	return (isSSO()) ? m_data.sso.buffer : m_data.core->get();
 }
@@ -746,7 +770,7 @@ void String::setSSOLength(int len)
 	m_data.sso.buffer[len] = '\0';
 }
 
-int String::getSSOLength() const
+int String::getSSOLength() const LN_NOEXCEPT
 {
 	return m_data.sso.length >> 1;
 }
@@ -896,7 +920,7 @@ uint32_t String::getHashCode() const
 
 
 
-const String& String::getNewLine()
+const String& String::newLine()
 {
 #ifdef LN_OS_WIN32
 	static String nl(_TT("\r\n"));
@@ -908,12 +932,6 @@ const String& String::getNewLine()
 	static String nl(_TT("\n"));
 	return nl;
 #endif
-}
-
-const String& String::getEmpty()
-{
-	static String str;
-	return str;
 }
 
 #ifdef LN_STRING_WITH_PATH
@@ -928,35 +946,6 @@ String& String::operator=(const Path& rhs)
 	return *this;
 }
 #endif
-
-//==============================================================================
-// StringRef
-//==============================================================================
-
-#ifdef LN_STRING_WITH_PATH
-StringRef::StringRef(const Path& path)
-	: StringRef(path.str())
-{
-}
-#endif
-
-String StringRef::mid(int start, int count) const
-{
-	// TODO: Ref で返していいよね？
-	//return StringHelper::mid(getBegin(), start, count);
-	return String(getBegin(), count).substring(start, count);
-}
-
-size_t StringRef::getHashCode() const
-{
-	if (IsNullOrEmpty()) return 0;
-	return CRCHash::compute(getBegin(), length());
-}
-
-
-
-//bool Path::operator < (const Path& right) const { return PathTraits::compare(m_path.c_str(), right.m_path.c_str()) < 0; }
-//bool Path::operator < (const Char* right) const { return PathTraits::compare(m_path.c_str(), right) < 0; }
 
 //namespace fmt {
 
@@ -980,48 +969,6 @@ size_t StringRef::getHashCode() const
 // String globals
 //==============================================================================
 
-#define TO_INT_DEF(type, func) \
-	const Char* begin; \
-	const Char* end; \
-	int len; \
-	NumberConversionResult res; \
-	StringHelper::trim(str.c_str(), str.length(), &begin, &len); \
-	type num = StringHelper::func(begin, len, base, &end, &res); \
-	if (res == NumberConversionResult::ArgsError)	{ LN_ENSURE(0); } \
-	if (res == NumberConversionResult::FormatError)	{ LN_ENSURE(0); } \
-	if (res == NumberConversionResult::Overflow)	{ LN_ENSURE(0); } \
-	LN_ENSURE(end == begin + len); \
-	return num;
-int8_t toInt8(const String& str, int base) { TO_INT_DEF(int8_t, toInt8); }
-int16_t toInt16(const String& str, int base) { TO_INT_DEF(int16_t, toInt16); }
-int32_t toInt32(const String& str, int base) { TO_INT_DEF(int32_t, toInt32); }
-int64_t toInt64(const String& str, int base) { TO_INT_DEF(int64_t, toInt64); }
-uint8_t toUInt8(const String& str, int base) { TO_INT_DEF(uint8_t, toUInt8); }
-uint16_t toUInt16(const String& str, int base) { TO_INT_DEF(uint16_t, toUInt16); }
-uint32_t toUInt32(const String& str, int base) { TO_INT_DEF(uint32_t, toUInt32); }
-uint64_t toUInt64(const String& str, int base) { TO_INT_DEF(uint64_t, toUInt64); }
-#undef TO_INT_DEF
-
-#define TRY_TO_INT_DEF(type, func) \
-	const Char* begin; \
-	const Char* end; \
-	int len; \
-	NumberConversionResult res; \
-	StringHelper::trim(str.c_str(), str.length(), &begin, &len); \
-	type num = StringHelper::func(begin, len, base, &end, &res); \
-	if (end != begin + len) { return false; } \
-	if (res != NumberConversionResult::Success) { return false; } \
-	if (outValue != nullptr) { *outValue = num; } \
-	return true;
-bool tryToInt8(const String& str, int8_t* outValue, int base) { TRY_TO_INT_DEF(int8_t, toInt8); }
-bool tryToInt16(const String& str, int16_t* outValue, int base) { TRY_TO_INT_DEF(int16_t, toInt16); }
-bool tryToInt32(const String& str, int32_t* outValue, int base) { TRY_TO_INT_DEF(int32_t, toInt32); }
-bool tryToInt64(const String& str, int64_t* outValue, int base) { TRY_TO_INT_DEF(int64_t, toInt64); }
-bool tryToUInt8(const String& str, uint8_t* outValue, int base) { TRY_TO_INT_DEF(uint8_t, toUInt8); }
-bool tryToUInt16(const String& str, uint16_t* outValue, int base) { TRY_TO_INT_DEF(uint16_t, toUInt16); }
-bool tryToUInt32(const String& str, uint32_t* outValue, int base) { TRY_TO_INT_DEF(uint32_t, toUInt32); }
-bool tryToUInt64(const String& str, uint64_t* outValue, int base) { TRY_TO_INT_DEF(uint64_t, toUInt64); }
-#undef TRY_TO_INT_DEF
 
 namespace detail {
 	

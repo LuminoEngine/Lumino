@@ -120,7 +120,8 @@ const Ref<TextEncoding>& TextEncoding::getEncoding(EncodingType type)
         }
         default:
             LN_UNREACHABLE();
-            return nullptr;
+			static Ref<TextEncoding> ref;
+            return ref;
     }
 }
 
@@ -163,7 +164,7 @@ size_t TextEncoding::getConversionRequiredByteCount(TextEncoding* from, TextEnco
 const Ref<TextEncoding>& TextEncoding::detectEncodingSimple(const char* str, int length, bool strict)
 {
     if (LN_REQUIRE(str))
-        return nullptr;
+        return Ref<TextEncoding>::Null;
 
     // check UTF8 BOM
     if (length >= 3) {
@@ -182,7 +183,7 @@ const Ref<TextEncoding>& TextEncoding::detectEncodingSimple(const char* str, int
         if (*s == 0x00) {
             // 有効範囲内に 0 があった。バイナリかもしれない
             if (strict)
-                return nullptr;
+				return Ref<TextEncoding>::Null;
             else
                 return getEncoding(EncodingType::ASCII);
         } else if (*s <= 0x7F) {

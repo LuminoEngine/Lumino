@@ -80,7 +80,7 @@ void JsonWriter::writePropertyName(const StringRef& str)
         return;
 
     autoComplete(JsonNode::PropertyName);
-    onKey(str.getBegin(), str.length());
+    onKey(str.data(), str.length());
     m_levelStack.top().justSawKey = true;
 }
 
@@ -147,7 +147,7 @@ void JsonWriter::writeString(const StringRef& str)
         return;
 
     autoComplete(JsonNode::String);
-    onString(str.getBegin(), str.length());
+    onString(str.data(), str.length());
     m_levelStack.top().valueCount++;
 }
 

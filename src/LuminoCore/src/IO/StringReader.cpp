@@ -55,7 +55,7 @@ bool StringReader::readLine(String* line)
         TTCHAR ch = m_range[i];
         if (ch == '\r' || ch == '\n') {
             if (line) {
-                *line = m_range.mid(m_pos, i - m_pos);
+                *line = m_range.substr(m_pos, i - m_pos);
             }
             m_pos = i + 1;
             if (ch == '\r' && m_pos < m_range.length() && m_range[m_pos] == '\n') m_pos++;
@@ -67,7 +67,7 @@ bool StringReader::readLine(String* line)
     // i は EOF にたどり着いた。そして、読み取る文字があれば読む。
     if (i > m_pos) {
         if (line) {
-            *line = m_range.mid(m_pos, i - m_pos);
+            *line = m_range.substr(m_pos, i - m_pos);
         }
         m_pos = i;
         return true;
@@ -83,7 +83,7 @@ String StringReader::readToEnd()
     if (m_pos == 0) {
         s = m_range;
     } else {
-        s = m_range.mid(m_pos, m_range.length() - m_pos);
+        s = m_range.substr(m_pos, m_range.length() - m_pos);
     }
     m_pos = m_range.length();
     return s;

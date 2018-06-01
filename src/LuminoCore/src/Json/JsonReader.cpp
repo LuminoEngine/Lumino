@@ -799,7 +799,7 @@ bool JsonReader::setNode(JsonNode node, const Char* value, int valueLen)
     if (value != nullptr && valueLen > 0) {
         m_value = String(value, valueLen);
     } else {
-        m_value = String::getEmpty();
+        m_value = String::Empty;
     }
 
     switch (m_currentNode) {

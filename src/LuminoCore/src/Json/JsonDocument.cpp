@@ -148,7 +148,7 @@ void JsonValue::setStringValue(const StringRef& value)
 {
     checkRelease();
     setType(JsonElementType::String);
-    m_string = LN_NEW String(value.getBegin(), value.length());
+    m_string = LN_NEW String(value.data(), value.length());
 }
 
 bool JsonValue::isNull() const
@@ -618,7 +618,7 @@ void JsonDocument::save(const StringRef& filePath, JsonFormatting formatting)
 
 void JsonDocument::load(const StringRef& filePath)
 {
-    StreamReader r(filePath.getBegin()); // TODO: end
+    StreamReader r(filePath.data()); // TODO: end
     JsonReader jr(&r);
     parseInternal(&jr);
 }

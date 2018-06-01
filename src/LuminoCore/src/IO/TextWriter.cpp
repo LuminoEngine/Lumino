@@ -10,7 +10,7 @@ namespace ln {
 // TextWriter
 
 TextWriter::TextWriter()
-    : m_newLine(String::getNewLine())
+    : m_newLine(String::newLine())
     , m_locale()
     , m_writtenPreamble(true)
 {
@@ -117,7 +117,7 @@ void TextWriter::write(double value)
 
 void TextWriter::write(const StringRef& str)
 {
-    writeInternal(str.getBegin(), str.length());
+    writeInternal(str.data(), str.length());
 }
 
 void TextWriter::writeLine()

@@ -12,7 +12,6 @@ class String;
 
 #define _LN_CHECK(expr, exception, ...)			(!(expr)) && ln::detail::notifyException<exception>(__FILE__, __LINE__, #expr, ##__VA_ARGS__)
 
-// core
 /**
  * コードを実行する前の前提条件を検証するためのマクロです。
  * 
@@ -97,6 +96,7 @@ class String;
 
 
 namespace detail {
+class ExceptionHelper;
 
 template<class TException, typename... TArgs>
 bool notifyException(const char* file, int line, const char* exprString, TArgs... args);
@@ -114,6 +114,8 @@ class LN_API Exception
 public:
 	LN_EXCEPTION_FORMATTING_CONSTRUCTOR_DECLARE(Exception);
 
+	using NotificationHandler = bool(*)(Exception& e);
+
 	Exception();
 	virtual ~Exception();
 	
@@ -123,11 +125,11 @@ public:
 	/** 例外のコピーを作成します。 */
 	virtual Exception* copy() const;
 
+	/** エラーハンドラを設定します。 */
+	static void setNotificationHandler(NotificationHandler handler);
 
-	using NotifyVerificationHandler = bool(*)(Exception& e);
-
-	static void setNotificationHandler(NotifyVerificationHandler handler);
-	static NotifyVerificationHandler notificationHandler();
+	/** エラーハンドラを取得します。 */
+	static NotificationHandler notificationHandler();
 
 protected:
 	void setCaption(const Char* caption);
@@ -139,7 +141,7 @@ protected:
 	void setMessage(const wchar_t* format, ...);
 	void setMessageU(const Char* message);
 
-public:	// TODO
+private:
 	void appendMessage(const Char* message, size_t len);
 	void setSourceLocationInfo(const char* filePath, int fileLine, const char* assertionMessage);
 
@@ -154,6 +156,7 @@ public:	// TODO
 	std::basic_string<Char>	m_message;
 
 	friend void detail::Exception_setSourceLocationInfo(Exception& e, const char* filePath, int fileLine, const char* assertionMessage);
+	friend class detail::ExceptionHelper;
 };
 
 /** 前提条件の間違いなどプログラム内の論理的な誤りが原因で発生したエラーを表します。 */
@@ -186,7 +189,6 @@ public:
 	virtual Exception* copy() const;
 };
 
-
 //------------------------------------------------------------------------------
 // extension errors
 
@@ -209,7 +211,6 @@ public:
 	IOException();
 	virtual Exception* copy() const;
 };
-
 
 namespace detail {
 
@@ -234,6 +235,14 @@ inline bool notifyException(const char* file, int line, const char* exprString, 
 	throw e;
 	return true;
 }
+
+class ExceptionHelper
+{
+public:
+	static const char* getSourceFilePath(const Exception& e) { return e.m_sourceFilePath; }
+	static const int getSourceFileLine(const Exception& e) { return e.m_sourceFileLine; }
+	static const char* getAssertionMessage(const Exception& e) { return e.m_assertionMessage; }
+};
 
 } // namespace detail
 } // namespace ln

@@ -122,7 +122,7 @@ private:
     bool setNode(JsonNode node, const Char* value = nullptr, int valueLen = 0);
     void pushState();
     void popState();
-    void setError(JsonDiagCode code, const String& message = String::getEmpty());
+    void setError(JsonDiagCode code, const String& message = String::Empty);
 };
 
 namespace detail {

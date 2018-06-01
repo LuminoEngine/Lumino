@@ -72,6 +72,9 @@ public:
 	static bool endsWith(const TChar* str1, int len1, const TChar* str2, int len2, CaseSensitivity cs);
 
 	template<typename TChar>
+	static void substr(const TChar* str, int len, int start, int count, const TChar** outBegin, const TChar** outEnd);
+
+	template<typename TChar>
 	static void left(const TChar* str, int count, const TChar** outBegin, const TChar** outEnd);
 
 	template<typename TChar>

@@ -188,7 +188,7 @@ TEST_F(Test_IO_Path, DecomposeComponents)
 		ASSERT_EQ(_TT("file"), Path(_TT("file")).fileNameWithoutExtension());
 		ASSERT_EQ(_TT(""), Path(_TT(".file")).fileNameWithoutExtension());
 		ASSERT_EQ(_TT(""), Path(_TT("dir/.file")).fileNameWithoutExtension());
-		ASSERT_EQ(true, Path().fileNameWithoutExtension().IsNullOrEmpty());
+		ASSERT_EQ(true, Path().fileNameWithoutExtension().isEmpty());
 	}
 	//* [ ] can get parent directory path
 	{

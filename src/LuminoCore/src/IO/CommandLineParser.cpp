@@ -733,7 +733,7 @@ void CommandLineParser::printVersion() const
 
 void CommandLineParser::printHelp(const StringRef& commandName) const
 {
-    if (!commandName.IsNullOrEmpty()) {
+    if (!commandName.isEmpty()) {
         Optional<Ref<CommandLineCommand>> command = findCommand(commandName);
         if (command) {
             std::cout << (*command)->buildHelpText() << std::endl;

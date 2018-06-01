@@ -8,11 +8,17 @@
 
 - name: Core
   items:
+    - name: 文字列の書式指定
+      href: Base/CompoundFormatString.md
     - name: ログ出力
       href: Base_Logging.md
     - name: オブジェクトのシリアライズ
       href: Serialization.md
-
+    - name: オブジェクトのメモリ管理
+      href: Base/MemoryManagement.md
+    - name: エラーハンドリング
+      href: Base/ErrorHandling.md
+    
 - name: Math
   href: Math/Index.md
   items: 
