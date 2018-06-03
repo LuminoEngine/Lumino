@@ -18,8 +18,8 @@ int main(int argc, char** argv)
 		//_T("-DCMAKE_PREFIX_PATH=\"D:\\Proj\\LN\\Lumino\\build\\EnginePackage\"")
 		//_T("-DCMAKE_PREFIX_PATH=\"D:\\Proj\\LN\\Lumino\\build\\CMakeInstallTemp\\MSVC2017-x86-MT\\lib\\cmake\\Lumino\"")
 		//_T("-DCMAKE_PREFIX_PATH=\"D:\\Proj\\LN\\Lumino\\build\\CMakeInstallTemp\\MSVC2017-x86-MT\\lib\"")
-		_T("-DCMAKE_PREFIX_PATH=\"D:/Proj/LN/Lumino/build/CMakeInstallTemp/MSVC2017-x86-MT/lib/cmake/Lumino\"")
-
+		//_T("-DCMAKE_PREFIX_PATH=\"D:/Proj/LN/Lumino/build/CMakeInstallTemp/MSVC2017-x86-MT/lib/cmake/Lumino\"")
+		_T("-DCMAKE_PREFIX_PATH=\"D:/Proj/LN/Lumino/build/CMakeInstallTemp/Emscripten/lib/cmake/Lumino\"")
 		}/*, &s1, &s2*/);
 
 	return 0;

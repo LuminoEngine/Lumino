@@ -37,6 +37,8 @@ option(LN_MSVC_STATIC_RUNTIME "static runtime (/MT, /MTd) or DLL runtime (/MD, /
 
 #------------------------------------------------------------------------------
 
+set(CMAKE_DEBUG_POSTFIX "-debug")
+
 include(src/LuminoCommon.cmake)
 
 set(LUMINO_ROOT_PATH "${CMAKE_CURRENT_LIST_DIR}")
@@ -51,6 +53,7 @@ endif()
 
 if (WIN32)
     add_definitions(-DLN_GLFW)
+    set(GLFW_INSTALL ON)
 endif()
 
 if (LN_ANDROID)

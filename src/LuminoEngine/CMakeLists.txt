@@ -115,15 +115,15 @@ endif()
 #------------------------------------------------------------------------------
 # Targets
 
-add_library(${PROJECT_NAME}-static STATIC ${LN_SOURCES})
-target_include_directories(${PROJECT_NAME}-static PUBLIC "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES})
-target_link_libraries(${PROJECT_NAME}-static LuminoCore ${LN_PLATFORM_LIBS} ${OPENGL_LIBRARY})
-set_target_properties(${PROJECT_NAME}-static PROPERTIES FOLDER "Lumino")
-ln_add_pch(${PROJECT_NAME}-static "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
+#add_library(${PROJECT_NAME}-static STATIC ${LN_SOURCES})
+#target_include_directories(${PROJECT_NAME}-static PUBLIC "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES})
+#target_link_libraries(${PROJECT_NAME}-static LuminoCore ${LN_PLATFORM_LIBS} ${OPENGL_LIBRARY})
+#set_target_properties(${PROJECT_NAME}-static PROPERTIES FOLDER "Lumino")
+#ln_add_pch(${PROJECT_NAME}-static "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
 
-add_library(${PROJECT_NAME} SHARED ${LN_SOURCES})
-target_include_directories(${PROJECT_NAME} PUBLIC "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES})
-target_compile_definitions(${PROJECT_NAME} PUBLIC LUMINO_BUILD_DLL=1)
+add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
+target_include_directories(${PROJECT_NAME} PRIVATE "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES})
+#target_compile_definitions(${PROJECT_NAME} PUBLIC LUMINO_BUILD_DLL=1)
 #target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive ${PROJECT_NAME}-static -Wl,--no-whole-archive)
 #target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-static)
 target_link_libraries(${PROJECT_NAME} LuminoCore ${LN_PLATFORM_LIBS} ${OPENGL_LIBRARY})
@@ -141,10 +141,19 @@ endif()
 #------------------------------------------------------------------------------
 # Install
 
-install(TARGETS ${PROJECT_NAME} DESTINATION lib/Debug CONFIGURATIONS Debug)
-install(TARGETS ${PROJECT_NAME} DESTINATION lib/Release CONFIGURATIONS Release)
+install(TARGETS ${PROJECT_NAME}
+    EXPORT LuminoEngineTargets
+    ARCHIVE     DESTINATION lib			# Library installation location (Copied at "INSTALL" build time)
+    INCLUDES    DESTINATION include)	# include directory (File is not copied)
+
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include DESTINATION .)
 
-install(TARGETS ${PROJECT_NAME}-static DESTINATION lib)
-install(TARGETS ${PROJECT_NAME}-static DESTINATION lib/Debug CONFIGURATIONS Debug)
-install(TARGETS ${PROJECT_NAME}-static DESTINATION lib/Release CONFIGURATIONS Release)
+install(
+	EXPORT LuminoEngineTargets
+	FILE LuminoEngineTargets.cmake
+	EXPORT_LINK_INTERFACE_LIBRARIES
+	DESTINATION "lib/cmake/Lumino")
+
+install(
+    FILES "LuminoEngineConfig.cmake"
+    DESTINATION "lib/cmake/Lumino")
