@@ -152,8 +152,8 @@ install(
 	EXPORT LuminoEngineTargets
 	FILE LuminoEngineTargets.cmake
 	EXPORT_LINK_INTERFACE_LIBRARIES
-	DESTINATION "lib/cmake/Lumino")
+	DESTINATION "lib/cmake")
 
 install(
     FILES "LuminoEngineConfig.cmake"
-    DESTINATION "lib/cmake/Lumino")
+    DESTINATION "lib/cmake")

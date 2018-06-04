@@ -284,8 +284,8 @@ install(
 	EXPORT LuminoCoreTargets
 	FILE LuminoCoreTargets.cmake
 	EXPORT_LINK_INTERFACE_LIBRARIES
-	DESTINATION "lib/cmake/LuminoCore")
+	DESTINATION "lib/cmake")
 
 install(
     FILES "LuminoCoreConfig.cmake"
-    DESTINATION "lib/cmake/LuminoCore")
+    DESTINATION "lib/cmake")

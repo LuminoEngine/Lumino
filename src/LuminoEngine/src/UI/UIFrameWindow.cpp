@@ -37,6 +37,7 @@ void UIFrameWindow::dispose()
 void UIFrameWindow::renderContents()
 {
 	GraphicsContext* ctx = m_manager->graphicsManager()->graphicsContext();
+
 	
 	ctx->clear(ClearFlags::All, Color::AliceBlue, 1.0f, 0x00);
 }

@@ -6,7 +6,8 @@ extern int main2();
 
 static void ln_main_loop()
 {
-    //ln::Engine::update();
+    printf("ln_main_loop.");
+    ln::Engine::update();
 
     static int count = 0;
     printf("%d\n", count);
@@ -15,10 +16,11 @@ static void ln_main_loop()
 
 int main(int argc, char** argv)
 {
-    printf("main\n");
-    //ln::Engine::initialize();
+    printf("run test.");
+    ln::Engine::initialize();
+    printf("initialized.");
 
-	//emscripten_set_main_loop(ln_main_loop, 0, true);
+	emscripten_set_main_loop(ln_main_loop, 0, true);
 
     // the next to emscripten_set_main_loop is unreachable.
     
