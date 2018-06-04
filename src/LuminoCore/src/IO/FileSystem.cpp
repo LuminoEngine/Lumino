@@ -207,38 +207,38 @@ uint64_t FileSystem::getFileSize(const StringRef& filePath)
     return PlatformFileSystem::getFileSize(localPath.c_str());
 }
 
-ByteBuffer FileSystem::readAllBytes(const StringRef& filePath)
+ByteBuffer2 FileSystem::readAllBytes(const StringRef& filePath)
 {
     detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath.data(), filePath.length());
     const PlatformFileSystem::PathChar mode[] = {'r', 'b', '\0'};
     FILE* fp = PlatformFileSystem::fopen(localPath.c_str(), mode);
-    if (LN_ENSURE_IO(fp, localPath.c_str())) return ByteBuffer();
+    if (LN_ENSURE_IO(fp, localPath.c_str())) return ByteBuffer2();
 
     size_t size = (size_t)detail::FileSystemInternal::getFileSize(fp);
-    ByteBuffer buffer(size);
-    fread(buffer.getData(), 1, size, fp);
+    ByteBuffer2 buffer(size);
+    fread(buffer.data(), 1, size, fp);
 
     fclose(fp);
     LN_EMSCRIPTEN_LAYZY_FLASH;
     return buffer;
 }
 
-static String readAllTextHelper(const ByteBuffer& buffer, TextEncoding* encoding)
+static String readAllTextHelper(const ByteBuffer2& buffer, TextEncoding* encoding)
 {
     if (encoding == nullptr) {
         TextEncoding* e = TextEncoding::getEncoding(EncodingType::UTF8);
-        if (ByteBuffer::compare(buffer, e->preamble(), 3, 3) == 0)
+        if (buffer.size() >= 3 && (buffer.data(), e->preamble(), 3) == 0)
             encoding = e;
         else
             encoding = TextEncoding::utf8Encoding();
     }
 
-    return encoding->decode(buffer.getData(), buffer.getSize());
+    return encoding->decode(buffer.data(), buffer.size());
 }
 
 String FileSystem::readAllText(const StringRef& filePath, TextEncoding* encoding)
 {
-    ByteBuffer buffer(FileSystem::readAllBytes(filePath));
+    ByteBuffer2 buffer(FileSystem::readAllBytes(filePath));
     return readAllTextHelper(buffer, encoding);
 }
 

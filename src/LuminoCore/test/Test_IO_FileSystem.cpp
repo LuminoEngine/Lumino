@@ -13,8 +13,8 @@ TEST_F(Test_IO_FileSystem, SimpleReadWrite)
 		byte_t data1[4] = { 'a', 'b', 'c', 'd' };
 		FileSystem::writeAllBytes(LN_TEMPFILE("file1"), data1, 4);
 		auto data2 = FileSystem::readAllBytes(LN_TEMPFILE("file1"));
-		ASSERT_EQ(4, data2.getSize());
-		ASSERT_EQ(0, memcmp(data2.getConstData(), data1, 4));
+		ASSERT_EQ(4, data2.size());
+		ASSERT_EQ(0, memcmp(data2.data(), data1, 4));
 		LN_EMSCRIPTEN_LAYZY_FLASH;
 	}
 	//* [ ] can read/write all text.

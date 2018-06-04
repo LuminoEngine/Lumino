@@ -16,8 +16,10 @@ ByteBuffer2::ByteBuffer2()
 {
 }
 
-ByteBuffer2::ByteBuffer2(int size, bool zeroClear)
+ByteBuffer2::ByteBuffer2(int size)
+	: ByteBuffer2()
 {
+	resize(size, true);
 }
 
 ByteBuffer2::ByteBuffer2(const void* data, int size)
@@ -142,6 +144,12 @@ void ByteBuffer2::free()
 	m_size = 0;
 }
 
+bool operator==(const ByteBuffer2& lhs, const ByteBuffer2& rhs)
+{
+	if (lhs.data() == rhs.data()) return true;\
+	if (lhs.size() != rhs.size()) return false;
+	return memcmp(lhs.data(), rhs.data(), lhs.size()) == 0;
+}
 
 
 //==============================================================================

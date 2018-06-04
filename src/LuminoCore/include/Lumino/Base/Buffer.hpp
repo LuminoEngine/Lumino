@@ -8,7 +8,7 @@ class ByteBuffer2
 {
 public:
 	ByteBuffer2();
-	ByteBuffer2(int size, bool zeroClear = true);
+	ByteBuffer2(int size);
 
 	/**
 	@brief		指定されたバッファの内容をコピーし、バッファを構築します。
@@ -78,6 +78,7 @@ inline const byte_t& ByteBuffer2::operator[](int index) const LN_NOEXCEPT
 	return data()[index];
 }
 
+bool operator==(const ByteBuffer2& lhs, const ByteBuffer2& rhs);
 
 
 /**

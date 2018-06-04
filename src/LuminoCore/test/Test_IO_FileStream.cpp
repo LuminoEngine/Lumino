@@ -71,7 +71,7 @@ TEST_F(Test_IO_FileStream, open)
 		file1->close();
 
 		auto data = FileSystem::readAllBytes(filePath);
-		ASSERT_EQ(2, data.getSize());
+		ASSERT_EQ(2, data.size());
 		ASSERT_EQ('B', data[0]);
 		ASSERT_EQ('C', data[1]);
 	}
