@@ -103,7 +103,7 @@ void GenericFormatStringBuilder<TChar>::appendString(const String& str)
 template<typename TChar>
 const TChar* GenericFormatStringBuilder<TChar>::c_str() const
 {
-	return (const TChar*)m_buffer.getConstData();
+	return (const TChar*)m_buffer.data();
 }
 
 template<typename TChar>
@@ -133,14 +133,14 @@ void GenericFormatStringBuilder<TChar>::appendIntenal(const TChar* str, int leng
 	else
 	{
 		// バッファが足りなければ拡張する
-		if (m_bufferUsed + byteCount > m_buffer.getSize())
+		if (m_bufferUsed + byteCount > m_buffer.size())
 		{
-			size_t newSize = m_buffer.getSize() + LN_MAX(m_buffer.getSize(), byteCount);	// 最低でも byteCount 分を拡張する
+			size_t newSize = m_buffer.size() + LN_MAX(m_buffer.size(), byteCount);	// 最低でも byteCount 分を拡張する
 			m_buffer.resize(newSize, false);
 		}
 
-		writeBegin = &(m_buffer.getData()[m_bufferUsed]);
-		writeSize = m_buffer.getSize() - m_bufferUsed;
+		writeBegin = &(m_buffer.data()[m_bufferUsed]);
+		writeSize = m_buffer.size() - m_bufferUsed;
 	}
 
 	memcpy(writeBegin, str, byteCount);

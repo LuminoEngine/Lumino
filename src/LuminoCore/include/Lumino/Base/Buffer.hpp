@@ -4,6 +4,82 @@
 
 namespace ln {
 
+class ByteBuffer2
+{
+public:
+	ByteBuffer2();
+	ByteBuffer2(int size, bool zeroClear = true);
+
+	/**
+	@brief		指定されたバッファの内容をコピーし、バッファを構築します。
+	@param[in]	data		: コピー元のバッファ
+	@param[in]	size		: コピーするバイト数
+	*/
+	ByteBuffer2(const void* data, int size);
+
+
+
+	ByteBuffer2(const ByteBuffer2& buffer);
+	ByteBuffer2(ByteBuffer2&& buffer);
+
+	ByteBuffer2& operator=(const ByteBuffer2& buffer);
+	ByteBuffer2& operator=(ByteBuffer2&& buffer);
+
+
+
+	~ByteBuffer2();
+	//void alloc(int size, bool zeroClear = true);
+
+
+	/**
+	@brief		バッファの再割り当てを行い、指定されたデータをコピーします。
+	@param[in]	data		: コピー元のデータ
+	@param[in]	size		: コピーするバイト数
+	*/
+	void assign(const void* data, int size);
+
+	void resize(int size, bool zeroClear = true);
+
+	int size() const LN_NOEXCEPT { return m_size; }
+
+	bool isEmpty() const LN_NOEXCEPT { return m_size == 0; }
+	
+	byte_t* data() LN_NOEXCEPT { return m_buffer; }
+	const byte_t* data() const LN_NOEXCEPT { return m_buffer; }
+
+	/** バッファを指定した値で埋めます。 */
+	void fill(const byte_t& value);
+
+	/** バッファの内容を交換します。 */
+	void swap(ByteBuffer2& buffer) LN_NOEXCEPT;
+	
+    /** 任意の位置の要素へアクセスします。 */
+	byte_t operator[](int index);
+
+    /** 任意の位置の要素へアクセスします。 */
+    const byte_t& operator[](int index) const LN_NOEXCEPT;
+
+private:
+	void free();
+	byte_t* m_buffer;
+	int m_capacity;
+	int m_size;
+};
+
+inline byte_t ByteBuffer2::operator[](int index)
+{
+	LN_FATAL(0 <= index && index < size());
+	return data()[index];
+}
+
+inline const byte_t& ByteBuffer2::operator[](int index) const LN_NOEXCEPT
+{
+	LN_FATAL(0 <= index && index < size());
+	return data()[index];
+}
+
+
+
 /**
 	@brief		バイト配列を表すクラスです。
 	@details	インスタンスは = 演算子等でコピーすることができます。

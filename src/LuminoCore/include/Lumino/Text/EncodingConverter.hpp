@@ -28,10 +28,10 @@ public:
 	void setConversionOptions(const EncodingConversionOptions& options);
 
 	/** テキストを変換します。 */
-	const ByteBuffer& convert(const void* data, size_t byteCount, EncodingConversionResult* outResult = nullptr);
+	const ByteBuffer2& convert(const void* data, size_t byteCount, EncodingConversionResult* outResult = nullptr);
 
 	/** 最後に呼び出した convert() で変換されたバッファを取得します。これは convert() の戻り値と同一です。 */
-	const ByteBuffer& getLastBuffer() const;
+	const ByteBuffer2& getLastBuffer() const;
 
 	/** 最後に呼び出した convert() の EncodingConversionResult を取得します。 */
 	const EncodingConversionResult& getLastResult() const;
@@ -49,10 +49,10 @@ private:
 	TextEncoding*					m_srcEncoding;
 	TextEncoder*					m_dstEncoder;
 	TextDecoder*					m_srcDecoder;
-	ByteBuffer					m_outputBuffer;
+	ByteBuffer2					m_outputBuffer;
 	EncodingConversionOptions	m_options;
 	EncodingConversionResult	m_lastResult;
-	ByteBuffer					m_tmpBuffer;			///< 状態を保持できないデコーダを使っている場合に使用する一時バッファ
+	ByteBuffer2					m_tmpBuffer;			///< 状態を保持できないデコーダを使っている場合に使用する一時バッファ
 	bool						m_encodingModified;
 };
 

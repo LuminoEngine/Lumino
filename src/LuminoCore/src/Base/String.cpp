@@ -39,6 +39,82 @@ struct StringLockContext
 }
 
 //==============================================================================
+// UStringCore
+
+namespace detail {
+
+UStringCore::UStringCore()
+    : m_refCount(1)
+    , m_str(nullptr)
+    , m_capacity(0)
+    , m_length(0)
+{}
+
+UStringCore::~UStringCore()
+{
+    delete[] m_str;
+}
+
+bool UStringCore::isShared() const LN_NOEXCEPT
+{
+	return (m_refCount > 1);
+}
+
+void UStringCore::retain()
+{
+	++m_refCount;
+}
+
+void UStringCore::release()
+{
+    --m_refCount;
+    if (m_refCount == 0)
+    {
+        delete this;
+    }
+}
+
+void UStringCore::reserve(int length)
+{
+    LN_DCHECK(length >= 0);
+    int size = length + 1;
+    if (m_capacity < size)
+    {
+        Char* oldStr = m_str;
+        int oldLen = m_length;
+
+        m_str = LN_NEW Char[size];
+        m_capacity = length;
+
+        if (oldStr != nullptr)
+        {
+            memcpy(m_str, oldStr, LN_MIN(length, oldLen) * sizeof(Char));
+            delete oldStr;
+        }
+    }
+}
+void UStringCore::fixLength(int length)
+{
+    m_str[length] = '\0';
+    m_length = length;
+}
+void UStringCore::resize(int length)
+{
+    reserve(length);
+    fixLength(length);
+}
+void UStringCore::clear()
+{
+    if (m_str != nullptr)
+    {
+        m_str[0] = '\0';
+    }
+    m_length = 0;
+}
+
+} // namespace detail
+
+//==============================================================================
 // String
 
 const String String::Empty;
@@ -432,29 +508,29 @@ std::wstring String::toStdWString() const
 	return std::wstring(reinterpret_cast<const wchar_t*>(bytes.data()), bytes.size() / sizeof(wchar_t));
 }
 
-#ifdef LN_STRING_WITH_ENCODING
-ByteBuffer String::convertTo(const String& str, const TextEncoding* encoding, bool* outUsedDefaultChar)
-{
-	TextEncoding* thisEncoding = TextEncoding::utf16Encoding();
-	if (encoding == thisEncoding)	// TODO: ポインタ比較ではダメ。結果は正しいが。
-	{
-		return ByteBuffer(str.c_str(), (str.length() + 1) * sizeof(Char));
-	}
-	else
-	{
-		EncodingConversionOptions options;
-		options.NullTerminated = true;
-
-		EncodingConversionResult result;
-		ByteBuffer buf = TextEncoding::convert(str.c_str(), str.length() * sizeof(Char), thisEncoding, encoding, options, &result);
-		if (outUsedDefaultChar != nullptr)
-		{
-			*outUsedDefaultChar = result.UsedDefaultChar;
-		}
-		return buf;
-	}
-}
-#endif
+//#ifdef LN_STRING_WITH_ENCODING
+//ByteBuffer String::convertTo(const String& str, const TextEncoding* encoding, bool* outUsedDefaultChar)
+//{
+//	TextEncoding* thisEncoding = TextEncoding::utf16Encoding();
+//	if (encoding == thisEncoding)	// TODO: ポインタ比較ではダメ。結果は正しいが。
+//	{
+//		return ByteBuffer(str.c_str(), (str.length() + 1) * sizeof(Char));
+//	}
+//	else
+//	{
+//		EncodingConversionOptions options;
+//		options.NullTerminated = true;
+//
+//		EncodingConversionResult result;
+//		ByteBuffer buf = TextEncoding::convert(str.c_str(), str.length() * sizeof(Char), thisEncoding, encoding, options, &result);
+//		if (outUsedDefaultChar != nullptr)
+//		{
+//			*outUsedDefaultChar = result.UsedDefaultChar;
+//		}
+//		return buf;
+//	}
+//}
+//#endif
 
 String String::remove(Char ch, CaseSensitivity cs) const
 {
@@ -890,7 +966,7 @@ void String::assignFromCStr(const TChar* str, int length, bool* outUsedDefaultCh
 		options.NullTerminated = false;
 
 		EncodingConversionResult result;
-		const ByteBuffer tmpBuffer = TextEncoding::convert(str, len * sizeof(TChar), encoding, getThisTypeEncoding(), options, &result);
+		//const ByteBuffer tmpBuffer = TextEncoding::convert(str, len * sizeof(TChar), encoding, getThisTypeEncoding(), options, &result);
 		if (outUsedDefaultChar != nullptr) *outUsedDefaultChar = result.UsedDefaultChar;
 
 		assign((const Char*)tmpBuffer.getData(), result.BytesUsed / sizeof(Char));

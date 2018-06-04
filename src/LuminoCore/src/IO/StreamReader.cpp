@@ -32,7 +32,7 @@ int StreamReader::peek()
             return -1;
         }
     }
-    const Char* buf = (const Char*)m_converter.getLastBuffer().getConstData();
+    const Char* buf = (const Char*)m_converter.getLastBuffer().data();
     return buf[m_charPos];
 }
 
@@ -45,7 +45,7 @@ int StreamReader::read()
             return -1;
         }
     }
-    const Char* buf = (const Char*)m_converter.getLastBuffer().getConstData();
+    const Char* buf = (const Char*)m_converter.getLastBuffer().data();
     return buf[m_charPos++];
 }
 
@@ -62,7 +62,7 @@ bool StreamReader::readLine(String* line)
     do {
         int i = m_charPos;
         do {
-            const Char* buf = (const Char*)m_converter.getLastBuffer().getConstData();
+            const Char* buf = (const Char*)m_converter.getLastBuffer().data();
             Char ch = buf[i];
             if (ch == '\r' || ch == '\n') {
                 m_readLineCache.append(buf + m_charPos, i - m_charPos);
@@ -82,7 +82,7 @@ bool StreamReader::readLine(String* line)
 
         // ここに来るのは、charBuffer の現在位置 ～ 終端までに改行が無かったとき。
         // 現在の残りバッファを str に結合して、次のバッファを ReadBuffer() で読み出す。
-        const Char* buf = (const Char*)m_converter.getLastBuffer().getConstData();
+        const Char* buf = (const Char*)m_converter.getLastBuffer().data();
         m_readLineCache.append(buf + m_charPos, m_charElementLen - m_charPos);
 
     } while (readBuffer() > 0);
@@ -96,7 +96,7 @@ String StreamReader::readToEnd()
     m_readLineCache.clear();
     do {
         if (m_charElementLen - m_charPos > 0) {
-            const Char* buf = (const Char*)m_converter.getLastBuffer().getConstData();
+            const Char* buf = (const Char*)m_converter.getLastBuffer().data();
             m_readLineCache.append(buf + m_charPos, m_charElementLen - m_charPos);
             m_charPos = m_charElementLen;
         }
@@ -139,14 +139,14 @@ int StreamReader::readBuffer()
     m_charPos = 0;
     m_charElementLen = 0;
 
-    m_byteLen = m_stream->read(m_byteBuffer.getData(), m_byteBuffer.getSize());
+    m_byteLen = m_stream->read(m_byteBuffer.data(), m_byteBuffer.size());
     if (m_byteLen == 0) {
         return m_charElementLen;
     }
 
     // check BOM
     if (m_initial) {
-        if (m_byteLen >= 3 && memcmp(m_byteBuffer.getData(), UTF8Encoding::BOM, 3) == 0) {
+        if (m_byteLen >= 3 && memcmp(m_byteBuffer.data(), UTF8Encoding::BOM, 3) == 0) {
             m_converter.getSourceEncoding(TextEncoding::getEncoding(EncodingType::UTF8));
         }
 
@@ -154,7 +154,7 @@ int StreamReader::readBuffer()
     }
 
     // 文字コード変換 (ユーザー指定 → TChar)
-    m_converter.convert(m_byteBuffer.getData(), m_byteLen);
+    m_converter.convert(m_byteBuffer.data(), m_byteLen);
     m_charElementLen = m_converter.getLastResult().BytesUsed / sizeof(Char);
     return m_charElementLen;
 }

@@ -415,7 +415,7 @@ private:
     int getByteCount() const { return length() * sizeof(Char); }
     uint32_t getHashCode() const;
 
-    static ByteBuffer convertTo(const String& str, const TextEncoding* encoding, bool* outUsedDefaultChar = nullptr);
+    //static ByteBuffer convertTo(const String& str, const TextEncoding* encoding, bool* outUsedDefaultChar = nullptr);
 
     union Data
     {
@@ -582,7 +582,7 @@ public:
 private:
     void appendIntenal(const TChar* str, int length);
 
-    ByteBuffer    m_buffer;
+    ByteBuffer2    m_buffer;
     size_t        m_bufferUsed;
     byte_t*        m_fixedBuffer;
     size_t        m_fixedBufferSize;
@@ -629,71 +629,20 @@ namespace detail {
 class UStringCore
 {
 public:
+	UStringCore();
+	~UStringCore();
+	bool isShared() const LN_NOEXCEPT;
+	void retain();
+	void release();
 
-    UStringCore()
-        : m_refCount(1)
-        , m_str(nullptr)
-        , m_capacity(0)
-        , m_length(0)
-    {}
-
-    ~UStringCore()
-    {
-        delete[] m_str;
-    }
-
-    bool isShared() const LN_NOEXCEPT { return (m_refCount > 1); }
-    void retain() { ++m_refCount; }
-    void release()
-    {
-        --m_refCount;
-        if (m_refCount == 0)
-        {
-            delete this;
-        }
-    }
-
-    Char* get() LN_NOEXCEPT { return m_str; }
+	Char* get() LN_NOEXCEPT { return m_str; }
     const Char* get() const LN_NOEXCEPT { return m_str; }
     int length() const LN_NOEXCEPT { return m_length; }
     int capacity() const { return m_capacity; }
-    void reserve(int length)
-    {
-        LN_DCHECK(length >= 0);
-        int size = length + 1;
-        if (m_capacity < size)
-        {
-            Char* oldStr = m_str;
-            int oldLen = m_length;
-
-            m_str = LN_NEW Char[size];
-            m_capacity = length;
-
-            if (oldStr != nullptr)
-            {
-                memcpy(m_str, oldStr, LN_MIN(length, oldLen) * sizeof(Char));
-                delete oldStr;
-            }
-        }
-    }
-    void fixLength(int length)
-    {
-        m_str[length] = '\0';
-        m_length = length;
-    }
-    void resize(int length)
-    {
-        reserve(length);
-        fixLength(length);
-    }
-    void clear()
-    {
-        if (m_str != nullptr)
-        {
-            m_str[0] = '\0';
-        }
-        m_length = 0;
-    }
+	void reserve(int length);
+	void fixLength(int length);
+	void resize(int length);
+	void clear();
 
 private:
     std::atomic<int>    m_refCount;
@@ -706,7 +655,6 @@ private:
 
 //==============================================================================
 // String
-//==============================================================================
 
 inline const Char* String::c_str() const LN_NOEXCEPT
 {
@@ -723,8 +671,17 @@ inline int String::capacity() const LN_NOEXCEPT
     return (isSSO()) ? SSOCapacity : ((m_data.core) ? m_data.core->capacity() : 0);
 }
 
-inline CharRef String::operator[](int index) { return CharRef(*this, index); }
-inline const Char& String::operator[](int index) const LN_NOEXCEPT { return getBuffer()[index]; }    // TODO: check range
+inline CharRef String::operator[](int index)
+{
+	LN_FATAL(0 <= index && index < length());
+	return CharRef(*this, index);
+}
+
+inline const Char& String::operator[](int index) const LN_NOEXCEPT
+{
+	LN_FATAL(0 <= index && index < length());
+	return getBuffer()[index];
+}
 
 inline String& String::operator=(const StringRef& rhs) { assign(rhs); return *this; }
 inline String& String::operator=(const Char* rhs) { assign(rhs); return *this; }

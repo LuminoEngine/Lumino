@@ -13,6 +13,10 @@ EncodingConverter::EncodingConverter()
 	, m_srcEncoding(nullptr)
 	, m_dstEncoder(nullptr)
 	, m_srcDecoder(nullptr)
+	, m_outputBuffer()
+	, m_options()
+	, m_lastResult()
+	, m_tmpBuffer()
 	, m_encodingModified(false)
 {
 	m_options.NullTerminated = false;
@@ -55,7 +59,7 @@ void EncodingConverter::setConversionOptions(const EncodingConversionOptions& op
 	m_options = options;
 }
 
-const ByteBuffer& EncodingConverter::convert(const void* data, size_t byteCount, EncodingConversionResult* outResult)
+const ByteBuffer2& EncodingConverter::convert(const void* data, size_t byteCount, EncodingConversionResult* outResult)
 {
 	checkUpdateEncoderDecoder();
 
@@ -67,12 +71,12 @@ const ByteBuffer& EncodingConverter::convert(const void* data, size_t byteCount,
 	m_outputBuffer.resize(size, false);
 
 	if (m_options.NullTerminated) {
-		m_outputBuffer.clear();
+		m_outputBuffer.fill(0);
 	}
 
 	if (m_srcDecoder->canRemain())
 	{
-		convertDecoderRemain(data, byteCount, m_srcDecoder, m_outputBuffer.getData(), size, m_dstEncoder, &m_lastResult);
+		convertDecoderRemain(data, byteCount, m_srcDecoder, m_outputBuffer.data(), size, m_dstEncoder, &m_lastResult);
 		m_outputBuffer.resize(m_lastResult.BytesUsed);	// 余分に確保されているので、見かけ上のサイズを実際に文字のあるサイズにする
 
 		if (outResult != nullptr) { *outResult = m_lastResult; }
@@ -85,8 +89,8 @@ const ByteBuffer& EncodingConverter::convert(const void* data, size_t byteCount,
 		m_tmpBuffer.resize(totalByteCount);
 
 		// 後のコードがキャストだらけにならないように
-		UTF16* utf16Buf = (UTF16*)m_tmpBuffer.getData();
-		int utf16ElementCount = m_tmpBuffer.getSize() / sizeof(UTF16);
+		UTF16* utf16Buf = (UTF16*)m_tmpBuffer.data();
+		int utf16ElementCount = m_tmpBuffer.size() / sizeof(UTF16);
 
 		// Char を中間コード(UTF16) へ
 		TextDecoder::DecodeResult decodeResult;
@@ -94,7 +98,7 @@ const ByteBuffer& EncodingConverter::convert(const void* data, size_t byteCount,
 
 		// 中間コード(UTF16)を出力コードへ
 		TextEncoder::EncodeResult encodeResult;
-		m_dstEncoder->convertFromUTF16(utf16Buf, decodeResult.outputByteCount / sizeof(UTF16), m_outputBuffer.getData(), m_outputBuffer.getSize(), &encodeResult);
+		m_dstEncoder->convertFromUTF16(utf16Buf, decodeResult.outputByteCount / sizeof(UTF16), m_outputBuffer.data(), m_outputBuffer.size(), &encodeResult);
 
 		// 余分に確保されているので、見かけ上のサイズを実際に文字のあるサイズにする
 		m_outputBuffer.resize(encodeResult.outputByteCount);
@@ -112,7 +116,7 @@ const ByteBuffer& EncodingConverter::convert(const void* data, size_t byteCount,
 	return m_outputBuffer;
 }
 
-const ByteBuffer& EncodingConverter::getLastBuffer() const
+const ByteBuffer2& EncodingConverter::getLastBuffer() const
 {
 	return m_outputBuffer;
 }

@@ -5,6 +5,7 @@ set(LN_SOURCES
 	${LN_SOURCES_gtest}
 	Common.hpp
 	Main.cpp
+	Test_Base_ByteBuffer.cpp
 	Test_Base_EnumFlags.cpp
 	Test_Base_Environment.cpp
 	Test_Base_Event.cpp

@@ -7,9 +7,145 @@
 
 namespace ln {
 
+static byte_t g_sharedEmpty[1] = { 0 };
+
+ByteBuffer2::ByteBuffer2()
+	: m_buffer(g_sharedEmpty)
+	, m_capacity(0)
+	, m_size(0)
+{
+}
+
+ByteBuffer2::ByteBuffer2(int size, bool zeroClear)
+{
+}
+
+ByteBuffer2::ByteBuffer2(const void* data, int size)
+	: ByteBuffer2()
+{
+	assign(data, size);
+}
+
+ByteBuffer2::ByteBuffer2(const ByteBuffer2& buffer)
+	: ByteBuffer2()
+{
+	if (!buffer.isEmpty())
+	{
+		assign(buffer.data(), buffer.size());
+	}
+}
+
+ByteBuffer2::ByteBuffer2(ByteBuffer2&& buffer)
+	: ByteBuffer2()
+{
+	swap(buffer);
+}
+
+ByteBuffer2& ByteBuffer2::operator=(const ByteBuffer2& buffer)
+{
+	if (this != &buffer)
+	{
+		free();
+
+		if (!buffer.isEmpty())
+		{
+			assign(buffer.data(), buffer.size());
+		}
+	}
+
+	return *this;
+}
+
+ByteBuffer2& ByteBuffer2::operator=(ByteBuffer2&& buffer)
+{
+	free();
+	swap(buffer);
+	return *this;
+}
+
+ByteBuffer2::~ByteBuffer2()
+{
+	free();
+}
+
+//void ByteBuffer2::alloc(int size, bool zeroClear)
+//{
+//
+//}
+
+void ByteBuffer2::assign(const void* data, int size)
+{
+	if (LN_REQUIRE(data != nullptr)) return;
+
+	resize(size, false);
+	memcpy_s(m_buffer, size, data, size);
+}
+
+void ByteBuffer2::resize(int size, bool zeroClear)
+{
+	if (m_buffer == g_sharedEmpty)	// 未割り当てなら new するだけ。
+	{
+		m_buffer = LN_NEW byte_t[size];
+		m_capacity = size;
+		m_size = size;
+	}
+	else
+	{
+		byte_t* newBuf = m_buffer;
+		size_t newSize = size;
+		size_t newCapacity = m_capacity;
+		if (size > m_capacity)
+		{
+			newBuf = LN_NEW byte_t[size];
+			newCapacity = size;
+			// 必要であれば 0 クリア
+			if (zeroClear) {
+				memset(newBuf, 0, newCapacity);
+			}
+		}
+
+		// 元のバッファがあればコピー。その後元のバッファを破棄
+		if (newBuf != m_buffer)
+		{
+			memcpy_s(newBuf, size, m_buffer, LN_MIN(size, m_size));
+			free();
+		}
+
+		// 新しいバッファに差し替え
+		m_buffer = newBuf;
+		m_capacity = newCapacity;
+		m_size = newSize;
+	}
+}
+
+void ByteBuffer2::fill(const byte_t& value)
+{
+	for (int i = 0; i < m_size; i++) {
+		m_buffer[i] = value;
+	}
+}
+
+void ByteBuffer2::swap(ByteBuffer2& buffer) LN_NOEXCEPT
+{
+	std::swap(m_buffer, buffer.m_buffer);
+	std::swap(m_capacity, buffer.m_capacity);
+	std::swap(m_size, buffer.m_size);
+}
+
+void ByteBuffer2::free()
+{
+	if (m_buffer && m_buffer != g_sharedEmpty) {
+		delete[] m_buffer;
+		m_buffer = nullptr;
+	}
+	m_capacity = 0;
+	m_size = 0;
+}
+
+
+
 //==============================================================================
 // ByteBufferCore
-//==============================================================================
 
 ByteBuffer::ByteBufferCore::ByteBufferCore(size_t size)
 	: m_buffer(LN_NEW byte_t[size])
@@ -50,7 +186,6 @@ void ByteBuffer::ByteBufferCore::release()
 	}
 }
 
-static byte_t g_sharedEmpty[1] = { 0 };
 ByteBuffer::ByteBufferCore ByteBuffer::SharedCoreEmpty(g_sharedEmpty);
 
 //==============================================================================

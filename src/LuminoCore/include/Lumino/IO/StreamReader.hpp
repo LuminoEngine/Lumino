@@ -50,7 +50,7 @@ private:
 
     Ref<Stream> m_stream;
     EncodingConverter m_converter;
-    ByteBuffer m_byteBuffer;
+    ByteBuffer2 m_byteBuffer;
     std::basic_string<Char> m_readLineCache;
     int m_byteLen;
     int m_charElementLen;

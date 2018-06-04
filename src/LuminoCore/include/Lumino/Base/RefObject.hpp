@@ -205,8 +205,8 @@ protected:
     }
 
     RefObject* m_ptr;
-    template<class T>
-    friend class Ref;
+
+    template<class U> friend class Ref;
 };
 
 template<class T>
@@ -374,13 +374,13 @@ bool operator==(const Ref<T>& lhs, const Ref<U>& rhs) LN_NOEXCEPT
 }
 
 template<class T>
-bool operator==(const Ref<T>& lhs, nullptr_t) LN_NOEXCEPT
+bool operator==(const Ref<T>& lhs, std::nullptr_t) LN_NOEXCEPT
 {
     return (lhs.get() == nullptr);
 }
 
 template<class T>
-bool operator==(nullptr_t, const Ref<T>& rhs) LN_NOEXCEPT
+bool operator==(std::nullptr_t, const Ref<T>& rhs) LN_NOEXCEPT
 {
     return (nullptr == rhs.get());
 }
@@ -392,13 +392,13 @@ bool operator!=(const Ref<T>& lhs, const Ref<U>& rhs) LN_NOEXCEPT
 }
 
 template<class T>
-bool operator!=(const Ref<T>& lhs, nullptr_t) LN_NOEXCEPT
+bool operator!=(const Ref<T>& lhs, std::nullptr_t) LN_NOEXCEPT
 {
     return (lhs.get() != nullptr);
 }
 
 template<class T>
-bool operator!=(nullptr_t, const Ref<T>& rhs) LN_NOEXCEPT
+bool operator!=(std::nullptr_t, const Ref<T>& rhs) LN_NOEXCEPT
 {
     return (nullptr != rhs.get());
 }
@@ -410,13 +410,13 @@ bool operator<(const Ref<T>& lhs, const Ref<U>& rhs) LN_NOEXCEPT
 }
 
 template<class T>
-bool operator<(const Ref<T>& lhs, nullptr_t) LN_NOEXCEPT
+bool operator<(const Ref<T>& lhs, std::nullptr_t) LN_NOEXCEPT
 {
     return (lhs.get() < nullptr);
 }
 
 template<class T>
-bool operator<(nullptr_t, const Ref<T>& rhs) LN_NOEXCEPT
+bool operator<(std::nullptr_t, const Ref<T>& rhs) LN_NOEXCEPT
 {
     return (nullptr < rhs.get());
 }
@@ -428,13 +428,13 @@ bool operator<=(const Ref<T>& lhs, const Ref<U>& rhs) LN_NOEXCEPT
 }
 
 template<class T>
-bool operator<=(const Ref<T>& lhs, nullptr_t) LN_NOEXCEPT
+bool operator<=(const Ref<T>& lhs, std::nullptr_t) LN_NOEXCEPT
 {
     return (lhs.get() <= nullptr);
 }
 
 template<class T>
-bool operator<=(nullptr_t, const Ref<T>& rhs) LN_NOEXCEPT
+bool operator<=(std::nullptr_t, const Ref<T>& rhs) LN_NOEXCEPT
 {
     return (nullptr <= rhs.get());
 }
@@ -446,13 +446,13 @@ bool operator>(const Ref<T>& lhs, const Ref<U>& rhs) LN_NOEXCEPT
 }
 
 template<class T>
-bool operator>(const Ref<T>& lhs, nullptr_t) LN_NOEXCEPT
+bool operator>(const Ref<T>& lhs, std::nullptr_t) LN_NOEXCEPT
 {
     return (lhs.get() > nullptr);
 }
 
 template<class T>
-bool operator>(nullptr_t, const Ref<T>& rhs) LN_NOEXCEPT
+bool operator>(std::nullptr_t, const Ref<T>& rhs) LN_NOEXCEPT
 {
     return (nullptr > rhs.get());
 }
@@ -464,13 +464,13 @@ bool operator>=(const Ref<T>& lhs, const Ref<U>& rhs) LN_NOEXCEPT
 }
 
 template<class T>
-bool operator>=(const Ref<T>& lhs, nullptr_t) LN_NOEXCEPT
+bool operator>=(const Ref<T>& lhs, std::nullptr_t) LN_NOEXCEPT
 {
     return (lhs.get() >= nullptr);
 }
 
 template<class T>
-bool operator>=(nullptr_t, const Ref<T>& rhs) LN_NOEXCEPT
+bool operator>=(std::nullptr_t, const Ref<T>& rhs) LN_NOEXCEPT
 {
     return (nullptr >= rhs.get());
 }

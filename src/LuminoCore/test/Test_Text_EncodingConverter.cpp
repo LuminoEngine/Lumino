@@ -11,8 +11,8 @@ TEST_F(Test_Text_EncodingConverter, AsciiCode)
 	convAsciiToUtf16.getSourceEncoding(TextEncoding::systemMultiByteEncoding());
 	convAsciiToUtf16.setDestinationEncoding(TextEncoding::utf16Encoding());
 	convAsciiToUtf16.setConversionOptions(options);
-	ByteBuffer buf = convAsciiToUtf16.convert("ab", 2);
-	const UTF16* utf16 = (const UTF16*)buf.getConstData();
+	const ByteBuffer2& buf = convAsciiToUtf16.convert("ab", 2);
+	const UTF16* utf16 = (const UTF16*)buf.data();
 	ASSERT_EQ('a', utf16[0]);
 	ASSERT_EQ('b', utf16[1]);
 	ASSERT_EQ(0x00, utf16[2]);
