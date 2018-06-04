@@ -34,8 +34,6 @@ TEST_F(Test_IO_FileSystem, FileCopyDelete)
 	String src1 = LN_TEMPFILE("Test_IO_FileSystem_FileCopyDelete1");
 	String src2 = LN_TEMPFILE("Test_IO_FileSystem_FileCopyDelete2");
 	String dest = LN_TEMPFILE("Test_IO_FileSystem_FileCopyDelete3");
-	uint64_t src1Size = FileSystem::getFileSize(src1);
-	uint64_t src2Size = FileSystem::getFileSize(src2);
 
 	// create source
 	FileSystem::writeAllText(src1.c_str(), _TT("a"));
@@ -47,7 +45,7 @@ TEST_F(Test_IO_FileSystem, FileCopyDelete)
 
 	//* [ ] コピー、コピーしたファイル(サイズ)が同じ
 	FileSystem::copyFile(src1, dest, FileCopyOption::None);
-	ASSERT_EQ(src1Size, FileSystem::getFileSize(dest));
+	ASSERT_EQ(1, FileSystem::getFileSize(dest));
 
 	//* [ ] 上書きしようとするが、変化なし
 	//FileSystem::copyFile(src2, dest, false);
@@ -55,7 +53,7 @@ TEST_F(Test_IO_FileSystem, FileCopyDelete)
 
 	//* [ ] 上書き許可でコピー、コピーしたファイル(サイズ)が同じ
 	FileSystem::copyFile(src2, dest, FileCopyOption::Overwrite);
-	ASSERT_EQ(src2Size, FileSystem::getFileSize(dest));
+	ASSERT_EQ(2, FileSystem::getFileSize(dest));
 
 	//* [ ] ファイル削除
 	FileSystem::removeFile(dest);

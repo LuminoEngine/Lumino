@@ -86,8 +86,16 @@ public:
 			// e.g.) "/.", "/.."
 			return false;
 		}
+		else
+		{
+			// "." or ".." was not included in path
 
-		return true;
+			if (isAbsolutePath(path, len))
+				return true;	
+			else
+				return false;	// file name only
+		}
+
 	}
 
 	/**
@@ -144,7 +152,7 @@ public:
 		@details	このオーバーロードは現在内部処理用です。
 	*/
 	template<typename TChar>
-	static int canonicalizePath(const TChar* srcPath, size_t srcLen, TChar* outPath);
+	static int canonicalizePath(const TChar* srcPath, size_t srcLen, TChar* outPath, size_t outPathSize);
 
 	/**
 		@brief		パスに含まれるディレクトリセパレータを統一する。

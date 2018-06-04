@@ -5,6 +5,16 @@
 
 namespace ln {
 
+static Path g_tempDirPath;
+
+void TestHelper::setTempDirPath(const Path& dirPath)
+{
+	g_tempDirPath = dirPath.canonicalize();
+	FileSystem::createDirectory(g_tempDirPath);
+
+	std::cout << "TempDirPath : " << g_tempDirPath.str() << std::endl;
+}
+
 //------------------------------------------------------------------------------
 String TestHelper::getFilePath(const char* baseSourceFilePath, const char* fileName)
 {
@@ -41,8 +51,7 @@ Path TestHelper::getFilePathU(const char* baseFilePath, const Char* fileName)
 
 Path TestHelper::getTempPath(const char* fileName)
 {
-	// TODO:
-	return Path(String::fromCString(fileName));
+	return Path(g_tempDirPath, String::fromCString(fileName));
 }
 
 Path TestHelper::getAssetPath(const char* fileName)

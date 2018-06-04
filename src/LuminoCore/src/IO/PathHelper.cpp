@@ -276,7 +276,7 @@ template int PathTraits::comparePathString(const wchar_t* path1, int len1, const
 template int PathTraits::comparePathString(const char16_t* path1, int len1, const char16_t* path2, int len2);
 
 template<typename TChar>
-int PathTraits::canonicalizePath(const TChar* srcPath, size_t srcLen, TChar* outPath)
+int PathTraits::canonicalizePath(const TChar* srcPath, size_t srcLen, TChar* outPath, size_t outPathSize)
 {
     /*
 	Ubuntu の realpath は実際にファイルが存在しないと変なパスを返した。(/A/B/../C が /A だけになってしまう)
@@ -292,6 +292,9 @@ int PathTraits::canonicalizePath(const TChar* srcPath, size_t srcLen, TChar* out
 	後ろから前へ行うことで、一時バッファや巻き戻しを使用することなく、比較的シンプルに実装できる。
 	ただし、結果は outPath に右詰で出力されるため、最後に左詰にする必要がある。
 	*/
+
+	if (LN_REQUIRE(outPathSize >= srcLen + 1))
+		return -1;
 
     if (srcLen == 0) {
         outPath[0] = '\0';
@@ -515,9 +518,9 @@ int PathTraits::canonicalizePath(const TChar* srcPath, size_t srcLen, TChar* out
 	return outLen;
 #endif
 }
-template int PathTraits::canonicalizePath(const char* srcPath, size_t srcLen, char* outPath);
-template int PathTraits::canonicalizePath(const wchar_t* srcPath, size_t srcLen, wchar_t* outPath);
-template int PathTraits::canonicalizePath(const char16_t* srcPath, size_t srcLen, char16_t* outPath);
+template int PathTraits::canonicalizePath(const char* srcPath, size_t srcLen, char* outPath, size_t outPathSize);
+template int PathTraits::canonicalizePath(const wchar_t* srcPath, size_t srcLen, wchar_t* outPath, size_t outPathSize);
+template int PathTraits::canonicalizePath(const char16_t* srcPath, size_t srcLen, char16_t* outPath, size_t outPathSize);
 
 template<typename TChar>
 static bool IsInternalSeparator(const TChar* path, int i, int len /*, int slen*/)

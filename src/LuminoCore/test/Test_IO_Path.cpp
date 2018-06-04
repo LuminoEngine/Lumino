@@ -273,7 +273,7 @@ TEST_F(Test_IO_Path, canonicalizePath)
 	{ \
 		Char path1[256] = _LT(src); \
 		Char path2[256]; \
-		detail::PathTraits::canonicalizePath(path1, StringHelper::strlen(path1), path2); \
+		detail::PathTraits::canonicalizePath(path1, StringHelper::strlen(path1), path2, 256); \
 		ASSERT_EQ(0,detail:: PathTraits::comparePathString(_LT(result), StringHelper::strlen(_LT(result)), path2, StringHelper::strlen(path2))); \
 	}
 
@@ -332,6 +332,9 @@ TEST_F(Test_IO_Path, canonicalizePath)
 		path22 = path22.canonicalize();
 		ASSERT_EQ(path2.str(), path22.str());
 #endif
+
+		// check overrun fixed
+		Path(_T("file")).canonicalize();
 	}
 }
 

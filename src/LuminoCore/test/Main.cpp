@@ -211,6 +211,7 @@ int main(int argc, char** argv)
 		emscripten_set_main_loop(ems_loop, 60, true);
 	}
 #endif
+	TestHelper::setTempDirPath(_T("TestTemp"));
 	GlobalLogger::addStdErrAdapter();
 	LN_LOG_INFO << "Running test.";
 

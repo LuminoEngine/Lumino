@@ -195,13 +195,13 @@ Path Path::canonicalize() const
     String* path;
 
     if (isAbsolute()) {
-        std::vector<Char> tmpPath(m_path.length());
-        int len = detail::PathTraits::canonicalizePath(m_path.c_str(), m_path.length(), tmpPath.data());
+        std::vector<Char> tmpPath(m_path.length() + 1);
+        int len = detail::PathTraits::canonicalizePath(m_path.c_str(), m_path.length(), tmpPath.data(), tmpPath.size());
         return Path(StringRef(tmpPath.data(), len));
     } else {
         Path fullPath(Environment::currentDirectory(), m_path);
-        std::vector<Char> tmpPath(fullPath.m_path.length());
-        int len = detail::PathTraits::canonicalizePath(fullPath.m_path.c_str(), fullPath.m_path.length(), tmpPath.data());
+        std::vector<Char> tmpPath(fullPath.m_path.length() + 1);
+		int len = detail::PathTraits::canonicalizePath(fullPath.m_path.c_str(), fullPath.m_path.length(), tmpPath.data(), tmpPath.size());
         return Path(StringRef(tmpPath.data(), len));
     }
 }

@@ -7,6 +7,9 @@ namespace ln {
 class TestHelper
 {
 public:
+	static void setTempDirPath(const Path& dirPath);
+
+
 	/// baseFilePath のファイルと同じディレクトリの fileName を指すパスを得る
 	static String getFilePath(const char* baseFilePath, const char* fileName);
 	static String getFilePath(const char* baseFilePath, const Char* fileName) { return String(getFilePathU(baseFilePath, fileName).c_str()); }
