@@ -248,7 +248,7 @@ void TextWriter::writeInternal(const Char* str, int len)
         return;
     }
 
-    const ByteBuffer2& buf = m_converter.convert(str, len * sizeof(Char));
+    const ByteBuffer& buf = m_converter.convert(str, len * sizeof(Char));
     onWriteOverride(buf.data(), buf.size());
 }
 

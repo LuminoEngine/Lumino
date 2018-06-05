@@ -207,15 +207,15 @@ uint64_t FileSystem::getFileSize(const StringRef& filePath)
     return PlatformFileSystem::getFileSize(localPath.c_str());
 }
 
-ByteBuffer2 FileSystem::readAllBytes(const StringRef& filePath)
+ByteBuffer FileSystem::readAllBytes(const StringRef& filePath)
 {
     detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath.data(), filePath.length());
     const PlatformFileSystem::PathChar mode[] = {'r', 'b', '\0'};
     FILE* fp = PlatformFileSystem::fopen(localPath.c_str(), mode);
-    if (LN_ENSURE_IO(fp, localPath.c_str())) return ByteBuffer2();
+    if (LN_ENSURE_IO(fp, localPath.c_str())) return ByteBuffer();
 
     size_t size = (size_t)detail::FileSystemInternal::getFileSize(fp);
-    ByteBuffer2 buffer(size);
+    ByteBuffer buffer(size);
     fread(buffer.data(), 1, size, fp);
 
     fclose(fp);
@@ -223,7 +223,7 @@ ByteBuffer2 FileSystem::readAllBytes(const StringRef& filePath)
     return buffer;
 }
 
-static String readAllTextHelper(const ByteBuffer2& buffer, TextEncoding* encoding)
+static String readAllTextHelper(const ByteBuffer& buffer, TextEncoding* encoding)
 {
     if (encoding == nullptr) {
         TextEncoding* e = TextEncoding::getEncoding(EncodingType::UTF8);
@@ -238,7 +238,7 @@ static String readAllTextHelper(const ByteBuffer2& buffer, TextEncoding* encodin
 
 String FileSystem::readAllText(const StringRef& filePath, TextEncoding* encoding)
 {
-    ByteBuffer2 buffer(FileSystem::readAllBytes(filePath));
+    ByteBuffer buffer(FileSystem::readAllBytes(filePath));
     return readAllTextHelper(buffer, encoding);
 }
 

@@ -582,7 +582,7 @@ public:
 private:
     void appendIntenal(const TChar* str, int length);
 
-    ByteBuffer2    m_buffer;
+    ByteBuffer    m_buffer;
     size_t        m_bufferUsed;
     byte_t*        m_fixedBuffer;
     size_t        m_fixedBufferSize;

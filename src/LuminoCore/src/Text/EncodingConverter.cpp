@@ -60,7 +60,7 @@ void EncodingConverter::setConversionOptions(const EncodingConversionOptions& op
 	m_options = options;
 }
 
-const ByteBuffer2& EncodingConverter::convert(const void* data, size_t byteCount, EncodingConversionResult* outResult)
+const ByteBuffer& EncodingConverter::convert(const void* data, size_t byteCount, EncodingConversionResult* outResult)
 {
 	checkUpdateEncoderDecoder();
 
@@ -119,7 +119,7 @@ const ByteBuffer2& EncodingConverter::convert(const void* data, size_t byteCount
 	return m_outputBuffer;
 }
 
-const ByteBuffer2& EncodingConverter::getLastBuffer() const
+const ByteBuffer& EncodingConverter::getLastBuffer() const
 {
 	return m_outputBuffer;
 }

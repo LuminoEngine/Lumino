@@ -159,7 +159,7 @@ public:
      * @param[in]    filePath    : 読み込むファイルのパス
      * @return        読み込んだバイナリデータ
      */
-    static ByteBuffer2 readAllBytes(const StringRef& filePath);
+    static ByteBuffer readAllBytes(const StringRef& filePath);
 
     /**
      * ファイルの内容をテキスト形式としてすべて読み込ます。
