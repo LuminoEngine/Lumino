@@ -169,9 +169,9 @@ void formatInternal_Numeric(GenericStringFormatter<TChar>& formatter, const TVal
 	char buf[64];
 	ln::detail::StdCharArrayBuffer<char> b(buf, 64);
 	std::basic_ostream<char, std::char_traits<char> > os(&b);
-	os.imbue(*formatter.m_locale);
+	os.imbue(*formatter.locale());
 
-	auto& formatParam = formatter.m_precision;
+	auto& formatParam = formatter.precision();
 	int32_t precision = -1;
 	if (!formatParam.isEmpty())
 	{
@@ -181,7 +181,7 @@ void formatInternal_Numeric(GenericStringFormatter<TChar>& formatter, const TVal
 		if (LN_ENSURE(result == NumberConversionResult::Success)) return;
 	}
 
-	auto& format = formatter.m_formatString;
+	auto& format = formatter.formatString();
 	if (format.isEmpty())
 	{
 	}
@@ -242,7 +242,7 @@ void formatInternal_Numeric(GenericStringFormatter<TChar>& formatter, const TVal
 		int len = b.length();
 		for (int i = 0; i < len; i++)
 		{
-			formatter.m_sb.appendChar(buf[i]);
+			formatter.getSB().appendChar(buf[i]);
 		}
 	}
 }
@@ -273,12 +273,12 @@ public:
 		if (value)
 		{
 			const TChar str[] = {'T', 'r', 'u', 'e'};
-			f.m_sb.appendString(str, 4);
+			f.getSB().appendString(str, 4);
 		}
 		else
 		{
 			const TChar str[] = { 'F', 'a', 'l', 's', 'e' };
-			f.m_sb.appendString(str, 5);
+			f.getSB().appendString(str, 5);
 		}
 	}
 
@@ -287,7 +287,7 @@ public:
 	static void formatArg_Char(void* formatter, const void* value)
 	{
 		auto& f = *static_cast<GenericStringFormatter<TChar>*>(formatter);
-		f.m_sb.appendChar(*static_cast<const TChar*>(value));
+		f.getSB().appendChar(*static_cast<const TChar*>(value));
 	}
 
 	// TChar*
@@ -297,7 +297,7 @@ public:
 	static void formatArg_CStr(void* formatter, const void* value)
 	{
 		auto& f = *static_cast<GenericStringFormatter<TChar>*>(formatter);
-		f.m_sb.appendString(static_cast<const TChar*>(value));
+		f.getSB().appendString(static_cast<const TChar*>(value));
 	}
 
 	// String
@@ -305,7 +305,7 @@ public:
 	static void formatArg_UString(void* formatter, const void* value)
 	{
 		auto& f = *static_cast<GenericStringFormatter<TChar>*>(formatter);
-		f.m_sb.appendString(*static_cast<const String*>(value));
+		f.getSB().appendString(*static_cast<const String*>(value));
 	}
 
 	// StringRef
@@ -314,7 +314,7 @@ public:
 	{
 		auto& f = *static_cast<GenericStringFormatter<TChar>*>(formatter);
 		const StringRef* ref = static_cast<const StringRef*>(value);
-		f.m_sb.appendString(ref->data(), ref->length());
+		f.getSB().appendString(ref->data(), ref->length());
 	}
 
 	// user-defined type
@@ -407,7 +407,7 @@ bool formatInternal(const Locale& locale, GenericFormatStringBuilder<TChar>* out
 	int autoNumberingIndex = -1;
 
 	GenericStringFormatter<TChar> formatter;
-	formatter.m_locale = &locale.stdLocale();
+	formatter.setLocale(&locale.stdLocale());
 	const TChar* pos = format;
 	const TChar* end = format + formatLen;
 	TChar ch;
@@ -613,16 +613,16 @@ bool formatInternal(const Locale& locale, GenericFormatStringBuilder<TChar>* out
 			return false;
 		}
 
-		formatter.m_sb.clear();
-		formatter.m_formatString = GenericFormatStringRef<TChar>(fmtBegin, fmtEnd);
-		formatter.m_precision = GenericFormatStringRef<TChar>(fmtEnd, fmtParamEnd);
+		formatter.getSB().clear();
+		formatter.setFormatString(GenericFormatStringRef<TChar>(fmtBegin, fmtEnd));
+		formatter.setPrecision (GenericFormatStringRef<TChar>(fmtEnd, fmtParamEnd));
 		args.GetArg(index).doFormat(&formatter);
 		if (formatter.hasError())
 		{
 			return false;
 		}
 
-		auto& str = formatter.m_sb;
+		auto& str = formatter.getSB();
 		int pad = width - str.length();
 		if (!leftJustify && pad > 0) outStr->appendChar(' ', pad);
 		outStr->appendString(str.c_str(), str.length());

@@ -307,20 +307,20 @@ StringRef String::substr(int start, int count) const
     return StringRef(begin, end);
 }
 
-String String::left(int count) const
+StringRef String::left(int count) const
 {
     const Char* begin;
     const Char* end;
     StringHelper::left(c_str(), count, &begin, &end);
-    return String(begin, end);
+    return StringRef(begin, end);
 }
 
-String String::right(int count) const
+StringRef String::right(int count) const
 {
     const Char* begin;
     const Char* end;
     StringHelper::right(c_str(), count, &begin, &end);
-    return String(begin, end);
+    return StringRef(begin, end);
 }
 
 String String::trim() const

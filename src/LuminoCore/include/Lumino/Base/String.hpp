@@ -186,7 +186,7 @@ public:
      * s.left(2);           // => "ab";
      * ~~~
      */
-    String left(int count) const; // TODO: StringRef
+	StringRef left(int count) const;
 
     /**
      * 文字列の右側(末尾)から指定した文字数を抽出します。
@@ -200,7 +200,7 @@ public:
      * s.right(2);          // => "ef";
      * ~~~
      */
-    String right(int count) const; // TODO: StringRef
+	StringRef right(int count) const;
 
     /** 文字列の先頭と末尾の空白を全て削除した文字列を返します。 */
     String trim() const;
@@ -307,7 +307,7 @@ public:
     static String concat(const StringRef& str1, const StringRef& str2, const StringRef& str3, const StringRef& str4); /**< @overload concat */
 
     /** 指定した文字列リストを結合した 1 つの文字列を生成します。各要素の間には、指定した区切り記号が挿入されます。 */
-    static String join(const List<String>& list, const StringRef& delim); // TODO: Range
+    static String join(const List<String>& list, const StringRef& delim);
 
     /** 複合書式文字列と可変長引数リストから文字列を生成します。 */
     template<typename... TArgs>
@@ -605,13 +605,23 @@ public:
     }
     bool hasError() const { return !m_error.empty(); }
 
-public: // TODO
+	void setLocale(const std::locale* locale) { m_locale = locale; }
+	const std::locale* locale() const { return m_locale; }
+
+	void setFormatString(const GenericFormatStringRef<TChar>& str) { m_formatString = str; }
+	const GenericFormatStringRef<TChar>& formatString() const { return m_formatString; }
+
+	void setPrecision(const GenericFormatStringRef<TChar>& str) { m_precision = str; }
+	const GenericFormatStringRef<TChar>& precision() const { return m_precision; }
+
+	GenericFormatStringBuilder<TChar>& getSB() { return m_sb; }
+
+private:
     const std::locale* m_locale;
     GenericFormatStringBuilder<TChar> m_sb;
     GenericFormatStringRef<TChar> m_formatString;
     GenericFormatStringRef<TChar> m_precision;
 
-private:
     std::string m_error;
     int m_errorPos;
 };
