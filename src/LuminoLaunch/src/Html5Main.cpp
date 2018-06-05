@@ -2,22 +2,26 @@
 #include <stdio.h>
 #include <emscripten.h>
 
-extern int main2();
+extern "C" ::ln::Application* LuminoCreateApplicationInstance();
+
+static ln::Application* g_app = nullptr;
 
 static void ln_main_loop()
 {
-    printf("ln_main_loop.");
+    ln::detail::ApplicationHelper::processTick(g_app);
     ln::Engine::update();
-
-    static int count = 0;
-    printf("%d\n", count);
 }
-
 
 int main(int argc, char** argv)
 {
     printf("run test.");
+
     ln::Engine::initialize();
+
+    g_app = ::LuminoCreateApplicationInstance();
+
+    ln::detail::ApplicationHelper::initialize(g_app);
+
     printf("initialized.");
 
 	emscripten_set_main_loop(ln_main_loop, 0, true);

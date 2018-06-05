@@ -15,6 +15,8 @@ public:
 
 	const Ref<EnvironmentSettings>& environmentSettings() const { return m_environmentSettings; }
 
+	Result dev_installTools() const;
+
 private:
 	Ref<EnvironmentSettings> m_environmentSettings;
 	Ref<Project> m_project;

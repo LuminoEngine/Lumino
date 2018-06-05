@@ -52,6 +52,7 @@ if (DEFINED EMSCRIPTEN)
     set(LN_EMSCRIPTEN ON)
     add_definitions(-DLN_GRAPHICS_OPENGLES)
     add_definitions(-DLN_GLFW)
+    add_definitions(-DGLFW_INCLUDE_ES2) # glfw3.h 内で include するヘッダを制御する
 endif()
 
 if (WIN32)

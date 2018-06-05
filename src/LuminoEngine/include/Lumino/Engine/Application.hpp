@@ -2,6 +2,7 @@
 #include "Object.hpp"
 
 namespace ln {
+namespace detail { class ApplicationHelper; }
 
 class LN_API Application
 	: public Object
@@ -20,8 +21,19 @@ public:
 protected:
 	Application();
 	virtual ~Application();
+
+	friend class detail::ApplicationHelper;
 };
 
+namespace detail {
+class ApplicationHelper
+{
+public:
+	static void initialize(Application* app);
+	static bool processTick(Application* app);
+	static void finalize(Application* app);
+};
+} // namespace detail
 } // namespace ln
 
 #define LUMINO_APP(appClass) \

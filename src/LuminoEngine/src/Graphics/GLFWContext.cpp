@@ -2,8 +2,8 @@
 #ifdef LN_GLFW
 
 #include "Internal.hpp"
-#include "../Platform/GLFWPlatformWindowManager.hpp"
 #include "GLFWContext.hpp"
+#include "../Platform/GLFWPlatformWindowManager.hpp"
 
 namespace ln {
 namespace detail {
