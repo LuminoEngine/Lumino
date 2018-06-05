@@ -8,6 +8,8 @@
 
 - name: Core
   items:
+    - name: 文字列の取り扱い
+      href: Base/String.md
     - name: 文字列の書式指定
       href: Base/CompoundFormatString.md
     - name: ログ出力
