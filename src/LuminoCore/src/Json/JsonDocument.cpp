@@ -557,7 +557,7 @@ JsonElement* JsonElementCache::alloc(size_t size)
         return nullptr;
 
     BufferInfo* cur = &m_buffers.back();
-    if (cur->buffer.getSize() - cur->used < size) {
+    if (cur->buffer.size() - cur->used < size) {
         BufferInfo info;
         info.buffer.resize(2048);
         info.used = 0;
@@ -565,7 +565,7 @@ JsonElement* JsonElementCache::alloc(size_t size)
         cur = &m_buffers.back();
     }
 
-    JsonElement* buf = reinterpret_cast<JsonElement*>(cur->buffer.getData() + cur->used);
+    JsonElement* buf = reinterpret_cast<JsonElement*>(cur->buffer.data() + cur->used);
     cur->used += size;
     m_elements.add(buf);
     return buf;

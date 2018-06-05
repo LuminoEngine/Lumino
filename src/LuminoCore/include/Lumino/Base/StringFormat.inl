@@ -50,6 +50,7 @@ GenericFormatStringBuilder<TChar>::GenericFormatStringBuilder()
 	, m_fixedBufferSize(0)
 	, m_fixedBufferOver(false)
 {
+	ln::detail::GenericBufferHelper::setAutoClear(&m_buffer, false);
 }
 
 template<typename TChar>
@@ -136,7 +137,7 @@ void GenericFormatStringBuilder<TChar>::appendIntenal(const TChar* str, int leng
 		if (m_bufferUsed + byteCount > m_buffer.size())
 		{
 			size_t newSize = m_buffer.size() + LN_MAX(m_buffer.size(), byteCount);	// 最低でも byteCount 分を拡張する
-			m_buffer.resize(newSize, false);
+			m_buffer.resize(newSize);
 		}
 
 		writeBegin = &(m_buffer.data()[m_bufferUsed]);

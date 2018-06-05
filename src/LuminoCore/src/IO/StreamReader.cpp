@@ -126,7 +126,10 @@ void StreamReader::initReader(Stream* stream, TextEncoding* encoding)
     m_stream = stream;
     m_converter.getSourceEncoding(encoding);
     m_converter.setDestinationEncoding(TextEncoding::getEncodingTemplate<Char>());
-    m_byteBuffer.resize(DefaultBufferSize, false);
+
+	detail::GenericBufferHelper::setAutoClear(&m_byteBuffer, false);
+    m_byteBuffer.resize(DefaultBufferSize);
+
     m_byteLen = 0;
     m_charElementLen = 0;
     m_charPos = 0;

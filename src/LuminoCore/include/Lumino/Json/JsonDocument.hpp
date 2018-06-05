@@ -194,7 +194,7 @@ private:
 
     struct BufferInfo
     {
-        ByteBuffer buffer;
+        ByteBuffer2 buffer;
         size_t used;
     };
     List<BufferInfo> m_buffers;
