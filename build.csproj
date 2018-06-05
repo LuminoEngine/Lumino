@@ -23,6 +23,7 @@
     <Compile Include="tools/LuminoBuild/Tasks/BuildEngine.cs" />
     <Compile Include="tools\LuminoBuild\Rules\MakePackage.cs" />
     <Compile Include="tools\LuminoBuild\Tasks\BuildDocuments.cs" />
+    <Compile Include="tools\LuminoBuild\Tasks\BuildEngine_Linux.cs" />
     <Compile Include="tools\LuminoBuild\Tasks\MakeNuGetPackage_Core.cs" />
   </ItemGroup>
   

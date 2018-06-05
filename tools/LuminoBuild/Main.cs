@@ -43,6 +43,7 @@ namespace LuminoBuild
             builder.Tasks = new List<LuminoBuild.BuildTask>();
             builder.Tasks.Add(new Tasks.MakeVSProjects());
             builder.Tasks.Add(new Tasks.BuildEngine());
+            builder.Tasks.Add(new Tasks.BuildEngine_Linux());
             builder.Tasks.Add(new Tasks.BuildDocuments());
             builder.Tasks.Add(new Tasks.MakeNuGetPackage_Core());
             builder.Rules.Add(new Rules.MakePackage());

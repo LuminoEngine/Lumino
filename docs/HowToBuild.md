@@ -8,3 +8,17 @@ choco install nuget.commandline
 docfx
 doxygen.install
 ```
+
+
+
+
+### Linux(Ubuntu)
+
+install `dotnet`
+
+https://www.microsoft.com/net/download/linux-package-manager/ubuntu16-04/sdk-current
+
+```
+$ dotnet run -- BuildEngine_Linux
+```
+
