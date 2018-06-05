@@ -228,7 +228,11 @@ using byte_t = unsigned char;
 #define LN_COM_SAFE_RELEASE(p)	{ if (p) { (p)->Release(); (p)= nullptr; } }
 
 // constexpr macro
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
+#if defined(__clang__)
+#define LN_CONSTEXPR constexpr
+#elif defined(__GNUC__) || defined(__GNUG__)
+#define LN_CONSTEXPR
+#elif !defined(_MSC_VER) || _MSC_VER >= 1900
 #define LN_CONSTEXPR constexpr
 #else
 #define LN_CONSTEXPR

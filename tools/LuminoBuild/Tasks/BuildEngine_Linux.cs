@@ -23,7 +23,7 @@ namespace LuminoBuild.Tasks
                 installDir);
 
             Utils.CallProcess("cmake", args);
-            Utils.CallProcess("cmake", "--build . --target INSTALL");
+            Utils.CallProcess("cmake", "--build . --target install");
         }
     }
 }
