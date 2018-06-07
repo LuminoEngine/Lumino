@@ -18,7 +18,7 @@ namespace LuminoBuild.Tasks
             Directory.CreateDirectory(buildDir);
             Directory.SetCurrentDirectory(buildDir);
 
-            Utils.CallProcess("cmake", $"{builder.LuminoRootDir} -DCMAKE_INSTALL_PREFIX={cmakeOutputDir}");
+            Utils.CallProcess("cmake", $"{builder.LuminoRootDir} -DCMAKE_INSTALL_PREFIX={cmakeOutputDir} -G \"Xcode\"");
             Utils.CallProcess("cmake", $"--build {buildDir}");
             Utils.CallProcess("cmake", $"--build {buildDir} --target install");
         }

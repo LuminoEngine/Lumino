@@ -1,4 +1,5 @@
-﻿#pragma once
+#pragma once
+#include <mach/mach_time.h>
 
 namespace ln {
 

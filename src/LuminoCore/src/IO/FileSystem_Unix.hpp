@@ -1,6 +1,7 @@
-﻿
+
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <unistd.h> 
 #include <dirent.h>
 #include <fnmatch.h>
 #include "Internal.hpp"
@@ -73,7 +74,7 @@ public:
             return false;
         }
 
-        const char* fileName = detail::PathTraits::getFileNameSub(path);
+        const char* fileName = detail::PathTraits::getFileName(path, path + strlen(path));
         Flags<FileAttribute> attrs = FileAttribute::None;
         if (S_ISDIR(st.st_mode)) {
             attrs |= FileAttribute::Directory;

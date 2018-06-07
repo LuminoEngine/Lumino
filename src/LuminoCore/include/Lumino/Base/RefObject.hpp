@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2018 lriki. Distributed under the MIT license.
+// Copyright (c) 2018 lriki. Distributed under the MIT license.
 #pragma once
 #include <atomic>
 #include <cassert>
@@ -408,17 +408,20 @@ bool operator<(const Ref<T>& lhs, const Ref<U>& rhs) LN_NOEXCEPT
 {
     return (lhs.get() < rhs.get());
 }
-
+	
 template<class T>
 bool operator<(const Ref<T>& lhs, std::nullptr_t) LN_NOEXCEPT
 {
-    return (lhs.get() < nullptr);
+	return std::less<T*>()(lhs.get(), nullptr);
+	//std::shared_ptr<<#class _Tp#>>
+    //return (lhs.get() < nullptr);
 }
 
 template<class T>
 bool operator<(std::nullptr_t, const Ref<T>& rhs) LN_NOEXCEPT
 {
-    return (nullptr < rhs.get());
+	return std::less<T*>()(nullptr, rhs.get());
+    //return (nullptr < rhs.get());
 }
 
 template<class T, class U>

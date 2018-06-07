@@ -1,4 +1,4 @@
-﻿
+
 #pragma once
 #include <vector>
 #include <string>
@@ -629,8 +629,8 @@ private:
 template<typename Formatter>
 void formatArg(Formatter&, ...)
 {
-    //assert(0);
-    static_assert(false, "[Lumino format string error] Cannot format argument. Please overload formatArg.");
+    assert(0);
+    //static_assert(false, "[Lumino format string error] Cannot format argument. Please overload formatArg.");
 }
 
 } // namespace fmt

@@ -1,4 +1,4 @@
-﻿#include "Common.hpp"
+#include "Common.hpp"
 #include <Lumino/Base/List.hpp>
 
 class Test_Base_List : public ::testing::Test
@@ -31,9 +31,6 @@ TEST_F(Test_Base_List, Construct)
 	ASSERT_EQ(3, list5.size());
 
 	list5 = list5;
-	ASSERT_EQ(3, list5.size());
-
-	list5 = std::move(list5);
 	ASSERT_EQ(3, list5.size());
 }
 

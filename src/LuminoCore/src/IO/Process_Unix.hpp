@@ -1,6 +1,7 @@
-﻿//#include "Internal.hpp"
+//#include "Internal.hpp"
 #include <sys/types.h> 
 #include <sys/wait.h>
+#include <unistd.h>
 #include <string>
 #include <vector>
 #include <chrono>
@@ -77,7 +78,7 @@ int PipeImpl::readBytes(void* buffer, int length)
 	int n;
 	do
 	{
-		n = read(m_readFD, buffer, length);
+		n = ::read(m_readFD, buffer, length);
 	} while (n < 0 && errno == EINTR);
 
 	if (LN_ENSURE(n >= 0)) return 0;
@@ -90,7 +91,7 @@ int PipeImpl::writeBytes(const void* buffer, int length)
 	int n;
 	do
 	{
-		n = write(m_writeFD, buffer, length);
+		n = ::write(m_writeFD, buffer, length);
 	} while (n < 0 && errno == EINTR);
 
 	if (LN_ENSURE(n >= 0)) return 0;
@@ -144,20 +145,20 @@ private:
 	
 ProcessImpl::ProcessImpl()
 	: m_pid(0)
-	, m_exitCode(0)
+	//, m_exitCode(0)
 {
 }
 
 void ProcessImpl::start(const ProcessStartInfo& startInfo)
 {
-	std::string program = startInfo.program.getString().toStdString();
-	std::string workingDirectory = startInfo.workingDirectory.toStdString();
+	std::string program = startInfo.program.str().toStdString();
+	std::string workingDirectory = startInfo.workingDirectory.str().toStdString();
 	std::vector<std::string> argvInstance(startInfo.args.size());
 	std::vector<char*> argv(startInfo.args.size() + 2);
 
 	argv[0] = const_cast<char*>(program.c_str());
 	for (int i = 0; i < startInfo.args.size(); i++) {
-		argvInstance[i + 1] = startInfo.args.toStdString();
+		argvInstance[i + 1] = startInfo.args[i].toStdString();
 		argv[i + 1] = const_cast<char*>(argvInstance[i + 1].c_str());
 	}
 	argv[startInfo.args.size() + 1] = NULL;
@@ -179,13 +180,13 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo)
 
 		// redirection
 		if (startInfo.stdinPipe) dup2(startInfo.stdinPipe->readFD(), STDIN_FILENO);
-		if (startInfo.stdoutPipe) dup2(outPipe->writeFD(), STDOUT_FILENO);
-		if (startInfo.stderrPipe) dup2(errPipe->writeFD(), STDERR_FILENO);
+		if (startInfo.stdoutPipe) dup2(startInfo.stdoutPipe->writeFD(), STDOUT_FILENO);
+		if (startInfo.stderrPipe) dup2(startInfo.stderrPipe->writeFD(), STDERR_FILENO);
 		if (startInfo.stdinPipe) startInfo.stdinPipe->closeBoth();
 		if (startInfo.stdoutPipe) startInfo.stdoutPipe->closeBoth();
 		if (startInfo.stderrPipe) startInfo.stderrPipe->closeBoth();
 		
-		execve(argv[0], argv, environ);
+		execve(argv[0], argv.data(), environ);
 		
 		// it only cames here when execve failed.
 		exit(72);
@@ -216,7 +217,7 @@ bool ProcessImpl::waitForExit(int timeoutMSec)
 		
 		usleep(1000);
 
-		elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start).count();
+		elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - startTime).count();
 		
 	} while(timeoutMSec == -1 || elapsedTime < timeoutMSec);
 	

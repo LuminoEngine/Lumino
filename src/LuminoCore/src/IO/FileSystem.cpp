@@ -1,4 +1,4 @@
-﻿
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <list>
@@ -256,7 +256,7 @@ void FileSystem::writeAllBytes(const StringRef& filePath, const void* buffer, si
 
 void FileSystem::writeAllText(const StringRef& filePath, const String& str, TextEncoding* encoding)
 {
-    encoding = (encoding == nullptr) ? TextEncoding::utf8Encoding() : encoding;
+    encoding = (encoding == nullptr) ? TextEncoding::utf8Encoding().get() : encoding;
 
     auto buffer = encoding->encode(str);
 

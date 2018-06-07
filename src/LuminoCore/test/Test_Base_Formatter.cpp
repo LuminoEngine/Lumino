@@ -1,4 +1,4 @@
-﻿#include "Common.hpp"
+#include "Common.hpp"
 #include <Lumino/Base/String.hpp>
 
 class Test_Base_Formatter : public ::testing::Test
@@ -141,7 +141,7 @@ TEST_F(Test_Base_Formatter, Basic)
 		ASSERT_EQ(_TT("25.187900"), String::format(_TT("{0:F}"), 25.1879));
 		ASSERT_EQ(_TT("25.187900"), String::format(_TT("{0:f}"), 25.1879));
 		ASSERT_EQ(_TT("25.19"), String::format(_TT("{0:F2}"), 25.1879));
-#ifndef __EMSCRIPTEN__	// Emscripten はロケール指定できないようだ
+#ifdef LN_WIN32
 		ASSERT_EQ(_TT("25,187900"), String::format(Locale(_TT("fr")), _TT("{0:F}"), 25.1879));
 #endif
 	}

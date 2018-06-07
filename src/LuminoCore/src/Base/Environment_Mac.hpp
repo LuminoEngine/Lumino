@@ -1,4 +1,5 @@
-﻿#pragma once
+#pragma once
+#include <unistd.h>
 
 namespace ln {
 
@@ -17,9 +18,15 @@ public:
 		strncpy(&((*outPath)[0]), p, len);
 		free(p);
 	}
+
+	static StringType getExecutablePath()
+	{
+		LN_NOTIMPLEMENTED();
+		return StringType();
+	}
 	
 #ifdef LN_OS_MAC
-	void getSpecialFolderPath(SpecialFolder specialFolder, LocalStringConverter<CharType>* out)
+	static void getSpecialFolderPath(SpecialFolder specialFolder, StringType* outPath)
 	{
 #if 0
 		short domain = kOnAppropriateDisk;

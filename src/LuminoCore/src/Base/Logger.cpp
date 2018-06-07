@@ -1,4 +1,4 @@
-﻿
+
 #include "Internal.hpp"
 #include <cstdio>
 #include <vector>
@@ -10,6 +10,7 @@
 #include <sys/timeb.h>
 #else
 #include <sys/time.h>
+#include <unistd.h>
 #endif
 #include <time.h>
 #include <sstream>
