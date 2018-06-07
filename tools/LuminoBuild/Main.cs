@@ -12,7 +12,7 @@ namespace LuminoBuild
             // default
             if (args.Length == 0)
             {
-                args = new string[] { "BuildDocuments" };
+                args = new string[] { "BuildEngine_macOS" };
             }
 
             Assembly thisAssembly = Assembly.GetEntryAssembly();
@@ -44,6 +44,7 @@ namespace LuminoBuild
             builder.Tasks.Add(new Tasks.MakeVSProjects());
             builder.Tasks.Add(new Tasks.BuildEngine());
             builder.Tasks.Add(new Tasks.BuildEngine_Linux());
+            builder.Tasks.Add(new Tasks.BuildEngine_macOS());
             builder.Tasks.Add(new Tasks.BuildDocuments());
             builder.Tasks.Add(new Tasks.MakeNuGetPackage_Core());
             builder.Rules.Add(new Rules.MakePackage());
