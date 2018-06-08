@@ -159,7 +159,7 @@ public:
 
     static bool matchPath(const char* filePath, const char* pattern)
     {
-        return fnmatch(pattern, filePath, FNM_PATHNAME) == 0;
+        return fnmatch(pattern, filePath, 0) == 0;
     }
 
     static int getCurrentDirectory(int bufferLength, char* outBuffer)

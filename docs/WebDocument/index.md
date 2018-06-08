@@ -1,6 +1,6 @@
 ---
-title: Welcome to Lumino website!
-documentType: "index"
+title: Welcome to DocFX website!
+documentType: index
 ---
 <style type="text/css">
 footer{

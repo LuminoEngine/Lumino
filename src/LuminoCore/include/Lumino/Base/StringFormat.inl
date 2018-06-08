@@ -1,6 +1,6 @@
 ﻿
 #include <array>
-#include <strstream>
+#include <sstream>
 #include <iomanip>
 #include "Locale.hpp"
 #include "StringHelper.hpp"

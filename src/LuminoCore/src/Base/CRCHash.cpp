@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <string.h>
 #include <Lumino/Base/CRCHash.hpp>
 
 namespace ln {

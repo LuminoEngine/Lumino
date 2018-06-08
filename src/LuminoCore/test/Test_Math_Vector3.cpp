@@ -194,7 +194,7 @@ TEST_F(Test_Vector3, Basic)
 		v = Vector3::unproject(Vector3(320, 240, 0), m2, 0, 0, 640, 480);
 		ASSERT_VEC3_NEAR(0, 0, 1.0f, v);
 		v = Vector3::unproject(Vector3(320, 240, 1), m2, 0, 0, 640, 480);
-		ASSERT_VEC3_NEAR(0, 0, 1000.01288f, v);
+		ASSERT_VEC3_NEAR_THRESHOLD(0, 0, 1000.01288f, v, 1.0f);
 		v = Vector3::unproject(Vector3(0, 0, 0), m2, 0, 0, 640, 480);
 		ASSERT_VEC3_NEAR(-0.769800305, 0.577350199, 1.0f, v);
 		v = Vector3::unproject(Vector3(640, 0, 0), m2, 0, 0, 640, 480);

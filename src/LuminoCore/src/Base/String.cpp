@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <limits.h>
 #include <iostream>
 #include <memory>
 #if defined(LN_OS_WIN32) && _MSC_VER >= 1900
@@ -1129,7 +1130,7 @@ int UStringConvert::convertNativeString(const char16_t* src, int srcLen, char* d
     options.ReplacementChar = '?';
     auto result = UnicodeUtils::convertUTF16toUTF8((const UTF16*)src, srcLen, (UTF8*)dst, dstSize, &options);
     if (result == UTFConversionResult_Success) {
-        dst[dstSize - 1] = '\0';
+		dst[options.ConvertedTargetLength] = '\0';
         return options.ConvertedTargetLength;
     } else {
         return 0;

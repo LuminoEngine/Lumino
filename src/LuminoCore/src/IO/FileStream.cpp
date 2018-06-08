@@ -74,8 +74,9 @@ bool FileStream::open(const StringRef& filePath, FileOpenMode openMode)
 
 void FileStream::close()
 {
-	if (m_stream != NULL) {
+	if (m_stream != nullptr) {
 		fclose(m_stream);
+		m_stream = nullptr;
 	}
 }
 

@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <limits.h>
 #include <iostream>
 #include <Lumino/Base/Environment.hpp>
 #include <Lumino/IO/Path.hpp>

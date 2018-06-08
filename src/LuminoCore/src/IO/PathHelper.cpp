@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <limits.h>
 #include <Lumino/Base/StringHelper.hpp>
 #include <Lumino/Base/Environment.hpp>
 #include "PathHelper.hpp"

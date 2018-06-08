@@ -102,6 +102,8 @@ TEST_F(Test_IO_FileSystem, DirectoryCreateCopyDelete)
 //## check match file path by wildcard
 TEST_F(Test_IO_FileSystem, matchPath)
 {
+	ASSERT_EQ(true, FileSystem::matchPath(_TT("file.txt"), _TT("*.txt")));
+	ASSERT_EQ(false, FileSystem::matchPath(_TT("file.txt"), _TT("*.dat")));
 	ASSERT_EQ(true, FileSystem::matchPath(_TT("dir/file.txt"), _TT("*.txt")));
 	ASSERT_EQ(false, FileSystem::matchPath(_TT("dir/file.txt"), _TT("*.dat")));
 }

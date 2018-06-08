@@ -1,4 +1,4 @@
-#include "Common.hpp"
+﻿#include "Common.hpp"
 #include <Lumino/Base/String.hpp>
 
 class Test_Base_Formatter : public ::testing::Test
@@ -11,6 +11,9 @@ protected:
 //---------------------------------------------------------------------
 TEST_F(Test_Base_Formatter, Basic)
 {
+	//struct LocalSt { int a; } st;
+	//String::format(_TT("{}"), st);
+
 	ASSERT_EQ(_TT(""), String::format(_TT("")));
 	ASSERT_EQ(_TT("a"), String::format(_TT("a")));
 	ASSERT_EQ(_TT("a"), String::format(_TT("{0}"), _TT("a")));

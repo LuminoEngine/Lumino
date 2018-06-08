@@ -1,5 +1,18 @@
 /* The standard CSS for doxygen 1.8.8 */
 
+.sm a {
+	color: rgb(96, 96, 96);
+}
+
+
+.memtitle {
+	padding: 8px;
+	border-top: 1px solid rgb(182, 182, 182);
+	border-left: 1px solid rgb(182, 182, 182);
+	border-right: 1px solid rgb(182, 182, 182);
+}
+
+
 body, table, div, p, dl {
 	font: 400 14px/22px Meiryo,Roboto,sans-serif;
 }
@@ -1013,7 +1026,7 @@ div.header
         background-repeat:repeat-x;
 	background-color: #F9F9F9;
 	margin:  0px;
-	border-top: 1px solid #CECECE;		/* ƒ^ƒu‚Æƒy[ƒW•\‘è‚ÌŠÔ‚Éƒ{[ƒ_[‚ğ“ü‚ê‚é */
+	border-top: 1px solid #CECECE;		/* ï¿ï½½^ï¿ï½½uï¿ï½½ï¾†ãƒšï¿ï½½[ï¿ï½½Wï¿ï½½\ï¿ï½½ï¿ï½½ï¾Œé–“ã«ãƒœï¿ï½½[ï¿ï½½_ï¿ï½½[ï¿ï½½ï¿ï½½ï¿ï½½ï¿ï½½ï¿ï½½ï¿ï½½ */
 	border-bottom: 1px solid #CECECE;
 }
 
@@ -1109,7 +1122,7 @@ dl.section dd {
  
 #projectname
 {
-	font: 250% Tahoma, Arial,sans-serif;	/* ƒTƒCƒY‚ğ­‚µT‚Ü‚µ‚­‚·‚é */
+	font: 250% Tahoma, Arial,sans-serif;	/* ï¿ï½½Tï¿ï½½Cï¿ï½½Yï¿ï½½ï¿ï½½ï¿ï½½ï¿ï½½Tï¿ï½½ï¾œã‚‘ï½¿ï½½ï¿ï½½ï¿ï½½ï¿ï½½ï¿ï½½ï¿ï½½ï¿ï½½ */
 	margin: 0px;
 	padding: 2px 4px;
 }

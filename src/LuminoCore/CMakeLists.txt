@@ -227,10 +227,10 @@ if (WIN32)
 	list(APPEND LN_LINK_LIBS "Shlwapi.lib")
 
 elseif (APPLE)
-	set(LN_UNIT_TEST_LINK_LIBS "pthread")
+	set(APPEND LN_LINK_LIBS "pthread")
 	
 elseif (UNIX)
-	set(LN_UNIT_TEST_LINK_LIBS "pthread")
+	set(APPEND LN_LINK_LIBS "pthread")
 	
 endif()
 

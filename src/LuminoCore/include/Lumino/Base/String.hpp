@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 #include <vector>
 #include <string>
@@ -124,11 +124,11 @@ public:
      * startIndex の位置から文字列の先頭に向かう count 文字分の領域から str を検索します。
      * ~~~
      * String str = "abcdef";
-     * str.LastIndexOf("de");       // => 3
-     * str.LastIndexOf("bc", 2);    // => 1
-     * str.LastIndexOf("cd", 2);    // => -1    (検索範囲 "abc" の中に "cd" は存在しない)
-     * str.LastIndexOf("cd", 4, 3); // => 2     (検索範囲 "cde" の中に "cd" は存在する)
-     * str.LastIndexOf("bc", 4, 3); // => -1    (検索範囲 "cde" の中に "bc" は存在しない)
+     * str.lastIndexOf("de");       // => 3
+     * str.lastIndexOf("bc", 2);    // => 1
+     * str.lastIndexOf("cd", 2);    // => -1    (検索範囲 "abc" の中に "cd" は存在しない)
+     * str.lastIndexOf("cd", 4, 3); // => 2     (検索範囲 "cde" の中に "cd" は存在する)
+     * str.lastIndexOf("bc", 4, 3); // => -1    (検索範囲 "cde" の中に "bc" は存在しない)
      * ~~~
      */
     int lastIndexOf(const StringRef& str, int startIndex = -1, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
@@ -152,7 +152,7 @@ public:
      * str が空文字の場合は必ず true が返ります。
      * ~~~
      * str = "file.txt";
-     * if (str.EndsWith(".txt")) {
+     * if (str.endsWith(".txt")) {
      *     // 一致した
      * }
      * ~~~
@@ -626,12 +626,12 @@ private:
     int m_errorPos;
 };
 
-template<typename Formatter>
-void formatArg(Formatter&, ...)
-{
-    assert(0);
-    //static_assert(false, "[Lumino format string error] Cannot format argument. Please overload formatArg.");
-}
+//template<typename T, typename Formatter>
+//void formatArg(Formatter&, ...)
+//{
+//    assert(0);
+//    //static_assert(false, "[Lumino format string error] Cannot format argument. Please overload formatArg.");
+//}
 
 } // namespace fmt
 

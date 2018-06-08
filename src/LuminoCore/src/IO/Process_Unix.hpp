@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 #include <chrono>
-//#include <Lumino/Base/ElapsedTimer.h>
 #include <Lumino/IO/Stream.hpp>
 #include <Lumino/IO/Process.hpp>
 
@@ -138,6 +137,8 @@ public:
 	
 private:
 	pid_t   m_pid;
+	int m_exitCode;
+	bool m_exited;
 	//Ref<PipeImpl> m_stdinPipe;
 	//Ref<PipeImpl> startInfo.stdoutPipe;
 	//Ref<PipeImpl> startInfo.stderrPipe;
@@ -146,6 +147,8 @@ private:
 ProcessImpl::ProcessImpl()
 	: m_pid(0)
 	//, m_exitCode(0)
+	, m_exitCode(0)
+	, m_exited(false)
 {
 }
 
@@ -158,8 +161,8 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo)
 
 	argv[0] = const_cast<char*>(program.c_str());
 	for (int i = 0; i < startInfo.args.size(); i++) {
-		argvInstance[i + 1] = startInfo.args[i].toStdString();
-		argv[i + 1] = const_cast<char*>(argvInstance[i + 1].c_str());
+		argvInstance[i] = startInfo.args[i].toStdString();
+		argv[i + 1] = const_cast<char*>(argvInstance[i].c_str());
 	}
 	argv[startInfo.args.size() + 1] = NULL;
 
@@ -194,6 +197,10 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo)
 	else
 	{
 		// parent process
+
+		if (startInfo.stdinPipe) startInfo.stdinPipe->closeRead();
+		if (startInfo.stdoutPipe) startInfo.stdoutPipe->closeWrite();
+		if (startInfo.stderrPipe) startInfo.stderrPipe->closeWrite();
 	}
 }
 
@@ -202,7 +209,6 @@ bool ProcessImpl::waitForExit(int timeoutMSec)
 	std::chrono::system_clock::time_point startTime = std::chrono::system_clock::now();
 	int elapsedTime;
 
-	bool exit = false;
 	do
 	{
 		int status;
@@ -212,7 +218,12 @@ bool ProcessImpl::waitForExit(int timeoutMSec)
 		}
 		else
 		{
-			exit = true;
+			if (!m_exited)
+			{
+				m_exitCode = WEXITSTATUS(status);
+				m_exited = true;
+			}
+			break;
 		}
 		
 		usleep(1000);
@@ -221,26 +232,45 @@ bool ProcessImpl::waitForExit(int timeoutMSec)
 		
 	} while(timeoutMSec == -1 || elapsedTime < timeoutMSec);
 	
-	return exit;
+	return m_exited;
 }
 
 ProcessStatus ProcessImpl::getStatus(int* outExitCode)
 {
-	if (outExitCode) *outExitCode = 1;
+	if (outExitCode) *outExitCode = 0;
 
 	int status;
 	pid_t pid = waitpid(m_pid, &status, WNOHANG);
 	if (pid == 0) {
 		return ProcessStatus::Running;
 	}
+	else
+	{
+		if (!m_exited)
+		{
+			m_exitCode = WEXITSTATUS(status);
+			m_exited = true;
+		}
+		if (outExitCode) *outExitCode = m_exitCode;
+		return ProcessStatus::Finished;
+	}
+
+#if 0
 	else if (WIFEXITED(status)) {
-		if (outExitCode) *outExitCode = WEXITSTATUS(status);
+		if (!m_exited)
+		{
+			m_exitCode = WEXITSTATUS(status);
+			m_exited = true;
+		}
+		if (outExitCode) *outExitCode = m_exitCode;
 		return ProcessStatus::Finished;
 	}
 	else {
 		// force termination.
+		m_exited = true;
 		return ProcessStatus::Crashed;
 	}
+#endif
 }
 
 } // namespace detail

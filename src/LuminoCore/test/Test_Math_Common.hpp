@@ -33,6 +33,11 @@ using namespace ln;
 	ASSERT_NEAR(y_, v.y, LN_FLOAT_THRESHOLD); \
 	ASSERT_NEAR(z_, v.z, LN_FLOAT_THRESHOLD);
 
+#define ASSERT_VEC3_NEAR_THRESHOLD(x_, y_, z_, v, th) \
+	ASSERT_NEAR(x_, v.x, th); \
+	ASSERT_NEAR(y_, v.y, th); \
+	ASSERT_NEAR(z_, v.z, th);
+
 #define ASSERT_VEC4_NEAR(x_, y_, z_, w_, v) \
 	ASSERT_NEAR(x_, v.x, LN_FLOAT_THRESHOLD); \
 	ASSERT_NEAR(y_, v.y, LN_FLOAT_THRESHOLD); \
