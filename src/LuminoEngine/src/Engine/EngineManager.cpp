@@ -93,7 +93,7 @@ void EngineManager::initializePlatformManager()
 		settings.mainWindowSettings.resizable = true;
 		//settings.mainWindowSettings.userWindow = m_settings.userMainWindow;
 
-		m_platformManager = Ref<PlatformManager>::makeRef();
+		m_platformManager = ln::makeRef<PlatformManager>();
 		m_platformManager->initialize(settings);
 	}
 }
@@ -123,7 +123,7 @@ void EngineManager::initializeGraphicsManager()
 		GraphicsManager::Settings settings;
 		settings.mainWindow = m_platformManager->mainWindow();
 
-		m_graphicsManager = Ref<GraphicsManager>::makeRef();
+		m_graphicsManager = ln::makeRef<PlatformManager>();
 		m_graphicsManager->initialize(settings);
 	}
 }
@@ -217,7 +217,7 @@ void EngineDomain::release()
 	if (g_engineManager)
 	{
 		g_engineManager->dispose();
-		g_engineManager->release();
+		RefObjectHelper::retain(g_engineManager);
 		g_engineManager = nullptr;
 	}
 }

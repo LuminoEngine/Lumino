@@ -15,14 +15,14 @@ PlatformManager::PlatformManager()
 void PlatformManager::initialize(const Settings& settings)
 {
 #ifdef LN_GLFW
-	auto windowManager = Ref<GLFWPlatformWindowManager>::makeRef();
+	auto windowManager = ln::makeRef<GLFWPlatformWindowManager>();
 	windowManager->initialize();
 	m_windowManager = windowManager;
 #endif
 
 	if (!m_windowManager)
 	{
-		auto windowManager = Ref<EmptyPlatformWindowManager>::makeRef();
+		auto windowManager = ln::makeRef<EmptyPlatformWindowManager>();
 		windowManager->initialize();
 		m_windowManager = windowManager;
 	}

@@ -225,7 +225,7 @@ void GLFWPlatformWindowManager::dispose()
 
 Ref<PlatformWindow> GLFWPlatformWindowManager::createWindow(const WindowCreationSettings& settings)
 {
-	auto obj = Ref<GLFWPlatformWindow>::makeRef();
+	auto obj = ln::makeRef<GLFWPlatformWindow>();
 	obj->initialize(settings);
 	return obj;
 }

@@ -24,7 +24,7 @@ void SwapChain::initialize(detail::PlatformWindow* window, const SizeI& backbuff
 
 void SwapChain::dispose()
 {
-	m_rhiObject.safeRelease();
+	m_rhiObject.reset();
 }
 
 detail::ISwapChain* SwapChain::resolveRHIObject() const
