@@ -26,26 +26,24 @@ namespace LuminoBuild.Tasks
 
         public override void Build(Builder builder)
         {
-            string appDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            string sdkDir = Path.Combine(appDir, @"Android\Sdk");
-            string ndk = Path.Combine(sdkDir, "ndk-bundle");
-            string cmake = Path.Combine(sdkDir, @"cmake\3.6.4111459\bin\cmake.exe");
             string cmakeHomeDir = builder.LuminoRootDir;
-            string cmakeToolchain = Path.Combine(sdkDir, @"ndk-bundle\build\cmake\android.toolchain.cmake");
-            string cmakeMake = Path.Combine(sdkDir, @"cmake\3.6.4111459\bin\ninja.exe");
             
             string platform = "android-24";
 
             foreach (var target in Targets)
             {
                 string abi = target.ABI;
-                string cmakeBuildDir = Path.Combine(builder.LuminoBuildDir, "Android", abi);
-                string cmakeOutputDir = Path.Combine(builder.LuminoBuildDir, "Package", "lib", "Android", abi);
+                string targetName = "Android-" + abi;
+                string cmakeBuildDir = Path.Combine(builder.LuminoBuildDir, targetName);
+                string cmakeInstallDir = Path.Combine(builder.LuminoBuildDir, "CMakeInstallTemp", targetName);
                 string buildType = "Release";
-                string args = $"-H{cmakeHomeDir} -B{cmakeBuildDir} -DANDROID_ABI={abi} -DANDROID_PLATFORM={platform} -DCMAKE_LIBRARY_OUTPUT_DIRECTORY={cmakeOutputDir} -DCMAKE_BUILD_TYPE={buildType} -DANDROID_NDK={ndk} -DCMAKE_CXX_FLAGS=-std=c++14 -DCMAKE_TOOLCHAIN_FILE={cmakeToolchain} -DCMAKE_MAKE_PROGRAM={cmakeMake} -G\"Android Gradle - Ninja\"";
+                string args = $"-H{cmakeHomeDir} -B{cmakeBuildDir} -DLN_TARGET_ARCH_NAME={targetName} -DCMAKE_INSTALL_PREFIX={cmakeInstallDir} -DANDROID_ABI={abi} -DANDROID_PLATFORM={platform} -DCMAKE_BUILD_TYPE={buildType} -DANDROID_NDK={BuildEnvironment.AndroidNdkRootDir} -DCMAKE_CXX_FLAGS=-std=c++14 -DCMAKE_TOOLCHAIN_FILE={BuildEnvironment.AndroidCMakeToolchain} -DCMAKE_MAKE_PROGRAM={BuildEnvironment.AndroidSdkNinja} -G\"Android Gradle - Ninja\"";
                 
-                Utils.CallProcess(cmake, args);
-                Utils.CallProcess(cmake, "--build " + cmakeBuildDir);
+                Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, args);
+                Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, "--build " + cmakeBuildDir);
+                Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, "--build " + cmakeBuildDir + " --target install");
+
+                Utils.CopyDirectory(Path.Combine(cmakeInstallDir, "lib"), Path.Combine(builder.LuminoPackageLibDir));
             }
         }
     }

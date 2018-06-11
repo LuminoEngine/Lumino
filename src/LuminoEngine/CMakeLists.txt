@@ -143,7 +143,7 @@ endif()
 
 install(TARGETS ${PROJECT_NAME}
     EXPORT LuminoEngineTargets
-    ARCHIVE     DESTINATION lib			# Library installation location (Copied at "INSTALL" build time)
+    ARCHIVE     DESTINATION lib/${LN_TARGET_ARCH_NAME}			# Library installation location (Copied at "INSTALL" build time)
     INCLUDES    DESTINATION include)	# include directory (File is not copied)
 
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include DESTINATION .)
@@ -152,8 +152,8 @@ install(
 	EXPORT LuminoEngineTargets
 	FILE LuminoEngineTargets.cmake
 	EXPORT_LINK_INTERFACE_LIBRARIES
-	DESTINATION "lib/cmake")
+	DESTINATION "lib/${LN_TARGET_ARCH_NAME}/cmake")
 
 install(
     FILES "LuminoEngineConfig.cmake"
-    DESTINATION "lib/cmake")
+    DESTINATION "lib/${LN_TARGET_ARCH_NAME}/cmake")

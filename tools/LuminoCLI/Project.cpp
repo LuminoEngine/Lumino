@@ -134,5 +134,5 @@ void Project::setupPathes()
 {
 	m_sourcesDir = ln::Path(m_rootDir, _T("Sources"));
 	m_assetsDir = ln::Path(m_rootDir, _T("Assets"));
-	m_buildDir = ln::Path(m_rootDir, _T("Build"));
+	m_buildDir = ln::Path(m_rootDir, _T(".lumino"));
 }

@@ -32,17 +32,20 @@ namespace LuminoBuild
             builder.LuminoLibDir = builder.LuminoRootDir + "lib/";
             builder.LuminoToolsDir = builder.LuminoRootDir + "tools/";
             builder.LuminoDocDir = builder.LuminoRootDir + "docs/";
-            builder.LuminoPackageDir = builder.LuminoRootDir + "package/";
+            builder.LuminoPackageDir = builder.LuminoBuildDir + "Package/";
+            builder.LuminoPackageLibDir = builder.LuminoPackageDir + "lib/";
             builder.LuminoPackageSourceDir = builder.LuminoRootDir + "package/PackageSource/";
             builder.LuminoPackageReleaseDir = builder.LuminoRootDir + "package/Release/Lumino/";
             builder.LuminoDependenciesDir = builder.LuminoRootDir + "external/LuminoDependencies/";
-            
+
+            BuildEnvironment.Initialize();
+
+
             Console.WriteLine("RootDir: {0}", builder.LuminoRootDir);
 
 
             builder.Tasks = new List<LuminoBuild.BuildTask>();
             builder.Tasks.Add(new Tasks.MakeVSProjects());
-            builder.Tasks.Add(new Tasks.BuildEngine());
             builder.Tasks.Add(new Tasks.BuildEngine_Linux());
             builder.Tasks.Add(new Tasks.BuildEngine_macOS());
             builder.Tasks.Add(new Tasks.BuildDocuments());

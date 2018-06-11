@@ -12,6 +12,7 @@ public:
 
 	Result newProject(const ln::Path& dir, const ln::String& projectName);
 	Result openProject(const ln::Path& dir);
+	Result buildProject();
 
 	const Ref<EnvironmentSettings>& environmentSettings() const { return m_environmentSettings; }
 

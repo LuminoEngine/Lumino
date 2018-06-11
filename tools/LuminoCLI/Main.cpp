@@ -30,7 +30,9 @@ int main(int argc, char** argv)
 	char* debugArgv[] = {
 		//"<program>", "init", "HelloLumino",
 
-		"<program>", "dev-install-tools",
+		//"<program>", "dev-install-tools",
+
+		"<program>", "build",
 	};
 	argc = sizeof(debugArgv) / sizeof(char*);
 	argv = debugArgv;
@@ -58,6 +60,11 @@ int main(int argc, char** argv)
 		if (parser.has(initCommand))
 		{
 			workspace->newProject(ln::Environment::currentDirectory(), projectnameArg->value());
+		}
+		else if (parser.has(buildCommand))
+		{
+			workspace->openProject(_T("D:\\Documents\\LuminoProjects\\Hello"));
+			workspace->buildProject();
 		}
 		else if (parser.has(dev_installTools))
 		{
