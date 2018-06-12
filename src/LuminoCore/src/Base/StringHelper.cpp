@@ -69,9 +69,10 @@ TChar StringHelper::toUpper(TChar ch)
 	return ch;
 }
 template char StringHelper::toUpper<char>(char ch);
-template UTF8 StringHelper::toUpper<UTF8>(UTF8 ch);
-template UTF16 StringHelper::toUpper<UTF16>(UTF16 ch);
-template UTF32 StringHelper::toUpper<UTF32>(UTF32 ch);
+template wchar_t StringHelper::toUpper<wchar_t>(wchar_t ch);
+//template UTF8 StringHelper::toUpper<UTF8>(UTF8 ch);
+//template UTF16 StringHelper::toUpper<UTF16>(UTF16 ch);
+//template UTF32 StringHelper::toUpper<UTF32>(UTF32 ch);
 template char16_t StringHelper::toUpper<char16_t>(char16_t ch);
 
 template<typename TChar>
@@ -82,9 +83,10 @@ TChar StringHelper::toLower(TChar ch)
 	return ch;
 }
 template char StringHelper::toLower<char>(char ch);
-template UTF8 StringHelper::toLower<UTF8>(UTF8 ch);
-template UTF16 StringHelper::toLower<UTF16>(UTF16 ch);
-template UTF32 StringHelper::toLower<UTF32>(UTF32 ch);
+template wchar_t StringHelper::toLower<wchar_t>(wchar_t ch);
+//template UTF8 StringHelper::toLower<UTF8>(UTF8 ch);
+//template UTF16 StringHelper::toLower<UTF16>(UTF16 ch);
+//template UTF32 StringHelper::toLower<UTF32>(UTF32 ch);
 template char16_t StringHelper::toLower<char16_t>(char16_t ch);
 
 template<typename TChar>

@@ -22,6 +22,7 @@ bool PathTraits::isSeparatorChar(TChar ch)
 }
 template bool PathTraits::isSeparatorChar<char>(char ch);
 template bool PathTraits::isSeparatorChar<wchar_t>(wchar_t ch);
+template bool PathTraits::isSeparatorChar<char16_t>(char16_t ch);
 
 template<typename TChar>
 bool PathTraits::isVolumeSeparatorChar(TChar ch)
@@ -34,6 +35,7 @@ bool PathTraits::isVolumeSeparatorChar(TChar ch)
 }
 template bool PathTraits::isVolumeSeparatorChar<char>(char ch);
 template bool PathTraits::isVolumeSeparatorChar<wchar_t>(wchar_t ch);
+template bool PathTraits::isVolumeSeparatorChar<char16_t>(char16_t ch);
 
 template<typename TChar>
 bool PathTraits::isRootPath(const TChar* path, int len)
