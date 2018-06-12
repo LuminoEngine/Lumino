@@ -5,7 +5,7 @@
 ----------
 
 ```cpp
-StreamReader reader("file.txt");
+StreamReader reader(u"file.txt");
 String line;
 while (reader.readLine(&line))
 {
@@ -18,7 +18,7 @@ while (reader.readLine(&line))
 エンコーディングを明示するには次のようにします。
 
 ```cpp
-StreamReader reader("file.txt", TextEncoding::utf16Encoding());
+StreamReader reader(u"file.txt", TextEncoding::utf16Encoding());
 ```
 
 
@@ -26,9 +26,9 @@ StreamReader reader("file.txt", TextEncoding::utf16Encoding());
 ----------
 
 ```cpp
-StreamWriter writer("file.txt");
-writer.write("Hello ");
-writer.writeLine("Lumino!");
+StreamWriter writer(u"file.txt");
+writer.write(u"Hello ");
+writer.writeLine(u"Lumino!");
 writer.writeLine(12345);
 ```
 

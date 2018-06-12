@@ -18,9 +18,9 @@ int main(int argc, char** argv)
     CommandLineParser parser;
     parser.addHelpOption();
 
-    auto* forceOpt = parser.addFlagOption("f", "force", "Overwrite file.");
-    auto* sourceArg = parser.addPositionalArgument("SOURCE", "source filename.");
-    auto* destArg = parser.addPositionalArgument("DEST", "destination filename.");
+    auto* forceOpt = parser.addFlagOption(u"f", u"force", u"Overwrite file.");
+    auto* sourceArg = parser.addPositionalArgument(u"SOURCE", u"source filename.");
+    auto* destArg = parser.addPositionalArgument(u"DEST", u"destination filename.");
 
     if (parser.process(argc, argv))
     {
@@ -76,10 +76,10 @@ CommandLineParser parser;
 parser.addHelpOption();
 
 // "-v" と "--version" オプションでバージョンを表示できるようにする
-parser.addVersionOption("1.2.0");
+parser.addVersionOption(u"1.2.0");
 
 // ヘルプにアプリケーションの説明を表示する
-parser.setApplicationDescription("sample application.");
+parser.setApplicationDescription(u"sample application.");
 ```
 
 ### 2. コマンドライン引数の情報を設定する
@@ -87,8 +87,8 @@ parser.setApplicationDescription("sample application.");
 CommandLineParser::addFlagOption() や CommandLineParser::addPositionalArgument() を使用して、CommandLineParser のインスタンスに引数情報を登録します。
 
 ```cpp
-CommandLineOption* forceOpt = parser.addFlagOption("f", "force", "Overwrite file.");
-CommandLinePositionalArgument* sourceArg = parser.addPositionalArgument("SOURCE", "source filename.");
+CommandLineOption* forceOpt = parser.addFlagOption(u"f", u"force", u"Overwrite file.");
+CommandLinePositionalArgument* sourceArg = parser.addPositionalArgument(u"SOURCE", u"source filename.");
 ```
 
 ### 3. コマンドライン引数の解析を行う

@@ -14,6 +14,7 @@ namespace LuminoBuild.Rules
         {
             builder.DoTask("MakeVSProjects");
             builder.DoTask("BuildEngine");
+            builder.DoTask("BuildDocuments");
             builder.DoTask("MakeNuGetPackage_Core");
 
             //if (Utils.IsWin32) builder.DoTask("make-vs");

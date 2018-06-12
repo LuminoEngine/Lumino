@@ -42,7 +42,7 @@ char, wchar_t 型のエンコーディングは、それぞれ TextEncoding::sys
 std::string stdstr = "abc";
 
 // std::string -> ln::String
-String str = String::fromStdString();
+String str = String::fromStdString(stdstr);
 
 // ln::String -> std::string
 stdstr = str.toStdString();
@@ -54,7 +54,7 @@ stdstr = str.toStdString();
 std::wstring stdstr = L"abc";
 
 // std::string -> ln::String
-String str = String::fromStdString();
+String str = String::fromStdString(stdstr);
 
 // ln::String -> std::string
 stdstr = str.toStdWString();

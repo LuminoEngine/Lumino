@@ -10,10 +10,10 @@ class Test_IO_CommandLineParser : public ::testing::Test { };
 TEST_F(Test_IO_CommandLineParser, SimpleOptions)
 {
 	ln::CommandLineParser parser;
-	auto* forceOption = parser.addFlagOption("f", "force", "force operation.");
-	auto* sizeOption = parser.addValueOption("", "size", "buffer size.");
-	auto* depthOption = parser.addValueOption("d", "depth", "depth level.", "0");
-	auto* langOption = parser.addNamedValueOption("", "lang", "language.", {"cpp", "cs", "py"}, "cpp");
+	auto* forceOption = parser.addFlagOption(u"f", u"force", u"force operation.");
+	auto* sizeOption = parser.addValueOption(u"", u"size", u"buffer size.");
+	auto* depthOption = parser.addValueOption(u"d", u"depth", u"depth level.", u"0");
+	auto* langOption = parser.addNamedValueOption(u"", u"lang", u"language.", {u"cpp", u"cs", u"py"}, u"cpp");
 
 	char* argv[] =
 	{
@@ -66,9 +66,9 @@ TEST_F(Test_IO_CommandLineParser, Options)
 	//* [ ] without default values (short names)
 	{
 		ln::CommandLineParser parser;
-		auto* flagOption = parser.addFlagOption("f", "flag", "description.");
-		auto* valueOption = parser.addValueOption("v", "value", "description.");
-		auto* namedValueOption = parser.addNamedValueOption("n", "named-value", "description.", { "abc", "def", "ghi" });
+		auto* flagOption = parser.addFlagOption(u"f", u"flag", u"description.");
+		auto* valueOption = parser.addValueOption(u"v", u"value", u"description.");
+		auto* namedValueOption = parser.addNamedValueOption(u"n", u"named-value", u"description.", { u"abc", u"def", u"ghi" });
 
 		char* argv[] =
 		{
@@ -83,15 +83,15 @@ TEST_F(Test_IO_CommandLineParser, Options)
 		ASSERT_EQ(true, parser.has(flagOption));
 		ASSERT_EQ(true, parser.has(valueOption));
 		ASSERT_EQ(true, parser.has(namedValueOption));
-		ASSERT_EQ(_T("100"), valueOption->value());
-		ASSERT_EQ(_T("ghi"), namedValueOption->value());
+		ASSERT_EQ(u"100", valueOption->value());
+		ASSERT_EQ(u"ghi", namedValueOption->value());
 	}
 	//* [ ] without default values (long names)
 	{
 		ln::CommandLineParser parser;
-		auto* flagOption = parser.addFlagOption("f", "flag", "description.");
-		auto* valueOption = parser.addValueOption("v", "value", "description.");
-		auto* namedValueOption = parser.addNamedValueOption("n", "named-value", "description.", { "abc", "def", "ghi" });
+		auto* flagOption = parser.addFlagOption(u"f", u"flag", u"description.");
+		auto* valueOption = parser.addValueOption(u"v", u"value", u"description.");
+		auto* namedValueOption = parser.addNamedValueOption(u"n", u"named-value", u"description.", { u"abc", u"def", u"ghi" });
 
 		char* argv[] =
 		{
