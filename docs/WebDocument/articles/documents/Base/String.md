@@ -81,3 +81,16 @@ String str = u"abc";
 Ref<TextEncoding> encoding = TextEncoding::utf8Encoding();
 std::vector<byte_t> utf8Data = encoding.encode(str);
 ```
+
+
+char 型文字列からの暗黙的な初期化
+----------
+String クラスは char 型文字列からの暗黙的な変換をサポートしています。
+
+```cpp
+String str = "Hello, World!";
+```
+
+これは変換を簡単に記述するための機能ですが、前項と同様の変換処理が行われるため、char16_t 文字列を直接指定するよりもオーバーヘッドがある点に注意してください。
+
+暗黙的な変換を無効にするには、Lumino の各ヘッダーファイルを include する前に `#define LN_STRING_STRICT_CONVERSION` を定義します。

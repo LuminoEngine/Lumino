@@ -8,10 +8,10 @@
 
 ```cpp
 // file1.txt を file2.txt へコピーする
-FileSystem::copyFile(u"file1.txt", u"file2.txt");
+FileSystem::copyFile("file1.txt", "file2.txt");
 
 // 上書きコピーする場合は FileCopyOption::Overwrite を指定する
-FileSystem::copyFile(u"file1.txt", u"file2.txt", FileCopyOption::Overwrite);
+FileSystem::copyFile("file1.txt", "file2.txt", FileCopyOption::Overwrite);
 ```
 
 

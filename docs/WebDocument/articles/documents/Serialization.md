@@ -32,7 +32,7 @@ JSON 文字列にシリアライズするには、JsonSerializer::serialize メ�
 
 ```cpp
 MyData data1;
-data1.name = u"example";
+data1.name = "example";
 data1.value = 100;
 
 String json = JsonSerializer::serialize(data1);
@@ -72,9 +72,9 @@ struct Documents
 };
 
 Documents docs;
-docs.caption = u"note";
-docs.fileList.add(u"file1.md");
-docs.fileList.add(u"file2.md");
+docs.caption = "note";
+docs.fileList.add("file1.md");
+docs.fileList.add("file2.md");
 
 String json = JsonSerializer::serialize(docs);
 // {"caption":"note","fileList":["file1.md","file2.md"]}

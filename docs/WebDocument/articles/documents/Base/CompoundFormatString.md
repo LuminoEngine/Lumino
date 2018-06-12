@@ -11,9 +11,9 @@ Lumino はそれらの安全で柔軟な代替手段として、python や .NET 
 この関数は書式として、.NET で使用されている複合書式文字列に似た書式を受け取ります。
 
 ```cpp
-String prefix = u"file";
+String prefix = "file";
 int index = 5;
-String fileName = String::format(u"{}-{}.txt", prefix, index);   // => file-5.txt
+String fileName = String::format("{}-{}.txt", prefix, index);   // => file-5.txt
 ```
 
 
@@ -37,13 +37,13 @@ String fileName = String::format(u"{}-{}.txt", prefix, index);   // => file-5.tx
 {} 内に数字を指定することで、引数リストのどの値を埋め込むかを選択できます。
 
 ```cpp
-String::format(u"{0}-{1}-{0}", u"foo", u"bar"));   // => "foo-bar-foo"
+String::format("{0}-{1}-{0}", "foo", "bar"));   // => "foo-bar-foo"
 ```
 
 省略した場合は引数リストを順に埋め込みます。
 
 ```cpp
-String::format(u"{}-{}", u"foo", u"bar"));   // => "foo-bar"
+String::format("{}-{}", "foo", "bar"));   // => "foo-bar"
 ```
 
 ### 10 進数 ("D") 書式指定子
@@ -54,9 +54,9 @@ String::format(u"{}-{}", u"foo", u"bar"));   // => "foo-bar"
 出力がこの桁数未満の場合は0埋めを行います。
 
 ```cpp
-String::format(u"{0:D}", 12345));   // => "12345"
-String::format(u"{0:d}", -12345));  // => "-12345"
-String::format(u"{0:D8}", 12345));  // => "00012345"
+String::format("{0:D}", 12345));   // => "12345"
+String::format("{0:d}", -12345));  // => "-12345"
+String::format("{0:D8}", 12345));  // => "00012345"
 ```
 
 ### 16 進数 ("X") 書式指定子
@@ -68,10 +68,10 @@ String::format(u"{0:D8}", 12345));  // => "00012345"
 出力がこの桁数未満の場合は0埋めを行います。
 
 ```cpp
-String::format(u"{0:x}", 0x2045e);  // => "2045e"
-String::format(u"{0:X}", 0x2045e);  // => "2045E"
-String::format(u"{0:X8}", 0x2045e); // => "0002045E"
-String::format(u"0x{0:X}", 255);    // => "0xFF"
+String::format("{0:x}", 0x2045e);  // => "2045e"
+String::format("{0:X}", 0x2045e);  // => "2045E"
+String::format("{0:X8}", 0x2045e); // => "0002045E"
+String::format("0x{0:X}", 255);    // => "0xFF"
 ```
 
 ### 固定小数点 ("F") 書式指定子
@@ -81,10 +81,10 @@ String::format(u"0x{0:X}", 255);    // => "0xFF"
 精度指定子は小数部の桁数です。
 
 ```cpp
-String::format(u"{0:F}", 25.1879));                 // => "25.1879"
-String::format(u"{0:f}", 25.1879));                 // => "25.1879"
+String::format("{0:F}", 25.1879));                 // => "25.1879"
+String::format("{0:f}", 25.1879));                 // => "25.1879"
 String::formatu("{0:F2}", 25.1879));                // => "25.19"
-String::format(Locale(u"fr"), u"{0:F2}", 25.1879)); // => "25,187900"
+String::format(Locale("fr"), "{0:F2}", 25.1879)); // => "25,187900"
 ```
 
 
@@ -96,10 +96,10 @@ String::format(Locale(u"fr"), u"{0:F2}", 25.1879)); // => "25,187900"
 精度指定子は小数部の桁数です。
 
 ```cpp
-String::format(u"{0:e}", 12345.6789);                // => "1.234568e+004"
-String::format(u"{0:E10}", 12345.6789);              // => "1.2345678900E+004"
-String::format(u"{0:e4}", 12345.6789);               // => "1.2346e+004"
-String::format(Locale(u"fr"), u"{0:E}", 12345.6789); // => "1,234568E+004"
+String::format("{0:e}", 12345.6789);                // => "1.234568e+004"
+String::format("{0:E10}", 12345.6789);              // => "1.2345678900E+004"
+String::format("{0:e4}", 12345.6789);               // => "1.2346e+004"
+String::format(Locale("fr"), "{0:E}", 12345.6789); // => "1,234568E+004"
 ```
 
 
@@ -110,8 +110,8 @@ String::format(Locale(u"fr"), u"{0:E}", 12345.6789); // => "1,234568E+004"
 左中かっこを 1 つ ("{") 表示するには、左中かっこ 2 つ ("{{") を固定テキストに指定します。
 
 ```cpp
-String::format(u"{{0}}");         // => "{0}"
-String::format(u"{{{0}}}", 1);    // => "{1}"
+String::format("{{0}}");         // => "{0}"
+String::format("{{{0}}}", 1);    // => "{1}"
 ```
 
 
