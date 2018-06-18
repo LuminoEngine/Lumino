@@ -39,6 +39,7 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/ColorStructs.hpp
 	include/Lumino/Graphics/GeometryStructs.hpp
 	include/Lumino/Graphics/GraphicsContext.hpp
+	include/Lumino/Graphics/GraphicsResource.hpp
 	src/Graphics/Internal.hpp
 	src/Graphics/ColorStructs.cpp
 	src/Graphics/GeometryStructs.cpp
@@ -48,9 +49,17 @@ set(LN_SOURCES_Graphics
 	src/Graphics/GraphicsDeviceContext.hpp
 	src/Graphics/GraphicsManager.cpp
 	src/Graphics/GraphicsManager.hpp
+	src/Graphics/GraphicsResource.cpp
 	src/Graphics/OpenGLDeviceContext.cpp
 	src/Graphics/OpenGLDeviceContext.hpp
 	src/Graphics/GraphicsContext.cpp
+)
+
+set(LN_SOURCES_Shader
+	include/Lumino/Shader/Common.hpp
+	include/Lumino/Shader/Shader.hpp
+	src/Shader/Internal.hpp
+	src/Shader/Shader.cpp
 )
 
 set(LN_SOURCES_UI
@@ -66,6 +75,7 @@ set(LN_SOURCES_UI
 source_group("Engine"				FILES ${LN_SOURCES_Engine})
 source_group("Platform"				FILES ${LN_SOURCES_Platform})
 source_group("Graphics"				FILES ${LN_SOURCES_Graphics})
+source_group("Shader"				FILES ${LN_SOURCES_Shader})
 source_group("UI"					FILES ${LN_SOURCES_UI})
 
 set(LN_SOURCES
@@ -75,6 +85,7 @@ set(LN_SOURCES
 	${LN_SOURCES_Engine}
 	${LN_SOURCES_Platform}
 	${LN_SOURCES_Graphics}
+	${LN_SOURCES_Shader}
 	${LN_SOURCES_UI}
 )
 

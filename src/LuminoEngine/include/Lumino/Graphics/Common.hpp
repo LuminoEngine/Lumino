@@ -2,6 +2,11 @@
 
 namespace ln {
 
+enum class GraphicsAPI
+{
+	OpenGL,
+};
+
 enum class ClearFlags
 {
 	None	= 0x0000,

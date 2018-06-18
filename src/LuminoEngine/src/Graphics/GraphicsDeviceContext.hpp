@@ -3,6 +3,7 @@
 namespace ln {
 namespace detail {
 class PlatformWindow;
+class IShaderUniform;
 
 class ISwapChain
 	: public RefObject
@@ -11,6 +12,26 @@ public:
 
 protected:
 	virtual ~ISwapChain() = default;
+};
+
+class IShaderPass
+	: public RefObject
+{
+public:
+	virtual int getUniformCount() const = 0;
+	virtual IShaderUniform* getUniform() const = 0;
+
+protected:
+	virtual ~IShaderPass() = default;
+};
+
+class IShaderUniform
+	: public RefObject
+{
+public:
+
+protected:
+	virtual ~IShaderUniform() = default;
 };
 
 class IGraphicsDeviceContext
