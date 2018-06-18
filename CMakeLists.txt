@@ -57,7 +57,7 @@ endif()
 
 if (WIN32)
     add_definitions(-DLN_GLFW)
-    set(GLFW_INSTALL ON)
+    set(GLFW_INSTALL ON CACHE BOOL "" FORCE)
 endif()
 
 if (LN_ANDROID)
