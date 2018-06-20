@@ -25,4 +25,16 @@ LN_CONSTRUCT_ACCESS:
 private:
 };
 
+
+class LN_API ShaderParameter
+	: public Object
+{
+LN_CONSTRUCT_ACCESS:
+	ShaderParameter();
+	virtual ~ShaderParameter();
+	void initialize();
+
+private:
+};
+
 } // namespace ln

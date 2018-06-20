@@ -5,6 +5,9 @@
 
 namespace ln {
 
+//=============================================================================
+// Shader
+
 Ref<Shader> Shader::create(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath)
 {
 	return ln::newObject<Shader>(vertexShaderFilePath, pixelShaderFilePath, ShaderCodeType::RawGLSL);
@@ -37,6 +40,21 @@ void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& 
 
 	printf("");
 
+}
+
+//=============================================================================
+// ShaderParameter
+
+ShaderParameter::ShaderParameter()
+{
+}
+
+ShaderParameter::~ShaderParameter()
+{
+}
+
+void ShaderParameter::initialize()
+{
 }
 
 } // namespace ln
