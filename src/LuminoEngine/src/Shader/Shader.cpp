@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <Lumino/Shader/Shader.hpp>
+#include "../Graphics/GraphicsDeviceContext.hpp"
 
 namespace ln {
 
@@ -26,6 +27,16 @@ void Shader::initialize()
 
 void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCodeType codeType)
 {
+	Shader::initialize();
+
+	auto vsCode = FileSystem::readAllBytes(vertexShaderFilePath);
+	auto psCode = FileSystem::readAllBytes(pixelShaderFilePath);
+
+	ShaderCompilationDiag diag;
+	auto pass = deviceContext()->createShaderPass(vsCode.data(), vsCode.size(), psCode.data(), psCode.size(), &diag);
+
+	printf("");
+
 }
 
 } // namespace ln

@@ -37,3 +37,10 @@ if (WIN32)
 	add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/glfw-3.2.1)
 	ln_add_dependencies_common_property(glfw "${CMAKE_CURRENT_LIST_DIR}/glfw-3.2.1/include")
 endif()
+
+#--------------------------------------
+# glad
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/glad)
+set(LN_DEPENDENCIES_INCLUDE_DIRECTORIES ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} "${CMAKE_CURRENT_LIST_DIR}/glad/include")
+
+

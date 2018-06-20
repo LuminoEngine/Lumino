@@ -14,8 +14,10 @@
 #endif
 
 #else
-#include <GL/gl.h>
+//#include <GL/gl.h>
 #endif
+#include <glad/glad.h>
+
 #include "GraphicsDeviceContext.hpp"
 
 namespace ln {
@@ -57,6 +59,7 @@ protected:
 	virtual void onEnterMainThread() override;
 	virtual void onLeaveMainThread() override;
 	virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
+	virtual Ref<IShaderPass> onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag) override;
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
 	virtual void onPresent(ISwapChain* swapChain) override;
 
@@ -101,6 +104,51 @@ class EmptyGLSwapChain
 public:
 	EmptyGLSwapChain() = default;
 	virtual ~EmptyGLSwapChain() = default;
+};
+
+class GLSLShader
+{
+public:
+	GLSLShader();
+	~GLSLShader();
+	bool create(const byte_t* code, int length, GLenum type, ShaderCompilationDiag* diag);
+	void dispose();
+
+	GLuint shader() const { return m_shader; }
+	GLenum type() const { return m_type; }
+
+private:
+	GLuint m_shader;
+	GLenum m_type;
+};
+
+
+class GLShaderUniform
+	: public IShaderUniform
+{
+public:
+	ShaderUniformTypeDesc desc;
+	std::string name;
+	GLint location;
+};
+
+class GLShaderPass
+	: public IShaderPass
+{
+public:
+	GLShaderPass();
+	void initialize(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag);
+	void dispose();
+
+	virtual int getUniformCount() const override;
+	virtual IShaderUniform* getUniform(int index) const override;
+
+private:
+	void buildUniforms();
+
+	GLuint m_program;
+
+	List<Ref<GLShaderUniform>> m_uniforms;
 };
 
 } // namespace detail

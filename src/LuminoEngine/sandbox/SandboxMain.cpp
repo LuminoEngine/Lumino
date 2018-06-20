@@ -10,7 +10,10 @@ int main(int argc, char** argv)
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
+	GlobalLogger::addStdErrAdapter();
 	Engine::initialize();
+
+	auto shader = Shader::create("C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/simple.vert", "C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/simple.frag");
 
 
 	while (Engine::update())
