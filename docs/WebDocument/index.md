@@ -1,6 +1,6 @@
 ---
 title: Welcome to DocFX website!
-documentType: index
+documentType: "index"
 ---
 <style type="text/css">
 footer{

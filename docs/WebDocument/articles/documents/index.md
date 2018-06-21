@@ -10,3 +10,7 @@ Lumino Documentation
 > バージョン 0.5.0 現在、公開されている機能は 文字列処理やファイルIO、JSON などの基本的な機能 (Core モジュール) のみです。
 > グラフィックスや音声などユーザーインターフェイスが関係する機能は実装中です。
 > [ロードマップ](https://github.com/lriki/Lumino/wiki/ProjectRoadmap) を確認してください。
+
+
+古いバージョン (v0.4.0) は [こちら](../downloads/index.md) です。
+
