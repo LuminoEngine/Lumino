@@ -127,9 +127,12 @@ class GLShaderUniform
 	: public IShaderUniform
 {
 public:
-	ShaderUniformTypeDesc desc;
-	std::string name;
-	GLint location;
+	virtual const ShaderUniformTypeDesc& desc() const { return m_desc; }
+	virtual const std::string& name() const { return m_name; }
+
+	ShaderUniformTypeDesc m_desc;
+	std::string m_name;
+	GLint m_location;
 };
 
 class GLShaderPass

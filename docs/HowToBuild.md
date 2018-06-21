@@ -1,5 +1,11 @@
 
 
+
+
+
+### Windows
+
+
 スタートボタン + X > [Windows PowerShell(管理者)]
 
 ```
@@ -9,6 +15,14 @@ docfx
 doxygen.install
 ```
 
+
+
+on Developer Command Prompt for VS2017
+```
+> dotnet run -- MakeVSProjects
+```
+
+After this, please check in the "build/..." folder.
 
 
 

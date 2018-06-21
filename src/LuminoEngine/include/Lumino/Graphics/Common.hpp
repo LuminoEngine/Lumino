@@ -42,9 +42,8 @@ enum class ShaderVariableType
 	VectorArray,
 	Matrix,
 	MatrixArray,
-	DeviceTexture,
-	ManagedTexture,
-	String,
+	Texture,
+	Pointer,
 
 	/*
 	*	Texture は、DirectX9HLSL では texture 型を表し、GLSL では sampler 型を表す。
@@ -54,12 +53,37 @@ enum class ShaderVariableType
 
 namespace detail {
 
+using ShaderRefrectionParameterType = ShaderVariableType;
+//enum class ShaderRefrectionParameterType
+//{
+//	Unknown,
+//	Bool,
+//	BoolArray,
+//	Int,
+//	Float,
+//	FloatArray,
+//	Vector,
+//	VectorArray,
+//	Matrix,
+//	MatrixArray,
+//	Texture,
+//};
+
 struct ShaderUniformTypeDesc
 {
-	ShaderVariableType type;
+	ShaderRefrectionParameterType type;
 	int rows;
 	int columns;
 	int elements;
+
+	static bool equals(const ShaderUniformTypeDesc& a, const ShaderUniformTypeDesc& b)
+	{
+		return
+			a.type == b.type &&
+			a.rows == b.rows &&
+			a.columns == b.columns &&
+			a.elements == b.elements;
+	}
 };
 
 } // namespace detail
