@@ -31,6 +31,16 @@ enum class SpecialFolderOption
     DoNotVerify,
 };
 
+/** データのバイトオーダー (エンディアン) */
+enum class ByteOrder
+{
+	/** リトルエンディアン */
+	LittleEndian,
+
+	/** ビッグエンディアン */
+	BigEndian,
+};
+
 /** 現在の動作環境やプラットフォームに関する情報へのアクセス手段を提供します。 */
 class Environment
 {
@@ -49,6 +59,9 @@ public:
 
     /** 環境変数の値を取得します。 */
     static Optional<String> getEnvironmentVariable(const StringRef& variableName);
+
+	/** 現在の環境のバイトオーダー (エンディアン) を確認します。 */
+	static ByteOrder byteOrder();
 };
 
 } // namespace ln

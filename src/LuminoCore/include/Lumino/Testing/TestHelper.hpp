@@ -34,16 +34,16 @@ public:
 
 } // namespace ln
 
-// __FILE__ のあるフォルダパス (Path) を取得する
+// obsolete: Please use LN_ASSETFILE
 #define LN_TEST_GET_DIR_PATH() ln::TestHelper::getDirPath(__FILE__)
 
-// __FILE__ と同じフォルダのファイルパス (Char) を取得する
+// obsolete: Please use LN_ASSETFILE
 #define LN_LOCALFILE(fileName) ln::TestHelper::getFilePath(__FILE__, fileName).c_str()
 
-// __FILE__ と同じフォルダのファイルパス (char) を取得する
+// obsolete: Please use LN_ASSETFILE
 #define LN_LOCALFILEA(fileName) ln::TestHelper::getFilePathA(__FILE__, fileName).c_str()
 
-// __FILE__ と同じフォルダのファイルパス (wchar_t) を取得する
+// obsolete: Please use LN_ASSETFILE
 #define LN_LOCALFILEW(fileName) ln::TestHelper::getFilePathW(__FILE__, fileName).c_str()
 
 #define LN_TEMPFILE(fileName) ln::TestHelper::getTempPath(fileName).c_str()

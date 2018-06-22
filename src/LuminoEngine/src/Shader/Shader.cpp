@@ -293,6 +293,55 @@ void ShaderParameterValue::setPointer(void* value)
 	dirty();
 }
 
+int ShaderParameterValue::getDataByteSize() const
+{
+	switch (m_type)
+	{
+	case ln::ShaderVariableType::Bool:
+		return sizeof(bool);
+	case ln::ShaderVariableType::BoolArray:
+		return m_buffer.size();
+	case ln::ShaderVariableType::Int:
+		return sizeof(int);
+	case ln::ShaderVariableType::Float:
+		return sizeof(float);
+	case ln::ShaderVariableType::FloatArray:
+		return m_buffer.size();
+	case ln::ShaderVariableType::Vector:
+		return sizeof(Vector4);
+	case ln::ShaderVariableType::VectorArray:
+		return m_buffer.size();
+	case ln::ShaderVariableType::Matrix:
+		return sizeof(Matrix);
+	case ln::ShaderVariableType::MatrixArray:
+		return m_buffer.size();
+	case ln::ShaderVariableType::Texture:
+		return sizeof(Texture*);
+	case ln::ShaderVariableType::Pointer:
+		return sizeof(void*);
+	default:
+		LN_UNREACHABLE();
+		return 0;
+	}
+}
+
+int ShaderParameterValue::getArrayLength() const
+{
+	if (m_type == ShaderVariableType::BoolArray) {
+		return m_buffer.size() / sizeof(bool);
+	}
+	if (m_type == ShaderVariableType::FloatArray) {
+		return m_buffer.size() / sizeof(float);
+	}
+	if (m_type == ShaderVariableType::VectorArray) {
+		return m_buffer.size() / sizeof(Vector4);
+	}
+	if (m_type == ShaderVariableType::MatrixArray) {
+		return m_buffer.size() / sizeof(Matrix);
+	}
+	return 0;
+}
+
 void ShaderParameterValue::dirty()
 {
 }
@@ -314,6 +363,188 @@ bool ShaderParameterValue::isShortSizeType(ShaderVariableType type)
 		type == ShaderVariableType::Vector ||
 		type == ShaderVariableType::Matrix;
 }
+
+} // namespace detail
+
+//=============================================================================
+// ShaderParameterValue
+namespace detail {
+
+size_t ShaderValueSerializer::measureBufferSize(const ShaderPass* pass)
+{
+	size_t size = 0;
+	for (auto& param : pass->m_parameters)
+	{
+		size += sizeof(uint8_t);	// type
+		size += sizeof(uint32_t);	// data size
+		size += param->m_value.getDataByteSize();
+	}
+	return size;
+}
+
+ShaderValueSerializer::ShaderValueSerializer(void* buffer, size_t size)
+	: m_stream(buffer, size)
+	, m_writer(&m_stream)
+{
+}
+
+//void ShaderValueSerializer::beginWriteValues(void* buffer)
+//{
+//}
+
+void ShaderValueSerializer::writeValue(const ShaderParameterValue& value)
+{
+	size_t byteSize = value.getDataByteSize();
+
+	m_writer.writeUInt8(static_cast<uint8_t>(value.type()));
+	m_writer.writeUInt32(static_cast<uint32_t>(byteSize));
+
+	switch (value.type())
+	{
+	case ShaderVariableType::Bool:
+		m_writer.writeUInt8(value.getBool() ? 1 : 0);
+		break;
+	case ShaderVariableType::BoolArray:
+		m_writer.write(value.getBoolArray(), byteSize);
+		break;
+	case ShaderVariableType::Int:
+		m_writer.writeInt32(value.getInt());
+		break;
+	case ShaderVariableType::Float:
+		m_writer.writeFloat(value.getFloat());
+		break;
+	case ShaderVariableType::FloatArray:
+		m_writer.write(value.getFloatArray(), byteSize);
+		break;
+	case ShaderVariableType::Vector:
+		m_writer.write(&value.getVector(), sizeof(Vector4));
+		break;
+	case ShaderVariableType::VectorArray:
+		m_writer.write(value.getVectorArray(), byteSize);
+		break;
+	case ShaderVariableType::Matrix:
+		m_writer.write(&value.getMatrix(), sizeof(Matrix));
+		break;
+	case ShaderVariableType::MatrixArray:
+		m_writer.write(value.getMatrixArray(), byteSize);
+		break;
+	case ShaderVariableType::Texture:
+		m_writer.writeUInt64((intptr_t)value.getTexture());
+		break;
+	case ShaderVariableType::Pointer:
+		m_writer.writeUInt64((intptr_t)value.getPointer());
+		break;
+	default:
+		LN_UNREACHABLE();
+		break;
+	}
+}
+
+//void ShaderValueSerializer::endWriteValues()
+//{
+//}
+
+//=============================================================================
+// ShaderValueDeserializer
+
+ShaderValueDeserializer::ShaderValueDeserializer(const void* buffer, size_t size)
+	: m_stream(buffer, size, false)
+	, m_reader(&m_stream)
+{
+}
+
+//void ShaderValueDeserializer::beginReadValues(const void* buffer)
+//{
+//}
+
+const void* ShaderValueDeserializer::readValue(size_t* outSize, ShaderVariableType* outType)
+{
+	if (m_stream.position() >= m_stream.length()) {
+		return nullptr;	// EOF
+	}
+
+	ShaderVariableType type = static_cast<ShaderVariableType>(m_reader.readUInt8());
+	size_t dataSize = m_reader.readUInt32();
+
+	const void* data = m_stream.head();
+	m_reader.seek(dataSize);
+
+	*outType = type;
+	*outSize = dataSize;
+	return data;
+
+	//switch (type)
+	//{
+	//	case ShaderVariableType::Bool:
+	//	{
+	//		variable->setBool(m_reader.readUInt8() != 0);
+	//		break;
+	//	}
+	//	case ShaderVariableType::BoolArray:
+	//	{
+	//		size_t size = m_reader.readUInt8();
+	//		variable->setBoolArray((const bool*)&raw[buffer.getPosition()], size);
+	//		m_reader.seek(sizeof(bool) * size);
+	//		break;
+	//	}
+	//	case ShaderVariableType::Int:
+	//	{
+	//		variable->setInt(m_reader.readInt32());
+	//		break;
+	//	}
+	//	case ShaderVariableType::Float:
+	//	{
+	//		variable->setFloat(m_reader.readFloat());
+	//		break;
+	//	}
+	//	case ShaderVariableType::FloatArray:
+	//	{
+	//		size_t size = m_reader.readUInt8();
+	//		variable->setFloatArray((const float*)&raw[buffer.getPosition()], size);
+	//		m_reader.seek(sizeof(float) * size);
+	//		break;
+	//	}
+	//	case ShaderVariableType::Vector:
+	//	{
+	//		Vector4 v;
+	//		m_reader.read(&v, sizeof(Vector4));
+	//		variable->setVector(v);
+	//		break;
+	//	}
+	//	case ShaderVariableType::VectorArray:
+	//	{
+	//		size_t size = m_reader.readUInt8();
+	//		variable->setVectorArray((const Vector4*)&raw[buffer.getPosition()], size);
+	//		m_reader.seek(sizeof(Vector4) * size);
+	//		break;
+	//	}
+	//	case ShaderVariableType::Matrix:
+	//	{
+	//		Matrix v;
+	//		m_reader.read(&v, sizeof(Matrix));
+	//		variable->setMatrix(v);
+	//		break;
+	//	}
+	//	case ShaderVariableType::MatrixArray:
+	//	{
+	//		size_t size = m_reader.readUInt8();
+	//		variable->setMatrixArray((const Matrix*)&raw[buffer.getPosition()], size);
+	//		m_reader.seek(sizeof(Matrix) * size);
+	//		break;
+	//	}
+	//	case ShaderVariableType::DeviceTexture:
+	//	case ShaderVariableType::ManagedTexture:
+	//		variable->setTexture((Driver::ITexture*)m_reader.readUInt64());
+	//		break;
+	//	default:
+	//		LN_UNREACHABLE();
+	//		break;
+	//}
+}
+
+//void ShaderValueDeserializer::endReadValues()
+//{
+//}
 
 } // namespace detail
 } // namespace ln

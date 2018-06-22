@@ -51,4 +51,13 @@ Optional<String> Environment::getEnvironmentVariable(const StringRef& variableNa
 		return nullptr;
 }
 
+ByteOrder Environment::byteOrder()
+{
+	const unsigned short x = 0x0001;
+	if ((*(unsigned char *)&x) != 0)
+		return ByteOrder::LittleEndian;
+	else
+		return ByteOrder::BigEndian;
+}
+
 } // namespace ln

@@ -49,6 +49,9 @@ public:
 	void setPointer(void* value);
 	void* getPointer() const { return m_data.Pointer; }
 
+	int getDataByteSize() const;
+	int getArrayLength() const;
+
 private:
 	LN_DISALLOW_COPY_AND_ASSIGN(ShaderParameterValue);
 
@@ -71,7 +74,37 @@ private:
 	Data m_data;
 	ByteBuffer m_buffer;
 };
-}
+
+class ShaderValueSerializer
+{
+public:
+	static size_t measureBufferSize(const ShaderPass* pass);
+
+	ShaderValueSerializer(void* buffer, size_t size);
+
+	//void beginWriteValues(void* buffer);
+	void writeValue(const ShaderParameterValue& value);
+	//void endWriteValues();
+
+private:
+	MemoryStream m_stream;
+	BinaryWriter m_writer;
+
+};
+
+class ShaderValueDeserializer
+{
+public:
+	ShaderValueDeserializer(const void* buffer, size_t size);
+	const void* readValue(size_t* outSize, ShaderVariableType* outType);	// return nullptr if eof
+	//void endReadValues();
+
+private:
+	MemoryStream m_stream;
+	BinaryReader m_reader;
+};
+
+} // namespace detail
 
 enum class ShaderCodeType
 {
@@ -117,6 +150,7 @@ private:
 	detail::ShaderParameterValue m_value;
 
 	friend class Shader;
+	friend class detail::ShaderValueSerializer;
 };
 
 class LN_API ShaderTechnique
@@ -157,6 +191,7 @@ private:
 
 	friend class Shader;
 	friend class ShaderTechnique;
+	friend class detail::ShaderValueSerializer;
 };
 
 

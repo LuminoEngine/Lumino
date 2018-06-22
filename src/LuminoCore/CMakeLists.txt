@@ -56,9 +56,12 @@ set(LN_SOURCES_Base
 
 set(LN_SOURCES_IO
 	include/Lumino/IO/Common.hpp
+	include/Lumino/IO/BinaryReader.hpp
+	include/Lumino/IO/BinaryWriter.hpp
 	include/Lumino/IO/CommandLineParser.hpp
 	include/Lumino/IO/FileStream.hpp
 	include/Lumino/IO/FileSystem.hpp
+	include/Lumino/IO/MemoryStream.hpp
 	include/Lumino/IO/Path.hpp
 	include/Lumino/IO/Process.hpp
 	include/Lumino/IO/Stream.hpp
@@ -69,11 +72,14 @@ set(LN_SOURCES_IO
 	include/Lumino/IO/TextReader.hpp
 	include/Lumino/IO/TextWriter.hpp
 	src/IO/Internal.hpp
+	src/IO/BinaryReader.cpp
+	src/IO/BinaryWriter.cpp
 	src/IO/CommandLineParser.cpp
 	src/IO/FileStream.cpp
 	src/IO/FileSystem.cpp
 	src/IO/FileSystem_Unix.hpp
 	src/IO/FileSystem_Win32.hpp
+	src/IO/MemoryStream.cpp
 	src/IO/Path.cpp
 	src/IO/PathHelper.cpp
 	src/IO/PathHelper.hpp

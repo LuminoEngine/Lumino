@@ -22,9 +22,12 @@
 #include "Lumino/Base/Variant.hpp"
 
 #include "Lumino/IO/Common.hpp"
+#include "Lumino/IO/BinaryReader.hpp"
+#include "Lumino/IO/BinaryWriter.hpp"
 #include "Lumino/IO/CommandLineParser.hpp"
 #include "Lumino/IO/FileStream.hpp"
 #include "Lumino/IO/FileSystem.hpp"
+#include "Lumino/IO/MemoryStream.hpp"
 #include "Lumino/IO/Path.hpp"
 #include "Lumino/IO/Process.hpp"
 #include "Lumino/IO/Stream.hpp"
