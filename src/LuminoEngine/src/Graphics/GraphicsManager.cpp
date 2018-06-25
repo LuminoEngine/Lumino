@@ -3,11 +3,14 @@
 #include <Lumino/Graphics/GraphicsContext.hpp>
 #include "GraphicsManager.hpp"
 #include "OpenGLDeviceContext.hpp"
+#include "LinearAllocator.hpp"
+#include "RenderingCommandList.hpp"
 
 namespace ln {
 namespace detail {
 
 GraphicsManager::GraphicsManager()
+	: m_linearAllocatorPageManager()
 {
 }
 
@@ -20,6 +23,10 @@ void GraphicsManager::initialize(const Settings& settings)
 	m_deviceContext = ctx;
 
 	m_graphicsContext = newObject<GraphicsContext>(m_deviceContext);
+
+	m_linearAllocatorPageManager = makeRef<LinearAllocatorPageManager>();
+
+	m_primaryRenderingCommandList = makeRef<RenderingCommandList>(this);
 }
 
 void GraphicsManager::dispose()

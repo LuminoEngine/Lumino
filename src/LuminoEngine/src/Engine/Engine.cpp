@@ -3,6 +3,8 @@
 #include "EngineManager.hpp"
 //#include "EngineDomain.hpp"
 #include <Lumino/Engine/Engine.hpp>
+#include <Lumino/Graphics/GraphicsContext.hpp>
+#include "../Graphics/GraphicsManager.hpp"
 
 namespace ln {
 
@@ -22,6 +24,11 @@ void Engine::terminate()
 bool Engine::update()
 {
 	return detail::EngineDomain::engineManager()->updateUnitily();
+}
+
+GraphicsContext* Engine::graphicsContext()
+{
+	return detail::EngineDomain::graphicsManager()->graphicsContext();
 }
 
 } // namespace ln

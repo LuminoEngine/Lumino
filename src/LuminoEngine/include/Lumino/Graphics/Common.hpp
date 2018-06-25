@@ -7,6 +7,16 @@ enum class GraphicsAPI
 	OpenGL,
 };
 
+/** 描画方式 */
+enum class GraphicsRenderingType
+{
+	/** 即時描画 */
+	Immediate,
+
+	/** 遅延描画 */
+	Threaded,
+};
+
 enum class ClearFlags
 {
 	None	= 0x0000,

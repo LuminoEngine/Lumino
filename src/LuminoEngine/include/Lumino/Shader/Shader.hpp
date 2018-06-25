@@ -7,7 +7,7 @@ namespace ln {
 class ShaderParameter;
 class ShaderTechnique;
 class ShaderPass;
-
+class GraphicsContext;
 
 class Texture
 	: public GraphicsResource
@@ -117,6 +117,21 @@ class LN_API Shader
 public:
 	static Ref<Shader> create(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath);
 
+	void setBool(const StringRef& name, bool value);
+	void setInt(const StringRef& name, int value);
+	void setBoolArray(const StringRef& name, const bool* value, int count);
+	void setFloat(const StringRef& name, float value);
+	void setFloatArray(const StringRef& name, const float* value, int count);
+	void setVector(const StringRef& name, const Vector4& value);
+	void setVectorArray(const StringRef& name, const Vector4* value, int count);
+	void setMatrix(const StringRef& name, const Matrix& value);
+	void setMatrixArray(const StringRef& name, const Matrix* value, int count);
+	void setTexture(const StringRef& name, Texture* value);
+
+	ShaderParameter* findParameter(const StringRef& name);
+
+	const List<Ref<ShaderTechnique>>& techniques() const { return m_techniques; }
+
 LN_CONSTRUCT_ACCESS:
 	Shader();
 	virtual ~Shader();
@@ -136,10 +151,24 @@ private:
 class LN_API ShaderParameter
 	: public Object
 {
+public:
+	void setBool(bool value);
+	void setInt(int value);
+	void setBoolArray(const bool* value, int count);
+	void setFloat(float value);
+	void setFloatArray(const float* value, int count);
+	void setVector(const Vector4& value);
+	void setVectorArray(const Vector4* value, int count);
+	void setMatrix(const Matrix& value);
+	void setMatrixArray(const Matrix* value, int count);
+	void setTexture(Texture* value);
+	void setPointer(void* value);
+
 LN_CONSTRUCT_ACCESS:
 	ShaderParameter();
 	virtual ~ShaderParameter();
 	void initialize(const detail::ShaderUniformTypeDesc& desc, const String& name);
+
 
 private:
 	const detail::ShaderUniformTypeDesc& desc() const { return m_desc; }
@@ -150,12 +179,17 @@ private:
 	detail::ShaderParameterValue m_value;
 
 	friend class Shader;
+	friend class ShaderPass;
 	friend class detail::ShaderValueSerializer;
 };
 
 class LN_API ShaderTechnique
 	: public Object
 {
+public:
+
+	const List<Ref<ShaderPass>>& passes() const { return m_passes; }
+
 LN_CONSTRUCT_ACCESS:
 	ShaderTechnique();
 	virtual ~ShaderTechnique();
@@ -184,14 +218,16 @@ LN_CONSTRUCT_ACCESS:
 private:
 	void setOwner(ShaderTechnique* owner) { m_owner = owner; }
 	void setupParameters();
+	void commit();
 
 	ShaderTechnique* m_owner;
-	detail::IShaderPass* m_rhiPass;
+	Ref<detail::IShaderPass> m_rhiPass;
 	List<ShaderParameter*> m_parameters;
 
 	friend class Shader;
 	friend class ShaderTechnique;
 	friend class detail::ShaderValueSerializer;
+	friend class GraphicsContext;
 };
 
 

@@ -105,24 +105,22 @@ void MemoryStream::reset(const void* buffer, size_t size, bool copy)
 	}
 }
 
-////------------------------------------------------------------------------------
-//void* MemoryStream::getBuffer(size_t index)
-//{
-//	byte_t* buf = NULL;
-//	size_t size = 0;
-//	if (m_fixedBuffer != NULL) {
-//		buf = (byte_t*)m_fixedBuffer;
-//		size = m_fixedBufferSize;
-//	}
-//	else {
-//		buf = (byte_t*)&(m_buffer[0]);
-//		size = m_buffer.size();
-//	}
-//
-//	if (LN_ENSURE(index < size)) return 0;
-//	return buf + index;
-//}
-//
+void* MemoryStream::data() const
+{
+	byte_t* buf = NULL;
+	size_t size = 0;
+	if (m_fixedBuffer != NULL) {
+		buf = (byte_t*)m_fixedBuffer;
+		size = m_fixedBufferSize;
+	}
+	else {
+		buf = (byte_t*)&(m_buffer[0]);
+		size = m_buffer.size();
+	}
+
+	return buf;
+}
+
 
 const void* MemoryStream::head() const
 {
@@ -207,7 +205,7 @@ void MemoryStream::write(const void* data, size_t byteCount)
 			LN_REQUIRE(0);
 			return;
 		}
-		memcpy_s(m_fixedBuffer, m_fixedBufferSize, data, byteCount);
+		memcpy_s(static_cast<byte_t*>(m_fixedBuffer) + m_seekPos, m_fixedBufferSize - m_seekPos, data, byteCount);
 	}
 	// 可変長のバッファを使用している場合
 	else

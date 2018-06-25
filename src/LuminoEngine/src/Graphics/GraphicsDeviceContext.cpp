@@ -38,7 +38,18 @@ Ref<IShaderPass> IGraphicsDeviceContext::createShaderPass(const byte_t* vsCode, 
 	diag->level = ShaderCompilationResultLevel::Success;
 	diag->message.clear();
 
-	return onCreateShaderPass(vsCode, vsCodeLen, fsCodeLen, psCodeLen, diag);
+	auto pass = onCreateShaderPass(vsCode, vsCodeLen, fsCodeLen, psCodeLen, diag);
+
+	if (!diag->message.empty()) {
+		LN_LOG_VERBOSE << diag->message;
+	}
+
+	return pass;
+}
+
+void IGraphicsDeviceContext::setShaderPass(IShaderPass* pass)
+{
+	//onSetShaderPass(pass);
 }
 
 void IGraphicsDeviceContext::clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)

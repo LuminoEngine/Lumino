@@ -184,6 +184,14 @@ enum class StringSplitOptions
 #define LN_SAFE_DELETE_ARRAY( p ) { if ( p ) { delete[] ( p ); ( p ) = NULL; } }
 #endif
 
+#ifndef LN_OPERATOR_NEW
+#define LN_OPERATOR_NEW(size)		::operator new(size)
+#endif
+
+#ifndef LN_OPERATOR_DELETE
+#define LN_OPERATOR_DELETE(ptr) {	::operator delete(ptr); (ptr) = 0; }
+#endif
+
 #ifndef LN_INTERNAL_ACCESS
 #define LN_INTERNAL_ACCESS				private
 #endif

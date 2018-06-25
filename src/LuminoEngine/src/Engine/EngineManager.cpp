@@ -123,7 +123,7 @@ void EngineManager::initializeGraphicsManager()
 		GraphicsManager::Settings settings;
 		settings.mainWindow = m_platformManager->mainWindow();
 
-		m_graphicsManager = ln::makeRef<PlatformManager>();
+		m_graphicsManager = ln::makeRef<GraphicsManager>();
 		m_graphicsManager->initialize(settings);
 	}
 }

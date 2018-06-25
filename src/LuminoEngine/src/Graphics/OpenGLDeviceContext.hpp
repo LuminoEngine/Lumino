@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #ifdef LN_GRAPHICS_OPENGLES
 
@@ -23,6 +23,7 @@
 namespace ln {
 namespace detail {
 class GLContext;
+class GLShaderPass;
 
 /*
 	Note:
@@ -55,6 +56,12 @@ public:
 	void initialize(const Settings& settings);
 	virtual void dispose() override;
 
+	// uniform set の時、Vector4[] → vec2[] に変換するための一時バッファ 
+	MemoryStream* uniformTempBuffer() { return &m_uniformTempBuffer; }
+	BinaryWriter* uniformTempBufferWriter() { return &m_uniformTempBufferWriter; }
+
+	void setActiveShaderPass(GLShaderPass* pass);
+
 protected:
 	virtual void onEnterMainThread() override;
 	virtual void onLeaveMainThread() override;
@@ -65,6 +72,9 @@ protected:
 
 private:
 	Ref<GLContext> m_glContext;
+	MemoryStream m_uniformTempBuffer;
+	BinaryWriter m_uniformTempBufferWriter;
+	GLShaderPass* m_activeShaderPass;
 };
 
 class GLSwapChain
@@ -130,6 +140,8 @@ public:
 	virtual const ShaderUniformTypeDesc& desc() const { return m_desc; }
 	virtual const std::string& name() const { return m_name; }
 
+	void setUniformValue(OpenGLDeviceContext* context, const void* data, size_t size);
+	
 	ShaderUniformTypeDesc m_desc;
 	std::string m_name;
 	GLint m_location;
@@ -140,17 +152,20 @@ class GLShaderPass
 {
 public:
 	GLShaderPass();
-	void initialize(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag);
+	void initialize(OpenGLDeviceContext* context, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag);
 	void dispose();
+
+	GLuint program() const { return m_program; }
 
 	virtual int getUniformCount() const override;
 	virtual IShaderUniform* getUniform(int index) const override;
+	virtual void setUniformValue(int index, const void* data, size_t size) override;
 
 private:
 	void buildUniforms();
 
+	OpenGLDeviceContext* m_context;
 	GLuint m_program;
-
 	List<Ref<GLShaderUniform>> m_uniforms;
 };
 

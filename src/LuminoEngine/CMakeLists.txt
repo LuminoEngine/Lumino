@@ -45,14 +45,18 @@ set(LN_SOURCES_Graphics
 	src/Graphics/GeometryStructs.cpp
 	src/Graphics/GLFWContext.cpp
 	src/Graphics/GLFWContext.hpp
+	src/Graphics/GraphicsContext.cpp
 	src/Graphics/GraphicsDeviceContext.cpp
 	src/Graphics/GraphicsDeviceContext.hpp
 	src/Graphics/GraphicsManager.cpp
 	src/Graphics/GraphicsManager.hpp
 	src/Graphics/GraphicsResource.cpp
+	src/Graphics/LinearAllocator.cpp
+	src/Graphics/LinearAllocator.hpp
 	src/Graphics/OpenGLDeviceContext.cpp
 	src/Graphics/OpenGLDeviceContext.hpp
-	src/Graphics/GraphicsContext.cpp
+	src/Graphics/RenderingCommandList.cpp
+	src/Graphics/RenderingCommandList.hpp
 )
 
 set(LN_SOURCES_Shader

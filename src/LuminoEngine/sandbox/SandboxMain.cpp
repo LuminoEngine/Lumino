@@ -14,7 +14,9 @@ int main(int argc, char** argv)
 	Engine::initialize();
 
 	auto shader = Shader::create("C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/simple.vert", "C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/simple.frag");
+	shader->setVector("g_color", Vector4(1, 0, 0, 1));
 
+	Engine::graphicsContext()->setShaderPass(shader->techniques()[0]->passes()[0]);
 
 	while (Engine::update())
 	{

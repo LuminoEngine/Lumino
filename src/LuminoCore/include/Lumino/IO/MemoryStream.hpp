@@ -40,6 +40,7 @@ public:
 	//*/
 	//void* getBuffer(size_t index = 0);
 
+	void* data() const;
 	const void* head() const;
 
 public:

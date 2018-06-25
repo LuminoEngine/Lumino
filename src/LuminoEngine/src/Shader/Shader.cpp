@@ -2,6 +2,8 @@
 #include "Internal.hpp"
 #include <Lumino/Shader/Shader.hpp>
 #include "../Graphics/GraphicsDeviceContext.hpp"
+#include "../Graphics/GraphicsManager.hpp"
+#include "../Graphics/RenderingCommandList.hpp"
 
 namespace ln {
 
@@ -47,6 +49,78 @@ void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& 
 	pass->setupParameters();
 }
 
+void Shader::setBool(const StringRef& name, bool value)
+{
+	ShaderParameter* param = findParameter(name);
+	if (param) param->setBool(value);
+}
+
+void Shader::setInt(const StringRef& name, int value)
+{
+	ShaderParameter* param = findParameter(name);
+	if (param) param->setInt(value);
+}
+
+void Shader::setBoolArray(const StringRef& name, const bool* value, int count)
+{
+	ShaderParameter* param = findParameter(name);
+	if (param) param->setBoolArray(value, count);
+}
+
+void Shader::setFloat(const StringRef& name, float value)
+{
+	ShaderParameter* param = findParameter(name);
+	if (param) param->setFloat(value);
+}
+
+void Shader::setFloatArray(const StringRef& name, const float* value, int count)
+{
+	ShaderParameter* param = findParameter(name);
+	if (param) param->setFloatArray(value, count);
+}
+
+void Shader::setVector(const StringRef& name, const Vector4& value)
+{
+	ShaderParameter* param = findParameter(name);
+	if (param) param->setVector(value);
+}
+
+void Shader::setVectorArray(const StringRef& name, const Vector4* value, int count)
+{
+	ShaderParameter* param = findParameter(name);
+	if (param) param->setVectorArray(value, count);
+}
+
+void Shader::setMatrix(const StringRef& name, const Matrix& value)
+{
+	ShaderParameter* param = findParameter(name);
+	if (param) param->setMatrix(value);
+}
+
+void Shader::setMatrixArray(const StringRef& name, const Matrix* value, int count)
+{
+	ShaderParameter* param = findParameter(name);
+	if (param) param->setMatrixArray(value, count);
+}
+
+void Shader::setTexture(const StringRef& name, Texture* value)
+{
+	ShaderParameter* param = findParameter(name);
+	if (param) param->setTexture(value);
+}
+
+ShaderParameter* Shader::findParameter(const StringRef& name)
+{
+	for (auto& param : m_parameters)
+	{
+		if (param->name() == name)
+		{
+			return param;
+		}
+	}
+	return nullptr;
+}
+
 ShaderParameter* Shader::getShaderParameter(const detail::ShaderUniformTypeDesc& desc, const String& name)
 {
 	for (auto& param : m_parameters)
@@ -79,6 +153,62 @@ void ShaderParameter::initialize(const detail::ShaderUniformTypeDesc& desc, cons
 	m_name = name;
 	m_value.reset(desc.type, desc.elements);
 }
+
+void ShaderParameter::setBool(bool value)
+{
+	m_value.setBool(value);
+}
+
+void ShaderParameter::setInt(int value)
+{
+	m_value.setInt(value);
+}
+
+void ShaderParameter::setBoolArray(const bool* value, int count)
+{
+	m_value.setBoolArray(value, count);
+}
+
+void ShaderParameter::setFloat(float value)
+{
+	m_value.setFloat(value);
+}
+
+void ShaderParameter::setFloatArray(const float* value, int count)
+{
+	m_value.setFloatArray(value, count);
+}
+
+void ShaderParameter::setVector(const Vector4& value)
+{
+	m_value.setVector(value);
+}
+
+void ShaderParameter::setVectorArray(const Vector4* value, int count)
+{
+	m_value.setVectorArray(value, count);
+}
+
+void ShaderParameter::setMatrix(const Matrix& value)
+{
+	m_value.setMatrix(value);
+}
+
+void ShaderParameter::setMatrixArray(const Matrix* value, int count)
+{
+	m_value.setMatrixArray(value, count);
+}
+
+void ShaderParameter::setTexture(Texture* value)
+{
+	m_value.setTexture(value);
+}
+
+void ShaderParameter::setPointer(void* value)
+{
+	m_value.setPointer(value);
+}
+
 
 //=============================================================================
 // ShaderTechnique
@@ -132,6 +262,41 @@ void ShaderPass::setupParameters()
 	}
 }
 
+static void tttt(const detail::RenderBulkData& data,
+	const Ref<detail::IShaderPass>& m_rhiPass)
+{
+	detail::ShaderValueDeserializer deserializer(data.data(), data.size());
+	for (int i = 0; i < m_rhiPass->getUniformCount(); i++)
+	{
+		size_t size = 0;
+		ShaderVariableType type = ShaderVariableType::Unknown;
+		const void* rawData = deserializer.readValue(&size, &type);
+		m_rhiPass->setUniformValue(i, rawData, size);
+	}
+
+}
+
+
+void ShaderPass::commit()
+{
+	auto* manager = m_owner->owner()->manager();
+
+	detail::RenderBulkData data = manager->primaryRenderingCommandList()->allocateBulkData(detail::ShaderValueSerializer::measureBufferSize(this));
+
+	detail::ShaderValueSerializer serializer(data.writableData(), data.size());
+	
+	for (auto& param : m_parameters) {
+		serializer.writeValue(param->m_value);
+	}
+
+	LN_ENQUEUE_RENDER_COMMAND_2(
+		ShaderPass_commit, manager,
+		detail::RenderBulkData, data,
+		Ref<detail::IShaderPass>, m_rhiPass,
+		{
+			tttt(data, m_rhiPass);
+		});
+}
 
 //=============================================================================
 // ShaderParameterValue

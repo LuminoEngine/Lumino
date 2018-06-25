@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <Lumino/Graphics/GraphicsContext.hpp>
+#include <Lumino/Shader/Shader.hpp>
 #include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
 
@@ -39,6 +40,14 @@ void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8
 {
 	// TODO: threading
 	m_rhiObject->clearBuffers(flags, color, z, stencil);
+}
+
+void GraphicsContext::setShaderPass(ShaderPass* pass)
+{
+	if (pass)
+	{
+		pass->commit();
+	}
 }
 
 void GraphicsContext::present(SwapChain* swapChain)

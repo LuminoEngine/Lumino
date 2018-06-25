@@ -5,6 +5,8 @@
 #include "ColorStructs.hpp"
 
 namespace ln {
+class ShaderPass;
+
 namespace detail {
 	class PlatformWindow;
 	class GraphicsManager;
@@ -37,6 +39,8 @@ class LN_API GraphicsContext
 public:
 
 	void clear(ClearFlags flags, const Color& color, float z, uint8_t stencil);
+
+	void setShaderPass(ShaderPass* pass);
 
 	void present(SwapChain* swapChain);
 

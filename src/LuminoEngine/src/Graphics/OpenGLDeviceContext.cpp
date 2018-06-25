@@ -136,6 +136,10 @@ public:
 // OpenGLDeviceContext
 
 OpenGLDeviceContext::OpenGLDeviceContext()
+	: m_glContext(nullptr)
+	, m_uniformTempBuffer()
+	, m_uniformTempBufferWriter(&m_uniformTempBuffer)
+	, m_activeShaderPass(nullptr)
 {
 }
 
@@ -163,6 +167,14 @@ void OpenGLDeviceContext::dispose()
 {
 }
 
+void OpenGLDeviceContext::setActiveShaderPass(GLShaderPass* pass)
+{
+	if (m_activeShaderPass != pass) {
+		m_activeShaderPass = pass;
+		::glUseProgram((m_activeShaderPass) ? m_activeShaderPass->program() : 0);
+	}
+}
+
 void OpenGLDeviceContext::onEnterMainThread()
 {
 	//m_glContext->makeCurrent();
@@ -171,6 +183,7 @@ void OpenGLDeviceContext::onEnterMainThread()
 void OpenGLDeviceContext::onLeaveMainThread()
 {
 	//m_glContext->makeCurrent();
+	setActiveShaderPass(nullptr);
 }
 
 Ref<ISwapChain> OpenGLDeviceContext::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
@@ -181,7 +194,7 @@ Ref<ISwapChain> OpenGLDeviceContext::onCreateSwapChain(PlatformWindow* window, c
 Ref<IShaderPass> OpenGLDeviceContext::onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* psCode, int psCodeLen, ShaderCompilationDiag* diag)
 {
 	auto ptr = makeRef<GLShaderPass>();
-	ptr->initialize(vsCode, vsCodeLen, psCode, psCodeLen, diag);
+	ptr->initialize(this, vsCode, vsCodeLen, psCode, psCodeLen, diag);
 	return ptr;
 }
 
@@ -256,7 +269,8 @@ bool GLSLShader::create(const byte_t* code, int length, GLenum type, ShaderCompi
 	m_shader = glCreateShader(m_type);
 	if (LN_ENSURE(m_shader != 0, "Failed to create shader.")) return false;
 
-	GL_CHECK(glShaderSource(m_shader, 1, (const GLchar**)&code, NULL));
+	GLint codeSize[1] = { length };
+	GL_CHECK(glShaderSource(m_shader, 1, (const GLchar**)&code, codeSize));
 	GL_CHECK(glCompileShader(m_shader));
 
 	// result
@@ -293,15 +307,127 @@ void GLSLShader::dispose()
 }
 
 //=============================================================================
+// GLShaderUniform
+
+void GLShaderUniform::setUniformValue(OpenGLDeviceContext* context, const void* data, size_t size)
+{
+	LN_CHECK(context);
+	LN_CHECK(data);
+
+	MemoryStream* tempBuffer = context->uniformTempBuffer();
+	BinaryWriter* tempWriter = context->uniformTempBufferWriter();
+	tempWriter->seek(0, SeekOrigin::Begin);
+
+	switch (m_desc.type)
+	{
+	case ShaderVariableType::Bool:
+		GL_CHECK(glUniform1i(m_location, *static_cast<const uint8_t*>(data)));
+		break;
+	case ShaderVariableType::BoolArray:
+	{
+		const uint8_t* begin = static_cast<const uint8_t*>(data);
+		const uint8_t* end = begin + m_desc.elements;
+		std::for_each(begin, end, [&tempWriter](bool v) { GLint i = (v) ? 1 : 0; tempWriter->write(&i, sizeof(GLint)); });
+		GL_CHECK(glUniform1iv(m_location, m_desc.elements, (const GLint*)tempBuffer->data()));
+		break;
+	}
+	case ShaderVariableType::Int:
+		GL_CHECK(glUniform1i(m_location, *static_cast<const int32_t*>(data)));
+		break;
+	case ShaderVariableType::Float:
+		GL_CHECK(glUniform1f(m_location, *static_cast<const float*>(data)));
+		break;
+	case ShaderVariableType::Vector:
+	{
+		const Vector4* vec = static_cast<const Vector4*>(data);
+		if (m_desc.columns == 2) {
+			GL_CHECK(glUniform2f(m_location, vec->x, vec->y));
+		}
+		else if (m_desc.columns == 3) {
+			GL_CHECK(glUniform3f(m_location, vec->x, vec->y, vec->z));
+		}
+		else if (m_desc.columns == 4) {
+			GL_CHECK(glUniform4f(m_location, vec->x, vec->y, vec->z, vec->w));
+		}
+		else {
+			LN_UNREACHABLE();
+		}
+		break;
+	}
+	case ShaderVariableType::VectorArray:
+	{
+		const Vector4* begin = static_cast<const Vector4*>(data);
+		const Vector4* end = begin + m_desc.elements;
+
+		if (m_desc.columns == 2)
+		{
+			std::for_each(begin, end, [&tempWriter](const Vector4& v) { tempWriter->write(&v, sizeof(float) * 2); });
+			GL_CHECK(glUniform2fv(m_location, m_desc.elements, (const GLfloat*)tempBuffer->data()));
+		}
+		else if (m_desc.columns == 3)
+		{
+			std::for_each(begin, end, [&tempWriter](const Vector4& v) { tempWriter->write(&v, sizeof(float) * 3); });
+			GL_CHECK(glUniform3fv(m_location, m_desc.elements, (const GLfloat*)tempBuffer->data()));
+		}
+		else if (m_desc.columns == 4)
+		{
+			GL_CHECK(glUniform4fv(m_location, m_desc.elements, (const GLfloat*)begin));
+		}
+		else
+		{
+			LN_UNREACHABLE();
+		}
+		break;
+	}
+	case ShaderVariableType::Matrix:
+	{
+		GL_CHECK(glUniformMatrix4fv(m_location, 1, GL_FALSE, static_cast<const GLfloat*>(data)));
+		break;
+	}
+	case ShaderVariableType::MatrixArray:
+		GL_CHECK(glUniformMatrix4fv(m_location, m_desc.elements, GL_FALSE, static_cast<const GLfloat*>(data)));
+		break;
+	case ShaderVariableType::Texture:
+		LN_NOTIMPLEMENTED();
+		//// textureStageIndex のテクスチャステージにバインド
+		//glActiveTexture(GL_TEXTURE0 + textureStageIndex);
+		//if (LN_ENSURE_GLERROR()) return;
+
+		//if (m_value.getDeviceTexture() != nullptr)
+		//	glBindTexture(GL_TEXTURE_2D, static_cast<GLTextureBase*>(m_value.getDeviceTexture())->getGLTexture());
+		//else
+		//	glBindTexture(GL_TEXTURE_2D, 0);
+		//if (LN_ENSURE_GLERROR()) return;
+
+
+		////LNGL::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, mSamplerState->MinFilter);
+		////LNGL::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mSamplerState->MagFilter);
+		////LNGL::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, mSamplerState->AddressU);
+		////LNGL::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, mSamplerState->AddressV);
+
+		//// テクスチャステージ番号をセット
+		//glUniform1i(m_location, textureStageIndex);
+		//if (LN_ENSURE_GLERROR()) return;
+		break;
+	default:
+		LN_UNREACHABLE();
+		break;
+	}
+}
+
+//=============================================================================
 // GLShaderPass
 
 GLShaderPass::GLShaderPass()
-	: m_program(0)
+	: m_context(nullptr)
+	, m_program(0)
 {
 }
 
-void GLShaderPass::initialize(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCode, int fsCodeLen, ShaderCompilationDiag* diag)
+void GLShaderPass::initialize(OpenGLDeviceContext* context, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCode, int fsCodeLen, ShaderCompilationDiag* diag)
 {
+	m_context = context;
+
 	GLSLShader vertexShader;
 	GLSLShader fragmentShader;
 	if (!vertexShader.create(vsCode, vsCodeLen, GL_VERTEX_SHADER, diag)) return;
@@ -358,6 +484,12 @@ IShaderUniform* GLShaderPass::getUniform(int index) const
 	return m_uniforms[index];
 }
 
+void GLShaderPass::setUniformValue(int index, const void* data, size_t size)
+{
+	m_context->setActiveShaderPass(this);
+	m_uniforms[index]->setUniformValue(m_context, data, size);
+}
+
 void GLShaderPass::buildUniforms()
 {
 	GLint count = 0;
@@ -385,7 +517,7 @@ void GLShaderPass::buildUniforms()
 		m_uniforms.add(uni);
 
 		//// テクスチャ型の変数にステージ番号を振っていく。
-		//if (passVar.Variable->getType() == ShaderVariableType_DeviceTexture)
+		//if (passVar.Variable->getType() == ShaderVariableType::DeviceTexture)
 		//{
 		//	passVar.TextureStageIndex = textureVarCount;
 		//	textureVarCount++;

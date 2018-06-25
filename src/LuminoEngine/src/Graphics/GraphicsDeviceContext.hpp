@@ -23,6 +23,7 @@ class IShaderPass
 public:
 	virtual int getUniformCount() const = 0;
 	virtual IShaderUniform* getUniform(int index) const = 0;
+	virtual void setUniformValue(int index, const void* data, size_t size) = 0;
 
 protected:
 	virtual ~IShaderPass() = default;
@@ -56,6 +57,8 @@ public:
 	Ref<ISwapChain> createSwapChain(PlatformWindow* window, const SizeI& backbufferSize);
 	Ref<IShaderPass> createShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag);
 
+	void setShaderPass(IShaderPass* pass);
+
 	void clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil);
 
 	void present(ISwapChain* swapChain);
@@ -66,6 +69,7 @@ protected:
 	virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) = 0;
 	virtual Ref<IShaderPass> onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag) = 0;
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
+	//virtual void onSetShaderPass(IShaderPass* pass) = 0;
 	virtual void onPresent(ISwapChain* swapChain) = 0;
 };
 

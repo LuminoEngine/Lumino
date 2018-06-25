@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 namespace ln {
+class GraphicsContext;
 
 /** アプリケーション全体にかかわる処理を行います。 */
 LN_CLASS(Static)
@@ -23,6 +24,8 @@ public:
 	*/
 	LN_METHOD()
 	static bool update();
+
+	static GraphicsContext* graphicsContext();
 };
 
 } // namespace ln
