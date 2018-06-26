@@ -40,6 +40,8 @@ public:
 
 	void clear(ClearFlags flags, const Color& color, float z, uint8_t stencil);
 
+
+
 	void setShaderPass(ShaderPass* pass);
 
 	void present(SwapChain* swapChain);

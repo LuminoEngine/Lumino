@@ -23,6 +23,7 @@
 namespace ln {
 namespace detail {
 class GLContext;
+class GLIndexBuffer;
 class GLShaderPass;
 
 /*
@@ -65,16 +66,30 @@ public:
 protected:
 	virtual void onEnterMainThread() override;
 	virtual void onLeaveMainThread() override;
+	virtual void onEnterRenderState() override;
+	virtual void onLeaveRenderState() override;
 	virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
+	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) override;
+	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) override;
+	virtual Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) override;
 	virtual Ref<IShaderPass> onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag) override;
+	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) override;
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
+	virtual void onDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) override;
+	virtual void onDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) override;
 	virtual void onPresent(ISwapChain* swapChain) override;
 
 private:
+	static void getPrimitiveInfo(PrimitiveType primitive, int primitiveCount, GLenum* gl_prim, int* vertexCount);
+
 	Ref<GLContext> m_glContext;
 	MemoryStream m_uniformTempBuffer;
 	BinaryWriter m_uniformTempBufferWriter;
 	GLShaderPass* m_activeShaderPass;
+
+	GLIndexBuffer* m_currentIndexBuffer;
+
+	GLuint m_vao;	// https://www.khronos.org/opengl/wiki/Vertex_Specification#Index_buffers
 };
 
 class GLSwapChain
@@ -114,6 +129,111 @@ class EmptyGLSwapChain
 public:
 	EmptyGLSwapChain() = default;
 	virtual ~EmptyGLSwapChain() = default;
+};
+
+struct GLVertexElement
+{
+	uint32_t streamIndex;
+
+	// 以下は GLShaderPass::getUsageAttributeIndex() に渡して attribute の location を取得する
+	VertexElementUsage	Usage;			// 要素の使用法
+	int					UsageIndex;     // 使用法番号
+
+										// 以下は glVertexAttribPointer() に渡す引数
+	GLint				Size;			// データの要素数 (1, 2, 3, 4 のいずれか。Vector3 なら 3 を指定する)
+	GLenum				Type;			// (終端は0)
+	GLboolean			Normalized;		// データを正規化するか (0.0 ～ 1.0 にするか。色を 0～255 で指定していて、GLSL では 0.0～1.0 で使いたいときは true)
+	GLsizei				Stride;			// 頂点1つ分のバイト数 (この要素が1つのバイト数ではないので注意)
+	size_t				ByteOffset;		// 先頭からのバイト数
+};
+
+class GLVertexDeclaration
+	: public IVertexDeclaration
+{
+public:
+	GLVertexDeclaration();
+	virtual ~GLVertexDeclaration();
+	void initialize(const VertexElement* elements, int elementsCount);
+
+	const List<GLVertexElement>& vertexElements() const { return m_vertexElements; }
+
+	// 頂点宣言から GL 用の頂点宣言を生成する
+	static void createGLVertexElements(const VertexElement* vertexElements, int elementsCount, List<GLVertexElement>* outList);
+
+	// 頂点宣言から頂点1つ分のデータサイズ (バイト数) を求める
+	static int getVertexSize(const VertexElement* vertexElements, int elementsCount, int streamIndex);
+
+	// 頂点宣言の型のサイズ (バイト数) を求める
+	static int getVertexElementTypeSize(VertexElementType type);
+
+	// 頂点宣言の型から GLVertexElement 用のデータを作る
+	static void convertDeclTypeLNToGL(VertexElementType type, GLenum* gl_type, GLint* size, GLboolean* normalized);
+
+private:
+	List<GLVertexElement>	m_vertexElements;
+};
+
+/*	glMapBuffer は使わない。
+*	・OpenGL ES では READ モードでロックできないため。
+*		つまり 一度 OpenGL にデータを送ってしまった後、その値を得ることができなくなってしまう。
+*		通常の lock の用途なら Write だけでほぼ問題ないが、
+*		デバイスロストしたときの復帰ではバックアップから GL の頂点バッファを作り直さなければならず、
+*		結局こちら側でずっと握っていた方が色々と都合が良かったりする。
+*/
+class GLVertexBuffer
+	: public IVertexBuffer
+{
+public:
+	GLVertexBuffer();
+	virtual ~GLVertexBuffer();
+	void initialize(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData);
+	GLuint getGLVertexBuffer() const { return m_glVertexBuffer; }
+
+	GLuint vertexBufferId() const { return m_glVertexBuffer; }
+
+	virtual void setSubData(size_t offset, const void* data, size_t length) override;
+	virtual void* map(size_t offset, uint32_t length) override;
+	virtual void unmap() override;
+
+private:
+	GLuint					m_glVertexBuffer;
+	//size_t					m_byteCount;
+	//byte_t*					m_data;
+	GLenum					m_usage;
+	GraphicsResourceUsage			m_format;
+};
+
+class GLIndexBuffer
+	: public IIndexBuffer
+{
+public:
+	GLIndexBuffer();
+	virtual ~GLIndexBuffer();
+
+	void initialize(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData);
+	GLuint indexBufferId() const { return m_indexBufferId; }
+	IndexBufferFormat format() const { return m_format; }
+
+	virtual void setSubData(size_t offset, const void* data, size_t length) override;
+	virtual void* map(size_t offset, uint32_t length) override;
+	virtual void unmap() override;
+
+//public:
+//	virtual size_t getByteCount() const { return m_byteCount; }
+//	virtual IndexBufferFormat getFormat() const { return m_format; }
+//	virtual ResourceUsage getUsage() const { return m_usage; }
+//	virtual void setSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes);
+//	virtual void lock(void** lockedBuffer, size_t* lockedSize);
+//	virtual void unlock();
+//	virtual void onLostDevice();
+//	virtual void onResetDevice();
+//
+private:
+	GLuint              m_indexBufferId;
+	//size_t				m_byteCount;
+	IndexBufferFormat	m_format;
+	GLenum		m_usage;
+	//bool				m_inited;
 };
 
 class GLSLShader

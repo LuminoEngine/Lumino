@@ -140,6 +140,7 @@ OpenGLDeviceContext::OpenGLDeviceContext()
 	, m_uniformTempBuffer()
 	, m_uniformTempBufferWriter(&m_uniformTempBuffer)
 	, m_activeShaderPass(nullptr)
+	, m_vao(0)
 {
 }
 
@@ -161,10 +162,16 @@ void OpenGLDeviceContext::initialize(const Settings& settings)
 
 	LN_LOG_INFO << "OpenGL " << GLVersion.major << "." << GLVersion.minor;
 
+	GL_CHECK(glGenVertexArrays(1, &m_vao));
 }
 
 void OpenGLDeviceContext::dispose()
 {
+	if (m_vao)
+	{
+		GL_CHECK(glBindVertexArray(0));
+		GL_CHECK(glDeleteVertexArrays(1, &m_vao));
+	}
 }
 
 void OpenGLDeviceContext::setActiveShaderPass(GLShaderPass* pass)
@@ -186,9 +193,39 @@ void OpenGLDeviceContext::onLeaveMainThread()
 	setActiveShaderPass(nullptr);
 }
 
+void OpenGLDeviceContext::onEnterRenderState()
+{
+}
+
+void OpenGLDeviceContext::onLeaveRenderState()
+{
+	GL_CHECK(glBindVertexArray(0));
+}
+
 Ref<ISwapChain> OpenGLDeviceContext::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
 {
 	return m_glContext->createSwapChain(window, backbufferSize);
+}
+
+Ref<IVertexDeclaration> OpenGLDeviceContext::onCreateVertexDeclaration(const VertexElement* elements, int elementsCount)
+{
+	auto ptr = makeRef<GLVertexDeclaration>();
+	ptr->initialize(elements, elementsCount);
+	return ptr;
+}
+
+Ref<IVertexBuffer> OpenGLDeviceContext::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
+{
+	auto ptr = makeRef<GLVertexBuffer>();
+	ptr->initialize(usage, bufferSize, initialData);
+	return ptr;
+}
+
+Ref<IIndexBuffer> OpenGLDeviceContext::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
+{
+	auto ptr = makeRef<GLIndexBuffer>();
+	ptr->initialize(usage, format, indexCount, initialData);
+	return ptr;
 }
 
 Ref<IShaderPass> OpenGLDeviceContext::onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* psCode, int psCodeLen, ShaderCompilationDiag* diag)
@@ -196,6 +233,42 @@ Ref<IShaderPass> OpenGLDeviceContext::onCreateShaderPass(const byte_t* vsCode, i
 	auto ptr = makeRef<GLShaderPass>();
 	ptr->initialize(this, vsCode, vsCodeLen, psCode, psCodeLen, diag);
 	return ptr;
+}
+
+void OpenGLDeviceContext::onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer)
+{
+	if (LN_REQUIRE(decls)) return;
+	if (LN_REQUIRE(vertexBuufers)) return;
+	if (LN_REQUIRE(vertexBuffersCount >= 1)) return;
+
+	// 複数の頂点バッファを使う
+	// https://qiita.com/y_UM4/items/75941cb75afb0a46aa5e
+	
+	// IVertexDeclaration で指定された頂点レイアウトと、GLSL に書かれている attribute 変数の定義順序が一致していることを前提としている。
+	// ※0.4.0 以前は変数名を固定していたが、それを廃止。リフレクションっぽいことをこのモジュールの中でやりたくない。複雑になりすぎる。
+
+	GL_CHECK(glBindVertexArray(m_vao));
+
+	GLVertexDeclaration* glDecl = static_cast<GLVertexDeclaration*>(decls);
+	for (int iElement = 0; iElement < glDecl->vertexElements().size(); iElement++)
+	{
+		const GLVertexElement& element = glDecl->vertexElements()[iElement];
+
+		GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, static_cast<GLVertexBuffer*>(vertexBuufers[element.streamIndex])->vertexBufferId()));
+		GL_CHECK(glEnableVertexAttribArray(iElement));
+		GL_CHECK(glVertexAttribPointer(iElement, element.Size, element.Type, element.Normalized, element.Stride, (void*)(element.ByteOffset)));
+	}
+
+	m_currentIndexBuffer = static_cast<GLIndexBuffer*>(indexBuffer);
+	if (m_currentIndexBuffer)
+	{
+		GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_currentIndexBuffer->indexBufferId()));
+	}
+	else
+	{
+		GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+	}
+
 }
 
 void OpenGLDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
@@ -225,9 +298,71 @@ void OpenGLDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, f
 	GL_CHECK(glClear(glflags));
 }
 
+void OpenGLDeviceContext::onDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
+{
+	GLenum gl_prim;
+	int vertexCount;
+	getPrimitiveInfo(primitive, primitiveCount, &gl_prim, &vertexCount);
+
+	GL_CHECK(glDrawArrays(gl_prim, startVertex, vertexCount));
+}
+
+void OpenGLDeviceContext::onDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
+{
+	GLenum gl_prim;
+	int vertexCount;
+	getPrimitiveInfo(primitive, primitiveCount, &gl_prim, &vertexCount);
+
+	// 引数 start end には、本来であれば0～vertexCountまでのインデックスの中の最大、最小の値を渡す。
+	// http://wiki.livedoor.jp/mikk_ni3_92/d/glDrawRangeElements%A4%CB%A4%E8%A4%EB%C9%C1%B2%E8
+	// ただ、全範囲を渡しても特に問題なさそうなのでこのまま。
+	if (m_currentIndexBuffer->format() == IndexBufferFormat::Index16)
+	{
+		GL_CHECK(glDrawElements(gl_prim, vertexCount, GL_UNSIGNED_SHORT, (GLvoid*)(sizeof(GLushort) * startIndex)));
+	}
+	else
+	{
+		GL_CHECK(glDrawElements(gl_prim, vertexCount, GL_UNSIGNED_INT, (GLvoid*)(sizeof(GLuint) * startIndex)));
+	}
+}
+
 void OpenGLDeviceContext::onPresent(ISwapChain* swapChain)
 {
 	m_glContext->swap(static_cast<GLSwapChain*>(swapChain));
+}
+
+void OpenGLDeviceContext::getPrimitiveInfo(PrimitiveType primitive, int primitiveCount, GLenum* gl_prim, int* vertexCount)
+{
+	switch (primitive)
+	{
+	case PrimitiveType::TriangleList:
+		*gl_prim = GL_TRIANGLES;
+		*vertexCount = primitiveCount * 3;
+		break;
+	case PrimitiveType::TriangleStrip:
+		*gl_prim = GL_TRIANGLE_STRIP;
+		*vertexCount = 2 + primitiveCount;
+		break;
+	case PrimitiveType::TriangleFan:
+		*gl_prim = GL_TRIANGLE_FAN;
+		*vertexCount = 2 + primitiveCount;
+		break;
+	case PrimitiveType::LineList:
+		*gl_prim = GL_LINES;
+		*vertexCount = primitiveCount * 2;
+		break;
+	case PrimitiveType::LineStrip:
+		*gl_prim = GL_LINE_STRIP;
+		*vertexCount = 1 + primitiveCount;
+		break;
+	case PrimitiveType::PointList:
+		*gl_prim = GL_POINTS;
+		*vertexCount = primitiveCount;
+		break;
+	default:
+		LN_UNREACHABLE();
+		break;
+	}
 }
 
 //=============================================================================
@@ -246,6 +381,254 @@ void EmptyGLContext::swap(GLSwapChain* swapChain)
 {
 }
 
+
+//==============================================================================
+// GLVertexDeclaration
+
+GLVertexDeclaration::GLVertexDeclaration()
+	: m_vertexElements()
+{
+}
+
+GLVertexDeclaration::~GLVertexDeclaration()
+{
+}
+
+void GLVertexDeclaration::initialize(const VertexElement* elements, int elementsCount)
+{
+	if (LN_REQUIRE(elements != nullptr)) return;
+	if (LN_REQUIRE(elementsCount >= 0)) return;
+
+	// 頂点宣言作成
+	createGLVertexElements(elements, elementsCount, &m_vertexElements);
+}
+
+void GLVertexDeclaration::createGLVertexElements(const VertexElement* vertexElements, int elementsCount, List<GLVertexElement>* outList)
+{
+	outList->reserve(elementsCount);
+
+	int vertexSize = getVertexSize(vertexElements, elementsCount, 0);
+	int totalSize = 0;
+	for (int i = 0; i < elementsCount; ++i)
+	{
+		GLVertexElement elm;
+		elm.streamIndex = vertexElements[i].StreamIndex;
+		elm.Usage = vertexElements[i].Usage;
+		elm.UsageIndex = vertexElements[i].UsageIndex;
+
+		convertDeclTypeLNToGL(
+			vertexElements[i].Type,
+			&elm.Type,
+			&elm.Size,
+			&elm.Normalized);
+
+		elm.Stride = vertexSize;
+		elm.ByteOffset = totalSize;
+		outList->add(elm);
+
+		totalSize += getVertexElementTypeSize(vertexElements[i].Type);
+	}
+}
+
+int GLVertexDeclaration::getVertexSize(const VertexElement* vertexElements, int elementsCount, int streamIndex)
+{
+	int size = 0;
+	for (int i = 0; i < elementsCount; ++i)
+	{
+		if (vertexElements[i].StreamIndex == streamIndex) {
+			size += getVertexElementTypeSize(vertexElements[i].Type);
+		}
+	}
+	return size;
+}
+
+int GLVertexDeclaration::getVertexElementTypeSize(VertexElementType type)
+{
+	switch (type)
+	{
+	case VertexElementType::Float1:	return sizeof(float);
+	case VertexElementType::Float2:	return sizeof(float) * 2;
+	case VertexElementType::Float3:	return sizeof(float) * 3;
+	case VertexElementType::Float4:	return sizeof(float) * 4;
+	case VertexElementType::Ubyte4:	return sizeof(unsigned char) * 4;
+	case VertexElementType::Color4:	return sizeof(unsigned char) * 4;
+	case VertexElementType::Short2:	return sizeof(short) * 2;
+	case VertexElementType::Short4:	return sizeof(short) * 4;
+	}
+	LN_UNREACHABLE();
+	return 0;
+}
+
+void GLVertexDeclaration::convertDeclTypeLNToGL(VertexElementType type, GLenum* gl_type, GLint* size, GLboolean* normalized)
+{
+	struct FormatType
+	{
+		GLenum		Type;
+		GLint		Size;
+		GLboolean	normalize;
+	};
+	
+	static const FormatType formatTable[] =
+	{
+		{ 0,				0,	GL_FALSE },	// VertexElementType::Unknown
+		{ GL_FLOAT,			1,	GL_FALSE },	// VertexElementType::Float1
+		{ GL_FLOAT,			2,	GL_FALSE },	// VertexElementType::Float2
+		{ GL_FLOAT,			3,	GL_FALSE },	// VertexElementType::Float3
+		{ GL_FLOAT,			4,	GL_FALSE },	// VertexElementType::Float4
+		{ GL_UNSIGNED_BYTE, 4,	GL_FALSE },	// VertexElementType::Ubyte4
+		{ GL_UNSIGNED_BYTE, 4,	GL_TRUE },	// VertexElementType::Color4
+		{ GL_SHORT,			2,	GL_FALSE },	// VertexElementType::Short2
+		{ GL_SHORT,			4,	GL_FALSE },	// VertexElementType::Short4
+	};
+	// http://www.opengl.org/sdk/docs/man/xhtml/glVertexAttribPointer.xml
+	// GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_DOUBLE
+
+	*gl_type = formatTable[(int)type].Type;
+	*size = formatTable[(int)type].Size;
+	*normalized = formatTable[(int)type].normalize;
+}
+
+//==============================================================================
+// GLVertexBuffer
+
+GLVertexBuffer::GLVertexBuffer()
+	: m_glVertexBuffer(0)
+	//, m_byteCount(0)
+	//, m_data(NULL)
+	, m_usage(0)
+	, m_format(GraphicsResourceUsage::Static)
+{
+}
+
+GLVertexBuffer::~GLVertexBuffer()
+{
+	glDeleteBuffers(1, &m_glVertexBuffer);
+	//LN_SAFE_DELETE_ARRAY(m_data);
+}
+
+void GLVertexBuffer::initialize(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
+{
+	m_format = usage;
+	//m_byteCount = bufferSize;
+	//m_data = LN_NEW byte_t[m_byteCount];
+	//if (initialData) {
+	//	memcpy_s(m_data, m_byteCount, initialData, m_byteCount);
+	//}
+	//else {
+	//	memset(m_data, 0, m_byteCount);
+	//}
+
+	if (m_format == GraphicsResourceUsage::Dynamic) {
+		m_usage = GL_DYNAMIC_DRAW;
+	}
+	else {
+		m_usage = GL_STATIC_DRAW;
+	}
+
+	GL_CHECK(glGenBuffers(1, &m_glVertexBuffer));
+	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, m_glVertexBuffer));
+	GL_CHECK(glBufferData(GL_ARRAY_BUFFER, bufferSize, initialData, m_usage));
+	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
+}
+
+void GLVertexBuffer::setSubData(size_t offset, const void* data, size_t length)
+{
+	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, m_glVertexBuffer));
+	GL_CHECK(glBufferSubData(GL_ARRAY_BUFFER, offset, length, data));
+	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
+}
+
+void* GLVertexBuffer::map(size_t offset, uint32_t length)
+{
+	LN_NOTIMPLEMENTED();
+	return nullptr;
+}
+
+void GLVertexBuffer::unmap()
+{
+	LN_NOTIMPLEMENTED();
+}
+//------------------------------------------------------------------------------
+//void* GLVertexBuffer::lock()
+//{
+//	return m_data;
+//}
+//
+////------------------------------------------------------------------------------
+//void GLVertexBuffer::unlock()
+//{
+//	//glBindBuffer(GL_ARRAY_BUFFER, m_glVertexBuffer);
+//	//if (LN_ENSURE_GLERROR()) return;
+//	//glBufferSubData(GL_ARRAY_BUFFER, 0, m_byteCount, m_data);
+//	//if (LN_ENSURE_GLERROR()) return;
+//	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+//	//if (LN_ENSURE_GLERROR()) return;
+//}
+
+////------------------------------------------------------------------------------
+//void GLVertexBuffer::onLostDevice()
+//{
+//	glDeleteBuffers(1, &m_glVertexBuffer);
+//	if (LN_ENSURE_GLERROR()) return;
+//}
+//
+////------------------------------------------------------------------------------
+//void GLVertexBuffer::onResetDevice()
+//{
+//	glGenBuffers(1, &m_glVertexBuffer);
+//	if (LN_ENSURE_GLERROR()) return;
+//	glBindBuffer(GL_ARRAY_BUFFER, m_glVertexBuffer);
+//	if (LN_ENSURE_GLERROR()) return;
+//	glBufferData(GL_ARRAY_BUFFER, m_byteCount, m_data, m_usage);
+//	if (LN_ENSURE_GLERROR()) return;
+//	glBindBuffer(GL_ARRAY_BUFFER, 0);
+//	if (LN_ENSURE_GLERROR()) return;
+//}
+
+//==============================================================================
+// GLIndexBuffer
+
+GLIndexBuffer::GLIndexBuffer()
+	: m_indexBufferId(0)
+	, m_format(IndexBufferFormat::Index16)
+	, m_usage(GL_STATIC_DRAW)
+{
+}
+
+GLIndexBuffer::~GLIndexBuffer()
+{
+	GL_CHECK(glDeleteBuffers(1, &m_indexBufferId));
+}
+
+void GLIndexBuffer::initialize(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
+{
+	m_format = format;
+	m_usage = (usage == GraphicsResourceUsage::Static) ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
+	int stride = (m_format == IndexBufferFormat::Index16) ? 2 : 4;
+
+	GL_CHECK(glGenBuffers(1, &m_indexBufferId));
+	GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBufferId));
+	GL_CHECK(glBufferData(GL_ELEMENT_ARRAY_BUFFER, stride * indexCount, initialData, m_usage));
+	GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+}
+
+void GLIndexBuffer::setSubData(size_t offset, const void* data, size_t length)
+{
+	GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBufferId));
+	GL_CHECK(glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset, length, data));
+	GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+}
+
+void* GLIndexBuffer::map(size_t offset, uint32_t length)
+{
+	LN_NOTIMPLEMENTED();
+	return nullptr;
+}
+
+void GLIndexBuffer::unmap()
+{
+	LN_NOTIMPLEMENTED();
+}
 
 //=============================================================================
 // GLSLShader

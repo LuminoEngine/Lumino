@@ -49,6 +49,11 @@ void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& 
 	pass->setupParameters();
 }
 
+void Shader::onChangeDevice(detail::IGraphicsDeviceContext* device)
+{
+	LN_NOTIMPLEMENTED();
+}
+
 void Shader::setBool(const StringRef& name, bool value)
 {
 	ShaderParameter* param = findParameter(name);

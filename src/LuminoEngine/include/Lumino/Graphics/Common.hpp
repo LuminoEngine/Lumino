@@ -27,6 +27,107 @@ enum class ClearFlags
 };
 LN_FLAGS_OPERATORS(ClearFlags);
 
+/** グラフィックスリソースの使用方法 */
+enum class GraphicsResourceUsage : uint8_t
+{
+	/** 頻繁に更新を行わないリソース */
+	Static,
+
+	/** 頻繁に更新を行うリソース */
+	Dynamic,
+};
+
+/** グラフィックスリソースの管理方法 */
+enum class GraphicsResourcePool
+{
+	/** デバイス変更時に内容を復元しません。*/
+	None,
+
+	/** デバイス変更時に内容を復元します。*/
+	Managed,
+};
+
+/** 頂点宣言の要素の型 */
+enum class VertexElementType
+{
+	/** Unknown */
+	Unknown,
+
+	/** float */
+	Float1,
+
+	/** float[2] (Vector2) */
+	Float2,
+
+	/** float[3] (Vector3) */
+	Float3,
+
+	/** float[4] (Vector4) */
+	Float4,
+
+	/** uint8_t[4] */
+	Ubyte4,
+
+	/** 32ビット色コード (使用非推奨。DirectX と OpenGL ではバイトオーダが異なる。DXは0xAARRGGBB、GLは0xAABBGGRRで、GLES ではオーダーの変更ができない) */
+	Color4,
+
+	/** short[2] */
+	Short2,
+
+	/** short[4] */
+	Short4,
+};
+
+/** 頂点宣言の要素の用途 */
+enum class VertexElementUsage
+{
+	Unknown,
+	Position,
+	Normal,
+	Color,
+	TexCoord,
+	PointSize,	// MME との互換性のために残している。
+	BlendIndices,
+	BlendWeight,
+};
+
+/** 頂点宣言の1要素 */
+struct VertexElement
+{
+	/** ストリーム番号 */
+	uint32_t StreamIndex;
+
+	/** 要素の型 */
+	VertexElementType Type;
+
+	/** 要素の用途 */
+	VertexElementUsage Usage;
+
+	/** UsageIndex */
+	uint32_t UsageIndex;
+};
+
+/** インデックスバッファのフォーマット */
+enum class IndexBufferFormat
+{
+	/** 16 bit */
+	Index16,
+
+	/** 32 bit */
+	Index32,
+};
+
+/** 描画プリミティブの種類 */
+enum class PrimitiveType
+{
+	TriangleList,
+	TriangleStrip,
+	TriangleFan,
+	LineList,
+	LineStrip,
+	PointList,
+};
+
 enum class ShaderCompilationResultLevel
 {
 	Success,

@@ -12,6 +12,9 @@ class LN_API GraphicsResource
 {
 public:
 
+protected:
+	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) = 0;
+
 LN_CONSTRUCT_ACCESS:
 	GraphicsResource();
 	virtual ~GraphicsResource();
@@ -20,7 +23,6 @@ LN_CONSTRUCT_ACCESS:
 LN_INTERNAL_ACCESS:
 	detail::GraphicsManager* manager() const { return m_manager; }
 	detail::IGraphicsDeviceContext* deviceContext() const;
-
 private:
 	detail::GraphicsManager* m_manager;
 };

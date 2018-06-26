@@ -138,6 +138,8 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 	void initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCodeType codeType);
 
+	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
+
 private:
 	ShaderParameter* getShaderParameter(const detail::ShaderUniformTypeDesc& desc, const String& name);
 

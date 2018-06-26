@@ -40,6 +40,9 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/GeometryStructs.hpp
 	include/Lumino/Graphics/GraphicsContext.hpp
 	include/Lumino/Graphics/GraphicsResource.hpp
+	include/Lumino/Graphics/IndexBuffer.hpp
+	include/Lumino/Graphics/VertexBuffer.hpp
+	include/Lumino/Graphics/VertexDeclaration.hpp
 	src/Graphics/Internal.hpp
 	src/Graphics/ColorStructs.cpp
 	src/Graphics/GeometryStructs.cpp
@@ -51,12 +54,15 @@ set(LN_SOURCES_Graphics
 	src/Graphics/GraphicsManager.cpp
 	src/Graphics/GraphicsManager.hpp
 	src/Graphics/GraphicsResource.cpp
+	src/Graphics/IndexBuffer.cpp
 	src/Graphics/LinearAllocator.cpp
 	src/Graphics/LinearAllocator.hpp
 	src/Graphics/OpenGLDeviceContext.cpp
 	src/Graphics/OpenGLDeviceContext.hpp
 	src/Graphics/RenderingCommandList.cpp
 	src/Graphics/RenderingCommandList.hpp
+	src/Graphics/VertexBuffer.cpp
+	src/Graphics/VertexDeclaration.cpp
 )
 
 set(LN_SOURCES_Shader

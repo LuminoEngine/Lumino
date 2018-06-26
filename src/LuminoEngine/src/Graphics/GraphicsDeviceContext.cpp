@@ -33,6 +33,21 @@ Ref<ISwapChain> IGraphicsDeviceContext::createSwapChain(PlatformWindow* window, 
 	return onCreateSwapChain(window, backbufferSize);
 }
 
+Ref<IVertexDeclaration> IGraphicsDeviceContext::createVertexDeclaration(const VertexElement* elements, int elementsCount)
+{
+	return onCreateVertexDeclaration(elements, elementsCount);
+}
+
+Ref<IVertexBuffer> IGraphicsDeviceContext::createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
+{
+	return onCreateVertexBuffer(usage, bufferSize, initialData);
+}
+
+Ref<IIndexBuffer> IGraphicsDeviceContext::createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
+{
+	return onCreateIndexBuffer(usage, format, indexCount, initialData);
+}
+
 Ref<IShaderPass> IGraphicsDeviceContext::createShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag)
 {
 	diag->level = ShaderCompilationResultLevel::Success;
@@ -47,9 +62,25 @@ Ref<IShaderPass> IGraphicsDeviceContext::createShaderPass(const byte_t* vsCode, 
 	return pass;
 }
 
-void IGraphicsDeviceContext::setShaderPass(IShaderPass* pass)
+void IGraphicsDeviceContext::setVertexDeclaration(IVertexDeclaration* value)
+{
+	m_staging.vertexDeclaration = value;
+}
+
+void IGraphicsDeviceContext::setVertexBuffer(int streamIndex, IVertexBuffer* value)
+{
+	m_staging.vertexBuffers[streamIndex] = value;
+}
+
+void IGraphicsDeviceContext::setIndexBuffer(IIndexBuffer* value)
+{
+	m_staging.indexBuffer = value;
+}
+
+void IGraphicsDeviceContext::setShaderPass(IShaderPass* value)
 {
 	//onSetShaderPass(pass);
+	LN_NOTIMPLEMENTED();
 }
 
 void IGraphicsDeviceContext::clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
