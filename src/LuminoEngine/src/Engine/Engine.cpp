@@ -11,19 +11,34 @@ namespace ln {
 //==============================================================================
 // Engine
 
+static void beginFrame()
+{
+	detail::EngineDomain::engineManager()->updateFrame();
+	detail::EngineDomain::engineManager()->renderFrame();
+}
+
+static void endFrame()
+{
+	detail::EngineDomain::engineManager()->presentFrame();
+}
+
 void Engine::initialize()
 {
 	detail::EngineDomain::engineManager()->initialize();
+	beginFrame();
 }
 
 void Engine::terminate()
 {
+	endFrame();
 	detail::EngineDomain::release();
 }
 
 bool Engine::update()
 {
-	return detail::EngineDomain::engineManager()->updateUnitily();
+	endFrame();
+	beginFrame();
+	return !detail::EngineDomain::engineManager()->isExitRequested();
 }
 
 GraphicsContext* Engine::graphicsContext()

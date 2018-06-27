@@ -1,6 +1,8 @@
 // simple.vert
- 
+
+attribute vec4 pos;
+
 void main(void)
 {
-  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+  gl_Position = pos;
 }

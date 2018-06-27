@@ -237,9 +237,9 @@ Ref<IShaderPass> OpenGLDeviceContext::onCreateShaderPass(const byte_t* vsCode, i
 
 void OpenGLDeviceContext::onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer)
 {
-	if (LN_REQUIRE(decls)) return;
-	if (LN_REQUIRE(vertexBuufers)) return;
-	if (LN_REQUIRE(vertexBuffersCount >= 1)) return;
+	//if (LN_REQUIRE(decls)) return;
+	//if (LN_REQUIRE(vertexBuufers)) return;
+	//if (LN_REQUIRE(vertexBuffersCount >= 1)) return;
 
 	// 複数の頂点バッファを使う
 	// https://qiita.com/y_UM4/items/75941cb75afb0a46aa5e
@@ -249,14 +249,17 @@ void OpenGLDeviceContext::onUpdatePrimitiveData(IVertexDeclaration* decls, IVert
 
 	GL_CHECK(glBindVertexArray(m_vao));
 
-	GLVertexDeclaration* glDecl = static_cast<GLVertexDeclaration*>(decls);
-	for (int iElement = 0; iElement < glDecl->vertexElements().size(); iElement++)
+	if (decls && vertexBuufers)
 	{
-		const GLVertexElement& element = glDecl->vertexElements()[iElement];
+		GLVertexDeclaration* glDecl = static_cast<GLVertexDeclaration*>(decls);
+		for (int iElement = 0; iElement < glDecl->vertexElements().size(); iElement++)
+		{
+			const GLVertexElement& element = glDecl->vertexElements()[iElement];
 
-		GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, static_cast<GLVertexBuffer*>(vertexBuufers[element.streamIndex])->vertexBufferId()));
-		GL_CHECK(glEnableVertexAttribArray(iElement));
-		GL_CHECK(glVertexAttribPointer(iElement, element.Size, element.Type, element.Normalized, element.Stride, (void*)(element.ByteOffset)));
+			GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, static_cast<GLVertexBuffer*>(vertexBuufers[element.streamIndex])->vertexBufferId()));
+			GL_CHECK(glEnableVertexAttribArray(iElement));
+			GL_CHECK(glVertexAttribPointer(iElement, element.Size, element.Type, element.Normalized, element.Stride, (void*)(element.ByteOffset)));
+		}
 	}
 
 	m_currentIndexBuffer = static_cast<GLIndexBuffer*>(indexBuffer);

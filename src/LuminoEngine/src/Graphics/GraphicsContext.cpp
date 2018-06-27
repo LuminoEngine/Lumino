@@ -1,9 +1,13 @@
 ﻿
 #include "Internal.hpp"
 #include <Lumino/Graphics/GraphicsContext.hpp>
+#include <Lumino/Graphics/VertexDeclaration.hpp>
+#include <Lumino/Graphics/VertexBuffer.hpp>
+#include <Lumino/Graphics/IndexBuffer.hpp>
 #include <Lumino/Shader/Shader.hpp>
 #include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
+#include "RenderingCommandList.hpp"
 
 namespace ln {
 
@@ -36,14 +40,97 @@ detail::ISwapChain* SwapChain::resolveRHIObject() const
 //==============================================================================
 // GraphicsContext
 
+GraphicsContext::GraphicsContext()
+	: m_device(nullptr)
+{
+}
+
+GraphicsContext::~GraphicsContext()
+{
+}
+
+void GraphicsContext::initialize(detail::IGraphicsDeviceContext* device)
+{
+	m_manager = detail::EngineDomain::graphicsManager();
+	m_device = device;
+}
+
+void GraphicsContext::dispose()
+{
+}
+
+void GraphicsContext::setVertexDeclaration(VertexDeclaration* value)
+{
+	detail::IVertexDeclaration* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
+	LN_ENQUEUE_RENDER_COMMAND_2(
+		GraphicsContext_setVertexDeclaration, m_manager,
+		detail::IGraphicsDeviceContext*, m_device,
+		detail::IVertexDeclaration*, rhiObject,
+		{
+			m_device->setVertexDeclaration(rhiObject);
+		});
+}
+
+void GraphicsContext::setVertexBuffer(int streamIndex, VertexBuffer* value)
+{
+	detail::IVertexBuffer* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
+	LN_ENQUEUE_RENDER_COMMAND_3(
+		GraphicsContext_setVertexBuffer, m_manager,
+		detail::IGraphicsDeviceContext*, m_device,
+		int, streamIndex,
+		detail::IVertexBuffer*, rhiObject,
+		{
+			m_device->setVertexBuffer(streamIndex, rhiObject);
+		});
+}
+
+void GraphicsContext::setIndexBuffer(IndexBuffer* value)
+{
+	detail::IIndexBuffer* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
+	LN_ENQUEUE_RENDER_COMMAND_2(
+		GraphicsContext_setIndexBuffer, m_manager,
+		detail::IGraphicsDeviceContext*, m_device,
+		detail::IIndexBuffer*, rhiObject,
+		{
+			m_device->setIndexBuffer(rhiObject);
+		});
+}
+
 void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
 	// TODO: threading
-	m_rhiObject->clearBuffers(flags, color, z, stencil);
+	m_device->clearBuffers(flags, color, z, stencil);
+}
+
+void GraphicsContext::drawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
+{
+	LN_ENQUEUE_RENDER_COMMAND_4(
+		GraphicsContext_setIndexBuffer, m_manager,
+		detail::IGraphicsDeviceContext*, m_device,
+		PrimitiveType, primitive,
+		int, startVertex,
+		int, primitiveCount,
+		{
+			m_device->drawPrimitive(primitive, startVertex, primitiveCount);
+		});
+}
+
+void GraphicsContext::drawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
+{
+	LN_ENQUEUE_RENDER_COMMAND_4(
+		GraphicsContext_setIndexBuffer, m_manager,
+		detail::IGraphicsDeviceContext*, m_device,
+		PrimitiveType, primitive,
+		int, startIndex,
+		int, primitiveCount,
+		{
+			m_device->drawPrimitiveIndexed(primitive, startIndex, primitiveCount);
+		});
 }
 
 void GraphicsContext::setShaderPass(ShaderPass* pass)
 {
+	// TODO: threading
 	if (pass)
 	{
 		pass->commit();
@@ -55,25 +142,7 @@ void GraphicsContext::present(SwapChain* swapChain)
 	if (LN_REQUIRE(swapChain)) return;
 
 	// TODO: threading
-	m_rhiObject->present(swapChain->resolveRHIObject());
-}
-
-GraphicsContext::GraphicsContext()
-	: m_rhiObject(nullptr)
-{
-}
-
-GraphicsContext::~GraphicsContext()
-{
-}
-
-void GraphicsContext::initialize(detail::IGraphicsDeviceContext* device)
-{
-	m_rhiObject = device;
-}
-
-void GraphicsContext::dispose()
-{
+	m_device->present(swapChain->resolveRHIObject());
 }
 
 } // namespace ln

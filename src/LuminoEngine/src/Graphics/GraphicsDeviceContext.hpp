@@ -98,6 +98,7 @@ public:
 
 	void clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil);
 	void drawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount);
+	void drawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount);
 
 	void present(ISwapChain* swapChain);
 
@@ -123,11 +124,14 @@ protected:
 	virtual void onPresent(ISwapChain* swapChain) = 0;
 
 private:
+	void commitStatus();
+
 	struct State
 	{
 		IVertexDeclaration* vertexDeclaration = nullptr;
 		std::array<IVertexBuffer*, 4> vertexBuffers = {};
 		IIndexBuffer* indexBuffer = nullptr;
+		IShaderPass* shaderPass = nullptr;
 	};
 
 	State m_staging;

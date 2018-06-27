@@ -48,6 +48,7 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~IndexBuffer();
 	void initialize(int indexCount, const void* initialData, IndexBufferFormat format, GraphicsResourceUsage usage);
 
+LN_INTERNAL_ACCESS:
 	int getIndexStride() const;
 	detail::IIndexBuffer* resolveRHIObject();
 	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;

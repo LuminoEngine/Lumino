@@ -5,6 +5,9 @@
 #include "ColorStructs.hpp"
 
 namespace ln {
+class VertexDeclaration;
+class VertexBuffer;
+class IndexBuffer;
 class ShaderPass;
 
 namespace detail {
@@ -38,12 +41,17 @@ class LN_API GraphicsContext
 {
 public:
 
+
+
+
+	void setVertexDeclaration(VertexDeclaration* value);
+	void setVertexBuffer(int streamIndex, VertexBuffer* value);
+	void setIndexBuffer(IndexBuffer* value);
+	void setShaderPass(ShaderPass* value);
+
 	void clear(ClearFlags flags, const Color& color, float z, uint8_t stencil);
-
-
-
-	void setShaderPass(ShaderPass* pass);
-
+	void drawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount);
+	void drawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount);
 	void present(SwapChain* swapChain);
 
 
@@ -56,7 +64,8 @@ LN_INTERNAL_ACCESS:
 	virtual void dispose();
 
 private:
-	detail::IGraphicsDeviceContext* m_rhiObject;
+	detail::GraphicsManager* m_manager;
+	detail::IGraphicsDeviceContext* m_device;
 };
 
 } // namespace ln

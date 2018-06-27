@@ -79,18 +79,36 @@ void IGraphicsDeviceContext::setIndexBuffer(IIndexBuffer* value)
 
 void IGraphicsDeviceContext::setShaderPass(IShaderPass* value)
 {
-	//onSetShaderPass(pass);
-	LN_NOTIMPLEMENTED();
+	m_staging.shaderPass = value;
 }
 
 void IGraphicsDeviceContext::clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
+	commitStatus();
 	onClearBuffers(flags, color, z, stencil);
+}
+
+void IGraphicsDeviceContext::drawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
+{
+	commitStatus();
+	onDrawPrimitive(primitive, startVertex, primitiveCount);
+}
+
+void IGraphicsDeviceContext::drawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
+{
+	commitStatus();
+	onDrawPrimitiveIndexed(primitive, startIndex, primitiveCount);
 }
 
 void IGraphicsDeviceContext::present(ISwapChain* swapChain)
 {
 	onPresent(swapChain);
+}
+
+void IGraphicsDeviceContext::commitStatus()
+{
+	onUpdatePrimitiveData(m_staging.vertexDeclaration, m_staging.vertexBuffers.data(), m_staging.vertexBuffers.size(), m_staging.indexBuffer);
+	// TODO: Shadr
 }
 
 } // namespace detail

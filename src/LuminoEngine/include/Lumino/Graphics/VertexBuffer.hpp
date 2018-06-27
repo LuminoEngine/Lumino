@@ -35,11 +35,13 @@ public:
 protected:
 	virtual void dispose() override;
 
-LN_INTERNAL_ACCESS:
+LN_CONSTRUCT_ACCESS:
 	VertexBuffer();
 	virtual ~VertexBuffer();
 	void initialize(size_t bufferSize, GraphicsResourceUsage usage);
 	void initialize(size_t bufferSize, const void* initialData, GraphicsResourceUsage usage);
+
+LN_INTERNAL_ACCESS:
 	detail::IVertexBuffer* resolveRHIObject();
 	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
 
