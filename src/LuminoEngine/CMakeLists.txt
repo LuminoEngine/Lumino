@@ -41,6 +41,7 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/GraphicsContext.hpp
 	include/Lumino/Graphics/GraphicsResource.hpp
 	include/Lumino/Graphics/IndexBuffer.hpp
+	include/Lumino/Graphics/Texture.hpp
 	include/Lumino/Graphics/VertexBuffer.hpp
 	include/Lumino/Graphics/VertexDeclaration.hpp
 	src/Graphics/Internal.hpp
@@ -61,6 +62,7 @@ set(LN_SOURCES_Graphics
 	src/Graphics/OpenGLDeviceContext.hpp
 	src/Graphics/RenderingCommandList.cpp
 	src/Graphics/RenderingCommandList.hpp
+	src/Graphics/Texture.cpp
 	src/Graphics/VertexBuffer.cpp
 	src/Graphics/VertexDeclaration.cpp
 )

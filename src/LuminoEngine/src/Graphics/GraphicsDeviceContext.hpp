@@ -39,6 +39,57 @@ protected:
 	virtual ~IIndexBuffer() = default;
 };
 
+class ITexture
+	: public RefObject
+{
+public:
+	virtual void readData(void* outData) = 0;
+
+
+
+	//void Clear(const Color& color);
+
+	//void setSubData(const PointI& point, RawBitmap* bitmap);
+
+
+
+	/// テクスチャの種類の取得
+	//virtual TextureType getTextureType() const = 0;
+
+	/// サーフェイスフォーマットの取得
+	//virtual TextureFormat getTextureFormat() const = 0;
+
+
+	///// 実際のサイズの取得 (デバイス依存により2のべき乗倍に拡張されたサイズ)
+	//virtual const SizeI& getRealSize() const = 0;
+
+	///// サンプラステートの設定
+	////virtual void setSamplerState(const SamplerState& state) = 0;
+
+	///// データ転送 (TODO:部分更新は未実装…)
+	//// data に渡されるイメージデータは上下が反転している状態。
+	//virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) = 0;
+
+	//virtual void setSubData3D(const Box32& box, const void* data, size_t dataBytes) = 0;
+
+	//// (得られるデータは上下反転)
+	//virtual void getData(const RectI& rect, void* outData) = 0;
+
+	// 得られるデータは上下反転していない。レイアウトは RGBA
+	//virtual void readData(void* outData) {}
+
+
+	///// ロック (バッファは上下反転)
+	//virtual RawBitmap* lock() = 0;
+
+	///// アンロック
+	//virtual void unlock() = 0;
+
+protected:
+	virtual ~ITexture() = default;
+};
+
+
 class ISwapChain
 	: public RefObject
 {
@@ -89,8 +140,11 @@ public:
 	Ref<IVertexDeclaration> createVertexDeclaration(const VertexElement* elements, int elementsCount);
 	Ref<IVertexBuffer> createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData = nullptr);
 	Ref<IIndexBuffer> createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData = nullptr);
+	Ref<ITexture> createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
 	Ref<IShaderPass> createShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag);
 
+
+	void setRenderTarget(int index, ITexture* value);
 	void setVertexDeclaration(IVertexDeclaration* value);
 	void setVertexBuffer(int streamIndex, IVertexBuffer* value);
 	void setIndexBuffer(IIndexBuffer* value);
@@ -111,8 +165,10 @@ protected:
 	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) = 0;
 	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) = 0;
 	virtual Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) = 0;
+	virtual Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) = 0;
 	virtual Ref<IShaderPass> onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag) = 0;
 
+	virtual void onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, ITexture* depthBuffer) = 0;
 	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) = 0;
 
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
@@ -128,6 +184,7 @@ private:
 
 	struct State
 	{
+		std::array<ITexture*, 4> renderTargets = {};
 		IVertexDeclaration* vertexDeclaration = nullptr;
 		std::array<IVertexBuffer*, 4> vertexBuffers = {};
 		IIndexBuffer* indexBuffer = nullptr;

@@ -72,6 +72,7 @@ protected:
 	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) override;
 	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) override;
 	virtual Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) override;
+	virtual Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) override;
 	virtual Ref<IShaderPass> onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag) override;
 	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) override;
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
@@ -234,6 +235,52 @@ private:
 	IndexBufferFormat	m_format;
 	GLenum		m_usage;
 	//bool				m_inited;
+};
+
+class GLRenderTargetTexture
+	: public ITexture
+{
+public:
+	GLRenderTargetTexture();
+	virtual ~GLRenderTargetTexture();
+	void initialize(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
+
+	virtual void readData(void* outData) override;
+
+private:
+	GLuint m_id;
+	GLenum m_pixelFormat;
+	GLenum m_elementType;
+
+//public:
+//	// override IDeviceObject
+//	virtual void onLostDevice();
+//	virtual void onResetDevice();
+//
+//	// override ITexture
+//	virtual TextureType getTextureType() const { return TextureType_RenderTarget; }
+//	virtual TextureFormat getTextureFormat() const { return m_format; }
+//	virtual const SizeI& getSize() const { return m_size; }
+//	virtual const SizeI& getRealSize() const { return m_realSize; }
+//	virtual void setSamplerState(const SamplerState& state) { LN_UNREACHABLE(); }
+//	virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) { LN_UNREACHABLE(); }
+//	virtual void setSubData3D(const Box32& box, const void* data, size_t dataBytes);
+//	virtual void getData(const RectI& rect, void* outData) override;
+//	virtual RawBitmap* lock();
+//	virtual void unlock();
+//
+//	// override GLTextureBase
+//	virtual GLuint getGLTexture() { return m_glTexture; }
+//
+//private:
+//	GLuint				m_glTexture;
+//	TextureFormat		m_format;
+//	SizeI				m_size;
+//	SizeI				m_realSize;
+//	int					m_mipLevels;
+//	GLenum				m_pixelFormat;
+//	GLenum				m_elementType;
+//	RawBitmap*	m_lockingBitmap;
 };
 
 class GLSLShader

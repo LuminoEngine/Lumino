@@ -129,6 +129,26 @@ public:
 		}
 	}
 
+	static void getGLTextureFormat(TextureFormat format, GLenum* internalFormat, GLenum* pixelFormat, GLenum* elementType)
+	{
+		// http://angra.blog31.fc2.com/blog-entry-11.html
+		static GLenum table[][3] =
+		{
+			// internalFormat,		pixelFormat,		elementType
+			{ GL_NONE,				GL_NONE,			GL_NONE },			// TextureFormat::Unknown
+			{ GL_RGBA8,				GL_RGBA,			GL_UNSIGNED_BYTE },	// TextureFormat::R8G8B8A8,            ///< 32 ビットのアルファ付きフォーマット (uint32_t アクセス時の表現。lnByte[4] にすると、ABGR)
+			{ GL_RGB,				GL_RGBA,			GL_UNSIGNED_BYTE },	// TextureFormat::R8G8B8X8,            ///< 32 ビットのアルファ無しフォーマット
+			{ GL_RGBA16F,			GL_RGBA,			GL_HALF_FLOAT },	// TextureFormat::A16B16G16R16F,       ///< 64 ビットの浮動小数点フォーマット
+			{ GL_RGBA32F,			GL_RGBA,			GL_FLOAT },			// TextureFormat::A32B32G32R32F,       ///< 128 ビットの浮動小数点フォーマット
+			{ GL_R16F,				GL_RED,				GL_HALF_FLOAT },	// TextureFormat::R16F,
+			{ GL_R32UI,				GL_RED,				GL_FLOAT },			// TextureFormat::R32F,
+																			//{ GL_R32UI,				GL_RED_INTEGER,		GL_INT },			// TextureFormat::R32_UInt,
+			//{ GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE }, // TextureFormat::D24S8,               ///< 32 ビットの Z バッファフォーマット
+		};
+		*internalFormat = table[(int)format][0];
+		*pixelFormat = table[(int)format][1];
+		*elementType = table[(int)format][2];
+	}
 };
 
 
@@ -225,6 +245,13 @@ Ref<IIndexBuffer> OpenGLDeviceContext::onCreateIndexBuffer(GraphicsResourceUsage
 {
 	auto ptr = makeRef<GLIndexBuffer>();
 	ptr->initialize(usage, format, indexCount, initialData);
+	return ptr;
+}
+
+Ref<ITexture> OpenGLDeviceContext::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
+{
+	auto ptr = makeRef<GLRenderTargetTexture>();
+	ptr->initialize(width, height, requestFormat, mipmap);
 	return ptr;
 }
 
@@ -631,6 +658,62 @@ void* GLIndexBuffer::map(size_t offset, uint32_t length)
 void GLIndexBuffer::unmap()
 {
 	LN_NOTIMPLEMENTED();
+}
+
+//=============================================================================
+// GLSLShader
+
+GLRenderTargetTexture::GLRenderTargetTexture()
+{
+}
+
+GLRenderTargetTexture::~GLRenderTargetTexture()
+{
+	if (m_id != 0) {
+		glDeleteTextures(1, &m_id);
+	}
+}
+
+void GLRenderTargetTexture::initialize(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
+{
+	if (mipmap) {
+		LN_NOTIMPLEMENTED();
+		return;
+	}
+
+	GL_CHECK(glGenTextures(1, &m_id));
+	GL_CHECK(glBindTexture(GL_TEXTURE_2D, m_id));
+
+	GL_CHECK(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
+
+	GLenum internalFormat;
+	OpenGLHelper::getGLTextureFormat(requestFormat, &internalFormat, &m_pixelFormat, &m_elementType);
+
+	GL_CHECK(glTexImage2D(
+		GL_TEXTURE_2D,
+		0/*m_mipLevels*/,	// TODO: 0 でないと glCheckFramebufferStatus が GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT を返した。MipMap についてはちゃんと調査する必要がありそう。
+		internalFormat,
+		width,
+		height,
+		0,
+		m_pixelFormat,
+		m_elementType,
+		nullptr));
+
+	// glTexParameteri() を一つも指定しないと, テクスチャが正常に使用できない場合がある
+	GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+	GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+	GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+	GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+
+	GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+}
+
+void GLRenderTargetTexture::readData(void* outData)
+{
+	GL_CHECK(glBindTexture(GL_TEXTURE_2D, m_id));
+	GL_CHECK(glGetTexImage(GL_TEXTURE_2D, 0, m_pixelFormat, m_elementType, outData));
+	GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
 //=============================================================================

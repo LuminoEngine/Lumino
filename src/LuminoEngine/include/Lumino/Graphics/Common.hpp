@@ -117,6 +117,43 @@ enum class IndexBufferFormat
 	Index32,
 };
 
+/** テクスチャのピクセルフォーマット */
+LN_ENUM()
+enum class TextureFormat
+{
+	/** Unknown */
+	Unknown = 0,
+
+	/** 32 ビットのアルファ付きフォーマット (GPUネイティブフォーマット。D3D_FMT_A8B8G8R8, DXGI_FORMAT_R8G8B8A8_UNORM) */
+	RGBA32,
+
+	/** 32 ビットのアルファ無しフォーマット */
+	RGBX32,
+
+	/** 64 ビットの浮動小数点フォーマット */
+	R16G16B16A16Float,
+
+	/** 128 ビットの浮動小数点フォーマット */
+	R32G32B32A32Float,
+
+	/** 16 ビットの浮動小数点フォーマット */
+	R16Float,
+
+	/** 32 ビットの浮動小数点フォーマット */
+	R32Float,
+
+	/** 32 ビットの整数フォーマット */
+	R32UInt,
+};
+
+/** 深度バッファのフォーマット */
+LN_ENUM()
+enum class DepthBufferFormat
+{
+	/** S8 32 ビット*/
+	D24S8,
+};
+
 /** 描画プリミティブの種類 */
 enum class PrimitiveType
 {

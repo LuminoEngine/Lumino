@@ -33,14 +33,22 @@ int main(int argc, char** argv)
 	auto decl = newObject<VertexDeclaration>();
 	decl->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
 
+	auto renderTarget = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBX32, false);
+
+	int loop = 0;
 	while (Engine::update())
 	{
 		auto ctx = Engine::graphicsContext();
 		//ctx->clear(ClearFlags::Color, Color::PaleVioletRed, 1.0, 0);
-		ctx->setVertexDeclaration(decl);
-		ctx->setVertexBuffer(0, vb);
-		ctx->setShaderPass(shader->techniques()[0]->passes()[0]);
-		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+		//ctx->setVertexDeclaration(decl);
+		//ctx->setVertexBuffer(0, vb);
+		//ctx->setShaderPass(shader->techniques()[0]->passes()[0]);
+		//ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+
+		loop++;
+		if (loop > 3) {
+			break;
+		}
 	}
 
 	Engine::terminate();

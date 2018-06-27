@@ -48,6 +48,11 @@ Ref<IIndexBuffer> IGraphicsDeviceContext::createIndexBuffer(GraphicsResourceUsag
 	return onCreateIndexBuffer(usage, format, indexCount, initialData);
 }
 
+Ref<ITexture> IGraphicsDeviceContext::createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
+{
+	return onCreateRenderTarget(width, height, requestFormat, mipmap);
+}
+
 Ref<IShaderPass> IGraphicsDeviceContext::createShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag)
 {
 	diag->level = ShaderCompilationResultLevel::Success;
@@ -60,6 +65,11 @@ Ref<IShaderPass> IGraphicsDeviceContext::createShaderPass(const byte_t* vsCode, 
 	}
 
 	return pass;
+}
+
+void IGraphicsDeviceContext::setRenderTarget(int index, ITexture* value)
+{
+	m_staging.renderTargets[index] = value;
 }
 
 void IGraphicsDeviceContext::setVertexDeclaration(IVertexDeclaration* value)
@@ -107,6 +117,10 @@ void IGraphicsDeviceContext::present(ISwapChain* swapChain)
 
 void IGraphicsDeviceContext::commitStatus()
 {
+	// TODO: modified check
+
+	onUpdateFrameBuffers(m_staging.renderTargets.data(), m_staging.renderTargets.size(), nullptr);
+
 	onUpdatePrimitiveData(m_staging.vertexDeclaration, m_staging.vertexBuffers.data(), m_staging.vertexBuffers.size(), m_staging.indexBuffer);
 	// TODO: Shadr
 }
