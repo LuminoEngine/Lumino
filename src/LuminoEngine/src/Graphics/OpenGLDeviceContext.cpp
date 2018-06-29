@@ -396,6 +396,42 @@ void OpenGLDeviceContext::getPrimitiveInfo(PrimitiveType primitive, int primitiv
 }
 
 //=============================================================================
+// GLSwapChain
+
+GLSwapChain::GLSwapChain()
+	//: m_fbo(0)
+	//, m_colorTexture(0)
+{
+}
+
+void GLSwapChain::setupBackbuffer(uint32_t width, uint32_t height)
+{
+	m_backbuffer = makeRef<GLRenderTargetTexture>(width, height, TextureFormat::RGBX32, false);
+	//GL_CHECK(glGenFramebuffers(1, &m_fbo));
+	//GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_fbo));
+
+	//GL_CHECK(glGenTextures(1, &m_colorTexture));
+	//GL_CHECK(glBindTexture(GL_TEXTURE_2D, m_colorTexture));
+	//GL_CHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr));
+
+	////GL_CHECK(glGenRenderbuffers(1, &m_colorRbo));
+	////GL_CHECK(glBindRenderbuffer(GL_RENDERBUFFER, m_colorRbo));
+	////GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, m_colorRbo));
+	////GL_CHECK(glRenderbufferStorage(GL_RENDERBUFFER, GL_COLOR, width, height));
+
+	////GL_CHECK(glGenRenderbuffers(1, &m_depthStencilRbo));
+	////GL_CHECK(glBindRenderbuffer(GL_RENDERBUFFER, m_depthStencilRbo));
+	////GL_CHECK(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height));
+	////GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthStencilRbo));
+	////GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_depthStencilRbo));
+
+	//LN_ENSURE(GL_FRAMEBUFFER_COMPLETE == glCheckFramebufferStatus(GL_FRAMEBUFFER),
+	//	"glCheckFramebufferStatus failed 0x%08x",
+	//	glCheckFramebufferStatus(GL_FRAMEBUFFER));
+}
+
+
+//=============================================================================
 // EmptyGLContext
 
 Ref<GLSwapChain> EmptyGLContext::createSwapChain(PlatformWindow* window, const SizeI& backbufferSize)

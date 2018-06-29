@@ -24,6 +24,7 @@ namespace ln {
 namespace detail {
 class GLContext;
 class GLIndexBuffer;
+class GLRenderTargetTexture;
 class GLShaderPass;
 
 /*
@@ -91,13 +92,22 @@ private:
 	GLIndexBuffer* m_currentIndexBuffer;
 
 	GLuint m_vao;	// https://www.khronos.org/opengl/wiki/Vertex_Specification#Index_buffers
+	GLuint m_fbo;
 };
 
 class GLSwapChain
 	: public ISwapChain
 {
 public:
+	GLSwapChain();
 	virtual ~GLSwapChain() = default;
+
+	void setupBackbuffer(uint32_t width, uint32_t height);
+
+private:
+	Ref<GLRenderTargetTexture> m_backbuffer;
+	//GLuint m_fbo;
+	//GLuint m_colorTexture;
 };
 
 class GLContext
