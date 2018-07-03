@@ -38,7 +38,8 @@ void UIFrameWindow::renderContents()
 {
 	GraphicsContext* ctx = m_manager->graphicsManager()->graphicsContext();
 
-	
+	ctx->setColorBuffer(0, m_swapChain->colorBuffer());
+	// TODO: Depthbuffer
 	ctx->clear(ClearFlags::All, Color::AliceBlue, 1.0f, 0x00);
 }
 
@@ -47,6 +48,11 @@ void UIFrameWindow::present()
 	GraphicsContext* ctx = m_manager->graphicsManager()->graphicsContext();
 
 	ctx->present(m_swapChain);
+}
+
+SwapChain* UIFrameWindow::swapChain() const
+{
+	return m_swapChain;
 }
 
 bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)

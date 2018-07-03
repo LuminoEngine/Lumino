@@ -25,6 +25,8 @@ public:
 	//virtual void setSize(const SizeI& size) = 0;
 	//virtual void setTitleText(const StringRef& title) = 0;
 
+	virtual void getSize(SizeI* size) = 0;
+
 	void attachEventListener(IPlatforEventListener* listener);
 	void detachEventListener(IPlatforEventListener* listener);
 	bool sendEventToAllListener(const PlatformEventArgs& e);	// return : isHandled

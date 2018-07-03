@@ -6,7 +6,7 @@
 #include "../Graphics/GeometryStructs.hpp"
 
 namespace ln {
-namespace detail { class PlatformWindow; }
+	namespace detail { class PlatformWindow; class UIManager; }
 class SwapChain;
 
 class LN_API UIFrameWindow
@@ -20,6 +20,7 @@ public:
 	void renderContents();
 	void present();
 
+	SwapChain* swapChain() const;
 
 LN_CONSTRUCT_ACCESS:
 	UIFrameWindow();

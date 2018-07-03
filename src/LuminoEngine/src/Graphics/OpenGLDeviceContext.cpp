@@ -161,6 +161,7 @@ OpenGLDeviceContext::OpenGLDeviceContext()
 	, m_uniformTempBufferWriter(&m_uniformTempBuffer)
 	, m_activeShaderPass(nullptr)
 	, m_vao(0)
+	, m_fbo(0)
 {
 }
 
@@ -183,6 +184,7 @@ void OpenGLDeviceContext::initialize(const Settings& settings)
 	LN_LOG_INFO << "OpenGL " << GLVersion.major << "." << GLVersion.minor;
 
 	GL_CHECK(glGenVertexArrays(1, &m_vao));
+	GL_CHECK(glGenFramebuffers(1, &m_fbo));
 }
 
 void OpenGLDeviceContext::dispose()
@@ -191,6 +193,13 @@ void OpenGLDeviceContext::dispose()
 	{
 		GL_CHECK(glBindVertexArray(0));
 		GL_CHECK(glDeleteVertexArrays(1, &m_vao));
+		m_vao = 0;
+	}
+	if (m_fbo != 0)
+	{
+		GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+		GL_CHECK(glDeleteFramebuffers(1, &m_fbo));
+		m_fbo = 0;
 	}
 }
 
@@ -260,6 +269,42 @@ Ref<IShaderPass> OpenGLDeviceContext::onCreateShaderPass(const byte_t* vsCode, i
 	auto ptr = makeRef<GLShaderPass>();
 	ptr->initialize(this, vsCode, vsCodeLen, psCode, psCodeLen, diag);
 	return ptr;
+}
+
+void OpenGLDeviceContext::onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer)
+{
+	GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_fbo));
+
+	// color buffers
+	for (int i = 0; i < renderTargetsCount; ++i)
+	{
+		if (renderTargets[i])
+		{
+			GLuint id = static_cast<GLTextureBase*>(renderTargets[i])->id();
+			GL_CHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, id, 0));
+		}
+		else
+		{
+			GL_CHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, 0, 0));
+		}
+	}
+
+	// depth buffer
+	if (depthBuffer)
+	{
+		GLuint id = static_cast<GLDepthBuffer*>(depthBuffer)->id();
+		GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, id));
+		GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, id));
+	}
+	else
+	{
+		GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, 0));
+		GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, 0));
+	}
+
+	LN_ENSURE(GL_FRAMEBUFFER_COMPLETE == glCheckFramebufferStatus(GL_FRAMEBUFFER),
+		"glCheckFramebufferStatus failed 0x%08x",
+		glCheckFramebufferStatus(GL_FRAMEBUFFER));
 }
 
 void OpenGLDeviceContext::onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer)
@@ -358,7 +403,29 @@ void OpenGLDeviceContext::onDrawPrimitiveIndexed(PrimitiveType primitive, int st
 
 void OpenGLDeviceContext::onPresent(ISwapChain* swapChain)
 {
-	m_glContext->swap(static_cast<GLSwapChain*>(swapChain));
+	auto* s = static_cast<GLSwapChain*>(swapChain);
+
+
+	//glBindTexture(GL_TEXTURE_2D, 0); // 描画先テクスチャのバインドを解除しておく.
+	//glBindFramebuffer(GL_FRAMEBUFFER, fboMSAA);
+	/* レンダーターゲットへ描画処理 */
+
+	SizeI windowSize, bufferSize;
+	s->getTargetWindowSize(&windowSize);
+	s->colorBuffer()->getSize(&bufferSize);
+
+	// いわゆるResolve処理.
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, s->fbo());
+	glBlitFramebuffer(0, 0, bufferSize.width, bufferSize.height, 0, 0, windowSize.width, windowSize.height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+	GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+
+	/* レンダーテクスチャを使用 */
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glBindTexture(GL_TEXTURE_2D, renderTex);
+
+
+	m_glContext->swap(s);
 }
 
 void OpenGLDeviceContext::getPrimitiveInfo(PrimitiveType primitive, int primitiveCount, GLenum* gl_prim, int* vertexCount)
@@ -399,16 +466,27 @@ void OpenGLDeviceContext::getPrimitiveInfo(PrimitiveType primitive, int primitiv
 // GLSwapChain
 
 GLSwapChain::GLSwapChain()
-	//: m_fbo(0)
+	: m_fbo(0)
 	//, m_colorTexture(0)
 {
 }
 
+GLSwapChain::~GLSwapChain()
+{
+	if (m_fbo)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glDeleteFramebuffers(1, &m_fbo);
+	}
+}
+
 void GLSwapChain::setupBackbuffer(uint32_t width, uint32_t height)
 {
-	m_backbuffer = makeRef<GLRenderTargetTexture>(width, height, TextureFormat::RGBX32, false);
-	//GL_CHECK(glGenFramebuffers(1, &m_fbo));
-	//GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_fbo));
+	m_backbuffer = makeRef<GLRenderTargetTexture>();
+	m_backbuffer->initialize(width, height, TextureFormat::RGBX32, false);
+
+	GL_CHECK(glGenFramebuffers(1, &m_fbo));
+	GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_fbo));
 
 	//GL_CHECK(glGenTextures(1, &m_colorTexture));
 	//GL_CHECK(glBindTexture(GL_TEXTURE_2D, m_colorTexture));
@@ -416,7 +494,8 @@ void GLSwapChain::setupBackbuffer(uint32_t width, uint32_t height)
 
 	////GL_CHECK(glGenRenderbuffers(1, &m_colorRbo));
 	////GL_CHECK(glBindRenderbuffer(GL_RENDERBUFFER, m_colorRbo));
-	////GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, m_colorRbo));
+	//GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, m_backbuffer->id()));
+	GL_CHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_backbuffer->id(), 0));
 	////GL_CHECK(glRenderbufferStorage(GL_RENDERBUFFER, GL_COLOR, width, height));
 
 	////GL_CHECK(glGenRenderbuffers(1, &m_depthStencilRbo));
@@ -425,11 +504,17 @@ void GLSwapChain::setupBackbuffer(uint32_t width, uint32_t height)
 	////GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthStencilRbo));
 	////GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_depthStencilRbo));
 
-	//LN_ENSURE(GL_FRAMEBUFFER_COMPLETE == glCheckFramebufferStatus(GL_FRAMEBUFFER),
-	//	"glCheckFramebufferStatus failed 0x%08x",
-	//	glCheckFramebufferStatus(GL_FRAMEBUFFER));
+	LN_ENSURE(GL_FRAMEBUFFER_COMPLETE == glCheckFramebufferStatus(GL_FRAMEBUFFER),
+		"glCheckFramebufferStatus failed 0x%08x",
+		glCheckFramebufferStatus(GL_FRAMEBUFFER));
+
+	GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
+ITexture* GLSwapChain::colorBuffer() const
+{
+	return m_backbuffer;
+}
 
 //=============================================================================
 // EmptyGLContext
@@ -717,12 +802,15 @@ void GLRenderTargetTexture::initialize(uint32_t width, uint32_t height, TextureF
 		return;
 	}
 
+	m_size = SizeI(width, height);
+
 	GL_CHECK(glGenTextures(1, &m_id));
 	GL_CHECK(glBindTexture(GL_TEXTURE_2D, m_id));
 
 	GL_CHECK(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
 
 	GLenum internalFormat;
+	m_pixelFormat = GL_BGRA;
 	OpenGLHelper::getGLTextureFormat(requestFormat, &internalFormat, &m_pixelFormat, &m_elementType);
 
 	GL_CHECK(glTexImage2D(
@@ -750,6 +838,11 @@ void GLRenderTargetTexture::readData(void* outData)
 	GL_CHECK(glBindTexture(GL_TEXTURE_2D, m_id));
 	GL_CHECK(glGetTexImage(GL_TEXTURE_2D, 0, m_pixelFormat, m_elementType, outData));
 	GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+}
+
+void GLRenderTargetTexture::getSize(SizeI* outSize)
+{
+	*outSize = m_size;
 }
 
 //=============================================================================

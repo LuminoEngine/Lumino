@@ -155,6 +155,11 @@ void GLFWPlatformWindow::dispose()
 	glfwDestroyWindow(m_glfwWindow);
 }
 
+void GLFWPlatformWindow::getSize(SizeI* size)
+{
+	glfwGetWindowSize(m_glfwWindow, &size->width, &size->height);
+}
+
 //void GLFWPlatformWindow::SetVisible(bool visible)
 //{
 //	if (visible) {

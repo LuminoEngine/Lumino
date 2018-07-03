@@ -17,6 +17,7 @@ public:
 
 	void initialize(const WindowCreationSettings& settings);
 	virtual void dispose() override;
+	virtual void getSize(SizeI* size) override;
 
 	GLFWwindow* glfwWindow() const { return m_glfwWindow; }
 

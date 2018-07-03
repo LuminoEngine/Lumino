@@ -4,6 +4,7 @@
 //#include "EngineDomain.hpp"
 #include <Lumino/Engine/Engine.hpp>
 #include <Lumino/Graphics/GraphicsContext.hpp>
+#include <Lumino/UI/UIFrameWindow.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 
 namespace ln {
@@ -44,6 +45,11 @@ bool Engine::update()
 GraphicsContext* Engine::graphicsContext()
 {
 	return detail::EngineDomain::graphicsManager()->graphicsContext();
+}
+
+UIFrameWindow* Engine::mainWindow()
+{
+	return detail::EngineDomain::engineManager()->mainWindow();
 }
 
 } // namespace ln

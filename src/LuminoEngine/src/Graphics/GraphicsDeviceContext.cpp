@@ -67,9 +67,15 @@ Ref<IShaderPass> IGraphicsDeviceContext::createShaderPass(const byte_t* vsCode, 
 	return pass;
 }
 
-void IGraphicsDeviceContext::setRenderTarget(int index, ITexture* value)
+void IGraphicsDeviceContext::setColorBuffer(int index, ITexture* value)
 {
 	m_staging.renderTargets[index] = value;
+}
+
+void IGraphicsDeviceContext::setDepthBuffer(IDepthBuffer* value)
+{
+	LN_NOTIMPLEMENTED();
+	m_staging.depthBuffer = value;
 }
 
 void IGraphicsDeviceContext::setVertexDeclaration(IVertexDeclaration* value)
@@ -117,6 +123,8 @@ void IGraphicsDeviceContext::present(ISwapChain* swapChain)
 
 void IGraphicsDeviceContext::commitStatus()
 {
+	if (LN_REQUIRE(m_staging.renderTargets[0])) return;
+
 	// TODO: modified check
 
 	onUpdateFrameBuffers(m_staging.renderTargets.data(), m_staging.renderTargets.size(), nullptr);

@@ -28,6 +28,12 @@ void RenderTargetTexture::initialize(int width, int height, TextureFormat reques
 	m_rhiObject = manager()->deviceContext()->createRenderTarget(width, height, requestFormat, mipmap);
 }
 
+void RenderTargetTexture::initialize(detail::ITexture* ref)
+{
+	GraphicsResource::initialize();
+	m_rhiObject = ref;
+}
+
 detail::ITexture* RenderTargetTexture::resolveRHIObject()
 {
 	return m_rhiObject;

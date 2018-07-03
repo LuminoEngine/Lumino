@@ -13,7 +13,7 @@ int main(int argc, char** argv)
 	GlobalLogger::addStdErrAdapter();
 	Engine::initialize();
 
-	auto shader = Shader::create("C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/simple.vert", "C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/simple.frag");
+	auto shader = Shader::create("C:/Proj/GitHub/Lumino/src/LuminoEngine/sandbox/Assets/simple.vert", "C:/Proj/GitHub/Lumino/src/LuminoEngine/sandbox/Assets/simple.frag");
 	shader->setVector("g_color", Vector4(0, 1, 0, 1));
 
 	Engine::graphicsContext()->setShaderPass(shader->techniques()[0]->passes()[0]);
@@ -35,10 +35,13 @@ int main(int argc, char** argv)
 
 	auto renderTarget = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBX32, false);
 
+
+	auto ctx = Engine::graphicsContext();
+	//ctx->setColorBuffer(0, Engine::mainWindow()->swapChain()->colorBuffer());
+
 	int loop = 0;
 	while (Engine::update())
 	{
-		auto ctx = Engine::graphicsContext();
 		//ctx->clear(ClearFlags::Color, Color::PaleVioletRed, 1.0, 0);
 		//ctx->setVertexDeclaration(decl);
 		//ctx->setVertexBuffer(0, vb);

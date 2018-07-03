@@ -2,6 +2,7 @@
 
 namespace ln {
 class GraphicsContext;
+class UIFrameWindow;
 
 /** アプリケーション全体にかかわる処理を行います。 */
 LN_CLASS(Static)
@@ -26,6 +27,8 @@ public:
 	static bool update();
 
 	static GraphicsContext* graphicsContext();
+	static UIFrameWindow* mainWindow();
+
 };
 
 } // namespace ln

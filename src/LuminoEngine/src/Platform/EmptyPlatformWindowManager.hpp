@@ -13,6 +13,7 @@ public:
 	virtual ~EmptyPlatformWindow();
 	void initialize(const WindowCreationSettings& settings);
 	virtual void dispose() override;
+	virtual void getSize(SizeI* size) override { *size = SizeI(); }
 
 private:
 };

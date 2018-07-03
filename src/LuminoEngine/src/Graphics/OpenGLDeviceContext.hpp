@@ -1,4 +1,8 @@
-﻿#pragma once
+﻿/*
+
+	マルチターゲットの参考:http://ramemiso.hateblo.jp/entry/2013/10/20/001909
+*/
+#pragma once
 
 #ifdef LN_GRAPHICS_OPENGLES
 
@@ -75,6 +79,7 @@ protected:
 	virtual Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) override;
 	virtual Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) override;
 	virtual Ref<IShaderPass> onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag) override;
+	virtual void onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer) override;
 	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) override;
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
 	virtual void onDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) override;
@@ -100,13 +105,20 @@ class GLSwapChain
 {
 public:
 	GLSwapChain();
-	virtual ~GLSwapChain() = default;
+	virtual ~GLSwapChain();
+
+
 
 	void setupBackbuffer(uint32_t width, uint32_t height);
 
+	virtual ITexture* colorBuffer() const override;
+	virtual void getTargetWindowSize(SizeI* outSize) = 0;
+
+	GLuint fbo() const { return m_fbo; }
+
 private:
 	Ref<GLRenderTargetTexture> m_backbuffer;
-	//GLuint m_fbo;
+	GLuint m_fbo;
 	//GLuint m_colorTexture;
 };
 
@@ -140,6 +152,7 @@ class EmptyGLSwapChain
 public:
 	EmptyGLSwapChain() = default;
 	virtual ~EmptyGLSwapChain() = default;
+	virtual void getTargetWindowSize(SizeI* outSize) override { *outSize = SizeI(); }
 };
 
 struct GLVertexElement
@@ -247,17 +260,30 @@ private:
 	//bool				m_inited;
 };
 
-class GLRenderTargetTexture
+class GLTextureBase
 	: public ITexture
+{
+public:
+	virtual ~GLTextureBase() = default;
+
+	virtual GLuint id() const = 0;
+};
+
+class GLRenderTargetTexture
+	: public GLTextureBase
 {
 public:
 	GLRenderTargetTexture();
 	virtual ~GLRenderTargetTexture();
 	void initialize(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
 
+	virtual GLuint id() const override { return m_id; }
+
 	virtual void readData(void* outData) override;
+	virtual void getSize(SizeI* outSize) override;
 
 private:
+	SizeI m_size;
 	GLuint m_id;
 	GLenum m_pixelFormat;
 	GLenum m_elementType;
@@ -291,6 +317,15 @@ private:
 //	GLenum				m_pixelFormat;
 //	GLenum				m_elementType;
 //	RawBitmap*	m_lockingBitmap;
+};
+
+class GLDepthBuffer
+	: public IDepthBuffer
+{
+public:
+	virtual ~GLDepthBuffer() = default;
+
+	GLuint id() const { LN_NOTIMPLEMENTED(); return 0; }
 };
 
 class GLSLShader

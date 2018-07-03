@@ -8,6 +8,8 @@ namespace ln {
 class VertexDeclaration;
 class VertexBuffer;
 class IndexBuffer;
+class RenderTargetTexture;
+class DepthBuffer;
 class ShaderPass;
 
 namespace detail {
@@ -24,6 +26,8 @@ class LN_API SwapChain
 public:
 	virtual void dispose();
 
+	RenderTargetTexture* colorBuffer() const;
+
 LN_CONSTRUCT_ACCESS:
 	SwapChain();
 	virtual ~SwapChain();
@@ -34,6 +38,7 @@ LN_INTERNAL_ACCESS:
 
 private:
 	Ref<detail::ISwapChain> m_rhiObject;
+	Ref<RenderTargetTexture> m_colorBuffer;
 };
 
 class LN_API GraphicsContext
@@ -44,6 +49,8 @@ public:
 
 
 
+	void setColorBuffer(int index, RenderTargetTexture* value);
+	void setDepthBuffer(DepthBuffer* value);
 	void setVertexDeclaration(VertexDeclaration* value);
 	void setVertexBuffer(int streamIndex, VertexBuffer* value);
 	void setIndexBuffer(IndexBuffer* value);

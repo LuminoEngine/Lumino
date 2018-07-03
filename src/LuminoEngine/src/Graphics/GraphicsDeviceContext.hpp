@@ -45,7 +45,7 @@ class ITexture
 public:
 	virtual void readData(void* outData) = 0;
 
-
+	virtual void getSize(SizeI* outSize) = 0;
 
 	//void Clear(const Color& color);
 
@@ -102,6 +102,7 @@ class ISwapChain
 	: public RefObject
 {
 public:
+	virtual ITexture* colorBuffer() const = 0;
 
 protected:
 	virtual ~ISwapChain() = default;
@@ -152,7 +153,8 @@ public:
 	Ref<IShaderPass> createShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag);
 
 
-	void setRenderTarget(int index, ITexture* value);
+	void setColorBuffer(int index, ITexture* value);
+	void setDepthBuffer(IDepthBuffer* value);
 	void setVertexDeclaration(IVertexDeclaration* value);
 	void setVertexBuffer(int streamIndex, IVertexBuffer* value);
 	void setIndexBuffer(IIndexBuffer* value);
@@ -193,6 +195,7 @@ private:
 	struct State
 	{
 		std::array<ITexture*, 4> renderTargets = {};
+		IDepthBuffer* depthBuffer = nullptr;
 		IVertexDeclaration* vertexDeclaration = nullptr;
 		std::array<IVertexBuffer*, 4> vertexBuffers = {};
 		IIndexBuffer* indexBuffer = nullptr;

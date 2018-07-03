@@ -4,6 +4,7 @@
 #include <Lumino/Graphics/VertexDeclaration.hpp>
 #include <Lumino/Graphics/VertexBuffer.hpp>
 #include <Lumino/Graphics/IndexBuffer.hpp>
+#include <Lumino/Graphics/Texture.hpp>
 #include <Lumino/Shader/Shader.hpp>
 #include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
@@ -25,11 +26,17 @@ SwapChain::~SwapChain()
 void SwapChain::initialize(detail::PlatformWindow* window, const SizeI& backbufferSize)
 {
 	m_rhiObject = detail::EngineDomain::graphicsManager()->deviceContext()->createSwapChain(window, backbufferSize);
+	m_colorBuffer = newObject<RenderTargetTexture>(m_rhiObject->colorBuffer());
 }
 
 void SwapChain::dispose()
 {
 	m_rhiObject.reset();
+}
+
+RenderTargetTexture* SwapChain::colorBuffer() const
+{
+	return m_colorBuffer;
 }
 
 detail::ISwapChain* SwapChain::resolveRHIObject() const
@@ -57,6 +64,31 @@ void GraphicsContext::initialize(detail::IGraphicsDeviceContext* device)
 
 void GraphicsContext::dispose()
 {
+}
+
+void GraphicsContext::setColorBuffer(int index, RenderTargetTexture* value)
+{
+	detail::ITexture* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
+	LN_ENQUEUE_RENDER_COMMAND_3(
+		GraphicsContext_setDepthBuffer, m_manager,
+		detail::IGraphicsDeviceContext*, m_device,
+		int, index,
+		detail::ITexture*, rhiObject,
+		{
+			m_device->setColorBuffer(index, rhiObject);
+		});
+}
+
+void GraphicsContext::setDepthBuffer(DepthBuffer* value)
+{
+	detail::IDepthBuffer* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
+	LN_ENQUEUE_RENDER_COMMAND_2(
+		GraphicsContext_setDepthBuffer, m_manager,
+		detail::IGraphicsDeviceContext*, m_device,
+		detail::IDepthBuffer*, rhiObject,
+		{
+			m_device->setDepthBuffer(rhiObject);
+		});
 }
 
 void GraphicsContext::setVertexDeclaration(VertexDeclaration* value)
