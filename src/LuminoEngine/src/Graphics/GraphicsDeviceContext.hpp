@@ -43,9 +43,14 @@ class ITexture
 	: public RefObject
 {
 public:
-	virtual void readData(void* outData) = 0;
+
 
 	virtual void getSize(SizeI* outSize) = 0;
+	virtual TextureFormat getTextureFormat() const = 0;
+
+	// データは up flow (上下反転)
+	virtual void readData(void* outData) = 0;
+
 
 	//void Clear(const Color& color);
 

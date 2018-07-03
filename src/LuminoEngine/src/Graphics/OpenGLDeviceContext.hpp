@@ -281,9 +281,11 @@ public:
 
 	virtual void readData(void* outData) override;
 	virtual void getSize(SizeI* outSize) override;
+	virtual TextureFormat getTextureFormat() const override { return m_textureFormat; }
 
 private:
 	SizeI m_size;
+	TextureFormat m_textureFormat;
 	GLuint m_id;
 	GLenum m_pixelFormat;
 	GLenum m_elementType;

@@ -137,7 +137,7 @@ public:
 			// internalFormat,		pixelFormat,		elementType
 			{ GL_NONE,				GL_NONE,			GL_NONE },			// TextureFormat::Unknown
 			{ GL_RGBA8,				GL_RGBA,			GL_UNSIGNED_BYTE },	// TextureFormat::R8G8B8A8,            ///< 32 ビットのアルファ付きフォーマット (uint32_t アクセス時の表現。lnByte[4] にすると、ABGR)
-			{ GL_RGB,				GL_RGBA,			GL_UNSIGNED_BYTE },	// TextureFormat::R8G8B8X8,            ///< 32 ビットのアルファ無しフォーマット
+			{ GL_RGBA8,				GL_RGBA,			GL_UNSIGNED_BYTE },	// TextureFormat::R8G8B8X8,	※元々 GL_RGB だったが、それだと glGetTexImage で強制終了
 			{ GL_RGBA16F,			GL_RGBA,			GL_HALF_FLOAT },	// TextureFormat::A16B16G16R16F,       ///< 64 ビットの浮動小数点フォーマット
 			{ GL_RGBA32F,			GL_RGBA,			GL_FLOAT },			// TextureFormat::A32B32G32R32F,       ///< 128 ビットの浮動小数点フォーマット
 			{ GL_R16F,				GL_RED,				GL_HALF_FLOAT },	// TextureFormat::R16F,
@@ -483,7 +483,7 @@ GLSwapChain::~GLSwapChain()
 void GLSwapChain::setupBackbuffer(uint32_t width, uint32_t height)
 {
 	m_backbuffer = makeRef<GLRenderTargetTexture>();
-	m_backbuffer->initialize(width, height, TextureFormat::RGBX32, false);
+	m_backbuffer->initialize(width, height, TextureFormat::RGBA32, false);
 
 	GL_CHECK(glGenFramebuffers(1, &m_fbo));
 	GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_fbo));
@@ -803,6 +803,7 @@ void GLRenderTargetTexture::initialize(uint32_t width, uint32_t height, TextureF
 	}
 
 	m_size = SizeI(width, height);
+	m_textureFormat = requestFormat;
 
 	GL_CHECK(glGenTextures(1, &m_id));
 	GL_CHECK(glBindTexture(GL_TEXTURE_2D, m_id));
@@ -810,7 +811,7 @@ void GLRenderTargetTexture::initialize(uint32_t width, uint32_t height, TextureF
 	GL_CHECK(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
 
 	GLenum internalFormat;
-	m_pixelFormat = GL_BGRA;
+	//m_pixelFormat = GL_BGRA;
 	OpenGLHelper::getGLTextureFormat(requestFormat, &internalFormat, &m_pixelFormat, &m_elementType);
 
 	GL_CHECK(glTexImage2D(
@@ -835,6 +836,7 @@ void GLRenderTargetTexture::initialize(uint32_t width, uint32_t height, TextureF
 
 void GLRenderTargetTexture::readData(void* outData)
 {
+	GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 	GL_CHECK(glBindTexture(GL_TEXTURE_2D, m_id));
 	GL_CHECK(glGetTexImage(GL_TEXTURE_2D, 0, m_pixelFormat, m_elementType, outData));
 	GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));

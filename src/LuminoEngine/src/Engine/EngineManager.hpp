@@ -57,6 +57,7 @@ public:
 	bool isExitRequested() const { return m_exitRequested; }
 	void exit();
 
+	EngineSettings& settings() { return m_settings; }
 	const Ref<PlatformManager>& platformManager() const { return m_platformManager; }
 	const Ref<GraphicsManager>& graphicsManager() const { return m_graphicsManager; }
 	const Ref<UIManager>& uiManager() const { return m_uiManager; }

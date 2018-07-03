@@ -117,12 +117,27 @@ enum class IndexBufferFormat
 	Index32,
 };
 
+/** ピクセルフォーマット */
+LN_ENUM()
+enum class PixelFormat
+{
+	/** Unknown */
+	Unknown,
+
+	A1,
+	A8,
+
+	RGBA32,
+
+	R32G32B32A32Float,
+};
+
 /** テクスチャのピクセルフォーマット */
 LN_ENUM()
 enum class TextureFormat
 {
 	/** Unknown */
-	Unknown = 0,
+	Unknown,
 
 	/** 32 ビットのアルファ付きフォーマット (GPUネイティブフォーマット。D3D_FMT_A8B8G8R8, DXGI_FORMAT_R8G8B8A8_UNORM) */
 	RGBA32,
@@ -197,6 +212,13 @@ enum class ShaderVariableType
 	*	Texture は、DirectX9HLSL では texture 型を表し、GLSL では sampler 型を表す。
 	*	GLSL では sampler しか無いが、DirectX9HLSL では texture と sampler の2種類が存在する。
 	*/
+};
+
+class GraphicsHelper
+{
+public:
+	static PixelFormat translateToPixelFormat(TextureFormat format);
+	static TextureFormat translateToTextureFormat(PixelFormat format);
 };
 
 namespace detail {

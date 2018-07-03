@@ -2,6 +2,7 @@
 
 #include <LuminoCore.hpp>
 
+#include "Lumino/Engine/EngineSettings.hpp"
 #include "Lumino/Engine/Engine.hpp"
 #include "Lumino/Engine/Application.hpp"
 

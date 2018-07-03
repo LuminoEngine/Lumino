@@ -7,6 +7,7 @@
 #include "Lumino/Base/Common.hpp"
 #include "Lumino/Base/CRCHash.hpp"
 #include "Lumino/Base/EnumFlags.hpp"
+#include "Lumino/Base/ElapsedTimer.hpp"
 #include "Lumino/Base/Environment.hpp"
 #include "Lumino/Base/Event.hpp"
 #include "Lumino/Base/List.hpp"
