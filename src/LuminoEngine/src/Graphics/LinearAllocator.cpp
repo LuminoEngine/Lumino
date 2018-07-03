@@ -31,19 +31,26 @@ LinearAllocatorPageManager::~LinearAllocatorPageManager()
 	clear();
 }
 
-LinearAllocatorPage* LinearAllocatorPageManager::requestPage(size_t requerSize)
+LinearAllocatorPage* LinearAllocatorPageManager::requestPage(/*size_t requerSize*/)
 {
 	std::lock_guard<std::mutex> lock(m_mutex);
 
 	LinearAllocatorPage* resultPage = nullptr;
 
-	auto freePage = m_freePages.findIf([&](LinearAllocatorPage* page) { return page->size() >= requerSize; });
-	if (freePage) {
-		resultPage = *freePage;
+	//auto freePage = m_freePages.findIf([&](LinearAllocatorPage* page) { return page->size() >= requerSize; });
+	//if (freePage) {
+	//	resultPage = *freePage;
+	//}
+
+	LinearAllocatorPage* freePage = nullptr;
+	if (!m_freePages.empty())
+	{
+		freePage = m_freePages.front();
+		m_freePages.pop_front();
 	}
 
 	if (!resultPage) {
-		auto page = createNewPage(requerSize);
+		auto page = createNewPage(PageSize);
 		m_pagePool.add(page);
 		resultPage = page;
 	}
@@ -54,7 +61,7 @@ LinearAllocatorPage* LinearAllocatorPageManager::requestPage(size_t requerSize)
 void LinearAllocatorPageManager::discardPage(LinearAllocatorPage* page)
 {
 	std::lock_guard<std::mutex> lock(m_mutex);
-	m_freePages.add(page);
+	m_freePages.push_back(page);
 }
 
 void LinearAllocatorPageManager::clear()
@@ -83,11 +90,11 @@ LinearAllocator::~LinearAllocator()
 
 void* LinearAllocator::allocate(size_t size)
 {
-	if (size > PageSize) {
+	if (size > LinearAllocatorPageManager::PageSize) {
 		return allocateLarge(size);
 	}
 
-	if (m_usedOffset + size > PageSize)
+	if (m_usedOffset + size > LinearAllocatorPageManager::PageSize)
 	{
 		assert(m_currentPage);
 		m_retiredPages.add(m_currentPage);
@@ -96,7 +103,7 @@ void* LinearAllocator::allocate(size_t size)
 
 	if (!m_currentPage)
 	{
-		m_currentPage = m_manager->requestPage(size);
+		m_currentPage = m_manager->requestPage();
 		m_usedOffset = 0;
 	}
 

@@ -35,6 +35,7 @@ public:
 	static int getPixelFormatByteSize(PixelFormat format);
 	static int getBitmapByteSize(int width, int height, int depth, PixelFormat format);
 
+
 LN_INTERNAL_ACCESS:
 	Bitmap2D();
 	virtual ~Bitmap2D();
@@ -55,6 +56,8 @@ class RenderTargetTexture
 {
 public:
 	Ref<Bitmap2D> readData();
+
+	virtual void dispose() override;
 
 LN_CONSTRUCT_ACCESS:
 	RenderTargetTexture();

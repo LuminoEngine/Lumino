@@ -133,6 +133,28 @@ void IGraphicsDeviceContext::commitStatus()
 	// TODO: Shadr
 }
 
+
+//=============================================================================
+// IGraphicsDeviceObject
+
+IGraphicsDeviceObject::IGraphicsDeviceObject()
+	: m_disposed(false)
+{
+}
+
+IGraphicsDeviceObject::~IGraphicsDeviceObject()
+{
+	if (!m_disposed) {
+		LN_LOG_ERROR << "object [" << this << "] is not disposed";
+	}
+}
+
+void IGraphicsDeviceObject::dispose()
+{
+	m_disposed = true;
+}
+
+
 } // namespace detail
 } // namespace ln
 

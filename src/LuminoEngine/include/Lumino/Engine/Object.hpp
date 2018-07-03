@@ -5,10 +5,12 @@ namespace ln {
 class Object
 	: public RefObject
 {
-public:
+protected:
 	Object();
 	virtual ~Object();
+	virtual void finalize() override;
 
+public:
 	virtual void dispose();
 };
 

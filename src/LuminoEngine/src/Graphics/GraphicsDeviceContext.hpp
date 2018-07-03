@@ -6,17 +6,122 @@ struct Color;
 
 namespace detail {
 class PlatformWindow;
+class ISwapChain;
+class IVertexDeclaration;
+class IVertexBuffer;
+class IIndexBuffer;
+class ITexture;
+class IDepthBuffer;
+class IShaderPass;
 class IShaderUniform;
 
-class IVertexDeclaration
+class IGraphicsDeviceContext
 	: public RefObject
+{
+public:
+	IGraphicsDeviceContext();
+	virtual ~IGraphicsDeviceContext() = default;
+
+	void initialize();
+	virtual void dispose();
+	void enterMainThread();
+	void leaveMainThread();
+
+	Ref<ISwapChain> createSwapChain(PlatformWindow* window, const SizeI& backbufferSize);
+	Ref<IVertexDeclaration> createVertexDeclaration(const VertexElement* elements, int elementsCount);
+	Ref<IVertexBuffer> createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData = nullptr);
+	Ref<IIndexBuffer> createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData = nullptr);
+	Ref<ITexture> createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
+	Ref<IShaderPass> createShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag);
+
+	void setColorBuffer(int index, ITexture* value);
+	void setDepthBuffer(IDepthBuffer* value);
+	void setVertexDeclaration(IVertexDeclaration* value);
+	void setVertexBuffer(int streamIndex, IVertexBuffer* value);
+	void setIndexBuffer(IIndexBuffer* value);
+	void setShaderPass(IShaderPass* value);
+
+	void clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil);
+	void drawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount);
+	void drawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount);
+
+	void present(ISwapChain* swapChain);
+
+protected:
+	virtual void onEnterMainThread() = 0;
+	virtual void onLeaveMainThread() = 0;
+	virtual void onEnterRenderState() = 0;
+	virtual void onLeaveRenderState() = 0;
+	virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) = 0;
+	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) = 0;
+	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) = 0;
+	virtual Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) = 0;
+	virtual Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) = 0;
+	virtual Ref<IShaderPass> onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag) = 0;
+
+	virtual void onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer) = 0;
+	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) = 0;
+
+	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
+	virtual void onDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) = 0;
+	virtual void onDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) = 0;
+
+	//virtual void onSetShaderPass(IShaderPass* pass) = 0;
+
+	virtual void onPresent(ISwapChain* swapChain) = 0;
+
+private:
+	void commitStatus();
+
+	struct State
+	{
+		std::array<ITexture*, 4> renderTargets = {};
+		IDepthBuffer* depthBuffer = nullptr;
+		IVertexDeclaration* vertexDeclaration = nullptr;
+		std::array<IVertexBuffer*, 4> vertexBuffers = {};
+		IIndexBuffer* indexBuffer = nullptr;
+		IShaderPass* shaderPass = nullptr;
+	};
+
+	State m_staging;
+};
+
+class IGraphicsDeviceObject
+	: public RefObject
+{
+public:
+	// (複数回の呼び出しに備えること)
+	virtual void dispose();
+
+protected:
+	IGraphicsDeviceObject();
+	virtual ~IGraphicsDeviceObject();
+
+private:
+	bool m_disposed;
+};
+
+class ISwapChain
+	: public IGraphicsDeviceObject
+{
+public:
+	virtual ITexture* getColorBuffer() const = 0;
+
+protected:
+	virtual ~ISwapChain() = default;
+};
+
+
+class IVertexDeclaration
+	: public IGraphicsDeviceObject
 {
 protected:
 	virtual ~IVertexDeclaration() = default;
 };
 
+
 class IVertexBuffer
-	: public RefObject
+	: public IGraphicsDeviceObject
 {
 public:
 	virtual void setSubData(size_t offset, const void* data, size_t length) = 0;
@@ -27,8 +132,9 @@ protected:
 	virtual ~IVertexBuffer() = default;
 };
 
+
 class IIndexBuffer
-	: public RefObject
+	: public IGraphicsDeviceObject
 {
 public:
 	virtual void setSubData(size_t offset, const void* data, size_t length) = 0;
@@ -39,8 +145,9 @@ protected:
 	virtual ~IIndexBuffer() = default;
 };
 
+
 class ITexture
-	: public RefObject
+	: public IGraphicsDeviceObject
 {
 public:
 
@@ -94,8 +201,9 @@ protected:
 	virtual ~ITexture() = default;
 };
 
+
 class IDepthBuffer
-	: public RefObject
+	: public IGraphicsDeviceObject
 {
 public:
 
@@ -103,18 +211,9 @@ protected:
 	virtual ~IDepthBuffer() = default;
 };
 
-class ISwapChain
-	: public RefObject
-{
-public:
-	virtual ITexture* colorBuffer() const = 0;
-
-protected:
-	virtual ~ISwapChain() = default;
-};
 
 class IShaderPass
-	: public RefObject
+	: public IGraphicsDeviceObject
 {
 public:
 	virtual int getUniformCount() const = 0;
@@ -125,8 +224,9 @@ protected:
 	virtual ~IShaderPass() = default;
 };
 
+
 class IShaderUniform
-	: public RefObject
+	: public IGraphicsDeviceObject
 {
 public:
 	virtual const ShaderUniformTypeDesc& desc() const = 0;
@@ -134,80 +234,6 @@ public:
 
 protected:
 	virtual ~IShaderUniform() = default;
-};
-
-class IGraphicsDeviceContext
-	: public RefObject
-{
-public:
-	IGraphicsDeviceContext();
-	virtual ~IGraphicsDeviceContext() = default;
-
-	void initialize();
-	virtual void dispose();
-	void enterMainThread();
-	void leaveMainThread();
-	//void enterRenderingThread();
-	//void leaveRenderingThread();
-
-	Ref<ISwapChain> createSwapChain(PlatformWindow* window, const SizeI& backbufferSize);
-	Ref<IVertexDeclaration> createVertexDeclaration(const VertexElement* elements, int elementsCount);
-	Ref<IVertexBuffer> createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData = nullptr);
-	Ref<IIndexBuffer> createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData = nullptr);
-	Ref<ITexture> createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
-	Ref<IShaderPass> createShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag);
-
-
-	void setColorBuffer(int index, ITexture* value);
-	void setDepthBuffer(IDepthBuffer* value);
-	void setVertexDeclaration(IVertexDeclaration* value);
-	void setVertexBuffer(int streamIndex, IVertexBuffer* value);
-	void setIndexBuffer(IIndexBuffer* value);
-	void setShaderPass(IShaderPass* value);
-
-	void clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil);
-	void drawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount);
-	void drawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount);
-
-	void present(ISwapChain* swapChain);
-
-protected:
-	virtual void onEnterMainThread() = 0;
-	virtual void onLeaveMainThread() = 0;
-	virtual void onEnterRenderState() = 0;
-	virtual void onLeaveRenderState() = 0;
-	virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) = 0;
-	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) = 0;
-	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) = 0;
-	virtual Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) = 0;
-	virtual Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) = 0;
-	virtual Ref<IShaderPass> onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag) = 0;
-
-	virtual void onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer) = 0;
-	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) = 0;
-
-	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
-	virtual void onDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) = 0;
-	virtual void onDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) = 0;
-
-	//virtual void onSetShaderPass(IShaderPass* pass) = 0;
-
-	virtual void onPresent(ISwapChain* swapChain) = 0;
-
-private:
-	void commitStatus();
-
-	struct State
-	{
-		std::array<ITexture*, 4> renderTargets = {};
-		IDepthBuffer* depthBuffer = nullptr;
-		IVertexDeclaration* vertexDeclaration = nullptr;
-		std::array<IVertexBuffer*, 4> vertexBuffers = {};
-		IIndexBuffer* indexBuffer = nullptr;
-		IShaderPass* shaderPass = nullptr;
-	};
-
-	State m_staging;
 };
 
 

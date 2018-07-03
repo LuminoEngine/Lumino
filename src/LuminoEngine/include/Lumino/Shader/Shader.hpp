@@ -170,7 +170,7 @@ LN_CONSTRUCT_ACCESS:
 	ShaderParameter();
 	virtual ~ShaderParameter();
 	void initialize(const detail::ShaderUniformTypeDesc& desc, const String& name);
-
+	virtual void dispose() override;
 
 private:
 	const detail::ShaderUniformTypeDesc& desc() const { return m_desc; }
@@ -216,6 +216,7 @@ LN_CONSTRUCT_ACCESS:
 	ShaderPass();
 	virtual ~ShaderPass();
 	void initialize(detail::IShaderPass* rhiPass);
+	virtual void dispose() override;
 
 private:
 	void setOwner(ShaderTechnique* owner) { m_owner = owner; }

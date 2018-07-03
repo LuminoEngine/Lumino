@@ -159,6 +159,11 @@ void ShaderParameter::initialize(const detail::ShaderUniformTypeDesc& desc, cons
 	m_value.reset(desc.type, desc.elements);
 }
 
+void ShaderParameter::dispose()
+{
+	Object::dispose();
+}
+
 void ShaderParameter::setBool(bool value)
 {
 	m_value.setBool(value);
@@ -255,6 +260,16 @@ void ShaderPass::initialize(detail::IShaderPass* rhiPass)
 	m_rhiPass = rhiPass;
 }
 
+void ShaderPass::dispose()
+{
+	if (m_rhiPass) {
+		m_rhiPass->dispose();
+		m_rhiPass = nullptr;
+	}
+
+	Object::dispose();
+}
+
 void ShaderPass::setupParameters()
 {
 	m_parameters.clear();
@@ -267,6 +282,7 @@ void ShaderPass::setupParameters()
 	}
 }
 
+// TODO:
 static void tttt(const detail::RenderBulkData& data,
 	const Ref<detail::IShaderPass>& m_rhiPass)
 {

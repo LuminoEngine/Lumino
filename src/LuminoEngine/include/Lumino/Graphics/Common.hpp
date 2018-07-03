@@ -257,5 +257,4 @@ struct ShaderUniformTypeDesc
 };
 
 } // namespace detail
-
 } // namespace ln

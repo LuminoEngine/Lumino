@@ -16,6 +16,8 @@ namespace ln {
 // SwapChain
 
 SwapChain::SwapChain()
+	: m_rhiObject(nullptr)
+	, m_colorBuffer(nullptr)
 {
 }
 
@@ -26,12 +28,16 @@ SwapChain::~SwapChain()
 void SwapChain::initialize(detail::PlatformWindow* window, const SizeI& backbufferSize)
 {
 	m_rhiObject = detail::EngineDomain::graphicsManager()->deviceContext()->createSwapChain(window, backbufferSize);
-	m_colorBuffer = newObject<RenderTargetTexture>(m_rhiObject->colorBuffer());
+	m_colorBuffer = newObject<RenderTargetTexture>(m_rhiObject->getColorBuffer());
 }
 
 void SwapChain::dispose()
 {
-	m_rhiObject.reset();
+	if (m_rhiObject)
+	{
+		m_rhiObject->dispose();
+		m_rhiObject = nullptr;
+	}
 }
 
 RenderTargetTexture* SwapChain::colorBuffer() const

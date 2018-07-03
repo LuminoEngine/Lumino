@@ -160,6 +160,7 @@ OpenGLDeviceContext::OpenGLDeviceContext()
 	, m_uniformTempBuffer()
 	, m_uniformTempBufferWriter(&m_uniformTempBuffer)
 	, m_activeShaderPass(nullptr)
+	, m_currentIndexBuffer(nullptr)
 	, m_vao(0)
 	, m_fbo(0)
 {
@@ -330,7 +331,7 @@ void OpenGLDeviceContext::onUpdatePrimitiveData(IVertexDeclaration* decls, IVert
 
 			GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, static_cast<GLVertexBuffer*>(vertexBuufers[element.streamIndex])->vertexBufferId()));
 			GL_CHECK(glEnableVertexAttribArray(iElement));
-			GL_CHECK(glVertexAttribPointer(iElement, element.Size, element.Type, element.Normalized, element.Stride, (void*)(element.ByteOffset)));
+			GL_CHECK(glVertexAttribPointer(iElement, element.size, element.type, element.normalized, element.stride, (void*)(element.byteOffset)));
 		}
 	}
 
@@ -412,7 +413,7 @@ void OpenGLDeviceContext::onPresent(ISwapChain* swapChain)
 
 	SizeI windowSize, bufferSize;
 	s->getTargetWindowSize(&windowSize);
-	s->colorBuffer()->getSize(&bufferSize);
+	s->getColorBuffer()->getSize(&bufferSize);
 
 	// いわゆるResolve処理.
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -466,18 +467,25 @@ void OpenGLDeviceContext::getPrimitiveInfo(PrimitiveType primitive, int primitiv
 // GLSwapChain
 
 GLSwapChain::GLSwapChain()
-	: m_fbo(0)
-	//, m_colorTexture(0)
+	: m_backbuffer(nullptr)
+	, m_fbo(0)
 {
 }
 
-GLSwapChain::~GLSwapChain()
+void GLSwapChain::dispose()
 {
 	if (m_fbo)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glDeleteFramebuffers(1, &m_fbo);
 	}
+
+	if (m_backbuffer)
+	{
+	}
+	m_backbuffer = nullptr;
+
+	ISwapChain::dispose();
 }
 
 void GLSwapChain::setupBackbuffer(uint32_t width, uint32_t height)
@@ -488,21 +496,7 @@ void GLSwapChain::setupBackbuffer(uint32_t width, uint32_t height)
 	GL_CHECK(glGenFramebuffers(1, &m_fbo));
 	GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_fbo));
 
-	//GL_CHECK(glGenTextures(1, &m_colorTexture));
-	//GL_CHECK(glBindTexture(GL_TEXTURE_2D, m_colorTexture));
-	//GL_CHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr));
-
-	////GL_CHECK(glGenRenderbuffers(1, &m_colorRbo));
-	////GL_CHECK(glBindRenderbuffer(GL_RENDERBUFFER, m_colorRbo));
-	//GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, m_backbuffer->id()));
 	GL_CHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_backbuffer->id(), 0));
-	////GL_CHECK(glRenderbufferStorage(GL_RENDERBUFFER, GL_COLOR, width, height));
-
-	////GL_CHECK(glGenRenderbuffers(1, &m_depthStencilRbo));
-	////GL_CHECK(glBindRenderbuffer(GL_RENDERBUFFER, m_depthStencilRbo));
-	////GL_CHECK(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height));
-	////GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthStencilRbo));
-	////GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_depthStencilRbo));
 
 	LN_ENSURE(GL_FRAMEBUFFER_COMPLETE == glCheckFramebufferStatus(GL_FRAMEBUFFER),
 		"glCheckFramebufferStatus failed 0x%08x",
@@ -511,7 +505,7 @@ void GLSwapChain::setupBackbuffer(uint32_t width, uint32_t height)
 	GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
-ITexture* GLSwapChain::colorBuffer() const
+ITexture* GLSwapChain::getColorBuffer() const
 {
 	return m_backbuffer;
 }
@@ -554,6 +548,10 @@ void GLVertexDeclaration::initialize(const VertexElement* elements, int elements
 	createGLVertexElements(elements, elementsCount, &m_vertexElements);
 }
 
+void GLVertexDeclaration::dispose()
+{
+}
+
 void GLVertexDeclaration::createGLVertexElements(const VertexElement* vertexElements, int elementsCount, List<GLVertexElement>* outList)
 {
 	outList->reserve(elementsCount);
@@ -564,17 +562,17 @@ void GLVertexDeclaration::createGLVertexElements(const VertexElement* vertexElem
 	{
 		GLVertexElement elm;
 		elm.streamIndex = vertexElements[i].StreamIndex;
-		elm.Usage = vertexElements[i].Usage;
-		elm.UsageIndex = vertexElements[i].UsageIndex;
+		elm.usage = vertexElements[i].Usage;
+		elm.usageIndex = vertexElements[i].UsageIndex;
 
 		convertDeclTypeLNToGL(
 			vertexElements[i].Type,
-			&elm.Type,
-			&elm.Size,
-			&elm.Normalized);
+			&elm.type,
+			&elm.size,
+			&elm.normalized);
 
-		elm.Stride = vertexSize;
-		elm.ByteOffset = totalSize;
+		elm.stride = vertexSize;
+		elm.byteOffset = totalSize;
 		outList->add(elm);
 
 		totalSize += getVertexElementTypeSize(vertexElements[i].Type);
@@ -653,8 +651,6 @@ GLVertexBuffer::GLVertexBuffer()
 
 GLVertexBuffer::~GLVertexBuffer()
 {
-	glDeleteBuffers(1, &m_glVertexBuffer);
-	//LN_SAFE_DELETE_ARRAY(m_data);
 }
 
 void GLVertexBuffer::initialize(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
@@ -680,6 +676,17 @@ void GLVertexBuffer::initialize(GraphicsResourceUsage usage, size_t bufferSize, 
 	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, m_glVertexBuffer));
 	GL_CHECK(glBufferData(GL_ARRAY_BUFFER, bufferSize, initialData, m_usage));
 	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
+}
+
+void GLVertexBuffer::dispose()
+{
+	if (m_glVertexBuffer) {
+		GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
+		GL_CHECK(glDeleteBuffers(1, &m_glVertexBuffer));
+		m_glVertexBuffer = 0;
+	}
+
+	IVertexBuffer::dispose();
 }
 
 void GLVertexBuffer::setSubData(size_t offset, const void* data, size_t length)
@@ -748,7 +755,6 @@ GLIndexBuffer::GLIndexBuffer()
 
 GLIndexBuffer::~GLIndexBuffer()
 {
-	GL_CHECK(glDeleteBuffers(1, &m_indexBufferId));
 }
 
 void GLIndexBuffer::initialize(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
@@ -761,6 +767,17 @@ void GLIndexBuffer::initialize(GraphicsResourceUsage usage, IndexBufferFormat fo
 	GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBufferId));
 	GL_CHECK(glBufferData(GL_ELEMENT_ARRAY_BUFFER, stride * indexCount, initialData, m_usage));
 	GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+}
+
+void GLIndexBuffer::dispose()
+{
+	if (m_indexBufferId) {
+		GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+		GL_CHECK(glDeleteBuffers(1, &m_indexBufferId));
+		m_indexBufferId = 0;
+	}
+
+	IIndexBuffer::dispose();
 }
 
 void GLIndexBuffer::setSubData(size_t offset, const void* data, size_t length)
@@ -790,9 +807,6 @@ GLRenderTargetTexture::GLRenderTargetTexture()
 
 GLRenderTargetTexture::~GLRenderTargetTexture()
 {
-	if (m_id != 0) {
-		glDeleteTextures(1, &m_id);
-	}
 }
 
 void GLRenderTargetTexture::initialize(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
@@ -834,6 +848,16 @@ void GLRenderTargetTexture::initialize(uint32_t width, uint32_t height, TextureF
 	GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
+void GLRenderTargetTexture::dispose()
+{
+	if (m_id != 0) {
+		GL_CHECK(glDeleteTextures(1, &m_id));
+		m_id = 0;
+	}
+
+	GLTextureBase::dispose();
+}
+
 void GLRenderTargetTexture::readData(void* outData)
 {
 	GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
@@ -845,6 +869,14 @@ void GLRenderTargetTexture::readData(void* outData)
 void GLRenderTargetTexture::getSize(SizeI* outSize)
 {
 	*outSize = m_size;
+}
+
+//=============================================================================
+// GLDepthBuffer
+
+void GLDepthBuffer::dispose()
+{
+	IDepthBuffer::dispose();
 }
 
 //=============================================================================
@@ -907,7 +939,137 @@ void GLSLShader::dispose()
 }
 
 //=============================================================================
+// GLShaderPass
+
+GLShaderPass::GLShaderPass()
+	: m_context(nullptr)
+	, m_program(0)
+	, m_uniforms()
+{
+}
+
+void GLShaderPass::initialize(OpenGLDeviceContext* context, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCode, int fsCodeLen, ShaderCompilationDiag* diag)
+{
+	m_context = context;
+
+	GLSLShader vertexShader;
+	GLSLShader fragmentShader;
+	if (!vertexShader.create(vsCode, vsCodeLen, GL_VERTEX_SHADER, diag)) return;
+	if (!fragmentShader.create(fsCode, fsCodeLen, GL_FRAGMENT_SHADER, diag)) return;
+
+	m_program = glCreateProgram();
+	LN_LOG_VERBOSE << "Program create:" << m_program << " vs:" << vertexShader.shader() << " fs:" << fragmentShader.shader();
+
+	GL_CHECK(glAttachShader(m_program, vertexShader.shader()));
+	GL_CHECK(glAttachShader(m_program, fragmentShader.shader()));
+
+	GLint linked = 0;
+	GL_CHECK(glLinkProgram(m_program));
+	GL_CHECK(glGetProgramiv(m_program, GL_LINK_STATUS, &linked));
+
+	int logSize;
+	GL_CHECK(glGetProgramiv(m_program, GL_INFO_LOG_LENGTH, &logSize));
+
+	if (logSize > 1)
+	{
+		std::vector<char> buf(logSize);
+		int length;
+		GL_CHECK(glGetProgramInfoLog(m_program, logSize, &length, (GLchar*)buf.data()));
+		diag->message += (const char*)buf.data();
+		diag->level = ShaderCompilationResultLevel::Warning;
+	}
+
+	if (linked == GL_FALSE)
+	{
+		diag->level = ShaderCompilationResultLevel::Error;
+		return;
+	}
+
+	buildUniforms();
+}
+
+void GLShaderPass::dispose()
+{
+	if (m_program)
+	{
+		GL_CHECK(glUseProgram(0));
+		GL_CHECK(glDeleteProgram(m_program));
+		m_program = 0;
+	}
+
+	IShaderPass::dispose();
+}
+
+int GLShaderPass::getUniformCount() const
+{
+	return m_uniforms.size();
+}
+
+IShaderUniform* GLShaderPass::getUniform(int index) const
+{
+	return m_uniforms[index];
+}
+
+void GLShaderPass::setUniformValue(int index, const void* data, size_t size)
+{
+	m_context->setActiveShaderPass(this);
+	m_uniforms[index]->setUniformValue(m_context, data, size);
+}
+
+void GLShaderPass::buildUniforms()
+{
+	GLint count = 0;
+	GL_CHECK(glGetProgramiv(m_program, GL_ACTIVE_UNIFORMS, &count));
+
+	for (int i = 0; i < count; i++)
+	{
+		GLsizei name_len = 0;
+		GLsizei var_size = 0;
+		GLenum  var_type = 0;
+		GLchar  name[256] = { 0 };
+		GL_CHECK(glGetActiveUniform(m_program, i, 256, &name_len, &var_size, &var_type, name));
+
+		GLint loc = glGetUniformLocation(m_program, name);
+
+		ShaderUniformTypeDesc desc;
+		OpenGLHelper::convertVariableTypeGLToLN(
+			name, var_type, var_size,
+			&desc.type, &desc.rows, &desc.columns, &desc.elements);
+
+		auto uni = makeRef<GLShaderUniform>();
+		uni->m_desc = desc;
+		uni->m_name = name;
+		uni->m_location = loc;
+		m_uniforms.add(uni);
+
+		//// テクスチャ型の変数にステージ番号を振っていく。
+		//if (passVar.Variable->getType() == ShaderVariableType::DeviceTexture)
+		//{
+		//	passVar.TextureStageIndex = textureVarCount;
+		//	textureVarCount++;
+		//}
+		//else
+		//{
+		//	passVar.TextureStageIndex = -1;
+		//}
+
+	}
+}
+
+//=============================================================================
 // GLShaderUniform
+
+GLShaderUniform::GLShaderUniform()
+	: m_desc{ShaderRefrectionParameterType::Unknown, 0, 0, 0}
+	, m_name()
+	, m_location(0)
+{
+}
+
+void GLShaderUniform::dispose()
+{
+	IShaderUniform::dispose();
+}
 
 void GLShaderUniform::setUniformValue(OpenGLDeviceContext* context, const void* data, size_t size)
 {
@@ -1015,120 +1177,6 @@ void GLShaderUniform::setUniformValue(OpenGLDeviceContext* context, const void* 
 	}
 }
 
-//=============================================================================
-// GLShaderPass
-
-GLShaderPass::GLShaderPass()
-	: m_context(nullptr)
-	, m_program(0)
-{
-}
-
-void GLShaderPass::initialize(OpenGLDeviceContext* context, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCode, int fsCodeLen, ShaderCompilationDiag* diag)
-{
-	m_context = context;
-
-	GLSLShader vertexShader;
-	GLSLShader fragmentShader;
-	if (!vertexShader.create(vsCode, vsCodeLen, GL_VERTEX_SHADER, diag)) return;
-	if (!fragmentShader.create(fsCode, fsCodeLen, GL_FRAGMENT_SHADER, diag)) return;
-
-	m_program = glCreateProgram();
-	LN_LOG_VERBOSE << "Program create:" << m_program << " vs:" << vertexShader.shader() << " fs:" << fragmentShader.shader();
-
-	GL_CHECK(glAttachShader(m_program, vertexShader.shader()));
-	GL_CHECK(glAttachShader(m_program, fragmentShader.shader()));
-
-	GLint linked = 0;
-	GL_CHECK(glLinkProgram(m_program));
-	GL_CHECK(glGetProgramiv(m_program, GL_LINK_STATUS, &linked));
-
-	int logSize;
-	GL_CHECK(glGetProgramiv(m_program, GL_INFO_LOG_LENGTH, &logSize));
-
-	if (logSize > 1)
-	{
-		std::vector<char> buf(logSize);
-		int length;
-		GL_CHECK(glGetProgramInfoLog(m_program, logSize, &length, (GLchar*)buf.data()));
-		diag->message += (const char*)buf.data();
-		diag->level = ShaderCompilationResultLevel::Warning;
-	}
-
-	if (linked == GL_FALSE)
-	{
-		diag->level = ShaderCompilationResultLevel::Error;
-		return;
-	}
-
-	buildUniforms();
-}
-
-void GLShaderPass::dispose()
-{
-	if (m_program)
-	{
-		GL_CHECK(glUseProgram(0));
-		GL_CHECK(glDeleteProgram(m_program));
-		m_program = 0;
-	}
-}
-
-int GLShaderPass::getUniformCount() const
-{
-	return m_uniforms.size();
-}
-
-IShaderUniform* GLShaderPass::getUniform(int index) const
-{
-	return m_uniforms[index];
-}
-
-void GLShaderPass::setUniformValue(int index, const void* data, size_t size)
-{
-	m_context->setActiveShaderPass(this);
-	m_uniforms[index]->setUniformValue(m_context, data, size);
-}
-
-void GLShaderPass::buildUniforms()
-{
-	GLint count = 0;
-	GL_CHECK(glGetProgramiv(m_program, GL_ACTIVE_UNIFORMS, &count));
-
-	for (int i = 0; i < count; i++)
-	{
-		GLsizei name_len = 0;
-		GLsizei var_size = 0;
-		GLenum  var_type = 0;
-		GLchar  name[256] = { 0 };
-		GL_CHECK(glGetActiveUniform(m_program, i, 256, &name_len, &var_size, &var_type, name));
-
-		GLint loc = glGetUniformLocation(m_program, name);
-
-		ShaderUniformTypeDesc desc;
-		OpenGLHelper::convertVariableTypeGLToLN(
-			name, var_type, var_size,
-			&desc.type, &desc.rows, &desc.columns, &desc.elements);
-
-		auto uni = makeRef<GLShaderUniform>();
-		uni->m_desc = desc;
-		uni->m_name = name;
-		uni->m_location = loc;
-		m_uniforms.add(uni);
-
-		//// テクスチャ型の変数にステージ番号を振っていく。
-		//if (passVar.Variable->getType() == ShaderVariableType::DeviceTexture)
-		//{
-		//	passVar.TextureStageIndex = textureVarCount;
-		//	textureVarCount++;
-		//}
-		//else
-		//{
-		//	passVar.TextureStageIndex = -1;
-		//}
-
-	}
-}
 
 } // namespace detail
 } // namespace ln

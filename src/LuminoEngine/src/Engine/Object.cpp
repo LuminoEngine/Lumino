@@ -15,6 +15,11 @@ Object::~Object()
 {
 }
 
+void Object::finalize()
+{
+	dispose();
+}
+
 void Object::dispose()
 {
 }

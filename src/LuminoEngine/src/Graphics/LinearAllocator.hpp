@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <mutex>
+#include <deque>
 
 namespace ln {
 namespace detail {
@@ -22,10 +23,12 @@ class LinearAllocatorPageManager
 	: public RefObject
 {
 public:
+	static const size_t PageSize = 0x200000;	// 2MB
+
 	LinearAllocatorPageManager();
 	virtual ~LinearAllocatorPageManager();
 
-	LinearAllocatorPage* requestPage(size_t requerSize);
+	LinearAllocatorPage* requestPage(/*size_t requerSize*/);
 	void discardPage(LinearAllocatorPage* page);
 
 	static Ref<LinearAllocatorPage> createNewPage(size_t size);
@@ -34,8 +37,9 @@ private:
 	void clear();
 
 	std::mutex m_mutex;
-	List<LinearAllocatorPage*> m_freePages;
-	List<Ref<LinearAllocatorPage>> m_pagePool;
+	//List<LinearAllocatorPage*> m_freePages;
+	List<Ref<LinearAllocatorPage>> m_pagePool;		// page instances
+	std::deque<LinearAllocatorPage*> m_freePages;	// page references
 };
 
 /*
@@ -63,7 +67,6 @@ public:
 private:
 	void* allocateLarge(size_t size);
 
-	static const size_t PageSize = 0x200000;	// 2MB
 
 	LinearAllocatorPageManager* m_manager;
 	size_t m_usedOffset;

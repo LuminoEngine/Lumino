@@ -77,6 +77,8 @@ int readPixel2(int i)
 	return g_fucnc(g_buf, i);
 }
 
+int g_loop;
+
 int main(int argc, char** argv)
 {
 #ifdef _WIN32
@@ -125,7 +127,7 @@ int main(int argc, char** argv)
 	auto shader = Shader::create("C:/Proj/GitHub/Lumino/src/LuminoEngine/sandbox/Assets/simple.vert", "C:/Proj/GitHub/Lumino/src/LuminoEngine/sandbox/Assets/simple.frag");
 	shader->setVector("g_color", Vector4(0, 1, 0, 1));
 
-	Engine::graphicsContext()->setShaderPass(shader->techniques()[0]->passes()[0]);
+	//Engine::graphicsContext()->setShaderPass(shader->techniques()[0]->passes()[0]);
 
 	struct Vertex
 	{
@@ -153,6 +155,7 @@ int main(int argc, char** argv)
 	int loop = 0;
 	while (Engine::update())
 	{
+		//printf("----\n");
 
 		//ctx->clear(ClearFlags::Color, Color::PaleVioletRed, 1.0, 0);
 		ctx->setVertexDeclaration(decl);
@@ -164,6 +167,7 @@ int main(int argc, char** argv)
 		//auto* cb = Engine::mainWindow()->swapChain()->colorBuffer();
 
 		loop++;
+		g_loop = loop;
 		if (loop > 2) {
 
 			auto bmp = Engine::mainWindow()->swapChain()->colorBuffer()->readData();

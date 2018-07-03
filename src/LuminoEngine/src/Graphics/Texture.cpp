@@ -114,6 +114,7 @@ int Bitmap2D::getBitmapByteSize(int width, int height, int depth, PixelFormat fo
 // RenderTargetTexture
 
 RenderTargetTexture::RenderTargetTexture()
+	: m_rhiObject(nullptr)
 {
 }
 
@@ -135,6 +136,16 @@ void RenderTargetTexture::initialize(detail::ITexture* ref)
 {
 	GraphicsResource::initialize();
 	m_rhiObject = ref;
+}
+
+void RenderTargetTexture::dispose()
+{
+	if (m_rhiObject) {
+		m_rhiObject->dispose();
+		m_rhiObject = nullptr;
+	}
+
+	GraphicsResource::dispose();
 }
 
 Ref<Bitmap2D> RenderTargetTexture::readData()

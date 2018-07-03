@@ -24,9 +24,10 @@ class LN_API SwapChain
 	: public Object
 {
 public:
-	virtual void dispose();
 
 	RenderTargetTexture* colorBuffer() const;
+
+	virtual void dispose() override;
 
 LN_CONSTRUCT_ACCESS:
 	SwapChain();
