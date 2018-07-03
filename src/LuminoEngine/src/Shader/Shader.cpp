@@ -49,6 +49,19 @@ void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& 
 	pass->setupParameters();
 }
 
+void Shader::dispose()
+{
+	for (auto& tech : m_techniques)
+	{
+		for (auto& pass : tech->passes())
+		{
+			pass->dispose();
+		}
+	}
+
+	GraphicsResource::dispose();
+}
+
 void Shader::onChangeDevice(detail::IGraphicsDeviceContext* device)
 {
 	LN_NOTIMPLEMENTED();

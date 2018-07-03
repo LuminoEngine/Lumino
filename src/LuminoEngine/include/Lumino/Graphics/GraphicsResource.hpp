@@ -12,6 +12,8 @@ class LN_API GraphicsResource
 {
 public:
 
+	virtual void dispose() override;
+
 protected:
 	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) = 0;
 

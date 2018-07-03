@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <Lumino/Graphics/GraphicsContext.hpp>
+#include <Lumino/Graphics/GraphicsResource.hpp>
 #include "GraphicsManager.hpp"
 #include "OpenGLDeviceContext.hpp"
 #include "LinearAllocator.hpp"
@@ -84,8 +85,24 @@ void GraphicsManager::initialize(const Settings& settings)
 
 void GraphicsManager::dispose()
 {
+	List<GraphicsResource*> removeList = m_graphicsResources;
+	m_graphicsResources.clear();
+	for (GraphicsResource* resource : removeList) {
+		resource->dispose();
+	}
+
 	m_graphicsContext->dispose();
 	m_deviceContext->dispose();
+}
+
+void GraphicsManager::addGraphicsResource(GraphicsResource* resource)
+{
+	m_graphicsResources.add(resource);
+}
+
+void GraphicsManager::removeGraphicsResource(GraphicsResource* resource)
+{
+	m_graphicsResources.remove(resource);
 }
 
 } // namespace detail

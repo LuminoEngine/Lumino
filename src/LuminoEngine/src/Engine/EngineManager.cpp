@@ -58,6 +58,7 @@ void EngineManager::initialize()
 void EngineManager::dispose()
 {
 	if (m_mainWindow) m_mainWindow->dispose();
+	if (m_graphicsManager) m_graphicsManager->dispose();
 	if (m_platformManager) m_platformManager->dispose();
 }
 

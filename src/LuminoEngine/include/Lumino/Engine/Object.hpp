@@ -14,6 +14,12 @@ public:
 	virtual void dispose();
 };
 
+class ObjectHelper
+{
+public:
+	static void dispose(Object* obj) { if (obj) obj->dispose(); }
+};
+
 template<class T, typename... TArgs>
 Ref<T> newObject(TArgs&&... args)
 {

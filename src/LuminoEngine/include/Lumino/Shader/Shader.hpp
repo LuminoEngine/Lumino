@@ -137,6 +137,7 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~Shader();
 	void initialize();
 	void initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCodeType codeType);
+	virtual void dispose() override;
 
 	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
 
