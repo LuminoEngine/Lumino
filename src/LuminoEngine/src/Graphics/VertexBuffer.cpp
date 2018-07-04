@@ -94,7 +94,7 @@ void VertexBuffer::initialize(size_t bufferSize, const void* initialData, Graphi
 void VertexBuffer::dispose()
 {
 	if (m_rhiObject) {
-		m_rhiObject->dispose();
+		m_rhiObject->dispose();	// TODO: ここで直接 dispose は良くない。スレッド対応を考えよう
 		m_rhiObject = nullptr;
 	}
 

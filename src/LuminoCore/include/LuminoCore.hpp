@@ -58,6 +58,7 @@
 
 #include "Lumino/Threading/Common.hpp"
 #include "Lumino/Threading/Thread.hpp"
+#include "Lumino/Threading/ConditionEvent.hpp"
 
 #include "Lumino/Json/Common.hpp"
 #include "Lumino/Json/JsonReader.hpp"

@@ -31,7 +31,7 @@ class EngineManager
 {
 public:
 	EngineManager();
-	virtual ~EngineManager() = default;
+	virtual ~EngineManager();
 
 	void initialize();
 	void dispose();

@@ -29,6 +29,8 @@ public:
 
 	virtual void dispose() override;
 
+	void wait();
+
 LN_CONSTRUCT_ACCESS:
 	SwapChain();
 	virtual ~SwapChain();

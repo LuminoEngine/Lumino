@@ -8,6 +8,7 @@ class TestHelper
 {
 public:
 	static void setTempDirPath(const Path& dirPath);
+	static void setAssetsDirPath(const Path& dirPath);
 
 
 	/// baseFilePath のファイルと同じディレクトリの fileName を指すパスを得る
@@ -48,4 +49,4 @@ public:
 
 #define LN_TEMPFILE(fileName) ln::TestHelper::getTempPath(fileName).c_str()
 
-#define LN_ASSETFILE(fileName) LN_LOCALFILE(fileName)//ln::TestHelper::getAssetPath(fileName).c_str()
+#define LN_ASSETFILE(fileName) ln::TestHelper::getAssetPath(fileName).c_str()

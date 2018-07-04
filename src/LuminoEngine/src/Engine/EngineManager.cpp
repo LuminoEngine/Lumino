@@ -48,11 +48,17 @@ EngineManager::EngineManager()
 {
 }
 
+EngineManager::~EngineManager()
+{
+}
+
 void EngineManager::initialize()
 {
 	initializeAllManagers();
 
-	m_mainWindow = newObject<UIFrameWindow>(m_platformManager->mainWindow(), m_settings.mainBackBufferSize);
+	if (m_uiManager) {
+		m_mainWindow = newObject<UIFrameWindow>(m_platformManager->mainWindow(), m_settings.mainBackBufferSize);
+	}
 }
 
 void EngineManager::dispose()
@@ -218,7 +224,7 @@ void EngineDomain::release()
 	if (g_engineManager)
 	{
 		g_engineManager->dispose();
-		RefObjectHelper::retain(g_engineManager);
+		RefObjectHelper::release(g_engineManager);
 		g_engineManager = nullptr;
 	}
 }

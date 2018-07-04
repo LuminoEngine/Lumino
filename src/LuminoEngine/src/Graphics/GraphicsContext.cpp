@@ -45,6 +45,11 @@ RenderTargetTexture* SwapChain::colorBuffer() const
 	return m_colorBuffer;
 }
 
+void SwapChain::wait()
+{
+	// TODO
+}
+
 detail::ISwapChain* SwapChain::resolveRHIObject() const
 {
 	return m_rhiObject;
