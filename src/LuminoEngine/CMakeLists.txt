@@ -36,6 +36,7 @@ set(LN_SOURCES_Platform
 
 set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/Common.hpp
+	include/Lumino/Graphics/Bitmap.hpp
 	include/Lumino/Graphics/ColorStructs.hpp
 	include/Lumino/Graphics/GeometryStructs.hpp
 	include/Lumino/Graphics/GraphicsContext.hpp
@@ -45,6 +46,7 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/VertexBuffer.hpp
 	include/Lumino/Graphics/VertexDeclaration.hpp
 	src/Graphics/Internal.hpp
+	src/Graphics/Bitmap.cpp
 	src/Graphics/ColorStructs.cpp
 	src/Graphics/GeometryStructs.cpp
 	src/Graphics/GLFWContext.cpp
@@ -145,11 +147,11 @@ endif()
 #ln_add_pch(${PROJECT_NAME}-static "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
 
 add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
-target_include_directories(${PROJECT_NAME} PRIVATE "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES})
+target_include_directories(${PROJECT_NAME} PRIVATE "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${PNG_INCLUDE_DIRS})
 #target_compile_definitions(${PROJECT_NAME} PUBLIC LUMINO_BUILD_DLL=1)
 #target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive ${PROJECT_NAME}-static -Wl,--no-whole-archive)
 #target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-static)
-target_link_libraries(${PROJECT_NAME} LuminoCore ${LN_PLATFORM_LIBS} ${OPENGL_LIBRARY} glad zlibstatic png_static)
+target_link_libraries(${PROJECT_NAME} LuminoCore ${LN_PLATFORM_LIBS} ${OPENGL_LIBRARY} glad ${ZLIB_LIBRARIES} ${PNG_LIBRARIES})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
 

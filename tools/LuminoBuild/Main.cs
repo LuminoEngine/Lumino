@@ -45,6 +45,7 @@ namespace LuminoBuild
 
 
             builder.Tasks = new List<LuminoBuild.BuildTask>();
+            builder.Tasks.Add(new Tasks.BuildExternalProjects());
             builder.Tasks.Add(new Tasks.MakeVSProjects());
             builder.Tasks.Add(new Tasks.BuildEngine_Linux());
             builder.Tasks.Add(new Tasks.BuildEngine_macOS());

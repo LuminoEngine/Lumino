@@ -43,5 +43,6 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 		}
 		printf("\n");
 	}
+	bmp->save("test.png");
 
 }
