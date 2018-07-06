@@ -1,28 +1,49 @@
 ﻿
 #include "Internal.hpp"
 #include <png.h>
+#include <Lumino/Engine/Diagnostics.hpp>
 #include <Lumino/Graphics/Bitmap.hpp>
 
 namespace ln {
 namespace detail {
 
-class IImageWriter
+template<class TFunc>
+class ScopedCall
 {
 public:
-	virtual ~IImageWriter() = default;
+	ScopedCall(TFunc finalizer)
+		: m_finalizer(finalizer)
+	{}
+
+	~ScopedCall()
+	{
+		m_finalizer();
+	}
+
+private:
+	TFunc m_finalizer;
 };
 
-class PngImageWriter
-	: public IImageWriter
+template<class TFunc>
+ScopedCall<TFunc> makeScopedCall(TFunc finalizer)
+{
+	return ScopedCall<TFunc>(finalizer);
+}
+
+class IBitmapEncoder
 {
 public:
-	PngImageWriter() {}
-	virtual ~PngImageWriter() = default;
+	virtual ~IBitmapEncoder() = default;
+};
 
-	static void PngWriteCallback(png_structp  png_ptr, png_bytep data, png_size_t length) {
-		//std::vector<ui8> *p = (std::vector<ui8>*)png_get_io_ptr(png_ptr);
-		//p->insert(p->end(), data, data + length);
+class PngBitmapEncoder
+	: public IBitmapEncoder
+{
+public:
+	PngBitmapEncoder() {}
+	virtual ~PngBitmapEncoder() = default;
 
+	static void pngWriteCallback(png_structp  png_ptr, png_bytep data, png_size_t length) {
 		Stream* stream = reinterpret_cast<Stream*>(png_get_io_ptr(png_ptr));
 		stream->write(data, length);
 	}
@@ -31,49 +52,245 @@ public:
 	// フォーマットは RGBA
 	void save(Stream* stream, const byte_t* data, const SizeI& size)
 	{
-		//png_struct* p = ;
-		//if (LN_ENSURE(p, "png_create_write_struct() failed")) return;
+		png_struct* png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+		if (LN_ENSURE(png, "png_create_write_struct() failed")) return;
 
+		// finalizer
+		auto se = makeScopedCall([&]() {png_destroy_write_struct(&png, NULL); });
 
-		auto p = std::unique_ptr<png_struct, std::function<void(png_struct*)>>{
-			png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL),
-			[](png_struct* p) { png_destroy_write_struct(&p, NULL); } };
-
-		
-
-
-		png_infop info_ptr = png_create_info_struct(p.get());
+		png_infop info_ptr = png_create_info_struct(png);
 		if (LN_ENSURE(info_ptr, "png_create_info_struct() failed")) return;
 
-		//ASSERT_EX(info_ptr, "png_create_info_struct() failed");
-		//ASSERT_EX(0 == setjmp(png_jmpbuf(p)), "setjmp(png_jmpbuf(p) failed");
 		png_set_IHDR(
-			p.get(), info_ptr,
+			png, info_ptr,
 			size.width, size.height,
 			8,						// 各色 8 bit
 			PNG_COLOR_TYPE_RGBA,	// RGBA フォーマット
 			PNG_INTERLACE_NONE,
 			PNG_COMPRESSION_TYPE_DEFAULT,
 			PNG_FILTER_TYPE_DEFAULT);
-		////png_set_compression_level(p, 1);
-		std::vector<png_byte*> rows(size.height);
-		for (size_t y = 0; y < size.height; ++y)
-			rows[y] = (png_byte*)data + y * size.height * 4;
+		png_set_compression_level(png, 1);
+		png_set_write_fn(png, stream, pngWriteCallback, NULL);
 
-		png_set_write_fn(p.get(), stream, PngWriteCallback, NULL);
+		std::vector<png_byte*> rows(size.height);
+		int rowBytes = png_get_rowbytes(png, info_ptr);
+		for (size_t y = 0; y < size.height; ++y)
+			rows[y] = (png_byte*)data + (rowBytes * y);
 
 		// write PNG information to file
-		png_write_info(p.get(), info_ptr);
+		png_write_info(png, info_ptr);
 
-		png_set_rows(p.get(), info_ptr, rows.data());
-		png_write_png(p.get(), info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
+		png_set_rows(png, info_ptr, rows.data());
+		png_write_png(png, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
 
-		png_write_end(p.get(), info_ptr);
+		png_write_end(png, info_ptr);
 	}
 };
 
 
+class IBitmapDecoder
+{
+public:
+	virtual ~IBitmapDecoder() = default;
+};
 
+class PngBitmapDecoder
+	: public IBitmapDecoder
+{
+public:
+	PngBitmapDecoder() {}
+	virtual ~PngBitmapDecoder() = default;
+
+	static const int PNG_BYTES_TO_CHECK = 4;	// png 識別用の、ファイルの先頭バイト数
+	png_struct* m_png;
+	png_info* m_info;
+
+	struct Frame
+	{
+
+	};
+
+	bool load(Stream* stream, DiagnosticsManager* diag)
+	{
+		png_byte	sig[PNG_BYTES_TO_CHECK];
+		int			res;
+
+		size_t dataSize = (size_t)stream->length();
+
+		// サイズチェック
+		if (dataSize < PNG_BYTES_TO_CHECK) {
+			diag->reportError("invalid data size.");
+			return false;
+		}
+
+		// データが png かどうか調べる
+		stream->read(sig, 4);
+		stream->seek(0, SeekOrigin::Begin);
+		res = png_check_sig(sig, PNG_BYTES_TO_CHECK);
+		if (!res) {
+			diag->reportError("invalid png signature.");
+			return false;
+		}
+
+		// png_struct構造体を確保・初期化する
+		m_png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+		if (LN_ENSURE(m_png)) return false;
+
+		// finalizer
+		auto se = makeScopedCall([&]() {png_destroy_read_struct(&m_png, &m_info, NULL); });
+
+		// png_info構造体を確保・初期化する
+		m_info = png_create_info_struct(m_png);
+		if (LN_ENSURE(m_info)) return false;
+
+		if (setjmp(png_jmpbuf(m_png))) return false;
+
+		// png データ、読み込みコールバック設定
+		png_set_read_fn(m_png, (void *)&stream, pngReadCallback);
+
+		// シグネチャの確認で読み飛ばしたバイト数を知らせる
+		//png_set_sig_bytes( m_png, PNG_BYTES_TO_CHECK );
+
+		// PNGファイルのヘッダ情報を読み込む
+		png_read_png(m_png, m_info, PNG_TRANSFORM_EXPAND, NULL);
+
+		// IHDRチャンク情報を取得する
+		png_uint_32 width, height;
+		int bitDepth, colorType, interlaceType;
+		png_get_IHDR(
+			m_png, m_info, &width, &height,
+			&bitDepth, &colorType, &interlaceType, NULL, NULL);
+		m_size.width = width;
+		m_size.height = height;
+
+		int pixelDepth = png_get_bit_depth(m_png, m_info) * png_get_channels(m_png, m_info);
+
+		// 必ず1色 8 ビットで
+		if (bitDepth != 8) return false;
+
+		// パレットモードは非対応
+		if (colorType & PNG_COLOR_MASK_PALETTE) return false;
+
+		//unsigned int row_bytes = png_get_rowbytes( m_png, m_info );
+		//mImageData = (unsigned char*) malloc( row_bytes * mHeight );
+
+		//png_bytepp row_pointers = png_get_rows( m_png, m_info );
+
+		//for (int i = 0; i < mHeight; i++) {
+		//    memcpy(mImageData+(row_bytes * (i)), row_pointers[i], row_bytes);
+		//}
+
+		//printf("%x\n", *((lnU32*)mImageData));
+		//printf("%x\n", *(((lnU32*)mImageData) + 1));
+
+		//-----------------------------------------------------
+		// ビットマップ格納
+
+		unsigned int	row_bytes = png_get_rowbytes(m_png, m_info);	// 横幅のバイト数 (例えば ABGR の時は 横幅 * 4)
+		png_bytepp		row_pointers = png_get_rows(m_png, m_info);	// ビットマップデータ
+
+		int sign = (swapHeight) ? -1 : 1;			// 反転するか？
+		int unit = (swapHeight) ? m_size.height - 1 : 0;	// イテレート開始行 (一番上か、一番下か)
+
+															// ABGR
+															// (R155, G128, B0, A78) のとき、U32(Little) で 4e0080ff となる。
+															// byte[4] の並びは AA RR GG BB
+		if (colorType == PNG_COLOR_TYPE_RGB_ALPHA && pixelDepth == 32)
+		{
+			m_format = PixelFormat::R8G8B8A8;
+			m_bitmapData = ByteBuffer(m_size.width * m_size.height * 4);
+			byte_t* bitmap = m_bitmapData.getData();
+
+			// 1行ずつコピー
+			for (int h = 0; h < m_size.height; ++h) {
+				memcpy(&bitmap[row_bytes * (unit + (sign * h))], row_pointers[h], row_bytes);
+			}
+		}
+		// BGR
+		// ABGR に拡張して読み込む
+		else if (colorType == PNG_COLOR_TYPE_RGB && pixelDepth == 24)
+		{
+			m_format = PixelFormat::R8G8B8A8;
+			m_bitmapData = ByteBuffer(m_size.width * m_size.height * 4);
+			byte_t* bitmap = m_bitmapData.getData();
+
+			byte_t* row;
+			for (int y = 0; y < m_size.height; ++y)
+			{
+				row = row_pointers[unit + (sign * y)];
+				for (int x = 0; x < m_size.width; ++x)
+				{
+					byte_t* src = &row[x * 3];
+					byte_t* dest = &bitmap[(x + m_size.width * y) * 4];
+					dest[0] = src[0];	// R
+					dest[1] = src[1];	// G
+					dest[2] = src[2];	// B
+					dest[3] = 0xFF;		// A
+				}
+			}
+		}
+		// Gray
+		else if (colorType == PNG_COLOR_TYPE_GRAY && pixelDepth == 8)
+		{
+			m_format = PixelFormat::A8;
+			m_bitmapData = ByteBuffer(m_size.width * m_size.height * 1);
+			byte_t* bitmap = m_bitmapData.getData();
+
+			for (int h = 0; h < m_size.height; ++h) {
+				memcpy(&bitmap[row_bytes * (unit + (sign * h))], row_pointers[h], row_bytes);
+			}
+		}
+		else {
+			return false;
+		}
+
+		//PNG_COLOR_TYPE_GRAY// (ビット深度 1, 2, 4, 8, 16)
+		//PNG_COLOR_TYPE_GRAY_ALPHA// (ビット深度 8, 16)
+		//PNG_COLOR_TYPE_PALETTE// (ビット深度 1, 2, 4, 8)
+		//PNG_COLOR_TYPE_RGB// (ビット深度 8, 16)
+		//PNG_COLOR_TYPE_RGB_ALPHA// (ビット深度 8, 16)
+
+		//PNG_COLOR_MASK_PALETTE
+		//PNG_COLOR_MASK_COLOR
+		//PNG_COLOR_MASK_ALPHA
+
+		//if(png_get_valid(pPng, pInfo, PNG_INFO_tRNS))
+		//	png_set_expand(pPng);
+		//if(ColorType == PNG_COLOR_TYPE_PALETTE)
+		//	png_set_expand(pPng);
+		//if(ColorType == PNG_COLOR_TYPE_GRAY && bpp < 8)
+		//	png_set_expand(pPng);
+		//if(bpp > 8)
+		//	png_set_strip_16(pPng);
+		//if(ColorType == PNG_COLOR_TYPE_GRAY)
+		//	png_set_gray_to_rgb(pPng);
+		return true;
+	}
+
+	static void pngReadCallback(png_structp png_ptr, png_bytep data, png_size_t length)
+	{
+#if 1
+		PngData* png_data = (PngData*)png_get_io_ptr(png_ptr);
+		int validSize = png_data->SourceStream->read(data, length);
+		if (validSize != length) {
+			png_error(png_ptr, "_readPngData failed");
+		}
+#else
+		PngData* buffer = (PngData*)png_get_io_ptr(png_ptr_);
+
+		if (buffer->Offset + length_ <= buffer->Length)
+		{
+			memcpy(data_, buffer->Data + buffer->Offset, length_);
+			buffer->Offset += length_;
+		}
+		else
+		{
+			printf("buffer->Offset:%d length_:%d buffer->Length:%d", buffer->Offset, length_, buffer->Length);
+			png_error(png_ptr_, "_readPngData failed");
+		}
+#endif
+	}
+};
 
 } // namespace detail
 
@@ -166,7 +383,7 @@ void Bitmap2D::flipVerticalFlow()
 void Bitmap2D::save(const StringRef& filePath)
 {
 	auto file = FileStream::create(filePath, FileOpenMode::Write | FileOpenMode::Truncate);
-	detail::PngImageWriter writer;
+	detail::PngBitmapEncoder writer;
 	writer.save(file, m_buffer.data(), SizeI(m_width, m_height));
 }
 
