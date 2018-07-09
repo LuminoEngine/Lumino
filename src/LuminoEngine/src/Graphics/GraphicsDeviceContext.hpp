@@ -26,6 +26,8 @@ public:
 	virtual void dispose();
 	void enterMainThread();
 	void leaveMainThread();
+	void enterRenderState();
+	void leaveRenderState();
 
 	Ref<ISwapChain> createSwapChain(PlatformWindow* window, const SizeI& backbufferSize);
 	Ref<IVertexDeclaration> createVertexDeclaration(const VertexElement* elements, int elementsCount);
@@ -50,8 +52,8 @@ public:
 protected:
 	virtual void onEnterMainThread() = 0;
 	virtual void onLeaveMainThread() = 0;
-	virtual void onEnterRenderState() = 0;
-	virtual void onLeaveRenderState() = 0;
+	virtual void onSaveExternalRenderState() = 0;
+	virtual void onRestoreExternalRenderState() = 0;
 	virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) = 0;
 	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) = 0;
 	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) = 0;

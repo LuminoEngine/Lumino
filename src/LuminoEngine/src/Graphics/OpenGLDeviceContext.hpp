@@ -99,8 +99,8 @@ public:
 protected:
 	virtual void onEnterMainThread() override;
 	virtual void onLeaveMainThread() override;
-	virtual void onEnterRenderState() override;
-	virtual void onLeaveRenderState() override;
+	virtual void onSaveExternalRenderState() override;
+	virtual void onRestoreExternalRenderState() override;
 	virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
 	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) override;
 	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) override;

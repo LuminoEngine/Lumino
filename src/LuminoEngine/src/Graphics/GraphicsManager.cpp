@@ -81,10 +81,22 @@ void GraphicsManager::initialize(const Settings& settings)
 	m_linearAllocatorPageManager = makeRef<LinearAllocatorPageManager>();
 
 	m_primaryRenderingCommandList = makeRef<RenderingCommandList>(this);
+
+	if (renderingType() == GraphicsRenderingType::Threaded) {
+		LN_NOTIMPLEMENTED();
+	}
+	else {
+		m_deviceContext->enterMainThread();
+		m_deviceContext->enterRenderState();
+	}
 }
 
 void GraphicsManager::dispose()
 {
+	m_deviceContext->leaveRenderState();
+	m_deviceContext->leaveMainThread();
+
+
 	List<GraphicsResource*> removeList = m_graphicsResources;
 	m_graphicsResources.clear();
 	for (GraphicsResource* resource : removeList) {

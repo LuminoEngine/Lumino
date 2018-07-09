@@ -28,6 +28,16 @@ void IGraphicsDeviceContext::leaveMainThread()
 {
 }
 
+void IGraphicsDeviceContext::enterRenderState()
+{
+	onSaveExternalRenderState();
+}
+
+void IGraphicsDeviceContext::leaveRenderState()
+{
+	onRestoreExternalRenderState();
+}
+
 Ref<ISwapChain> IGraphicsDeviceContext::createSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
 {
 	return onCreateSwapChain(window, backbufferSize);

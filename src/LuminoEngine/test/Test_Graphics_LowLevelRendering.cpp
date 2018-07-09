@@ -9,9 +9,9 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 	shader->setVector("g_color", Vector4(1, 0, 0, 1));
 
 	Vector4 v[] = {
-		Vector4(0, 1, 0, 1),
-		Vector4(-1, 1, 0, 1),
-		Vector4(0, -1, 0, 1),
+		Vector4(0, 0.5, 0, 1),
+		Vector4(-0.5, -0.25, 0, 1),
+		Vector4(0.5, -0.25, 0, 1),
 	};
 
 	auto vertexBuffer = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
@@ -25,8 +25,11 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 	ctx->setShaderPass(shader->techniques()[0]->passes()[0]);
 	ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
+	Engine::update();
+	
+
 	//TestEnv::saveScreenShot(LN_ASSETFILE("Test_Graphics_LowLevelRendering-BasicTriangle-1.png"));
-	ASSERT_SCREEN(LN_ASSETFILE("Test_Graphics_LowLevelRendering-BasicTriangle-1.png"));
+	ASSERT_SCREEN_S(LN_ASSETFILE("Test_Graphics_LowLevelRendering-BasicTriangle-1.png"));
 
 	//Engine::update();
 

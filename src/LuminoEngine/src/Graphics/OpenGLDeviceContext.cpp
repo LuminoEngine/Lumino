@@ -223,11 +223,21 @@ void OpenGLDeviceContext::onLeaveMainThread()
 	setActiveShaderPass(nullptr);
 }
 
-void OpenGLDeviceContext::onEnterRenderState()
+void OpenGLDeviceContext::onSaveExternalRenderState()
 {
+	//glDisable(GL_CULL_FACE);
+
+
+	glEnable(GL_CULL_FACE);
+
+	GLboolean ff;
+	GL_CHECK(glGetBooleanv(GL_CULL_FACE, &ff));
+
+
+	//glEnable();
 }
 
-void OpenGLDeviceContext::onLeaveRenderState()
+void OpenGLDeviceContext::onRestoreExternalRenderState()
 {
 	GL_CHECK(glBindVertexArray(0));
 }
