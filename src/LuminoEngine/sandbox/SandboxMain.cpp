@@ -176,7 +176,7 @@ int main(int argc, char** argv)
 			{
 				for (int x = 0; x < bmp->width(); x++)
 				{
-					auto c = bmp->getColor32(x, y);
+					auto c = bmp->getPixel32(x, y);
 					if (c.g != 248)
 						printf("#");
 					else

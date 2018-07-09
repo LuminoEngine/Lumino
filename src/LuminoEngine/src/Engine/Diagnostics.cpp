@@ -18,6 +18,11 @@ DiagnosticsManager::~DiagnosticsManager()
 {
 }
 
+void DiagnosticsManager::initialize()
+{
+	Object::initialize();
+}
+
 void DiagnosticsManager::reportError(StringRef message)
 {
 	auto item = newObject<DiagnosticsItem>();
@@ -44,17 +49,44 @@ void DiagnosticsManager::reportInfo(StringRef message)
 	m_items.add(item);
 }
 
+void DiagnosticsManager::dump() const
+{
+	for (auto& item : m_items)
+	{
+		switch (item->level())
+		{
+		case DiagnosticsLevel::Error:
+			LN_LOG_ERROR << item->message();
+			break;
+		case DiagnosticsLevel::Warning:
+			LN_LOG_WARNING << item->message();
+			break;
+		case DiagnosticsLevel::Info:
+			LN_LOG_INFO << item->message();
+			break;
+		default:
+			LN_UNREACHABLE();
+			break;
+		}
+	}
+}
+
 //==============================================================================
 // DiagnosticsItem
 
 DiagnosticsItem::DiagnosticsItem()
-	: m_string()
-	, m_level(DiagnosticsLevel::Error)
+	: m_level(DiagnosticsLevel::Error)
+	, m_string()
 {
 }
 
 DiagnosticsItem::~DiagnosticsItem()
 {
+}
+
+void DiagnosticsItem::initialize()
+{
+	Object::initialize();
 }
 
 } // namespace ln

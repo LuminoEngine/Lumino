@@ -30,6 +30,14 @@ ScopedCall<TFunc> makeScopedCall(TFunc finalizer)
 	return ScopedCall<TFunc>(finalizer);
 }
 
+class BitmapFrame
+{
+public:
+	Ref<ByteBuffer> data;
+	SizeI size;
+	PixelFormat format;
+};
+
 class IBitmapEncoder
 {
 public:
@@ -55,10 +63,8 @@ public:
 		png_struct* png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 		if (LN_ENSURE(png, "png_create_write_struct() failed")) return;
 
-		// finalizer
-		auto se = makeScopedCall([&]() {png_destroy_write_struct(&png, NULL); });
-
 		png_infop info_ptr = png_create_info_struct(png);
+		auto se = makeScopedCall([&]() {png_destroy_write_struct(&png, &info_ptr); }); // finalizer
 		if (LN_ENSURE(info_ptr, "png_create_info_struct() failed")) return;
 
 		png_set_IHDR(
@@ -92,6 +98,8 @@ class IBitmapDecoder
 {
 public:
 	virtual ~IBitmapDecoder() = default;
+
+	virtual BitmapFrame* getBitmapFrame() = 0;
 };
 
 class PngBitmapDecoder
@@ -105,13 +113,9 @@ public:
 	png_struct* m_png;
 	png_info* m_info;
 
-	struct Frame
-	{
-
-	};
-
 	bool load(Stream* stream, DiagnosticsManager* diag)
 	{
+		const bool swapHeight = false;
 		png_byte	sig[PNG_BYTES_TO_CHECK];
 		int			res;
 
@@ -146,7 +150,7 @@ public:
 		if (setjmp(png_jmpbuf(m_png))) return false;
 
 		// png データ、読み込みコールバック設定
-		png_set_read_fn(m_png, (void *)&stream, pngReadCallback);
+		png_set_read_fn(m_png, (void*)stream, pngReadCallback);
 
 		// シグネチャの確認で読み飛ばしたバイト数を知らせる
 		//png_set_sig_bytes( m_png, PNG_BYTES_TO_CHECK );
@@ -160,8 +164,8 @@ public:
 		png_get_IHDR(
 			m_png, m_info, &width, &height,
 			&bitDepth, &colorType, &interlaceType, NULL, NULL);
-		m_size.width = width;
-		m_size.height = height;
+		m_frame.size.width = width;
+		m_frame.size.height = height;
 
 		int pixelDepth = png_get_bit_depth(m_png, m_info) * png_get_channels(m_png, m_info);
 
@@ -171,18 +175,6 @@ public:
 		// パレットモードは非対応
 		if (colorType & PNG_COLOR_MASK_PALETTE) return false;
 
-		//unsigned int row_bytes = png_get_rowbytes( m_png, m_info );
-		//mImageData = (unsigned char*) malloc( row_bytes * mHeight );
-
-		//png_bytepp row_pointers = png_get_rows( m_png, m_info );
-
-		//for (int i = 0; i < mHeight; i++) {
-		//    memcpy(mImageData+(row_bytes * (i)), row_pointers[i], row_bytes);
-		//}
-
-		//printf("%x\n", *((lnU32*)mImageData));
-		//printf("%x\n", *(((lnU32*)mImageData) + 1));
-
 		//-----------------------------------------------------
 		// ビットマップ格納
 
@@ -190,19 +182,19 @@ public:
 		png_bytepp		row_pointers = png_get_rows(m_png, m_info);	// ビットマップデータ
 
 		int sign = (swapHeight) ? -1 : 1;			// 反転するか？
-		int unit = (swapHeight) ? m_size.height - 1 : 0;	// イテレート開始行 (一番上か、一番下か)
+		int unit = (swapHeight) ? m_frame.size.height - 1 : 0;	// イテレート開始行 (一番上か、一番下か)
 
 															// ABGR
 															// (R155, G128, B0, A78) のとき、U32(Little) で 4e0080ff となる。
 															// byte[4] の並びは AA RR GG BB
 		if (colorType == PNG_COLOR_TYPE_RGB_ALPHA && pixelDepth == 32)
 		{
-			m_format = PixelFormat::R8G8B8A8;
-			m_bitmapData = ByteBuffer(m_size.width * m_size.height * 4);
-			byte_t* bitmap = m_bitmapData.getData();
+			m_frame.format = PixelFormat::RGBA32;
+			m_frame.data = makeRef<ByteBuffer>(m_frame.size.width * m_frame.size.height * 4);
+			byte_t* bitmap = m_frame.data->data();
 
 			// 1行ずつコピー
-			for (int h = 0; h < m_size.height; ++h) {
+			for (int h = 0; h < m_frame.size.height; ++h) {
 				memcpy(&bitmap[row_bytes * (unit + (sign * h))], row_pointers[h], row_bytes);
 			}
 		}
@@ -210,18 +202,18 @@ public:
 		// ABGR に拡張して読み込む
 		else if (colorType == PNG_COLOR_TYPE_RGB && pixelDepth == 24)
 		{
-			m_format = PixelFormat::R8G8B8A8;
-			m_bitmapData = ByteBuffer(m_size.width * m_size.height * 4);
-			byte_t* bitmap = m_bitmapData.getData();
+			m_frame.format = PixelFormat::RGBA32;
+			m_frame.data = makeRef<ByteBuffer>(m_frame.size.width * m_frame.size.height * 4);
+			byte_t* bitmap = m_frame.data->data();
 
 			byte_t* row;
-			for (int y = 0; y < m_size.height; ++y)
+			for (int y = 0; y < m_frame.size.height; ++y)
 			{
 				row = row_pointers[unit + (sign * y)];
-				for (int x = 0; x < m_size.width; ++x)
+				for (int x = 0; x < m_frame.size.width; ++x)
 				{
 					byte_t* src = &row[x * 3];
-					byte_t* dest = &bitmap[(x + m_size.width * y) * 4];
+					byte_t* dest = &bitmap[(x + m_frame.size.width * y) * 4];
 					dest[0] = src[0];	// R
 					dest[1] = src[1];	// G
 					dest[2] = src[2];	// B
@@ -232,11 +224,11 @@ public:
 		// Gray
 		else if (colorType == PNG_COLOR_TYPE_GRAY && pixelDepth == 8)
 		{
-			m_format = PixelFormat::A8;
-			m_bitmapData = ByteBuffer(m_size.width * m_size.height * 1);
-			byte_t* bitmap = m_bitmapData.getData();
+			m_frame.format = PixelFormat::A8;
+			m_frame.data = makeRef<ByteBuffer>(m_frame.size.width * m_frame.size.height * 1);
+			byte_t* bitmap = m_frame.data->data();
 
-			for (int h = 0; h < m_size.height; ++h) {
+			for (int h = 0; h < m_frame.size.height; ++h) {
 				memcpy(&bitmap[row_bytes * (unit + (sign * h))], row_pointers[h], row_bytes);
 			}
 		}
@@ -269,27 +261,18 @@ public:
 
 	static void pngReadCallback(png_structp png_ptr, png_bytep data, png_size_t length)
 	{
-#if 1
-		PngData* png_data = (PngData*)png_get_io_ptr(png_ptr);
-		int validSize = png_data->SourceStream->read(data, length);
+		Stream* stream = (Stream*)png_get_io_ptr(png_ptr);
+		int validSize = stream->read(data, length);
 		if (validSize != length) {
 			png_error(png_ptr, "_readPngData failed");
 		}
-#else
-		PngData* buffer = (PngData*)png_get_io_ptr(png_ptr_);
-
-		if (buffer->Offset + length_ <= buffer->Length)
-		{
-			memcpy(data_, buffer->Data + buffer->Offset, length_);
-			buffer->Offset += length_;
-		}
-		else
-		{
-			printf("buffer->Offset:%d length_:%d buffer->Length:%d", buffer->Offset, length_, buffer->Length);
-			png_error(png_ptr_, "_readPngData failed");
-		}
-#endif
 	}
+
+	virtual BitmapFrame* getBitmapFrame() override { return &m_frame; }
+
+private:
+
+	BitmapFrame m_frame;
 };
 
 } // namespace detail
@@ -319,32 +302,52 @@ public:
 
 Bitmap2D::Bitmap2D()
 {
+	m_buffer = makeRef<ByteBuffer>();
 }
 
 Bitmap2D::~Bitmap2D()
 {
 }
 
-void Bitmap2D::initialize(int width, int height, PixelFormat format)
+void Bitmap2D::initialize()
 {
-	m_width = width;
-	m_height = height;
-	//m_depth = 0;
-	m_format = format;
-	m_buffer.resize(getBitmapByteSize(m_width, m_height, 1, m_format));
+	m_size.width = 0;
+	m_size.height = 0;
+	m_format = PixelFormat::Unknown;
 }
 
-Color32 Bitmap2D::getColor32(int x, int y) const
+void Bitmap2D::initialize(int width, int height, PixelFormat format)
+{
+	m_size.width = width;
+	m_size.height = height;
+	m_format = format;
+	m_buffer->resize(getBitmapByteSize(m_size.width, m_size.height, 1, m_format));
+}
+
+Color32 Bitmap2D::getPixel32(int x, int y) const
 {
 	if (m_format == PixelFormat::RGBA32)
 	{
-		const uint8_t* pixel = m_buffer.data() + ((y * m_width) + x) * 4;
+		const uint8_t* pixel = m_buffer->data() + ((y * m_size.width) + x) * 4;
 		return Color32(pixel[0], pixel[1], pixel[2], pixel[3]);
 	}
 	else
 	{
 		LN_NOTIMPLEMENTED();
 		return Color32();
+	}
+}
+
+void Bitmap2D::setPixel32(int x, int y, const Color32& color)
+{
+	if (m_format == PixelFormat::RGBA32)
+	{
+		Color32* pixel = reinterpret_cast<Color32*>(m_buffer->data() + ((y * m_size.width) + x) * 4);
+		*pixel = color;
+	}
+	else
+	{
+		LN_NOTIMPLEMENTED();
 	}
 }
 
@@ -358,19 +361,19 @@ void Bitmap2D::flipVerticalFlow()
 	{
 		// XOR で工夫すると演算回数が少なくなるとか最適化の余地はあるけど、
 		// とりあえず今は評価目的でしか使わないので愚直に swap。
-		byte_t* pixels = m_buffer.data();
-		for (int y = 0; y < (m_height / 2); ++y) {
-			for (int x = 0; x < m_width; ++x) {
-				std::swap(pixels[(y * m_width) + x], pixels[((m_height - 1 - y) * m_width) + x]);
+		byte_t* pixels = m_buffer->data();
+		for (int y = 0; y < (m_size.height / 2); ++y) {
+			for (int x = 0; x < m_size.width; ++x) {
+				std::swap(pixels[(y * m_size.width) + x], pixels[((m_size.height - 1 - y) * m_size.width) + x]);
 			}
 		}
 	}
 	else if (pixelSize == 4)
 	{
-		uint32_t* pixels = (uint32_t*)m_buffer.data();
-		for (int y = 0; y < (m_height / 2); ++y) {
-			for (int x = 0; x < m_width; ++x) {
-				std::swap(pixels[(y * m_width) + x], pixels[((m_height - 1 - y) * m_width) + x]);
+		uint32_t* pixels = (uint32_t*)m_buffer->data();
+		for (int y = 0; y < (m_size.height / 2); ++y) {
+			for (int x = 0; x < m_size.width; ++x) {
+				std::swap(pixels[(y * m_size.width) + x], pixels[((m_size.height - 1 - y) * m_size.width) + x]);
 			}
 		}
 	}
@@ -380,11 +383,28 @@ void Bitmap2D::flipVerticalFlow()
 	}
 }
 
+void Bitmap2D::load(const StringRef& filePath)
+{
+	auto file = FileStream::create(filePath);
+	detail::PngBitmapDecoder decoder;
+
+	auto diag = newObject<DiagnosticsManager>();
+	decoder.load(file, diag);
+	diag->dump();
+	if (diag->succeeded())
+	{
+		detail::BitmapFrame* frame = decoder.getBitmapFrame();
+		m_buffer = frame->data;
+		m_size = frame->size;
+		m_format = frame->format;
+	}
+}
+
 void Bitmap2D::save(const StringRef& filePath)
 {
 	auto file = FileStream::create(filePath, FileOpenMode::Write | FileOpenMode::Truncate);
-	detail::PngBitmapEncoder writer;
-	writer.save(file, m_buffer.data(), SizeI(m_width, m_height));
+	detail::PngBitmapEncoder encoder;
+	encoder.save(file, m_buffer->data(), m_size);
 }
 
 int Bitmap2D::getPixelFormatByteSize(PixelFormat format)

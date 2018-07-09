@@ -8,6 +8,7 @@ class Object
 protected:
 	Object();
 	virtual ~Object();
+	void initialize();
 	virtual void finalize() override;
 
 public:

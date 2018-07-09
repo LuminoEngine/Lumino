@@ -25,24 +25,27 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 	ctx->setShaderPass(shader->techniques()[0]->passes()[0]);
 	ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
+	//TestEnv::saveScreenShot(LN_ASSETFILE("Test_Graphics_LowLevelRendering-BasicTriangle-1.png"));
+	ASSERT_SCREEN(LN_ASSETFILE("Test_Graphics_LowLevelRendering-BasicTriangle-1.png"));
+
 	//Engine::update();
 
-	auto* swapChain = Engine::mainWindow()->swapChain();
-	swapChain->wait();
+	//auto* swapChain = Engine::mainWindow()->swapChain();
+	//swapChain->wait();
 
-	auto bmp = swapChain->colorBuffer()->readData();
-	for (int y = 0; y < bmp->height(); y++)
-	{
-		for (int x = 0; x < bmp->width(); x++)
-		{
-			auto c = bmp->getColor32(x, y);
-			if (c.g != 248)
-				printf("#");
-			else
-				printf("-");
-		}
-		printf("\n");
-	}
-	bmp->save("test.png");
+	//auto bmp = swapChain->colorBuffer()->readData();
+	//for (int y = 0; y < bmp->height(); y++)
+	//{
+	//	for (int x = 0; x < bmp->width(); x++)
+	//	{
+	//		auto c = bmp->getPixel32(x, y);
+	//		if (c.g != 248)
+	//			printf("#");
+	//		else
+	//			printf("-");
+	//	}
+	//	printf("\n");
+	//}
+	//bmp->save("test.png");
 
 }
