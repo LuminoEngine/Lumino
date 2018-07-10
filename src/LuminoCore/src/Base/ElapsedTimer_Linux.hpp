@@ -26,7 +26,7 @@ static void _clock_gettime(int, struct timespec* ts)
 static void _getTime(uint64_t* sec, uint64_t* nsec)
 {
 	timespec ts;
-	qt_clock_gettime(CLOCK_REALTIME, &ts);
+	_clock_gettime(CLOCK_REALTIME, &ts);
 	*sec = ts.tv_sec;
 	*nsec = ts.tv_nsec;
 }
