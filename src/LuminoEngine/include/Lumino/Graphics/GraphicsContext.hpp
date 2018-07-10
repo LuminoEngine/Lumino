@@ -74,8 +74,26 @@ LN_INTERNAL_ACCESS:
 	virtual void dispose();
 
 private:
+	void commitStatus();
+
 	detail::GraphicsManager* m_manager;
 	detail::IGraphicsDeviceContext* m_device;
+
+	struct Status
+	{
+		//RenderStateData renderState;
+		std::array<Ref<RenderTargetTexture>, 4> renderTargets;
+		Ref<DepthBuffer> depthBuffer;
+		Ref<VertexDeclaration> vertexDeclaration;
+		std::array<Ref<VertexBuffer>, 4> vertexBuffers;
+		Ref<IndexBuffer> indexBuffer;
+		Ref<ShaderPass> shaderPass;
+
+		void reset();
+	};
+
+	Status m_staging;
+	Status m_current;
 };
 
 } // namespace ln

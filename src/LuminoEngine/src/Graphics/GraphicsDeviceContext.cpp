@@ -89,7 +89,6 @@ void IGraphicsDeviceContext::setColorBuffer(int index, ITexture* value)
 
 void IGraphicsDeviceContext::setDepthBuffer(IDepthBuffer* value)
 {
-	LN_NOTIMPLEMENTED();
 	m_staging.depthBuffer = value;
 }
 

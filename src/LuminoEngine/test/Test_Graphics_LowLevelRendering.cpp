@@ -48,6 +48,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 	m_shader1->setVector("g_color", Vector4(1, 0, 0, 1));
 
 	auto vb1 = newObject<VertexBuffer>(sizeof(Vector4) * 3, GraphicsResourceUsage::Static);
+	auto vb2 = newObject<VertexBuffer>(sizeof(Vector4) * 3, GraphicsResourceUsage::Static);
 	auto ctx = Engine::graphicsContext();
 	ctx->setVertexDeclaration(m_vertexDecl1);
 	ctx->setVertexBuffer(0, vb1);
@@ -65,7 +66,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-		ASSERT_SCREEN_S(LN_ASSETFILE("Test_Graphics_LowLevelRendering-VertexBuffer-2.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Test_Graphics_LowLevelRendering-VertexBuffer-2.png"));
 	}
 
 	// * [ ] 一度レンダリングに使用されたバッファを、再更新できること (static)
@@ -80,10 +81,50 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-		ASSERT_SCREEN_S(LN_ASSETFILE("Test_Graphics_LowLevelRendering-VertexBuffer-3.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Test_Graphics_LowLevelRendering-VertexBuffer-3.png"));
+	}
+
+	// * [ ] まだ一度もレンダリングに使用されていないバッファを、拡張できること (static)
+	{
+		Vector4 v2[] = {
+			Vector4(-0.5, 0.5, 0, 1),
+			Vector4(0.5, 0.5, 0, 1),
+			Vector4(-0.5, -0.5, 0, 1),
+			Vector4(0.5, -0.5, 0, 1),
+		};
+		
+		vb2->resize(sizeof(Vector4) * 4);
+		ASSERT_EQ(sizeof(Vector4) * 4, vb2->size());
+
+		memcpy(vb2->map(MapMode::Write), v2, vb2->size());
+
+		ctx->setVertexBuffer(0, vb2);
+		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
+
+		ASSERT_SCREEN(LN_ASSETFILE("Test_Graphics_LowLevelRendering-VertexBuffer-4.png"));
+	}
+
+	// * [ ] 一度レンダリングに使用されたバッファを、拡張できること (static)
+	{
+		Vector4 v2[] = {
+			Vector4(-0.5, 0.5, 0, 1),
+			Vector4(0.5, 0.5, 0, 1),
+			Vector4(-0.5, -0.5, 0, 1),
+			Vector4(0.5, -0.5, 0, 1),
+			Vector4(-0.5, -1, 0, 1),
+		};
+
+		vb2->resize(sizeof(Vector4) * 5);
+		ASSERT_EQ(sizeof(Vector4) * 5, vb2->size());
+
+		memcpy(vb2->map(MapMode::Write), v2, vb2->size());
+
+		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 3);
+
+		ASSERT_SCREEN(LN_ASSETFILE("Test_Graphics_LowLevelRendering-VertexBuffer-5.png"));
 	}
 
 	// TODO: 部分 lock
-
-	// 拡張
 }
