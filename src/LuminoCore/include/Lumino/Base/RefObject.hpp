@@ -193,6 +193,8 @@ public:
     /** オブジェクトのポインタへの変換をサポートします。 */
     operator T*() const { return static_cast<T*>(m_ptr); } // ここでコンパイルエラーとなる場合、T の定義があるヘッダファイルを include しているか確認すること。
 
+	RefObject* basePointer() const { return m_ptr; }
+
 protected:
     void safeAddRef()
     {
@@ -249,7 +251,7 @@ Ref<T>::Ref(const Ref& ref) LN_NOEXCEPT
 template<class T>
 template<class Y>
 Ref<T>::Ref(const Ref<Y>& ref) LN_NOEXCEPT
-    : m_ptr(ref.get())
+    : m_ptr(static_cast<T*>(ref.get()))
 {
     LN_SAFE_RETAIN(m_ptr);
 }
@@ -265,7 +267,7 @@ template<class T>
 template<class Y>
 Ref<T>::Ref(Ref<Y>&& ref) LN_NOEXCEPT
 {
-    m_ptr = ref.m_ptr;
+    m_ptr = static_cast<T*>(ref.get());
     ref.m_ptr = nullptr;
 }
 
@@ -328,7 +330,7 @@ template<class T>
 template<class Y>
 Ref<T>& Ref<T>::operator=(const Ref<Y>& ref) LN_NOEXCEPT
 {
-    LN_REFOBJ_SET(m_ptr, ref.m_ptr);
+    LN_REFOBJ_SET(m_ptr, static_cast<T*>(ref.get()));
     return *this;
 }
 
@@ -348,7 +350,7 @@ template<class Y>
 Ref<T>& Ref<T>::operator=(Ref<Y>&& ref) LN_NOEXCEPT
 {
     LN_SAFE_RELEASE(m_ptr);
-    m_ptr = ref.m_ptr;
+    m_ptr = static_cast<T*>(ref.get());
     ref.m_ptr = nullptr;
     return *this;
 }
@@ -370,126 +372,123 @@ T* Ref<T>::operator->() const LN_NOEXCEPT
 template<class T, class U>
 bool operator==(const Ref<T>& lhs, const Ref<U>& rhs) LN_NOEXCEPT
 {
-    return (lhs.get() == rhs.get());
+    return (lhs.basePointer() == rhs.basePointer());
 }
 
 template<class T>
 bool operator==(const Ref<T>& lhs, std::nullptr_t) LN_NOEXCEPT
 {
-    return (lhs.get() == nullptr);
+    return (lhs.basePointer() == nullptr);
 }
 
 template<class T>
 bool operator==(std::nullptr_t, const Ref<T>& rhs) LN_NOEXCEPT
 {
-    return (nullptr == rhs.get());
+    return (nullptr == rhs.basePointer());
 }
 
 template<class T, class U>
 bool operator!=(const Ref<T>& lhs, const Ref<U>& rhs) LN_NOEXCEPT
 {
-    return (lhs.get() != rhs.get());
+    return (lhs.basePointer() != rhs.basePointer());
 }
 
 template<class T>
 bool operator!=(const Ref<T>& lhs, std::nullptr_t) LN_NOEXCEPT
 {
-    return (lhs.get() != nullptr);
+    return (lhs.basePointer() != nullptr);
 }
 
 template<class T>
 bool operator!=(std::nullptr_t, const Ref<T>& rhs) LN_NOEXCEPT
 {
-    return (nullptr != rhs.get());
+    return (nullptr != rhs.basePointer());
 }
 
 template<class T, class U>
 bool operator<(const Ref<T>& lhs, const Ref<U>& rhs) LN_NOEXCEPT
 {
-    return (lhs.get() < rhs.get());
+    return (lhs.basePointer() < rhs.basePointer());
 }
 	
 template<class T>
 bool operator<(const Ref<T>& lhs, std::nullptr_t) LN_NOEXCEPT
 {
-	return std::less<T*>()(lhs.get(), nullptr);
-	//std::shared_ptr<<#class _Tp#>>
-    //return (lhs.get() < nullptr);
+	return std::less<RefObject*>()(lhs.basePointer(), nullptr);
 }
 
 template<class T>
 bool operator<(std::nullptr_t, const Ref<T>& rhs) LN_NOEXCEPT
 {
-	return std::less<T*>()(nullptr, rhs.get());
-    //return (nullptr < rhs.get());
+	return std::less<T*>()(nullptr, rhs.basePointer());
 }
 
 template<class T, class U>
 bool operator<=(const Ref<T>& lhs, const Ref<U>& rhs) LN_NOEXCEPT
 {
-    return (lhs.get() <= rhs.get());
+    return (lhs.basePointer() <= rhs.basePointer());
 }
 
 template<class T>
 bool operator<=(const Ref<T>& lhs, std::nullptr_t) LN_NOEXCEPT
 {
-    return (lhs.get() <= nullptr);
+    return (lhs.basePointer() <= nullptr);
 }
 
 template<class T>
 bool operator<=(std::nullptr_t, const Ref<T>& rhs) LN_NOEXCEPT
 {
-    return (nullptr <= rhs.get());
+    return (nullptr <= rhs.basePointer());
 }
 
 template<class T, class U>
 bool operator>(const Ref<T>& lhs, const Ref<U>& rhs) LN_NOEXCEPT
 {
-    return (lhs.get() > rhs.get());
+    return (lhs.basePointer() > rhs.basePointer());
 }
 
 template<class T>
 bool operator>(const Ref<T>& lhs, std::nullptr_t) LN_NOEXCEPT
 {
-    return (lhs.get() > nullptr);
+    return (lhs.basePointer() > nullptr);
 }
 
 template<class T>
 bool operator>(std::nullptr_t, const Ref<T>& rhs) LN_NOEXCEPT
 {
-    return (nullptr > rhs.get());
+    return (nullptr > rhs.basePointer());
 }
 
 template<class T, class U>
 bool operator>=(const Ref<T>& lhs, const Ref<U>& rhs) LN_NOEXCEPT
 {
-    return (lhs.get() >= rhs.get());
+    return (lhs.basePointer() >= rhs.basePointer());
 }
 
 template<class T>
 bool operator>=(const Ref<T>& lhs, std::nullptr_t) LN_NOEXCEPT
 {
-    return (lhs.get() >= nullptr);
+    return (lhs.basePointer() >= nullptr);
 }
 
 template<class T>
 bool operator>=(std::nullptr_t, const Ref<T>& rhs) LN_NOEXCEPT
 {
-    return (nullptr >= rhs.get());
+    return (nullptr >= rhs.basePointer());
 }
 
 /** Cast between RefPtr types statically. */
 template<class T, class U>
 Ref<T> static_pointer_cast(const Ref<U>& ref)
 {
-    return Ref<T>(static_cast<T*>(ref.get()));
+    return Ref<T>(static_cast<T*>(ref.basePointer()));
 }
 
 /** Cast between RefPtr types dynamically. */
 template<class T, class U>
 Ref<T> dynamic_pointer_cast(const Ref<U>& ref)
 {
-    return Ref<T>(dynamic_cast<T*>(ref.get()));
+    return Ref<T>(dynamic_cast<T*>(ref.basePointer()));
 }
 
 /** Ref を構築します。受け取った引数リストを型 T のコンストラクタへ渡してオブジェクトを構築します。 */
