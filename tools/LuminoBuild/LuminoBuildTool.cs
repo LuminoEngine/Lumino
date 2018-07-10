@@ -54,6 +54,7 @@ namespace LuminoBuild
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine(e.ToString());
                 Console.ResetColor(); // 色のリセット
+                throw new Exception("DoTask failed.");
             }
         }
 
