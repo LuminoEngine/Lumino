@@ -83,7 +83,7 @@ String::format("0x{0:X}", 255);    // => "0xFF"
 ```cpp
 String::format("{0:F}", 25.1879));                 // => "25.1879"
 String::format("{0:f}", 25.1879));                 // => "25.1879"
-String::formatu("{0:F2}", 25.1879));                // => "25.19"
+String::format("{0:F2}", 25.1879));                // => "25.19"
 String::format(Locale("fr"), "{0:F2}", 25.1879)); // => "25,187900"
 ```
 
