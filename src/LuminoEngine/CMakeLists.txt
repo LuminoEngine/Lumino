@@ -44,6 +44,8 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/GraphicsContext.hpp
 	include/Lumino/Graphics/GraphicsResource.hpp
 	include/Lumino/Graphics/IndexBuffer.hpp
+	include/Lumino/Graphics/RenderState.hpp
+	include/Lumino/Graphics/SamplerState.hpp
 	include/Lumino/Graphics/Texture.hpp
 	include/Lumino/Graphics/VertexBuffer.hpp
 	include/Lumino/Graphics/VertexDeclaration.hpp
@@ -60,6 +62,8 @@ set(LN_SOURCES_Graphics
 	src/Graphics/GraphicsManager.hpp
 	src/Graphics/GraphicsResource.cpp
 	src/Graphics/IndexBuffer.cpp
+	src/Graphics/RenderState.cpp
+	src/Graphics/SamplerState.cpp
 	src/Graphics/LinearAllocator.cpp
 	src/Graphics/LinearAllocator.hpp
 	src/Graphics/OpenGLDeviceContext.cpp

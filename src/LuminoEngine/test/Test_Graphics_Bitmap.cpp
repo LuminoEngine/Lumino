@@ -1,11 +1,11 @@
-#include "Common.hpp"
+ï»¿#include "Common.hpp"
 
 class Test_Graphics_Bitmap : public ::testing::Test {};
 
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_Bitmap, SimpleLoadSave)
 {
-	//* [ ] downflow ‚ÅƒsƒNƒZƒ‹ƒf[ƒ^‚ğæ“¾‚Å‚«‚é‚±‚ÆB
+	//* [ ] downflow ã§ãƒ”ã‚¯ã‚»ãƒ«ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ã§ãã‚‹ã“ã¨ã€‚
 	{
 		auto bmp1 = newObject<Bitmap2D>();
 		bmp1->load(LN_ASSETFILE("Bitmap1.png"));
@@ -14,7 +14,7 @@ TEST_F(Test_Graphics_Bitmap, SimpleLoadSave)
 		ASSERT_EQ(Color32(0, 0, 255, 255), bmp1->getPixel32(0, 3));
 		ASSERT_EQ(Color32(255, 255, 255, 0), bmp1->getPixel32(3, 3));
 	}
-	//* [ ] downflow ‚ÅƒsƒNƒZƒ‹ƒf[ƒ^‚ğ•Û‘¶‚Å‚«‚é‚±‚ÆB
+	//* [ ] downflow ã§ãƒ”ã‚¯ã‚»ãƒ«ãƒ‡ãƒ¼ã‚¿ã‚’ä¿å­˜ã§ãã‚‹ã“ã¨ã€‚
 	{
 		{
 			auto bmp0 = newObject<Bitmap2D>(4, 4, PixelFormat::RGBA32);

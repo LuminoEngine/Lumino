@@ -99,11 +99,7 @@ void IndexBuffer::initialize(int indexCount, const void* initialData, IndexBuffe
 //------------------------------------------------------------------------------
 void IndexBuffer::dispose()
 {
-	if (m_rhiObject) {
-		m_rhiObject->dispose();
-		m_rhiObject = nullptr;
-	}
-
+	m_rhiObject = nullptr;
 	GraphicsResource::dispose();
 }
 

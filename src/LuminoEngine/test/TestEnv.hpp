@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 class TestEnv
 {
@@ -9,7 +9,7 @@ public:
 	static void saveScreenShot(const Char* filePath);
 	static bool equalsScreenShot(const Char* filePath, int passRate);
 	static bool equalsBitmapFile(Bitmap2D* bmp1, const Char* filePath, int passRate);
-	static bool checkScreenShot(const Char* filePath, int passRate = 99, bool save = false);	// Šî–{“I‚É 99% ˆê’v‚µ‚Ä‚¢‚ê‚Î—Ç‚¢BƒOƒ‰ƒ{‚É‚æ‚Á‚ÄAF¬•ª+-1 ‚­‚ç‚¢‚ÌŒë·‚ª‚ ‚é
+	static bool checkScreenShot(const Char* filePath, int passRate = 99, bool save = false);	// åŸºæœ¬çš„ã« 99% ä¸€è‡´ã—ã¦ã„ã‚Œã°è‰¯ã„ã€‚ã‚°ãƒ©ãƒœã«ã‚ˆã£ã¦ã€è‰²æˆåˆ†+-1 ãã‚‰ã„ã®èª¤å·®ãŒã‚ã‚‹
 	static void waitRendering();
 };
 

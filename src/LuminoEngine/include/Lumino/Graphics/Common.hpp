@@ -47,6 +47,16 @@ enum class GraphicsResourcePool
 	Managed,
 };
 
+/** グラフィックスリソースのマップ方法 */
+enum class MapMode
+{
+	/** 読み取りモード */
+	Read,
+
+	/** 書き込みモード */
+	Write,
+};
+
 /** 頂点宣言の要素の型 */
 enum class VertexElementType
 {

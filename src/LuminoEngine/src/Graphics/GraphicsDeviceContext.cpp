@@ -77,6 +77,11 @@ Ref<IShaderPass> IGraphicsDeviceContext::createShaderPass(const byte_t* vsCode, 
 	return pass;
 }
 
+void IGraphicsDeviceContext::setRenderState(const RenderStateData& value)
+{
+	m_staging.renderState = value;
+}
+
 void IGraphicsDeviceContext::setColorBuffer(int index, ITexture* value)
 {
 	m_staging.renderTargets[index] = value;
@@ -137,6 +142,8 @@ void IGraphicsDeviceContext::commitStatus()
 
 	// TODO: modified check
 
+	onUpdateRenderState(m_staging.renderState);
+
 	onUpdateFrameBuffers(m_staging.renderTargets.data(), m_staging.renderTargets.size(), nullptr);
 
 	onUpdatePrimitiveData(m_staging.vertexDeclaration, m_staging.vertexBuffers.data(), m_staging.vertexBuffers.size(), m_staging.indexBuffer);
@@ -155,8 +162,13 @@ IGraphicsDeviceObject::IGraphicsDeviceObject()
 IGraphicsDeviceObject::~IGraphicsDeviceObject()
 {
 	if (!m_disposed) {
-		LN_LOG_ERROR << "object [" << this << "] is not disposed";
+		LN_LOG_ERROR << "object [0x" << this << "] is not disposed";
 	}
+}
+
+void IGraphicsDeviceObject::finalize()
+{
+	dispose();
 }
 
 void IGraphicsDeviceObject::dispose()
@@ -164,6 +176,69 @@ void IGraphicsDeviceObject::dispose()
 	m_disposed = true;
 }
 
+//=============================================================================
+// ISwapChain
+
+ISwapChain::ISwapChain()
+{
+	LN_LOG_VERBOSE << "ISwapChain [0x" << this << "] constructed.";
+}
+
+//=============================================================================
+// IVertexDeclaration
+
+IVertexDeclaration::IVertexDeclaration()
+{
+	LN_LOG_VERBOSE << "IVertexDeclaration [0x" << this << "] constructed.";
+}
+
+//=============================================================================
+// IVertexBuffer
+
+IVertexBuffer::IVertexBuffer()
+{
+	LN_LOG_VERBOSE << "IVertexBuffer [0x" << this << "] constructed.";
+}
+
+//=============================================================================
+// IIndexBuffer
+
+IIndexBuffer::IIndexBuffer()
+{
+	LN_LOG_VERBOSE << "IIndexBuffer [0x" << this << "] constructed.";
+}
+
+//=============================================================================
+// ITexture
+
+ITexture::ITexture()
+{
+	LN_LOG_VERBOSE << "ITexture [0x" << this << "] constructed.";
+}
+
+//=============================================================================
+// IDepthBuffer
+
+IDepthBuffer::IDepthBuffer()
+{
+	LN_LOG_VERBOSE << "IDepthBuffer [0x" << this << "] constructed.";
+}
+
+//=============================================================================
+// IShaderPass
+
+IShaderPass::IShaderPass()
+{
+	LN_LOG_VERBOSE << "IShaderPass [0x" << this << "] constructed.";
+}
+
+//=============================================================================
+// IShaderUniform
+
+IShaderUniform::IShaderUniform()
+{
+	LN_LOG_VERBOSE << "IShaderUniform [0x" << this << "] constructed.";
+}
 
 } // namespace detail
 } // namespace ln

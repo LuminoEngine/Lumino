@@ -43,10 +43,7 @@ void VertexDeclaration::initialize(const VertexElement* elements, int count)
 
 void VertexDeclaration::dispose()
 {
-	if (m_deviceObj) {
-		m_deviceObj->dispose();
-		m_deviceObj = nullptr;
-	}
+	m_deviceObj = nullptr;
 
 	GraphicsResource::dispose();
 }

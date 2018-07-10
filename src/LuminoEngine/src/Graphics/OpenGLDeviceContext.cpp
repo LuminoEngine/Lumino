@@ -225,20 +225,18 @@ void OpenGLDeviceContext::onLeaveMainThread()
 
 void OpenGLDeviceContext::onSaveExternalRenderState()
 {
-	//glDisable(GL_CULL_FACE);
-
-
-	glEnable(GL_CULL_FACE);
-
-	GLboolean ff;
-	GL_CHECK(glGetBooleanv(GL_CULL_FACE, &ff));
-
-
-	//glEnable();
+	GL_CHECK(glGetBooleanv(GL_CULL_FACE, &m_savedState.state_GL_CULL_FACE));
 }
 
 void OpenGLDeviceContext::onRestoreExternalRenderState()
 {
+	if (m_savedState.state_GL_CULL_FACE) {
+		GL_CHECK(glEnable(GL_CULL_FACE));
+	}
+	else {
+		GL_CHECK(glDisable(GL_CULL_FACE));
+	}
+
 	GL_CHECK(glBindVertexArray(0));
 }
 
@@ -280,6 +278,79 @@ Ref<IShaderPass> OpenGLDeviceContext::onCreateShaderPass(const byte_t* vsCode, i
 	auto ptr = makeRef<GLShaderPass>();
 	ptr->initialize(this, vsCode, vsCodeLen, psCode, psCodeLen, diag);
 	return ptr;
+}
+
+void OpenGLDeviceContext::onUpdateRenderState(const RenderStateData& newState)
+{
+	// alphaBlendEnabled
+	if (newState.alphaBlendEnabled) {
+		glEnable(GL_BLEND);
+	}
+	else {
+		glDisable(GL_BLEND);
+	}
+
+	// blendOp
+	{
+		GLenum  blendOpTable[] =
+		{
+			GL_FUNC_ADD,
+			GL_FUNC_SUBTRACT,
+			GL_FUNC_REVERSE_SUBTRACT,
+			GL_MIN,
+			GL_MAX,
+		};
+
+		glBlendEquation(blendOpTable[(int)newState.blendOp]);
+	}
+
+	// sourceBlend
+	// destinationBlend
+	{
+		GLenum blendFactorTable[] =	// glBlendFuncSeparate
+		{
+			GL_ZERO,
+			GL_ONE,
+			GL_SRC_COLOR,
+			GL_ONE_MINUS_SRC_COLOR,
+			GL_SRC_ALPHA,
+			GL_ONE_MINUS_SRC_ALPHA,
+			GL_DST_COLOR,
+			GL_ONE_MINUS_DST_COLOR,
+			GL_DST_ALPHA,
+			GL_ONE_MINUS_DST_ALPHA
+		};
+
+		glBlendFuncSeparate(
+			blendFactorTable[(int)newState.sourceBlend],
+			blendFactorTable[(int)newState.destinationBlend],
+			blendFactorTable[(int)newState.sourceBlend],
+			blendFactorTable[(int)newState.destinationBlend]);
+	}
+
+	// cullingMode
+	{
+		switch (newState.cullingMode)
+		{
+		case CullingMode::None:
+			glDisable(GL_CULL_FACE);
+			break;
+		case CullingMode::Front:
+			glEnable(GL_CULL_FACE);
+			glCullFace(GL_BACK);
+			break;
+		case CullingMode::Back:
+			glEnable(GL_CULL_FACE);
+			glCullFace(GL_FRONT);
+			break;
+		}
+	}
+
+	// fillMode
+	{
+		const GLenum tb[] = { GL_FILL, GL_LINE, GL_POINT };
+		glPolygonMode(GL_FRONT_AND_BACK, tb[(int)newState.fillMode]);
+	}
 }
 
 void OpenGLDeviceContext::onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer)
@@ -560,6 +631,7 @@ void GLVertexDeclaration::initialize(const VertexElement* elements, int elements
 
 void GLVertexDeclaration::dispose()
 {
+	IVertexDeclaration::dispose();
 }
 
 void GLVertexDeclaration::createGLVertexElements(const VertexElement* vertexElements, int elementsCount, List<GLVertexElement>* outList)

@@ -306,4 +306,9 @@ bool GlobalLogger::hasAnyAdapter()
 	return !detail::LoggerInterface::getInstance()->m_impl->m_adapters.empty();
 }
 
+void GlobalLogger::setLevel(LogLevel level)
+{
+	detail::g_maxLevel = level;
+}
+
 } // namespace ln

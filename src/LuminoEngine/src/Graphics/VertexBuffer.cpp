@@ -93,10 +93,7 @@ void VertexBuffer::initialize(size_t bufferSize, const void* initialData, Graphi
 //------------------------------------------------------------------------------
 void VertexBuffer::dispose()
 {
-	if (m_rhiObject) {
-		m_rhiObject->dispose();	// TODO: ここで直接 dispose は良くない。スレッド対応を考えよう
-		m_rhiObject = nullptr;
-	}
+	m_rhiObject = nullptr;
 
 	GraphicsResource::dispose();
 }
@@ -132,8 +129,10 @@ void VertexBuffer::resize(int size)
 }
 
 //------------------------------------------------------------------------------
-void* VertexBuffer::getMappedData()
+void* VertexBuffer::map(MapMode mode)
 {
+	if (LN_REQUIRE(!(m_usage == GraphicsResourceUsage::Static && mode == MapMode::Read))) return nullptr;
+
 	if (m_usage == GraphicsResourceUsage::Static)
 	{
 		// sizeConst で、まだ1度も SetVertexBufferCommand に入っていない場合は直接 lock で書き換えできる

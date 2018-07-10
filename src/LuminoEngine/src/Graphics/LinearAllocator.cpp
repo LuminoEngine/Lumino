@@ -31,7 +31,7 @@ LinearAllocatorPageManager::~LinearAllocatorPageManager()
 	clear();
 }
 
-LinearAllocatorPage* LinearAllocatorPageManager::requestPage(/*size_t requerSize*/)
+LinearAllocatorPage* LinearAllocatorPageManager::requestPage()
 {
 	std::lock_guard<std::mutex> lock(m_mutex);
 

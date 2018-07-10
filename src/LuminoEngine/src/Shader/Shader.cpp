@@ -275,10 +275,7 @@ void ShaderPass::initialize(detail::IShaderPass* rhiPass)
 
 void ShaderPass::dispose()
 {
-	if (m_rhiPass) {
-		m_rhiPass->dispose();
-		m_rhiPass = nullptr;
-	}
+	m_rhiPass = nullptr;
 
 	Object::dispose();
 }

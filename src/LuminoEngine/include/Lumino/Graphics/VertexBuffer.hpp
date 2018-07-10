@@ -24,10 +24,7 @@ public:
 	void resize(int size);
 
 	/** 頂点バッファが保持するデータにアクセスします。 */
-	void* getMappedData();
-
-	/** 頂点が保持するデータにアクセスします。サイズが size より小さい場合はバッファを拡張します。 */
-	//void* requestMappedData(int size);
+	void* map(MapMode mode);
 
 	/** 頂点バッファをクリアします。 */
 	void clear();

@@ -33,11 +33,7 @@ void SwapChain::initialize(detail::PlatformWindow* window, const SizeI& backbuff
 
 void SwapChain::dispose()
 {
-	if (m_rhiObject)
-	{
-		m_rhiObject->dispose();
-		m_rhiObject = nullptr;
-	}
+	m_rhiObject = nullptr;
 }
 
 RenderTargetTexture* SwapChain::colorBuffer() const

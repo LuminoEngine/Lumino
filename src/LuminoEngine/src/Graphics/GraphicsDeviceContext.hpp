@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <Lumino/Graphics/RenderState.hpp>
 
 namespace ln {
 struct SizeI;
@@ -36,6 +37,7 @@ public:
 	Ref<ITexture> createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
 	Ref<IShaderPass> createShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag);
 
+	void setRenderState(const RenderStateData& value);
 	void setColorBuffer(int index, ITexture* value);
 	void setDepthBuffer(IDepthBuffer* value);
 	void setVertexDeclaration(IVertexDeclaration* value);
@@ -61,6 +63,7 @@ protected:
 	virtual Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) = 0;
 	virtual Ref<IShaderPass> onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag) = 0;
 
+	virtual void onUpdateRenderState(const RenderStateData& newState) = 0;
 	virtual void onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer) = 0;
 	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) = 0;
 
@@ -77,6 +80,7 @@ private:
 
 	struct State
 	{
+		RenderStateData renderState;
 		std::array<ITexture*, 4> renderTargets = {};
 		IDepthBuffer* depthBuffer = nullptr;
 		IVertexDeclaration* vertexDeclaration = nullptr;
@@ -92,12 +96,12 @@ class IGraphicsDeviceObject
 	: public RefObject
 {
 public:
-	// (複数回の呼び出しに備えること)
-	virtual void dispose();
 
 protected:
 	IGraphicsDeviceObject();
 	virtual ~IGraphicsDeviceObject();
+	virtual void finalize();
+	virtual void dispose();	// (複数回の呼び出しに備えること)
 
 private:
 	bool m_disposed;
@@ -107,6 +111,7 @@ class ISwapChain
 	: public IGraphicsDeviceObject
 {
 public:
+	ISwapChain();
 	virtual ITexture* getColorBuffer() const = 0;
 
 protected:
@@ -118,6 +123,7 @@ class IVertexDeclaration
 	: public IGraphicsDeviceObject
 {
 protected:
+	IVertexDeclaration();
 	virtual ~IVertexDeclaration() = default;
 };
 
@@ -131,6 +137,7 @@ public:
 	virtual void unmap() = 0;
 
 protected:
+	IVertexBuffer();
 	virtual ~IVertexBuffer() = default;
 };
 
@@ -144,6 +151,7 @@ public:
 	virtual void unmap() = 0;
 
 protected:
+	IIndexBuffer();
 	virtual ~IIndexBuffer() = default;
 };
 
@@ -200,6 +208,7 @@ public:
 	//virtual void unlock() = 0;
 
 protected:
+	ITexture();
 	virtual ~ITexture() = default;
 };
 
@@ -210,6 +219,7 @@ class IDepthBuffer
 public:
 
 protected:
+	IDepthBuffer();
 	virtual ~IDepthBuffer() = default;
 };
 
@@ -223,6 +233,7 @@ public:
 	virtual void setUniformValue(int index, const void* data, size_t size) = 0;
 
 protected:
+	IShaderPass();
 	virtual ~IShaderPass() = default;
 };
 
@@ -235,6 +246,7 @@ public:
 	virtual const std::string& name() const = 0;
 
 protected:
+	IShaderUniform();
 	virtual ~IShaderUniform() = default;
 };
 

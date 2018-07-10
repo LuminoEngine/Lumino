@@ -38,10 +38,7 @@ void RenderTargetTexture::initialize(detail::ITexture* ref)
 
 void RenderTargetTexture::dispose()
 {
-	if (m_rhiObject) {
-		m_rhiObject->dispose();
-		m_rhiObject = nullptr;
-	}
+	m_rhiObject = nullptr;
 
 	GraphicsResource::dispose();
 }
