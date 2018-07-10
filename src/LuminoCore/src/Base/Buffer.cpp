@@ -43,6 +43,11 @@ ByteBuffer::ByteBuffer(ByteBuffer&& buffer)
     swap(buffer);
 }
 
+ByteBuffer::~ByteBuffer()
+{
+	free();
+}
+
 ByteBuffer& ByteBuffer::operator=(const ByteBuffer& buffer)
 {
     if (this != &buffer) {
@@ -61,11 +66,6 @@ ByteBuffer& ByteBuffer::operator=(ByteBuffer&& buffer)
     free();
     swap(buffer);
     return *this;
-}
-
-ByteBuffer::~ByteBuffer()
-{
-    free();
 }
 
 //void ByteBuffer::alloc(int size, bool zeroClear)

@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include "Common.hpp"
+#include "RefObject.hpp"
 
 namespace ln {
 namespace detail {
@@ -9,6 +10,7 @@ class GenericBufferHelper;
 
 /** バイト配列を表します。 */
 class ByteBuffer
+	: public RefObject
 {
 public:
     /** 空のバッファを構築します。 */
@@ -31,7 +33,8 @@ public:
     /** 指定されたバッファの内容をムーブして構築します。(ムーブコンストラクタ) */
     ByteBuffer(ByteBuffer&& buffer);
 
-    ~ByteBuffer();
+	/** (デストラクタ) */
+    virtual ~ByteBuffer();
 
     /** 指定されたバッファの内容をコピーします。 */
     ByteBuffer& operator=(const ByteBuffer& buffer);
