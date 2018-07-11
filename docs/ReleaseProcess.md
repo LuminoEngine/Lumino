@@ -23,3 +23,13 @@ dotnet run -- MakePackage
 
 
 
+
+Documents
+----------
+### Web Site
+
+docs/WebDocument/_site
+
+の中身を丸ごと配置する。
+
+

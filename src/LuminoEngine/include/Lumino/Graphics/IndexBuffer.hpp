@@ -17,7 +17,7 @@ public:
 	int size() const;
 
 	/** インデックスバッファの容量を確保します。 */
-	//void reserve(int indexCount);
+	void reserve(int indexCount);
 
 	/** インデックスバッファのサイズを変更します。 */
 	void resize(int indexCount);
@@ -31,11 +31,11 @@ public:
 	/** インデックスバッファをクリアします。 */
 	void clear();
 
-	/** インデックスバッファのフォーマットを設定します。 */
+	/** インデックスバッファのフォーマットを変更します。 */
 	void setFormat(IndexBufferFormat format);
 
 	/** インデックスバッファのフォーマットを取得します。 */
-	IndexBufferFormat getIndexFormat() const { return m_format; }
+	IndexBufferFormat format() const { return m_format; }
 
 	/** インデックスの値を設定します。 */
 	void setIndex(int index, int vertexIndex);

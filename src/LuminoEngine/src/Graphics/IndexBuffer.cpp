@@ -110,16 +110,16 @@ int IndexBuffer::size() const
 }
 
 //------------------------------------------------------------------------------
-//void IndexBuffer::reserve(int indexCount)
-//{
-//	if (LN_REQUIRE(!resizable())) return;
-//
-//	size_t newSize = static_cast<size_t>(indexCount * getIndexStride());
-//	if (newSize != m_buffer.capacity())
-//	{
-//		m_buffer.reserve(newSize);
-//	}
-//}
+void IndexBuffer::reserve(int indexCount)
+{
+	if (LN_REQUIRE(!isRHIDirect())) return;		// サイズ変更禁止
+
+	size_t newSize = static_cast<size_t>(indexCount * getIndexStride());
+	if (newSize != m_buffer.capacity())
+	{
+		m_buffer.reserve(newSize);
+	}
+}
 
 //------------------------------------------------------------------------------
 void IndexBuffer::resize(int indexCount)
