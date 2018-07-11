@@ -220,6 +220,7 @@ public:
 
 	GLuint vertexBufferId() const { return m_glVertexBuffer; }
 
+	virtual size_t getBytesSize() override { return m_size; }
 	virtual void setSubData(size_t offset, const void* data, size_t length) override;
 	virtual void* map(size_t offset, uint32_t length) override;
 	virtual void unmap() override;
@@ -228,6 +229,7 @@ private:
 	GLuint m_glVertexBuffer;
 	GLenum m_usage;
 	GraphicsResourceUsage m_format;
+	size_t m_size;
 };
 
 class GLIndexBuffer
@@ -242,6 +244,7 @@ public:
 	GLuint indexBufferId() const { return m_indexBufferId; }
 	IndexBufferFormat format() const { return m_format; }
 
+	virtual size_t getBytesSize() override { return m_size; }
 	virtual void setSubData(size_t offset, const void* data, size_t length) override;
 	virtual void* map(size_t offset, uint32_t length) override;
 	virtual void unmap() override;
@@ -250,6 +253,7 @@ private:
 	GLuint m_indexBufferId;
 	IndexBufferFormat m_format;
 	GLenum m_usage;
+	size_t m_size;
 };
 
 class GLTextureBase

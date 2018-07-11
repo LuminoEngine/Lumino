@@ -62,7 +62,6 @@ namespace ln {
 //------------------------------------------------------------------------------
 IndexBuffer::IndexBuffer()
 	: m_rhiObject(nullptr)
-	, m_rhiBufferByteSize(0)
 	, m_format(IndexBufferFormat::Index16)
 	, m_usage(GraphicsResourceUsage::Static)
 	, m_pool(GraphicsResourcePool::Managed)
@@ -78,8 +77,16 @@ IndexBuffer::~IndexBuffer()
 {
 }
 
-//------------------------------------------------------------------------------
-void IndexBuffer::initialize(int indexCount, const void* initialData, IndexBufferFormat format, GraphicsResourceUsage usage)
+void IndexBuffer::initialize(int indexCount, IndexBufferFormat format, GraphicsResourceUsage usage)
+{
+	GraphicsResource::initialize();
+	m_format = format;
+	m_usage = usage;
+	m_buffer.resize(getIndexBufferSize(m_format, indexCount));	// TODO: ここでメモリ確保したくない気がする
+	m_modified = true;
+}
+
+void IndexBuffer::initialize(int indexCount, IndexBufferFormat format, const void* initialData, GraphicsResourceUsage usage)
 {
 	GraphicsResource::initialize();
 	m_format = format;
@@ -88,7 +95,6 @@ void IndexBuffer::initialize(int indexCount, const void* initialData, IndexBuffe
 	if (m_usage == GraphicsResourceUsage::Static)
 	{
 		m_rhiObject = manager()->deviceContext()->createIndexBuffer(m_usage, m_format, indexCount, initialData);
-		m_rhiBufferByteSize = getIndexBufferSize(m_format, indexCount);
 	}
 	else
 	{
@@ -107,6 +113,11 @@ void IndexBuffer::dispose()
 int IndexBuffer::size() const
 {
 	return static_cast<int>(m_buffer.size() / getIndexStride(m_format));
+}
+
+int IndexBuffer::bytesSize() const
+{
+	return m_buffer.size();
 }
 
 //------------------------------------------------------------------------------
@@ -134,7 +145,7 @@ void IndexBuffer::resize(int indexCount)
 }
 
 //------------------------------------------------------------------------------
-void* IndexBuffer::getMappedData()
+void* IndexBuffer::map(MapMode mode)
 {
 	if (m_usage == GraphicsResourceUsage::Static)
 	{
@@ -201,7 +212,7 @@ void IndexBuffer::setFormat(IndexBufferFormat format)
 //------------------------------------------------------------------------------
 void IndexBuffer::setIndex(int index, int vertexIndex)
 {
-	void* indexBuffer = getMappedData();
+	void* indexBuffer = map(MapMode::Write);
 
 	if (m_format == IndexBufferFormat::Index16)
 	{
@@ -230,7 +241,7 @@ detail::IIndexBuffer* IndexBuffer::resolveRHIObject()
 		}
 		else
 		{
-			if (m_rhiObject == nullptr || m_rhiBufferByteSize != m_buffer.size())
+			if (m_rhiObject == nullptr || m_rhiObject->getBytesSize() != m_buffer.size())
 			{
 				m_rhiObject = manager()->deviceContext()->createIndexBuffer(m_usage, m_format, size(), m_buffer.data());
 			}

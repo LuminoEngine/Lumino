@@ -36,10 +36,11 @@ Result Workspace::buildProject()
 		ln::String buildType = "Release";
 		ln::String targetName = u"Android-" + abi;
 		ln::String outputDir = u"D:/Documents/LuminoProjects/Hello/Projects/LuminoApplication/app/build/intermediates/cmake/release/obj/x86_64";
+		ln::String buildDir = ln::Path::combine(m_project->buildDir(), targetName);
 
 		ln::List<ln::String> args = {
 			u"-H" + m_project->rootDirPath().str(),
-			u"-B" + ln::Path::combine(m_project->buildDir(), targetName).str(),
+			u"-B" + buildDir,
 			u"-DLN_TARGET_ARCH_NAME=" + targetName,
 			u"-DANDROID_ABI=" + abi,
 			u"-DANDROID_PLATFORM=" + platform,

@@ -6,14 +6,11 @@
 namespace ln {
 namespace detail { class IVertexBuffer; }
 
-/**
-	@brief		頂点バッファのクラスです。
-*/
+/** 頂点バッファのクラスです。 */
 class VertexBuffer
 	: public GraphicsResource
 {
 public:
-
 	/** 頂点バッファのバイトサイズを取得します。 */
 	int size() const;
 
@@ -45,10 +42,7 @@ LN_INTERNAL_ACCESS:
 private:
 	bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }
 
-	// TODO
-	//friend struct SetVertexBufferCommand;
 	Ref<detail::IVertexBuffer>	m_rhiObject;
-	size_t m_rhiBufferByteSize;
 	GraphicsResourceUsage			m_usage;
 	GraphicsResourcePool	m_pool;
 	std::vector<byte_t>		m_buffer;

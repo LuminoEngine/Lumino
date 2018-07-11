@@ -50,7 +50,6 @@ namespace ln {
 //------------------------------------------------------------------------------
 VertexBuffer::VertexBuffer()
 	: m_rhiObject(nullptr)
-	, m_rhiBufferByteSize(0)
 	, m_usage(GraphicsResourceUsage::Static)
 	, m_pool(GraphicsResourcePool::Managed)
 	, m_buffer()
@@ -69,7 +68,7 @@ void VertexBuffer::initialize(size_t bufferSize, GraphicsResourceUsage usage)
 {
 	GraphicsResource::initialize();
 	m_usage = usage;
-	m_buffer.resize(bufferSize);
+	m_buffer.resize(bufferSize);	// TODO: ここでメモリ確保したくない気がする
 	m_modified = true;
 }
 
@@ -81,7 +80,6 @@ void VertexBuffer::initialize(size_t bufferSize, const void* initialData, Graphi
 	if (initialData)
 	{
 		m_rhiObject = manager()->deviceContext()->createVertexBuffer(m_usage, bufferSize, initialData);
-		m_rhiBufferByteSize = bufferSize;
 	}
 	else
 	{
@@ -179,10 +177,9 @@ detail::IVertexBuffer* VertexBuffer::resolveRHIObject()
 		}
 		else
 		{
-			if (m_rhiObject == nullptr || m_rhiBufferByteSize != m_buffer.size())
+			if (m_rhiObject == nullptr || m_rhiObject->getBytesSize() != m_buffer.size())
 			{
 				m_rhiObject = manager()->deviceContext()->createVertexBuffer(m_usage, m_buffer.size(), m_buffer.data());
-				m_rhiBufferByteSize = m_buffer.size();
 			}
 			else
 			{

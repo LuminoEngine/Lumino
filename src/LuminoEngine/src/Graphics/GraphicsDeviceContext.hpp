@@ -132,6 +132,7 @@ class IVertexBuffer
 	: public IGraphicsDeviceObject
 {
 public:
+	virtual size_t getBytesSize() = 0;
 	virtual void setSubData(size_t offset, const void* data, size_t length) = 0;
 	virtual void* map(size_t offset, uint32_t length) = 0;
 	virtual void unmap() = 0;
@@ -146,6 +147,7 @@ class IIndexBuffer
 	: public IGraphicsDeviceObject
 {
 public:
+	virtual size_t getBytesSize() = 0;
 	virtual void setSubData(size_t offset, const void* data, size_t length) = 0;
 	virtual void* map(size_t offset, uint32_t length) = 0;
 	virtual void unmap() = 0;

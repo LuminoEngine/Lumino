@@ -728,6 +728,7 @@ GLVertexBuffer::GLVertexBuffer()
 	//, m_data(NULL)
 	, m_usage(0)
 	, m_format(GraphicsResourceUsage::Static)
+	, m_size(0)
 {
 }
 
@@ -738,6 +739,7 @@ GLVertexBuffer::~GLVertexBuffer()
 void GLVertexBuffer::initialize(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
 {
 	m_format = usage;
+	m_size = bufferSize;
 	//m_byteCount = bufferSize;
 	//m_data = LN_NEW byte_t[m_byteCount];
 	//if (initialData) {
@@ -832,6 +834,7 @@ GLIndexBuffer::GLIndexBuffer()
 	: m_indexBufferId(0)
 	, m_format(IndexBufferFormat::Index16)
 	, m_usage(GL_STATIC_DRAW)
+	, m_size(0)
 {
 }
 
@@ -844,10 +847,11 @@ void GLIndexBuffer::initialize(GraphicsResourceUsage usage, IndexBufferFormat fo
 	m_format = format;
 	m_usage = (usage == GraphicsResourceUsage::Static) ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
 	int stride = (m_format == IndexBufferFormat::Index16) ? 2 : 4;
+	m_size = stride * indexCount;
 
 	GL_CHECK(glGenBuffers(1, &m_indexBufferId));
 	GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBufferId));
-	GL_CHECK(glBufferData(GL_ELEMENT_ARRAY_BUFFER, stride * indexCount, initialData, m_usage));
+	GL_CHECK(glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_size, initialData, m_usage));
 	GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 }
 
