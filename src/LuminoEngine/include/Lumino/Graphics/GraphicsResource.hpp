@@ -37,19 +37,21 @@ class LN_API GraphicsBufferResource
 	: public GraphicsResource
 {
 public:
-	int size() const;
-	void reserve(int size);
-	void resize(int size);
-	void* map(MapMode mode);
-	void clear();
 
 protected:
 	GraphicsBufferResource();
 	virtual ~GraphicsBufferResource();
 	void initialize(GraphicsResourceUsage usage, GraphicsResourcePool pool, const void* initialData, size_t initialDataSize);
 
+	int getSizeInternal() const;
+	void reserveInternal(int size);
+	void resizeInternal(int size);
+	void* mapInternal(MapMode mode);
+	void clearInternal();
+
 	bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }
 	void resolveRHIObjectInternal();
+
 	virtual detail::IGraphicsDeviceObject* createRHIObject(const void* initialData, size_t initialDataSize) = 0;
 	virtual size_t getRHIBufferSize() = 0;
 	virtual void* mapNative() = 0;

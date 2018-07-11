@@ -52,12 +52,12 @@ GraphicsBufferResource::~GraphicsBufferResource()
 {
 }
 
-int GraphicsBufferResource::size() const
+int GraphicsBufferResource::getSizeInternal() const
 {
 	return static_cast<int>(m_buffer.size());
 }
 
-void GraphicsBufferResource::reserve(int size)
+void GraphicsBufferResource::reserveInternal(int size)
 {
 	if (LN_REQUIRE(!isRHIDirect())) return;		// サイズ変更禁止
 
@@ -68,7 +68,7 @@ void GraphicsBufferResource::reserve(int size)
 	}
 }
 
-void GraphicsBufferResource::resize(int size)
+void GraphicsBufferResource::resizeInternal(int size)
 {
 	if (LN_REQUIRE(!isRHIDirect())) return;		// サイズ変更禁止
 
@@ -79,7 +79,7 @@ void GraphicsBufferResource::resize(int size)
 	}
 }
 
-void* GraphicsBufferResource::map(MapMode mode)
+void* GraphicsBufferResource::mapInternal(MapMode mode)
 {
 	if (LN_REQUIRE(!(m_usage == GraphicsResourceUsage::Static && mode == MapMode::Read))) return nullptr;
 
@@ -90,7 +90,7 @@ void* GraphicsBufferResource::map(MapMode mode)
 		{
 			if (m_rhiLockedBuffer == nullptr)
 			{
-				m_rhiLockedBuffer = m_rhiObject->map(0, size());
+				m_rhiLockedBuffer = mapNative();
 			}
 			m_modified = true;
 			return m_rhiLockedBuffer;
@@ -112,7 +112,7 @@ void* GraphicsBufferResource::map(MapMode mode)
 //}
 
 //------------------------------------------------------------------------------
-void GraphicsBufferResource::clear()
+void GraphicsBufferResource::clearInternal()
 {
 	m_buffer.clear();
 	m_modified = true;
