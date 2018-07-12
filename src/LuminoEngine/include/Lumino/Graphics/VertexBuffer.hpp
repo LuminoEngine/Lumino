@@ -32,7 +32,20 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	VertexBuffer();
 	virtual ~VertexBuffer();
+
+	/**
+	 * 頂点バッファを作成します。
+	 * @param[in]	bufferSize		: 頂点バッファのサイズ (バイト単位)
+	 * @param[in]	usage			: リソースの使用方法
+	 */
 	void initialize(size_t bufferSize, GraphicsResourceUsage usage);
+
+	/**
+	 * 頂点バッファを作成します。
+	 * @param[in]	bufferSize		: 頂点バッファのサイズ (バイト単位)
+	 * @param[in]	initialData		: 初期値として書き込む頂点データ
+	 * @param[in]	usage			: リソースの使用方法
+	 */
 	void initialize(size_t bufferSize, const void* initialData, GraphicsResourceUsage usage);
 
 LN_INTERNAL_ACCESS:
