@@ -780,16 +780,23 @@ void GLVertexBuffer::setSubData(size_t offset, const void* data, size_t length)
 	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
 }
 
-void* GLVertexBuffer::map(size_t offset, uint32_t length)
+void* GLVertexBuffer::map()
 {
-	LN_NOTIMPLEMENTED();
-	return nullptr;
+	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, m_glVertexBuffer));
+	void* buffer;
+	GL_CHECK(buffer = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY));
+	//GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
+
+	return buffer;
 }
 
 void GLVertexBuffer::unmap()
 {
-	LN_NOTIMPLEMENTED();
+	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, m_glVertexBuffer));
+	GL_CHECK(glUnmapBuffer(GL_ARRAY_BUFFER));
+	//GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
 }
+
 //------------------------------------------------------------------------------
 //void* GLVertexBuffer::lock()
 //{
@@ -873,15 +880,18 @@ void GLIndexBuffer::setSubData(size_t offset, const void* data, size_t length)
 	GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 }
 
-void* GLIndexBuffer::map(size_t offset, uint32_t length)
+void* GLIndexBuffer::map()
 {
-	LN_NOTIMPLEMENTED();
-	return nullptr;
+	GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBufferId));
+	void* buffer;
+	GL_CHECK(buffer = glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY));
+	return buffer;
 }
 
 void GLIndexBuffer::unmap()
 {
-	LN_NOTIMPLEMENTED();
+	GL_CHECK(glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER));
+	//GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 }
 
 //=============================================================================

@@ -152,7 +152,7 @@ void* IndexBuffer::map(MapMode mode)
 		// sizeConst で、まだ1度も SetVertexBufferCommand に入っていない場合は直接 lock で書き換えできる
 		if (m_initialUpdate && m_rhiObject != nullptr)
 		{
-			void* data = m_rhiObject->map(0, getIndexBufferSize(m_format, size()));
+			void* data = m_rhiObject->map();
 			m_modified = true;
 			return data;
 		}

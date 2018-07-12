@@ -45,6 +45,8 @@ private:
 	Ref<detail::IVertexBuffer>	m_rhiObject;
 	GraphicsResourceUsage			m_usage;
 	GraphicsResourcePool	m_pool;
+	size_t m_staticSize;
+
 	std::vector<byte_t>		m_buffer;
 	void*					m_rhiLockedBuffer;
 	bool					m_initialUpdate;

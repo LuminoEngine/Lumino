@@ -52,6 +52,7 @@ VertexBuffer::VertexBuffer()
 	: m_rhiObject(nullptr)
 	, m_usage(GraphicsResourceUsage::Static)
 	, m_pool(GraphicsResourcePool::Managed)
+	, m_staticSize(0)
 	, m_buffer()
 	, m_rhiLockedBuffer(nullptr)
 	, m_initialUpdate(true)
@@ -68,24 +69,30 @@ void VertexBuffer::initialize(size_t bufferSize, GraphicsResourceUsage usage)
 {
 	GraphicsResource::initialize();
 	m_usage = usage;
-	m_buffer.resize(bufferSize);	// TODO: ここでメモリ確保したくない気がする
 	m_modified = true;
+	resize(bufferSize);
 }
 
 void VertexBuffer::initialize(size_t bufferSize, const void* initialData, GraphicsResourceUsage usage)
 {
-	GraphicsResource::initialize();
-	m_usage = usage;
-
+	VertexBuffer::initialize(bufferSize, usage);
 	if (initialData)
 	{
 		m_rhiObject = manager()->deviceContext()->createVertexBuffer(m_usage, bufferSize, initialData);
+		m_modified = false;
 	}
-	else
-	{
-		m_buffer.resize(bufferSize);
-		m_modified = true;
-	}
+	//GraphicsResource::initialize();
+	//m_usage = usage;
+
+	//if (initialData)
+	//{
+	//	m_rhiObject = manager()->deviceContext()->createVertexBuffer(m_usage, bufferSize, initialData);
+	//}
+	//else
+	//{
+	//	m_buffer.resize(bufferSize);
+	//	m_modified = true;
+	//}
 }
 
 //------------------------------------------------------------------------------
@@ -99,30 +106,29 @@ void VertexBuffer::dispose()
 //------------------------------------------------------------------------------
 int VertexBuffer::size() const
 {
-	return static_cast<int>(m_buffer.size());
+	if (m_usage == GraphicsResourceUsage::Static) {
+		return m_staticSize;
+	}
+	else {
+		return static_cast<int>(m_buffer.size());
+	}
 }
 
 //------------------------------------------------------------------------------
 void VertexBuffer::reserve(int size)
 {
-	if (LN_REQUIRE(!isRHIDirect())) return;		// サイズ変更禁止
-
-	size_t newSize = static_cast<size_t>(size);
-	if (newSize != m_buffer.capacity())
-	{
-		m_buffer.reserve(newSize);
-	}
+	if (LN_REQUIRE(m_usage == GraphicsResourceUsage::Dynamic)) return;
+	m_buffer.reserve(static_cast<size_t>(size));
 }
 
 //------------------------------------------------------------------------------
 void VertexBuffer::resize(int size)
 {
-	if (LN_REQUIRE(!isRHIDirect())) return;		// サイズ変更禁止
-
-	size_t newSize = static_cast<size_t>(size);
-	if (newSize != m_buffer.size())
-	{
-		m_buffer.resize(newSize);
+	if (m_usage == GraphicsResourceUsage::Static) {
+		m_staticSize = size;
+	}
+	else {
+		m_buffer.resize(size);
 	}
 }
 
@@ -131,18 +137,29 @@ void* VertexBuffer::map(MapMode mode)
 {
 	if (LN_REQUIRE(!(m_usage == GraphicsResourceUsage::Static && mode == MapMode::Read))) return nullptr;
 
-	if (m_usage == GraphicsResourceUsage::Static)
+	// if have not entried the Command List at least once, can rewrite directly with map().
+	if (m_initialUpdate)
 	{
-		// sizeConst で、まだ1度も SetVertexBufferCommand に入っていない場合は直接 lock で書き換えできる
-		if (m_initialUpdate && m_rhiObject != nullptr)
-		{
-			if (m_rhiLockedBuffer == nullptr)
-			{
-				m_rhiLockedBuffer = m_rhiObject->map(0, size());
-			}
-			m_modified = true;
-			return m_rhiLockedBuffer;
+		if (!m_rhiObject) {
+			/* in case:
+				auto vb = VertexBuffer::initialize(256, GraphicsResourceUsage::Static);
+				auto buf = vb->map(MapMode::Write);
+				...
+			*/
+			m_rhiObject = manager()->deviceContext()->createVertexBuffer(m_usage, size(), nullptr);
 		}
+
+		if (m_rhiLockedBuffer == nullptr)
+		{
+			m_rhiLockedBuffer = m_rhiObject->map();
+		}
+
+		m_modified = true;
+		return m_rhiLockedBuffer;
+	}
+
+	if (m_usage == GraphicsResourceUsage::Static) {
+		m_buffer.resize(m_staticSize);
 	}
 
 	m_modified = true;
@@ -162,7 +179,9 @@ void* VertexBuffer::map(MapMode mode)
 //------------------------------------------------------------------------------
 void VertexBuffer::clear()
 {
+	if (LN_REQUIRE(m_usage == GraphicsResourceUsage::Dynamic)) return;
 	m_buffer.clear();
+	m_staticSize = 0;
 	m_modified = true;
 }
 
@@ -171,32 +190,66 @@ detail::IVertexBuffer* VertexBuffer::resolveRHIObject()
 {
 	if (m_modified)
 	{
-		if (isRHIDirect())
+		//if (m_usage == GraphicsResourceUsage::Static)
 		{
-			m_rhiObject->unmap();
-		}
-		else
-		{
-			if (m_rhiObject == nullptr || m_rhiObject->getBytesSize() != m_buffer.size())
+			if (m_rhiLockedBuffer)
 			{
-				m_rhiObject = manager()->deviceContext()->createVertexBuffer(m_usage, m_buffer.size(), m_buffer.data());
+				m_rhiObject->unmap();
+				m_rhiLockedBuffer = nullptr;
 			}
 			else
 			{
-				detail::RenderBulkData data(m_buffer.data(), m_buffer.size());
-				detail::IVertexBuffer* rhiObject = m_rhiObject;
-				LN_ENQUEUE_RENDER_COMMAND_2(
-					VertexBuffer_SetSubData, manager(),
-					detail::RenderBulkData, data,
-					Ref<detail::IVertexBuffer>, rhiObject,
-					{
-						rhiObject->setSubData(0, data.data(), data.size());
-					});
+				size_t requiredSize = size();
+				if (!m_rhiObject || m_rhiObject->getBytesSize() != requiredSize)
+				{
+					m_rhiObject = manager()->deviceContext()->createVertexBuffer(m_usage, m_buffer.size(), m_buffer.data());
+				}
+				else
+				{
+					detail::RenderBulkData data(m_buffer.data(), m_buffer.size());
+					detail::IVertexBuffer* rhiObject = m_rhiObject;
+					LN_ENQUEUE_RENDER_COMMAND_2(
+						VertexBuffer_SetSubData, manager(),
+						detail::RenderBulkData, data,
+						Ref<detail::IVertexBuffer>, rhiObject,
+						{
+							rhiObject->setSubData(0, data.data(), data.size());
+						});
+				}
 			}
 		}
+		//else
+		//{
+
+		//}
+
+		//{
+		//	if (m_rhiObject == nullptr || m_rhiObject->getBytesSize() != m_buffer.size())
+		//	{
+		//		m_rhiObject = manager()->deviceContext()->createVertexBuffer(m_usage, m_buffer.size(), m_buffer.data());
+		//		m_initialRequiredSize = 0;
+		//	}
+		//	else
+		//	{
+		//		detail::RenderBulkData data(m_buffer.data(), m_buffer.size());
+		//		detail::IVertexBuffer* rhiObject = m_rhiObject;
+		//		LN_ENQUEUE_RENDER_COMMAND_2(
+		//			VertexBuffer_SetSubData, manager(),
+		//			detail::RenderBulkData, data,
+		//			Ref<detail::IVertexBuffer>, rhiObject,
+		//			{
+		//				rhiObject->setSubData(0, data.data(), data.size());
+		//			});
+		//	}
+		//}
 	}
 
 	if (LN_ENSURE(m_rhiObject)) return nullptr;
+
+	if (m_usage == GraphicsResourceUsage::Static) {
+		m_buffer.clear();
+		m_buffer.shrink_to_fit();
+	}
 
 	m_initialUpdate = false;
 	m_modified = false;

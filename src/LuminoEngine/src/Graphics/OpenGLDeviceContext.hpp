@@ -222,7 +222,7 @@ public:
 
 	virtual size_t getBytesSize() override { return m_size; }
 	virtual void setSubData(size_t offset, const void* data, size_t length) override;
-	virtual void* map(size_t offset, uint32_t length) override;
+	virtual void* map() override;
 	virtual void unmap() override;
 
 private:
@@ -246,7 +246,7 @@ public:
 
 	virtual size_t getBytesSize() override { return m_size; }
 	virtual void setSubData(size_t offset, const void* data, size_t length) override;
-	virtual void* map(size_t offset, uint32_t length) override;
+	virtual void* map() override;
 	virtual void unmap() override;
 
 private:
