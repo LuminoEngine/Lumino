@@ -5,6 +5,7 @@
 #include <Lumino/Graphics/VertexBuffer.hpp>
 #include <Lumino/Graphics/IndexBuffer.hpp>
 #include <Lumino/Graphics/Texture.hpp>
+#include <Lumino/Graphics/DepthBuffer.hpp>
 #include <Lumino/Shader/Shader.hpp>
 #include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"

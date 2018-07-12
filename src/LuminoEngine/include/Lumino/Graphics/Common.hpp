@@ -121,10 +121,10 @@ struct VertexElement
 enum class IndexBufferFormat
 {
 	/** 16 bit */
-	Index16,
+	UInt16,
 
 	/** 32 bit */
-	Index32,
+	UInt32,
 };
 
 /** ピクセルフォーマット */

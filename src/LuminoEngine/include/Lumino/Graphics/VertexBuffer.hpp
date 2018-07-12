@@ -26,6 +26,9 @@ public:
 	/** 頂点バッファをクリアします。 */
 	void clear();
 
+	/** リソースの管理方法を変更します。(default: Managed) */
+	void setResourcePool(GraphicsResourcePool pool);
+
 protected:
 	virtual void dispose() override;
 
@@ -58,7 +61,7 @@ private:
 	Ref<detail::IVertexBuffer>	m_rhiObject;
 	GraphicsResourceUsage			m_usage;
 	GraphicsResourcePool	m_pool;
-	size_t m_staticSize;
+	size_t m_primarySize;
 
 	std::vector<byte_t>		m_buffer;
 	void*					m_rhiLockedBuffer;

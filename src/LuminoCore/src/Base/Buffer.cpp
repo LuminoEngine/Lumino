@@ -1,4 +1,4 @@
-
+﻿
 #include "Internal.hpp"
 #include <algorithm>
 #include <Lumino/Base/RefObject.hpp>

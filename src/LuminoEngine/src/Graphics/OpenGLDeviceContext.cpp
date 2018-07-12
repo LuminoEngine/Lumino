@@ -473,7 +473,7 @@ void OpenGLDeviceContext::onDrawPrimitiveIndexed(PrimitiveType primitive, int st
 	// 引数 start end には、本来であれば0～vertexCountまでのインデックスの中の最大、最小の値を渡す。
 	// http://wiki.livedoor.jp/mikk_ni3_92/d/glDrawRangeElements%A4%CB%A4%E8%A4%EB%C9%C1%B2%E8
 	// ただ、全範囲を渡しても特に問題なさそうなのでこのまま。
-	if (m_currentIndexBuffer->format() == IndexBufferFormat::Index16)
+	if (m_currentIndexBuffer->format() == IndexBufferFormat::UInt16)
 	{
 		GL_CHECK(glDrawElements(gl_prim, vertexCount, GL_UNSIGNED_SHORT, (GLvoid*)(sizeof(GLushort) * startIndex)));
 	}
@@ -839,7 +839,7 @@ void GLVertexBuffer::unmap()
 
 GLIndexBuffer::GLIndexBuffer()
 	: m_indexBufferId(0)
-	, m_format(IndexBufferFormat::Index16)
+	, m_format(IndexBufferFormat::UInt16)
 	, m_usage(GL_STATIC_DRAW)
 	, m_size(0)
 {
@@ -853,7 +853,7 @@ void GLIndexBuffer::initialize(GraphicsResourceUsage usage, IndexBufferFormat fo
 {
 	m_format = format;
 	m_usage = (usage == GraphicsResourceUsage::Static) ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
-	int stride = (m_format == IndexBufferFormat::Index16) ? 2 : 4;
+	int stride = (m_format == IndexBufferFormat::UInt16) ? 2 : 4;
 	m_size = stride * indexCount;
 
 	GL_CHECK(glGenBuffers(1, &m_indexBufferId));

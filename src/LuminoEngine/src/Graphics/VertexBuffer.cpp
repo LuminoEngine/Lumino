@@ -1,4 +1,22 @@
-﻿
+﻿/*
+
+- GraphicsResourcePool::None + GraphicsResourceUsage::Static
+	- resolve で m_buffer を削除する。省メモリが目的。基本的に使うべきではない。
+
+- GraphicsResourcePool::Managed + GraphicsResourceUsage::Static
+	- resolve で m_buffer を削除しない。DeviceReset 時には復元する。デフォルト。
+
+- GraphicsResourcePool::None + GraphicsResourceUsage::Dynamic
+	- resolve で m_buffer を削除しない（Dynamic 設定による）。DeviceReset 時には復元しない。毎フレーム新規作成されるような用途。
+
+- GraphicsResourcePool::Managed + GraphicsResourceUsage::Dynamic
+	- resolve で m_buffer を削除しない（Dynamic 設定による）。DeviceReset 時には復元する。毎フレームほどではないが、比較的頻繁に発生するイベントで部分変更される用途。（drawText）
+
+バッファはできるだけ確保しないようにしたいところだけど、
+GraphicsResourcePool::None + GraphicsResourceUsage::Static 以外はどうしても必要になる。
+
+*/
+
 #include "Internal.hpp"
 #include "GraphicsManager.hpp"
 #include "RenderingCommandList.hpp"
@@ -14,7 +32,7 @@ VertexBuffer::VertexBuffer()
 	: m_rhiObject(nullptr)
 	, m_usage(GraphicsResourceUsage::Static)
 	, m_pool(GraphicsResourcePool::Managed)
-	, m_staticSize(0)
+	, m_primarySize(0)
 	, m_buffer()
 	, m_rhiLockedBuffer(nullptr)
 	, m_initialUpdate(true)
@@ -52,43 +70,26 @@ void VertexBuffer::dispose()
 
 int VertexBuffer::size() const
 {
-	if (m_usage == GraphicsResourceUsage::Static) {
-		return m_staticSize;
-	}
-	else {
-		return static_cast<int>(m_buffer.size());
-	}
+	return m_primarySize;
 }
 
 void VertexBuffer::reserve(int size)
 {
-	if (LN_REQUIRE(m_usage == GraphicsResourceUsage::Dynamic)) return;
 	m_buffer.reserve(static_cast<size_t>(size));
 }
 
 void VertexBuffer::resize(int size)
 {
-	if (m_usage == GraphicsResourceUsage::Static) {
-		m_staticSize = size;
-	}
-	else {
-		m_buffer.resize(size);
-	}
+	m_primarySize = size;
+	m_buffer.resize(size);
 }
 
 void* VertexBuffer::map(MapMode mode)
 {
-	if (LN_REQUIRE(!(m_usage == GraphicsResourceUsage::Static && mode == MapMode::Read))) return nullptr;
-
 	// if have not entried the Command List at least once, can rewrite directly with map().
-	if (m_initialUpdate)
+	if (m_initialUpdate && m_pool == GraphicsResourcePool::None)
 	{
 		if (!m_rhiObject) {
-			/* in case:
-				auto vb = VertexBuffer::initialize(256, GraphicsResourceUsage::Static);
-				auto buf = vb->map(MapMode::Write);
-				...
-			*/
 			m_rhiObject = manager()->deviceContext()->createVertexBuffer(m_usage, size(), nullptr);
 		}
 
@@ -101,8 +102,9 @@ void* VertexBuffer::map(MapMode mode)
 		return m_rhiLockedBuffer;
 	}
 
-	if (m_usage == GraphicsResourceUsage::Static) {
-		m_buffer.resize(m_staticSize);
+	// prepare for GraphicsResourcePool::None
+	if (m_buffer.size() < m_primarySize) {
+		m_buffer.resize(m_primarySize);
 	}
 
 	m_modified = true;
@@ -113,8 +115,13 @@ void VertexBuffer::clear()
 {
 	if (LN_REQUIRE(m_usage == GraphicsResourceUsage::Dynamic)) return;
 	m_buffer.clear();
-	m_staticSize = 0;
+	m_primarySize = 0;
 	m_modified = true;
+}
+
+void VertexBuffer::setResourcePool(GraphicsResourcePool pool)
+{
+	m_pool = pool;
 }
 
 detail::IVertexBuffer* VertexBuffer::resolveRHIObject()
@@ -150,7 +157,7 @@ detail::IVertexBuffer* VertexBuffer::resolveRHIObject()
 
 	if (LN_ENSURE(m_rhiObject)) return nullptr;
 
-	if (m_usage == GraphicsResourceUsage::Static) {
+	if (m_pool == GraphicsResourcePool::None) {
 		m_buffer.clear();
 		m_buffer.shrink_to_fit();
 	}

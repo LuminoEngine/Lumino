@@ -1,10 +1,9 @@
 ﻿
 #pragma once
-#include "Common.hpp"
 #include "GraphicsResource.hpp"
 
 namespace ln {
-namespace detail { class ITexture; class IDepthBuffer; }
+namespace detail { class ITexture; }
 
 class Bitmap2D;
 
@@ -32,15 +31,6 @@ private:
 	//SizeI m_size;
 	//TextureFormat m_requestFormat;
 	//bool m_mipmap;
-};
-
-
-class DepthBuffer
-	: public GraphicsResource
-{
-public:
-LN_INTERNAL_ACCESS:
-	detail::IDepthBuffer* resolveRHIObject() { LN_NOTIMPLEMENTED(); return nullptr; }
 };
 
 } // namespace ln

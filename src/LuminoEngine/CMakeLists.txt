@@ -40,6 +40,7 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/Common.hpp
 	include/Lumino/Graphics/Bitmap.hpp
 	include/Lumino/Graphics/ColorStructs.hpp
+	include/Lumino/Graphics/DepthBuffer.hpp
 	include/Lumino/Graphics/GeometryStructs.hpp
 	include/Lumino/Graphics/GraphicsContext.hpp
 	include/Lumino/Graphics/GraphicsResource.hpp
@@ -52,6 +53,7 @@ set(LN_SOURCES_Graphics
 	src/Graphics/Internal.hpp
 	src/Graphics/Bitmap.cpp
 	src/Graphics/ColorStructs.cpp
+	src/Graphics/DepthBuffer.cpp
 	src/Graphics/GeometryStructs.cpp
 	src/Graphics/GLFWContext.cpp
 	src/Graphics/GLFWContext.hpp

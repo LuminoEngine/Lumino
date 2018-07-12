@@ -47,13 +47,30 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 {
 	m_shader1->setVector("g_color", Vector4(1, 0, 0, 1));
 
-	// test static and dynamic
-	for (int i = 0; i < 2; i++)
+	struct Param
 	{
-		auto usage = (i == 0) ? GraphicsResourceUsage::Static : GraphicsResourceUsage::Dynamic;
+		GraphicsResourceUsage usage;
+		GraphicsResourcePool pool;
+	};
+	Param params[] =
+	{
+		{ GraphicsResourceUsage::Static, GraphicsResourcePool::None },
+		{ GraphicsResourceUsage::Static, GraphicsResourcePool::Managed },
+		{ GraphicsResourceUsage::Dynamic, GraphicsResourcePool::None },
+		{ GraphicsResourceUsage::Dynamic, GraphicsResourcePool::Managed },
+	};
+
+	// test static and dynamic
+	for (int i = 0; i < 4; i++)
+	{
+		auto usage = params[i].usage;
+		auto pool = params[i].pool;
 
 		auto vb1 = newObject<VertexBuffer>(sizeof(Vector4) * 3, usage);
 		auto vb2 = newObject<VertexBuffer>(sizeof(Vector4) * 3, usage);
+		vb1->setResourcePool(pool);
+		vb2->setResourcePool(pool);
+
 		auto ctx = Engine::graphicsContext();
 		ctx->setVertexDeclaration(m_vertexDecl1);
 		ctx->setVertexBuffer(0, vb1);
@@ -141,10 +158,24 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 {
 	m_shader1->setVector("g_color", Vector4(0, 0, 1, 1));
 
-	// test static and dynamic
-	for (int i = 0; i < 2; i++)
+	struct Param
 	{
-		auto usage = (i == 0) ? GraphicsResourceUsage::Static : GraphicsResourceUsage::Dynamic;
+		GraphicsResourceUsage usage;
+		GraphicsResourcePool pool;
+	};
+	Param params[] =
+	{
+		{ GraphicsResourceUsage::Static, GraphicsResourcePool::None },
+		{ GraphicsResourceUsage::Static, GraphicsResourcePool::Managed },
+		{ GraphicsResourceUsage::Dynamic, GraphicsResourcePool::None },
+		{ GraphicsResourceUsage::Dynamic, GraphicsResourcePool::Managed },
+	};
+
+	// test static and dynamic
+	for (int i = 0; i < 4; i++)
+	{
+		auto usage = params[i].usage;
+		auto pool = params[i].pool;
 
 		Vector4 vertices[] = {
 			Vector4(0, 0.5, 0, 1),
@@ -154,7 +185,8 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 			Vector4(-0.5, -0.25, 0, 1),
 		};
 		auto vb1 = newObject<VertexBuffer>(sizeof(Vector4) * 5, vertices, usage);
-		auto ib1 = newObject<IndexBuffer>(3, IndexBufferFormat::Index16, usage);
+		auto ib1 = newObject<IndexBuffer>(3, IndexBufferFormat::UInt16, usage);
+		ib1->setResourcePool(pool);
 
 		auto ctx = Engine::graphicsContext();
 		ctx->setVertexDeclaration(m_vertexDecl1);
@@ -182,6 +214,22 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 			ctx->drawPrimitiveIndexed(PrimitiveType::TriangleList, 0, 1);
 
 			ASSERT_SCREEN(LN_ASSETFILE("Test_Graphics_LowLevelRendering-IndexBuffer-2.png"));
+		}
+
+		// * [ ] フォーマット変更 16 -> 32
+		{
+			if (usage == GraphicsResourceUsage::Static && pool == GraphicsResourcePool::None) {
+				// un supported
+			}
+			else
+			{
+				ib1->setFormat(IndexBufferFormat::UInt32);
+
+				ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
+				ctx->drawPrimitiveIndexed(PrimitiveType::TriangleList, 0, 1);
+
+				ASSERT_SCREEN(LN_ASSETFILE("Test_Graphics_LowLevelRendering-IndexBuffer-2.png"));	// ↑と同じ結果
+			}
 		}
 	}
 }
