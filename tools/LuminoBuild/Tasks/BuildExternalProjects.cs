@@ -54,9 +54,9 @@ namespace LuminoBuild.Tasks
                             var name = Path.GetFileNameWithoutExtension(path);
 
                             if (name == "zlibstaticd")  // debug lib
-                                File.Move(path, Path.Combine(dir, "zlibd" + ext));
+                                Utils.MoveFileForce(path, Path.Combine(dir, "zlibd" + ext));
                             else
-                                File.Move(path, Path.Combine(dir, "zlib" + ext));
+                                Utils.MoveFileForce(path, Path.Combine(dir, "zlib" + ext));
                         }
                     }
 
@@ -70,11 +70,13 @@ namespace LuminoBuild.Tasks
                             var name = Path.GetFileNameWithoutExtension(path);
 
                             if (name == "libpng16_staticd")  // debug lib
-                                File.Move(path, Path.Combine(dir, "libpng16d" + ext));
+                                Utils.MoveFileForce(path, Path.Combine(dir, "libpng16d" + ext));
                             else
-                                File.Move(path, Path.Combine(dir, "libpng16" + ext));
+                                Utils.MoveFileForce(path, Path.Combine(dir, "libpng16" + ext));
                         }
                     }
+
+                    break;
                     
 #if false
 

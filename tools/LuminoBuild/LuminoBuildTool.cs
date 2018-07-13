@@ -307,6 +307,16 @@ namespace LuminoBuild
             }
         }
 
+        public static void MoveFileForce(string sourceFileName, string destFileName)
+        {
+            if (File.Exists(destFileName))
+            {
+                File.Delete(destFileName);
+            }
+
+            File.Move(sourceFileName, destFileName);
+        }
+
         /// <summary>
         /// 指定した名前のコマンドが使用できるか確認する
         /// </summary>

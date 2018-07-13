@@ -82,6 +82,8 @@ set(LN_SOURCES_Shader
 	include/Lumino/Shader/Shader.hpp
 	src/Shader/Internal.hpp
 	src/Shader/Shader.cpp
+	src/Shader/ShaderAnalyzer.cpp
+	src/Shader/ShaderAnalyzer.hpp
 )
 
 set(LN_SOURCES_UI
@@ -119,7 +121,7 @@ set(LN_SOURCES_SharedLib
 
 if (WIN32)
 	find_package(OpenGL)
-	list(APPEND LN_PLATFORM_LIBS "imagehlp.lib")
+	#list(APPEND LN_PLATFORM_LIBS "imagehlp.lib")
 	list(APPEND LN_PLATFORM_LIBS "Shlwapi.lib")
 	list(APPEND LN_PLATFORM_LIBS glfw)
 
@@ -159,7 +161,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE "${LUMINO_INCLUDE_DIRECTORIES
 #target_compile_definitions(${PROJECT_NAME} PUBLIC LUMINO_BUILD_DLL=1)
 #target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive ${PROJECT_NAME}-static -Wl,--no-whole-archive)
 #target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-static)
-target_link_libraries(${PROJECT_NAME} LuminoCore ${LN_PLATFORM_LIBS} ${OPENGL_LIBRARY} glad ${ZLIB_LIBRARIES} ${PNG_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore ${LN_PLATFORM_LIBS} ${OPENGL_LIBRARY} glad ${ZLIB_LIBRARIES} ${PNG_LIBRARIES} glslang SPIRV-Cross)
+#target_link_libraries(${PROJECT_NAME} PRIVATE glslang)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
 

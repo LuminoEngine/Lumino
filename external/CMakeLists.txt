@@ -5,7 +5,8 @@ project (ExternalProjects)
 include(../src/LuminoCommon.cmake)
 include(ExternalProject)
 
-SET(
+# notify global values to external projects.
+set(
     LN_FLAGS_ARGS
     -DCMAKE_C_FLAGS=${DCMAKE_C_FLAGS}
     -DCMAKE_C_FLAGS_DEBUG=${CMAKE_C_FLAGS_DEBUG}
@@ -36,8 +37,8 @@ ExternalProject_Add(
     INSTALL_DIR     ${LN_EXTERNAL_INSTALL_DIR}/libpng
     GIT_REPOSITORY  git://git.code.sf.net/p/libpng/code
     GIT_TAG         v1.6.9
-    CMAKE_ARGS      -DZLIB_ROOT=${LN_EXTERNAL_INSTALL_DIR}/zlib
-                    -DCMAKE_INSTALL_PREFIX=${LN_EXTERNAL_INSTALL_DIR}/libpng
+    CMAKE_ARGS      -DCMAKE_INSTALL_PREFIX=${LN_EXTERNAL_INSTALL_DIR}/libpng
+                    -DZLIB_ROOT=${LN_EXTERNAL_INSTALL_DIR}/zlib
                     -DPNG_SHARED=OFF
                     -DPNG_STATIC=ON
                     -DPNG_TESTS=OFF
@@ -51,4 +52,28 @@ ExternalProject_Add(
                     #-DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
                     #-DCMAKE_C_FLAGS=${GL_BINDING_C_FLAGS}
 )
+
+ExternalProject_Add(
+    external_glslang
+    PREFIX          ${LN_EXTERNAL_BUILD_DIR}/glslang
+    INSTALL_DIR     ${LN_EXTERNAL_INSTALL_DIR}/glslang
+    GIT_REPOSITORY  https://github.com/KhronosGroup/glslang.git
+    GIT_TAG         6.2.2596
+    CMAKE_ARGS      -DCMAKE_INSTALL_PREFIX=${LN_EXTERNAL_INSTALL_DIR}/glslang
+                    ${LN_FLAGS_ARGS}
+)
+
+ExternalProject_Add(
+    external_SPIRV-Cross
+    PREFIX          ${LN_EXTERNAL_BUILD_DIR}/SPIRV-Cross
+    INSTALL_DIR     ${LN_EXTERNAL_INSTALL_DIR}/SPIRV-Cross
+    GIT_REPOSITORY  https://github.com/KhronosGroup/SPIRV-Cross.git
+    GIT_TAG         be7425ef70231ab82930331959ab487d605d0482
+    CMAKE_ARGS      -DCMAKE_INSTALL_PREFIX=${LN_EXTERNAL_INSTALL_DIR}/SPIRV-Cross
+                    -DCMAKE_DEBUG_POSTFIX=d
+                    ${LN_FLAGS_ARGS}
+)
+
+
+
 
