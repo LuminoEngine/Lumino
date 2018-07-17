@@ -3,6 +3,7 @@
 
 #include <Lumino/UI/UIFrameWindow.hpp>
 #include "../Platform/PlatformManager.hpp"
+#include "../Shader/ShaderAnalyzer.hpp"
 #include "../Graphics/GraphicsManager.hpp"
 #include "../UI/UIManager.hpp"
 #include "EngineManager.hpp"
@@ -64,6 +65,7 @@ void EngineManager::initialize()
 void EngineManager::dispose()
 {
 	if (m_mainWindow) m_mainWindow->dispose();
+	if (m_shaderManager) m_shaderManager->dispose();
 	if (m_graphicsManager) m_graphicsManager->dispose();
 	if (m_platformManager) m_platformManager->dispose();
 }
@@ -76,6 +78,7 @@ void EngineManager::initializeAllManagers()
 	initializeInputManager();
 	initializeAudioManager();
 	initializePhysicsManager();
+	initializeShaderManager();
 	initializeGraphicsManager();
 	initializeEffectManager();
 	initializeModelManager();
@@ -119,6 +122,20 @@ void EngineManager::initializeAudioManager()
 
 void EngineManager::initializePhysicsManager()
 {
+}
+
+void EngineManager::initializeShaderManager()
+{
+	if (!m_shaderManager)
+	{
+		initializeGraphicsManager();
+
+		ShaderManager::Settings settings;
+		settings.graphicsManager = m_graphicsManager;
+
+		m_shaderManager = ln::makeRef<ShaderManager>();
+		m_shaderManager->initialize(settings);
+	}
 }
 
 void EngineManager::initializeGraphicsManager()
@@ -242,6 +259,11 @@ EngineManager* EngineDomain::engineManager()
 PlatformManager* EngineDomain::platformManager()
 {
 	return engineManager()->platformManager();
+}
+
+ShaderManager* EngineDomain::shaderManager()
+{
+	return engineManager()->shaderManager();
 }
 
 GraphicsManager* EngineDomain::graphicsManager()

@@ -16,6 +16,7 @@ namespace detail
 class EngineManager;
 class PlatformManager;
 class AnimationManager;
+class ShaderManager;
 class GraphicsManager;
 class ModelManager;
 class ArchiveManager;
@@ -27,6 +28,7 @@ public:
 	static void release();
 	static EngineManager* engineManager();
 	static PlatformManager* platformManager();
+	static ShaderManager* shaderManager();
 	static GraphicsManager* graphicsManager();
 	static UIManager* uiManager();
 

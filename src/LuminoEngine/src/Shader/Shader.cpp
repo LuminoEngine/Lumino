@@ -4,7 +4,7 @@
 #include "../Graphics/GraphicsDeviceContext.hpp"
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Graphics/RenderingCommandList.hpp"
-
+#include "ShaderAnalyzer.hpp"
 
 
 namespace ln {
@@ -35,12 +35,29 @@ void Shader::initialize()
 void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCodeType codeType)
 {
 	Shader::initialize();
+	m_diag = newObject<DiagnosticsManager>();
 
-	auto vsCode = FileSystem::readAllBytes(vertexShaderFilePath);
-	auto psCode = FileSystem::readAllBytes(pixelShaderFilePath);
+	auto vsData = FileSystem::readAllBytes(vertexShaderFilePath);
+	auto psData = FileSystem::readAllBytes(pixelShaderFilePath);
+
+	detail::ShaderCode vsCodeGen;
+	if (!vsCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Vertex, reinterpret_cast<const char*>(vsData.data()), vsData.size(), "main", m_diag))
+	{
+	}
+
+	detail::ShaderCode psCodeGen;
+	psCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Fragment, reinterpret_cast<const char*>(psData.data()), psData.size(), "main", m_diag);
+
+	//detail::EngineDomain::shaderManager()
+
+
+	std::string vsCode = vsCodeGen.generateGlsl();
+	std::string psCode = psCodeGen.generateGlsl();
 
 	ShaderCompilationDiag diag;
-	auto rhiPass = deviceContext()->createShaderPass(vsCode.data(), vsCode.size(), psCode.data(), psCode.size(), &diag);
+	auto rhiPass = deviceContext()->createShaderPass(
+		reinterpret_cast<const byte_t*>(vsCode.c_str()), vsCode.length(),
+		reinterpret_cast<const byte_t*>(psCode.c_str()), psCode.length(), &diag);
 
 	auto tech = newObject<ShaderTechnique>();
 	tech->setOwner(this);

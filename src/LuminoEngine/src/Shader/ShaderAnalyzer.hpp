@@ -1,12 +1,36 @@
 ﻿
 #pragma once
+#include <Lumino/Engine/Diagnostics.hpp>
 
 namespace ln {
+namespace detail {
+class GraphicsManager;
 
 enum class ShaderCodeStage
 {
 	Vertex,
 	Fragment,
+};
+
+class ShaderManager
+	: public RefObject
+{
+public:
+	struct Settings
+	{
+		GraphicsManager* graphicsManager;
+	};
+
+	ShaderManager();
+	virtual ~ShaderManager();
+
+	void initialize(const Settings& settings);
+	void dispose();
+
+	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
+
+private:
+	GraphicsManager * m_graphicsManager;
 };
 
 // シェーダコード１つ分。
@@ -16,9 +40,14 @@ class ShaderCode
 public:
 	ShaderCode();
 
-	bool parse(const char* code, size_t length);
+	bool parseAndGenerateSpirv(ShaderCodeStage stage, const char* code, size_t length, const std::string& entryPoint, DiagnosticsManager* diag);
+
+	std::string generateGlsl();
+
 
 private:
+	std::vector<uint32_t> m_spirvCode;
 };
 
+} // namespace detail
 } // namespace ln

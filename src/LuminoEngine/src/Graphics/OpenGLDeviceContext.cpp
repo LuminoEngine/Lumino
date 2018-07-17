@@ -1150,6 +1150,54 @@ void GLShaderPass::buildUniforms()
 		//}
 
 	}
+
+	glGetProgramiv(m_program, GL_ACTIVE_UNIFORM_BLOCKS, &count);
+	for (int i = 0; i < count; i++)
+	{
+		GLchar blockName[128];
+		GLsizei blockNameLen;
+		glGetActiveUniformBlockName(m_program, i, 128, &blockNameLen, blockName);
+
+		GLuint blockIndex = glGetUniformBlockIndex(m_program, blockName);
+
+		GLint blockSize;
+		glGetActiveUniformBlockiv(m_program, blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
+
+		LN_LOG_VERBOSE << "uniform block " << i;
+		LN_LOG_VERBOSE << "  blockName  : " << blockName;
+		LN_LOG_VERBOSE << "  blockIndex : " << blockIndex;
+		LN_LOG_VERBOSE << "  blockSize  : " << blockSize;
+
+
+		GLint blockMemberCount;
+		glGetActiveUniformBlockiv(m_program, blockIndex, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &blockMemberCount);
+
+		GLint indices[32];
+		glGetActiveUniformBlockiv(m_program, blockIndex, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, indices);
+
+		GLint offsets[32];
+		glGetActiveUniformsiv(m_program, blockMemberCount, (const GLuint*)indices, GL_UNIFORM_OFFSET, offsets);
+
+		//GLint elements[32];
+		//glGetActiveUniformsiv(m_program, blockMemberCount, (const GLuint*)indices, GL_UNIFORM_SIZE, elements);
+
+		for (int iMember = 0; iMember < blockMemberCount; iMember++)
+		{
+			GLsizei nameLen = 0;
+			GLsizei size = 0;
+			GLenum  type = 0;
+			GLchar  name[256] = { 0 };
+			glGetActiveUniform(m_program, indices[iMember], 256, &nameLen, &size, &type, name);
+
+			LN_LOG_VERBOSE << "uniform " << iMember;
+			LN_LOG_VERBOSE << "  name     : " << name;
+			LN_LOG_VERBOSE << "  index    : " << indices[iMember];
+			LN_LOG_VERBOSE << "  offset   : " << offsets[iMember];
+			LN_LOG_VERBOSE << "  type     : " << type;
+			LN_LOG_VERBOSE << "  elements : " << size;
+			//LN_LOG_VERBOSE << "  elements : " << elements[iMember];
+		}
+	}
 }
 
 //=============================================================================

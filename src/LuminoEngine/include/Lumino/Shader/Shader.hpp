@@ -4,6 +4,7 @@
 #include "../Graphics/GraphicsResource.hpp"
 
 namespace ln {
+class DiagnosticsManager;
 class ShaderParameter;
 class ShaderTechnique;
 class ShaderPass;
@@ -144,6 +145,7 @@ LN_CONSTRUCT_ACCESS:
 private:
 	ShaderParameter* getShaderParameter(const detail::ShaderUniformTypeDesc& desc, const String& name);
 
+	Ref<DiagnosticsManager> m_diag;
 	List<Ref<ShaderParameter>> m_parameters;
 	List<Ref<ShaderTechnique>> m_techniques;
 

@@ -18,7 +18,7 @@ GTEST_API_ int main(int argc, char **argv)
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);
 
-	//GlobalLogger::setLevel(LogLevel::Verbose);
+	GlobalLogger::setLevel(LogLevel::Verbose);
 	TestHelper::setAssetsDirPath(LN_LOCALFILE("Assets"));
 	TestHelper::setTempDirPath(Environment::specialFolderPath(SpecialFolder::Temporary));
 	TestEnv::setup();

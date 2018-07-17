@@ -7,6 +7,7 @@
 #include "ShaderAnalyzer.hpp"
 
 namespace ln {
+namespace detail {
 
 // from glslang: StanAalone/ResourceLimits.cpp
 const TBuiltInResource DefaultTBuiltInResource = {
@@ -109,14 +110,155 @@ const TBuiltInResource DefaultTBuiltInResource = {
 //=============================================================================
 // ShaderCode
 
+ShaderManager::ShaderManager()
+	: m_graphicsManager(nullptr)
+{
+}
+
+ShaderManager::~ShaderManager()
+{
+}
+
+void ShaderManager::initialize(const Settings& settings)
+{
+	m_graphicsManager = settings.graphicsManager;
+	glslang::InitializeProcess();
+}
+
+void ShaderManager::dispose()
+{
+	glslang::FinalizeProcess();
+}
+
+//=============================================================================
+// ShaderCode
+
 ShaderCode::ShaderCode()
 {
 }
 
-bool ShaderCode::parse(const char* code, size_t length)
+bool ShaderCode::parseAndGenerateSpirv(ShaderCodeStage stage, const char* code, size_t length, const std::string& entryPoint, DiagnosticsManager* diag)
 {
-	LN_NOTIMPLEMENTED();
-	return false;
+	// -d オプション
+	//const int defaultVersion = Options & EOptionDefaultDesktop ? 110 : 100;
+	const int defaultVersion = 100;
+
+	glslang::EShSource sourceType = glslang::EShSourceHlsl;
+	const int ClientInputSemanticsVersion = 320;
+	glslang::EshTargetClientVersion OpenGLClientVersion = glslang::EShTargetOpenGL_450;
+	bool forwardCompatible = false;
+	EShMessages messages = (EShMessages)(EShMsgSpvRules | EShMsgVulkanRules);
+
+	EShLanguage lang;
+	switch (stage)
+	{
+	case ShaderCodeStage::Vertex:
+		lang = EShLanguage::EShLangVertex;
+		break;
+	case ShaderCodeStage::Fragment:
+		lang = EShLanguage::EShLangFragment;
+		break;
+	default:
+		LN_NOTIMPLEMENTED();
+		break;
+	}
+
+	glslang::TProgram program;
+	glslang::TShader shader(lang);
+
+	// parse
+	{
+		const char*shaderCode[1] = { code };
+		const int shaderLenght[1] = { length };
+		const char* shaderName[1] = { "shadercode" };
+		shader.setStringsWithLengthsAndNames(shaderCode, shaderLenght, shaderName, 1);
+		shader.setEntryPoint(entryPoint.c_str());
+
+		shader.setEnvInput(sourceType, lang, glslang::EShClientOpenGL, ClientInputSemanticsVersion);
+		shader.setEnvClient(glslang::EShClientOpenGL, OpenGLClientVersion);
+		/* Vulkan Rule
+		shader->setEnvInput((Options & EOptionReadHlsl) ? glslang::EShSourceHlsl : glslang::EShSourceGlsl,
+		compUnit.stage, glslang::EShClientVulkan, ClientInputSemanticsVersion);
+		shader->setEnvClient(glslang::EShClientVulkan, VulkanClientVersion);
+		*/
+
+		if (!shader.parse(&DefaultTBuiltInResource, defaultVersion, forwardCompatible, messages)) {
+			if (!StringHelper::isNullOrEmpty(shader.getInfoLog())) diag->reportError(shader.getInfoLog());
+			if (!StringHelper::isNullOrEmpty(shader.getInfoDebugLog())) diag->reportError(shader.getInfoDebugLog());
+			return false;
+		}
+		else if (shader.getInfoLog()) {
+			if (!StringHelper::isNullOrEmpty(shader.getInfoLog())) diag->reportWarning(shader.getInfoLog());
+			if (!StringHelper::isNullOrEmpty(shader.getInfoDebugLog())) diag->reportWarning(shader.getInfoDebugLog());
+		}
+	}
+
+	// link
+	{
+		program.addShader(&shader);
+
+		if (!program.link(messages)) {
+			if (!StringHelper::isNullOrEmpty(shader.getInfoLog())) diag->reportError(shader.getInfoLog());
+			if (!StringHelper::isNullOrEmpty(shader.getInfoDebugLog())) diag->reportError(shader.getInfoDebugLog());
+			return false;
+		}
+		else if (shader.getInfoLog()) {
+			if (!StringHelper::isNullOrEmpty(shader.getInfoLog())) diag->reportWarning(shader.getInfoLog());
+			if (!StringHelper::isNullOrEmpty(shader.getInfoDebugLog())) diag->reportWarning(shader.getInfoDebugLog());
+		}
+
+	}
+
+	glslang::GlslangToSpv(*program.getIntermediate(lang), m_spirvCode);
+
+	return true;
 }
 
+std::string ShaderCode::generateGlsl()
+{
+	spirv_cross::CompilerGLSL glsl(m_spirvCode);
+
+#if 0
+	spirv_cross::ShaderResources resources = glsl.get_shader_resources();
+
+	// Get all sampled images in the shader.
+	for (auto &resource : resources.sampled_images)
+	{
+		unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
+		unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
+		printf("Image %s at set = %u, binding = %u\n", resource.name.c_str(), set, binding);
+
+		// Modify the decoration to prepare it for GLSL.
+		glsl.unset_decoration(resource.id, spv::DecorationDescriptorSet);
+
+		// Some arbitrary remapping if we want.
+		glsl.set_decoration(resource.id, spv::DecorationBinding, set * 16 + binding);
+	}
+#endif
+
+	// Set some options.
+	spirv_cross::CompilerGLSL::Options options;
+	options.version = 400;
+	options.es = false;
+	//options.version = 300;
+	//options.es = true;
+	glsl.set_common_options(options);
+
+
+
+	// From main.cpp
+	// Builds a mapping for all combinations of images and samplers.
+	glsl.build_combined_image_samplers();
+
+	// Give the remapped combined samplers new names.
+	// Here you can also set up decorations if you want (binding = #N).
+	for (auto &remap : glsl.get_combined_image_samplers())
+	{
+		glsl.set_name(remap.combined_id, "test" /*join("SPIRV_Cross_Combined", glsl.get_name(remap.image_id), glsl.get_name(remap.sampler_id))*/);
+	}
+
+	return glsl.compile();
+}
+
+} // namespace detail
 } // namespace ln

@@ -92,6 +92,9 @@ public:
 	template<typename TChar>
 	static bool isSpace(TChar ch);
 
+	template<typename TChar>
+	static bool isNullOrEmpty(const TChar* str) { return !str || str[0] == '\0'; }
+
 	template<typename TChar, typename TLookuped>
 	static void SplitHelper(const TChar* begin, const TChar* end, const TChar* delim, int delimLen, StringSplitOptions option, CaseSensitivity cs, TLookuped callback)
 	{

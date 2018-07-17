@@ -5,7 +5,8 @@ class Test_Graphics_LowLevelRendering : public ::testing::Test
 public:
 	virtual void SetUp()
 	{
-		m_shader1 = Shader::create(LN_ASSETFILE("simple.vert"), LN_ASSETFILE("simple.frag"));
+		//m_shader1 = Shader::create(LN_ASSETFILE("simple.vert"), LN_ASSETFILE("simple.frag"));
+		m_shader1 = Shader::create(LN_ASSETFILE("simple.vsh"), LN_ASSETFILE("test.psh"));
 
 		m_vertexDecl1 = newObject<VertexDeclaration>();
 		m_vertexDecl1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
