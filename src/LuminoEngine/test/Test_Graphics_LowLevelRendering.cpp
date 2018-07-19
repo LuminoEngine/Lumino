@@ -6,7 +6,8 @@ public:
 	virtual void SetUp()
 	{
 		//m_shader1 = Shader::create(LN_ASSETFILE("simple.vert"), LN_ASSETFILE("simple.frag"));
-		m_shader1 = Shader::create(LN_ASSETFILE("simple.vsh"), LN_ASSETFILE("test.psh"));
+		//m_shader1 = Shader::create(LN_ASSETFILE("simple.vsh"), LN_ASSETFILE("test.psh"));
+		m_shader1 = Shader::create(LN_ASSETFILE("simple.vsh"), LN_ASSETFILE("simple.psh"));
 
 		m_vertexDecl1 = newObject<VertexDeclaration>();
 		m_vertexDecl1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
@@ -23,7 +24,9 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 {
 	// # 時計回り (左ねじ) で描画できること
 	{
-		m_shader1->setVector("g_color", Vector4(1, 0, 0, 1));
+		//m_shader1->setVector("g_color", Vector4(1, 0, 0, 1));
+		Vector4 color(1, 0, 0, 1);
+		m_shader1->findConstantBuffer("ConstBuff")->setData(&color, sizeof(Vector4));
 
 		Vector4 v[] = {
 			Vector4(0, 0.5, 0, 1),

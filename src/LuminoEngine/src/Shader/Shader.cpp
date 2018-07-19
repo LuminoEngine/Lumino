@@ -158,6 +158,12 @@ ShaderParameter* Shader::findParameter(const StringRef& name)
 	return nullptr;
 }
 
+ShaderConstantBuffer* Shader::findConstantBuffer(const StringRef& name)
+{
+	auto result = m_buffers.findIf([name](const ShaderConstantBuffer* buf) { return buf->name() == name; });
+	return (result) ? *result : nullptr;
+}
+
 ShaderParameter* Shader::getShaderParameter(const detail::ShaderUniformTypeDesc& desc, const String& name)
 {
 	for (auto& param : m_parameters)
@@ -171,6 +177,21 @@ ShaderParameter* Shader::getShaderParameter(const detail::ShaderUniformTypeDesc&
 	auto param = newObject<ShaderParameter>(desc, name);
 	m_parameters.add(param);
 	return param;
+}
+
+ShaderConstantBuffer* Shader::getOrCreateConstantBuffer(detail::IShaderUniformBuffer* rhiBuffer)
+{
+	for (auto& buffer : m_buffers)
+	{
+		if (buffer->getRhiObject()->name() == rhiBuffer->name())
+		{
+			return buffer;
+		}
+	}
+
+	auto buffer = newObject<ShaderConstantBuffer>(this, rhiBuffer);
+	m_buffers.add(buffer);
+	return buffer;
 }
 
 //=============================================================================
@@ -251,6 +272,46 @@ void ShaderParameter::setPointer(void* value)
 	m_value.setPointer(value);
 }
 
+//=============================================================================
+// ShaderConstantBuffer
+
+ShaderConstantBuffer::ShaderConstantBuffer()
+	: m_rhiObject(nullptr)
+	, m_owner(nullptr)
+{
+}
+
+ShaderConstantBuffer::~ShaderConstantBuffer()
+{
+}
+
+void ShaderConstantBuffer::initialize(Shader* owner, detail::IShaderUniformBuffer* rhiObject)
+{
+	Object::initialize();
+	m_owner = owner;
+	m_rhiObject = rhiObject;
+	m_name = String::fromStdString(m_rhiObject->name());
+	m_buffer.resize(m_rhiObject->bufferSize());
+}
+
+void ShaderConstantBuffer::setData(const void* data, int size)
+{
+	m_buffer.assign(data, size);
+}
+
+void ShaderConstantBuffer::commit()
+{
+	auto* manager = owner()->manager();
+	detail::RenderBulkData data = manager->primaryRenderingCommandList()->allocateBulkData(m_buffer.size());
+
+	LN_ENQUEUE_RENDER_COMMAND_2(
+		ShaderConstantBuffer_commit, manager,
+		detail::RenderBulkData, data,
+		Ref<detail::IShaderUniformBuffer>, m_rhiObject,
+		{
+			m_rhiObject->setData(data.data(), data.size());
+		});
+}
 
 //=============================================================================
 // ShaderTechnique
@@ -265,6 +326,7 @@ ShaderTechnique::~ShaderTechnique()
 
 void ShaderTechnique::initialize()
 {
+	Object::initialize();
 }
 
 void ShaderTechnique::addShaderPass(ShaderPass* pass)
@@ -288,6 +350,7 @@ ShaderPass::~ShaderPass()
 void ShaderPass::initialize(detail::IShaderPass* rhiPass)
 {
 	if (LN_REQUIRE(rhiPass)) return;
+	Object::initialize();
 
 	m_rhiPass = rhiPass;
 }
@@ -309,28 +372,38 @@ void ShaderPass::setupParameters()
 		ShaderParameter* param = m_owner->owner()->getShaderParameter(uni->desc(), String::fromStdString(uni->name()));
 		m_parameters.add(param);
 	}
-}
 
-// TODO:
-static void tttt(const detail::RenderBulkData& data,
-	const Ref<detail::IShaderPass>& m_rhiPass)
-{
-	detail::ShaderValueDeserializer deserializer(data.data(), data.size());
-	for (int i = 0; i < m_rhiPass->getUniformCount(); i++)
+	m_buffers.clear();
+
+	for (int i = 0; i < m_rhiPass->getUniformBufferCount(); i++)
 	{
-		size_t size = 0;
-		ShaderVariableType type = ShaderVariableType::Unknown;
-		const void* rawData = deserializer.readValue(&size, &type);
-		m_rhiPass->setUniformValue(i, rawData, size);
+		detail::IShaderUniformBuffer* rhi = m_rhiPass->getUniformBuffer(i);
+		ShaderConstantBuffer* buf = m_owner->owner()->getOrCreateConstantBuffer(rhi);
+		m_buffers.add(buf);
 	}
-
 }
 
+//// TODO:
+//static void tttt(const detail::RenderBulkData& data,
+//	const Ref<detail::IShaderPass>& m_rhiPass)
+//{
+//	detail::ShaderValueDeserializer deserializer(data.data(), data.size());
+//	for (int i = 0; i < m_rhiPass->getUniformCount(); i++)
+//	{
+//		size_t size = 0;
+//		ShaderVariableType type = ShaderVariableType::Unknown;
+//		const void* rawData = deserializer.readValue(&size, &type);
+//		m_rhiPass->setUniformValue(i, rawData, size);
+//	}
+//
+//}
+//
 
 void ShaderPass::commit()
 {
 	auto* manager = m_owner->owner()->manager();
 
+#if 0
 	detail::RenderBulkData data = manager->primaryRenderingCommandList()->allocateBulkData(detail::ShaderValueSerializer::measureBufferSize(this));
 
 	detail::ShaderValueSerializer serializer(data.writableData(), data.size());
@@ -346,6 +419,12 @@ void ShaderPass::commit()
 		{
 			tttt(data, m_rhiPass);
 		});
+#endif
+
+	for (auto& buffer : m_buffers)
+	{
+		buffer->commit();
+	}
 }
 
 //=============================================================================

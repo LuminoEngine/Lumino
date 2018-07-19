@@ -256,6 +256,11 @@ struct ShaderUniformTypeDesc
 	int columns;
 	int elements;
 
+	size_t offset;
+	size_t size;
+	size_t arrayStride;
+	size_t matrixStride;
+
 	static bool equals(const ShaderUniformTypeDesc& a, const ShaderUniformTypeDesc& b)
 	{
 		return

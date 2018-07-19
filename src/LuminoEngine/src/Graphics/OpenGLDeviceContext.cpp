@@ -184,8 +184,13 @@ void OpenGLDeviceContext::initialize(const Settings& settings)
 
 	LN_LOG_INFO << "OpenGL " << GLVersion.major << "." << GLVersion.minor;
 
+	//GLint value;
+	//glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &value);
+
 	GL_CHECK(glGenVertexArrays(1, &m_vao));
 	GL_CHECK(glGenFramebuffers(1, &m_fbo));
+
+
 }
 
 void OpenGLDeviceContext::dispose()
@@ -1112,6 +1117,16 @@ void GLShaderPass::setUniformValue(int index, const void* data, size_t size)
 	m_uniforms[index]->setUniformValue(m_context, data, size);
 }
 
+int GLShaderPass::getUniformBufferCount() const
+{
+	return m_uniformBuffers.size();
+}
+
+IShaderUniformBuffer* GLShaderPass::getUniformBuffer(int index) const
+{
+	return m_uniformBuffers[index];
+}
+
 void GLShaderPass::buildUniforms()
 {
 	GLint count = 0;
@@ -1132,11 +1147,8 @@ void GLShaderPass::buildUniforms()
 			name, var_type, var_size,
 			&desc.type, &desc.rows, &desc.columns, &desc.elements);
 
-		auto uni = makeRef<GLShaderUniform>();
-		uni->m_desc = desc;
-		uni->m_name = name;
-		uni->m_location = loc;
-		m_uniforms.add(uni);
+		auto uniform = makeRef<GLShaderUniform>(desc, name, loc);
+		m_uniforms.add(uniform);
 
 		//// テクスチャ型の変数にステージ番号を振っていく。
 		//if (passVar.Variable->getType() == ShaderVariableType::DeviceTexture)
@@ -1148,38 +1160,48 @@ void GLShaderPass::buildUniforms()
 		//{
 		//	passVar.TextureStageIndex = -1;
 		//}
-
 	}
 
-	glGetProgramiv(m_program, GL_ACTIVE_UNIFORM_BLOCKS, &count);
+	GL_CHECK(glGetProgramiv(m_program, GL_ACTIVE_UNIFORM_BLOCKS, &count));
 	for (int i = 0; i < count; i++)
 	{
 		GLchar blockName[128];
 		GLsizei blockNameLen;
-		glGetActiveUniformBlockName(m_program, i, 128, &blockNameLen, blockName);
+		GL_CHECK(glGetActiveUniformBlockName(m_program, i, 128, &blockNameLen, blockName));
 
 		GLuint blockIndex = glGetUniformBlockIndex(m_program, blockName);
 
 		GLint blockSize;
-		glGetActiveUniformBlockiv(m_program, blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
+		GL_CHECK(glGetActiveUniformBlockiv(m_program, blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize));
+		
+		auto uniformBlock = makeRef<GLShaderUniformBuffer>(blockName, blockIndex, blockSize, i);
+		m_uniformBuffers.add(uniformBlock);
 
 		LN_LOG_VERBOSE << "uniform block " << i;
 		LN_LOG_VERBOSE << "  blockName  : " << blockName;
 		LN_LOG_VERBOSE << "  blockIndex : " << blockIndex;
 		LN_LOG_VERBOSE << "  blockSize  : " << blockSize;
 
-
 		GLint blockMemberCount;
-		glGetActiveUniformBlockiv(m_program, blockIndex, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &blockMemberCount);
+		GL_CHECK(glGetActiveUniformBlockiv(m_program, blockIndex, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &blockMemberCount));
 
 		GLint indices[32];
-		glGetActiveUniformBlockiv(m_program, blockIndex, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, indices);
+		GL_CHECK(glGetActiveUniformBlockiv(m_program, blockIndex, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, indices));
 
 		GLint offsets[32];
-		glGetActiveUniformsiv(m_program, blockMemberCount, (const GLuint*)indices, GL_UNIFORM_OFFSET, offsets);
+		GL_CHECK(glGetActiveUniformsiv(m_program, blockMemberCount, (const GLuint*)indices, GL_UNIFORM_OFFSET, offsets));
 
 		//GLint elements[32];
 		//glGetActiveUniformsiv(m_program, blockMemberCount, (const GLuint*)indices, GL_UNIFORM_SIZE, elements);
+
+		GLint arrayStrides[32];
+		GL_CHECK(glGetActiveUniformsiv(m_program, blockMemberCount, (const GLuint*)indices, GL_UNIFORM_ARRAY_STRIDE, arrayStrides));
+
+		GLint matrixStrides[32];
+		GL_CHECK(glGetActiveUniformsiv(m_program, blockMemberCount, (const GLuint*)indices, GL_UNIFORM_MATRIX_STRIDE, matrixStrides));
+		
+		GLint isRowMajors[32];
+		GL_CHECK(glGetActiveUniformsiv(m_program, blockMemberCount, (const GLuint*)indices, GL_UNIFORM_IS_ROW_MAJOR, isRowMajors));
 
 		for (int iMember = 0; iMember < blockMemberCount; iMember++)
 		{
@@ -1187,26 +1209,114 @@ void GLShaderPass::buildUniforms()
 			GLsizei size = 0;
 			GLenum  type = 0;
 			GLchar  name[256] = { 0 };
-			glGetActiveUniform(m_program, indices[iMember], 256, &nameLen, &size, &type, name);
+			GL_CHECK(glGetActiveUniform(m_program, indices[iMember], 256, &nameLen, &size, &type, name));
+
+			ShaderUniformTypeDesc desc;
+			OpenGLHelper::convertVariableTypeGLToLN(
+				name, type, size,
+				&desc.type, &desc.rows, &desc.columns, &desc.elements);
+
+			size_t dataSize;
+			if (iMember < blockMemberCount - 1) {
+				dataSize = offsets[iMember + 1] - offsets[iMember];
+			}
+			else {
+				dataSize = blockSize - offsets[iMember];
+			}
+
+			desc.offset = offsets[iMember];
+			desc.size = dataSize;
+			desc.arrayStride = arrayStrides[iMember];
+			desc.matrixStride = matrixStrides[iMember];
+
+			auto uniform = makeRef<GLShaderUniform>(desc, name, offsets[iMember]);
+			uniformBlock->addUniform(uniform);
 
 			LN_LOG_VERBOSE << "uniform " << iMember;
-			LN_LOG_VERBOSE << "  name     : " << name;
-			LN_LOG_VERBOSE << "  index    : " << indices[iMember];
-			LN_LOG_VERBOSE << "  offset   : " << offsets[iMember];
-			LN_LOG_VERBOSE << "  type     : " << type;
-			LN_LOG_VERBOSE << "  elements : " << size;
-			//LN_LOG_VERBOSE << "  elements : " << elements[iMember];
+			LN_LOG_VERBOSE << "  name          : " << name;
+			LN_LOG_VERBOSE << "  index         : " << indices[iMember];	// uniform location (unique in program)
+			LN_LOG_VERBOSE << "  offset        : " << offsets[iMember];
+			LN_LOG_VERBOSE << "  array stride  : " << arrayStrides[iMember];
+			LN_LOG_VERBOSE << "  matrix stride : " << matrixStrides[iMember];
+			LN_LOG_VERBOSE << "  type          : " << type;
+			LN_LOG_VERBOSE << "  elements      : " << size;
+			LN_LOG_VERBOSE << "  rows          : " << desc.rows;
+			LN_LOG_VERBOSE << "  columns       : " << desc.columns;
+			LN_LOG_VERBOSE << "  row majors    : " << isRowMajors[iMember];
+			LN_LOG_VERBOSE << "  data size     : " << dataSize;
 		}
 	}
 }
 
 //=============================================================================
+// GLShaderUniformBuffer
+
+GLShaderUniformBuffer::GLShaderUniformBuffer(const GLchar* blockName, GLuint blockIndex, GLint blockSize, GLuint bindingPoint)
+	: m_name(blockName)
+	, m_blockIndex(blockIndex)
+	, m_blockSize(blockSize)
+	, m_ubo(0)
+{
+	GL_CHECK(glGenBuffers(1, &m_ubo));
+	GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, m_ubo));
+	GL_CHECK(glBufferData(GL_UNIFORM_BUFFER, m_blockSize, nullptr, GL_DYNAMIC_DRAW));
+	GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, 0));
+
+	// Choose a binding point in the UBO; must be < GL_MAX_UNIFORM_BUFFER_BINDINGS
+	GLuint bp = 7;
+
+
+	//// Fill the buffer with data at the chosen binding point
+	//glBindBufferBase(GL_UNIFORM_BUFFER, bindingPoint, ubo);
+
+	//// Query the shader for block index of 'Crazy80s' and hook it up
+	//GLuint idx = glGetUniformBlockIndex(prog, "Crazy80s");
+	//glUniformBlockBinding(prog, idx, bp);
+}
+
+GLShaderUniformBuffer::~GLShaderUniformBuffer()
+{
+
+	if (m_ubo)
+	{
+		GL_CHECK(glDeleteBuffers(1, &m_ubo));
+		m_ubo = 0;
+	}
+
+}
+
+const std::string& GLShaderUniformBuffer::name() const
+{
+	return m_name;
+}
+
+int GLShaderUniformBuffer::getUniformCount() const
+{
+	return m_uniforms.size();
+}
+
+IShaderUniform* GLShaderUniformBuffer::getUniform(int index) const
+{
+	return m_uniforms[index];
+}
+
+void GLShaderUniformBuffer::setData(const void* data, size_t size)
+{
+	if (LN_REQUIRE(data)) return;
+	if (LN_REQUIRE(size == m_blockSize)) return;
+	GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, m_ubo));
+	GL_CHECK(glBufferSubData(GL_UNIFORM_BUFFER, 0, size, data));
+	GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, 0));
+}
+
+
+//=============================================================================
 // GLShaderUniform
 
-GLShaderUniform::GLShaderUniform()
-	: m_desc{ShaderRefrectionParameterType::Unknown, 0, 0, 0}
-	, m_name()
-	, m_location(0)
+GLShaderUniform::GLShaderUniform(const ShaderUniformTypeDesc& desc, const GLchar* name, GLint location)
+	: m_desc(desc)
+	, m_name(name)
+	, m_location(location)
 {
 }
 

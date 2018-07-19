@@ -14,6 +14,7 @@ class IIndexBuffer;
 class ITexture;
 class IDepthBuffer;
 class IShaderPass;
+class IShaderUniformBuffer;
 class IShaderUniform;
 
 class IGraphicsDeviceContext
@@ -234,11 +235,28 @@ public:
 	virtual IShaderUniform* getUniform(int index) const = 0;
 	virtual void setUniformValue(int index, const void* data, size_t size) = 0;
 
+	virtual int getUniformBufferCount() const = 0;
+	virtual IShaderUniformBuffer* getUniformBuffer(int index) const = 0;
+
 protected:
 	IShaderPass();
 	virtual ~IShaderPass() = default;
 };
 
+class IShaderUniformBuffer
+	: public IGraphicsDeviceObject
+{
+public:
+	virtual const std::string& name() const = 0;
+	virtual int getUniformCount() const = 0;
+	virtual IShaderUniform* getUniform(int index) const = 0;
+	virtual size_t bufferSize() const = 0;
+	virtual void setData(const void* data, size_t size) = 0;
+
+protected:
+	IShaderUniformBuffer();
+	virtual ~IShaderUniformBuffer() = default;
+};
 
 class IShaderUniform
 	: public IGraphicsDeviceObject

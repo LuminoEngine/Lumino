@@ -6,6 +6,7 @@
 namespace ln {
 class DiagnosticsManager;
 class ShaderParameter;
+class ShaderConstantBuffer;
 class ShaderTechnique;
 class ShaderPass;
 class GraphicsContext;
@@ -17,6 +18,7 @@ class Texture
 
 namespace detail {
 class IShaderPass;
+class IShaderUniformBuffer;
 
 class ShaderParameterValue
 {
@@ -130,6 +132,7 @@ public:
 	void setTexture(const StringRef& name, Texture* value);
 
 	ShaderParameter* findParameter(const StringRef& name);
+	ShaderConstantBuffer* findConstantBuffer(const StringRef& name);
 
 	const List<Ref<ShaderTechnique>>& techniques() const { return m_techniques; }
 
@@ -144,9 +147,11 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	ShaderParameter* getShaderParameter(const detail::ShaderUniformTypeDesc& desc, const String& name);
+	ShaderConstantBuffer* getOrCreateConstantBuffer(detail::IShaderUniformBuffer* buffer);
 
 	Ref<DiagnosticsManager> m_diag;
 	List<Ref<ShaderParameter>> m_parameters;
+	List<Ref<ShaderConstantBuffer>> m_buffers;
 	List<Ref<ShaderTechnique>> m_techniques;
 
 	friend class ShaderPass;
@@ -186,6 +191,32 @@ private:
 	friend class Shader;
 	friend class ShaderPass;
 	friend class detail::ShaderValueSerializer;
+};
+
+class LN_API ShaderConstantBuffer
+	: public Object
+{
+public:
+	const String& name() const { return m_name; }
+	void setData(const void* data, int size);
+
+LN_CONSTRUCT_ACCESS:	// TODO: 内部でしか new しないから private とかでいい気がする
+	ShaderConstantBuffer();
+	virtual ~ShaderConstantBuffer();
+	void initialize(Shader* owner, detail::IShaderUniformBuffer* rhiObject);
+
+private:
+	Shader* owner() const { return m_owner; }
+	detail::IShaderUniformBuffer* getRhiObject() const { return m_rhiObject; }
+	void commit();
+
+	Shader* m_owner;
+	detail::IShaderUniformBuffer* m_rhiObject;
+	String m_name;
+	ByteBuffer m_buffer;
+
+	friend class Shader;
+	friend class ShaderPass;
 };
 
 class LN_API ShaderTechnique
@@ -229,6 +260,7 @@ private:
 	ShaderTechnique* m_owner;
 	Ref<detail::IShaderPass> m_rhiPass;
 	List<ShaderParameter*> m_parameters;
+	List<ShaderConstantBuffer*> m_buffers;
 
 	friend class Shader;
 	friend class ShaderTechnique;

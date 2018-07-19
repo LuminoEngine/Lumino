@@ -232,6 +232,14 @@ IShaderPass::IShaderPass()
 }
 
 //=============================================================================
+// IShaderPass
+
+IShaderUniformBuffer::IShaderUniformBuffer()
+{
+	LN_LOG_VERBOSE << "IShaderUniformBuffer [0x" << this << "] constructed.";
+}
+
+//=============================================================================
 // IShaderUniform
 
 IShaderUniform::IShaderUniform()

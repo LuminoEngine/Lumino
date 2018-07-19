@@ -73,6 +73,7 @@ class GLSwapChain;
 class GLIndexBuffer;
 class GLRenderTargetTexture;
 class GLShaderPass;
+class GLShaderUniformBuffer;
 class GLShaderUniform;
 
 class OpenGLDeviceContext
@@ -359,29 +360,62 @@ public:
 	virtual IShaderUniform* getUniform(int index) const override;
 	virtual void setUniformValue(int index, const void* data, size_t size) override;
 
+	virtual int getUniformBufferCount() const override;
+	virtual IShaderUniformBuffer* getUniformBuffer(int index) const override;
+
 private:
 	void buildUniforms();
 
 	OpenGLDeviceContext* m_context;
 	GLuint m_program;
+	List<Ref<GLShaderUniformBuffer>> m_uniformBuffers;
 	List<Ref<GLShaderUniform>> m_uniforms;
+
+};
+
+class GLShaderUniformBuffer
+	: public IShaderUniformBuffer
+{
+public:
+	GLShaderUniformBuffer(const GLchar* blockName, GLuint blockIndex, GLint blockSize, GLuint bindingPoint);
+	virtual ~GLShaderUniformBuffer();
+	void addUniform(GLShaderUniform* uniform) { m_uniforms.add(uniform); }
+
+	virtual const std::string& name() const;
+	virtual int getUniformCount() const;
+	virtual IShaderUniform* getUniform(int index) const;
+	virtual size_t bufferSize() const { return m_blockSize; }
+	virtual void setData(const void* data, size_t size);
+
+private:
+	std::string m_name;
+	GLuint m_blockIndex;
+	GLint m_blockSize;
+	List<Ref<GLShaderUniform>> m_uniforms;
+	GLuint m_ubo;
 };
 
 class GLShaderUniform
 	: public IShaderUniform
 {
 public:
-	GLShaderUniform();
+	GLShaderUniform(const ShaderUniformTypeDesc& desc, const GLchar* name, GLint location);
 	virtual ~GLShaderUniform() = default;
 	virtual void dispose() override;
 	virtual const ShaderUniformTypeDesc& desc() const { return m_desc; }
 	virtual const std::string& name() const { return m_name; }
 
 	void setUniformValue(OpenGLDeviceContext* context, const void* data, size_t size);
-	
+
+	//GLint offsetOnBuffer() const {}
+	//GLint sizeOnBuffer() const;
+
+private:
 	ShaderUniformTypeDesc m_desc;
 	std::string m_name;
-	GLint m_location;
+	GLint m_location;	// [obsolete]
+
+	
 };
 
 //=============================================================================
