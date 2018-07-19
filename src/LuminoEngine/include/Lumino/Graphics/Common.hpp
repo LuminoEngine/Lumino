@@ -249,6 +249,7 @@ using ShaderRefrectionParameterType = ShaderVariableType;
 //	Texture,
 //};
 
+// rows, columns はデータレイアウトとしての領域サイズ。
 struct ShaderUniformTypeDesc
 {
 	ShaderRefrectionParameterType type;

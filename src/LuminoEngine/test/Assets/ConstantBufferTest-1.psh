@@ -18,10 +18,16 @@ cbuffer ConstBuff : register(b0)
 
 cbuffer ConstBuff2 : register(b1)
 {
+    
     float3x4 g_mat34;
     float2x2 g_mat22;
     float4x3 g_mat43;
-    float4x3 g_mat44;
+    float4x4 g_mat44;
+    
+    float3x4 g_mat34ary3[3];
+    float2x2 g_mat22ary3[3];
+    float4x3 g_mat43ary3[3];
+    float4x4 g_mat44ary3[3];
 }
 
 struct PS_INPUT
@@ -58,6 +64,19 @@ float4 main(PS_INPUT input) : SV_TARGET
     }
     if (g_type == 14) {
         return g_float4ary3[1];
+    }
+    
+    // transform test
+    if (g_type == 99) {
+        float4 pos = mul(g_color4, g_mat44);
+        return float4(pos.xyz, 1);
+    }
+    
+    if (g_type == 21) {
+        return float4(g_mat34[0][1], g_mat34[0][2], g_mat34[0][0], 1);
+    }
+    if (g_type == 22) {
+        return float4(g_mat22[0][0], g_mat22[1][0], g_mat22[0][1], 1);
     }
     
     return float4(0, 0, 0, 0);

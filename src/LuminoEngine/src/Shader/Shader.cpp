@@ -70,10 +70,10 @@ namespace ln {
 // int or float
 static void alignScalarsToBuffer(
 	const byte_t* source, size_t unitBytes, int unitCount,
-	byte_t* buffer, size_t offset, int elements, size_t arrayStride)
+	byte_t* buffer, size_t offset, int elements, size_t arrayStride) LN_NOEXCEPT
 {
-	int loop = std::min(unitCount, elements);
 	byte_t* head = buffer + offset;
+	int loop = std::min(unitCount, elements);
 	for (int i = 0; i < elements; i++) {
 		memcpy(head + arrayStride * i, source + unitBytes * i, unitBytes);
 	}
@@ -82,14 +82,45 @@ static void alignScalarsToBuffer(
 // vector
 static void alignVectorsToBuffer(
 	const byte_t* source, int sourceColumns, int sourceElementCount,
-	byte_t* buffer, size_t offset, int elements, size_t arrayStride, int columns)
+	byte_t* buffer, size_t offset, int elements, size_t arrayStride, int columns) LN_NOEXCEPT
 {
-	size_t sourceVectorSize = sizeof(float) * sourceColumns;
-	size_t copySize = std::min(sourceVectorSize, sizeof(float) * columns);
-	int loop = std::min(sourceElementCount, elements);
+	size_t srcVectorSize = sizeof(float) * sourceColumns;
+	size_t copySize = std::min(srcVectorSize, sizeof(float) * columns);
 	byte_t* head = buffer + offset;
+	int loop = std::min(sourceElementCount, elements);
 	for (int i = 0; i < elements; i++) {
-		memcpy(head + arrayStride * i, source + sourceVectorSize * i, copySize);
+		memcpy(head + arrayStride * i, source + srcVectorSize * i, copySize);
+	}
+}
+
+// matrix
+static void alignMatricesToBuffer(
+	const byte_t* source, int sourceColumns, int sourceRows, int sourceElementCount,
+	byte_t* buffer, size_t offset, int elements, size_t matrixStride, size_t arrayStride, int rows, int columns, bool transpose) LN_NOEXCEPT
+{
+	size_t srcRowSize = sizeof(float) * sourceColumns;
+	size_t dstRowSize = matrixStride;
+	size_t copySize = std::min(srcRowSize, dstRowSize);
+	byte_t* head = buffer + offset;
+	int loop = std::min(sourceElementCount, elements);
+	int rowLoop = std::min(sourceRows, rows);
+	for (int i = 0; i < elements; i++)
+	{
+		const byte_t* srcMatHead = source + sourceColumns * sourceRows * i;
+		byte_t* dstMatHead = head + arrayStride * i;
+
+		float tmp[16];
+		if (transpose)
+		{
+			assert(sourceColumns == 4 && sourceRows == 4);
+			*reinterpret_cast<Matrix*>(tmp) = Matrix::makeTranspose(*reinterpret_cast<const Matrix*>(srcMatHead));
+			srcMatHead = reinterpret_cast<const byte_t*>(tmp);
+		}
+
+		for (int j = 0; j < rowLoop; j++)
+		{
+			memcpy(dstMatHead + matrixStride * j, srcMatHead + srcRowSize * j, copySize);
+		}
 	}
 }
 
@@ -348,6 +379,17 @@ void ShaderParameter::setVectorArray(const Vector4* value, int count)
 	alignVectorsToBuffer((const byte_t*)value, 4, count, m_owner->buffer().data(), m_desc.offset, m_desc.elements, m_desc.arrayStride, m_desc.columns);
 }
 
+void ShaderParameter::setMatrix(const Matrix& value)
+{
+	alignMatricesToBuffer((const byte_t*)&value, 4, 4, 1, m_owner->buffer().data(), m_desc.offset, 1, m_desc.matrixStride, 0, m_desc.rows, m_desc.columns, true);
+}
+
+void ShaderParameter::setMatrixArray(const Matrix* value, int count)
+{
+	alignMatricesToBuffer((const byte_t*)value, 4, 4, count, m_owner->buffer().data(), m_desc.offset, m_desc.elements, m_desc.matrixStride, 0, m_desc.rows, m_desc.columns, true);
+}
+
+
 #if 0
 void ShaderParameter::setBool(bool value)
 {
@@ -359,18 +401,6 @@ void ShaderParameter::setBoolArray(const bool* value, int count)
 {
 	m_value.setBoolArray(value, count);
 }
-
-
-void ShaderParameter::setMatrix(const Matrix& value)
-{
-	m_value.setMatrix(value);
-}
-
-void ShaderParameter::setMatrixArray(const Matrix* value, int count)
-{
-	m_value.setMatrixArray(value, count);
-}
-
 void ShaderParameter::setTexture(Texture* value)
 {
 	m_value.setTexture(value);

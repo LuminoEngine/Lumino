@@ -260,6 +260,7 @@ TEST_F(Test_Graphics_LowLevelRendering, ConstantBuffer)
 		return TestEnv::capture()->getPixel32(0, 0);
 	};
 
+#if 0
 	// * [ ] float
 	{
 		buffer1->findParameter("g_type")->setInt(1);
@@ -310,6 +311,42 @@ TEST_F(Test_Graphics_LowLevelRendering, ConstantBuffer)
 	{
 		buffer1->findParameter("g_type")->setInt(14);
 		buffer1->findParameter("g_float4ary3")->setVectorArray(ary2, 3);
+		ASSERT_EQ(true, renderAndCapture().g > 200);
+	}
+
+#endif
+
+	//* [ ] 座標変換したときに一般的な使い方ができるか
+	{
+		auto pos = Vector4(1, 0, 0, 1);
+		auto mat = Matrix::makeRotationY(-Math::PIDiv2);
+		auto r = Vector4::transform(pos, mat);	// (0, 0, 1)
+		buffer1->findParameter("g_type")->setInt(99);
+		buffer1->findParameter("g_color4")->setVector(pos);
+		buffer2->findParameter("g_mat44")->setMatrix(mat);
+		ASSERT_EQ(true, renderAndCapture().b > 200);
+	}
+	// * [ ] matrix34 (Vector4[3])
+	{
+		Matrix m(
+			0, 0, 0, 0,
+			0, 0, 0, 0,
+			0, 0, 0, 0,
+			0, 0, 0, 0);
+		m(0, 1) = 1;	// 転置とかされることなく、この配列アクセスで値が取り出せる
+		buffer1->findParameter("g_type")->setInt(21);
+		buffer2->findParameter("g_mat34")->setMatrix(m);
+		ASSERT_EQ(true, renderAndCapture().r > 200);
+	}
+	// * [ ] matrix22 (Vector2[2])
+	{
+		Matrix m(
+			0, 0, 0, 0,
+			1, 0, 0, 0,
+			0, 0, 0, 0,
+			0, 0, 0, 0);
+		buffer1->findParameter("g_type")->setInt(22);
+		buffer2->findParameter("g_mat22")->setMatrix(m);
 		ASSERT_EQ(true, renderAndCapture().g > 200);
 	}
 }
