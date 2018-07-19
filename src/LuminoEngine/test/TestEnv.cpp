@@ -14,6 +14,11 @@ void TestEnv::teardown()
 	Engine::terminate();
 }
 
+Ref<Bitmap2D> TestEnv::capture()
+{
+	return Engine::mainWindow()->swapChain()->colorBuffer()->readData();
+}
+
 void TestEnv::saveScreenShot(const Char* filePath)
 {
 	Engine::mainWindow()->swapChain()->colorBuffer()->readData()->save(filePath);

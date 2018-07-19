@@ -24,9 +24,7 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 {
 	// # 時計回り (左ねじ) で描画できること
 	{
-		//m_shader1->setVector("g_color", Vector4(1, 0, 0, 1));
-		Vector4 color(1, 0, 0, 1);
-		m_shader1->findConstantBuffer("ConstBuff")->setData(&color, sizeof(Vector4));
+		m_shader1->findConstantBuffer("ConstBuff")->findParameter("g_color")->setVector(Vector4(1, 0, 0, 1));
 
 		Vector4 v[] = {
 			Vector4(0, 0.5, 0, 1),
@@ -49,7 +47,7 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 {
-	m_shader1->setVector("g_color", Vector4(1, 0, 0, 1));
+	//m_shader1->setVector("g_color", Vector4(1, 0, 0, 1));
 
 	struct Param
 	{
@@ -160,7 +158,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 {
-	m_shader1->setVector("g_color", Vector4(0, 0, 1, 1));
+	//m_shader1->setVector("g_color", Vector4(0, 0, 1, 1));
 
 	struct Param
 	{
@@ -235,5 +233,83 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 				ASSERT_SCREEN(LN_ASSETFILE("Test_Graphics_LowLevelRendering-IndexBuffer-2.png"));	// ↑と同じ結果
 			}
 		}
+	}
+}
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Graphics_LowLevelRendering, ConstantBuffer)
+{
+	auto shader1 = Shader::create(LN_ASSETFILE("simple.vsh"), LN_ASSETFILE("ConstantBufferTest-1.psh"));
+	auto buffer1 = shader1->findConstantBuffer("ConstBuff");
+	auto buffer2 = shader1->findConstantBuffer("ConstBuff2");
+
+	Vector4 v[] = {
+		Vector4(-1, 1, 0, 1),
+		Vector4(0, 1, 0, 1),
+		Vector4(-1, 0, 0, 1),
+	};
+	auto vertexBuffer = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+	auto ctx = Engine::graphicsContext();
+	ctx->setVertexDeclaration(m_vertexDecl1);
+	ctx->setVertexBuffer(0, vertexBuffer);
+	ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
+
+	auto renderAndCapture = [&]() {
+		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+		return TestEnv::capture()->getPixel32(0, 0);
+	};
+
+	// * [ ] float
+	{
+		buffer1->findParameter("g_type")->setInt(1);
+		buffer1->findParameter("g_color1")->setFloat(0.5);	// 赤っぽくする
+		ASSERT_EQ(true, renderAndCapture().r > 100);		// 赤っぽくなっているはず
+	}
+	// * [ ] float2
+	{
+		buffer1->findParameter("g_type")->setInt(2);
+		buffer1->findParameter("g_color2")->setVector(Vector4(1, 0, 0, 1));
+		ASSERT_EQ(true, renderAndCapture().r > 200);
+	}
+	// * [ ] float3
+	{
+		buffer1->findParameter("g_type")->setInt(3);
+		buffer1->findParameter("g_color3")->setVector(Vector4(0, 1, 0, 1));
+		ASSERT_EQ(true, renderAndCapture().g > 200);
+	}
+	// * [ ] float4
+	{
+		buffer1->findParameter("g_type")->setInt(4);
+		buffer1->findParameter("g_color4")->setVector(Vector4(0, 0, 1, 1));
+		ASSERT_EQ(true, renderAndCapture().b > 200);
+	}
+
+	float ary1[3] = { 0, 0.5, 0 };
+	Vector4 ary2[3] = { {1, 0, 0, 1}, {0, 1, 0, 1}, {0, 0, 1, 1} };
+
+	// * [ ] float[]
+	{
+		buffer1->findParameter("g_type")->setInt(11);
+		buffer1->findParameter("g_float1ary3")->setFloatArray(ary1, 3);
+		ASSERT_EQ(true, renderAndCapture().r > 100);
+	}
+	// * [ ] float2[]
+	{
+		buffer1->findParameter("g_type")->setInt(12);
+		buffer1->findParameter("g_float2ary3")->setVectorArray(ary2, 3);
+		ASSERT_EQ(true, renderAndCapture().g > 200);
+	}
+	// * [ ] float3[]
+	{
+		buffer1->findParameter("g_type")->setInt(13);
+		buffer1->findParameter("g_float3ary3")->setVectorArray(ary2, 3);
+		ASSERT_EQ(true, renderAndCapture().b > 200);
+	}
+	// * [ ] float4[]
+	{
+		buffer1->findParameter("g_type")->setInt(14);
+		buffer1->findParameter("g_float4ary3")->setVectorArray(ary2, 3);
+		ASSERT_EQ(true, renderAndCapture().g > 200);
 	}
 }

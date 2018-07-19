@@ -390,7 +390,7 @@ void Bitmap2D::load(const StringRef& filePath)
 
 	auto diag = newObject<DiagnosticsManager>();
 	decoder.load(file, diag);
-	diag->dump();
+	diag->dumpToLog();
 	if (diag->succeeded())
 	{
 		detail::BitmapFrame* frame = decoder.getBitmapFrame();

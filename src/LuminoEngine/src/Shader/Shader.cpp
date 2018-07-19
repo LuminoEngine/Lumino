@@ -9,6 +9,90 @@
 
 namespace ln {
 
+//static void alignIntToBuffer(const int* values, int valuesCount, int elements, size_t offset, size_t stride, void* buffer)
+//{
+//	byte_t* head = static_cast<byte_t*>(buffer) + offset;
+//	int loop = std::min(valuesCount, elements);
+//	for (int i = 0; i < loop; i++) {
+//		memcpy(head + stride * i, values + i, sizeof(int));
+//	}
+//
+//	memcpy(static_cast<byte_t*>(buffer) + offset, &value, sizeof(float) * columns);
+//}
+
+//struct IntVector4
+//{
+//	int x, y, z, w;
+//};
+//
+//static void alignIntVector4ToBuffer(const IntVector4& value, int columns, size_t offset, void* buffer)
+//{
+//	memcpy(static_cast<byte_t*>(buffer) + offset, &value, sizeof(int) * columns);
+//}
+//
+//static void alignIntVector4ArrayToBuffer(const IntVector4* values, int valuesCount, int elements, size_t offset, size_t stride, void* buffer)
+//{
+//	int loop = std::min(valuesCount, elements);
+//	for (int i = 0; i < loop; i++) {
+//		alignIntVector4ToBuffer(values[i], stride / sizeof(int), offset + stride * i, buffer);
+//	}
+//}
+//
+//static void alignVector4ToBuffer(const Vector4& value, int columns, size_t offset, void* buffer)
+//{
+//	memcpy(static_cast<byte_t*>(buffer) + offset, &value, sizeof(float) * columns);
+//}
+//
+//static void alignVector4ArrayToBuffer(const Vector4* values, int elements, size_t offset, size_t stride, void* buffer)
+//{
+//	for (int i = 0; i < elements; i++) {
+//		alignVector4ToBuffer(values[i], stride / sizeof(float), offset + stride * i, buffer);
+//	}
+//}
+//
+//
+//struct AlignmentSource
+//{
+//	const byte_t* data;
+//	size_t unit;			// 1 要素のサイズ。sizeof
+//	size_t columns;
+//	size_t rows;			// 行列の列数。ベクトルやスカラの時は 1 にする。
+//	size_t elements;		// 配列要素数。スカラの時は 1 にする。
+//};
+//
+//struct AligmentTarget
+//{
+//	byte_t* buffer;
+//	size_t bufferSize;
+//	size_t unit;			// 1 要素のサイズ。sizeof
+//};
+
+// int or float
+static void alignScalarsToBuffer(
+	const byte_t* source, size_t unitBytes, int unitCount,
+	byte_t* buffer, size_t offset, int elements, size_t arrayStride)
+{
+	int loop = std::min(unitCount, elements);
+	byte_t* head = buffer + offset;
+	for (int i = 0; i < elements; i++) {
+		memcpy(head + arrayStride * i, source + unitBytes * i, unitBytes);
+	}
+}
+
+// vector
+static void alignVectorsToBuffer(
+	const byte_t* source, int sourceColumns, int sourceElementCount,
+	byte_t* buffer, size_t offset, int elements, size_t arrayStride, int columns)
+{
+	size_t sourceVectorSize = sizeof(float) * sourceColumns;
+	size_t copySize = std::min(sourceVectorSize, sizeof(float) * columns);
+	int loop = std::min(sourceElementCount, elements);
+	byte_t* head = buffer + offset;
+	for (int i = 0; i < elements; i++) {
+		memcpy(head + arrayStride * i, source + sourceVectorSize * i, copySize);
+	}
+}
+
 //=============================================================================
 // Shader
 
@@ -40,32 +124,13 @@ void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& 
 	auto vsData = FileSystem::readAllBytes(vertexShaderFilePath);
 	auto psData = FileSystem::readAllBytes(pixelShaderFilePath);
 
-	detail::ShaderCode vsCodeGen;
-	if (!vsCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Vertex, reinterpret_cast<const char*>(vsData.data()), vsData.size(), "main", m_diag))
-	{
+	buildShader(
+		reinterpret_cast<const char*>(vsData.data()), vsData.size(),
+		reinterpret_cast<const char*>(psData.data()), psData.size());
+
+	if (m_diag->hasItems())	{
+		m_diag->dumpToLog();
 	}
-
-	detail::ShaderCode psCodeGen;
-	psCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Fragment, reinterpret_cast<const char*>(psData.data()), psData.size(), "main", m_diag);
-
-	//detail::EngineDomain::shaderManager()
-
-
-	std::string vsCode = vsCodeGen.generateGlsl();
-	std::string psCode = psCodeGen.generateGlsl();
-
-	ShaderCompilationDiag diag;
-	auto rhiPass = deviceContext()->createShaderPass(
-		reinterpret_cast<const byte_t*>(vsCode.c_str()), vsCode.length(),
-		reinterpret_cast<const byte_t*>(psCode.c_str()), psCode.length(), &diag);
-
-	auto tech = newObject<ShaderTechnique>();
-	tech->setOwner(this);
-	m_techniques.add(tech);
-
-	auto pass = newObject<ShaderPass>(rhiPass);
-	tech->addShaderPass(pass);
-	pass->setupParameters();
 }
 
 void Shader::dispose()
@@ -86,6 +151,38 @@ void Shader::onChangeDevice(detail::IGraphicsDeviceContext* device)
 	LN_NOTIMPLEMENTED();
 }
 
+void Shader::buildShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen)
+{
+	detail::ShaderCode vsCodeGen;
+	if (!vsCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Vertex, vsData, vsLen, "main", m_diag))
+	{
+		return;
+	}
+
+	detail::ShaderCode psCodeGen;
+	if (!psCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Fragment, psData, psLen, "main", m_diag))
+	{
+		return;
+	}
+
+	std::string vsCode = vsCodeGen.generateGlsl();
+	std::string psCode = psCodeGen.generateGlsl();
+
+	ShaderCompilationDiag diag;
+	auto rhiPass = deviceContext()->createShaderPass(
+		reinterpret_cast<const byte_t*>(vsCode.c_str()), vsCode.length(),
+		reinterpret_cast<const byte_t*>(psCode.c_str()), psCode.length(), &diag);
+
+	auto tech = newObject<ShaderTechnique>();
+	tech->setOwner(this);
+	m_techniques.add(tech);
+
+	auto pass = newObject<ShaderPass>(rhiPass);
+	tech->addShaderPass(pass);
+	pass->setupParameters();
+}
+
+#if 0
 void Shader::setBool(const StringRef& name, bool value)
 {
 	ShaderParameter* param = findParameter(name);
@@ -145,18 +242,19 @@ void Shader::setTexture(const StringRef& name, Texture* value)
 	ShaderParameter* param = findParameter(name);
 	if (param) param->setTexture(value);
 }
+#endif
 
-ShaderParameter* Shader::findParameter(const StringRef& name)
-{
-	for (auto& param : m_parameters)
-	{
-		if (param->name() == name)
-		{
-			return param;
-		}
-	}
-	return nullptr;
-}
+//ShaderParameter* Shader::findParameter(const StringRef& name)
+//{
+//	for (auto& param : m_parameters)
+//	{
+//		if (param->name() == name)
+//		{
+//			return param;
+//		}
+//	}
+//	return nullptr;
+//}
 
 ShaderConstantBuffer* Shader::findConstantBuffer(const StringRef& name)
 {
@@ -164,20 +262,20 @@ ShaderConstantBuffer* Shader::findConstantBuffer(const StringRef& name)
 	return (result) ? *result : nullptr;
 }
 
-ShaderParameter* Shader::getShaderParameter(const detail::ShaderUniformTypeDesc& desc, const String& name)
-{
-	for (auto& param : m_parameters)
-	{
-		if (detail::ShaderUniformTypeDesc::equals(param->desc(), desc) && param->name() == name)
-		{
-			return param;
-		}
-	}
-
-	auto param = newObject<ShaderParameter>(desc, name);
-	m_parameters.add(param);
-	return param;
-}
+//ShaderParameter* Shader::getShaderParameter(const detail::ShaderUniformTypeDesc& desc, const String& name)
+//{
+//	for (auto& param : m_parameters)
+//	{
+//		if (detail::ShaderUniformTypeDesc::equals(param->desc(), desc) && param->name() == name)
+//		{
+//			return param;
+//		}
+//	}
+//
+//	auto param = newObject<ShaderParameter>(desc, name);
+//	m_parameters.add(param);
+//	return param;
+//}
 
 ShaderConstantBuffer* Shader::getOrCreateConstantBuffer(detail::IShaderUniformBuffer* rhiBuffer)
 {
@@ -205,8 +303,10 @@ ShaderParameter::~ShaderParameter()
 {
 }
 
-void ShaderParameter::initialize(const detail::ShaderUniformTypeDesc& desc, const String& name)
+void ShaderParameter::initialize(ShaderConstantBuffer* owner, const detail::ShaderUniformTypeDesc& desc, const String& name)
 {
+	Object::initialize();
+	m_owner = owner;
 	m_desc = desc;
 	m_name = name;
 	m_value.reset(desc.type, desc.elements);
@@ -217,40 +317,49 @@ void ShaderParameter::dispose()
 	Object::dispose();
 }
 
+
+void ShaderParameter::setInt(int value)
+{
+	alignScalarsToBuffer((const byte_t*)&value, sizeof(int), 1, m_owner->buffer().data(), m_desc.offset, 1, 0);
+}
+
+void ShaderParameter::setIntArray(const int* value, int count)
+{
+	LN_NOTIMPLEMENTED();
+}
+
+void ShaderParameter::setFloat(float value)
+{
+	alignScalarsToBuffer((const byte_t*)&value, sizeof(float), 1, m_owner->buffer().data(), m_desc.offset, 1, 0);
+}
+
+void ShaderParameter::setFloatArray(const float* value, int count)
+{
+	alignScalarsToBuffer((const byte_t*)value, sizeof(float), count, m_owner->buffer().data(), m_desc.offset, m_desc.elements, m_desc.arrayStride);
+}
+
+void ShaderParameter::setVector(const Vector4& value)
+{
+	alignVectorsToBuffer((const byte_t*)&value, 4, 1, m_owner->buffer().data(), m_desc.offset, 1, 0, m_desc.columns);
+}
+
+void ShaderParameter::setVectorArray(const Vector4* value, int count)
+{
+	alignVectorsToBuffer((const byte_t*)value, 4, count, m_owner->buffer().data(), m_desc.offset, m_desc.elements, m_desc.arrayStride, m_desc.columns);
+}
+
+#if 0
 void ShaderParameter::setBool(bool value)
 {
 	m_value.setBool(value);
 }
 
-void ShaderParameter::setInt(int value)
-{
-	m_value.setInt(value);
-}
 
 void ShaderParameter::setBoolArray(const bool* value, int count)
 {
 	m_value.setBoolArray(value, count);
 }
 
-void ShaderParameter::setFloat(float value)
-{
-	m_value.setFloat(value);
-}
-
-void ShaderParameter::setFloatArray(const float* value, int count)
-{
-	m_value.setFloatArray(value, count);
-}
-
-void ShaderParameter::setVector(const Vector4& value)
-{
-	m_value.setVector(value);
-}
-
-void ShaderParameter::setVectorArray(const Vector4* value, int count)
-{
-	m_value.setVectorArray(value, count);
-}
 
 void ShaderParameter::setMatrix(const Matrix& value)
 {
@@ -271,6 +380,7 @@ void ShaderParameter::setPointer(void* value)
 {
 	m_value.setPointer(value);
 }
+#endif
 
 //=============================================================================
 // ShaderConstantBuffer
@@ -292,6 +402,12 @@ void ShaderConstantBuffer::initialize(Shader* owner, detail::IShaderUniformBuffe
 	m_rhiObject = rhiObject;
 	m_name = String::fromStdString(m_rhiObject->name());
 	m_buffer.resize(m_rhiObject->bufferSize());
+
+	for (int i = 0; i < m_rhiObject->getUniformCount(); i++)
+	{
+		detail::IShaderUniform* field = m_rhiObject->getUniform(i);
+		m_parameters.add(newObject<ShaderParameter>(this, field->desc(), String::fromStdString(field->name())));
+	}
 }
 
 void ShaderConstantBuffer::setData(const void* data, int size)
@@ -299,10 +415,17 @@ void ShaderConstantBuffer::setData(const void* data, int size)
 	m_buffer.assign(data, size);
 }
 
+ShaderParameter* ShaderConstantBuffer::findParameter(const StringRef& name) const
+{
+	auto result = m_parameters.findIf([name](const ShaderParameter* param) { return param->name() == name; });
+	return (result) ? *result : nullptr;
+}
+
 void ShaderConstantBuffer::commit()
 {
 	auto* manager = owner()->manager();
 	detail::RenderBulkData data = manager->primaryRenderingCommandList()->allocateBulkData(m_buffer.size());
+	memcpy(data.writableData(), m_buffer.data(), data.size());
 
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		ShaderConstantBuffer_commit, manager,
@@ -364,14 +487,14 @@ void ShaderPass::dispose()
 
 void ShaderPass::setupParameters()
 {
-	m_parameters.clear();
+	//m_parameters.clear();
 
-	for (int i = 0; i < m_rhiPass->getUniformCount(); i++)
-	{
-		detail::IShaderUniform* uni = m_rhiPass->getUniform(i);
-		ShaderParameter* param = m_owner->owner()->getShaderParameter(uni->desc(), String::fromStdString(uni->name()));
-		m_parameters.add(param);
-	}
+	//for (int i = 0; i < m_rhiPass->getUniformCount(); i++)
+	//{
+	//	detail::IShaderUniform* uni = m_rhiPass->getUniform(i);
+	//	ShaderParameter* param = m_owner->owner()->getShaderParameter(uni->desc(), String::fromStdString(uni->name()));
+	//	m_parameters.add(param);
+	//}
 
 	m_buffers.clear();
 
@@ -425,6 +548,19 @@ void ShaderPass::commit()
 	{
 		buffer->commit();
 	}
+
+	//LN_ENQUEUE_RENDER_COMMAND_1(
+	//	ShaderPass_commit, manager,
+	//	Ref<detail::IShaderPass>, m_rhiPass,
+	//	{
+	//		m_rhiPass->a
+	//	});
+}
+
+detail::IShaderPass* ShaderPass::resolveRHIObject()
+{
+	commit();
+	return m_rhiPass;
 }
 
 //=============================================================================
@@ -666,14 +802,17 @@ namespace detail {
 
 size_t ShaderValueSerializer::measureBufferSize(const ShaderPass* pass)
 {
-	size_t size = 0;
-	for (auto& param : pass->m_parameters)
-	{
-		size += sizeof(uint8_t);	// type
-		size += sizeof(uint32_t);	// data size
-		size += param->m_value.getDataByteSize();
-	}
-	return size;
+	LN_NOTIMPLEMENTED();
+	return 0;
+
+	//size_t size = 0;
+	//for (auto& param : pass->m_parameters)
+	//{
+	//	size += sizeof(uint8_t);	// type
+	//	size += sizeof(uint32_t);	// data size
+	//	size += param->m_value.getDataByteSize();
+	//}
+	//return size;
 }
 
 ShaderValueSerializer::ShaderValueSerializer(void* buffer, size_t size)

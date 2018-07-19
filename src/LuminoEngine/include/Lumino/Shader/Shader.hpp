@@ -5,7 +5,7 @@
 
 namespace ln {
 class DiagnosticsManager;
-class ShaderParameter;
+//class ShaderParameter;
 class ShaderConstantBuffer;
 class ShaderTechnique;
 class ShaderPass;
@@ -120,18 +120,18 @@ class LN_API Shader
 public:
 	static Ref<Shader> create(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath);
 
-	void setBool(const StringRef& name, bool value);
-	void setInt(const StringRef& name, int value);
-	void setBoolArray(const StringRef& name, const bool* value, int count);
-	void setFloat(const StringRef& name, float value);
-	void setFloatArray(const StringRef& name, const float* value, int count);
-	void setVector(const StringRef& name, const Vector4& value);
-	void setVectorArray(const StringRef& name, const Vector4* value, int count);
-	void setMatrix(const StringRef& name, const Matrix& value);
-	void setMatrixArray(const StringRef& name, const Matrix* value, int count);
-	void setTexture(const StringRef& name, Texture* value);
+	//void setBool(const StringRef& name, bool value);
+	//void setInt(const StringRef& name, int value);
+	//void setBoolArray(const StringRef& name, const bool* value, int count);
+	//void setFloat(const StringRef& name, float value);
+	//void setFloatArray(const StringRef& name, const float* value, int count);
+	//void setVector(const StringRef& name, const Vector4& value);
+	//void setVectorArray(const StringRef& name, const Vector4* value, int count);
+	//void setMatrix(const StringRef& name, const Matrix& value);
+	//void setMatrixArray(const StringRef& name, const Matrix* value, int count);
+	//void setTexture(const StringRef& name, Texture* value);
 
-	ShaderParameter* findParameter(const StringRef& name);
+	//ShaderParameter* findParameter(const StringRef& name);
 	ShaderConstantBuffer* findConstantBuffer(const StringRef& name);
 
 	const List<Ref<ShaderTechnique>>& techniques() const { return m_techniques; }
@@ -146,11 +146,12 @@ LN_CONSTRUCT_ACCESS:
 	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
 
 private:
-	ShaderParameter* getShaderParameter(const detail::ShaderUniformTypeDesc& desc, const String& name);
+	void buildShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen);
+	//ShaderParameter* getShaderParameter(const detail::ShaderUniformTypeDesc& desc, const String& name);
 	ShaderConstantBuffer* getOrCreateConstantBuffer(detail::IShaderUniformBuffer* buffer);
 
 	Ref<DiagnosticsManager> m_diag;
-	List<Ref<ShaderParameter>> m_parameters;
+	//List<Ref<ShaderParameter>> m_parameters;
 	List<Ref<ShaderConstantBuffer>> m_buffers;
 	List<Ref<ShaderTechnique>> m_techniques;
 
@@ -162,9 +163,12 @@ class LN_API ShaderParameter
 	: public Object
 {
 public:
+	const String& name() const { return m_name; }
+
 	void setBool(bool value);
+	//void setBoolArray(const bool* value, int count);
 	void setInt(int value);
-	void setBoolArray(const bool* value, int count);
+	void setIntArray(const int* value, int count);
 	void setFloat(float value);
 	void setFloatArray(const float* value, int count);
 	void setVector(const Vector4& value);
@@ -177,13 +181,14 @@ public:
 LN_CONSTRUCT_ACCESS:
 	ShaderParameter();
 	virtual ~ShaderParameter();
-	void initialize(const detail::ShaderUniformTypeDesc& desc, const String& name);
+	void initialize(ShaderConstantBuffer* owner, const detail::ShaderUniformTypeDesc& desc, const String& name);
 	virtual void dispose() override;
 
 private:
 	const detail::ShaderUniformTypeDesc& desc() const { return m_desc; }
-	const String& name() const { return m_name; }
+	
 
+	ShaderConstantBuffer* m_owner;
 	detail::ShaderUniformTypeDesc m_desc;
 	String m_name;
 	detail::ShaderParameterValue m_value;
@@ -200,6 +205,8 @@ public:
 	const String& name() const { return m_name; }
 	void setData(const void* data, int size);
 
+	ShaderParameter* findParameter(const StringRef& name) const;
+
 LN_CONSTRUCT_ACCESS:	// TODO: 内部でしか new しないから private とかでいい気がする
 	ShaderConstantBuffer();
 	virtual ~ShaderConstantBuffer();
@@ -208,14 +215,17 @@ LN_CONSTRUCT_ACCESS:	// TODO: 内部でしか new しないから private とか
 private:
 	Shader* owner() const { return m_owner; }
 	detail::IShaderUniformBuffer* getRhiObject() const { return m_rhiObject; }
+	ByteBuffer& buffer() { return m_buffer; }
 	void commit();
 
 	Shader* m_owner;
 	detail::IShaderUniformBuffer* m_rhiObject;
 	String m_name;
 	ByteBuffer m_buffer;
+	List<Ref<ShaderParameter>> m_parameters;
 
 	friend class Shader;
+	friend class ShaderParameter;
 	friend class ShaderPass;
 };
 
@@ -256,10 +266,11 @@ private:
 	void setOwner(ShaderTechnique* owner) { m_owner = owner; }
 	void setupParameters();
 	void commit();
+	detail::IShaderPass* resolveRHIObject();
 
 	ShaderTechnique* m_owner;
 	Ref<detail::IShaderPass> m_rhiPass;
-	List<ShaderParameter*> m_parameters;
+	//List<ShaderParameter*> m_parameters;
 	List<ShaderConstantBuffer*> m_buffers;
 
 	friend class Shader;

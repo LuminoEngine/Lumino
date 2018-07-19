@@ -111,6 +111,7 @@ protected:
 	virtual void onUpdateRenderState(const RenderStateData& newState) override;
 	virtual void onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer) override;
 	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) override;
+	virtual void onUpdateShaderPass(IShaderPass* newPass) override;
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
 	virtual void onDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) override;
 	virtual void onDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) override;
@@ -355,6 +356,7 @@ public:
 	virtual void dispose() override;
 
 	GLuint program() const { return m_program; }
+	void apply();
 
 	virtual int getUniformCount() const override;
 	virtual IShaderUniform* getUniform(int index) const override;
@@ -380,6 +382,7 @@ public:
 	GLShaderUniformBuffer(const GLchar* blockName, GLuint blockIndex, GLint blockSize, GLuint bindingPoint);
 	virtual ~GLShaderUniformBuffer();
 	void addUniform(GLShaderUniform* uniform) { m_uniforms.add(uniform); }
+	void bind(GLuint program);
 
 	virtual const std::string& name() const;
 	virtual int getUniformCount() const;
@@ -391,6 +394,7 @@ private:
 	std::string m_name;
 	GLuint m_blockIndex;
 	GLint m_blockSize;
+	GLuint m_bindingPoint;
 	List<Ref<GLShaderUniform>> m_uniforms;
 	GLuint m_ubo;
 };

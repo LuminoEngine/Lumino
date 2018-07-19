@@ -6,6 +6,7 @@ public:
 	static void setup();
 	static void teardown();
 
+	static Ref<Bitmap2D> capture();
 	static void saveScreenShot(const Char* filePath);
 	static bool equalsScreenShot(const Char* filePath, int passRate);
 	static bool equalsBitmapFile(Bitmap2D* bmp1, const Char* filePath, int passRate);

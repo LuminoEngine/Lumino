@@ -102,6 +102,11 @@ void GraphicsContext::setIndexBuffer(IndexBuffer* value)
 	m_staging.indexBuffer = value;
 }
 
+void GraphicsContext::setShaderPass(ShaderPass* pass)
+{
+	m_staging.shaderPass = pass;
+}
+
 void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
 	commitStatus();
@@ -135,15 +140,6 @@ void GraphicsContext::drawPrimitiveIndexed(PrimitiveType primitive, int startInd
 		{
 			m_device->drawPrimitiveIndexed(primitive, startIndex, primitiveCount);
 		});
-}
-
-void GraphicsContext::setShaderPass(ShaderPass* pass)
-{
-	// TODO: threading
-	if (pass)
-	{
-		pass->commit();
-	}
 }
 
 void GraphicsContext::present(SwapChain* swapChain)
@@ -228,6 +224,18 @@ void GraphicsContext::commitStatus()
 			detail::IIndexBuffer*, rhiObject,
 			{
 				m_device->setIndexBuffer(rhiObject);
+			});
+	}
+
+	{
+		auto& value = m_staging.shaderPass;
+		detail::IShaderPass* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
+		LN_ENQUEUE_RENDER_COMMAND_2(
+			GraphicsContext_setShaderPass, m_manager,
+			detail::IGraphicsDeviceContext*, m_device,
+			detail::IShaderPass*, rhiObject,
+			{
+				m_device->setShaderPass(rhiObject);
 			});
 	}
 }

@@ -143,10 +143,12 @@ void IGraphicsDeviceContext::commitStatus()
 
 	onUpdateRenderState(m_staging.renderState);
 
+	onUpdateShaderPass(m_staging.shaderPass);
+
 	onUpdateFrameBuffers(m_staging.renderTargets.data(), m_staging.renderTargets.size(), nullptr);
 
 	onUpdatePrimitiveData(m_staging.vertexDeclaration, m_staging.vertexBuffers.data(), m_staging.vertexBuffers.size(), m_staging.indexBuffer);
-	// TODO: Shadr
+	
 }
 
 

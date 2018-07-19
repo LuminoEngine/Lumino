@@ -49,7 +49,7 @@ void DiagnosticsManager::reportInfo(StringRef message)
 	m_items.add(item);
 }
 
-void DiagnosticsManager::dump() const
+void DiagnosticsManager::dumpToLog() const
 {
 	for (auto& item : m_items)
 	{

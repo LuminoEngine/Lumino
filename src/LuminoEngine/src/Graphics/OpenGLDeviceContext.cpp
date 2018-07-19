@@ -69,6 +69,8 @@ public:
 			//case GL_INT_VEC3:   SET_LNDESC(LN_SVC_VECTOR, ShaderRefrectionParameterType::IntVector, 1, 3); break;
 			//case GL_INT_VEC4:   SET_LNDESC(LN_SVC_VECTOR, ShaderRefrectionParameterType::IntVector, 1, 4); break;
 
+			case GL_UNSIGNED_INT:	SET_LNDESC(LN_SVC_SCALAR, ShaderRefrectionParameterType::Int, 1, 1); break;
+
 			case GL_BOOL:        SET_LNDESC(LN_SVC_SCALAR, ShaderRefrectionParameterType::Bool, 1, 1); break;
 			//case GL_BOOL_VEC2:   SET_LNDESC(LN_SVC_VECTOR, ShaderRefrectionParameterType::BoolVector, 1, 2); break;
 			//case GL_BOOL_VEC3:   SET_LNDESC(LN_SVC_VECTOR, ShaderRefrectionParameterType::BoolVector, 1, 3); break;
@@ -100,7 +102,9 @@ public:
 			case GL_SAMPLER_1D_SHADOW:  SET_LNDESC(LN_SVC_SAMPLER, ShaderRefrectionParameterType::Unknown, 1, 1); break;
 			case GL_SAMPLER_2D_SHADOW:  SET_LNDESC(LN_SVC_SAMPLER, ShaderRefrectionParameterType::Unknown, 1, 1); break;
 				//#endif
-			default: SET_LNDESC(LN_SVC_SAMPLER, ShaderRefrectionParameterType::Unknown, 0, 0); break;
+			default:
+				SET_LNDESC(LN_SVC_SAMPLER, ShaderRefrectionParameterType::Unknown, 0, 0);
+				break;
 		}
 
 		// check array type (e.g. "list[0]")
@@ -431,6 +435,15 @@ void OpenGLDeviceContext::onUpdatePrimitiveData(IVertexDeclaration* decls, IVert
 		GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 	}
 
+}
+
+void OpenGLDeviceContext::onUpdateShaderPass(IShaderPass* newPass)
+{
+	if (newPass)
+	{
+		GLShaderPass* pass = static_cast<GLShaderPass*>(newPass);
+		pass->apply();
+	}
 }
 
 void OpenGLDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
@@ -1101,6 +1114,14 @@ void GLShaderPass::dispose()
 	IShaderPass::dispose();
 }
 
+void GLShaderPass::apply()
+{
+	GL_CHECK(glUseProgram(m_program));
+	for (auto& buf : m_uniformBuffers) {
+		buf->bind(m_program);
+	}
+}
+
 int GLShaderPass::getUniformCount() const
 {
 	return m_uniforms.size();
@@ -1229,7 +1250,18 @@ void GLShaderPass::buildUniforms()
 			desc.arrayStride = arrayStrides[iMember];
 			desc.matrixStride = matrixStrides[iMember];
 
-			auto uniform = makeRef<GLShaderUniform>(desc, name, offsets[iMember]);
+			char* localName = name;
+			if (strstr(localName, blockName) && localName[blockNameLen] == '.') {
+				// "Buffer.g_value" といったように、ブロック名が先頭についていることがあるので取り除いておく
+				localName += blockNameLen + 1;
+			}
+			char* bracket = strstr(localName, "[");
+			if (bracket) {
+				// 配列変数は "g_ary[0]" というような名前で出てくるので、後ろを削る。
+				*bracket = '\0';
+			}
+
+			auto uniform = makeRef<GLShaderUniform>(desc, localName, offsets[iMember]);
 			uniformBlock->addUniform(uniform);
 
 			LN_LOG_VERBOSE << "uniform " << iMember;
@@ -1255,6 +1287,7 @@ GLShaderUniformBuffer::GLShaderUniformBuffer(const GLchar* blockName, GLuint blo
 	: m_name(blockName)
 	, m_blockIndex(blockIndex)
 	, m_blockSize(blockSize)
+	, m_bindingPoint(bindingPoint)
 	, m_ubo(0)
 {
 	GL_CHECK(glGenBuffers(1, &m_ubo));
@@ -1262,16 +1295,7 @@ GLShaderUniformBuffer::GLShaderUniformBuffer(const GLchar* blockName, GLuint blo
 	GL_CHECK(glBufferData(GL_UNIFORM_BUFFER, m_blockSize, nullptr, GL_DYNAMIC_DRAW));
 	GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 
-	// Choose a binding point in the UBO; must be < GL_MAX_UNIFORM_BUFFER_BINDINGS
-	GLuint bp = 7;
-
-
-	//// Fill the buffer with data at the chosen binding point
-	//glBindBufferBase(GL_UNIFORM_BUFFER, bindingPoint, ubo);
-
-	//// Query the shader for block index of 'Crazy80s' and hook it up
-	//GLuint idx = glGetUniformBlockIndex(prog, "Crazy80s");
-	//glUniformBlockBinding(prog, idx, bp);
+	
 }
 
 GLShaderUniformBuffer::~GLShaderUniformBuffer()
@@ -1283,6 +1307,15 @@ GLShaderUniformBuffer::~GLShaderUniformBuffer()
 		m_ubo = 0;
 	}
 
+}
+
+void GLShaderUniformBuffer::bind(GLuint program)
+{
+	// m_ubo を context 内の Global なテーブルの m_bindingPoint 番目にセット
+	GL_CHECK(glBindBufferBase(GL_UNIFORM_BUFFER, m_bindingPoint, m_ubo));
+
+	// m_bindingPoint 番目にセットされている m_ubo を、m_blockIndex 番目の Uniform Buffer として使う
+	GL_CHECK(glUniformBlockBinding(program, m_blockIndex, m_bindingPoint));
 }
 
 const std::string& GLShaderUniformBuffer::name() const
