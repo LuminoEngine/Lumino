@@ -45,4 +45,12 @@ private:
 };
 
 
+namespace detail {
+
+class BitmapHelper
+{
+public:
+	static void blitRawSimple(void* dst, const void* src, size_t width, size_t height, size_t pixelBytes, bool flipVertical);
+};
+} // namespace detail
 } // namespace ln

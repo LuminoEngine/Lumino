@@ -70,6 +70,7 @@ int readPixel1(int i)
 	//{
 	//	return g_buf[i % 512];
 	//}
+	return 0;
 }
 
 int readPixel2(int i)

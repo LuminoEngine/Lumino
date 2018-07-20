@@ -35,6 +35,7 @@ public:
 	Ref<IVertexDeclaration> createVertexDeclaration(const VertexElement* elements, int elementsCount);
 	Ref<IVertexBuffer> createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData = nullptr);
 	Ref<IIndexBuffer> createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData = nullptr);
+	Ref<ITexture> createTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData = nullptr);
 	Ref<ITexture> createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
 	Ref<IShaderPass> createShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag);
 
@@ -61,6 +62,7 @@ protected:
 	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) = 0;
 	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) = 0;
 	virtual Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) = 0;
+	virtual Ref<ITexture> onCreateTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) = 0;
 	virtual Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) = 0;
 	virtual Ref<IShaderPass> onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag) = 0;
 
@@ -166,7 +168,7 @@ class ITexture
 public:
 
 
-	virtual void getSize(SizeI* outSize) = 0;
+	virtual const SizeI& realSize(SizeI* outSize) = 0;
 	virtual TextureFormat getTextureFormat() const = 0;
 
 	// データは up flow (上下反転)
@@ -192,9 +194,9 @@ public:
 	///// サンプラステートの設定
 	////virtual void setSamplerState(const SamplerState& state) = 0;
 
-	///// データ転送 (TODO:部分更新は未実装…)
-	//// data に渡されるイメージデータは上下が反転している状態。
-	//virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) = 0;
+	// データ転送 (TODO:部分更新は未実装…)
+	// data に渡されるイメージデータは上下が反転している状態。
+	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
 
 	//virtual void setSubData3D(const Box32& box, const void* data, size_t dataBytes) = 0;
 

@@ -6,15 +6,11 @@
 namespace ln {
 class DiagnosticsManager;
 //class ShaderParameter;
+class Texture;
 class ShaderConstantBuffer;
 class ShaderTechnique;
 class ShaderPass;
 class GraphicsContext;
-
-class Texture
-	: public GraphicsResource
-{
-};
 
 namespace detail {
 class IShaderPass;

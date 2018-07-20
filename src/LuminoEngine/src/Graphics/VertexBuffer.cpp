@@ -64,7 +64,7 @@ void VertexBuffer::initialize(size_t bufferSize, const void* initialData, Graphi
 
 void VertexBuffer::dispose()
 {
-	m_rhiObject = nullptr;
+	m_rhiObject.reset();
 	GraphicsResource::dispose();
 }
 

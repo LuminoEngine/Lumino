@@ -58,6 +58,11 @@ Ref<IIndexBuffer> IGraphicsDeviceContext::createIndexBuffer(GraphicsResourceUsag
 	return onCreateIndexBuffer(usage, format, indexCount, initialData);
 }
 
+Ref<ITexture> IGraphicsDeviceContext::createTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
+{
+	return onCreateTexture2D(width, height, requestFormat, mipmap, initialData);
+}
+
 Ref<ITexture> IGraphicsDeviceContext::createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
 {
 	return onCreateRenderTarget(width, height, requestFormat, mipmap);

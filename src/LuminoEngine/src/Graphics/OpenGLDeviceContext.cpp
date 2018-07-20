@@ -275,6 +275,13 @@ Ref<IIndexBuffer> OpenGLDeviceContext::onCreateIndexBuffer(GraphicsResourceUsage
 	return ptr;
 }
 
+Ref<ITexture> OpenGLDeviceContext::onCreateTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
+{
+	auto ptr = makeRef<GLTexture2D>();
+	ptr->initialize(width, height, requestFormat, mipmap, initialData);
+	return ptr;
+}
+
 Ref<ITexture> OpenGLDeviceContext::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
 {
 	auto ptr = makeRef<GLRenderTargetTexture>();
@@ -913,7 +920,92 @@ void GLIndexBuffer::unmap()
 }
 
 //=============================================================================
-// GLSLShader
+// GLTexture2D
+
+GLTexture2D::GLTexture2D()
+	: m_id(0)
+	, m_size(0, 0)
+	, m_textureFormat(TextureFormat::Unknown)
+	, m_pixelFormat(0)
+	, m_elementType(0)
+{
+}
+
+GLTexture2D::~GLTexture2D()
+{
+}
+
+void GLTexture2D::initialize(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
+{
+	m_size = SizeI(width, height);
+	m_textureFormat = requestFormat;
+
+	// http://marina.sys.wakayama-u.ac.jp/~tokoi/?date=20040914
+
+	GLint levels = (mipmap) ? 4 : 0;	// TODO:DirectX だと 0 の場合は全レベル作成するけど、今ちょっと計算めんどうなので 
+
+	GLenum internalFormat;
+	OpenGLHelper::getGLTextureFormat(requestFormat, &internalFormat, &m_pixelFormat, &m_elementType);
+
+	// テクスチャ作成
+	GL_CHECK(glGenTextures(1, &m_id));
+	GL_CHECK(glBindTexture(GL_TEXTURE_2D, m_id));
+	GL_CHECK(glTexImage2D(GL_TEXTURE_2D, levels, internalFormat, m_size.width, m_size.height, 0, m_pixelFormat, m_elementType, initialData));
+
+	// デフォルトのサンプラステート (セットしておかないとサンプリングできない)
+	//setGLSamplerState(m_samplerState);
+
+	GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+}
+
+void GLTexture2D::dispose()
+{
+	if (m_id != 0)
+	{
+		GL_CHECK(glDeleteTextures(1, &m_id));
+		m_id = 0;
+	}
+
+	GLTextureBase::dispose();
+}
+
+void GLTexture2D::readData(void* outData)
+{
+	LN_UNREACHABLE();
+}
+
+void GLTexture2D::getSize(SizeI* outSize)
+{
+	*outSize = m_size;
+}
+
+TextureFormat GLTexture2D::getTextureFormat() const
+{
+	return m_textureFormat;
+}
+
+void GLTexture2D::setSubData(int x, int y, int width, int height, const void* data, size_t dataSize)
+{
+	GL_CHECK(glBindTexture(GL_TEXTURE_2D, m_id));
+
+	/* テクスチャ画像はバイト単位に詰め込まれている */
+	//glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	GL_CHECK(glTexSubImage2D(
+		GL_TEXTURE_2D,
+		0,	// TODO: Mipmap
+		x,
+		/*m_realSize.Height - */y,
+		width,
+		height,
+		m_pixelFormat,
+		m_elementType,
+		data));
+
+	GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+}
+
+//=============================================================================
+// GLRenderTargetTexture
 
 GLRenderTargetTexture::GLRenderTargetTexture()
 {
@@ -983,6 +1075,16 @@ void GLRenderTargetTexture::readData(void* outData)
 void GLRenderTargetTexture::getSize(SizeI* outSize)
 {
 	*outSize = m_size;
+}
+
+TextureFormat GLRenderTargetTexture::getTextureFormat() const
+{
+	return m_textureFormat;
+}
+
+void GLRenderTargetTexture::setSubData(int x, int y, int width, int height, const void* data, size_t dataSize)
+{
+	LN_UNREACHABLE();
 }
 
 //=============================================================================

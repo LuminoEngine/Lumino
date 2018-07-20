@@ -106,6 +106,7 @@ protected:
 	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) override;
 	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) override;
 	virtual Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) override;
+	virtual Ref<ITexture> onCreateTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
 	virtual Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) override;
 	virtual Ref<IShaderPass> onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag) override;
 	virtual void onUpdateRenderState(const RenderStateData& newState) override;
@@ -267,6 +268,31 @@ public:
 	virtual GLuint id() const = 0;
 };
 
+
+class GLTexture2D
+	: public GLTextureBase
+{
+public:
+	GLTexture2D();
+	virtual ~GLTexture2D();
+	void initialize(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData);
+	virtual void dispose() override;
+
+	virtual void readData(void* outData) override;
+	virtual void getSize(SizeI* outSize) override;
+	virtual TextureFormat getTextureFormat() const override;
+	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) override;
+
+	virtual GLuint id() const override { return m_id; }
+
+private:
+	GLuint m_id;
+	SizeI m_size;
+	TextureFormat m_textureFormat;
+	GLenum m_pixelFormat;
+	GLenum m_elementType;
+};
+
 class GLRenderTargetTexture
 	: public GLTextureBase
 {
@@ -280,7 +306,9 @@ public:
 
 	virtual void readData(void* outData) override;
 	virtual void getSize(SizeI* outSize) override;
-	virtual TextureFormat getTextureFormat() const override { return m_textureFormat; }
+	virtual TextureFormat getTextureFormat() const override;
+	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) override;
+
 
 private:
 	SizeI m_size;

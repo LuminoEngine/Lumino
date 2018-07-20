@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <Lumino/Graphics/Texture.hpp>
 #include <Lumino/Shader/Shader.hpp>
 #include "../Graphics/GraphicsDeviceContext.hpp"
 #include "../Graphics/GraphicsManager.hpp"
@@ -106,7 +107,7 @@ static void alignMatricesToBuffer(
 	int rowLoop = std::min(sourceRows, rows);
 	for (int i = 0; i < elements; i++)
 	{
-		const byte_t* srcMatHead = source + sourceColumns * sourceRows * i;
+		const byte_t* srcMatHead = source + (sourceColumns * sourceRows * sizeof(float)) * i;
 		byte_t* dstMatHead = head + arrayStride * i;
 
 		float tmp[16];
@@ -386,7 +387,7 @@ void ShaderParameter::setMatrix(const Matrix& value)
 
 void ShaderParameter::setMatrixArray(const Matrix* value, int count)
 {
-	alignMatricesToBuffer((const byte_t*)value, 4, 4, count, m_owner->buffer().data(), m_desc.offset, m_desc.elements, m_desc.matrixStride, 0, m_desc.rows, m_desc.columns, true);
+	alignMatricesToBuffer((const byte_t*)value, 4, 4, count, m_owner->buffer().data(), m_desc.offset, m_desc.elements, m_desc.matrixStride, m_desc.arrayStride, m_desc.rows, m_desc.columns, true);
 }
 
 

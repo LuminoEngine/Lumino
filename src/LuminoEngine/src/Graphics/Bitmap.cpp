@@ -278,8 +278,8 @@ private:
 } // namespace detail
 
 
-  //==============================================================================
-  // Bitmap2D
+//==============================================================================
+// Bitmap2D
 
   /*
   TextureFormat で処理を分岐するのは switch と関数ポインタどちらがいい？
@@ -425,5 +425,38 @@ int Bitmap2D::getBitmapByteSize(int width, int height, int depth, PixelFormat fo
 	return getPixelFormatByteSize(format) * width * height * depth;
 }
 
+//==============================================================================
+// BitmapHelper
+
+namespace detail {
+
+void BitmapHelper::blitRawSimple(void* dst, const void* src, size_t width, size_t height, size_t pixelBytes, bool flipVertical)
+{
+	if (LN_REQUIRE(dst)) return;
+	if (LN_REQUIRE(src)) return;
+	if (LN_REQUIRE(dst != src)) return;
+	size_t lineBytes = width * pixelBytes;
+
+	if (!flipVertical)
+	{
+		for (size_t y = 0; y < height; y++)
+		{
+			byte_t* d = static_cast<byte_t*>(dst) + (lineBytes * y);
+			const byte_t* s = static_cast<const byte_t*>(src) + (lineBytes * y);
+			memcpy(d, s, lineBytes);
+		}
+	}
+	else
+	{
+		for (size_t y = 0; y < height; y++)
+		{
+			byte_t* d = static_cast<byte_t*>(dst) + (lineBytes * y);
+			const byte_t* s = static_cast<const byte_t*>(src) + (lineBytes * (height - y - 1));
+			memcpy(d, s, lineBytes);
+		}
+	}
+}
+
+} // namespace detail
 
 } // namespace ln

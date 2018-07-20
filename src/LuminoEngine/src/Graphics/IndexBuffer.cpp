@@ -48,7 +48,7 @@ void IndexBuffer::initialize(int indexCount, IndexBufferFormat format, const voi
 
 void IndexBuffer::dispose()
 {
-	m_rhiObject = nullptr;
+	m_rhiObject.reset();
 	GraphicsResource::dispose();
 }
 

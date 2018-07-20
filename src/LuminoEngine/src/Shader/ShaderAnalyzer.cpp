@@ -218,7 +218,7 @@ std::string ShaderCode::generateGlsl()
 {
 	spirv_cross::CompilerGLSL glsl(m_spirvCode);
 
-#if 0
+#if 1
 	spirv_cross::ShaderResources resources = glsl.get_shader_resources();
 
 	// Get all sampled images in the shader.
@@ -234,6 +234,8 @@ std::string ShaderCode::generateGlsl()
 		// Some arbitrary remapping if we want.
 		glsl.set_decoration(resource.id, spv::DecorationBinding, set * 16 + binding);
 	}
+
+
 #endif
 
 	// Set some options.
@@ -254,8 +256,30 @@ std::string ShaderCode::generateGlsl()
 	// Here you can also set up decorations if you want (binding = #N).
 	for (auto &remap : glsl.get_combined_image_samplers())
 	{
-		glsl.set_name(remap.combined_id, "test" /*join("SPIRV_Cross_Combined", glsl.get_name(remap.image_id), glsl.get_name(remap.sampler_id))*/);
+		glsl.set_name(remap.combined_id, "SPIRV_Cross_Combined" + glsl.get_name(remap.image_id) + glsl.get_name(remap.sampler_id));
+		//glsl.set_name(remap.combined_id, "test" /*join("SPIRV_Cross_Combined", glsl.get_name(remap.image_id), glsl.get_name(remap.sampler_id))*/);
 	}
+
+
+
+
+
+	// uniform textureXX
+	for (auto &resource : resources.separate_images)
+	{
+		unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
+		unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
+		printf("Image %s at set = %u, binding = %u\n", resource.name.c_str(), set, binding);
+	}
+
+	// uniform textureXX
+	for (auto &resource : resources.separate_samplers)
+	{
+		unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
+		unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
+		printf("Image %s at set = %u, binding = %u\n", resource.name.c_str(), set, binding);
+	}
+
 
 	return glsl.compile();
 }

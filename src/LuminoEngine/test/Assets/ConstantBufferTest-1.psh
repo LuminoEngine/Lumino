@@ -71,12 +71,40 @@ float4 main(PS_INPUT input) : SV_TARGET
         float4 pos = mul(g_color4, g_mat44);
         return float4(pos.xyz, 1);
     }
+    if (g_type == 100) {
+        float4 pos = mul(g_color4, g_mat44ary3[1]);
+        return float4(pos.xyz, 1);
+    }
+    if (g_type == 101) {
+        float4x4 m = g_mat44ary3[1];
+        return float4(g_mat44[0][2], m[0][2], m[2][0], 1);
+    }
     
+    // 以下、行列のテストでは余計な値が入りそうなところ(転置など)についても念のため確認ということで、いくつかの要素を参照している。
     if (g_type == 21) {
         return float4(g_mat34[0][1], g_mat34[0][2], g_mat34[0][0], 1);
     }
     if (g_type == 22) {
         return float4(g_mat22[0][0], g_mat22[1][0], g_mat22[0][1], 1);
+    }
+    if (g_type == 23) {
+        return float4(0, g_mat43[2][2], g_mat43[3][2], 1);
+    }
+    if (g_type == 24) {
+        return float4(g_mat44[2][3], g_mat44[3][2], 0, 1);
+    }
+    
+    if (g_type == 31) {
+        float3x4 m = g_mat34ary3[1];
+        return float4(0, m[0][1], m[1][0], 1);
+    }
+    if (g_type == 32) {
+    }
+    if (g_type == 33) {
+    }
+    if (g_type == 34) {
+        float4x4 m = g_mat44ary3[1];
+        return float4(m[2][3], m[3][2], 0, 1);
     }
     
     return float4(0, 0, 0, 0);
