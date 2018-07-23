@@ -13,9 +13,11 @@ class IVertexBuffer;
 class IIndexBuffer;
 class ITexture;
 class IDepthBuffer;
+class ISamplerState;
 class IShaderPass;
 class IShaderUniformBuffer;
 class IShaderUniform;
+class IShaderSamplerBuffer;
 
 class IGraphicsDeviceContext
 	: public RefObject
@@ -37,6 +39,7 @@ public:
 	Ref<IIndexBuffer> createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData = nullptr);
 	Ref<ITexture> createTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData = nullptr);
 	Ref<ITexture> createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
+	Ref<ISamplerState> createSamplerState(const SamplerStateData& desc);
 	Ref<IShaderPass> createShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag);
 
 	void setRenderState(const RenderStateData& value);
@@ -64,6 +67,7 @@ protected:
 	virtual Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) = 0;
 	virtual Ref<ITexture> onCreateTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) = 0;
 	virtual Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) = 0;
+	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) = 0;
 	virtual Ref<IShaderPass> onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag) = 0;
 
 	virtual void onUpdateRenderState(const RenderStateData& newState) = 0;
@@ -168,7 +172,7 @@ class ITexture
 public:
 
 
-	virtual const SizeI& realSize(SizeI* outSize) = 0;
+	virtual const SizeI& realSize() = 0;
 	virtual TextureFormat getTextureFormat() const = 0;
 
 	// データは up flow (上下反転)
@@ -229,6 +233,15 @@ protected:
 	virtual ~IDepthBuffer() = default;
 };
 
+class ISamplerState
+	: public IGraphicsDeviceObject
+{
+public:
+
+protected:
+	ISamplerState();
+	virtual ~ISamplerState() = default;
+};
 
 class IShaderPass
 	: public IGraphicsDeviceObject
@@ -240,6 +253,8 @@ public:
 
 	virtual int getUniformBufferCount() const = 0;
 	virtual IShaderUniformBuffer* getUniformBuffer(int index) const = 0;
+
+	virtual IShaderSamplerBuffer* samplerBuffer() const = 0;
 
 protected:
 	IShaderPass();
@@ -273,6 +288,20 @@ protected:
 	virtual ~IShaderUniform() = default;
 };
 
+class IShaderSamplerBuffer
+	: public IGraphicsDeviceObject
+{
+public:
+	virtual int registerCount() const = 0;
+	virtual const std::string& getTextureRegisterName(int registerIndex) const = 0;
+	virtual const std::string& getSamplerRegisterName(int registerIndex) const = 0;
+	virtual void setTexture(int registerIndex, ITexture* texture) = 0;
+	virtual void setSamplerState(int registerIndex, const SamplerStateData& state) = 0;
+
+protected:
+	IShaderSamplerBuffer();
+	virtual ~IShaderSamplerBuffer() = default;
+};
 
 } // namespace detail
 } // namespace ln

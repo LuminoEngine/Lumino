@@ -4,6 +4,7 @@
 #include "GeometryStructs.hpp"
 
 namespace ln {
+class ShaderPass;
 namespace detail { class ITexture; }
 
 class Bitmap2D;
@@ -32,6 +33,8 @@ protected:
 
 	SizeI m_size;
 	TextureFormat m_format;
+
+	friend class ShaderPass;
 };
 
 /** 2D テクスチャのクラスです。 */

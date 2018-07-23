@@ -46,6 +46,7 @@ public:
 
 
 private:
+	ShaderCodeStage m_stage;
 	std::vector<uint32_t> m_spirvCode;
 };
 

@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <sstream>
 #include <glslang/Public/ShaderLang.h>
 #include <glslang/Include/ResourceLimits.h>
 #include <SPIRV/GlslangToSpv.h>
@@ -134,11 +135,14 @@ void ShaderManager::dispose()
 // ShaderCode
 
 ShaderCode::ShaderCode()
+	: m_stage(ShaderCodeStage::Vertex)
 {
 }
 
 bool ShaderCode::parseAndGenerateSpirv(ShaderCodeStage stage, const char* code, size_t length, const std::string& entryPoint, DiagnosticsManager* diag)
 {
+	m_stage = stage;
+
 	// -d オプション
 	//const int defaultVersion = Options & EOptionDefaultDesktop ? 110 : 100;
 	const int defaultVersion = 100;
@@ -256,7 +260,7 @@ std::string ShaderCode::generateGlsl()
 	// Here you can also set up decorations if you want (binding = #N).
 	for (auto &remap : glsl.get_combined_image_samplers())
 	{
-		glsl.set_name(remap.combined_id, "SPIRV_Cross_Combined" + glsl.get_name(remap.image_id) + glsl.get_name(remap.sampler_id));
+		glsl.set_name(remap.combined_id, "lnCIS_lnT_" + glsl.get_name(remap.image_id) + "_lnS_" + glsl.get_name(remap.sampler_id));
 		//glsl.set_name(remap.combined_id, "test" /*join("SPIRV_Cross_Combined", glsl.get_name(remap.image_id), glsl.get_name(remap.sampler_id))*/);
 	}
 
@@ -278,6 +282,52 @@ std::string ShaderCode::generateGlsl()
 		unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
 		unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
 		printf("Image %s at set = %u, binding = %u\n", resource.name.c_str(), set, binding);
+	}
+
+
+	{
+		if (m_stage == ShaderCodeStage::Vertex)
+		{
+			for (size_t i = 0; i < resources.stage_outputs.size(); i++)
+			{
+				std::stringstream s;
+				s << "ln_varying_" << i;
+				glsl.set_name(resources.stage_outputs[i].id, s.str());
+			}
+		}
+		else if (m_stage == ShaderCodeStage::Fragment)
+		{
+			for (size_t i = 0; i < resources.stage_inputs.size(); i++)
+			{
+				std::stringstream s;
+				s << "ln_varying_" << i;
+				glsl.set_name(resources.stage_inputs[i].id, s.str());
+			}
+		}
+
+		////auto resources = compiler.get_shader_resources();
+		//// For fragment shaders
+		//for (auto &v : resources.stage_inputs)
+		//	if (glsl.get_decoration(v.id, spv::DecorationLocation) == 0)
+		//	{
+		//		//glsl.set_name(v.id, "FFFF");
+		//		//printf("%s\n", v.);
+		//		//auto s = glsl.get_name(v.id);
+		//		//glsl.set_name(v.base_type_id, "VertexFragmentLinkage");
+
+		//		auto& a = glsl.get_type(v.type_id);
+		//		std::cout  << std::endl;
+		//		
+
+		//	}
+		//// For vertex shaders
+		//for (auto &v : resources.stage_outputs)
+		//	if (glsl.get_decoration(v.id, spv::DecorationLocation) == 0)
+		//	{
+		//		//auto s = glsl.get_name(v.id);
+		//		//glsl.set_name(v.base_type_id, "VertexFragmentLinkage");
+
+		//	}
 	}
 
 

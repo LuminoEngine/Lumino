@@ -231,6 +231,35 @@ public:
 	static TextureFormat translateToTextureFormat(PixelFormat format);
 };
 
+
+
+
+
+
+
+
+
+
+/// テクスチャフィルタ
+enum class TextureFilterMode
+{
+	Point = 0,		///< 補間を行わない
+	Linear,			///< 補間を行う
+};
+
+/// テクスチャアドレッシング
+enum class TextureAddressMode
+{
+	Repeat = 0,		///< 繰り返し
+	Clamp,			///< 境界のピクセルが引き延ばされる
+};
+
+struct SamplerStateData
+{
+	TextureFilterMode filter;
+	TextureAddressMode address;
+};
+
 namespace detail {
 
 using ShaderRefrectionParameterType = ShaderVariableType;

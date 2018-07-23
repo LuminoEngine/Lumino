@@ -1,18 +1,3 @@
-//--------------------------------------------------------------------------------------
-// Pixel Shader
-//--------------------------------------------------------------------------------------
-
-//Texture2D txDiffuse : register(t0);
-//SamplerState samLinear : register(s0);
-
-cbuffer ConstBuff : register(b0)
-{
-    matrix mtxProj;
-    matrix mtxView;
-    matrix mtxWorld;
-    float4 Diffuse;
-};
-
 
 struct PS_INPUT
 {
@@ -20,17 +5,18 @@ struct PS_INPUT
     float2 Tex : TEXCOORD;
 };
 
-
 Texture2D g_texture1 : register(t0);
-Texture2D g_texture2 : register(t1);
-SamplerState g_samplerState1 : register(s1);
-SamplerState g_samplerState2 : register(s0);
+SamplerState g_samplerState1 : register(s0);
+Texture2D g_texture2;
+SamplerState g_samplerState2;
+Texture2D g_texture3 : register(t1);
+SamplerState g_samplerState3 : register(s1);
+sampler2D g_s;
 
 float4 main(PS_INPUT input) : SV_Target
 {
-    float4 test1 = g_texture1.Sample(g_samplerState1, input.Tex);
-    float4 test2 = g_texture1.Sample(g_samplerState2, input.Tex);
-    float4 test3 = g_texture2.Sample(g_samplerState1, input.Tex);
-
-    return g_texture1.Sample(g_samplerState1, input.Tex) * Diffuse;
+    //return float4(1, 0, 0, 1);
+    //float4 uv = float4(input.Tex, 0, 1);
+    //return uv;
+    return g_texture1.Sample(g_samplerState1, input.Tex);// + uv;
 }

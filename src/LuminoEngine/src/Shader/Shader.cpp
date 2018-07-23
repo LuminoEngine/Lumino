@@ -10,6 +10,12 @@
 
 namespace ln {
 
+namespace detail {
+
+
+
+} // namespace detail
+
 //static void alignIntToBuffer(const int* values, int valuesCount, int elements, size_t offset, size_t stride, void* buffer)
 //{
 //	byte_t* head = static_cast<byte_t*>(buffer) + offset;
@@ -288,7 +294,13 @@ void Shader::setTexture(const StringRef& name, Texture* value)
 //	return nullptr;
 //}
 
-ShaderConstantBuffer* Shader::findConstantBuffer(const StringRef& name)
+ShaderParameter* Shader::findParameter(const StringRef& name) const
+{
+	auto result = m_textureParameters.findIf([&](const Ref<ShaderParameter>& param) { return param->name() == name; });
+	return (result) ? *result : nullptr;
+}
+
+ShaderConstantBuffer* Shader::findConstantBuffer(const StringRef& name) const
 {
 	auto result = m_buffers.findIf([name](const ShaderConstantBuffer* buf) { return buf->name() == name; });
 	return (result) ? *result : nullptr;
@@ -324,10 +336,25 @@ ShaderConstantBuffer* Shader::getOrCreateConstantBuffer(detail::IShaderUniformBu
 	return buffer;
 }
 
+ShaderParameter* Shader::getOrCreateTextureParameter(const String& name)
+{
+	auto result = m_textureParameters.findIf([&](const Ref<ShaderParameter>& param) { return param->name() == name; });
+	if (result) {
+		return *result;
+	}
+	else
+	{
+		auto param = newObject<ShaderParameter>(ShaderParameterClass::Texture, name);
+		m_textureParameters.add(param);
+		return param;
+	}
+}
+
 //=============================================================================
 // ShaderParameter
 
 ShaderParameter::ShaderParameter()
+	: m_class(ShaderParameterClass::Constant)
 {
 }
 
@@ -342,6 +369,13 @@ void ShaderParameter::initialize(ShaderConstantBuffer* owner, const detail::Shad
 	m_desc = desc;
 	m_name = name;
 	m_value.reset(desc.type, desc.elements);
+}
+
+void ShaderParameter::initialize(ShaderParameterClass parameterClass, const String& name)
+{
+	Object::initialize();
+	m_class = parameterClass;
+	m_name = name;
 }
 
 void ShaderParameter::dispose()
@@ -390,6 +424,10 @@ void ShaderParameter::setMatrixArray(const Matrix* value, int count)
 	alignMatricesToBuffer((const byte_t*)value, 4, 4, count, m_owner->buffer().data(), m_desc.offset, m_desc.elements, m_desc.matrixStride, m_desc.arrayStride, m_desc.rows, m_desc.columns, true);
 }
 
+void ShaderParameter::setTexture(Texture* value)
+{
+	m_textureValue = value;
+}
 
 #if 0
 void ShaderParameter::setBool(bool value)
@@ -535,6 +573,15 @@ void ShaderPass::setupParameters()
 		ShaderConstantBuffer* buf = m_owner->owner()->getOrCreateConstantBuffer(rhi);
 		m_buffers.add(buf);
 	}
+
+
+	m_textureParameters.clear();
+	detail::IShaderSamplerBuffer* samplerBuffer = m_rhiPass->samplerBuffer();
+	for (int i = 0; i < samplerBuffer->registerCount(); i++)
+	{
+		ShaderParameter* param = m_owner->owner()->getOrCreateTextureParameter(String::fromStdString(samplerBuffer->getTextureRegisterName(i)));
+		m_textureParameters.add(param);
+	}
 }
 
 //// TODO:
@@ -580,12 +627,24 @@ void ShaderPass::commit()
 		buffer->commit();
 	}
 
-	//LN_ENQUEUE_RENDER_COMMAND_1(
-	//	ShaderPass_commit, manager,
-	//	Ref<detail::IShaderPass>, m_rhiPass,
-	//	{
-	//		m_rhiPass->a
-	//	});
+	// TODO: 1つのバッファにまとめるとか、一括で送りたい。
+	detail::IShaderSamplerBuffer* samplerBuffer = m_rhiPass->samplerBuffer();
+	for (int i = 0; i < samplerBuffer->registerCount(); i++)
+	{
+		auto* manager = m_owner->owner()->manager();
+		Texture* texture = m_textureParameters[i]->texture();
+		detail::ITexture* rhiTexture = (texture) ? texture->resolveRHIObject() : nullptr;
+		LN_ENQUEUE_RENDER_COMMAND_3(
+			ShaderConstantBuffer_commit_setTexture, manager,
+			detail::IShaderSamplerBuffer*, samplerBuffer,
+			int, i,
+			Ref<detail::ITexture>, rhiTexture,
+			{
+				samplerBuffer->setTexture(i, rhiTexture);
+			});
+
+		//samplerBuffer->setTexture(i, m_textureParameters[i]->texture());
+	}
 }
 
 detail::IShaderPass* ShaderPass::resolveRHIObject()

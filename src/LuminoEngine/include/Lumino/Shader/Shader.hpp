@@ -8,6 +8,7 @@ class DiagnosticsManager;
 //class ShaderParameter;
 class Texture;
 class ShaderConstantBuffer;
+class ShaderParameter;
 class ShaderTechnique;
 class ShaderPass;
 class GraphicsContext;
@@ -127,8 +128,8 @@ public:
 	//void setMatrixArray(const StringRef& name, const Matrix* value, int count);
 	//void setTexture(const StringRef& name, Texture* value);
 
-	//ShaderParameter* findParameter(const StringRef& name);
-	ShaderConstantBuffer* findConstantBuffer(const StringRef& name);
+	ShaderParameter* findParameter(const StringRef& name) const;
+	ShaderConstantBuffer* findConstantBuffer(const StringRef& name) const;
 
 	const List<Ref<ShaderTechnique>>& techniques() const { return m_techniques; }
 
@@ -145,15 +146,27 @@ private:
 	void buildShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen);
 	//ShaderParameter* getShaderParameter(const detail::ShaderUniformTypeDesc& desc, const String& name);
 	ShaderConstantBuffer* getOrCreateConstantBuffer(detail::IShaderUniformBuffer* buffer);
+	ShaderParameter* getOrCreateTextureParameter(const String& name);
 
 	Ref<DiagnosticsManager> m_diag;
 	//List<Ref<ShaderParameter>> m_parameters;
 	List<Ref<ShaderConstantBuffer>> m_buffers;
 	List<Ref<ShaderTechnique>> m_techniques;
 
+	List<Ref<ShaderParameter>> m_textureParameters;
+
 	friend class ShaderPass;
 };
 
+
+
+
+enum class ShaderParameterClass
+{
+	Constant,
+	Texture,
+	Sampler,
+};
 
 class LN_API ShaderParameter
 	: public Object
@@ -178,16 +191,20 @@ LN_CONSTRUCT_ACCESS:
 	ShaderParameter();
 	virtual ~ShaderParameter();
 	void initialize(ShaderConstantBuffer* owner, const detail::ShaderUniformTypeDesc& desc, const String& name);
+	void initialize(ShaderParameterClass parameterClass, const String& name);
 	virtual void dispose() override;
 
 private:
 	const detail::ShaderUniformTypeDesc& desc() const { return m_desc; }
+	const Ref<Texture>& texture() const { return m_textureValue; }
 	
-
+	ShaderParameterClass m_class;
 	ShaderConstantBuffer* m_owner;
 	detail::ShaderUniformTypeDesc m_desc;
 	String m_name;
 	detail::ShaderParameterValue m_value;
+
+	Ref<Texture> m_textureValue;
 
 	friend class Shader;
 	friend class ShaderPass;
@@ -268,6 +285,7 @@ private:
 	Ref<detail::IShaderPass> m_rhiPass;
 	//List<ShaderParameter*> m_parameters;
 	List<ShaderConstantBuffer*> m_buffers;
+	List<ShaderParameter*> m_textureParameters;
 
 	friend class Shader;
 	friend class ShaderTechnique;

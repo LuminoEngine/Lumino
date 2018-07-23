@@ -48,6 +48,7 @@ void Texture2D::initialize(int width, int height, TextureFormat format, bool mip
 	m_initialUpdate = true;
 	m_modified = true;
 	setSize(SizeI(width, height));
+	setFormat(format);
 }
 
 Bitmap2D* Texture2D::map(MapMode mode)
@@ -178,8 +179,7 @@ Ref<Bitmap2D> RenderTargetTexture::readData()
 {
 	detail::ITexture* rhiObject = resolveRHIObject();
 
-	SizeI size;
-	rhiObject->getSize(&size);
+	SizeI size = rhiObject->realSize();
 	auto bitmap = newObject<Bitmap2D>(size.width, size.height, GraphicsHelper::translateToPixelFormat(rhiObject->getTextureFormat()));
 
 	if (manager()->renderingType() == GraphicsRenderingType::Threaded)

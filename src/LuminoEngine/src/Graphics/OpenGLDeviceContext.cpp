@@ -80,8 +80,10 @@ public:
 			case GL_FLOAT_MAT3:     SET_LNDESC(LN_SVC_MATRIX, ShaderRefrectionParameterType::Matrix, 3, 3); break;
 			case GL_FLOAT_MAT4:     SET_LNDESC(LN_SVC_MATRIX, ShaderRefrectionParameterType::Matrix, 4, 4); break;
 
+			case GL_SAMPLER_1D:         SET_LNDESC(LN_SVC_SAMPLER, ShaderRefrectionParameterType::Texture, 1, 1); break;
 			case GL_SAMPLER_2D:         SET_LNDESC(LN_SVC_SAMPLER, ShaderRefrectionParameterType::Texture, 1, 1); break;
 			case GL_SAMPLER_CUBE:       SET_LNDESC(LN_SVC_SAMPLER, ShaderRefrectionParameterType::Texture, 1, 1); break;
+			case GL_SAMPLER_3D:         SET_LNDESC(LN_SVC_SAMPLER, ShaderRefrectionParameterType::Texture, 1, 1); break;
 
 			//#if !defined(LNOTE_GLES)
 			case GL_FLOAT_MAT2x3:   SET_LNDESC(LN_SVC_MATRIX, ShaderRefrectionParameterType::Matrix, 3, 2); break;
@@ -96,8 +98,6 @@ public:
 			//case GL_FLOAT_VEC3: SET_LNDESC( LN_SVC_VECTOR, LN_SVT_FLOAT, 1, 3 ); break;
 			//case GL_FLOAT_VEC4: SET_LNDESC( LN_SVC_VECTOR, LN_SVT_FLOAT, 1, 4 ); break;
 
-			case GL_SAMPLER_1D:         SET_LNDESC(LN_SVC_SAMPLER, ShaderRefrectionParameterType::Texture, 1, 1); break;
-			case GL_SAMPLER_3D:         SET_LNDESC(LN_SVC_SAMPLER, ShaderRefrectionParameterType::Texture, 1, 1); break;
 
 			case GL_SAMPLER_1D_SHADOW:  SET_LNDESC(LN_SVC_SAMPLER, ShaderRefrectionParameterType::Unknown, 1, 1); break;
 			case GL_SAMPLER_2D_SHADOW:  SET_LNDESC(LN_SVC_SAMPLER, ShaderRefrectionParameterType::Unknown, 1, 1); break;
@@ -286,6 +286,13 @@ Ref<ITexture> OpenGLDeviceContext::onCreateRenderTarget(uint32_t width, uint32_t
 {
 	auto ptr = makeRef<GLRenderTargetTexture>();
 	ptr->initialize(width, height, requestFormat, mipmap);
+	return ptr;
+}
+
+Ref<ISamplerState> OpenGLDeviceContext::onCreateSamplerState(const SamplerStateData& desc)
+{
+	auto ptr = makeRef<GLSamplerState>();
+	ptr->initialize(desc);
 	return ptr;
 }
 
@@ -519,7 +526,7 @@ void OpenGLDeviceContext::onPresent(ISwapChain* swapChain)
 
 	SizeI windowSize, bufferSize;
 	s->getTargetWindowSize(&windowSize);
-	s->getColorBuffer()->getSize(&bufferSize);
+	bufferSize = s->getColorBuffer()->realSize();
 
 	// いわゆるResolve処理.
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -954,6 +961,29 @@ void GLTexture2D::initialize(uint32_t width, uint32_t height, TextureFormat requ
 
 	// デフォルトのサンプラステート (セットしておかないとサンプリングできない)
 	//setGLSamplerState(m_samplerState);
+	{
+
+		GLint filter[] =
+		{
+			GL_NEAREST,			// TextureFilterMode_Point,
+			GL_LINEAR,			// TextureFilterMode_Linear,
+		};
+		GLint wrap[] =
+		{
+			GL_REPEAT,			// TextureWrapMode_Repeat
+			GL_CLAMP_TO_EDGE,	// TextureWrapMode_Clamp
+		};
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter[1]);
+		//if (LN_ENSURE_GLERROR()) return;
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter[1]);
+		//if (LN_ENSURE_GLERROR()) return;
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap[1]);
+		//if (LN_ENSURE_GLERROR()) return;
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap[1]);
+		//if (LN_ENSURE_GLERROR()) return;
+	}
 
 	GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
 }
@@ -974,9 +1004,9 @@ void GLTexture2D::readData(void* outData)
 	LN_UNREACHABLE();
 }
 
-void GLTexture2D::getSize(SizeI* outSize)
+const SizeI& GLTexture2D::realSize()
 {
-	*outSize = m_size;
+	return m_size;
 }
 
 TextureFormat GLTexture2D::getTextureFormat() const
@@ -1072,9 +1102,9 @@ void GLRenderTargetTexture::readData(void* outData)
 	GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
-void GLRenderTargetTexture::getSize(SizeI* outSize)
+const SizeI& GLRenderTargetTexture::realSize()
 {
-	*outSize = m_size;
+	return m_size;
 }
 
 TextureFormat GLRenderTargetTexture::getTextureFormat() const
@@ -1093,6 +1123,26 @@ void GLRenderTargetTexture::setSubData(int x, int y, int width, int height, cons
 void GLDepthBuffer::dispose()
 {
 	IDepthBuffer::dispose();
+}
+
+//=============================================================================
+// GLSamplerState
+
+GLSamplerState::GLSamplerState()
+{
+}
+
+GLSamplerState::~GLSamplerState()
+{
+}
+
+void GLSamplerState::initialize(const SamplerStateData& desc)
+{
+}
+
+void GLSamplerState::dispose()
+{
+	ISamplerState::dispose();
 }
 
 //=============================================================================
@@ -1222,6 +1272,8 @@ void GLShaderPass::apply()
 	for (auto& buf : m_uniformBuffers) {
 		buf->bind(m_program);
 	}
+
+	m_samplerBuffer->bind();
 }
 
 int GLShaderPass::getUniformCount() const
@@ -1250,8 +1302,15 @@ IShaderUniformBuffer* GLShaderPass::getUniformBuffer(int index) const
 	return m_uniformBuffers[index];
 }
 
+IShaderSamplerBuffer* GLShaderPass::samplerBuffer() const
+{
+	return m_samplerBuffer;
+}
+
 void GLShaderPass::buildUniforms()
 {
+	m_samplerBuffer = makeRef<GLLocalShaderSamplerBuffer>();
+
 	GLint count = 0;
 	GL_CHECK(glGetProgramiv(m_program, GL_ACTIVE_UNIFORMS, &count));
 
@@ -1272,6 +1331,11 @@ void GLShaderPass::buildUniforms()
 
 		auto uniform = makeRef<GLShaderUniform>(desc, name, loc);
 		m_uniforms.add(uniform);
+
+		if (desc.type == ShaderRefrectionParameterType::Texture)
+		{
+			m_samplerBuffer->addGlslSamplerUniform(name, loc);
+		}
 
 		//// テクスチャ型の変数にステージ番号を振っていく。
 		//if (passVar.Variable->getType() == ShaderVariableType::DeviceTexture)
@@ -1571,6 +1635,75 @@ void GLShaderUniform::setUniformValue(OpenGLDeviceContext* context, const void* 
 	}
 }
 
+
+//=============================================================================
+// GLLocalShaderSamplerBuffer
+
+GLLocalShaderSamplerBuffer::GLLocalShaderSamplerBuffer()
+	: m_table()
+{
+}
+
+void GLLocalShaderSamplerBuffer::addGlslSamplerUniform(const std::string& name, GLint uniformLocation)
+{
+	auto keyword = name.find("lnCIS");
+	auto textureSep = name.find("_lnT_");
+	auto samplerSep = name.find("_lnS_");
+	if (keyword != std::string::npos && textureSep != std::string::npos && samplerSep && std::string::npos)
+	{
+		Entry e;
+		e.uniformLocation = uniformLocation;
+		e.textureRegisterName = name.substr(textureSep + 5, samplerSep - (textureSep + 5));
+		e.samplerRegisterName = name.substr(samplerSep + 5);
+		m_table.push_back(e);
+		LN_LOG_VERBOSE << name << " is added to ShaderSamplerBuffer.";
+	}
+	else
+	{
+		LN_LOG_VERBOSE << name << " is not added to ShaderSamplerBuffer.";
+	}
+}
+
+void GLLocalShaderSamplerBuffer::bind()
+{
+	for (int i = 0; i < m_table.size(); i++)
+	{
+		int stageIndex = i;
+		GLTextureBase* t = static_cast<GLTextureBase*>(m_table[i].texture);
+		GL_CHECK(glActiveTexture(GL_TEXTURE0 + stageIndex));
+		GL_CHECK(glBindTexture(GL_TEXTURE_2D, (t) ? t->id() : 0));
+		GL_CHECK(glUniform1i(m_table[i].uniformLocation, stageIndex));
+
+		// TODO:
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	}
+}
+
+int GLLocalShaderSamplerBuffer::registerCount() const
+{
+	return m_table.size();
+}
+
+const std::string& GLLocalShaderSamplerBuffer::getTextureRegisterName(int registerIndex) const
+{
+	return m_table[registerIndex].textureRegisterName;
+}
+
+const std::string& GLLocalShaderSamplerBuffer::getSamplerRegisterName(int registerIndex) const
+{
+	return m_table[registerIndex].samplerRegisterName;
+}
+
+void GLLocalShaderSamplerBuffer::setTexture(int registerIndex, ITexture* texture)
+{
+	m_table[registerIndex].texture = texture;
+}
+
+void GLLocalShaderSamplerBuffer::setSamplerState(int registerIndex, const SamplerStateData& state)
+{
+	m_table[registerIndex].samplerState = state;
+}
 
 } // namespace detail
 } // namespace ln

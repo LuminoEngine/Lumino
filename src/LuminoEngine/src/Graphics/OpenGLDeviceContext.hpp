@@ -75,6 +75,7 @@ class GLRenderTargetTexture;
 class GLShaderPass;
 class GLShaderUniformBuffer;
 class GLShaderUniform;
+class GLLocalShaderSamplerBuffer;
 
 class OpenGLDeviceContext
 	: public IGraphicsDeviceContext
@@ -108,6 +109,7 @@ protected:
 	virtual Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) override;
 	virtual Ref<ITexture> onCreateTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
 	virtual Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) override;
+	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
 	virtual Ref<IShaderPass> onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag) override;
 	virtual void onUpdateRenderState(const RenderStateData& newState) override;
 	virtual void onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer) override;
@@ -279,7 +281,7 @@ public:
 	virtual void dispose() override;
 
 	virtual void readData(void* outData) override;
-	virtual void getSize(SizeI* outSize) override;
+	virtual const SizeI& realSize() override;
 	virtual TextureFormat getTextureFormat() const override;
 	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) override;
 
@@ -305,7 +307,7 @@ public:
 	virtual GLuint id() const override { return m_id; }
 
 	virtual void readData(void* outData) override;
-	virtual void getSize(SizeI* outSize) override;
+	virtual const SizeI& realSize() override;
 	virtual TextureFormat getTextureFormat() const override;
 	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) override;
 
@@ -358,6 +360,18 @@ public:
 	GLuint id() const { LN_NOTIMPLEMENTED(); return 0; }
 };
 
+class GLSamplerState
+	: public ISamplerState
+{
+public:
+	GLSamplerState();
+	virtual ~GLSamplerState();
+	void initialize(const SamplerStateData& desc);
+	virtual void dispose() override;
+
+private:
+};
+
 class GLSLShader
 {
 public:
@@ -393,6 +407,8 @@ public:
 	virtual int getUniformBufferCount() const override;
 	virtual IShaderUniformBuffer* getUniformBuffer(int index) const override;
 
+	virtual IShaderSamplerBuffer* samplerBuffer() const override;
+
 private:
 	void buildUniforms();
 
@@ -400,6 +416,7 @@ private:
 	GLuint m_program;
 	List<Ref<GLShaderUniformBuffer>> m_uniformBuffers;
 	List<Ref<GLShaderUniform>> m_uniforms;
+	Ref<GLLocalShaderSamplerBuffer> m_samplerBuffer;
 
 };
 
@@ -448,6 +465,35 @@ private:
 	GLint m_location;	// [obsolete]
 
 	
+};
+
+// 変数名から独自のテーブルを構築する
+class GLLocalShaderSamplerBuffer
+	: public IShaderSamplerBuffer
+{
+public:
+	GLLocalShaderSamplerBuffer();
+	virtual ~GLLocalShaderSamplerBuffer() = default;
+	void addGlslSamplerUniform(const std::string& name, GLint uniformLocation);
+	void bind();
+
+	virtual int registerCount() const override;
+	virtual const std::string& getTextureRegisterName(int registerIndex) const override;
+	virtual const std::string& getSamplerRegisterName(int registerIndex) const override;
+	virtual void setTexture(int registerIndex, ITexture* texture) override;
+	virtual void setSamplerState(int registerIndex, const SamplerStateData& state) override;
+
+private:
+	struct Entry
+	{
+		std::string textureRegisterName;
+		std::string samplerRegisterName;
+		GLint uniformLocation;
+		ITexture* texture = nullptr;
+		SamplerStateData samplerState;
+	};
+
+	std::vector<Entry> m_table;
 };
 
 //=============================================================================

@@ -14,9 +14,30 @@
 namespace ln {
 
 //------------------------------------------------------------------------------
+//SamplerState::SamplerState()
+//	: FilterMode(TextureFilterMode_Point)
+//	, WrapMode(TextureWrapMode_Repeat)
+//{}
+
+//=============================================================================
+// SamplerState
+
 SamplerState::SamplerState()
-	: FilterMode(TextureFilterMode_Point)
-	, WrapMode(TextureWrapMode_Repeat)
-{}
+{
+}
+
+SamplerState::~SamplerState()
+{
+}
+
+void SamplerState::initialize()
+{
+	Object::initialize();
+}
+
+void SamplerState::dispose()
+{
+	Object::dispose();
+}
 
 } // namespace ln

@@ -68,6 +68,11 @@ Ref<ITexture> IGraphicsDeviceContext::createRenderTarget(uint32_t width, uint32_
 	return onCreateRenderTarget(width, height, requestFormat, mipmap);
 }
 
+Ref<ISamplerState> IGraphicsDeviceContext::createSamplerState(const SamplerStateData& desc)
+{
+	return onCreateSamplerState(desc);
+}
+
 Ref<IShaderPass> IGraphicsDeviceContext::createShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag)
 {
 	diag->level = ShaderCompilationResultLevel::Success;
@@ -231,6 +236,14 @@ IDepthBuffer::IDepthBuffer()
 }
 
 //=============================================================================
+// ISamplerState
+
+ISamplerState::ISamplerState()
+{
+	LN_LOG_VERBOSE << "ISamplerState [0x" << this << "] constructed.";
+}
+
+//=============================================================================
 // IShaderPass
 
 IShaderPass::IShaderPass()
@@ -252,6 +265,14 @@ IShaderUniformBuffer::IShaderUniformBuffer()
 IShaderUniform::IShaderUniform()
 {
 	LN_LOG_VERBOSE << "IShaderUniform [0x" << this << "] constructed.";
+}
+
+//=============================================================================
+// IShaderUniform
+
+IShaderSamplerBuffer::IShaderSamplerBuffer()
+{
+	LN_LOG_VERBOSE << "IShaderSamplerBuffer [0x" << this << "] constructed.";
 }
 
 } // namespace detail
