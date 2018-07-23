@@ -12,6 +12,10 @@ protected:
 	virtual void finalize() override;
 
 public:
+	/**
+	 * このオブジェクトが保持しているリソースを開放します。
+	 * @attention このメソッドは virtual です。RAII の実装を目的としてデストラクタで呼び出すことはできません。代わりに finalize() からコールされます。
+	 */
 	virtual void dispose();
 };
 

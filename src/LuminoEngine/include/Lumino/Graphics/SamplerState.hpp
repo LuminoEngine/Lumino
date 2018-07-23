@@ -1,22 +1,38 @@
 ﻿
-#pragma once 
+#pragma once
+#include "GraphicsResource.hpp"
 
 namespace ln {
-
+namespace detail { class ISamplerState; }
 
 
 
 
 class SamplerState
-	: public Object
+	: public GraphicsResource
 {
+public:
+	void setFilterMode(TextureFilterMode value);
+	void setAddressMode(TextureAddressMode value);
+
 LN_CONSTRUCT_ACCESS:
 	SamplerState();
 	virtual ~SamplerState();
 	virtual void initialize();
 	virtual void dispose() override;
 
+LN_INTERNAL_ACCESS:
+	detail::ISamplerState* resolveRHIObject();
+	void setFrozen(bool value) { m_frozen = value; }
+
+protected:
+	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
+
 private:
+	Ref<detail::ISamplerState> m_rhiObject;
+	SamplerStateData m_desc;
+	bool m_modified;
+	bool m_frozen;
 };
 
 

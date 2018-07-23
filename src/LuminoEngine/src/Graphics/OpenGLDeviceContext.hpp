@@ -369,7 +369,10 @@ public:
 	void initialize(const SamplerStateData& desc);
 	virtual void dispose() override;
 
+	GLuint id() const { return m_id; }
+
 private:
+	GLuint m_id;
 };
 
 class GLSLShader
@@ -481,16 +484,16 @@ public:
 	virtual const std::string& getTextureRegisterName(int registerIndex) const override;
 	virtual const std::string& getSamplerRegisterName(int registerIndex) const override;
 	virtual void setTexture(int registerIndex, ITexture* texture) override;
-	virtual void setSamplerState(int registerIndex, const SamplerStateData& state) override;
+	virtual void setSamplerState(int registerIndex, ISamplerState* state) override;
 
 private:
 	struct Entry
 	{
 		std::string textureRegisterName;
 		std::string samplerRegisterName;
-		GLint uniformLocation;
+		GLint uniformLocation = 0;
 		ITexture* texture = nullptr;
-		SamplerStateData samplerState;
+		GLSamplerState* samplerState = nullptr;
 	};
 
 	std::vector<Entry> m_table;

@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <Lumino/Graphics/GraphicsContext.hpp>
 #include <Lumino/Graphics/GraphicsResource.hpp>
+#include <Lumino/Graphics/SamplerState.hpp>
 #include "GraphicsManager.hpp"
 #include "OpenGLDeviceContext.hpp"
 #include "LinearAllocator.hpp"
@@ -89,19 +90,28 @@ void GraphicsManager::initialize(const Settings& settings)
 		m_deviceContext->enterMainThread();
 		m_deviceContext->enterRenderState();
 	}
+
+	// default objects
+	{
+		m_defaultSamplerState = newObject<SamplerState>();
+	}
 }
 
 void GraphicsManager::dispose()
 {
-	m_deviceContext->leaveRenderState();
-	m_deviceContext->leaveMainThread();
-
+	// default objects
+	{
+		m_defaultSamplerState.reset();
+	}
 
 	List<GraphicsResource*> removeList = m_graphicsResources;
 	m_graphicsResources.clear();
 	for (GraphicsResource* resource : removeList) {
 		resource->dispose();
 	}
+
+	m_deviceContext->leaveRenderState();
+	m_deviceContext->leaveMainThread();
 
 	m_graphicsContext->dispose();
 	m_deviceContext->dispose();

@@ -258,6 +258,8 @@ struct SamplerStateData
 {
 	TextureFilterMode filter;
 	TextureAddressMode address;
+
+	static const SamplerStateData defaultState;
 };
 
 namespace detail {

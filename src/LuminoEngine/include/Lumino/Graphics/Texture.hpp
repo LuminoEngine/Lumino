@@ -4,6 +4,7 @@
 #include "GeometryStructs.hpp"
 
 namespace ln {
+class SamplerState;
 class ShaderPass;
 namespace detail { class ITexture; }
 
@@ -24,15 +25,23 @@ public:
 	/** テクスチャのピフォーマットを取得します。 */
 	TextureFormat format() const { return m_format; }
 
+	/** このテクスチャに関連付けられている SamplerState を取得します。 */
+	SamplerState* samplerState() const;
+
+	/** このテクスチャに関連付ける SamplerState を設定します。 */
+	void setSamplerState(SamplerState* value);
+
 protected:
 	Texture();
 	virtual ~Texture();
+	virtual void initialize();
 	virtual detail::ITexture* resolveRHIObject() = 0;
 	void setSize(const SizeI& size) { m_size = size; }
 	void setFormat(TextureFormat format) { m_format = format; }
 
 	SizeI m_size;
 	TextureFormat m_format;
+	Ref<SamplerState> m_samplerState;
 
 	friend class ShaderPass;
 };

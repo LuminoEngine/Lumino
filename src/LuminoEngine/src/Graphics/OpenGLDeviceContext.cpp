@@ -961,29 +961,29 @@ void GLTexture2D::initialize(uint32_t width, uint32_t height, TextureFormat requ
 
 	// デフォルトのサンプラステート (セットしておかないとサンプリングできない)
 	//setGLSamplerState(m_samplerState);
-	{
+	//{
 
-		GLint filter[] =
-		{
-			GL_NEAREST,			// TextureFilterMode_Point,
-			GL_LINEAR,			// TextureFilterMode_Linear,
-		};
-		GLint wrap[] =
-		{
-			GL_REPEAT,			// TextureWrapMode_Repeat
-			GL_CLAMP_TO_EDGE,	// TextureWrapMode_Clamp
-		};
+	//	GLint filter[] =
+	//	{
+	//		GL_NEAREST,			// TextureFilterMode_Point,
+	//		GL_LINEAR,			// TextureFilterMode_Linear,
+	//	};
+	//	GLint wrap[] =
+	//	{
+	//		GL_REPEAT,			// TextureWrapMode_Repeat
+	//		GL_CLAMP_TO_EDGE,	// TextureWrapMode_Clamp
+	//	};
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter[1]);
-		//if (LN_ENSURE_GLERROR()) return;
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter[1]);
-		//if (LN_ENSURE_GLERROR()) return;
+	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter[1]);
+	//	//if (LN_ENSURE_GLERROR()) return;
+	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter[1]);
+	//	//if (LN_ENSURE_GLERROR()) return;
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap[1]);
-		//if (LN_ENSURE_GLERROR()) return;
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap[1]);
-		//if (LN_ENSURE_GLERROR()) return;
-	}
+	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap[1]);
+	//	//if (LN_ENSURE_GLERROR()) return;
+	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap[1]);
+	//	//if (LN_ENSURE_GLERROR()) return;
+	//}
 
 	GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
 }
@@ -1076,10 +1076,10 @@ void GLRenderTargetTexture::initialize(uint32_t width, uint32_t height, TextureF
 		nullptr));
 
 	// glTexParameteri() を一つも指定しないと, テクスチャが正常に使用できない場合がある
-	GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-	GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-	GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-	GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+	//GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+	//GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+	//GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+	//GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 
 	GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
 }
@@ -1129,6 +1129,8 @@ void GLDepthBuffer::dispose()
 // GLSamplerState
 
 GLSamplerState::GLSamplerState()
+	: m_id(0)
+
 {
 }
 
@@ -1138,10 +1140,30 @@ GLSamplerState::~GLSamplerState()
 
 void GLSamplerState::initialize(const SamplerStateData& desc)
 {
+	const GLint filter[] =
+	{
+		GL_NEAREST,			// TextureFilterMode::Point,
+		GL_LINEAR,			// TextureFilterMode::Linear,
+	};
+	const GLint address[] =
+	{
+		GL_REPEAT,			// TextureAddressMode::Repeat
+		GL_CLAMP_TO_EDGE,	// TextureAddressMode::Clamp
+	};
+
+	GL_CHECK(glGenSamplers(1, &m_id));
+	GL_CHECK(glSamplerParameteri(m_id, GL_TEXTURE_MIN_FILTER, filter[static_cast<int>(desc.filter)]));
+	GL_CHECK(glSamplerParameteri(m_id, GL_TEXTURE_MAG_FILTER, filter[static_cast<int>(desc.filter)]));
+	GL_CHECK(glSamplerParameteri(m_id, GL_TEXTURE_WRAP_S, address[static_cast<int>(desc.address)]));
+	GL_CHECK(glSamplerParameteri(m_id, GL_TEXTURE_WRAP_T, address[static_cast<int>(desc.address)]));
 }
 
 void GLSamplerState::dispose()
 {
+	if (m_id) {
+		GL_CHECK(glDeleteSamplers(1, &m_id));
+		m_id = 0;
+	}
 	ISamplerState::dispose();
 }
 
@@ -1668,15 +1690,12 @@ void GLLocalShaderSamplerBuffer::bind()
 {
 	for (int i = 0; i < m_table.size(); i++)
 	{
-		int stageIndex = i;
+		int unitIndex = i;
 		GLTextureBase* t = static_cast<GLTextureBase*>(m_table[i].texture);
-		GL_CHECK(glActiveTexture(GL_TEXTURE0 + stageIndex));
+		GL_CHECK(glActiveTexture(GL_TEXTURE0 + unitIndex));
 		GL_CHECK(glBindTexture(GL_TEXTURE_2D, (t) ? t->id() : 0));
-		GL_CHECK(glUniform1i(m_table[i].uniformLocation, stageIndex));
-
-		// TODO:
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		GL_CHECK(glBindSampler(unitIndex, (m_table[i].samplerState) ? m_table[i].samplerState->id() : 0));
+		GL_CHECK(glUniform1i(m_table[i].uniformLocation, unitIndex));
 	}
 }
 
@@ -1700,9 +1719,9 @@ void GLLocalShaderSamplerBuffer::setTexture(int registerIndex, ITexture* texture
 	m_table[registerIndex].texture = texture;
 }
 
-void GLLocalShaderSamplerBuffer::setSamplerState(int registerIndex, const SamplerStateData& state)
+void GLLocalShaderSamplerBuffer::setSamplerState(int registerIndex, ISamplerState* state)
 {
-	m_table[registerIndex].samplerState = state;
+	m_table[registerIndex].samplerState = static_cast<GLSamplerState*>(state);
 }
 
 } // namespace detail

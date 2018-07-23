@@ -5,6 +5,7 @@
 #include "GraphicsDeviceContext.hpp"
 #include <Lumino/Graphics/Bitmap.hpp>
 #include <Lumino/Graphics/Texture.hpp>
+#include <Lumino/Graphics/SamplerState.hpp>
 
 namespace ln {
 
@@ -14,11 +15,27 @@ namespace ln {
 Texture::Texture()
 	: m_size(0, 0)
 	, m_format(TextureFormat::Unknown)
+	, m_samplerState(nullptr)
 {
 }
 
 Texture::~Texture()
 {
+}
+
+void Texture::initialize()
+{
+	GraphicsResource::initialize();
+}
+
+SamplerState* Texture::samplerState() const
+{
+	return m_samplerState;
+}
+
+void Texture::setSamplerState(SamplerState* value)
+{
+	m_samplerState = value;
 }
 
 //==============================================================================

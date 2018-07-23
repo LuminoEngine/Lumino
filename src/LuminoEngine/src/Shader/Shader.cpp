@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <Lumino/Graphics/Texture.hpp>
+#include <Lumino/Graphics/SamplerState.hpp>
 #include <Lumino/Shader/Shader.hpp>
 #include "../Graphics/GraphicsDeviceContext.hpp"
 #include "../Graphics/GraphicsManager.hpp"
@@ -633,14 +634,26 @@ void ShaderPass::commit()
 	{
 		auto* manager = m_owner->owner()->manager();
 		Texture* texture = m_textureParameters[i]->texture();
+
+		SamplerState* sampler;
+		if (texture && texture->samplerState()) {
+			sampler = texture->samplerState();
+		}
+		else {
+			sampler = m_owner->owner()->manager()->defaultSamplerState();
+		}
+
 		detail::ITexture* rhiTexture = (texture) ? texture->resolveRHIObject() : nullptr;
-		LN_ENQUEUE_RENDER_COMMAND_3(
+		detail::ISamplerState* rhiSampler = (sampler) ? sampler->resolveRHIObject() : nullptr;
+		LN_ENQUEUE_RENDER_COMMAND_4(
 			ShaderConstantBuffer_commit_setTexture, manager,
 			detail::IShaderSamplerBuffer*, samplerBuffer,
 			int, i,
 			Ref<detail::ITexture>, rhiTexture,
+			Ref<detail::ISamplerState>, rhiSampler,
 			{
 				samplerBuffer->setTexture(i, rhiTexture);
+				samplerBuffer->setSamplerState(i, rhiSampler);
 			});
 
 		//samplerBuffer->setTexture(i, m_textureParameters[i]->texture());

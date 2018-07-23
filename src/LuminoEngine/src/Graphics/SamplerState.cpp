@@ -1,28 +1,25 @@
-﻿/*
-	DirectX 等のグラフィックスAPI レベルでは、Filter は min/Mag/Mip の3種、
-	Wrap は U、V 方向の2種設定できる。
-	しかし、実際のケースとしてそこまで細かく設定する必要があるのか？という考えや
-	Unity 等のゲームエンジンでは細かくしていないことから、実装をシンプルにするために
-	項目を減らしている。
-
-	DirectX と OpenGL の対応表
-	http://dench.flatlib.jp/opengl/glsl_hlsl
-*/
+﻿
 #include "Internal.hpp"
 #include <Lumino/Graphics/SamplerState.hpp>
+#include "GraphicsDeviceContext.hpp"
+#include "GraphicsManager.hpp"
 
 namespace ln {
 
-//------------------------------------------------------------------------------
-//SamplerState::SamplerState()
-//	: FilterMode(TextureFilterMode_Point)
-//	, WrapMode(TextureWrapMode_Repeat)
-//{}
+const SamplerStateData SamplerStateData::defaultState =
+{
+	TextureFilterMode::Point,
+	TextureAddressMode::Repeat,
+};
 
 //=============================================================================
 // SamplerState
 
 SamplerState::SamplerState()
+	: m_rhiObject(nullptr)
+	, m_desc(SamplerStateData::defaultState)
+	, m_modified(true)
+	, m_frozen(false)
 {
 }
 
@@ -32,12 +29,56 @@ SamplerState::~SamplerState()
 
 void SamplerState::initialize()
 {
-	Object::initialize();
+	GraphicsResource::initialize();
 }
 
 void SamplerState::dispose()
 {
-	Object::dispose();
+	m_rhiObject.reset();
+	GraphicsResource::dispose();
+}
+
+void SamplerState::setFilterMode(TextureFilterMode value)
+{
+	if (LN_REQUIRE(!m_frozen)) return;
+	if (m_desc.filter != value)
+	{
+		m_desc.filter = value;
+		m_modified = true;
+	}
+}
+
+void SamplerState::setAddressMode(TextureAddressMode value)
+{
+	if (LN_REQUIRE(!m_frozen)) return;
+	if (m_desc.address != value)
+	{
+		m_desc.address = value;
+		m_modified = true;
+	}
+}
+
+detail::ISamplerState* SamplerState::resolveRHIObject()
+{
+	if (m_modified)
+	{
+		m_rhiObject = deviceContext()->createSamplerState(m_desc);
+		m_modified = false;
+	}
+
+	return m_rhiObject;
+}
+
+void SamplerState::onChangeDevice(detail::IGraphicsDeviceContext* device)
+{
+	if (device)
+	{
+		m_modified = true;
+	}
+	else
+	{
+		m_rhiObject.reset();
+	}
 }
 
 } // namespace ln

@@ -186,6 +186,11 @@ bool ShaderCode::parseAndGenerateSpirv(ShaderCodeStage stage, const char* code, 
 		shader->setEnvClient(glslang::EShClientVulkan, VulkanClientVersion);
 		*/
 
+		/* TODO: parse でメモリリークしてるぽい。EShLangFragment の時に発生する。
+			Dumping objects ->
+			{12053} normal block at 0x06EB1410, 8 bytes long.
+			 Data: <k       > 6B 0F 00 00 FF FF FF FF 
+		*/
 		if (!shader.parse(&DefaultTBuiltInResource, defaultVersion, forwardCompatible, messages)) {
 			if (!StringHelper::isNullOrEmpty(shader.getInfoLog())) diag->reportError(shader.getInfoLog());
 			if (!StringHelper::isNullOrEmpty(shader.getInfoDebugLog())) diag->reportError(shader.getInfoDebugLog());
