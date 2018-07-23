@@ -94,6 +94,7 @@ void GraphicsManager::initialize(const Settings& settings)
 	// default objects
 	{
 		m_defaultSamplerState = newObject<SamplerState>();
+		m_defaultSamplerState->setFrozen(true);
 	}
 }
 

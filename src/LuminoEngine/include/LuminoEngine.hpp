@@ -11,6 +11,7 @@
 #include "Lumino/Graphics/VertexBuffer.hpp"
 #include "Lumino/Graphics/IndexBuffer.hpp"
 #include "Lumino/Graphics/Texture.hpp"
+#include "Lumino/Graphics/SamplerState.hpp"
 #include "Lumino/Graphics/Bitmap.hpp"
 
 #include "Lumino/Shader/Shader.hpp"
