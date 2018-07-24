@@ -541,4 +541,39 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 	}
 }
 
+//------------------------------------------------------------------------------
+TEST_F(Test_Graphics_LowLevelRendering, BlendStateTest)
+{
+	auto shader1 = Shader::create(LN_ASSETFILE("SimplePosColor.vsh"), LN_ASSETFILE("SimplePosColor.psh"));
+
+	auto vertexDecl1 = newObject<VertexDeclaration>();
+	vertexDecl1->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
+	vertexDecl1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
+
+	struct Vertex
+	{
+		Vector3 pos;
+		Vector4 color;
+	};
+	Vertex v[] = {
+		{ { -1, 1, 0 },{ 1, 0, 0, 1 } },
+		{ { 0, 1, 0 },{ 0, 1, 0, 1 } },
+		{ { -1, 0, 0 },{ 0, 0, 1, 1 } },
+		{ { 0, 0, 0 },{ 1, 0, 1, 0 } },
+	};
+	auto vb1 = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+
+	auto ctx = Engine::graphicsContext();
+	ctx->setVertexDeclaration(vertexDecl1);
+	ctx->setVertexBuffer(0, vb1);
+	ctx->setIndexBuffer(nullptr);
+	ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
+
+	{
+		ctx->clear(ClearFlags::All, Color::Gray, 1.0f, 0);
+		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
+
+		ASSERT_SCREEN_S(LN_ASSETFILE("Test_Graphics_LowLevelRendering-BlendStateTest-1.png"));
+	}
+}
 
