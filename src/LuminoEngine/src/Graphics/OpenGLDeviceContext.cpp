@@ -305,60 +305,87 @@ Ref<IShaderPass> OpenGLDeviceContext::onCreateShaderPass(const byte_t* vsCode, i
 
 void OpenGLDeviceContext::onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState)
 {
-	if (blendState.independentBlendEnable) {
-		LN_NOTIMPLEMENTED();
-	}
-
 	// BlendState
 	{
-		const RenderTargetBlendDesc& desc = blendState.renderTargets[0];
-
-		// blendEnable
-		if (desc.blendEnable) {
-			GL_CHECK(glEnable(GL_BLEND));
-		}
-		else {
-			GL_CHECK(glDisable(GL_BLEND));
-		}
-
-		// blendOp
+		GLenum  blendOpTable[] =
 		{
-			GLenum  blendOpTable[] =
-			{
-				GL_FUNC_ADD,
-				GL_FUNC_SUBTRACT,
-				GL_FUNC_REVERSE_SUBTRACT,
-				GL_MIN,
-				GL_MAX,
-			};
+			GL_FUNC_ADD,
+			GL_FUNC_SUBTRACT,
+			GL_FUNC_REVERSE_SUBTRACT,
+			GL_MIN,
+			GL_MAX,
+		};
 
-			GL_CHECK(glBlendEquationSeparate(
-				blendOpTable[(int)desc.blendOp],
-				blendOpTable[(int)desc.blendOpAlpha]));
-		}
-
-		// sourceBlend
-		// destinationBlend
+		GLenum blendFactorTable[] =
 		{
-			GLenum blendFactorTable[] =	// glBlendFuncSeparate
-			{
-				GL_ZERO,
-				GL_ONE,
-				GL_SRC_COLOR,
-				GL_ONE_MINUS_SRC_COLOR,
-				GL_SRC_ALPHA,
-				GL_ONE_MINUS_SRC_ALPHA,
-				GL_DST_COLOR,
-				GL_ONE_MINUS_DST_COLOR,
-				GL_DST_ALPHA,
-				GL_ONE_MINUS_DST_ALPHA
-			};
+			GL_ZERO,
+			GL_ONE,
+			GL_SRC_COLOR,
+			GL_ONE_MINUS_SRC_COLOR,
+			GL_SRC_ALPHA,
+			GL_ONE_MINUS_SRC_ALPHA,
+			GL_DST_COLOR,
+			GL_ONE_MINUS_DST_COLOR,
+			GL_DST_ALPHA,
+			GL_ONE_MINUS_DST_ALPHA
+		};
 
-			GL_CHECK(glBlendFuncSeparate(
-				blendFactorTable[(int)desc.sourceBlend],
-				blendFactorTable[(int)desc.destinationBlend],
-				blendFactorTable[(int)desc.sourceBlendAlpha],
-				blendFactorTable[(int)desc.destinationBlendAlpha]));
+		if (blendState.independentBlendEnable)
+		{
+			for (int i = 0; i < 8; i++)	// TODO: num RT
+			{
+				const RenderTargetBlendDesc& desc = blendState.renderTargets[i];
+
+				// blendEnable
+				if (desc.blendEnable) {
+					GL_CHECK(glEnablei(GL_BLEND, i));
+				}
+				else {
+					GL_CHECK(glEnablei(GL_BLEND, i));
+				}
+
+				// sourceBlend
+				// destinationBlend
+				GL_CHECK(glBlendFuncSeparatei(i,
+					blendFactorTable[(int)desc.sourceBlend],
+					blendFactorTable[(int)desc.destinationBlend],
+					blendFactorTable[(int)desc.sourceBlendAlpha],
+					blendFactorTable[(int)desc.destinationBlendAlpha]));
+
+				// blendOp
+				GL_CHECK(glBlendEquationSeparatei(i,
+					blendOpTable[(int)desc.blendOp],
+					blendOpTable[(int)desc.blendOpAlpha]));
+			}
+		}
+		else
+		{
+			const RenderTargetBlendDesc& desc = blendState.renderTargets[0];
+
+			// blendEnable
+			if (desc.blendEnable) {
+				GL_CHECK(glEnable(GL_BLEND));
+			}
+			else {
+				GL_CHECK(glDisable(GL_BLEND));
+			}
+
+			// blendOp
+			{
+				GL_CHECK(glBlendEquationSeparate(
+					blendOpTable[(int)desc.blendOp],
+					blendOpTable[(int)desc.blendOpAlpha]));
+			}
+
+			// sourceBlend
+			// destinationBlend
+			{
+				GL_CHECK(glBlendFuncSeparate(
+					blendFactorTable[(int)desc.sourceBlend],
+					blendFactorTable[(int)desc.destinationBlend],
+					blendFactorTable[(int)desc.sourceBlendAlpha],
+					blendFactorTable[(int)desc.destinationBlendAlpha]));
+			}
 		}
 	}
 
@@ -389,6 +416,51 @@ void OpenGLDeviceContext::onUpdatePipelineState(const BlendStateDesc& blendState
 		}
 	}
 
+	// DepthStencilState
+	{
+		GLenum cmpFuncTable[] =
+		{
+			GL_NEVER,		// Never
+			GL_LESS,		// Less
+			GL_LEQUAL,		// LessEqual
+			GL_GREATER,		// Greater
+			GL_GEQUAL,		// GreaterEqual
+			GL_EQUAL,		// Equal
+			GL_NOTEQUAL,	// NotEqual
+			GL_ALWAYS,		// Always
+		};
+
+		// 深度テスト
+		if (depthStencilState.depthTestEnabled) {
+			GL_CHECK(glEnable(GL_DEPTH_TEST));
+		}
+		else {
+			GL_CHECK(glDisable(GL_DEPTH_TEST));
+		}
+
+		// depthTestEnabled
+		GL_CHECK(glDepthMask(depthStencilState.depthTestEnabled ? GL_TRUE : GL_FALSE));
+
+		// stencilEnabled
+		if (depthStencilState.stencilEnabled) {
+			GL_CHECK(glEnable(GL_STENCIL_TEST));
+		}
+		else {
+			GL_CHECK(glDisable(GL_STENCIL_TEST));
+		}
+
+		// stencilFunc
+		// stencilReferenceValue
+		GL_CHECK(glStencilFuncSeparate(GL_FRONT, cmpFuncTable[(int)depthStencilState.frontFace.stencilFunc], depthStencilState.stencilReferenceValue, 0xFFFFFFFF));
+		GL_CHECK(glStencilFuncSeparate(GL_BACK, cmpFuncTable[(int)depthStencilState.backFace.stencilFunc], depthStencilState.stencilReferenceValue, 0xFFFFFFFF));
+
+		// stencilFailOp
+		// stencilDepthFailOp
+		// stencilPassOp
+		GLenum stencilOpTable[] = { GL_KEEP, GL_REPLACE };
+		GL_CHECK(glStencilOpSeparate(GL_FRONT, stencilOpTable[(int)depthStencilState.frontFace.stencilFailOp], stencilOpTable[(int)depthStencilState.frontFace.stencilDepthFailOp], stencilOpTable[(int)depthStencilState.frontFace.stencilPassOp]));
+		GL_CHECK(glStencilOpSeparate(GL_BACK, stencilOpTable[(int)depthStencilState.backFace.stencilFailOp], stencilOpTable[(int)depthStencilState.backFace.stencilDepthFailOp], stencilOpTable[(int)depthStencilState.backFace.stencilPassOp]));
+	}
 }
 
 void OpenGLDeviceContext::onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer)

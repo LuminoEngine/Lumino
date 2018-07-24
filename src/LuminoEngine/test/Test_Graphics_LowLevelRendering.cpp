@@ -526,7 +526,7 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 	{
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
-		ASSERT_SCREEN_S(LN_ASSETFILE("Test_Graphics_LowLevelRendering-SamplerState-1.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Test_Graphics_LowLevelRendering-SamplerState-1.png"));
 	}
 
 	// * [ ] Linear, Clamp
@@ -537,7 +537,7 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 		tex1->setSamplerState(sampler);
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
-		ASSERT_SCREEN_S(LN_ASSETFILE("Test_Graphics_LowLevelRendering-SamplerState-2.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Test_Graphics_LowLevelRendering-SamplerState-2.png"));
 	}
 }
 
