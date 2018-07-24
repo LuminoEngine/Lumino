@@ -81,7 +81,7 @@ private:
 
 	struct Status
 	{
-		//RenderStateData renderState;
+		//RenderStateDesc renderState;
 		std::array<Ref<RenderTargetTexture>, 4> renderTargets;
 		Ref<DepthBuffer> depthBuffer;
 		Ref<VertexDeclaration> vertexDeclaration;

@@ -42,7 +42,9 @@ public:
 	Ref<ISamplerState> createSamplerState(const SamplerStateData& desc);
 	Ref<IShaderPass> createShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag);
 
-	void setRenderState(const RenderStateData& value);
+	void setBlendState(const BlendStateDesc& value);
+	void setRasterizerState(const RasterizerStateDesc& value);
+	void setDepthStencil(const DepthStencilStateDesc& value);
 	void setColorBuffer(int index, ITexture* value);
 	void setDepthBuffer(IDepthBuffer* value);
 	void setVertexDeclaration(IVertexDeclaration* value);
@@ -70,7 +72,7 @@ protected:
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) = 0;
 	virtual Ref<IShaderPass> onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag) = 0;
 
-	virtual void onUpdateRenderState(const RenderStateData& newState) = 0;
+	virtual void onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState) = 0;
 	virtual void onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer) = 0;
 	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) = 0;
 	virtual void onUpdateShaderPass(IShaderPass* newPass) = 0;
@@ -88,7 +90,9 @@ private:
 
 	struct State
 	{
-		RenderStateData renderState;
+		BlendStateDesc blendState;
+		RasterizerStateDesc rasterizerState;
+		DepthStencilStateDesc depthStencilState;
 		std::array<ITexture*, 4> renderTargets = {};
 		IDepthBuffer* depthBuffer = nullptr;
 		IVertexDeclaration* vertexDeclaration = nullptr;

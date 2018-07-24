@@ -87,9 +87,19 @@ Ref<IShaderPass> IGraphicsDeviceContext::createShaderPass(const byte_t* vsCode, 
 	return pass;
 }
 
-void IGraphicsDeviceContext::setRenderState(const RenderStateData& value)
+void IGraphicsDeviceContext::setBlendState(const BlendStateDesc& value)
 {
-	m_staging.renderState = value;
+	m_staging.blendState = value;
+}
+
+void IGraphicsDeviceContext::setRasterizerState(const RasterizerStateDesc& value)
+{
+	m_staging.rasterizerState = value;
+}
+
+void IGraphicsDeviceContext::setDepthStencil(const DepthStencilStateDesc& value)
+{
+	m_staging.depthStencilState = value;
 }
 
 void IGraphicsDeviceContext::setColorBuffer(int index, ITexture* value)
@@ -151,7 +161,7 @@ void IGraphicsDeviceContext::commitStatus()
 
 	// TODO: modified check
 
-	onUpdateRenderState(m_staging.renderState);
+	onUpdatePipelineState(m_staging.blendState, m_staging.rasterizerState, m_staging.depthStencilState);
 
 	onUpdateShaderPass(m_staging.shaderPass);
 

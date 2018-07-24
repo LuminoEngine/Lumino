@@ -5,17 +5,73 @@
 namespace ln {
 
 //==============================================================================
-// RenderStateData
+// RenderTargetBlendDesc
 
-RenderStateData::RenderStateData()
-	: alphaBlendEnabled(false)
-	, blendOp(BlendOp::Add)
+RenderTargetBlendDesc::RenderTargetBlendDesc()
+	: blendEnable(false)
 	, sourceBlend(BlendFactor::One)
 	, destinationBlend(BlendFactor::Zero)
-	, cullingMode(CullingMode::Back)
-	, fillMode(FillMode::Solid)
+	, blendOp(BlendOp::Add)
+	, sourceBlendAlpha(BlendFactor::One)
+	, destinationBlendAlpha(BlendFactor::Zero)
+	, blendOpAlpha(BlendOp::Add)
 {
 }
+
+//==============================================================================
+// BlendStateDesc
+
+BlendStateDesc::BlendStateDesc()
+	: independentBlendEnable(false)
+	, renderTargets{}
+{
+}
+
+//==============================================================================
+// RasterizerStateDesc
+
+RasterizerStateDesc::RasterizerStateDesc()
+	: fillMode(FillMode::Solid)
+	, cullMode(CullingMode::Back)
+{
+}
+
+//==============================================================================
+// StencilOpDesc
+
+StencilOpDesc::StencilOpDesc()
+	: stencilFailOp(StencilOp::Keep)
+	, stencilDepthFailOp(StencilOp::Keep)
+	, stencilPassOp(StencilOp::Keep)
+	, stencilFunc(ComparisonFunc::Always)
+{
+}
+
+//==============================================================================
+// DepthStencilStateDesc
+
+DepthStencilStateDesc::DepthStencilStateDesc()
+	: depthTestEnabled(false)
+	, depthWriteEnabled(false)
+	, stencilEnabled(false)
+	, stencilReferenceValue(0)
+	, frontFace()
+	, backFace()
+{
+}
+
+////==============================================================================
+//// RenderStateDesc
+//
+//RenderStateDesc::RenderStateDesc()
+//	: alphaBlendEnabled(false)
+//	, blendOp(BlendOp::Add)
+//	, sourceBlend(BlendFactor::One)
+//	, destinationBlend(BlendFactor::Zero)
+//	, cullingMode(CullingMode::Back)
+//	, fillMode(FillMode::Solid)
+//{
+//}
 
 #if 0
 //==============================================================================

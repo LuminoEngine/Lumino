@@ -31,21 +31,28 @@ enum class BlendFactor
 /** カリング方法 */
 enum class CullingMode
 {
-	None,						/**< 両面表示 */
-	Front,						/**< 前面を描画しない */
-	Back,						/**< 裏面を描画しない */
+	/** 両面を描画します。 */
+	None,
+
+	/** 前向きの面を描画しません。 */
+	Front,
+
+	/** 後ろ向きの面を描画しません。 */
+	Back,
 };
 
-/// 塗りつぶし方法を表します
+/** 塗りつぶし方法 */
 enum class FillMode
 {
-	Solid,			///< 面を塗りつぶす
-	Wire,				///< ワイヤーフレーム
-	Point,				///< 頂点
+	/** 面を塗りつぶす */
+	Solid,
+
+	/** ワイヤーフレーム */
+	Wireframe,
 };
 
 /// 比較関数の定数
-enum class CompareFunc
+enum class ComparisonFunc
 {
 	Never,					///< 常に失敗します。
 	Less,						///< (新しいピクセル値 < 現在のピクセル値) 新しいピクセル値が、現在のピクセル値未満の場合に、新しいピクセル値を採用します。
@@ -64,29 +71,134 @@ enum class StencilOp
 	replace,					///< ステンシルデータをステンシル参照値に設定します。
 };
 
-/** レンダリングステート */
-struct RenderStateData
+///** レンダリングステート */
+//struct RenderStateDesc
+//{
+//	/** アルファブレンドの有無 */
+//	bool alphaBlendEnabled;
+//
+//	/** ブレンディングの演算方法 */
+//	BlendOp blendOp;
+//
+//	/** ブレンディングの係数 */
+//	BlendFactor sourceBlend;
+//
+//	/** ブレンディングの係数 */
+//	BlendFactor destinationBlend;
+//
+//	/** カリング方法 */
+//	CullingMode cullingMode;
+//
+//	/** 塗りつぶし方法 */
+//	FillMode fillMode;
+//
+//	RenderStateDesc();
+//};
+
+
+
+
+
+
+
+
+
+
+/** レンダー ターゲットのブレンディングステート */
+struct RenderTargetBlendDesc
 {
-	/** アルファブレンドの有無 */
-	bool alphaBlendEnabled;
+	/** ブレンディングの有無 (default:false) */
+	bool blendEnable;
 
-	/** ブレンディングの演算方法 */
-	BlendOp blendOp;
-
-	/** ブレンディングの係数 */
+	/** 入力元の RGB に対する係数 (default: One) */
 	BlendFactor sourceBlend;
 
-	/** ブレンディングの係数 */
+	/** 出力先の RGB に対する係数 (default: Zero) */
 	BlendFactor destinationBlend;
 
-	/** カリング方法 */
-	CullingMode cullingMode;
+	/** RGB のブレンディング操作 (default: Add) */
+	BlendOp blendOp;
 
-	/** 塗りつぶし方法 */
+	/** 入力元のアルファ値に対する係数 (default: One) */
+	BlendFactor sourceBlendAlpha;
+
+	/** 出力先のアルファ値に対する係数 (default: Zero) */
+	BlendFactor destinationBlendAlpha;
+
+	/** アルファ値のブレンディング操作 (default: Add) */
+	BlendOp blendOpAlpha;
+
+	RenderTargetBlendDesc();
+};
+
+/** ブレンディングステート */
+struct BlendStateDesc
+{
+	/** レンダーターゲットで独立したブレンディングを有効にするには、true に設定します。(default:false) */
+	bool independentBlendEnable;
+
+	/** レンダーターゲットごとのブレンドステートの配列です。 */
+	RenderTargetBlendDesc renderTargets[8];
+
+	BlendStateDesc();
+};
+
+/** ラスタライザステート */
+struct RasterizerStateDesc
+{
+	/** 塗りつぶし方法 (default:Solid) */
 	FillMode fillMode;
 
-	RenderStateData();
+	/** カリング方法 (default:Back) */
+	CullingMode cullMode;
+
+	RasterizerStateDesc();
 };
+
+/** ステンシル処理 */
+struct StencilOpDesc
+{
+	/** ステンシルテストに失敗した場合のステンシル処理です。(default:Keep) */
+	StencilOp	stencilFailOp;
+
+	/** ステンシルテストに合格で、深度テストが不合格の場合のステンシル処理です。(default:Keep) */
+	StencilOp	stencilDepthFailOp;
+
+	/** ステンシルテストと深度テストに合格した場合のステンシル処理です。(default:Keep) */
+	StencilOp	stencilPassOp;
+
+	/** ステンシルテストの比較関数　(default:Always) */
+	ComparisonFunc	stencilFunc;
+
+	StencilOpDesc();
+};
+
+/** 深度ステンシルステート */
+struct DepthStencilStateDesc
+{
+	/** 深度テストの有効状態 (default:true) */
+	bool depthTestEnabled;
+
+	/** 深度書き込みの有効状態 (default:true) */
+	bool depthWriteEnabled;
+
+	/** ステンシルテストの有効状態 (default:false) */
+	bool stencilEnabled;
+
+	/** ステンシルテストの参照値 (default:0) */
+	uint8_t stencilReferenceValue;
+
+	/** 法線がカメラの方向を向いている面のステンシル処理 */
+	StencilOpDesc frontFace;
+
+	/** 法線がカメラと逆方向を向いている面のステンシル処理 */
+	StencilOpDesc backFace;
+
+	DepthStencilStateDesc();
+};
+
+
+
 
 
 

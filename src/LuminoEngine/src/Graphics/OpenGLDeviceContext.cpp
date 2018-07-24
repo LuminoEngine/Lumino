@@ -303,77 +303,92 @@ Ref<IShaderPass> OpenGLDeviceContext::onCreateShaderPass(const byte_t* vsCode, i
 	return ptr;
 }
 
-void OpenGLDeviceContext::onUpdateRenderState(const RenderStateData& newState)
+void OpenGLDeviceContext::onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState)
 {
-	// alphaBlendEnabled
-	if (newState.alphaBlendEnabled) {
-		glEnable(GL_BLEND);
-	}
-	else {
-		glDisable(GL_BLEND);
+	if (blendState.independentBlendEnable) {
+		LN_NOTIMPLEMENTED();
 	}
 
-	// blendOp
+	// BlendState
 	{
-		GLenum  blendOpTable[] =
+		const RenderTargetBlendDesc& desc = blendState.renderTargets[0];
+
+		// blendEnable
+		if (desc.blendEnable) {
+			GL_CHECK(glEnable(GL_BLEND));
+		}
+		else {
+			GL_CHECK(glDisable(GL_BLEND));
+		}
+
+		// blendOp
 		{
-			GL_FUNC_ADD,
-			GL_FUNC_SUBTRACT,
-			GL_FUNC_REVERSE_SUBTRACT,
-			GL_MIN,
-			GL_MAX,
-		};
+			GLenum  blendOpTable[] =
+			{
+				GL_FUNC_ADD,
+				GL_FUNC_SUBTRACT,
+				GL_FUNC_REVERSE_SUBTRACT,
+				GL_MIN,
+				GL_MAX,
+			};
 
-		glBlendEquation(blendOpTable[(int)newState.blendOp]);
-	}
+			GL_CHECK(glBlendEquationSeparate(
+				blendOpTable[(int)desc.blendOp],
+				blendOpTable[(int)desc.blendOpAlpha]));
+		}
 
-	// sourceBlend
-	// destinationBlend
-	{
-		GLenum blendFactorTable[] =	// glBlendFuncSeparate
+		// sourceBlend
+		// destinationBlend
 		{
-			GL_ZERO,
-			GL_ONE,
-			GL_SRC_COLOR,
-			GL_ONE_MINUS_SRC_COLOR,
-			GL_SRC_ALPHA,
-			GL_ONE_MINUS_SRC_ALPHA,
-			GL_DST_COLOR,
-			GL_ONE_MINUS_DST_COLOR,
-			GL_DST_ALPHA,
-			GL_ONE_MINUS_DST_ALPHA
-		};
+			GLenum blendFactorTable[] =	// glBlendFuncSeparate
+			{
+				GL_ZERO,
+				GL_ONE,
+				GL_SRC_COLOR,
+				GL_ONE_MINUS_SRC_COLOR,
+				GL_SRC_ALPHA,
+				GL_ONE_MINUS_SRC_ALPHA,
+				GL_DST_COLOR,
+				GL_ONE_MINUS_DST_COLOR,
+				GL_DST_ALPHA,
+				GL_ONE_MINUS_DST_ALPHA
+			};
 
-		glBlendFuncSeparate(
-			blendFactorTable[(int)newState.sourceBlend],
-			blendFactorTable[(int)newState.destinationBlend],
-			blendFactorTable[(int)newState.sourceBlend],
-			blendFactorTable[(int)newState.destinationBlend]);
-	}
-
-	// cullingMode
-	{
-		switch (newState.cullingMode)
-		{
-		case CullingMode::None:
-			glDisable(GL_CULL_FACE);
-			break;
-		case CullingMode::Front:
-			glEnable(GL_CULL_FACE);
-			glCullFace(GL_BACK);
-			break;
-		case CullingMode::Back:
-			glEnable(GL_CULL_FACE);
-			glCullFace(GL_FRONT);
-			break;
+			GL_CHECK(glBlendFuncSeparate(
+				blendFactorTable[(int)desc.sourceBlend],
+				blendFactorTable[(int)desc.destinationBlend],
+				blendFactorTable[(int)desc.sourceBlendAlpha],
+				blendFactorTable[(int)desc.destinationBlendAlpha]));
 		}
 	}
 
-	// fillMode
+	// RasterizerState
 	{
-		const GLenum tb[] = { GL_FILL, GL_LINE, GL_POINT };
-		glPolygonMode(GL_FRONT_AND_BACK, tb[(int)newState.fillMode]);
+		// fillMode
+		{
+			const GLenum tb[] = { GL_FILL, GL_LINE, GL_POINT };
+			GL_CHECK(glPolygonMode(GL_FRONT_AND_BACK, tb[(int)rasterizerState.fillMode]));
+		}
+
+		// cullingMode
+		{
+			switch (rasterizerState.cullMode)
+			{
+			case CullingMode::None:
+				GL_CHECK(glDisable(GL_CULL_FACE));
+				break;
+			case CullingMode::Front:
+				GL_CHECK(glEnable(GL_CULL_FACE));
+				GL_CHECK(glCullFace(GL_BACK));
+				break;
+			case CullingMode::Back:
+				GL_CHECK(glEnable(GL_CULL_FACE));
+				GL_CHECK(glCullFace(GL_FRONT));
+				break;
+			}
+		}
 	}
+
 }
 
 void OpenGLDeviceContext::onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer)
