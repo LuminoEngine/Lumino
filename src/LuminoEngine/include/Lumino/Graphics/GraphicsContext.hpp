@@ -3,6 +3,7 @@
 #include "Common.hpp"
 #include "GeometryStructs.hpp"
 #include "ColorStructs.hpp"
+#include "RenderState.hpp"
 
 namespace ln {
 class VertexDeclaration;
@@ -26,6 +27,7 @@ class LN_API SwapChain
 public:
 
 	RenderTargetTexture* colorBuffer() const;
+	DepthBuffer* depthBuffer() const;
 
 	virtual void dispose() override;
 
@@ -42,6 +44,7 @@ LN_INTERNAL_ACCESS:
 private:
 	Ref<detail::ISwapChain> m_rhiObject;
 	Ref<RenderTargetTexture> m_colorBuffer;
+	Ref<DepthBuffer> m_depthBuffer;
 };
 
 class LN_API GraphicsContext
@@ -49,9 +52,9 @@ class LN_API GraphicsContext
 {
 public:
 
-
-
-
+	void setBlendState(const BlendStateDesc& value);
+	void setRasterizerState(const RasterizerStateDesc& value);
+	void setDepthStencilState(const DepthStencilStateDesc& value);
 	void setColorBuffer(int index, RenderTargetTexture* value);
 	void setDepthBuffer(DepthBuffer* value);
 	void setVertexDeclaration(VertexDeclaration* value);
@@ -79,9 +82,11 @@ private:
 	detail::GraphicsManager* m_manager;
 	detail::IGraphicsDeviceContext* m_device;
 
-	struct Status
+	struct State
 	{
-		//RenderStateDesc renderState;
+		BlendStateDesc blendState;
+		RasterizerStateDesc rasterizerState;
+		DepthStencilStateDesc depthStencilState;
 		std::array<Ref<RenderTargetTexture>, 4> renderTargets;
 		Ref<DepthBuffer> depthBuffer;
 		Ref<VertexDeclaration> vertexDeclaration;
@@ -92,8 +97,8 @@ private:
 		void reset();
 	};
 
-	Status m_staging;
-	Status m_current;
+	State m_staging;
+	State m_current;
 };
 
 } // namespace ln

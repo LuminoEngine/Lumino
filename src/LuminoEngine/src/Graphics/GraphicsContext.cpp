@@ -28,18 +28,29 @@ SwapChain::~SwapChain()
 
 void SwapChain::initialize(detail::PlatformWindow* window, const SizeI& backbufferSize)
 {
+	// TODO: GraphicsResource にして、onChangeDevice でバックバッファをアタッチ
+	Object::initialize();
 	m_rhiObject = detail::EngineDomain::graphicsManager()->deviceContext()->createSwapChain(window, backbufferSize);
 	m_colorBuffer = newObject<RenderTargetTexture>(m_rhiObject->getColorBuffer());
+	m_depthBuffer = newObject<DepthBuffer>(m_colorBuffer->width(), m_colorBuffer->height());
 }
 
 void SwapChain::dispose()
 {
-	m_rhiObject = nullptr;
+	m_rhiObject.reset();
+	m_depthBuffer.reset();
+	m_colorBuffer.reset();
+	Object::dispose();
 }
 
 RenderTargetTexture* SwapChain::colorBuffer() const
 {
 	return m_colorBuffer;
+}
+
+DepthBuffer* SwapChain::depthBuffer() const
+{
+	return m_depthBuffer;
 }
 
 void SwapChain::wait()
@@ -75,6 +86,21 @@ void GraphicsContext::initialize(detail::IGraphicsDeviceContext* device)
 
 void GraphicsContext::dispose()
 {
+}
+
+void GraphicsContext::setBlendState(const BlendStateDesc& value)
+{
+	m_staging.blendState = value;
+}
+
+void GraphicsContext::setRasterizerState(const RasterizerStateDesc& value)
+{
+	m_staging.rasterizerState = value;
+}
+
+void GraphicsContext::setDepthStencilState(const DepthStencilStateDesc& value)
+{
+	m_staging.depthStencilState = value;
 }
 
 void GraphicsContext::setColorBuffer(int index, RenderTargetTexture* value)
@@ -160,6 +186,23 @@ void GraphicsContext::commitStatus()
 	// TODO: ぜんぶまとめて送信できる方法も用意していい気がする。
 
 	{
+		auto& blendState = m_staging.blendState;
+		auto& rasterizerState = m_staging.rasterizerState;
+		auto& depthStencilState = m_staging.depthStencilState;
+		LN_ENQUEUE_RENDER_COMMAND_4(
+			GraphicsContext_setPipelineState, m_manager,
+			detail::IGraphicsDeviceContext*, m_device,
+			BlendStateDesc, blendState,
+			RasterizerStateDesc, rasterizerState,
+			DepthStencilStateDesc, depthStencilState,
+			{
+				m_device->setBlendState(blendState);
+				m_device->setRasterizerState(rasterizerState);
+				m_device->setDepthStencilState(depthStencilState);
+			});
+	}
+
+	{
 		for (int i = 0; i < m_staging.renderTargets.size(); i++)
 		{
 			auto& value = m_staging.renderTargets[i];
@@ -240,8 +283,11 @@ void GraphicsContext::commitStatus()
 	}
 }
 
-void GraphicsContext::Status::reset()
+void GraphicsContext::State::reset()
 {
+	blendState = BlendStateDesc();
+	rasterizerState = RasterizerStateDesc();
+	depthStencilState = DepthStencilStateDesc();
 	renderTargets = {};
 	depthBuffer = nullptr;
 	vertexDeclaration = nullptr;

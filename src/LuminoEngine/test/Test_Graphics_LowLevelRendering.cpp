@@ -40,14 +40,15 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-		ASSERT_SCREEN(LN_ASSETFILE("Test_Graphics_LowLevelRendering-BasicTriangle-1.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-BasicTriangle-1.png"));
 	}
 }
 
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 {
-	//m_shader1->setVector("g_color", Vector4(1, 0, 0, 1));
+	auto buffer1 = m_shader1->findConstantBuffer("ConstBuff");
+	buffer1->findParameter("g_color")->setVector(Vector4(1, 0, 0, 1));
 
 	struct Param
 	{
@@ -90,7 +91,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-			ASSERT_SCREEN(LN_ASSETFILE("Test_Graphics_LowLevelRendering-VertexBuffer-2.png"));
+			ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-VertexBuffer-2.png"));
 		}
 
 		// * [ ] 一度レンダリングに使用されたバッファを、再更新できること
@@ -105,7 +106,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-			ASSERT_SCREEN(LN_ASSETFILE("Test_Graphics_LowLevelRendering-VertexBuffer-3.png"));
+			ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-VertexBuffer-3.png"));
 		}
 
 		// * [ ] まだ一度もレンダリングに使用されていないバッファを、拡張できること
@@ -126,7 +127,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
 
-			ASSERT_SCREEN(LN_ASSETFILE("Test_Graphics_LowLevelRendering-VertexBuffer-4.png"));
+			ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-VertexBuffer-4.png"));
 		}
 
 		// * [ ] 一度レンダリングに使用されたバッファを、拡張できること
@@ -147,7 +148,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 3);
 
-			ASSERT_SCREEN(LN_ASSETFILE("Test_Graphics_LowLevelRendering-VertexBuffer-5.png"));
+			ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-VertexBuffer-5.png"));
 		}
 	}
 
@@ -156,9 +157,50 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 }
 
 //------------------------------------------------------------------------------
+TEST_F(Test_Graphics_LowLevelRendering, MultiStreamVertexBuffer)
+{
+	auto shader1 = Shader::create(LN_ASSETFILE("MultiStreamVertexBuffer-1.vsh"), LN_ASSETFILE("MultiStreamVertexBuffer-1.psh"));
+
+	struct PosColor
+	{
+		Vector3 pos;
+		Vector4 color;
+	};
+	PosColor v1[3] = { 
+		{ { -1, 1, 0 }, { 0.5, 0, 0, 0 } }, 
+		{ {0, 1, 0}, { 0, 1., 0, 0 } },
+		{ {-1, 0, 0}, { 0, 0, 0.5, 0 } }
+	};
+	Vector3 uv1[3] = { { 0.5, 0, 0 },{ 0, -0.5, 0 }, { 0, 0, 0.5 } };
+	Vector4 uv2[3] = { { 0, 0, 0, 1 },{ 0, 0, 0, 1 },{ 0, 0, 0, 1 } };
+
+	auto vb1 = newObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
+	auto vb2 = newObject<VertexBuffer>(sizeof(uv1), uv1, GraphicsResourceUsage::Static);
+	auto vb3 = newObject<VertexBuffer>(sizeof(uv2), uv2, GraphicsResourceUsage::Static);
+	auto vd1 = newObject<VertexDeclaration>();
+	vd1->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
+	vd1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
+	vd1->addVertexElement(1, VertexElementType::Float3, VertexElementUsage::TexCoord, 0);
+	vd1->addVertexElement(2, VertexElementType::Float4, VertexElementUsage::TexCoord, 1);
+
+	auto ctx = Engine::graphicsContext();
+	ctx->setVertexBuffer(0, vb1);
+	ctx->setVertexBuffer(1, vb2);
+	ctx->setVertexBuffer(2, vb3);
+	ctx->setVertexDeclaration(vd1);
+	ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
+
+	ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
+	ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+
+	ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-MultiStreamVertexBuffer-1.png"));
+}
+
+//------------------------------------------------------------------------------
 TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 {
-	//m_shader1->setVector("g_color", Vector4(0, 0, 1, 1));
+	auto buffer1 = m_shader1->findConstantBuffer("ConstBuff");
+	buffer1->findParameter("g_color")->setVector(Vector4(0, 0, 1, 1));
 
 	struct Param
 	{
@@ -204,7 +246,7 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 			ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->drawPrimitiveIndexed(PrimitiveType::TriangleList, 0, 1);
 
-			ASSERT_SCREEN(LN_ASSETFILE("Test_Graphics_LowLevelRendering-IndexBuffer-1.png"));
+			ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-IndexBuffer-1.png"));
 		}
 
 		// * [ ] 一度レンダリングに使用されたバッファを、再更新できること
@@ -215,7 +257,7 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 			ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->drawPrimitiveIndexed(PrimitiveType::TriangleList, 0, 1);
 
-			ASSERT_SCREEN(LN_ASSETFILE("Test_Graphics_LowLevelRendering-IndexBuffer-2.png"));
+			ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-IndexBuffer-2.png"));
 		}
 
 		// * [ ] フォーマット変更 16 -> 32
@@ -230,7 +272,7 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 				ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 				ctx->drawPrimitiveIndexed(PrimitiveType::TriangleList, 0, 1);
 
-				ASSERT_SCREEN(LN_ASSETFILE("Test_Graphics_LowLevelRendering-IndexBuffer-2.png"));	// ↑と同じ結果
+				ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-IndexBuffer-2.png"));	// ↑と同じ結果
 			}
 		}
 	}
@@ -481,7 +523,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture)
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
 
-		ASSERT_SCREEN(LN_ASSETFILE("Test_Graphics_LowLevelRendering-TextureTest-1.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-TextureTest-1.png"));
 	}
 }
 
@@ -526,7 +568,7 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 	{
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
-		ASSERT_SCREEN(LN_ASSETFILE("Test_Graphics_LowLevelRendering-SamplerState-1.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-SamplerState-1.png"));
 	}
 
 	// * [ ] Linear, Clamp
@@ -537,12 +579,13 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 		tex1->setSamplerState(sampler);
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
-		ASSERT_SCREEN(LN_ASSETFILE("Test_Graphics_LowLevelRendering-SamplerState-2.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-SamplerState-2.png"));
 	}
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Graphics_LowLevelRendering, BlendStateTest)
+//## RenderState 関係のテスト。設定が Native layer まで渡ることを確認する。
+TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 {
 	auto shader1 = Shader::create(LN_ASSETFILE("SimplePosColor.vsh"), LN_ASSETFILE("SimplePosColor.psh"));
 
@@ -555,25 +598,165 @@ TEST_F(Test_Graphics_LowLevelRendering, BlendStateTest)
 		Vector3 pos;
 		Vector4 color;
 	};
-	Vertex v[] = {
-		{ { -1, 1, 0 },{ 1, 0, 0, 1 } },
-		{ { 0, 1, 0 },{ 0, 1, 0, 1 } },
-		{ { -1, 0, 0 },{ 0, 0, 1, 1 } },
-		{ { 0, 0, 0 },{ 1, 0, 1, 0 } },
+	Vertex v1[] = {	// 深度テスト用に少し奥に出しておく
+		{ { -1, 1, 0.5 }, Color::Red },
+		{ { 0, 1, 0.5 }, Color::Red },
+		{ { -1, 0, 0.5 }, Color::Red },
+		{ { 0, 0, 0.5 }, Color::Red },
 	};
-	auto vb1 = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+	auto vb1 = newObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
+
+	Vertex v2[] = {
+		{ { -0.5, 0.5, 0 }, Color::Blue },
+		{ { 0.5, 0.5, 0 }, Color::Blue },
+		{ { -0.5, -0.5, 0 }, Color::Blue },
+		{ { 0.5, -0.5, 0 }, Color::Blue },
+	};
+	auto vb2 = newObject<VertexBuffer>(sizeof(v2), v2, GraphicsResourceUsage::Static);
+
+	Vertex v3[] = {	// 裏面テスト用
+		{ { 0, 0, 0 }, Color::Green },
+		{ { 0, -1, 0 }, Color::Green },
+		{ { 1, 0, 0 }, Color::Green },
+		{ { 1, -1, 0 }, Color::Green },
+	};
+	auto vb3 = newObject<VertexBuffer>(sizeof(v3), v3, GraphicsResourceUsage::Static);
 
 	auto ctx = Engine::graphicsContext();
 	ctx->setVertexDeclaration(vertexDecl1);
-	ctx->setVertexBuffer(0, vb1);
 	ctx->setIndexBuffer(nullptr);
 	ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 
+	// * [ ] check BlendState (RGB Add blend)
 	{
+		BlendStateDesc state1;
+		state1.renderTargets[0].blendEnable = true;
+		state1.renderTargets[0].sourceBlend = BlendFactor::One;
+		state1.renderTargets[0].destinationBlend = BlendFactor::One;
+		state1.renderTargets[0].blendOp = BlendOp::Add;
+
 		ctx->clear(ClearFlags::All, Color::Gray, 1.0f, 0);
+
+		ctx->setBlendState(BlendStateDesc());
+		ctx->setVertexBuffer(0, vb1);
+		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
+		
+		ctx->setBlendState(state1);
+		ctx->setVertexBuffer(0, vb2);
 		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
 
-		ASSERT_SCREEN_S(LN_ASSETFILE("Test_Graphics_LowLevelRendering-BlendStateTest-1.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-RenderStateTest-1.png"));
+
+		ctx->setBlendState(BlendStateDesc());	// 戻しておく
+	}
+	// * [ ] check RasterizerState
+	{
+		RasterizerStateDesc state1;
+		state1.cullMode = CullingMode::Front;
+
+		RasterizerStateDesc state2;
+		state2.cullMode = CullingMode::Back;
+
+		RasterizerStateDesc state3;
+		state3.cullMode = CullingMode::None;
+
+		RasterizerStateDesc state4;
+		state4.fillMode = FillMode::Wireframe;
+
+		ctx->setRasterizerState(state1);
+		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->setVertexBuffer(0, vb1);
+		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 赤は描かれない
+		ctx->setVertexBuffer(0, vb3);
+		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 緑は描かれる
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-RenderStateTest-2-1.png"));
+
+		ctx->setRasterizerState(state2);
+		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->setVertexBuffer(0, vb1);
+		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 赤は描かれる
+		ctx->setVertexBuffer(0, vb3);
+		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 緑は描かれない
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-RenderStateTest-2-2.png"));
+
+		ctx->setRasterizerState(state3);
+		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->setVertexBuffer(0, vb1);
+		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 赤は描かれる
+		ctx->setVertexBuffer(0, vb3);
+		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 緑は描かれる
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-RenderStateTest-2-3.png"));
+
+		ctx->setRasterizerState(state4);
+		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->setVertexBuffer(0, vb2);
+		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-RenderStateTest-2-4.png"));
+
+		ctx->setRasterizerState(RasterizerStateDesc());	// 戻しておく
+	}
+
+	// * [ ] check DepthStencilState
+	{
+		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->setVertexBuffer(0, vb2);
+		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 青 (z=0)
+		ctx->setVertexBuffer(0, vb1);
+		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 赤 (z=0.5)
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-RenderStateTest-3-1.png"));
+
+
+		DepthStencilStateDesc state1;
+		state1.depthTestEnabled = false;
+
+		ctx->setDepthStencilState(state1);
+		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->setVertexBuffer(0, vb2);
+		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 青 (z=0)
+		ctx->setVertexBuffer(0, vb1);
+		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 赤 (z=0.5)
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-RenderStateTest-3-2.png"));
+
+
+		DepthStencilStateDesc state2;
+		state2.depthWriteEnabled = false;
+
+		ctx->setDepthStencilState(state2);
+		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->setVertexBuffer(0, vb2);
+		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 青 (z=0)
+		ctx->setVertexBuffer(0, vb1);
+		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 赤 (z=0.5)
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-RenderStateTest-3-3.png"));
+
+		ctx->setDepthStencilState(DepthStencilStateDesc());	// 戻しておく
+	}
+
+	// * [ ] check DepthStencilState (stencil test)
+	{
+		// ステンシル書き込み (参照値0xFF が型抜きの hole と考える)
+		DepthStencilStateDesc state1;
+		state1.stencilEnabled = true;							// true にしないと書き込まれない
+		state1.frontFace.stencilPassOp = StencilOp::Replace;	// 描画できたところに参照値を書き込む
+		state1.frontFace.stencilFunc = ComparisonFunc::Always;	// 常に成功（常に上書き）
+		ctx->setDepthStencilState(state1);
+		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->setVertexBuffer(0, vb1);
+		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 赤 (z=0.5)
+
+		// ステンシルテスト
+		DepthStencilStateDesc state2;
+		state2.stencilEnabled = true;
+		state2.frontFace.stencilFunc = ComparisonFunc::Equal;	// 0xFFと等しければ成功 → カラーバッファ書き込み
+		ctx->setDepthStencilState(state2);
+		ctx->setVertexBuffer(0, vb2);
+		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 青 (z=0)
+
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-RenderStateTest-4-1.png"));
+
+		ctx->setDepthStencilState(DepthStencilStateDesc());	// 戻しておく
+
+		// TODO: ステンシル書き込み時に描画はしない
 	}
 }
 

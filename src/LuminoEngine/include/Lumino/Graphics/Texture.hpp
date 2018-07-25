@@ -84,7 +84,7 @@ private:
 };
 
 class RenderTargetTexture
-	: public GraphicsResource
+	: public Texture
 {
 public:
 	Ref<Bitmap2D> readData();

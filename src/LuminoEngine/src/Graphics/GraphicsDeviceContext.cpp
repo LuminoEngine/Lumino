@@ -68,6 +68,11 @@ Ref<ITexture> IGraphicsDeviceContext::createRenderTarget(uint32_t width, uint32_
 	return onCreateRenderTarget(width, height, requestFormat, mipmap);
 }
 
+Ref<IDepthBuffer> IGraphicsDeviceContext::createDepthBuffer(uint32_t width, uint32_t height)
+{
+	return onCreateDepthBuffer(width, height);
+}
+
 Ref<ISamplerState> IGraphicsDeviceContext::createSamplerState(const SamplerStateData& desc)
 {
 	return onCreateSamplerState(desc);
@@ -97,7 +102,7 @@ void IGraphicsDeviceContext::setRasterizerState(const RasterizerStateDesc& value
 	m_staging.rasterizerState = value;
 }
 
-void IGraphicsDeviceContext::setDepthStencil(const DepthStencilStateDesc& value)
+void IGraphicsDeviceContext::setDepthStencilState(const DepthStencilStateDesc& value)
 {
 	m_staging.depthStencilState = value;
 }
@@ -165,7 +170,7 @@ void IGraphicsDeviceContext::commitStatus()
 
 	onUpdateShaderPass(m_staging.shaderPass);
 
-	onUpdateFrameBuffers(m_staging.renderTargets.data(), m_staging.renderTargets.size(), nullptr);
+	onUpdateFrameBuffers(m_staging.renderTargets.data(), m_staging.renderTargets.size(), m_staging.depthBuffer);
 
 	onUpdatePrimitiveData(m_staging.vertexDeclaration, m_staging.vertexBuffers.data(), m_staging.vertexBuffers.size(), m_staging.indexBuffer);
 	

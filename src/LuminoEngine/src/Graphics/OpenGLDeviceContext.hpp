@@ -109,6 +109,7 @@ protected:
 	virtual Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) override;
 	virtual Ref<ITexture> onCreateTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
 	virtual Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) override;
+	virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
 	virtual Ref<IShaderPass> onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag) override;
 	virtual void onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState) override;
@@ -130,12 +131,19 @@ private:
 	GLIndexBuffer* m_currentIndexBuffer;
 	GLuint m_vao;	// https://www.khronos.org/opengl/wiki/Vertex_Specification#Index_buffers
 	GLuint m_fbo;
+	//int m_lastUsedAttribIndex;
 
 	struct
 	{
 		GLboolean state_GL_CULL_FACE;
 
 	} m_savedState;
+
+	struct
+	{
+		GLint MAX_VERTEX_ATTRIBS = 0;
+
+	} m_caps;
 };
 
 class GLContext
@@ -354,10 +362,14 @@ class GLDepthBuffer
 	: public IDepthBuffer
 {
 public:
-	virtual ~GLDepthBuffer() = default;
+	GLDepthBuffer();
+	void initialize(uint32_t width, uint32_t height);
 	virtual void dispose() override;
 
-	GLuint id() const { LN_NOTIMPLEMENTED(); return 0; }
+	GLuint id() const { return m_id; }
+
+private:
+	GLuint m_id;
 };
 
 class GLSamplerState

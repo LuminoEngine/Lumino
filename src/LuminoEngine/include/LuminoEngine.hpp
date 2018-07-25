@@ -6,6 +6,7 @@
 #include "Lumino/Engine/Engine.hpp"
 #include "Lumino/Engine/Application.hpp"
 
+#include "Lumino/Graphics/RenderState.hpp"
 #include "Lumino/Graphics/GraphicsContext.hpp"
 #include "Lumino/Graphics/VertexDeclaration.hpp"
 #include "Lumino/Graphics/VertexBuffer.hpp"

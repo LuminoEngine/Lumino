@@ -39,7 +39,7 @@ void UIFrameWindow::renderContents()
 	GraphicsContext* ctx = m_manager->graphicsManager()->graphicsContext();
 
 	ctx->setColorBuffer(0, m_swapChain->colorBuffer());
-	// TODO: Depthbuffer
+	ctx->setDepthBuffer(m_swapChain->depthBuffer());
 	ctx->clear(ClearFlags::All, Color::AliceBlue, 1.0f, 0x00);
 }
 

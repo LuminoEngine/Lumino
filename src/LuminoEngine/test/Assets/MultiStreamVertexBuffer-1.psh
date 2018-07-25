@@ -1,0 +1,13 @@
+
+struct PS_INPUT
+{
+    float4 Color : COLOR0;
+    float3 Tex1 : TEXCOORD0;
+    float4 Tex2 : TEXCOORD1;
+};
+
+float4 main(PS_INPUT input) : SV_Target
+{
+   return input.Color + float4(input.Tex1, 0) + input.Tex2;
+}
+

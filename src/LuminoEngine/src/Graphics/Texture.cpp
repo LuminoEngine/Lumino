@@ -171,25 +171,26 @@ RenderTargetTexture::~RenderTargetTexture()
 
 void RenderTargetTexture::initialize(int width, int height, TextureFormat requestFormat, bool mipmap)
 {
-	GraphicsResource::initialize();
+	Texture::initialize();
 	//m_size.width = width;
 	//m_size.height = height;
 	//m_requestFormat = requestFormat;
 	//m_mipmap = mipmap;
 	m_rhiObject = manager()->deviceContext()->createRenderTarget(width, height, requestFormat, mipmap);
+	setSize(m_rhiObject->realSize());
 }
 
 void RenderTargetTexture::initialize(detail::ITexture* ref)
 {
-	GraphicsResource::initialize();
+	Texture::initialize();
 	m_rhiObject = ref;
+	setSize(m_rhiObject->realSize());
 }
 
 void RenderTargetTexture::dispose()
 {
-	m_rhiObject = nullptr;
-
-	GraphicsResource::dispose();
+	m_rhiObject.reset();
+	Texture::dispose();
 }
 
 Ref<Bitmap2D> RenderTargetTexture::readData()

@@ -191,6 +191,10 @@ void OpenGLDeviceContext::initialize(const Settings& settings)
 	//GLint value;
 	//glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &value);
 
+
+
+	GL_CHECK(glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &m_caps.MAX_VERTEX_ATTRIBS));
+
 	GL_CHECK(glGenVertexArrays(1, &m_vao));
 	GL_CHECK(glGenFramebuffers(1, &m_fbo));
 
@@ -286,6 +290,13 @@ Ref<ITexture> OpenGLDeviceContext::onCreateRenderTarget(uint32_t width, uint32_t
 {
 	auto ptr = makeRef<GLRenderTargetTexture>();
 	ptr->initialize(width, height, requestFormat, mipmap);
+	return ptr;
+}
+
+Ref<IDepthBuffer> OpenGLDeviceContext::onCreateDepthBuffer(uint32_t width, uint32_t height)
+{
+	auto ptr = makeRef<GLDepthBuffer>();
+	ptr->initialize(width, height);
 	return ptr;
 }
 
@@ -430,7 +441,7 @@ void OpenGLDeviceContext::onUpdatePipelineState(const BlendStateDesc& blendState
 			GL_ALWAYS,		// Always
 		};
 
-		// 深度テスト
+		// depthTestEnabled
 		if (depthStencilState.depthTestEnabled) {
 			GL_CHECK(glEnable(GL_DEPTH_TEST));
 		}
@@ -438,8 +449,8 @@ void OpenGLDeviceContext::onUpdatePipelineState(const BlendStateDesc& blendState
 			GL_CHECK(glDisable(GL_DEPTH_TEST));
 		}
 
-		// depthTestEnabled
-		GL_CHECK(glDepthMask(depthStencilState.depthTestEnabled ? GL_TRUE : GL_FALSE));
+		// depthWriteEnabled
+		GL_CHECK(glDepthMask(depthStencilState.depthWriteEnabled ? GL_TRUE : GL_FALSE));
 
 		// stencilEnabled
 		if (depthStencilState.stencilEnabled) {
@@ -451,15 +462,15 @@ void OpenGLDeviceContext::onUpdatePipelineState(const BlendStateDesc& blendState
 
 		// stencilFunc
 		// stencilReferenceValue
-		GL_CHECK(glStencilFuncSeparate(GL_FRONT, cmpFuncTable[(int)depthStencilState.frontFace.stencilFunc], depthStencilState.stencilReferenceValue, 0xFFFFFFFF));
-		GL_CHECK(glStencilFuncSeparate(GL_BACK, cmpFuncTable[(int)depthStencilState.backFace.stencilFunc], depthStencilState.stencilReferenceValue, 0xFFFFFFFF));
+		GL_CHECK(glStencilFuncSeparate(GL_BACK, cmpFuncTable[(int)depthStencilState.frontFace.stencilFunc], depthStencilState.stencilReferenceValue, 0xFFFFFFFF));
+		GL_CHECK(glStencilFuncSeparate(GL_FRONT, cmpFuncTable[(int)depthStencilState.backFace.stencilFunc], depthStencilState.stencilReferenceValue, 0xFFFFFFFF));
 
 		// stencilFailOp
 		// stencilDepthFailOp
 		// stencilPassOp
 		GLenum stencilOpTable[] = { GL_KEEP, GL_REPLACE };
-		GL_CHECK(glStencilOpSeparate(GL_FRONT, stencilOpTable[(int)depthStencilState.frontFace.stencilFailOp], stencilOpTable[(int)depthStencilState.frontFace.stencilDepthFailOp], stencilOpTable[(int)depthStencilState.frontFace.stencilPassOp]));
-		GL_CHECK(glStencilOpSeparate(GL_BACK, stencilOpTable[(int)depthStencilState.backFace.stencilFailOp], stencilOpTable[(int)depthStencilState.backFace.stencilDepthFailOp], stencilOpTable[(int)depthStencilState.backFace.stencilPassOp]));
+		GL_CHECK(glStencilOpSeparate(GL_BACK, stencilOpTable[(int)depthStencilState.frontFace.stencilFailOp], stencilOpTable[(int)depthStencilState.frontFace.stencilDepthFailOp], stencilOpTable[(int)depthStencilState.frontFace.stencilPassOp]));
+		GL_CHECK(glStencilOpSeparate(GL_FRONT, stencilOpTable[(int)depthStencilState.backFace.stencilFailOp], stencilOpTable[(int)depthStencilState.backFace.stencilDepthFailOp], stencilOpTable[(int)depthStencilState.backFace.stencilPassOp]));
 	}
 }
 
@@ -516,14 +527,45 @@ void OpenGLDeviceContext::onUpdatePrimitiveData(IVertexDeclaration* decls, IVert
 	if (decls && vertexBuufers)
 	{
 		GLVertexDeclaration* glDecl = static_cast<GLVertexDeclaration*>(decls);
-		for (int iElement = 0; iElement < glDecl->vertexElements().size(); iElement++)
+		
+		for (int iElement = 0; iElement < m_caps.MAX_VERTEX_ATTRIBS; iElement++)
 		{
-			const GLVertexElement& element = glDecl->vertexElements()[iElement];
+			GLuint attrLoc = iElement;	// 本来は attribute 変数の location
 
-			GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, static_cast<GLVertexBuffer*>(vertexBuufers[element.streamIndex])->vertexBufferId()));
-			GL_CHECK(glEnableVertexAttribArray(iElement));
-			GL_CHECK(glVertexAttribPointer(iElement, element.size, element.type, element.normalized, element.stride, (void*)(element.byteOffset)));
+			if (iElement < glDecl->vertexElements().size())
+			{
+				const GLVertexElement& element = glDecl->vertexElements()[iElement];
+
+				if (vertexBuufers[element.streamIndex])
+				{
+					GL_CHECK(glEnableVertexAttribArray(attrLoc));
+					GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, static_cast<GLVertexBuffer*>(vertexBuufers[element.streamIndex])->vertexBufferId()));
+					GL_CHECK(glVertexAttribPointer(attrLoc, element.size, element.type, element.normalized, element.stride, (void*)(element.byteOffset)));
+				}
+				else
+				{
+					GL_CHECK(glDisableVertexAttribArray(attrLoc));
+					GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
+				}
+			}
+			else
+			{
+				GL_CHECK(glDisableVertexAttribArray(attrLoc));
+				GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
+			}
 		}
+
+		//int disableCount = m_lastUsedAttribIndex - iElement;
+		//if (disableCount > 0)
+		//{
+		//	for (int i = 0; i < disableCount; i++)
+		//	{
+		//		GL_CHECK(glDisableVertexAttribArray(attrLoc));
+		//		GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
+		//	}
+		//}
+
+		//m_lastUsedAttribIndex = iElement;
 	}
 
 	m_currentIndexBuffer = static_cast<GLIndexBuffer*>(indexBuffer);
@@ -757,7 +799,8 @@ void GLVertexDeclaration::createGLVertexElements(const VertexElement* vertexElem
 {
 	outList->reserve(elementsCount);
 
-	int vertexSize = getVertexSize(vertexElements, elementsCount, 0);
+	int sizeInStream[16] = {0};
+
 	int totalSize = 0;
 	for (int i = 0; i < elementsCount; ++i)
 	{
@@ -772,11 +815,19 @@ void GLVertexDeclaration::createGLVertexElements(const VertexElement* vertexElem
 			&elm.size,
 			&elm.normalized);
 
-		elm.stride = vertexSize;
-		elm.byteOffset = totalSize;
+		elm.byteOffset = sizeInStream[elm.streamIndex];
+		sizeInStream[elm.streamIndex] += getVertexElementTypeSize(vertexElements[i].Type);
+
+		//elm.stride = getVertexSize(vertexElements, elementsCount, elm.streamIndex);
+		//elm.byteOffset = totalSize;
 		outList->add(elm);
 
-		totalSize += getVertexElementTypeSize(vertexElements[i].Type);
+		//totalSize += getVertexElementTypeSize(vertexElements[i].Type);
+	}
+
+	for (auto& e : *outList)
+	{
+		e.stride = sizeInStream[e.streamIndex];
 	}
 }
 
@@ -1207,8 +1258,26 @@ void GLRenderTargetTexture::setSubData(int x, int y, int width, int height, cons
 //=============================================================================
 // GLDepthBuffer
 
+GLDepthBuffer::GLDepthBuffer()
+	: m_id(0)
+{
+}
+
+void GLDepthBuffer::initialize(uint32_t width, uint32_t height)
+{
+	if (LN_REQUIRE(!m_id)) return;
+	GL_CHECK(glGenRenderbuffers(1, &m_id));
+	GL_CHECK(glBindRenderbuffer(GL_RENDERBUFFER, m_id));
+	GL_CHECK(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height));
+	GL_CHECK(glBindRenderbuffer(GL_RENDERBUFFER, 0));
+}
+
 void GLDepthBuffer::dispose()
 {
+	if (m_id != 0) {
+		GL_CHECK(glDeleteRenderbuffers(1, &m_id));
+		m_id = 0;
+	}
 	IDepthBuffer::dispose();
 }
 

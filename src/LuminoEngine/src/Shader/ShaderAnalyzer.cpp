@@ -299,6 +299,17 @@ std::string ShaderCode::generateGlsl()
 				s << "ln_varying_" << i;
 				glsl.set_name(resources.stage_outputs[i].id, s.str());
 			}
+
+
+
+			//for (auto &resource : resources.stage_inputs)
+			//{
+			//	auto s = glsl.get_decoration_string(resource.id, spv::DecorationHlslSemanticGOOGLE);
+			//	std::cout << s << std::endl;
+			//}
+
+			//
+			
 		}
 		else if (m_stage == ShaderCodeStage::Fragment)
 		{

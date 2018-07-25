@@ -68,7 +68,7 @@ enum class ComparisonFunc
 enum class StencilOp
 {
 	Keep,					///< 既存のステンシル データを保持します。(何もしません)
-	replace,					///< ステンシルデータをステンシル参照値に設定します。
+	Replace,					///< ステンシルデータをステンシル参照値に設定します。
 };
 
 ///** レンダリングステート */
@@ -159,16 +159,16 @@ struct RasterizerStateDesc
 struct StencilOpDesc
 {
 	/** ステンシルテストに失敗した場合のステンシル処理です。(default:Keep) */
-	StencilOp	stencilFailOp;
+	StencilOp stencilFailOp;
 
 	/** ステンシルテストに合格で、深度テストが不合格の場合のステンシル処理です。(default:Keep) */
-	StencilOp	stencilDepthFailOp;
+	StencilOp stencilDepthFailOp;
 
 	/** ステンシルテストと深度テストに合格した場合のステンシル処理です。(default:Keep) */
-	StencilOp	stencilPassOp;
+	StencilOp stencilPassOp;
 
 	/** ステンシルテストの比較関数　(default:Always) */
-	ComparisonFunc	stencilFunc;
+	ComparisonFunc stencilFunc;
 
 	StencilOpDesc();
 };

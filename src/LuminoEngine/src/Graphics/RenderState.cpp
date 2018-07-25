@@ -51,10 +51,10 @@ StencilOpDesc::StencilOpDesc()
 // DepthStencilStateDesc
 
 DepthStencilStateDesc::DepthStencilStateDesc()
-	: depthTestEnabled(false)
-	, depthWriteEnabled(false)
+	: depthTestEnabled(true)
+	, depthWriteEnabled(true)
 	, stencilEnabled(false)
-	, stencilReferenceValue(0)
+	, stencilReferenceValue(0xFF)
 	, frontFace()
 	, backFace()
 {
