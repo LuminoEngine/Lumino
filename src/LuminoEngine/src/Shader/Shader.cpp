@@ -153,6 +153,7 @@ Shader::~Shader()
 void Shader::initialize()
 {
 	GraphicsResource::initialize();
+	m_diag = newObject<DiagnosticsManager>();
 }
 
 void Shader::initialize(const StringRef& hlslEffectFilePath)
@@ -160,17 +161,47 @@ void Shader::initialize(const StringRef& hlslEffectFilePath)
 	Shader::initialize();
 
 	auto diag = newObject<DiagnosticsManager>();
-	auto code = FileSystem::readAllBytes(hlslEffectFilePath);
-	detail::HLSLMetadataParser parser;
-	parser.parse((const char*)code.data(), code.size(), diag);
-	
+	auto data = FileSystem::readAllBytes(hlslEffectFilePath);
+	auto code = reinterpret_cast<char*>(data.data());
+	auto codeLen = data.size();
 
+	detail::HLSLMetadataParser parser;
+	parser.parse(code, codeLen, diag);
+
+	// glslang は hlsl の technique ブロックを理解できないので、空白で潰しておく
+	for (auto& hlslTech : parser.techniques)
+	{
+		memset(code + hlslTech.blockBegin, ' ', hlslTech.blockEnd - hlslTech.blockBegin);
+	}
+	
+	for (auto& hlslTech : parser.techniques)
+	{
+		auto tech = newObject<ShaderTechnique>();
+		tech->setOwner(this);
+		m_techniques.add(tech);
+
+		for (auto& hlslPass : hlslTech.passes)
+		{
+			auto rhiPass = createShaderPass(
+				code, codeLen, hlslPass.vertexShader.c_str(),
+				code, codeLen, hlslPass.pixelShader.c_str());
+			if (rhiPass)
+			{
+				auto pass = newObject<ShaderPass>(rhiPass);
+				tech->addShaderPass(pass);
+				pass->setupParameters();
+			}
+		}
+	}
+
+	if (m_diag->hasItems()) {
+		m_diag->dumpToLog();
+	}
 }
 
 void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCodeType codeType)
 {
 	Shader::initialize();
-	m_diag = newObject<DiagnosticsManager>();
 
 	auto vsData = FileSystem::readAllBytes(vertexShaderFilePath);
 	auto psData = FileSystem::readAllBytes(pixelShaderFilePath);
@@ -202,36 +233,36 @@ void Shader::onChangeDevice(detail::IGraphicsDeviceContext* device)
 	LN_NOTIMPLEMENTED();
 }
 
-bool Shader::genNativeCodes(
+Ref<detail::IShaderPass> Shader::createShaderPass(
 	const char* vsData, size_t vsLen, const char* vsEntryPoint,
-	const char* psData, size_t psLen, const char* psEntryPoint,
-	std::string* vsCode, std::string* psCode)
+	const char* psData, size_t psLen, const char* psEntryPoint)
 {
+	List<Path> includeDirs = { "C:/Proj/GitHub/Lumino/src/LuminoEngine/test/Assets" };
+
 	detail::ShaderCode vsCodeGen;
-	if (!vsCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Vertex, vsData, vsLen, vsEntryPoint, m_diag))
+	if (!vsCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Vertex, vsData, vsLen, vsEntryPoint, includeDirs, m_diag))
 	{
-		return;
+		return nullptr;
 	}
 
 	detail::ShaderCode psCodeGen;
-	if (!psCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Fragment, psData, psLen, psEntryPoint, m_diag))
+	if (!psCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Fragment, psData, psLen, psEntryPoint, includeDirs, m_diag))
 	{
-		return;
+		return nullptr;
 	}
 
-	*vsCode = vsCodeGen.generateGlsl();
-	*psCode = psCodeGen.generateGlsl();
+	std::string vsCode = vsCodeGen.generateGlsl();
+	std::string psCode = psCodeGen.generateGlsl();
+
+	ShaderCompilationDiag diag;
+	return deviceContext()->createShaderPass(
+		reinterpret_cast<const byte_t*>(vsCode.c_str()), vsCode.length(),
+		reinterpret_cast<const byte_t*>(psCode.c_str()), psCode.length(), &diag);
 }
 
 void Shader::buildShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen)
 {
-	std::string vsCode, psCode;
-	genNativeCodes(vsData, vsLen, "main", psData, psLen, "main", &vsCode, &psCode);
-
-	ShaderCompilationDiag diag;
-	auto rhiPass = deviceContext()->createShaderPass(
-		reinterpret_cast<const byte_t*>(vsCode.c_str()), vsCode.length(),
-		reinterpret_cast<const byte_t*>(psCode.c_str()), psCode.length(), &diag);
+	auto rhiPass = createShaderPass(vsData, vsLen, "main", psData, psLen, "main");
 
 	auto tech = newObject<ShaderTechnique>();
 	tech->setOwner(this);

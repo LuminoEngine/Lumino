@@ -145,10 +145,9 @@ LN_CONSTRUCT_ACCESS:
 	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
 
 private:
-	bool genNativeCodes(
+	Ref<detail::IShaderPass> createShaderPass(
 		const char* vsData, size_t vsLen, const char* vsEntryPoint,
-		const char* psData, size_t psLen, const char* psEntryPoint,
-		std::string* vsCode, std::string* psCode);
+		const char* psData, size_t psLen, const char* psEntryPoint);
 	void buildShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen);
 	//ShaderParameter* getShaderParameter(const detail::ShaderUniformTypeDesc& desc, const String& name);
 	ShaderConstantBuffer* getOrCreateConstantBuffer(detail::IShaderUniformBuffer* buffer);

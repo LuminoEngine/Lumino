@@ -110,7 +110,7 @@ const TBuiltInResource DefaultTBuiltInResource = {
 };
 
 //=============================================================================
-// ShaderCode
+// ShaderManager
 
 ShaderManager::ShaderManager()
 	: m_graphicsManager(nullptr)
@@ -133,6 +133,42 @@ void ShaderManager::dispose()
 }
 
 //=============================================================================
+// LocalIncluder
+
+class LocalIncluder
+	: public glslang::TShader::Includer
+{
+public:
+	const List<Path>* includeDirs;
+
+	virtual IncludeResult* includeSystem(const char* headerName, const char* sourceName, size_t inclusionDepth)
+	{
+		return nullptr;
+	}
+
+	virtual IncludeResult* includeLocal(const char* headerName, const char* sourceName, size_t inclusionDepth)
+	{
+		for (auto& dir : (*includeDirs))
+		{
+			auto path = Path(dir, String::fromCString(headerName));
+			if (FileSystem::existsFile(path))
+			{
+				ByteBuffer* buf = new ByteBuffer(FileSystem::readAllBytes(path));
+				return new IncludeResult(path.str().toStdString(), (const char*)buf->data(), buf->size(), buf);
+			}
+		}
+
+		return nullptr;
+	}
+
+	virtual void releaseInclude(IncludeResult* result)
+	{
+		delete reinterpret_cast<ByteBuffer*>(result->userData);
+		delete result;
+	}
+};
+
+//=============================================================================
 // ShaderCode
 
 ShaderCode::ShaderCode()
@@ -140,9 +176,14 @@ ShaderCode::ShaderCode()
 {
 }
 
-bool ShaderCode::parseAndGenerateSpirv(ShaderCodeStage stage, const char* code, size_t length, const std::string& entryPoint, DiagnosticsManager* diag)
+bool ShaderCode::parseAndGenerateSpirv(
+	ShaderCodeStage stage, const char* code, size_t length, const std::string& entryPoint,
+	const List<Path>& includeDir, DiagnosticsManager* diag)
 {
 	m_stage = stage;
+
+	LocalIncluder includer;
+	includer.includeDirs = &includeDir;
 
 	// -d オプション
 	//const int defaultVersion = Options & EOptionDefaultDesktop ? 110 : 100;
@@ -193,7 +234,7 @@ bool ShaderCode::parseAndGenerateSpirv(ShaderCodeStage stage, const char* code, 
 			{12053} normal block at 0x06EB1410, 8 bytes long.
 			 Data: <k       > 6B 0F 00 00 FF FF FF FF 
 		*/
-		if (!shader.parse(&DefaultTBuiltInResource, defaultVersion, forwardCompatible, messages)) {
+		if (!shader.parse(&DefaultTBuiltInResource, defaultVersion, forwardCompatible, messages, includer)) {
 			if (!StringHelper::isNullOrEmpty(shader.getInfoLog())) diag->reportError(shader.getInfoLog());
 			if (!StringHelper::isNullOrEmpty(shader.getInfoDebugLog())) diag->reportError(shader.getInfoDebugLog());
 			return false;
@@ -233,7 +274,7 @@ bool ShaderCode::parseAndGenerateSpirv(ShaderCodeStage stage, const char* code, 
 	// 変数名はどこで作られる？
 #endif
 
-	//glslang::GlslangToSpv(*program.getIntermediate(lang), m_spirvCode);
+	glslang::GlslangToSpv(*program.getIntermediate(lang), m_spirvCode);
 
 	return true;
 }
@@ -502,11 +543,8 @@ bool HLSLMetadataParser::parseTechnique(HLSLTechnique* tech)
 	}
 	if (!closed) return false;
 
-	// hlsl2glsl は technique ブロックを理解できないのですべて無効化しておく
-	//for (int i = begin; i <= m_current; i++)
-	//{
-	//	m_tokens->getAt(i).setValid(false);
-	//}
+	tech->blockBegin = m_tokens->at(begin).location();
+	tech->blockEnd = current().location() + 1;
 
 	return true;
 }

@@ -42,7 +42,9 @@ class ShaderCode
 public:
 	ShaderCode();
 
-	bool parseAndGenerateSpirv(ShaderCodeStage stage, const char* code, size_t length, const std::string& entryPoint, DiagnosticsManager* diag);
+	bool parseAndGenerateSpirv(
+		ShaderCodeStage stage, const char* code, size_t length, const std::string& entryPoint,
+		const List<Path>& includeDir, DiagnosticsManager* diag);
 
 	std::string generateGlsl();
 
@@ -67,6 +69,8 @@ struct HLSLTechnique
 {
 	std::string	name;
 	std::vector<HLSLPass>	passes;
+	size_t blockBegin = 0;	// "technique"
+	size_t blockEnd = 0;	// next to "}"
 };
 
 class HLSLMetadataParser
