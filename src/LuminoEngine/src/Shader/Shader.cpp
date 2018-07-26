@@ -155,6 +155,18 @@ void Shader::initialize()
 	GraphicsResource::initialize();
 }
 
+void Shader::initialize(const StringRef& hlslEffectFilePath)
+{
+	Shader::initialize();
+
+	auto diag = newObject<DiagnosticsManager>();
+	auto code = FileSystem::readAllBytes(hlslEffectFilePath);
+	detail::HLSLMetadataParser parser;
+	parser.parse((const char*)code.data(), code.size(), diag);
+	
+
+}
+
 void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCodeType codeType)
 {
 	Shader::initialize();
@@ -190,22 +202,31 @@ void Shader::onChangeDevice(detail::IGraphicsDeviceContext* device)
 	LN_NOTIMPLEMENTED();
 }
 
-void Shader::buildShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen)
+bool Shader::genNativeCodes(
+	const char* vsData, size_t vsLen, const char* vsEntryPoint,
+	const char* psData, size_t psLen, const char* psEntryPoint,
+	std::string* vsCode, std::string* psCode)
 {
 	detail::ShaderCode vsCodeGen;
-	if (!vsCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Vertex, vsData, vsLen, "main", m_diag))
+	if (!vsCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Vertex, vsData, vsLen, vsEntryPoint, m_diag))
 	{
 		return;
 	}
 
 	detail::ShaderCode psCodeGen;
-	if (!psCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Fragment, psData, psLen, "main", m_diag))
+	if (!psCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Fragment, psData, psLen, psEntryPoint, m_diag))
 	{
 		return;
 	}
 
-	std::string vsCode = vsCodeGen.generateGlsl();
-	std::string psCode = psCodeGen.generateGlsl();
+	*vsCode = vsCodeGen.generateGlsl();
+	*psCode = psCodeGen.generateGlsl();
+}
+
+void Shader::buildShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen)
+{
+	std::string vsCode, psCode;
+	genNativeCodes(vsData, vsLen, "main", psData, psLen, "main", &vsCode, &psCode);
 
 	ShaderCompilationDiag diag;
 	auto rhiPass = deviceContext()->createShaderPass(

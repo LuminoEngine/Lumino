@@ -200,6 +200,10 @@ enum class StringSplitOptions
 #define LN_PROTECTED_INTERNAL_ACCESS	protected
 #endif
 
+#ifndef LN_ARRAY_SIZE_OF
+#define LN_ARRAY_SIZE_OF(ary) ( sizeof(ary) / sizeof( ary[0] ) )
+#endif
+
 //------------------------------------------------------------------------------
 #include <stdint.h>
 

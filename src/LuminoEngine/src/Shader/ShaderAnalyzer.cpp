@@ -5,6 +5,7 @@
 #include <glslang/Include/ResourceLimits.h>
 #include <SPIRV/GlslangToSpv.h>
 #include <spirv_cross/spirv_glsl.hpp>
+#include "../Grammar/CppLexer.hpp"
 #include "ShaderAnalyzer.hpp"
 
 namespace ln {
@@ -167,8 +168,9 @@ bool ShaderCode::parseAndGenerateSpirv(ShaderCodeStage stage, const char* code, 
 		break;
 	}
 
-	glslang::TProgram program;
+	// この２つは開放順が重要。TProgram の ヘッダや Standalone.cpp CompileAndLinkShaderUnits の一番下に書いてある。
 	glslang::TShader shader(lang);
+	glslang::TProgram program;
 
 	// parse
 	{
@@ -218,7 +220,20 @@ bool ShaderCode::parseAndGenerateSpirv(ShaderCodeStage stage, const char* code, 
 
 	}
 
-	glslang::GlslangToSpv(*program.getIntermediate(lang), m_spirvCode);
+
+	program.buildReflection();
+	program.dumpReflection();
+#if 0
+
+	for (int i = 0; i < program.getNumLiveAttributes(); i++)
+	{
+		auto* type = program.getAttributeTType(i);
+		printf("");
+	}
+	// 変数名はどこで作られる？
+#endif
+
+	//glslang::GlslangToSpv(*program.getIntermediate(lang), m_spirvCode);
 
 	return true;
 }
@@ -348,6 +363,226 @@ std::string ShaderCode::generateGlsl()
 
 
 	return glsl.compile();
+}
+
+
+//=============================================================================
+// HLSLMetadataParser
+
+bool HLSLMetadataParser::parse(const char* code, size_t length, DiagnosticsManager* diag)
+{
+	m_code = code;
+	m_codeLength = length;
+
+	TextDiagnostics textdiag(diag);
+	CppLexer lexer;
+	lexer.setDiag(&textdiag);
+	m_tokens = lexer.makeTokenList(code, length);
+
+	m_current = 0;
+	m_isLuminoShader = false;
+
+	parseCompileUnit();
+
+	return true;
+}
+
+//Token& HLSLMetadataParser::current()
+//{
+//	return m_tokens->at(m_current);
+//}
+
+const Token& HLSLMetadataParser::current() const
+{
+	return m_tokens->at(m_current);
+}
+
+bool HLSLMetadataParser::next()
+{
+	do
+	{
+		m_current++;
+
+	} while (!isEof() && isSpaceToken(current()));
+
+	return !isEof();
+}
+
+bool HLSLMetadataParser::nextTo(const char* word, int len)
+{
+	do
+	{
+		m_current++;
+
+	} while (
+		isSpaceToken(current()) ||
+		!equalString(current(), word, len));
+
+	return !isEof();
+}
+
+bool HLSLMetadataParser::isSpaceToken(const Token& token) const
+{
+	return
+		token.group() == TokenGroup::SpaceSequence ||
+		token.group() == TokenGroup::NewLine ||
+		token.group() == TokenGroup::Comment;
+}
+
+bool HLSLMetadataParser::isEof() const
+{
+	return m_current >= m_tokens->size();
+	//return current().group() == TokenGroup::Eof;
+}
+
+bool HLSLMetadataParser::equalString(const Token& token, const char* str, size_t len)
+{
+	if (token.length() != len) return false;
+	const char* ts = CppLexer::getTokenString(token, m_code, m_codeLength);
+	return strncmp(ts, str, len) == 0;
+}
+
+std::string HLSLMetadataParser::getString(const Token& token)
+{
+	const char* ts = CppLexer::getTokenString(token, m_code, m_codeLength);
+	return std::string(ts, token.length());
+}
+
+bool HLSLMetadataParser::parseCompileUnit()
+{
+	do
+	{
+		if (current().group() != TokenGroup::Unknown)
+		{
+			if (equalString(current(), "technique", 9))
+			{
+				HLSLTechnique tech;
+				if (!parseTechnique(&tech)) return false;
+				techniques.push_back(std::move(tech));
+			}
+		}
+
+	} while (next());
+
+	return true;
+}
+
+bool HLSLMetadataParser::parseTechnique(HLSLTechnique* tech)
+{
+	int begin = m_current;
+
+	// 名前
+	if (!next()) return false;
+	if (current().group() == TokenGroup::Identifier)
+	{
+		tech->name = getString(current());
+	}
+	else
+	{
+		LN_NOTIMPLEMENTED();
+		return false;
+	}
+
+	if (!nextTo('{')) return false;
+
+	bool closed = false;
+	while (next())
+	{
+		if (equalString(current(), "pass", 4))
+		{
+			HLSLPass pass;
+			if (!parsePass(&pass)) return false;
+			tech->passes.push_back(std::move(pass));
+		}
+		else if (equalString(current(), "}", 1))
+		{
+			closed = true;
+			break;
+		}
+	}
+	if (!closed) return false;
+
+	// hlsl2glsl は technique ブロックを理解できないのですべて無効化しておく
+	//for (int i = begin; i <= m_current; i++)
+	//{
+	//	m_tokens->getAt(i).setValid(false);
+	//}
+
+	return true;
+}
+
+bool HLSLMetadataParser::parsePass(HLSLPass* pass)
+{
+	// 名前
+	if (!next()) return false;
+	if (current().group() == TokenGroup::Identifier)
+	{
+		pass->name = getString(current());
+	}
+	else
+	{
+		LN_NOTIMPLEMENTED();
+		return false;
+	}
+
+	if (!nextTo('{')) return false;
+
+	bool closed = false;
+	while (next())
+	{
+		if (current().group() == TokenGroup::Identifier)
+		{
+			if (!parseRenderState(pass)) return false;
+		}
+		else if (equalString(current(), "}", 1))
+		{
+			closed = true;
+			break;
+		}
+	}
+	if (!closed) return false;
+
+	return true;
+}
+
+bool HLSLMetadataParser::parseRenderState(HLSLPass* pass)
+{
+	const Token& name = current();
+	if (!nextTo('=')) return false;
+	if (!next()) return false;
+	const Token& value = current();
+
+	if (equalString(name, "VertexShader", 12))
+	{
+		//next();	// skip "compile"
+		//next();	// skip "vs_x_x"
+		pass->vertexShader = getString(current());
+	}
+	else if (equalString(name, "PixelShader", 11))
+	{
+		//next();	// skip "compile"
+		//next();	// skip "ps_x_x"
+		pass->pixelShader = getString(current());
+	}
+	else if (equalString(name, "ShadingModel", 12))
+	{
+		pass->shadingModel = getString(current());
+		m_isLuminoShader = true;
+	}
+	else if (equalString(name, "LigitingModel", 13))
+	{
+		pass->ligitingModel = getString(current());
+		m_isLuminoShader = true;
+	}
+	else if (equalString(name, "SurfaceShader", 13))
+	{
+		pass->surfaceShader = getString(current());
+		m_isLuminoShader = true;
+	}
+
+	if (!nextTo(';')) return false;
+
+	return true;
 }
 
 } // namespace detail

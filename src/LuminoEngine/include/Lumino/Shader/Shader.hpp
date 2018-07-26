@@ -115,6 +115,7 @@ class LN_API Shader
 	: public GraphicsResource
 {
 public:
+	static Ref<Shader> create(const StringRef& hlslEffectFilePath);
 	static Ref<Shader> create(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath);
 
 	//void setBool(const StringRef& name, bool value);
@@ -137,12 +138,17 @@ LN_CONSTRUCT_ACCESS:
 	Shader();
 	virtual ~Shader();
 	void initialize();
+	void initialize(const StringRef& hlslEffectFilePath);
 	void initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCodeType codeType);
 	virtual void dispose() override;
 
 	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
 
 private:
+	bool genNativeCodes(
+		const char* vsData, size_t vsLen, const char* vsEntryPoint,
+		const char* psData, size_t psLen, const char* psEntryPoint,
+		std::string* vsCode, std::string* psCode);
 	void buildShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen);
 	//ShaderParameter* getShaderParameter(const detail::ShaderUniformTypeDesc& desc, const String& name);
 	ShaderConstantBuffer* getOrCreateConstantBuffer(detail::IShaderUniformBuffer* buffer);

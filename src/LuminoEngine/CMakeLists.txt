@@ -36,6 +36,15 @@ set(LN_SOURCES_Platform
 	src/Platform/PlatformWindowManager.hpp
 )
 
+set(LN_SOURCES_Grammar
+	src/Grammar/Internal.hpp
+	src/Grammar/AbstractLexer.cpp
+	src/Grammar/AbstractLexer.hpp
+	src/Grammar/CppLexer.cpp
+	src/Grammar/CppLexer.hpp
+	src/Grammar/Token.hpp
+)
+
 set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/Common.hpp
 	include/Lumino/Graphics/Bitmap.hpp
@@ -98,6 +107,7 @@ set(LN_SOURCES_UI
 # Grouping.
 source_group("Engine"				FILES ${LN_SOURCES_Engine})
 source_group("Platform"				FILES ${LN_SOURCES_Platform})
+source_group("Grammar"				FILES ${LN_SOURCES_Grammar})
 source_group("Graphics"				FILES ${LN_SOURCES_Graphics})
 source_group("Shader"				FILES ${LN_SOURCES_Shader})
 source_group("UI"					FILES ${LN_SOURCES_UI})
@@ -108,6 +118,7 @@ set(LN_SOURCES
 	include/LuminoEngine.hpp
 	${LN_SOURCES_Engine}
 	${LN_SOURCES_Platform}
+	${LN_SOURCES_Grammar}
 	${LN_SOURCES_Graphics}
 	${LN_SOURCES_Shader}
 	${LN_SOURCES_UI}
