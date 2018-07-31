@@ -19,7 +19,7 @@ namespace LuminoBuild.Tasks
             Directory.SetCurrentDirectory(buildDir);
 
             var args = string.Format(
-                "-DCMAKE_INSTALL_PREFIX=\"{0}\" -DLN_BUILD_TESTS=ON ../..",
+                "-DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=\"{0}\" -DLN_BUILD_TESTS=ON ../..",
                 installDir);
 
             Utils.CallProcess("cmake", args);

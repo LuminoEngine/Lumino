@@ -12,3 +12,6 @@
 #define NOMINMAX
 #include <Windows.h>
 #endif
+
+#include "Base/CRTHelper.h"
+

@@ -33,6 +33,7 @@ install `dotnet`
 https://www.microsoft.com/net/download/linux-package-manager/ubuntu16-04/sdk-current
 
 ```
+$ dotnet run -- BuildExternalProjects
 $ dotnet run -- BuildEngine_Linux
 ```
 

@@ -35,7 +35,7 @@ set(LN_SOURCES_gtest
 
 #--------------------------------------
 # glfw
-if (WIN32)
+if (LN_OS_DESKTOP)
 	set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "")
 	set(GLFW_BUILD_TESTS OFF CACHE BOOL "")
 	set(GLFW_BUILD_DOCS OFF CACHE BOOL "")
@@ -78,6 +78,7 @@ find_package(ZLIB REQUIRED)
 
 set(PNG_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/libpng)
 set(PNG_DIR ${PNG_ROOT})
+#set(CMAKE_PREFIX_PATH ${PNG_ROOT})    # for Linux
 #set(CMAKE_PREFIX_PATH ${PNG_ROOT})
 find_package(PNG REQUIRED)
 #find_package(PNG REQUIRED PATHS ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/libpng)
@@ -101,6 +102,7 @@ find_package(PNG REQUIRED)
 # glslang
 
 set(GLSLANG_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/glslang)
+#set(CMAKE_PREFIX_PATH ${GLSLANG_ROOT})        # for Linux
 
 find_library(glslang_LIBRARY_RELEASE NAMES glslang PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
 find_library(glslang_LIBRARY_DEBUG NAMES glslangd PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)

@@ -235,17 +235,15 @@ set(LN_INCLUDE_DIRECTORIES
 #------------------------------------------------------------------------------
 # Apply options
 #------------------------------------------------------------------------------
-set(LN_LINK_LIBS "")
-
 if (WIN32)
 	list(APPEND LN_LINK_LIBS "imagehlp.lib")
 	list(APPEND LN_LINK_LIBS "Shlwapi.lib")
 
 elseif (APPLE)
-	set(APPEND LN_LINK_LIBS "pthread")
+	set(APPEND LN_LINK_LIBS pthread)
 	
 elseif (UNIX)
-	set(APPEND LN_LINK_LIBS "pthread")
+	set(APPEND LN_LINK_LIBS pthread)
 	
 endif()
 
@@ -261,7 +259,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/include)
-target_link_libraries(${PROJECT_NAME} ${LN_LINK_LIBS})
+target_link_libraries(${PROJECT_NAME} INTERFACE ${LN_LINK_LIBS})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "src/LuminoCore.PCH.h" "src/LuminoCore.PCH.cpp")
 

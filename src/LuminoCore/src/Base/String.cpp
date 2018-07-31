@@ -11,7 +11,6 @@
 #include <Lumino/Base/StringHelper.hpp>
 #include <Lumino/Base/RefObject.hpp>
 #include <Lumino/Base/CRCHash.hpp>
-#include "CRTHelper.h"
 #include "../Text/UnicodeUtils.hpp"
 #include <Lumino/Text/Encoding.hpp>
 
@@ -970,6 +969,8 @@ void String::assignFromCStr(const TChar* str, int length, bool* outUsedDefaultCh
 #endif
     }
 }
+template void String::assignFromCStr(const char* str, int length, bool* outUsedDefaultChar, TextEncoding* encoding);
+template void String::assignFromCStr(const wchar_t* str, int length, bool* outUsedDefaultChar, TextEncoding* encoding);
 
 void String::setAt(int index, Char ch)
 {
