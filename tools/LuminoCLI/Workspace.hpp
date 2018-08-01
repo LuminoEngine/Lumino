@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 class EnvironmentSettings;
+class DevTools;
 class Project;
 
 class Workspace
@@ -20,5 +21,6 @@ public:
 
 private:
 	Ref<EnvironmentSettings> m_environmentSettings;
+	Ref<DevTools> m_devTools;
 	Ref<Project> m_project;
 };

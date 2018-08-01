@@ -5,8 +5,10 @@
 
 Workspace::Workspace()
 	: m_environmentSettings(ln::makeRef<EnvironmentSettings>())
+	, m_devTools(ln::makeRef<DevTools>())
 {
 	m_environmentSettings->updatePathes();
+	m_devTools->setupPathes(m_environmentSettings);
 }
 
 Workspace::~Workspace()
@@ -66,6 +68,9 @@ Result Workspace::buildProject()
 
 Result Workspace::dev_installTools() const
 {
+	m_devTools->install();
+
+
 	// Emscripten
 	{
 		auto srcIncludeDir = ln::Path::combine(m_environmentSettings->luminoPackageRootPath(), u"Emscripten", u"include");

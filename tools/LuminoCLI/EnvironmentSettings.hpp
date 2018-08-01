@@ -11,6 +11,8 @@ public:
 	// リリースパッケージのルートパス。この下に include フォルダなどがある
 	ln::Path luminoPackageRootPath() const;
 
+	ln::Path appDataDirPath() const;
+
 	ln::Path emscriptenPythonPath() const;
 	ln::Path emcmakePath() const;
 	ln::Path emscriptenRootPath() const;
@@ -28,4 +30,20 @@ private:
 	ln::Path m_androidSdkNinja;
 	ln::Path m_androidNdkRootDir;
 	ln::Path m_androidCMakeToolchain;
+};
+
+class DevTools
+	: public ln::RefObject
+{
+public:
+	DevTools();
+	void setupPathes(EnvironmentSettings* env);
+	void install();
+	void verify();
+
+private:
+	ln::Path m_toolsDir;
+	ln::String m_emsdkVer;
+	ln::Path m_emsdkRootDir;
+	ln::Path m_emscriptenRootDir;
 };

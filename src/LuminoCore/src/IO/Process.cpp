@@ -18,6 +18,7 @@ Process::Process()
 	, m_stdoutEncoding(nullptr)
 	, m_stderrEncoding(nullptr)
 {
+	m_startInfo.useShellExecute = true;
 	createRedirectStreams();
 }
 
@@ -91,7 +92,14 @@ StreamReader* Process::openStderr()
 
 void Process::start()
 {
-	m_impl->start(m_startInfo);
+	if (m_startInfo.useShellExecute) {
+		if (LN_REQUIRE(!m_startInfo.stdinPipe && !m_startInfo.stdoutPipe && !m_startInfo.stderrPipe)) return;
+		// TODO: 環境変数指定も NG
+		m_impl->startWithShell(m_startInfo);
+	}
+	else {
+		m_impl->start(m_startInfo);
+	}
 }
 
 bool Process::wait(int timeoutMilliseconds)

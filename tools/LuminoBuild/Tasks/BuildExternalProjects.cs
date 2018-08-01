@@ -71,10 +71,42 @@ namespace LuminoBuild.Tasks
 
                             if (name == "libpng16_staticd")  // debug lib
                                 Utils.MoveFileForce(path, Path.Combine(dir, "libpng16d" + ext));
-                            else
+                            else if(name == "libpng16_static")
                                 Utils.MoveFileForce(path, Path.Combine(dir, "libpng16" + ext));
                         }
                     }
+                }
+
+                // Emscripten
+                {
+                    var buildDir = Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalBuild");
+                    var installDir = Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall");
+                    var sourceDir = "../../../external/";
+
+                    Directory.CreateDirectory(buildDir);
+
+                    var script = Path.Combine(buildDir, "build.bat");
+                    using (var f = new StreamWriter(script))
+                    {
+                        f.WriteLine($"cd \"{BuildEnvironment.EmsdkDir}\"");
+                        //f.WriteLine($"emsdk activate {BuildEnvironment.emsdkVer}");
+                        f.WriteLine($"call emsdk_env.bat");
+                        f.WriteLine($"cd \"{Utils.ToWin32Path(buildDir)}\"");
+                        f.WriteLine($"call emcmake cmake -DCMAKE_BUILD_TYPE=Release -DLN_EXTERNAL_BUILD_DIR={buildDir.Replace("\\", "/")} -DLN_EXTERNAL_INSTALL_DIR={installDir} -G \"MinGW Makefiles\" {sourceDir}");
+                        f.WriteLine($"cmake --build .");
+                    }
+
+                    Utils.CallProcessShell(script);
+
+                    //Directory.SetCurrentDirectory(BuildEnvironment.EmsdkDir);
+                    //Utils.CallProcess("emsdk_env.bat");
+                    //var ff = Environment.GetEnvironmentVariables();
+                    //Utils.CallProcess("emcmake", $"cmake -DCMAKE_BUILD_TYPE=Release -DLN_EXTERNAL_BUILD_DIR={buildDir.Replace("\\", "/")} -DLN_EXTERNAL_INSTALL_DIR={installDir} -G \"MinGW Makefiles\" {sourceDir}");
+
+                    //Directory.CreateDirectory(buildDir);
+                    //Directory.SetCurrentDirectory(buildDir);
+                    //Utils.CallProcess(BuildEnvironment.emcmake, $"cmake -DCMAKE_BUILD_TYPE=Release -DLN_EXTERNAL_BUILD_DIR={buildDir.Replace("\\", "/")} -DLN_EXTERNAL_INSTALL_DIR={installDir} -G \"MinGW Makefiles\" {sourceDir}");
+                    //Utils.CallProcess("cmake", "--build .");
                 }
             }
             else
@@ -89,6 +121,7 @@ namespace LuminoBuild.Tasks
                 Utils.CallProcess("cmake", "--build .");
                 //Utils.CallProcess("cmake", "--build . --config Debug");
             }
+
         }
     }
 }

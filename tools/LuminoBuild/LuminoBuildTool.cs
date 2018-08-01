@@ -215,6 +215,15 @@ namespace LuminoBuild
 
     static class Utils
     {
+        public static string ToUnixPath(string path)
+        {
+            return path.Replace("\\", "/");
+        }
+        public static string ToWin32Path(string path)
+        {
+            return path.Replace("/", "\\");
+        }
+
         /// <summary>
         /// ファイルを別のフォルダへコピーする (ファイル名は変更しない)
         /// </summary>
@@ -429,6 +438,7 @@ namespace LuminoBuild
             {
                 p.StartInfo.FileName = program;
                 p.StartInfo.Arguments = args;
+                p.StartInfo.UseShellExecute = true;
 
                 p.Start();
 

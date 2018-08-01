@@ -24,6 +24,7 @@ struct ProcessStartInfo
 	//Encoding*				standardInputEncoding;
 	//Encoding*				standardOutputEncoding;
 	//Encoding*				standardErrorEncoding;
+	bool useShellExecute;
 };
 
 //struct ProcessStartResult

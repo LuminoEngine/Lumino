@@ -30,9 +30,9 @@ int main(int argc, char** argv)
 	char* debugArgv[] = {
 		//"<program>", "init", "HelloLumino",
 
-		//"<program>", "dev-install-tools",
+		"<program>", "dev-install-tools",
 
-		"<program>", "build",
+		//"<program>", "build",
 	};
 	argc = sizeof(debugArgv) / sizeof(char*);
 	argv = debugArgv;
@@ -40,6 +40,8 @@ int main(int argc, char** argv)
 #endif
 
 	ln::CommandLineParser parser;
+	//auto installCommand = parser.addCommand(_T("install"), _T("install."));
+
 	auto initCommand = parser.addCommand(_T("init"), _T("init description."));
 	auto projectnameArg = initCommand->addPositionalArgument(_T("project-name"), _T("prooject name."));
 
@@ -57,6 +59,10 @@ int main(int argc, char** argv)
 	{
 		auto workspace = ln::makeRef<Workspace>();
 
+		//if (parser.has(installCommand))
+		//{
+
+		//}
 		if (parser.has(initCommand))
 		{
 			workspace->newProject(ln::Environment::currentDirectory(), projectnameArg->value());
