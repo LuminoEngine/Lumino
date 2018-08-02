@@ -32,6 +32,7 @@ Result Workspace::buildProject()
 	ln::String luminoPackageDir = u"D:\\Proj\\LN\\Lumino\\build\\Package";//ln::Environment::getEnvironmentVariable();
 
 	// Android
+	if (0)
 	{
 		ln::String abi = u"x86_64";
 		ln::String platform = "android-26";

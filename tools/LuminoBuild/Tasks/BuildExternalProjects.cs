@@ -11,8 +11,115 @@ namespace LuminoBuild.Tasks
 
         public override string Description { get { return "BuildExternalProjects"; } }
 
+
+        private void BuildProject(Builder builder, string projectDirName, string externalSourceDir, string buildArchDir, string additionalOptions = "")
+        {
+            var buildDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalBuild", projectDirName));
+            var installDir = Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalInstall", projectDirName);
+            var cmakeSourceDir = Path.Combine(externalSourceDir, projectDirName);
+            var ov = Path.Combine(builder.LuminoRootDir, "src", "CFlagOverrides.cmake");
+
+            Directory.CreateDirectory(buildDir);
+            Directory.SetCurrentDirectory(buildDir);
+            Utils.CallProcess("cmake", $"-DCMAKE_INSTALL_PREFIX={installDir} -DCMAKE_USER_MAKE_RULES_OVERRIDE={ov} {additionalOptions} {cmakeSourceDir}");
+            Utils.CallProcess("cmake", "--build . --config Debug");
+            Utils.CallProcess("cmake", "--build . --config Debug --target INSTALL");
+            Utils.CallProcess("cmake", "--build . --config Release");
+            Utils.CallProcess("cmake", "--build . --config Release --target INSTALL");
+        }
+
+        private void BuildProjectEm(Builder builder, string projectDirName, string externalSourceDir, string buildArchDir, string additionalOptions = "")
+        {
+            var buildDir = Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalBuild", projectDirName);
+            var installDir = Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalInstall", projectDirName);
+            var cmakeSourceDir = Path.Combine(externalSourceDir, projectDirName);
+
+            Directory.CreateDirectory(buildDir);
+
+            var script = Path.Combine(buildDir, "build.bat");
+            using (var f = new StreamWriter(script))
+            {
+                f.WriteLine($"cd \"{BuildEnvironment.EmsdkDir}\"");
+                f.WriteLine($"call emsdk_env.bat");
+                f.WriteLine($"cd \"{Utils.ToWin32Path(buildDir)}\"");
+                f.WriteLine($"call emcmake cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX={installDir} {additionalOptions} -G \"MinGW Makefiles\" {cmakeSourceDir}");
+                f.WriteLine($"call cmake --build .");
+                f.WriteLine($"call cmake --build . --target install");
+            }
+
+            Utils.CallProcessShell(script); // bat の中でエラーが発生すれば、例外に乗って出てくる
+
+            // emcmake で find_library などを行う場合、Emscripten のシステムフォルダ以外は検索しないようにツールチェインファイルで封印されている。
+            // Lumino 本体のビルド時にライブラリを探すことができるようにするため、システムフォルダに一式コピーしておく。
+            Utils.CopyDirectory(installDir, Path.Combine(BuildEnvironment.EmscriptenDir, "system"));
+        }
+
         public override void Build(Builder builder)
         {
+            var reposDir = Path.Combine(builder.LuminoBuildDir,"ExternalSource");
+            Directory.CreateDirectory(reposDir);
+            Directory.SetCurrentDirectory(reposDir);
+
+            if (!Directory.Exists("zlib"))
+            {
+                Utils.CallProcess("git", "clone --progress --depth 1 -b v1.2.11 https://github.com/madler/zlib.git zlib");
+                Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "zlib", "CMakeLists.txt"), "zlib");
+            }
+            if (!Directory.Exists("libpng"))
+            {
+                Utils.CallProcess("git", "clone --progress --depth 1 -b v1.6.9 git://git.code.sf.net/p/libpng/code libpng");
+                Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "libpng", "CMakeLists.txt"), "libpng");
+            }
+            if (!Directory.Exists("glslang"))
+            {
+                Utils.CallProcess("git", "clone --progress --depth 1 -b 6.2.2596 https://github.com/KhronosGroup/glslang.git glslang");
+            }
+            if (!Directory.Exists("SPIRV-Cross"))
+            {
+                Utils.CallProcess("git", "clone --progress https://github.com/KhronosGroup/SPIRV-Cross.git SPIRV-Cross");
+                Directory.SetCurrentDirectory("SPIRV-Cross");
+                Utils.CallProcess("git", "checkout be7425ef70231ab82930331959ab487d605d0482");
+            }
+
+
+            if (Utils.IsWin32)
+            {
+
+                // Emscripten
+                {
+                    var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall", "zlib"));
+
+                    BuildProjectEm(builder, "zlib", reposDir, "Emscripten");
+                    BuildProjectEm(builder, "libpng", reposDir, "Emscripten", $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
+                    BuildProjectEm(builder, "glslang", reposDir, "Emscripten");
+                    BuildProjectEm(builder, "SPIRV-Cross", reposDir, "Emscripten");
+                }
+                return;
+
+                foreach (var target in MakeVSProjects.Targets)
+                {
+                    var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, target.DirName, "ExternalInstall", "zlib"));
+
+                    BuildProject(builder, "zlib", reposDir, target.DirName, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
+                    BuildProject(builder, "libpng", reposDir, target.DirName, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
+                    BuildProject(builder, "glslang", reposDir, target.DirName, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
+                    BuildProject(builder, "SPIRV-Cross", reposDir, target.DirName, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DCMAKE_DEBUG_POSTFIX=d");
+                    return;
+                }
+            }
+
+
+
+
+            return;
+
+
+
+
+
+
+
+
             if (Utils.IsWin32)
             {
                 foreach (var target in MakeVSProjects.Targets)

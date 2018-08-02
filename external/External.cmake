@@ -60,8 +60,27 @@ ln_add_dependencies_common_property(glad)
 #ln_mark_non_dependencies(minigzip)
 #ln_mark_non_dependencies(zlib)
 #message(${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/zlib/lib)
-set(ZLIB_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/zlib)
-#set(CMAKE_PREFIX_PATH "${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall")
+
+
+#set(ZLIB_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/zlib)
+
+#message(${CMAKE_LIBRARY_ARCHITECTURE})
+#message(${CMAKE_PREFIX_PATH})
+#message(${CMAKE_LIBRARY_PATH})
+#message(${MAKE_FRAMEWORK_PATH})
+
+set(CMAKE_PREFIX_PATH ${EMSCRIPTEN_ROOT_PATH}/system)
+
+#find_library(ZLIB_SS2 NAMES libzlib zlib HINTS C:/Users/hldc0061/AppData/Roaming/Lumino/BuildTools/emsdk/emscripten/1.38.10/system/lib)
+#find_library(ZLIB_SS2 NAMES libzlib zlib)
+
+#message(${ZLIB_SS2})
+
+#set(CMAKE_PREFIX_PATH ${ZLIB_ROOT})
+
+
+
+#message(${ZLIB_ROOT})
 find_package(ZLIB REQUIRED)
 #find_library(zlibstatic_LIB NAMES zlibstaticd PATHS ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/zlib/lib)
 #message(${zlibstatic_LIB})
@@ -78,7 +97,7 @@ find_package(ZLIB REQUIRED)
 
 set(PNG_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/libpng)
 set(PNG_DIR ${PNG_ROOT})
-#set(CMAKE_PREFIX_PATH ${PNG_ROOT})    # for Linux
+#set(CMAKE_PREFIX_PATH ${PNG_ROOT})
 #set(CMAKE_PREFIX_PATH ${PNG_ROOT})
 find_package(PNG REQUIRED)
 #find_package(PNG REQUIRED PATHS ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/libpng)

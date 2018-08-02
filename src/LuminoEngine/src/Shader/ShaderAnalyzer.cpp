@@ -216,7 +216,7 @@ bool ShaderCode::parseAndGenerateSpirv(
 	// parse
 	{
 		const char*shaderCode[1] = { code };
-		const int shaderLenght[1] = { length };
+		const int shaderLenght[1] = { static_cast<int>(length) };
 		const char* shaderName[1] = { "shadercode" };
 		shader.setStringsWithLengthsAndNames(shaderCode, shaderLenght, shaderName, 1);
 		shader.setEntryPoint(entryPoint.c_str());

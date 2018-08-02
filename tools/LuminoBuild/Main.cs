@@ -12,7 +12,7 @@ namespace LuminoBuild
             // default
             if (args.Length == 0)
             {
-                args = new string[] { "BuildExternalProjects" };
+                args = new string[] { "BuildEngineEmscripten" };
             }
 
             Assembly thisAssembly = Assembly.GetEntryAssembly();
@@ -36,7 +36,7 @@ namespace LuminoBuild
             builder.LuminoPackageLibDir = builder.LuminoPackageDir + "lib/";
             builder.LuminoPackageSourceDir = builder.LuminoRootDir + "package/PackageSource/";
             builder.LuminoPackageReleaseDir = builder.LuminoRootDir + "package/Release/Lumino/";
-            builder.LuminoDependenciesDir = builder.LuminoRootDir + "external/LuminoDependencies/";
+            builder.LuminoExternalDir = builder.LuminoRootDir + "external";
 
             BuildEnvironment.Initialize();
 

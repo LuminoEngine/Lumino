@@ -27,7 +27,7 @@ namespace LuminoBuild
         public string LuminoPackageLibDir;
         public string LuminoPackageSourceDir;
         public string LuminoPackageReleaseDir;
-        public string LuminoDependenciesDir;
+        public string LuminoExternalDir;
         public List<BuildTask> Tasks = new List<BuildTask>();
         public List<BuildRule> Rules = new List<BuildRule>();
 
@@ -352,8 +352,7 @@ namespace LuminoBuild
 		public static string CallProcess(string program, string args = ""/*, bool useShell = false*/, Dictionary<string, string> environmentVariables = null)
 		{
             Logger.WriteLine($"{program} {args}");
-
-
+            
             using (Process p = new Process())
 			{
                 var sb = new StringBuilder();

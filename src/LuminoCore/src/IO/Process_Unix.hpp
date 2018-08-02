@@ -134,6 +134,7 @@ public:
 	virtual ~ProcessImpl() = default;
 	
 	void start(const ProcessStartInfo& startInfo);
+	void startWithShell(const ProcessStartInfo& startInfo);
 	bool waitForExit(int timeoutMSec);
 	ProcessStatus getStatus(int* outExitCode);
 	
@@ -204,6 +205,11 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo)
 		if (startInfo.stdoutPipe) startInfo.stdoutPipe->closeWrite();
 		if (startInfo.stderrPipe) startInfo.stderrPipe->closeWrite();
 	}
+}
+
+void ProcessImpl::startWithShell(const ProcessStartInfo& startInfo)
+{
+	LN_NOTIMPLEMENTED();
 }
 
 bool ProcessImpl::waitForExit(int timeoutMSec)
