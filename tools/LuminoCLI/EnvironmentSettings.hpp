@@ -6,7 +6,6 @@ class EnvironmentSettings
 public:
 	void updatePathes();
 
-	ln::Path projectTemplatesDirPath() const;
 
 	// リリースパッケージのルートパス。この下に include フォルダなどがある
 	ln::Path luminoPackageRootPath() const;
@@ -32,16 +31,19 @@ private:
 	ln::Path m_androidCMakeToolchain;
 };
 
-class DevTools
+class BuildEnvironment
 	: public ln::RefObject
 {
 public:
-	DevTools();
+	BuildEnvironment();
 	void setupPathes(EnvironmentSettings* env);
 	void install();
 	void verify();
 
+	ln::Path projectTemplatesDirPath() const { return m_projectTemplatesDirPath; }
+
 private:
+	ln::Path m_projectTemplatesDirPath;
 	ln::Path m_toolsDir;
 	ln::String m_emsdkVer;
 	ln::Path m_emsdkRootDir;

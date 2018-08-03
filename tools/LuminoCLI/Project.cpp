@@ -28,7 +28,7 @@ CppProjectLanguageContext::~CppProjectLanguageContext()
 
 Result CppProjectLanguageContext::applyTemplates()
 {
-	auto projectTemplatesDir = project()->workspace()->environmentSettings()->projectTemplatesDirPath();
+	auto projectTemplatesDir = project()->workspace()->buildEnvironment()->projectTemplatesDirPath();
 
 	// Common
 	{

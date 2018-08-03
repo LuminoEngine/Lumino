@@ -121,6 +121,7 @@ using Char = wchar_t;
 #define _T(x) _TT(x) 
 #endif
 
+namespace ln {
 
 /** 大文字と小文字の区別指定 */
 enum class CaseSensitivity
@@ -141,6 +142,8 @@ enum class StringSplitOptions
 	/** 出力は空の文字列を含まない */
 	RemoveEmptyEntries,
 };
+
+} // namespace ln
 
 //------------------------------------------------------------------------------
 // CHECK macro

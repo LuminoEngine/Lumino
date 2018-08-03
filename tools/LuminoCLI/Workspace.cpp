@@ -5,7 +5,7 @@
 
 Workspace::Workspace()
 	: m_environmentSettings(ln::makeRef<EnvironmentSettings>())
-	, m_devTools(ln::makeRef<DevTools>())
+	, m_devTools(ln::makeRef<BuildEnvironment>())
 {
 	m_environmentSettings->updatePathes();
 	m_devTools->setupPathes(m_environmentSettings);
@@ -27,13 +27,14 @@ Result Workspace::openProject(const ln::Path& dir)
 	return m_project->openProject(dir);
 }
 
-Result Workspace::buildProject()
+Result Workspace::buildProject(const ln::String& target)
 {
-	ln::String luminoPackageDir = u"D:\\Proj\\LN\\Lumino\\build\\Package";//ln::Environment::getEnvironmentVariable();
 
 	// Android
 	if (0)
 	{
+		ln::String luminoPackageDir = u"D:\\Proj\\LN\\Lumino\\build\\Package";//ln::Environment::getEnvironmentVariable();
+
 		ln::String abi = u"x86_64";
 		ln::String platform = "android-26";
 		ln::String buildType = "Release";
@@ -62,6 +63,11 @@ Result Workspace::buildProject()
 		ln::Process::execute(m_environmentSettings->androidSdkCMake(), args);
 
 		ln::Process::execute(m_environmentSettings->androidSdkCMake(), {u"--build", buildDir });
+	}
+
+	if (ln::String::compare(target, u"Emscripten", ln::CaseSensitivity::CaseInsensitive) == 0)
+	{
+		
 	}
 
 	return Result::OK;

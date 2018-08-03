@@ -27,16 +27,17 @@ int main(int argc, char** argv)
 #endif
 
 #if 1
+	//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects");
+	::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\HelloLumino");
 	char* debugArgv[] = {
 		//"<program>", "init", "HelloLumino",
 
-		"<program>", "dev-install-tools",
+		//"<program>", "dev-install-tools",
 
-		//"<program>", "build",
+		"<program>", "build", "Emscripten",
 	};
 	argc = sizeof(debugArgv) / sizeof(char*);
 	argv = debugArgv;
-	::SetCurrentDirectoryW(L"D:\\Documents\\LuminoProjects\\Hello");
 #endif
 
 	ln::CommandLineParser parser;
@@ -46,7 +47,7 @@ int main(int argc, char** argv)
 	auto projectnameArg = initCommand->addPositionalArgument(_T("project-name"), _T("prooject name."));
 
 	auto buildCommand = parser.addCommand(_T("build"), _T("init description."));
-
+	auto burildTargetArg = buildCommand->addPositionalArgument(u"target", u"-");
 
 	auto dev_installTools = parser.addCommand(_T("dev-install-tools"), _T("description."));
 
@@ -65,12 +66,12 @@ int main(int argc, char** argv)
 		//}
 		if (parser.has(initCommand))
 		{
-			workspace->newProject(ln::Environment::currentDirectory(), projectnameArg->value());
+			workspace->newProject(ln::Path(ln::Environment::currentDirectory(), projectnameArg->value()), projectnameArg->value());
 		}
 		else if (parser.has(buildCommand))
 		{
 			workspace->openProject(_T("D:\\Documents\\LuminoProjects\\Hello"));
-			workspace->buildProject();
+			workspace->buildProject(burildTargetArg->value());
 		}
 		else if (parser.has(dev_installTools))
 		{

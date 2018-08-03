@@ -26,11 +26,6 @@ ln::Path EnvironmentSettings::appDataDirPath() const
 	return ln::Path::combine(ln::Environment::specialFolderPath(ln::SpecialFolder::ApplicationData), u"Lumino");
 }
 
-ln::Path EnvironmentSettings::projectTemplatesDirPath() const
-{
-	return _T("D:/Proj/LN/Lumino/tools/LuminoCLI/ProjectTemplates");
-}
-
 ln::Path EnvironmentSettings::luminoPackageRootPath() const
 {
 	return _T("D:/Proj/LN/Lumino/build/CMakeInstallTemp");
@@ -52,10 +47,9 @@ ln::Path EnvironmentSettings::emscriptenRootPath() const
 }
 
 //==============================================================================
-// DevTools
+// BuildEnvironment
 
-
-DevTools::DevTools()
+BuildEnvironment::BuildEnvironment()
 	: m_toolsDir()
 	, m_emsdkVer()
 	, m_emsdkRootDir()
@@ -63,16 +57,19 @@ DevTools::DevTools()
 {
 }
 
-void DevTools::setupPathes(EnvironmentSettings* env)
+void BuildEnvironment::setupPathes(EnvironmentSettings* env)
 {
 	if (LN_REQUIRE(env)) return;
 	m_toolsDir = (ln::Path::combine(env->appDataDirPath(), u"BuildTools"));
 	m_emsdkVer = (u"1.38.10");
 	m_emsdkRootDir = (ln::Path::combine(m_toolsDir, u"emsdk"));
 	m_emscriptenRootDir = (ln::Path::combine(m_emsdkRootDir, m_emsdkVer));
+
+	//ln::Path sp = ln::Environment::executablePath();
+	m_projectTemplatesDirPath = _T("C:/Proj/GitHub/Lumino/tools/LuminoCLI/ProjectTemplates");
 }
 
-void DevTools::install()
+void BuildEnvironment::install()
 {
 	ln::FileSystem::createDirectory(m_toolsDir);
 
@@ -97,7 +94,7 @@ void DevTools::install()
 	}
 }
 
-void DevTools::verify()
+void BuildEnvironment::verify()
 {
 
 }
