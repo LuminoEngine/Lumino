@@ -70,7 +70,7 @@ int main(int argc, char** argv)
 		}
 		else if (parser.has(buildCommand))
 		{
-			workspace->openProject(_T("D:\\Documents\\LuminoProjects\\Hello"));
+			workspace->openProject(ln::Environment::currentDirectory());
 			workspace->buildProject(burildTargetArg->value());
 		}
 		else if (parser.has(dev_installTools))

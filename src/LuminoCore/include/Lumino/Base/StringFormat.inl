@@ -329,7 +329,7 @@ public:
 	{
 		formatArg(
 			*static_cast<GenericStringFormatter<TChar>*>(formatter),
-			value);
+			*reinterpret_cast<const T*>(value));
 	}
 
 	void doFormat(GenericStringFormatter<TChar>* formatter) const

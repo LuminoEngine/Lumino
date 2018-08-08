@@ -67,7 +67,23 @@ Result Workspace::buildProject(const ln::String& target)
 
 	if (ln::String::compare(target, u"Emscripten", ln::CaseSensitivity::CaseInsensitive) == 0)
 	{
-		
+		auto buildDir = ln::Path::combine(m_project->buildDir(), u"Emscripten").canonicalize();
+		auto installDir = ln::Path::combine(buildDir, u"Release");
+		auto cmakeSourceDir = m_project->rootDirPath();
+		auto script = ln::Path::combine(buildDir, u"build.bat");
+
+		ln::FileSystem::createDirectory(buildDir);
+
+		{
+			ln::StreamWriter sw(script);
+			sw.writeLineFormat(u"cd \"{0}\"", m_devTools->emsdkDirPath());
+			sw.writeLineFormat(u"call emsdk_env.bat");
+			sw.writeLineFormat(u"cd \"{0}\"", buildDir);
+			sw.writeLineFormat(u"call emcmake cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX={0} -G \"MinGW Makefiles\" {1}", installDir, cmakeSourceDir);
+			sw.writeLineFormat(u"call cmake --build .");
+		}
+
+		ln::Process::execute(script);
 	}
 
 	return Result::OK;
