@@ -20,6 +20,8 @@ namespace LuminoBuild.Tasks
 
         private void BuildProject(Builder builder, string projectDirName, string externalSourceDir, string buildArchDir, string generator, string additionalOptions = "")
         {
+            Logger.WriteLine($"BuildProject ({projectDirName})");
+
             var buildDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalBuild", projectDirName));
             var installDir = Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalInstall", projectDirName);
             var cmakeSourceDir = Path.Combine(externalSourceDir, projectDirName);
@@ -36,8 +38,10 @@ namespace LuminoBuild.Tasks
 
         private void BuildProjectEm(Builder builder, string projectDirName, string externalSourceDir, string buildArchDir, string additionalOptions = "")
         {
+            Logger.WriteLine($"BuildProjectEm ({projectDirName})");
+
             var buildDir = Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalBuild", projectDirName);
-            var installDir = Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalInstall", projectDirName);
+            var installDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalInstall", projectDirName));
             var cmakeSourceDir = Path.Combine(externalSourceDir, projectDirName);
 
             Directory.CreateDirectory(buildDir);
@@ -86,11 +90,15 @@ namespace LuminoBuild.Tasks
                 Directory.SetCurrentDirectory("SPIRV-Cross");
                 Utils.CallProcess("git", "checkout be7425ef70231ab82930331959ab487d605d0482");
             }
-
+            if (!Directory.Exists("glad"))
+            {
+                Utils.CopyDirectory(Path.Combine(builder.LuminoExternalDir, "glad"), "glad");
+                //Utils.CallProcess("git", "clone --progress --depth 1 -b v0.1.26 https://github.com/Dav1dde/glad.git glad");
+            }
+            
 
             if (Utils.IsWin32)
             {
-
                 // Emscripten
                 {
                     var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall", "zlib"));
@@ -99,6 +107,7 @@ namespace LuminoBuild.Tasks
                     BuildProjectEm(builder, "libpng", reposDir, "Emscripten", $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
                     BuildProjectEm(builder, "glslang", reposDir, "Emscripten");
                     BuildProjectEm(builder, "SPIRV-Cross", reposDir, "Emscripten");
+                    BuildProjectEm(builder, "glad", reposDir, "Emscripten", "-DGLAD_INSTALL=ON");
                 }
           
                 // Visual C++
@@ -110,6 +119,7 @@ namespace LuminoBuild.Tasks
                     BuildProject(builder, "libpng", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
                     BuildProject(builder, "glslang", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
                     BuildProject(builder, "SPIRV-Cross", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DCMAKE_DEBUG_POSTFIX=d");
+                    BuildProject(builder, "glad", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DGLAD_INSTALL=ON");
                 }
             }
 

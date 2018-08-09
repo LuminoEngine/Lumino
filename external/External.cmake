@@ -46,9 +46,26 @@ endif()
 
 #--------------------------------------
 # glad
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/glad)
-set(LN_DEPENDENCIES_INCLUDE_DIRECTORIES ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} "${CMAKE_CURRENT_LIST_DIR}/glad/include")
-ln_add_dependencies_common_property(glad)
+#add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/glad)
+#set(LN_DEPENDENCIES_INCLUDE_DIRECTORIES ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} "${CMAKE_CURRENT_LIST_DIR}/glad/include")
+#ln_add_dependencies_common_property(glad)
+
+
+if (LN_EMSCRIPTEN)
+	# reference to installed libs by "build.csproj"
+	set(GLAD_ROOT ${EMSCRIPTEN_ROOT_PATH}/system)
+else()
+	set(GLAD_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/glad)
+endif()
+
+find_library(GLAD_LIBRARY_RELEASE NAMES glad libglad PATHS ${GLAD_ROOT} PATH_SUFFIXES lib)
+find_library(GLAD_LIBRARY_DEBUG NAMES gladd libgladd PATHS ${GLAD_ROOT} PATH_SUFFIXES lib)
+
+set(LIB_NAME GLAD)
+add_library(${LIB_NAME} STATIC IMPORTED)
+set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
+set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
+set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${${LIB_NAME}_ROOT}/include)
 
 #--------------------------------------
 # zlib
