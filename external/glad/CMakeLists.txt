@@ -4,7 +4,7 @@ set(CMAKE_DEBUG_POSTFIX "d")
 
 add_library(${PROJECT_NAME} STATIC src/glad.c)
 
-target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_LIST_DIR}/include")
+target_include_directories(${PROJECT_NAME} INTERFACE "${CMAKE_CURRENT_LIST_DIR}/include")
 
 install(TARGETS ${PROJECT_NAME}
     EXPORT ${PROJECT_NAME}Targets
