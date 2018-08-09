@@ -63,13 +63,15 @@ void BuildEnvironment::setupPathes(EnvironmentSettings* env)
 	m_toolsDir = (ln::Path::combine(env->appDataDirPath(), u"BuildTools"));
 	m_emsdkVer = (u"1.38.10");
 	m_emsdkRootDir = (ln::Path::combine(m_toolsDir, u"emsdk"));
-	m_emscriptenRootDir = (ln::Path::combine(m_emsdkRootDir, m_emsdkVer));
+	m_emscriptenRootDir = (ln::Path::combine(m_emsdkRootDir, u"emscripten", m_emsdkVer));
 
+
+	m_luminoEmscriptenSdkDirPath = u"C:/Proj/GitHub/Lumino/build/CMakeInstallTemp/Emscripten";
 	//ln::Path sp = ln::Environment::executablePath();
 	m_projectTemplatesDirPath = _T("C:/Proj/GitHub/Lumino/tools/LuminoCLI/ProjectTemplates");
 }
 
-void BuildEnvironment::install()
+void BuildEnvironment::verifyAndInstall()
 {
 	ln::FileSystem::createDirectory(m_toolsDir);
 
@@ -92,9 +94,26 @@ void BuildEnvironment::install()
 		proc1.start();
 		proc1.wait();
 	}
+
+	// Emscripten
+	{
+		auto file = ln::Path::combine(m_emscriptenRootDir, u"system", u"include", u"LuminoEngine.hpp");
+		if (!ln::FileSystem::existsFile(file))
+		{
+			// 必須ファイルが1つ無かったので、とりあえず全部インストールしなおす
+
+			auto srcIncludeDir = ln::Path::combine(m_luminoEmscriptenSdkDirPath, u"include");
+			auto dstIncludeDir = ln::Path::combine(m_emscriptenRootDir, u"system", u"include");
+			ln::FileSystem::copyDirectory(srcIncludeDir, dstIncludeDir, true, true);
+
+			auto srcLibDir = ln::Path::combine(m_luminoEmscriptenSdkDirPath, u"lib");
+			auto dstLibDir = ln::Path::combine(m_emscriptenRootDir, u"system", u"lib");
+			ln::FileSystem::copyDirectory(srcLibDir, dstLibDir, true, true);
+
+		}
+		
+
+	}
+
 }
 
-void BuildEnvironment::verify()
-{
-
-}

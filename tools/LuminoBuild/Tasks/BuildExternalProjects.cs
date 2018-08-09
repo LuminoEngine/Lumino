@@ -5,6 +5,12 @@ using System.Linq;
 
 namespace LuminoBuild.Tasks
 {
+    /*
+     * build/MSVC2017-x64-MT/ の下など、各アーキテクチャフォルダの中に
+     * - ExternalBuild
+     * - ExternalInstall    → ライブラリのインストールフォルダ 
+     * を作る。
+     */
     class BuildExternalProjects : BuildTask
     {
         public override string CommandName { get { return "BuildExternalProjects"; } }
@@ -12,7 +18,7 @@ namespace LuminoBuild.Tasks
         public override string Description { get { return "BuildExternalProjects"; } }
 
 
-        private void BuildProject(Builder builder, string projectDirName, string externalSourceDir, string buildArchDir, string additionalOptions = "")
+        private void BuildProject(Builder builder, string projectDirName, string externalSourceDir, string buildArchDir, string generator, string additionalOptions = "")
         {
             var buildDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalBuild", projectDirName));
             var installDir = Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalInstall", projectDirName);
@@ -21,7 +27,7 @@ namespace LuminoBuild.Tasks
 
             Directory.CreateDirectory(buildDir);
             Directory.SetCurrentDirectory(buildDir);
-            Utils.CallProcess("cmake", $"-DCMAKE_INSTALL_PREFIX={installDir} -DCMAKE_USER_MAKE_RULES_OVERRIDE={ov} {additionalOptions} {cmakeSourceDir}");
+            Utils.CallProcess("cmake", $"-DCMAKE_INSTALL_PREFIX={installDir} -DCMAKE_USER_MAKE_RULES_OVERRIDE={ov} {additionalOptions} -G \"{generator}\" {cmakeSourceDir}");
             Utils.CallProcess("cmake", "--build . --config Debug");
             Utils.CallProcess("cmake", "--build . --config Debug --target INSTALL");
             Utils.CallProcess("cmake", "--build . --config Release");
@@ -94,17 +100,16 @@ namespace LuminoBuild.Tasks
                     BuildProjectEm(builder, "glslang", reposDir, "Emscripten");
                     BuildProjectEm(builder, "SPIRV-Cross", reposDir, "Emscripten");
                 }
-                return;
-
+          
+                // Visual C++
                 foreach (var target in MakeVSProjects.Targets)
                 {
                     var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, target.DirName, "ExternalInstall", "zlib"));
 
-                    BuildProject(builder, "zlib", reposDir, target.DirName, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
-                    BuildProject(builder, "libpng", reposDir, target.DirName, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
-                    BuildProject(builder, "glslang", reposDir, target.DirName, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
-                    BuildProject(builder, "SPIRV-Cross", reposDir, target.DirName, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DCMAKE_DEBUG_POSTFIX=d");
-                    return;
+                    BuildProject(builder, "zlib", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
+                    BuildProject(builder, "libpng", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
+                    BuildProject(builder, "glslang", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
+                    BuildProject(builder, "SPIRV-Cross", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DCMAKE_DEBUG_POSTFIX=d");
                 }
             }
 

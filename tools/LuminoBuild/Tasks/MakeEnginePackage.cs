@@ -24,23 +24,23 @@ namespace LuminoBuild.Tasks
                 Path.Combine(targetRootDir, "include"));
 
             Utils.CopyDirectory(
-                Path.Combine(tempInstallDir, "MSVC2017-x86-MD"),
+                Path.Combine(tempInstallDir, "MSVC2017-x86-MD", "lib"),
                 Path.Combine(targetRootDir, "lib", "MSVC2017-x86-MD"));
 
             Utils.CopyDirectory(
-                Path.Combine(tempInstallDir, "MSVC2017-x86-MT"),
+                Path.Combine(tempInstallDir, "MSVC2017-x86-MT", "lib"),
                 Path.Combine(targetRootDir, "lib", "MSVC2017-x86-MT"));
 
             Utils.CopyDirectory(
-                Path.Combine(tempInstallDir, "MSVC2017-x64-MD"),
+                Path.Combine(tempInstallDir, "MSVC2017-x64-MD", "lib"),
                 Path.Combine(targetRootDir, "lib", "MSVC2017-x64-MD"));
 
             Utils.CopyDirectory(
-                Path.Combine(tempInstallDir, "MSVC2017-x64-MT"),
+                Path.Combine(tempInstallDir, "MSVC2017-x64-MT", "lib"),
                 Path.Combine(targetRootDir, "lib", "MSVC2017-x64-MT"));
 
             Utils.CopyDirectory(
-                Path.Combine(tempInstallDir, "Emscripten"),
+                Path.Combine(tempInstallDir, "Emscripten", "lib"),
                 Path.Combine(targetRootDir, "lib", "Emscripten"));
         }
     }

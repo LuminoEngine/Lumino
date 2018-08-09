@@ -7,7 +7,7 @@ class Test_IO_BinaryReader : public ::testing::Test {};
 //------------------------------------------------------------------------------
 TEST_F(Test_IO_BinaryReader, Basic)
 {
-	Ref<FileStream> file = FileStream::create(LN_ASSETFILE("TestData/BinaryReaderTest.dat"), FileOpenMode::Read);
+	Ref<FileStream> file = FileStream::create(LN_ASSETFILE("BinaryReaderTest.dat"), FileOpenMode::Read);
 	BinaryReader reader(file);
 
 	// 1byte
@@ -45,7 +45,7 @@ TEST_F(Test_IO_BinaryReader, Basic)
 //------------------------------------------------------------------------------
 TEST_F(Test_IO_BinaryReader, BytesSpecified)
 {
-	Ref<FileStream> file = FileStream::create(LN_ASSETFILE("TestData/BinaryReaderTest.dat"), FileOpenMode::Read);
+	Ref<FileStream> file = FileStream::create(LN_ASSETFILE("BinaryReaderTest.dat"), FileOpenMode::Read);
 	BinaryReader reader(file);
 
 	// 1byte

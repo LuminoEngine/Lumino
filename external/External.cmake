@@ -69,7 +69,6 @@ ln_add_dependencies_common_property(glad)
 #message(${CMAKE_LIBRARY_PATH})
 #message(${MAKE_FRAMEWORK_PATH})
 
-set(CMAKE_PREFIX_PATH ${EMSCRIPTEN_ROOT_PATH}/system)
 
 #find_library(ZLIB_SS2 NAMES libzlib zlib HINTS C:/Users/hldc0061/AppData/Roaming/Lumino/BuildTools/emsdk/emscripten/1.38.10/system/lib)
 #find_library(ZLIB_SS2 NAMES libzlib zlib)
@@ -78,10 +77,18 @@ set(CMAKE_PREFIX_PATH ${EMSCRIPTEN_ROOT_PATH}/system)
 
 #set(CMAKE_PREFIX_PATH ${ZLIB_ROOT})
 
+#if (LN_EMSCRIPTEN)
+#	set(CMAKE_PREFIX_PATH ${EMSCRIPTEN_ROOT_PATH}/system)
+#	find_package(ZLIB REQUIRED)
+#else()
+#	set(ZLIB_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/zlib)
+#	set(ZLIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/zlib)
+#	set(CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/zlib)
+#	find_package(ZLIB REQUIRED HINTS ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/zlib)
+#endif()
 
 
 #message(${ZLIB_ROOT})
-find_package(ZLIB REQUIRED)
 #find_library(zlibstatic_LIB NAMES zlibstaticd PATHS ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/zlib/lib)
 #message(${zlibstatic_LIB})
 #message(${ZLIB_FOUND})
@@ -89,17 +96,47 @@ find_package(ZLIB REQUIRED)
 #message(${ZLIB_LIBRARIES})
 #message(${ZLIB_STATIC_LIB})
 
+if (LN_EMSCRIPTEN)
+	# reference to installed libs by "build.csproj"
+	set(ZLIB_ROOT ${EMSCRIPTEN_ROOT_PATH}/system)
+else()
+	set(ZLIB_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/zlib)
+endif()
 
+find_library(ZLIB_LIBRARY_RELEASE NAMES zlib PATHS ${ZLIB_ROOT} PATH_SUFFIXES lib)
+find_library(ZLIB_LIBRARY_DEBUG NAMES zlibd PATHS ${ZLIB_ROOT} PATH_SUFFIXES lib)
 
+set(LIB_NAME ZLIB)
+add_library(${LIB_NAME} STATIC IMPORTED)
+set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
+set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
+set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ZLIB_ROOT}/include)
 
 #--------------------------------------
 # libpng
 
-set(PNG_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/libpng)
-set(PNG_DIR ${PNG_ROOT})
+if (LN_EMSCRIPTEN)
+	# reference to installed libs by "build.csproj"
+	set(PNG_ROOT ${EMSCRIPTEN_ROOT_PATH}/system)
+else()
+	set(PNG_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/libpng)
+endif()
+
+find_library(PNG_LIBRARY_RELEASE NAMES libpng16 PATHS ${PNG_ROOT} PATH_SUFFIXES lib)
+find_library(PNG_LIBRARY_DEBUG NAMES libpng16d PATHS ${PNG_ROOT} PATH_SUFFIXES lib)
+
+set(LIB_NAME PNG)
+add_library(${LIB_NAME} STATIC IMPORTED)
+set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
+set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
+set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${PNG_ROOT}/include)
+
+
+#set(PNG_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/libpng)
+#set(PNG_DIR ${PNG_ROOT})
 #set(CMAKE_PREFIX_PATH ${PNG_ROOT})
 #set(CMAKE_PREFIX_PATH ${PNG_ROOT})
-find_package(PNG REQUIRED)
+#find_package(PNG REQUIRED)
 #find_package(PNG REQUIRED PATHS ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/libpng)
 #find_library (PNG_LIB NAMES libpng libpng16_static PATHS ${PNG_ROOT})
 #message(${PNG_LIB})

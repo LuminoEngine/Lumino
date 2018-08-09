@@ -33,6 +33,7 @@ Result Workspace::buildProject(const ln::String& target)
 	// Android
 	if (0)
 	{
+
 		ln::String luminoPackageDir = u"D:\\Proj\\LN\\Lumino\\build\\Package";//ln::Environment::getEnvironmentVariable();
 
 		ln::String abi = u"x86_64";
@@ -75,11 +76,18 @@ Result Workspace::buildProject(const ln::String& target)
 		ln::FileSystem::createDirectory(buildDir);
 
 		{
+			ln::List<ln::String> emcmakeArgs = {
+				u"-DCMAKE_BUILD_TYPE=Release",
+				u"-DCMAKE_INSTALL_PREFIX=" + installDir,
+				u"-G \"MinGW Makefiles\"",
+				cmakeSourceDir,
+			};
+
 			ln::StreamWriter sw(script);
 			sw.writeLineFormat(u"cd \"{0}\"", m_devTools->emsdkDirPath());
 			sw.writeLineFormat(u"call emsdk_env.bat");
 			sw.writeLineFormat(u"cd \"{0}\"", buildDir);
-			sw.writeLineFormat(u"call emcmake cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX={0} -G \"MinGW Makefiles\" {1}", installDir, cmakeSourceDir);
+			sw.writeLineFormat(u"call emcmake cmake " + ln::String::join(emcmakeArgs, u" "));
 			sw.writeLineFormat(u"call cmake --build .");
 		}
 
@@ -91,19 +99,9 @@ Result Workspace::buildProject(const ln::String& target)
 
 Result Workspace::dev_installTools() const
 {
-	m_devTools->install();
+	m_devTools->verifyAndInstall();
 
 
-	// Emscripten
-	{
-		auto srcIncludeDir = ln::Path::combine(m_environmentSettings->luminoPackageRootPath(), u"Emscripten", u"include");
-		auto dstIncludeDir = ln::Path::combine(m_environmentSettings->emscriptenRootPath(), u"system", u"include");
-		ln::FileSystem::copyDirectory(srcIncludeDir, dstIncludeDir, true, true);
-
-		auto srcLibDir = ln::Path::combine(m_environmentSettings->luminoPackageRootPath(), u"Emscripten", u"lib");
-		auto dstLibDir = ln::Path::combine(m_environmentSettings->emscriptenRootPath(), u"system", u"lib");
-		ln::FileSystem::copyDirectory(srcLibDir, dstLibDir, true, true);
-	}
 	
 	return Result::OK;
 }
