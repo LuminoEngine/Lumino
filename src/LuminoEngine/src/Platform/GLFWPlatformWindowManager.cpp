@@ -2,6 +2,7 @@
 #ifdef LN_GLFW
 
 #include "Internal.hpp"
+#include <GLFW/glfw3.h>
 #include "GLFWPlatformWindowManager.hpp"
 
 namespace ln {

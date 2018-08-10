@@ -52,7 +52,7 @@ if (DEFINED EMSCRIPTEN)
     set(LN_EMSCRIPTEN ON)
     add_definitions(-DLN_GRAPHICS_OPENGLES)
     add_definitions(-DLN_GLFW)
-    add_definitions(-DGLFW_INCLUDE_ES2) # glfw3.h 内で include するヘッダを制御する
+    #add_definitions(-DGLFW_INCLUDE_ES2) # glfw3.h 内で include するヘッダを制御する
 
 elseif(WIN32 OR APPLE OR UNIX)
     add_definitions(-DLN_GLFW)

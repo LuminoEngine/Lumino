@@ -20,12 +20,13 @@ namespace LuminoBuild.Tasks
 
         private void BuildProject(Builder builder, string projectDirName, string externalSourceDir, string buildArchDir, string generator, string additionalOptions = "")
         {
-            Logger.WriteLine($"BuildProject ({projectDirName})");
 
             var buildDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalBuild", projectDirName));
             var installDir = Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalInstall", projectDirName);
             var cmakeSourceDir = Path.Combine(externalSourceDir, projectDirName);
             var ov = Path.Combine(builder.LuminoRootDir, "src", "CFlagOverrides.cmake");
+
+            Logger.WriteLine($"BuildProject ({projectDirName}) buildDir:{buildDir}");
 
             Directory.CreateDirectory(buildDir);
             Directory.SetCurrentDirectory(buildDir);
@@ -38,11 +39,11 @@ namespace LuminoBuild.Tasks
 
         private void BuildProjectEm(Builder builder, string projectDirName, string externalSourceDir, string buildArchDir, string additionalOptions = "")
         {
-            Logger.WriteLine($"BuildProjectEm ({projectDirName})");
-
             var buildDir = Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalBuild", projectDirName);
             var installDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalInstall", projectDirName));
             var cmakeSourceDir = Path.Combine(externalSourceDir, projectDirName);
+
+            Logger.WriteLine($"BuildProjectEm ({projectDirName}) buildDir:{buildDir}");
 
             Directory.CreateDirectory(buildDir);
 

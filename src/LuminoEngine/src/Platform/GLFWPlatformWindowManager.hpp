@@ -2,8 +2,10 @@
 
 #ifdef LN_GLFW
 
-#include <GLFW/glfw3.h>
+//#include <GLFW/glfw3.h>
 #include "PlatformWindowManager.hpp"
+
+struct GLFWwindow;
 
 namespace ln {
 namespace detail {
