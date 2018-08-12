@@ -33,6 +33,8 @@ set(LN_SOURCES_gtest
 
 #-------------------------------------------------------------------------------
 
+message("EMSCRIPTEN_ROOT_PATH: ${EMSCRIPTEN_ROOT_PATH}")
+
 #--------------------------------------
 # glfw
 if (LN_OS_DESKTOP)

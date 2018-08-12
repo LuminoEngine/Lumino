@@ -28,7 +28,9 @@ int main(int argc, char** argv)
 
 #if 1
 	//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects");
-	::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\HelloLumino");
+	//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\HelloLumino");
+	::SetCurrentDirectoryW(L"D:\\Documents\\LuminoProjects\\HelloLumino");
+	
 	char* debugArgv[] = {
 		//"<program>", "init", "HelloLumino",
 

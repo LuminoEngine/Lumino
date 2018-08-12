@@ -62,13 +62,24 @@ void BuildEnvironment::setupPathes(EnvironmentSettings* env)
 	if (LN_REQUIRE(env)) return;
 	m_toolsDir = (ln::Path::combine(env->appDataDirPath(), u"BuildTools"));
 	m_emsdkVer = (u"1.38.10");
+	m_emsdkName = u"sdk-1.38.10-64bit";
 	m_emsdkRootDir = (ln::Path::combine(m_toolsDir, u"emsdk"));
 	m_emscriptenRootDir = (ln::Path::combine(m_emsdkRootDir, u"emscripten", m_emsdkVer));
 
+	ln::Path path = ln::Environment::executablePath();
+	while (!path.isRoot())
+	{
+		if (ln::FileSystem::existsDirectory(ln::Path(path, u".git"))) {
+			m_luminoRepoRoot = path;
+			break;
+		}
+		path = path.parent();
+	}
+	if (LN_ENSURE(!m_luminoRepoRoot.isEmpty())) return;
+	LN_LOG_DEBUG << m_luminoRepoRoot;
 
-	m_luminoEmscriptenSdkDirPath = u"C:/Proj/GitHub/Lumino/build/CMakeInstallTemp/Emscripten";
-	//ln::Path sp = ln::Environment::executablePath();
-	m_projectTemplatesDirPath = _T("C:/Proj/GitHub/Lumino/tools/LuminoCLI/ProjectTemplates");
+	m_luminoEmscriptenSdkDirPath = ln::Path(m_luminoRepoRoot, u"build/CMakeInstallTemp/Emscripten");
+	m_projectTemplatesDirPath = ln::Path(m_luminoRepoRoot, u"tools/LuminoCLI/ProjectTemplates");
 }
 
 void BuildEnvironment::verifyAndInstall()

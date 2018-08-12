@@ -84,9 +84,10 @@ Result Workspace::buildProject(const ln::String& target)
 			};
 
 			ln::StreamWriter sw(script);
-			sw.writeLineFormat(u"cd \"{0}\"", m_devTools->emsdkDirPath());
+			sw.writeLineFormat(u"cd /d \"{0}\"", m_devTools->emsdkDirPath());
+			sw.writeLineFormat(u"call emsdk_env.bat " + m_devTools->emsdkName());
 			sw.writeLineFormat(u"call emsdk_env.bat");
-			sw.writeLineFormat(u"cd \"{0}\"", buildDir);
+			sw.writeLineFormat(u"cd /d \"{0}\"", buildDir);
 			sw.writeLineFormat(u"call emcmake cmake " + ln::String::join(emcmakeArgs, u" "));
 			sw.writeLineFormat(u"call cmake --build .");
 		}

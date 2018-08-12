@@ -23,9 +23,10 @@ namespace LuminoBuild.Tasks
             var script = Path.Combine(buildDir, "build.bat");
             using (var f = new StreamWriter(script))
             {
-                f.WriteLine($"cd \"{BuildEnvironment.EmsdkDir}\"");
+                f.WriteLine($"cd /d \"{BuildEnvironment.EmsdkDir}\"");
+                f.WriteLine($"call emsdk activate {BuildEnvironment.emsdkVer}");
                 f.WriteLine($"call emsdk_env.bat");
-                f.WriteLine($"cd \"{Utils.ToWin32Path(buildDir)}\"");
+                f.WriteLine($"cd /d \"{Utils.ToWin32Path(buildDir)}\"");
                 f.WriteLine($"call emcmake cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX={installDir} -G \"MinGW Makefiles\" {cmakeSourceDir}");
                 f.WriteLine($"call cmake --build .");
                 f.WriteLine($"call cmake --build . --target install");

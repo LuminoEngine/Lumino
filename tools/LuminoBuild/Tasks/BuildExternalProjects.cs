@@ -50,9 +50,10 @@ namespace LuminoBuild.Tasks
             var script = Path.Combine(buildDir, "build.bat");
             using (var f = new StreamWriter(script))
             {
-                f.WriteLine($"cd \"{BuildEnvironment.EmsdkDir}\"");
+                f.WriteLine($"cd /d \"{BuildEnvironment.EmsdkDir}\"");
+                f.WriteLine($"call emsdk activate {BuildEnvironment.emsdkVer}");
                 f.WriteLine($"call emsdk_env.bat");
-                f.WriteLine($"cd \"{Utils.ToWin32Path(buildDir)}\"");
+                f.WriteLine($"cd /d \"{Utils.ToWin32Path(buildDir)}\"");
                 f.WriteLine($"call emcmake cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX={installDir} {additionalOptions} -G \"MinGW Makefiles\" {cmakeSourceDir}");
                 f.WriteLine($"call cmake --build .");
                 f.WriteLine($"call cmake --build . --target install");
@@ -67,7 +68,7 @@ namespace LuminoBuild.Tasks
 
         public override void Build(Builder builder)
         {
-            var reposDir = Path.Combine(builder.LuminoBuildDir,"ExternalSource");
+            var reposDir = Path.Combine(builder.LuminoBuildDir, "ExternalSource");
             Directory.CreateDirectory(reposDir);
             Directory.SetCurrentDirectory(reposDir);
 
@@ -102,6 +103,7 @@ namespace LuminoBuild.Tasks
             {
                 // Emscripten
                 {
+                    var externalInstallDir = Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall");
                     var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall", "zlib"));
 
                     BuildProjectEm(builder, "zlib", reposDir, "Emscripten");
