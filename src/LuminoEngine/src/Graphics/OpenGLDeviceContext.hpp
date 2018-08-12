@@ -62,7 +62,21 @@
 //#else
 ////#include <GL/gl.h>
 //#endif
+#ifdef LN_EMSCRIPTEN
+#include <emscripten.h>
+#define GL_GLEXT_PROTOTYPES
+#define EGL_EGLEXT_PROTOTYPES
+#include <GL/gl.h>
+
+//#include <GLES2/gl2.h>
+//#include <GLES2/gl2ext.h>
+
+#include <GLES3/gl3.h>
+//#include <GLES3/gl2ext.h>
+
+#else
 #include <glad/glad.h>
+#endif
 
 #include "GraphicsDeviceContext.hpp"
 

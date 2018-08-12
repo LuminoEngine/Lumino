@@ -172,6 +172,8 @@ OpenGLDeviceContext::OpenGLDeviceContext()
 
 void OpenGLDeviceContext::initialize(const Settings& settings)
 {
+	LN_LOG_DEBUG << "OpenGLDeviceContext::initialize start";
+
 #ifdef LN_GLFW
 	auto glfwContext = makeRef<GLFWContext>();
 	glfwContext->initialize(settings.mainWindow);
@@ -183,22 +185,22 @@ void OpenGLDeviceContext::initialize(const Settings& settings)
 		m_glContext = glfwContext;
 	}
 
+#ifdef LN_EMSCRIPTEN
+#else
 	int result = gladLoadGL();
 	if (LN_ENSURE(result, "Failed gladLoadGL()")) return;
-
 	LN_LOG_INFO << "OpenGL " << GLVersion.major << "." << GLVersion.minor;
+#endif
 
 	//GLint value;
 	//glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &value);
-
-
 
 	GL_CHECK(glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &m_caps.MAX_VERTEX_ATTRIBS));
 
 	GL_CHECK(glGenVertexArrays(1, &m_vao));
 	GL_CHECK(glGenFramebuffers(1, &m_fbo));
 
-
+	LN_LOG_DEBUG << "OpenGLDeviceContext::initialize end";
 }
 
 void OpenGLDeviceContext::dispose()
@@ -341,6 +343,9 @@ void OpenGLDeviceContext::onUpdatePipelineState(const BlendStateDesc& blendState
 			GL_ONE_MINUS_DST_ALPHA
 		};
 
+#ifdef GL_GLES_PROTOTYPES
+		// OpenGL ES is unsupported
+#else
 		if (blendState.independentBlendEnable)
 		{
 			for (int i = 0; i < 8; i++)	// TODO: num RT
@@ -370,6 +375,7 @@ void OpenGLDeviceContext::onUpdatePipelineState(const BlendStateDesc& blendState
 			}
 		}
 		else
+#endif
 		{
 			const RenderTargetBlendDesc& desc = blendState.renderTargets[0];
 
@@ -404,8 +410,12 @@ void OpenGLDeviceContext::onUpdatePipelineState(const BlendStateDesc& blendState
 	{
 		// fillMode
 		{
+#ifdef GL_GLES_PROTOTYPES
+			// OpenGL ES is glPolygonMode unsupported
+#else
 			const GLenum tb[] = { GL_FILL, GL_LINE, GL_POINT };
 			GL_CHECK(glPolygonMode(GL_FRONT_AND_BACK, tb[(int)rasterizerState.fillMode]));
+#endif
 		}
 
 		// cullingMode
@@ -954,8 +964,18 @@ void* GLVertexBuffer::map()
 {
 	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, m_glVertexBuffer));
 	void* buffer;
-	GL_CHECK(buffer = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY));
+	//GL_CHECK(buffer = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY));
 	//GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
+
+	// https://developer.apple.com/jp/documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/TechniquesforWorkingwithVertexData/TechniquesforWorkingwithVertexData.html
+
+
+	GL_CHECK(buffer = glMapBufferRange(GL_ARRAY_BUFFER, 0, m_size, GL_MAP_WRITE_BIT));
+
+
+	//GLbitfield flags = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
+	//glBufferStorage(GL_ARRAY_BUFFER, DYN_VB_SIZE, NULL, flags);
+	//m_dyn_vb_ptr = glMapBufferRange(GL_ARRAY_BUFFER, 0, DYN_VB_SIZE, flags);
 
 	return buffer;
 }
@@ -1054,7 +1074,8 @@ void* GLIndexBuffer::map()
 {
 	GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBufferId));
 	void* buffer;
-	GL_CHECK(buffer = glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY));
+	//GL_CHECK(buffer = glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY));
+	GL_CHECK(buffer = glMapBufferRange(GL_ARRAY_BUFFER, 0, m_size, GL_MAP_WRITE_BIT));
 	return buffer;
 }
 
@@ -1234,10 +1255,15 @@ void GLRenderTargetTexture::dispose()
 
 void GLRenderTargetTexture::readData(void* outData)
 {
+#ifdef GL_GLES_PROTOTYPES
+	// OpenGL ES is glGetTexImage unsupported
+	// http://oppyen.hatenablog.com/entry/2016/10/21/071612
+#else
 	GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 	GL_CHECK(glBindTexture(GL_TEXTURE_2D, m_id));
 	GL_CHECK(glGetTexImage(GL_TEXTURE_2D, 0, m_pixelFormat, m_elementType, outData));
 	GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+#endif
 }
 
 const SizeI& GLRenderTargetTexture::realSize()
