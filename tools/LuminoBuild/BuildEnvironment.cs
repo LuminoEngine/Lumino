@@ -16,6 +16,7 @@ namespace LuminoBuild
         public static string emcmake { get; set; }
 
 
+        public const string AndroidTargetPlatform = "android-24";
         public static string AndroidSdkRootDir { get; set; }
         public static string AndroidSdkCMake { get; set; }
         public static string AndroidSdkNinja { get; set; }

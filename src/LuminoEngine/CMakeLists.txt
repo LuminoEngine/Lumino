@@ -138,13 +138,12 @@ elseif (APPLE)
 	list(APPEND LN_PLATFORM_LIBS glfw)
 	
 elseif (UNIX)
-	list(APPEND LN_PLATFORM_LIBS glfw)
-	
+	if (LN_ANDROID)
+	else()
+		list(APPEND LN_PLATFORM_LIBS glfw)
+	endif()
 endif()
 
-if (LN_ANDROID)
-	list(APPEND LN_PLATFORM_LIBS GLESv2)
-endif()
 
 if (LN_IOS)
 

@@ -86,28 +86,28 @@ void BuildEnvironment::verifyAndInstall()
 {
 	ln::FileSystem::createDirectory(m_toolsDir);
 
-	if (!ln::FileSystem::existsDirectory(m_emsdkRootDir))
-	{
-		ln::Process proc1;
-		proc1.setProgram(u"git");
-		proc1.setArguments({ u"clone", u"https://github.com/juj/emsdk.git" });
-		proc1.setWorkingDirectory(m_toolsDir);
-		proc1.start();
-		proc1.wait();
-	}
-
-	if (!ln::FileSystem::existsDirectory(m_emscriptenRootDir))
-	{
-		ln::Process proc1;
-		proc1.setProgram(u"emsdk");
-		proc1.setArguments({ u"install", m_emsdkVer });
-		proc1.setWorkingDirectory(m_emsdkRootDir);
-		proc1.start();
-		proc1.wait();
-	}
-
 	// Emscripten
 	{
+		if (!ln::FileSystem::existsDirectory(m_emsdkRootDir))
+		{
+			ln::Process proc1;
+			proc1.setProgram(u"git");
+			proc1.setArguments({ u"clone", u"https://github.com/juj/emsdk.git" });
+			proc1.setWorkingDirectory(m_toolsDir);
+			proc1.start();
+			proc1.wait();
+		}
+
+		if (!ln::FileSystem::existsDirectory(m_emscriptenRootDir))
+		{
+			ln::Process proc1;
+			proc1.setProgram(u"emsdk");
+			proc1.setArguments({ u"install", m_emsdkVer });
+			proc1.setWorkingDirectory(m_emsdkRootDir);
+			proc1.start();
+			proc1.wait();
+		}
+
 		auto file = ln::Path::combine(m_emscriptenRootDir, u"system", u"include", u"LuminoEngine.hpp");
 		if (!ln::FileSystem::existsFile(file))
 		{

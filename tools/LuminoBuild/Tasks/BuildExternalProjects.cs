@@ -66,6 +66,23 @@ namespace LuminoBuild.Tasks
             Utils.CopyDirectory(installDir, Path.Combine(BuildEnvironment.EmscriptenDir, "system"));
         }
 
+        private void BuildProjectAndroid(Builder builder, string projectDirName, string externalSourceDir, string abi, string additionalOptions = "")
+        {
+            string cmakeHomeDir = Path.Combine(externalSourceDir, projectDirName);//builder.LuminoRootDir;
+            string platform = BuildEnvironment.AndroidTargetPlatform;
+
+            var targetName = "Android-" + abi;
+
+            string cmakeBuildDir = Path.Combine(builder.LuminoBuildDir, targetName, "ExternalBuild", projectDirName);
+            string cmakeInstallDir = Path.Combine(builder.LuminoBuildDir, "CMakeInstallTemp", targetName);
+            string buildType = "Release";
+            string args = $"-H{cmakeHomeDir} -B{cmakeBuildDir} -DLN_TARGET_ARCH_NAME={targetName} -DCMAKE_INSTALL_PREFIX={cmakeInstallDir} -DANDROID_ABI={abi} -DANDROID_PLATFORM={platform} -DCMAKE_BUILD_TYPE={buildType} -DANDROID_NDK={BuildEnvironment.AndroidNdkRootDir} -DCMAKE_CXX_FLAGS=-std=c++14 -DANDROID_STL=c++_shared -DCMAKE_TOOLCHAIN_FILE={BuildEnvironment.AndroidCMakeToolchain} -DCMAKE_MAKE_PROGRAM={BuildEnvironment.AndroidSdkNinja} -G\"Android Gradle - Ninja\"";
+
+            Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, args);
+            Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, "--build " + cmakeBuildDir);
+            Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, "--build " + cmakeBuildDir + " --target install");
+        }
+
         public override void Build(Builder builder)
         {
             var reposDir = Path.Combine(builder.LuminoBuildDir, "ExternalSource");
@@ -101,6 +118,19 @@ namespace LuminoBuild.Tasks
 
             if (Utils.IsWin32)
             {
+                // Android
+                {
+                    foreach (var target in BuildEngineAndroidJNI.Targets)
+                    {
+                        var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "Android-" + target.ABI, "ExternalInstall", "zlib"));
+                        BuildProjectAndroid(builder, "zlib", reposDir, target.ABI);
+                        BuildProjectAndroid(builder, "libpng", reposDir, target.ABI, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
+                        BuildProjectAndroid(builder, "glslang", reposDir, target.ABI);
+                        BuildProjectAndroid(builder, "SPIRV-Cross", reposDir, target.ABI);
+                    }
+                }
+                return;
+
                 // Emscripten
                 {
                     var externalInstallDir = Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall");

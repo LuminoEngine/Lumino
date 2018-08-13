@@ -12,7 +12,7 @@ namespace LuminoBuild.Tasks
             public string ABI;
         }
 
-        public List<Target> Targets = new List<Target>()
+        public static List<Target> Targets = new List<Target>()
         {
             new Target() { ABI = "x86" },
             new Target() { ABI = "x86_64" },
@@ -27,8 +27,7 @@ namespace LuminoBuild.Tasks
         public override void Build(Builder builder)
         {
             string cmakeHomeDir = builder.LuminoRootDir;
-            
-            string platform = "android-24";
+            string platform = BuildEnvironment.AndroidTargetPlatform;
 
             foreach (var target in Targets)
             {
@@ -37,7 +36,7 @@ namespace LuminoBuild.Tasks
                 string cmakeBuildDir = Path.Combine(builder.LuminoBuildDir, targetName);
                 string cmakeInstallDir = Path.Combine(builder.LuminoBuildDir, "CMakeInstallTemp", targetName);
                 string buildType = "Release";
-                string args = $"-H{cmakeHomeDir} -B{cmakeBuildDir} -DLN_TARGET_ARCH_NAME={targetName} -DCMAKE_INSTALL_PREFIX={cmakeInstallDir} -DANDROID_ABI={abi} -DANDROID_PLATFORM={platform} -DCMAKE_BUILD_TYPE={buildType} -DANDROID_NDK={BuildEnvironment.AndroidNdkRootDir} -DCMAKE_CXX_FLAGS=-std=c++14 -DCMAKE_TOOLCHAIN_FILE={BuildEnvironment.AndroidCMakeToolchain} -DCMAKE_MAKE_PROGRAM={BuildEnvironment.AndroidSdkNinja} -G\"Android Gradle - Ninja\"";
+                string args = $"-H{cmakeHomeDir} -B{cmakeBuildDir} -DLN_TARGET_ARCH_NAME={targetName} -DCMAKE_INSTALL_PREFIX={cmakeInstallDir} -DANDROID_ABI={abi} -DANDROID_PLATFORM={platform} -DCMAKE_BUILD_TYPE={buildType} -DANDROID_NDK={BuildEnvironment.AndroidNdkRootDir} -DCMAKE_CXX_FLAGS=-std=c++14 -DANDROID_STL=c++_shared -DCMAKE_TOOLCHAIN_FILE={BuildEnvironment.AndroidCMakeToolchain} -DCMAKE_MAKE_PROGRAM={BuildEnvironment.AndroidSdkNinja} -G\"Android Gradle - Ninja\"";
                 
                 Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, args);
                 Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, "--build " + cmakeBuildDir);
