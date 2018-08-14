@@ -31,16 +31,16 @@ Result Workspace::buildProject(const ln::String& target)
 {
 
 	// Android
-	if (0)
+	if (ln::String::compare(target, u"Android", ln::CaseSensitivity::CaseInsensitive) == 0)
 	{
 
-		ln::String luminoPackageDir = u"D:\\Proj\\LN\\Lumino\\build\\Package";//ln::Environment::getEnvironmentVariable();
+		ln::String luminoPackageDir = u"D:\\Proj\\GitHub\\Lumino\\build\\CMakeInstallTemp\\Android-x86_64";// \\lib\\cmake";//ln::Environment::getEnvironmentVariable();
 
 		ln::String abi = u"x86_64";
 		ln::String platform = "android-26";
 		ln::String buildType = "Release";
 		ln::String targetName = u"Android-" + abi;
-		ln::String outputDir = u"D:/Documents/LuminoProjects/Hello/Projects/LuminoApplication/app/build/intermediates/cmake/release/obj/x86_64";
+		ln::String outputDir = m_project->rootDirPath().str().replace("\\", "/") + u"Projects/Android/app/build/intermediates/cmake/release/obj/x86_64";
 		ln::String buildDir = ln::Path::combine(m_project->buildDir(), targetName);
 
 		ln::List<ln::String> args = {
@@ -56,7 +56,7 @@ Result Workspace::buildProject(const ln::String& target)
 			u"-DCMAKE_TOOLCHAIN_FILE=" + m_environmentSettings->androidCMakeToolchain(),
 			u"-DCMAKE_MAKE_PROGRAM=" + m_environmentSettings->androidSdkNinja(),
 
-			u"-DLumino_DIR=" + luminoPackageDir,
+			u"-DLumino_DIR=" + luminoPackageDir.replace("\\", "/"),
 
 			u"-G\"Android Gradle - Ninja\"",
 		};
@@ -66,6 +66,7 @@ Result Workspace::buildProject(const ln::String& target)
 		ln::Process::execute(m_environmentSettings->androidSdkCMake(), {u"--build", buildDir });
 	}
 
+	// Emscripten
 	if (ln::String::compare(target, u"Emscripten", ln::CaseSensitivity::CaseInsensitive) == 0)
 	{
 		auto buildDir = ln::Path::combine(m_project->buildDir(), u"Emscripten").canonicalize();

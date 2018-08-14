@@ -36,7 +36,8 @@ int main(int argc, char** argv)
 
 		//"<program>", "dev-install-tools",
 
-		"<program>", "build", "Emscripten",
+		//"<program>", "build", "Emscripten",
+		"<program>", "build", "Android",
 	};
 	argc = sizeof(debugArgv) / sizeof(char*);
 	argv = debugArgv;

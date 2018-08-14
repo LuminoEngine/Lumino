@@ -54,15 +54,15 @@ if (DEFINED EMSCRIPTEN)
     add_definitions(-DLN_GLFW)
     #add_definitions(-DGLFW_INCLUDE_ES2) # glfw3.h 内で include するヘッダを制御する
 
+
+elseif (LN_ANDROID)
+    add_definitions(-DLN_GRAPHICS_OPENGLES)
+
 elseif(WIN32 OR APPLE OR UNIX)
     add_definitions(-DLN_GLFW)
     set(GLFW_INSTALL ON CACHE BOOL "" FORCE)
     set(LN_OS_DESKTOP ON)
 
-endif()
-
-if (LN_ANDROID)
-    add_definitions(-DLN_GRAPHICS_OPENGLES)
 endif()
 
 if (DEFINED IOS_PLATFORM)

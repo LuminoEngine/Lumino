@@ -132,15 +132,15 @@ set(LN_SOURCES_SharedLib
 
 if (WIN32)
 	find_package(OpenGL)
-	list(APPEND LN_PLATFORM_LIBS glfw)
+	list(APPEND LN_PLATFORM_LIBS glfw GLAD)
 
 elseif (APPLE)
-	list(APPEND LN_PLATFORM_LIBS glfw)
+	list(APPEND LN_PLATFORM_LIBS glfw GLAD)
 	
 elseif (UNIX)
 	if (LN_ANDROID)
 	else()
-		list(APPEND LN_PLATFORM_LIBS glfw)
+		list(APPEND LN_PLATFORM_LIBS glfw GLAD)
 	endif()
 endif()
 
@@ -171,8 +171,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE "${LUMINO_INCLUDE_DIRECTORIES
 #target_compile_definitions(${PROJECT_NAME} PUBLIC LUMINO_BUILD_DLL=1)
 #target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive ${PROJECT_NAME}-static -Wl,--no-whole-archive)
 #target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-static)
-target_link_libraries(${PROJECT_NAME} INTERFACE LuminoCore ${LN_PLATFORM_LIBS} ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB PNG GLAD)
+target_link_libraries(${PROJECT_NAME} INTERFACE LuminoCore ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB PNG GLAD ${LN_PLATFORM_LIBS})
 #target_link_libraries(${PROJECT_NAME} PRIVATE glslang)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
@@ -190,7 +190,7 @@ endif()
 
 install(TARGETS ${PROJECT_NAME}
     EXPORT LuminoEngineTargets
-    ARCHIVE     DESTINATION lib/${LN_TARGET_ARCH_NAME}			# Library installation location (Copied at "INSTALL" build time)
+    ARCHIVE     DESTINATION lib			# Library installation location (Copied at "INSTALL" build time)
     INCLUDES    DESTINATION include)	# include directory (File is not copied)
 
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include DESTINATION .)
@@ -199,8 +199,8 @@ install(
 	EXPORT LuminoEngineTargets
 	FILE LuminoEngineTargets.cmake
 	EXPORT_LINK_INTERFACE_LIBRARIES
-	DESTINATION "lib/${LN_TARGET_ARCH_NAME}/cmake")
+	DESTINATION "lib/cmake")
 
 install(
     FILES "LuminoEngineConfig.cmake"
-    DESTINATION "lib/${LN_TARGET_ARCH_NAME}/cmake")
+    DESTINATION "lib/cmake")

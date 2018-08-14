@@ -27,16 +27,16 @@ namespace LuminoBuild
             builder.VersionString = string.Format("{0}.{1}.{2}", builder.MajorVersion, builder.MinorVersion, builder.RevisionVersion);
 
             builder.LuminoRootDir = Path.GetFullPath(Path.Combine(exeDir, "../../../../../../")) + "/";
-            builder.LuminoBuildDir = Path.GetFullPath(builder.LuminoRootDir + "build");
-            builder.LuminoBindingsDir = Path.GetFullPath(builder.LuminoRootDir + "bindings");
-            builder.LuminoLibDir = Path.GetFullPath(builder.LuminoRootDir + "lib");
-            builder.LuminoToolsDir = Path.GetFullPath(builder.LuminoRootDir + "tools");
-            builder.LuminoDocDir = Path.GetFullPath(builder.LuminoRootDir + "docs");
-            builder.LuminoPackageDir = Path.GetFullPath(builder.LuminoBuildDir + "Package");
-            builder.LuminoPackageLibDir = Path.GetFullPath(builder.LuminoPackageDir + "lib");
-            builder.LuminoPackageSourceDir = Path.GetFullPath(builder.LuminoRootDir + "package/PackageSource");
-            builder.LuminoPackageReleaseDir = Path.GetFullPath(builder.LuminoRootDir + "package/Release/Lumino");
-            builder.LuminoExternalDir = Path.GetFullPath(builder.LuminoRootDir + "external");
+            builder.LuminoBuildDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "build"));
+            builder.LuminoBindingsDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "bindings"));
+            builder.LuminoLibDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "lib"));
+            builder.LuminoToolsDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "tools"));
+            builder.LuminoDocDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "docs"));
+            builder.LuminoPackageDir = Path.GetFullPath(Path.Combine(builder.LuminoBuildDir, "Package"));
+            builder.LuminoPackageLibDir = Path.GetFullPath(Path.Combine(builder.LuminoPackageDir, "lib"));
+            builder.LuminoPackageSourceDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "package/PackageSource"));
+            builder.LuminoPackageReleaseDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "package/Release/Lumino"));
+            builder.LuminoExternalDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "external"));
 
             BuildEnvironment.Initialize();
 

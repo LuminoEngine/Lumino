@@ -74,7 +74,7 @@ namespace LuminoBuild.Tasks
             var targetName = "Android-" + abi;
 
             string cmakeBuildDir = Path.Combine(builder.LuminoBuildDir, targetName, "ExternalBuild", projectDirName);
-            string cmakeInstallDir = Path.Combine(builder.LuminoBuildDir, "CMakeInstallTemp", targetName);
+            string cmakeInstallDir = Path.Combine(builder.LuminoBuildDir, targetName, "ExternalInstall", projectDirName);
             string buildType = "Release";
             string args = $"-H{cmakeHomeDir} -B{cmakeBuildDir} -DLN_TARGET_ARCH_NAME={targetName} -DCMAKE_INSTALL_PREFIX={cmakeInstallDir} -DANDROID_ABI={abi} -DANDROID_PLATFORM={platform} -DCMAKE_BUILD_TYPE={buildType} -DANDROID_NDK={BuildEnvironment.AndroidNdkRootDir} -DCMAKE_CXX_FLAGS=-std=c++14 -DANDROID_STL=c++_shared -DCMAKE_TOOLCHAIN_FILE={BuildEnvironment.AndroidCMakeToolchain} -DCMAKE_MAKE_PROGRAM={BuildEnvironment.AndroidSdkNinja} -G\"Android Gradle - Ninja\"";
 
