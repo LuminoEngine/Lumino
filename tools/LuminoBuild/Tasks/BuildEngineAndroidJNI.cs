@@ -43,6 +43,8 @@ namespace LuminoBuild.Tasks
                 Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, "--build " + cmakeBuildDir + " --target install");
 
                 //Utils.CopyDirectory(Path.Combine(cmakeInstallDir, "lib"), Path.Combine(builder.LuminoPackageLibDir));
+
+                Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "ImportExternalLibraries.cmake"), cmakeInstallDir);
             }
         }
     }

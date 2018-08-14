@@ -56,6 +56,7 @@ Result Workspace::buildProject(const ln::String& target)
 			u"-DCMAKE_TOOLCHAIN_FILE=" + m_environmentSettings->androidCMakeToolchain(),
 			u"-DCMAKE_MAKE_PROGRAM=" + m_environmentSettings->androidSdkNinja(),
 
+			u"-DANDROID_STL=c++_shared",
 			u"-DLumino_DIR=" + luminoPackageDir.replace("\\", "/"),
 
 			u"-G\"Android Gradle - Ninja\"",
