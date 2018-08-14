@@ -13,7 +13,7 @@ namespace LuminoBuild.Tasks
         public override void Build(Builder builder)
         {
             var buildDir = Path.Combine(builder.LuminoBuildDir, "Linux-x86_64");
-            var installDir = Path.Combine(builder.LuminoBuildDir, "CMakeInstallTemp", "Linux-x86_64");
+            var installDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "Linux-x86_64");
 
             Directory.CreateDirectory(buildDir);
             Directory.SetCurrentDirectory(buildDir);

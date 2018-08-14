@@ -15,7 +15,7 @@ namespace LuminoBuild.Tasks
             var buildArchDir = "Emscripten";
 
             var buildDir = Path.Combine(builder.LuminoBuildDir, buildArchDir);
-            var installDir = Path.Combine(builder.LuminoBuildDir, "CMakeInstallTemp", buildArchDir);
+            var installDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, buildArchDir);
             var cmakeSourceDir = builder.LuminoRootDir;
 
             Directory.CreateDirectory(buildDir);
@@ -43,7 +43,7 @@ namespace LuminoBuild.Tasks
             //string emInstallDir = BuildEnvironment.EmscriptenDir;
             //string bundlePythonDir = Path.Combine(emInstallDir, "python", "2.7.5.3_64bit");
 
-            //string cmakeOutputDir = Path.Combine(builder.LuminoBuildDir, "CMakeInstallTemp", "Emscripten");
+            //string cmakeOutputDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "Emscripten");
 
             //string path = Environment.GetEnvironmentVariable("PATH");
             //path = bundlePythonDir + ";" + path;

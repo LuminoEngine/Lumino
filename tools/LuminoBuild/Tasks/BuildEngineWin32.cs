@@ -21,7 +21,7 @@ namespace LuminoBuild.Tasks
                 
                 foreach (var t in list)
                 {
-                    Directory.SetCurrentDirectory(builder.LuminoBuildDir + t.DirName);
+                    Directory.SetCurrentDirectory(Path.Combine(builder.LuminoBuildDir, t.DirName));
                     Utils.CallProcess("cmake", "--build . --config Debug --target INSTALL");
                     Utils.CallProcess("ctest", "-C Debug");
 

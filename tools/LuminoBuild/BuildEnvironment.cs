@@ -6,6 +6,7 @@ namespace LuminoBuild
 {
     class BuildEnvironment
     {
+        public const string CMakeTargetInstallDir = "CMakeInstallTemp";
         public const string emsdkVer = "sdk-1.38.10-64bit";
         public const string emVer = "1.38.10";
 

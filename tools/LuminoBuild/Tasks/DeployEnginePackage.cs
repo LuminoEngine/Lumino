@@ -4,15 +4,15 @@ using System.IO;
 
 namespace LuminoBuild.Tasks
 {
-    class MakeEnginePackage : BuildTask
+    class DeployEnginePackage : BuildTask
     {
-        public override string CommandName => "MakeEnginePackage";
+        public override string CommandName => "DeployEnginePackage";
 
-        public override string Description => "MakeEnginePackage";
+        public override string Description => "DeployEnginePackage";
 
         public override void Build(Builder builder)
         {
-            var tempInstallDir = Path.Combine(builder.LuminoBuildDir, "CMakeInstallTemp");
+            var tempInstallDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir);
             var targetRootDir = Path.Combine(builder.LuminoBuildDir, "EnginePackage");
 
             Utils.CopyDirectory(

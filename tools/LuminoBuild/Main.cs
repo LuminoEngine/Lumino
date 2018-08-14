@@ -12,7 +12,7 @@ namespace LuminoBuild
             // default
             if (args.Length == 0)
             {
-                args = new string[] { "BuildEngineAndroidJNI" };
+                args = new string[] { "BuildExternalProjects" };
             }
 
             Assembly thisAssembly = Assembly.GetEntryAssembly();
@@ -55,7 +55,7 @@ namespace LuminoBuild
             builder.Tasks.Add(new Tasks.MakeNuGetPackage_Core());
             builder.Tasks.Add(new Tasks.BuildEngineAndroidJNI());
             builder.Tasks.Add(new Tasks.BuildEngineEmscripten());
-            builder.Tasks.Add(new Tasks.MakeEnginePackage());
+            builder.Tasks.Add(new Tasks.DeployEnginePackage());
             builder.Rules.Add(new Rules.MakePackage());
 
 

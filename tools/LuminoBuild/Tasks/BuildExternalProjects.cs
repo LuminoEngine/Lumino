@@ -22,7 +22,7 @@ namespace LuminoBuild.Tasks
         {
 
             var buildDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalBuild", projectDirName));
-            var installDir = Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalInstall", projectDirName);
+            var installDir = Path.Combine(builder.LuminoBuildDir, buildArchDir, BuildEnvironment.CMakeTargetInstallDir, projectDirName);
             var cmakeSourceDir = Path.Combine(externalSourceDir, projectDirName);
             var ov = Path.Combine(builder.LuminoRootDir, "src", "CFlagOverrides.cmake");
 
@@ -118,41 +118,41 @@ namespace LuminoBuild.Tasks
 
             if (Utils.IsWin32)
             {
-                // Android
-                {
-                    foreach (var target in BuildEngineAndroidJNI.Targets)
-                    {
-                        var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "Android-" + target.ABI, "ExternalInstall", "zlib"));
-                        BuildProjectAndroid(builder, "zlib", reposDir, target.ABI);
-                        BuildProjectAndroid(builder, "libpng", reposDir, target.ABI, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
-                        BuildProjectAndroid(builder, "glslang", reposDir, target.ABI);
-                        BuildProjectAndroid(builder, "SPIRV-Cross", reposDir, target.ABI);
-                    }
-                }
-                return;
+                //// Android
+                //{
+                //    foreach (var target in BuildEngineAndroidJNI.Targets)
+                //    {
+                //        var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "Android-" + target.ABI, "ExternalInstall", "zlib"));
+                //        BuildProjectAndroid(builder, "zlib", reposDir, target.ABI);
+                //        BuildProjectAndroid(builder, "libpng", reposDir, target.ABI, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
+                //        BuildProjectAndroid(builder, "glslang", reposDir, target.ABI);
+                //        BuildProjectAndroid(builder, "SPIRV-Cross", reposDir, target.ABI);
+                //    }
+                //}
 
-                // Emscripten
-                {
-                    var externalInstallDir = Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall");
-                    var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall", "zlib"));
+                //// Emscripten
+                //{
+                //    var externalInstallDir = Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall");
+                //    var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall", "zlib"));
 
-                    BuildProjectEm(builder, "zlib", reposDir, "Emscripten");
-                    BuildProjectEm(builder, "libpng", reposDir, "Emscripten", $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
-                    BuildProjectEm(builder, "glslang", reposDir, "Emscripten");
-                    BuildProjectEm(builder, "SPIRV-Cross", reposDir, "Emscripten");
-                    BuildProjectEm(builder, "glad", reposDir, "Emscripten", "-DGLAD_INSTALL=ON");
-                }
+                //    BuildProjectEm(builder, "zlib", reposDir, "Emscripten");
+                //    BuildProjectEm(builder, "libpng", reposDir, "Emscripten", $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
+                //    BuildProjectEm(builder, "glslang", reposDir, "Emscripten");
+                //    BuildProjectEm(builder, "SPIRV-Cross", reposDir, "Emscripten");
+                //    BuildProjectEm(builder, "glad", reposDir, "Emscripten", "-DGLAD_INSTALL=ON");
+                //}
           
                 // Visual C++
                 foreach (var target in MakeVSProjects.Targets)
                 {
-                    var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, target.DirName, "ExternalInstall", "zlib"));
+                    var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, target.DirName, BuildEnvironment.CMakeTargetInstallDir, "zlib"));
 
                     BuildProject(builder, "zlib", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
                     BuildProject(builder, "libpng", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
                     BuildProject(builder, "glslang", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
                     BuildProject(builder, "SPIRV-Cross", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DCMAKE_DEBUG_POSTFIX=d");
                     BuildProject(builder, "glad", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DGLAD_INSTALL=ON");
+                    return;
                 }
             }
 

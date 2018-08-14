@@ -43,7 +43,7 @@ namespace LuminoBuild.Tasks
                     Directory.CreateDirectory(builder.LuminoBuildDir + t.DirName);
                     Directory.SetCurrentDirectory(builder.LuminoBuildDir + t.DirName);
 
-                    var installDir = Path.Combine(builder.LuminoRootDir, "build", "CMakeInstallTemp", t.DirName);
+                    var installDir = Path.Combine(builder.LuminoRootDir, "build", BuildEnvironment.CMakeTargetInstallDir, t.DirName);
                     var args = string.Format("-G\"{0}\" -DCMAKE_INSTALL_PREFIX=\"{1}\" -DLN_MSVC_STATIC_RUNTIME={2} -DLN_BUILD_TESTS=ON -DLN_BUILD_TOOLS=ON ../..", t.VSTarget, installDir, t.MSVCStaticRuntime);
                     Utils.CallProcess("cmake", args);
                 }
