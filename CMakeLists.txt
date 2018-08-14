@@ -72,6 +72,7 @@ endif()
 
 #------------------------------------------------------------------------------
 
+set(LN_EXTERNAL_FIND_PATH_MODE "build")
 include(external/External.cmake)
 add_subdirectory(src/LuminoCore)
 add_subdirectory(src/LuminoEngine)

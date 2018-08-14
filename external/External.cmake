@@ -6,44 +6,63 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # サードパーティライブラリ用の共通設定
 macro(ln_add_dependencies_common_property_full projectName includeDir)
-	set_target_properties(${projectName} PROPERTIES PREFIX "")
-	set_target_properties(${projectName} PROPERTIES FOLDER "Dependencies")	# Visual Studio solution folder
-	set(LN_DEPENDENCIES_LIBRARIES ${LN_DEPENDENCIES_LIBRARIES} ${projectName})
-	set(LN_DEPENDENCIES_INCLUDE_DIRECTORIES ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${includeDir})
+    set_target_properties(${projectName} PROPERTIES PREFIX "")
+    set_target_properties(${projectName} PROPERTIES FOLDER "Dependencies")    # Visual Studio solution folder
+    set(LN_DEPENDENCIES_LIBRARIES ${LN_DEPENDENCIES_LIBRARIES} ${projectName})
+    set(LN_DEPENDENCIES_INCLUDE_DIRECTORIES ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${includeDir})
 endmacro()
 macro(ln_add_dependencies_common_property projectName)
-	set_target_properties(${projectName} PROPERTIES FOLDER "Dependencies")	# Visual Studio solution folder
+    set_target_properties(${projectName} PROPERTIES FOLDER "Dependencies")    # Visual Studio solution folder
 endmacro()
 macro(ln_mark_non_dependencies projectName)
-	set_target_properties(${projectName} PROPERTIES FOLDER "Dependencies")	# Visual Studio solution folder
+    set_target_properties(${projectName} PROPERTIES FOLDER "Dependencies")    # Visual Studio solution folder
 endmacro()
 
 if (MSVC)
-	add_definitions("/wd4996")		# pragma warning disable
+    add_definitions("/wd4996")        # pragma warning disable
 endif()
 
 
 set(LN_INCLUDES_gtest
-	"${CMAKE_CURRENT_LIST_DIR}/gtest/include"
-	"${CMAKE_CURRENT_LIST_DIR}/gtest"
-	"${CMAKE_CURRENT_LIST_DIR}/gtest/src")
+    "${CMAKE_CURRENT_LIST_DIR}/gtest/include"
+    "${CMAKE_CURRENT_LIST_DIR}/gtest"
+    "${CMAKE_CURRENT_LIST_DIR}/gtest/src")
 
 set(LN_SOURCES_gtest
-	"${CMAKE_CURRENT_LIST_DIR}/gtest/src/gtest-all.cc")
+    "${CMAKE_CURRENT_LIST_DIR}/gtest/src/gtest-all.cc")
 
 #-------------------------------------------------------------------------------
 
 message("EMSCRIPTEN_ROOT_PATH: ${EMSCRIPTEN_ROOT_PATH}")
 
+
+
+macro(ln_make_external_find_path varName projectDirName)
+    message("LN_EXTERNAL_FIND_PATH_MODE:${LN_EXTERNAL_FIND_PATH_MODE}")
+    if (LN_EMSCRIPTEN)
+        # reference to installed libs by "build.csproj"
+        set(${varName} ${EMSCRIPTEN_ROOT_PATH}/system)
+        
+    elseif(${LN_EXTERNAL_FIND_PATH_MODE} STREQUAL "build")
+        set(${varName} ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/${projectDirName})
+        
+    else()
+        set(${varName} ${Lumino_DIR})
+        
+    endif()
+    message("${varName}:${${varName}}")
+endmacro()
+
+
 #--------------------------------------
 # glfw
 if (LN_OS_DESKTOP)
-	set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "")
-	set(GLFW_BUILD_TESTS OFF CACHE BOOL "")
-	set(GLFW_BUILD_DOCS OFF CACHE BOOL "")
-	set(GLFW_INSTALL OFF CACHE BOOL "")
-	add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/glfw-3.2.1)
-	ln_add_dependencies_common_property_full(glfw "${CMAKE_CURRENT_LIST_DIR}/glfw-3.2.1/include")
+    set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "")
+    set(GLFW_BUILD_TESTS OFF CACHE BOOL "")
+    set(GLFW_BUILD_DOCS OFF CACHE BOOL "")
+    set(GLFW_INSTALL OFF CACHE BOOL "")
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/glfw-3.2.1)
+    ln_add_dependencies_common_property_full(glfw "${CMAKE_CURRENT_LIST_DIR}/glfw-3.2.1/include")
 endif()
 
 #--------------------------------------
@@ -54,21 +73,21 @@ endif()
 
 if (LN_OS_DESKTOP OR LN_EMSCRIPTEN)
 
-	set(LIB_NAME GLAD)
-	add_library(${LIB_NAME} STATIC IMPORTED)
+    set(LIB_NAME GLAD)
+    add_library(${LIB_NAME} STATIC IMPORTED)
 
-	if (LN_EMSCRIPTEN)
-		# reference to installed libs by "build.csproj"
-		set(GLAD_ROOT ${EMSCRIPTEN_ROOT_PATH}/system)
-	else()
-		set(GLAD_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/glad)
-		find_library(GLAD_LIBRARY_RELEASE NAMES glad libglad PATHS ${GLAD_ROOT} PATH_SUFFIXES lib)
-		find_library(GLAD_LIBRARY_DEBUG NAMES gladd libgladd PATHS ${GLAD_ROOT} PATH_SUFFIXES lib)
-		set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
-		set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
-	endif()
+    if (LN_EMSCRIPTEN)
+        # reference to installed libs by "build.csproj"
+        set(GLAD_ROOT ${EMSCRIPTEN_ROOT_PATH}/system)
+    else()
+        set(GLAD_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/glad)
+        find_library(GLAD_LIBRARY_RELEASE NAMES glad libglad PATHS ${GLAD_ROOT} PATH_SUFFIXES lib)
+        find_library(GLAD_LIBRARY_DEBUG NAMES gladd libgladd PATHS ${GLAD_ROOT} PATH_SUFFIXES lib)
+        set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
+        set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
+    endif()
 
-	set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${${LIB_NAME}_ROOT}/include)
+    set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${${LIB_NAME}_ROOT}/include)
 endif()
 
 #--------------------------------------
@@ -99,13 +118,13 @@ endif()
 #set(CMAKE_PREFIX_PATH ${ZLIB_ROOT})
 
 #if (LN_EMSCRIPTEN)
-#	set(CMAKE_PREFIX_PATH ${EMSCRIPTEN_ROOT_PATH}/system)
-#	find_package(ZLIB REQUIRED)
+#    set(CMAKE_PREFIX_PATH ${EMSCRIPTEN_ROOT_PATH}/system)
+#    find_package(ZLIB REQUIRED)
 #else()
-#	set(ZLIB_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/zlib)
-#	set(ZLIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/zlib)
-#	set(CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/zlib)
-#	find_package(ZLIB REQUIRED HINTS ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/zlib)
+#    set(ZLIB_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/zlib)
+#    set(ZLIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/zlib)
+#    set(CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/zlib)
+#    find_package(ZLIB REQUIRED HINTS ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/zlib)
 #endif()
 
 
@@ -117,12 +136,14 @@ endif()
 #message(${ZLIB_LIBRARIES})
 #message(${ZLIB_STATIC_LIB})
 
-if (LN_EMSCRIPTEN)
-	# reference to installed libs by "build.csproj"
-	set(ZLIB_ROOT ${EMSCRIPTEN_ROOT_PATH}/system)
-else()
-	set(ZLIB_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/zlib)
-endif()
+#if (LN_EMSCRIPTEN)
+    # reference to installed libs by "build.csproj"
+#    set(ZLIB_ROOT ${EMSCRIPTEN_ROOT_PATH}/system)
+#else()
+#    set(ZLIB_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/zlib)
+#endif()
+
+ln_make_external_find_path(ZLIB_ROOT zlib)
 
 find_library(ZLIB_LIBRARY_RELEASE NAMES zlib PATHS ${ZLIB_ROOT} PATH_SUFFIXES lib)
 find_library(ZLIB_LIBRARY_DEBUG NAMES zlibd PATHS ${ZLIB_ROOT} PATH_SUFFIXES lib)
@@ -137,10 +158,10 @@ set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ZLI
 # libpng
 
 if (LN_EMSCRIPTEN)
-	# reference to installed libs by "build.csproj"
-	set(PNG_ROOT ${EMSCRIPTEN_ROOT_PATH}/system)
+    # reference to installed libs by "build.csproj"
+    set(PNG_ROOT ${EMSCRIPTEN_ROOT_PATH}/system)
 else()
-	set(PNG_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/libpng)
+    set(PNG_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/libpng)
 endif()
 
 find_library(PNG_LIBRARY_RELEASE NAMES libpng16 PATHS ${PNG_ROOT} PATH_SUFFIXES lib)
@@ -152,27 +173,6 @@ set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_
 set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
 set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${PNG_ROOT}/include)
 
-
-#set(PNG_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/libpng)
-#set(PNG_DIR ${PNG_ROOT})
-#set(CMAKE_PREFIX_PATH ${PNG_ROOT})
-#set(CMAKE_PREFIX_PATH ${PNG_ROOT})
-#find_package(PNG REQUIRED)
-#find_package(PNG REQUIRED PATHS ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/libpng)
-#find_library (PNG_LIB NAMES libpng libpng16_static PATHS ${PNG_ROOT})
-#message(${PNG_LIB})
-#message(${PNG_LIBRARIES})
-
-#set(ZLIB_LIBRARY ${ZLIB_LIBRARIES})
-#set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIRS}) # zlib.h and zconf.h
-#set(PNG_SHARED OFF CACHE BOOL "")
-#set(PNG_STATIC ON CACHE BOOL "")
-#set(PNG_TESTS OFF CACHE BOOL "")
-
-#add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/libpng-1.6.34)
-#set(LN_DEPENDENCIES_INCLUDE_DIRECTORIES ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} "${CMAKE_CURRENT_LIST_DIR}/libpng-1.6.34")
-#ln_add_dependencies_common_property(png_static)
-#ln_mark_non_dependencies(genfiles)
 
 
 #--------------------------------------
