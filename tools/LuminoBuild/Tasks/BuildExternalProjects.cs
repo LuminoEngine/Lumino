@@ -22,7 +22,7 @@ namespace LuminoBuild.Tasks
         {
 
             var buildDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalBuild", projectDirName));
-            var installDir = Path.Combine(builder.LuminoBuildDir, buildArchDir, BuildEnvironment.CMakeTargetInstallDir, projectDirName);
+            var installDir = Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalInstall", projectDirName);
             var cmakeSourceDir = Path.Combine(externalSourceDir, projectDirName);
             var ov = Path.Combine(builder.LuminoRootDir, "src", "CFlagOverrides.cmake");
 
@@ -145,14 +145,13 @@ namespace LuminoBuild.Tasks
                 // Visual C++
                 foreach (var target in MakeVSProjects.Targets)
                 {
-                    var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, target.DirName, BuildEnvironment.CMakeTargetInstallDir, "zlib"));
+                    var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, target.DirName, "ExternalInstall", "zlib"));
 
                     BuildProject(builder, "zlib", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
                     BuildProject(builder, "libpng", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
                     BuildProject(builder, "glslang", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
                     BuildProject(builder, "SPIRV-Cross", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DCMAKE_DEBUG_POSTFIX=d");
                     BuildProject(builder, "glad", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DGLAD_INSTALL=ON");
-                    return;
                 }
             }
 

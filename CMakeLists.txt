@@ -77,6 +77,7 @@ include(external/ImportExternalLibraries.cmake)
 add_subdirectory(src/LuminoCore)
 add_subdirectory(src/LuminoEngine)
 add_subdirectory(src/LuminoLaunch)
+add_subdirectory(src/LuminoRuntime)
 
 #if (DEFINED EMSCRIPTEN)
 #    add_subdirectory(src/LuminoHtml5Runtime)
