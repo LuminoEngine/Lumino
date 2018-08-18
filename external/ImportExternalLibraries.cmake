@@ -224,3 +224,18 @@ if (LN_OS_DESKTOP)
     set(spirv-cross_INCLUDE_DIRS "${SPIRV-Cross_ROOT}/include")
     set(spirv-cross_LIBRARIES spirv-cross-core spirv-cross-glsl)
 endif()
+
+#--------------------------------------
+# openal-soft
+
+ln_make_external_find_path(OpenAL_ROOT openal-soft)
+
+find_library(OpenAL_LIBRARY_RELEASE NAMES OpenAL32 PATHS ${OpenAL_ROOT} PATH_SUFFIXES lib)
+find_library(OpenAL_LIBRARY_DEBUG NAMES OpenAL32d PATHS ${OpenAL_ROOT} PATH_SUFFIXES lib)
+
+set(LIB_NAME OpenAL)
+add_library(OpenAL STATIC IMPORTED)
+set_target_properties(OpenAL PROPERTIES IMPORTED_LOCATION_RELEASE "${OpenAL_LIBRARY_RELEASE}")
+set_target_properties(OpenAL PROPERTIES IMPORTED_LOCATION_DEBUG "${OpenAL_LIBRARY_DEBUG}")
+set_target_properties(OpenAL PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${OpenAL_ROOT}/include)
+
