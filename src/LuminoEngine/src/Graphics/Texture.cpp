@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "GraphicsManager.hpp"
-#include "RenderingCommandList.hpp"
+#include "../Engine/RenderingCommandList.hpp"
 #include "GraphicsDeviceContext.hpp"
 #include <Lumino/Graphics/Bitmap.hpp>
 #include <Lumino/Graphics/Texture.hpp>
@@ -200,7 +200,7 @@ Ref<Bitmap2D> RenderTargetTexture::readData()
 	SizeI size = rhiObject->realSize();
 	auto bitmap = newObject<Bitmap2D>(size.width, size.height, GraphicsHelper::translateToPixelFormat(rhiObject->getTextureFormat()));
 
-	if (manager()->renderingType() == GraphicsRenderingType::Threaded)
+	if (manager()->renderingType() == RenderingType::Threaded)
 	{
 		LN_NOTIMPLEMENTED();
 	}

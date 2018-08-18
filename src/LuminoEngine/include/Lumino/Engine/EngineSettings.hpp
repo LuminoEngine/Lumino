@@ -27,7 +27,7 @@ public:
 //	static void setGraphicsAPI(GraphicsAPI graphicsAPI);
 //
 //	/** グラフィックス機能で使用するレンダリング方法を設定します。(default: Threaded) */
-//	static void setGraphicsRenderingType(GraphicsRenderingType renderingType);
+//	static void setGraphicsRenderingType(RenderingType renderingType);
 //	
 //	/** 浮動小数点計算の精度を指定します。true の場合、グラフィックス機能で使用する描画 API が DirectX9 である場合、D3DCREATE_FPU_PRESERVE が設定されます。*/
 //	static void setFpuPreserveEnabled(bool enabled);

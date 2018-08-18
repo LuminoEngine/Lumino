@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <Lumino/Graphics/Common.hpp>
+#include "../Engine/RenderingCommandList.hpp"
 
 namespace ln {
 class GraphicsContext; 
@@ -9,8 +10,6 @@ class SamplerState;
 namespace detail {
 class PlatformWindow;
 class IGraphicsDeviceContext;
-class RenderingCommandList;
-class LinearAllocatorPageManager;
 
 class GraphicsManager
 	: public RefObject
@@ -33,7 +32,7 @@ public:
 	const Ref<IGraphicsDeviceContext>& deviceContext() const { return m_deviceContext; }
 	const Ref<GraphicsContext>& graphicsContext() const { return m_graphicsContext; }
 	const Ref<LinearAllocatorPageManager>& linearAllocatorPageManager() const { return m_linearAllocatorPageManager; }
-	GraphicsRenderingType renderingType() const { return GraphicsRenderingType::Immediate; }
+	RenderingType renderingType() const { return RenderingType::Immediate; }
 	const Ref<RenderingCommandList>& primaryRenderingCommandList() const { return m_primaryRenderingCommandList; }
 
 	const Ref<SamplerState>& defaultSamplerState() const { return m_defaultSamplerState; }

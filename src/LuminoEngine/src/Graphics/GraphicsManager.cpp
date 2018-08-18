@@ -5,8 +5,7 @@
 #include <Lumino/Graphics/SamplerState.hpp>
 #include "GraphicsManager.hpp"
 #include "OpenGLDeviceContext.hpp"
-#include "LinearAllocator.hpp"
-#include "RenderingCommandList.hpp"
+#include "../Engine/LinearAllocator.hpp"
 
 namespace ln {
 
@@ -81,9 +80,9 @@ void GraphicsManager::initialize(const Settings& settings)
 
 	m_linearAllocatorPageManager = makeRef<LinearAllocatorPageManager>();
 
-	m_primaryRenderingCommandList = makeRef<RenderingCommandList>(this);
+	m_primaryRenderingCommandList = makeRef<RenderingCommandList>(linearAllocatorPageManager());
 
-	if (renderingType() == GraphicsRenderingType::Threaded) {
+	if (renderingType() == RenderingType::Threaded) {
 		LN_NOTIMPLEMENTED();
 	}
 	else {

@@ -19,6 +19,10 @@ set(LN_SOURCES_Engine
 	src/Engine/EngineDomain.hpp
 	src/Engine/EngineManager.cpp
 	src/Engine/EngineManager.hpp
+	src/Engine/LinearAllocator.cpp
+	src/Engine/LinearAllocator.hpp
+	src/Engine/RenderingCommandList.cpp
+	src/Engine/RenderingCommandList.hpp
 	src/Engine/Object.cpp
 )
 
@@ -75,12 +79,8 @@ set(LN_SOURCES_Graphics
 	src/Graphics/IndexBuffer.cpp
 	src/Graphics/RenderState.cpp
 	src/Graphics/SamplerState.cpp
-	src/Graphics/LinearAllocator.cpp
-	src/Graphics/LinearAllocator.hpp
 	src/Graphics/OpenGLDeviceContext.cpp
 	src/Graphics/OpenGLDeviceContext.hpp
-	src/Graphics/RenderingCommandList.cpp
-	src/Graphics/RenderingCommandList.hpp
 	src/Graphics/Texture.cpp
 	src/Graphics/VertexBuffer.cpp
 	src/Graphics/VertexDeclaration.cpp

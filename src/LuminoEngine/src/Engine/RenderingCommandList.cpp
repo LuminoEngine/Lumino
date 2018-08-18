@@ -1,8 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "RenderingCommandList.hpp"
-#include "LinearAllocator.hpp"
-#include "GraphicsManager.hpp"
+#include "../Engine/LinearAllocator.hpp"
 
 namespace ln {
 namespace detail {
@@ -35,8 +34,8 @@ RenderBulkData& RenderBulkData::operator=(const RenderBulkData& other)
 //=============================================================================
 // RenderingCommandList
 
-RenderingCommandList::RenderingCommandList(GraphicsManager* manager)
-	: m_linearAllocator(makeRef<LinearAllocator>(manager->linearAllocatorPageManager()))
+RenderingCommandList::RenderingCommandList(LinearAllocatorPageManager* manager)
+	: m_linearAllocator(makeRef<LinearAllocator>(manager))
 {
 }
 

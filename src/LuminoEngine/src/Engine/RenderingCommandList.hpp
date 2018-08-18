@@ -1,8 +1,22 @@
 ﻿#pragma once
 
 namespace ln {
+
+/** 描画方式 */
+enum class RenderingType
+{
+	/** 即時描画 */
+	Immediate,
+
+	/** 遅延描画 */
+	Threaded,
+};
+
 namespace detail {
+class LinearAllocatorPageManager;
 class LinearAllocator;
+
+
 
 /*
 	データバッファをレンダリングスレッドに転送するためのデータ構造。
@@ -45,7 +59,7 @@ class RenderingCommandList
 	: public RefObject
 {
 public:
-	RenderingCommandList(GraphicsManager* manager);
+	RenderingCommandList(LinearAllocatorPageManager* manager);
 	virtual ~RenderingCommandList();
 
 	template<typename T, typename... TArgs>
@@ -80,7 +94,7 @@ private:
 #define LN_ENQUEUE_RENDER_COMMAND_PARAM(type, param) type param
 
 #define LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, commandName, ...) \
-	if (manager->renderingType() == GraphicsRenderingType::Threaded) { \
+	if (manager->renderingType() == RenderingType::Threaded) { \
 		manager->primaryRenderingCommandList()->enqueueCommand<commandName>(__VA_ARGS__); \
 	} \
 	else { \
