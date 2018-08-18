@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include "AudioNode.hpp"
 #include "AudioDecoder.hpp"	// for AudioSourceNode
+#include <Lumino/Engine/Diagnostics.hpp>
 
 namespace ln {
 namespace detail {
@@ -194,7 +195,7 @@ AudioInputPin* AudioNode::addInputPin(int channels)
 AudioOutputPin* AudioNode::addOutputPin(int channels)
 {
 	auto pin = newObject<AudioOutputPin>(channels);
-	m_outputPins.add(newObject<AudioOutputPin>());
+	m_outputPins.add(pin);
 	return pin;
 }
 
@@ -240,7 +241,7 @@ void AudioDestinationNode::initialize()
 void AudioDestinationNode::render(float * outputBuffer, int length)
 {
 	AudioBus* bus = inputPin(0)->pull();
-	bus->mergeChannelBuffers(outputBuffer, length);
+	bus->mergeToChannelBuffers(outputBuffer, length);
 }
 
 void AudioDestinationNode::process()

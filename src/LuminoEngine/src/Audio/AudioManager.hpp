@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "../Engine/RenderingCommandList.hpp"
 
 namespace ln {
 namespace detail {
@@ -18,8 +19,13 @@ public:
 	void dispose();
 	void update();
 
+	RenderingType renderingType() const { return RenderingType::Immediate; }
+	const Ref<RenderingCommandList>& primaryRenderingCommandList() const { return m_primaryRenderingCommandList; }
+
 private:
 	Ref<AudioContext> m_audioContext;
+	Ref<LinearAllocatorPageManager> m_linearAllocatorPageManager;
+	Ref<RenderingCommandList> m_primaryRenderingCommandList;
 };
 
 } // namespace detail

@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include "../Engine/LinearAllocator.hpp"
 #include "AudioContext.hpp"
 #include "AudioManager.hpp"
 
@@ -17,6 +18,9 @@ void AudioManager::initialize(const Settings& settings)
 {
 	m_audioContext = makeRef<AudioContext>();
 	m_audioContext->initialize();
+
+	m_linearAllocatorPageManager = makeRef<LinearAllocatorPageManager>();
+	m_primaryRenderingCommandList = makeRef<RenderingCommandList>(m_linearAllocatorPageManager);
 }
 
 void AudioManager::dispose()
