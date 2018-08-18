@@ -16,6 +16,7 @@ AudioManager::AudioManager()
 void AudioManager::initialize(const Settings& settings)
 {
 	m_audioContext = makeRef<AudioContext>();
+	m_audioContext->initialize();
 }
 
 void AudioManager::dispose()

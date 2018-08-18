@@ -8,8 +8,8 @@ namespace detail {
 enum class PCMFormat
 {
 	U8,
-	S8L,	// L = little endian
-	S16L,
+	S8,
+	S16L,	// L = little endian
 	S24L,
 	S32L,
 	S64L,
@@ -40,6 +40,7 @@ public:
 	virtual void reset() = 0;
 
 	static void convertToFloat32(float* dst, const byte_t* src, const size_t length, PCMFormat format);
+	static void convertFromFloat32(void * dst, const float * src, const size_t length, PCMFormat format);
 
 	//virtual void getLoopState(uint32_t* begin, uint32_t* length) const = 0;
 private:

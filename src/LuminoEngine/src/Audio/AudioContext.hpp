@@ -2,6 +2,7 @@
 
 namespace ln {
 namespace detail {
+class AudioDevice;
 class AudioDestinationNode;
 
 class AudioContext
@@ -15,6 +16,7 @@ public:
 	void process();
 
 private:
+	Ref<AudioDevice> m_device;
 	Ref<AudioDestinationNode> m_destinationNode;
 };
 

@@ -296,6 +296,10 @@ void EngineManager::updateFrame()
 	if (m_inputManager) {
 		m_inputManager->updateFrame(0.016);	// TODO: time
 	}
+	
+	if (m_audioManager) {
+		m_audioManager->update();
+	}
 }
 
 void EngineManager::renderFrame()

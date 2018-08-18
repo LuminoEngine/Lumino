@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <AL/al.h>
+#include <AL/alc.h>
 #include "AudioDevice.hpp"
 
 namespace ln {
@@ -19,8 +21,10 @@ private:
 	ALCcontext* m_alContext;
 	ALuint m_masterSource;
 	std::vector<ALuint> m_freeBuffers;
+	std::vector<int16_t> m_finalRenderdBuffer;
 
-	int m_sampleRate;
+	int m_masterSampleRate;
+	int m_masterChannels;
 };
 
 } // namespace detail

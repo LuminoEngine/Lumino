@@ -35,6 +35,12 @@ static const float NQR_BYTE_2_FLT = 1.0f / 127.0f;
 #define int24_to_float32(s) ((float) (s) / NQR_INT24_MAX)
 #define int32_to_float32(s) ((float) (s) / NQR_INT32_MAX)
 
+#define float32_to_int8(s)  (float) (s * 127.f)
+#define float32_to_uint8(s) (float) ((s * 127.f) + 128)
+#define float32_to_int16(s) (float) (s * NQR_INT16_MAX)
+#define float32_to_int24(s) (float) (s * NQR_INT24_MAX)
+#define float32_to_int32(s) (float) (s * NQR_INT32_MAX)
+
 static inline uint16_t swapEndian16(uint16_t value)
 {
 	return (uint16_t)((value >> 8) | (value << 8));
@@ -89,7 +95,7 @@ void AudioDecoder::convertToFloat32(float* dst, const byte_t* src, const size_t 
 		for (size_t i = 0; i < length; ++i)
 			dst[i] = uint8_to_float32(src[i]);
 	}
-	else if (format == PCMFormat::S8L)
+	else if (format == PCMFormat::S8)
 	{
 		for (size_t i = 0; i < length; ++i)
 			dst[i] = int8_to_float32(src[i]);
@@ -122,7 +128,43 @@ void AudioDecoder::convertToFloat32(float* dst, const byte_t* src, const size_t 
 	}
 }
 
+static float dither(float s) { return s; }	// TODO: dummy
 
+void AudioDecoder::convertFromFloat32(void * dst, const float * src, const size_t length, PCMFormat format)
+{
+	if (format == PCMFormat::U8)
+	{
+		uint8_t * destPtr = reinterpret_cast<uint8_t *>(dst);
+		for (size_t i = 0; i < length; ++i)
+			destPtr[i] = (uint8_t)dither(lroundf(float32_to_uint8(src[i])));
+	}
+	else if (format == PCMFormat::S8)
+	{
+		int8_t * destPtr = reinterpret_cast<int8_t *>(dst);
+		for (size_t i = 0; i < length; ++i)
+			destPtr[i] = (int8_t)dither(lroundf(float32_to_int8(src[i])));
+	}
+	else if (format == PCMFormat::S16L)
+	{
+		int16_t * destPtr = reinterpret_cast<int16_t *>(dst);
+		for (size_t i = 0; i < length; ++i)
+			destPtr[i] = (int16_t)dither(lroundf(float32_to_int16(src[i])));
+	}
+	else if (format == PCMFormat::S24L)
+	{
+		LN_NOTIMPLEMENTED();
+	}
+	else if (format == PCMFormat::S32L)
+	{
+		int32_t * destPtr = reinterpret_cast<int32_t *>(dst);
+		for (size_t i = 0; i < length; ++i)
+			destPtr[i] = (int32_t)dither(lroundf(float32_to_int32(src[i])));
+	}
+	else
+	{
+		LN_UNREACHABLE();
+	}
+}
 
 
 struct WaveFileHeader
@@ -238,7 +280,7 @@ void WaveDecoder::initialize(Stream* stream, DiagnosticsManager* diag)
 			uint32_t chunkSize = reader.readUInt32();
 			m_pcmDataOffset = m_stream->position();
 			m_pcmDataLength = chunkSize;
-			m_info.totalSeconds = static_cast<double>(m_pcmDataOffset) / static_cast<double>(m_info.sampleRate) / m_info.frameSize;
+			m_info.totalSeconds = static_cast<double>(m_pcmDataLength) / static_cast<double>(m_info.sampleRate) / m_info.frameSize;
 			m_info.totalSamples = (m_pcmDataLength / m_info.frameSize) * m_info.channelCount;
 			break;
 		}
@@ -268,7 +310,11 @@ uint32_t WaveDecoder::read(float* buffer, uint32_t requestSamples)
 	size_t requestSize = requestSamples * m_info.byteParSample;
 	size_t readSize = m_stream->read(m_workBuffer.data(), requestSize);
 	uint32_t readSamples = readSize / m_info.byteParSample;
+#if 1
+	memcpy(buffer, m_workBuffer.data(), readSize);
+#else
 	convertToFloat32(buffer, m_workBuffer.data(), std::min(readSamples, requestSamples), m_info.sourceFormat);
+#endif
 	return readSamples;
 }
 

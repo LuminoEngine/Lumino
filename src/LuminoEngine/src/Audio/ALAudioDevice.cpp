@@ -1,11 +1,16 @@
 ﻿
 #include "Internal.hpp"
-#include <AL/al.h>
-#include <AL/alc.h>
 #include "ALAudioDevice.hpp"
+#include "AudioNode.hpp"
+
+#include "AudioDecoder.hpp"	// TODO: test
+#include <Lumino/Engine/Diagnostics.hpp>	// TODO: test
 
 namespace ln {
 namespace detail {
+
+	WaveDecoder wd;// TODO: test
+	std::vector<float> tmpBuffer;
 
 //==============================================================================
 // ALAudioDevice
@@ -24,7 +29,16 @@ void ALAudioDevice::initialize()
 	m_freeBuffers.resize(2);
 	alGenBuffers(2, m_freeBuffers.data());
 
-	m_sampleRate = 44100;	// TODO
+	m_masterSampleRate = 44100;	// TODO
+	m_masterChannels = 2;
+
+	//m_finalRenderdBuffer.resize(AudioNode::ProcessingSizeInFrames * m_masterChannels);
+	m_finalRenderdBuffer.resize(m_masterSampleRate * m_masterChannels);
+
+	// TODO: test
+	auto diag = newObject<DiagnosticsManager>();
+	wd.initialize(FileStream::create(u"D:\\tmp\\8_MapBGM2.wav"), diag);
+	tmpBuffer.resize(AudioNode::ProcessingSizeInFrames * m_masterChannels);
 }
 
 void ALAudioDevice::dispose()
@@ -53,12 +67,18 @@ void ALAudioDevice::updateProcess()
 		alSourceUnqueueBuffers(m_masterSource, 1, &buffer);
 		m_freeBuffers.push_back(buffer);
 		--processedCount;
+		printf("processed\n");
 	}
 
 	// render data and set buffer to source
 	if (m_freeBuffers.size() > 0)
 	{
-		alBufferData(m_freeBuffers.back(), AL_FORMAT_STEREO16, buf, samples_read*num_channels * 2, m_sampleRate);
+		// TODO: test
+		wd.read((float*)m_finalRenderdBuffer.data(), m_masterSampleRate);
+		//wd.read(tmpBuffer.data(), tmpBuffer.size());
+		//AudioDecoder::convertFromFloat32(m_finalRenderdBuffer.data(), tmpBuffer.data(), m_finalRenderdBuffer.size(), PCMFormat::S16L);
+
+		alBufferData(m_freeBuffers.back(), AL_FORMAT_STEREO16, m_finalRenderdBuffer.data(), m_finalRenderdBuffer.size(), m_masterSampleRate);
 		alSourceQueueBuffers(m_masterSource, 1, &m_freeBuffers.back());
 		m_freeBuffers.pop_back();
 
@@ -69,6 +89,7 @@ void ALAudioDevice::updateProcess()
 		{
 			alSourcePlay(m_masterSource);
 		}
+		printf("queue\n");
 	}
 }
 
