@@ -173,7 +173,12 @@ namespace LuminoBuild.Tasks
                 Utils.CopyDirectory(Path.Combine(builder.LuminoExternalDir, "glad"), "glad");
                 //Utils.CallProcess("git", "clone --progress --depth 1 -b v0.1.26 https://github.com/Dav1dde/glad.git glad");
             }
-            
+            if (!Directory.Exists("openal-soft"))
+            {
+                // https://github.com/kcat/openal-soft/issues/183 の問題の修正後、まだタグが降られていない。そのため latest を取得
+                Utils.CallProcess("git", "clone --progress --depth 1 https://github.com/kcat/openal-soft.git openal-soft");
+            }
+            return;
 
             if (Utils.IsWin32)
             {

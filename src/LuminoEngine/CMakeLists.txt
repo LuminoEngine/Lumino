@@ -83,6 +83,15 @@ set(LN_SOURCES_Input
     src/Input/Win32JoystickDriver.hpp
 )
 
+set(LN_SOURCES_Audio
+	include/Lumino/Audio/Common.hpp
+	src/Audio/Internal.hpp
+	src/Audio/AudioDecoder.cpp
+	src/Audio/AudioDecoder.hpp
+	src/Audio/AudioManager.cpp
+	src/Audio/AudioManager.hpp
+)
+
 set(LN_SOURCES_Graphics
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/Bitmap.hpp
@@ -242,6 +251,7 @@ source_group("Engine"                FILES ${LN_SOURCES_Engine})
 source_group("Platform"                FILES ${LN_SOURCES_Platform})
 source_group("Input"                FILES ${LN_SOURCES_Input})
 source_group("Grammar"                FILES ${LN_SOURCES_Grammar})
+source_group("Audio"				FILES ${LN_SOURCES_Audio})
 source_group("Graphics"                FILES ${LN_SOURCES_Graphics})
 source_group("Shader"                FILES ${LN_SOURCES_Shader})
 source_group("Mesh"                FILES ${LN_SOURCES_Mesh})
@@ -259,6 +269,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Platform}
     ${LN_SOURCES_Grammar}
     ${LN_SOURCES_Input}
+	${LN_SOURCES_Audio}
     ${LN_SOURCES_Graphics}
     ${LN_SOURCES_Shader}
     ${LN_SOURCES_Mesh}
