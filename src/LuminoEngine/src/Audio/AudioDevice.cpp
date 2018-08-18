@@ -19,6 +19,7 @@ void AudioDevice::dispose()
 
 void AudioDevice::render(float * outputBuffer, int length)
 {
+	m_renderCallback->render(outputBuffer, length);
 }
 
 } // namespace detail

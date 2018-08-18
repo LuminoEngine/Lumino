@@ -6,6 +6,7 @@ namespace detail {
 class IAudioDeviceRenderCallback
 {
 public:
+	// 現在はステレオのみ。length / 2 でチャンネルのサンプル数がわかる。
 	virtual void render(float* outputBuffer, int length) = 0;
 };
 

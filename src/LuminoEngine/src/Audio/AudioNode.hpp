@@ -1,7 +1,12 @@
 ﻿#pragma once
+#include "AudioDevice.hpp"	// for IAudioDeviceRenderCallback
 
 namespace ln {
 namespace detail {
+class AudioNode;
+class AudioInputPin;
+class AudioOutputPin;
+class AudioDecoder;
 
 // AudioNode 間の音声データの受け渡しに使用するバッファ。
 // データは 浮動小数点サンプルで、範囲 -1.0 ~ +1.0 となっている。
@@ -14,6 +19,12 @@ public:
 	void initialize(size_t length);
 
 	float* data() { return m_data.data(); }
+	const float* data() const { return m_data.data(); }
+	size_t length() const { return m_data.size(); }
+
+	void clear();
+	void sumFrom(const AudioChannel* ch);
+	void copyTo(float* buffer, size_t bufferLength, size_t stride);
 
 private:
 	std::vector<float> m_data;
@@ -28,6 +39,13 @@ public:
 	virtual ~AudioBus() = default;
 	void initialize(int channelCount, size_t length);
 
+	int channelCount() const { return m_channels.size(); }
+	AudioChannel* channel(int index) const { return m_channels[index]; }
+	void clear();
+	void mergeToChannelBuffers(float* buffer, size_t length);
+	void separationFrom(float* buffer, size_t length, int channelCount);
+	void sumFrom(const AudioBus* bus);
+
 private:
 	List<Ref<AudioChannel>> m_channels;
 };
@@ -38,9 +56,14 @@ class AudioInputPin
 public:
 	AudioInputPin();
 	virtual ~AudioInputPin() = default;
-	void initialize();
+	void initialize(int channels);
+
+	AudioBus* pull();
 
 private:
+	AudioNode * m_ownerNode;
+	Ref<AudioBus> m_summingBus;	// Total output
+	List<Ref<AudioOutputPin>> m_connectedOutputPins;
 };
 
 class AudioOutputPin
@@ -49,10 +72,14 @@ class AudioOutputPin
 public:
 	AudioOutputPin();
 	virtual ~AudioOutputPin() = default;
-	void initialize();
+	void initialize(int channels);
+
+	AudioBus* pull();
 
 private:
-
+	AudioNode* m_ownerNode;
+	Ref<AudioBus> m_resultBus;	// result of m_ownerNode->process()
+	List<Ref<AudioInputPin>> m_connectedInputPins;
 };
 
 
@@ -73,25 +100,54 @@ public:
 
 	AudioInputPin* inputPin(int index) const;
 	AudioOutputPin* outputPin(int index) const;
+	void processIfNeeded();
 
 protected:
 	// Do not call after object initialzation.
-	void addInputPin();
+	AudioInputPin* addInputPin(int channels);
 	// Do not call after object initialzation.
-	void addOutputPin();
+	AudioOutputPin* addOutputPin(int channels);
+
+	void pullInputs();
+
+	// output(0) へ書き込む。要素数は自分で addOutputPin() した数だけ。
+	// input は pull 済み。データを取り出すだけでよい。
+	virtual void process() = 0;
 
 private:
 	List<Ref<AudioInputPin>> m_inputPins;
 	List<Ref<AudioOutputPin>> m_outputPins;
 };
 
+class AudioSourceNode
+	: public AudioNode
+{
+public:
+
+protected:
+	virtual void process() override;
+
+LN_CONSTRUCT_ACCESS:
+	AudioSourceNode();
+	virtual ~AudioSourceNode() = default;
+	void initialize(const StringRef& filePath);
+
+private:
+	Ref<AudioDecoder> m_decoder;
+};
+
 class AudioDestinationNode
 	: public AudioNode
+	, public IAudioDeviceRenderCallback
 {
 public:
 	AudioDestinationNode();
 	virtual ~AudioDestinationNode() = default;
 	void initialize();
+
+protected:
+	virtual void render(float* outputBuffer, int length) override;
+	virtual void process() override;
 
 private:
 };

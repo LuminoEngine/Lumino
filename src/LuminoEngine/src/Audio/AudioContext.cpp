@@ -21,6 +21,8 @@ void AudioContext::initialize()
 	m_device = device;
 
 	m_destinationNode = newObject<AudioDestinationNode>();
+
+	m_device->setRenderCallback(m_destinationNode);
 }
 
 void AudioContext::dispose()
