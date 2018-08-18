@@ -74,10 +74,8 @@ void ALAudioDevice::updateProcess()
 	if (m_freeBuffers.size() > 0)
 	{
 		// TODO: test
-		//wd.read((float*)m_finalRenderdBuffer.data(), m_masterSampleRate/* * m_masterChannels*/);
-		wd.read((float*)m_finalRenderdBuffer.data(), m_finalRenderdBuffer.size());
-		//wd.read(tmpBuffer.data(), tmpBuffer.size());
-		//AudioDecoder::convertFromFloat32(m_finalRenderdBuffer.data(), tmpBuffer.data(), m_finalRenderdBuffer.size(), PCMFormat::S16L);
+		wd.read(tmpBuffer.data(), tmpBuffer.size());
+		AudioDecoder::convertFromFloat32(m_finalRenderdBuffer.data(), tmpBuffer.data(), m_finalRenderdBuffer.size(), PCMFormat::S16L);
 
 		alBufferData(m_freeBuffers.back(), AL_FORMAT_STEREO16, m_finalRenderdBuffer.data(), sizeof(int16_t) * m_finalRenderdBuffer.size(), m_masterSampleRate);
 		alSourceQueueBuffers(m_masterSource, 1, &m_freeBuffers.back());

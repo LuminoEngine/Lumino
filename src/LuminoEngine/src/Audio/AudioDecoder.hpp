@@ -39,7 +39,7 @@ public:
 	virtual size_t read(float* buffer, uint32_t bufferLength) = 0;	// チャンネルは関係なし。ファイルから取り出せた順に詰める
 	virtual void reset() = 0;
 
-	static void convertToFloat32(float* dst, const byte_t* src, const size_t length, PCMFormat format);
+	static void convertToFloat32(float* dst, const void* src, const size_t length, PCMFormat format);
 	static void convertFromFloat32(void * dst, const float * src, const size_t length, PCMFormat format);
 
 	//virtual void getLoopState(uint32_t* begin, uint32_t* length) const = 0;

@@ -88,22 +88,25 @@ static inline uint64_t swapEndian64(uint64_t value)
 // Src data is aligned to PCMFormat
 // @todo normalize?
 //void nqr::ConvertToFloat32(float * dst, const uint8_t * src, const size_t N, PCMFormat f)
-void AudioDecoder::convertToFloat32(float* dst, const byte_t* src, const size_t length, PCMFormat format)
+void AudioDecoder::convertToFloat32(float* dst, const void* src, const size_t length, PCMFormat format)
 {
 	if (format == PCMFormat::U8)
 	{
+		const uint8_t * srcPtr = reinterpret_cast<const uint8_t *>(src);
 		for (size_t i = 0; i < length; ++i)
-			dst[i] = uint8_to_float32(src[i]);
+			dst[i] = uint8_to_float32(srcPtr[i]);
 	}
 	else if (format == PCMFormat::S8)
 	{
+		const int8_t * srcPtr = reinterpret_cast<const int8_t *>(src);
 		for (size_t i = 0; i < length; ++i)
-			dst[i] = int8_to_float32(src[i]);
+			dst[i] = int8_to_float32(srcPtr[i]);
 	}
 	else if (format == PCMFormat::S16L)
 	{
+		const int16_t * srcPtr = reinterpret_cast<const int16_t *>(src);
 		for (size_t i = 0; i < length; ++i)
-			dst[i] = int16_to_float32(Read16L(src[i]));
+			dst[i] = int16_to_float32(Read16L(srcPtr[i]));
 	}
 	else if (format == PCMFormat::S24L)
 	{
@@ -111,8 +114,9 @@ void AudioDecoder::convertToFloat32(float* dst, const byte_t* src, const size_t 
 	}
 	else if (format == PCMFormat::S32L)
 	{
+		const int32_t * srcPtr = reinterpret_cast<const int32_t *>(src);
 		for (size_t i = 0; i < length; ++i)
-			dst[i] = int32_to_float32(Read32L(src[i]));
+			dst[i] = int32_to_float32(Read32L(srcPtr[i]));
 	}
 	else if (format == PCMFormat::S64L)
 	{
@@ -134,21 +138,21 @@ void AudioDecoder::convertFromFloat32(void * dst, const float * src, const size_
 {
 	if (format == PCMFormat::U8)
 	{
-		uint8_t * destPtr = reinterpret_cast<uint8_t *>(dst);
+		uint8_t * dstPtr = reinterpret_cast<uint8_t *>(dst);
 		for (size_t i = 0; i < length; ++i)
-			destPtr[i] = (uint8_t)dither(lroundf(float32_to_uint8(src[i])));
+			dstPtr[i] = (uint8_t)dither(lroundf(float32_to_uint8(src[i])));
 	}
 	else if (format == PCMFormat::S8)
 	{
-		int8_t * destPtr = reinterpret_cast<int8_t *>(dst);
+		int8_t * dstPtr = reinterpret_cast<int8_t *>(dst);
 		for (size_t i = 0; i < length; ++i)
-			destPtr[i] = (int8_t)dither(lroundf(float32_to_int8(src[i])));
+			dstPtr[i] = (int8_t)dither(lroundf(float32_to_int8(src[i])));
 	}
 	else if (format == PCMFormat::S16L)
 	{
-		int16_t * destPtr = reinterpret_cast<int16_t *>(dst);
+		int16_t * dstPtr = reinterpret_cast<int16_t *>(dst);
 		for (size_t i = 0; i < length; ++i)
-			destPtr[i] = (int16_t)dither(lroundf(float32_to_int16(src[i])));
+			dstPtr[i] = (int16_t)dither(lroundf(float32_to_int16(src[i])));
 	}
 	else if (format == PCMFormat::S24L)
 	{
@@ -156,9 +160,9 @@ void AudioDecoder::convertFromFloat32(void * dst, const float * src, const size_
 	}
 	else if (format == PCMFormat::S32L)
 	{
-		int32_t * destPtr = reinterpret_cast<int32_t *>(dst);
+		int32_t * dstPtr = reinterpret_cast<int32_t *>(dst);
 		for (size_t i = 0; i < length; ++i)
-			destPtr[i] = (int32_t)dither(lroundf(float32_to_int32(src[i])));
+			dstPtr[i] = (int32_t)dither(lroundf(float32_to_int32(src[i])));
 	}
 	else
 	{
@@ -310,7 +314,7 @@ uint32_t WaveDecoder::read(float* buffer, uint32_t requestSamples)
 	size_t requestSize = requestSamples * m_info.byteParSample;
 	size_t readSize = m_stream->read(m_workBuffer.data(), requestSize);
 	uint32_t readSamples = readSize / m_info.byteParSample;
-#if 1
+#if 0
 	memcpy(buffer, m_workBuffer.data(), readSize);
 #else
 	convertToFloat32(buffer, m_workBuffer.data(), std::min(readSamples, requestSamples), m_info.sourceFormat);

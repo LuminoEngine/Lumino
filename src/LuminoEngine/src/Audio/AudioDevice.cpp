@@ -17,6 +17,10 @@ void AudioDevice::dispose()
 {
 }
 
+void AudioDevice::render(float * outputBuffer, int length)
+{
+}
+
 } // namespace detail
 } // namespace ln
 
