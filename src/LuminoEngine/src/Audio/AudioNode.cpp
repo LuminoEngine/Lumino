@@ -47,6 +47,47 @@ AudioSourceNode::AudioSourceNode()
 {
 }
 
+void AudioSourceNode::setPlaybackRate(float rate)
+{
+	LN_ENQUEUE_RENDER_COMMAND_2(
+		start, context()->manager(),
+		Ref<detail::CoreAudioSourceNode>, m_coreObject,
+		float, rate,
+		{
+			m_coreObject->setPlaybackRate(rate);
+		});
+}
+
+void AudioSourceNode::start()
+{
+	LN_ENQUEUE_RENDER_COMMAND_1(
+		start, context()->manager(),
+		Ref<detail::CoreAudioSourceNode>, m_coreObject,
+		{
+			m_coreObject->start();
+		});
+}
+
+void AudioSourceNode::stop()
+{
+	LN_ENQUEUE_RENDER_COMMAND_1(
+		start, context()->manager(),
+		Ref<detail::CoreAudioSourceNode>, m_coreObject,
+		{
+			m_coreObject->stop();
+		});
+}
+
+void AudioSourceNode::pause()
+{
+	LN_NOTIMPLEMENTED();
+}
+
+void AudioSourceNode::resume()
+{
+	LN_NOTIMPLEMENTED();
+}
+
 void AudioSourceNode::initialize(const StringRef & filePath)
 {
 	AudioNode::initialize();

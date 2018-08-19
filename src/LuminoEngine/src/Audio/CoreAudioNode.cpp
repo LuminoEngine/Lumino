@@ -21,6 +21,7 @@ static void vadd(const float* source1P, const float* source2P, float* destP, siz
 // CoreAudioChannel
 
 CoreAudioChannel::CoreAudioChannel()
+	: m_isSilent(true)
 {
 }
 
@@ -30,14 +31,18 @@ void CoreAudioChannel::initialize(size_t length)
 	m_data.resize(length);
 }
 
-void CoreAudioChannel::clear()
+void CoreAudioChannel::setSilentAndZero()
 {
-	memset(data(), 0, sizeof(float) * length());
+	if (!m_isSilent)
+	{
+		memset(mutableData(), 0, sizeof(float) * length());
+		m_isSilent = true;
+	}
 }
 
 void CoreAudioChannel::copyTo(float* buffer, size_t bufferLength, size_t stride) const
 {
-	const float* src = data();
+	const float* src = constData();
 	if (stride == 1) {
 		memcpy(buffer, src, length());
 	}
@@ -53,7 +58,7 @@ void CoreAudioChannel::copyTo(float* buffer, size_t bufferLength, size_t stride)
 
 void CoreAudioChannel::copyFrom(const float * buffer, size_t bufferLength, size_t stride)
 {
-	float* dst = data();
+	float* dst = mutableData();
 	if (stride == 1) {
 		memcpy(dst, buffer, length());
 	}
@@ -67,9 +72,35 @@ void CoreAudioChannel::copyFrom(const float * buffer, size_t bufferLength, size_
 	}
 }
 
+void CoreAudioChannel::copyFrom(const CoreAudioChannel* ch)
+{
+	bool isSafe = (ch && ch->length() >= length());
+	assert(isSafe);
+	if (!isSafe) {
+		return;
+	}
+
+	if (ch->isSilent()) {
+		setSilentAndZero();
+		return;
+	}
+
+	memcpy(mutableData(), ch->constData(), sizeof(float) * length());
+}
+
 void CoreAudioChannel::sumFrom(const CoreAudioChannel * ch)
 {
-	vadd(data(), ch->data(), data(), length());
+	if (ch->isSilent()) {
+		return;
+	}
+
+	if (isSilent()) {
+		// optimize for first time.
+		copyFrom(ch);
+	}
+	else {
+		vadd(constData(), ch->constData(), mutableData(), length());
+	}
 }
 
 //==============================================================================
@@ -89,18 +120,39 @@ void CoreAudioBus::initialize(int channelCount, size_t length)
 	m_validLength = length;
 }
 
-void CoreAudioBus::clear()
+void CoreAudioBus::setSilentAndZero()
 {
-	for (auto& ch : m_channels)
-	{
-		ch->clear();
+	for (auto& ch : m_channels) {
+		ch->setSilentAndZero();
 	}
+}
+
+void CoreAudioBus::clearSilentFlag()
+{
+	for (auto& ch : m_channels) {
+		ch->clearSilentFlag();
+	}
+}
+
+bool CoreAudioBus::isSilent() const
+{
+	for (auto& ch : m_channels) {
+		if (!ch->isSilent()) {
+			return false;
+		}
+	}
+	return true;
 }
 
 void CoreAudioBus::mergeToChannelBuffers(float* buffer, size_t length)
 {
 	assert(m_channels.size() == 2);
 	assert(m_channels[0]->length() * 2 == length);
+
+	if (isSilent()) {
+		memset(buffer, 0, sizeof(float) * length);
+		return;
+	}
 
 	for (int i = 0; i < m_channels.size(); i++)
 	{
@@ -111,7 +163,7 @@ void CoreAudioBus::mergeToChannelBuffers(float* buffer, size_t length)
 void CoreAudioBus::separateFrom(const float * buffer, size_t length, int channelCount)
 {
 	assert(m_channels.size() == 2);
-	assert(m_channels[0]->length() * 2 == length);
+	assert(m_channels[0]->length() * 2 >= length);	// length が少ない分にはOK。多いのはあふれるのでNG
 
 	for (int i = 0; i < m_channels.size(); i++)
 	{
@@ -151,7 +203,7 @@ void CoreAudioInputPin::initialize(int channels)
 
 CoreAudioBus* CoreAudioInputPin::pull()
 {
-	m_summingBus->clear();
+	m_summingBus->setSilentAndZero();
 
 	for (auto& output : m_connectedOutputPins)
 	{
@@ -255,7 +307,11 @@ CoreAudioOutputPin* CoreAudioNode::addOutputPin(int channels)
 
 CoreAudioSourceNode::CoreAudioSourceNode()
 	: m_virtualReadIndex(0)
-	, m_playbackRate(1.2f)
+	, m_playbackRate(1.0f)
+	, m_seekFrame(0)
+	, m_playingState(PlayingState::Stopped)
+	, m_requestedPlayingState(PlayingState::None)
+	, m_resetRequested(false)
 {
 }
 
@@ -280,6 +336,27 @@ void CoreAudioSourceNode::setPlaybackRate(float rate)
 {
 	m_playbackRate = rate;
 	resetSourceBuffers();
+}
+
+void CoreAudioSourceNode::start()
+{
+	m_requestedPlayingState = PlayingState::Playing;
+}
+
+void CoreAudioSourceNode::stop()
+{
+	m_requestedPlayingState = PlayingState::Stopped;
+	m_resetRequested = true;
+}
+
+void CoreAudioSourceNode::reset()
+{
+	m_seekFrame = 0;
+}
+
+void CoreAudioSourceNode::finish()
+{
+	m_requestedPlayingState = PlayingState::Stopped;
 }
 
 unsigned CoreAudioSourceNode::numberOfChannels() const
@@ -316,17 +393,24 @@ double CoreAudioSourceNode::calculatePitchRate()
 
 void CoreAudioSourceNode::process()
 {
+	updatePlayingState();
+
+
 	CoreAudioBus* result = outputPin(0)->bus();
 
-	result->clear();
+	if (m_playingState != PlayingState::Playing) {
+		result->setSilentAndZero();
+		return;
+	}
+
 
 	//size_t bufferLength = //result->validLength();
 	unsigned numChannels = m_decoder->audioDataInfo().channelCount;
 
-	size_t rea = m_decoder->read2(m_readBuffer.data(), m_readFrames);
-	m_sourceBus->separateFrom(m_readBuffer.data(), m_readBuffer.size(), numChannels);
+	size_t bufferLength = m_decoder->read2(m_readBuffer.data(), m_readFrames);
+	size_t readSamples = bufferLength * numChannels;
+	m_sourceBus->separateFrom(m_readBuffer.data(), readSamples, numChannels);
 
-	size_t bufferLength = m_readFrames;
 
 
 	double pitchRate = calculatePitchRate();
@@ -376,8 +460,8 @@ void CoreAudioSourceNode::process()
 			// Linear interpolation.
 			for (unsigned i = 0; i < numChannels; ++i)
 			{
-				float * destination = result->channel(i)->data();
-				const float * source = m_sourceBus->channel(i)->data();
+				float * destination = result->channel(i)->mutableData();
+				const float * source = m_sourceBus->channel(i)->constData();
 
 				double sample1 = source[readIndex];
 				double sample2 = source[readIndex2];
@@ -405,6 +489,8 @@ void CoreAudioSourceNode::process()
 
 	//printf("writeIndex:%d\n", writeIndex);
 
+	result->clearSilentFlag();
+
 	m_virtualReadIndex = virtualReadIndex;
 }
 
@@ -420,14 +506,23 @@ bool CoreAudioSourceNode::renderSilenceAndFinishIfNotLooping(CoreAudioBus * bus,
 			// so generate silence for the remaining.
 			for (unsigned i = 0; i < numberOfChannels(); ++i)
 			{
-				memset(bus->channel(i)->data() + index, 0, sizeof(float) * framesToProcess);
+				memset(bus->channel(i)->mutableData() + index, 0, sizeof(float) * framesToProcess);
 			}
+			finish();
 		}
 
-		//finish(r);
 		return true;
 	}
 	return false;
+}
+
+void CoreAudioSourceNode::updatePlayingState()
+{
+	if (m_resetRequested) {
+		reset();
+	}
+
+	m_playingState = m_requestedPlayingState;
 }
 
 

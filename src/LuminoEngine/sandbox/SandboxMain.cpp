@@ -40,8 +40,10 @@ int main(int argc, char** argv)
 	//Engine::terminate();
 	//return 0;
 	// Audio test
-	auto src = newObject<AudioSourceNode>(u"D:\\tmp\\8_MapBGM2.wav");
-	AudioNode::connect(src, AudioContext::primary()->destination());
+	auto source = newObject<AudioSourceNode>(u"D:\\tmp\\8_MapBGM2.wav");
+	AudioNode::connect(source, AudioContext::primary()->destination());
+	source->setPlaybackRate(1.2);
+	source->start();
 
 	auto shader = Shader::create(
 		LN_LOCALFILE("Assets/simple.vert"),

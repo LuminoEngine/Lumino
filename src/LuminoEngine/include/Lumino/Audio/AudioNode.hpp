@@ -31,6 +31,12 @@ class AudioSourceNode
 	: public AudioNode
 {
 public:
+	void setPlaybackRate(float rate);
+
+	void start();
+	void stop();
+	void pause();
+	void resume();
 
 LN_CONSTRUCT_ACCESS:
 	AudioSourceNode();

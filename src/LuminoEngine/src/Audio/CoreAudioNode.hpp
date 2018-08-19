@@ -18,17 +18,23 @@ public:
 	virtual ~CoreAudioChannel() = default;
 	void initialize(size_t length);
 
-	float* data() { return m_data.data(); }
-	const float* data() const { return m_data.data(); }
+	float* mutableData() { clearSilentFlag();  return m_data.data(); }	// Direct access to PCM sample data. clears silent flag.
+	const float* constData() const { return m_data.data(); }
 	size_t length() const { return m_data.size(); }
 
-	void clear();
+	void setSilentAndZero();
+	void clearSilentFlag() { m_isSilent = false; }
+	bool isSilent() const { return m_isSilent; }
+
+	//void clear();
 	void copyTo(float* buffer, size_t bufferLength, size_t stride) const;
 	void copyFrom(const float* buffer, size_t bufferLength, size_t stride);
+	void copyFrom(const CoreAudioChannel* ch);
 	void sumFrom(const CoreAudioChannel* ch);
 
 private:
 	std::vector<float> m_data;
+	bool m_isSilent;
 };
 
 // CoreAudioNode 間の音声データの受け渡しに使用する CoreAudioChannel のコレクション。
@@ -46,7 +52,10 @@ public:
 
 	int channelCount() const { return m_channels.size(); }
 	CoreAudioChannel* channel(int index) const { return m_channels[index]; }
-	void clear();
+	void setSilentAndZero();	// set silent flag, and zero clear buffers if needed. if set a valid samples in process(), please call clearSilentFlag()
+	void clearSilentFlag();
+	bool isSilent() const;	// return true if all child true.
+
 	void mergeToChannelBuffers(float* buffer, size_t length);
 	void separateFrom(const float* buffer, size_t length, int channelCount);
 	void sumFrom(const CoreAudioBus* bus);
@@ -133,6 +142,7 @@ protected:
 
 	// output(x) へ書き込む。要素数は自分で addOutputPin() した数だけ。
 	// input は pull 済み。データを取り出すだけでよい。
+	// output(x) のバッファクリアは process() の実装側で行う。例えば消音したい場合は必ず process 無いでクリア (setSilentAndZero() を呼び出す)
 	virtual void process() = 0;
 
 private:
@@ -157,11 +167,18 @@ public:
 
 	bool loop() const { return false; }
 
+	
+	void start();
+	void stop();
+	void reset();	// TODO: internal
+	void finish();	// TODO: internal
+
 private:
 	unsigned numberOfChannels() const;
 	void resetSourceBuffers();
 	double calculatePitchRate();
 	bool renderSilenceAndFinishIfNotLooping(CoreAudioBus * bus, unsigned index, size_t framesToProcess);
+	void updatePlayingState();
 
 	Ref<AudioDecoder> m_decoder;
 	std::vector<float> m_readBuffer;
@@ -173,6 +190,19 @@ private:
 
 	float m_playbackRate;
 	size_t m_readFrames;
+	size_t m_seekFrame;
+
+	// scheduling
+	enum class PlayingState
+	{
+		None,
+		Stopped,
+		Playing,
+		Pausing,
+	};
+	PlayingState m_playingState;
+	PlayingState m_requestedPlayingState;
+	bool m_resetRequested;
 };
 
 class CoreAudioDestinationNode
