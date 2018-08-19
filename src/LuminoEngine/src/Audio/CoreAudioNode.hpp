@@ -40,7 +40,10 @@ public:
 	virtual ~CoreAudioBus() = default;
 	void initialize(int channelCount, size_t length);
 
-	size_t length() const { return m_channels[0]->length(); }	// フレーム数
+	size_t validLength() const { return m_validLength; }	// フレーム数
+	//void setValidLength(size_t length) { m_validLength = length; }
+	//size_t fullLength() const { return m_channels[0]->length(); }
+
 	int channelCount() const { return m_channels.size(); }
 	CoreAudioChannel* channel(int index) const { return m_channels[index]; }
 	void clear();
@@ -50,6 +53,7 @@ public:
 
 private:
 	List<Ref<CoreAudioChannel>> m_channels;
+	size_t m_validLength;
 };
 
 class CoreAudioInputPin
@@ -149,10 +153,15 @@ public:
 	virtual ~CoreAudioSourceNode() = default;
 	void initialize(const Ref<AudioDecoder>& decoder);
 
+	void setPlaybackRate(float rate);
+
 	bool loop() const { return false; }
 
 private:
+	unsigned numberOfChannels() const;
+	void resetSourceBuffers();
 	double calculatePitchRate();
+	bool renderSilenceAndFinishIfNotLooping(CoreAudioBus * bus, unsigned index, size_t framesToProcess);
 
 	Ref<AudioDecoder> m_decoder;
 	std::vector<float> m_readBuffer;
@@ -163,6 +172,7 @@ private:
 	double m_virtualReadIndex;
 
 	float m_playbackRate;
+	size_t m_readFrames;
 };
 
 class CoreAudioDestinationNode

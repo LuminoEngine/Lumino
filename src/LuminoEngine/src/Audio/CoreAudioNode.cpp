@@ -86,6 +86,7 @@ void CoreAudioBus::initialize(int channelCount, size_t length)
 	{
 		m_channels.add(newObject<CoreAudioChannel>(length));
 	}
+	m_validLength = length;
 }
 
 void CoreAudioBus::clear()
@@ -270,9 +271,33 @@ void CoreAudioSourceNode::initialize(const Ref<AudioDecoder>& decoder)
 
 	unsigned numChannels = m_decoder->audioDataInfo().channelCount;
 	auto* pin = addOutputPin(numChannels);
-	m_readBuffer.resize(pin->bus()->length() * numChannels);
+	//m_readBuffer.resize(pin->bus()->validLength() * numChannels);
 
-	m_sourceBus = newObject<CoreAudioBus>(numChannels, pin->bus()->length());
+	resetSourceBuffers();
+}
+
+void CoreAudioSourceNode::setPlaybackRate(float rate)
+{
+	m_playbackRate = rate;
+	resetSourceBuffers();
+}
+
+unsigned CoreAudioSourceNode::numberOfChannels() const
+{
+	return outputPin(0)->bus()->channelCount();
+}
+
+void CoreAudioSourceNode::resetSourceBuffers()
+{
+	CoreAudioOutputPin* pin = outputPin(0);
+
+	m_readFrames = pin->bus()->validLength() * m_playbackRate;
+
+	unsigned numChannels = m_decoder->audioDataInfo().channelCount;
+
+	m_readBuffer.resize(m_readFrames * numChannels);
+
+	m_sourceBus = newObject<CoreAudioBus>(numChannels, m_readFrames);
 }
 
 double CoreAudioSourceNode::calculatePitchRate()
@@ -293,11 +318,15 @@ void CoreAudioSourceNode::process()
 {
 	CoreAudioBus* result = outputPin(0)->bus();
 
-	size_t bufferLength = result->length();
+	result->clear();
+
+	//size_t bufferLength = //result->validLength();
 	unsigned numChannels = m_decoder->audioDataInfo().channelCount;
 
-	m_decoder->read2(m_readBuffer.data(), result->length());
+	size_t rea = m_decoder->read2(m_readBuffer.data(), m_readFrames);
 	m_sourceBus->separateFrom(m_readBuffer.data(), m_readBuffer.size(), numChannels);
+
+	size_t bufferLength = m_readFrames;
 
 
 	double pitchRate = calculatePitchRate();
@@ -306,7 +335,7 @@ void CoreAudioSourceNode::process()
 
 	unsigned endFrame = bufferLength;
 
-	if (m_virtualReadIndex >= endFrame)
+	//if (m_virtualReadIndex >= endFrame)
 		m_virtualReadIndex = 0; // reset to start
 
 
@@ -319,7 +348,7 @@ void CoreAudioSourceNode::process()
 	// TODO: loop
 
 	{
-		int framesToProcess = result->length();
+		int framesToProcess = result->validLength();
 		while (framesToProcess--)
 		{
 			unsigned readIndex = static_cast<unsigned>(virtualReadIndex);
@@ -355,23 +384,52 @@ void CoreAudioSourceNode::process()
 				double sample = (1.0 - factor) * sample1 + factor * sample2;
 
 				destination[writeIndex] = static_cast<float>(sample);
+
+				//if (sample > 1.0) {
+				//	printf("");
+				//}
 			}
 			writeIndex++;
 
 			virtualReadIndex += pitchRate;
 
 			// Wrap-around, retaining sub-sample position since virtualReadIndex is floating-point.
-			//if (virtualReadIndex >= virtualEndFrame)
-			//{
-			//	virtualReadIndex -= virtualDeltaFrames;
-			//	if (renderSilenceAndFinishIfNotLooping(r, bus, writeIndex, framesToProcess))
-			//		break;
-			//}
+			if (virtualReadIndex >= virtualEndFrame)
+			{
+				virtualReadIndex -= virtualDeltaFrames;
+				if (renderSilenceAndFinishIfNotLooping(result, writeIndex, framesToProcess))
+					break;
+			}
 		}
 	}
 
+	//printf("writeIndex:%d\n", writeIndex);
+
 	m_virtualReadIndex = virtualReadIndex;
 }
+
+bool CoreAudioSourceNode::renderSilenceAndFinishIfNotLooping(CoreAudioBus * bus, unsigned index, size_t framesToProcess)
+{
+	if (!loop())
+	{
+		// If we're not looping, then stop playing when we get to the end.
+
+		if (framesToProcess > 0)
+		{
+			// We're not looping and we've reached the end of the sample data, but we still need to provide more output,
+			// so generate silence for the remaining.
+			for (unsigned i = 0; i < numberOfChannels(); ++i)
+			{
+				memset(bus->channel(i)->data() + index, 0, sizeof(float) * framesToProcess);
+			}
+		}
+
+		//finish(r);
+		return true;
+	}
+	return false;
+}
+
 
 //==============================================================================
 // CoreAudioDestinationNode
