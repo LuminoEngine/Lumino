@@ -1,16 +1,20 @@
 ﻿
 #include "Internal.hpp"
-#include "AudioNode.hpp"
-#include "AudioContext.hpp"
+#include <Lumino/Audio/AudioNode.hpp>
+#include <Lumino/Audio/AudioContext.hpp>
+#include "CoreAudioNode.hpp"
 #include "ALAudioDevice.hpp"
+#include "AudioManager.hpp"
 
 namespace ln {
-namespace detail {
 
 //==============================================================================
 // AudioContext
 
-	Ref<AudioSourceNode> ssss;
+AudioContext* AudioContext::primary()
+{
+	return detail::EngineDomain::audioManager()->primaryContext();
+}
 
 AudioContext::AudioContext()
 {
@@ -18,18 +22,21 @@ AudioContext::AudioContext()
 
 void AudioContext::initialize()
 {
-	auto device = makeRef<ALAudioDevice>();
+	m_manager = detail::EngineDomain::audioManager();
+
+	auto device = makeRef<detail::ALAudioDevice>();
 	device->initialize();
 	m_device = device;
 
-	m_destinationNode = newObject<AudioDestinationNode>();
+	m_coreDestinationNode = newObject<detail::CoreAudioDestinationNode>();
 
-	m_device->setRenderCallback(m_destinationNode);
+	m_device->setRenderCallback(m_coreDestinationNode);
 
+	m_destinationNode = newObject<AudioDestinationNode>(m_coreDestinationNode);
 
 	// TODO: test
-	ssss = newObject<AudioSourceNode>(u"D:\\tmp\\8_MapBGM2.wav");
-	AudioNode::connect(ssss, m_destinationNode);
+	//ssss = newObject<CoreAudioSourceNode>(u"D:\\tmp\\8_MapBGM2.wav");
+	//CoreAudioNode::connect(ssss, m_destinationNode);
 }
 
 void AudioContext::dispose()
@@ -46,6 +53,10 @@ void AudioContext::process()
 	m_device->updateProcess();
 }
 
-} // namespace detail
+AudioDestinationNode* AudioContext::destination() const
+{
+	return m_destinationNode;
+}
+
 } // namespace ln
 

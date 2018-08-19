@@ -16,6 +16,7 @@ namespace detail
 class EngineManager;
 class PlatformManager;
 class InputManager;
+class AudioManager;
 class AnimationManager;
 class ShaderManager;
 class GraphicsManager;
@@ -33,6 +34,7 @@ public:
 	static EngineManager* engineManager();
 	static PlatformManager* platformManager();
 	static InputManager* inputManager();
+	static AudioManager* audioManager();
 	static ShaderManager* shaderManager();
 	static GraphicsManager* graphicsManager();
 	static MeshManager* meshManager();

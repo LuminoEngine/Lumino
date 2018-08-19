@@ -12,8 +12,20 @@
 #include "LuminoEngine/Input/InputBinding.hpp"
 #include "LuminoEngine/Input/Mouse.hpp"
 
+#include "Lumino/Audio/AudioContext.hpp"
+#include "Lumino/Audio/AudioNode.hpp"
+
 #include "LuminoEngine/Graphics/RenderState.hpp"
 #include "LuminoEngine/Graphics/SamplerState.hpp"
+#include "Lumino/Graphics/RenderState.hpp"
+#include "Lumino/Graphics/GraphicsContext.hpp"
+#include "Lumino/Graphics/VertexDeclaration.hpp"
+#include "Lumino/Graphics/VertexBuffer.hpp"
+#include "Lumino/Graphics/IndexBuffer.hpp"
+#include "Lumino/Graphics/Texture.hpp"
+#include "Lumino/Graphics/SamplerState.hpp"
+#include "Lumino/Graphics/Bitmap.hpp"
+
 #include "LuminoEngine/Graphics/VertexDeclaration.hpp"
 #include "LuminoEngine/Graphics/VertexBuffer.hpp"
 #include "LuminoEngine/Graphics/IndexBuffer.hpp"

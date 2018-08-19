@@ -296,7 +296,7 @@ void EngineManager::updateFrame()
 	if (m_inputManager) {
 		m_inputManager->updateFrame(0.016);	// TODO: time
 	}
-	
+
 	if (m_audioManager) {
 		m_audioManager->update();
 	}
@@ -380,6 +380,11 @@ PlatformManager* EngineDomain::platformManager()
 InputManager* EngineDomain::inputManager()
 {
 	return engineManager()->inputManager();
+}
+
+AudioManager * EngineDomain::audioManager()
+{
+	return engineManager()->audioManager();
 }
 
 ShaderManager* EngineDomain::shaderManager()

@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "ALAudioDevice.hpp"
-#include "AudioNode.hpp"
+#include "CoreAudioNode.hpp"
 
 #include "AudioDecoder.hpp"	// TODO: test
 #include <Lumino/Engine/Diagnostics.hpp>	// TODO: test
@@ -32,8 +32,8 @@ void ALAudioDevice::initialize()
 	m_masterSampleRate = 44100;	// TODO
 	m_masterChannels = 2;
 
-	m_renderdBuffer.resize(AudioNode::ProcessingSizeInFrames * m_masterChannels);
-	m_finalRenderdBuffer.resize(AudioNode::ProcessingSizeInFrames * m_masterChannels);
+	m_renderdBuffer.resize(CoreAudioNode::ProcessingSizeInFrames * m_masterChannels);
+	m_finalRenderdBuffer.resize(CoreAudioNode::ProcessingSizeInFrames * m_masterChannels);
 	//m_finalRenderdBuffer.resize(m_masterSampleRate * m_masterChannels);
 
 	// TODO: test

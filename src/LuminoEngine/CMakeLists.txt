@@ -85,11 +85,12 @@ set(LN_SOURCES_Input
 
 set(LN_SOURCES_Audio
 	include/Lumino/Audio/Common.hpp
+	include/Lumino/Audio/AudioContext.hpp
+	include/Lumino/Audio/AudioNode.hpp
 	src/Audio/Internal.hpp
 	src/Audio/ALAudioDevice.cpp
 	src/Audio/ALAudioDevice.hpp
 	src/Audio/AudioContext.cpp
-	src/Audio/AudioContext.hpp
 	src/Audio/AudioDecoder.cpp
 	src/Audio/AudioDecoder.hpp
 	src/Audio/AudioDevice.cpp
@@ -97,7 +98,8 @@ set(LN_SOURCES_Audio
 	src/Audio/AudioManager.cpp
 	src/Audio/AudioManager.hpp
 	src/Audio/AudioNode.cpp
-	src/Audio/AudioNode.hpp
+	src/Audio/CoreAudioNode.cpp
+	src/Audio/CoreAudioNode.hpp
 )
 
 set(LN_SOURCES_Graphics

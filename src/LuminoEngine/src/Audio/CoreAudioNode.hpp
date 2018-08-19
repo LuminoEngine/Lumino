@@ -3,19 +3,19 @@
 
 namespace ln {
 namespace detail {
-class AudioNode;
-class AudioInputPin;
-class AudioOutputPin;
+class CoreAudioNode;
+class CoreAudioInputPin;
+class CoreAudioOutputPin;
 class AudioDecoder;
 
-// AudioNode 間の音声データの受け渡しに使用するバッファ。
+// CoreAudioNode 間の音声データの受け渡しに使用するバッファ。
 // データは 浮動小数点サンプルで、範囲 -1.0 ~ +1.0 となっている。
-class AudioChannel
+class CoreAudioChannel
 	: public Object
 {
 public:
-	AudioChannel();
-	virtual ~AudioChannel() = default;
+	CoreAudioChannel();
+	virtual ~CoreAudioChannel() = default;
 	void initialize(size_t length);
 
 	float* data() { return m_data.data(); }
@@ -25,79 +25,79 @@ public:
 	void clear();
 	void copyTo(float* buffer, size_t bufferLength, size_t stride) const;
 	void copyFrom(const float* buffer, size_t bufferLength, size_t stride);
-	void sumFrom(const AudioChannel* ch);
+	void sumFrom(const CoreAudioChannel* ch);
 
 private:
 	std::vector<float> m_data;
 };
 
-// AudioNode 間の音声データの受け渡しに使用する AudioChannel のコレクション。
-class AudioBus
+// CoreAudioNode 間の音声データの受け渡しに使用する CoreAudioChannel のコレクション。
+class CoreAudioBus
 	: public Object
 {
 public:
-	AudioBus();
-	virtual ~AudioBus() = default;
+	CoreAudioBus();
+	virtual ~CoreAudioBus() = default;
 	void initialize(int channelCount, size_t length);
 
 	size_t length() const { return m_channels[0]->length(); }	// フレーム数
 	int channelCount() const { return m_channels.size(); }
-	AudioChannel* channel(int index) const { return m_channels[index]; }
+	CoreAudioChannel* channel(int index) const { return m_channels[index]; }
 	void clear();
 	void mergeToChannelBuffers(float* buffer, size_t length);
 	void separateFrom(const float* buffer, size_t length, int channelCount);
-	void sumFrom(const AudioBus* bus);
+	void sumFrom(const CoreAudioBus* bus);
 
 private:
-	List<Ref<AudioChannel>> m_channels;
+	List<Ref<CoreAudioChannel>> m_channels;
 };
 
-class AudioInputPin
+class CoreAudioInputPin
 	: public Object
 {
 public:
-	AudioInputPin();
-	virtual ~AudioInputPin() = default;
+	CoreAudioInputPin();
+	virtual ~CoreAudioInputPin() = default;
 	void initialize(int channels);
 
-	AudioBus* pull();
+	CoreAudioBus* pull();
 
 	// TODO: internal
-	void setOwnerNode(AudioNode* node) { m_ownerNode = node; }
-	void addLinkOutput(AudioOutputPin* output);
+	void setOwnerNode(CoreAudioNode* node) { m_ownerNode = node; }
+	void addLinkOutput(CoreAudioOutputPin* output);
 
 private:
-	AudioNode * m_ownerNode;
-	Ref<AudioBus> m_summingBus;	// Total output
-	List<Ref<AudioOutputPin>> m_connectedOutputPins;
+	CoreAudioNode * m_ownerNode;
+	Ref<CoreAudioBus> m_summingBus;	// Total output
+	List<Ref<CoreAudioOutputPin>> m_connectedOutputPins;
 };
 
-class AudioOutputPin
+class CoreAudioOutputPin
 	: public Object
 {
 public:
-	AudioOutputPin();
-	virtual ~AudioOutputPin() = default;
+	CoreAudioOutputPin();
+	virtual ~CoreAudioOutputPin() = default;
 	void initialize(int channels);
 
-	AudioBus* bus() const;
+	CoreAudioBus* bus() const;
 
 	// process() から呼び出してはならない
-	AudioBus* pull();
+	CoreAudioBus* pull();
 
 
 	// TODO: internal
-	void setOwnerNode(AudioNode* node) { m_ownerNode = node; }
-	void addLinkInput(AudioInputPin* input);
+	void setOwnerNode(CoreAudioNode* node) { m_ownerNode = node; }
+	void addLinkInput(CoreAudioInputPin* input);
 
 private:
-	AudioNode* m_ownerNode;
-	Ref<AudioBus> m_resultBus;	// result of m_ownerNode->process()
-	List<Ref<AudioInputPin>> m_connectedInputPins;
+	CoreAudioNode* m_ownerNode;
+	Ref<CoreAudioBus> m_resultBus;	// result of m_ownerNode->process()
+	List<Ref<CoreAudioInputPin>> m_connectedInputPins;
 };
 
 
-class AudioNode
+class CoreAudioNode
 	: public Object
 {
 public:
@@ -109,21 +109,21 @@ public:
 	// 値を小さくするほど (高レベルAPIとしての) 演奏開始から実際に音が鳴るまでの遅延が少なくなるが、process の回数 (ノードをたどる回数) が増えるので処理は重くなる。
 	static const int ProcessingSizeInFrames = 2048;
 
-	AudioNode();
-	virtual ~AudioNode() = default;
+	CoreAudioNode();
+	virtual ~CoreAudioNode() = default;
 
-	AudioInputPin* inputPin(int index) const;
-	AudioOutputPin* outputPin(int index) const;
+	CoreAudioInputPin* inputPin(int index) const;
+	CoreAudioOutputPin* outputPin(int index) const;
 	void processIfNeeded();
 
 	// in=1, out=1 用のユーティリティ
-	static void connect(AudioNode* outputSide, AudioNode* inputSide);
+	static void connect(CoreAudioNode* outputSide, CoreAudioNode* inputSide);
 
 protected:
 	// Do not call after object initialzation.
-	AudioInputPin* addInputPin(int channels);
+	CoreAudioInputPin* addInputPin(int channels);
 	// Do not call after object initialzation.
-	AudioOutputPin* addOutputPin(int channels);
+	CoreAudioOutputPin* addOutputPin(int channels);
 
 	void pullInputs();
 
@@ -132,35 +132,46 @@ protected:
 	virtual void process() = 0;
 
 private:
-	List<Ref<AudioInputPin>> m_inputPins;
-	List<Ref<AudioOutputPin>> m_outputPins;
+	List<Ref<CoreAudioInputPin>> m_inputPins;
+	List<Ref<CoreAudioOutputPin>> m_outputPins;
 };
 
-class AudioSourceNode
-	: public AudioNode
+class CoreAudioSourceNode
+	: public CoreAudioNode
 {
 public:
 
 protected:
 	virtual void process() override;
 
-LN_CONSTRUCT_ACCESS:
-	AudioSourceNode();
-	virtual ~AudioSourceNode() = default;
-	void initialize(const StringRef& filePath);
+public:
+	CoreAudioSourceNode();
+	virtual ~CoreAudioSourceNode() = default;
+	void initialize(const Ref<AudioDecoder>& decoder);
+
+	bool loop() const { return false; }
 
 private:
+	double calculatePitchRate();
+
 	Ref<AudioDecoder> m_decoder;
 	std::vector<float> m_readBuffer;
+	Ref<CoreAudioBus> m_sourceBus;
+
+	// Current playback position.
+	// Since it's floating-point, it interpolate sub-samples.
+	double m_virtualReadIndex;
+
+	float m_playbackRate;
 };
 
-class AudioDestinationNode
-	: public AudioNode
+class CoreAudioDestinationNode
+	: public CoreAudioNode
 	, public IAudioDeviceRenderCallback
 {
 public:
-	AudioDestinationNode();
-	virtual ~AudioDestinationNode() = default;
+	CoreAudioDestinationNode();
+	virtual ~CoreAudioDestinationNode() = default;
 	void initialize();
 
 protected:

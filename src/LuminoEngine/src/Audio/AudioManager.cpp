@@ -1,7 +1,9 @@
 ﻿
 #include "Internal.hpp"
 #include "../Engine/LinearAllocator.hpp"
-#include "AudioContext.hpp"
+#include <Lumino/Engine/Diagnostics.hpp>
+#include <Lumino/Audio/AudioContext.hpp>
+#include "AudioDecoder.hpp"
 #include "AudioManager.hpp"
 
 namespace ln {
@@ -16,8 +18,8 @@ AudioManager::AudioManager()
 
 void AudioManager::initialize(const Settings& settings)
 {
-	m_audioContext = makeRef<AudioContext>();
-	m_audioContext->initialize();
+	m_primaryContext = makeRef<AudioContext>();
+	m_primaryContext->initialize();
 
 	m_linearAllocatorPageManager = makeRef<LinearAllocatorPageManager>();
 	m_primaryRenderingCommandList = makeRef<RenderingCommandList>(m_linearAllocatorPageManager);
@@ -25,15 +27,26 @@ void AudioManager::initialize(const Settings& settings)
 
 void AudioManager::dispose()
 {
-	if (m_audioContext) {
-		m_audioContext->dispose();
-		m_audioContext.reset();
+	if (m_primaryContext) {
+		m_primaryContext->dispose();
+		m_primaryContext.reset();
 	}
 }
 
 void AudioManager::update()
 {
-	m_audioContext->process();
+	m_primaryContext->process();
+}
+
+Ref<AudioDecoder> AudioManager::createAudioDecoder(const StringRef & filePath)
+{
+	// TODO: diag
+	auto diag = newObject<DiagnosticsManager>();
+
+	// TODO: cache
+	auto decoder = makeRef<WaveDecoder>();
+	decoder->initialize(FileStream::create(filePath), diag);
+	return decoder;
 }
 
 } // namespace detail
