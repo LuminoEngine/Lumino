@@ -9,8 +9,8 @@
 namespace ln {
 namespace detail {
 
-	WaveDecoder wd;// TODO: test
-	std::vector<float> tmpBuffer;
+	//WaveDecoder wd;// TODO: test
+	//std::vector<float> tmpBuffer;
 
 //==============================================================================
 // ALAudioDevice
@@ -32,13 +32,13 @@ void ALAudioDevice::initialize()
 	m_masterSampleRate = 44100;	// TODO
 	m_masterChannels = 2;
 
+	m_renderdBuffer.resize(AudioNode::ProcessingSizeInFrames * m_masterChannels);
 	m_finalRenderdBuffer.resize(AudioNode::ProcessingSizeInFrames * m_masterChannels);
 	//m_finalRenderdBuffer.resize(m_masterSampleRate * m_masterChannels);
 
 	// TODO: test
-	auto diag = newObject<DiagnosticsManager>();
-	wd.initialize(FileStream::create(u"D:\\tmp\\8_MapBGM2.wav"), diag);
-	tmpBuffer.resize(AudioNode::ProcessingSizeInFrames * m_masterChannels);
+	//auto diag = newObject<DiagnosticsManager>();
+	//wd.initialize(FileStream::create(u"D:\\tmp\\8_MapBGM2.wav"), diag);
 }
 
 void ALAudioDevice::dispose()
@@ -73,9 +73,8 @@ void ALAudioDevice::updateProcess()
 	// render data and set buffer to source
 	if (m_freeBuffers.size() > 0)
 	{
-		// TODO: test
-		wd.read(tmpBuffer.data(), tmpBuffer.size());
-		AudioDecoder::convertFromFloat32(m_finalRenderdBuffer.data(), tmpBuffer.data(), m_finalRenderdBuffer.size(), PCMFormat::S16L);
+		render(m_renderdBuffer.data(), m_renderdBuffer.size());
+		AudioDecoder::convertFromFloat32(m_finalRenderdBuffer.data(), m_renderdBuffer.data(), m_finalRenderdBuffer.size(), PCMFormat::S16L);
 
 		alBufferData(m_freeBuffers.back(), AL_FORMAT_STEREO16, m_finalRenderdBuffer.data(), sizeof(int16_t) * m_finalRenderdBuffer.size(), m_masterSampleRate);
 		alSourceQueueBuffers(m_masterSource, 1, &m_freeBuffers.back());

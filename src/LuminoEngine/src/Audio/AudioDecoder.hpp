@@ -29,6 +29,7 @@ struct AudioDataInfo
 	size_t byteParSample;
 };
 
+// TODO: できるだけキャッシュして共有して使いたい。シークは read でやる。できるだけmutable な状態を持たない。
 class AudioDecoder
 	: public RefObject
 {
@@ -36,7 +37,7 @@ public:
 	virtual ~AudioDecoder() = default;
 	virtual const AudioDataInfo& audioDataInfo() const = 0;
 	virtual void seekToSample(size_t sampleNumber) = 0;
-	virtual size_t read(float* buffer, uint32_t bufferLength) = 0;	// チャンネルは関係なし。ファイルから取り出せた順に詰める
+	virtual size_t read2(float* buffer, uint32_t requestFrames) = 0;	// チャンネル数2の時に frames=1 で呼び出すと、2サンプル取り出す
 	virtual void reset() = 0;
 
 	static void convertToFloat32(float* dst, const void* src, const size_t length, PCMFormat format);
@@ -54,7 +55,7 @@ public:
 	void initialize(Stream* stream, DiagnosticsManager* diag);
 	virtual const AudioDataInfo& audioDataInfo() const override;
 	virtual void seekToSample(uint32_t sampleNumber) override;
-	virtual uint32_t read(float* buffer, uint32_t requestSamples) override;
+	virtual uint32_t read2(float* buffer, uint32_t requestFrames) override;
 	virtual void reset() override;
 
 private:

@@ -23,8 +23,9 @@ public:
 	size_t length() const { return m_data.size(); }
 
 	void clear();
+	void copyTo(float* buffer, size_t bufferLength, size_t stride) const;
+	void copyFrom(const float* buffer, size_t bufferLength, size_t stride);
 	void sumFrom(const AudioChannel* ch);
-	void copyTo(float* buffer, size_t bufferLength, size_t stride);
 
 private:
 	std::vector<float> m_data;
@@ -39,11 +40,12 @@ public:
 	virtual ~AudioBus() = default;
 	void initialize(int channelCount, size_t length);
 
+	size_t length() const { return m_channels[0]->length(); }	// フレーム数
 	int channelCount() const { return m_channels.size(); }
 	AudioChannel* channel(int index) const { return m_channels[index]; }
 	void clear();
 	void mergeToChannelBuffers(float* buffer, size_t length);
-	void separationFrom(float* buffer, size_t length, int channelCount);
+	void separateFrom(const float* buffer, size_t length, int channelCount);
 	void sumFrom(const AudioBus* bus);
 
 private:
@@ -60,6 +62,10 @@ public:
 
 	AudioBus* pull();
 
+	// TODO: internal
+	void setOwnerNode(AudioNode* node) { m_ownerNode = node; }
+	void addLinkOutput(AudioOutputPin* output);
+
 private:
 	AudioNode * m_ownerNode;
 	Ref<AudioBus> m_summingBus;	// Total output
@@ -74,7 +80,15 @@ public:
 	virtual ~AudioOutputPin() = default;
 	void initialize(int channels);
 
+	AudioBus* bus() const;
+
+	// process() から呼び出してはならない
 	AudioBus* pull();
+
+
+	// TODO: internal
+	void setOwnerNode(AudioNode* node) { m_ownerNode = node; }
+	void addLinkInput(AudioInputPin* input);
 
 private:
 	AudioNode* m_ownerNode;
@@ -102,6 +116,9 @@ public:
 	AudioOutputPin* outputPin(int index) const;
 	void processIfNeeded();
 
+	// in=1, out=1 用のユーティリティ
+	static void connect(AudioNode* outputSide, AudioNode* inputSide);
+
 protected:
 	// Do not call after object initialzation.
 	AudioInputPin* addInputPin(int channels);
@@ -110,7 +127,7 @@ protected:
 
 	void pullInputs();
 
-	// output(0) へ書き込む。要素数は自分で addOutputPin() した数だけ。
+	// output(x) へ書き込む。要素数は自分で addOutputPin() した数だけ。
 	// input は pull 済み。データを取り出すだけでよい。
 	virtual void process() = 0;
 
@@ -134,6 +151,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	Ref<AudioDecoder> m_decoder;
+	std::vector<float> m_readBuffer;
 };
 
 class AudioDestinationNode

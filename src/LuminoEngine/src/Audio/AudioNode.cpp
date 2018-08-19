@@ -28,6 +28,7 @@ AudioChannel::AudioChannel()
 void AudioChannel::initialize(size_t length)
 {
 	Object::initialize();
+	m_data.resize(length);
 }
 
 void AudioChannel::clear()
@@ -35,12 +36,7 @@ void AudioChannel::clear()
 	memset(data(), 0, sizeof(float) * length());
 }
 
-void AudioChannel::sumFrom(const AudioChannel * ch)
-{
-	vadd(data(), ch->data(), data(), length());
-}
-
-void AudioChannel::copyTo(float* buffer, size_t bufferLength, size_t stride)
+void AudioChannel::copyTo(float* buffer, size_t bufferLength, size_t stride) const
 {
 	const float* src = data();
 	if (stride == 1) {
@@ -54,6 +50,27 @@ void AudioChannel::copyTo(float* buffer, size_t bufferLength, size_t stride)
 			buffer += stride;
 		}
 	}
+}
+
+void AudioChannel::copyFrom(const float * buffer, size_t bufferLength, size_t stride)
+{
+	float* dst = data();
+	if (stride == 1) {
+		memcpy(dst, buffer, length());
+	}
+	else {
+		size_t n = length();
+		while (n--) {
+			*dst = *buffer;
+			dst++;
+			buffer += stride;
+		}
+	}
+}
+
+void AudioChannel::sumFrom(const AudioChannel * ch)
+{
+	vadd(data(), ch->data(), data(), length());
 }
 
 //==============================================================================
@@ -88,6 +105,17 @@ void AudioBus::mergeToChannelBuffers(float* buffer, size_t length)
 	for (int i = 0; i < m_channels.size(); i++)
 	{
 		m_channels[i]->copyTo(buffer + i, length - i, m_channels.size());
+	}
+}
+
+void AudioBus::separateFrom(const float * buffer, size_t length, int channelCount)
+{
+	assert(m_channels.size() == 2);
+	assert(m_channels[0]->length() * 2 == length);
+
+	for (int i = 0; i < m_channels.size(); i++)
+	{
+		m_channels[i]->copyFrom(buffer + i, length - i, m_channels.size());
 	}
 }
 
@@ -134,6 +162,11 @@ AudioBus* AudioInputPin::pull()
 	return m_summingBus;
 }
 
+void AudioInputPin::addLinkOutput(AudioOutputPin * output)
+{
+	m_connectedOutputPins.add(output);
+}
+
 //==============================================================================
 // AudioOutputPin
 
@@ -148,10 +181,20 @@ void AudioOutputPin::initialize(int channels)
 	m_resultBus = newObject<AudioBus>(channels, AudioNode::ProcessingSizeInFrames);
 }
 
+AudioBus * AudioOutputPin::bus() const
+{
+	return m_resultBus;
+}
+
 AudioBus * AudioOutputPin::pull()
 {
 	m_ownerNode->processIfNeeded();
 	return m_resultBus;
+}
+
+void AudioOutputPin::addLinkInput(AudioInputPin * input)
+{
+	m_connectedInputPins.add(input);
 }
 
 //==============================================================================
@@ -185,9 +228,16 @@ void AudioNode::processIfNeeded()
 	process();
 }
 
+void AudioNode::connect(AudioNode * outputSide, AudioNode * inputSide)
+{
+	outputSide->outputPin(0)->addLinkInput(inputSide->inputPin(0));
+	inputSide->inputPin(0)->addLinkOutput(outputSide->outputPin(0));
+}
+
 AudioInputPin* AudioNode::addInputPin(int channels)
 {
 	auto pin = newObject<AudioInputPin>(channels);
+	pin->setOwnerNode(this);
 	m_inputPins.add(pin);
 	return pin;
 }
@@ -195,6 +245,7 @@ AudioInputPin* AudioNode::addInputPin(int channels)
 AudioOutputPin* AudioNode::addOutputPin(int channels)
 {
 	auto pin = newObject<AudioOutputPin>(channels);
+	pin->setOwnerNode(this);
 	m_outputPins.add(pin);
 	return pin;
 }
@@ -217,12 +268,16 @@ void AudioSourceNode::initialize(const StringRef & filePath)
 	m_decoder = decoder;
 	//tmpBuffer.resize(AudioNode::ProcessingSizeInFrames * m_masterChannels);
 
-	addOutputPin(m_decoder->audioDataInfo().channelCount);
+	auto* pin = addOutputPin(m_decoder->audioDataInfo().channelCount);
+	m_readBuffer.resize(pin->bus()->length() * m_decoder->audioDataInfo().channelCount);
 }
 
 void AudioSourceNode::process()
 {
-	outputPin(0);
+	AudioBus* result = outputPin(0)->bus();
+
+	m_decoder->read2(m_readBuffer.data(), result->length());
+	result->separateFrom(m_readBuffer.data(), m_readBuffer.size(), m_decoder->audioDataInfo().channelCount);
 }
 
 //==============================================================================

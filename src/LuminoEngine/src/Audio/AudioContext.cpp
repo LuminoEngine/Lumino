@@ -10,6 +10,8 @@ namespace detail {
 //==============================================================================
 // AudioContext
 
+	Ref<AudioSourceNode> ssss;
+
 AudioContext::AudioContext()
 {
 }
@@ -23,6 +25,11 @@ void AudioContext::initialize()
 	m_destinationNode = newObject<AudioDestinationNode>();
 
 	m_device->setRenderCallback(m_destinationNode);
+
+
+	// TODO: test
+	ssss = newObject<AudioSourceNode>(u"D:\\tmp\\8_MapBGM2.wav");
+	AudioNode::connect(ssss, m_destinationNode);
 }
 
 void AudioContext::dispose()

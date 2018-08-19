@@ -309,17 +309,19 @@ void WaveDecoder::seekToSample(uint32_t sampleNumber)
 	m_stream->seek(m_pcmDataOffset + (sampleNumber * m_info.byteParSample), SeekOrigin::Begin);
 }
 
-uint32_t WaveDecoder::read(float* buffer, uint32_t requestSamples)
+uint32_t WaveDecoder::read2(float* buffer, uint32_t requestFrames)
 {
+	size_t requestSamples = requestFrames * m_info.channelCount;
 	size_t requestSize = requestSamples * m_info.byteParSample;
 	size_t readSize = m_stream->read(m_workBuffer.data(), requestSize);
 	uint32_t readSamples = readSize / m_info.byteParSample;
+	uint32_t readFrames = readSamples / m_info.channelCount;
 #if 0
 	memcpy(buffer, m_workBuffer.data(), readSize);
 #else
 	convertToFloat32(buffer, m_workBuffer.data(), std::min(readSamples, requestSamples), m_info.sourceFormat);
 #endif
-	return readSamples;
+	return readFrames;
 }
 
 void WaveDecoder::reset()
