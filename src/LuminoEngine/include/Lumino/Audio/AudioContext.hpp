@@ -4,6 +4,7 @@ namespace ln {
 namespace detail {
 class AudioManager;
 class AudioDevice;
+class AudioContextCore;
 class CoreAudioDestinationNode;
 } // namespace detail
 class AudioDestinationNode;
@@ -25,9 +26,12 @@ public:
 	// TODO: internal
 	detail::AudioManager* manager() const { return m_manager; }
 
+	detail::AudioContextCore* coreObject();
+
 private:
 	detail::AudioManager* m_manager;
 	Ref<detail::AudioDevice> m_device;
+	Ref<detail::AudioContextCore> m_audioContextHandler;
 	Ref<detail::CoreAudioDestinationNode> m_coreDestinationNode;
 	Ref<AudioDestinationNode> m_destinationNode;
 };

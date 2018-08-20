@@ -40,10 +40,20 @@ int main(int argc, char** argv)
 	//Engine::terminate();
 	//return 0;
 	// Audio test
+	
+#if 1
+	auto source = newObject<AudioSourceNode>(u"D:\\tmp\\8_MapBGM2.wav");
+	auto panner = newObject<AudioPannerNode>();
+	AudioNode::connect(source, panner);
+	AudioNode::connect(panner, AudioContext::primary()->destination());
+	source->setPlaybackRate(1.0);
+	source->start();
+#else
 	auto source = newObject<AudioSourceNode>(u"D:\\tmp\\8_MapBGM2.wav");
 	AudioNode::connect(source, AudioContext::primary()->destination());
 	source->setPlaybackRate(1.2);
 	source->start();
+#endif
 
 	auto shader = Shader::create(
 		LN_LOCALFILE("Assets/simple.vert"),

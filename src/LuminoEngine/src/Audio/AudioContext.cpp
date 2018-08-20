@@ -28,7 +28,10 @@ void AudioContext::initialize()
 	device->initialize();
 	m_device = device;
 
-	m_coreDestinationNode = newObject<detail::CoreAudioDestinationNode>();
+	m_audioContextHandler = makeRef<detail::AudioContextCore>();
+
+	m_coreDestinationNode = makeRef<detail::CoreAudioDestinationNode>(m_audioContextHandler);
+	m_coreDestinationNode->initialize();
 
 	m_device->setRenderCallback(m_coreDestinationNode);
 
@@ -56,6 +59,11 @@ void AudioContext::process()
 AudioDestinationNode* AudioContext::destination() const
 {
 	return m_destinationNode;
+}
+
+detail::AudioContextCore* AudioContext::coreObject()
+{
+	return m_audioContextHandler;
 }
 
 } // namespace ln

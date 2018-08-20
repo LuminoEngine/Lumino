@@ -5,6 +5,7 @@ class AudioContext;
 namespace detail {
 class CoreAudioNode;
 class CoreAudioSourceNode;
+class CoreAudioPannerNode;
 class CoreAudioDestinationNode;
 } // namespace detail
 
@@ -46,6 +47,21 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	Ref<detail::CoreAudioSourceNode> m_coreObject;
+};
+
+class AudioPannerNode
+	: public AudioNode
+{
+public:
+
+LN_CONSTRUCT_ACCESS:
+	AudioPannerNode();
+	virtual ~AudioPannerNode() = default;
+	void initialize();
+	virtual detail::CoreAudioNode* coreNode() override;
+
+private:
+	Ref<detail::CoreAudioPannerNode> m_coreObject;
 };
 
 class AudioDestinationNode

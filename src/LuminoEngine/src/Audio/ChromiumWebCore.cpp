@@ -2,7 +2,6 @@
 #include "Internal.hpp"
 #include "ChromiumWebCore.hpp"
 
-#include "CoreAudioNode.hpp"	// TODO: AudioBus
 
 #define ASSERT assert
 #define NOTREACHED LN_UNREACHABLE
@@ -10,7 +9,7 @@
 
 namespace ln {
 namespace detail {
-namespace WebCore {
+namespace blink {
 
 using namespace std;
 
@@ -514,7 +513,7 @@ void CalculateAzimuthElevation(
 		*out_elevation = elevation;
 }
 
-} // namespace WebCore
+} // namespace blink
 } // namespace detail
 } // namespace ln
 

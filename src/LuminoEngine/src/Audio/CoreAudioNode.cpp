@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include "CoreAudioNode.hpp"
 #include "AudioDecoder.hpp"	// for CoreAudioSourceNode
+#include "ChromiumWebCore.hpp"
 
 namespace ln {
 namespace detail {
@@ -16,6 +17,18 @@ static void vadd(const float* source1P, const float* source2P, float* destP, siz
 		destP++;
 	}
 }
+
+void vsmul(const float* sourceP, int sourceStride, const float* scale, float* destP, int destStride, size_t framesToProcess)
+{
+	int n = framesToProcess;
+	float k = *scale;
+	while (n--) {
+		*destP = k * *sourceP;
+		sourceP += sourceStride;
+		destP += destStride;
+	}
+}
+
 
 //==============================================================================
 // CoreAudioChannel
@@ -105,6 +118,8 @@ void CoreAudioChannel::sumFrom(const CoreAudioChannel * ch)
 
 //==============================================================================
 // CoreAudioBus
+
+const unsigned kMaxBusChannels = 32;
 
 CoreAudioBus::CoreAudioBus()
 {
@@ -267,6 +282,75 @@ void CoreAudioBus::sumFrom(const CoreAudioBus* bus)
 	}
 }
 
+void CoreAudioBus::copyWithGainFrom(const CoreAudioBus& source_bus, float gain)
+{
+	if (!topologyMatches(source_bus)) {
+		LN_UNREACHABLE();
+		setSilentAndZero();
+		return;
+	}
+
+	if (source_bus.isSilent()) {
+		setSilentAndZero();
+		return;
+	}
+
+	unsigned number_of_channels = this->NumberOfChannels();
+	LN_DCHECK(number_of_channels < kMaxBusChannels);
+	if (number_of_channels > kMaxBusChannels)
+		return;
+
+	// If it is copying from the same bus and no need to change gain, just return.
+	if (this == &source_bus && gain == 1)
+		return;
+
+	const float* sources[kMaxBusChannels];
+	float* destinations[kMaxBusChannels];
+
+	for (unsigned i = 0; i < number_of_channels; ++i) {
+		sources[i] = source_bus.Channel(i)->Data();
+		destinations[i] = Channel(i)->MutableData();
+	}
+
+	unsigned frames_to_process = length();
+
+	// Handle gains of 0 and 1 (exactly) specially.
+	if (gain == 1) {
+		for (unsigned channel_index = 0; channel_index < number_of_channels;
+			++channel_index) {
+			memcpy(destinations[channel_index], sources[channel_index],
+				frames_to_process * sizeof(*destinations[channel_index]));
+		}
+	}
+	else if (gain == 0) {
+		for (unsigned channel_index = 0; channel_index < number_of_channels;
+			++channel_index) {
+			memset(destinations[channel_index], 0,
+				frames_to_process * sizeof(*destinations[channel_index]));
+		}
+	}
+	else {
+		for (unsigned channel_index = 0; channel_index < number_of_channels;
+			++channel_index) {
+			vsmul(sources[channel_index], 1, &gain, destinations[channel_index], 1,
+				frames_to_process);
+		}
+	}
+}
+
+// Returns true if the channel count and frame-size match.
+bool CoreAudioBus::topologyMatches(const CoreAudioBus& bus) const
+{
+	if (NumberOfChannels() != bus.NumberOfChannels())
+		return false;  // channel mismatch
+
+					   // Make sure source bus has enough frames.
+	if (length() > bus.length())
+		return false;  // frame-size mismatch
+
+	return true;
+}
+
 //==============================================================================
 // CoreAudioOutputPin
 
@@ -279,6 +363,11 @@ void CoreAudioInputPin::initialize(int channels)
 {
 	Object::initialize();
 	m_summingBus = newObject<CoreAudioBus>(channels, CoreAudioNode::ProcessingSizeInFrames);
+}
+
+CoreAudioBus* CoreAudioInputPin::bus() const
+{
+	return m_summingBus;
 }
 
 CoreAudioBus* CoreAudioInputPin::pull()
@@ -332,8 +421,14 @@ void CoreAudioOutputPin::addLinkInput(CoreAudioInputPin * input)
 //==============================================================================
 // CoreAudioNode
 
-CoreAudioNode::CoreAudioNode()
+CoreAudioNode::CoreAudioNode(AudioContextCore* context)
+	: m_context(context)
 {
+}
+
+void CoreAudioNode::initialize()
+{
+	Object::initialize();
 }
 
 CoreAudioInputPin * CoreAudioNode::inputPin(int index) const
@@ -385,8 +480,9 @@ CoreAudioOutputPin* CoreAudioNode::addOutputPin(int channels)
 //==============================================================================
 // CoreAudioDestinationNode
 
-CoreAudioSourceNode::CoreAudioSourceNode()
-	: m_virtualReadIndex(0)
+CoreAudioSourceNode::CoreAudioSourceNode(AudioContextCore* context)
+	: CoreAudioNode(context)
+	, m_virtualReadIndex(0)
 	, m_playbackRate(1.0f)
 	, m_seekFrame(0)
 	, m_playingState(PlayingState::Stopped)
@@ -605,11 +701,93 @@ void CoreAudioSourceNode::updatePlayingState()
 	m_playingState = m_requestedPlayingState;
 }
 
+//==============================================================================
+// CoreAudioPannerNode
+
+CoreAudioPannerNode::CoreAudioPannerNode(AudioContextCore* context)
+	: CoreAudioNode(context)
+{
+}
+
+void CoreAudioPannerNode::initialize()
+{
+	CoreAudioNode::initialize();
+
+	unsigned numChannels = 2;
+	addOutputPin(numChannels);
+	addInputPin(numChannels);
+
+	m_panner = blink::Panner::Create(blink::Panner::kPanningModelEqualPower, 0, nullptr);
+	m_distanceEffect = std::make_shared<blink::DistanceEffect>();
+	m_coneEffect = std::make_shared<blink::ConeEffect>();
+}
+
+void CoreAudioPannerNode::process()
+{
+	//test
+	static float count = 0;
+	count += 0.01;
+	m_emitter.m_position = Vector3(cos(count), 0, sin(count));
+
+
+
+	CoreAudioBus* destination = outputPin(0)->bus();
+
+	if (!m_panner.get()) {
+		destination->setSilentAndZero();
+		return;
+	}
+
+	CoreAudioBus* source = inputPin(0)->bus();
+	if (!source) {
+		destination->setSilentAndZero();
+		return;
+	}
+
+	double azimuth;
+	double elevation;
+	azimuthElevation(&azimuth, &elevation);
+
+	m_panner->Pan(azimuth, elevation, source, destination, destination->length(), CoreAudioBus::kSpeakers);
+
+	float total_gain = distanceConeGain();
+
+	destination->copyWithGainFrom(*destination, total_gain);
+}
+
+void CoreAudioPannerNode::azimuthElevation(double* outAzimuth, double* outElevation)
+{
+	double cached_azimuth_;
+	double cached_elevation_;
+
+	// TODO: dirty and cache
+
+	auto& listener = context()->listener();
+	blink::CalculateAzimuthElevation(
+		&cached_azimuth_, &cached_elevation_, 
+		m_emitter.m_position, listener.m_position, listener.m_forward, listener.m_up);
+
+	*outAzimuth = cached_azimuth_;
+	*outElevation = cached_elevation_;
+}
+
+float CoreAudioPannerNode::distanceConeGain()
+{
+	// TODO: dirty and cache
+
+	float cached_distance_cone_gain_;
+
+	cached_distance_cone_gain_ = blink::CalculateDistanceConeGain(
+		m_emitter.m_position, m_emitter.m_direction, context()->listener().m_position, m_distanceEffect.get(), m_coneEffect.get());
+
+	return cached_distance_cone_gain_;
+}
 
 //==============================================================================
 // CoreAudioDestinationNode
 
-CoreAudioDestinationNode::CoreAudioDestinationNode()
+CoreAudioDestinationNode::CoreAudioDestinationNode(AudioContextCore* context)
+	: CoreAudioNode(context)
 {
 }
 

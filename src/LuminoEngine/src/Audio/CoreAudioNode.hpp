@@ -105,6 +105,9 @@ public:
 	void separateFrom(const float* buffer, size_t length, int channelCount);
 	void sumFrom(const CoreAudioBus* bus);
 
+	void copyWithGainFrom(const CoreAudioBus& source_bus, float gain);
+	bool topologyMatches(const CoreAudioBus& bus) const;
+
 	// chromium interface
 	int NumberOfChannels() const { return m_channels.size(); }
 	CoreAudioChannel* Channel(int index) const { return channel(index); }
@@ -115,7 +118,17 @@ private:
 	List<Ref<CoreAudioChannel>> m_channels;
 	size_t m_validLength;
 
-	int m_layout = LayoutCanonical;
+	int m_layout = kLayoutCanonical;
+};
+
+class AudioContextCore
+	: public RefObject
+{
+public:
+	const AudioListenerParams& listener() const { return m_listener; }
+
+private:
+	AudioListenerParams m_listener;
 };
 
 class CoreAudioInputPin
@@ -126,13 +139,17 @@ public:
 	virtual ~CoreAudioInputPin() = default;
 	void initialize(int channels);
 
+	CoreAudioBus* bus() const;
+
 	CoreAudioBus* pull();
 
 	// TODO: internal
 	void setOwnerNode(CoreAudioNode* node) { m_ownerNode = node; }
 	void addLinkOutput(CoreAudioOutputPin* output);
 
+
 private:
+
 	CoreAudioNode * m_ownerNode;
 	Ref<CoreAudioBus> m_summingBus;	// Total output
 	List<Ref<CoreAudioOutputPin>> m_connectedOutputPins;
@@ -175,8 +192,11 @@ public:
 	// 値を小さくするほど (高レベルAPIとしての) 演奏開始から実際に音が鳴るまでの遅延が少なくなるが、process の回数 (ノードをたどる回数) が増えるので処理は重くなる。
 	static const int ProcessingSizeInFrames = 2048;
 
-	CoreAudioNode();
+	CoreAudioNode(AudioContextCore* context);
 	virtual ~CoreAudioNode() = default;
+	void initialize();
+
+	AudioContextCore* context() const { return m_context; }
 
 	CoreAudioInputPin* inputPin(int index) const;
 	CoreAudioOutputPin* outputPin(int index) const;
@@ -199,6 +219,7 @@ protected:
 	virtual void process() = 0;
 
 private:
+	AudioContextCore* m_context;
 	List<Ref<CoreAudioInputPin>> m_inputPins;
 	List<Ref<CoreAudioOutputPin>> m_outputPins;
 };
@@ -212,7 +233,7 @@ protected:
 	virtual void process() override;
 
 public:
-	CoreAudioSourceNode();
+	CoreAudioSourceNode(AudioContextCore* context);
 	virtual ~CoreAudioSourceNode() = default;
 	void initialize(const Ref<AudioDecoder>& decoder);
 
@@ -258,12 +279,42 @@ private:
 	bool m_resetRequested;
 };
 
+namespace blink { 
+class Panner;
+class DistanceEffect;
+class ConeEffect;
+}
+
+class CoreAudioPannerNode
+	: public CoreAudioNode
+{
+public:
+
+protected:
+	virtual void process() override;
+
+public:
+	CoreAudioPannerNode(AudioContextCore* context);
+	virtual ~CoreAudioPannerNode() = default;
+	void initialize();
+
+private:
+	void azimuthElevation(double* outAzimuth, double* outElevation);
+	float distanceConeGain();
+
+	AudioEmitterParams m_emitter;
+
+	std::shared_ptr<blink::Panner> m_panner;
+	std::shared_ptr<blink::DistanceEffect> m_distanceEffect;
+	std::shared_ptr<blink::ConeEffect> m_coneEffect;
+};
+
 class CoreAudioDestinationNode
 	: public CoreAudioNode
 	, public IAudioDeviceRenderCallback
 {
 public:
-	CoreAudioDestinationNode();
+	CoreAudioDestinationNode(AudioContextCore* context);
 	virtual ~CoreAudioDestinationNode() = default;
 	void initialize();
 

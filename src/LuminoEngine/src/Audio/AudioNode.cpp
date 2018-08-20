@@ -93,11 +93,30 @@ void AudioSourceNode::initialize(const StringRef & filePath)
 	AudioNode::initialize();
 	auto decoder = context()->manager()->createAudioDecoder(filePath);
 
-	m_coreObject = makeRef<detail::CoreAudioSourceNode>();
+	m_coreObject = makeRef<detail::CoreAudioSourceNode>(context()->coreObject());
 	m_coreObject->initialize(decoder);
 }
 
 detail::CoreAudioNode * AudioSourceNode::coreNode()
+{
+	return m_coreObject;
+}
+
+//==============================================================================
+// AudioPannerNode
+
+AudioPannerNode::AudioPannerNode()
+{
+}
+
+void AudioPannerNode::initialize()
+{
+	AudioNode::initialize();
+	m_coreObject = makeRef<detail::CoreAudioPannerNode>(context()->coreObject());
+	m_coreObject->initialize();
+}
+
+detail::CoreAudioNode* AudioPannerNode::coreNode()
 {
 	return m_coreObject;
 }

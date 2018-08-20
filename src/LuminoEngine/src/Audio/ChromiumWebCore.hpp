@@ -7,15 +7,16 @@
 
 #pragma once
 
+#include "CoreAudioNode.hpp"	// TODO: AudioBus
+
 #define PLATFORM_EXPORT
 #define USING_FAST_MALLOC(x)
 #define WTF_MAKE_NONCOPYABLE(x)
 
-
 namespace ln {
 namespace detail {
 class CoreAudioBus;
-namespace WebCore {
+namespace blink {
 using AudioBus = CoreAudioBus;
 
 class HRTFDatabaseLoader;
@@ -189,7 +190,7 @@ void CalculateAzimuthElevation(
 	const Vector3& listener_forward,
 	const Vector3& listener_up);
 
-} // namespace WebCore
+} // namespace blink
 } // namespace detail
 } // namespace ln
 
