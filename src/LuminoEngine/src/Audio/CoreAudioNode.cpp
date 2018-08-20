@@ -120,6 +120,86 @@ void CoreAudioBus::initialize(int channelCount, size_t length)
 	m_validLength = length;
 }
 
+CoreAudioChannel* CoreAudioBus::channelByType(unsigned channel_type)
+{
+	// For now we only support canonical channel layouts...
+	if (m_layout != kLayoutCanonical)
+		return nullptr;
+
+	switch (NumberOfChannels()) {
+	case 1:  // mono
+		if (channel_type == kChannelMono || channel_type == kChannelLeft)
+			return Channel(0);
+		return nullptr;
+
+	case 2:  // stereo
+		switch (channel_type) {
+		case kChannelLeft:
+			return Channel(0);
+		case kChannelRight:
+			return Channel(1);
+		default:
+			return nullptr;
+		}
+
+	case 4:  // quad
+		switch (channel_type) {
+		case kChannelLeft:
+			return Channel(0);
+		case kChannelRight:
+			return Channel(1);
+		case kChannelSurroundLeft:
+			return Channel(2);
+		case kChannelSurroundRight:
+			return Channel(3);
+		default:
+			return nullptr;
+		}
+
+	case 5:  // 5.0
+		switch (channel_type) {
+		case kChannelLeft:
+			return Channel(0);
+		case kChannelRight:
+			return Channel(1);
+		case kChannelCenter:
+			return Channel(2);
+		case kChannelSurroundLeft:
+			return Channel(3);
+		case kChannelSurroundRight:
+			return Channel(4);
+		default:
+			return nullptr;
+		}
+
+	case 6:  // 5.1
+		switch (channel_type) {
+		case kChannelLeft:
+			return Channel(0);
+		case kChannelRight:
+			return Channel(1);
+		case kChannelCenter:
+			return Channel(2);
+		case kChannelLFE:
+			return Channel(3);
+		case kChannelSurroundLeft:
+			return Channel(4);
+		case kChannelSurroundRight:
+			return Channel(5);
+		default:
+			return nullptr;
+		}
+	}
+
+	LN_UNREACHABLE();
+	return nullptr;
+}
+
+const CoreAudioChannel* CoreAudioBus::channelByType(unsigned type) const
+{
+	return const_cast<CoreAudioBus*>(this)->channelByType(type);
+}
+
 void CoreAudioBus::setSilentAndZero()
 {
 	for (auto& ch : m_channels) {
@@ -327,7 +407,7 @@ void CoreAudioSourceNode::initialize(const Ref<AudioDecoder>& decoder)
 
 	unsigned numChannels = m_decoder->audioDataInfo().channelCount;
 	auto* pin = addOutputPin(numChannels);
-	//m_readBuffer.resize(pin->bus()->validLength() * numChannels);
+	//m_readBuffer.resize(pin->bus()->length() * numChannels);
 
 	resetSourceBuffers();
 }
@@ -368,7 +448,7 @@ void CoreAudioSourceNode::resetSourceBuffers()
 {
 	CoreAudioOutputPin* pin = outputPin(0);
 
-	m_readFrames = pin->bus()->validLength() * m_playbackRate;
+	m_readFrames = pin->bus()->length() * m_playbackRate;
 
 	unsigned numChannels = m_decoder->audioDataInfo().channelCount;
 
@@ -404,7 +484,7 @@ void CoreAudioSourceNode::process()
 	}
 
 
-	//size_t bufferLength = //result->validLength();
+	//size_t bufferLength = //result->length();
 	unsigned numChannels = m_decoder->audioDataInfo().channelCount;
 
 	size_t bufferLength = m_decoder->read2(m_readBuffer.data(), m_readFrames);
@@ -432,7 +512,7 @@ void CoreAudioSourceNode::process()
 	// TODO: loop
 
 	{
-		int framesToProcess = result->validLength();
+		int framesToProcess = result->length();
 		while (framesToProcess--)
 		{
 			unsigned readIndex = static_cast<unsigned>(virtualReadIndex);

@@ -47,6 +47,11 @@ TEST_F(Test_Vector3, Basic)
 		ASSERT_NEAR(3.741657, sample1.length(), LN_FLOAT_THRESHOLD);
 		ASSERT_NEAR(14.000000, sample1.lengthSquared(), LN_FLOAT_THRESHOLD);
 	}
+	// isZero
+	{
+		ASSERT_EQ(true, Vector3(0, 0.0f, -0.0f).isZero());
+		ASSERT_EQ(false, Vector3(0, 1.0f, -1.0f).isZero());
+	}
 	// this->normalize
 	{
 		Vector3 v1 = sample1;

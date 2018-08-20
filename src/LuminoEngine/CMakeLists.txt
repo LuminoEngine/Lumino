@@ -86,6 +86,7 @@ set(LN_SOURCES_Input
 set(LN_SOURCES_Audio
 	include/Lumino/Audio/Common.hpp
 	include/Lumino/Audio/AudioContext.hpp
+	include/Lumino/Audio/AudioListener.hpp
 	include/Lumino/Audio/AudioNode.hpp
 	src/Audio/Internal.hpp
 	src/Audio/ALAudioDevice.cpp
@@ -95,9 +96,12 @@ set(LN_SOURCES_Audio
 	src/Audio/AudioDecoder.hpp
 	src/Audio/AudioDevice.cpp
 	src/Audio/AudioDevice.hpp
+	src/Audio/AudioListener.cpp
 	src/Audio/AudioManager.cpp
 	src/Audio/AudioManager.hpp
 	src/Audio/AudioNode.cpp
+	src/Audio/ChromiumWebCore.cpp
+	src/Audio/ChromiumWebCore.hpp
 	src/Audio/CoreAudioNode.cpp
 	src/Audio/CoreAudioNode.hpp
 )

@@ -8,6 +8,18 @@ class CoreAudioInputPin;
 class CoreAudioOutputPin;
 class AudioDecoder;
 
+//enum class Channel : int
+//{
+//	First = 0,
+//	Left = 0,
+//	Right = 1,
+//	Center = 2, // center and mono are the same
+//	Mono = 2,
+//	LFE = 3,
+//	SurroundLeft = 4,
+//	SurroundRight = 5,
+//};
+
 // CoreAudioNode 間の音声データの受け渡しに使用するバッファ。
 // データは 浮動小数点サンプルで、範囲 -1.0 ~ +1.0 となっている。
 class CoreAudioChannel
@@ -32,6 +44,12 @@ public:
 	void copyFrom(const CoreAudioChannel* ch);
 	void sumFrom(const CoreAudioChannel* ch);
 
+
+	// chromium interface
+	float* MutableData() { return mutableData(); }
+	const float* Data() const { return constData(); }
+
+
 private:
 	std::vector<float> m_data;
 	bool m_isSilent;
@@ -42,27 +60,62 @@ class CoreAudioBus
 	: public Object
 {
 public:
+	enum
+	{
+		kLayoutCanonical = 0
+	};
+
+	enum ChannelInterpretation {
+		kSpeakers,
+		kDiscrete,
+	};
+
+
+	enum {
+		kChannelLeft = 0,
+		kChannelRight = 1,
+		kChannelCenter = 2,  // center and mono are the same
+		kChannelMono = 2,
+		kChannelLFE = 3,
+		kChannelSurroundLeft = 4,
+		kChannelSurroundRight = 5,
+	};
+
 	CoreAudioBus();
 	virtual ~CoreAudioBus() = default;
 	void initialize(int channelCount, size_t length);
 
-	size_t validLength() const { return m_validLength; }	// フレーム数
+	size_t length() const { return m_validLength; }	// フレーム数
 	//void setValidLength(size_t length) { m_validLength = length; }
 	//size_t fullLength() const { return m_channels[0]->length(); }
 
 	int channelCount() const { return m_channels.size(); }
+	int numberOfChannels() const { return m_channels.size(); }
+
 	CoreAudioChannel* channel(int index) const { return m_channels[index]; }
+	CoreAudioChannel* channelByType(unsigned  type);
+	const CoreAudioChannel* channelByType(unsigned  type) const;
+
 	void setSilentAndZero();	// set silent flag, and zero clear buffers if needed. if set a valid samples in process(), please call clearSilentFlag()
 	void clearSilentFlag();
 	bool isSilent() const;	// return true if all child true.
+
 
 	void mergeToChannelBuffers(float* buffer, size_t length);
 	void separateFrom(const float* buffer, size_t length, int channelCount);
 	void sumFrom(const CoreAudioBus* bus);
 
+	// chromium interface
+	int NumberOfChannels() const { return m_channels.size(); }
+	CoreAudioChannel* Channel(int index) const { return channel(index); }
+	CoreAudioChannel* ChannelByType(unsigned  type) { return channelByType(type); }
+
+
 private:
 	List<Ref<CoreAudioChannel>> m_channels;
 	size_t m_validLength;
+
+	int m_layout = LayoutCanonical;
 };
 
 class CoreAudioInputPin
@@ -219,6 +272,66 @@ protected:
 	virtual void process() override;
 
 private:
+};
+
+class Audio3DModule
+{
+public:
+	template <typename T>
+	static void fixNANs(T& x)
+	{
+		if (std::isnan(T(x)) || std::isinf(x)) x = T(0);
+	}
+
+	inline static bool isZero(const Vector3 &v) { return fabsf(v.x) < FLT_EPSILON && fabsf(v.y) < FLT_EPSILON && fabsf(v.z) < FLT_EPSILON; }
+	inline static float magnitude(const Vector3 &v) { return sqrtf(Vector3::dot(v, v)); }
+
+	static float dopplerRate(const AudioListenerParams& listener, const AudioEmitterParams& emitter)
+	{
+		double dopplerShift = 1.0;
+
+		// TODO: ソースもリスナーも変更されていない場合の最適化
+		double dopplerFactor = listener.m_dopplerFactor;
+
+		if (dopplerFactor > 0.0)
+		{
+			double speedOfSound = listener.m_speedOfSound;
+
+			// Don't bother if both source and listener have no velocity
+			bool sourceHasVelocity = !isZero(emitter.m_velocity);
+			bool listenerHasVelocity = !isZero(listener.m_velocity);
+
+			if (sourceHasVelocity || listenerHasVelocity)
+			{
+				// Calculate the source to listener vector
+				Vector3 sourceToListener = emitter.m_position - listener.m_position;
+
+				double sourceListenerMagnitude = magnitude(sourceToListener);
+
+				double listenerProjection = Vector3::dot(sourceToListener, listener.m_velocity) / sourceListenerMagnitude;
+				double sourceProjection = Vector3::dot(sourceToListener, emitter.m_velocity) / sourceListenerMagnitude;
+
+				listenerProjection = -listenerProjection;
+				sourceProjection = -sourceProjection;
+
+				double scaledSpeedOfSound = speedOfSound / dopplerFactor;
+				listenerProjection = std::min(listenerProjection, scaledSpeedOfSound);
+				sourceProjection = std::min(sourceProjection, scaledSpeedOfSound);
+
+				dopplerShift = ((speedOfSound - dopplerFactor * listenerProjection) / (speedOfSound - dopplerFactor * sourceProjection));
+				fixNANs(dopplerShift); // avoid illegal values
+
+				// Limit the pitch shifting to 4 octaves up and 3 octaves down.
+				if (dopplerShift > 16.0)
+					dopplerShift = 16.0;
+				else if (dopplerShift < 0.125)
+					dopplerShift = 0.125;
+			}
+		}
+
+		return static_cast<float>(dopplerShift);
+	}
+
 };
 
 } // namespace detail
