@@ -3,43 +3,10 @@
 #include "CoreAudioNode.hpp"
 #include "AudioDecoder.hpp"	// for CoreAudioSourceNode
 #include "ChromiumWebCore.hpp"
+#include "blink/VectorMath.h"
 
 namespace ln {
 namespace detail {
-
-static void vadd(const float* source1P, const float* source2P, float* destP, size_t framesToProcess)
-{
-	int n = framesToProcess;
-	while (n--) {
-		*destP = *source1P + *source2P;
-		source1P++;
-		source2P++;
-		destP++;
-	}
-}
-
-void vsmul(const float* sourceP, int sourceStride, const float* scale, float* destP, int destStride, size_t framesToProcess)
-{
-	int n = framesToProcess;
-	float k = *scale;
-	while (n--) {
-		*destP = k * *sourceP;
-		sourceP += sourceStride;
-		destP += destStride;
-	}
-}
-
-void vclip(const float* sourceP, int sourceStride, const float* lowThresholdP, const float* highThresholdP, float* destP, int destStride, size_t framesToProcess)
-{
-	int n = framesToProcess;
-	float lowThreshold = *lowThresholdP;
-	float highThreshold = *highThresholdP;
-	while (n--) {
-		*destP = std::max(std::min(*sourceP, highThreshold), lowThreshold);
-		sourceP += sourceStride;
-		destP += destStride;
-	}
-}
 
 //==============================================================================
 // CoreAudioChannel
@@ -123,7 +90,7 @@ void CoreAudioChannel::sumFrom(const CoreAudioChannel * ch)
 		copyFrom(ch);
 	}
 	else {
-		vadd(constData(), ch->constData(), mutableData(), length());
+		::blink::VectorMath::vadd(constData(), 1, ch->constData(), 1, mutableData(), 1, length());
 	}
 }
 
@@ -343,8 +310,7 @@ void CoreAudioBus::copyWithGainFrom(const CoreAudioBus& source_bus, float gain)
 	else {
 		for (unsigned channel_index = 0; channel_index < number_of_channels;
 			++channel_index) {
-			vsmul(sources[channel_index], 1, &gain, destinations[channel_index], 1,
-				frames_to_process);
+			::blink::VectorMath::vsmul(sources[channel_index], 1, &gain, destinations[channel_index], 1, frames_to_process);
 		}
 	}
 }
@@ -820,7 +786,7 @@ void CoreAudioDestinationNode::render(float * outputBuffer, int length)
 	for (unsigned i = 0; i < bus->numberOfChannels(); ++i)
 	{
 		CoreAudioChannel * channel = bus->channel(i);
-		vclip(channel->constData(), 1, &kLowThreshold, &kHighThreshold, channel->mutableData(), 1, channel->length());
+		::blink::VectorMath::vclip(channel->constData(), 1, &kLowThreshold, &kHighThreshold, channel->mutableData(), 1, channel->length());
 	}
 
 	bus->mergeToChannelBuffers(outputBuffer, length);
