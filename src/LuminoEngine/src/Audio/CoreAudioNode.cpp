@@ -29,6 +29,17 @@ void vsmul(const float* sourceP, int sourceStride, const float* scale, float* de
 	}
 }
 
+void vclip(const float* sourceP, int sourceStride, const float* lowThresholdP, const float* highThresholdP, float* destP, int destStride, size_t framesToProcess)
+{
+	int n = framesToProcess;
+	float lowThreshold = *lowThresholdP;
+	float highThreshold = *highThresholdP;
+	while (n--) {
+		*destP = std::max(std::min(*sourceP, highThreshold), lowThreshold);
+		sourceP += sourceStride;
+		destP += destStride;
+	}
+}
 
 //==============================================================================
 // CoreAudioChannel
@@ -747,10 +758,12 @@ void CoreAudioPannerNode::process()
 	double azimuth;
 	double elevation;
 	azimuthElevation(&azimuth, &elevation);
+	//printf("azimuth:%f\n", azimuth);
 
 	m_panner->Pan(azimuth, elevation, source, destination, destination->length(), CoreAudioBus::kSpeakers);
 
 	float total_gain = distanceConeGain();
+	//printf("tt:%f\n", total_gain);
 
 	destination->copyWithGainFrom(*destination, total_gain);
 }
@@ -800,6 +813,16 @@ void CoreAudioDestinationNode::initialize()
 void CoreAudioDestinationNode::render(float * outputBuffer, int length)
 {
 	CoreAudioBus* bus = inputPin(0)->pull();
+
+	// Clamp values at 0db (i.e., [-1.0, 1.0])
+	const float kLowThreshold = -1.0f;
+	const float kHighThreshold = 1.0f;
+	for (unsigned i = 0; i < bus->numberOfChannels(); ++i)
+	{
+		CoreAudioChannel * channel = bus->channel(i);
+		vclip(channel->constData(), 1, &kLowThreshold, &kHighThreshold, channel->mutableData(), 1, channel->length());
+	}
+
 	bus->mergeToChannelBuffers(outputBuffer, length);
 }
 

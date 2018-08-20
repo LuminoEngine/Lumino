@@ -73,10 +73,10 @@ void ALAudioDevice::updateProcess()
 	// render data and set buffer to source
 	if (m_freeBuffers.size() > 0)
 	{
-		ElapsedTimer t;
+		//ElapsedTimer t;
 		render(m_renderdBuffer.data(), m_renderdBuffer.size());
 		AudioDecoder::convertFromFloat32(m_finalRenderdBuffer.data(), m_renderdBuffer.data(), m_finalRenderdBuffer.size(), PCMFormat::S16L);
-		std::cout << t.elapsedMicroseconds() << "[us]\n";
+		//std::cout << t.elapsedMicroseconds() << "[us]\n";
 
 		alBufferData(m_freeBuffers.back(), AL_FORMAT_STEREO16, m_finalRenderdBuffer.data(), sizeof(int16_t) * m_finalRenderdBuffer.size(), m_masterSampleRate);
 		alSourceQueueBuffers(m_masterSource, 1, &m_freeBuffers.back());
