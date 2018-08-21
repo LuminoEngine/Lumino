@@ -228,14 +228,17 @@ endif()
 #--------------------------------------
 # openal-soft
 
-ln_make_external_find_path(OpenAL_ROOT openal-soft)
+if (LN_EMSCRIPTEN)
 
-find_library(OpenAL_LIBRARY_RELEASE NAMES OpenAL32 PATHS ${OpenAL_ROOT} PATH_SUFFIXES lib)
-find_library(OpenAL_LIBRARY_DEBUG NAMES OpenAL32d PATHS ${OpenAL_ROOT} PATH_SUFFIXES lib)
+else()
+    ln_make_external_find_path(OpenAL_ROOT openal-soft)
 
-set(LIB_NAME OpenAL)
-add_library(OpenAL STATIC IMPORTED)
-set_target_properties(OpenAL PROPERTIES IMPORTED_LOCATION_RELEASE "${OpenAL_LIBRARY_RELEASE}")
-set_target_properties(OpenAL PROPERTIES IMPORTED_LOCATION_DEBUG "${OpenAL_LIBRARY_DEBUG}")
-set_target_properties(OpenAL PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${OpenAL_ROOT}/include)
+    find_library(OpenAL_LIBRARY_RELEASE NAMES OpenAL32 PATHS ${OpenAL_ROOT} PATH_SUFFIXES lib)
+    find_library(OpenAL_LIBRARY_DEBUG NAMES OpenAL32d PATHS ${OpenAL_ROOT} PATH_SUFFIXES lib)
 
+    set(LIB_NAME OpenAL)
+    add_library(OpenAL STATIC IMPORTED)
+    set_target_properties(OpenAL PROPERTIES IMPORTED_LOCATION_RELEASE "${OpenAL_LIBRARY_RELEASE}")
+    set_target_properties(OpenAL PROPERTIES IMPORTED_LOCATION_DEBUG "${OpenAL_LIBRARY_DEBUG}")
+    set_target_properties(OpenAL PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${OpenAL_ROOT}/include)
+endif()

@@ -1,4 +1,13 @@
 ﻿#pragma once
+#include <shared_mutex>
+
+#if LN_AUDIO_THREAD_ENABLED
+#define LN_AUDIO_WRITE_LOCK_COMMIT	std::shared_lock<std::shared_mutex> lock(commitMutex());
+#define LN_AUDIO_READ_LOCK_COMMIT	std::shared_lock<std::shared_mutex> lock(commitMutex());
+#else
+#define LN_AUDIO_WRITE_LOCK_COMMIT
+#define LN_AUDIO_READ_LOCK_COMMIT
+#endif
 
 namespace ln {
 class AudioContext;
@@ -24,7 +33,11 @@ protected:
 	void initialize();
 	virtual void dispose();
 	virtual detail::CoreAudioNode* coreNode() = 0;
-	virtual void commit();
+	virtual void commit();	// ロック済みの状態で呼ばれる
+
+#if LN_AUDIO_THREAD_ENABLED
+	std::shared_mutex& commitMutex();
+#endif
 
 private:
 	void addConnectionInput(AudioNode* inputSide);

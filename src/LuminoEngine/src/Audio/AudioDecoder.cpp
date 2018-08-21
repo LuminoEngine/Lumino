@@ -304,14 +304,14 @@ const AudioDataInfo& WaveDecoder::audioDataInfo() const
 	return m_info;
 }
 
-void WaveDecoder::seekToSample(uint32_t sampleNumber)
-{
-	m_stream->seek(m_pcmDataOffset + (sampleNumber * m_info.byteParSample), SeekOrigin::Begin);
-}
+//void WaveDecoder::seekToSample(uint32_t sampleNumber)
+//{
+//	m_stream->seek(m_pcmDataOffset + (sampleNumber * m_info.byteParSample), SeekOrigin::Begin);
+//}
 
 uint32_t WaveDecoder::read2(float* buffer, uint32_t requestFrames)
 {
-	size_t requestSamples = requestFrames * m_info.channelCount;
+	uint32_t requestSamples = requestFrames * m_info.channelCount;
 	size_t requestSize = requestSamples * m_info.byteParSample;
 	size_t readSize = m_stream->read(m_workBuffer.data(), requestSize);
 	uint32_t readSamples = readSize / m_info.byteParSample;

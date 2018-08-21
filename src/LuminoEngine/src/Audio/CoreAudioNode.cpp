@@ -11,29 +11,25 @@ namespace detail {
 //==============================================================================
 // CoreAudioOutputPin
 
-CoreAudioInputPin::CoreAudioInputPin()
+CoreAudioInputPin::CoreAudioInputPin(int channels)
 	: m_ownerNode(nullptr)
 {
+	m_summingBus = makeRef<CIAudioBus>();
+	m_summingBus->initialize2(channels, CoreAudioNode::ProcessingSizeInFrames);
 }
 
-void CoreAudioInputPin::initialize(int channels)
-{
-	Object::initialize();
-	m_summingBus = newObject<CoreAudioBus>(channels, CoreAudioNode::ProcessingSizeInFrames);
-}
-
-CoreAudioBus* CoreAudioInputPin::bus() const
+CIAudioBus* CoreAudioInputPin::bus() const
 {
 	return m_summingBus;
 }
 
-CoreAudioBus* CoreAudioInputPin::pull()
+CIAudioBus* CoreAudioInputPin::pull()
 {
 	m_summingBus->setSilentAndZero();
 
 	for (auto& output : m_connectedOutputPins)
 	{
-		CoreAudioBus* bus = output->pull();
+		CIAudioBus* bus = output->pull();
 		m_summingBus->sumFrom(bus);
 	}
 
@@ -68,23 +64,19 @@ void CoreAudioInputPin::disconnectAll()
 //==============================================================================
 // CoreAudioOutputPin
 
-CoreAudioOutputPin::CoreAudioOutputPin()
+CoreAudioOutputPin::CoreAudioOutputPin(int channels)
 	: m_ownerNode(nullptr)
 {
+	m_resultBus = makeRef<CIAudioBus>();
+	m_resultBus->initialize2(channels, CoreAudioNode::ProcessingSizeInFrames);
 }
 
-void CoreAudioOutputPin::initialize(int channels)
-{
-	Object::initialize();
-	m_resultBus = newObject<CoreAudioBus>(channels, CoreAudioNode::ProcessingSizeInFrames);
-}
-
-CoreAudioBus * CoreAudioOutputPin::bus() const
+CIAudioBus * CoreAudioOutputPin::bus() const
 {
 	return m_resultBus;
 }
 
-CoreAudioBus * CoreAudioOutputPin::pull()
+CIAudioBus * CoreAudioOutputPin::pull()
 {
 	m_ownerNode->processIfNeeded();
 	return m_resultBus;
@@ -174,7 +166,7 @@ void CoreAudioNode::disconnectAllOutputSide()
 
 CoreAudioInputPin* CoreAudioNode::addInputPin(int channels)
 {
-	auto pin = newObject<CoreAudioInputPin>(channels);
+	auto pin = makeRef<CoreAudioInputPin>(channels);
 	pin->setOwnerNode(this);
 	m_inputPins.add(pin);
 	return pin;
@@ -182,7 +174,7 @@ CoreAudioInputPin* CoreAudioNode::addInputPin(int channels)
 
 CoreAudioOutputPin* CoreAudioNode::addOutputPin(int channels)
 {
-	auto pin = newObject<CoreAudioOutputPin>(channels);
+	auto pin = makeRef<CoreAudioOutputPin>(channels);
 	pin->setOwnerNode(this);
 	m_outputPins.add(pin);
 	return pin;
@@ -261,7 +253,8 @@ void CoreAudioSourceNode::resetSourceBuffers()
 
 	m_readBuffer.resize(m_readFrames * numChannels);
 
-	m_sourceBus = newObject<CoreAudioBus>(numChannels, m_readFrames);
+	m_sourceBus = makeRef<CIAudioBus>();
+	m_sourceBus->initialize2(numChannels, m_readFrames);
 }
 
 double CoreAudioSourceNode::calculatePitchRate()
@@ -283,7 +276,7 @@ void CoreAudioSourceNode::process()
 	updatePlayingState();
 
 
-	CoreAudioBus* result = outputPin(0)->bus();
+	CIAudioBus* result = outputPin(0)->bus();
 
 	if (m_playingState != PlayingState::Playing) {
 		result->setSilentAndZero();
@@ -381,7 +374,7 @@ void CoreAudioSourceNode::process()
 	m_virtualReadIndex = virtualReadIndex;
 }
 
-bool CoreAudioSourceNode::renderSilenceAndFinishIfNotLooping(CoreAudioBus * bus, unsigned index, size_t framesToProcess)
+bool CoreAudioSourceNode::renderSilenceAndFinishIfNotLooping(CIAudioBus * bus, unsigned index, size_t framesToProcess)
 {
 	if (!loop())
 	{
@@ -442,14 +435,14 @@ void CoreAudioPannerNode::process()
 
 
 
-	CoreAudioBus* destination = outputPin(0)->bus();
+	CIAudioBus* destination = outputPin(0)->bus();
 
 	if (!m_panner.get()) {
 		destination->setSilentAndZero();
 		return;
 	}
 
-	CoreAudioBus* source = inputPin(0)->bus();
+	CIAudioBus* source = inputPin(0)->bus();
 	if (!source) {
 		destination->setSilentAndZero();
 		return;
@@ -460,7 +453,7 @@ void CoreAudioPannerNode::process()
 	azimuthElevation(&azimuth, &elevation);
 	//printf("azimuth:%f\n", azimuth);
 
-	m_panner->Pan(azimuth, elevation, source, destination, destination->length(), CoreAudioBus::kSpeakers);
+	m_panner->Pan(azimuth, elevation, source, destination, destination->length(), CIAudioBus::kSpeakers);
 
 	float total_gain = distanceConeGain();
 	//printf("tt:%f\n", total_gain);
@@ -512,7 +505,7 @@ void CoreAudioDestinationNode::initialize()
 
 void CoreAudioDestinationNode::render(float * outputBuffer, int length)
 {
-	CoreAudioBus* bus = inputPin(0)->pull();
+	CIAudioBus* bus = inputPin(0)->pull();
 
 	// Clamp values at 0db (i.e., [-1.0, 1.0])
 	const float kLowThreshold = -1.0f;

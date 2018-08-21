@@ -30,8 +30,6 @@ void AudioNode::dispose()
 
 void AudioNode::commit()
 {
-	std::shared_lock<std::shared_mutex> lock(context()->commitMutex);
-
 	if (m_inputConnectionsDirty)
 	{
 		coreNode()->disconnectAllInputSide();
@@ -51,13 +49,20 @@ void AudioNode::commit()
 	}
 }
 
+#if LN_AUDIO_THREAD_ENABLED
+std::shared_mutex& AudioNode::commitMutex()
+{
+	return context()->commitMutex;
+}
+#endif
+
 void AudioNode::addConnectionInput(AudioNode * inputSide)
 {
 	if (LN_REQUIRE(inputSide)) return;
 	if (LN_REQUIRE(context() == inputSide->context())) return;
 	if (!m_inputConnections.contains(inputSide))
 	{
-		std::shared_lock<std::shared_mutex> lock(context()->commitMutex);
+		LN_AUDIO_WRITE_LOCK_COMMIT;
 		m_inputConnections.add(inputSide);
 		m_inputConnectionsDirty = true;
 	}
@@ -69,7 +74,7 @@ void AudioNode::addConnectionOutput(AudioNode * outputSide)
 	if (LN_REQUIRE(context() == outputSide->context())) return;
 	if (!m_outputConnections.contains(outputSide))
 	{
-		std::shared_lock<std::shared_mutex> lock(context()->commitMutex);
+		LN_AUDIO_WRITE_LOCK_COMMIT;
 		m_outputConnections.add(outputSide);
 		m_outputConnectionsDirty = true;
 	}

@@ -53,6 +53,7 @@ void AudioContext::dispose()
 
 void AudioContext::process()
 {
+	commitGraphs();
 	m_device->updateProcess();
 }
 
@@ -68,6 +69,10 @@ detail::AudioContextCore* AudioContext::coreObject()
 
 void AudioContext::commitGraphs()
 {
+#if LN_AUDIO_THREAD_ENABLED
+	std::shared_lock<std::shared_mutex> lock(commitMutex);
+#endif
+
 	for (AudioNode* node : m_allAudioNodes)
 	{
 		node->commit();

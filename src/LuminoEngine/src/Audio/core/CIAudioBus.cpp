@@ -88,17 +88,16 @@ void CIAudioChannel::sumFrom(const CIAudioChannel * ch)
 }
 
 //==============================================================================
-// CoreAudioBus
+// CIAudioBus
 
 const unsigned kMaxBusChannels = 32;
 
-CoreAudioBus::CoreAudioBus()
+CIAudioBus::CIAudioBus()
 {
 }
 
-void CoreAudioBus::initialize(int channelCount, size_t length)
+void CIAudioBus::initialize2(int channelCount, size_t length)
 {
-	Object::initialize();
 	for (int i = 0; i < channelCount; ++i)
 	{
 		m_channels.add(makeRef<CIAudioChannel>(length));
@@ -106,7 +105,7 @@ void CoreAudioBus::initialize(int channelCount, size_t length)
 	m_validLength = length;
 }
 
-CIAudioChannel* CoreAudioBus::channelByType(unsigned channel_type)
+CIAudioChannel* CIAudioBus::channelByType(unsigned channel_type)
 {
 	// For now we only support canonical channel layouts...
 	if (m_layout != kLayoutCanonical)
@@ -181,26 +180,26 @@ CIAudioChannel* CoreAudioBus::channelByType(unsigned channel_type)
 	return nullptr;
 }
 
-const CIAudioChannel* CoreAudioBus::channelByType(unsigned type) const
+const CIAudioChannel* CIAudioBus::channelByType(unsigned type) const
 {
-	return const_cast<CoreAudioBus*>(this)->channelByType(type);
+	return const_cast<CIAudioBus*>(this)->channelByType(type);
 }
 
-void CoreAudioBus::setSilentAndZero()
+void CIAudioBus::setSilentAndZero()
 {
 	for (auto& ch : m_channels) {
 		ch->setSilentAndZero();
 	}
 }
 
-void CoreAudioBus::clearSilentFlag()
+void CIAudioBus::clearSilentFlag()
 {
 	for (auto& ch : m_channels) {
 		ch->clearSilentFlag();
 	}
 }
 
-bool CoreAudioBus::isSilent() const
+bool CIAudioBus::isSilent() const
 {
 	for (auto& ch : m_channels) {
 		if (!ch->isSilent()) {
@@ -210,7 +209,7 @@ bool CoreAudioBus::isSilent() const
 	return true;
 }
 
-void CoreAudioBus::mergeToChannelBuffers(float* buffer, size_t length)
+void CIAudioBus::mergeToChannelBuffers(float* buffer, size_t length)
 {
 	assert(m_channels.size() == 2);
 	assert(m_channels[0]->length() * 2 == length);
@@ -226,7 +225,7 @@ void CoreAudioBus::mergeToChannelBuffers(float* buffer, size_t length)
 	}
 }
 
-void CoreAudioBus::separateFrom(const float * buffer, size_t length, int channelCount)
+void CIAudioBus::separateFrom(const float * buffer, size_t length, int channelCount)
 {
 	assert(m_channels.size() == 2);
 	assert(m_channels[0]->length() * 2 >= length);	// length が少ない分にはOK。多いのはあふれるのでNG
@@ -237,7 +236,7 @@ void CoreAudioBus::separateFrom(const float * buffer, size_t length, int channel
 	}
 }
 
-void CoreAudioBus::sumFrom(const CoreAudioBus* bus)
+void CIAudioBus::sumFrom(const CIAudioBus* bus)
 {
 	int thisChannelCount = channelCount();
 	if (thisChannelCount == bus->channelCount())
@@ -253,7 +252,7 @@ void CoreAudioBus::sumFrom(const CoreAudioBus* bus)
 	}
 }
 
-void CoreAudioBus::copyWithGainFrom(const CoreAudioBus& source_bus, float gain)
+void CIAudioBus::copyWithGainFrom(const CIAudioBus& source_bus, float gain)
 {
 	if (!topologyMatches(source_bus)) {
 		LN_UNREACHABLE();
@@ -309,7 +308,7 @@ void CoreAudioBus::copyWithGainFrom(const CoreAudioBus& source_bus, float gain)
 }
 
 // Returns true if the channel count and frame-size match.
-bool CoreAudioBus::topologyMatches(const CoreAudioBus& bus) const
+bool CIAudioBus::topologyMatches(const CIAudioBus& bus) const
 {
 	if (NumberOfChannels() != bus.NumberOfChannels())
 		return false;  // channel mismatch

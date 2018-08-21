@@ -15,9 +15,9 @@
 
 namespace ln {
 namespace detail {
-class CoreAudioBus;
+class CIAudioBus;
 namespace blink {
-using AudioBus = CoreAudioBus;
+using AudioBus = CIAudioBus;
 
 class HRTFDatabaseLoader;
 

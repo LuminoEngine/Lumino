@@ -50,8 +50,8 @@ private:
 };
 
 // collection of a audio channels.
-class CoreAudioBus
-	: public Object
+class CIAudioBus
+	: public RefObject
 {
 public:
 	enum
@@ -75,9 +75,9 @@ public:
 		kChannelSurroundRight = 5,
 	};
 
-	CoreAudioBus();
-	virtual ~CoreAudioBus() = default;
-	void initialize(int channelCount, size_t length);
+	CIAudioBus();
+	virtual ~CIAudioBus() = default;
+	void initialize2(int channelCount, size_t length);
 
 	size_t length() const { return m_validLength; }	// フレーム数
 	//void setValidLength(size_t length) { m_validLength = length; }
@@ -97,10 +97,10 @@ public:
 
 	void mergeToChannelBuffers(float* buffer, size_t length);
 	void separateFrom(const float* buffer, size_t length, int channelCount);
-	void sumFrom(const CoreAudioBus* bus);
+	void sumFrom(const CIAudioBus* bus);
 
-	void copyWithGainFrom(const CoreAudioBus& source_bus, float gain);
-	bool topologyMatches(const CoreAudioBus& bus) const;
+	void copyWithGainFrom(const CIAudioBus& source_bus, float gain);
+	bool topologyMatches(const CIAudioBus& bus) const;
 
 	// chromium interface
 	int NumberOfChannels() const { return m_channels.size(); }

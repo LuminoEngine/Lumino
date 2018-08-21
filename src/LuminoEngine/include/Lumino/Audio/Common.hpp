@@ -1,5 +1,10 @@
 ﻿#pragma once
 
+#ifdef __EMSCRIPTEN__
+#else
+#define LN_AUDIO_THREAD_ENABLED 1
+#endif
+
 namespace ln {
 
 namespace detail {

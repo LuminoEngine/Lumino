@@ -2,6 +2,8 @@
 #include "AudioDevice.hpp"	// for IAudioDeviceRenderCallback
 #include "core/CIAudioBus.hpp"
 
+#include <float.h>	// for FLT_EPSILON
+
 namespace ln {
 namespace detail {
 class CoreAudioNode;
@@ -21,16 +23,15 @@ private:
 };
 
 class CoreAudioInputPin
-	: public Object
+	: public RefObject
 {
 public:
-	CoreAudioInputPin();
+	CoreAudioInputPin(int channels);
 	virtual ~CoreAudioInputPin() = default;
-	void initialize(int channels);
 
-	CoreAudioBus* bus() const;
+	CIAudioBus* bus() const;
 
-	CoreAudioBus* pull();
+	CIAudioBus* pull();
 
 	// TODO: internal
 	void setOwnerNode(CoreAudioNode* node) { m_ownerNode = node; }
@@ -45,22 +46,21 @@ public:
 private:
 
 	CoreAudioNode * m_ownerNode;
-	Ref<CoreAudioBus> m_summingBus;	// Total output
+	Ref<CIAudioBus> m_summingBus;	// Total output
 	List<Ref<CoreAudioOutputPin>> m_connectedOutputPins;
 };
 
 class CoreAudioOutputPin
-	: public Object
+	: public RefObject
 {
 public:
-	CoreAudioOutputPin();
+	CoreAudioOutputPin(int channels);
 	virtual ~CoreAudioOutputPin() = default;
-	void initialize(int channels);
 
-	CoreAudioBus* bus() const;
+	CIAudioBus* bus() const;
 
 	// process() から呼び出してはならない
-	CoreAudioBus* pull();
+	CIAudioBus* pull();
 
 
 	// TODO: internal
@@ -74,7 +74,7 @@ public:
 
 private:
 	CoreAudioNode* m_ownerNode;
-	Ref<CoreAudioBus> m_resultBus;	// result of m_ownerNode->process()
+	Ref<CIAudioBus> m_resultBus;	// result of m_ownerNode->process()
 	List<Ref<CoreAudioInputPin>> m_connectedInputPins;
 };
 
@@ -153,12 +153,12 @@ private:
 	unsigned numberOfChannels() const;
 	void resetSourceBuffers();
 	double calculatePitchRate();
-	bool renderSilenceAndFinishIfNotLooping(CoreAudioBus * bus, unsigned index, size_t framesToProcess);
+	bool renderSilenceAndFinishIfNotLooping(CIAudioBus * bus, unsigned index, size_t framesToProcess);
 	void updatePlayingState();
 
 	Ref<AudioDecoder> m_decoder;
 	std::vector<float> m_readBuffer;
-	Ref<CoreAudioBus> m_sourceBus;
+	Ref<CIAudioBus> m_sourceBus;
 
 	// Current playback position.
 	// Since it's floating-point, it interpolate sub-samples.

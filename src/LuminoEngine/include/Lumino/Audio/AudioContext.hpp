@@ -8,6 +8,7 @@ class AudioDevice;
 class AudioContextCore;
 class CoreAudioDestinationNode;
 } // namespace detail
+class AudioNode;
 class AudioDestinationNode;
 
 class AudioContext
@@ -30,13 +31,16 @@ public:
 	detail::AudioContextCore* coreObject();
 
 LN_INTERNAL_ACCESS:
+#if LN_AUDIO_THREAD_ENABLED
 	std::shared_mutex commitMutex;
+#endif
 
 	void addAudioNode(AudioNode* node) { m_allAudioNodes.add(node); }
 	void removeAudioNode(AudioNode* node) { m_allAudioNodes.remove(node); }
-	void commitGraphs();
 
 private:
+	void commitGraphs();
+
 	detail::AudioManager* m_manager;
 	Ref<detail::AudioDevice> m_device;
 	Ref<detail::AudioContextCore> m_audioContextHandler;

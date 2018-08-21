@@ -30,6 +30,10 @@ private:
 	Ref<AudioContext> m_primaryContext;
 	Ref<LinearAllocatorPageManager> m_linearAllocatorPageManager;
 	Ref<RenderingCommandList> m_primaryRenderingCommandList;
+
+#if LN_AUDIO_THREAD_ENABLED
+	std::unique_ptr<std::thread> m_audioThread;
+#endif
 };
 
 } // namespace detail
