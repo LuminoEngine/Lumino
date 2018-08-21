@@ -9,7 +9,7 @@
 namespace ln {
 namespace detail {
 
-	//WaveDecoder wd;// TODO: test
+	WaveDecoder wd;// TODO: test
 	//std::vector<float> tmpBuffer;
 
 //==============================================================================
@@ -37,8 +37,10 @@ void ALAudioDevice::initialize()
 	//m_finalRenderdBuffer.resize(m_masterSampleRate * m_masterChannels);
 
 	// TODO: test
-	//auto diag = newObject<DiagnosticsManager>();
+	auto diag = newObject<DiagnosticsManager>();
+	wd.initialize(FileStream::create(u"Assets/8_MapBGM2.wav"), diag);
 	//wd.initialize(FileStream::create(u"D:\\tmp\\8_MapBGM2.wav"), diag);
+	printf("ff test\n");
 }
 
 void ALAudioDevice::dispose()
@@ -73,10 +75,35 @@ void ALAudioDevice::updateProcess()
 	// render data and set buffer to source
 	if (m_freeBuffers.size() > 0)
 	{
+#if 1
+		wd.read2((float*)m_finalRenderdBuffer.data(), CoreAudioNode::ProcessingSizeInFrames);
+#else
 		//ElapsedTimer t;
+		memset(m_renderdBuffer.data(), 0, sizeof(float) * m_renderdBuffer.size());
 		render(m_renderdBuffer.data(), m_renderdBuffer.size());
 		AudioDecoder::convertFromFloat32(m_finalRenderdBuffer.data(), m_renderdBuffer.data(), m_finalRenderdBuffer.size(), PCMFormat::S16L);
 		//std::cout << t.elapsedMicroseconds() << "[us]\n";
+#endif
+		static int init = 0;
+		if (init < 10) {
+			printf("\n");
+			int total = 0;
+			for (size_t i = 0; i < m_finalRenderdBuffer.size(); i++) {
+				total += m_finalRenderdBuffer[i];
+			}
+			printf("total(%d) : %d\n", init, total);
+			init++;
+		}
+		//int mmin = 0; int mmax = 0;
+		//for (size_t i = 0; i < m_finalRenderdBuffer.size(); i++) {
+		//	int d = m_finalRenderdBuffer[i];
+		//	mmin = std::min(mmin, d);
+		//	mmax = std::max(mmax, d);
+		//}
+		//if (INT16_MAX <= mmax || INT16_MIN >= mmin) {
+		//	printf("mm : %d %d\n", mmin, mmax);
+		//}
+		memset(m_finalRenderdBuffer.data(), 0, sizeof(int16_t) * m_finalRenderdBuffer.size());
 
 		alBufferData(m_freeBuffers.back(), AL_FORMAT_STEREO16, m_finalRenderdBuffer.data(), sizeof(int16_t) * m_finalRenderdBuffer.size(), m_masterSampleRate);
 		alSourceQueueBuffers(m_masterSource, 1, &m_freeBuffers.back());

@@ -21,11 +21,13 @@ void AudioNode::initialize()
 {
 	Object::initialize();
 	m_context =	detail::EngineDomain::audioManager()->primaryContext();
+	m_context->addAudioNode(this);
 }
 
 void AudioNode::dispose()
 {
 	Object::dispose();
+	m_context->removeAudioNode(this);
 }
 
 void AudioNode::commit()

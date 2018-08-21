@@ -41,7 +41,7 @@ int main(int argc, char** argv)
 	//return 0;
 	// Audio test
 	
-#if 1
+#if 0
 	auto source = newObject<AudioSourceNode>(u"D:\\tmp\\8_MapBGM2.wav");
 	auto panner = newObject<AudioPannerNode>();
 	AudioNode::connect(source, panner);
@@ -51,7 +51,7 @@ int main(int argc, char** argv)
 #else
 	auto source = newObject<AudioSourceNode>(u"D:\\tmp\\8_MapBGM2.wav");
 	AudioNode::connect(source, AudioContext::primary()->destination());
-	source->setPlaybackRate(1.2);
+	//source->setPlaybackRate(1.2);
 	source->start();
 #endif
 

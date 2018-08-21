@@ -289,7 +289,6 @@ void CoreAudioSourceNode::process()
 
 	size_t bufferLength = m_decoder->read2(m_readBuffer.data(), m_readFrames);
 	size_t readSamples = bufferLength * numChannels;
-	m_sourceBus->separateFrom(m_readBuffer.data(), readSamples, numChannels);
 
 
 
@@ -311,7 +310,14 @@ void CoreAudioSourceNode::process()
 	double virtualEndFrame = bufferLength;
 	// TODO: loop
 
+	if (1)
 	{
+		result->separateFrom(m_readBuffer.data(), readSamples, numChannels);
+	}
+	else
+	{
+		m_sourceBus->separateFrom(m_readBuffer.data(), readSamples, numChannels);
+
 		int framesToProcess = result->length();
 		while (framesToProcess--)
 		{
