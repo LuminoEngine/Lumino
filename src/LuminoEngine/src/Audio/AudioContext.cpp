@@ -66,5 +66,13 @@ detail::AudioContextCore* AudioContext::coreObject()
 	return m_audioContextHandler;
 }
 
+void AudioContext::commitGraphs()
+{
+	for (AudioNode* node : m_allAudioNodes)
+	{
+		node->commit();
+	}
+}
+
 } // namespace ln
 

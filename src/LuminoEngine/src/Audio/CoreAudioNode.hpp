@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "AudioDevice.hpp"	// for IAudioDeviceRenderCallback
+#include "core/CIAudioBus.hpp"
 
 namespace ln {
 namespace detail {
@@ -8,118 +9,6 @@ class CoreAudioInputPin;
 class CoreAudioOutputPin;
 class AudioDecoder;
 
-//enum class Channel : int
-//{
-//	First = 0,
-//	Left = 0,
-//	Right = 1,
-//	Center = 2, // center and mono are the same
-//	Mono = 2,
-//	LFE = 3,
-//	SurroundLeft = 4,
-//	SurroundRight = 5,
-//};
-
-// CoreAudioNode 間の音声データの受け渡しに使用するバッファ。
-// データは 浮動小数点サンプルで、範囲 -1.0 ~ +1.0 となっている。
-class CoreAudioChannel
-	: public Object
-{
-public:
-	CoreAudioChannel();
-	virtual ~CoreAudioChannel() = default;
-	void initialize(size_t length);
-
-	float* mutableData() { clearSilentFlag();  return m_data.data(); }	// Direct access to PCM sample data. clears silent flag.
-	const float* constData() const { return m_data.data(); }
-	size_t length() const { return m_data.size(); }
-
-	void setSilentAndZero();
-	void clearSilentFlag() { m_isSilent = false; }
-	bool isSilent() const { return m_isSilent; }
-
-	//void clear();
-	void copyTo(float* buffer, size_t bufferLength, size_t stride) const;
-	void copyFrom(const float* buffer, size_t bufferLength, size_t stride);
-	void copyFrom(const CoreAudioChannel* ch);
-	void sumFrom(const CoreAudioChannel* ch);
-
-
-	// chromium interface
-	float* MutableData() { return mutableData(); }
-	const float* Data() const { return constData(); }
-
-
-private:
-	std::vector<float> m_data;
-	bool m_isSilent;
-};
-
-// CoreAudioNode 間の音声データの受け渡しに使用する CoreAudioChannel のコレクション。
-class CoreAudioBus
-	: public Object
-{
-public:
-	enum
-	{
-		kLayoutCanonical = 0
-	};
-
-	enum ChannelInterpretation {
-		kSpeakers,
-		kDiscrete,
-	};
-
-
-	enum {
-		kChannelLeft = 0,
-		kChannelRight = 1,
-		kChannelCenter = 2,  // center and mono are the same
-		kChannelMono = 2,
-		kChannelLFE = 3,
-		kChannelSurroundLeft = 4,
-		kChannelSurroundRight = 5,
-	};
-
-	CoreAudioBus();
-	virtual ~CoreAudioBus() = default;
-	void initialize(int channelCount, size_t length);
-
-	size_t length() const { return m_validLength; }	// フレーム数
-	//void setValidLength(size_t length) { m_validLength = length; }
-	//size_t fullLength() const { return m_channels[0]->length(); }
-
-	int channelCount() const { return m_channels.size(); }
-	int numberOfChannels() const { return m_channels.size(); }
-
-	CoreAudioChannel* channel(int index) const { return m_channels[index]; }
-	CoreAudioChannel* channelByType(unsigned  type);
-	const CoreAudioChannel* channelByType(unsigned  type) const;
-
-	void setSilentAndZero();	// set silent flag, and zero clear buffers if needed. if set a valid samples in process(), please call clearSilentFlag()
-	void clearSilentFlag();
-	bool isSilent() const;	// return true if all child true.
-
-
-	void mergeToChannelBuffers(float* buffer, size_t length);
-	void separateFrom(const float* buffer, size_t length, int channelCount);
-	void sumFrom(const CoreAudioBus* bus);
-
-	void copyWithGainFrom(const CoreAudioBus& source_bus, float gain);
-	bool topologyMatches(const CoreAudioBus& bus) const;
-
-	// chromium interface
-	int NumberOfChannels() const { return m_channels.size(); }
-	CoreAudioChannel* Channel(int index) const { return channel(index); }
-	CoreAudioChannel* ChannelByType(unsigned  type) { return channelByType(type); }
-
-
-private:
-	List<Ref<CoreAudioChannel>> m_channels;
-	size_t m_validLength;
-
-	int m_layout = kLayoutCanonical;
-};
 
 class AudioContextCore
 	: public RefObject
@@ -146,7 +35,12 @@ public:
 	// TODO: internal
 	void setOwnerNode(CoreAudioNode* node) { m_ownerNode = node; }
 	void addLinkOutput(CoreAudioOutputPin* output);
+	void removeLinkOutput(CoreAudioOutputPin* output);
+	
 
+	const List<Ref<CoreAudioOutputPin>>& connectedOutputPins() const { return m_connectedOutputPins; }
+	void disconnect(int index);
+	void disconnectAll();
 
 private:
 
@@ -172,6 +66,11 @@ public:
 	// TODO: internal
 	void setOwnerNode(CoreAudioNode* node) { m_ownerNode = node; }
 	void addLinkInput(CoreAudioInputPin* input);
+	void removeLinkInput(CoreAudioInputPin* input);
+
+	const List<Ref<CoreAudioInputPin>>& connectedInputPins() const { return m_connectedInputPins; }
+	void disconnect(int index);
+	void disconnectAll();
 
 private:
 	CoreAudioNode* m_ownerNode;
@@ -204,6 +103,9 @@ public:
 
 	// in=1, out=1 用のユーティリティ
 	static void connect(CoreAudioNode* outputSide, CoreAudioNode* inputSide);
+
+	void disconnectAllInputSide();
+	void disconnectAllOutputSide();
 
 protected:
 	// Do not call after object initialzation.

@@ -106,6 +106,8 @@ set(LN_SOURCES_Audio
 	src/Audio/CoreAudioNode.hpp
 	src/Audio/blink/VectorMath.cpp
 	src/Audio/blink/VectorMath.h
+	src/Audio/core/CIAudioBus.cpp
+	src/Audio/core/CIAudioBus.hpp
 )
 
 set(LN_SOURCES_Graphics

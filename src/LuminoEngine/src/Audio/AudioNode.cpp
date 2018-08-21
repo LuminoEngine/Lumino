@@ -12,6 +12,8 @@ namespace ln {
 // AudioNode
 
 AudioNode::AudioNode()
+	: m_inputConnectionsDirty(false)
+	, m_outputConnectionsDirty(false)
 {
 }
 
@@ -21,23 +23,62 @@ void AudioNode::initialize()
 	m_context =	detail::EngineDomain::audioManager()->primaryContext();
 }
 
-void AudioNode::connect(AudioNode * outputSide, AudioNode * inputSide)
+void AudioNode::dispose()
+{
+	Object::dispose();
+}
+
+void AudioNode::commit()
+{
+	std::shared_lock<std::shared_mutex> lock(context()->commitMutex);
+
+	if (m_inputConnectionsDirty)
+	{
+		coreNode()->disconnectAllInputSide();
+		for (auto& node : m_inputConnections) {
+			detail::CoreAudioNode::connect(node->coreNode(), coreNode());
+		}
+		m_inputConnectionsDirty = false;
+	}
+
+	if (m_outputConnectionsDirty)
+	{
+		coreNode()->disconnectAllOutputSide();
+		for (auto& node : m_outputConnections) {
+			detail::CoreAudioNode::connect(coreNode(), node->coreNode());
+		}
+		m_outputConnectionsDirty = false;
+	}
+}
+
+void AudioNode::addConnectionInput(AudioNode * inputSide)
+{
+	if (LN_REQUIRE(inputSide)) return;
+	if (LN_REQUIRE(context() == inputSide->context())) return;
+	if (!m_inputConnections.contains(inputSide))
+	{
+		std::shared_lock<std::shared_mutex> lock(context()->commitMutex);
+		m_inputConnections.add(inputSide);
+		m_inputConnectionsDirty = true;
+	}
+}
+
+void AudioNode::addConnectionOutput(AudioNode * outputSide)
 {
 	if (LN_REQUIRE(outputSide)) return;
-	if (LN_REQUIRE(inputSide)) return;
-	if (LN_REQUIRE(outputSide->m_context == inputSide->m_context)) return;
+	if (LN_REQUIRE(context() == outputSide->context())) return;
+	if (!m_outputConnections.contains(outputSide))
+	{
+		std::shared_lock<std::shared_mutex> lock(context()->commitMutex);
+		m_outputConnections.add(outputSide);
+		m_outputConnectionsDirty = true;
+	}
+}
 
-	detail::AudioManager* manager = outputSide->m_context->manager();
-	Ref<detail::CoreAudioNode> output = outputSide->coreNode();
-	Ref<detail::CoreAudioNode> input = inputSide->coreNode();
-	LN_ENQUEUE_RENDER_COMMAND_2(
-		connect, manager,
-		Ref<detail::CoreAudioNode>, output,
-		Ref<detail::CoreAudioNode>, input,
-		{
-			detail::CoreAudioNode::connect(output, input);
-		});
-
+void AudioNode::connect(AudioNode * outputSide, AudioNode * inputSide)
+{
+	outputSide->addConnectionOutput(inputSide);
+	inputSide->addConnectionInput(outputSide);
 }
 
 //==============================================================================

@@ -35,6 +35,7 @@ void AudioManager::dispose()
 
 void AudioManager::update()
 {
+	m_primaryContext->commitGraphs();
 	m_primaryContext->process();
 }
 

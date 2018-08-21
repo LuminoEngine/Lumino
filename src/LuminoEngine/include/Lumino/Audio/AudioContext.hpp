@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <shared_mutex>
 
 namespace ln {
 namespace detail {
@@ -28,12 +29,21 @@ public:
 
 	detail::AudioContextCore* coreObject();
 
+LN_INTERNAL_ACCESS:
+	std::shared_mutex commitMutex;
+
+	void addAudioNode(AudioNode* node) { m_allAudioNodes.add(node); }
+	void removeAudioNode(AudioNode* node) { m_allAudioNodes.remove(node); }
+	void commitGraphs();
+
 private:
 	detail::AudioManager* m_manager;
 	Ref<detail::AudioDevice> m_device;
 	Ref<detail::AudioContextCore> m_audioContextHandler;
 	Ref<detail::CoreAudioDestinationNode> m_coreDestinationNode;
 	Ref<AudioDestinationNode> m_destinationNode;
+
+	List<AudioNode*> m_allAudioNodes;
 };
 
 } // namespace ln

@@ -22,10 +22,21 @@ protected:
 	AudioNode();
 	virtual ~AudioNode() = default;
 	void initialize();
+	virtual void dispose();
 	virtual detail::CoreAudioNode* coreNode() = 0;
+	virtual void commit();
 
 private:
+	void addConnectionInput(AudioNode* inputSide);
+	void addConnectionOutput(AudioNode* outputSide);
+
 	AudioContext* m_context;
+	List<Ref<AudioNode>> m_inputConnections;	// input side in this node
+	List<Ref<AudioNode>> m_outputConnections;	// output side in this node
+	bool m_inputConnectionsDirty;
+	bool m_outputConnectionsDirty;
+
+	friend class AudioContext;
 };
 
 class AudioSourceNode
