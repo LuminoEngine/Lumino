@@ -316,7 +316,7 @@ uint32_t WaveDecoder::read2(float* buffer, uint32_t requestFrames)
 	size_t readSize = m_stream->read(m_workBuffer.data(), requestSize);
 	uint32_t readSamples = readSize / m_info.byteParSample;
 	uint32_t readFrames = readSamples / m_info.channelCount;
-#if 1
+#if 0
 	memcpy(buffer, m_workBuffer.data(), readSize);
 #else
 	convertToFloat32(buffer, m_workBuffer.data(), std::min(readSamples, requestSamples), m_info.sourceFormat);

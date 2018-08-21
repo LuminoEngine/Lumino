@@ -29,7 +29,7 @@ void ALAudioDevice::initialize()
 	m_freeBuffers.resize(2);
 	alGenBuffers(2, m_freeBuffers.data());
 
-	m_masterSampleRate = 44100;	// TODO
+	m_masterSampleRate = 48000;//44100;	// TODO
 	m_masterChannels = 2;
 
 	m_renderdBuffer.resize(CoreAudioNode::ProcessingSizeInFrames * m_masterChannels);
@@ -75,8 +75,10 @@ void ALAudioDevice::updateProcess()
 	// render data and set buffer to source
 	if (m_freeBuffers.size() > 0)
 	{
-#if 1
+#if 0
 		wd.read2((float*)m_finalRenderdBuffer.data(), CoreAudioNode::ProcessingSizeInFrames);
+#elif 1
+		wd.read2(m_renderdBuffer.data(), CoreAudioNode::ProcessingSizeInFrames);
 #else
 		//ElapsedTimer t;
 		memset(m_renderdBuffer.data(), 0, sizeof(float) * m_renderdBuffer.size());
@@ -84,16 +86,16 @@ void ALAudioDevice::updateProcess()
 		AudioDecoder::convertFromFloat32(m_finalRenderdBuffer.data(), m_renderdBuffer.data(), m_finalRenderdBuffer.size(), PCMFormat::S16L);
 		//std::cout << t.elapsedMicroseconds() << "[us]\n";
 #endif
-		static int init = 0;
-		if (init < 10) {
-			printf("\n");
-			int total = 0;
-			for (size_t i = 0; i < m_finalRenderdBuffer.size(); i++) {
-				total += m_finalRenderdBuffer[i];
-			}
-			printf("total(%d) : %d\n", init, total);
-			init++;
-		}
+		//static int init = 0;
+		//if (init < 10) {
+		//	printf("\n");
+		//	int total = 0;
+		//	for (size_t i = 0; i < m_finalRenderdBuffer.size(); i++) {
+		//		total += m_finalRenderdBuffer[i];
+		//	}
+		//	printf("total(%d) : %d\n", init, total);
+		//	init++;
+		//}
 		//int mmin = 0; int mmax = 0;
 		//for (size_t i = 0; i < m_finalRenderdBuffer.size(); i++) {
 		//	int d = m_finalRenderdBuffer[i];
@@ -103,9 +105,13 @@ void ALAudioDevice::updateProcess()
 		//if (INT16_MAX <= mmax || INT16_MIN >= mmin) {
 		//	printf("mm : %d %d\n", mmin, mmax);
 		//}
-		memset(m_finalRenderdBuffer.data(), 0, sizeof(int16_t) * m_finalRenderdBuffer.size());
+		//memset(m_finalRenderdBuffer.data(), 0, sizeof(int16_t) * m_finalRenderdBuffer.size());
 
+#if 1
+		alBufferData(m_freeBuffers.back(), 0x10011, m_renderdBuffer.data(), sizeof(float) * m_renderdBuffer.size(), m_masterSampleRate);
+#else
 		alBufferData(m_freeBuffers.back(), AL_FORMAT_STEREO16, m_finalRenderdBuffer.data(), sizeof(int16_t) * m_finalRenderdBuffer.size(), m_masterSampleRate);
+#endif
 		alSourceQueueBuffers(m_masterSource, 1, &m_freeBuffers.back());
 		m_freeBuffers.pop_back();
 
