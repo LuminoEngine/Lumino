@@ -14,6 +14,7 @@ public:
 	virtual ~ALAudioDevice() = default;
 	void initialize();
 	virtual void dispose() override;
+	virtual int deviceSamplingRate() override;
 	virtual void updateProcess() override;
 
 private:

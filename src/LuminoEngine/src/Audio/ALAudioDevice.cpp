@@ -29,7 +29,7 @@ void ALAudioDevice::initialize()
 	m_freeBuffers.resize(2);
 	alGenBuffers(2, m_freeBuffers.data());
 
-	m_masterSampleRate = 48000;//44100;	// TODO
+	m_masterSampleRate = deviceSamplingRate();//44100;	// TODO
 	m_masterChannels = 2;
 
 	m_renderdBuffer.resize(CoreAudioNode::ProcessingSizeInFrames * m_masterChannels);
@@ -56,6 +56,11 @@ void ALAudioDevice::dispose()
 		alcCloseDevice(m_alDevice);
 		m_alDevice = nullptr;
 	}
+}
+
+int ALAudioDevice::deviceSamplingRate()
+{
+	return 48000;
 }
 
 void ALAudioDevice::updateProcess()

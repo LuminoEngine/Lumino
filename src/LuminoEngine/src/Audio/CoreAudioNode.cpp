@@ -9,6 +9,13 @@ namespace ln {
 namespace detail {
 
 //==============================================================================
+// PropagationParameters
+
+PropagationParameters::PropagationParameters()
+	: m_finalSamplingRate(0)
+{}
+
+//==============================================================================
 // CoreAudioOutputPin
 
 CoreAudioInputPin::CoreAudioInputPin(int channels)

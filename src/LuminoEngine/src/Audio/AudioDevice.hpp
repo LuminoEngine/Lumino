@@ -18,6 +18,8 @@ public:
 	virtual ~AudioDevice() = default;
 	virtual void dispose();
 
+	virtual int deviceSamplingRate();
+
 	void setRenderCallback(IAudioDeviceRenderCallback* callback) { m_renderCallback = callback; }
 
 	// 毎フレーム更新用。スレッド使う場合はそこからよばれる。

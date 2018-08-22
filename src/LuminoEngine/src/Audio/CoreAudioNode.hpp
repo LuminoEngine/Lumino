@@ -22,6 +22,19 @@ private:
 	AudioListenerParams m_listener;
 };
 
+class PropagationParameters
+{
+public:
+	PropagationParameters();
+
+	int finalSamplingRate() const { return m_finalSamplingRate; }
+
+	void setFinalSamplingRate(int rate) { m_finalSamplingRate = rate; }
+
+private:
+	int m_finalSamplingRate;
+};
+
 class CoreAudioInputPin
 	: public RefObject
 {
@@ -185,6 +198,7 @@ namespace blink {
 class Panner;
 class DistanceEffect;
 class ConeEffect;
+class SincResampler;
 }
 
 class CoreAudioPannerNode
@@ -225,6 +239,8 @@ protected:
 	virtual void process() override;
 
 private:
+	PropagationParameters m_propagationParameters;
+	std::shared_ptr<blink::SincResampler> m_resampler;
 };
 
 class Audio3DModule
