@@ -42,7 +42,6 @@ private:
 	void commitGraphs();
 
 	detail::AudioManager* m_manager;
-	Ref<detail::AudioDevice> m_device;
 	Ref<detail::AudioContextCore> m_audioContextHandler;
 	Ref<detail::CoreAudioDestinationNode> m_coreDestinationNode;
 	Ref<AudioDestinationNode> m_destinationNode;

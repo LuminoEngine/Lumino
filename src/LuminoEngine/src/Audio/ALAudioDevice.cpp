@@ -36,11 +36,13 @@ void ALAudioDevice::initialize()
 	m_finalRenderdBuffer.resize(CoreAudioNode::ProcessingSizeInFrames * m_masterChannels);
 	//m_finalRenderdBuffer.resize(m_masterSampleRate * m_masterChannels);
 
+#if 0
 	// TODO: test
 	auto diag = newObject<DiagnosticsManager>();
 	wd.initialize(FileStream::create(u"Assets/8_MapBGM2.wav"), diag);
 	//wd.initialize(FileStream::create(u"D:\\tmp\\8_MapBGM2.wav"), diag);
 	printf("ff test\n");
+#endif
 }
 
 void ALAudioDevice::dispose()
@@ -82,11 +84,11 @@ void ALAudioDevice::updateProcess()
 	{
 #if 0
 		wd.read2((float*)m_finalRenderdBuffer.data(), CoreAudioNode::ProcessingSizeInFrames);
-#elif 1
+#elif 0
 		wd.read2(m_renderdBuffer.data(), CoreAudioNode::ProcessingSizeInFrames);
 #else
 		//ElapsedTimer t;
-		memset(m_renderdBuffer.data(), 0, sizeof(float) * m_renderdBuffer.size());
+		//memset(m_renderdBuffer.data(), 0, sizeof(float) * m_renderdBuffer.size());
 		render(m_renderdBuffer.data(), m_renderdBuffer.size());
 		AudioDecoder::convertFromFloat32(m_finalRenderdBuffer.data(), m_renderdBuffer.data(), m_finalRenderdBuffer.size(), PCMFormat::S16L);
 		//std::cout << t.elapsedMicroseconds() << "[us]\n";

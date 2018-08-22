@@ -3,7 +3,7 @@
 #include <Lumino/Audio/AudioNode.hpp>
 #include <Lumino/Audio/AudioContext.hpp>
 #include "CoreAudioNode.hpp"
-#include "ALAudioDevice.hpp"
+//#include "ALAudioDevice.hpp"
 #include "AudioManager.hpp"
 
 namespace ln {
@@ -24,16 +24,13 @@ void AudioContext::initialize()
 {
 	m_manager = detail::EngineDomain::audioManager();
 
-	auto device = makeRef<detail::ALAudioDevice>();
-	device->initialize();
-	m_device = device;
-
 	m_audioContextHandler = makeRef<detail::AudioContextCore>();
+	m_audioContextHandler->initialize();
 
 	m_coreDestinationNode = makeRef<detail::CoreAudioDestinationNode>(m_audioContextHandler);
 	m_coreDestinationNode->initialize();
 
-	m_device->setRenderCallback(m_coreDestinationNode);
+	m_audioContextHandler->device()->setRenderCallback(m_coreDestinationNode);
 
 	m_destinationNode = newObject<AudioDestinationNode>(m_coreDestinationNode);
 
@@ -44,17 +41,17 @@ void AudioContext::initialize()
 
 void AudioContext::dispose()
 {
-	if (m_device)
+	if (m_coreDestinationNode)
 	{
-		m_device->dispose();
-		m_device.reset();
+		m_coreDestinationNode->dispose();
+		m_coreDestinationNode.reset();
 	}
 }
 
 void AudioContext::process()
 {
 	commitGraphs();
-	m_device->updateProcess();
+	m_audioContextHandler->device()->updateProcess();
 }
 
 AudioDestinationNode* AudioContext::destination() const

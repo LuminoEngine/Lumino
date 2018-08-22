@@ -3,6 +3,10 @@
 namespace ln {
 namespace detail {
 
+//namespace blink {
+//	class SincResampler;
+//}
+
 //enum class Channel : int
 //{
 //	First = 0,
@@ -77,11 +81,13 @@ public:
 
 	CIAudioBus();
 	virtual ~CIAudioBus() = default;
-	void initialize2(int channelCount, size_t length);
+	void initialize2(int channelCount, size_t length, int sampleRate = 0);
 
 	size_t length() const { return m_validLength; }	// フレーム数
 	//void setValidLength(size_t length) { m_validLength = length; }
 	//size_t fullLength() const { return m_channels[0]->length(); }
+	int sampleRate() const { return m_sampleRate; }
+	void setSampleRate(int value) { m_sampleRate = value; }
 
 	int channelCount() const { return m_channels.size(); }
 	int numberOfChannels() const { return m_channels.size(); }
@@ -100,6 +106,7 @@ public:
 	void sumFrom(const CIAudioBus* bus);
 
 	void copyWithGainFrom(const CIAudioBus& source_bus, float gain);
+	void copyBySampleRateConverting(const CIAudioBus* source_bus, int new_sample_rate);
 	bool topologyMatches(const CIAudioBus& bus) const;
 
 	// chromium interface
@@ -111,6 +118,7 @@ public:
 private:
 	List<Ref<CIAudioChannel>> m_channels;
 	size_t m_validLength;
+	int m_sampleRate;
 
 	int m_layout = kLayoutCanonical;
 };

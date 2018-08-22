@@ -534,10 +534,20 @@ void SincResampler::Process(const float* source,
 	// Resample an in-memory buffer using an AudioSourceProvider.
 	BufferSourceProvider source_provider(source, number_of_source_frames);
 
+#if 0
+	unsigned number_of_destination_frames =
+		static_cast<unsigned>(std::ceil(static_cast<float>(number_of_source_frames) / scale_factor_));
+	//float* last = destination + number_of_destination_frames - 1;
+#else
 	unsigned number_of_destination_frames =
 		static_cast<unsigned>(number_of_source_frames / scale_factor_);
+	float* last = destination + number_of_destination_frames;
+#endif
 	unsigned remaining = number_of_destination_frames;
 
+
+
+	auto* firstd = destination;
 	while (remaining) {
 		unsigned frames_this_time = std::min(remaining, block_size_);
 		Process(&source_provider, destination, frames_this_time);
@@ -545,6 +555,21 @@ void SincResampler::Process(const float* source,
 		destination += frames_this_time;
 		remaining -= frames_this_time;
 	}
+
+	float mmin = 0;
+	float mmax = 0;
+	for (int i = 0; i < 2048; i++) {
+		mmin = std::min(firstd[i], mmin);
+		mmax = std::max(firstd[i], mmax);
+	}
+	printf("mm: %f %f\n", mmin, mmax);
+
+	//printf("%d\n", destination - firstd);
+	//memset(firstd, 0, sizeof(float) *  (number_of_destination_frames + 1));
+	//*last = 0;
+	//*destination = 0;
+	//memset(firstd, 0, sizeof(float) *  (number_of_destination_frames + 1));
+	//memcpy(firstd, source, sizeof(float) *  number_of_source_frames);
 }
 
 void SincResampler::Process(AudioSourceProvider* source_provider,

@@ -18,7 +18,7 @@ public:
 	virtual ~AudioDevice() = default;
 	virtual void dispose();
 
-	virtual int deviceSamplingRate();
+	virtual int deviceSamplingRate() = 0;
 
 	void setRenderCallback(IAudioDeviceRenderCallback* callback) { m_renderCallback = callback; }
 

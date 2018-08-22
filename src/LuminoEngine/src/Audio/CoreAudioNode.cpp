@@ -4,9 +4,33 @@
 #include "AudioDecoder.hpp"	// for CoreAudioSourceNode
 #include "ChromiumWebCore.hpp"
 #include "blink/VectorMath.h"
+#include "ALAudioDevice.hpp"
 
 namespace ln {
 namespace detail {
+
+//==============================================================================
+// AudioContextCore
+
+AudioContextCore::AudioContextCore()
+{
+}
+
+void AudioContextCore::initialize()
+{
+	auto device = makeRef<ALAudioDevice>();
+	device->initialize();
+	m_device = device;
+}
+
+void AudioContextCore::dispose()
+{
+	if (m_device)
+	{
+		m_device->dispose();
+		m_device.reset();
+	}
+}
 
 //==============================================================================
 // PropagationParameters
@@ -215,6 +239,9 @@ void CoreAudioSourceNode::initialize(const Ref<AudioDecoder>& decoder)
 	auto* pin = addOutputPin(numChannels);
 	//m_readBuffer.resize(pin->bus()->length() * numChannels);
 
+
+	
+
 	resetSourceBuffers();
 }
 
@@ -254,14 +281,36 @@ void CoreAudioSourceNode::resetSourceBuffers()
 {
 	CoreAudioOutputPin* pin = outputPin(0);
 
-	m_readFrames = pin->bus()->length() * m_playbackRate;
+	size_t baseFrames = pin->bus()->length();
+	m_readFrames = baseFrames;
+
+
+	int sourceSampleRate = m_decoder->audioDataInfo().sampleRate;
+	int destinationSampleRate = context()->device()->deviceSamplingRate();
+	if (sourceSampleRate != destinationSampleRate)
+	{
+		float scale = static_cast<float>(sourceSampleRate) / static_cast<float>(destinationSampleRate);
+		m_resampler = std::make_unique<blink::SincResampler>(scale);
+		m_readFrames *= scale;
+	}
+
+
+	m_readFrames *= m_playbackRate;
+	baseFrames *= m_playbackRate;
 
 	unsigned numChannels = m_decoder->audioDataInfo().channelCount;
 
 	m_readBuffer.resize(m_readFrames * numChannels);
+	if (m_resampler) {
+		m_resamplingBus = makeRef<CIAudioBus>();
+		m_resamplingBus->initialize2(numChannels, m_readFrames, m_decoder->audioDataInfo().sampleRate);
+	}
 
 	m_sourceBus = makeRef<CIAudioBus>();
-	m_sourceBus->initialize2(numChannels, m_readFrames);
+	m_sourceBus->initialize2(numChannels, baseFrames);
+
+
+
 }
 
 double CoreAudioSourceNode::calculatePitchRate()
@@ -319,7 +368,13 @@ void CoreAudioSourceNode::process()
 
 	if (1)
 	{
-		result->separateFrom(m_readBuffer.data(), readSamples, numChannels);
+		if (m_resampler) {
+			m_resamplingBus->separateFrom(m_readBuffer.data(), readSamples, numChannels);
+			result->copyBySampleRateConverting(m_resamplingBus, context()->device()->deviceSamplingRate());
+		}
+		else {
+			result->separateFrom(m_readBuffer.data(), readSamples, numChannels);
+		}
 	}
 	else
 	{

@@ -11,14 +11,25 @@ class CoreAudioInputPin;
 class CoreAudioOutputPin;
 class AudioDecoder;
 
+namespace blink {
+	class Panner;
+	class DistanceEffect;
+	class ConeEffect;
+	class SincResampler;
+}
 
 class AudioContextCore
 	: public RefObject
 {
 public:
+	AudioContextCore();
+	void initialize();
+	void dispose();
+	const Ref<AudioDevice>& device() const { return m_device; }
 	const AudioListenerParams& listener() const { return m_listener; }
 
 private:
+	Ref<AudioDevice> m_device;
 	AudioListenerParams m_listener;
 };
 
@@ -171,7 +182,10 @@ private:
 
 	Ref<AudioDecoder> m_decoder;
 	std::vector<float> m_readBuffer;
-	Ref<CIAudioBus> m_sourceBus;
+	Ref<CIAudioBus> m_sourceBus;	// resampled
+	std::unique_ptr<blink::SincResampler> m_resampler;
+	Ref<CIAudioBus> m_resamplingBus;
+	//std::vector<float> m_resamplingBuffer;
 
 	// Current playback position.
 	// Since it's floating-point, it interpolate sub-samples.
@@ -194,12 +208,6 @@ private:
 	bool m_resetRequested;
 };
 
-namespace blink { 
-class Panner;
-class DistanceEffect;
-class ConeEffect;
-class SincResampler;
-}
 
 class CoreAudioPannerNode
 	: public CoreAudioNode
@@ -240,7 +248,6 @@ protected:
 
 private:
 	PropagationParameters m_propagationParameters;
-	std::shared_ptr<blink::SincResampler> m_resampler;
 };
 
 class Audio3DModule
