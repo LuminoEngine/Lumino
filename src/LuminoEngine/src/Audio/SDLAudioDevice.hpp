@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include "D:\Tech\Graphics\SDL2-2.0.8\include\SDL.h"
-//#include <SDL/SDL.h>
+//#include "D:\Tech\Graphics\SDL2-2.0.8\include\SDL.h"
+#include <SDL2/SDL.h>
 #include "AudioDevice.hpp"
 
 namespace ln {

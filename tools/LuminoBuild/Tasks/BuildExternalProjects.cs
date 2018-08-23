@@ -176,7 +176,20 @@ namespace LuminoBuild.Tasks
             if (!Directory.Exists("openal-soft"))
             {
                 // https://github.com/kcat/openal-soft/issues/183 の問題の修正後、まだタグが降られていない。そのため latest を取得
-                Utils.CallProcess("git", "clone --progress --depth 1 https://github.com/kcat/openal-soft.git openal-soft");
+                Utils.CallProcess("git", "clone --progress https://github.com/kcat/openal-soft.git openal-soft");
+                Directory.SetCurrentDirectory("openal-soft");
+                Utils.CallProcess("git", "checkout 7d76cbddd6fbdb52eaa917845435b95ae89efced");
+                Directory.SetCurrentDirectory(reposDir);
+            }
+            if (!Directory.Exists("SDL2"))
+            {
+                using (var wc = new System.Net.WebClient())
+                {
+                    var zip = Path.Combine(reposDir, "SDL2-2.0.8.zip");
+                    wc.DownloadFile("https://www.libsdl.org/release/SDL2-2.0.8.zip", zip);
+                    Utils.ExtractZipFile(zip, Path.Combine(reposDir, "SDL2-2.0.8"));
+                    Directory.Move(Path.Combine(reposDir, "SDL2-2.0.8", "SDL2-2.0.8"), Path.Combine(reposDir, "SDL2"));
+                }
             }
 
             if (Utils.IsWin32)
@@ -214,6 +227,7 @@ namespace LuminoBuild.Tasks
                     BuildProject(builder, "glfw", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF -DGLFW_INSTALL=ON");
                     BuildProject(builder, "glad", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DGLAD_INSTALL=ON");
                     BuildProject(builder, "openal-soft", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
+                    BuildProject(builder, "SDL2", reposDir, target.DirName, target.VSTarget, $"-DSDL_SHARED=OFF -DSDL_STATIC=ON -DSSE=OFF -DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
                 }
             }
             else

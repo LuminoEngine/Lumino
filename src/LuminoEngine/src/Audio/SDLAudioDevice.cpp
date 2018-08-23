@@ -4,7 +4,7 @@
 #include "CoreAudioNode.hpp"
 #include "AudioDecoder.hpp"
 
-#pragma comment(lib, "D:/Tech/Graphics/SDL2-2.0.8/lib/x86/SDL2.lib")
+//#pragma comment(lib, "D:/Tech/Graphics/SDL2-2.0.8/lib/x86/SDL2.lib")
 
 namespace ln {
 namespace detail {

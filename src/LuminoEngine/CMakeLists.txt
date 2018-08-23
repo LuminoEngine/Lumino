@@ -84,32 +84,32 @@ set(LN_SOURCES_Input
 )
 
 set(LN_SOURCES_Audio
-	include/Lumino/Audio/Common.hpp
-	include/Lumino/Audio/AudioContext.hpp
-	include/Lumino/Audio/AudioListener.hpp
-	include/Lumino/Audio/AudioNode.hpp
-	src/Audio/Internal.hpp
-	src/Audio/ALAudioDevice.cpp
-	src/Audio/ALAudioDevice.hpp
-	src/Audio/AudioContext.cpp
-	src/Audio/AudioDecoder.cpp
-	src/Audio/AudioDecoder.hpp
-	src/Audio/AudioDevice.cpp
-	src/Audio/AudioDevice.hpp
-	src/Audio/AudioListener.cpp
-	src/Audio/AudioManager.cpp
-	src/Audio/AudioManager.hpp
-	src/Audio/AudioNode.cpp
-	src/Audio/ChromiumWebCore.cpp
-	src/Audio/ChromiumWebCore.hpp
-	src/Audio/CoreAudioNode.cpp
-	src/Audio/CoreAudioNode.hpp
-	src/Audio/SDLAudioDevice.cpp
-	src/Audio/SDLAudioDevice.hpp
-	src/Audio/blink/VectorMath.cpp
-	src/Audio/blink/VectorMath.h
-	src/Audio/core/CIAudioBus.cpp
-	src/Audio/core/CIAudioBus.hpp
+    include/Lumino/Audio/Common.hpp
+    include/Lumino/Audio/AudioContext.hpp
+    include/Lumino/Audio/AudioListener.hpp
+    include/Lumino/Audio/AudioNode.hpp
+    src/Audio/Internal.hpp
+    src/Audio/ALAudioDevice.cpp
+    src/Audio/ALAudioDevice.hpp
+    src/Audio/AudioContext.cpp
+    src/Audio/AudioDecoder.cpp
+    src/Audio/AudioDecoder.hpp
+    src/Audio/AudioDevice.cpp
+    src/Audio/AudioDevice.hpp
+    src/Audio/AudioListener.cpp
+    src/Audio/AudioManager.cpp
+    src/Audio/AudioManager.hpp
+    src/Audio/AudioNode.cpp
+    src/Audio/ChromiumWebCore.cpp
+    src/Audio/ChromiumWebCore.hpp
+    src/Audio/CoreAudioNode.cpp
+    src/Audio/CoreAudioNode.hpp
+    src/Audio/SDLAudioDevice.cpp
+    src/Audio/SDLAudioDevice.hpp
+    src/Audio/blink/VectorMath.cpp
+    src/Audio/blink/VectorMath.h
+    src/Audio/core/CIAudioBus.cpp
+    src/Audio/core/CIAudioBus.hpp
 )
 
 set(LN_SOURCES_Graphics
@@ -271,7 +271,7 @@ source_group("Engine"                FILES ${LN_SOURCES_Engine})
 source_group("Platform"                FILES ${LN_SOURCES_Platform})
 source_group("Input"                FILES ${LN_SOURCES_Input})
 source_group("Grammar"                FILES ${LN_SOURCES_Grammar})
-source_group("Audio"				FILES ${LN_SOURCES_Audio})
+source_group("Audio"                FILES ${LN_SOURCES_Audio})
 source_group("Graphics"                FILES ${LN_SOURCES_Graphics})
 source_group("Shader"                FILES ${LN_SOURCES_Shader})
 source_group("Mesh"                FILES ${LN_SOURCES_Mesh})
@@ -317,7 +317,8 @@ elseif (LN_IOS)
 
 elseif (WIN32)
     find_package(OpenGL)
-    list(APPEND LN_PLATFORM_LIBS glfw GLAD)
+    list(APPEND LN_PLATFORM_LIBS glfw GLAD OpenAL SDL2)
+    list(APPEND LN_PLATFORM_LIBS user32 gdi32 winmm imm32 ole32 oleaut32 version uuid)
 
 elseif (APPLE)
     list(APPEND LN_PLATFORM_LIBS glfw GLAD)
@@ -327,11 +328,13 @@ elseif (APPLE)
     list(APPEND LN_PLATFORM_LIBS ${COCOA_LIBRARY})
     list(APPEND LN_PLATFORM_LIBS ${CoreVideo_LIBRARY})
     list(APPEND LN_PLATFORM_LIBS ${IOKit_LIBRARY})
+    list(APPEND LN_PLATFORM_LIBS OpenAL)
+    list(APPEND LN_PLATFORM_LIBS SDL2)
     
 elseif (UNIX)
     if (LN_ANDROID)
     else()
-        list(APPEND LN_PLATFORM_LIBS glfw GLAD)
+        list(APPEND LN_PLATFORM_LIBS glfw GLAD OpenAL SDL2)
     endif()
 endif()
 
