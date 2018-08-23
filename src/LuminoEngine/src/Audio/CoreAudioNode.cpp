@@ -5,6 +5,7 @@
 #include "ChromiumWebCore.hpp"
 #include "blink/VectorMath.h"
 #include "ALAudioDevice.hpp"
+#include "SDLAudioDevice.hpp"
 
 namespace ln {
 namespace detail {
@@ -18,9 +19,15 @@ AudioContextCore::AudioContextCore()
 
 void AudioContextCore::initialize()
 {
+#if 1
+	auto device = makeRef<SDLAudioDevice>();
+	device->initialize();
+	m_device = device;
+#else
 	auto device = makeRef<ALAudioDevice>();
 	device->initialize();
 	m_device = device;
+#endif
 }
 
 void AudioContextCore::dispose()

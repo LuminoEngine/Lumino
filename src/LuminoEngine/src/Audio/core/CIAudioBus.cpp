@@ -376,7 +376,7 @@ void CIAudioBus::copyBySampleRateConverting(
 		float* destination = channel(i)->mutableData();
 
 		blink::SincResampler resampler(sample_rate_ratio);
-		resampler.Process(source, destination, source_length);
+		resampler.Process(source, destination, source_length, channel(i)->length());
 	}
 
 	clearSilentFlag();

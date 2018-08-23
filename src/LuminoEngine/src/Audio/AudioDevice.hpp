@@ -25,6 +25,7 @@ public:
 	// 毎フレーム更新用。スレッド使う場合はそこからよばれる。
 	virtual void updateProcess() = 0;
 
+	virtual void run() {}
 protected:
 	void render(float* outputBuffer, int length);
 

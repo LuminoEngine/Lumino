@@ -530,7 +530,8 @@ namespace {
 
 void SincResampler::Process(const float* source,
 	float* destination,
-	unsigned number_of_source_frames) {
+	unsigned number_of_source_frames,
+	unsigned number_of_output_destination_frames) {
 	// Resample an in-memory buffer using an AudioSourceProvider.
 	BufferSourceProvider source_provider(source, number_of_source_frames);
 
@@ -556,13 +557,25 @@ void SincResampler::Process(const float* source,
 		remaining -= frames_this_time;
 	}
 
-	float mmin = 0;
-	float mmax = 0;
-	for (int i = 0; i < 2048; i++) {
-		mmin = std::min(firstd[i], mmin);
-		mmax = std::max(firstd[i], mmax);
+	if (number_of_destination_frames < number_of_output_destination_frames) {
+
+		float realRemaining = (static_cast<float>(number_of_source_frames) / scale_factor_) - number_of_destination_frames;
+		assert(realRemaining < 1.0f);
+
+		*last = Math::lerp(*(last - 1), source[number_of_source_frames - 1], realRemaining);
+		
 	}
-	printf("mm: %f %f\n", mmin, mmax);
+
+	//float mmin = 0;
+	//float mmax = 0;
+	//for (int i = 0; i < 2048; i++) {
+	//	mmin = std::min(firstd[i], mmin);
+	//	mmax = std::max(firstd[i], mmax);
+	//}
+	//printf("mm: %f %f\n", mmin, mmax);
+	//*last = *(last - 1);
+
+	//memset(last - 32, 0, sizeof(float) *  32);
 
 	//printf("%d\n", destination - firstd);
 	//memset(firstd, 0, sizeof(float) *  (number_of_destination_frames + 1));

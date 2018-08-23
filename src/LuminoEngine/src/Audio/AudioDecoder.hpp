@@ -40,8 +40,8 @@ public:
 	virtual uint32_t read2(float* buffer, uint32_t requestFrames) = 0;	// チャンネル数2の時に frames=1 で呼び出すと、2サンプル取り出す
 	virtual void reset() = 0;
 
-	static void convertToFloat32(float* dst, const void* src, const size_t length, PCMFormat format);
-	static void convertFromFloat32(void * dst, const float * src, const size_t length, PCMFormat format);
+	static void convertToFloat32(float* dst, const void* src, const size_t frameLength, PCMFormat format);
+	static void convertFromFloat32(void * dst, const float * src, const size_t frameLength, PCMFormat format);
 
 	//virtual void getLoopState(uint32_t* begin, uint32_t* length) const = 0;
 private:

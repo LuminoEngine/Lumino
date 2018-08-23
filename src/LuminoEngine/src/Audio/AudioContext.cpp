@@ -52,6 +52,8 @@ void AudioContext::process()
 {
 	commitGraphs();
 	m_audioContextHandler->device()->updateProcess();
+
+	m_audioContextHandler->device()->run();
 }
 
 AudioDestinationNode* AudioContext::destination() const

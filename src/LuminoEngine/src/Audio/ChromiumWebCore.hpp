@@ -354,7 +354,8 @@ public:
 	// / scaleFactor frames in destination.
 	void Process(const float* source,
 		float* destination,
-		unsigned number_of_source_frames);
+		unsigned number_of_source_frames,
+		unsigned number_of_output_destination_frames);
 
 	// Process with input source callback function for streaming applications.
 	void Process(AudioSourceProvider*,
