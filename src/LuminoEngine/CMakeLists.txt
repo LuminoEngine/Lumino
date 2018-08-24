@@ -317,7 +317,7 @@ elseif (LN_IOS)
 
 elseif (WIN32)
     find_package(OpenGL)
-    list(APPEND LN_PLATFORM_LIBS glfw GLAD OpenAL SDL2)
+    list(APPEND LN_PLATFORM_LIBS glfw GLAD OpenAL)
     list(APPEND LN_PLATFORM_LIBS user32 gdi32 winmm imm32 ole32 oleaut32 version uuid)
 
 elseif (APPLE)
@@ -334,10 +334,14 @@ elseif (APPLE)
 elseif (UNIX)
     if (LN_ANDROID)
     else()
-        list(APPEND LN_PLATFORM_LIBS glfw GLAD OpenAL SDL2)
+        list(APPEND LN_PLATFORM_LIBS glfw GLAD OpenAL)
     endif()
 endif()
 
+if (LN_USE_SDL)
+    list(APPEND LN_PLATFORM_LIBS SDL2)
+    list(APPEND LN_PLATFORM_DEFINITIONS LN_USE_SDL=1)
+endif()
 
 #------------------------------------------------------------------------------
 # Targets
@@ -359,6 +363,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 )
 target_include_directories(${PROJECT_NAME} PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS})
 #target_compile_definitions(${PROJECT_NAME} PUBLIC LUMINO_BUILD_DLL=1)
+target_compile_definitions(${PROJECT_NAME} PRIVATE ${LN_PLATFORM_DEFINITIONS})
 #target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive ${PROJECT_NAME}-static -Wl,--no-whole-archive)
 #target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-static)
 target_link_libraries(${PROJECT_NAME} INTERFACE LuminoCore ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})

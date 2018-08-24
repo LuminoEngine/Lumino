@@ -246,9 +246,7 @@ endif()
 #--------------------------------------
 # SDL2
 
-if (LN_EMSCRIPTEN)
-
-else()
+if (LN_USE_SDL)
     ln_make_external_find_path(SDL2_ROOT SDL2)
     find_library(SDL2_LIBRARY_RELEASE NAMES SDL2 PATHS ${SDL2_ROOT} PATH_SUFFIXES lib)
     find_library(SDL2_LIBRARY_DEBUG NAMES SDL2d PATHS ${SDL2_ROOT} PATH_SUFFIXES lib)
@@ -259,4 +257,3 @@ else()
     set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
     set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${SDL2_ROOT}/include)
 endif()
-

@@ -1,5 +1,6 @@
 ﻿#pragma once
-//#include "D:\Tech\Graphics\SDL2-2.0.8\include\SDL.h"
+
+#ifdef LN_USE_SDL
 #include <SDL2/SDL.h>
 #include "AudioDevice.hpp"
 
@@ -29,4 +30,5 @@ private:
 
 } // namespace detail
 } // namespace ln
+#endif
 

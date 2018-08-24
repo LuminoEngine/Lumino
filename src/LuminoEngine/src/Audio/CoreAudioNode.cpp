@@ -19,7 +19,7 @@ AudioContextCore::AudioContextCore()
 
 void AudioContextCore::initialize()
 {
-#if 1
+#ifdef LN_USE_SDL
 	auto device = makeRef<SDLAudioDevice>();
 	device->initialize();
 	m_device = device;

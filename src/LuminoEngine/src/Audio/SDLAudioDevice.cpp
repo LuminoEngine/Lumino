@@ -1,4 +1,5 @@
 ﻿
+#ifdef LN_USE_SDL
 #include "Internal.hpp"
 #include "SDLAudioDevice.hpp"
 #include "CoreAudioNode.hpp"
@@ -96,3 +97,4 @@ void SDLCALL SDLAudioDevice::SDLAudioCallbackStatic(void *userdata, Uint8 * stre
 } // namespace detail
 } // namespace ln
 
+#endif
