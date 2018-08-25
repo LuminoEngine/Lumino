@@ -156,6 +156,8 @@ void EngineManager::initializeAudioManager()
 {
 	if (!m_audioManager)
 	{
+		initializeCommon();
+
 		AudioManager::Settings settings;
 		m_audioManager = ln::makeRef<AudioManager>();
 		m_audioManager->initialize(settings);

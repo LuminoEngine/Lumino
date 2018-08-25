@@ -24,8 +24,12 @@ class AudioNode
 public:
 	// in=1, out=1 用のユーティリティ
 	static void connect(AudioNode* outputSide, AudioNode* inputSide);
+	static void disconnect(AudioNode* outputSide, AudioNode* inputSide);
 
 	AudioContext* context() const { return m_context; }
+
+	/** このノードをの全ての接続を解除します。 */
+	void disconnect();
 
 protected:
 	AudioNode();
@@ -42,6 +46,8 @@ protected:
 private:
 	void addConnectionInput(AudioNode* inputSide);
 	void addConnectionOutput(AudioNode* outputSide);
+	void removeConnectionInput(AudioNode* inputSide);
+	void removeConnectionOutput(AudioNode* outputSide);
 
 	AudioContext* m_context;
 	List<Ref<AudioNode>> m_inputConnections;	// input side in this node
@@ -68,9 +74,26 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~AudioSourceNode() = default;
 	void initialize(const StringRef& filePath);
 	virtual detail::CoreAudioNode* coreNode() override;
+	virtual void commit() override;
 
 private:
+	enum class PlayingState
+	{
+		NoChanged,
+		Stop,
+		Play,
+		Pause,
+	};
+
+	struct CommitState
+	{
+		float playbackRate;
+		PlayingState currentState;
+		bool resetRequire;
+	};
+
 	Ref<detail::CoreAudioSourceNode> m_coreObject;
+	CommitState m_commitState;
 };
 
 class AudioPannerNode

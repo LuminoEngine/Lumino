@@ -27,7 +27,11 @@ void AudioNode::initialize()
 void AudioNode::dispose()
 {
 	Object::dispose();
-	m_context->removeAudioNode(this);
+	if (m_context) {
+		disconnect();
+		m_context->removeAudioNode(this);
+		m_context = nullptr;
+	}
 }
 
 void AudioNode::commit()
@@ -82,10 +86,46 @@ void AudioNode::addConnectionOutput(AudioNode * outputSide)
 	}
 }
 
+void AudioNode::removeConnectionInput(AudioNode* inputSide)
+{
+	if (LN_REQUIRE(inputSide)) return;
+	if (m_inputConnections.remove(inputSide))
+	{
+		m_inputConnectionsDirty = true;
+	}
+}
+
+void AudioNode::removeConnectionOutput(AudioNode* outputSide)
+{
+	if (LN_REQUIRE(outputSide)) return;
+	if (m_outputConnections.remove(outputSide))
+	{
+		m_outputConnectionsDirty = true;
+	}
+}
+
 void AudioNode::connect(AudioNode * outputSide, AudioNode * inputSide)
 {
 	outputSide->addConnectionOutput(inputSide);
 	inputSide->addConnectionInput(outputSide);
+}
+
+void AudioNode::disconnect(AudioNode* outputSide, AudioNode* inputSide)
+{
+	outputSide->removeConnectionOutput(inputSide);
+	inputSide->removeConnectionInput(outputSide);
+}
+
+void AudioNode::disconnect()
+{
+	for (auto& node : m_inputConnections) {
+		node->removeConnectionOutput(this);
+	}
+	for (auto& node : m_outputConnections) {
+		node->removeConnectionInput(this);
+	}
+	m_inputConnectionsDirty = false;
+	m_outputConnectionsDirty = false;
 }
 
 //==============================================================================
@@ -93,37 +133,45 @@ void AudioNode::connect(AudioNode * outputSide, AudioNode * inputSide)
 
 AudioSourceNode::AudioSourceNode()
 {
+	m_commitState.playbackRate = 1.0f;
+	m_commitState.currentState = PlayingState::NoChanged;
+	m_commitState.resetRequire = false;
 }
 
 void AudioSourceNode::setPlaybackRate(float rate)
 {
-	LN_ENQUEUE_RENDER_COMMAND_2(
-		start, context()->manager(),
-		Ref<detail::CoreAudioSourceNode>, m_coreObject,
-		float, rate,
-		{
-			m_coreObject->setPlaybackRate(rate);
-		});
+	m_commitState.playbackRate = rate;
+	//LN_ENQUEUE_RENDER_COMMAND_2(
+	//	start, context()->manager(),
+	//	Ref<detail::CoreAudioSourceNode>, m_coreObject,
+	//	float, rate,
+	//	{
+	//		m_coreObject->setPlaybackRate(rate);
+	//	});
 }
 
 void AudioSourceNode::start()
 {
-	LN_ENQUEUE_RENDER_COMMAND_1(
-		start, context()->manager(),
-		Ref<detail::CoreAudioSourceNode>, m_coreObject,
-		{
-			m_coreObject->start();
-		});
+	m_commitState.resetRequire = true;
+	m_commitState.currentState = PlayingState::Play;
+	//LN_ENQUEUE_RENDER_COMMAND_1(
+	//	start, context()->manager(),
+	//	Ref<detail::CoreAudioSourceNode>, m_coreObject,
+	//	{
+	//		m_coreObject->start();
+	//	});
 }
 
 void AudioSourceNode::stop()
 {
-	LN_ENQUEUE_RENDER_COMMAND_1(
-		start, context()->manager(),
-		Ref<detail::CoreAudioSourceNode>, m_coreObject,
-		{
-			m_coreObject->stop();
-		});
+	m_commitState.resetRequire = true;
+	m_commitState.currentState = PlayingState::Stop;
+	//LN_ENQUEUE_RENDER_COMMAND_1(
+	//	start, context()->manager(),
+	//	Ref<detail::CoreAudioSourceNode>, m_coreObject,
+	//	{
+	//		m_coreObject->stop();
+	//	});
 }
 
 void AudioSourceNode::pause()
@@ -148,6 +196,36 @@ void AudioSourceNode::initialize(const StringRef & filePath)
 detail::CoreAudioNode * AudioSourceNode::coreNode()
 {
 	return m_coreObject;
+}
+
+void AudioSourceNode::commit()
+{
+	AudioNode::commit();
+
+	if (m_commitState.resetRequire) {
+		m_coreObject->reset();
+		m_commitState.resetRequire = false;
+	}
+
+	switch (m_commitState.currentState)
+	{
+	case PlayingState::NoChanged:
+		break;
+	case  PlayingState::Stop:
+		m_coreObject->stop();
+		break;
+	case  PlayingState::Play:
+		m_coreObject->start();
+		break;
+	case  PlayingState::Pause:
+		LN_NOTIMPLEMENTED();
+		break;
+	default:
+		break;
+	}
+	m_commitState.currentState = PlayingState::NoChanged;
+
+	m_coreObject->setPlaybackRate(m_commitState.playbackRate);
 }
 
 //==============================================================================

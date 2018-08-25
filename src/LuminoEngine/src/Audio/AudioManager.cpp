@@ -13,6 +13,11 @@ namespace detail {
 // AudioManager
 
 AudioManager::AudioManager()
+	: m_primaryContext()
+{
+}
+
+AudioManager::~AudioManager()
 {
 }
 
@@ -21,21 +26,23 @@ void AudioManager::initialize(const Settings& settings)
 	m_primaryContext = makeRef<AudioContext>();
 	m_primaryContext->initialize();
 
-	m_linearAllocatorPageManager = makeRef<LinearAllocatorPageManager>();
-	m_primaryRenderingCommandList = makeRef<RenderingCommandList>(m_linearAllocatorPageManager);
+	//m_linearAllocatorPageManager = makeRef<LinearAllocatorPageManager>();
+	//m_primaryRenderingCommandList = makeRef<RenderingCommandList>(m_linearAllocatorPageManager);
 }
 
 void AudioManager::dispose()
 {
 	if (m_primaryContext) {
 		m_primaryContext->dispose();
-		m_primaryContext.reset();
+		m_primaryContext = nullptr;
 	}
 }
 
 void AudioManager::update()
 {
-	m_primaryContext->process();
+	if (m_primaryContext) {
+		m_primaryContext->process();
+	}
 }
 
 Ref<AudioDecoder> AudioManager::createAudioDecoder(const StringRef & filePath)

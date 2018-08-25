@@ -19,6 +19,11 @@ AudioContext* AudioContext::primary()
 }
 
 AudioContext::AudioContext()
+	: m_manager(nullptr)
+	, m_audioDevice(nullptr)
+	, m_coreDestinationNode(nullptr)
+	, m_destinationNode(nullptr)
+	, m_allAudioNodes()
 {
 }
 
@@ -40,7 +45,6 @@ void AudioContext::initialize()
 
 	m_coreDestinationNode = makeRef<detail::CoreAudioDestinationNode>(m_audioDevice);
 	m_coreDestinationNode->initialize();
-
 	m_audioDevice->setRenderCallback(m_coreDestinationNode);
 
 	m_destinationNode = newObject<AudioDestinationNode>(m_coreDestinationNode);
@@ -52,19 +56,32 @@ void AudioContext::initialize()
 
 void AudioContext::dispose()
 {
+	List<AudioNode*> removeList = m_allAudioNodes;
+	m_allAudioNodes.clear();
+	for (AudioNode* node : removeList) {
+		node->dispose();
+	}
+
 	if (m_coreDestinationNode)
 	{
 		m_coreDestinationNode->dispose();
 		m_coreDestinationNode.reset();
 	}
+
+	if (m_audioDevice) {
+		m_audioDevice->dispose();
+		m_audioDevice = nullptr;
+	}
 }
 
 void AudioContext::process()
 {
-	commitGraphs();
-	m_audioDevice->updateProcess();
+	if (m_audioDevice) {
+		commitGraphs();
+		m_audioDevice->updateProcess();
 
-	m_audioDevice->run();
+		m_audioDevice->run();
+	}
 }
 
 AudioDestinationNode* AudioContext::destination() const
