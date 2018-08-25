@@ -16,11 +16,15 @@ namespace detail {
 // ALAudioDevice
 
 ALAudioDevice::ALAudioDevice()
+	: m_finalRenderdBuffer()
 {
 }
 
 void ALAudioDevice::initialize()
 {
+	AudioDevice::initialize(CoreAudioNode::ProcessingSizeInFrames, 2);
+	m_finalRenderdBuffer.resize(CoreAudioNode::ProcessingSizeInFrames * 2);
+
 	m_alDevice = alcOpenDevice(nullptr);
 	m_alContext = alcCreateContext(m_alDevice, nullptr);
 	alcMakeContextCurrent(m_alContext);
@@ -29,11 +33,11 @@ void ALAudioDevice::initialize()
 	m_freeBuffers.resize(2);
 	alGenBuffers(2, m_freeBuffers.data());
 
-	m_masterSampleRate = deviceSamplingRate();//44100;	// TODO
-	m_masterChannels = 2;
+	m_masterSampleRate = deviceSamplingRate();	// TODO
+	//m_masterChannels = 2;
 
-	m_renderdBuffer.resize(CoreAudioNode::ProcessingSizeInFrames * m_masterChannels);
-	m_finalRenderdBuffer.resize(CoreAudioNode::ProcessingSizeInFrames * m_masterChannels);
+	//m_renderdBuffer.resize(CoreAudioNode::ProcessingSizeInFrames * m_masterChannels);
+	//m_finalRenderdBuffer.resize(CoreAudioNode::ProcessingSizeInFrames * m_masterChannels);
 	//m_finalRenderdBuffer.resize(m_masterSampleRate * m_masterChannels);
 
 #if 0
@@ -62,7 +66,7 @@ void ALAudioDevice::dispose()
 
 int ALAudioDevice::deviceSamplingRate()
 {
-	return 48000;
+	return 44100;//48000;//
 }
 
 void ALAudioDevice::updateProcess()
@@ -87,10 +91,11 @@ void ALAudioDevice::updateProcess()
 #elif 0
 		wd.read2(m_renderdBuffer.data(), CoreAudioNode::ProcessingSizeInFrames);
 #else
+		render(m_finalRenderdBuffer.data(), m_finalRenderdBuffer.size());
 		//ElapsedTimer t;
 		//memset(m_renderdBuffer.data(), 0, sizeof(float) * m_renderdBuffer.size());
-		render(m_renderdBuffer.data(), m_renderdBuffer.size());
-		AudioDecoder::convertFromFloat32(m_finalRenderdBuffer.data(), m_renderdBuffer.data(), m_finalRenderdBuffer.size(), PCMFormat::S16L);
+		//render(m_renderdBuffer.data(), m_renderdBuffer.size());
+		//AudioDecoder::convertFromFloat32(m_finalRenderdBuffer.data(), m_renderdBuffer.data(), m_finalRenderdBuffer.size(), PCMFormat::S16L);
 		//std::cout << t.elapsedMicroseconds() << "[us]\n";
 #endif
 		//static int init = 0;
@@ -114,7 +119,7 @@ void ALAudioDevice::updateProcess()
 		//}
 		//memset(m_finalRenderdBuffer.data(), 0, sizeof(int16_t) * m_finalRenderdBuffer.size());
 
-#if 1
+#if 0
 		alBufferData(m_freeBuffers.back(), 0x10011, m_renderdBuffer.data(), sizeof(float) * m_renderdBuffer.size(), m_masterSampleRate);
 #else
 		alBufferData(m_freeBuffers.back(), AL_FORMAT_STEREO16, m_finalRenderdBuffer.data(), sizeof(int16_t) * m_finalRenderdBuffer.size(), m_masterSampleRate);

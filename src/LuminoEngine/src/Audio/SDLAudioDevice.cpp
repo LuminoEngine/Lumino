@@ -3,7 +3,6 @@
 #include "Internal.hpp"
 #include "SDLAudioDevice.hpp"
 #include "CoreAudioNode.hpp"
-#include "AudioDecoder.hpp"
 
 //#pragma comment(lib, "D:/Tech/Graphics/SDL2-2.0.8/lib/x86/SDL2.lib")
 
@@ -22,10 +21,8 @@ SDL_AudioDeviceID m_deviceId;
 void SDLAudioDevice::initialize()
 {
 	m_masterSampleRate = deviceSamplingRate();//44100;	// TODO
-	m_masterChannels = 2;
 
-	m_renderdBuffer.resize(CoreAudioNode::ProcessingSizeInFrames * m_masterChannels);
-	m_finalRenderdBuffer.resize(CoreAudioNode::ProcessingSizeInFrames * m_masterChannels);
+
 
 	SDL_Init(SDL_INIT_AUDIO/* | SDL_INIT_EVENTS*/);
 
@@ -85,7 +82,7 @@ void SDLAudioDevice::run()
 void SDLAudioDevice::SDLAudioCallback(Uint8 * stream, int len)
 {
 	render(m_renderdBuffer.data(), m_renderdBuffer.size());
-	AudioDecoder::convertFromFloat32(stream, m_renderdBuffer.data(), len / sizeof(int16_t), PCMFormat::S16L);
+	//AudioDecoder::convertFromFloat32(stream, m_renderdBuffer.data(), len / sizeof(int16_t), PCMFormat::S16L);
 	//AudioDecoder::convertFromFloat32(m_finalRenderdBuffer.data(), m_renderdBuffer.data(), m_finalRenderdBuffer.size(), PCMFormat::S16L);
 }
 

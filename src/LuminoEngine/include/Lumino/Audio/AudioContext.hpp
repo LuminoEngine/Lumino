@@ -5,7 +5,6 @@ namespace ln {
 namespace detail {
 class AudioManager;
 class AudioDevice;
-class AudioContextCore;
 class CoreAudioDestinationNode;
 } // namespace detail
 class AudioNode;
@@ -28,7 +27,7 @@ public:
 	// TODO: internal
 	detail::AudioManager* manager() const { return m_manager; }
 
-	detail::AudioContextCore* coreObject();
+	detail::AudioDevice* coreObject();
 
 LN_INTERNAL_ACCESS:
 #if LN_AUDIO_THREAD_ENABLED
@@ -42,7 +41,7 @@ private:
 	void commitGraphs();
 
 	detail::AudioManager* m_manager;
-	Ref<detail::AudioContextCore> m_audioContextHandler;
+	Ref<detail::AudioDevice> m_audioDevice;
 	Ref<detail::CoreAudioDestinationNode> m_coreDestinationNode;
 	Ref<AudioDestinationNode> m_destinationNode;
 

@@ -22,11 +22,11 @@ private:
 	ALCcontext* m_alContext;
 	ALuint m_masterSource;
 	std::vector<ALuint> m_freeBuffers;
-	std::vector<float> m_renderdBuffer;
-	std::vector<int16_t> m_finalRenderdBuffer;
+	//std::vector<float> m_renderdBuffer;
+	//std::vector<int16_t> m_finalRenderdBuffer;
 
 	int m_masterSampleRate;
-	int m_masterChannels;
+	std::vector<int16_t> m_finalRenderdBuffer;
 };
 
 } // namespace detail

@@ -5,6 +5,8 @@
 #include "CoreAudioNode.hpp"
 //#include "ALAudioDevice.hpp"
 #include "AudioManager.hpp"
+#include "ALAudioDevice.hpp"
+#include "SDLAudioDevice.hpp"
 
 namespace ln {
 
@@ -24,13 +26,22 @@ void AudioContext::initialize()
 {
 	m_manager = detail::EngineDomain::audioManager();
 
-	m_audioContextHandler = makeRef<detail::AudioContextCore>();
-	m_audioContextHandler->initialize();
+#ifdef LN_USE_SDL
+	auto device = makeRef<detail::SDLAudioDevice>();
+	device->initialize();
+	m_audioDevice = device;
+#else
+	auto device = makeRef<detail::ALAudioDevice>();
+	device->initialize();
+	m_audioDevice = device;
+#endif
+	//m_audioContextHandler = makeRef<detail::AudioContextCore>();
+	//m_audioContextHandler->initialize();
 
-	m_coreDestinationNode = makeRef<detail::CoreAudioDestinationNode>(m_audioContextHandler);
+	m_coreDestinationNode = makeRef<detail::CoreAudioDestinationNode>(m_audioDevice);
 	m_coreDestinationNode->initialize();
 
-	m_audioContextHandler->device()->setRenderCallback(m_coreDestinationNode);
+	m_audioDevice->setRenderCallback(m_coreDestinationNode);
 
 	m_destinationNode = newObject<AudioDestinationNode>(m_coreDestinationNode);
 
@@ -51,9 +62,9 @@ void AudioContext::dispose()
 void AudioContext::process()
 {
 	commitGraphs();
-	m_audioContextHandler->device()->updateProcess();
+	m_audioDevice->updateProcess();
 
-	m_audioContextHandler->device()->run();
+	m_audioDevice->run();
 }
 
 AudioDestinationNode* AudioContext::destination() const
@@ -61,9 +72,9 @@ AudioDestinationNode* AudioContext::destination() const
 	return m_destinationNode;
 }
 
-detail::AudioContextCore* AudioContext::coreObject()
+detail::AudioDevice* AudioContext::coreObject()
 {
-	return m_audioContextHandler;
+	return m_audioDevice;
 }
 
 void AudioContext::commitGraphs()

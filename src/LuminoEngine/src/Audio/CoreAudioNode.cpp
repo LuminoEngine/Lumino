@@ -4,41 +4,39 @@
 #include "AudioDecoder.hpp"	// for CoreAudioSourceNode
 #include "ChromiumWebCore.hpp"
 #include "blink/VectorMath.h"
-#include "ALAudioDevice.hpp"
-#include "SDLAudioDevice.hpp"
 
 namespace ln {
 namespace detail {
 
-//==============================================================================
-// AudioContextCore
-
-AudioContextCore::AudioContextCore()
-{
-}
-
-void AudioContextCore::initialize()
-{
-#ifdef LN_USE_SDL
-	auto device = makeRef<SDLAudioDevice>();
-	device->initialize();
-	m_device = device;
-#else
-	auto device = makeRef<ALAudioDevice>();
-	device->initialize();
-	m_device = device;
-#endif
-}
-
-void AudioContextCore::dispose()
-{
-	if (m_device)
-	{
-		m_device->dispose();
-		m_device.reset();
-	}
-}
-
+////==============================================================================
+//// AudioContextCore
+//
+//AudioContextCore::AudioContextCore()
+//{
+//}
+//
+//void AudioContextCore::initialize()
+//{
+//#ifdef LN_USE_SDL
+//	auto device = makeRef<SDLAudioDevice>();
+//	device->initialize();
+//	m_device = device;
+//#else
+//	auto device = makeRef<ALAudioDevice>();
+//	device->initialize();
+//	m_device = device;
+//#endif
+//}
+//
+//void AudioContextCore::dispose()
+//{
+//	if (m_device)
+//	{
+//		m_device->dispose();
+//		m_device.reset();
+//	}
+//}
+//
 //==============================================================================
 // PropagationParameters
 
@@ -148,7 +146,7 @@ void CoreAudioOutputPin::disconnectAll()
 //==============================================================================
 // CoreAudioNode
 
-CoreAudioNode::CoreAudioNode(AudioContextCore* context)
+CoreAudioNode::CoreAudioNode(AudioDevice* context)
 	: m_context(context)
 {
 }
@@ -221,7 +219,7 @@ CoreAudioOutputPin* CoreAudioNode::addOutputPin(int channels)
 //==============================================================================
 // CoreAudioDestinationNode
 
-CoreAudioSourceNode::CoreAudioSourceNode(AudioContextCore* context)
+CoreAudioSourceNode::CoreAudioSourceNode(AudioDevice* context)
 	: CoreAudioNode(context)
 	, m_virtualReadIndex(0)
 	, m_playbackRate(1.0f)
@@ -293,7 +291,7 @@ void CoreAudioSourceNode::resetSourceBuffers()
 
 
 	int sourceSampleRate = m_decoder->audioDataInfo().sampleRate;
-	int destinationSampleRate = context()->device()->deviceSamplingRate();
+	int destinationSampleRate = context()->deviceSamplingRate();
 	if (sourceSampleRate != destinationSampleRate)
 	{
 		float scale = static_cast<float>(sourceSampleRate) / static_cast<float>(destinationSampleRate);
@@ -377,7 +375,7 @@ void CoreAudioSourceNode::process()
 	{
 		if (m_resampler) {
 			m_resamplingBus->separateFrom(m_readBuffer.data(), readSamples, numChannels);
-			result->copyBySampleRateConverting(m_resamplingBus, context()->device()->deviceSamplingRate());
+			result->copyBySampleRateConverting(m_resamplingBus, context()->deviceSamplingRate());
 		}
 		else {
 			result->separateFrom(m_readBuffer.data(), readSamples, numChannels);
@@ -483,7 +481,7 @@ void CoreAudioSourceNode::updatePlayingState()
 //==============================================================================
 // CoreAudioPannerNode
 
-CoreAudioPannerNode::CoreAudioPannerNode(AudioContextCore* context)
+CoreAudioPannerNode::CoreAudioPannerNode(AudioDevice* context)
 	: CoreAudioNode(context)
 {
 }
@@ -567,7 +565,7 @@ float CoreAudioPannerNode::distanceConeGain()
 //==============================================================================
 // CoreAudioDestinationNode
 
-CoreAudioDestinationNode::CoreAudioDestinationNode(AudioContextCore* context)
+CoreAudioDestinationNode::CoreAudioDestinationNode(AudioDevice* context)
 	: CoreAudioNode(context)
 {
 }

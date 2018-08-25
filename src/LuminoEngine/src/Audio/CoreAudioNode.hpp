@@ -18,20 +18,20 @@ namespace blink {
 	class SincResampler;
 }
 
-class AudioContextCore
-	: public RefObject
-{
-public:
-	AudioContextCore();
-	void initialize();
-	void dispose();
-	const Ref<AudioDevice>& device() const { return m_device; }
-	const AudioListenerParams& listener() const { return m_listener; }
-
-private:
-	Ref<AudioDevice> m_device;
-	AudioListenerParams m_listener;
-};
+//class AudioContextCore
+//	: public RefObject
+//{
+//public:
+//	AudioContextCore();
+//	void initialize();
+//	void dispose();
+//	const Ref<AudioDevice>& device() const { return m_device; }
+//	const AudioListenerParams& listener() const { return m_listener; }
+//
+//private:
+//	Ref<AudioDevice> m_device;
+//	AudioListenerParams m_listener;
+//};
 
 class PropagationParameters
 {
@@ -115,11 +115,11 @@ public:
 	// 値を小さくするほど (高レベルAPIとしての) 演奏開始から実際に音が鳴るまでの遅延が少なくなるが、process の回数 (ノードをたどる回数) が増えるので処理は重くなる。
 	static const int ProcessingSizeInFrames = 2048;
 
-	CoreAudioNode(AudioContextCore* context);
+	CoreAudioNode(AudioDevice* context);
 	virtual ~CoreAudioNode() = default;
 	void initialize();
 
-	AudioContextCore* context() const { return m_context; }
+	AudioDevice* context() const { return m_context; }
 
 	CoreAudioInputPin* inputPin(int index) const;
 	CoreAudioOutputPin* outputPin(int index) const;
@@ -145,7 +145,7 @@ protected:
 	virtual void process() = 0;
 
 private:
-	AudioContextCore* m_context;
+	AudioDevice * m_context;
 	List<Ref<CoreAudioInputPin>> m_inputPins;
 	List<Ref<CoreAudioOutputPin>> m_outputPins;
 };
@@ -159,7 +159,7 @@ protected:
 	virtual void process() override;
 
 public:
-	CoreAudioSourceNode(AudioContextCore* context);
+	CoreAudioSourceNode(AudioDevice* context);
 	virtual ~CoreAudioSourceNode() = default;
 	void initialize(const Ref<AudioDecoder>& decoder);
 
@@ -218,7 +218,7 @@ protected:
 	virtual void process() override;
 
 public:
-	CoreAudioPannerNode(AudioContextCore* context);
+	CoreAudioPannerNode(AudioDevice* context);
 	virtual ~CoreAudioPannerNode() = default;
 	void initialize();
 
@@ -238,7 +238,7 @@ class CoreAudioDestinationNode
 	, public IAudioDeviceRenderCallback
 {
 public:
-	CoreAudioDestinationNode(AudioContextCore* context);
+	CoreAudioDestinationNode(AudioDevice* context);
 	virtual ~CoreAudioDestinationNode() = default;
 	void initialize();
 

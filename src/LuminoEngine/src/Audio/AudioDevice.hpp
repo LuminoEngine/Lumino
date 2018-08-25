@@ -16,7 +16,10 @@ class AudioDevice
 public:
 	AudioDevice();
 	virtual ~AudioDevice() = default;
+	void initialize(int frames, int channels);
 	virtual void dispose();
+
+	const AudioListenerParams& listener() const { return m_listener; }
 
 	virtual int deviceSamplingRate() = 0;
 
@@ -27,10 +30,13 @@ public:
 
 	virtual void run() {}
 protected:
-	void render(float* outputBuffer, int length);
+	void render(int16_t* outputBuffer, int length);
 
 private:
 	IAudioDeviceRenderCallback* m_renderCallback;
+	AudioListenerParams m_listener;
+	int m_masterChannels;
+	std::vector<float> m_renderdBuffer;
 };
 
 } // namespace detail
