@@ -29,15 +29,35 @@ public:
 
 	detail::AudioDevice* coreObject();
 
+	void sendConnect(AudioNode* outputSide, AudioNode* inputSide);
+	void sendDisconnect(AudioNode* outputSide, AudioNode* inputSide);
+	void sendDisconnectAllAndDispose(AudioNode* node);
+
 LN_INTERNAL_ACCESS:
 #if LN_AUDIO_THREAD_ENABLED
-	std::shared_mutex commitMutex;
+	std::shared_mutex m_commitMutex;
+	std::shared_mutex& commitMutex() { return m_commitMutex; }
 #endif
 
 	void addAudioNode(AudioNode* node) { m_allAudioNodes.add(node); }
 	void removeAudioNode(AudioNode* node) { m_allAudioNodes.remove(node); }
 
 private:
+	enum class OperationCode
+	{
+		Connection,
+		Disconnection,
+		DisconnectionAllAndDispose,
+	};
+
+	struct ConnectionCommand
+	{
+		OperationCode code;
+		Ref<AudioNode> outputSide;
+		Ref<AudioNode> inputSide;
+	};
+
+	// call by aduio thread.
 	void commitGraphs();
 
 	detail::AudioManager* m_manager;
@@ -46,6 +66,7 @@ private:
 	Ref<AudioDestinationNode> m_destinationNode;
 
 	List<AudioNode*> m_allAudioNodes;
+	std::vector<ConnectionCommand> m_connectionCommands;
 };
 
 } // namespace ln

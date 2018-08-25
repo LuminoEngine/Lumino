@@ -44,16 +44,16 @@ protected:
 #endif
 
 private:
-	void addConnectionInput(AudioNode* inputSide);
-	void addConnectionOutput(AudioNode* outputSide);
-	void removeConnectionInput(AudioNode* inputSide);
-	void removeConnectionOutput(AudioNode* outputSide);
+	//void addConnectionInput(AudioNode* inputSide);
+	//void addConnectionOutput(AudioNode* outputSide);
+	//void removeConnectionInput(AudioNode* inputSide);
+	//void removeConnectionOutput(AudioNode* outputSide);
 
 	AudioContext* m_context;
-	List<Ref<AudioNode>> m_inputConnections;	// input side in this node
-	List<Ref<AudioNode>> m_outputConnections;	// output side in this node
-	bool m_inputConnectionsDirty;
-	bool m_outputConnectionsDirty;
+	//List<Ref<AudioNode>> m_inputConnections;	// input side in this node
+	//List<Ref<AudioNode>> m_outputConnections;	// output side in this node
+	//bool m_inputConnectionsDirty;
+	//bool m_outputConnectionsDirty;
 
 	friend class AudioContext;
 };

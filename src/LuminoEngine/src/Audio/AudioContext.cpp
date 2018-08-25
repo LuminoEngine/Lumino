@@ -68,6 +68,10 @@ void AudioContext::dispose()
 		m_coreDestinationNode.reset();
 	}
 
+	// TODO: スレッド停止
+
+	commitGraphs();
+
 	if (m_audioDevice) {
 		m_audioDevice->dispose();
 		m_audioDevice = nullptr;
@@ -94,11 +98,68 @@ detail::AudioDevice* AudioContext::coreObject()
 	return m_audioDevice;
 }
 
+void AudioContext::sendConnect(AudioNode* outputSide, AudioNode* inputSide)
+{
+	if (LN_REQUIRE(outputSide)) return;
+	if (LN_REQUIRE(inputSide)) return;
+	if (LN_REQUIRE(outputSide->context() == this)) return;
+	if (LN_REQUIRE(inputSide->context() == this)) return;
+
+	LN_AUDIO_WRITE_LOCK_COMMIT;
+	m_connectionCommands.push_back({ OperationCode::Connection, outputSide, inputSide });
+}
+
+void AudioContext::sendDisconnect(AudioNode* outputSide, AudioNode* inputSide)
+{
+	if (LN_REQUIRE(outputSide)) return;
+	if (LN_REQUIRE(inputSide)) return;
+	if (LN_REQUIRE(outputSide->context() == this)) return;
+	if (LN_REQUIRE(inputSide->context() == this)) return;
+
+	LN_AUDIO_WRITE_LOCK_COMMIT;
+	m_connectionCommands.push_back({ OperationCode::Disconnection, outputSide, inputSide });
+}
+
+void AudioContext::sendDisconnectAllAndDispose(AudioNode* node)
+{
+	if (LN_REQUIRE(node)) return;
+	if (LN_REQUIRE(node->context() == this)) return;
+
+	LN_AUDIO_WRITE_LOCK_COMMIT;
+	m_connectionCommands.push_back({ OperationCode::DisconnectionAllAndDispose, node });
+}
+
 void AudioContext::commitGraphs()
 {
-#if LN_AUDIO_THREAD_ENABLED
-	std::shared_lock<std::shared_mutex> lock(commitMutex);
-#endif
+	LN_AUDIO_WRITE_LOCK_COMMIT;
+
+	if (!m_connectionCommands.empty())
+	{
+		for (auto& cmd : m_connectionCommands)
+		{
+			switch (cmd.code)
+			{
+			case OperationCode::Connection:
+				detail::CoreAudioNode::connect(cmd.outputSide->coreNode(), cmd.inputSide->coreNode());
+				break;
+			case OperationCode::Disconnection:
+				LN_NOTIMPLEMENTED();
+				break;
+			case OperationCode::DisconnectionAllAndDispose:
+			{
+				detail::CoreAudioNode* node = cmd.outputSide->coreNode();
+				node->disconnectAllInputSide();
+				node->disconnectAllOutputSide();
+				node->dispose();
+				break;
+			}
+			default:
+				LN_UNREACHABLE();
+				break;
+			}
+		}
+		m_connectionCommands.clear();
+	}
 
 	for (AudioNode* node : m_allAudioNodes)
 	{

@@ -12,8 +12,8 @@ namespace ln {
 // AudioNode
 
 AudioNode::AudioNode()
-	: m_inputConnectionsDirty(false)
-	, m_outputConnectionsDirty(false)
+	//: m_inputConnectionsDirty(false)
+	//, m_outputConnectionsDirty(false)
 {
 }
 
@@ -28,7 +28,7 @@ void AudioNode::dispose()
 {
 	Object::dispose();
 	if (m_context) {
-		disconnect();
+		m_context->sendDisconnectAllAndDispose(this);
 		m_context->removeAudioNode(this);
 		m_context = nullptr;
 	}
@@ -36,96 +36,96 @@ void AudioNode::dispose()
 
 void AudioNode::commit()
 {
-	if (m_inputConnectionsDirty)
-	{
-		coreNode()->disconnectAllInputSide();
-		for (auto& node : m_inputConnections) {
-			detail::CoreAudioNode::connect(node->coreNode(), coreNode());
-		}
-		m_inputConnectionsDirty = false;
-	}
 
-	if (m_outputConnectionsDirty)
-	{
-		coreNode()->disconnectAllOutputSide();
-		for (auto& node : m_outputConnections) {
-			detail::CoreAudioNode::connect(coreNode(), node->coreNode());
-		}
-		m_outputConnectionsDirty = false;
-	}
+	//if (m_inputConnectionsDirty)
+	//{
+	//	coreNode()->disconnectAllInputSide();
+	//	for (auto& node : m_inputConnections) {
+	//		detail::CoreAudioNode::connect(node->coreNode(), coreNode());
+	//	}
+	//	m_inputConnectionsDirty = false;
+	//}
+
+	//if (m_outputConnectionsDirty)
+	//{
+	//	coreNode()->disconnectAllOutputSide();
+	//	for (auto& node : m_outputConnections) {
+	//		detail::CoreAudioNode::connect(coreNode(), node->coreNode());
+	//	}
+	//	m_outputConnectionsDirty = false;
+	//}
 }
 
 #if LN_AUDIO_THREAD_ENABLED
 std::shared_mutex& AudioNode::commitMutex()
 {
-	return context()->commitMutex;
+	return context()->commitMutex();
 }
 #endif
 
-void AudioNode::addConnectionInput(AudioNode * inputSide)
-{
-	if (LN_REQUIRE(inputSide)) return;
-	if (LN_REQUIRE(context() == inputSide->context())) return;
-	if (!m_inputConnections.contains(inputSide))
-	{
-		LN_AUDIO_WRITE_LOCK_COMMIT;
-		m_inputConnections.add(inputSide);
-		m_inputConnectionsDirty = true;
-	}
-}
-
-void AudioNode::addConnectionOutput(AudioNode * outputSide)
-{
-	if (LN_REQUIRE(outputSide)) return;
-	if (LN_REQUIRE(context() == outputSide->context())) return;
-	if (!m_outputConnections.contains(outputSide))
-	{
-		LN_AUDIO_WRITE_LOCK_COMMIT;
-		m_outputConnections.add(outputSide);
-		m_outputConnectionsDirty = true;
-	}
-}
-
-void AudioNode::removeConnectionInput(AudioNode* inputSide)
-{
-	if (LN_REQUIRE(inputSide)) return;
-	if (m_inputConnections.remove(inputSide))
-	{
-		m_inputConnectionsDirty = true;
-	}
-}
-
-void AudioNode::removeConnectionOutput(AudioNode* outputSide)
-{
-	if (LN_REQUIRE(outputSide)) return;
-	if (m_outputConnections.remove(outputSide))
-	{
-		m_outputConnectionsDirty = true;
-	}
-}
+//void AudioNode::addConnectionInput(AudioNode * inputSide)
+//{
+//	if (LN_REQUIRE(inputSide)) return;
+//	if (LN_REQUIRE(context() == inputSide->context())) return;
+//
+//	LN_AUDIO_WRITE_LOCK_COMMIT;
+//	m_connectionCommands.push_back({ OperationCode::ConnectionInput, inputSide});
+//}
+//
+//void AudioNode::addConnectionOutput(AudioNode * outputSide)
+//{
+//	if (LN_REQUIRE(outputSide)) return;
+//	if (LN_REQUIRE(context() == outputSide->context())) return;
+//
+//	LN_AUDIO_WRITE_LOCK_COMMIT;
+//	m_connectionCommands.push_back({ OperationCode::ConnectionOutput, outputSide });
+//}
+//
+//void AudioNode::removeConnectionInput(AudioNode* inputSide)
+//{
+//	if (LN_REQUIRE(inputSide)) return;
+//	if (LN_REQUIRE(context() == inputSide->context())) return;
+//
+//	LN_AUDIO_WRITE_LOCK_COMMIT;
+//	m_connectionCommands.push_back({ OperationCode::DisconnectionInput, inputSide });
+//}
+//
+//void AudioNode::removeConnectionOutput(AudioNode* outputSide)
+//{
+//	if (LN_REQUIRE(outputSide)) return;
+//	if (LN_REQUIRE(context() == outputSide->context())) return;
+//
+//	LN_AUDIO_WRITE_LOCK_COMMIT;
+//	m_connectionCommands.push_back({ OperationCode::DisconnectionOutput, outputSide });
+//}
 
 void AudioNode::connect(AudioNode * outputSide, AudioNode * inputSide)
 {
-	outputSide->addConnectionOutput(inputSide);
-	inputSide->addConnectionInput(outputSide);
+	if (LN_REQUIRE(outputSide)) return;
+	outputSide->context()->sendConnect(outputSide, inputSide);
+	//outputSide->addConnectionOutput(inputSide);
+	//inputSide->addConnectionInput(outputSide);
 }
 
 void AudioNode::disconnect(AudioNode* outputSide, AudioNode* inputSide)
 {
-	outputSide->removeConnectionOutput(inputSide);
-	inputSide->removeConnectionInput(outputSide);
+	if (LN_REQUIRE(outputSide)) return;
+	outputSide->context()->sendDisconnect(outputSide, inputSide);
+	//outputSide->removeConnectionOutput(inputSide);
+	//inputSide->removeConnectionInput(outputSide);
 }
 
 void AudioNode::disconnect()
 {
-	for (auto& node : m_inputConnections) {
-		node->removeConnectionOutput(this);
-	}
-	for (auto& node : m_outputConnections) {
-		node->removeConnectionInput(this);
-	}
-	m_inputConnectionsDirty = false;
-	m_outputConnectionsDirty = false;
+	LN_NOTIMPLEMENTED();
+	//for (auto& node : m_inputConnections) {
+	//	node->removeConnectionOutput(this);
+	//}
+	//for (auto& node : m_outputConnections) {
+	//	node->removeConnectionInput(this);
+	//}
+	//m_inputConnectionsDirty = false;
+	//m_outputConnectionsDirty = false;
 }
 
 //==============================================================================
