@@ -104,6 +104,8 @@ set(LN_SOURCES_Audio
     src/Audio/ChromiumWebCore.hpp
     src/Audio/CoreAudioNode.cpp
     src/Audio/CoreAudioNode.hpp
+    src/Audio/DSoundAudioDevice.cpp
+    src/Audio/DSoundAudioDevice.hpp
     src/Audio/SDLAudioDevice.cpp
     src/Audio/SDLAudioDevice.hpp
     src/Audio/blink/VectorMath.cpp

@@ -50,6 +50,7 @@ int main(int argc, char** argv)
 	source->start();
 #else
 	auto source = newObject<AudioSourceNode>(u"D:\\tmp\\3_EventScene_variation2.wav");
+	//auto source = newObject<AudioSourceNode>(u"D:\\tmp\\8_MapBGM2.wav");
 	AudioNode::connect(source, AudioContext::primary()->destination());
 	//source->setPlaybackRate(1.2);
 	source->start();
