@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <memory>
+#include <thread>
 #include "../Engine/RenderingCommandList.hpp"
 
 namespace ln {
@@ -27,13 +29,15 @@ public:
 	Ref<AudioDecoder> createAudioDecoder(const StringRef& filePath);
 
 private:
+	void processThread();
+
 	Ref<AudioContext> m_primaryContext;
 	//Ref<LinearAllocatorPageManager> m_linearAllocatorPageManager;
 	//Ref<RenderingCommandList> m_primaryRenderingCommandList;
 
-#if LN_AUDIO_THREAD_ENABLED
-	//std::unique_ptr<std::thread> m_audioThread;
-#endif
+	std::unique_ptr<std::thread> m_audioThread;
+	std::unique_ptr<Exception> m_audioThreadException;
+	std::atomic<bool> m_endRequested;
 };
 
 } // namespace detail

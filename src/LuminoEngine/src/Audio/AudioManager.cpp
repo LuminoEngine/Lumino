@@ -28,10 +28,27 @@ void AudioManager::initialize(const Settings& settings)
 
 	//m_linearAllocatorPageManager = makeRef<LinearAllocatorPageManager>();
 	//m_primaryRenderingCommandList = makeRef<RenderingCommandList>(m_linearAllocatorPageManager);
+
+
+
+#if LN_AUDIO_THREAD_ENABLED
+	m_endRequested = false;
+	m_audioThread = std::make_unique<std::thread>(std::bind(&AudioManager::processThread, this));
+#endif
 }
 
 void AudioManager::dispose()
 {
+#if LN_AUDIO_THREAD_ENABLED
+	m_endRequested = true;
+
+	if (m_audioThread) {
+		m_audioThread->join();
+	}
+	if (m_audioThreadException) {
+		throw *m_audioThreadException;
+	}
+#endif
 	if (m_primaryContext) {
 		m_primaryContext->dispose();
 		m_primaryContext = nullptr;
@@ -40,8 +57,11 @@ void AudioManager::dispose()
 
 void AudioManager::update()
 {
-	if (m_primaryContext) {
-		m_primaryContext->process();
+	if (!m_audioThread) {
+		// not thread processing.
+		if (m_primaryContext) {
+			m_primaryContext->process();
+		}
 	}
 }
 
@@ -54,6 +74,23 @@ Ref<AudioDecoder> AudioManager::createAudioDecoder(const StringRef & filePath)
 	auto decoder = makeRef<WaveDecoder>();
 	decoder->initialize(FileStream::create(filePath), diag);
 	return decoder;
+}
+
+void AudioManager::processThread()
+{
+	try
+	{
+		while (!m_endRequested)
+		{
+			if (m_primaryContext) {
+				m_primaryContext->process();
+			}
+		}
+	}
+	catch (Exception& e)
+	{
+		m_audioThreadException.reset(e.copy());
+	}
 }
 
 } // namespace detail
