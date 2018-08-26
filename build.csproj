@@ -30,7 +30,7 @@
     <Compile Include="tools/LuminoBuild/Tasks/BuildEngineAndroidJNI.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildEngineEmscripten.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildExternalProjects.cs" />
-    <Compile Include="tools\LuminoBuild\Tasks\DeployEnginePackage.cs" />
+    <Compile Include="tools/LuminoBuild/Tasks/DeployEnginePackage.cs" />
     <Compile Include="tools/LuminoBuild/Rules/MakePackage.cs" />
   </ItemGroup>
   

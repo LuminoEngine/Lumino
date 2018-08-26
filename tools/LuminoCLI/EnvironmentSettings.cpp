@@ -66,6 +66,7 @@ void BuildEnvironment::setupPathes(EnvironmentSettings* env)
 	m_emsdkRootDir = (ln::Path::combine(m_toolsDir, u"emsdk"));
 	m_emscriptenRootDir = (ln::Path::combine(m_emsdkRootDir, u"emscripten", m_emsdkVer));
 
+	// デバッグ用。実行ファイルの位置からさかのぼっていって、.git が見つかればそこから必要なパスを作ってみる
 	ln::Path path = ln::Environment::executablePath();
 	while (!path.isRoot())
 	{

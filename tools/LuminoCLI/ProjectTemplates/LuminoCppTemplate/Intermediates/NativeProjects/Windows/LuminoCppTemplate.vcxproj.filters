@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="targetver.h">
+      <Filter>AppResources</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>AppResources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Sources\Application.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Sources\PCH.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Sources\Application.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Sources\PCH.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>AppResources</Filter>
+    </Image>
+    <Image Include="app.ico">
+      <Filter>AppResources</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Sources">
+      <UniqueIdentifier>{eb616a93-aa6d-4b76-9c9c-8b317e6eeabb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AppResources">
+      <UniqueIdentifier>{795ead8f-9ca5-4424-8a6b-1ec16435faf1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc">
+      <Filter>AppResources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

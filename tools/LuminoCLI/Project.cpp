@@ -33,12 +33,12 @@ Result CppProjectLanguageContext::applyTemplates()
 	// Common
 	{
 		ln::String files[] = {
-			"CMakeLists.txt",
-			"LuminoCppTemplate.sln",
-			"Sources/Application.cpp",
-			"Sources/Application.h",
-			"Sources/LuminoCppTemplate.vcxproj",
-			"Sources/LuminoCppTemplate.vcxproj.filters",
+			u".gitignore",
+			u"Intermediates/CMakeLists.txt",
+			u"Sources/Application.cpp",
+			u"Sources/Application.h",
+			u"Sources/PCH.cpp",
+			u"Sources/PCH.h",
 		};
 
 		auto destRoot = project()->rootDirPath();
@@ -46,34 +46,42 @@ Result CppProjectLanguageContext::applyTemplates()
 
 		for (auto& file : files)
 		{
-			ln::FileSystem::copyFile(ln::Path(srcRoot, file), ln::Path(destRoot, file), ln::FileCopyOption::Overwrite);
+			auto filePath = ln::Path(destRoot, file);
+			auto dirPath = filePath.parent();
+			if (!ln::FileSystem::existsDirectory(dirPath)) {
+				ln::FileSystem::createDirectory(dirPath);
+			}
+
+			ln::FileSystem::copyFile(ln::Path(srcRoot, file), filePath, ln::FileCopyOption::Overwrite);
 		}
 	}
 
 	// Win32
-	if (0)
 	{
 		ln::String files[] = {
-			"LuminoCppTemplate.cpp",
-			"LuminoCppTemplate.h",
-			"LuminoCppTemplate.ico",
-			"LuminoCppTemplate.rc",
-			"LuminoCppTemplate.vcxproj",
-			"LuminoCppTemplate.vcxproj.filters",
-			"Resource.h",
-			"small.ico",
-			"stdafx.cpp",
-			"stdafx.h",
-			"targetver.h",
+			u"LuminoCppTemplate.sln",
+			u"Intermediates/NativeProjects/Windows/LuminoCppTemplate.vcxproj",
+			u"Intermediates/NativeProjects/Windows/LuminoCppTemplate.vcxproj.filters",
+			u"Intermediates/NativeProjects/Windows/app.ico",
+			u"Intermediates/NativeProjects/Windows/Resource.h",
+			u"Intermediates/NativeProjects/Windows/Resource.rc",
+			u"Intermediates/NativeProjects/Windows/small.ico",
+			u"Intermediates/NativeProjects/Windows/targetver.h",
 		};
 
-		auto destRoot = ln::Path(project()->buildDir(), _T("Win32"));
-		auto srcRoot = ln::Path(projectTemplatesDir, _T("LuminoCppTemplate/LuminoCppTemplate"));
+		auto destRoot = project()->rootDirPath();
+		auto srcRoot = ln::Path(projectTemplatesDir, _T("LuminoCppTemplate"));
 		ln::FileSystem::createDirectory(destRoot);
 
 		for (auto& file : files)
 		{
-			ln::FileSystem::copyFile(ln::Path(srcRoot, file), ln::Path(destRoot, file), ln::FileCopyOption::Overwrite);
+			auto filePath = ln::Path(destRoot, file);
+			auto dirPath = filePath.parent();
+			if (!ln::FileSystem::existsDirectory(dirPath)) {
+				ln::FileSystem::createDirectory(dirPath);
+			}
+
+			ln::FileSystem::copyFile(ln::Path(srcRoot, file), filePath, ln::FileCopyOption::Overwrite);
 		}
 	}
 

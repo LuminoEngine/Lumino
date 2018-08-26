@@ -32,12 +32,12 @@ int main(int argc, char** argv)
 	::SetCurrentDirectoryW(L"D:\\Documents\\LuminoProjects\\HelloLumino");
 	
 	char* debugArgv[] = {
-		//"<program>", "init", "HelloLumino",
+		"<program>", "init", "HelloLumino",
 
 		//"<program>", "dev-install-tools",
 
 		//"<program>", "build", "Emscripten",
-		"<program>", "build", "Android",
+		//"<program>", "build", "Android",
 	};
 	argc = sizeof(debugArgv) / sizeof(char*);
 	argv = debugArgv;
