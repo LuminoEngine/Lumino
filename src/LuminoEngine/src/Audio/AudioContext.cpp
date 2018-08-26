@@ -64,8 +64,6 @@ void AudioContext::dispose()
 		m_coreDestinationNode.reset();
 	}
 
-	// TODO: スレッド停止
-
 	commitGraphs();
 
 	if (m_audioDevice) {

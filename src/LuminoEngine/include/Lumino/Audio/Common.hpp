@@ -2,7 +2,7 @@
 
 #ifdef __EMSCRIPTEN__
 #else
-#define LN_AUDIO_THREAD_ENABLED 1
+#define LN_AUDIO_THREAD_ENABLED
 #endif
 
 namespace ln {

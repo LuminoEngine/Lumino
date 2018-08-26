@@ -56,7 +56,7 @@ void AudioNode::commit()
 	//}
 }
 
-#if LN_AUDIO_THREAD_ENABLED
+#ifdef LN_AUDIO_THREAD_ENABLED
 std::shared_mutex& AudioNode::commitMutex()
 {
 	return context()->commitMutex();

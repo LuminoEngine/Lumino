@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <shared_mutex>
 
-#if LN_AUDIO_THREAD_ENABLED
+#ifdef LN_AUDIO_THREAD_ENABLED
 #define LN_AUDIO_WRITE_LOCK_COMMIT	std::shared_lock<std::shared_mutex> lock(commitMutex());
 #define LN_AUDIO_READ_LOCK_COMMIT	std::shared_lock<std::shared_mutex> lock(commitMutex());
 #else
@@ -39,7 +39,7 @@ protected:
 	virtual detail::CoreAudioNode* coreNode() = 0;
 	virtual void commit();	// ロック済みの状態で呼ばれる
 
-#if LN_AUDIO_THREAD_ENABLED
+#ifdef LN_AUDIO_THREAD_ENABLED
 	std::shared_mutex& commitMutex();
 #endif
 

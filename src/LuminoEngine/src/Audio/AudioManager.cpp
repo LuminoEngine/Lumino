@@ -31,7 +31,7 @@ void AudioManager::initialize(const Settings& settings)
 
 
 
-#if LN_AUDIO_THREAD_ENABLED
+#ifdef LN_AUDIO_THREAD_ENABLED
 	m_endRequested = false;
 	m_audioThread = std::make_unique<std::thread>(std::bind(&AudioManager::processThread, this));
 #endif
@@ -39,7 +39,7 @@ void AudioManager::initialize(const Settings& settings)
 
 void AudioManager::dispose()
 {
-#if LN_AUDIO_THREAD_ENABLED
+#ifdef LN_AUDIO_THREAD_ENABLED
 	m_endRequested = true;
 
 	if (m_audioThread) {

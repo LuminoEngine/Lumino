@@ -34,7 +34,7 @@ public:
 	void sendDisconnectAllAndDispose(AudioNode* node);
 
 LN_INTERNAL_ACCESS:
-#if LN_AUDIO_THREAD_ENABLED
+#ifdef LN_AUDIO_THREAD_ENABLED
 	std::shared_mutex m_commitMutex;
 	std::shared_mutex& commitMutex() { return m_commitMutex; }
 #endif
