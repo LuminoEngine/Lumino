@@ -22,6 +22,9 @@ protected:
 	Application();
 	virtual ~Application();
 
+private:
+	void run();
+
 	friend class detail::ApplicationHelper;
 };
 
@@ -29,9 +32,13 @@ namespace detail {
 class ApplicationHelper
 {
 public:
+	// for external main loop (emscripten, android)
 	static void initialize(Application* app);
 	static bool processTick(Application* app);
 	static void finalize(Application* app);
+
+	// for internal main loop (win32, macOS...)
+	static void run(Application* app);
 };
 } // namespace detail
 } // namespace ln

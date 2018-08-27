@@ -7,18 +7,18 @@
     <ClInclude Include="Resource.h">
       <Filter>AppResources</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Sources\Application.h">
+    <ClInclude Include="..\..\Sources\Application.h">
       <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Sources\PCH.h">
+    <ClInclude Include="..\..\Sources\PCH.h">
       <Filter>Sources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\Sources\Application.cpp">
+    <ClCompile Include="..\..\Sources\Application.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Sources\PCH.cpp">
+    <ClCompile Include="..\..\Sources\PCH.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>

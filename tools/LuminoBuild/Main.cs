@@ -12,7 +12,7 @@ namespace LuminoBuild
             // default
             if (args.Length == 0)
             {
-                args = new string[] { "BuildExternalProjects" };
+                args = new string[] { "DeployEnginePackage" };
             }
 
             Assembly thisAssembly = Assembly.GetEntryAssembly();

@@ -34,7 +34,7 @@ Result CppProjectLanguageContext::applyTemplates()
 	{
 		ln::String files[] = {
 			u".gitignore",
-			u"Intermediates/CMakeLists.txt",
+			u"NativeProjects/CMakeLists.txt",
 			u"Sources/Application.cpp",
 			u"Sources/Application.h",
 			u"Sources/PCH.cpp",
@@ -60,13 +60,13 @@ Result CppProjectLanguageContext::applyTemplates()
 	{
 		ln::String files[] = {
 			u"LuminoCppTemplate.sln",
-			u"Intermediates/NativeProjects/Windows/LuminoCppTemplate.vcxproj",
-			u"Intermediates/NativeProjects/Windows/LuminoCppTemplate.vcxproj.filters",
-			u"Intermediates/NativeProjects/Windows/app.ico",
-			u"Intermediates/NativeProjects/Windows/Resource.h",
-			u"Intermediates/NativeProjects/Windows/Resource.rc",
-			u"Intermediates/NativeProjects/Windows/small.ico",
-			u"Intermediates/NativeProjects/Windows/targetver.h",
+			u"NativeProjects/Windows/LuminoCppTemplate.vcxproj",
+			u"NativeProjects/Windows/LuminoCppTemplate.vcxproj.filters",
+			u"NativeProjects/Windows/app.ico",
+			u"NativeProjects/Windows/Resource.h",
+			u"NativeProjects/Windows/Resource.rc",
+			u"NativeProjects/Windows/small.ico",
+			u"NativeProjects/Windows/targetver.h",
 		};
 
 		auto destRoot = project()->rootDirPath();

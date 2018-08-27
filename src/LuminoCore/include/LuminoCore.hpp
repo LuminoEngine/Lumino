@@ -68,13 +68,13 @@
 #include "Lumino/Serialization/ArchiveStore.hpp"
 #include "Lumino/Serialization/Serialization.hpp"
 
-#ifndef LN_MSVC_DISABLE_LIBRARY_LINK
+#ifdef LN_MSVC_AUTO_LINK_LIBRARIES
 #ifdef _MSC_VER
 
 #ifdef _DEBUG
-#define LN_MSVC_BUILD_CONFIG "Debug"
+#define LN_MSVC_LIBRARY_POSTFIX "d"
 #else
-#define LN_MSVC_BUILD_CONFIG "Release"
+#define LN_MSVC_LIBRARY_POSTFIX
 #endif
 
 #ifdef _WIN64
@@ -89,7 +89,9 @@
 #define LN_MSVC_BUILD_RUNTIMELIBRARY "MT"
 #endif
 
-#pragma comment(lib, "MSVC2017-" LN_MSVC_BUILD_ARCH "-" LN_MSVC_BUILD_RUNTIMELIBRARY "/" LN_MSVC_BUILD_CONFIG "/LuminoCore.lib")
+#define LN_MSVC_MAKE_LIB_PATH(name) "MSVC2017-" LN_MSVC_BUILD_ARCH "-" LN_MSVC_BUILD_RUNTIMELIBRARY "/" name LN_MSVC_LIBRARY_POSTFIX ".lib"
+
+#pragma comment(lib, LN_MSVC_MAKE_LIB_PATH("LuminoCore"))
 
 #endif
 #endif

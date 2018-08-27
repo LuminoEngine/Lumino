@@ -27,21 +27,24 @@ int main(int argc, char** argv)
 #endif
 
 #if 1
-	::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\HelloLumino");
-	//::SetCurrentDirectoryW(L"D:\\Documents\\LuminoProjects\\HelloLumino");
+	if (argc == 1)
+	{
+		//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\HelloLumino");
+		::SetCurrentDirectoryW(L"D:\\Documents\\LuminoProjects\\HelloLumino");
 	
-	char* debugArgv[] = {
-		//"<program>", "init", "HelloLumino",
+		char* debugArgv[] = {
+			"<program>", "init", "HelloLumino",
 
-		//"<program>", "dev-install-tools",
+			//"<program>", "dev-install-tools",
 
-		//"<program>", "build", "Emscripten",
-		//"<program>", "build", "Android",
+			//"<program>", "build", "Emscripten",
+			//"<program>", "build", "Android",
 
-		"<program>", "dev-openide",
-	};
-	argc = sizeof(debugArgv) / sizeof(char*);
-	argv = debugArgv;
+			//"<program>", "dev-openide",
+		};
+		argc = sizeof(debugArgv) / sizeof(char*);
+		argv = debugArgv;
+	}
 #endif
 
 	ln::CommandLineParser parser;

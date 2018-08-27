@@ -7,12 +7,10 @@ project(LuminoLaunch)
 
 set(LN_SOURCES
 	src/LuminoLaunch.PCH.cpp
-	src/LuminoLaunch.PCH.h
+    src/LuminoLaunch.PCH.h
+    src/Main_Win32.cpp
+    src/Main_Html5.cpp
 )
-
-if (LN_EMSCRIPTEN)
-	set(LN_SOURCES ${LN_SOURCES} src/Html5Main.cpp)
-endif()
 
 #------------------------------------------------------------------------------
 # Targets
