@@ -108,6 +108,7 @@ namespace LuminoBuild.Tasks
                 Utils.CallProcess("git", "clone --progress https://github.com/KhronosGroup/SPIRV-Cross.git SPIRV-Cross");
                 Directory.SetCurrentDirectory("SPIRV-Cross");
                 Utils.CallProcess("git", "checkout be7425ef70231ab82930331959ab487d605d0482");
+                Directory.SetCurrentDirectory(reposDir);
             }
             if (!Directory.Exists("glad"))
             {
@@ -118,30 +119,30 @@ namespace LuminoBuild.Tasks
 
             if (Utils.IsWin32)
             {
-                //// Android
-                //{
-                //    foreach (var target in BuildEngineAndroidJNI.Targets)
-                //    {
-                //        var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "Android-" + target.ABI, "ExternalInstall", "zlib"));
-                //        BuildProjectAndroid(builder, "zlib", reposDir, target.ABI);
-                //        BuildProjectAndroid(builder, "libpng", reposDir, target.ABI, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
-                //        BuildProjectAndroid(builder, "glslang", reposDir, target.ABI);
-                //        BuildProjectAndroid(builder, "SPIRV-Cross", reposDir, target.ABI);
-                //    }
-                //}
+                // Android
+                {
+                    foreach (var target in BuildEngine_AndroidJNI.Targets)
+                    {
+                        var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "Android-" + target.ABI, "ExternalInstall", "zlib"));
+                        BuildProjectAndroid(builder, "zlib", reposDir, target.ABI);
+                        BuildProjectAndroid(builder, "libpng", reposDir, target.ABI, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
+                        BuildProjectAndroid(builder, "glslang", reposDir, target.ABI);
+                        BuildProjectAndroid(builder, "SPIRV-Cross", reposDir, target.ABI);
+                    }
+                }
 
-                //// Emscripten
-                //{
-                //    var externalInstallDir = Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall");
-                //    var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall", "zlib"));
+                // Emscripten
+                {
+                    var externalInstallDir = Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall");
+                    var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall", "zlib"));
 
-                //    BuildProjectEm(builder, "zlib", reposDir, "Emscripten");
-                //    BuildProjectEm(builder, "libpng", reposDir, "Emscripten", $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
-                //    BuildProjectEm(builder, "glslang", reposDir, "Emscripten");
-                //    BuildProjectEm(builder, "SPIRV-Cross", reposDir, "Emscripten");
-                //    BuildProjectEm(builder, "glad", reposDir, "Emscripten", "-DGLAD_INSTALL=ON");
-                //}
-          
+                    BuildProjectEm(builder, "zlib", reposDir, "Emscripten");
+                    BuildProjectEm(builder, "libpng", reposDir, "Emscripten", $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
+                    BuildProjectEm(builder, "glslang", reposDir, "Emscripten");
+                    BuildProjectEm(builder, "SPIRV-Cross", reposDir, "Emscripten");
+                    BuildProjectEm(builder, "glad", reposDir, "Emscripten", "-DGLAD_INSTALL=ON");
+                }
+
                 // Visual C++
                 foreach (var target in MakeVSProjects.Targets)
                 {
@@ -154,128 +155,6 @@ namespace LuminoBuild.Tasks
                     BuildProject(builder, "glad", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DGLAD_INSTALL=ON");
                 }
             }
-
-
-
-
-            return;
-
-
-
-
-
-
-
-
-            if (Utils.IsWin32)
-            {
-                foreach (var target in MakeVSProjects.Targets)
-                {
-
-                    //var projectName = "zlib";
-                    var buildDir = Path.Combine(builder.LuminoBuildDir, target.DirName, "ExternalBuild");
-                    var installDir = Path.Combine(builder.LuminoBuildDir, target.DirName, "ExternalInstall");
-                    var sourceDir = "../../../external/";// + projectName;
-
-                    Directory.CreateDirectory(buildDir);
-                    Directory.SetCurrentDirectory(buildDir);
-                    Utils.CallProcess("cmake", $"-DLN_MSVC_STATIC_RUNTIME=ON -DLN_EXTERNAL_BUILD_DIR={buildDir.Replace("\\", "/")} -DLN_EXTERNAL_INSTALL_DIR={installDir} {sourceDir}");
-                    Utils.CallProcess("cmake", "--build . --config Debug");
-                    Utils.CallProcess("cmake", "--build . --config Release");
-
-
-
-
-
-
-                    // zlib は cmake のコンフィグレーションで static lib のみ生成できない。
-                    // また、cmake の find_XXXX 系でライブラリを探すとき、static lib 優先にできない。
-                    // そのため dynamic lib を削除して static lib の名前を置き換えることで対策する。
-                    {
-                        var binDir = Path.Combine(installDir, "zlib", "bin");
-                        if (Directory.Exists(binDir))
-                            Directory.Delete(Path.Combine(binDir), true);
-                        var zlibList = Directory.EnumerateFiles(Path.Combine(installDir, "zlib", "lib"), "zlib*", SearchOption.AllDirectories).Where(x => !x.Contains("zlibstatic"));
-                        var zlibstaticList = Directory.EnumerateFiles(Path.Combine(installDir, "zlib", "lib"), "zlib*", SearchOption.AllDirectories).Where(x => x.Contains("zlibstatic"));
-                        foreach (var path in zlibList)
-                        {
-                            File.Delete(path);
-                        }
-                        foreach (var path in zlibstaticList)
-                        {
-                            var dir = Path.GetDirectoryName(path);
-                            var ext = Path.GetExtension(path);
-                            var name = Path.GetFileNameWithoutExtension(path);
-
-                            if (name == "zlibstaticd")  // debug lib
-                                Utils.MoveFileForce(path, Path.Combine(dir, "zlibd" + ext));
-                            else
-                                Utils.MoveFileForce(path, Path.Combine(dir, "zlib" + ext));
-                        }
-                    }
-
-                    // libpng も
-                    {
-                        var libpngstaticList = Directory.EnumerateFiles(Path.Combine(installDir, "libpng", "lib"), "libpng*", SearchOption.TopDirectoryOnly);
-                        foreach (var path in libpngstaticList)
-                        {
-                            var dir = Path.GetDirectoryName(path);
-                            var ext = Path.GetExtension(path);
-                            var name = Path.GetFileNameWithoutExtension(path);
-
-                            if (name == "libpng16_staticd")  // debug lib
-                                Utils.MoveFileForce(path, Path.Combine(dir, "libpng16d" + ext));
-                            else if(name == "libpng16_static")
-                                Utils.MoveFileForce(path, Path.Combine(dir, "libpng16" + ext));
-                        }
-                    }
-                }
-
-                // Emscripten
-                {
-                    var buildDir = Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalBuild");
-                    var installDir = Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall");
-                    var sourceDir = "../../../external/";
-
-                    Directory.CreateDirectory(buildDir);
-
-                    var script = Path.Combine(buildDir, "build.bat");
-                    using (var f = new StreamWriter(script))
-                    {
-                        f.WriteLine($"cd \"{BuildEnvironment.EmsdkDir}\"");
-                        //f.WriteLine($"emsdk activate {BuildEnvironment.emsdkVer}");
-                        f.WriteLine($"call emsdk_env.bat");
-                        f.WriteLine($"cd \"{Utils.ToWin32Path(buildDir)}\"");
-                        f.WriteLine($"call emcmake cmake -DCMAKE_BUILD_TYPE=Release -DLN_EXTERNAL_BUILD_DIR={buildDir.Replace("\\", "/")} -DLN_EXTERNAL_INSTALL_DIR={installDir} -G \"MinGW Makefiles\" {sourceDir}");
-                        f.WriteLine($"cmake --build .");
-                    }
-
-                    Utils.CallProcessShell(script);
-
-                    //Directory.SetCurrentDirectory(BuildEnvironment.EmsdkDir);
-                    //Utils.CallProcess("emsdk_env.bat");
-                    //var ff = Environment.GetEnvironmentVariables();
-                    //Utils.CallProcess("emcmake", $"cmake -DCMAKE_BUILD_TYPE=Release -DLN_EXTERNAL_BUILD_DIR={buildDir.Replace("\\", "/")} -DLN_EXTERNAL_INSTALL_DIR={installDir} -G \"MinGW Makefiles\" {sourceDir}");
-
-                    //Directory.CreateDirectory(buildDir);
-                    //Directory.SetCurrentDirectory(buildDir);
-                    //Utils.CallProcess(BuildEnvironment.emcmake, $"cmake -DCMAKE_BUILD_TYPE=Release -DLN_EXTERNAL_BUILD_DIR={buildDir.Replace("\\", "/")} -DLN_EXTERNAL_INSTALL_DIR={installDir} -G \"MinGW Makefiles\" {sourceDir}");
-                    //Utils.CallProcess("cmake", "--build .");
-                }
-            }
-            else
-            {
-                var buildDir = Path.Combine(builder.LuminoBuildDir, "Linux-x86_64", "ExternalBuild");
-                var installDir = Path.Combine(builder.LuminoBuildDir, "Linux-x86_64", "ExternalInstall");
-                var sourceDir = "../../../external/";
-
-                Directory.CreateDirectory(buildDir);
-                Directory.SetCurrentDirectory(buildDir);
-                Utils.CallProcess("cmake", $"-DCMAKE_BUILD_TYPE=Release -DLN_EXTERNAL_BUILD_DIR={buildDir.Replace("\\", "/")} -DLN_EXTERNAL_INSTALL_DIR={installDir} {sourceDir}");
-                Utils.CallProcess("cmake", "--build .");
-                //Utils.CallProcess("cmake", "--build . --config Debug");
-            }
-
         }
     }
 }

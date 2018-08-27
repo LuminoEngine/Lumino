@@ -5,9 +5,9 @@ using LuminoBuild;
 
 namespace LuminoBuild.Tasks
 {
-    class BuildEngineWin32 : BuildTask
+    class BuildEngine_MSVC : BuildTask
     {
-        public override string CommandName { get { return "BuildEngineWin32"; } }
+        public override string CommandName { get { return "BuildEngine_MSVC"; } }
 
         public override string Description { get { return "Build engine for C++."; } }
         

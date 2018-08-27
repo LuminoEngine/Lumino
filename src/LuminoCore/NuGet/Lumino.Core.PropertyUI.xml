@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProjectSchemaDefinitions xmlns="clr-namespace:Microsoft.Build.Framework.XamlTypes;assembly=Microsoft.Build.Framework">
+  <Rule Name="A3dBuildProperty" PageTemplate="tool" DisplayName="Lumino build configuration" SwitchPrefix="/" Order="300">
+    
+    <Rule.Categories>
+      <Category Name="General" DisplayName="General" />
+    </Rule.Categories>
+    
+    <Rule.DataSource>
+      <DataSource Persistence="ProjectFile" ItemType="" SourceOfDefaultValue="AfterContext" />
+    </Rule.DataSource>
+    
+    <BoolProperty Name="LuminoAutoLinkLibraries" DisplayName="Enable auto link libraries." Description="Automatically link the libraries necessary for Lumino build." Category="General"/>
+  </Rule>
+</ProjectSchemaDefinitions>

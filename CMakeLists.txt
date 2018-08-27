@@ -37,7 +37,7 @@ option(LN_MSVC_STATIC_RUNTIME "static runtime (/MT, /MTd) or DLL runtime (/MD, /
 
 #------------------------------------------------------------------------------
 
-set(CMAKE_DEBUG_POSTFIX "-debug")
+set(CMAKE_DEBUG_POSTFIX "d")
 
 include(src/LuminoCommon.cmake)
 

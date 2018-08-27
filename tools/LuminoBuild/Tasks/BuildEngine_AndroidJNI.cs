@@ -5,7 +5,7 @@ using LuminoBuild;
 
 namespace LuminoBuild.Tasks
 {
-    class BuildEngineAndroidJNI : BuildTask
+    class BuildEngine_AndroidJNI : BuildTask
     {
         public struct Target
         {
@@ -20,7 +20,7 @@ namespace LuminoBuild.Tasks
             new Target() { ABI = "armeabi-v7a" },
         };
 
-        public override string CommandName { get { return "BuildEngineAndroidJNI"; } }
+        public override string CommandName { get { return "BuildEngine_AndroidJNI"; } }
 
         public override string Description { get { return "Build Android JNI"; } }
 

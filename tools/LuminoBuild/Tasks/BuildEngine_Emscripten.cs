@@ -4,9 +4,9 @@ using System.IO;
 
 namespace LuminoBuild.Tasks
 {
-    class BuildEngineEmscripten : BuildTask
+    class BuildEngine_Emscripten : BuildTask
     {
-        public override string CommandName { get { return "BuildEngineEmscripten"; } }
+        public override string CommandName { get { return "BuildEngine_Emscripten"; } }
 
         public override string Description { get { return "Build Emscripten"; } }
 

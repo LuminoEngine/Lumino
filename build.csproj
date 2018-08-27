@@ -22,13 +22,13 @@
     <Compile Include="tools/LuminoBuild/BuildEnvironment.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/SetupTools.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/MakeVSProjects.cs" />
-    <Compile Include="tools/LuminoBuild/Tasks/BuildEngineWin32.cs" />
+    <Compile Include="tools\LuminoBuild\Tasks\BuildEngine_MSVC.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildDocuments.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildEngine_Linux.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildEngine_macOS.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/MakeNuGetPackage_Core.cs" />
-    <Compile Include="tools/LuminoBuild/Tasks/BuildEngineAndroidJNI.cs" />
-    <Compile Include="tools/LuminoBuild/Tasks/BuildEngineEmscripten.cs" />
+    <Compile Include="tools\LuminoBuild\Tasks\BuildEngine_AndroidJNI.cs" />
+    <Compile Include="tools\LuminoBuild\Tasks\BuildEngine_Emscripten.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildExternalProjects.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/DeployEnginePackage.cs" />
     <Compile Include="tools/LuminoBuild/Rules/MakePackage.cs" />
