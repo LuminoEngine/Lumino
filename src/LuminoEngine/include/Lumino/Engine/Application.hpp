@@ -29,7 +29,7 @@ private:
 };
 
 namespace detail {
-class ApplicationHelper
+class LN_API ApplicationHelper
 {
 public:
 	// for external main loop (emscripten, android)

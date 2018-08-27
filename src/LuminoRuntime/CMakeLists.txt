@@ -26,7 +26,7 @@ ln_add_pch(${PROJECT_NAME} "src/LuminoRuntime.PCH.h" "src/LuminoRuntime.PCH.cpp"
 install(TARGETS ${PROJECT_NAME}
     EXPORT ${PROJECT_NAME}Targets
     RUNTIME     DESTINATION lib
-    LIBRARY     DESTINATION lib)
+    ARCHIVE     DESTINATION lib)
 
 install(
 	EXPORT ${PROJECT_NAME}Targets

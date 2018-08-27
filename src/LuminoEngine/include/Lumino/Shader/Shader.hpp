@@ -164,6 +164,7 @@ private:
 };
 
 
+template class LN_API List<Ref<ShaderConstantBuffer>>;
 
 
 enum class ShaderParameterClass

@@ -2,7 +2,7 @@
 
 namespace ln {
 
-class Object
+class LN_API Object
 	: public RefObject
 {
 protected:

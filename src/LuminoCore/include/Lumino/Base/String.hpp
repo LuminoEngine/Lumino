@@ -29,7 +29,7 @@ struct StringLockContext;
  * 
  * 文字列はメモリ上に連続的に確保され Null 終端文字を格納します。
  */
-class String
+class LN_API String
 {
 public:
     static const String Empty;

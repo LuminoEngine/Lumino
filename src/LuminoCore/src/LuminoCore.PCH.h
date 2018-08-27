@@ -1,4 +1,5 @@
 ﻿#pragma once
+#define LUMINO_BUILD_DLL
 #define LN_INTERNAL_ACCESS public
 #define LN_PROTECTED_INTERNAL_ACCESS public
 #include <Lumino/Base/Common.hpp>

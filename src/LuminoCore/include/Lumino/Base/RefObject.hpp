@@ -53,7 +53,7 @@ class Ref;
  * 一般的なケースでは、ln::makeRef 関数によりインスタンスを作成し、RefObject 用のスマートポインタである Ref クラスを使用して参照を管理します。
  * 参照を直接操作したい場合は RefObjectHelper クラスを使用します。
  */
-class RefObject
+class LN_API RefObject
 {
 protected:
     RefObject();
