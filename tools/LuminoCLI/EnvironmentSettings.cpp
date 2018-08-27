@@ -81,6 +81,8 @@ void BuildEnvironment::setupPathes(EnvironmentSettings* env)
 
 	m_luminoEmscriptenSdkDirPath = ln::Path(m_luminoRepoRoot, u"build/CMakeInstallTemp/Emscripten");
 	m_projectTemplatesDirPath = ln::Path(m_luminoRepoRoot, u"tools/LuminoCLI/ProjectTemplates");
+
+	m_luminoPackageRootDir = ln::Path(m_luminoRepoRoot, u"build/ReleasePackage");
 }
 
 void BuildEnvironment::verifyAndInstall()

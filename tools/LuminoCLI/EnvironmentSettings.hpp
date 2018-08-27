@@ -43,12 +43,16 @@ public:
 	
 	ln::Path projectTemplatesDirPath() const { return m_projectTemplatesDirPath; }
 
+	const ln::Path& luminoPackageRootDir() const { return m_luminoPackageRootDir; }
+	
+
 	const ln::String& emsdkName() const { return m_emsdkName; }
 	const ln::Path& emsdkDirPath() const { return m_emsdkRootDir; }
 	const ln::Path& emscriptenDirPath() const { return m_emscriptenRootDir; }
 
 private:
 	ln::Path m_luminoRepoRoot;
+	ln::Path m_luminoPackageRootDir;
 	ln::Path m_luminoEmscriptenSdkDirPath;
 	ln::Path m_projectTemplatesDirPath;
 	ln::Path m_toolsDir;

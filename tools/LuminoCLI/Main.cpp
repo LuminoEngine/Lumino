@@ -27,17 +27,18 @@ int main(int argc, char** argv)
 #endif
 
 #if 1
-	//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects");
-	//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\HelloLumino");
-	::SetCurrentDirectoryW(L"D:\\Documents\\LuminoProjects\\HelloLumino");
+	::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\HelloLumino");
+	//::SetCurrentDirectoryW(L"D:\\Documents\\LuminoProjects\\HelloLumino");
 	
 	char* debugArgv[] = {
-		"<program>", "init", "HelloLumino",
+		//"<program>", "init", "HelloLumino",
 
 		//"<program>", "dev-install-tools",
 
 		//"<program>", "build", "Emscripten",
 		//"<program>", "build", "Android",
+
+		"<program>", "dev-openide",
 	};
 	argc = sizeof(debugArgv) / sizeof(char*);
 	argv = debugArgv;
@@ -54,6 +55,9 @@ int main(int argc, char** argv)
 
 	auto dev_installTools = parser.addCommand(_T("dev-install-tools"), _T("description."));
 
+
+	auto dev_openide = parser.addCommand(_T("dev-openide"), _T("description."));
+
 	//auto forceOption1 = initCommand->addFlagOption(_T("f"), _T("force"), _T("force description."));
 
 	//auto addCommand = parser.addCommand(_T("add"), _T("add description."));
@@ -69,7 +73,7 @@ int main(int argc, char** argv)
 		//}
 		if (parser.has(initCommand))
 		{
-			workspace->newProject(ln::Path(ln::Environment::currentDirectory(), projectnameArg->value()), projectnameArg->value());
+			workspace->newProject(ln::Environment::currentDirectory(), projectnameArg->value());
 		}
 		else if (parser.has(buildCommand))
 		{
@@ -79,6 +83,10 @@ int main(int argc, char** argv)
 		else if (parser.has(dev_installTools))
 		{
 			workspace->dev_installTools();
+		}
+		else if (parser.has(dev_openide))
+		{
+			workspace->dev_openIde();
 		}
 	}
 

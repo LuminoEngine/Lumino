@@ -108,3 +108,13 @@ Result Workspace::dev_installTools() const
 	
 	return Result::OK;
 }
+
+Result Workspace::dev_openIde() const
+{
+	putenv((u"LUMINO_PATH=" + buildEnvironment()->luminoPackageRootDir()).toStdString().c_str());
+
+	ln::Process proc;
+	proc.setProgram("LuminoCppTemplate.sln");
+	proc.start();
+	return Result::OK;
+}

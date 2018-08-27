@@ -160,6 +160,7 @@ private:
 
 ProcessImpl::ProcessImpl()
 {
+	memset(&m_processInfo, 0, sizeof(m_processInfo));
 }
 
 ProcessImpl::~ProcessImpl()

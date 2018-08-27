@@ -74,8 +74,8 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)Build\Win32\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Build\Win32\obj\$(Configuration)\</IntDir>
-    <IncludePath>$(LUMINO_PATH)\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(LUMINO_PATH)\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(LUMINO_PATH)\Engine\Cpp\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LUMINO_PATH)\Engine\Cpp\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -84,8 +84,8 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)Build\Win32\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Build\Win32\obj\$(Configuration)\</IntDir>
-    <IncludePath>$(LUMINO_PATH)\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(LUMINO_PATH)\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(LUMINO_PATH)\Engine\Cpp\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LUMINO_PATH)\Engine\Cpp\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
