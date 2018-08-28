@@ -15,12 +15,12 @@ namespace LuminoBuild
         public string InstallerProductGUID_MSVC2013 = "9695C499-D82F-4A79-BB8E-E1EE62E13DBC";
         public string InstallerProductGUID_MSVC2015 = "7AAE3341-C965-445C-B83E-F3E3A07E3E80";
         public string InstallerProductGUID_MSVC2017 = "FF69C51F-DB0F-411A-A552-3F1B4783B538";
-
-        public int MajorVersion;
-        public int MinorVersion;
-        public int RevisionVersion;
-        public int BuildVersion;
-        public string VersionString;
+        
+        public int MajorVersion = 0;
+        public int MinorVersion = 5;
+        public int RevisionVersion = 0;
+        public int BuildVersion = 0;
+        public string VersionString => string.Format("{0}.{1}.{2}", MajorVersion, MinorVersion, RevisionVersion);
 
         public string LuminoRootDir;
         public string LuminoBuildDir;
@@ -250,6 +250,16 @@ namespace LuminoBuild
             {
                 File.Copy(file, dstDir + "/" + Path.GetFileName(file), true);
             }
+        }
+
+        public static void GenerateFile(string dstFile, string templateFile, IEnumerable<KeyValuePair<string, string>> values)
+        {
+            string text = File.ReadAllText(templateFile);
+            foreach (var vp in values)
+            {
+                text = text.Replace(vp.Key, vp.Value);
+            }
+            File.WriteAllText(dstFile, text);
         }
 
         /// <summary>

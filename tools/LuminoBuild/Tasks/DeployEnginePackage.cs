@@ -15,6 +15,15 @@ namespace LuminoBuild.Tasks
             var tempInstallDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir);
             var targetRootDir = Path.Combine(builder.LuminoBuildDir, "ReleasePackage");
 
+            // docs
+            {
+                // Readme
+                Utils.GenerateFile(
+                    Path.Combine(targetRootDir, "Readme.txt"),
+                    Path.Combine(builder.LuminoPackageSourceDir, "Readme.txt.template"),
+                    new Dictionary<string, string>{ { "%%LuminoVersion%%", builder.VersionString } });
+            }
+
             // C++ Engine
             {
                 string cppEngineRoot = Path.Combine(targetRootDir, "Engine", "Cpp");

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-    <Product Id="%%ProductGUID%%" Name="Lumino for Visual C++ 2017" Language="1041" Version="%%Version%%" Manufacturer="Lumino" UpgradeCode="9733E20F-1D72-4667-85D2-2E633652C860" Codepage="932">
+    <Product Id="%%ProductGUID%%" Name="Lumino" Language="1041" Version="%%Version%%" Manufacturer="Lumino" UpgradeCode="9733E20F-1D72-4667-85D2-2E633652C860" Codepage="932">
         <Package Description="Lumino installer" Comments="Lumino installer" InstallerVersion="200" Compressed="yes" SummaryCodepage="932" />
         <Media Id="1" Cabinet="simple.cab" EmbedCab="yes" />
 
@@ -11,7 +11,7 @@
                 <Directory Id="ID_LUMINO_DIR" Name="Lumino">
                     <Component Id="ID_LuminoCommon" Guid="E82C2596-609D-4BA7-849C-80B5BCA06130">
                         <CreateFolder />
-                        <Environment Id="LuminoInstallDir" Name="LuminoInstallDir" System="yes" Permanent="no" Action="set" Part="all" Value="[LUMINO_DIR]" />
+                        <Environment Id="ID_LuminoInstallDir" Name="LUMINO_DIR" System="yes" Permanent="no" Action="set" Part="all" Value="[ID_LUMINO_DIR]" />
                     </Component>
                 </Directory>
             </Directory>

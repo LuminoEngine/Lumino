@@ -20,11 +20,6 @@ namespace LuminoBuild
 
             var builder = new LuminoBuild.Builder();
 
-            builder.MajorVersion = 0;
-            builder.MinorVersion = 4;
-            builder.RevisionVersion = 0;
-            builder.BuildVersion = 0;
-            builder.VersionString = string.Format("{0}.{1}.{2}", builder.MajorVersion, builder.MinorVersion, builder.RevisionVersion);
 
             builder.LuminoRootDir = Path.GetFullPath(Path.Combine(exeDir, "../../../../../../")) + "/";
             builder.LuminoBuildDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "build"));
@@ -34,8 +29,9 @@ namespace LuminoBuild
             builder.LuminoDocDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "docs"));
             builder.LuminoPackageDir = Path.GetFullPath(Path.Combine(builder.LuminoBuildDir, "Package"));
             builder.LuminoPackageLibDir = Path.GetFullPath(Path.Combine(builder.LuminoPackageDir, "lib"));
-            builder.LuminoPackageSourceDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "package/PackageSource"));
-            builder.LuminoPackageReleaseDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "package/Release/Lumino"));
+            builder.LuminoPackageSourceDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "tools/PackageSource"));
+            //builder.LuminoPackageSourceDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "package/PackageSource"));
+            //builder.LuminoPackageReleaseDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "package/Release/Lumino"));
             builder.LuminoExternalDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "external"));
 
             BuildEnvironment.Initialize();
