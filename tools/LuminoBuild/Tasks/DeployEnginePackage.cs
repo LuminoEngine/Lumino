@@ -27,25 +27,41 @@ namespace LuminoBuild.Tasks
                     Path.Combine(builder.LuminoRootDir, "src", "LuminoEngine", "include"),
                     Path.Combine(cppEngineRoot, "include"));
 
-                Utils.CopyDirectory(
-                    Path.Combine(tempInstallDir, "MSVC2017-x86-MD", "lib"),
-                    Path.Combine(cppEngineRoot, "lib", "MSVC2017-x86-MD"));
 
-                Utils.CopyDirectory(
-                    Path.Combine(tempInstallDir, "MSVC2017-x86-MT", "lib"),
-                    Path.Combine(cppEngineRoot, "lib", "MSVC2017-x86-MT"));
+                var engineArchs = new string[]
+                {
+                    "MSVC2017-x86-MD",
+                    "MSVC2017-x86-MT",
+                    "MSVC2017-x64-MD",
+                    "Emscripten",
+                };
 
-                Utils.CopyDirectory(
-                    Path.Combine(tempInstallDir, "MSVC2017-x64-MD", "lib"),
-                    Path.Combine(cppEngineRoot, "lib", "MSVC2017-x64-MD"));
+                var externalLibs = new string[]
+                {
+                    "glad",
+                    "glslang",
+                    "libpng",
+                    "openal-soft",
+                    "SDL2",
+                    "SPIRV-Cross",
+                    "zlib",
+                };
 
-                Utils.CopyDirectory(
-                    Path.Combine(tempInstallDir, "MSVC2017-x64-MT", "lib"),
-                    Path.Combine(cppEngineRoot, "lib", "MSVC2017-x64-MT"));
+                var externalInstallDir = Path.Combine(builder.LuminoBuildDir, "MSVC2017-x86-MD", "ExternalInstall");
+                
+                foreach (var arch in engineArchs)
+                {
+                    Utils.CopyDirectory(
+                        Path.Combine(tempInstallDir, arch, "lib"),
+                        Path.Combine(cppEngineRoot, "lib", arch));
 
-                Utils.CopyDirectory(
-                    Path.Combine(tempInstallDir, "Emscripten", "lib"),
-                    Path.Combine(cppEngineRoot, "lib", "Emscripten"));
+                    foreach (var lib in externalLibs)
+                    {
+                        Utils.CopyDirectory(
+                            Path.Combine(externalInstallDir, lib, "lib"),
+                            Path.Combine(cppEngineRoot, "lib", "MSVC2017-x86-MD"));
+                    }
+                }
             }
         }
     }

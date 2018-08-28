@@ -11,6 +11,11 @@ namespace LuminoBuild
 {
 	class Builder
     {
+        // リリースのたびに変更する必要がある情報
+        public string InstallerProductGUID_MSVC2013 = "9695C499-D82F-4A79-BB8E-E1EE62E13DBC";
+        public string InstallerProductGUID_MSVC2015 = "7AAE3341-C965-445C-B83E-F3E3A07E3E80";
+        public string InstallerProductGUID_MSVC2017 = "FF69C51F-DB0F-411A-A552-3F1B4783B538";
+
         public int MajorVersion;
         public int MinorVersion;
         public int RevisionVersion;
