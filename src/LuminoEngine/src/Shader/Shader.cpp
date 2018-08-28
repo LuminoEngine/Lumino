@@ -607,6 +607,11 @@ void ShaderPass::dispose()
 	Object::dispose();
 }
 
+Shader* ShaderPass::shader() const
+{
+	return m_owner->owner();
+}
+
 void ShaderPass::setupParameters()
 {
 	//m_parameters.clear();

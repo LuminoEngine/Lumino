@@ -130,7 +130,16 @@ void GraphicsContext::setIndexBuffer(IndexBuffer* value)
 
 void GraphicsContext::setShaderPass(ShaderPass* pass)
 {
-	m_staging.shaderPass = pass;
+	if (pass)
+	{
+		m_staging.shader = pass->shader();
+		m_staging.shaderPass = pass;
+	}
+	else
+	{
+		m_staging.shader = nullptr;
+		m_staging.shaderPass = nullptr;
+	}
 }
 
 void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)

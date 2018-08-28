@@ -13,8 +13,11 @@ namespace LuminoBuild.Rules
         public override void Build(Builder builder)
         {
             builder.DoTask("BuildExternalProjects");
-            builder.DoTask("MakeVSProjects");
-            builder.DoTask("BuildEngine_MSVC");
+            if (Utils.IsWin32)
+            {
+                builder.DoTask("MakeVSProjects");
+                builder.DoTask("BuildEngine_MSVC");
+            }
             builder.DoTask("BuildEngine_Emscripten");
             builder.DoTask("BuildEngine_AndroidJNI");
             builder.DoTask("BuildDocuments");

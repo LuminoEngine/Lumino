@@ -56,6 +56,7 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_HlslEffect, Sample)
 {
+#if 0
 	auto shader1 = newObject<Shader>(LN_ASSETFILE("Atmosphere.fx"));
 	auto shader2 = newObject<Shader>(LN_ASSETFILE("Cloud.fx"));
 
@@ -147,4 +148,5 @@ TEST_F(Test_Graphics_HlslEffect, Sample)
 
 
 	//ASSERT_SCREEN_S(LN_ASSETFILE("Result/Test_Graphics_HlslEffect-Sample-1.png"));
+#endif
 }

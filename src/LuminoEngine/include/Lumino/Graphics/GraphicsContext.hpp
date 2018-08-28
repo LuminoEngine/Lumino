@@ -11,6 +11,7 @@ class VertexBuffer;
 class IndexBuffer;
 class RenderTargetTexture;
 class DepthBuffer;
+class Shader;
 class ShaderPass;
 
 namespace detail {
@@ -92,7 +93,8 @@ private:
 		Ref<VertexDeclaration> vertexDeclaration;
 		std::array<Ref<VertexBuffer>, 4> vertexBuffers;
 		Ref<IndexBuffer> indexBuffer;
-		Ref<ShaderPass> shaderPass;
+		Ref<Shader> shader;		// shaderPass owner, for keep reference.
+		ShaderPass* shaderPass;
 
 		void reset();
 	};

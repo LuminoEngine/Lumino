@@ -275,6 +275,10 @@ private:
 class LN_API ShaderPass
 	: public Object
 {
+public:
+	/** この ShaderPass が含まれている Shader を取得します。 */
+	Shader* shader() const;
+
 LN_CONSTRUCT_ACCESS:
 	ShaderPass();
 	virtual ~ShaderPass();

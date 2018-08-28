@@ -1078,7 +1078,7 @@ void* GLIndexBuffer::map()
 	GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBufferId));
 	void* buffer;
 	//GL_CHECK(buffer = glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY));
-	GL_CHECK(buffer = glMapBufferRange(GL_ARRAY_BUFFER, 0, m_size, GL_MAP_WRITE_BIT));
+	GL_CHECK(buffer = glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, 0, m_size, GL_MAP_WRITE_BIT));
 	return buffer;
 }
 
