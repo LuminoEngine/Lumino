@@ -19,9 +19,16 @@ namespace LuminoBuild.Rules
                 builder.DoTask("BuildEngine_MSVC");
             }
             builder.DoTask("BuildEngine_Emscripten");
-            builder.DoTask("BuildEngine_AndroidJNI");
+
+            //builder.DoTask("BuildEngine_AndroidJNI");
+
+
             builder.DoTask("BuildDocuments");
-            builder.DoTask("MakeNuGetPackage_Core");
+            //builder.DoTask("MakeNuGetPackage_Core");
+
+
+            builder.DoTask("DeployEnginePackage");
+            builder.DoTask("MakeInstaller_Win32");
         }
     }
 }

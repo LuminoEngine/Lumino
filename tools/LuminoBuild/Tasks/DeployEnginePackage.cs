@@ -14,6 +14,7 @@ namespace LuminoBuild.Tasks
         {
             var tempInstallDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir);
             var targetRootDir = Path.Combine(builder.LuminoBuildDir, "ReleasePackage");
+            Directory.CreateDirectory(targetRootDir);
 
             // docs
             {
@@ -27,6 +28,10 @@ namespace LuminoBuild.Tasks
             // C++ Engine
             {
                 string cppEngineRoot = Path.Combine(targetRootDir, "Engine", "Cpp");
+                
+                File.Copy(
+                    Path.Combine(builder.LuminoSourceDir, "LuminoSetup.cmake"),
+                    Path.Combine(cppEngineRoot, "LuminoSetup.cmake"), true);
 
                 Utils.CopyDirectory(
                     Path.Combine(builder.LuminoRootDir, "src", "LuminoCore", "include"),
@@ -66,9 +71,13 @@ namespace LuminoBuild.Tasks
 
                     foreach (var lib in externalLibs)
                     {
-                        Utils.CopyDirectory(
-                            Path.Combine(externalInstallDir, lib, "lib"),
-                            Path.Combine(cppEngineRoot, "lib", "MSVC2017-x86-MD"));
+                        var srcDir = Path.Combine(externalInstallDir, lib, "lib");
+                        if (Directory.Exists(srcDir))   // copy if directory exists. openal-soft etc are optional.
+                        {
+                            Utils.CopyDirectory(
+                                srcDir,
+                                Path.Combine(cppEngineRoot, "lib", arch));
+                        }
                     }
                 }
             }

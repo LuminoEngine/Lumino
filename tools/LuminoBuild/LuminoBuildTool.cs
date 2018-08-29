@@ -28,6 +28,7 @@ namespace LuminoBuild
         public string LuminoLibDir;
         public string LuminoToolsDir;
         public string LuminoDocDir;
+        public string LuminoSourceDir;
         public string LuminoPackageDir;
         public string LuminoPackageLibDir;
         public string LuminoPackageSourceDir;

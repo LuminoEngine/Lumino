@@ -6,6 +6,7 @@ project(LuminoLaunch)
 # Files
 
 set(LN_SOURCES
+    include/LuminoLaunch.hpp
 	src/LuminoLaunch.PCH.cpp
     src/LuminoLaunch.PCH.h
     src/Main_Win32.cpp
@@ -38,7 +39,7 @@ install(TARGETS ${PROJECT_NAME}
     ARCHIVE     DESTINATION lib			# Library installation location (Copied at "INSTALL" build time)
     INCLUDES    DESTINATION include)	# include directory (File is not copied)
 
-#install(DIRECTORY ${PROJECT_SOURCE_DIR}/include DESTINATION .)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include DESTINATION .)
 
 install(
 	EXPORT LuminoLaunchTargets
