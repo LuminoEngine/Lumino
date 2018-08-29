@@ -25,6 +25,19 @@ on Developer Command Prompt for VS2017
 After this, please check in the "build/..." folder.
 
 
+### macOS
+
+```
+$ brew install git
+
+brew update
+$ brew install openssl
+$ brew install python3
+```
+
+Error downloading URL 'https://github.com/kripken/emscripten/archive/1.38.11.tar.gz': <urlopen error [SSL: TLSV1_ALERT_PROTOCOL_VERSION] tlsv1 alert protocol version (_ssl.c:590)>
+
+wget https://github.com/kripken/emscripten/archive/1.38.10.tar.gz
 
 ### Linux(Ubuntu)
 

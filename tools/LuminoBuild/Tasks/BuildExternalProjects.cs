@@ -32,9 +32,13 @@ namespace LuminoBuild.Tasks
             Directory.SetCurrentDirectory(buildDir);
             Utils.CallProcess("cmake", $"-DCMAKE_INSTALL_PREFIX={installDir} -DCMAKE_USER_MAKE_RULES_OVERRIDE={ov} {additionalOptions} -G \"{generator}\" {cmakeSourceDir}");
             Utils.CallProcess("cmake", "--build . --config Debug");
-            Utils.CallProcess("cmake", "--build . --config Debug --target INSTALL");
+            Utils.CallProcess("cmake", "--build . --config Debug --target install");
             Utils.CallProcess("cmake", "--build . --config Release");
-            Utils.CallProcess("cmake", "--build . --config Release --target INSTALL");
+            Utils.CallProcess("cmake", "--build . --config Release --target install");
+
+            /*
+                MSVC と Xcode は Debug,Release の 2 つの構成をもつプロジェクトが出力される。
+            */
         }
 
         private void BuildProjectEm(Builder builder, string projectDirName, string externalSourceDir, string buildArchDir, string additionalOptions = "")
@@ -154,6 +158,17 @@ namespace LuminoBuild.Tasks
                     BuildProject(builder, "SPIRV-Cross", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DCMAKE_DEBUG_POSTFIX=d");
                     BuildProject(builder, "glad", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DGLAD_INSTALL=ON");
                 }
+            }
+            else
+            {
+                var dirName = "macOS";
+                var generator = "Xcode";
+                var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, dirName, "ExternalInstall", "zlib"));
+                BuildProject(builder, "zlib", reposDir, dirName, generator);
+                BuildProject(builder, "libpng", reposDir, dirName, generator, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
+                BuildProject(builder, "glslang", reposDir, dirName, generator);
+                BuildProject(builder, "SPIRV-Cross", reposDir, dirName, generator, $"-DCMAKE_DEBUG_POSTFIX=d");
+                BuildProject(builder, "glad", reposDir, dirName, generator, $"-DGLAD_INSTALL=ON");
             }
         }
     }

@@ -1,7 +1,9 @@
 #================================================================================
+# Lumino:
 # This file is customized for building static library.
 # Copy it to repository root and use it.
 set(BUILD_SHARED_LIBS OFF)
+set(CMAKE_DEBUG_POSTFIX "d")
 #================================================================================
 
 cmake_minimum_required(VERSION 2.4.4)

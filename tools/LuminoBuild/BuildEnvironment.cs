@@ -53,12 +53,13 @@ namespace LuminoBuild
             if (!Directory.Exists(EmsdkDir))
             {
                 Directory.SetCurrentDirectory(BuildToolsDir);
-                Utils.CallProcessShell("git", "clone https://github.com/juj/emsdk.git");
+                Utils.CallProcess("git", "clone https://github.com/juj/emsdk.git");
             }
             if (!Directory.Exists(EmscriptenDir))
             {
                 Directory.SetCurrentDirectory(Path.GetFullPath(EmsdkDir));
-                Utils.CallProcessShell("emsdk", "install " + emsdkVer);
+                Utils.CallProcess("emsdk", "update");
+                Utils.CallProcess("emsdk", "install " + emsdkVer);  // "CallProcessShell" failed on macOS.
             }
         }
     }

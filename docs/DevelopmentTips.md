@@ -8,6 +8,9 @@ Windows
 dotnet run -- MakeVSProjects
 ```
 
+macOS
+----------
+AppData は ~/.config/Lumino/
 
 textlint
 ----------
