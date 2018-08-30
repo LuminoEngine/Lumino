@@ -1,4 +1,4 @@
-﻿
+
 #include "Internal.hpp"
 #include <sstream>
 #include <glslang/Public/ShaderLang.h>
@@ -190,9 +190,9 @@ bool ShaderCode::parseAndGenerateSpirv(
 	const int defaultVersion = 100;
 
 	glslang::EShSource sourceType = glslang::EShSourceHlsl;
-	const int ClientInputSemanticsVersion = 320;
+	const int ClientInputSemanticsVersion = 410;//320;
 	glslang::EshTargetClientVersion OpenGLClientVersion = glslang::EShTargetOpenGL_450;
-	bool forwardCompatible = false;
+	bool forwardCompatible = true;
 	EShMessages messages = (EShMessages)(EShMsgSpvRules | EShMsgVulkanRules);
 
 	EShLanguage lang;
@@ -305,7 +305,7 @@ std::string ShaderCode::generateGlsl()
 
 	// Set some options.
 	spirv_cross::CompilerGLSL::Options options;
-	options.version = 400;
+	options.version = 410;
 	options.es = false;
 	//options.version = 300;
 	//options.es = true;

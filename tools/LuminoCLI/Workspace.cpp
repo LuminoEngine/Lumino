@@ -111,10 +111,14 @@ Result Workspace::dev_installTools() const
 
 Result Workspace::dev_openIde() const
 {
+#if defined(_WIN32)
 	putenv((u"LUMINO_PATH=" + buildEnvironment()->luminoPackageRootDir()).toStdString().c_str());
 
 	ln::Process proc;
 	proc.setProgram("LuminoCppTemplate.sln");
 	proc.start();
+#else
+	LN_NOTIMPLEMENTED();	// TODO: putenv は書き込み可能なポインタを渡さないとならないみたい？
+#endif
 	return Result::OK;
 }

@@ -27,10 +27,10 @@ endif()
 # options
 
 # build unit test projects
-option(LN_BUILD_TESTS "build unit test projects." OFF)
+option(LN_BUILD_TESTS "build unit test projects." ON)
 
 # build tool projects
-option(LN_BUILD_TOOLS "build tool projects." OFF)
+option(LN_BUILD_TOOLS "build tool projects." ON)
 
 # MSVC Runtime library.
 option(LN_MSVC_STATIC_RUNTIME "static runtime (/MT, /MTd) or DLL runtime (/MD, /MDd) or to link either." OFF)

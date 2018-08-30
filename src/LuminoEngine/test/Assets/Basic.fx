@@ -19,7 +19,7 @@ VS_OUTPUT vsMain(VS_INPUT input)
     return output;
 }
 
-cbuffer ConstBuff : register(b0)
+cbuffer ConstBuff// : register(b0)
 {
     float4 g_color;
 };

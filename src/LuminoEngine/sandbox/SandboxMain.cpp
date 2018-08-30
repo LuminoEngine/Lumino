@@ -1,6 +1,7 @@
 ﻿
 #define LN_MSVC_DISABLE_LIBRARY_LINK
 #include <LuminoEngine.hpp>
+#include <Lumino/Testing/TestHelper.hpp>
 #include "Common.hpp"
 using namespace ln;
 
@@ -125,7 +126,9 @@ int main(int argc, char** argv)
 	EngineSettings::setMainBackBufferSize(80, 60);
 	Engine::initialize();
 
-	auto shader = Shader::create("C:/Proj/GitHub/Lumino/src/LuminoEngine/sandbox/Assets/simple.vert", "C:/Proj/GitHub/Lumino/src/LuminoEngine/sandbox/Assets/simple.frag");
+	auto shader = Shader::create(
+		LN_LOCALFILE("Assets/simple.vert"),
+		LN_LOCALFILE("Assets/simple.frag"));
 	//shader->setVector("g_color", Vector4(0, 1, 0, 1));
 
 	//Engine::graphicsContext()->setShaderPass(shader->techniques()[0]->passes()[0]);

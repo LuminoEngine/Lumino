@@ -30,7 +30,7 @@ namespace LuminoBuild.Tasks
 
             Directory.CreateDirectory(buildDir);
             Directory.SetCurrentDirectory(buildDir);
-            Utils.CallProcess("cmake", $"-DCMAKE_INSTALL_PREFIX={installDir} -DCMAKE_USER_MAKE_RULES_OVERRIDE={ov} {additionalOptions} -G \"{generator}\" {cmakeSourceDir}");
+            Utils.CallProcess("cmake", $"-DCMAKE_DEBUG_POSTFIX=d -DCMAKE_INSTALL_PREFIX={installDir} -DCMAKE_USER_MAKE_RULES_OVERRIDE={ov} {additionalOptions} -G \"{generator}\" {cmakeSourceDir}");
             Utils.CallProcess("cmake", "--build . --config Debug");
             Utils.CallProcess("cmake", "--build . --config Debug --target install");
             Utils.CallProcess("cmake", "--build . --config Release");

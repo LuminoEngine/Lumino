@@ -1,5 +1,13 @@
 #pragma once
 #include <unistd.h>
+#import <Foundation/Foundation.h>
+//#import <Foundation/NSString.h>
+//class NSString;
+
+//typedef struct objc_object NSString;
+extern "C" NSString* NSTemporaryDirectory();
+
+extern std::string NSStringToStdString(NSString* nsstring);
 
 namespace ln {
 
@@ -26,6 +34,12 @@ public:
 
 	static void getSpecialFolderPath(SpecialFolder specialFolder, StringType* outPath)
 	{
+		if (specialFolder == SpecialFolder::Temporary) {
+			if (NSString* path = NSTemporaryDirectory()) {
+				*outPath = [path UTF8String];
+				return;
+			}
+		}
 		LN_NOTIMPLEMENTED();
 	}
 	

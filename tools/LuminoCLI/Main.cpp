@@ -26,7 +26,7 @@ int main(int argc, char** argv)
 	return 0;
 #endif
 
-#if 1
+#if defined(_DEBUG) && defined(_WIN32)
 	if (argc == 1)
 	{
 		//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\HelloLumino");

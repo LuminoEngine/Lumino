@@ -1,4 +1,4 @@
-﻿
+
 #ifdef LN_GLFW
 
 #include "Internal.hpp"
@@ -132,8 +132,13 @@ void GLFWPlatformWindow::initialize(const WindowCreationSettings& settings)
 	//}
 	//else
 	{
+		// FIXME: macOS だとバージョン指定が効かない？
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 		glfwWindowHint(GLFW_RESIZABLE, (settings.resizable) ? GL_TRUE : GL_FALSE);
 		glfwWindowHint(GLFW_DECORATED, GL_TRUE);
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);	// for NSGL(macOS)
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		m_glfwWindow = glfwCreateWindow(settings.clientSize.width, settings.clientSize.height, settings.title.toStdString().c_str(), NULL, NULL);
 		if (LN_ENSURE(m_glfwWindow)) return;
 	}
