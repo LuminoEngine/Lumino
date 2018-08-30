@@ -58,7 +58,10 @@ namespace LuminoBuild
             if (!Directory.Exists(EmscriptenDir))
             {
                 Directory.SetCurrentDirectory(Path.GetFullPath(EmsdkDir));
-                Utils.CallProcess("emsdk", "update");
+
+                // FIXME: ubuntu failed...
+                //Utils.CallProcess("emsdk", "update");
+
                 Utils.CallProcess("emsdk", "install " + emsdkVer);  // "CallProcessShell" failed on macOS.
             }
         }

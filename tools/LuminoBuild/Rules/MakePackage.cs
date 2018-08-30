@@ -27,7 +27,7 @@ namespace LuminoBuild.Rules
             //builder.DoTask("MakeNuGetPackage_Core");
 
 
-            builder.DoTask("DeployEnginePackage");
+            builder.DoTask("MakeEnginePackage");
             builder.DoTask("MakeInstaller_Win32");
         }
     }

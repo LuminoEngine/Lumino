@@ -11,7 +11,7 @@
                 <Directory Id="ID_LUMINO_DIR" Name="Lumino">
                     <Component Id="ID_LuminoCommon" Guid="E82C2596-609D-4BA7-849C-80B5BCA06130">
                         <CreateFolder />
-                        <Environment Id="ID_LuminoInstallDir" Name="LUMINO_DIR" System="yes" Permanent="no" Action="set" Part="all" Value="[ID_LUMINO_DIR]" />
+                        <Environment Id="ID_LuminoInstallDir" Name="LUMINO" System="yes" Permanent="no" Action="set" Part="all" Value="[ID_LUMINO_DIR]" />
                     </Component>
                 </Directory>
             </Directory>

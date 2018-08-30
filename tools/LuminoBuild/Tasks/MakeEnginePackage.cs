@@ -4,11 +4,11 @@ using System.IO;
 
 namespace LuminoBuild.Tasks
 {
-    class DeployEnginePackage : BuildTask
+    class MakeEnginePackage : BuildTask
     {
-        public override string CommandName => "DeployEnginePackage";
+        public override string CommandName => "MakeEnginePackage";
 
-        public override string Description => "DeployEnginePackage";
+        public override string Description => "MakeEnginePackage";
 
         public override void Build(Builder builder)
         {
@@ -28,18 +28,11 @@ namespace LuminoBuild.Tasks
             // C++ Engine
             {
                 string cppEngineRoot = Path.Combine(targetRootDir, "Engine", "Cpp");
+                Directory.CreateDirectory(cppEngineRoot);
                 
                 File.Copy(
                     Path.Combine(builder.LuminoSourceDir, "LuminoSetup.cmake"),
                     Path.Combine(cppEngineRoot, "LuminoSetup.cmake"), true);
-
-                Utils.CopyDirectory(
-                    Path.Combine(builder.LuminoRootDir, "src", "LuminoCore", "include"),
-                    Path.Combine(cppEngineRoot, "include"));
-
-                Utils.CopyDirectory(
-                    Path.Combine(builder.LuminoRootDir, "src", "LuminoEngine", "include"),
-                    Path.Combine(cppEngineRoot, "include"));
 
 
                 var engineArchs = new string[]
@@ -65,9 +58,19 @@ namespace LuminoBuild.Tasks
                 
                 foreach (var arch in engineArchs)
                 {
+                    var targetDir = Path.Combine(cppEngineRoot, arch);
+
+                    Utils.CopyDirectory(
+                        Path.Combine(builder.LuminoSourceDir, "LuminoCore", "include"),
+                        Path.Combine(targetDir, "include"));
+
+                    Utils.CopyDirectory(
+                        Path.Combine(builder.LuminoSourceDir, "LuminoEngine", "include"),
+                        Path.Combine(targetDir, "include"));
+
                     Utils.CopyDirectory(
                         Path.Combine(tempInstallDir, arch, "lib"),
-                        Path.Combine(cppEngineRoot, "lib", arch));
+                        Path.Combine(targetDir, "lib"));
 
                     foreach (var lib in externalLibs)
                     {
@@ -76,7 +79,7 @@ namespace LuminoBuild.Tasks
                         {
                             Utils.CopyDirectory(
                                 srcDir,
-                                Path.Combine(cppEngineRoot, "lib", arch));
+                                Path.Combine(targetDir, "lib"));
                         }
                     }
                 }
