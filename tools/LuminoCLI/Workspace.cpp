@@ -33,23 +33,31 @@ Result Workspace::buildProject(const ln::String& target)
 	// Android
 	if (ln::String::compare(target, u"Android", ln::CaseSensitivity::CaseInsensitive) == 0)
 	{
+		::SetCurrentDirectoryW(L"D:\\Documents\\LuminoProjects\\HelloLumino\\NativeProjects\\LuminoApp.Android");
 
-		ln::String luminoPackageDir = u"D:\\Proj\\GitHub\\Lumino\\build\\CMakeInstallTemp\\Android-x86_64";// \\lib\\cmake";//ln::Environment::getEnvironmentVariable();
+		putenv("JAVA_HOME=\"D:\\Program Files\\Android\\Android Studio\\jre\"");
 
+		ln::Process::execute(u"gradlew.bat", { u"assemble" });	// Debug, Release 両方ビルド
+
+		// https://qiita.com/tkc_tsuchiya/items/6485714615ace9e19918
+
+#if 0
 		ln::String abi = u"x86_64";
 		ln::String platform = "android-26";
 		ln::String buildType = "Release";
 		ln::String targetName = u"Android-" + abi;
-		ln::String outputDir = m_project->rootDirPath().str().replace("\\", "/") + u"Projects/Android/app/build/intermediates/cmake/release/obj/x86_64";
-		ln::String buildDir = ln::Path::combine(m_project->buildDir(), targetName);
+		ln::Path outputDir = ln::Path(m_project->androidProjectDir(), u"app/build/intermediates/cmake/release/obj/" + abi);
+		ln::Path luminoPackageDir = ln::Path(m_devTools->luminoPackageRootDir(), u"Engine/Cpp/Android-" + abi);
+		ln::Path cmakeHomeDir = ln::Path(m_project->androidProjectDir(), u"app");
+		ln::Path buildDir = ln::Path::combine(m_project->buildDir(), targetName);
 
 		ln::List<ln::String> args = {
-			u"-H" + m_project->rootDirPath().str(),
+			u"-H" + cmakeHomeDir,
 			u"-B" + buildDir,
 			u"-DLN_TARGET_ARCH_NAME=" + targetName,
 			u"-DANDROID_ABI=" + abi,
 			u"-DANDROID_PLATFORM=" + platform,
-			u"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=" + outputDir,
+			u"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=" + outputDir.str().replace("\\", "/"),
 			u"-DCMAKE_BUILD_TYPE=" + buildType,
 			u"-DANDROID_NDK=" + m_environmentSettings->androidNdkRootDir(),
 			u"-DCMAKE_CXX_FLAGS=-std=c++14",
@@ -57,7 +65,7 @@ Result Workspace::buildProject(const ln::String& target)
 			u"-DCMAKE_MAKE_PROGRAM=" + m_environmentSettings->androidSdkNinja(),
 
 			u"-DANDROID_STL=c++_shared",
-			u"-DLumino_DIR=" + luminoPackageDir.replace("\\", "/"),
+			u"-DLumino_DIR=" + luminoPackageDir.str().replace("\\", "/"),
 
 			u"-G\"Android Gradle - Ninja\"",
 		};
@@ -65,6 +73,7 @@ Result Workspace::buildProject(const ln::String& target)
 		ln::Process::execute(m_environmentSettings->androidSdkCMake(), args);
 
 		ln::Process::execute(m_environmentSettings->androidSdkCMake(), {u"--build", buildDir });
+#endif
 	}
 
 	// Emscripten
@@ -109,14 +118,39 @@ Result Workspace::dev_installTools() const
 	return Result::OK;
 }
 
-Result Workspace::dev_openIde() const
+Result Workspace::dev_openIde(const ln::String& target) const
 {
 #if defined(_WIN32)
-	putenv((u"LUMINO_PATH=" + buildEnvironment()->luminoPackageRootDir()).toStdString().c_str());
+	if (ln::String::compare(target, u"Android", ln::CaseSensitivity::CaseInsensitive) == 0)
+	{
+		HKEY hKey = NULL;
+		LONG lRet = RegOpenKeyExW(HKEY_LOCAL_MACHINE,
+			L"SOFTWARE\\Android Studio",
+			NULL,
+			KEY_READ | KEY_WOW64_64KEY,	// https://stackoverflow.com/questions/252297/why-is-regopenkeyex-returning-error-code-2-on-vista-64bit
+			&hKey);
+		if (lRet != ERROR_SUCCESS) {
+			LN_LOG_ERROR << u"Android Studio not installed.";
+			return;
+		}
 
-	ln::Process proc;
-	proc.setProgram("LuminoCppTemplate.sln");
-	proc.start();
+		DWORD type, size;
+		WCHAR path[MAX_PATH];
+		RegQueryValueExW(hKey, L"Path", NULL, &type, (LPBYTE)path, &size);
+
+		ln::Process proc;
+		proc.setProgram(ln::Path::combine(ln::String::fromCString(path), u"bin", u"studio"));
+		proc.setArguments({ m_project->androidProjectDir() });
+		proc.start();
+	}
+	else
+	{
+		putenv((u"LUMINO_PATH=" + buildEnvironment()->luminoPackageRootDir()).toStdString().c_str());
+
+		ln::Process proc;
+		proc.setProgram("LuminoCppTemplate.sln");
+		proc.start();
+	}
 #else
 	LN_NOTIMPLEMENTED();	// TODO: putenv は書き込み可能なポインタを渡さないとならないみたい？
 #endif

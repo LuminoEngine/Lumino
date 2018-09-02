@@ -33,14 +33,14 @@ int main(int argc, char** argv)
 		::SetCurrentDirectoryW(L"D:\\Documents\\LuminoProjects\\HelloLumino");
 	
 		char* debugArgv[] = {
-			"<program>", "init", "HelloLumino",
+			//"<program>", "init", "HelloLumino",
 
 			//"<program>", "dev-install-tools",
 
 			//"<program>", "build", "Emscripten",
 			//"<program>", "build", "Android",
 
-			//"<program>", "dev-openide",
+			"<program>", "dev-openide",
 		};
 		argc = sizeof(debugArgv) / sizeof(char*);
 		argv = debugArgv;
@@ -59,7 +59,8 @@ int main(int argc, char** argv)
 	auto dev_installTools = parser.addCommand(_T("dev-install-tools"), _T("description."));
 
 
-	auto dev_openide = parser.addCommand(_T("dev-openide"), _T("description."));
+	auto dev_openide = parser.addCommand(u"dev-openide", u"description.");
+	auto dev_openide_targetArg = initCommand->addPositionalArgument(u"target", u"target.");
 
 	//auto forceOption1 = initCommand->addFlagOption(_T("f"), _T("force"), _T("force description."));
 
@@ -89,7 +90,8 @@ int main(int argc, char** argv)
 		}
 		else if (parser.has(dev_openide))
 		{
-			workspace->dev_openIde();
+			workspace->openProject(ln::Environment::currentDirectory());
+			workspace->dev_openIde(dev_openide_targetArg->value());
 		}
 	}
 

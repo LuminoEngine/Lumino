@@ -59,6 +59,9 @@ public:
 	const ln::Path& rootDirPath() const { return m_rootDir; }
 	const ln::Path& buildDir() const { return m_buildDir; }
 
+	ln::Path nativeProjectsDir() const { return ln::Path(rootDirPath(), u"NativeProjects"); }
+	ln::Path androidProjectDir() const { return ln::Path(nativeProjectsDir(), u"LuminoApp.Android"); }
+
 private:
 	void setupPathes();
 

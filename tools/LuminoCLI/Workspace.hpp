@@ -19,7 +19,7 @@ public:
 	const Ref<BuildEnvironment>& buildEnvironment() const { return m_devTools; }
 
 	Result dev_installTools() const;
-	Result dev_openIde() const;
+	Result dev_openIde(const ln::String& target) const;
 
 private:
 	Ref<EnvironmentSettings> m_environmentSettings;
