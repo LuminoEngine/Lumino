@@ -12,7 +12,7 @@ namespace LuminoBuild
             // default
             if (args.Length == 0)
             {
-                args = new string[] { "MakeInstaller_Win32" };
+                args = new string[] { "MakeReleasePackage" };
             }
 
             Assembly thisAssembly = Assembly.GetEntryAssembly();
@@ -52,7 +52,7 @@ namespace LuminoBuild
             builder.Tasks.Add(new Tasks.MakeNuGetPackage_Core());
             builder.Tasks.Add(new Tasks.BuildEngine_AndroidJNI());
             builder.Tasks.Add(new Tasks.BuildEngine_Emscripten());
-            builder.Tasks.Add(new Tasks.MakeEnginePackage());
+            builder.Tasks.Add(new Tasks.MakeReleasePackage());
             builder.Tasks.Add(new Tasks.MakeInstaller_Win32());
             builder.Rules.Add(new Rules.MakePackage());
 

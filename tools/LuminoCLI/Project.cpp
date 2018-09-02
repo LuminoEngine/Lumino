@@ -62,32 +62,32 @@ Result CppProjectLanguageContext::applyTemplates()
 			ln::Path(dstRoot, u"LuminoApp.sln"), ln::FileCopyOption::Overwrite);
 
 		ln::FileSystem::copyDirectory(
-			ln::Path(srcRoot, u"NativeProjects/LuminoApp-Win32"),
-			ln::Path(dstRoot, u"NativeProjects/LuminoApp-Win32"),
+			ln::Path(srcRoot, u"NativeProjects/LuminoApp.Win32"),
+			ln::Path(dstRoot, u"NativeProjects/LuminoApp.Win32"),
 			true, true);
 	}
 
 	// macOS
 	{
 		ln::FileSystem::copyDirectory(
-			ln::Path(srcRoot, u"NativeProjects/LuminoApp-macOS"),
-			ln::Path(dstRoot, u"NativeProjects/LuminoApp-macOS"),
+			ln::Path(srcRoot, u"NativeProjects/LuminoApp.macOS"),
+			ln::Path(dstRoot, u"NativeProjects/LuminoApp.macOS"),
 			true, true);
 	}
 
 	// iOS
 	{
 		ln::FileSystem::copyDirectory(
-			ln::Path(srcRoot, u"NativeProjects/LuminoApp-iOS"),
-			ln::Path(dstRoot, u"NativeProjects/LuminoApp-iOS"),
+			ln::Path(srcRoot, u"NativeProjects/LuminoApp.iOS"),
+			ln::Path(dstRoot, u"NativeProjects/LuminoApp.iOS"),
 			true, true);
 	}
 
 	// Android
 	{
 		ln::FileSystem::copyDirectory(
-			ln::Path(srcRoot, u"NativeProjects/LuminoApp-Android"),
-			ln::Path(dstRoot, u"NativeProjects/LuminoApp-Android"),
+			ln::Path(srcRoot, u"NativeProjects/LuminoApp.Android"),
+			ln::Path(dstRoot, u"NativeProjects/LuminoApp.Android"),
 			true, true);
 	}
 
