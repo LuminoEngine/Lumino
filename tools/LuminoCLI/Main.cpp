@@ -60,7 +60,7 @@ int main(int argc, char** argv)
 
 
 	auto dev_openide = parser.addCommand(u"dev-openide", u"description.");
-	auto dev_openide_targetArg = initCommand->addPositionalArgument(u"target", u"target.");
+	auto dev_openide_targetArg = dev_openide->addPositionalArgument(u"target", u"target.");
 
 	//auto forceOption1 = initCommand->addFlagOption(_T("f"), _T("force"), _T("force description."));
 

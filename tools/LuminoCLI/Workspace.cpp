@@ -118,7 +118,7 @@ Result Workspace::dev_installTools() const
 	return Result::OK;
 }
 
-Result Workspace::dev_openIde(const ln::String& target) const
+void Workspace::dev_openIde(const ln::String& target) const
 {
 #if defined(_WIN32)
 	if (ln::String::compare(target, u"Android", ln::CaseSensitivity::CaseInsensitive) == 0)
@@ -154,5 +154,4 @@ Result Workspace::dev_openIde(const ln::String& target) const
 #else
 	LN_NOTIMPLEMENTED();	// TODO: putenv は書き込み可能なポインタを渡さないとならないみたい？
 #endif
-	return Result::OK;
 }
