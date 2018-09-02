@@ -1,38 +1,39 @@
 apply plugin: 'com.android.application'
 
-android {
+android +AHs-
     compileSdkVersion 27
-    defaultConfig {
-        applicationId "org.lumino.lib.luminoapp"
+    defaultConfig +AHs-
+        applicationId +ACI-org.lumino.lib.luminoapp+ACI-
         minSdkVersion 26
         targetSdkVersion 27
         versionCode 1
-        versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        externalNativeBuild {
-            cmake {
-                cppFlags "-std=c++14"
-            }
-        }
-    }
-    buildTypes {
-        release {
+        versionName +ACI-1.0+ACI-
+        testInstrumentationRunner +ACI-android.support.test.runner.AndroidJUnitRunner+ACI-
+        externalNativeBuild +AHs-
+            cmake +AHs-
+                cppFlags +ACI--std+AD0-c+-+-14+ACI-
+                arguments +ACI--DANDROID+AF8-STL+AD0-c+-+-+AF8-shared+ACI-
+            +AH0-
+        +AH0-
+    +AH0-
+    buildTypes +AHs-
+        release +AHs-
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-    externalNativeBuild {
-        cmake {
-            path "CMakeLists.txt"
-        }
-    }
-}
+        +AH0-
+    +AH0-
+    externalNativeBuild +AHs-
+        cmake +AHs-
+            path +ACI-CMakeLists.txt+ACI-
+        +AH0-
+    +AH0-
++AH0-
 
-dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+dependencies +AHs-
+    implementation fileTree(dir: 'libs', include: +AFs-'+ACo-.jar'+AF0-)
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-}
++AH0-

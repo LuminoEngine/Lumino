@@ -34,6 +34,9 @@ namespace LuminoBuild.Tasks
                     Path.Combine(builder.LuminoSourceDir, "LuminoSetup.cmake"),
                     Path.Combine(cppEngineRoot, "LuminoSetup.cmake"), true);
 
+                File.Copy(
+                    Path.Combine(builder.LuminoExternalDir, "ImportExternalLibraries.cmake"),
+                    Path.Combine(cppEngineRoot, "ImportExternalLibraries.cmake"), true);
 
                 var engineArchs = new string[]
                 {
