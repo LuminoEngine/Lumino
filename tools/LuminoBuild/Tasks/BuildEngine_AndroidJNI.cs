@@ -32,19 +32,46 @@ namespace LuminoBuild.Tasks
             foreach (var target in Targets)
             {
                 string abi = target.ABI;
-                string targetName = "Android-" + abi;
-                string cmakeBuildDir = Path.Combine(builder.LuminoBuildDir, targetName);
-                string cmakeInstallDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, targetName);
-                string buildType = "Release";
-                string args = $"-H{cmakeHomeDir} -B{cmakeBuildDir} -DLN_TARGET_ARCH_NAME={targetName} -DCMAKE_INSTALL_PREFIX={cmakeInstallDir} -DANDROID_ABI={abi} -DANDROID_PLATFORM={platform} -DCMAKE_BUILD_TYPE={buildType} -DANDROID_NDK={BuildEnvironment.AndroidNdkRootDir} -DCMAKE_CXX_FLAGS=-std=c++14 -DANDROID_STL=c++_shared -DCMAKE_TOOLCHAIN_FILE={BuildEnvironment.AndroidCMakeToolchain} -DCMAKE_MAKE_PROGRAM={BuildEnvironment.AndroidSdkNinja} -G\"Android Gradle - Ninja\"";
-                
-                Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, args);
-                Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, "--build " + cmakeBuildDir);
-                Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, "--build " + cmakeBuildDir + " --target install");
 
-                //Utils.CopyDirectory(Path.Combine(cmakeInstallDir, "lib"), Path.Combine(builder.LuminoPackageLibDir));
 
-                Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "ImportExternalLibraries.cmake"), cmakeInstallDir);
+                var buildTypes = new string[]
+                {
+                    "Debug",
+                    "Release",
+                };
+
+                foreach (var buildType in buildTypes)
+                {
+                    var targetName = $"Android-{abi}-{buildType}";
+                    string cmakeBuildDir = Path.Combine(builder.LuminoBuildDir, targetName);
+                    string cmakeInstallDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, targetName);
+
+                    var args = new string[]
+                    {
+                        $"-H{cmakeHomeDir}",
+                        $"-B{cmakeBuildDir}",
+                        $"-DLN_BUILD_TESTS=OFF",
+                        $"-DLN_BUILD_TOOLS=OFF",
+                        $"-DLN_TARGET_ARCH_NAME={targetName}",
+                        $"-DCMAKE_DEBUG_POSTFIX=d",
+                        $"-DCMAKE_INSTALL_PREFIX={cmakeInstallDir}",
+                        $"-DANDROID_ABI={abi}",
+                        $"-DANDROID_PLATFORM={platform}",
+                        $"-DCMAKE_BUILD_TYPE={buildType}",
+                        $"-DANDROID_NDK={BuildEnvironment.AndroidNdkRootDir}",
+                        $"-DCMAKE_CXX_FLAGS=-std=c++14",
+                        $"-DANDROID_STL=c++_shared",
+                        $"-DCMAKE_TOOLCHAIN_FILE={BuildEnvironment.AndroidCMakeToolchain}",
+                        $"-DCMAKE_MAKE_PROGRAM={BuildEnvironment.AndroidSdkNinja}",
+                        $"-G\"Android Gradle - Ninja\"",
+                    };
+
+                    Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, string.Join(' ', args));
+                    Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, "--build " + cmakeBuildDir);
+                    Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, "--build " + cmakeBuildDir + " --target install");
+
+                    Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "ImportExternalLibraries.cmake"), cmakeInstallDir);
+                }
             }
         }
     }

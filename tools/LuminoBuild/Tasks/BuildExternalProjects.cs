@@ -74,17 +74,41 @@ namespace LuminoBuild.Tasks
         {
             string cmakeHomeDir = Path.Combine(externalSourceDir, projectDirName);//builder.LuminoRootDir;
             string platform = BuildEnvironment.AndroidTargetPlatform;
+            
+            var buildTypes = new string[]
+            {
+                "Debug",
+                "Release",
+            };
+            
+            foreach(var buildType in buildTypes)
+            {
+                var targetName = $"Android-{abi}-{buildType}";
+                var cmakeBuildDir = Path.Combine(builder.LuminoBuildDir, targetName, "ExternalBuild", projectDirName);
+                var cmakeInstallDir = Path.Combine(builder.LuminoBuildDir, targetName, "ExternalInstall", projectDirName);
 
-            var targetName = "Android-" + abi;
+                var args = new string[]
+                {
+                    $"-H{cmakeHomeDir}",
+                    $"-B{cmakeBuildDir}",
+                    $"-DLN_TARGET_ARCH_NAME={targetName}",
+                    $"-DCMAKE_DEBUG_POSTFIX=d",
+                    $"-DCMAKE_INSTALL_PREFIX={cmakeInstallDir}",
+                    $"-DANDROID_ABI={abi}",
+                    $"-DANDROID_PLATFORM={platform}",
+                    $"-DCMAKE_BUILD_TYPE={buildType}",
+                    $"-DANDROID_NDK={BuildEnvironment.AndroidNdkRootDir}",
+                    $"-DCMAKE_CXX_FLAGS=-std=c++14",
+                    $"-DANDROID_STL=c++_shared",
+                    $"-DCMAKE_TOOLCHAIN_FILE={BuildEnvironment.AndroidCMakeToolchain}",
+                    $"-DCMAKE_MAKE_PROGRAM={BuildEnvironment.AndroidSdkNinja}",
+                    $"-G\"Android Gradle - Ninja\"",
+                };
 
-            string cmakeBuildDir = Path.Combine(builder.LuminoBuildDir, targetName, "ExternalBuild", projectDirName);
-            string cmakeInstallDir = Path.Combine(builder.LuminoBuildDir, targetName, "ExternalInstall", projectDirName);
-            string buildType = "Release";
-            string args = $"-H{cmakeHomeDir} -B{cmakeBuildDir} -DLN_TARGET_ARCH_NAME={targetName} -DCMAKE_INSTALL_PREFIX={cmakeInstallDir} -DANDROID_ABI={abi} -DANDROID_PLATFORM={platform} -DCMAKE_BUILD_TYPE={buildType} -DANDROID_NDK={BuildEnvironment.AndroidNdkRootDir} -DCMAKE_CXX_FLAGS=-std=c++14 -DANDROID_STL=c++_shared -DCMAKE_TOOLCHAIN_FILE={BuildEnvironment.AndroidCMakeToolchain} -DCMAKE_MAKE_PROGRAM={BuildEnvironment.AndroidSdkNinja} -G\"Android Gradle - Ninja\"";
-
-            Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, args);
-            Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, "--build " + cmakeBuildDir);
-            Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, "--build " + cmakeBuildDir + " --target install");
+                Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, string.Join(' ', args));
+                Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, "--build " + cmakeBuildDir);
+                Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, "--build " + cmakeBuildDir + " --target install");
+            }
         }
 
         public override void Build(Builder builder)
