@@ -12,7 +12,7 @@ namespace LuminoBuild
             // default
             if (args.Length == 0)
             {
-                args = new string[] { "MakeReleasePackage" };
+                args = new string[] { "BuildEngine_AndroidJNI" };
             }
 
             Assembly thisAssembly = Assembly.GetEntryAssembly();

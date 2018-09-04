@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <Lumino/Base/Platform.hpp>
 
 namespace ln {
 
@@ -21,6 +22,12 @@ public:
 		CharType result[MAX_PATH] = { 0 };
 		GetModuleFileName(NULL, result, MAX_PATH);
 		return result;
+	}
+
+	static void setEnvironmentVariable(const StringRef& variableName, const StringRef& value)
+	{
+		BOOL r = ::SetEnvironmentVariableW(variableName.toStdWString().c_str(), value.toStdWString().c_str());
+		if (LN_ENSURE(r != FALSE, detail::Win32Helper::getWin32ErrorMessage(::GetLastError()))) return;
 	}
 
 	static void getSpecialFolderPath(SpecialFolder specialFolder, StringType* outPath)

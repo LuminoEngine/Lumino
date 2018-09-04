@@ -51,6 +51,11 @@ Optional<String> Environment::getEnvironmentVariable(const StringRef& variableNa
 		return nullptr;
 }
 
+void Environment::setEnvironmentVariable(const StringRef& variableName, const StringRef& value)
+{
+	PlatformEnvironment::setEnvironmentVariable(variableName, value);
+}
+
 ByteOrder Environment::byteOrder()
 {
 	const unsigned short x = 0x0001;

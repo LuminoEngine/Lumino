@@ -478,8 +478,8 @@ public:
 	GLShaderUniform(const ShaderUniformTypeDesc& desc, const GLchar* name, GLint location);
 	virtual ~GLShaderUniform() = default;
 	virtual void dispose() override;
-	virtual const ShaderUniformTypeDesc& desc() const { return m_desc; }
-	virtual const std::string& name() const { return m_name; }
+	virtual const ShaderUniformTypeDesc& desc() const override { return m_desc; }
+	virtual const std::string& name() const override { return m_name; }
 
 	void setUniformValue(OpenGLDeviceContext* context, const void* data, size_t size);
 

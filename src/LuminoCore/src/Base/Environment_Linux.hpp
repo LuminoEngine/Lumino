@@ -24,6 +24,13 @@ public:
 		return StringType();
 	}
 
+	static void setEnvironmentVariable(const StringRef& variableName, const StringRef& value)
+	{
+		std::string str = ln::String::format(u"{0}={1}", variableName, value).toStdString();
+		std::vector<char> buf(str.c_str(), str.c_str() + str.length());
+		putenv(buf.data());
+	}
+
 	static void getSpecialFolderPath(SpecialFolder specialFolder, StringType* outPath)
 	{
 		LN_NOTIMPLEMENTED();

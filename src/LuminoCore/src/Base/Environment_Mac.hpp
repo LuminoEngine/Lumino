@@ -32,6 +32,11 @@ public:
 		return StringType();
 	}
 
+	static void setEnvironmentVariable(const StringRef& variableName, const StringRef& value)
+	{
+		putenv(ln::String::format(u"{0}={1}", variableName, value).toStdString().c_str());
+	}
+
 	static void getSpecialFolderPath(SpecialFolder specialFolder, StringType* outPath)
 	{
 		if (specialFolder == SpecialFolder::Temporary) {

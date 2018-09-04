@@ -60,6 +60,9 @@ public:
     /** 環境変数の値を取得します。 */
     static Optional<String> getEnvironmentVariable(const StringRef& variableName);
 
+	/** 現在のプロセスの環境変数を設定します。(システム環境変数や他のプロセスの環境変数へ影響を及ぼしません) */
+	static void setEnvironmentVariable(const StringRef& variableName, const StringRef& value);
+
 	/** 現在の環境のバイトオーダー (エンディアン) を確認します。 */
 	static ByteOrder byteOrder();
 };
