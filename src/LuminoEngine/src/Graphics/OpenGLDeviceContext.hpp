@@ -178,9 +178,9 @@ public:
 	virtual ~GLSwapChain() = default;
 	virtual void dispose() override;
 	virtual ITexture* getColorBuffer() const override;
-	virtual void getTargetWindowSize(SizeI* outSize) = 0;
+	virtual void getBackendBufferSize(SizeI* outSize) = 0;
 
-	void setupBackbuffer(uint32_t width, uint32_t height);
+	void genBackbuffer(uint32_t width, uint32_t height);
 	GLuint fbo() const { return m_fbo; }
 
 
@@ -542,9 +542,12 @@ class EmptyGLSwapChain
 	: public GLSwapChain
 {
 public:
-	EmptyGLSwapChain() = default;
+	EmptyGLSwapChain(const SizeI& size) : m_size(size) {}
 	virtual ~EmptyGLSwapChain() = default;
-	virtual void getTargetWindowSize(SizeI* outSize) override { *outSize = SizeI(); }
+	virtual void getBackendBufferSize(SizeI* outSize) override { *outSize = m_size; }
+
+private:
+	SizeI m_size;
 };
 
 } // namespace detail

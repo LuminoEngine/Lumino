@@ -18,7 +18,7 @@ GLFWSwapChain::GLFWSwapChain(GLFWPlatformWindow* window)
 {
 }
 
-void GLFWSwapChain::getTargetWindowSize(SizeI* outSize)
+void GLFWSwapChain::getBackendBufferSize(SizeI* outSize)
 {
 	m_window->getSize(outSize);
 }
@@ -42,7 +42,7 @@ Ref<GLSwapChain> GLFWContext::createSwapChain(PlatformWindow* window, const Size
 	LN_CHECK(glfwWindow);
 
 	auto ptr = makeRef<GLFWSwapChain>(glfwWindow);
-	ptr->setupBackbuffer(backbufferSize.width, backbufferSize.height);
+	ptr->genBackbuffer(backbufferSize.width, backbufferSize.height);
 	return ptr;
 }
 

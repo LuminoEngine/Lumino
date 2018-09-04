@@ -23,6 +23,9 @@ protected:
 	virtual ~Application();
 
 private:
+	void initInternal();
+	bool updateInertnal();
+	void finalizeInternal();
 	void run();
 
 	friend class detail::ApplicationHelper;

@@ -16,7 +16,7 @@ public:
 
 	GLFWPlatformWindow* window() const { return m_window; }
 
-	virtual void getTargetWindowSize(SizeI* outSize) override;
+	virtual void getBackendBufferSize(SizeI* outSize) override;
 
 private:
 	GLFWPlatformWindow* m_window;

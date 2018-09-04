@@ -667,7 +667,7 @@ void OpenGLDeviceContext::onPresent(ISwapChain* swapChain)
 	/* レンダーターゲットへ描画処理 */
 
 	SizeI windowSize, bufferSize;
-	s->getTargetWindowSize(&windowSize);
+	s->getBackendBufferSize(&windowSize);
 	bufferSize = s->getColorBuffer()->realSize();
 
 	// いわゆるResolve処理.
@@ -743,7 +743,7 @@ void GLSwapChain::dispose()
 	ISwapChain::dispose();
 }
 
-void GLSwapChain::setupBackbuffer(uint32_t width, uint32_t height)
+void GLSwapChain::genBackbuffer(uint32_t width, uint32_t height)
 {
 	m_backbuffer = makeRef<GLRenderTargetTexture>();
 	m_backbuffer->initialize(width, height, TextureFormat::RGBA32, false);
@@ -770,7 +770,9 @@ ITexture* GLSwapChain::getColorBuffer() const
 
 Ref<GLSwapChain> EmptyGLContext::createSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
 {
-	return makeRef<EmptyGLSwapChain>();
+	auto ptr = makeRef<EmptyGLSwapChain>(backbufferSize);
+	ptr->genBackbuffer(backbufferSize.width, backbufferSize.height);
+	return ptr;
 }
 
 void EmptyGLContext::makeCurrent(GLSwapChain* swapChain)

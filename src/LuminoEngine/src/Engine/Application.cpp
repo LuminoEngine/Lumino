@@ -36,23 +36,39 @@ void Application::onDestroy()
 {
 }
 
+void Application::initInternal()
+{
+	detail::EngineDomain::engineManager()->initialize();
+	onCreate();
+	onStart();
+}
+
+bool Application::updateInertnal()
+{
+	detail::EngineDomain::engineManager()->updateFrame();
+	detail::EngineDomain::engineManager()->renderFrame();
+	onUpdate();
+	detail::EngineDomain::engineManager()->presentFrame();
+	return !detail::EngineDomain::engineManager()->isExitRequested();
+}
+
+void Application::finalizeInternal()
+{
+	onStop();
+	onDestroy();
+	detail::EngineDomain::release();
+}
+
 void Application::run()
 {
 #ifdef __EMSCRIPTEN__
 	LN_UNREACHABLE();
 #endif
+	initInternal();
 
-	do
-	{
-		detail::EngineDomain::engineManager()->updateFrame();
-		detail::EngineDomain::engineManager()->renderFrame();
+	while (updateInertnal());
 
-		onUpdate();
-
-		detail::EngineDomain::engineManager()->presentFrame();
-
-	} while (!detail::EngineDomain::engineManager()->isExitRequested());
-
+	finalizeInternal();
 }
 
 //==============================================================================
@@ -62,20 +78,17 @@ namespace detail {
 
 void ApplicationHelper::initialize(Application* app)
 {
-	app->onCreate();
-	app->onStart();
+	app->initInternal();
 }
 
 bool ApplicationHelper::processTick(Application* app)
 {
-	app->onUpdate();
-	return true;
+	return app->updateInertnal();
 }
 
 void ApplicationHelper::finalize(Application* app)
 {
-	app->onStop();
-	app->onDestroy();
+	app->finalizeInternal();
 }
 
 void ApplicationHelper::run(Application* app)
