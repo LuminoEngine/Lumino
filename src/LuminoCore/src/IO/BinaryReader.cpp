@@ -196,6 +196,22 @@ double BinaryReader::readDouble()
 	return buffer;
 }
 
+String BinaryReader::readString(size_t byteCount, ln::TextEncoding* encoding)
+{
+	if (encoding) {
+		LN_NOTIMPLEMENTED();
+		return String::Empty;
+	}
+	if (ln::Environment::byteOrder() == ByteOrder::BigEndian) {
+		LN_NOTIMPLEMENTED();
+		return String::Empty;
+	}
+
+	m_stringCache.resize(byteCount);
+	read(m_stringCache.data(), m_stringCache.size());
+	return String((const Char*)m_stringCache.data(), m_stringCache.size() / sizeof(Char));
+}
+
 size_t BinaryReader::read(void* buffer, size_t count)
 {
 	if (LN_REQUIRE(m_stream)) return 0;

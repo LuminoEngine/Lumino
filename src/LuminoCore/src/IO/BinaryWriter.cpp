@@ -138,6 +138,20 @@ void BinaryWriter::writeDouble(double value)
 	m_stream->write(&value, 8);
 }
 
+void BinaryWriter::writeString(const StringRef& str, ln::TextEncoding* encoding)
+{
+	if (encoding) {
+		LN_NOTIMPLEMENTED();
+		return;
+	}
+	if (ln::Environment::byteOrder() == ByteOrder::BigEndian) {
+		LN_NOTIMPLEMENTED();
+		return;
+	}
+
+	write(str.data(), str.length() * sizeof(Char));
+}
+
 void BinaryWriter::write(const void* buffer, size_t count)
 {
 	if (LN_REQUIRE(m_stream)) return;

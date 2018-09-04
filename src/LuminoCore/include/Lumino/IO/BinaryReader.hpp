@@ -92,6 +92,11 @@ public:
 	double readDouble();
 
 	/**
+		@brief		指定したバイト数の文字列データを読み取り、ストリームの現在位置を進めます。
+	*/
+	String readString(size_t byteCount, ln::TextEncoding* encoding = nullptr);
+
+	/**
 		@brief		指定したバイト数のデータを読み取り、ストリームの現在位置を進めます。
 	*/
 	size_t read(void* buffer, size_t count);
@@ -103,6 +108,7 @@ public:
 
 private:
 	Ref<Stream> m_stream;
+	std::vector<byte_t> m_stringCache;
 };
 
 } // namespace ln

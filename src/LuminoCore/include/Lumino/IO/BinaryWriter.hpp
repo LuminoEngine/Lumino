@@ -88,6 +88,11 @@ public:
 	void writeDouble(double value);
 
 	/**
+		@brief		文字列を書き込みます。
+	*/
+	void writeString(const StringRef& str, ln::TextEncoding* encoding = nullptr);
+
+	/**
 		@brief		指定したバイト数のデータを書き込み、ストリームの現在位置を進めます。
 	*/
 	void write(const void* buffer, size_t count);
