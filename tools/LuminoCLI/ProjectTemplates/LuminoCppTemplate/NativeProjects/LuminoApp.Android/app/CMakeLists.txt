@@ -7,20 +7,21 @@ cmake_minimum_required(VERSION 3.4.1)
 
 
 
-file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_LIST_DIR}/../../../Sources/*.cpp)
 
-#set(LUMINO D:/Proj/GitHub/Lumino/build/ReleasePackage)
+set(LUMINO_PACKAGE_DIR $ENV{LUMINO})
+message("LUMINO_PACKAGE_DIR: ${LUMINO_PACKAGE_DIR}")
 
+include(${LUMINO_PACKAGE_DIR}/Engine/Cpp/LuminoSetup.cmake)
 
-include(${LUMINO}/Engine/Cpp/LuminoSetup.cmake)
+list(APPEND CMAKE_FIND_ROOT_PATH ${LUMINO_PACKAGE_DIR}/Engine/Cpp/Android-${ANDROID_ABI})
 
-set(Lumino_DIR ${LUMINO}/Engine/Cpp/Android-${ANDROID_ABI})
-include(${LUMINO}/Engine/Cpp/ImportExternalLibraries.cmake)
-
-list(APPEND CMAKE_FIND_ROOT_PATH ${LUMINO}/Engine/Cpp/Android-${ANDROID_ABI})
-set(LUMINO_CMAKE_DIR ${LUMINO}/Engine/Cpp/Android-${ANDROID_ABI}/lib/cmake)
+set(LUMINO_CMAKE_DIR ${LUMINO_PACKAGE_DIR}/Engine/Cpp/Android-${ANDROID_ABI}/lib/cmake)
 find_package(LuminoCore REQUIRED CONFIG PATHS ${LUMINO_CMAKE_DIR})
 find_package(LuminoEngine REQUIRED CONFIG PATHS ${LUMINO_CMAKE_DIR})
+
+
+
+file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_LIST_DIR}/../../../Sources/*.cpp)
 
 
 # Creates and names a library, sets it as either STATIC
@@ -55,11 +56,22 @@ find_library( # Sets the name of the path variable.
 # can link multiple libraries, such as libraries you define in this
 # build script, prebuilt third-party libraries, or system libraries.
 
+message(${ZLIB_LIBRARY_RELEASE})
+
+add_dependencies(PNG ZLIB)
+
 target_link_libraries( # Specifies the target library.
                        native-lib
 
                        # Links the target library to the log library
                        # included in the NDK.
                        ${log-lib}
-                       
-                       LuminoEngine)
+                       EGL
+                       GLESv3
+                       m
+                       z
+                       LuminoEngine
+                       #${ZLIB_LIBRARY_RELEASE}
+                       )
+
+SET_TARGET_PROPERTIES(native-lib PROPERTIES LINK_FLAGS -v)

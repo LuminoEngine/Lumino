@@ -1,4 +1,6 @@
 
+include(ImportExternalLibraries.cmake)
+
 function(ln_add_pch project_name header_file_path source_file_path)
 
 	get_filename_component(header_file_name ${header_file_path} NAME)
@@ -34,3 +36,4 @@ function(ln_add_pch project_name header_file_path source_file_path)
 	endif()
 
 endfunction()
+

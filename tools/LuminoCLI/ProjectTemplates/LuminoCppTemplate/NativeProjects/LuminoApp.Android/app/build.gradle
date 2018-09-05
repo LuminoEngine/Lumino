@@ -1,39 +1,43 @@
 apply plugin: 'com.android.application'
 
-android +AHs-
+android {
+    signingConfigs {
+        config {
+        }
+    }
     compileSdkVersion 27
-    defaultConfig +AHs-
-        applicationId +ACI-org.lumino.lib.luminoapp+ACI-
+    defaultConfig {
+        applicationId "org.lumino.lib.luminoapp"
         minSdkVersion 26
         targetSdkVersion 27
         versionCode 1
-        versionName +ACI-1.0+ACI-
-        testInstrumentationRunner +ACI-android.support.test.runner.AndroidJUnitRunner+ACI-
-        externalNativeBuild +AHs-
-            cmake +AHs-
-                cppFlags +ACI--std+AD0-c+-+-14+ACI-
-                arguments +ACI--DANDROID+AF8-STL+AD0-c+-+-+AF8-shared+ACI-
-            +AH0-
-        +AH0-
-    +AH0-
-    buildTypes +AHs-
-        release +AHs-
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        externalNativeBuild {
+            cmake {
+                cppFlags "-std=c++14"
+                arguments "-DANDROID_STL=c++_shared"
+            }
+        }
+    }
+    buildTypes {
+        release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        +AH0-
-    +AH0-
-    externalNativeBuild +AHs-
-        cmake +AHs-
-            path +ACI-CMakeLists.txt+ACI-
-        +AH0-
-    +AH0-
-+AH0-
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
+    }
+}
 
-dependencies +AHs-
-    implementation fileTree(dir: 'libs', include: +AFs-'+ACo-.jar'+AF0-)
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-+AH0-
+}

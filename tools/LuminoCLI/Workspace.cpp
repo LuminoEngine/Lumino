@@ -138,6 +138,8 @@ void Workspace::dev_openIde(const ln::String& target) const
 		WCHAR path[MAX_PATH];
 		RegQueryValueExW(hKey, L"Path", NULL, &type, (LPBYTE)path, &size);
 
+		ln::Environment::setEnvironmentVariable(u"LUMINO", buildEnvironment()->luminoPackageRootDir());
+
 		ln::Process proc;
 		proc.setProgram(ln::Path::combine(ln::String::fromCString(path), u"bin", u"studio"));
 		proc.setArguments({ m_project->androidProjectDir() });
