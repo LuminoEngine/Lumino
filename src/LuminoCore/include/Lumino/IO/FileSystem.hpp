@@ -230,6 +230,10 @@ public:
     static void setAttribute(const wchar_t* filePath, int len, FileAttribute attr);
     static void setAttribute(const char16_t* filePath, int len, FileAttribute attr);
 
+	static time_t getLastModifiedTime(const char* filePath, int len);
+	static time_t getLastModifiedTime(const wchar_t* filePath, int len);
+	static time_t getLastModifiedTime(const char16_t* filePath, int len);
+
     static void copyFile(const char* sourceFileName, int sourceFileNameLen, const char* destFileName, int destFileNameLen, FileCopyOption option);
     static void copyFile(const wchar_t* sourceFileName, int sourceFileNameLen, const wchar_t* destFileName, int destFileNameLen, FileCopyOption option);
     static void copyFile(const char16_t* sourceFileName, int sourceFileNameLen, const char16_t* destFileName, int destFileNameLen, FileCopyOption option);

@@ -54,6 +54,15 @@ public:
         return true;
     }
 
+	static void getLastModifiedTime(const wchar_t* path, time_t* outTime)
+	{
+		WIN32_FILE_ATTRIBUTE_DATA fad;
+		BOOL r = ::GetFileAttributesExW(path, GetFileExInfoStandard, &fad);
+		if (LN_ENSURE(r != FALSE, detail::Win32Helper::getWin32ErrorMessage(::GetLastError()))) return;
+		r = detail::Win32Helper::FILETIMEtoEpochTime(fad.ftLastWriteTime, outTime);
+		if (LN_ENSURE(r != FALSE)) return;
+	}
+
     static void copyFile(const wchar_t* sourceFileName, const wchar_t* destFileName, bool overwrite)
     {
         BOOL r = ::CopyFileW(sourceFileName, destFileName, (overwrite) ? FALSE : TRUE);

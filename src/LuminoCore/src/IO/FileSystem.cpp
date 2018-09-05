@@ -322,6 +322,28 @@ void FileSystemInternal::setAttribute(const char16_t* filePath, int len, FileAtt
     PlatformFileSystem::setAttribute(localPath.c_str(), attr);
 }
 
+time_t FileSystemInternal::getLastModifiedTime(const char* filePath, int len)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath, len);
+	time_t time;
+	PlatformFileSystem::getLastModifiedTime(localPath.c_str(), &time);
+	return time;
+}
+time_t FileSystemInternal::getLastModifiedTime(const wchar_t* filePath, int len)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath, len);
+	time_t time;
+	PlatformFileSystem::getLastModifiedTime(localPath.c_str(), &time);
+	return time;
+}
+time_t FileSystemInternal::getLastModifiedTime(const char16_t* filePath, int len)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath, len);
+	time_t time;
+	PlatformFileSystem::getLastModifiedTime(localPath.c_str(), &time);
+	return time;
+}
+
 void FileSystemInternal::copyFile(const char* sourceFileName, int sourceFileNameLen, const char* destFileName, int destFileNameLen, FileCopyOption option)
 {
     detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath1(sourceFileName, sourceFileNameLen);

@@ -1,4 +1,7 @@
 ﻿#include "Common.hpp"
+#include <Lumino/Base/DateTime.hpp>
+#include <Lumino/Threading/Thread.hpp>
+#include <Lumino/IO/FileInfo.hpp>
 #include <Lumino/IO/FileSystem.hpp>
 
 //==============================================================================
@@ -191,6 +194,25 @@ TEST_F(Test_IO_FileSystem, GetFilesOrDirectory)
 	}
 
 	FileSystem::removeDirectory(LN_TEMPFILE("GetFilesTest1"), true);
+}
+
+//## check file update.
+TEST_F(Test_IO_FileSystem, LastModifiedTime)
+{
+	FileSystem::writeAllText(LN_TEMPFILE("test"), u"test1");
+	DateTime t1 = FileInfo(LN_TEMPFILE("test")).lastModifiedTime();
+
+	Thread::sleep(2000);
+
+	DateTime t2 = FileInfo(LN_TEMPFILE("test")).lastModifiedTime();
+
+	Thread::sleep(2000);
+
+	FileSystem::writeAllText(LN_TEMPFILE("test"), u"test2");
+	DateTime t3 = FileInfo(LN_TEMPFILE("test")).lastModifiedTime();
+
+	ASSERT_EQ(true, t1 == t2);
+	ASSERT_EQ(true, t1 < t3);
 }
 
 #endif

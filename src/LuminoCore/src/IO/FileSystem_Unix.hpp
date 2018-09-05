@@ -97,6 +97,18 @@ public:
         return true;
     }
 
+	static void getLastModifiedTime(const char* path, time_t* outTime)
+	{
+		struct stat st;
+		if (stat(path, &st) == 0) {
+#if defined(__APPLE__)
+			*outTime = st.st_mtimespec.tv_sec;
+#else
+			*outTime = st.st_mtime;
+#endif
+		}
+	}
+
     static void copyFile(const char* sourceFileName, const char* destFileName, bool overwrite)
     {
         // コピー先ファイルの存在確認

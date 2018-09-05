@@ -15,6 +15,8 @@ class Win32Helper
 {
 public:
 	static String getWin32ErrorMessage(DWORD errorCode);
+	static BOOL SYSTEMTIMEtoEpochTime(const SYSTEMTIME& sysTime, time_t* outTime);
+	static BOOL FILETIMEtoEpochTime(const FILETIME& fileTime, time_t* outTime);
 };
 
 #define LN_ENSURE_HRESULT(hr)		(LN_ENSURE(SUCCEEDED(hr), ln::detail::Win32Helper::getWin32ErrorMessage(hr)))

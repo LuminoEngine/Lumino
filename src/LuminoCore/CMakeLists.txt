@@ -13,6 +13,7 @@ set(LN_SOURCES_Base
 	include/Lumino/Base/Assertion.hpp
 	include/Lumino/Base/Buffer.hpp
 	include/Lumino/Base/CRCHash.hpp
+	include/Lumino/Base/DateTime.hpp
 	include/Lumino/Base/ElapsedTimer.hpp
 	include/Lumino/Base/EnumFlags.hpp
 	include/Lumino/Base/Environment.hpp
@@ -59,6 +60,7 @@ set(LN_SOURCES_IO
 	include/Lumino/IO/BinaryReader.hpp
 	include/Lumino/IO/BinaryWriter.hpp
 	include/Lumino/IO/CommandLineParser.hpp
+	include/Lumino/IO/FileInfo.hpp
 	include/Lumino/IO/FileStream.hpp
 	include/Lumino/IO/FileSystem.hpp
 	include/Lumino/IO/MemoryStream.hpp
@@ -75,6 +77,7 @@ set(LN_SOURCES_IO
 	src/IO/BinaryReader.cpp
 	src/IO/BinaryWriter.cpp
 	src/IO/CommandLineParser.cpp
+	src/IO/FileInfo.cpp
 	src/IO/FileStream.cpp
 	src/IO/FileSystem.cpp
 	src/IO/FileSystem_Unix.hpp
