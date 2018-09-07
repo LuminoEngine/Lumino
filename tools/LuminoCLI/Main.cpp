@@ -1,4 +1,4 @@
-﻿
+
 #include "Workspace.hpp"
 
 int main(int argc, char** argv)
@@ -32,7 +32,7 @@ int main(int argc, char** argv)
 		//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\HelloLumino");
 		::SetCurrentDirectoryW(L"D:\\Documents\\LuminoProjects\\HelloLumino");
 	
-		char* debugArgv[] = {
+		const char* debugArgv[] = {
 			//"<program>", "init", "HelloLumino",
 
 			//"<program>", "dev-install-tools",
@@ -40,13 +40,12 @@ int main(int argc, char** argv)
 			//"<program>", "build", "Emscripten",
 			//"<program>", "build", "Android",
 
-			"<program>", "dev-openide",
+			"/Users/lriki/Proj/Lumino/build/macOS/tools/LuminoCLI/Debug/lumino", "dev-openide",
 		};
 		argc = sizeof(debugArgv) / sizeof(char*);
-		argv = debugArgv;
+		argv = (char**)debugArgv;
 	}
 #endif
-
 	try
 	{
 

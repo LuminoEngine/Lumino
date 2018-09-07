@@ -153,6 +153,11 @@ void Workspace::dev_openIde(const ln::String& target) const
 		proc.setProgram("LuminoCppTemplate.sln");
 		proc.start();
 	}
+#elif defined(__APPLE__)
+	ln::Process proc;
+	proc.setProgram(u"/usr/bin/open");
+	proc.setArguments({ u"/Applications/Xcode.app/", ln::Path(m_project->macOSProjectDir(), u"LuminoApp.macOS.xcodeproj") });
+	proc.start();
 #else
 	LN_NOTIMPLEMENTED();	// TODO: putenv は書き込み可能なポインタを渡さないとならないみたい？
 #endif

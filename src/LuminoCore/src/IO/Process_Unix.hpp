@@ -180,6 +180,7 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo)
 		{
 			if (chdir(workingDirectory.c_str()) != 0)
 			{
+				perror("critical OS file missing.\n");
 				exit(72);	// critical OS file missing 
 			}
 		}
@@ -195,6 +196,7 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo)
 		execve(argv[0], argv.data(), environ);
 		
 		// it only cames here when execve failed.
+		fprintf(stderr, "execve failed. (errno:%d)\n", errno);
 		exit(72);
 	}
 	else
@@ -209,7 +211,7 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo)
 
 void ProcessImpl::startWithShell(const ProcessStartInfo& startInfo)
 {
-	LN_NOTIMPLEMENTED();
+	start(startInfo);
 }
 
 bool ProcessImpl::waitForExit(int timeoutMSec)
