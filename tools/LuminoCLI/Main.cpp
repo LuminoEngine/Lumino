@@ -47,52 +47,63 @@ int main(int argc, char** argv)
 	}
 #endif
 
-	ln::CommandLineParser parser;
-	//auto installCommand = parser.addCommand(_T("install"), _T("install."));
-
-	auto initCommand = parser.addCommand(_T("init"), _T("init description."));
-	auto projectnameArg = initCommand->addPositionalArgument(_T("project-name"), _T("prooject name."));
-
-	auto buildCommand = parser.addCommand(_T("build"), _T("init description."));
-	auto burildTargetArg = buildCommand->addPositionalArgument(u"target", u"-");
-
-	auto dev_installTools = parser.addCommand(_T("dev-install-tools"), _T("description."));
-
-
-	auto dev_openide = parser.addCommand(u"dev-openide", u"description.");
-	auto dev_openide_targetArg = dev_openide->addPositionalArgument(u"target", u"target.");
-
-	//auto forceOption1 = initCommand->addFlagOption(_T("f"), _T("force"), _T("force description."));
-
-	//auto addCommand = parser.addCommand(_T("add"), _T("add description."));
-	//auto forceOption2 = addCommand->addFlagOption(_T("f"), _T("force"), _T("force description."));
-
-	if (parser.process(argc, argv))
+	try
 	{
-		auto workspace = ln::makeRef<Workspace>();
 
-		//if (parser.has(installCommand))
-		//{
+	
 
-		//}
-		if (parser.has(initCommand))
+		ln::CommandLineParser parser;
+		//auto installCommand = parser.addCommand(_T("install"), _T("install."));
+
+		auto initCommand = parser.addCommand(_T("init"), _T("init description."));
+		auto projectnameArg = initCommand->addPositionalArgument(_T("project-name"), _T("prooject name."));
+
+		auto buildCommand = parser.addCommand(_T("build"), _T("init description."));
+		auto burildTargetArg = buildCommand->addPositionalArgument(u"target", u"-");
+
+		auto dev_installTools = parser.addCommand(_T("dev-install-tools"), _T("description."));
+
+
+		auto dev_openide = parser.addCommand(u"dev-openide", u"description.");
+		auto dev_openide_targetArg = dev_openide->addPositionalArgument(u"target", u"target.");
+
+		//auto forceOption1 = initCommand->addFlagOption(_T("f"), _T("force"), _T("force description."));
+
+		//auto addCommand = parser.addCommand(_T("add"), _T("add description."));
+		//auto forceOption2 = addCommand->addFlagOption(_T("f"), _T("force"), _T("force description."));
+
+		if (parser.process(argc, argv))
 		{
-			workspace->newProject(ln::Environment::currentDirectory(), projectnameArg->value());
+			auto workspace = ln::makeRef<Workspace>();
+
+			//if (parser.has(installCommand))
+			//{
+
+			//}
+			if (parser.has(initCommand))
+			{
+				workspace->newProject(ln::Environment::currentDirectory(), projectnameArg->value());
+			}
+			else if (parser.has(buildCommand))
+			{
+				workspace->openProject(ln::Environment::currentDirectory());
+				workspace->buildProject(burildTargetArg->value());
+			}
+			else if (parser.has(dev_installTools))
+			{
+				workspace->dev_installTools();
+			}
+			else if (parser.has(dev_openide))
+			{
+				workspace->openProject(ln::Environment::currentDirectory());
+				workspace->dev_openIde(dev_openide_targetArg->value());
+			}
 		}
-		else if (parser.has(buildCommand))
-		{
-			workspace->openProject(ln::Environment::currentDirectory());
-			workspace->buildProject(burildTargetArg->value());
-		}
-		else if (parser.has(dev_installTools))
-		{
-			workspace->dev_installTools();
-		}
-		else if (parser.has(dev_openide))
-		{
-			workspace->openProject(ln::Environment::currentDirectory());
-			workspace->dev_openIde(dev_openide_targetArg->value());
-		}
+	}
+	catch (ln::Exception& e)
+	{
+		ln::String m = e.getMessage();
+		std::cout << m << std::endl;
 	}
 
 	return 0;

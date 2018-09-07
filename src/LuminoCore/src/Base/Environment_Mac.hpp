@@ -27,11 +27,7 @@ public:
 		free(p);
 	}
 
-	static StringType getExecutablePath()
-	{
-		LN_NOTIMPLEMENTED();
-		return StringType();
-	}
+	static StringType getExecutablePath();
 
 	static void setEnvironmentVariable(const StringRef& variableName, const StringRef& value)
 	{

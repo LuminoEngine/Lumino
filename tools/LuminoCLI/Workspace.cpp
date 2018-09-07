@@ -1,4 +1,4 @@
-﻿
+
 #include "EnvironmentSettings.hpp"
 #include "Project.hpp"
 #include "Workspace.hpp"
@@ -33,7 +33,7 @@ Result Workspace::buildProject(const ln::String& target)
 	// Android
 	if (ln::String::compare(target, u"Android", ln::CaseSensitivity::CaseInsensitive) == 0)
 	{
-		::SetCurrentDirectoryW(L"D:\\Documents\\LuminoProjects\\HelloLumino\\NativeProjects\\LuminoApp.Android");
+		//::SetCurrentDirectoryW(L"D:\\Documents\\LuminoProjects\\HelloLumino\\NativeProjects\\LuminoApp.Android");
 
 		putenv("JAVA_HOME=\"D:\\Program Files\\Android\\Android Studio\\jre\"");
 
