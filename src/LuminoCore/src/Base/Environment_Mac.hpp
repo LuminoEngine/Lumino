@@ -1,13 +1,14 @@
 #pragma once
 #include <unistd.h>
-#import <Foundation/Foundation.h>
+#include <stdlib.h>
+//#import <Foundation/Foundation.h>
 //#import <Foundation/NSString.h>
 //class NSString;
 
 //typedef struct objc_object NSString;
-extern "C" NSString* NSTemporaryDirectory();
+//extern "C" NSString* NSTemporaryDirectory();
 
-extern std::string NSStringToStdString(NSString* nsstring);
+//extern std::string NSStringToStdString(NSString* nsstring);
 
 namespace ln {
 
@@ -34,19 +35,12 @@ public:
 
 	static void setEnvironmentVariable(const StringRef& variableName, const StringRef& value)
 	{
-		putenv(ln::String::format(u"{0}={1}", variableName, value).toStdString().c_str());
+		std::string str = ln::String::format(u"{0}={1}", variableName, value).toStdString();
+		std::vector<char> buf(str.c_str(), str.c_str() + str.length());
+		putenv(buf.data());
 	}
 
-	static void getSpecialFolderPath(SpecialFolder specialFolder, StringType* outPath)
-	{
-		if (specialFolder == SpecialFolder::Temporary) {
-			if (NSString* path = NSTemporaryDirectory()) {
-				*outPath = [path UTF8String];
-				return;
-			}
-		}
-		LN_NOTIMPLEMENTED();
-	}
+	static void getSpecialFolderPath(SpecialFolder specialFolder, StringType* outPath);
 	
 #if 0
 	void getSpecialFolderPath(SpecialFolder specialFolder, LocalStringConverter<CharType>* out)

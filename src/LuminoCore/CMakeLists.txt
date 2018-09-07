@@ -200,6 +200,10 @@ if (WIN32)
 	)
 
 elseif (APPLE)
+	set(LN_SOURCES_Base
+		${LN_SOURCES_Base}
+		src/Base/Foundation_macOS.mm
+	)
 
 elseif (UNIX)
 
