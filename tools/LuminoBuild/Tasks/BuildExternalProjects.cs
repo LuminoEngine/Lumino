@@ -18,6 +18,7 @@ namespace LuminoBuild.Tasks
         public override string Description { get { return "BuildExternalProjects"; } }
 
 
+        // (システム標準の cmake を使う系)
         private void BuildProject(Builder builder, string projectDirName, string externalSourceDir, string buildArchDir, string generator, string additionalOptions = "")
         {
 
@@ -117,6 +118,10 @@ namespace LuminoBuild.Tasks
             Directory.CreateDirectory(reposDir);
             Directory.SetCurrentDirectory(reposDir);
 
+            if (!Directory.Exists("ios-cmake"))
+            {
+                Utils.CallProcess("git", "clone --progress --depth 1 -b 2.0.0 https://github.com/leetal/ios-cmake.git ios-cmake");
+            }
             if (!Directory.Exists("zlib"))
             {
                 Utils.CallProcess("git", "clone --progress --depth 1 -b v1.2.11 https://github.com/madler/zlib.git zlib");
@@ -185,14 +190,30 @@ namespace LuminoBuild.Tasks
             }
             else
             {
-                var dirName = "macOS";
-                var generator = "Xcode";
-                var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, dirName, "ExternalInstall", "zlib"));
-                BuildProject(builder, "zlib", reposDir, dirName, generator);
-                BuildProject(builder, "libpng", reposDir, dirName, generator, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
-                BuildProject(builder, "glslang", reposDir, dirName, generator);
-                BuildProject(builder, "SPIRV-Cross", reposDir, dirName, generator, $"-DCMAKE_DEBUG_POSTFIX=d");
-                BuildProject(builder, "glad", reposDir, dirName, generator, $"-DGLAD_INSTALL=ON");
+                var iOSToolchainFile = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "ExternalSource", "ios-cmake", "ios.toolchain.cmake "));
+
+                var targetArgs = new []
+                {
+                    // macOS
+                    //new { DirName = "macOS", Args = "" },
+
+                    // iOS
+                    new { DirName = "iOS", Args = $"-DCMAKE_TOOLCHAIN_FILE=\"{iOSToolchainFile}\" -DIOS_PLATFORM=OS" },
+                };
+
+                foreach (var t in targetArgs)
+                {
+                    var dirName = t.DirName;
+                    var args = t.Args;
+                    var generator = "Xcode";
+                    var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, dirName, "ExternalInstall", "zlib"));
+
+                    //BuildProject(builder, "zlib", reposDir, dirName, generator, args);
+                    BuildProject(builder, "libpng", reposDir, dirName, generator, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include " + args);
+                    BuildProject(builder, "glslang", reposDir, dirName, generator, args);
+                    BuildProject(builder, "SPIRV-Cross", reposDir, dirName, generator, $"-DCMAKE_DEBUG_POSTFIX=d " + args);
+                    BuildProject(builder, "glad", reposDir, dirName, generator, $"-DGLAD_INSTALL=ON " + args);
+                }
             }
         }
     }
