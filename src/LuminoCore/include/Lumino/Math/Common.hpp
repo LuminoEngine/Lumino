@@ -2,7 +2,7 @@
 #pragma once
 
 #include <ostream>
-#include <Lumino/Base/Common.hpp>
+#include "../Base/Common.hpp"
 
 namespace ln {
 

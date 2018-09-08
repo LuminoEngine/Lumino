@@ -3,7 +3,7 @@
 #define NOMINMAX
 #include <Windows.h>
 #endif
-#include <Lumino/Base/String.hpp>
+#include "String.hpp"
 
 namespace ln {
 namespace detail

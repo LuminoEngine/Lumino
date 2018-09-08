@@ -270,6 +270,40 @@ target_link_libraries(${PROJECT_NAME} INTERFACE ${LN_LINK_LIBS})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "src/LuminoCore.PCH.h" "src/LuminoCore.PCH.cpp")
 
+
+
+#file(GLOB_RECURSE LN_XCODE_PUBLIC_HEADERS "${CMAKE_CURRENT_LIST_DIR}/include" "*.hpp")
+#list(FILTER LN_XCODE_PUBLIC_HEADERS INCLUDE REGEX "*.hpp")
+#message(${LN_XCODE_PUBLIC_HEADERS})
+
+add_library(${PROJECT_NAME}dy SHARED ${LN_SOURCES})
+target_include_directories(${PROJECT_NAME}dy PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_link_libraries(${PROJECT_NAME}dy INTERFACE ${LN_LINK_LIBS})
+set_target_properties(${PROJECT_NAME}dy PROPERTIES FOLDER "Lumino")
+ln_add_pch(${PROJECT_NAME}dy "src/LuminoCore.PCH.h" "src/LuminoCore.PCH.cpp")
+set_target_properties(${PROJECT_NAME}dy PROPERTIES
+  FRAMEWORK TRUE
+  FRAMEWORK_VERSION A
+  MACOSX_FRAMEWORK_IDENTIFIER lib.Lumino
+  MACOSX_FRAMEWORK_INFO_PLIST ${CMAKE_CURRENT_LIST_DIR}/Info.plist
+  #INSTALL_PATH ""
+  #INSTALL_NAME_DIR "@rpath"
+  #LIBRARY_OUTPUT_NAME "${PROJECT_NAME}-dy"
+  # "current version" in semantic format in Mach-O binary file
+  VERSION 1.0.0
+  # "compatibility version" in semantic format in Mach-O binary file
+  SOVERSION 1.0.0
+  #PUBLIC_HEADER ${LN_XCODE_PUBLIC_HEADERS}
+  PUBLIC_HEADER ${CMAKE_CURRENT_LIST_DIR}/include/LuminoCore.hpp
+  BUILD_WITH_INSTALL_RPATH 1
+  XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMIRY "1,2"
+  XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "iPhone Developer"
+  #XCODE_ATTRIBUTE_DEVELOPMENT_TEAM 2347GVV3KC
+)
+#SET_XCODE_PROPERTY(${PROJECT_NAME}dy CODE_SIGN_IDENTITY "iPhone Developer")
+#SET_XCODE_PROPERTY(${PROJECT_NAME}dy DEVELOPMENT_TEAM 2347GVV3KC)
+
+
 #set_target_properties(${PROJECT_NAME} PROPERTIES
 #    CXX_STANDARD 11
 #    CXX_STANDARD_REQUIRED YES
