@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#include "GameViewController.h"
 
 @interface AppDelegate ()
 
@@ -17,6 +18,27 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	// Override point for customization after application launch.
+	
+	// Create lumino app instance
+	
+	// Initialize GLView (initialize engine)
+	
+	// Create UIWindow
+	//_window = [[UIWindow alloc] initWithFrame: [[UIScreen mainScreen] bounds]];
+	
+	
+	
+	// Create view controller
+	//_viewController = [[GameViewController alloc]init];
+	
+	// Set RootViewController to window
+	//[_window addSubview: _viewController.view];
+	
+	//[_window makeKeyAndVisible];
+	
+	// Hide status bar
+	//[[UIApplication sharedApplication] setStatusBarHidden:true];
+	
 	return YES;
 }
 

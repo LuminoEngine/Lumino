@@ -14,6 +14,51 @@
 // Include header shared between C code here, which executes Metal API commands, and .metal files
 #import "ShaderTypes.h"
 
+
+
+@implementation Renderer
+{
+	EAGLContext* _eaglContext;
+}
+
+
+-(nonnull instancetype)initWithOpenGLKitView:(nonnull GLKView *)view;
+{
+	self = [super init];
+	if(self)
+	{
+		// Create OpenGL context
+		_eaglContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+		
+		[EAGLContext setCurrentContext:_eaglContext];
+		
+		
+		CAEAGLLayer* layer = (CAEAGLLayer*)view.layer;
+		layer.opaque = YES;
+		layer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:
+									@(FALSE), kEAGLDrawablePropertyRetainedBacking,
+									kEAGLColorFormatRGBA8, kEAGLDrawablePropertyColorFormat, nil];
+		
+		
+		
+		view.context = _eaglContext;
+	}
+	
+	return self;
+}
+
+
+
+- (void)glkView:(nonnull GLKView *)view drawInRect:(CGRect)rect {
+	
+	glClearColor(0.0f, 0.0f, 1.0f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+}
+
+@end
+
+#if 0
+
 static const NSUInteger kMaxBuffersInFlight = 3;
 
 static const size_t kAlignedUniformsSize = (sizeof(Uniforms) & ~0xFF) + 0x100;
@@ -331,3 +376,5 @@ matrix_float4x4 matrix_perspective_right_hand(float fovyRadians, float aspect, f
 }
 
 @end
+
+#endif

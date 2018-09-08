@@ -11,7 +11,8 @@
 
 @implementation GameViewController
 {
-    MTKView *_view;
+    //MTKView *_view;
+	GLKView* _view;
 
     Renderer *_renderer;
 }
@@ -20,23 +21,30 @@
 {
     [super viewDidLoad];
 
-    _view = (MTKView *)self.view;
+	
+	// Created by storyboard
+    _view = (GLKView *)self.view;
 
-    _view.device = MTLCreateSystemDefaultDevice();
+    //_view.device = MTLCreateSystemDefaultDevice();
     _view.backgroundColor = UIColor.clearColor;
 
+	/*
     if(!_view.device)
     {
         NSLog(@"Metal is not supported on this device");
         self.view = [[UIView alloc] initWithFrame:self.view.frame];
         return;
     }
+	 */
 
-    _renderer = [[Renderer alloc] initWithMetalKitView:_view];
+    _renderer = [[Renderer alloc] initWithOpenGLKitView:_view];
 
-    [_renderer mtkView:_view drawableSizeWillChange:_view.bounds.size];
+    //[_renderer mtkView:_view drawableSizeWillChange:_view.bounds.size];
 
+	
     _view.delegate = _renderer;
+	
+	
 }
 
 @end
