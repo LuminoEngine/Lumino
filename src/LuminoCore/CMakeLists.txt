@@ -272,12 +272,12 @@ ln_add_pch(${PROJECT_NAME} "src/LuminoCore.PCH.h" "src/LuminoCore.PCH.cpp")
 
 
 
-#file(GLOB_RECURSE LN_XCODE_PUBLIC_HEADERS "${CMAKE_CURRENT_LIST_DIR}/include" "*.hpp")
+file(GLOB_RECURSE LN_XCODE_PUBLIC_HEADERS "${CMAKE_CURRENT_LIST_DIR}/include" "*.hpp")
 #list(FILTER LN_XCODE_PUBLIC_HEADERS INCLUDE REGEX "*.hpp")
-#message(${LN_XCODE_PUBLIC_HEADERS})
+message("LN_XCODE_PUBLIC_HEADERS: ${LN_XCODE_PUBLIC_HEADERS}")
 
 add_library(${PROJECT_NAME}dy SHARED ${LN_SOURCES})
-target_include_directories(${PROJECT_NAME}dy PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(${PROJECT_NAME}dy PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(${PROJECT_NAME}dy INTERFACE ${LN_LINK_LIBS})
 set_target_properties(${PROJECT_NAME}dy PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME}dy "src/LuminoCore.PCH.h" "src/LuminoCore.PCH.cpp")
@@ -293,8 +293,8 @@ set_target_properties(${PROJECT_NAME}dy PROPERTIES
   VERSION 1.0.0
   # "compatibility version" in semantic format in Mach-O binary file
   SOVERSION 1.0.0
-  #PUBLIC_HEADER ${LN_XCODE_PUBLIC_HEADERS}
-  PUBLIC_HEADER ${CMAKE_CURRENT_LIST_DIR}/include/LuminoCore.hpp
+  #PUBLIC_HEADER "${LN_XCODE_PUBLIC_HEADERS}"
+  #PUBLIC_HEADER "${CMAKE_CURRENT_LIST_DIR}/include"
   BUILD_WITH_INSTALL_RPATH 1
   XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMIRY "1,2"
   XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "iPhone Developer"
@@ -316,7 +316,7 @@ set_target_properties(${PROJECT_NAME}dy PROPERTIES
 
 # Unit test.
 if (LN_BUILD_TESTS)
-	add_subdirectory(test)
+	#add_subdirectory(test)
 endif()
 
 #------------------------------------------------------------------------------
@@ -338,3 +338,13 @@ install(
 install(
     FILES "LuminoCoreConfig.cmake"
     DESTINATION "lib/cmake")
+
+
+	
+install(TARGETS ${PROJECT_NAME}dy
+	EXPORT LuminoCoredyTargets
+	FRAMEWORK DESTINATION .)					# include directory (File is not copied)
+#INSTALL( DIRECTORY ${DIRS_TO_DEPLOY} DESTINATION usr/myproject )
+
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/Lumino DESTINATION "LuminoCoredy.framework/Versions/A/Headers")
+install(FILES ${PROJECT_SOURCE_DIR}/include/LuminoCore.hpp DESTINATION "LuminoCoredy.framework/Versions/A/Headers")
