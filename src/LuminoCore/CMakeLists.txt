@@ -264,55 +264,40 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
+if (APPLE)
+set(APP_BUNDLE_IDENTIFIER "lib.Lumino")
+set(MACOSX_BUNDLE_INFO_STRING ${APP_BUNDLE_IDENTIFIER})
+set(MACOSX_BUNDLE_GUI_IDENTIFIER ${APP_BUNDLE_IDENTIFIER})
+set(MACOSX_BUNDLE_BUNDLE_NAME ${APP_BUNDLE_IDENTIFIER})
+
+	# Build as framework.
+	add_library(${PROJECT_NAME} SHARED ${LN_SOURCES})
+	set_target_properties(${PROJECT_NAME} PROPERTIES
+		FRAMEWORK TRUE
+		#FRAMEWORK_VERSION A
+		MACOSX_FRAMEWORK_IDENTIFIER lib.Lumino
+		#MACOSX_FRAMEWORK_INFO_PLIST ${CMAKE_CURRENT_LIST_DIR}/Info.plist
+		#VERSION 1.0.0
+		#SOVERSION 1.0.0
+		BUILD_WITH_INSTALL_RPATH 1
+		XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMIRY "1,2"
+		XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "iPhone Developer")
+	# Do not use PUBLIC_HEADERS.
+	# Since PUBLIC_HEADERS does not maintain the folder tree,
+	# install the header file with the install command.
+	#install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/Lumino DESTINATION "LuminoCore.framework/Versions/A/Headers")
+	#install(FILES ${PROJECT_SOURCE_DIR}/include/LuminoCore.hpp DESTINATION "LuminoCore.framework/Versions/A/Headers")
+	install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/Lumino DESTINATION "LuminoCore.framework/Headers")
+	install(FILES ${PROJECT_SOURCE_DIR}/include/LuminoCore.hpp DESTINATION "LuminoCore.framework/Headers")
+
+else()
+	add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
+endif()
+
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(${PROJECT_NAME} INTERFACE ${LN_LINK_LIBS})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "src/LuminoCore.PCH.h" "src/LuminoCore.PCH.cpp")
-
-
-
-file(GLOB_RECURSE LN_XCODE_PUBLIC_HEADERS "${CMAKE_CURRENT_LIST_DIR}/include" "*.hpp")
-#list(FILTER LN_XCODE_PUBLIC_HEADERS INCLUDE REGEX "*.hpp")
-message("LN_XCODE_PUBLIC_HEADERS: ${LN_XCODE_PUBLIC_HEADERS}")
-
-add_library(${PROJECT_NAME}dy SHARED ${LN_SOURCES})
-target_include_directories(${PROJECT_NAME}dy PUBLIC ${PROJECT_SOURCE_DIR}/include)
-target_link_libraries(${PROJECT_NAME}dy INTERFACE ${LN_LINK_LIBS})
-set_target_properties(${PROJECT_NAME}dy PROPERTIES FOLDER "Lumino")
-ln_add_pch(${PROJECT_NAME}dy "src/LuminoCore.PCH.h" "src/LuminoCore.PCH.cpp")
-set_target_properties(${PROJECT_NAME}dy PROPERTIES
-  FRAMEWORK TRUE
-  FRAMEWORK_VERSION A
-  MACOSX_FRAMEWORK_IDENTIFIER lib.Lumino
-  MACOSX_FRAMEWORK_INFO_PLIST ${CMAKE_CURRENT_LIST_DIR}/Info.plist
-  #INSTALL_PATH ""
-  #INSTALL_NAME_DIR "@rpath"
-  #LIBRARY_OUTPUT_NAME "${PROJECT_NAME}-dy"
-  # "current version" in semantic format in Mach-O binary file
-  VERSION 1.0.0
-  # "compatibility version" in semantic format in Mach-O binary file
-  SOVERSION 1.0.0
-  #PUBLIC_HEADER "${LN_XCODE_PUBLIC_HEADERS}"
-  #PUBLIC_HEADER "${CMAKE_CURRENT_LIST_DIR}/include"
-  BUILD_WITH_INSTALL_RPATH 1
-  XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMIRY "1,2"
-  XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "iPhone Developer"
-  #XCODE_ATTRIBUTE_DEVELOPMENT_TEAM 2347GVV3KC
-)
-#SET_XCODE_PROPERTY(${PROJECT_NAME}dy CODE_SIGN_IDENTITY "iPhone Developer")
-#SET_XCODE_PROPERTY(${PROJECT_NAME}dy DEVELOPMENT_TEAM 2347GVV3KC)
-
-
-#set_target_properties(${PROJECT_NAME} PROPERTIES
-#    CXX_STANDARD 11
-#    CXX_STANDARD_REQUIRED YES
-#    CXX_EXTENSIONS NO
-#)
-
-#target_include_directories(${PROJECT_NAME} PUBLIC
-##                           $<BUILD_INTERFACE:${LN_INCLUDE_DIRECTORIES}>
-#                           $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include7>)
 
 # Unit test.
 if (LN_BUILD_TESTS)
@@ -325,7 +310,8 @@ endif()
 install(TARGETS ${PROJECT_NAME}
     EXPORT LuminoCoreTargets
     ARCHIVE     DESTINATION lib	# Library installation location (Copied at "INSTALL" build time)
-    INCLUDES    DESTINATION include)					# include directory (File is not copied)
+    INCLUDES    DESTINATION include					# include directory (File is not copied)
+	FRAMEWORK DESTINATION .)
 
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include DESTINATION .)
 
@@ -341,10 +327,7 @@ install(
 
 
 	
-install(TARGETS ${PROJECT_NAME}dy
-	EXPORT LuminoCoredyTargets
-	FRAMEWORK DESTINATION .)					# include directory (File is not copied)
+#install(TARGETS ${PROJECT_NAME}dy
+#	EXPORT LuminoCoredyTargets
+#	FRAMEWORK DESTINATION .)					# include directory (File is not copied)
 #INSTALL( DIRECTORY ${DIRS_TO_DEPLOY} DESTINATION usr/myproject )
-
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/Lumino DESTINATION "LuminoCoredy.framework/Versions/A/Headers")
-install(FILES ${PROJECT_SOURCE_DIR}/include/LuminoCore.hpp DESTINATION "LuminoCoredy.framework/Versions/A/Headers")

@@ -12,17 +12,26 @@ namespace LuminoBuild.Tasks
 
         public override void Build(Builder builder)
         {
-            string cmakeOutputDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "iOS");
+            // framework 作成時は CMAKE_DEBUG_POSTFIX が効かないようなので個別に作る
+            BuildProject(builder, "iOS-OS-Debug", "Debug", "OS");
+            BuildProject(builder, "iOS-OS-Release", "Release", "OS");
+            BuildProject(builder, "iOS-SIMULATOR64-Debug", "Debug", "SIMULATOR64");
+            BuildProject(builder, "iOS-SIMULATOR64-Release", "Release", "SIMULATOR64");
+        }
 
-            var iOSToolchainFile = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "ExternalSource", "ios-cmake", "ios.toolchain.cmake "));
-            var buildDir = Path.Combine(builder.LuminoBuildDir, "iOS");
+        private void BuildProject(Builder builder, string buildDirName, string config, string platform)
+        {
+            string cmakeInstallDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, buildDirName);
+
+            var iOSToolchainFile = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "ExternalSource", "ios-cmake", "ios.toolchain.cmake"));
+            var buildDir = Path.Combine(builder.LuminoBuildDir, buildDirName);
             var generator = "Xcode";
             var args = new string[]
             {
                 $"{builder.LuminoRootDir}",
                 $"-DCMAKE_TOOLCHAIN_FILE=\"{iOSToolchainFile}\"",
-                $"-DIOS_PLATFORM=OS",
-                $"-DCMAKE_INSTALL_PREFIX={cmakeOutputDir}",
+                $"-DIOS_PLATFORM={platform}",
+                $"-DCMAKE_INSTALL_PREFIX={cmakeInstallDir}",
                 $"-DLN_BUILD_TESTS=OFF",
                 $"-DLN_BUILD_TOOLS=OFF",
                 $"-G\"Xcode\"",
@@ -31,8 +40,7 @@ namespace LuminoBuild.Tasks
             Directory.SetCurrentDirectory(buildDir);
 
             Utils.CallProcess("cmake", string.Join(' ', args));
-            Utils.CallProcess("cmake", $"--build {buildDir}");
-            Utils.CallProcess("cmake", $"--build {buildDir} --target install");
+            Utils.CallProcess("cmake", $"--build . --config {config} --target install");
         }
     }
 }

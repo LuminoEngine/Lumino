@@ -192,11 +192,22 @@ namespace LuminoBuild.Tasks
             {
                 // iOS
                 {
+                    var targetInfos = new []
+                    {
+                        new { Config = "Debug", Platform = "OS" },
+                        new { Config = "Release", Platform = "OS" },
+                        new { Config = "Debug", Platform = "SIMULATOR64" },
+                        new { Config = "Release", Platform = "SIMULATOR64" },
+                    };
                     var iOSToolchainFile = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "ExternalSource", "ios-cmake", "ios.toolchain.cmake "));
-                    var dirName = "iOS";
-                    var args = $"-DCMAKE_TOOLCHAIN_FILE=\"{iOSToolchainFile}\" -DIOS_PLATFORM=OS";
-                    var generator = "Xcode";
-                    BuildProject(builder, "libpng", reposDir, dirName, generator, args);
+                    
+                    foreach (var t in targetInfos)
+                    {
+                        var dirName = $"iOS-{t.Platform}-{t.Config}";
+                        var args = $"-DCMAKE_TOOLCHAIN_FILE=\"{iOSToolchainFile}\" -DIOS_PLATFORM=OS";
+                        var generator = "Xcode";
+                        BuildProject(builder, "libpng", reposDir, dirName, generator, args);
+                    }
                 }
 
 return;
