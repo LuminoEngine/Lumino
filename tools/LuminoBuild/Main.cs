@@ -47,6 +47,7 @@ namespace LuminoBuild
             builder.Tasks.Add(new Tasks.MakeVSProjects());
             builder.Tasks.Add(new Tasks.BuildEngine_Linux());
             builder.Tasks.Add(new Tasks.BuildEngine_macOS());
+            builder.Tasks.Add(new Tasks.BuildEngine_iOS());
             builder.Tasks.Add(new Tasks.BuildDocuments());
             builder.Tasks.Add(new Tasks.BuildEngine_MSVC());
             builder.Tasks.Add(new Tasks.MakeNuGetPackage_Core());

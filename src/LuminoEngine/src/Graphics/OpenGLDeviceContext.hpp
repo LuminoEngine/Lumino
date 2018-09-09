@@ -1,4 +1,4 @@
-﻿/*
+/*
  * SwapChain 周りの動作について
  * ----------
  * OpenGL context がデフォルトで作るバックバッファは、モジュールの外に公開しない。
@@ -50,7 +50,11 @@
 #ifdef __APPLE__
 #include <unistd.h>
 #include <sys/resource.h>
-#include <OpenGLES/ES2/gl.h>
+//#include <OpenGLES/ES2/gl.h>
+#include <OpenGLES/ES3/gl.h>
+#include <OpenGLES/ES3/glext.h>
+#define GL_GLES_PROTOTYPES
+
 #else
 //#include <GL/gl.h>
 //#include <GLES2/gl2.h>

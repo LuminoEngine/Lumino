@@ -1,6 +1,6 @@
 
 #import <mach-o/dyld.h>
-#import <Cocoa/Cocoa.h>
+//#import <Cocoa/Cocoa.h>
 #import <Foundation/Foundation.h>
 //#include <CoreFoundation/CoreFoundation.h>
 //#include <Security/Security.h>

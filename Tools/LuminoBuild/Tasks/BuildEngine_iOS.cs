@@ -12,13 +12,25 @@ namespace LuminoBuild.Tasks
 
         public override void Build(Builder builder)
         {
-            string cmakeOutputDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "macOS");
+            string cmakeOutputDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "iOS");
 
-            string buildDir = Path.Combine(builder.LuminoBuildDir, "macOS");
+            var iOSToolchainFile = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "ExternalSource", "ios-cmake", "ios.toolchain.cmake "));
+            var buildDir = Path.Combine(builder.LuminoBuildDir, "iOS");
+            var generator = "Xcode";
+            var args = new string[]
+            {
+                $"{builder.LuminoRootDir}",
+                $"-DCMAKE_TOOLCHAIN_FILE=\"{iOSToolchainFile}\"",
+                $"-DIOS_PLATFORM=OS",
+                $"-DCMAKE_INSTALL_PREFIX={cmakeOutputDir}",
+                $"-DLN_BUILD_TESTS=OFF",
+                $"-DLN_BUILD_TOOLS=OFF",
+                $"-G\"Xcode\"",
+            };
             Directory.CreateDirectory(buildDir);
             Directory.SetCurrentDirectory(buildDir);
 
-            Utils.CallProcess("cmake", $"{builder.LuminoRootDir} -DCMAKE_INSTALL_PREFIX={cmakeOutputDir} -G \"Xcode\"");
+            Utils.CallProcess("cmake", string.Join(' ', args));
             Utils.CallProcess("cmake", $"--build {buildDir}");
             Utils.CallProcess("cmake", $"--build {buildDir} --target install");
         }

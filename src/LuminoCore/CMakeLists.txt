@@ -316,7 +316,7 @@ set_target_properties(${PROJECT_NAME}dy PROPERTIES
 
 # Unit test.
 if (LN_BUILD_TESTS)
-	#add_subdirectory(test)
+	add_subdirectory(test)
 endif()
 
 #------------------------------------------------------------------------------

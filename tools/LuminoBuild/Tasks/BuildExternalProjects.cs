@@ -190,24 +190,33 @@ namespace LuminoBuild.Tasks
             }
             else
             {
-                var iOSToolchainFile = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "ExternalSource", "ios-cmake", "ios.toolchain.cmake "));
+                // iOS
+                {
+                    var iOSToolchainFile = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "ExternalSource", "ios-cmake", "ios.toolchain.cmake "));
+                    var dirName = "iOS";
+                    var args = $"-DCMAKE_TOOLCHAIN_FILE=\"{iOSToolchainFile}\" -DIOS_PLATFORM=OS";
+                    var generator = "Xcode";
+                    BuildProject(builder, "libpng", reposDir, dirName, generator, args);
+                }
+
+return;
 
                 var targetArgs = new []
                 {
                     // macOS
-                    //new { DirName = "macOS", Args = "" },
+                    new { DirName = "macOS", Args = "" },
 
                     // iOS
-                    new { DirName = "iOS", Args = $"-DCMAKE_TOOLCHAIN_FILE=\"{iOSToolchainFile}\" -DIOS_PLATFORM=OS" },
+                    //new { DirName = "iOS", Args = $"-DCMAKE_TOOLCHAIN_FILE=\"{iOSToolchainFile}\" -DIOS_PLATFORM=OS" },
                 };
 
                 foreach (var t in targetArgs)
                 {
                     var dirName = t.DirName;
                     var args = t.Args;
-                    var generator = "Xcode";
                     var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, dirName, "ExternalInstall", "zlib"));
 
+                    var generator = "Xcode";
                     //BuildProject(builder, "zlib", reposDir, dirName, generator, args);
                     BuildProject(builder, "libpng", reposDir, dirName, generator, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include " + args);
                     BuildProject(builder, "glslang", reposDir, dirName, generator, args);

@@ -58,6 +58,11 @@ if (DEFINED EMSCRIPTEN)
 elseif (LN_ANDROID)
     add_definitions(-DLN_GRAPHICS_OPENGLES)
 
+elseif (DEFINED IOS_PLATFORM)
+    set(LN_IOS ON)
+    add_definitions(-DLN_GRAPHICS_OPENGLES)
+    set (CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "10.0" CACHE string "iOS Deployment Target")
+
 elseif(WIN32 OR APPLE OR UNIX)
     add_definitions(-DLN_GLFW)
     set(GLFW_INSTALL ON CACHE BOOL "" FORCE)
@@ -65,10 +70,6 @@ elseif(WIN32 OR APPLE OR UNIX)
 
 endif()
 
-if (DEFINED IOS_PLATFORM)
-    set(LN_IOS ON)
-    add_definitions(-DLN_GRAPHICS_OPENGLES)
-endif()
 
 #------------------------------------------------------------------------------
 
