@@ -7,31 +7,31 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8C95E8C6213BC8B100772569 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8C5213BC8B100772569 /* AppDelegate.m */; };
-		8C95E8C9213BC8B100772569 /* Renderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8C8213BC8B100772569 /* Renderer.m */; };
-		8C95E8CC213BC8B100772569 /* GameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8CB213BC8B100772569 /* GameViewController.m */; };
+		8C95E8C6213BC8B100772569 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8C5213BC8B100772569 /* AppDelegate.mm */; };
+		8C95E8C9213BC8B100772569 /* Renderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8C8213BC8B100772569 /* Renderer.mm */; };
+		8C95E8CC213BC8B100772569 /* GameViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8CB213BC8B100772569 /* GameViewController.mm */; };
 		8C95E8CE213BC8B100772569 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8CD213BC8B100772569 /* Shaders.metal */; };
 		8C95E8D2213BC8B100772569 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8C95E8D0213BC8B100772569 /* Main.storyboard */; };
 		8C95E8D4213BC8B100772569 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C95E8D3213BC8B100772569 /* Assets.xcassets */; };
 		8C95E8D7213BC8B100772569 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8C95E8D5213BC8B100772569 /* LaunchScreen.storyboard */; };
-		8C95E8DA213BC8B100772569 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8D9213BC8B100772569 /* main.m */; };
+		8C95E8DA213BC8B100772569 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8D9213BC8B100772569 /* main.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		8C95E8C1213BC8B100772569 /* LuminoApp.iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LuminoApp.iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C95E8C4213BC8B100772569 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		8C95E8C5213BC8B100772569 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		8C95E8C5213BC8B100772569 /* AppDelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AppDelegate.mm; sourceTree = "<group>"; };
 		8C95E8C7213BC8B100772569 /* Renderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Renderer.h; sourceTree = "<group>"; };
-		8C95E8C8213BC8B100772569 /* Renderer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Renderer.m; sourceTree = "<group>"; };
+		8C95E8C8213BC8B100772569 /* Renderer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = Renderer.mm; sourceTree = "<group>"; };
 		8C95E8CA213BC8B100772569 /* GameViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameViewController.h; sourceTree = "<group>"; };
-		8C95E8CB213BC8B100772569 /* GameViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GameViewController.m; sourceTree = "<group>"; };
+		8C95E8CB213BC8B100772569 /* GameViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = GameViewController.mm; sourceTree = "<group>"; };
 		8C95E8CD213BC8B100772569 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		8C95E8CF213BC8B100772569 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
 		8C95E8D1213BC8B100772569 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		8C95E8D3213BC8B100772569 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8C95E8D6213BC8B100772569 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8C95E8D8213BC8B100772569 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8C95E8D9213BC8B100772569 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		8C95E8D9213BC8B100772569 /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,18 +65,18 @@
 			isa = PBXGroup;
 			children = (
 				8C95E8C4213BC8B100772569 /* AppDelegate.h */,
-				8C95E8C5213BC8B100772569 /* AppDelegate.m */,
+				8C95E8C5213BC8B100772569 /* AppDelegate.mm */,
 				8C95E8C7213BC8B100772569 /* Renderer.h */,
-				8C95E8C8213BC8B100772569 /* Renderer.m */,
+				8C95E8C8213BC8B100772569 /* Renderer.mm */,
 				8C95E8CA213BC8B100772569 /* GameViewController.h */,
-				8C95E8CB213BC8B100772569 /* GameViewController.m */,
+				8C95E8CB213BC8B100772569 /* GameViewController.mm */,
 				8C95E8CD213BC8B100772569 /* Shaders.metal */,
 				8C95E8CF213BC8B100772569 /* ShaderTypes.h */,
 				8C95E8D0213BC8B100772569 /* Main.storyboard */,
 				8C95E8D3213BC8B100772569 /* Assets.xcassets */,
 				8C95E8D5213BC8B100772569 /* LaunchScreen.storyboard */,
 				8C95E8D8213BC8B100772569 /* Info.plist */,
-				8C95E8D9213BC8B100772569 /* main.m */,
+				8C95E8D9213BC8B100772569 /* main.mm */,
 			);
 			path = LuminoApp.iOS;
 			sourceTree = "<group>";
@@ -152,11 +152,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8C95E8DA213BC8B100772569 /* main.m in Sources */,
+				8C95E8DA213BC8B100772569 /* main.mm in Sources */,
 				8C95E8CE213BC8B100772569 /* Shaders.metal in Sources */,
-				8C95E8C9213BC8B100772569 /* Renderer.m in Sources */,
-				8C95E8CC213BC8B100772569 /* GameViewController.m in Sources */,
-				8C95E8C6213BC8B100772569 /* AppDelegate.m in Sources */,
+				8C95E8C9213BC8B100772569 /* Renderer.mm in Sources */,
+				8C95E8CC213BC8B100772569 /* GameViewController.mm in Sources */,
+				8C95E8C6213BC8B100772569 /* AppDelegate.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
