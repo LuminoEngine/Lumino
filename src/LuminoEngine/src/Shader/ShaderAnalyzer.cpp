@@ -1,4 +1,5 @@
 
+#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 #include "Internal.hpp"
 #include <sstream>
 #include <glslang/Public/ShaderLang.h>
@@ -108,29 +109,6 @@ const TBuiltInResource DefaultTBuiltInResource = {
 		/* .generalConstantMatrixVectorIndexing = */ 1,
 	}
 };
-
-//=============================================================================
-// ShaderManager
-
-ShaderManager::ShaderManager()
-	: m_graphicsManager(nullptr)
-{
-}
-
-ShaderManager::~ShaderManager()
-{
-}
-
-void ShaderManager::initialize(const Settings& settings)
-{
-	m_graphicsManager = settings.graphicsManager;
-	glslang::InitializeProcess();
-}
-
-void ShaderManager::dispose()
-{
-	glslang::FinalizeProcess();
-}
 
 //=============================================================================
 // LocalIncluder
@@ -625,3 +603,5 @@ bool HLSLMetadataParser::parseRenderState(HLSLPass* pass)
 
 } // namespace detail
 } // namespace ln
+
+#endif // LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER

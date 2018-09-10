@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <Lumino/Engine/Diagnostics.hpp>
 #include <Lumino/Graphics/Texture.hpp>
 #include <Lumino/Graphics/SamplerState.hpp>
 #include <Lumino/Shader/Shader.hpp>
@@ -159,6 +160,7 @@ void Shader::initialize()
 void Shader::initialize(const StringRef& hlslEffectFilePath)
 {
 	Shader::initialize();
+#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 
 	auto diag = newObject<DiagnosticsManager>();
 	auto data = FileSystem::readAllBytes(hlslEffectFilePath);
@@ -197,6 +199,9 @@ void Shader::initialize(const StringRef& hlslEffectFilePath)
 	if (m_diag->hasItems()) {
 		m_diag->dumpToLog();
 	}
+#else
+	LN_NOTIMPLEMENTED();
+#endif
 }
 
 void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCodeType codeType)
@@ -237,6 +242,7 @@ Ref<detail::IShaderPass> Shader::createShaderPass(
 	const char* vsData, size_t vsLen, const char* vsEntryPoint,
 	const char* psData, size_t psLen, const char* psEntryPoint)
 {
+#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 	List<Path> includeDirs = { "C:/Proj/GitHub/Lumino/src/LuminoEngine/test/Assets" };
 
 	detail::ShaderCode vsCodeGen;
@@ -258,6 +264,10 @@ Ref<detail::IShaderPass> Shader::createShaderPass(
 	return deviceContext()->createShaderPass(
 		reinterpret_cast<const byte_t*>(vsCode.c_str()), vsCode.length(),
 		reinterpret_cast<const byte_t*>(psCode.c_str()), psCode.length(), &diag);
+#else
+	LN_NOTIMPLEMENTED();
+	return nullptr;
+#endif
 }
 
 void Shader::buildShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen)

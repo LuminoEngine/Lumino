@@ -91,6 +91,10 @@ set(LN_SOURCES_Shader
 	include/Lumino/Shader/Shader.hpp
 	src/Shader/Internal.hpp
 	src/Shader/Shader.cpp
+	src/Shader/ShaderAnalyzer.cpp
+	src/Shader/ShaderAnalyzer.hpp
+	src/Shader/ShaderManager.cpp
+	src/Shader/ShaderManager.hpp
 )
 
 set(LN_SOURCES_UI
@@ -101,10 +105,6 @@ set(LN_SOURCES_UI
 	src/UI/UIManager.cpp
 	src/UI/UIManager.hpp
 )
-
-if (LN_OS_DESKTOP)
-	list(APPEND LN_SOURCES_Shader src/Shader/ShaderAnalyzer.cpp src/Shader/ShaderAnalyzer.hpp)
-endif()
 
 # Grouping.
 source_group("Engine"				FILES ${LN_SOURCES_Engine})
@@ -196,7 +196,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB PNG ${LN_PLATFORM_LIBS})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
 
-
+if (LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
+	target_compile_definitions(${PROJECT_NAME} PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
+endif()
 
 # Unit test.
 if (LN_BUILD_TESTS)

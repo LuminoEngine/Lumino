@@ -3,7 +3,7 @@
 
 #include <Lumino/UI/UIFrameWindow.hpp>
 #include "../Platform/PlatformManager.hpp"
-#include "../Shader/ShaderAnalyzer.hpp"
+#include "../Shader/ShaderManager.hpp"
 #include "../Graphics/GraphicsManager.hpp"
 #include "../UI/UIManager.hpp"
 #include "EngineManager.hpp"

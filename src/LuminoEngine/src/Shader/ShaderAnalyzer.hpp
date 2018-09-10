@@ -1,5 +1,7 @@
 ﻿
 #pragma once
+#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
+
 #include <Lumino/Engine/Diagnostics.hpp>
 
 namespace ln {
@@ -12,27 +14,6 @@ enum class ShaderCodeStage
 {
 	Vertex,
 	Fragment,
-};
-
-class ShaderManager
-	: public RefObject
-{
-public:
-	struct Settings
-	{
-		GraphicsManager* graphicsManager;
-	};
-
-	ShaderManager();
-	virtual ~ShaderManager();
-
-	void initialize(const Settings& settings);
-	void dispose();
-
-	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
-
-private:
-	GraphicsManager * m_graphicsManager;
 };
 
 // シェーダコード１つ分。
@@ -108,3 +89,5 @@ private:
 
 } // namespace detail
 } // namespace ln
+
+#endif // LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
