@@ -34,6 +34,7 @@ namespace LuminoBuild.Tasks
                 $"-DCMAKE_INSTALL_PREFIX={cmakeInstallDir}",
                 $"-DLN_BUILD_TESTS=OFF",
                 $"-DLN_BUILD_TOOLS=OFF",
+                $"-DLN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=OFF",
                 $"-G\"Xcode\"",
             };
             Directory.CreateDirectory(buildDir);
