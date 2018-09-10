@@ -164,7 +164,28 @@ endif()
 #set_target_properties(${PROJECT_NAME}-static PROPERTIES FOLDER "Lumino")
 #ln_add_pch(${PROJECT_NAME}-static "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
 
-add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
+#add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
+
+if (APPLE)
+	# Build as framework.
+	add_library(${PROJECT_NAME} SHARED ${LN_SOURCES})
+	set_target_properties(${PROJECT_NAME} PROPERTIES
+		FRAMEWORK TRUE
+		#VERSION 1.0.0
+		#SOVERSION 1.0.0
+		MACOSX_FRAMEWORK_IDENTIFIER lib.Lumino
+		BUILD_WITH_INSTALL_RPATH 1
+		XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMIRY "1,2"
+		XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "iPhone Developer")
+	# Do not use PUBLIC_HEADERS.
+	# Since PUBLIC_HEADERS does not maintain the folder tree,
+	# install the header file with the install command.
+	install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/Lumino DESTINATION "LuminoEngine.framework/Headers")
+	install(FILES ${PROJECT_SOURCE_DIR}/include/LuminoEngine.hpp DESTINATION "LuminoEngine.framework/Headers")
+else()
+	add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
+endif()
+
 target_include_directories(${PROJECT_NAME} PRIVATE "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS})
 #target_compile_definitions(${PROJECT_NAME} PUBLIC LUMINO_BUILD_DLL=1)
 #target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive ${PROJECT_NAME}-static -Wl,--no-whole-archive)
@@ -189,8 +210,9 @@ endif()
 install(TARGETS ${PROJECT_NAME}
     EXPORT LuminoEngineTargets
     ARCHIVE     DESTINATION lib			# Library installation location (Copied at "INSTALL" build time)
-    INCLUDES    DESTINATION include)	# include directory (File is not copied)
-
+    INCLUDES    DESTINATION include		# include directory (File is not copied)
+	FRAMEWORK DESTINATION .)
+	
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include DESTINATION .)
 
 install(

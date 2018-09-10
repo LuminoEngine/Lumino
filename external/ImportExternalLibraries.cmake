@@ -112,8 +112,16 @@ if (LN_OS_DESKTOP)
     set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
     set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
     set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ZLIB_ROOT}/include)
-else()
+
+elseif (LN_IOS)
     # use system zlib.
+    find_package(ZLIB REQUIRED)
+    add_library(ZLIB STATIC IMPORTED)
+    set_target_properties(ZLIB PROPERTIES IMPORTED_LOCATION_RELEASE ${ZLIB_LIBRARIES})
+    set_target_properties(ZLIB PROPERTIES IMPORTED_LOCATION_DEBUG ${ZLIB_LIBRARIES})
+    set_target_properties(ZLIB PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ZLIB_INCLUDE_DIRS})
+
+else()
 endif()
 
 #--------------------------------------

@@ -265,31 +265,21 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 if (APPLE)
-set(APP_BUNDLE_IDENTIFIER "lib.Lumino")
-set(MACOSX_BUNDLE_INFO_STRING ${APP_BUNDLE_IDENTIFIER})
-set(MACOSX_BUNDLE_GUI_IDENTIFIER ${APP_BUNDLE_IDENTIFIER})
-set(MACOSX_BUNDLE_BUNDLE_NAME ${APP_BUNDLE_IDENTIFIER})
-
 	# Build as framework.
 	add_library(${PROJECT_NAME} SHARED ${LN_SOURCES})
 	set_target_properties(${PROJECT_NAME} PROPERTIES
 		FRAMEWORK TRUE
-		#FRAMEWORK_VERSION A
-		MACOSX_FRAMEWORK_IDENTIFIER lib.Lumino
-		#MACOSX_FRAMEWORK_INFO_PLIST ${CMAKE_CURRENT_LIST_DIR}/Info.plist
 		#VERSION 1.0.0
 		#SOVERSION 1.0.0
+		MACOSX_FRAMEWORK_IDENTIFIER lib.Lumino
 		BUILD_WITH_INSTALL_RPATH 1
 		XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMIRY "1,2"
 		XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "iPhone Developer")
 	# Do not use PUBLIC_HEADERS.
 	# Since PUBLIC_HEADERS does not maintain the folder tree,
 	# install the header file with the install command.
-	#install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/Lumino DESTINATION "LuminoCore.framework/Versions/A/Headers")
-	#install(FILES ${PROJECT_SOURCE_DIR}/include/LuminoCore.hpp DESTINATION "LuminoCore.framework/Versions/A/Headers")
 	install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/Lumino DESTINATION "LuminoCore.framework/Headers")
 	install(FILES ${PROJECT_SOURCE_DIR}/include/LuminoCore.hpp DESTINATION "LuminoCore.framework/Headers")
-
 else()
 	add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
 endif()
