@@ -149,6 +149,16 @@ public:
 //=============================================================================
 // ShaderCode
 
+void ShaderCode::initializeGlobals()
+{
+	glslang::InitializeProcess();
+}
+
+void ShaderCode::finalizeGlobals()
+{
+	glslang::FinalizeProcess();
+}
+
 ShaderCode::ShaderCode()
 	: m_stage(ShaderCodeStage::Vertex)
 {

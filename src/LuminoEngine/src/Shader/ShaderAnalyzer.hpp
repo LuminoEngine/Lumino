@@ -21,6 +21,9 @@ enum class ShaderCodeStage
 class ShaderCode
 {
 public:
+	static void initializeGlobals();
+	static void finalizeGlobals();
+
 	ShaderCode();
 
 	bool parseAndGenerateSpirv(

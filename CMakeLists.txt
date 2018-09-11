@@ -32,6 +32,9 @@ option(LN_BUILD_TESTS "build unit test projects." ON)
 # build tool projects
 option(LN_BUILD_TOOLS "build tool projects." ON)
 
+# build only LuminoCore.
+option(LN_BUILD_CORE_ONLY "build only LuminoCore." OFF)
+
 # build embedded shader transcompiler.
 option(LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER "build tool projects.build embedded shader transcompiler." ON)
 
@@ -43,6 +46,12 @@ option(LN_MSVC_STATIC_RUNTIME "static runtime (/MT, /MTd) or DLL runtime (/MD, /
 set(CMAKE_DEBUG_POSTFIX "d")
 
 include(src/LuminoCommon.cmake)
+
+if (LN_BUILD_CORE_ONLY)
+    set(LN_BUILD_CORE ON)
+elseif()
+    set(LN_BUILD_CORE OFF)
+endif()
 
 set(LUMINO_ROOT_PATH "${CMAKE_CURRENT_LIST_DIR}")
 set(LUMINO_INCLUDE_DIRECTORIES
@@ -80,10 +89,9 @@ set(LN_EXTERNAL_FIND_PATH_MODE "build")
 include(external/ImportExternalLibraries.cmake)
 add_subdirectory(src/LuminoCore)
 add_subdirectory(src/LuminoEngine)
-add_subdirectory(src/LuminoLaunch)
 
 if (LN_OS_DESKTOP)
-    add_subdirectory(src/LuminoRuntime)
+    #add_subdirectory(src/LuminoRuntime)
 endif()
 
 if (LN_BUILD_TOOLS)

@@ -6,6 +6,7 @@
 #include <Lumino/Base/String.hpp>
 #include <Lumino/Base/StringHelper.hpp>
 #include <Lumino/Base/Logger.hpp>
+#include "../Base/CRTHelper.h"
 #include "../Text/UnicodeUtils.hpp"
 
 namespace ln {

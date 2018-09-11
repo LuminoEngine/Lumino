@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.0.0)
-project(LuminoEngine_Sandbox)
+project(LuminoEngine-Sandbox)
 
 set(LN_SOURCES
 	Common.hpp

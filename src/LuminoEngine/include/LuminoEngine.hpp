@@ -38,5 +38,5 @@
 #pragma comment(lib, LN_MSVC_MAKE_LIB_PATH("spirv-cross-util"))
 #pragma comment(lib, LN_MSVC_MAKE_LIB_PATH("SPVRemapper"))
 #pragma comment(lib, LN_MSVC_MAKE_LIB_PATH("zlib"))
-#pragma comment(lib, "Shlwapi.lib")
 #endif
+#pragma comment(lib, "Shlwapi.lib")
