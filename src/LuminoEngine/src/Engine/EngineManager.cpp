@@ -6,6 +6,7 @@
 #include "../Input/InputManager.hpp"
 #include "../Shader/ShaderManager.hpp"
 #include "../Graphics/GraphicsManager.hpp"
+#include "../Rendering/RenderingManager.hpp"
 #include "../UI/UIManager.hpp"
 #include "EngineManager.hpp"
 #include "EngineDomain.hpp"
@@ -70,6 +71,7 @@ void EngineManager::dispose()
 	}
 
 	if (m_mainWindow) m_mainWindow->dispose();
+	if (m_renderingManager) m_renderingManager->dispose();
 	if (m_shaderManager) m_shaderManager->dispose();
 	if (m_graphicsManager) m_graphicsManager->dispose();
 	if (m_inputManager) m_inputManager->dispose();
@@ -86,6 +88,7 @@ void EngineManager::initializeAllManagers()
 	initializePhysicsManager();
 	initializeShaderManager();
 	initializeGraphicsManager();
+	initializeRenderingManager();
 	initializeEffectManager();
 	initializeModelManager();
 	initializeAssetsManager();
@@ -170,6 +173,20 @@ void EngineManager::initializeGraphicsManager()
 
 		m_graphicsManager = ln::makeRef<GraphicsManager>();
 		m_graphicsManager->initialize(settings);
+	}
+}
+
+void EngineManager::initializeRenderingManager()
+{
+	if (!m_renderingManager)
+	{
+		initializeGraphicsManager();
+
+		RenderingManager::Settings settings;
+		settings.graphicsManager = m_graphicsManager;
+
+		m_renderingManager = ln::makeRef<RenderingManager>();
+		m_renderingManager->initialize(settings);
 	}
 }
 
@@ -315,6 +332,10 @@ GraphicsManager* EngineDomain::graphicsManager()
 	return engineManager()->graphicsManager();
 }
 
+RenderingManager* EngineDomain::renderingManager()
+{
+	return engineManager()->renderingManager();
+}
 
 UIManager* EngineDomain::uiManager()
 {

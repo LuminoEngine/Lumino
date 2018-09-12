@@ -131,6 +131,17 @@ set(LN_SOURCES_Shader
     src/Shader/ShaderManager.hpp
 )
 
+set(LN_SOURCES_Rendering
+    include/Lumino/Rendering/Common.hpp
+    include/Lumino/Rendering/RenderingContext.hpp
+    src/Rendering/Internal.hpp
+    src/Rendering/RenderingContext.cpp
+    src/Rendering/RenderingManager.cpp
+    src/Rendering/RenderingManager.hpp
+    src/Rendering/RenderStage.cpp
+    src/Rendering/RenderStage.hpp
+)
+
 set(LN_SOURCES_UI
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIEvents.hpp
@@ -156,6 +167,7 @@ source_group("Input"                FILES ${LN_SOURCES_Input})
 source_group("Grammar"                FILES ${LN_SOURCES_Grammar})
 source_group("Graphics"                FILES ${LN_SOURCES_Graphics})
 source_group("Shader"                FILES ${LN_SOURCES_Shader})
+source_group("Rendering"                FILES ${LN_SOURCES_Rendering})
 source_group("UI"                    FILES ${LN_SOURCES_UI})
 
 set(LN_SOURCES
@@ -168,6 +180,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Input}
     ${LN_SOURCES_Graphics}
     ${LN_SOURCES_Shader}
+    ${LN_SOURCES_Rendering}
     ${LN_SOURCES_UI}
     #${LN_SOURCES_LuminoCore}
 )
