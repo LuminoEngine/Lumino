@@ -22,6 +22,16 @@ public:
 private:
 };
 
+class RenderStageList
+	: public RefObject
+{
+public:
+	RenderStageList();
+	
+
+private:
+};
+
 } // namespace detail
 } // namespace ln
 

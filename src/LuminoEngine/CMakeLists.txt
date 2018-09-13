@@ -146,6 +146,8 @@ set(LN_SOURCES_Rendering
     src/Rendering/RenderView.cpp
     src/Rendering/SceneRenderer.cpp
     src/Rendering/SceneRenderer.hpp
+    src/Rendering/SpriteRenderFeature.cpp
+    src/Rendering/SpriteRenderFeature.hpp
 )
 
 set(LN_SOURCES_UI
