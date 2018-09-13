@@ -26,7 +26,7 @@ namespace detail {
  * コマンドリスト (RenderStage の集合) をどのように描画するかを決めるクラス。
  * 3D なら ForwardShading だったり、2D なら NoShading だったり。
  * RenderStage の集合に対して遅延描画などの描画方式の都合や最適化のための並び替え、カリングなどを行い正確に効率よく描画する。
- * 実際の描画は RenderFerture に任せる。
+ * 実際の描画は RenderFeature に任せる。
  * インスタンスは RenderView が保持する。
  * 
  * ### RenderView
@@ -42,12 +42,12 @@ namespace detail {
  * これの種類によっても State が異なることになるため RenderStage は拡張性が重要となる。
  * またそれ以上に特にユーザーカスタマイズを考慮する必要がある。
  * 例えばユーザーが外部のパーティクルエンジンを組み込みたいと思ったら・・・
- * - ExParticleRenderFerture のような描画を行うクラスを作る (state less)
- * - ExParticleRenderFertureState のような State 保持クラスを作る
+ * - ExParticleRenderFeature のような描画を行うクラスを作る (state less)
+ * - ExParticleRenderFeatureState のような State 保持クラスを作る
  * - ExParticleRenderCommand のようなジオメトリ形状保持クラスを作る (0.4.0 のころの DrawElement)
  * - RenderStage へステートとして、
- *   - ExParticleRenderFerture のポインタ
- *   - ExParticleRenderFertureState
+ *   - ExParticleRenderFeature のポインタ
+ *   - ExParticleRenderFeatureState
  *   をセットする。
  * - 描画時、ExParticleRenderCommand を add する
  * 

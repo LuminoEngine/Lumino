@@ -133,13 +133,19 @@ set(LN_SOURCES_Shader
 
 set(LN_SOURCES_Rendering
     include/Lumino/Rendering/Common.hpp
+    include/Lumino/Rendering/RenderFeature.hpp
     include/Lumino/Rendering/RenderingContext.hpp
+    include/Lumino/Rendering/RenderView.hpp
     src/Rendering/Internal.hpp
+    src/Rendering/RenderFeature.cpp
     src/Rendering/RenderingContext.cpp
     src/Rendering/RenderingManager.cpp
     src/Rendering/RenderingManager.hpp
     src/Rendering/RenderStage.cpp
     src/Rendering/RenderStage.hpp
+    src/Rendering/RenderView.cpp
+    src/Rendering/SceneRenderer.cpp
+    src/Rendering/SceneRenderer.hpp
 )
 
 set(LN_SOURCES_UI
