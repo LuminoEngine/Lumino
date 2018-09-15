@@ -136,6 +136,7 @@ set(LN_SOURCES_Rendering
     include/Lumino/Rendering/RenderFeature.hpp
     include/Lumino/Rendering/RenderingContext.hpp
     include/Lumino/Rendering/RenderView.hpp
+    include/Lumino/Rendering/Vertex.hpp
     src/Rendering/Internal.hpp
     src/Rendering/RenderFeature.cpp
     src/Rendering/RenderingContext.cpp

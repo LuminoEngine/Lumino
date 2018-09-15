@@ -1,8 +1,10 @@
 ﻿#pragma once
 
 namespace ln {
-namespace detail {
+class VertexDeclaration;
 
+namespace detail {
+class SpriteRenderFeature;
 
 /* 
  * RenderingManager
@@ -74,7 +76,14 @@ public:
 	void initialize(const Settings& settings);
 	void dispose();
 
+	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
+	const Ref<VertexDeclaration>& standardVertexDeclaration() const { return m_standardVertexDeclaration; }
+	const Ref<SpriteRenderFeature>& spriteRenderFeature() const { return m_spriteRenderFeature; }
+
 private:
+	GraphicsManager* m_graphicsManager;
+	Ref<VertexDeclaration> m_standardVertexDeclaration;
+	Ref<SpriteRenderFeature> m_spriteRenderFeature;
 };
 
 } // namespace detail

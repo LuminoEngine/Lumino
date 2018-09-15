@@ -1,7 +1,9 @@
 ﻿
 #include "Internal.hpp"
-#include "SpriteRenderFeature.hpp"
+#include <Lumino/Graphics/Texture.hpp>
 #include "../Graphics/GraphicsManager.hpp"
+#include "SpriteRenderFeature.hpp"
+#include "RenderingManager.hpp"
 
 namespace ln {
 namespace detail {
@@ -13,19 +15,12 @@ InternalSpriteRenderer::InternalSpriteRenderer()
 {
 }
 
-void InternalSpriteRenderer::initialize(GraphicsManager* manager)
+void InternalSpriteRenderer::initialize(RenderingManager* manager)
 {
-	m_device = manager->deviceContext();
+	m_device = manager->graphicsManager()->deviceContext();
 	m_buffersReservedSpriteCount = 0;
-
-	static VertexElement elements[] =
-	{
-		{ 0, VertexElementType::Float3, VertexElementUsage::Position, 0 },
-		{ 0, VertexElementType::Float4, VertexElementUsage::Color, 0 },
-		{ 0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0 },
-	};
-	m_vertexDeclaration = m_device->createVertexDeclaration(elements, LN_ARRAY_SIZE_OF(elements));
-
+	m_vertexDeclaration = manager->standardVertexDeclaration()->resolveRHIObject();
+	
 	// reserve buffers.
 	m_spriteDataList.reserve(2048);
 	prepareBuffers(2048);
@@ -43,7 +38,6 @@ void InternalSpriteRenderer::drawRequest(
 	const Matrix& transform,
 	const Vector2& size,
 	const Vector2& anchorRatio,
-	ITexture* texture,
 	const Rect& srcRect,
 	const Color& color,
 	SpriteBaseDirection baseDir,
@@ -196,9 +190,9 @@ void InternalSpriteRenderer::drawRequest(
 	sprite.vertices[3].color = color;
 
 	// テクスチャ
-	if (texture != nullptr)
+	if (m_state.texture != nullptr)
 	{
-		const SizeI& texSize = texture->realSize();
+		const SizeI& texSize = m_state.texture->realSize();
 		Vector2 texSizeInv(1.0f / texSize.width, 1.0f / texSize.height);
 		Rect sr(srcRect);
 		float l = sr.x * texSizeInv.x;
@@ -227,7 +221,7 @@ void InternalSpriteRenderer::drawRequest(
 	}
 
 	// カメラからの距離をソート用Z値にする場合
-	if (m_state.sortingBasis == SortingDistanceBasis_ViewPont) {
+	if (m_state.sortingBasis == SortingDistanceBasis::ViewPont) {
 		sprite.depth = (m_viewPosition - worldPoint).lengthSquared();
 	}
 	else {
@@ -282,6 +276,9 @@ void InternalSpriteRenderer::flush()
 		return;
 	}
 
+	// Allocate vertex buffer and index buffer, if needed.
+	prepareBuffers(m_spriteDataList.size());
+
 	// Initialize sprite index list.
 	for (int i = 0; i < spriteCount; ++i) {
 		m_spriteIndexList[i] = i;
@@ -303,11 +300,8 @@ void InternalSpriteRenderer::flush()
 		}
 	}
 
-	// Allocate vertex buffer and index buffer, if needed.
-	prepareBuffers(m_spriteDataList.size());
-
 	// Copy vertex data.
-	SpriteVertex* vb = static_cast<SpriteVertex*>(m_vertexBuffer->map());
+	Vertex* vb = static_cast<Vertex*>(m_vertexBuffer->map());
 	for (int iSprite = 0, iVertex = 0; iSprite < spriteCount; iSprite++)
 	{
 		int iData = m_spriteIndexList[iSprite];
@@ -335,14 +329,15 @@ void InternalSpriteRenderer::prepareBuffers(int spriteCount)
 {
 	if (m_buffersReservedSpriteCount < spriteCount)
 	{
-		size_t vertexBufferSize = sizeof(SpriteVertex) * spriteCount * 4;
-		m_vertexBuffer = m_device->createVertexBuffer(GraphicsResourceUsage::Dynamic, vertexBufferSize, nullptr);
-
-		size_t indexBufferSize = spriteCount * 6;
-		if (LN_ENSURE(indexBufferSize > 0xFFFF)) {
+		size_t vertexCount = spriteCount * 4;
+		if (LN_ENSURE(vertexCount < 0xFFFF)) {
 			return;
 		}
 
+		size_t vertexBufferSize = sizeof(Vertex) * vertexCount;
+		m_vertexBuffer = m_device->createVertexBuffer(GraphicsResourceUsage::Dynamic, vertexBufferSize, nullptr);
+
+		size_t indexBufferSize = spriteCount * 6;
 		std::vector<size_t> indexBuf(sizeof(uint16_t) * indexBufferSize, false);
 		uint16_t* ib = (uint16_t*)indexBuf.data();
 		int idx = 0;
@@ -362,10 +357,116 @@ void InternalSpriteRenderer::prepareBuffers(int spriteCount)
 			GraphicsResourceUsage::Dynamic, IndexBufferFormat::UInt16,
 			spriteCount * 6, ib);
 
+		m_spriteIndexList.resize(spriteCount);
+
 		m_buffersReservedSpriteCount = spriteCount;
 	}
 }
-	
+
+//==============================================================================
+// SpriteRenderFeature
+
+SpriteRenderFeature::SpriteRenderFeature()
+	: m_manager(nullptr)
+	, m_state()
+	, m_internal()
+{
+}
+
+void SpriteRenderFeature::initialize(RenderingManager* manager)
+{
+	RenderFeature::initialize();
+	m_manager = manager;
+	m_internal = makeRef<InternalSpriteRenderer>();
+	m_internal->initialize(manager);
+}
+
+void SpriteRenderFeature::setSortInfo(
+	SpriteSortMode sortMode,
+	SortingDistanceBasis sortingBasis)
+{
+	m_state.sortMode = sortMode;
+	m_state.sortingBasis = sortingBasis;
+}
+
+void SpriteRenderFeature::setState(
+	const Matrix& viewMatrix,
+	const Matrix& projMatrix,
+	Texture* texture)
+{
+	m_state.viewMatrix = viewMatrix;
+	m_state.projMatrix = projMatrix;
+	m_state.texture = (texture) ? texture->resolveRHIObject() : nullptr;
+
+	GraphicsManager* manager = m_manager->graphicsManager();
+	LN_ENQUEUE_RENDER_COMMAND_2(
+		SpriteRenderFeature_setState, manager,
+		InternalSpriteRenderer*, m_internal,
+		InternalSpriteRenderer::State, m_state,
+		{
+			m_internal->setState(m_state);
+		});
+}
+
+void SpriteRenderFeature::drawRequest2D(
+	const Matrix& transform,
+	const Vector2& size,
+	const Vector2& anchorRatio,
+	const Rect& srcRect,
+	const Color& color,
+	BillboardType billboardType)
+{
+	GraphicsManager* manager = m_manager->graphicsManager();
+	LN_ENQUEUE_RENDER_COMMAND_7(
+		SpriteRenderFeature_drawRequest2D, manager,
+		InternalSpriteRenderer*, m_internal,
+		Matrix, transform,
+		Vector2, size,
+		Vector2, anchorRatio,
+		Rect, srcRect,
+		Color, color,
+		BillboardType, billboardType,
+		{
+			m_internal->drawRequest(transform, size, anchorRatio, srcRect, color, SpriteBaseDirection::Basic2D, billboardType);
+		});
+}
+
+void SpriteRenderFeature::drawRequest(
+	const Matrix& transform,
+	const Vector2& size,
+	const Vector2& anchorRatio,
+	const Rect& srcRect,
+	const Color& color,
+	SpriteBaseDirection baseDirection,
+	BillboardType billboardType)
+{
+	GraphicsManager* manager = m_manager->graphicsManager();
+	LN_ENQUEUE_RENDER_COMMAND_8(
+		SpriteRenderFeature_drawRequest, manager,
+		InternalSpriteRenderer*, m_internal,
+		Matrix, transform,
+		Vector2, size,
+		Vector2, anchorRatio,
+		Rect, srcRect,
+		Color, color,
+		SpriteBaseDirection, baseDirection,
+		BillboardType, billboardType,
+		{
+			m_internal->drawRequest(transform, size, anchorRatio, srcRect, color, baseDirection, billboardType);
+		});
+}
+
+void SpriteRenderFeature::flush()
+{
+	GraphicsManager* manager = m_manager->graphicsManager();
+	LN_ENQUEUE_RENDER_COMMAND_1(
+		SpriteRenderFeature_flush, manager,
+		InternalSpriteRenderer*, m_internal,
+		{
+			m_internal->flush();
+		});
+}
+
 } // namespace detail
 } // namespace ln
 

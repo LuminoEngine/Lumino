@@ -6,6 +6,7 @@ class RenderFeature
 	: public Object
 {
 public:
+	virtual void flush() = 0;
 
 private:
 };

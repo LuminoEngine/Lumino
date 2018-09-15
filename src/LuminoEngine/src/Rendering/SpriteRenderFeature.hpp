@@ -1,12 +1,14 @@
 ﻿#pragma once
 #include <Lumino/Base/EnumFlags.hpp>
-#include <Lumino/Rendering/RenderFeature.hpp>
 #include <Lumino/Graphics/GeometryStructs.hpp>
 #include <Lumino/Graphics/ColorStructs.hpp>
 #include <Lumino/Graphics/VertexDeclaration.hpp>
+#include <Lumino/Rendering/RenderFeature.hpp>
+#include <Lumino/Rendering/Vertex.hpp>
 #include "../Graphics/GraphicsDeviceContext.hpp"
 
 namespace ln {
+class Texture;
 namespace detail {
 
 /** スプライトのソート方法 */
@@ -19,11 +21,11 @@ enum class SpriteSortMode
 };
 //LN_FLAGS_OPERATORS(SpriteSortFlags);
 
-/// オブジェクトのソートの基準
-enum SortingDistanceBasis
+// オブジェクトのソートの基準
+enum class SortingDistanceBasis
 {
-	SortingDistanceBasis_RawZ = 0,		///< オブジェクトの Z 値
-	SortingDistanceBasis_ViewPont,		///< オブジェクトの位置と視点との距離
+	RawZ,		// オブジェクトの Z 値
+	ViewPont,	// オブジェクトの位置と視点との距離
 };
 
 // 実際の描画を行う内部クラス。
@@ -36,14 +38,13 @@ public:
 	{
 		Matrix viewMatrix;
 		Matrix projMatrix;
-		Size viewPixelSize;
-		Ref<ITexture*> texture;
-		SpriteSortMode sortMode;
-		SortingDistanceBasis sortingBasis;
+		Ref<ITexture> texture;
+		SpriteSortMode sortMode = SpriteSortMode::DepthBackToFront;
+		SortingDistanceBasis sortingBasis = SortingDistanceBasis::ViewPont;
 	};
 
 	InternalSpriteRenderer();
-	void initialize(GraphicsManager* manager);
+	void initialize(RenderingManager* manager);
 
 	void setState(const State& state);
 
@@ -51,7 +52,6 @@ public:
 		const Matrix& transform,
 		const Vector2& size,
 		const Vector2& anchorRatio,
-		ITexture* texture,
 		const Rect& srcRect,
 		const Color& color,
 		SpriteBaseDirection baseDir,
@@ -63,19 +63,10 @@ public:
 private:
 	class SpriteCmpDepthBackToFront;		// Z 値の大きい方から小さい方へソートする比較
 	class SpriteCmpDepthFrontToBack;		// Z 値の小さい方から大きい方へソートする比較
-	class SpriteCmpTexDepthBackToFront;		// Z 値の大きい方から小さい方へソートする比較 (テクスチャ優先)
-	class SpriteCmpTexDepthFrontToBack;		// Z 値の小さい方から大きい方へソートする比較 (テクスチャ優先)
-
-	struct SpriteVertex
-	{
-		Vector3 position;  
-		Color color;
-		Vector2 uv;
-	};
 
 	struct SpriteData
 	{
-		SpriteVertex vertices[4];
+		Vertex vertices[4];
 		int priority;	// 優先度 (大きい方が後から描画される =手前)
 		float depth;	// ソートに使われる Z 値 (大きいほど遠い)
 	};
@@ -100,8 +91,42 @@ class SpriteRenderFeature
 	: public RenderFeature
 {
 public:
+	void setSortInfo(
+		SpriteSortMode sortMode,
+		SortingDistanceBasis sortingBasis);
+
+	void setState(
+		const Matrix& viewMatrix,
+		const Matrix& projMatrix,
+		Texture* texture);
+
+	void drawRequest2D(
+		const Matrix& transform,
+		const Vector2& size,
+		const Vector2& anchorRatio,
+		const Rect& srcRect,
+		const Color& color,
+		BillboardType billboardType);
+
+	void drawRequest(
+		const Matrix& transform,
+		const Vector2& size,
+		const Vector2& anchorRatio,
+		const Rect& srcRect,
+		const Color& color,
+		SpriteBaseDirection baseDirection,
+		BillboardType billboardType);
+
+	virtual void flush() override;
+
+LN_CONSTRUCT_ACCESS:
+	SpriteRenderFeature();
+	void initialize(RenderingManager* manager);
 
 private:
+	RenderingManager* m_manager;
+	InternalSpriteRenderer::State m_state;
+	Ref<InternalSpriteRenderer> m_internal;
 };
 
 } // namespace detail

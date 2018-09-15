@@ -21,6 +21,8 @@
 
 #include "LuminoEngine/Shader/Shader.hpp"
 
+#include "Lumino/Rendering/Common.hpp"
+
 #include "LuminoEngine/UI/UIFrameWindow.hpp"
 
 

@@ -136,6 +136,11 @@ static void alignMatricesToBuffer(
 //=============================================================================
 // Shader
 
+Ref<Shader> Shader::create(const StringRef& hlslEffectFilePath)
+{
+	return ln::newObject<Shader>(hlslEffectFilePath);
+}
+
 Ref<Shader> Shader::create(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath)
 {
 	return ln::newObject<Shader>(vertexShaderFilePath, pixelShaderFilePath, ShaderCodeType::RawGLSL);
