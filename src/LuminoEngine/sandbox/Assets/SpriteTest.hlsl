@@ -1,14 +1,20 @@
 
+
+Texture2D g_texture1 : register(t0);
+SamplerState g_samplerState1 : register(s0);
+
 struct VS_INPUT
 {
     float4 Pos : POSITION;
     float4 Color : COLOR;
+    float2 TexUV : TEXCOORD0;
 };
  
 struct VS_OUTPUT
 {
     float4 Pos : SV_POSITION;
     float4 Color : COLOR;
+    float2 TexUV : TEXCOORD0;
 };
  
 VS_OUTPUT vsMain(VS_INPUT input)
@@ -16,10 +22,11 @@ VS_OUTPUT vsMain(VS_INPUT input)
     VS_OUTPUT output = (VS_OUTPUT)0;
     output.Pos = input.Pos;
     output.Color = input.Color;
+    output.TexUV = input.TexUV;
     return output;
 }
 
-cbuffer ConstBuff// : register(b0)
+cbuffer ConstBuff
 {
     float4 g_color;
 };
@@ -27,11 +34,13 @@ cbuffer ConstBuff// : register(b0)
 struct PS_INPUT
 {
     float4 Color : COLOR;
+    float2 TexUV : TEXCOORD0;
 };
 
 float4 psMain(PS_INPUT input) : SV_TARGET
 {
-    return input.Color + g_color;
+    return g_texture1.Sample(g_samplerState1, input.TexUV);
+    //return input.Color * g_texture1.Sample(g_samplerState1, input.TexUV) + g_color;
 }
 
 technique MainTech
