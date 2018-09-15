@@ -11,15 +11,13 @@ namespace ln {
 class Texture;
 namespace detail {
 
-/** スプライトのソート方法 */
+// スプライトのソート方法
 enum class SpriteSortMode
 {
-	None = 0x00,			/**< ソートしない */
-	DepthBackToFront = 0x01,			/**< Z値が大きいものが先に描画されるようにソートする (アルファブレンド使用時の推奨) */
-	DepthFrontToBack = 0x02,			/**< Z値が小さいものが先に描画されるようにソートする (SpriteSortMode_DepthBackToFront と同時には使えない) */
-	//Texture = 0x04,			/**< テクスチャを優先してソートする (同じテクスチャを持つスプライトが多数あるとき用。ただし、アルファブレンドが有効な場合は描画が不自然になることがある) */
+	None,				// ソートしない
+	DepthBackToFront,	// Z値が大きいものが先に描画されるようにソートする (アルファブレンド使用時の推奨)
+	DepthFrontToBack,	// Z値が小さいものが先に描画されるようにソートする (SpriteSortMode_DepthBackToFront と同時には使えない)
 };
-//LN_FLAGS_OPERATORS(SpriteSortFlags);
 
 // オブジェクトのソートの基準
 enum class SortingDistanceBasis
@@ -38,7 +36,7 @@ public:
 	{
 		Matrix viewMatrix;
 		Matrix projMatrix;
-		Ref<ITexture> texture;
+		Size textureRealSize;
 		SpriteSortMode sortMode = SpriteSortMode::DepthBackToFront;
 		SortingDistanceBasis sortingBasis = SortingDistanceBasis::ViewPont;
 	};
@@ -98,15 +96,7 @@ public:
 	void setState(
 		const Matrix& viewMatrix,
 		const Matrix& projMatrix,
-		Texture* texture);
-
-	void drawRequest2D(
-		const Matrix& transform,
-		const Vector2& size,
-		const Vector2& anchorRatio,
-		const Rect& srcRect,
-		const Color& color,
-		BillboardType billboardType);
+		const Size& textureRealSize);
 
 	void drawRequest(
 		const Matrix& transform,

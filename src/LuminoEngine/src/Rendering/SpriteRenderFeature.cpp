@@ -190,10 +190,20 @@ void InternalSpriteRenderer::drawRequest(
 	sprite.vertices[3].color = color;
 
 	// テクスチャ
-	if (m_state.texture != nullptr)
+	if (Math::nearEqual(m_state.textureRealSize.width, 0) || Math::nearEqual(m_state.textureRealSize.height, 0))
 	{
-		const SizeI& texSize = m_state.texture->realSize();
-		Vector2 texSizeInv(1.0f / texSize.width, 1.0f / texSize.height);
+		sprite.vertices[0].uv.x = 0;
+		sprite.vertices[0].uv.y = 0;
+		sprite.vertices[1].uv.x = 1;
+		sprite.vertices[1].uv.y = 0;
+		sprite.vertices[2].uv.x = 0;
+		sprite.vertices[2].uv.y = 1;
+		sprite.vertices[3].uv.x = 1;
+		sprite.vertices[3].uv.y = 1;
+	}
+	else
+	{
+		Vector2 texSizeInv(1.0f / m_state.textureRealSize.width, 1.0f / m_state.textureRealSize.height);
 		Rect sr(srcRect);
 		float l = sr.x * texSizeInv.x;
 		float t = sr.y * texSizeInv.y;
@@ -207,17 +217,6 @@ void InternalSpriteRenderer::drawRequest(
 		sprite.vertices[2].uv.y = b;
 		sprite.vertices[3].uv.x = r;
 		sprite.vertices[3].uv.y = b;
-	}
-	else
-	{
-		sprite.vertices[0].uv.x = 0;
-		sprite.vertices[0].uv.y = 0;
-		sprite.vertices[1].uv.x = 1;
-		sprite.vertices[1].uv.y = 0;
-		sprite.vertices[2].uv.x = 0;
-		sprite.vertices[2].uv.y = 1;
-		sprite.vertices[3].uv.x = 1;
-		sprite.vertices[3].uv.y = 1;
 	}
 
 	// カメラからの距離をソート用Z値にする場合
@@ -392,11 +391,11 @@ void SpriteRenderFeature::setSortInfo(
 void SpriteRenderFeature::setState(
 	const Matrix& viewMatrix,
 	const Matrix& projMatrix,
-	Texture* texture)
+	const Size& textureRealSize)
 {
 	m_state.viewMatrix = viewMatrix;
 	m_state.projMatrix = projMatrix;
-	m_state.texture = (texture) ? texture->resolveRHIObject() : nullptr;
+	m_state.textureRealSize = textureRealSize;
 
 	GraphicsManager* manager = m_manager->graphicsManager();
 	LN_ENQUEUE_RENDER_COMMAND_2(
@@ -405,29 +404,6 @@ void SpriteRenderFeature::setState(
 		InternalSpriteRenderer::State, m_state,
 		{
 			m_internal->setState(m_state);
-		});
-}
-
-void SpriteRenderFeature::drawRequest2D(
-	const Matrix& transform,
-	const Vector2& size,
-	const Vector2& anchorRatio,
-	const Rect& srcRect,
-	const Color& color,
-	BillboardType billboardType)
-{
-	GraphicsManager* manager = m_manager->graphicsManager();
-	LN_ENQUEUE_RENDER_COMMAND_7(
-		SpriteRenderFeature_drawRequest2D, manager,
-		InternalSpriteRenderer*, m_internal,
-		Matrix, transform,
-		Vector2, size,
-		Vector2, anchorRatio,
-		Rect, srcRect,
-		Color, color,
-		BillboardType, billboardType,
-		{
-			m_internal->drawRequest(transform, size, anchorRatio, srcRect, color, SpriteBaseDirection::Basic2D, billboardType);
 		});
 }
 
