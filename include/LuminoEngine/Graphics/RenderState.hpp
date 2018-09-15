@@ -4,7 +4,7 @@
 namespace ln {
 
 /** ブレンディングの演算方法 */
-enum class BlendOp
+enum class BlendOp : uint8_t
 {
 	Add,						/**< 転送元に転送先を加算する。*/
 	Subtract,					/**< 転送元から転送先を減算する。*/
@@ -14,7 +14,7 @@ enum class BlendOp
 };
 
 /** ブレンディングの係数 */
-enum class BlendFactor
+enum class BlendFactor : uint8_t
 {
 	Zero,						/**< ブレンディング係数は、(0, 0, 0, 0) */
 	One,						/**< ブレンディング係数は、(1, 1, 1, 1) */
@@ -29,7 +29,7 @@ enum class BlendFactor
 };
 
 /** カリング方法 */
-enum class CullingMode
+enum class CullingMode : uint8_t
 {
 	/** 両面を描画します。 */
 	None,
@@ -42,7 +42,7 @@ enum class CullingMode
 };
 
 /** 塗りつぶし方法 */
-enum class FillMode
+enum class FillMode : uint8_t
 {
 	/** 面を塗りつぶす */
 	Solid,
@@ -52,7 +52,7 @@ enum class FillMode
 };
 
 /// 比較関数の定数
-enum class ComparisonFunc
+enum class ComparisonFunc : uint8_t
 {
 	Never,					///< 常に失敗します。
 	Less,						///< (新しいピクセル値 < 現在のピクセル値) 新しいピクセル値が、現在のピクセル値未満の場合に、新しいピクセル値を採用します。

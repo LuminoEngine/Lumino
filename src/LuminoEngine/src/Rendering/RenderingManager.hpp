@@ -15,14 +15,16 @@ class SpriteRenderFeature;
  * 
  * ### RenderStage
  * State と Command(DrawElement) を固めて持っておくクラス。
- * Unity でいうところの CommandBuffer に相当する。
  * SceneNode 1つ分と考えてもよい。
  * 基本的にどんなタイミングでも、「RenderStage を描画」すれば同じジオメトリが表示される。
- * 
+ * Unity でいうところの CommandBuffer に似て見えるが違うものなので注意。
+ * Unity の CommandBuffer は SetRenderTarget → DrawMesh → SetRenderTarget → DrawMesh のようにステート変更と描画を混在できるが、http://tips.hecomi.com/entry/2016/02/19/090000
+ * RenderStage はあくまでステートとジオメトリの塊なので↑のようには使うものではない。
+ *
  * ### RenderingContext
  * ユーザーが何か直接描画したいときに主に使うことになるクラス。
  * Unity でいうところの Graphics クラス。
- * コマンドリスト (RenderStage の集合) を構築する。
+ * コマンドリストを構築する。
  * 
  * ### SceneRenderer
  * コマンドリスト (RenderStage の集合) をどのように描画するかを決めるクラス。
@@ -52,6 +54,15 @@ class SpriteRenderFeature;
  *   - ExParticleRenderFeatureState
  *   をセットする。
  * - 描画時、ExParticleRenderCommand を add する
+ *
+ *
+ * 主な流れ
+ * --------
+ * RenderingContext は CommandBuffer を構築する。
+ * CommandBuffer は fix したら、それが持つ描画コマンドをもとに RenderStage リストを構築する。
+ * SceneRenderer はコマンド実行ポイントで、CommandBuffer が持つ RenderStage リストを実行する。
+ * 
+ * コマンド実行ポイント：https://docs.unity3d.com/ja/current/Manual/GraphicsCommandBuffers.html
  * 
  * 
  * World と UI

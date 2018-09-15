@@ -8,6 +8,16 @@
 #include "../src/Rendering/SpriteRenderFeature.hpp"
 using namespace ln;
 
+class TestRenderView
+	: public RenderView
+{
+public:
+	void drawScene();
+	void render();
+
+	FrameBuffer frameBuffer;
+};
+
 int main(int argc, char** argv)
 {
 #ifdef _WIN32

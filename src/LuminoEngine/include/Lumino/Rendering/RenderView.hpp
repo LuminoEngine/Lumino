@@ -17,7 +17,9 @@ class RenderView
 	: public Object
 {
 public:
-	// TODO: internal
+
+protected:
+	// 構築済みの stageList を実行し、frameBuffer へレンダリングを行う。
 	void render(const FrameBuffer& frameBuffer, detail::RenderStageList* stageList);
 
 private:

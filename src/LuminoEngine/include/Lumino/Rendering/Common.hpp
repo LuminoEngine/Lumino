@@ -2,6 +2,22 @@
 
 namespace ln {
 
+enum class ShadingModel : uint8_t
+{
+	Default,
+	UnLighting,
+};
+
+/** 合成方法 */
+enum class BlendMode : uint8_t
+{
+	Normal,			/**< 通常 */
+	Alpha,			/**< アルファブレンド */
+	Add,			/**< 加算合成 */
+	Subtract,		/**< 減算合成 */
+	Multiply,		/**< 乗算合成 */
+};
+
 /** 3D 空間での基準方向を表す値 */
 enum class SpriteBaseDirection
 {

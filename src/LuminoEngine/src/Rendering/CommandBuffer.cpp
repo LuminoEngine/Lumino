@@ -1,16 +1,13 @@
 ﻿
 #include "Internal.hpp"
-#include "RenderStage.hpp"
+#include <Lumino/Rendering/CommandBuffer.hpp>
 
 namespace ln {
 namespace detail {
 
 //==============================================================================
-// RenderStage
+// CommandBuffer
 
-RenderStage::RenderStage()
-{
-}
 	
 } // namespace detail
 } // namespace ln

@@ -133,11 +133,15 @@ set(LN_SOURCES_Shader
 
 set(LN_SOURCES_Rendering
     include/Lumino/Rendering/Common.hpp
+    include/Lumino/Rendering/CommandBuffer.hpp
+    include/Lumino/Rendering/Material.hpp
     include/Lumino/Rendering/RenderFeature.hpp
     include/Lumino/Rendering/RenderingContext.hpp
     include/Lumino/Rendering/RenderView.hpp
     include/Lumino/Rendering/Vertex.hpp
     src/Rendering/Internal.hpp
+    src/Rendering/CommandBuffer.cpp
+    src/Rendering/Material.cpp
     src/Rendering/RenderFeature.cpp
     src/Rendering/RenderingContext.cpp
     src/Rendering/RenderingManager.cpp

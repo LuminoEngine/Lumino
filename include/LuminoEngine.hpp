@@ -22,6 +22,9 @@
 #include "LuminoEngine/Shader/Shader.hpp"
 
 #include "Lumino/Rendering/Common.hpp"
+#include "Lumino/Rendering/RenderView.hpp"
+#include "Lumino/Rendering/RenderFeature.hpp"
+#include "Lumino/Rendering/RenderingContext.hpp"
 
 #include "LuminoEngine/UI/UIFrameWindow.hpp"
 
