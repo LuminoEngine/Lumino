@@ -1,0 +1,78 @@
+﻿#pragma once
+#include "RenderStage.hpp"
+#include "SpriteRenderFeature.hpp"
+
+namespace ln {
+namespace detail {
+
+// CommandBuffer から使われることを想定。
+// draw 系を呼んだときに、ステートが変化していれば新しい RenderStage を作ったり、
+// 0.4.0 まで DrawList クラスがやってたことを担当する。
+// CommandBuffer や RenderStageList と分離しているのは、
+// - 一部のステートセットをユーザーから隠蔽したい
+//		- → VisualNode のステートセット
+// - メモリ効率をよくしたい
+//		- → CommandBuffer や RenderStageList はたくさん作られることがあるが、ステート変化検出用の一時ステートを全部持ち続けるのは無駄。
+//			RenderStageListBuilder は EngineDomain 内の唯一インスタンスでもよい。（並列化はできなくなるが・・・まぁ、その場合はインスタンスを複数作ればいいだけ）
+class RenderStageListBuilder
+	: public RefObject
+{
+public:
+	RenderStageListBuilder();
+	void setTargetList(RenderStageList* targetList);
+	void reset();
+
+	void setRenderTarget(int index, RenderTargetTexture* value);
+	void setDepthBuffer(DepthBuffer* value);
+	void setViewportRect(const RectI& value);
+	void setScissorRect(const RectI& value);
+
+	void setBlendMode(const Optional<BlendMode>& value);
+	void setCullingMode(const Optional<CullingMode>& value);
+	void setDepthTestEnabled(const Optional<bool>& value);
+	void setDepthWriteEnabled(const Optional<bool>& value);
+
+	void setShadingModel(const Optional<ShadingModel>& value);
+	void setMaterial(AbstractMaterial* value);
+
+	// BuiltinEffectData
+	void setTransfrom(const Matrix& value);
+	void setOpacity(float value);
+	void setColorScale(const Color& value);
+	void setBlendColor(const Color& value);
+	void setTone(const ToneF& value);
+
+	SpriteRenderFeatureStageParameters* spriteRenderFeatureStageParameters() { return &m_spriteRenderFeatureStageParameters; }
+
+	template<class TElement>
+	RenderDrawElement* addNewDrawElement(
+		RenderFeature* renderFeature,
+		RenderFeatureStageParameters* params)
+	{
+		RenderStage* stage = prepareRenderStage(renderFeature, params);
+		if (LN_ENSURE(stage)) return nullptr;
+		TElement* element = m_targetList->newData<TElement>();
+		stage->addElement(element);
+		return element;
+	}
+
+private:
+	RenderStage* prepareRenderStage(RenderFeature* renderFeature, RenderFeatureStageParameters* featureParams);
+
+	RenderStageList* m_targetList;
+	FrameBufferStageParameters m_primaryFrameBufferStageParameters;
+
+	GeometryStageParameters m_primaryGeometryStageParameters;
+
+	// 以下、各 RenderFeature のステート。
+	// これは m_modified 対象外。代わりに prepareRenderStage() のたびに equals() でチェックされる。
+	// ユーザー定義する場合は外部でこれらを定義し、draw 時にそのポインタを指定する必要がある。
+	// (もしフレームワークに沿った流れでなくても大丈夫ならグローバル変数とかで受け取ったりしても大丈夫)
+	SpriteRenderFeatureStageParameters m_spriteRenderFeatureStageParameters;
+
+	bool m_modified;
+};
+
+} // namespace detail
+} // namespace ln
+

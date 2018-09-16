@@ -6,6 +6,7 @@
 #include "../src/Engine/EngineDomain.hpp"
 #include "../src/Rendering/RenderingManager.hpp"
 #include "../src/Rendering/SpriteRenderFeature.hpp"
+#include "../src/Rendering/RenderStageListBuilder.hpp"
 using namespace ln;
 
 class TestRenderView
@@ -48,13 +49,17 @@ int main(int argc, char** argv)
 	bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
 	bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
 
+	ShaderParameter* param = shader->findParameter("g_texture1");
+	param->setTexture(tex1);
+
 	auto ctx = Engine::graphicsContext();
 	//ctx->setColorBuffer(0, Engine::mainWindow()->swapChain()->colorBuffer());
 
 	auto sr = detail::EngineDomain::renderingManager()->spriteRenderFeature();
 
-	ShaderParameter* param = shader->findParameter("g_texture1");
-	param->setTexture(tex1);
+	auto list = makeRef<detail::RenderStageList>(detail::EngineDomain::renderingManager());
+	auto builder = detail::EngineDomain::renderingManager()->renderStageListBuilder();
+	builder->setTargetList(list);
 
 	int loop = 0;
 	while (Engine::update())
@@ -85,10 +90,24 @@ int main(int argc, char** argv)
 			std::cout << "isRepeated" << std::endl;
 		}
 		ctx->setShaderPass(shader->techniques()[0]->passes()[0]);
+
+		builder->reset();
+		class DrawSprite : public detail::RenderDrawElement
+		{
+		public:
+			virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+			{
+				static_cast<detail::SpriteRenderFeature*>(renderFeatures)->drawRequest(
+					Matrix(), Vector2(1, 1), Vector2(0, 0), Rect(0, 0, 1, 1), Color::Blue, SpriteBaseDirection::ZMinus, BillboardType::None);
+			}
+		};
+
+		auto* element = builder->addNewDrawElement<DrawSprite>(sr, builder->spriteRenderFeatureStageParameters());
+
 		//ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-		sr->drawRequest(Matrix(), Vector2(1, 1), Vector2(0, 0), Rect(0, 0, 1, 1), Color::Blue, SpriteBaseDirection::ZMinus, BillboardType::None);
-		sr->flush();
+		//sr->drawRequest(Matrix(), Vector2(1, 1), Vector2(0, 0), Rect(0, 0, 1, 1), Color::Blue, SpriteBaseDirection::ZMinus, BillboardType::None);
+		//sr->flush();
 	}
 
 	Engine::terminate();

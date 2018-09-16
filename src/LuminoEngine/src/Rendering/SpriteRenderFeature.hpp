@@ -6,6 +6,7 @@
 #include <Lumino/Rendering/RenderFeature.hpp>
 #include <Lumino/Rendering/Vertex.hpp>
 #include "../Graphics/GraphicsDeviceContext.hpp"
+#include "RenderStage.hpp"
 
 namespace ln {
 class Texture;
@@ -83,6 +84,29 @@ private:
 	Ref<IVertexBuffer> m_vertexBuffer;
 	Ref<IIndexBuffer> m_indexBuffer;
 	int m_buffersReservedSpriteCount;
+};
+
+class SpriteRenderFeatureStageParameters
+	: public RenderFeatureStageParameters
+{
+public:
+	InternalSpriteRenderer::State m_state;
+
+
+	virtual bool equals(const RenderFeatureStageParameters* other) override
+	{
+		// TODO: strict
+		// TODO: 型情報の比較も必要。いつもの enum でよいが。
+		return this == other;
+	}
+
+	virtual void copyTo(RenderFeatureStageParameters* params) override
+	{
+		// TODO: type check
+		static_cast<SpriteRenderFeatureStageParameters*>(params)->m_state = m_state;
+	}
+
+private:
 };
 
 class SpriteRenderFeature
