@@ -42,6 +42,9 @@ void RenderingManager::initialize(const Settings& settings)
 
 void RenderingManager::dispose()
 {
+	m_stageDataPageManager = nullptr;
+	m_spriteRenderFeature = nullptr;
+	m_renderStageListBuilder = nullptr;
 	m_standardVertexDeclaration = nullptr;
 }
 

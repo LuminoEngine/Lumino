@@ -12,6 +12,7 @@ class AbstractMaterial;
 class RenderFeature;
 namespace detail {
 class RenderStage;
+class DrawElementList;
 
 struct BuiltinEffectData
 {
@@ -48,7 +49,7 @@ struct BuiltinEffectData
 	}
 };
 
-// インスタンスは RenderStageList の LinearAllocator に配置される。
+// インスタンスは DrawElementList の LinearAllocator に配置される。
 // 描画が終わったら解放される。
 class FrameBufferStageParameters
 {
@@ -87,7 +88,7 @@ public:
 	}
 };
 
-// インスタンスは RenderStageList の LinearAllocator に配置される。
+// インスタンスは DrawElementList の LinearAllocator に配置される。
 // 描画が終わったら解放される。
 // GeometryStageParameters は
 // - RenderingContext がもステート
@@ -136,7 +137,7 @@ public:
 	}
 };
 
-// インスタンスは RenderStageList の LinearAllocator に配置される。
+// インスタンスは DrawElementList の LinearAllocator に配置される。
 // 描画が終わったら解放される。
 class RenderFeatureStageParameters
 {
@@ -148,7 +149,7 @@ public:
 	//Ref<Font>					m_font;
 };
 
-// インスタンスは RenderStageList の LinearAllocator に配置される。
+// インスタンスは DrawElementList の LinearAllocator に配置される。
 // clear や draw 系のメソッド呼び出しをおこなう。
 // ステートは変更するべきではない。
 class RenderDrawElement
@@ -164,11 +165,14 @@ public:
 	// この中で使えるのは GraphicsContext のみ。RenderingContext や Device 側の機能を呼び出してはならない。
 	virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeature) = 0;
 
+	RenderStage* stage() const { return m_stage; }
+	RenderDrawElement* next() const { return m_next; }
+
 private:
 	RenderStage* m_stage;
 	RenderDrawElement* m_next;
 
-	friend class RenderStage;
+	friend class DrawElementList;
 };
 
 /*
@@ -204,23 +208,23 @@ public:
 
 	RenderStage();
 
-	void addElement(RenderDrawElement* element);
+	void flush();
 
 private:
-	RenderDrawElement* m_headElement;	// head of link list.
-	RenderDrawElement* m_tailElement;	// tail of link list.
 
 	//List<RenderDrawElement*> m_drawCommands;	// TODO: ポインタのリンクリストでもいいかな
 };
 
-class RenderStageList
+class DrawElementList
 	: public RefObject
 {
 public:
-	RenderStageList(RenderingManager* manager);
+	DrawElementList(RenderingManager* manager);
 
 	bool isEmpty() const { return m_renderStageList.isEmpty(); }
 	RenderStage* last() const { return m_renderStageList.back(); }
+
+	void clear();
 
 	template<class T>
 	T* newData()
@@ -231,9 +235,16 @@ public:
 
 	RenderStage* addNewRenderStage();
 
+	void addElement(RenderStage* parentStage, RenderDrawElement* element);
+
+	RenderDrawElement* headElement() const { return m_headElement; }
+
 private:
 	Ref<LinearAllocator> m_dataAllocator;
 	List<RenderStage*> m_renderStageList;	// TODO: ポインタのリンクリストでもいいかな
+
+	RenderDrawElement* m_headElement;	// head of link list.
+	RenderDrawElement* m_tailElement;	// tail of link list.
 };
 
 } // namespace detail

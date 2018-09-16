@@ -4,7 +4,7 @@
 
 namespace ln {
 namespace detail {
-class RenderStageList;
+class DrawElementList;
 }
 
 struct FrameBuffer
@@ -20,7 +20,7 @@ public:
 
 protected:
 	// 構築済みの stageList を実行し、frameBuffer へレンダリングを行う。
-	void render(const FrameBuffer& frameBuffer, detail::RenderStageList* stageList);
+	void render(const FrameBuffer& frameBuffer, detail::DrawElementList* stageList);
 
 private:
 };

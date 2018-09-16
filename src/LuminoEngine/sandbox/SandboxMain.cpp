@@ -32,82 +32,76 @@ int main(int argc, char** argv)
 	//EngineSettings::setMainBackBufferSize(80, 60);
 	Engine::initialize();
 
-	auto shader = Shader::create(LN_LOCALFILE("Assets/SpriteTest.hlsl"));
-
-	//auto shader = Shader::create(
-	//	LN_LOCALFILE("Assets/simple.vert"),
-	//	LN_LOCALFILE("Assets/simple.frag"));
-	//shader->setVector("g_color", Vector4(0, 1, 0, 1));
-
-	//Engine::graphicsContext()->setShaderPass(shader->techniques()[0]->passes()[0]);
-
-	//auto tex1 = newObject<Texture2D>(LN_LOCALFILE("Assets/Sprite1.png"));
-	auto tex1 = newObject<Texture2D>(2, 2);
-	auto bmp1 = tex1->map(MapMode::Write);
-	bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
-	bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
-	bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
-	bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
-
-	ShaderParameter* param = shader->findParameter("g_texture1");
-	param->setTexture(tex1);
-
-	auto ctx = Engine::graphicsContext();
-	//ctx->setColorBuffer(0, Engine::mainWindow()->swapChain()->colorBuffer());
-
-	auto sr = detail::EngineDomain::renderingManager()->spriteRenderFeature();
-
-	auto list = makeRef<detail::RenderStageList>(detail::EngineDomain::renderingManager());
-	auto builder = detail::EngineDomain::renderingManager()->renderStageListBuilder();
-	builder->setTargetList(list);
-
-	int loop = 0;
-	while (Engine::update())
 	{
-		//auto pt = Mouse::position();
-		//std::cout << pt.x << ", " << pt.y << std::endl;
 
-		if (Input::isTriggered(InputButtons::Left)) {
-			std::cout << "Left" << std::endl;
-		}
-		if (Input::isOffTriggered(InputButtons::Left)) {
-			std::cout << "isOffTriggered" << std::endl;
-		}
-		if (Input::isRepeated(InputButtons::Left)) {
-			std::cout << "isRepeated" << std::endl;
-		}
+		auto shader = Shader::create(LN_LOCALFILE("Assets/SpriteTest.hlsl"));
 
-		if (Mouse::isPressed(MouseButtons::Left)) {
-			//std::cout << "isPressed" << std::endl;
-		}
-		if (Mouse::isTriggered(MouseButtons::Left)) {
-			std::cout << "isTriggered" << std::endl;
-		}
-		if (Mouse::isOffTriggered(MouseButtons::Left)) {
-			std::cout << "isOffTriggered" << std::endl;
-		}
-		if (Mouse::isRepeated(MouseButtons::Left)) {
-			std::cout << "isRepeated" << std::endl;
-		}
-		ctx->setShaderPass(shader->techniques()[0]->passes()[0]);
+		//auto shader = Shader::create(
+		//	LN_LOCALFILE("Assets/simple.vert"),
+		//	LN_LOCALFILE("Assets/simple.frag"));
+		//shader->setVector("g_color", Vector4(0, 1, 0, 1));
 
-		builder->reset();
-		class DrawSprite : public detail::RenderDrawElement
+		//Engine::graphicsContext()->setShaderPass(shader->techniques()[0]->passes()[0]);
+
+		//auto tex1 = newObject<Texture2D>(LN_LOCALFILE("Assets/Sprite1.png"));
+		auto tex1 = newObject<Texture2D>(2, 2);
+		auto bmp1 = tex1->map(MapMode::Write);
+		bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
+		bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
+		bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
+		bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
+
+		ShaderParameter* param = shader->findParameter("g_texture1");
+		param->setTexture(tex1);
+
+		auto ctx = Engine::graphicsContext();
+		//ctx->setColorBuffer(0, Engine::mainWindow()->swapChain()->colorBuffer());
+
+		auto sr = detail::EngineDomain::renderingManager()->spriteRenderFeature();
+
+		auto list = makeRef<detail::DrawElementList>(detail::EngineDomain::renderingManager());
+		auto builder = detail::EngineDomain::renderingManager()->renderStageListBuilder();
+		builder->setTargetList(list);
+
+		int loop = 0;
+		while (Engine::update())
 		{
-		public:
-			virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+			ctx->setShaderPass(shader->techniques()[0]->passes()[0]);
+
+			list->clear();
+			builder->reset();
+			class DrawSprite : public detail::RenderDrawElement
 			{
-				static_cast<detail::SpriteRenderFeature*>(renderFeatures)->drawRequest(
-					Matrix(), Vector2(1, 1), Vector2(0, 0), Rect(0, 0, 1, 1), Color::Blue, SpriteBaseDirection::ZMinus, BillboardType::None);
+			public:
+				virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+				{
+					static_cast<detail::SpriteRenderFeature*>(renderFeatures)->drawRequest(
+						Matrix(), Vector2(1, 1), Vector2(0, 0), Rect(0, 0, 1, 1), Color::Blue, SpriteBaseDirection::ZMinus, BillboardType::None);
+				}
+			};
+
+			auto* element = builder->addNewDrawElement<DrawSprite>(sr, builder->spriteRenderFeatureStageParameters());
+
+			auto* ie = list->headElement();
+			while (ie)
+			{
+				auto* stage = ie->stage();
+				// TODO: applystate
+				ie->onDraw(ctx, stage->renderFeature);
+				stage->flush();
+				ie = ie->next();
 			}
-		};
 
-		auto* element = builder->addNewDrawElement<DrawSprite>(sr, builder->spriteRenderFeatureStageParameters());
+			//ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-		//ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+			//sr->drawRequest(Matrix(), Vector2(1, 1), Vector2(0, 0), Rect(0, 0, 1, 1), Color::Blue, SpriteBaseDirection::ZMinus, BillboardType::None);
+			//sr->flush();
 
-		//sr->drawRequest(Matrix(), Vector2(1, 1), Vector2(0, 0), Rect(0, 0, 1, 1), Color::Blue, SpriteBaseDirection::ZMinus, BillboardType::None);
-		//sr->flush();
+			if (::GetKeyState('Z') < 0)
+			{
+				break;
+			}
+		}
 	}
 
 	Engine::terminate();

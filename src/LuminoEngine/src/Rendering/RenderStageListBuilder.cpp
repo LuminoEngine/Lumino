@@ -14,7 +14,7 @@ RenderStageListBuilder::RenderStageListBuilder()
 
 }
 
-void RenderStageListBuilder::setTargetList(RenderStageList * targetList)
+void RenderStageListBuilder::setTargetList(DrawElementList * targetList)
 {
 	m_targetList = targetList;
 }

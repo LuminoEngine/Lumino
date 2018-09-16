@@ -8,18 +8,18 @@ namespace detail {
 // CommandBuffer から使われることを想定。
 // draw 系を呼んだときに、ステートが変化していれば新しい RenderStage を作ったり、
 // 0.4.0 まで DrawList クラスがやってたことを担当する。
-// CommandBuffer や RenderStageList と分離しているのは、
+// CommandBuffer や DrawElementList と分離しているのは、
 // - 一部のステートセットをユーザーから隠蔽したい
 //		- → VisualNode のステートセット
 // - メモリ効率をよくしたい
-//		- → CommandBuffer や RenderStageList はたくさん作られることがあるが、ステート変化検出用の一時ステートを全部持ち続けるのは無駄。
+//		- → CommandBuffer や DrawElementList はたくさん作られることがあるが、ステート変化検出用の一時ステートを全部持ち続けるのは無駄。
 //			RenderStageListBuilder は EngineDomain 内の唯一インスタンスでもよい。（並列化はできなくなるが・・・まぁ、その場合はインスタンスを複数作ればいいだけ）
 class RenderStageListBuilder
 	: public RefObject
 {
 public:
 	RenderStageListBuilder();
-	void setTargetList(RenderStageList* targetList);
+	void setTargetList(DrawElementList* targetList);
 	void reset();
 
 	void setRenderTarget(int index, RenderTargetTexture* value);
@@ -52,14 +52,14 @@ public:
 		RenderStage* stage = prepareRenderStage(renderFeature, params);
 		if (LN_ENSURE(stage)) return nullptr;
 		TElement* element = m_targetList->newData<TElement>();
-		stage->addElement(element);
+		m_targetList->addElement(stage, element);
 		return element;
 	}
 
 private:
 	RenderStage* prepareRenderStage(RenderFeature* renderFeature, RenderFeatureStageParameters* featureParams);
 
-	RenderStageList* m_targetList;
+	DrawElementList* m_targetList;
 	FrameBufferStageParameters m_primaryFrameBufferStageParameters;
 
 	GeometryStageParameters m_primaryGeometryStageParameters;

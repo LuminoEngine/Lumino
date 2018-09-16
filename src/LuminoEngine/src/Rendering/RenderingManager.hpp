@@ -16,7 +16,8 @@ class SpriteRenderFeature;
  * --------
  * 
  * ### RenderStage
- * State と Command(DrawElement) を固めて持っておくクラス。
+ * DrawElement に紐づく State を持っておくクラス。
+ * 複数の DrawElement から参照されることが多い。
  * SceneNode 1つ分と考えてもよい。
  * 基本的にどんなタイミングでも、「RenderStage を描画」すれば同じジオメトリが表示される。
  * Unity でいうところの CommandBuffer に似て見えるが違うものなので注意。
