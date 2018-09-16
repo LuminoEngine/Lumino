@@ -4,6 +4,7 @@ namespace ln {
 class VertexDeclaration;
 
 namespace detail {
+class LinearAllocatorPageManager;
 class SpriteRenderFeature;
 
 /* 
@@ -90,11 +91,15 @@ public:
 	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
 	const Ref<VertexDeclaration>& standardVertexDeclaration() const { return m_standardVertexDeclaration; }
 	const Ref<SpriteRenderFeature>& spriteRenderFeature() const { return m_spriteRenderFeature; }
+	const Ref<LinearAllocatorPageManager>& stageDataPageManager() const { return m_stageDataPageManager; }
 
 private:
 	GraphicsManager* m_graphicsManager;
 	Ref<VertexDeclaration> m_standardVertexDeclaration;
 	Ref<SpriteRenderFeature> m_spriteRenderFeature;
+
+	// RenderStage 関係のデータ (ステートやコマンド) 用の LinearAllocatorPageManager
+	Ref<LinearAllocatorPageManager> m_stageDataPageManager;
 };
 
 } // namespace detail

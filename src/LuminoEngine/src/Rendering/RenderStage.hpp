@@ -8,6 +8,7 @@ namespace ln {
 class Shader;
 class AbstractMaterial;
 namespace detail {
+class LinearAllocator;
 
 struct BuiltinEffectData
 {
@@ -70,6 +71,19 @@ public:
 	//Ref<Font>					m_font;
 };
 
+// インスタンスは RenderStageList の LinearAllocator に配置される。
+// clear や draw 系のメソッド呼び出しをおこなう。
+// ステートは変更するべきではない。
+class RenderStageDrawCommand
+{
+public:
+	RenderStageDrawCommand();
+	virtual ~RenderStageDrawCommand();
+	virtual void onExecute() = 0;
+
+private:
+};
+
 /*
  * RenderStage
  * 
@@ -99,7 +113,14 @@ public:
 
 	RenderStage();
 
+	template<class T>
+	T* addNewCommand()
+	{
+
+	}
+
 private:
+	List<RenderStageDrawCommand*> m_drawCommands;	// TODO: ポインタのリンクリストでもいいかな
 };
 
 class RenderStageList
@@ -107,9 +128,11 @@ class RenderStageList
 {
 public:
 	RenderStageList();
-	
+
+	RenderStage* addNewRenderStage();
 
 private:
+	Ref<LinearAllocator> m_dataAllocator;
 };
 
 } // namespace detail

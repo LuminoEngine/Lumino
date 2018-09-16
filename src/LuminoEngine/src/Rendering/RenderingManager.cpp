@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <Lumino/Graphics/VertexDeclaration.hpp>
+#include "../Engine/LinearAllocator.hpp"
 #include "SpriteRenderFeature.hpp"
 #include "RenderingManager.hpp"
 
@@ -14,6 +15,7 @@ RenderingManager::RenderingManager()
 	: m_graphicsManager(nullptr)
 	, m_standardVertexDeclaration()
 	, m_spriteRenderFeature()
+	, m_stageDataPageManager()
 {
 }
 
@@ -31,6 +33,8 @@ void RenderingManager::initialize(const Settings& settings)
 	m_standardVertexDeclaration = newObject<VertexDeclaration>(elements, 4);
 
 	m_spriteRenderFeature = newObject<SpriteRenderFeature>(this);
+
+	m_stageDataPageManager = makeRef<LinearAllocatorPageManager>();
 }
 
 void RenderingManager::dispose()
