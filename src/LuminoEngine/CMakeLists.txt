@@ -123,10 +123,12 @@ set(LN_SOURCES_Graphics
 set(LN_SOURCES_Shader
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/Shader.hpp
+    include/Lumino/Shader/ShaderInterfaceFramework.hpp
     src/Shader/Internal.hpp
     src/Shader/Shader.cpp
     src/Shader/ShaderAnalyzer.cpp
     src/Shader/ShaderAnalyzer.hpp
+    src/Shader/ShaderInterfaceFramework.cpp
     src/Shader/ShaderManager.cpp
     src/Shader/ShaderManager.hpp
 )
@@ -155,6 +157,8 @@ set(LN_SOURCES_Rendering
     src/Rendering/SceneRenderer.hpp
     src/Rendering/SpriteRenderFeature.cpp
     src/Rendering/SpriteRenderFeature.hpp
+    src/Rendering/UnLigitingSceneRenderer.cpp
+    src/Rendering/UnLigitingSceneRenderer.hpp
 )
 
 set(LN_SOURCES_UI

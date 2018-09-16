@@ -147,6 +147,7 @@ Ref<Shader> Shader::create(const StringRef& vertexShaderFilePath, const StringRe
 }
 
 Shader::Shader()
+	: m_globalConstantBuffer(nullptr)
 {
 
 }
@@ -183,7 +184,7 @@ void Shader::initialize(const StringRef& hlslEffectFilePath)
 	
 	for (auto& hlslTech : parser.techniques)
 	{
-		auto tech = newObject<ShaderTechnique>();
+		auto tech = newObject<ShaderTechnique>(String::fromStdString(hlslTech.name));
 		tech->setOwner(this);
 		m_techniques.add(tech);
 
@@ -207,6 +208,7 @@ void Shader::initialize(const StringRef& hlslEffectFilePath)
 #else
 	LN_NOTIMPLEMENTED();
 #endif
+	postInitialize();
 }
 
 void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCodeType codeType)
@@ -223,6 +225,8 @@ void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& 
 	if (m_diag->hasItems())	{
 		m_diag->dumpToLog();
 	}
+
+	postInitialize();
 }
 
 void Shader::dispose()
@@ -279,13 +283,37 @@ void Shader::buildShader(const char* vsData, size_t vsLen, const char* psData, s
 {
 	auto rhiPass = createShaderPass(vsData, vsLen, "main", psData, psLen, "main");
 
-	auto tech = newObject<ShaderTechnique>();
+	auto tech = newObject<ShaderTechnique>(u"Main");	// TODO: 名前指定できた方がいいかも
 	tech->setOwner(this);
 	m_techniques.add(tech);
 
 	auto pass = newObject<ShaderPass>(rhiPass);
 	tech->addShaderPass(pass);
 	pass->setupParameters();
+}
+
+void Shader::postInitialize()
+{
+	// find global constant buffer.
+	{
+		m_globalConstantBuffer = findConstantBuffer(u"_Global");
+		if (!m_globalConstantBuffer && !m_buffers.isEmpty()) {
+			m_globalConstantBuffer = m_buffers.front();
+		}
+	}
+
+	// analyze semantices.
+	{
+		if (m_globalConstantBuffer) {
+			for (auto& param : m_globalConstantBuffer->m_parameters) {
+				m_semanticsManager.prepareParameter(param);
+			}
+		}
+
+		for (auto& param : m_textureParameters) {
+			m_semanticsManager.prepareParameter(param);
+		}
+	}
 }
 
 #if 0
@@ -364,14 +392,37 @@ void Shader::setTexture(const StringRef& name, Texture* value)
 
 ShaderParameter* Shader::findParameter(const StringRef& name) const
 {
-	auto result = m_textureParameters.findIf([&](const Ref<ShaderParameter>& param) { return param->name() == name; });
-	return (result) ? *result : nullptr;
+	// find global constant buffer.
+	{
+		ShaderParameter* result = m_globalConstantBuffer->findParameter(name);
+		if (result) {
+			return result;
+		}
+	}
+
+	// find texture params.
+	{
+		auto result = m_textureParameters.findIf([&](const Ref<ShaderParameter>& param) { return param->name() == name; });
+		return (result) ? *result : nullptr;
+	}
 }
 
 ShaderConstantBuffer* Shader::findConstantBuffer(const StringRef& name) const
 {
 	auto result = m_buffers.findIf([name](const ShaderConstantBuffer* buf) { return buf->name() == name; });
 	return (result) ? *result : nullptr;
+}
+
+ShaderTechnique* Shader::findTechniqueByClass(const detail::ShaderTechniqueClass& techniqueClass) const
+{
+	for (auto& tech : m_techniques)
+	{
+		if (detail::ShaderTechniqueClass::equals(tech->techniqueClass(), techniqueClass))
+		{
+			return tech;
+		}
+	}
+	return nullptr;
 }
 
 //ShaderParameter* Shader::getShaderParameter(const detail::ShaderUniformTypeDesc& desc, const String& name)
@@ -584,9 +635,11 @@ ShaderTechnique::~ShaderTechnique()
 {
 }
 
-void ShaderTechnique::initialize()
+void ShaderTechnique::initialize(const String& name)
 {
 	Object::initialize();
+	m_name = name;
+	detail::ShaderTechniqueClass::parseTechniqueClassString(m_name, &m_techniqueClass);
 }
 
 void ShaderTechnique::addShaderPass(ShaderPass* pass)

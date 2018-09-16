@@ -26,10 +26,10 @@ VS_OUTPUT vsMain(VS_INPUT input)
     return output;
 }
 
-cbuffer ConstBuff
-{
+//cbuffer ConstBuff
+//{
     float4 g_color;
-};
+//};
 
 struct PS_INPUT
 {

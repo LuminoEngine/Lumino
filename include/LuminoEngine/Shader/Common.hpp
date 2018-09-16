@@ -2,6 +2,7 @@
 
 namespace ln {
 
+
 //enum class ShaderCodeType
 //{
 //	Hlsl,

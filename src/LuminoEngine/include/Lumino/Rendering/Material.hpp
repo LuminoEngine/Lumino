@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "../Graphics/ColorStructs.hpp"
 #include "../Shader/Shader.hpp"
+#include "../Shader/ShaderInterfaceFramework.hpp"
 
 namespace ln {
 namespace detail {
@@ -9,23 +10,6 @@ enum class MaterialType : uint8_t
 {
 	PBR,
 	Diffuse,
-};
-
-struct PhongMaterialData
-{
-	Color diffuse;
-	Color ambient;
-	Color specular;
-	Color emissive;
-	float power;
-};
-
-struct PbrMaterialData
-{
-	Color color;
-	float roughness;
-	float metallic;
-	float specular;
 };
 
 } // namespace detail

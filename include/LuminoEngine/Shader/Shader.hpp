@@ -2,6 +2,7 @@
 #pragma once
 #include "Common.hpp"
 #include "../Graphics/GraphicsResource.hpp"
+#include "ShaderInterfaceFramework.hpp"
 
 namespace ln {
 class DiagnosticsManager;
@@ -134,6 +135,10 @@ public:
 
 	const List<Ref<ShaderTechnique>>& techniques() const { return m_techniques; }
 
+	// TODO: inernal
+	detail::ShaderSemanticsManager* semanticsManager() { return& m_semanticsManager; }
+	ShaderTechnique* findTechniqueByClass(const detail::ShaderTechniqueClass& techniqueClass) const;
+
 LN_CONSTRUCT_ACCESS:
 	Shader();
 	virtual ~Shader();
@@ -149,6 +154,7 @@ private:
 		const char* vsData, size_t vsLen, const char* vsEntryPoint,
 		const char* psData, size_t psLen, const char* psEntryPoint);
 	void buildShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen);
+	void postInitialize();
 	//ShaderParameter* getShaderParameter(const detail::ShaderUniformTypeDesc& desc, const String& name);
 	ShaderConstantBuffer* getOrCreateConstantBuffer(detail::IShaderUniformBuffer* buffer);
 	ShaderParameter* getOrCreateTextureParameter(const String& name);
@@ -159,6 +165,9 @@ private:
 	List<Ref<ShaderTechnique>> m_techniques;
 
 	List<Ref<ShaderParameter>> m_textureParameters;
+
+	ShaderConstantBuffer* m_globalConstantBuffer;
+	detail::ShaderSemanticsManager m_semanticsManager;
 
 	friend class ShaderPass;
 };
@@ -255,10 +264,13 @@ public:
 
 	const List<Ref<ShaderPass>>& passes() const { return m_passes; }
 
+	// TODO: internal
+	const detail::ShaderTechniqueClass& techniqueClass() const { return m_techniqueClass; }
+
 LN_CONSTRUCT_ACCESS:
 	ShaderTechnique();
 	virtual ~ShaderTechnique();
-	void initialize();
+	void initialize(const String& name);
 
 private:
 	void setOwner(Shader* owner) { m_owner = owner; }
@@ -266,7 +278,9 @@ private:
 	void addShaderPass(ShaderPass* pass);
 
 	Shader* m_owner;
+	String m_name;
 	List<Ref<ShaderPass>> m_passes;
+	detail::ShaderTechniqueClass m_techniqueClass;
 
 	friend class Shader;
 	friend class ShaderPass;
