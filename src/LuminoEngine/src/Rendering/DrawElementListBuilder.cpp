@@ -1,32 +1,32 @@
 ﻿
 #include "Internal.hpp"
 #include <Lumino/Rendering/Material.hpp>
-#include "RenderStageListBuilder.hpp"
+#include "DrawElementListBuilder.hpp"
 
 namespace ln {
 namespace detail {
 
 //==============================================================================
-// RenderStageListBuilder
+// DrawElementListBuilder
 
-RenderStageListBuilder::RenderStageListBuilder()
+DrawElementListBuilder::DrawElementListBuilder()
 {
 
 }
 
-void RenderStageListBuilder::setTargetList(DrawElementList * targetList)
+void DrawElementListBuilder::setTargetList(DrawElementList * targetList)
 {
 	m_targetList = targetList;
 }
 
-void RenderStageListBuilder::reset()
+void DrawElementListBuilder::reset()
 {
 	m_primaryFrameBufferStageParameters.reset();
 	m_primaryGeometryStageParameters.reset();
 	m_modified = true;
 }
 
-void RenderStageListBuilder::setRenderTarget(int index, RenderTargetTexture * value)
+void DrawElementListBuilder::setRenderTarget(int index, RenderTargetTexture * value)
 {
 	if (m_primaryFrameBufferStageParameters.m_renderTargets[index] != value) {
 		m_primaryFrameBufferStageParameters.m_renderTargets[index] = value;
@@ -34,7 +34,7 @@ void RenderStageListBuilder::setRenderTarget(int index, RenderTargetTexture * va
 	}
 }
 
-void RenderStageListBuilder::setDepthBuffer(DepthBuffer * value)
+void DrawElementListBuilder::setDepthBuffer(DepthBuffer * value)
 {
 	if (m_primaryFrameBufferStageParameters.m_depthBuffer != value) {
 		m_primaryFrameBufferStageParameters.m_depthBuffer = value;
@@ -42,7 +42,7 @@ void RenderStageListBuilder::setDepthBuffer(DepthBuffer * value)
 	}
 }
 
-void RenderStageListBuilder::setViewportRect(const RectI & value)
+void DrawElementListBuilder::setViewportRect(const RectI & value)
 {
 	if (m_primaryFrameBufferStageParameters.m_viewportRect != value) {
 		m_primaryFrameBufferStageParameters.m_viewportRect = value;
@@ -50,7 +50,7 @@ void RenderStageListBuilder::setViewportRect(const RectI & value)
 	}
 }
 
-void RenderStageListBuilder::setScissorRect(const RectI & value)
+void DrawElementListBuilder::setScissorRect(const RectI & value)
 {
 	if (m_primaryFrameBufferStageParameters.m_scissorRect != value) {
 		m_primaryFrameBufferStageParameters.m_scissorRect = value;
@@ -58,7 +58,7 @@ void RenderStageListBuilder::setScissorRect(const RectI & value)
 	}
 }
 
-void RenderStageListBuilder::setBlendMode(const Optional<BlendMode>& value)
+void DrawElementListBuilder::setBlendMode(const Optional<BlendMode>& value)
 {
 	if (m_primaryGeometryStageParameters.m_blendMode != value) {
 		m_primaryGeometryStageParameters.m_blendMode = value;
@@ -66,7 +66,7 @@ void RenderStageListBuilder::setBlendMode(const Optional<BlendMode>& value)
 	}
 }
 
-void RenderStageListBuilder::setCullingMode(const Optional<CullingMode>& value)
+void DrawElementListBuilder::setCullingMode(const Optional<CullingMode>& value)
 {
 	if (m_primaryGeometryStageParameters.m_cullingMode != value) {
 		m_primaryGeometryStageParameters.m_cullingMode = value;
@@ -74,7 +74,7 @@ void RenderStageListBuilder::setCullingMode(const Optional<CullingMode>& value)
 	}
 }
 
-void RenderStageListBuilder::setDepthTestEnabled(const Optional<bool>& value)
+void DrawElementListBuilder::setDepthTestEnabled(const Optional<bool>& value)
 {
 	if (m_primaryGeometryStageParameters.m_depthTestEnabled != value) {
 		m_primaryGeometryStageParameters.m_depthTestEnabled = value;
@@ -82,7 +82,7 @@ void RenderStageListBuilder::setDepthTestEnabled(const Optional<bool>& value)
 	}
 }
 
-void RenderStageListBuilder::setDepthWriteEnabled(const Optional<bool>& value)
+void DrawElementListBuilder::setDepthWriteEnabled(const Optional<bool>& value)
 {
 	if (m_primaryGeometryStageParameters.m_depthWriteEnabled != value) {
 		m_primaryGeometryStageParameters.m_depthWriteEnabled = value;
@@ -90,7 +90,7 @@ void RenderStageListBuilder::setDepthWriteEnabled(const Optional<bool>& value)
 	}
 }
 
-void RenderStageListBuilder::setShadingModel(const Optional<ShadingModel>& value)
+void DrawElementListBuilder::setShadingModel(const Optional<ShadingModel>& value)
 {
 	if (m_primaryGeometryStageParameters.shadingModel != value) {
 		m_primaryGeometryStageParameters.shadingModel = value;
@@ -98,7 +98,7 @@ void RenderStageListBuilder::setShadingModel(const Optional<ShadingModel>& value
 	}
 }
 
-void RenderStageListBuilder::setMaterial(AbstractMaterial * value)
+void DrawElementListBuilder::setMaterial(AbstractMaterial * value)
 {
 	if (m_primaryGeometryStageParameters.m_material != value) {
 		m_primaryGeometryStageParameters.m_material = value;
@@ -106,7 +106,7 @@ void RenderStageListBuilder::setMaterial(AbstractMaterial * value)
 	}
 }
 
-void RenderStageListBuilder::setTransfrom(const Matrix & value)
+void DrawElementListBuilder::setTransfrom(const Matrix & value)
 {
 	if (m_primaryGeometryStageParameters.builtinEffectData.m_transfrom != value) {
 		m_primaryGeometryStageParameters.builtinEffectData.m_transfrom = value;
@@ -114,7 +114,7 @@ void RenderStageListBuilder::setTransfrom(const Matrix & value)
 	}
 }
 
-void RenderStageListBuilder::setOpacity(float value)
+void DrawElementListBuilder::setOpacity(float value)
 {
 	if (m_primaryGeometryStageParameters.builtinEffectData.opacity != value) {
 		m_primaryGeometryStageParameters.builtinEffectData.opacity = value;
@@ -122,7 +122,7 @@ void RenderStageListBuilder::setOpacity(float value)
 	}
 }
 
-void RenderStageListBuilder::setColorScale(const Color & value)
+void DrawElementListBuilder::setColorScale(const Color & value)
 {
 	if (m_primaryGeometryStageParameters.builtinEffectData.colorScale != value) {
 		m_primaryGeometryStageParameters.builtinEffectData.colorScale = value;
@@ -130,7 +130,7 @@ void RenderStageListBuilder::setColorScale(const Color & value)
 	}
 }
 
-void RenderStageListBuilder::setBlendColor(const Color & value)
+void DrawElementListBuilder::setBlendColor(const Color & value)
 {
 	if (m_primaryGeometryStageParameters.builtinEffectData.blendColor != value) {
 		m_primaryGeometryStageParameters.builtinEffectData.blendColor = value;
@@ -138,7 +138,7 @@ void RenderStageListBuilder::setBlendColor(const Color & value)
 	}
 }
 
-void RenderStageListBuilder::setTone(const ToneF & value)
+void DrawElementListBuilder::setTone(const ToneF & value)
 {
 	if (m_primaryGeometryStageParameters.builtinEffectData.tone != value) {
 		m_primaryGeometryStageParameters.builtinEffectData.tone = value;
@@ -146,7 +146,7 @@ void RenderStageListBuilder::setTone(const ToneF & value)
 	}
 }
 
-RenderStage * RenderStageListBuilder::prepareRenderStage(RenderFeature* renderFeature, RenderFeatureStageParameters * featureParams)
+RenderStage * DrawElementListBuilder::prepareRenderStage(RenderFeature* renderFeature, RenderFeatureStageParameters * featureParams)
 {
 	RenderStage* newStage = nullptr;
 	if (m_targetList->isEmpty()) {

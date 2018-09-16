@@ -141,6 +141,8 @@ set(LN_SOURCES_Rendering
     include/Lumino/Rendering/Vertex.hpp
     src/Rendering/Internal.hpp
     src/Rendering/CommandBuffer.cpp
+    src/Rendering/DrawElementListBuilder.cpp
+    src/Rendering/DrawElementListBuilder.hpp
     src/Rendering/Material.cpp
     src/Rendering/RenderFeature.cpp
     src/Rendering/RenderingContext.cpp
@@ -148,8 +150,6 @@ set(LN_SOURCES_Rendering
     src/Rendering/RenderingManager.hpp
     src/Rendering/RenderStage.cpp
     src/Rendering/RenderStage.hpp
-    src/Rendering/RenderStageListBuilder.cpp
-    src/Rendering/RenderStageListBuilder.hpp
     src/Rendering/RenderView.cpp
     src/Rendering/SceneRenderer.cpp
     src/Rendering/SceneRenderer.hpp

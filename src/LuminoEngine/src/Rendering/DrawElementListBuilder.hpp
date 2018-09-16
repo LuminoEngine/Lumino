@@ -13,12 +13,12 @@ namespace detail {
 //		- → VisualNode のステートセット
 // - メモリ効率をよくしたい
 //		- → CommandBuffer や DrawElementList はたくさん作られることがあるが、ステート変化検出用の一時ステートを全部持ち続けるのは無駄。
-//			RenderStageListBuilder は EngineDomain 内の唯一インスタンスでもよい。（並列化はできなくなるが・・・まぁ、その場合はインスタンスを複数作ればいいだけ）
-class RenderStageListBuilder
+//			DrawElementListBuilder は EngineDomain 内の唯一インスタンスでもよい。（並列化はできなくなるが・・・まぁ、その場合はインスタンスを複数作ればいいだけ）
+class DrawElementListBuilder
 	: public RefObject
 {
 public:
-	RenderStageListBuilder();
+	DrawElementListBuilder();
 	void setTargetList(DrawElementList* targetList);
 	void reset();
 

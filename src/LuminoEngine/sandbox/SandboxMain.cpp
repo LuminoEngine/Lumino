@@ -6,7 +6,7 @@
 #include "../src/Engine/EngineDomain.hpp"
 #include "../src/Rendering/RenderingManager.hpp"
 #include "../src/Rendering/SpriteRenderFeature.hpp"
-#include "../src/Rendering/RenderStageListBuilder.hpp"
+#include "../src/Rendering/DrawElementListBuilder.hpp"
 using namespace ln;
 
 class TestRenderView

@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <Lumino/Graphics/VertexDeclaration.hpp>
 #include "../Engine/LinearAllocator.hpp"
-#include "RenderStageListBuilder.hpp"
+#include "DrawElementListBuilder.hpp"
 #include "SpriteRenderFeature.hpp"
 #include "RenderingManager.hpp"
 
@@ -33,7 +33,7 @@ void RenderingManager::initialize(const Settings& settings)
 	};
 	m_standardVertexDeclaration = newObject<VertexDeclaration>(elements, 4);
 
-	m_renderStageListBuilder = makeRef<RenderStageListBuilder>();
+	m_renderStageListBuilder = makeRef<DrawElementListBuilder>();
 
 	m_spriteRenderFeature = newObject<SpriteRenderFeature>(this);
 

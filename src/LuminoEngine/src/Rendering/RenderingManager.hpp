@@ -5,11 +5,20 @@ class VertexDeclaration;
 
 namespace detail {
 class LinearAllocatorPageManager;
-class RenderStageListBuilder;
+class DrawElementListBuilder;
 class SpriteRenderFeature;
 
 /* 
  * RenderingManager
+ * 
+ * 主要モジュールについて
+ * --------
+ * ### DrawElement 構築
+ * DrawElement は描画ジオメトリの最小単位。「何を描画するか？」を表す。
+ * - DrawElement
+ * - RenderStage
+ * - DrawElementList
+ * 
  * 
  * 
  * 主要クラスについて
@@ -96,14 +105,14 @@ public:
 
 	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
 	const Ref<VertexDeclaration>& standardVertexDeclaration() const { return m_standardVertexDeclaration; }
-	const Ref<RenderStageListBuilder>& renderStageListBuilder() const { return m_renderStageListBuilder; }
+	const Ref<DrawElementListBuilder>& renderStageListBuilder() const { return m_renderStageListBuilder; }
 	const Ref<SpriteRenderFeature>& spriteRenderFeature() const { return m_spriteRenderFeature; }
 	const Ref<LinearAllocatorPageManager>& stageDataPageManager() const { return m_stageDataPageManager; }
 
 private:
 	GraphicsManager* m_graphicsManager;
 	Ref<VertexDeclaration> m_standardVertexDeclaration;
-	Ref<RenderStageListBuilder> m_renderStageListBuilder;
+	Ref<DrawElementListBuilder> m_renderStageListBuilder;
 	Ref<SpriteRenderFeature> m_spriteRenderFeature;
 
 	// RenderStage 関係のデータ (ステートやコマンド) 用の LinearAllocatorPageManager
