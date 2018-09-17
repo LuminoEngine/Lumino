@@ -14,6 +14,21 @@ namespace detail {
 class RenderStage;
 class DrawElementList;
 
+// DrawElementList::newFrameData() で確保するデータのインターフェイス。
+// 描画終了時にデストラクタを呼び出すために使用する。
+class IDrawElementListFrameData
+{
+protected:
+	IDrawElementListFrameData();
+	virtual ~IDrawElementListFrameData();
+
+private:
+	// next data of linked list.
+	IDrawElementListFrameData* m_nextFrameData;
+
+	friend class DrawElementList;
+};
+
 struct BuiltinEffectData
 {
 	static const BuiltinEffectData DefaultValue;
@@ -53,6 +68,7 @@ struct BuiltinEffectData
 // インスタンスは DrawElementList の LinearAllocator に配置される。
 // 描画が終わったら解放される。
 class FrameBufferStageParameters
+	: public IDrawElementListFrameData
 {
 public:
 	Ref<RenderTargetTexture>	m_renderTargets[MaxMultiRenderTargets];
@@ -98,6 +114,7 @@ public:
 // これは VisualNode::onRender() 内で、VisualNode が持つ State をベースとして RenderingContext を使えるようにするための仕組み。
 // 例えば VisualNode::onRender() 内で RenderingContext::setOpacity() すると、VisualNode の opacity と乗算された結果が 最終結果となる。
 class GeometryStageParameters
+	: public IDrawElementListFrameData
 {
 public:
 	// まだ確定状態となるわけではないので Optional が含まれることもある。
@@ -154,6 +171,7 @@ public:
 // clear や draw 系のメソッド呼び出しをおこなう。
 // ステートは変更するべきではない。
 class RenderDrawElement
+	: public IDrawElementListFrameData
 {
 public:
 	RenderDrawElement();
@@ -196,7 +214,8 @@ private:
 // - SceneRenderer が ZPrepass などの描画でデフォルトの　RT を指定してくることがある。
 // - SceneRenderer がシェーダの種類を指定してくることがある。（ShadowPass で書きたい。ユーザーシェーダがそれを持っていればそれを使うし、そうでなければデフォルトのを使う）
 class RenderStage
-	: public RefObject
+	//: public RefObject
+	: public IDrawElementListFrameData
 {
 public:
 	// RenderingContext のステート。
@@ -252,6 +271,7 @@ class DrawElementList
 {
 public:
 	DrawElementList(RenderingManager* manager);
+	virtual ~DrawElementList();
 
 	bool isEmpty() const { return m_renderStageList.isEmpty(); }
 	RenderStage* last() const { return m_renderStageList.back(); }
@@ -259,10 +279,12 @@ public:
 	void clear();
 
 	template<class T>
-	T* newData()
+	T* newFrameData()
 	{
 		void* buffer = m_dataAllocator->allocate(sizeof(T));
-		return new (buffer)T();
+		T* data = new (buffer)T();
+		addFrameData(data);
+		return data;
 	}
 
 	RenderStage* addNewRenderStage();
@@ -272,11 +294,16 @@ public:
 	RenderDrawElement* headElement() const { return m_headElement; }
 
 private:
+	void addFrameData(IDrawElementListFrameData* data);
+
 	Ref<LinearAllocator> m_dataAllocator;
 	List<RenderStage*> m_renderStageList;	// TODO: ポインタのリンクリストでもいいかな
 
 	RenderDrawElement* m_headElement;	// head of link list.
 	RenderDrawElement* m_tailElement;	// tail of link list.
+
+	IDrawElementListFrameData* m_headFrameData;	// head of link list.
+	IDrawElementListFrameData* m_tailFrameData;	// tail of link list.
 };
 
 } // namespace detail

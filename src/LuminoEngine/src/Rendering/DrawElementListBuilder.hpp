@@ -51,7 +51,7 @@ public:
 	{
 		RenderStage* stage = prepareRenderStage(renderFeature, params);
 		if (LN_ENSURE(stage)) return nullptr;
-		TElement* element = m_targetList->newData<TElement>();
+		TElement* element = m_targetList->newFrameData<TElement>();
 		m_targetList->addElement(stage, element);
 		return element;
 	}

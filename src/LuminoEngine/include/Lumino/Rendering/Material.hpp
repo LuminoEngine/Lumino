@@ -10,7 +10,7 @@ namespace detail {
 enum class MaterialType : uint8_t
 {
 	PBR,
-	Diffuse,
+	Phong,
 };
 
 } // namespace detail
@@ -31,6 +31,9 @@ class AbstractMaterial
 //	static const String MaterialTextureParameter;
 
 public:
+	void setMainTexture(Texture* value);
+	Texture* mainTexture() const;
+
 	void setShader(Shader* shader);
 	Shader* shader() const;
 
@@ -71,8 +74,8 @@ protected:
 	AbstractMaterial(detail::MaterialType type);
 	virtual ~AbstractMaterial();
 	void initialize();
-	virtual void translateToPhongMaterialData(detail::PhongMaterialData* outData) = 0;
 	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) = 0;
+	virtual void translateToPhongMaterialData(detail::PhongMaterialData* outData) = 0;
 
 //LN_INTERNAL_ACCESS:
 //	void reset();
@@ -144,6 +147,7 @@ private:
 
 	detail::MaterialType m_type;
 	Ref<Shader> m_shader;
+	Ref<Texture> m_mainTexture;
 	std::unordered_map<uint32_t, Variant> m_valueMap;
 
 	//std::unordered_map<uint32_t, ShaderValue>	m_builtinValueMap;
@@ -170,6 +174,37 @@ LN_INTERNAL_ACCESS:
 	//uint32_t getHashCode();
 };
 
+/**
+ * 標準的な物理ベースレンダリングのマテリアルです。
+ */
+class Material
+	: public AbstractMaterial
+{
+	//LN_OBJECT;
+public:
+	static Ref<Material> create();
+
+public:
+	void setColor(const Color& value);
+	void setRoughness(float value);
+	void setMetallic(float value);
+	void setSpecular(float value);
+
+	// TODO: 自己発光。必要かな？
+	//void setEmissive(const Color& value);
+
+protected:
+	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) override;
+	virtual void translateToPhongMaterialData(detail::PhongMaterialData* outData) override;
+
+LN_CONSTRUCT_ACCESS:
+	Material();
+	virtual ~Material();
+	void initialize();
+
+private:
+	detail::PbrMaterialData m_data;
+};
 
 } // namespace ln
 

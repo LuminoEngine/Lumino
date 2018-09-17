@@ -678,7 +678,7 @@ void ShaderPass::dispose()
 
 Shader* ShaderPass::shader() const
 {
-	return m_owner->owner();
+	return m_owner->shader();
 }
 
 void ShaderPass::setupParameters()
@@ -697,7 +697,7 @@ void ShaderPass::setupParameters()
 	for (int i = 0; i < m_rhiPass->getUniformBufferCount(); i++)
 	{
 		detail::IShaderUniformBuffer* rhi = m_rhiPass->getUniformBuffer(i);
-		ShaderConstantBuffer* buf = m_owner->owner()->getOrCreateConstantBuffer(rhi);
+		ShaderConstantBuffer* buf = m_owner->shader()->getOrCreateConstantBuffer(rhi);
 		m_buffers.add(buf);
 	}
 
@@ -706,7 +706,7 @@ void ShaderPass::setupParameters()
 	detail::IShaderSamplerBuffer* samplerBuffer = m_rhiPass->samplerBuffer();
 	for (int i = 0; i < samplerBuffer->registerCount(); i++)
 	{
-		ShaderParameter* param = m_owner->owner()->getOrCreateTextureParameter(String::fromStdString(samplerBuffer->getTextureRegisterName(i)));
+		ShaderParameter* param = m_owner->shader()->getOrCreateTextureParameter(String::fromStdString(samplerBuffer->getTextureRegisterName(i)));
 		m_textureParameters.add(param);
 	}
 }
@@ -729,7 +729,7 @@ void ShaderPass::setupParameters()
 
 void ShaderPass::commit()
 {
-	auto* manager = m_owner->owner()->manager();
+	auto* manager = m_owner->shader()->manager();
 
 #if 0
 	detail::RenderBulkData data = manager->primaryRenderingCommandList()->allocateBulkData(detail::ShaderValueSerializer::measureBufferSize(this));
@@ -758,7 +758,7 @@ void ShaderPass::commit()
 	detail::IShaderSamplerBuffer* samplerBuffer = m_rhiPass->samplerBuffer();
 	for (int i = 0; i < samplerBuffer->registerCount(); i++)
 	{
-		auto* manager = m_owner->owner()->manager();
+		auto* manager = m_owner->shader()->manager();
 		Texture* texture = m_textureParameters[i]->texture();
 
 		SamplerState* sampler;
@@ -766,7 +766,7 @@ void ShaderPass::commit()
 			sampler = texture->samplerState();
 		}
 		else {
-			sampler = m_owner->owner()->manager()->defaultSamplerState();
+			sampler = m_owner->shader()->manager()->defaultSamplerState();
 		}
 
 		detail::ITexture* rhiTexture = (texture) ? texture->resolveRHIObject() : nullptr;

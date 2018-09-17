@@ -8,6 +8,7 @@
 #include "../src/Rendering/SpriteRenderFeature.hpp"
 #include "../src/Rendering/DrawElementListBuilder.hpp"
 #include "../src/Rendering/UnLigitingSceneRenderer.hpp"
+#include <Lumino/Rendering/Material.hpp>
 using namespace ln;
 
 class TestRenderView
@@ -69,6 +70,17 @@ int main(int argc, char** argv)
 
 		auto spriteRender = detail::EngineDomain::renderingManager()->spriteRenderFeature();
 
+
+
+		auto tex1 = newObject<Texture2D>(2, 2);
+		auto bmp1 = tex1->map(MapMode::Write);
+		bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
+		bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
+		bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
+		bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
+		auto material = Material::create();
+		material->setMainTexture(tex1);
+
 		while (Engine::update())
 		{
 			renderView->m_elementList->clear();
@@ -84,7 +96,11 @@ int main(int argc, char** argv)
 				}
 			};
 
-			auto* element = builder->addNewDrawElement<DrawSprite>(spriteRender, builder->spriteRenderFeatureStageParameters());
+			// drawSprite
+			{
+				builder->setMaterial(material);
+				auto* element = builder->addNewDrawElement<DrawSprite>(spriteRender, builder->spriteRenderFeatureStageParameters());
+			}
 
 			renderView->render();
 

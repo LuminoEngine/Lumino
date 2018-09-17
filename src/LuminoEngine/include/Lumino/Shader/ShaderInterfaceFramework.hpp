@@ -56,11 +56,11 @@ enum class BuiltinSemantics
 	MaterialMetallic,		// [PBR] float
 	MaterialSpecular,		// [PBR] float
 
-	MaterialDiffuse,		// [Phong] vector
-	MaterialAmbient,		// [Phong] vector
-	MaterialEmmisive,		// [Phong] vector
-	MaterialSpecularColor,	// [Phong] vector
-	MaterialSpecularPower,	// [Phong] float
+	PhongMaterialDiffuse,		// [Phong] vector
+	PhongMaterialAmbient,		// [Phong] vector
+	PhongMaterialEmmisive,		// [Phong] vector
+	PhongMaterialSpecularColor,	// [Phong] vector
+	PhongMaterialSpecularPower,	// [Phong] float
 
 	ColorScale,				// vector (Built-in effect)
 	BlendColor,				// vector (Built-in effect)

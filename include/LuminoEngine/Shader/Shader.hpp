@@ -261,6 +261,7 @@ class LN_API ShaderTechnique
 	: public Object
 {
 public:
+	Shader* shader() const { return m_owner; }
 
 	const List<Ref<ShaderPass>>& passes() const { return m_passes; }
 
@@ -274,7 +275,6 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	void setOwner(Shader* owner) { m_owner = owner; }
-	Shader* owner() const { return m_owner; }
 	void addShaderPass(ShaderPass* pass);
 
 	Shader* m_owner;

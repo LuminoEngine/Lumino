@@ -51,11 +51,11 @@ static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_SubsetUnit 
 	{ _LT("ln_MaterialRoughness"), BuiltinSemantics::MaterialRoughness },
 	{ _LT("ln_MaterialMetallic"), BuiltinSemantics::MaterialMetallic },
 	{ _LT("ln_MaterialSpecular"), BuiltinSemantics::MaterialSpecular },
-	{ _LT("ln_MaterialDiffuse"), BuiltinSemantics::MaterialDiffuse },
-	{ _LT("ln_MaterialAmbient"), BuiltinSemantics::MaterialAmbient },
-	{ _LT("ln_MaterialEmmisive"), BuiltinSemantics::MaterialEmmisive },
-	{ _LT("ln_MaterialSpecularColor"), BuiltinSemantics::MaterialSpecularColor },
-	{ _LT("ln_MaterialSpecularPower"), BuiltinSemantics::MaterialSpecularPower },
+	{ _LT("ln_PhongMaterialDiffuse"), BuiltinSemantics::PhongMaterialDiffuse },
+	{ _LT("ln_PhongMaterialAmbient"), BuiltinSemantics::PhongMaterialAmbient },
+	{ _LT("ln_PhongMaterialEmmisive"), BuiltinSemantics::PhongMaterialEmmisive },
+	{ _LT("ln_PhongMaterialSpecularColor"), BuiltinSemantics::PhongMaterialSpecularColor },
+	{ _LT("ln_PhongMaterialSpecularPower"), BuiltinSemantics::PhongMaterialSpecularPower },
 	{ _LT("ln_ColorScale"), BuiltinSemantics::ColorScale },
 	{ _LT("ln_BlendColor"), BuiltinSemantics::BlendColor },
 	{ _LT("ln_ToneColor"), BuiltinSemantics::ToneColor },
@@ -332,19 +332,19 @@ void ShaderSemanticsManager::updateSubsetVariables_Phong(const PhongMaterialData
 	{
 		switch (varInfo.kind)
 		{
-		case BuiltinSemantics::MaterialDiffuse:
+		case BuiltinSemantics::PhongMaterialDiffuse:
 			varInfo.variable->setVector(materialData.diffuse);
 			break;
-		case BuiltinSemantics::MaterialAmbient:
+		case BuiltinSemantics::PhongMaterialAmbient:
 			varInfo.variable->setVector(materialData.ambient);
 			break;
-		case BuiltinSemantics::MaterialEmmisive:
+		case BuiltinSemantics::PhongMaterialEmmisive:
 			varInfo.variable->setVector(materialData.emissive);
 			break;
-		case BuiltinSemantics::MaterialSpecular:
+		case BuiltinSemantics::PhongMaterialSpecularColor:
 			varInfo.variable->setVector(materialData.specular);
 			break;
-		case BuiltinSemantics::MaterialSpecularPower:
+		case BuiltinSemantics::PhongMaterialSpecularPower:
 			varInfo.variable->setFloat(materialData.power);
 			break;
 		}

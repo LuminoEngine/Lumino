@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <Lumino/Graphics/GraphicsContext.hpp>
+#include <Lumino/Rendering/Material.hpp>
 #include "RenderStage.hpp"
 #include "SceneRenderer.hpp"
 
@@ -128,6 +129,10 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 
 		// DrawElement drawing.
 		{
+			applyGeometryStatus(graphicsContext, currentStage, nullptr);
+
+			AbstractMaterial* finalMaterial = currentStage->getMaterialFinal(nullptr, nullptr);
+
 			ElementInfo elementInfo;
 			elementInfo.viewProjMatrix = &cameraInfo.viewProjMatrix;
 			elementInfo.WorldMatrix = element->combinedWorldMatrix();
@@ -135,14 +140,22 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 			//elementInfo.boneTexture = m_skinningMatricesTexture;
 			//elementInfo.boneLocalQuaternionTexture = m_skinningLocalQuaternionsTexture;
 
-			//AbstractMaterial* finalMaterial = currentStage->getMaterialFinal(m_defaultMaterial, nullptr);
-
-			applyGeometryStatus(graphicsContext, currentStage, nullptr);
+			SubsetInfo subsetInfo;
+			subsetInfo.materialTexture = (finalMaterial) ? finalMaterial->mainTexture() : nullptr;
+			subsetInfo.opacity = currentStage->getOpacityFinal();
+			subsetInfo.colorScale = currentStage->getColorScaleFinal();
+			subsetInfo.blendColor = currentStage->getBlendColorFinal();
+			subsetInfo.tone = currentStage->getToneFinal();
 
 			ShaderTechnique* tech = pass->selectShaderTechnique(
 				ShaderTechniqueClass_MeshProcess::StaticMesh,
 				nullptr,
 				ShadingModel::UnLighting);
+
+			detail::ShaderSemanticsManager* semanticsManager = tech->shader()->semanticsManager();
+			semanticsManager->updateCameraVariables(cameraInfo);
+			semanticsManager->updateElementVariables(cameraInfo, elementInfo);
+			semanticsManager->updateSubsetVariables(subsetInfo);
 
 			for (ShaderPass* pass : tech->passes())
 			{

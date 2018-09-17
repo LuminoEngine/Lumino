@@ -196,11 +196,11 @@ RenderStage * DrawElementListBuilder::prepareRenderStage(RenderFeature* renderFe
 			sharedGeometryStageParameters = m_primaryGeometryStageParameters.equals(lastStage->geometryStageParameters);
 		}
 		if (!sharedFrameBufferStageParameters) {
-			newStage->frameBufferStageParameters = m_targetList->newData<FrameBufferStageParameters>();
+			newStage->frameBufferStageParameters = m_targetList->newFrameData<FrameBufferStageParameters>();
 			*newStage->frameBufferStageParameters = m_primaryFrameBufferStageParameters;
 		}
 		if (!sharedGeometryStageParameters) {
-			newStage->geometryStageParameters = m_targetList->newData<GeometryStageParameters>();
+			newStage->geometryStageParameters = m_targetList->newFrameData<GeometryStageParameters>();
 			*newStage->geometryStageParameters = m_primaryGeometryStageParameters;
 		}
 

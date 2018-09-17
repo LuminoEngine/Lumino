@@ -11,6 +11,18 @@ namespace detail {
 const BuiltinEffectData BuiltinEffectData::DefaultValue;
 
 //==============================================================================
+// IDrawElementListFrameData
+
+IDrawElementListFrameData::IDrawElementListFrameData()
+	: m_nextFrameData(nullptr)
+{
+}
+
+IDrawElementListFrameData::~IDrawElementListFrameData()
+{
+}
+
+//==============================================================================
 // RenderDrawElement
 
 RenderDrawElement::RenderDrawElement()
@@ -130,20 +142,47 @@ DrawElementList::DrawElementList(RenderingManager* manager)
 	: m_dataAllocator(makeRef<LinearAllocator>(manager->stageDataPageManager()))
 	, m_headElement(nullptr)
 	, m_tailElement(nullptr)
+	, m_headFrameData(nullptr)
+	, m_tailFrameData(nullptr)
 {
+}
+
+DrawElementList::~DrawElementList()
+{
+	clear();
 }
 
 void DrawElementList::clear()
 {
 	m_dataAllocator->cleanup();
 	m_renderStageList.clear();
-	m_headElement = nullptr;
-	m_tailElement = nullptr;
+
+	// destruct frame data.
+	{
+		IDrawElementListFrameData* p = m_headFrameData;
+		while (p) {
+			p->~IDrawElementListFrameData();
+			p = p->m_nextFrameData;
+		}
+		m_headFrameData = nullptr;
+		m_tailFrameData = nullptr;
+	}
+
+	// destruct draw elements.
+	{
+		RenderDrawElement* p = m_headElement;
+		while (p) {
+			p->~RenderDrawElement();
+			p = p->next();
+		}
+		m_headElement = nullptr;
+		m_tailElement = nullptr;
+	}
 }
 
 RenderStage* DrawElementList::addNewRenderStage()
 {
-	return newData<RenderStage>();
+	return newFrameData<RenderStage>();
 }
 
 void DrawElementList::addElement(RenderStage* parentStage, RenderDrawElement* element)
@@ -159,8 +198,21 @@ void DrawElementList::addElement(RenderStage* parentStage, RenderDrawElement* el
 	}
 	else {
 		m_tailElement->m_next = element;
-		m_tailElement = element;
 	}
+	m_tailElement = element;
+}
+
+void DrawElementList::addFrameData(IDrawElementListFrameData* data)
+{
+	LN_CHECK(data);
+
+	if (!m_headFrameData) {
+		m_headFrameData = data;
+	}
+	else {
+		m_tailFrameData->m_nextFrameData = data;
+	}
+	m_tailFrameData = data;
 }
 
 } // namespace detail

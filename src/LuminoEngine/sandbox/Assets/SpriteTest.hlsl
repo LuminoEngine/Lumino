@@ -1,6 +1,6 @@
 
 
-Texture2D g_texture1 : register(t0);
+Texture2D ln_MaterialTexture : register(t0);
 SamplerState g_samplerState1 : register(s0);
 
 struct VS_INPUT
@@ -39,7 +39,7 @@ struct PS_INPUT
 
 float4 psMain(PS_INPUT input) : SV_TARGET
 {
-    return g_texture1.Sample(g_samplerState1, input.TexUV);
+    return ln_MaterialTexture.Sample(g_samplerState1, input.TexUV);
     //return input.Color * g_texture1.Sample(g_samplerState1, input.TexUV) + g_color;
 }
 
