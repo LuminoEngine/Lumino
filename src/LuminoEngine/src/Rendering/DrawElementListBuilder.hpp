@@ -36,7 +36,7 @@ public:
 	void setMaterial(AbstractMaterial* value);
 
 	// BuiltinEffectData
-	void setTransfrom(const Matrix& value);
+	//void setTransfrom(const Matrix& value);
 	void setOpacity(float value);
 	void setColorScale(const Color& value);
 	void setBlendColor(const Color& value);
@@ -61,7 +61,6 @@ private:
 
 	DrawElementList* m_targetList;
 	FrameBufferStageParameters m_primaryFrameBufferStageParameters;
-
 	GeometryStageParameters m_primaryGeometryStageParameters;
 
 	// 以下、各 RenderFeature のステート。

@@ -67,7 +67,7 @@ public:
 	void setBlendState(const BlendStateDesc& value);
 	void setRasterizerState(const RasterizerStateDesc& value);
 	void setDepthStencilState(const DepthStencilStateDesc& value);
-	void setColorBuffer(int index, RenderTargetTexture* value);
+	void setColorBuffer(int index, RenderTargetTexture* value);	// TODO: やっぱり ColorBuffer は驚く
 	void setDepthBuffer(DepthBuffer* value);
 	void setVertexDeclaration(VertexDeclaration* value);
 	void setVertexBuffer(int streamIndex, VertexBuffer* value);

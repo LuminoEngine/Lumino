@@ -7,6 +7,7 @@
 #include "../src/Rendering/RenderingManager.hpp"
 #include "../src/Rendering/SpriteRenderFeature.hpp"
 #include "../src/Rendering/DrawElementListBuilder.hpp"
+#include "../src/Rendering/UnLigitingSceneRenderer.hpp"
 using namespace ln;
 
 class TestRenderView
@@ -33,7 +34,66 @@ int main(int argc, char** argv)
 	Engine::initialize();
 
 	{
+		class TestRenderView : public RenderView
+		{
+		public:
+			// 本番では、World が持っていたりする。
+			Ref<detail::DrawElementList> m_elementList;
 
+			Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer;
+
+			TestRenderView()
+			{
+				m_elementList = makeRef<detail::DrawElementList>(detail::EngineDomain::renderingManager());
+				attachDrawElementList(m_elementList);
+
+				m_sceneRenderer = makeRef<detail::UnLigitingSceneRenderer>();
+				m_sceneRenderer->initialize(detail::EngineDomain::renderingManager());
+			}
+
+			void render()
+			{
+				auto swapChain = Engine::mainWindow()->swapChain();
+				FrameBuffer fb;
+				fb.renderTarget[0] = swapChain->colorBuffer();
+				fb.depthBuffer = swapChain->depthBuffer();
+
+				RenderView::render(Engine::graphicsContext(), fb, m_sceneRenderer);
+			}
+		};
+
+		auto renderView = newObject<TestRenderView>();
+
+		auto builder = detail::EngineDomain::renderingManager()->renderStageListBuilder();
+		builder->setTargetList(renderView->m_elementList);
+
+		auto spriteRender = detail::EngineDomain::renderingManager()->spriteRenderFeature();
+
+		while (Engine::update())
+		{
+			renderView->m_elementList->clear();
+			builder->reset();
+
+			class DrawSprite : public detail::RenderDrawElement
+			{
+			public:
+				virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+				{
+					static_cast<detail::SpriteRenderFeature*>(renderFeatures)->drawRequest(
+						Matrix(), Vector2(1, 1), Vector2(0, 0), Rect(0, 0, 1, 1), Color::Blue, SpriteBaseDirection::ZMinus, BillboardType::None);
+				}
+			};
+
+			auto* element = builder->addNewDrawElement<DrawSprite>(spriteRender, builder->spriteRenderFeatureStageParameters());
+
+			renderView->render();
+
+			if (::GetKeyState('Z') < 0)
+			{
+				break;
+			}
+		}
+#if 0
 		auto shader = Shader::create(LN_LOCALFILE("Assets/SpriteTest.hlsl"));
 
 		//auto shader = Shader::create(
@@ -102,6 +162,7 @@ int main(int argc, char** argv)
 				break;
 			}
 		}
+#endif
 	}
 
 	Engine::terminate();

@@ -106,13 +106,13 @@ void DrawElementListBuilder::setMaterial(AbstractMaterial * value)
 	}
 }
 
-void DrawElementListBuilder::setTransfrom(const Matrix & value)
-{
-	if (m_primaryGeometryStageParameters.builtinEffectData.m_transfrom != value) {
-		m_primaryGeometryStageParameters.builtinEffectData.m_transfrom = value;
-		m_modified = true;
-	}
-}
+//void DrawElementListBuilder::setTransfrom(const Matrix & value)
+//{
+//	if (m_primaryGeometryStageParameters.builtinEffectData.m_transfrom != value) {
+//		m_primaryGeometryStageParameters.builtinEffectData.m_transfrom = value;
+//		m_modified = true;
+//	}
+//}
 
 void DrawElementListBuilder::setOpacity(float value)
 {
@@ -148,12 +148,13 @@ void DrawElementListBuilder::setTone(const ToneF & value)
 
 RenderStage * DrawElementListBuilder::prepareRenderStage(RenderFeature* renderFeature, RenderFeatureStageParameters * featureParams)
 {
+	RenderStage* lastStage = nullptr;
 	RenderStage* newStage = nullptr;
 	if (m_targetList->isEmpty()) {
 		newStage = m_targetList->addNewRenderStage();
 	}
 	else {
-		RenderStage* lastStage = m_targetList->last();
+		lastStage = m_targetList->last();
 
 		if (!m_modified)
 		{
@@ -187,6 +188,22 @@ RenderStage * DrawElementListBuilder::prepareRenderStage(RenderFeature* renderFe
 		// ステートが変化したので新しい Stage が作られた。setup して返す
 		newStage->renderFeature = renderFeature;
 		newStage->renderFeatureStageParameters = featureParams;
+
+		bool sharedFrameBufferStageParameters = false;
+		bool sharedGeometryStageParameters = false;
+		if (lastStage) {
+			sharedFrameBufferStageParameters = m_primaryFrameBufferStageParameters.equals(lastStage->frameBufferStageParameters);
+			sharedGeometryStageParameters = m_primaryGeometryStageParameters.equals(lastStage->geometryStageParameters);
+		}
+		if (!sharedFrameBufferStageParameters) {
+			newStage->frameBufferStageParameters = m_targetList->newData<FrameBufferStageParameters>();
+			*newStage->frameBufferStageParameters = m_primaryFrameBufferStageParameters;
+		}
+		if (!sharedGeometryStageParameters) {
+			newStage->geometryStageParameters = m_targetList->newData<GeometryStageParameters>();
+			*newStage->geometryStageParameters = m_primaryGeometryStageParameters;
+		}
+
 		return newStage;
 	}
 	else {

@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "../Graphics/ColorStructs.hpp"
+#include "../Graphics/RenderState.hpp"
 #include "../Shader/Shader.hpp"
 #include "../Shader/ShaderInterfaceFramework.hpp"
 
@@ -44,26 +45,26 @@ public:
 	/** @name RenderState */
 	/** @{ */
 
-//private:
-//	Nullable<BlendMode>		blendMode;
-//	Nullable<CullingMode>	cullingMode;
-//	Nullable<bool>			depthTestEnabled;
-//	Nullable<bool>			depthWriteEnabled;
+private:
+	Optional<BlendMode>		blendMode;
+	Optional<CullingMode>	cullingMode;
+	Optional<bool>			depthTestEnabled;
+	Optional<bool>			depthWriteEnabled;
 
-//public:
-//	ShadingModel			shadingModel = ShadingModel::Default;
-//
-//	void setBlendMode(Nullable<BlendMode> mode);
-//	Nullable<BlendMode> getBlendMode() const { return blendMode; }
-//
-//	void setCullingMode(Nullable<CullingMode> mode);
-//	Nullable<CullingMode> getCullingMode() const { return cullingMode; }
-//
-//	void setDepthTestEnabled(Nullable<bool> enabled);
-//	Nullable<bool> isDepthTestEnabled() const { return depthTestEnabled; }
-//
-//	void setDepthWriteEnabled(Nullable<bool> enabled);
-//	Nullable<bool> isDepthWriteEnabled() const { return depthWriteEnabled; }
+public:
+	ShadingModel			shadingModel = ShadingModel::Default;
+
+	void setBlendMode(Optional<BlendMode> mode);
+	Optional<BlendMode> getBlendMode() const { return blendMode; }
+
+	void setCullingMode(Optional<CullingMode> mode);
+	Optional<CullingMode> getCullingMode() const { return cullingMode; }
+
+	void setDepthTestEnabled(Optional<bool> enabled);
+	Optional<bool> isDepthTestEnabled() const { return depthTestEnabled; }
+
+	void setDepthWriteEnabled(Optional<bool> enabled);
+	Optional<bool> isDepthWriteEnabled() const { return depthWriteEnabled; }
 
 
 protected:

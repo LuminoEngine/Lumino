@@ -238,6 +238,7 @@ void Shader::dispose()
 			pass->dispose();
 		}
 	}
+	m_techniques.clear();
 
 	GraphicsResource::dispose();
 }

@@ -16,7 +16,8 @@ class DrawElementList;
 
 struct BuiltinEffectData
 {
-	Matrix						m_transfrom;
+	static const BuiltinEffectData DefaultValue;
+
 	//Ref<Shader>	shader;
 	float opacity;
 	Color colorScale;
@@ -30,7 +31,7 @@ struct BuiltinEffectData
 
 	void reset()
 	{
-		m_transfrom = Matrix();
+		//m_transfrom = Matrix();
 		opacity = 1.0;
 		colorScale = Color(1.0f, 1.0f, 1.0f, 1.0f);
 		blendColor = Color(0.0f, 0.0f, 0.0f, 0.0f);
@@ -41,7 +42,7 @@ struct BuiltinEffectData
 	{
 		// TODO: hash
 		return
-			m_transfrom == other->m_transfrom &&
+			//m_transfrom == other->m_transfrom &&
 			opacity == other->opacity &&
 			colorScale == other->colorScale &&
 			blendColor == other->blendColor &&
@@ -100,13 +101,13 @@ class GeometryStageParameters
 {
 public:
 	// まだ確定状態となるわけではないので Optional が含まれることもある。
+	Ref<AbstractMaterial>			m_material;			// setMaterial() で指定されたマテリアル
 	Optional<BlendMode>			m_blendMode;
 	Optional<CullingMode>		m_cullingMode;
 	Optional<bool>				m_depthTestEnabled;
 	Optional<bool>				m_depthWriteEnabled;
-	Ref<AbstractMaterial>			m_material;			// setMaterial() で指定されたマテリアル
 	Optional<ShadingModel>		shadingModel;
-	BuiltinEffectData builtinEffectData;
+	BuiltinEffectData builtinEffectData;	// TODO: RenderState 変更のコストは高いけど、Uniform 変更のコストはそんなに高くない。これは Element 側に持って行ってもいい気がする。
 
 	GeometryStageParameters()
 	{
@@ -115,11 +116,11 @@ public:
 
 	void reset()
 	{
+		m_material = nullptr;
 		m_blendMode = nullptr;
 		m_cullingMode = nullptr;
 		m_depthTestEnabled = nullptr;
 		m_depthWriteEnabled = nullptr;
-		m_material = nullptr;
 		shadingModel = nullptr;
 		builtinEffectData.reset();
 	}
@@ -127,11 +128,11 @@ public:
 	bool equals(const GeometryStageParameters* other) const
 	{
 		return
+			m_material == other->m_material &&
 			m_blendMode == other->m_blendMode &&
 			m_cullingMode == other->m_cullingMode &&
 			m_depthTestEnabled == other->m_depthTestEnabled &&
 			m_depthWriteEnabled == other->m_depthWriteEnabled &&
-			m_material == other->m_material &&
 			shadingModel == other->shadingModel &&
 			builtinEffectData.equals(&other->builtinEffectData);
 	}
@@ -165,10 +166,14 @@ public:
 	// この中で使えるのは GraphicsContext のみ。RenderingContext や Device 側の機能を呼び出してはならない。
 	virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeature) = 0;
 
+	const Matrix& combinedWorldMatrix() const { return m_combinedWorldMatrix; }
 	RenderStage* stage() const { return m_stage; }
 	RenderDrawElement* next() const { return m_next; }
 
+	float zDistance = 0;	//  TODO: internal
+
 private:
+	Matrix m_combinedWorldMatrix;		// TODO: Element はたくさん作られるので、メモリ消費量が大きいかもしれない
 	RenderStage* m_stage;
 	RenderDrawElement* m_next;
 
@@ -203,12 +208,39 @@ public:
 	RenderFeatureStageParameters* renderFeatureStageParameters;
 
 
-	// これは Manager が持っているインスタンスを指す。ユーザー定義の場合はそっち。インスタンスは RenderStage モジュール内では管理しない。山荘のみ。
+	// これは Manager が持っているインスタンスを指す。ユーザー定義の場合はそっち。インスタンスは RenderStage モジュール内では管理しない。参照のみ。
 	RenderFeature* renderFeature;
 
 	RenderStage();
 
+	bool equals(const RenderStage* other) const;
 	void flush();
+
+
+	RenderTargetTexture* getRenderTargetFinal(int index) const { return frameBufferStageParameters->m_renderTargets[index]; }
+	DepthBuffer* getDepthBufferFinal() const { return frameBufferStageParameters->m_depthBuffer; }
+	const RectI& getViewportRectFinal() const { return frameBufferStageParameters->m_viewportRect; }
+	const RectI& getScissorRectFinal() const { return frameBufferStageParameters->m_scissorRect; }
+
+
+	AbstractMaterial* getMaterialFinal(AbstractMaterial* defaultValue, AbstractMaterial* priorityValue) const;
+	ShadingModel getShadingModelFinal(AbstractMaterial* finalMaterial) const;	// getMaterialFinal() で確定した Material を渡すこと
+	BlendMode getBlendModeFinal(AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
+	CullingMode getCullingModeFinal(AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
+	bool isDepthTestEnabledFinal(AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
+	bool isDepthWriteEnabledFinal(AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
+	//const Matrix& getTransformFinal() const { return geometryStageParameters->; }
+	//Brush* getBrushFinal() const { return renderingContextParameters.getBrush(); }
+	//Pen* getPenFinal() const { return nullptr; }	// TODO:
+	//Font* getFontFinal() const { return renderingContextParameters.getFont(); }
+	//AbstractMaterial* getPriorityMaterialFinal() const { return renderingContextParameters.getPriorityMaterial(); }
+	// BuiltinEffectData
+	//Shader* getShaderFinal(AbstractMaterial* finalMaterial) const;	// getMaterialFinal() で確定した Material を渡すこと
+	float getOpacityFinal() const { return geometryStageParameters->builtinEffectData.opacity; }
+	const Color& getColorScaleFinal() const { return geometryStageParameters->builtinEffectData.colorScale; }
+	const Color& getBlendColorFinal() const { return geometryStageParameters->builtinEffectData.blendColor; }
+	const ToneF& getToneFinal() const { return geometryStageParameters->builtinEffectData.tone; }
+
 
 private:
 

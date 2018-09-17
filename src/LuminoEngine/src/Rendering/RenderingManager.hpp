@@ -2,11 +2,19 @@
 
 namespace ln {
 class VertexDeclaration;
+class Shader;
 
 namespace detail {
 class LinearAllocatorPageManager;
 class DrawElementListBuilder;
 class SpriteRenderFeature;
+
+enum class BuiltinShader
+{
+	Sprite,
+	//LegacyDiffuse,		// Lambert Shading
+};
+
 
 /* 
  * RenderingManager
@@ -108,6 +116,7 @@ public:
 	const Ref<DrawElementListBuilder>& renderStageListBuilder() const { return m_renderStageListBuilder; }
 	const Ref<SpriteRenderFeature>& spriteRenderFeature() const { return m_spriteRenderFeature; }
 	const Ref<LinearAllocatorPageManager>& stageDataPageManager() const { return m_stageDataPageManager; }
+	const Ref<Shader>& builtinShader(BuiltinShader shader) const { return m_builtinShaders[(int)shader]; }
 
 private:
 	GraphicsManager* m_graphicsManager;
@@ -117,6 +126,8 @@ private:
 
 	// RenderStage 関係のデータ (ステートやコマンド) 用の LinearAllocatorPageManager
 	Ref<LinearAllocatorPageManager> m_stageDataPageManager;
+
+	std::array<Ref<Shader>, 2> m_builtinShaders;
 };
 
 } // namespace detail
