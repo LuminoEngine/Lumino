@@ -8,7 +8,7 @@ namespace ln {
 class GraphicsContext;
 namespace detail {
 class DrawElementList;
-class DrawElementListManager;
+class DrawElementListCollector;
 class SceneRenderer;
 }
 
@@ -24,7 +24,7 @@ class RenderView
 public:
 	// World の描画などでは RenderView のインスタンスを持ち回り、描画してほしい人が Manager を ここに add していく。
 	void clearDrawElementListManagers();
-	void addDrawElementListManager(detail::DrawElementListManager* elementListManager);
+	void addDrawElementListManager(detail::DrawElementListCollector* elementListManager);
 
 	// TODO: internal
 	detail::CameraInfo cameraInfo;
@@ -34,10 +34,10 @@ protected:
 	void render(GraphicsContext* graphicsContext, const FrameBuffer& frameBuffer, detail::SceneRenderer* sceneRenderer);
 
 LN_INTERNAL_ACCESS:
-	const List<detail::DrawElementListManager*>& elementListManagers() const { return m_elementListManagers; }
+	const List<detail::DrawElementListCollector*>& elementListManagers() const { return m_elementListManagers; }
 
 private:
-	List<detail::DrawElementListManager*> m_elementListManagers;
+	List<detail::DrawElementListCollector*> m_elementListManagers;
 };
 
 } // namespace ln

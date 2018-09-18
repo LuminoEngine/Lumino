@@ -319,7 +319,7 @@ enum class RendringPhase
 // 1フレームで実行するコマンドリストすべてをまとめておく。
 // インスタンスは World などに、基本的にずっと持っておく。
 // 描画開始時に clear() し、そのフレームで描画したい CommandBuffer やら RenderingContext やらからどんどん add していく。
-class DrawElementListManager
+class DrawElementListCollector
 	: public RefObject
 {
 public:

@@ -14,7 +14,7 @@ void RenderView::clearDrawElementListManagers()
 	m_elementListManagers.clear();
 }
 
-void RenderView::addDrawElementListManager(detail::DrawElementListManager* elementListManager)
+void RenderView::addDrawElementListManager(detail::DrawElementListCollector* elementListManager)
 {
 	m_elementListManagers.add(elementListManager);
 }

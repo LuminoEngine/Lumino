@@ -42,13 +42,13 @@ int main(int argc, char** argv)
 			// 本番では、World が持っていたりする。
 			Ref<detail::WorldSceneGraphRenderingContext> m_context;
 
-			Ref<detail::DrawElementListManager> m_elementListManager;
+			Ref<detail::DrawElementListCollector> m_elementListManager;
 
 			Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer;
 
 			TestRenderView()
 			{
-				m_elementListManager = makeRef<detail::DrawElementListManager>();
+				m_elementListManager = makeRef<detail::DrawElementListCollector>();
 				m_context = makeRef<detail::WorldSceneGraphRenderingContext>();
 				m_elementListManager->addDrawElementList(detail::RendringPhase::Default, m_context->m_elementList);
 				addDrawElementListManager(m_elementListManager);
@@ -100,14 +100,14 @@ int main(int argc, char** argv)
 		{
 		public:
 			// 本番では、World が持っていたりする。
-			Ref<detail::DrawElementListManager> m_elementListManager;
+			Ref<detail::DrawElementListCollector> m_elementListManager;
 			Ref<detail::DrawElementList> m_elementList;
 
 			Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer;
 
 			TestRenderView()
 			{
-				m_elementListManager = makeRef<detail::DrawElementListManager>();
+				m_elementListManager = makeRef<detail::DrawElementListCollector>();
 				m_elementList = makeRef<detail::DrawElementList>(detail::EngineDomain::renderingManager());
 				m_elementListManager->addDrawElementList(detail::RendringPhase::Default, m_elementList);
 				addDrawElementListManager(m_elementListManager);
