@@ -215,6 +215,26 @@ void DrawElementList::addFrameData(IDrawElementListFrameData* data)
 	m_tailFrameData = data;
 }
 
+//==============================================================================
+// DrawElementListManager
+
+void DrawElementListManager::clear()
+{
+	for (auto& list : m_lists) {
+		list.clear();
+	}
+}
+
+void DrawElementListManager::addDrawElementList(RendringPhase phase, DrawElementList* list)
+{
+	m_lists[(int)phase].add(list);
+}
+
+const List<DrawElementList*>& DrawElementListManager::lists(RendringPhase phase) const
+{
+	return m_lists[(int)phase];
+}
+
 } // namespace detail
 } // namespace ln
 

@@ -312,49 +312,56 @@ void SceneRenderer::collect(/*SceneRendererPass* pass, */const detail::CameraInf
 	//InternalContext* context = m_manager->getInternalContext();
 	//const detail::CameraInfo& cameraInfo = m_renderingRenderView->m_cameraInfo;
 
-	for (auto& elementList : m_renderingRenderView->elementLists())
+
+	for (auto& elementListManager : m_renderingRenderView->elementListManagers())
 	{
-		//elementList->setDefaultRenderTarget(m_renderingDefaultRenderTarget);
-		//elementList->setDefaultDepthBuffer(m_renderingDefaultDepthBuffer);
+		// TODO: とりあえず Default
+		
 
-		//for (DynamicLightInfo* light : elementList->getDynamicLightList())
-		//{
-		//	onCollectLight(light);
-		//}
-
-		//onPreRender(elementList);
-
-		// 視点に関する情報の設定
-		//context->setViewInfo(cameraInfo.viewPixelSize, cameraInfo.viewMatrix, cameraInfo.projMatrix);
-
-		// ライブラリ外部への書き込み対応
-		//context->beginBaseRenderer()->Clear(ClearFlags::Depth/* | ClearFlags::Stencil*/, Color());
-
-		//for (int i = 0; i < elementList->getElementCount(); ++i)
-		//{
-		//	DrawElement* element = elementList->getElement(i);
-
-		RenderDrawElement* element = elementList->headElement();
-		while (element)
+		for (auto& elementList : elementListManager->lists(RendringPhase::Default))
 		{
-#if 0		// TODO: 視錘台カリング
-			const Matrix& transform = element->getTransform(elementList);
+			//elementList->setDefaultRenderTarget(m_renderingDefaultRenderTarget);
+			//elementList->setDefaultDepthBuffer(m_renderingDefaultDepthBuffer);
 
-			Sphere boundingSphere = element->getLocalBoundingSphere();
-			boundingSphere.center += transform.getPosition();
+			//for (DynamicLightInfo* light : elementList->getDynamicLightList())
+			//{
+			//	onCollectLight(light);
+			//}
 
-			if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
-				cameraInfo.viewFrustum.intersects(boundingSphere.center, boundingSphere.radius))
+			//onPreRender(elementList);
+
+			// 視点に関する情報の設定
+			//context->setViewInfo(cameraInfo.viewPixelSize, cameraInfo.viewMatrix, cameraInfo.projMatrix);
+
+			// ライブラリ外部への書き込み対応
+			//context->beginBaseRenderer()->Clear(ClearFlags::Depth/* | ClearFlags::Stencil*/, Color());
+
+			//for (int i = 0; i < elementList->getElementCount(); ++i)
+			//{
+			//	DrawElement* element = elementList->getElement(i);
+
+			RenderDrawElement* element = elementList->headElement();
+			while (element)
 			{
-				// このノードは描画できる
-				m_renderingElementList.add(element);
-			}
+#if 0		// TODO: 視錘台カリング
+				const Matrix& transform = element->getTransform(elementList);
+
+				Sphere boundingSphere = element->getLocalBoundingSphere();
+				boundingSphere.center += transform.getPosition();
+
+				if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
+					cameraInfo.viewFrustum.intersects(boundingSphere.center, boundingSphere.radius))
+				{
+					// このノードは描画できる
+					m_renderingElementList.add(element);
+				}
 #else
-			m_renderingElementList.add(element);
+				m_renderingElementList.add(element);
 #endif
 
 
-			element = element->next();
+				element = element->next();
+			}
 		}
 	}
 

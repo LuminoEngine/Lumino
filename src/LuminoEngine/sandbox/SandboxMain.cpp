@@ -39,14 +39,17 @@ int main(int argc, char** argv)
 		{
 		public:
 			// 本番では、World が持っていたりする。
+			Ref<detail::DrawElementListManager> m_elementListManager;
 			Ref<detail::DrawElementList> m_elementList;
 
 			Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer;
 
 			TestRenderView()
 			{
+				m_elementListManager = makeRef<detail::DrawElementListManager>();
 				m_elementList = makeRef<detail::DrawElementList>(detail::EngineDomain::renderingManager());
-				attachDrawElementList(m_elementList);
+				m_elementListManager->addDrawElementList(detail::RendringPhase::Default, m_elementList);
+				addDrawElementListManager(m_elementListManager);
 
 				m_sceneRenderer = makeRef<detail::UnLigitingSceneRenderer>();
 				m_sceneRenderer->initialize(detail::EngineDomain::renderingManager());

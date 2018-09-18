@@ -266,6 +266,9 @@ private:
 	//List<RenderDrawElement*> m_drawCommands;	// TODO: ポインタのリンクリストでもいいかな
 };
 
+// 描画コマンドのリスト。
+// https://docs.unity3d.com/ja/current/Manual/GraphicsCommandBuffers.html
+// ↑の各ポイントに挿入される単位となる。
 class DrawElementList
 	: public RefObject
 {
@@ -304,6 +307,28 @@ private:
 
 	IDrawElementListFrameData* m_headFrameData;	// head of link list.
 	IDrawElementListFrameData* m_tailFrameData;	// tail of link list.
+};
+
+enum class RendringPhase
+{
+	Default = 0,
+
+	_Count,
+};
+
+// 1フレームで実行するコマンドリストすべてをまとめておく。
+// インスタンスは World などに、基本的にずっと持っておく。
+// 描画開始時に clear() し、そのフレームで描画したい CommandBuffer やら RenderingContext やらからどんどん add していく。
+class DrawElementListManager
+	: public RefObject
+{
+public:
+	void clear();
+	void addDrawElementList(RendringPhase phase, DrawElementList* list);
+	const List<DrawElementList*>& lists(RendringPhase phase) const;
+
+private:
+	List<DrawElementList*> m_lists[(int)RendringPhase::_Count];
 };
 
 } // namespace detail
