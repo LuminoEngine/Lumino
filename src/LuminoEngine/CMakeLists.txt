@@ -145,6 +145,8 @@ set(LN_SOURCES_Rendering
     src/Rendering/CommandBuffer.cpp
     src/Rendering/DrawElementListBuilder.cpp
     src/Rendering/DrawElementListBuilder.hpp
+    src/Rendering/LightClusters.cpp
+    src/Rendering/LightClusters.hpp
     src/Rendering/Material.cpp
     src/Rendering/RenderFeature.cpp
     src/Rendering/RenderingContext.cpp
