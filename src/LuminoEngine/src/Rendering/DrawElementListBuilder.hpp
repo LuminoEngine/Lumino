@@ -45,7 +45,7 @@ public:
 	SpriteRenderFeatureStageParameters* spriteRenderFeatureStageParameters() { return &m_spriteRenderFeatureStageParameters; }
 
 	template<class TElement>
-	RenderDrawElement* addNewDrawElement(
+	TElement* addNewDrawElement(
 		RenderFeature* renderFeature,
 		RenderFeatureStageParameters* params)
 	{
