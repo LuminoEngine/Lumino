@@ -123,9 +123,11 @@ set(LN_SOURCES_Graphics
 set(LN_SOURCES_Shader
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/Shader.hpp
+    include/Lumino/Shader/ShaderHelper.hpp
     include/Lumino/Shader/ShaderInterfaceFramework.hpp
     src/Shader/Internal.hpp
     src/Shader/Shader.cpp
+    src/Shader/ShaderHelper.cpp
     src/Shader/ShaderAnalyzer.cpp
     src/Shader/ShaderAnalyzer.hpp
     src/Shader/ShaderInterfaceFramework.cpp
