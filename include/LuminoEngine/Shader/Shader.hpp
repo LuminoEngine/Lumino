@@ -15,6 +15,7 @@ class ShaderTechnique;
 class ShaderPass;
 class GraphicsContext;
 namespace detail {
+class ShaderManager;
 class IShaderPass;
 class IShaderUniformBuffer;
 }
@@ -77,6 +78,7 @@ private:
 	ShaderConstantBuffer* getOrCreateConstantBuffer(detail::IShaderUniformBuffer* buffer);
 	ShaderParameter* getOrCreateTextureParameter(const String& name);
 
+	detail::ShaderManager* m_manager;
 	Ref<DiagnosticsManager> m_diag;
 	//List<Ref<ShaderParameter>> m_parameters;
 	List<Ref<ShaderConstantBuffer>> m_buffers;

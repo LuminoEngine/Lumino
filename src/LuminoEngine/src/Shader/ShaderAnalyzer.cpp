@@ -121,7 +121,8 @@ public:
 
 	virtual IncludeResult* includeSystem(const char* headerName, const char* sourceName, size_t inclusionDepth)
 	{
-		return nullptr;
+		// TODO: とりあえず共通にしてみる
+		return includeLocal(headerName, sourceName, inclusionDepth);
 	}
 
 	virtual IncludeResult* includeLocal(const char* headerName, const char* sourceName, size_t inclusionDepth)
@@ -141,8 +142,11 @@ public:
 
 	virtual void releaseInclude(IncludeResult* result)
 	{
-		delete reinterpret_cast<ByteBuffer*>(result->userData);
-		delete result;
+		if (result)
+		{
+			delete reinterpret_cast<ByteBuffer*>(result->userData);
+			delete result;
+		}
 	}
 };
 

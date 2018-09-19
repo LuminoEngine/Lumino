@@ -7,6 +7,7 @@
 #include "../Graphics/GraphicsDeviceContext.hpp"
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Engine/RenderingCommandList.hpp"
+#include "ShaderManager.hpp"
 #include "ShaderAnalyzer.hpp"
 
 
@@ -147,7 +148,8 @@ Ref<Shader> Shader::create(const StringRef& vertexShaderFilePath, const StringRe
 }
 
 Shader::Shader()
-	: m_globalConstantBuffer(nullptr)
+	: m_manager(detail::EngineDomain::shaderManager())
+	, m_globalConstantBuffer(nullptr)
 {
 
 }
@@ -253,7 +255,8 @@ Ref<detail::IShaderPass> Shader::createShaderPass(
 	const char* psData, size_t psLen, const char* psEntryPoint)
 {
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-	List<Path> includeDirs = { "C:/Proj/GitHub/Lumino/src/LuminoEngine/test/Assets" };
+
+	auto& includeDirs = m_manager->shaderIncludePaths();
 
 	detail::ShaderCode vsCodeGen;
 	if (!vsCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Vertex, vsData, vsLen, vsEntryPoint, includeDirs, m_diag))
