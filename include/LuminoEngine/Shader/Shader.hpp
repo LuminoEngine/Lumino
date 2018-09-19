@@ -62,8 +62,8 @@ LN_CONSTRUCT_ACCESS:
 	Shader();
 	virtual ~Shader();
 	void initialize();
-	void initialize(const StringRef& hlslEffectFilePath);
-	void initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCodeType codeType);
+	void initialize(const StringRef& hlslEffectFilePath, DiagnosticsManager* diag = nullptr);
+	void initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCodeType codeType, DiagnosticsManager* diag = nullptr);
 	virtual void dispose() override;
 
 	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
@@ -71,15 +71,16 @@ LN_CONSTRUCT_ACCESS:
 private:
 	Ref<detail::IShaderPass> createShaderPass(
 		const char* vsData, size_t vsLen, const char* vsEntryPoint,
-		const char* psData, size_t psLen, const char* psEntryPoint);
-	void buildShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen);
+		const char* psData, size_t psLen, const char* psEntryPoint,
+		DiagnosticsManager* diag);
+	void buildShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen, DiagnosticsManager* diag);
 	void postInitialize();
 	//ShaderParameter* getShaderParameter(const detail::ShaderUniformTypeDesc& desc, const String& name);
 	ShaderConstantBuffer* getOrCreateConstantBuffer(detail::IShaderUniformBuffer* buffer);
 	ShaderParameter* getOrCreateTextureParameter(const String& name);
 
 	detail::ShaderManager* m_manager;
-	Ref<DiagnosticsManager> m_diag;
+	//Ref<DiagnosticsManager> m_diag;
 	//List<Ref<ShaderParameter>> m_parameters;
 	List<Ref<ShaderConstantBuffer>> m_buffers;
 	List<Ref<ShaderTechnique>> m_techniques;

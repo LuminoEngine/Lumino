@@ -12,6 +12,8 @@ class String;
 
 #define _LN_CHECK(expr, exception, ...)			(!(expr)) && ln::detail::notifyException<exception>(__FILE__, __LINE__, #expr, ##__VA_ARGS__)
 
+#define LN_ERROR(...)							ln::detail::notifyException<::ln::Exception>(__FILE__, __LINE__, nullptr, ##__VA_ARGS__)
+
 /**
  * コードを実行する前の前提条件を検証するためのマクロです。
  * 

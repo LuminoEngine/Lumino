@@ -162,21 +162,22 @@ Shader::~Shader()
 void Shader::initialize()
 {
 	GraphicsResource::initialize();
-	m_diag = newObject<DiagnosticsManager>();
+	//m_diag = newObject<DiagnosticsManager>();
 }
 
-void Shader::initialize(const StringRef& hlslEffectFilePath)
+void Shader::initialize(const StringRef& hlslEffectFilePath, DiagnosticsManager* diag)
 {
 	Shader::initialize();
+	Ref<DiagnosticsManager> localDiag = (diag) ? diag : newObject<DiagnosticsManager>();
+
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 
-	auto diag = newObject<DiagnosticsManager>();
 	auto data = FileSystem::readAllBytes(hlslEffectFilePath);
 	auto code = reinterpret_cast<char*>(data.data());
 	auto codeLen = data.size();
 
 	detail::HLSLMetadataParser parser;
-	parser.parse(code, codeLen, diag);
+	parser.parse(code, codeLen, localDiag);
 
 	// glslang は hlsl の technique ブロックを理解できないので、空白で潰しておく
 	for (auto& hlslTech : parser.techniques)
@@ -194,7 +195,8 @@ void Shader::initialize(const StringRef& hlslEffectFilePath)
 		{
 			auto rhiPass = createShaderPass(
 				code, codeLen, hlslPass.vertexShader.c_str(),
-				code, codeLen, hlslPass.pixelShader.c_str());
+				code, codeLen, hlslPass.pixelShader.c_str(),
+				localDiag);
 			if (rhiPass)
 			{
 				auto pass = newObject<ShaderPass>(rhiPass);
@@ -204,31 +206,39 @@ void Shader::initialize(const StringRef& hlslEffectFilePath)
 		}
 	}
 
-	if (m_diag->hasItems()) {
-		m_diag->dumpToLog();
-	}
+	//if (m_diag->hasItems()) {
+	//	m_diag->dumpToLog();
+	//}
 #else
 	LN_NOTIMPLEMENTED();
 #endif
 	postInitialize();
+
+	if (!diag && localDiag->hasError()) {
+		LN_ERROR("err");	// TODO: get all error string.
+		return;
+	}
 }
 
-void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCodeType codeType)
+void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCodeType codeType, DiagnosticsManager* diag)
 {
 	Shader::initialize();
+	Ref<DiagnosticsManager> localDiag = (diag) ? diag : newObject<DiagnosticsManager>();
 
 	auto vsData = FileSystem::readAllBytes(vertexShaderFilePath);
 	auto psData = FileSystem::readAllBytes(pixelShaderFilePath);
 
 	buildShader(
 		reinterpret_cast<const char*>(vsData.data()), vsData.size(),
-		reinterpret_cast<const char*>(psData.data()), psData.size());
-
-	if (m_diag->hasItems())	{
-		m_diag->dumpToLog();
-	}
+		reinterpret_cast<const char*>(psData.data()), psData.size(),
+		localDiag);
 
 	postInitialize();
+
+	if (!diag && localDiag->hasError()) {
+		LN_ERROR("err");	// TODO: get all error string.
+		return;
+	}
 }
 
 void Shader::dispose()
@@ -252,20 +262,21 @@ void Shader::onChangeDevice(detail::IGraphicsDeviceContext* device)
 
 Ref<detail::IShaderPass> Shader::createShaderPass(
 	const char* vsData, size_t vsLen, const char* vsEntryPoint,
-	const char* psData, size_t psLen, const char* psEntryPoint)
+	const char* psData, size_t psLen, const char* psEntryPoint,
+	DiagnosticsManager* diag)
 {
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 
 	auto& includeDirs = m_manager->shaderIncludePaths();
 
 	detail::ShaderCode vsCodeGen;
-	if (!vsCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Vertex, vsData, vsLen, vsEntryPoint, includeDirs, m_diag))
+	if (!vsCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Vertex, vsData, vsLen, vsEntryPoint, includeDirs, diag))
 	{
 		return nullptr;
 	}
 
 	detail::ShaderCode psCodeGen;
-	if (!psCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Fragment, psData, psLen, psEntryPoint, includeDirs, m_diag))
+	if (!psCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Fragment, psData, psLen, psEntryPoint, includeDirs, diag))
 	{
 		return nullptr;
 	}
@@ -273,19 +284,19 @@ Ref<detail::IShaderPass> Shader::createShaderPass(
 	std::string vsCode = vsCodeGen.generateGlsl();
 	std::string psCode = psCodeGen.generateGlsl();
 
-	ShaderCompilationDiag diag;
+	ShaderCompilationDiag sdiag;	// TODO:
 	return deviceContext()->createShaderPass(
 		reinterpret_cast<const byte_t*>(vsCode.c_str()), vsCode.length(),
-		reinterpret_cast<const byte_t*>(psCode.c_str()), psCode.length(), &diag);
+		reinterpret_cast<const byte_t*>(psCode.c_str()), psCode.length(), &sdiag);
 #else
 	LN_NOTIMPLEMENTED();
 	return nullptr;
 #endif
 }
 
-void Shader::buildShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen)
+void Shader::buildShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen, DiagnosticsManager* diag)
 {
-	auto rhiPass = createShaderPass(vsData, vsLen, "main", psData, psLen, "main");
+	auto rhiPass = createShaderPass(vsData, vsLen, "main", psData, psLen, "main", diag);
 
 	auto tech = newObject<ShaderTechnique>(u"Main");	// TODO: 名前指定できた方がいいかも
 	tech->setOwner(this);
