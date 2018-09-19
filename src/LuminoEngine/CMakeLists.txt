@@ -144,6 +144,8 @@ set(LN_SOURCES_Rendering
     include/Lumino/Rendering/RenderView.hpp
     include/Lumino/Rendering/Vertex.hpp
     src/Rendering/Internal.hpp
+    src/Rendering/ClusteredShadingSceneRenderer.cpp
+    src/Rendering/ClusteredShadingSceneRenderer.hpp
     src/Rendering/CommandBuffer.cpp
     src/Rendering/DrawElementListBuilder.cpp
     src/Rendering/DrawElementListBuilder.hpp

@@ -1,11 +1,12 @@
 ﻿
 #include "Internal.hpp"
+#include <Lumino/Graphics/Bitmap.hpp>
+#include <Lumino/Graphics/Texture.hpp>
 #include "LightClusters.hpp"
 
 namespace ln {
 namespace detail {
 
-#if 0
 //==============================================================================
 // LightClusters
 
@@ -24,11 +25,12 @@ LightClusters::LightClusters()
 
 void LightClusters::init()
 {
-	m_clustersTexture = tr::Texture3D::create(ClusterWidth, ClusterHeight, ClusterDepth);
 	m_lightInofs.reserve(MaxLights);
-	m_lightInfoTexture = Texture2D::create(sizeof(LightInfo) / sizeof(Vector4), MaxLights, TextureFormat::R32G32B32A32_Float, false);
 	m_globalLightInofs.reserve(MaxLights);
-	m_globalLightInfoTexture = Texture2D::create(sizeof(GlobalLightInfo) / sizeof(Vector4), MaxLights, TextureFormat::R32G32B32A32_Float, false);
+
+	m_clustersTexture = newObject<Texture3D>(ClusterWidth, ClusterWidth, ClusterWidth, TextureFormat::RGBA32, false, GraphicsResourceUsage::Dynamic);
+	m_lightInfoTexture = newObject<Texture2D>(sizeof(LightInfo) / sizeof(Vector4), MaxLights, TextureFormat::R32G32B32A32Float, false, GraphicsResourceUsage::Dynamic);
+	m_globalLightInfoTexture = newObject<Texture2D>(sizeof(GlobalLightInfo) / sizeof(Vector4), MaxLights, TextureFormat::R32G32B32A32Float, false, GraphicsResourceUsage::Dynamic);
 }
 
 void LightClusters::beginMakeClusters(const Matrix& view, const Matrix& proj, const Vector3& cameraPos, float nearClip, float farClip)
@@ -132,24 +134,24 @@ void LightClusters::endMakeClusters()
 			m_globalLightInofs.add(GlobalLightInfo{});
 		}
 
-		m_globalLightInfoTexture->setMappedData(&m_globalLightInofs[0]);
+		detail::TextureHelper::setMappedData(m_globalLightInfoTexture, &m_globalLightInofs[0]);
 	}
 
 	// Local lights
 	{
-		// m_clustersData -> m_clustersTexture
+		Bitmap3D* surface = m_clustersTexture->map(MapMode::Write);
 		for (int y = 0; y < ClusterHeight; y++)
 		{
 			for (int x = 0; x < ClusterWidth; x++)
 			{
 				for (int z = 0; z < ClusterDepth; z++)
 				{
-					m_clustersTexture->setPixel32(x, y, z, m_clustersData[((ClusterWidth * ClusterHeight * z) + (ClusterWidth * y) + x)]);
+					surface->setPixel32(x, y, z, m_clustersData[((ClusterWidth * ClusterHeight * z) + (ClusterWidth * y) + x)]);
 				}
 			}
 		}
 
-		m_lightInfoTexture->setMappedData(&m_lightInofs[0]);
+		detail::TextureHelper::setMappedData(m_lightInfoTexture, &m_lightInofs[0]);
 	}
 }
 
@@ -313,7 +315,6 @@ void LightClusters::addClusterData(int x, int y, int z, int lightId)
 	//	printf("%d\n", clustersAddCount);
 	//}
 }
-#endif
 
 } // namespace detail
 } // namespace ln

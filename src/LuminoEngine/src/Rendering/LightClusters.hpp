@@ -1,9 +1,10 @@
 ﻿#pragma once
 
 namespace ln {
+class Texture2D;
+class Texture3D;
 namespace detail {
 
-#if 0
 class LightClusters
 {
 public:
@@ -25,7 +26,7 @@ public:
 	void addAmbientLight(const Color& color);
 	void addHemisphereLight(const Color& skyColor, const Color& groundColor);
 
-	const Ref<tr::Texture3D>& getClustersVolumeTexture() const { return m_clustersTexture; }
+	const Ref<Texture3D>& getClustersVolumeTexture() const { return m_clustersTexture; }
 	const Ref<Texture2D>& getLightInfoTexture() const { return m_lightInfoTexture; }
 	const Ref<Texture2D>& getGlobalLightInfoTexture() const { return m_globalLightInfoTexture; }
 
@@ -46,6 +47,7 @@ private:
 		Color	color;
 	};
 
+	// Texture2D の 1 行分として書き込むため、float4 の倍数サイズである必要がある
 	struct GlobalLightInfo
 	{
 		Color	color;			// DirectionalColor, AmbientColor, (sky)Hemisphere
@@ -59,7 +61,7 @@ private:
 	static const int		ClusterDepth = 32;
 	std::vector<Color32>	m_clustersData;		// TODO: Texture3D がまだ setData も getMappedData もサポートしていないので。できれば getMappedData にそのまま書き込みたい
 	std::vector<int>		m_clustersAddCount;	// あるクラスタに書かれたデータの数
-	Ref<tr::Texture3D>		m_clustersTexture;
+	Ref<Texture3D>		m_clustersTexture;
 
 	static const int		MaxLights = 64;
 	List<LightInfo>			m_lightInofs;		// m_lightInfoTexture に書き込む。TODO: Texture2D が float4 書き込みをちゃんとサポートしたら必要ない。
@@ -68,7 +70,6 @@ private:
 	Ref<Texture2D>			m_globalLightInfoTexture;
 
 };
-#endif
 
 } // namespace detail
 } // namespace ln

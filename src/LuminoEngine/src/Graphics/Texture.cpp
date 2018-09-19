@@ -335,4 +335,17 @@ void RenderTargetTexture::onChangeDevice(detail::IGraphicsDeviceContext* device)
 	LN_NOTIMPLEMENTED();
 }
 
+namespace detail {
+
+
+//==============================================================================
+// TextureHelper
+
+void TextureHelper::setMappedData(Texture2D* texture, const void* data)
+{
+	Bitmap2D* surface = texture->map(MapMode::Write);
+	memcpy(surface->rawBuffer()->data(), data, surface->rawBuffer()->size());
+}
+
+} // namespace detail
 } // namespace ln

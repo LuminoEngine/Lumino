@@ -147,4 +147,13 @@ private:
 	//bool m_mipmap;
 };
 
+namespace detail {
+
+class TextureHelper
+{
+public:
+	static void setMappedData(Texture2D* texture, const void* data);
+};
+
+} // namespace detail
 } // namespace ln
