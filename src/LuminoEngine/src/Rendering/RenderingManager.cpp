@@ -42,7 +42,7 @@ void RenderingManager::initialize(const Settings& settings)
 
 
 
-	m_builtinShaders[0] = Shader::create(u"D:/Proj/GitHub/Lumino/src/LuminoEngine/sandbox/Assets/SpriteTest.hlsl");
+//	m_builtinShaders[0] = Shader::create(u"D:/Proj/GitHub/Lumino/src/LuminoEngine/sandbox/Assets/SpriteTest.hlsl");
 
 }
 

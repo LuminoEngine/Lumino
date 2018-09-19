@@ -400,6 +400,14 @@ public:
 };
 
 // 内部用
+struct BoxSizeI
+{
+	int		width;
+	int		height;
+	int		depth;
+};
+
+// 内部用
 class RectI
 {
 public:

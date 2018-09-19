@@ -394,6 +394,7 @@ void Shader::setTexture(const StringRef& name, Texture* value)
 ShaderParameter* Shader::findParameter(const StringRef& name) const
 {
 	// find global constant buffer.
+	if (m_globalConstantBuffer)
 	{
 		ShaderParameter* result = m_globalConstantBuffer->findParameter(name);
 		if (result) {

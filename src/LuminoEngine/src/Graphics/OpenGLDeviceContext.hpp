@@ -125,6 +125,7 @@ protected:
 	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) override;
 	virtual Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) override;
 	virtual Ref<ITexture> onCreateTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
+	virtual Ref<ITexture> onCreateTexture3D(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
 	virtual Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) override;
 	virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
@@ -321,16 +322,46 @@ public:
 	void initialize(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData);
 	virtual void dispose() override;
 
+	virtual DeviceTextureType type() const override { return DeviceTextureType::Texture2D; }
 	virtual void readData(void* outData) override;
 	virtual const SizeI& realSize() override;
 	virtual TextureFormat getTextureFormat() const override;
 	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) override;
+	virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
 
 	virtual GLuint id() const override { return m_id; }
 
 private:
 	GLuint m_id;
 	SizeI m_size;
+	TextureFormat m_textureFormat;
+	GLenum m_pixelFormat;
+	GLenum m_elementType;
+};
+
+class GLTexture3D
+	: public GLTextureBase
+{
+public:
+	GLTexture3D();
+	virtual ~GLTexture3D();
+	void initialize(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData);
+	virtual void dispose() override;
+
+	virtual DeviceTextureType type() const override { return DeviceTextureType::Texture3D; }
+	virtual void readData(void* outData) override;
+	virtual const SizeI& realSize() override;
+	virtual TextureFormat getTextureFormat() const override;
+	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) override;
+	virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
+
+	virtual GLuint id() const override { return m_id; }
+
+private:
+	GLuint m_id;
+	uint32_t m_width;
+	uint32_t m_height;
+	uint32_t m_depth;
 	TextureFormat m_textureFormat;
 	GLenum m_pixelFormat;
 	GLenum m_elementType;
@@ -347,10 +378,12 @@ public:
 
 	virtual GLuint id() const override { return m_id; }
 
+	virtual DeviceTextureType type() const override { return DeviceTextureType::RenderTarget; }
 	virtual void readData(void* outData) override;
 	virtual const SizeI& realSize() override;
 	virtual TextureFormat getTextureFormat() const override;
 	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) override;
+	virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
 
 
 private:

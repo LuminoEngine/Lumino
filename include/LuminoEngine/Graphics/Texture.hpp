@@ -8,6 +8,7 @@ class ShaderPass;
 namespace detail { class ITexture; }
 
 class Bitmap2D;
+class Bitmap3D;
 
 /** テクスチャのベースクラスです。 */
 LN_CLASS()
@@ -76,6 +77,45 @@ private:
 	GraphicsResourcePool m_pool;
 
 	Ref<Bitmap2D> m_bitmap;
+	void* m_rhiLockedBuffer;
+	bool m_mipmap;
+	bool m_initialUpdate;
+	bool m_modified;
+};
+
+
+/** 3D テクスチャのクラスです。 */
+LN_CLASS()
+class Texture3D
+	: public Texture
+{
+public:
+	/** テクスチャの奥行きを取得します。 (ピクセル単位) */
+	int depth() const { return m_depth; }
+
+	/** テクスチャが保持するビットマップデータにアクセスします。 */
+	Bitmap3D* map(MapMode mode);
+
+	/** リソースの管理方法を変更します。(default: Managed) */
+	void setResourcePool(GraphicsResourcePool pool);
+
+LN_CONSTRUCT_ACCESS:
+	Texture3D();
+	virtual ~Texture3D();
+	void initialize(int width, int height, int depth, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
+
+protected:
+	virtual void dispose() override;
+	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
+	virtual detail::ITexture* resolveRHIObject() override;
+
+private:
+	Ref<detail::ITexture> m_rhiObject;
+	GraphicsResourceUsage m_usage;
+	GraphicsResourcePool m_pool;
+
+	int m_depth;
+	Ref<Bitmap3D> m_bitmap;
 	void* m_rhiLockedBuffer;
 	bool m_mipmap;
 	bool m_initialUpdate;

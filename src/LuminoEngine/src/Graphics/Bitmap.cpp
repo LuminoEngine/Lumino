@@ -429,6 +429,49 @@ int Bitmap2D::getBitmapByteSize(int width, int height, int depth, PixelFormat fo
 }
 
 //==============================================================================
+// Bitmap3D
+
+Bitmap3D::Bitmap3D()
+	: m_buffer(makeRef<ByteBuffer>())
+	, m_width(0)
+	, m_height(0)
+	, m_depth(0)
+	, m_format(PixelFormat::Unknown)
+{
+}
+
+Bitmap3D::~Bitmap3D()
+{
+}
+
+void Bitmap3D::initialize(int width, int height, int depth, PixelFormat format)
+{
+	if (LN_REQUIRE(width > 0)) return;
+	if (LN_REQUIRE(height > 0)) return;
+	if (LN_REQUIRE(depth > 0)) return;
+	Object::initialize();
+	m_width = width;
+	m_height = height;
+	m_depth = depth;
+	m_format = format;
+	m_buffer->resize(Bitmap2D::getBitmapByteSize(m_width, m_height, m_depth, m_format));
+}
+
+void Bitmap3D::setPixel32(int x, int y, int z, const Color32& color)
+{
+	if (m_format == PixelFormat::RGBA32)
+	{
+		size_t faceSize = 4 * m_width * m_height;
+		Color32* pixel = reinterpret_cast<Color32*>(m_buffer->data() + (faceSize * z) + ((y * m_width) + x) * 4);
+		*pixel = color;
+	}
+	else
+	{
+		LN_NOTIMPLEMENTED();
+	}
+}
+
+//==============================================================================
 // BitmapHelper
 
 namespace detail {
@@ -457,6 +500,22 @@ void BitmapHelper::blitRawSimple(void* dst, const void* src, size_t width, size_
 			const byte_t* s = static_cast<const byte_t*>(src) + (lineBytes * (height - y - 1));
 			memcpy(d, s, lineBytes);
 		}
+	}
+}
+
+void BitmapHelper::blitRawSimple3D(void* dst, const void* src, size_t width, size_t height, size_t depth, size_t pixelBytes, bool flipVertical)
+{
+	if (LN_REQUIRE(dst)) return;
+	if (LN_REQUIRE(src)) return;
+	if (LN_REQUIRE(dst != src)) return;
+	size_t faceBytes = (width * pixelBytes) * height;
+
+	for (size_t z = 0; z < depth; z++)
+	{
+		blitRawSimple(
+			static_cast<byte_t*>(dst) + (faceBytes * z),
+			static_cast<const byte_t*>(src) + (faceBytes * z),
+			width, height, pixelBytes, flipVertical);
 	}
 }
 

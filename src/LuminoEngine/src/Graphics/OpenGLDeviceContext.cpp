@@ -318,6 +318,13 @@ Ref<ITexture> OpenGLDeviceContext::onCreateTexture2D(uint32_t width, uint32_t he
 	return ptr;
 }
 
+Ref<ITexture> OpenGLDeviceContext::onCreateTexture3D(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
+{
+	auto ptr = makeRef<GLTexture3D>();
+	ptr->initialize(width, height, depth, requestFormat, mipmap, initialData);
+	return ptr;
+}
+
 Ref<ITexture> OpenGLDeviceContext::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
 {
 	auto ptr = makeRef<GLRenderTargetTexture>();
@@ -1265,6 +1272,102 @@ void GLTexture2D::setSubData(int x, int y, int width, int height, const void* da
 	GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
+void GLTexture2D::setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
+{
+	LN_UNREACHABLE();
+}
+
+//=============================================================================
+// GLTexture3D
+
+GLTexture3D::GLTexture3D()
+	: m_id(0)
+	, m_width(0)
+	, m_height(0)
+	, m_depth(0)
+	, m_textureFormat(TextureFormat::Unknown)
+	, m_pixelFormat(0)
+	, m_elementType(0)
+{
+}
+
+GLTexture3D::~GLTexture3D()
+{
+}
+
+void GLTexture3D::initialize(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
+{
+	m_width = width;
+	m_height = height;
+	m_depth = depth;
+	m_textureFormat = requestFormat;
+	GLint levels = (mipmap) ? 4 : 0;	// TODO:DirectX だと 0 の場合は全レベル作成するけど、今ちょっと計算めんどうなので 
+
+	GLenum internalFormat;
+	OpenGLHelper::getGLTextureFormat(requestFormat, &internalFormat, &m_pixelFormat, &m_elementType);
+
+	GLuint tex;
+	GL_CHECK(glGenTextures(1, &m_id));
+	GL_CHECK(glBindTexture(GL_TEXTURE_3D, m_id));
+	GL_CHECK(glTexImage3D(GL_TEXTURE_3D, levels, internalFormat, m_width, m_height, m_depth, 0, m_pixelFormat, m_elementType, initialData));
+
+	//// テクスチャの拡大・縮小に線形補間を用いる
+	//glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	//// テクスチャからはみ出た部分には境界色を用いる
+	//glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	//glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	//glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
+
+	// テクスチャの境界色を設定する (ボリュームの外には何もない)
+	//static const GLfloat black[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	//glTexParameterfv(GL_TEXTURE_3D, GL_TEXTURE_BORDER_COLOR, black);
+
+	GL_CHECK(glBindTexture(GL_TEXTURE_3D, 0));
+}
+
+void GLTexture3D::dispose()
+{
+	if (m_id != 0)
+	{
+		GL_CHECK(glDeleteTextures(1, &m_id));
+		m_id = 0;
+	}
+
+	GLTextureBase::dispose();
+}
+
+void GLTexture3D::readData(void* outData)
+{
+	LN_UNREACHABLE();
+}
+
+const SizeI& GLTexture3D::realSize()
+{
+	LN_NOTIMPLEMENTED();
+	return SizeI::Zero;
+}
+
+TextureFormat GLTexture3D::getTextureFormat() const
+{
+	return m_textureFormat;
+}
+
+void GLTexture3D::setSubData(int x, int y, int width, int height, const void* data, size_t dataSize)
+{
+	LN_UNREACHABLE();
+}
+
+void GLTexture3D::setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
+{
+	GL_CHECK(glBindTexture(GL_TEXTURE_3D, m_id));
+	GL_CHECK(glTexSubImage3D(GL_TEXTURE_3D,
+		0,	// TODO: Mipmap
+		x, y, z, width, height, depth, m_pixelFormat, m_elementType, data));
+	GL_CHECK(glBindTexture(GL_TEXTURE_3D, 0));
+}
+
 //=============================================================================
 // GLRenderTargetTexture
 
@@ -1353,6 +1456,11 @@ TextureFormat GLRenderTargetTexture::getTextureFormat() const
 }
 
 void GLRenderTargetTexture::setSubData(int x, int y, int width, int height, const void* data, size_t dataSize)
+{
+	LN_UNREACHABLE();
+}
+
+void GLRenderTargetTexture::setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
 {
 	LN_UNREACHABLE();
 }
@@ -1950,8 +2058,9 @@ void GLLocalShaderSamplerBuffer::bind()
 	{
 		int unitIndex = i;
 		GLTextureBase* t = static_cast<GLTextureBase*>(m_table[i].texture);
+		GLenum target = (t->type() == DeviceTextureType::Texture3D) ? GL_TEXTURE_3D : GL_TEXTURE_2D;
 		GL_CHECK(glActiveTexture(GL_TEXTURE0 + unitIndex));
-		GL_CHECK(glBindTexture(GL_TEXTURE_2D, (t) ? t->id() : 0));
+		GL_CHECK(glBindTexture(target, (t) ? t->id() : 0));
 		GL_CHECK(glBindSampler(unitIndex, (m_table[i].samplerState) ? m_table[i].samplerState->id() : 0));
 		GL_CHECK(glUniform1i(m_table[i].uniformLocation, unitIndex));
 	}

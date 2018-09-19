@@ -531,6 +531,52 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture)
 }
 
 //------------------------------------------------------------------------------
+TEST_F(Test_Graphics_LowLevelRendering, Texture3D)
+{
+	auto shader1 = Shader::create(LN_ASSETFILE("Texture3DTest-1.vsh"), LN_ASSETFILE("Texture3DTest-1.psh"));
+
+	auto vertexDecl1 = newObject<VertexDeclaration>();
+	vertexDecl1->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
+	vertexDecl1->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::TexCoord, 0);
+
+	struct Vertex
+	{
+		Vector3 pos;
+		Vector3 uv;
+	};
+	Vertex v[] = {
+		{ { -1, 1, 0 }, { 0, 0, 0.5 }, },	// 0.5 で中央の face からサンプリングする
+		{ { 0, 1, 0 }, { 1, 0, 0.5 }, },
+		{ { -1, 0, 0 }, { 0, 1, 0.5 }, },
+		{ { 0, 0, 0 }, { 1, 1, 0.5 }, },
+	};
+	auto vb1 = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+
+	auto tex1 = newObject<Texture3D>(2, 2, 3);
+	auto bmp1 = tex1->map(MapMode::Write);
+	bmp1->setPixel32(0, 0, 1, Color32(255, 0, 0, 255));
+	bmp1->setPixel32(1, 0, 1, Color32(255, 0, 255, 255));
+	bmp1->setPixel32(0, 1, 1, Color32(0, 255, 0, 255));
+	bmp1->setPixel32(1, 1, 1, Color32(0, 0, 255, 255));
+
+	shader1->findParameter("g_texture1")->setTexture(tex1);
+
+	auto ctx = Engine::graphicsContext();
+	ctx->setVertexDeclaration(vertexDecl1);
+	ctx->setVertexBuffer(0, vb1);
+	ctx->setIndexBuffer(nullptr);
+	ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
+
+	// * [ ] default
+	{
+		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
+
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-Texture3D-1.png"));
+	}
+}
+
+//------------------------------------------------------------------------------
 TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 {
 	auto shader1 = Shader::create(LN_ASSETFILE("TextureTest-1.vsh"), LN_ASSETFILE("TextureTest-1.psh"));

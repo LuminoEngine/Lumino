@@ -19,6 +19,13 @@ class IShaderUniformBuffer;
 class IShaderUniform;
 class IShaderSamplerBuffer;
 
+enum class DeviceTextureType
+{
+	Texture2D,
+	Texture3D,
+	RenderTarget,
+};
+
 class IGraphicsDeviceContext
 	: public RefObject
 {
@@ -38,6 +45,7 @@ public:
 	Ref<IVertexBuffer> createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData = nullptr);
 	Ref<IIndexBuffer> createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData = nullptr);
 	Ref<ITexture> createTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData = nullptr);
+	Ref<ITexture> createTexture3D(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData = nullptr);
 	Ref<ITexture> createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
 	Ref<IDepthBuffer> createDepthBuffer(uint32_t width, uint32_t height);
 	Ref<ISamplerState> createSamplerState(const SamplerStateData& desc);
@@ -69,6 +77,7 @@ protected:
 	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) = 0;
 	virtual Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) = 0;
 	virtual Ref<ITexture> onCreateTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) = 0;
+	virtual Ref<ITexture> onCreateTexture3D(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) = 0;
 	virtual Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) = 0;
 	virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) = 0;
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) = 0;
@@ -82,8 +91,6 @@ protected:
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
 	virtual void onDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) = 0;
 	virtual void onDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) = 0;
-
-	//virtual void onSetShaderPass(IShaderPass* pass) = 0;
 
 	virtual void onPresent(ISwapChain* swapChain) = 0;
 
@@ -176,9 +183,10 @@ class ITexture
 	: public IGraphicsDeviceObject
 {
 public:
-
+	virtual DeviceTextureType type() const = 0;
 
 	virtual const SizeI& realSize() = 0;
+
 	virtual TextureFormat getTextureFormat() const = 0;
 
 	// データは up flow (上下反転)
@@ -207,6 +215,7 @@ public:
 	// データ転送 (TODO:部分更新は未実装…)
 	// data に渡されるイメージデータは上下が反転している状態。
 	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
+	virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
 
 	//virtual void setSubData3D(const Box32& box, const void* data, size_t dataBytes) = 0;
 

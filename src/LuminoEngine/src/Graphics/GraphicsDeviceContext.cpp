@@ -63,6 +63,11 @@ Ref<ITexture> IGraphicsDeviceContext::createTexture2D(uint32_t width, uint32_t h
 	return onCreateTexture2D(width, height, requestFormat, mipmap, initialData);
 }
 
+Ref<ITexture> IGraphicsDeviceContext::createTexture3D(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
+{
+	return onCreateTexture3D(width, height, depth, requestFormat, mipmap, initialData);
+}
+
 Ref<ITexture> IGraphicsDeviceContext::createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
 {
 	return onCreateRenderTarget(width, height, requestFormat, mipmap);
