@@ -49,7 +49,7 @@ enum class BuiltinSemantics
 
 	//--------------------
 	// Subset unit
-	MaterialTexture,
+	MaterialTexture,	// glslang の HLSL Parser が texture をサポートしていないため Texture2D 固定。
 
 	MaterialColor,		// [PBR] vector
 	MaterialRoughness,	// [PBR] float

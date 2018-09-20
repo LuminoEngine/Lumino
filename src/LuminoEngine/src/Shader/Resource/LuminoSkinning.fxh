@@ -8,7 +8,9 @@ float	 MMM_modelsize = 1.0;
 float2 ln_BoneTextureReciprocalSize = float2( 1.0/4.0, 1.0/256.0 );
 
 // ボーン用頂点テクスチャサンプラー宣言
-texture ln_BoneTexture;
+Texture2D ln_BoneTexture;
+SamplerState ln_BoneTextureSamplerState;
+/*
 sampler2D ln_BoneSampler = sampler_state
 {
 	Texture = <ln_BoneTexture>;
@@ -18,8 +20,11 @@ sampler2D ln_BoneSampler = sampler_state
 	AddressU = Clamp;
 	AddressV = Clamp;
 };
+*/
 
-texture ln_BoneLocalQuaternionTexture;
+Texture2D ln_BoneLocalQuaternionTexture;
+SamplerState ln_BoneLocalQuaternionTextureSamplerState;
+/*
 sampler2D ln_BoneLocalQuaternionSampler = sampler_state
 {
 	Texture = <ln_BoneLocalQuaternionTexture>;
@@ -29,6 +34,7 @@ sampler2D ln_BoneLocalQuaternionSampler = sampler_state
 	AddressU = Clamp;
 	AddressV = Clamp;
 };
+*/
 
 struct MMM_SKINNING_INPUT
 {
@@ -68,11 +74,17 @@ float4x3 LN_GetBoneMatrix(int boneIndex)
 	float4 tc1 = float4( 1.5f * uv.x, (boneIndex + 0.5f) * uv.y, 0, 1 );
 	float4 tc2 = float4( 2.5f * uv.x, (boneIndex + 0.5f) * uv.y, 0, 1 );
 	//float4 tc3 = float4( 3.5f * uv.x, (boneIndex + 0.5f) * uv.y, 0, 1 );
+	
+	return float4x3(
+		ln_BoneTexture.SampleLevel(ln_BoneTextureSamplerState, tc0, 0),
+		ln_BoneTexture.SampleLevel(ln_BoneTextureSamplerState, tc1, 0),
+		ln_BoneTexture.SampleLevel(ln_BoneTextureSamplerState, tc2, 0));
+	/*
 	return float4x3(
 		tex2Dlod( ln_BoneSampler, tc0 ),
 		tex2Dlod( ln_BoneSampler, tc1 ),
-		tex2Dlod( ln_BoneSampler, tc2 )/*,
-		tex2Dlod( ln_BoneSampler, tc3 )*/ );
+		tex2Dlod( ln_BoneSampler, tc2 ) );
+		*/
 }
 
 float4x4 LN_GetBoneMatrix4x4(int boneIndex)
@@ -87,18 +99,28 @@ float4x4 LN_GetBoneMatrix4x4(int boneIndex)
 	float4 tc1 = float4( 1.5f * uv.x, (boneIndex + 0.5f) * uv.y, 0, 1 );
 	float4 tc2 = float4( 2.5f * uv.x, (boneIndex + 0.5f) * uv.y, 0, 1 );
 	float4 tc3 = float4( 3.5f * uv.x, (boneIndex + 0.5f) * uv.y, 0, 1 );
+	
+	
+	return float4x4(
+		ln_BoneTexture.SampleLevel(ln_BoneTextureSamplerState, tc0, 0),
+		ln_BoneTexture.SampleLevel(ln_BoneTextureSamplerState, tc1, 0),
+		ln_BoneTexture.SampleLevel(ln_BoneTextureSamplerState, tc2, 0),
+		ln_BoneTexture.SampleLevel(ln_BoneTextureSamplerState, tc3, 0));
+	/*
 	return float4x4(
 		tex2Dlod( ln_BoneSampler, tc0 ),    // rot
 		tex2Dlod( ln_BoneSampler, tc1 ),    // rot
 		tex2Dlod( ln_BoneSampler, tc2 ),    // rot
 		tex2Dlod( ln_BoneSampler, tc3 ));   // transform
+		*/
 }
 
 float4 LN_GetBoneLocalQuaternion(int boneIndex)
 {
 	float2 uv = ln_BoneTextureReciprocalSize;
 	float4 tc0 = float4(0.5f, (boneIndex + 0.5f) * uv.y, 0, 1);	// +0.5 は半ピクセル分
-	return tex2Dlod(ln_BoneLocalQuaternionSampler, tc0);
+	return ln_BoneLocalQuaternionTexture.SampleLevel(ln_BoneLocalQuaternionTextureSamplerState, tc0, 0);
+	//return tex2Dlod(ln_BoneLocalQuaternionSampler, tc0);
 }
 
 float4 LN_QuaternionSlerp(float4 q1, float4 q2, float t)
@@ -179,8 +201,8 @@ MMM_SKINNING_OUTPUT MMM_SkinnedPositionNormal(
 	float4 pos = 0.0;
 	float4 nml = 0.0;
 
-	float blendWeights[4] = (float[4])weights;
-	float BlendIndices[4] = (float[4])indices;
+	float blendWeights[4] = { weights.x, weights.y, weights.z, weights.w };//(float[4])weights;
+	float BlendIndices[4] = { indices.x, indices.y, indices.z, indices.w };//(float[4])indices;
 	
 	if (sdefC.w >= 0)
 	{
@@ -219,12 +241,12 @@ MMM_SKINNING_OUTPUT MMM_SkinnedPositionNormal(
 		for (int i = 0; i < 3; i++)
 		{
 			lastWeight += blendWeights[i];
-			pos.xyz += mul(position.xyz, LN_GetBoneMatrix(BlendIndices[i])) * blendWeights[i];
-			nml.xyz += mul(normal.xyz, LN_GetBoneMatrix(BlendIndices[i])) * blendWeights[i];
+			pos.xyz += mul(float4(position.xyz, 1.0f), LN_GetBoneMatrix(BlendIndices[i])) * blendWeights[i];
+			nml.xyz += mul(float4(normal.xyz, 1.0f), LN_GetBoneMatrix(BlendIndices[i])) * blendWeights[i];
 		}
 		lastWeight = 1.0f - lastWeight;
-		pos.xyz += mul(position.xyz, LN_GetBoneMatrix(BlendIndices[3])) * lastWeight;
-		nml.xyz += mul(normal.xyz, LN_GetBoneMatrix(BlendIndices[3])) * lastWeight;
+		pos.xyz += mul(float4(position.xyz, 1.0f), LN_GetBoneMatrix(BlendIndices[3])) * lastWeight;
+		nml.xyz += mul(float4(normal.xyz, 1.0f), LN_GetBoneMatrix(BlendIndices[3])) * lastWeight;
 		
 		pos.w = 1.0f;
 	}
@@ -243,8 +265,8 @@ LN_SkinningOutput LN_SkinningVertex(
 {
 	float4 pos = 0.0;
 	float4 nml = 0.0;
-	float blendWeights[4] = (float[4])weights;
-	float BlendIndices[4] = (float[4])indices;
+	float blendWeights[4] = { weights.x, weights.y, weights.z, weights.w };//(float[4])weights;
+	float BlendIndices[4] = { indices.x, indices.y, indices.z, indices.w };//(float[4])indices;
 
     float lastWeight = 0.0;
     for (int i = 0; i < 3; i++)

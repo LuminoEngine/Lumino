@@ -15,7 +15,8 @@ float4x4	ln_WorldViewProjection;
 float4x4	ln_WorldView;
 float4x4	ln_WorldViewIT;
 float2		ln_ViewportPixelSize;
-texture		ln_MaterialTexture;
+Texture2D		ln_MaterialTexture;
+SamplerState	ln_MaterialTextureSamplerState;
 
 
 struct LN_VSInput

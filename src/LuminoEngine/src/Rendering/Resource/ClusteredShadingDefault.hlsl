@@ -2,9 +2,6 @@
 
 //BEGIN_HLSL
 
-
-
-
 #include <Lumino.fxh>
 #include <LuminoForward.fxh>
 #include <LuminoPBR.fxh>
