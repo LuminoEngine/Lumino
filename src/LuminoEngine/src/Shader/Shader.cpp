@@ -215,7 +215,7 @@ void Shader::initialize(const StringRef& hlslEffectFilePath, DiagnosticsManager*
 	postInitialize();
 
 	if (!diag && localDiag->hasError()) {
-		LN_ERROR("err");	// TODO: get all error string.
+		LN_ERROR(localDiag->toString());
 		return;
 	}
 }
@@ -236,7 +236,7 @@ void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& 
 	postInitialize();
 
 	if (!diag && localDiag->hasError()) {
-		LN_ERROR("err");	// TODO: get all error string.
+		LN_ERROR(localDiag->toString());
 		return;
 	}
 }

@@ -26,6 +26,7 @@ public:
 
 	const List<Ref<DiagnosticsItem>>& items() const { return m_items; }
 
+	ln::String toString() const;
 	void dumpToLog() const;
 
 LN_CONSTRUCT_ACCESS:

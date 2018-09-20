@@ -143,8 +143,13 @@ void printError(const Exception& e)
 		buf, BUFFER_SIZE, "%s(%d):\"%s\" ",
 		ExceptionHelper::getSourceFilePath(e),
 		ExceptionHelper::getSourceFileLine(e),
-		ExceptionHelper::getAssertionMessage(e));
-	convertChar16ToLocalChar(e.getMessage(), BUFFER_SIZE, buf + len, BUFFER_SIZE - len);
+		(ExceptionHelper::getAssertionMessage(e)) ? ExceptionHelper::getAssertionMessage(e) : "");
+
+	if (!StringHelper::isNullOrEmpty(e.getMessage())) {
+		buf[len] = '\n';
+		len++;
+		convertChar16ToLocalChar(e.getMessage(), BUFFER_SIZE, buf + len, BUFFER_SIZE - len);
+	}
 
 	if (GlobalLogger::hasAnyAdapter()) {
 		LN_LOG_ERROR << buf;
@@ -199,12 +204,28 @@ static void safeWCharToUChar(const wchar_t* src, Char* dst, int dstSize) LN_NOEX
 	dst[i] = '\0';
 }
 
-LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(Exception);
+// LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(Exception);
+Exception::Exception(const char* message)
+	: Exception()
+{
+	setMessage(message);
+} 
+Exception::Exception(const wchar_t* message)
+	: Exception()
+{
+	setMessage(message);
+}
+Exception::Exception(const Char* message)
+	: Exception()
+{
+	setMessageU(message);
+}
 
 Exception::Exception()
 	: m_sourceFilePath{}
 	, m_sourceFileLine(0)
-	, m_stackBuffer()
+	, m_assertionMessage{}
+	, m_stackBuffer{}
 	, m_stackBufferSize(0)
 	, m_caption()
 	, m_message()
@@ -301,7 +322,9 @@ void Exception::setSourceLocationInfo(const char* filePath, int fileLine, const 
 {
 	StringHelper::strcpy(m_sourceFilePath, MaxPathSize - 1, filePath);
 	m_sourceFileLine = fileLine;
-	StringHelper::strcpy(m_assertionMessage, MaxAssertionMessageSize - 1, assertionMessage);
+	if (assertionMessage) {
+		StringHelper::strcpy(m_assertionMessage, MaxAssertionMessageSize - 1, assertionMessage);
+	}
 }
 
 //==============================================================================

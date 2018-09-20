@@ -40,7 +40,7 @@ void RenderingManager::initialize(const Settings& settings)
 
 	m_stageDataPageManager = makeRef<LinearAllocatorPageManager>();
 
-	auto shader = Shader::create(u"D:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.hlsl");
+	auto shader = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.hlsl");
 	//auto shader = Shader::create(u"D:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/DepthPrepass.hlsl");
 	
 

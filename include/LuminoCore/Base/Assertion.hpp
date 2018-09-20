@@ -229,6 +229,7 @@ inline bool notifyException(const char* file, int line, const char* exprString, 
 	const size_t BUFFER_SIZE = 512;
 	Char str[BUFFER_SIZE] = {};
 	errorPrintf(str, BUFFER_SIZE, args...);
+
 	TException e(str);
 	detail::Exception_setSourceLocationInfo(e, file, line, exprString);
 	auto h = Exception::notificationHandler();
