@@ -457,12 +457,6 @@ struct MySSInput
 	float4	WorldPos	: TEXCOORD5;
 };
 
-sampler2D		MaterialTextureSampler = sampler_state
-{
-	texture = <ln_MaterialTexture>;
-	MINFILTER = LINEAR;
-	MAGFILTER = LINEAR;
-};
 
 void MyVFMain(LN_VSInput input, inout MyVFOutput output)	// ★ out 引数の型をパース
 {
@@ -472,7 +466,7 @@ void MyVFMain(LN_VSInput input, inout MyVFOutput output)	// ★ out 引数の型
 // Surface Shader
 void MySSMain(MySSInput input, inout LN_SurfaceOutput output)
 {
-	output.Albedo = (tex2D(MaterialTextureSampler, input.UV)) * input.Color;
+	output.Albedo = ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.UV) * input.Color;
 	//output.Albedo = float4(1, 0, 0, 1);
 }
 
