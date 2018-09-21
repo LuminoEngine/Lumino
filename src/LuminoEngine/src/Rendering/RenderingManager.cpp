@@ -5,6 +5,7 @@
 #include "../Engine/LinearAllocator.hpp"
 #include "DrawElementListBuilder.hpp"
 #include "SpriteRenderFeature.hpp"
+#include "RenderTargetTextureCache.hpp"
 #include "RenderingManager.hpp"
 
 namespace ln {
@@ -25,6 +26,9 @@ void RenderingManager::initialize(const Settings& settings)
 {
 	m_graphicsManager = settings.graphicsManager;
 
+	m_renderTargetTextureCacheManager = makeRef<RenderTargetTextureCacheManager>();
+	m_depthBufferCacheManager = makeRef<DepthBufferCacheManager>();
+
 	static VertexElement elements[] =
 	{
 		{ 0, VertexElementType::Float3, VertexElementUsage::Position, 0 },
@@ -40,11 +44,11 @@ void RenderingManager::initialize(const Settings& settings)
 
 	m_stageDataPageManager = makeRef<LinearAllocatorPageManager>();
 
-	auto shader = Shader::create(u"D:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.hlsl");
-	//auto shader = Shader::create(u"D:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/DepthPrepass.hlsl");
-	
+	m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(u"D:/Proj/GitHub/Lumino/src/LuminoEngine/sandbox/Assets/SpriteTest.hlsl");
+	m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"D:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.hlsl");
+	m_builtinShaders[(int)BuiltinShader::DepthPrepass] = Shader::create(u"D:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/DepthPrepass.hlsl");
+	m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(u"D:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.hlsl");
 
-//	m_builtinShaders[0] = Shader::create(u"D:/Proj/GitHub/Lumino/src/LuminoEngine/sandbox/Assets/SpriteTest.hlsl");
 
 }
 

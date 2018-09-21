@@ -20,13 +20,25 @@ class SceneRendererPass
 	: public RefObject
 {
 public:
+	SceneRendererPass();
+	virtual ~SceneRendererPass();
+	void initialize();
+
+	// シャドウバッファの作成などのため、パス単位で RenderTarget を切り替えたい場合、ここでセットする
+	virtual void overrideDefaultFrameBuffer(FrameBuffer* frameBuffer);
+
 	// Element の情報と派生 Pass から、最終的に使いたい ShaderTechnique を求める
 	virtual ShaderTechnique* selectShaderTechnique(
 		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
 		Shader* requestedShader,
 		ShadingModel requestedShadingModel) = 0;
 
+	RenderingManager* manager() const { return m_manager; }
+
+	ShaderTechniqueClass_ShadingModel tlanslateShadingModel(ShadingModel value) { return (ShaderTechniqueClass_ShadingModel)value; }
+
 private:
+	RenderingManager* m_manager;
 };
 
 class SceneRenderer
@@ -52,7 +64,7 @@ protected:
 	void prepare();
 
 private:
-	void applyFrameBufferStatus(GraphicsContext* context, RenderStage* stage);
+	void applyFrameBufferStatus(GraphicsContext* context, RenderStage* stage, const FrameBuffer& defaultFrameBufferInPass);
 	void applyGeometryStatus(GraphicsContext* context, RenderStage* stage, AbstractMaterial* priorityMaterial);
 	static void makeBlendMode(BlendMode mode, RenderTargetBlendDesc* state);
 

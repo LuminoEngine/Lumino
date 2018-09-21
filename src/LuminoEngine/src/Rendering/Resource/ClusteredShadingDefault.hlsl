@@ -15,7 +15,9 @@
 
 
 
-texture2D ln_GlobalLightInfoTexture;
+Texture2D ln_GlobalLightInfoTexture;
+SamplerState ln_GlobalLightInfoTextureSamplerState;
+/*
 sampler2D ln_GlobalLightInfoSampler = sampler_state
 {
 	Texture = <ln_GlobalLightInfoTexture>;
@@ -25,8 +27,11 @@ sampler2D ln_GlobalLightInfoSampler = sampler_state
 	AddressU = Clamp;
 	AddressV = Clamp;
 };
+*/
 
-texture2D ln_pointLightInfoTexture;
+Texture2D ln_pointLightInfoTexture;
+SamplerState ln_pointLightInfoTextureSamplerState;
+/*
 sampler2D pointLightInfoSampler = sampler_state
 {
 	Texture = <ln_pointLightInfoTexture>;
@@ -36,6 +41,7 @@ sampler2D pointLightInfoSampler = sampler_state
 	AddressU = Clamp;
 	AddressV = Clamp;
 };
+*/
 
 static const int MaxLights = 16;
 
@@ -44,7 +50,9 @@ float		ln_farClip;
 float3		ln_cameraPos;
 //float4x4	ln_View;
 
-texture3D ln_clustersTexture;
+Texture3D ln_clustersTexture;
+SamplerState ln_clustersTextureSamplerState;
+/*
 sampler3D	clustersSampler = sampler_state
 {
 	texture = <ln_clustersTexture>;
@@ -54,6 +62,7 @@ sampler3D	clustersSampler = sampler_state
 	AddressU = Clamp;
 	AddressV = Clamp;
 };
+*/
 
 float4	ln_AmbientColor;
 float4	ln_AmbientSkyColor;
@@ -135,10 +144,15 @@ LightInfo _LN_GetLightInfoClusterd(int index)
 	
 	//float4 posAndRange = tex2D(pointLightInfoSampler, tc0.xy);
 	//float4 spotDirection = tex2D(pointLightInfoSampler, tc1.xy);
-	float4 posAndRange = tex2D(pointLightInfoSampler, (float2(0.0, y) * s));
-	float4 spotDirection = tex2D(pointLightInfoSampler, (float2(1.0, y) * s));
-	float4 spotAngle = tex2D(pointLightInfoSampler, (float2(2.0, y) * s));
-	float4 color = tex2D(pointLightInfoSampler, (float2(3.0, y) * s));
+
+	//float4 posAndRange = tex2D(pointLightInfoSampler, (float2(0.0, y) * s));
+	//float4 spotDirection = tex2D(pointLightInfoSampler, (float2(1.0, y) * s));
+	//float4 spotAngle = tex2D(pointLightInfoSampler, (float2(2.0, y) * s));
+	//float4 color = tex2D(pointLightInfoSampler, (float2(3.0, y) * s));
+	float4 posAndRange = ln_pointLightInfoTexture.Sample(ln_pointLightInfoTextureSamplerState, (float2(0.0, y) * s));
+	float4 spotDirection = ln_pointLightInfoTexture.Sample(ln_pointLightInfoTextureSamplerState, (float2(1.0, y) * s));
+	float4 spotAngle = ln_pointLightInfoTexture.Sample(ln_pointLightInfoTextureSamplerState, (float2(2.0, y) * s));
+	float4 color = ln_pointLightInfoTexture.Sample(ln_pointLightInfoTextureSamplerState, (float2(3.0, y) * s));
 	
 	LightInfo light;
 	light.position = posAndRange.xyz;
@@ -175,9 +189,12 @@ GlobalLightInfo _LN_GetGlobalLightInfo(int index)
 	float y = (float)index;
 	y += 0.5;
 	GlobalLightInfo info;
-	info.color = tex2D(ln_GlobalLightInfoSampler, (float2(0.0, y) * s));
-	info.groundColor = tex2D(ln_GlobalLightInfoSampler, (float2(1.5, y) * s));
-	info.directionAndType = tex2D(ln_GlobalLightInfoSampler, (float2(2.5, y) * s));
+	//info.color = tex2D(ln_GlobalLightInfoSampler, (float2(0.0, y) * s));
+	//info.groundColor = tex2D(ln_GlobalLightInfoSampler, (float2(1.5, y) * s));
+	//info.directionAndType = tex2D(ln_GlobalLightInfoSampler, (float2(2.5, y) * s));
+	info.color = ln_GlobalLightInfoTexture.Sample(ln_GlobalLightInfoTextureSamplerState, (float2(0.0, y) * s));
+	info.groundColor = ln_GlobalLightInfoTexture.Sample(ln_GlobalLightInfoTextureSamplerState, (float2(1.5, y) * s));
+	info.directionAndType = ln_GlobalLightInfoTexture.Sample(ln_GlobalLightInfoTextureSamplerState, (float2(2.5, y) * s));
 	return info;
 }
 
@@ -233,7 +250,8 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 	float cy = (vp.y + 1.0) / 2.0;
 	float cz = _LN_FlustumClustereDepthBias(depth);
 	
-	float4 cluster = tex3D(clustersSampler, float3(cx, cy, cz));
+	//float4 cluster = tex3D(clustersSampler, float3(cx, cy, cz));
+	float4 cluster = ln_clustersTexture.Sample(ln_clustersTextureSamplerState, float3(cx, cy, cz));
 	float lightIndices[4] = {cluster.r, cluster.g, cluster.b, cluster.a};
 	
 	
@@ -542,7 +560,8 @@ float4 _lngs_PS_UnLighting(_lngs_PSInput input) : COLOR0
 	float3 ambient = float3(1, 1, 1) * ln_MaterialAmbient.rgb;
 	result.rgb = saturate(result.rgb + ambient);
 
-	result *= (tex2D(MaterialTextureSampler, input.common.UV));
+	//result *= (tex2D(MaterialTextureSampler, input.common.UV));
+	result *= ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.common.UV);
 
 	return result;
 }

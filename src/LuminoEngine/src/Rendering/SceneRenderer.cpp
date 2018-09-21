@@ -9,6 +9,26 @@ namespace ln {
 namespace detail {
 
 //==============================================================================
+// SceneRendererPass
+
+SceneRendererPass::SceneRendererPass()
+	: m_manager(detail::EngineDomain::renderingManager())
+{
+}
+
+SceneRendererPass::~SceneRendererPass()
+{
+}
+
+void SceneRendererPass::initialize()
+{
+}
+
+void SceneRendererPass::overrideDefaultFrameBuffer(FrameBuffer* frameBuffer)
+{
+}
+
+//==============================================================================
 // SceneRenderer
 
 SceneRenderer::SceneRenderer()
@@ -103,6 +123,8 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 {
 	m_renderingElementList.clear();
 
+	FrameBuffer defaultFrameBuffer = *m_defaultFrameBuffer;
+
 	detail::CameraInfo cameraInfo = m_renderingRenderView->cameraInfo;
 
 	//pass->overrideCameraInfo(&cameraInfo);
@@ -124,7 +146,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 				currentStage->flush();
 			}
 			currentStage = stage;
-			applyFrameBufferStatus(graphicsContext, currentStage);
+			applyFrameBufferStatus(graphicsContext, currentStage, defaultFrameBuffer);
 		}
 
 		// DrawElement drawing.
@@ -414,7 +436,7 @@ void SceneRenderer::prepare()
 		});
 }
 
-void SceneRenderer::applyFrameBufferStatus(GraphicsContext* context, RenderStage* stage)
+void SceneRenderer::applyFrameBufferStatus(GraphicsContext* context, RenderStage* stage, const FrameBuffer& defaultFrameBufferInPass)
 {
 	RenderTargetTexture* renderTarget0 = nullptr;
 
@@ -424,7 +446,7 @@ void SceneRenderer::applyFrameBufferStatus(GraphicsContext* context, RenderStage
 		{
 			RenderTargetTexture* target = stage->getRenderTargetFinal(i);
 			if (!target) {
-				target = m_defaultFrameBuffer->renderTarget[i];
+				target = defaultFrameBufferInPass.renderTarget[i];
 			}
 
 			context->setColorBuffer(i, target);
@@ -442,7 +464,7 @@ void SceneRenderer::applyFrameBufferStatus(GraphicsContext* context, RenderStage
 			context->setDepthBuffer(depthBuffer);
 		}
 		else {
-			context->setDepthBuffer(m_defaultFrameBuffer->depthBuffer);
+			context->setDepthBuffer(defaultFrameBufferInPass.depthBuffer);
 		}
 	}
 

@@ -6,12 +6,17 @@ class Shader;
 
 namespace detail {
 class LinearAllocatorPageManager;
+class RenderTargetTextureCacheManager;
+class DepthBufferCacheManager;
 class DrawElementListBuilder;
 class SpriteRenderFeature;
 
 enum class BuiltinShader
 {
 	Sprite,
+	ClusteredShadingDefault,
+	DepthPrepass,
+	ShadowCaster,
 	//LegacyDiffuse,		// Lambert Shading
 };
 
@@ -112,6 +117,8 @@ public:
 	void dispose();
 
 	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
+	const Ref<RenderTargetTextureCacheManager>& renderTargetTextureCacheManager() const { return m_renderTargetTextureCacheManager; }
+	const Ref<DepthBufferCacheManager>& depthBufferCacheManager() const { return m_depthBufferCacheManager; }
 	const Ref<VertexDeclaration>& standardVertexDeclaration() const { return m_standardVertexDeclaration; }
 	const Ref<DrawElementListBuilder>& renderStageListBuilder() const { return m_renderStageListBuilder; }
 	const Ref<SpriteRenderFeature>& spriteRenderFeature() const { return m_spriteRenderFeature; }
@@ -120,6 +127,8 @@ public:
 
 private:
 	GraphicsManager* m_graphicsManager;
+	Ref<RenderTargetTextureCacheManager> m_renderTargetTextureCacheManager;
+	Ref<DepthBufferCacheManager> m_depthBufferCacheManager;
 	Ref<VertexDeclaration> m_standardVertexDeclaration;
 	Ref<DrawElementListBuilder> m_renderStageListBuilder;
 	Ref<SpriteRenderFeature> m_spriteRenderFeature;
@@ -127,7 +136,7 @@ private:
 	// RenderStage 関係のデータ (ステートやコマンド) 用の LinearAllocatorPageManager
 	Ref<LinearAllocatorPageManager> m_stageDataPageManager;
 
-	std::array<Ref<Shader>, 2> m_builtinShaders;
+	std::array<Ref<Shader>, 4> m_builtinShaders;
 };
 
 } // namespace detail

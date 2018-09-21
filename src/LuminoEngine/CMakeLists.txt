@@ -158,6 +158,8 @@ set(LN_SOURCES_Rendering
     src/Rendering/RenderingManager.hpp
     src/Rendering/RenderStage.cpp
     src/Rendering/RenderStage.hpp
+    src/Rendering/RenderTargetTextureCache.cpp
+    src/Rendering/RenderTargetTextureCache.hpp
     src/Rendering/RenderView.cpp
     src/Rendering/SceneRenderer.cpp
     src/Rendering/SceneRenderer.hpp

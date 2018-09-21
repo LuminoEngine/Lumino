@@ -21,16 +21,21 @@ public:
 	virtual ~ClusteredShadingGeometryRenderingPass();
 	void initialize();
 
+	virtual ShaderTechnique* selectShaderTechnique(
+		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
+		Shader* requestedShader,
+		ShadingModel requestedShadingModel) override;
+
 	//virtual Shader* getDefaultShader() const override;
-	virtual void selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy) override;
+	//virtual void selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy) override;
 
 	//virtual void onBeginPass(DefaultStatus* defaultStatus, RenderView* renderView) override;
 
 private:
 	Ref<Shader>					m_defaultShader;
 	ShaderTechnique*			m_defaultShaderTechnique;
-	Ref<Shader>					m_unLightingShader;
-	ShaderTechnique*			m_unLightingShaderTechnique;
+	//Ref<Shader>					m_unLightingShader;
+	//ShaderTechnique*			m_unLightingShaderTechnique;
 };
 
 class DepthPrepass
@@ -41,7 +46,12 @@ public:
 	virtual ~DepthPrepass();
 	void initialize();
 
-	virtual void selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy) override;
+	virtual ShaderTechnique* selectShaderTechnique(
+		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
+		Shader* requestedShader,
+		ShadingModel requestedShadingModel) override;
+
+	//virtual void selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy) override;
 	virtual void onBeginPass(DefaultStatus* defaultStatus, RenderView* renderView) override;
 
 public:	// TODO:
@@ -49,7 +59,6 @@ public:	// TODO:
 	Ref<RenderTargetTexture>	m_depthMap;
 };
 
-#if 0
 class ShadowCasterPass
 	: public RenderingPass2
 {
@@ -75,8 +84,6 @@ public:	// TODO:
 	Ref<Shader>		m_defaultShader;
 	Ref<RenderTargetTexture>	m_shadowMap;
 };
-#endif
-
 
 class ClusteredShadingSceneRenderer
 	: public SceneRenderer
@@ -101,7 +108,6 @@ private:
 	FogParams					m_fogParams;
 	Ref<DepthPrepass>			m_depthPrepass;
 };
-
 #endif
 
 } // namespace detail

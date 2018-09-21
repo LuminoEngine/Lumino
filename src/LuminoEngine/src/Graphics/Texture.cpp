@@ -16,6 +16,7 @@ Texture::Texture()
 	: m_size(0, 0)
 	, m_format(TextureFormat::Unknown)
 	, m_samplerState(nullptr)
+	, m_mipmap(false)
 {
 }
 
@@ -61,11 +62,11 @@ void Texture2D::initialize(int width, int height, TextureFormat format, bool mip
 	Texture::initialize();
 	m_bitmap = newObject<Bitmap2D>(width, height, GraphicsHelper::translateToPixelFormat(format));
 	m_usage = usage;
-	m_mipmap = mipmap;
 	m_initialUpdate = true;
 	m_modified = true;
 	setSize(SizeI(width, height));
 	setFormat(format);
+	setMipmap(mipmap);
 }
 
 Bitmap2D* Texture2D::map(MapMode mode)
@@ -124,7 +125,7 @@ detail::ITexture* Texture2D::resolveRHIObject()
 
 			if (!m_rhiObject)
 			{
-				m_rhiObject = manager()->deviceContext()->createTexture2D(width(), height(), format(), m_mipmap, m_bitmap->data());
+				m_rhiObject = manager()->deviceContext()->createTexture2D(width(), height(), format(), mipmap(), m_bitmap->data());
 			}
 			else
 			{
@@ -177,11 +178,11 @@ void Texture3D::initialize(int width, int height, int depth, TextureFormat forma
 	m_depth = depth;
 	m_bitmap = newObject<Bitmap3D>(width, height, depth, GraphicsHelper::translateToPixelFormat(format));
 	m_usage = usage;
-	m_mipmap = mipmap;
 	m_initialUpdate = true;
 	m_modified = true;
 	setSize(SizeI(width, height));
 	setFormat(format);
+	setMipmap(mipmap);
 }
 
 Bitmap3D* Texture3D::map(MapMode mode)
@@ -240,7 +241,7 @@ detail::ITexture* Texture3D::resolveRHIObject()
 
 			if (!m_rhiObject)
 			{
-				m_rhiObject = manager()->deviceContext()->createTexture3D(width(), height(), depth(), format(), m_mipmap, m_bitmap->data());
+				m_rhiObject = manager()->deviceContext()->createTexture3D(width(), height(), depth(), format(), mipmap(), m_bitmap->data());
 			}
 			else
 			{
@@ -290,6 +291,7 @@ void RenderTargetTexture::initialize(int width, int height, TextureFormat reques
 	//m_mipmap = mipmap;
 	m_rhiObject = manager()->deviceContext()->createRenderTarget(width, height, requestFormat, mipmap);
 	setSize(m_rhiObject->realSize());
+	setMipmap(mipmap);
 }
 
 void RenderTargetTexture::initialize(detail::ITexture* ref)

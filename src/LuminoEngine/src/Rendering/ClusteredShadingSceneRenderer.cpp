@@ -1,12 +1,12 @@
 ﻿
 #include "Internal.hpp"
+#include "RenderingManager.hpp"
 #include "ClusteredShadingSceneRenderer.hpp"
 
 namespace ln {
 namespace detail {
 
 #if 0
-	
 //==============================================================================
 // ClusteredShadingGeometryRenderingPass
 
@@ -26,67 +26,68 @@ void ClusteredShadingGeometryRenderingPass::initialize()
 	SceneRendererPass::initialize();
 
 	{
-		static const byte_t data[] =
-		{
-#include "Resource/ClusteredShadingDefault.fx.h"
-		};
-		static const size_t size = LN_ARRAY_SIZE_OF(data);
-		m_defaultShader = Shader::create((const char*)data, size, nullptr, ShaderCodeType::RawHLSL);
+		m_defaultShader = manager()->builtinShader(BuiltinShader::ClusteredShadingDefault);
 	}
 	
 	// TODO: getPass 引数型
 	m_defaultShaderTechnique = m_defaultShader->findTechnique(ClusteredShadingGeometryRenderingPass_TechniqueName);
 
-	{
-		static const byte_t data[] =
-		{
-#include "Resource/UnLighting.fx.h"
-		};
-		static const size_t size = LN_ARRAY_SIZE_OF(data);
-		m_unLightingShader = Shader::create((const char*)data, size, nullptr, ShaderCodeType::RawHLSL);
-	}
-	m_unLightingShaderTechnique = m_unLightingShader->getTechniques()[0];
+//	{
+//		static const byte_t data[] =
+//		{
+//#include "Resource/UnLighting.fx.h"
+//		};
+//		static const size_t size = LN_ARRAY_SIZE_OF(data);
+//		m_unLightingShader = Shader::create((const char*)data, size, nullptr, ShaderCodeType::RawHLSL);
+//	}
+//	m_unLightingShaderTechnique = m_unLightingShader->getTechniques()[0];
 }
 
-void ClusteredShadingGeometryRenderingPass::selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy)
+ShaderTechnique* ClusteredShadingGeometryRenderingPass::selectShaderTechnique(
+	ShaderTechniqueClass_MeshProcess requestedMeshProcess,
+	Shader* requestedShader,
+	ShadingModel requestedShadingModel)
 {
-	ShaderTechniqueClassSet classSet;
+	Shader* shader = (requestedShader) ? requestedShader : m_defaultShader;
+
+	ShaderTechniqueClass classSet;
 	classSet.ligiting = ShaderTechniqueClass_Ligiting::Forward;
 	classSet.phase = ShaderTechniqueClass_Phase::Geometry;
-	classSet.meshProcess = element->vertexProcessing;
-
-	outPolicy->shader = (stageData.shader) ? stageData.shader : m_defaultShader;
-
-	classSet.shadingModel = stageData.shadingModel;
-	outPolicy->shaderTechnique = outPolicy->shader->findTechniqueByClass(classSet);
-	if (!outPolicy->shaderTechnique)
-	{
-		outPolicy->shaderTechnique = m_defaultShaderTechnique;
-	}
-
-	//if (stageData.shadingModel == ShadingModel::UnLighting)
-	//{
-	//	classSet.shadingModel = ShaderTechniqueClass_ShadingModel::UnLighting;
-	//	outPolicy->shaderTechnique = stageData.shader->findTechniqueByClass(classSet);
-	//	if (!outPolicy->shaderTechnique)
-	//	{
-	//		outPolicy->shaderTechnique = m_unLightingShaderTechnique;
-	//	}
-	//}
-	//else
-	//{
-	//	classSet.shadingModel = ShaderTechniqueClass_ShadingModel::Default;
-	//	outPolicy->shaderTechnique = stageData.shader->findTechniqueByClass(classSet);
-	//	if (!outPolicy->shaderTechnique)
-	//	{
-	//		outPolicy->shaderTechnique = m_defaultShaderTechnique;
-	//	}
-	//}
-
-	outPolicy->shader = outPolicy->shaderTechnique->getOwnerShader();
-	outPolicy->visible = true;
-
+	classSet.meshProcess = requestedMeshProcess;
+	classSet.shadingModel = tlanslateShadingModel(requestedShadingModel);
+	ShaderTechnique* technique = shader->findTechniqueByClass(classSet);
+	if (technique)
+		return technique;
+	else
+		return m_defaultShaderTechnique;
 }
+
+//void ClusteredShadingGeometryRenderingPass::selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy)
+//{
+//
+//	//if (stageData.shadingModel == ShadingModel::UnLighting)
+//	//{
+//	//	classSet.shadingModel = ShaderTechniqueClass_ShadingModel::UnLighting;
+//	//	outPolicy->shaderTechnique = stageData.shader->findTechniqueByClass(classSet);
+//	//	if (!outPolicy->shaderTechnique)
+//	//	{
+//	//		outPolicy->shaderTechnique = m_unLightingShaderTechnique;
+//	//	}
+//	//}
+//	//else
+//	//{
+//	//	classSet.shadingModel = ShaderTechniqueClass_ShadingModel::Default;
+//	//	outPolicy->shaderTechnique = stageData.shader->findTechniqueByClass(classSet);
+//	//	if (!outPolicy->shaderTechnique)
+//	//	{
+//	//		outPolicy->shaderTechnique = m_defaultShaderTechnique;
+//	//	}
+//	//}
+//
+//	outPolicy->shader = outPolicy->shaderTechnique->getOwnerShader();
+//	outPolicy->visible = true;
+//
+//}
 
 //RenderTargetTexture* g_m_normalRenderTarget = nullptr;
 //void ClusteredShadingGeometryRenderingPass::onBeginPass(DefaultStatus* defaultStatus, RenderView* renderView)
@@ -137,15 +138,24 @@ void DepthPrepass::initialize()
 	}
 }
 
-void DepthPrepass::selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy)
+ShaderTechnique* DepthPrepass::selectShaderTechnique(
+	ShaderTechniqueClass_MeshProcess requestedMeshProcess,
+	Shader* requestedShader,
+	ShadingModel requestedShadingModel)
 {
-	// TODO: とりあえずデフォルト強制
-	outPolicy->shader = m_defaultShader;
-	outPolicy->shaderTechnique = m_defaultShader->getTechniques()[0];
-
-	// とありあえず全部可
-	outPolicy->visible = true;
+	// force default
+	return m_defaultShader->techniques().front();
 }
+
+//void DepthPrepass::selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy)
+//{
+//	// TODO: とりあえずデフォルト強制
+//	outPolicy->shader = m_defaultShader;
+//	outPolicy->shaderTechnique = m_defaultShader->getTechniques()[0];
+//
+//	// とありあえず全部可
+//	outPolicy->visible = true;
+//}
 
 void DepthPrepass::onBeginPass(DefaultStatus* defaultStatus, RenderView* renderView)
 {
@@ -340,6 +350,7 @@ void ClusteredShadingSceneRenderer::onShaderPassChainging(ShaderPass* pass)
 	v = shader->findVariable(_T("ln_FogParams"));
 	if (v) v->setVector(Vector4(m_fogParams.color.rgb() * m_fogParams.color.a, m_fogParams.density));
 }
+
 #endif
 
 } // namespace detail

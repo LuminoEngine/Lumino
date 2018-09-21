@@ -51,6 +51,7 @@ public:
 
 	ShaderParameter* findParameter(const StringRef& name) const;
 	ShaderConstantBuffer* findConstantBuffer(const StringRef& name) const;
+	ShaderTechnique* findTechnique(const StringRef& name) const;
 
 	const List<Ref<ShaderTechnique>>& techniques() const { return m_techniques; }
 
@@ -183,6 +184,7 @@ class LN_API ShaderTechnique
 {
 public:
 	Shader* shader() const { return m_owner; }
+	const String& name() const { return m_name; }
 
 	const List<Ref<ShaderPass>>& passes() const { return m_passes; }
 

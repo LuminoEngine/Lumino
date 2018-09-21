@@ -214,9 +214,14 @@ void Shader::initialize(const StringRef& hlslEffectFilePath, DiagnosticsManager*
 #endif
 	postInitialize();
 
-	if (!diag && localDiag->hasError()) {
-		LN_ERROR(localDiag->toString());
-		return;
+	if (!diag) {
+		if (localDiag->hasError()) {
+			LN_ERROR(localDiag->toString());
+			return;
+		}
+		else if (localDiag->hasWarning()) {
+			LN_LOG_WARNING << localDiag->toString();
+		}
 	}
 }
 
@@ -235,9 +240,15 @@ void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& 
 
 	postInitialize();
 
-	if (!diag && localDiag->hasError()) {
-		LN_ERROR(localDiag->toString());
-		return;
+
+	if (!diag) {
+		if (localDiag->hasError()) {
+			LN_ERROR(localDiag->toString());
+			return;
+		}
+		else if (localDiag->hasWarning()) {
+			LN_LOG_WARNING << localDiag->toString();
+		}
 	}
 }
 
@@ -427,6 +438,18 @@ ShaderConstantBuffer* Shader::findConstantBuffer(const StringRef& name) const
 {
 	auto result = m_buffers.findIf([name](const ShaderConstantBuffer* buf) { return buf->name() == name; });
 	return (result) ? *result : nullptr;
+}
+
+ShaderTechnique* Shader::findTechnique(const StringRef& name) const
+{
+	for (auto& var : m_techniques)
+	{
+		if (String::compare(StringRef(var->name()), 0, StringRef(name), 0, -1, CaseSensitivity::CaseSensitive) == 0)
+		{
+			return var;
+		}
+	}
+	return nullptr;
 }
 
 ShaderTechnique* Shader::findTechniqueByClass(const detail::ShaderTechniqueClass& techniqueClass) const

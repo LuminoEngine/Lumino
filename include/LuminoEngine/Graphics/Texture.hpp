@@ -38,10 +38,13 @@ protected:
 	virtual detail::ITexture* resolveRHIObject() = 0;
 	void setSize(const SizeI& size) { m_size = size; }
 	void setFormat(TextureFormat format) { m_format = format; }
+	void setMipmap(bool mipmap) { m_mipmap = mipmap; }
+	bool mipmap() const { return m_mipmap; }
 
 	SizeI m_size;
 	TextureFormat m_format;
 	Ref<SamplerState> m_samplerState;
+	bool m_mipmap;
 
 	friend class ShaderPass;
 };
@@ -78,7 +81,6 @@ private:
 
 	Ref<Bitmap2D> m_bitmap;
 	void* m_rhiLockedBuffer;
-	bool m_mipmap;
 	bool m_initialUpdate;
 	bool m_modified;
 };
@@ -117,7 +119,6 @@ private:
 	int m_depth;
 	Ref<Bitmap3D> m_bitmap;
 	void* m_rhiLockedBuffer;
-	bool m_mipmap;
 	bool m_initialUpdate;
 	bool m_modified;
 };
