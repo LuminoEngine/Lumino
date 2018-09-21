@@ -74,7 +74,7 @@ public:
 	void setIndexBuffer(IndexBuffer* value);
 	void setShaderPass(ShaderPass* value);
 
-	void clear(ClearFlags flags, const Color& color, float z, uint8_t stencil);
+	void clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00);
 	void drawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount);
 	void drawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount);
 	void present(SwapChain* swapChain);

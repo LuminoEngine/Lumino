@@ -24,8 +24,12 @@ public:
 	virtual ~SceneRendererPass();
 	void initialize();
 
-	// シャドウバッファの作成などのため、パス単位で RenderTarget を切り替えたい場合、ここでセットする
-	virtual void overrideDefaultFrameBuffer(FrameBuffer* frameBuffer);
+	virtual void onBeginRender(RenderView* renderView);
+	virtual void onEndRender(RenderView* renderView);
+
+	// シャドウバッファの作成などのため、パス単位で RenderTarget を切り替えたい場合、ここで frameBuffer にセットする。
+	// この時点では GraphicsContext は自由に使ってもよい。ステート復元する必要はない。
+	virtual void onBeginPass(RenderView* renderView, GraphicsContext* context, FrameBuffer* frameBuffer);
 
 	// Element の情報と派生 Pass から、最終的に使いたい ShaderTechnique を求める
 	virtual ShaderTechnique* selectShaderTechnique(
@@ -52,6 +56,7 @@ public:
 
 protected:
 	SceneRenderer();
+	void initialize();
 
 	void addPass(SceneRendererPass* pass);
 
@@ -63,11 +68,15 @@ protected:
 	// レンダリング準備として、効率的な描画を行うために収集した各種オブジェクトのソートなどを行う
 	void prepare();
 
+	//virtual void onBeginRender() = 0;
+	//virtual void onEndRender() = 0;
+
 private:
 	void applyFrameBufferStatus(GraphicsContext* context, RenderStage* stage, const FrameBuffer& defaultFrameBufferInPass);
 	void applyGeometryStatus(GraphicsContext* context, RenderStage* stage, AbstractMaterial* priorityMaterial);
 	static void makeBlendMode(BlendMode mode, RenderTargetBlendDesc* state);
 
+	detail::RenderingManager* m_manager;
 	List<Ref<SceneRendererPass>> m_renderingPassList;
 
 	RenderView* m_renderingRenderView;

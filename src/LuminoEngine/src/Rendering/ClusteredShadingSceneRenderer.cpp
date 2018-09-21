@@ -1,12 +1,15 @@
 ﻿
 #include "Internal.hpp"
+#include <Lumino/Graphics/GraphicsContext.hpp>
+#include <Lumino/Rendering/RenderView.hpp>
 #include "RenderingManager.hpp"
 #include "ClusteredShadingSceneRenderer.hpp"
+#include "RenderTargetTextureCache.hpp"
 
 namespace ln {
 namespace detail {
 
-#if 0
+#if 1
 //==============================================================================
 // ClusteredShadingGeometryRenderingPass
 
@@ -128,14 +131,31 @@ DepthPrepass::~DepthPrepass()
 
 void DepthPrepass::initialize()
 {
-	{
-		static const byte_t data[] =
-		{
-#include "Resource/DepthPrepass.fx.h"
-		};
-		static const size_t size = LN_ARRAY_SIZE_OF(data);
-		m_defaultShader = Shader::create((const char*)data, size, nullptr, ShaderCodeType::RawIR);
-	}
+	SceneRendererPass::initialize();
+	m_defaultShader = manager()->builtinShader(BuiltinShader::DepthPrepass);
+}
+
+void DepthPrepass::onBeginRender(RenderView* renderView)
+{
+	m_depthMap = renderView->frameBufferCache()->requestRenderTargetTexture(renderView->renderingFrameBufferSize(), TextureFormat::RGBA32, false);
+	m_depthBuffer = renderView->frameBufferCache()->requestDepthBuffer(renderView->renderingFrameBufferSize());
+}
+
+void DepthPrepass::onEndRender(RenderView* renderView)
+{
+	renderView->frameBufferCache()->release(m_depthMap);
+	renderView->frameBufferCache()->release(m_depthBuffer);
+	m_depthMap = nullptr;
+	m_depthBuffer = nullptr;
+}
+
+void DepthPrepass::onBeginPass(RenderView* renderView, GraphicsContext* context, FrameBuffer* frameBuffer)
+{
+	frameBuffer->renderTarget[0] = m_depthMap;
+	frameBuffer->depthBuffer = m_depthBuffer;
+	context->setColorBuffer(0, m_depthMap);
+	context->setDepthBuffer(m_depthBuffer);
+	context->clear(ClearFlags::All, Color::Transparency, 1.0f, 0);
 }
 
 ShaderTechnique* DepthPrepass::selectShaderTechnique(
@@ -156,20 +176,19 @@ ShaderTechnique* DepthPrepass::selectShaderTechnique(
 //	// とありあえず全部可
 //	outPolicy->visible = true;
 //}
+//
+//void DepthPrepass::onBeginPass(DefaultStatus* defaultStatus, RenderView* renderView)
+//{
+//	auto viewSize = SizeI::fromFloatSize(renderView->getViewSize());
+//	if (!m_depthMap || m_depthMap->getSize() != viewSize)
+//	{
+//		m_depthMap = Ref<RenderTargetTexture>::makeRef();
+//		m_depthMap->createImpl(GraphicsManager::getInstance(), viewSize, 1, TextureFormat::R32G32B32A32_Float);
+//	}
+//
+//	defaultStatus->defaultRenderTarget[0] = m_depthMap;
+//}
 
-void DepthPrepass::onBeginPass(DefaultStatus* defaultStatus, RenderView* renderView)
-{
-	auto viewSize = SizeI::fromFloatSize(renderView->getViewSize());
-	if (!m_depthMap || m_depthMap->getSize() != viewSize)
-	{
-		m_depthMap = Ref<RenderTargetTexture>::makeRef();
-		m_depthMap->createImpl(GraphicsManager::getInstance(), viewSize, 1, TextureFormat::R32G32B32A32_Float);
-	}
-
-	defaultStatus->defaultRenderTarget[0] = m_depthMap;
-}
-
-#if 0
 //==============================================================================
 // ShadowCasterPass
 //==============================================================================
@@ -181,24 +200,17 @@ ShadowCasterPass::~ShadowCasterPass()
 {
 }
 
-RenderTargetTexture* g_m_shadowMap  = nullptr;
+//RenderTargetTexture* g_m_shadowMap  = nullptr;
 void ShadowCasterPass::initialize()
 {
-	RenderingPass2::initialize();
+	SceneRendererPass::initialize();
 
-	{
-		static const byte_t data[] =
-		{
-#include "Resource/ShadowCaster.fx.h"
-		};
-		static const size_t size = LN_ARRAY_SIZE_OF(data);
-		m_defaultShader = Shader::create((const char*)data, size, nullptr, ShaderCodeType::RawIR);
-	}
+	m_defaultShader = manager()->builtinShader(BuiltinShader::ShadowCaster);
 
-	m_shadowMap = Ref<RenderTargetTexture>::makeRef();
-	m_shadowMap->createImpl(GraphicsManager::getInstance(), SizeI(1024, 1024), 1, TextureFormat::R32G32B32A32_Float);
+	m_shadowMap = newObject<RenderTargetTexture>(1024, 1024, TextureFormat::R32G32B32A32Float, false);
+	m_depthBuffer = newObject<DepthBuffer>(1024, 1024);
 
-	g_m_shadowMap = m_shadowMap;
+	//g_m_shadowMap = m_shadowMap;
 }
 
 //Shader* ShadowCasterPass::getDefaultShader() const
@@ -206,31 +218,34 @@ void ShadowCasterPass::initialize()
 //	return m_defaultShader;
 //}
 
-void ShadowCasterPass::selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy)
-{
-	// TODO: とりあえずデフォルト強制
-	outPolicy->shader = m_defaultShader;
-	outPolicy->shaderTechnique = m_defaultShader->getTechniques()[0];
 
-	// とありあえず全部可
-	outPolicy->visible = true;
+void ShadowCasterPass::onBeginPass(RenderView* renderView, GraphicsContext* context, FrameBuffer* frameBuffer)
+{
+	frameBuffer->renderTarget[0] = m_shadowMap;
+	frameBuffer->depthBuffer = m_depthBuffer;
+	context->setColorBuffer(0, m_shadowMap);
+	context->setDepthBuffer(m_depthBuffer);
+	context->clear(ClearFlags::All, Color::Transparency, 1.0f, 0);
 }
 
-void ShadowCasterPass::onBeginPass(DefaultStatus* defaultStatus, RenderView* renderView)
+ShaderTechnique* DepthPrepass::selectShaderTechnique(
+	ShaderTechniqueClass_MeshProcess requestedMeshProcess,
+	Shader* requestedShader,
+	ShadingModel requestedShadingModel)
 {
-	defaultStatus->defaultRenderTarget[0] = m_shadowMap;
+	// force default
+	return m_defaultShader->techniques().front();
 }
 
-void ShadowCasterPass::overrideCameraInfo(detail::CameraInfo* cameraInfo)
-{
-	*cameraInfo = view;
-}
+//void ShadowCasterPass::overrideCameraInfo(detail::CameraInfo* cameraInfo)
+//{
+//	*cameraInfo = view;
+//}
 
 //ShaderPass* ShadowCasterPass::selectShaderPass(Shader* shader)
 //{
 //	return RenderingPass2::selectShaderPass(shader);
 //}
-#endif
 
 //==============================================================================
 // ClusteredShadingSceneRenderer
@@ -246,7 +261,7 @@ ClusteredShadingSceneRenderer::~ClusteredShadingSceneRenderer()
 
 void ClusteredShadingSceneRenderer::initialize(GraphicsManager* manager)
 {
-	SceneRenderer::initialize(manager);
+	SceneRenderer::initialize();
 
 	m_depthPrepass = newObject<DepthPrepass>();
 	addPass(m_depthPrepass);
@@ -261,6 +276,16 @@ void ClusteredShadingSceneRenderer::initialize(GraphicsManager* manager)
 	//m_renderSettings.ambientColor = Color(1, 0, 0, 1);
 
 }
+
+//void ClusteredShadingSceneRenderer::onBeginRender()
+//{
+//
+//}
+//
+//void ClusteredShadingSceneRenderer::onEndRender()
+//{
+//
+//}
 
 void ClusteredShadingSceneRenderer::prepare()
 {

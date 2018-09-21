@@ -32,7 +32,12 @@ void RenderView::addDrawElementListManager(detail::DrawElementListCollector* ele
 
 void RenderView::render(GraphicsContext* graphicsContext, const FrameBuffer& frameBuffer, detail::SceneRenderer* sceneRenderer)
 {
+	m_renderingFrameBufferSize = SizeI(frameBuffer.renderTarget[0]->width(), frameBuffer.renderTarget[0]->height());
+
 	sceneRenderer->render(graphicsContext, this, frameBuffer);
+
+	// 誤用防止
+	m_renderingFrameBufferSize = SizeI();
 }
 
 } // namespace ln

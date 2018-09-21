@@ -24,7 +24,15 @@ void SceneRendererPass::initialize()
 {
 }
 
-void SceneRendererPass::overrideDefaultFrameBuffer(FrameBuffer* frameBuffer)
+void SceneRendererPass::onBeginRender(RenderView* renderView)
+{
+}
+
+void SceneRendererPass::onEndRender(RenderView* renderView)
+{
+}
+
+void SceneRendererPass::onBeginPass(RenderView* renderView, GraphicsContext* context, FrameBuffer* frameBuffer)
 {
 }
 
@@ -32,8 +40,13 @@ void SceneRendererPass::overrideDefaultFrameBuffer(FrameBuffer* frameBuffer)
 // SceneRenderer
 
 SceneRenderer::SceneRenderer()
-	: m_renderingRenderView(nullptr)
+	: m_manager(detail::EngineDomain::renderingManager())
+	, m_renderingRenderView(nullptr)
 	, m_zSortDistanceBase(ZSortDistanceBase::CameraScreenDistance)
+{
+}
+
+void SceneRenderer::initialize()
 {
 }
 
@@ -98,9 +111,20 @@ void SceneRenderer::render(
 		m_renderingActualPassList.add(pass);
 	}
 
+
+	for (SceneRendererPass* pass : m_renderingActualPassList)
+	{
+		pass->onBeginRender(renderView);
+	}
+
 	for (SceneRendererPass* pass : m_renderingActualPassList)
 	{
 		renderPass(graphicsContext, pass);
+	}
+
+	for (SceneRendererPass* pass : m_renderingActualPassList)
+	{
+		pass->onEndRender(renderView);
 	}
 
 	//// Flush
@@ -124,6 +148,8 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 	m_renderingElementList.clear();
 
 	FrameBuffer defaultFrameBuffer = *m_defaultFrameBuffer;
+	pass->onBeginPass(m_renderingRenderView, graphicsContext, &defaultFrameBuffer);
+
 
 	detail::CameraInfo cameraInfo = m_renderingRenderView->cameraInfo;
 

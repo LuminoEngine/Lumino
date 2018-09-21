@@ -40,11 +40,13 @@ protected:
 LN_INTERNAL_ACCESS:
 	const List<detail::DrawElementListCollector*>& elementListManagers() const { return m_elementListManagers; }
 	const Ref<detail::FrameBufferCache>& frameBufferCache() const { return m_frameBufferCache; }
+	const SizeI& renderingFrameBufferSize() const { return m_renderingFrameBufferSize; }
 
 private:
 	detail::RenderingManager* m_manager;
 	Ref<detail::FrameBufferCache> m_frameBufferCache;
 	List<detail::DrawElementListCollector*> m_elementListManagers;
+	SizeI m_renderingFrameBufferSize;	// render() の内側だけで使える
 };
 
 } // namespace ln

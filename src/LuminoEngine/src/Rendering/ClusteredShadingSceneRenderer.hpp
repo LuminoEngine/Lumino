@@ -5,7 +5,7 @@
 namespace ln {
 namespace detail {
 
-#if 0
+#if 1
 
 struct FogParams
 {
@@ -46,24 +46,31 @@ public:
 	virtual ~DepthPrepass();
 	void initialize();
 
+
+	virtual void onBeginRender(RenderView* renderView) override;
+	virtual void onEndRender(RenderView* renderView) override;
+
+	virtual void onBeginPass(RenderView* renderView, GraphicsContext* context, FrameBuffer* frameBuffer) override;
+
 	virtual ShaderTechnique* selectShaderTechnique(
 		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
 		Shader* requestedShader,
 		ShadingModel requestedShadingModel) override;
 
 	//virtual void selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy) override;
-	virtual void onBeginPass(DefaultStatus* defaultStatus, RenderView* renderView) override;
+	//virtual void onBeginPass(DefaultStatus* defaultStatus, RenderView* renderView) override;
 
 public:	// TODO:
 	Ref<Shader>					m_defaultShader;
-	Ref<RenderTargetTexture>	m_depthMap;
+	RenderTargetTexture*	m_depthMap;
+	DepthBuffer*	m_depthBuffer;
 };
 
 class ShadowCasterPass
-	: public RenderingPass2
+	: public SceneRendererPass
 {
 public:
-	CameraInfo	view;
+	//CameraInfo	view;
 
 	ShadowCasterPass();
 	virtual ~ShadowCasterPass();
@@ -71,11 +78,15 @@ public:
 
 	//virtual Shader* getDefaultShader() const override;
 
-	virtual void selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy) override;
+	virtual void onBeginPass(RenderView* renderView, GraphicsContext* context, FrameBuffer* frameBuffer) override;
 
-	virtual void onBeginPass(DefaultStatus* defaultStatus, RenderView* renderView) override;
+	virtual ShaderTechnique* selectShaderTechnique(
+		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
+		Shader* requestedShader,
+		ShadingModel requestedShadingModel) override;
 
-	virtual void overrideCameraInfo(detail::CameraInfo* cameraInfo) override;
+
+	//virtual void overrideCameraInfo(detail::CameraInfo* cameraInfo) override;
 
 protected:
 	//virtual ShaderPass* selectShaderPass(Shader* shader) override;
@@ -83,6 +94,7 @@ protected:
 public:	// TODO:
 	Ref<Shader>		m_defaultShader;
 	Ref<RenderTargetTexture>	m_shadowMap;
+	Ref<DepthBuffer>	m_depthBuffer;
 };
 
 class ClusteredShadingSceneRenderer
@@ -97,6 +109,9 @@ public:
 	DepthPrepass* getDepthPrepass() const { return m_depthPrepass; }
 
 protected:
+	//virtual void onBeginRender() override;
+	//virtual void onEndRender() override;
+
 	virtual void collect(RenderingPass2* pass, const detail::CameraInfo& cameraInfo) override;
 	virtual void prepare() override;
 	virtual void onCollectLight(DynamicLightInfo* light) override;
