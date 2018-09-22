@@ -65,6 +65,75 @@ int main(int argc, char** argv)
 				fb.renderTarget[0] = swapChain->colorBuffer();
 				fb.depthBuffer = swapChain->depthBuffer();
 
+				{
+					Size size(fb.renderTarget[0]->width(), fb.renderTarget[0]->height());
+					Vector3 pos = Vector3(5, 0, -5);
+					mainCameraInfo.makePerspective(pos, Vector3::normalize(Vector3::Zero - pos), Math::PI / 3.0f, size, 0.1f, 1000.0f);
+
+				}
+
+				RenderView::render(Engine::graphicsContext(), fb, m_sceneRenderer);
+			}
+		};
+
+		auto renderView = newObject<TestRenderView>();
+
+		auto tex1 = newObject<Texture2D>(2, 2);
+		auto bmp1 = tex1->map(MapMode::Write);
+		bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
+		bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
+		bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
+		bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
+		auto material = Material::create();
+		material->setMainTexture(tex1);
+
+		while (Engine::update())
+		{
+			renderView->m_context->reset();
+
+			//renderView->m_context->setCullingMode(CullingMode::None);
+
+			renderView->m_context->drawSprite(
+				Matrix(), Size(2, 1), Vector2(0, 0), Rect(0, 0, 1, 1), Color::Blue,
+				SpriteBaseDirection::ZMinus, BillboardType::None, material);
+
+			renderView->render();
+
+			if (::GetKeyState('Z') < 0)
+			{
+				break;
+			}
+		}
+#if 0
+		class TestRenderView : public RenderView
+		{
+		public:
+			// 本番では、World が持っていたりする。
+			Ref<detail::WorldSceneGraphRenderingContext> m_context;
+
+			Ref<detail::DrawElementListCollector> m_elementListManager;
+
+			Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer;
+
+			TestRenderView()
+			{
+				m_elementListManager = makeRef<detail::DrawElementListCollector>();
+				m_context = makeRef<detail::WorldSceneGraphRenderingContext>();
+				m_elementListManager->addDrawElementList(detail::RendringPhase::Default, m_context->m_elementList);
+				addDrawElementListManager(m_elementListManager);
+
+				m_sceneRenderer = makeRef<detail::UnLigitingSceneRenderer>();
+				m_sceneRenderer->initialize(detail::EngineDomain::renderingManager());
+			}
+
+			void render()
+			{
+
+				auto swapChain = Engine::mainWindow()->swapChain();
+				FrameBuffer fb;
+				fb.renderTarget[0] = swapChain->colorBuffer();
+				fb.depthBuffer = swapChain->depthBuffer();
+
 				RenderView::render(Engine::graphicsContext(), fb, m_sceneRenderer);
 			}
 		};
@@ -95,6 +164,7 @@ int main(int argc, char** argv)
 				break;
 			}
 		}
+#endif
 #if 0
 		class TestRenderView : public RenderView
 		{

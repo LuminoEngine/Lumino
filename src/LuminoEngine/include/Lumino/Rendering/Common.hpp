@@ -41,4 +41,134 @@ enum class BillboardType
 	RotY,					/**< Y 軸回転のみ行う */
 };
 
+/** ライトの種類 */
+enum class LightType
+{
+	/** アンビエントライト */
+	Ambient,
+
+	/** 半球ライト */
+	Hemisphere,
+
+	/** ディレクショナルライト */
+	Directional,
+
+	/** ポイントライト */
+	Point,
+
+	/** スポットライト */
+	Spot,
+};
+
+
+namespace detail {
+
+struct DynamicLightInfo
+{
+	DynamicLightInfo()
+		: m_type(LightType::Ambient)
+		, m_color(Color::White)
+		, m_color2(Color::White)
+		//, m_ambient(Color::White)
+		, m_specular(Color::White)
+		, m_position(0, 0, 0)
+		, m_direction(0, -1, 0)
+		, m_intensity(1.0f)
+		, m_range(10.0f)
+		, m_attenuation(1.0f)
+		, m_spotAngle(Math::PI / 3)
+		, m_spotPenumbra(0.0f)
+		, castShadow(false)
+		//, m_shadowCasterPass(nullptr)
+	{}
+
+	LightType	m_type;				// ライトの種類
+
+	// 基本色 (Phong ではディフーズカラー)
+	// [Ambient] ambient color
+	// [Hemisphere] sky color
+	Color		m_color;
+
+	// [Hemisphere] ground color
+	// [Directional, Point, Spot] (Phong shading でのみ使用) アンビエントカラー
+	Color		m_color2;		
+
+	//Color		m_ambient;			// (Phong shading でのみ使用) アンビエントカラー
+	Color		m_specular;			// (Phong shading でのみ使用) スペキュラカラー
+	Vector3		m_position;			// [Point, Spot]
+	Vector3		m_direction;		// [Directional, Spot]向き
+	float		m_intensity;		// [All] 光の強さ (Shader uniform にセットする前に、m_color と乗算する)
+	float		m_range;			// [Point, Spot] 減衰
+	float		m_attenuation;		// [Point, Spot] 減衰
+	float		m_spotAngle;		// [Spot]
+	float		m_spotPenumbra;		// [Spot]
+
+	bool castShadow;	// [Directional, Point, Spot]
+	//float		m_shadowZFar;
+
+	//detail::ShadowCasterPass*	m_shadowCasterPass;
+	//Matrix		transform;
+
+	//float		tempDistance;		// 作業用変数
+
+	//static const int MaxLights = 3;		// MMD based
+
+	static DynamicLightInfo makeAmbientLightInfo(const Color& color, float intensity)
+	{
+		DynamicLightInfo info;
+		info.m_type = LightType::Ambient;
+		info.m_color = color;
+		info.m_intensity = intensity;
+		return info;
+	}
+
+	static DynamicLightInfo makeHemisphereLightInfo(const Color& skyColor, const Color& groundColor, float intensity)
+	{
+		DynamicLightInfo info;
+		info.m_type = LightType::Hemisphere;
+		info.m_color = skyColor;
+		info.m_color2 = groundColor;
+		info.m_intensity = intensity;
+		return info;
+	}
+
+	static DynamicLightInfo makeDirectionalLightInfo(const Color& color, float intensity, const Vector3& direction)
+	{
+		DynamicLightInfo info;
+		info.m_type = LightType::Directional;
+		info.m_color = color;
+		info.m_direction = direction;
+		info.m_intensity = intensity;
+		return info;
+	}
+
+	static DynamicLightInfo makePointLightInfo(const Color& color, float intensity, const Vector3& position, float range, float attenuation)
+	{
+		DynamicLightInfo info;
+		info.m_type = LightType::Point;
+		info.m_color = color;
+		info.m_position = position;
+		info.m_intensity = intensity;
+		info.m_range = range;
+		info.m_attenuation = attenuation;
+		return info;
+	}
+
+	static DynamicLightInfo makeSpotLightInfo(const Color& color, float intensity, const Vector3& position, const Vector3& direction, float range, float attenuation, float spotAngle, float spotPenumbra)
+	{
+		DynamicLightInfo info;
+		info.m_type = LightType::Spot;
+		info.m_color = color;
+		info.m_position = position;
+		info.m_direction = direction;
+		info.m_intensity = intensity;
+		info.m_range = range;
+		info.m_attenuation = attenuation;
+		info.m_spotAngle = spotAngle;
+		info.m_spotPenumbra = spotPenumbra;
+		return info;
+	}
+};
+
+} // namespace detail
 } // namespace ln

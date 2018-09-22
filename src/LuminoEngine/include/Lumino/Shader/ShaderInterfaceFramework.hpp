@@ -95,7 +95,7 @@ struct SceneInfo
 // カメラ単位のデータに関する情報
 struct CameraInfo
 {
-	intptr_t	dataSourceId;
+	//intptr_t	dataSourceId;
 	Size		viewPixelSize;
 	Vector3		viewPosition;
 	Vector3		viewDirection;
@@ -107,7 +107,6 @@ struct CameraInfo
 	float		nearClip = 0;
 	float		farClip = 0;
 
-	// POD
 
 	void makePerspective(const Vector3& viewPos, const Vector3& viewDir, float fovY, const Size& size, float n, float f);
 };

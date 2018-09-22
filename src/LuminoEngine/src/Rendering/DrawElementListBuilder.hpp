@@ -19,6 +19,7 @@ class DrawElementListBuilder
 {
 public:
 	DrawElementListBuilder();
+	DrawElementList* targetList() const { return m_targetList; }
 	void setTargetList(DrawElementList* targetList);
 	void reset();
 

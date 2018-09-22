@@ -28,7 +28,7 @@ void convertWCharToChar16(const wchar_t* inStr, size_t inStrLen, char16_t* outSt
 {
 #if WCHAR_MAX <= 0xffff	// wchar_t == char16_t
 	// assumed windows
-	memcmp(outStr, inStr, sizeof(char16_t) * LN_MAX(inStrLen, outStrLen));
+	memcpy(outStr, inStr, sizeof(char16_t) * LN_MAX(inStrLen, outStrLen));
 #elif WCHAR_MAX <= 0xffffffff
 	// assumed unix
 	ln::UTFConversionOptions opt;

@@ -16,6 +16,7 @@ enum class ZSortDistanceBase
 	CameraScreenDistance,	/**< カメラが映すスクリーン平面とノードの距離を使用する */
 };
 
+
 class SceneRendererPass
 	: public RefObject
 {

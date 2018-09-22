@@ -7,6 +7,32 @@
 namespace ln {
 namespace detail {
 
+//==============================================================================
+// CameraInfo
+
+void CameraInfo::makePerspective(const Vector3& viewPos, const Vector3& viewDir, float fovY, const Size& size, float n, float f)
+{
+	//dataSourceId = 0;
+	viewPixelSize = size;
+	viewPosition = viewPos;
+	viewDirection = viewDir;
+	viewMatrix = Matrix::makeLookAtLH(viewPos, viewPos + viewDir, Vector3::UnitY);
+	//projMatrix = Matrix::makeOrthoLH(size.width, size.height, n, f);//Matrix::makePerspectiveFovLH(fovY, size.width / size.height, n, f);
+	projMatrix = Matrix::makePerspectiveFovLH(fovY, size.width / size.height, n, f);
+	viewProjMatrix = viewMatrix * projMatrix;
+	viewFrustum = ViewFrustum(viewProjMatrix);
+	//zSortDistanceBase = ZSortDistanceBase::CameraScreenDistance;
+	nearClip = n;
+	farClip = f;
+
+	//{
+	//	Vector3 pos(1, 1, -1);
+	//	Vector4 tt = Vector3::transform(pos, viewProjMatrix);
+	//	float d = tt.z / tt.w;
+	//	printf("");
+	//}
+
+}
 
 //==============================================================================
 // ShaderSemanticsManager

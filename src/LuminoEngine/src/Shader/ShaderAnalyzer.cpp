@@ -339,12 +339,30 @@ std::string ShaderCode::generateGlsl()
 
 
 	{
+		// TODO: 名前一致対応したい
+		/*
+			今のままだと、頂点シェーダの出力とピクセルシェーダの入力構造体のレイアウトが一致していなければ、
+			glUseProgram が INVALID を返すみたいな原因のわかりにくい問題となる。
+		
+			glslang がセマンティクスまで理解していればいいが、そうでなければ構造体メンバの名前一致で
+			指定できるようにしたい。
+
+		*/
+
+
 		if (m_stage == ShaderCodeStage::Vertex)
 		{
 			for (size_t i = 0; i < resources.stage_outputs.size(); i++)
 			{
+				// _entryPointOutput_Color
+
+				//auto s = "ln_varying_" + resources.stage_outputs[i].name.substr(18);
+
+				//
+
 				std::stringstream s;
 				s << "ln_varying_" << i;
+				glsl.set_name(resources.stage_outputs[i].id, s.str());
 				glsl.set_name(resources.stage_outputs[i].id, s.str());
 			}
 
@@ -363,6 +381,7 @@ std::string ShaderCode::generateGlsl()
 		{
 			for (size_t i = 0; i < resources.stage_inputs.size(); i++)
 			{
+				//auto s = "ln_varying_" + resources.stage_inputs[i].name.substr(6);
 				std::stringstream s;
 				s << "ln_varying_" << i;
 				glsl.set_name(resources.stage_inputs[i].id, s.str());

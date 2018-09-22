@@ -296,6 +296,10 @@ public:
 
 	RenderDrawElement* headElement() const { return m_headElement; }
 
+	void addDynamicLightInfo(const DynamicLightInfo& info) { return m_dynamicLightInfoList.add(info); }
+
+	const List<DynamicLightInfo>& dynamicLightInfoList() const { return m_dynamicLightInfoList; }
+
 private:
 	void addFrameData(IDrawElementListFrameData* data);
 
@@ -307,6 +311,8 @@ private:
 
 	IDrawElementListFrameData* m_headFrameData;	// head of link list.
 	IDrawElementListFrameData* m_tailFrameData;	// tail of link list.
+
+	List<DynamicLightInfo> m_dynamicLightInfoList;
 };
 
 enum class RendringPhase

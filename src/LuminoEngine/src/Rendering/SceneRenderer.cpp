@@ -151,7 +151,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 	pass->onBeginPass(m_renderingRenderView, graphicsContext, &defaultFrameBuffer);
 
 
-	detail::CameraInfo cameraInfo = m_renderingRenderView->cameraInfo;
+	const detail::CameraInfo& cameraInfo = m_renderingRenderView->mainCameraInfo;
 
 	//pass->overrideCameraInfo(&cameraInfo);
 

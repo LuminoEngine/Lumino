@@ -80,6 +80,23 @@ public:
 
 	/** @} */
 
+
+	//--------------------------------------------------------------------------
+	/** @name light */
+	/** @{ */
+
+	void addAmbientLight(const Color& color, float intensity);
+
+	void addHemisphereLight(const Color& skyColor, const Color& groundColor, float intensity);
+
+	void addDirectionalLight(const Color& color, float intensity, const Vector3& direction);
+
+	void addPointLight(const Color& color, float intensity, const Vector3& position, float range, float attenuation);
+
+	void addSpotLight(const Color& color, float intensity, const Vector3& position, const Vector3& direction, float range, float attenuation, float spotAngle, float spotPenumbra);
+
+	/** @} */
+
 LN_PROTECTED_INTERNAL_ACCESS:
 	RenderingContext();
 	virtual ~RenderingContext();

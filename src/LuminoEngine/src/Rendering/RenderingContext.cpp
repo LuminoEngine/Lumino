@@ -114,6 +114,31 @@ void RenderingContext::drawSprite(
 	//ptr->setLocalBoundingSphere(sphere);
 }
 
+void RenderingContext::addAmbientLight(const Color& color, float intensity)
+{
+	m_builder->targetList()->addDynamicLightInfo(detail::DynamicLightInfo::makeAmbientLightInfo(color, intensity));
+}
+
+void RenderingContext::addHemisphereLight(const Color& skyColor, const Color& groundColor, float intensity)
+{
+	m_builder->targetList()->addDynamicLightInfo(detail::DynamicLightInfo::makeHemisphereLightInfo(skyColor, groundColor, intensity));
+}
+
+void RenderingContext::addDirectionalLight(const Color& color, float intensity, const Vector3& direction)
+{
+	m_builder->targetList()->addDynamicLightInfo(detail::DynamicLightInfo::makeDirectionalLightInfo(color, intensity, direction));
+}
+
+void RenderingContext::addPointLight(const Color& color, float intensity, const Vector3& position, float range, float attenuation)
+{
+	m_builder->targetList()->addDynamicLightInfo(detail::DynamicLightInfo::makePointLightInfo(color, intensity, position, range, attenuation));
+}
+
+void RenderingContext::addSpotLight(const Color& color, float intensity, const Vector3& position, const Vector3& direction, float range, float attenuation, float spotAngle, float spotPenumbra)
+{
+	m_builder->targetList()->addDynamicLightInfo(detail::DynamicLightInfo::makeSpotLightInfo(color, intensity, position, direction, range, attenuation, spotAngle, spotPenumbra));
+}
+
 //==============================================================================
 // RenderingContext
 

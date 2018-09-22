@@ -31,7 +31,7 @@ public:
 	void addDrawElementListManager(detail::DrawElementListCollector* elementListManager);
 
 	// TODO: internal
-	detail::CameraInfo cameraInfo;
+	detail::CameraInfo mainCameraInfo;
 
 protected:
 	// アタッチされている stageList を実行し、frameBuffer へレンダリングを行う。

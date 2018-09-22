@@ -23,18 +23,18 @@ struct LN_VSInput
 {
 	float3	Pos				: POSITION;
 	float3	Normal			: NORMAL0;
-	float4	Color			: COLOR0;
 	float2	UV				: TEXCOORD0;
+	float4	Color			: COLOR0;
 	float4	BlendWeight		: BLENDWEIGHT;
 	float4	BlendIndices	: BLENDINDICES;
 };
 
 struct LN_VSOutput_Common
 {
-	float4	svPos		: POSITION;
+	float4	svPos		: SV_POSITION;
 	float3	Normal		: NORMAL0;
-	float4	Color		: COLOR0;
 	float2	UV			: TEXCOORD0;
+	float4	Color		: COLOR0;
 };
 
 struct LNVFInput
@@ -42,8 +42,8 @@ struct LNVFInput
 	// LNVSInput と同じ内容
 	float3	Pos			: POSITION;
 	float3	Normal		: NORMAL0;
-	float4	Color		: COLOR0;
 	float2	UV			: TEXCOORD0;
+	float4	Color		: COLOR0;
 	
 	// その他、Forward, Clusterd, Differd すべてで必要になるもの
 	// (ターゲットごとに分けたりすると煩雑なのでまとめる。そんなに数は多くならないだろう)
@@ -55,8 +55,8 @@ struct LN_PSInput_Common
 {
 	// POSITION 以外は LNVSInput と同じ
 	float3	Normal		: NORMAL0;
-	float4	Color		: COLOR0;
 	float2	UV			: TEXCOORD0;
+	float4	Color		: COLOR0;
 };
 
 struct LN_SurfaceOutput
@@ -84,7 +84,7 @@ LN_VSOutput_Common LN_ProcessVertex_Common(LN_VSInput input)
 	LN_VSOutput_Common o;
 	o.svPos			= mul(float4(input.Pos, 1.0f), ln_WorldViewProjection);
 	o.Normal		= mul(float4(input.Normal, 1.0f), ln_WorldViewIT).xyz;
-	o.UV			= input.UV + (float2(0.5, 0.5) / ln_ViewportPixelSize);
+	o.UV			= input.UV;// + (float2(0.5, 0.5) / ln_ViewportPixelSize);
 	o.Color			= input.Color;
 	return o;
 }
