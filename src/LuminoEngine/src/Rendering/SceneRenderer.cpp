@@ -48,6 +48,12 @@ SceneRenderer::SceneRenderer()
 
 void SceneRenderer::initialize()
 {
+	m_skinningMatricesTexture = newObject<Texture2D>(4, 1024, TextureFormat::R32G32B32A32Float, false, GraphicsResourceUsage::Dynamic);
+	m_skinningLocalQuaternionsTexture = newObject<Texture2D>(1, 1024, TextureFormat::R32G32B32A32Float, false, GraphicsResourceUsage::Dynamic);
+	
+	// skinning texture は毎フレーム更新されるものなので、デバイスリセット時に復元する必要はない
+	m_skinningMatricesTexture->setResourcePool(GraphicsResourcePool::None);
+	m_skinningLocalQuaternionsTexture->setResourcePool(GraphicsResourcePool::None);
 }
 
 void SceneRenderer::render(
@@ -106,6 +112,8 @@ void SceneRenderer::render(
 	//	}
 	//}
 	//m_renderingActualPassList.addRange(m_renderingPassList);
+
+	m_renderingActualPassList.clear();
 	for (SceneRendererPass* pass : m_renderingPassList)
 	{
 		m_renderingActualPassList.add(pass);
@@ -185,8 +193,8 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 			elementInfo.viewProjMatrix = &cameraInfo.viewProjMatrix;
 			elementInfo.WorldMatrix = element->combinedWorldMatrix();
 			elementInfo.WorldViewProjectionMatrix = elementInfo.WorldMatrix * (*elementInfo.viewProjMatrix);
-			//elementInfo.boneTexture = m_skinningMatricesTexture;
-			//elementInfo.boneLocalQuaternionTexture = m_skinningLocalQuaternionsTexture;
+			elementInfo.boneTexture = m_skinningMatricesTexture;
+			elementInfo.boneLocalQuaternionTexture = m_skinningLocalQuaternionsTexture;
 
 			SubsetInfo subsetInfo;
 			subsetInfo.materialTexture = (finalMaterial) ? finalMaterial->mainTexture() : nullptr;

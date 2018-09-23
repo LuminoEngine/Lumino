@@ -386,6 +386,12 @@ std::string ShaderCode::generateGlsl()
 				s << "ln_varying_" << i;
 				glsl.set_name(resources.stage_inputs[i].id, s.str());
 			}
+
+			for (size_t i = 0; i < resources.stage_outputs.size(); i++)
+			{
+				//glsl.set_decoration(resources.stage_outputs[i].id, spv::DecorationLocation, 6);
+				//glsl.unset_decoration(resources.stage_outputs[i].id, spv::DecorationLocation);
+			}
 		}
 
 		////auto resources = compiler.get_shader_resources();
@@ -596,6 +602,8 @@ bool HLSLMetadataParser::parsePass(HLSLPass* pass)
 
 bool HLSLMetadataParser::parseRenderState(HLSLPass* pass)
 {
+	// TODO:  VertexShader　 = compile vs_3_0 VS_WriteLinearDepth(); とか間違えて書いてしまうことが多いので、警告したい。
+
 	const Token& name = current();
 	if (!nextTo('=')) return false;
 	if (!next()) return false;

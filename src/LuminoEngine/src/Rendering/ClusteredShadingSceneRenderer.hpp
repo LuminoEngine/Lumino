@@ -13,31 +13,6 @@ struct FogParams
 	float	density = 0.0f;
 };
 
-class ClusteredShadingGeometryRenderingPass
-	: public SceneRendererPass
-{
-public:
-	ClusteredShadingGeometryRenderingPass();
-	virtual ~ClusteredShadingGeometryRenderingPass();
-	void initialize();
-
-	virtual ShaderTechnique* selectShaderTechnique(
-		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
-		Shader* requestedShader,
-		ShadingModel requestedShadingModel) override;
-
-	//virtual Shader* getDefaultShader() const override;
-	//virtual void selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy) override;
-
-	//virtual void onBeginPass(DefaultStatus* defaultStatus, RenderView* renderView) override;
-
-private:
-	Ref<Shader>					m_defaultShader;
-	ShaderTechnique*			m_defaultShaderTechnique;
-	//Ref<Shader>					m_unLightingShader;
-	//ShaderTechnique*			m_unLightingShaderTechnique;
-};
-
 class DepthPrepass
 	: public SceneRendererPass
 {
@@ -64,6 +39,31 @@ public:	// TODO:
 	Ref<Shader>					m_defaultShader;
 	RenderTargetTexture*	m_depthMap;
 	DepthBuffer*	m_depthBuffer;
+};
+
+class ClusteredShadingGeometryRenderingPass
+	: public SceneRendererPass
+{
+public:
+	ClusteredShadingGeometryRenderingPass();
+	virtual ~ClusteredShadingGeometryRenderingPass();
+	void initialize();
+
+	virtual ShaderTechnique* selectShaderTechnique(
+		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
+		Shader* requestedShader,
+		ShadingModel requestedShadingModel) override;
+
+	//virtual Shader* getDefaultShader() const override;
+	//virtual void selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy) override;
+
+	//virtual void onBeginPass(DefaultStatus* defaultStatus, RenderView* renderView) override;
+
+private:
+	Ref<Shader>					m_defaultShader;
+	ShaderTechnique*			m_defaultShaderTechnique;
+	//Ref<Shader>					m_unLightingShader;
+	//ShaderTechnique*			m_unLightingShaderTechnique;
 };
 
 class ShadowCasterPass

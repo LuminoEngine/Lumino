@@ -10,6 +10,56 @@ namespace ln {
 namespace detail {
 
 #if 1
+
+//==============================================================================
+// DepthPrepass
+
+DepthPrepass::DepthPrepass()
+{
+}
+
+DepthPrepass::~DepthPrepass()
+{
+}
+
+void DepthPrepass::initialize()
+{
+	SceneRendererPass::initialize();
+	m_defaultShader = manager()->builtinShader(BuiltinShader::DepthPrepass);
+}
+
+void DepthPrepass::onBeginRender(RenderView* renderView)
+{
+	m_depthMap = renderView->frameBufferCache()->requestRenderTargetTexture(renderView->renderingFrameBufferSize(), TextureFormat::RGBA32, false);
+	m_depthBuffer = renderView->frameBufferCache()->requestDepthBuffer(renderView->renderingFrameBufferSize());
+}
+
+void DepthPrepass::onEndRender(RenderView* renderView)
+{
+	renderView->frameBufferCache()->release(m_depthMap);
+	renderView->frameBufferCache()->release(m_depthBuffer);
+	m_depthMap = nullptr;
+	m_depthBuffer = nullptr;
+}
+
+void DepthPrepass::onBeginPass(RenderView* renderView, GraphicsContext* context, FrameBuffer* frameBuffer)
+{
+	frameBuffer->renderTarget[0] = m_depthMap;
+	frameBuffer->depthBuffer = m_depthBuffer;
+	context->setColorBuffer(0, m_depthMap);
+	context->setDepthBuffer(m_depthBuffer);
+	context->clear(ClearFlags::All, Color::Transparency, 1.0f, 0);
+}
+
+ShaderTechnique* DepthPrepass::selectShaderTechnique(
+	ShaderTechniqueClass_MeshProcess requestedMeshProcess,
+	Shader* requestedShader,
+	ShadingModel requestedShadingModel)
+{
+	// force default
+	return m_defaultShader->techniques().front();
+}
+
 //==============================================================================
 // ClusteredShadingGeometryRenderingPass
 
@@ -117,78 +167,6 @@ ShaderTechnique* ClusteredShadingGeometryRenderingPass::selectShaderTechnique(
 
 
 
-
-//==============================================================================
-// DepthPrepass
-//==============================================================================
-DepthPrepass::DepthPrepass()
-{
-}
-
-DepthPrepass::~DepthPrepass()
-{
-}
-
-void DepthPrepass::initialize()
-{
-	SceneRendererPass::initialize();
-	m_defaultShader = manager()->builtinShader(BuiltinShader::DepthPrepass);
-}
-
-void DepthPrepass::onBeginRender(RenderView* renderView)
-{
-	m_depthMap = renderView->frameBufferCache()->requestRenderTargetTexture(renderView->renderingFrameBufferSize(), TextureFormat::RGBA32, false);
-	m_depthBuffer = renderView->frameBufferCache()->requestDepthBuffer(renderView->renderingFrameBufferSize());
-}
-
-void DepthPrepass::onEndRender(RenderView* renderView)
-{
-	renderView->frameBufferCache()->release(m_depthMap);
-	renderView->frameBufferCache()->release(m_depthBuffer);
-	m_depthMap = nullptr;
-	m_depthBuffer = nullptr;
-}
-
-void DepthPrepass::onBeginPass(RenderView* renderView, GraphicsContext* context, FrameBuffer* frameBuffer)
-{
-	frameBuffer->renderTarget[0] = m_depthMap;
-	frameBuffer->depthBuffer = m_depthBuffer;
-	context->setColorBuffer(0, m_depthMap);
-	context->setDepthBuffer(m_depthBuffer);
-	context->clear(ClearFlags::All, Color::Transparency, 1.0f, 0);
-}
-
-ShaderTechnique* DepthPrepass::selectShaderTechnique(
-	ShaderTechniqueClass_MeshProcess requestedMeshProcess,
-	Shader* requestedShader,
-	ShadingModel requestedShadingModel)
-{
-	// force default
-	return m_defaultShader->techniques().front();
-}
-
-//void DepthPrepass::selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy)
-//{
-//	// TODO: とりあえずデフォルト強制
-//	outPolicy->shader = m_defaultShader;
-//	outPolicy->shaderTechnique = m_defaultShader->getTechniques()[0];
-//
-//	// とありあえず全部可
-//	outPolicy->visible = true;
-//}
-//
-//void DepthPrepass::onBeginPass(DefaultStatus* defaultStatus, RenderView* renderView)
-//{
-//	auto viewSize = SizeI::fromFloatSize(renderView->getViewSize());
-//	if (!m_depthMap || m_depthMap->getSize() != viewSize)
-//	{
-//		m_depthMap = Ref<RenderTargetTexture>::makeRef();
-//		m_depthMap->createImpl(GraphicsManager::getInstance(), viewSize, 1, TextureFormat::R32G32B32A32_Float);
-//	}
-//
-//	defaultStatus->defaultRenderTarget[0] = m_depthMap;
-//}
-
 //==============================================================================
 // ShadowCasterPass
 //==============================================================================
@@ -264,7 +242,7 @@ void ClusteredShadingSceneRenderer::initialize(RenderingManager* manager)
 	SceneRenderer::initialize();
 
 	m_depthPrepass = newObject<DepthPrepass>();
-	addPass(m_depthPrepass);
+	//addPass(m_depthPrepass);
 
 	// pass "Geometry"
 	addPass(newObject<ClusteredShadingGeometryRenderingPass>());

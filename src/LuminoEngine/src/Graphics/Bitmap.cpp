@@ -461,8 +461,8 @@ void Bitmap3D::setPixel32(int x, int y, int z, const Color32& color)
 {
 	if (m_format == PixelFormat::RGBA32)
 	{
-		size_t faceSize = 4 * m_width * m_height;
-		Color32* pixel = reinterpret_cast<Color32*>(m_buffer->data() + (faceSize * z) + ((y * m_width) + x) * 4);
+		size_t faceSize = m_width * m_height;
+		Color32* pixel = reinterpret_cast<Color32*>(m_buffer->data() + ((z * faceSize) + ((y * m_width) + x)) * 4);
 		*pixel = color;
 	}
 	else

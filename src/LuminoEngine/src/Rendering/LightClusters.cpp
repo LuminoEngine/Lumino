@@ -28,7 +28,7 @@ void LightClusters::init()
 	m_lightInofs.reserve(MaxLights);
 	m_globalLightInofs.reserve(MaxLights);
 
-	m_clustersTexture = newObject<Texture3D>(ClusterWidth, ClusterWidth, ClusterWidth, TextureFormat::RGBA32, false, GraphicsResourceUsage::Dynamic);
+	m_clustersTexture = newObject<Texture3D>(ClusterWidth, ClusterHeight, ClusterDepth, TextureFormat::RGBA32, false, GraphicsResourceUsage::Dynamic);
 	m_lightInfoTexture = newObject<Texture2D>(sizeof(LightInfo) / sizeof(Vector4), MaxLights, TextureFormat::R32G32B32A32Float, false, GraphicsResourceUsage::Dynamic);
 	m_globalLightInfoTexture = newObject<Texture2D>(sizeof(GlobalLightInfo) / sizeof(Vector4), MaxLights, TextureFormat::R32G32B32A32Float, false, GraphicsResourceUsage::Dynamic);
 }
@@ -93,6 +93,8 @@ void LightClusters::addSpotLight(const Vector3& pos, float range, float attenuat
 	addClusterSpherical(pos, range);
 
 	LightInfo info;
+	//info.posAndRange = Vector4(pos, range);
+	//info.directionAndAtt = Vector4(-direction, range);
 	info.posAndRange = Vector4(Vector3::transform(pos, m_view).xyz(), range);
 	info.directionAndAtt = Vector4(transformDirection(-direction, m_view), attenuation);
 	info.spotAngle = Vector4(cos(cone), cos(cone * (1.0 - penumbra)), 0, 0);

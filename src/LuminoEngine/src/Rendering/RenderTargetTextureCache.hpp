@@ -25,8 +25,8 @@ protected:
 private:
 	struct Entry
 	{
-		int							refCount;
-		int							lifeFrames;
+		int							refCount;// こが 0 であれば再利用できる
+		int							lifeFrames;	
 		Ref<GraphicsResource>	resourceObject;
 	};
 	typedef std::vector<Entry>	RenderTargetList;

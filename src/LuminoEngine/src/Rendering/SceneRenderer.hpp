@@ -93,6 +93,10 @@ private:
 	List<RenderDrawElement*> m_renderingElementList;
 
 	List<SceneRendererPass*>	m_renderingActualPassList;
+
+	// TODO: ちゃんとした置き場は SkinnedMesh 実装時に考える
+	Ref<Texture2D>    m_skinningMatricesTexture;            // GPU スキニング用のテクスチャ
+	Ref<Texture2D>    m_skinningLocalQuaternionsTexture;    // GPU スキニング用のテクスチャ
 };
 
 } // namespace detail

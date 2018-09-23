@@ -235,15 +235,21 @@ float _LN_CalcFogFactor(float depth)
 
 	
 	
-float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_ClusteredForward extra, LN_SurfaceOutput surface)
+float4 _LN_PS_ClusteredForward_Default(
+	//LN_PSInput_ClusteredForward extra,
+	float3 worldPos,
+	float3 vertexPos,
+
+	LN_SurfaceOutput surface)
 {
-	float4 worldPos = float4(extra.WorldPos, 1.0f);
-	float4 viewPos = mul(worldPos, ln_View);
+	float4 viewPos = mul(float4(worldPos, 1.0f), ln_View);
 	float depth = (viewPos.z - ln_nearClip) / (ln_farClip - ln_nearClip);
 	
+	// 頂点位置から視点位置へのベクトル
+	float3 vViewPosition = -viewPos.xyz;
 	
 	
-	float4 vp = mul(float4(extra.VertexPos, 1.0f), ln_WorldViewProjection);
+	float4 vp = mul(float4(vertexPos, 1.0f), ln_WorldViewProjection);
 	vp.xyz /= vp.w;
 	
 	float cx = (vp.x + 1.0) / 2.0;
@@ -257,17 +263,16 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 	
 	float4 mc = surface.Albedo;// * ln_ColorScale;//(tex2D(MaterialTextureSampler, p.UV) * p.Color) * ln_ColorScale;
 	
-
 	
 	/**/
 	LN_PBRGeometry geometry;
-	geometry.position = -extra.vViewPosition;//-vViewPosition;
+	geometry.position = -vViewPosition;//-vViewPosition;
 	geometry.normal = normalize(surface.Normal);//vNormal);
-	geometry.viewDir = normalize(extra.vViewPosition);//vViewPosition);
+	geometry.viewDir = normalize(vViewPosition);//vViewPosition);
 
 	/**/
-	float metallic = 0.5;	// TODO:
-	float roughness = 0.3;	// TODO:
+	float metallic = 0.0;//0.5;	// TODO:
+	float roughness = 1.0;//0.3;	// TODO:
 	LN_PBRMaterial material;
 	material.diffuseColor = lerp(surface.Albedo.xyz, float3(0, 0, 0), metallic);
 	material.specularColor = lerp(float3(0.04, 0.04, 0.04), surface.Albedo.xyz, metallic);
@@ -290,6 +295,7 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 			
 			if (light.spotAngles.x > 0.0)
 			{
+				// Spot light
 				LN_SpotLight spotLight;
 				spotLight.position = light.position;
 				spotLight.direction = light.direction;
@@ -306,6 +312,7 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 			}
 			else
 			{
+				// Point light
 				LN_PointLight pointLight;
 				pointLight.position = light.position;
 				pointLight.color = light.color.xyz;// * light.color.a;
@@ -314,8 +321,27 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 				LN_GetPointDirectLightIrradiance(pointLight, geometry, directLight);
 				if (directLight.visible)
 				{
+					//　FixMe: ↓ ライト位置が 0, 0, 0 だと dotNL が 0 になってしまう・・・？
 					LN_RE_Direct(directLight, geometry, material, reflectedLight);
-	//return float4(1,1,0, 1);
+
+		/*			
+	// コサイン項
+	//float dotNL = saturate(dot(geometry.normal, directLight.direction));
+	float dotNL = 
+						geometry.normal.x * directLight.direction.x+
+						geometry.normal.y * directLight.direction.y+
+						geometry.normal.z * directLight.direction.z;
+
+	// 放射照度 = コサイン項 * 放射輝度
+	float3 irradiance = dotNL * directLight.color;
+	//return float4(directLight.direction, 1);
+					//return float4(abs(dotNL) * 10000, 0, 0, 1);
+					//return float4(
+					//	geometry.normal.x * directLight.direction.x,
+					//	geometry.normal.y * directLight.direction.y,
+					//	geometry.normal.z * directLight.direction.z,
+					//	1);
+					*/
 				}
 			}
 			
@@ -325,6 +351,8 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 				float DistanceSqr = dot(ToLight, ToLight);
 				float3 L = ToLight * rsqrt(DistanceSqr);
 				
+				//return float4(rsqrt(DistanceSqr), 0, 0, 1);
+				//return float4(L, 1);
 				
 				float LightInvRadius = 1.0 / light.range;
 				float LightFalloffExponent = 0;
@@ -356,7 +384,7 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 		}
 	}
 	
-#if 1
+#if 0
 	float3 ambientIrradiance = float3(0, 0, 0);
 	{
     	float3 color = float3(0, 0, 0);
@@ -405,9 +433,10 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 	    result.rgb += color;
 	}
 
-	RE_IndirectDiffuse_BlinnPhong(ambientIrradiance, geometry, material, reflectedLight);
+	//RE_IndirectDiffuse_BlinnPhong(ambientIrradiance, geometry, material, reflectedLight);
 
 #endif
+	//return float4(result, 1);
 	
 #if 0
 	//result = float3(0, 0, 0);
@@ -420,11 +449,18 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 	/**/
 	float3 emissive = float3(0,0,0);
 	float opacity = 1.0;
-	float3 outgoingLight = emissive + reflectedLight.directDiffuse + reflectedLight.directSpecular + reflectedLight.indirectDiffuse + reflectedLight.indirectSpecular;
+	float3 outgoingLight =
+		emissive +
+		reflectedLight.directDiffuse +
+		reflectedLight.directSpecular +
+		reflectedLight.indirectDiffuse +
+		reflectedLight.indirectSpecular;
+
+	return float4(outgoingLight, opacity);
 	
 	// Shadow
-    float4 posInLight = extra.vInLightPosition;
-    outgoingLight *= LN_CalculateShadow(posInLight);
+    //float4 posInLight = extra.vInLightPosition;
+    //outgoingLight *= LN_CalculateShadow(posInLight);
 	
 	// Fog
 	result.rgb = lerp(ln_FogParams.rgb, outgoingLight, _LN_CalcFogFactor(viewPos.z));
@@ -494,22 +530,35 @@ void MySSMain(MySSInput input, inout LN_SurfaceOutput output)
 
 struct _lngs_VSOutput
 {
-	LN_VSOutput_Common				common;
-	LN_VSOutput_ClusteredForward	extra;
-	/* VF 定義なし */ MyVFOutput						user;	// ★ MyVFMain() の最後の引数をパースして得る
+	float4	svPos		: SV_POSITION;
+
+	// common
+	float3	Normal		: NORMAL0;
+	float2	UV			: TEXCOORD0;
+	float4	Color		: COLOR0;
+
+	// clustered forward
+	float3	WorldPos	: TEXCOORD10;
+	float3	VertexPos	: TEXCOORD11;
 };
 
 // auto generation
 _lngs_VSOutput _lngs_VS_ClusteredForward_Geometry(LN_VSInput vsi)
 {
-	_lngs_VSOutput o;
-	o.common	= LN_ProcessVertex_Common(vsi);
-	o.extra		= LN_ProcessVertex_ClusteredForward(vsi);
-	// ★ Scene固有のコードはここに直接生成する (ピクセルシェーダと書き方を合わせたい)
-	MyVFMain(vsi, o.user);	// ★ User定義呼び出し
-	return o;
+	LN_VSOutput_Common common = LN_ProcessVertex_Common(vsi);
+	LN_VSOutput_ClusteredForward extra = LN_ProcessVertex_ClusteredForward(vsi);
+
+	_lngs_VSOutput output;
+	output.svPos = common.svPos;
+	output.Normal = common.Normal;
+	output.UV = common.UV;
+	output.Color = common.Color;
+	output.WorldPos = extra.WorldPos;
+	output.VertexPos = extra.VertexPos;
+	return output;
 }
 // auto generation
+/*
 _lngs_VSOutput _lngs_VS_ClusteredForward_Geometry_SkinnedMesh(LN_VSInput vsi)
 {
 	_lngs_VSOutput o;
@@ -519,13 +568,19 @@ _lngs_VSOutput _lngs_VS_ClusteredForward_Geometry_SkinnedMesh(LN_VSInput vsi)
 	MyVFMain(vsi, o.user);	// ★ User定義呼び出し
 	return o;
 }
+*/
 
 
 struct _lngs_PSInput
 {
-	LN_PSInput_Common				common;
-	LN_PSInput_ClusteredForward		extra;
-	MySSInput						user;	// ★ MyVFMain() の最後の引数をパースして得る
+	// common
+	float3	Normal		: NORMAL0;
+	float2	UV			: TEXCOORD0;
+	float4	Color		: COLOR0;
+	
+	// clustered forward
+	float3	WorldPos	: TEXCOORD10;
+	float3	VertexPos	: TEXCOORD11;
 };
 
 struct _lngs_PSOutput
@@ -537,16 +592,20 @@ struct _lngs_PSOutput
 _lngs_PSOutput _lngs_PS_ClusteredForward_Geometry(_lngs_PSInput input)
 {
 	LN_SurfaceOutput surface;
-	_LN_InitSurfaceOutput(input.common, surface);
-	MySSMain(input.user, surface);	// ★ User定義呼び出し
+	_LN_InitSurfaceOutput(input.Normal, surface);
+
+	//surface.Normal = input.Normal;
 	
 	// ★ライティングのコードはここに直接生成する (GBuffer生成などではマルチRT書き込みするため、戻り値も変えなければならない)
 	// ・・・というより、ピクセルシェーダ全体を生成する。フラグメントの結合じゃダメ。
+
+	// TODO: SurfaceShader を入れるのはこのあたり
+	surface.Albedo = ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.UV);// * input.Color;
 	
 	_lngs_PSOutput o;
-	o.color0 = _LN_PS_ClusteredForward_Default(input.common, input.extra, surface);
-	//o.color1 = float4(o.color0.a, 0, 0, 1);
+	o.color0 = _LN_PS_ClusteredForward_Default(input.WorldPos, input.VertexPos, surface);
 	o.color0.a = surface.Albedo.a;
+	//o.color0 = float4(1, 0, 0, 1);
 	return o;
 }
 
@@ -555,13 +614,13 @@ float4	ln_MaterialAmbient;	// TODO: とりあえず MMD モデル用のために
 
 float4 _lngs_PS_UnLighting(_lngs_PSInput input) : COLOR0
 {
-	float4 result = input.common.Color * ln_MaterialM2Color;
+	float4 result = input.Color * ln_MaterialM2Color;
 
 	float3 ambient = float3(1, 1, 1) * ln_MaterialAmbient.rgb;
 	result.rgb = saturate(result.rgb + ambient);
 
 	//result *= (tex2D(MaterialTextureSampler, input.common.UV));
-	result *= ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.common.UV);
+	result *= ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.UV);
 
 	return result;
 }
@@ -587,8 +646,8 @@ technique Forward_Geometry
 {
 	pass Pass1
 	{
-		VertexShader = compile vs_3_0 _lngs_VS_ClusteredForward_Geometry();
-		PixelShader	 = compile ps_3_0 _lngs_PS_ClusteredForward_Geometry();
+		VertexShader = _lngs_VS_ClusteredForward_Geometry;
+		PixelShader	 = _lngs_PS_ClusteredForward_Geometry;
 	}
 }
 
@@ -596,8 +655,8 @@ technique Forward_Geometry_SkinnedMesh
 {
 	pass Pass1
 	{
-		VertexShader = compile vs_3_0 _lngs_VS_ClusteredForward_Geometry_SkinnedMesh();
-		PixelShader	 = compile ps_3_0 _lngs_PS_ClusteredForward_Geometry();
+		VertexShader = _lngs_VS_ClusteredForward_Geometry_SkinnedMesh;
+		PixelShader	 = _lngs_PS_ClusteredForward_Geometry;
 	}
 }
 
@@ -605,8 +664,8 @@ technique Forward_Geometry_SkinnedMesh_UnLighting
 {
 	pass Pass1
 	{
-		VertexShader = compile vs_3_0 _lngs_VS_ClusteredForward_Geometry_SkinnedMesh();
-		PixelShader	 = compile ps_3_0 _lngs_PS_UnLighting();
+		VertexShader = _lngs_VS_ClusteredForward_Geometry_SkinnedMesh;
+		PixelShader	 = _lngs_PS_UnLighting;
 	}
 }
 

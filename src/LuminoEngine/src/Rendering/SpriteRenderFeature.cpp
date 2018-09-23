@@ -46,6 +46,7 @@ void InternalSpriteRenderer::drawRequest(
 	SpriteData sprite;
 
 	Vector2 center(size.x * anchorRatio.x, size.y * anchorRatio.y);
+	Vector3 normal = Vector3::UnitZ;
 
 	// 3D の場合の頂点座標
 	if (baseDir != SpriteBaseDirection::Basic2D)
@@ -72,36 +73,42 @@ void InternalSpriteRenderer::drawRequest(
 			sprite.vertices[1].position.set(LN_WRITE_V3(0, t, r));     // 右上
 			sprite.vertices[2].position.set(LN_WRITE_V3(0, b, l));     // 左下
 			sprite.vertices[3].position.set(LN_WRITE_V3(0, b, r));     // 右下
+			normal = Vector3(1, 0, 0);
 			break;
 		case SpriteBaseDirection::YPlus:
 			sprite.vertices[0].position.set(LN_WRITE_V3(l, 0, t));
 			sprite.vertices[1].position.set(LN_WRITE_V3(r, 0, t));
 			sprite.vertices[2].position.set(LN_WRITE_V3(l, 0, b));
 			sprite.vertices[3].position.set(LN_WRITE_V3(r, 0, b));
+			normal = Vector3(0, 1, 0);
 			break;
 		case SpriteBaseDirection::ZPlus:
 			sprite.vertices[0].position.set(LN_WRITE_V3(r, t, 0));
 			sprite.vertices[1].position.set(LN_WRITE_V3(l, t, 0));
 			sprite.vertices[2].position.set(LN_WRITE_V3(r, b, 0));
 			sprite.vertices[3].position.set(LN_WRITE_V3(l, b, 0));
+			normal = Vector3(0, 0, 1);
 			break;
 		case SpriteBaseDirection::XMinus:
 			sprite.vertices[0].position.set(LN_WRITE_V3(0, t, r));
 			sprite.vertices[1].position.set(LN_WRITE_V3(0, t, l));
 			sprite.vertices[2].position.set(LN_WRITE_V3(0, b, r));
 			sprite.vertices[3].position.set(LN_WRITE_V3(0, b, l));
+			normal = Vector3(-1, 0, 0);
 			break;
 		case SpriteBaseDirection::YMinus:
 			sprite.vertices[0].position.set(LN_WRITE_V3(r, 0, t));
 			sprite.vertices[1].position.set(LN_WRITE_V3(l, 0, t));
 			sprite.vertices[2].position.set(LN_WRITE_V3(r, 0, b));
 			sprite.vertices[3].position.set(LN_WRITE_V3(l, 0, b));
+			normal = Vector3(0, -1, 0);
 			break;
 		case SpriteBaseDirection::ZMinus:
 			sprite.vertices[0].position.set(LN_WRITE_V3(l, t, 0));
 			sprite.vertices[1].position.set(LN_WRITE_V3(r, t, 0));
 			sprite.vertices[2].position.set(LN_WRITE_V3(l, b, 0));
 			sprite.vertices[3].position.set(LN_WRITE_V3(r, b, 0));
+			normal = Vector3(0, 0, -1);
 			break;
 		}
 #undef LN_WRITE_V3
@@ -114,7 +121,11 @@ void InternalSpriteRenderer::drawRequest(
 		sprite.vertices[1].position.set(origin.x + size.x, origin.y, 0);
 		sprite.vertices[2].position.set(origin.x, origin.y + size.y, 0);
 		sprite.vertices[3].position.set(origin.x + size.x, origin.y + size.y, 0);
+		normal = Vector3(0, 0, -1);
 	}
+
+	for (int i = 0; i < 4; i++)
+		sprite.vertices[i].normal = normal;
 
 	const Vector3& worldPoint = transform.position();
 

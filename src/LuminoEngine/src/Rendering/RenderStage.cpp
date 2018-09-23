@@ -178,6 +178,8 @@ void DrawElementList::clear()
 		m_headElement = nullptr;
 		m_tailElement = nullptr;
 	}
+
+	m_dynamicLightInfoList.clear();
 }
 
 RenderStage* DrawElementList::addNewRenderStage()

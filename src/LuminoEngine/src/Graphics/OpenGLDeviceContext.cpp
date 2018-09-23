@@ -1661,7 +1661,9 @@ void GLShaderPass::apply()
 		buf->bind(m_program);
 	}
 
-	m_samplerBuffer->bind();
+	if (m_samplerBuffer) {
+		m_samplerBuffer->bind();
+	}
 }
 
 int GLShaderPass::getUniformCount() const

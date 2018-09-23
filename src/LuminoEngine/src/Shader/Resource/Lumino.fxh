@@ -68,10 +68,10 @@ struct LN_SurfaceOutput
 	float3	Gloss;		// specular intensity
 };
 
-void _LN_InitSurfaceOutput(LN_PSInput_Common common, inout LN_SurfaceOutput surface)
+void _LN_InitSurfaceOutput(float3 normal, inout LN_SurfaceOutput surface)
 {
 	surface.Albedo = float4(0, 0, 0, 1);
-	surface.Normal = common.Normal;
+	surface.Normal = normal;
 	surface.Emission = float3(0, 0, 0);
 	surface.Specular = 0;
 	surface.Gloss = float3(0, 0, 0);

@@ -72,7 +72,7 @@ int main(int argc, char** argv)
 				{
 					Size size(fb.renderTarget[0]->width(), fb.renderTarget[0]->height());
 					Vector3 pos = Vector3(5, 0, -5);
-					mainCameraInfo.makePerspective(pos, Vector3::normalize(Vector3::Zero - pos), Math::PI / 3.0f, size, 0.1f, 1000.0f);
+					mainCameraInfo.makePerspective(pos, Vector3::normalize(Vector3::Zero - pos), Math::PI / 3.0f, size, 0.1f, 100.0f);
 
 				}
 
@@ -95,13 +95,13 @@ int main(int argc, char** argv)
 		{
 			renderView->m_context->reset();
 
-			//renderView->m_context->setCullingMode(CullingMode::None);
+			renderView->m_context->setCullingMode(CullingMode::None);
 
 			renderView->m_context->drawSprite(
 				Matrix(), Size(7, 5), Vector2(0, 0), Rect(0, 0, 1, 1), Color::Blue,
 				SpriteBaseDirection::ZMinus, BillboardType::None, material);
 
-			renderView->m_context->addPointLight(Color::White, 1.0, Vector3(0, 0, 0), 3.0, 1.0);
+			renderView->m_context->addPointLight(Color::White, 1.0, Vector3(0, 0, -1), 3.0, 1.0);
 
 			renderView->render();
 

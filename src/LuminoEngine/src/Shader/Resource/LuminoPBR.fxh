@@ -28,7 +28,7 @@ float	ln_MaterialM2Specular;
 struct LN_IncidentLight
 {
 	float3 color;
-	float3 direction;
+	float3 direction;	// ピクセル位置 → ライト中心位置 への向きベクトル
 	bool visible;
 };
 
