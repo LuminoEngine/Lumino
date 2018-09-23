@@ -47,12 +47,6 @@ set(CMAKE_DEBUG_POSTFIX "d")
 
 include(src/LuminoCommon.cmake)
 
-if (LN_BUILD_CORE_ONLY)
-    set(LN_BUILD_CORE ON)
-elseif()
-    set(LN_BUILD_CORE OFF)
-endif()
-
 set(LUMINO_ROOT_PATH "${CMAKE_CURRENT_LIST_DIR}")
 set(LUMINO_INCLUDE_DIRECTORIES
     "${LUMINO_ROOT_PATH}/src/LuminoCore/include"

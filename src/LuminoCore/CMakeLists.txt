@@ -1,8 +1,5 @@
 ﻿#
 # Required variables:
-#   LN_BUILD_CORE
-#       Specify this when you want to use only LuminoCore independently.
-#       OFF for normal build (build LuminoEngine).
 #
 
 cmake_minimum_required (VERSION 3.0.0)
@@ -15,6 +12,7 @@ include(${PROJECT_SOURCE_DIR}/../LuminoCommon.cmake NO_POLICY_SCOPE)
 include(LuminoCoreSources.cmake)
 
 set(LN_SOURCES
+    ${LN_SOURCES_LuminoCore}
     src/LuminoCore.PCH.cpp
     src/LuminoCore.PCH.h)
 
@@ -43,56 +41,35 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-if (LN_BUILD_CORE)
-    if (APPLE)
-        # Build as framework.
-        add_library(${PROJECT_NAME} SHARED ${LN_SOURCES})
-        set_target_properties(${PROJECT_NAME} PROPERTIES
-            FRAMEWORK TRUE
-            #VERSION 1.0.0
-            #SOVERSION 1.0.0
-            MACOSX_FRAMEWORK_IDENTIFIER lib.Lumino
-            BUILD_WITH_INSTALL_RPATH 1
-            XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMIRY "1,2"
-            XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "iPhone Developer")
-        # Do not use PUBLIC_HEADERS.
-        # Since PUBLIC_HEADERS does not maintain the folder tree,
-        # install the header file with the install command.
-        install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/Lumino DESTINATION "LuminoCore.framework/Headers")
-        install(FILES ${PROJECT_SOURCE_DIR}/include/LuminoCore.hpp DESTINATION "LuminoCore.framework/Headers")
-    else()
-        add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
-    endif()
+add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
+target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_link_libraries(${PROJECT_NAME} INTERFACE ${LN_LINK_LIBS})
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
+ln_add_pch(${PROJECT_NAME} "src/LuminoCore.PCH.h" "src/LuminoCore.PCH.cpp")
 
-    target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/include)
-    target_link_libraries(${PROJECT_NAME} INTERFACE ${LN_LINK_LIBS})
-    set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
-    ln_add_pch(${PROJECT_NAME} "src/LuminoCore.PCH.h" "src/LuminoCore.PCH.cpp")
-
-    # Unit test.
-    if (LN_BUILD_TESTS)
-        add_subdirectory(test)
-    endif()
-
-    #------------------------------------------------------------------------------
-    # Install
-
-    install(TARGETS ${PROJECT_NAME}
-        EXPORT LuminoCoreTargets
-        ARCHIVE     DESTINATION lib    # Library installation location (Copied at "INSTALL" build time)
-        INCLUDES    DESTINATION include                    # include directory (File is not copied)
-        FRAMEWORK DESTINATION .)
-
-    install(DIRECTORY ${PROJECT_SOURCE_DIR}/include DESTINATION .)
-
-    install(
-        EXPORT LuminoCoreTargets
-        FILE LuminoCoreTargets.cmake
-        EXPORT_LINK_INTERFACE_LIBRARIES
-        DESTINATION "lib/cmake")
-
-    install(
-        FILES "LuminoCoreConfig.cmake"
-        DESTINATION "lib/cmake")
-    
+# Unit test.
+if (LN_BUILD_TESTS)
+    add_subdirectory(test)
 endif()
+
+#------------------------------------------------------------------------------
+# Install
+
+install(TARGETS ${PROJECT_NAME}
+    EXPORT LuminoCoreTargets
+    ARCHIVE     DESTINATION lib    # Library installation location (Copied at "INSTALL" build time)
+    INCLUDES    DESTINATION include                    # include directory (File is not copied)
+    FRAMEWORK DESTINATION .)
+
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include DESTINATION .)
+
+install(
+    EXPORT LuminoCoreTargets
+    FILE LuminoCoreTargets.cmake
+    EXPORT_LINK_INTERFACE_LIBRARIES
+    DESTINATION "lib/cmake")
+
+install(
+    FILES "LuminoCoreConfig.cmake"
+    DESTINATION "lib/cmake")
+

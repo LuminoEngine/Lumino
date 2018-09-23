@@ -132,7 +132,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Graphics}
     ${LN_SOURCES_Shader}
     ${LN_SOURCES_UI}
-    ${LN_SOURCES_LuminoCore}
+    #${LN_SOURCES_LuminoCore}
 )
 
 set(LN_SOURCES_SharedLib
@@ -175,9 +175,25 @@ endif()
 
 #add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
 
+
+
+add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
+target_include_directories(${PROJECT_NAME} PRIVATE "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS})
+#target_compile_definitions(${PROJECT_NAME} PUBLIC LUMINO_BUILD_DLL=1)
+#target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive ${PROJECT_NAME}-static -Wl,--no-whole-archive)
+#target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-static)
+target_link_libraries(${PROJECT_NAME} INTERFACE ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore ZLIB PNG ${LN_PLATFORM_LIBS})
+#target_link_libraries(${PROJECT_NAME} PRIVATE glslang)
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
+ln_add_pch(${PROJECT_NAME} "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
+
+if (LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
+endif()
+
 if (APPLE)
     # Build as framework.
-    add_library(${PROJECT_NAME} SHARED ${LN_SOURCES})
     set_target_properties(${PROJECT_NAME} PROPERTIES
         FRAMEWORK TRUE
         #VERSION 1.0.0
@@ -193,20 +209,6 @@ if (APPLE)
     install(FILES ${PROJECT_SOURCE_DIR}/include/LuminoEngine.hpp DESTINATION "LuminoEngine.framework/Headers")
 else()
     add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
-endif()
-
-target_include_directories(${PROJECT_NAME} PRIVATE "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS})
-#target_compile_definitions(${PROJECT_NAME} PUBLIC LUMINO_BUILD_DLL=1)
-#target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive ${PROJECT_NAME}-static -Wl,--no-whole-archive)
-#target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-static)
-target_link_libraries(${PROJECT_NAME} INTERFACE ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB PNG ${LN_PLATFORM_LIBS})
-#target_link_libraries(${PROJECT_NAME} PRIVATE glslang)
-set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
-ln_add_pch(${PROJECT_NAME} "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
-
-if (LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
 endif()
 
 # Unit test.
