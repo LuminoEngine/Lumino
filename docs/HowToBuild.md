@@ -39,6 +39,14 @@ Error downloading URL 'https://github.com/kripken/emscripten/archive/1.38.11.tar
 
 wget https://github.com/kripken/emscripten/archive/1.38.10.tar.gz
 
+
+```
+$ dotnet run -- BuildExternalProjects
+$ dotnet run -- BuildEngine_Linux
+```
+
+
+
 ### Linux(Ubuntu)
 
 install `dotnet`

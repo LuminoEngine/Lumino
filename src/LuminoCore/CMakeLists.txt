@@ -47,6 +47,23 @@ target_link_libraries(${PROJECT_NAME} INTERFACE ${LN_LINK_LIBS})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "src/LuminoCore.PCH.h" "src/LuminoCore.PCH.cpp")
 
+if (APPLE)
+    # Build as framework.
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        FRAMEWORK TRUE
+        #VERSION 1.0.0
+        #SOVERSION 1.0.0
+        MACOSX_FRAMEWORK_IDENTIFIER lib.Lumino
+        BUILD_WITH_INSTALL_RPATH 1
+        XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMIRY "1,2"
+        XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "iPhone Developer")
+    # Do not use PUBLIC_HEADERS.
+    # Since PUBLIC_HEADERS does not maintain the folder tree,
+    # install the header file with the install command.
+    install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/Lumino DESTINATION "LuminoCore.framework/Headers")
+    install(FILES ${PROJECT_SOURCE_DIR}/include/LuminoCore.hpp DESTINATION "LuminoCore.framework/Headers")
+endif()
+
 # Unit test.
 if (LN_BUILD_TESTS)
     add_subdirectory(test)

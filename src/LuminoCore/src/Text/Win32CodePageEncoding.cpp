@@ -1,4 +1,6 @@
 ﻿
+#ifdef _WIN32
+
 #include "Internal.hpp"
 #include <Windows.h>
 #include <vector>
@@ -211,3 +213,5 @@ bool Win32CodePageEncoding::Win32CodePageEncoder::convertFromUTF16(const UTF16* 
 }
 
 } // namespace ln
+
+#endif

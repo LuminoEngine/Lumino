@@ -207,8 +207,6 @@ if (APPLE)
     # install the header file with the install command.
     install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/Lumino DESTINATION "LuminoEngine.framework/Headers")
     install(FILES ${PROJECT_SOURCE_DIR}/include/LuminoEngine.hpp DESTINATION "LuminoEngine.framework/Headers")
-else()
-    add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
 endif()
 
 # Unit test.
