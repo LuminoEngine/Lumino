@@ -18,13 +18,9 @@ namespace LuminoBuild.Tasks
     {
         public static CMakeTargetInfo[] Targets = new CMakeTargetInfo[]
         {
-            //new CMakeTargetInfo { DirName = "MSVC2015-x86-MT", VSTarget = "Visual Studio 14", Platform="Win32", MSVCStaticRuntime = "ON" },
-            //new CMakeTargetInfo { DirName = "MSVC2015-x86-MD", VSTarget = "Visual Studio 14", Platform="Win32", MSVCStaticRuntime = "OFF" },
-            //new CMakeTargetInfo { DirName = "MSVC2015-x64-MT", VSTarget = "Visual Studio 14 Win64", Platform="x64", MSVCStaticRuntime = "ON" },
-            //new CMakeTargetInfo { DirName = "MSVC2015-x64-MD", VSTarget = "Visual Studio 14 Win64", Platform="x64", MSVCStaticRuntime = "OFF" },
-            new CMakeTargetInfo { DirName = "MSVC2017-x86-MD", VSTarget = "Visual Studio 15", Platform="Win32", MSVCStaticRuntime = "OFF" },
+            //new CMakeTargetInfo { DirName = "MSVC2017-x86-MD", VSTarget = "Visual Studio 15", Platform="Win32", MSVCStaticRuntime = "OFF" },
             new CMakeTargetInfo { DirName = "MSVC2017-x86-MT", VSTarget = "Visual Studio 15", Platform="Win32", MSVCStaticRuntime = "ON" },
-            new CMakeTargetInfo { DirName = "MSVC2017-x64-MD", VSTarget = "Visual Studio 15 Win64", Platform="x64", MSVCStaticRuntime = "OFF" },
+            //new CMakeTargetInfo { DirName = "MSVC2017-x64-MD", VSTarget = "Visual Studio 15 Win64", Platform="x64", MSVCStaticRuntime = "OFF" },
             //new CMakeTargetInfo { DirName = "MSVC2017-x64-MT", VSTarget = "Visual Studio 15 Win64", Platform="x64", MSVCStaticRuntime = "ON" },
         };
         
@@ -44,8 +40,20 @@ namespace LuminoBuild.Tasks
                     Directory.SetCurrentDirectory(Path.Combine(builder.LuminoBuildDir, t.DirName));
 
                     var installDir = Path.Combine(builder.LuminoRootDir, "build", BuildEnvironment.CMakeTargetInstallDir, t.DirName);
-                    var args = string.Format("-G\"{0}\" -DCMAKE_INSTALL_PREFIX=\"{1}\" -DLN_MSVC_STATIC_RUNTIME={2} -DLN_BUILD_TESTS=ON -DLN_BUILD_TOOLS=ON ../..", t.VSTarget, installDir, t.MSVCStaticRuntime);
-                    Utils.CallProcess("cmake", args);
+
+
+                    var args = new string[]
+                    {
+                        $"-G\"{t.VSTarget}\"",
+                        $"-DCMAKE_INSTALL_PREFIX=\"{installDir}\"",
+                        $"-DLN_MSVC_STATIC_RUNTIME={t.MSVCStaticRuntime}",
+                        $"-DLN_BUILD_TESTS=ON",
+                        $"-DLN_BUILD_TOOLS=ON",
+                        $"-LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=ON",
+                        $" ../..",
+                    };
+
+                    Utils.CallProcess("cmake", string.Join(' ', args));
                 }
             }
             else

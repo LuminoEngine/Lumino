@@ -12,7 +12,7 @@ namespace LuminoBuild
             // default
             if (args.Length == 0)
             {
-                args = new string[] { "MakeReleasePackage" };
+                args = new string[] { "MakePackage" };
             }
 
             Assembly thisAssembly = Assembly.GetEntryAssembly();

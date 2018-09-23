@@ -20,12 +20,13 @@ namespace LuminoBuild.Rules
             }
             builder.DoTask("BuildEngine_Emscripten");
 
-            //builder.DoTask("BuildEngine_AndroidJNI");
-
+            if (BuildEnvironment.AndroidStudioFound)
+            {
+                builder.DoTask("BuildEngine_AndroidJNI");
+            }
 
             builder.DoTask("BuildDocuments");
             //builder.DoTask("MakeNuGetPackage_Core");
-
 
             builder.DoTask("MakeReleasePackage");
             builder.DoTask("MakeInstaller_Win32");

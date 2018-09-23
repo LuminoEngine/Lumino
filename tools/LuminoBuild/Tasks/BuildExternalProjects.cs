@@ -159,8 +159,6 @@ namespace LuminoBuild.Tasks
                         var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "Android-" + target.ABI, "ExternalInstall", "zlib"));
                         BuildProjectAndroid(builder, "zlib", reposDir, target.ABI);
                         BuildProjectAndroid(builder, "libpng", reposDir, target.ABI, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
-                        BuildProjectAndroid(builder, "glslang", reposDir, target.ABI);
-                        BuildProjectAndroid(builder, "SPIRV-Cross", reposDir, target.ABI);
                     }
                 }
 
@@ -171,8 +169,6 @@ namespace LuminoBuild.Tasks
 
                     BuildProjectEm(builder, "zlib", reposDir, "Emscripten");
                     BuildProjectEm(builder, "libpng", reposDir, "Emscripten", $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
-                    BuildProjectEm(builder, "glslang", reposDir, "Emscripten");
-                    BuildProjectEm(builder, "SPIRV-Cross", reposDir, "Emscripten");
                     BuildProjectEm(builder, "glad", reposDir, "Emscripten", "-DGLAD_INSTALL=ON");
                 }
 

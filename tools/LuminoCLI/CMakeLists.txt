@@ -1,17 +1,12 @@
 cmake_minimum_required (VERSION 3.0.0)
 project(lumino)
 
-set(LN_SOURCES
-    LuminoCLI.PCH.cpp
-    LuminoCLI.PCH.hpp
-    EnvironmentSettings.cpp
-    EnvironmentSettings.hpp
-    Main.cpp
-    Project.cpp
-    Project.hpp
-    Workspace.cpp
-    Workspace.hpp
-)
+
+file(
+    GLOB
+    LN_SOURCES
+    "*.hpp"
+    "*.cpp")
 
 source_group("Sources" FILES ${LN_SOURCES})
 

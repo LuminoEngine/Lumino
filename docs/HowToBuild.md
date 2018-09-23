@@ -11,8 +11,8 @@
 ```
 choco install cmake
 choco install nuget.commandline
-docfx
-doxygen.install
+choco install docfx
+choco install doxygen.install
 ```
 
 

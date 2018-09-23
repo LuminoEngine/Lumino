@@ -58,6 +58,7 @@ enum class FileCopyOption
 class DirectoryIteratorRange
 {
 public:
+	bool isEmpty() const { return m_begin == m_end; }
     detail::DirectoryIterator2 begin() { return m_begin; }
     detail::DirectoryIterator2 end() { return m_end; }
 

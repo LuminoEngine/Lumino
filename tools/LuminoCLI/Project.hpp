@@ -1,33 +1,8 @@
 ﻿#pragma once
 
-class Workspace;
+class LanguageContext;
 class Project;
-
-class ProjectLanguageContext
-	: public ln::RefObject
-{
-public:
-	ProjectLanguageContext(Project* project);
-	virtual ~ProjectLanguageContext();
-
-	Project* project() const { return m_project; }
-
-	virtual Result applyTemplates() = 0;
-
-private:
-	Project* m_project;
-};
-
-class CppProjectLanguageContext
-	: public ProjectLanguageContext
-{
-public:
-	CppProjectLanguageContext(Project* project);
-	virtual ~CppProjectLanguageContext();
-
-	virtual Result applyTemplates() override;
-};
-
+class Workspace;
 
 class ProjectProperties
 	: public ln::RefObject
@@ -63,12 +38,15 @@ public:
 	ln::Path androidProjectDir() const { return ln::Path(nativeProjectsDir(), u"LuminoApp.Android"); }
 	ln::Path macOSProjectDir() const { return ln::Path(nativeProjectsDir(), u"LuminoApp.macOS");  }
 
+	/** 指定フォルダにプロジェクトファイルが含まれているかを確認する */
+	static bool existsProjectFile(const ln::Path& dir);
+
 private:
 	void setupPathes();
 
 	Workspace* m_workspace;
 	Ref<ProjectProperties> m_properties;
-	Ref<ProjectLanguageContext> m_context;
+	Ref<LanguageContext> m_context;
 
 	ln::String m_projectName;
 	ln::Path m_rootDir;

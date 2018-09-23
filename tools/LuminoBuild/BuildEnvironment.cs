@@ -18,6 +18,7 @@ namespace LuminoBuild
 
 
         public const string AndroidTargetPlatform = "android-24";
+        public static bool AndroidStudioFound { get; set; }
         public static string AndroidSdkRootDir { get; set; }
         public static string AndroidSdkCMake { get; set; }
         public static string AndroidSdkNinja { get; set; }
@@ -33,14 +34,24 @@ namespace LuminoBuild
             EmscriptenDir = Path.Combine(EmsdkDir, "emscripten", emVer);
             emcmake = Path.Combine(EmscriptenDir, Utils.IsWin32 ? "emcmake.bat" : "emcmake");
 
-            string localAppDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            AndroidSdkRootDir = Path.Combine(localAppDir, @"Android\Sdk");
 
-            AndroidSdkCMake = Path.Combine(AndroidSdkRootDir, @"cmake\3.6.4111459\bin\cmake.exe");
-            AndroidSdkNinja = Path.Combine(AndroidSdkRootDir, @"cmake\3.6.4111459\bin\ninja.exe");
+            if (Utils.IsWin32)
+            {
+                string localAppDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                AndroidSdkRootDir = Path.Combine(localAppDir, @"Android\Sdk");
 
-            AndroidNdkRootDir = Path.Combine(AndroidSdkRootDir, "ndk-bundle");
-            AndroidCMakeToolchain = Path.Combine(AndroidNdkRootDir, @"build\cmake\android.toolchain.cmake");
+                AndroidSdkCMake = Path.Combine(AndroidSdkRootDir, @"cmake\3.6.4111459\bin\cmake.exe");
+                AndroidSdkNinja = Path.Combine(AndroidSdkRootDir, @"cmake\3.6.4111459\bin\ninja.exe");
+
+                AndroidNdkRootDir = Path.Combine(AndroidSdkRootDir, "ndk-bundle");
+                AndroidCMakeToolchain = Path.Combine(AndroidNdkRootDir, @"build\cmake\android.toolchain.cmake");
+
+                AndroidStudioFound = true;
+            }
+            else
+            {
+                AndroidStudioFound = false;
+            }
 
 
             InstallTools();

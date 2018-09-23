@@ -9,6 +9,8 @@
 #include <Shlobj.h>
 #endif
 
+#include "CLI.hpp"
+
 enum class Result
 {
 	Failed = 0,

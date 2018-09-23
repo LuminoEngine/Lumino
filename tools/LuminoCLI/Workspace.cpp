@@ -147,10 +147,16 @@ void Workspace::dev_openIde(const ln::String& target) const
 	}
 	else
 	{
-		putenv((u"LUMINO_PATH=" + buildEnvironment()->luminoPackageRootDir()).toStdString().c_str());
+		auto files = ln::FileSystem::getFiles(ln::Environment::currentDirectory(), u"*.sln");
+		if (files.isEmpty()) {
+			CLI::error("Not found *.sln file.");
+			return;
+		}
+
+		ln::Environment::setEnvironmentVariable(u"LUMINO", buildEnvironment()->luminoPackageRootDir());
 
 		ln::Process proc;
-		proc.setProgram("LuminoCppTemplate.sln");
+		proc.setProgram(*files.begin());
 		proc.start();
 	}
 #elif defined(__APPLE__)

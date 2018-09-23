@@ -30,6 +30,7 @@ set(LN_SOURCES_Engine
 
 set(LN_SOURCES_Platform
     include/Lumino/Platform/PlatformEvent.hpp
+    include/Lumino/Platform/Win32PlatformInterface.hpp
     src/Platform/Internal.hpp
     src/Platform/EmptyPlatformWindowManager.cpp
     src/Platform/EmptyPlatformWindowManager.hpp
@@ -40,6 +41,7 @@ set(LN_SOURCES_Platform
     src/Platform/PlatformManager.hpp
     src/Platform/PlatformWindowManager.cpp
     src/Platform/PlatformWindowManager.hpp
+    src/Platform/Win32PlatformInterface.cpp
 )
 
 set(LN_SOURCES_Grammar
@@ -108,11 +110,6 @@ set(LN_SOURCES_UI
     src/UI/UIManager.hpp
 )
 
-set(LN_SOURCES_Launch
-    src/Launch/Main_Win32.cpp
-    src/Launch/Main_Html5.cpp
-)
-
 # Grouping.
 source_group("Engine"                FILES ${LN_SOURCES_Engine})
 source_group("Platform"                FILES ${LN_SOURCES_Platform})
@@ -120,7 +117,6 @@ source_group("Grammar"                FILES ${LN_SOURCES_Grammar})
 source_group("Graphics"                FILES ${LN_SOURCES_Graphics})
 source_group("Shader"                FILES ${LN_SOURCES_Shader})
 source_group("UI"                    FILES ${LN_SOURCES_UI})
-source_group("Launch"                    FILES ${LN_SOURCES_Launch})
 
 set(LN_SOURCES
     src/LuminoEngine.PCH.cpp

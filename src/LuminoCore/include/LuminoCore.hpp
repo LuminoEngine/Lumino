@@ -77,19 +77,7 @@
 #define LN_MSVC_LIBRARY_POSTFIX
 #endif
 
-#ifdef _WIN64
-#define LN_MSVC_BUILD_ARCH "x64"
-#else
-#define LN_MSVC_BUILD_ARCH "x86"
-#endif
-
-#ifdef _DLL
-#define LN_MSVC_BUILD_RUNTIMELIBRARY "MD"
-#else
-#define LN_MSVC_BUILD_RUNTIMELIBRARY "MT"
-#endif
-
-#define LN_MSVC_MAKE_LIB_PATH(name) "MSVC2017-" LN_MSVC_BUILD_ARCH "-" LN_MSVC_BUILD_RUNTIMELIBRARY "/" name LN_MSVC_LIBRARY_POSTFIX ".lib"
+#define LN_MSVC_MAKE_LIB_PATH(name) name LN_MSVC_LIBRARY_POSTFIX ".lib"
 
 #pragma comment(lib, LN_MSVC_MAKE_LIB_PATH("LuminoCore"))
 
