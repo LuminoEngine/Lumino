@@ -5,7 +5,7 @@
 namespace ln {
 namespace detail {
 
-#if 0
+#if 1
 
 struct FogParams
 {
@@ -103,7 +103,7 @@ class ClusteredShadingSceneRenderer
 public:
 	ClusteredShadingSceneRenderer();
 	virtual ~ClusteredShadingSceneRenderer();
-	void initialize(GraphicsManager* manager);
+	void initialize(RenderingManager* manager);
 	//void setSceneGlobalRenderSettings(const SceneGlobalRenderSettings& settings) { m_renderSettings = settings; }
 	void setFogParams(const FogParams& params) { m_fogParams = params; }
 	DepthPrepass* getDepthPrepass() const { return m_depthPrepass; }
@@ -112,10 +112,9 @@ protected:
 	//virtual void onBeginRender() override;
 	//virtual void onEndRender() override;
 
-	virtual void collect(RenderingPass2* pass, const detail::CameraInfo& cameraInfo) override;
-	virtual void prepare() override;
-	virtual void onCollectLight(DynamicLightInfo* light) override;
-	virtual void onShaderPassChainging(ShaderPass* pass) override;
+	virtual void collect(const detail::CameraInfo& cameraInfo) override;
+	virtual void onCollectLight(const DynamicLightInfo& light) override;
+	virtual void onSetAdditionalShaderPassVariables(Shader* shader) override;
 
 private:
 	LightClusters				m_lightClusters;

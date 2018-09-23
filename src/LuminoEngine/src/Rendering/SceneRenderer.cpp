@@ -204,6 +204,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 			semanticsManager->updateCameraVariables(cameraInfo);
 			semanticsManager->updateElementVariables(cameraInfo, elementInfo);
 			semanticsManager->updateSubsetVariables(subsetInfo);
+			onSetAdditionalShaderPassVariables(tech->shader());
 
 			for (ShaderPass* pass : tech->passes())
 			{
@@ -371,10 +372,10 @@ void SceneRenderer::collect(/*SceneRendererPass* pass, */const detail::CameraInf
 			//elementList->setDefaultRenderTarget(m_renderingDefaultRenderTarget);
 			//elementList->setDefaultDepthBuffer(m_renderingDefaultDepthBuffer);
 
-			//for (DynamicLightInfo* light : elementList->getDynamicLightList())
-			//{
-			//	onCollectLight(light);
-			//}
+			for (auto& light : elementList->dynamicLightInfoList())
+			{
+				onCollectLight(light);
+			}
 
 			//onPreRender(elementList);
 
@@ -460,6 +461,14 @@ void SceneRenderer::prepare()
 			//	return lhs->m_stateFence < rhs->m_stateFence;
 			//}
 		});
+}
+
+void SceneRenderer::onCollectLight(const DynamicLightInfo& light)
+{
+}
+
+void SceneRenderer::onSetAdditionalShaderPassVariables(Shader* shader)
+{
 }
 
 void SceneRenderer::applyFrameBufferStatus(GraphicsContext* context, RenderStage* stage, const FrameBuffer& defaultFrameBufferInPass)

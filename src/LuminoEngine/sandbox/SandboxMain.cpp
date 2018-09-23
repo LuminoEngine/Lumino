@@ -8,6 +8,7 @@
 #include "../src/Rendering/SpriteRenderFeature.hpp"
 #include "../src/Rendering/DrawElementListBuilder.hpp"
 #include "../src/Rendering/UnLigitingSceneRenderer.hpp"
+#include "../src/Rendering/ClusteredShadingSceneRenderer.hpp"
 #include <Lumino/Rendering/Material.hpp>
 #include <Lumino/Rendering/RenderingContext.hpp>
 using namespace ln;
@@ -44,8 +45,9 @@ int main(int argc, char** argv)
 
 			Ref<detail::DrawElementListCollector> m_elementListManager;
 
-			Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer;
-
+			//Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer;
+			Ref<detail::ClusteredShadingSceneRenderer> m_sceneRenderer;
+			
 			TestRenderView()
 			{
 				m_elementListManager = makeRef<detail::DrawElementListCollector>();
@@ -53,7 +55,9 @@ int main(int argc, char** argv)
 				m_elementListManager->addDrawElementList(detail::RendringPhase::Default, m_context->m_elementList);
 				addDrawElementListManager(m_elementListManager);
 
-				m_sceneRenderer = makeRef<detail::UnLigitingSceneRenderer>();
+				//m_sceneRenderer = makeRef<detail::UnLigitingSceneRenderer>();
+				//m_sceneRenderer->initialize(detail::EngineDomain::renderingManager());
+				m_sceneRenderer = makeRef<detail::ClusteredShadingSceneRenderer>();
 				m_sceneRenderer->initialize(detail::EngineDomain::renderingManager());
 			}
 
@@ -94,8 +98,10 @@ int main(int argc, char** argv)
 			//renderView->m_context->setCullingMode(CullingMode::None);
 
 			renderView->m_context->drawSprite(
-				Matrix(), Size(2, 1), Vector2(0, 0), Rect(0, 0, 1, 1), Color::Blue,
+				Matrix(), Size(7, 5), Vector2(0, 0), Rect(0, 0, 1, 1), Color::Blue,
 				SpriteBaseDirection::ZMinus, BillboardType::None, material);
+
+			renderView->m_context->addPointLight(Color::White, 1.0, Vector3(0, 0, 0), 3.0, 1.0);
 
 			renderView->render();
 

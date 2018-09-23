@@ -9,7 +9,7 @@
 namespace ln {
 namespace detail {
 
-#if 0
+#if 1
 //==============================================================================
 // ClusteredShadingGeometryRenderingPass
 
@@ -228,7 +228,7 @@ void ShadowCasterPass::onBeginPass(RenderView* renderView, GraphicsContext* cont
 	context->clear(ClearFlags::All, Color::Transparency, 1.0f, 0);
 }
 
-ShaderTechnique* DepthPrepass::selectShaderTechnique(
+ShaderTechnique* ShadowCasterPass::selectShaderTechnique(
 	ShaderTechniqueClass_MeshProcess requestedMeshProcess,
 	Shader* requestedShader,
 	ShadingModel requestedShadingModel)
@@ -259,7 +259,7 @@ ClusteredShadingSceneRenderer::~ClusteredShadingSceneRenderer()
 {
 }
 
-void ClusteredShadingSceneRenderer::initialize(GraphicsManager* manager)
+void ClusteredShadingSceneRenderer::initialize(RenderingManager* manager)
 {
 	SceneRenderer::initialize();
 
@@ -287,92 +287,89 @@ void ClusteredShadingSceneRenderer::initialize(GraphicsManager* manager)
 //
 //}
 
-void ClusteredShadingSceneRenderer::prepare()
-{
-	SceneRenderer::prepare();
-}
 
-void ClusteredShadingSceneRenderer::collect(RenderingPass2* pass, const detail::CameraInfo& cameraInfo)
+void ClusteredShadingSceneRenderer::collect(const detail::CameraInfo& cameraInfo)
 {
 	m_lightClusters.beginMakeClusters(cameraInfo.viewMatrix, cameraInfo.projMatrix, cameraInfo.viewPosition, cameraInfo.nearClip, cameraInfo.farClip);
 
-	SceneRenderer::collect(pass, cameraInfo);
+	SceneRenderer::collect(cameraInfo);
 
 	m_lightClusters.endMakeClusters();
 }
 
-void ClusteredShadingSceneRenderer::onCollectLight(DynamicLightInfo* light)
+// TODO: Vector3 クラスへ
+static Vector3 transformDirection(const Vector3& vec, const Matrix& mat)
 {
-	if (LN_REQUIRE(light)) return;
+	return Vector3(
+		(((vec.x * mat.m11) + (vec.y * mat.m21)) + (vec.z * mat.m31)),
+		(((vec.x * mat.m12) + (vec.y * mat.m22)) + (vec.z * mat.m32)),
+		(((vec.x * mat.m13) + (vec.y * mat.m23)) + (vec.z * mat.m33)));
 
-	const CameraInfo& view = getRenderView()->m_cameraInfo;
+}
 
-	Color color = light->m_diffuse;
-	color *= light->m_intensity;
+void ClusteredShadingSceneRenderer::onCollectLight(const DynamicLightInfo& light)
+{
+	const CameraInfo& view = renderingRenderView()->mainCameraInfo;
 
-	switch (light->m_type)
+	Color color = light.m_color;
+	color *= light.m_intensity;
+
+	switch (light.m_type)
 	{
 	case LightType::Ambient:
 		m_lightClusters.addAmbientLight(color);
 		break;
 	case LightType::Hemisphere:
-		m_lightClusters.addHemisphereLight(color, light->m_groundColor * light->m_intensity);
+		m_lightClusters.addHemisphereLight(color, light.m_color2 * light.m_intensity);
 		break;
 	case LightType::Directional:
-		m_lightClusters.addDirectionalLight(transformDirection(-light->m_direction, view.viewMatrix), color);
+		m_lightClusters.addDirectionalLight(transformDirection(-light.m_direction, view.viewMatrix), color);
 		break;
 	case LightType::Point:
-		m_lightClusters.addPointLight(light->m_position, light->m_range, light->m_attenuation, color);
+		m_lightClusters.addPointLight(light.m_position, light.m_range, light.m_attenuation, color);
 		break;
 	case LightType::Spot:
-		//m_lightClusters.addSpotLight(Vector3::transform(light->m_position, view.viewMatrix).GetXYZ(), light->m_range, light->m_attenuation, transformDirection(-light->m_direction, view.viewMatrix), light->m_spotAngle, Math::lerp(light->m_spotAngle, 0, light->m_spotPenumbra), light->m_diffuse);
-		m_lightClusters.addSpotLight(light->m_position, light->m_range, light->m_attenuation, color, light->m_direction, light->m_spotAngle, light->m_spotPenumbra);
+		m_lightClusters.addSpotLight(light.m_position, light.m_range, light.m_attenuation, color, light.m_direction, light.m_spotAngle, light.m_spotPenumbra);
 		break;
 	default:
 		LN_UNREACHABLE();
 		break;
 	}
-
-	SceneRenderer::onCollectLight(light);
 }
 
-void ClusteredShadingSceneRenderer::onShaderPassChainging(ShaderPass* pass)
+void ClusteredShadingSceneRenderer::onSetAdditionalShaderPassVariables(Shader* shader)
 {
-	SceneRenderer::onShaderPassChainging(pass);
-
-	Shader* shader = pass->getOwnerShader();
-
-	ShaderVariable* v;
+	ShaderParameter* v;
 	
-	v = shader->findVariable(_T("ln_GlobalLightInfoTexture"));
+	v = shader->findParameter(_T("ln_GlobalLightInfoTexture"));
 	if (v) v->setTexture(m_lightClusters.getGlobalLightInfoTexture());
 
-	v = shader->findVariable(_T("ln_pointLightInfoTexture"));
+	v = shader->findParameter(_T("ln_pointLightInfoTexture"));
 	if (v) v->setTexture(m_lightClusters.getLightInfoTexture());
 
-	v = shader->findVariable(_T("ln_clustersTexture"));
+	v = shader->findParameter(_T("ln_clustersTexture"));
 	if (v) v->setTexture(m_lightClusters.getClustersVolumeTexture());
 
-	v = shader->findVariable(_T("ln_nearClip"));
+	v = shader->findParameter(_T("ln_nearClip"));
 	if (v) v->setFloat(m_lightClusters.m_nearClip);
 
-	v = shader->findVariable(_T("ln_farClip"));
+	v = shader->findParameter(_T("ln_farClip"));
 	if (v) v->setFloat(m_lightClusters.m_farClip);
 
-	v = shader->findVariable(_T("ln_cameraPos"));
+	v = shader->findParameter(_T("ln_cameraPos"));
 	if (v) v->setVector(Vector4(m_lightClusters.m_cameraPos, 0));
 
 
-	//v = shader->findVariable(_T("ln_AmbientColor"));
+	//v = shader->findParameter(_T("ln_AmbientColor"));
 	//if (v) v->setVector(Vector4(m_renderSettings.ambientColor));	// TODO: Color 直接渡しできるようにしてもいいと思う
-
-	//v = shader->findVariable(_T("ln_AmbientSkyColor"));
+	
+	//v = shader->findParameter(_T("ln_AmbientSkyColor"));
 	//if (v) v->setVector(Vector4(m_renderSettings.ambientSkyColor));
 
-	//v = shader->findVariable(_T("ln_AmbientGroundColor"));
+	//v = shader->findParameter(_T("ln_AmbientGroundColor"));
 	//if (v) v->setVector(Vector4(m_renderSettings.ambientGroundColor));
 
-	v = shader->findVariable(_T("ln_FogParams"));
+	v = shader->findParameter(_T("ln_FogParams"));
 	if (v) v->setVector(Vector4(m_fogParams.color.rgb() * m_fogParams.color.a, m_fogParams.density));
 }
 

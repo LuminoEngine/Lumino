@@ -64,13 +64,18 @@ protected:
 	void renderPass(GraphicsContext* graphicsContext, SceneRendererPass* pass);
 
 	// レンダリング準備として、描画に関係する各種オブジェクト (DrawElement や Light) を収集するフェーズ
-	void collect(/*SceneRendererPass* pass, */const detail::CameraInfo& cameraInfo);
+	virtual void collect(const detail::CameraInfo& cameraInfo);
 
 	// レンダリング準備として、効率的な描画を行うために収集した各種オブジェクトのソートなどを行う
 	void prepare();
 
 	//virtual void onBeginRender() = 0;
 	//virtual void onEndRender() = 0;
+
+	virtual void onCollectLight(const DynamicLightInfo& light);
+	virtual void onSetAdditionalShaderPassVariables(Shader* shader);
+
+	RenderView* renderingRenderView() const { return m_renderingRenderView; }
 
 private:
 	void applyFrameBufferStatus(GraphicsContext* context, RenderStage* stage, const FrameBuffer& defaultFrameBufferInPass);
