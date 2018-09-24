@@ -30,6 +30,7 @@ set(LN_SOURCES_Engine
 
 set(LN_SOURCES_Platform
     include/Lumino/Platform/PlatformEvent.hpp
+    include/Lumino/Platform/PlatformSupport.hpp
     include/Lumino/Platform/Win32PlatformInterface.hpp
     src/Platform/Internal.hpp
     src/Platform/EmptyPlatformWindowManager.cpp
@@ -39,6 +40,7 @@ set(LN_SOURCES_Platform
     src/Platform/PlatformEvent.cpp
     src/Platform/PlatformManager.cpp
     src/Platform/PlatformManager.hpp
+    src/Platform/PlatformSupport.cpp
     src/Platform/PlatformWindowManager.cpp
     src/Platform/PlatformWindowManager.hpp
     src/Platform/Win32PlatformInterface.cpp
@@ -51,6 +53,25 @@ set(LN_SOURCES_Grammar
     src/Grammar/CppLexer.cpp
     src/Grammar/CppLexer.hpp
     src/Grammar/Token.hpp
+)
+
+set(LN_SOURCES_Input
+    include/Lumino/Input/Common.hpp
+    include/Lumino/Input/Input.hpp
+    include/Lumino/Input/InputBinding.hpp
+    include/Lumino/Input/InputController.hpp
+    src/Input/Input.cpp
+    src/Input/InputBinding.cpp
+    src/Input/InputDriver.cpp
+    src/Input/InputDriver.hpp
+    src/Input/InputManager.cpp
+    src/Input/InputManager.hpp
+    src/Input/Internal.hpp
+    src/Input/InputController.cpp
+    src/Input/Win32InputDriver.cpp
+    src/Input/Win32InputDriver.hpp
+    src/Input/Win32JoystickDriver.cpp
+    src/Input/Win32JoystickDriver.hpp
 )
 
 set(LN_SOURCES_Graphics
@@ -125,6 +146,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Engine}
     ${LN_SOURCES_Platform}
     ${LN_SOURCES_Grammar}
+    ${LN_SOURCES_Input}
     ${LN_SOURCES_Graphics}
     ${LN_SOURCES_Shader}
     ${LN_SOURCES_UI}

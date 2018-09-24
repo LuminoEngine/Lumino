@@ -15,6 +15,7 @@ namespace detail
 {
 class EngineManager;
 class PlatformManager;
+class InputManager;
 class AnimationManager;
 class ShaderManager;
 class GraphicsManager;
@@ -28,6 +29,7 @@ public:
 	static void release();
 	static EngineManager* engineManager();
 	static PlatformManager* platformManager();
+	static InputManager* inputManager();
 	static ShaderManager* shaderManager();
 	static GraphicsManager* graphicsManager();
 	static UIManager* uiManager();

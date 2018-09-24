@@ -117,9 +117,6 @@ enum class DragDropEffects
 	Copy,
 };
 
-namespace detail {
-
-class PlatformWindow;
 
 /** システムイベントの種類 */
 enum class PlatformEventType
@@ -167,6 +164,9 @@ enum class MouseButtons
 	X2,				/**< 拡張ボタン2 */
 };
 
+namespace detail {
+
+class PlatformWindow;
 
 /** イベント引数 */
 struct PlatformEventArgs

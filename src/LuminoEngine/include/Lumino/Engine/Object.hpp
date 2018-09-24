@@ -2,6 +2,8 @@
 
 namespace ln {
 
+#define LN_OBJECT
+
 class LN_API Object
 	: public RefObject
 {

@@ -61,7 +61,6 @@ public:
 
 	EngineSettings& settings() { return m_settings; }
 	const Ref<PlatformManager>& platformManager() const { return m_platformManager; }
-	const Ref<ShaderManager>& shaderManager() const { return m_shaderManager; }
 	const Ref<GraphicsManager>& graphicsManager() const { return m_graphicsManager; }
 	const Ref<UIManager>& uiManager() const { return m_uiManager; }
 	const Ref<UIFrameWindow>& mainWindow() const { return m_mainWindow; }
@@ -73,9 +72,8 @@ private:
 
 	Ref<PlatformManager>				m_platformManager;
 	//Ref<AnimationManager>			m_animationManager;
-	//Ref<InputManager>				m_inputManager;
+	Ref<InputManager>				m_inputManager;
 	//Ref<AudioManager>				m_audioManager;
-	//Ref<PhysicsManager>		m_physicsManager;
 	Ref<ShaderManager> m_shaderManager;
 	Ref<GraphicsManager>			m_graphicsManager;
 	//Ref<EffectManager>				m_effectManager;

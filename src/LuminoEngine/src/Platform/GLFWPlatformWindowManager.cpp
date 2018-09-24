@@ -1,8 +1,13 @@
 
 #ifdef LN_GLFW
 
+#ifdef _WIN32
+#define GLFW_EXPOSE_NATIVE_WIN32
+#endif
+
 #include "Internal.hpp"
 #include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
 #include "GLFWPlatformWindowManager.hpp"
 
 namespace ln {
@@ -164,6 +169,11 @@ void GLFWPlatformWindow::dispose()
 void GLFWPlatformWindow::getSize(SizeI* size)
 {
 	glfwGetWindowSize(m_glfwWindow, &size->width, &size->height);
+}
+
+void* GLFWPlatformWindow::getWin32Window() const
+{
+	return glfwGetWin32Window(m_glfwWindow);
 }
 
 //void GLFWPlatformWindow::SetVisible(bool visible)

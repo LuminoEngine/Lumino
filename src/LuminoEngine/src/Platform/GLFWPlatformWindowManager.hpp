@@ -23,6 +23,8 @@ public:
 
 	GLFWwindow* glfwWindow() const { return m_glfwWindow; }
 
+	void* getWin32Window() const;
+
 private:
 	static void window_close_callback(GLFWwindow* window);
 	static void window_focus_callback(GLFWwindow* window, int focused);	// window activate/diactivate

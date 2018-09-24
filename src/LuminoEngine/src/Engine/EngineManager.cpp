@@ -3,7 +3,7 @@
 
 #include <Lumino/UI/UIFrameWindow.hpp>
 #include "../Platform/PlatformManager.hpp"
-#include "../Shader/ShaderManager.hpp"
+#include "../Input/InputManager.hpp"
 #include "../Graphics/GraphicsManager.hpp"
 #include "../UI/UIManager.hpp"
 #include "EngineManager.hpp"
@@ -67,6 +67,7 @@ void EngineManager::dispose()
 	if (m_mainWindow) m_mainWindow->dispose();
 	if (m_shaderManager) m_shaderManager->dispose();
 	if (m_graphicsManager) m_graphicsManager->dispose();
+	if (m_inputManager) m_inputManager->dispose();
 	if (m_platformManager) m_platformManager->dispose();
 }
 
@@ -114,6 +115,15 @@ void EngineManager::initializeAnimationManager()
 
 void EngineManager::initializeInputManager()
 {
+	if (!m_inputManager)
+	{
+		initializePlatformManager();
+
+		InputManager::Settings settings;
+		settings.mainWindow = m_platformManager->mainWindow();
+		m_inputManager = ln::makeRef<InputManager>();
+		m_inputManager->initialize(settings);
+	}
 }
 
 void EngineManager::initializeAudioManager()
@@ -259,6 +269,11 @@ EngineManager* EngineDomain::engineManager()
 PlatformManager* EngineDomain::platformManager()
 {
 	return engineManager()->platformManager();
+}
+
+InputManager* EngineDomain::inputManager()
+{
+	return engineManager()->inputManager();
 }
 
 ShaderManager* EngineDomain::shaderManager()

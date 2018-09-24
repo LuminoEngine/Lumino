@@ -59,7 +59,7 @@ bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)
 {
 	switch (e.type)
 	{
-	case detail::PlatformEventType::close:
+	case PlatformEventType::close:
 		//exit();
 		break;
 	default:
