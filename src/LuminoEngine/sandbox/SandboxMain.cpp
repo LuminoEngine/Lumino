@@ -83,6 +83,7 @@ int main(int argc, char** argv)
 
 
 
+	while (Engine::update())
 	{
 		class TestRenderView : public RenderView
 		{

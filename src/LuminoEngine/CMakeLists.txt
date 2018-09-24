@@ -319,7 +319,7 @@ elseif (LN_IOS)
 
 elseif (WIN32)
     find_package(OpenGL)
-    list(APPEND LN_PLATFORM_LIBS glfw GLAD OpenAL)
+    list(APPEND LN_PLATFORM_LIBS glfw GLAD)
     #list(APPEND LN_PLATFORM_LIBS user32 gdi32 winmm imm32 ole32 oleaut32 version uuid)
     list(APPEND LN_PLATFORM_LIBS winmm imm32 version)
 
