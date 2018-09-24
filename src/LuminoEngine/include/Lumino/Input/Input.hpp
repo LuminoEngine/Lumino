@@ -3,6 +3,7 @@
 #include "Common.hpp"
 
 namespace ln {
+class InputGesture;
 
 /**
 	@brief		ゲームパッドやキーボードなどの入力システムのインターフェイス

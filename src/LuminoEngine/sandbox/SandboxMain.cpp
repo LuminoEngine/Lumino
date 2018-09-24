@@ -159,37 +159,11 @@ int main(int argc, char** argv)
 	int loop = 0;
 	while (Engine::update())
 	{
-		//printf("----\n");
-
-		//ctx->clear(ClearFlags::Color, Color::PaleVioletRed, 1.0, 0);
-		ctx->setVertexDeclaration(decl);
-		ctx->setVertexBuffer(0, vb);
-		ctx->setShaderPass(shader->techniques()[0]->passes()[0]);
-		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+		auto pt = Mouse::position();
+		std::cout << pt.x << ", " << pt.y << std::endl;
 
 
-		//auto* cb = Engine::mainWindow()->swapChain()->colorBuffer();
-
-		loop++;
-		g_loop = loop;
-		if (loop > 2) {
-
-			auto bmp = Engine::mainWindow()->swapChain()->colorBuffer()->readData();
-
-			for (int y = 0; y < bmp->height(); y++)
-			{
-				for (int x = 0; x < bmp->width(); x++)
-				{
-					auto c = bmp->getPixel32(x, y);
-					if (c.g != 248)
-						printf("#");
-					else
-						printf("-");
-				}
-				printf("\n");
-			}
-
-
+		if (GetKeyState('Z') & 0x8000) {
 			break;
 		}
 

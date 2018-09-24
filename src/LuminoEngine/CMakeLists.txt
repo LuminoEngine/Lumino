@@ -62,6 +62,7 @@ set(LN_SOURCES_Input
     include/Lumino/Input/Input.hpp
     include/Lumino/Input/InputBinding.hpp
     include/Lumino/Input/InputController.hpp
+    include/Lumino/Input/Mouse.hpp
     src/Input/Input.cpp
     src/Input/InputBinding.cpp
     src/Input/InputDriver.cpp
@@ -70,6 +71,7 @@ set(LN_SOURCES_Input
     src/Input/InputManager.hpp
     src/Input/Internal.hpp
     src/Input/InputController.cpp
+    src/Input/Mouse.cpp
     src/Input/Win32InputDriver.cpp
     src/Input/Win32InputDriver.hpp
     src/Input/Win32JoystickDriver.cpp

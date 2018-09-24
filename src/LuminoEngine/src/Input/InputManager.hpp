@@ -9,6 +9,7 @@ class InputDriver;
 class InputGesture;
 
 namespace detail {
+class MouseInputDevice;
 
 class InputManager
 	: public RefObject
@@ -28,7 +29,9 @@ public:
 	void initialize(const Settings& settings);
 	void dispose();
 
-	const Ref<InputController>& getVirtualPad(int index) { return m_defaultVirtualPads[index]; }
+	const Ref<InputDriver>& inputDriver() const { return m_inputDriver; }
+	const Ref<InputController>& getVirtualPad(int index) const { return m_defaultVirtualPads[index]; }
+	const Ref<MouseInputDevice>& mouseInputDevice() const { return m_mouseInputDevice; }
 
 	// フレーム開始時に状態をリセットする。特に、Platform モジュールがイベントを発行する前に実行しておく必要がある
 	void preUpdateFrame();
@@ -54,6 +57,7 @@ private:
 	static const int MaxVirtualPads = 1;
 	Ref<InputDriver>							m_inputDriver;
 	std::array<Ref<InputController>, MaxVirtualPads>	m_defaultVirtualPads;
+	Ref<MouseInputDevice> m_mouseInputDevice;
 	//Matrix				m_mouseTransform;
 	//Mouse*				m_mouse;
 	//Keyboard*			m_keyboard;

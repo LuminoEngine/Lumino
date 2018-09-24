@@ -27,6 +27,7 @@
 #include <Lumino/Input/Input.hpp>
 #include <Lumino/Input/InputBinding.hpp>
 #include <Lumino/Input/InputController.hpp>
+#include <Lumino/Input/Mouse.hpp>
 
 namespace ln {
 namespace detail
@@ -93,6 +94,8 @@ void InputManager::initialize(const Settings& settings)
 	pad->addBinding(InputButtons::Shift,	GamepadGesture::create(GamepadElement::Button4));
 	pad->addBinding(InputButtons::PageUp,	GamepadGesture::create(GamepadElement::Button5));
 	pad->addBinding(InputButtons::PageDown,	GamepadGesture::create(GamepadElement::Button6));
+
+	m_mouseInputDevice = makeRef<MouseInputDevice>();
 }
 
 //------------------------------------------------------------------------------
