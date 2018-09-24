@@ -43,6 +43,8 @@ InputManager::InputManager()
 	, m_defaultVirtualPads{}
 	, m_lasgAnyActiveTriggered(nullptr)
 	, m_anyActiveTriggeredFrameCount(0)
+	, m_repeatIntervalStartTime(0.7f)
+	, m_repeatIntervalStepTime(0.2f)
 {
 }
 
@@ -141,6 +143,8 @@ void InputManager::updateFrame(float elapsedTime)
 	{
 		m_anyActiveTriggeredFrameCount = 0;
 	}
+
+	m_mouseInputDevice->updateFrame(elapsedTime);
 }
 
 //------------------------------------------------------------------------------

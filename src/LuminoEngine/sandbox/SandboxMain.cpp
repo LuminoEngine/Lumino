@@ -159,8 +159,21 @@ int main(int argc, char** argv)
 	int loop = 0;
 	while (Engine::update())
 	{
-		auto pt = Mouse::position();
-		std::cout << pt.x << ", " << pt.y << std::endl;
+		//auto pt = Mouse::position();
+		//std::cout << pt.x << ", " << pt.y << std::endl;
+
+		if (Mouse::isPressed(MouseButtons::Left)) {
+			//std::cout << "isPressed" << std::endl;
+		}
+		if (Mouse::isTriggered(MouseButtons::Left)) {
+			std::cout << "isTriggered" << std::endl;
+		}
+		if (Mouse::isOffTriggered(MouseButtons::Left)) {
+			std::cout << "isOffTriggered" << std::endl;
+		}
+		if (Mouse::isRepeated(MouseButtons::Left)) {
+			std::cout << "isRepeated" << std::endl;
+		}
 
 
 		if (GetKeyState('Z') & 0x8000) {

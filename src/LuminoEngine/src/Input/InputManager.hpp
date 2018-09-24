@@ -50,6 +50,9 @@ public:
 
 	InputGesture* getAnyActiveTriggered();
 
+	float repeatIntervalStartTime() const { return m_repeatIntervalStartTime; }
+	float repeatIntervalStepTime() const { return m_repeatIntervalStepTime; }
+
 private:
 	void refreshDevices();
 
@@ -65,6 +68,9 @@ private:
 
 	Ref<InputGesture>	m_lasgAnyActiveTriggered;
 	int					m_anyActiveTriggeredFrameCount;
+
+	float m_repeatIntervalStartTime;
+	float m_repeatIntervalStepTime;
 };
 
 } // namespace detail
