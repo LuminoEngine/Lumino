@@ -26,7 +26,6 @@ Win32InputDriver::Win32InputDriver()
 //------------------------------------------------------------------------------
 Win32InputDriver::~Win32InputDriver()
 {
-	dispose();
 }
 
 

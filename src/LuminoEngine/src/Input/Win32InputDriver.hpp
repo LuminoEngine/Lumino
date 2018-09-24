@@ -14,6 +14,7 @@ public:
 	virtual ~Win32InputDriver();
 
 	void initialize(HWND hWnd);
+	virtual void dispose() override;
 
 	virtual int getJoystickCount() override;
 	virtual void getJoystickState(int joysticNumber, JoystickDeviceState* state) override;
@@ -22,7 +23,6 @@ public:
 	void stopVibration(int joysticNumber);
 
 private:
-	void dispose();
 	void refreshDevice();
 	void releaseDevice();
 

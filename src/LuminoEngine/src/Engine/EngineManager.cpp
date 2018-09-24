@@ -64,6 +64,10 @@ void EngineManager::initialize()
 
 void EngineManager::dispose()
 {
+	if (m_platformManager) {
+		m_platformManager->mainWindow()->detachEventListener(this);
+	}
+
 	if (m_mainWindow) m_mainWindow->dispose();
 	if (m_shaderManager) m_shaderManager->dispose();
 	if (m_graphicsManager) m_graphicsManager->dispose();
@@ -106,6 +110,8 @@ void EngineManager::initializePlatformManager()
 
 		m_platformManager = ln::makeRef<PlatformManager>();
 		m_platformManager->initialize(settings);
+
+		m_platformManager->mainWindow()->attachEventListener(this);
 	}
 }
 
@@ -198,8 +204,19 @@ bool EngineManager::updateUnitily()
 
 void EngineManager::updateFrame()
 {
+	if (m_inputManager) {
+		m_inputManager->preUpdateFrame();
+	}
+
 	if (m_platformManager) {
 		m_platformManager->windowManager()->processSystemEventQueue();
+	}
+
+	// いくつかの入力状態は onEvent 経由で Platform モジュールから Input モジュールに伝えられる。
+	// このときはまだ押されているかどうかだけを覚えておく。
+	// 次に InputManager::updateFrame で、現在時間を考慮して各種状態を更新する。
+	if (m_inputManager) {
+		m_inputManager->updateFrame(0.016);	// TODO: time
 	}
 }
 
@@ -238,6 +255,13 @@ bool EngineManager::onPlatformEvent(const PlatformEventArgs& e)
 	default:
 		break;
 	}
+
+
+	// 他のモジュールにイベントを渡した後、まだ処理されていなければ input へ回す
+	if (m_inputManager) {
+		m_inputManager->onEvent(e);
+	}
+
 	return false;
 }
 

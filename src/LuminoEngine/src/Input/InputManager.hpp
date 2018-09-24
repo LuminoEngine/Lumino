@@ -30,8 +30,10 @@ public:
 
 	const Ref<InputController>& getVirtualPad(int index) { return m_defaultVirtualPads[index]; }
 
+	// フレーム開始時に状態をリセットする。特に、Platform モジュールがイベントを発行する前に実行しておく必要がある
 	void preUpdateFrame();
-	void updateFrame();
+
+	void updateFrame(float elapsedTime);
 
 	//InputDevice* GetInputDevice() { return m_inputDevice; }
 	//int GetButtonRepertFirstFrameCount() const { return 20; }

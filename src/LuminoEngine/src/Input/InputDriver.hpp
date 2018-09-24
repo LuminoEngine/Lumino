@@ -36,6 +36,7 @@ class InputDriver
 public:
 	InputDriver();
 	virtual ~InputDriver();
+	virtual void dispose();
 
 	bool queryKeyState(Keys key);
 	bool queryMouseState(MouseAction action);

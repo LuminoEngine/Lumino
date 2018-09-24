@@ -30,6 +30,28 @@ PlatformEventArgs PlatformEventArgs::makeActivateChangedEvent(PlatformWindow* se
 	return e;
 }
 
+PlatformEventArgs PlatformEventArgs::makeMouseButtonEvent(PlatformWindow* sender, PlatformEventType type, MouseButtons button/*, short x, short y*/, ModifierKeys modifierKeys)
+{
+	PlatformEventArgs e;
+	e.sender = sender;
+	e.type = type;
+	e.mouse.button = button;
+	//e.mouse.x = x;
+	//e.mouse.y = y;
+	e.mouse.modifierKeys = modifierKeys;
+	return e;
+}
+
+PlatformEventArgs PlatformEventArgs::makeMouseMoveEvent(PlatformWindow* sender, PlatformEventType type, short screenX, short screenY)
+{
+	PlatformEventArgs e;
+	e.sender = sender;
+	e.type = type;
+	e.mouseMove.screenX = screenX;
+	e.mouseMove.screenY = screenY;
+	return e;
+}
+
 PlatformEventArgs PlatformEventArgs::makeKeyEvent(PlatformWindow* sender, PlatformEventType type, Keys keyCode, ModifierKeys modifierKeys, char keyChar)
 {
 	PlatformEventArgs e;

@@ -14,6 +14,8 @@ public:
 	void initialize(const WindowCreationSettings& settings);
 	virtual void dispose() override;
 	virtual void getSize(SizeI* size) override { *size = SizeI(); }
+	virtual PointI pointFromScreen(const PointI& screenPoint) override { return screenPoint; }
+	virtual PointI pointToScreen(const PointI& clientPoint) override { return clientPoint; }
 
 private:
 };

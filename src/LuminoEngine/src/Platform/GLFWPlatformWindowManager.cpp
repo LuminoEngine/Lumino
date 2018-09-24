@@ -152,6 +152,9 @@ void GLFWPlatformWindow::initialize(const WindowCreationSettings& settings)
 	glfwSetWindowCloseCallback(m_glfwWindow, window_close_callback);
 	glfwSetWindowFocusCallback(m_glfwWindow, window_focus_callback);
 	glfwSetKeyCallback(m_glfwWindow, window_key_callback);
+	glfwSetMouseButtonCallback(m_glfwWindow, window_mouseButton_callback);
+	glfwSetCursorPosCallback(m_glfwWindow, window_mousePos_callback);
+	
 
 	//glfwMakeContextCurrent(m_glfwWindow);
 	//glewInit();
@@ -169,6 +172,28 @@ void GLFWPlatformWindow::dispose()
 void GLFWPlatformWindow::getSize(SizeI* size)
 {
 	glfwGetWindowSize(m_glfwWindow, &size->width, &size->height);
+}
+
+PointI GLFWPlatformWindow::pointFromScreen(const PointI& screenPoint)
+{
+#ifdef _WIN32
+	POINT pt = { screenPoint.x, screenPoint.y };
+	::ScreenToClient(glfwGetWin32Window(m_glfwWindow), &pt);
+	return PointI(pt.x, pt.y);
+#else
+	LN_NOTIMPLEMENTED();
+#endif
+}
+
+PointI GLFWPlatformWindow::pointToScreen(const PointI& clientPoint)
+{
+#ifdef _WIN32
+	POINT pt = { clientPoint.x, clientPoint.y };
+	::ClientToScreen(glfwGetWin32Window(m_glfwWindow), &pt);
+	return PointI(pt.x, pt.y);
+#else
+	LN_NOTIMPLEMENTED();
+#endif
 }
 
 void* GLFWPlatformWindow::getWin32Window() const
@@ -204,12 +229,76 @@ void GLFWPlatformWindow::window_key_callback(GLFWwindow* window, int key, int sc
 
 	PlatformEventType eventType = (action == GLFW_PRESS || action == GLFW_REPEAT) ? PlatformEventType::KeyDown : PlatformEventType::KeyUp;
 
-	Flags<ModifierKeys> modifierKeys =
-		((key == GLFW_KEY_LEFT_ALT || key == GLFW_KEY_RIGHT_ALT) ? ModifierKeys::Alt : ModifierKeys::None) |
-		((key == GLFW_KEY_LEFT_SHIFT || key == GLFW_KEY_RIGHT_SHIFT) ? ModifierKeys::Shift : ModifierKeys::None) |
-		((key == GLFW_KEY_LEFT_CONTROL || key == GLFW_KEY_RIGHT_CONTROL) ? ModifierKeys::Control : ModifierKeys::None);
+	//Flags<ModifierKeys> modifierKeys =
+	//	((key == GLFW_KEY_LEFT_ALT || key == GLFW_KEY_RIGHT_ALT) ? ModifierKeys::Alt : ModifierKeys::None) |
+	//	((key == GLFW_KEY_LEFT_SHIFT || key == GLFW_KEY_RIGHT_SHIFT) ? ModifierKeys::Shift : ModifierKeys::None) |
+	//	((key == GLFW_KEY_LEFT_CONTROL || key == GLFW_KEY_RIGHT_CONTROL) ? ModifierKeys::Control : ModifierKeys::None);
 
-	PlatformEventArgs::makeKeyEvent(thisWindow, eventType, GLFWKeyToLNKey[key], modifierKeys, key);
+	//PlatformEventArgs::makeKeyEvent(thisWindow, eventType, GLFWKeyToLNKey[key], modifierKeys, key);
+}
+
+void GLFWPlatformWindow::window_mouseButton_callback(GLFWwindow* window, int button, int action, int mods)
+{
+	GLFWPlatformWindow* thisWindow = (GLFWPlatformWindow*)glfwGetWindowUserPointer(window);
+
+	PlatformEventType eventType = PlatformEventType::Unknown;
+	switch (action)
+	{
+	case GLFW_PRESS:
+		eventType = PlatformEventType::MouseDown;
+		break;
+	case GLFW_RELEASE:
+		eventType = PlatformEventType::MouseUp;
+		break;
+	default:
+		break;
+	}
+
+	MouseButtons mouseButton = MouseButtons::None;
+	switch (button)
+	{
+	case GLFW_MOUSE_BUTTON_LEFT:
+		mouseButton = MouseButtons::Left;
+		break;
+	case GLFW_MOUSE_BUTTON_RIGHT:
+		mouseButton = MouseButtons::Right;
+		break;
+	case GLFW_MOUSE_BUTTON_MIDDLE:
+		mouseButton = MouseButtons::Middle;
+		break;
+	case GLFW_MOUSE_BUTTON_4:
+		mouseButton = MouseButtons::X1;
+		break;
+	case GLFW_MOUSE_BUTTON_5:
+		mouseButton = MouseButtons::X2;
+		break;
+	default:
+		break;
+	}
+
+	if (eventType != PlatformEventType::Unknown && mouseButton != MouseButtons::None)
+	{
+		Flags<ModifierKeys> modifierKeys =
+			((mods == GLFW_MOD_ALT || mods == GLFW_MOD_ALT) ? ModifierKeys::Alt : ModifierKeys::None) |
+			((mods == GLFW_MOD_SHIFT || mods == GLFW_MOD_SHIFT) ? ModifierKeys::Shift : ModifierKeys::None) |
+			((mods == GLFW_MOD_CONTROL || mods == GLFW_MOD_CONTROL) ? ModifierKeys::Control : ModifierKeys::None);
+
+		thisWindow->sendEventToAllListener(PlatformEventArgs::makeMouseButtonEvent(thisWindow, eventType, mouseButton, modifierKeys));
+	}
+}
+
+void GLFWPlatformWindow::window_mousePos_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	GLFWPlatformWindow* thisWindow = (GLFWPlatformWindow*)glfwGetWindowUserPointer(window);
+
+#ifdef _WIN32
+	POINT pt;
+	::GetCursorPos(&pt);
+#else
+	LN_NOTIMPLEMENTED();
+#endif
+
+	thisWindow->sendEventToAllListener(PlatformEventArgs::makeMouseMoveEvent(thisWindow, PlatformEventType::MouseMove, pt.x, pt.y));
 }
 
 //=============================================================================

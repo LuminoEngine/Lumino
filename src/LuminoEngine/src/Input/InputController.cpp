@@ -162,7 +162,7 @@ void InputController::updateFrame()
 	}
 	m_inputStateForAny.current = 0;
 
-	// m_inputStatus に現在の入力値を展開する
+	// m_inputStatus の current に現在の入力値を展開する
 	for (const BindingSlot& slot : m_bindingSlots)
 	{
 		InputGesture* binding = slot.binding;

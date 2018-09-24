@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <Lumino/Platform/PlatformWindow.hpp>
 #include "InputDriver.hpp"
 
 namespace ln {
@@ -27,6 +28,10 @@ InputDriver::InputDriver()
 
 //------------------------------------------------------------------------------
 InputDriver::~InputDriver()
+{
+}
+
+void InputDriver::dispose()
 {
 }
 
@@ -93,9 +98,12 @@ void InputDriver::onEvent(const detail::PlatformEventArgs& e)
 		onMouseButtonUp(e.mouse.button);
 		break;
 	case PlatformEventType::MouseMove:
-		m_mousePoint.x = e.mouse.x;
-		m_mousePoint.y = e.mouse.y;
+	{
+		PointI pt = e.sender->pointFromScreen(PointI(e.mouseMove.screenX, e.mouseMove.screenY));
+		m_mousePoint.x = pt.x;
+		m_mousePoint.y = pt.y;
 		break;
+	}
 	case PlatformEventType::MouseWheel:
 		m_mouseWheel = e.wheel.delta;
 		break;

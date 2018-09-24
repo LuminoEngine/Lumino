@@ -54,11 +54,11 @@ InputManager::~InputManager()
 void InputManager::initialize(const Settings& settings)
 {
 #if defined(LN_OS_WIN32)
-	Ref<Win32InputDriver> driver(LN_NEW Win32InputDriver());
+	auto driver = makeRef<Win32InputDriver>();
 	driver->initialize((HWND)PlatformSupport::getWin32WindowHandle(settings.mainWindow));
 	m_inputDriver = driver;
 #elif defined(LN_OS_MAC)
-	Ref<CocoaInputDriver> driver(LN_NEW CocoaInputDriver());
+	auto driver = makeRef<CocoaInputDriver>();
 	m_inputDriver = driver;
 #endif
 
@@ -102,7 +102,10 @@ void InputManager::dispose()
 		m_defaultVirtualPads[i] = nullptr;
 	}
 
-	m_inputDriver = nullptr;
+	if (m_inputDriver) {
+		m_inputDriver->dispose();
+		m_inputDriver = nullptr;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -112,7 +115,7 @@ void InputManager::preUpdateFrame()
 }
 
 //------------------------------------------------------------------------------
-void InputManager::updateFrame()
+void InputManager::updateFrame(float elapsedTime)
 {
 	for (auto& pad : m_defaultVirtualPads)
 	{

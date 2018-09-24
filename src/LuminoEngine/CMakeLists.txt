@@ -31,6 +31,7 @@ set(LN_SOURCES_Engine
 set(LN_SOURCES_Platform
     include/Lumino/Platform/PlatformEvent.hpp
     include/Lumino/Platform/PlatformSupport.hpp
+    include/Lumino/Platform/PlatformWindow.hpp
     include/Lumino/Platform/Win32PlatformInterface.hpp
     src/Platform/Internal.hpp
     src/Platform/EmptyPlatformWindowManager.cpp
@@ -41,6 +42,7 @@ set(LN_SOURCES_Platform
     src/Platform/PlatformManager.cpp
     src/Platform/PlatformManager.hpp
     src/Platform/PlatformSupport.cpp
+    src/Platform/PlatformWindow.cpp
     src/Platform/PlatformWindowManager.cpp
     src/Platform/PlatformWindowManager.hpp
     src/Platform/Win32PlatformInterface.cpp
