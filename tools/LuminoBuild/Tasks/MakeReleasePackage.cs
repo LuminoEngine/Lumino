@@ -43,9 +43,7 @@ namespace LuminoBuild.Tasks
 
                     var engineArchs = new[]
                     {
-                        new { Src = "MSVC2017-x86-MD", Dst = "MSVC2017-x86-MD" },
                         new { Src = "MSVC2017-x86-MT", Dst = "MSVC2017-x86-MT" },
-                        new { Src = "MSVC2017-x64-MD", Dst = "MSVC2017-x64-MD" },
                         new { Src = "Emscripten", Dst = "Emscripten" },
                         new { Src = "Android-arm64-v8a-Debug", Dst = "Android-arm64-v8a" },
                         new { Src = "Android-arm64-v8a-Release", Dst = "Android-arm64-v8a" },
