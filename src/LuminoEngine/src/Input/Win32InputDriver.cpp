@@ -1,4 +1,5 @@
 ﻿
+#if _WIN32
 #include "../Internal.hpp"
 #include <wbemidl.h>
 #include <oleauto.h>
@@ -287,3 +288,5 @@ LCleanup:
 }
 
 } // namespace ln
+
+#endif

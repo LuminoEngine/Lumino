@@ -35,6 +35,7 @@ public:
 	const ln::Path& buildDir() const { return m_buildDir; }
 
 	ln::Path nativeProjectsDir() const { return ln::Path(rootDirPath(), u"NativeProjects"); }
+	ln::Path emscriptenProjectDir() const { return ln::Path(nativeProjectsDir(), u"LuminoApp.Emscripten"); }
 	ln::Path androidProjectDir() const { return ln::Path(nativeProjectsDir(), u"LuminoApp.Android"); }
 	ln::Path macOSProjectDir() const { return ln::Path(nativeProjectsDir(), u"LuminoApp.macOS");  }
 

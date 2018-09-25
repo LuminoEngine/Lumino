@@ -126,32 +126,6 @@ int main(int argc, char** argv)
 	EngineSettings::setMainBackBufferSize(80, 60);
 	Engine::initialize();
 
-	auto shader = Shader::create(
-		LN_LOCALFILE("Assets/simple.vert"),
-		LN_LOCALFILE("Assets/simple.frag"));
-	//shader->setVector("g_color", Vector4(0, 1, 0, 1));
-
-	//Engine::graphicsContext()->setShaderPass(shader->techniques()[0]->passes()[0]);
-
-	struct Vertex
-	{
-		Vector4 pos;
-	};
-	Vertex v[] = {
-		Vector4(0, 1, 0, 1),
-		Vector4(-1, 1, 0, 1),
-		Vector4(0, -1, 0, 1),
-	};
-
-	auto vb = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
-
-	auto decl = newObject<VertexDeclaration>();
-	decl->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
-
-	//auto renderTarget = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBX32, false);
-
-
-
 
 	auto ctx = Engine::graphicsContext();
 	//ctx->setColorBuffer(0, Engine::mainWindow()->swapChain()->colorBuffer());

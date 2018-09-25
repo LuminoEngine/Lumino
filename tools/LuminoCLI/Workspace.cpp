@@ -81,7 +81,7 @@ Result Workspace::buildProject(const ln::String& target)
 	{
 		auto buildDir = ln::Path::combine(m_project->buildDir(), u"Emscripten").canonicalize();
 		auto installDir = ln::Path::combine(buildDir, u"Release");
-		auto cmakeSourceDir = m_project->rootDirPath();
+		auto cmakeSourceDir = m_project->emscriptenProjectDir();
 		auto script = ln::Path::combine(buildDir, u"build.bat");
 
 		ln::FileSystem::createDirectory(buildDir);
@@ -90,6 +90,7 @@ Result Workspace::buildProject(const ln::String& target)
 			ln::List<ln::String> emcmakeArgs = {
 				u"-DCMAKE_BUILD_TYPE=Release",
 				u"-DCMAKE_INSTALL_PREFIX=" + installDir,
+				u"-DLUMINO=" + buildEnvironment()->luminoPackageRootDir().str().replace("\\", "/"),
 				u"-G \"MinGW Makefiles\"",
 				cmakeSourceDir,
 			};

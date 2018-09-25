@@ -1,5 +1,5 @@
 ﻿
-#pragma once
+#if _WIN32
 #include "../Internal.hpp"
 #include <algorithm>
 #include <Lumino/Base/Platform.hpp>
@@ -481,3 +481,5 @@ void XInputModule::initialize()
 }
 
 } // namespace ln
+
+#endif

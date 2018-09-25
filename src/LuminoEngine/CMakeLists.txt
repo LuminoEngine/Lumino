@@ -36,6 +36,7 @@ set(LN_SOURCES_Platform
     src/Platform/Internal.hpp
     src/Platform/EmptyPlatformWindowManager.cpp
     src/Platform/EmptyPlatformWindowManager.hpp
+    src/Platform/EmscriptenPlatformInterface.cpp
     src/Platform/GLFWPlatformWindowManager.cpp
     src/Platform/GLFWPlatformWindowManager.hpp
     src/Platform/PlatformEvent.cpp
@@ -138,6 +139,7 @@ set(LN_SOURCES_UI
 # Grouping.
 source_group("Engine"                FILES ${LN_SOURCES_Engine})
 source_group("Platform"                FILES ${LN_SOURCES_Platform})
+source_group("Input"                FILES ${LN_SOURCES_Input})
 source_group("Grammar"                FILES ${LN_SOURCES_Grammar})
 source_group("Graphics"                FILES ${LN_SOURCES_Graphics})
 source_group("Shader"                FILES ${LN_SOURCES_Shader})

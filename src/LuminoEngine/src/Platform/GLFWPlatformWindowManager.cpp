@@ -7,7 +7,9 @@
 
 #include "Internal.hpp"
 #include <GLFW/glfw3.h>
+#ifdef _WIN32
 #include <GLFW/glfw3native.h>
+#endif
 #include "GLFWPlatformWindowManager.hpp"
 
 namespace ln {
@@ -176,7 +178,9 @@ void GLFWPlatformWindow::getSize(SizeI* size)
 
 PointI GLFWPlatformWindow::pointFromScreen(const PointI& screenPoint)
 {
-#ifdef _WIN32
+#if defined(LN_EMSCRIPTEN)
+	return screenPoint;
+#elif defined(LN_OS_WIN32)
 	POINT pt = { screenPoint.x, screenPoint.y };
 	::ScreenToClient(glfwGetWin32Window(m_glfwWindow), &pt);
 	return PointI(pt.x, pt.y);
@@ -187,7 +191,9 @@ PointI GLFWPlatformWindow::pointFromScreen(const PointI& screenPoint)
 
 PointI GLFWPlatformWindow::pointToScreen(const PointI& clientPoint)
 {
-#ifdef _WIN32
+#if defined(LN_EMSCRIPTEN)
+	return clientPoint;
+#elif defined(LN_OS_WIN32)
 	POINT pt = { clientPoint.x, clientPoint.y };
 	::ClientToScreen(glfwGetWin32Window(m_glfwWindow), &pt);
 	return PointI(pt.x, pt.y);
@@ -198,7 +204,11 @@ PointI GLFWPlatformWindow::pointToScreen(const PointI& clientPoint)
 
 void* GLFWPlatformWindow::getWin32Window() const
 {
+#ifdef _WIN32
 	return glfwGetWin32Window(m_glfwWindow);
+#else
+	return nullptr;
+#endif
 }
 
 //void GLFWPlatformWindow::SetVisible(bool visible)
@@ -240,6 +250,8 @@ void GLFWPlatformWindow::window_key_callback(GLFWwindow* window, int key, int sc
 void GLFWPlatformWindow::window_mouseButton_callback(GLFWwindow* window, int button, int action, int mods)
 {
 	GLFWPlatformWindow* thisWindow = (GLFWPlatformWindow*)glfwGetWindowUserPointer(window);
+
+	printf("window_mouseButton_callback\n");
 
 	PlatformEventType eventType = PlatformEventType::Unknown;
 	switch (action)
@@ -291,14 +303,16 @@ void GLFWPlatformWindow::window_mousePos_callback(GLFWwindow* window, double xpo
 {
 	GLFWPlatformWindow* thisWindow = (GLFWPlatformWindow*)glfwGetWindowUserPointer(window);
 
-#ifdef _WIN32
+#if defined(LN_EMSCRIPTEN)
+	thisWindow->sendEventToAllListener(PlatformEventArgs::makeMouseMoveEvent(thisWindow, PlatformEventType::MouseMove, (short)xpos, (short)ypos));
+#elif defined(LN_OS_WIN32)
 	POINT pt;
 	::GetCursorPos(&pt);
+	thisWindow->sendEventToAllListener(PlatformEventArgs::makeMouseMoveEvent(thisWindow, PlatformEventType::MouseMove, pt.x, pt.y));
 #else
 	LN_NOTIMPLEMENTED();
 #endif
 
-	thisWindow->sendEventToAllListener(PlatformEventArgs::makeMouseMoveEvent(thisWindow, PlatformEventType::MouseMove, pt.x, pt.y));
 }
 
 //=============================================================================

@@ -1,5 +1,6 @@
 
-include(ImportExternalLibraries.cmake)
+
+include(${LUMINO}/Engine/Cpp/ImportExternalLibraries.cmake)
 
 function(ln_add_pch project_name header_file_path source_file_path)
 
