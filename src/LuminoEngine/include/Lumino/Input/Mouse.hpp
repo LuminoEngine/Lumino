@@ -7,15 +7,14 @@
 
 namespace ln {
 
-
 class Mouse
 {
 public:
-	static bool isPressed(MouseButtons button);
-	static bool isTriggered(MouseButtons button);
-	static bool isOffTriggered(MouseButtons button);
-	static bool isRepeated(MouseButtons button);
-	static Point position();
+    static bool isPressed(MouseButtons button);
+    static bool isTriggered(MouseButtons button);
+    static bool isOffTriggered(MouseButtons button);
+    static bool isRepeated(MouseButtons button);
+    static Point position();
 
 private:
 };
@@ -24,24 +23,24 @@ namespace detail {
 class InputManager;
 
 class MouseInputDevice
-	: public RefObject
+    : public RefObject
 {
 public:
-	MouseInputDevice();
+    MouseInputDevice();
 
-	bool isPressed(MouseButtons button) const;
-	bool isTriggered(MouseButtons button) const;
-	bool isOffTriggered(MouseButtons button) const;
-	bool isRepeated(MouseButtons button) const;
-	Point position();
+    bool isPressed(MouseButtons button) const;
+    bool isTriggered(MouseButtons button) const;
+    bool isOffTriggered(MouseButtons button) const;
+    bool isRepeated(MouseButtons button) const;
+    Point position();
 
-	void updateFrame(float elapsedTime);
+    void updateFrame(float elapsedTime);
 
 private:
-	static int MouseButtonToIndex(MouseButtons button);
+    static int MouseButtonToIndex(MouseButtons button);
 
-	detail::InputManager* m_manager;
-	std::array<InputDeviceElement, 5> m_elements;	// MouseButtons
+    detail::InputManager* m_manager;
+    std::array<InputDeviceElement, 5> m_elements; // MouseButtons
 };
 
 } // namespace detail

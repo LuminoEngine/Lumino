@@ -34,6 +34,8 @@ Win32InputDriver::~Win32InputDriver()
 //------------------------------------------------------------------------------
 void Win32InputDriver::initialize(HWND hWnd)
 {
+	LN_LOG_DEBUG << "Win32InputDriver";
+
 	HRESULT hr;
 	m_hWnd = hWnd;
 

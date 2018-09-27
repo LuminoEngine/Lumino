@@ -17,22 +17,22 @@ GLFWInputDriver::~GLFWInputDriver()
 
 void GLFWInputDriver::initialize()
 {
+	LN_LOG_DEBUG << "GLFWInputDriver";
 }
 
 void GLFWInputDriver::dispose()
 {
-	InputDriver::dispose();
+    InputDriver::dispose();
 }
 
 int GLFWInputDriver::getJoystickCount()
 {
-	return 0;
+    return 0;
 }
 
 void GLFWInputDriver::getJoystickState(int joysticNumber, JoystickDeviceState* state)
 {
-	state->reset();
+    state->reset();
 }
 
 } // namespace ln
-
