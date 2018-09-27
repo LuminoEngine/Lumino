@@ -29,9 +29,7 @@ InputController::InputController(detail::InputManager* manager)
 	, m_repeatIntervalStart(20)	// TODO 要調整。時間の方がいいかも？
 	, m_repeatIntervalStep(5)
 {
-	m_inputStateForAny.current = 0;
-	m_inputStateForAny.state = 0;
-	m_inputStateForAny.ref = 0;
+	m_inputStateForAny = makeRef<detail::InputDeviceElement>();
 }
 
 //------------------------------------------------------------------------------
@@ -43,7 +41,7 @@ InputController::~InputController()
 bool InputController::isPressed(const StringRef& bindingName) const
 {
 	auto* state = LockupState(bindingName);
-	if (LN_REQUIRE_KEY(state != nullptr)) return false;
+	if (LN_REQUIRE_KEY(state)) return false;
 	return (state->state > 0);
 }
 
@@ -51,7 +49,7 @@ bool InputController::isPressed(const StringRef& bindingName) const
 bool InputController::isTriggered(const StringRef& bindingName) const
 {
 	auto* state = LockupState(bindingName);
-	if (LN_REQUIRE_KEY(state != nullptr)) return false;
+	if (LN_REQUIRE_KEY(state)) return false;
 	return (state->state == 1);
 }
 
@@ -59,7 +57,7 @@ bool InputController::isTriggered(const StringRef& bindingName) const
 bool InputController::isOffTriggered(const StringRef& bindingName) const
 {
 	auto* state = LockupState(bindingName);
-	if (LN_REQUIRE_KEY(state != nullptr)) return false;
+	if (LN_REQUIRE_KEY(state)) return false;
 	return (state->state == -1);
 }
 
@@ -67,7 +65,7 @@ bool InputController::isOffTriggered(const StringRef& bindingName) const
 bool InputController::isRepeated(const StringRef& bindingName) const
 {
 	auto* state = LockupState(bindingName);
-	if (LN_REQUIRE_KEY(state != nullptr)) return false;
+	if (LN_REQUIRE_KEY(state)) return false;
 	int s = state->state;
 	return ((s == 1) || (s > m_repeatIntervalStart && (s % m_repeatIntervalStep) == 0));
 }
@@ -75,9 +73,9 @@ bool InputController::isRepeated(const StringRef& bindingName) const
 //------------------------------------------------------------------------------
 float InputController::getAxisValue(const StringRef& bindingName) const
 {
-	auto state = m_inputStatus.findIf([&](auto& item) { return item.first == bindingName; });
-	if (LN_REQUIRE_KEY(state.hasValue())) return 0.0f;
-	return state->second.current;
+	auto* state = LockupState(bindingName);
+	if (LN_REQUIRE_KEY(state)) return 0.0f;
+	return state->current;
 }
 
 //------------------------------------------------------------------------------
@@ -87,18 +85,17 @@ void InputController::addBinding(const StringRef& buttonName, InputGesture* gest
 	m_bindingSlots.add(slot);
 
 	// まだ登録したことがない名前であれば InputState を作る。そうでなければ参照カウントを増やす。
-	auto state = m_inputStatus.findIf([&](auto& item) { return item.first == buttonName; });
+	auto state = m_inputStatus.findIf([&](auto& item) { return item->name == buttonName; });
 	if (state.hasValue())
 	{
-		state->second.ref++;
+		(*state)->ref++;
 	}
 	else
 	{
-		InputState newState;
-		newState.current = 0;
-		newState.state = 0;
-		newState.ref = 1;
-		m_inputStatus.add(std::pair<String, InputState>(buttonName, newState));
+		auto element = makeRef<detail::InputDeviceElement>();
+		element->name = buttonName;
+		element->ref = 1;
+		m_inputStatus.add(element);
 	}
 }
 
@@ -110,10 +107,10 @@ void InputController::removeBinding(InputGesture* gesture)
 
 	const String& name = m_bindingSlots[index].name;
 
-	auto state = m_inputStatus.findIf([&](auto& item) { return item.first == name; });
-	state->second.ref--;
-	if (state->second.ref <= 0) {
-		m_inputStatus.removeIf([&](auto& item) { return item.first == name; });
+	auto state = m_inputStatus.findIf([&](auto& item) { return item->name == name; });
+	(*state)->ref--;
+	if ((*state)->ref <= 0) {
+		m_inputStatus.removeIf([&](auto& item) { return item->name == name; });
 	}
 
 	m_bindingSlots.removeAt(index);
@@ -150,7 +147,7 @@ void InputController::setRepeatInterval(int start, int step)
 }
 
 //------------------------------------------------------------------------------
-void InputController::updateFrame()
+void InputController::updateFrame(float elapsedTime)
 {
 	//SortedArray<String, InputState>::iterator itr = m_inputStatus.begin();
 	//SortedArray<String, InputState>::iterator end = m_inputStatus.end();
@@ -158,9 +155,9 @@ void InputController::updateFrame()
 	//	(*itr).second.current = 0;
 	//}
 	for (auto& state : m_inputStatus) {
-		state.second.current = 0;
+		state->current = 0;
 	}
-	m_inputStateForAny.current = 0;
+	m_inputStateForAny->current = 0;
 
 	// m_inputStatus の current に現在の入力値を展開する
 	for (const BindingSlot& slot : m_bindingSlots)
@@ -173,12 +170,12 @@ void InputController::updateFrame()
 			(m_attachedDevices & detail::InputDeviceID_Mouse) != 0,
 			getJoyNumber());
 
-		auto state = m_inputStatus.findIf([&](auto& item) { return item.first == slot.name; });
+		auto state = m_inputStatus.findIf([&](auto& item) { return item->name == slot.name; });
 		if (state.hasValue())
 		{
 			v *= binding->getScale();
 			if (v >= binding->GetMinValidMThreshold()) {
-				state->second.current = std::max(state->second.current, v);	// Binding が重複したとか、とりあえず大きい方を使う
+				(*state)->current = std::max((*state)->current, v);	// Binding が重複したとか、とりあえず大きい方を使う
 			}
 		}
 	}
@@ -186,14 +183,16 @@ void InputController::updateFrame()
 	// 現在の入力値から状態を遷移させる
 	for (auto& state : m_inputStatus)
 	{
-		UpdateOneInputState(&state.second);
+		state->updateFrame(elapsedTime, m_manager->repeatIntervalStartTime(), m_manager->repeatIntervalStepTime());
+		//UpdateOneInputState(&state.second);
 
-		if (state.second.current > 0.0f)
+		if (state->current > 0.0f)
 		{
-			m_inputStateForAny.current = 1.0f;
+			m_inputStateForAny->current = 1.0f;
 		}
 	}
-	UpdateOneInputState(&m_inputStateForAny);
+	m_inputStateForAny->updateFrame(elapsedTime, m_manager->repeatIntervalStartTime(), m_manager->repeatIntervalStepTime());
+	//UpdateOneInputState(&m_inputStateForAny);
 }
 
 //------------------------------------------------------------------------------
@@ -206,33 +205,33 @@ int InputController::getJoyNumber() const
 	return -1;
 }
 
-//------------------------------------------------------------------------------
-void InputController::UpdateOneInputState(InputState* state)
-{
-	if (state->current > 0.0f) {
-		state->state++;	// 押されてる間は毎フレームインクリメントする
-	}
-	else
-	{
-		if (state->state > 0.0f) {
-			state->state = -1;	// 離された瞬間のフレーム
-		}
-		else {
-			state->state = 0;		// 離された瞬間の次のフレーム
-		}
-	}
-}
+////------------------------------------------------------------------------------
+//void InputController::UpdateOneInputState(InputState* state)
+//{
+//	if (state->current > 0.0f) {
+//		state->state++;	// 押されてる間は毎フレームインクリメントする
+//	}
+//	else
+//	{
+//		if (state->state > 0.0f) {
+//			state->state = -1;	// 離された瞬間のフレーム
+//		}
+//		else {
+//			state->state = 0;		// 離された瞬間の次のフレーム
+//		}
+//	}
+//}
 
 //------------------------------------------------------------------------------
-const InputController::InputState* InputController::LockupState(const StringRef& bindingName) const
+const detail::InputDeviceElement* InputController::LockupState(const StringRef& bindingName) const
 {
 	if (bindingName.isEmpty())
 	{
-		return &m_inputStateForAny;
+		return m_inputStateForAny;
 	}
-	auto state = m_inputStatus.findIf([&](auto& item) { return item.first == bindingName; });
+	auto state = m_inputStatus.findIf([&](auto& item) { return item->name == bindingName; });
 	if (state) {
-		return &state->second;
+		return *state;
 	}
 	else {
 		return nullptr;

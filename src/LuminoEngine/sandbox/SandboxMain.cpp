@@ -139,6 +139,12 @@ int main(int argc, char** argv)
 		if (Input::isTriggered(InputButtons::Left)) {
 			std::cout << "Left" << std::endl;
 		}
+		if (Input::isOffTriggered(InputButtons::Left)) {
+			std::cout << "isOffTriggered" << std::endl;
+		}
+		if (Input::isRepeated(InputButtons::Left)) {
+			std::cout << "isRepeated" << std::endl;
+		}
 
 		if (Mouse::isPressed(MouseButtons::Left)) {
 			//std::cout << "isPressed" << std::endl;

@@ -130,7 +130,7 @@ void InputManager::updateFrame(float elapsedTime)
 	{
 		if (pad)
 		{
-			pad->updateFrame();
+			pad->updateFrame(elapsedTime);
 		}
 	}
 

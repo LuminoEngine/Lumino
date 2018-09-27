@@ -27,7 +27,7 @@ public:
 	void clearAllBindings();
 	void setRepeatInterval(int start, int step);
 
-	void updateFrame();
+	void updateFrame(float elapsedTime);
 
 	// TODO:
 	int getJoyNumber() const;
@@ -39,21 +39,21 @@ private:
 		Ref<InputGesture>	binding;
 	};
 
-	struct InputState
-	{
-		float	current;
-		int		state;
-		int		ref;
-	};
+	//struct InputState
+	//{
+	//	float	current;
+	//	int		state;
+	//	int		ref;
+	//};
 
-	void UpdateOneInputState(InputState* state);
-	const InputState* LockupState(const StringRef& bindingName) const;
+	//void UpdateOneInputState(detail::InputDeviceElement* state);
+	const detail::InputDeviceElement* LockupState(const StringRef& bindingName) const;
 
 	detail::InputManager*			m_manager;
 	uint32_t						m_attachedDevices;		// TODO: 本当ならちゃんとインターフェイス組むべきかも
 	List<BindingSlot>				m_bindingSlots;
-	List<std::pair<String, InputState>> m_inputStatus;
-	InputState						m_inputStateForAny;
+	List<Ref<detail::InputDeviceElement>> m_inputStatus;
+	Ref<detail::InputDeviceElement>						m_inputStateForAny;
 	int								m_repeatIntervalStart;
 	int								m_repeatIntervalStep;
 };
