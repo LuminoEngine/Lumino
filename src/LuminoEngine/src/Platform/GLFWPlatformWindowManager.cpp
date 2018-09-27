@@ -125,6 +125,8 @@ GLFWPlatformWindow::~GLFWPlatformWindow()
 
 void GLFWPlatformWindow::initialize(const WindowCreationSettings& settings)
 {
+	initKeyTable();
+
 	//// とりあえず生成時固定。GLFW は実行中に変更したければ、
 	//// glfwCreateWindow() で新しいウィンドウを開きなおす必要がある。
 	//if (m_fullScreen)
@@ -239,19 +241,12 @@ void GLFWPlatformWindow::window_key_callback(GLFWwindow* window, int key, int sc
 
 	PlatformEventType eventType = (action == GLFW_PRESS || action == GLFW_REPEAT) ? PlatformEventType::KeyDown : PlatformEventType::KeyUp;
 
-	//Flags<ModifierKeys> modifierKeys =
-	//	((key == GLFW_KEY_LEFT_ALT || key == GLFW_KEY_RIGHT_ALT) ? ModifierKeys::Alt : ModifierKeys::None) |
-	//	((key == GLFW_KEY_LEFT_SHIFT || key == GLFW_KEY_RIGHT_SHIFT) ? ModifierKeys::Shift : ModifierKeys::None) |
-	//	((key == GLFW_KEY_LEFT_CONTROL || key == GLFW_KEY_RIGHT_CONTROL) ? ModifierKeys::Control : ModifierKeys::None);
-
-	//PlatformEventArgs::makeKeyEvent(thisWindow, eventType, GLFWKeyToLNKey[key], modifierKeys, key);
+	thisWindow->sendEventToAllListener(PlatformEventArgs::makeKeyEvent(thisWindow, eventType, GLFWKeyToLNKey[key], glfwKeyModToLNKeyMod(mods), key));
 }
 
 void GLFWPlatformWindow::window_mouseButton_callback(GLFWwindow* window, int button, int action, int mods)
 {
 	GLFWPlatformWindow* thisWindow = (GLFWPlatformWindow*)glfwGetWindowUserPointer(window);
-
-	printf("window_mouseButton_callback\n");
 
 	PlatformEventType eventType = PlatformEventType::Unknown;
 	switch (action)
@@ -290,12 +285,7 @@ void GLFWPlatformWindow::window_mouseButton_callback(GLFWwindow* window, int but
 
 	if (eventType != PlatformEventType::Unknown && mouseButton != MouseButtons::None)
 	{
-		Flags<ModifierKeys> modifierKeys =
-			((mods == GLFW_MOD_ALT || mods == GLFW_MOD_ALT) ? ModifierKeys::Alt : ModifierKeys::None) |
-			((mods == GLFW_MOD_SHIFT || mods == GLFW_MOD_SHIFT) ? ModifierKeys::Shift : ModifierKeys::None) |
-			((mods == GLFW_MOD_CONTROL || mods == GLFW_MOD_CONTROL) ? ModifierKeys::Control : ModifierKeys::None);
-
-		thisWindow->sendEventToAllListener(PlatformEventArgs::makeMouseButtonEvent(thisWindow, eventType, mouseButton, modifierKeys));
+		thisWindow->sendEventToAllListener(PlatformEventArgs::makeMouseButtonEvent(thisWindow, eventType, mouseButton, glfwKeyModToLNKeyMod(mods)));
 	}
 }
 
@@ -313,6 +303,15 @@ void GLFWPlatformWindow::window_mousePos_callback(GLFWwindow* window, double xpo
 	LN_NOTIMPLEMENTED();
 #endif
 
+}
+
+ModifierKeys GLFWPlatformWindow::glfwKeyModToLNKeyMod(int mods)
+{
+	Flags<ModifierKeys> modifierKeys =
+		((mods == GLFW_MOD_ALT || mods == GLFW_MOD_ALT) ? ModifierKeys::Alt : ModifierKeys::None) |
+		((mods == GLFW_MOD_SHIFT || mods == GLFW_MOD_SHIFT) ? ModifierKeys::Shift : ModifierKeys::None) |
+		((mods == GLFW_MOD_CONTROL || mods == GLFW_MOD_CONTROL) ? ModifierKeys::Control : ModifierKeys::None);
+	return modifierKeys;
 }
 
 //=============================================================================

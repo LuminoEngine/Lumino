@@ -19,14 +19,24 @@
 #define LN_OS_FAMILY_UNIX
 #elif (defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__CYGWIN__) || defined(Q_OS_WIN))
 #define LN_OS_WIN32
-#elif defined(__APPLE__) || defined(__APPLE_CC__) || defined(__OSX__)
-#define LN_OS_MAC
+#elif defined(__APPLE__) && (defined(__GNUC__) || defined(__xlC__) || defined(__xlc__))
+#define LN_OS_DARWIN
 #define LN_OS_FAMILY_UNIX
 #else
 #define LN_OS_LINUX
 #define LN_X11
 #define LN_OS_FAMILY_UNIX
 #endif
+
+#if defined(LN_OS_DARWIN)
+#	include <TargetConditionals.h>
+#	if (defined(TARGET_OS_EMBEDDED) && TARGET_OS_EMBEDDED) || (defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE) || (defined(TARGET_IPHONE_SIMULATOR) && TARGET_IPHONE_SIMULATOR)
+#		define LN_OS_IOS
+#	elif defined(TARGET_OS_MAC) && TARGET_OS_MAC
+#		define _OS_MAC
+#	endif
+#endif
+
 
 // compiler
 #if defined(__GNUC__)

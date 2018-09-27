@@ -12,7 +12,7 @@ namespace LuminoBuild
             // default
             if (args.Length == 0)
             {
-                args = new string[] { "BuildEngine_Emscripten" };
+                args = new string[] { "MakeVSProjects" };
             }
 
             Assembly thisAssembly = Assembly.GetEntryAssembly();

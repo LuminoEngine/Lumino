@@ -23,6 +23,7 @@
 #elif defined(LN_OS_MAC)
 	#include "CocoaInputDriver.hpp"
 #endif
+#include "GLFWInputDriver.hpp"
 #include <Lumino/Platform/PlatformSupport.hpp>
 #include <Lumino/Input/Input.hpp>
 #include <Lumino/Input/InputBinding.hpp>
@@ -60,9 +61,12 @@ void InputManager::initialize(const Settings& settings)
 	auto driver = makeRef<Win32InputDriver>();
 	driver->initialize((HWND)PlatformSupport::getWin32WindowHandle(settings.mainWindow));
 	m_inputDriver = driver;
-#elif defined(LN_OS_MAC)
-	auto driver = makeRef<CocoaInputDriver>();
+#elif defined(LN_EMSCRIPTEN) || defined(LN_OS_MAC)
+	auto driver = makeRef<GLFWInputDriver>();
+	driver->initialize();
 	m_inputDriver = driver;
+#else
+	LN_NOTIMPLEMENTED();
 #endif
 
 	// TODO: 今は1つだけ

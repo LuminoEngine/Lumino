@@ -172,6 +172,7 @@ void InputController::updateFrame()
 			(m_attachedDevices & detail::InputDeviceID_Keyboard) != 0,
 			(m_attachedDevices & detail::InputDeviceID_Mouse) != 0,
 			getJoyNumber());
+
 		auto state = m_inputStatus.findIf([&](auto& item) { return item.first == slot.name; });
 		if (state.hasValue())
 		{

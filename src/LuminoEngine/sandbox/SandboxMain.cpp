@@ -136,6 +136,10 @@ int main(int argc, char** argv)
 		//auto pt = Mouse::position();
 		//std::cout << pt.x << ", " << pt.y << std::endl;
 
+		if (Input::isTriggered(InputButtons::Left)) {
+			std::cout << "Left" << std::endl;
+		}
+
 		if (Mouse::isPressed(MouseButtons::Left)) {
 			//std::cout << "isPressed" << std::endl;
 		}

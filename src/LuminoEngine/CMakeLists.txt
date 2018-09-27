@@ -64,6 +64,8 @@ set(LN_SOURCES_Input
     include/Lumino/Input/InputBinding.hpp
     include/Lumino/Input/InputController.hpp
     include/Lumino/Input/Mouse.hpp
+    src/Input/GLFWInputDriver.cpp
+    src/Input/GLFWInputDriver.hpp
     src/Input/Input.cpp
     src/Input/InputBinding.cpp
     src/Input/InputDriver.cpp

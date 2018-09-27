@@ -33,6 +33,7 @@ private:
 	static void window_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	static void window_mouseButton_callback(GLFWwindow* window, int button, int action, int mods);
 	static void window_mousePos_callback(GLFWwindow* window, double xpos, double ypos);
+	static ModifierKeys glfwKeyModToLNKeyMod(int mods);
 
 	GLFWwindow* m_glfwWindow;
 };

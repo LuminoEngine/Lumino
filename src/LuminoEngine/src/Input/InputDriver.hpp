@@ -27,6 +27,13 @@ struct JoystickDeviceState
 	float		Axes[MaxAxis];			// -1.0～1.0
 	uint32_t	POV;					// POV 状態 (POVDir の組み合わせ  GLFWでは取れない)
 	uint8_t		Buttons[MaxButtons];
+
+	void reset()
+	{
+		memset(Axes, 0, sizeof(Axes));
+		POV = 0;
+		memset(Buttons, 0, sizeof(Buttons));
+	}
 };
 
 // 
