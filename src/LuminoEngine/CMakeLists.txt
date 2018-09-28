@@ -138,6 +138,13 @@ set(LN_SOURCES_UI
     src/UI/UIManager.hpp
 )
 
+if (APPLE)
+    set(LN_SOURCES_Platform
+        ${LN_SOURCES_Platform}
+        src/Platform/PlatformSupport.mm
+    )
+endif()
+
 # Grouping.
 source_group("Engine"                FILES ${LN_SOURCES_Engine})
 source_group("Platform"                FILES ${LN_SOURCES_Platform})

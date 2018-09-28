@@ -1,4 +1,4 @@
-﻿
+
 #pragma once
 #include "PlatformEvent.hpp"
 
@@ -14,4 +14,10 @@ public:
 	static void* getWin32WindowHandle(detail::PlatformWindow* window);	// TODO: remove detail
 };
 
+
+namespace detail {
+void Cocoa_getScreenMousePosition(int* x, int* y);
+void Cocoa_pointFromScreen(void* windowId, int screenPointX, int screenPointY, int* clientPointX, int* clientPointY);
+void Cocoa_pointToScreen(void* windowId, int clientPointX, int clientPointY, int* screenPointX, int* screenPointY);
+} // namespace detail
 } // namespace ln

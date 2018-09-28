@@ -1,4 +1,4 @@
-﻿/*
+/*
 	[2015/12/5]
 		ポーリングの入力判定はいままでどおりにする。
 		1フレームの間にON/OFFが同時に来たときには ON にするようにもできるけど、
@@ -20,8 +20,6 @@
 #include "InputManager.hpp"
 #if defined(LN_OS_WIN32)
 	#include "Win32InputDriver.hpp"
-#elif defined(LN_OS_MAC)
-	#include "CocoaInputDriver.hpp"
 #endif
 #include "GLFWInputDriver.hpp"
 #include <Lumino/Platform/PlatformSupport.hpp>

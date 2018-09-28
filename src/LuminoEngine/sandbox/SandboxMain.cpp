@@ -159,11 +159,6 @@ int main(int argc, char** argv)
 			std::cout << "isRepeated" << std::endl;
 		}
 
-
-		if (GetKeyState('Z') & 0x8000) {
-			break;
-		}
-
 	}
 
 	Engine::terminate();

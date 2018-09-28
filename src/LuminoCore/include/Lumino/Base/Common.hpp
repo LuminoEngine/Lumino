@@ -33,7 +33,7 @@
 #	if (defined(TARGET_OS_EMBEDDED) && TARGET_OS_EMBEDDED) || (defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE) || (defined(TARGET_IPHONE_SIMULATOR) && TARGET_IPHONE_SIMULATOR)
 #		define LN_OS_IOS
 #	elif defined(TARGET_OS_MAC) && TARGET_OS_MAC
-#		define _OS_MAC
+#		define LN_OS_MAC
 #	endif
 #endif
 

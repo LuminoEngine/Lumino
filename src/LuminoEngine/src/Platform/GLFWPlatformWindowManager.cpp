@@ -1,15 +1,16 @@
 
 #ifdef LN_GLFW
 
-#ifdef _WIN32
-#define GLFW_EXPOSE_NATIVE_WIN32
-#endif
 
 #include "Internal.hpp"
 #include <GLFW/glfw3.h>
-#ifdef _WIN32
-#include <GLFW/glfw3native.h>
+#if defined(LN_OS_WIN32)
+#	define GLFW_EXPOSE_NATIVE_WIN32
+#elif defined(LN_OS_MAC)
+#	define GLFW_EXPOSE_NATIVE_COCOA
 #endif
+#include <GLFW/glfw3native.h>
+#include <Lumino/Platform/PlatformSupport.hpp>
 #include "GLFWPlatformWindowManager.hpp"
 
 namespace ln {
@@ -186,6 +187,10 @@ PointI GLFWPlatformWindow::pointFromScreen(const PointI& screenPoint)
 	POINT pt = { screenPoint.x, screenPoint.y };
 	::ScreenToClient(glfwGetWin32Window(m_glfwWindow), &pt);
 	return PointI(pt.x, pt.y);
+#elif defined(LN_OS_MAC)
+	PointI clientPoint;
+	Cocoa_pointFromScreen(glfwGetCocoaWindow(m_glfwWindow), screenPoint.x, screenPoint.y, &clientPoint.x, &clientPoint.y);
+	return clientPoint;
 #else
 	LN_NOTIMPLEMENTED();
 #endif
@@ -199,6 +204,10 @@ PointI GLFWPlatformWindow::pointToScreen(const PointI& clientPoint)
 	POINT pt = { clientPoint.x, clientPoint.y };
 	::ClientToScreen(glfwGetWin32Window(m_glfwWindow), &pt);
 	return PointI(pt.x, pt.y);
+#elif defined(LN_OS_MAC)
+	PointI screenPoint;
+	Cocoa_pointToScreen(glfwGetCocoaWindow(m_glfwWindow), clientPoint.x, clientPoint.y, &screenPoint.x, &screenPoint.y);
+	return screenPoint;
 #else
 	LN_NOTIMPLEMENTED();
 #endif
@@ -299,10 +308,14 @@ void GLFWPlatformWindow::window_mousePos_callback(GLFWwindow* window, double xpo
 	POINT pt;
 	::GetCursorPos(&pt);
 	thisWindow->sendEventToAllListener(PlatformEventArgs::makeMouseMoveEvent(thisWindow, PlatformEventType::MouseMove, pt.x, pt.y));
+#elif defined(LN_OS_MAC)
+	int x = 0;
+	int y = 0;
+	Cocoa_getScreenMousePosition(&x, &y);
+	thisWindow->sendEventToAllListener(PlatformEventArgs::makeMouseMoveEvent(thisWindow, PlatformEventType::MouseMove, x, y));
 #else
 	LN_NOTIMPLEMENTED();
 #endif
-
 }
 
 ModifierKeys GLFWPlatformWindow::glfwKeyModToLNKeyMod(int mods)
