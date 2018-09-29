@@ -225,7 +225,7 @@ if (LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
     target_compile_definitions(${PROJECT_NAME} PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
 endif()
 
-if (APPLE)
+if (LN_BUILD_XCODE_FRAMEWORK)
     # Build as framework.
     set_target_properties(${PROJECT_NAME} PROPERTIES
         FRAMEWORK TRUE

@@ -29,9 +29,9 @@ namespace LuminoBuild.Tasks
             var args = new string[]
             {
                 $"{builder.LuminoRootDir}",
+                $"-DCMAKE_INSTALL_PREFIX={cmakeInstallDir}",
                 $"-DCMAKE_TOOLCHAIN_FILE=\"{iOSToolchainFile}\"",
                 $"-DIOS_PLATFORM={platform}",
-                $"-DCMAKE_INSTALL_PREFIX={cmakeInstallDir}",
                 $"-DLN_BUILD_TESTS=OFF",
                 $"-DLN_BUILD_TOOLS=OFF",
                 $"-DLN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=OFF",
