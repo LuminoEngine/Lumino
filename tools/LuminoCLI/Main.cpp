@@ -28,6 +28,52 @@ int main(int argc, char** argv)
 	try
 	{
 
+		if (argc == 3 && strcmp(argv[1], "--local-initial-setup"))
+		{
+			ln::Path packageDir = argv[2];
+			ln::Path toolsDir = ln::Path(packageDir, u"tools");
+			ln::List<ln::String> lines;
+
+			if (ln::FileSystem::existsFile(u"~/.profile")) {
+				// TODO: readAllLines
+				{
+					int beginLine = -1;
+					int endLine = -1;
+					ln::StreamReader r(u"~/.profile");
+					ln::String line;
+					while (r.readLine(&line)) {
+						if (line.indexOf(u"# [Begin Lumino]") == 0)
+							beginLine = lines.size();
+						if (line.indexOf(u"# [End Lumino]") == 0)
+							endLine = lines.size();
+						lines.add(line);
+					}
+
+					if (beginLine >= 0 && endLine >= 0 && beginLine < endLine) {
+						// already exists.
+					}
+					else {
+						lines.add(u"# [Begin Lumino]");
+						lines.add(ln::String::format(u"export LUMINO_ROOT={0}", packageDir));
+						lines.add(ln::String::format(u"export PATH=$PATH:{0}", toolsDir));
+						lines.add(u"# [End Lumino]");
+					}
+				}
+			}
+			else {
+				lines.add(u"# [Begin Lumino]");
+				lines.add(ln::String::format(u"export LUMINO_ROOT={0}", packageDir));
+				lines.add(ln::String::format(u"export PATH=$PATH:{0}", toolsDir));
+				lines.add(u"# [End Lumino]");
+			}
+
+			ln::StreamWriter w(u"~/.profile");
+			for (auto& line : lines) {
+				w.writeLine(line);
+			}
+			return 0;
+		}
+
 	
 
 		ln::CommandLineParser parser;
