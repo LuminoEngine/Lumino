@@ -29,6 +29,7 @@ set(LN_SOURCES_Engine
 )
 
 set(LN_SOURCES_Platform
+    include/Lumino/Platform/CocoaPlatformInterface.hpp
     include/Lumino/Platform/PlatformEvent.hpp
     include/Lumino/Platform/PlatformSupport.hpp
     include/Lumino/Platform/PlatformWindow.hpp
@@ -141,6 +142,7 @@ set(LN_SOURCES_UI
 if (APPLE)
     set(LN_SOURCES_Platform
         ${LN_SOURCES_Platform}
+        src/Platform/CocoaPlatformInterface.mm
         src/Platform/PlatformSupport.mm
     )
 endif()

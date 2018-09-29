@@ -6,8 +6,9 @@
 //  Copyright © 2018年 Lumino. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#include <LuminoEngine.hpp>
+#include <Lumino/Platform/CocoaPlatformInterface.hpp>
 
 int main(int argc, const char * argv[]) {
-	return NSApplicationMain(argc, argv);
+	return ln::CocoaPlatformInterface::Main();
 }
