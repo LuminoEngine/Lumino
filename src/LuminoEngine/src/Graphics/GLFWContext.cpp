@@ -20,7 +20,7 @@ GLFWSwapChain::GLFWSwapChain(GLFWPlatformWindow* window)
 
 void GLFWSwapChain::getBackendBufferSize(SizeI* outSize)
 {
-	m_window->getSize(outSize);
+	m_window->getFramebufferSize(&outSize->width, &outSize->height);
 }
 
 //=============================================================================

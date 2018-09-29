@@ -15,6 +15,7 @@ public:
 	virtual void dispose() = 0;
 
 	virtual void getSize(SizeI* size) = 0;
+	virtual void getFramebufferSize(int* width, int* height) = 0;
 
 	virtual PointI pointFromScreen(const PointI& screenPoint) = 0;
 	virtual PointI pointToScreen(const PointI& clientPoint) = 0;

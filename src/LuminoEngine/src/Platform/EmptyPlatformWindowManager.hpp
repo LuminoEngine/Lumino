@@ -14,6 +14,7 @@ public:
 	void initialize(const WindowCreationSettings& settings);
 	virtual void dispose() override;
 	virtual void getSize(SizeI* size) override { *size = SizeI(); }
+	virtual void getFramebufferSize(int* width, int* height) override { *width = 0; *height = 0; }
 	virtual PointI pointFromScreen(const PointI& screenPoint) override { return screenPoint; }
 	virtual PointI pointToScreen(const PointI& clientPoint) override { return clientPoint; }
 

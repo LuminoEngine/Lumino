@@ -1,5 +1,6 @@
-﻿
+
 #include "Internal.hpp"
+#include <Lumino/Platform/PlatformWindow.hpp>
 #include "OpenGLDeviceContext.hpp"
 
 #include "GLFWContext.hpp"
@@ -194,6 +195,7 @@ void OpenGLDeviceContext::initialize(const Settings& settings)
 	if (LN_ENSURE(result, "Failed gladLoadGL()")) return;
 	LN_LOG_INFO << "OpenGL " << GLVersion.major << "." << GLVersion.minor;
 #endif
+
 
 	//GLint value;
 	//glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &value);
@@ -625,7 +627,7 @@ void OpenGLDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, f
 		GL_CHECK(glClearStencil(stencil));
 		glflags |= GL_STENCIL_BUFFER_BIT;
 	}
-
+	
 	GL_CHECK(glClear(glflags));
 }
 

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifdef LN_GLFW
 
@@ -20,6 +20,7 @@ public:
 	void initialize(const WindowCreationSettings& settings);
 	virtual void dispose() override;
 	virtual void getSize(SizeI* size) override;
+	virtual void getFramebufferSize(int* width, int* height) override;
 	virtual PointI pointFromScreen(const PointI& screenPoint) override;
 	virtual PointI pointToScreen(const PointI& clientPoint) override;
 
@@ -30,6 +31,7 @@ public:
 private:
 	static void window_close_callback(GLFWwindow* window);
 	static void window_focus_callback(GLFWwindow* window, int focused);	// window activate/diactivate
+	static void window_framebuffer_size_callback(GLFWwindow* window, int width, int height);
 	static void window_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	static void window_mouseButton_callback(GLFWwindow* window, int button, int action, int mods);
 	static void window_mousePos_callback(GLFWwindow* window, double xpos, double ypos);
