@@ -1,8 +1,8 @@
 ﻿
 #pragma once
 #include <array>
-#include <Lumino/Platform/PlatformEvent.hpp>
-#include <Lumino/Graphics/GeometryStructs.hpp>
+#include <LuminoEngine/Platform/PlatformEvent.hpp>
+#include <LuminoEngine/Graphics/GeometryStructs.hpp>
 #include "Common.hpp"
 
 namespace ln {

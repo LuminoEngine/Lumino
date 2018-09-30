@@ -1,12 +1,12 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/Graphics/GraphicsContext.hpp>
-#include <Lumino/Graphics/VertexDeclaration.hpp>
-#include <Lumino/Graphics/VertexBuffer.hpp>
-#include <Lumino/Graphics/IndexBuffer.hpp>
-#include <Lumino/Graphics/Texture.hpp>
-#include <Lumino/Graphics/DepthBuffer.hpp>
-#include <Lumino/Shader/Shader.hpp>
+#include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/Graphics/VertexDeclaration.hpp>
+#include <LuminoEngine/Graphics/VertexBuffer.hpp>
+#include <LuminoEngine/Graphics/IndexBuffer.hpp>
+#include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoEngine/Graphics/DepthBuffer.hpp>
+#include <LuminoEngine/Shader/Shader.hpp>
 #include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
 #include "../Engine/RenderingCommandList.hpp"

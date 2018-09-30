@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/Input/InputController.hpp>
-#include <Lumino/Input/Input.hpp>
+#include <LuminoEngine/Input/InputController.hpp>
+#include <LuminoEngine/Input/Input.hpp>
 #include "InputManager.hpp"
 
 namespace ln {

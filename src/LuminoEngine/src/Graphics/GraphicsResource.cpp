@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/Graphics/GraphicsResource.hpp>
+#include <LuminoEngine/Graphics/GraphicsResource.hpp>
 #include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
 

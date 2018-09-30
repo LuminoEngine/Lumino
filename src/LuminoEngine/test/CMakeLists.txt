@@ -14,7 +14,7 @@ set(LN_SOURCES
 
 include_directories(
 	${LN_INCLUDES_gtest}
-	${LUMINO_INCLUDE_DIRECTORIES}
+	#${LUMINO_INCLUDE_DIRECTORIES}
 )
 
 add_executable(${PROJECT_NAME} ${LN_SOURCES})

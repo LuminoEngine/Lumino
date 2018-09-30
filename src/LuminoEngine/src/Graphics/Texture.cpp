@@ -3,9 +3,9 @@
 #include "GraphicsManager.hpp"
 #include "../Engine/RenderingCommandList.hpp"
 #include "GraphicsDeviceContext.hpp"
-#include <Lumino/Graphics/Bitmap.hpp>
-#include <Lumino/Graphics/Texture.hpp>
-#include <Lumino/Graphics/SamplerState.hpp>
+#include <LuminoEngine/Graphics/Bitmap.hpp>
+#include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoEngine/Graphics/SamplerState.hpp>
 
 namespace ln {
 

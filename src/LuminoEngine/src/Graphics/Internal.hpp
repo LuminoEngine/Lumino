@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Internal.hpp"
-#include <Lumino/Graphics/Common.hpp>
-#include <Lumino/Graphics/GeometryStructs.hpp>
-#include <Lumino/Graphics/ColorStructs.hpp>
+#include <LuminoEngine/Graphics/Common.hpp>
+#include <LuminoEngine/Graphics/GeometryStructs.hpp>
+#include <LuminoEngine/Graphics/ColorStructs.hpp>
 

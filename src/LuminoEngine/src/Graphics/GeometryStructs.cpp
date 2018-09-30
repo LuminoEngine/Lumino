@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <limits>
 #include <algorithm>
-#include <Lumino/Graphics/GeometryStructs.hpp>
+#include <LuminoEngine/Graphics/GeometryStructs.hpp>
 
 namespace ln {
 

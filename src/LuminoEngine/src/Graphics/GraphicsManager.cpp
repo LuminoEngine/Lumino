@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/Graphics/GraphicsContext.hpp>
-#include <Lumino/Graphics/GraphicsResource.hpp>
-#include <Lumino/Graphics/SamplerState.hpp>
+#include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/Graphics/GraphicsResource.hpp>
+#include <LuminoEngine/Graphics/SamplerState.hpp>
 #include "GraphicsManager.hpp"
 #include "OpenGLDeviceContext.hpp"
 #include "../Engine/LinearAllocator.hpp"

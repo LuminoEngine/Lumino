@@ -1,6 +1,6 @@
 ﻿
 #include "../Internal.hpp"
-#include <Lumino/Input/InputBinding.hpp>
+#include <LuminoEngine/Input/InputBinding.hpp>
 
 namespace ln {
 

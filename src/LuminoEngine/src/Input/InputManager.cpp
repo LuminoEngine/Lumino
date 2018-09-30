@@ -22,11 +22,11 @@
 	#include "Win32InputDriver.hpp"
 #endif
 #include "GLFWInputDriver.hpp"
-#include <Lumino/Platform/PlatformSupport.hpp>
-#include <Lumino/Input/Input.hpp>
-#include <Lumino/Input/InputBinding.hpp>
-#include <Lumino/Input/InputController.hpp>
-#include <Lumino/Input/Mouse.hpp>
+#include <LuminoEngine/Platform/PlatformSupport.hpp>
+#include <LuminoEngine/Input/Input.hpp>
+#include <LuminoEngine/Input/InputBinding.hpp>
+#include <LuminoEngine/Input/InputController.hpp>
+#include <LuminoEngine/Input/Mouse.hpp>
 
 namespace ln {
 namespace detail

@@ -1,7 +1,7 @@
 
 #include "Internal.hpp"
 #include "../../LuminoCore/src/Text/UnicodeUtils.hpp"
-#include <Lumino/Engine/Diagnostics.hpp>
+#include <LuminoEngine/Engine/Diagnostics.hpp>
 #include "AbstractLexer.hpp"
 
 namespace ln {

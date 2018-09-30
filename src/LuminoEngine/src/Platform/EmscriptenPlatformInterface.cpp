@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <emscripten.h>
 #include "Internal.hpp"
-#include <Lumino/Engine/Application.hpp>
-//#include <Lumino/Engine/Engine.hpp>
+#include <LuminoEngine/Engine/Application.hpp>
+//#include <LuminoEngine/Engine/Engine.hpp>
 
 extern "C" ::ln::Application* LuminoCreateApplicationInstance();
 

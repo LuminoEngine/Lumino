@@ -3,7 +3,7 @@
 #include "GraphicsManager.hpp"
 #include "../Engine/RenderingCommandList.hpp"
 #include "GraphicsDeviceContext.hpp"
-#include <Lumino/Graphics/IndexBuffer.hpp>
+#include <LuminoEngine/Graphics/IndexBuffer.hpp>
 
 namespace ln {
 

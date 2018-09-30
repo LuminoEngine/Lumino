@@ -21,7 +21,7 @@ GraphicsResourcePool::None + GraphicsResourceUsage::Static 以外はどうして
 #include "GraphicsManager.hpp"
 #include "../Engine/RenderingCommandList.hpp"
 #include "GraphicsDeviceContext.hpp"
-#include <Lumino/Graphics/VertexBuffer.hpp>
+#include <LuminoEngine/Graphics/VertexBuffer.hpp>
 
 namespace ln {
 

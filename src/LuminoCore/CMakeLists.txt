@@ -16,9 +16,6 @@ set(LN_SOURCES
     src/LuminoCore.PCH.cpp
     src/LuminoCore.PCH.h)
 
-set(LN_INCLUDE_DIRECTORIES
-    ${PROJECT_SOURCE_DIR}/include)
-
 #------------------------------------------------------------------------------
 # Apply options
 
@@ -43,7 +40,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
-target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(${PROJECT_NAME} PUBLIC  
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>  
+    $<INSTALL_INTERFACE:include>  # <prefix>/include
+)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LN_LINK_LIBS})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "src/LuminoCore.PCH.h" "src/LuminoCore.PCH.cpp")

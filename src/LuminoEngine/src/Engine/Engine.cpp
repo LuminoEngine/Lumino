@@ -2,10 +2,10 @@
 #include "Internal.hpp"
 #include "EngineManager.hpp"
 //#include "EngineDomain.hpp"
-#include <Lumino/Engine/Engine.hpp>
-#include <Lumino/Engine/EngineSettings.hpp>
-#include <Lumino/Graphics/GraphicsContext.hpp>
-#include <Lumino/UI/UIFrameWindow.hpp>
+#include <LuminoEngine/Engine/Engine.hpp>
+#include <LuminoEngine/Engine/EngineSettings.hpp>
+#include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 
 namespace ln {

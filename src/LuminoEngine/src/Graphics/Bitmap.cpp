@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
 #include <png.h>
-#include <Lumino/Engine/Diagnostics.hpp>
-#include <Lumino/Graphics/Bitmap.hpp>
+#include <LuminoEngine/Engine/Diagnostics.hpp>
+#include <LuminoEngine/Graphics/Bitmap.hpp>
 
 namespace ln {
 namespace detail {

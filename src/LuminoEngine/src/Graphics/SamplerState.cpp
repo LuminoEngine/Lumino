@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/Graphics/SamplerState.hpp>
+#include <LuminoEngine/Graphics/SamplerState.hpp>
 #include "GraphicsDeviceContext.hpp"
 #include "GraphicsManager.hpp"
 

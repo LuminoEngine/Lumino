@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/Engine/Diagnostics.hpp>
+#include <LuminoEngine/Engine/Diagnostics.hpp>
 
 namespace ln {
 

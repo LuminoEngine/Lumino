@@ -4,16 +4,18 @@ project(LuminoEngine)
 
 include(../LuminoCore/LuminoCoreSources.cmake)
 
+set(LN_ENGINE_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/../../include)
+
 #------------------------------------------------------------------------------
 # Files
 
 set(LN_SOURCES_Engine
-    include/Lumino/Engine/Common.hpp
-    include/Lumino/Engine/Application.hpp
-    include/Lumino/Engine/Diagnostics.hpp
-    include/Lumino/Engine/Engine.hpp
-    include/Lumino/Engine/EngineSettings.hpp
-    include/Lumino/Engine/Object.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Engine/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Engine/Application.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Engine/Diagnostics.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Engine/Engine.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Engine/EngineSettings.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Engine/Object.hpp
     src/Engine/Internal.hpp
     src/Engine/Application.cpp
     src/Engine/Diagnostics.cpp
@@ -29,11 +31,11 @@ set(LN_SOURCES_Engine
 )
 
 set(LN_SOURCES_Platform
-    include/Lumino/Platform/CocoaPlatformInterface.hpp
-    include/Lumino/Platform/PlatformEvent.hpp
-    include/Lumino/Platform/PlatformSupport.hpp
-    include/Lumino/Platform/PlatformWindow.hpp
-    include/Lumino/Platform/Win32PlatformInterface.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Platform/CocoaPlatformInterface.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Platform/PlatformEvent.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Platform/PlatformSupport.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Platform/PlatformWindow.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Platform/Win32PlatformInterface.hpp
     src/Platform/Internal.hpp
     src/Platform/EmptyPlatformWindowManager.cpp
     src/Platform/EmptyPlatformWindowManager.hpp
@@ -60,11 +62,11 @@ set(LN_SOURCES_Grammar
 )
 
 set(LN_SOURCES_Input
-    include/Lumino/Input/Common.hpp
-    include/Lumino/Input/Input.hpp
-    include/Lumino/Input/InputBinding.hpp
-    include/Lumino/Input/InputController.hpp
-    include/Lumino/Input/Mouse.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Input/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Input/Input.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Input/InputBinding.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Input/InputController.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Input/Mouse.hpp
     src/Input/GLFWInputDriver.cpp
     src/Input/GLFWInputDriver.hpp
     src/Input/Input.cpp
@@ -83,19 +85,19 @@ set(LN_SOURCES_Input
 )
 
 set(LN_SOURCES_Graphics
-    include/Lumino/Graphics/Common.hpp
-    include/Lumino/Graphics/Bitmap.hpp
-    include/Lumino/Graphics/ColorStructs.hpp
-    include/Lumino/Graphics/DepthBuffer.hpp
-    include/Lumino/Graphics/GeometryStructs.hpp
-    include/Lumino/Graphics/GraphicsContext.hpp
-    include/Lumino/Graphics/GraphicsResource.hpp
-    include/Lumino/Graphics/IndexBuffer.hpp
-    include/Lumino/Graphics/RenderState.hpp
-    include/Lumino/Graphics/SamplerState.hpp
-    include/Lumino/Graphics/Texture.hpp
-    include/Lumino/Graphics/VertexBuffer.hpp
-    include/Lumino/Graphics/VertexDeclaration.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Graphics/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Graphics/Bitmap.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Graphics/ColorStructs.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Graphics/DepthBuffer.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Graphics/GeometryStructs.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Graphics/GraphicsContext.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Graphics/GraphicsResource.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Graphics/IndexBuffer.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Graphics/RenderState.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Graphics/SamplerState.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Graphics/Texture.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Graphics/VertexBuffer.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Graphics/VertexDeclaration.hpp
     src/Graphics/Internal.hpp
     src/Graphics/Bitmap.cpp
     src/Graphics/ColorStructs.cpp
@@ -120,8 +122,8 @@ set(LN_SOURCES_Graphics
 )
 
 set(LN_SOURCES_Shader
-    include/Lumino/Shader/Common.hpp
-    include/Lumino/Shader/Shader.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Shader/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Shader/Shader.hpp
     src/Shader/Internal.hpp
     src/Shader/Shader.cpp
     src/Shader/ShaderAnalyzer.cpp
@@ -131,9 +133,9 @@ set(LN_SOURCES_Shader
 )
 
 set(LN_SOURCES_UI
-    include/Lumino/UI/Common.hpp
-    include/Lumino/UI/UIEvents.hpp
-    include/Lumino/UI/UIFrameWindow.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/UI/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/UI/UIEvents.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino/UI/UIFrameWindow.hpp
     src/UI/UIFrameWindow.cpp
     src/UI/UIManager.cpp
     src/UI/UIManager.hpp
@@ -159,7 +161,7 @@ source_group("UI"                    FILES ${LN_SOURCES_UI})
 set(LN_SOURCES
     src/LuminoEngine.PCH.cpp
     src/LuminoEngine.PCH.h
-    include/LuminoEngine.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine.hpp
     ${LN_SOURCES_Engine}
     ${LN_SOURCES_Platform}
     ${LN_SOURCES_Grammar}
@@ -213,11 +215,15 @@ endif()
 
 
 add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
-target_include_directories(${PROJECT_NAME} PRIVATE "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} PUBLIC  
+    $<BUILD_INTERFACE:${LN_ENGINE_INCLUDE_DIR}>
+    $<INSTALL_INTERFACE:include>  # <prefix>/include
+)
+target_include_directories(${PROJECT_NAME} PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS})
 #target_compile_definitions(${PROJECT_NAME} PUBLIC LUMINO_BUILD_DLL=1)
 #target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive ${PROJECT_NAME}-static -Wl,--no-whole-archive)
 #target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-static)
-target_link_libraries(${PROJECT_NAME} INTERFACE ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} INTERFACE LuminoCore ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore ZLIB PNG ${LN_PLATFORM_LIBS})
 #target_link_libraries(${PROJECT_NAME} PRIVATE glslang)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")

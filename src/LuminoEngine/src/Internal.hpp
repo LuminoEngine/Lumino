@@ -5,5 +5,5 @@
 #define LN_INTERNAL_ACCESS public
 #define LN_PROTECTED_INTERNAL_ACCESS public
 #include <LuminoCore.hpp>
-#include <Lumino/Engine/Object.hpp>
+#include <LuminoEngine/Engine/Object.hpp>
 #include "Engine/EngineDomain.hpp"

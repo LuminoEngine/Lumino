@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/Graphics/GraphicsContext.hpp>
-#include <Lumino/UI/UIFrameWindow.hpp>
+#include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include "UIManager.hpp"
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Platform/PlatformManager.hpp"

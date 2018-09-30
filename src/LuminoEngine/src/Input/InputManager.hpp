@@ -1,8 +1,8 @@
 ﻿
 #pragma once
 #include <array>
-#include <Lumino/Platform/PlatformEvent.hpp>
-#include <Lumino/Input/Common.hpp>
+#include <LuminoEngine/Platform/PlatformEvent.hpp>
+#include <LuminoEngine/Input/Common.hpp>
 
 namespace ln {
 class InputDriver;

@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include <Lumino/Platform/PlatformEvent.hpp>
-#include <Lumino/Platform/PlatformWindow.hpp>
+#include <LuminoEngine/Platform/PlatformEvent.hpp>
+#include <LuminoEngine/Platform/PlatformWindow.hpp>
 
 namespace ln {
 namespace detail {

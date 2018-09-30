@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
-#include <Lumino/Graphics/DepthBuffer.hpp>
+#include <LuminoEngine/Graphics/DepthBuffer.hpp>
 
 namespace ln {
 

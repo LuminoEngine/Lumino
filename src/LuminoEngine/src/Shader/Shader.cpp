@@ -1,9 +1,9 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/Engine/Diagnostics.hpp>
-#include <Lumino/Graphics/Texture.hpp>
-#include <Lumino/Graphics/SamplerState.hpp>
-#include <Lumino/Shader/Shader.hpp>
+#include <LuminoEngine/Engine/Diagnostics.hpp>
+#include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoEngine/Graphics/SamplerState.hpp>
+#include <LuminoEngine/Shader/Shader.hpp>
 #include "../Graphics/GraphicsDeviceContext.hpp"
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Engine/RenderingCommandList.hpp"

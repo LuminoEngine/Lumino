@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <Lumino/Math/Vector3.hpp>
 #include <Lumino/Math/Vector4.hpp>
-#include <Lumino/Graphics/ColorStructs.hpp>
+#include <LuminoEngine/Graphics/ColorStructs.hpp>
 
 namespace ln {
 

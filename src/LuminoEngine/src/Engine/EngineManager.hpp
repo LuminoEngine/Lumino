@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include <Lumino/Graphics/GeometryStructs.hpp>
-#include <Lumino/Platform/PlatformEvent.hpp>
+#include <LuminoEngine/Graphics/GeometryStructs.hpp>
+#include <LuminoEngine/Platform/PlatformEvent.hpp>
 
 namespace ln {
 class UIFrameWindow;

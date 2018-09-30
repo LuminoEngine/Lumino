@@ -2,7 +2,7 @@
 #pragma once
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 
-#include <Lumino/Engine/Diagnostics.hpp>
+#include <LuminoEngine/Engine/Diagnostics.hpp>
 
 namespace ln {
 class Token;

@@ -2,26 +2,26 @@
 
 #include <LuminoCore.hpp>
 
-#include "Lumino/Engine/EngineSettings.hpp"
-#include "Lumino/Engine/Engine.hpp"
-#include "Lumino/Engine/Application.hpp"
+#include "LuminoEngine/Engine/EngineSettings.hpp"
+#include "LuminoEngine/Engine/Engine.hpp"
+#include "LuminoEngine/Engine/Application.hpp"
 
-#include "Lumino/Input/Common.hpp"
-#include "Lumino/Input/Input.hpp"
-#include "Lumino/Input/InputBinding.hpp"
-#include "Lumino/Input/Mouse.hpp"
+#include "LuminoEngine/Input/Common.hpp"
+#include "LuminoEngine/Input/Input.hpp"
+#include "LuminoEngine/Input/InputBinding.hpp"
+#include "LuminoEngine/Input/Mouse.hpp"
 
-#include "Lumino/Graphics/VertexDeclaration.hpp"
-#include "Lumino/Graphics/VertexBuffer.hpp"
-#include "Lumino/Graphics/IndexBuffer.hpp"
-#include "Lumino/Graphics/Texture.hpp"
-#include "Lumino/Graphics/SamplerState.hpp"
-#include "Lumino/Graphics/Bitmap.hpp"
-#include "Lumino/Graphics/GraphicsContext.hpp"
+#include "LuminoEngine/Graphics/VertexDeclaration.hpp"
+#include "LuminoEngine/Graphics/VertexBuffer.hpp"
+#include "LuminoEngine/Graphics/IndexBuffer.hpp"
+#include "LuminoEngine/Graphics/Texture.hpp"
+#include "LuminoEngine/Graphics/SamplerState.hpp"
+#include "LuminoEngine/Graphics/Bitmap.hpp"
+#include "LuminoEngine/Graphics/GraphicsContext.hpp"
 
-#include "Lumino/Shader/Shader.hpp"
+#include "LuminoEngine/Shader/Shader.hpp"
 
-#include "Lumino/UI/UIFrameWindow.hpp"
+#include "LuminoEngine/UI/UIFrameWindow.hpp"
 
 
 #ifdef LN_MSVC_AUTO_LINK_LIBRARIES

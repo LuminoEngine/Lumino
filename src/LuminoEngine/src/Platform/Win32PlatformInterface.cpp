@@ -3,8 +3,8 @@
 #ifdef _WIN32
 #include "Internal.hpp"
 #include <Windows.h>
-#include <Lumino/Engine/Application.hpp>
-#include <Lumino/Platform/Win32PlatformInterface.hpp>
+#include <LuminoEngine/Engine/Application.hpp>
+#include <LuminoEngine/Platform/Win32PlatformInterface.hpp>
 
 extern "C" ::ln::Application* LuminoCreateApplicationInstance();
 

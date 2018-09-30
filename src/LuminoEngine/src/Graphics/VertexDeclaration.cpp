@@ -3,7 +3,7 @@
 #include "GraphicsManager.hpp"
 #include "../Engine/RenderingCommandList.hpp"
 #include "GraphicsDeviceContext.hpp"
-#include <Lumino/Graphics/VertexDeclaration.hpp>
+#include <LuminoEngine/Graphics/VertexDeclaration.hpp>
 
 namespace ln {
 
