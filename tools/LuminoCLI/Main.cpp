@@ -4,11 +4,11 @@
 
 int main(int argc, char** argv)
 {
-#if defined(_DEBUG) && defined(_WIN32)
+#if 1// && defined(_WIN32)
 	if (argc == 1)
 	{
 		//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\HelloLumino");
-		::SetCurrentDirectoryW(L"D:\\Documents\\LuminoProjects\\HelloLumino");
+		//::SetCurrentDirectoryW(L"D:\\Documents\\LuminoProjects\\HelloLumino");
 	
 		const char* debugArgv[] = {
 			"<program>",
@@ -19,7 +19,10 @@ int main(int argc, char** argv)
 			//"<program>", "build", "Emscripten",
 			//"<program>", "build", "Android",
 
-			"dev-openide", "vs",
+			//"dev-openide", "vs",
+			
+			"--local-initial-setup", "/Users/lriki/Proj/Lumino/ReleasePackage.macOS"
+
 		};
 		argc = sizeof(debugArgv) / sizeof(char*);
 		argv = (char**)debugArgv;
@@ -27,50 +30,61 @@ int main(int argc, char** argv)
 #endif
 	try
 	{
-		printf("argv[1]:%s\n", argv[1]);
-		
 		if (argc == 3 && strcmp(argv[1], "--local-initial-setup") == 0)
 		{
 			ln::Path packageDir = argv[2];
 			ln::Path toolsDir = ln::Path(packageDir, u"tools");
 			ln::List<ln::String> lines;
+			
+			ln::Path profile = ln::Path(ln::Environment::specialFolderPath(ln::SpecialFolder::Home), u".profile");
 
-			if (ln::FileSystem::existsFile(u"~/.profile")) {
+			bool added = false;
+			if (ln::FileSystem::existsFile(profile)) {
 				int beginLine = -1;
 				int endLine = -1;
-				printf("read\n");
-				ln::StreamReader r(u"~/.profile");
+				ln::StreamReader r(profile);
 				ln::String line;
 				while (r.readLine(&line)) {
-					if (line.indexOf(u"# [Begin Lumino]") == 0)
+					if (line.indexOf(u"# [Lumino begin]") == 0)
 						beginLine = lines.size();
-					if (line.indexOf(u"# [End Lumino]") == 0)
+					if (line.indexOf(u"# [Lumino end]") == 0)
 						endLine = lines.size();
 					lines.add(line);
 				}
 
 				if (beginLine >= 0 && endLine >= 0 && beginLine < endLine) {
 					// already exists.
-				}
-				else {
-					lines.add(u"# [Begin Lumino]");
-					lines.add(ln::String::format(u"export LUMINO_ROOT={0}", packageDir));
-					lines.add(ln::String::format(u"export PATH=$PATH:{0}", toolsDir));
-					lines.add(u"# [End Lumino]");
+					
+					for (int i = beginLine; i < endLine; i++) {
+						if (lines[i].indexOf("export LUMINO_ROOT") == 0) {
+							lines[i] = ln::String::format(u"export LUMINO_ROOT={0}", packageDir);
+							CLI::message(u"LUMINO_ROOT updating.");
+						}
+						if (lines[i].indexOf("export PATH") == 0) {
+							lines[i] = ln::String::format(u"export PATH=$PATH:{0}", toolsDir);
+							CLI::message(u"PATH updating.");
+						}
+					}
+					
+					added = true;
 				}
 			}
-			else {
-				lines.add(u"# [Begin Lumino]");
+			
+			if (!added) {
+				lines.add(u"");
+				lines.add(u"# [Lumino begin]");
 				lines.add(ln::String::format(u"export LUMINO_ROOT={0}", packageDir));
 				lines.add(ln::String::format(u"export PATH=$PATH:{0}", toolsDir));
-				lines.add(u"# [End Lumino]");
+				lines.add(u"# [Lumino end]");
 			}
 
-			printf("write\n");
-			ln::StreamWriter w(u"~/.profile");
+			ln::StreamWriter w(profile);
+			w.setNewLine(u"\n");	// for macOS (\r is invalid)
 			for (auto& line : lines) {
 				w.writeLine(line);
 			}
+				
+			CLI::message(ln::String::format(u"Lumino environment variable added to {0}.", profile));
 			return 0;
 		}
 
