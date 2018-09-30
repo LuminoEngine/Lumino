@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.0.0)
-project(lumino)
+project(lumino-cli)
 
 
 file(
@@ -21,4 +21,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "LuminoCLI.PCH.hpp" "LuminoCLI.PCH.cpp")
 
 
+#------------------------------------------------------------------------------
+# Install
+
+install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 

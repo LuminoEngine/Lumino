@@ -94,6 +94,22 @@ namespace LuminoBuild.Tasks
                         }
                     }
                 }
+
+                // bin files
+                {
+                    if (Utils.IsWin32)
+                    {
+                        Utils.CopyDirectory(
+                            Path.Combine(tempInstallDir, "MSVC2017-x86-MT", "bin"),
+                            Path.Combine(targetRootDir, "tools"));
+                    }
+                    else if (Utils.IsMac)
+                    {
+                        Utils.CopyDirectory(
+                            Path.Combine(tempInstallDir, "macOS", "bin"),
+                            Path.Combine(targetRootDir, "Tools"));
+                    }
+                }
             }
 
         }
