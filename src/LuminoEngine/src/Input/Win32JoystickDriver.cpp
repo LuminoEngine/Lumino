@@ -2,7 +2,7 @@
 #if _WIN32
 #include "../Internal.hpp"
 #include <algorithm>
-#include <Lumino/Base/Platform.hpp>
+#include <LuminoCore/Base/Platform.hpp>
 #include "Win32JoystickDriver.hpp"
 
 namespace ln {

@@ -6,16 +6,16 @@
 #if defined(LN_OS_WIN32) && _MSC_VER >= 1900
 #include <cuchar>
 #endif
-#include <Lumino/Base/Buffer.hpp>
-#include <Lumino/Base/String.hpp>
-#include <Lumino/Base/StringHelper.hpp>
-#include <Lumino/Base/RefObject.hpp>
-#include <Lumino/Base/CRCHash.hpp>
+#include <LuminoCore/Base/Buffer.hpp>
+#include <LuminoCore/Base/String.hpp>
+#include <LuminoCore/Base/StringHelper.hpp>
+#include <LuminoCore/Base/RefObject.hpp>
+#include <LuminoCore/Base/CRCHash.hpp>
 #include "../Text/UnicodeUtils.hpp"
-#include <Lumino/Text/Encoding.hpp>
+#include <LuminoCore/Text/Encoding.hpp>
 
 #ifdef LN_STRING_WITH_PATH
-#include <Lumino/IO/Path.hpp>
+#include <LuminoCore/IO/Path.hpp>
 #endif
 
 namespace ln {

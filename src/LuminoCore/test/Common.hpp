@@ -1,8 +1,8 @@
 ﻿#pragma once
 
 #include <gtest/gtest.h>
-#include <Lumino/Base/Assertion.hpp>
-#include <Lumino/Base/Logger.hpp>
-#include <Lumino/Testing/TestHelper.hpp>
+#include <LuminoCore/Base/Assertion.hpp>
+#include <LuminoCore/Base/Logger.hpp>
+#include <LuminoCore/Testing/TestHelper.hpp>
 using namespace ln;
 

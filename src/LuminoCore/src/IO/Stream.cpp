@@ -1,5 +1,5 @@
 ﻿#include "Internal.hpp"
-#include <Lumino/IO/Stream.hpp>
+#include <LuminoCore/IO/Stream.hpp>
 
 namespace ln {
 

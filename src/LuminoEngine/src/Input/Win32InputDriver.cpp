@@ -3,7 +3,7 @@
 #include "../Internal.hpp"
 #include <wbemidl.h>
 #include <oleauto.h>
-#include <Lumino/Base/Platform.hpp>
+#include <LuminoCore/Base/Platform.hpp>
 #include "Win32InputDriver.hpp"
 
 #pragma comment(lib, "dinput8.lib")

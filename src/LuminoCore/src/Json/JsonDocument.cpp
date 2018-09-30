@@ -1,15 +1,15 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/Base/String.hpp>
-#include <Lumino/IO/Path.hpp>
-#include <Lumino/IO/Stream.hpp>
-#include <Lumino/IO/StringReader.hpp>
-#include <Lumino/IO/StreamReader.hpp>
-#include <Lumino/IO/StreamWriter.hpp>
-#include <Lumino/IO/StringWriter.hpp>
-#include <Lumino/Json/JsonReader.hpp>
-#include <Lumino/Json/JsonWriter.hpp>
-#include <Lumino/Json/JsonDocument.hpp>
+#include <LuminoCore/Base/String.hpp>
+#include <LuminoCore/IO/Path.hpp>
+#include <LuminoCore/IO/Stream.hpp>
+#include <LuminoCore/IO/StringReader.hpp>
+#include <LuminoCore/IO/StreamReader.hpp>
+#include <LuminoCore/IO/StreamWriter.hpp>
+#include <LuminoCore/IO/StringWriter.hpp>
+#include <LuminoCore/Json/JsonReader.hpp>
+#include <LuminoCore/Json/JsonWriter.hpp>
+#include <LuminoCore/Json/JsonDocument.hpp>
 
 namespace ln {
 

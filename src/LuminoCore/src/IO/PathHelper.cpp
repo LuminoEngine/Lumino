@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
 #include <limits.h>
-#include <Lumino/Base/StringHelper.hpp>
-#include <Lumino/Base/Environment.hpp>
+#include <LuminoCore/Base/StringHelper.hpp>
+#include <LuminoCore/Base/Environment.hpp>
 #include "PathHelper.hpp"
 
 namespace ln {

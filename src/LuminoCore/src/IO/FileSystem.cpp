@@ -3,9 +3,9 @@
 #include <sys/stat.h>
 #include <list>
 #include "Internal.hpp"
-#include <Lumino/Base/Buffer.hpp>
-#include <Lumino/Text/Encoding.hpp>
-#include <Lumino/IO/FileSystem.hpp>
+#include <LuminoCore/Base/Buffer.hpp>
+#include <LuminoCore/Text/Encoding.hpp>
+#include <LuminoCore/IO/FileSystem.hpp>
 #if defined(LN_OS_WIN32)
 #include "FileSystem_Win32.hpp"
 #else

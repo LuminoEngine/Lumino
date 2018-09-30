@@ -1,7 +1,7 @@
 
 #include "Internal.hpp"
-#include <Lumino/Base/Environment.hpp>
-#include <Lumino/IO/FileSystem.hpp>
+#include <LuminoCore/Base/Environment.hpp>
+#include <LuminoCore/IO/FileSystem.hpp>
 
 #if defined(LN_OS_WIN32)
 #include <Shlobj.h>

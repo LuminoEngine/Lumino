@@ -1,7 +1,7 @@
 ﻿#include "Common.hpp"
 #include <unordered_map>
-#include <Lumino/Base/String.hpp>
-#include <Lumino/Text/Encoding.hpp>
+#include <LuminoCore/Base/String.hpp>
+#include <LuminoCore/Text/Encoding.hpp>
 
 class Test_Base_String : public ::testing::Test
 {

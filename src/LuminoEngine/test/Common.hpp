@@ -6,5 +6,5 @@
 #include <LuminoEngine.hpp>
 using namespace ln;
 
-#include <Lumino/Testing/TestHelper.hpp>
+#include <LuminoCore/Testing/TestHelper.hpp>
 #include "TestEnv.hpp"

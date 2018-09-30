@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/Base/String.hpp>
-#include <Lumino/IO/StringWriter.hpp>
+#include <LuminoCore/Base/String.hpp>
+#include <LuminoCore/IO/StringWriter.hpp>
 
 namespace ln {
 

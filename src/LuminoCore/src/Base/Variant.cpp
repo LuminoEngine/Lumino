@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/Base/Variant.hpp>
+#include <LuminoCore/Base/Variant.hpp>
 
 namespace ln {
 

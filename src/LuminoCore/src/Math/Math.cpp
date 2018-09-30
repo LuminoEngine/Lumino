@@ -2,7 +2,7 @@
 #include <math.h>
 #include <float.h>
 #include <limits>
-#include <Lumino/Math/Math.hpp>
+#include <LuminoCore/Math/Math.hpp>
 
 namespace ln {
 

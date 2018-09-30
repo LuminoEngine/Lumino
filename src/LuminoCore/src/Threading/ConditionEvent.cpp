@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/Threading/ConditionEvent.hpp>
+#include <LuminoCore/Threading/ConditionEvent.hpp>
 #if defined(LN_OS_WIN32)
 #include "ConditionEvent_Win32.hpp"
 #else

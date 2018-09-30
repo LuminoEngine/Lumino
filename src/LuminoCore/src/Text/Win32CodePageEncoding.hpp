@@ -1,8 +1,8 @@
 ﻿
 #define NOMINMAX
 #include <Windows.h>
-#include <Lumino/Text/Encoding.hpp>
-#include <Lumino/Base/String.hpp>
+#include <LuminoCore/Text/Encoding.hpp>
+#include <LuminoCore/Base/String.hpp>
 
 namespace ln {
 

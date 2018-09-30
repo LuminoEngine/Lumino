@@ -1,5 +1,5 @@
 ﻿#include "Common.hpp"
-#include <Lumino/IO/StreamReader.hpp>
+#include <LuminoCore/IO/StreamReader.hpp>
 
 class Test_IO_StreamReader : public ::testing::Test {};
 

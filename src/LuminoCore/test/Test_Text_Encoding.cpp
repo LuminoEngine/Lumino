@@ -1,7 +1,7 @@
 ﻿#include "Common.hpp"
 #include <memory>
-#include <Lumino/Base/String.hpp>
-#include <Lumino/Text/Encoding.hpp>
+#include <LuminoCore/Base/String.hpp>
+#include <LuminoCore/Text/Encoding.hpp>
 
 static UTF8 g_utf8Hokke[] = { 0xF0, 0xA9, 0xB8, 0xBD };		// ほっけ
 static UTF16 g_utf16Hokke[] = { 0xD867, 0xDE3D };			// ほっけ

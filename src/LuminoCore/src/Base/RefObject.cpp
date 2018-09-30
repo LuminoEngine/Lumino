@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/Base/Assertion.hpp>
-#include <Lumino/Base/RefObject.hpp>
+#include <LuminoCore/Base/Assertion.hpp>
+#include <LuminoCore/Base/RefObject.hpp>
 
 namespace ln {
 

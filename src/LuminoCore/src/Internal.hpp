@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include <Lumino/Base/Common.hpp>
-#include <Lumino/Base/Assertion.hpp>
+#include <LuminoCore/Base/Common.hpp>
+#include <LuminoCore/Base/Assertion.hpp>
 #include <stdlib.h>
 #include <string.h>
 

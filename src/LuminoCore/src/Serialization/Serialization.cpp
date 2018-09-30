@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/Serialization/Serialization.hpp>
+#include <LuminoCore/Serialization/Serialization.hpp>
 
 namespace ln {
 

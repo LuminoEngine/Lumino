@@ -1,5 +1,5 @@
 ﻿#include "Common.hpp"
-#include <Lumino/Base/EnumFlags.hpp>
+#include <LuminoCore/Base/EnumFlags.hpp>
 
 //==============================================================================
 //# enum class のビットフラグのテスト

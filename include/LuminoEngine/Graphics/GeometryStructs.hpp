@@ -1,7 +1,7 @@
 ﻿
 #pragma once
-#include <Lumino/Math/Vector2.hpp>
-#include <Lumino/Math/Vector3.hpp>
+#include <LuminoCore/Math/Vector2.hpp>
+#include <LuminoCore/Math/Vector3.hpp>
 
 namespace ln {
 struct Thickness;

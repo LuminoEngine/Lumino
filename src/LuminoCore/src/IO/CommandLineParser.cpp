@@ -2,10 +2,10 @@
 #include "Internal.hpp"
 #include <limits.h>
 #include <iostream>
-#include <Lumino/Base/Environment.hpp>
-#include <Lumino/IO/Path.hpp>
-#include <Lumino/IO/StringWriter.hpp>
-#include <Lumino/IO/CommandLineParser.hpp>
+#include <LuminoCore/Base/Environment.hpp>
+#include <LuminoCore/IO/Path.hpp>
+#include <LuminoCore/IO/StringWriter.hpp>
+#include <LuminoCore/IO/CommandLineParser.hpp>
 
 namespace ln {
 

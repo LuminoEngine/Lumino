@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/IO/Stream.hpp>
-#include <Lumino/IO/BinaryWriter.hpp>
+#include <LuminoCore/IO/Stream.hpp>
+#include <LuminoCore/IO/BinaryWriter.hpp>
 
 namespace ln {
 

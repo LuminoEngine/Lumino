@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <userenv.h>
-#include <Lumino/Base/Platform.hpp>
+#include <LuminoCore/Base/Platform.hpp>
 
 namespace ln {
 

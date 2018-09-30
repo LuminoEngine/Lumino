@@ -1,8 +1,8 @@
 ﻿#include "Common.hpp"
-#include <Lumino/Json/JsonDocument.hpp>
-#include <Lumino/Serialization/Serialization.hpp>
-#include <Lumino/Base/Variant.hpp>
-#include <Lumino/Math/Math.hpp>
+#include <LuminoCore/Json/JsonDocument.hpp>
+#include <LuminoCore/Serialization/Serialization.hpp>
+#include <LuminoCore/Base/Variant.hpp>
+#include <LuminoCore/Math/Math.hpp>
 
 //==============================================================================
 //# シリアライズのテスト

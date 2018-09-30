@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <algorithm>
-#include <Lumino/Text/EncodingConverter.hpp>
+#include <LuminoCore/Text/EncodingConverter.hpp>
 
 namespace ln {
 

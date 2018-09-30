@@ -1,5 +1,5 @@
 ﻿
-#include <Lumino/Math/AttitudeTransform.hpp>
+#include <LuminoCore/Math/AttitudeTransform.hpp>
 
 namespace ln {
 

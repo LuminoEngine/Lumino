@@ -43,9 +43,9 @@
 #endif
 
 #include <locale.h>
-#include <Lumino/Base/Locale.hpp>
-#include <Lumino/Base/StlHelper.hpp>
-#include <Lumino/Base/String.hpp>
+#include <LuminoCore/Base/Locale.hpp>
+#include <LuminoCore/Base/StlHelper.hpp>
+#include <LuminoCore/Base/String.hpp>
 
 namespace ln {
 

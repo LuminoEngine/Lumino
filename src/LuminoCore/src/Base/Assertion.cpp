@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <algorithm>
-#include <Lumino/Base/Assertion.hpp>
-#include <Lumino/Base/String.hpp>
-#include <Lumino/Base/StringHelper.hpp>
-#include <Lumino/Base/Logger.hpp>
+#include <LuminoCore/Base/Assertion.hpp>
+#include <LuminoCore/Base/String.hpp>
+#include <LuminoCore/Base/StringHelper.hpp>
+#include <LuminoCore/Base/Logger.hpp>
 #include "../Base/CRTHelper.h"
 #include "../Text/UnicodeUtils.hpp"
 

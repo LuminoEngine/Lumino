@@ -15,7 +15,7 @@
 #include <time.h>
 #include <sstream>
 #include <iomanip>
-#include <Lumino/Base/Logger.hpp>
+#include <LuminoCore/Base/Logger.hpp>
 
 namespace ln {
 

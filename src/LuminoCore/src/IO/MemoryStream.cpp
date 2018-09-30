@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/IO/MemoryStream.hpp>
-#include <Lumino/IO/FileSystem.hpp>
+#include <LuminoCore/IO/MemoryStream.hpp>
+#include <LuminoCore/IO/FileSystem.hpp>
 //#include "../../Include/Lumino/IO/FileSystem.h"
 
 namespace ln {

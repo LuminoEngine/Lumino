@@ -12,9 +12,9 @@
 #include <time.h>
 #include "Internal.hpp"
 #include "PathHelper.hpp"
-#include <Lumino/Base/Environment.hpp>
-#include <Lumino/IO/FileSystem.hpp>
-#include <Lumino/IO/Path.hpp>
+#include <LuminoCore/Base/Environment.hpp>
+#include <LuminoCore/IO/FileSystem.hpp>
+#include <LuminoCore/IO/Path.hpp>
 
 namespace ln {
 

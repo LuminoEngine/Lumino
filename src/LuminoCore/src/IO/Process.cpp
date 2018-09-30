@@ -1,5 +1,5 @@
 ﻿#include "Internal.hpp"
-#include <Lumino/IO/Process.hpp>
+#include <LuminoCore/IO/Process.hpp>
 #if defined(LN_OS_WIN32)
 #include "Process_Win32.hpp"
 #else

@@ -1,7 +1,7 @@
 ﻿#include "Internal.hpp"
 #include "../Text/UTF8Encoding.hpp"
-#include <Lumino/IO/FileStream.hpp>
-#include <Lumino/IO/StreamReader.hpp>
+#include <LuminoCore/IO/FileStream.hpp>
+#include <LuminoCore/IO/StreamReader.hpp>
 
 namespace ln {
 

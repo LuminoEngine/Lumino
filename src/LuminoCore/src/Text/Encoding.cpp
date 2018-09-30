@@ -2,9 +2,9 @@
 #include <memory>
 #include <algorithm>
 #include "Internal.hpp"
-#include <Lumino/Base/Buffer.hpp>
-#include <Lumino/Base/String.hpp>
-#include <Lumino/Text/Encoding.hpp>
+#include <LuminoCore/Base/Buffer.hpp>
+#include <LuminoCore/Base/String.hpp>
+#include <LuminoCore/Text/Encoding.hpp>
 #include "UnicodeUtils.hpp"
 #include "ASCIIEncoding.hpp"
 #include "UTF8Encoding.hpp"

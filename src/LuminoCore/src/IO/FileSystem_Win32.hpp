@@ -4,9 +4,9 @@
 #include <Shlwapi.h>
 #include "Internal.hpp"
 #include <Windows.h>
-#include <Lumino/Text/Encoding.hpp>
+#include <LuminoCore/Text/Encoding.hpp>
 #include "PathHelper.hpp"
-#include <Lumino/Base/Platform.hpp>
+#include <LuminoCore/Base/Platform.hpp>
 
 namespace ln {
 

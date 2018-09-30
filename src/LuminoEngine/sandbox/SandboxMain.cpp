@@ -1,7 +1,7 @@
 ﻿
 #define LN_MSVC_DISABLE_LIBRARY_LINK
 #include <LuminoEngine.hpp>
-#include <Lumino/Testing/TestHelper.hpp>
+#include <LuminoCore/Testing/TestHelper.hpp>
 #include "Common.hpp"
 using namespace ln;
 

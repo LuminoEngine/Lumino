@@ -1,7 +1,7 @@
 ﻿
-#include <Lumino/Base/StlHelper.hpp>
-#include <Lumino/IO/FileSystem.hpp>
-#include <Lumino/Testing/TestHelper.hpp>
+#include <LuminoCore/Base/StlHelper.hpp>
+#include <LuminoCore/IO/FileSystem.hpp>
+#include <LuminoCore/Testing/TestHelper.hpp>
 
 namespace ln {
 

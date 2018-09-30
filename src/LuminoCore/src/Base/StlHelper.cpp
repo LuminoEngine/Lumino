@@ -1,6 +1,6 @@
 ﻿
-#include <Lumino/Base/StlHelper.hpp>
-#include <Lumino/Base/String.hpp>
+#include <LuminoCore/Base/StlHelper.hpp>
+#include <LuminoCore/Base/String.hpp>
 #include "../Text/UnicodeUtils.hpp"
 
 namespace ln {

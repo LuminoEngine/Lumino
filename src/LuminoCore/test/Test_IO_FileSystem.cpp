@@ -1,8 +1,8 @@
 ﻿#include "Common.hpp"
-#include <Lumino/Base/DateTime.hpp>
-#include <Lumino/Threading/Thread.hpp>
-#include <Lumino/IO/FileInfo.hpp>
-#include <Lumino/IO/FileSystem.hpp>
+#include <LuminoCore/Base/DateTime.hpp>
+#include <LuminoCore/Threading/Thread.hpp>
+#include <LuminoCore/IO/FileInfo.hpp>
+#include <LuminoCore/IO/FileSystem.hpp>
 
 //==============================================================================
 //# FileSystem

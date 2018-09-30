@@ -5,17 +5,17 @@
 #include <math.h>
 #include "Common.hpp"
 
-#include <Lumino/Math/Math.hpp>
-#include <Lumino/Math/Vector2.hpp>
-#include <Lumino/Math/Vector3.hpp>
-#include <Lumino/Math/Vector4.hpp>
-#include <Lumino/Math/Matrix.hpp>
-#include <Lumino/Math/Quaternion.hpp>
-#include <Lumino/Math/AttitudeTransform.hpp>
-#include <Lumino/Math/Geometries.hpp>
-#include <Lumino/Math/Plane.hpp>
-#include <Lumino/Math/ViewFrustum.hpp>
-#include <Lumino/Math/Random.hpp>
+#include <LuminoCore/Math/Math.hpp>
+#include <LuminoCore/Math/Vector2.hpp>
+#include <LuminoCore/Math/Vector3.hpp>
+#include <LuminoCore/Math/Vector4.hpp>
+#include <LuminoCore/Math/Matrix.hpp>
+#include <LuminoCore/Math/Quaternion.hpp>
+#include <LuminoCore/Math/AttitudeTransform.hpp>
+#include <LuminoCore/Math/Geometries.hpp>
+#include <LuminoCore/Math/Plane.hpp>
+#include <LuminoCore/Math/ViewFrustum.hpp>
+#include <LuminoCore/Math/Random.hpp>
 using namespace ln;
 
 

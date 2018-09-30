@@ -7,55 +7,55 @@ set(LN_CORE_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/../../include)
 file(
     GLOB
     LN_SOURCES_Base
-    "${LN_CORE_INCLUDE_DIR}/Lumino/Base/*.hpp"
+    "${LN_CORE_INCLUDE_DIR}/LuminoCore/Base/*.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/Base/*.cpp")
 
 file(
     GLOB
     LN_SOURCES_IO
-    "${LN_CORE_INCLUDE_DIR}/Lumino/IO/*.hpp"
+    "${LN_CORE_INCLUDE_DIR}/LuminoCore/IO/*.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/IO/*.cpp")
 
 file(
     GLOB
     LN_SOURCES_Json
-    "${LN_CORE_INCLUDE_DIR}/Lumino/Json/*.hpp"
+    "${LN_CORE_INCLUDE_DIR}/LuminoCore/Json/*.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/Json/*.cpp")
 
 file(
     GLOB
     LN_SOURCES_Math
-    "${LN_CORE_INCLUDE_DIR}/Lumino/Math/*.hpp"
+    "${LN_CORE_INCLUDE_DIR}/LuminoCore/Math/*.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/Math/*.cpp")
 
 file(
     GLOB
     LN_SOURCES_Serialization
-    "${LN_CORE_INCLUDE_DIR}/Lumino/Serialization/*.hpp"
+    "${LN_CORE_INCLUDE_DIR}/LuminoCore/Serialization/*.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/Serialization/*.cpp")
 
 file(
     GLOB
     LN_SOURCES_Testing
-    "${LN_CORE_INCLUDE_DIR}/Lumino/Testing/*.hpp"
+    "${LN_CORE_INCLUDE_DIR}/LuminoCore/Testing/*.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/Testing/*.cpp")
 
 file(
     GLOB
     LN_SOURCES_Text
-    "${LN_CORE_INCLUDE_DIR}/Lumino/Text/*.hpp"
+    "${LN_CORE_INCLUDE_DIR}/LuminoCore/Text/*.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/Text/*.cpp")
 
 file(
     GLOB
     LN_SOURCES_Threading
-    "${LN_CORE_INCLUDE_DIR}/Lumino/Threading/*.hpp"
+    "${LN_CORE_INCLUDE_DIR}/LuminoCore/Threading/*.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/Threading/*.cpp")
 
 file(
     GLOB
     LN_SOURCES_Xml
-    "${LN_CORE_INCLUDE_DIR}/Lumino/Xml/*.hpp"
+    "${LN_CORE_INCLUDE_DIR}/LuminoCore/Xml/*.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/Xml/*.cpp")
 
 #--------------------------------------

@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
 #include <algorithm>
-#include <Lumino/Base/RefObject.hpp>
-#include <Lumino/Base/Buffer.hpp>
+#include <LuminoCore/Base/RefObject.hpp>
+#include <LuminoCore/Base/Buffer.hpp>
 #include "CRTHelper.h"
 
 namespace ln {

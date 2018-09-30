@@ -5,7 +5,7 @@
 #else
 #include "Thread_POSIX.hpp"
 #endif
-#include <Lumino/Threading/Thread.hpp>
+#include <LuminoCore/Threading/Thread.hpp>
 
 namespace ln {
 

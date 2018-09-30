@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/Base/String.hpp>
-#include <Lumino/Json/JsonWriter.hpp>
+#include <LuminoCore/Base/String.hpp>
+#include <LuminoCore/Json/JsonWriter.hpp>
 
 namespace ln {
 

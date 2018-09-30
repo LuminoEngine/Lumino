@@ -1,8 +1,8 @@
 ﻿
 #include <float.h>
 #include "Internal.hpp"
-#include <Lumino/Base/String.hpp>
-#include <Lumino/IO/TextWriter.hpp>
+#include <LuminoCore/Base/String.hpp>
+#include <LuminoCore/IO/TextWriter.hpp>
 
 namespace ln {
 

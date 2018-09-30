@@ -1,6 +1,6 @@
 ﻿#include "Common.hpp"
-#include <Lumino/IO/FileSystem.hpp>
-#include <Lumino/IO/CommandLineParser.hpp>
+#include <LuminoCore/IO/FileSystem.hpp>
+#include <LuminoCore/IO/CommandLineParser.hpp>
 
 //==============================================================================
 //# CommandLineParser

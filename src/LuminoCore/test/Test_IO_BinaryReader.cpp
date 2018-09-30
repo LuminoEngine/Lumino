@@ -1,6 +1,6 @@
 ﻿#include "Common.hpp"
-#include <Lumino/IO/FileStream.hpp>
-#include <Lumino/IO/BinaryReader.hpp>
+#include <LuminoCore/IO/FileStream.hpp>
+#include <LuminoCore/IO/BinaryReader.hpp>
 
 class Test_IO_BinaryReader : public ::testing::Test {};
 

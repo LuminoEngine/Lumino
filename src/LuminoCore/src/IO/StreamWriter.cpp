@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2018 lriki. Distributed under the MIT license.
 #include "Internal.hpp"
-#include <Lumino/IO/Path.hpp>
-#include <Lumino/IO/FileStream.hpp>
-#include <Lumino/IO/StreamWriter.hpp>
+#include <LuminoCore/IO/Path.hpp>
+#include <LuminoCore/IO/FileStream.hpp>
+#include <LuminoCore/IO/StreamWriter.hpp>
 
 namespace ln {
 

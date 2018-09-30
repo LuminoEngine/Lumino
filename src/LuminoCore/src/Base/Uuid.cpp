@@ -1,6 +1,6 @@
 ﻿
-#include <Lumino/Base/Common.hpp>
-#include <Lumino/Base/Uuid.hpp>
+#include <LuminoCore/Base/Common.hpp>
+#include <LuminoCore/Base/Uuid.hpp>
 
 #if defined(LN_OS_WIN32)
 #include <objbase.h>

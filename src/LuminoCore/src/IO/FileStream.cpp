@@ -12,8 +12,8 @@
 */
 
 #include "Internal.hpp"
-#include <Lumino/IO/FileSystem.hpp>
-#include <Lumino/IO/FileStream.hpp>
+#include <LuminoCore/IO/FileSystem.hpp>
+#include <LuminoCore/IO/FileStream.hpp>
 
 namespace ln {
 

@@ -1,11 +1,11 @@
 ﻿
 #include <math.h>
 #include <cmath>
-#include <Lumino/Math/Vector3.hpp>
-#include <Lumino/Math/Vector4.hpp>
-#include <Lumino/Math/Matrix.hpp>
-#include <Lumino/Math/Geometries.hpp>
-#include <Lumino/Math/Plane.hpp>
+#include <LuminoCore/Math/Vector3.hpp>
+#include <LuminoCore/Math/Vector4.hpp>
+#include <LuminoCore/Math/Matrix.hpp>
+#include <LuminoCore/Math/Geometries.hpp>
+#include <LuminoCore/Math/Plane.hpp>
 #include "Asm.h"
 
 namespace ln {

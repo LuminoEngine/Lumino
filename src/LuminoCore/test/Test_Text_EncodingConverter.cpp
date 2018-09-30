@@ -1,5 +1,5 @@
 ﻿#include "Common.hpp"
-#include <Lumino/Text/EncodingConverter.hpp>
+#include <LuminoCore/Text/EncodingConverter.hpp>
 
 class Test_Text_EncodingConverter : public ::testing::Test {};
 

@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/Base/String.hpp>
-#include <Lumino/Text/Encoding.hpp>
-#include <Lumino/IO/Path.hpp>
+#include <LuminoCore/Base/String.hpp>
+#include <LuminoCore/Text/Encoding.hpp>
+#include <LuminoCore/IO/Path.hpp>
 
 namespace ln {
 

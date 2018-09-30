@@ -7,9 +7,9 @@
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
-#include <Lumino/Base/Assertion.hpp>
-#include <Lumino/Base/StringHelper.hpp>
-#include <Lumino/Base/StlHelper.hpp>
+#include <LuminoCore/Base/Assertion.hpp>
+#include <LuminoCore/Base/StringHelper.hpp>
+#include <LuminoCore/Base/StlHelper.hpp>
 
 #ifdef LN_MSVC
 #else

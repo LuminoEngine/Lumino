@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include <Lumino/Base/EnumFlags.hpp>
+#include <LuminoCore/Base/EnumFlags.hpp>
 
 namespace ln {
 class DataObject;

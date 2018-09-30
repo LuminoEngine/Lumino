@@ -1,7 +1,7 @@
 ﻿#include "Internal.hpp"
-#include <Lumino/IO/Stream.hpp>
-#include <Lumino/IO/Process.hpp>
-#include <Lumino/Base/Platform.hpp>
+#include <LuminoCore/IO/Stream.hpp>
+#include <LuminoCore/IO/Process.hpp>
+#include <LuminoCore/Base/Platform.hpp>
 
 namespace ln {
 namespace detail {
