@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <userenv.h>
 #include <Lumino/Base/Platform.hpp>
 
 namespace ln {
@@ -43,6 +44,26 @@ public:
 		case SpecialFolder::Temporary:
 			::GetTempPathW(MAX_PATH, path);
 			break;
+		case SpecialFolder::Home:
+		{
+			BOOL bResult;
+			HANDLE hToken;
+			bResult = ::OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &hToken);
+			if (bResult) {
+				DWORD dwBufferSize;
+				bResult = ::GetUserProfileDirectoryW(hToken, NULL, &dwBufferSize);
+				if (!bResult && dwBufferSize != 0) {
+					wchar_t* directory = new wchar_t[dwBufferSize];
+					bResult = GetUserProfileDirectoryW(hToken, directory, &dwBufferSize);
+					if (bResult) {
+						*outPath = directory;
+					}
+					delete[] directory;
+				}
+				::CloseHandle(hToken);
+			}
+			break;
+		}
 		default:
 			LN_UNREACHABLE();
 			break;

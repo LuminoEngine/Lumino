@@ -7,15 +7,19 @@ namespace ln {
 /**
  * システムの特別なフォルダパスを示す値です。
  * 
- * SpecialFolder   | Windows                   | OS X    | Linux
- * ----------------|---------------------------|---------|---------
- * ApplicationData | \<USER\>/AppData/Roaming    |         | ~/.local/share, /usr/local/share, /usr/share/
- * Temporary       | \<USER\>/AppData/Local/Temp |         | /tmp
+ * 次の表は、各 OS 上のパスの例です。
+ * 
+ * SpecialFolder   | Windows                              | OS X            | Linux
+ * ----------------|--------------------------------------|-----------------|---------
+ * ApplicationData | C:/Users/\<USER\>/AppData/Roaming    |                 | ~/.local/share, /usr/local/share, /usr/share/
+ * Temporary       | C:/Users/\<USER\>/AppData/Local/Temp |                 | /tmp
+ * Home            | C:/Users/\<USER\>/AppData/Local/Temp | /Users/\<USER\> | ~
  */
 enum class SpecialFolder
 {
     ApplicationData,
     Temporary,
+	Home,
 };
 
 /** システムの特別なフォルダパス を取得する際の動作 */

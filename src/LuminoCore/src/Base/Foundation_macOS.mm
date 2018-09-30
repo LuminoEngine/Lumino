@@ -31,33 +31,48 @@ PlatformEnvironment::StringType PlatformEnvironment::getExecutablePath()
 
 void PlatformEnvironment::getSpecialFolderPath(SpecialFolder specialFolder, StringType* outPath)
 {
-	if (specialFolder == SpecialFolder::ApplicationData)
+	switch (specialFolder)
 	{
-		NSFileManager* fileManager = [NSFileManager defaultManager];
-		if (LN_ENSURE(fileManager)) {
-			return;
-		}
-		
-		NSArray* urls = [fileManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask];
-		if (LN_ENSURE(urls)) {
-			return;
-		}
-		if (LN_ENSURE(urls.count > 0)) {
-			return;
-		}
-		
-		NSURL* url = [urls objectAtIndex:0];
-		NSString* path = url.path;
-		*outPath = [path UTF8String];
-	}
-	else if (specialFolder == SpecialFolder::Temporary) {
-		if (NSString* path = NSTemporaryDirectory()) {
+		case SpecialFolder::ApplicationData:
+		{
+			NSFileManager* fileManager = [NSFileManager defaultManager];
+			if (LN_ENSURE(fileManager)) {
+				return;
+			}
+			
+			NSArray* urls = [fileManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask];
+			if (LN_ENSURE(urls)) {
+				return;
+			}
+			if (LN_ENSURE(urls.count > 0)) {
+				return;
+			}
+			
+			NSURL* url = [urls objectAtIndex:0];
+			NSString* path = url.path;
 			*outPath = [path UTF8String];
-			return;
+			break;
 		}
-	}
-	else {
-		LN_UNREACHABLE();
+		case SpecialFolder::Temporary:
+		{
+			if (NSString* path = NSTemporaryDirectory()) {
+				*outPath = [path UTF8String];
+				return;
+			}
+			break;
+		}
+		case SpecialFolder::Home:
+		{
+			const char* path = ::getenv("HOME");
+			if (path)
+				*outPath = path;
+			else
+				return "/";
+			break;
+		}
+		default:
+			LN_UNREACHABLE();
+			break;
 	}
 }
 } // namespace ln

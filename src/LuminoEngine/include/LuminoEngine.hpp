@@ -43,4 +43,3 @@
 #pragma comment(lib, LN_MSVC_MAKE_LIB_PATH("SPVRemapper"))
 #pragma comment(lib, LN_MSVC_MAKE_LIB_PATH("zlib"))
 #endif
-#pragma comment(lib, "Shlwapi.lib")

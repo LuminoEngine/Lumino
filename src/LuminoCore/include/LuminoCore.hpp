@@ -83,3 +83,6 @@
 
 #endif
 #endif
+
+#pragma comment(lib, "Shlwapi.lib")
+#pragma comment(lib, "Userenv.lib")
