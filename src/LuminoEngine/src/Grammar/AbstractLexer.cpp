@@ -1,4 +1,4 @@
-
+ï»¿
 #include "Internal.hpp"
 #include "../../LuminoCore/src/Text/UnicodeUtils.hpp"
 #include <LuminoEngine/Engine/Diagnostics.hpp>
@@ -73,7 +73,7 @@ Flags<AlphaNumTypeFlags> AbstractLexer::GetAlphaNumType(int ch)
 	};
 	uint8_t uc = (uint8_t)ch;
 	if (uc > 255) {
-		return AlphaNumTypeFlags::MBC;	// wchar_t Œ^‚Ì‘½ƒoƒCƒgƒR[ƒh
+		return AlphaNumTypeFlags::MBC;	// wchar_t å‹ã®å¤šãƒã‚¤ãƒˆã‚³ãƒ¼ãƒ‰
 	}
 	return (AlphaNumTypeFlags)s_alphaNumTypeTable[uc];
 }
@@ -111,12 +111,12 @@ int AbstractLexer::ReadMBSSequence(const Range& buffer)
 		int extraCount = 0;
 		UnicodeUtils::checkUTF8TrailingBytes((const UTF8*)r.pos, (const UTF8*)r.end, false, &extraCount);
 
-		// ’Ç‰ÁƒoƒCƒg‚ª–³‚¢ = ƒVƒ“ƒOƒ‹ƒoƒCƒg•¶š‚¾‚Á‚½ê‡‚ÍI—¹
+		// è¿½åŠ ãƒã‚¤ãƒˆãŒç„¡ã„ = ã‚·ãƒ³ã‚°ãƒ«ãƒã‚¤ãƒˆæ–‡å­—ã ã£ãŸå ´åˆã¯çµ‚äº†
 		if (extraCount == 0) {
 			break;
 		}
 
-		// ¡‰ñ’²‚×‚½•¶š‚ÆA’Ç‰Á•¶š•ªi‚ß‚é
+		// ä»Šå›èª¿ã¹ãŸæ–‡å­—ã¨ã€è¿½åŠ æ–‡å­—åˆ†é€²ã‚ã‚‹
 		r.pos += (1 + extraCount);
 	};
 

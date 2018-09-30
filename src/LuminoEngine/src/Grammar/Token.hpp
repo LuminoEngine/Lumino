@@ -1,24 +1,24 @@
-#pragma once
+ï»¿#pragma once
 
 namespace ln {
 
 using SourceLocation = uint32_t;
 
-/** Šî–{“I‚Èƒg[ƒNƒ“í•Ê (Œ¾ŒêŠÔ‹¤’Ê) */
+/** åŸºæœ¬çš„ãªãƒˆãƒ¼ã‚¯ãƒ³ç¨®åˆ¥ (è¨€èªé–“å…±é€š) */
 enum class TokenGroup
 {
-	Unknown = 0,			/**< ‹¤’Êí•Ê‚Æ‚µ‚Ä‚Í•ª—Ş‚³‚ê‚È‚¢ */
-	SpaceSequence,			/**< ‹ó”’•À‚Ñ (C‚Ì EscapeNewLine ‚àŠÜ‚Ş) */
-	NewLine,				/**< ‰üs ("\r" "\n" "\r\n" ‚Ì‚¢‚¸‚ê‚©B•À‚Ñ‚Å‚Í‚È‚¢B"\r\n\r\n" ‚Í2‚Â‚Ì NewLine ƒg[ƒNƒ“‚Æ‚È‚é) */
-	Identifier,				/**< ¯•Êq */
-	Keyword,				/**< ƒL[ƒ[ƒh */
-	Operator,				/**< ‰‰Zq */
-	ArithmeticLiteral,		/**< ZpŒ^ƒŠƒeƒ‰ƒ‹ (®”A¬”BCŒ¾Œê‚Ì char ‚àZpŒ^) */
-	StringLiteral,			/**< •¶š—ñ */
-	Comment,				/**< ƒRƒƒ“ƒg */
-	MbsSequence,			/**< ƒ}ƒ‹ƒ`ƒoƒCƒg•¶š•À‚Ñ */
-	TextTokens,				/**< ƒvƒŠƒvƒƒZƒbƒT‚È‚Ç‚Åg‚í‚ê‚éƒƒbƒZ[ƒW•¶š—ñ */
-	Eof,					/**< ƒoƒbƒtƒ@ EOF */
+	Unknown = 0,			/**< å…±é€šç¨®åˆ¥ã¨ã—ã¦ã¯åˆ†é¡ã•ã‚Œãªã„ */
+	SpaceSequence,			/**< ç©ºç™½ä¸¦ã³ (Cã® EscapeNewLine ã‚‚å«ã‚€) */
+	NewLine,				/**< æ”¹è¡Œ ("\r" "\n" "\r\n" ã®ã„ãšã‚Œã‹ã€‚ä¸¦ã³ã§ã¯ãªã„ã€‚"\r\n\r\n" ã¯2ã¤ã® NewLine ãƒˆãƒ¼ã‚¯ãƒ³ã¨ãªã‚‹) */
+	Identifier,				/**< è­˜åˆ¥å­ */
+	Keyword,				/**< ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰ */
+	Operator,				/**< æ¼”ç®—å­ */
+	ArithmeticLiteral,		/**< ç®—è¡“å‹ãƒªãƒ†ãƒ©ãƒ« (æ•´æ•°ã€å°æ•°ã€‚Cè¨€èªã® char ã‚‚ç®—è¡“å‹) */
+	StringLiteral,			/**< æ–‡å­—åˆ— */
+	Comment,				/**< ã‚³ãƒ¡ãƒ³ãƒˆ */
+	MbsSequence,			/**< ãƒãƒ«ãƒãƒã‚¤ãƒˆæ–‡å­—ä¸¦ã³ */
+	TextTokens,				/**< ãƒ—ãƒªãƒ—ãƒ­ã‚»ãƒƒã‚µãªã©ã§ä½¿ã‚ã‚Œã‚‹ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸æ–‡å­—åˆ— */
+	Eof,					/**< ãƒãƒƒãƒ•ã‚¡ EOF */
 };
 
 class Token

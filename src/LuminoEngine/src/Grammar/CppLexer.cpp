@@ -1,4 +1,4 @@
-
+ï»¿
 #include "Internal.hpp"
 #include "CppLexer.hpp"
 
@@ -8,64 +8,64 @@ int CppLexer::readToken(const Range& buffer)
 {
 	int len;
 
-	// ‹ó”’•À‚Ñ
+	// ç©ºç™½ä¸¦ã³
 	len = ReadSpaceSequence(buffer);
 	if (len > 0) { return len; }
-	// ƒvƒŠƒvƒƒZƒbƒTƒg[ƒNƒ“—ñ
+	// ãƒ—ãƒªãƒ—ãƒ­ã‚»ãƒƒã‚µãƒˆãƒ¼ã‚¯ãƒ³åˆ—
 	//len = ReadPPTokens(buffer);
 	//if (len > 0) { return len; }
-	// ‰üs
+	// æ”¹è¡Œ
 	len = ReadNewLine(buffer);
 	if (len > 0) { return len; }
-	// —\–ñŒê
+	// äºˆç´„èª
 	len = ReadKeyword(buffer);
 	if (len > 0) { return len; }
-	// •¶šƒŠƒeƒ‰ƒ‹
+	// æ–‡å­—ãƒªãƒ†ãƒ©ãƒ«
 	len = ReadCharLiteral(buffer);
 	if (len > 0) { return len; }
-	// •¶š—ñƒŠƒeƒ‰ƒ‹
+	// æ–‡å­—åˆ—ãƒªãƒ†ãƒ©ãƒ«
 	len = ReadStringLiteral(buffer);
 	if (len > 0) { return len; }
-	// ¯•Êq
+	// è­˜åˆ¥å­
 	len = ReadIdentifier(buffer);
 	if (len > 0) { return len; }
-	// ”’lƒŠƒeƒ‰ƒ‹
+	// æ•°å€¤ãƒªãƒ†ãƒ©ãƒ«
 	len = ReadNumericLiteral(buffer);
 	if (len > 0) { return len; }
-	// ƒuƒƒbƒNƒRƒƒ“ƒg
+	// ãƒ–ãƒ­ãƒƒã‚¯ã‚³ãƒ¡ãƒ³ãƒˆ
 	len = ReadBlockComment(buffer);
 	if (len > 0) { return len; }
-	// sƒRƒƒ“ƒg (‰‰Zq‚æ‚èæ‚ÉŒ©‚Ä‚¨‚­)
+	// è¡Œã‚³ãƒ¡ãƒ³ãƒˆ (æ¼”ç®—å­ã‚ˆã‚Šå…ˆã«è¦‹ã¦ãŠã)
 	len = ReadLineComment(buffer);
 	if (len > 0) { return len; }
-	// ‰‰Zq
+	// æ¼”ç®—å­
 	len = ReadOperator(buffer);
 	if (len > 0) { return len; }
-	// s––ƒGƒXƒP[ƒv
+	// è¡Œæœ«ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—
 	len = ReadEscapeNewLine(buffer);
 	if (len > 0) { return len; }
-	// ƒ}ƒ‹ƒ`ƒoƒCƒg•¶š•À‚Ñ
+	// ãƒãƒ«ãƒãƒã‚¤ãƒˆæ–‡å­—ä¸¦ã³
 	len = ReadMBSSequence(buffer);
 	if (len > 0) { return len; }
 
 
 	/*
-	* •¶š—ñƒŠƒeƒ‰ƒ‹‚Í¯•Êq‚Ì‘O‚É‰ğÍ‚·‚éB‚±‚ê‚ÍAL “™‚ÌƒvƒŒƒtƒBƒbƒNƒX‘Î‰‚Ì‚½‚ßB
-	* ‚È‚¨ACheckHexLiteralStart() ‚Í 0x ‚ğƒvƒŒƒtƒBƒbƒNƒX‚Æ‚µ‚Ä“Á•Êˆµ‚¢‚µ‚Ä‚¢‚é‚ªA
-	* •¶š—ñ‚Å‚Í‚±‚Ì‚æ‚¤‚É L ‚ğ“Á•Êˆµ‚¢‚Í‚µ‚È‚¢B
-	* ‚±‚ê‚Í C++11 ‚Ì raw string ‘Î‰‚ğ‹–ì‚É“ü‚ê‚½‚à‚ÌB
+	* æ–‡å­—åˆ—ãƒªãƒ†ãƒ©ãƒ«ã¯è­˜åˆ¥å­ã®å‰ã«è§£æã™ã‚‹ã€‚ã“ã‚Œã¯ã€L ç­‰ã®ãƒ—ãƒ¬ãƒ•ã‚£ãƒƒã‚¯ã‚¹å¯¾å¿œã®ãŸã‚ã€‚
+	* ãªãŠã€CheckHexLiteralStart() ã¯ 0x ã‚’ãƒ—ãƒ¬ãƒ•ã‚£ãƒƒã‚¯ã‚¹ã¨ã—ã¦ç‰¹åˆ¥æ‰±ã„ã—ã¦ã„ã‚‹ãŒã€
+	* æ–‡å­—åˆ—ã§ã¯ã“ã®ã‚ˆã†ã« L ã‚’ç‰¹åˆ¥æ‰±ã„ã¯ã—ãªã„ã€‚
+	* ã“ã‚Œã¯ C++11 ã® raw string å¯¾å¿œã‚’è¦–é‡ã«å…¥ã‚ŒãŸã‚‚ã®ã€‚
 	*
-	* raw string ‚ÍŸ‚Ì‚æ‚¤‚É‘‚­‚±‚Æ‚ª‚Å‚«‚éB
+	* raw string ã¯æ¬¡ã®ã‚ˆã†ã«æ›¸ãã“ã¨ãŒã§ãã‚‹ã€‚
 	*		str = R"**(AAA )" BBB)**";
-	* ‚±‚ÌƒŠƒeƒ‰ƒ‹‚Å‚ÍA
-	* EŠJnƒg[ƒNƒ“		R"**(
-	* E•¶š—ñ			AAA )" BBB
-	* EI’[ƒg[ƒNƒ“		)**"
-	* ‚Å‚ ‚éB
+	* ã“ã®ãƒªãƒ†ãƒ©ãƒ«ã§ã¯ã€
+	* ãƒ»é–‹å§‹ãƒˆãƒ¼ã‚¯ãƒ³		R"**(
+	* ãƒ»æ–‡å­—åˆ—			AAA )" BBB
+	* ãƒ»çµ‚ç«¯ãƒˆãƒ¼ã‚¯ãƒ³		)**"
+	* ã§ã‚ã‚‹ã€‚
 	*
-	* ƒvƒŒƒtƒBƒbƒNƒX‚Í L R U “™—lX‚ ‚èA‚±‚ê‚ç‚ğ“Á•Êˆµ‚¢‚µ‚Äƒp[ƒX‚µ‚Ä‚àA
-	* Ÿ‚Ì " ‚É‚Íu‰½‚Ìí—Ş‚Å‚ ‚é‚©v‚ğ CheckStringStart() ‚É“n‚³‚È‚¯‚ê‚Î‚È‚ç‚È‚¢B
-	* ƒvƒŒƒtƒBƒbƒNƒX‚Æ " ‚ÌŠÔ‚É‹ó”’‚ª‰Â”\‚Å‚ ‚ê‚Î‚Ü‚¾‚µ‚àA‚í‚´‚í‚´“Á•Êˆµ‚¢‚µ‚ÄŠÖ”‚ğ•ª‚¯‚é‚Æ‹t‚É•¡G‚É‚È‚Á‚Ä‚µ‚Ü‚¤B
+	* ãƒ—ãƒ¬ãƒ•ã‚£ãƒƒã‚¯ã‚¹ã¯ L R U ç­‰æ§˜ã€…ã‚ã‚Šã€ã“ã‚Œã‚‰ã‚’ç‰¹åˆ¥æ‰±ã„ã—ã¦ãƒ‘ãƒ¼ã‚¹ã—ã¦ã‚‚ã€
+	* æ¬¡ã® " æ™‚ã«ã¯ã€Œä½•ã®ç¨®é¡ã§ã‚ã‚‹ã‹ã€ã‚’ CheckStringStart() ã«æ¸¡ã•ãªã‘ã‚Œã°ãªã‚‰ãªã„ã€‚
+	* ãƒ—ãƒ¬ãƒ•ã‚£ãƒƒã‚¯ã‚¹ã¨ " ã®é–“ã«ç©ºç™½ãŒå¯èƒ½ã§ã‚ã‚Œã°ã¾ã ã—ã‚‚ã€ã‚ã–ã‚ã–ç‰¹åˆ¥æ‰±ã„ã—ã¦é–¢æ•°ã‚’åˆ†ã‘ã‚‹ã¨é€†ã«è¤‡é›‘ã«ãªã£ã¦ã—ã¾ã†ã€‚
 	*/
 	return 0;
 
@@ -82,8 +82,8 @@ int CppLexer::IsSpaceChar(const Range& r)
 
 int CppLexer::ReadSpaceSequence(const Range& buffer)
 {
-	// ˜A‘±‚·‚éƒXƒy[ƒX•¶š‚Ì”‚ğ•Ô‚·
-	// (‘SŠpƒXƒy[ƒX‚ğ‹–—e‚·‚éê‡‚Í‚»‚ê‘S‘Ì‚Ì•¶š”‚àƒJƒEƒ“ƒg)
+	// é€£ç¶šã™ã‚‹ã‚¹ãƒšãƒ¼ã‚¹æ–‡å­—ã®æ•°ã‚’è¿”ã™
+	// (å…¨è§’ã‚¹ãƒšãƒ¼ã‚¹ã‚’è¨±å®¹ã™ã‚‹å ´åˆã¯ãã‚Œå…¨ä½“ã®æ–‡å­—æ•°ã‚‚ã‚«ã‚¦ãƒ³ãƒˆ)
 	Range r = buffer;
 	while (r.pos < r.end)
 	{
@@ -94,7 +94,7 @@ int CppLexer::ReadSpaceSequence(const Range& buffer)
 		r.pos += len;
 	}
 
-	// ƒg[ƒNƒ“ì¬
+	// ãƒˆãƒ¼ã‚¯ãƒ³ä½œæˆ
 	if (buffer.pos < r.pos) {
 		AddToken(TokenGroup::SpaceSequence, buffer.pos, r.pos);
 	}
@@ -182,8 +182,8 @@ int CppLexer::IsKeyword(const Range& buffer, int* langTokenType)
 	int type = 0;
 	for (int i = 0; i < len; ++i)
 	{
-		if (wordList[i].word[0] == buffer.pos[0] &&		// ‚Ü‚¸‚Íæ“ª•¶š‚ğ’²‚×‚Ä
-			strncmp(wordList[i].word, buffer.pos, wordList[i].length) == 0)	// æ“ª‚ªˆê’v‚µ‚½‚çc‚è‚ğ’²‚×‚é
+		if (wordList[i].word[0] == buffer.pos[0] &&		// ã¾ãšã¯å…ˆé ­æ–‡å­—ã‚’èª¿ã¹ã¦
+			strncmp(wordList[i].word, buffer.pos, wordList[i].length) == 0)	// å…ˆé ­ãŒä¸€è‡´ã—ãŸã‚‰æ®‹ã‚Šã‚’èª¿ã¹ã‚‹
 		{
 			type = (int)wordList[i].type;
 			keyLen = wordList[i].length;
@@ -191,7 +191,7 @@ int CppLexer::IsKeyword(const Range& buffer, int* langTokenType)
 		}
 	}
 
-	// –{“–‚ÉƒL[ƒ[ƒh‚ª¯•Êq‚Æ‚µ‚ÄŠ®Œ‹‚µ‚Ä‚¢‚éH
+	// æœ¬å½“ã«ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰ãŒè­˜åˆ¥å­ã¨ã—ã¦å®Œçµã—ã¦ã„ã‚‹ï¼Ÿ
 	if (keyLen > 0 && IsIdentifierLetter(Range(buffer.pos + keyLen, buffer.end)) == 0)
 	{
 		*langTokenType = type;
@@ -218,7 +218,7 @@ int CppLexer::ReadEnclosingTokenHelper(const Range& buffer, TokenCheckCallback s
 	Range r = buffer;
 	*outNotFoundEndToken = true;
 
-	// •¶š—ñ‚ÌŠJnƒ`ƒFƒbƒN
+	// æ–‡å­—åˆ—ã®é–‹å§‹ãƒã‚§ãƒƒã‚¯
 	int startCount = startCallback(r);
 	if (startCount == 0) {
 		return 0;
@@ -227,7 +227,7 @@ int CppLexer::ReadEnclosingTokenHelper(const Range& buffer, TokenCheckCallback s
 
 	while (r.pos < r.end)
 	{
-		// ƒGƒXƒP[ƒvƒV[ƒPƒ“ƒX‚Ìƒ`ƒFƒbƒN
+		// ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã®ãƒã‚§ãƒƒã‚¯
 		int len = 0;
 		if (chars != nullptr && r.pos[0] == '\\')
 		{
@@ -243,15 +243,15 @@ int CppLexer::ReadEnclosingTokenHelper(const Range& buffer, TokenCheckCallback s
 		if (len > 0)
 		{
 			r.pos += len;
-			continue;	// ‚±‚ÌŒã‚Ì‰ğÍ‚É‚Í‰ñ‚³‚È‚¢‚ÅŸ‚Ì•¶š‚Ö
+			continue;	// ã“ã®å¾Œã®è§£æã«ã¯å›ã•ãªã„ã§æ¬¡ã®æ–‡å­—ã¸
 		}
 
-		// I’[ƒ`ƒFƒbƒN
+		// çµ‚ç«¯ãƒã‚§ãƒƒã‚¯
 		len = endCallback(r);
 		if (len > 0) {
 			r.pos += len;
 			*outNotFoundEndToken = false;
-			break;		// I—¹
+			break;		// çµ‚äº†
 		}
 
 		r.pos++;
@@ -264,7 +264,7 @@ int CppLexer::ReadEnclosingTokenHelper(const Range& buffer, TokenCheckCallback s
 int CppLexer::ReadCharLiteral(const Range& buffer)
 {
 	//const TokenChar chars[] = { '\'', '"', '?', '\\', 'a', 'b', 'f', 'n', 'r', 't', 'v', '\0' };
-	const char chars[] = { '\'', '\0' };	// •ªŠ„‚ª–Ú“I‚È‚Ì‚Å ' ‚¾‚¯ƒGƒXƒP[ƒv‚ÅOK
+	const char chars[] = { '\'', '\0' };	// åˆ†å‰²ãŒç›®çš„ãªã®ã§ ' ã ã‘ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã§OK
 	bool notFoundEndToken;
 	int len = ReadEnclosingTokenHelper(buffer, IsCharLiteralStart, IsCharLiteralEnd, chars, &notFoundEndToken);
 
@@ -286,7 +286,7 @@ int CppLexer::IsCharLiteralStart(const Range& buffer)
 		return 1;
 	}
 	if (buffer.pos[0] == 'L' && buffer.pos[1] == '\'') {
-		return 2;	// L ƒvƒŒƒtƒBƒbƒNƒX•t‚«•¶š—ñƒŠƒeƒ‰ƒ‹
+		return 2;	// L ãƒ—ãƒ¬ãƒ•ã‚£ãƒƒã‚¯ã‚¹ä»˜ãæ–‡å­—åˆ—ãƒªãƒ†ãƒ©ãƒ«
 	}
 	return 0;
 }
@@ -323,12 +323,12 @@ int CppLexer::ReadStringLiteral(const Range& buffer)
 	//if (m_seqPPDirective != PPDirectiveSeq::FoundInclude)
 	//{
 	//const TokenChar chars[] = { '\'', '"', '?', '\\', 'a', 'b', 'f', 'n', 'r', 't', 'v', '\0' };
-	const char chars[] = { '"', '\0' };	// •ªŠ„‚ª–Ú“I‚È‚Ì‚Å " ‚¾‚¯ƒGƒXƒP[ƒv‚ÅOK
+	const char chars[] = { '"', '\0' };	// åˆ†å‰²ãŒç›®çš„ãªã®ã§ " ã ã‘ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã§OK
 	len = ReadEnclosingTokenHelper(buffer, IsStringLiteralStart, IsStringLiteralEnd, chars, &notFoundEndToken);
 	//}
 	//else
 	//{
-	//	// #include “à‚Ìê‡‚Í‚±‚¿‚çBƒGƒXƒP[ƒv‚Í–³‚¢
+	//	// #include å†…ã®å ´åˆã¯ã“ã¡ã‚‰ã€‚ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã¯ç„¡ã„
 	//	len = ReadEnclosingTokenHelper(buffer, IsStringLiteralStartInIncludeDirective, IsStringLiteralEndIncludeDirective, nullptr, &notFoundEndToken);
 	//}
 
@@ -350,7 +350,7 @@ int CppLexer::IsStringLiteralStart(const Range& buffer)
 		return 1;
 	}
 	if (buffer.pos[0] == 'L' && buffer.pos[1] == '"') {
-		return 2;	// L ƒvƒŒƒtƒBƒbƒNƒX•t‚«•¶š—ñƒŠƒeƒ‰ƒ‹
+		return 2;	// L ãƒ—ãƒ¬ãƒ•ã‚£ãƒƒã‚¯ã‚¹ä»˜ãæ–‡å­—åˆ—ãƒªãƒ†ãƒ©ãƒ«
 	}
 	return 0;
 }
@@ -376,14 +376,14 @@ int CppLexer::ReadIdentifier(const Range& buffer)
 	*/
 	Range r = buffer;
 
-	// ¯•Êq‚Ìæ“ª•¶š‚©H
+	// è­˜åˆ¥å­ã®å…ˆé ­æ–‡å­—ã‹ï¼Ÿ
 	int len = IsIdentifierStart(buffer);
 	if (len == 0) {
-		return 0;	// ¯•Êq‚Å‚Í‚È‚¢
+		return 0;	// è­˜åˆ¥å­ã§ã¯ãªã„
 	}
 	r.pos += len;
 
-	// Œã‚É‘±‚­•¶š‚Í³‚µ‚¢‚©H
+	// å¾Œã«ç¶šãæ–‡å­—ã¯æ­£ã—ã„ã‹ï¼Ÿ
 	while (r.pos < r.end)
 	{
 		len = IsIdentifierLetter(r);
@@ -393,7 +393,7 @@ int CppLexer::ReadIdentifier(const Range& buffer)
 		r.pos += len;
 	}
 
-	// ƒg[ƒNƒ“ì¬
+	// ãƒˆãƒ¼ã‚¯ãƒ³ä½œæˆ
 	AddToken(TokenGroup::Identifier, buffer.pos, r.pos);
 	return r.pos - buffer.pos;
 }
@@ -421,135 +421,135 @@ int CppLexer::IsIdentifierLetter(const Range& buffer)
 //------------------------------------------------------------------------------
 int CppLexer::ReadNumericLiteral(const Range& buffer)
 {
-	/* 123	10i”ƒŠƒeƒ‰ƒ‹
-	* 012	8i”ƒŠƒeƒ‰ƒ‹
+	/* 123	10é€²æ•°ãƒªãƒ†ãƒ©ãƒ«
+	* 012	8é€²æ•°ãƒªãƒ†ãƒ©ãƒ«
 	*
 	*/
 
-	// TODO: ‚±‚Ì“à—e‚Í LangDef ‚É‚Á‚Ä‚¢‚­‚×‚«‚©‚àH
+	// TODO: ã“ã®å†…å®¹ã¯ LangDef ã«æŒã£ã¦ã„ãã¹ãã‹ã‚‚ï¼Ÿ
 
-	bool	bExistPeriod = false;		/* ¬”“_‚ª“oê‚µ‚½‚çTRUE */
-	bool	bExistExp = false;		/* w”‚ª“oê‚µ‚½‚çTRUE */
-	bool	bExistSuffix = false;		/* Ú”öŒê‚ª“oê‚µ‚½‚çTRUE */
-	bool	bHexMode = false;		/* 16i”‚Å—L‚éê‡‚ÉTRUE */
+	bool	bExistPeriod = false;		/* å°æ•°ç‚¹ãŒç™»å ´ã—ãŸã‚‰TRUE */
+	bool	bExistExp = false;		/* æŒ‡æ•°ãŒç™»å ´ã—ãŸã‚‰TRUE */
+	bool	bExistSuffix = false;		/* æ¥å°¾èªãŒç™»å ´ã—ãŸã‚‰TRUE */
+	bool	bHexMode = false;		/* 16é€²æ•°ã§æœ‰ã‚‹å ´åˆã«TRUE */
 
-									// ”’lƒŠƒeƒ‰ƒ‹‚ÌŒ^BƒTƒtƒBƒbƒNƒX‚Æ‚©‚È‚¯‚ê‚ÎƒfƒtƒHƒ‹ƒg‚Í Int32
+									// æ•°å€¤ãƒªãƒ†ãƒ©ãƒ«ã®å‹ã€‚ã‚µãƒ•ã‚£ãƒƒã‚¯ã‚¹ã¨ã‹ãªã‘ã‚Œã°ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯ Int32
 	int	litaralType = TT_NumericLitaralType_Int32;
 
-	// 16i”‚Ìæ“ªƒ`ƒFƒbƒN
+	// 16é€²æ•°ã®å…ˆé ­ãƒã‚§ãƒƒã‚¯
 	//const TokenChar* pPos = buffer.pos;
 	Range r = buffer;
 	int len = IsHexLiteralStart(r);
 	if (len > 0) {
 		r.pos += len;
-		bHexMode = true;	// 16 i”‚Å‚ ‚é
+		bHexMode = true;	// 16 é€²æ•°ã§ã‚ã‚‹
 	}
 
-	int nStep = 0;	// ó‘Ô‘JˆÚ‚ğ•\‚·
+	int nStep = 0;	// çŠ¶æ…‹é·ç§»ã‚’è¡¨ã™
 
 	bool bEnd = false;
 	while (r.pos < r.end && !bEnd)
 	{
-		if (r.pos[0] > 255) {	// wchar_t ‚Ì”ÍˆÍƒ`ƒFƒbƒN
+		if (r.pos[0] > 255) {	// wchar_t ã®ç¯„å›²ãƒã‚§ãƒƒã‚¯
 			break;
 		}
 		Flags<AlphaNumTypeFlags> charType = GetAlphaNumType(r.pos[0]);
 
-		// ƒ}ƒ‹ƒ`ƒoƒCƒgƒR[ƒh‚Ü‚½‚Í§Œä•¶š‚Ü‚½‚Í . ˆÈŠO‚Ì‰‰Zq‚Å‚ ‚ê‚ÎI—¹
+		// ãƒãƒ«ãƒãƒã‚¤ãƒˆã‚³ãƒ¼ãƒ‰ã¾ãŸã¯åˆ¶å¾¡æ–‡å­—ã¾ãŸã¯ . ä»¥å¤–ã®æ¼”ç®—å­ã§ã‚ã‚Œã°çµ‚äº†
 		if (charType.hasFlag(AlphaNumTypeFlags::MBC) ||
 			charType.hasFlag(AlphaNumTypeFlags::Control) ||
 			(charType.hasFlag(AlphaNumTypeFlags::OpChar) && r.pos[0] != '.')) {
-			break;	// I—¹
+			break;	// çµ‚äº†
 		}
 
-		// ƒTƒtƒBƒbƒNƒX‚Ìƒ`ƒFƒbƒN (ƒTƒtƒBƒbƒNƒX‚Íˆê”ÔÅŒã‚¾‚ªA‚¢‚ë‚¢‚ë‚È‚Æ‚±‚ë‚É‘‚¯‚éB1f 1.0f .1f 1.0-e2f)
+		// ã‚µãƒ•ã‚£ãƒƒã‚¯ã‚¹ã®ãƒã‚§ãƒƒã‚¯ (ã‚µãƒ•ã‚£ãƒƒã‚¯ã‚¹ã¯ä¸€ç•ªæœ€å¾Œã ãŒã€ã„ã‚ã„ã‚ãªã¨ã“ã‚ã«æ›¸ã‘ã‚‹ã€‚1f 1.0f .1f 1.0-e2f)
 		if (charType.hasFlag(AlphaNumTypeFlags::Alphabet) /*|| charType.TestFlag(AlphaNumTypeFlags::HexAlpha)*/)
 		{
-			// ®”Œ^
+			// æ•´æ•°å‹
 			len = IsIntegerSuffix(r, &litaralType);
 			if (len > 0) {
 				r.pos += len;
-				bExistSuffix = true;	// ƒTƒtƒBƒbƒNƒX‚ğŒ©‚Â‚¯‚½
+				bExistSuffix = true;	// ã‚µãƒ•ã‚£ãƒƒã‚¯ã‚¹ã‚’è¦‹ã¤ã‘ãŸ
 				nStep = 10;
 				continue;
 			}
-			// À”Œ^
-			if (!bHexMode)	// 16V”‚Ì F ‚Æ float ‚Ì F ‚ğ‹æ•Ê‚µ‚½‚¢
+			// å®Ÿæ•°å‹
+			if (!bHexMode)	// 16æ–°æ•°ã® F ã¨ float ã® F ã‚’åŒºåˆ¥ã—ãŸã„
 			{
 				len = IsRealSuffix(r, &litaralType);
 				if (len > 0) {
 					r.pos += len;
-					bExistSuffix = true;	// ƒTƒtƒBƒbƒNƒX‚ğŒ©‚Â‚¯‚½
+					bExistSuffix = true;	// ã‚µãƒ•ã‚£ãƒƒã‚¯ã‚¹ã‚’è¦‹ã¤ã‘ãŸ
 					nStep = 10;
 					continue;
 				}
 			}
-			// ¦ 50LL ‚Ì‚æ‚¤‚Éd•¡‚Ì‰Â”\«‚ª‚ ‚é‚½‚ßA•¡”Œ©‚Â‚©‚Á‚Ä‚àƒGƒ‰[‚É‚µ‚È‚¢
+			// â€» 50LL ã®ã‚ˆã†ã«é‡è¤‡ã®å¯èƒ½æ€§ãŒã‚ã‚‹ãŸã‚ã€è¤‡æ•°è¦‹ã¤ã‹ã£ã¦ã‚‚ã‚¨ãƒ©ãƒ¼ã«ã—ãªã„
 		}
 
 		if (bExistSuffix) {
-			return 0;	// ƒTƒtƒBƒbƒNƒX‚ÌŒã‚ÉAƒTƒtƒBƒbƒNƒX‚Å‚Í‚È‚¢•¶š‚ª—ˆ‚½B‚¨‚©‚µ‚¢
+			return 0;	// ã‚µãƒ•ã‚£ãƒƒã‚¯ã‚¹ã®å¾Œã«ã€ã‚µãƒ•ã‚£ãƒƒã‚¯ã‚¹ã§ã¯ãªã„æ–‡å­—ãŒæ¥ãŸã€‚ãŠã‹ã—ã„
 		}
 
 		switch (nStep)
 		{
-		case 0:		// ®”•”•ª
+		case 0:		// æ•´æ•°éƒ¨åˆ†
 		{
 			if (bHexMode && charType.hasFlag(AlphaNumTypeFlags::HexAlpha)) {
-				r.pos++;		// 16 i”‚È‚ç HexAlpha ‚ğ‹–‰Â‚µ‚ÄŒp‘±
+				r.pos++;		// 16 é€²æ•°ãªã‚‰ HexAlpha ã‚’è¨±å¯ã—ã¦ç¶™ç¶š
 			}
 			else if (charType.hasFlag(AlphaNumTypeFlags::Number)) {
-				r.pos++;		// •’Ê‚Ì”’l‚à OK
+				r.pos++;		// æ™®é€šã®æ•°å€¤ã‚‚ OK
 			}
 			else if (charType.hasFlag(AlphaNumTypeFlags::OpChar) && r.pos[0] == '.') {
-				nStep = 1;	// . ‚ªŒ©‚Â‚©‚Á‚½B¬”•”•ª‚ÖˆÚs
+				nStep = 1;	// . ãŒè¦‹ã¤ã‹ã£ãŸã€‚å°æ•°éƒ¨åˆ†ã¸ç§»è¡Œ
 				r.pos++;
-				litaralType = TT_NumericLitaralType_Double;	// ‚Æ‚è‚ ‚¦‚¸ Double Œ^‚Æ‚·‚é
+				litaralType = TT_NumericLitaralType_Double;	// ã¨ã‚Šã‚ãˆãš Double å‹ã¨ã™ã‚‹
 			}
 			else {
 				len = IsExponentStart(r);
 				if (len > 0)		// e E + -
 				{
-					nStep = 2;		// e- ‚Æ‚©‚ªŒ©‚Â‚©‚Á‚½Bw”•”•ª‚ÖˆÚs
+					nStep = 2;		// e- ã¨ã‹ãŒè¦‹ã¤ã‹ã£ãŸã€‚æŒ‡æ•°éƒ¨åˆ†ã¸ç§»è¡Œ
 					r.pos += len;
-					litaralType = TT_NumericLitaralType_Double;	// w”•”‚ª‚ ‚é‚Ì‚Å‚Æ‚è‚ ‚¦‚¸ Double Œ^‚Æ‚·‚é
+					litaralType = TT_NumericLitaralType_Double;	// æŒ‡æ•°éƒ¨ãŒã‚ã‚‹ã®ã§ã¨ã‚Šã‚ãˆãš Double å‹ã¨ã™ã‚‹
 				}
 				else {
-					return 0;		// 10.5G “™A•Ï‚ÈƒTƒtƒBƒbƒNƒX‚Æ‚©AŸ‚Ì¯•Êq‚Æ‚ÌŠÔ‚ÉƒXƒy[ƒX‚ª–³‚¢‚Æ‚©
+					return 0;		// 10.5G ç­‰ã€å¤‰ãªã‚µãƒ•ã‚£ãƒƒã‚¯ã‚¹ã¨ã‹ã€æ¬¡ã®è­˜åˆ¥å­ã¨ã®é–“ã«ã‚¹ãƒšãƒ¼ã‚¹ãŒç„¡ã„ã¨ã‹
 				}
 			}
 			break;
 		}
-		case 1:		// ¬”•”•ª
+		case 1:		// å°æ•°éƒ¨åˆ†
 		{
 			if (bHexMode && charType.hasFlag(AlphaNumTypeFlags::HexAlpha)) {
-				r.pos++;		// 16 i”‚È‚ç HexAlpha ‚ğ‹–‰Â‚µ‚ÄŒp‘±
+				r.pos++;		// 16 é€²æ•°ãªã‚‰ HexAlpha ã‚’è¨±å¯ã—ã¦ç¶™ç¶š
 			}
 			else if (charType.hasFlag(AlphaNumTypeFlags::Number)) {
-				r.pos++;		// •’Ê‚Ì”’l‚à OK
+				r.pos++;		// æ™®é€šã®æ•°å€¤ã‚‚ OK
 			}
 			else
 			{
 				len = IsExponentStart(r);
 				if (len > 0)		// e E + -
 				{
-					nStep = 2;		// e- ‚Æ‚©‚ªŒ©‚Â‚©‚Á‚½Bw”•”•ª‚ÖˆÚs
+					nStep = 2;		// e- ã¨ã‹ãŒè¦‹ã¤ã‹ã£ãŸã€‚æŒ‡æ•°éƒ¨åˆ†ã¸ç§»è¡Œ
 					r.pos += len;
-					//litaralType = TT_NumericLitaralType_Double;	// w”•”‚ª‚ ‚é‚Ì‚Å‚Æ‚è‚ ‚¦‚¸ Double Œ^‚Æ‚·‚é
+					//litaralType = TT_NumericLitaralType_Double;	// æŒ‡æ•°éƒ¨ãŒã‚ã‚‹ã®ã§ã¨ã‚Šã‚ãˆãš Double å‹ã¨ã™ã‚‹
 				}
 				else {
-					return 0;		// 10.5G “™A•Ï‚ÈƒTƒtƒBƒbƒNƒX‚Æ‚©AŸ‚Ì¯•Êq‚Æ‚ÌŠÔ‚ÉƒXƒy[ƒX‚ª–³‚¢‚Æ‚©
+					return 0;		// 10.5G ç­‰ã€å¤‰ãªã‚µãƒ•ã‚£ãƒƒã‚¯ã‚¹ã¨ã‹ã€æ¬¡ã®è­˜åˆ¥å­ã¨ã®é–“ã«ã‚¹ãƒšãƒ¼ã‚¹ãŒç„¡ã„ã¨ã‹
 				}
 			}
 			break;
 		}
-		case 2:		// w”•”•ª
+		case 2:		// æŒ‡æ•°éƒ¨åˆ†
 		{
 			if (charType.hasFlag(AlphaNumTypeFlags::Number)) {
-				r.pos++;		// •’Ê‚Ì”’l‚Í OK
+				r.pos++;		// æ™®é€šã®æ•°å€¤ã¯ OK
 			}
 			else {
-				return 0;	// ‚»‚êˆÈŠO‚Í¸”s
+				return 0;	// ãã‚Œä»¥å¤–ã¯å¤±æ•—
 			}
 			break;
 		}
@@ -558,7 +558,7 @@ int CppLexer::ReadNumericLiteral(const Range& buffer)
 
 	if (r.pos - buffer.pos > 0)
 	{
-		// ‚±‚±‚Ü‚Å—ˆ‚½‚ç‰ğÍ¬Œ÷
+		// ã“ã“ã¾ã§æ¥ãŸã‚‰è§£ææˆåŠŸ
 		AddToken(TokenGroup::ArithmeticLiteral, buffer.pos, r.pos, litaralType);
 	}
 	return r.pos - buffer.pos;
@@ -570,7 +570,7 @@ int CppLexer::IsHexLiteralStart(const Range& buffer)
 	if (buffer.pos[0] == '0' && (buffer.pos[1] == 'x' || buffer.pos[1] == 'X'))
 		return 2;
 	return 0;
-	// VB ‚Í‚½‚µ‚© &H
+	// VB ã¯ãŸã—ã‹ &H
 }
 
 //------------------------------------------------------------------------------
@@ -691,7 +691,7 @@ int CppLexer::IsBlockCommentEnd(const Range& buffer)
 //------------------------------------------------------------------------------
 int CppLexer::ReadLineComment(const Range& buffer)
 {
-	// sƒRƒƒ“ƒg‚ÌŠJnƒ`ƒFƒbƒN
+	// è¡Œã‚³ãƒ¡ãƒ³ãƒˆã®é–‹å§‹ãƒã‚§ãƒƒã‚¯
 	int len = IsLineCommentStart(buffer);
 	if (len == 0) {
 		return 0;
@@ -700,18 +700,18 @@ int CppLexer::ReadLineComment(const Range& buffer)
 	Range r = buffer;
 	while (r.pos < r.end)
 	{
-		// s–– \ ƒ`ƒFƒbƒN
+		// è¡Œæœ« \ ãƒã‚§ãƒƒã‚¯
 		len = IsEscapeNewLine(r);
 		if (len > 0) {
 			r.pos += len;
-			continue;		// Œp‘±
+			continue;		// ç¶™ç¶š
 		}
 
-		// I—¹ƒ`ƒFƒbƒN (EOF ‚Í end “’B‚Åƒ‹[ƒv”²‚¯‚é‚Ì‚Å“Á‚É‹C‚É‚µ‚È‚­‚Ä—Ç‚¢)
+		// çµ‚äº†ãƒã‚§ãƒƒã‚¯ (EOF ã¯ end åˆ°é”ã§ãƒ«ãƒ¼ãƒ—æŠœã‘ã‚‹ã®ã§ç‰¹ã«æ°—ã«ã—ãªãã¦è‰¯ã„)
 		len = IsNewLine(r);
 		if (len > 0) {
-			// ‰üs‚ÍƒRƒƒ“ƒg‚É‚ÍŠÜ‚Ü‚È‚¢
-			break;			// I—¹
+			// æ”¹è¡Œã¯ã‚³ãƒ¡ãƒ³ãƒˆã«ã¯å«ã¾ãªã„
+			break;			// çµ‚äº†
 		}
 
 		++r.pos;
@@ -753,7 +753,7 @@ int CppLexer::IsOperator(const Range& buffer, int* langTokenType)
 			int				length;
 			int				type;
 		};
-		// ++ ‚Æ + ‚Ì‚æ‚¤‚ÉA1•¶š–Ú‚ª“¯‚¶‚à‚Ì‚Í•¶š”‚Ì‘½‚¢•û‚ªæ‚ÉŒŸõ‚³‚ê‚é‚æ‚¤‚É‚·‚é
+		// ++ ã¨ + ã®ã‚ˆã†ã«ã€1æ–‡å­—ç›®ãŒåŒã˜ã‚‚ã®ã¯æ–‡å­—æ•°ã®å¤šã„æ–¹ãŒå…ˆã«æ¤œç´¢ã•ã‚Œã‚‹ã‚ˆã†ã«ã™ã‚‹
 		static const WordData wordList[] =
 		{
 			{ ("##"),	2,	TT_CppOP_SharpSharp },
@@ -810,8 +810,8 @@ int CppLexer::IsOperator(const Range& buffer, int* langTokenType)
 		const int count = LN_ARRAY_SIZE_OF(wordList);
 		for (int i = 0; i < count; ++i)
 		{
-			if (wordList[i].word[0] == buffer.pos[0] &&		// ‚Ü‚¸‚Íæ“ª•¶š‚ğ’²‚×‚Ä
-				strncmp(wordList[i].word, buffer.pos, wordList[i].length) == 0)	// æ“ª‚ªˆê’v‚µ‚½‚çc‚è‚ğ’²‚×‚é
+			if (wordList[i].word[0] == buffer.pos[0] &&		// ã¾ãšã¯å…ˆé ­æ–‡å­—ã‚’èª¿ã¹ã¦
+				strncmp(wordList[i].word, buffer.pos, wordList[i].length) == 0)	// å…ˆé ­ãŒä¸€è‡´ã—ãŸã‚‰æ®‹ã‚Šã‚’èª¿ã¹ã‚‹
 			{
 				*langTokenType = (int)wordList[i].type;
 				return wordList[i].length;
@@ -855,7 +855,7 @@ int CppLexer::IsEscapeNewLine(const Range& buffer)
 //------------------------------------------------------------------------------
 int CppLexer::ReadPPHeaderName(const Range& buffer)
 {
-	// ƒGƒXƒP[ƒv‚Í–³‚¢
+	// ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã¯ç„¡ã„
 	bool notFoundEndToken;
 	int len = ReadEnclosingTokenHelper(buffer, IsStringLiteralStartInIncludeDirective, IsStringLiteralEndIncludeDirective, nullptr, &notFoundEndToken);
 	if (len > 0)
@@ -884,27 +884,27 @@ int CppLexer::IsStringLiteralEndIncludeDirective(const Range& buffer)
 }
 
 //------------------------------------------------------------------------------
-// ƒvƒŠƒvƒƒZƒbƒTƒg[ƒNƒ“—ñ(1s)‚Ì“Ç‚İæ‚èB
-// ‰üs‚ÍŠÜ‚Ü‚È‚¢B
-// #define AAA ‚Í u#, define, space, AAA, NewLinev‚Åo‚Ä‚­‚éB
-// EscapeNewLine ‚à“¯—lB
+// ãƒ—ãƒªãƒ—ãƒ­ã‚»ãƒƒã‚µãƒˆãƒ¼ã‚¯ãƒ³åˆ—(1è¡Œ)ã®èª­ã¿å–ã‚Šã€‚
+// æ”¹è¡Œã¯å«ã¾ãªã„ã€‚
+// #define AAA ã¯ ã€Œ#, define, space, AAA, NewLineã€ã§å‡ºã¦ãã‚‹ã€‚
+// EscapeNewLine ã‚‚åŒæ§˜ã€‚
 //		#error AAA\
 //		BBB
-// ‚ÍAu#, error, space, PPTokens, EscapeNewLine, PPTokensv
+// ã¯ã€ã€Œ#, error, space, PPTokens, EscapeNewLine, PPTokensã€
 //------------------------------------------------------------------------------
 int CppLexer::ReadPPTokens(const Range& buffer)
 {
 	Range r = buffer;
 	while (r.pos < r.end)
 	{
-		// ‰üs‚Ü‚Å“Ç‚Ş
+		// æ”¹è¡Œã¾ã§èª­ã‚€
 		int len = IsEscapeNewLine(r);
 		if (len > 0) {
-			break;		// I—¹
+			break;		// çµ‚äº†
 		}
 		len = IsNewLine(r);
 		if (len > 0) {
-			break;		// I—¹
+			break;		// çµ‚äº†
 		}
 		++r.pos;
 	}

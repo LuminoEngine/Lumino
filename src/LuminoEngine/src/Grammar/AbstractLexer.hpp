@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Token.hpp"
 
 namespace ln {
@@ -22,15 +22,15 @@ struct LexedToken
 	size_t length;
 };
 
-/** ASCII ƒR[ƒh‚Ì•¶ší•Ê */
+/** ASCII ã‚³ãƒ¼ãƒ‰ã®æ–‡å­—ç¨®åˆ¥ */
 enum class AlphaNumTypeFlags
 {
-	MBC = 0x0000,		/**< ƒ}ƒ‹ƒ`ƒoƒCƒg•¶š‚É”z’u‚³‚ê‚éƒR[ƒh */
-	Control = 0x0001,		/**< §Œä•¶š */
-	OpChar = 0x0002,		/**< ƒIƒyƒŒ[ƒVƒ‡ƒ“ƒR[ƒh */
-	Number = 0x0004,		/**< ”š */
-	Alphabet = 0x0008,		/**< ’Êí•¶š */
-	HexAlpha = 0x0100,		/**< 16i”š‚Æ‚µ‚Ä‚àg‚¦‚é•¶š */
+	MBC = 0x0000,		/**< ãƒãƒ«ãƒãƒã‚¤ãƒˆæ–‡å­—ã«é…ç½®ã•ã‚Œã‚‹ã‚³ãƒ¼ãƒ‰ */
+	Control = 0x0001,		/**< åˆ¶å¾¡æ–‡å­— */
+	OpChar = 0x0002,		/**< ã‚ªãƒšãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã‚³ãƒ¼ãƒ‰ */
+	Number = 0x0004,		/**< æ•°å­— */
+	Alphabet = 0x0008,		/**< é€šå¸¸æ–‡å­— */
+	HexAlpha = 0x0100,		/**< 16é€²æ•°å­—ã¨ã—ã¦ã‚‚ä½¿ãˆã‚‹æ–‡å­— */
 };
 LN_FLAGS_OPERATORS(AlphaNumTypeFlags);
 

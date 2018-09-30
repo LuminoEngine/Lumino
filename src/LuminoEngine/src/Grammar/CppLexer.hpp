@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "AbstractLexer.hpp"
 
@@ -8,9 +8,9 @@ enum CppTokenType
 {
 	TT_Cpp_Unknown = 0,
 
-	/* 1`255 ‚Í ASCII •¶š‚Æ‚·‚é (bison ‚Å•¶šƒŠƒeƒ‰ƒ‹ '*' “™‚ªg‚¦‚é‚æ‚¤‚É‚È‚é) */
+	/* 1ï½255 ã¯ ASCII æ–‡å­—ã¨ã™ã‚‹ (bison ã§æ–‡å­—ãƒªãƒ†ãƒ©ãƒ« '*' ç­‰ãŒä½¿ãˆã‚‹ã‚ˆã†ã«ãªã‚‹) */
 
-	/* ˆÈ‰º‚Í‘S‚Ä bison ’è‹`ƒtƒ@ƒCƒ‹“à‚Å %token ‚Æ‚µ‚Ä‚à’è‹`‚·‚é */
+	/* ä»¥ä¸‹ã¯å…¨ã¦ bison å®šç¾©ãƒ•ã‚¡ã‚¤ãƒ«å†…ã§ %token ã¨ã—ã¦ã‚‚å®šç¾©ã™ã‚‹ */
 
 	TT_CppKW_asm = 256,
 	TT_CppKW_auto,
@@ -76,10 +76,10 @@ enum CppTokenType
 	TT_CppKW_wchar_t,
 	TT_CppKW_while,
 
-	TT_CppOP_SeparatorBegin,	///< ˆÈ~‚Í‰‰Zq
+	TT_CppOP_SeparatorBegin,	///< ä»¥é™ã¯æ¼”ç®—å­
 	// operator
-	// ‰ğÍ‚ÍŠî–{“I‚É•¶š”‚Ì‘å‚«‚¢•û‚©‚çƒg[ƒNƒ“•ªŠ„‚µ‚È‚¢‚ÆA—á‚¦‚Î + ‚Æ ++ ‚ğŠÔˆá‚¦‚é‚±‚Æ‚ª‚ ‚éB
-	// —ájx+++++y	¨	x ++ ++ + y,
+	// è§£ææ™‚ã¯åŸºæœ¬çš„ã«æ–‡å­—æ•°ã®å¤§ãã„æ–¹ã‹ã‚‰ãƒˆãƒ¼ã‚¯ãƒ³åˆ†å‰²ã—ãªã„ã¨ã€ä¾‹ãˆã° + ã¨ ++ ã‚’é–“é•ãˆã‚‹ã“ã¨ãŒã‚ã‚‹ã€‚
+	// ä¾‹ï¼‰x+++++y	â†’	x ++ ++ + y,
 	TT_CppOP_SharpSharp,		// ## (concat)
 	TT_CppOP_Sharp,				// # (Prepro/stringize)
 	TT_CppOP_ArrowAsterisk,		// ->*
@@ -131,15 +131,15 @@ enum CppTokenType
 	TT_CppOP_LeftAngle,			// <
 	TT_CppOP_RightAngle,		// >
 
-	TT_CppOP_SeparatorEnd,			///< ˆÈ~‚Í‰‰Zq
+	TT_CppOP_SeparatorEnd,			///< ä»¥é™ã¯æ¼”ç®—å­
 
 	//<: :> <% %> %: %:%: ?= 
 	//and and_eq bitand bitor compl not not_eq
 	//or or_eq xor xor_eq
 
-	// new delete ‚ÍƒL[ƒ[ƒh‚Æ‚µ‚Äˆµ‚¤
+	// new delete ã¯ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰ã¨ã—ã¦æ‰±ã†
 
-	/* ‚¿‚È‚İ‚É C++11 ‚Ì‰‰Zq‚ÍˆÈ‰º‚Ì’Ê‚èBƒgƒŠƒOƒ‰ƒt‚ğŠÜ‚Ü‚È‚¯‚ê‚Î C++ ‚Æ“¯‚¶
+	/* ã¡ãªã¿ã« C++11 ã®æ¼”ç®—å­ã¯ä»¥ä¸‹ã®é€šã‚Šã€‚ãƒˆãƒªã‚°ãƒ©ãƒ•ã‚’å«ã¾ãªã‘ã‚Œã° C++ ã¨åŒã˜
 	{ } [ ] # ## ( )
 	<: :> <% %> %: %:%: ; : ...
 	new delete ? :: . .*
