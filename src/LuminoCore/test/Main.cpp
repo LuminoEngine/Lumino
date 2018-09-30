@@ -1,7 +1,7 @@
 ﻿
 #include <stdio.h>
 #include "Common.hpp"
-#include <Lumino/Base/Logger.hpp>
+#include <LuminoCore.hpp>
 
 
 #ifdef __EMSCRIPTEN__
