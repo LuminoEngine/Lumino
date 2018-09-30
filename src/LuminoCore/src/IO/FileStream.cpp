@@ -44,7 +44,7 @@ bool FileStream::open(const StringRef& filePath, FileOpenMode openMode)
 {
 	close();
 
-	m_filePath = Path(filePath).canonicalize();
+	m_filePath = Path(filePath);//Path(filePath).canonicalize();
 	m_openModeFlags = openMode;
 
 	if (m_openModeFlags.hasFlag(FileOpenMode::Deferring))

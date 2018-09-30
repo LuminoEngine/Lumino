@@ -27,37 +27,36 @@ int main(int argc, char** argv)
 #endif
 	try
 	{
-
-		if (argc == 3 && strcmp(argv[1], "--local-initial-setup"))
+		printf("argv[1]:%s\n", argv[1]);
+		
+		if (argc == 3 && strcmp(argv[1], "--local-initial-setup") == 0)
 		{
 			ln::Path packageDir = argv[2];
 			ln::Path toolsDir = ln::Path(packageDir, u"tools");
 			ln::List<ln::String> lines;
 
 			if (ln::FileSystem::existsFile(u"~/.profile")) {
-				// TODO: readAllLines
-				{
-					int beginLine = -1;
-					int endLine = -1;
-					ln::StreamReader r(u"~/.profile");
-					ln::String line;
-					while (r.readLine(&line)) {
-						if (line.indexOf(u"# [Begin Lumino]") == 0)
-							beginLine = lines.size();
-						if (line.indexOf(u"# [End Lumino]") == 0)
-							endLine = lines.size();
-						lines.add(line);
-					}
+				int beginLine = -1;
+				int endLine = -1;
+				printf("read\n");
+				ln::StreamReader r(u"~/.profile");
+				ln::String line;
+				while (r.readLine(&line)) {
+					if (line.indexOf(u"# [Begin Lumino]") == 0)
+						beginLine = lines.size();
+					if (line.indexOf(u"# [End Lumino]") == 0)
+						endLine = lines.size();
+					lines.add(line);
+				}
 
-					if (beginLine >= 0 && endLine >= 0 && beginLine < endLine) {
-						// already exists.
-					}
-					else {
-						lines.add(u"# [Begin Lumino]");
-						lines.add(ln::String::format(u"export LUMINO_ROOT={0}", packageDir));
-						lines.add(ln::String::format(u"export PATH=$PATH:{0}", toolsDir));
-						lines.add(u"# [End Lumino]");
-					}
+				if (beginLine >= 0 && endLine >= 0 && beginLine < endLine) {
+					// already exists.
+				}
+				else {
+					lines.add(u"# [Begin Lumino]");
+					lines.add(ln::String::format(u"export LUMINO_ROOT={0}", packageDir));
+					lines.add(ln::String::format(u"export PATH=$PATH:{0}", toolsDir));
+					lines.add(u"# [End Lumino]");
 				}
 			}
 			else {
@@ -67,6 +66,7 @@ int main(int argc, char** argv)
 				lines.add(u"# [End Lumino]");
 			}
 
+			printf("write\n");
 			ln::StreamWriter w(u"~/.profile");
 			for (auto& line : lines) {
 				w.writeLine(line);
