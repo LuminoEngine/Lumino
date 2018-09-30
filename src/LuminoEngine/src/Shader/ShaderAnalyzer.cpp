@@ -576,7 +576,6 @@ bool HLSLMetadataParser::parseRenderState(HLSLPass* pass)
 	const Token& name = current();
 	if (!nextTo('=')) return false;
 	if (!next()) return false;
-	const Token& value = current();
 
 	if (equalString(name, "VertexShader", 12))
 	{

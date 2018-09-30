@@ -130,7 +130,6 @@ public:
 	 * @param[in]   y        : Y 軸の回転角度 (ラジアン単位)
 	 * @param[in]   z        : Z 軸の回転角度 (ラジアン単位)
 	 * @param[in]   order    : 回転順序
-	 * @return      演算結果の行列
 	 */
     void rotateEulerAngles(float x, float y, float z, RotationOrder order = RotationOrder::ZXY);
 
@@ -138,7 +137,6 @@ public:
      * この行列を XYZ 各軸のオイラー角を指定して回転します。
      * @param[in]   angles  : XYZ 各軸の回転角度 (ラジアン単位)
      * @param[in]   order   : 回転順序
-     * @return      演算結果の行列
      */
     void rotateEulerAngles(const Vector3& angles, RotationOrder order = RotationOrder::ZXY);
 

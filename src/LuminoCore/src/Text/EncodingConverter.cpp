@@ -1,4 +1,4 @@
-﻿
+
 #include "Internal.hpp"
 #include <algorithm>
 #include <LuminoCore/Text/EncodingConverter.hpp>
@@ -158,8 +158,6 @@ void EncodingConverter::convertDecoderRemain(
 	UTF16 utf16[BufferingElements];
 	size_t totalBytesUsed = 0;
 	size_t totalCharsUsed = 0;
-	size_t bytesUsed;
-	size_t charsUsed;
 	const byte_t* src = (const byte_t*)src_;
 	byte_t* dest = (byte_t*)dest_;
 	size_t srcPos = 0;

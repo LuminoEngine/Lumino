@@ -103,7 +103,6 @@ public:
     /**
      * 指定された行列を使用してこの平面を座標変換します。
      * @param[in]   mat     : 処理の基になる行列
-     * @return      変換された平面
      */
     void transform(const Matrix& mat);
 

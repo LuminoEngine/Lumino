@@ -25,8 +25,6 @@ static void initKeyTable()
 	static bool mInitedKeyTable = false;
 	if ( mInitedKeyTable ) return;
 
-	GLFWKeyToLNKey[GLFW_KEY_UNKNOWN] = Keys::Unknown;
-
 	GLFWKeyToLNKey[GLFW_KEY_A] = Keys::A;
 	GLFWKeyToLNKey[GLFW_KEY_B] = Keys::B;
 	GLFWKeyToLNKey[GLFW_KEY_C] = Keys::C;
@@ -262,7 +260,12 @@ void GLFWPlatformWindow::window_key_callback(GLFWwindow* window, int key, int sc
 
 	PlatformEventType eventType = (action == GLFW_PRESS || action == GLFW_REPEAT) ? PlatformEventType::KeyDown : PlatformEventType::KeyUp;
 
-	thisWindow->sendEventToAllListener(PlatformEventArgs::makeKeyEvent(thisWindow, eventType, GLFWKeyToLNKey[key], glfwKeyModToLNKeyMod(mods), key));
+	Keys keyCode = Keys::Unknown;
+	if (key != GLFW_KEY_UNKNOWN) {
+		keyCode = GLFWKeyToLNKey[key];
+	}
+
+	thisWindow->sendEventToAllListener(PlatformEventArgs::makeKeyEvent(thisWindow, eventType, keyCode, glfwKeyModToLNKeyMod(mods), key));
 }
 
 void GLFWPlatformWindow::window_mouseButton_callback(GLFWwindow* window, int button, int action, int mods)

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "String.hpp"
 
 namespace ln {
@@ -12,7 +12,7 @@ public:
 private:
 	int64_t m_span;	// min resolution = 1s (time_t)
 
-	friend class DateTime;
+	friend struct DateTime;
 };
 
 inline TimeSpan::TimeSpan(int hours, int minutes, int seconds)

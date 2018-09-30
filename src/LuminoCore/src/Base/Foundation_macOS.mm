@@ -67,7 +67,7 @@ void PlatformEnvironment::getSpecialFolderPath(SpecialFolder specialFolder, Stri
 			if (path)
 				*outPath = path;
 			else
-				return "/";
+				*outPath = "/";
 			break;
 		}
 		default:

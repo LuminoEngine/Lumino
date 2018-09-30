@@ -1,4 +1,4 @@
-﻿
+
 #pragma once
 #include <stack>
 #include "../Base/String.hpp"
@@ -252,7 +252,7 @@ protected:
 
 	virtual bool onReadContainer(int* outElementCount) override
 	{
-		JsonElement* element;
+		JsonElement* element = nullptr;
 		if (m_nodeStack.empty())
 		{
 			element = m_localDoc->rootElement();
@@ -270,6 +270,10 @@ protected:
 		{
 			element = static_cast<JsonArray*>(m_nodeStack.top())->element(getNextIndex());
 			m_nodeStack.push(element);
+		}
+		else
+		{
+			LN_NOTIMPLEMENTED();
 		}
 
 		if (element->type() == JsonElementType::Object)

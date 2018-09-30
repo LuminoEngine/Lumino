@@ -188,8 +188,8 @@ public:
 
     /**
      * 指定された複数のベクトルの最小値で構成されるベクトルを返します。
-     * @param[in]   vec1    : 処理の基になるベクトルの配列
-     * @param[in]   count    : 処理の基になるベクトルの数
+     * @param[in]   vectors : 処理の基になるベクトルの配列
+     * @param[in]   count   : 処理の基になるベクトルの数
      * @return      最小値から作成されたベクトル
      */
     static Vector3 min(const Vector3* vectors, int count);

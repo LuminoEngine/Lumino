@@ -1,4 +1,4 @@
-﻿
+
 #include "Internal.hpp"
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
@@ -83,7 +83,7 @@ static void alignScalarsToBuffer(
 {
 	byte_t* head = buffer + offset;
 	int loop = std::min(unitCount, elements);
-	for (int i = 0; i < elements; i++) {
+	for (int i = 0; i < loop; i++) {
 		memcpy(head + arrayStride * i, source + unitBytes * i, unitBytes);
 	}
 }
@@ -97,7 +97,7 @@ static void alignVectorsToBuffer(
 	size_t copySize = std::min(srcVectorSize, sizeof(float) * columns);
 	byte_t* head = buffer + offset;
 	int loop = std::min(sourceElementCount, elements);
-	for (int i = 0; i < elements; i++) {
+	for (int i = 0; i < loop; i++) {
 		memcpy(head + arrayStride * i, source + srcVectorSize * i, copySize);
 	}
 }
@@ -113,7 +113,7 @@ static void alignMatricesToBuffer(
 	byte_t* head = buffer + offset;
 	int loop = std::min(sourceElementCount, elements);
 	int rowLoop = std::min(sourceRows, rows);
-	for (int i = 0; i < elements; i++)
+	for (int i = 0; i < loop; i++)
 	{
 		const byte_t* srcMatHead = source + (sourceColumns * sourceRows * sizeof(float)) * i;
 		byte_t* dstMatHead = head + arrayStride * i;
@@ -518,8 +518,8 @@ void ShaderParameter::setPointer(void* value)
 // ShaderConstantBuffer
 
 ShaderConstantBuffer::ShaderConstantBuffer()
-	: m_rhiObject(nullptr)
-	, m_owner(nullptr)
+	: m_owner(nullptr)
+	, m_rhiObject(nullptr)
 {
 }
 

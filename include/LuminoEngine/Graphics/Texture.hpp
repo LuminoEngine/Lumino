@@ -1,4 +1,4 @@
-﻿
+
 #pragma once
 #include "GraphicsResource.hpp"
 #include "GeometryStructs.hpp"
@@ -34,7 +34,7 @@ public:
 protected:
 	Texture();
 	virtual ~Texture();
-	virtual void initialize();
+	void initialize();
 	virtual detail::ITexture* resolveRHIObject() = 0;
 	void setSize(const SizeI& size) { m_size = size; }
 	void setFormat(TextureFormat format) { m_format = format; }
@@ -98,7 +98,7 @@ LN_CONSTRUCT_ACCESS:
 	void initialize(detail::ITexture* ref);
 
 LN_INTERNAL_ACCESS:
-	detail::ITexture* resolveRHIObject();
+	virtual detail::ITexture* resolveRHIObject() override;
 	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
 
 private:

@@ -192,8 +192,6 @@ Path Path::canonicalize() const
         return *this;
     }
 
-    String* path;
-
     if (isAbsolute()) {
         std::vector<Char> tmpPath(m_path.length() + 1);
         int len = detail::PathTraits::canonicalizePath(m_path.c_str(), m_path.length(), tmpPath.data(), tmpPath.size());
