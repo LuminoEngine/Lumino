@@ -79,7 +79,7 @@ install(TARGETS ${PROJECT_NAME}
     INCLUDES    DESTINATION include                    # include directory (File is not copied)
     FRAMEWORK DESTINATION .)
 
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/include DESTINATION .)
+#install(DIRECTORY ${PROJECT_SOURCE_DIR}/include DESTINATION .)
 
 install(
     EXPORT LuminoCoreTargets

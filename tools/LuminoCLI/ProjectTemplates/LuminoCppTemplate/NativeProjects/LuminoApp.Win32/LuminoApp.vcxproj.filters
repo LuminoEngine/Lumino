@@ -5,7 +5,10 @@
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="PCH.cpp">
-      <Filter>AppResources</Filter>
+      <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>App</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -13,34 +16,34 @@
       <Filter>Sources</Filter>
     </ClInclude>
     <ClInclude Include="PCH.h">
-      <Filter>AppResources</Filter>
+      <Filter>App</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
-      <Filter>AppResources</Filter>
+      <Filter>App</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">
-      <Filter>AppResources</Filter>
+      <Filter>App</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="app.ico">
-      <Filter>AppResources</Filter>
+      <Filter>App</Filter>
     </Image>
     <Image Include="small.ico">
-      <Filter>AppResources</Filter>
+      <Filter>App</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Sources">
       <UniqueIdentifier>{252925f5-9db3-447b-b807-dd336c903acb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="AppResources">
+    <Filter Include="App">
       <UniqueIdentifier>{1ee9024f-4f5b-43b9-b1c1-01f3194bc2c0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc">
-      <Filter>AppResources</Filter>
+      <Filter>App</Filter>
     </ResourceCompile>
   </ItemGroup>
 </Project>

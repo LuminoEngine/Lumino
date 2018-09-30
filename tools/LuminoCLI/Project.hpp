@@ -26,11 +26,12 @@ public:
 	Project(Workspace* owner);
 	virtual ~Project();
 
-	Result newProject(const ln::Path& dir, const ln::String& projectName);
+	Result newProject(const ln::Path& projectDir, const ln::String& projectName);
 	Result openProject(const ln::Path& dir);
 	Result saveProject();
 
 	Workspace* workspace() const { return m_workspace; }
+	const ln::Path& engineDirPath() const { return m_engineDir; }
 	const ln::Path& rootDirPath() const { return m_rootDir; }
 	const ln::Path& buildDir() const { return m_buildDir; }
 
@@ -51,6 +52,7 @@ private:
 
 	ln::String m_projectName;
 	ln::Path m_rootDir;
+	ln::Path m_engineDir;
 	ln::Path m_sourcesDir;
 	ln::Path m_assetsDir;
 	ln::Path m_buildDir;

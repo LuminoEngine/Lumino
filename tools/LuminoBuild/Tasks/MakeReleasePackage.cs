@@ -21,8 +21,8 @@ namespace LuminoBuild.Tasks
                 targetRootDir = Path.Combine(builder.LuminoRootDir, "ReleasePackage.macOS");
             Directory.CreateDirectory(targetRootDir);
 
-            string cppEngineRoot = Path.Combine(targetRootDir, "Engine", "Cpp");
-            Directory.CreateDirectory(cppEngineRoot);
+            string nativeEngineRoot = Path.Combine(targetRootDir, "Engine", "Native");
+            Directory.CreateDirectory(nativeEngineRoot);
 
             // docs
             {
@@ -37,32 +37,16 @@ namespace LuminoBuild.Tasks
             {
                 File.Copy(
                     Path.Combine(builder.LuminoSourceDir, "LuminoSetup.cmake"),
-                    Path.Combine(cppEngineRoot, "LuminoSetup.cmake"), true);
+                    Path.Combine(nativeEngineRoot, "lib", "LuminoSetup.cmake"), true);
 
                 File.Copy(
                     Path.Combine(builder.LuminoExternalDir, "ImportExternalLibraries.cmake"),
-                    Path.Combine(cppEngineRoot, "ImportExternalLibraries.cmake"), true);
+                    Path.Combine(nativeEngineRoot, "lib", "ImportExternalLibraries.cmake"), true);
+
+                File.WriteAllText(
+                    Path.Combine(nativeEngineRoot, ".gitignore"),
+                    "include/\nlib/\n");
             }
-
-
-            var engineArchs = new[]
-            {
-                new { Src = "MSVC2017-x86-MT", Dst = "MSVC2017-x86-MT" },
-                new { Src = "Emscripten", Dst = "Emscripten" },
-                new { Src = "Android-arm64-v8a-Debug", Dst = "Android-arm64-v8a" },
-                new { Src = "Android-arm64-v8a-Release", Dst = "Android-arm64-v8a" },
-                new { Src = "Android-armeabi-v7a-Debug", Dst = "Android-armeabi-v7a" },
-                new { Src = "Android-armeabi-v7a-Release", Dst = "Android-armeabi-v7a" },
-                new { Src = "Android-x86-Debug", Dst = "Android-x86" },
-                new { Src = "Android-x86-Release", Dst = "Android-x86" },
-                new { Src = "Android-x86_64-Debug", Dst = "Android-x86_64" },
-                new { Src = "Android-x86_64-Release", Dst = "Android-x86_64" },
-                new { Src = "macOS", Dst = "macOS" },
-                new { Src = "iOS-SIMULATOR64-Debug", Dst = "iOS-SIMULATOR64-Debug" },
-                new { Src = "iOS-SIMULATOR64-Release", Dst = "iOS-SIMULATOR64-Release" },
-                new { Src = "iOS-OS-Debug", Dst = "iOS-OS-Debug" },
-                new { Src = "iOS-OS-Release", Dst = "iOS-OS-Release" },
-            };
 
             var externalLibs = new string[]
             {
@@ -74,40 +58,36 @@ namespace LuminoBuild.Tasks
                 "SPIRV-Cross",
                 "zlib",
             };
-
-            //if (Utils.IsWin32)
+            
+            // C++ Engine
             {
-                // C++ Engine
+                // include files
                 {
+                    Utils.CopyDirectory(
+                        Path.Combine(builder.LuminoRootDir, "include"),
+                        Path.Combine(nativeEngineRoot, "include"));
+                }
 
-                    foreach (var arch in engineArchs)
+                // lib files
+                foreach (var arch in BuildEnvironment.TargetArchs)
+                {
+                    if (Directory.Exists(Path.Combine(tempInstallDir, arch.SourceDirName)))   // copy if directory exists.
                     {
-                        if (Directory.Exists(Path.Combine(tempInstallDir, arch.Src)))   // copy if directory exists.
+                        var externalInstallDir = Path.Combine(builder.LuminoBuildDir, arch.SourceDirName, "ExternalInstall");
+                        var targetDir = Path.Combine(nativeEngineRoot, "lib", arch.DestDirName);
+
+                        Utils.CopyDirectory(
+                            Path.Combine(tempInstallDir, arch.SourceDirName, "lib"),
+                            targetDir);
+
+                        foreach (var lib in externalLibs)
                         {
-                            var externalInstallDir = Path.Combine(builder.LuminoBuildDir, arch.Src, "ExternalInstall");
-                            var targetDir = Path.Combine(cppEngineRoot, arch.Dst);
-
-                            Utils.CopyDirectory(
-                                Path.Combine(builder.LuminoSourceDir, "LuminoCore", "include"),
-                                Path.Combine(targetDir, "include"));
-
-                            Utils.CopyDirectory(
-                                Path.Combine(builder.LuminoSourceDir, "LuminoEngine", "include"),
-                                Path.Combine(targetDir, "include"));
-
-                            Utils.CopyDirectory(
-                                Path.Combine(tempInstallDir, arch.Src, "lib"),
-                                Path.Combine(targetDir, "lib"));
-
-                            foreach (var lib in externalLibs)
+                            var srcDir = Path.Combine(externalInstallDir, lib, "lib");
+                            if (Directory.Exists(srcDir))   // copy if directory exists. openal-soft etc are optional.
                             {
-                                var srcDir = Path.Combine(externalInstallDir, lib, "lib");
-                                if (Directory.Exists(srcDir))   // copy if directory exists. openal-soft etc are optional.
-                                {
-                                    Utils.CopyDirectory(
-                                        srcDir,
-                                        Path.Combine(targetDir, "lib"));
-                                }
+                                Utils.CopyDirectory(
+                                    srcDir,
+                                    targetDir);
                             }
                         }
                     }

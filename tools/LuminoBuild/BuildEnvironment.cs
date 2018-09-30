@@ -4,7 +4,13 @@ using System.IO;
 
 namespace LuminoBuild
 {
-    class BuildEnvironment
+    public class TargetArch
+    {
+        public string SourceDirName { get; set; }
+        public string DestDirName { get; set; }
+    }
+
+    public class BuildEnvironment
     {
         public const string CMakeTargetInstallDir = "CMakeInstallTemp";
         public const string emsdkVer = "sdk-1.38.10-64bit";
@@ -24,6 +30,27 @@ namespace LuminoBuild
         public static string AndroidSdkNinja { get; set; }
         public static string AndroidNdkRootDir { get; set; }
         public static string AndroidCMakeToolchain { get; set; }
+
+
+
+        public static TargetArch[] TargetArchs = new TargetArch[]
+        {
+            new TargetArch(){ SourceDirName = "MSVC2017-x86-MT", DestDirName = "MSVC2017-x86-MT" },
+            new TargetArch(){ SourceDirName = "Emscripten", DestDirName = "Emscripten" },
+            new TargetArch(){ SourceDirName = "Android-arm64-v8a-Debug", DestDirName = "Android-arm64-v8a" },
+            new TargetArch(){ SourceDirName = "Android-arm64-v8a-Release", DestDirName = "Android-arm64-v8a" },
+            new TargetArch(){ SourceDirName = "Android-armeabi-v7a-Debug", DestDirName = "Android-armeabi-v7a" },
+            new TargetArch(){ SourceDirName = "Android-armeabi-v7a-Release", DestDirName = "Android-armeabi-v7a" },
+            new TargetArch(){ SourceDirName = "Android-x86-Debug", DestDirName = "Android-x86" },
+            new TargetArch(){ SourceDirName = "Android-x86-Release", DestDirName = "Android-x86" },
+            new TargetArch(){ SourceDirName = "Android-x86_64-Debug", DestDirName = "Android-x86_64" },
+            new TargetArch(){ SourceDirName = "Android-x86_64-Release", DestDirName = "Android-x86_64" },
+            new TargetArch(){ SourceDirName = "macOS", DestDirName = "macOS" },
+            new TargetArch(){ SourceDirName = "iOS-SIMULATOR64-Debug", DestDirName = "iOS-SIMULATOR64-Debug" },
+            new TargetArch(){ SourceDirName = "iOS-SIMULATOR64-Release", DestDirName = "iOS-SIMULATOR64-Release" },
+            new TargetArch(){ SourceDirName = "iOS-OS-Debug", DestDirName = "iOS-OS-Debug" },
+            new TargetArch(){ SourceDirName = "iOS-OS-Release", DestDirName = "iOS-OS-Release" },
+        };
 
         public static void Initialize()
         {

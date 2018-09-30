@@ -11,7 +11,7 @@ public:
 	Workspace();
 	virtual ~Workspace();
 
-	Result newProject(const ln::Path& dir, const ln::String& projectName);
+	Result newProject(const ln::Path& projectDir, const ln::String& projectName);
 	Result openProject(const ln::Path& dir);
 	Result buildProject(const ln::String& target);
 

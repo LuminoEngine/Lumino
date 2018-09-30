@@ -4,7 +4,7 @@
 
 int main(int argc, char** argv)
 {
-#if 1// && defined(_WIN32)
+#if defined(LN_DEBUG) && defined(_WIN32)
 	if (argc == 1)
 	{
 		//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\HelloLumino");
@@ -120,7 +120,9 @@ int main(int argc, char** argv)
 					return 1;
 				}
 				else {
-					workspace->newProject(ln::Environment::currentDirectory(), init_projectName->value());
+					workspace->newProject(
+						ln::Path(ln::Environment::currentDirectory(), init_projectName->value()),
+						init_projectName->value());
 				}
 			}
 			else if (parser.has(buildCommand))

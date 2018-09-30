@@ -33,6 +33,7 @@ Result CppLanguageContext::applyTemplates()
 	auto srcRoot = ln::Path(projectTemplatesDir, u"LuminoCppTemplate");
 	auto dstRoot = project()->rootDirPath();
 
+
 	// Common
 	{
 		ln::String files[] = {
@@ -52,6 +53,10 @@ Result CppLanguageContext::applyTemplates()
 
 			ln::FileSystem::copyFile(ln::Path(srcRoot, file), filePath, ln::FileCopyOption::Overwrite);
 		}
+
+		ln::FileSystem::copyDirectory(
+			ln::Path::combine(project()->workspace()->buildEnvironment()->luminoPackageRootDir(), u"Engine", u"Native"),
+			project()->engineDirPath(), true, true);
 	}
 
 	// Win32
