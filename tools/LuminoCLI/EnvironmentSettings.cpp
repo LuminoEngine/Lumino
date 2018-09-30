@@ -1,4 +1,4 @@
-﻿
+
 #include "EnvironmentSettings.hpp"
 
 void EnvironmentSettings::updatePathes()
@@ -82,7 +82,11 @@ void BuildEnvironment::setupPathes(EnvironmentSettings* env)
 	m_luminoEmscriptenSdkDirPath = ln::Path(m_luminoRepoRoot, u"build/CMakeInstallTemp/Emscripten");
 	m_projectTemplatesDirPath = ln::Path(m_luminoRepoRoot, u"tools/LuminoCLI/ProjectTemplates");
 
+#if defined(LN_OS_WIN32)
 	m_luminoPackageRootDir = ln::Path(m_luminoRepoRoot, u"ReleasePackage.Win32");
+#elif defined(LN_OS_MAC)
+	m_luminoPackageRootDir = ln::Path(m_luminoRepoRoot, u"ReleasePackage.macOS");
+#endif
 }
 
 void BuildEnvironment::verifyAndInstall()

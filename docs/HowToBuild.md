@@ -29,6 +29,7 @@ After this, please check in the "build/..." folder.
 
 ```
 $ brew install git
+brew install doxygen docfx
 
 brew update
 $ brew install openssl

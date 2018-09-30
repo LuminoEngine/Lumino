@@ -7,7 +7,7 @@
 
 #import <objc/runtime.h>
 #include <string>
-#include <Lumino/Base/Environment.hpp>
+#include <LuminoCore/Base/Environment.hpp>
 #include "Environment_Mac.hpp"
 
 //std::string NSStringToStdString(NSString* nsstring) {

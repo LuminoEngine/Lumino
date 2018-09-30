@@ -6,8 +6,8 @@
 #include <string>
 #include <vector>
 #include <chrono>
-#include <Lumino/IO/Stream.hpp>
-#include <Lumino/IO/Process.hpp>
+#include <LuminoCore/IO/Stream.hpp>
+#include <LuminoCore/IO/Process.hpp>
 
 #if defined(LN_OS_MAC)
 //#include <crt_externs.h>

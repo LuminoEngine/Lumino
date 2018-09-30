@@ -5,9 +5,9 @@
 #include <dirent.h>
 #include <fnmatch.h>
 #include "Internal.hpp"
-#include <Lumino/Base/EnumFlags.hpp>
-#include <Lumino/Text/Encoding.hpp>
-#include <Lumino/IO/Common.hpp>
+#include <LuminoCore/Base/EnumFlags.hpp>
+#include <LuminoCore/Text/Encoding.hpp>
+#include <LuminoCore/IO/Common.hpp>
 #include "PathHelper.hpp"
 
 namespace ln {

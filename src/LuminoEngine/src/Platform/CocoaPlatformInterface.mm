@@ -1,7 +1,7 @@
 
 #include "Internal.hpp"
-#include <Lumino/Engine/Application.hpp>
-#include <Lumino/Platform/CocoaPlatformInterface.hpp>
+#include <LuminoEngine/Engine/Application.hpp>
+#include <LuminoEngine/Platform/CocoaPlatformInterface.hpp>
 
 extern "C" ::ln::Application* LuminoCreateApplicationInstance();
 

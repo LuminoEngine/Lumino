@@ -22,7 +22,9 @@ namespace LuminoBuild.Tasks
             Directory.CreateDirectory(targetRootDir);
 
             string nativeEngineRoot = Path.Combine(targetRootDir, "Engine", "Native");
+            string nativeEngineLib = Path.Combine(nativeEngineRoot, "lib");
             Directory.CreateDirectory(nativeEngineRoot);
+            Directory.CreateDirectory(nativeEngineLib);
 
             // docs
             {
@@ -37,11 +39,11 @@ namespace LuminoBuild.Tasks
             {
                 File.Copy(
                     Path.Combine(builder.LuminoSourceDir, "LuminoSetup.cmake"),
-                    Path.Combine(nativeEngineRoot, "lib", "LuminoSetup.cmake"), true);
+                    Path.Combine(nativeEngineLib, "LuminoSetup.cmake"), true);
 
                 File.Copy(
                     Path.Combine(builder.LuminoExternalDir, "ImportExternalLibraries.cmake"),
-                    Path.Combine(nativeEngineRoot, "lib", "ImportExternalLibraries.cmake"), true);
+                    Path.Combine(nativeEngineLib, "ImportExternalLibraries.cmake"), true);
 
                 File.WriteAllText(
                     Path.Combine(nativeEngineRoot, ".gitignore"),

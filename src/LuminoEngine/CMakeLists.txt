@@ -190,6 +190,8 @@ elseif (WIN32)
 
 elseif (APPLE)
     list(APPEND LN_PLATFORM_LIBS glfw GLAD)
+    find_library(COCOA_LIBRARY Cocoa)
+    list(APPEND LN_PLATFORM_LIBS ${COCOA_LIBRARY})
     
 elseif (UNIX)
     if (LN_ANDROID)

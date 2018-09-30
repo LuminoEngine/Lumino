@@ -1,9 +1,14 @@
 
 #include "Internal.hpp"
+
+#ifdef LN_OS_MAC
 #import <Cocoa/Cocoa.h>
+#endif
 
 namespace ln {
 namespace detail {
+
+#ifdef LN_OS_MAC
 
 void Cocoa_getScreenMousePosition(int* x, int* y)
 {
@@ -46,6 +51,8 @@ void Cocoa_pointToScreen(void* windowId, int clientPointX, int clientPointY, int
 	*screenPointX = nativeScreenPoint.x;
 	*screenPointY = -nativeScreenPoint.y + screenHeight;
 }
+
+#endif
 
 } // namespace detail
 } // namespace ln

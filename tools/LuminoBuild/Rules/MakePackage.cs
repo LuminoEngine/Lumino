@@ -17,6 +17,7 @@ namespace LuminoBuild.Rules
             {
                 builder.DoTask("MakeVSProjects");
                 builder.DoTask("BuildEngine_MSVC");
+                builder.DoTask("BuildEngine_Emscripten");
             }
             if (Utils.IsMac)
             {
@@ -24,7 +25,6 @@ namespace LuminoBuild.Rules
                 builder.DoTask("BuildEngine_iOS");
                 
             }
-            builder.DoTask("BuildEngine_Emscripten");
 
             if (BuildEnvironment.AndroidStudioFound)
             {
