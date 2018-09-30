@@ -10,12 +10,12 @@ set(LN_ENGINE_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/../../include)
 # Files
 
 set(LN_SOURCES_Engine
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Engine/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Engine/Application.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Engine/Diagnostics.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Engine/Engine.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Engine/EngineSettings.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Engine/Object.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Application.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Diagnostics.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Engine.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/EngineSettings.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Object.hpp
     src/Engine/Internal.hpp
     src/Engine/Application.cpp
     src/Engine/Diagnostics.cpp
@@ -31,11 +31,11 @@ set(LN_SOURCES_Engine
 )
 
 set(LN_SOURCES_Platform
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Platform/CocoaPlatformInterface.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Platform/PlatformEvent.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Platform/PlatformSupport.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Platform/PlatformWindow.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Platform/Win32PlatformInterface.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/CocoaPlatformInterface.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/PlatformEvent.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/PlatformSupport.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/PlatformWindow.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/Win32PlatformInterface.hpp
     src/Platform/Internal.hpp
     src/Platform/EmptyPlatformWindowManager.cpp
     src/Platform/EmptyPlatformWindowManager.hpp
@@ -62,11 +62,11 @@ set(LN_SOURCES_Grammar
 )
 
 set(LN_SOURCES_Input
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Input/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Input/Input.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Input/InputBinding.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Input/InputController.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Input/Mouse.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Input/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Input/Input.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Input/InputBinding.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Input/InputController.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Input/Mouse.hpp
     src/Input/GLFWInputDriver.cpp
     src/Input/GLFWInputDriver.hpp
     src/Input/Input.cpp
@@ -85,19 +85,19 @@ set(LN_SOURCES_Input
 )
 
 set(LN_SOURCES_Graphics
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Graphics/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Graphics/Bitmap.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Graphics/ColorStructs.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Graphics/DepthBuffer.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Graphics/GeometryStructs.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Graphics/GraphicsContext.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Graphics/GraphicsResource.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Graphics/IndexBuffer.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Graphics/RenderState.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Graphics/SamplerState.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Graphics/Texture.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Graphics/VertexBuffer.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Graphics/VertexDeclaration.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/Bitmap.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/ColorStructs.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/DepthBuffer.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/GeometryStructs.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/GraphicsContext.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/GraphicsResource.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/IndexBuffer.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/RenderState.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/SamplerState.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/Texture.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/VertexBuffer.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/VertexDeclaration.hpp
     src/Graphics/Internal.hpp
     src/Graphics/Bitmap.cpp
     src/Graphics/ColorStructs.cpp
@@ -122,8 +122,8 @@ set(LN_SOURCES_Graphics
 )
 
 set(LN_SOURCES_Shader
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Shader/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/Shader/Shader.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/Shader.hpp
     src/Shader/Internal.hpp
     src/Shader/Shader.cpp
     src/Shader/ShaderAnalyzer.cpp
@@ -133,9 +133,9 @@ set(LN_SOURCES_Shader
 )
 
 set(LN_SOURCES_UI
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/UI/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/UI/UIEvents.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/Lumino/UI/UIFrameWindow.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIEvents.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIFrameWindow.hpp
     src/UI/UIFrameWindow.cpp
     src/UI/UIManager.cpp
     src/UI/UIManager.hpp

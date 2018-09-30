@@ -41,7 +41,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC  
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>  
+    $<BUILD_INTERFACE:${LN_CORE_INCLUDE_DIR}>  
     $<INSTALL_INTERFACE:include>  # <prefix>/include
 )
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LN_LINK_LIBS})
