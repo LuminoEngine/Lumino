@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/Graphics/Texture.hpp>
-#include <Lumino/Shader/ShaderHelper.hpp>
+#include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoEngine/Shader/ShaderHelper.hpp>
 
 namespace ln {
 namespace detail {

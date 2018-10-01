@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/Graphics/VertexDeclaration.hpp>
-#include <Lumino/Shader/Shader.hpp>
+#include <LuminoEngine/Graphics/VertexDeclaration.hpp>
+#include <LuminoEngine/Shader/Shader.hpp>
 #include "../Engine/LinearAllocator.hpp"
 #include "DrawElementListBuilder.hpp"
 #include "SpriteRenderFeature.hpp"

@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/Graphics/Texture.hpp>
+#include <LuminoEngine/Graphics/Texture.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 #include "SpriteRenderFeature.hpp"
 #include "RenderingManager.hpp"

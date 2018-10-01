@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/Graphics/Texture.hpp>
-#include <Lumino/Shader/Shader.hpp>
-#include <Lumino/Shader/ShaderInterfaceFramework.hpp>
+#include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoEngine/Shader/Shader.hpp>
+#include <LuminoEngine/Shader/ShaderInterfaceFramework.hpp>
 
 namespace ln {
 namespace detail {

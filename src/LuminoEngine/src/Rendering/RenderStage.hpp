@@ -1,8 +1,8 @@
 ﻿#pragma once
-#include <Lumino/Graphics/ColorStructs.hpp>
-#include <Lumino/Graphics/RenderState.hpp>
-#include <Lumino/Graphics/Texture.hpp>
-#include <Lumino/Graphics/DepthBuffer.hpp>
+#include <LuminoEngine/Graphics/ColorStructs.hpp>
+#include <LuminoEngine/Graphics/RenderState.hpp>
+#include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoEngine/Graphics/DepthBuffer.hpp>
 #include "../Engine/LinearAllocator.hpp"
 
 namespace ln {

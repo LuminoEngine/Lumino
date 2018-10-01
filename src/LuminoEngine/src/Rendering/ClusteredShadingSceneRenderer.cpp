@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/Graphics/GraphicsContext.hpp>
-#include <Lumino/Rendering/RenderView.hpp>
+#include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/Rendering/RenderView.hpp>
 #include "RenderingManager.hpp"
 #include "ClusteredShadingSceneRenderer.hpp"
 #include "RenderTargetTextureCache.hpp"

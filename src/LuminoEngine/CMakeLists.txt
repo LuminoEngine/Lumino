@@ -123,8 +123,8 @@ set(LN_SOURCES_Graphics
 set(LN_SOURCES_Shader
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/Shader.hpp
-    include/Lumino/Shader/ShaderHelper.hpp
-    include/Lumino/Shader/ShaderInterfaceFramework.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/ShaderHelper.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/ShaderInterfaceFramework.hpp
     src/Shader/Internal.hpp
     src/Shader/Shader.cpp
     src/Shader/ShaderHelper.cpp
@@ -136,13 +136,13 @@ set(LN_SOURCES_Shader
 )
 
 set(LN_SOURCES_Rendering
-    include/Lumino/Rendering/Common.hpp
-    include/Lumino/Rendering/CommandBuffer.hpp
-    include/Lumino/Rendering/Material.hpp
-    include/Lumino/Rendering/RenderFeature.hpp
-    include/Lumino/Rendering/RenderingContext.hpp
-    include/Lumino/Rendering/RenderView.hpp
-    include/Lumino/Rendering/Vertex.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/CommandBuffer.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/Material.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/RenderFeature.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/RenderingContext.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/RenderView.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/Vertex.hpp
     src/Rendering/Internal.hpp
     src/Rendering/ClusteredShadingSceneRenderer.cpp
     src/Rendering/ClusteredShadingSceneRenderer.hpp

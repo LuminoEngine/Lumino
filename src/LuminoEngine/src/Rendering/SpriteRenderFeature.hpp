@@ -1,10 +1,10 @@
 ﻿#pragma once
-#include <Lumino/Base/EnumFlags.hpp>
-#include <Lumino/Graphics/GeometryStructs.hpp>
-#include <Lumino/Graphics/ColorStructs.hpp>
-#include <Lumino/Graphics/VertexDeclaration.hpp>
-#include <Lumino/Rendering/RenderFeature.hpp>
-#include <Lumino/Rendering/Vertex.hpp>
+#include <LuminoCore/Base/EnumFlags.hpp>
+#include <LuminoEngine/Graphics/GeometryStructs.hpp>
+#include <LuminoEngine/Graphics/ColorStructs.hpp>
+#include <LuminoEngine/Graphics/VertexDeclaration.hpp>
+#include <LuminoEngine/Rendering/RenderFeature.hpp>
+#include <LuminoEngine/Rendering/Vertex.hpp>
 #include "../Graphics/GraphicsDeviceContext.hpp"
 #include "RenderStage.hpp"
 

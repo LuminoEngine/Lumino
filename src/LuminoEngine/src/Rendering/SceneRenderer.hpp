@@ -1,7 +1,7 @@
 ﻿#pragma once
-#include <Lumino/Graphics/RenderState.hpp>
-#include <Lumino/Shader/Shader.hpp>
-#include <Lumino/Rendering/RenderView.hpp>
+#include <LuminoEngine/Graphics/RenderState.hpp>
+#include <LuminoEngine/Shader/Shader.hpp>
+#include <LuminoEngine/Rendering/RenderView.hpp>
 
 namespace ln {
 class AbstractMaterial;

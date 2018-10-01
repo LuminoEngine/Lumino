@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/Rendering/CommandBuffer.hpp>
+#include <LuminoEngine/Rendering/CommandBuffer.hpp>
 
 namespace ln {
 namespace detail {

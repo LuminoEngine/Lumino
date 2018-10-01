@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/Graphics/Bitmap.hpp>
-#include <Lumino/Graphics/Texture.hpp>
+#include <LuminoEngine/Graphics/Bitmap.hpp>
+#include <LuminoEngine/Graphics/Texture.hpp>
 #include "LightClusters.hpp"
 
 namespace ln {

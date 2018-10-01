@@ -25,6 +25,8 @@ public:
 	/** テクスチャのピフォーマットを取得します。 */
 	TextureFormat format() const { return m_format; }
 
+	bool mipmap() const { return m_mipmap; }
+
 	/** このテクスチャに関連付けられている SamplerState を取得します。 */
 	SamplerState* samplerState() const;
 
@@ -39,7 +41,6 @@ protected:
 	void setSize(const SizeI& size) { m_size = size; }
 	void setFormat(TextureFormat format) { m_format = format; }
 	void setMipmap(bool mipmap) { m_mipmap = mipmap; }
-	bool mipmap() const { return m_mipmap; }
 
 	SizeI m_size;
 	TextureFormat m_format;

@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/Graphics/GraphicsContext.hpp>
-#include <Lumino/Rendering/Material.hpp>
+#include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
 #include "RenderStage.hpp"
 #include "SceneRenderer.hpp"
 

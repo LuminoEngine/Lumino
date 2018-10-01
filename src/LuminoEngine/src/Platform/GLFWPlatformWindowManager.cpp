@@ -142,8 +142,10 @@ void GLFWPlatformWindow::initialize(const WindowCreationSettings& settings)
 	//else
 	{
 		// FIXME: macOS だとバージョン指定が効かない？
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+		// glGenSamplers を使うのに最低 3.3 必要。
+		// https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glGenSamplers.xhtml
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 		glfwWindowHint(GLFW_RESIZABLE, (settings.resizable) ? GL_TRUE : GL_FALSE);
 		glfwWindowHint(GLFW_DECORATED, GL_TRUE);
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);	// for NSGL(macOS)

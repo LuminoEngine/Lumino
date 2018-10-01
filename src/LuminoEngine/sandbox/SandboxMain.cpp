@@ -9,8 +9,8 @@
 #include "../src/Rendering/DrawElementListBuilder.hpp"
 #include "../src/Rendering/UnLigitingSceneRenderer.hpp"
 #include "../src/Rendering/ClusteredShadingSceneRenderer.hpp"
-#include <Lumino/Rendering/Material.hpp>
-#include <Lumino/Rendering/RenderingContext.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/RenderingContext.hpp>
 using namespace ln;
 
 class TestRenderView

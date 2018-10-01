@@ -1,8 +1,8 @@
 ﻿
 #pragma once
 #include <unordered_map>
-#include <Lumino/Graphics/Texture.hpp>
-#include <Lumino/Graphics/DepthBuffer.hpp>
+#include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoEngine/Graphics/DepthBuffer.hpp>
 
 namespace ln {
 namespace detail {

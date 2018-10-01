@@ -21,10 +21,10 @@
 
 #include "LuminoEngine/Shader/Shader.hpp"
 
-#include "Lumino/Rendering/Common.hpp"
-#include "Lumino/Rendering/RenderView.hpp"
-#include "Lumino/Rendering/RenderFeature.hpp"
-#include "Lumino/Rendering/RenderingContext.hpp"
+#include "LuminoEngine/Rendering/Common.hpp"
+#include "LuminoEngine/Rendering/RenderView.hpp"
+#include "LuminoEngine/Rendering/RenderFeature.hpp"
+#include "LuminoEngine/Rendering/RenderingContext.hpp"
 
 #include "LuminoEngine/UI/UIFrameWindow.hpp"
 

@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include <Lumino/Graphics/GeometryStructs.hpp>
-#include <Lumino/Graphics/ColorStructs.hpp>
+#include <LuminoEngine/Graphics/GeometryStructs.hpp>
+#include <LuminoEngine/Graphics/ColorStructs.hpp>
 
 namespace ln {
 
