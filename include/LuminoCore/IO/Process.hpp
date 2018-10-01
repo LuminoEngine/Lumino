@@ -106,6 +106,8 @@ public:
 	*/
 	int exitCode();
 
+	void setUseShellExecute(bool value) { m_startInfo.useShellExecute = value; }
+
 public:
 
 	/**

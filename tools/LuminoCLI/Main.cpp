@@ -102,6 +102,10 @@ int main(int argc, char** argv)
 		auto burildTargetArg = buildCommand->addPositionalArgument(u"target", u"-");
 
 		//--------------------------------------------------------------------------------
+		auto runCommand = parser.addCommand(_T("run"), _T("run description."));
+		auto runCommand_targetArg = runCommand->addPositionalArgument(u"target", u"-");
+
+		//--------------------------------------------------------------------------------
 		auto dev_installTools = parser.addCommand(_T("dev-install-tools"), _T("description."));
 
 
@@ -129,6 +133,11 @@ int main(int argc, char** argv)
 			{
 				workspace->openProject(ln::Environment::currentDirectory());
 				workspace->buildProject(burildTargetArg->value());
+			}
+			else if (parser.has(runCommand))
+			{
+				workspace->openProject(ln::Environment::currentDirectory());
+				workspace->runProject(runCommand_targetArg->value());
 			}
 			else if (parser.has(dev_installTools))
 			{

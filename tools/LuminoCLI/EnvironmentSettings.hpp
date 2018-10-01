@@ -49,6 +49,7 @@ public:
 	const ln::String& emsdkName() const { return m_emsdkName; }
 	const ln::Path& emsdkDirPath() const { return m_emsdkRootDir; }
 	const ln::Path& emscriptenDirPath() const { return m_emscriptenRootDir; }
+	const ln::Path& python2() const { return m_python2; }
 
 private:
 	ln::Path m_luminoPackageRootDir;
@@ -59,4 +60,5 @@ private:
 	ln::String m_emsdkName;
 	ln::Path m_emsdkRootDir;
 	ln::Path m_emscriptenRootDir;
+	ln::Path m_python2;
 };

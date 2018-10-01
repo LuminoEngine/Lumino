@@ -64,6 +64,7 @@ void BuildEnvironment::setupPathes(EnvironmentSettings* env)
 	m_emsdkName = u"sdk-1.38.10-64bit";
 	m_emsdkRootDir = (ln::Path::combine(m_toolsDir, u"emsdk"));
 	m_emscriptenRootDir = (ln::Path::combine(m_emsdkRootDir, u"emscripten", m_emsdkVer));
+	m_python2 = ln::Path::combine(m_emsdkRootDir, u"python", u"2.7.13.1_64bit", u"python-2.7.13.amd64", u"python");
 
 #if 0// LN_DEBUG
 	// デバッグ用。実行ファイルの位置からさかのぼっていって、.git が見つかればそこから必要なパスを作ってみる

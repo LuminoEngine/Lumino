@@ -77,7 +77,7 @@ Result Workspace::buildProject(const ln::String& target)
 	}
 
 	// Emscripten
-	if (ln::String::compare(target, u"Emscripten", ln::CaseSensitivity::CaseInsensitive) == 0)
+	else if (ln::String::compare(target, u"Emscripten", ln::CaseSensitivity::CaseInsensitive) == 0)
 	{
 		auto buildDir = ln::Path::combine(m_project->buildDir(), u"Emscripten").canonicalize();
 		auto installDir = ln::Path::combine(buildDir, u"Release");
@@ -90,7 +90,7 @@ Result Workspace::buildProject(const ln::String& target)
 			ln::List<ln::String> emcmakeArgs = {
 				u"-DCMAKE_BUILD_TYPE=Release",
 				u"-DCMAKE_INSTALL_PREFIX=" + installDir,
-				u"-DLUMINO=" + buildEnvironment()->luminoPackageRootDir().str().replace("\\", "/"),
+				u"-DLUMINO_ENGINE_ROOT=\"" + m_project->engineDirPath().str().replace("\\", "/") + u"\"",
 				u"-G \"MinGW Makefiles\"",
 				cmakeSourceDir,
 			};
@@ -105,6 +105,39 @@ Result Workspace::buildProject(const ln::String& target)
 		}
 
 		ln::Process::execute(script);
+	}
+
+	return Result::OK;
+}
+
+Result Workspace::runProject(const ln::String& target)
+{
+	// Emscripten
+	if (ln::String::compare(target, u"Emscripten", ln::CaseSensitivity::CaseInsensitive) == 0)
+	{
+		auto buildDir = ln::Path::combine(m_project->buildDir(), u"Emscripten").canonicalize();
+
+		ln::Process proc;
+		proc.setProgram(m_devTools->python2());
+		proc.setArguments({u"-m", u"SimpleHTTPServer", u"8000"});
+		proc.setWorkingDirectory(buildDir);
+		proc.setUseShellExecute(false);
+		proc.start();
+
+		{
+			// TODO: findFirstFile とかどうだろう？
+			auto files = ln::FileSystem::getFiles(buildDir, u"*.html");
+			if (files.isEmpty()) {
+				CLI::error("Not found *.sln file.");
+				return Result::Failed;
+			}
+
+			ln::Process proc2;
+			proc2.setProgram(u"http://localhost:8000/" + (*files.begin()).fileName());
+			proc2.start();
+		}
+
+		proc.wait();
 	}
 
 	return Result::OK;
