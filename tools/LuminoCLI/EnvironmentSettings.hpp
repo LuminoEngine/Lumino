@@ -51,7 +51,6 @@ public:
 	const ln::Path& emscriptenDirPath() const { return m_emscriptenRootDir; }
 
 private:
-	ln::Path m_luminoRepoRoot;
 	ln::Path m_luminoPackageRootDir;
 	ln::Path m_luminoEmscriptenSdkDirPath;
 	ln::Path m_projectTemplatesDirPath;

@@ -8,7 +8,6 @@ void EnvironmentSettings::updatePathes()
 	HRESULT hr = ::SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, NULL, &path);
 	if (SUCCEEDED(hr))
 	{
-		wprintf(L"FOLDERID_Public: %s\n", path);
 
 		m_androidSdkRootDir = ln::Path::combine(ln::String::fromCString(path), u"Android", u"Sdk");
 		m_androidSdkCMake = ln::Path::combine(m_androidSdkRootDir, u"cmake/3.6.4111459/bin/cmake.exe");
@@ -66,26 +65,37 @@ void BuildEnvironment::setupPathes(EnvironmentSettings* env)
 	m_emsdkRootDir = (ln::Path::combine(m_toolsDir, u"emsdk"));
 	m_emscriptenRootDir = (ln::Path::combine(m_emsdkRootDir, u"emscripten", m_emsdkVer));
 
+#if 0// LN_DEBUG
 	// デバッグ用。実行ファイルの位置からさかのぼっていって、.git が見つかればそこから必要なパスを作ってみる
 	ln::Path path = ln::Environment::executablePath();
+	ln::Path luminoRepoRoot;
 	while (!path.isRoot())
 	{
 		if (ln::FileSystem::existsDirectory(ln::Path(path, u".git"))) {
-			m_luminoRepoRoot = path;
+			luminoRepoRoot = path;
 			break;
 		}
 		path = path.parent();
 	}
-	if (LN_ENSURE(!m_luminoRepoRoot.isEmpty())) return;
-	LN_LOG_DEBUG << m_luminoRepoRoot;
+	if (LN_ENSURE(!luminoRepoRoot.isEmpty())) return;
+	CLI::info("Using debug mode build environment pathes.");
 
-	m_luminoEmscriptenSdkDirPath = ln::Path(m_luminoRepoRoot, u"build/CMakeInstallTemp/Emscripten");
-	m_projectTemplatesDirPath = ln::Path(m_luminoRepoRoot, u"tools/LuminoCLI/ProjectTemplates");
+	LN_LOG_DEBUG << luminoRepoRoot;
+
+	m_luminoEmscriptenSdkDirPath = ln::Path(luminoRepoRoot, u"build/CMakeInstallTemp/Emscripten");
+	m_projectTemplatesDirPath = ln::Path(luminoRepoRoot, u"tools/LuminoCLI/ProjectTemplates");
 
 #if defined(LN_OS_WIN32)
-	m_luminoPackageRootDir = ln::Path(m_luminoRepoRoot, u"ReleasePackage.Win32");
+	m_luminoPackageRootDir = ln::Path(luminoRepoRoot, u"ReleasePackage.Win32");
 #elif defined(LN_OS_MAC)
-	m_luminoPackageRootDir = ln::Path(m_luminoRepoRoot, u"ReleasePackage.macOS");
+	m_luminoPackageRootDir = ln::Path(luminoRepoRoot, u"ReleasePackage.macOS");
+#endif
+#else
+	ln::Path executablePath = ln::Environment::executablePath();
+	ln::Path toolsDir = executablePath.parent();
+	m_luminoPackageRootDir = toolsDir.parent();
+	m_projectTemplatesDirPath = ln::Path(toolsDir, u"Templates");
+
 #endif
 }
 

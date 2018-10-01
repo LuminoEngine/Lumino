@@ -23,17 +23,47 @@ Result Project::newProject(const ln::Path& projectDir, const ln::String& project
 	m_properties = ln::makeRef<ProjectProperties>();
 	setupPathes();
 
+	CLI::info(u"\nCreating a new Lumino app in " + m_rootDir + u"\n");
+
 	m_projectName = projectName;
 	m_properties->language = u"cpp";
 	ln::FileSystem::createDirectory(m_engineDir);
 	ln::FileSystem::createDirectory(m_sourcesDir);
 	ln::FileSystem::createDirectory(m_assetsDir);
+	ln::FileSystem::createDirectory(projectsDir());
 	ln::FileSystem::createDirectory(m_buildDir);
 
 	m_context = ln::makeRef<CppLanguageContext>(this);
 	m_context->applyTemplates();
 	
-	return saveProject();
+	Result result = saveProject();
+	CLI::info(u"\nSuccess! Created " + m_projectName + u" at " + m_rootDir + u"\n");
+	return result;
+	/* TODO: もうちょっと詳しく出力したい
+		例：
+		Success! Created my-app at C:\LocalProj\tmp\my-app
+		Inside that directory, you can run several commands:
+
+		  npm start
+			Starts the development server.
+
+		  npm run build
+			Bundles the app into static files for production.
+
+		  npm test
+			Starts the test runner.
+
+		  npm run eject
+			Removes this tool and copies build dependencies, configuration files
+			and scripts into the app directory. If you do this, you can’t go back!
+
+		We suggest that you begin by typing:
+
+		  cd my-app
+		  npm start
+
+		Happy hacking!
+	*/
 }
 
 Result Project::openProject(const ln::Path& dir)

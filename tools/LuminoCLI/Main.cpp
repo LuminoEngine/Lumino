@@ -8,11 +8,11 @@ int main(int argc, char** argv)
 	if (argc == 1)
 	{
 		//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\HelloLumino");
-		//::SetCurrentDirectoryW(L"D:\\Documents\\LuminoProjects\\HelloLumino");
+		::SetCurrentDirectoryW(L"C:\\LocalProj\\tmp");
 	
 		const char* debugArgv[] = {
 			"<program>",
-			//, "init", "HelloLumino",
+			"init", "HelloLumino",
 
 			//"<program>", "dev-install-tools",
 
@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 
 			//"dev-openide", "vs",
 			
-			"--local-initial-setup", "/Users/lriki/Proj/Lumino/ReleasePackage.macOS"
+			//"--local-initial-setup", "/Users/lriki/Proj/Lumino/ReleasePackage.macOS"
 
 		};
 		argc = sizeof(debugArgv) / sizeof(char*);
@@ -58,11 +58,11 @@ int main(int argc, char** argv)
 					for (int i = beginLine; i < endLine; i++) {
 						if (lines[i].indexOf("export LUMINO_ROOT") == 0) {
 							lines[i] = ln::String::format(u"export LUMINO_ROOT={0}", packageDir);
-							CLI::message(u"LUMINO_ROOT updating.");
+							CLI::info(u"LUMINO_ROOT updating.");
 						}
 						if (lines[i].indexOf("export PATH") == 0) {
 							lines[i] = ln::String::format(u"export PATH=$PATH:{0}", toolsDir);
-							CLI::message(u"PATH updating.");
+							CLI::info(u"PATH updating.");
 						}
 					}
 					
@@ -84,7 +84,7 @@ int main(int argc, char** argv)
 				w.writeLine(line);
 			}
 				
-			CLI::message(ln::String::format(u"Lumino environment variable added to {0}.", profile));
+			CLI::info(ln::String::format(u"Lumino environment variable added to {0}.", profile));
 			return 0;
 		}
 

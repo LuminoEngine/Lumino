@@ -6,10 +6,11 @@
 #include <GLFW/glfw3.h>
 #if defined(LN_OS_WIN32)
 #	define GLFW_EXPOSE_NATIVE_WIN32
+#	include <GLFW/glfw3native.h>
 #elif defined(LN_OS_MAC)
 #	define GLFW_EXPOSE_NATIVE_COCOA
+#	include <GLFW/glfw3native.h>
 #endif
-#include <GLFW/glfw3native.h>
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
 #include "GLFWPlatformWindowManager.hpp"
 

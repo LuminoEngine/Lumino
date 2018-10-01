@@ -35,10 +35,10 @@ public:
 	const ln::Path& rootDirPath() const { return m_rootDir; }
 	const ln::Path& buildDir() const { return m_buildDir; }
 
-	ln::Path nativeProjectsDir() const { return ln::Path(rootDirPath(), u"NativeProjects"); }
-	ln::Path emscriptenProjectDir() const { return ln::Path(nativeProjectsDir(), u"LuminoApp.Emscripten"); }
-	ln::Path androidProjectDir() const { return ln::Path(nativeProjectsDir(), u"LuminoApp.Android"); }
-	ln::Path macOSProjectDir() const { return ln::Path(nativeProjectsDir(), u"LuminoApp.macOS");  }
+	ln::Path projectsDir() const { return ln::Path(rootDirPath(), u"Projects"); }
+	ln::Path emscriptenProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.Emscripten"); }
+	ln::Path androidProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.Android"); }
+	ln::Path macOSProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.macOS");  }
 
 	/** 指定フォルダにプロジェクトファイルが含まれているかを確認する */
 	static bool existsProjectFile(const ln::Path& dir);

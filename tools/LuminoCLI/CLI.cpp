@@ -6,7 +6,7 @@ void CLI::output(const ln::String & str)
 	std::cout << str << std::endl;
 }
 
-void CLI::message(const ln::String & str)
+void CLI::info(const ln::String & str)
 {
 	std::cerr << str << std::endl;
 }

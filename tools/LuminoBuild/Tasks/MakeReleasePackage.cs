@@ -34,7 +34,7 @@ namespace LuminoBuild.Tasks
                     Path.Combine(builder.LuminoPackageSourceDir, "Readme.txt.template"),
                     new Dictionary<string, string> { { "%%LuminoVersion%%", builder.VersionString } });
             }
-            
+
             // C++ Engine (common)
             {
                 File.Copy(
@@ -60,7 +60,7 @@ namespace LuminoBuild.Tasks
                 "SPIRV-Cross",
                 "zlib",
             };
-            
+
             // C++ Engine
             {
                 // include files
@@ -101,7 +101,7 @@ namespace LuminoBuild.Tasks
                     {
                         Utils.CopyDirectory(
                             Path.Combine(tempInstallDir, "MSVC2017-x86-MT", "bin"),
-                            Path.Combine(targetRootDir, "tools"));
+                            Path.Combine(targetRootDir, "Tools"));
                     }
                     else if (Utils.IsMac)
                     {
@@ -112,6 +112,12 @@ namespace LuminoBuild.Tasks
                 }
             }
 
+            // Templates
+            {
+                Utils.CopyDirectory(
+                    Path.Combine(builder.LuminoToolsDir, "LuminoCLI", "Templates", "NativeProject"),
+                    Path.Combine(targetRootDir, "Tools", "Templates", "NativeProject"));
+            }
         }
     }
 }

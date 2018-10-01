@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 #include "GraphicsResource.hpp"
 #include "GeometryStructs.hpp"

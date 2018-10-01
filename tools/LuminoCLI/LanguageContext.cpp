@@ -29,16 +29,16 @@ CppLanguageContext::~CppLanguageContext()
 
 Result CppLanguageContext::applyTemplates()
 {
-	auto projectTemplatesDir = project()->workspace()->buildEnvironment()->projectTemplatesDirPath();
-	auto srcRoot = ln::Path(projectTemplatesDir, u"LuminoCppTemplate");
-	auto dstRoot = project()->rootDirPath();
+	CLI::info("Copying NativeProject template...");
 
+	auto projectTemplatesDir = project()->workspace()->buildEnvironment()->projectTemplatesDirPath();
+	auto srcRoot = ln::Path(projectTemplatesDir, u"NativeProject");
+	auto dstRoot = project()->rootDirPath();
 
 	// Common
 	{
 		ln::String files[] = {
 			u".gitignore",
-			u"NativeProjects/CMakeLists.txt",
 			u"Sources/Application.cpp",
 			u"Sources/Application.h",
 		};
@@ -66,34 +66,35 @@ Result CppLanguageContext::applyTemplates()
 			ln::Path(dstRoot, u"LuminoApp.sln"), ln::FileCopyOption::Overwrite);
 
 		ln::FileSystem::copyDirectory(
-			ln::Path(srcRoot, u"NativeProjects/LuminoApp.Win32"),
-			ln::Path(dstRoot, u"NativeProjects/LuminoApp.Win32"),
+			ln::Path(srcRoot, u"Projects/LuminoApp.Win32"),
+			ln::Path(dstRoot, u"Projects/LuminoApp.Win32"),
 			true, true);
 	}
 
 	// macOS
 	{
 		ln::FileSystem::copyDirectory(
-			ln::Path(srcRoot, u"NativeProjects/LuminoApp.macOS"),
-			ln::Path(dstRoot, u"NativeProjects/LuminoApp.macOS"),
+			ln::Path(srcRoot, u"Projects/LuminoApp.macOS"),
+			ln::Path(dstRoot, u"Projects/LuminoApp.macOS"),
 			true, true);
 	}
 
 	// iOS
 	{
 		ln::FileSystem::copyDirectory(
-			ln::Path(srcRoot, u"NativeProjects/LuminoApp.iOS"),
-			ln::Path(dstRoot, u"NativeProjects/LuminoApp.iOS"),
+			ln::Path(srcRoot, u"Projects/LuminoApp.iOS"),
+			ln::Path(dstRoot, u"Projects/LuminoApp.iOS"),
 			true, true);
 	}
 
 	// Android
 	{
 		ln::FileSystem::copyDirectory(
-			ln::Path(srcRoot, u"NativeProjects/LuminoApp.Android"),
-			ln::Path(dstRoot, u"NativeProjects/LuminoApp.Android"),
+			ln::Path(srcRoot, u"Projects/LuminoApp.Android"),
+			ln::Path(dstRoot, u"Projects/LuminoApp.Android"),
 			true, true);
 	}
 
+	CLI::info("Copied NativeProject template.");
 	return Result::OK;
 }

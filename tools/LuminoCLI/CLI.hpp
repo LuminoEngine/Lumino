@@ -14,7 +14,7 @@ public:
 	static void output(const ln::String& str);
 
 	/** 進捗状況やログの出力。stderr に出力される。 */
-	static void message(const ln::String& str);
+	static void info(const ln::String& str);
 
 	/** ワーニング出力。stderr に出力される。 */
 	static void warning(const ln::String& str);
