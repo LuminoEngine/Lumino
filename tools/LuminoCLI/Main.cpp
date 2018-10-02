@@ -8,11 +8,11 @@ int main(int argc, char** argv)
 	if (argc == 1)
 	{
 		//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\HelloLumino");
-		::SetCurrentDirectoryW(L"C:\\LocalProj\\tmp");
+		::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\HelloLumino");
 	
 		const char* debugArgv[] = {
 			"<program>",
-			"init", "HelloLumino",
+			//"init", "HelloLumino",
 
 			//"<program>", "dev-install-tools",
 
@@ -23,6 +23,7 @@ int main(int argc, char** argv)
 			
 			//"--local-initial-setup", "/Users/lriki/Proj/Lumino/ReleasePackage.macOS"
 
+			"restore",
 		};
 		argc = sizeof(debugArgv) / sizeof(char*);
 		argv = (char**)debugArgv;

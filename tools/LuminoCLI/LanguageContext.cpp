@@ -109,7 +109,11 @@ void CppLanguageContext::restore()
 
 void CppLanguageContext::copyEngine()
 {
+	CLI::info("Copying Engine...");
+
 	ln::FileSystem::copyDirectory(
 		ln::Path::combine(project()->workspace()->buildEnvironment()->luminoPackageRootDir(), u"Engine", u"Native"),
 		project()->engineDirPath(), true, true);
+
+	CLI::info("Copied Engine.");
 }

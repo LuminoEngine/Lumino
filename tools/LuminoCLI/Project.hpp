@@ -56,6 +56,7 @@ private:
 	Ref<LanguageContext> m_context;
 
 	ln::String m_projectName;
+	ln::Path m_projectFilePath;
 	ln::Path m_rootDir;
 	ln::Path m_engineDir;
 	ln::Path m_sourcesDir;

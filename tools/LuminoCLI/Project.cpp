@@ -70,7 +70,21 @@ Result Project::openProject(const ln::Path& dir)
 {
 	m_rootDir = dir.canonicalize();
 	m_properties = ln::makeRef<ProjectProperties>();
+
+
 	setupPathes();
+
+
+	ln::String json = ln::FileSystem::readAllText(m_projectFilePath);
+	ln::JsonSerializer::deserialize(json, *m_properties);
+
+	if (m_properties->language == "cpp") {
+		m_context = ln::makeRef<CppLanguageContext>(this);
+	}
+	else {
+		LN_NOTIMPLEMENTED();
+	}
+
 	return Result::OK;
 }
 
@@ -100,4 +114,12 @@ void Project::setupPathes()
 	m_sourcesDir = ln::Path(m_rootDir, u"Sources");
 	m_assetsDir = ln::Path(m_rootDir, u"Assets");
 	m_buildDir = ln::Path(m_rootDir, u".lumino");
+
+	auto files = ln::FileSystem::getFiles(m_rootDir, u"*" + ProjectFileExt);
+	if (!files.isEmpty()) {
+		m_projectFilePath = *files.begin();
+	}
+	else {
+		LN_NOTIMPLEMENTED();
+	}
 }
