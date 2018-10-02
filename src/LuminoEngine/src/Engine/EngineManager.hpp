@@ -14,9 +14,9 @@ class AudioManager;
 class AnimationManager;
 class ShaderManager;
 class GraphicsManager;
+class MeshManager;
 class RenderingManager;
 class EffectManager;
-class ModelManager;
 class AssetsManager;
 class UIManager;
 
@@ -47,9 +47,9 @@ public:
 	void initializePhysicsManager();
 	void initializeShaderManager();
 	void initializeGraphicsManager();
+	void initializeMeshManager();
 	void initializeRenderingManager();
 	void initializeEffectManager();
-	void initializeModelManager();
 	void initializeAssetsManager();
 	void initializeUIManager();
 
@@ -66,6 +66,7 @@ public:
 	const Ref<InputManager>& inputManager() const { return m_inputManager; }
 	const Ref<ShaderManager>& shaderManager() const { return m_shaderManager; }
 	const Ref<GraphicsManager>& graphicsManager() const { return m_graphicsManager; }
+	const Ref<MeshManager>& meshManager() const { return m_meshManager; }
 	const Ref<RenderingManager>& renderingManager() const { return m_renderingManager; }
 	const Ref<UIManager>& uiManager() const { return m_uiManager; }
 	const Ref<UIFrameWindow>& mainWindow() const { return m_mainWindow; }
@@ -81,9 +82,9 @@ private:
 	//Ref<AudioManager>				m_audioManager;
 	Ref<ShaderManager> m_shaderManager;
 	Ref<GraphicsManager>			m_graphicsManager;
+	Ref<MeshManager>				m_meshManager;
 	Ref<RenderingManager>			m_renderingManager;
 	//Ref<EffectManager>				m_effectManager;
-	//Ref<ModelManager>				m_modelManager;
 	//Ref<AssetsManager>						m_assetsManager;
 	Ref<UIManager>					m_uiManager;
 

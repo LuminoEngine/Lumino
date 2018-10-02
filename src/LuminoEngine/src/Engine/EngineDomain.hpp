@@ -19,8 +19,8 @@ class InputManager;
 class AnimationManager;
 class ShaderManager;
 class GraphicsManager;
+class MeshManager;
 class RenderingManager;
-class ModelManager;
 class ArchiveManager;
 class UIManager;
 
@@ -33,6 +33,7 @@ public:
 	static InputManager* inputManager();
 	static ShaderManager* shaderManager();
 	static GraphicsManager* graphicsManager();
+	static MeshManager* meshManager();
 	static RenderingManager* renderingManager();
 	static UIManager* uiManager();
 
@@ -45,7 +46,6 @@ public:
 	//static ArchiveManager* getArchiveManager();
 	//static AnimationManager* getAnimationManager();
 	//static GraphicsManager* getGraphicsManager();
-	//static ModelManager* getModelManager();
 	//static UIManager* getUIManager();
 
 	//static SceneGraphManager* getSceneGraphManager();

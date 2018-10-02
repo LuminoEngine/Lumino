@@ -154,6 +154,7 @@ class IVertexBuffer
 {
 public:
 	virtual size_t getBytesSize() = 0;
+	virtual GraphicsResourceUsage usage() const = 0;
 	virtual void setSubData(size_t offset, const void* data, size_t length) = 0;
 	virtual void* map() = 0;
 	virtual void unmap() = 0;
@@ -169,6 +170,7 @@ class IIndexBuffer
 {
 public:
 	virtual size_t getBytesSize() = 0;
+	virtual GraphicsResourceUsage usage() const = 0;
 	virtual void setSubData(size_t offset, const void* data, size_t length) = 0;
 	virtual void* map() = 0;
 	virtual void unmap() = 0;

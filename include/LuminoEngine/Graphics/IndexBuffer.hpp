@@ -38,6 +38,9 @@ public:
 	/** インデックスの値を設定します。 */
 	void setIndex(int index, int vertexIndex);
 
+	/** リソースの使用方法を変更します。(default: Static) */
+	void setResourceUsage(GraphicsResourceUsage usage);
+
 	/** リソースの管理方法を変更します。(default: Managed) */
 	void setResourcePool(GraphicsResourcePool pool);
 

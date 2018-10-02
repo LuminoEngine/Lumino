@@ -76,7 +76,7 @@ void IndexBuffer::resize(int indexCount)
 void* IndexBuffer::map(MapMode mode)
 {
 	// if have not entried the Command List at least once, can rewrite directly with map().
-	if (m_initialUpdate && m_pool == GraphicsResourcePool::None)
+	if (m_initialUpdate && m_usage == GraphicsResourceUsage::Static && m_pool == GraphicsResourcePool::None)
 	{
 		if (!m_rhiObject) {
 			m_rhiObject = manager()->deviceContext()->createIndexBuffer(m_usage, m_format, size(),nullptr);
@@ -158,6 +158,14 @@ void IndexBuffer::setIndex(int index, int vertexIndex)
 	}
 }
 
+void IndexBuffer::setResourceUsage(GraphicsResourceUsage usage)
+{
+	// Prohibit while direct locking.
+	if (LN_REQUIRE(!m_rhiLockedBuffer)) return;
+	m_usage = usage;
+	m_modified = true;
+}
+
 void IndexBuffer::setResourcePool(GraphicsResourcePool pool)
 {
 	m_pool = pool;
@@ -175,7 +183,7 @@ detail::IIndexBuffer* IndexBuffer::resolveRHIObject()
 		else
 		{
 			size_t requiredSize = bytesSize();
-			if (!m_rhiObject || m_rhiObject->getBytesSize() != requiredSize)
+			if (!m_rhiObject || m_rhiObject->getBytesSize() != requiredSize || m_rhiObject->usage() != m_usage)
 			{
 				m_rhiObject = manager()->deviceContext()->createIndexBuffer(m_usage, m_format, size(), m_buffer.data());
 			}
@@ -196,7 +204,7 @@ detail::IIndexBuffer* IndexBuffer::resolveRHIObject()
 
 	if (LN_ENSURE(m_rhiObject)) return nullptr;
 
-	if (m_pool == GraphicsResourcePool::None) {
+	if (m_usage == GraphicsResourceUsage::Static && m_pool == GraphicsResourcePool::None) {
 		m_buffer.clear();
 		m_buffer.shrink_to_fit();
 	}

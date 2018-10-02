@@ -12,4 +12,10 @@ struct Vertex
 	Color color;
 };
 
+struct VertexBlendWeight
+{
+	float		weights[4];
+	float		indices[4];
+};
+
 } // namespace ln

@@ -6,6 +6,7 @@
 #include "../Input/InputManager.hpp"
 #include "../Shader/ShaderManager.hpp"
 #include "../Graphics/GraphicsManager.hpp"
+#include "../Mesh/MeshManager.hpp"
 #include "../Rendering/RenderingManager.hpp"
 #include "../UI/UIManager.hpp"
 #include "EngineManager.hpp"
@@ -88,9 +89,9 @@ void EngineManager::initializeAllManagers()
 	initializePhysicsManager();
 	initializeShaderManager();
 	initializeGraphicsManager();
+	initializeMeshManager();
 	initializeRenderingManager();
 	initializeEffectManager();
-	initializeModelManager();
 	initializeAssetsManager();
 	initializeUIManager();
 }
@@ -176,6 +177,20 @@ void EngineManager::initializeGraphicsManager()
 	}
 }
 
+void EngineManager::initializeMeshManager()
+{
+	if (!m_meshManager)
+	{
+		initializeGraphicsManager();
+
+		MeshManager::Settings settings;
+		settings.graphicsManager = m_graphicsManager;
+
+		m_meshManager = ln::makeRef<MeshManager>();
+		m_meshManager->initialize(settings);
+	}
+}
+
 void EngineManager::initializeRenderingManager()
 {
 	if (!m_renderingManager)
@@ -191,10 +206,6 @@ void EngineManager::initializeRenderingManager()
 }
 
 void EngineManager::initializeEffectManager()
-{
-}
-
-void EngineManager::initializeModelManager()
 {
 }
 
@@ -330,6 +341,11 @@ ShaderManager* EngineDomain::shaderManager()
 GraphicsManager* EngineDomain::graphicsManager()
 {
 	return engineManager()->graphicsManager();
+}
+
+MeshManager* EngineDomain::meshManager()
+{
+	return engineManager()->meshManager();
 }
 
 RenderingManager* EngineDomain::renderingManager()

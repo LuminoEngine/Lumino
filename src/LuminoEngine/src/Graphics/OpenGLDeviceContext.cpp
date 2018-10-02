@@ -985,8 +985,8 @@ GLVertexBuffer::GLVertexBuffer()
 	: m_glVertexBuffer(0)
 	//, m_byteCount(0)
 	//, m_data(NULL)
-	, m_usage(0)
-	, m_format(GraphicsResourceUsage::Static)
+	, m_usage(GraphicsResourceUsage::Static)
+	//, m_format(GraphicsResourceUsage::Static)
 	, m_size(0)
 {
 }
@@ -997,7 +997,8 @@ GLVertexBuffer::~GLVertexBuffer()
 
 void GLVertexBuffer::initialize(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
 {
-	m_format = usage;
+	//m_format = usage;
+	m_usage = usage;
 	m_size = bufferSize;
 	//m_byteCount = bufferSize;
 	//m_data = LN_NEW byte_t[m_byteCount];
@@ -1008,16 +1009,16 @@ void GLVertexBuffer::initialize(GraphicsResourceUsage usage, size_t bufferSize, 
 	//	memset(m_data, 0, m_byteCount);
 	//}
 
-	if (m_format == GraphicsResourceUsage::Dynamic) {
-		m_usage = GL_DYNAMIC_DRAW;
-	}
-	else {
-		m_usage = GL_STATIC_DRAW;
-	}
+	//if (m_format == GraphicsResourceUsage::Dynamic) {
+	//	m_usage = GL_DYNAMIC_DRAW;
+	//}
+	//else {
+	//	m_usage = GL_STATIC_DRAW;
+	//}
 
 	GL_CHECK(glGenBuffers(1, &m_glVertexBuffer));
 	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, m_glVertexBuffer));
-	GL_CHECK(glBufferData(GL_ARRAY_BUFFER, bufferSize, initialData, m_usage));
+	GL_CHECK(glBufferData(GL_ARRAY_BUFFER, bufferSize, initialData, (m_usage == GraphicsResourceUsage::Static) ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW));
 	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
 }
 
@@ -1109,7 +1110,7 @@ void GLVertexBuffer::unmap()
 GLIndexBuffer::GLIndexBuffer()
 	: m_indexBufferId(0)
 	, m_format(IndexBufferFormat::UInt16)
-	, m_usage(GL_STATIC_DRAW)
+	, m_usage(GraphicsResourceUsage::Static)
 	, m_size(0)
 {
 }
@@ -1121,13 +1122,13 @@ GLIndexBuffer::~GLIndexBuffer()
 void GLIndexBuffer::initialize(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
 {
 	m_format = format;
-	m_usage = (usage == GraphicsResourceUsage::Static) ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
+	m_usage = usage;
 	int stride = (m_format == IndexBufferFormat::UInt16) ? 2 : 4;
 	m_size = stride * indexCount;
 
 	GL_CHECK(glGenBuffers(1, &m_indexBufferId));
 	GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBufferId));
-	GL_CHECK(glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_size, initialData, m_usage));
+	GL_CHECK(glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_size, initialData, (m_usage == GraphicsResourceUsage::Static) ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW));
 	GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 }
 
