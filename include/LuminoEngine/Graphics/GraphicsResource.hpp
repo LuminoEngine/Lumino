@@ -33,4 +33,15 @@ private:
 	detail::GraphicsManager* m_manager;
 };
 
+
+namespace detail {
+
+class GraphicsResourceHelper
+{
+public:
+	template<class TReturn, class TObject>
+	static TReturn* resolveRHIObject(TObject& obj) { return (obj) ? obj->resolveRHIObject() : nullptr; }
+};
+
+} // namespace detail
 } // namespace ln

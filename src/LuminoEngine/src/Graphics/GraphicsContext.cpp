@@ -278,7 +278,7 @@ void GraphicsContext::commitStatus()
 		for (int i = 0; i < m_staging.vertexBuffers.size(); i++)
 		{
 			auto& value = m_staging.vertexBuffers[i];
-			detail::IVertexBuffer* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
+			detail::IVertexBuffer* rhiObject = detail::GraphicsResourceHelper::resolveRHIObject<detail::IVertexBuffer>(value);
 			LN_ENQUEUE_RENDER_COMMAND_3(
 				GraphicsContext_setVertexBuffer, m_manager,
 				detail::IGraphicsDeviceContext*, m_device,
