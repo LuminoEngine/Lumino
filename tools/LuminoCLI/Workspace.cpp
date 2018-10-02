@@ -143,6 +143,11 @@ Result Workspace::runProject(const ln::String& target)
 	return Result::OK;
 }
 
+void Workspace::restoreProject()
+{
+	m_project->restore();
+}
+
 Result Workspace::dev_installTools() const
 {
 	m_devTools->verifyAndInstall();

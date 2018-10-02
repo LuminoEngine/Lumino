@@ -15,6 +15,7 @@ public:
 	Result openProject(const ln::Path& dir);
 	Result buildProject(const ln::String& target);
 	Result runProject(const ln::String& target);
+	void restoreProject();
 
 	const Ref<EnvironmentSettings>& environmentSettings() const { return m_environmentSettings; }
 	const Ref<BuildEnvironment>& buildEnvironment() const { return m_devTools; }

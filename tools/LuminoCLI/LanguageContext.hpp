@@ -13,6 +13,7 @@ public:
 	Project* project() const { return m_project; }
 
 	virtual Result applyTemplates() = 0;
+	virtual void restore() = 0;
 
 private:
 	Project* m_project;
@@ -26,4 +27,8 @@ public:
 	virtual ~CppLanguageContext();
 
 	virtual Result applyTemplates() override;
+	virtual void restore() override;
+
+private:
+	void copyEngine();
 };

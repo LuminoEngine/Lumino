@@ -54,9 +54,7 @@ Result CppLanguageContext::applyTemplates()
 			ln::FileSystem::copyFile(ln::Path(srcRoot, file), filePath, ln::FileCopyOption::Overwrite);
 		}
 
-		ln::FileSystem::copyDirectory(
-			ln::Path::combine(project()->workspace()->buildEnvironment()->luminoPackageRootDir(), u"Engine", u"Native"),
-			project()->engineDirPath(), true, true);
+		copyEngine();
 	}
 
 	// Win32
@@ -97,4 +95,21 @@ Result CppLanguageContext::applyTemplates()
 
 	CLI::info("Copied NativeProject template.");
 	return Result::OK;
+}
+
+void CppLanguageContext::restore()
+{
+	if (project()->properties()->engineVersion == u"system") {
+		copyEngine();
+	}
+	else {
+		LN_NOTIMPLEMENTED();
+	}
+}
+
+void CppLanguageContext::copyEngine()
+{
+	ln::FileSystem::copyDirectory(
+		ln::Path::combine(project()->workspace()->buildEnvironment()->luminoPackageRootDir(), u"Engine", u"Native"),
+		project()->engineDirPath(), true, true);
 }

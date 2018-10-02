@@ -98,15 +98,18 @@ int main(int argc, char** argv)
 		auto init_projectName = init->addPositionalArgument(u"project-name", u"prooject name.");
 
 		//--------------------------------------------------------------------------------
-		auto buildCommand = parser.addCommand(_T("build"), _T("init description."));
+		auto buildCommand = parser.addCommand(u"build", u"init description.");
 		auto burildTargetArg = buildCommand->addPositionalArgument(u"target", u"-");
 
 		//--------------------------------------------------------------------------------
-		auto runCommand = parser.addCommand(_T("run"), _T("run description."));
+		auto runCommand = parser.addCommand(u"run", u"run description.");
 		auto runCommand_targetArg = runCommand->addPositionalArgument(u"target", u"-");
 
 		//--------------------------------------------------------------------------------
-		auto dev_installTools = parser.addCommand(_T("dev-install-tools"), _T("description."));
+		auto restoreCommand = parser.addCommand(u"restore", u"Restore Engines included in the project.");
+
+		//--------------------------------------------------------------------------------
+		auto dev_installTools = parser.addCommand(u"dev-install-tools", u"description.");
 
 
 		auto dev_openide = parser.addCommand(u"dev-openide", u"description.");
@@ -138,6 +141,11 @@ int main(int argc, char** argv)
 			{
 				workspace->openProject(ln::Environment::currentDirectory());
 				workspace->runProject(runCommand_targetArg->value());
+			}
+			else if (parser.has(restoreCommand))
+			{
+				workspace->openProject(ln::Environment::currentDirectory());
+				workspace->restoreProject();
 			}
 			else if (parser.has(dev_installTools))
 			{

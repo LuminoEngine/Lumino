@@ -9,11 +9,13 @@ class ProjectProperties
 {
 public:
 	ln::String language;	// "cpp", "cs" ...
+	ln::String engineVersion = u"system";	// "x.y.z" or "system"
 
 	LN_SERIALIZE_CLASS_VERSION(1)
 	void serialize(ln::Archive& ar)
 	{
 		ar & LN_NVP(language);
+		ar & LN_NVP(engineVersion);
 	}
 };
 
@@ -29,6 +31,9 @@ public:
 	Result newProject(const ln::Path& projectDir, const ln::String& projectName);
 	Result openProject(const ln::Path& dir);
 	Result saveProject();
+	void restore();
+
+	const Ref<ProjectProperties>& properties() const { return m_properties; }
 
 	Workspace* workspace() const { return m_workspace; }
 	const ln::Path& engineDirPath() const { return m_engineDir; }
@@ -56,4 +61,6 @@ private:
 	ln::Path m_sourcesDir;
 	ln::Path m_assetsDir;
 	ln::Path m_buildDir;
+
+
 };

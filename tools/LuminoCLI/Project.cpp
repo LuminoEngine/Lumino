@@ -83,6 +83,11 @@ Result Project::saveProject()
 	return Result::OK;
 }
 
+void Project::restore()
+{
+	m_context->restore();
+}
+
 bool Project::existsProjectFile(const ln::Path& dir)
 {
 	auto files = ln::FileSystem::getFiles(dir, u"*" + ProjectFileExt);
