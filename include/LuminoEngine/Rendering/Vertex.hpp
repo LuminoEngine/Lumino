@@ -18,4 +18,22 @@ struct VertexBlendWeight
 	float		indices[4];
 };
 
+struct VertexAdditionalUV
+{
+	Vector4		uv[4];
+};
+
+struct VertexSdefInfo
+{
+	Vector4		sdefC;
+	Vector3		sdefR0;
+	Vector3		sdefR1;
+};
+
+struct VertexMmdExtra
+{
+	float		edgeWeight;
+	float		index;
+};
+
 } // namespace ln

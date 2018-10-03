@@ -155,16 +155,27 @@ public:
 	}
 };
 
-// インスタンスは DrawElementList の LinearAllocator に配置される。
-// 描画が終わったら解放される。
+// プライマリのインスタンスは DrawElementListBuilder が持っている。
+// ステート確定時に DrawElementList の LinearAllocator にコピー&配置される。これは描画が終わったら解放される。
+// Lumino 内部で定義されている RenderFeatureStageParameters のプライマリのインスタンスは DrawElementListBuilder に持たせているが、これは別に必須ではない。
+// ユーザーが独自の RenderFeature を実装する場合、addNewDrawElement() にコピー元となるインスタンスを指定すればよい。
 class RenderFeatureStageParameters
 {
 public:
+	size_t typeId() const { return m_typeId; }
+
 	virtual bool equals(const RenderFeatureStageParameters* other) = 0;
 	virtual void copyTo(RenderFeatureStageParameters* params) = 0;
 
+protected:
+	RenderFeatureStageParameters(size_t typeId)
+		: m_typeId(typeId)
+	{}
+
 	//Ref<Brush>					m_brush;
 	//Ref<Font>					m_font;
+private:
+	size_t m_typeId;
 };
 
 // インスタンスは DrawElementList の LinearAllocator に配置される。

@@ -123,8 +123,10 @@ void VertexBuffer::setResourceUsage(GraphicsResourceUsage usage)
 {
 	// Prohibit while direct locking.
 	if (LN_REQUIRE(!m_rhiLockedBuffer)) return;
-	m_usage = usage;
-	m_modified = true;
+	if (m_usage != usage) {
+		m_usage = usage;
+		m_modified = true;
+	}
 }
 
 void VertexBuffer::setResourcePool(GraphicsResourcePool pool)

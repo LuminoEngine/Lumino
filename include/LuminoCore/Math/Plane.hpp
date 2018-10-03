@@ -52,7 +52,7 @@ public:
 public:
     /**
      * この平面を正規化します。
-	 * 
+     * 
      * 面法線 Normal を正規化し、それに使用した係数を distance にも適用します。
      */
     void normalize();
@@ -78,7 +78,7 @@ public:
      * @param[in]   point   : 球の中心座標
      * @param[in]   radius  : 球の半径
      * @return      true の場合、裏側にある (接触している場合も true)
-	 *
+     *
      * 面は法線が伸びている方が表側です。
      */
     bool checkInside(const Vector3& point, float radius) const;
@@ -105,6 +105,14 @@ public:
      * @param[in]   mat     : 処理の基になる行列
      */
     void transform(const Matrix& mat);
+
+    /**
+     * 指定した点と平面の距離を計算します。
+     * 
+     * 戻り値の符号で点と平面の位置関係を表します。負値の場合、点は平面の裏側にあります。
+     * 単純に距離を知りたい場合は戻り値の絶対値を取ってください。
+     */
+    float getDistanceToPoint(const Vector3& point) const { return Vector3::dot(normal, point) + distance; }
 
 public:
     /**
@@ -165,8 +173,8 @@ inline bool Plane::checkInside(const Vector3& point, float radius) const
 
 inline std::ostream& operator<<(std::ostream& s, const Plane& v)
 {
-	s << v.normal.x << ' ' << v.normal.y << ' ' << v.normal.z << ' ' << v.distance;
-	return s;
+    s << v.normal.x << ' ' << v.normal.y << ' ' << v.normal.z << ' ' << v.distance;
+    return s;
 }
 
 } // namespace ln

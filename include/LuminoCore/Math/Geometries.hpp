@@ -28,7 +28,7 @@ public:
     Ray(const Vector3& origin, const Vector3& direction);
 };
 
-/** 直方体を定義します。 */
+/** 直方体を定義します。(axis-aligned bounding box) */
 struct LN_API Box
 {
 public:
@@ -51,11 +51,28 @@ public:
     /** 各軸のサイズを指定して正方形を作成します。*/
     Box(float sizeXYZ);
 
+    /** 中心座標と各軸のサイズを指定して正方形を作成します。*/
+    Box(const Vector3& center, float sizeXYZ);
+
+    /** 中心座標と各軸のサイズを指定して正方形を作成します。*/
+    Box(const Vector3& center, float width, float height, float depth);
+
     /** 最小値と最大値を指定してボックスを作成します。*/
     Box(const Vector3& min, const Vector3& max);
 
+    /** サイズが 0 以下であるかを判定します。*/
+    bool isEmpty() const { return width <= 0.0f || height <= 0.0f || depth <= 0.0f; }
+
+    /** 境界の最小値を取得します。*/
+    Vector3 minPoint() const;
+
+    /** 境界と最大値を取得します。*/
+    Vector3 maxPoint() const;
+
     /** 境界の最小値と最大値を取得します。*/
     void getMinMax(Vector3* outMin, Vector3* outMax) const;
+
+	static Box transform(const Box& box, const Matrix& mat);
 };
 
 /** 向きを持つボックスを定義します。 */
@@ -79,7 +96,7 @@ public:
 
     /** Y 軸の範囲 */
     float extentY;
-    
+
     /** Z 軸の範囲 */
     float extentZ;
 

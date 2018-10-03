@@ -6,6 +6,20 @@
 
 namespace ln {
 struct Matrix;
+struct Box;
+
+/** 交差判定の結果を表します。 */
+enum class IntersectResult
+{
+    /** 領域の外側にある */
+    Outside,
+
+    /** 領域の内側にある */
+    Inside,
+
+    /** 領域の境界上にある (交差している) */
+    Intersect,
+};
 
 /**
  * 3D の視錐台を定義します。
@@ -49,6 +63,11 @@ public:
      * @return      交差する場合は true、そうでない場合は false。(接触している場合も true)
      */
     bool intersects(const Vector3& center, float radius) const;
+
+    /**
+     * 指定した Box がこの視錐台と交差するかを判定します。
+     */
+    IntersectResult intersects(const Box& box) const;
 
     /**
      * 錐台の各頂点を取得します。

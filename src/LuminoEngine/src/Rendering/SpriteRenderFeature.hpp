@@ -40,6 +40,16 @@ public:
 		Size textureRealSize;
 		SpriteSortMode sortMode = SpriteSortMode::DepthBackToFront;
 		SortingDistanceBasis sortingBasis = SortingDistanceBasis::ViewPont;
+
+		bool operator==(const State& other) const
+		{
+			return
+				viewMatrix == other.viewMatrix &&
+				projMatrix == other.projMatrix &&
+				textureRealSize == other.textureRealSize &&
+				sortMode == other.sortMode &&
+				sortingBasis == other.sortingBasis;
+		}
 	};
 
 	InternalSpriteRenderer();
@@ -92,17 +102,21 @@ class SpriteRenderFeatureStageParameters
 public:
 	InternalSpriteRenderer::State m_state;
 
+	SpriteRenderFeatureStageParameters()
+		: RenderFeatureStageParameters(CRCHash::compute("SpriteRenderFeatureStageParameters"))
+	{
+	}
 
 	virtual bool equals(const RenderFeatureStageParameters* other) override
 	{
-		// TODO: strict
-		// TODO: 型情報の比較も必要。いつもの enum でよいが。
-		return this == other;
+		if (typeId() != other->typeId()) return false;
+		if (this == other) return true;
+		return this->m_state == static_cast<const SpriteRenderFeatureStageParameters*>(other)->m_state;
 	}
 
 	virtual void copyTo(RenderFeatureStageParameters* params) override
 	{
-		// TODO: type check
+		LN_CHECK(typeId() == params->typeId());
 		static_cast<SpriteRenderFeatureStageParameters*>(params)->m_state = m_state;
 	}
 

@@ -24,6 +24,9 @@ using namespace ln;
 // (具体的にどう異なるのかは調査中。VS2010 と VS2013 では Vector3::project() の誤差が一番大きかった)
 #define LN_FLOAT_THRESHOLD 0.0001/*0.000001*/
 
+#define ASSERT_FLOAT_NEAR(x_, v) \
+	ASSERT_NEAR(x_, v, LN_FLOAT_THRESHOLD);
+
 #define ASSERT_VEC2_NEAR(x_, y_, v) \
 	ASSERT_NEAR(x_, v.x, LN_FLOAT_THRESHOLD); \
 	ASSERT_NEAR(y_, v.y, LN_FLOAT_THRESHOLD);

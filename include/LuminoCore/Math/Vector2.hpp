@@ -49,11 +49,11 @@ public:
      */
     void set(float x, float y);
 
-	/** Returns pointer to the first element. */
-	float* data() LN_NOEXCEPT { return &x; }
+    /** Returns pointer to the first element. */
+    float* data() LN_NOEXCEPT { return &x; }
 
-	/** Returns pointer to the first element. */
-	const float* data() const LN_NOEXCEPT { return &x; }
+    /** Returns pointer to the first element. */
+    const float* data() const LN_NOEXCEPT { return &x; }
 
     /**
      * このベクトルの長さを返します。
@@ -390,8 +390,8 @@ inline bool Vector2::operator!=(const Vector2& v) const
 
 inline std::ostream& operator<<(std::ostream& s, const Vector2& v)
 {
-	s << v.x << ' ' << v.y;
-	return s;
+    s << v.x << ' ' << v.y;
+    return s;
 }
 
 } // namespace ln
