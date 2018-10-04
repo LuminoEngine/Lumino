@@ -254,6 +254,7 @@ struct SamplerStateData
 
 namespace detail {
 static const int MaxMultiRenderTargets = 4;
+static const int MaxVertexStreams = 16;
 
 using ShaderRefrectionParameterType = ShaderVariableType;
 //enum class ShaderRefrectionParameterType

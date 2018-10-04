@@ -154,6 +154,19 @@ private:
 
 
 LN_INTERNAL_ACCESS:
+
+	bool equalStatus(const AbstractMaterial* other) const
+	{
+		if (LN_REQUIRE(other)) return false;
+		if (this == other) return true;
+		return
+			m_shader == other->m_shader &&
+			blendMode == other->blendMode &&
+			cullingMode == other->cullingMode &&
+			depthTestEnabled == other->depthTestEnabled &&
+			depthWriteEnabled == other->depthWriteEnabled;
+	}
+
 	//int									m_revisionCount;
 	//uint32_t							m_hashCode;
 

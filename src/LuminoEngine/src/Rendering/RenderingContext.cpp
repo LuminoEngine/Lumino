@@ -1,6 +1,8 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
+#include <LuminoEngine/Mesh/Mesh.hpp>
 #include "RenderingManager.hpp"
 #include "DrawElementListBuilder.hpp"
 
@@ -108,6 +110,41 @@ void RenderingContext::drawSprite(
 	element->color = color;
 	element->baseDirection = baseDirection;
 	element->billboardType = billboardType;
+	// TODO
+	//detail::Sphere sphere;
+	//detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &sphere);
+	//ptr->setLocalBoundingSphere(sphere);
+}
+
+void RenderingContext::drawMesh(MeshContainer* meshContainer, int sectionIndex)
+{
+	class DrawMesh : public detail::RenderDrawElement
+	{
+	public:
+		Ref<MeshContainer> meshContainer;
+		int sectionIndex;
+
+		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+		{
+			// TODO: LOD Level
+			MeshResource* mesh = meshContainer->selectLODResource(0);
+
+			static_cast<detail::MeshRenderFeature*>(renderFeatures)->drawMesh(mesh, sectionIndex);
+		}
+	};
+
+
+	MeshResource* mesh = meshContainer->meshResource();
+	int materialIndex = mesh->sections()[sectionIndex].materialIndex;
+
+	m_builder->setMaterial(
+		meshContainer->meshModel()->materials()[materialIndex]);
+
+	auto* element = m_builder->addNewDrawElement<DrawMesh>(
+		m_manager->meshRenderFeature(),
+		m_builder->meshRenderFeatureStageParameters());
+	element->meshContainer = meshContainer;
+	element->sectionIndex = sectionIndex;
 	// TODO
 	//detail::Sphere sphere;
 	//detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &sphere);

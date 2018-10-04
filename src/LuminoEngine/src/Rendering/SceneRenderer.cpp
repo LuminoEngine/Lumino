@@ -187,7 +187,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 		{
 			applyGeometryStatus(graphicsContext, currentStage, nullptr);
 
-			AbstractMaterial* finalMaterial = currentStage->getMaterialFinal(nullptr, nullptr);
+			AbstractMaterial* finalMaterial = currentStage->getMaterialFinal(nullptr);
 
 			ElementInfo elementInfo;
 			elementInfo.viewProjMatrix = &cameraInfo.viewProjMatrix;

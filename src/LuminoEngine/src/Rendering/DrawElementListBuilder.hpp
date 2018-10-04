@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "RenderStage.hpp"
 #include "SpriteRenderFeature.hpp"
+#include "MeshRenderFeature.hpp"
 
 namespace ln {
 namespace detail {
@@ -44,6 +45,7 @@ public:
 	void setTone(const ToneF& value);
 
 	SpriteRenderFeatureStageParameters* spriteRenderFeatureStageParameters() { return &m_spriteRenderFeatureStageParameters; }
+	MeshRenderFeatureStageParameters* meshRenderFeatureStageParameters() { return &m_meshRenderFeatureStageParameters; }
 
 	template<class TElement>
 	TElement* addNewDrawElement(
@@ -69,6 +71,7 @@ private:
 	// ユーザー定義する場合は外部でこれらを定義し、draw 時にそのポインタを指定する必要がある。
 	// (もしフレームワークに沿った流れでなくても大丈夫ならグローバル変数とかで受け取ったりしても大丈夫)
 	SpriteRenderFeatureStageParameters m_spriteRenderFeatureStageParameters;
+	MeshRenderFeatureStageParameters m_meshRenderFeatureStageParameters;
 
 	bool m_modified;
 };

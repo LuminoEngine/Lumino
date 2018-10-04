@@ -10,6 +10,7 @@
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/Mesh.hpp>
+#include "MeshManager.hpp"
 
 namespace ln {
 
@@ -26,7 +27,8 @@ const std::array<size_t, MeshResource::VBG_Count> MeshResource::VertexStrideTabl
 };
 
 MeshResource::MeshResource()
-	: m_vertexCount(0)
+	: m_manager()
+	, m_vertexCount(0)
 	, m_indexCount(0)
 	, m_usage(GraphicsResourceUsage::Static)
 	, m_vertexBuffers{}
@@ -42,6 +44,7 @@ MeshResource::~MeshResource()
 void MeshResource::initialize()
 {
 	Object::initialize();
+	m_manager = detail::EngineDomain::meshManager();
 }
 
 int MeshResource::vertexCount() const
@@ -79,7 +82,7 @@ void MeshResource::setVertex(int index, const Vertex& value)
 	if (LN_REQUIRE_RANGE(index, 0, vertexCount())) return;
 
 	Vertex* v = (Vertex*)requestVertexData(VBG_Basic);
-	*v = value;
+	*(v + index) = value;
 }
 
 void MeshResource::setIndex(int index, int value)
@@ -210,12 +213,44 @@ void* MeshResource::requestIndexDataForAdditional(int additionalIndexCount, Inde
 		return ((uint32_t*)data) + begin;
 }
 
+void MeshResource::commitRenderData(int sectionIndex, MeshSection* outSection, VertexDeclaration** outDecl, VertexBuffer** outVBs, int* outVBCount, IndexBuffer** outIB)
+{
+	// Section
+	*outSection = m_sections[sectionIndex];
+
+	// VertexDeclaration
+	{
+		uint32_t flags = 0;
+		if (m_vertexBuffers[VBG_Basic]) flags |= detail::PredefinedVertexLayoutFlags_Geometry;
+		if (m_vertexBuffers[VBG_BlendWeights]) flags |= detail::PredefinedVertexLayoutFlags_BlendWeights;
+		if (m_vertexBuffers[VBG_AdditionalUVs]) flags |= detail::PredefinedVertexLayoutFlags_AdditionalUV;
+		if (m_vertexBuffers[VBG_SdefInfo]) flags |= detail::PredefinedVertexLayoutFlags_SdefInfo;
+		if (m_vertexBuffers[VBG_MmdExtra]) flags |= detail::PredefinedVertexLayoutFlags_MmdExtra;
+		*outDecl = m_manager->getPredefinedVertexLayout((detail::PredefinedVertexLayoutFlags)flags);
+	}
+
+	// VertexBuffer
+	int vbCount = 0;
+	for (int i = 0; i < VBG_Count; ++i)
+	{
+		if (m_vertexBuffers[i])
+		{
+			outVBs[vbCount] = m_vertexBuffers[i];
+			++vbCount;
+		}
+	}
+	*outVBCount = vbCount;
+	
+	// IndexBuffer
+	*outIB = m_indexBuffer;
+}
 
 //==============================================================================
 // MeshContainer
 
 MeshContainer::MeshContainer()
-	: m_name()
+	: m_meshModel(nullptr)
+	, m_name()
 	, m_lodResources()
 {
 }
@@ -299,14 +334,16 @@ void MeshContainer::calculateBounds()
 
 void MeshModel::addMeshContainer(MeshContainer* meshContainer)
 {
+	if (LN_REQUIRE(meshContainer)) return;
+	if (LN_REQUIRE(!meshContainer->m_meshModel)) return;
 	m_meshContainers.add(meshContainer);
+	meshContainer->m_meshModel = this;
 }
 
 void MeshModel::addMaterial(AbstractMaterial* material)
 {
 	m_materials.add(material);
 }
-
 
 namespace detail {
 

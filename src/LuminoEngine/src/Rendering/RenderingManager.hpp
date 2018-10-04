@@ -10,6 +10,7 @@ class RenderTargetTextureCacheManager;
 class DepthBufferCacheManager;
 class DrawElementListBuilder;
 class SpriteRenderFeature;
+class MeshRenderFeature;
 
 enum class BuiltinShader
 {
@@ -122,6 +123,7 @@ public:
 	const Ref<VertexDeclaration>& standardVertexDeclaration() const { return m_standardVertexDeclaration; }
 	const Ref<DrawElementListBuilder>& renderStageListBuilder() const { return m_renderStageListBuilder; }
 	const Ref<SpriteRenderFeature>& spriteRenderFeature() const { return m_spriteRenderFeature; }
+	const Ref<MeshRenderFeature>& meshRenderFeature() const { return m_meshRenderFeature; }
 	const Ref<LinearAllocatorPageManager>& stageDataPageManager() const { return m_stageDataPageManager; }
 	const Ref<Shader>& builtinShader(BuiltinShader shader) const { return m_builtinShaders[(int)shader]; }
 
@@ -132,6 +134,7 @@ private:
 	Ref<VertexDeclaration> m_standardVertexDeclaration;
 	Ref<DrawElementListBuilder> m_renderStageListBuilder;
 	Ref<SpriteRenderFeature> m_spriteRenderFeature;
+	Ref<MeshRenderFeature> m_meshRenderFeature;
 
 	// RenderStage 関係のデータ (ステートやコマンド) 用の LinearAllocatorPageManager
 	Ref<LinearAllocatorPageManager> m_stageDataPageManager;

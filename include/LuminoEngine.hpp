@@ -21,6 +21,8 @@
 
 #include "LuminoEngine/Shader/Shader.hpp"
 
+#include "LuminoEngine/Mesh/Mesh.hpp"
+
 #include "LuminoEngine/Rendering/Common.hpp"
 #include "LuminoEngine/Rendering/RenderView.hpp"
 #include "LuminoEngine/Rendering/RenderFeature.hpp"

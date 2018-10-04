@@ -36,6 +36,9 @@ int main(int argc, char** argv)
 	//EngineSettings::setMainBackBufferSize(80, 60);
 	Engine::initialize();
 
+	//Engine::terminate();
+	//return 0;
+
 	{
 		class TestRenderView : public RenderView
 		{
@@ -91,24 +94,48 @@ int main(int argc, char** argv)
 		auto material = Material::create();
 		material->setMainTexture(tex1);
 
+		auto meshRes = newObject<MeshResource>();
+		meshRes->resizeVertexBuffer(4);
+		meshRes->resizeIndexBuffer(6);
+		meshRes->resizeSections(1);
+		//meshRes->setVertex(0, Vertex{ Vector3(-1, 0, 1), Vector3::UnitY, Vector2(0, 0), Color::White });
+		//meshRes->setVertex(1, Vertex{ Vector3(1, 0, 1), Vector3::UnitY, Vector2(1, 0), Color::White });
+		//meshRes->setVertex(2, Vertex{ Vector3(-1, 0, -1), Vector3::UnitY, Vector2(0, 1), Color::White });
+		//meshRes->setVertex(3, Vertex{ Vector3(1, 0, -1), Vector3::UnitY, Vector2(1, 1), Color::White });
+		meshRes->setVertex(0, Vertex{ Vector3(-3, 1, 0), -Vector3::UnitZ, Vector2(0, 0), Color::White });
+		meshRes->setVertex(1, Vertex{ Vector3(3, 1, 0), -Vector3::UnitZ, Vector2(1, 0), Color::White });
+		meshRes->setVertex(2, Vertex{ Vector3(-3, -1, 0), -Vector3::UnitZ, Vector2(0, 1), Color::White });
+		meshRes->setVertex(3, Vertex{ Vector3(3, -1, 0), -Vector3::UnitZ, Vector2(1, 1), Color::White });
+		meshRes->setIndex(0, 0);
+		meshRes->setIndex(1, 1);
+		meshRes->setIndex(2, 2);
+		meshRes->setIndex(3, 2);
+		meshRes->setIndex(4, 1);
+		meshRes->setIndex(5, 3);
+		meshRes->setSection(0, 0, 2, 0);
+
+		auto meshContainer = newObject<MeshContainer>();
+		meshContainer->setMeshResource(meshRes);
+
+		auto meshModel = newObject<MeshModel>();
+		meshModel->addMeshContainer(meshContainer);
+		meshModel->addMaterial(material);
+
 		while (Engine::update())
 		{
 			renderView->m_context->reset();
 
 			renderView->m_context->setCullingMode(CullingMode::None);
 
-			renderView->m_context->drawSprite(
-				Matrix(), Size(7, 5), Vector2(0, 0), Rect(0, 0, 1, 1), Color::Blue,
-				SpriteBaseDirection::ZMinus, BillboardType::None, material);
+			renderView->m_context->drawMesh(meshContainer, 0);
+
+			//renderView->m_context->drawSprite(
+			//	Matrix(), Size(7, 5), Vector2(0, 0), Rect(0, 0, 1, 1), Color::Blue,
+			//	SpriteBaseDirection::ZMinus, BillboardType::None, material);
 
 			renderView->m_context->addPointLight(Color::White, 1.0, Vector3(0, 0, -1), 3.0, 1.0);
 
 			renderView->render();
-
-			if (::GetKeyState('Z') < 0)
-			{
-				break;
-			}
 		}
 #if 0
 		class TestRenderView : public RenderView

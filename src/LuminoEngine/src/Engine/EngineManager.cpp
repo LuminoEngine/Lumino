@@ -73,6 +73,7 @@ void EngineManager::dispose()
 
 	if (m_mainWindow) m_mainWindow->dispose();
 	if (m_renderingManager) m_renderingManager->dispose();
+	if (m_meshManager) m_meshManager->dispose();
 	if (m_shaderManager) m_shaderManager->dispose();
 	if (m_graphicsManager) m_graphicsManager->dispose();
 	if (m_inputManager) m_inputManager->dispose();

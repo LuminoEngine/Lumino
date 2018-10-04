@@ -1,15 +1,18 @@
 ﻿#pragma once
+#include <unordered_map>
 
 namespace ln {
 class VertexDeclaration;
 namespace detail {
 
-enum PredefinedVertexLayout
+enum PredefinedVertexLayoutFlags	// TODO: name StandardVertexLayoutFlags
 {
-	PredefinedVertexLayout_Standard,			// struct Vertex
-	PredefinedVertexLayout_Standard_BlendWeight,	// struct Vertex, struct VertexBlendWeight
-
-	PredefinedVertexLayout_Count,
+	PredefinedVertexLayoutFlags_None = 0x0000,
+	PredefinedVertexLayoutFlags_Geometry = 0x0001,
+	PredefinedVertexLayoutFlags_BlendWeights = 0x0002,
+	PredefinedVertexLayoutFlags_AdditionalUV = 0x0004,
+	PredefinedVertexLayoutFlags_SdefInfo = 0x0008,
+	PredefinedVertexLayoutFlags_MmdExtra = 0x0010,
 };
 
 class MeshManager
@@ -24,13 +27,22 @@ public:
 	MeshManager();
 	void initialize(const Settings& settings);
 	void dispose();
+	VertexDeclaration* getPredefinedVertexLayout(PredefinedVertexLayoutFlags flags);
+
 
 	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
-	const Ref<VertexDeclaration>& predefinedVertexLayout(PredefinedVertexLayout kind) const { return m_predefinedVertexLayouts[kind]; }
+
+	//const Ref<VertexDeclaration>& predefinedVertexLayout(PredefinedVertexLayout kind) const { return m_predefinedVertexLayouts[kind]; }
 
 private:
 	GraphicsManager* m_graphicsManager;
-	std::array<Ref<VertexDeclaration>, PredefinedVertexLayout_Count> m_predefinedVertexLayouts;
+	std::unordered_map<PredefinedVertexLayoutFlags, Ref<VertexDeclaration>> m_predefinedVertexLayouts;
+	//std::array<Ref<VertexDeclaration>, PredefinedVertexLayout_Count> m_predefinedVertexLayouts;
+	//Ref<VertexDeclaration> m_predefinedVertexLayout_StandardGeometry;
+	//Ref<VertexDeclaration> m_predefinedVertexLayout_StandardBlendWeights;
+	//Ref<VertexDeclaration> m_predefinedVertexLayout_AdditionalUV;
+	//Ref<VertexDeclaration> m_predefinedVertexLayout_SdefInfo;
+	//Ref<VertexDeclaration> m_predefinedVertexLayout_SdefInfo;
 };
 
 } // namespace detail

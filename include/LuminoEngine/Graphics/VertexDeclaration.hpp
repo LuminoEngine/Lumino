@@ -6,7 +6,7 @@
 namespace ln {
 namespace detail { class IVertexDeclaration; }
 
-class VertexDeclaration
+class VertexDeclaration	// TODO: name : Layout
 	: public GraphicsResource
 {
 public:

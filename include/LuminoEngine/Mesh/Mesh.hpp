@@ -3,10 +3,15 @@
 #include "../Rendering/Vertex.hpp"
 
 namespace ln {
+class VertexDeclaration;
 class VertexBuffer;
 class IndexBuffer;
 class AbstractMaterial;
 class MeshContainer;
+class MeshModel;
+namespace detail {
+class MeshManager;
+}
 
 struct MeshSection
 {
@@ -53,6 +58,10 @@ public:
 	/** セクションの情報を設定します。 */
 	void setSection(int sectionIndex, int startIndex, int primitiveCount, int materialIndex);
 
+	// TODO: internal
+	void commitRenderData(int sectionIndex, MeshSection* outSection, VertexDeclaration** outDecl, VertexBuffer** outVBs, int* outVBCount, IndexBuffer** outIB);
+	const List<MeshSection>& sections() const { return m_sections; }
+
 LN_CONSTRUCT_ACCESS:
 	MeshResource();
 	virtual ~MeshResource();
@@ -81,12 +90,14 @@ private:
 
 	static const std::array<size_t, VBG_Count> VertexStrideTable;
 
+	detail::MeshManager* m_manager;
 	int m_vertexCount;
 	int m_indexCount;
 	GraphicsResourceUsage m_usage;
 	std::array<Ref<VertexBuffer>, VBG_Count> m_vertexBuffers;
 	Ref<IndexBuffer> m_indexBuffer;
 	List<MeshSection> m_sections;
+	//List<Ref<AbstractMaterial>> m_materials;
 
 	friend class MeshContainer;
 };
@@ -118,6 +129,8 @@ public:
 
 	void calculateBounds();
 
+	MeshModel* meshModel() const { return m_meshModel; }
+
 LN_CONSTRUCT_ACCESS:
 	MeshContainer();
 	virtual ~MeshContainer();
@@ -126,9 +139,12 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 private:
+	MeshModel* m_meshModel;
 	ln::String m_name;
 	Box m_boundingBox;
 	List<Ref<MeshResource>> m_lodResources;
+
+	friend class MeshModel;
 };
 
 class MeshModel
@@ -137,6 +153,9 @@ class MeshModel
 public:
 	void addMeshContainer(MeshContainer* meshContainer);
 	void addMaterial(AbstractMaterial* material);
+
+	const List<Ref<AbstractMaterial>>& materials() const { return m_materials; }
+
 
 private:
 	List<Ref<MeshContainer>> m_meshContainers;

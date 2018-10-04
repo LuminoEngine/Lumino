@@ -188,6 +188,7 @@ public:
 	RenderDrawElement();
 	virtual ~RenderDrawElement();
 
+
 	// 描画実行。
 	// 純粋に描画のみを行うこと。
 	// ステートは RenderFeature::onStateChanged に通知済み。
@@ -224,6 +225,10 @@ private:
 // 各 Parameters クラスは まだ確定状態ではない。
 // - SceneRenderer が ZPrepass などの描画でデフォルトの　RT を指定してくることがある。
 // - SceneRenderer がシェーダの種類を指定してくることがある。（ShadowPass で書きたい。ユーザーシェーダがそれを持っていればそれを使うし、そうでなければデフォルトのを使う）
+//
+// ステートをまとめることの留意点として、
+// そもそもまとめるのは 不透明・半透明 によって描画パスの振り分けを行うことが主な目的。
+// シェーダ変数の変更は別にかまわない。（というかそれまで固定するのはちょっと現実的ではない）
 class RenderStage
 	//: public RefObject
 	: public IDrawElementListFrameData
@@ -253,7 +258,7 @@ public:
 	const RectI& getScissorRectFinal() const { return frameBufferStageParameters->m_scissorRect; }
 
 
-	AbstractMaterial* getMaterialFinal(AbstractMaterial* defaultValue, AbstractMaterial* priorityValue) const;
+	AbstractMaterial* getMaterialFinal(AbstractMaterial* priorityValue) const;
 	ShadingModel getShadingModelFinal(AbstractMaterial* finalMaterial) const;	// getMaterialFinal() で確定した Material を渡すこと
 	BlendMode getBlendModeFinal(AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
 	CullingMode getCullingModeFinal(AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと

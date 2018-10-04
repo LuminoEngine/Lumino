@@ -59,16 +59,28 @@ void RenderStage::flush()
 	}
 }
 
-AbstractMaterial* RenderStage::getMaterialFinal(AbstractMaterial* defaultValue, AbstractMaterial* priorityValue) const
+AbstractMaterial* RenderStage::getMaterialFinal(AbstractMaterial* priorityValue) const
 {
 	// specified drawXXXX()
-	if (priorityValue) return priorityValue;
+	if (priorityValue) {
+
+		// 優先マテリアルを使う場合、ステートは基本のマテリアルと同一でなければならない。
+		// この時点で、DrawElement は 不透明・半透明  によって描画パスの振り分けが終わっているので、
+		// 振り分け結果とつじつまが合わなくなるようなステートにしてはならない。
+		// なお、シェーダ変数は異なっていてもかまわない。
+		LN_CHECK(geometryStageParameters->m_material->equalStatus(priorityValue));
+
+		return priorityValue;
+	}
 
 	// specified context->setMaterial() or meshObj->setMaterial()
 	if (geometryStageParameters->m_material) return geometryStageParameters->m_material;
 
+	LN_UNREACHABLE();
+	return nullptr;
+
 	// default は SceneRenderer に決めてもらう
-	return defaultValue;
+	//return defaultValue;
 }
 
 ShadingModel RenderStage::getShadingModelFinal(AbstractMaterial* finalMaterial) const

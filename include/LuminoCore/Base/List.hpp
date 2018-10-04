@@ -9,6 +9,31 @@
 #include "Optional.hpp"
 
 namespace ln {
+template<typename T> class List;
+
+/**
+ * Ref クラスから List クラスへ読み取り専用アクセスする際に使用するインターフェイスです。
+ */
+template<typename TItem>
+class ReadOnlyList : public RefObject
+{
+protected:
+	ReadOnlyList() {}
+
+public:	// TODO: internal}
+	typedef typename std::vector<TItem>::iterator iterator;
+	typedef typename std::vector<TItem>::const_iterator const_iterator;
+
+	List<TItem>& derived() { return *static_cast<List<TItem>*>(this); }
+	const List<TItem>& derived() const { return *static_cast<const List<TItem> *>(this); }
+	int size_internal() const LN_NOEXCEPT { return derived().size(); }
+	TItem& at_internal(int index) { return derived().at(index); }
+	const TItem& at_internal(int index) const { return derived().at(index); }
+	iterator begin_internal() LN_NOEXCEPT { return derived().begin(); }
+	const_iterator begin_internal() const LN_NOEXCEPT { return derived().begin(); }
+	iterator end_internal() LN_NOEXCEPT { return derived().end(); }
+	const_iterator end_internal() const LN_NOEXCEPT { return derived().end(); }
+};
 
 /**
  * 参照カウントを持つ可変長配列のコンテナテンプレートクラスです。
@@ -17,7 +42,7 @@ namespace ln {
  * std::vector とおなじように使用できますが、ヒープに確保された List のインスタンスはベースクラスの RefObject が持つ参照カウントによっても寿命を管理されます。
  */
 template<typename T>
-class List : public RefObject
+class List : public ReadOnlyList<T>
 {
 public:
     typedef typename std::vector<T>::value_type value_type;

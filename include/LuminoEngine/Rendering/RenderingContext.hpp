@@ -8,6 +8,7 @@ class Texture;
 class RenderTargetTexture;
 class DepthBuffer;
 class AbstractMaterial;
+class MeshContainer;
 namespace detail {
 class RenderingManager;
 class DrawElementList;
@@ -77,6 +78,8 @@ public:
 		SpriteBaseDirection baseDirection,
 		BillboardType billboardType,
 		AbstractMaterial* material);
+
+	void drawMesh(MeshContainer* meshContainer, int sectionIndex);
 
 	/** @} */
 
