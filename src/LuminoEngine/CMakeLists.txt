@@ -142,6 +142,8 @@ set(LN_SOURCES_Mesh
     src/Mesh/Mesh.cpp
     src/Mesh/MeshManager.cpp
     src/Mesh/MeshManager.hpp
+    src/Mesh/MqoImporter.cpp
+    src/Mesh/MqoImporter.hpp
 )
 
 set(LN_SOURCES_Rendering
