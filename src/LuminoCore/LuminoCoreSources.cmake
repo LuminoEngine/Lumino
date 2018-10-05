@@ -52,6 +52,7 @@ file(
     "${LN_CORE_INCLUDE_DIR}/LuminoCore/Text/*.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/Text/*.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/Text/*.hpp")
+    "${CMAKE_CURRENT_LIST_DIR}/src/Text/*.c")
 
 file(
     GLOB

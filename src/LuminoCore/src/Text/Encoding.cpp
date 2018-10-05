@@ -10,8 +10,7 @@
 #include "UTF8Encoding.hpp"
 #include "UTF16Encoding.hpp"
 #include "UTF32Encoding.hpp"
-//#include "DBCSEncoding.h"
-//#include "EUCJPEncoding.h"
+#include "DBCSEncoding.hpp"
 #if defined(LN_OS_WIN32)
 #include "Win32CodePageEncoding.hpp"
 #endif
@@ -88,11 +87,11 @@ const Ref<TextEncoding>& TextEncoding::getEncoding(EncodingType type)
             static Ref<TextEncoding> ref(&asciiEncoding);
             return ref;
         }
-        //case EncodingType::SJIS:
-        //{
-        //	static DBCSEncoding sjisEncoding(EncodingType::SJIS);
-        //	return &sjisEncoding;
-        //}
+        case EncodingType::SJIS:
+        {
+        	static DBCSEncoding sjisEncoding(EncodingType::SJIS);
+        	return &sjisEncoding;
+        }
         //case EncodingType::EUCJP:
         //{
         //	static EUCJPEncoding eucjpEncoding;

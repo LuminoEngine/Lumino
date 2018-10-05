@@ -22,6 +22,9 @@ enum class EncodingType
 
     /** UTF-8 (BOM 無し) */
     UTF8N,
+
+	/** 日本語 (シフト JIS) -- cp932(MS932) Windows-31J ※MS実装 */
+	SJIS,
 };
 
 /** 文字コード変換のオプションを指定するための構造体 */
