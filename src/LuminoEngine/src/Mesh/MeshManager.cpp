@@ -1,6 +1,9 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Graphics/VertexDeclaration.hpp>
+#include <LuminoEngine/Graphics/Texture.hpp>
+#include "../Asset/AssetManager.hpp"
 #include "MeshManager.hpp"
 
 namespace ln {
@@ -18,6 +21,7 @@ MeshManager::MeshManager()
 void MeshManager::initialize(const Settings& settings)
 {
 	m_graphicsManager = settings.graphicsManager;
+	m_assetManager = settings.assetManager;
 
 	//{
 	//	static VertexElement elements[] =
@@ -108,6 +112,18 @@ VertexDeclaration* MeshManager::getPredefinedVertexLayout(PredefinedVertexLayout
 
 		return vertexLayout;
 	}
+}
+
+Ref<Texture> MeshManager::createTexture(const Path& parentDir, const StringRef& filePath, DiagnosticsManager* diag)
+{
+	Path path(parentDir, filePath);
+
+	if (!m_assetManager->existsFile(path)) {
+		diag->reportWarning(String::format(u"Texture file not found: {0}", path));
+		return nullptr;
+	}
+
+	return m_assetManager->loadTexture(path);
 }
 
 } // namespace detail

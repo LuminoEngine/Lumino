@@ -2,8 +2,11 @@
 #include <unordered_map>
 
 namespace ln {
+class DiagnosticsManager;
 class VertexDeclaration;
+class Texture;
 namespace detail {
+class AssetManager;
 
 enum PredefinedVertexLayoutFlags	// TODO: name StandardVertexLayoutFlags
 {
@@ -22,6 +25,7 @@ public:
 	struct Settings
 	{
 		GraphicsManager* graphicsManager;
+		AssetManager* assetManager;
 	};
 
 	MeshManager();
@@ -29,6 +33,7 @@ public:
 	void dispose();
 	VertexDeclaration* getPredefinedVertexLayout(PredefinedVertexLayoutFlags flags);
 
+	Ref<Texture> createTexture(const Path& parentDir, const StringRef& filePath, DiagnosticsManager* diag);
 
 	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
 
@@ -36,6 +41,7 @@ public:
 
 private:
 	GraphicsManager* m_graphicsManager;
+	AssetManager* m_assetManager;
 	std::unordered_map<PredefinedVertexLayoutFlags, Ref<VertexDeclaration>> m_predefinedVertexLayouts;
 	//std::array<Ref<VertexDeclaration>, PredefinedVertexLayout_Count> m_predefinedVertexLayouts;
 	//Ref<VertexDeclaration> m_predefinedVertexLayout_StandardGeometry;

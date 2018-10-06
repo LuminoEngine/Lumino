@@ -4,17 +4,19 @@
 
 namespace ln {
 class Stream;
+class DiagnosticsManager;
 namespace detail {
 
 class MqoParser
 {
 public:
-	MqoParser();
 
 	//Ref<tr::SrMeshModel> import(ModelManager* manager, const PathName& filePath);
-	Ref<MeshModel> import(MeshManager* manager, const Path& filePath);
+	//Ref<MeshModel> import(MeshManager* manager, const Path& filePath);
 
-private:
+protected:
+	MqoParser();
+
 	struct MqoFace
 	{
 		int				vertexCount;		// 面を構成する頂点数 (3 or 4) 読み込まれた後、四角形は3角形に分割される
@@ -24,6 +26,19 @@ private:
 		uint32_t		colors[4];			// 頂点カラー
 	};
 
+	void parse(MeshManager* manager, const Path& filePath, DiagnosticsManager* diag);
+	DiagnosticsManager* diag() const { return m_diag; }
+
+	virtual void visitMaterialChunk() = 0;
+	virtual void visitMaterial(AbstractMaterial* material) = 0;
+	virtual void visitObjectChunk(const StringRef& name) = 0;
+	virtual void visitVertexChunk(int vertexCount) = 0;
+	virtual void visitVertex(const Vector3& vertex, int index) = 0;
+	virtual void visitFaceChunk(int faceCount) = 0;
+	virtual void visitFace(const MqoFace& mqoFace) = 0;
+
+private:
+
 	void loadMaterials(StreamReader* reader);
 	void loadObject(StreamReader* reader);
 	void readVertexChunk(StreamReader* reader);
@@ -32,23 +47,39 @@ private:
 	static void readUInts(const StringRef& str, uint32_t* values, int valuesCount);
 	static void readFloats(const StringRef& str, float* values, int valuesCount);
 
-	void visitMaterialChunk();
-	void visitMaterial(AbstractMaterial* material);
-	void visitObjectChunk(const StringRef& name);
-	void visitVertexChunk(int vertexCount);
-	void visitVertex(const Vector3& vertex, int index);
-	void visitFaceChunk(int faceCount);
-	void visitFace(const MqoFace& mqoFace);
 
 	MeshManager*			m_manager;
+	DiagnosticsManager* m_diag;
+
 	Path				m_filePath;
 	Path				m_parentDir;
 
-	Ref<MeshModel>	m_model;
-	//tr::SrMesh*				m_mesh;
-	bool					m_flipZCoord;
 };
 
+class MqoImporter
+	: public MqoParser
+{
+public:
+	MqoImporter();
+	Ref<MeshModel> import(MeshManager* manager, const Path& filePath, DiagnosticsManager* diag);
+
+protected:
+	virtual void visitMaterialChunk() override;
+	virtual void visitMaterial(AbstractMaterial* material) override;
+	virtual void visitObjectChunk(const StringRef& name) override;
+	virtual void visitVertexChunk(int vertexCount) override;
+	virtual void visitVertex(const Vector3& vertex, int index) override;
+	virtual void visitFaceChunk(int faceCount) override;
+	virtual void visitFace(const MqoFace& mqoFace) override;
+
+private:
+	Ref<MeshModel>	m_model;
+	MeshResource* m_mesh;
+	//tr::SrMesh*				m_mesh;
+	bool					m_flipZCoord;
+
+	std::vector<Vector3> m_vertices;
+};
 
 } // namespace detail
 } // namespace ln

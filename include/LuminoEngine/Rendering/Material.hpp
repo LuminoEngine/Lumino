@@ -145,12 +145,14 @@ private:
 
 	//static void onRenderStateChanged(Object* obj);
 
+	detail::ShaderParameterValue* getValue(const ln::StringRef& name);
+
 	detail::MaterialType m_type;
 	Ref<Shader> m_shader;
 	Ref<Texture> m_mainTexture;
-	std::unordered_map<uint32_t, Variant> m_valueMap;
+	std::vector<std::pair<String, std::shared_ptr<detail::ShaderParameterValue>>> m_values;
 
-	//std::unordered_map<uint32_t, ShaderValue>	m_builtinValueMap;
+protected:
 
 
 LN_INTERNAL_ACCESS:
@@ -217,6 +219,46 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	detail::PbrMaterialData m_data;
+};
+
+
+/** 非物理ベースレンダリングで使用される Phong シェーディング用のマテリアルです。 */
+class PhongMaterial
+	: public AbstractMaterial
+{
+	LN_OBJECT;
+public:
+	static const String DiffuseParameterName;
+	static const String AmbientParameterName;
+	static const String EmissiveParameterName;
+	static const String SpecularParameterName;
+	static const String SpecularPowerParameterName;
+
+	static const Color PhongMaterial::DefaultDiffuse;
+	static const Color PhongMaterial::DefaultAmbient;
+	static const Color PhongMaterial::DefaultSpecular;
+	static const Color PhongMaterial::DefaultEmissive;
+	static const float PhongMaterial::DefaultPower;
+
+	static Ref<PhongMaterial> create();
+
+	void setDiffuse(const Color& value);
+	void setAmbient(const Color& value);
+	void setEmissive(const Color& value);
+	void setSpecular(const Color& value);
+	void setSpecularPower(float value);
+
+protected:
+	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) override;
+	virtual void translateToPhongMaterialData(detail::PhongMaterialData* outData) override;
+
+LN_CONSTRUCT_ACCESS:
+	PhongMaterial();
+	virtual ~PhongMaterial();
+	void initialize();
+
+private:
+	detail::PhongMaterialData m_data;
 };
 
 } // namespace ln

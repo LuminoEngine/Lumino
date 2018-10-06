@@ -17,7 +17,7 @@ class GraphicsManager;
 class MeshManager;
 class RenderingManager;
 class EffectManager;
-class AssetsManager;
+class AssetManager;
 class UIManager;
 
 struct EngineSettings
@@ -50,7 +50,7 @@ public:
 	void initializeMeshManager();
 	void initializeRenderingManager();
 	void initializeEffectManager();
-	void initializeAssetsManager();
+	void initializeAssetManager();
 	void initializeUIManager();
 
 	bool updateUnitily();
@@ -85,7 +85,7 @@ private:
 	Ref<MeshManager>				m_meshManager;
 	Ref<RenderingManager>			m_renderingManager;
 	//Ref<EffectManager>				m_effectManager;
-	//Ref<AssetsManager>						m_assetsManager;
+	Ref<AssetManager>						m_assetManager;
 	Ref<UIManager>					m_uiManager;
 
 	Ref<UIFrameWindow> m_mainWindow;

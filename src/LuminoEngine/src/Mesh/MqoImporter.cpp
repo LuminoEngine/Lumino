@@ -7,6 +7,7 @@
 #include <LuminoCore/Text/Encoding.hpp>
 #include <LuminoCore/IO/StreamReader.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
 #include "MeshManager.hpp"
 #include "MqoImporter.hpp"
 
@@ -17,17 +18,16 @@ namespace detail {
 // MqoParser
 
 MqoParser::MqoParser()
-	: m_flipZCoord(true)
 {
 }
 
-Ref<MeshModel> MqoParser::import(MeshManager* manager, const Path& filePath)
+void MqoParser::parse(MeshManager* manager, const Path& filePath, DiagnosticsManager* diag)
 {
-	if (LN_REQUIRE(manager != nullptr)) return nullptr;
+	if (LN_REQUIRE(manager != nullptr)) return;
 
 	m_manager = manager;
+	m_diag = diag;
 	m_parentDir = filePath.parent();
-	m_model = newObject<MeshModel>();
 
 	// Metasequoia4 で出力される .mqo ファイルの文字コードは Shift_JIS だった
 	StreamReader reader(filePath.c_str(), TextEncoding::getEncoding(EncodingType::SJIS));
@@ -55,8 +55,6 @@ Ref<MeshModel> MqoParser::import(MeshManager* manager, const Path& filePath)
 			continue;
 		}
 	}
-
-	return m_model;
 }
 
 //Ref<MeshModel> MqoParser::import2(ModelManager* manager, const Path& filePath)
@@ -132,7 +130,7 @@ void MqoParser::loadMaterials(StreamReader* reader)
 			//if (line.IndexOf(_LT("refract"), dataHead, CaseSensitivity::CaseInsensitive)	屈折率 （Ver4.0以降)	1～5
 			if (line.indexOf(_LT("tex"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	模様マッピング名	相対パスまたは絶対パスで記述
 			{
-				texture = m_manager->createTexture(m_parentDir, StringRef(line.c_str() + numHead, line.c_str() + numEnd), ModelCreationFlag::None);
+				texture = m_manager->createTexture(m_parentDir, StringRef(line.c_str() + numHead, line.c_str() + numEnd), diag());
 			}
 			//if (line.IndexOf(_LT("aplane"), dataHead, CaseSensitivity::CaseInsensitive)	透明マッピング名	相対パスまたは絶対パスで記述
 			//if (line.IndexOf(_LT("bump"), dataHead, CaseSensitivity::CaseInsensitive)	凹凸マッピング名	相対パスまたは絶対パスで記述
@@ -170,7 +168,7 @@ void MqoParser::loadMaterials(StreamReader* reader)
 		material->setSpecular(c);
 
 		material->setSpecularPower(power);
-		material->setMaterialTexture(texture);
+		material->setMainTexture(texture);
 
 		visitMaterial(material);
 	}
@@ -327,50 +325,74 @@ void MqoParser::readFloats(const StringRef& str, float* values, int valuesCount)
 	});
 }
 
-void MqoParser::visitMaterialChunk()
+
+//==============================================================================
+// MqoImporter
+
+MqoImporter::MqoImporter()
 {
 }
 
-void MqoParser::visitMaterial(AbstractMaterial* material)
+Ref<MeshModel> MqoImporter::import(MeshManager* manager, const Path& filePath, DiagnosticsManager* diag)
+{
+	m_model = newObject<MeshModel>();
+	parse(manager, filePath, diag);
+	return m_model;
+}
+
+void MqoImporter::visitMaterialChunk()
+{
+}
+
+void MqoImporter::visitMaterial(AbstractMaterial* material)
 {
 	m_model->addMaterial(material);
 }
 
-void MqoParser::visitObjectChunk(const StringRef& name)
+void MqoImporter::visitObjectChunk(const StringRef& name)
 {
-	m_mesh = m_model->addMesh();
+	auto mesh = newObject<MeshResource>();
+	auto container = newObject<MeshContainer>();
+	container->setName(name);
+	container->setMeshResource(mesh);
+	m_mesh = mesh;
 }
 
-void MqoParser::visitVertexChunk(int vertexCount)
+void MqoImporter::visitVertexChunk(int vertexCount)
 {
-	m_mesh->addVertices(vertexCount);
+	m_vertices.resize(vertexCount);
+	//LN_CHECK(m_mesh->vertexCount() == 0);
+	//m_mesh->resizeIndexBuffer(vertexCount);
 }
 
-void MqoParser::visitVertex(const Vector3& vertex, int index)
+void MqoImporter::visitVertex(const Vector3& vertex, int index)
 {
-	tr::SrMeshOperation::moveVertex(m_mesh->getVertex(index), vertex);
+	m_vertices[index] = vertex;
 }
 
-void MqoParser::visitFaceChunk(int faceCount)
+void MqoImporter::visitFaceChunk(int faceCount)
 {
+	LN_CHECK(m_mesh->indexCount() == 0);
+	m_mesh->resizeIndexBuffer(faceCount);
 }
 
-void MqoParser::visitFace(const MqoFace& mqoFace)
+void MqoImporter::visitFace(const MqoFace& mqoFace)
 {
-	tr::SrFace* face = m_mesh->makeFace(mqoFace.vertexIndices, mqoFace.vertexCount);
-	for (int i = 0; i < mqoFace.vertexCount; i++)
-	{
-		face->m_material = m_model->getMaterial(mqoFace.materialIndex);
+	//tr::SrFace* face = m_mesh->makeFace(mqoFace.vertexIndices, mqoFace.vertexCount);
+	//for (int i = 0; i < mqoFace.vertexCount; i++)
+	//{
+	//	face->m_material = m_model->getMaterial(mqoFace.materialIndex);
 
-		face->m_loops[i]->uv = mqoFace.uv[i];
+	//	face->m_loops[i]->uv = mqoFace.uv[i];
 
-		uint32_t c = mqoFace.colors[i];
-		face->m_loops[i]->color.r = static_cast<float>(c & 0x000000FF) / 255.0f;
-		face->m_loops[i]->color.g = static_cast<float>((c & 0x0000FF00) >> 8) / 255.0f;
-		face->m_loops[i]->color.b = static_cast<float>((c & 0x00FF0000) >> 16) / 255.0f;
-		face->m_loops[i]->color.a = static_cast<float>((c & 0xFF000000) >> 24) / 255.0f;
-	}
+	//	uint32_t c = mqoFace.colors[i];
+	//	face->m_loops[i]->color.r = static_cast<float>(c & 0x000000FF) / 255.0f;
+	//	face->m_loops[i]->color.g = static_cast<float>((c & 0x0000FF00) >> 8) / 255.0f;
+	//	face->m_loops[i]->color.b = static_cast<float>((c & 0x00FF0000) >> 16) / 255.0f;
+	//	face->m_loops[i]->color.a = static_cast<float>((c & 0xFF000000) >> 24) / 255.0f;
+	//}
 }
+
 
 } // namespace detail
 } // namespace ln

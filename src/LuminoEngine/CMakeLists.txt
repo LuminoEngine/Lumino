@@ -191,6 +191,12 @@ set(LN_SOURCES_UI
     src/UI/UIManager.hpp
 )
 
+set(LN_SOURCES_Asset
+    src/Asset/Internal.hpp
+    src/Asset/AssetManager.cpp
+    src/Asset/AssetManager.hpp
+)
+
 if (APPLE)
     set(LN_SOURCES_Platform
         ${LN_SOURCES_Platform}
@@ -210,6 +216,7 @@ source_group("Shader"                FILES ${LN_SOURCES_Shader})
 source_group("Mesh"                FILES ${LN_SOURCES_Mesh})
 source_group("Rendering"                FILES ${LN_SOURCES_Rendering})
 source_group("UI"                    FILES ${LN_SOURCES_UI})
+source_group("Asset"                FILES ${LN_SOURCES_Asset})
 
 set(LN_SOURCES
     src/LuminoEngine.PCH.cpp
@@ -224,6 +231,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Mesh}
     ${LN_SOURCES_Rendering}
     ${LN_SOURCES_UI}
+    ${LN_SOURCES_Asset}
     #${LN_SOURCES_LuminoCore}
 )
 

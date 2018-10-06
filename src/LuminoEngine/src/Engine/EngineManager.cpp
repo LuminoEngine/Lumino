@@ -9,6 +9,7 @@
 #include "../Mesh/MeshManager.hpp"
 #include "../Rendering/RenderingManager.hpp"
 #include "../UI/UIManager.hpp"
+#include "../Asset/AssetManager.hpp"
 #include "EngineManager.hpp"
 #include "EngineDomain.hpp"
 
@@ -46,8 +47,8 @@ EngineManager::EngineManager()
 	//, m_graphicsManager(nullptr)
 	//, m_effectManager(nullptr)
 	//, m_modelManager(nullptr)
-	//, m_assetsManager(nullptr)
 	//, m_uiManager(nullptr)
+	, m_assetManager(nullptr)
 	, m_exitRequested(false)
 {
 }
@@ -72,6 +73,7 @@ void EngineManager::dispose()
 	}
 
 	if (m_mainWindow) m_mainWindow->dispose();
+	if (m_assetManager) m_assetManager->dispose();
 	if (m_renderingManager) m_renderingManager->dispose();
 	if (m_meshManager) m_meshManager->dispose();
 	if (m_shaderManager) m_shaderManager->dispose();
@@ -93,8 +95,8 @@ void EngineManager::initializeAllManagers()
 	initializeMeshManager();
 	initializeRenderingManager();
 	initializeEffectManager();
-	initializeAssetsManager();
 	initializeUIManager();
+	initializeAssetManager();
 }
 
 void EngineManager::initializeCommon()
@@ -183,9 +185,11 @@ void EngineManager::initializeMeshManager()
 	if (!m_meshManager)
 	{
 		initializeGraphicsManager();
+		initializeAssetManager();
 
 		MeshManager::Settings settings;
 		settings.graphicsManager = m_graphicsManager;
+		settings.assetManager = m_assetManager;
 
 		m_meshManager = ln::makeRef<MeshManager>();
 		m_meshManager->initialize(settings);
@@ -210,8 +214,15 @@ void EngineManager::initializeEffectManager()
 {
 }
 
-void EngineManager::initializeAssetsManager()
+void EngineManager::initializeAssetManager()
 {
+	if (!m_assetManager)
+	{
+		AssetManager::Settings settings;
+
+		m_assetManager = ln::makeRef<AssetManager>();
+		m_assetManager->initialize(settings);
+	}
 }
 
 void EngineManager::initializeUIManager()
