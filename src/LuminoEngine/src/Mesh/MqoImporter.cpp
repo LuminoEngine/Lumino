@@ -9,6 +9,7 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include "MeshManager.hpp"
+#include "GMesh.hpp"
 #include "MqoImporter.hpp"
 
 namespace ln {
@@ -210,7 +211,7 @@ void MqoParser::readVertexChunk(StreamReader* reader)
 		if (line.indexOf(_LT("}")) > -1) break;
 
 		Vector3 v;
-		readFloats(StringRef(line, 2), reinterpret_cast<float*>(&v), 3);
+		readFloats(line.substr(2), reinterpret_cast<float*>(&v), 3);
 		visitVertex(v, index);
 		index++;
 	}
@@ -337,6 +338,12 @@ Ref<MeshModel> MqoImporter::import(MeshManager* manager, const Path& filePath, D
 {
 	m_model = newObject<MeshModel>();
 	parse(manager, filePath, diag);
+
+	// TODO: on end ほしい
+	GMeshOperations::calculateNormals(m_mesh, 0);
+
+	m_meshContainer->setMeshResource(GMeshOperations::generateMeshResource(m_mesh));
+
 	return m_model;
 }
 
@@ -351,46 +358,49 @@ void MqoImporter::visitMaterial(AbstractMaterial* material)
 
 void MqoImporter::visitObjectChunk(const StringRef& name)
 {
-	auto mesh = newObject<MeshResource>();
+	//auto mesh = newObject<MeshResource>();
 	auto container = newObject<MeshContainer>();
 	container->setName(name);
-	container->setMeshResource(mesh);
-	m_mesh = mesh;
+	m_model->addMeshContainer(container);
+	m_meshContainer = container;
+
+	m_mesh = makeRef<GMesh>(manager());
 }
 
 void MqoImporter::visitVertexChunk(int vertexCount)
 {
-	m_vertices.resize(vertexCount);
+	m_mesh->setVertexCount(vertexCount);
 	//LN_CHECK(m_mesh->vertexCount() == 0);
 	//m_mesh->resizeIndexBuffer(vertexCount);
 }
 
 void MqoImporter::visitVertex(const Vector3& vertex, int index)
 {
-	m_vertices[index] = vertex;
+	m_mesh->vertex(index)->position = vertex;
 }
 
 void MqoImporter::visitFaceChunk(int faceCount)
 {
-	LN_CHECK(m_mesh->indexCount() == 0);
-	m_mesh->resizeIndexBuffer(faceCount);
 }
 
 void MqoImporter::visitFace(const MqoFace& mqoFace)
 {
-	//tr::SrFace* face = m_mesh->makeFace(mqoFace.vertexIndices, mqoFace.vertexCount);
-	//for (int i = 0; i < mqoFace.vertexCount; i++)
-	//{
-	//	face->m_material = m_model->getMaterial(mqoFace.materialIndex);
-
-	//	face->m_loops[i]->uv = mqoFace.uv[i];
-
-	//	uint32_t c = mqoFace.colors[i];
-	//	face->m_loops[i]->color.r = static_cast<float>(c & 0x000000FF) / 255.0f;
-	//	face->m_loops[i]->color.g = static_cast<float>((c & 0x0000FF00) >> 8) / 255.0f;
-	//	face->m_loops[i]->color.b = static_cast<float>((c & 0x00FF0000) >> 16) / 255.0f;
-	//	face->m_loops[i]->color.a = static_cast<float>((c & 0xFF000000) >> 24) / 255.0f;
-	//}
+	GFace* face = m_mesh->makeFace(mqoFace.vertexIndices, mqoFace.vertexCount);
+	
+	face->foreachLoops([&](GLoop* loop, int i) {
+		loop->uv = mqoFace.uv[i];
+		uint32_t c = mqoFace.colors[i];
+		loop->color.r = static_cast<float>(c & 0x000000FF) / 255.0f;
+		loop->color.g = static_cast<float>((c & 0x0000FF00) >> 8) / 255.0f;
+		loop->color.b = static_cast<float>((c & 0x00FF0000) >> 16) / 255.0f;
+		loop->color.a = static_cast<float>((c & 0xFF000000) >> 24) / 255.0f;
+	});
+	
+	// TODO: Material
+	for (int i = 0; i < mqoFace.vertexCount; i++)
+	{
+		//face->m_material = m_model->getMaterial(mqoFace.materialIndex);
+	}
 }
 
 

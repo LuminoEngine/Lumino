@@ -6,6 +6,7 @@ namespace ln {
 class Stream;
 class DiagnosticsManager;
 namespace detail {
+class GMesh;
 
 class MqoParser
 {
@@ -27,6 +28,7 @@ protected:
 	};
 
 	void parse(MeshManager* manager, const Path& filePath, DiagnosticsManager* diag);
+	MeshManager* manager() const { return m_manager; }
 	DiagnosticsManager* diag() const { return m_diag; }
 
 	virtual void visitMaterialChunk() = 0;
@@ -74,11 +76,13 @@ protected:
 
 private:
 	Ref<MeshModel>	m_model;
-	MeshResource* m_mesh;
+	MeshContainer* m_meshContainer;
+	Ref<GMesh> m_mesh;
+	//MeshResource* m_mesh;
 	//tr::SrMesh*				m_mesh;
 	bool					m_flipZCoord;
 
-	std::vector<Vector3> m_vertices;
+	//std::vector<Vector3> m_vertices;
 };
 
 } // namespace detail

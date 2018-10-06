@@ -36,10 +36,8 @@ Ref<Texture2D> AssetManager::loadTexture(const StringRef& filePath)
 {
 	// TODO: cache
 
-	//auto ref = newObject<Texture2D>(filePath, TextureFormat::RGBA32, true);
-
-	LN_NOTIMPLEMENTED();
-	return nullptr;
+	auto ref = newObject<Texture2D>(filePath, TextureFormat::RGBA32, true);
+	return ref;
 }
 
 } // namespace detail

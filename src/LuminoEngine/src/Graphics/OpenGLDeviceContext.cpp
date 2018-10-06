@@ -2061,9 +2061,23 @@ void GLLocalShaderSamplerBuffer::bind()
 	{
 		int unitIndex = i;
 		GLTextureBase* t = static_cast<GLTextureBase*>(m_table[i].texture);
-		GLenum target = (t->type() == DeviceTextureType::Texture3D) ? GL_TEXTURE_3D : GL_TEXTURE_2D;
+
 		GL_CHECK(glActiveTexture(GL_TEXTURE0 + unitIndex));
-		GL_CHECK(glBindTexture(target, (t) ? t->id() : 0));
+
+		if (t) {
+			if (t->type() == DeviceTextureType::Texture3D) {
+				GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+				GL_CHECK(glBindTexture(GL_TEXTURE_3D, t->id()));
+			}
+			else {
+				GL_CHECK(glBindTexture(GL_TEXTURE_2D, t->id()));
+				GL_CHECK(glBindTexture(GL_TEXTURE_3D, 0));
+			}
+		}
+		else {
+			GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+			GL_CHECK(glBindTexture(GL_TEXTURE_3D, 0));
+		}
 		GL_CHECK(glBindSampler(unitIndex, (m_table[i].samplerState) ? m_table[i].samplerState->id() : 0));
 		GL_CHECK(glUniform1i(m_table[i].uniformLocation, unitIndex));
 	}

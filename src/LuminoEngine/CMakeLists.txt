@@ -139,6 +139,8 @@ set(LN_SOURCES_Mesh
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/Mesh.hpp
     src/Mesh/Internal.hpp
+    src/Mesh/GMesh.cpp
+    src/Mesh/GMesh.hpp
     src/Mesh/Mesh.cpp
     src/Mesh/MeshManager.cpp
     src/Mesh/MeshManager.hpp

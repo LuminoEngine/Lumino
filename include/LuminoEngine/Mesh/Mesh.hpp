@@ -154,6 +154,8 @@ public:
 	void addMeshContainer(MeshContainer* meshContainer);
 	void addMaterial(AbstractMaterial* material);
 
+
+	const List<Ref<MeshContainer>>& meshContainers() const { return m_meshContainers; }
 	const List<Ref<AbstractMaterial>>& materials() const { return m_materials; }
 
 

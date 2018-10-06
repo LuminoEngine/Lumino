@@ -67,6 +67,7 @@ LN_CONSTRUCT_ACCESS:
 	Texture2D();
 	virtual ~Texture2D();
 	void initialize(int width, int height, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
+	void initialize(const StringRef& filePath, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
 
 protected:
 	virtual void dispose() override;

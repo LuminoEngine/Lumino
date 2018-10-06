@@ -11,6 +11,7 @@
 #include "../src/Rendering/ClusteredShadingSceneRenderer.hpp"
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
+#include "../src/Mesh/MqoImporter.hpp"
 using namespace ln;
 
 class TestRenderView
@@ -94,14 +95,20 @@ int main(int argc, char** argv)
 		auto material = Material::create();
 		material->setMainTexture(tex1);
 
+#if 1
+		auto diag = newObject<DiagnosticsManager>();
+		detail::MqoImporter importer;
+		auto meshModel = importer.import(detail::EngineDomain::meshManager(),
+			u"D:\\Documents\\LuminoProjects\\TestModels\\plane-1.mqo", diag);
+		auto meshContainer = meshModel->meshContainers()[0];
+
+		meshModel->materials()[0]->setMainTexture(tex1);
+
+#else
 		auto meshRes = newObject<MeshResource>();
 		meshRes->resizeVertexBuffer(4);
 		meshRes->resizeIndexBuffer(6);
 		meshRes->resizeSections(1);
-		//meshRes->setVertex(0, Vertex{ Vector3(-1, 0, 1), Vector3::UnitY, Vector2(0, 0), Color::White });
-		//meshRes->setVertex(1, Vertex{ Vector3(1, 0, 1), Vector3::UnitY, Vector2(1, 0), Color::White });
-		//meshRes->setVertex(2, Vertex{ Vector3(-1, 0, -1), Vector3::UnitY, Vector2(0, 1), Color::White });
-		//meshRes->setVertex(3, Vertex{ Vector3(1, 0, -1), Vector3::UnitY, Vector2(1, 1), Color::White });
 		meshRes->setVertex(0, Vertex{ Vector3(-3, 1, 0), -Vector3::UnitZ, Vector2(0, 0), Color::White });
 		meshRes->setVertex(1, Vertex{ Vector3(3, 1, 0), -Vector3::UnitZ, Vector2(1, 0), Color::White });
 		meshRes->setVertex(2, Vertex{ Vector3(-3, -1, 0), -Vector3::UnitZ, Vector2(0, 1), Color::White });
@@ -120,6 +127,7 @@ int main(int argc, char** argv)
 		auto meshModel = newObject<MeshModel>();
 		meshModel->addMeshContainer(meshContainer);
 		meshModel->addMaterial(material);
+#endif
 
 		while (Engine::update())
 		{
@@ -128,10 +136,6 @@ int main(int argc, char** argv)
 			renderView->m_context->setCullingMode(CullingMode::None);
 
 			renderView->m_context->drawMesh(meshContainer, 0);
-
-			//renderView->m_context->drawSprite(
-			//	Matrix(), Size(7, 5), Vector2(0, 0), Rect(0, 0, 1, 1), Color::Blue,
-			//	SpriteBaseDirection::ZMinus, BillboardType::None, material);
 
 			renderView->m_context->addPointLight(Color::White, 1.0, Vector3(0, 0, -1), 3.0, 1.0);
 

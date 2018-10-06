@@ -5,6 +5,7 @@
 #include "LuminoEngine/Engine/EngineSettings.hpp"
 #include "LuminoEngine/Engine/Engine.hpp"
 #include "LuminoEngine/Engine/Application.hpp"
+#include "LuminoEngine/Engine/Diagnostics.hpp"
 
 #include "LuminoEngine/Input/Common.hpp"
 #include "LuminoEngine/Input/Input.hpp"

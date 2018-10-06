@@ -190,7 +190,7 @@ PhongMaterial::~PhongMaterial()
 
 void PhongMaterial::initialize()
 {
-	PhongMaterial::initialize();
+	AbstractMaterial::initialize();
 }
 
 void PhongMaterial::setDiffuse(const Color& value)
