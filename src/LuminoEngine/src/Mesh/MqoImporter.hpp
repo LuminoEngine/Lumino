@@ -8,6 +8,20 @@ class DiagnosticsManager;
 namespace detail {
 class GMesh;
 
+/*
+	Mqo ファイル Note
+	--------
+	- Z+ を手前とする右手座標系。
+	- 面は時計回りが表となっている。
+
+	四角形
+	--------
+	Vertex:
+	0--1
+	|  |
+	2--3
+	Index: 0 1 3 2
+*/
 class MqoParser
 {
 public:

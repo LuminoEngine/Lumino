@@ -331,6 +331,7 @@ void MqoParser::readFloats(const StringRef& str, float* values, int valuesCount)
 // MqoImporter
 
 MqoImporter::MqoImporter()
+	: m_flipZCoord(true)
 {
 }
 
@@ -376,7 +377,11 @@ void MqoImporter::visitVertexChunk(int vertexCount)
 
 void MqoImporter::visitVertex(const Vector3& vertex, int index)
 {
-	m_mesh->vertex(index)->position = vertex;
+	Vector3* pos = &m_mesh->vertex(index)->position;
+	*pos = vertex;
+	if (m_flipZCoord) {
+		pos->z *= -1;
+	}
 }
 
 void MqoImporter::visitFaceChunk(int faceCount)
@@ -385,7 +390,25 @@ void MqoImporter::visitFaceChunk(int faceCount)
 
 void MqoImporter::visitFace(const MqoFace& mqoFace)
 {
-	GFace* face = m_mesh->makeFace(mqoFace.vertexIndices, mqoFace.vertexCount);
+	MqoFace primFace;
+	if (m_flipZCoord)
+	{
+		primFace.vertexCount = mqoFace.vertexCount;
+		primFace.materialIndex = mqoFace.materialIndex;
+		for (int i = 0; i < mqoFace.vertexCount; i++)
+		{
+			int ti = (primFace.vertexCount - 1) - i;
+			primFace.vertexIndices[ti] = mqoFace.vertexIndices[i];
+			primFace.uv[ti] = mqoFace.uv[i];
+			primFace.colors[ti] = mqoFace.colors[i];
+		}
+	}
+	else
+	{
+		primFace = mqoFace;
+	}
+
+	GFace* face = m_mesh->makeFace(primFace.vertexIndices, primFace.vertexCount);
 	
 	face->foreachLoops([&](GLoop* loop, int i) {
 		loop->uv = mqoFace.uv[i];
