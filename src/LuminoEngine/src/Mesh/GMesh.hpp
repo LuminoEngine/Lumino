@@ -65,9 +65,11 @@ struct GLoop
 //	Vector3 normal;
 };
 
-/** 半稜線
+/** 面
  *
  * 複数の半稜線の連結によって構成される。
+ *
+ * 面は時計回りを表とする。
  */
 struct GFace
 {

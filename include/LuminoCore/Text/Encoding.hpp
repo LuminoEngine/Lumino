@@ -73,6 +73,9 @@ struct TextEncodeResult
 class LN_API TextEncoding : public RefObject
 {
 public:
+
+	// TODO: 以下の const Ref<TextEncoding>& 戻り値は Rawポインタでかまわない
+
     /**
      * 環境依存のマルチバイト文字コードのエンコーディングを取得します。
      *

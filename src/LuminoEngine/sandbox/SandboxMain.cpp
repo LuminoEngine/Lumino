@@ -75,7 +75,7 @@ int main(int argc, char** argv)
 
 				{
 					Size size(fb.renderTarget[0]->width(), fb.renderTarget[0]->height());
-					Vector3 pos = Vector3(5, 0, -5);
+					Vector3 pos = Vector3(5, 5, -5);
 					mainCameraInfo.makePerspective(pos, Vector3::normalize(Vector3::Zero - pos), Math::PI / 3.0f, size, 0.1f, 100.0f);
 
 				}
@@ -99,10 +99,10 @@ int main(int argc, char** argv)
 		auto diag = newObject<DiagnosticsManager>();
 		detail::MqoImporter importer;
 		auto meshModel = importer.import(detail::EngineDomain::meshManager(),
-			u"D:\\Documents\\LuminoProjects\\TestModels\\plane-1.mqo", diag);
+			u"D:\\Documents\\LuminoProjects\\TestModels\\grass-1.mqo", diag);
 		auto meshContainer = meshModel->meshContainers()[0];
 
-		meshModel->materials()[0]->setMainTexture(tex1);
+		//meshModel->materials()[0]->setMainTexture(tex1);
 
 #else
 		auto meshRes = newObject<MeshResource>();
@@ -137,7 +137,7 @@ int main(int argc, char** argv)
 
 			renderView->m_context->drawMesh(meshContainer, 0);
 
-			renderView->m_context->addPointLight(Color::White, 1.0, Vector3(0, 0, -1), 3.0, 1.0);
+			renderView->m_context->addPointLight(Color::White, 1.0, Vector3(0, 1, -1), 10.0, 1.0);
 
 			renderView->render();
 		}

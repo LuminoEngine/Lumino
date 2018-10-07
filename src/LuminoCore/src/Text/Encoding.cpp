@@ -90,7 +90,8 @@ const Ref<TextEncoding>& TextEncoding::getEncoding(EncodingType type)
         case EncodingType::SJIS:
         {
         	static DBCSEncoding sjisEncoding(EncodingType::SJIS);
-        	return &sjisEncoding;
+			static Ref<TextEncoding> ref(&sjisEncoding);
+			return ref;
         }
         //case EncodingType::EUCJP:
         //{
