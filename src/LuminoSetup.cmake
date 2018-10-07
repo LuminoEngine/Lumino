@@ -11,8 +11,13 @@ endif()
 
 include(${LUMINO_ENGINE_ROOT}/lib/ImportExternalLibraries.cmake)
 
-find_package(LuminoCore REQUIRED PATHS ${LUMINO_ENGINE_ROOT}/lib/Emscripten/cmake)
-find_package(LuminoEngine REQUIRED PATHS ${LUMINO_ENGINE_ROOT}/lib/Emscripten/cmake)
+if (DEFINED EMSCRIPTEN)
+	find_package(LuminoCore REQUIRED PATHS ${LUMINO_ENGINE_ROOT}/lib/Emscripten/cmake)
+	find_package(LuminoEngine REQUIRED PATHS ${LUMINO_ENGINE_ROOT}/lib/Emscripten/cmake)
+elseif (ANDROID_ABI)
+	find_package(LuminoCore REQUIRED PATHS ${LUMINO_ENGINE_ROOT}/lib/Android-${ANDROID_ABI}/cmake)
+	find_package(LuminoEngine REQUIRED PATHS ${LUMINO_ENGINE_ROOT}/lib/Android-${ANDROID_ABI}/cmake)
+endif()
 
 function(ln_add_pch project_name header_file_path source_file_path)
 
