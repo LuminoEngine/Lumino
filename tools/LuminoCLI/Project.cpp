@@ -21,6 +21,9 @@ Result Project::newProject(const ln::Path& projectDir, const ln::String& project
 {
 	m_rootDir = projectDir.canonicalize();
 	m_properties = ln::makeRef<ProjectProperties>();
+
+	ln::FileSystem::createDirectory(m_rootDir);
+
 	setupPathes();
 
 	CLI::info(u"\nCreating a new Lumino app in " + m_rootDir + u"\n");
@@ -73,6 +76,10 @@ Result Project::openProject(const ln::Path& dir)
 
 
 	setupPathes();
+	if (m_projectFilePath.isEmpty()) {
+		CLI::error("Lumino project file not found in current directory.");
+		return Result::Failed;
+	}
 
 
 	ln::String json = ln::FileSystem::readAllText(m_projectFilePath);
@@ -118,8 +125,5 @@ void Project::setupPathes()
 	auto files = ln::FileSystem::getFiles(m_rootDir, u"*" + ProjectFileExt);
 	if (!files.isEmpty()) {
 		m_projectFilePath = *files.begin();
-	}
-	else {
-		LN_NOTIMPLEMENTED();
 	}
 }

@@ -84,7 +84,7 @@ void BuildEnvironment::setupPathes(EnvironmentSettings* env)
 	LN_LOG_DEBUG << luminoRepoRoot;
 
 	m_luminoEmscriptenSdkDirPath = ln::Path(luminoRepoRoot, u"build/CMakeInstallTemp/Emscripten");
-	m_projectTemplatesDirPath = ln::Path(luminoRepoRoot, u"tools/LuminoCLI/ProjectTemplates");
+	m_projectTemplatesDirPath = ln::Path(luminoRepoRoot, u"tools/LuminoCLI/Templates");
 
 #if defined(LN_OS_WIN32)
 	m_luminoPackageRootDir = ln::Path(luminoRepoRoot, u"ReleasePackage.Win32");

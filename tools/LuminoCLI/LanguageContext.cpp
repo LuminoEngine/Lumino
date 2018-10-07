@@ -77,6 +77,14 @@ Result CppLanguageContext::applyTemplates()
 			true, true);
 	}
 
+	// Emscripten
+	{
+		ln::FileSystem::copyDirectory(
+			ln::Path(srcRoot, u"Projects/LuminoApp.Emscripten"),
+			ln::Path(dstRoot, u"Projects/LuminoApp.Emscripten"),
+			true, true);
+	}
+
 	// iOS
 	{
 		ln::FileSystem::copyDirectory(
