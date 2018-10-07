@@ -8,7 +8,7 @@ int main(int argc, char** argv)
 	if (argc == 1)
 	{
 		//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\HelloLumino");
-		::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\HelloLumino");
+		::SetCurrentDirectoryW(L"D:\\Documents\\LuminoProjects\\HelloLumino");
 	
 		const char* debugArgv[] = {
 			"<program>",
@@ -16,14 +16,14 @@ int main(int argc, char** argv)
 
 			//"<program>", "dev-install-tools",
 
-			//"<program>", "build", "Emscripten",
+			"build", "Emscripten",
 			//"<program>", "build", "Android",
 
 			//"dev-openide", "vs",
 			
 			//"--local-initial-setup", "/Users/lriki/Proj/Lumino/ReleasePackage.macOS"
 
-			"restore",
+			//"restore",
 		};
 		argc = sizeof(debugArgv) / sizeof(char*);
 		argv = (char**)debugArgv;

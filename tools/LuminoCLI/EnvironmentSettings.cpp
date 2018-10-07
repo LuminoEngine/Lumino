@@ -60,13 +60,13 @@ void BuildEnvironment::setupPathes(EnvironmentSettings* env)
 {
 	if (LN_REQUIRE(env)) return;
 	m_toolsDir = (ln::Path::combine(env->appDataDirPath(), u"BuildTools"));
-	m_emsdkVer = (u"1.38.10");
+	m_emsdkVer = u"1.38.10"; //(u"1.38.10");
 	m_emsdkName = u"sdk-1.38.10-64bit";
 	m_emsdkRootDir = (ln::Path::combine(m_toolsDir, u"emsdk"));
 	m_emscriptenRootDir = (ln::Path::combine(m_emsdkRootDir, u"emscripten", m_emsdkVer));
 	m_python2 = ln::Path::combine(m_emsdkRootDir, u"python", u"2.7.13.1_64bit", u"python-2.7.13.amd64", u"python");
 
-#if 0// LN_DEBUG
+#ifdef  LN_DEBUG
 	// デバッグ用。実行ファイルの位置からさかのぼっていって、.git が見つかればそこから必要なパスを作ってみる
 	ln::Path path = ln::Environment::executablePath();
 	ln::Path luminoRepoRoot;
@@ -100,7 +100,7 @@ void BuildEnvironment::setupPathes(EnvironmentSettings* env)
 #endif
 }
 
-void BuildEnvironment::verifyAndInstall()
+void BuildEnvironment::prepareEmscriptenSdk()
 {
 	ln::FileSystem::createDirectory(m_toolsDir);
 
@@ -109,6 +109,7 @@ void BuildEnvironment::verifyAndInstall()
 		if (!ln::FileSystem::existsDirectory(m_emsdkRootDir))
 		{
 			ln::Process proc1;
+			proc1.setUseShellExecute(false);
 			proc1.setProgram(u"git");
 			proc1.setArguments({ u"clone", u"https://github.com/juj/emsdk.git" });
 			proc1.setWorkingDirectory(m_toolsDir);
@@ -119,27 +120,32 @@ void BuildEnvironment::verifyAndInstall()
 		if (!ln::FileSystem::existsDirectory(m_emscriptenRootDir))
 		{
 			ln::Process proc1;
+			proc1.setUseShellExecute(false);
+#ifdef LN_OS_WIN32
+			proc1.setProgram(u"emsdk.bat");
+#else
 			proc1.setProgram(u"emsdk");
-			proc1.setArguments({ u"install", m_emsdkVer });
-			proc1.setWorkingDirectory(m_emsdkRootDir);
+#endif
+			proc1.setArguments({ u"install", m_emsdkName });
+			proc1.setWorkingDirectory(m_emscriptenRootDir);
 			proc1.start();
 			proc1.wait();
 		}
 
-		auto file = ln::Path::combine(m_emscriptenRootDir, u"system", u"include", u"LuminoEngine.hpp");
-		if (!ln::FileSystem::existsFile(file))
-		{
-			// 必須ファイルが1つ無かったので、とりあえず全部インストールしなおす
+		//auto file = ln::Path::combine(m_emscriptenRootDir, u"system", u"include", u"LuminoEngine.hpp");
+		//if (!ln::FileSystem::existsFile(file))
+		//{
+		//	// 必須ファイルが1つ無かったので、とりあえず全部インストールしなおす
 
-			auto srcIncludeDir = ln::Path::combine(m_luminoEmscriptenSdkDirPath, u"include");
-			auto dstIncludeDir = ln::Path::combine(m_emscriptenRootDir, u"system", u"include");
-			ln::FileSystem::copyDirectory(srcIncludeDir, dstIncludeDir, true, true);
+		//	auto srcIncludeDir = ln::Path::combine(m_luminoEmscriptenSdkDirPath, u"include");
+		//	auto dstIncludeDir = ln::Path::combine(m_emscriptenRootDir, u"system", u"include");
+		//	ln::FileSystem::copyDirectory(srcIncludeDir, dstIncludeDir, true, true);
 
-			auto srcLibDir = ln::Path::combine(m_luminoEmscriptenSdkDirPath, u"lib");
-			auto dstLibDir = ln::Path::combine(m_emscriptenRootDir, u"system", u"lib");
-			ln::FileSystem::copyDirectory(srcLibDir, dstLibDir, true, true);
+		//	auto srcLibDir = ln::Path::combine(m_luminoEmscriptenSdkDirPath, u"lib");
+		//	auto dstLibDir = ln::Path::combine(m_emscriptenRootDir, u"system", u"lib");
+		//	ln::FileSystem::copyDirectory(srcLibDir, dstLibDir, true, true);
 
-		}
+		//}
 		
 
 	}

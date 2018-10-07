@@ -12,7 +12,7 @@ namespace LuminoBuild
             // default
             if (args.Length == 0)
             {
-                args = new string[] { "MakeInstaller_Win32" };
+                args = new string[] { "MakeReleasePackage" };
             }
 
             Assembly thisAssembly = Assembly.GetEntryAssembly();
@@ -35,7 +35,7 @@ namespace LuminoBuild
             //builder.LuminoPackageReleaseDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "package/Release/Lumino"));
             builder.LuminoExternalDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "external"));
 
-            BuildEnvironment.Initialize();
+            BuildEnvironment.Initialize(builder.LuminoRootDir);
 
 
             Console.WriteLine("RootDir: {0}", builder.LuminoRootDir);

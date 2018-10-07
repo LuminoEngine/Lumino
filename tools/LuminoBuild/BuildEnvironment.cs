@@ -52,10 +52,9 @@ namespace LuminoBuild
             new TargetArch(){ SourceDirName = "iOS-OS-Release", DestDirName = "iOS-OS-Release" },
         };
 
-        public static void Initialize()
+        public static void Initialize(string repoRootDir)
         {
-            string appDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            BuildToolsDir = Path.Combine(appDir, "Lumino", "BuildTools");
+            BuildToolsDir = Path.Combine(repoRootDir, "build", "BuildTools");
 
             EmsdkDir = Path.Combine(BuildToolsDir, "emsdk");
             EmscriptenDir = Path.Combine(EmsdkDir, "emscripten", emVer);
@@ -87,20 +86,23 @@ namespace LuminoBuild
         private static void InstallTools()
         {
             Directory.CreateDirectory(BuildToolsDir);
-            
-            if (!Directory.Exists(EmsdkDir))
-            {
-                Directory.SetCurrentDirectory(BuildToolsDir);
-                Utils.CallProcess("git", "clone https://github.com/juj/emsdk.git");
-            }
-            if (!Directory.Exists(EmscriptenDir))
-            {
-                Directory.SetCurrentDirectory(Path.GetFullPath(EmsdkDir));
 
-                // FIXME: ubuntu failed...
-                //Utils.CallProcess("emsdk", "update");
+            // Install emsdk
+            {
+                if (!Directory.Exists(EmsdkDir))
+                {
+                    Directory.SetCurrentDirectory(BuildToolsDir);
+                    Utils.CallProcess("git", "clone https://github.com/juj/emsdk.git");
+                }
+                if (!Directory.Exists(EmscriptenDir))
+                {
+                    Directory.SetCurrentDirectory(Path.GetFullPath(EmsdkDir));
 
-                Utils.CallProcess("emsdk", "install " + emsdkVer);  // "CallProcessShell" failed on macOS.
+                    if (Utils.IsWin32)
+                        Utils.CallProcess("emsdk.bat", "install " + emsdkVer);
+                    else
+                        Utils.CallProcess("emsdk", "install " + emsdkVer);
+                }
             }
         }
     }

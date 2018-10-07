@@ -79,6 +79,9 @@ Result Workspace::buildProject(const ln::String& target)
 	// Emscripten
 	else if (ln::String::compare(target, u"Emscripten", ln::CaseSensitivity::CaseInsensitive) == 0)
 	{
+		// emsdk がなければインストールする
+		m_devTools->prepareEmscriptenSdk();
+
 		auto buildDir = ln::Path::combine(m_project->buildDir(), u"Emscripten").canonicalize();
 		auto installDir = ln::Path::combine(buildDir, u"Release");
 		auto cmakeSourceDir = m_project->emscriptenProjectDir();
@@ -91,13 +94,14 @@ Result Workspace::buildProject(const ln::String& target)
 				u"-DCMAKE_BUILD_TYPE=Release",
 				u"-DCMAKE_INSTALL_PREFIX=" + installDir,
 				u"-DLUMINO_ENGINE_ROOT=\"" + m_project->engineDirPath().str().replace("\\", "/") + u"\"",
+				u"-DLN_TARGET_ARCH=Emscripten",
 				u"-G \"MinGW Makefiles\"",
 				cmakeSourceDir,
 			};
 
 			ln::StreamWriter sw(script);
 			sw.writeLineFormat(u"cd /d \"{0}\"", m_devTools->emsdkDirPath());
-			sw.writeLineFormat(u"call emsdk_env.bat " + m_devTools->emsdkName());
+			sw.writeLineFormat(u"call emsdk activate " + m_devTools->emsdkName());
 			sw.writeLineFormat(u"call emsdk_env.bat");
 			sw.writeLineFormat(u"cd /d \"{0}\"", buildDir);
 			sw.writeLineFormat(u"call emcmake cmake " + ln::String::join(emcmakeArgs, u" "));
@@ -150,7 +154,7 @@ void Workspace::restoreProject()
 
 Result Workspace::dev_installTools() const
 {
-	m_devTools->verifyAndInstall();
+	m_devTools->prepareEmscriptenSdk();
 
 
 	

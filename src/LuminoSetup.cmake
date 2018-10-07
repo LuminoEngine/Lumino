@@ -4,7 +4,15 @@ set(CMAKE_CXX_STANDARD 14) # C++14...
 set(CMAKE_CXX_STANDARD_REQUIRED ON) #...is required...
 set(CMAKE_CXX_EXTENSIONS OFF) #...without compiler extensions like gnu++11
 
+if (DEFINED EMSCRIPTEN)
+    list(APPEND CMAKE_FIND_ROOT_PATH ${LUMINO_ENGINE_ROOT}/lib/Emscripten)
+    set(CMAKE_EXECUTABLE_SUFFIX .html)
+endif()
+
 include(${LUMINO_ENGINE_ROOT}/lib/ImportExternalLibraries.cmake)
+
+find_package(LuminoCore REQUIRED PATHS ${LUMINO_ENGINE_ROOT}/lib/Emscripten/cmake)
+find_package(LuminoEngine REQUIRED PATHS ${LUMINO_ENGINE_ROOT}/lib/Emscripten/cmake)
 
 function(ln_add_pch project_name header_file_path source_file_path)
 

@@ -42,7 +42,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC  
     $<BUILD_INTERFACE:${LN_CORE_INCLUDE_DIR}>  
-    $<INSTALL_INTERFACE:include>  # <prefix>/include
+    $<INSTALL_INTERFACE:../../include>  # <prefix>/include
 )
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LN_LINK_LIBS})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
@@ -75,19 +75,18 @@ endif()
 
 install(TARGETS ${PROJECT_NAME}
     EXPORT LuminoCoreTargets
-    ARCHIVE     DESTINATION lib    # Library installation location (Copied at "INSTALL" build time)
-    INCLUDES    DESTINATION include                    # include directory (File is not copied)
+    ARCHIVE     DESTINATION .#lib    # Library installation location (Copied at "INSTALL" build time)
+    #INCLUDES    DESTINATION ../../include        # include directory (File is not copied)
+    #INCLUDES    DESTINATION include                    # include directory (File is not copied)
     FRAMEWORK DESTINATION .)
-
-#install(DIRECTORY ${PROJECT_SOURCE_DIR}/include DESTINATION .)
 
 install(
     EXPORT LuminoCoreTargets
     FILE LuminoCoreTargets.cmake
     EXPORT_LINK_INTERFACE_LIBRARIES
-    DESTINATION "lib/cmake")
+    DESTINATION "cmake")
 
 install(
     FILES "LuminoCoreConfig.cmake"
-    DESTINATION "lib/cmake")
+    DESTINATION "cmake")
 

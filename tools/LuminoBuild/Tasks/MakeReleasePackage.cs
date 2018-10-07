@@ -75,13 +75,13 @@ namespace LuminoBuild.Tasks
                 {
                     if (Directory.Exists(Path.Combine(tempInstallDir, arch.SourceDirName)))   // copy if directory exists.
                     {
-                        var externalInstallDir = Path.Combine(builder.LuminoBuildDir, arch.SourceDirName, "ExternalInstall");
                         var targetDir = Path.Combine(nativeEngineRoot, "lib", arch.DestDirName);
 
                         Utils.CopyDirectory(
-                            Path.Combine(tempInstallDir, arch.SourceDirName, "lib"),
+                            Path.Combine(tempInstallDir, arch.SourceDirName/*, "lib"*/),
                             targetDir);
 
+                        var externalInstallDir = Path.Combine(builder.LuminoBuildDir, arch.SourceDirName, "ExternalInstall");
                         foreach (var lib in externalLibs)
                         {
                             var srcDir = Path.Combine(externalInstallDir, lib, "lib");

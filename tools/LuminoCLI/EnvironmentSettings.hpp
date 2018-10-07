@@ -37,7 +37,7 @@ class BuildEnvironment
 public:
 	BuildEnvironment();
 	void setupPathes(EnvironmentSettings* env);
-	void verifyAndInstall();
+	void prepareEmscriptenSdk();
 
 	const ln::Path& luminoEmscriptenSdkDirPath() const { return m_luminoEmscriptenSdkDirPath; }
 	
@@ -46,6 +46,7 @@ public:
 	const ln::Path& luminoPackageRootDir() const { return m_luminoPackageRootDir; }
 	
 
+	const ln::String& msdkVer() const { return m_emsdkVer; }
 	const ln::String& emsdkName() const { return m_emsdkName; }
 	const ln::Path& emsdkDirPath() const { return m_emsdkRootDir; }
 	const ln::Path& emscriptenDirPath() const { return m_emscriptenRootDir; }

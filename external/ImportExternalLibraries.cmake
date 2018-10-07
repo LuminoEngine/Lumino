@@ -3,10 +3,10 @@
 set(CMAKE_FIND_DEBUG_MODE 1)
 
 # FIXME: Emscripten と Android のビルド時、find_library が sysroot 以外を探せるように強制。
-set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+#set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
-set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
-set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
+#set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
+#set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
 
 #-------------------------------------------------------------------------------
 
@@ -49,15 +49,16 @@ message("CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
 
 
 macro(ln_make_external_find_path varName projectDirName)
-    if (LN_EMSCRIPTEN)
+    #if (LN_EMSCRIPTEN)
         # reference to installed libs by "build.csproj"
-        set(${varName} ${EMSCRIPTEN_ROOT_PATH}/system)
-    elseif(DEFINED LN_EXTERNAL_FIND_PATH_MODE)
+        #set(${varName} ${EMSCRIPTEN_ROOT_PATH}/system)
+    #else
+    if(DEFINED LN_EXTERNAL_FIND_PATH_MODE)
         if (${LN_EXTERNAL_FIND_PATH_MODE} STREQUAL "build")
             set(${varName} ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/${projectDirName})
         endif()
     else()
-        set(${varName} ${Lumino_DIR})
+    set(${varName} ${LUMINO_ENGINE_ROOT}/lib/${LN_TARGET_ARCH})
     endif()
 endmacro()
 
@@ -136,7 +137,6 @@ add_library(${LIB_NAME} STATIC IMPORTED)
 set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
 set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
 set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${PNG_ROOT}/include)
-
 
 
 #--------------------------------------

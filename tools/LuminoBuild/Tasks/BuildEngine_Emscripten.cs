@@ -36,7 +36,7 @@ namespace LuminoBuild.Tasks
 
             // emcmake で find_library などを行う場合、Emscripten のシステムフォルダ以外は検索しないようにツールチェインファイルで封印されている。
             // Lumino 本体のビルド時にライブラリを探すことができるようにするため、システムフォルダに一式コピーしておく。
-            Utils.CopyDirectory(installDir, Path.Combine(BuildEnvironment.EmscriptenDir, "system"));
+            //Utils.CopyDirectory(installDir, Path.Combine(BuildEnvironment.EmscriptenDir, "system"));
 
 
             //string emRootDir = BuildEnvironment.EmscriptenDir;
