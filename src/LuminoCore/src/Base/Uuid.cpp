@@ -68,7 +68,7 @@ Uuid Uuid::generate()
 	};
 	return Uuid(bytes);
 
-#elif defined(LN_ANDROID)
+#elif defined(LN_OS_ANDROID)
 	// Android NDK は uuid サポートしていない。
 	// 作るとしたら https://github.com/graeme-hill/crossguid/blob/master/src/guid.cpp
 	// のように、JVMEnv の構造体のポインタをもらわないとならない。

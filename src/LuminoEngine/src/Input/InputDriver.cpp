@@ -86,6 +86,16 @@ void InputDriver::preUpdateFrame()
 	m_mouseWheel = 0;
 }
 
+int InputDriver::getJoystickCount()
+{
+	return 0;
+}
+
+void InputDriver::getJoystickState(int joystickNumber, JoystickDeviceState* state)
+{
+	state->reset();
+}
+
 //------------------------------------------------------------------------------
 void InputDriver::onEvent(const detail::PlatformEventArgs& e)
 {

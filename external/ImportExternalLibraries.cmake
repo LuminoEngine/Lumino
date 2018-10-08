@@ -103,7 +103,14 @@ endif()
 #--------------------------------------
 # zlib
 
-if (LN_OS_DESKTOP)
+if (ANDROID_ABI)
+    # zlib を "ZLIB" 変数で参照できるようにする
+    find_package(ZLIB REQUIRED)
+    add_library(ZLIB STATIC IMPORTED)
+    set_target_properties(ZLIB PROPERTIES IMPORTED_LOCATION "${ZLIB_LIBRARIES}")
+    set_target_properties(ZLIB PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ZLIB_INCLUDE_DIRS})
+    
+elseif (LN_OS_DESKTOP)
     ln_make_external_find_path(ZLIB_ROOT zlib)
     find_library(ZLIB_LIBRARY_RELEASE NAMES zlib PATHS ${ZLIB_ROOT} PATH_SUFFIXES lib)
     find_library(ZLIB_LIBRARY_DEBUG NAMES zlibd PATHS ${ZLIB_ROOT} PATH_SUFFIXES lib)

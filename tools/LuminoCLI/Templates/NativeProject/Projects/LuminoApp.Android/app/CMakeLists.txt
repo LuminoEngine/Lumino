@@ -1,25 +1,13 @@
-# For more information about using CMake with Android Studio, read the
-# documentation: https://d.android.com/studio/projects/add-native-code.html
-
-# Sets the minimum version of CMake required to build the native library.
-
 cmake_minimum_required(VERSION 3.4.1)
 
+set(LUMINO_ENGINE_ROOT $ENV{LUMINO_ROOT}/Engine/Native)
+set(LN_TARGET_ARCH Android-${ANDROID_ABI})
 
 
-
-set(LUMINO_PACKAGE_DIR $ENV{LUMINO})
-message("LUMINO_PACKAGE_DIR: ${LUMINO_PACKAGE_DIR}")
-
-include(${LUMINO_PACKAGE_DIR}/Engine/Cpp/LuminoSetup.cmake)
-
-list(APPEND CMAKE_FIND_ROOT_PATH ${LUMINO_PACKAGE_DIR}/Engine/Cpp/Android-${ANDROID_ABI})
-
-set(LUMINO_CMAKE_DIR ${LUMINO_PACKAGE_DIR}/Engine/Cpp/Android-${ANDROID_ABI}/lib/cmake)
-find_package(LuminoCore REQUIRED CONFIG PATHS ${LUMINO_CMAKE_DIR})
-find_package(LuminoEngine REQUIRED CONFIG PATHS ${LUMINO_CMAKE_DIR})
+list(APPEND CMAKE_FIND_ROOT_PATH ${LUMINO_ENGINE_ROOT}/lib/Android-${ANDROID_ABI})
 
 
+include(${LUMINO_ENGINE_ROOT}/lib/LuminoSetup.cmake)
 
 file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_LIST_DIR}/../../../Sources/*.cpp)
 
@@ -35,9 +23,12 @@ add_library( # Sets the name of the library.
              # Sets the library as a shared library.
              SHARED
 
-             # Provides a relative path to your source file(s).
-             src/main/cpp/native-lib.cpp ${SOURCES} ../../PCH.cpp ../../PCH.h)
-ln_add_pch(native-lib ../../PCH.h ../../PCH.cpp)
+             ${SOURCES}
+             src/main/cpp/native-lib.cpp
+             src/main/cpp/PCH.cpp
+             src/main/cpp/PCH.h
+             )
+ln_add_pch(native-lib src/main/cpp/PCH.h src/main/cpp/PCH.cpp)
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by
@@ -56,7 +47,7 @@ find_library( # Sets the name of the path variable.
 # can link multiple libraries, such as libraries you define in this
 # build script, prebuilt third-party libraries, or system libraries.
 
-message(${ZLIB_LIBRARY_RELEASE})
+#message(${ZLIB_LIBRARY_RELEASE})
 
 add_dependencies(PNG ZLIB)
 
@@ -73,5 +64,3 @@ target_link_libraries( # Specifies the target library.
                        LuminoEngine
                        #${ZLIB_LIBRARY_RELEASE}
                        )
-
-SET_TARGET_PROPERTIES(native-lib PROPERTIES LINK_FLAGS -v)

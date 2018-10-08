@@ -15,7 +15,7 @@
 #define LN_EMSCRIPTEN
 #define LN_OS_FAMILY_UNIX
 #elif defined(__ANDROID__)
-#define LN_ANDROID
+#define LN_OS_ANDROID
 #define LN_OS_FAMILY_UNIX
 #elif (defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__CYGWIN__) || defined(Q_OS_WIN))
 #define LN_OS_WIN32

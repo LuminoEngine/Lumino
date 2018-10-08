@@ -60,8 +60,8 @@ public:
 	const PointI& getMousePoint() const { return m_mousePoint; }
 	int getMouseWheel() const { return m_mouseWheel; }
 
-	virtual int getJoystickCount() = 0;
-	virtual void getJoystickState(int joystickNumber, JoystickDeviceState* state) = 0;
+	virtual int getJoystickCount();
+	virtual void getJoystickState(int joystickNumber, JoystickDeviceState* state);
 
 	virtual void onEvent(const detail::PlatformEventArgs& e);
 

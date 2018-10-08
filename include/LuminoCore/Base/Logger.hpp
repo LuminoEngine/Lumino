@@ -54,6 +54,8 @@ public:
      */
     static void addStdErrAdapter();
 
+	static void addAndroidLogcatAdapter();
+
 	/**
 	 * どの程度詳細にログを生成するかを設定します。(defailt: Debug)
 	 *
@@ -112,7 +114,7 @@ class ILoggerAdapter
 {
 public:
     virtual ~ILoggerAdapter();
-    virtual void write(const char* str, size_t len) = 0;
+    virtual void write(LogLevel level, const char* str, size_t len) = 0;
 };
 
 class LoggerInterface

@@ -64,7 +64,8 @@ void InputManager::initialize(const Settings& settings)
 	driver->initialize();
 	m_inputDriver = driver;
 #else
-	LN_NOTIMPLEMENTED();
+	auto driver = makeRef<InputDriver>();
+	m_inputDriver = driver;
 #endif
 
 	// TODO: 今は1つだけ
