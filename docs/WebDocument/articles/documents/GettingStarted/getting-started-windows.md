@@ -1,9 +1,5 @@
-Lumino をはじめる
+開発準備 (Windows)
 ========
-
-
-Windows
---------
 
 ### Visual Studio をインストールする
 
@@ -23,9 +19,3 @@ Windows
 ```
 lumino-cli init HelloLumino
 ```
-
-
-macOS
---------
-TODO:
-

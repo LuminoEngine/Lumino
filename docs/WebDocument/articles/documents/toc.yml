@@ -1,6 +1,8 @@
 - name: Lumino について
   href: Index.md
   items:
+    - name: Lumino をはじめる
+      href: GettingStarted/getting-started.md
     - name: 動作環境
       href: Requirements.md
     - name: Lumino をインストールする
