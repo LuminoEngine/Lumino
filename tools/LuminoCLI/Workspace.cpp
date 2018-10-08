@@ -29,9 +29,15 @@ Result Workspace::openProject(const ln::Path& dir)
 
 Result Workspace::buildProject(const ln::String& target)
 {
-
+	// Windows
+	if (ln::String::compare(target, u"Windows", ln::CaseSensitivity::CaseInsensitive) == 0)
+	{
+		//MSBuild ClassLibrary1.sln /t:build /p:Configuration=Debug;Platform="x64"
+		//ln::Process::execute(u"MSBuild", { u"/t:build" });
+		LN_NOTIMPLEMENTED();
+	}
 	// Android
-	if (ln::String::compare(target, u"Android", ln::CaseSensitivity::CaseInsensitive) == 0)
+	else if (ln::String::compare(target, u"Android", ln::CaseSensitivity::CaseInsensitive) == 0)
 	{
 		//::SetCurrentDirectoryW(L"D:\\Documents\\LuminoProjects\\HelloLumino\\NativeProjects\\LuminoApp.Android");
 
