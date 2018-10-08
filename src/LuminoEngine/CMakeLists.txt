@@ -178,7 +178,9 @@ set(LN_SOURCES_SharedLib
 
 
 
-if (LN_IOS)
+if (LN_EMSCRIPTEN)
+
+elseif (LN_IOS)
     FIND_LIBRARY( OPENGLES_FRAMEWORKS OpenGLES )
     if(OPENGLES_FRAMEWORKS)
         list(APPEND LN_PLATFORM_LIBS "-framework OpenGLES")
