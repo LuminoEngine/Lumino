@@ -39,8 +39,8 @@ LN_INTERNAL_ACCESS:
 	std::shared_mutex& commitMutex() { return m_commitMutex; }
 #endif
 
-	void addAudioNode(AudioNode* node) { m_allAudioNodes.add(node); }
-	void removeAudioNode(AudioNode* node) { m_allAudioNodes.remove(node); }
+	void addAudioNode(AudioNode* node);
+	void disposeNodeOnGenericThread(AudioNode* node);	// Audio Thread 以外での AudioNode::dispose
 
 private:
 	enum class OperationCode
@@ -67,6 +67,9 @@ private:
 
 	List<AudioNode*> m_allAudioNodes;
 	std::vector<ConnectionCommand> m_connectionCommands;
+
+	// commitGraphs() 中、m_allAudioNodes の AudioNode のインスタンスが消えないように参照を持っておくための list
+	//List<Ref<AudioNode>> m_allAudioNodes_onCommit;
 };
 
 } // namespace ln

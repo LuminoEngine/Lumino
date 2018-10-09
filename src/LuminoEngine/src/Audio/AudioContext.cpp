@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/Audio/AudioNode.hpp>
-#include <Lumino/Audio/AudioContext.hpp>
+#include <LuminoEngine/Audio/AudioNode.hpp>
+#include <LuminoEngine/Audio/AudioContext.hpp>
 #include "CoreAudioNode.hpp"
 #include "AudioManager.hpp"
 #include "DSoundAudioDevice.hpp"
@@ -123,9 +123,31 @@ void AudioContext::sendDisconnectAllAndDispose(AudioNode* node)
 	m_connectionCommands.push_back({ OperationCode::DisconnectionAllAndDispose, node });
 }
 
+void AudioContext::addAudioNode(AudioNode* node)
+{
+	LN_AUDIO_WRITE_LOCK_COMMIT;
+	m_allAudioNodes.add(node);
+}
+
+void AudioContext::disposeNodeOnGenericThread(AudioNode* node)
+{
+	LN_AUDIO_WRITE_LOCK_COMMIT;
+	if (node->m_context) {
+		node->m_context->sendDisconnectAllAndDispose(node);
+		node->m_context = nullptr;
+		m_allAudioNodes.remove(node);
+	}
+}
+
 void AudioContext::commitGraphs()
 {
 	LN_AUDIO_WRITE_LOCK_COMMIT;
+	//for (AudioNode* node : m_allAudioNodes)
+	//{
+	//	m_allAudioNodes_onCommit.add(node);
+	//}
+
+	//
 
 	if (!m_connectionCommands.empty())
 	{

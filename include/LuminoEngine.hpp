@@ -12,8 +12,8 @@
 #include "LuminoEngine/Input/InputBinding.hpp"
 #include "LuminoEngine/Input/Mouse.hpp"
 
-#include "Lumino/Audio/AudioContext.hpp"
-#include "Lumino/Audio/AudioNode.hpp"
+#include "LuminoEngine/Audio/AudioContext.hpp"
+#include "LuminoEngine/Audio/AudioNode.hpp"
 
 #include "LuminoEngine/Graphics/RenderState.hpp"
 #include "LuminoEngine/Graphics/SamplerState.hpp"

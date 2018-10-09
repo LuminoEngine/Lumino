@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
 #include "../Engine/LinearAllocator.hpp"
-#include <Lumino/Engine/Diagnostics.hpp>
-#include <Lumino/Audio/AudioContext.hpp>
+#include <LuminoEngine/Engine/Diagnostics.hpp>
+#include <LuminoEngine/Audio/AudioContext.hpp>
 #include "AudioDecoder.hpp"
 #include "AudioManager.hpp"
 

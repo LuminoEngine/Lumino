@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/Audio/AudioContext.hpp>
-#include <Lumino/Audio/AudioNode.hpp>
+#include <LuminoEngine/Audio/AudioContext.hpp>
+#include <LuminoEngine/Audio/AudioNode.hpp>
 #include "AudioManager.hpp"
 #include "CoreAudioNode.hpp"
 #include "../Engine/RenderingCommandList.hpp"
@@ -28,9 +28,7 @@ void AudioNode::dispose()
 {
 	Object::dispose();
 	if (m_context) {
-		m_context->sendDisconnectAllAndDispose(this);
-		m_context->removeAudioNode(this);
-		m_context = nullptr;
+		m_context->disposeNodeOnGenericThread(this);
 	}
 }
 

@@ -84,10 +84,10 @@ set(LN_SOURCES_Input
 )
 
 set(LN_SOURCES_Audio
-    include/Lumino/Audio/Common.hpp
-    include/Lumino/Audio/AudioContext.hpp
-    include/Lumino/Audio/AudioListener.hpp
-    include/Lumino/Audio/AudioNode.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioContext.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioListener.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioNode.hpp
     src/Audio/Internal.hpp
     src/Audio/ALAudioDevice.cpp
     src/Audio/ALAudioDevice.hpp
@@ -106,6 +106,8 @@ set(LN_SOURCES_Audio
     src/Audio/CoreAudioNode.hpp
     src/Audio/DSoundAudioDevice.cpp
     src/Audio/DSoundAudioDevice.hpp
+    src/Audio/Mp3AudioDecoder.cpp
+    src/Audio/Mp3AudioDecoder.hpp
     src/Audio/SDLAudioDevice.cpp
     src/Audio/SDLAudioDevice.hpp
     src/Audio/blink/VectorMath.cpp
@@ -322,6 +324,7 @@ elseif (WIN32)
     list(APPEND LN_PLATFORM_LIBS glfw GLAD)
     #list(APPEND LN_PLATFORM_LIBS user32 gdi32 winmm imm32 ole32 oleaut32 version uuid)
     list(APPEND LN_PLATFORM_LIBS winmm imm32 version)
+    list(APPEND LN_PLATFORM_LIBS OpenAL)
 
 elseif (APPLE)
     list(APPEND LN_PLATFORM_LIBS glfw GLAD)
