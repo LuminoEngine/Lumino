@@ -202,7 +202,6 @@ namespace LuminoBuild.Tasks
                     }
                 }
 
-return;
 
                 var targetArgs = new []
                 {
@@ -220,7 +219,7 @@ return;
                     var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, dirName, "ExternalInstall", "zlib"));
 
                     var generator = "Xcode";
-                    //BuildProject(builder, "zlib", reposDir, dirName, generator, args);
+                    BuildProject(builder, "zlib", reposDir, dirName, generator, args);
                     BuildProject(builder, "libpng", reposDir, dirName, generator, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include " + args);
                     BuildProject(builder, "glslang", reposDir, dirName, generator, args);
                     BuildProject(builder, "SPIRV-Cross", reposDir, dirName, generator, $"-DCMAKE_DEBUG_POSTFIX=d " + args);
