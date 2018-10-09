@@ -92,6 +92,7 @@ public:
     bool hasValue() const { return !m_values.isEmpty(); }
     const String& value() const { return m_values[0]; }
     const List<String>& values() const { return m_values; }
+	Flags<CommandLinePositionalArgumentFlags> flags() const { return m_flags; }
 
     bool isList() const { return m_isList; }
     bool isOptional() const { return m_flags.hasFlag(CommandLinePositionalArgumentFlags::Optional); }

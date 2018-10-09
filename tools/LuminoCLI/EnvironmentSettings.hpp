@@ -39,6 +39,8 @@ public:
 	void setupPathes(EnvironmentSettings* env);
 	void prepareEmscriptenSdk();
 
+	const ln::String& defaultTargetName() const { return m_defaultTargetName; }
+
 	const ln::Path& luminoEmscriptenSdkDirPath() const { return m_luminoEmscriptenSdkDirPath; }
 	
 	ln::Path projectTemplatesDirPath() const { return m_projectTemplatesDirPath; }
@@ -55,6 +57,7 @@ public:
 	const ln::Path& msbuild() const { return m_msbuild; }
 
 private:
+	ln::String m_defaultTargetName;
 	ln::Path m_luminoPackageRootDir;
 	ln::Path m_luminoEmscriptenSdkDirPath;
 	ln::Path m_projectTemplatesDirPath;

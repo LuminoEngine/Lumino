@@ -14,8 +14,3 @@
 
 - 実行時に Windows SmartScreen の注意メッセージが表示された場合は「詳細情報」→「実行」を押してください
 
-
-
-```
-lumino-cli init HelloLumino
-```

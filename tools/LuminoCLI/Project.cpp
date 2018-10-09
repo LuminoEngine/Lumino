@@ -78,7 +78,7 @@ Result Project::openProject(const ln::Path& dir)
 	setupPathes();
 	if (m_projectFilePath.isEmpty()) {
 		CLI::error("Lumino project file not found in current directory.");
-		return Result::Failed;
+		return Result::Fail;
 	}
 
 
@@ -92,7 +92,7 @@ Result Project::openProject(const ln::Path& dir)
 		LN_NOTIMPLEMENTED();
 	}
 
-	return Result::OK;
+	return Result::Success;
 }
 
 Result Project::saveProject()
@@ -101,7 +101,7 @@ Result Project::saveProject()
 	auto path = ln::Path(m_rootDir, m_projectName + ProjectFileExt);
 	ln::FileSystem::writeAllText(path.c_str(), json);	// TODO: remove c_str()
 
-	return Result::OK;
+	return Result::Success;
 }
 
 void Project::restore()

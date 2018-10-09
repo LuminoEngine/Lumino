@@ -1,4 +1,4 @@
-- name: Lumino について
+- name: Lumino の概要
   href: Index.md
   items:
     - name: Lumino をはじめる
@@ -47,3 +47,12 @@
 #  items:
 #    - name: 入力
 #      href: Input_VirtualController.md
+
+- name: プラットフォーム固有の情報
+  items: 
+    - name: Windows
+      href: platform-specific/web.md
+    - name: Web
+      href: platform-specific/web.md
+    - name: Android
+      href: platform-specific/android.md

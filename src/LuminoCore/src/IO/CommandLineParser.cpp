@@ -395,8 +395,10 @@ bool CommandLineCommandBase::verify()
     }
 
     for (auto& arg : positionalArguments()) {
-        if (arg->values().isEmpty()) {
-            return false;
+        if (!arg->flags().hasFlag(CommandLinePositionalArgumentFlags::Optional)) {
+            if (arg->values().isEmpty()) {
+                return false;
+            }
         }
     }
 

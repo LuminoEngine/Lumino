@@ -57,15 +57,15 @@ Result CppLanguageContext::applyTemplates()
 		copyEngine();
 	}
 
-	// Win32
+	// Windows
 	{
 		ln::FileSystem::copyFile(
 			ln::Path(srcRoot, u"LuminoApp.sln"),
 			ln::Path(dstRoot, u"LuminoApp.sln"), ln::FileCopyOption::Overwrite);
 
 		ln::FileSystem::copyDirectory(
-			ln::Path(srcRoot, u"Projects/LuminoApp.Win32"),
-			ln::Path(dstRoot, u"Projects/LuminoApp.Win32"),
+			ln::Path(srcRoot, u"Projects/LuminoApp.Windows"),
+			ln::Path(dstRoot, u"Projects/LuminoApp.Windows"),
 			true, true);
 	}
 
@@ -77,11 +77,11 @@ Result CppLanguageContext::applyTemplates()
 			true, true);
 	}
 
-	// Emscripten
+	// Web
 	{
 		ln::FileSystem::copyDirectory(
-			ln::Path(srcRoot, u"Projects/LuminoApp.Emscripten"),
-			ln::Path(dstRoot, u"Projects/LuminoApp.Emscripten"),
+			ln::Path(srcRoot, u"Projects/LuminoApp.Web"),
+			ln::Path(dstRoot, u"Projects/LuminoApp.Web"),
 			true, true);
 	}
 
@@ -102,7 +102,7 @@ Result CppLanguageContext::applyTemplates()
 	}
 
 	CLI::info("Copied NativeProject template.");
-	return Result::OK;
+	return Result::Success;
 }
 
 void CppLanguageContext::restore()

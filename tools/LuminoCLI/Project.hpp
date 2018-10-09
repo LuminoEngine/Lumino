@@ -33,7 +33,7 @@ public:
 	Result saveProject();
 	void restore();
 
-	const Ref<ProjectProperties>& properties() const { return m_properties; }
+	const ln::Ref<ProjectProperties>& properties() const { return m_properties; }
 
 	Workspace* workspace() const { return m_workspace; }
 	const ln::Path& engineDirPath() const { return m_engineDir; }
@@ -41,10 +41,10 @@ public:
 	const ln::Path& buildDir() const { return m_buildDir; }
 
 	ln::Path projectsDir() const { return ln::Path(rootDirPath(), u"Projects"); }
-	ln::Path emscriptenProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.Emscripten"); }
+	ln::Path emscriptenProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.Web"); }
 	ln::Path androidProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.Android"); }
 	ln::Path macOSProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.macOS");  }
-	ln::Path windowsProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.Win32"); }
+	ln::Path windowsProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.Windows"); }
 
 	/** 指定フォルダにプロジェクトファイルが含まれているかを確認する */
 	static bool existsProjectFile(const ln::Path& dir);
@@ -53,8 +53,8 @@ private:
 	void setupPathes();
 
 	Workspace* m_workspace;
-	Ref<ProjectProperties> m_properties;
-	Ref<LanguageContext> m_context;
+	ln::Ref<ProjectProperties> m_properties;
+	ln::Ref<LanguageContext> m_context;
 
 	ln::String m_projectName;
 	ln::Path m_projectFilePath;

@@ -11,15 +11,15 @@ Lumino をはじめる
 --------
 ターミナル（コマンドプロンプト）を開いて次のコマンドを入力します。
 
-```
-lumino init HelloLumino
+```sh
+lumino-cli init HelloLumino
 ```
 
-- `HelloLumino` はプロジェクト名です。
+- `HelloLumino` の部分はプロジェクト名です。
 - カレントディレクトリの下に HelloLumino というディレクトリが作成され、その中に必要なファイルが作成されます。
 
 続いて作成されたディレクトリに移動しておきます。
-```
+```sh
 cd HelloLumino
 ```
 
@@ -27,8 +27,23 @@ cd HelloLumino
 --------
 Lumino のプロジェクトディレクトリ(.lnproj ファイルのあるディレクトリ)で次のコマンドを入力します。
 
+```sh
+lumino-cli run
 ```
-lumino run
-```
+
+動作中のプラットフォーム向けのアプリがビルド・実行され、ウィンドウが表示されます。
+
+
+その他のプラットフォーム固有の情報は以下のページを参照してください。
+- [Windows アプリ](../platform-specific/windows.md)
+- [Web アプリ](../platform-specific/web.md)
+- [Android アプリ](../platform-specific/android.md)
+
+
+プロジェクトのディレクトリ構成
+--------
+TODO:
+
+
 
 

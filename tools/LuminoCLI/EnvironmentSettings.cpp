@@ -54,6 +54,13 @@ BuildEnvironment::BuildEnvironment()
 	, m_emsdkRootDir()
 	, m_emscriptenRootDir()
 {
+#if defined(LN_OS_WIN32)
+	m_defaultTargetName = u"Windows";
+#elif defined(LN_OS_MAC)
+	m_defaultTargetName = u"macOS";
+#else
+	static_assert("Target not supported.");
+#endif
 }
 
 void BuildEnvironment::setupPathes(EnvironmentSettings* env)

@@ -15,16 +15,16 @@ public:
 	Result openProject(const ln::Path& dir);
 	Result buildProject(const ln::String& target);
 	Result runProject(const ln::String& target);
-	void restoreProject();
+	Result restoreProject();
 
-	const Ref<EnvironmentSettings>& environmentSettings() const { return m_environmentSettings; }
-	const Ref<BuildEnvironment>& buildEnvironment() const { return m_devTools; }
+	const ln::Ref<EnvironmentSettings>& environmentSettings() const { return m_environmentSettings; }
+	const ln::Ref<BuildEnvironment>& buildEnvironment() const { return m_devTools; }
 
 	Result dev_installTools() const;
 	void dev_openIde(const ln::String& target) const;
 
 private:
-	Ref<EnvironmentSettings> m_environmentSettings;
-	Ref<BuildEnvironment> m_devTools;
-	Ref<Project> m_project;
+	ln::Ref<EnvironmentSettings> m_environmentSettings;
+	ln::Ref<BuildEnvironment> m_devTools;
+	ln::Ref<Project> m_project;
 };

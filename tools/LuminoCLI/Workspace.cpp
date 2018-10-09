@@ -35,12 +35,12 @@ Result Workspace::buildProject(const ln::String& target)
 		auto file = ln::FileSystem::getFile(m_project->rootDirPath(), u"*.sln");
 		if (file.isEmpty()) {
 			CLI::error(".sln file not found.");
-			return Result::Failed;
+			return Result::Fail;
 		}
 
 		if (ln::Process::execute(m_devTools->msbuild(), { file.str(), u"/t:build", u"/p:Configuration=Debug;Platform=\"x86\"" }) != 0) {
 			CLI::error("Failed MSBuild.");
-			return Result::Failed;
+			return Result::Fail;
 		}
 	}
 	// Android
@@ -89,13 +89,13 @@ Result Workspace::buildProject(const ln::String& target)
 #endif
 	}
 
-	// Emscripten
-	else if (ln::String::compare(target, u"Emscripten", ln::CaseSensitivity::CaseInsensitive) == 0)
+	// Web
+	else if (ln::String::compare(target, u"Web", ln::CaseSensitivity::CaseInsensitive) == 0)
 	{
 		// emsdk がなければインストールする
 		m_devTools->prepareEmscriptenSdk();
 
-		auto buildDir = ln::Path::combine(m_project->buildDir(), u"Emscripten").canonicalize();
+		auto buildDir = ln::Path::combine(m_project->buildDir(), u"Web").canonicalize();
 		auto installDir = ln::Path::combine(buildDir, u"Release");
 		auto cmakeSourceDir = m_project->emscriptenProjectDir();
 		auto script = ln::Path::combine(buildDir, u"build.bat");
@@ -124,7 +124,7 @@ Result Workspace::buildProject(const ln::String& target)
 		ln::Process::execute(script);
 	}
 
-	return Result::OK;
+	return Result::Success;
 }
 
 Result Workspace::runProject(const ln::String& target)
@@ -135,10 +135,10 @@ Result Workspace::runProject(const ln::String& target)
 		auto exe = ln::FileSystem::getFile(ln::Path(m_project->windowsProjectDir(), u"bin/Debug"), u"*.exe");
 		ln::Process::execute(exe);
 	}
-	// Emscripten
-	else if (ln::String::compare(target, u"Emscripten", ln::CaseSensitivity::CaseInsensitive) == 0)
+	// Web
+	else if (ln::String::compare(target, u"Web", ln::CaseSensitivity::CaseInsensitive) == 0)
 	{
-		auto buildDir = ln::Path::combine(m_project->buildDir(), u"Emscripten").canonicalize();
+		auto buildDir = ln::Path::combine(m_project->buildDir(), u"Web").canonicalize();
 
 		ln::Process proc;
 		proc.setProgram(m_devTools->python2());
@@ -152,7 +152,7 @@ Result Workspace::runProject(const ln::String& target)
 			auto files = ln::FileSystem::getFiles(buildDir, u"*.html");
 			if (files.isEmpty()) {
 				CLI::error("Not found *.sln file.");
-				return Result::Failed;
+				return Result::Fail;
 			}
 
 			ln::Process proc2;
@@ -163,12 +163,13 @@ Result Workspace::runProject(const ln::String& target)
 		proc.wait();
 	}
 
-	return Result::OK;
+	return Result::Success;
 }
 
-void Workspace::restoreProject()
+Result Workspace::restoreProject()
 {
 	m_project->restore();
+	return Result::Success;
 }
 
 Result Workspace::dev_installTools() const
@@ -177,7 +178,7 @@ Result Workspace::dev_installTools() const
 
 
 	
-	return Result::OK;
+	return Result::Success;
 }
 
 void Workspace::dev_openIde(const ln::String& target) const

@@ -1,4 +1,5 @@
 
+#include "EnvironmentSettings.hpp"
 #include "Workspace.hpp"
 #include "Project.hpp"
 
@@ -19,7 +20,7 @@ int main(int argc, char** argv)
 			//"build", "Emscripten",
 			//"<program>", "build", "Android",
 
-			"run", "Windows",
+			"run", //"Windows",
 
 			//"dev-openide", "vs",
 			
@@ -94,22 +95,25 @@ int main(int argc, char** argv)
 	
 
 		ln::CommandLineParser parser;
-		//auto installCommand = parser.addCommand(_T("install"), _T("install."));
 
 		//--------------------------------------------------------------------------------
-		auto init = parser.addCommand(u"init", u"Create a Lumino project in the current directory.");
-		auto init_projectName = init->addPositionalArgument(u"project-name", u"prooject name.");
+		// init command
+		auto initCommand = parser.addCommand(u"init", u"Create a Lumino project in the current directory.");
+		auto initCommand_projectName = initCommand->addPositionalArgument(u"project-name", u"prooject name.");
 
 		//--------------------------------------------------------------------------------
-		auto buildCommand = parser.addCommand(u"build", u"init description.");
-		auto burildTargetArg = buildCommand->addPositionalArgument(u"target", u"-");
+		// build command
+		auto buildCommand = parser.addCommand(u"build", u"Build the project.");
+		auto burildTargetArg = buildCommand->addPositionalArgument(u"target", u"Specify the target to build.", ln::CommandLinePositionalArgumentFlags::Optional);
 
 		//--------------------------------------------------------------------------------
-		auto runCommand = parser.addCommand(u"run", u"run description.");
-		auto runCommand_targetArg = runCommand->addPositionalArgument(u"target", u"-");
+		// run command
+		auto runCommand = parser.addCommand(u"run", u"Build the project.");
+		auto runCommand_targetArg = runCommand->addPositionalArgument(u"target", u"Specify the target to run.", ln::CommandLinePositionalArgumentFlags::Optional);
 
 		//--------------------------------------------------------------------------------
-		auto restoreCommand = parser.addCommand(u"restore", u"Restore Engines included in the project.");
+		// restore command
+		auto restoreCommand = parser.addCommand(u"restore", u"Restore engines included in the project.");
 
 		//--------------------------------------------------------------------------------
 		auto dev_installTools = parser.addCommand(u"dev-install-tools", u"description.");
@@ -123,7 +127,9 @@ int main(int argc, char** argv)
 		{
 			auto workspace = ln::makeRef<Workspace>();
 
-			if (parser.has(init))
+			//--------------------------------------------------------------------------------
+			// init command
+			if (parser.has(initCommand))
 			{
 				if (Project::existsProjectFile(ln::Environment::currentDirectory())) {
 					CLI::error("Project file already exists.");
@@ -131,25 +137,55 @@ int main(int argc, char** argv)
 				}
 				else {
 					workspace->newProject(
-						ln::Path(ln::Environment::currentDirectory(), init_projectName->value()),
-						init_projectName->value());
+						ln::Path(ln::Environment::currentDirectory(), initCommand_projectName->value()),
+						initCommand_projectName->value());
 				}
 			}
+			//--------------------------------------------------------------------------------
+			// build command
 			else if (parser.has(buildCommand))
 			{
-				workspace->openProject(ln::Environment::currentDirectory());
-				workspace->buildProject(burildTargetArg->value());
+				ln::String target = workspace->buildEnvironment()->defaultTargetName();
+				if (burildTargetArg->hasValue()) {
+					target = burildTargetArg->value();
+				}
+
+				if (!workspace->openProject(ln::Environment::currentDirectory())) {
+					return 1;
+				}
+				if (!workspace->runProject(target)) {
+					return 1;
+				}
 			}
+			//--------------------------------------------------------------------------------
+			// run command
 			else if (parser.has(runCommand))
 			{
-				workspace->openProject(ln::Environment::currentDirectory());
-				workspace->buildProject(runCommand_targetArg->value());
-				workspace->runProject(runCommand_targetArg->value());
+				ln::String target = workspace->buildEnvironment()->defaultTargetName();
+				if (runCommand_targetArg->hasValue()) {
+					target = runCommand_targetArg->value();
+				}
+
+				if (!workspace->openProject(ln::Environment::currentDirectory())) {
+					return 1;
+				}
+				if (!workspace->buildProject(target)) {
+					return 1;
+				}
+				if (!workspace->runProject(target)) {
+					return 1;
+				}
 			}
+			//--------------------------------------------------------------------------------
+			// restore command
 			else if (parser.has(restoreCommand))
 			{
-				workspace->openProject(ln::Environment::currentDirectory());
-				workspace->restoreProject();
+				if (!workspace->openProject(ln::Environment::currentDirectory())) {
+					return 1;
+				}
+				if (!workspace->restoreProject()) {
+					return 1;
+				}
 			}
 			else if (parser.has(dev_installTools))
 			{
