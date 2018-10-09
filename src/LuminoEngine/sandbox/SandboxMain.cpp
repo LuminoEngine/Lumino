@@ -2,6 +2,7 @@
 #define LN_MSVC_DISABLE_LIBRARY_LINK
 #include <LuminoEngine.hpp>
 #include <LuminoCore/Testing/TestHelper.hpp>
+#include "../src/Audio/Mp3AudioDecoder.hpp"
 #include "Common.hpp"
 #include "../src/Engine/EngineDomain.hpp"
 #include "../src/Rendering/RenderingManager.hpp"
@@ -40,6 +41,15 @@ int main(int argc, char** argv)
 	//Engine::terminate();
 	//return 0;
 	// Audio test
+
+
+	{
+		auto ss = FileStream::create(u"D:\\tmp\\light_song_instrumental_0.mp3");
+		detail::Mp3AudioDecoder dec;
+		auto diag = newObject<DiagnosticsManager>();
+		dec.initialize(ss, diag);
+	}
+
 	
 #if 0
 	auto source = newObject<AudioSourceNode>(u"D:\\tmp\\8_MapBGM2.wav");

@@ -14,7 +14,7 @@ namespace ln {
 namespace detail {
 
 Mp3AudioDecoder::Mp3AudioDecoder()
-	: m_acmMP3WaveFormat(std::make_unique<MPEGLAYER3WAVEFORMAT>())
+	: m_acmMP3WaveFormat(new MPEGLAYER3WAVEFORMAT())
 {
 }
 
@@ -41,45 +41,45 @@ const AudioDataInfo& Mp3AudioDecoder::audioDataInfo() const
 
 uint32_t Mp3AudioDecoder::read2(float* buffer, uint32_t requestFrames)
 {
-	m_stream->seek(m_dataOffset + seekPos, SeekOrigin::Begin);
+	//m_stream->seek(m_dataOffset + seekPos, SeekOrigin::Begin);
 
-	// ファイルからデータ読み込み
-	size_t read_size = m_stream->read(m_mp3SourceBufferParSec.getData(), m_mp3SourceBufferParSec.getSize());
+	//// ファイルからデータ読み込み
+	//size_t read_size = m_stream->read(m_mp3SourceBufferParSec.getData(), m_mp3SourceBufferParSec.getSize());
 
-	DWORD src_length = m_mp3SourceBufferParSec.getSize();
+	//DWORD src_length = m_mp3SourceBufferParSec.getSize();
 
-	// 実際に読み込んだサイズが、読むべきサイズよりも小さかった場合
-	if (read_size < m_mp3SourceBufferParSec.getSize())
-	{
-		// とりあえず、読み込めたサイズ分コンバートする
-		src_length = read_size;
-	}
+	//// 実際に読み込んだサイズが、読むべきサイズよりも小さかった場合
+	//if (read_size < m_mp3SourceBufferParSec.getSize())
+	//{
+	//	// とりあえず、読み込めたサイズ分コンバートする
+	//	src_length = read_size;
+	//}
 
-	// ACM ヘッダに変換バッファ設定
-	ACMSTREAMHEADER ash;
-	ZeroMemory(&ash, sizeof(ACMSTREAMHEADER));
-	ash.cbStruct = sizeof(ACMSTREAMHEADER);
-	ash.pbSrc = m_mp3SourceBufferParSec.getData();
-	ash.cbSrcLength = src_length;
-	ash.pbDst = (LPBYTE)buffer;
-	ash.cbDstLength = buffer_size;
+	//// ACM ヘッダに変換バッファ設定
+	//ACMSTREAMHEADER ash;
+	//ZeroMemory(&ash, sizeof(ACMSTREAMHEADER));
+	//ash.cbStruct = sizeof(ACMSTREAMHEADER);
+	//ash.pbSrc = m_mp3SourceBufferParSec.getData();
+	//ash.cbSrcLength = src_length;
+	//ash.pbDst = (LPBYTE)buffer;
+	//ash.cbDstLength = buffer_size;
 
-	// コンバート実行
-	MMRESULT mmr = acmStreamPrepareHeader(m_hACMStream, &ash, 0);
-	if (LN_ENSURE(mmr == 0, _T("MMRESULT:%u"), mmr)) return;
+	//// コンバート実行
+	//MMRESULT mmr = acmStreamPrepareHeader(m_hACMStream, &ash, 0);
+	//if (LN_ENSURE(mmr == 0, _T("MMRESULT:%u"), mmr)) return;
 
-	DWORD acm_flag = (m_resetFlag == true) ? ACM_STREAMCONVERTF_START : ACM_STREAMCONVERTF_BLOCKALIGN;
-	mmr = acmStreamConvert(m_hACMStream, &ash, acm_flag);
-	if (LN_ENSURE(mmr == 0, _T("MMRESULT:%u"), mmr)) return;
+	//DWORD acm_flag = (m_resetFlag == true) ? ACM_STREAMCONVERTF_START : ACM_STREAMCONVERTF_BLOCKALIGN;
+	//mmr = acmStreamConvert(m_hACMStream, &ash, acm_flag);
+	//if (LN_ENSURE(mmr == 0, _T("MMRESULT:%u"), mmr)) return;
 
-	mmr = acmStreamUnprepareHeader(m_hACMStream, &ash, 0);
-	if (LN_ENSURE(mmr == 0, _T("MMRESULT:%u"), mmr)) return;
+	//mmr = acmStreamUnprepareHeader(m_hACMStream, &ash, 0);
+	//if (LN_ENSURE(mmr == 0, _T("MMRESULT:%u"), mmr)) return;
 
-	// コンバートした結果、実際に使った領域を返す
-	*out_read_size = ash.cbSrcLengthUsed;
-	*out_write_size = ash.cbDstLengthUsed;
+	//// コンバートした結果、実際に使った領域を返す
+	//*out_read_size = ash.cbSrcLengthUsed;
+	//*out_write_size = ash.cbDstLengthUsed;
 
-	m_resetFlag = false;
+	//m_resetFlag = false;
 
 	return 0;
 }
@@ -245,7 +245,7 @@ bool Mp3AudioDecoder::getPCMFormat()
 	wBlockSize = (WORD)((1152 * dwBitRate * 1000 / dwSampleRate) / 8) + padding;
 
 	// MPEGLAYER3WAVEFORMAT 構造体にいろいろ格納する
-	MPEGLAYER3WAVEFORMAT* format = m_acmMP3WaveFormat.get();
+	MPEGLAYER3WAVEFORMAT* format = m_acmMP3WaveFormat;
 
 	format->wfx.wFormatTag = WAVE_FORMAT_MPEGLAYER3;
 	format->wfx.nChannels = channel;
