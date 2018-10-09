@@ -52,6 +52,8 @@ public:
 	const ln::Path& emscriptenDirPath() const { return m_emscriptenRootDir; }
 	const ln::Path& python2() const { return m_python2; }
 
+	const ln::Path& msbuild() const { return m_msbuild; }
+
 private:
 	ln::Path m_luminoPackageRootDir;
 	ln::Path m_luminoEmscriptenSdkDirPath;
@@ -62,4 +64,5 @@ private:
 	ln::Path m_emsdkRootDir;
 	ln::Path m_emscriptenRootDir;
 	ln::Path m_python2;
+	ln::Path m_msbuild;
 };

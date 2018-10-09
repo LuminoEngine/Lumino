@@ -98,6 +98,30 @@ void BuildEnvironment::setupPathes(EnvironmentSettings* env)
 	m_projectTemplatesDirPath = ln::Path(toolsDir, u"Templates");
 
 #endif
+
+	// Find msbuild
+	{
+#ifdef LN_OS_WIN32
+		ln::String result;
+		if (ln::Process::execute(u"vswhere", {u"-format", u"json"}, &result) != 0) {
+			CLI::error("Failed vswhere.");
+			return;
+		}
+
+		ln::JsonDocument json;
+		json.parse(result);
+		auto* obj = static_cast<ln::JsonObject*>(static_cast<ln::JsonArray*>(json.rootElement())->element(0));
+		auto* value = static_cast<ln::JsonValue*>(obj->find(u"installationPath"));
+
+		auto path = ln::Path(value->stringValue(), u"MSBuild\\15.0\\Bin\\MSBuild.exe");
+		if (ln::FileSystem::existsFile(path)) {
+			m_msbuild = path;
+		}
+		else {
+			CLI::warning("MSBuild not found.");
+		}
+#endif
+	}
 }
 
 void BuildEnvironment::prepareEmscriptenSdk()

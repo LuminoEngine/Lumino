@@ -102,6 +102,7 @@ namespace LuminoBuild.Tasks
                         Utils.CopyDirectory(
                             Path.Combine(tempInstallDir, "MSVC2017-x86-MT", "bin"),
                             Path.Combine(targetRootDir, "Tools"));
+                        
                     }
                     else if (Utils.IsMac)
                     {

@@ -7,8 +7,8 @@ int main(int argc, char** argv)
 #if defined(LN_DEBUG) && defined(_WIN32)
 	if (argc == 1)
 	{
-		//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\HelloLumino");
-		::SetCurrentDirectoryW(L"D:\\Documents\\LuminoProjects\\HelloLumino");
+		::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\HelloLumino");
+		//::SetCurrentDirectoryW(L"D:\\Documents\\LuminoProjects\\HelloLumino");
 	
 		const char* debugArgv[] = {
 			"<program>",
@@ -16,8 +16,10 @@ int main(int argc, char** argv)
 
 			//"<program>", "dev-install-tools",
 
-			"build", "Emscripten",
+			//"build", "Emscripten",
 			//"<program>", "build", "Android",
+
+			"run", "Windows",
 
 			//"dev-openide", "vs",
 			
@@ -141,6 +143,7 @@ int main(int argc, char** argv)
 			else if (parser.has(runCommand))
 			{
 				workspace->openProject(ln::Environment::currentDirectory());
+				workspace->buildProject(runCommand_targetArg->value());
 				workspace->runProject(runCommand_targetArg->value());
 			}
 			else if (parser.has(restoreCommand))

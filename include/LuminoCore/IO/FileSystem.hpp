@@ -191,6 +191,18 @@ public:
      */
     static void writeAllText(const StringRef& filePath, const String& str, TextEncoding* encoding = nullptr);
 
+	/**
+	 * 指定したディレクトリ内の1つのファイルパス返します。
+	 *
+	 * @param[in]   dirPath    : 検索するディレクトリのパス
+	 * @param[in]   pattern    : ファイル名の検索文字列 (ワイルドカード (* および ?) を含めることができます。省略した場合はすべてのファイルを列挙します)
+	 * @return      ファイルが見つからない場合は空の Path を返します。
+	 *
+	 * これは getFiles() のユーティリティです。getFiles() で見つかった最初のファイルパスを返します。
+	 * 特定の拡張子を持つファイルを1つだけ検索したい場合に使用します。
+	 */
+	static Path getFile(const StringRef& dirPath, const StringRef& pattern = StringRef());
+
     /**
      * 指定したディレクトリ内のファイルパス返します。
      * 

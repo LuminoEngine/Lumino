@@ -816,6 +816,17 @@ DirectoryIteratorRange::DirectoryIteratorRange(const StringRef& dirPath, const S
 {
 }
 
+Path FileSystem::getFile(const StringRef& dirPath, const StringRef& pattern)
+{
+	auto files = ln::FileSystem::getFiles(dirPath, pattern);
+	if (!files.isEmpty()) {
+		return *files.begin();
+	}
+	else {
+		return Path();
+	}
+}
+
 DirectoryIteratorRange FileSystem::getFiles(const StringRef& dirPath, const StringRef& pattern, SearchOption searchOption)
 {
     return DirectoryIteratorRange(dirPath, pattern, searchOption, detail::SearchTargetEntity::File);

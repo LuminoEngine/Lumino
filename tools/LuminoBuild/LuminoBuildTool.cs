@@ -312,6 +312,27 @@ namespace LuminoBuild
         }
 
         /// <summary>
+        /// ファイルをダウンロードする
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="fileName"></param>
+        public static void DownloadFile(string url, string fileName)
+        {
+            var request = System.Net.WebRequest.Create(url);
+            var response = request.GetResponse();
+            var stream = response.GetResponseStream();
+            using (var file = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write))
+            {
+                int read;
+                byte[] buffer = new byte[1024];
+                while ((read = stream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    file.Write(buffer, 0, read);
+                }
+            }
+        }
+
+        /// <summary>
         /// フォルダから .zip を作る
         /// </summary>
         public static void CreateZipFile(string dirPath, string zipFilePath, bool includeBaseDirectory = true)

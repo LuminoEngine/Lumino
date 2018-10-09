@@ -32,9 +32,16 @@ Result Workspace::buildProject(const ln::String& target)
 	// Windows
 	if (ln::String::compare(target, u"Windows", ln::CaseSensitivity::CaseInsensitive) == 0)
 	{
-		//MSBuild ClassLibrary1.sln /t:build /p:Configuration=Debug;Platform="x64"
-		//ln::Process::execute(u"MSBuild", { u"/t:build" });
-		LN_NOTIMPLEMENTED();
+		auto file = ln::FileSystem::getFile(m_project->rootDirPath(), u"*.sln");
+		if (file.isEmpty()) {
+			CLI::error(".sln file not found.");
+			return Result::Failed;
+		}
+
+		if (ln::Process::execute(m_devTools->msbuild(), { file.str(), u"/t:build", u"/p:Configuration=Debug;Platform=\"x86\"" }) != 0) {
+			CLI::error("Failed MSBuild.");
+			return Result::Failed;
+		}
 	}
 	// Android
 	else if (ln::String::compare(target, u"Android", ln::CaseSensitivity::CaseInsensitive) == 0)
@@ -122,8 +129,14 @@ Result Workspace::buildProject(const ln::String& target)
 
 Result Workspace::runProject(const ln::String& target)
 {
+	// Windows
+	if (ln::String::compare(target, u"Windows", ln::CaseSensitivity::CaseInsensitive) == 0)
+	{
+		auto exe = ln::FileSystem::getFile(ln::Path(m_project->windowsProjectDir(), u"bin/Debug"), u"*.exe");
+		ln::Process::execute(exe);
+	}
 	// Emscripten
-	if (ln::String::compare(target, u"Emscripten", ln::CaseSensitivity::CaseInsensitive) == 0)
+	else if (ln::String::compare(target, u"Emscripten", ln::CaseSensitivity::CaseInsensitive) == 0)
 	{
 		auto buildDir = ln::Path::combine(m_project->buildDir(), u"Emscripten").canonicalize();
 

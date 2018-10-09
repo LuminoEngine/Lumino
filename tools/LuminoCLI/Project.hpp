@@ -44,6 +44,7 @@ public:
 	ln::Path emscriptenProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.Emscripten"); }
 	ln::Path androidProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.Android"); }
 	ln::Path macOSProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.macOS");  }
+	ln::Path windowsProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.Win32"); }
 
 	/** 指定フォルダにプロジェクトファイルが含まれているかを確認する */
 	static bool existsProjectFile(const ln::Path& dir);

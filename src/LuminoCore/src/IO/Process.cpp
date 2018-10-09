@@ -44,7 +44,7 @@ StreamWriter* Process::openStdin()
 	{
 		m_startInfo.stdinPipe = makeRef<detail::PipeImpl>();
 		m_startInfo.stdinPipe->init();
-		m_stdinWriter = makeRef<StreamWriter>(m_startInfo.stdinPipe, m_stdinEncoding);
+		m_stdinWriter = makeRef<StreamWriter>(m_startInfo.stdinPipe, (m_stdinEncoding) ? m_stdinEncoding : TextEncoding::systemMultiByteEncoding());
 	}
 
 	return m_stdinWriter;
@@ -56,7 +56,7 @@ StreamReader* Process::openStdout()
 	{
 		m_startInfo.stdoutPipe = makeRef<detail::PipeImpl>();
 		m_startInfo.stdoutPipe->init();
-		m_stdoutReader = makeRef<StreamReader>(m_startInfo.stdoutPipe, m_stdoutEncoding);
+		m_stdoutReader = makeRef<StreamReader>(m_startInfo.stdoutPipe, (m_stdoutEncoding) ? m_stdoutEncoding : TextEncoding::systemMultiByteEncoding());
 	}
 
 	return m_stdoutReader;
@@ -68,7 +68,7 @@ StreamReader* Process::openStderr()
 	{
 		m_startInfo.stderrPipe = makeRef<detail::PipeImpl>();
 		m_startInfo.stderrPipe->init();
-		m_stderrReader = makeRef<StreamReader>(m_startInfo.stderrPipe, m_stderrEncoding);
+		m_stderrReader = makeRef<StreamReader>(m_startInfo.stderrPipe, (m_stderrEncoding) ? m_stderrEncoding : TextEncoding::systemMultiByteEncoding());
 	}
 
 	return m_stderrReader;
