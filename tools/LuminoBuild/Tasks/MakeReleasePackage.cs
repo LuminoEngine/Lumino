@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace LuminoBuild.Tasks
 {
@@ -90,6 +91,22 @@ namespace LuminoBuild.Tasks
                                 Utils.CopyDirectory(
                                     srcDir,
                                     targetDir);
+                            }
+                        }
+
+                        // .pdb
+                        if (arch.PdbCopy)
+                        {
+                            var libfiles = Directory.GetFiles(targetDir, "*.lib", SearchOption.TopDirectoryOnly);
+                            var libnames = new HashSet<string>(libfiles.Select(x => Path.GetFileNameWithoutExtension(x)));
+                            var files1 = Directory.GetFiles(Path.Combine(builder.LuminoBuildDir, arch.SourceDirName), "*.pdb", SearchOption.AllDirectories);
+                            foreach (var file in files1)
+                            {
+                                if (file.Contains("Debug") && libnames.Contains(Path.GetFileNameWithoutExtension(file)))
+                                {
+                                    File.Copy(file, Path.Combine(targetDir, Path.GetFileName(file)), true);
+                                    Console.WriteLine(file);
+                                }
                             }
                         }
                     }

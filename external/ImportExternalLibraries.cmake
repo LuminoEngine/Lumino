@@ -64,12 +64,14 @@ endmacro()
 #--------------------------------------
 # glfw
 if (LN_OS_DESKTOP)
-    set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "")
-    set(GLFW_BUILD_TESTS OFF CACHE BOOL "")
-    set(GLFW_BUILD_DOCS OFF CACHE BOOL "")
-    set(GLFW_INSTALL OFF CACHE BOOL "")
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/glfw-3.2.1)
-    ln_add_dependencies_common_property_full(glfw "${CMAKE_CURRENT_LIST_DIR}/glfw-3.2.1/include")
+    set(GLFW_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/glfw)
+    find_library(GLFW_LIBRARY_RELEASE NAMES glfw3 libglfw3 PATHS ${GLAD_ROOT} PATH_SUFFIXES lib)
+    find_library(GLFW_LIBRARY_DEBUG NAMES glfw3d libglfw3d PATHS ${GLAD_ROOT} PATH_SUFFIXES lib)
+
+    add_library(glfw STATIC IMPORTED)
+    set_target_properties(glfw PROPERTIES IMPORTED_LOCATION_RELEASE "${GLFW_LIBRARY_RELEASE}")
+    set_target_properties(glfw PROPERTIES IMPORTED_LOCATION_DEBUG "${GLFW_LIBRARY_DEBUG}")
+    set_target_properties(glfw PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${GLFW_ROOT}/include)
 endif()
 
 #--------------------------------------

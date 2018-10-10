@@ -8,6 +8,7 @@ namespace LuminoBuild
     {
         public string SourceDirName { get; set; }
         public string DestDirName { get; set; }
+        public bool PdbCopy { get; set; } = false;
     }
 
     public class BuildEnvironment
@@ -37,7 +38,7 @@ namespace LuminoBuild
 
         public static TargetArch[] TargetArchs = new TargetArch[]
         {
-            new TargetArch(){ SourceDirName = "MSVC2017-x86-MT", DestDirName = "MSVC2017-x86-MT" },
+            new TargetArch(){ SourceDirName = "MSVC2017-x86-MT", DestDirName = "MSVC2017-x86-MT", PdbCopy = true },
             new TargetArch(){ SourceDirName = "Emscripten", DestDirName = "Emscripten" },
             new TargetArch(){ SourceDirName = "Android-arm64-v8a-Debug", DestDirName = "Android-arm64-v8a" },
             new TargetArch(){ SourceDirName = "Android-arm64-v8a-Release", DestDirName = "Android-arm64-v8a" },

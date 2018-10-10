@@ -139,6 +139,10 @@ namespace LuminoBuild.Tasks
                 Utils.CallProcess("git", "checkout be7425ef70231ab82930331959ab487d605d0482");
                 Directory.SetCurrentDirectory(reposDir);
             }
+            if (!Directory.Exists("glfw"))
+            {
+                Utils.CallProcess("git", "clone --progress --depth 1 -b 3.2.1 https://github.com/glfw/glfw.git glfw");
+            }
             if (!Directory.Exists("glad"))
             {
                 Utils.CopyDirectory(Path.Combine(builder.LuminoExternalDir, "glad"), "glad");
@@ -176,7 +180,8 @@ namespace LuminoBuild.Tasks
                     BuildProject(builder, "zlib", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
                     BuildProject(builder, "libpng", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
                     BuildProject(builder, "glslang", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
-                    BuildProject(builder, "SPIRV-Cross", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DCMAKE_DEBUG_POSTFIX=d");
+                    BuildProject(builder, "SPIRV-Cross", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
+                    BuildProject(builder, "glfw", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF -DGLFW_INSTALL=ON");
                     BuildProject(builder, "glad", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DGLAD_INSTALL=ON");
                 }
             }
@@ -222,7 +227,8 @@ namespace LuminoBuild.Tasks
                     BuildProject(builder, "zlib", reposDir, dirName, generator, args);
                     BuildProject(builder, "libpng", reposDir, dirName, generator, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include " + args);
                     BuildProject(builder, "glslang", reposDir, dirName, generator, args);
-                    BuildProject(builder, "SPIRV-Cross", reposDir, dirName, generator, $"-DCMAKE_DEBUG_POSTFIX=d " + args);
+                    BuildProject(builder, "SPIRV-Cross", reposDir, dirName, generator, args);
+                    BuildProject(builder, "glfw", reposDir, dirName, generator, $"-DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF -DGLFW_INSTALL=ON");
                     BuildProject(builder, "glad", reposDir, dirName, generator, $"-DGLAD_INSTALL=ON " + args);
                 }
             }
