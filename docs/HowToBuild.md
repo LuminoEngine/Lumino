@@ -13,7 +13,12 @@ choco install cmake
 choco install nuget.commandline
 choco install docfx
 choco install doxygen.install
+choco install python3 --pre
 ```
+
+
+
+
 
 
 
@@ -39,6 +44,10 @@ $ brew install python3
 Error downloading URL 'https://github.com/kripken/emscripten/archive/1.38.11.tar.gz': <urlopen error [SSL: TLSV1_ALERT_PROTOCOL_VERSION] tlsv1 alert protocol version (_ssl.c:590)>
 
 wget https://github.com/kripken/emscripten/archive/1.38.10.tar.gz
+
+or 
+
+https://github.com/kripken/emscripten/issues/6275
 
 
 ```

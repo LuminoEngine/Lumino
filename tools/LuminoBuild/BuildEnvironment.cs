@@ -12,9 +12,11 @@ namespace LuminoBuild
 
     public class BuildEnvironment
     {
+        public const string VSWhereUrl = @"https://github.com/Microsoft/vswhere/releases/download/2.5.2/vswhere.exe";
+
         public const string CMakeTargetInstallDir = "CMakeInstallTemp";
-        public const string emsdkVer = "sdk-1.38.10-64bit";
-        public const string emVer = "1.38.10";
+        public const string emsdkVer = "sdk-1.38.12-64bit";
+        public const string emVer = "1.38.12";
 
         public static string BuildToolsDir { get; set; }
 

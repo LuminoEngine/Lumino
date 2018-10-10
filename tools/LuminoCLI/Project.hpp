@@ -2,22 +2,8 @@
 
 class LanguageContext;
 class Project;
+class ProjectProperties;
 class Workspace;
-
-class ProjectProperties
-	: public ln::RefObject
-{
-public:
-	ln::String language;	// "cpp", "cs" ...
-	ln::String engineVersion = u"system";	// "x.y.z" or "system"
-
-	LN_SERIALIZE_CLASS_VERSION(1)
-	void serialize(ln::Archive& ar)
-	{
-		ar & LN_NVP(language);
-		ar & LN_NVP(engineVersion);
-	}
-};
 
 class Project
 	: public ln::RefObject
@@ -31,6 +17,7 @@ public:
 	Result newProject(const ln::Path& projectDir, const ln::String& projectName);
 	Result openProject(const ln::Path& dir);
 	Result saveProject();
+	Result loadProject();
 	void restore();
 
 	const ln::Ref<ProjectProperties>& properties() const { return m_properties; }
@@ -63,6 +50,20 @@ private:
 	ln::Path m_sourcesDir;
 	ln::Path m_assetsDir;
 	ln::Path m_buildDir;
+};
 
+// プロジェクトファイルに保存する情報
+class ProjectProperties
+	: public ln::RefObject
+{
+public:
+	ln::String language;	// "cpp", "cs" ...
+	ln::String engineVersion = u"system";	// "x.y.z" or "system"
 
+	LN_SERIALIZE_CLASS_VERSION(1)
+	void serialize(ln::Archive& ar)
+	{
+		ar & LN_NVP(language);
+		ar & LN_NVP(engineVersion);
+	}
 };

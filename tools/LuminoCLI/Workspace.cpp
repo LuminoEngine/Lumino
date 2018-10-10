@@ -4,11 +4,9 @@
 #include "Workspace.hpp"
 
 Workspace::Workspace()
-	: m_environmentSettings(ln::makeRef<EnvironmentSettings>())
-	, m_devTools(ln::makeRef<BuildEnvironment>())
+	: m_devTools(ln::makeRef<BuildEnvironment>())
 {
-	m_environmentSettings->updatePathes();
-	m_devTools->setupPathes(m_environmentSettings);
+	m_devTools->setupPathes();
 }
 
 Workspace::~Workspace()
@@ -43,11 +41,10 @@ Result Workspace::buildProject(const ln::String& target)
 			return Result::Fail;
 		}
 	}
+#if 0
 	// Android
 	else if (ln::String::compare(target, u"Android", ln::CaseSensitivity::CaseInsensitive) == 0)
 	{
-		//::SetCurrentDirectoryW(L"D:\\Documents\\LuminoProjects\\HelloLumino\\NativeProjects\\LuminoApp.Android");
-
 		putenv("JAVA_HOME=\"D:\\Program Files\\Android\\Android Studio\\jre\"");
 
 		ln::Process::execute(u"gradlew.bat", { u"assemble" });	// Debug, Release 両方ビルド
@@ -88,7 +85,7 @@ Result Workspace::buildProject(const ln::String& target)
 		ln::Process::execute(m_environmentSettings->androidSdkCMake(), {u"--build", buildDir });
 #endif
 	}
-
+#endif
 	// Web
 	else if (ln::String::compare(target, u"Web", ln::CaseSensitivity::CaseInsensitive) == 0)
 	{
@@ -123,6 +120,11 @@ Result Workspace::buildProject(const ln::String& target)
 
 		ln::Process::execute(script);
 	}
+	else
+	{
+		CLI::error(ln::String::format(u"{0} is invalid target.", target));
+		return Result::Fail;
+	}
 
 	return Result::Success;
 }
@@ -148,10 +150,9 @@ Result Workspace::runProject(const ln::String& target)
 		proc.start();
 
 		{
-			// TODO: findFirstFile とかどうだろう？
 			auto files = ln::FileSystem::getFiles(buildDir, u"*.html");
 			if (files.isEmpty()) {
-				CLI::error("Not found *.sln file.");
+				CLI::error("Not found *.html file.");
 				return Result::Fail;
 			}
 
@@ -161,6 +162,11 @@ Result Workspace::runProject(const ln::String& target)
 		}
 
 		proc.wait();
+	}
+	else
+	{
+		CLI::error(ln::String::format(u"{0} is invalid target.", target));
+		return Result::Fail;
 	}
 
 	return Result::Success;

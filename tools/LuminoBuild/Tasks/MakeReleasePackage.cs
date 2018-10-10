@@ -102,7 +102,10 @@ namespace LuminoBuild.Tasks
                         Utils.CopyDirectory(
                             Path.Combine(tempInstallDir, "MSVC2017-x86-MT", "bin"),
                             Path.Combine(targetRootDir, "Tools"));
-                        
+
+                        Utils.DownloadFile(
+                            BuildEnvironment.VSWhereUrl,
+                            Path.Combine(targetRootDir, "Tools", "vswhere.exe"));
                     }
                     else if (Utils.IsMac)
                     {
