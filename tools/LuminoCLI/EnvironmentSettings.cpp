@@ -125,7 +125,7 @@ Result BuildEnvironment::prepareEmscriptenSdk()
 #ifdef LN_OS_WIN32
 			auto emsdk = ln::Path(m_emsdkRootDir, u"emsdk.bat"); // TODO: process クラス内で path 結合
 #else
-			auto emsdk = u"emsdk");
+			auto emsdk = u"emsdk";
 #endif
 			if (!callProcess(u"git", { u"pull" }, m_emsdkRootDir)) {
 				return Result::Fail;

@@ -112,6 +112,19 @@ namespace LuminoBuild.Tasks
                         Utils.CopyDirectory(
                             Path.Combine(tempInstallDir, "macOS", "bin"),
                             Path.Combine(targetRootDir, "Tools"));
+
+                        string file = Path.Combine(targetRootDir, "setup.sh");
+                        File.Copy(
+                            Path.Combine(builder.LuminoRootDir, "Tools", "PackageSource", "macOS", "setup.sh"),
+                            file, true);
+
+                        const int _0755 =
+                            Utils.S_IRUSR | Utils.S_IXUSR | Utils.S_IWUSR |
+                            Utils.S_IRGRP | Utils.S_IXGRP |
+                            Utils.S_IROTH | Utils.S_IXOTH;
+                        int re = Utils.chmod(file, _0755);
+                        Console.WriteLine(file);
+                        Console.WriteLine(re);
                     }
                 }
             }
