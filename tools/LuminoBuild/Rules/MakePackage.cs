@@ -32,12 +32,12 @@ namespace LuminoBuild.Rules
             }
 
             builder.DoTask("BuildDocuments");
-            //builder.DoTask("MakeNuGetPackage_Core");
 
             builder.DoTask("MakeReleasePackage");
             
             if (Utils.IsWin32)
             {
+                builder.DoTask("MakeNuGetPackage_Core");
                 builder.DoTask("MakeInstaller_Win32");
             }
         }

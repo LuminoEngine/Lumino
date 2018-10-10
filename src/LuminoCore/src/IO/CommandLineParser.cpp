@@ -244,18 +244,27 @@ void CommandLineCommandBase::buildHelpUsageText(StringWriter* writer) const
     if (!args.isEmpty()) {
         for (auto& a : args) {
             writer->write(_T(" "));
+			// prologue
             if (a->isOptional()) {
                 writer->write(_T("["));
             }
+			else {
+				writer->write(_T("<"));
+			}
+			// name
             if (a->isList()) {
                 writer->write(a->name());
                 writer->write(_T("..."));
             } else {
                 writer->write(a->name());
             }
+			// epilogue
             if (a->isOptional()) {
                 writer->write(_T("]"));
             }
+			else {
+				writer->write(_T(">"));
+			}
         }
     }
     if (!commands.isEmpty()) {

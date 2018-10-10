@@ -6,7 +6,7 @@ class BuildEnvironment
 public:
 	BuildEnvironment();
 	void setupPathes();
-	void prepareEmscriptenSdk();
+	Result prepareEmscriptenSdk();
 
 	const ln::String& defaultTargetName() const { return m_defaultTargetName; }
 
@@ -35,6 +35,8 @@ public:
 	const ln::Path& androidCMakeToolchain() const { return m_androidCMakeToolchain; }
 
 private:
+	static Result callProcess(const ln::String& program, const ln::List<ln::String>& arguments, const ln::Path& workingDir);
+
 	ln::String m_defaultTargetName;
 	ln::Path m_appDataDirPath;
 	ln::Path m_luminoPackageRootDir;

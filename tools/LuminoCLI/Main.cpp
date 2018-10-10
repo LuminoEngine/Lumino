@@ -57,7 +57,7 @@ int main(int argc, char** argv)
 
 		//--------------------------------------------------------------------------------
 		// run command
-		auto runCommand = parser.addCommand(u"run", u"Build the project.");
+		auto runCommand = parser.addCommand(u"run", u"Run the project.");
 		auto runCommand_targetArg = runCommand->addPositionalArgument(u"target", u"Specify the target to run.", ln::CommandLinePositionalArgumentFlags::Optional);
 
 		//--------------------------------------------------------------------------------

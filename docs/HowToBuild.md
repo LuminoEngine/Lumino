@@ -14,6 +14,7 @@ choco install nuget.commandline
 choco install docfx
 choco install doxygen.install
 choco install python3 --pre
+choco install wixtoolset
 ```
 
 

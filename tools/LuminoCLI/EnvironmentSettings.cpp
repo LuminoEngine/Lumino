@@ -107,7 +107,7 @@ void BuildEnvironment::setupPathes()
 	}
 }
 
-void BuildEnvironment::prepareEmscriptenSdk()
+Result BuildEnvironment::prepareEmscriptenSdk()
 {
 	ln::FileSystem::createDirectory(m_toolsDir);
 
@@ -115,47 +115,45 @@ void BuildEnvironment::prepareEmscriptenSdk()
 	{
 		if (!ln::FileSystem::existsDirectory(m_emsdkRootDir))
 		{
-			ln::Process proc1;
-			proc1.setUseShellExecute(false);
-			proc1.setProgram(u"git");
-			proc1.setArguments({ u"clone", u"https://github.com/juj/emsdk.git" });
-			proc1.setWorkingDirectory(m_toolsDir);
-			proc1.start();
-			proc1.wait();
+			if (!callProcess(u"git", { u"clone", u"https://github.com/juj/emsdk.git" }, m_toolsDir)) {
+				return Result::Fail;
+			}
 		}
 
 		if (!ln::FileSystem::existsDirectory(m_emscriptenRootDir))
 		{
-			ln::Process proc1;
-			proc1.setUseShellExecute(false);
 #ifdef LN_OS_WIN32
-			proc1.setProgram(u"emsdk");
+			auto emsdk = ln::Path(m_emsdkRootDir, u"emsdk.bat"); // TODO: process クラス内で path 結合
 #else
-			proc1.setProgram(u"emsdk");
+			auto emsdk = u"emsdk");
 #endif
-			proc1.setArguments({ u"install", m_emsdkName });
-			proc1.setWorkingDirectory(m_emsdkRootDir);
-			proc1.start();
-			proc1.wait();
+			if (!callProcess(u"git", { u"pull" }, m_emsdkRootDir)) {
+				return Result::Fail;
+			}
+			if (!callProcess(emsdk, { u"update-tags" }, m_emsdkRootDir)) {
+				return Result::Fail;
+			}
+			if (!callProcess(emsdk, { u"install", m_emsdkName }, m_emsdkRootDir)) {
+				return Result::Fail;
+			}
 		}
-
-		//auto file = ln::Path::combine(m_emscriptenRootDir, u"system", u"include", u"LuminoEngine.hpp");
-		//if (!ln::FileSystem::existsFile(file))
-		//{
-		//	// 必須ファイルが1つ無かったので、とりあえず全部インストールしなおす
-
-		//	auto srcIncludeDir = ln::Path::combine(m_luminoEmscriptenSdkDirPath, u"include");
-		//	auto dstIncludeDir = ln::Path::combine(m_emscriptenRootDir, u"system", u"include");
-		//	ln::FileSystem::copyDirectory(srcIncludeDir, dstIncludeDir, true, true);
-
-		//	auto srcLibDir = ln::Path::combine(m_luminoEmscriptenSdkDirPath, u"lib");
-		//	auto dstLibDir = ln::Path::combine(m_emscriptenRootDir, u"system", u"lib");
-		//	ln::FileSystem::copyDirectory(srcLibDir, dstLibDir, true, true);
-
-		//}
-		
-
 	}
+}
 
+Result BuildEnvironment::callProcess(const ln::String& program, const ln::List<ln::String>& arguments, const ln::Path& workingDir)
+{
+	ln::Process proc1;
+	proc1.setUseShellExecute(false);
+	proc1.setProgram(program);
+	proc1.setArguments(arguments);
+	proc1.setWorkingDirectory(workingDir);
+	proc1.start();
+	proc1.wait();
+	if (proc1.exitCode() == 0) {
+		return Result::Success;
+	}
+	else {
+		return Result::Fail;
+	}
 }
 

@@ -1,9 +1,15 @@
-Lumino をインストールする
-==========
-
 NuGet からインストールする
-----------
+========
 
+Nuget
+--------
+[NuGet Gallery | Lumino.Core](https://www.nuget.org/packages/Lumino.Core/)
+
+現時点では、Nuget で配布しているものは Core モジュールのみとなります。
+
+
+Visual Studio を使用してインストールする
+--------
 Visual Studio のソリューションエクスプローラで C++ プロジェクトを右クリックし、[NuGet パッケージの管理] をクリックします。
 
 ![](img/nuget-1.png)

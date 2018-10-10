@@ -19,7 +19,7 @@ namespace LuminoBuild.Tasks
             Utils.CopyDirectory("theme", "html");
             File.Copy("../Assets/icon64.png", "html/icon64.png", true);
 
-
+            // doxygen の出力を docfx の出力フォルダにコピーする
             Directory.SetCurrentDirectory(builder.LuminoDocDir);
             Utils.CopyDirectory(Path.Combine("Doxygen", "html"), Path.Combine(builder.LuminoDocDir, "WebDocument", "_site", "articles", "reference-cpp"));
 

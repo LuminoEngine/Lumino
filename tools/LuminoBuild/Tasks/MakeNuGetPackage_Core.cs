@@ -19,37 +19,37 @@ namespace LuminoBuild.Tasks
             var files = new List<(string src, string dst)>()
             {
                 (
-                    Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "MSVC2017-x86-MD", "lib", "Debug", "LuminoCore.lib"),
+                    Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "MSVC2017-x86-MD", "LuminoCore.lib"),
                     Path.Combine(nativeDir, "lib", "MSVC2017-x86-MD", "Debug", "LuminoCore.lib")
                 ),
                 (
-                    Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "MSVC2017-x86-MD", "lib", "Release", "LuminoCore.lib"),
+                    Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "MSVC2017-x86-MD", "LuminoCore.lib"),
                     Path.Combine(nativeDir, "lib", "MSVC2017-x86-MD", "Release", "LuminoCore.lib")
                 ),
+                //(
+                //    Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "MSVC2017-x86-MT", "LuminoCore.lib"),
+                //    Path.Combine(nativeDir, "lib", "MSVC2017-x86-MT", "Debug", "LuminoCore.lib")
+                //),
+                //(
+                //    Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "MSVC2017-x86-MT", "LuminoCore.lib"),
+                //    Path.Combine(nativeDir, "lib", "MSVC2017-x86-MT", "Release", "LuminoCore.lib")
+                //),
                 (
-                    Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "MSVC2017-x86-MT", "lib", "Debug", "LuminoCore.lib"),
-                    Path.Combine(nativeDir, "lib", "MSVC2017-x86-MT", "Debug", "LuminoCore.lib")
-                ),
-                (
-                    Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "MSVC2017-x86-MT", "lib", "Release", "LuminoCore.lib"),
-                    Path.Combine(nativeDir, "lib", "MSVC2017-x86-MT", "Release", "LuminoCore.lib")
-                ),
-                (
-                    Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "MSVC2017-x64-MD", "lib", "Debug", "LuminoCore.lib"),
+                    Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "MSVC2017-x64-MD", "LuminoCore.lib"),
                     Path.Combine(nativeDir, "lib", "MSVC2017-x64-MD", "Debug", "LuminoCore.lib")
                 ),
                 (
-                    Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "MSVC2017-x64-MD", "lib", "Release", "LuminoCore.lib"),
+                    Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "MSVC2017-x64-MD", "LuminoCore.lib"),
                     Path.Combine(nativeDir, "lib", "MSVC2017-x64-MD", "Release", "LuminoCore.lib")
                 ),
-                (
-                    Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "MSVC2017-x64-MT", "lib", "Debug", "LuminoCore.lib"),
-                    Path.Combine(nativeDir, "lib", "MSVC2017-x64-MT", "Debug", "LuminoCore.lib")
-                ),
-                (
-                    Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "MSVC2017-x64-MT", "lib", "Release", "LuminoCore.lib"),
-                    Path.Combine(nativeDir, "lib", "MSVC2017-x64-MT", "Release", "LuminoCore.lib")
-                ),
+                //(
+                //    Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "MSVC2017-x64-MT", "LuminoCore.lib"),
+                //    Path.Combine(nativeDir, "lib", "MSVC2017-x64-MT", "Debug", "LuminoCore.lib")
+                //),
+                //(
+                //    Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "MSVC2017-x64-MT", "LuminoCore.lib"),
+                //    Path.Combine(nativeDir, "lib", "MSVC2017-x64-MT", "Release", "LuminoCore.lib")
+                //),
                 // nuget --------
                 (
                     Path.Combine(builder.LuminoRootDir, "src", "LuminoCore", "NuGet", "Lumino.Core.props"),
@@ -66,7 +66,7 @@ namespace LuminoBuild.Tasks
             };
 
             Utils.CopyDirectory(
-                Path.Combine(builder.LuminoRootDir, "src", "LuminoCore", "include"),
+                Path.Combine(builder.LuminoRootDir, "include", "LuminoCore"),
                 Path.Combine(nativeDir, "include"));
 
             foreach (var pair in files)
