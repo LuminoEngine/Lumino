@@ -14,6 +14,7 @@
 		8C3C9BC7215FB2FD0072D63A /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3C9BC6215FB2FC0072D63A /* IOKit.framework */; };
 		8C3C9BC9215FB3350072D63A /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3C9BC8215FB3340072D63A /* CoreVideo.framework */; };
 		8C3C9BCC215FB3BE0072D63A /* Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8C3C9BCB215FB3BE0072D63A /* Application.cpp */; };
+		8C3D1D55216E3B5F002867EC /* glfw3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3D1D54216E3B5E002867EC /* glfw3.a */; };
 		8C3ED93E216E345A00FE97FD /* libglslang.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3ED92C216E345300FE97FD /* libglslang.a */; };
 		8C3ED93F216E345A00FE97FD /* libOSDependent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3ED92D216E345400FE97FD /* libOSDependent.a */; };
 		8C3ED940216E345A00FE97FD /* libzlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3ED92E216E345400FE97FD /* libzlib.a */; };
@@ -67,6 +68,7 @@
 		8C3C9BCB215FB3BE0072D63A /* Application.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Application.cpp; path = ../../../Sources/Application.cpp; sourceTree = "<group>"; };
 		8C3C9BCD215FB3C70072D63A /* Application.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Application.h; path = ../../../Sources/Application.h; sourceTree = "<group>"; };
 		8C3C9BCE215FB49D0072D63A /* Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
+		8C3D1D54216E3B5E002867EC /* glfw3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = glfw3.a; path = ../../Engine/lib/macOS/glfw3.a; sourceTree = "<group>"; };
 		8C3ED92C216E345300FE97FD /* libglslang.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglslang.a; path = ../../Engine/lib/macOS/libglslang.a; sourceTree = "<group>"; };
 		8C3ED92D216E345400FE97FD /* libOSDependent.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libOSDependent.a; path = ../../Engine/lib/macOS/libOSDependent.a; sourceTree = "<group>"; };
 		8C3ED92E216E345400FE97FD /* libzlib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzlib.a; path = ../../Engine/lib/macOS/libzlib.a; sourceTree = "<group>"; };
@@ -97,6 +99,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8C3D1D55216E3B5F002867EC /* glfw3.a in Frameworks */,
 				8C3ED93E216E345A00FE97FD /* libglslang.a in Frameworks */,
 				8C3ED93F216E345A00FE97FD /* libOSDependent.a in Frameworks */,
 				8C3ED940216E345A00FE97FD /* libzlib.a in Frameworks */,
@@ -169,6 +172,7 @@
 		8C64478B2143E84B00A712D5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8C3D1D54216E3B5E002867EC /* glfw3.a */,
 				8C3ED93D216E345A00FE97FD /* libglad.a */,
 				8C3ED92C216E345300FE97FD /* libglslang.a */,
 				8C3ED932216E345600FE97FD /* libHLSL.a */,
@@ -412,6 +416,11 @@
 				INFOPLIST_FILE = LuminoApp.macOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../Engine/lib/macOS";
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-v",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "Lumino.LuminoApp-macOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -431,6 +440,11 @@
 				INFOPLIST_FILE = LuminoApp.macOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../Engine/lib/macOS";
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-v",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "Lumino.LuminoApp-macOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

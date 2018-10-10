@@ -122,9 +122,7 @@ namespace LuminoBuild.Tasks
                             Utils.S_IRUSR | Utils.S_IXUSR | Utils.S_IWUSR |
                             Utils.S_IRGRP | Utils.S_IXGRP |
                             Utils.S_IROTH | Utils.S_IXOTH;
-                        int re = Utils.chmod(file, _0755);
-                        Console.WriteLine(file);
-                        Console.WriteLine(re);
+                        Utils.chmod(file, _0755);
                     }
                 }
             }
