@@ -54,6 +54,7 @@ namespace LuminoBuild.Tasks
             var externalLibs = new string[]
             {
                 "glad",
+                "glfw",
                 "glslang",
                 "libpng",
                 "openal-soft",
@@ -95,6 +96,9 @@ namespace LuminoBuild.Tasks
                         }
 
                         // .pdb
+                        // CMake では static library の PDB 出力先をコントロールできない。https://cmake.org/cmake/help/v3.1/prop_tgt/PDB_OUTPUT_DIRECTORY.html
+                        // そのためビルドスクリプト側でコントロールする。
+                        // 以下、パスに "Debug" を含む者のうち、lib と同じ名前の pdb ファイルをコピーする。
                         if (arch.PdbCopy)
                         {
                             var libfiles = Directory.GetFiles(targetDir, "*.lib", SearchOption.TopDirectoryOnly);
