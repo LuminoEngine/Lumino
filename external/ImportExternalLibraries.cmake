@@ -65,8 +65,8 @@ endmacro()
 # glfw
 if (LN_OS_DESKTOP)
     set(GLFW_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/glfw)
-    find_library(GLFW_LIBRARY_RELEASE NAMES glfw3 libglfw3 PATHS ${GLAD_ROOT} PATH_SUFFIXES lib)
-    find_library(GLFW_LIBRARY_DEBUG NAMES glfw3d libglfw3d PATHS ${GLAD_ROOT} PATH_SUFFIXES lib)
+    find_library(GLFW_LIBRARY_RELEASE NAMES glfw3 libglfw3 PATHS ${GLFW_ROOT} PATH_SUFFIXES lib)
+    find_library(GLFW_LIBRARY_DEBUG NAMES glfw3d libglfw3d PATHS ${GLFW_ROOT} PATH_SUFFIXES lib)
 
     add_library(glfw STATIC IMPORTED)
     set_target_properties(glfw PROPERTIES IMPORTED_LOCATION_RELEASE "${GLFW_LIBRARY_RELEASE}")

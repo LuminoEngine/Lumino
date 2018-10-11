@@ -13,10 +13,10 @@ namespace LuminoBuild.Tasks
         public override void Build(Builder builder)
         {
             // framework 作成時は CMAKE_DEBUG_POSTFIX が効かないようなので個別に作る
-            //BuildProject(builder, "iOS-OS-Debug", "Debug", "OS");
-            //BuildProject(builder, "iOS-OS-Release", "Release", "OS");
+            BuildProject(builder, "iOS-OS-Debug", "Debug", "OS");
+            BuildProject(builder, "iOS-OS-Release", "Release", "OS");
             BuildProject(builder, "iOS-SIMULATOR64-Debug", "Debug", "SIMULATOR64");
-            //BuildProject(builder, "iOS-SIMULATOR64-Release", "Release", "SIMULATOR64");
+            BuildProject(builder, "iOS-SIMULATOR64-Release", "Release", "SIMULATOR64");
         }
 
         private void BuildProject(Builder builder, string buildDirName, string config, string platform)
