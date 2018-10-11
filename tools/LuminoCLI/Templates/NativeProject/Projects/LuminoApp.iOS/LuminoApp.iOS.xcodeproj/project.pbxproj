@@ -15,6 +15,14 @@
 		8C95E8D4213BC8B100772569 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C95E8D3213BC8B100772569 /* Assets.xcassets */; };
 		8C95E8D7213BC8B100772569 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8C95E8D5213BC8B100772569 /* LaunchScreen.storyboard */; };
 		8C95E8DA213BC8B100772569 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8D9213BC8B100772569 /* main.mm */; };
+		8CC4475B216F8B98002F20DA /* libpng16.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC44758216F8B98002F20DA /* libpng16.a */; };
+		8CC4475C216F8B98002F20DA /* libLuminoCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC44759216F8B98002F20DA /* libLuminoCore.a */; };
+		8CC4475D216F8B98002F20DA /* libLuminoEngine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC4475A216F8B98002F20DA /* libLuminoEngine.a */; };
+		8CC4475F216F8BBA002F20DA /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC4475E216F8BBA002F20DA /* libz.tbd */; };
+		8CC44761216F8BF7002F20DA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC44760216F8BF7002F20DA /* UIKit.framework */; };
+		8CC44763216F8C24002F20DA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC44762216F8C24002F20DA /* Foundation.framework */; };
+		8CC44765216F8C6E002F20DA /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC44764216F8C6E002F20DA /* GLKit.framework */; };
+		8CC44767216F8C76002F20DA /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC44766216F8C76002F20DA /* OpenGLES.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +40,14 @@
 		8C95E8D6213BC8B100772569 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8C95E8D8213BC8B100772569 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8C95E8D9213BC8B100772569 /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
+		8CC44758216F8B98002F20DA /* libpng16.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng16.a; path = "../../Engine/lib/iOS-SIMULATOR64-Release/libpng16.a"; sourceTree = "<group>"; };
+		8CC44759216F8B98002F20DA /* libLuminoCore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLuminoCore.a; path = "../../Engine/lib/iOS-SIMULATOR64-Release/libLuminoCore.a"; sourceTree = "<group>"; };
+		8CC4475A216F8B98002F20DA /* libLuminoEngine.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLuminoEngine.a; path = "../../Engine/lib/iOS-SIMULATOR64-Release/libLuminoEngine.a"; sourceTree = "<group>"; };
+		8CC4475E216F8BBA002F20DA /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		8CC44760216F8BF7002F20DA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		8CC44762216F8C24002F20DA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		8CC44764216F8C6E002F20DA /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
+		8CC44766216F8C76002F20DA /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,6 +55,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8CC44767216F8C76002F20DA /* OpenGLES.framework in Frameworks */,
+				8CC44765216F8C6E002F20DA /* GLKit.framework in Frameworks */,
+				8CC44763216F8C24002F20DA /* Foundation.framework in Frameworks */,
+				8CC44761216F8BF7002F20DA /* UIKit.framework in Frameworks */,
+				8CC4475F216F8BBA002F20DA /* libz.tbd in Frameworks */,
+				8CC4475B216F8B98002F20DA /* libpng16.a in Frameworks */,
+				8CC4475C216F8B98002F20DA /* libLuminoCore.a in Frameworks */,
+				8CC4475D216F8B98002F20DA /* libLuminoEngine.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -50,6 +74,7 @@
 			children = (
 				8C95E8C3213BC8B100772569 /* LuminoApp.iOS */,
 				8C95E8C2213BC8B100772569 /* Products */,
+				8CC44757216F8B97002F20DA /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -79,6 +104,21 @@
 				8C95E8D9213BC8B100772569 /* main.mm */,
 			);
 			path = LuminoApp.iOS;
+			sourceTree = "<group>";
+		};
+		8CC44757216F8B97002F20DA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				8CC44766216F8C76002F20DA /* OpenGLES.framework */,
+				8CC44764216F8C6E002F20DA /* GLKit.framework */,
+				8CC44762216F8C24002F20DA /* Foundation.framework */,
+				8CC44760216F8BF7002F20DA /* UIKit.framework */,
+				8CC4475E216F8BBA002F20DA /* libz.tbd */,
+				8CC44759216F8B98002F20DA /* libLuminoCore.a */,
+				8CC4475A216F8B98002F20DA /* libLuminoEngine.a */,
+				8CC44758216F8B98002F20DA /* libpng16.a */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -291,8 +331,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Engine/include";
 				INFOPLIST_FILE = LuminoApp.iOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../Engine/lib/iOS-SIMULATOR64-Release";
 				PRODUCT_BUNDLE_IDENTIFIER = "Lumino.LuminoApp-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -304,8 +346,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Engine/include";
 				INFOPLIST_FILE = LuminoApp.iOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../Engine/lib/iOS-SIMULATOR64-Release";
 				PRODUCT_BUNDLE_IDENTIFIER = "Lumino.LuminoApp-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
