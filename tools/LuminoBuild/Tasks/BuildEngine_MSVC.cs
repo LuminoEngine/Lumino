@@ -23,10 +23,10 @@ namespace LuminoBuild.Tasks
                 {
                     Directory.SetCurrentDirectory(Path.Combine(builder.LuminoBuildDir, t.DirName));
                     Utils.CallProcess("cmake", "--build . --config Debug --target INSTALL");
-                    Utils.CallProcess("ctest", "-C Debug");
+                    Utils.CallProcess("ctest", "-C Debug --output-on-failure");
 
                     Utils.CallProcess("cmake", "--build . --config Release --target INSTALL");
-                    Utils.CallProcess("ctest", "-C Release");
+                    Utils.CallProcess("ctest", "-C Release --output-on-failure");
                 }
             }
             else
