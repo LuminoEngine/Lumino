@@ -153,6 +153,7 @@ namespace LuminoBuild.Tasks
             if (Utils.IsWin32)
             {
                 // Android
+                if (BuildEnvironment.AndroidStudioFound)
                 {
                     foreach (var target in BuildEngine_AndroidJNI.Targets)
                     {
