@@ -122,8 +122,6 @@ int main(int argc, char** argv)
 
 
 	GlobalLogger::addStdErrAdapter();
-	EngineSettings::setMainWindowSize(80, 60);
-	EngineSettings::setMainBackBufferSize(80, 60);
 	Engine::initialize();
 
 

@@ -40,7 +40,7 @@ void UIFrameWindow::renderContents()
 
 	ctx->setColorBuffer(0, m_swapChain->colorBuffer());
 	ctx->setDepthBuffer(m_swapChain->depthBuffer());
-	ctx->clear(ClearFlags::All, Color(240, 240, 240), 1.0f, 0x00);
+	ctx->clear(ClearFlags::All, Color(0.4, 0.4, 0.4), 1.0f, 0x00);
 }
 
 void UIFrameWindow::present()

@@ -672,7 +672,7 @@ void OpenGLDeviceContext::onPresent(ISwapChain* swapChain)
 	s->getBackendBufferSize(&windowSize);
 	bufferSize = s->getColorBuffer()->realSize();
 
-	// いわゆるResolve処理.
+	// SwapChain の Framebuffer をウィンドウのバックバッファへ転送
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, s->fbo());
 	glBlitFramebuffer(0, 0, bufferSize.width, bufferSize.height, 0, 0, windowSize.width, windowSize.height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
