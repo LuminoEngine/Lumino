@@ -74,8 +74,9 @@ namespace LuminoBuild
 
                 AndroidNdkRootDir = Path.Combine(AndroidSdkRootDir, "ndk-bundle");
                 AndroidCMakeToolchain = Path.Combine(AndroidNdkRootDir, @"build\cmake\android.toolchain.cmake");
-
-                AndroidStudioFound = true;
+                
+                // とりあえず本当にあるかどうかで Android のビルド有無としておく
+                AndroidStudioFound = File.Exists(AndroidSdkCMake);
             }
             else
             {
