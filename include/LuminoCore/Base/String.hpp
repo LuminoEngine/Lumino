@@ -185,7 +185,7 @@ public:
      * s.left(2);           // => "ab";
      * ~~~
      */
-	StringRef left(int count) const;
+    StringRef left(int count) const;
 
     /**
      * 文字列の右側(末尾)から指定した文字数を抽出します。
@@ -198,7 +198,7 @@ public:
      * s.right(2);          // => "ef";
      * ~~~
      */
-	StringRef right(int count) const;
+    StringRef right(int count) const;
 
     /** 文字列の先頭と末尾の空白を全て削除した文字列を返します。 */
     String trim() const;
@@ -409,7 +409,7 @@ private:
 
     // utils
     void assignFromCStr(const char* str, int length = -1, bool* outUsedDefaultChar = nullptr, TextEncoding* encoding = nullptr);
-	void assignFromCStr(const wchar_t* str, int length = -1, bool* outUsedDefaultChar = nullptr, TextEncoding* encoding = nullptr);
+    void assignFromCStr(const wchar_t* str, int length = -1, bool* outUsedDefaultChar = nullptr, TextEncoding* encoding = nullptr);
     void setAt(int index, Char ch);
     int getByteCount() const { return length() * sizeof(Char); }
     uint32_t getHashCode() const;
@@ -603,16 +603,16 @@ public:
     }
     bool hasError() const { return !m_error.empty(); }
 
-	void setLocale(const std::locale* locale) { m_locale = locale; }
-	const std::locale* locale() const { return m_locale; }
+    void setLocale(const std::locale* locale) { m_locale = locale; }
+    const std::locale* locale() const { return m_locale; }
 
-	void setFormatString(const GenericFormatStringRef<TChar>& str) { m_formatString = str; }
-	const GenericFormatStringRef<TChar>& formatString() const { return m_formatString; }
+    void setFormatString(const GenericFormatStringRef<TChar>& str) { m_formatString = str; }
+    const GenericFormatStringRef<TChar>& formatString() const { return m_formatString; }
 
-	void setPrecision(const GenericFormatStringRef<TChar>& str) { m_precision = str; }
-	const GenericFormatStringRef<TChar>& precision() const { return m_precision; }
+    void setPrecision(const GenericFormatStringRef<TChar>& str) { m_precision = str; }
+    const GenericFormatStringRef<TChar>& precision() const { return m_precision; }
 
-	GenericFormatStringBuilder<TChar>& getSB() { return m_sb; }
+    GenericFormatStringBuilder<TChar>& getSB() { return m_sb; }
 
 private:
     const std::locale* m_locale;

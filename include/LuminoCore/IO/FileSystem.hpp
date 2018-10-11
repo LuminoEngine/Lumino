@@ -50,15 +50,15 @@ private:
 
 enum class FileCopyOption
 {
-	None,
-	Overwrite,
+    None,
+    Overwrite,
 };
 
 /** ファイルリストを STL の範囲ベースのインターフェイスとして列挙するためのクラスです。 */
 class DirectoryIteratorRange
 {
 public:
-	bool isEmpty() const { return m_begin == m_end; }
+    bool isEmpty() const { return m_begin == m_end; }
     detail::DirectoryIterator2 begin() { return m_begin; }
     detail::DirectoryIterator2 end() { return m_end; }
 
@@ -191,17 +191,17 @@ public:
      */
     static void writeAllText(const StringRef& filePath, const String& str, TextEncoding* encoding = nullptr);
 
-	/**
-	 * 指定したディレクトリ内の1つのファイルパス返します。
-	 *
-	 * @param[in]   dirPath    : 検索するディレクトリのパス
-	 * @param[in]   pattern    : ファイル名の検索文字列 (ワイルドカード (* および ?) を含めることができます。省略した場合はすべてのファイルを列挙します)
-	 * @return      ファイルが見つからない場合は空の Path を返します。
-	 *
-	 * これは getFiles() のユーティリティです。getFiles() で見つかった最初のファイルパスを返します。
-	 * 特定の拡張子を持つファイルを1つだけ検索したい場合に使用します。
-	 */
-	static Path getFile(const StringRef& dirPath, const StringRef& pattern = StringRef());
+    /**
+     * 指定したディレクトリ内の1つのファイルパス返します。
+     *
+     * @param[in]   dirPath    : 検索するディレクトリのパス
+     * @param[in]   pattern    : ファイル名の検索文字列 (ワイルドカード (* および ?) を含めることができます。省略した場合はすべてのファイルを列挙します)
+     * @return      ファイルが見つからない場合は空の Path を返します。
+     *
+     * これは getFiles() のユーティリティです。getFiles() で見つかった最初のファイルパスを返します。
+     * 特定の拡張子を持つファイルを1つだけ検索したい場合に使用します。
+     */
+    static Path getFile(const StringRef& dirPath, const StringRef& pattern = StringRef());
 
     /**
      * 指定したディレクトリ内のファイルパス返します。
@@ -243,9 +243,9 @@ public:
     static void setAttribute(const wchar_t* filePath, int len, FileAttribute attr);
     static void setAttribute(const char16_t* filePath, int len, FileAttribute attr);
 
-	static time_t getLastModifiedTime(const char* filePath, int len);
-	static time_t getLastModifiedTime(const wchar_t* filePath, int len);
-	static time_t getLastModifiedTime(const char16_t* filePath, int len);
+    static time_t getLastModifiedTime(const char* filePath, int len);
+    static time_t getLastModifiedTime(const wchar_t* filePath, int len);
+    static time_t getLastModifiedTime(const char16_t* filePath, int len);
 
     static void copyFile(const char* sourceFileName, int sourceFileNameLen, const char* destFileName, int destFileNameLen, FileCopyOption option);
     static void copyFile(const wchar_t* sourceFileName, int sourceFileNameLen, const wchar_t* destFileName, int destFileNameLen, FileCopyOption option);

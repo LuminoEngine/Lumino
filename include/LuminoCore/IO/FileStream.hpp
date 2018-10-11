@@ -13,8 +13,8 @@ class FileStream
 public:
     /**
      * ファイルを開き、FileStream を作成します。
-     * @param[in] filePath	: ファイル名
-     * @param[in] openMode	: ファイルを開く方法 (FileOpenMode のフラグの組み合わせ)
+     * @param[in] filePath  : ファイル名
+     * @param[in] openMode  : ファイルを開く方法 (FileOpenMode のフラグの組み合わせ)
      */
     static Ref<FileStream> create(const StringRef& filePath, FileOpenMode openMode = FileOpenMode::Read);
 
