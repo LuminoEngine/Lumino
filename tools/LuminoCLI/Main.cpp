@@ -20,10 +20,10 @@ int main(int argc, char** argv)
 
 			//"<program>", "dev-install-tools",
 
-			//"build", "Emscripten",
+			"build", "Web",
 			//"<program>", "build", "Android",
 
-			"run", "Web", //"Windows",
+			//"run", "Web", //"Windows",
 
 			//"dev-openide", "vs",
 			
@@ -37,6 +37,8 @@ int main(int argc, char** argv)
 #endif
 	try
 	{
+		setlocale(LC_ALL, "");
+
 		if (argc == 3 && strcmp(argv[1], "--local-initial-setup") == 0)
 		{
 			return commnad_localInitialSetup(argv[2]);
@@ -48,7 +50,7 @@ int main(int argc, char** argv)
 		//--------------------------------------------------------------------------------
 		// init command
 		auto initCommand = parser.addCommand(u"init", u"Create a Lumino project in the current directory.");
-		auto initCommand_projectName = initCommand->addPositionalArgument(u"project-name", u"prooject name.");
+		auto initCommand_projectName = initCommand->addPositionalArgument(u"project-name", u"project name.");
 
 		//--------------------------------------------------------------------------------
 		// build command
@@ -104,7 +106,7 @@ int main(int argc, char** argv)
 				if (!workspace->openProject(ln::Environment::currentDirectory())) {
 					return 1;
 				}
-				if (!workspace->runProject(target)) {
+				if (!workspace->buildProject(target)) {
 					return 1;
 				}
 			}

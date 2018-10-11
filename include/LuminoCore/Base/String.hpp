@@ -408,8 +408,8 @@ private:
     bool isNonSSO() const LN_NOEXCEPT { return detail::getLSB<0>(static_cast<uint8_t>(m_data.sso.length)); }
 
     // utils
-    template<typename TChar>
-    void assignFromCStr(const TChar* str, int length = -1, bool* outUsedDefaultChar = nullptr, TextEncoding* encoding = nullptr);
+    void assignFromCStr(const char* str, int length = -1, bool* outUsedDefaultChar = nullptr, TextEncoding* encoding = nullptr);
+	void assignFromCStr(const wchar_t* str, int length = -1, bool* outUsedDefaultChar = nullptr, TextEncoding* encoding = nullptr);
     void setAt(int index, Char ch);
     int getByteCount() const { return length() * sizeof(Char); }
     uint32_t getHashCode() const;

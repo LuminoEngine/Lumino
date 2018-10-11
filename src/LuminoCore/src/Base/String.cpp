@@ -926,51 +926,79 @@ void String::assign(const StringRef& str)
     assign(str.data(), str.length());
 }
 
-template<typename TChar>
-void String::assignFromCStr(const TChar* str, int length, bool* outUsedDefaultChar, TextEncoding* encoding)
+void String::assignFromCStr(const char* str, int length, bool* outUsedDefaultChar, TextEncoding* encoding)
 {
-    int len = 0;
-    bool ascii = true;
+	int len = 0;
+	bool ascii = true;
 
-    if (str) {
-        // ASCII だけの文字列か調べる。ついでに文字数も調べる。
-        length = (length < 0) ? INT_MAX : length;
-        const TChar* pos = str;
-        for (; *pos && len < length; ++pos, ++len) {
-            if (isascii(*pos) == 0) {
-                ascii = false;
-            }
-        }
-    }
+	if (str) {
+		// ASCII だけの文字列か調べる。ついでに文字数も調べる。
+		length = (length < 0) ? INT_MAX : length;
+		const char* pos = str;
+		for (; *pos && len < length; ++pos, ++len) {
+			if (isascii(*pos) == 0) {
+				ascii = false;
+			}
+		}
+	}
 
-    if (ascii) {
-        detail::StringLockContext context;
-        Char* buf = lockBuffer(len, &context);
-        for (int i = 0; i < len; ++i) {
-            buf[i] = str[i];
-        }
-        unlockBuffer(len, &context);
-    } else {
-#if LN_STRING_WITH_ENCODING
-        if (!encoding) {
-            encoding = TextEncoding::getEncodingTemplate<TChar>();
-        }
+	if (ascii) {
+		detail::StringLockContext context;
+		Char* buf = lockBuffer(len, &context);
+		for (int i = 0; i < len; ++i) buf[i] = str[i];
+		unlockBuffer(len, &context);
+	}
+	else {
+		thread_local std::unique_ptr<TextDecoder> localDecoder = nullptr;
+		if (!localDecoder) localDecoder.reset(TextEncoding::systemMultiByteEncoding()->createDecoder());
 
-        EncodingConversionOptions options;
-        options.NullTerminated = false;
+		detail::StringLockContext context;
+		size_t bufSize = TextEncoding::getConversionRequiredByteCount(TextEncoding::systemMultiByteEncoding(), TextEncoding::tcharEncoding(), len) / sizeof(Char);
+		Char* buf = lockBuffer(bufSize, &context);
+		
+		TextDecoder::DecodeResult result;
+		localDecoder->convertToUTF16((const byte_t*)str, len, (UTF16*)buf, bufSize, &result);
 
-        EncodingConversionResult result;
-        //const ByteBuffer tmpBuffer = TextEncoding::convert(str, len * sizeof(TChar), encoding, getThisTypeEncoding(), options, &result);
-        if (outUsedDefaultChar != nullptr) *outUsedDefaultChar = result.UsedDefaultChar;
-
-        assign((const Char*)tmpBuffer.getData(), result.BytesUsed / sizeof(Char));
-#else
-        LN_NOTIMPLEMENTED();
-#endif
-    }
+		unlockBuffer(result.outputByteCount / sizeof(Char), &context);
+	}
 }
-template void String::assignFromCStr(const char* str, int length, bool* outUsedDefaultChar, TextEncoding* encoding);
-template void String::assignFromCStr(const wchar_t* str, int length, bool* outUsedDefaultChar, TextEncoding* encoding);
+
+void String::assignFromCStr(const wchar_t* str, int length, bool* outUsedDefaultChar, TextEncoding* encoding)
+{
+	int len = 0;
+	bool ascii = true;
+
+	if (str) {
+		// ASCII だけの文字列か調べる。ついでに文字数も調べる。
+		length = (length < 0) ? INT_MAX : length;
+		const wchar_t* pos = str;
+		for (; *pos && len < length; ++pos, ++len) {
+			if (isascii(*pos) == 0) {
+				ascii = false;
+			}
+		}
+	}
+
+	if (ascii) {
+		detail::StringLockContext context;
+		Char* buf = lockBuffer(len, &context);
+		for (int i = 0; i < len; ++i) buf[i] = str[i];
+		unlockBuffer(len, &context);
+	}
+	else {
+		thread_local std::unique_ptr<TextDecoder> localDecoder = nullptr;
+		if (!localDecoder) localDecoder.reset(TextEncoding::wideCharEncoding()->createDecoder());
+
+		detail::StringLockContext context;
+		size_t bufSize = TextEncoding::getConversionRequiredByteCount(TextEncoding::wideCharEncoding(), TextEncoding::tcharEncoding(), len * sizeof(wchar_t)) / sizeof(Char);
+		Char* buf = lockBuffer(bufSize, &context);
+
+		TextDecoder::DecodeResult result;
+		localDecoder->convertToUTF16((const byte_t*)str, len * sizeof(wchar_t), (UTF16*)buf, bufSize, &result);
+
+		unlockBuffer(result.outputByteCount / sizeof(Char), &context);
+	}
+}
 
 void String::setAt(int index, Char ch)
 {

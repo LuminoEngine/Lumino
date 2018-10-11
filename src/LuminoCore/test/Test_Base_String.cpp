@@ -873,7 +873,22 @@ TEST_F(Test_Base_String, convertNativeCharString)
 	ASSERT_EQ("abc", str.toStdString());
 	ASSERT_EQ(L"abc", str.toStdWString());
 
-	// TODO:
+	//* [ ] Native(MultiByte) -> ln::String
+	{
+		Char str1[] = { 0x3042, 0x0000 };	// "あ"
+
+		if (TextEncoding::systemMultiByteEncoding()->name() == u"UTF-8") {
+			uint8_t s[] = { 0xE3, 0x81, 0x82, 0x00 };	// "あ"
+			ASSERT_EQ(str1, String::fromCString((char*)s));
+		}
+		else {
+			uint8_t s[] = { 0x82, 0xA0, 0x00 };	// "あ" (SJIS)
+			ASSERT_EQ(str1, String::fromCString((char*)s));
+		}
+
+		wchar_t s[] = { 0x3042, 0x0000 };
+		ASSERT_EQ(str1, String::fromCString(s));
+	}
 }
 
 TEST_F(Test_Base_String, unordered_map)

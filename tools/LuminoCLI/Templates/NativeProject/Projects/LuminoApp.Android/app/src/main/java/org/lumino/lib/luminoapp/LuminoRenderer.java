@@ -36,10 +36,7 @@ public class LuminoRenderer implements GLSurfaceView.Renderer
     {
         /*
          onDrawFrame is called by 60 FPS.
-         */
-
-        gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-        gl.glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
+        */
 
         nativeUpdateFrame();
     }

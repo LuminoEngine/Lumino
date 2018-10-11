@@ -17,7 +17,7 @@ namespace LuminoBuild.Tasks
 
             string targetRootDir;
             if (Utils.IsWin32)
-                targetRootDir = Path.Combine(builder.LuminoRootDir, "ReleasePackage.Win32");
+                targetRootDir = Path.Combine(builder.LuminoRootDir, "ReleasePackage.Windows");
             else
                 targetRootDir = Path.Combine(builder.LuminoRootDir, "ReleasePackage.macOS");
             Directory.CreateDirectory(targetRootDir);

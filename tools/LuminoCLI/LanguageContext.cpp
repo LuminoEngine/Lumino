@@ -117,11 +117,16 @@ void CppLanguageContext::restore()
 
 void CppLanguageContext::copyEngine()
 {
-	CLI::info("Copying Engine...");
+	if (!ln::FileSystem::getFile(project()->engineDirPath()).isEmpty()) {
+		CLI::warning(u"File exists in the engine folder.");
+	}
+	else {
+		CLI::info("Copying Engine...");
 
-	ln::FileSystem::copyDirectory(
-		ln::Path::combine(project()->workspace()->buildEnvironment()->luminoPackageRootDir(), u"Engine", u"Native"),
-		project()->engineDirPath(), true, true);
+		ln::FileSystem::copyDirectory(
+			ln::Path::combine(project()->workspace()->buildEnvironment()->luminoPackageRootDir(), u"Engine", u"Native"),
+			project()->engineDirPath(), true, true);
 
-	CLI::info("Copied Engine.");
+		CLI::info("Copied Engine.");
+	}
 }
