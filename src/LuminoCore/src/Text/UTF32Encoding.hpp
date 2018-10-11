@@ -24,6 +24,7 @@ public:
     virtual byte_t* preamble() const override;
     virtual int getCharacterCount(const void* buffer, size_t bufferSize) const override;
     virtual int getLeadExtraLength(const void* buffer, size_t bufferSize) const override { return 0; }
+	virtual bool convertToUTF16Stateless(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult) override;
 
 private:
     bool m_bigEndian;
@@ -36,7 +37,7 @@ public:
     public:
         UTF32Decoder(TextEncoding* encoding) : TextDecoder(encoding) { reset(); }
         virtual bool canRemain() override { return true; }
-        virtual bool convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, DecodeResult* outResult) override;
+        virtual bool convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult) override;
         virtual int usedDefaultCharCount() override { return mUsedDefaultCharCount; }
         virtual bool completed() override { return m_lastLeadBytesCount == 0; }
         virtual void reset() override
@@ -57,7 +58,7 @@ public:
     public:
         UTF32Encoder(TextEncoding* encoding) : TextEncoder(encoding) { reset(); }
         virtual bool canRemain() override { return true; }
-        virtual bool convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, EncodeResult* outResult) override;
+        virtual bool convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, TextEncodeResult* outResult) override;
         virtual int usedDefaultCharCount() override { return mUsedDefaultCharCount; }
         virtual bool completed() override { return m_hiSurrogate == 0x0000; }
         virtual void reset() override

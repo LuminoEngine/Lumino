@@ -25,6 +25,7 @@ public:
     virtual byte_t* preamble() const override;
     virtual int getCharacterCount(const void* buffer, size_t bufferSize) const override;
     virtual int getLeadExtraLength(const void* buffer, size_t bufferSize) const override;
+	virtual bool convertToUTF16Stateless(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult) override;
 
 private:
     bool m_byteOrderMark;
@@ -41,7 +42,7 @@ public:
             reset();
         }
         virtual bool canRemain() override { return true; }
-        virtual bool convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, DecodeResult* outResult) override;
+        virtual bool convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult) override;
         virtual int usedDefaultCharCount() override { return mUsedDefaultCharCount; }
         virtual bool completed() override { return mCompleted; }
         virtual void reset() override
@@ -75,7 +76,7 @@ public:
             reset();
         }
         virtual bool canRemain() override { return true; }
-        virtual bool convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, EncodeResult* outResult) override;
+        virtual bool convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, TextEncodeResult* outResult) override;
         virtual int usedDefaultCharCount() override { return mUsedDefaultCharCount; }
         virtual bool completed() override { return mCompleted; }
         virtual void reset() override

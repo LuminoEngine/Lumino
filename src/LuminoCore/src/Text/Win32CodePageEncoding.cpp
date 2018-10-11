@@ -47,6 +47,12 @@ int Win32CodePageEncoding::getLeadExtraLength(const void* buffer, size_t bufferS
     return (::IsDBCSLeadByteEx(m_cpInfo.CodePage, *((const byte_t*)buffer))) ? 1 : 0;
 }
 
+bool Win32CodePageEncoding::convertToUTF16Stateless(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult)
+{
+	Win32CodePageDecoder decoder(this, m_cpInfo);
+	return decoder.convertToUTF16(input, inputByteSize, output, outputElementSize, outResult);
+}
+
 //==============================================================================
 // Win32CodePageEncoding::Win32CodePageDecoder
 
@@ -64,7 +70,7 @@ Win32CodePageEncoding::Win32CodePageDecoder::Win32CodePageDecoder(TextEncoding* 
     reset();
 }
 
-bool Win32CodePageEncoding::Win32CodePageDecoder::convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, DecodeResult* outResult)
+bool Win32CodePageEncoding::Win32CodePageDecoder::convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult)
 {
     outResult->usedByteCount = 0;
     outResult->outputByteCount = 0;
@@ -156,7 +162,7 @@ Win32CodePageEncoding::Win32CodePageEncoder::Win32CodePageEncoder(TextEncoding* 
     reset();
 }
 
-bool Win32CodePageEncoding::Win32CodePageEncoder::convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, EncodeResult* outResult)
+bool Win32CodePageEncoding::Win32CodePageEncoder::convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, TextEncodeResult* outResult)
 {
     outResult->usedElementCount = 0;
     outResult->outputByteCount = 0;

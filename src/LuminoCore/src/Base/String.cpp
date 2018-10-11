@@ -949,15 +949,12 @@ void String::assignFromCStr(const char* str, int length, bool* outUsedDefaultCha
 		unlockBuffer(len, &context);
 	}
 	else {
-		thread_local std::unique_ptr<TextDecoder> localDecoder = nullptr;
-		if (!localDecoder) localDecoder.reset(TextEncoding::systemMultiByteEncoding()->createDecoder());
-
 		detail::StringLockContext context;
 		size_t bufSize = TextEncoding::getConversionRequiredByteCount(TextEncoding::systemMultiByteEncoding(), TextEncoding::tcharEncoding(), len) / sizeof(Char);
 		Char* buf = lockBuffer(bufSize, &context);
 		
-		TextDecoder::DecodeResult result;
-		localDecoder->convertToUTF16((const byte_t*)str, len, (UTF16*)buf, bufSize, &result);
+		TextDecodeResult result;
+		TextEncoding::systemMultiByteEncoding()->convertToUTF16Stateless((const byte_t*)str, len, (UTF16*)buf, bufSize, &result);
 
 		unlockBuffer(result.outputByteCount / sizeof(Char), &context);
 	}
@@ -986,15 +983,12 @@ void String::assignFromCStr(const wchar_t* str, int length, bool* outUsedDefault
 		unlockBuffer(len, &context);
 	}
 	else {
-		thread_local std::unique_ptr<TextDecoder> localDecoder = nullptr;
-		if (!localDecoder) localDecoder.reset(TextEncoding::wideCharEncoding()->createDecoder());
-
 		detail::StringLockContext context;
 		size_t bufSize = TextEncoding::getConversionRequiredByteCount(TextEncoding::wideCharEncoding(), TextEncoding::tcharEncoding(), len * sizeof(wchar_t)) / sizeof(Char);
 		Char* buf = lockBuffer(bufSize, &context);
 
-		TextDecoder::DecodeResult result;
-		localDecoder->convertToUTF16((const byte_t*)str, len * sizeof(wchar_t), (UTF16*)buf, bufSize, &result);
+		TextDecodeResult result;
+		TextEncoding::wideCharEncoding()->convertToUTF16Stateless((const byte_t*)str, len * sizeof(wchar_t), (UTF16*)buf, bufSize, &result);
 
 		unlockBuffer(result.outputByteCount / sizeof(Char), &context);
 	}

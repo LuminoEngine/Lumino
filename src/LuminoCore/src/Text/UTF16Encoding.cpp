@@ -46,7 +46,16 @@ int UTF16Encoding::getCharacterCount(const void* buffer, size_t bufferSize) cons
     return count;
 }
 
-bool UTF16Encoding::UTF16Decoder::convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, DecodeResult* outResult)
+bool UTF16Encoding::convertToUTF16Stateless(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult)
+{
+	UTF16Decoder decoder(this);
+	return decoder.convertToUTF16(input, inputByteSize, output, outputElementSize, outResult);
+}
+
+//==============================================================================
+// UTF16Decoder
+
+bool UTF16Encoding::UTF16Decoder::convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult)
 {
     outResult->usedByteCount = 0;
     outResult->outputByteCount = 0;
@@ -124,7 +133,10 @@ bool UTF16Encoding::UTF16Decoder::convertToUTF16(const byte_t* input, size_t inp
     return true;
 }
 
-bool UTF16Encoding::UTF16Encoder::convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, EncodeResult* outResult)
+//==============================================================================
+// UTF16Encoder
+
+bool UTF16Encoding::UTF16Encoder::convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, TextEncodeResult* outResult)
 {
     outResult->usedElementCount = 0;
     outResult->outputByteCount = 0;

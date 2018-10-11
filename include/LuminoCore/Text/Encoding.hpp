@@ -15,7 +15,7 @@ enum class EncodingType
     Unknown = 0,
 
     /** ASCII (拡張アスキーは含まない http://www.asciitable.com/) */
-    ASCII,    
+    ASCII,
 
     /** UTF-8 */
     UTF8,
@@ -27,15 +27,41 @@ enum class EncodingType
 /** 文字コード変換のオプションを指定するための構造体 */
 struct EncodingConversionOptions
 {
-    bool    NullTerminated;        /** 変換結果の終端に \0 文字を付加する */
+    bool NullTerminated; /** 変換結果の終端に \0 文字を付加する */
 };
 
 /** 文字コード変換の結果を受け取るための構造体 */
 struct EncodingConversionResult
 {
-    size_t    BytesUsed;            /** 変換後の有効バイト数 */
-    size_t    CharsUsed;            /** 変換後の有効文字数(マルチバイト文字を考慮した文字数) */
-    bool    UsedDefaultChar;    /** 変換不可文字をデフォルト文字('?') に変換したかどうか */
+    size_t BytesUsed;     /** 変換後の有効バイト数 */
+    size_t CharsUsed;     /** 変換後の有効文字数(マルチバイト文字を考慮した文字数) */
+    bool UsedDefaultChar; /** 変換不可文字をデフォルト文字('?') に変換したかどうか */
+};
+
+/** 内部文字コードへのデコード結果を受け取るための構造体 */
+struct TextDecodeResult
+{
+    /** 消費バイト数 (入力バイト数に対して足りなければ変換エラーがある) */
+    size_t usedByteCount;
+
+    /** 変換結果のバイト数 */
+    size_t outputByteCount;
+
+    /** 変換結果の文字数 */
+    size_t outputCharCount;
+};
+
+/** 内部文字コードからのエンコード結果を受け取るための構造体 */
+struct TextEncodeResult
+{
+    /** 消費要素数数 (入力要素数に対して足りなければ変換エラーがある) */
+    size_t usedElementCount;
+
+    /** 変換結果のバイト数 */
+    size_t outputByteCount;
+
+    /** 変換結果の文字数 */
+    size_t outputCharCount;
 };
 
 /**
@@ -44,14 +70,13 @@ struct EncodingConversionResult
 class LN_API TextEncoding : public RefObject
 {
 public:
-
     /**
      * 環境依存のマルチバイト文字コードのエンコーディングを取得します。
      *
      * Windows 環境では CP_THREAD_ACP が示すコードページエンコーディングです。それ以外の環境では UTF-8 となります。        
      */
     static const Ref<TextEncoding>& systemMultiByteEncoding();
-    
+
     /**
      * 環境依存のワイド文字のエンコーディングを取得します。
      *
@@ -101,7 +126,7 @@ public:
      * エンコーディングを from から to へ fromByteCount バイト分だけ変換する際に必要な、変換先バッファの最大バイト数を取得します。
      */
     static size_t getConversionRequiredByteCount(TextEncoding* from, TextEncoding* to, size_t fromByteCount);
-    
+
     /**
      * バイトシーケンスがどのようなエンコーディングで表されているかを簡易的に判別します。
      *
@@ -153,7 +178,7 @@ public:
      * @return 0 で終わるバイト列。BOM を持たないエンコードの場合は nullptr
      */
     virtual byte_t* preamble() const = 0;
-    
+
     /**
      * 指定されたバッファをこのエンコーディングで表現した際の文字数を取得します。
      *
@@ -174,19 +199,21 @@ public:
      * @return 一致した場合は BOM のバイト数を返します。そうでなければ 0 を返します。
      */
     size_t checkPreamble(const void* buffer, size_t bufferSize) const;
-    
+
     /** デコードまたはエンコード先にマッピングできない文字が見つかった時に置換する文字を設定します。 */
     void setFallbackReplacementChar(uint32_t ch) { m_fallbackReplacementChar = ch; }
 
     /** デコードまたはエンコード先にマッピングできない文字が見つかった時に置換する文字を取得します。 */
     uint32_t fallbackReplacementChar() const { return m_fallbackReplacementChar; }
 
+    virtual bool convertToUTF16Stateless(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult);
+
 protected:
     TextEncoding();
     virtual ~TextEncoding();
 
 private:
-    uint32_t    m_fallbackReplacementChar;
+    uint32_t m_fallbackReplacementChar;
 };
 
 /**
@@ -206,15 +233,7 @@ private:
 class LN_API TextDecoder
 {
 public:
-
-    struct DecodeResult
-    {
-        size_t usedByteCount;        // 消費バイト数 (足りなければ変換エラーがある)
-        size_t outputByteCount;        // 変換結果のバイト数を格納する
-        size_t outputCharCount;        // 変換結果の文字数を格納する
-    };
-
-	/** この Decoder に対応する TextEncoding を取得します。 */
+    /** この Decoder に対応する TextEncoding を取得します。 */
     TextEncoding* encoding() const { return m_encoding; }
 
     /** 変換状態を保持できるかを確認します。 */
@@ -229,7 +248,7 @@ public:
      * @param[in]   outputElementSize   : output バッファのサイズ (文字数単位)
      * @param[out]  outResult           : 変換結果を格納する変数
      */
-    virtual bool convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, DecodeResult* outResult) = 0;
+    virtual bool convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult) = 0;
 
     /** 一連の convertToUTF16() の呼び出しの中で、変換できない文字を規定文字に変換した文字数を取得します。 */
     virtual int usedDefaultCharCount() = 0;
@@ -258,14 +277,7 @@ private:
 class LN_API TextEncoder
 {
 public:
-    struct EncodeResult
-    {
-        size_t usedElementCount;    // 消費要素数 (足りなければ変換エラーがある)
-        size_t outputByteCount;        // 変換結果のバイト数を格納する
-        size_t outputCharCount;        // 変換結果の文字数を格納する
-    };
-
-	/** この Encoder に対応する TextEncoding を取得します。 */
+    /** この Encoder に対応する TextEncoding を取得します。 */
     TextEncoding* encoding() const { return m_encoding; }
 
     /** 変換状態を保持できるかを確認します。 */
@@ -280,7 +292,7 @@ public:
      * @param[in]   outputByteSize      : output のバイト数
      * @param[out]  outResult           : 変換結果を格納する変数
      */
-    virtual bool convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, EncodeResult* outResult) = 0;
+    virtual bool convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, TextEncodeResult* outResult) = 0;
 
     /** 一連の convertToUTF16() の呼び出しの中で、変換できない文字を規定文字に変換した文字数を取得します。 */
     virtual int usedDefaultCharCount() = 0;

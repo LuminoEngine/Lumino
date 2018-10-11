@@ -51,7 +51,7 @@ TEST_F(Test_Text_UTF8Encoding, BytesToUTF16Conversion)
 		0xE8, 0xAA, 0x9E,	// '語'
 	};
 	UTF16 utf16Buf[3] = { 0, 0, 0 };
-	TextDecoder::DecodeResult result;
+	TextDecodeResult result;
 
 	// '日' を 1byte ずつ状態を保持しながら変換
 	ASSERT_EQ(true, decoder->convertToUTF16(&utf8Buf[0], 1, &utf16Buf[0], 1, &result));
@@ -113,7 +113,7 @@ TEST_F(Test_Text_UTF8Encoding, UTF16ToBytesConversion)
 	std::unique_ptr<TextEncoder> encoder(TextEncoding::utf8Encoding()->createEncoder());
 
 	UTF8 utf8Buf[6];
-	TextEncoder::EncodeResult result;
+	TextEncodeResult result;
 
 	// 1文字変換
 	ASSERT_EQ(true, encoder->convertFromUTF16(&g_utf16Buf[0], 1, utf8Buf, 6, &result));
@@ -150,7 +150,7 @@ TEST_F(Test_Text_UTF16Encoding, BytesToUTF16Conversion)
 	std::unique_ptr<TextDecoder> decoder(TextEncoding::utf16Encoding()->createDecoder());
 	UTF16 utf16Buf[3] = { 0, 0, 0 };
 	auto* bytes = (const byte_t*)g_utf16Buf;
-	TextDecoder::DecodeResult result;
+	TextDecodeResult result;
 
 	//### - [ ] input every 1bytes
 	{
@@ -199,7 +199,7 @@ TEST_F(Test_Text_UTF16Encoding, UTF16ToBytesConversion)
 {
 	std::unique_ptr<TextEncoder> encoder(TextEncoding::utf16Encoding()->createEncoder());
 	UTF16 utf16Buf[3] = { 0, 0, 0 };
-	TextEncoder::EncodeResult result;
+	TextEncodeResult result;
 
 	//### - [ ] input every 1bytes
 	{
@@ -241,7 +241,7 @@ TEST_F(Test_Text_UTF32Encoding, BytesToUTF16Conversion)
 {
 	std::unique_ptr<TextDecoder> decoder(TextEncoding::utf32Encoding()->createDecoder());
 	UTF16 utf16Buf[3] = { 0, 0, 0 };
-	TextDecoder::DecodeResult result;
+	TextDecodeResult result;
 
 	//### - [ ] all at once
 	{
@@ -312,7 +312,7 @@ TEST_F(Test_Text_UTF32Encoding, BytesToUTF32Conversion)
 {
 	std::unique_ptr<TextEncoder> encoder(TextEncoding::utf32Encoding()->createEncoder());
 	UTF32 utf32Buf[3] = { 0, 0, 0 };
-	TextEncoder::EncodeResult result;
+	TextEncodeResult result;
 
 	//### - [ ] all at once
 	{

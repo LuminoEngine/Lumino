@@ -40,7 +40,16 @@ int UTF8Encoding::getLeadExtraLength(const void* buffer, size_t bufferSize) cons
     return len;
 }
 
-bool UTF8Encoding::UTF8Decoder::convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, DecodeResult* outResult)
+bool UTF8Encoding::convertToUTF16Stateless(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult)
+{
+	UTF8Decoder decoder(this, m_byteOrderMark);
+	return decoder.convertToUTF16(input, inputByteSize, output, outputElementSize, outResult);
+}
+
+//==============================================================================
+// UTF8Decoder
+
+bool UTF8Encoding::UTF8Decoder::convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult)
 {
     outResult->usedByteCount = 0;
     outResult->outputByteCount = 0;
@@ -142,7 +151,10 @@ bool UTF8Encoding::UTF8Decoder::convertToUTF16(const byte_t* input, size_t input
     return true;
 }
 
-bool UTF8Encoding::UTF8Encoder::convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, EncodeResult* outResult)
+//==============================================================================
+// UTF8Encoder
+
+bool UTF8Encoding::UTF8Encoder::convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, TextEncodeResult* outResult)
 {
     outResult->usedElementCount = 0;
     outResult->outputByteCount = 0;
