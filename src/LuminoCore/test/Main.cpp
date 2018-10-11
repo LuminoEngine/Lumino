@@ -216,7 +216,8 @@ int main(int argc, char** argv)
 	TestHelper::setTempDirPath(_T("TestTemp"));
 	GlobalLogger::addStdErrAdapter();
 	LN_LOG_INFO << "Running test.";
-
+    LN_LOG_INFO << "SystemMultiByteEncoding: " << TextEncoding::systemMultiByteEncoding()->name();
+    LN_LOG_INFO << "WideCharEncoding: " << TextEncoding::wideCharEncoding()->name();
 
 	char* testArgs[] =
 	{
