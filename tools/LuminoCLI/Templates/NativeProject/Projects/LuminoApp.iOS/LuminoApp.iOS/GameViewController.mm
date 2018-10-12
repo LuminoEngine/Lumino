@@ -1,27 +1,25 @@
-//
-//  GameViewController.m
-//  LuminoApp.iOS
-//
-//  Created by lriki on 2018/09/02.
-//  Copyright © 2018年 Lumino. All rights reserved.
-//
 
+#import "RootGLView.h"
 #import "GameViewController.h"
 #import "Renderer.h"
+#include <LuminoEngine/Platform/iOSPlatformInterface.hpp>
 
 @implementation GameViewController
 {
-    //MTKView *_view;
-	GLKView* _view;
+	RootGLView* _view;
+    Renderer* _renderer;
+}
 
-    Renderer *_renderer;
+// nibを使用せずにプログラムでビュー階層を作成する
+- (void)loadView {
+    _view = [RootGLView viewWithFrame: [UIScreen mainScreen].bounds];
+    self.view = _view;
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
-	
+#if 0
 	// Created by storyboard
     _view = (GLKView *)self.view;
 
@@ -36,15 +34,21 @@
         return;
     }
 	 */
+#endif
 
     _renderer = [[Renderer alloc] initWithOpenGLKitView:_view];
 
     //[_renderer mtkView:_view drawableSizeWillChange:_view.bounds.size];
 
-	
     _view.delegate = _renderer;
+}
 	
-	
+// UI が回転した
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    CGSize s = CGSizeMake([_view getWidth], [_view getHeight]);
+    ln::iOSPlatformInterface::applicationScreenSizeChanged((int) s.width, (int) s.height);
 }
 
 @end

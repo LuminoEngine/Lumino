@@ -881,10 +881,13 @@ TEST_F(Test_Base_String, convertNativeCharString)
 			uint8_t s[] = { 0xE3, 0x81, 0x82, 0x00 };	// "あ"
 			ASSERT_EQ(str1, String::fromCString((char*)s));
 		}
-		else {
+#ifdef LN_OS_WIN32
+		// CI 環境では英語版の Windows が使われることがあるので、ひとまず逃げる
+		else if (TextEncoding::systemMultiByteEncoding()->name() == u"cp932") {
 			uint8_t s[] = { 0x82, 0xA0, 0x00 };	// "あ" (SJIS)
 			ASSERT_EQ(str1, String::fromCString((char*)s));
 		}
+#endif
 
 		wchar_t s[] = { 0x3042, 0x0000 };
 		ASSERT_EQ(str1, String::fromCString(s));

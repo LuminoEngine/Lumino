@@ -36,8 +36,10 @@ lumino-cli run
 
 その他のプラットフォーム固有の情報は以下のページを参照してください。
 - [Windows アプリ](../platform-specific/windows.md)
-- [Web アプリ](../platform-specific/web.md)
+- [macOS アプリ](../platform-specific/macos.md)
+- [iOS アプリ](../platform-specific/ios.md)
 - [Android アプリ](../platform-specific/android.md)
+- [Web アプリ](../platform-specific/web.md)
 
 
 プロジェクトのディレクトリ構成

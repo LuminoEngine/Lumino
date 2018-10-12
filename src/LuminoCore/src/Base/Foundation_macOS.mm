@@ -16,6 +16,11 @@
 
 namespace ln {
 
+void writeNSLog(const char* str)
+{
+	NSLog(str);
+}
+
 PlatformEnvironment::StringType PlatformEnvironment::getExecutablePath()
 {
 	char path[1024];

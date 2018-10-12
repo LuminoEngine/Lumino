@@ -12,6 +12,7 @@ Java_org_lumino_lib_luminoapp_LuminoRenderer_nativeInitialize(
     jint width,
     jint height)
 {
+    ln::GlobalLogger::addLogcatAdapter();
 	g_app = ::LuminoCreateApplicationInstance();
 	ln::detail::ApplicationHelper::initialize(g_app);
 }
@@ -106,15 +107,3 @@ Java_org_lumino_lib_luminoapp_LuminoRenderer_nativeKeyEvent(
 {
     return JNI_FALSE;
 }
-
-
-extern "C" JNIEXPORT jstring
-JNICALL
-Java_org_lumino_lib_luminoapp_MainActivity_stringFromJNI(
-        JNIEnv *env,
-        jobject /* this */) {
-    ln::String t = u"Hello from C++ 2";
-    std::string hello = t.toStdString();
-    return env->NewStringUTF(hello.c_str());
-}
-

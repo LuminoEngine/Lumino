@@ -14,6 +14,7 @@
 // Include header shared between C code here, which executes Metal API commands, and .metal files
 #import "ShaderTypes.h"
 
+#include <LuminoEngine/Platform/iOSPlatformInterface.hpp>
 
 
 @implementation Renderer
@@ -42,6 +43,11 @@
 		
 		
 		view.context = _eaglContext;
+
+
+        ln::iOSPlatformInterface::nativeInitialize(
+            view.frame.size.width,
+            view.frame.size.height);
 	}
 	
 	return self;
@@ -49,10 +55,11 @@
 
 
 
-- (void)glkView:(nonnull GLKView *)view drawInRect:(CGRect)rect {
-	
-	glClearColor(0.0f, 0.0f, 1.0f, 0.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+- (void)glkView:(nonnull GLKView *)view drawInRect:(CGRect)rect
+{
+	ln::iOSPlatformInterface::nativeUpdateFrame();
+	//glClearColor(0.0f, 0.0f, 1.0f, 0.0f);
+	//glClear(GL_COLOR_BUFFER_BIT);
 }
 
 @end

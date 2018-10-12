@@ -54,7 +54,15 @@ public:
      */
     static void addStdErrAdapter();
 
-	static void addAndroidLogcatAdapter();
+	/**
+	 * Android システムの Logcat へ出力するためのアダプタを追加します。
+	 */
+	static void addLogcatAdapter();
+
+	/**
+	 * macOS/iOS システムの NLog へ出力するためのアダプタを追加します。
+	 */
+	static void addNLogAdapter();
 
 	/**
 	 * どの程度詳細にログを生成するかを設定します。(defailt: Debug)

@@ -23,6 +23,8 @@
 
 namespace ln {
 
+void writeNSLog(const char* str);
+
 //==============================================================================
 // LogHelper
 
@@ -222,6 +224,20 @@ public:
 };
 #endif
 
+#if defined(LN_OS_MAC) || defined(LN_OS_IOS)
+//==============================================================================
+// NLogLoggerAdapter
+
+class NLogLoggerAdapter : public ILoggerAdapter
+{
+public:
+	virtual void write(LogLevel level, const char* str, size_t len) override
+	{
+        writeNSLog(str);
+	}
+};
+#endif
+
 //==============================================================================
 // LoggerInterface::Impl
 
@@ -335,12 +351,21 @@ void GlobalLogger::addStdErrAdapter()
         std::make_shared<detail::StdErrLoggerAdapter>());
 }
 
-void GlobalLogger::addAndroidLogcatAdapter()
+void GlobalLogger::addLogcatAdapter()
 {
 #ifdef LN_OS_ANDROID
 	detail::LoggerInterface::getInstance()->m_impl->m_adapters.push_back(
 		std::make_shared<detail::AndroidLogcatLoggerAdapter>());
 	LN_LOG_INFO << "Attached AndroidLogcatLoggerAdapter.";
+#endif
+}
+
+void GlobalLogger::addNLogAdapter()
+{
+#if defined(LN_OS_MAC) || defined(LN_OS_IOS)
+	detail::LoggerInterface::getInstance()->m_impl->m_adapters.push_back(
+		std::make_shared<detail::NLogLoggerAdapter>());
+	LN_LOG_INFO << "Attached NLogLoggerAdapter.";
 #endif
 }
 

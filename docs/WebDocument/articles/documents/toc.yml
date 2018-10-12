@@ -12,12 +12,12 @@
       href: Base/String.md
     - name: 文字列の書式指定
       href: Base/CompoundFormatString.md
+    - name: オブジェクトのメモリ管理
+      href: Base/MemoryManagement.md
     - name: ログ出力
       href: Base_Logging.md
     - name: オブジェクトのシリアライズ
       href: Serialization.md
-    - name: オブジェクトのメモリ管理
-      href: Base/MemoryManagement.md
     - name: エラーハンドリング
       href: Base/ErrorHandling.md
     
@@ -53,7 +53,11 @@
       items:
       - name: Nuget からインストールする
         href: platform-specific/windows-Install-nuget.md
-    - name: Web
-      href: platform-specific/web.md
+    - name: macOS
+      href: platform-specific/macOS.md
+    - name: iOS
+      href: platform-specific/iOS.md
     - name: Android
       href: platform-specific/android.md
+    - name: Web
+      href: platform-specific/web.md
