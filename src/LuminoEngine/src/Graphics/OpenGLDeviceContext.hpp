@@ -100,6 +100,7 @@ public:
 	struct Settings
 	{
 		PlatformWindow* mainWindow = nullptr;
+        uint32_t defaultFramebuffer;
 	};
 
 	OpenGLDeviceContext();
@@ -167,12 +168,13 @@ class GLContext
 	: public RefObject
 {
 public:
-	GLContext() = default;
+    GLContext();
 	virtual ~GLContext() = default;
 
 	virtual Ref<GLSwapChain> createSwapChain(PlatformWindow* window, const SizeI& backbufferSize) = 0;
 	virtual void makeCurrent(GLSwapChain* swapChain) = 0;
 	virtual void swap(GLSwapChain* swapChain) = 0;
+
 };
 
 class GLSwapChain
@@ -189,9 +191,19 @@ public:
 	GLuint fbo() const { return m_fbo; }
 
 
+    GLuint defaultFBO() const { return m_defaultFBO; }
+    void setDefaultFBO(GLuint id) { m_defaultFBO = id; }
+
 private:
 	Ref<GLRenderTargetTexture> m_backbuffer;
 	GLuint m_fbo;
+
+    // ネイティブの UI view と関連付けられている最終的なバックバッファを示す FBO。
+    // 特に、EAGL (iOS) のために用意されている。
+    // WGL や NSGL はデフォルトの FBO はコンテキストによって生成され Id は 0 となっているが、EAGL では生成されない。
+    // このため glBlitFramebuffer のために Id 0 をバインドすると、「FBO ではない」エラーとなってしまう。
+    // GLKView::bindDrawable によって glBlitFramebuffer 可能な FBO を作ることができるが、その Id は 0 ではないので、GLKView 側からもらうことでデフォルトを認識できるようにする。
+    GLuint m_defaultFBO;
 };
 
 struct GLVertexElement

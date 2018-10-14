@@ -28,26 +28,15 @@ public:
 	static const char* glEnumName(GLenum _enum)
 	{
 #define GLENUM(_ty) case _ty: return #_ty
-
 		switch (_enum)
 		{
 			GLENUM(GL_TEXTURE);
-			//GLENUM(GL_RENDERBUFFER);
-
 			GLENUM(GL_INVALID_ENUM);
 			GLENUM(GL_INVALID_VALUE);
 			GLENUM(GL_INVALID_OPERATION);
 			GLENUM(GL_OUT_OF_MEMORY);
 			GLENUM(GL_INVALID_FRAMEBUFFER_OPERATION);
-			
-
-			//GLENUM(GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT);
-			//GLENUM(GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT);
-			//			GLENUM(GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER);
-			//			GLENUM(GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER);
-			//GLENUM(GL_FRAMEBUFFER_UNSUPPORTED);
 		}
-
 #undef GLENUM
 		return "<GLenum?>";
 	}
@@ -700,58 +689,35 @@ void OpenGLDeviceContext::onPresent(ISwapChain* swapChain)
 {
 	auto* s = static_cast<GLSwapChain*>(swapChain);
 
+	SizeI endpointSize;
+	s->getBackendBufferSize(&endpointSize);
 
-	//glBindTexture(GL_TEXTURE_2D, 0); // 描画先テクスチャのバインドを解除しておく.
-	//glBindFramebuffer(GL_FRAMEBUFFER, fboMSAA);
-	/* レンダーターゲットへ描画処理 */
+    SizeI bufferSize = s->getColorBuffer()->realSize();
 
-	SizeI windowSize, bufferSize;
-	s->getBackendBufferSize(&windowSize);
-	bufferSize = s->getColorBuffer()->realSize();
-
-	printf("xxxx:%d %d %d %d\n", bufferSize.width, bufferSize.height, windowSize.width, windowSize.height);
-
-//375 812
 	// SwapChain の Framebuffer をウィンドウのバックバッファへ転送
-	GL_CHECK(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 1));
-	GL_CHECK(glBindFramebuffer(GL_READ_FRAMEBUFFER, s->fbo()));
+    {
+        GL_CHECK(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, s->defaultFBO()));
+        GL_CHECK(glBindFramebuffer(GL_READ_FRAMEBUFFER, s->fbo()));
 
-	printf("s->fbo():%d\n", s->fbo());
-	
-	LN_ENSURE(GL_FRAMEBUFFER_COMPLETE == glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER),
-		"glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER) failed 0x%08x",
-		glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER));
+        //// 現在のフレームバッファにアタッチされているカラーバッファのレンダーバッファ名を取得
+        //GLint colorBufferName = 0;
+        //GL_CHECK(glGetFramebufferAttachmentParameteriv(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &colorBufferName));
 
-		
-	LN_ENSURE(GL_FRAMEBUFFER_COMPLETE == glCheckFramebufferStatus(GL_READ_FRAMEBUFFER),
-		"glCheckFramebufferStatus(GL_READ_FRAMEBUFFER) failed 0x%08x",
-		glCheckFramebufferStatus(GL_READ_FRAMEBUFFER));
+        //// レンダーバッファ(カラーバッファ)をバインド
+        //GL_CHECK(glBindRenderbuffer(GL_RENDERBUFFER, colorBufferName));
 
+        // カラーバッファの幅と高さを取得
+        //GLint endpointWidth;
+        //GLint endpointHeight;
+        //GL_CHECK(glGetRenderbufferParameteriv(GL_FRAMEBUFFER, GL_RENDERBUFFER_WIDTH, &endpointWidth));
+        //GL_CHECK(glGetRenderbufferParameteriv(GL_FRAMEBUFFER, GL_RENDERBUFFER_HEIGHT, &endpointHeight));
 
-		// 現在のフレームバッファにアタッチされているカラーバッファのレンダーバッファ名を取得
-    GLint colorBufferName = 0;
-    glGetFramebufferAttachmentParameteriv( GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &colorBufferName );
- 
- 	// レンダーバッファ(カラーバッファ)をバインド
-    glBindRenderbuffer( GL_RENDERBUFFER, colorBufferName );
-
-    // カラーバッファの幅と高さを取得
-	GLint width;
-	GLint height;
-    glGetRenderbufferParameteriv( GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &width );
-    glGetRenderbufferParameteriv( GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &height );
-
-	printf("yyyy:%d %d\n", width, height);
-
-
-
-	GL_CHECK(glBlitFramebuffer(0, 0, bufferSize.width, bufferSize.height, 0, 0, 375, 812, GL_COLOR_BUFFER_BIT, GL_NEAREST));
-	GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 1));
-
-	/* レンダーテクスチャを使用 */
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	//glBindTexture(GL_TEXTURE_2D, renderTex);
-
+        // Blit
+        // ※EAGL(iOS) は destination が FBO ではない場合失敗する。それ以外は RenderTarget でも成功していた。
+        GL_CHECK(glBlitFramebuffer(0, 0, bufferSize.width, bufferSize.height, 0, 0, endpointSize.width, endpointSize.height, GL_COLOR_BUFFER_BIT, GL_NEAREST));
+       
+        GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, s->defaultFBO()));
+    }
 
 	m_glContext->swap(s);
 }
@@ -791,11 +757,19 @@ void OpenGLDeviceContext::getPrimitiveInfo(PrimitiveType primitive, int primitiv
 }
 
 //=============================================================================
+// GLContext
+
+GLContext::GLContext()
+{
+}
+
+//=============================================================================
 // GLSwapChain
 
 GLSwapChain::GLSwapChain()
 	: m_backbuffer(nullptr)
 	, m_fbo(0)
+    , m_defaultFBO(0)
 {
 }
 

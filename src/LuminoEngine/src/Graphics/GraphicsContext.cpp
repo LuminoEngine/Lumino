@@ -9,6 +9,7 @@
 #include <LuminoEngine/Shader/Shader.hpp>
 #include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
+#include "OpenGLDeviceContext.hpp"
 #include "../Engine/RenderingCommandList.hpp"
 
 namespace ln {
@@ -62,6 +63,20 @@ detail::ISwapChain* SwapChain::resolveRHIObject() const
 {
 	return m_rhiObject;
 }
+
+//==============================================================================
+// GraphicsContext
+namespace detail {
+
+void SwapChainHelper::setOpenGLEndpointFBO(SwapChain* swapChain, uint32_t id)
+{
+    LN_DCHECK(swapChain);
+    if (GLSwapChain* glswap = dynamic_cast<GLSwapChain*>(swapChain->resolveRHIObject())) {
+        glswap->setDefaultFBO(id);
+    }
+}
+
+} // namespace detail
 
 //==============================================================================
 // GraphicsContext

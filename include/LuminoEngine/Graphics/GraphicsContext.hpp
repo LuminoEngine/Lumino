@@ -48,6 +48,16 @@ private:
 	Ref<DepthBuffer> m_depthBuffer;
 };
 
+namespace detail {
+
+class SwapChainHelper
+{
+public:
+    static void setOpenGLEndpointFBO(SwapChain* swapChain, uint32_t id);
+};
+
+} // namespace detail
+
 class LN_API GraphicsContext
 	: public Object
 {
