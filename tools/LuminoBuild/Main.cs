@@ -31,8 +31,6 @@ namespace LuminoBuild
             builder.LuminoPackageDir = Path.GetFullPath(Path.Combine(builder.LuminoBuildDir, "Package"));
             builder.LuminoPackageLibDir = Path.GetFullPath(Path.Combine(builder.LuminoPackageDir, "lib"));
             builder.LuminoPackageSourceDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "tools/PackageSource"));
-            //builder.LuminoPackageSourceDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "package/PackageSource"));
-            //builder.LuminoPackageReleaseDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "package/Release/Lumino"));
             builder.LuminoExternalDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "external"));
 
             BuildEnvironment.Initialize(builder.LuminoRootDir);
@@ -56,13 +54,9 @@ namespace LuminoBuild
             builder.Tasks.Add(new Tasks.MakeReleasePackage());
             builder.Tasks.Add(new Tasks.MakeInstaller_Win32());
             builder.Rules.Add(new Rules.MakePackage());
-
-
-
-
-
-
-
+            builder.Rules.Add(new Rules.BuildForCI());
+            
+            
             if (args.Length >= 1)
             {
                 builder.DoTaskOrRule(args[0]);

@@ -6,13 +6,13 @@
 ### Windows
 
 
-スタートボタン + X > [Windows PowerShell(管理者)]
+[Win + X] > [Windows PowerShell(管理者)]
 
 ```
 choco install cmake
 choco install nuget.commandline
 choco install docfx
-choco install doxygen.install
+choco install doxygen.portable
 choco install python3 --pre
 choco install wixtoolset
 ```
