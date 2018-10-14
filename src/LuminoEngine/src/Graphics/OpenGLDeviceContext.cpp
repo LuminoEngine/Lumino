@@ -35,10 +35,11 @@ public:
 			//GLENUM(GL_RENDERBUFFER);
 
 			GLENUM(GL_INVALID_ENUM);
-			//GLENUM(GL_INVALID_FRAMEBUFFER_OPERATION);
 			GLENUM(GL_INVALID_VALUE);
 			GLENUM(GL_INVALID_OPERATION);
 			GLENUM(GL_OUT_OF_MEMORY);
+			GLENUM(GL_INVALID_FRAMEBUFFER_OPERATION);
+			
 
 			//GLENUM(GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT);
 			//GLENUM(GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT);
@@ -139,6 +140,22 @@ public:
 
 	static void getGLTextureFormat(TextureFormat format, GLenum* internalFormat, GLenum* pixelFormat, GLenum* elementType)
 	{
+#if defined(LN_GRAPHICS_OPENGLES)
+		static GLenum table[][3] =
+		{
+			// internalFormat,		pixelFormat,		elementType
+			{ GL_NONE,				GL_NONE,			GL_NONE },			// TextureFormat::Unknown
+			{ GL_RGBA,				GL_RGBA,			GL_UNSIGNED_BYTE },	// TextureFormat::R8G8B8A8,            ///< 32 ビットのアルファ付きフォーマット (uint32_t アクセス時の表現。lnByte[4] にすると、ABGR)
+			{ GL_RGBA,				GL_RGBA,			GL_UNSIGNED_BYTE },	// TextureFormat::R8G8B8X8,	※元々 GL_RGB だったが、それだと glGetTexImage で強制終了
+			{ GL_RGBA16F,			GL_RGBA,			GL_HALF_FLOAT },	// TextureFormat::A16B16G16R16F,       ///< 64 ビットの浮動小数点フォーマット
+			{ GL_RGBA32F,			GL_RGBA,			GL_FLOAT },			// TextureFormat::A32B32G32R32F,       ///< 128 ビットの浮動小数点フォーマット
+			{ GL_R16F,				GL_RED,				GL_HALF_FLOAT },	// TextureFormat::R16F,
+			{ GL_R32UI,				GL_RED,				GL_FLOAT },			// TextureFormat::R32F,
+																			//{ GL_R32UI,				GL_RED_INTEGER,		GL_INT },			// TextureFormat::R32_UInt,
+			//{ GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE }, // TextureFormat::D24S8,               ///< 32 ビットの Z バッファフォーマット
+		};
+
+#else
 		// http://angra.blog31.fc2.com/blog-entry-11.html
 		static GLenum table[][3] =
 		{
@@ -153,6 +170,7 @@ public:
 																			//{ GL_R32UI,				GL_RED_INTEGER,		GL_INT },			// TextureFormat::R32_UInt,
 			//{ GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE }, // TextureFormat::D24S8,               ///< 32 ビットの Z バッファフォーマット
 		};
+#endif
 		*internalFormat = table[(int)format][0];
 		*pixelFormat = table[(int)format][1];
 		*elementType = table[(int)format][2];
@@ -189,6 +207,10 @@ void OpenGLDeviceContext::initialize(const Settings& settings)
 		m_glContext = glfwContext;
 	}
 
+#if defined(LN_GRAPHICS_OPENGLES)
+	LN_LOG_INFO << "OpenGL ES enabled.";
+#endif
+
 #if defined(LN_EMSCRIPTEN) || defined(LN_GRAPHICS_OPENGLES)
 #else
 	int result = gladLoadGL();
@@ -200,7 +222,21 @@ void OpenGLDeviceContext::initialize(const Settings& settings)
 	//GLint value;
 	//glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &value);
 
+	LN_LOG_INFO << "GL_VERSION : " << glGetString(GL_VERSION);
+
 	GL_CHECK(glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &m_caps.MAX_VERTEX_ATTRIBS));
+	GL_CHECK(glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &m_caps.MAX_COLOR_ATTACHMENTS));
+	LN_LOG_INFO << "GL_MAX_VERTEX_ATTRIBS : " << m_caps.MAX_VERTEX_ATTRIBS;
+	LN_LOG_INFO << "GL_MAX_COLOR_ATTACHMENTS : " << m_caps.MAX_COLOR_ATTACHMENTS;
+	
+	
+	int extensions = 0;
+	glGetIntegerv(GL_EXTENSIONS, &extensions);
+	glGetError();	// ignore error.
+	LN_LOG_INFO << "GL_EXTENSIONS : " << extensions;
+	for(int i = 0; i < extensions; i++) {
+		LN_LOG_INFO << "  " << glGetStringi(GL_EXTENSIONS, i);
+	}
 
 	GL_CHECK(glGenVertexArrays(1, &m_vao));
 	GL_CHECK(glGenFramebuffers(1, &m_fbo));
@@ -494,6 +530,7 @@ void OpenGLDeviceContext::onUpdateFrameBuffers(ITexture** renderTargets, int ren
 	GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_fbo));
 
 	// color buffers
+	int maxCount = std::min(renderTargetsCount, m_caps.MAX_COLOR_ATTACHMENTS);
 	for (int i = 0; i < renderTargetsCount; ++i)
 	{
 		if (renderTargets[i])
@@ -672,11 +709,44 @@ void OpenGLDeviceContext::onPresent(ISwapChain* swapChain)
 	s->getBackendBufferSize(&windowSize);
 	bufferSize = s->getColorBuffer()->realSize();
 
+	printf("xxxx:%d %d %d %d\n", bufferSize.width, bufferSize.height, windowSize.width, windowSize.height);
+
+//375 812
 	// SwapChain の Framebuffer をウィンドウのバックバッファへ転送
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, s->fbo());
-	glBlitFramebuffer(0, 0, bufferSize.width, bufferSize.height, 0, 0, windowSize.width, windowSize.height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
-	GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+	GL_CHECK(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 1));
+	GL_CHECK(glBindFramebuffer(GL_READ_FRAMEBUFFER, s->fbo()));
+
+	printf("s->fbo():%d\n", s->fbo());
+	
+	LN_ENSURE(GL_FRAMEBUFFER_COMPLETE == glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER),
+		"glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER) failed 0x%08x",
+		glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER));
+
+		
+	LN_ENSURE(GL_FRAMEBUFFER_COMPLETE == glCheckFramebufferStatus(GL_READ_FRAMEBUFFER),
+		"glCheckFramebufferStatus(GL_READ_FRAMEBUFFER) failed 0x%08x",
+		glCheckFramebufferStatus(GL_READ_FRAMEBUFFER));
+
+
+		// 現在のフレームバッファにアタッチされているカラーバッファのレンダーバッファ名を取得
+    GLint colorBufferName = 0;
+    glGetFramebufferAttachmentParameteriv( GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &colorBufferName );
+ 
+ 	// レンダーバッファ(カラーバッファ)をバインド
+    glBindRenderbuffer( GL_RENDERBUFFER, colorBufferName );
+
+    // カラーバッファの幅と高さを取得
+	GLint width;
+	GLint height;
+    glGetRenderbufferParameteriv( GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &width );
+    glGetRenderbufferParameteriv( GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &height );
+
+	printf("yyyy:%d %d\n", width, height);
+
+
+
+	GL_CHECK(glBlitFramebuffer(0, 0, bufferSize.width, bufferSize.height, 0, 0, 375, 812, GL_COLOR_BUFFER_BIT, GL_NEAREST));
+	GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 1));
 
 	/* レンダーテクスチャを使用 */
 	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -1231,6 +1301,14 @@ void GLRenderTargetTexture::initialize(uint32_t width, uint32_t height, TextureF
 	GLenum internalFormat;
 	//m_pixelFormat = GL_BGRA;
 	OpenGLHelper::getGLTextureFormat(requestFormat, &internalFormat, &m_pixelFormat, &m_elementType);
+
+	printf("!!!! %x %x %x¥n", internalFormat, m_pixelFormat, m_elementType);
+	
+	printf("!!!! %d %d¥n", width, height);
+
+	internalFormat = GL_RGB;
+	m_pixelFormat = GL_RGB;
+	m_elementType = GL_UNSIGNED_BYTE;
 
 	GL_CHECK(glTexImage2D(
 		GL_TEXTURE_2D,

@@ -144,6 +144,7 @@ set(LN_SOURCES_UI
 if (APPLE)
     set(LN_SOURCES_Platform
         ${LN_SOURCES_Platform}
+        src/Platform/iOSPlatformInterface.mm
         src/Platform/CocoaPlatformInterface.mm
         src/Platform/PlatformSupport.mm
     )

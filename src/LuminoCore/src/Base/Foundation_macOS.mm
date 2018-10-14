@@ -18,7 +18,7 @@ namespace ln {
 
 void writeNSLog(const char* str)
 {
-	NSLog(str);
+	NSLog([NSString stringWithCString: str encoding:NSUTF8StringEncoding]);
 }
 
 PlatformEnvironment::StringType PlatformEnvironment::getExecutablePath()

@@ -158,6 +158,7 @@ private:
 	struct
 	{
 		GLint MAX_VERTEX_ATTRIBS = 0;
+		GLint MAX_COLOR_ATTACHMENTS = 0;
 
 	} m_caps;
 };

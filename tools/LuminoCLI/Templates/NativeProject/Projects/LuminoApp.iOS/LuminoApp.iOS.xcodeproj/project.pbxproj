@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8C561D1A2170D7FE009F0306 /* Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8C561D182170D7FE009F0306 /* Application.cpp */; };
 		8C95E8C6213BC8B100772569 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8C5213BC8B100772569 /* AppDelegate.mm */; };
 		8C95E8C9213BC8B100772569 /* Renderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8C8213BC8B100772569 /* Renderer.mm */; };
 		8C95E8CC213BC8B100772569 /* GameViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8CB213BC8B100772569 /* GameViewController.mm */; };
@@ -26,6 +27,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8C561D182170D7FE009F0306 /* Application.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Application.cpp; path = ../../../Sources/Application.cpp; sourceTree = "<group>"; };
+		8C561D192170D7FE009F0306 /* Application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Application.h; path = ../../../Sources/Application.h; sourceTree = "<group>"; };
+		8C561D1B2170D81B009F0306 /* Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
 		8C95E8C1213BC8B100772569 /* LuminoApp.iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LuminoApp.iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C95E8C4213BC8B100772569 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		8C95E8C5213BC8B100772569 /* AppDelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AppDelegate.mm; sourceTree = "<group>"; };
@@ -69,9 +73,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8C561D172170D7E5009F0306 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				8C561D182170D7FE009F0306 /* Application.cpp */,
+				8C561D192170D7FE009F0306 /* Application.h */,
+			);
+			name = Sources;
+			path = "New Group";
+			sourceTree = "<group>";
+		};
 		8C95E8B8213BC8B000772569 = {
 			isa = PBXGroup;
 			children = (
+				8C561D172170D7E5009F0306 /* Sources */,
 				8C95E8C3213BC8B100772569 /* LuminoApp.iOS */,
 				8C95E8C2213BC8B100772569 /* Products */,
 				8CC44757216F8B97002F20DA /* Frameworks */,
@@ -102,6 +117,7 @@
 				8C95E8D5213BC8B100772569 /* LaunchScreen.storyboard */,
 				8C95E8D8213BC8B100772569 /* Info.plist */,
 				8C95E8D9213BC8B100772569 /* main.mm */,
+				8C561D1B2170D81B009F0306 /* Prefix.pch */,
 			);
 			path = LuminoApp.iOS;
 			sourceTree = "<group>";
@@ -194,6 +210,7 @@
 			files = (
 				8C95E8DA213BC8B100772569 /* main.mm in Sources */,
 				8C95E8CE213BC8B100772569 /* Shaders.metal in Sources */,
+				8C561D1A2170D7FE009F0306 /* Application.cpp in Sources */,
 				8C95E8C9213BC8B100772569 /* Renderer.mm in Sources */,
 				8C95E8CC213BC8B100772569 /* GameViewController.mm in Sources */,
 				8C95E8C6213BC8B100772569 /* AppDelegate.mm in Sources */,
@@ -331,6 +348,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = LuminoApp.iOS/Prefix.pch;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Engine/include";
 				INFOPLIST_FILE = LuminoApp.iOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -346,6 +365,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = LuminoApp.iOS/Prefix.pch;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Engine/include";
 				INFOPLIST_FILE = LuminoApp.iOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
