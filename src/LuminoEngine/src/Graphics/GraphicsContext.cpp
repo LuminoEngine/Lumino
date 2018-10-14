@@ -68,7 +68,7 @@ detail::ISwapChain* SwapChain::resolveRHIObject() const
 // GraphicsContext
 namespace detail {
 
-void SwapChainHelper::setOpenGLBackendSize(SwapChain* swapChain, int width, int height)
+void SwapChainHelper::setBackendBufferSize(SwapChain* swapChain, int width, int height)
 {
     LN_DCHECK(swapChain);
     if (GLSwapChain* glswap = dynamic_cast<GLSwapChain*>(swapChain->resolveRHIObject())) {
