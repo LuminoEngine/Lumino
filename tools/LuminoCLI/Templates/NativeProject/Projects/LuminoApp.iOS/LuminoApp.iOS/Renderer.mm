@@ -1,29 +1,18 @@
-//
-//  Renderer.m
-//  LuminoApp.iOS
-//
-//  Created by lriki on 2018/09/02.
-//  Copyright © 2018年 Lumino. All rights reserved.
-//
 
 #import <simd/simd.h>
 #import <ModelIO/ModelIO.h>
 
 #import "Renderer.h"
 
-// Include header shared between C code here, which executes Metal API commands, and .metal files
 #import "ShaderTypes.h"
 #import <OpenGLES/ES3/gl.h>
 #import <OpenGLES/ES3/glext.h>
-
 #include <LuminoEngine/Platform/iOSPlatformInterface.hpp>
-
 
 @implementation Renderer
 {
 	EAGLContext* _eaglContext;
 }
-
 
 -(nonnull instancetype)initWithOpenGLKitView:(nonnull GLKView *)view;
 {
@@ -32,55 +21,51 @@
 	{
 		// Create OpenGL context
 		_eaglContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3];
-		
 		[EAGLContext setCurrentContext:_eaglContext];
-		
-		
 		view.context = _eaglContext;
 		
-		{
-			[view bindDrawable ];
-			
-			GLint defaultFBO;
-			glGetIntegerv(GL_FRAMEBUFFER_BINDING, &defaultFBO);
-			printf("DEFAULT FBO: %d", defaultFBO);
-		}
+        // Create badkend FBO
+        [view bindDrawable];
+        GLint backendFBO;
+        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &backendFBO);
 		
 #if 1
-		[view bindDrawable];
-		GLint defaultFBO;
-		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &defaultFBO);
+		//[view bindDrawable];
+		//GLint defaultFBO;
+		//glGetIntegerv(GL_FRAMEBUFFER_BINDING, &defaultFBO);
 		
-		glBindFramebuffer(GL_FRAMEBUFFER, defaultFBO);
-		
-		// 現在のフレームバッファにアタッチされているカラーバッファのレンダーバッファ名を取得
-		GLint colorBufferName = 0;
-		glGetFramebufferAttachmentParameteriv( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &colorBufferName );
-		
-		// レンダーバッファ(カラーバッファ)をバインド
-		glBindRenderbuffer( GL_RENDERBUFFER, colorBufferName );
-		
-		// カラーバッファの幅と高さを取得
-		GLint width2;
-		GLint height2;
-		glGetRenderbufferParameteriv( GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &width2 );
-		glGetRenderbufferParameteriv( GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &height2 );
+        {
+            //glBindFramebuffer(GL_FRAMEBUFFER, defaultFBO);
+            
+            // 現在のフレームバッファにアタッチされているカラーバッファのレンダーバッファ名を取得
+            GLint colorBufferName = 0;
+            glGetFramebufferAttachmentParameteriv( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &colorBufferName );
+            
+            // レンダーバッファ(カラーバッファ)をバインド
+            glBindRenderbuffer( GL_RENDERBUFFER, colorBufferName );
+            
+            // カラーバッファの幅と高さを取得
+            GLint backendWidth;
+            GLint backendHeight;
+            glGetRenderbufferParameteriv( GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &backendWidth );
+            glGetRenderbufferParameteriv( GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &backendHeight );
+        }
 		
 		
 		[view enableSetNeedsDisplay];
 		//glBindRenderbuffer( GL_RENDERBUFFER, 0 );
 		
-		auto aa = view.enableSetNeedsDisplay;
+		//auto aa = view.enableSetNeedsDisplay;
 		
-		int width = view.frame.size.width;
-		int height = view.frame.size.height;
-		ln::iOSPlatformInterface::nativeInitialize(
-												   width,
-												   height);
+		//int width = view.frame.size.width;
+		//int height = view.frame.size.height;
+		ln::iOSPlatformInterface::nativeInitialize(backendWidth, backendHeight);
+
+        ln::detail::SwapChainHelper::setOpenGLBackendFBO(ln::Engine::mainWindow()->swapChain(), backendFBO);
+        
+
 		
 		[view setNeedsDisplay];
-		//view.setNeedsDisplay = YES;
-		//view.context = _eaglContext;
 #endif
 	}
 	

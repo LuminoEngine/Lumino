@@ -68,7 +68,7 @@ detail::ISwapChain* SwapChain::resolveRHIObject() const
 // GraphicsContext
 namespace detail {
 
-void SwapChainHelper::setOpenGLEndpointFBO(SwapChain* swapChain, uint32_t id)
+void SwapChainHelper::setOpenGLBackendFBO(SwapChain* swapChain, uint32_t id)
 {
     LN_DCHECK(swapChain);
     if (GLSwapChain* glswap = dynamic_cast<GLSwapChain*>(swapChain->resolveRHIObject())) {

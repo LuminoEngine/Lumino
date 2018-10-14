@@ -53,7 +53,7 @@ namespace detail {
 class SwapChainHelper
 {
 public:
-    static void setOpenGLEndpointFBO(SwapChain* swapChain, uint32_t id);
+    static void setOpenGLBackendFBO(SwapChain* swapChain, uint32_t id);
 };
 
 } // namespace detail
