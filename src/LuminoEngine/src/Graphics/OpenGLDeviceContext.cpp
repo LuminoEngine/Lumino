@@ -770,6 +770,8 @@ GLSwapChain::GLSwapChain()
 	: m_backbuffer(nullptr)
 	, m_fbo(0)
     , m_defaultFBO(0)
+    , m_backengBufferWidth(0)
+    , m_backengBufferHeight(0)
 {
 }
 
@@ -787,6 +789,12 @@ void GLSwapChain::dispose()
 	m_backbuffer = nullptr;
 
 	ISwapChain::dispose();
+}
+
+void GLSwapChain::getBackendBufferSize(SizeI* outSize)
+{
+    outSize->width = m_backengBufferWidth;
+    outSize->height = m_backengBufferHeight;
 }
 
 void GLSwapChain::genBackbuffer(uint32_t width, uint32_t height)
@@ -811,12 +819,19 @@ ITexture* GLSwapChain::getColorBuffer() const
 	return m_backbuffer;
 }
 
+void GLSwapChain::setBackendBufferSize(int width, int height)
+{
+    m_backengBufferWidth = width;
+    m_backengBufferHeight = height;
+}
+
 //=============================================================================
 // EmptyGLContext
 
 Ref<GLSwapChain> EmptyGLContext::createSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
 {
-	auto ptr = makeRef<EmptyGLSwapChain>(backbufferSize);
+	auto ptr = makeRef<EmptyGLSwapChain>();
+    ptr->setBackendBufferSize(backbufferSize.width, backbufferSize.height);
 	ptr->genBackbuffer(backbufferSize.width, backbufferSize.height);
 	return ptr;
 }

@@ -53,6 +53,7 @@ namespace detail {
 class SwapChainHelper
 {
 public:
+    static void setOpenGLBackendSize(SwapChain* swapChain, int width, int height);
     static void setOpenGLBackendFBO(SwapChain* swapChain, uint32_t id);
 };
 

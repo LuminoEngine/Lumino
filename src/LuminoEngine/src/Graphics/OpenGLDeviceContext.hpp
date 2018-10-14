@@ -185,7 +185,7 @@ public:
 	virtual ~GLSwapChain() = default;
 	virtual void dispose() override;
 	virtual ITexture* getColorBuffer() const override;
-	virtual void getBackendBufferSize(SizeI* outSize) = 0;
+    virtual void getBackendBufferSize(SizeI* outSize);
 
 	void genBackbuffer(uint32_t width, uint32_t height);
 	GLuint fbo() const { return m_fbo; }
@@ -193,6 +193,8 @@ public:
 
     GLuint defaultFBO() const { return m_defaultFBO; }
     void setDefaultFBO(GLuint id) { m_defaultFBO = id; }
+
+    void setBackendBufferSize(int width, int height);
 
 private:
 	Ref<GLRenderTargetTexture> m_backbuffer;
@@ -204,6 +206,8 @@ private:
     // このため glBlitFramebuffer のために Id 0 をバインドすると、「FBO ではない」エラーとなってしまう。
     // GLKView::bindDrawable によって glBlitFramebuffer 可能な FBO を作ることができるが、その Id は 0 ではないので、GLKView 側からもらうことでデフォルトを認識できるようにする。
     GLuint m_defaultFBO;
+    int m_backengBufferWidth;
+    int m_backengBufferHeight;
 };
 
 struct GLVertexElement
@@ -559,12 +563,10 @@ class EmptyGLSwapChain
 	: public GLSwapChain
 {
 public:
-	EmptyGLSwapChain(const SizeI& size) : m_size(size) {}
+	EmptyGLSwapChain() {}
 	virtual ~EmptyGLSwapChain() = default;
-	virtual void getBackendBufferSize(SizeI* outSize) override { *outSize = m_size; }
 
 private:
-	SizeI m_size;
 };
 
 } // namespace detail
