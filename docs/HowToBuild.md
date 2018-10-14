@@ -1,12 +1,22 @@
+ビルド方法
+========
 
 
 
 
-
+必要なパッケージをインストールする
+--------
 ### Windows
 
+#### Visual Studio
+Visual Studio 2017 をインストールしてください。
 
-[Win + X] > [Windows PowerShell(管理者)]
+#### Chocolatey
+Chocolatey をインストールしてください。
+― [Chocolatey installation](https://chocolatey.org/docs/installation)
+
+続いて Windows PowerShell(管理者) で各パッケージをインストールします。 
+- [Win + X] > [Windows PowerShell(管理者)]
 
 ```
 choco install cmake
@@ -17,69 +27,42 @@ choco install python3 --pre
 choco install wixtoolset
 ```
 
-
-
-
-
-
-
-on Developer Command Prompt for VS2017
-```
-> dotnet run -- MakeVSProjects
-```
-
-After this, please check in the "build/..." folder.
-
-
 ### macOS
+[dotnet](https://docs.microsoft.com/ja-jp/dotnet/core/macos-prerequisites?tabs=netcore2x) をインストールしてください。
 
+その他のパッケージは homebrew でインストールします。
 ```
-$ brew install git
-brew install doxygen docfx
-
-brew update
-$ brew install openssl
-$ brew install python3
-```
-
-Error downloading URL 'https://github.com/kripken/emscripten/archive/1.38.11.tar.gz': <urlopen error [SSL: TLSV1_ALERT_PROTOCOL_VERSION] tlsv1 alert protocol version (_ssl.c:590)>
-
-wget https://github.com/kripken/emscripten/archive/1.38.10.tar.gz
-
-or 
-
-https://github.com/kripken/emscripten/issues/6275
-
-
-```
-$ dotnet run -- BuildExternalProjects
-$ dotnet run -- BuildEngine_Linux
+brew install git cmake doxygen docfx openssl python3
 ```
 
 
-
-### Linux(Ubuntu)
-
-install `dotnet`
-
-https://www.microsoft.com/net/download/linux-package-manager/ubuntu16-04/sdk-current
+ビルドする
+--------
+Lumino のルートフォルダ (build.csproj のあるフォルダ) で次のコマンドを実行してください。
 
 ```
-$ dotnet run -- BuildExternalProjects
-$ dotnet run -- BuildEngine_Linux
+dotnet run
 ```
 
+このコマンドは Lumino 本体のビルド、ドキュメントのビルド、リリースパッケージの作成までの一連のタスクを実行します。
 
+より細かい単位でタスクを実行したい場合は次のコマンドを使用します。
 
-
-
-Note
---------------------
-
-on Developer Command Prompt for VS2017
 ```
-> dotnet run -- MakeVSProjects
+dotnet run -- <タスク名>
 ```
+
+<タスク名> は以下のフォルダ内の .cs ファイルに定義されているクラス名です。
+- tools/LuminoBuild/Rules
+- tools/LuminoBuild/Tasks
+
+
+TIPS
+--------
+Lumino の開発を行う場合、ビルド後、build/<ターゲット名> フォルダ内に生成されている各 IDE 用のプロジェクトを開いてコーディングを行うとスムーズに開発できます。その場合は最初に `dotnet run` を実行してパッケージ一式をビルドしてください。
+
+例えば、Visual Studio のプロジェクト (ソリューションファイル) は build/MSVC2017-x86-MT/Lumino.sln などに生成されます。
+
 
 After this, please check in the "build/..." folder.
 
