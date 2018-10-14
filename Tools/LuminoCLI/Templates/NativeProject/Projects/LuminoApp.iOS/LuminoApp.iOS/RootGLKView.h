@@ -1,5 +1,4 @@
 
-
 #import <UIKit/UIKit.h>
 #import <GLKit/GLKit.h>
 #import <OpenGLES/EAGL.h>
@@ -7,7 +6,7 @@
 #import <OpenGLES/ES2/gl.h>
 #import <OpenGLES/ES2/glext.h>
 
-@interface RootGLView : GLKView
+@interface RootGLKView : GLKView
 
 
 @end

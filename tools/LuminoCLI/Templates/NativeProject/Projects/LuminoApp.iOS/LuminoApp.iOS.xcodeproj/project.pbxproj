@@ -13,7 +13,6 @@
 		8C95E8C6213BC8B100772569 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8C5213BC8B100772569 /* AppDelegate.mm */; };
 		8C95E8C9213BC8B100772569 /* Renderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8C8213BC8B100772569 /* Renderer.mm */; };
 		8C95E8CC213BC8B100772569 /* GameViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8CB213BC8B100772569 /* GameViewController.mm */; };
-		8C95E8CE213BC8B100772569 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8CD213BC8B100772569 /* Shaders.metal */; };
 		8C95E8D2213BC8B100772569 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8C95E8D0213BC8B100772569 /* Main.storyboard */; };
 		8C95E8D4213BC8B100772569 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C95E8D3213BC8B100772569 /* Assets.xcassets */; };
 		8C95E8D7213BC8B100772569 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8C95E8D5213BC8B100772569 /* LaunchScreen.storyboard */; };
@@ -25,6 +24,7 @@
 		8CC44763216F8C24002F20DA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC44762216F8C24002F20DA /* Foundation.framework */; };
 		8CC44765216F8C6E002F20DA /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC44764216F8C6E002F20DA /* GLKit.framework */; };
 		8CC44767216F8C76002F20DA /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC44766216F8C76002F20DA /* OpenGLES.framework */; };
+		8CDB756E21737735006F48BC /* RootGLKView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8CDB756C21737735006F48BC /* RootGLKView.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,8 +40,6 @@
 		8C95E8C8213BC8B100772569 /* Renderer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = Renderer.mm; sourceTree = "<group>"; };
 		8C95E8CA213BC8B100772569 /* GameViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameViewController.h; sourceTree = "<group>"; };
 		8C95E8CB213BC8B100772569 /* GameViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = GameViewController.mm; sourceTree = "<group>"; };
-		8C95E8CD213BC8B100772569 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
-		8C95E8CF213BC8B100772569 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
 		8C95E8D1213BC8B100772569 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		8C95E8D3213BC8B100772569 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8C95E8D6213BC8B100772569 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -55,6 +53,8 @@
 		8CC44762216F8C24002F20DA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		8CC44764216F8C6E002F20DA /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 		8CC44766216F8C76002F20DA /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		8CDB756C21737735006F48BC /* RootGLKView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RootGLKView.mm; sourceTree = "<group>"; };
+		8CDB756D21737735006F48BC /* RootGLKView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RootGLKView.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,14 +114,14 @@
 				8C95E8C8213BC8B100772569 /* Renderer.mm */,
 				8C95E8CA213BC8B100772569 /* GameViewController.h */,
 				8C95E8CB213BC8B100772569 /* GameViewController.mm */,
-				8C95E8CD213BC8B100772569 /* Shaders.metal */,
-				8C95E8CF213BC8B100772569 /* ShaderTypes.h */,
 				8C95E8D0213BC8B100772569 /* Main.storyboard */,
 				8C95E8D3213BC8B100772569 /* Assets.xcassets */,
 				8C95E8D5213BC8B100772569 /* LaunchScreen.storyboard */,
 				8C95E8D8213BC8B100772569 /* Info.plist */,
 				8C95E8D9213BC8B100772569 /* main.mm */,
 				8C561D1B2170D81B009F0306 /* Prefix.pch */,
+				8CDB756D21737735006F48BC /* RootGLKView.h */,
+				8CDB756C21737735006F48BC /* RootGLKView.mm */,
 			);
 			path = LuminoApp.iOS;
 			sourceTree = "<group>";
@@ -169,7 +169,7 @@
 		8C95E8B9213BC8B000772569 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0920;
+				LastUpgradeCheck = 1000;
 				ORGANIZATIONNAME = Lumino;
 				TargetAttributes = {
 					8C95E8C0213BC8B000772569 = {
@@ -215,11 +215,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				8C95E8DA213BC8B100772569 /* main.mm in Sources */,
-				8C95E8CE213BC8B100772569 /* Shaders.metal in Sources */,
 				8C561D1A2170D7FE009F0306 /* Application.cpp in Sources */,
 				8C95E8C9213BC8B100772569 /* Renderer.mm in Sources */,
 				8C95E8CC213BC8B100772569 /* GameViewController.mm in Sources */,
 				8C95E8C6213BC8B100772569 /* AppDelegate.mm in Sources */,
+				8CDB756E21737735006F48BC /* RootGLKView.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -259,6 +259,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -266,6 +267,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -314,6 +316,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -321,6 +324,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
