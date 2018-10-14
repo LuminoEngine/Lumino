@@ -15,9 +15,13 @@
 @end
 
 @implementation AppDelegate
-
+{
+	CADisplayLink* _displayLink;
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+	
+#if 0
 	// Override point for customization after application launch.
 	
 	// Create lumino app instance
@@ -30,7 +34,7 @@
 	
 	
 	// Create view controller
-	//_viewController = [[GameViewController alloc]init];
+	_viewController = [[GameViewController alloc]init];
 	
 	// Set RootViewController to window
 	//[_window addSubview: _viewController.view];
@@ -40,12 +44,12 @@
 	
 
 	// Window 作成
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    //self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 
 	// initWithNibName:nil で、nib(storyboard) からの読み込みを行わないようにする
-    _viewController = [[GameViewController alloc] initWithNibName:nil bundle:nil];
-    _viewController.wantsFullScreenLayout = YES;
-    [window setRootViewController:_viewController];
+    //_viewController = [[GameViewController alloc] initWithNibName:nil bundle:nil];
+    //_viewController.wantsFullScreenLayout = YES;
+    [_window setRootViewController:_viewController];
     //self.window.rootViewController = _viewController;
 
 	// Windowを表示する
@@ -53,8 +57,19 @@
 
 	// Hide status bar
     [[UIApplication sharedApplication] setStatusBarHidden:true];
-
+#endif
+	
+	// startMainLoop
+	{
+		_displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(displayDidRefresh:)];
+		[_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+	}
 	return YES;
+}
+
+- (void)displayDidRefresh:(CADisplayLink *)displayLink
+{
+	NSLog(@"called displayDidRefresh");
 }
 
 
@@ -83,6 +98,11 @@
 
 
 - (void)applicationWillTerminate:(UIApplication *)application {
+	// stopMainLoop
+	{
+		[_displayLink invalidate];
+		_displayLink = nil;
+	}
 	// Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 	ln::iOSPlatformInterface::nativeFinalize();
 }

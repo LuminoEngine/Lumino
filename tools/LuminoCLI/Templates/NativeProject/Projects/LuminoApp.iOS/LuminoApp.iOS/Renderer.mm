@@ -13,6 +13,8 @@
 
 // Include header shared between C code here, which executes Metal API commands, and .metal files
 #import "ShaderTypes.h"
+#import <OpenGLES/ES3/gl.h>
+#import <OpenGLES/ES3/glext.h>
 
 #include <LuminoEngine/Platform/iOSPlatformInterface.hpp>
 
@@ -29,25 +31,57 @@
 	if(self)
 	{
 		// Create OpenGL context
-		_eaglContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+		_eaglContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3];
 		
 		[EAGLContext setCurrentContext:_eaglContext];
 		
 		
-		CAEAGLLayer* layer = (CAEAGLLayer*)view.layer;
-		layer.opaque = YES;
-		layer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:
-									@(FALSE), kEAGLDrawablePropertyRetainedBacking,
-									kEAGLColorFormatRGBA8, kEAGLDrawablePropertyColorFormat, nil];
-		
-		
-		
 		view.context = _eaglContext;
-
-
-        ln::iOSPlatformInterface::nativeInitialize(
-            view.frame.size.width,
-            view.frame.size.height);
+		
+		{
+			[view bindDrawable ];
+			
+			GLint defaultFBO;
+			glGetIntegerv(GL_FRAMEBUFFER_BINDING, &defaultFBO);
+			printf("DEFAULT FBO: %d", defaultFBO);
+		}
+		
+#if 1
+		[view bindDrawable];
+		GLint defaultFBO;
+		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &defaultFBO);
+		
+		glBindFramebuffer(GL_FRAMEBUFFER, defaultFBO);
+		
+		// 現在のフレームバッファにアタッチされているカラーバッファのレンダーバッファ名を取得
+		GLint colorBufferName = 0;
+		glGetFramebufferAttachmentParameteriv( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &colorBufferName );
+		
+		// レンダーバッファ(カラーバッファ)をバインド
+		glBindRenderbuffer( GL_RENDERBUFFER, colorBufferName );
+		
+		// カラーバッファの幅と高さを取得
+		GLint width2;
+		GLint height2;
+		glGetRenderbufferParameteriv( GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &width2 );
+		glGetRenderbufferParameteriv( GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &height2 );
+		
+		
+		[view enableSetNeedsDisplay];
+		//glBindRenderbuffer( GL_RENDERBUFFER, 0 );
+		
+		auto aa = view.enableSetNeedsDisplay;
+		
+		int width = view.frame.size.width;
+		int height = view.frame.size.height;
+		ln::iOSPlatformInterface::nativeInitialize(
+												   width,
+												   height);
+		
+		[view setNeedsDisplay];
+		//view.setNeedsDisplay = YES;
+		//view.context = _eaglContext;
+#endif
 	}
 	
 	return self;

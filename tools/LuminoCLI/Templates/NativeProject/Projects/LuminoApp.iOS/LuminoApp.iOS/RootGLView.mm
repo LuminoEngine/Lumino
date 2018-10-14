@@ -1,7 +1,7 @@
 #import "RootGLView.h"
 #include <LuminoEngine/Platform/iOSPlatformInterface.hpp>
 
-@implementation CCEAGLView
+@implementation RootGLView
 
 - (void)dealloc
 {
