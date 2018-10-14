@@ -359,10 +359,7 @@
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Engine/include";
 				INFOPLIST_FILE = LuminoApp.iOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(SRCROOT)/../../Engine/lib/iOS-SIMULATOR64-Release",
-					"$(SRCROOT)/../../Engine/lib/iOS-SIMULATOR64-Debug",
-				);
+				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../Engine/lib/iOS-SIMULATOR64-Release";
 				PRODUCT_BUNDLE_IDENTIFIER = "Lumino.LuminoApp-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -379,10 +376,7 @@
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Engine/include";
 				INFOPLIST_FILE = LuminoApp.iOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(SRCROOT)/../../Engine/lib/iOS-SIMULATOR64-Release",
-					"$(SRCROOT)/../../Engine/lib/iOS-SIMULATOR64-Debug",
-				);
+				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../Engine/lib/iOS-SIMULATOR64-Release";
 				PRODUCT_BUNDLE_IDENTIFIER = "Lumino.LuminoApp-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";

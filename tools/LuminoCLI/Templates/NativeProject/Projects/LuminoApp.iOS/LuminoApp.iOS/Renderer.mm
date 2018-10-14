@@ -34,22 +34,13 @@
 		//GLint defaultFBO;
 		//glGetIntegerv(GL_FRAMEBUFFER_BINDING, &defaultFBO);
 		
-        {
-            //glBindFramebuffer(GL_FRAMEBUFFER, defaultFBO);
-            
-            // 現在のフレームバッファにアタッチされているカラーバッファのレンダーバッファ名を取得
-            GLint colorBufferName = 0;
-            glGetFramebufferAttachmentParameteriv( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &colorBufferName );
-            
-            // レンダーバッファ(カラーバッファ)をバインド
-            glBindRenderbuffer( GL_RENDERBUFFER, colorBufferName );
-            
-            // カラーバッファの幅と高さを取得
-            GLint backendWidth;
-            GLint backendHeight;
-            glGetRenderbufferParameteriv( GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &backendWidth );
-            glGetRenderbufferParameteriv( GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &backendHeight );
-        }
+		
+		// カラーバッファの幅と高さを取得
+		GLint backendWidth = 0;
+		GLint backendHeight = 0;
+		glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &backendWidth);
+		glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &backendHeight);
+		
 		
 		
 		[view enableSetNeedsDisplay];
@@ -61,6 +52,7 @@
 		//int height = view.frame.size.height;
 		ln::iOSPlatformInterface::nativeInitialize(backendWidth, backendHeight);
 
+		ln::detail::SwapChainHelper::setBackendBufferSize(ln::Engine::mainWindow()->swapChain(), backendWidth, backendHeight);
         ln::detail::SwapChainHelper::setOpenGLBackendFBO(ln::Engine::mainWindow()->swapChain(), backendFBO);
         
 
