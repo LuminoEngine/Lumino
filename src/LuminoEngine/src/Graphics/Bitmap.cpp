@@ -58,40 +58,43 @@ public:
 
 	// データは Bitmap クラスから直接渡されることを想定し、downflow で渡すこと。
 	// フォーマットは RGBA
-	void save(Stream* stream, const byte_t* data, const SizeI& size)
-	{
-		png_struct* png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-		if (LN_ENSURE(png, "png_create_write_struct() failed")) return;
-
-		png_infop info_ptr = png_create_info_struct(png);
-		auto se = makeScopedCall([&]() {png_destroy_write_struct(&png, &info_ptr); }); // finalizer
-		if (LN_ENSURE(info_ptr, "png_create_info_struct() failed")) return;
-
-		png_set_IHDR(
-			png, info_ptr,
-			size.width, size.height,
-			8,						// 各色 8 bit
-			PNG_COLOR_TYPE_RGBA,	// RGBA フォーマット
-			PNG_INTERLACE_NONE,
-			PNG_COMPRESSION_TYPE_DEFAULT,
-			PNG_FILTER_TYPE_DEFAULT);
-		png_set_compression_level(png, 1);
-		png_set_write_fn(png, stream, pngWriteCallback, NULL);
-
-		std::vector<png_byte*> rows(size.height);
-		int rowBytes = png_get_rowbytes(png, info_ptr);
-		for (size_t y = 0; y < size.height; ++y)
-			rows[y] = (png_byte*)data + (rowBytes * y);
-
-		// write PNG information to file
-		png_write_info(png, info_ptr);
-
-		png_set_rows(png, info_ptr, rows.data());
-		png_write_png(png, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
-
-		png_write_end(png, info_ptr);
-	}
+	void save(Stream* stream, const byte_t* data, const SizeI& size);
 };
+
+void PngBitmapEncoder::save(Stream* stream, const byte_t* data, const SizeI& size)
+{
+	png_struct* png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	if (LN_ENSURE(png, "png_create_write_struct() failed")) return;
+
+	png_infop info_ptr = png_create_info_struct(png);
+	auto se = makeScopedCall([&]() {png_destroy_write_struct(&png, &info_ptr); }); // finalizer
+	if (LN_ENSURE(info_ptr, "png_create_info_struct() failed")) return;
+
+	png_set_IHDR(
+		png, info_ptr,
+		size.width, size.height,
+		8,						// 各色 8 bit
+		PNG_COLOR_TYPE_RGBA,	// RGBA フォーマット
+		PNG_INTERLACE_NONE,
+		PNG_COMPRESSION_TYPE_DEFAULT,
+		PNG_FILTER_TYPE_DEFAULT);
+	png_set_compression_level(png, 1);
+	png_set_write_fn(png, stream, pngWriteCallback, NULL);
+
+	std::vector<png_byte*> rows(size.height);
+	int rowBytes = png_get_rowbytes(png, info_ptr);
+	for (size_t y = 0; y < size.height; ++y)
+		rows[y] = (png_byte*)data + (rowBytes * y);
+
+	// write PNG information to file
+	png_write_info(png, info_ptr);
+
+	png_set_rows(png, info_ptr, rows.data());
+	png_write_png(png, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
+
+	png_write_end(png, info_ptr);
+}
+
 
 
 class IBitmapDecoder

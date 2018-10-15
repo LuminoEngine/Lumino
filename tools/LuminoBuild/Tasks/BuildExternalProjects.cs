@@ -125,7 +125,20 @@ namespace LuminoBuild.Tasks
             }
             if (!Directory.Exists("libpng"))
             {
-                Utils.CallProcess("git", "clone --progress --depth 1 -b libpng17 https://github.com/glennrp/libpng.git libpng");
+                Utils.CallProcess("git", "clone --progress --depth 1 -b v1.6.9 git://git.code.sf.net/p/libpng/code libpng");
+                //Utils.CallProcess("git", "clone --progress --depth 1 -b libpng17 https://github.com/glennrp/libpng.git libpng");
+
+#if false
+                var zip = Path.Combine(reposDir, "lpng1635.zip");
+                Utils.DownloadFile("https://download.sourceforge.net/libpng/lpng1635.zip", zip);
+
+                var dir = Path.Combine(reposDir, "lpng1635");
+                Utils.ExtractZipFile(zip, dir);
+                Directory.Move(Path.Combine(dir, "lpng1635"), Path.Combine(reposDir, "libpng"));
+                //Directory.Move(dir, Path.Combine(reposDir, "libpng"));
+
+                //Utils.CallProcess("git", "clone --progress --depth 1 -b libpng17 https://github.com/glennrp/libpng.git libpng");
+#endif
                 Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "libpng", "CMakeLists.txt"), "libpng");
             }
             if (!Directory.Exists("glslang"))
