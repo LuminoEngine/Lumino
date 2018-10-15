@@ -94,6 +94,10 @@ void EngineManager::initializeAllManagers()
 
 void EngineManager::initializeCommon()
 {
+#if defined(LN_OS_WIN32) || defined(LN_OS_MAC)
+	auto log = Path(Path(Environment::executablePath()).parent(), u"lumino.log");
+	GlobalLogger::addFileAdapter(log.str().toStdString());
+#endif
 }
 
 void EngineManager::initializePlatformManager()

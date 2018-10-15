@@ -450,9 +450,6 @@ int CppLexer::ReadNumericLiteral(const Range& buffer)
 	bool bEnd = false;
 	while (r.pos < r.end && !bEnd)
 	{
-		if (r.pos[0] > 255) {	// wchar_t の範囲チェック
-			break;
-		}
 		Flags<AlphaNumTypeFlags> charType = GetAlphaNumType(r.pos[0]);
 
 		// マルチバイトコードまたは制御文字または . 以外の演算子であれば終了
