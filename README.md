@@ -11,7 +11,7 @@ Get started
 
 [Website](https://lriki.github.io/lumino/)
 
-[Roadmap](https://lriki.github.io/lumino/articles/downloads/DevVer.html)
+[Roadmap](https://github.com/lriki/Lumino/wiki/ProjectRoadmap)
 
 [How to build](docs/HowToBuild.md)
 
