@@ -19,7 +19,7 @@ namespace LuminoBuild.Tasks
             var files = new List<(string src, string dst)>()
             {
                 (
-                    Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "MSVC2017-x86-MD", "LuminoCore.lib"),
+                    Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "MSVC2017-x86-MD", "LuminoCored.lib"),
                     Path.Combine(nativeDir, "lib", "MSVC2017-x86-MD", "Debug", "LuminoCore.lib")
                 ),
                 (
@@ -35,7 +35,7 @@ namespace LuminoBuild.Tasks
                 //    Path.Combine(nativeDir, "lib", "MSVC2017-x86-MT", "Release", "LuminoCore.lib")
                 //),
                 (
-                    Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "MSVC2017-x64-MD", "LuminoCore.lib"),
+                    Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "MSVC2017-x64-MD", "LuminoCored.lib"),
                     Path.Combine(nativeDir, "lib", "MSVC2017-x64-MD", "Debug", "LuminoCore.lib")
                 ),
                 (
@@ -65,9 +65,13 @@ namespace LuminoBuild.Tasks
                 ),
             };
 
+            Directory.CreateDirectory(Path.Combine(nativeDir, "include"));
             Utils.CopyDirectory(
                 Path.Combine(builder.LuminoRootDir, "include", "LuminoCore"),
-                Path.Combine(nativeDir, "include"));
+                Path.Combine(nativeDir, "include", "LuminoCore"));
+            File.Copy(
+                Path.Combine(builder.LuminoRootDir, "include", "LuminoCore.hpp"),
+                Path.Combine(nativeDir, "include", "LuminoCore.hpp"), true);
 
             foreach (var pair in files)
             {
