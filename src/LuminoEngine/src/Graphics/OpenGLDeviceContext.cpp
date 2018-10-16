@@ -1291,13 +1291,9 @@ void GLRenderTargetTexture::initialize(uint32_t width, uint32_t height, TextureF
 	//m_pixelFormat = GL_BGRA;
 	OpenGLHelper::getGLTextureFormat(requestFormat, &internalFormat, &m_pixelFormat, &m_elementType);
 
-	printf("!!!! %x %x %x¥n", internalFormat, m_pixelFormat, m_elementType);
-	
-	printf("!!!! %d %d¥n", width, height);
-
-	internalFormat = GL_RGB;
-	m_pixelFormat = GL_RGB;
-	m_elementType = GL_UNSIGNED_BYTE;
+//	internalFormat = GL_RGB;
+//	m_pixelFormat = GL_RGB;
+//	m_elementType = GL_UNSIGNED_BYTE;
 
 	GL_CHECK(glTexImage2D(
 		GL_TEXTURE_2D,
