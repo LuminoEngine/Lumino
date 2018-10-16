@@ -1,10 +1,3 @@
-//
-//  main.m
-//  LuminoApp.macOS
-//
-//  Created by lriki on 2018/09/02.
-//  Copyright © 2018年 Lumino. All rights reserved.
-//
 
 #include <LuminoEngine.hpp>
 #include <LuminoEngine/Platform/CocoaPlatformInterface.hpp>
