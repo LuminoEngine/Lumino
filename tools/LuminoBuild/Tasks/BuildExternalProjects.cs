@@ -154,7 +154,12 @@ namespace LuminoBuild.Tasks
             }
             if (!Directory.Exists("glfw"))
             {
-                Utils.CallProcess("git", "clone --progress --depth 1 -b 3.2.1 https://github.com/glfw/glfw.git glfw");
+                // TODO: #glfw 816 の対策が現時点の最新 3.2.1 には入っていないので、開発中の master を取ってくる
+                // 3.3 リリース後、そのタグで clone するようにしておく。
+                Utils.CallProcess("git", "clone --progress --depth 1 https://github.com/glfw/glfw.git glfw");
+                Directory.SetCurrentDirectory("glfw");
+                Utils.CallProcess("git", "checkout 5afcd0981bf2fe9b9550f24ba298857aac6c35c2");
+                Directory.SetCurrentDirectory(reposDir);
             }
             if (!Directory.Exists("glad"))
             {
