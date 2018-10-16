@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		8C32BB002171A1D8003E4BAC /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C32BAFF2171A1D8003E4BAC /* QuartzCore.framework */; };
-		8C561D1A2170D7FE009F0306 /* Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8C561D182170D7FE009F0306 /* Application.cpp */; };
 		8C561D1E2170D8A5009F0306 /* libLuminoEngine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC4475A216F8B98002F20DA /* libLuminoEngine.a */; };
 		8C95E8C6213BC8B100772569 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8C5213BC8B100772569 /* AppDelegate.mm */; };
 		8C95E8C9213BC8B100772569 /* Renderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8C8213BC8B100772569 /* Renderer.mm */; };
@@ -17,6 +16,7 @@
 		8C95E8D4213BC8B100772569 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C95E8D3213BC8B100772569 /* Assets.xcassets */; };
 		8C95E8D7213BC8B100772569 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8C95E8D5213BC8B100772569 /* LaunchScreen.storyboard */; };
 		8C95E8DA213BC8B100772569 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8D9213BC8B100772569 /* main.mm */; };
+		8C97636721760C0800839863 /* Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8C97636621760C0800839863 /* Application.cpp */; };
 		8CC4475B216F8B98002F20DA /* libpng16.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC44758216F8B98002F20DA /* libpng16.a */; };
 		8CC4475C216F8B98002F20DA /* libLuminoCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC44759216F8B98002F20DA /* libLuminoCore.a */; };
 		8CC4475F216F8BBA002F20DA /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC4475E216F8BBA002F20DA /* libz.tbd */; };
@@ -29,8 +29,6 @@
 
 /* Begin PBXFileReference section */
 		8C32BAFF2171A1D8003E4BAC /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
-		8C561D182170D7FE009F0306 /* Application.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Application.cpp; path = ../../../Sources/Application.cpp; sourceTree = "<group>"; };
-		8C561D192170D7FE009F0306 /* Application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Application.h; path = ../../../Sources/Application.h; sourceTree = "<group>"; };
 		8C561D1B2170D81B009F0306 /* Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
 		8C561D1C2170D86E009F0306 /* libLuminoEngined.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLuminoEngined.a; path = "../../Engine/lib/iOS-SIMULATOR64-Debug/libLuminoEngined.a"; sourceTree = "<group>"; };
 		8C95E8C1213BC8B100772569 /* LuminoApp.iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LuminoApp.iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -45,6 +43,8 @@
 		8C95E8D6213BC8B100772569 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8C95E8D8213BC8B100772569 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8C95E8D9213BC8B100772569 /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
+		8C97636521760C0800839863 /* Application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Application.h; sourceTree = "<group>"; };
+		8C97636621760C0800839863 /* Application.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Application.cpp; sourceTree = "<group>"; };
 		8CC44758216F8B98002F20DA /* libpng16.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng16.a; path = "../../Engine/lib/iOS-SIMULATOR64-Release/libpng16.a"; sourceTree = "<group>"; };
 		8CC44759216F8B98002F20DA /* libLuminoCore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLuminoCore.a; path = "../../Engine/lib/iOS-SIMULATOR64-Release/libLuminoCore.a"; sourceTree = "<group>"; };
 		8CC4475A216F8B98002F20DA /* libLuminoEngine.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLuminoEngine.a; path = "../../Engine/lib/iOS-SIMULATOR64-Release/libLuminoEngine.a"; sourceTree = "<group>"; };
@@ -77,20 +77,10 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		8C561D172170D7E5009F0306 /* Sources */ = {
-			isa = PBXGroup;
-			children = (
-				8C561D182170D7FE009F0306 /* Application.cpp */,
-				8C561D192170D7FE009F0306 /* Application.h */,
-			);
-			name = Sources;
-			path = "New Group";
-			sourceTree = "<group>";
-		};
 		8C95E8B8213BC8B000772569 = {
 			isa = PBXGroup;
 			children = (
-				8C561D172170D7E5009F0306 /* Sources */,
+				8C97636421760C0800839863 /* Sources */,
 				8C95E8C3213BC8B100772569 /* LuminoApp.iOS */,
 				8C95E8C2213BC8B100772569 /* Products */,
 				8CC44757216F8B97002F20DA /* Frameworks */,
@@ -124,6 +114,16 @@
 				8CDB756C21737735006F48BC /* RootGLKView.mm */,
 			);
 			path = LuminoApp.iOS;
+			sourceTree = "<group>";
+		};
+		8C97636421760C0800839863 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				8C97636521760C0800839863 /* Application.h */,
+				8C97636621760C0800839863 /* Application.cpp */,
+			);
+			name = Sources;
+			path = ../../Sources;
 			sourceTree = "<group>";
 		};
 		8CC44757216F8B97002F20DA /* Frameworks */ = {
@@ -215,8 +215,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				8C95E8DA213BC8B100772569 /* main.mm in Sources */,
-				8C561D1A2170D7FE009F0306 /* Application.cpp in Sources */,
 				8C95E8C9213BC8B100772569 /* Renderer.mm in Sources */,
+				8C97636721760C0800839863 /* Application.cpp in Sources */,
 				8C95E8CC213BC8B100772569 /* GameViewController.mm in Sources */,
 				8C95E8C6213BC8B100772569 /* AppDelegate.mm in Sources */,
 				8CDB756E21737735006F48BC /* RootGLKView.mm in Sources */,

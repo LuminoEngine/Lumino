@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8C2BF73E2174DCB900D68B5B /* Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8C2BF73D2174DCB900D68B5B /* Application.cpp */; };
+		8C023F3221760B6B00D6A082 /* Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8C023F3121760B6B00D6A082 /* Application.cpp */; };
 		8C3C9B9D215FB1A40072D63A /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3C9B9C215FB1A40072D63A /* OpenGL.framework */; };
 		8C3C9B9F215FB1BB0072D63A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3C9B9E215FB1BB0072D63A /* Foundation.framework */; };
 		8C3C9BC3215FB2970072D63A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3C9BC2215FB2970072D63A /* Cocoa.framework */; };
@@ -38,10 +38,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8C023F3021760B6B00D6A082 /* Application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Application.h; sourceTree = "<group>"; };
+		8C023F3121760B6B00D6A082 /* Application.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Application.cpp; sourceTree = "<group>"; };
 		8C1DA4C22143EC8200640009 /* HelloLumino */ = {isa = PBXFileReference; lastKnownFileType = folder; name = HelloLumino; path = ../..; sourceTree = "<group>"; };
 		8C1DA4C42143EC9500640009 /* Lumino */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Lumino; path = ../../../../Lumino; sourceTree = "<group>"; };
-		8C2BF73C2174DCB900D68B5B /* Application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Application.h; path = ../../../Sources/Application.h; sourceTree = "<group>"; };
-		8C2BF73D2174DCB900D68B5B /* Application.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Application.cpp; path = ../../../Sources/Application.cpp; sourceTree = "<group>"; };
 		8C3C9B9C215FB1A40072D63A /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		8C3C9B9E215FB1BB0072D63A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		8C3C9BC2215FB2970072D63A /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -111,19 +111,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		8C2BF73B2174DCA900D68B5B /* Sources */ = {
+		8C023F2F21760B6B00D6A082 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				8C2BF73D2174DCB900D68B5B /* Application.cpp */,
-				8C2BF73C2174DCB900D68B5B /* Application.h */,
+				8C023F3021760B6B00D6A082 /* Application.h */,
+				8C023F3121760B6B00D6A082 /* Application.cpp */,
 			);
-			path = Sources;
+			name = Sources;
+			path = ../../Sources;
 			sourceTree = "<group>";
 		};
 		8C5BFFCB213BC8840009704D = {
 			isa = PBXGroup;
 			children = (
-				8C2BF73B2174DCA900D68B5B /* Sources */,
+				8C023F2F21760B6B00D6A082 /* Sources */,
 				8C5BFFD6213BC8840009704D /* LuminoApp.macOS */,
 				8C5BFFD5213BC8840009704D /* Products */,
 				8C64478B2143E84B00A712D5 /* Frameworks */,
@@ -253,7 +254,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8C2BF73E2174DCB900D68B5B /* Application.cpp in Sources */,
+				8C023F3221760B6B00D6A082 /* Application.cpp in Sources */,
 				8C5BFFEA213BC8840009704D /* main.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
