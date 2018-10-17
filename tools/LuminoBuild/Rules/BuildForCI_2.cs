@@ -7,11 +7,9 @@ using System.Threading.Tasks;
 namespace LuminoBuild.Rules
 {
     // CI 環境によっては実行時間が長すぎると強制終了させられる。そのため、一部のタスクを分離したりスキップするための BuildRule。
-    // 事前に BuildExternalProjects を実行しておくこと。
-    // この Rule ではドキュメントやリリースパッケージの作成は行わない。
-    class BuildForCI : BuildRule
+    class BuildForCI_2 : BuildRule
     {
-        public override string Name => "BuildForCI";
+        public override string Name => "BuildForCI_2";
 
         public override void Build(Builder builder)
         {
