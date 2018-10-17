@@ -386,7 +386,7 @@ namespace LuminoBuild
             }
         }
 
-		public static string CallProcess(string program, string args = ""/*, bool useShell = false*/, Dictionary<string, string> environmentVariables = null)
+		public static string CallProcess(string program, string args = ""/*, bool useShell = false*/, Dictionary<string, string> environmentVariables = null, Action<StreamWriter> stdinWrite = null)
 		{
             Logger.WriteLine($"{program} {args}");
             
@@ -405,6 +405,10 @@ namespace LuminoBuild
                     p.StartInfo.RedirectStandardError = true;
                     p.ErrorDataReceived += (object sender, DataReceivedEventArgs e) => { Console.WriteLine(e.Data); };
                 }
+                if (stdinWrite != null)
+                {
+                    p.StartInfo.RedirectStandardInput = true;
+                }
 
                 if (environmentVariables != null)
                 {
@@ -422,6 +426,11 @@ namespace LuminoBuild
                 }
 
 				p.Start();
+
+                if (stdinWrite != null)
+                {
+                    stdinWrite(p.StandardInput);
+                }
 
                 if (!p.StartInfo.UseShellExecute)
                 {

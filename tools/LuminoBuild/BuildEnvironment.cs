@@ -64,19 +64,20 @@ namespace LuminoBuild
             emcmake = Path.Combine(EmscriptenDir, Utils.IsWin32 ? "emcmake.bat" : "emcmake");
 
 
+
             if (Utils.IsWin32)
             {
-                string localAppDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                AndroidSdkRootDir = Path.Combine(localAppDir, @"Android\Sdk");
+                //string localAppDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                //AndroidSdkRootDir = Path.Combine(localAppDir, @"Android\Sdk");
+                AndroidSdkRootDir = Path.Combine(BuildToolsDir, "android-sdk");
 
                 AndroidSdkCMake = Path.Combine(AndroidSdkRootDir, @"cmake\3.6.4111459\bin\cmake.exe");
                 AndroidSdkNinja = Path.Combine(AndroidSdkRootDir, @"cmake\3.6.4111459\bin\ninja.exe");
 
                 AndroidNdkRootDir = Path.Combine(AndroidSdkRootDir, "ndk-bundle");
                 AndroidCMakeToolchain = Path.Combine(AndroidNdkRootDir, @"build\cmake\android.toolchain.cmake");
-                
-                // とりあえず本当にあるかどうかで Android のビルド有無としておく
-                AndroidStudioFound = File.Exists(AndroidSdkCMake);
+
+                AndroidStudioFound = true;
             }
             else
             {
@@ -106,6 +107,33 @@ namespace LuminoBuild
                         Utils.CallProcess("emsdk.bat", "install " + emsdkVer);
                     else
                         Utils.CallProcess("emsdk", "install " + emsdkVer);
+                }
+            }
+
+            // Install Android SDK
+            {
+                var androidSdk = Path.Combine(BuildToolsDir, "android-sdk");
+                if (!Directory.Exists(androidSdk))
+                {
+                    var zip = Path.Combine(BuildToolsDir, "android-sdk-tools.zip");
+                    if (Utils.IsWin32)
+                        Utils.DownloadFile("https://dl.google.com/android/repository/sdk-tools-windows-4333796.zip", zip);
+                    else if (Utils.IsMac)
+                        Utils.DownloadFile("https://dl.google.com/android/repository/sdk-tools-darwin-4333796.zip", zip);
+
+                    Utils.ExtractZipFile(zip, androidSdk);
+
+                    var javaHome = Path.Combine(BuildToolsDir, "emsdk", "java", "8.152_64bit", "bin");
+                    var skdmanager = Path.Combine(androidSdk, "tools", "bin", "sdkmanager.bat");
+
+                    var env = new Dictionary<string, string>()
+                    {
+                        { "PATH", javaHome + ";"+ Environment.GetEnvironmentVariable("PATH") },
+                    };
+                    
+                    Utils.CallProcess(skdmanager, "cmake;3.6.4111459", env, (stdin) => stdin.WriteLine("y"));
+                    Utils.CallProcess(skdmanager, "ndk-bundle", env, (stdin) => stdin.WriteLine("y"));
+                    //Utils.CallProcess(skdmanager, "lldb;3.1", env, (stdin) => stdin.WriteLine("y"));
                 }
             }
         }
