@@ -1,6 +1,6 @@
 build/
 build.sln
-ReleasePackage.*
+ReleasePackage-*
 .vscode
 
 

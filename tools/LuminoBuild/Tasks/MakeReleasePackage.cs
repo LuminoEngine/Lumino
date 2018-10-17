@@ -14,12 +14,13 @@ namespace LuminoBuild.Tasks
         public override void Build(Builder builder)
         {
             var tempInstallDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir);
-
-            string targetRootDir;
+            string targetEnvName;
             if (Utils.IsWin32)
-                targetRootDir = Path.Combine(builder.LuminoRootDir, "ReleasePackage.Windows");
+                targetEnvName = "Windows";
             else
-                targetRootDir = Path.Combine(builder.LuminoRootDir, "ReleasePackage.macOS");
+                targetEnvName = "macOS";
+
+            string targetRootDir = Path.Combine(builder.LuminoRootDir, "ReleasePackage-" + targetEnvName);
             Directory.CreateDirectory(targetRootDir);
 
             string nativeEngineRoot = Path.Combine(targetRootDir, "Engine", "Native");
@@ -153,6 +154,13 @@ namespace LuminoBuild.Tasks
                 Utils.CopyDirectory(
                     Path.Combine(builder.LuminoToolsDir, "LuminoCLI", "Templates", "NativeProject"),
                     Path.Combine(targetRootDir, "Tools", "Templates", "NativeProject"));
+            }
+
+            // zip
+            {
+                Utils.CreateZipFile(
+                    targetRootDir,
+                    Path.Combine(builder.LuminoBuildDir, $"Lumino-{builder.VersionString}-{targetEnvName}.zip"));
             }
         }
     }

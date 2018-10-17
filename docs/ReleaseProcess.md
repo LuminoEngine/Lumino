@@ -15,7 +15,7 @@
 [Developer Command Prompt for VS2017] で以下を実行する。
 
 ```
-dotnet run -- MakePackage
+dotnet run
 ```
 
 `build/NuGetPackage-LuminoCore/Lumino.Core.x.y.z.nupkg` を配布する。
@@ -28,5 +28,8 @@ Documents
 docs/WebDocument/_site
 
 の中身を丸ごと配置する。
+
+### リリースノート
+※1.0.0 までは用意しない。
 
 
