@@ -37,6 +37,20 @@ namespace LuminoBuild
         public List<BuildTask> Tasks = new List<BuildTask>();
         public List<BuildRule> Rules = new List<BuildRule>();
 
+        public string ReleasePackageName
+        {
+            get
+            {
+                string targetEnvName;
+                if (Utils.IsWin32)
+                    targetEnvName = "Windows";
+                else
+                    targetEnvName = "macOS";
+
+                return $"Lumino-{VersionString}-{targetEnvName}";
+            }
+        }
+
         public void DoTaskOrRule(string name)
         {
             var rule = Rules.Find((r) => r.Name == name);

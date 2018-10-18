@@ -1,6 +1,7 @@
 build/
 build.sln
-ReleasePackage-*
+ReleasePackage-*/
+Lumino-*/
 .vscode
 
 
