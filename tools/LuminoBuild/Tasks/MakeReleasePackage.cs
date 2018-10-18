@@ -20,7 +20,9 @@ namespace LuminoBuild.Tasks
             else
                 targetEnvName = "macOS";
 
-            string targetRootDir = Path.Combine(builder.LuminoRootDir, "ReleasePackage-" + targetEnvName);
+            string packageName = $"Lumino-{builder.VersionString}-{targetEnvName}";
+
+            string targetRootDir = Path.Combine(builder.LuminoRootDir, packageName);
             Directory.CreateDirectory(targetRootDir);
 
             string nativeEngineRoot = Path.Combine(targetRootDir, "Engine", "Native");
@@ -154,9 +156,7 @@ namespace LuminoBuild.Tasks
 
             // zip
             {
-                Utils.CreateZipFile(
-                    targetRootDir,
-                    Path.Combine(builder.LuminoBuildDir, $"Lumino-{builder.VersionString}-{targetEnvName}.zip"));
+                Utils.CreateZipFile(targetRootDir, Path.Combine(builder.LuminoBuildDir, packageName + ".zip"), true);
             }
         }
     }

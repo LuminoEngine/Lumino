@@ -81,12 +81,12 @@ endif()
 # gtest
 
 set(LN_INCLUDES_gtest
-    "${CMAKE_CURRENT_LIST_DIR}/gtest/include"
-    "${CMAKE_CURRENT_LIST_DIR}/gtest"
-    "${CMAKE_CURRENT_LIST_DIR}/gtest/src")
+    "${CMAKE_CURRENT_LIST_DIR}/external/gtest/include"
+    "${CMAKE_CURRENT_LIST_DIR}/external/gtest"
+    "${CMAKE_CURRENT_LIST_DIR}/external/gtest/src")
 
 set(LN_SOURCES_gtest
-    "${CMAKE_CURRENT_LIST_DIR}/gtest/src/gtest-all.cc")
+    "${CMAKE_CURRENT_LIST_DIR}/external/gtest/src/gtest-all.cc")
 
 #------------------------------------------------------------------------------
 
@@ -97,12 +97,13 @@ else()
     include(external/ImportExternalLibraries.cmake)
     add_subdirectory(src/LuminoCore)
     add_subdirectory(src/LuminoEngine)
+    
+    if (LN_BUILD_TOOLS)
+        add_subdirectory(tools/LuminoCLI)
+    endif()
 endif()
 
 if (LN_OS_DESKTOP)
     #add_subdirectory(src/LuminoRuntime)
 endif()
 
-if (LN_BUILD_TOOLS)
-    add_subdirectory(tools/LuminoCLI)
-endif()
