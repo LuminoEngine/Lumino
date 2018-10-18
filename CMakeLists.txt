@@ -79,10 +79,14 @@ endif()
 
 #------------------------------------------------------------------------------
 
-set(LN_EXTERNAL_FIND_PATH_MODE "build")
-include(external/ImportExternalLibraries.cmake)
-add_subdirectory(src/LuminoCore)
-add_subdirectory(src/LuminoEngine)
+if (LN_BUILD_CORE_ONLY)
+    add_subdirectory(src/LuminoCore)
+else()
+    set(LN_EXTERNAL_FIND_PATH_MODE "build")
+    include(external/ImportExternalLibraries.cmake)
+    add_subdirectory(src/LuminoCore)
+    add_subdirectory(src/LuminoEngine)
+endif()
 
 if (LN_OS_DESKTOP)
     #add_subdirectory(src/LuminoRuntime)
