@@ -265,15 +265,15 @@ public:
      * "0x" または "0X" であれば 16 進数、"0" であれば 8 進数、それ以外であれば 10 進数です。
      * 基数に 8 または 16 が指定されている際、文字列の先頭は "0" または "0x" である必要はありません。
      */
-    int toInt(int base = 0);
-    int8_t toInt8(int base = 0);
-    int16_t toInt16(int base = 0);   /**< @copydoc toInt */
-    int32_t toInt32(int base = 0);   /**< @copydoc toInt */
-    int64_t toInt64(int base = 0);   /**< @copydoc toInt */
-    uint8_t toUInt8(int base = 0);   /**< @copydoc toInt */
-    uint16_t toUInt16(int base = 0); /**< @copydoc toInt */
-    uint32_t toUInt32(int base = 0); /**< @copydoc toInt */
-    uint64_t toUInt64(int base = 0); /**< @copydoc toInt */
+    int toInt(int base = 0) const;
+    int8_t toInt8(int base = 0) const;
+    int16_t toInt16(int base = 0) const;   /**< @copydoc toInt */
+    int32_t toInt32(int base = 0) const;   /**< @copydoc toInt */
+    int64_t toInt64(int base = 0) const;   /**< @copydoc toInt */
+    uint8_t toUInt8(int base = 0) const;   /**< @copydoc toInt */
+    uint16_t toUInt16(int base = 0) const; /**< @copydoc toInt */
+    uint32_t toUInt32(int base = 0) const; /**< @copydoc toInt */
+    uint64_t toUInt64(int base = 0) const; /**< @copydoc toInt */
 
     /**
      * この文字列を整数値に変換し、成否を返します。
@@ -283,15 +283,15 @@ public:
      * @return      正常に変換された場合は true。それ以外の場合は false。
      * @see         toInt
      */
-    bool tryToInt(int8_t* outValue, int base = 0);
-    bool tryToInt8(int8_t* outValue, int base = 0);
-    bool tryToInt16(int16_t* outValue, int base = 0);   /**< @copydoc tryToInt */
-    bool tryToInt32(int32_t* outValue, int base = 0);   /**< @copydoc tryToInt */
-    bool tryToInt64(int64_t* outValue, int base = 0);   /**< @copydoc tryToInt */
-    bool tryToUInt8(uint8_t* outValue, int base = 0);   /**< @copydoc tryToInt */
-    bool tryToUInt16(uint16_t* outValue, int base = 0); /**< @copydoc tryToInt */
-    bool tryToUInt32(uint32_t* outValue, int base = 0); /**< @copydoc tryToInt */
-    bool tryToUInt64(uint64_t* outValue, int base = 0); /**< @copydoc tryToInt */
+    bool tryToInt(int8_t* outValue, int base = 0) const;
+    bool tryToInt8(int8_t* outValue, int base = 0) const;
+    bool tryToInt16(int16_t* outValue, int base = 0) const;   /**< @copydoc tryToInt */
+    bool tryToInt32(int32_t* outValue, int base = 0) const;   /**< @copydoc tryToInt */
+    bool tryToInt64(int64_t* outValue, int base = 0) const;   /**< @copydoc tryToInt */
+    bool tryToUInt8(uint8_t* outValue, int base = 0) const;   /**< @copydoc tryToInt */
+    bool tryToUInt16(uint16_t* outValue, int base = 0) const; /**< @copydoc tryToInt */
+    bool tryToUInt32(uint32_t* outValue, int base = 0) const; /**< @copydoc tryToInt */
+    bool tryToUInt64(uint64_t* outValue, int base = 0) const; /**< @copydoc tryToInt */
 
     /** ローカルの std::string 型文字列へ変換します。 */
     std::string toStdString() const;

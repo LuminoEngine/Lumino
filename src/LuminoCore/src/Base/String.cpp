@@ -450,39 +450,39 @@ List<String> String::split(const StringRef& delim, StringSplitOptions option) co
     }                                                            \
     LN_ENSURE(end == begin + len);                               \
     return num;
-int String::toInt(int base)
+int String::toInt(int base) const
 {
     TO_INT_DEF(int32_t, toInt32);
 }
-int8_t String::toInt8(int base)
+int8_t String::toInt8(int base) const
 {
     TO_INT_DEF(int8_t, toInt8);
 }
-int16_t String::toInt16(int base)
+int16_t String::toInt16(int base) const
 {
     TO_INT_DEF(int16_t, toInt16);
 }
-int32_t String::toInt32(int base)
+int32_t String::toInt32(int base) const
 {
     TO_INT_DEF(int32_t, toInt32);
 }
-int64_t String::toInt64(int base)
+int64_t String::toInt64(int base) const
 {
     TO_INT_DEF(int64_t, toInt64);
 }
-uint8_t String::toUInt8(int base)
+uint8_t String::toUInt8(int base) const
 {
     TO_INT_DEF(uint8_t, toUInt8);
 }
-uint16_t String::toUInt16(int base)
+uint16_t String::toUInt16(int base) const
 {
     TO_INT_DEF(uint16_t, toUInt16);
 }
-uint32_t String::toUInt32(int base)
+uint32_t String::toUInt32(int base) const
 {
     TO_INT_DEF(uint32_t, toUInt32);
 }
-uint64_t String::toUInt64(int base)
+uint64_t String::toUInt64(int base) const
 {
     TO_INT_DEF(uint64_t, toUInt64);
 }
@@ -505,39 +505,39 @@ uint64_t String::toUInt64(int base)
         *outValue = num;                                         \
     }                                                            \
     return true;
-bool String::tryToInt(int8_t* outValue, int base)
+bool String::tryToInt(int8_t* outValue, int base) const
 {
     TRY_TO_INT_DEF(int8_t, toInt32);
 }
-bool String::tryToInt8(int8_t* outValue, int base)
+bool String::tryToInt8(int8_t* outValue, int base) const
 {
     TRY_TO_INT_DEF(int8_t, toInt8);
 }
-bool String::tryToInt16(int16_t* outValue, int base)
+bool String::tryToInt16(int16_t* outValue, int base) const
 {
     TRY_TO_INT_DEF(int16_t, toInt16);
 }
-bool String::tryToInt32(int32_t* outValue, int base)
+bool String::tryToInt32(int32_t* outValue, int base) const
 {
     TRY_TO_INT_DEF(int32_t, toInt32);
 }
-bool String::tryToInt64(int64_t* outValue, int base)
+bool String::tryToInt64(int64_t* outValue, int base) const
 {
     TRY_TO_INT_DEF(int64_t, toInt64);
 }
-bool String::tryToUInt8(uint8_t* outValue, int base)
+bool String::tryToUInt8(uint8_t* outValue, int base) const
 {
     TRY_TO_INT_DEF(uint8_t, toUInt8);
 }
-bool String::tryToUInt16(uint16_t* outValue, int base)
+bool String::tryToUInt16(uint16_t* outValue, int base) const
 {
     TRY_TO_INT_DEF(uint16_t, toUInt16);
 }
-bool String::tryToUInt32(uint32_t* outValue, int base)
+bool String::tryToUInt32(uint32_t* outValue, int base) const
 {
     TRY_TO_INT_DEF(uint32_t, toUInt32);
 }
-bool String::tryToUInt64(uint64_t* outValue, int base)
+bool String::tryToUInt64(uint64_t* outValue, int base) const
 {
     TRY_TO_INT_DEF(uint64_t, toUInt64);
 }
