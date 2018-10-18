@@ -103,7 +103,7 @@ Result Workspace::buildProject(const ln::String& target)
 			ln::List<ln::String> emcmakeArgs = {
 				u"-DCMAKE_BUILD_TYPE=Release",
 				u"-DCMAKE_INSTALL_PREFIX=" + installDir,
-				u"-DLUMINO_ENGINE_ROOT=\"" + m_project->engineDirPath().str().replace("\\", "/") + u"\"",
+				u"-DLUMINO_ENGINE_ROOT=\"" + ln::Path(m_project->engineDirPath(), u"Native").str().replace("\\", "/") + u"\"",
 				u"-DLN_TARGET_ARCH=Emscripten",
 				u"-G \"MinGW Makefiles\"",
 				cmakeSourceDir,

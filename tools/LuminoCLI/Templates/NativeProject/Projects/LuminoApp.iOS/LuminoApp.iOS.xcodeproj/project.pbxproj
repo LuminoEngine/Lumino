@@ -30,7 +30,7 @@
 /* Begin PBXFileReference section */
 		8C32BAFF2171A1D8003E4BAC /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		8C561D1B2170D81B009F0306 /* Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
-		8C561D1C2170D86E009F0306 /* libLuminoEngined.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLuminoEngined.a; path = "../../Engine/lib/iOS-SIMULATOR64-Debug/libLuminoEngined.a"; sourceTree = "<group>"; };
+		8C561D1C2170D86E009F0306 /* libLuminoEngined.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLuminoEngined.a; path = "../../Engine/Native/lib/iOS-SIMULATOR64-Debug/libLuminoEngined.a"; sourceTree = "<group>"; };
 		8C95E8C1213BC8B100772569 /* LuminoApp.iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LuminoApp.iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C95E8C4213BC8B100772569 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		8C95E8C5213BC8B100772569 /* AppDelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AppDelegate.mm; sourceTree = "<group>"; };
@@ -45,9 +45,9 @@
 		8C95E8D9213BC8B100772569 /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		8C97636521760C0800839863 /* Application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Application.h; sourceTree = "<group>"; };
 		8C97636621760C0800839863 /* Application.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Application.cpp; sourceTree = "<group>"; };
-		8CC44758216F8B98002F20DA /* libpng16.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng16.a; path = "../../Engine/lib/iOS-SIMULATOR64-Release/libpng16.a"; sourceTree = "<group>"; };
-		8CC44759216F8B98002F20DA /* libLuminoCore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLuminoCore.a; path = "../../Engine/lib/iOS-SIMULATOR64-Release/libLuminoCore.a"; sourceTree = "<group>"; };
-		8CC4475A216F8B98002F20DA /* libLuminoEngine.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLuminoEngine.a; path = "../../Engine/lib/iOS-SIMULATOR64-Release/libLuminoEngine.a"; sourceTree = "<group>"; };
+		8CC44758216F8B98002F20DA /* libpng16.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng16.a; path = "../../Engine/Native/lib/iOS-SIMULATOR64-Release/libpng16.a"; sourceTree = "<group>"; };
+		8CC44759216F8B98002F20DA /* libLuminoCore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLuminoCore.a; path = "../../Engine/Native/lib/iOS-SIMULATOR64-Release/libLuminoCore.a"; sourceTree = "<group>"; };
+		8CC4475A216F8B98002F20DA /* libLuminoEngine.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLuminoEngine.a; path = "../../Engine/Native/lib/iOS-SIMULATOR64-Release/libLuminoEngine.a"; sourceTree = "<group>"; };
 		8CC4475E216F8BBA002F20DA /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		8CC44760216F8BF7002F20DA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		8CC44762216F8C24002F20DA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -360,10 +360,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = LuminoApp.iOS/Prefix.pch;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Engine/include";
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Engine/Native/include";
 				INFOPLIST_FILE = LuminoApp.iOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../Engine/lib/iOS-SIMULATOR64-Release";
+				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../Engine/Native/lib/iOS-SIMULATOR64-Release";
 				PRODUCT_BUNDLE_IDENTIFIER = "Lumino.LuminoApp-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -377,10 +377,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = LuminoApp.iOS/Prefix.pch;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Engine/include";
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Engine/Native/include";
 				INFOPLIST_FILE = LuminoApp.iOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../Engine/lib/iOS-SIMULATOR64-Release";
+				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../Engine/Native/lib/iOS-SIMULATOR64-Release";
 				PRODUCT_BUNDLE_IDENTIFIER = "Lumino.LuminoApp-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";

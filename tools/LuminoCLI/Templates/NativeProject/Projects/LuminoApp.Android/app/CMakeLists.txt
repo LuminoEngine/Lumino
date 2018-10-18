@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.4.1)
 
-set(LUMINO_ENGINE_ROOT $ENV{LUMINO_ROOT}/Engine/Native)
+#set(LUMINO_ENGINE_ROOT $ENV{LUMINO_ROOT}/Engine/Native)
+set(LUMINO_ENGINE_ROOT ${CMAKE_CURRENT_LIST_DIR}/../../../Sources/Engine/Native)
 set(LN_TARGET_ARCH Android-${ANDROID_ABI})
 
 

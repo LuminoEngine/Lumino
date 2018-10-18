@@ -49,25 +49,25 @@
 		8C83D8D1217628C800D072BA /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		8C83D8D3217628D700D072BA /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		8C83D8D5217628DE00D072BA /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
-		8C83D8D72176291400D072BA /* libspirv-cross-glsl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libspirv-cross-glsl.a"; path = "../../Engine/lib/macOS/libspirv-cross-glsl.a"; sourceTree = "<group>"; };
-		8C83D8D82176291400D072BA /* libLuminoEngine.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLuminoEngine.a; path = ../../Engine/lib/macOS/libLuminoEngine.a; sourceTree = "<group>"; };
-		8C83D8D92176291400D072BA /* libOSDependent.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libOSDependent.a; path = ../../Engine/lib/macOS/libOSDependent.a; sourceTree = "<group>"; };
-		8C83D8DA2176291400D072BA /* libglfw3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglfw3.a; path = ../../Engine/lib/macOS/libglfw3.a; sourceTree = "<group>"; };
-		8C83D8DB2176291400D072BA /* libglslang.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglslang.a; path = ../../Engine/lib/macOS/libglslang.a; sourceTree = "<group>"; };
-		8C83D8DC2176291400D072BA /* libspirv-cross-hlsl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libspirv-cross-hlsl.a"; path = "../../Engine/lib/macOS/libspirv-cross-hlsl.a"; sourceTree = "<group>"; };
-		8C83D8DD2176291400D072BA /* libSPIRV.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSPIRV.a; path = ../../Engine/lib/macOS/libSPIRV.a; sourceTree = "<group>"; };
-		8C83D8DE2176291400D072BA /* libHLSL.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libHLSL.a; path = ../../Engine/lib/macOS/libHLSL.a; sourceTree = "<group>"; };
-		8C83D8DF2176291400D072BA /* libspirv-cross-reflect.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libspirv-cross-reflect.a"; path = "../../Engine/lib/macOS/libspirv-cross-reflect.a"; sourceTree = "<group>"; };
-		8C83D8E02176291400D072BA /* libLuminoCore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLuminoCore.a; path = ../../Engine/lib/macOS/libLuminoCore.a; sourceTree = "<group>"; };
-		8C83D8E12176291400D072BA /* libpng16.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng16.a; path = ../../Engine/lib/macOS/libpng16.a; sourceTree = "<group>"; };
-		8C83D8E22176291400D072BA /* libspirv-cross-cpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libspirv-cross-cpp.a"; path = "../../Engine/lib/macOS/libspirv-cross-cpp.a"; sourceTree = "<group>"; };
-		8C83D8E32176291400D072BA /* libspirv-cross-util.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libspirv-cross-util.a"; path = "../../Engine/lib/macOS/libspirv-cross-util.a"; sourceTree = "<group>"; };
-		8C83D8E42176291400D072BA /* libOGLCompiler.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libOGLCompiler.a; path = ../../Engine/lib/macOS/libOGLCompiler.a; sourceTree = "<group>"; };
-		8C83D8E52176291400D072BA /* libglad.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglad.a; path = ../../Engine/lib/macOS/libglad.a; sourceTree = "<group>"; };
-		8C83D8E62176291400D072BA /* libspirv-cross-msl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libspirv-cross-msl.a"; path = "../../Engine/lib/macOS/libspirv-cross-msl.a"; sourceTree = "<group>"; };
-		8C83D8E72176291400D072BA /* libspirv-cross-core.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libspirv-cross-core.a"; path = "../../Engine/lib/macOS/libspirv-cross-core.a"; sourceTree = "<group>"; };
-		8C83D8E82176291400D072BA /* libSPVRemapper.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSPVRemapper.a; path = ../../Engine/lib/macOS/libSPVRemapper.a; sourceTree = "<group>"; };
-		8C83D8E92176291400D072BA /* libzlib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzlib.a; path = ../../Engine/lib/macOS/libzlib.a; sourceTree = "<group>"; };
+		8C83D8D72176291400D072BA /* libspirv-cross-glsl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libspirv-cross-glsl.a"; path = "../../Engine/Native/lib/macOS/libspirv-cross-glsl.a"; sourceTree = "<group>"; };
+		8C83D8D82176291400D072BA /* libLuminoEngine.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLuminoEngine.a; path = ../../Engine/Native/lib/macOS/libLuminoEngine.a; sourceTree = "<group>"; };
+		8C83D8D92176291400D072BA /* libOSDependent.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libOSDependent.a; path = ../../Engine/Native/lib/macOS/libOSDependent.a; sourceTree = "<group>"; };
+		8C83D8DA2176291400D072BA /* libglfw3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglfw3.a; path = ../../Engine/Native/lib/macOS/libglfw3.a; sourceTree = "<group>"; };
+		8C83D8DB2176291400D072BA /* libglslang.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglslang.a; path = ../../Engine/Native/lib/macOS/libglslang.a; sourceTree = "<group>"; };
+		8C83D8DC2176291400D072BA /* libspirv-cross-hlsl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libspirv-cross-hlsl.a"; path = "../../Engine/Native/lib/macOS/libspirv-cross-hlsl.a"; sourceTree = "<group>"; };
+		8C83D8DD2176291400D072BA /* libSPIRV.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSPIRV.a; path = ../../Engine/Native/lib/macOS/libSPIRV.a; sourceTree = "<group>"; };
+		8C83D8DE2176291400D072BA /* libHLSL.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libHLSL.a; path = ../../Engine/Native/lib/macOS/libHLSL.a; sourceTree = "<group>"; };
+		8C83D8DF2176291400D072BA /* libspirv-cross-reflect.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libspirv-cross-reflect.a"; path = "../../Engine/Native/lib/macOS/libspirv-cross-reflect.a"; sourceTree = "<group>"; };
+		8C83D8E02176291400D072BA /* libLuminoCore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLuminoCore.a; path = ../../Engine/Native/lib/macOS/libLuminoCore.a; sourceTree = "<group>"; };
+		8C83D8E12176291400D072BA /* libpng16.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng16.a; path = ../../Engine/Native/lib/macOS/libpng16.a; sourceTree = "<group>"; };
+		8C83D8E22176291400D072BA /* libspirv-cross-cpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libspirv-cross-cpp.a"; path = "../../Engine/Native/lib/macOS/libspirv-cross-cpp.a"; sourceTree = "<group>"; };
+		8C83D8E32176291400D072BA /* libspirv-cross-util.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libspirv-cross-util.a"; path = "../../Engine/Native/lib/macOS/libspirv-cross-util.a"; sourceTree = "<group>"; };
+		8C83D8E42176291400D072BA /* libOGLCompiler.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libOGLCompiler.a; path = ../../Engine/Native/lib/macOS/libOGLCompiler.a; sourceTree = "<group>"; };
+		8C83D8E52176291400D072BA /* libglad.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglad.a; path = ../../Engine/Native/lib/macOS/libglad.a; sourceTree = "<group>"; };
+		8C83D8E62176291400D072BA /* libspirv-cross-msl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libspirv-cross-msl.a"; path = "../../Engine/Native/lib/macOS/libspirv-cross-msl.a"; sourceTree = "<group>"; };
+		8C83D8E72176291400D072BA /* libspirv-cross-core.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libspirv-cross-core.a"; path = "../../Engine/Native/lib/macOS/libspirv-cross-core.a"; sourceTree = "<group>"; };
+		8C83D8E82176291400D072BA /* libSPVRemapper.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSPVRemapper.a; path = ../../Engine/Native/lib/macOS/libSPVRemapper.a; sourceTree = "<group>"; };
+		8C83D8E92176291400D072BA /* libzlib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzlib.a; path = ../../Engine/Native/lib/macOS/libzlib.a; sourceTree = "<group>"; };
 		8C83D8FE2176294D00D072BA /* Application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Application.h; sourceTree = "<group>"; };
 		8C83D8FF2176294D00D072BA /* Application.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Application.cpp; sourceTree = "<group>"; };
 		8C83D9012176296000D072BA /* Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
@@ -377,13 +377,13 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = LuminoApp.macOS/Prefix.pch;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Engine/include";
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Engine/Native/include";
 				INFOPLIST_FILE = LuminoApp.macOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../Engine/lib/macOS";
+				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../Engine/Native/lib/macOS";
 				PRODUCT_BUNDLE_IDENTIFIER = "Lumino.LuminoApp-macOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -398,13 +398,13 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = LuminoApp.macOS/Prefix.pch;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Engine/include";
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Engine/Native/include";
 				INFOPLIST_FILE = LuminoApp.macOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../Engine/lib/macOS";
+				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../Engine/Native/lib/macOS";
 				PRODUCT_BUNDLE_IDENTIFIER = "Lumino.LuminoApp-macOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
