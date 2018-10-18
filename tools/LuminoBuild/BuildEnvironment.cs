@@ -124,7 +124,7 @@ namespace LuminoBuild
                     Utils.ExtractZipFile(zip, androidSdk);
 
                     var javaHome = Path.Combine(BuildToolsDir, "emsdk", "java", "8.152_64bit", "bin");
-                    var skdmanager = Path.Combine(androidSdk, "tools", "bin", "sdkmanager.bat");
+                    var skdmanager = Path.Combine(androidSdk, "tools", "bin", (Utils.IsWin32) ? "sdkmanager.bat" : "sdkmanager");
 
                     var env = new Dictionary<string, string>()
                     {
