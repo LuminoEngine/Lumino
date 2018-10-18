@@ -140,11 +140,7 @@ namespace LuminoBuild.Tasks
                             Path.Combine(builder.LuminoRootDir, "Tools", "PackageSource", "macOS", "setup.sh"),
                             file, true);
 
-                        const int _0755 =
-                            Utils.S_IRUSR | Utils.S_IXUSR | Utils.S_IWUSR |
-                            Utils.S_IRGRP | Utils.S_IXGRP |
-                            Utils.S_IROTH | Utils.S_IXOTH;
-                        Utils.chmod(file, _0755);
+                        Utils.chmod(file, Utils.S_0755);
                     }
                 }
             }

@@ -588,5 +588,10 @@ namespace LuminoBuild
         public const int S_IROTH = 0x4;
         public const int S_IWOTH = 0x2;
         public const int S_IXOTH = 0x1;
+        
+        public const int S_0755 =
+            S_IRUSR | S_IXUSR | S_IWUSR |
+            S_IRGRP | S_IXGRP |
+            S_IROTH | S_IXOTH;
 	}
 }

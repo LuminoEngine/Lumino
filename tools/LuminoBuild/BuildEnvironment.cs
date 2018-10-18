@@ -126,6 +126,9 @@ namespace LuminoBuild
                     var javaHome = Path.Combine(BuildToolsDir, "emsdk", "java", "8.152_64bit", "bin");
                     var skdmanager = Path.Combine(androidSdk, "tools", "bin", (Utils.IsWin32) ? "sdkmanager.bat" : "sdkmanager");
 
+
+                    Utils.chmod(skdmanager, Utils.S_0755);
+
                     var env = new Dictionary<string, string>()
                     {
                         { "PATH", javaHome + ";"+ Environment.GetEnvironmentVariable("PATH") },
