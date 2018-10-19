@@ -127,7 +127,8 @@ namespace LuminoBuild
                     var skdmanager = Path.Combine(androidSdk, "tools", "bin", (Utils.IsWin32) ? "sdkmanager.bat" : "sdkmanager");
 
 
-                    Utils.chmod(skdmanager, Utils.S_0755);
+                    if (!Utils.IsWin32)
+                        Utils.chmod(skdmanager, Utils.S_0755);
 
                     var env = new Dictionary<string, string>()
                     {
