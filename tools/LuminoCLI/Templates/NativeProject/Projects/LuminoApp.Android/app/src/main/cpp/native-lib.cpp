@@ -15,6 +15,7 @@ Java_org_lumino_lib_luminoapp_LuminoRenderer_nativeInitialize(
     ln::GlobalLogger::addLogcatAdapter();
 	g_app = ::LuminoCreateApplicationInstance();
 	ln::detail::ApplicationHelper::initialize(g_app);
+	ln::detail::SwapChainHelper::setBackendBufferSize(ln::Engine::mainWindow()->swapChain(), width, height);
 }
 
 extern "C" JNIEXPORT void JNICALL
