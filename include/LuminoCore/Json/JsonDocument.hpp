@@ -13,6 +13,8 @@ class JsonDocument;
 namespace detail {
 class JsonElementCache;
 class JsonHelper;
+class LinearAllocator;
+class LinearAllocatorPageManager;
 }
 
 /** Json の値の型を示します。*/
@@ -190,15 +192,17 @@ public:
     JsonElement* alloc(size_t size);
 
 private:
-    static const size_t BufferSize = 2048;
+    //static const size_t BufferSize = 2048;
 
-    struct BufferInfo
-    {
-        ByteBuffer buffer;
-        size_t used;
-    };
-    List<BufferInfo> m_buffers;
+    //struct BufferInfo
+    //{
+    //    ByteBuffer buffer;
+    //    size_t used;
+    //};
+    //List<BufferInfo> m_buffers;
     List<JsonElement*> m_elements;
+	Ref<LinearAllocatorPageManager> m_linearAllocatorPageManager;
+	Ref<LinearAllocator> m_linearAllocator;
 };
 
 } // namespace detail

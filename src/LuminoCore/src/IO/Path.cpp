@@ -186,6 +186,17 @@ Path Path::native() const
 #endif
 }
 
+Path Path::unify() const
+{
+	String newPath = m_path;
+	for (int i = 0; i < newPath.length(); i++) {
+		if (newPath[i] == '\\') {
+			newPath[i] = '/';
+		}
+	}
+	return Path(newPath);
+}
+
 Path Path::canonicalize() const
 {
     if (detail::PathTraits::isCanonicalPath(m_path.c_str(), m_path.length())) {

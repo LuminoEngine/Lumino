@@ -8,37 +8,43 @@ file(
     GLOB
     LN_SOURCES_Base
     "${LN_CORE_INCLUDE_DIR}/LuminoCore/Base/*.hpp"
-    "${CMAKE_CURRENT_LIST_DIR}/src/Base/*.cpp")
+    "${CMAKE_CURRENT_LIST_DIR}/src/Base/*.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/src/Base/*.hpp")
 
 file(
     GLOB
     LN_SOURCES_IO
     "${LN_CORE_INCLUDE_DIR}/LuminoCore/IO/*.hpp"
-    "${CMAKE_CURRENT_LIST_DIR}/src/IO/*.cpp")
+    "${CMAKE_CURRENT_LIST_DIR}/src/IO/*.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/src/IO/*.hpp")
 
 file(
     GLOB
     LN_SOURCES_Json
     "${LN_CORE_INCLUDE_DIR}/LuminoCore/Json/*.hpp"
-    "${CMAKE_CURRENT_LIST_DIR}/src/Json/*.cpp")
+    "${CMAKE_CURRENT_LIST_DIR}/src/Json/*.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/src/Json/*.hpp")
 
 file(
     GLOB
     LN_SOURCES_Math
     "${LN_CORE_INCLUDE_DIR}/LuminoCore/Math/*.hpp"
-    "${CMAKE_CURRENT_LIST_DIR}/src/Math/*.cpp")
+    "${CMAKE_CURRENT_LIST_DIR}/src/Math/*.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/src/Math/*.hpp")
 
 file(
     GLOB
     LN_SOURCES_Serialization
     "${LN_CORE_INCLUDE_DIR}/LuminoCore/Serialization/*.hpp"
-    "${CMAKE_CURRENT_LIST_DIR}/src/Serialization/*.cpp")
+    "${CMAKE_CURRENT_LIST_DIR}/src/Serialization/*.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/src/Serialization/*.hpp")
 
 file(
     GLOB
     LN_SOURCES_Testing
     "${LN_CORE_INCLUDE_DIR}/LuminoCore/Testing/*.hpp"
-    "${CMAKE_CURRENT_LIST_DIR}/src/Testing/*.cpp")
+    "${CMAKE_CURRENT_LIST_DIR}/src/Testing/*.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/src/Testing/*.hpp")
 
 file(
     GLOB
@@ -51,13 +57,15 @@ file(
     GLOB
     LN_SOURCES_Threading
     "${LN_CORE_INCLUDE_DIR}/LuminoCore/Threading/*.hpp"
-    "${CMAKE_CURRENT_LIST_DIR}/src/Threading/*.cpp")
+    "${CMAKE_CURRENT_LIST_DIR}/src/Threading/*.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/src/Threading/*.hpp")
 
 file(
     GLOB
     LN_SOURCES_Xml
     "${LN_CORE_INCLUDE_DIR}/LuminoCore/Xml/*.hpp"
-    "${CMAKE_CURRENT_LIST_DIR}/src/Xml/*.cpp")
+    "${CMAKE_CURRENT_LIST_DIR}/src/Xml/*.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/src/Xml/*.hpp")
 
 #--------------------------------------
 # Platform source files.

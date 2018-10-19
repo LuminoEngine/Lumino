@@ -10,6 +10,7 @@
 #include <LuminoCore/Json/JsonReader.hpp>
 #include <LuminoCore/Json/JsonWriter.hpp>
 #include <LuminoCore/Json/JsonDocument.hpp>
+#include "../Base/LinearAllocator.hpp"
 
 namespace ln {
 
@@ -536,10 +537,12 @@ namespace detail {
 
 void JsonElementCache::initialize()
 {
-    BufferInfo info;
-    info.buffer.resize(2048);
-    info.used = 0;
-    m_buffers.add(info);
+    //BufferInfo info;
+    //info.buffer.resize(2048);
+    //info.used = 0;
+    //m_buffers.add(info);
+	m_linearAllocatorPageManager = makeRef<LinearAllocatorPageManager>();
+	m_linearAllocator = makeRef<LinearAllocator>(m_linearAllocatorPageManager);
 
     m_elements.reserve(256);
 }
@@ -549,24 +552,28 @@ void JsonElementCache::finalize()
     for (JsonElement* e : m_elements) {
         e->~JsonElement();
     }
+
+	m_linearAllocator = nullptr;
+	m_linearAllocatorPageManager = nullptr;
 }
 
 JsonElement* JsonElementCache::alloc(size_t size)
 {
-    if (LN_REQUIRE(size <= BufferSize))
-        return nullptr;
+    //if (LN_REQUIRE(size <= BufferSize))
+    //    return nullptr;
 
-    BufferInfo* cur = &m_buffers.back();
-    if (cur->buffer.size() - cur->used < size) {
-        BufferInfo info;
-        info.buffer.resize(2048);
-        info.used = 0;
-        m_buffers.add(info);
-        cur = &m_buffers.back();
-    }
+    //BufferInfo* cur = &m_buffers.back();
+    //if (cur->buffer.size() - cur->used < size) {
+    //    BufferInfo info;
+    //    info.buffer.resize(2048);
+    //    info.used = 0;
+    //    m_buffers.add(info);
+    //    cur = &m_buffers.back();
+    //}
 
-    JsonElement* buf = reinterpret_cast<JsonElement*>(cur->buffer.data() + cur->used);
-    cur->used += size;
+    //JsonElement* buf = reinterpret_cast<JsonElement*>(cur->buffer.data() + cur->used);
+    //cur->used += size;
+	JsonElement* buf = reinterpret_cast<JsonElement*>(m_linearAllocator->allocate(size));
     m_elements.add(buf);
     return buf;
 }
