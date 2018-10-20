@@ -13,10 +13,16 @@ void CLI::info(const ln::String & str)
 
 void CLI::warning(const ln::String & str)
 {
-	std::cerr << str << std::endl;
+	std::cerr << "Warning: " << str << std::endl;
 }
 
 void CLI::error(const ln::String & str)
 {
-	std::cerr << str << std::endl;
+	std::cerr << "Error: " << str << std::endl;
+}
+
+void CLI::fatal(const ln::String& str)
+{
+    std::cerr << "Fatal error: " << str << std::endl;
+    throw ln::Exception(str.c_str());
 }

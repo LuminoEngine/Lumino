@@ -21,5 +21,8 @@ public:
 
 	/** エラー出力。stderr に出力される。 */
 	static void error(const ln::String& str);
+
+    /** エラー出力。stderr に出力され、例外を投げる。 */
+    static void fatal(const ln::String& str);
 };
 

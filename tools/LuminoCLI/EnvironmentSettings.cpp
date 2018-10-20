@@ -21,48 +21,80 @@ BuildEnvironment::BuildEnvironment()
 
 void BuildEnvironment::setupPathes()
 {
-	m_appDataDirPath = ln::Path::combine(ln::Environment::specialFolderPath(ln::SpecialFolder::ApplicationData), u"Lumino");
-	m_toolsDir = (ln::Path::combine(m_appDataDirPath, u"BuildTools"));
-	m_emsdkVer = u"1.38.12";
-	m_emsdkName = u"sdk-1.38.12-64bit";
-	m_emsdkRootDir = (ln::Path::combine(m_toolsDir, u"emsdk"));
-	m_emscriptenRootDir = (ln::Path::combine(m_emsdkRootDir, u"emscripten", m_emsdkVer));
-	m_python2 = ln::Path::combine(m_emsdkRootDir, u"python", u"2.7.13.1_64bit", u"python-2.7.13.amd64", u"python");
+    // Find package root
+    {
+        m_luminoPackageRootDir.clear();
 
+        // 実行ファイルを少しさかのぼってパッケージのルートらしいフォルダがあればそこを採用
+        ln::Path packageRootDir = ln::Path(ln::Environment::executablePath()).parent().parent();
+        ln::Path engineDir = ln::Path(packageRootDir, u"Engine");
+        ln::Path toolsDir = ln::Path(packageRootDir, u"Tools");
+        if (ln::FileSystem::existsDirectory(engineDir) && ln::FileSystem::existsDirectory(toolsDir))
+        {
+            m_luminoPackageRootDir = packageRootDir;
+        }
+        
 #ifdef  LN_DEBUG
-	// デバッグ用。実行ファイルの位置からさかのぼっていって、.git が見つかればそこから必要なパスを作ってみる
-	ln::Path path = ln::Environment::executablePath();
-	ln::Path luminoRepoRoot;
-	while (!path.isRoot())
-	{
-		if (ln::FileSystem::existsDirectory(ln::Path(path, u".git"))) {
-			luminoRepoRoot = path;
-			break;
-		}
-		path = path.parent();
-	}
-	if (LN_ENSURE(!luminoRepoRoot.isEmpty())) return;
-	CLI::info("Using debug mode build environment pathes.");
+        // デバッグ用。実行ファイルの位置からさかのぼっていって、.git が見つかればそこから必要なパスを作ってみる
+        if (m_luminoPackageRootDir.isEmpty())
+        {
+            ln::Path path = ln::Environment::executablePath();
+            ln::Path luminoRepoRoot;
+            while (!path.isRoot())
+            {
+                if (ln::FileSystem::existsDirectory(ln::Path(path, u".git"))) {
+                    luminoRepoRoot = path;
+                    break;
+                }
+                path = path.parent();
+            }
+            CLI::info("Using debug mode build environment pathes.");
 
-	LN_LOG_DEBUG << luminoRepoRoot;
-
-	m_luminoEmscriptenSdkDirPath = ln::Path(luminoRepoRoot, u"build/CMakeInstallTemp/Emscripten");
-	m_projectTemplatesDirPath = ln::Path(luminoRepoRoot, u"tools/LuminoCLI/Templates");
+            LN_LOG_DEBUG << luminoRepoRoot;
 
 #if defined(LN_OS_WIN32)
-	m_luminoPackageRootDir = ln::Path(luminoRepoRoot, u"Lumino-0.6.0-Windows");
+            m_luminoPackageRootDir = ln::Path(luminoRepoRoot, u"Lumino-0.6.0-Windows");
 #elif defined(LN_OS_MAC)
-	m_luminoPackageRootDir = ln::Path(luminoRepoRoot, u"Lumino-0.6.0-macOS");
+            m_luminoPackageRootDir = ln::Path(luminoRepoRoot, u"Lumino-0.6.0-macOS");
 #endif
-#else
-	ln::Path executablePath = ln::Environment::executablePath();
-	ln::Path toolsDir = executablePath.parent();
-	m_luminoPackageRootDir = toolsDir.parent();
-	m_projectTemplatesDirPath = ln::Path(toolsDir, u"Templates");
-
+        }
 #endif
+        // まだ見つからなければ環境変数を探してみる
+        if (m_luminoPackageRootDir.isEmpty())
+        {
+            auto path = ln::Environment::getEnvironmentVariable(u"LUMINO_ROOT");
+            if (path) {
+                m_luminoPackageRootDir = *path;
+            }
+        }
 
-	m_luminoPackageToolsDir = ln::Path(m_luminoPackageRootDir, u"Tools");
+        // ここまでで見つからなかったらエラー
+        if (m_luminoPackageRootDir.isEmpty())
+        {
+            CLI::fatal(u"Not found lumino package root directory.");
+        }
+    }
+
+    // Setup Basic paths
+    {
+        m_luminoPackageToolsDir = ln::Path(m_luminoPackageRootDir, u"Tools");
+        m_projectTemplatesDirPath = ln::Path(m_luminoPackageToolsDir, u"Templates");
+
+        CLI::info(u"luminoPackageRootDir: " + m_luminoPackageRootDir);
+        CLI::info(u"luminoPackageToolsDir: " + m_luminoPackageToolsDir);
+        CLI::info(u"projectTemplatesDirPath: " + m_projectTemplatesDirPath);
+    }
+
+    // Emscripten
+    {
+        m_appDataDirPath = ln::Path::combine(ln::Environment::specialFolderPath(ln::SpecialFolder::ApplicationData), u"Lumino");
+        m_toolsDir = (ln::Path::combine(m_appDataDirPath, u"BuildTools"));
+        m_emsdkVer = u"1.38.12";
+        m_emsdkName = u"sdk-1.38.12-64bit";
+        m_emsdkRootDir = (ln::Path::combine(m_toolsDir, u"emsdk"));
+        m_emscriptenRootDir = (ln::Path::combine(m_emsdkRootDir, u"emscripten", m_emsdkVer));
+        m_python2 = ln::Path::combine(m_emsdkRootDir, u"python", u"2.7.13.1_64bit", u"python-2.7.13.amd64", u"python");
+    }
 
 	// Android
 	{
