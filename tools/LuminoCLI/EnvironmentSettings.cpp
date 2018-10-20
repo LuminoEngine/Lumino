@@ -50,9 +50,9 @@ void BuildEnvironment::setupPathes()
 	m_projectTemplatesDirPath = ln::Path(luminoRepoRoot, u"tools/LuminoCLI/Templates");
 
 #if defined(LN_OS_WIN32)
-	m_luminoPackageRootDir = ln::Path(luminoRepoRoot, u"ReleasePackage.Windows");
+	m_luminoPackageRootDir = ln::Path(luminoRepoRoot, u"Lumino-0.6.0-Windows");
 #elif defined(LN_OS_MAC)
-	m_luminoPackageRootDir = ln::Path(luminoRepoRoot, u"ReleasePackage.macOS");
+	m_luminoPackageRootDir = ln::Path(luminoRepoRoot, u"Lumino-0.6.0-macOS");
 #endif
 #else
 	ln::Path executablePath = ln::Environment::executablePath();

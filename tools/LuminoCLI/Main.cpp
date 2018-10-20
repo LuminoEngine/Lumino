@@ -11,8 +11,8 @@ int main(int argc, char** argv)
 	if (argc == 1)
 	{
 		//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects");
-		::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\HelloLumino");
-		//::SetCurrentDirectoryW(L"D:\\Documents\\LuminoProjects\\HelloLumino");
+		//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\HelloLumino");
+		::SetCurrentDirectoryW(L"D:\\Documents\\LuminoProjects\\HelloLumino");
 	
 		const char* debugArgv[] = {
 			"<program>",
@@ -20,10 +20,9 @@ int main(int argc, char** argv)
 
 			//"<program>", "dev-install-tools",
 
-			"build", "Web",
-			//"<program>", "build", "Android",
+			//"build", "Web",
 
-			//"run", "Web", //"Windows",
+			"run", "Web", //"Windows",
 
 			//"dev-openide", "vs",
 			

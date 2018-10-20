@@ -207,7 +207,6 @@ void OpenGLDeviceContext::initialize(const Settings& settings)
 	LN_LOG_INFO << "OpenGL " << GLVersion.major << "." << GLVersion.minor;
 #endif
 
-
 	//GLint value;
 	//glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &value);
 
@@ -221,13 +220,14 @@ void OpenGLDeviceContext::initialize(const Settings& settings)
 	
 	int extensions = 0;
 	glGetIntegerv(GL_EXTENSIONS, &extensions);
-	glGetError();	// ignore error.
 	LN_LOG_INFO << "GL_EXTENSIONS : " << extensions;
 	for(int i = 0; i < extensions; i++) {
 		LN_LOG_INFO << "  " << glGetStringi(GL_EXTENSIONS, i);
 	}
+    // ignore error.
+    while (glGetError() != 0);
 
-	GL_CHECK(glGenVertexArrays(1, &m_vao));
+    GL_CHECK(glGenVertexArrays(1, &m_vao));
 	GL_CHECK(glGenFramebuffers(1, &m_fbo));
 
 	LN_LOG_DEBUG << "OpenGLDeviceContext::initialize end";
@@ -516,7 +516,9 @@ void OpenGLDeviceContext::onUpdatePipelineState(const BlendStateDesc& blendState
 
 void OpenGLDeviceContext::onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer)
 {
-	GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_fbo));
+    if (m_fbo) {
+        GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_fbo));
+    }
 
 	// color buffers
 	int maxCount = std::min(renderTargetsCount, m_caps.MAX_COLOR_ATTACHMENTS);
@@ -563,7 +565,9 @@ void OpenGLDeviceContext::onUpdatePrimitiveData(IVertexDeclaration* decls, IVert
 	// IVertexDeclaration で指定された頂点レイアウトと、GLSL に書かれている attribute 変数の定義順序が一致していることを前提としている。
 	// ※0.4.0 以前は変数名を固定していたが、それを廃止。リフレクションっぽいことをこのモジュールの中でやりたくない。複雑になりすぎる。
 
-	GL_CHECK(glBindVertexArray(m_vao));
+    if (m_vao) {
+        GL_CHECK(glBindVertexArray(m_vao));
+    }
 
 	if (decls && vertexBuufers)
 	{
