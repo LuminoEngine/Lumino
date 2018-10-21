@@ -5,6 +5,8 @@
       href: GettingStarted/getting-started.md
     - name: 動作環境
       href: GettingStarted/requirements.md
+    - name: ダウンロード
+      href: GettingStarted/download.md
 
 - name: Core
   items:

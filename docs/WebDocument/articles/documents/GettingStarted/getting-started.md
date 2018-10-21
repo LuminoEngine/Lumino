@@ -42,10 +42,5 @@ lumino-cli run
 - [Web アプリ](../platform-specific/web.md)
 
 
-プロジェクトのディレクトリ構成
---------
-TODO:
-
-
 
 
