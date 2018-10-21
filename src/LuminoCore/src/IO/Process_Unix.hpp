@@ -1,16 +1,18 @@
 //#include "Internal.hpp"
+#include <errno.h>
 #include <sys/types.h> 
 #include <sys/wait.h>
 #include <unistd.h>
 #include <string>
 #include <vector>
 #include <chrono>
-#include <Lumino/IO/Stream.hpp>
-#include <Lumino/IO/Process.hpp>
+#include <LuminoCore/IO/Stream.hpp>
+#include <LuminoCore/IO/Process.hpp>
 
 #if defined(LN_OS_MAC)
-#include <crt_externs.h>
-#define environ (*_NSGetEnviron())
+//#include <crt_externs.h>
+//#define environ (*_NSGetEnviron())
+extern char **environ;
 #else
 extern char **environ;
 #endif
@@ -39,8 +41,8 @@ public:
 	// Stream interface
 	virtual bool canRead() const override { return true; }
 	virtual bool canWrite() const override { return true; }
-	virtual int64_t length() const override { LN_UNREACHABLE(); }
-	virtual int64_t position() const override { LN_UNREACHABLE(); }
+	virtual int64_t length() const override { LN_UNREACHABLE(); return 0; }
+	virtual int64_t position() const override { LN_UNREACHABLE(); return 0; }
 	virtual size_t read(void* buffer, size_t byteCount) override { return readBytes(buffer, byteCount); }
 	virtual void write(const void* buffer, size_t byteCount) override { writeBytes(buffer, byteCount); }
 	virtual void seek(int64_t offset, SeekOrigin origin) override { LN_UNREACHABLE(); }
@@ -132,6 +134,7 @@ public:
 	virtual ~ProcessImpl() = default;
 	
 	void start(const ProcessStartInfo& startInfo);
+	void startWithShell(const ProcessStartInfo& startInfo);
 	bool waitForExit(int timeoutMSec);
 	ProcessStatus getStatus(int* outExitCode);
 	
@@ -177,6 +180,7 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo)
 		{
 			if (chdir(workingDirectory.c_str()) != 0)
 			{
+				perror("critical OS file missing.\n");
 				exit(72);	// critical OS file missing 
 			}
 		}
@@ -192,6 +196,7 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo)
 		execve(argv[0], argv.data(), environ);
 		
 		// it only cames here when execve failed.
+		fprintf(stderr, "execve failed. (errno:%d)\n", errno);
 		exit(72);
 	}
 	else
@@ -202,6 +207,11 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo)
 		if (startInfo.stdoutPipe) startInfo.stdoutPipe->closeWrite();
 		if (startInfo.stderrPipe) startInfo.stderrPipe->closeWrite();
 	}
+}
+
+void ProcessImpl::startWithShell(const ProcessStartInfo& startInfo)
+{
+	start(startInfo);
 }
 
 bool ProcessImpl::waitForExit(int timeoutMSec)

@@ -1,5 +1,5 @@
 ﻿#include "Common.hpp"
-#include <Lumino/Base/Optional.hpp>
+#include <LuminoCore/Base/Optional.hpp>
 
 class Test_Base_Optional : public ::testing::Test {};
 

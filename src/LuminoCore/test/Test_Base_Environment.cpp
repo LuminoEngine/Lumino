@@ -1,5 +1,5 @@
 ﻿#include "Common.hpp"
-#include <Lumino/Base/Environment.hpp>
+#include <LuminoCore/Base/Environment.hpp>
 
 class Test_Base_Environment : public ::testing::Test {};
 

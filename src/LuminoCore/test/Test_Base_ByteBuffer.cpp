@@ -1,5 +1,5 @@
 ﻿#include "Common.hpp"
-#include <Lumino/Base/Buffer.hpp>
+#include <LuminoCore/Base/Buffer.hpp>
 
 class Test_Base_ByteBuffer : public ::testing::Test {};
 

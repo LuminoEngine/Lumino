@@ -5,9 +5,9 @@
 #include <dirent.h>
 #include <fnmatch.h>
 #include "Internal.hpp"
-#include <Lumino/Base/EnumFlags.hpp>
-#include <Lumino/Text/Encoding.hpp>
-#include <Lumino/IO/Common.hpp>
+#include <LuminoCore/Base/EnumFlags.hpp>
+#include <LuminoCore/Text/Encoding.hpp>
+#include <LuminoCore/IO/Common.hpp>
 #include "PathHelper.hpp"
 
 namespace ln {
@@ -96,6 +96,18 @@ public:
         *outAttr = attrs;
         return true;
     }
+
+	static void getLastModifiedTime(const char* path, time_t* outTime)
+	{
+		struct stat st;
+		if (stat(path, &st) == 0) {
+#if defined(__APPLE__)
+			*outTime = st.st_mtimespec.tv_sec;
+#else
+			*outTime = st.st_mtime;
+#endif
+		}
+	}
 
     static void copyFile(const char* sourceFileName, const char* destFileName, bool overwrite)
     {

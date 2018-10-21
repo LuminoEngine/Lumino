@@ -1,10 +1,12 @@
-- name: Lumino について
-  href: Index.md
+- name: Lumino の概要
+  href: index.md
   items:
+    - name: Lumino をはじめる
+      href: GettingStarted/getting-started.md
     - name: 動作環境
-      href: Requirements.md
-    - name: Lumino をインストールする
-      href: GettingStarted/Install.md
+      href: GettingStarted/requirements.md
+    - name: ダウンロード
+      href: GettingStarted/download.md
 
 - name: Core
   items:
@@ -12,12 +14,12 @@
       href: Base/String.md
     - name: 文字列の書式指定
       href: Base/CompoundFormatString.md
+    - name: オブジェクトのメモリ管理
+      href: Base/MemoryManagement.md
     - name: ログ出力
       href: Base_Logging.md
     - name: オブジェクトのシリアライズ
       href: Serialization.md
-    - name: オブジェクトのメモリ管理
-      href: Base/MemoryManagement.md
     - name: エラーハンドリング
       href: Base/ErrorHandling.md
     
@@ -45,3 +47,19 @@
 #  items:
 #    - name: 入力
 #      href: Input_VirtualController.md
+
+- name: プラットフォーム固有の情報
+  items: 
+    - name: Windows
+      href: platform-specific/windows.md
+      items:
+      - name: Nuget からインストールする
+        href: platform-specific/windows-Install-nuget.md
+    - name: macOS
+      href: platform-specific/macOS.md
+    - name: iOS
+      href: platform-specific/iOS.md
+    - name: Android
+      href: platform-specific/android.md
+    - name: Web
+      href: platform-specific/web.md

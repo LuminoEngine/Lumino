@@ -1,8 +1,8 @@
 ﻿#include "Common.hpp"
-#include <Lumino/Json/JsonDocument.hpp>
-#include <Lumino/Serialization/Serialization.hpp>
-#include <Lumino/Base/Variant.hpp>
-#include <Lumino/Math/Math.hpp>
+#include <LuminoCore/Json/JsonDocument.hpp>
+#include <LuminoCore/Serialization/Serialization.hpp>
+#include <LuminoCore/Base/Variant.hpp>
+#include <LuminoCore/Math/Math.hpp>
 
 //==============================================================================
 //# シリアライズのテスト
@@ -788,4 +788,37 @@ TEST_F(Test_Serialization2, VariantTest)
 		ASSERT_EQ(2, data.v_List.list()[1].get<int32_t>());
 		ASSERT_EQ(3, data.v_List.list()[2].get<int32_t>());
 	}
+}
+
+//------------------------------------------------------------------------------
+//## [Issue] 初期状態 reserve で確保されるメモリを超えると serialize 中に落ちる問題
+TEST_F(Test_Serialization2, ManyData)
+{
+	struct Test2
+	{
+		int x, y, z;
+
+		void serialize(Archive& ar)
+		{
+			ar & LN_NVP(x);
+			ar & LN_NVP(y);
+			ar & LN_NVP(z);
+		}
+	};
+	struct Test1
+	{
+		List<Test2> list;
+
+		void serialize(Archive& ar)
+		{
+			ar & LN_NVP(list);
+		}
+	};
+	Test1 t1;
+	for (int i = 0; i < 100; i++) {
+		t1.list.add(Test2{i, i * 10, i * 100});
+	}
+
+	String json = JsonSerializer::serialize(t1, JsonFormatting::None);
+	ASSERT_EQ(true, json.contains(u"\"x\":99"));	// 最後の値が出ていればOKとする
 }

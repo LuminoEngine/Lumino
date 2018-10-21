@@ -1,14 +1,14 @@
 ﻿
 #pragma once
-#include <Lumino/Text/Encoding.hpp>
-#include <Lumino/Base/String.hpp>
+#include <LuminoCore/Text/Encoding.hpp>
+#include <LuminoCore/Base/String.hpp>
 
 namespace ln {
 
 class ASCIIEncoding : public TextEncoding
 {
 public:
-	static const String Name;
+    static const String Name;
 
     ASCIIEncoding();
     virtual ~ASCIIEncoding(){};
@@ -27,9 +27,13 @@ public:
     class ASCIIDecoder : public TextDecoder
     {
     public:
-        ASCIIDecoder(TextEncoding* encoding) : TextDecoder(encoding) { reset(); }
+        ASCIIDecoder(TextEncoding* encoding)
+            : TextDecoder(encoding)
+        {
+            reset();
+        }
         virtual bool canRemain() override { return true; }
-        virtual bool convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, DecodeResult* outResult) override;
+        virtual bool convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult) override;
         virtual int usedDefaultCharCount() override { return mUsedDefaultCharCount; }
         virtual bool completed() override { return true; }
         virtual void reset() override { mUsedDefaultCharCount = 0; }
@@ -42,9 +46,13 @@ public:
     class ASCIIEncoder : public TextEncoder
     {
     public:
-        ASCIIEncoder(TextEncoding* encoding) : TextEncoder(encoding) { reset(); }
+        ASCIIEncoder(TextEncoding* encoding)
+            : TextEncoder(encoding)
+        {
+            reset();
+        }
         virtual bool canRemain() override { return true; }
-        virtual bool convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, EncodeResult* outResult) override;
+        virtual bool convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, TextEncodeResult* outResult) override;
         virtual int usedDefaultCharCount() override { return mUsedDefaultCharCount; }
         virtual bool completed() override { return true; }
         virtual void reset() override { mUsedDefaultCharCount = 0; }

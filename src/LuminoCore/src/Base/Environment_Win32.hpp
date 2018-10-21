@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <userenv.h>
+#include <LuminoCore/Base/Platform.hpp>
 
 namespace ln {
 
@@ -23,6 +25,12 @@ public:
 		return result;
 	}
 
+	static void setEnvironmentVariable(const StringRef& variableName, const StringRef& value)
+	{
+		BOOL r = ::SetEnvironmentVariableW(variableName.toStdWString().c_str(), value.toStdWString().c_str());
+		if (LN_ENSURE(r != FALSE, detail::Win32Helper::getWin32ErrorMessage(::GetLastError()))) return;
+	}
+
 	static void getSpecialFolderPath(SpecialFolder specialFolder, StringType* outPath)
 	{
 		LN_CHECK(outPath);
@@ -36,6 +44,26 @@ public:
 		case SpecialFolder::Temporary:
 			::GetTempPathW(MAX_PATH, path);
 			break;
+		case SpecialFolder::Home:
+		{
+			BOOL bResult;
+			HANDLE hToken;
+			bResult = ::OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &hToken);
+			if (bResult) {
+				DWORD dwBufferSize;
+				bResult = ::GetUserProfileDirectoryW(hToken, NULL, &dwBufferSize);
+				if (!bResult && dwBufferSize != 0) {
+					wchar_t* directory = new wchar_t[dwBufferSize];
+					bResult = GetUserProfileDirectoryW(hToken, directory, &dwBufferSize);
+					if (bResult) {
+						*outPath = directory;
+					}
+					delete[] directory;
+				}
+				::CloseHandle(hToken);
+			}
+			break;
+		}
 		default:
 			LN_UNREACHABLE();
 			break;

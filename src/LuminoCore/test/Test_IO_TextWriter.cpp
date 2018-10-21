@@ -1,6 +1,6 @@
 ﻿#include "Common.hpp"
-#include <Lumino/IO/TextWriter.hpp>
-#include <Lumino/IO/StringWriter.hpp>
+#include <LuminoCore/IO/TextWriter.hpp>
+#include <LuminoCore/IO/StringWriter.hpp>
 
 //==============================================================================
 //# TextWriter

@@ -1,4 +1,5 @@
-﻿
+
+#include <errno.h>
 #include <stdarg.h>
 #include <wchar.h>
 #include <math.h>
@@ -6,9 +7,9 @@
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
-#include <Lumino/Base/Assertion.hpp>
-#include <Lumino/Base/StringHelper.hpp>
-#include <Lumino/Base/StlHelper.hpp>
+#include <LuminoCore/Base/Assertion.hpp>
+#include <LuminoCore/Base/StringHelper.hpp>
+#include <LuminoCore/Base/StlHelper.hpp>
 
 #ifdef LN_MSVC
 #else
@@ -68,9 +69,10 @@ TChar StringHelper::toUpper(TChar ch)
 	return ch;
 }
 template char StringHelper::toUpper<char>(char ch);
-template UTF8 StringHelper::toUpper<UTF8>(UTF8 ch);
-template UTF16 StringHelper::toUpper<UTF16>(UTF16 ch);
-template UTF32 StringHelper::toUpper<UTF32>(UTF32 ch);
+template wchar_t StringHelper::toUpper<wchar_t>(wchar_t ch);
+//template UTF8 StringHelper::toUpper<UTF8>(UTF8 ch);
+//template UTF16 StringHelper::toUpper<UTF16>(UTF16 ch);
+//template UTF32 StringHelper::toUpper<UTF32>(UTF32 ch);
 template char16_t StringHelper::toUpper<char16_t>(char16_t ch);
 
 template<typename TChar>
@@ -81,9 +83,10 @@ TChar StringHelper::toLower(TChar ch)
 	return ch;
 }
 template char StringHelper::toLower<char>(char ch);
-template UTF8 StringHelper::toLower<UTF8>(UTF8 ch);
-template UTF16 StringHelper::toLower<UTF16>(UTF16 ch);
-template UTF32 StringHelper::toLower<UTF32>(UTF32 ch);
+template wchar_t StringHelper::toLower<wchar_t>(wchar_t ch);
+//template UTF8 StringHelper::toLower<UTF8>(UTF8 ch);
+//template UTF16 StringHelper::toLower<UTF16>(UTF16 ch);
+//template UTF32 StringHelper::toLower<UTF32>(UTF32 ch);
 template char16_t StringHelper::toLower<char16_t>(char16_t ch);
 
 template<typename TChar>
@@ -226,10 +229,10 @@ int StringHelper::compare(const TChar* str1, int str1Len, const TChar* str2, int
 	}
 
 	// 必要があれば文字数カウント
-	str1Len = (str1Len < 0) ? strlen(str1) : str1Len;
-	str2Len = (str2Len < 0) ? strlen(str2) : str2Len;
-	int minCount = LN_MIN(str1Len, str2Len);
-	int maxCount = LN_MAX(str1Len, str2Len);
+	str1Len = (str1Len < 0) ? static_cast<int>(strlen(str1)) : str1Len;
+	str2Len = (str2Len < 0) ? static_cast<int>(strlen(str2)) : str2Len;
+	int minCount = std::min(str1Len, str2Len);
+	int maxCount = std::max(str1Len, str2Len);
 
 	// チェックする文字数
 	if (count < 0)
@@ -963,5 +966,3 @@ template void UStringHelper::toStringInt8<char16_t>(int8_t v, char16_t* outStr, 
 
 } // namespace detail
 } // namespace ln
-
-

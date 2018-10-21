@@ -1,6 +1,6 @@
 ﻿
-#include <Lumino/Math/Vector3.hpp>
-#include <Lumino/Math/Geometries.hpp>
+#include <LuminoCore/Math/Vector3.hpp>
+#include <LuminoCore/Math/Geometries.hpp>
 
 namespace ln {
 

@@ -1,9 +1,17 @@
 #pragma once
 #include <unistd.h>
+#include <stdlib.h>
+//#import <Foundation/Foundation.h>
+//#import <Foundation/NSString.h>
+//class NSString;
+
+//typedef struct objc_object NSString;
+//extern "C" NSString* NSTemporaryDirectory();
+
+//extern std::string NSStringToStdString(NSString* nsstring);
 
 namespace ln {
 
-// Unix
 class PlatformEnvironment
 {
 public:
@@ -19,16 +27,20 @@ public:
 		free(p);
 	}
 
-	static StringType getExecutablePath()
+	static StringType getExecutablePath();
+
+	static void setEnvironmentVariable(const StringRef& variableName, const StringRef& value)
 	{
-		LN_NOTIMPLEMENTED();
-		return StringType();
+		std::string str = ln::String::format(u"{0}={1}", variableName, value).toStdString();
+		std::vector<char> buf(str.c_str(), str.c_str() + str.length());
+		putenv(buf.data());
 	}
+
+	static void getSpecialFolderPath(SpecialFolder specialFolder, StringType* outPath);
 	
-#ifdef LN_OS_MAC
-	static void getSpecialFolderPath(SpecialFolder specialFolder, StringType* outPath)
-	{
 #if 0
+	void getSpecialFolderPath(SpecialFolder specialFolder, LocalStringConverter<CharType>* out)
+	{
 		short domain = kOnAppropriateDisk;
 		
 		OSType type = kDesktopFolderType;
@@ -61,7 +73,6 @@ public:
 		
 		String path = String::fromCString((const char*)buf.getConstData(), buf.getSize());
 		StringTraits::tstrcpy(outPath, LN_MAX_PATH, path.c_str());
-#endif
 	}
 #endif
 };

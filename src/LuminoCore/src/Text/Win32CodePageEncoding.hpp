@@ -1,8 +1,8 @@
 ﻿
 #define NOMINMAX
 #include <Windows.h>
-#include <Lumino/Text/Encoding.hpp>
-#include <Lumino/Base/String.hpp>
+#include <LuminoCore/Text/Encoding.hpp>
+#include <LuminoCore/Base/String.hpp>
 
 namespace ln {
 
@@ -22,6 +22,7 @@ public:
     virtual byte_t* preamble() const override { return nullptr; }
     virtual int getCharacterCount(const void* buffer, size_t bufferSize) const override;
     virtual int getLeadExtraLength(const void* buffer, size_t bufferSize) const override;
+	virtual bool convertToUTF16Stateless(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult) override;
 
 private:
     CPINFOEX m_cpInfo;
@@ -34,7 +35,7 @@ public:
     public:
         Win32CodePageDecoder(TextEncoding* encoding, const CPINFOEX& cpInfo);
         virtual bool canRemain() override { return m_canRemain; }
-        virtual bool convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, DecodeResult* outResult) override;
+        virtual bool convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult) override;
         virtual int usedDefaultCharCount() override { return m_usedDefaultCharCount; }
         virtual bool completed() override { return m_lastLeadByte == 0; }
         virtual void reset() override
@@ -56,7 +57,7 @@ public:
     public:
         Win32CodePageEncoder(TextEncoding* encoding, const CPINFOEX& cpInfo);
         virtual bool canRemain() override { return m_canRemain; }
-        virtual bool convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, EncodeResult* outResult) override;
+        virtual bool convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, TextEncodeResult* outResult) override;
         virtual int usedDefaultCharCount() override { return m_usedDefaultCharCount; }
         virtual bool completed() override { return true; }
         virtual void reset() override { m_usedDefaultCharCount = 0; }

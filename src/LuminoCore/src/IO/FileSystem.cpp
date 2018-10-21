@@ -3,9 +3,9 @@
 #include <sys/stat.h>
 #include <list>
 #include "Internal.hpp"
-#include <Lumino/Base/Buffer.hpp>
-#include <Lumino/Text/Encoding.hpp>
-#include <Lumino/IO/FileSystem.hpp>
+#include <LuminoCore/Base/Buffer.hpp>
+#include <LuminoCore/Text/Encoding.hpp>
+#include <LuminoCore/IO/FileSystem.hpp>
 #if defined(LN_OS_WIN32)
 #include "FileSystem_Win32.hpp"
 #else
@@ -320,6 +320,28 @@ void FileSystemInternal::setAttribute(const char16_t* filePath, int len, FileAtt
 {
     detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath, len);
     PlatformFileSystem::setAttribute(localPath.c_str(), attr);
+}
+
+time_t FileSystemInternal::getLastModifiedTime(const char* filePath, int len)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath, len);
+	time_t time;
+	PlatformFileSystem::getLastModifiedTime(localPath.c_str(), &time);
+	return time;
+}
+time_t FileSystemInternal::getLastModifiedTime(const wchar_t* filePath, int len)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath, len);
+	time_t time;
+	PlatformFileSystem::getLastModifiedTime(localPath.c_str(), &time);
+	return time;
+}
+time_t FileSystemInternal::getLastModifiedTime(const char16_t* filePath, int len)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath, len);
+	time_t time;
+	PlatformFileSystem::getLastModifiedTime(localPath.c_str(), &time);
+	return time;
 }
 
 void FileSystemInternal::copyFile(const char* sourceFileName, int sourceFileNameLen, const char* destFileName, int destFileNameLen, FileCopyOption option)
@@ -792,6 +814,17 @@ DirectoryIteratorRange::DirectoryIteratorRange(const StringRef& dirPath, const S
     : m_begin(dirPath, pattern, searchOption, targetEntity)
     , m_end()
 {
+}
+
+Path FileSystem::getFile(const StringRef& dirPath, const StringRef& pattern)
+{
+	auto files = ln::FileSystem::getFiles(dirPath, pattern);
+	if (!files.isEmpty()) {
+		return *files.begin();
+	}
+	else {
+		return Path();
+	}
 }
 
 DirectoryIteratorRange FileSystem::getFiles(const StringRef& dirPath, const StringRef& pattern, SearchOption searchOption)

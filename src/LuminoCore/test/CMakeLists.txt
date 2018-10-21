@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.0.0)
-project(LuminoCore_Test)
+project(LuminoCore-Test)
 
 set(LN_SOURCES
 	${LN_SOURCES_gtest}
@@ -16,6 +16,7 @@ set(LN_SOURCES
 	Test_Base_RefObject.cpp
 	Test_Base_String.cpp
 	Test_Base_StringRef.cpp
+	Test_IO_BinaryReader.cpp
 	Test_IO_CommandLineParser.cpp
 	Test_IO_FileStream.cpp
 	Test_IO_FileSystem.cpp
@@ -42,19 +43,19 @@ set(LN_SOURCES
 
 include_directories(
 	${LN_INCLUDES_gtest}
-	${LUMINO_INCLUDE_DIRECTORIES}
+	#${LUMINO_INCLUDE_DIRECTORIES}
 )
 
 
-add_executable(LuminoCore_Test ${LN_SOURCES})
-target_link_libraries(${PROJECT_NAME} LuminoCore)
+add_executable(${PROJECT_NAME} ${LN_SOURCES})
+target_link_libraries(${PROJECT_NAME} LuminoCore "-framework Foundation")
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 
 if (DEFINED EMSCRIPTEN)
-	em_link_pre_js(LuminoCore_Test ${CMAKE_CURRENT_SOURCE_DIR}/pre.js)
+	em_link_pre_js(LuminoCore-Test ${CMAKE_CURRENT_SOURCE_DIR}/pre.js)
 endif()
 
-add_test(NAME LuminoCore_Test-all COMMAND $<TARGET_FILE:LuminoCore_Test>)
+add_test(NAME LuminoCore-Test-all COMMAND $<TARGET_FILE:LuminoCore-Test>)
 
 #set_target_properties(${PROJECT_NAME} PROPERTIES
 #    CXX_STANDARD 11

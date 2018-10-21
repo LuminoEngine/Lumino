@@ -1,9 +1,9 @@
 ﻿
 #include "Internal.hpp"
 #include <float.h>
-#include <Lumino/Base/String.hpp>
-#include <Lumino/IO/StringReader.hpp>
-#include <Lumino/Json/JsonReader.hpp>
+#include <LuminoCore/Base/String.hpp>
+#include <LuminoCore/IO/StringReader.hpp>
+#include <LuminoCore/Json/JsonReader.hpp>
 
 namespace ln {
 namespace detail {

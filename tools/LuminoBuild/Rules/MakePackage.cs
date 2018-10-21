@@ -12,13 +12,34 @@ namespace LuminoBuild.Rules
 
         public override void Build(Builder builder)
         {
-            builder.DoTask("MakeVSProjects");
-            builder.DoTask("BuildEngine");
-            builder.DoTask("BuildDocuments");
-            builder.DoTask("MakeNuGetPackage_Core");
+            builder.DoTask("BuildExternalProjects");
+            if (Utils.IsWin32)
+            {
+                builder.DoTask("MakeVSProjects");
+                builder.DoTask("BuildEngine_MSVC");
+                builder.DoTask("BuildEngine_Emscripten");
+            }
+            if (Utils.IsMac)
+            {
+                builder.DoTask("BuildEngine_macOS");
+                builder.DoTask("BuildEngine_iOS");
+                
+            }
 
-            //if (Utils.IsWin32) builder.DoTask("make-vs");
-            //if (Utils.IsMac) builder.DoTask("MakeXCodeProjects");
+            if (BuildEnvironment.AndroidStudioFound)
+            {
+                builder.DoTask("BuildEngine_AndroidJNI");
+            }
+
+            builder.DoTask("BuildDocuments");
+
+            builder.DoTask("MakeReleasePackage");
+            
+            if (Utils.IsWin32)
+            {
+                builder.DoTask("MakeNuGetPackage_Core");
+                builder.DoTask("MakeInstaller_Win32");
+            }
         }
     }
 }

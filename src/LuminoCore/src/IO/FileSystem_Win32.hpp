@@ -4,9 +4,9 @@
 #include <Shlwapi.h>
 #include "Internal.hpp"
 #include <Windows.h>
-#include <Lumino/Text/Encoding.hpp>
+#include <LuminoCore/Text/Encoding.hpp>
 #include "PathHelper.hpp"
-#include <Lumino/Base/Platform.hpp>
+#include <LuminoCore/Base/Platform.hpp>
 
 namespace ln {
 
@@ -53,6 +53,15 @@ public:
         *outAttr = flags;
         return true;
     }
+
+	static void getLastModifiedTime(const wchar_t* path, time_t* outTime)
+	{
+		WIN32_FILE_ATTRIBUTE_DATA fad;
+		BOOL r = ::GetFileAttributesExW(path, GetFileExInfoStandard, &fad);
+		if (LN_ENSURE(r != FALSE, detail::Win32Helper::getWin32ErrorMessage(::GetLastError()))) return;
+		r = detail::Win32Helper::FILETIMEtoEpochTime(fad.ftLastWriteTime, outTime);
+		if (LN_ENSURE(r != FALSE)) return;
+	}
 
     static void copyFile(const wchar_t* sourceFileName, const wchar_t* destFileName, bool overwrite)
     {

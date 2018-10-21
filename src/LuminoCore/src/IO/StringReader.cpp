@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/IO/StringReader.hpp>
+#include <LuminoCore/IO/StringReader.hpp>
 
 namespace ln {
 

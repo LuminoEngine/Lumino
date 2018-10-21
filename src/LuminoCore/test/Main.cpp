@@ -1,7 +1,7 @@
 ﻿
 #include <stdio.h>
 #include "Common.hpp"
-#include <Lumino/Base/Logger.hpp>
+#include <LuminoCore.hpp>
 
 
 #ifdef __EMSCRIPTEN__
@@ -211,16 +211,19 @@ int main(int argc, char** argv)
 		emscripten_set_main_loop(ems_loop, 60, true);
 	}
 #endif
+
+	TestHelper::setAssetsDirPath(LN_LOCALFILE("TestData"));
 	TestHelper::setTempDirPath(_T("TestTemp"));
 	GlobalLogger::addStdErrAdapter();
 	LN_LOG_INFO << "Running test.";
-
+    LN_LOG_INFO << "SystemMultiByteEncoding: " << TextEncoding::systemMultiByteEncoding()->name();
+    LN_LOG_INFO << "WideCharEncoding: " << TextEncoding::wideCharEncoding()->name();
 
 	char* testArgs[] =
 	{
 		argv[0],
 		"--gtest_break_on_failure",
-		//"--gtest_filter=Test_IO_FileStream.*"
+		//"--gtest_filter=Test_Serialization2.ManyData",
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 

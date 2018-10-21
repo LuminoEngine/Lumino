@@ -1,5 +1,5 @@
 ﻿#include "Internal.hpp"
-#include <Lumino/IO/Process.hpp>
+#include <LuminoCore/IO/Process.hpp>
 #if defined(LN_OS_WIN32)
 #include "Process_Win32.hpp"
 #else
@@ -18,6 +18,7 @@ Process::Process()
 	, m_stdoutEncoding(nullptr)
 	, m_stderrEncoding(nullptr)
 {
+	m_startInfo.useShellExecute = true;
 	createRedirectStreams();
 }
 
@@ -43,7 +44,11 @@ StreamWriter* Process::openStdin()
 	{
 		m_startInfo.stdinPipe = makeRef<detail::PipeImpl>();
 		m_startInfo.stdinPipe->init();
-		m_stdinWriter = makeRef<StreamWriter>(m_startInfo.stdinPipe, m_stdinEncoding);
+		TextEncoding* encoding = m_stdinEncoding;
+		if (!encoding) {
+			encoding = TextEncoding::systemMultiByteEncoding();
+		}
+		m_stdinWriter = makeRef<StreamWriter>(m_startInfo.stdinPipe, encoding);
 	}
 
 	return m_stdinWriter;
@@ -55,7 +60,11 @@ StreamReader* Process::openStdout()
 	{
 		m_startInfo.stdoutPipe = makeRef<detail::PipeImpl>();
 		m_startInfo.stdoutPipe->init();
-		m_stdoutReader = makeRef<StreamReader>(m_startInfo.stdoutPipe, m_stdoutEncoding);
+		TextEncoding* encoding = m_stdoutEncoding;
+		if (!encoding) {
+			encoding = TextEncoding::systemMultiByteEncoding();
+		}
+		m_stdoutReader = makeRef<StreamReader>(m_startInfo.stdoutPipe, encoding);
 	}
 
 	return m_stdoutReader;
@@ -67,7 +76,11 @@ StreamReader* Process::openStderr()
 	{
 		m_startInfo.stderrPipe = makeRef<detail::PipeImpl>();
 		m_startInfo.stderrPipe->init();
-		m_stderrReader = makeRef<StreamReader>(m_startInfo.stderrPipe, m_stderrEncoding);
+		TextEncoding* encoding = m_stdoutEncoding;
+		if (!encoding) {
+			encoding = TextEncoding::systemMultiByteEncoding();
+		}
+		m_stderrReader = makeRef<StreamReader>(m_startInfo.stderrPipe, encoding);
 	}
 
 	return m_stderrReader;
@@ -91,7 +104,14 @@ StreamReader* Process::openStderr()
 
 void Process::start()
 {
-	m_impl->start(m_startInfo);
+	if (m_startInfo.useShellExecute) {
+		if (LN_REQUIRE(!m_startInfo.stdinPipe && !m_startInfo.stdoutPipe && !m_startInfo.stderrPipe)) return;
+		// TODO: 環境変数指定も NG
+		m_impl->startWithShell(m_startInfo);
+	}
+	else {
+		m_impl->start(m_startInfo);
+	}
 }
 
 bool Process::wait(int timeoutMilliseconds)

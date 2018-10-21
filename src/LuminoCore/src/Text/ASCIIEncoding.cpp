@@ -13,13 +13,13 @@ ASCIIEncoding::ASCIIEncoding()
 {
 }
 
-bool ASCIIEncoding::ASCIIDecoder::convertToUTF16(const byte_t* input, size_t inBufferByteCount, UTF16* output, size_t outBufferCharCount, DecodeResult* outResult)
+bool ASCIIEncoding::ASCIIDecoder::convertToUTF16(const byte_t* input, size_t inBufferByteCount, UTF16* output, size_t outBufferCharCount, TextDecodeResult* outResult)
 {
     LN_DCHECK(input);
     LN_DCHECK(output);
     LN_DCHECK(outResult);
 
-	uint32_t fallbackReplacementChar = encoding()->fallbackReplacementChar();
+    uint32_t fallbackReplacementChar = encoding()->fallbackReplacementChar();
 
     size_t i = 0;
     for (; i < inBufferByteCount; ++i) {
@@ -46,13 +46,13 @@ bool ASCIIEncoding::ASCIIDecoder::convertToUTF16(const byte_t* input, size_t inB
     return true;
 }
 
-bool ASCIIEncoding::ASCIIEncoder::convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, EncodeResult* outResult)
+bool ASCIIEncoding::ASCIIEncoder::convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, TextEncodeResult* outResult)
 {
     LN_DCHECK(input);
     LN_DCHECK(output);
     LN_DCHECK(outResult);
 
-	uint32_t fallbackReplacementChar = encoding()->fallbackReplacementChar();
+    uint32_t fallbackReplacementChar = encoding()->fallbackReplacementChar();
 
     for (size_t i = 0; i < inputElementSize; ++i) {
         UTF16 ch = input[i];

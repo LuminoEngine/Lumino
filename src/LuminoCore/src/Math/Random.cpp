@@ -1,6 +1,6 @@
 ﻿
 #include <time.h>
-#include <Lumino/Math/Random.hpp>
+#include <LuminoCore/Math/Random.hpp>
 
 namespace ln {
 

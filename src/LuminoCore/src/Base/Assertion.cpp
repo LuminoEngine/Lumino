@@ -2,10 +2,11 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <algorithm>
-#include <Lumino/Base/Assertion.hpp>
-#include <Lumino/Base/String.hpp>
-#include <Lumino/Base/StringHelper.hpp>
-#include <Lumino/Base/Logger.hpp>
+#include <LuminoCore/Base/Assertion.hpp>
+#include <LuminoCore/Base/String.hpp>
+#include <LuminoCore/Base/StringHelper.hpp>
+#include <LuminoCore/Base/Logger.hpp>
+#include "../Base/CRTHelper.h"
 #include "../Text/UnicodeUtils.hpp"
 
 namespace ln {
@@ -55,12 +56,19 @@ void convertChar16ToWChar(const char16_t* inStr, size_t inStrLen, wchar_t* outSt
 
 void convertChar16ToLocalChar(const char16_t* inStr, size_t inStrLen, char* outStr, size_t outStrLen)
 {
+#ifdef LN_MSVC
+	size_t ret;
+	mbstate_t state;
+	memset(&state, 0, sizeof state);
+	wcsrtombs_s(&ret, outStr, outStrLen, (const wchar_t**)&inStr, _TRUNCATE, &state);
+#else
 	size_t len = (inStrLen < outStrLen) ? inStrLen : outStrLen;
 	size_t i = 0;
 	for (; i < len && inStr[i]; i++) {
 		outStr[i] = static_cast<char>(inStr[i]);
 	}
 	outStr[i] = '\0';
+#endif
 }
 
 void errorPrintf(Char* buf, size_t bufSize, const char* format, ...)

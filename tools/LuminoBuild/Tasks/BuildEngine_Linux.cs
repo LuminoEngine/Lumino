@@ -13,13 +13,13 @@ namespace LuminoBuild.Tasks
         public override void Build(Builder builder)
         {
             var buildDir = Path.Combine(builder.LuminoBuildDir, "Linux-x86_64");
-            var installDir = Path.Combine(builder.LuminoBuildDir, "CMakeInstallTemp", "Linux-x86_64");
+            var installDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "Linux-x86_64");
 
             Directory.CreateDirectory(buildDir);
             Directory.SetCurrentDirectory(buildDir);
 
             var args = string.Format(
-                "-DCMAKE_INSTALL_PREFIX=\"{0}\" -DLN_BUILD_TESTS=ON ../..",
+                "-DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=\"{0}\" -DLN_BUILD_TESTS=ON ../..",
                 installDir);
 
             Utils.CallProcess("cmake", args);

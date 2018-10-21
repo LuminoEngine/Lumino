@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/Base/ElapsedTimer.hpp>
+#include <LuminoCore/Base/ElapsedTimer.hpp>
 
 #if defined(LN_OS_WIN32)
 #include "ElapsedTimer_Win32.hpp"

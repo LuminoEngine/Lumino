@@ -6,17 +6,16 @@
 #if defined(LN_OS_WIN32) && _MSC_VER >= 1900
 #include <cuchar>
 #endif
-#include <Lumino/Base/Buffer.hpp>
-#include <Lumino/Base/String.hpp>
-#include <Lumino/Base/StringHelper.hpp>
-#include <Lumino/Base/RefObject.hpp>
-#include <Lumino/Base/CRCHash.hpp>
-#include "CRTHelper.h"
+#include <LuminoCore/Base/Buffer.hpp>
+#include <LuminoCore/Base/String.hpp>
+#include <LuminoCore/Base/StringHelper.hpp>
+#include <LuminoCore/Base/RefObject.hpp>
+#include <LuminoCore/Base/CRCHash.hpp>
 #include "../Text/UnicodeUtils.hpp"
-#include <Lumino/Text/Encoding.hpp>
+#include <LuminoCore/Text/Encoding.hpp>
 
 #ifdef LN_STRING_WITH_PATH
-#include <Lumino/IO/Path.hpp>
+#include <LuminoCore/IO/Path.hpp>
 #endif
 
 namespace ln {
@@ -451,39 +450,39 @@ List<String> String::split(const StringRef& delim, StringSplitOptions option) co
     }                                                            \
     LN_ENSURE(end == begin + len);                               \
     return num;
-int String::toInt(int base)
+int String::toInt(int base) const
 {
     TO_INT_DEF(int32_t, toInt32);
 }
-int8_t String::toInt8(int base)
+int8_t String::toInt8(int base) const
 {
     TO_INT_DEF(int8_t, toInt8);
 }
-int16_t String::toInt16(int base)
+int16_t String::toInt16(int base) const
 {
     TO_INT_DEF(int16_t, toInt16);
 }
-int32_t String::toInt32(int base)
+int32_t String::toInt32(int base) const
 {
     TO_INT_DEF(int32_t, toInt32);
 }
-int64_t String::toInt64(int base)
+int64_t String::toInt64(int base) const
 {
     TO_INT_DEF(int64_t, toInt64);
 }
-uint8_t String::toUInt8(int base)
+uint8_t String::toUInt8(int base) const
 {
     TO_INT_DEF(uint8_t, toUInt8);
 }
-uint16_t String::toUInt16(int base)
+uint16_t String::toUInt16(int base) const
 {
     TO_INT_DEF(uint16_t, toUInt16);
 }
-uint32_t String::toUInt32(int base)
+uint32_t String::toUInt32(int base) const
 {
     TO_INT_DEF(uint32_t, toUInt32);
 }
-uint64_t String::toUInt64(int base)
+uint64_t String::toUInt64(int base) const
 {
     TO_INT_DEF(uint64_t, toUInt64);
 }
@@ -506,39 +505,39 @@ uint64_t String::toUInt64(int base)
         *outValue = num;                                         \
     }                                                            \
     return true;
-bool String::tryToInt(int8_t* outValue, int base)
+bool String::tryToInt(int8_t* outValue, int base) const
 {
     TRY_TO_INT_DEF(int8_t, toInt32);
 }
-bool String::tryToInt8(int8_t* outValue, int base)
+bool String::tryToInt8(int8_t* outValue, int base) const
 {
     TRY_TO_INT_DEF(int8_t, toInt8);
 }
-bool String::tryToInt16(int16_t* outValue, int base)
+bool String::tryToInt16(int16_t* outValue, int base) const
 {
     TRY_TO_INT_DEF(int16_t, toInt16);
 }
-bool String::tryToInt32(int32_t* outValue, int base)
+bool String::tryToInt32(int32_t* outValue, int base) const
 {
     TRY_TO_INT_DEF(int32_t, toInt32);
 }
-bool String::tryToInt64(int64_t* outValue, int base)
+bool String::tryToInt64(int64_t* outValue, int base) const
 {
     TRY_TO_INT_DEF(int64_t, toInt64);
 }
-bool String::tryToUInt8(uint8_t* outValue, int base)
+bool String::tryToUInt8(uint8_t* outValue, int base) const
 {
     TRY_TO_INT_DEF(uint8_t, toUInt8);
 }
-bool String::tryToUInt16(uint16_t* outValue, int base)
+bool String::tryToUInt16(uint16_t* outValue, int base) const
 {
     TRY_TO_INT_DEF(uint16_t, toUInt16);
 }
-bool String::tryToUInt32(uint32_t* outValue, int base)
+bool String::tryToUInt32(uint32_t* outValue, int base) const
 {
     TRY_TO_INT_DEF(uint32_t, toUInt32);
 }
-bool String::tryToUInt64(uint64_t* outValue, int base)
+bool String::tryToUInt64(uint64_t* outValue, int base) const
 {
     TRY_TO_INT_DEF(uint64_t, toUInt64);
 }
@@ -927,8 +926,7 @@ void String::assign(const StringRef& str)
     assign(str.data(), str.length());
 }
 
-template<typename TChar>
-void String::assignFromCStr(const TChar* str, int length, bool* outUsedDefaultChar, TextEncoding* encoding)
+void String::assignFromCStr(const char* str, int length, bool* outUsedDefaultChar, TextEncoding* encoding)
 {
     int len = 0;
     bool ascii = true;
@@ -936,7 +934,7 @@ void String::assignFromCStr(const TChar* str, int length, bool* outUsedDefaultCh
     if (str) {
         // ASCII だけの文字列か調べる。ついでに文字数も調べる。
         length = (length < 0) ? INT_MAX : length;
-        const TChar* pos = str;
+        const char* pos = str;
         for (; *pos && len < length; ++pos, ++len) {
             if (isascii(*pos) == 0) {
                 ascii = false;
@@ -952,22 +950,49 @@ void String::assignFromCStr(const TChar* str, int length, bool* outUsedDefaultCh
         }
         unlockBuffer(len, &context);
     } else {
-#if LN_STRING_WITH_ENCODING
-        if (!encoding) {
-            encoding = TextEncoding::getEncodingTemplate<TChar>();
+        detail::StringLockContext context;
+        size_t bufSize = TextEncoding::getConversionRequiredByteCount(TextEncoding::systemMultiByteEncoding(), TextEncoding::tcharEncoding(), len) / sizeof(Char);
+        Char* buf = lockBuffer(bufSize, &context);
+
+        TextDecodeResult result;
+        TextEncoding::systemMultiByteEncoding()->convertToUTF16Stateless((const byte_t*)str, len, (UTF16*)buf, bufSize, &result);
+
+        unlockBuffer(result.outputByteCount / sizeof(Char), &context);
+    }
+}
+
+void String::assignFromCStr(const wchar_t* str, int length, bool* outUsedDefaultChar, TextEncoding* encoding)
+{
+    int len = 0;
+    bool ascii = true;
+
+    if (str) {
+        // ASCII だけの文字列か調べる。ついでに文字数も調べる。
+        length = (length < 0) ? INT_MAX : length;
+        const wchar_t* pos = str;
+        for (; *pos && len < length; ++pos, ++len) {
+            if (isascii(*pos) == 0) {
+                ascii = false;
+            }
         }
+    }
 
-        EncodingConversionOptions options;
-        options.NullTerminated = false;
+    if (ascii) {
+        detail::StringLockContext context;
+        Char* buf = lockBuffer(len, &context);
+        for (int i = 0; i < len; ++i) {
+            buf[i] = str[i];
+        }
+        unlockBuffer(len, &context);
+    } else {
+        detail::StringLockContext context;
+        size_t bufSize = TextEncoding::getConversionRequiredByteCount(TextEncoding::wideCharEncoding(), TextEncoding::tcharEncoding(), len * sizeof(wchar_t)) / sizeof(Char);
+        Char* buf = lockBuffer(bufSize, &context);
 
-        EncodingConversionResult result;
-        //const ByteBuffer tmpBuffer = TextEncoding::convert(str, len * sizeof(TChar), encoding, getThisTypeEncoding(), options, &result);
-        if (outUsedDefaultChar != nullptr) *outUsedDefaultChar = result.UsedDefaultChar;
+        TextDecodeResult result;
+        TextEncoding::wideCharEncoding()->convertToUTF16Stateless((const byte_t*)str, len * sizeof(wchar_t), (UTF16*)buf, bufSize, &result);
 
-        assign((const Char*)tmpBuffer.getData(), result.BytesUsed / sizeof(Char));
-#else
-        LN_NOTIMPLEMENTED();
-#endif
+        unlockBuffer(result.outputByteCount / sizeof(Char), &context);
     }
 }
 
@@ -1130,7 +1155,7 @@ int UStringConvert::convertNativeString(const char16_t* src, int srcLen, char* d
     options.ReplacementChar = '?';
     auto result = UnicodeUtils::convertUTF16toUTF8((const UTF16*)src, srcLen, (UTF8*)dst, dstSize, &options);
     if (result == UTFConversionResult_Success) {
-		dst[options.ConvertedTargetLength] = '\0';
+        dst[options.ConvertedTargetLength] = '\0';
         return options.ConvertedTargetLength;
     } else {
         return 0;

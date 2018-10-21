@@ -20,35 +20,45 @@ namespace LuminoBuild
 
             var builder = new LuminoBuild.Builder();
 
-            builder.MajorVersion = 0;
-            builder.MinorVersion = 4;
-            builder.RevisionVersion = 0;
-            builder.BuildVersion = 0;
-            builder.VersionString = string.Format("{0}.{1}.{2}", builder.MajorVersion, builder.MinorVersion, builder.RevisionVersion);
 
             builder.LuminoRootDir = Path.GetFullPath(Path.Combine(exeDir, "../../../../../../")) + "/";
-            builder.LuminoBuildDir = builder.LuminoRootDir + "build/";
-            builder.LuminoBindingsDir = builder.LuminoRootDir + "bindings/";
-            builder.LuminoLibDir = builder.LuminoRootDir + "lib/";
-            builder.LuminoToolsDir = builder.LuminoRootDir + "tools/";
-            builder.LuminoDocDir = builder.LuminoRootDir + "docs/";
-            builder.LuminoPackageDir = builder.LuminoRootDir + "package/";
-            builder.LuminoPackageSourceDir = builder.LuminoRootDir + "package/PackageSource/";
-            builder.LuminoPackageReleaseDir = builder.LuminoRootDir + "package/Release/Lumino/";
-            builder.LuminoDependenciesDir = builder.LuminoRootDir + "external/LuminoDependencies/";
-            
+            builder.LuminoBuildDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "build"));
+            builder.LuminoBindingsDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "bindings"));
+            builder.LuminoLibDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "lib"));
+            builder.LuminoToolsDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "tools"));
+            builder.LuminoDocDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "docs"));
+            builder.LuminoSourceDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "src"));
+            builder.LuminoPackageDir = Path.GetFullPath(Path.Combine(builder.LuminoBuildDir, "Package"));
+            builder.LuminoPackageLibDir = Path.GetFullPath(Path.Combine(builder.LuminoPackageDir, "lib"));
+            builder.LuminoPackageSourceDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "tools/PackageSource"));
+            builder.LuminoExternalDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "external"));
+
+            BuildEnvironment.Initialize(builder.LuminoRootDir);
+
+
             Console.WriteLine("RootDir: {0}", builder.LuminoRootDir);
 
 
             builder.Tasks = new List<LuminoBuild.BuildTask>();
+            builder.Tasks.Add(new Tasks.SetupTools());
+            builder.Tasks.Add(new Tasks.BuildExternalProjects());
             builder.Tasks.Add(new Tasks.MakeVSProjects());
-            builder.Tasks.Add(new Tasks.BuildEngine());
             builder.Tasks.Add(new Tasks.BuildEngine_Linux());
             builder.Tasks.Add(new Tasks.BuildEngine_macOS());
+            builder.Tasks.Add(new Tasks.BuildEngine_iOS());
             builder.Tasks.Add(new Tasks.BuildDocuments());
+            builder.Tasks.Add(new Tasks.BuildEngine_MSVC());
             builder.Tasks.Add(new Tasks.MakeNuGetPackage_Core());
+            builder.Tasks.Add(new Tasks.BuildEngine_AndroidJNI());
+            builder.Tasks.Add(new Tasks.BuildEngine_Emscripten());
+            builder.Tasks.Add(new Tasks.MakeReleasePackage());
+            builder.Tasks.Add(new Tasks.MakeInstaller_Win32());
             builder.Rules.Add(new Rules.MakePackage());
-
+            builder.Rules.Add(new Rules.BuildForCI_1());
+            builder.Rules.Add(new Rules.BuildForCI_2());
+            builder.Rules.Add(new Rules.BuildForCI_3());
+            
+            
             if (args.Length >= 1)
             {
                 builder.DoTaskOrRule(args[0]);

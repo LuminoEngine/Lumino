@@ -1,5 +1,5 @@
 #include "Common.hpp"
-#include <Lumino/Base/List.hpp>
+#include <LuminoCore/Base/List.hpp>
 
 class Test_Base_List : public ::testing::Test
 {

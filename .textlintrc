@@ -1,0 +1,8 @@
+{
+    "rules": {
+        "preset-ja-technical-writing": true,
+        "textlint-rule-spellcheck-tech-word": true,
+        "spellcheck-tech-word": true,
+        "preset-ja-technical-writing": true
+    }
+}

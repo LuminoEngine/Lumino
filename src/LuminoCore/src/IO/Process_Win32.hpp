@@ -1,7 +1,7 @@
 ﻿#include "Internal.hpp"
-#include <Lumino/IO/Stream.hpp>
-#include <Lumino/IO/Process.hpp>
-#include <Lumino/Base/Platform.hpp>
+#include <LuminoCore/IO/Stream.hpp>
+#include <LuminoCore/IO/Process.hpp>
+#include <LuminoCore/Base/Platform.hpp>
 
 namespace ln {
 namespace detail {
@@ -124,6 +124,7 @@ public:
 	virtual ~ProcessImpl();
 
 	void start(const ProcessStartInfo& startInfo);
+	void startWithShell(const ProcessStartInfo& startInfo);
 	bool waitForExit(int timeoutMSec);
 	ProcessStatus getStatus(int* outExitCode);
 
@@ -159,6 +160,7 @@ private:
 
 ProcessImpl::ProcessImpl()
 {
+	memset(&m_processInfo, 0, sizeof(m_processInfo));
 }
 
 ProcessImpl::~ProcessImpl()
@@ -287,7 +289,6 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo)
 		return;
 	}
 
-
 	//
 	//if (startInfo.stdinPipe) {
 	//	startInfo.stdinPipe->closeRead();
@@ -303,6 +304,57 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo)
 	if (startupInfo.hStdInput) CloseHandle(startupInfo.hStdInput);
 	if (startupInfo.hStdOutput) CloseHandle(startupInfo.hStdOutput);
 	if (startupInfo.hStdError) CloseHandle(startupInfo.hStdError);
+}
+
+void ProcessImpl::startWithShell(const ProcessStartInfo& startInfo)
+{
+	SHELLEXECUTEINFOW shellExecuteInfo = { 0 };
+	shellExecuteInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
+	shellExecuteInfo.fMask |= SEE_MASK_NOCLOSEPROCESS;
+	shellExecuteInfo.fMask |= SEE_MASK_FLAG_NO_UI;
+	shellExecuteInfo.fMask |= SEE_MASK_FLAG_DDEWAIT;
+
+	if (0/*ウィンドウ非表示*/) {
+		shellExecuteInfo.nShow = SW_HIDE;
+	}
+	else {
+		shellExecuteInfo.nShow = SW_SHOWNORMAL;
+	}
+
+	std::wstring fileName;
+	if (!startInfo.program.isEmpty()) {
+		fileName = startInfo.program.str().toStdWString();
+		shellExecuteInfo.lpFile = fileName.c_str();
+	}
+
+	std::wstring arguments;
+	if (!startInfo.args.isEmpty()) {
+		for (auto& a : startInfo.args)
+		{
+			arguments.append(L" ");
+			arguments.append(a.toStdWString());
+		}
+		shellExecuteInfo.lpParameters = arguments.c_str();
+	}
+
+	std::wstring workingDirectory;
+	if (!startInfo.workingDirectory.isEmpty()) {
+		workingDirectory = startInfo.workingDirectory.str().toStdWString();
+		shellExecuteInfo.lpDirectory = workingDirectory.c_str();
+	}
+
+
+	if (!::ShellExecuteExW(&shellExecuteInfo))
+	{
+		LN_ENSURE(0, Win32Helper::getWin32ErrorMessage(::GetLastError()));
+	}
+
+	// TODO: ファイルが見つからない場合でも、TRUE で戻ってくる。
+	// その場合、hProcess が null になっている。
+
+	memset(&m_processInfo, 0, sizeof(m_processInfo));
+
+	m_processInfo.hProcess = shellExecuteInfo.hProcess;
 }
 
 bool ProcessImpl::waitForExit(int timeoutMSec)

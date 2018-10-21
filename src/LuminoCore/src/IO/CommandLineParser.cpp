@@ -1,11 +1,11 @@
-﻿
+
 #include "Internal.hpp"
 #include <limits.h>
 #include <iostream>
-#include <Lumino/Base/Environment.hpp>
-#include <Lumino/IO/Path.hpp>
-#include <Lumino/IO/StringWriter.hpp>
-#include <Lumino/IO/CommandLineParser.hpp>
+#include <LuminoCore/Base/Environment.hpp>
+#include <LuminoCore/IO/Path.hpp>
+#include <LuminoCore/IO/StringWriter.hpp>
+#include <LuminoCore/IO/CommandLineParser.hpp>
 
 namespace ln {
 
@@ -244,18 +244,27 @@ void CommandLineCommandBase::buildHelpUsageText(StringWriter* writer) const
     if (!args.isEmpty()) {
         for (auto& a : args) {
             writer->write(_T(" "));
+			// prologue
             if (a->isOptional()) {
                 writer->write(_T("["));
             }
+			else {
+				writer->write(_T("<"));
+			}
+			// name
             if (a->isList()) {
                 writer->write(a->name());
                 writer->write(_T("..."));
             } else {
                 writer->write(a->name());
             }
+			// epilogue
             if (a->isOptional()) {
                 writer->write(_T("]"));
             }
+			else {
+				writer->write(_T(">"));
+			}
         }
     }
     if (!commands.isEmpty()) {
@@ -395,8 +404,10 @@ bool CommandLineCommandBase::verify()
     }
 
     for (auto& arg : positionalArguments()) {
-        if (arg->values().isEmpty()) {
-            return false;
+        if (!arg->flags().hasFlag(CommandLinePositionalArgumentFlags::Optional)) {
+            if (arg->values().isEmpty()) {
+                return false;
+            }
         }
     }
 

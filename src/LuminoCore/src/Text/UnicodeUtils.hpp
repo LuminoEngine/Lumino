@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <Lumino/Base/Common.hpp>
+#include <LuminoCore/Base/Common.hpp>
 
 #ifndef _WIN32
 #include <stdint.h>

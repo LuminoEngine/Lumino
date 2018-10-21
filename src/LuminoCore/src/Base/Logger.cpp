@@ -15,9 +15,15 @@
 #include <time.h>
 #include <sstream>
 #include <iomanip>
-#include <Lumino/Base/Logger.hpp>
+#include <LuminoCore/Base/Logger.hpp>
+
+#ifdef LN_OS_ANDROID
+#include <android/log.h>
+#endif
 
 namespace ln {
+
+void writeNSLog(const char* str);
 
 //==============================================================================
 // LogHelper
@@ -170,7 +176,7 @@ ILoggerAdapter::~ILoggerAdapter()
 class FileLoggerAdapter : public ILoggerAdapter
 {
 public:
-	virtual void write(const char* str, size_t len) override
+	virtual void write(LogLevel level, const char* str, size_t len) override
 	{
 		g_logFile.write(str, len);
 	}
@@ -182,11 +188,55 @@ public:
 class StdErrLoggerAdapter : public ILoggerAdapter
 {
 public:
-    virtual void write(const char* str, size_t len) override
+    virtual void write(LogLevel level, const char* str, size_t len) override
     {
         std::cerr << str;
     }
 };
+
+#ifdef LN_OS_ANDROID
+//==============================================================================
+// AndroidLogcatLoggerAdapter
+
+class AndroidLogcatLoggerAdapter : public ILoggerAdapter
+{
+public:
+	virtual void write(LogLevel level, const char* str, size_t len) override
+	{
+		auto localLevel = ANDROID_LOG_ERROR;
+		switch (level)
+		{
+		case LogLevel::Fatal:
+			localLevel = ANDROID_LOG_FATAL;
+		case LogLevel::Error:
+			localLevel = ANDROID_LOG_ERROR;
+		case LogLevel::Warning:
+			localLevel = ANDROID_LOG_WARN;
+		case LogLevel::Info:
+			localLevel = ANDROID_LOG_INFO;
+		case LogLevel::Debug:
+			localLevel = ANDROID_LOG_DEBUG;
+		case LogLevel::Verbose:
+			localLevel = ANDROID_LOG_VERBOSE;
+		}
+		__android_log_print(localLevel, "Lumino", "%s", str);
+	}
+};
+#endif
+
+#if defined(LN_OS_MAC) || defined(LN_OS_IOS)
+//==============================================================================
+// NLogLoggerAdapter
+
+class NLogLoggerAdapter : public ILoggerAdapter
+{
+public:
+	virtual void write(LogLevel level, const char* str, size_t len) override
+	{
+        writeNSLog(str);
+	}
+};
+#endif
 
 //==============================================================================
 // LoggerInterface::Impl
@@ -271,7 +321,7 @@ void LoggerInterface::operator+=(const LogRecord& record)
 		auto str = g_logSS.str();
 
 		for (auto& adapter : m_impl->m_adapters) {
-			adapter->write(str.c_str(), str.length());
+			adapter->write(record.GetLevel(), str.c_str(), str.length());
 		}
 	}
 }
@@ -301,9 +351,32 @@ void GlobalLogger::addStdErrAdapter()
         std::make_shared<detail::StdErrLoggerAdapter>());
 }
 
+void GlobalLogger::addLogcatAdapter()
+{
+#ifdef LN_OS_ANDROID
+	detail::LoggerInterface::getInstance()->m_impl->m_adapters.push_back(
+		std::make_shared<detail::AndroidLogcatLoggerAdapter>());
+	LN_LOG_INFO << "Attached AndroidLogcatLoggerAdapter.";
+#endif
+}
+
+void GlobalLogger::addNLogAdapter()
+{
+#if defined(LN_OS_MAC) || defined(LN_OS_IOS)
+	detail::LoggerInterface::getInstance()->m_impl->m_adapters.push_back(
+		std::make_shared<detail::NLogLoggerAdapter>());
+	LN_LOG_INFO << "Attached NLogLoggerAdapter.";
+#endif
+}
+
 bool GlobalLogger::hasAnyAdapter()
 {
 	return !detail::LoggerInterface::getInstance()->m_impl->m_adapters.empty();
+}
+
+void GlobalLogger::setLevel(LogLevel level)
+{
+	detail::g_maxLevel = level;
 }
 
 } // namespace ln

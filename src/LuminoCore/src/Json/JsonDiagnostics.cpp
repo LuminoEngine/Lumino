@@ -1,6 +1,6 @@
 
 #include "Internal.hpp"
-#include <Lumino/Json/JsonDiagnostics.hpp>
+#include <LuminoCore/Json/JsonDiagnostics.hpp>
 
 namespace ln {
 

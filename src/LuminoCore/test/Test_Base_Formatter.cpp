@@ -1,5 +1,5 @@
 ﻿#include "Common.hpp"
-#include <Lumino/Base/String.hpp>
+#include <LuminoCore/Base/String.hpp>
 
 class Test_Base_Formatter : public ::testing::Test
 {

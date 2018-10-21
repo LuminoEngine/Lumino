@@ -1,20 +1,20 @@
-﻿/*
+/*
     # Note: "String base" vs "Entity name array"
     Path クラスとしては String をラップするだけにしたい。Lumino の用途としては読み取り操作が多い。
     エンティティ分割は Uri クラスで。
 
     # Note: "dir/"
     "dir/" は、「dir 内の無名ファイルをさしている」みたいなイメージ。
-    "dir/*" にマッチする。
+    "dir/XXXX" にマッチする。
     それでいいのかはいろいろ意見あるだろうけど・・・。
 */
 
 #include <time.h>
 #include "Internal.hpp"
 #include "PathHelper.hpp"
-#include <Lumino/Base/Environment.hpp>
-#include <Lumino/IO/FileSystem.hpp>
-#include <Lumino/IO/Path.hpp>
+#include <LuminoCore/Base/Environment.hpp>
+#include <LuminoCore/IO/FileSystem.hpp>
+#include <LuminoCore/IO/Path.hpp>
 
 namespace ln {
 
@@ -186,13 +186,22 @@ Path Path::native() const
 #endif
 }
 
+Path Path::unify() const
+{
+	String newPath = m_path;
+	for (int i = 0; i < newPath.length(); i++) {
+		if (newPath[i] == '\\') {
+			newPath[i] = '/';
+		}
+	}
+	return Path(newPath);
+}
+
 Path Path::canonicalize() const
 {
     if (detail::PathTraits::isCanonicalPath(m_path.c_str(), m_path.length())) {
         return *this;
     }
-
-    String* path;
 
     if (isAbsolute()) {
         std::vector<Char> tmpPath(m_path.length() + 1);

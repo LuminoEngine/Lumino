@@ -11,11 +11,16 @@ namespace LuminoBuild
 {
 	class Builder
     {
-        public int MajorVersion;
-        public int MinorVersion;
-        public int RevisionVersion;
-        public int BuildVersion;
-        public string VersionString;
+        // リリースのたびに変更する必要がある情報
+        public string InstallerProductGUID_MSVC2013 = "9695C499-D82F-4A79-BB8E-E1EE62E13DBC";
+        public string InstallerProductGUID_MSVC2015 = "7AAE3341-C965-445C-B83E-F3E3A07E3E80";
+        public string InstallerProductGUID_MSVC2017 = "FF69C51F-DB0F-411A-A552-3F1B4783B538";
+        
+        public int MajorVersion = 0;
+        public int MinorVersion = 6;
+        public int RevisionVersion = 0;
+        public int BuildVersion = 0;
+        public string VersionString => string.Format("{0}.{1}.{2}", MajorVersion, MinorVersion, RevisionVersion);
 
         public string LuminoRootDir;
         public string LuminoBuildDir;
@@ -23,12 +28,28 @@ namespace LuminoBuild
         public string LuminoLibDir;
         public string LuminoToolsDir;
         public string LuminoDocDir;
+        public string LuminoSourceDir;
         public string LuminoPackageDir;
+        public string LuminoPackageLibDir;
         public string LuminoPackageSourceDir;
         public string LuminoPackageReleaseDir;
-        public string LuminoDependenciesDir;
+        public string LuminoExternalDir;
         public List<BuildTask> Tasks = new List<BuildTask>();
         public List<BuildRule> Rules = new List<BuildRule>();
+
+        public string ReleasePackageName
+        {
+            get
+            {
+                string targetEnvName;
+                if (Utils.IsWin32)
+                    targetEnvName = "Windows";
+                else
+                    targetEnvName = "macOS";
+
+                return $"Lumino-{VersionString}-{targetEnvName}";
+            }
+        }
 
         public void DoTaskOrRule(string name)
         {
@@ -54,7 +75,7 @@ namespace LuminoBuild
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine(e.ToString());
                 Console.ResetColor(); // 色のリセット
-                throw new Exception("DoTask failed.");
+                throw new Exception($"[{name}] Task failed.");
             }
         }
 
@@ -72,6 +93,7 @@ namespace LuminoBuild
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine(e.ToString());
                 Console.ResetColor(); // 色のリセット
+                throw new Exception($"[{name}] Rule failed.");
             }
         }
 
@@ -105,7 +127,15 @@ namespace LuminoBuild
                 if (task.Buildable)
                 {
                     Logger.WriteLine("[{0}] Task started.", task.CommandName);
-                    task.Build(this);
+                    string oldCD = Directory.GetCurrentDirectory();
+                    try
+                    {
+                        task.Build(this);
+                    }
+                    finally
+                    {
+                        Directory.SetCurrentDirectory(oldCD);
+                    }
                     Logger.WriteLine("[{0}] Task succeeded.", task.CommandName);
                 }
             }
@@ -119,18 +149,18 @@ namespace LuminoBuild
             }
         }
 
-        public void Build()
-        {
-            foreach (var rule in Tasks)
-            {
-                if (rule.Buildable)
-                {
-                    Logger.WriteLine("[{0}] Rule started.", rule.CommandName);
-                    rule.Build(this);
-                    Logger.WriteLine("[{0}] Rule succeeded.", rule.CommandName);
-                }
-            }
-        }
+        //public void Build()
+        //{
+        //    foreach (var rule in Tasks)
+        //    {
+        //        if (rule.Buildable)
+        //        {
+        //            Logger.WriteLine("[{0}] Rule started.", rule.CommandName);
+        //            rule.Build(this);
+        //            Logger.WriteLine("[{0}] Rule succeeded.", rule.CommandName);
+        //        }
+        //    }
+        //}
     }
 
 
@@ -206,6 +236,15 @@ namespace LuminoBuild
 
     static class Utils
     {
+        public static string ToUnixPath(string path)
+        {
+            return path.Replace("\\", "/");
+        }
+        public static string ToWin32Path(string path)
+        {
+            return path.Replace("/", "\\");
+        }
+
         /// <summary>
         /// ファイルを別のフォルダへコピーする (ファイル名は変更しない)
         /// </summary>
@@ -227,6 +266,16 @@ namespace LuminoBuild
             {
                 File.Copy(file, dstDir + "/" + Path.GetFileName(file), true);
             }
+        }
+
+        public static void GenerateFile(string dstFile, string templateFile, IEnumerable<KeyValuePair<string, string>> values)
+        {
+            string text = File.ReadAllText(templateFile);
+            foreach (var vp in values)
+            {
+                text = text.Replace(vp.Key, vp.Value);
+            }
+            File.WriteAllText(dstFile, text);
         }
 
         /// <summary>
@@ -278,6 +327,27 @@ namespace LuminoBuild
         }
 
         /// <summary>
+        /// ファイルをダウンロードする
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="fileName"></param>
+        public static void DownloadFile(string url, string fileName)
+        {
+            var request = System.Net.WebRequest.Create(url);
+            var response = request.GetResponse();
+            var stream = response.GetResponseStream();
+            using (var file = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write))
+            {
+                int read;
+                byte[] buffer = new byte[1024];
+                while ((read = stream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    file.Write(buffer, 0, read);
+                }
+            }
+        }
+
+        /// <summary>
         /// フォルダから .zip を作る
         /// </summary>
         public static void CreateZipFile(string dirPath, string zipFilePath, bool includeBaseDirectory = true)
@@ -296,6 +366,16 @@ namespace LuminoBuild
             {
                 ZipFile.ExtractToDirectory(zipFilePath, dirPath);
             }
+        }
+
+        public static void MoveFileForce(string sourceFileName, string destFileName)
+        {
+            if (File.Exists(destFileName))
+            {
+                File.Delete(destFileName);
+            }
+
+            File.Move(sourceFileName, destFileName);
         }
 
         /// <summary>
@@ -321,23 +401,57 @@ namespace LuminoBuild
             }
         }
 
-		public static string CallProcess(string program, string args = "")
+		public static string CallProcess(string program, string args = ""/*, bool useShell = false*/, Dictionary<string, string> environmentVariables = null, Action<StreamWriter> stdinWrite = null)
 		{
-			using (Process p = new Process())
+            Logger.WriteLine($"{program} {args}");
+            
+            using (Process p = new Process())
 			{
                 var sb = new StringBuilder();
 				p.StartInfo.Arguments = args;
 				p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
 				p.StartInfo.UseShellExecute = false;
 				p.StartInfo.FileName = program;
-				p.StartInfo.RedirectStandardOutput = true;
-				p.OutputDataReceived += (object sender, DataReceivedEventArgs e) => { Console.WriteLine(e.Data); sb.Append(e.Data); };
-				p.StartInfo.RedirectStandardError = true;
-				p.ErrorDataReceived += (object sender, DataReceivedEventArgs e) => { Console.WriteLine(e.Data); };
+
+                if (!p.StartInfo.UseShellExecute)
+                {
+                    p.StartInfo.RedirectStandardOutput = true;
+                    p.OutputDataReceived += (object sender, DataReceivedEventArgs e) => { Console.WriteLine(e.Data); sb.Append(e.Data); };
+                    p.StartInfo.RedirectStandardError = true;
+                    p.ErrorDataReceived += (object sender, DataReceivedEventArgs e) => { Console.WriteLine(e.Data); };
+                }
+                if (stdinWrite != null)
+                {
+                    p.StartInfo.RedirectStandardInput = true;
+                }
+
+                if (environmentVariables != null)
+                {
+                    foreach (var pair in environmentVariables)
+                    {
+                        if (p.StartInfo.EnvironmentVariables.ContainsKey(pair.Key))
+                        {
+                            p.StartInfo.EnvironmentVariables[pair.Key] = pair.Value;
+                        }
+                        else
+                        {
+                            p.StartInfo.EnvironmentVariables.Add(pair.Key, pair.Value);
+                        }
+                    }
+                }
 
 				p.Start();
-				p.BeginOutputReadLine();
-				p.BeginErrorReadLine();
+
+                if (stdinWrite != null)
+                {
+                    stdinWrite(p.StandardInput);
+                }
+
+                if (!p.StartInfo.UseShellExecute)
+                {
+                    p.BeginOutputReadLine();
+                    p.BeginErrorReadLine();
+                }
 
 				p.WaitForExit();
 
@@ -384,6 +498,7 @@ namespace LuminoBuild
             {
                 p.StartInfo.FileName = program;
                 p.StartInfo.Arguments = args;
+                p.StartInfo.UseShellExecute = true;
 
                 p.Start();
 
@@ -469,5 +584,29 @@ namespace LuminoBuild
                 return "xbuild";
             }
         }
+
+
+        [DllImport("libc", SetLastError = true)]
+        public static extern int chmod(string pathname, int mode);
+
+        // user permissions
+        public const int S_IRUSR = 0x100;
+        public const int S_IWUSR = 0x80;
+        public const int S_IXUSR = 0x40;
+
+        // group permission
+        public const int S_IRGRP = 0x20;
+        public const int S_IWGRP = 0x10;
+        public const int S_IXGRP = 0x8;
+
+        // other permissions
+        public const int S_IROTH = 0x4;
+        public const int S_IWOTH = 0x2;
+        public const int S_IXOTH = 0x1;
+        
+        public const int S_0755 =
+            S_IRUSR | S_IXUSR | S_IWUSR |
+            S_IRGRP | S_IXGRP |
+            S_IROTH | S_IXOTH;
 	}
 }

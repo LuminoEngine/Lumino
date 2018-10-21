@@ -1,7 +1,7 @@
-﻿
+
 #include "Internal.hpp"
-#include <Lumino/Base/Environment.hpp>
-#include <Lumino/IO/FileSystem.hpp>
+#include <LuminoCore/Base/Environment.hpp>
+#include <LuminoCore/IO/FileSystem.hpp>
 
 #if defined(LN_OS_WIN32)
 #include <Shlobj.h>
@@ -49,6 +49,20 @@ Optional<String> Environment::getEnvironmentVariable(const StringRef& variableNa
 		return String::fromCString(value);
 	else
 		return nullptr;
+}
+
+void Environment::setEnvironmentVariable(const StringRef& variableName, const StringRef& value)
+{
+	PlatformEnvironment::setEnvironmentVariable(variableName, value);
+}
+
+ByteOrder Environment::byteOrder()
+{
+	const unsigned short x = 0x0001;
+	if ((*(unsigned char *)&x) != 0)
+		return ByteOrder::LittleEndian;
+	else
+		return ByteOrder::BigEndian;
 }
 
 } // namespace ln

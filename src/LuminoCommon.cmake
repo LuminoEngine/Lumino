@@ -133,23 +133,16 @@ function(ln_add_pch project_name header_file_path source_file_path)
 		set(ln_compile_flags
 			"/Yu\"${header_file_name}\" /FI\"${header_file_name}\""	# use PCH, ForcedIncludeFiles
 		)
-		
-		
-		#set_target_properties(${project_name} PROPERTIES COMPILE_FLAGS ${ln_compile_flags})			
-		#get_target_property(compile_defs ${project_name} COMPILE_FLAGS)
-		#message(${compile_defs})
+
 	else()
 		# https://github.com/nanoant/CMakePCHCompiler/blob/master/CMakePCHCompiler.cmake
-
-		#set(COMPILE_FLAGS "-x c++-header")
 
 		get_filename_component(result ${header_file_path} ABSOLUTE)
 
 		# force include header
 		set(ln_compile_flags "-include \"${result}\"")
-		
-		#Sset_source_files_properties(${project_name} PROPERTIES COMPILE_FLAGS ${ln_compile_flags})
-	endif()
+		endif()
+
 
 	# get source files from project (referred LLVM)
 	get_property(source_files TARGET ${project_name} PROPERTY SOURCES)

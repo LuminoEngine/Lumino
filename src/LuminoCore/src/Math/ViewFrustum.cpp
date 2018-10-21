@@ -1,6 +1,6 @@
 ﻿
-#include <Lumino/Math/Matrix.hpp>
-#include <Lumino/Math/ViewFrustum.hpp>
+#include <LuminoCore/Math/Matrix.hpp>
+#include <LuminoCore/Math/ViewFrustum.hpp>
 
 namespace ln {
 

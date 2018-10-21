@@ -1,7 +1,7 @@
 ﻿#include "Common.hpp"
-#include <Lumino/IO/StreamReader.hpp>
-#include <Lumino/IO/StringReader.hpp>
-#include <Lumino/Json/JsonReader.hpp>
+#include <LuminoCore/IO/StreamReader.hpp>
+#include <LuminoCore/IO/StringReader.hpp>
+#include <LuminoCore/Json/JsonReader.hpp>
 
 class Test_Json_JsonReader : public ::testing::Test {};
 

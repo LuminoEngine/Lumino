@@ -19,13 +19,25 @@
   <ItemGroup>
     <Compile Include="tools/LuminoBuild/Main.cs" />
     <Compile Include="tools/LuminoBuild/LuminoBuildTool.cs" />
+    <Compile Include="tools/LuminoBuild/BuildEnvironment.cs" />
+    <Compile Include="tools/LuminoBuild/Tasks/SetupTools.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/MakeVSProjects.cs" />
-    <Compile Include="tools/LuminoBuild/Tasks/BuildEngine.cs" />
-    <Compile Include="tools/LuminoBuild/Rules/MakePackage.cs" />
+    <Compile Include="tools/LuminoBuild/Tasks/BuildEngine_MSVC.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildDocuments.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildEngine_Linux.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildEngine_macOS.cs" />
+    <Compile Include="tools/LuminoBuild/Tasks/BuildEngine_iOS.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/MakeNuGetPackage_Core.cs" />
+    <Compile Include="tools/LuminoBuild/Tasks/BuildEngine_AndroidJNI.cs" />
+    <Compile Include="tools/LuminoBuild/Tasks/BuildEngine_Emscripten.cs" />
+    <Compile Include="tools/LuminoBuild/Tasks/BuildExternalProjects.cs" />
+    <Compile Include="tools/LuminoBuild/Tasks/MakeReleasePackage.cs" />
+    <Compile Include="tools/LuminoBuild/Tasks/MakeInstaller_Win32.cs" />
+    <Compile Include="tools/LuminoBuild/Tasks/MakeLocalPackage.cs" />
+    <Compile Include="tools/LuminoBuild/Rules/MakePackage.cs" />
+    <Compile Include="tools/LuminoBuild/Rules/BuildForCI_1.cs" />
+    <Compile Include="tools/LuminoBuild/Rules/BuildForCI_2.cs" />
+    <Compile Include="tools/LuminoBuild/Rules/BuildForCI_3.cs" />
   </ItemGroup>
   
 </Project>

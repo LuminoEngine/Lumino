@@ -1,7 +1,8 @@
 build/
 build.sln
+ReleasePackage-*/
+Lumino-*/
 .vscode
-
 
 
 ## Ignore Visual Studio temporary files, build results, and

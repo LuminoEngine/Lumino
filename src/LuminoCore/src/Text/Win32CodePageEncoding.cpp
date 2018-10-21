@@ -1,4 +1,6 @@
 ﻿
+#ifdef _WIN32
+
 #include "Internal.hpp"
 #include <Windows.h>
 #include <vector>
@@ -13,15 +15,17 @@ namespace ln {
 Win32CodePageEncoding::Win32CodePageEncoding(UINT codePage)
 {
     BOOL r = ::GetCPInfoEx(codePage, 0, &m_cpInfo);
-    if (LN_ENSURE(r != FALSE))
+    if (LN_ENSURE(r != FALSE)) {
         return;
+    }
 
     char buf[32];
-    sprintf_s(buf, "cp%u", codePage);
+    sprintf_s(buf, "cp%u", m_cpInfo.CodePage);
 
     wchar_t buf2[32];
-    for (int i = 0; i < 32; i++)
+    for (int i = 0; i < 32; i++) {
         buf2[i] = buf[i];
+    }
     m_name = buf2;
 }
 
@@ -45,12 +49,18 @@ int Win32CodePageEncoding::getLeadExtraLength(const void* buffer, size_t bufferS
     return (::IsDBCSLeadByteEx(m_cpInfo.CodePage, *((const byte_t*)buffer))) ? 1 : 0;
 }
 
+bool Win32CodePageEncoding::convertToUTF16Stateless(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult)
+{
+    Win32CodePageDecoder decoder(this, m_cpInfo);
+    return decoder.convertToUTF16(input, inputByteSize, output, outputElementSize, outResult);
+}
+
 //==============================================================================
 // Win32CodePageEncoding::Win32CodePageDecoder
 
 Win32CodePageEncoding::Win32CodePageDecoder::Win32CodePageDecoder(TextEncoding* encoding, const CPINFOEX& cpInfo)
     : TextDecoder(encoding)
-	, m_codePage(cpInfo.CodePage)
+    , m_codePage(cpInfo.CodePage)
     , m_lastLeadByte(0)
     , m_usedDefaultCharCount(0)
     , m_canRemain(false)
@@ -62,7 +72,7 @@ Win32CodePageEncoding::Win32CodePageDecoder::Win32CodePageDecoder(TextEncoding* 
     reset();
 }
 
-bool Win32CodePageEncoding::Win32CodePageDecoder::convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, DecodeResult* outResult)
+bool Win32CodePageEncoding::Win32CodePageDecoder::convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult)
 {
     outResult->usedByteCount = 0;
     outResult->outputByteCount = 0;
@@ -145,7 +155,7 @@ bool Win32CodePageEncoding::Win32CodePageDecoder::convertToUTF16(const byte_t* i
 
 Win32CodePageEncoding::Win32CodePageEncoder::Win32CodePageEncoder(TextEncoding* encoding, const CPINFOEX& cpInfo)
     : TextEncoder(encoding)
-	, m_codePage(cpInfo.CodePage)
+    , m_codePage(cpInfo.CodePage)
     , m_usedDefaultCharCount(0)
     , m_canRemain(false)
 {
@@ -154,7 +164,7 @@ Win32CodePageEncoding::Win32CodePageEncoder::Win32CodePageEncoder(TextEncoding* 
     reset();
 }
 
-bool Win32CodePageEncoding::Win32CodePageEncoder::convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, EncodeResult* outResult)
+bool Win32CodePageEncoding::Win32CodePageEncoder::convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, TextEncodeResult* outResult)
 {
     outResult->usedElementCount = 0;
     outResult->outputByteCount = 0;
@@ -211,3 +221,5 @@ bool Win32CodePageEncoding::Win32CodePageEncoder::convertFromUTF16(const UTF16* 
 }
 
 } // namespace ln
+
+#endif

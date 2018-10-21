@@ -1,10 +1,10 @@
 ﻿
-#include <Lumino/Math/Math.hpp>
-#include <Lumino/Math/Vector2.hpp>
-#include <Lumino/Math/Vector3.hpp>
-#include <Lumino/Math/Vector4.hpp>
-#include <Lumino/Math/Quaternion.hpp>
-#include <Lumino/Math/Matrix.hpp>
+#include <LuminoCore/Math/Math.hpp>
+#include <LuminoCore/Math/Vector2.hpp>
+#include <LuminoCore/Math/Vector3.hpp>
+#include <LuminoCore/Math/Vector4.hpp>
+#include <LuminoCore/Math/Quaternion.hpp>
+#include <LuminoCore/Math/Matrix.hpp>
 #include "Asm.h"
 
 namespace ln {
