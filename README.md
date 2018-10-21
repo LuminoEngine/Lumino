@@ -7,6 +7,14 @@ Lumino はゲームやデジタルアートなどのリアルタイムグラフ�
 マルチプラットフォームで動作し複数のプログラミング言語から利用できる、使いやすいインターフェイスを提供します。
 
 
+Build and Unit Tests
+--------
+| Package | Status  |
+|---------|---------|
+| Windows | [![Build Status](https://dev.azure.com/lriki/Lumino/_apis/build/status/Lumino-Windows)](https://dev.azure.com/lriki/Lumino/_build/latest?definitionId=2) |
+| macOS   | [![Build Status](https://dev.azure.com/lriki/Lumino/_apis/build/status/Lumino-macOS)](https://dev.azure.com/lriki/Lumino/_build/latest?definitionId=3) |
+
+
 Get started
 --------
 
