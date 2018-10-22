@@ -18,6 +18,8 @@ class MeshManager;
 class RenderingManager;
 class EffectManager;
 class AssetManager;
+class VisualManager;
+class SceneManager;
 class UIManager;
 
 struct EngineSettings
@@ -49,8 +51,10 @@ public:
 	void initializeGraphicsManager();
 	void initializeMeshManager();
 	void initializeRenderingManager();
-	void initializeEffectManager();
+	//void initializeEffectManager();
 	void initializeAssetManager();
+    void initializeVisualManager();
+    void initializeSceneManager();
 	void initializeUIManager();
 
 	bool updateUnitily();
@@ -68,7 +72,10 @@ public:
 	const Ref<GraphicsManager>& graphicsManager() const { return m_graphicsManager; }
 	const Ref<MeshManager>& meshManager() const { return m_meshManager; }
 	const Ref<RenderingManager>& renderingManager() const { return m_renderingManager; }
-	const Ref<UIManager>& uiManager() const { return m_uiManager; }
+    const Ref<AssetManager>& assetManager() const { return m_assetManager; }
+    const Ref<VisualManager>& visualManager() const { return m_visualManager; }
+	const Ref<SceneManager>& sceneManager() const { return m_sceneManager; }
+    const Ref<UIManager>& uiManager() const { return m_uiManager; }
 	const Ref<UIFrameWindow>& mainWindow() const { return m_mainWindow; }
 
 private:
@@ -85,7 +92,10 @@ private:
 	Ref<MeshManager>				m_meshManager;
 	Ref<RenderingManager>			m_renderingManager;
 	//Ref<EffectManager>				m_effectManager;
+	//Ref<ModelManager>				m_modelManager;
 	Ref<AssetManager>						m_assetManager;
+    Ref<VisualManager>					m_visualManager;
+    Ref<SceneManager>					m_sceneManager;
 	Ref<UIManager>					m_uiManager;
 
 	Ref<UIFrameWindow> m_mainWindow;

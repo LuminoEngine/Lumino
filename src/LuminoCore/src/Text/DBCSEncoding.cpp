@@ -84,7 +84,7 @@ int DBCSEncoding::getLeadExtraLength(const void* buffer, size_t bufferSize) cons
 	return (CheckDBCSLeadByte(m_tableInfo, *((const byte_t*)buffer))) ? 1 : 0;
 }
 
-bool DBCSEncoding::DBCSDecoder::convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, DecodeResult* outResult)
+bool DBCSEncoding::DBCSDecoder::convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult)
 {
 	if (outputElementSize > 0) { output[0] = '\0'; }
 	outResult->usedByteCount = 0;
@@ -141,7 +141,7 @@ bool DBCSEncoding::DBCSDecoder::convertToUTF16(const byte_t* input, size_t input
 	return true;
 }
 
-bool DBCSEncoding::DBCSEncoder::convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, EncodeResult* outResult)
+bool DBCSEncoding::DBCSEncoder::convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, TextEncodeResult* outResult)
 {
 	if (outputByteSize > 0) { output[0] = '\0'; }
 	outResult->usedElementCount = 0;

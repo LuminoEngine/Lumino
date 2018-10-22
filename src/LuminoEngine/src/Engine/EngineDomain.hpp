@@ -21,7 +21,9 @@ class ShaderManager;
 class GraphicsManager;
 class MeshManager;
 class RenderingManager;
-class ArchiveManager;
+class AssetManager;
+class VisualManager;
+class SceneManager;
 class UIManager;
 
 class EngineDomain
@@ -35,6 +37,9 @@ public:
 	static GraphicsManager* graphicsManager();
 	static MeshManager* meshManager();
 	static RenderingManager* renderingManager();
+    static AssetManager* assetManager();
+    static VisualManager* visualManager();
+    static SceneManager* sceneManager();
 	static UIManager* uiManager();
 
 	//static Application* application;
@@ -43,7 +48,6 @@ public:
 
 
 
-	//static ArchiveManager* getArchiveManager();
 	//static AnimationManager* getAnimationManager();
 	//static GraphicsManager* getGraphicsManager();
 	//static UIManager* getUIManager();

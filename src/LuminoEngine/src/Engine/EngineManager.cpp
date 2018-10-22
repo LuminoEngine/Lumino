@@ -8,8 +8,10 @@
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Mesh/MeshManager.hpp"
 #include "../Rendering/RenderingManager.hpp"
-#include "../UI/UIManager.hpp"
 #include "../Asset/AssetManager.hpp"
+#include "../Visual/VisualManager.hpp"
+#include "../Scene/SceneManager.hpp"
+#include "../UI/UIManager.hpp"
 #include "EngineManager.hpp"
 #include "EngineDomain.hpp"
 
@@ -73,6 +75,8 @@ void EngineManager::dispose()
 	}
 
 	if (m_mainWindow) m_mainWindow->dispose();
+    if (m_sceneManager) m_sceneManager->dispose();
+    if (m_visualManager) m_visualManager->dispose();
 	if (m_assetManager) m_assetManager->dispose();
 	if (m_renderingManager) m_renderingManager->dispose();
 	if (m_meshManager) m_meshManager->dispose();
@@ -94,7 +98,9 @@ void EngineManager::initializeAllManagers()
 	initializeGraphicsManager();
 	initializeMeshManager();
 	initializeRenderingManager();
-	initializeEffectManager();
+	initializeAssetManager();
+    initializeVisualManager();
+    initializeSceneManager();
 	initializeUIManager();
 	initializeAssetManager();
 }
@@ -210,19 +216,38 @@ void EngineManager::initializeRenderingManager()
 	}
 }
 
-void EngineManager::initializeEffectManager()
-{
-}
-
 void EngineManager::initializeAssetManager()
 {
-	if (!m_assetManager)
-	{
-		AssetManager::Settings settings;
+    if (!m_assetManager)
+    {
+        AssetManager::Settings settings;
 
-		m_assetManager = ln::makeRef<AssetManager>();
-		m_assetManager->initialize(settings);
-	}
+        m_assetManager = ln::makeRef<AssetManager>();
+        m_assetManager->initialize(settings);
+    }
+}
+
+void EngineManager::initializeVisualManager()
+{
+    if (!m_visualManager)
+    {
+        initializeGraphicsManager();
+
+        VisualManager::Settings settings;
+        settings.graphicsManager = m_graphicsManager;
+
+        m_visualManager = ln::makeRef<VisualManager>();
+        m_visualManager->initialize(settings);
+    }
+}
+
+void EngineManager::initializeSceneManager()
+{
+    if (!m_sceneManager)
+    {
+        m_sceneManager = ln::makeRef<SceneManager>();
+        m_sceneManager->initialize();
+    }
 }
 
 void EngineManager::initializeUIManager()
@@ -363,6 +388,21 @@ MeshManager* EngineDomain::meshManager()
 RenderingManager* EngineDomain::renderingManager()
 {
 	return engineManager()->renderingManager();
+}
+
+AssetManager* EngineDomain::assetManager()
+{
+    return engineManager()->assetManager();
+}
+
+VisualManager* EngineDomain::visualManager()
+{
+    return engineManager()->visualManager();
+}
+
+SceneManager* EngineDomain::sceneManager()
+{
+    return engineManager()->sceneManager();
 }
 
 UIManager* EngineDomain::uiManager()

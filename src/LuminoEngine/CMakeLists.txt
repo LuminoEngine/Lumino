@@ -184,6 +184,33 @@ set(LN_SOURCES_Rendering
     src/Rendering/UnLigitingSceneRenderer.hpp
 )
 
+set(LN_SOURCES_Asset
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Asset/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Asset/Asset.hpp
+    src/Asset/Internal.hpp
+    src/Asset/Asset.cpp
+    src/Asset/AssetManager.cpp
+    src/Asset/AssetManager.hpp
+)
+
+set(LN_SOURCES_Visual
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/Common.hpp
+    src/Visual/Internal.hpp
+    src/Visual/VisualManager.cpp
+    src/Visual/VisualManager.hpp
+)
+
+set(LN_SOURCES_Scene
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Scene.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/SceneConductor.hpp
+    src/Scene/Internal.hpp
+    src/Scene/Scene.cpp
+    src/Scene/SceneConductor.cpp
+    src/Scene/SceneManager.cpp
+    src/Scene/SceneManager.hpp
+)
+
 set(LN_SOURCES_UI
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIEvents.hpp
@@ -191,12 +218,6 @@ set(LN_SOURCES_UI
     src/UI/UIFrameWindow.cpp
     src/UI/UIManager.cpp
     src/UI/UIManager.hpp
-)
-
-set(LN_SOURCES_Asset
-    src/Asset/Internal.hpp
-    src/Asset/AssetManager.cpp
-    src/Asset/AssetManager.hpp
 )
 
 if (APPLE)
@@ -217,8 +238,10 @@ source_group("Graphics"                FILES ${LN_SOURCES_Graphics})
 source_group("Shader"                FILES ${LN_SOURCES_Shader})
 source_group("Mesh"                FILES ${LN_SOURCES_Mesh})
 source_group("Rendering"                FILES ${LN_SOURCES_Rendering})
-source_group("UI"                    FILES ${LN_SOURCES_UI})
 source_group("Asset"                FILES ${LN_SOURCES_Asset})
+source_group("Visual"                FILES ${LN_SOURCES_Visual})
+source_group("Scene"                FILES ${LN_SOURCES_Scene})
+source_group("UI"                    FILES ${LN_SOURCES_UI})
 
 set(LN_SOURCES
     src/LuminoEngine.PCH.cpp
@@ -232,8 +255,10 @@ set(LN_SOURCES
     ${LN_SOURCES_Shader}
     ${LN_SOURCES_Mesh}
     ${LN_SOURCES_Rendering}
-    ${LN_SOURCES_UI}
     ${LN_SOURCES_Asset}
+    ${LN_SOURCES_Visual}
+    ${LN_SOURCES_Scene}
+    ${LN_SOURCES_UI}
     #${LN_SOURCES_LuminoCore}
 )
 
