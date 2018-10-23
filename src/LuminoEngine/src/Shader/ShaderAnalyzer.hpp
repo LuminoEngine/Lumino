@@ -18,13 +18,13 @@ enum class ShaderCodeStage
 
 // シェーダコード１つ分。
 // HLSL 入力可能だが、technique 構文はあらかじめ取り除いておく必要がある。
-class ShaderCode
+class ShaderCodeTranspiler
 {
 public:
 	static void initializeGlobals();
 	static void finalizeGlobals();
 
-	ShaderCode();
+    ShaderCodeTranspiler();
 
 	bool parseAndGenerateSpirv(
 		ShaderCodeStage stage, const char* code, size_t length, const std::string& entryPoint,
@@ -44,9 +44,14 @@ struct HLSLPass
 	std::string	name;
 	std::string vertexShader;	// for Raw HLSL
 	std::string pixelShader;	// for Raw HLSL
+    std::string surfaceShader;	// for Lumino HLSL
 	std::string shadingModel;	// for Lumino HLSL
 	std::string ligitingModel;	// for Lumino HLSL
-	std::string surfaceShader;	// for Lumino HLSL
+
+    void save(BinaryWriter* w, int version);
+    void load(BinaryReader* r, int version);
+    //void save(JsonWriter* w, int version);
+    //void load(JsonReader* r, int version);
 };
 
 struct HLSLTechnique
@@ -55,6 +60,14 @@ struct HLSLTechnique
 	std::vector<HLSLPass>	passes;
 	size_t blockBegin = 0;	// "technique"
 	size_t blockEnd = 0;	// next to "}"
+
+    void save(BinaryWriter* w, int version);
+    void load(BinaryReader* r, int version);
+    //void save(JsonWriter* w, int version);
+    //void load(JsonReader* r, int version);
+
+    static void writeString(BinaryWriter* w, const std::string& str);
+    static std::string readString(BinaryReader* r);
 };
 
 class HLSLMetadataParser

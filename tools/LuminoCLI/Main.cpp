@@ -2,6 +2,7 @@
 #include "EnvironmentSettings.hpp"
 #include "Workspace.hpp"
 #include "Project.hpp"
+#include "FxcCommand.hpp"
 
 static int commnad_localInitialSetup(const char* packageDir_);
 
@@ -22,13 +23,15 @@ int main(int argc, char** argv)
 
 			//"build", "Web",
 
-			"run", "Web", //"Windows",
+			//"run", "Web", //"Windows",
 
 			//"dev-openide", "vs",
 			
 			//"--local-initial-setup", "/Users/lriki/Proj/Lumino/ReleasePackage.macOS"
 
 			//"restore",
+
+            "fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Basic.fx",
 		};
 		argc = sizeof(debugArgv) / sizeof(char*);
 		argv = (char**)debugArgv;
@@ -64,6 +67,11 @@ int main(int argc, char** argv)
 		//--------------------------------------------------------------------------------
 		// restore command
 		auto restoreCommand = parser.addCommand(u"restore", u"Restore engines included in the project.");
+
+        //--------------------------------------------------------------------------------
+        // fxc command
+        auto fxcCommand = parser.addCommand(u"fxc", u"Compile shader.");
+        auto fxcCommand_inputArg = fxcCommand->addPositionalArgument(u"input", u"Input file.", ln::CommandLinePositionalArgumentFlags::Optional);
 
 		//--------------------------------------------------------------------------------
 		auto dev_installTools = parser.addCommand(u"dev-install-tools", u"description.");
@@ -139,6 +147,12 @@ int main(int argc, char** argv)
 					return 1;
 				}
 			}
+            //--------------------------------------------------------------------------------
+            // fxc command
+            else if (parser.has(fxcCommand)) {
+                FxcCommand cmd;
+                cmd.execute(fxcCommand_inputArg->value());
+            }
 			else if (parser.has(dev_installTools))
 			{
 				if (!workspace->dev_installTools()) {

@@ -11,7 +11,7 @@ class ShaderManager
 public:
 	struct Settings
 	{
-		GraphicsManager* graphicsManager;
+		GraphicsManager* graphicsManager = nullptr;
 	};
 
 	ShaderManager();

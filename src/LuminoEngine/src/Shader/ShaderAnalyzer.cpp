@@ -111,6 +111,89 @@ const TBuiltInResource DefaultTBuiltInResource = {
 };
 
 //=============================================================================
+// HLSLPass
+
+void HLSLPass::save(BinaryWriter* w, int version)
+{
+    HLSLTechnique::writeString(w, name);
+    HLSLTechnique::writeString(w, vertexShader);
+    HLSLTechnique::writeString(w, pixelShader);
+    HLSLTechnique::writeString(w, surfaceShader);
+    HLSLTechnique::writeString(w, shadingModel);
+    HLSLTechnique::writeString(w, ligitingModel);
+}
+
+void HLSLPass::load(BinaryReader* r, int version)
+{
+    name = HLSLTechnique::readString(r);
+    vertexShader = HLSLTechnique::readString(r);
+    pixelShader = HLSLTechnique::readString(r);
+    surfaceShader = HLSLTechnique::readString(r);
+    shadingModel = HLSLTechnique::readString(r);
+    ligitingModel = HLSLTechnique::readString(r);
+}
+
+//=============================================================================
+// HLSLTechnique
+
+void HLSLTechnique::save(BinaryWriter* w, int version)
+{
+    LN_CHECK(passes.size() < 255);
+    writeString(w, name);
+
+    // passes
+    w->writeUInt8(passes.size());
+    for (auto& pass : passes) {
+        pass.save(w, version);
+    }
+}
+
+void HLSLTechnique::load(BinaryReader* r, int version)
+{
+    name = readString(r);
+
+    // passes
+    int count = r->readUInt8();
+    for (int i = 0; i < count; i++) {
+        HLSLPass pass;
+        pass.load(r, version);
+        passes.push_back(std::move(pass));
+    }
+}
+
+void HLSLTechnique::writeString(BinaryWriter* w, const std::string& str)
+{
+    LN_CHECK(str.length() < 255);
+    w->writeUInt8(str.length());
+    w->write(str.data(), str.length());
+}
+
+std::string HLSLTechnique::readString(BinaryReader* r)
+{
+    char buf[255] = { 0 };
+    uint8_t len = r->readUInt8();
+    if (len == 0) {
+        return std::string();
+    }
+    else {
+        r->read(buf, len);
+        return std::string(buf, len);
+    }
+}
+
+//void save(JsonWriter* w, int version)
+//{
+//    w->writeStartObject();
+//    w->writeString(name);
+//    w->writeEndObject();
+//}
+//
+//void load(JsonReader* r, int version)
+//{
+//}
+
+
+//=============================================================================
 // LocalIncluder
 
 class LocalIncluder
@@ -151,24 +234,24 @@ public:
 };
 
 //=============================================================================
-// ShaderCode
+// ShaderCodeTranspiler
 
-void ShaderCode::initializeGlobals()
+void ShaderCodeTranspiler::initializeGlobals()
 {
 	glslang::InitializeProcess();
 }
 
-void ShaderCode::finalizeGlobals()
+void ShaderCodeTranspiler::finalizeGlobals()
 {
 	glslang::FinalizeProcess();
 }
 
-ShaderCode::ShaderCode()
+ShaderCodeTranspiler::ShaderCodeTranspiler()
 	: m_stage(ShaderCodeStage::Vertex)
 {
 }
 
-bool ShaderCode::parseAndGenerateSpirv(
+bool ShaderCodeTranspiler::parseAndGenerateSpirv(
 	ShaderCodeStage stage, const char* code, size_t length, const std::string& entryPoint,
 	const List<Path>& includeDir, DiagnosticsManager* diag)
 {
@@ -271,7 +354,7 @@ bool ShaderCode::parseAndGenerateSpirv(
 	return true;
 }
 
-std::string ShaderCode::generateGlsl()
+std::string ShaderCodeTranspiler::generateGlsl()
 {
 	spirv_cross::CompilerGLSL glsl(m_spirvCode);
 

@@ -28,14 +28,14 @@ void ShaderManager::initialize(const Settings& settings)
 #endif
 
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-	ShaderCode::initializeGlobals();
+	ShaderCodeTranspiler::initializeGlobals();
 #endif
 }
 
 void ShaderManager::dispose()
 {
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-	ShaderCode::finalizeGlobals();
+    ShaderCodeTranspiler::finalizeGlobals();
 #endif
 }
 
