@@ -1,4 +1,4 @@
-﻿
+
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
@@ -101,7 +101,8 @@ ShaderTechnique* ClusteredShadingGeometryRenderingPass::selectShaderTechnique(
 	Shader* requestedShader,
 	ShadingModel requestedShadingModel)
 {
-	Shader* shader = (requestedShader) ? requestedShader : m_defaultShader;
+	Shader* shader = requestedShader;
+	if (!shader) shader = m_defaultShader;
 
 	ShaderTechniqueClass classSet;
 	classSet.ligiting = ShaderTechniqueClass_Ligiting::Forward;

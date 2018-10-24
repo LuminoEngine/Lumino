@@ -35,7 +35,7 @@ public:
 		tryGlow(m_count + count);
 		size_t begin = getBufferUsedByteCount();
 		m_count += count;
-		return reinterpret_cast<T*>(m_buffer.getData() + begin);
+		return reinterpret_cast<T*>(m_buffer.data() + begin);
 	}
 
 	void clear()
@@ -43,11 +43,11 @@ public:
 		m_count = 0;
 	}
 
-	T& getAt(int index) { return ((T*)(m_buffer.getData()))[index]; }
+	T& getAt(int index) { return ((T*)(m_buffer.data()))[index]; }
 	T& getLast() { return getAt(m_count - 1); }
 
 	int getCount() const { return m_count; }
-	byte_t* getBuffer() { return m_buffer.getData(); }
+	byte_t* getBuffer() { return m_buffer.data(); }
 	size_t getBufferUsedByteCount() { return m_count * sizeof(T); }
 
 private:

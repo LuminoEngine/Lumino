@@ -1,4 +1,4 @@
-﻿
+
 #include "Internal.hpp"
 
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
@@ -97,7 +97,7 @@ void EngineManager::initializeAllManagers()
 	initializeShaderManager();
 	initializeGraphicsManager();
 	initializeMeshManager();
-	initializeRenderingManager();
+	//initializeRenderingManager();
 	initializeAssetManager();
     initializeVisualManager();
     initializeSceneManager();

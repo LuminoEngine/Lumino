@@ -370,6 +370,8 @@ std::string ShaderCodeTranspiler::generateGlsl()
 
 		// Modify the decoration to prepare it for GLSL.
 		glsl.unset_decoration(resource.id, spv::DecorationDescriptorSet);
+		
+		
 
 		// Some arbitrary remapping if we want.
 		glsl.set_decoration(resource.id, spv::DecorationBinding, set * 16 + binding);
@@ -418,6 +420,7 @@ std::string ShaderCodeTranspiler::generateGlsl()
 		unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
 		unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
 		printf("Image %s at set = %u, binding = %u\n", resource.name.c_str(), set, binding);
+		
 	}
 
 
@@ -502,6 +505,24 @@ std::string ShaderCodeTranspiler::generateGlsl()
 		//	}
 	}
 
+	// デフォルトでは binding の値が格納されており、 GLSL に出力すると１
+	//   layout(binding = 0, std140) uniform ConstBuff
+	// というようなコードが出力される。
+	// しかし、macOS (Mojave) では binding には対応しておらず、
+	//   unknown identifer 'binding' in layout
+	// というエラーになってしまう。
+	// そこで、binding の decoration は削除してしまう。
+	// こうしておくと、glsl.compile() で binding 指定を含まない GLSL を生成することができる。
+	for (size_t i = 0; i < resources.uniform_buffers.size(); i++)
+	{
+		// Modify the decoration to prepare it for GLSL.
+		glsl.unset_decoration(resources.uniform_buffers[i].id, spv::DecorationBinding);
+		
+		
+		
+		// Some arbitrary remapping if we want.
+		//glsl.set_decoration(resource.id, spv::DecorationBinding, set * 16 + binding);
+	}
 
 	return glsl.compile();
 }

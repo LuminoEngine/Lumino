@@ -673,7 +673,7 @@ void OpenGLDeviceContext::onDrawPrimitive(PrimitiveType primitive, int startVert
 	GLenum gl_prim;
 	int vertexCount;
 	getPrimitiveInfo(primitive, primitiveCount, &gl_prim, &vertexCount);
-
+	
 	GL_CHECK(glDrawArrays(gl_prim, startVertex, vertexCount));
 }
 

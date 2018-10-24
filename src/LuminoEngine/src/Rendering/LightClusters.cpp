@@ -1,5 +1,6 @@
-﻿
+
 #include "Internal.hpp"
+#include <float.h>
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include "LightClusters.hpp"
@@ -7,6 +8,11 @@
 namespace ln {
 namespace detail {
 
+const int		LightClusters::ClusterWidth = 16;
+const int		LightClusters::ClusterHeight = 16;
+const int		LightClusters::ClusterDepth = 32;
+const int		LightClusters::MaxLights = 64;
+	
 //==============================================================================
 // LightClusters
 

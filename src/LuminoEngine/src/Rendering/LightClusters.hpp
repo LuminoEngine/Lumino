@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 namespace ln {
 class Texture2D;
@@ -56,14 +56,14 @@ private:
 		Vector4	dummy;
 	};
 
-	static const int		ClusterWidth = 16;
-	static const int		ClusterHeight = 16;
-	static const int		ClusterDepth = 32;
+	static const int		ClusterWidth;
+	static const int		ClusterHeight;
+	static const int		ClusterDepth;
 	std::vector<Color32>	m_clustersData;		// TODO: Texture3D がまだ setData も getMappedData もサポートしていないので。できれば getMappedData にそのまま書き込みたい
 	std::vector<int>		m_clustersAddCount;	// あるクラスタに書かれたデータの数
 	Ref<Texture3D>		m_clustersTexture;
 
-	static const int		MaxLights = 64;
+	static const int		MaxLights;
 	List<LightInfo>			m_lightInofs;		// m_lightInfoTexture に書き込む。TODO: Texture2D が float4 書き込みをちゃんとサポートしたら必要ない。
 	Ref<Texture2D>			m_lightInfoTexture;
 	List<GlobalLightInfo>	m_globalLightInofs;		// m_globalLightInfoTexture に書き込む。TODO: Texture2D が float4 書き込みをちゃんとサポートしたら必要ない。

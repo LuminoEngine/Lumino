@@ -168,7 +168,8 @@ void Shader::initialize()
 void Shader::initialize(const StringRef& hlslEffectFilePath, DiagnosticsManager* diag)
 {
 	Shader::initialize();
-	Ref<DiagnosticsManager> localDiag = (diag) ? diag : newObject<DiagnosticsManager>();
+	Ref<DiagnosticsManager> localDiag = diag;
+	if (!localDiag) localDiag = newObject<DiagnosticsManager>();
 
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 
@@ -228,7 +229,8 @@ void Shader::initialize(const StringRef& hlslEffectFilePath, DiagnosticsManager*
 void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCodeType codeType, DiagnosticsManager* diag)
 {
 	Shader::initialize();
-	Ref<DiagnosticsManager> localDiag = (diag) ? diag : newObject<DiagnosticsManager>();
+	Ref<DiagnosticsManager> localDiag = diag;
+	if (!localDiag) localDiag = newObject<DiagnosticsManager>();
 
 	auto vsData = FileSystem::readAllBytes(vertexShaderFilePath);
 	auto psData = FileSystem::readAllBytes(pixelShaderFilePath);
@@ -294,11 +296,22 @@ Ref<detail::IShaderPass> Shader::createShaderPass(
 
 	std::string vsCode = vsCodeGen.generateGlsl();
 	std::string psCode = psCodeGen.generateGlsl();
+	
+	std::cout <<psCode << std::endl;
 
-	ShaderCompilationDiag sdiag;	// TODO:
-	return deviceContext()->createShaderPass(
+	ShaderCompilationDiag sdiag;
+	Ref<detail::IShaderPass> pass = deviceContext()->createShaderPass(
 		reinterpret_cast<const byte_t*>(vsCode.c_str()), vsCode.length(),
 		reinterpret_cast<const byte_t*>(psCode.c_str()), psCode.length(), &sdiag);
+	
+	if (sdiag.level == ShaderCompilationResultLevel::Error) {
+		diag->reportError(String::fromStdString(sdiag.message));
+	}
+	else if (sdiag.level == ShaderCompilationResultLevel::Warning) {
+		diag->reportWarning(String::fromStdString(sdiag.message));
+	}
+	
+	return pass;
 #else
 	LN_NOTIMPLEMENTED();
 	return nullptr;

@@ -1,4 +1,5 @@
-﻿#pragma once
+#pragma once
+#include "../Engine/LinearAllocator.hpp"
 
 namespace ln {
 class MeshResource;

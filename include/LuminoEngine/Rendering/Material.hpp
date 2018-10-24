@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "../Graphics/ColorStructs.hpp"
 #include "../Graphics/RenderState.hpp"
 #include "../Shader/Shader.hpp"
@@ -234,11 +234,11 @@ public:
 	static const String SpecularParameterName;
 	static const String SpecularPowerParameterName;
 
-	static const Color PhongMaterial::DefaultDiffuse;
-	static const Color PhongMaterial::DefaultAmbient;
-	static const Color PhongMaterial::DefaultSpecular;
-	static const Color PhongMaterial::DefaultEmissive;
-	static const float PhongMaterial::DefaultPower;
+	static const Color DefaultDiffuse;
+	static const Color DefaultAmbient;
+	static const Color DefaultSpecular;
+	static const Color DefaultEmissive;
+	static const float DefaultPower;
 
 	static Ref<PhongMaterial> create();
 
