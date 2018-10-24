@@ -87,12 +87,12 @@ void PngBitmapEncoder::save(Stream* stream, const byte_t* data, const SizeI& siz
 		rows[y] = (png_byte*)data + (rowBytes * y);
 
 	// write PNG information to file
-	png_write_info(png, info_ptr);
+	//png_write_info(png, info_ptr);
 
 	png_set_rows(png, info_ptr, rows.data());
 	png_write_png(png, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
 
-	png_write_end(png, info_ptr);
+	//png_write_end(png, info_ptr);
 }
 
 

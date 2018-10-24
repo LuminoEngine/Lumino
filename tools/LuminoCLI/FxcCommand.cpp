@@ -55,6 +55,9 @@ void FxcCommand::execute(const ln::Path& inputFile)
                 {
                     ln::detail::ShaderCodeTranspiler transpiler;
                     transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, diag);
+					if (diag->hasError()) {
+						return;
+					}
 
                     ShaderCode code;
                     code.glslCode = transpiler.generateGlsl();
@@ -69,6 +72,9 @@ void FxcCommand::execute(const ln::Path& inputFile)
                 {
                     ln::detail::ShaderCodeTranspiler transpiler;
                     transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, diag);
+					if (diag->hasError()) {
+						return;
+					}
 
                     ShaderCode code;
                     code.glslCode = transpiler.generateGlsl();

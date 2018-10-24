@@ -204,11 +204,15 @@ set(LN_SOURCES_Scene
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Scene.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/SceneConductor.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/World.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/WorldObject.hpp
     src/Scene/Internal.hpp
     src/Scene/Scene.cpp
     src/Scene/SceneConductor.cpp
     src/Scene/SceneManager.cpp
     src/Scene/SceneManager.hpp
+    src/Scene/World.cpp
+    src/Scene/WorldObject.cpp
 )
 
 set(LN_SOURCES_UI

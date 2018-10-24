@@ -31,13 +31,29 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 	vd1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
 
 	auto ctx = Engine::graphicsContext();
-	ctx->setVertexDeclaration(vd1);
-	ctx->setVertexBuffer(0, vb1);
-	ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
-	ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
-	ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-	ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_HlslEffect-Basic-1.png"));
+	//* [ ] Basic rendering
+	{
+		ctx->setVertexDeclaration(vd1);
+		ctx->setVertexBuffer(0, vb1);
+		ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
+		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_HlslEffect-Basic-1.png"));
+	}
+
+	//* [ ] Nested struct
+	{
+		auto shader2 = newObject<Shader>(LN_ASSETFILE("NestedStruct.fx"));
+		shader2->findConstantBuffer("ConstBuff")->findParameter("g_color")->setVector(Vector4(0, 1, 0, 1));
+
+		ctx->setShaderPass(shader2->techniques()[0]->passes()[0]);
+		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_HlslEffect-Basic-3.png"));
+	}
 
 	//* [ ] #include
 	{
@@ -48,7 +64,7 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_HlslEffect-Basic-1.png"));	
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_HlslEffect-Basic-1.png"));	// 1 と同じ結果でよい
 	}
 }
 

@@ -31,7 +31,7 @@ int main(int argc, char** argv)
 
 			//"restore",
 
-            "fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Basic.fx",
+            "fxc", "C:/LocalProj/tmp/Basic.fx",
 		};
 		argc = sizeof(debugArgv) / sizeof(char*);
 		argv = (char**)debugArgv;
