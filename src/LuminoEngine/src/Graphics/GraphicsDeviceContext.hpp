@@ -56,6 +56,8 @@ public:
 	void setDepthStencilState(const DepthStencilStateDesc& value);
 	void setColorBuffer(int index, ITexture* value);
 	void setDepthBuffer(IDepthBuffer* value);
+	void setViewportRect(const RectI& value);
+	void setScissorRect(const RectI& value);
 	void setVertexDeclaration(IVertexDeclaration* value);
 	void setVertexBuffer(int streamIndex, IVertexBuffer* value);
 	void setIndexBuffer(IIndexBuffer* value);
@@ -85,6 +87,7 @@ protected:
 
 	virtual void onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState) = 0;
 	virtual void onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer) = 0;
+	virtual void onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize) = 0;
 	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) = 0;
 	virtual void onUpdateShaderPass(IShaderPass* newPass) = 0;
 
@@ -104,6 +107,8 @@ private:
 		DepthStencilStateDesc depthStencilState;
 		std::array<ITexture*, 4> renderTargets = {};
 		IDepthBuffer* depthBuffer = nullptr;
+		RectI viewportRect;
+		RectI scissorRect;
 		IVertexDeclaration* vertexDeclaration = nullptr;
 		std::array<IVertexBuffer*, 4> vertexBuffers = {};
 		IIndexBuffer* indexBuffer = nullptr;

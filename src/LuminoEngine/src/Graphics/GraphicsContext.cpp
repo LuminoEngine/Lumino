@@ -129,11 +129,26 @@ void GraphicsContext::setDepthStencilState(const DepthStencilStateDesc& value)
 void GraphicsContext::setColorBuffer(int index, RenderTargetTexture* value)
 {
 	m_staging.renderTargets[index] = value;
+	if (index == 0 && value) {
+		auto rect = Rect(0, 0, value->width(), value->height());
+		setViewportRect(rect);
+		setScissorRect(rect);
+	}
 }
 
 void GraphicsContext::setDepthBuffer(DepthBuffer* value)
 {
 	m_staging.depthBuffer = value;
+}
+
+void GraphicsContext::setViewportRect(const Rect& value)
+{
+	m_staging.viewportRect = value;
+}
+
+void GraphicsContext::setScissorRect(const Rect& value)	// 使用するのは主に UI なので、ピクセル単位で指定
+{
+	m_staging.scissorRect = value;
 }
 
 void GraphicsContext::setVertexDeclaration(VertexDeclaration* value)
@@ -259,6 +274,20 @@ void GraphicsContext::commitStatus()
 			detail::IDepthBuffer*, rhiObject,
 			{
 				m_device->setDepthBuffer(rhiObject);
+			});
+	}
+
+	{
+		RectI viewportRect = RectI::fromFloatRect(m_staging.viewportRect);
+		RectI scissorRect = RectI::fromFloatRect(m_staging.scissorRect);
+		LN_ENQUEUE_RENDER_COMMAND_3(
+			GraphicsContext_setDepthBuffer, m_manager,
+			detail::IGraphicsDeviceContext*, m_device,
+			RectI, viewportRect,
+			RectI, scissorRect,
+			{
+				m_device->setViewportRect(viewportRect);
+				m_device->setScissorRect(scissorRect);
 			});
 	}
 

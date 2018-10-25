@@ -1,4 +1,4 @@
-#include "Common.hpp"
+﻿#include "Common.hpp"
 
 class Test_Graphics_LowLevelRendering : public ::testing::Test
 {
@@ -278,6 +278,68 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 				ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-IndexBuffer-2.png"));	// ↑と同じ結果
 			}
 		}
+	}
+}
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
+{
+	m_shader1->findConstantBuffer("ConstBuff")->findParameter("g_color")->setVector(Vector4(1, 0, 0, 1));
+
+	Vector4 v[] = {
+		Vector4(0, 0.5, 0, 1),
+		Vector4(0.5, -0.25, 0, 1),
+		Vector4(-0.5, -0.25, 0, 1),
+	};
+	auto vertexBuffer = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+
+	auto ctx = Engine::graphicsContext();
+	ctx->setVertexDeclaration(m_vertexDecl1);
+	ctx->setVertexBuffer(0, vertexBuffer);
+	ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
+
+	//* [ ] Viewport
+	{
+		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
+
+		ctx->setViewportRect(Rect(0, 0, 80, 60));		// 左上
+		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+
+		ctx->setViewportRect(Rect(80, 60, 80, 60));		// 右下
+		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-ViewportAndScissor-1.png"));
+
+		ctx->setViewportRect(Rect(0, 0, 160, 120));		// reset
+	}
+
+	//* [ ] Scissor
+	{
+		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
+
+		ctx->setScissorRect(Rect(0, 0, 80, 60));		// 左上
+		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+
+		ctx->setScissorRect(Rect(80, 60, 80, 60));		// 右下
+		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-ViewportAndScissor-2.png"));
+
+		ctx->setScissorRect(Rect(0, 0, 160, 120));		// reset
+	}
+
+	//* [ ] Viewport+Scissor (Experimental) ... OpenGL では Viewport が優先だった。
+	{
+		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
+
+		ctx->setViewportRect(Rect(0, 0, 80, 60));		// 左上
+		ctx->setScissorRect(Rect(40, 30, 80, 60));		// 中央
+		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-ViewportAndScissor-3.png"));
+
+		ctx->setViewportRect(Rect(0, 0, 160, 120));		// reset
+		ctx->setScissorRect(Rect(0, 0, 160, 120));		// reset
 	}
 }
 

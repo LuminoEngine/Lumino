@@ -67,8 +67,10 @@ public:
 	void setBlendState(const BlendStateDesc& value);
 	void setRasterizerState(const RasterizerStateDesc& value);
 	void setDepthStencilState(const DepthStencilStateDesc& value);
-	void setColorBuffer(int index, RenderTargetTexture* value);	// TODO: やっぱり ColorBuffer は驚く
+	void setColorBuffer(int index, RenderTargetTexture* value);	// Viewport, Scissor はクリア TODO: やっぱり ColorBuffer は驚く
 	void setDepthBuffer(DepthBuffer* value);
+	void setViewportRect(const Rect& value);
+	void setScissorRect(const Rect& value);
 	void setVertexDeclaration(VertexDeclaration* value);
 	void setVertexBuffer(int streamIndex, VertexBuffer* value);
 	void setIndexBuffer(IndexBuffer* value);
@@ -101,6 +103,8 @@ private:
 		DepthStencilStateDesc depthStencilState;
 		std::array<Ref<RenderTargetTexture>, 4> renderTargets;
 		Ref<DepthBuffer> depthBuffer;
+		Rect viewportRect;
+		Rect scissorRect;
 		Ref<VertexDeclaration> vertexDeclaration;
 		std::array<Ref<VertexBuffer>, 4> vertexBuffers;
 		Ref<IndexBuffer> indexBuffer;

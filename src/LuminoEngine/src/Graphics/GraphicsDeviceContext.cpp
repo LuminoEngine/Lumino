@@ -122,6 +122,16 @@ void IGraphicsDeviceContext::setDepthBuffer(IDepthBuffer* value)
 	m_staging.depthBuffer = value;
 }
 
+void IGraphicsDeviceContext::setViewportRect(const RectI& value)
+{
+	m_staging.viewportRect = value;
+}
+
+void IGraphicsDeviceContext::setScissorRect(const RectI& value)
+{
+	m_staging.scissorRect = value;
+}
+
 void IGraphicsDeviceContext::setVertexDeclaration(IVertexDeclaration* value)
 {
 	m_staging.vertexDeclaration = value;
@@ -176,6 +186,8 @@ void IGraphicsDeviceContext::commitStatus()
 	onUpdateShaderPass(m_staging.shaderPass);
 
 	onUpdateFrameBuffers(m_staging.renderTargets.data(), m_staging.renderTargets.size(), m_staging.depthBuffer);
+
+	onUpdateRegionRects(m_staging.viewportRect, m_staging.scissorRect, m_staging.renderTargets[0]->realSize());
 
 	onUpdatePrimitiveData(m_staging.vertexDeclaration, m_staging.vertexBuffers.data(), m_staging.vertexBuffers.size(), m_staging.indexBuffer);
 	

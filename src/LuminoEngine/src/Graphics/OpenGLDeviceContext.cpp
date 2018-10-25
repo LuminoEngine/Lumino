@@ -560,6 +560,16 @@ void OpenGLDeviceContext::onUpdateFrameBuffers(ITexture** renderTargets, int ren
 		glCheckFramebufferStatus(GL_FRAMEBUFFER));
 }
 
+void OpenGLDeviceContext::onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize)
+{
+	GL_CHECK(glViewport(viewportRect.x, targetSize.height - (viewportRect.y + viewportRect.height), viewportRect.width, viewportRect.height));
+	//GL_CHECK(glViewport(0, 0, 160, 60));
+	//GL_CHECK(glViewport(0, 0, 80, 60));
+
+	GL_CHECK(glEnable(GL_SCISSOR_TEST));
+	GL_CHECK(glScissor(scissorRect.x, targetSize.height - (scissorRect.y + scissorRect.height), scissorRect.width, scissorRect.height));
+}
+
 void OpenGLDeviceContext::onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer)
 {
 	//if (LN_REQUIRE(decls)) return;
