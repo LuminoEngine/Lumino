@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/Graphics/SwapChain.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include "UIManager.hpp"
 #include "../Graphics/GraphicsManager.hpp"

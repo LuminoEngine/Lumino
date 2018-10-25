@@ -13,51 +13,12 @@ class RenderTargetTexture;
 class DepthBuffer;
 class Shader;
 class ShaderPass;
+class SwapChain;
 
 namespace detail {
-	class PlatformWindow;
 	class GraphicsManager;
 	class IGraphicsDeviceContext;
-	class ISwapChain;
 }
-
-
-class LN_API SwapChain
-	: public Object
-{
-public:
-
-	RenderTargetTexture* colorBuffer() const;
-	DepthBuffer* depthBuffer() const;
-
-	virtual void dispose() override;
-
-	void wait();
-
-LN_CONSTRUCT_ACCESS:
-	SwapChain();
-	virtual ~SwapChain();
-	void initialize(detail::PlatformWindow* window, const SizeI& backbufferSize);
-
-LN_INTERNAL_ACCESS:
-	detail::ISwapChain* resolveRHIObject() const;
-
-private:
-	Ref<detail::ISwapChain> m_rhiObject;
-	Ref<RenderTargetTexture> m_colorBuffer;
-	Ref<DepthBuffer> m_depthBuffer;
-};
-
-namespace detail {
-
-class SwapChainHelper
-{
-public:
-    static void setBackendBufferSize(SwapChain* swapChain, int width, int height);
-    static void setOpenGLBackendFBO(SwapChain* swapChain, uint32_t id);
-};
-
-} // namespace detail
 
 class LN_API GraphicsContext
 	: public Object

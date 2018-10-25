@@ -41,7 +41,7 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 		ctx->clear(ClearFlags::All, Color(0,0,0,0), 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-		ASSERT_SCREEN_S(LN_ASSETFILE("Result/00-Test_Graphics_HlslEffect-Basic-1.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_HlslEffect-Basic-1.png"));
 	}
 	
 	//* [ ] Nested struct
@@ -53,7 +53,7 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 		
-		ASSERT_SCREEN_S(LN_ASSETFILE("Result/00-Test_Graphics_HlslEffect-Basic-3.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_HlslEffect-Basic-3.png"));
 	}
 
 	//* [ ] #include

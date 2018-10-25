@@ -94,6 +94,7 @@ set(LN_SOURCES_Graphics
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/IndexBuffer.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/RenderState.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/SamplerState.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/SwapChain.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/Texture.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/VertexBuffer.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/VertexDeclaration.hpp
@@ -113,6 +114,7 @@ set(LN_SOURCES_Graphics
     src/Graphics/IndexBuffer.cpp
     src/Graphics/RenderState.cpp
     src/Graphics/SamplerState.cpp
+    src/Graphics/SwapChain.cpp
     src/Graphics/OpenGLDeviceContext.cpp
     src/Graphics/OpenGLDeviceContext.hpp
     src/Graphics/Texture.cpp
