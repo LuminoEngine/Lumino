@@ -2,6 +2,7 @@
 #pragma once
 #include "Common.hpp"
 #include "../Graphics/GraphicsResource.hpp"
+#include "../Graphics/RenderState.hpp"
 
 namespace ln {
 class Texture;
@@ -94,6 +95,42 @@ public:
 private:
 	MemoryStream m_stream;
 	BinaryReader m_reader;
+};
+
+class ShaderRenderState
+    : public RefObject
+{
+public:
+    // RenderTargetBlendDesc
+    Optional<bool> blendEnable;
+    Optional<BlendFactor> sourceBlend;
+    Optional<BlendFactor> destinationBlend;
+    Optional<BlendOp> blendOp;
+    Optional<BlendFactor> sourceBlendAlpha;
+    Optional<BlendFactor> destinationBlendAlpha;
+    Optional<BlendOp> blendOpAlpha;
+
+    // RasterizerStateDesc
+    Optional<FillMode> fillMode;
+    Optional<CullingMode> cullMode;
+
+    // DepthStencilStateDesc
+    Optional<ComparisonFunc> depthTestFunc;
+    Optional<bool> depthWriteEnabled;
+
+    // StencilOpDesc
+    Optional<bool> stencilEnabled;
+    Optional<uint8_t> stencilReferenceValue;
+    Optional<StencilOp> stencilFailOp;
+    Optional<StencilOp> stencilDepthFailOp;
+    Optional<StencilOp> stencilPassOp;
+    Optional<ComparisonFunc> stencilFunc;
+};
+
+class ShaderHelper
+{
+public:
+    static ShaderRenderState* getShaderRenderState(ShaderPass* pass);
 };
 
 } // namespace detail

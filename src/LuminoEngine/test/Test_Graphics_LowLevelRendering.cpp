@@ -869,7 +869,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		// ステンシルテスト
 		DepthStencilStateDesc state2;
 		state2.stencilEnabled = true;
-		state2.frontFace.stencilFunc = ComparisonFunc::Equal;	// 0xFFと等しければ成功 → カラーバッファ書き込み
+		state2.frontFace.stencilFunc = ComparisonFunc::Equal;	// 0xFF(デフォルト値)と等しければ成功 → カラーバッファ書き込み
 		ctx->setDepthStencilState(state2);
 		ctx->setVertexBuffer(0, vb2);
 		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 青 (z=0)

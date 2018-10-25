@@ -119,6 +119,42 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 }
 
 //------------------------------------------------------------------------------
+TEST_F(Test_Graphics_HlslEffect, ShaderPassRenderState)
+{
+    auto shader = newObject<Shader>(LN_ASSETFILE("ShaderPassRenderStateTest1.fx"));
+    
+    // pass0 は何もセットされていない
+    // pass1 はすべてセットされている
+    for (int i = 0; i < 2; i++)
+    {
+        auto pass = shader->techniques()[0]->passes()[i];
+        auto state = detail::ShaderHelper::getShaderRenderState(pass);
+        bool expect = (i == 0) ? false : true;
+        ASSERT_EQ(expect, state->blendEnable.hasValue());
+        ASSERT_EQ(expect, state->sourceBlend.hasValue());
+        ASSERT_EQ(expect, state->destinationBlend.hasValue());
+        ASSERT_EQ(expect, state->blendOp.hasValue());
+        ASSERT_EQ(expect, state->sourceBlendAlpha.hasValue());
+        ASSERT_EQ(expect, state->destinationBlendAlpha.hasValue());
+        ASSERT_EQ(expect, state->blendOpAlpha.hasValue());
+
+        ASSERT_EQ(expect, state->fillMode.hasValue());
+        ASSERT_EQ(expect, state->cullMode.hasValue());
+
+        ASSERT_EQ(expect, state->depthTestFunc.hasValue());
+        ASSERT_EQ(expect, state->depthWriteEnabled.hasValue());
+
+        ASSERT_EQ(expect, state->stencilEnabled.hasValue());
+        ASSERT_EQ(expect, state->stencilReferenceValue.hasValue());
+        ASSERT_EQ(expect, state->stencilFailOp.hasValue());
+        ASSERT_EQ(expect, state->stencilDepthFailOp.hasValue());
+        ASSERT_EQ(expect, state->stencilPassOp.hasValue());
+        ASSERT_EQ(expect, state->stencilFunc.hasValue());
+    }
+
+}
+
+//------------------------------------------------------------------------------
 TEST_F(Test_Graphics_HlslEffect, Sample)
 {
 #if 0

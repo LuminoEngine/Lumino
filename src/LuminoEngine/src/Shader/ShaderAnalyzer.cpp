@@ -7,6 +7,7 @@
 #include <SPIRV/GlslangToSpv.h>
 #include <spirv_cross/spirv_glsl.hpp>
 #include "../Grammar/CppLexer.hpp"
+#include <LuminoEngine/Shader/ShaderHelper.hpp>
 #include "ShaderAnalyzer.hpp"
 
 namespace ln {
@@ -791,7 +792,8 @@ bool HLSLMetadataParser::equalString(const Token& token, const char* str, size_t
 {
 	if (token.length() != len) return false;
 	const char* ts = CppLexer::getTokenString(token, m_code, m_codeLength);
-	return strncmp(ts, str, len) == 0;
+    return StringHelper::compare(ts, token.length(), str, len, len, CaseSensitivity::CaseInsensitive) == 0;
+	//return strncmp(ts, str, len) == 0;
 }
 
 std::string HLSLMetadataParser::getString(const Token& token)
@@ -843,6 +845,7 @@ bool HLSLMetadataParser::parseTechnique(HLSLTechnique* tech)
 		if (equalString(current(), "pass", 4))
 		{
 			HLSLPass pass;
+            pass.renderState = makeRef<ShaderRenderState>();
 			if (!parsePass(&pass)) return false;
 			tech->passes.push_back(std::move(pass));
 		}
@@ -936,61 +939,61 @@ bool HLSLMetadataParser::parseRenderState(HLSLPass* pass)
     //--------------------------------------------------
     // BlendStateDesc
     else if (equalString(name, "BlendEnable", 11)) {
-        if (!parseStateValue(token, &pass->blendEnable, RenderStateParser::tryParseBool)) return false;
+        if (!parseStateValue(token, &pass->renderState->blendEnable, RenderStateParser::tryParseBool)) return false;
     }
     else if (equalString(name, "SourceBlend", 11)) {
-        if (!parseStateValue(token, &pass->sourceBlend, RenderStateParser::tryParseBlendFactor)) return false;
+        if (!parseStateValue(token, &pass->renderState->sourceBlend, RenderStateParser::tryParseBlendFactor)) return false;
     }
     else if (equalString(name, "DestinationBlend", 16)) {
-        if (!parseStateValue(token, &pass->destinationBlend, RenderStateParser::tryParseBlendFactor)) return false;
+        if (!parseStateValue(token, &pass->renderState->destinationBlend, RenderStateParser::tryParseBlendFactor)) return false;
     }
     else if (equalString(name, "BlendOp", 7)) {
-        if (!parseStateValue(token, &pass->blendOp, RenderStateParser::tryParseBlendOp)) return false;
+        if (!parseStateValue(token, &pass->renderState->blendOp, RenderStateParser::tryParseBlendOp)) return false;
     }
     else if (equalString(name, "SourceBlendAlpha", 16)) {
-        if (!parseStateValue(token, &pass->sourceBlendAlpha, RenderStateParser::tryParseBlendFactor)) return false;
+        if (!parseStateValue(token, &pass->renderState->sourceBlendAlpha, RenderStateParser::tryParseBlendFactor)) return false;
     }
     else if (equalString(name, "DestinationBlendAlpha", 21)) {
-        if (!parseStateValue(token, &pass->destinationBlendAlpha, RenderStateParser::tryParseBlendFactor)) return false;
+        if (!parseStateValue(token, &pass->renderState->destinationBlendAlpha, RenderStateParser::tryParseBlendFactor)) return false;
     }
     else if (equalString(name, "BlendOpAlpha", 12)) {
-        if (!parseStateValue(token, &pass->blendOpAlpha, RenderStateParser::tryParseBlendOp)) return false;
+        if (!parseStateValue(token, &pass->renderState->blendOpAlpha, RenderStateParser::tryParseBlendOp)) return false;
     }
     //--------------------------------------------------
     // RasterizerStateDesc
     else if (equalString(name, "FillMode", 8)) {
-        if (!parseStateValue(token, &pass->fillMode, RenderStateParser::tryParseFillMode)) return false;
+        if (!parseStateValue(token, &pass->renderState->fillMode, RenderStateParser::tryParseFillMode)) return false;
     }
-    else if (equalString(name, "CullingMode", 11)) {
-        if (!parseStateValue(token, &pass->cullMode, RenderStateParser::tryParseCullingMode)) return false;
+    else if (equalString(name, "cullMode", 8)) {
+        if (!parseStateValue(token, &pass->renderState->cullMode, RenderStateParser::tryParseCullingMode)) return false;
     }
     //--------------------------------------------------
     // DepthStencilStateDesc
     else if (equalString(name, "DepthTestFunc", 13)) {
-        if (!parseStateValue(token, &pass->depthTestFunc, RenderStateParser::tryParseComparisonFunc)) return false;
+        if (!parseStateValue(token, &pass->renderState->depthTestFunc, RenderStateParser::tryParseComparisonFunc)) return false;
     }
     else if (equalString(name, "DepthWriteEnabled", 17)) {
-        if (!parseStateValue(token, &pass->depthWriteEnabled, RenderStateParser::tryParseBool)) return false;
+        if (!parseStateValue(token, &pass->renderState->depthWriteEnabled, RenderStateParser::tryParseBool)) return false;
     }
     //--------------------------------------------------
     // Stencil
     else if (equalString(name, "StencilEnabled", 14)) {
-        if (!parseStateValue(token, &pass->stencilEnabled, RenderStateParser::tryParseBool)) return false;
+        if (!parseStateValue(token, &pass->renderState->stencilEnabled, RenderStateParser::tryParseBool)) return false;
     }
     else if (equalString(name, "StencilReferenceValue", 21)) {
-        if (!parseStateValue(token, &pass->stencilReferenceValue, RenderStateParser::tryParseUInt8)) return false;
+        if (!parseStateValue(token, &pass->renderState->stencilReferenceValue, RenderStateParser::tryParseUInt8)) return false;
     }
     else if (equalString(name, "StencilFailOp", 13)) {
-        if (!parseStateValue(token, &pass->stencilFailOp, RenderStateParser::tryParseStencilOp)) return false;
+        if (!parseStateValue(token, &pass->renderState->stencilFailOp, RenderStateParser::tryParseStencilOp)) return false;
     }
     else if (equalString(name, "StencilDepthFailOp", 18)) {
-        if (!parseStateValue(token, &pass->stencilDepthFailOp, RenderStateParser::tryParseStencilOp)) return false;
+        if (!parseStateValue(token, &pass->renderState->stencilDepthFailOp, RenderStateParser::tryParseStencilOp)) return false;
     }
     else if (equalString(name, "StencilPassOp", 13)) {
-        if (!parseStateValue(token, &pass->stencilPassOp, RenderStateParser::tryParseStencilOp)) return false;
+        if (!parseStateValue(token, &pass->renderState->stencilPassOp, RenderStateParser::tryParseStencilOp)) return false;
     }
     else if (equalString(name, "StencilFunc", 11)) {
-        if (!parseStateValue(token, &pass->stencilFunc, RenderStateParser::tryParseComparisonFunc)) return false;
+        if (!parseStateValue(token, &pass->renderState->stencilFunc, RenderStateParser::tryParseComparisonFunc)) return false;
     }
 
 	if (!nextTo(';')) return false;

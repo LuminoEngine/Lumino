@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Shader/ShaderHelper.hpp>
+#include <LuminoEngine/Shader/Shader.hpp>
 
 namespace ln {
 namespace detail {
@@ -417,6 +418,15 @@ const void* ShaderValueDeserializer::readValue(size_t* outSize, ShaderVariableTy
 //void ShaderValueDeserializer::endReadValues()
 //{
 //}
+
+//=============================================================================
+// ShaderHelper
+
+ShaderRenderState* ShaderHelper::getShaderRenderState(ShaderPass* pass)
+{
+    return pass->m_renderState;
+}
+
 
 } // namespace detail
 } // namespace ln

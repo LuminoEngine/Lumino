@@ -185,7 +185,7 @@ struct DepthStencilStateDesc
 	/** ステンシルテストの有効状態 (default:false) */
 	bool stencilEnabled;
 
-	/** ステンシルテストの参照値 (default:0) */
+	/** ステンシルテストの参照値 (default:0xFF) */
 	uint8_t stencilReferenceValue;
 
 	/** 法線がカメラの方向を向いている面のステンシル処理 */

@@ -230,6 +230,7 @@ Optional<T>& Optional<T>::operator=(std::nullptr_t) LN_NOEXCEPT
 template<class T>
 Optional<T>& Optional<T>::operator=(const T& value)
 {
+    m_value = value;
     m_hasValue = true;
     return *this;
 }

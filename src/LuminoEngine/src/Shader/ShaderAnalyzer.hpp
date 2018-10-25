@@ -2,7 +2,6 @@
 #pragma once
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 
-#include <LuminoEngine/Graphics/RenderState.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 
 namespace ln {
@@ -10,6 +9,7 @@ class Token;
 
 namespace detail {
 class GraphicsManager;
+class ShaderRenderState;
 
 enum class ShaderCodeStage
 {
@@ -49,31 +49,7 @@ struct HLSLPass
 	std::string shadingModel;	// for Lumino HLSL
 	std::string ligitingModel;	// for Lumino HLSL
 
-    // RenderTargetBlendDesc
-    Optional<bool> blendEnable;
-    Optional<BlendFactor> sourceBlend;
-    Optional<BlendFactor> destinationBlend;
-    Optional<BlendOp> blendOp;
-    Optional<BlendFactor> sourceBlendAlpha;
-    Optional<BlendFactor> destinationBlendAlpha;
-    Optional<BlendOp> blendOpAlpha;
-
-    // RasterizerStateDesc
-    Optional<FillMode> fillMode;
-    Optional<CullingMode> cullMode;
-
-    // DepthStencilStateDesc
-    Optional<ComparisonFunc> depthTestFunc;
-    Optional<bool> depthWriteEnabled;
-
-    // StencilOpDesc
-    Optional<bool> stencilEnabled;
-    Optional<uint8_t> stencilReferenceValue;
-    Optional<StencilOp> stencilFailOp;
-    Optional<StencilOp> stencilDepthFailOp;
-    Optional<StencilOp> stencilPassOp;
-    Optional<ComparisonFunc> stencilFunc;
-
+    Ref<ShaderRenderState> renderState;
 
 
     void save(BinaryWriter* w, int version);
