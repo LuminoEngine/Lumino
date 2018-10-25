@@ -1,4 +1,4 @@
-﻿#include "Common.hpp"
+#include "Common.hpp"
 
 class Test_Graphics_LowLevelRendering : public ::testing::Test
 {
@@ -442,7 +442,7 @@ TEST_F(Test_Graphics_LowLevelRendering, ConstantBuffer)
 		buffer2->findParameter("g_mat44ary3")->setMatrixArray(ary, 3);
 		ASSERT_EQ(true, renderAndCapture().b > 200);
 	}
-	//* [ ] array にすると転置される？
+	//* [ ] array しても転置されないこと
 	{
         auto mat = Matrix();
         mat(0, 2) = 1;
