@@ -459,14 +459,14 @@ void OpenGLDeviceContext::onUpdatePipelineState(const BlendStateDesc& blendState
 		{
 			switch (rasterizerState.cullMode)
 			{
-			case CullingMode::None:
+			case CullMode::None:
 				GL_CHECK(glDisable(GL_CULL_FACE));
 				break;
-			case CullingMode::Front:
+			case CullMode::Front:
 				GL_CHECK(glEnable(GL_CULL_FACE));
 				GL_CHECK(glCullFace(GL_BACK));
 				break;
-			case CullingMode::Back:
+			case CullMode::Back:
 				GL_CHECK(glEnable(GL_CULL_FACE));
 				GL_CHECK(glCullFace(GL_FRONT));
 				break;

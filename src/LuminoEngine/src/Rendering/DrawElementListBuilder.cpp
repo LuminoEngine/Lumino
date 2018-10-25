@@ -66,7 +66,7 @@ void DrawElementListBuilder::setBlendMode(const Optional<BlendMode>& value)
 	}
 }
 
-void DrawElementListBuilder::setCullingMode(const Optional<CullingMode>& value)
+void DrawElementListBuilder::setCullingMode(const Optional<CullMode>& value)
 {
 	if (m_primaryGeometryStageParameters.m_cullingMode != value) {
 		m_primaryGeometryStageParameters.m_cullingMode = value;

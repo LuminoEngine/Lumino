@@ -108,7 +108,7 @@ BlendMode RenderStage::getBlendModeFinal(AbstractMaterial* finalMaterial) const
 	return BlendMode::Alpha;
 }
 
-CullingMode RenderStage::getCullingModeFinal(AbstractMaterial* finalMaterial) const
+CullMode RenderStage::getCullingModeFinal(AbstractMaterial* finalMaterial) const
 {
 	if (finalMaterial && finalMaterial->getCullingMode().hasValue())
 		return finalMaterial->getCullingMode().value();
@@ -118,7 +118,7 @@ CullingMode RenderStage::getCullingModeFinal(AbstractMaterial* finalMaterial) co
 		return geometryStageParameters->m_cullingMode.value();
 
 	// default
-	return CullingMode::Back;
+	return CullMode::Back;
 }
 
 ComparisonFunc RenderStage::getDepthTestFuncFinal(AbstractMaterial* finalMaterial) const

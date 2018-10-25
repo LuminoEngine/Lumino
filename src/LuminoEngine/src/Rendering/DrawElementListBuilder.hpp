@@ -30,7 +30,7 @@ public:
 	void setScissorRect(const RectI& value);
 
 	void setBlendMode(const Optional<BlendMode>& value);
-	void setCullingMode(const Optional<CullingMode>& value);
+	void setCullingMode(const Optional<CullMode>& value);
 	void setDepthTestEnabled(const Optional<bool>& value);
 	void setDepthWriteEnabled(const Optional<bool>& value);
 

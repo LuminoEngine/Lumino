@@ -50,7 +50,7 @@ public:
 
 private:
 	Optional<BlendMode>		blendMode;
-	Optional<CullingMode>	cullingMode;
+	Optional<CullMode>	cullingMode;
 	Optional<bool>			depthTestEnabled;
 	Optional<bool>			depthWriteEnabled;
 
@@ -60,8 +60,8 @@ public:
 	void setBlendMode(Optional<BlendMode> mode);
 	Optional<BlendMode> getBlendMode() const { return blendMode; }
 
-	void setCullingMode(Optional<CullingMode> mode);
-	Optional<CullingMode> getCullingMode() const { return cullingMode; }
+	void setCullingMode(Optional<CullMode> mode);
+	Optional<CullMode> getCullingMode() const { return cullingMode; }
 
 	void setDepthTestEnabled(Optional<bool> enabled);
 	Optional<bool> isDepthTestEnabled() const { return depthTestEnabled; }

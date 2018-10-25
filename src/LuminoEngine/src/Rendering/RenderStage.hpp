@@ -120,7 +120,7 @@ public:
 	// まだ確定状態となるわけではないので Optional が含まれることもある。
 	Ref<AbstractMaterial>			m_material;			// setMaterial() で指定されたマテリアル
 	Optional<BlendMode>			m_blendMode;
-	Optional<CullingMode>		m_cullingMode;
+	Optional<CullMode>		m_cullingMode;
 	Optional<bool>				m_depthTestEnabled;
 	Optional<bool>				m_depthWriteEnabled;
 	Optional<ShadingModel>		shadingModel;
@@ -261,7 +261,7 @@ public:
 	AbstractMaterial* getMaterialFinal(AbstractMaterial* priorityValue) const;
 	ShadingModel getShadingModelFinal(AbstractMaterial* finalMaterial) const;	// getMaterialFinal() で確定した Material を渡すこと
 	BlendMode getBlendModeFinal(AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
-	CullingMode getCullingModeFinal(AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
+	CullMode getCullingModeFinal(AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
     ComparisonFunc getDepthTestFuncFinal(AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
 	bool isDepthWriteEnabledFinal(AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
 	//const Matrix& getTransformFinal() const { return geometryStageParameters->; }

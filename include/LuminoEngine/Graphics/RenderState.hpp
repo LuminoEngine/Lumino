@@ -39,7 +39,7 @@ enum class FillMode : uint8_t
 };
 
 /** カリング方法 */
-enum class CullingMode : uint8_t
+enum class CullMode : uint8_t
 {
 	/** 両面を描画します。 */
 	None,
@@ -87,7 +87,7 @@ enum class StencilOp
 //	BlendFactor destinationBlend;
 //
 //	/** カリング方法 */
-//	CullingMode cullingMode;
+//	CullMode cullingMode;
 //
 //	/** 塗りつぶし方法 */
 //	FillMode fillMode;
@@ -150,7 +150,7 @@ struct RasterizerStateDesc
 	FillMode fillMode;
 
 	/** カリング方法 (default:Back) */
-	CullingMode cullMode;
+	CullMode cullMode;
 
 	RasterizerStateDesc();
 };
@@ -227,7 +227,7 @@ public:
 	BlendFactor		destinationBlend;	/**< ブレンディングの係数 (default: Zero) */
 	
 	BlendMode		Blend;	/*TODO: 廃止予定*/		///< 合成方法 (default:BlendMode::Alpha)
-	CullingMode		Culling;		///< カリング方法 (default:CullingMode_Back)
+	CullMode		Culling;		///< カリング方法 (default:CullingMode_Back)
 	FillMode		Fill;			///< 塗りつぶし方法 (default:FillMode_Solid)
 	bool			AlphaTest;      ///< アルファテストの有無 (default:true)
 	//bool			PointSprite;	///< ポイントスプライトモードの有無 (default:false)

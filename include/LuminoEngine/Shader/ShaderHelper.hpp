@@ -112,7 +112,7 @@ public:
 
     // RasterizerStateDesc
     Optional<FillMode> fillMode;
-    Optional<CullingMode> cullMode;
+    Optional<CullMode> cullMode;
 
     // DepthStencilStateDesc
     Optional<ComparisonFunc> depthTestFunc;

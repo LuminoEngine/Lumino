@@ -133,7 +133,7 @@ int main(int argc, char** argv)
 		{
 			renderView->m_context->reset();
 
-			renderView->m_context->setCullingMode(CullingMode::None);
+			renderView->m_context->setCullingMode(CullMode::None);
 
 			renderView->m_context->drawMesh(meshContainer, 0);
 

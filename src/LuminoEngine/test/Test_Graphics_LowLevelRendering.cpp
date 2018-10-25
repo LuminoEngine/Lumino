@@ -774,13 +774,13 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 	// * [ ] check RasterizerState
 	{
 		RasterizerStateDesc state1;
-		state1.cullMode = CullingMode::Front;
+		state1.cullMode = CullMode::Front;
 
 		RasterizerStateDesc state2;
-		state2.cullMode = CullingMode::Back;
+		state2.cullMode = CullMode::Back;
 
 		RasterizerStateDesc state3;
-		state3.cullMode = CullingMode::None;
+		state3.cullMode = CullMode::None;
 
 		RasterizerStateDesc state4;
 		state4.fillMode = FillMode::Wireframe;

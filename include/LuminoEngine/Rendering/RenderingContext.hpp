@@ -53,8 +53,8 @@ public:
 	/** BlendMode を設定します。 シーンの既定値を使用する場合は nullptr を指定します。 */
 	void setBlendMode(Optional<BlendMode> value);
 
-	/** CullingMode を設定します。 シーンの既定値を使用する場合は nullptr を指定します。 */
-	void setCullingMode(Optional<CullingMode> value);
+	/** CullMode を設定します。 シーンの既定値を使用する場合は nullptr を指定します。 */
+	void setCullingMode(Optional<CullMode> value);
 
 	/** 深度テストの有無を設定します。 シーンの既定値を使用する場合は nullptr を指定します。 */
 	void setDepthTestEnabled(Optional<bool> value);
