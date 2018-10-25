@@ -444,23 +444,19 @@ TEST_F(Test_Graphics_LowLevelRendering, ConstantBuffer)
 	}
 	//* [ ] array にすると転置される？
 	{
-		/* シェーダコードは↓
-			float4x4 m = g_mat44ary3[1];
-			return float4(g_mat44[0][2], m[0][2], m[2][0], 1);
+        auto mat = Matrix();
+        mat(0, 2) = 1;
+        mat(2, 0) = 0;
+        Matrix ary[3] = { {}, mat, {} };
 
-			この場合 R と G が同じ値となり黄色が出てくるはずだが、
-			実際にやってみると R と B が出ている。
+        buffer2->findParameter("g_mat44")->setMatrix(mat);
+        buffer2->findParameter("g_mat44ary3")->setMatrixArray(ary, 3);
 
-			このブロックのテストは、↑の2つのブロックのテストの後に行われるため
-			2つの行列は同じ値になっているはずだが・・・行列配列だけ、中身が転置されてしまう。
-
-			ただ、それでも mul が同じ結果で成功するのもまた疑問。
-		*/
 		buffer1->findParameter("g_type")->setInt(101);
 		auto c = renderAndCapture();
-		ASSERT_EQ(true, c.r > 200);
-		//ASSERT_EQ(true, c.g > 200);
-		ASSERT_EQ(true, c.b > 200);
+		ASSERT_EQ(true, c.r > 200); // expect 255
+		ASSERT_EQ(true, c.g > 200); // expect 255
+		ASSERT_EQ(true, c.b < 10);  // expect 0
 	}
 
 	//* [ ] float3x4 (Vector4[3])
@@ -509,9 +505,6 @@ TEST_F(Test_Graphics_LowLevelRendering, ConstantBuffer)
 		ASSERT_EQ(true, renderAndCapture().r > 200);
 	}
 
-	// ※ TODO: 以下、行列配列だけ、中身が転置されてしまうようなので要調査。
-	// 現状はその想定で基準を組んでいる。
-
 	//* [ ] float3x4[3] (Vector4[3][,,])
 	{
 		Matrix m[3] = {
@@ -526,7 +519,10 @@ TEST_F(Test_Graphics_LowLevelRendering, ConstantBuffer)
 		m[1](0, 1) = 1;
 		buffer1->findParameter("g_type")->setInt(31);
 		buffer2->findParameter("g_mat34ary3")->setMatrixArray(m, 3);
-		ASSERT_EQ(true, renderAndCapture().b > 200);
+        auto c = renderAndCapture();
+        ASSERT_EQ(true, c.r < 10); // expect 0
+        ASSERT_EQ(true, c.g > 200);// expect 255
+		ASSERT_EQ(true, c.b < 10); // expect 0
 	}
 
 	//* [ ] float4x4 (Vector4[4][,,])
@@ -542,8 +538,23 @@ TEST_F(Test_Graphics_LowLevelRendering, ConstantBuffer)
 		{} };
 		buffer1->findParameter("g_type")->setInt(34);
 		buffer2->findParameter("g_mat44ary3")->setMatrixArray(m, 3);
-		ASSERT_EQ(true, renderAndCapture().g > 200);
+        auto c = renderAndCapture();
+        ASSERT_EQ(true, c.r > 200);// expect 255
+        ASSERT_EQ(true, c.g < 10); // expect 0
+        ASSERT_EQ(true, c.b < 10); // expect 0
 	}
+
+    //* [ ] mul で想定通り座標変換できること
+    {
+        auto m = Matrix::makeRotationY(-Math::PI / 2);
+        auto v = Vector4::transform(Vector4(1, 0, 0, 1), m);
+        buffer1->findParameter("g_type")->setInt(35);
+        buffer2->findParameter("g_mat44")->setMatrix(m);
+        auto c = renderAndCapture();
+        ASSERT_EQ(true, c.r < 10);   // expect 0
+        ASSERT_EQ(true, c.g < 10);   // expect 0
+        ASSERT_EQ(true, c.b > 200);  // expect 255
+    }
 }
 
 //------------------------------------------------------------------------------
