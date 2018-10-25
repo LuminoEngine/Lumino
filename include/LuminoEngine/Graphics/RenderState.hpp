@@ -28,6 +28,16 @@ enum class BlendFactor : uint8_t
 	InverseDestinationAlpha,	/**< ブレンディング係数は、(1-Ad, 1-Ad, 1-Ad, 1-Ad) */
 };
 
+/** 塗りつぶし方法 */
+enum class FillMode : uint8_t
+{
+    /** 面を塗りつぶす */
+    Solid,
+
+    /** ワイヤーフレーム */
+    Wireframe,
+};
+
 /** カリング方法 */
 enum class CullingMode : uint8_t
 {
@@ -39,16 +49,6 @@ enum class CullingMode : uint8_t
 
 	/** 後ろ向きの面を描画しません。 */
 	Back,
-};
-
-/** 塗りつぶし方法 */
-enum class FillMode : uint8_t
-{
-	/** 面を塗りつぶす */
-	Solid,
-
-	/** ワイヤーフレーム */
-	Wireframe,
 };
 
 /// 比較関数の定数
@@ -196,11 +196,6 @@ struct DepthStencilStateDesc
 
 	DepthStencilStateDesc();
 };
-
-
-
-
-
 
 
 

@@ -599,11 +599,130 @@ std::string ShaderCodeTranspiler::generateGlsl()
 }
 
 
+
+//=============================================================================
+// RenderStateParser
+
+class RenderStateParser
+{
+public:
+    static bool equals(const std::string& str1, const char* str2, int str2len)
+    {
+        return StringHelper::compare(str1.c_str(), str1.size(), str2, str2len, str2len, CaseSensitivity::CaseInsensitive) == 0;
+    }
+
+    static bool tryParseBool(const std::string& value, bool* outValue)
+    {
+        if (equals(value, "true", 4)) {
+            *outValue = true;
+            return true;
+        }
+        else if (equals(value, "false", 5)) {
+            *outValue = false;
+            return true;
+        }
+        return false;
+    }
+
+    static bool tryParseUInt8(const std::string& value, uint8_t* outValue)
+    {
+        NumberConversionResult result;
+        const char* end;
+        *outValue = StringHelper::toInt32(value.c_str(), value.length(), 10, &end, &result);
+        return result == NumberConversionResult::Success;
+    }
+
+    template<typename TTable, typename TString, typename TValue>
+    static bool findHelper(const TTable& table, const TString& value, TValue* outValue)
+    {
+        for (auto& i : table) {
+            if (equals(value, i.name, i.len)) {
+                *outValue = i.value;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static bool tryParseBlendOp(const std::string& value, BlendOp* outValue)
+    {
+        struct { const char* name; size_t len; BlendOp value; } table[] = {
+            { "Add", 3, BlendOp::Add },
+            { "Subtract", 8, BlendOp::Subtract },
+            { "ReverseSubtract", 15, BlendOp::ReverseSubtract },
+            { "Min", 3, BlendOp::Min },
+            { "Max", 3, BlendOp::Max },
+        };
+        return findHelper(table, value, outValue);
+    }
+
+    static bool tryParseBlendFactor(const std::string& value, BlendFactor* outValue)
+    {
+        struct { const char* name; size_t len; BlendFactor value; } table[] = {
+            { "Zero", 4, BlendFactor::Zero },
+            { "One", 3, BlendFactor::One },
+            { "SourceColor", 11, BlendFactor::SourceColor },
+            { "InverseSourceColor", 18, BlendFactor::InverseSourceColor },
+            { "SourceAlpha", 11, BlendFactor::SourceAlpha },
+            { "InverseSourceAlpha", 18, BlendFactor::InverseSourceAlpha },
+            { "DestinationColor", 16, BlendFactor::DestinationColor },
+            { "InverseDestinationColor", 23, BlendFactor::InverseDestinationColor },
+            { "DestinationAlpha", 16, BlendFactor::DestinationAlpha },
+            { "InverseDestinationAlpha", 23, BlendFactor::InverseDestinationAlpha },
+        };
+        return findHelper(table, value, outValue);
+    }
+
+    static bool tryParseFillMode(const std::string& value, FillMode* outValue)
+    {
+        struct { const char* name; size_t len; FillMode value; } table[] = {
+            { "Solid", 5, FillMode::Solid },
+            { "Wireframe", 9, FillMode::Wireframe },
+        };
+        return findHelper(table, value, outValue);
+    }
+
+    static bool tryParseCullingMode(const std::string& value, CullingMode* outValue)
+    {
+        struct { const char* name; size_t len; CullingMode value; } table[] = {
+            { "None", 4, CullingMode::None },
+            { "Front", 5, CullingMode::Front },
+            { "Back", 4, CullingMode::Back },
+        };
+        return findHelper(table, value, outValue);
+    }
+
+    static bool tryParseComparisonFunc(const std::string& value, ComparisonFunc* outValue)
+    {
+        struct { const char* name; size_t len; ComparisonFunc value; } table[] = {
+            { "Never", 5, ComparisonFunc::Never },
+            { "Less", 4, ComparisonFunc::Less },
+            { "LessEqual", 9, ComparisonFunc::LessEqual },
+            { "Greater", 7, ComparisonFunc::Greater },
+            { "GreaterEqual", 12, ComparisonFunc::GreaterEqual },
+            { "Equal", 5, ComparisonFunc::Equal },
+            { "NotEqual", 8, ComparisonFunc::NotEqual },
+            { "Always", 6, ComparisonFunc::Always },
+        };
+        return findHelper(table, value, outValue);
+    }
+
+    static bool tryParseStencilOp(const std::string& value, StencilOp* outValue)
+    {
+        struct { const char* name; size_t len; StencilOp value; } table[] = {
+            { "Keep", 4, StencilOp::Keep },
+            { "Replace", 7, StencilOp::Replace },
+        };
+        return findHelper(table, value, outValue);
+    }
+};
+
 //=============================================================================
 // HLSLMetadataParser
 
 bool HLSLMetadataParser::parse(const char* code, size_t length, DiagnosticsManager* diag)
 {
+    m_diag = diag;
 	m_code = code;
 	m_codeLength = length;
 
@@ -783,33 +902,96 @@ bool HLSLMetadataParser::parseRenderState(HLSLPass* pass)
 	if (!nextTo('=')) return false;
 	if (!next()) return false;
 
+    std::string token = getString(current());
+
+    //--------------------------------------------------
+    // Shader code
 	if (equalString(name, "VertexShader", 12))
 	{
 		//next();	// skip "compile"
 		//next();	// skip "vs_x_x"
-		pass->vertexShader = getString(current());
+		pass->vertexShader = token;
 	}
 	else if (equalString(name, "PixelShader", 11))
 	{
 		//next();	// skip "compile"
 		//next();	// skip "ps_x_x"
-		pass->pixelShader = getString(current());
+		pass->pixelShader = token;
 	}
 	else if (equalString(name, "ShadingModel", 12))
 	{
-		pass->shadingModel = getString(current());
+		pass->shadingModel = token;
 		m_isLuminoShader = true;
 	}
 	else if (equalString(name, "LigitingModel", 13))
 	{
-		pass->ligitingModel = getString(current());
+		pass->ligitingModel = token;
 		m_isLuminoShader = true;
 	}
 	else if (equalString(name, "SurfaceShader", 13))
 	{
-		pass->surfaceShader = getString(current());
+		pass->surfaceShader = token;
 		m_isLuminoShader = true;
 	}
+    //--------------------------------------------------
+    // BlendStateDesc
+    else if (equalString(name, "BlendEnable", 11)) {
+        if (!parseStateValue(token, &pass->blendEnable, RenderStateParser::tryParseBool)) return false;
+    }
+    else if (equalString(name, "SourceBlend", 11)) {
+        if (!parseStateValue(token, &pass->sourceBlend, RenderStateParser::tryParseBlendFactor)) return false;
+    }
+    else if (equalString(name, "DestinationBlend", 16)) {
+        if (!parseStateValue(token, &pass->destinationBlend, RenderStateParser::tryParseBlendFactor)) return false;
+    }
+    else if (equalString(name, "BlendOp", 7)) {
+        if (!parseStateValue(token, &pass->blendOp, RenderStateParser::tryParseBlendOp)) return false;
+    }
+    else if (equalString(name, "SourceBlendAlpha", 16)) {
+        if (!parseStateValue(token, &pass->sourceBlendAlpha, RenderStateParser::tryParseBlendFactor)) return false;
+    }
+    else if (equalString(name, "DestinationBlendAlpha", 21)) {
+        if (!parseStateValue(token, &pass->destinationBlendAlpha, RenderStateParser::tryParseBlendFactor)) return false;
+    }
+    else if (equalString(name, "BlendOpAlpha", 12)) {
+        if (!parseStateValue(token, &pass->blendOpAlpha, RenderStateParser::tryParseBlendOp)) return false;
+    }
+    //--------------------------------------------------
+    // RasterizerStateDesc
+    else if (equalString(name, "FillMode", 8)) {
+        if (!parseStateValue(token, &pass->fillMode, RenderStateParser::tryParseFillMode)) return false;
+    }
+    else if (equalString(name, "CullingMode", 11)) {
+        if (!parseStateValue(token, &pass->cullMode, RenderStateParser::tryParseCullingMode)) return false;
+    }
+    //--------------------------------------------------
+    // DepthStencilStateDesc
+    else if (equalString(name, "DepthTestEnabled", 16)) {
+        if (!parseStateValue(token, &pass->depthTestEnabled, RenderStateParser::tryParseBool)) return false;
+    }
+    else if (equalString(name, "DepthWriteEnabled", 17)) {
+        if (!parseStateValue(token, &pass->depthWriteEnabled, RenderStateParser::tryParseBool)) return false;
+    }
+    //--------------------------------------------------
+    // Stencil
+    else if (equalString(name, "StencilEnabled", 14)) {
+        if (!parseStateValue(token, &pass->stencilEnabled, RenderStateParser::tryParseBool)) return false;
+    }
+    else if (equalString(name, "StencilReferenceValue", 21)) {
+        if (!parseStateValue(token, &pass->stencilReferenceValue, RenderStateParser::tryParseUInt8)) return false;
+    }
+    else if (equalString(name, "StencilFailOp", 13)) {
+        if (!parseStateValue(token, &pass->stencilFailOp, RenderStateParser::tryParseStencilOp)) return false;
+    }
+    else if (equalString(name, "StencilDepthFailOp", 18)) {
+        if (!parseStateValue(token, &pass->stencilDepthFailOp, RenderStateParser::tryParseStencilOp)) return false;
+    }
+    else if (equalString(name, "StencilPassOp", 13)) {
+        if (!parseStateValue(token, &pass->stencilPassOp, RenderStateParser::tryParseStencilOp)) return false;
+    }
+    else if (equalString(name, "StencilFunc", 11)) {
+        if (!parseStateValue(token, &pass->stencilFunc, RenderStateParser::tryParseComparisonFunc)) return false;
+    }
 
 	if (!nextTo(';')) return false;
 

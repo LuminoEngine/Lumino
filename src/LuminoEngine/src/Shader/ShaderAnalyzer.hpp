@@ -2,6 +2,7 @@
 #pragma once
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 
+#include <LuminoEngine/Graphics/RenderState.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 
 namespace ln {
@@ -48,10 +49,38 @@ struct HLSLPass
 	std::string shadingModel;	// for Lumino HLSL
 	std::string ligitingModel;	// for Lumino HLSL
 
+    // RenderTargetBlendDesc
+    Optional<bool> blendEnable;
+    Optional<BlendFactor> sourceBlend;
+    Optional<BlendFactor> destinationBlend;
+    Optional<BlendOp> blendOp;
+    Optional<BlendFactor> sourceBlendAlpha;
+    Optional<BlendFactor> destinationBlendAlpha;
+    Optional<BlendOp> blendOpAlpha;
+
+    // RasterizerStateDesc
+    Optional<FillMode> fillMode;
+    Optional<CullingMode> cullMode;
+
+    // DepthStencilStateDesc
+    Optional<bool> depthTestEnabled;
+    Optional<bool> depthWriteEnabled;
+
+    // StencilOpDesc
+    Optional<bool> stencilEnabled;
+    Optional<uint8_t> stencilReferenceValue;
+    Optional<StencilOp> stencilFailOp;
+    Optional<StencilOp> stencilDepthFailOp;
+    Optional<StencilOp> stencilPassOp;
+    Optional<ComparisonFunc> stencilFunc;
+
+
+
     void save(BinaryWriter* w, int version);
     void load(BinaryReader* r, int version);
     //void save(JsonWriter* w, int version);
     //void load(JsonReader* r, int version);
+
 };
 
 struct HLSLTechnique
@@ -68,6 +97,7 @@ struct HLSLTechnique
 
     static void writeString(BinaryWriter* w, const std::string& str);
     static std::string readString(BinaryReader* r);
+
 };
 
 class HLSLMetadataParser
@@ -96,6 +126,21 @@ private:
 	bool parsePass(HLSLPass* pass);
 	bool parseRenderState(HLSLPass* pass);
 
+    template<typename TValue, typename TParser>
+    bool parseStateValue(const std::string& token, Optional<TValue>* outValue, TParser parser)
+    {
+        TValue v;
+        if (parser(token, &v)) {
+            *outValue = v;
+            return true;
+        }
+        else {
+            m_diag->reportError(u"Parser error: " + String::fromStdString(token));
+            return false;
+        }
+    }
+
+    DiagnosticsManager* m_diag;
 	const char* m_code;
 	size_t m_codeLength;
 	Ref<List<Token>> m_tokens;

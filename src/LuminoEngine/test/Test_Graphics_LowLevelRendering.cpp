@@ -1,4 +1,4 @@
-#include "Common.hpp"
+﻿#include "Common.hpp"
 
 class Test_Graphics_LowLevelRendering : public ::testing::Test
 {

@@ -505,9 +505,9 @@ uint64_t String::toUInt64(int base) const
         *outValue = num;                                         \
     }                                                            \
     return true;
-bool String::tryToInt(int8_t* outValue, int base) const
+bool String::tryToInt(int* outValue, int base) const
 {
-    TRY_TO_INT_DEF(int8_t, toInt32);
+    TRY_TO_INT_DEF(int, toInt32);
 }
 bool String::tryToInt8(int8_t* outValue, int base) const
 {
