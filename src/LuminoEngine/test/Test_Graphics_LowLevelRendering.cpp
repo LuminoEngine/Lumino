@@ -829,7 +829,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 
 
 		DepthStencilStateDesc state1;
-		state1.depthTestEnabled = false;
+		state1.depthTestFunc = ComparisonFunc::Always;
 
 		ctx->setDepthStencilState(state1);
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);

@@ -121,17 +121,17 @@ CullingMode RenderStage::getCullingModeFinal(AbstractMaterial* finalMaterial) co
 	return CullingMode::Back;
 }
 
-bool RenderStage::isDepthTestEnabledFinal(AbstractMaterial* finalMaterial) const
+ComparisonFunc RenderStage::getDepthTestFuncFinal(AbstractMaterial* finalMaterial) const
 {
 	if (finalMaterial && finalMaterial->isDepthTestEnabled().hasValue())
-		return finalMaterial->isDepthTestEnabled().value();
+		return (finalMaterial->isDepthTestEnabled().value()) ? ComparisonFunc::LessEqual : ComparisonFunc::Always;
 
 	// specified context->setXXXX() or meshObj->setXXXX()
 	if (geometryStageParameters->m_depthTestEnabled.hasValue())
-		return geometryStageParameters->m_depthTestEnabled.value();
+		return (geometryStageParameters->m_depthTestEnabled.value()) ? ComparisonFunc::LessEqual : ComparisonFunc::Always;
 
 	// default
-	return true;
+    return ComparisonFunc::LessEqual;
 }
 
 bool RenderStage::isDepthWriteEnabledFinal(AbstractMaterial* finalMaterial) const

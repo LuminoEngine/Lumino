@@ -51,14 +51,14 @@ StencilOpDesc::StencilOpDesc()
 // DepthStencilStateDesc
 
 DepthStencilStateDesc::DepthStencilStateDesc()
-	: depthTestEnabled(true)
+	: depthTestFunc(ComparisonFunc::LessEqual)  //　Note: DX=LessEqual, GL=Less
 	, depthWriteEnabled(true)
 	, stencilEnabled(false)
 	, stencilReferenceValue(0xFF)
 	, frontFace()
 	, backFace()
 {
-}
+} 
 
 ////==============================================================================
 //// RenderStateDesc

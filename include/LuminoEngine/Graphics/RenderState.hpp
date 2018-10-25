@@ -176,8 +176,8 @@ struct StencilOpDesc
 /** 深度ステンシルステート */
 struct DepthStencilStateDesc
 {
-	/** 深度テストの有効状態 (default:true) */
-	bool depthTestEnabled;
+	/** 深度テストの有効状態 (default:ComparisonFunc::LessEqual) */
+    ComparisonFunc depthTestFunc;
 
 	/** 深度書き込みの有効状態 (default:true) */
 	bool depthWriteEnabled;

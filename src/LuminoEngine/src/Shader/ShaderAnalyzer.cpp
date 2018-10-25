@@ -966,8 +966,8 @@ bool HLSLMetadataParser::parseRenderState(HLSLPass* pass)
     }
     //--------------------------------------------------
     // DepthStencilStateDesc
-    else if (equalString(name, "DepthTestEnabled", 16)) {
-        if (!parseStateValue(token, &pass->depthTestEnabled, RenderStateParser::tryParseBool)) return false;
+    else if (equalString(name, "DepthTestFunc", 13)) {
+        if (!parseStateValue(token, &pass->depthTestFunc, RenderStateParser::tryParseComparisonFunc)) return false;
     }
     else if (equalString(name, "DepthWriteEnabled", 17)) {
         if (!parseStateValue(token, &pass->depthWriteEnabled, RenderStateParser::tryParseBool)) return false;

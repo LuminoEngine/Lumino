@@ -262,7 +262,7 @@ public:
 	ShadingModel getShadingModelFinal(AbstractMaterial* finalMaterial) const;	// getMaterialFinal() で確定した Material を渡すこと
 	BlendMode getBlendModeFinal(AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
 	CullingMode getCullingModeFinal(AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
-	bool isDepthTestEnabledFinal(AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
+    ComparisonFunc getDepthTestFuncFinal(AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
 	bool isDepthWriteEnabledFinal(AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
 	//const Matrix& getTransformFinal() const { return geometryStageParameters->; }
 	//Brush* getBrushFinal() const { return renderingContextParameters.getBrush(); }

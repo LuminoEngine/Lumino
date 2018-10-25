@@ -63,7 +63,7 @@ struct HLSLPass
     Optional<CullingMode> cullMode;
 
     // DepthStencilStateDesc
-    Optional<bool> depthTestEnabled;
+    Optional<ComparisonFunc> depthTestFunc;
     Optional<bool> depthWriteEnabled;
 
     // StencilOpDesc

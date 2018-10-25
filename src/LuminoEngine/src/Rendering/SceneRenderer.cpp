@@ -546,7 +546,7 @@ void SceneRenderer::applyGeometryStatus(GraphicsContext* context, RenderStage* s
 	// DepthStencilState
 	{
 		DepthStencilStateDesc state;
-		state.depthTestEnabled = stage->isDepthTestEnabledFinal(priorityMaterial);
+		state.depthTestFunc = stage->getDepthTestFuncFinal(priorityMaterial);
 		state.depthWriteEnabled = stage->isDepthWriteEnabledFinal(priorityMaterial);
 		context->setDepthStencilState(state);
 	}

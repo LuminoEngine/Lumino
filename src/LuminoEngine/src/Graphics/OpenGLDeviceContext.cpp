@@ -488,13 +488,21 @@ void OpenGLDeviceContext::onUpdatePipelineState(const BlendStateDesc& blendState
 			GL_ALWAYS,		// Always
 		};
 
-		// depthTestEnabled
-		if (depthStencilState.depthTestEnabled) {
-			GL_CHECK(glEnable(GL_DEPTH_TEST));
-		}
-		else {
-			GL_CHECK(glDisable(GL_DEPTH_TEST));
-		}
+		//// depthTestEnabled
+		//if (depthStencilState.depthTestEnabled) {
+		//	GL_CHECK(glEnable(GL_DEPTH_TEST));
+		//}
+		//else {
+		//	GL_CHECK(glDisable(GL_DEPTH_TEST));
+		//}
+
+        if (depthStencilState.depthTestFunc == ComparisonFunc::Always) {
+            GL_CHECK(glDisable(GL_DEPTH_TEST));
+        }
+        else {
+            GL_CHECK(glEnable(GL_DEPTH_TEST));
+            GL_CHECK(glDepthFunc(cmpFuncTable[(int)depthStencilState.depthTestFunc]));
+        }
 
 		// depthWriteEnabled
 		GL_CHECK(glDepthMask(depthStencilState.depthWriteEnabled ? GL_TRUE : GL_FALSE));
