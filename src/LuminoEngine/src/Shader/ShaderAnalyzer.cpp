@@ -110,6 +110,61 @@ const TBuiltInResource DefaultTBuiltInResource = {
 	}
 };
 
+// from glslang/StandAlone/StandAlone.cpp
+// Add things like "#define ..." to a preamble to use in the beginning of the shader.
+class TPreamble {
+public:
+	TPreamble() { }
+
+	bool isSet() const { return text.size() > 0; }
+	const char* get() const { return text.c_str(); }
+	const std::vector<std::string>& prepro() const { return processes; }
+
+	// #define...
+	void addDef(std::string def)
+	{
+		text.append("#define ");
+		fixLine(def);
+
+		processes.push_back("D");
+		processes.back().append(def);
+
+		// The first "=" needs to turn into a space
+		const size_t equal = def.find_first_of("=");
+		if (equal != def.npos)
+			def[equal] = ' ';
+
+		text.append(def);
+		text.append("\n");
+	}
+
+	// #undef...
+	void addUndef(std::string undef)
+	{
+		text.append("#undef ");
+		fixLine(undef);
+
+		processes.push_back("U");
+		processes.back().append(undef);
+
+		text.append(undef);
+		text.append("\n");
+	}
+
+protected:
+	void fixLine(std::string& line)
+	{
+		// Can't go past a newline in the line
+		const size_t end = line.find_first_of("\n");
+		if (end != line.npos)
+			line = line.substr(0, end);
+	}
+
+	std::string text;                   // contents of preamble
+	std::vector<std::string> processes; // what should be recorded by OpModuleProcessed, or equivalent
+
+};
+
 //=============================================================================
 // HLSLPass
 
@@ -253,12 +308,21 @@ ShaderCodeTranspiler::ShaderCodeTranspiler()
 
 bool ShaderCodeTranspiler::parseAndGenerateSpirv(
 	ShaderCodeStage stage, const char* code, size_t length, const std::string& entryPoint,
-	const List<Path>& includeDir, DiagnosticsManager* diag)
+	const List<Path>& includeDir, const List<String>* definitions, DiagnosticsManager* diag)
 {
 	m_stage = stage;
 
 	LocalIncluder includer;
 	includer.includeDirs = &includeDir;
+
+
+	TPreamble preamble;
+	if (definitions) {
+		for (auto& def : *definitions) {
+			preamble.addDef(def.toStdString());
+		}
+	}
+
 
 	// -d オプション
 	//const int defaultVersion = Options & EOptionDefaultDesktop ? 110 : 100;
@@ -303,6 +367,13 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
 		compUnit.stage, glslang::EShClientVulkan, ClientInputSemanticsVersion);
 		shader->setEnvClient(glslang::EShClientVulkan, VulkanClientVersion);
 		*/
+
+
+		if (preamble.isSet()) {
+			shader.setPreamble(preamble.get());
+		}
+		shader.addProcesses(preamble.prepro());
+
 
 		/* TODO: parse でメモリリークしてるぽい。EShLangFragment の時に発生する。
 			Dumping objects ->

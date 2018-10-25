@@ -135,16 +135,46 @@ static void alignMatricesToBuffer(
 }
 
 //=============================================================================
-// Shader
+// ShaderCompilationProperties
 
-Ref<Shader> Shader::create(const StringRef& hlslEffectFilePath)
+ShaderCompilationProperties::ShaderCompilationProperties()
 {
-	return ln::newObject<Shader>(hlslEffectFilePath);
 }
 
-Ref<Shader> Shader::create(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath)
+ShaderCompilationProperties::~ShaderCompilationProperties()
 {
-	return ln::newObject<Shader>(vertexShaderFilePath, pixelShaderFilePath, ShaderCodeType::RawGLSL);
+}
+
+void ShaderCompilationProperties::initialize()
+{
+}
+
+void ShaderCompilationProperties::addIncludeDirectory(const StringRef& value)
+{
+	m_includeDirectories.add(value);
+}
+
+void ShaderCompilationProperties::addDefinition(const StringRef& value)
+{
+	m_definitions.add(value);
+}
+
+void ShaderCompilationProperties::setDiagnostics(DiagnosticsManager* diag)
+{
+	m_diag = diag;
+}
+
+//=============================================================================
+// Shader
+
+Ref<Shader> Shader::create(const StringRef& hlslEffectFilePath, ShaderCompilationProperties* properties)
+{
+	return ln::newObject<Shader>(hlslEffectFilePath, properties);
+}
+
+Ref<Shader> Shader::create(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCompilationProperties* properties)
+{
+	return ln::newObject<Shader>(vertexShaderFilePath, pixelShaderFilePath, ShaderCodeType::RawGLSL, properties);
 }
 
 Shader::Shader()
@@ -156,19 +186,18 @@ Shader::Shader()
 
 Shader::~Shader()
 {
-
 }
 
 void Shader::initialize()
 {
 	GraphicsResource::initialize();
-	//m_diag = newObject<DiagnosticsManager>();
 }
 
-void Shader::initialize(const StringRef& hlslEffectFilePath, DiagnosticsManager* diag)
+void Shader::initialize(const StringRef& hlslEffectFilePath, ShaderCompilationProperties* properties)
 {
 	Shader::initialize();
-	Ref<DiagnosticsManager> localDiag = diag;
+	Ref<DiagnosticsManager> localDiag = nullptr;
+	if (properties) localDiag = properties->m_diag;
 	if (!localDiag) localDiag = newObject<DiagnosticsManager>();
 
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
@@ -197,7 +226,7 @@ void Shader::initialize(const StringRef& hlslEffectFilePath, DiagnosticsManager*
 			auto rhiPass = createShaderPass(
 				code, codeLen, hlslPass.vertexShader.c_str(),
 				code, codeLen, hlslPass.pixelShader.c_str(),
-				localDiag);
+				localDiag, properties);
 			if (rhiPass)
 			{
 				auto pass = newObject<ShaderPass>(rhiPass);
@@ -206,16 +235,12 @@ void Shader::initialize(const StringRef& hlslEffectFilePath, DiagnosticsManager*
 			}
 		}
 	}
-
-	//if (m_diag->hasItems()) {
-	//	m_diag->dumpToLog();
-	//}
 #else
 	LN_NOTIMPLEMENTED();
 #endif
 	postInitialize();
 
-	if (!diag) {
+	if (!properties || !properties->m_diag) {
 		if (localDiag->hasError()) {
 			LN_ERROR(localDiag->toString());
 			return;
@@ -226,24 +251,25 @@ void Shader::initialize(const StringRef& hlslEffectFilePath, DiagnosticsManager*
 	}
 }
 
-void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCodeType codeType, DiagnosticsManager* diag)
+void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCodeType codeType, ShaderCompilationProperties* properties)
 {
 	Shader::initialize();
-	Ref<DiagnosticsManager> localDiag = diag;
+	Ref<DiagnosticsManager> localDiag = nullptr;
+	if (properties) localDiag = properties->m_diag;
 	if (!localDiag) localDiag = newObject<DiagnosticsManager>();
 
 	auto vsData = FileSystem::readAllBytes(vertexShaderFilePath);
 	auto psData = FileSystem::readAllBytes(pixelShaderFilePath);
 
-	buildShader(
+	createSinglePassShader(
 		reinterpret_cast<const char*>(vsData.data()), vsData.size(),
 		reinterpret_cast<const char*>(psData.data()), psData.size(),
-		localDiag);
+		localDiag, properties);
 
 	postInitialize();
 
 
-	if (!diag) {
+	if (!properties || !properties->m_diag) {
 		if (localDiag->hasError()) {
 			LN_ERROR(localDiag->toString());
 			return;
@@ -276,28 +302,28 @@ void Shader::onChangeDevice(detail::IGraphicsDeviceContext* device)
 Ref<detail::IShaderPass> Shader::createShaderPass(
 	const char* vsData, size_t vsLen, const char* vsEntryPoint,
 	const char* psData, size_t psLen, const char* psEntryPoint,
-	DiagnosticsManager* diag)
+	DiagnosticsManager* diag, ShaderCompilationProperties* properties)
 {
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-
-	auto& includeDirs = m_manager->shaderIncludePaths();
+	List<Path> includeDirs;
+	if (properties) {
+		for (auto& path : properties->m_includeDirectories) includeDirs.add(path);
+	}
 
 	detail::ShaderCodeTranspiler vsCodeGen;
-	if (!vsCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Vertex, vsData, vsLen, vsEntryPoint, includeDirs, diag))
+	if (!vsCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Vertex, vsData, vsLen, vsEntryPoint, includeDirs, (properties) ? &properties->m_definitions : nullptr, diag))
 	{
 		return nullptr;
 	}
 
 	detail::ShaderCodeTranspiler psCodeGen;
-	if (!psCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Fragment, psData, psLen, psEntryPoint, includeDirs, diag))
+	if (!psCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Fragment, psData, psLen, psEntryPoint, includeDirs, (properties) ? &properties->m_definitions : nullptr, diag))
 	{
 		return nullptr;
 	}
 
 	std::string vsCode = vsCodeGen.generateGlsl();
 	std::string psCode = psCodeGen.generateGlsl();
-	
-	std::cout <<psCode << std::endl;
 
 	ShaderCompilationDiag sdiag;
 	Ref<detail::IShaderPass> pass = deviceContext()->createShaderPass(
@@ -318,9 +344,9 @@ Ref<detail::IShaderPass> Shader::createShaderPass(
 #endif
 }
 
-void Shader::buildShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen, DiagnosticsManager* diag)
+void Shader::createSinglePassShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen, DiagnosticsManager* diag, ShaderCompilationProperties* properties)
 {
-	auto rhiPass = createShaderPass(vsData, vsLen, "main", psData, psLen, "main", diag);
+	auto rhiPass = createShaderPass(vsData, vsLen, "main", psData, psLen, "main", diag, properties);
 
 	auto tech = newObject<ShaderTechnique>(u"Main");	// TODO: 名前指定できた方がいいかも
 	tech->setOwner(this);

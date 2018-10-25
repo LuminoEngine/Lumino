@@ -22,11 +22,11 @@ public:
 
 	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
 
-	const List<Path>& shaderIncludePaths() const { return m_shaderIncludePaths; }
+	//const List<Path>& shaderIncludePaths() const { return m_shaderIncludePaths; }
 
 private:
 	GraphicsManager * m_graphicsManager;
-	List<Path> m_shaderIncludePaths;
+	//List<Path> m_shaderIncludePaths;
 };
 
 } // namespace detail

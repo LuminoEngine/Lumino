@@ -26,6 +26,7 @@ void FxcCommand::execute(const ln::Path& inputFile)
     shaderManager->initialize(settings);
 
     ln::List<ln::Path> includeDirectories;
+	ln::List<ln::String> definitions;
 
     auto inputCodeBuffer = ln::FileSystem::readAllBytes(inputFile);
     char* inputCode = (char*)inputCodeBuffer.data();
@@ -54,7 +55,7 @@ void FxcCommand::execute(const ln::Path& inputFile)
                 if (itr == m_vertexShaderCodeMap.end())
                 {
                     ln::detail::ShaderCodeTranspiler transpiler;
-                    transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, diag);
+                    transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, &definitions, diag);
 					if (diag->hasError()) {
 						return;
 					}
@@ -71,7 +72,7 @@ void FxcCommand::execute(const ln::Path& inputFile)
                 if (itr == m_pixelShaderCodeMap.end())
                 {
                     ln::detail::ShaderCodeTranspiler transpiler;
-                    transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, diag);
+                    transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, &definitions, diag);
 					if (diag->hasError()) {
 						return;
 					}

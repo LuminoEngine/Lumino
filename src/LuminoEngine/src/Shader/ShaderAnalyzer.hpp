@@ -28,7 +28,7 @@ public:
 
 	bool parseAndGenerateSpirv(
 		ShaderCodeStage stage, const char* code, size_t length, const std::string& entryPoint,
-		const List<Path>& includeDir, DiagnosticsManager* diag);
+		const List<Path>& includeDir, const List<String>* definitions, DiagnosticsManager* diag);
 
 	std::string generateGlsl();
 
