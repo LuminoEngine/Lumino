@@ -5,6 +5,7 @@
 #include "RenderingManager.hpp"
 #include "ClusteredShadingSceneRenderer.hpp"
 #include "RenderTargetTextureCache.hpp"
+#include "RenderingPipeline.hpp"
 
 namespace ln {
 namespace detail {
@@ -28,16 +29,16 @@ void DepthPrepass::initialize()
 	m_defaultShader = manager()->builtinShader(BuiltinShader::DepthPrepass);
 }
 
-void DepthPrepass::onBeginRender(RenderView* renderView)
+void DepthPrepass::onBeginRender(SceneRenderer* sceneRenderer)
 {
-	m_depthMap = renderView->frameBufferCache()->requestRenderTargetTexture(renderView->renderingFrameBufferSize(), TextureFormat::RGBA32, false);
-	m_depthBuffer = renderView->frameBufferCache()->requestDepthBuffer(renderView->renderingFrameBufferSize());
+	m_depthMap = sceneRenderer->renderingPipeline()->frameBufferCache()->requestRenderTargetTexture(sceneRenderer->renderingPipeline()->renderingFrameBufferSize(), TextureFormat::RGBA32, false);
+	m_depthBuffer = sceneRenderer->renderingPipeline()->frameBufferCache()->requestDepthBuffer(sceneRenderer->renderingPipeline()->renderingFrameBufferSize());
 }
 
-void DepthPrepass::onEndRender(RenderView* renderView)
+void DepthPrepass::onEndRender(SceneRenderer* sceneRenderer)
 {
-	renderView->frameBufferCache()->release(m_depthMap);
-	renderView->frameBufferCache()->release(m_depthBuffer);
+    sceneRenderer->renderingPipeline()->frameBufferCache()->release(m_depthMap);
+    sceneRenderer->renderingPipeline()->frameBufferCache()->release(m_depthBuffer);
 	m_depthMap = nullptr;
 	m_depthBuffer = nullptr;
 }
@@ -288,7 +289,7 @@ static Vector3 transformDirection(const Vector3& vec, const Matrix& mat)
 
 void ClusteredShadingSceneRenderer::onCollectLight(const DynamicLightInfo& light)
 {
-	const CameraInfo& view = renderingRenderView()->mainCameraInfo;
+	const CameraInfo* view = renderingPipeline()->mainCameraInfo();
 
 	Color color = light.m_color;
 	color *= light.m_intensity;
@@ -302,7 +303,7 @@ void ClusteredShadingSceneRenderer::onCollectLight(const DynamicLightInfo& light
 		m_lightClusters.addHemisphereLight(color, light.m_color2 * light.m_intensity);
 		break;
 	case LightType::Directional:
-		m_lightClusters.addDirectionalLight(transformDirection(-light.m_direction, view.viewMatrix), color);
+		m_lightClusters.addDirectionalLight(transformDirection(-light.m_direction, view->viewMatrix), color);
 		break;
 	case LightType::Point:
 		m_lightClusters.addPointLight(light.m_position, light.m_range, light.m_attenuation, color);

@@ -34,19 +34,15 @@ public:
 	detail::CameraInfo mainCameraInfo;
 
 protected:
-	// アタッチされている stageList を実行し、frameBuffer へレンダリングを行う。
-	void render(GraphicsContext* graphicsContext, const FrameBuffer& frameBuffer, detail::SceneRenderer* sceneRenderer);
 
 LN_INTERNAL_ACCESS:
 	const List<detail::DrawElementListCollector*>& elementListManagers() const { return m_elementListManagers; }
-	const Ref<detail::FrameBufferCache>& frameBufferCache() const { return m_frameBufferCache; }
-	const SizeI& renderingFrameBufferSize() const { return m_renderingFrameBufferSize; }
 
 private:
 	detail::RenderingManager* m_manager;
-	Ref<detail::FrameBufferCache> m_frameBufferCache;
+
+    // TODO: これ List じゃなくていい気がする、というか、List じゃないほうが安全
 	List<detail::DrawElementListCollector*> m_elementListManagers;
-	SizeI m_renderingFrameBufferSize;	// render() の内側だけで使える
 };
 
 } // namespace ln

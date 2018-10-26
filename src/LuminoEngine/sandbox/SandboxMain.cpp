@@ -43,6 +43,7 @@ int main(int argc, char** argv)
 	// Audio test
 
 
+#if 0
 	{
 		auto ss = FileStream::create(u"D:\\tmp\\light_song_instrumental_0.mp3");
 		detail::Mp3AudioDecoder dec;
@@ -195,6 +196,7 @@ int main(int argc, char** argv)
 
 			renderView->render();
 		}
+#endif
 #if 0
 		class TestRenderView : public RenderView
 		{
@@ -404,8 +406,8 @@ int main(int argc, char** argv)
 				break;
 			}
 		}
-#endif
 	}
+#endif
 
 	Engine::terminate();
 

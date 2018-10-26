@@ -3,6 +3,7 @@
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include "RenderStage.hpp"
+#include "RenderingPipeline.hpp"
 #include "SceneRenderer.hpp"
 
 namespace ln {
@@ -24,11 +25,11 @@ void SceneRendererPass::initialize()
 {
 }
 
-void SceneRendererPass::onBeginRender(RenderView* renderView)
+void SceneRendererPass::onBeginRender(SceneRenderer* sceneRenderer)
 {
 }
 
-void SceneRendererPass::onEndRender(RenderView* renderView)
+void SceneRendererPass::onEndRender(SceneRenderer* sceneRenderer)
 {
 }
 
@@ -41,7 +42,7 @@ void SceneRendererPass::onBeginPass(GraphicsContext* context, FrameBuffer* frame
 
 SceneRenderer::SceneRenderer()
 	: m_manager(detail::EngineDomain::renderingManager())
-	, m_renderingRenderView(nullptr)
+	, m_renderingPipeline(nullptr)
 	, m_zSortDistanceBase(ZSortDistanceBase::CameraScreenDistance)
 {
 }
@@ -58,10 +59,10 @@ void SceneRenderer::initialize()
 
 void SceneRenderer::render(
 	GraphicsContext* graphicsContext,
-	RenderView* renderView,
+    RenderingPipeline* renderingPipeline,
 	const FrameBuffer& defaultFrameBuffer)
 {
-	m_renderingRenderView = renderView;
+	m_renderingPipeline = renderingPipeline;
 	m_defaultFrameBuffer = &defaultFrameBuffer;
 
 	//detail::CoreGraphicsRenderFeature* coreRenderer = m_manager->getRenderer();
@@ -122,7 +123,7 @@ void SceneRenderer::render(
 
 	for (SceneRendererPass* pass : m_renderingActualPassList)
 	{
-		pass->onBeginRender(renderView);
+		pass->onBeginRender(this);
 	}
 
 	for (SceneRendererPass* pass : m_renderingActualPassList)
@@ -132,7 +133,7 @@ void SceneRenderer::render(
 
 	for (SceneRendererPass* pass : m_renderingActualPassList)
 	{
-		pass->onEndRender(renderView);
+		pass->onEndRender(this);
 	}
 
 	//// Flush
@@ -159,11 +160,11 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 	pass->onBeginPass(graphicsContext, &defaultFrameBuffer);
 
 
-	const detail::CameraInfo& cameraInfo = m_renderingRenderView->mainCameraInfo;
+	const detail::CameraInfo* cameraInfo = m_renderingPipeline->mainCameraInfo();
 
 	//pass->overrideCameraInfo(&cameraInfo);
 
-	collect(/*pass, */cameraInfo);
+	collect(/*pass, */*cameraInfo);
 
 	prepare();
 
@@ -190,7 +191,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 			AbstractMaterial* finalMaterial = currentStage->getMaterialFinal(nullptr);
 
 			ElementInfo elementInfo;
-			elementInfo.viewProjMatrix = &cameraInfo.viewProjMatrix;
+			elementInfo.viewProjMatrix = &cameraInfo->viewProjMatrix;
 			elementInfo.WorldMatrix = element->combinedWorldMatrix();
 			elementInfo.WorldViewProjectionMatrix = elementInfo.WorldMatrix * (*elementInfo.viewProjMatrix);
 			elementInfo.boneTexture = m_skinningMatricesTexture;
@@ -209,8 +210,8 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 				ShadingModel::UnLighting);
 
 			detail::ShaderSemanticsManager* semanticsManager = tech->shader()->semanticsManager();
-			semanticsManager->updateCameraVariables(cameraInfo);
-			semanticsManager->updateElementVariables(cameraInfo, elementInfo);
+			semanticsManager->updateCameraVariables(*cameraInfo);
+			semanticsManager->updateElementVariables(*cameraInfo, elementInfo);
 			semanticsManager->updateSubsetVariables(subsetInfo);
 			onSetAdditionalShaderPassVariables(tech->shader());
 
@@ -370,7 +371,7 @@ void SceneRenderer::collect(/*SceneRendererPass* pass, */const detail::CameraInf
 	//const detail::CameraInfo& cameraInfo = m_renderingRenderView->m_cameraInfo;
 
 
-	for (auto& elementListManager : m_renderingRenderView->elementListManagers())
+	for (auto& elementListManager : *m_renderingPipeline->elementListManagers())
 	{
 		// TODO: とりあえず Default
 		

@@ -8,6 +8,7 @@ class AbstractMaterial;
 namespace detail {
 class RenderStage;
 class RenderDrawElement;
+class RenderingPipeline;
 
 enum class ZSortDistanceBase
 {
@@ -25,8 +26,8 @@ public:
 	virtual ~SceneRendererPass();
 	void initialize();
 
-	virtual void onBeginRender(RenderView* renderView);
-	virtual void onEndRender(RenderView* renderView);
+	virtual void onBeginRender(SceneRenderer* sceneRenderer);
+	virtual void onEndRender(SceneRenderer* sceneRenderer);
 
 	// シャドウバッファの作成などのため、パス単位で RenderTarget を切り替えたい場合、ここで frameBuffer にセットする。
 	// この時点では GraphicsContext は自由に使ってもよい。ステート復元する必要はない。
@@ -52,8 +53,10 @@ class SceneRenderer
 public:
 	void render(
 		GraphicsContext* graphicsContext,
-		RenderView* renderView,
+        RenderingPipeline* renderingPipeline,
 		const FrameBuffer& defaultFrameBuffer);
+
+    RenderingPipeline* renderingPipeline() const { return m_renderingPipeline; }
 
 protected:
 	SceneRenderer();
@@ -75,7 +78,6 @@ protected:
 	virtual void onCollectLight(const DynamicLightInfo& light);
 	virtual void onSetAdditionalShaderPassVariables(Shader* shader);
 
-	RenderView* renderingRenderView() const { return m_renderingRenderView; }
 
 private:
 	void applyFrameBufferStatus(GraphicsContext* context, RenderStage* stage, const FrameBuffer& defaultFrameBufferInPass);
@@ -85,7 +87,7 @@ private:
 	detail::RenderingManager* m_manager;
 	List<Ref<SceneRendererPass>> m_renderingPassList;
 
-	RenderView* m_renderingRenderView;
+    RenderingPipeline* m_renderingPipeline;
 	const FrameBuffer* m_defaultFrameBuffer;
 	ZSortDistanceBase m_zSortDistanceBase;
 

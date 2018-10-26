@@ -22,8 +22,8 @@ public:
 	void initialize();
 
 
-	virtual void onBeginRender(RenderView* renderView) override;
-	virtual void onEndRender(RenderView* renderView) override;
+	virtual void onBeginRender(SceneRenderer* sceneRenderer) override;
+	virtual void onEndRender(SceneRenderer* sceneRenderer) override;
 
 	virtual void onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer) override;
 
