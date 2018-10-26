@@ -135,6 +135,8 @@ set(LN_SOURCES_Shader
     src/Shader/ShaderInterfaceFramework.cpp
     src/Shader/ShaderManager.cpp
     src/Shader/ShaderManager.hpp
+    src/Shader/UnifiedShader.cpp
+    src/Shader/UnifiedShader.hpp
 )
 
 set(LN_SOURCES_Mesh

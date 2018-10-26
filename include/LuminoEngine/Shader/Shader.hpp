@@ -97,6 +97,10 @@ private:
 		const char* vsData, size_t vsLen, const char* vsEntryPoint,
 		const char* psData, size_t psLen, const char* psEntryPoint,
 		DiagnosticsManager* diag, ShaderCompilationProperties* properties);
+	Ref<detail::IShaderPass> createRHIShaderPass(
+		const char* vsData, size_t vsLen,
+		const char* psData, size_t psLen,
+		DiagnosticsManager* diag);
 	void createSinglePassShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen, DiagnosticsManager* diag, ShaderCompilationProperties* properties);
 	void postInitialize();
 	//ShaderParameter* getShaderParameter(const detail::ShaderUniformTypeDesc& desc, const String& name);

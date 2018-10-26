@@ -151,7 +151,43 @@ TEST_F(Test_Graphics_HlslEffect, ShaderPassRenderState)
         ASSERT_EQ(expect, state->stencilPassOp.hasValue());
         ASSERT_EQ(expect, state->stencilFunc.hasValue());
     }
+}
 
+//------------------------------------------------------------------------------
+TEST_F(Test_Graphics_HlslEffect, UnifiedShader)
+{
+	struct PosColor
+	{
+		Vector4 pos;
+		Vector4 color;
+	};
+	PosColor v1[3] = {
+		{ { -1, 1, 0, 1 },{ 0, 0, 1, 1 } },
+		{ { 0, 1, 0, 1 },{ 0, 0, 1, 1 } },
+		{ { -1, 0, 0, 1 },{ 0, 0, 1, 1 } },
+	};
+
+	auto vb1 = newObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
+	auto vd1 = newObject<VertexDeclaration>();
+	vd1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
+	vd1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
+
+	auto ctx = Engine::graphicsContext();
+
+	//* [ ] Basic rendering
+	{
+		//auto shader = newObject<Shader>(LN_ASSETFILE("FxcTest1.lufx"));
+		auto shader = newObject<Shader>(LN_ASSETFILE("Basic.fx"));
+		shader->findConstantBuffer("ConstBuff")->findParameter("g_color")->setVector(Vector4(0, 1, 0, 1));
+
+		ctx->setVertexDeclaration(vd1);
+		ctx->setVertexBuffer(0, vb1);
+		ctx->setShaderPass(shader->techniques()[0]->passes()[0]);
+		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+
+		ASSERT_SCREEN_S(LN_ASSETFILE("Result/00-Test_Graphics_HlslEffect-UnifiedShader-1.png"));
+	}
 }
 
 //------------------------------------------------------------------------------

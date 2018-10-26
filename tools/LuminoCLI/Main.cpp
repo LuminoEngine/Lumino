@@ -71,7 +71,8 @@ int main(int argc, char** argv)
         //--------------------------------------------------------------------------------
         // fxc command
         auto fxcCommand = parser.addCommand(u"fxc", u"Compile shader.");
-        auto fxcCommand_inputArg = fxcCommand->addPositionalArgument(u"input", u"Input file.", ln::CommandLinePositionalArgumentFlags::Optional);
+        auto fxcCommand_inputArg = fxcCommand->addPositionalArgument(u"input", u"Input file.");
+		auto fxcCommand_outputArg = fxcCommand->addPositionalArgument(u"output", u"Output file.", ln::CommandLinePositionalArgumentFlags::Optional);
 
 		//--------------------------------------------------------------------------------
 		auto dev_installTools = parser.addCommand(u"dev-install-tools", u"description.");
@@ -151,8 +152,12 @@ int main(int argc, char** argv)
             // fxc command
             else if (parser.has(fxcCommand)) {
                 FxcCommand cmd;
-                cmd.execute(fxcCommand_inputArg->value());
+				if (fxcCommand_outputArg->hasValue()) {
+					cmd.outputFile = fxcCommand_outputArg->value();
+				}
+                return cmd.execute(fxcCommand_inputArg->value());
             }
+			//--------------------------------------------------------------------------------
 			else if (parser.has(dev_installTools))
 			{
 				if (!workspace->dev_installTools()) {

@@ -4,15 +4,21 @@
 class FxcCommand
 {
 public:
-    void execute(const ln::Path& inputFile);
+	ln::Path outputFile;
+
+    int execute(const ln::Path& inputFile);
 
 private:
-    struct ShaderCode
-    {
-        std::string glslCode;
-        //std::vector<uint32_t> spirvCode;
-    };
+	bool generate(const ln::Path& inputFile);
 
-    std::unordered_map<std::string, ShaderCode> m_vertexShaderCodeMap;
-    std::unordered_map<std::string, ShaderCode> m_pixelShaderCodeMap;
+	ln::Ref<ln::DiagnosticsManager> m_diag;
+
+    //struct ShaderCode
+    //{
+    //    std::string glslCode;
+    //    //std::vector<uint32_t> spirvCode;
+    //};
+
+    //std::unordered_map<std::string, ShaderCode> m_vertexShaderCodeMap;
+    //std::unordered_map<std::string, ShaderCode> m_pixelShaderCodeMap;
 };

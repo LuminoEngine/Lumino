@@ -1,6 +1,7 @@
 
 #include "../../src/LuminoEngine/src/Shader/ShaderManager.hpp"
 #include "../../src/LuminoEngine/src/Shader/ShaderAnalyzer.hpp"
+#include "../../src/LuminoEngine/src/Shader/UnifiedShader.hpp"
 #include "Project.hpp"
 #include "FxcCommand.hpp"
 
@@ -19,25 +20,45 @@
 
 */
 
-void FxcCommand::execute(const ln::Path& inputFile)
+
+int FxcCommand::execute(const ln::Path& inputFile)
 {
-    ln::detail::ShaderManager::Settings settings;
-    auto shaderManager = ln::makeRef<ln::detail::ShaderManager>();
-    shaderManager->initialize(settings);
+	ln::detail::ShaderManager::Settings settings;
+	auto shaderManager = ln::makeRef<ln::detail::ShaderManager>();
+	shaderManager->initialize(settings);
+
+	m_diag = ln::newObject<ln::DiagnosticsManager>();
+
+	bool result = generate(inputFile);
+
+	m_diag->dumpToLog();
+
+	shaderManager->dispose();
+
+	return ((!result) || m_diag->hasError()) ? 1 : 0;
+}
+
+bool FxcCommand::generate(const ln::Path& inputFile)
+{
+	ln::Path inputFilePath = inputFile.canonicalize();
+	ln::Path outputFilePath = outputFile;
+	if (outputFilePath.isEmpty()) {
+		outputFilePath = inputFilePath.replaceExtension(ln::detail::UnifiedShader::FileExt);
+	}
 
     ln::List<ln::Path> includeDirectories;
 	ln::List<ln::String> definitions;
 
-    auto inputCodeBuffer = ln::FileSystem::readAllBytes(inputFile);
+    auto inputCodeBuffer = ln::FileSystem::readAllBytes(inputFilePath);
     char* inputCode = (char*)inputCodeBuffer.data();
     size_t inputCodeLength = inputCodeBuffer.size();
 
-    auto diag = ln::newObject<ln::DiagnosticsManager>();
+	auto unifiedShader = ln::makeRef<ln::detail::UnifiedShader>(m_diag);
 
     ln::detail::HLSLMetadataParser metadataParser;
-    metadataParser.parse(inputCode, inputCodeLength, diag);
-    if (diag->hasError()) {
-        return;
+    metadataParser.parse(inputCode, inputCodeLength, m_diag);
+    if (m_diag->hasError()) {
+        return false;
     }
 
     // glslang は hlsl の technique ブロックを理解できないので、空白で潰しておく
@@ -45,48 +66,83 @@ void FxcCommand::execute(const ln::Path& inputFile)
         memset(inputCode + tech.blockBegin, ' ', tech.blockEnd - tech.blockBegin);
     }
 
-
-    for (auto& tech : metadataParser.techniques) {
-        for (auto& pass : tech.passes) {
-
+	// まずは Code を作る
+    for (auto& tech : metadataParser.techniques)
+	{
+        for (auto& pass : tech.passes)
+		{
             // Vertex shader
             {
-                auto itr = m_vertexShaderCodeMap.find(pass.vertexShader);
-                if (itr == m_vertexShaderCodeMap.end())
-                {
-                    ln::detail::ShaderCodeTranspiler transpiler;
-                    transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, &definitions, diag);
-					if (diag->hasError()) {
-						return;
+				if (!unifiedShader->hasCode(pass.vertexShader, ln::detail::CodeKind::Glsl))
+				{
+					ln::detail::ShaderCodeTranspiler transpiler;
+					transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, &definitions, m_diag);
+					if (m_diag->hasError()) {
+						return false;
 					}
 
-                    ShaderCode code;
-                    code.glslCode = transpiler.generateGlsl();
-                    m_vertexShaderCodeMap.insert({ pass.vertexShader, std::move(code) });
-                }
+					unifiedShader->setCode(pass.vertexShader, ln::detail::CodeKind::Glsl, transpiler.generateGlsl());
+				}
             }
 
             // Pixel shader
             {
-                auto itr = m_pixelShaderCodeMap.find(pass.pixelShader);
-                if (itr == m_pixelShaderCodeMap.end())
-                {
-                    ln::detail::ShaderCodeTranspiler transpiler;
-                    transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, &definitions, diag);
-					if (diag->hasError()) {
-						return;
+				if (!unifiedShader->hasCode(pass.pixelShader, ln::detail::CodeKind::Glsl))
+				{
+					ln::detail::ShaderCodeTranspiler transpiler;
+					transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, &definitions, m_diag);
+					if (m_diag->hasError()) {
+						return false;
 					}
 
-                    ShaderCode code;
-                    code.glslCode = transpiler.generateGlsl();
-                    m_pixelShaderCodeMap.insert({ pass.pixelShader, std::move(code) });
-                }
+					unifiedShader->setCode(pass.pixelShader, ln::detail::CodeKind::Glsl, transpiler.generateGlsl());
+				}
             }
         }
     }
 
+	// Tech と Pass を作る
+	for (auto& tech : metadataParser.techniques)
+	{
+		ln::detail::UnifiedShader::TechniqueId techId;
+		if (!unifiedShader->addTechnique(tech.name, &techId)) {
+			return false;
+		}
 
+		for (auto& pass : tech.passes)
+		{
+			ln::detail::UnifiedShader::CodeContainerId codeId;
+			ln::detail::UnifiedShader::PassId passId;
+			if (!unifiedShader->addPass(techId, pass.name, &passId)) {
+				return false;
+			}
 
+			// VertexShader
+			if (!unifiedShader->findCodeContainer(pass.vertexShader, &codeId)) {
+				return false;
+			}
+			unifiedShader->setVertexShader(passId, codeId);
+
+			// PixelShader
+			if (!unifiedShader->findCodeContainer(pass.pixelShader, &codeId)) {
+				return false;
+			}
+			unifiedShader->setPixelShader(passId, codeId);
+
+			// ShaderRenderState
+			unifiedShader->setRenderState(passId, pass.renderState);
+		}
+	}
+
+	if (!unifiedShader->save(outputFilePath)) {
+		return false;
+	}
+
+	CLI::info(u"Compilation succeeded; see " + outputFilePath);
+
+	return true;
+
+#if 0
     //{
     //    ln::StringWriter buffer;
     //    ln::JsonWriter writer(&buffer);
@@ -149,8 +205,7 @@ void FxcCommand::execute(const ln::Path& inputFile)
             }
         }
     }
+#endif
 
 
-
-    shaderManager->dispose();
 }

@@ -7,6 +7,7 @@
 #include "../Graphics/GraphicsDeviceContext.hpp"
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Engine/RenderingCommandList.hpp"
+#include "UnifiedShader.hpp"
 #include "ShaderManager.hpp"
 #include "ShaderAnalyzer.hpp"
 
@@ -200,44 +201,90 @@ void Shader::initialize(const StringRef& hlslEffectFilePath, ShaderCompilationPr
 	if (properties) localDiag = properties->m_diag;
 	if (!localDiag) localDiag = newObject<DiagnosticsManager>();
 
-#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-
-	auto data = FileSystem::readAllBytes(hlslEffectFilePath);
-	auto code = reinterpret_cast<char*>(data.data());
-	auto codeLen = data.size();
-
-	detail::HLSLMetadataParser parser;
-	parser.parse(code, codeLen, localDiag);
-
-	// glslang は hlsl の technique ブロックを理解できないので、空白で潰しておく
-	for (auto& hlslTech : parser.techniques)
+	if (Path(hlslEffectFilePath).hasExtension(detail::UnifiedShader::FileExt))
 	{
-		memset(code + hlslTech.blockBegin, ' ', hlslTech.blockEnd - hlslTech.blockBegin);
-	}
-	
-	for (auto& hlslTech : parser.techniques)
-	{
-		auto tech = newObject<ShaderTechnique>(String::fromStdString(hlslTech.name));
-		tech->setOwner(this);
-		m_techniques.add(tech);
-
-		for (auto& hlslPass : hlslTech.passes)
+		detail::UnifiedShader unifiedShader(localDiag);
+		if (unifiedShader.load(hlslEffectFilePath))
 		{
-			auto rhiPass = createShaderPass(
-				code, codeLen, hlslPass.vertexShader.c_str(),
-				code, codeLen, hlslPass.pixelShader.c_str(),
-				localDiag, properties);
-			if (rhiPass)
+			for (int iTech = 0; iTech < unifiedShader.techniqueCount(); iTech++)
 			{
-				auto pass = newObject<ShaderPass>(rhiPass, &hlslPass);
-				tech->addShaderPass(pass);
-				pass->setupParameters();
+				detail::UnifiedShader::TechniqueId techId = unifiedShader.techniqueId(iTech);
+				auto tech = newObject<ShaderTechnique>(String::fromStdString(unifiedShader.techniqueName(techId)));
+				tech->setOwner(this);
+				m_techniques.add(tech);
+
+				for (int iPass = 0; iPass < unifiedShader.passCount(); iPass++)
+				{
+					detail::UnifiedShader::PassId passId = unifiedShader.passId(iPass);
+					detail::UnifiedShader::CodeContainerId vscodeId = unifiedShader.vertexShader(passId);
+					detail::UnifiedShader::CodeContainerId pscodeId = unifiedShader.pixelShader(passId);
+
+					const std::string* vscode = nullptr;
+					const std::string* pscode = nullptr;
+					if (vscodeId) {
+						vscode = &unifiedShader.getCode(vscodeId, detail::CodeKind::Glsl);
+					}
+					if (pscodeId) {
+						pscode = &unifiedShader.getCode(pscodeId, detail::CodeKind::Glsl);
+					}
+
+					auto rhiPass = createRHIShaderPass(
+						(vscode) ? vscode->c_str() : nullptr, (vscode) ? vscode->length() : 0,
+						(pscode) ? pscode->c_str() : nullptr, (pscode) ? pscode->length() : 0,
+						localDiag);
+					if (rhiPass)
+					{
+						auto pass = newObject<ShaderPass>(rhiPass);
+						pass->m_renderState = unifiedShader.renderState(passId);
+						tech->addShaderPass(pass);
+						pass->setupParameters();
+					}
+				}
 			}
 		}
 	}
+	else
+	{
+#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
+
+		auto data = FileSystem::readAllBytes(hlslEffectFilePath);
+		auto code = reinterpret_cast<char*>(data.data());
+		auto codeLen = data.size();
+
+		detail::HLSLMetadataParser parser;
+		parser.parse(code, codeLen, localDiag);
+
+		// glslang は hlsl の technique ブロックを理解できないので、空白で潰しておく
+		for (auto& hlslTech : parser.techniques)
+		{
+			memset(code + hlslTech.blockBegin, ' ', hlslTech.blockEnd - hlslTech.blockBegin);
+		}
+
+		for (auto& hlslTech : parser.techniques)
+		{
+			auto tech = newObject<ShaderTechnique>(String::fromStdString(hlslTech.name));
+			tech->setOwner(this);
+			m_techniques.add(tech);
+
+			for (auto& hlslPass : hlslTech.passes)
+			{
+				auto rhiPass = createShaderPass(
+					code, codeLen, hlslPass.vertexShader.c_str(),
+					code, codeLen, hlslPass.pixelShader.c_str(),
+					localDiag, properties);
+				if (rhiPass)
+				{
+					auto pass = newObject<ShaderPass>(rhiPass, &hlslPass);
+					tech->addShaderPass(pass);
+					pass->setupParameters();
+				}
+			}
+		}
 #else
-	LN_NOTIMPLEMENTED();
+		LN_NOTIMPLEMENTED();
 #endif
+	}
+
 	postInitialize();
 
 	if (!properties || !properties->m_diag) {
@@ -325,23 +372,36 @@ Ref<detail::IShaderPass> Shader::createShaderPass(
 	std::string vsCode = vsCodeGen.generateGlsl();
 	std::string psCode = psCodeGen.generateGlsl();
 
-	ShaderCompilationDiag sdiag;
-	Ref<detail::IShaderPass> pass = deviceContext()->createShaderPass(
-		reinterpret_cast<const byte_t*>(vsCode.c_str()), vsCode.length(),
-		reinterpret_cast<const byte_t*>(psCode.c_str()), psCode.length(), &sdiag);
-	
-	if (sdiag.level == ShaderCompilationResultLevel::Error) {
-		diag->reportError(String::fromStdString(sdiag.message));
-	}
-	else if (sdiag.level == ShaderCompilationResultLevel::Warning) {
-		diag->reportWarning(String::fromStdString(sdiag.message));
-	}
+	Ref<detail::IShaderPass> pass = createRHIShaderPass(
+		vsCode.c_str(), vsCode.length(),
+		psCode.c_str(), psCode.length(),
+		diag);
 	
 	return pass;
 #else
 	LN_NOTIMPLEMENTED();
 	return nullptr;
 #endif
+}
+
+Ref<detail::IShaderPass> Shader::createRHIShaderPass(
+	const char* vsData, size_t vsLen,
+	const char* psData, size_t psLen,
+	DiagnosticsManager* diag)
+{
+	ShaderCompilationDiag sdiag;
+	Ref<detail::IShaderPass> pass = deviceContext()->createShaderPass(
+		reinterpret_cast<const byte_t*>(psData), vsLen,
+		reinterpret_cast<const byte_t*>(psData), psLen, &sdiag);
+
+	if (sdiag.level == ShaderCompilationResultLevel::Error) {
+		diag->reportError(String::fromStdString(sdiag.message));
+	}
+	else if (sdiag.level == ShaderCompilationResultLevel::Warning) {
+		diag->reportWarning(String::fromStdString(sdiag.message));
+	}
+
+	return pass;
 }
 
 void Shader::createSinglePassShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen, DiagnosticsManager* diag, ShaderCompilationProperties* properties)
