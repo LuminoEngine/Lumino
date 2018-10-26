@@ -4,6 +4,7 @@
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include "../Platform/PlatformManager.hpp"
 #include "../Input/InputManager.hpp"
+#include "../Audio/AudioManager.hpp"
 #include "../Shader/ShaderManager.hpp"
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Mesh/MeshManager.hpp"
@@ -44,7 +45,7 @@ EngineManager::EngineManager()
 	, m_platformManager(nullptr)
 	//, m_animationManager(nullptr)
 	//, m_inputManager(nullptr)
-	//, m_audioManager(nullptr)
+	, m_audioManager(nullptr)
 	//, m_physicsManager(nullptr)
 	//, m_graphicsManager(nullptr)
 	//, m_effectManager(nullptr)
@@ -82,6 +83,7 @@ void EngineManager::dispose()
 	if (m_meshManager) m_meshManager->dispose();
 	if (m_shaderManager) m_shaderManager->dispose();
 	if (m_graphicsManager) m_graphicsManager->dispose();
+	if (m_audioManager) m_audioManager->dispose();
 	if (m_inputManager) m_inputManager->dispose();
 	if (m_platformManager) m_platformManager->dispose();
 }
@@ -152,6 +154,14 @@ void EngineManager::initializeInputManager()
 
 void EngineManager::initializeAudioManager()
 {
+	if (!m_audioManager)
+	{
+		initializeCommon();
+
+		AudioManager::Settings settings;
+		m_audioManager = ln::makeRef<AudioManager>();
+		m_audioManager->initialize(settings);
+	}
 }
 
 void EngineManager::initializePhysicsManager()
@@ -288,6 +298,10 @@ void EngineManager::updateFrame()
 	if (m_inputManager) {
 		m_inputManager->updateFrame(0.016);	// TODO: time
 	}
+
+	if (m_audioManager) {
+		m_audioManager->update();
+	}
 }
 
 void EngineManager::renderFrame()
@@ -368,6 +382,11 @@ PlatformManager* EngineDomain::platformManager()
 InputManager* EngineDomain::inputManager()
 {
 	return engineManager()->inputManager();
+}
+
+AudioManager * EngineDomain::audioManager()
+{
+	return engineManager()->audioManager();
 }
 
 ShaderManager* EngineDomain::shaderManager()

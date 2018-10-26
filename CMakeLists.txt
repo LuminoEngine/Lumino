@@ -41,6 +41,9 @@ option(LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER "build tool projects.build embedde
 # MSVC Runtime library.
 option(LN_MSVC_STATIC_RUNTIME "static runtime (/MT, /MTd) or DLL runtime (/MD, /MDd) or to link either." OFF)
 
+# use SDL on MSVC
+option(LN_MSVC_USE_SDL "use SDL on MSVC" OFF)
+
 #------------------------------------------------------------------------------
 
 set(CMAKE_DEBUG_POSTFIX "d")
@@ -60,6 +63,7 @@ if (DEFINED EMSCRIPTEN)
     add_definitions(-DLN_GLFW)
     #add_definitions(-DGLFW_INCLUDE_ES2) # glfw3.h 内で include するヘッダを制御する
 
+    set(LN_USE_SDL ON)
 
 elseif (LN_ANDROID)
     add_definitions(-DLN_GRAPHICS_OPENGLES)
@@ -76,6 +80,12 @@ elseif(WIN32 OR APPLE OR UNIX)
 
 endif()
 
+
+if (MSVC AND LN_MSVC_USE_SDL)
+    set(LN_USE_SDL ON)
+else()
+    set(LN_USE_SDL OFF)
+endif()
 
 #------------------------------------------------------------------------------
 # gtest

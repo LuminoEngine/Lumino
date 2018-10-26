@@ -83,6 +83,8 @@ public:
     LN_METHOD()
     float lengthSquared() const;
 
+	bool isZero() const { return !x && !y && !z; }
+
     /**
      * このベクトルを正規化します。
      * 

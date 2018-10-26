@@ -12,6 +12,9 @@
 #include "LuminoEngine/Input/InputBinding.hpp"
 #include "LuminoEngine/Input/Mouse.hpp"
 
+#include "LuminoEngine/Audio/AudioContext.hpp"
+#include "LuminoEngine/Audio/AudioNode.hpp"
+
 #include "LuminoEngine/Graphics/RenderState.hpp"
 #include "LuminoEngine/Graphics/SamplerState.hpp"
 #include "LuminoEngine/Graphics/VertexDeclaration.hpp"

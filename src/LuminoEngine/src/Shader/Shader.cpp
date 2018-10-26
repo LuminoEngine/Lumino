@@ -274,7 +274,7 @@ void Shader::initialize(const StringRef& hlslEffectFilePath, ShaderCompilationPr
 					localDiag, properties);
 				if (rhiPass)
 				{
-					auto pass = newObject<ShaderPass>(rhiPass, &hlslPass);
+					auto pass = newObject<ShaderPass>(rhiPass, hlslPass.renderState);
 					tech->addShaderPass(pass);
 					pass->setupParameters();
 				}
@@ -798,16 +798,13 @@ ShaderPass::~ShaderPass()
 {
 }
 
-void ShaderPass::initialize(detail::IShaderPass* rhiPass, detail::HLSLPass* hlslPass)
+void ShaderPass::initialize(detail::IShaderPass* rhiPass, detail::ShaderRenderState* renderState)
 {
 	if (LN_REQUIRE(rhiPass)) return;
 	Object::initialize();
 
 	m_rhiPass = rhiPass;
-
-    if (hlslPass) {
-        m_renderState = hlslPass->renderState;
-    }
+    m_renderState = renderState;
 }
 
 void ShaderPass::dispose()

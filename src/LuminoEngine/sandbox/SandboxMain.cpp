@@ -2,6 +2,7 @@
 #define LN_MSVC_DISABLE_LIBRARY_LINK
 #include <LuminoEngine.hpp>
 #include <LuminoCore/Testing/TestHelper.hpp>
+#include "../src/Audio/Mp3AudioDecoder.hpp"
 #include "Common.hpp"
 #include "../src/Engine/EngineDomain.hpp"
 #include "../src/Rendering/RenderingManager.hpp"
@@ -39,7 +40,60 @@ int main(int argc, char** argv)
 
 	//Engine::terminate();
 	//return 0;
+	// Audio test
 
+
+	{
+		auto ss = FileStream::create(u"D:\\tmp\\light_song_instrumental_0.mp3");
+		detail::Mp3AudioDecoder dec;
+		auto diag = newObject<DiagnosticsManager>();
+		dec.initialize(ss, diag);
+	}
+
+	
+#if 0
+	auto source = newObject<AudioSourceNode>(u"D:\\tmp\\8_MapBGM2.wav");
+	auto panner = newObject<AudioPannerNode>();
+	AudioNode::connect(source, panner);
+	AudioNode::connect(panner, AudioContext::primary()->destination());
+	source->setPlaybackRate(1.2);
+	source->start();
+#else
+	auto source = newObject<AudioSourceNode>(u"D:\\tmp\\3_EventScene_variation2.wav");
+	//auto source = newObject<AudioSourceNode>(u"D:\\tmp\\8_MapBGM2.wav");
+	AudioNode::connect(source, AudioContext::primary()->destination());
+	//source->setPlaybackRate(1.2);
+	source->start();
+#endif
+
+	auto shader = Shader::create(
+		LN_LOCALFILE("Assets/simple.vert"),
+		LN_LOCALFILE("Assets/simple.frag"));
+	//shader->setVector("g_color", Vector4(0, 1, 0, 1));
+
+	//Engine::graphicsContext()->setShaderPass(shader->techniques()[0]->passes()[0]);
+
+	struct Vertex
+	{
+		Vector4 pos;
+	};
+	Vertex v[] = {
+		Vector4(0, 1, 0, 1),
+		Vector4(-1, 1, 0, 1),
+		Vector4(0, -1, 0, 1),
+	};
+
+	auto vb = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+
+	auto decl = newObject<VertexDeclaration>();
+	decl->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
+
+	//auto renderTarget = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBX32, false);
+
+
+
+
+	while (Engine::update())
 	{
 		class TestRenderView : public RenderView
 		{

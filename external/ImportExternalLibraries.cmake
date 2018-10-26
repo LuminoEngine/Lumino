@@ -224,3 +224,36 @@ if (LN_OS_DESKTOP)
     set(spirv-cross_INCLUDE_DIRS "${SPIRV-Cross_ROOT}/include")
     set(spirv-cross_LIBRARIES spirv-cross-core spirv-cross-glsl)
 endif()
+
+#--------------------------------------
+# openal-soft
+
+if (LN_EMSCRIPTEN)
+
+else()
+    ln_make_external_find_path(OpenAL_ROOT openal-soft)
+
+    find_library(OpenAL_LIBRARY_RELEASE NAMES OpenAL32 PATHS ${OpenAL_ROOT} PATH_SUFFIXES lib)
+    find_library(OpenAL_LIBRARY_DEBUG NAMES OpenAL32d PATHS ${OpenAL_ROOT} PATH_SUFFIXES lib)
+
+    set(LIB_NAME OpenAL)
+    add_library(OpenAL STATIC IMPORTED)
+    set_target_properties(OpenAL PROPERTIES IMPORTED_LOCATION_RELEASE "${OpenAL_LIBRARY_RELEASE}")
+    set_target_properties(OpenAL PROPERTIES IMPORTED_LOCATION_DEBUG "${OpenAL_LIBRARY_DEBUG}")
+    set_target_properties(OpenAL PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${OpenAL_ROOT}/include)
+endif()
+
+#--------------------------------------
+# SDL2
+
+if (LN_USE_SDL)
+    ln_make_external_find_path(SDL2_ROOT SDL2)
+    find_library(SDL2_LIBRARY_RELEASE NAMES SDL2 PATHS ${SDL2_ROOT} PATH_SUFFIXES lib)
+    find_library(SDL2_LIBRARY_DEBUG NAMES SDL2d PATHS ${SDL2_ROOT} PATH_SUFFIXES lib)
+
+    set(LIB_NAME SDL2)
+    add_library(${LIB_NAME} STATIC IMPORTED)
+    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
+    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
+    set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${SDL2_ROOT}/include)
+endif()

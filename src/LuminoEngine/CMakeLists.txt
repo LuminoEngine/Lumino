@@ -83,6 +83,39 @@ set(LN_SOURCES_Input
     src/Input/Win32JoystickDriver.hpp
 )
 
+set(LN_SOURCES_Audio
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioContext.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioListener.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioNode.hpp
+    src/Audio/Internal.hpp
+    src/Audio/ALAudioDevice.cpp
+    src/Audio/ALAudioDevice.hpp
+    src/Audio/AudioContext.cpp
+    src/Audio/AudioDecoder.cpp
+    src/Audio/AudioDecoder.hpp
+    src/Audio/AudioDevice.cpp
+    src/Audio/AudioDevice.hpp
+    src/Audio/AudioListener.cpp
+    src/Audio/AudioManager.cpp
+    src/Audio/AudioManager.hpp
+    src/Audio/AudioNode.cpp
+    src/Audio/ChromiumWebCore.cpp
+    src/Audio/ChromiumWebCore.hpp
+    src/Audio/CoreAudioNode.cpp
+    src/Audio/CoreAudioNode.hpp
+    src/Audio/DSoundAudioDevice.cpp
+    src/Audio/DSoundAudioDevice.hpp
+    src/Audio/Mp3AudioDecoder.cpp
+    src/Audio/Mp3AudioDecoder.hpp
+    src/Audio/SDLAudioDevice.cpp
+    src/Audio/SDLAudioDevice.hpp
+    src/Audio/blink/VectorMath.cpp
+    src/Audio/blink/VectorMath.h
+    src/Audio/core/CIAudioBus.cpp
+    src/Audio/core/CIAudioBus.hpp
+)
+
 set(LN_SOURCES_Graphics
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/Bitmap.hpp
@@ -242,6 +275,7 @@ source_group("Engine"                FILES ${LN_SOURCES_Engine})
 source_group("Platform"                FILES ${LN_SOURCES_Platform})
 source_group("Input"                FILES ${LN_SOURCES_Input})
 source_group("Grammar"                FILES ${LN_SOURCES_Grammar})
+source_group("Audio"                FILES ${LN_SOURCES_Audio})
 source_group("Graphics"                FILES ${LN_SOURCES_Graphics})
 source_group("Shader"                FILES ${LN_SOURCES_Shader})
 source_group("Mesh"                FILES ${LN_SOURCES_Mesh})
@@ -259,6 +293,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Platform}
     ${LN_SOURCES_Grammar}
     ${LN_SOURCES_Input}
+	${LN_SOURCES_Audio}
     ${LN_SOURCES_Graphics}
     ${LN_SOURCES_Shader}
     ${LN_SOURCES_Mesh}
@@ -287,6 +322,9 @@ elseif (LN_IOS)
 elseif (WIN32)
     find_package(OpenGL)
     list(APPEND LN_PLATFORM_LIBS glfw GLAD)
+    #list(APPEND LN_PLATFORM_LIBS user32 gdi32 winmm imm32 ole32 oleaut32 version uuid)
+    list(APPEND LN_PLATFORM_LIBS winmm imm32 version)
+    list(APPEND LN_PLATFORM_LIBS OpenAL)
 
 elseif (APPLE)
     list(APPEND LN_PLATFORM_LIBS glfw GLAD)
@@ -296,14 +334,20 @@ elseif (APPLE)
     list(APPEND LN_PLATFORM_LIBS ${COCOA_LIBRARY})
     list(APPEND LN_PLATFORM_LIBS ${CoreVideo_LIBRARY})
     list(APPEND LN_PLATFORM_LIBS ${IOKit_LIBRARY})
+    list(APPEND LN_PLATFORM_LIBS OpenAL)
+    list(APPEND LN_PLATFORM_LIBS SDL2)
     
 elseif (UNIX)
     if (LN_ANDROID)
     else()
-        list(APPEND LN_PLATFORM_LIBS glfw GLAD)
+        list(APPEND LN_PLATFORM_LIBS glfw GLAD OpenAL)
     endif()
 endif()
 
+if (LN_USE_SDL)
+    list(APPEND LN_PLATFORM_LIBS SDL2)
+    list(APPEND LN_PLATFORM_DEFINITIONS LN_USE_SDL=1)
+endif()
 
 #------------------------------------------------------------------------------
 # Targets
@@ -325,6 +369,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 )
 target_include_directories(${PROJECT_NAME} PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS})
 #target_compile_definitions(${PROJECT_NAME} PUBLIC LUMINO_BUILD_DLL=1)
+target_compile_definitions(${PROJECT_NAME} PRIVATE ${LN_PLATFORM_DEFINITIONS})
 #target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive ${PROJECT_NAME}-static -Wl,--no-whole-archive)
 #target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-static)
 target_link_libraries(${PROJECT_NAME} INTERFACE LuminoCore ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
