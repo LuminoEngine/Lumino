@@ -110,6 +110,10 @@ float4 main(PS_INPUT input) : SV_TARGET
         float4 pos = float4(1, 0, 0, 1);
         return mul(pos, g_mat44);
     }
+    if (g_type == 36) {
+        float4 pos = float4(1, 0, 0, 1);
+        return mul(pos, g_mat44ary3[1]);
+    }
     
     return float4(0, 0, 0, 0);
 }

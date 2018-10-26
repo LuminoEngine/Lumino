@@ -391,7 +391,7 @@ Ref<detail::IShaderPass> Shader::createRHIShaderPass(
 {
 	ShaderCompilationDiag sdiag;
 	Ref<detail::IShaderPass> pass = deviceContext()->createShaderPass(
-		reinterpret_cast<const byte_t*>(psData), vsLen,
+		reinterpret_cast<const byte_t*>(vsData), vsLen,
 		reinterpret_cast<const byte_t*>(psData), psLen, &sdiag);
 
 	if (sdiag.level == ShaderCompilationResultLevel::Error) {

@@ -176,8 +176,7 @@ TEST_F(Test_Graphics_HlslEffect, UnifiedShader)
 
 	//* [ ] Basic rendering
 	{
-		//auto shader = newObject<Shader>(LN_ASSETFILE("FxcTest1.lufx"));
-		auto shader = newObject<Shader>(LN_ASSETFILE("Basic.fx"));
+		auto shader = newObject<Shader>(LN_ASSETFILE("FxcTest1.lufx"));
 		shader->findConstantBuffer("ConstBuff")->findParameter("g_color")->setVector(Vector4(0, 1, 0, 1));
 
 		ctx->setVertexDeclaration(vd1);
@@ -186,7 +185,7 @@ TEST_F(Test_Graphics_HlslEffect, UnifiedShader)
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-		ASSERT_SCREEN_S(LN_ASSETFILE("Result/00-Test_Graphics_HlslEffect-UnifiedShader-1.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_HlslEffect-UnifiedShader-1.png"));
 	}
 }
 
