@@ -19,7 +19,7 @@ namespace detail {
 class ShaderManager;
 class IShaderPass;
 class IShaderUniformBuffer;
-class HLSLPass;
+//class HLSLPass;
 }
 
 
@@ -246,7 +246,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	ShaderPass();
 	virtual ~ShaderPass();
-	void initialize(detail::IShaderPass* rhiPass, detail::HLSLPass* hlslPass = nullptr);
+	void initialize(detail::IShaderPass* rhiPass, detail::ShaderRenderState* renderState = nullptr);
 	virtual void dispose() override;
 
 private:

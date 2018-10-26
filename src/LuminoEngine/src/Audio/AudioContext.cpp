@@ -31,16 +31,16 @@ void AudioContext::initialize()
 {
 	m_manager = detail::EngineDomain::audioManager();
 
-#ifdef LN_USE_SDL
+#if defined(LN_USE_SDL)
 	auto device = makeRef<detail::SDLAudioDevice>();
 	device->initialize();
 	m_audioDevice = device;
+#elif defined(LN_OS_WIN32)
+    auto device = makeRef<detail::DSoundAudioDevice>();
+    device->initialize(detail::CoreAudioNode::ProcessingSizeInFrames);
+    m_audioDevice = device;
 #else
 	//auto device = makeRef<detail::ALAudioDevice>();
-	auto device = makeRef<detail::DSoundAudioDevice>();
-	
-	device->initialize(detail::CoreAudioNode::ProcessingSizeInFrames);
-	m_audioDevice = device;
 #endif
 	m_coreDestinationNode = makeRef<detail::CoreAudioDestinationNode>(m_audioDevice);
 	m_coreDestinationNode->initialize();
