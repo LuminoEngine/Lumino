@@ -25,7 +25,7 @@ public:
 	virtual void onBeginRender(RenderView* renderView) override;
 	virtual void onEndRender(RenderView* renderView) override;
 
-	virtual void onBeginPass(RenderView* renderView, GraphicsContext* context, FrameBuffer* frameBuffer) override;
+	virtual void onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer) override;
 
 	virtual ShaderTechnique* selectShaderTechnique(
 		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
@@ -78,7 +78,7 @@ public:
 
 	//virtual Shader* getDefaultShader() const override;
 
-	virtual void onBeginPass(RenderView* renderView, GraphicsContext* context, FrameBuffer* frameBuffer) override;
+	virtual void onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer) override;
 
 	virtual ShaderTechnique* selectShaderTechnique(
 		ShaderTechniqueClass_MeshProcess requestedMeshProcess,

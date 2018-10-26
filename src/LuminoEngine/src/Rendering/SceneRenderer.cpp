@@ -32,7 +32,7 @@ void SceneRendererPass::onEndRender(RenderView* renderView)
 {
 }
 
-void SceneRendererPass::onBeginPass(RenderView* renderView, GraphicsContext* context, FrameBuffer* frameBuffer)
+void SceneRendererPass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
 {
 }
 
@@ -156,7 +156,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 	m_renderingElementList.clear();
 
 	FrameBuffer defaultFrameBuffer = *m_defaultFrameBuffer;
-	pass->onBeginPass(m_renderingRenderView, graphicsContext, &defaultFrameBuffer);
+	pass->onBeginPass(graphicsContext, &defaultFrameBuffer);
 
 
 	const detail::CameraInfo& cameraInfo = m_renderingRenderView->mainCameraInfo;

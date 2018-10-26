@@ -6,6 +6,8 @@ namespace detail {
 /*
  * 描画リストやポストエフェクトなど描画に関わる全てのパラメータを受け取り、
  * RenderView から覗くことができる 1 枚の絵を描き上げる。
+ *
+ * 将来的な話だが、Deffered と Forward 混在のような複数の SceneRenderer をコントロールするのはこのクラスの役目。
  */
 class RenderingPipeline
 	: public RefObject

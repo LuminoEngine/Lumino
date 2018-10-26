@@ -42,7 +42,7 @@ void DepthPrepass::onEndRender(RenderView* renderView)
 	m_depthBuffer = nullptr;
 }
 
-void DepthPrepass::onBeginPass(RenderView* renderView, GraphicsContext* context, FrameBuffer* frameBuffer)
+void DepthPrepass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
 {
 	frameBuffer->renderTarget[0] = m_depthMap;
 	frameBuffer->depthBuffer = m_depthBuffer;
@@ -198,7 +198,7 @@ void ShadowCasterPass::initialize()
 //}
 
 
-void ShadowCasterPass::onBeginPass(RenderView* renderView, GraphicsContext* context, FrameBuffer* frameBuffer)
+void ShadowCasterPass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
 {
 	frameBuffer->renderTarget[0] = m_shadowMap;
 	frameBuffer->depthBuffer = m_depthBuffer;

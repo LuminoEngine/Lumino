@@ -30,7 +30,7 @@ public:
 
 	// シャドウバッファの作成などのため、パス単位で RenderTarget を切り替えたい場合、ここで frameBuffer にセットする。
 	// この時点では GraphicsContext は自由に使ってもよい。ステート復元する必要はない。
-	virtual void onBeginPass(RenderView* renderView, GraphicsContext* context, FrameBuffer* frameBuffer);
+	virtual void onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer);
 
 	// Element の情報と派生 Pass から、最終的に使いたい ShaderTechnique を求める
 	virtual ShaderTechnique* selectShaderTechnique(
