@@ -307,6 +307,10 @@ void EngineManager::updateFrame()
 	if (m_audioManager) {
 		m_audioManager->update();
 	}
+
+    if (m_mainWorld) {
+        m_mainWorld->updateFrame(0.016);	// TODO: time
+    }
 }
 
 void EngineManager::renderFrame()
@@ -314,6 +318,10 @@ void EngineManager::renderFrame()
 	if (m_mainWindow) {
 		m_mainWindow->renderContents();
 	}
+
+    if (m_mainWorld) {
+        m_mainWorld->render();
+    }
 }
 
 void EngineManager::presentFrame()
