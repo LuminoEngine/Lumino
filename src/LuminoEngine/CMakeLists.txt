@@ -208,6 +208,8 @@ set(LN_SOURCES_Rendering
     src/Rendering/RenderingContext.cpp
     src/Rendering/RenderingManager.cpp
     src/Rendering/RenderingManager.hpp
+    src/Rendering/RenderingPipeline.cpp
+    src/Rendering/RenderingPipeline.hpp
     src/Rendering/RenderStage.cpp
     src/Rendering/RenderStage.hpp
     src/Rendering/RenderTargetTextureCache.cpp
@@ -230,26 +232,30 @@ set(LN_SOURCES_Asset
     src/Asset/AssetManager.hpp
 )
 
-set(LN_SOURCES_Visual
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/Common.hpp
-    src/Visual/Internal.hpp
-    src/Visual/VisualManager.cpp
-    src/Visual/VisualManager.hpp
-)
-
 set(LN_SOURCES_Scene
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Component.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Scene.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/SceneConductor.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/World.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/WorldObject.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/WorldRenderView.hpp
     src/Scene/Internal.hpp
+    src/Scene/Component.cpp
     src/Scene/Scene.cpp
     src/Scene/SceneConductor.cpp
     src/Scene/SceneManager.cpp
     src/Scene/SceneManager.hpp
     src/Scene/World.cpp
     src/Scene/WorldObject.cpp
+    src/Scene/WorldRenderView.cpp
+)
+
+set(LN_SOURCES_Visual
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/Common.hpp
+    src/Visual/Internal.hpp
+    src/Visual/VisualManager.cpp
+    src/Visual/VisualManager.hpp
 )
 
 set(LN_SOURCES_UI
@@ -281,8 +287,8 @@ source_group("Shader"                FILES ${LN_SOURCES_Shader})
 source_group("Mesh"                FILES ${LN_SOURCES_Mesh})
 source_group("Rendering"                FILES ${LN_SOURCES_Rendering})
 source_group("Asset"                FILES ${LN_SOURCES_Asset})
-source_group("Visual"                FILES ${LN_SOURCES_Visual})
 source_group("Scene"                FILES ${LN_SOURCES_Scene})
+source_group("Visual"                FILES ${LN_SOURCES_Visual})
 source_group("UI"                    FILES ${LN_SOURCES_UI})
 
 set(LN_SOURCES
@@ -299,8 +305,8 @@ set(LN_SOURCES
     ${LN_SOURCES_Mesh}
     ${LN_SOURCES_Rendering}
     ${LN_SOURCES_Asset}
-    ${LN_SOURCES_Visual}
     ${LN_SOURCES_Scene}
+    ${LN_SOURCES_Visual}
     ${LN_SOURCES_UI}
     #${LN_SOURCES_LuminoCore}
 )

@@ -4,6 +4,8 @@
 
 namespace ln {
 class UIFrameWindow;
+class World;
+class WorldRenderView;
 
 namespace detail {
 class PlatformManager;
@@ -101,6 +103,8 @@ private:
 	Ref<UIManager>					m_uiManager;
 
 	Ref<UIFrameWindow> m_mainWindow;
+    Ref<World> m_mainWorld;
+    Ref<WorldRenderView> m_mainWorldRenderView;
 
 	bool m_exitRequested;
 };

@@ -4,6 +4,7 @@
 #include <LuminoEngine/Scene/Scene.hpp>
 
 namespace ln {
+
 namespace detail {
 
 class SceneManager
@@ -46,6 +47,7 @@ private:
 	Ref<Scene>				m_activeScene;
 	std::deque<EventCommsnd>		m_eventQueue;
 	std::stack<Ref<Scene>>	m_sceneStack;	// not contains m_activeScene
+
 };
 
 } // namespace detail

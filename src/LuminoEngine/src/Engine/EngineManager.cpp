@@ -2,6 +2,8 @@
 #include "Internal.hpp"
 
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
+#include <LuminoEngine/Scene/World.hpp>
+#include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include "../Platform/PlatformManager.hpp"
 #include "../Input/InputManager.hpp"
 #include "../Audio/AudioManager.hpp"
@@ -67,6 +69,9 @@ void EngineManager::initialize()
 	if (m_uiManager) {
 		m_mainWindow = newObject<UIFrameWindow>(m_platformManager->mainWindow(), m_settings.mainBackBufferSize);
 	}
+
+    m_mainWorld = newObject<World>();
+    m_mainWorldRenderView = newObject<WorldRenderView>();
 }
 
 void EngineManager::dispose()
