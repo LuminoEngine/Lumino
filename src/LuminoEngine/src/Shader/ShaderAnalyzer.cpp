@@ -8,6 +8,7 @@
 #include <spirv_cross/spirv_glsl.hpp>
 #include "../Grammar/CppLexer.hpp"
 #include <LuminoEngine/Shader/ShaderHelper.hpp>
+#include "ShaderManager.hpp"
 #include "ShaderAnalyzer.hpp"
 
 namespace ln {
@@ -300,12 +301,20 @@ class LocalIncluder
 	: public glslang::TShader::Includer
 {
 public:
+    ShaderManager* m_manager;
 	const List<Path>* includeDirs;
 
 	virtual IncludeResult* includeSystem(const char* headerName, const char* sourceName, size_t inclusionDepth)
 	{
-		// TODO: とりあえず共通にしてみる
-		return includeLocal(headerName, sourceName, inclusionDepth);
+        for (auto& pair : m_manager->builtinShaderList())
+        {
+            if (pair.first == headerName)
+            {
+                return new IncludeResult(headerName, pair.second.c_str(), pair.second.size(), nullptr);
+            }
+        }
+
+        return nullptr;
 	}
 
 	virtual IncludeResult* includeLocal(const char* headerName, const char* sourceName, size_t inclusionDepth)
@@ -327,7 +336,9 @@ public:
 	{
 		if (result)
 		{
-			delete reinterpret_cast<ByteBuffer*>(result->userData);
+            if (result->userData) {
+                delete reinterpret_cast<ByteBuffer*>(result->userData);
+            }
 			delete result;
 		}
 	}
@@ -358,6 +369,7 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
 	m_stage = stage;
 
 	LocalIncluder includer;
+    includer.m_manager = detail::EngineDomain::shaderManager();
 	includer.includeDirs = &includeDir;
 
 

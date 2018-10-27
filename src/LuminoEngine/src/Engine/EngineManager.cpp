@@ -1,6 +1,6 @@
 
 #include "Internal.hpp"
-
+#include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
@@ -72,6 +72,8 @@ void EngineManager::initialize()
 
     m_mainWorld = newObject<World>();
     m_mainWorldRenderView = newObject<WorldRenderView>();
+    m_mainWorldRenderView->setTargetWorld(m_mainWorld);
+    m_sceneManager->setActiveWorld(m_mainWorld);
 }
 
 void EngineManager::dispose()
@@ -104,7 +106,7 @@ void EngineManager::initializeAllManagers()
 	initializeShaderManager();
 	initializeGraphicsManager();
 	initializeMeshManager();
-	//initializeRenderingManager();
+	initializeRenderingManager();
 	initializeAssetManager();
     initializeVisualManager();
     initializeSceneManager();
@@ -319,8 +321,14 @@ void EngineManager::renderFrame()
 		m_mainWindow->renderContents();
 	}
 
+    // DrawList 構築
     if (m_mainWorld) {
         m_mainWorld->render();
+    }
+
+    // DrawList を実際に描画
+    if (m_mainWorldRenderView) {
+        m_mainWorldRenderView->render(m_graphicsManager->graphicsContext());
     }
 }
 

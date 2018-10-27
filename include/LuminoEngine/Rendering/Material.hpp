@@ -1,4 +1,5 @@
 #pragma once
+#include "Common.hpp"
 #include "../Graphics/ColorStructs.hpp"
 #include "../Graphics/RenderState.hpp"
 #include "../Shader/Shader.hpp"

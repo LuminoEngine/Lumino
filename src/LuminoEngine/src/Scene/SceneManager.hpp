@@ -4,6 +4,7 @@
 #include <LuminoEngine/Scene/Scene.hpp>
 
 namespace ln {
+class World;
 
 namespace detail {
 
@@ -22,6 +23,9 @@ public:
 	Scene* getActiveScene() const { return m_activeScene; }
 
 	void updateFrame();
+
+    void setActiveWorld(World* world) { m_activeWorld = world; }
+    World* activeWorld() const { return m_activeWorld; }
 
 private:
 	void executeCommands();
@@ -48,6 +52,7 @@ private:
 	std::deque<EventCommsnd>		m_eventQueue;
 	std::stack<Ref<Scene>>	m_sceneStack;	// not contains m_activeScene
 
+    World* m_activeWorld;
 };
 
 } // namespace detail

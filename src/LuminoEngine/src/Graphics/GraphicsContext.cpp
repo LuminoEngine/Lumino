@@ -64,9 +64,19 @@ void GraphicsContext::setColorBuffer(int index, RenderTargetTexture* value)
 	}
 }
 
+RenderTargetTexture* GraphicsContext::colorBuffer(int index) const
+{
+    return m_staging.renderTargets[index];
+}
+
 void GraphicsContext::setDepthBuffer(DepthBuffer* value)
 {
 	m_staging.depthBuffer = value;
+}
+
+DepthBuffer* GraphicsContext::depthBuffer() const
+{
+    return m_staging.depthBuffer;
 }
 
 void GraphicsContext::setViewportRect(const Rect& value)

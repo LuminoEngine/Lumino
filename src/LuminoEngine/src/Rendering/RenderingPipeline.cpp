@@ -21,6 +21,11 @@ void RenderingPipeline::initialize()
 //==============================================================================
 // SceneRenderingPipeline
 
+SceneRenderingPipeline::SceneRenderingPipeline()
+    : m_sceneRenderer(nullptr)
+{
+}
+
 void SceneRenderingPipeline::initialize()
 {
     RenderingPipeline::initialize();

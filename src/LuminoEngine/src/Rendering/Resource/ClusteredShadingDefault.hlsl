@@ -651,6 +651,7 @@ technique Forward_Geometry
 	}
 }
 
+/*
 technique Forward_Geometry_SkinnedMesh
 {
 	pass Pass1
@@ -668,6 +669,7 @@ technique Forward_Geometry_SkinnedMesh_UnLighting
 		PixelShader	 = _lngs_PS_UnLighting;
 	}
 }
+*/
 
 //END_HLSL
 

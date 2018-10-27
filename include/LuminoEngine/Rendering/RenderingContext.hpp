@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "Common.hpp"
 #include "../Graphics/ColorStructs.hpp"
 #include "../Graphics/GeometryStructs.hpp"
 #include "../Graphics/RenderState.hpp"
@@ -16,7 +17,7 @@ class DrawElementListBuilder;
 } // namespace detail
 
 class RenderingContext
-	: public RefObject
+	: public RefObject  // TODO: Object
 {
 public:
 	//--------------------------------------------------------------------------
@@ -111,23 +112,5 @@ private:
 	Ref<detail::DrawElementListBuilder> m_builder;
 };
 
-namespace detail {
-
-// TODO: Test
-class WorldSceneGraphRenderingContext
-	: public RenderingContext
-{
-public:
-	WorldSceneGraphRenderingContext();
-
-	void reset();
-
-	// 本番では、World が持っていたりする。
-	Ref<detail::DrawElementList> m_elementList;
-
-private:
-};
-
-} // namespace detail
 } // namespace ln
 

@@ -31,7 +31,7 @@ public:
 	void addDrawElementListManager(detail::DrawElementListCollector* elementListManager);
 
 	// TODO: internal
-	detail::CameraInfo mainCameraInfo;
+	//detail::CameraInfo mainCameraInfo;
 
 protected:
 

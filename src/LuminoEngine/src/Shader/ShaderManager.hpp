@@ -24,8 +24,11 @@ public:
 
 	//const List<Path>& shaderIncludePaths() const { return m_shaderIncludePaths; }
 
+    const std::vector<std::pair<std::string, std::string>>& builtinShaderList() const { return m_builtinShaderList; }
+
 private:
-	GraphicsManager * m_graphicsManager;
+	GraphicsManager* m_graphicsManager;
+    std::vector<std::pair<std::string, std::string>> m_builtinShaderList;
 	//List<Path> m_shaderIncludePaths;
 };
 

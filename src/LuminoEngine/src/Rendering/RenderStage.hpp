@@ -3,6 +3,7 @@
 #include <LuminoEngine/Graphics/RenderState.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/DepthBuffer.hpp>
+#include <LuminoEngine/Rendering/Common.hpp>
 #include "../Engine/LinearAllocator.hpp"
 
 namespace ln {

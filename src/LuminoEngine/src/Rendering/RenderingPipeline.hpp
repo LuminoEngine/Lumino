@@ -35,6 +35,8 @@ class SceneRenderingPipeline
     : public RenderingPipeline
 {
 public:
+    SceneRenderingPipeline();
+
     void initialize();
     void render(
         GraphicsContext* graphicsContext,

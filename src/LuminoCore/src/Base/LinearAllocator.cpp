@@ -116,7 +116,9 @@ void* LinearAllocator::allocate(size_t size)
 
 void LinearAllocator::cleanup()
 {
-	m_manager->discardPage(m_currentPage);
+    if (m_currentPage) {
+        m_manager->discardPage(m_currentPage);
+    }
 
 	for (auto& page : m_retiredPages) {
 		m_manager->discardPage(page);

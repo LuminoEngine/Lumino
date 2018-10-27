@@ -60,7 +60,8 @@ void convertChar16ToLocalChar(const char16_t* inStr, size_t inStrLen, char* outS
 	size_t ret;
 	mbstate_t state;
 	memset(&state, 0, sizeof state);
-	wcsrtombs_s(&ret, outStr, outStrLen, (const wchar_t**)&inStr, _TRUNCATE, &state);
+    size_t len = std::min(outStrLen, inStrLen);
+	wcsrtombs_s(&ret, outStr, len, (const wchar_t**)&inStr, len - 1, &state);
 #else
 	size_t len = (inStrLen < outStrLen) ? inStrLen : outStrLen;
 	size_t i = 0;
@@ -148,7 +149,15 @@ void printError(const Exception& e)
 	if (!StringHelper::isNullOrEmpty(e.getMessage())) {
 		buf[len] = '\n';
 		len++;
-		convertChar16ToLocalChar(e.getMessage(), BUFFER_SIZE, buf + len, BUFFER_SIZE - len);
+        size_t messageLen = StringHelper::strlen(e.getMessage());
+        size_t bufferLen = BUFFER_SIZE - len;
+        convertChar16ToLocalChar(e.getMessage(), messageLen, buf + len, bufferLen);
+        if (messageLen >= bufferLen) {
+            buf[BUFFER_SIZE - 4] = '.';
+            buf[BUFFER_SIZE - 3] = '.';
+            buf[BUFFER_SIZE - 2] = '.';
+            buf[BUFFER_SIZE - 1] = '\0';
+        }
 	}
 
 	if (GlobalLogger::hasAnyAdapter()) {

@@ -22,6 +22,57 @@ void ShaderManager::initialize(const Settings& settings)
 {
 	m_graphicsManager = settings.graphicsManager;
 
+
+    // Lumino.fxh.h
+    {
+        static const unsigned char data[] =
+        {
+#include "Resource/Lumino.fxh.h"
+        };
+        static const size_t size = LN_ARRAY_SIZE_OF(data);
+        m_builtinShaderList.push_back({ "Lumino.fxh", std::string((const char*)data, size) });
+    }
+
+    // LuminoForward.fxh.h
+    {
+        static const unsigned char data[] =
+        {
+#include "Resource/LuminoForward.fxh.h"
+        };
+        static const size_t size = LN_ARRAY_SIZE_OF(data);
+        m_builtinShaderList.push_back({ "LuminoForward.fxh", std::string((const char*)data, size) });
+    }
+
+    // LuminoPBR.fxh.h
+    {
+        static const unsigned char data[] =
+        {
+#include "Resource/LuminoPBR.fxh.h"
+        };
+        static const size_t size = LN_ARRAY_SIZE_OF(data);
+        m_builtinShaderList.push_back({ "LuminoPBR.fxh", std::string((const char*)data, size) });
+    }
+
+    // LuminoShadow.fxh.h
+    {
+        static const unsigned char data[] =
+        {
+#include "Resource/LuminoShadow.fxh.h"
+        };
+        static const size_t size = LN_ARRAY_SIZE_OF(data);
+        m_builtinShaderList.push_back({ "LuminoShadow.fxh", std::string((const char*)data, size) });
+    }
+
+    // LuminoSkinning.fxh.h
+    {
+        static const unsigned char data[] =
+        {
+#include "Resource/LuminoSkinning.fxh.h"
+        };
+        static const size_t size = LN_ARRAY_SIZE_OF(data);
+        m_builtinShaderList.push_back({ "LuminoSkinning.fxh", std::string((const char*)data, size) });
+    }
+
 //#ifdef LN_DEBUG
 //	Path debugIncludePath = Path((Path(String::fromCString(__FILE__)).parent()), u"Resource");
 //	m_shaderIncludePaths.add(debugIncludePath);

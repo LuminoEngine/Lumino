@@ -87,8 +87,9 @@ TEST_F(Test_Base_RefObject, Construct)
 		Ref<TestObjA> ref3(&obj2);
 		Ref<TestObjB> ref4(&obj3);
 
-		Ref<TestObjB> ref5(std::move(ref3));
-		Ref<TestObjB> ref6(std::move(ref4));
+        // ダウンキャストなのでNG
+		//Ref<TestObjB> ref5(std::move(ref3));
+		//Ref<TestObjB> ref6(std::move(ref4));
 
 		ASSERT_EQ(2, RefObjectHelper::getReferenceCount(&obj2));
 		ASSERT_EQ(2, RefObjectHelper::getReferenceCount(&obj3));

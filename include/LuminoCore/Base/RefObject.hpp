@@ -243,16 +243,19 @@ Ref<T>::Ref(T* ptr, bool retain)
 
 template<class T>
 Ref<T>::Ref(const Ref& ref) LN_NOEXCEPT
-    : m_ptr(ref.m_ptr)
+    : m_ptr(nullptr)
 {
+    m_ptr = ref.get();
     LN_SAFE_RETAIN(m_ptr);
 }
 
 template<class T>
 template<class Y>
 Ref<T>::Ref(const Ref<Y>& ref) LN_NOEXCEPT
-    : m_ptr(static_cast<T*>(ref.get()))
+    : m_ptr(nullptr)
 {
+    T* t = ref.get();   // confirm implicit cast
+    m_ptr = t;
     LN_SAFE_RETAIN(m_ptr);
 }
 
@@ -267,7 +270,8 @@ template<class T>
 template<class Y>
 Ref<T>::Ref(Ref<Y>&& ref) LN_NOEXCEPT
 {
-    m_ptr = static_cast<T*>(ref.get());
+    T* t = ref.get();   // confirm implicit cast
+    m_ptr = t;
     ref.m_ptr = nullptr;
 }
 
@@ -330,7 +334,8 @@ template<class T>
 template<class Y>
 Ref<T>& Ref<T>::operator=(const Ref<Y>& ref) LN_NOEXCEPT
 {
-    LN_REFOBJ_SET(m_ptr, static_cast<T*>(ref.get()));
+    T* t = ref.get();   // confirm implicit cast
+    LN_REFOBJ_SET(m_ptr, t);
     return *this;
 }
 
@@ -350,7 +355,8 @@ template<class Y>
 Ref<T>& Ref<T>::operator=(Ref<Y>&& ref) LN_NOEXCEPT
 {
     LN_SAFE_RELEASE(m_ptr);
-    m_ptr = static_cast<T*>(ref.get());
+    T* t = ref.get();   // confirm implicit cast
+    m_ptr = t;
     ref.m_ptr = nullptr;
     return *this;
 }
@@ -497,5 +503,6 @@ inline Ref<T> makeRef(TArgs&&... args)
 {
     return Ref<T>(LN_NEW T(std::forward<TArgs>(args)...), false);
 }
+
 
 } // namespace ln

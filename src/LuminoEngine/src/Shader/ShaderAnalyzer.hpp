@@ -3,6 +3,7 @@
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 
 #include <LuminoEngine/Engine/Diagnostics.hpp>
+#include "../Grammar/Token.hpp"
 
 namespace ln {
 class Token;

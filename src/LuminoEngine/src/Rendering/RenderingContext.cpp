@@ -176,24 +176,5 @@ void RenderingContext::addSpotLight(const Color& color, float intensity, const V
 	m_builder->targetList()->addDynamicLightInfo(detail::DynamicLightInfo::makeSpotLightInfo(color, intensity, position, direction, range, attenuation, spotAngle, spotPenumbra));
 }
 
-//==============================================================================
-// RenderingContext
-
-namespace detail {
-
-WorldSceneGraphRenderingContext::WorldSceneGraphRenderingContext()
-	: m_elementList(makeRef<detail::DrawElementList>(detail::EngineDomain::renderingManager()))
-{
-	setDrawElementList(m_elementList);
-}
-
-void WorldSceneGraphRenderingContext::reset()
-{
-	RenderingContext::reset();
-	m_elementList->clear();
-}
-
-} // namespace detail
-
 } // namespace ln
 

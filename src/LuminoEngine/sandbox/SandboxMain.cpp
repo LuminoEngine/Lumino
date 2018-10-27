@@ -31,16 +31,22 @@ int main(int argc, char** argv)
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-
-
 	GlobalLogger::addStdErrAdapter();
-	//EngineSettings::setMainWindowSize(80, 60);
-	//EngineSettings::setMainBackBufferSize(80, 60);
 	Engine::initialize();
 
-	//Engine::terminate();
-	//return 0;
-	// Audio test
+    //auto tex = newObject<Texture2D>(u"D:/tmp/110220c_as019.png");
+    auto tex = newObject<Texture2D>(2, 2);
+    auto bmp1 = tex->map(MapMode::Write);
+    bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
+    bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
+    bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
+    bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
+    auto sprite = newObject<Sprite>();
+    sprite->setTexture(tex);
+
+    while (Engine::update())
+    {
+    }
 
 
 #if 0
