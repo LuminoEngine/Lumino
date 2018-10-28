@@ -75,6 +75,8 @@ protected:
 	AbstractMaterial(detail::MaterialType type);
 	virtual ~AbstractMaterial();
 	void initialize();
+
+public: // TODO: internal
 	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) = 0;
 	virtual void translateToPhongMaterialData(detail::PhongMaterialData* outData) = 0;
 
@@ -205,9 +207,7 @@ public:
 	void setRoughness(float value);
 	void setMetallic(float value);
 	void setSpecular(float value);
-
-	// TODO: 自己発光。必要かな？
-	//void setEmissive(const Color& value);
+    void setEmissive(const Color& value);
 
 protected:
 	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) override;

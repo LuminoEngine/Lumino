@@ -6,10 +6,11 @@
 //------------------------------------------------------------------------------
 // Built-in Variables
 
-float4	ln_MaterialM2Color;
-float	ln_MaterialM2Roughness;
-float	ln_MaterialM2Metallic;
-float	ln_MaterialM2Specular;
+float4	ln_MaterialColor;
+float	ln_MaterialRoughness;
+float	ln_MaterialMetallic;
+float	ln_MaterialSpecular;
+float4	ln_MaterialEmissive;
 
 //------------------------------------------------------------------------------
 

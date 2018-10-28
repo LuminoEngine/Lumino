@@ -20,6 +20,7 @@ void SpriteComponent::initialize()
 {
     VisualComponent::initialize();
     m_material = newObject<Material>();
+    m_material->setEmissive(Color(1,1,1,0.5));
 }
 
 void SpriteComponent::setTexture(Texture* texture)

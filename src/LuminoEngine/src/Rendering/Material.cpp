@@ -102,6 +102,7 @@ static const Color Material_DefaultColor = Color(0.5f, 0.5f, 0.5f, 1.0f);
 static const float Material_DefaultRoughness = 0.5f;
 static const float Material_DefaultMetallic = 0.5f;
 static const float Material_DefaultSpecular = 0.5f;
+static const Color Material_DefaultEmmisive = Color(0, 0, 0, 0);
 
 Ref<Material> Material::create()
 {
@@ -115,6 +116,7 @@ Material::Material()
 	m_data.roughness = Material_DefaultRoughness;
 	m_data.metallic = Material_DefaultMetallic;
 	m_data.specular = Material_DefaultSpecular;
+    m_data.emissive = Material_DefaultEmmisive;
 }
 
 Material::~Material()
@@ -144,6 +146,11 @@ void Material::setMetallic(float value)
 void Material::setSpecular(float value)
 {
 	m_data.specular = value;
+}
+
+void Material::setEmissive(const Color& value)
+{
+    m_data.emissive = value;
 }
 
 void Material::translateToPBRMaterialData(detail::PbrMaterialData* outData)

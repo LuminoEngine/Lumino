@@ -213,6 +213,13 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 			semanticsManager->updateCameraVariables(*cameraInfo);
 			semanticsManager->updateElementVariables(*cameraInfo, elementInfo);
 			semanticsManager->updateSubsetVariables(subsetInfo);
+
+            if (finalMaterial) {
+                PbrMaterialData pbrMaterialData;
+                finalMaterial->translateToPBRMaterialData(&pbrMaterialData);
+                semanticsManager->updateSubsetVariables_PBR(pbrMaterialData);
+            }
+
 			onSetAdditionalShaderPassVariables(tech->shader());
 
 			for (ShaderPass* pass : tech->passes())

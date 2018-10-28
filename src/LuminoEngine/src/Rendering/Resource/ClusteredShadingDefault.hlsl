@@ -447,10 +447,9 @@ float4 _LN_PS_ClusteredForward_Default(
 
 
 	/**/
-	float3 emissive = float3(0,0,0);
 	float opacity = 1.0;
 	float3 outgoingLight =
-		emissive +
+		surface.Emission +
 		reflectedLight.directDiffuse +
 		reflectedLight.directSpecular +
 		reflectedLight.indirectDiffuse +
@@ -601,6 +600,8 @@ _lngs_PSOutput _lngs_PS_ClusteredForward_Geometry(_lngs_PSInput input)
 
 	// TODO: SurfaceShader を入れるのはこのあたり
 	surface.Albedo = ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.UV);// * input.Color;
+
+	surface.Emission = (ln_MaterialEmissive.rgb * ln_MaterialEmissive.a);
 	
 	_lngs_PSOutput o;
 	o.color0 = _LN_PS_ClusteredForward_Default(input.WorldPos, input.VertexPos, surface);
@@ -614,7 +615,7 @@ float4	ln_MaterialAmbient;	// TODO: とりあえず MMD モデル用のために
 
 float4 _lngs_PS_UnLighting(_lngs_PSInput input) : COLOR0
 {
-	float4 result = input.Color * ln_MaterialM2Color;
+	float4 result = input.Color * ln_MaterialColor;
 
 	float3 ambient = float3(1, 1, 1) * ln_MaterialAmbient.rgb;
 	result.rgb = saturate(result.rgb + ambient);
