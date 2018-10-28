@@ -77,7 +77,7 @@ struct DynamicLightInfo
 		, m_range(10.0f)
 		, m_attenuation(1.0f)
 		, m_spotAngle(Math::PI / 3)
-		, m_spotPenumbra(0.0f)
+		, m_spotPenumbra(0.1f)
 		, castShadow(false)
 		//, m_shadowCasterPass(nullptr)
 	{}

@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Scene/WorldObject.hpp>
 #include <LuminoEngine/Scene/Component.hpp>
 
 namespace ln {
@@ -21,7 +22,16 @@ void Component::initialize()
     Object::initialize();
 }
 
+detail::WorldObjectTransform* Component::transrom() const
+{
+    &worldObject()->transform();
+}
+
 void Component::onUpdate(float elapsedSeconds)
+{
+}
+
+void Component::onPrepareRender(RenderingContext* context)
 {
 }
 

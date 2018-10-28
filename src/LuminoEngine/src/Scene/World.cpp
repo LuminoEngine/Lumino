@@ -81,6 +81,8 @@ void World::render()
 
         for (auto& c : obj->m_components)
         {
+
+            c->onPrepareRender(m_renderingContext); // TODO: 全体の前にした方がいいかも
             c->onRender(m_renderingContext);
         }
     }
