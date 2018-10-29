@@ -34,6 +34,7 @@ int main(int argc, char** argv)
 	GlobalLogger::addStdErrAdapter();
 	Engine::initialize();
 
+	auto light1 = AmbientLight::create(Color(0.5, 0.5, 0.5));
 
     //auto tex = newObject<Texture2D>(u"D:/tmp/110220c_as019.png");
     auto tex = newObject<Texture2D>(2, 2);

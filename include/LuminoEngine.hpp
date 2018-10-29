@@ -34,9 +34,12 @@
 #include "LuminoEngine/Rendering/RenderFeature.hpp"
 #include "LuminoEngine/Rendering/RenderingContext.hpp"
 
+#include "LuminoEngine/Visual/LightComponent.hpp"
+#include "LuminoEngine/Visual/SpriteComponent.hpp"
+
+#include "LuminoEngine/Scene/Light.hpp"
 #include "LuminoEngine/Scene/Sprite.hpp"
 
-#include "LuminoEngine/Visual/SpriteComponent.hpp"
 
 #include "LuminoEngine/UI/UIFrameWindow.hpp"
 
