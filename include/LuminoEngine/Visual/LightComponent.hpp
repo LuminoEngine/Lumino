@@ -131,16 +131,16 @@ public:
 	bool isEnabled() const { return m_enabled; }
 
 	/** ライトカラーを設定します。(default: White) */
-	void setColor(const Color& color) { m_lightInfo->m_color = color; }
+	void setColor(const Color& color) { m_color = color; }
 
 	/** ライトカラーを取得します。 */
-	const Color& getColor() const { return m_lightInfo->m_color; }
+	const Color& getColor() const { return m_color; }
 
 	/** ライトの明るさを設定します。(default: 0.5) */
-	void setIntensity(float intensity) { m_lightInfo->m_intensity = intensity; }
+	void setIntensity(float intensity) { m_intensity = intensity; }
 
 	/** ライトの明るさを取得します。 */
-	float getIntensity() const { return m_lightInfo->m_intensity; }
+	float getIntensity() const { return m_intensity; }
 
 protected:
 	virtual void onPrepareRender(RenderingContext* context) override;
@@ -151,8 +151,9 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 private:
-	Ref<detail::DynamicLightInfo>	m_lightInfo;
-	bool							m_enabled;
+	Color m_color;
+	float m_intensity;
+	bool m_enabled;
 };
 
 /** 半球ライトのコンポーネントです。 */
@@ -169,22 +170,22 @@ public:
 	bool isEnabled() const { return m_enabled; }
 
 	/** 空の環境光の色を取得します。 */
-	const Color& getSkyColor() { return m_lightInfo->m_color; }
+	const Color& getSkyColor() { return m_skyColor; }
 
 	/** 空の環境光の色を設定します。(default: White) */
-	void setSkyColor(const Color& color) { m_lightInfo->m_color = color; }
+	void setSkyColor(const Color& color) { m_skyColor = color; }
 
 	/** 地面の環境光の色を取得します。 */
-	const Color& getGroundColor() { return m_lightInfo->m_color2; }
+	const Color& getGroundColor() { return m_groundColor; }
 
 	/** 地面の環境光の色を設定します。(default: White) */
-	void setGroundColor(const Color& color) { m_lightInfo->m_color2 = color; }
+	void setGroundColor(const Color& color) { m_groundColor = color; }
 
 	/** ライトの明るさを設定します。(default: 0.5) */
-	void setIntensity(float intensity) { m_lightInfo->m_intensity = intensity; }
+	void setIntensity(float intensity) { m_intensity = intensity; }
 
 	/** ライトの明るさを取得します。 */
-	float getIntensity() const { return m_lightInfo->m_intensity; }
+	float getIntensity() const { return m_intensity; }
 
 protected:
 	virtual void onPrepareRender(RenderingContext* context) override;
@@ -195,8 +196,10 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 private:
-	Ref<detail::DynamicLightInfo>	m_lightInfo;
-	bool							m_enabled;
+	Color m_skyColor;
+	Color m_groundColor;
+	float m_intensity;
+	bool m_enabled;
 };
 
 /** ディレクショナルライトのコンポーネントです。 */
@@ -213,16 +216,16 @@ public:
 	bool isEnabled() const { return m_enabled; }
 
 	/** ライトカラーを設定します。(default: White) */
-	void setColor(const Color& color) { m_lightInfo->m_color = color; }
+	void setColor(const Color& color) { m_color = color; }
 
 	/** ライトカラーを取得します。 */
-	const Color& getColor() const { return m_lightInfo->m_color; }
+	const Color& getColor() const { return m_color; }
 
 	/** ライトの明るさを設定します。(default: 0.5) */
-	void setIntensity(float intensity) { m_lightInfo->m_intensity = intensity; }
+	void setIntensity(float intensity) { m_intensity = intensity; }
 
 	/** ライトの明るさを取得します。 */
-	float getIntensity() const { return m_lightInfo->m_intensity; }
+	float getIntensity() const { return m_intensity; }
 
 	/** 影の有無を設定します。(default: false) */
 	void setShadowCast(bool enabled);
@@ -239,9 +242,9 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 private:
-	Ref<detail::DynamicLightInfo>	m_lightInfo;
-	Ref<detail::ShadowCasterPass>	m_shadowCasterPass;
-	bool							m_enabled;
+	Color m_color;
+	float m_intensity;
+	bool m_enabled;
 };
 
 /** ポイントライトのコンポーネントです。 */
@@ -258,28 +261,28 @@ public:
 	bool isEnabled() const { return m_enabled; }
 
 	/** ライトカラーを設定します。(default: White) */
-	void setColor(const Color& color) { m_lightInfo->m_color = color; }
+	void setColor(const Color& color) { m_color = color; }
 
 	/** ライトカラーを取得します。 */
-	const Color& getColor() const { return m_lightInfo->m_color; }
+	const Color& getColor() const { return m_color; }
 
 	/** ライトの明るさを設定します。(default: 1.0) */
-	void setIntensity(float intensity) { m_lightInfo->m_intensity = intensity; }
+	void setIntensity(float intensity) { m_intensity = intensity; }
 
 	/** ライトの明るさを取得します。 */
-	float getIntensity() const { return m_lightInfo->m_intensity; }
+	float getIntensity() const { return m_intensity; }
 
 	/** ライトの影響範囲を設定します。(default: 10.0) */
-	void setRange(float range) { m_lightInfo->m_range = range; }
+	void setRange(float range) { m_range = range; }
 
 	/** ライトの影響範囲を取得します。 */
-	float getRange() const { return m_lightInfo->m_range; }
+	float getRange() const { return m_range; }
 
 	/** ライトの減衰を設定します。(default: 1.0) */
-	void setAttenuation(float attenuation) { m_lightInfo->m_attenuation = attenuation; }
+	void setAttenuation(float attenuation) { m_attenuation = attenuation; }
 
 	/** ライトの減衰を取得します。 */
-	float getAttenuation() const { return m_lightInfo->m_attenuation; }
+	float getAttenuation() const { return m_attenuation; }
 
 protected:
 	virtual void onPrepareRender(RenderingContext* context) override;
@@ -290,8 +293,11 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 private:
-	Ref<detail::DynamicLightInfo>	m_lightInfo;
-	bool							m_enabled;
+	Color m_color;
+	float m_intensity;
+	float m_range;
+	float m_attenuation;
+	bool m_enabled;
 };
 
 /** スポットライトのコンポーネントです。 */
@@ -308,40 +314,40 @@ public:
 	bool isEnabled() const { return m_enabled; }
 
 	/** ライトカラーを設定します。(default: White) */
-	void setColor(const Color& color) { m_lightInfo->m_color = color; }
+	void setColor(const Color& color) { m_color = color; }
 
 	/** ライトカラーを取得します。 */
-	const Color& getColor() const { return m_lightInfo->m_color; }
+	const Color& getColor() const { return m_color; }
 
 	/** ライトの明るさを設定します。(default: 1.0) */
-	void setIntensity(float intensity) { m_lightInfo->m_intensity = intensity; }
+	void setIntensity(float intensity) { m_intensity = intensity; }
 
 	/** ライトの明るさを取得します。 */
-	float getIntensity() const { return m_lightInfo->m_intensity; }
+	float getIntensity() const { return m_intensity; }
 
 	/** ライトの影響範囲を設定します。(default: 10.0) */
-	void setRange(float range) { m_lightInfo->m_range = range; }
+	void setRange(float range) { m_range = range; }
 
 	/** ライトの影響範囲を取得します。 */
-	float getRange() const { return m_lightInfo->m_range; }
+	float getRange() const { return m_range; }
 
 	/** ライトの減衰を設定します。(default: 1.0) */
-	void setAttenuation(float attenuation) { m_lightInfo->m_attenuation = attenuation; }
+	void setAttenuation(float attenuation) { m_attenuation = attenuation; }
 
 	/** ライトの減衰を取得します。 */
-	float getAttenuation() const { return m_lightInfo->m_attenuation; }
+	float getAttenuation() const { return m_attenuation; }
 
 	/** スポットライトのコーン角度を設定します。(ラジアン単位、default: PI / 3) */
-	void setAngle(float angle) { m_lightInfo->m_spotAngle = angle; }
+	void setAngle(float angle) { m_spotAngle = angle; }
 
 	/** スポットライトのコーン角度を取得します。(ラジアン単位) */
-	float getAngle() const { return m_lightInfo->m_spotAngle; }
+	float getAngle() const { return m_spotAngle; }
 
-	/** スポットライトのコーン角度に対する減衰率を設定します。(0..1, default: 0) */
-	void setPenumbra(float penumbra) { m_lightInfo->m_spotPenumbra = penumbra; }
+	/** スポットライトのコーン角度に対する減衰率を設定します。(0..1, default: 0.1) */
+	void setPenumbra(float penumbra) { m_spotPenumbra = penumbra; }
 
 	/** スポットライトのコーン角度に対する減衰率を設定します。 */
-	float getPenumbra() const { return m_lightInfo->m_spotPenumbra; }
+	float getPenumbra() const { return m_spotPenumbra; }
 
 protected:
 	virtual void onPrepareRender(RenderingContext* context) override;
@@ -352,8 +358,13 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 private:
-	Ref<detail::DynamicLightInfo>	m_lightInfo;
-	bool							m_enabled;
+	Color m_color;
+	float m_intensity;
+	float m_range;
+	float m_attenuation;
+	float m_spotAngle;
+	float m_spotPenumbra;
+	bool m_enabled;
 };
 
 

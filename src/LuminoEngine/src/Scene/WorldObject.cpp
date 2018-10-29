@@ -1,7 +1,9 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Scene/Component.hpp>
+#include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
+#include "SceneManager.hpp"
 
 namespace ln {
 
@@ -82,6 +84,11 @@ WorldObject::~WorldObject()
 void WorldObject::initialize()
 {
     Object::initialize();
+
+	World* activeWorld = detail::EngineDomain::sceneManager()->activeWorld();
+	if (activeWorld) {
+		activeWorld->addObject(this);
+	}
 }
 
 void WorldObject::addComponent(Component* component)

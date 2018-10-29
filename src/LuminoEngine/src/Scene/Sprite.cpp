@@ -1,9 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Visual/SpriteComponent.hpp>
-#include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/Sprite.hpp>
-#include "SceneManager.hpp"
 
 namespace ln {
 
@@ -21,8 +19,6 @@ Sprite::~Sprite()
 void Sprite::initialize()
 {
     WorldObject::initialize();
-    detail::EngineDomain::sceneManager()->activeWorld()->addObject(this);
-
     m_component = newObject<SpriteComponent>();
     addComponent(m_component);
 }

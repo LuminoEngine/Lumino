@@ -93,7 +93,8 @@ void LightComponent::onPreRender(DrawList* context)
 // AmbientLightComponent
 
 AmbientLightComponent::AmbientLightComponent()
-	: m_lightInfo(nullptr)
+	: m_color(Color::White)
+	, m_intensity(0.5f)
 	, m_enabled(true)
 {
 }
@@ -105,16 +106,13 @@ AmbientLightComponent::~AmbientLightComponent()
 void AmbientLightComponent::initialize()
 {
 	VisualComponent::initialize();
-	m_lightInfo = makeRef<detail::DynamicLightInfo>();
-	m_lightInfo->m_type = LightType::Ambient;
-    m_lightInfo->m_intensity = 0.5f;
 }
 
 void AmbientLightComponent::onPrepareRender(RenderingContext* context)
 {
 	if (m_enabled)
 	{
-		context->addDynamicLightInfo(m_lightInfo);
+		context->addAmbientLight(m_color, m_intensity);
 	}
 }
 
@@ -122,7 +120,9 @@ void AmbientLightComponent::onPrepareRender(RenderingContext* context)
 // HemisphereLightComponent
 
 HemisphereLightComponent::HemisphereLightComponent()
-	: m_lightInfo(nullptr)
+	: m_skyColor(Color::White)
+	, m_groundColor(Color::White)
+	, m_intensity(0.5f)
 	, m_enabled(true)
 {
 }
@@ -134,16 +134,13 @@ HemisphereLightComponent::~HemisphereLightComponent()
 void HemisphereLightComponent::initialize()
 {
 	VisualComponent::initialize();
-	m_lightInfo = makeRef<detail::DynamicLightInfo>();
-	m_lightInfo->m_type = LightType::Hemisphere;
-    m_lightInfo->m_intensity = 0.5f;
 }
 
 void HemisphereLightComponent::onPrepareRender(RenderingContext* context)
 {
 	if (m_enabled)
 	{
-		context->addDynamicLightInfo(m_lightInfo);
+		context->addHemisphereLight(m_skyColor, m_groundColor, m_intensity);
 	}
 }
 
@@ -151,7 +148,8 @@ void HemisphereLightComponent::onPrepareRender(RenderingContext* context)
 // DirectionalLightComponent
 
 DirectionalLightComponent::DirectionalLightComponent()
-	: m_lightInfo(nullptr)
+	: m_color(Color::White)
+	, m_intensity(0.5f)
 	, m_enabled(true)
 {
 }
@@ -163,9 +161,6 @@ DirectionalLightComponent::~DirectionalLightComponent()
 void DirectionalLightComponent::initialize()
 {
 	VisualComponent::initialize();
-	m_lightInfo = makeRef<detail::DynamicLightInfo>();
-	m_lightInfo->m_type = LightType::Directional;
-    m_lightInfo->m_intensity = 0.5f;
 }
 
 void DirectionalLightComponent::setShadowCast(bool enabled)
@@ -183,7 +178,9 @@ void DirectionalLightComponent::setShadowCast(bool enabled)
 
 bool DirectionalLightComponent::isShadowCast() const
 {
-	return m_shadowCasterPass != nullptr;
+	LN_NOTIMPLEMENTED();
+	return false;
+	//return m_shadowCasterPass != nullptr;
 }
 
 void DirectionalLightComponent::onPrepareRender(RenderingContext* context)
@@ -191,20 +188,17 @@ void DirectionalLightComponent::onPrepareRender(RenderingContext* context)
 	if (m_enabled)
 	{
         const Matrix& t = transrom()->worldMatrix();
-		m_lightInfo->m_position = t.position();
-		m_lightInfo->m_direction = t.front();
-		m_lightInfo->m_shadowCasterPass = m_shadowCasterPass;
-		context->addDynamicLightInfo(m_lightInfo);
+		context->addDirectionalLight(m_color, m_intensity, t.front());
 
-		if (m_shadowCasterPass != nullptr)
-		{
-			m_shadowCasterPass->view.makePerspective(
-				m_lightInfo->m_position, m_lightInfo->m_direction,
-				Math::PI / 2.0f,
-				//m_shadowCasterPass->m_shadowMap->getSize().toFloatSize(),
-				Size(1024.0/8, 1024.0 / 8),	// TODO: LightMapSize
-				0.5f, 100.0f);	// TODO: clip range
-		}
+		//if (m_shadowCasterPass != nullptr)
+		//{
+		//	m_shadowCasterPass->view.makePerspective(
+		//		m_lightInfo->m_position, m_lightInfo->m_direction,
+		//		Math::PI / 2.0f,
+		//		//m_shadowCasterPass->m_shadowMap->getSize().toFloatSize(),
+		//		Size(1024.0/8, 1024.0 / 8),	// TODO: LightMapSize
+		//		0.5f, 100.0f);	// TODO: clip range
+		//}
 	}
 }
 
@@ -212,7 +206,10 @@ void DirectionalLightComponent::onPrepareRender(RenderingContext* context)
 // PointLightComponent
 
 PointLightComponent::PointLightComponent()
-	: m_lightInfo(nullptr)
+	: m_color(Color::White)
+	, m_intensity(1.0f)
+	, m_range(10.0f)
+	, m_attenuation(1.0f)
 	, m_enabled(true)
 {
 }
@@ -224,19 +221,14 @@ PointLightComponent::~PointLightComponent()
 void PointLightComponent::initialize()
 {
 	VisualComponent::initialize();
-	m_lightInfo = makeRef<detail::DynamicLightInfo>();
-	m_lightInfo->m_type = LightType::Point;
-	m_lightInfo->m_intensity = 1.0f;
 }
 
 void PointLightComponent::onPrepareRender(RenderingContext* context)
 {
 	if (m_enabled)
 	{
-        const Matrix& t = transrom()->worldMatrix();
-        m_lightInfo->m_position = t.position();
-        m_lightInfo->m_direction = t.front();
-		context->addDynamicLightInfo(m_lightInfo);
+		const Matrix& t = transrom()->worldMatrix();
+		context->addPointLight(m_color, m_intensity, t.position(), m_range, m_attenuation);
 	}
 }
 
@@ -244,7 +236,12 @@ void PointLightComponent::onPrepareRender(RenderingContext* context)
 // SpotLightComponent
 
 SpotLightComponent::SpotLightComponent()
-	: m_lightInfo(nullptr)
+	: m_color(Color::White)
+	, m_intensity(1.0f)
+	, m_range(10.0f)
+	, m_attenuation(1.0f)
+	, m_spotAngle(Math::PI / 3)
+	, m_spotPenumbra(0.1f)
 	, m_enabled(true)
 {
 }
@@ -256,9 +253,6 @@ SpotLightComponent::~SpotLightComponent()
 void SpotLightComponent::initialize()
 {
 	VisualComponent::initialize();
-	m_lightInfo = makeRef<detail::DynamicLightInfo>();
-	m_lightInfo->m_type = LightType::Spot;
-	m_lightInfo->m_intensity = 1.0f;
 }
 
 void SpotLightComponent::onPrepareRender(RenderingContext* context)
@@ -266,9 +260,9 @@ void SpotLightComponent::onPrepareRender(RenderingContext* context)
 	if (m_enabled)
 	{
         const Matrix& t = transrom()->worldMatrix();
-        m_lightInfo->m_position = t.position();
-        m_lightInfo->m_direction = t.front();
-		context->addDynamicLightInfo(m_lightInfo);
+		context->addSpotLight(
+			m_color, m_intensity, t.position(), t.front(),
+			m_range, m_attenuation, m_spotAngle, m_spotPenumbra);
 	}
 }
 

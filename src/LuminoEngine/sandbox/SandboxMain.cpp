@@ -34,6 +34,7 @@ int main(int argc, char** argv)
 	GlobalLogger::addStdErrAdapter();
 	Engine::initialize();
 
+
     //auto tex = newObject<Texture2D>(u"D:/tmp/110220c_as019.png");
     auto tex = newObject<Texture2D>(2, 2);
     auto bmp1 = tex->map(MapMode::Write);
@@ -43,6 +44,7 @@ int main(int argc, char** argv)
     bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
     auto sprite = newObject<Sprite>();
     sprite->setTexture(tex);
+
 
     while (Engine::update())
     {

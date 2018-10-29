@@ -24,7 +24,7 @@ void Component::initialize()
 
 detail::WorldObjectTransform* Component::transrom() const
 {
-    &worldObject()->transform();
+    return worldObject()->transform();
 }
 
 void Component::onUpdate(float elapsedSeconds)
