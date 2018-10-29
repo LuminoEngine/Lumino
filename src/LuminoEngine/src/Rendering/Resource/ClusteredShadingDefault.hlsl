@@ -384,7 +384,7 @@ float4 _LN_PS_ClusteredForward_Default(
 		}
 	}
 	
-#if 0
+#if 1
 	float3 ambientIrradiance = float3(0, 0, 0);
 	{
     	float3 color = float3(0, 0, 0);
@@ -409,6 +409,7 @@ float4 _LN_PS_ClusteredForward_Default(
 			// AmbientLight
 			else if (light.directionAndType.w >= 2.0)
 			{
+				//return light.color;
 				//ambientColor = saturate(ambientColor + light.color.rgb * light.color.a);
 				ambientIrradiance += LN_GetAmbientLightIrradiance(light.color.rgb * light.color.a);
 			}
@@ -432,6 +433,10 @@ float4 _LN_PS_ClusteredForward_Default(
 	    }
 	    result.rgb += color;
 	}
+
+
+	// TODO: ひとまず
+	reflectedLight.directDiffuse += ambientIrradiance * material.diffuseColor;
 
 	//RE_IndirectDiffuse_BlinnPhong(ambientIrradiance, geometry, material, reflectedLight);
 
