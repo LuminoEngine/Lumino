@@ -234,6 +234,7 @@ set(LN_SOURCES_Asset
 
 set(LN_SOURCES_Scene
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Camera.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Component.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Light.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Scene.hpp
@@ -243,6 +244,7 @@ set(LN_SOURCES_Scene
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/WorldObject.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/WorldRenderView.hpp
     src/Scene/Internal.hpp
+    src/Scene/Camera.cpp
     src/Scene/Component.cpp
     src/Scene/Light.cpp
     src/Scene/Scene.cpp
@@ -257,10 +259,12 @@ set(LN_SOURCES_Scene
 
 set(LN_SOURCES_Visual
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/CameraComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/LightComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/SpriteComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/VisualComponent.hpp
     src/Visual/Internal.hpp
+    src/Visual/CameraComponent.cpp
     src/Visual/LightComponent.cpp
     src/Visual/SpriteComponent.cpp
     src/Visual/VisualComponent.cpp
