@@ -6,6 +6,7 @@ namespace ln {
 class UIFrameWindow;
 class World;
 class WorldRenderView;
+class Camera;
 
 namespace detail {
 class PlatformManager;
@@ -105,6 +106,7 @@ private:
 	Ref<UIFrameWindow> m_mainWindow;
     Ref<World> m_mainWorld;
     Ref<WorldRenderView> m_mainWorldRenderView;
+	Ref<Camera> m_mainCamera;
 
 	bool m_exitRequested;
 };

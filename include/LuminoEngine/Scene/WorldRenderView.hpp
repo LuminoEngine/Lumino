@@ -5,6 +5,7 @@
 
 namespace ln {
 class World;
+class Camera;
 namespace detail {
 class SceneRenderingPipeline;
 }
@@ -14,6 +15,7 @@ class WorldRenderView
 {
 public:
     void setTargetWorld(World* world);
+	void setCamera(Camera* camera);
 
 
     // TODO: internal
@@ -28,6 +30,7 @@ private:
     Ref<detail::SceneRenderingPipeline> m_sceneRenderingPipeline;
     Ref<detail::DrawElementListCollector> m_drawElementListCollector;
     Ref<World> m_targetWorld;
+	Ref<Camera> m_camera;
 };
 
 } // namespace ln

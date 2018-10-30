@@ -4,6 +4,7 @@
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
+#include <LuminoEngine/Scene/Camera.hpp>
 #include "../Platform/PlatformManager.hpp"
 #include "../Input/InputManager.hpp"
 #include "../Audio/AudioManager.hpp"
@@ -72,7 +73,9 @@ void EngineManager::initialize()
 
     m_mainWorld = newObject<World>();
     m_mainWorldRenderView = newObject<WorldRenderView>();
+	m_mainCamera = newObject<Camera>();
     m_mainWorldRenderView->setTargetWorld(m_mainWorld);
+	m_mainWorldRenderView->setCamera(m_mainCamera);
     m_sceneManager->setActiveWorld(m_mainWorld);
 }
 

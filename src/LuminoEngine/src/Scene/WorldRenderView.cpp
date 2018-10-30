@@ -3,6 +3,7 @@
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
+#include <LuminoEngine/Scene/Camera.hpp>
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/RenderingPipeline.hpp"
 
@@ -36,22 +37,30 @@ void WorldRenderView::setTargetWorld(World* world)
     addDrawElementListManager(m_drawElementListCollector);
 }
 
+void WorldRenderView::setCamera(Camera* camera)
+{
+	m_camera = camera;
+}
+
 void WorldRenderView::render(GraphicsContext* graphicsContext)
 {
-    FrameBuffer fb;
-    fb.renderTarget[0] = graphicsContext->colorBuffer(0);
-    fb.depthBuffer = graphicsContext->depthBuffer();
+	if (m_camera)
+	{
+		FrameBuffer fb;
+		fb.renderTarget[0] = graphicsContext->colorBuffer(0);
+		fb.depthBuffer = graphicsContext->depthBuffer();
 
-    // TODO:
-    detail::CameraInfo camera;
-    {
-        Size size(fb.renderTarget[0]->width(), fb.renderTarget[0]->height());
-        Vector3 pos = Vector3(5, 5, -5);
-        camera.makePerspective(pos, Vector3::normalize(Vector3::Zero - pos), Math::PI / 3.0f, size, 0.1f, 100.0f);
+		// TODO:
+		detail::CameraInfo camera;
+		{
+			Size size(fb.renderTarget[0]->width(), fb.renderTarget[0]->height());
+			Vector3 pos = Vector3(5, 5, -5);
+			camera.makePerspective(pos, Vector3::normalize(Vector3::Zero - pos), Math::PI / 3.0f, size, 0.1f, 100.0f);
 
-    }
+		}
 
-    m_sceneRenderingPipeline->render(graphicsContext, fb, &camera, &elementListManagers());
+		m_sceneRenderingPipeline->render(graphicsContext, fb, &camera, &elementListManagers());
+	}
 }
 
 } // namespace ln

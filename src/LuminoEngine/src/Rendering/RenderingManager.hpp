@@ -66,6 +66,14 @@ enum class BuiltinShader
  * RenderStage の集合 に対しては n:n。
  * これは主にエディタ上で、シーンのプレビューを異なるウィンドウで見れるようにするための仕組み。(通常レンダリングと深度マップを同時表示など)
  * オフスクリーンレンダリングでも使用される。
+ *
+ * ※Unity の Camera が持っている RenderTarge 関係の情報を抜き出した感じ。Camera クラスと統合しないのは、
+ * - Lumino としては World のモジュールの方が上位なので、依存したくない
+ * - Camera オブジェクトは World ごとにインスタンスが変わるのに対して、RenderView は UIViewport 側につくので、寿命が異なる。
+ *
+ * Note:
+ * - でも RenderView と Camera の 1:n 関係をサポートすると、Camera に View ⇔ World 座標変換メソッドを持たせることができなくなる。or RenderView を毎回指定しなければならない。
+ * - ウィンドウorバックバッファのサイズが欲しいときに Camera クラスを想像するだろうか？
  * 
  * ###　RenderFerture
  * Sprite や Text など、様々なコンポーネントの描画に特化した派生クラスがある。
