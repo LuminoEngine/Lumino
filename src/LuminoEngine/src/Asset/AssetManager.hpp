@@ -20,6 +20,8 @@ public:
 	bool existsFile(const StringRef& filePath) const;
 	Ref<Texture2D> loadTexture(const StringRef& filePath);
 
+    Ref<Stream> openFileStream(const StringRef& filePath);
+
 private:
 };
 

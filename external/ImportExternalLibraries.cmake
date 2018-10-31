@@ -236,7 +236,6 @@ else()
     find_library(OpenAL_LIBRARY_RELEASE NAMES OpenAL32 PATHS ${OpenAL_ROOT} PATH_SUFFIXES lib)
     find_library(OpenAL_LIBRARY_DEBUG NAMES OpenAL32d PATHS ${OpenAL_ROOT} PATH_SUFFIXES lib)
 
-    set(LIB_NAME OpenAL)
     add_library(OpenAL STATIC IMPORTED)
     set_target_properties(OpenAL PROPERTIES IMPORTED_LOCATION_RELEASE "${OpenAL_LIBRARY_RELEASE}")
     set_target_properties(OpenAL PROPERTIES IMPORTED_LOCATION_DEBUG "${OpenAL_LIBRARY_DEBUG}")
@@ -257,3 +256,16 @@ if (LN_USE_SDL)
     set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
     set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${SDL2_ROOT}/include)
 endif()
+
+#--------------------------------------
+# freetype
+
+ln_make_external_find_path(FreeType_ROOT "freetype2")
+
+find_library(FreeType_LIBRARY_RELEASE NAMES freetype libfreetype PATHS ${FreeType_ROOT} PATH_SUFFIXES lib)
+find_library(FreeType_LIBRARY_DEBUG NAMES freetyped libfreetyped PATHS ${FreeType_ROOT} PATH_SUFFIXES lib)
+
+add_library(FreeType STATIC IMPORTED)
+set_target_properties(FreeType PROPERTIES IMPORTED_LOCATION_RELEASE "${FreeType_LIBRARY_RELEASE}")
+set_target_properties(FreeType PROPERTIES IMPORTED_LOCATION_DEBUG "${FreeType_LIBRARY_DEBUG}")
+set_target_properties(FreeType PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${FreeType_ROOT}/include/freetype2)

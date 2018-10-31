@@ -191,6 +191,11 @@ namespace LuminoBuild.Tasks
                     Directory.Move(Path.Combine(reposDir, "SDL2-2.0.8", "SDL2-2.0.8"), Path.Combine(reposDir, "SDL2"));
                 }
             }
+            if (!Directory.Exists("freetype2"))
+            {
+                Utils.CallProcess("git", "clone --progress --depth 1 -b VER-2-7-1 git://git.sv.nongnu.org/freetype/freetype2.git freetype2");
+            }
+
 
             if (Utils.IsWin32)
             {
@@ -202,6 +207,7 @@ namespace LuminoBuild.Tasks
                         var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "Android-" + target.ABI, "ExternalInstall", "zlib"));
                         BuildProjectAndroid(builder, "zlib", reposDir, target.ABI);
                         BuildProjectAndroid(builder, "libpng", reposDir, target.ABI, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
+                        BuildProjectAndroid(builder, "freetype2", reposDir, target.ABI);
                     }
                 }
 
@@ -213,6 +219,7 @@ namespace LuminoBuild.Tasks
                     BuildProjectEm(builder, "zlib", reposDir, "Emscripten");
                     BuildProjectEm(builder, "libpng", reposDir, "Emscripten", $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
                     BuildProjectEm(builder, "glad", reposDir, "Emscripten", "-DGLAD_INSTALL=ON");
+                    BuildProjectEm(builder, "freetype2", reposDir, "Emscripten");
                 }
 
                 // Visual C++
@@ -228,6 +235,7 @@ namespace LuminoBuild.Tasks
                     BuildProject(builder, "glad", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DGLAD_INSTALL=ON");
                     BuildProject(builder, "openal-soft", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
                     BuildProject(builder, "SDL2", reposDir, target.DirName, target.VSTarget, $"-DSDL_SHARED=OFF -DSDL_STATIC=ON -DSSE=OFF -DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
+                    BuildProject(builder, "freetype2", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
                 }
             }
             else
@@ -249,6 +257,7 @@ namespace LuminoBuild.Tasks
                         var args = $"-DCMAKE_TOOLCHAIN_FILE=\"{iOSToolchainFile}\" -DIOS_PLATFORM=OS";
                         var generator = "Xcode";
                         BuildProject(builder, "libpng", reposDir, dirName, generator, args);
+                        BuildProject(builder, "freetype2", reposDir, dirName, generator, args);
                     }
                 }
 
@@ -275,6 +284,7 @@ namespace LuminoBuild.Tasks
                     BuildProject(builder, "SPIRV-Cross", reposDir, dirName, generator, args);
                     BuildProject(builder, "glfw", reposDir, dirName, generator, $"-DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF -DGLFW_INSTALL=ON");
                     BuildProject(builder, "glad", reposDir, dirName, generator, $"-DGLAD_INSTALL=ON " + args);
+                    BuildProject(builder, "freetype2", reposDir, dirName, generator, args);
                 }
             }
         }

@@ -172,6 +172,21 @@ set(LN_SOURCES_Shader
     src/Shader/UnifiedShader.hpp
 )
 
+set(LN_SOURCES_Font
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Font/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Font/Font.hpp
+    src/Font/Internal.hpp
+    src/Font/Font.cpp
+    src/Font/FontCore.cpp
+    src/Font/FontCore.hpp
+    src/Font/FontManager.cpp
+    src/Font/FontManager.hpp
+    src/Font/FreeTypeFont.cpp
+    src/Font/FreeTypeFont.hpp
+    src/Font/TextLayoutEngine.cpp
+    src/Font/TextLayoutEngine.hpp
+)
+
 set(LN_SOURCES_Mesh
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/Mesh.hpp
@@ -291,19 +306,20 @@ if (APPLE)
 endif()
 
 # Grouping.
-source_group("Engine"                FILES ${LN_SOURCES_Engine})
-source_group("Platform"                FILES ${LN_SOURCES_Platform})
-source_group("Input"                FILES ${LN_SOURCES_Input})
-source_group("Grammar"                FILES ${LN_SOURCES_Grammar})
-source_group("Audio"                FILES ${LN_SOURCES_Audio})
-source_group("Graphics"                FILES ${LN_SOURCES_Graphics})
-source_group("Shader"                FILES ${LN_SOURCES_Shader})
-source_group("Mesh"                FILES ${LN_SOURCES_Mesh})
-source_group("Rendering"                FILES ${LN_SOURCES_Rendering})
-source_group("Asset"                FILES ${LN_SOURCES_Asset})
-source_group("Scene"                FILES ${LN_SOURCES_Scene})
-source_group("Visual"                FILES ${LN_SOURCES_Visual})
-source_group("UI"                    FILES ${LN_SOURCES_UI})
+source_group("Engine"    FILES ${LN_SOURCES_Engine})
+source_group("Platform"  FILES ${LN_SOURCES_Platform})
+source_group("Input"     FILES ${LN_SOURCES_Input})
+source_group("Grammar"   FILES ${LN_SOURCES_Grammar})
+source_group("Audio"     FILES ${LN_SOURCES_Audio})
+source_group("Graphics"  FILES ${LN_SOURCES_Graphics})
+source_group("Shader"    FILES ${LN_SOURCES_Shader})
+source_group("Font"      FILES ${LN_SOURCES_Font})
+source_group("Mesh"      FILES ${LN_SOURCES_Mesh})
+source_group("Rendering" FILES ${LN_SOURCES_Rendering})
+source_group("Asset"     FILES ${LN_SOURCES_Asset})
+source_group("Scene"     FILES ${LN_SOURCES_Scene})
+source_group("Visual"    FILES ${LN_SOURCES_Visual})
+source_group("UI"        FILES ${LN_SOURCES_UI})
 
 set(LN_SOURCES
     src/LuminoEngine.PCH.cpp
@@ -316,6 +332,7 @@ set(LN_SOURCES
 	${LN_SOURCES_Audio}
     ${LN_SOURCES_Graphics}
     ${LN_SOURCES_Shader}
+    ${LN_SOURCES_Font}
     ${LN_SOURCES_Mesh}
     ${LN_SOURCES_Rendering}
     ${LN_SOURCES_Asset}
@@ -396,7 +413,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE ${LN_PLATFORM_DEFINITIONS})
 #target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive ${PROJECT_NAME}-static -Wl,--no-whole-archive)
 #target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-static)
 target_link_libraries(${PROJECT_NAME} INTERFACE LuminoCore ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore ZLIB PNG ${LN_PLATFORM_LIBS})
+target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore ZLIB PNG FreeType ${LN_PLATFORM_LIBS})
 #target_link_libraries(${PROJECT_NAME} PRIVATE glslang)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")

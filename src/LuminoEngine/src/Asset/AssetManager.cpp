@@ -40,6 +40,13 @@ Ref<Texture2D> AssetManager::loadTexture(const StringRef& filePath)
 	return ref;
 }
 
+Ref<Stream> AssetManager::openFileStream(const StringRef& filePath)
+{
+    // TODO: archive
+
+    return FileStream::create(filePath, FileOpenMode::Read);
+}
+
 } // namespace detail
 } // namespace ln
 
