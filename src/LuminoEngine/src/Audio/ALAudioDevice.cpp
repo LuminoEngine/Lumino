@@ -1,4 +1,5 @@
 ﻿
+#ifdef LN_USE_OPENAL
 #include "Internal.hpp"
 #include "ALAudioDevice.hpp"
 #include "CoreAudioNode.hpp"
@@ -99,3 +100,4 @@ void ALAudioDevice::updateProcess()
 } // namespace detail
 } // namespace ln
 
+#endif

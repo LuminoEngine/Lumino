@@ -30,7 +30,7 @@ public:
     float getFarClip() const { return m_component->getFarClip(); }
 
 
-	//CameraComponent* getCameraComponent() const;
+	CameraComponent* cameraComponent() const;
 
 LN_CONSTRUCT_ACCESS:
 	Camera();

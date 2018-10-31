@@ -55,7 +55,7 @@ void AudioNode::commit()
 }
 
 #ifdef LN_AUDIO_THREAD_ENABLED
-std::shared_mutex& AudioNode::commitMutex()
+detail::AudioRWMutex& AudioNode::commitMutex()
 {
 	return context()->commitMutex();
 }

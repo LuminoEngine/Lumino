@@ -39,6 +39,17 @@ private:
 	std::vector<float> m_renderdBuffer;
 };
 
+class NullAudioDevice
+	: public AudioDevice
+{
+public:
+	NullAudioDevice();
+	virtual int deviceSamplingRate() override;
+	virtual void updateProcess() override;
+
+private:
+};
+
 } // namespace detail
 } // namespace ln
 

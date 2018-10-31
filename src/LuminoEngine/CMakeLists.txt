@@ -368,6 +368,9 @@ if (LN_USE_SDL)
     list(APPEND LN_PLATFORM_LIBS SDL2)
     list(APPEND LN_PLATFORM_DEFINITIONS LN_USE_SDL=1)
 endif()
+if (LN_USE_OPENAL)
+    list(APPEND LN_PLATFORM_DEFINITIONS LN_USE_OPENAL=1)
+endif()
 
 #------------------------------------------------------------------------------
 # Targets

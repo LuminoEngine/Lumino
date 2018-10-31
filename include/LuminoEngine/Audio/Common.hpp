@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <shared_mutex>
 
 #ifdef __EMSCRIPTEN__
 #else
@@ -6,6 +7,22 @@
 #endif
 
 namespace ln {
+
+namespace detail {
+class internal_shared_mutex;
+#ifdef LN_AUDIO_THREAD_ENABLED
+#ifdef LN_OS_ANDROID
+using AudioRWMutex = internal_shared_mutex;
+#else
+using AudioRWMutex = std::shared_mutex;
+#endif
+#define LN_AUDIO_WRITE_LOCK_COMMIT	std::lock_guard<ln::detail::AudioRWMutex> lock(commitMutex());
+#define LN_AUDIO_READ_LOCK_COMMIT	std::shared_lock<ln::detail::AudioRWMutex> lock(commitMutex());
+#else
+#define LN_AUDIO_WRITE_LOCK_COMMIT
+#define LN_AUDIO_READ_LOCK_COMMIT
+#endif
+} // namespace detail
 
 namespace detail {
 

@@ -40,7 +40,7 @@ void AudioContext::initialize()
     device->initialize(detail::CoreAudioNode::ProcessingSizeInFrames);
     m_audioDevice = device;
 #else
-	//auto device = makeRef<detail::ALAudioDevice>();
+	auto device = makeRef<detail::NullAudioDevice>();
 #endif
 	m_coreDestinationNode = makeRef<detail::CoreAudioDestinationNode>(m_audioDevice);
 	m_coreDestinationNode->initialize();

@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include <shared_mutex>
 
 namespace ln {
 namespace detail {
@@ -35,8 +34,8 @@ public:
 
 LN_INTERNAL_ACCESS:
 #ifdef LN_AUDIO_THREAD_ENABLED
-	std::shared_mutex m_commitMutex;
-	std::shared_mutex& commitMutex() { return m_commitMutex; }
+	detail::AudioRWMutex m_commitMutex;
+	detail::AudioRWMutex& commitMutex() { return m_commitMutex; }
 #endif
 
 	void addAudioNode(AudioNode* node);

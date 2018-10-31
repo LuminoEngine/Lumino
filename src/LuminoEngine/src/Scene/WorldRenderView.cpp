@@ -53,9 +53,23 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
 		// TODO:
 		detail::CameraInfo camera;
 		{
-			Size size(fb.renderTarget[0]->width(), fb.renderTarget[0]->height());
-			Vector3 pos = Vector3(5, 5, -5);
-			camera.makePerspective(pos, Vector3::normalize(Vector3::Zero - pos), Math::PI / 3.0f, size, 0.1f, 100.0f);
+			CameraComponent* cc = m_camera->cameraComponent();
+
+			camera.viewPixelSize = Size(fb.renderTarget[0]->width(), fb.renderTarget[0]->height());	// TODO: 必要？
+			camera.viewPosition = m_camera->m_transform->position;
+			camera.viewDirection = cc->getDirectionInternal().xyz();
+			camera.viewMatrix = cc->getViewMatrix();
+			camera.projMatrix = cc->getProjectionMatrix();
+			camera.viewProjMatrix = cc->getViewProjectionMatrix();
+			camera.viewFrustum = cc->getViewFrustum();
+
+			camera.nearClip = cc->getNearClip();
+			camera.farClip = cc->getFarClip();
+
+
+			//Size size(fb.renderTarget[0]->width(), fb.renderTarget[0]->height());
+			//Vector3 pos = Vector3(5, 5, -5);
+			//camera.makePerspective(pos, Vector3::normalize(Vector3::Zero - pos), Math::PI / 3.0f, size, 0.1f, 100.0f);
 
 		}
 

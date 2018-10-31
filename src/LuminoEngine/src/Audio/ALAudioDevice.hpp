@@ -1,4 +1,7 @@
 ﻿#pragma once
+
+#ifdef LN_USE_OPENAL
+
 #include <AL/al.h>
 #include <AL/alc.h>
 #include "AudioDevice.hpp"
@@ -28,3 +31,4 @@ private:
 } // namespace detail
 } // namespace ln
 
+#endif

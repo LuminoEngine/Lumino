@@ -27,11 +27,11 @@ void Camera::initialize()
 	WorldObject::initialize();
     m_component = newObject<CameraComponent>();
 }
-//
-//CameraComponent* Camera::getCameraComponent() const
-//{
-//	return m_component;
-//}
+
+CameraComponent* Camera::cameraComponent() const
+{
+	return m_component;
+}
 
 //void Camera::setCameraComponent(CameraComponent* component)
 //{

@@ -36,19 +36,23 @@ int main(int argc, char** argv)
 
 	auto light1 = AmbientLight::create();
 
-    auto tex = newObject<Texture2D>(u"D:/tmp/110220c_as019.png");
-    //auto tex = newObject<Texture2D>(2, 2);
-    //auto bmp1 = tex->map(MapMode::Write);
-    //bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
-    //bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
-    //bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
-    //bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
+    //auto tex = newObject<Texture2D>(u"D:/tmp/110220c_as019.png");
+    auto tex = newObject<Texture2D>(2, 2);
+    auto bmp1 = tex->map(MapMode::Write);
+    bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
+    bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
+    bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
+    bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
     auto sprite = newObject<Sprite>();
     sprite->setTexture(tex);
 
 
     while (Engine::update())
     {
+		if (Input::isPressed(InputButtons::Left))
+		{
+			printf("left\n");
+		}
     }
 
 

@@ -72,11 +72,11 @@ void EngineManager::initialize()
 	}
 
     m_mainWorld = newObject<World>();
-    m_mainWorldRenderView = newObject<WorldRenderView>();
+    m_sceneManager->setActiveWorld(m_mainWorld);
 	m_mainCamera = newObject<Camera>();
+    m_mainWorldRenderView = newObject<WorldRenderView>();
     m_mainWorldRenderView->setTargetWorld(m_mainWorld);
 	m_mainWorldRenderView->setCamera(m_mainCamera);
-    m_sceneManager->setActiveWorld(m_mainWorld);
 }
 
 void EngineManager::dispose()

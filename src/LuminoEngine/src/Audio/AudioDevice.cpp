@@ -35,6 +35,22 @@ void AudioDevice::render(int16_t* outputBuffer, int length)
 	AudioDecoder::convertFromFloat32(outputBuffer, m_renderdBuffer.data(), length, PCMFormat::S16L);
 }
 
+//==============================================================================
+// NullAudioDevice
+
+NullAudioDevice::NullAudioDevice()
+{
+}
+
+int NullAudioDevice::deviceSamplingRate()
+{
+	return 48000;
+}
+
+void NullAudioDevice::updateProcess()
+{
+}
+
 } // namespace detail
 } // namespace ln
 

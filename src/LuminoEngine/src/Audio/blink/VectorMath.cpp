@@ -20,7 +20,7 @@
 #include <emmintrin.h>
 #endif
 
-#if defined(LN_OS_MAC)
+#if defined(ARM_NEON_INTRINSICS)
 #include <arm_neon.h>
 #endif
 
