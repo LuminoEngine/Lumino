@@ -115,7 +115,7 @@ void MeasureTextLayoutEngine::onPlacementGlyph(UTF32 ch, const Vector2& pos, con
 
 
 //==============================================================================
-// MeasureTextLayoutEngine
+// BitmapTextRenderer
 
 void BitmapTextRenderer::render(Bitmap2D* bitmap, const StringRef& text, const Rect& rect, Font* font, const Color& color, TextLayoutOptions options)
 {

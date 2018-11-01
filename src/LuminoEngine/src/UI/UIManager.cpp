@@ -5,6 +5,9 @@
 namespace ln {
 namespace detail {
 
+//==============================================================================
+// UIManager
+
 UIManager::UIManager()
 	: m_graphicsManager(nullptr)
 {

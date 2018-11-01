@@ -9,6 +9,9 @@
 
 namespace ln {
 
+//==============================================================================
+// UIFrameWindow
+
 UIFrameWindow::UIFrameWindow()
 {
 }

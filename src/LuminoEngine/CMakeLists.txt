@@ -289,11 +289,27 @@ set(LN_SOURCES_Visual
 
 set(LN_SOURCES_UI
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIElement.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIControl.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIEvents.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIFrameWindow.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UILayoutElement.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UILayoutPanel.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIRenderingContext.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UISprite.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIViewport.hpp
+    src/UI/UIControl.cpp
+    src/UI/UIElement.cpp
     src/UI/UIFrameWindow.cpp
+    src/UI/UILayoutElement.cpp
+    src/UI/UILayoutPanel.cpp
     src/UI/UIManager.cpp
     src/UI/UIManager.hpp
+    src/UI/UIRenderingContext.cpp
+    src/UI/UIRenderView.cpp
+    src/UI/UIRenderView.hpp
+    src/UI/UISprite.cpp
+    src/UI/UIViewport.cpp
 )
 
 if (APPLE)
