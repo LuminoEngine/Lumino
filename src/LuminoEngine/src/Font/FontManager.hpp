@@ -133,6 +133,9 @@ public:
 	void addAliveFontCore(FontCore* font) { m_aliveFontCoreList.add(font); }
 	void removeAliveFontCore(FontCore* font) { m_aliveFontCoreList.remove(font); }
 
+    void setDefaultFontDesc(const FontDesc& desc) { m_defaultFontDesc = desc; }
+    FontDesc defaultFontDesc() const { return m_defaultFontDesc; }
+
 private:
     static FT_Error callbackFaceRequester(FTC_FaceID face_id, FT_Library library, FT_Pointer request_data, FT_Face* aface);
     FT_Error faceRequester(FTC_FaceID face_id, FT_Library library, FT_Pointer request_data, FT_Face* aface);
@@ -167,6 +170,8 @@ private:
 
     typedef std::unordered_map<intptr_t, TTFDataEntry> TTFDataEntryMap;
     TTFDataEntryMap m_ttfDataEntryMap;
+
+    FontDesc m_defaultFontDesc;
 };
 
 } // namespace detail

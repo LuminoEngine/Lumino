@@ -4,6 +4,7 @@
 #include "ColorStructs.hpp"
 
 namespace ln {
+class Bitmap2D;
 
 namespace detail {
 
@@ -20,9 +21,34 @@ struct U32
 	byte_t D[4];
 };
 
+class PixelAccessor_A8
+{
+public:
+    ClColor color;
+
+    PixelAccessor_A8(ClColor c)
+        : color(c)
+    {}
+    inline size_t pitch(int width) const
+    {
+        return width;
+    }
+    inline ClColor get(const byte_t* line, int x) const
+    {
+        byte_t c = line[x];
+        return ClColor{ color.r, color.g, color.b, c };
+    }
+    inline void set(byte_t* line, int x, ClColor color) const
+    {
+        line[x] = color.a;
+    }
+};
+
 class PixelAccessor_R8G8B8A8
 {
 public:
+    PixelAccessor_R8G8B8A8(ClColor c)
+    {}
 	inline size_t pitch(int width) const
 	{
 		return width * 4;
@@ -36,26 +62,6 @@ public:
 	{
 		U32* w = &((U32*)line)[x];
 		w->D[0] = color.r; w->D[1] = color.g; w->D[2] = color.b; w->D[3] = color.a;
-	}
-};
-
-class PixelAccessor_A8
-{
-public:
-	ClColor color;
-
-	inline size_t pitch(int width) const
-	{
-		return width;
-	}
-	inline ClColor get(const byte_t* line, int x) const
-	{
-		byte_t c = line[x];
-		return ClColor{ color.r, color.g, color.b, c };
-	}
-	inline void set(byte_t* line, int x, ClColor color) const
-	{
-		line[x] = color.a;
 	}
 };
 
@@ -126,7 +132,7 @@ public:
 
 	inline ClColor getPixel(int x)
 	{
-		return m_accessor.get(m_curLine, m_dstRect.x + x);
+		return m_accessor.get(m_currentLine, m_dstRect.x + x);
 	}
 
 	inline void setPixel(int x, ClColor color)
@@ -144,7 +150,38 @@ private:
 	TPixelAccessor m_accessor;
 };
 
-} // namespace detail 
+
+
+class BlitHelper
+{
+public:
+    template<class TDestConverter, class TSrcConverter>
+    static void bitBltInternalTemplate(
+        Bitmap2D* dest, const RectI& destRect,
+        const Bitmap2D* src, const RectI& srcRect,
+        ClColor mulColorRGBA, bool alphaBlend) throw();
+
+    template<class TDestConverter>
+    static void bitBltInternalTemplateHelper(
+        Bitmap2D* dest, const RectI& destRect,
+        const Bitmap2D* src, const RectI& srcRect,
+        ClColor mulColorRGBA, bool alphaBlend);
+
+    static void bitBltInternal(
+        Bitmap2D* dest, const RectI& destRect,
+        const Bitmap2D* src, const RectI& srcRect,
+        ClColor mulColorRGBA, bool alphaBlend);
+};
+
+
+
+} // namespace detail
+
+enum class BitmapBlitOptions
+{
+    None = 0x0000,
+    AlphaBlend = 0x0001,
+};
 
 class Bitmap2D
 	: public Object
@@ -170,6 +207,8 @@ public:
 
 	Ref<Bitmap2D> transcodeTo(PixelFormat format, const Color32& color = Color32::White) const;
 
+    void blit(const RectI& destRect, const Bitmap2D* srcBitmap, const RectI& srcRect, const Color32& color, BitmapBlitOptions options);
+
 	static int getPixelFormatByteSize(PixelFormat format);
 	static int getBitmapByteSize(int width, int height, int depth, PixelFormat format);
 
@@ -188,6 +227,8 @@ public:	// TODO:
 	Ref<ByteBuffer> m_buffer;	// Font などからの reserve 動作のため、m_size * m_format とバイトサイズは一致しないことがあるので注意。
 	SizeI m_size;
 	PixelFormat m_format;
+
+    friend class detail::BlitHelper;
 };
 
 class Bitmap3D
@@ -230,6 +271,7 @@ class BitmapHelper
 public:
 	static void blitRawSimple(void* dst, const void* src, size_t width, size_t height, size_t pixelBytes, bool flipVertical);
 	static void blitRawSimple3D(void* dst, const void* src, size_t width, size_t height, size_t depth, size_t pixelBytes, bool flipVertical);
+    //static void drawText(Bitmap2D* bitmap, const StringRef& text, const RectI& rect, Font* font, const Color& color);
 };
 } // namespace detail
 } // namespace ln

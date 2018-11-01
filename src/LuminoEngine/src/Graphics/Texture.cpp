@@ -6,6 +6,8 @@
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
+#include <LuminoEngine/Font/Font.hpp>
+#include "../Font/TextLayoutEngine.hpp"
 
 namespace ln {
 
@@ -85,6 +87,12 @@ void Texture2D::initialize(const StringRef& filePath, TextureFormat format, bool
 	setMipmap(mipmap);
 }
 
+void Texture2D::dispose()
+{
+    m_rhiObject.reset();
+    Texture::dispose();
+}
+
 Bitmap2D* Texture2D::map(MapMode mode)
 {
 	if (m_initialUpdate && m_pool == GraphicsResourcePool::None)
@@ -101,10 +109,11 @@ void Texture2D::setResourcePool(GraphicsResourcePool pool)
 	m_pool = pool;
 }
 
-void Texture2D::dispose()
+void Texture2D::drawText(const StringRef& text, const Rect& rect, Font* font, const Color& color)
 {
-	m_rhiObject.reset();
-	Texture::dispose();
+    Bitmap2D* bitmap = map(MapMode::Write);
+    detail::BitmapTextRenderer renderer;
+    renderer.render(bitmap, text, rect, font, color, detail::TextLayoutOptions::None);
 }
 
 void Texture2D::onChangeDevice(detail::IGraphicsDeviceContext* device)

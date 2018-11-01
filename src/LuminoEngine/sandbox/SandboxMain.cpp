@@ -36,49 +36,53 @@ int main(int argc, char** argv)
 	GlobalLogger::addStdErrAdapter();
 	Engine::initialize();
 
-	detail::EngineDomain::fontManager()->registerFontFile(u"C:/Proj/GitHub/Lumino/tools/VLGothic/VL-PGothic-Regular.ttf");
+    
+	detail::EngineDomain::fontManager()->registerFontFile(LN_LOCALFILE("../../../tools/VLGothic/VL-PGothic-Regular.ttf"));
 
-	detail::FontDesc desc;
-	desc.Family = "VL PGothic";
-	desc.isBold = true;
-	auto font1 = detail::EngineDomain::fontManager()->lookupFontCore(desc);
-	auto font2 = detail::EngineDomain::fontManager()->lookupFontCore(desc);
+	//detail::FontDesc desc;
+	//desc.Family = "VL PGothic";
+	//desc.isBold = true;
+	//auto font1 = detail::EngineDomain::fontManager()->lookupFontCore(desc);
+	//auto font2 = detail::EngineDomain::fontManager()->lookupFontCore(desc);
 
-	detail::FontGlobalMetrics gm;
-	font2->getGlobalMetrics(&gm);
+	//detail::FontGlobalMetrics gm;
+	//font2->getGlobalMetrics(&gm);
 
-	detail::BitmapGlyphInfo bmpInfo;
-	//auto bmp = newObject<Bitmap2D>();
-	//bmpInfo.glyphBitmap = bmp;
-	bmpInfo.glyphBitmap = nullptr;
-	font2->lookupGlyphBitmap('A', &bmpInfo);
-	bmpInfo.glyphBitmap->transcodeTo(PixelFormat::RGBA32)->save("C:/LocalProj/tmp/test.png");
-	font2->lookupGlyphBitmap('A', &bmpInfo);
+	//detail::BitmapGlyphInfo bmpInfo;
+	////auto bmp = newObject<Bitmap2D>();
+	////bmpInfo.glyphBitmap = bmp;
+	//bmpInfo.glyphBitmap = nullptr;
+	//font2->lookupGlyphBitmap('A', &bmpInfo);
+	//bmpInfo.glyphBitmap->transcodeTo(PixelFormat::RGBA32)->save("C:/LocalProj/tmp/test.png");
+	//font2->lookupGlyphBitmap('A', &bmpInfo);
 
-	auto ker = font2->getKerning('i', 'j');
+	//auto ker = font2->getKerning('i', 'j');
 
-	printf("");
+	//printf("");
 
-	//auto light1 = AmbientLight::create();
+    auto font = Font::create(u"VL PGothic", 20);
 
- //   //auto tex = newObject<Texture2D>(u"D:/tmp/110220c_as019.png");
- //   auto tex = newObject<Texture2D>(2, 2);
- //   auto bmp1 = tex->map(MapMode::Write);
- //   bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
- //   bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
- //   bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
- //   bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
- //   auto sprite = newObject<Sprite>();
- //   sprite->setTexture(tex);
+	auto light1 = AmbientLight::create();
+
+    auto tex = newObject<Texture2D>(u"D:/tmp/110220c_as019.png");
+    tex->drawText(u"Hello!", Rect(0, 0, 100, 100), font, Color::White);
+    //auto tex = newObject<Texture2D>(2, 2);
+    //auto bmp1 = tex->map(MapMode::Write);
+    //bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
+    //bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
+    //bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
+    //bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
+    auto sprite = newObject<Sprite>();
+    sprite->setTexture(tex);
 
 
- //   while (Engine::update())
- //   {
-	//	if (Input::isPressed(InputButtons::Left))
-	//	{
-	//		printf("left\n");
-	//	}
- //   }
+    while (Engine::update())
+    {
+		if (Input::isPressed(InputButtons::Left))
+		{
+			printf("left\n");
+		}
+    }
 
 
 #if 0

@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "GraphicsResource.hpp"
+#include "ColorStructs.hpp"
 #include "GeometryStructs.hpp"
 
 namespace ln {
@@ -9,6 +10,7 @@ namespace detail { class ITexture; }
 
 class Bitmap2D;
 class Bitmap3D;
+class Font;
 
 /** テクスチャのベースクラスです。 */
 LN_CLASS()
@@ -62,6 +64,8 @@ public:
 
 	/** リソースの管理方法を変更します。(default: Managed) */
 	void setResourcePool(GraphicsResourcePool pool);
+
+    void drawText(const StringRef& text, const Rect& rect, Font* font, const Color& color);
 
 LN_CONSTRUCT_ACCESS:
 	Texture2D();

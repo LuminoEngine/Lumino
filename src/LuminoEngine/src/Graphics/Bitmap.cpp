@@ -278,6 +278,168 @@ private:
 	BitmapFrame m_frame;
 };
 
+
+
+
+//==============================================================================
+// BlitHelper
+
+template<class TDestConverter, class TSrcConverter>
+void BlitHelper::bitBltInternalTemplate(
+    Bitmap2D* dest, const RectI& destRect,
+    const Bitmap2D* src, const RectI& srcRect,
+    ClColor mulColorRGBA, bool alphaBlend) throw()
+{
+    SrcBuffer<TSrcConverter> srcBuf(src->data(), src->width(), false, srcRect, TSrcConverter(mulColorRGBA));
+    DestBuffer<TDestConverter> dstBuf(dest->data(), dest->width(), false, destRect, TDestConverter(mulColorRGBA));
+
+    if (alphaBlend)
+    {
+        for (int y = 0; y < srcRect.height; ++y)
+        {
+            dstBuf.setLine(y);
+            srcBuf.setLine(y);
+            for (int x = 0; x < srcRect.width; ++x)
+            {
+                ClColor src = srcBuf.getPixel(x);
+                uint8_t src_alpha = src.a;
+                if (src_alpha == 0) continue;     // フォントならコレでかなり高速化できるはず
+
+
+                ClColor dest_color = dstBuf.getPixel(x);
+                uint8_t dest_alpha = dest_color.a;
+                uint8_t a, r, g, b;
+
+                a = src_alpha;
+
+                // まず、src と mul をまぜまぜ
+                r = (mulColorRGBA.r * src.r) >> 8;
+                g = (mulColorRGBA.g * src.g) >> 8;
+                b = (mulColorRGBA.b * src.b) >> 8;
+                a = (mulColorRGBA.a * src_alpha) >> 8;
+
+                // photoshop 等のツール系の計算式ではやや時間がかかるため、
+                // DirectX 同様、dest のアルファは無視する方向で実装する。
+                // ただし、このままだと dest(0, 0, 0, 0) に半透明の色を合成する場合、
+                // 黒ずみが発生してしまう。テクスチャのデフォルトはこの状態。
+                // dest(1, 0, 0, 0) とかなら、ユーザーが黒と合成されることを意図していると考えられるが、
+                // 流石に完全に透明なのに黒ずむのはどうかと…。
+                // というわけで、dest_alpha == 0 なら src が 100% になるように細工している。
+                if (dest_alpha != 0)
+                {
+                    r = ((dest_color.r * (0xff - a)) >> 8) +
+                        ((r * a) >> 8);
+
+                    g = ((dest_color.g * (0xff - a)) >> 8) +
+                        ((g * a) >> 8);
+
+                    b = ((dest_color.b * (0xff - a)) >> 8) +
+                        ((b * a) >> 8);
+                }
+
+                // 書き込み用に再計算。
+                // 乗算だと、半透明を重ねるごとに薄くなってしまう。
+                // イメージとしては、重ねるごとに濃くなる加算が適切だと思う。
+                // TODO: 本来はブレンドファンクションで表現するべきか…
+                a = (dest_alpha + a);
+                a = (a > 255) ? 255 : a;
+
+                dstBuf.setPixel(x, ClColor{ r, g, b, a });
+            }
+        }
+    }
+    else
+    {
+        for (int y = 0; y < srcRect.height; ++y)
+        {
+            dstBuf.setLine(y);
+            srcBuf.setLine(y);
+            for (int x = 0; x < srcRect.width; ++x)
+            {
+                ClColor src = srcBuf.getPixel(x);
+                ClColor c = {
+                    (mulColorRGBA.r * src.r) >> 8,
+                    (mulColorRGBA.g * src.g) >> 8,
+                    (mulColorRGBA.b * src.b) >> 8,
+                    (mulColorRGBA.a * src.a) >> 8 };
+                dstBuf.setPixel(x, c);
+            }
+        }
+    }
+}
+
+template<class TDestConverter>
+void BlitHelper::bitBltInternalTemplateHelper(
+    Bitmap2D* dest, const RectI& destRect,
+    const Bitmap2D* src, const RectI& srcRect,
+    ClColor mulColorRGBA, bool alphaBlend)
+{
+    switch (src->m_format)
+    {
+    case PixelFormat::A8:
+        bitBltInternalTemplate<TDestConverter, PixelAccessor_A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+        break;
+    case PixelFormat::RGBA32:
+        bitBltInternalTemplate<TDestConverter, PixelAccessor_R8G8B8A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+        break;
+    //case PixelFormat::R8G8B8X8:
+    //    bitBltInternalTemplate<TDestConverter, ConverterR8G8B8X8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+    //    break;
+    //case PixelFormat::B8G8R8A8:
+    //    bitBltInternalTemplate<TDestConverter, ConverterB8G8R8A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+    //    break;
+    //case PixelFormat::B8G8R8X8:
+    //    bitBltInternalTemplate<TDestConverter, ConverterB8G8R8X8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+    //    break;
+        //case PixelFormat_R32G32B32A32_Float:
+        //	break;
+    default:
+        LN_NOTIMPLEMENTED();
+        break;
+    }
+}
+
+void BlitHelper::bitBltInternal(
+    Bitmap2D* dest, const RectI& destRect_,
+    const Bitmap2D* src, const RectI& srcRect_,
+    ClColor mulColorRGBA, bool alphaBlend)
+{
+    // 双方の矩形を RawBitmap からはみ出ないようにクリッピングし、範囲の大きさは dest に合わせる。
+    // (拡縮はしない。srcRect が小さければ、余分な部分は何もしない)
+    RectI destRect = destRect_;
+    RectI srcRect = srcRect_;
+    destRect.clip(RectI(0, 0, dest->m_size));
+    srcRect.clip(RectI(0, 0, src->m_size));
+    srcRect.width = std::min(srcRect.width, destRect.width);
+    srcRect.height = std::min(srcRect.height, destRect.height);
+
+    switch (dest->m_format)
+    {
+    case PixelFormat::A8:
+        bitBltInternalTemplateHelper<PixelAccessor_A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+        break;
+    case PixelFormat::RGBA32:
+        bitBltInternalTemplateHelper<PixelAccessor_R8G8B8A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+        break;
+    //case PixelFormat::R8G8B8X8:
+    //    bitBltInternalTemplateHelper<ConverterR8G8B8X8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+    //    break;
+    //case PixelFormat::B8G8R8A8:
+    //    bitBltInternalTemplateHelper<ConverterB8G8R8A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+    //    break;
+    //case PixelFormat::B8G8R8X8:
+    //    bitBltInternalTemplateHelper<ConverterB8G8R8X8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+    //    break;
+        //case PixelFormat_R32G32B32A32_Float:
+        //	break;
+    default:
+        LN_NOTIMPLEMENTED();
+        break;
+    }
+}
+
+
+
 } // namespace detail
 
 
@@ -415,8 +577,9 @@ Ref<Bitmap2D> Bitmap2D::transcodeTo(PixelFormat format, const Color32& color) co
 	auto dstBitmap = newObject<Bitmap2D>(m_size.width, m_size.height, format);
 
 	RectI rect(0, 0, m_size.width, m_size.height);
-	detail::SrcBuffer<detail::PixelAccessor_A8> src(data(), width(), false, rect, detail::PixelAccessor_A8{ color.r, color.g, color.b, color.a });
-	detail::DestBuffer<detail::PixelAccessor_R8G8B8A8> dst(dstBitmap->data(), dstBitmap->width(), false, rect, detail::PixelAccessor_R8G8B8A8());
+    detail::ClColor c{ color.r, color.g, color.b, color.a };
+	detail::SrcBuffer<detail::PixelAccessor_A8> src(data(), width(), false, rect, detail::PixelAccessor_A8(c));
+	detail::DestBuffer<detail::PixelAccessor_R8G8B8A8> dst(dstBitmap->data(), dstBitmap->width(), false, rect, detail::PixelAccessor_R8G8B8A8(c));
 
 	for (int y = 0; y < rect.height; y++)
 	{
@@ -443,6 +606,11 @@ Ref<Bitmap2D> Bitmap2D::transcodeTo(PixelFormat format, const Color32& color) co
 	//}
 
 	return dstBitmap;
+}
+
+void Bitmap2D::blit(const RectI& destRect, const Bitmap2D* srcBitmap, const RectI& srcRect, const Color32& color, BitmapBlitOptions options)
+{
+    detail::BlitHelper::bitBltInternal(this, destRect, srcBitmap, srcRect, detail::ClColor{ color.r, color.g, color.b, color.a }, testFlag(options, BitmapBlitOptions::AlphaBlend));
 }
 
 int Bitmap2D::getPixelFormatByteSize(PixelFormat format)
@@ -553,6 +721,11 @@ void BitmapHelper::blitRawSimple3D(void* dst, const void* src, size_t width, siz
 			width, height, pixelBytes, flipVertical);
 	}
 }
+
+//void BitmapHelper::drawText(Bitmap2D* bitmap, const StringRef& text, const RectI& rect, Font* font, const Color& color)
+//{
+//
+//}
 
 } // namespace detail
 

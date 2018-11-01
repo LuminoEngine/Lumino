@@ -289,7 +289,10 @@ void FreeTypeFont::lookupGlyphBitmap(UTF32 utf32code, BitmapGlyphInfo* outInfo)
 	FT_BitmapGlyph glyph_bitmap;
 	if (glyph->format == FT_GLYPH_FORMAT_BITMAP) {
 		// FT_LOAD_NO_BITMAP が OFF だとここに入ってくる
-		FT_BitmapToBitmap2D(&((FT_BitmapGlyph)glyph)->bitmap, blitTarget);
+        FT_Bitmap* bitmap = &((FT_BitmapGlyph)glyph)->bitmap;
+        FT_BitmapToBitmap2D(bitmap, blitTarget);
+        outInfo->size.width = bitmap->width;
+        outInfo->size.height = bitmap->rows;
 	}
 	else
 	{
@@ -308,9 +311,14 @@ void FreeTypeFont::lookupGlyphBitmap(UTF32 utf32code, BitmapGlyphInfo* outInfo)
 		if (LN_ENSURE(err == 0, "failed FT_Glyph_To_Bitmap : %d\n", err)) return;
 
 		//glyph_bitmap = (FT_BitmapGlyph)m_fontGlyphBitmap.CopyGlyph;
+        FT_Bitmap* bitmap = &((FT_BitmapGlyph)copyGlyph)->bitmap;
 		FT_BitmapToBitmap2D(&((FT_BitmapGlyph)copyGlyph)->bitmap, blitTarget);
+        outInfo->size.width = bitmap->width;
+        outInfo->size.height = bitmap->rows;
+
 		FT_Done_Glyph(copyGlyph);
 	}
+
 
 	//FT_Bitmap* ft_bitmap = &glyph_bitmap->bitmap;
 	//refreshBitmap(m_glyphBitmap, ft_bitmap);

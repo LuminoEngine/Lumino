@@ -72,12 +72,12 @@ void EngineManager::initialize()
 		m_mainWindow = newObject<UIFrameWindow>(m_platformManager->mainWindow(), m_settings.mainBackBufferSize);
 	}
 
- //   m_mainWorld = newObject<World>();
- //   m_sceneManager->setActiveWorld(m_mainWorld);
-	//m_mainCamera = newObject<Camera>();
- //   m_mainWorldRenderView = newObject<WorldRenderView>();
- //   m_mainWorldRenderView->setTargetWorld(m_mainWorld);
-	//m_mainWorldRenderView->setCamera(m_mainCamera);
+    m_mainWorld = newObject<World>();
+    m_sceneManager->setActiveWorld(m_mainWorld);
+	m_mainCamera = newObject<Camera>();
+    m_mainWorldRenderView = newObject<WorldRenderView>();
+    m_mainWorldRenderView->setTargetWorld(m_mainWorld);
+	m_mainWorldRenderView->setCamera(m_mainCamera);
 }
 
 void EngineManager::dispose()
@@ -113,9 +113,9 @@ void EngineManager::initializeAllManagers()
 	initializeFontManager();
 	initializeMeshManager();
 	initializeAssetManager();
-	//initializeRenderingManager();
-    //initializeVisualManager();
-    //initializeSceneManager();
+	initializeRenderingManager();
+    initializeVisualManager();
+    initializeSceneManager();
 	initializeUIManager();
 }
 
