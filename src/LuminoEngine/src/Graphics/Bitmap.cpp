@@ -410,6 +410,41 @@ void Bitmap2D::save(const StringRef& filePath)
 	encoder.save(file, m_buffer->data(), m_size);
 }
 
+Ref<Bitmap2D> Bitmap2D::transcodeTo(PixelFormat format, const Color32& color) const
+{
+	auto dstBitmap = newObject<Bitmap2D>(m_size.width, m_size.height, format);
+
+	RectI rect(0, 0, m_size.width, m_size.height);
+	detail::SrcBuffer<detail::PixelAccessor_A8> src(data(), width(), false, rect, detail::PixelAccessor_A8{ color.r, color.g, color.b, color.a });
+	detail::DestBuffer<detail::PixelAccessor_R8G8B8A8> dst(dstBitmap->data(), dstBitmap->width(), false, rect, detail::PixelAccessor_R8G8B8A8());
+
+	for (int y = 0; y < rect.height; y++)
+	{
+		src.setLine(y);
+		dst.setLine(y);
+		for (int x = 0; x < rect.width; x++)
+		{
+			dst.setPixel(x, src.getPixel(x));
+		}
+	}
+
+	//struct U32
+	//{
+	//	byte_t D[4];
+	//};
+
+	//if (m_format == PixelFormat::A8 && format == PixelFormat::RGBA32)
+	//{
+
+	//}
+	//else
+	//{
+	//	LN_NOTIMPLEMENTED();
+	//}
+
+	return dstBitmap;
+}
+
 int Bitmap2D::getPixelFormatByteSize(PixelFormat format)
 {
 	const int table[] =

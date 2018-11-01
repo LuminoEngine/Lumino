@@ -1,4 +1,4 @@
-
+ï»¿
 #include "Internal.hpp"
 #include <ft2build.h>
 #include FT_FREETYPE_H /* <freetype/freetype.h> */
@@ -119,7 +119,7 @@ void FontManager::dispose()
 
 void FontManager::registerFontFile(const StringRef& fontFilePath)
 {
-	// ƒtƒ@ƒCƒ‹‚©‚ç‘S‚Ä‚Ìƒf[ƒ^‚ğ“Ç‚İ‚Ş
+	// ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰å…¨ã¦ã®ãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚€
 	auto file = m_assetManager->openFileStream(fontFilePath);
 	auto buffer = makeRef<ByteBuffer>(file->length());
 	file->read(buffer->data(), buffer->size());
@@ -128,7 +128,7 @@ void FontManager::registerFontFile(const StringRef& fontFilePath)
 	int numFaces = 0;
 	String familyName;
 
-	// Face ì¬ (ƒtƒ@ƒ~ƒŠ–¼EFace ”‚ğ’²‚×‚é‚½‚ßB‚·‚®íœ‚·‚é)
+	// Face ä½œæˆ (ãƒ•ã‚¡ãƒŸãƒªåãƒ»Face æ•°ã‚’èª¿ã¹ã‚‹ãŸã‚ã€‚ã™ãå‰Šé™¤ã™ã‚‹)
 	{
 		FT_Face face;
 		err = FT_New_Memory_Face(
@@ -143,7 +143,7 @@ void FontManager::registerFontFile(const StringRef& fontFilePath)
 		FT_Done_Face(face);
 	}
 
-	// Fase ‚Ğ‚Æ‚Â‚¾‚¯ (.ttf)
+	// Fase ã²ã¨ã¤ã ã‘ (.ttf)
 	if (numFaces == 1)
 	{
 		uint32_t key = CRCHash::compute(familyName.c_str());
@@ -156,7 +156,7 @@ void FontManager::registerFontFile(const StringRef& fontFilePath)
 			LN_LOG_INFO << "Registered font file." << familyName;
 		}
 	}
-	// Fase ‚ª•¡” (.ttc)
+	// Fase ãŒè¤‡æ•° (.ttc)
 	else if (numFaces > 1)
 	{
 		for (int i = 0; i < numFaces; i++)
@@ -218,10 +218,10 @@ FT_Error FontManager::faceRequester(
     FT_Pointer request_data,
     FT_Face* aface)
 {
-    // ƒLƒƒƒbƒVƒ…ŒŸõ‚ÌƒR[ƒ‹ƒoƒbƒNBmap ‚©‚çæ‚é‚æ‚¤‚É‚µ‚Ä‚¢‚éB
+    // ã‚­ãƒ£ãƒƒã‚·ãƒ¥æ¤œç´¢ã®ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã€‚map ã‹ã‚‰å–ã‚‹ã‚ˆã†ã«ã—ã¦ã„ã‚‹ã€‚
 
-    // face_id ‚ÍAFTC_Manager_LookupFace() ‚É“n‚µ‚½ ID ‚ª“ü‚Á‚Ä‚­‚éB
-    // ID ‚Í©•ª‚ÅD‚«‚È‚æ‚¤‚ÉŒˆ‚ß‚ç‚ê‚éB
+    // face_id ã¯ã€FTC_Manager_LookupFace() ã«æ¸¡ã—ãŸ ID ãŒå…¥ã£ã¦ãã‚‹ã€‚
+    // ID ã¯è‡ªåˆ†ã§å¥½ããªã‚ˆã†ã«æ±ºã‚ã‚‰ã‚Œã‚‹ã€‚
 
     intptr_t key = (intptr_t)face_id;
     auto itr = m_ttfDataEntryMap.find(key/*family_name*/);
@@ -249,14 +249,14 @@ FT_Error FontManager::faceRequester(
 #if 0//def LN_OS_WIN32
     else if (m_requesterFaceName != NULL)
     {
-        // –¼‘O‚©‚çƒVƒXƒeƒ€ƒtƒHƒ“ƒgŒŸõ
+        // åå‰ã‹ã‚‰ã‚·ã‚¹ãƒ†ãƒ ãƒ•ã‚©ãƒ³ãƒˆæ¤œç´¢
         TSystemFontData* systemFont = getWindowsSystemFontData(m_requesterFaceName);
         m_requesterFaceName = NULL;
         if (systemFont == NULL) {
             return FT_Err_Cannot_Open_Resource;
         }
 
-        // ƒŠƒ\[ƒXƒƒbƒN
+        // ãƒªã‚½ãƒ¼ã‚¹ãƒ­ãƒƒã‚¯
         size_t size = 0;
         int index = 0;
         byte_t* data = lockWindowsSystemFontData(systemFont, &size, &index);
@@ -265,7 +265,7 @@ FT_Error FontManager::faceRequester(
             return FT_Err_Cannot_Open_Resource;
         }
 
-        // FreeType ‚Ì“Ç‚İæ‚èƒXƒgƒŠ[ƒ€
+        // FreeType ã®èª­ã¿å–ã‚Šã‚¹ãƒˆãƒªãƒ¼ãƒ 
         FT_Stream stream = (FT_Stream)malloc(sizeof(FT_StreamRec));
         if (stream == NULL) {
             freeWindowsSystemFontData(systemFont);
@@ -291,11 +291,11 @@ FT_Error FontManager::faceRequester(
         FT_Face face;
         FT_Error err = FT_Open_Face(m_ftLibrary, &args, index, &face);
         if (err != FT_Err_Ok) {
-            // ¸”s‚µ‚½ê‡‚àstream‚ÍŸè‚É‰ğ•ú‚³‚ê‚é
+            // å¤±æ•—ã—ãŸå ´åˆã‚‚streamã¯å‹æ‰‹ã«è§£æ”¾ã•ã‚Œã‚‹
             return err;
         }
 
-        // Charmap‚ğİ’è‚µ‚Ä‚¨‚­
+        // Charmapã‚’è¨­å®šã—ã¦ãŠã
         err = FT_Select_Charmap(face, FT_ENCODING_UNICODE);
         if (err != FT_Err_Ok) {
             FT_Done_Face(face);

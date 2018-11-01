@@ -127,6 +127,8 @@ public:
 	Ref<FontCore> lookupFontCore(const FontDesc& keyDesc);
 
 	FTC_Manager ftCacheManager() const { return m_ftCacheManager; }
+	FTC_CMapCache ftCacheMapCache() const { return m_ftCMapCache; }
+	FTC_ImageCache ftCImageCache() const { return m_ftImageCache; }
 
 	void addAliveFontCore(FontCore* font) { m_aliveFontCoreList.add(font); }
 	void removeAliveFontCore(FontCore* font) { m_aliveFontCoreList.remove(font); }

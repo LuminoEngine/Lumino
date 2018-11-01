@@ -1,4 +1,4 @@
-
+ï»¿
 #include "Internal.hpp"
 #include "FontManager.hpp"
 #include "FontCore.hpp"
@@ -32,7 +32,7 @@ void FontCore::dispose()
 
 void FontCore::finalize()
 {
-	// ObjectCache ‚©‚çíœ‚³‚ê‚é‚Æ‚«—p
+	// ObjectCache ã‹ã‚‰å‰Šé™¤ã•ã‚Œã‚‹ã¨ãç”¨
 	dispose();
 }
 

@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 namespace ln {
+class Bitmap2D;
 namespace detail {
 class FontManager;
 
@@ -46,6 +47,15 @@ struct OutlineInfo
     int	vertexCount;
 };
 
+struct BitmapGlyphInfo
+{
+	Bitmap2D* glyphBitmap;	// in,out
+	//RawBitmap*			GlyphBitmap;
+	//RawBitmap*			OutlineBitmap;	///< 縁どり線用 (NULL でなければ先にこれをbltし、その上に GlyphBitmap を blt する)
+	//int				OutlineOffset;	///< 縁どり時は、線の分だけサイズが大きくなる。
+	SizeI size;	// [out] glyphBitmap に書き込まれた bitmap のピクセルサイズ。左上詰めで blit される。
+};
+
 struct VectorGlyphInfo
 {
     List<FontOutlineVertex>	vertices;
@@ -72,6 +82,10 @@ public:
     virtual void getGlobalMetrics(FontGlobalMetrics* outMetrix) = 0;
 	virtual void getGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics) = 0;
     virtual Vector2 getKerning(UTF32 prev, UTF32 next) = 0;
+
+	// outInfo->bitmap が nullptr である場合、内部に持っている Bitmap2D の参照を返す。
+	// この場合この Bitmap2D の参照を持ち出したり変更したりすることはできない。
+	virtual void lookupGlyphBitmap(UTF32 utf32code, BitmapGlyphInfo* outInfo) = 0;
 	virtual void decomposeOutline(UTF32 utf32code, VectorGlyphInfo* outInfo) = 0;
 
 protected:

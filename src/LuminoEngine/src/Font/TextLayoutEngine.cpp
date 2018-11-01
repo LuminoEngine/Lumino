@@ -1,4 +1,4 @@
-
+﻿
 #include "Internal.hpp"
 #include "TextLayoutEngine.hpp"
 

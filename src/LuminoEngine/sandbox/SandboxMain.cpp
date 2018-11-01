@@ -40,11 +40,22 @@ int main(int argc, char** argv)
 
 	detail::FontDesc desc;
 	desc.Family = "VL PGothic";
+	desc.isBold = true;
 	auto font1 = detail::EngineDomain::fontManager()->lookupFontCore(desc);
 	auto font2 = detail::EngineDomain::fontManager()->lookupFontCore(desc);
 
 	detail::FontGlobalMetrics gm;
 	font2->getGlobalMetrics(&gm);
+
+	detail::BitmapGlyphInfo bmpInfo;
+	//auto bmp = newObject<Bitmap2D>();
+	//bmpInfo.glyphBitmap = bmp;
+	bmpInfo.glyphBitmap = nullptr;
+	font2->lookupGlyphBitmap('A', &bmpInfo);
+	bmpInfo.glyphBitmap->transcodeTo(PixelFormat::RGBA32)->save("C:/LocalProj/tmp/test.png");
+	font2->lookupGlyphBitmap('A', &bmpInfo);
+
+	auto ker = font2->getKerning('i', 'j');
 
 	printf("");
 
