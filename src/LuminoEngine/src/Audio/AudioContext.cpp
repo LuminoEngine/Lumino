@@ -131,10 +131,11 @@ void AudioContext::addAudioNode(AudioNode* node)
 
 void AudioContext::disposeNodeOnGenericThread(AudioNode* node)
 {
-	LN_AUDIO_WRITE_LOCK_COMMIT;
 	if (node->m_context) {
 		node->m_context->sendDisconnectAllAndDispose(node);
 		node->m_context = nullptr;
+
+		LN_AUDIO_WRITE_LOCK_COMMIT;
 		m_allAudioNodes.remove(node);
 	}
 }

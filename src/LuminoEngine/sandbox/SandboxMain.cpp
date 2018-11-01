@@ -13,6 +13,8 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include "../src/Mesh/MqoImporter.hpp"
+#include "../src/Font/FontManager.hpp"
+#include "../src/Font/FontCore.hpp"
 using namespace ln;
 
 class TestRenderView
@@ -34,26 +36,38 @@ int main(int argc, char** argv)
 	GlobalLogger::addStdErrAdapter();
 	Engine::initialize();
 
-	auto light1 = AmbientLight::create();
+	detail::EngineDomain::fontManager()->registerFontFile(u"C:/Proj/GitHub/Lumino/tools/VLGothic/VL-PGothic-Regular.ttf");
 
-    //auto tex = newObject<Texture2D>(u"D:/tmp/110220c_as019.png");
-    auto tex = newObject<Texture2D>(2, 2);
-    auto bmp1 = tex->map(MapMode::Write);
-    bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
-    bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
-    bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
-    bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
-    auto sprite = newObject<Sprite>();
-    sprite->setTexture(tex);
+	detail::FontDesc desc;
+	desc.Family = "VL PGothic";
+	auto font1 = detail::EngineDomain::fontManager()->lookupFontCore(desc);
+	auto font2 = detail::EngineDomain::fontManager()->lookupFontCore(desc);
+
+	detail::FontGlobalMetrics gm;
+	font2->getGlobalMetrics(&gm);
+
+	printf("");
+
+	//auto light1 = AmbientLight::create();
+
+ //   //auto tex = newObject<Texture2D>(u"D:/tmp/110220c_as019.png");
+ //   auto tex = newObject<Texture2D>(2, 2);
+ //   auto bmp1 = tex->map(MapMode::Write);
+ //   bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
+ //   bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
+ //   bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
+ //   bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
+ //   auto sprite = newObject<Sprite>();
+ //   sprite->setTexture(tex);
 
 
-    while (Engine::update())
-    {
-		if (Input::isPressed(InputButtons::Left))
-		{
-			printf("left\n");
-		}
-    }
+ //   while (Engine::update())
+ //   {
+	//	if (Input::isPressed(InputButtons::Left))
+	//	{
+	//		printf("left\n");
+	//	}
+ //   }
 
 
 #if 0

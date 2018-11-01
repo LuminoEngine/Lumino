@@ -15,6 +15,8 @@
 #include "LuminoEngine/Audio/AudioContext.hpp"
 #include "LuminoEngine/Audio/AudioNode.hpp"
 
+#include "LuminoEngine/Shader/Shader.hpp"
+
 #include "LuminoEngine/Graphics/RenderState.hpp"
 #include "LuminoEngine/Graphics/SamplerState.hpp"
 #include "LuminoEngine/Graphics/VertexDeclaration.hpp"
@@ -25,7 +27,7 @@
 #include "LuminoEngine/Graphics/GraphicsContext.hpp"
 #include "LuminoEngine/Graphics/Bitmap.hpp"
 
-#include "LuminoEngine/Shader/Shader.hpp"
+#include "LuminoEngine/Font/Font.hpp"
 
 #include "LuminoEngine/Mesh/Mesh.hpp"
 

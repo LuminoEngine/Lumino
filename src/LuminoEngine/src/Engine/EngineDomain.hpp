@@ -20,6 +20,7 @@ class AudioManager;
 class AnimationManager;
 class ShaderManager;
 class GraphicsManager;
+class FontManager;
 class MeshManager;
 class RenderingManager;
 class AssetManager;
@@ -37,6 +38,7 @@ public:
 	static AudioManager* audioManager();
 	static ShaderManager* shaderManager();
 	static GraphicsManager* graphicsManager();
+	static FontManager* fontManager();
 	static MeshManager* meshManager();
 	static RenderingManager* renderingManager();
     static AssetManager* assetManager();

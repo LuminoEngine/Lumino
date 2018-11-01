@@ -17,6 +17,7 @@ class AudioManager;
 class AnimationManager;
 class ShaderManager;
 class GraphicsManager;
+class FontManager;
 class MeshManager;
 class RenderingManager;
 class EffectManager;
@@ -52,6 +53,7 @@ public:
 	void initializePhysicsManager();
 	void initializeShaderManager();
 	void initializeGraphicsManager();
+	void initializeFontManager();
 	void initializeMeshManager();
 	void initializeRenderingManager();
 	//void initializeEffectManager();
@@ -74,6 +76,7 @@ public:
 	const Ref<AudioManager>& audioManager() const { return m_audioManager; }
 	const Ref<ShaderManager>& shaderManager() const { return m_shaderManager; }
 	const Ref<GraphicsManager>& graphicsManager() const { return m_graphicsManager; }
+	const Ref<FontManager>& fontManager() const { return m_fontManager; }
 	const Ref<MeshManager>& meshManager() const { return m_meshManager; }
 	const Ref<RenderingManager>& renderingManager() const { return m_renderingManager; }
     const Ref<AssetManager>& assetManager() const { return m_assetManager; }
@@ -94,6 +97,7 @@ private:
 	//Ref<PhysicsManager>		m_physicsManager;
 	Ref<ShaderManager> m_shaderManager;
 	Ref<GraphicsManager>			m_graphicsManager;
+	Ref<FontManager> m_fontManager;
 	Ref<MeshManager>				m_meshManager;
 	Ref<RenderingManager>			m_renderingManager;
 	//Ref<EffectManager>				m_effectManager;

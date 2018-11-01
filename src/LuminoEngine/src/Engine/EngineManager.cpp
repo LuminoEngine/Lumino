@@ -10,6 +10,7 @@
 #include "../Audio/AudioManager.hpp"
 #include "../Shader/ShaderManager.hpp"
 #include "../Graphics/GraphicsManager.hpp"
+#include "../Font/FontManager.hpp"
 #include "../Mesh/MeshManager.hpp"
 #include "../Rendering/RenderingManager.hpp"
 #include "../Asset/AssetManager.hpp"
@@ -91,6 +92,7 @@ void EngineManager::dispose()
 	if (m_assetManager) m_assetManager->dispose();
 	if (m_renderingManager) m_renderingManager->dispose();
 	if (m_meshManager) m_meshManager->dispose();
+	if (m_fontManager) m_fontManager->dispose();
 	if (m_shaderManager) m_shaderManager->dispose();
 	if (m_graphicsManager) m_graphicsManager->dispose();
 	if (m_audioManager) m_audioManager->dispose();
@@ -108,6 +110,7 @@ void EngineManager::initializeAllManagers()
 	initializePhysicsManager();
 	initializeShaderManager();
 	initializeGraphicsManager();
+	initializeFontManager();
 	initializeMeshManager();
 	initializeRenderingManager();
 	initializeAssetManager();
@@ -203,6 +206,20 @@ void EngineManager::initializeGraphicsManager()
 
 		m_graphicsManager = ln::makeRef<GraphicsManager>();
 		m_graphicsManager->initialize(settings);
+	}
+}
+
+void EngineManager::initializeFontManager()
+{
+	if (!m_fontManager)
+	{
+		initializeAssetManager();
+
+		FontManager::Settings settings;
+		settings.assetManager = m_assetManager;
+
+		m_fontManager = ln::makeRef<FontManager>();
+		m_fontManager->initialize(settings);
 	}
 }
 
@@ -421,6 +438,11 @@ ShaderManager* EngineDomain::shaderManager()
 GraphicsManager* EngineDomain::graphicsManager()
 {
 	return engineManager()->graphicsManager();
+}
+
+FontManager* EngineDomain::fontManager()
+{
+	return engineManager()->fontManager();
 }
 
 MeshManager* EngineDomain::meshManager()

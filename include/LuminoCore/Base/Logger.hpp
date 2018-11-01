@@ -30,10 +30,13 @@ class StringRef;
 /** ログの通知レベル */
 enum class LogLevel
 {
+	// Lumino のユーザーに対して通知したい情報
     Fatal,
     Error,
     Warning,
     Info,
+
+	// Lumino の開発として集めたい情報
     Debug,
     Verbose,
 };

@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <LuminoEngine/Font/Common.hpp>
 
 typedef int FT_Error;
 typedef void*  FT_Pointer;
@@ -11,7 +12,7 @@ typedef struct FT_FaceRec_*  FT_Face;
 
 namespace ln {
 namespace detail {
-
+class FontCore;
 
 // RefObject のキャッシュ管理。
 // RefObject を作りたいときは、まず先に findObject を呼び出してキャッシュ探す。なければ作る。
@@ -36,20 +37,18 @@ public:
 
     RefObject* findObject(const TKey& key)
     {
-        if (LN_REQUIRE(!isDisposed())) return;
+        if (LN_REQUIRE(!isDisposed())) return nullptr;
 
-        if (obj) {
-            for (auto itr = m_aliveList.begin(); itr != m_aliveList.end(); ++itr) {
-                if (itr->key == key) {
-                    return itr->obj;
-                }
+        for (auto itr = m_aliveList.begin(); itr != m_aliveList.end(); ++itr) {
+            if (itr->key == key) {
+                return itr->obj;
             }
+        }
 
-            for (auto itr = m_freeList.begin(); itr != m_freeList.end(); ++itr) {
-                if (itr->key == key) {
-                    m_aliveList.splice(m_aliveList.end(), std::move(m_freeList), itr);
-                    return m_aliveList.back().obj;
-                }
+        for (auto itr = m_freeList.begin(); itr != m_freeList.end(); ++itr) {
+            if (itr->key == key) {
+                m_aliveList.splice(m_aliveList.end(), std::move(m_freeList), itr);
+                return m_aliveList.back().obj;
             }
         }
 
@@ -124,6 +123,13 @@ public:
     FontManager();
 	void initialize(const Settings& settings);
 	void dispose();
+	void registerFontFile(const StringRef& fontFilePath);
+	Ref<FontCore> lookupFontCore(const FontDesc& keyDesc);
+
+	FTC_Manager ftCacheManager() const { return m_ftCacheManager; }
+
+	void addAliveFontCore(FontCore* font) { m_aliveFontCoreList.add(font); }
+	void removeAliveFontCore(FontCore* font) { m_aliveFontCoreList.remove(font); }
 
 private:
     static FT_Error callbackFaceRequester(FTC_FaceID face_id, FT_Library library, FT_Pointer request_data, FT_Face* aface);
@@ -144,10 +150,9 @@ private:
          */
     };
 
-    typedef std::unordered_map<intptr_t, TTFDataEntry> TTFDataEntryMap;
-    TTFDataEntryMap m_ttfDataEntryMap;
-
     AssetManager* m_assetManager;
+	ObjectCache<uint32_t> m_fontCoreCache;
+	List<FontCore*> m_aliveFontCoreList;
     EncodingConverter m_charToUTF32Converter;
     EncodingConverter m_wcharToUTF32Converter;
     EncodingConverter m_TCharToUTF32Converter;
@@ -157,6 +162,9 @@ private:
     FTC_Manager m_ftCacheManager;
     FTC_CMapCache m_ftCMapCache;
     FTC_ImageCache m_ftImageCache;
+
+    typedef std::unordered_map<intptr_t, TTFDataEntry> TTFDataEntryMap;
+    TTFDataEntryMap m_ttfDataEntryMap;
 };
 
 } // namespace detail
