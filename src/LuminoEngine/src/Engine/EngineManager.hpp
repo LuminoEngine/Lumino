@@ -4,6 +4,8 @@
 
 namespace ln {
 class UIFrameWindow;
+class UIViewport;
+//class UIRenderView;
 class World;
 class WorldRenderView;
 class Camera;
@@ -25,6 +27,7 @@ class AssetManager;
 class VisualManager;
 class SceneManager;
 class UIManager;
+
 
 struct EngineSettings
 {
@@ -108,6 +111,8 @@ private:
 	Ref<UIManager>					m_uiManager;
 
 	Ref<UIFrameWindow> m_mainWindow;
+	Ref<UIViewport> m_mainViewport;
+	//Ref<UIRenderView> m_mainUIRenderView;
     Ref<World> m_mainWorld;
     Ref<WorldRenderView> m_mainWorldRenderView;
 	Ref<Camera> m_mainCamera;

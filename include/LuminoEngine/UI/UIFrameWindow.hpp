@@ -2,15 +2,18 @@
 
 #include "Common.hpp"
 #include "UIEvents.hpp"
+#include "UIElement.hpp"
 #include "../Platform/PlatformEvent.hpp"
 #include "../Graphics/GeometryStructs.hpp"
 
 namespace ln {
-	namespace detail { class PlatformWindow; class UIManager; }
+namespace detail { class PlatformWindow; class UIManager; }
 class SwapChain;
+class UIRenderView;
+class UIViewport;
 
 class LN_API UIFrameWindow
-	: public Object
+	: public UIElement
 	, public detail::IPlatforEventListener
 {
 public:
@@ -21,6 +24,13 @@ public:
 	void present();
 
 	SwapChain* swapChain() const;
+
+
+	// TODO: UI ツリーのシステムをちゃんと作っていないが、ひとまず UIViewport を使った動きを作りたいので一時的に設けてある
+	Ref<UIViewport> m_viewport;
+	virtual int getVisualChildrenCount() const override { return 1; }
+	virtual UIElement* getVisualChild(int index) const override;
+
 
 LN_CONSTRUCT_ACCESS:
 	UIFrameWindow();
@@ -33,8 +43,10 @@ private:
 	detail::UIManager* m_manager;
 	Ref<detail::PlatformWindow>	m_platformWindow;
 	Ref<SwapChain>	m_swapChain;
+	Ref<UIRenderView> m_renderView;
 
 	Event<UIEventHandler> m_onClosed;
+
 };
 
 } // namespace ln

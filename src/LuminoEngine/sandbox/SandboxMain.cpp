@@ -60,6 +60,7 @@ int main(int argc, char** argv)
 
 	//printf("");
 
+#if 0
     auto font = Font::create(u"VL PGothic", 20);
 
 	auto light1 = AmbientLight::create();
@@ -74,14 +75,10 @@ int main(int argc, char** argv)
     //bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
     auto sprite = newObject<Sprite>();
     sprite->setTexture(tex);
-
+#endif
 
     while (Engine::update())
     {
-		if (Input::isPressed(InputButtons::Left))
-		{
-			printf("left\n");
-		}
     }
 
 

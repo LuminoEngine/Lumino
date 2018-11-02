@@ -2,12 +2,12 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
+#include <LuminoEngine/UI/UIElement.hpp>
+#include <LuminoEngine/UI/UIRenderView.hpp>
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/RenderingPipeline.hpp"
-#include "UIRenderView.hpp"
 
 namespace ln {
-namespace detail {
 
 //==============================================================================
 // UIRenderView
@@ -23,10 +23,24 @@ void UIRenderView::initialize()
 	m_sceneRenderingPipeline = makeRef<detail::FlatRenderingPipeline>();
 	m_sceneRenderingPipeline->initialize();
 	m_drawElementListCollector = makeRef<detail::DrawElementListCollector>();
+
+	m_drawElementListCollector->addDrawElementList(detail::RendringPhase::Default, m_renderingContext->m_elementList);
+	addDrawElementListManager(m_drawElementListCollector);
 }
 
-void UIRenderView::render(GraphicsContext* graphicsContext)
+void UIRenderView::renderTree(GraphicsContext* graphicsContext, UIElement* element)
 {
+	// build draw elements
+	{
+		m_renderingContext->reset();
+		element->render(m_renderingContext);
+	}
+
+
+
+
+
+
 	FrameBuffer fb;
 	fb.renderTarget[0] = graphicsContext->colorBuffer(0);
 	fb.depthBuffer = graphicsContext->depthBuffer();
@@ -48,6 +62,5 @@ void UIRenderView::render(GraphicsContext* graphicsContext)
 	m_sceneRenderingPipeline->render(graphicsContext, fb, &camera, &elementListManagers());
 }
 
-} // namespace detail
 } // namespace ln
 

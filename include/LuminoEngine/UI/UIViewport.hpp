@@ -1,14 +1,17 @@
 ﻿#pragma once
-#include "UIElement.hpp"
+#include "UIContainerElement.hpp"
 
 namespace ln {
 
 class UIViewport
-	: public UIElement
+	: public UIContainerElement
 {
 public:
     UIViewport();
 	void initialize();
+
+protected:
+	virtual void onRender(UIRenderingContext* context);
 
 private:
 };

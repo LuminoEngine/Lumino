@@ -13,7 +13,12 @@ UIViewport::UIViewport()
 
 void UIViewport::initialize()
 {
-    UIElement::initialize();
+	UIContainerElement::initialize();
+}
+
+void UIViewport::onRender(UIRenderingContext* context)
+{
+
 }
 
 } // namespace ln
