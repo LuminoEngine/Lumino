@@ -44,6 +44,7 @@
 
 
 #include "LuminoEngine/UI/UIFrameWindow.hpp"
+#include "LuminoEngine/UI/UISprite.hpp"
 
 
 #ifdef LN_MSVC_AUTO_LINK_LIBRARIES

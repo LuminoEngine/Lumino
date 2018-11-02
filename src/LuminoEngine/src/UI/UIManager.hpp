@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 namespace ln {
+class UIContainerElement;
 namespace detail {
 class PlatformManager;
 class GraphicsManager;
@@ -22,9 +23,13 @@ public:
 
 	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
 
+    void setPrimaryElement(UIContainerElement* element);
+    UIContainerElement* primaryElement() const;
+
 private:
 	GraphicsManager* m_graphicsManager;
 	//PlatformManager* platformManager;
+    Ref<UIContainerElement> m_primaryElement;
 };
 
 } // namespace detail

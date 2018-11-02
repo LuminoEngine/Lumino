@@ -75,6 +75,7 @@ void EngineManager::initialize()
 		m_mainViewport = newObject<UIViewport>();
 		m_mainWindow->m_viewport = m_mainViewport;
 		//m_mainUIRenderView = newObject<UIRenderView>();
+        m_uiManager->setPrimaryElement(m_mainViewport);
 	}
 
     m_mainWorld = newObject<World>();

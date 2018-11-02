@@ -3,6 +3,7 @@
 
 namespace ln {
 class UIRenderingContext;
+namespace detail { class UIManager; }
 
 class UIElement
 	: public Object
@@ -27,7 +28,7 @@ LN_INTERNAL_ACCESS:
 	void render(UIRenderingContext* context);
 
 private:
-	
+    detail::UIManager* m_manager;
 };
 
 } // namespace ln

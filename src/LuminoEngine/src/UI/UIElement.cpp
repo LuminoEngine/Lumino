@@ -1,6 +1,8 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/UI/UIElement.hpp>
+#include <LuminoEngine/UI/UIContainerElement.hpp>
+#include "UIManager.hpp"
 
 namespace ln {
 
@@ -8,12 +10,19 @@ namespace ln {
 // UIElement
 
 UIElement::UIElement()
+    : m_manager(nullptr)
 {
 }
 
 void UIElement::initialize()
 {
     Object::initialize();
+    m_manager = detail::EngineDomain::uiManager();
+
+    UIContainerElement* primaryElement = m_manager->primaryElement();
+    if (primaryElement) {
+        primaryElement->addElement(this);
+    }
 }
 
 int UIElement::getVisualChildrenCount() const

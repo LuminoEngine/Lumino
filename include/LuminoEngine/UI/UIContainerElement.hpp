@@ -5,7 +5,6 @@ namespace ln {
 
 class UIContainerElement
 	: public UIElement
-    , public detail::ILayoutElement
 {
 public:
 	UIContainerElement();

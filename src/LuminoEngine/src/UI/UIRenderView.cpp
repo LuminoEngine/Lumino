@@ -51,9 +51,9 @@ void UIRenderView::renderTree(GraphicsContext* graphicsContext, UIElement* eleme
 		camera.viewPixelSize = Size(fb.renderTarget[0]->width(), fb.renderTarget[0]->height());	// TODO: 必要？
 		camera.viewPosition = Vector3::Zero;
 		camera.viewDirection = Vector3::UnitZ;
-		camera.viewMatrix = Matrix();// ::makeLookAtLH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);
-		camera.projMatrix = Matrix::makePerspective2DLH(camera.viewPixelSize.width, camera.viewPixelSize.height, 0, 10000);
-		camera.viewProjMatrix = camera.viewMatrix * camera.viewProjMatrix;
+		camera.viewMatrix = Matrix::makeLookAtLH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);//Matrix();// 
+		camera.projMatrix = Matrix::makePerspective2DLH(camera.viewPixelSize.width, camera.viewPixelSize.height, 0, 1000);
+		camera.viewProjMatrix = camera.viewMatrix * camera.projMatrix;
 		camera.viewFrustum = ViewFrustum(camera.viewProjMatrix);
 		camera.nearClip = 0;
 		camera.farClip = 1000;

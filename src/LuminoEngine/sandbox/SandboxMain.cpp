@@ -60,7 +60,7 @@ int main(int argc, char** argv)
 
 	//printf("");
 
-#if 0
+#if 1
     auto font = Font::create(u"VL PGothic", 20);
 
 	auto light1 = AmbientLight::create();
@@ -73,7 +73,10 @@ int main(int argc, char** argv)
     //bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
     //bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
     //bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
-    auto sprite = newObject<Sprite>();
+
+    //auto sprite = newObject<Sprite>();
+    //sprite->setTexture(tex);
+    auto sprite = newObject<UISprite>();
     sprite->setTexture(tex);
 #endif
 
