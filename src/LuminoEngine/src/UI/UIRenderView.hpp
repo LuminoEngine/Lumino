@@ -2,7 +2,9 @@
 #include <LuminoEngine/Rendering/RenderView.hpp>
 
 namespace ln {
+class UIRenderingContext;
 namespace detail {
+class FlatRenderingPipeline;
 
 // TODO: 0.6.0 時点で、UI の描画最適化 (更新のあったところだけ再描画) を計画している。
 // これは UI ツリーのあるコンテナを、RenderTarget を持つ特別なコンテナとするフラグを持たせ、
@@ -15,7 +17,14 @@ public:
     UIRenderView();
 	void initialize();
 
+
+	// TODO: internal
+	void render(GraphicsContext* graphicsContext);
+
 private:
+	Ref<UIRenderingContext> m_renderingContext;
+	Ref<detail::FlatRenderingPipeline> m_sceneRenderingPipeline;
+	Ref<detail::DrawElementListCollector> m_drawElementListCollector;
 };
 
 } // namespace detail

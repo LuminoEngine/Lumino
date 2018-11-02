@@ -8,9 +8,12 @@ class UIRenderingContext
 {
 public:
     UIRenderingContext();
-	void initialize();
 
-private:
+
+public: // TODO: inernal
+	void reset();
+
+	Ref<detail::DrawElementList> m_elementList;
 };
 
 } // namespace ln

@@ -5,6 +5,7 @@ namespace ln {
 class GraphicsContext;
 namespace detail {
 class ClusteredShadingSceneRenderer;
+class UnLigitingSceneRenderer;
 
 /*
  * 描画リストやポストエフェクトなど描画に関わる全てのパラメータを受け取り、
@@ -49,10 +50,21 @@ private:
     Ref<detail::ClusteredShadingSceneRenderer> m_sceneRenderer;
 };
 
-class UIRenderingPipeline
-    : public RefObject
+// ライティングしない Pipeline。UI で使う。
+class FlatRenderingPipeline
+    : public RenderingPipeline
 {
 public:
+	FlatRenderingPipeline();
+	void initialize();
+	void render(
+		GraphicsContext* graphicsContext,
+		const FrameBuffer& frameBuffer,
+		const detail::CameraInfo* mainCameraInfo,
+		const List<detail::DrawElementListCollector*>* elementListManagers);
+
+private:
+	Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer;
 };
 
 } // namespace detail

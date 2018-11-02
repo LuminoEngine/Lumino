@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include "RenderingPipeline.hpp"
 #include "ClusteredShadingSceneRenderer.hpp"
+#include "UnLigitingSceneRenderer.hpp"
 #include "RenderTargetTextureCache.hpp"
 #include "RenderingManager.hpp"
 
@@ -51,6 +52,42 @@ void SceneRenderingPipeline::render(
     m_renderingFrameBufferSize = SizeI();
     m_mainCameraInfo = nullptr;
     m_elementListManagers = nullptr;
+}
+
+
+//==============================================================================
+// FlatRenderingPipeline
+
+FlatRenderingPipeline::FlatRenderingPipeline()
+	: m_sceneRenderer(nullptr)
+{
+}
+
+void FlatRenderingPipeline::initialize()
+{
+	RenderingPipeline::initialize();
+	RenderingManager* manager = detail::EngineDomain::renderingManager();
+
+	m_sceneRenderer = makeRef<detail::UnLigitingSceneRenderer>();
+	m_sceneRenderer->initialize(manager);
+}
+
+void FlatRenderingPipeline::render(
+	GraphicsContext* graphicsContext,
+	const FrameBuffer& frameBuffer,
+	const detail::CameraInfo* mainCameraInfo,
+	const List<detail::DrawElementListCollector*>* elementListManagers)
+{
+	m_mainCameraInfo = mainCameraInfo;
+	m_elementListManagers = elementListManagers;
+	m_renderingFrameBufferSize = SizeI(frameBuffer.renderTarget[0]->width(), frameBuffer.renderTarget[0]->height());
+
+	m_sceneRenderer->render(graphicsContext, this, frameBuffer);
+
+	// Œë—p–hŽ~
+	m_renderingFrameBufferSize = SizeI();
+	m_mainCameraInfo = nullptr;
+	m_elementListManagers = nullptr;
 }
 
 } // namespace detail
