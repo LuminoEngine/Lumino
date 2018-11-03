@@ -103,6 +103,7 @@ void RenderingContext::blit(AbstractMaterial* material)
     auto* element = m_builder->addNewDrawElement<Blit>(
         m_manager->blitRenderFeature(),
         m_builder->blitRenderFeatureStageParameters());
+    element->targetPhase = detail::RendringPhase::ImageEffect;
 }
 
 void RenderingContext::drawSprite(

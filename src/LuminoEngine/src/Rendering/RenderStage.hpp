@@ -213,6 +213,10 @@ public:
 
 	float zDistance = 0;	//  TODO: internal
 
+
+    // FIXME: Unity では CommandBuffer (を実行するメソッド) 単位で持つが・・・
+    RendringPhase targetPhase = RendringPhase::Default;
+
 private:
 	Matrix m_combinedWorldMatrix;		// TODO: Element はたくさん作られるので、メモリ消費量が大きいかもしれない
 	RenderStage* m_stage;
@@ -256,6 +260,8 @@ public:
 
 	// これは Manager が持っているインスタンスを指す。ユーザー定義の場合はそっち。インスタンスは RenderStage モジュール内では管理しない。参照のみ。
 	RenderFeature* renderFeature;
+
+
 
 	RenderStage();
 
@@ -342,24 +348,6 @@ private:
 	List<DynamicLightInfo> m_dynamicLightInfoList;
 };
 
-// 
-// https://docs.unity3d.com/ja/current/Manual/GraphicsCommandBuffers.html
-// の各〇に相当する。
-// ただし、Default は特殊扱い。DrawElementList が投入された SceneRenderer の中でフィルタリングがかかる。
-// 例えば(今後実装するかもしれない Deferred Shading では)、
-//  - Default の半透明オブジェクトは ForwardSceneRenderer でのみ描画される。
-//  - Default の不透明オブジェクトは DeferredSceneRenderer でのみ描画される。
-//  - Default のオブジェクトは AfterImageEffects などでは描画されない。
-// などなど。
-// 一方 Default 以外のものはブレンド有無などの RenderState にかかわらず必ずそのタイミングで描画される。そのへんはユーザー責任で考える。
-enum class RendringPhase
-{
-	Default = 0,
-
-    // https://docs.unity3d.com/ja/2017.4/ScriptReference/Rendering.CameraEvent.html
-
-	_Count,
-};
 
 // 1フレームで実行するコマンドリストすべてをまとめておく。
 // インスタンスは World などに、基本的にずっと持っておく。
