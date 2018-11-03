@@ -7,8 +7,10 @@ class Shader;
 namespace detail {
 class LinearAllocatorPageManager;
 class RenderTargetTextureCacheManager;
+class FrameBufferCache;
 class DepthBufferCacheManager;
 class DrawElementListBuilder;
+class BlitRenderFeature;
 class SpriteRenderFeature;
 class MeshRenderFeature;
 
@@ -128,8 +130,10 @@ public:
 	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
 	const Ref<RenderTargetTextureCacheManager>& renderTargetTextureCacheManager() const { return m_renderTargetTextureCacheManager; }
 	const Ref<DepthBufferCacheManager>& depthBufferCacheManager() const { return m_depthBufferCacheManager; }
+    const Ref<FrameBufferCache>& frameBufferCache() const { return m_frameBufferCache; }
 	const Ref<VertexDeclaration>& standardVertexDeclaration() const { return m_standardVertexDeclaration; }
 	const Ref<DrawElementListBuilder>& renderStageListBuilder() const { return m_renderStageListBuilder; }
+    const Ref<BlitRenderFeature>& blitRenderFeature() const { return m_blitRenderFeature; }
 	const Ref<SpriteRenderFeature>& spriteRenderFeature() const { return m_spriteRenderFeature; }
 	const Ref<MeshRenderFeature>& meshRenderFeature() const { return m_meshRenderFeature; }
 	const Ref<LinearAllocatorPageManager>& stageDataPageManager() const { return m_stageDataPageManager; }
@@ -139,8 +143,10 @@ private:
 	GraphicsManager* m_graphicsManager;
 	Ref<RenderTargetTextureCacheManager> m_renderTargetTextureCacheManager;
 	Ref<DepthBufferCacheManager> m_depthBufferCacheManager;
+    Ref<FrameBufferCache> m_frameBufferCache;
 	Ref<VertexDeclaration> m_standardVertexDeclaration;
 	Ref<DrawElementListBuilder> m_renderStageListBuilder;
+    Ref<BlitRenderFeature> m_blitRenderFeature;
 	Ref<SpriteRenderFeature> m_spriteRenderFeature;
 	Ref<MeshRenderFeature> m_meshRenderFeature;
 

@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "RenderStage.hpp"
+#include "BlitRenderFeature.hpp"
 #include "SpriteRenderFeature.hpp"
 #include "MeshRenderFeature.hpp"
 
@@ -22,7 +23,8 @@ public:
 	DrawElementListBuilder();
 	DrawElementList* targetList() const { return m_targetList; }
 	void setTargetList(DrawElementList* targetList);
-	void reset();
+    void resetForBeginRendering();  // 描画開始時のリセット。スタックもクリアする
+	void reset2();   // スタックに積んである分はリセットしないしスタックも消さない
 
 	void setRenderTarget(int index, RenderTargetTexture* value);
 	void setDepthBuffer(DepthBuffer* value);
@@ -35,7 +37,7 @@ public:
 	void setDepthWriteEnabled(const Optional<bool>& value);
 
 	void setShadingModel(const Optional<ShadingModel>& value);
-	void setMaterial(AbstractMaterial* value);
+	void setMaterial(AbstractMaterial* value);  // 一度 set したマテリアルは描画完了まで変更してはならない。TODO: Freezed みたいな状態にしたい
 
 	// BuiltinEffectData
 	//void setTransfrom(const Matrix& value);
@@ -44,6 +46,10 @@ public:
 	void setBlendColor(const Color& value);
 	void setTone(const ToneF& value);
 
+    void pushState(bool reset);
+    void popState();
+
+    SpriteRenderFeatureStageParameters* blitRenderFeatureStageParameters() { return &m_blitRenderFeatureStageParameters; }
 	SpriteRenderFeatureStageParameters* spriteRenderFeatureStageParameters() { return &m_spriteRenderFeatureStageParameters; }
 	MeshRenderFeatureStageParameters* meshRenderFeatureStageParameters() { return &m_meshRenderFeatureStageParameters; }
 
@@ -60,16 +66,30 @@ public:
 	}
 
 private:
+    class State : public RefObject
+    {
+    public:
+        FrameBufferStageParameters frameBufferStageParameters;
+        GeometryStageParameters geometryStageParameters;
+    };
+
 	RenderStage* prepareRenderStage(RenderFeature* renderFeature, RenderFeatureStageParameters* featureParams);
+    FrameBufferStageParameters& primaryFrameBufferStageParameters() { return m_aliveStateStack.front()->frameBufferStageParameters; }
+    GeometryStageParameters& primaryGeometryStageParameters() { return m_aliveStateStack.front()->geometryStageParameters; }
+
 
 	DrawElementList* m_targetList;
-	FrameBufferStageParameters m_primaryFrameBufferStageParameters;
-	GeometryStageParameters m_primaryGeometryStageParameters;
+	//FrameBufferStageParameters m_primaryFrameBufferStageParameters;
+	//GeometryStageParameters m_primaryGeometryStageParameters;
+    List<Ref<State>> m_freeStateStack;
+    List<Ref<State>> m_aliveStateStack;	// size >= 1
+
 
 	// 以下、各 RenderFeature のステート。
 	// これは m_modified 対象外。代わりに prepareRenderStage() のたびに equals() でチェックされる。
 	// ユーザー定義する場合は外部でこれらを定義し、draw 時にそのポインタを指定する必要がある。
 	// (もしフレームワークに沿った流れでなくても大丈夫ならグローバル変数とかで受け取ったりしても大丈夫)
+    BlitRenderFeatureStageParameters m_blitRenderFeatureStageParameters;
 	SpriteRenderFeatureStageParameters m_spriteRenderFeatureStageParameters;
 	MeshRenderFeatureStageParameters m_meshRenderFeatureStageParameters;
 

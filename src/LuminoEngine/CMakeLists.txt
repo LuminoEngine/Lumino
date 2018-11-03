@@ -212,6 +212,8 @@ set(LN_SOURCES_Rendering
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/ToneImageEffect.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/Vertex.hpp
     src/Rendering/Internal.hpp
+    src/Rendering/BlitRenderFeature.cpp
+    src/Rendering/BlitRenderFeature.hpp
     src/Rendering/ClusteredShadingSceneRenderer.cpp
     src/Rendering/ClusteredShadingSceneRenderer.hpp
     src/Rendering/CommandBuffer.cpp

@@ -17,133 +17,182 @@ DrawElementListBuilder::DrawElementListBuilder()
 void DrawElementListBuilder::setTargetList(DrawElementList * targetList)
 {
 	m_targetList = targetList;
+
+    // とりあえず 10 個くらい
+    for (int i = 0; i < 10; i++) {
+        m_freeStateStack.add(makeRef<State>());
+    }
 }
 
-void DrawElementListBuilder::reset()
+void DrawElementListBuilder::resetForBeginRendering()
 {
-	m_primaryFrameBufferStageParameters.reset();
-	m_primaryGeometryStageParameters.reset();
+    for (auto s : m_aliveStateStack)
+    {
+        m_freeStateStack.add(s);
+    }
+    m_aliveStateStack.clear();
+    pushState(true);	// 1つスタックに積んでおく。コレがルートのステート
+}
+
+void DrawElementListBuilder::reset2()
+{
+	primaryFrameBufferStageParameters().reset();
+	primaryGeometryStageParameters().reset();
 	m_modified = true;
 }
 
 void DrawElementListBuilder::setRenderTarget(int index, RenderTargetTexture * value)
 {
-	if (m_primaryFrameBufferStageParameters.m_renderTargets[index] != value) {
-		m_primaryFrameBufferStageParameters.m_renderTargets[index] = value;
+	if (primaryFrameBufferStageParameters().m_renderTargets[index] != value) {
+		primaryFrameBufferStageParameters().m_renderTargets[index] = value;
 		m_modified = true;
 	}
 }
 
 void DrawElementListBuilder::setDepthBuffer(DepthBuffer * value)
 {
-	if (m_primaryFrameBufferStageParameters.m_depthBuffer != value) {
-		m_primaryFrameBufferStageParameters.m_depthBuffer = value;
+	if (primaryFrameBufferStageParameters().m_depthBuffer != value) {
+		primaryFrameBufferStageParameters().m_depthBuffer = value;
 		m_modified = true;
 	}
 }
 
 void DrawElementListBuilder::setViewportRect(const RectI & value)
 {
-	if (m_primaryFrameBufferStageParameters.m_viewportRect != value) {
-		m_primaryFrameBufferStageParameters.m_viewportRect = value;
+	if (primaryFrameBufferStageParameters().m_viewportRect != value) {
+		primaryFrameBufferStageParameters().m_viewportRect = value;
 		m_modified = true;
 	}
 }
 
 void DrawElementListBuilder::setScissorRect(const RectI & value)
 {
-	if (m_primaryFrameBufferStageParameters.m_scissorRect != value) {
-		m_primaryFrameBufferStageParameters.m_scissorRect = value;
+	if (primaryFrameBufferStageParameters().m_scissorRect != value) {
+		primaryFrameBufferStageParameters().m_scissorRect = value;
 		m_modified = true;
 	}
 }
 
 void DrawElementListBuilder::setBlendMode(const Optional<BlendMode>& value)
 {
-	if (m_primaryGeometryStageParameters.m_blendMode != value) {
-		m_primaryGeometryStageParameters.m_blendMode = value;
+	if (primaryGeometryStageParameters().m_blendMode != value) {
+		primaryGeometryStageParameters().m_blendMode = value;
 		m_modified = true;
 	}
 }
 
 void DrawElementListBuilder::setCullingMode(const Optional<CullMode>& value)
 {
-	if (m_primaryGeometryStageParameters.m_cullingMode != value) {
-		m_primaryGeometryStageParameters.m_cullingMode = value;
+	if (primaryGeometryStageParameters().m_cullingMode != value) {
+		primaryGeometryStageParameters().m_cullingMode = value;
 		m_modified = true;
 	}
 }
 
 void DrawElementListBuilder::setDepthTestEnabled(const Optional<bool>& value)
 {
-	if (m_primaryGeometryStageParameters.m_depthTestEnabled != value) {
-		m_primaryGeometryStageParameters.m_depthTestEnabled = value;
+	if (primaryGeometryStageParameters().m_depthTestEnabled != value) {
+		primaryGeometryStageParameters().m_depthTestEnabled = value;
 		m_modified = true;
 	}
 }
 
 void DrawElementListBuilder::setDepthWriteEnabled(const Optional<bool>& value)
 {
-	if (m_primaryGeometryStageParameters.m_depthWriteEnabled != value) {
-		m_primaryGeometryStageParameters.m_depthWriteEnabled = value;
+	if (primaryGeometryStageParameters().m_depthWriteEnabled != value) {
+		primaryGeometryStageParameters().m_depthWriteEnabled = value;
 		m_modified = true;
 	}
 }
 
 void DrawElementListBuilder::setShadingModel(const Optional<ShadingModel>& value)
 {
-	if (m_primaryGeometryStageParameters.shadingModel != value) {
-		m_primaryGeometryStageParameters.shadingModel = value;
+	if (primaryGeometryStageParameters().shadingModel != value) {
+		primaryGeometryStageParameters().shadingModel = value;
 		m_modified = true;
 	}
 }
 
 void DrawElementListBuilder::setMaterial(AbstractMaterial * value)
 {
-	if (m_primaryGeometryStageParameters.m_material != value) {
-		m_primaryGeometryStageParameters.m_material = value;
+	if (primaryGeometryStageParameters().m_material != value) {
+		primaryGeometryStageParameters().m_material = value;
 		m_modified = true;
 	}
 }
 
 //void DrawElementListBuilder::setTransfrom(const Matrix & value)
 //{
-//	if (m_primaryGeometryStageParameters.builtinEffectData.m_transfrom != value) {
-//		m_primaryGeometryStageParameters.builtinEffectData.m_transfrom = value;
+//	if (primaryGeometryStageParameters().builtinEffectData.m_transfrom != value) {
+//		primaryGeometryStageParameters().builtinEffectData.m_transfrom = value;
 //		m_modified = true;
 //	}
 //}
 
 void DrawElementListBuilder::setOpacity(float value)
 {
-	if (m_primaryGeometryStageParameters.builtinEffectData.opacity != value) {
-		m_primaryGeometryStageParameters.builtinEffectData.opacity = value;
+	if (primaryGeometryStageParameters().builtinEffectData.opacity != value) {
+		primaryGeometryStageParameters().builtinEffectData.opacity = value;
 		m_modified = true;
 	}
 }
 
 void DrawElementListBuilder::setColorScale(const Color & value)
 {
-	if (m_primaryGeometryStageParameters.builtinEffectData.colorScale != value) {
-		m_primaryGeometryStageParameters.builtinEffectData.colorScale = value;
+	if (primaryGeometryStageParameters().builtinEffectData.colorScale != value) {
+		primaryGeometryStageParameters().builtinEffectData.colorScale = value;
 		m_modified = true;
 	}
 }
 
 void DrawElementListBuilder::setBlendColor(const Color & value)
 {
-	if (m_primaryGeometryStageParameters.builtinEffectData.blendColor != value) {
-		m_primaryGeometryStageParameters.builtinEffectData.blendColor = value;
+	if (primaryGeometryStageParameters().builtinEffectData.blendColor != value) {
+		primaryGeometryStageParameters().builtinEffectData.blendColor = value;
 		m_modified = true;
 	}
 }
 
 void DrawElementListBuilder::setTone(const ToneF & value)
 {
-	if (m_primaryGeometryStageParameters.builtinEffectData.tone != value) {
-		m_primaryGeometryStageParameters.builtinEffectData.tone = value;
+	if (primaryGeometryStageParameters().builtinEffectData.tone != value) {
+		primaryGeometryStageParameters().builtinEffectData.tone = value;
 		m_modified = true;
 	}
+}
+
+void DrawElementListBuilder::pushState(bool reset)
+{
+    Ref<State> state;
+    if (m_freeStateStack.isEmpty()) {
+        state = makeRef<State>();
+    }
+    else {
+        state = m_freeStateStack.back();
+        m_freeStateStack.removeLast();
+    }
+
+    if (m_aliveStateStack.isEmpty()) {
+        // 描画開始時に1つ積んでおくため
+    }
+    else {
+        // 現在のステートを保持
+        state->frameBufferStageParameters.copyFrom(primaryFrameBufferStageParameters());
+        state->geometryStageParameters.copyFrom(primaryGeometryStageParameters());
+    }
+
+    m_aliveStateStack.add(state);
+
+    if (reset) {
+        this->reset2();
+    }
+}
+
+void DrawElementListBuilder::popState()
+{
+    auto state = m_aliveStateStack.back();
+    m_aliveStateStack.removeLast();
+    m_freeStateStack.add(state);
 }
 
 RenderStage * DrawElementListBuilder::prepareRenderStage(RenderFeature* renderFeature, RenderFeatureStageParameters * featureParams)
@@ -192,16 +241,16 @@ RenderStage * DrawElementListBuilder::prepareRenderStage(RenderFeature* renderFe
 		bool sharedFrameBufferStageParameters = false;
 		bool sharedGeometryStageParameters = false;
 		if (lastStage) {
-			sharedFrameBufferStageParameters = m_primaryFrameBufferStageParameters.equals(lastStage->frameBufferStageParameters);
-			sharedGeometryStageParameters = m_primaryGeometryStageParameters.equals(lastStage->geometryStageParameters);
+			sharedFrameBufferStageParameters = primaryFrameBufferStageParameters().equals(lastStage->frameBufferStageParameters);
+			sharedGeometryStageParameters = primaryGeometryStageParameters().equals(lastStage->geometryStageParameters);
 		}
 		if (!sharedFrameBufferStageParameters) {
 			newStage->frameBufferStageParameters = m_targetList->newFrameData<FrameBufferStageParameters>();
-			*newStage->frameBufferStageParameters = m_primaryFrameBufferStageParameters;
+			*newStage->frameBufferStageParameters = primaryFrameBufferStageParameters();
 		}
 		if (!sharedGeometryStageParameters) {
 			newStage->geometryStageParameters = m_targetList->newFrameData<GeometryStageParameters>();
-			*newStage->geometryStageParameters = m_primaryGeometryStageParameters;
+			*newStage->geometryStageParameters = primaryGeometryStageParameters();
 		}
 
 		return newStage;

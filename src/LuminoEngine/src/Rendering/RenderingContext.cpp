@@ -26,9 +26,9 @@ void RenderingContext::setDrawElementList(detail::DrawElementList* list)
 	m_builder->setTargetList(list);
 }
 
-void RenderingContext::reset()
+void RenderingContext::resetForBeginRendering()
 {
-	m_builder->reset();
+	m_builder->resetForBeginRendering();
 }
 
 void RenderingContext::setRenderTarget(int index, RenderTargetTexture * value)
@@ -69,6 +69,40 @@ void RenderingContext::setDepthTestEnabled(Optional<bool> value)
 void RenderingContext::setDepthWriteEnabled(Optional<bool> value)
 {
 	m_builder->setDepthWriteEnabled(value);
+}
+
+void RenderingContext::resetState()
+{
+    m_builder->reset2();
+}
+
+void RenderingContext::pushState(bool reset)
+{
+    m_builder->pushState(reset);
+}
+
+void RenderingContext::popState()
+{
+    m_builder->popState();
+}
+
+void RenderingContext::blit(AbstractMaterial* material)
+{
+    class Blit : public detail::RenderDrawElement
+    {
+    public:
+        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+        {
+            static_cast<detail::BlitRenderFeature*>(renderFeatures)->blit();
+        }
+    };
+
+    // TODO: material 指定なしでも呼び出せるように、RenderTarget のように Cache 持っておきたい。
+
+    m_builder->setMaterial(material);
+    auto* element = m_builder->addNewDrawElement<Blit>(
+        m_manager->blitRenderFeature(),
+        m_builder->blitRenderFeatureStageParameters());
 }
 
 void RenderingContext::drawSprite(

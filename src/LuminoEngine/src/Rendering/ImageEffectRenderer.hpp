@@ -3,6 +3,7 @@
 namespace ln {
 class RenderingContext;
 class ImageEffect;
+class Material;
 namespace detail {
 
 class ImageEffectRenderer
@@ -12,10 +13,12 @@ public:
     ImageEffectRenderer();
     void addImageEffect(ImageEffect* effect);
     void removeImageEffect(ImageEffect* effect);
-    void render(RenderingContext* context);
+    void render(RenderingContext* context, RenderTargetTexture* inout);
 
 private:
+    RenderingManager* m_manager;
     List<Ref<ImageEffect>> m_imageEffects;
+    Ref<Material> m_blitMaterial;
 };
 
 } // namespace detail

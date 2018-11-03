@@ -31,14 +31,14 @@ void DepthPrepass::initialize()
 
 void DepthPrepass::onBeginRender(SceneRenderer* sceneRenderer)
 {
-	m_depthMap = sceneRenderer->renderingPipeline()->frameBufferCache()->requestRenderTargetTexture(sceneRenderer->renderingPipeline()->renderingFrameBufferSize(), TextureFormat::RGBA32, false);
-	m_depthBuffer = sceneRenderer->renderingPipeline()->frameBufferCache()->requestDepthBuffer(sceneRenderer->renderingPipeline()->renderingFrameBufferSize());
+	m_depthMap = manager()->frameBufferCache()->requestRenderTargetTexture(sceneRenderer->renderingPipeline()->renderingFrameBufferSize(), TextureFormat::RGBA32, false);
+	m_depthBuffer = manager()->frameBufferCache()->requestDepthBuffer(sceneRenderer->renderingPipeline()->renderingFrameBufferSize());
 }
 
 void DepthPrepass::onEndRender(SceneRenderer* sceneRenderer)
 {
-    sceneRenderer->renderingPipeline()->frameBufferCache()->release(m_depthMap);
-    sceneRenderer->renderingPipeline()->frameBufferCache()->release(m_depthBuffer);
+    manager()->frameBufferCache()->release(m_depthMap);
+    manager()->frameBufferCache()->release(m_depthBuffer);
 	m_depthMap = nullptr;
 	m_depthBuffer = nullptr;
 }

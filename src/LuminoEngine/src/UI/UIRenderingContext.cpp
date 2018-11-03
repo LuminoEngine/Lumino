@@ -14,9 +14,9 @@ UIRenderingContext::UIRenderingContext()
 	setDrawElementList(m_elementList);
 }
 
-void UIRenderingContext::reset()
+void UIRenderingContext::resetForBeginRendering()
 {
-	RenderingContext::reset();
+	RenderingContext::resetForBeginRendering();
 	m_elementList->clear();
 }
 

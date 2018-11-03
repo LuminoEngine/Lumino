@@ -73,7 +73,7 @@ void World::onPostUpdate(float elapsedSeconds)
 
 void World::render()
 {
-    m_renderingContext->reset();
+    m_renderingContext->resetForBeginRendering();
 
     for (auto& obj : m_rootWorldObjectList)
     {
@@ -99,9 +99,9 @@ WorldSceneGraphRenderingContext::WorldSceneGraphRenderingContext()
 	setDrawElementList(m_elementList);
 }
 
-void WorldSceneGraphRenderingContext::reset()
+void WorldSceneGraphRenderingContext::resetForBeginRendering()
 {
-	RenderingContext::reset();
+	RenderingContext::resetForBeginRendering();
 	m_elementList->clear();
 }
 

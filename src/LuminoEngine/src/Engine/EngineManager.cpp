@@ -7,6 +7,8 @@
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
+#include "../Rendering/RenderTargetTextureCache.hpp"
+
 #include "../Platform/PlatformManager.hpp"
 #include "../Input/InputManager.hpp"
 #include "../Audio/AudioManager.hpp"
@@ -342,6 +344,10 @@ void EngineManager::updateFrame()
 
 void EngineManager::renderFrame()
 {
+    if (m_renderingManager) {
+        m_renderingManager->frameBufferCache()->beginRenderSection();
+    }
+
 	if (m_mainWindow) {
 		m_mainWindow->renderContents();
 	}
@@ -363,6 +369,11 @@ void EngineManager::presentFrame()
 		m_mainWindow->present();
 	}
 
+    if (m_renderingManager) {
+        m_renderingManager->frameBufferCache()->endRenderSection();
+    }
+
+    // TODO:
 	Thread::sleep(1);
 }
 

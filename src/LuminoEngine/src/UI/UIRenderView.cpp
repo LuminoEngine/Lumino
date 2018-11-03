@@ -32,7 +32,7 @@ void UIRenderView::renderTree(GraphicsContext* graphicsContext, UIElement* eleme
 {
 	// build draw elements
 	{
-		m_renderingContext->reset();
+		m_renderingContext->resetForBeginRendering();
 		element->render(m_renderingContext);
 	}
 

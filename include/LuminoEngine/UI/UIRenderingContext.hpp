@@ -11,7 +11,7 @@ public:
 
 
 public: // TODO: inernal
-	void reset();
+	void resetForBeginRendering();
 
 	Ref<detail::DrawElementList> m_elementList;
 };

@@ -14,9 +14,9 @@ namespace detail {
 
 void RenderingPipeline::initialize()
 {
-    RenderingManager* manager = detail::EngineDomain::renderingManager();
-    m_frameBufferCache = makeRef<detail::FrameBufferCache>(
-        manager->renderTargetTextureCacheManager(), manager->depthBufferCacheManager());
+    //RenderingManager* manager = detail::EngineDomain::renderingManager();
+    //m_frameBufferCache = makeRef<detail::FrameBufferCache>(
+    //    manager->renderTargetTextureCacheManager(), manager->depthBufferCacheManager());
 }
 
 //==============================================================================

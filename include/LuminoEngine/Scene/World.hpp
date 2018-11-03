@@ -54,7 +54,7 @@ class WorldSceneGraphRenderingContext
 public:
     WorldSceneGraphRenderingContext();
     
-    void reset();
+    void resetForBeginRendering();
     
     // 本番では、World が持っていたりする。
     Ref<detail::DrawElementList> m_elementList;

@@ -65,9 +65,15 @@ public:
 
 	/** @} */
 
+    void resetState();
+    void pushState(bool reset = true);  // TODO: enum, scoped_guard
+    void popState();
+
 	//--------------------------------------------------------------------------
 	/** @name drawing */
 	/** @{ */
+
+    void blit(AbstractMaterial* material);
 
 	/** スプライトを描画します。 */
 	void drawSprite(
@@ -105,7 +111,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	RenderingContext();
 	virtual ~RenderingContext();
 	void setDrawElementList(detail::DrawElementList* list);
-	void reset();
+	void resetForBeginRendering();
 
 private:
 	detail::RenderingManager* m_manager;

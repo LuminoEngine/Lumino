@@ -4,6 +4,7 @@
 #include <LuminoEngine/Shader/Shader.hpp>
 #include "../Engine/LinearAllocator.hpp"
 #include "DrawElementListBuilder.hpp"
+#include "BlitRenderFeature.hpp"
 #include "SpriteRenderFeature.hpp"
 #include "MeshRenderFeature.hpp"
 #include "RenderTargetTextureCache.hpp"
@@ -30,6 +31,7 @@ void RenderingManager::initialize(const Settings& settings)
 
 	m_renderTargetTextureCacheManager = makeRef<RenderTargetTextureCacheManager>();
 	m_depthBufferCacheManager = makeRef<DepthBufferCacheManager>();
+    m_frameBufferCache = makeRef<detail::FrameBufferCache>(m_renderTargetTextureCacheManager, m_depthBufferCacheManager);
 
 	static VertexElement elements[] =
 	{
@@ -42,6 +44,7 @@ void RenderingManager::initialize(const Settings& settings)
 
 	m_renderStageListBuilder = makeRef<DrawElementListBuilder>();
 
+    m_blitRenderFeature = newObject<BlitRenderFeature>(this);
 	m_spriteRenderFeature = newObject<SpriteRenderFeature>(this);
 	m_meshRenderFeature = newObject<MeshRenderFeature>(this);
 

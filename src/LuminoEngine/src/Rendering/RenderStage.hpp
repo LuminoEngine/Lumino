@@ -104,6 +104,11 @@ public:
 			m_viewportRect == other->m_viewportRect &&
 			m_scissorRect == other->m_scissorRect;
 	}
+
+    void copyFrom(const FrameBufferStageParameters& other)
+    {
+        *this = other;
+    }
 };
 
 // インスタンスは DrawElementList の LinearAllocator に配置される。
@@ -154,6 +159,11 @@ public:
 			shadingModel == other->shadingModel &&
 			builtinEffectData.equals(&other->builtinEffectData);
 	}
+
+    void copyFrom(const GeometryStageParameters& other)
+    {
+        *this = other;
+    }
 };
 
 // プライマリのインスタンスは DrawElementListBuilder が持っている。
