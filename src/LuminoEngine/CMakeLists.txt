@@ -203,10 +203,13 @@ set(LN_SOURCES_Mesh
 set(LN_SOURCES_Rendering
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/CommandBuffer.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/ImageEffect.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/Material.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/RenderFeature.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/RenderingContext.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/RenderView.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/ScreenMotionBlurImageEffect.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/ToneImageEffect.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/Vertex.hpp
     src/Rendering/Internal.hpp
     src/Rendering/ClusteredShadingSceneRenderer.cpp
@@ -214,6 +217,9 @@ set(LN_SOURCES_Rendering
     src/Rendering/CommandBuffer.cpp
     src/Rendering/DrawElementListBuilder.cpp
     src/Rendering/DrawElementListBuilder.hpp
+    src/Rendering/ImageEffect.cpp
+    src/Rendering/ImageEffectRenderer.cpp
+    src/Rendering/ImageEffectRenderer.hpp
     src/Rendering/LightClusters.cpp
     src/Rendering/LightClusters.hpp
     src/Rendering/Material.cpp
@@ -230,8 +236,10 @@ set(LN_SOURCES_Rendering
     src/Rendering/RenderTargetTextureCache.cpp
     src/Rendering/RenderTargetTextureCache.hpp
     src/Rendering/RenderView.cpp
+    src/Rendering/ScreenMotionBlurImageEffect.cpp
     src/Rendering/SceneRenderer.cpp
     src/Rendering/SceneRenderer.hpp
+    src/Rendering/ToneImageEffect.cpp
     src/Rendering/SpriteRenderFeature.cpp
     src/Rendering/SpriteRenderFeature.hpp
     src/Rendering/UnLigitingSceneRenderer.cpp

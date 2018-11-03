@@ -66,6 +66,8 @@ private:
 	GraphicsManager*	m_manager;
 };
 
+// RenderTarget, DepthBuffer の Cache の release 忘れを防ぐためのクラス。
+// (防ぐというより、ユーザーに使わせるときに「release しなくてもいいよ」仕様にするために使う)
 // FrameBufferCache のインスタンスは RenderView ごとに持っておく。
 // CacheManager は RenderingManager が持って置き、FrameBufferCache はGCのタイミングをとる。
 // beginRenderSection/endRenderSection は RenderView など、あるシーンの描画の起点で呼び出す。
