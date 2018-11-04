@@ -32,6 +32,8 @@ public:
 	void clearDrawElementListManagers();
 	void addDrawElementListManager(detail::DrawElementListCollector* elementListManager);
 
+    virtual void render(GraphicsContext* graphicsContext) = 0;
+
 	// TODO: internal
 	//detail::CameraInfo mainCameraInfo;
 

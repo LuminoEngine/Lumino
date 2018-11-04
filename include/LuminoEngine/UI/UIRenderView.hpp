@@ -19,15 +19,18 @@ public:
     UIRenderView();
 	void initialize();
 
+    void setRootElement(UIElement* element);
 
 	// TODO: internal
 	// 描画コマンド構築と実行まですべて行う
-	void renderTree(GraphicsContext* graphicsContext, UIElement* element);
+	//void renderTree(GraphicsContext* graphicsContext, UIElement* element);
+    virtual void render(GraphicsContext* graphicsContext) override;
 
 private:
 	Ref<UIRenderingContext> m_renderingContext;
 	Ref<detail::FlatRenderingPipeline> m_sceneRenderingPipeline;
 	Ref<detail::DrawElementListCollector> m_drawElementListCollector;
+    Ref<UIElement> m_rootElement;
 };
 
 } // namespace ln

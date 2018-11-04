@@ -3,6 +3,7 @@
 
 namespace ln {
 class UIRenderingContext;
+class UIRenderView;
 namespace detail { class UIManager; }
 
 class UIElement
@@ -23,12 +24,13 @@ protected:
 
 	virtual void onRender(UIRenderingContext* context);
 
-
-LN_INTERNAL_ACCESS:
-	void render(UIRenderingContext* context);
+    // TODO: internal
+    virtual void render(UIRenderingContext* context);
 
 private:
     detail::UIManager* m_manager;
+
+    friend class UIRenderView;
 };
 
 } // namespace ln

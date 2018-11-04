@@ -13,6 +13,7 @@ namespace ln {
 // UIRenderView
 
 UIRenderView::UIRenderView()
+    : m_rootElement(nullptr)
 {
 }
 
@@ -28,38 +29,46 @@ void UIRenderView::initialize()
 	addDrawElementListManager(m_drawElementListCollector);
 }
 
-void UIRenderView::renderTree(GraphicsContext* graphicsContext, UIElement* element)
+void UIRenderView::setRootElement(UIElement* element)
 {
-	// build draw elements
-	{
-		m_renderingContext->resetForBeginRendering();
-		element->render(m_renderingContext);
-	}
+    m_rootElement = element;
+}
+
+void UIRenderView::render(GraphicsContext* graphicsContext)
+{
+    if (m_rootElement)
+    {
+        // build draw elements
+        {
+            m_renderingContext->resetForBeginRendering();
+            m_rootElement->render(m_renderingContext);
+        }
 
 
 
 
 
 
-	FrameBuffer fb;
-	fb.renderTarget[0] = graphicsContext->colorBuffer(0);
-	fb.depthBuffer = graphicsContext->depthBuffer();
+        FrameBuffer fb;
+        fb.renderTarget[0] = graphicsContext->colorBuffer(0);
+        fb.depthBuffer = graphicsContext->depthBuffer();
 
-	// TODO:
-	detail::CameraInfo camera;
-	{
-		camera.viewPixelSize = Size(fb.renderTarget[0]->width(), fb.renderTarget[0]->height());	// TODO: 必要？
-		camera.viewPosition = Vector3::Zero;
-		camera.viewDirection = Vector3::UnitZ;
-		camera.viewMatrix = Matrix::makeLookAtLH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);//Matrix();// 
-		camera.projMatrix = Matrix::makePerspective2DLH(camera.viewPixelSize.width, camera.viewPixelSize.height, 0, 1000);
-		camera.viewProjMatrix = camera.viewMatrix * camera.projMatrix;
-		camera.viewFrustum = ViewFrustum(camera.viewProjMatrix);
-		camera.nearClip = 0;
-		camera.farClip = 1000;
-	}
+        // TODO:
+        detail::CameraInfo camera;
+        {
+            camera.viewPixelSize = Size(fb.renderTarget[0]->width(), fb.renderTarget[0]->height());	// TODO: 必要？
+            camera.viewPosition = Vector3::Zero;
+            camera.viewDirection = Vector3::UnitZ;
+            camera.viewMatrix = Matrix::makeLookAtLH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);//Matrix();// 
+            camera.projMatrix = Matrix::makePerspective2DLH(camera.viewPixelSize.width, camera.viewPixelSize.height, 0, 1000);
+            camera.viewProjMatrix = camera.viewMatrix * camera.projMatrix;
+            camera.viewFrustum = ViewFrustum(camera.viewProjMatrix);
+            camera.nearClip = 0;
+            camera.farClip = 1000;
+        }
 
-	m_sceneRenderingPipeline->render(graphicsContext, fb, &camera, &elementListManagers());
+        m_sceneRenderingPipeline->render(graphicsContext, fb, &camera, &elementListManagers());
+    }
 }
 
 } // namespace ln

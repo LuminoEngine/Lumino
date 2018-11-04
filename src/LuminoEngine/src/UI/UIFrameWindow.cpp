@@ -55,7 +55,8 @@ void UIFrameWindow::present()
 {
 	GraphicsContext* ctx = m_manager->graphicsManager()->graphicsContext();
 
-	m_renderView->renderTree(ctx, this);
+    m_renderView->setRootElement(this);
+	m_renderView->render(ctx);
 
 	ctx->present(m_swapChain);
 }

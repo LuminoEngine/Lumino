@@ -46,6 +46,12 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
 {
 	if (m_camera)
 	{
+        // DrawList 構築
+        if (m_targetWorld) {
+            m_targetWorld->render();
+        }
+
+
 		FrameBuffer fb;
 		fb.renderTarget[0] = graphicsContext->colorBuffer(0);
 		fb.depthBuffer = graphicsContext->depthBuffer();

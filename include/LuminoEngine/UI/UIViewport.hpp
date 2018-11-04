@@ -4,7 +4,10 @@
 namespace ln {
 class RenderView;
 class ImageEffect;
-namespace detail { class ImageEffectRenderer; }
+namespace detail {
+class UIManager;
+class ImageEffectRenderer;
+}
 
 class UIViewport
 	: public UIContainerElement
@@ -20,10 +23,11 @@ public:
 	void initialize();
 
 protected:
-    virtual void render(UIRenderingContext* context);
+    //virtual void render(UIRenderingContext* context);
 	virtual void onRender(UIRenderingContext* context);
 
 private:
+    detail::UIManager* m_manager;
     Ref<detail::ImageEffectRenderer> m_imageEffectRenderer;
     List<Ref<RenderView>> m_renderViews;
 };

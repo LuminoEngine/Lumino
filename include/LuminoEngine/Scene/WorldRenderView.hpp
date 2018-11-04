@@ -19,7 +19,7 @@ public:
 
 
     // TODO: internal
-    void render(GraphicsContext* graphicsContext);
+    virtual void render(GraphicsContext* graphicsContext) override;
 
 LN_CONSTRUCT_ACCESS:
     WorldRenderView();

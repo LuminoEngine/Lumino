@@ -86,6 +86,8 @@ void EngineManager::initialize()
     m_mainWorldRenderView = newObject<WorldRenderView>();
     m_mainWorldRenderView->setTargetWorld(m_mainWorld);
 	m_mainWorldRenderView->setCamera(m_mainCamera);
+
+    m_mainViewport->addRenderView(m_mainWorldRenderView);
 }
 
 void EngineManager::dispose()
@@ -352,15 +354,15 @@ void EngineManager::renderFrame()
 		m_mainWindow->renderContents();
 	}
 
-    // DrawList 構築
-    if (m_mainWorld) {
-        m_mainWorld->render();
-    }
+    //// DrawList 構築
+    //if (m_mainWorld) {
+    //    m_mainWorld->render();
+    //}
 
-    // DrawList を実際に描画
-    if (m_mainWorldRenderView) {
-        m_mainWorldRenderView->render(m_graphicsManager->graphicsContext());
-    }
+    //// DrawList を実際に描画
+    //if (m_mainWorldRenderView) {
+    //    m_mainWorldRenderView->render(m_graphicsManager->graphicsContext());
+    //}
 }
 
 void EngineManager::presentFrame()

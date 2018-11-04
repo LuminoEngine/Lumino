@@ -74,10 +74,10 @@ int main(int argc, char** argv)
     bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
     bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
 
-    //auto sprite = newObject<Sprite>();
-    //sprite->setTexture(tex);
-    auto sprite = newObject<UISprite>();
+    auto sprite = newObject<Sprite>();
     sprite->setTexture(tex);
+    //auto sprite = newObject<UISprite>();
+    //sprite->setTexture(tex);
 #endif
 
     while (Engine::update())
