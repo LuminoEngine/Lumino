@@ -34,6 +34,9 @@ void SceneRenderingPipeline::initialize()
 
     m_sceneRenderer = makeRef<detail::ClusteredShadingSceneRenderer>();
     m_sceneRenderer->initialize(manager);
+
+    m_sceneRenderer_ImageEffectPhase = makeRef<detail::UnLigitingSceneRenderer>();
+    m_sceneRenderer_ImageEffectPhase->initialize(manager);
 }
 
 void SceneRenderingPipeline::render(
@@ -42,15 +45,19 @@ void SceneRenderingPipeline::render(
     const detail::CameraInfo* mainCameraInfo,
     const List<detail::DrawElementListCollector*>* elementListManagers)
 {
-    m_mainCameraInfo = mainCameraInfo;
     m_elementListManagers = elementListManagers;
     m_renderingFrameBufferSize = SizeI(frameBuffer.renderTarget[0]->width(), frameBuffer.renderTarget[0]->height());
 
-    m_sceneRenderer->render(graphicsContext, this, frameBuffer);
+    m_sceneRenderer->render(graphicsContext, this, frameBuffer, *mainCameraInfo, RendringPhase::Default);
+
+    {
+        CameraInfo camera;
+        camera.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
+        m_sceneRenderer_ImageEffectPhase->render(graphicsContext, this, frameBuffer, camera, RendringPhase::ImageEffect);
+    }
 
     // Œë—p–hŽ~
     m_renderingFrameBufferSize = SizeI();
-    m_mainCameraInfo = nullptr;
     m_elementListManagers = nullptr;
 }
 
@@ -70,6 +77,9 @@ void FlatRenderingPipeline::initialize()
 
 	m_sceneRenderer = makeRef<detail::UnLigitingSceneRenderer>();
 	m_sceneRenderer->initialize(manager);
+
+    m_sceneRenderer_ImageEffectPhase = makeRef<detail::UnLigitingSceneRenderer>();
+    m_sceneRenderer_ImageEffectPhase->initialize(manager);
 }
 
 void FlatRenderingPipeline::render(
@@ -78,15 +88,20 @@ void FlatRenderingPipeline::render(
 	const detail::CameraInfo* mainCameraInfo,
 	const List<detail::DrawElementListCollector*>* elementListManagers)
 {
-	m_mainCameraInfo = mainCameraInfo;
 	m_elementListManagers = elementListManagers;
 	m_renderingFrameBufferSize = SizeI(frameBuffer.renderTarget[0]->width(), frameBuffer.renderTarget[0]->height());
 
-	m_sceneRenderer->render(graphicsContext, this, frameBuffer);
+	m_sceneRenderer->render(graphicsContext, this, frameBuffer, *mainCameraInfo, RendringPhase::Default);
+
+
+    {
+        CameraInfo camera;
+        camera.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
+        m_sceneRenderer_ImageEffectPhase->render(graphicsContext, this, frameBuffer, camera, RendringPhase::ImageEffect);
+    }
 
 	// Œë—p–hŽ~
 	m_renderingFrameBufferSize = SizeI();
-	m_mainCameraInfo = nullptr;
 	m_elementListManagers = nullptr;
 }
 

@@ -289,7 +289,7 @@ static Vector3 transformDirection(const Vector3& vec, const Matrix& mat)
 
 void ClusteredShadingSceneRenderer::onCollectLight(const DynamicLightInfo& light)
 {
-	const CameraInfo* view = renderingPipeline()->mainCameraInfo();
+	const CameraInfo& view = mainCameraInfo();
 
 	Color color = light.m_color;
 	color *= light.m_intensity;
@@ -303,7 +303,7 @@ void ClusteredShadingSceneRenderer::onCollectLight(const DynamicLightInfo& light
 		m_lightClusters.addHemisphereLight(color, light.m_color2 * light.m_intensity);
 		break;
 	case LightType::Directional:
-		m_lightClusters.addDirectionalLight(transformDirection(-light.m_direction, view->viewMatrix), color);
+		m_lightClusters.addDirectionalLight(transformDirection(-light.m_direction, view.viewMatrix), color);
 		break;
 	case LightType::Point:
 		m_lightClusters.addPointLight(light.m_position, light.m_range, light.m_attenuation, color);

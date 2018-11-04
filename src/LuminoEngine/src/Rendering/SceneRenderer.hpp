@@ -54,9 +54,12 @@ public:
 	void render(
 		GraphicsContext* graphicsContext,
         RenderingPipeline* renderingPipeline,
-		const FrameBuffer& defaultFrameBuffer);
+		const FrameBuffer& defaultFrameBuffer,
+        const detail::CameraInfo& mainCameraInfo,
+        RendringPhase targetPhase);
 
     RenderingPipeline* renderingPipeline() const { return m_renderingPipeline; }
+    const detail::CameraInfo& mainCameraInfo() const { return m_mainCameraInfo; }
 
 protected:
 	SceneRenderer();
@@ -67,7 +70,7 @@ protected:
 	void renderPass(GraphicsContext* graphicsContext, SceneRendererPass* pass);
 
 	// レンダリング準備として、描画に関係する各種オブジェクト (DrawElement や Light) を収集するフェーズ
-	virtual void collect(const detail::CameraInfo& cameraInfo);
+	virtual void collect(const CameraInfo& cameraInfo);
 
 	// レンダリング準備として、効率的な描画を行うために収集した各種オブジェクトのソートなどを行う
 	void prepare();
@@ -90,6 +93,12 @@ private:
     RenderingPipeline* m_renderingPipeline;
 	const FrameBuffer* m_defaultFrameBuffer;
 	ZSortDistanceBase m_zSortDistanceBase;
+
+    // 1つのパイプラインの別フェーズで SceneRenderer を使うとき、
+    // viewproj 行列を分けたいことがある (Default と ImageEffect など) ため、SceneRenderer 側に実態で持つ 
+    CameraInfo m_mainCameraInfo;
+
+    RendringPhase m_targetPhase;
 
 	// build by collect().
 	List<RenderDrawElement*> m_renderingElementList;

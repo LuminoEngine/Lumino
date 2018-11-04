@@ -21,12 +21,10 @@ public:
 
     const SizeI& renderingFrameBufferSize() const { return m_renderingFrameBufferSize; }
     //const Ref<detail::FrameBufferCache>& frameBufferCache() const { return m_frameBufferCache; }
-    const detail::CameraInfo* mainCameraInfo() const { return m_mainCameraInfo; }
 
     const List<detail::DrawElementListCollector*>* elementListManagers() const { return m_elementListManagers; }
 
 protected:
-    const detail::CameraInfo* m_mainCameraInfo;
     //Ref<detail::FrameBufferCache> m_frameBufferCache;
     SizeI m_renderingFrameBufferSize;	// render() の内側だけで使える
     const List<detail::DrawElementListCollector*>* m_elementListManagers;
@@ -48,6 +46,7 @@ public:
 
 private:
     Ref<detail::ClusteredShadingSceneRenderer> m_sceneRenderer;
+    Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer_ImageEffectPhase;
 };
 
 // ライティングしない Pipeline。UI で使う。
@@ -65,6 +64,7 @@ public:
 
 private:
 	Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer;
+    Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer_ImageEffectPhase;
 };
 
 } // namespace detail

@@ -60,10 +60,14 @@ void SceneRenderer::initialize()
 void SceneRenderer::render(
 	GraphicsContext* graphicsContext,
     RenderingPipeline* renderingPipeline,
-	const FrameBuffer& defaultFrameBuffer)
+	const FrameBuffer& defaultFrameBuffer,
+    const CameraInfo& mainCameraInfo,
+    RendringPhase targetPhase)
 {
 	m_renderingPipeline = renderingPipeline;
 	m_defaultFrameBuffer = &defaultFrameBuffer;
+    m_mainCameraInfo = mainCameraInfo;
+    m_targetPhase = targetPhase;
 
 	//detail::CoreGraphicsRenderFeature* coreRenderer = m_manager->getRenderer();
 	//coreRenderer->begin();
@@ -160,11 +164,11 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 	pass->onBeginPass(graphicsContext, &defaultFrameBuffer);
 
 
-	const detail::CameraInfo* cameraInfo = m_renderingPipeline->mainCameraInfo();
+	const detail::CameraInfo& cameraInfo = mainCameraInfo();
 
 	//pass->overrideCameraInfo(&cameraInfo);
 
-	collect(/*pass, */*cameraInfo);
+	collect(/*pass, */cameraInfo);
 
 	prepare();
 
@@ -191,7 +195,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 			AbstractMaterial* finalMaterial = currentStage->getMaterialFinal(nullptr);
 
 			ElementInfo elementInfo;
-			elementInfo.viewProjMatrix = &cameraInfo->viewProjMatrix;
+			elementInfo.viewProjMatrix = &cameraInfo.viewProjMatrix;
 			elementInfo.WorldMatrix = element->combinedWorldMatrix();
 			elementInfo.WorldViewProjectionMatrix = elementInfo.WorldMatrix * (*elementInfo.viewProjMatrix);
 			elementInfo.boneTexture = m_skinningMatricesTexture;
@@ -210,8 +214,8 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 				ShadingModel::UnLighting);
 
 			detail::ShaderSemanticsManager* semanticsManager = tech->shader()->semanticsManager();
-			semanticsManager->updateCameraVariables(*cameraInfo);
-			semanticsManager->updateElementVariables(*cameraInfo, elementInfo);
+			semanticsManager->updateCameraVariables(cameraInfo);
+			semanticsManager->updateElementVariables(cameraInfo, elementInfo);
 			semanticsManager->updateSubsetVariables(subsetInfo);
 
             if (finalMaterial) {
@@ -408,21 +412,26 @@ void SceneRenderer::collect(/*SceneRendererPass* pass, */const detail::CameraInf
 			RenderDrawElement* element = elementList->headElement();
 			while (element)
 			{
+                // filter phase
+                if (element->targetPhase == m_targetPhase) {
+
+
 #if 0		// TODO: 視錘台カリング
-				const Matrix& transform = element->getTransform(elementList);
+                    const Matrix& transform = element->getTransform(elementList);
 
-				Sphere boundingSphere = element->getLocalBoundingSphere();
-				boundingSphere.center += transform.getPosition();
+                    Sphere boundingSphere = element->getLocalBoundingSphere();
+                    boundingSphere.center += transform.getPosition();
 
-				if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
-					cameraInfo.viewFrustum.intersects(boundingSphere.center, boundingSphere.radius))
-				{
-					// このノードは描画できる
-					m_renderingElementList.add(element);
-				}
+                    if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
+                        cameraInfo.viewFrustum.intersects(boundingSphere.center, boundingSphere.radius))
+                    {
+                        // このノードは描画できる
+                        m_renderingElementList.add(element);
+                    }
 #else
-				m_renderingElementList.add(element);
+                    m_renderingElementList.add(element);
 #endif
+                }
 
 
 				element = element->next();
