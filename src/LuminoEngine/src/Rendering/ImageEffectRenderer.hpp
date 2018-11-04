@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 namespace ln {
+class RenderTargetTexture;
 class RenderingContext;
 class ImageEffect;
 class Material;

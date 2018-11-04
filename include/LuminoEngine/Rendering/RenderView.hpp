@@ -20,6 +20,8 @@ struct FrameBuffer
 	Ref<DepthBuffer> depthBuffer;
 };
 
+// RenderView は別の RenderingContext の描画コマンド構築中に、レンダリングターゲットを生成する目的で render を実行することがある。
+// そのため render の実装は RenderingContext や GraphicsContext の状態に依存しないようにしなければならない。
 class RenderView
 	: public Object
 {
