@@ -702,7 +702,7 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 	ctx->setIndexBuffer(nullptr);
 	ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 
-	// * [ ] default
+	// * [ ] default (Point, Reprat)
 	{
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
