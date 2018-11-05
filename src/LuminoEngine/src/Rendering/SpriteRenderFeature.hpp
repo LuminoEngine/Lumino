@@ -66,7 +66,7 @@ public:
 		SpriteBaseDirection baseDir,
 		BillboardType billboardType);
 
-	void flush();
+	void flush(IGraphicsDeviceContext* context);
 	void clear();
 
 private:
@@ -80,7 +80,7 @@ private:
 		float depth;	// ソートに使われる Z 値 (大きいほど遠い)
 	};
 
-	void prepareBuffers(int spriteCount);
+	void prepareBuffers(IGraphicsDeviceContext* context, int spriteCount);
 
 	State m_state;
 	Matrix m_viewInverseMatrix;
@@ -89,7 +89,7 @@ private:
 	List<SpriteData> m_spriteDataList;
 	List<int> m_spriteIndexList;
 
-	IGraphicsDeviceContext* m_device;
+	//IGraphicsDeviceContext* m_device;
 	Ref<IVertexDeclaration> m_vertexDeclaration;
 	Ref<IVertexBuffer> m_vertexBuffer;
 	Ref<IIndexBuffer> m_indexBuffer;
@@ -145,7 +145,7 @@ public:
 		SpriteBaseDirection baseDirection,
 		BillboardType billboardType);
 
-	virtual void flush() override;
+	virtual void flush(GraphicsContext* context) override;
 
 LN_CONSTRUCT_ACCESS:
 	SpriteRenderFeature();

@@ -29,6 +29,11 @@ public:
 	void addGraphicsResource(GraphicsResource* resource);
 	void removeGraphicsResource(GraphicsResource* resource);
 
+	// deviceContext() は、リソースの CRUD のみを目的として IGraphicsDeviceContext にアクセスしたいときに使うこと。
+	// 描画を目的としたステートの変更や、clear、draw 系は GraphicsContext::commitState() の戻り値を使うこと。
+	// またこれらの予防として、IGraphicsDeviceContext のポインタは持ち出してメンバに保持したりせず、
+	// 必要な時に GraphicsManager または GraphicsContext から取得すること。
+	// TODO: こういう事情がでてきたので、以前のバージョンのように IGraphicsDeviceContext をリソース関係と描画関係で分離するのもアリかもしれない。
 	const Ref<IGraphicsDeviceContext>& deviceContext() const { return m_deviceContext; }
 	const Ref<GraphicsContext>& graphicsContext() const { return m_graphicsContext; }
 	const Ref<LinearAllocatorPageManager>& linearAllocatorPageManager() const { return m_linearAllocatorPageManager; }

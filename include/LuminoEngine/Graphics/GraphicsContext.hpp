@@ -44,6 +44,10 @@ public:
 	void drawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount);
 	void present(SwapChain* swapChain);
 
+	// TODO: internal
+	// IGraphicsDeviceContext の clear, draw 系の機能を呼び出したい場合はこの戻り値を使うこと。
+	// GraphicsContext は変更中のステートをキャッシュするが、それを確実に IGraphicsDeviceContext へ送信した状態にする。
+	detail::IGraphicsDeviceContext* commitState();
 
 LN_CONSTRUCT_ACCESS:
 	GraphicsContext();
@@ -54,7 +58,6 @@ LN_INTERNAL_ACCESS:
 	virtual void dispose();
 
 private:
-	void commitStatus();
 
 	detail::GraphicsManager* m_manager;
 	detail::IGraphicsDeviceContext* m_device;

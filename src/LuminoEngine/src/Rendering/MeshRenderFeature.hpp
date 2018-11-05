@@ -48,10 +48,10 @@ public:
 	~MeshRenderFeature();
 	void initialize(RenderingManager* manager);
 
-	void drawMesh(MeshResource* mesh, int sectionIndex);
+	void drawMesh(GraphicsContext* context, MeshResource* mesh, int sectionIndex);
 	//void drawMesh(MeshResource* mesh, int startIndex, int primitiveCount, PrimitiveType primitiveType);
 
-	virtual void flush() override;
+	virtual void flush(GraphicsContext* context) override;
 
 private:
 	struct DrawMeshCommandData
@@ -65,7 +65,7 @@ private:
 		PrimitiveType						primitiveType;
 	};
 
-	void drawMeshImplOnRenderThread(const DrawMeshCommandData& data);
+	void drawMeshImplOnRenderThread(IGraphicsDeviceContext* context, const DrawMeshCommandData& data);
 
 	RenderingManager* m_manager;
 

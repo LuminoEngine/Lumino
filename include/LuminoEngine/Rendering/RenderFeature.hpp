@@ -1,12 +1,13 @@
 ﻿#pragma once
 
 namespace ln {
+class GraphicsContext;
 
 class RenderFeature
 	: public Object
 {
 public:
-	virtual void flush() = 0;
+	virtual void flush(GraphicsContext* context) = 0;
 
 private:
 };

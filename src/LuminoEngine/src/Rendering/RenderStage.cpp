@@ -52,10 +52,10 @@ bool RenderStage::equals(const RenderStage* other) const
 		renderFeature == other->renderFeature;
 }
 
-void RenderStage::flush()
+void RenderStage::flush(GraphicsContext* context)
 {
 	if (renderFeature) {
-		renderFeature->flush();
+		renderFeature->flush(context);
 	}
 }
 

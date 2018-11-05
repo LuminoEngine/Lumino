@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/VertexDeclaration.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
+#include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 #include "BlitRenderFeature.hpp"
@@ -34,29 +35,29 @@ void BlitRenderFeature::initialize(RenderingManager* manager)
     m_vertexDeclaration = manager->standardVertexDeclaration()->resolveRHIObject();
 }
 
-void BlitRenderFeature::blit()
+void BlitRenderFeature::blit(GraphicsContext* context)
 {
     auto* _this = this;
+	IGraphicsDeviceContext* deviceContext = context->commitState();
 
-    LN_ENQUEUE_RENDER_COMMAND_1(
+    LN_ENQUEUE_RENDER_COMMAND_2(
         BlitRenderFeature_blit, m_manager->graphicsManager(),
         BlitRenderFeature*, _this,
+		IGraphicsDeviceContext*, deviceContext,
         {
-            _this->blitImplOnRenderThread();
+            _this->blitImplOnRenderThread(deviceContext);
         });
 }
 
-void BlitRenderFeature::flush()
+void BlitRenderFeature::flush(GraphicsContext* context)
 {
 }
 
-void BlitRenderFeature::blitImplOnRenderThread()
+void BlitRenderFeature::blitImplOnRenderThread(IGraphicsDeviceContext* context)
 {
-    IGraphicsDeviceContext* device = m_manager->graphicsManager()->deviceContext();
-
-    device->setVertexDeclaration(m_vertexDeclaration);
-    device->setVertexBuffer(0, m_vertexBuffer);
-    device->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
+	context->setVertexDeclaration(m_vertexDeclaration);
+	context->setVertexBuffer(0, m_vertexBuffer);
+	context->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
 }
 
 } // namespace detail

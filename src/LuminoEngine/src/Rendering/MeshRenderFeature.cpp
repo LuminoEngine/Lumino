@@ -3,6 +3,7 @@
 #include <LuminoEngine/Graphics/VertexDeclaration.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
+#include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Mesh/Mesh.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 #include "MeshRenderFeature.hpp"
@@ -35,7 +36,7 @@ void MeshRenderFeature::initialize(RenderingManager* manager)
 //}
 
 //void MeshRenderFeature::drawMesh(MeshResource* mesh, int startIndex, int primitiveCount, PrimitiveType primitiveType)
-void MeshRenderFeature::drawMesh(MeshResource* mesh, int sectionIndex)
+void MeshRenderFeature::drawMesh(GraphicsContext* context, MeshResource* mesh, int sectionIndex)
 {
 	if (LN_REQUIRE(mesh != nullptr)) return;
 	auto* _this = this;
@@ -61,29 +62,29 @@ void MeshRenderFeature::drawMesh(MeshResource* mesh, int sectionIndex)
 
 	if (LN_REQUIRE(data.vertexBuffers[0])) return;
 
-	LN_ENQUEUE_RENDER_COMMAND_2(
+	IGraphicsDeviceContext* deviceContext = context->commitState();
+	LN_ENQUEUE_RENDER_COMMAND_3(
 		MeshRenderFeature_drawMesh, m_manager->graphicsManager(),
 		MeshRenderFeature*, _this,
+		IGraphicsDeviceContext*, deviceContext,
 		DrawMeshCommandData, data,
 		{
-			_this->drawMeshImplOnRenderThread(data);
+			_this->drawMeshImplOnRenderThread(deviceContext, data);
 		});
 }
 
-void MeshRenderFeature::flush()
+void MeshRenderFeature::flush(GraphicsContext* context)
 {
 }
 
-void MeshRenderFeature::drawMeshImplOnRenderThread(const DrawMeshCommandData& data)
+void MeshRenderFeature::drawMeshImplOnRenderThread(IGraphicsDeviceContext* context, const DrawMeshCommandData& data)
 {
-	IGraphicsDeviceContext* device = m_manager->graphicsManager()->deviceContext();
-
-	device->setVertexDeclaration(data.vertexDeclaration);
+	context->setVertexDeclaration(data.vertexDeclaration);
 	for (int i = 0; i < data.vertexBuffersCount; ++i) {
-		device->setVertexBuffer(i, data.vertexBuffers[i]);
+		context->setVertexBuffer(i, data.vertexBuffers[i]);
 	}
-	device->setIndexBuffer(data.indexBuffer);
-	device->drawPrimitiveIndexed(data.primitiveType, data.startIndex, data.primitiveCount);
+	context->setIndexBuffer(data.indexBuffer);
+	context->drawPrimitiveIndexed(data.primitiveType, data.startIndex, data.primitiveCount);
 }
 
 } // namespace detail

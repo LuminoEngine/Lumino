@@ -182,7 +182,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 		if (currentStage == nullptr || !currentStage->equals(stage))
 		{
 			if (currentStage) {
-				currentStage->flush();
+				currentStage->flush(graphicsContext);
 			}
 			currentStage = stage;
 			applyFrameBufferStatus(graphicsContext, currentStage, defaultFrameBuffer);
@@ -236,7 +236,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 	}
 
 	if (currentStage) {
-		currentStage->flush();
+		currentStage->flush(graphicsContext);
 	}
 
 #if 0

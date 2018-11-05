@@ -266,7 +266,7 @@ public:
 	RenderStage();
 
 	bool equals(const RenderStage* other) const;
-	void flush();
+	void flush(GraphicsContext* context);
 
 
 	RenderTargetTexture* getRenderTargetFinal(int index) const { return frameBufferStageParameters->m_renderTargets[index]; }

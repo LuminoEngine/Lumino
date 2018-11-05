@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 #include "SpriteRenderFeature.hpp"
 #include "RenderingManager.hpp"
@@ -17,13 +18,13 @@ InternalSpriteRenderer::InternalSpriteRenderer()
 
 void InternalSpriteRenderer::initialize(RenderingManager* manager)
 {
-	m_device = manager->graphicsManager()->deviceContext();
+	//m_device = manager->graphicsManager()->deviceContext();
 	m_buffersReservedSpriteCount = 0;
 	m_vertexDeclaration = manager->standardVertexDeclaration()->resolveRHIObject();
 	
 	// reserve buffers.
 	m_spriteDataList.reserve(2048);
-	prepareBuffers(2048);
+	prepareBuffers(manager->graphicsManager()->deviceContext(), 2048);
 }
 
 void InternalSpriteRenderer::setState(const State& state)
@@ -279,7 +280,7 @@ public:
 	}
 };
 
-void InternalSpriteRenderer::flush()
+void InternalSpriteRenderer::flush(IGraphicsDeviceContext* context)
 {
 	int spriteCount = m_spriteDataList.size();
 	if (spriteCount == 0) {
@@ -287,7 +288,7 @@ void InternalSpriteRenderer::flush()
 	}
 
 	// Allocate vertex buffer and index buffer, if needed.
-	prepareBuffers(m_spriteDataList.size());
+	prepareBuffers(context, m_spriteDataList.size());
 
 	// Initialize sprite index list.
 	for (int i = 0; i < spriteCount; ++i) {
@@ -321,10 +322,10 @@ void InternalSpriteRenderer::flush()
 	m_vertexBuffer->unmap();
 
 	// Render
-	m_device->setVertexDeclaration(m_vertexDeclaration);
-	m_device->setVertexBuffer(0, m_vertexBuffer);
-	m_device->setIndexBuffer(m_indexBuffer);
-	m_device->drawPrimitiveIndexed(PrimitiveType::TriangleList, 0, spriteCount * 2);
+	context->setVertexDeclaration(m_vertexDeclaration);
+	context->setVertexBuffer(0, m_vertexBuffer);
+	context->setIndexBuffer(m_indexBuffer);
+	context->drawPrimitiveIndexed(PrimitiveType::TriangleList, 0, spriteCount * 2);
 
 	// Cleanup
 	clear();
@@ -335,7 +336,7 @@ void InternalSpriteRenderer::clear()
 	m_spriteDataList.clear();
 }
 
-void InternalSpriteRenderer::prepareBuffers(int spriteCount)
+void InternalSpriteRenderer::prepareBuffers(IGraphicsDeviceContext* context, int spriteCount)
 {
 	if (m_buffersReservedSpriteCount < spriteCount)
 	{
@@ -345,7 +346,7 @@ void InternalSpriteRenderer::prepareBuffers(int spriteCount)
 		}
 
 		size_t vertexBufferSize = sizeof(Vertex) * vertexCount;
-		m_vertexBuffer = m_device->createVertexBuffer(GraphicsResourceUsage::Dynamic, vertexBufferSize, nullptr);
+		m_vertexBuffer = context->createVertexBuffer(GraphicsResourceUsage::Dynamic, vertexBufferSize, nullptr);
 
 		size_t indexBufferSize = spriteCount * 6;
 		std::vector<size_t> indexBuf(sizeof(uint16_t) * indexBufferSize, false);
@@ -363,7 +364,7 @@ void InternalSpriteRenderer::prepareBuffers(int spriteCount)
 			ib[i2 + 4] = idx + 1;
 			ib[i2 + 5] = idx + 3;
 		}
-		m_indexBuffer = m_device->createIndexBuffer(
+		m_indexBuffer = context->createIndexBuffer(
 			GraphicsResourceUsage::Dynamic, IndexBufferFormat::UInt16,
 			spriteCount * 6, ib);
 
@@ -443,14 +444,16 @@ void SpriteRenderFeature::drawRequest(
 		});
 }
 
-void SpriteRenderFeature::flush()
+void SpriteRenderFeature::flush(GraphicsContext* context)
 {
 	GraphicsManager* manager = m_manager->graphicsManager();
-	LN_ENQUEUE_RENDER_COMMAND_1(
+	IGraphicsDeviceContext* deviceContext = context->commitState();
+	LN_ENQUEUE_RENDER_COMMAND_2(
 		SpriteRenderFeature_flush, manager,
+		IGraphicsDeviceContext*, deviceContext,
 		InternalSpriteRenderer*, m_internal,
 		{
-			m_internal->flush();
+			m_internal->flush(deviceContext);
 		});
 }
 

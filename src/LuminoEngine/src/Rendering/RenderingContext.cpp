@@ -93,7 +93,7 @@ void RenderingContext::blit(AbstractMaterial* material)
     public:
         virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
         {
-            static_cast<detail::BlitRenderFeature*>(renderFeatures)->blit();
+            static_cast<detail::BlitRenderFeature*>(renderFeatures)->blit(context);
         }
     };
 
@@ -164,7 +164,7 @@ void RenderingContext::drawMesh(MeshContainer* meshContainer, int sectionIndex)
 			// TODO: LOD Level
 			MeshResource* mesh = meshContainer->selectLODResource(0);
 
-			static_cast<detail::MeshRenderFeature*>(renderFeatures)->drawMesh(mesh, sectionIndex);
+			static_cast<detail::MeshRenderFeature*>(renderFeatures)->drawMesh(context, mesh, sectionIndex);
 		}
 	};
 

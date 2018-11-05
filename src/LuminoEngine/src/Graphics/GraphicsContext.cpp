@@ -120,14 +120,14 @@ void GraphicsContext::setShaderPass(ShaderPass* pass)
 
 void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
-	commitStatus();
+	commitState();
 	// TODO: threading
 	m_device->clearBuffers(flags, color, z, stencil);
 }
 
 void GraphicsContext::drawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
 {
-	commitStatus();
+	commitState();
 	LN_ENQUEUE_RENDER_COMMAND_4(
 		GraphicsContext_setIndexBuffer, m_manager,
 		detail::IGraphicsDeviceContext*, m_device,
@@ -141,7 +141,7 @@ void GraphicsContext::drawPrimitive(PrimitiveType primitive, int startVertex, in
 
 void GraphicsContext::drawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
 {
-	commitStatus();
+	commitState();
 	LN_ENQUEUE_RENDER_COMMAND_4(
 		GraphicsContext_setIndexBuffer, m_manager,
 		detail::IGraphicsDeviceContext*, m_device,
@@ -161,7 +161,7 @@ void GraphicsContext::present(SwapChain* swapChain)
 	m_device->present(swapChain->resolveRHIObject());
 }
 
-void GraphicsContext::commitStatus()
+detail::IGraphicsDeviceContext* GraphicsContext::commitState()
 {
 	// ポインタとしては変わっていなくても、resolve は毎回呼び出す。
 	// こうしておかないと、
@@ -280,6 +280,8 @@ void GraphicsContext::commitStatus()
 				m_device->setShaderPass(rhiObject);
 			});
 	}
+
+	return m_manager->deviceContext();
 }
 
 void GraphicsContext::State::reset()

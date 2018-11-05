@@ -26,10 +26,18 @@ void UISprite::setTexture(Texture* texture)
 
 void UISprite::onRender(UIRenderingContext* context)
 {
-    //context->drawSprite(
-    //    Matrix(), Size(200, 100), Vector2(0, 0), Rect(0, 0, 1, 1), Color::White,
-    //    SpriteBaseDirection::Basic2D, BillboardType::None, m_material);
-context->blit(m_material);
+	context->setBlendMode(BlendMode::Add);
+	context->blit(m_material);
+
+    context->drawSprite(
+        Matrix(), Size(200, 100), Vector2(0, 0), Rect(0, 0, 1, 1), Color::White,
+        SpriteBaseDirection::Basic2D, BillboardType::None, m_material);
+
+
+	//context->drawSprite(
+	//	Matrix(), Size(20, 10), Vector2(0, 0), Rect(0, 0, 1, 1), Color::White,
+	//	SpriteBaseDirection::Basic2D, BillboardType::None, m_material);
+
 }
 
 } // namespace ln
