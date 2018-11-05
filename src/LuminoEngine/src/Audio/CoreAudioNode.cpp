@@ -349,6 +349,12 @@ void CoreAudioSourceNode::process()
 	unsigned numChannels = m_decoder->audioDataInfo().channelCount;
 
 	size_t bufferLength = m_decoder->read2(m_readBuffer.data(), m_readFrames);
+    if (bufferLength == 0) {    // EOF
+        result->setSilentAndZero();
+        return;
+    }
+
+
 	size_t readSamples = bufferLength * numChannels;
 
 

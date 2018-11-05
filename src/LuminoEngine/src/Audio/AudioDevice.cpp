@@ -33,6 +33,12 @@ void AudioDevice::render(int16_t* outputBuffer, int length)
 {
 	m_renderCallback->render(m_renderdBuffer.data(), m_renderdBuffer.size());
 	AudioDecoder::convertFromFloat32(outputBuffer, m_renderdBuffer.data(), length, PCMFormat::S16L);
+
+    //int sum = 0;
+    //for (int i = 0; i < length; i++) {
+    //    sum += outputBuffer[length];
+    //}
+    //std::cout << length << " " << sum << std::endl;
 }
 
 //==============================================================================

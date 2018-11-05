@@ -83,8 +83,8 @@ int main(int argc, char** argv)
     //Engine::mainViewport()->addImageEffect(imageEffect);
 #endif
 
-    //auto sound = newObject<Sound>(u"D:\\tmp\\8_MapBGM2.wav");
-    //sound->play();
+    auto sound = newObject<Sound>(u"D:\\tmp\\4_Battle_win.wav");
+    sound->play();
 
     while (Engine::update())
     {
