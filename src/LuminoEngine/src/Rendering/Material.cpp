@@ -34,7 +34,7 @@ Texture* AbstractMaterial::mainTexture() const
 
 void AbstractMaterial::setShader(Shader* shader)
 {
-	LN_NOTIMPLEMENTED();
+    m_shader = shader;
 }
 
 Shader* AbstractMaterial::shader() const

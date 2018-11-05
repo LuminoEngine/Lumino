@@ -88,6 +88,7 @@ set(LN_SOURCES_Audio
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioContext.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioListener.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioNode.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/Sound.hpp
     src/Audio/Internal.hpp
     src/Audio/ALAudioDevice.cpp
     src/Audio/ALAudioDevice.hpp
@@ -110,6 +111,7 @@ set(LN_SOURCES_Audio
     src/Audio/Mp3AudioDecoder.hpp
     src/Audio/SDLAudioDevice.cpp
     src/Audio/SDLAudioDevice.hpp
+    src/Audio/Sound.cpp
     src/Audio/blink/VectorMath.cpp
     src/Audio/blink/VectorMath.h
     src/Audio/core/CIAudioBus.cpp

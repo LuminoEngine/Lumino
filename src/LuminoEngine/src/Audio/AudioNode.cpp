@@ -184,11 +184,11 @@ void AudioSourceNode::resume()
 
 void AudioSourceNode::initialize(const StringRef & filePath)
 {
-	AudioNode::initialize();
-	auto decoder = context()->manager()->createAudioDecoder(filePath);
-
-	m_coreObject = makeRef<detail::CoreAudioSourceNode>(context()->coreObject());
+    Ref<detail::AudioDecoder> decoder = detail::EngineDomain::audioManager()->createAudioDecoder(filePath);
+	m_coreObject = makeRef<detail::CoreAudioSourceNode>(detail::EngineDomain::audioManager()->primaryContext()->coreObject());
 	m_coreObject->initialize(decoder);
+
+    AudioNode::initialize();
 }
 
 detail::CoreAudioNode * AudioSourceNode::coreNode()

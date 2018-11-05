@@ -105,7 +105,7 @@ BlendMode RenderStage::getBlendModeFinal(AbstractMaterial* finalMaterial) const
 		return geometryStageParameters->m_blendMode.value();
 
 	// default
-	return BlendMode::Alpha;
+	return BlendMode::Normal;
 }
 
 CullMode RenderStage::getCullingModeFinal(AbstractMaterial* finalMaterial) const

@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include "../Graphics/GraphicsManager.hpp"
@@ -58,6 +59,8 @@ void UIViewport::onRender(UIRenderingContext* context)
     {
         view->render(graphicsContext);
     }
+
+    m_imageEffectRenderer->render(context, graphicsContext->colorBuffer(0));
 }
 
 } // namespace ln

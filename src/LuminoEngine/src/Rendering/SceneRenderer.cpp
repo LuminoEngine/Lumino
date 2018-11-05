@@ -210,7 +210,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 
 			ShaderTechnique* tech = pass->selectShaderTechnique(
 				ShaderTechniqueClass_MeshProcess::StaticMesh,
-				nullptr,
+                finalMaterial->shader(),
 				ShadingModel::UnLighting);
 
 			detail::ShaderSemanticsManager* semanticsManager = tech->shader()->semanticsManager();

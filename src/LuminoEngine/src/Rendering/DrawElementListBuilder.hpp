@@ -27,6 +27,7 @@ public:
 	void reset2();   // スタックに積んである分はリセットしないしスタックも消さない
 
 	void setRenderTarget(int index, RenderTargetTexture* value);
+    RenderTargetTexture* renderTarget(int index) const;
 	void setDepthBuffer(DepthBuffer* value);
 	void setViewportRect(const RectI& value);
 	void setScissorRect(const RectI& value);
@@ -75,8 +76,9 @@ private:
 
 	RenderStage* prepareRenderStage(RenderFeature* renderFeature, RenderFeatureStageParameters* featureParams);
     FrameBufferStageParameters& primaryFrameBufferStageParameters() { return m_aliveStateStack.front()->frameBufferStageParameters; }
+    const FrameBufferStageParameters& primaryFrameBufferStageParameters() const { return m_aliveStateStack.front()->frameBufferStageParameters; }
     GeometryStageParameters& primaryGeometryStageParameters() { return m_aliveStateStack.front()->geometryStageParameters; }
-
+    const GeometryStageParameters& primaryGeometryStageParameters() const { return m_aliveStateStack.front()->geometryStageParameters; }
 
 	DrawElementList* m_targetList;
 	//FrameBufferStageParameters m_primaryFrameBufferStageParameters;

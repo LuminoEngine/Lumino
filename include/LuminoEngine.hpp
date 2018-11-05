@@ -14,6 +14,7 @@
 
 #include "LuminoEngine/Audio/AudioContext.hpp"
 #include "LuminoEngine/Audio/AudioNode.hpp"
+#include "LuminoEngine/Audio/Sound.hpp"
 
 #include "LuminoEngine/Shader/Shader.hpp"
 
@@ -36,14 +37,16 @@
 #include "LuminoEngine/Rendering/RenderFeature.hpp"
 #include "LuminoEngine/Rendering/RenderingContext.hpp"
 
+#include "LuminoEngine/Rendering/ToneImageEffect.hpp"
+
 #include "LuminoEngine/Visual/LightComponent.hpp"
 #include "LuminoEngine/Visual/SpriteComponent.hpp"
 
 #include "LuminoEngine/Scene/Light.hpp"
 #include "LuminoEngine/Scene/Sprite.hpp"
 
-
 #include "LuminoEngine/UI/UIFrameWindow.hpp"
+#include "LuminoEngine/UI/UIViewport.hpp"
 #include "LuminoEngine/UI/UISprite.hpp"
 
 

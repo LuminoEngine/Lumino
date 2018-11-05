@@ -78,7 +78,13 @@ int main(int argc, char** argv)
     sprite->setTexture(tex);
     //auto sprite = newObject<UISprite>();
     //sprite->setTexture(tex);
+
+    //auto imageEffect = newObject<ToneImageEffect>();
+    //Engine::mainViewport()->addImageEffect(imageEffect);
 #endif
+
+    //auto sound = newObject<Sound>(u"D:\\tmp\\8_MapBGM2.wav");
+    //sound->play();
 
     while (Engine::update())
     {

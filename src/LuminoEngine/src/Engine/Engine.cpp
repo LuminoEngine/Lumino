@@ -6,6 +6,7 @@
 #include <LuminoEngine/Engine/EngineSettings.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
+#include <LuminoEngine/UI/UIViewport.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 
 namespace ln {
@@ -70,6 +71,11 @@ GraphicsContext* Engine::graphicsContext()
 UIFrameWindow* Engine::mainWindow()
 {
 	return detail::EngineDomain::engineManager()->mainWindow();
+}
+
+UIViewport* Engine::mainViewport()
+{
+    return detail::EngineDomain::engineManager()->mainViewport();
 }
 
 } // namespace ln

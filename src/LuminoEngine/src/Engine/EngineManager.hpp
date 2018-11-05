@@ -5,7 +5,8 @@
 namespace ln {
 class UIFrameWindow;
 class UIViewport;
-//class UIRenderView;
+class UIRenderView;
+class UIContainerElement;
 class World;
 class WorldRenderView;
 class Camera;
@@ -86,7 +87,9 @@ public:
     const Ref<VisualManager>& visualManager() const { return m_visualManager; }
 	const Ref<SceneManager>& sceneManager() const { return m_sceneManager; }
     const Ref<UIManager>& uiManager() const { return m_uiManager; }
+
 	const Ref<UIFrameWindow>& mainWindow() const { return m_mainWindow; }
+    const Ref<UIViewport>& mainViewport() const { return m_mainViewport; }
 
 private:
 	virtual bool onPlatformEvent(const PlatformEventArgs& e) override;
@@ -112,7 +115,8 @@ private:
 
 	Ref<UIFrameWindow> m_mainWindow;
 	Ref<UIViewport> m_mainViewport;
-	//Ref<UIRenderView> m_mainUIRenderView;
+    Ref<UIRenderView> m_mainUIRenderView;   // m_mainViewport の ViewBox 内部に配置する
+    Ref<UIContainerElement> m_mainUIRoot;   // m_mainUIRenderView の RootElement
     Ref<World> m_mainWorld;
     Ref<WorldRenderView> m_mainWorldRenderView;
 	Ref<Camera> m_mainCamera;

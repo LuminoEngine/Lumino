@@ -27,7 +27,12 @@ protected:
 	AudioNode();
 	virtual ~AudioNode() = default;
 	void initialize();
-	virtual void dispose();
+    virtual void dispose();
+    // initialize の中で context に addAudioNode() するが、その時点で初期化処理は完全に終わっていなければならない。
+    // そうしないと、addAudioNode() に入った瞬間 AudioThread で commit が走ったときに、未初期化の変数にアクセスしてしまう。
+    // onInitialize() はそういった事情を考慮して、セーフティなタイミングで初期化を行うためのコールバック。
+    // 逆に言うと、AudioNode のサブクラスは他のモジュールのように initialize() は一切実装してはならない。
+    //virtual void onInitialize() = 0;
 	virtual detail::CoreAudioNode* coreNode() = 0;
 	virtual void commit();	// ロック済みの状態で呼ばれる
 

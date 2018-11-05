@@ -56,9 +56,8 @@ void ImageEffectRenderer::render(RenderingContext* context, RenderTargetTexture*
 
         context->resetState();
 
-        context->setRenderTarget(0, inout);
-        m_blitMaterial->setMainTexture(primaryTarget);
-        context->blit(m_blitMaterial);
+        m_blitMaterial->setMainTexture(primaryTarget); // TODO: blit が source 指定未対応なので
+        context->blit(nullptr, inout, m_blitMaterial);
 
         context->popState();
 

@@ -18,7 +18,7 @@ ImageEffect::~ImageEffect()
 
 void ImageEffect::initialize()
 {
-
+    Object::initialize();
 }
 
 } // namespace ln

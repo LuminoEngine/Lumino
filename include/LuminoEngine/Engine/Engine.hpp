@@ -3,6 +3,7 @@
 namespace ln {
 class GraphicsContext;
 class UIFrameWindow;
+class UIViewport;
 
 /** アプリケーション全体にかかわる処理を行います。 */
 LN_CLASS(Static)
@@ -28,6 +29,7 @@ public:
 
 	static GraphicsContext* graphicsContext();
 	static UIFrameWindow* mainWindow();
+    static UIViewport* mainViewport();
 
 };
 

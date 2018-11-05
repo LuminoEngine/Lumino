@@ -36,6 +36,11 @@ void RenderingContext::setRenderTarget(int index, RenderTargetTexture * value)
 	m_builder->setRenderTarget(index, value);
 }
 
+RenderTargetTexture* RenderingContext::renderTarget(int index) const
+{
+    return m_builder->renderTarget(index);
+}
+
 void RenderingContext::setDepthBuffer(DepthBuffer * value)
 {
 	m_builder->setDepthBuffer(value);
@@ -86,7 +91,7 @@ void RenderingContext::popState()
     m_builder->popState();
 }
 
-void RenderingContext::blit(AbstractMaterial* material)
+void RenderingContext::blit(RenderTargetTexture* source, RenderTargetTexture* destination, AbstractMaterial* material) 
 {
     class Blit : public detail::RenderDrawElement
     {
@@ -96,6 +101,15 @@ void RenderingContext::blit(AbstractMaterial* material)
             static_cast<detail::BlitRenderFeature*>(renderFeatures)->blit(context);
         }
     };
+    if (source) {
+        LN_NOTIMPLEMENTED();
+        return;
+    }
+
+    // TODO: scoped_gurad
+    RenderTargetTexture* oldTarget = renderTarget(0);
+    setRenderTarget(0, destination);
+
 
     // TODO: material 指定なしでも呼び出せるように、RenderTarget のように Cache 持っておきたい。
 
@@ -104,6 +118,8 @@ void RenderingContext::blit(AbstractMaterial* material)
         m_manager->blitRenderFeature(),
         m_builder->blitRenderFeatureStageParameters());
     element->targetPhase = detail::RendringPhase::ImageEffect;
+
+    setRenderTarget(0, oldTarget);
 }
 
 void RenderingContext::drawSprite(

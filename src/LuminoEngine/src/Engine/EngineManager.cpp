@@ -3,7 +3,8 @@
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>
-//#include <LuminoEngine/UI/UIRenderView.hpp>
+#include <LuminoEngine/UI/UIRenderView.hpp>
+#include <LuminoEngine/UI/UIContainerElement.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
@@ -76,8 +77,6 @@ void EngineManager::initialize()
 		m_mainWindow = newObject<UIFrameWindow>(m_platformManager->mainWindow(), m_settings.mainBackBufferSize);
 		m_mainViewport = newObject<UIViewport>();
 		m_mainWindow->m_viewport = m_mainViewport;
-		//m_mainUIRenderView = newObject<UIRenderView>();
-        m_uiManager->setPrimaryElement(m_mainViewport);
 	}
 
     m_mainWorld = newObject<World>();
@@ -86,8 +85,15 @@ void EngineManager::initialize()
     m_mainWorldRenderView = newObject<WorldRenderView>();
     m_mainWorldRenderView->setTargetWorld(m_mainWorld);
 	m_mainWorldRenderView->setCamera(m_mainCamera);
-
     m_mainViewport->addRenderView(m_mainWorldRenderView);
+
+
+    m_mainUIRenderView = newObject<UIRenderView>();
+    m_mainViewport->addRenderView(m_mainUIRenderView);
+
+    m_mainUIRoot = newObject<UIContainerElement>();
+    m_mainUIRenderView->setRootElement(m_mainUIRoot);
+    m_uiManager->setPrimaryElement(m_mainUIRoot);
 }
 
 void EngineManager::dispose()

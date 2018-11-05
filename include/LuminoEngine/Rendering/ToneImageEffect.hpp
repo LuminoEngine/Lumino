@@ -2,6 +2,7 @@
 #include "ImageEffect.hpp"
 
 namespace ln {
+class Material;
 
 class ToneImageEffect
 	: public ImageEffect
@@ -15,6 +16,7 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 private:
+    Ref<Material> m_material;
 };
 
 } // namespace ln

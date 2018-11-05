@@ -49,6 +49,11 @@ void DrawElementListBuilder::setRenderTarget(int index, RenderTargetTexture * va
 	}
 }
 
+RenderTargetTexture* DrawElementListBuilder::renderTarget(int index) const
+{
+    return primaryFrameBufferStageParameters().m_renderTargets[index];
+}
+
 void DrawElementListBuilder::setDepthBuffer(DepthBuffer * value)
 {
 	if (primaryFrameBufferStageParameters().m_depthBuffer != value) {
