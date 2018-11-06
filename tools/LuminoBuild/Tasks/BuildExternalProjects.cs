@@ -21,9 +21,9 @@ namespace LuminoBuild.Tasks
         // (システム標準の cmake を使う系)
         private void BuildProject(Builder builder, string projectDirName, string externalSourceDir, string buildArchDir, string generator, string additionalOptions = "")
         {
-
-            var buildDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalBuild", projectDirName));
-            var installDir = Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalInstall", projectDirName);
+            var projectName = Path.GetFileName(projectDirName); // zlib/contrib/minizip のような場合に minizip だけ取り出す
+            var buildDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalBuild", projectName));
+            var installDir = Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalInstall", projectName);
             var cmakeSourceDir = Path.Combine(externalSourceDir, projectDirName);
             var ov = Path.Combine(builder.LuminoRootDir, "src", "CFlagOverrides.cmake");
 
@@ -44,8 +44,9 @@ namespace LuminoBuild.Tasks
 
         private void BuildProjectEm(Builder builder, string projectDirName, string externalSourceDir, string buildArchDir, string additionalOptions = "")
         {
-            var buildDir = Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalBuild", projectDirName);
-            var installDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalInstall", projectDirName));
+            var projectName = Path.GetFileName(projectDirName);
+            var buildDir = Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalBuild", projectName);
+            var installDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalInstall", projectName));
             var cmakeSourceDir = Path.Combine(externalSourceDir, projectDirName);
 
             Logger.WriteLine($"BuildProjectEm ({projectDirName}) buildDir:{buildDir}");
@@ -69,6 +70,7 @@ namespace LuminoBuild.Tasks
 
         private void BuildProjectAndroid(Builder builder, string projectDirName, string externalSourceDir, string abi, string additionalOptions = "")
         {
+            var projectName = Path.GetFileName(projectDirName);
             string cmakeHomeDir = Path.Combine(externalSourceDir, projectDirName);//builder.LuminoRootDir;
             string platform = BuildEnvironment.AndroidTargetPlatform;
             
@@ -81,8 +83,8 @@ namespace LuminoBuild.Tasks
             foreach(var buildType in buildTypes)
             {
                 var targetName = $"Android-{abi}-{buildType}";
-                var cmakeBuildDir = Path.Combine(builder.LuminoBuildDir, targetName, "ExternalBuild", projectDirName);
-                var cmakeInstallDir = Path.Combine(builder.LuminoBuildDir, targetName, "ExternalInstall", projectDirName);
+                var cmakeBuildDir = Path.Combine(builder.LuminoBuildDir, targetName, "ExternalBuild", projectName);
+                var cmakeInstallDir = Path.Combine(builder.LuminoBuildDir, targetName, "ExternalInstall", projectName);
 
                 var args = new string[]
                 {
@@ -122,6 +124,7 @@ namespace LuminoBuild.Tasks
             {
                 Utils.CallProcess("git", "clone --progress --depth 1 -b v1.2.11 https://github.com/madler/zlib.git zlib");
                 Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "zlib", "CMakeLists.txt"), "zlib");
+                Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "minizip/contrib/minizip", "CMakeLists.txt"), "zlib");
             }
             if (!Directory.Exists("libpng"))
             {
@@ -206,6 +209,7 @@ namespace LuminoBuild.Tasks
                     {
                         var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "Android-" + target.ABI, "ExternalInstall", "zlib"));
                         BuildProjectAndroid(builder, "zlib", reposDir, target.ABI);
+                        BuildProjectAndroid(builder, "zlib/contrib/minizip", reposDir, target.ABI, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
                         BuildProjectAndroid(builder, "libpng", reposDir, target.ABI, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
                         BuildProjectAndroid(builder, "freetype2", reposDir, target.ABI);
                     }
@@ -217,6 +221,7 @@ namespace LuminoBuild.Tasks
                     var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall", "zlib"));
 
                     BuildProjectEm(builder, "zlib", reposDir, "Emscripten");
+                    BuildProjectEm(builder, "zlib/contrib/minizip", reposDir, "Emscripten", $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
                     BuildProjectEm(builder, "libpng", reposDir, "Emscripten", $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
                     BuildProjectEm(builder, "glad", reposDir, "Emscripten", "-DGLAD_INSTALL=ON");
                     BuildProjectEm(builder, "freetype2", reposDir, "Emscripten");
@@ -228,6 +233,7 @@ namespace LuminoBuild.Tasks
                     var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, target.DirName, "ExternalInstall", "zlib"));
 
                     BuildProject(builder, "zlib", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
+                    BuildProject(builder, "zlib/contrib/minizip", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
                     BuildProject(builder, "libpng", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
                     BuildProject(builder, "glslang", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
                     BuildProject(builder, "SPIRV-Cross", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
@@ -256,6 +262,7 @@ namespace LuminoBuild.Tasks
                         var dirName = $"iOS-{t.Platform}-{t.Config}";
                         var args = $"-DCMAKE_TOOLCHAIN_FILE=\"{iOSToolchainFile}\" -DIOS_PLATFORM=OS";
                         var generator = "Xcode";
+                        BuildProject(builder, "zlib/contrib/minizip", reposDir, dirName, generator, args);
                         BuildProject(builder, "libpng", reposDir, dirName, generator, args);
                         BuildProject(builder, "freetype2", reposDir, dirName, generator, args);
                     }
@@ -279,6 +286,7 @@ namespace LuminoBuild.Tasks
 
                     var generator = "Xcode";
                     BuildProject(builder, "zlib", reposDir, dirName, generator, args);
+                    BuildProject(builder, "zlib/contrib/minizip", reposDir, dirName, generator, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include " + args);
                     BuildProject(builder, "libpng", reposDir, dirName, generator, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include " + args);
                     BuildProject(builder, "glslang", reposDir, dirName, generator, args);
                     BuildProject(builder, "SPIRV-Cross", reposDir, dirName, generator, args);

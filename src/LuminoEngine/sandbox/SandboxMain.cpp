@@ -15,6 +15,7 @@
 #include "../src/Mesh/MqoImporter.hpp"
 #include "../src/Font/FontManager.hpp"
 #include "../src/Font/FontCore.hpp"
+#include "../src/Asset/AssetArchive.hpp"
 using namespace ln;
 
 class TestRenderView
@@ -35,6 +36,17 @@ int main(int argc, char** argv)
 
 	GlobalLogger::addStdErrAdapter();
 	Engine::initialize();
+
+
+	detail::ZipAssetArchiveMaker ar;
+	ar.open(u"C:/LocalProj/tmp/asset_pass.zip", u"pass");
+	ar.addFile(u"C:/LocalProj/tmp/Basic.fx", u"Basic.fx");
+	ar.addFile(u"C:/LocalProj/tmp/CMakeLists.txt", u"CMakeLists.txt");
+	ar.close();
+
+	detail::ZipAssetArchive ar2;
+	ar2.open(u"C:/LocalProj/tmp/asset_pass.zip", u"pass1");
+
 
     
 	detail::EngineDomain::fontManager()->registerFontFile(LN_LOCALFILE("../../../tools/VLGothic/VL-PGothic-Regular.ttf"));

@@ -124,6 +124,19 @@ else()
 endif()
 
 #--------------------------------------
+# minizip
+
+ln_make_external_find_path(minizip_ROOT "minizip")
+
+find_library(minizip_LIBRARY_RELEASE NAMES minizip libminizip PATHS ${minizip_ROOT} PATH_SUFFIXES lib)
+find_library(minizip_LIBRARY_DEBUG NAMES minizipd libminizipd PATHS ${minizip_ROOT} PATH_SUFFIXES lib)
+
+add_library(minizip STATIC IMPORTED)
+set_target_properties(minizip PROPERTIES IMPORTED_LOCATION_RELEASE "${minizip_LIBRARY_RELEASE}")
+set_target_properties(minizip PROPERTIES IMPORTED_LOCATION_DEBUG "${minizip_LIBRARY_DEBUG}")
+set_target_properties(minizip PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${minizip_ROOT}/include)
+
+#--------------------------------------
 # libpng
 
 ln_make_external_find_path(PNG_ROOT libpng)

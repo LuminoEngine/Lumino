@@ -257,6 +257,8 @@ set(LN_SOURCES_Asset
     src/Asset/Asset.cpp
     src/Asset/AssetManager.cpp
     src/Asset/AssetManager.hpp
+    src/Asset/AssetArchive.cpp
+    src/Asset/AssetArchive.hpp
 )
 
 set(LN_SOURCES_Scene
@@ -443,7 +445,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE ${LN_PLATFORM_DEFINITIONS})
 #target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive ${PROJECT_NAME}-static -Wl,--no-whole-archive)
 #target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-static)
 target_link_libraries(${PROJECT_NAME} INTERFACE LuminoCore ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore ZLIB PNG FreeType ${LN_PLATFORM_LIBS})
+target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore ZLIB minizip PNG FreeType ${LN_PLATFORM_LIBS})
 #target_link_libraries(${PROJECT_NAME} PRIVATE glslang)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
