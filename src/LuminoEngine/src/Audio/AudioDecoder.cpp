@@ -310,6 +310,14 @@ const AudioDataInfo& WaveDecoder::audioDataInfo() const
 //	m_stream->seek(m_pcmDataOffset + (sampleNumber * m_info.byteParSample), SeekOrigin::Begin);
 //}
 
+void WaveDecoder::seekToFrame(size_t frameNumber)
+{
+    size_t frameBytes = m_info.byteParSample * m_info.channelCount;
+    size_t newPos = frameBytes * frameNumber;
+    if (LN_REQUIRE(newPos <= m_pcmDataLength)) return;
+    m_pcmDataPos = newPos;
+}
+
 uint32_t WaveDecoder::read2(float* buffer, uint32_t requestFrames)
 {
 	uint32_t requestSamples = requestFrames * m_info.channelCount;
@@ -321,6 +329,7 @@ uint32_t WaveDecoder::read2(float* buffer, uint32_t requestFrames)
         return 0;
     }
 
+    m_stream->seek(m_pcmDataOffset + m_pcmDataPos, SeekOrigin::Begin);
 	size_t readSize = m_stream->read(m_workBuffer.data(), size);
     LN_CHECK(readSize == size);
     m_pcmDataPos += size;

@@ -165,7 +165,7 @@ public:
 
 	void setPlaybackRate(float rate);
 
-	bool loop() const { return false; }
+	bool loop() const { return true; }
 
 	
 	void start();

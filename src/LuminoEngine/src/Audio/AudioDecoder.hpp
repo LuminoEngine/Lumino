@@ -36,8 +36,8 @@ class AudioDecoder
 public:
 	virtual ~AudioDecoder() = default;
 	virtual const AudioDataInfo& audioDataInfo() const = 0;
-	//virtual void seekToSample(size_t sampleNumber) = 0;
-	virtual uint32_t read2(float* buffer, uint32_t requestFrames) = 0;	// チャンネル数2の時に frames=1 で呼び出すと、2サンプル取り出す
+	virtual void seekToFrame(size_t frameNumber) = 0;
+	virtual uint32_t read2(float* buffer, uint32_t requestFrames) = 0;	// チャンネル数2の時に frames=1 で呼び出すと、2サンプル取り出す。ret は読んだフレーム数
 	virtual void reset() = 0;
 
 	static void convertToFloat32(float* dst, const void* src, const size_t frameLength, PCMFormat format);
@@ -55,6 +55,7 @@ public:
 	void initialize(Stream* stream, DiagnosticsManager* diag);
 	virtual const AudioDataInfo& audioDataInfo() const override;
 	//virtual void seekToSample(uint32_t sampleNumber) override;
+    virtual void seekToFrame(size_t frameNumber) override;
 	virtual uint32_t read2(float* buffer, uint32_t requestFrames) override;
 	virtual void reset() override;
 

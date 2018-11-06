@@ -332,6 +332,7 @@ double CoreAudioSourceNode::calculatePitchRate()
 	return totalRate;
 }
 
+// https://github.com/chromium/chromium/blob/ba96c018682416a7b2ec77876404b14322aa1b54/third_party/blink/renderer/modules/webaudio/audio_buffer_source_node.cc
 void CoreAudioSourceNode::process()
 {
 	updatePlayingState();
@@ -348,11 +349,34 @@ void CoreAudioSourceNode::process()
 	//size_t bufferLength = //result->length();
 	unsigned numChannels = m_decoder->audioDataInfo().channelCount;
 
-	size_t bufferLength = m_decoder->read2(m_readBuffer.data(), m_readFrames);
-    if (bufferLength == 0) {    // EOF
-        result->setSilentAndZero();
-        return;
+    size_t bufferLength = 0;
+    {
+        if (loop()) {
+            size_t requestLength = m_readFrames;
+            float* buf = m_readBuffer.data();
+            do
+            {
+                bufferLength = m_decoder->read2(buf, requestLength);
+                if (bufferLength < requestLength) {    // EOF
+                    m_decoder->seekToFrame(0);
+                }
+                requestLength -= bufferLength;
+                buf += bufferLength;
+            } while (requestLength > 0);
+
+            bufferLength = m_readFrames;
+        }
+        else {
+            size_t bufferLength = m_decoder->read2(m_readBuffer.data(), m_readFrames);
+            if (bufferLength == 0) {    // EOF
+                result->setSilentAndZero();
+                return;
+            }
+        }
+
+
     }
+
 
 
 	size_t readSamples = bufferLength * numChannels;
@@ -388,12 +412,12 @@ void CoreAudioSourceNode::process()
 			result->separateFrom(m_readBuffer.data(), readSamples, numChannels);
 		}
 
-        int remain = result->length() - bufferLength;
-        if (remain > 0) {
-            //result->fillZero(bufferLength, remain);
-            result->fillZero(0, result->length());
-            printf("eof\n");
-        }
+        //int remain = result->length() - bufferLength;
+        //if (remain > 0) {
+        //    //result->fillZero(bufferLength, remain);
+        //    result->fillZero(0, result->length());
+        //    printf("eof\n");
+        //}
 	}
 	else
 	{
