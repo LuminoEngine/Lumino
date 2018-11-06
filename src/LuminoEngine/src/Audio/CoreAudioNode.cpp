@@ -358,6 +358,7 @@ void CoreAudioSourceNode::process()
 	size_t readSamples = bufferLength * numChannels;
 
 
+    //printf("bufferLength:%d , result->length():%d", bufferLength, result->length());
 
 	double pitchRate = calculatePitchRate();
 
@@ -386,6 +387,13 @@ void CoreAudioSourceNode::process()
 		else {
 			result->separateFrom(m_readBuffer.data(), readSamples, numChannels);
 		}
+
+        int remain = result->length() - bufferLength;
+        if (remain > 0) {
+            //result->fillZero(bufferLength, remain);
+            result->fillZero(0, result->length());
+            printf("eof\n");
+        }
 	}
 	else
 	{

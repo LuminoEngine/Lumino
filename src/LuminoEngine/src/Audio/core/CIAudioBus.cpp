@@ -88,6 +88,12 @@ void CIAudioChannel::sumFrom(const CIAudioChannel * ch)
 	}
 }
 
+void CIAudioChannel::fillZero(size_t start, size_t length)
+{
+    if (LN_REQUIRE(start + length <= m_data.size())) return;
+    memset(m_data.data() + start, 0, sizeof(float) * length);
+}
+
 //==============================================================================
 // CIAudioBus
 
@@ -209,6 +215,13 @@ bool CIAudioBus::isSilent() const
 		}
 	}
 	return true;
+}
+
+void CIAudioBus::fillZero(size_t start, size_t length)
+{
+    for (int i = 0; i < m_channels.size(); i++) {
+        m_channels[i]->fillZero(start, length);
+    }
 }
 
 void CIAudioBus::mergeToChannelBuffers(float* buffer, size_t length)

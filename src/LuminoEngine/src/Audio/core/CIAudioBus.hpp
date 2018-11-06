@@ -41,7 +41,7 @@ public:
 	void copyFrom(const float* buffer, size_t bufferLength, size_t stride);
 	void copyFrom(const CIAudioChannel* ch);
 	void sumFrom(const CIAudioChannel* ch);
-
+    void fillZero(size_t start, size_t length); // isSilent は変化しない
 
 	// chromium interface
 	float* MutableData() { return mutableData(); }
@@ -100,7 +100,7 @@ public:
 	void clearSilentFlag();
 	bool isSilent() const;	// return true if all child true.
 
-
+    void fillZero(size_t start, size_t length);
 	void mergeToChannelBuffers(float* buffer, size_t length);
 	void separateFrom(const float* buffer, size_t length, int channelCount);
 	void sumFrom(const CIAudioBus* bus);

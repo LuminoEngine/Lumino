@@ -297,6 +297,7 @@ void WaveDecoder::initialize(Stream* stream, DiagnosticsManager* diag)
 	}
 
 	m_workBuffer.resize(m_info.sampleRate * m_info.channelCount);
+    m_pcmDataPos = 0;
 }
 
 const AudioDataInfo& WaveDecoder::audioDataInfo() const
@@ -313,10 +314,16 @@ uint32_t WaveDecoder::read2(float* buffer, uint32_t requestFrames)
 {
 	uint32_t requestSamples = requestFrames * m_info.channelCount;
 	size_t requestSize = requestSamples * m_info.byteParSample;
-	size_t readSize = m_stream->read(m_workBuffer.data(), requestSize);
-    if (readSize == 0) {
+
+    size_t size = std::min(requestSize, m_pcmDataLength - m_pcmDataPos);
+    //size_t newPos = m_pcmDataPos + requestSize;
+    if (size == 0) {
         return 0;
     }
+
+	size_t readSize = m_stream->read(m_workBuffer.data(), size);
+    LN_CHECK(readSize == size);
+    m_pcmDataPos += size;
 
 	uint32_t readSamples = readSize / m_info.byteParSample;
 	uint32_t readFrames = readSamples / m_info.channelCount;

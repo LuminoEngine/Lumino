@@ -124,7 +124,7 @@ namespace LuminoBuild.Tasks
             {
                 Utils.CallProcess("git", "clone --progress --depth 1 -b v1.2.11 https://github.com/madler/zlib.git zlib");
                 Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "zlib", "CMakeLists.txt"), "zlib");
-                Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "minizip/contrib/minizip", "CMakeLists.txt"), "zlib");
+                Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "minizip", "CMakeLists.txt"), "zlib/contrib/minizip");
             }
             if (!Directory.Exists("libpng"))
             {

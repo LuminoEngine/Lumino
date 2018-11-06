@@ -63,6 +63,7 @@ private:
 	AudioDataInfo m_info;
 	size_t m_pcmDataOffset;
 	size_t m_pcmDataLength;
+    size_t m_pcmDataPos;
 	size_t m_bitDepth;
 	size_t m_seekSample;
 	std::vector<byte_t> m_workBuffer;
