@@ -88,6 +88,7 @@ set(LN_SOURCES_Audio
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioContext.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioListener.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioNode.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/GameAudio.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/Sound.hpp
     src/Audio/Internal.hpp
     src/Audio/ALAudioDevice.cpp
@@ -107,6 +108,9 @@ set(LN_SOURCES_Audio
     src/Audio/CoreAudioNode.hpp
     src/Audio/DSoundAudioDevice.cpp
     src/Audio/DSoundAudioDevice.hpp
+    src/Audio/GameAudio.cpp
+    src/Audio/GameAudioImpl.cpp
+    src/Audio/GameAudioImpl.hpp
     src/Audio/Mp3AudioDecoder.cpp
     src/Audio/Mp3AudioDecoder.hpp
     src/Audio/SDLAudioDevice.cpp
