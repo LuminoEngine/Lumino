@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <list>
 #include <LuminoEngine/Font/Common.hpp>
 
 typedef int FT_Error;

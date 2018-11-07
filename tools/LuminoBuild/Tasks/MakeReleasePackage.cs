@@ -73,12 +73,13 @@ namespace LuminoBuild.Tasks
                 {
                     if (Directory.Exists(Path.Combine(tempInstallDir, arch.SourceDirName)))   // copy if directory exists.
                     {
+                        // Engine libs
                         var targetDir = Path.Combine(nativeEngineRoot, "lib", arch.DestDirName);
-
                         Utils.CopyDirectory(
                             Path.Combine(tempInstallDir, arch.SourceDirName/*, "lib"*/),
                             targetDir);
 
+                        // External libs
                         var externalInstallDir = Path.Combine(builder.LuminoBuildDir, arch.SourceDirName, "ExternalInstall");
                         foreach (var lib in externalLibs)
                         {
@@ -117,7 +118,7 @@ namespace LuminoBuild.Tasks
                     if (Utils.IsWin32)
                     {
                         Utils.CopyDirectory(
-                            Path.Combine(tempInstallDir, "MSVC2017-x86-MT", "bin"),
+                            Path.Combine(tempInstallDir, "MSVC2017-x86-MT-Release", "bin"),
                             Path.Combine(targetRootDir, "Tools"));
 
                         Utils.DownloadFile(
@@ -127,7 +128,7 @@ namespace LuminoBuild.Tasks
                     else if (Utils.IsMac)
                     {
                         Utils.CopyDirectory(
-                            Path.Combine(tempInstallDir, "macOS", "bin"),
+                            Path.Combine(tempInstallDir, "macOS-Release", "bin"),
                             Path.Combine(targetRootDir, "Tools"));
 
                         string file = Path.Combine(targetRootDir, "setup.sh");

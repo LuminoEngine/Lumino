@@ -21,12 +21,15 @@ namespace LuminoBuild.Tasks
                 
                 foreach (var t in list)
                 {
-                    Directory.SetCurrentDirectory(Path.Combine(builder.LuminoBuildDir, t.DirName));
-                    Utils.CallProcess("cmake", "--build . --config Debug --target INSTALL");
-                    Utils.CallProcess("ctest", "-C Debug --output-on-failure");
+                    var targetName = t.DirName + "-" + t.BuildType;
 
-                    Utils.CallProcess("cmake", "--build . --config Release --target INSTALL");
-                    Utils.CallProcess("ctest", "-C Release --output-on-failure");
+                    Directory.SetCurrentDirectory(Path.Combine(builder.LuminoBuildDir, targetName));
+
+                    Utils.CallProcess("cmake", $"--build . --config {t.BuildType} --target INSTALL");
+                    Utils.CallProcess("ctest", $"-C {t.BuildType} --output-on-failure");
+
+                    //Utils.CallProcess("cmake", "--build . --config Release --target INSTALL");
+                    //Utils.CallProcess("ctest", "-C Release --output-on-failure");
                 }
             }
             else
