@@ -38,21 +38,23 @@ namespace LuminoBuild
 
         public static TargetArch[] TargetArchs = new TargetArch[]
         {
-            new TargetArch(){ SourceDirName = "MSVC2017-x86-MT", DestDirName = "MSVC2017-x86-MT", PdbCopy = true },
+            new TargetArch(){ SourceDirName = "MSVC2017-x86-MT-Debug", DestDirName = "MSVC2017-x86-MT-Debug", PdbCopy = true },
+            new TargetArch(){ SourceDirName = "MSVC2017-x86-MT-Release", DestDirName = "MSVC2017-x86-MT-Release", PdbCopy = true },
             new TargetArch(){ SourceDirName = "Emscripten", DestDirName = "Emscripten" },
-            new TargetArch(){ SourceDirName = "Android-arm64-v8a-Debug", DestDirName = "Android-arm64-v8a" },
+            new TargetArch(){ SourceDirName = "Android-arm64-v8a-Debug", DestDirName = "Android-arm64-v8a-Debug" },
             new TargetArch(){ SourceDirName = "Android-arm64-v8a-Release", DestDirName = "Android-arm64-v8a" },
-            new TargetArch(){ SourceDirName = "Android-armeabi-v7a-Debug", DestDirName = "Android-armeabi-v7a" },
+            new TargetArch(){ SourceDirName = "Android-armeabi-v7a-Debug", DestDirName = "Android-armeabi-v7a-Debug" },
             new TargetArch(){ SourceDirName = "Android-armeabi-v7a-Release", DestDirName = "Android-armeabi-v7a" },
-            new TargetArch(){ SourceDirName = "Android-x86-Debug", DestDirName = "Android-x86" },
+            new TargetArch(){ SourceDirName = "Android-x86-Debug", DestDirName = "Android-x86-Debug" },
             new TargetArch(){ SourceDirName = "Android-x86-Release", DestDirName = "Android-x86" },
-            new TargetArch(){ SourceDirName = "Android-x86_64-Debug", DestDirName = "Android-x86_64" },
+            new TargetArch(){ SourceDirName = "Android-x86_64-Debug", DestDirName = "Android-x86_64-Debug" },
             new TargetArch(){ SourceDirName = "Android-x86_64-Release", DestDirName = "Android-x86_64" },
-            new TargetArch(){ SourceDirName = "macOS", DestDirName = "macOS" },
+            new TargetArch(){ SourceDirName = "macOS-Debug", DestDirName = "macOS-Debug" },
+            new TargetArch(){ SourceDirName = "macOS-Release", DestDirName = "macOS" },
             new TargetArch(){ SourceDirName = "iOS-SIMULATOR64-Debug", DestDirName = "iOS-SIMULATOR64-Debug" },
-            new TargetArch(){ SourceDirName = "iOS-SIMULATOR64-Release", DestDirName = "iOS-SIMULATOR64-Release" },
+            new TargetArch(){ SourceDirName = "iOS-SIMULATOR64-Release", DestDirName = "iOS-SIMULATOR64" },
             new TargetArch(){ SourceDirName = "iOS-OS-Debug", DestDirName = "iOS-OS-Debug" },
-            new TargetArch(){ SourceDirName = "iOS-OS-Release", DestDirName = "iOS-OS-Release" },
+            new TargetArch(){ SourceDirName = "iOS-OS-Release", DestDirName = "iOS-OS" },
         };
 
         public static void Initialize(string repoRootDir)
@@ -85,10 +87,10 @@ namespace LuminoBuild
             }
 
 
-            InstallTools();
+            InstallTools(repoRootDir);
         }
 
-        private static void InstallTools()
+        private static void InstallTools(string repoRootDir)
         {
             Directory.CreateDirectory(BuildToolsDir);
 
@@ -107,6 +109,10 @@ namespace LuminoBuild
                         Utils.CallProcess("emsdk.bat", "install " + emsdkVer);
                     else
                         Utils.CallProcess("emsdk", "install " + emsdkVer);
+
+                    Utils.CopyFile(
+                        Path.Combine(repoRootDir, "external", "emscripten", "Emscripten.cmake"),
+                        Path.Combine(EmscriptenDir, "cmake", "Modules", "Platform"));
                 }
             }
 

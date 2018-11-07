@@ -31,9 +31,6 @@ endif()
 
 #-------------------------------------------------------------------------------
 
-message("EMSCRIPTEN_ROOT_PATH: ${EMSCRIPTEN_ROOT_PATH}")
-message("CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
-
 
 
 
@@ -58,7 +55,7 @@ endmacro()
 if (LN_OS_DESKTOP)
     set(GLFW_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/glfw)
     find_library(GLFW_LIBRARY_RELEASE NAMES glfw3 libglfw3 PATHS ${GLFW_ROOT} PATH_SUFFIXES lib)
-    find_library(GLFW_LIBRARY_DEBUG NAMES glfw3d libglfw3d PATHS ${GLFW_ROOT} PATH_SUFFIXES lib)
+    find_library(GLFW_LIBRARY_DEBUG NAMES glfw3 libglfw3 PATHS ${GLFW_ROOT} PATH_SUFFIXES lib)
 
     add_library(glfw STATIC IMPORTED)
     set_target_properties(glfw PROPERTIES IMPORTED_LOCATION_RELEASE "${GLFW_LIBRARY_RELEASE}")
@@ -129,7 +126,7 @@ endif()
 ln_make_external_find_path(minizip_ROOT "minizip")
 
 find_library(minizip_LIBRARY_RELEASE NAMES minizip libminizip PATHS ${minizip_ROOT} PATH_SUFFIXES lib)
-find_library(minizip_LIBRARY_DEBUG NAMES minizipd libminizipd PATHS ${minizip_ROOT} PATH_SUFFIXES lib)
+find_library(minizip_LIBRARY_DEBUG NAMES minizip libminizip PATHS ${minizip_ROOT} PATH_SUFFIXES lib)
 
 add_library(minizip STATIC IMPORTED)
 set_target_properties(minizip PROPERTIES IMPORTED_LOCATION_RELEASE "${minizip_LIBRARY_RELEASE}")
@@ -219,9 +216,9 @@ if (LN_OS_DESKTOP)
     #set(SPIRV-Cross_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/SPIRV-Cross)
 
     find_library(spirv-cross-core_LIBRARY_RELEASE NAMES spirv-cross-core PATHS ${SPIRV-Cross_ROOT} PATH_SUFFIXES lib)
-    find_library(spirv-cross-core_LIBRARY_DEBUG NAMES spirv-cross-cored PATHS ${SPIRV-Cross_ROOT} PATH_SUFFIXES lib)
+    find_library(spirv-cross-core_LIBRARY_DEBUG NAMES spirv-cross-core PATHS ${SPIRV-Cross_ROOT} PATH_SUFFIXES lib)
     find_library(spirv-cross-glsl_LIBRARY_RELEASE NAMES spirv-cross-glsl PATHS ${SPIRV-Cross_ROOT} PATH_SUFFIXES lib)
-    find_library(spirv-cross-glsl_LIBRARY_DEBUG NAMES spirv-cross-glsld PATHS ${SPIRV-Cross_ROOT} PATH_SUFFIXES lib)
+    find_library(spirv-cross-glsl_LIBRARY_DEBUG NAMES spirv-cross-glsl PATHS ${SPIRV-Cross_ROOT} PATH_SUFFIXES lib)
 
     set(LIB_NAME spirv-cross-core)
     add_library(${LIB_NAME} STATIC IMPORTED)
@@ -247,7 +244,7 @@ else()
     ln_make_external_find_path(OpenAL_ROOT openal-soft)
 
     find_library(OpenAL_LIBRARY_RELEASE NAMES OpenAL32 PATHS ${OpenAL_ROOT} PATH_SUFFIXES lib)
-    find_library(OpenAL_LIBRARY_DEBUG NAMES OpenAL32d PATHS ${OpenAL_ROOT} PATH_SUFFIXES lib)
+    find_library(OpenAL_LIBRARY_DEBUG NAMES OpenAL32 PATHS ${OpenAL_ROOT} PATH_SUFFIXES lib)
 
     add_library(OpenAL STATIC IMPORTED)
     set_target_properties(OpenAL PROPERTIES IMPORTED_LOCATION_RELEASE "${OpenAL_LIBRARY_RELEASE}")

@@ -358,10 +358,10 @@ void BlitHelper::bitBltInternalTemplate(
             {
                 ClColor src = srcBuf.getPixel(x);
                 ClColor c = {
-                    (mulColorRGBA.r * src.r) >> 8,
-                    (mulColorRGBA.g * src.g) >> 8,
-                    (mulColorRGBA.b * src.b) >> 8,
-                    (mulColorRGBA.a * src.a) >> 8 };
+                    static_cast<uint8_t>((mulColorRGBA.r * src.r) >> 8),
+                    static_cast<uint8_t>((mulColorRGBA.g * src.g) >> 8),
+                    static_cast<uint8_t>((mulColorRGBA.b * src.b) >> 8),
+                    static_cast<uint8_t>((mulColorRGBA.a * src.a) >> 8) };
                 dstBuf.setPixel(x, c);
             }
         }

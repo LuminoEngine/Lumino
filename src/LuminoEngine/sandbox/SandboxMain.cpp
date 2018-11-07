@@ -38,14 +38,14 @@ int main(int argc, char** argv)
 	Engine::initialize();
 
 
-	detail::ZipAssetArchiveMaker ar;
-	ar.open(u"C:/LocalProj/tmp/asset_pass.zip", u"pass");
-	ar.addFile(u"C:/LocalProj/tmp/Basic.fx", u"Basic.fx");
-	ar.addFile(u"C:/LocalProj/tmp/CMakeLists.txt", u"CMakeLists.txt");
-	ar.close();
+	//detail::ZipAssetArchiveMaker ar;
+	//ar.open(u"C:/LocalProj/tmp/asset_pass.zip", u"pass");
+	//ar.addFile(u"C:/LocalProj/tmp/Basic.fx", u"Basic.fx");
+	//ar.addFile(u"C:/LocalProj/tmp/CMakeLists.txt", u"CMakeLists.txt");
+	//ar.close();
 
-	detail::ZipAssetArchive ar2;
-	ar2.open(u"C:/LocalProj/tmp/asset_pass.zip", u"pass1");
+	//detail::ZipAssetArchive ar2;
+	//ar2.open(u"C:/LocalProj/tmp/asset_pass.zip", u"pass1");
 
 
     
@@ -95,7 +95,9 @@ int main(int argc, char** argv)
     //Engine::mainViewport()->addImageEffect(imageEffect);
 #endif
 
-    auto sound = newObject<Sound>(u"D:\\tmp\\4_Battle_win.wav");
+    //auto sound = newObject<Sound>(u"D:\\tmp\\4_Battle_win.wav");
+    auto sound = newObject<Sound>(u"D:/Music/momentum/02 - momentum.wav");
+    
     sound->play();
 
     while (Engine::update())
