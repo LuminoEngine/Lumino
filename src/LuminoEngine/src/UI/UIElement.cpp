@@ -39,6 +39,17 @@ void UIElement::onRender(UIRenderingContext* context)
 {
 }
 
+void UIElement::updateLayout(const Size& size)
+{
+    // TODO: Layoutelement に実装を持っていく
+
+    // child elements
+    int count = getVisualChildrenCount();
+    for (int i = 0; i < count; i++) {
+        getVisualChild(i)->updateLayout(size);
+    }
+}
+
 void UIElement::render(UIRenderingContext* context)
 {
 	onRender(context);

@@ -348,6 +348,10 @@ void EngineManager::updateFrame()
     if (m_mainWorld) {
         m_mainWorld->updateFrame(0.016);	// TODO: time
     }
+
+    //if (m_mainWindow) {
+    //    m_mainWindow->
+    //}
 }
 
 void EngineManager::renderFrame()

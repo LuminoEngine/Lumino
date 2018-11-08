@@ -96,12 +96,20 @@ int main(int argc, char** argv)
 #endif
 
     //auto sound = newObject<Sound>(u"D:\\tmp\\4_Battle_win.wav");
-    //auto sound = newObject<Sound>(u"D:/Music/momentum/02 - momentum.wav");
-    //
-    //sound->play();
+    auto sound = newObject<Sound>(u"D:/Music/momentum/02 - momentum.wav");
+
+    //sound->setPitch(1.2);
+    sound->play();
 
     while (Engine::update())
     {
+        if (Mouse::isPressed(MouseButtons::Left))
+        {
+            float pitch = (Mouse::position().x / 640)  + 0.5;
+            std::cout << pitch << std::endl;
+            sound->setPitch(pitch);
+        }
+        
     }
 
 

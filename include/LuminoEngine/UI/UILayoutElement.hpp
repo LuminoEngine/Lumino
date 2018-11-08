@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "../Graphics/GeometryStructs.hpp"
 
 namespace ln {
 namespace detail {

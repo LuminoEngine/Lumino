@@ -402,7 +402,7 @@ void CoreAudioSourceNode::process()
 	double virtualEndFrame = bufferLength;
 	// TODO: loop
 
-	if (1)
+	if (Math::nearEqual(m_playbackRate, 1.0f))
 	{
 		if (m_resampler) {
 			m_resamplingBus->separateFrom(m_readBuffer.data(), readSamples, numChannels);
@@ -423,6 +423,12 @@ void CoreAudioSourceNode::process()
 	{
 		m_sourceBus->separateFrom(m_readBuffer.data(), readSamples, numChannels);
 
+        // writeIndex は result の Bus の書き込みインデックス。以下 while で 1 ずつインクリメントしていく。
+        // readIndex は m_sourceBus の読み込みインデックス。以下 while で pitchRate ずつインクリメントしていく。
+        // 例えば pitch=1.2 で処理を進めると・・・
+        //   1 回目は writeIndex, readIndex 共に 0 なので、最初のサンプルがそのまま使われる。
+        //   2 回目は readIndex が 1.2 となっている。このとき、readIndex+1 のフレームを 0.2 で補間した値を writeIndex に書き込む。
+
 		int framesToProcess = result->length();
 		while (framesToProcess--)
 		{
@@ -434,11 +440,13 @@ void CoreAudioSourceNode::process()
 
 			if (readIndex2 >= bufferLength)
 			{
+#if 0           // TODO: loop() と書いてあるが、サンプル数が result->length() より小さいときのみという条件も入れておかないとプチノイズが乗る
 				if (loop()) {
 					// Make sure to wrap around at the end of the buffer.
 					readIndex2 = static_cast<unsigned>(virtualReadIndex + 1 - virtualDeltaFrames);
 				}
 				else
+#endif
 					readIndex2 = readIndex;
 			}
 
@@ -476,6 +484,8 @@ void CoreAudioSourceNode::process()
 					break;
 			}
 		}
+
+        printf("");
 	}
 
 	//printf("writeIndex:%d\n", writeIndex);

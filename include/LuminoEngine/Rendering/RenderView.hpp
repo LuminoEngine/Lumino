@@ -38,15 +38,19 @@ public:
 	//detail::CameraInfo mainCameraInfo;
 
 protected:
+   
 
 LN_INTERNAL_ACCESS:
 	const List<detail::DrawElementListCollector*>& elementListManagers() const { return m_elementListManagers; }
+    void setActualPixelSize(const Size& size) { m_actualPixelSize = size; }
 
 private:
 	detail::RenderingManager* m_manager;
 
     // TODO: これ List じゃなくていい気がする、というか、List じゃないほうが安全
 	List<detail::DrawElementListCollector*> m_elementListManagers;
+
+    Size m_actualPixelSize;
 };
 
 } // namespace ln
