@@ -42,10 +42,9 @@ LinearAllocatorPage* LinearAllocatorPageManager::requestPage()
 	//	resultPage = *freePage;
 	//}
 
-	LinearAllocatorPage* freePage = nullptr;
 	if (!m_freePages.empty())
 	{
-		freePage = m_freePages.front();
+        resultPage = m_freePages.front();
 		m_freePages.pop_front();
 	}
 
@@ -118,13 +117,17 @@ void LinearAllocator::cleanup()
 {
     if (m_currentPage) {
         m_manager->discardPage(m_currentPage);
+        m_currentPage = nullptr;
     }
 
 	for (auto& page : m_retiredPages) {
 		m_manager->discardPage(page);
 	}
+    m_retiredPages.clear();
 
 	m_largePages.clear();
+
+    m_usedOffset = 0;
 }
 
 void* LinearAllocator::allocateLarge(size_t size)

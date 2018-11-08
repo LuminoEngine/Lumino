@@ -96,9 +96,9 @@ int main(int argc, char** argv)
 #endif
 
     //auto sound = newObject<Sound>(u"D:\\tmp\\4_Battle_win.wav");
-    auto sound = newObject<Sound>(u"D:/Music/momentum/02 - momentum.wav");
-    
-    sound->play();
+    //auto sound = newObject<Sound>(u"D:/Music/momentum/02 - momentum.wav");
+    //
+    //sound->play();
 
     while (Engine::update())
     {

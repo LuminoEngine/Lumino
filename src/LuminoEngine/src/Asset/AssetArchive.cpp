@@ -78,7 +78,7 @@ void CryptedAssetArchiveWriter::open(const StringRef& filePath, const StringRef&
 
 	m_writer->write(CryptedArchiveHelper::FileSignature, 4);
 	m_writer->writeUInt16(CryptedArchiveHelper::FileVersion);
-	m_writer->writeUInt32(CRCHash::compute(password.data, password.length()));
+	m_writer->writeUInt32(CRCHash::compute(password.data(), password.length()));
 }
 
 void CryptedAssetArchiveWriter::close()
@@ -130,7 +130,7 @@ void CryptedAssetArchiveWriter::addFile(const StringRef& filePath, const StringR
 	}
 
 	// TODO: UTF8
-	m_fileEntries.add(FileEntry{ offset, FileSystem::getFileSize(filePath), filePath.toStdString() });
+	m_fileEntries.add(FileEntry{ offset, (uint32_t)FileSystem::getFileSize(filePath), filePath.toStdString() });
 }
 
 

@@ -159,6 +159,7 @@ void GraphicsContext::present(SwapChain* swapChain)
 
 	// TODO: threading
 	m_device->present(swapChain->resolveRHIObject());
+    m_manager->primaryRenderingCommandList()->clear();
 }
 
 detail::IGraphicsDeviceContext* GraphicsContext::commitState()
@@ -294,6 +295,7 @@ void GraphicsContext::State::reset()
 	vertexDeclaration = nullptr;
 	vertexBuffers = {};
 	indexBuffer = nullptr;
+    shader = nullptr;
 	shaderPass = nullptr;
 }
 
