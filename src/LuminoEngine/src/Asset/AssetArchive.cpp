@@ -172,6 +172,9 @@ bool CryptedAssetArchiveReader::open(const StringRef& filePath, const StringRef&
 		m_file->seek(fileEntriesPos, SeekOrigin::Begin);
 		while (m_file->position() < m_file->length())	// fail safe
 		{
+			if (checkSignature(m_reader, CryptedArchiveHelper::CentralDirectorySignature)) {
+				break;
+			}
 			if (!checkSignature(m_reader, CryptedArchiveHelper::FileEntrySignature)) {
 				return false;
 			}
