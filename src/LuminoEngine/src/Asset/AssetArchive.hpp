@@ -67,7 +67,7 @@ private:
 
 	struct ComparePath {
 		bool operator()(const String& a, const String& b) const {
-			return Path::compare(a, b) == 0;
+			return Path::compare(a, b) < 0;
 		}
 	};
 

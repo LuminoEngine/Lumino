@@ -47,7 +47,14 @@ int main(int argc, char** argv)
 	//detail::ZipAssetArchive ar2;
 	//ar2.open(u"C:/LocalProj/tmp/asset_pass.zip", u"pass1");
 
+	detail::CryptedAssetArchiveWriter aw;
+	aw.open(u"C:/LocalProj/tmp/asset_pass.lna", u"pass");
+	aw.addFile(u"C:/LocalProj/tmp/Basic.fx", u"Basic.fx");
+	aw.addFile(u"C:/LocalProj/tmp/CMakeLists.txt", u"CMakeLists.txt");
+	aw.close();
 
+	detail::CryptedAssetArchiveReader ar;
+	ar.open(u"C:/LocalProj/tmp/asset_pass.lna", u"pass");
     
 	detail::EngineDomain::fontManager()->registerFontFile(LN_LOCALFILE("../../../tools/VLGothic/VL-PGothic-Regular.ttf"));
 

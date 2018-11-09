@@ -20,12 +20,13 @@ const char CryptedArchiveHelper::CentralDirectorySignature[4] = { 'l', 'c', '1',
 
 void CryptedArchiveHelper::initKeys128(const char* password, byte_t* keys)
 {
-	for (char i = 0; i < 128; i++) {
-		keys[i] = CRCHash::compute(&i, 1);
+	for (int i = 0; i < 128; i++) {
+		keys[i] = crc(i);
 	}
 
 	while (*password != '\0') {
 		shiftKey128(keys, *password);
+		password++;
 	}
 }
 
@@ -118,7 +119,7 @@ void CryptedAssetArchiveWriter::addFile(const StringRef& filePath, const StringR
 
 	byte_t data[128];
 	uint32_t offset = m_file->position();
-	while (true)
+	while (file->position() < file->length())
 	{
 		size_t size = file->read(data, 128);
 		if (size < 128) {
@@ -130,7 +131,7 @@ void CryptedAssetArchiveWriter::addFile(const StringRef& filePath, const StringR
 	}
 
 	// TODO: UTF8
-	m_fileEntries.add(FileEntry{ offset, (uint32_t)FileSystem::getFileSize(filePath), filePath.toStdString() });
+	m_fileEntries.add(FileEntry{ offset, (uint32_t)FileSystem::getFileSize(filePath), localPath.toStdString() });
 }
 
 
@@ -166,16 +167,21 @@ bool CryptedAssetArchiveReader::open(const StringRef& filePath, const StringRef&
 		fileEntriesPos = m_reader->readUInt32();
 	}
 
-
 	// file entries
 	{
 		m_file->seek(fileEntriesPos, SeekOrigin::Begin);
 		while (m_file->position() < m_file->length())	// fail safe
 		{
-			if (checkSignature(m_reader, CryptedArchiveHelper::CentralDirectorySignature)) {
+			// check signeture
+			char sig[4];
+			size_t size = m_reader->read(sig, 4);
+			if (size != 4) {
+				return false;
+			}
+			if (strncmp(sig, CryptedArchiveHelper::CentralDirectorySignature, 4) == 0) {
 				break;
 			}
-			if (!checkSignature(m_reader, CryptedArchiveHelper::FileEntrySignature)) {
+			if (strncmp(sig, CryptedArchiveHelper::FileEntrySignature, 4) != 0) {
 				return false;
 			}
 
@@ -183,9 +189,9 @@ bool CryptedAssetArchiveReader::open(const StringRef& filePath, const StringRef&
 			fe.dataOffset = m_reader->readUInt32();
 			fe.dataSize = m_reader->readUInt32();
 
-			ln::Path virtualFullPath = ln::Path(
-				virtualDirFullPath,
-				ln::Path(String::fromStdString(readString(m_reader))));
+
+			ln::Path path = ln::Path(String::fromStdString(readString(m_reader)));
+			ln::Path virtualFullPath = ln::Path(virtualDirFullPath, path);
 
 			String relativePath = virtualDirFullPath.makeRelative(virtualFullPath);
 
