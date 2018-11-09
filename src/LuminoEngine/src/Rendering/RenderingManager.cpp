@@ -41,7 +41,6 @@ void RenderingManager::initialize(const Settings& settings)
 		{ 0, VertexElementType::Float4, VertexElementUsage::Color, 0 },
 	};
 	m_standardVertexDeclaration = newObject<VertexDeclaration>(elements, 4);
-
 	m_renderStageListBuilder = makeRef<DrawElementListBuilder>();
 
     m_blitRenderFeature = newObject<BlitRenderFeature>(this);
@@ -52,13 +51,13 @@ void RenderingManager::initialize(const Settings& settings)
 
 	//m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(u"D:/Proj/GitHub/Lumino/src/LuminoEngine/sandbox/Assets/SpriteTest.hlsl");
 
-#if 1
+#if 0
 	m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.hlsl");
 	m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.hlsl");
 	m_builtinShaders[(int)BuiltinShader::DepthPrepass] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/DepthPrepass.hlsl");
 	m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.hlsl");
 #endif
-#if 0
+#if 1
 	m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.hlsl");
 	m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.hlsl");
 	m_builtinShaders[(int)BuiltinShader::DepthPrepass] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/DepthPrepass.hlsl");
@@ -80,6 +79,7 @@ void RenderingManager::dispose()
 	m_stageDataPageManager = nullptr;
 	m_meshRenderFeature = nullptr;
 	m_spriteRenderFeature = nullptr;
+    m_blitRenderFeature = nullptr;
 	m_renderStageListBuilder = nullptr;
 	m_standardVertexDeclaration = nullptr;
 	m_depthBufferCacheManager = nullptr;

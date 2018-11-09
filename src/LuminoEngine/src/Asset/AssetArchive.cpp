@@ -154,6 +154,11 @@ CryptedAssetArchiveReader::CryptedAssetArchiveReader()
 {
 }
 
+CryptedAssetArchiveReader::~CryptedAssetArchiveReader()
+{
+    close();
+}
+
 bool CryptedAssetArchiveReader::open(const StringRef& filePath, const StringRef& password)
 {
 	CryptedArchiveHelper::initKeys(password.toStdString().c_str(), m_keys);
@@ -243,7 +248,7 @@ size_t CryptedAssetArchiveReader::read(byte_t* data, size_t count, size_t dataOf
 
 	byte_t buf[128];
 	size_t totalSize = 0;
-	while (m_file->position() < m_file->length() && totalSize < count)	// fail safe
+	while (m_file->position() < m_file->length() && totalSize < count && seekPoint + totalSize < dataSize)
 	{
 		size_t size = m_file->read(buf, 128);
 		if (size < 128) {

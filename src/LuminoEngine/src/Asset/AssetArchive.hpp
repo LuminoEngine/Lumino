@@ -56,6 +56,7 @@ class CryptedAssetArchiveReader
 {
 public:
 	CryptedAssetArchiveReader();
+    ~CryptedAssetArchiveReader();
 	bool open(const StringRef& filePath, const StringRef& password);
 	void close();
 	size_t read(byte_t* data, size_t count, size_t dataOffset, size_t dataSize, size_t seekPoint);

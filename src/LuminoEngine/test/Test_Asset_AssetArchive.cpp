@@ -40,92 +40,92 @@ TEST_F(Test_Asset_AssetArchive, CryptedAssetArchive)
 		
 		byte_t buf[512];
 
-		//// * [ ] 0 byte file
-		//{
-		//	auto s1 = ar.openFileStream(LN_TEMPFILE("test/data0"));
-		//	ASSERT_EQ(0, s1->length());
-		//	ASSERT_EQ(0, s1->read(buf, 1));
-		//}
+		// * [ ] 0 byte file
+		{
+			auto s1 = ar.openFileStream(LN_TEMPFILE("test/data0"));
+			ASSERT_EQ(0, s1->length());
+			ASSERT_EQ(0, s1->read(buf, 1));
+		}
 
-		//// * [ ] 1 byte file
-		//{
-		//	auto s1 = ar.openFileStream(LN_TEMPFILE("test/data1"));
-		//	ASSERT_EQ(1, s1->length());
-		//	ASSERT_EQ(1, s1->read(buf, 1));
-		//	ASSERT_EQ(0, memcmp(buf, data1, 1));
-		//}
+		// * [ ] 1 byte file
+		{
+			auto s1 = ar.openFileStream(LN_TEMPFILE("test/data1"));
+			ASSERT_EQ(1, s1->length());
+			ASSERT_EQ(1, s1->read(buf, 1));
+			ASSERT_EQ(0, memcmp(buf, data1, 1));
+		}
 
-		//// * [ ] 128 byte file
-		//{
-		//	auto s1 = ar.openFileStream(LN_TEMPFILE("test/data2"));
-		//	ASSERT_EQ(128, s1->length());
-		//	ASSERT_EQ(128, s1->read(buf, 128));
-		//	ASSERT_EQ(0, memcmp(buf, data2, 128));
-		//}
+		// * [ ] 128 byte file
+		{
+			auto s1 = ar.openFileStream(LN_TEMPFILE("test/data2"));
+			ASSERT_EQ(128, s1->length());
+			ASSERT_EQ(128, s1->read(buf, 128));
+			ASSERT_EQ(0, memcmp(buf, data2, 128));
+		}
 
-		//// * [ ] 129 byte file
-		//{
-		//	auto s1 = ar.openFileStream(LN_TEMPFILE("test/data3"));
-		//	ASSERT_EQ(129, s1->length());
-		//	ASSERT_EQ(129, s1->read(buf, 129));
-		//	ASSERT_EQ(0, memcmp(buf, data3, 129));
-		//}
+		// * [ ] 129 byte file
+		{
+			auto s1 = ar.openFileStream(LN_TEMPFILE("test/data3"));
+			ASSERT_EQ(129, s1->length());
+			ASSERT_EQ(129, s1->read(buf, 129));
+			ASSERT_EQ(0, memcmp(buf, data3, 129));
+		}
 
-		//// * [ ] 129 byte file (128 + 1)
-		//{
-		//	auto s1 = ar.openFileStream(LN_TEMPFILE("test/data3"));
-		//	ASSERT_EQ(129, s1->length());
-		//	ASSERT_EQ(128, s1->read(buf, 128));
-		//	ASSERT_EQ(0, memcmp(buf, data3, 128));
-		//	ASSERT_EQ(1, s1->read(buf, 2));
-		//	ASSERT_EQ(data3[128], buf[0]);
-		//}
+		// * [ ] 129 byte file (128 + 1)
+		{
+			auto s1 = ar.openFileStream(LN_TEMPFILE("test/data3"));
+			ASSERT_EQ(129, s1->length());
+			ASSERT_EQ(128, s1->read(buf, 128));
+			ASSERT_EQ(0, memcmp(buf, data3, 128));
+			ASSERT_EQ(1, s1->read(buf, 2));
+			ASSERT_EQ(data3[128], buf[0]);
+		}
 
-		//// * [ ] 256 byte file
-		//{
-		//	auto s1 = ar.openFileStream(LN_TEMPFILE("test/data4"));
-		//	ASSERT_EQ(256, s1->length());
-		//	ASSERT_EQ(256, s1->read(buf, 256));
-		//	ASSERT_EQ(0, memcmp(buf, data4, 256));
-		//}
+		// * [ ] 256 byte file
+		{
+			auto s1 = ar.openFileStream(LN_TEMPFILE("test/data4"));
+			ASSERT_EQ(256, s1->length());
+			ASSERT_EQ(256, s1->read(buf, 256));
+			ASSERT_EQ(0, memcmp(buf, data4, 256));
+		}
 
-		//// * [ ] 256 byte file (cross boundary)
-		//{
-		//	auto s1 = ar.openFileStream(LN_TEMPFILE("test/data4"));
-		//	ASSERT_EQ(256, s1->length());
-		//	ASSERT_EQ(64, s1->read(buf, 64));
-		//	ASSERT_EQ(128, s1->read(buf, 128));
-		//	ASSERT_EQ(0, memcmp(buf, data4 + 64, 128));
-		//}
+		// * [ ] 256 byte file (cross boundary)
+		{
+			auto s1 = ar.openFileStream(LN_TEMPFILE("test/data4"));
+			ASSERT_EQ(256, s1->length());
+			ASSERT_EQ(64, s1->read(buf, 64));
+			ASSERT_EQ(128, s1->read(buf, 128));
+			ASSERT_EQ(0, memcmp(buf, data4 + 64, 128));
+		}
 
-		//// * [ ] 384 byte file (cross boundary)
-		//{
-		//	auto s1 = ar.openFileStream(LN_TEMPFILE("test/data5"));
-		//	ASSERT_EQ(384, s1->length());
-		//	ASSERT_EQ(64, s1->read(buf, 64));
-		//	ASSERT_EQ(256, s1->read(buf, 256));
-		//	ASSERT_EQ(0, memcmp(buf, data5 + 64, 256));
-		//}
+		// * [ ] 384 byte file (cross boundary)
+		{
+			auto s1 = ar.openFileStream(LN_TEMPFILE("test/data5"));
+			ASSERT_EQ(384, s1->length());
+			ASSERT_EQ(64, s1->read(buf, 64));
+			ASSERT_EQ(256, s1->read(buf, 256));
+			ASSERT_EQ(0, memcmp(buf, data5 + 64, 256));
+		}
 
-		//// * [ ] 384 byte file (by 1024)
-		//{
-		//	auto s1 = ar.openFileStream(LN_TEMPFILE("test/data5"));
-		//	ASSERT_EQ(384, s1->length());
-		//	ASSERT_EQ(384, s1->read(buf, 1024));
-		//	ASSERT_EQ(0, memcmp(buf, data5, 384));
-		//}
+		// * [ ] 384 byte file (by 1024)
+		{
+			auto s1 = ar.openFileStream(LN_TEMPFILE("test/data5"));
+			ASSERT_EQ(384, s1->length());
+			ASSERT_EQ(384, s1->read(buf, 1024));
+			ASSERT_EQ(0, memcmp(buf, data5, 384));
+		}
 
-		// * [ ] 
-		//{
-		//	byte_t tbuf[384];
-		//	auto s1 = ar.openFileStream(LN_TEMPFILE("test/data5"));
-		//	size_t ofsset = 0;
-		//	while (size_t size = s1->read(tbuf + ofsset, 55))
-		//	{
-		//		ofsset += size;
-		//	}
-		//	ASSERT_EQ(384, ofsset);
-		//	ASSERT_EQ(0, memcmp(tbuf, data5, 384));
-		//}
+		// * [ ] odd and sequential
+		{
+			byte_t tbuf[384];
+			auto s1 = ar.openFileStream(LN_TEMPFILE("test/data5"));
+			size_t ofsset = 0;
+			while (size_t size = s1->read(tbuf + ofsset, 55))
+			{
+				ofsset += size;
+			}
+			ASSERT_EQ(384, ofsset);
+			ASSERT_EQ(0, memcmp(tbuf, data5, 384));
+		}
 	}
 }
