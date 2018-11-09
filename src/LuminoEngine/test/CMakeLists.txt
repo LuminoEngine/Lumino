@@ -5,6 +5,7 @@ set(LN_SOURCES
 	${LN_SOURCES_gtest}
 	Common.hpp
 	Main.cpp
+	Test_Asset_AssetArchive.cpp
 	Test_Graphics_Bitmap.cpp
 	Test_Graphics_HlslEffect.cpp
 	Test_Graphics_LowLevelRendering.cpp

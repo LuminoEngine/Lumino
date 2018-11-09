@@ -17,50 +17,62 @@ const char CryptedArchiveHelper::FileSignature[4] = { 'l', 'c', 'a', 'c' };
 const uint16_t CryptedArchiveHelper::FileVersion = 1;
 const char CryptedArchiveHelper::FileEntrySignature[4] = { 'l', 'c', '3', '4' };
 const char CryptedArchiveHelper::CentralDirectorySignature[4] = { 'l', 'c', '1', '2' };
+static const z_crc_t* g_crcTable = nullptr;
 
-void CryptedArchiveHelper::initKeys128(const char* password, byte_t* keys)
+void CryptedArchiveHelper::initKeys(const char* password, uint32_t* keys)
 {
-	for (int i = 0; i < 128; i++) {
-		keys[i] = crc(i);
-	}
+	g_crcTable = get_crc_table();
 
+	*(keys + 0) = 305419896L;
+	*(keys + 1) = 591751049L;
+	*(keys + 2) = 878082192L;
 	while (*password != '\0') {
-		shiftKey128(keys, *password);
+		shiftKey(keys, (int)*password);
 		password++;
 	}
 }
 
-void CryptedArchiveHelper::encrypt128(const byte_t* keys, byte_t* data)
+void CryptedArchiveHelper::encrypt128(const uint32_t* keys, byte_t* data)
 {
+	uint32_t localKeys[3] = { keys[0], keys[1], keys[2] };
 	for (int i = 0; i < 128; i++) {
-		data[i] = data[i] ^ ccbyte(keys, i);
+		byte_t t = ccbyte(localKeys);
+		shiftKey(localKeys, data[i]);
+		data[i] = t ^ data[i];
+		//data[i] = data[i] ^ ccbyte(keys, i);
 	}
+	//(t=decrypt_byte(pkeys,pcrc_32_tab), update_keys(pkeys,pcrc_32_tab,c), t^(c))
 }
 
-void CryptedArchiveHelper::decrypt128(const byte_t* keys, byte_t* data)
+void CryptedArchiveHelper::decrypt128(const uint32_t* keys, byte_t* data)
 {
+	uint32_t localKeys[3] = { keys[0], keys[1], keys[2] };
 	for (int i = 0; i < 128; i++) {
-		data[i] = data[i] ^ ccbyte(keys, i);
+		data[i] ^= ccbyte(localKeys);
+		shiftKey(localKeys, data[i]);
 	}
 }
 
-byte_t CryptedArchiveHelper::ccbyte(const byte_t* keys, int index)
+byte_t CryptedArchiveHelper::ccbyte(const uint32_t* keys)
 {
-	byte_t t = keys[index] | 2;
-	return (byte_t)(((t * (t ^ 1)) >> 8) & 0xff);
+	unsigned t = ((unsigned)(*(keys + 2)) & 0xffff) | 2;
+	return (int)(((t * (t ^ 1)) >> 8) & 0xff);
 }
 
-void CryptedArchiveHelper::shiftKey128(byte_t* keys, int c)
+void CryptedArchiveHelper::shiftKey(uint32_t* keys, int c)
 {
-	keys[0] = crc(keys[127]) ^ (c & 0xFF);
-	for (int i = 1; i < 128; i++) {
-		keys[i] = keys[i-1] ^ (c & 0xFF) + 1;
+	(*(keys + 0)) = crc((*(keys + 0)), c);
+	(*(keys + 1)) += (*(keys + 0)) & 0xff;
+	(*(keys + 1)) = (*(keys + 1)) * 134775813L + 1;
+	{
+		register int keyshift = (int)((*(keys + 1)) >> 24);
+		(*(keys + 2)) = crc((*(keys + 2)), keyshift);
 	}
 }
 
-uint32_t CryptedArchiveHelper::crc(byte_t b)
+uint32_t CryptedArchiveHelper::crc(uint32_t key, int c)
 {
-	return CRCHash::compute((const char*)&b, 1);
+	return ((*(g_crcTable + (((int)(c) ^ (key)) & 0xff))) ^ ((c) >> 8));
 }
 
 //=============================================================================
@@ -72,7 +84,7 @@ CryptedAssetArchiveWriter::CryptedAssetArchiveWriter()
 
 void CryptedAssetArchiveWriter::open(const StringRef& filePath, const StringRef& password)
 {
-	CryptedArchiveHelper::initKeys128(password.toStdString().c_str(), m_keys);
+	CryptedArchiveHelper::initKeys(password.toStdString().c_str(), m_keys);
 
 	m_file = FileStream::create(filePath, FileOpenMode::Write | FileOpenMode::Truncate);
 	m_writer = makeRef<BinaryWriter>(m_file);
@@ -144,6 +156,8 @@ CryptedAssetArchiveReader::CryptedAssetArchiveReader()
 
 bool CryptedAssetArchiveReader::open(const StringRef& filePath, const StringRef& password)
 {
+	CryptedArchiveHelper::initKeys(password.toStdString().c_str(), m_keys);
+
 	ln::Path virtualDirFullPath = ln::Path(filePath).canonicalize().replaceExtension(u"");
 
 	m_file = FileStream::create(filePath, FileOpenMode::Read);
@@ -155,6 +169,11 @@ bool CryptedAssetArchiveReader::open(const StringRef& filePath, const StringRef&
 	}
 	uint16_t fileVersion = m_reader->readUInt16();
 	uint32_t passwordHash = m_reader->readUInt32();
+
+	// check password
+	if (passwordHash != CRCHash::compute(password.data(), password.length())) {
+		return false;
+	}
 
 	// central directory
 	size_t fileEntriesPos = 0;
@@ -189,13 +208,12 @@ bool CryptedAssetArchiveReader::open(const StringRef& filePath, const StringRef&
 			fe.dataOffset = m_reader->readUInt32();
 			fe.dataSize = m_reader->readUInt32();
 
-
 			ln::Path path = ln::Path(String::fromStdString(readString(m_reader)));
-			ln::Path virtualFullPath = ln::Path(virtualDirFullPath, path);
+			ln::Path virtualFullPath = ln::Path(virtualDirFullPath, path).canonicalize();
 
-			String relativePath = virtualDirFullPath.makeRelative(virtualFullPath);
+			//String relativePath = virtualDirFullPath.makeRelative(virtualFullPath);
 
-			m_fileEntries.insert({relativePath, fe});
+			m_fileEntries.insert({ virtualFullPath, fe});
 		}
 	}
 
@@ -209,6 +227,54 @@ void CryptedAssetArchiveReader::close()
 	if (m_file) {
 		m_file->close();
 		m_file = nullptr;
+	}
+}
+
+size_t CryptedAssetArchiveReader::read(byte_t* data, size_t count, size_t dataOffset, size_t dataSize, size_t seekPoint)
+{
+	if (seekPoint >= dataSize) {
+		return 0;
+	}
+
+	size_t seekHeadOffset = seekPoint % 128;
+	size_t seekHead = seekPoint - seekHeadOffset;
+
+	m_file->seek(dataOffset + seekHead, SeekOrigin::Begin);
+
+	byte_t buf[128];
+	size_t totalSize = 0;
+	while (m_file->position() < m_file->length() && totalSize < count)	// fail safe
+	{
+		size_t size = m_file->read(buf, 128);
+		if (size < 128) {
+			memset(data + size, 0, 128 - size);	// fill 0.
+		}
+
+		CryptedArchiveHelper::decrypt128(m_keys, buf);
+
+		size_t remain = dataSize - (seekPoint + totalSize);
+		size_t writeSize = std::min(size - seekHeadOffset, count - totalSize);
+		writeSize = std::min(writeSize, remain);
+
+
+		memcpy(data, buf + seekHeadOffset, writeSize);
+		data += writeSize;
+		totalSize += writeSize;
+		seekHeadOffset = 0;
+	}
+
+	return totalSize;
+}
+
+Ref<Stream> CryptedAssetArchiveReader::openFileStream(const StringRef& filePath)
+{
+	auto path = Path(filePath).canonicalize();
+	auto itr = m_fileEntries.find(path);
+	if (itr != m_fileEntries.end()) {
+		return makeRef<CryptedArchiveFileStream>(this, itr->second.dataOffset, itr->second.dataSize);
+	}
+	else {
+		return nullptr;
 	}
 }
 
@@ -242,6 +308,57 @@ std::string CryptedAssetArchiveReader::readString(BinaryReader* r)
 }
 
 
+//=============================================================================
+// CryptedArchiveFileStream
+
+CryptedArchiveFileStream::CryptedArchiveFileStream(CryptedAssetArchiveReader* archive, size_t dataOffset, size_t dataSize)
+	: m_archive(archive)
+	, m_dataOffset(dataOffset)
+	, m_dataSize(dataSize)
+	, m_position(0)
+{
+}
+
+bool CryptedArchiveFileStream::canRead() const
+{
+	return true;
+}
+
+bool CryptedArchiveFileStream::canWrite() const
+{
+	return false;
+}
+
+int64_t CryptedArchiveFileStream::length() const
+{
+	return m_dataSize;
+}
+
+int64_t CryptedArchiveFileStream::position() const
+{
+	return m_position;
+}
+
+size_t CryptedArchiveFileStream::read(void* buffer, size_t byteCount)
+{
+	size_t size = m_archive->read((byte_t*)buffer, byteCount, m_dataOffset, m_dataSize, m_position);
+	m_position += size;
+	return size;
+}
+
+void CryptedArchiveFileStream::write(const void* data, size_t byteCount)
+{
+	LN_UNREACHABLE();
+}
+
+void CryptedArchiveFileStream::seek(int64_t offset, SeekOrigin origin)
+{
+	m_position = detail::FileSystemInternal::calcSeekPoint(m_position, m_dataSize, offset, (int)origin);
+}
+
+void CryptedArchiveFileStream::flush()
+{
+}
 
 
 

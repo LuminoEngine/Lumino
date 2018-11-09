@@ -9,7 +9,9 @@ namespace detail {
 class AssetArchive
 {
 public:
+	virtual Ref<Stream> openFileStream(const StringRef& filePath) = 0;
 };
+
 
 class CryptedArchiveHelper
 {
@@ -19,13 +21,12 @@ public:
 	static const char FileEntrySignature[4];
 	static const char CentralDirectorySignature[4];
 
-	
-	static void initKeys128(const char* password, byte_t* keys);
-	static void encrypt128(const byte_t* keys, byte_t* data);
-	static void decrypt128(const byte_t* keys, byte_t* data);
-	static byte_t ccbyte(const byte_t* keys, int index);
-	static void shiftKey128(byte_t* keys, int c);
-	static uint32_t crc(byte_t b);
+	static void initKeys(const char* password, uint32_t* keys);
+	static void encrypt128(const uint32_t* keys, byte_t* data);
+	static void decrypt128(const uint32_t* keys, byte_t* data);
+	static byte_t ccbyte(const uint32_t* keys);
+	static void shiftKey(uint32_t* keys, int c);
+	static uint32_t crc(uint32_t key, int c);
 };
 
 class CryptedAssetArchiveWriter
@@ -44,18 +45,21 @@ private:
 		std::string filePath;
 	};
 
-	byte_t m_keys[128];
+	uint32_t m_keys[3];
 	Ref<FileStream> m_file;
 	Ref<BinaryWriter> m_writer;
 	List<FileEntry> m_fileEntries;
 };
 
 class CryptedAssetArchiveReader
+	: public AssetArchive
 {
 public:
 	CryptedAssetArchiveReader();
 	bool open(const StringRef& filePath, const StringRef& password);
 	void close();
+	size_t read(byte_t* data, size_t count, size_t dataOffset, size_t dataSize, size_t seekPoint);
+	virtual Ref<Stream> openFileStream(const StringRef& filePath) override;
 
 private:
 	struct FileEntry
@@ -74,10 +78,32 @@ private:
 	bool checkSignature(BinaryReader* r, const char* sig);
 	std::string readString(BinaryReader* r);
 
-	std::string m_password;
+	uint32_t m_keys[3];
 	Ref<FileStream> m_file;
 	Ref<BinaryReader> m_reader;
 	std::map<String, FileEntry, ComparePath> m_fileEntries;
+};
+
+class CryptedArchiveFileStream
+	: public Stream
+{
+public:
+	CryptedArchiveFileStream(CryptedAssetArchiveReader* archive, size_t dataOffset, size_t dataSize);
+
+	virtual bool canRead() const override;
+	virtual bool canWrite() const override;
+	virtual int64_t length() const override;
+	virtual int64_t position() const override;
+	virtual size_t read(void* buffer, size_t byteCount) override;
+	virtual void write(const void* data, size_t byteCount) override;
+	virtual void seek(int64_t offset, SeekOrigin origin) override;
+	virtual void flush() override;
+
+private:
+	CryptedAssetArchiveReader* m_archive;
+	size_t m_dataOffset;
+	size_t m_dataSize;
+	size_t m_position;
 };
 
 
