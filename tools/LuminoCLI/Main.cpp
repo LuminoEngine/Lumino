@@ -31,7 +31,7 @@ int main(int argc, char** argv)
 
 			//"restore",
 
-            "fxc", "C:/LocalProj/tmp/Basic.fx",
+            "fxc", "Assets/LineWave.fx",
 		};
 		argc = sizeof(debugArgv) / sizeof(char*);
 		argv = (char**)debugArgv;
@@ -48,6 +48,7 @@ int main(int argc, char** argv)
 	
 
 		ln::CommandLineParser parser;
+        parser.addHelpOption();
 
 		//--------------------------------------------------------------------------------
 		// init command
@@ -75,10 +76,10 @@ int main(int argc, char** argv)
 		auto fxcCommand_outputArg = fxcCommand->addPositionalArgument(u"output", u"Output file.", ln::CommandLinePositionalArgumentFlags::Optional);
 
 		//--------------------------------------------------------------------------------
-		auto dev_installTools = parser.addCommand(u"dev-install-tools", u"description.");
+		auto dev_installTools = parser.addCommand(u"dev-install-tools", u"internal.");
 
 
-		auto dev_openide = parser.addCommand(u"dev-openide", u"description.");
+		auto dev_openide = parser.addCommand(u"dev-openide", u"internal.");
 		auto dev_openide_targetArg = dev_openide->addPositionalArgument(u"target", u"target.");
 
 
@@ -171,7 +172,14 @@ int main(int argc, char** argv)
 				}
 				workspace->dev_openIde(dev_openide_targetArg->value());
 			}
+            else
+            {
+                parser.printHelp();
+            }
 		}
+        else {
+            parser.printHelp();
+        }
 	}
 	catch (ln::Exception& e)
 	{

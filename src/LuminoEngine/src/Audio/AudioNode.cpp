@@ -54,12 +54,10 @@ void AudioNode::commit()
 	//}
 }
 
-#ifdef LN_AUDIO_THREAD_ENABLED
 detail::AudioRWMutex& AudioNode::commitMutex()
 {
 	return context()->commitMutex();
 }
-#endif
 
 //void AudioNode::addConnectionInput(AudioNode * inputSide)
 //{
@@ -138,7 +136,7 @@ AudioSourceNode::AudioSourceNode()
 
 void AudioSourceNode::setPlaybackRate(float rate)
 {
-    detail::ScopedWriteLock(propertyMutex());
+    detail::ScopedWriteLock lock(propertyMutex());
 	m_commitState.playbackRate = rate;
 	//LN_ENQUEUE_RENDER_COMMAND_2(
 	//	start, context()->manager(),
@@ -201,7 +199,7 @@ void AudioSourceNode::commit()
 {
 	AudioNode::commit();
 
-    detail::ScopedReadLock(propertyMutex());
+    detail::ScopedReadLock lock(propertyMutex());
 
 	if (m_commitState.resetRequire) {
 		m_coreObject->reset();

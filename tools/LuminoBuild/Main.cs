@@ -54,6 +54,7 @@ namespace LuminoBuild
             builder.Tasks.Add(new Tasks.MakeReleasePackage());
             builder.Tasks.Add(new Tasks.MakeInstaller_Win32());
             builder.Rules.Add(new Rules.MakePackage());
+            builder.Rules.Add(new Rules.MakeLocalPackage());
             builder.Rules.Add(new Rules.BuildForCI_1());
             builder.Rules.Add(new Rules.BuildForCI_2());
             builder.Rules.Add(new Rules.BuildForCI_3());

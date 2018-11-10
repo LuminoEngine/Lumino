@@ -34,10 +34,8 @@ public:
 	void sendDisconnectAllAndDispose(AudioNode* node);
 
 LN_INTERNAL_ACCESS:
-#ifdef LN_AUDIO_THREAD_ENABLED
 	detail::AudioRWMutex m_commitMutex;
 	detail::AudioRWMutex& commitMutex() { return m_commitMutex; }
-#endif
 
 	void addAudioNode(AudioNode* node);
 	void disposeNodeOnGenericThread(AudioNode* node);	// Audio Thread 以外での AudioNode::dispose

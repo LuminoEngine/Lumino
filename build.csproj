@@ -35,6 +35,7 @@
     <Compile Include="tools/LuminoBuild/Tasks/MakeInstaller_Win32.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/MakeLocalPackage.cs" />
     <Compile Include="tools/LuminoBuild/Rules/MakePackage.cs" />
+    <Compile Include="tools/LuminoBuild/Rules/MakeLocalPackage.cs" />
     <Compile Include="tools/LuminoBuild/Rules/BuildForCI_1.cs" />
     <Compile Include="tools/LuminoBuild/Rules/BuildForCI_2.cs" />
     <Compile Include="tools/LuminoBuild/Rules/BuildForCI_3.cs" />

@@ -6,6 +6,8 @@
 namespace ln {
 namespace detail {
 
+#ifdef LN_AUDIO_THREAD_ENABLED
+
 // When std::shared_mutex can not be used
 // https://www.boost.org/doc/libs/1_61_0/boost/thread/pthread/shared_mutex.hpp
 class internal_shared_mutex
@@ -225,6 +227,39 @@ public:
 		release_waiters();
 	}
 };
+#else
+
+class internal_shared_mutex
+{
+public:
+	LN_DISALLOW_COPY_AND_ASSIGN(internal_shared_mutex);
+
+	internal_shared_mutex()
+	{
+	}
+
+	~internal_shared_mutex()
+	{
+	}
+
+	void lock_shared()
+	{
+	}
+
+	void unlock_shared()
+	{
+	}
+
+	void lock()
+	{
+	}
+
+	void unlock()
+	{
+	}
+};
+
+#endif
 
 
 } // namespace detail

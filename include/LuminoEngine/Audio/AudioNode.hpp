@@ -37,9 +37,7 @@ protected:
 	virtual detail::CoreAudioNode* coreNode() = 0;
 	virtual void commit();	// ロック済みの状態で呼ばれる
 
-#ifdef LN_AUDIO_THREAD_ENABLED
 	detail::AudioRWMutex& commitMutex();
-#endif
     detail::AudioRWMutex& propertyMutex() { return m_propertyMutex; }
 
 private:

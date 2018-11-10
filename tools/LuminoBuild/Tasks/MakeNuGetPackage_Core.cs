@@ -12,6 +12,16 @@ namespace LuminoBuild.Tasks
 
         public override void Build(Builder builder)
         {
+            // Build project
+            foreach (var t in MakeVSProjects.Targets)
+            {
+                if (t.MSVCStaticRuntime == "OFF")
+                {
+                    BuildEngine_MSVC.BuildTarget(builder, t);
+                }
+            }
+
+
             var nugetroot = Path.Combine(builder.LuminoBuildDir, "NuGetPackage-LuminoCore");
             var nativeDir = Path.Combine(builder.LuminoBuildDir, "NuGetPackage-LuminoCore", "build", "native");
             Directory.CreateDirectory(nativeDir);

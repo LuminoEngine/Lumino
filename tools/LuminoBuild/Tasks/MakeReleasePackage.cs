@@ -49,13 +49,17 @@ namespace LuminoBuild.Tasks
 
             var externalLibs = new string[]
             {
+                "freetype2",
                 "glad",
                 "glfw",
                 "glslang",
                 "libpng",
+                "minizip",
+                "ogg",
                 "openal-soft",
                 "SDL2",
                 "SPIRV-Cross",
+                "vorbis",
                 "zlib",
             };
 
@@ -151,6 +155,11 @@ namespace LuminoBuild.Tasks
             // zip
             {
                 Utils.CreateZipFile(targetRootDir, Path.Combine(builder.LuminoBuildDir, builder.ReleasePackageName + ".zip"), true);
+            }
+
+            // Local package
+            {
+                Utils.CopyDirectory(targetRootDir, Path.Combine(builder.LuminoBuildDir, "LocalPackage"));
             }
         }
     }

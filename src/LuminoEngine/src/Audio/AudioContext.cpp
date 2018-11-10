@@ -99,7 +99,7 @@ void AudioContext::sendConnect(AudioNode* outputSide, AudioNode* inputSide)
 	if (LN_REQUIRE(outputSide->context() == this)) return;
 	if (LN_REQUIRE(inputSide->context() == this)) return;
 
-	LN_AUDIO_WRITE_LOCK_COMMIT;
+    detail::ScopedWriteLock lock(commitMutex());
 	m_connectionCommands.push_back({ OperationCode::Connection, outputSide, inputSide });
 }
 
@@ -110,7 +110,7 @@ void AudioContext::sendDisconnect(AudioNode* outputSide, AudioNode* inputSide)
 	if (LN_REQUIRE(outputSide->context() == this)) return;
 	if (LN_REQUIRE(inputSide->context() == this)) return;
 
-	LN_AUDIO_WRITE_LOCK_COMMIT;
+    detail::ScopedWriteLock lock(commitMutex());
 	m_connectionCommands.push_back({ OperationCode::Disconnection, outputSide, inputSide });
 }
 
@@ -119,13 +119,13 @@ void AudioContext::sendDisconnectAllAndDispose(AudioNode* node)
 	if (LN_REQUIRE(node)) return;
 	if (LN_REQUIRE(node->context() == this)) return;
 
-	LN_AUDIO_WRITE_LOCK_COMMIT;
+    detail::ScopedWriteLock lock(commitMutex());
 	m_connectionCommands.push_back({ OperationCode::DisconnectionAllAndDispose, node });
 }
 
 void AudioContext::addAudioNode(AudioNode* node)
 {
-	LN_AUDIO_WRITE_LOCK_COMMIT;
+    detail::ScopedWriteLock lock(commitMutex());
 	m_allAudioNodes.add(node);
 }
 
@@ -135,14 +135,14 @@ void AudioContext::disposeNodeOnGenericThread(AudioNode* node)
 		node->m_context->sendDisconnectAllAndDispose(node);
 		node->m_context = nullptr;
 
-		LN_AUDIO_WRITE_LOCK_COMMIT;
+        detail::ScopedWriteLock lock(commitMutex());
 		m_allAudioNodes.remove(node);
 	}
 }
 
 void AudioContext::commitGraphs()
 {
-	LN_AUDIO_WRITE_LOCK_COMMIT;
+    detail::ScopedWriteLock lock(commitMutex());
 	//for (AudioNode* node : m_allAudioNodes)
 	//{
 	//	m_allAudioNodes_onCommit.add(node);
