@@ -299,7 +299,6 @@ void CoreAudioSourceNode::resetSourceBuffers()
 		m_readFrames *= scale;
 	}
 
-
 	m_readFrames *= m_playbackRate;
 	baseFrames *= m_playbackRate;
 

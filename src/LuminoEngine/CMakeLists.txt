@@ -89,6 +89,7 @@ set(LN_SOURCES_Audio
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioListener.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioNode.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/GameAudio.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/InternalSharedMutex.inc
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/Sound.hpp
     src/Audio/Internal.hpp
     src/Audio/ALAudioDevice.cpp

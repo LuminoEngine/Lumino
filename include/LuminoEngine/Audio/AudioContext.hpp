@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "InternalSharedMutex.inc"
 
 namespace ln {
 namespace detail {

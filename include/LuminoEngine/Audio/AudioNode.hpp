@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <shared_mutex>
+#include "InternalSharedMutex.inc"
 
 namespace ln {
 class AudioContext;
@@ -39,6 +40,7 @@ protected:
 #ifdef LN_AUDIO_THREAD_ENABLED
 	detail::AudioRWMutex& commitMutex();
 #endif
+    detail::AudioRWMutex& propertyMutex() { return m_propertyMutex; }
 
 private:
 	//void addConnectionInput(AudioNode* inputSide);
@@ -51,6 +53,7 @@ private:
 	//List<Ref<AudioNode>> m_outputConnections;	// output side in this node
 	//bool m_inputConnectionsDirty;
 	//bool m_outputConnectionsDirty;
+    detail::AudioRWMutex m_propertyMutex;
 
 	friend class AudioContext;
 };

@@ -138,6 +138,7 @@ AudioSourceNode::AudioSourceNode()
 
 void AudioSourceNode::setPlaybackRate(float rate)
 {
+    detail::ScopedWriteLock(propertyMutex());
 	m_commitState.playbackRate = rate;
 	//LN_ENQUEUE_RENDER_COMMAND_2(
 	//	start, context()->manager(),
@@ -199,6 +200,8 @@ detail::CoreAudioNode * AudioSourceNode::coreNode()
 void AudioSourceNode::commit()
 {
 	AudioNode::commit();
+
+    detail::ScopedReadLock(propertyMutex());
 
 	if (m_commitState.resetRequire) {
 		m_coreObject->reset();

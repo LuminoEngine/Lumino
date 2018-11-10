@@ -53,12 +53,6 @@ int main(int argc, char** argv)
 	//aw.addFile(u"C:/LocalProj/tmp/CMakeLists.txt", u"CMakeLists.txt");
 	//aw.close();
 
-	detail::CryptedAssetArchiveReader ar;
-	ar.open(u"C:/LocalProj/tmp/asset_pass.lna", u"pass");
-	auto file = ar.openFileStream(u"C:/LocalProj/tmp/asset_pass/Basic.fx");
-	char buf[100];
-	file->read(buf, 50);
-	file->read(buf + 50, 50);
     
 	detail::EngineDomain::fontManager()->registerFontFile(LN_LOCALFILE("../../../tools/VLGothic/VL-PGothic-Regular.ttf"));
 
@@ -109,15 +103,15 @@ int main(int argc, char** argv)
     //auto sound = newObject<Sound>(u"D:\\tmp\\4_Battle_win.wav");
     auto sound = newObject<Sound>(u"D:/Music/momentum/02 - momentum.wav");
 
-    //sound->setPitch(1.2);
     sound->play();
+    //sound->setPitch(1.2);
 
     while (Engine::update())
     {
         if (Mouse::isPressed(MouseButtons::Left))
         {
             float pitch = (Mouse::position().x / 640)  + 0.5;
-            std::cout << pitch << std::endl;
+            //std::cout << pitch << std::endl;
             sound->setPitch(pitch);
         }
         
