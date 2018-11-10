@@ -46,6 +46,7 @@ int main(int argc, char** argv)
 			return commnad_localInitialSetup(argv[2]);
 		}
 	
+        ln::GlobalLogger::addStdErrAdapter();
 
 		ln::CommandLineParser parser;
         parser.addHelpOption();
