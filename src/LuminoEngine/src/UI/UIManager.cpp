@@ -17,7 +17,11 @@ UIManager::UIManager()
 
 void UIManager::initialize(const Settings& settings)
 {
+    LN_LOG_DEBUG << "UIManager Initialization started.";
+
 	m_graphicsManager = settings.graphicsManager;
+
+    LN_LOG_DEBUG << "UIManager Initialization ended.";
 }
 
 void UIManager::dispose()

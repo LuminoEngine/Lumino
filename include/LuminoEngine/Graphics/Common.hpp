@@ -48,7 +48,7 @@ enum class MapMode
 };
 
 /** 頂点宣言の要素の型 */
-enum class VertexElementType
+enum class VertexElementType : uint8_t
 {
 	/** Unknown */
 	Unknown,
@@ -134,7 +134,7 @@ enum class PixelFormat
 
 /** テクスチャのピクセルフォーマット */
 LN_ENUM()
-enum class TextureFormat
+enum class TextureFormat : uint8_t
 {
 	/** Unknown */
 	Unknown,

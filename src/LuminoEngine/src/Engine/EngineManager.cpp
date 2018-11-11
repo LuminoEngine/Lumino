@@ -79,6 +79,7 @@ void EngineManager::initialize()
 		m_mainWindow->m_viewport = m_mainViewport;
 	}
 
+#if 0
     m_mainWorld = newObject<World>();
     m_sceneManager->setActiveWorld(m_mainWorld);
 	m_mainCamera = newObject<Camera>();
@@ -94,6 +95,7 @@ void EngineManager::initialize()
     m_mainUIRoot = newObject<UIContainerElement>();
     m_mainUIRenderView->setRootElement(m_mainUIRoot);
     m_uiManager->setPrimaryElement(m_mainUIRoot);
+#endif
 }
 
 void EngineManager::dispose()

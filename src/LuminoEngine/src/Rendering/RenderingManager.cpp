@@ -27,6 +27,8 @@ RenderingManager::RenderingManager()
 
 void RenderingManager::initialize(const Settings& settings)
 {
+    LN_LOG_DEBUG << "RenderingManager Initialization started.";
+
 	m_graphicsManager = settings.graphicsManager;
 
 	m_renderTargetTextureCacheManager = makeRef<RenderTargetTextureCacheManager>();
@@ -57,7 +59,7 @@ void RenderingManager::initialize(const Settings& settings)
 	m_builtinShaders[(int)BuiltinShader::DepthPrepass] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/DepthPrepass.hlsl");
 	m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.hlsl");
 #endif
-#if 1
+#if 0
 	m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.hlsl");
 	m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.hlsl");
 	m_builtinShaders[(int)BuiltinShader::DepthPrepass] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/DepthPrepass.hlsl");
@@ -69,6 +71,8 @@ void RenderingManager::initialize(const Settings& settings)
 	m_builtinShaders[(int)BuiltinShader::DepthPrepass] = Shader::create(u"/Users/lriki/Proj/Lumino/src/LuminoEngine/src/Rendering/Resource/DepthPrepass.hlsl");
 	m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(u"/Users/lriki/Proj/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.hlsl");
 #endif
+
+    LN_LOG_DEBUG << "RenderingManager Initialization ended.";
 }
 
 void RenderingManager::dispose()

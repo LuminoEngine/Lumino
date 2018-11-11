@@ -247,7 +247,8 @@ void ClusteredShadingSceneRenderer::initialize(RenderingManager* manager)
 	//addPass(m_depthPrepass);
 
 	// pass "Geometry"
-	addPass(newObject<ClusteredShadingGeometryRenderingPass>());
+    auto geometryPass = newObject<ClusteredShadingGeometryRenderingPass>();
+	addPass(geometryPass);
 
 	m_lightClusters.init();
 

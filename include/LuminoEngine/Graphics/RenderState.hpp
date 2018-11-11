@@ -66,7 +66,7 @@ enum class ComparisonFunc : uint8_t
 };
 
 /// ステンシルテストの結果に応じたステンシル処理方法です。
-enum class StencilOp
+enum class StencilOp : uint8_t
 {
 	Keep,					///< 既存のステンシル データを保持します。(何もしません)
 	Replace,					///< ステンシルデータをステンシル参照値に設定します。
