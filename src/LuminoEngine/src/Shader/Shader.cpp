@@ -10,6 +10,7 @@
 #include "UnifiedShader.hpp"
 #include "ShaderManager.hpp"
 #include "ShaderAnalyzer.hpp"
+#include "HLSLMetadataParser.hpp"
 
 
 namespace ln {

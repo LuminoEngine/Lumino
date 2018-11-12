@@ -168,6 +168,8 @@ set(LN_SOURCES_Shader
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/ShaderHelper.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/ShaderInterfaceFramework.hpp
     src/Shader/Internal.hpp
+    src/Shader/HLSLMetadataParser.cpp
+    src/Shader/HLSLMetadataParser.hpp
     src/Shader/Shader.cpp
     src/Shader/ShaderHelper.cpp
     src/Shader/ShaderAnalyzer.cpp
