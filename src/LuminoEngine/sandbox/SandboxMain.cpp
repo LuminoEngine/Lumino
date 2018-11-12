@@ -77,7 +77,7 @@ int main(int argc, char** argv)
 
 	//printf("");
 
-#if 1
+#if 0
     auto font = Font::create(u"VL PGothic", 20);
 
 	auto light1 = AmbientLight::create();

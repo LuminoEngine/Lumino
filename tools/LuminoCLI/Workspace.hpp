@@ -16,6 +16,7 @@ public:
 	Result runProject(const ln::String& target);
 	Result restoreProject();
 
+    const ln::Ref<Project>& project() const { return m_project; }
 	const ln::Ref<BuildEnvironment>& buildEnvironment() const { return m_devTools; }
 
 	Result dev_installTools() const;

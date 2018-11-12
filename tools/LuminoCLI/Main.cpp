@@ -3,6 +3,7 @@
 #include "Workspace.hpp"
 #include "Project.hpp"
 #include "FxcCommand.hpp"
+#include "ArchiveCommand.hpp"
 
 static int commnad_localInitialSetup(const char* packageDir_);
 
@@ -31,7 +32,9 @@ int main(int argc, char** argv)
 
 			//"restore",
 
-            "fxc", "Assets/LineWave.fx",
+            //"fxc", "Assets/LineWave.fx",
+
+            "asset-archive",
 		};
 		argc = sizeof(debugArgv) / sizeof(char*);
 		argv = (char**)debugArgv;
@@ -75,6 +78,11 @@ int main(int argc, char** argv)
         auto fxcCommand = parser.addCommand(u"fxc", u"Compile shader.");
         auto fxcCommand_inputArg = fxcCommand->addPositionalArgument(u"input", u"Input file.");
 		auto fxcCommand_outputArg = fxcCommand->addPositionalArgument(u"output", u"Output file.", ln::CommandLinePositionalArgumentFlags::Optional);
+        
+        //--------------------------------------------------------------------------------
+        // asset-archive command
+        auto assetArchiveCommand = parser.addCommand(u"asset-archive", u"Make assets archive.");
+
 
 		//--------------------------------------------------------------------------------
 		auto dev_installTools = parser.addCommand(u"dev-install-tools", u"internal.");
@@ -158,6 +166,15 @@ int main(int argc, char** argv)
 					cmd.outputFile = fxcCommand_outputArg->value();
 				}
                 return cmd.execute(fxcCommand_inputArg->value());
+            }
+            //--------------------------------------------------------------------------------
+            // asset-archive command
+            else if (parser.has(assetArchiveCommand)) {
+                if (!workspace->openProject(ln::Environment::currentDirectory())) {
+                    return 1;
+                }
+                ArchiveCommand cmd;
+                return cmd.execute(workspace->project());
             }
 			//--------------------------------------------------------------------------------
 			else if (parser.has(dev_installTools))

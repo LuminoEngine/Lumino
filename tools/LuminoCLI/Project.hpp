@@ -25,6 +25,7 @@ public:
 	Workspace* workspace() const { return m_workspace; }
 	const ln::Path& engineDirPath() const { return m_engineDir; }
 	const ln::Path& rootDirPath() const { return m_rootDir; }
+    const ln::Path& assetsDir() const { return m_assetsDir; }
 	const ln::Path& buildDir() const { return m_buildDir; }
 
 	ln::Path projectsDir() const { return ln::Path(rootDirPath(), u"Projects"); }

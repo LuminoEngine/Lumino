@@ -52,11 +52,7 @@ void BuildEnvironment::setupPathes()
 
             LN_LOG_DEBUG << luminoRepoRoot;
 
-#if defined(LN_OS_WIN32)
-            m_luminoPackageRootDir = ln::Path(luminoRepoRoot, u"Lumino-0.6.0-Windows");
-#elif defined(LN_OS_MAC)
-            m_luminoPackageRootDir = ln::Path(luminoRepoRoot, u"Lumino-0.6.0-macOS");
-#endif
+            m_luminoPackageRootDir = ln::Path::combine(luminoRepoRoot, u"build", u"LocalPackage");
         }
 #endif
         // まだ見つからなければ環境変数を探してみる
