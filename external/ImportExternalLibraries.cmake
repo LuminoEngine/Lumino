@@ -5,24 +5,13 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 #set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
 #set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
 
+message("LN_TARGET_ARCH: ${LN_TARGET_ARCH}")
+message("CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+
 #-------------------------------------------------------------------------------
 
 # Visual Studio ソリューションフォルダを作るようにする
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-# サードパーティライブラリ用の共通設定
-macro(ln_add_dependencies_common_property_full projectName includeDir)
-    set_target_properties(${projectName} PROPERTIES PREFIX "")
-    set_target_properties(${projectName} PROPERTIES FOLDER "Dependencies")    # Visual Studio solution folder
-    set(LN_DEPENDENCIES_LIBRARIES ${LN_DEPENDENCIES_LIBRARIES} ${projectName})
-    set(LN_DEPENDENCIES_INCLUDE_DIRECTORIES ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${includeDir})
-endmacro()
-macro(ln_add_dependencies_common_property projectName)
-    set_target_properties(${projectName} PROPERTIES FOLDER "Dependencies")    # Visual Studio solution folder
-endmacro()
-macro(ln_mark_non_dependencies projectName)
-    set_target_properties(${projectName} PROPERTIES FOLDER "Dependencies")    # Visual Studio solution folder
-endmacro()
 
 if (MSVC)
     add_definitions("/wd4996")        # pragma warning disable
@@ -31,20 +20,13 @@ endif()
 
 #-------------------------------------------------------------------------------
 
-
-
-
 macro(ln_make_external_find_path varName projectDirName)
-    #if (LN_EMSCRIPTEN)
-        # reference to installed libs by "build.csproj"
-        #set(${varName} ${EMSCRIPTEN_ROOT_PATH}/system)
-    #else
     if(DEFINED LN_EXTERNAL_FIND_PATH_MODE)
         if (${LN_EXTERNAL_FIND_PATH_MODE} STREQUAL "build")
             set(${varName} ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/${projectDirName})
         endif()
     else()
-    set(${varName} ${LUMINO_ENGINE_ROOT}/lib/${LN_TARGET_ARCH})
+        set(${varName} ${LUMINO_ENGINE_ROOT}/lib/${LN_TARGET_ARCH}-${CMAKE_BUILD_TYPE})
     endif()
 endmacro()
 
@@ -65,9 +47,6 @@ endif()
 
 #--------------------------------------
 # glad
-#add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/glad)
-#set(LN_DEPENDENCIES_INCLUDE_DIRECTORIES ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} "${CMAKE_CURRENT_LIST_DIR}/glad/include")
-#ln_add_dependencies_common_property(glad)
 
 if (LN_OS_DESKTOP)# OR LN_EMSCRIPTEN)
 

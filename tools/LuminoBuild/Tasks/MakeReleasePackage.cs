@@ -15,7 +15,7 @@ namespace LuminoBuild.Tasks
         {
             var tempInstallDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir);
 
-            string targetRootDir = Path.Combine(builder.LuminoRootDir, builder.ReleasePackageName);
+            string targetRootDir = Path.Combine(builder.LuminoBuildDir, builder.LocalPackageName);
             Directory.CreateDirectory(targetRootDir);
 
             string nativeEngineRoot = Path.Combine(targetRootDir, "Engine", "Native");
@@ -150,16 +150,6 @@ namespace LuminoBuild.Tasks
                 Utils.CopyDirectory(
                     Path.Combine(builder.LuminoToolsDir, "LuminoCLI", "Templates", "NativeProject"),
                     Path.Combine(targetRootDir, "Tools", "Templates", "NativeProject"));
-            }
-
-            // zip
-            {
-                Utils.CreateZipFile(targetRootDir, Path.Combine(builder.LuminoBuildDir, builder.ReleasePackageName + ".zip"), true);
-            }
-
-            // Local package
-            {
-                Utils.CopyDirectory(targetRootDir, Path.Combine(builder.LuminoBuildDir, "LocalPackage"));
             }
         }
     }

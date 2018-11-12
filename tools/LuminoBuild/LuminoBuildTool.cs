@@ -37,6 +37,14 @@ namespace LuminoBuild
         public List<BuildTask> Tasks = new List<BuildTask>();
         public List<BuildRule> Rules = new List<BuildRule>();
 
+        public string LocalPackageName
+        {
+            get
+            {
+                return "LocalPackage";
+            }
+        }
+        
         public string ReleasePackageName
         {
             get
@@ -50,6 +58,7 @@ namespace LuminoBuild
                 return $"Lumino-{VersionString}-{targetEnvName}";
             }
         }
+
 
         public void DoTaskOrRule(string name)
         {

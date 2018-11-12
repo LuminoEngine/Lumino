@@ -1,4 +1,9 @@
 
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
+
 enable_language(CXX)
 set(CMAKE_CXX_STANDARD 14) # C++14...
 set(CMAKE_CXX_STANDARD_REQUIRED ON) #...is required...
@@ -11,13 +16,16 @@ endif()
 
 include(${LUMINO_ENGINE_ROOT}/lib/ImportExternalLibraries.cmake)
 
-if (DEFINED EMSCRIPTEN)
-	find_package(LuminoCore REQUIRED PATHS ${LUMINO_ENGINE_ROOT}/lib/Emscripten/cmake)
-	find_package(LuminoEngine REQUIRED PATHS ${LUMINO_ENGINE_ROOT}/lib/Emscripten/cmake)
-elseif (ANDROID_ABI)
-	find_package(LuminoCore REQUIRED PATHS ${LUMINO_ENGINE_ROOT}/lib/Android-${ANDROID_ABI}/cmake)
-	find_package(LuminoEngine REQUIRED PATHS ${LUMINO_ENGINE_ROOT}/lib/Android-${ANDROID_ABI}/cmake)
-endif()
+#if (DEFINED EMSCRIPTEN)
+#	find_package(LuminoCore REQUIRED PATHS ${LUMINO_ENGINE_ROOT}/lib/Emscripten/cmake)
+#	find_package(LuminoEngine REQUIRED PATHS ${LUMINO_ENGINE_ROOT}/lib/Emscripten/cmake)
+#elseif (ANDROID_ABI)
+#	find_package(LuminoCore REQUIRED PATHS ${LUMINO_ENGINE_ROOT}/lib/Android-${ANDROID_ABI}/cmake)
+#	find_package(LuminoEngine REQUIRED PATHS ${LUMINO_ENGINE_ROOT}/lib/Android-${ANDROID_ABI}/cmake)
+#endif()
+
+find_package(LuminoCore REQUIRED PATHS ${LUMINO_ENGINE_ROOT}/lib/${LN_TARGET_ARCH}-${CMAKE_BUILD_TYPE}/cmake)
+find_package(LuminoEngine REQUIRED PATHS ${LUMINO_ENGINE_ROOT}/lib/${LN_TARGET_ARCH}-${CMAKE_BUILD_TYPE}/cmake)
 
 function(ln_add_pch project_name header_file_path source_file_path)
 

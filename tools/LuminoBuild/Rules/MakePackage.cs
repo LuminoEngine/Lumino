@@ -33,7 +33,9 @@ namespace LuminoBuild.Rules
             builder.DoTask("BuildDocuments");
 
             builder.DoTask("MakeReleasePackage");
-            
+            builder.DoTask("CompressPackage");
+
+
             if (Utils.IsWin32)
             {
                 builder.DoTask("MakeNuGetPackage_Core");
