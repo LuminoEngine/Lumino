@@ -7,8 +7,10 @@ namespace detail {
 
 
 class AssetArchive
+    : public RefObject
 {
 public:
+    virtual bool existsFile(const StringRef& filePath) const = 0;
 	virtual Ref<Stream> openFileStream(const StringRef& filePath) = 0;
 };
 
@@ -57,9 +59,10 @@ class CryptedAssetArchiveReader
 public:
 	CryptedAssetArchiveReader();
     ~CryptedAssetArchiveReader();
-	bool open(const StringRef& filePath, const StringRef& password);
+	bool open(const StringRef& filePath, const StringRef& password, bool pathAsRawRelative);
 	void close();
 	size_t read(byte_t* data, size_t count, size_t dataOffset, size_t dataSize, size_t seekPoint);
+    virtual bool existsFile(const StringRef& filePath) const override;
 	virtual Ref<Stream> openFileStream(const StringRef& filePath) override;
 
 private:
@@ -71,7 +74,7 @@ private:
 	};
 
 	struct ComparePath {
-		bool operator()(const String& a, const String& b) const {
+		bool operator()(const Path& a, const Path& b) const {
 			return Path::compare(a, b) < 0;
 		}
 	};
@@ -82,7 +85,7 @@ private:
 	uint32_t m_keys[3];
 	Ref<FileStream> m_file;
 	Ref<BinaryReader> m_reader;
-	std::map<String, FileEntry, ComparePath> m_fileEntries;
+	std::map<Path, FileEntry, ComparePath> m_fileEntries;
 };
 
 class CryptedArchiveFileStream

@@ -36,7 +36,7 @@ TEST_F(Test_Asset_AssetArchive, CryptedAssetArchive)
 
 	{
 		detail::CryptedAssetArchiveReader ar;
-		ASSERT_EQ(true, ar.open(LN_TEMPFILE("test.lna"), u"pass"));
+		ASSERT_EQ(true, ar.open(LN_TEMPFILE("test.lna"), u"pass", true));
 		
 		byte_t buf[512];
 

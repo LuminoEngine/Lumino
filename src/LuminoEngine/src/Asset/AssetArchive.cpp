@@ -159,7 +159,7 @@ CryptedAssetArchiveReader::~CryptedAssetArchiveReader()
     close();
 }
 
-bool CryptedAssetArchiveReader::open(const StringRef& filePath, const StringRef& password)
+bool CryptedAssetArchiveReader::open(const StringRef& filePath, const StringRef& password, bool pathAsRawRelative)
 {
 	CryptedArchiveHelper::initKeys(password.toStdString().c_str(), m_keys);
 
@@ -214,11 +214,15 @@ bool CryptedAssetArchiveReader::open(const StringRef& filePath, const StringRef&
 			fe.dataSize = m_reader->readUInt32();
 
 			ln::Path path = ln::Path(String::fromStdString(readString(m_reader)));
-			ln::Path virtualFullPath = ln::Path(virtualDirFullPath, path).canonicalize();
 
-			//String relativePath = virtualDirFullPath.makeRelative(virtualFullPath);
+            if (pathAsRawRelative) {
+                ln::Path virtualFullPath = ln::Path(virtualDirFullPath, path).canonicalize().unify();
+                m_fileEntries.insert({ virtualFullPath, fe });
+            }
+            else {
+                m_fileEntries.insert({ path.unify(), fe });
+            }
 
-			m_fileEntries.insert({ virtualFullPath, fe});
 		}
 	}
 
@@ -271,10 +275,14 @@ size_t CryptedAssetArchiveReader::read(byte_t* data, size_t count, size_t dataOf
 	return totalSize;
 }
 
+bool CryptedAssetArchiveReader::existsFile(const StringRef& filePath) const
+{
+    return m_fileEntries.find(Path(filePath).unify()) != m_fileEntries.end();
+}
+
 Ref<Stream> CryptedAssetArchiveReader::openFileStream(const StringRef& filePath)
 {
-	auto path = Path(filePath).canonicalize();
-	auto itr = m_fileEntries.find(path);
+	auto itr = m_fileEntries.find(Path(filePath).unify());
 	if (itr != m_fileEntries.end()) {
 		return makeRef<CryptedArchiveFileStream>(this, itr->second.dataOffset, itr->second.dataSize);
 	}

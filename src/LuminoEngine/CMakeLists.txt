@@ -30,12 +30,14 @@ set(LN_SOURCES_Engine
 )
 
 set(LN_SOURCES_Platform
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/AndroidPlatformInterface.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/CocoaPlatformInterface.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/PlatformEvent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/PlatformSupport.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/PlatformWindow.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/Win32PlatformInterface.hpp
     src/Platform/Internal.hpp
+    src/Platform/AndroidPlatformInterface.cpp
     src/Platform/EmptyPlatformWindowManager.cpp
     src/Platform/EmptyPlatformWindowManager.hpp
     src/Platform/EmscriptenPlatformInterface.cpp

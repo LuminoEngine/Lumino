@@ -17,6 +17,8 @@ public:
 	void initialize(const Settings& settings);
 	void dispose();
 
+    void addAssetArchive(const StringRef& filePath);
+
 	bool existsFile(const StringRef& filePath) const;
 	Ref<Texture2D> loadTexture(const StringRef& filePath);
 
