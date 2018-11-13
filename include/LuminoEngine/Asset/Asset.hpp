@@ -7,6 +7,7 @@ namespace ln {
 class Asset
 {
 public:
+    static bool existsFile(const StringRef& filePath);
 };
 
 } // namespace ln

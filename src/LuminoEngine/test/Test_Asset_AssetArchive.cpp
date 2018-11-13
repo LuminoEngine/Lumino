@@ -1,4 +1,5 @@
 ﻿#include "Common.hpp"
+#include "../src/Asset/AssetManager.hpp"
 #include "../src/Asset/AssetArchive.hpp"
 
 class Test_Asset_AssetArchive : public ::testing::Test {};
@@ -36,7 +37,7 @@ TEST_F(Test_Asset_AssetArchive, CryptedAssetArchive)
 
 	{
 		detail::CryptedAssetArchiveReader ar;
-		ASSERT_EQ(true, ar.open(LN_TEMPFILE("test.lna"), u"pass", true));
+		ASSERT_EQ(true, ar.open(LN_TEMPFILE("test.lna"), u"pass", false));
 		
 		byte_t buf[512];
 
@@ -128,4 +129,12 @@ TEST_F(Test_Asset_AssetArchive, CryptedAssetArchive)
 			ASSERT_EQ(0, memcmp(tbuf, data5, 384));
 		}
 	}
+}
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Asset_AssetArchive, AddAssetArchive)
+{
+    detail::EngineDomain::assetManager()->addAssetArchive(LN_ASSETFILE("test.lca"), u"pass");
+    bool r = Asset::existsFile(u"data1");
+    printf("");
 }

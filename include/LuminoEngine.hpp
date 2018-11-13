@@ -49,6 +49,7 @@
 #include "LuminoEngine/UI/UIViewport.hpp"
 #include "LuminoEngine/UI/UISprite.hpp"
 
+#include "LuminoEngine/Asset/Asset.hpp"
 
 #ifdef LN_MSVC_AUTO_LINK_LIBRARIES
 #pragma comment(lib, "glfw3.lib")

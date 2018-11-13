@@ -10,8 +10,9 @@ class AssetArchive
     : public RefObject
 {
 public:
-    virtual bool existsFile(const StringRef& filePath) const = 0;
-	virtual Ref<Stream> openFileStream(const StringRef& filePath) = 0;
+    virtual void close() = 0;
+    virtual bool existsFile(const Path& unifiedFilePath) const = 0;
+	virtual Ref<Stream> openFileStream(const Path& unifiedFilePath) = 0;
 };
 
 
@@ -60,10 +61,10 @@ public:
 	CryptedAssetArchiveReader();
     ~CryptedAssetArchiveReader();
 	bool open(const StringRef& filePath, const StringRef& password, bool pathAsRawRelative);
-	void close();
+    virtual void close() override;
 	size_t read(byte_t* data, size_t count, size_t dataOffset, size_t dataSize, size_t seekPoint);
-    virtual bool existsFile(const StringRef& filePath) const override;
-	virtual Ref<Stream> openFileStream(const StringRef& filePath) override;
+    virtual bool existsFile(const Path& unifiedFilePath) const override;
+	virtual Ref<Stream> openFileStream(const Path& unifiedFilePath) override;
 
 private:
 	struct FileEntry

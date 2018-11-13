@@ -1,6 +1,7 @@
 
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/Texture.hpp>
+#include "AssetArchive.hpp"
 #include "AssetManager.hpp"
 
 namespace ln {
@@ -23,13 +24,33 @@ void AssetManager::initialize(const Settings& settings)
 
 void AssetManager::dispose()
 {
+    for (auto& archive : m_archives) {
+        archive->close();
+    }
+    m_archives.clear();
+}
+
+void AssetManager::addAssetArchive(const StringRef& filePath, const StringRef& password)
+{
+    auto archive = makeRef<CryptedAssetArchiveReader>();
+    bool result = archive->open(filePath, password, true);
+    if (LN_ENSURE(result)) return;
+    m_archives.add(archive);
 }
 
 bool AssetManager::existsFile(const StringRef& filePath) const
 {
-	// TODO: archive
+    auto unifiedFilePath = Path(filePath).unify();
+    for (auto& archive : m_archives) {
+        if (archive->existsFile(unifiedFilePath)) {
+            return true;
+        }
+    }
 
-	return FileSystem::existsFile(filePath);
+    // TODO: dummy archive
+
+    return FileSystem::existsFile(filePath);
+
 }
 
 Ref<Texture2D> AssetManager::loadTexture(const StringRef& filePath)

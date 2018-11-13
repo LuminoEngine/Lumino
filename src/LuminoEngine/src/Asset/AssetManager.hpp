@@ -3,6 +3,7 @@
 namespace ln {
 class Texture2D;
 namespace detail {
+class AssetArchive;
 
 class AssetManager
 	: public RefObject
@@ -17,7 +18,7 @@ public:
 	void initialize(const Settings& settings);
 	void dispose();
 
-    void addAssetArchive(const StringRef& filePath);
+    void addAssetArchive(const StringRef& filePath, const StringRef& password);
 
 	bool existsFile(const StringRef& filePath) const;
 	Ref<Texture2D> loadTexture(const StringRef& filePath);
@@ -25,6 +26,7 @@ public:
     Ref<Stream> openFileStream(const StringRef& filePath);
 
 private:
+    List<Ref<AssetArchive>> m_archives;
 };
 
 } // namespace detail
