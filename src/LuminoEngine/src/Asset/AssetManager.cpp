@@ -50,7 +50,14 @@ bool AssetManager::existsFile(const StringRef& filePath) const
     // TODO: dummy archive
 
     return FileSystem::existsFile(filePath);
+}
 
+Ref<ByteBuffer> AssetManager::readAllBytes(const StringRef& filePath)
+{
+	auto stream = openFileStream(filePath);
+	auto buffer = makeRef<ByteBuffer>(stream->length());
+	stream->read(buffer->data(), buffer->size());
+	return buffer;
 }
 
 Ref<Texture2D> AssetManager::loadTexture(const StringRef& filePath)
@@ -63,6 +70,14 @@ Ref<Texture2D> AssetManager::loadTexture(const StringRef& filePath)
 
 Ref<Stream> AssetManager::openFileStream(const StringRef& filePath)
 {
+	auto unifiedFilePath = Path(filePath).unify();
+	for (auto& archive : m_archives) {
+		auto stream = archive->openFileStream(unifiedFilePath);
+		if (stream) {
+			return stream;
+		}
+	}
+
     // TODO: archive
 
     return FileStream::create(filePath, FileOpenMode::Read);

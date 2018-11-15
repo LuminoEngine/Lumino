@@ -21,6 +21,7 @@ public:
     void addAssetArchive(const StringRef& filePath, const StringRef& password);
 
 	bool existsFile(const StringRef& filePath) const;
+	Ref<ByteBuffer> readAllBytes(const StringRef& filePath);
 	Ref<Texture2D> loadTexture(const StringRef& filePath);
 
     Ref<Stream> openFileStream(const StringRef& filePath);

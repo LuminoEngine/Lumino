@@ -26,7 +26,7 @@ TEST_F(Test_Asset_AssetArchive, CryptedAssetArchive)
 	FileSystem::writeAllBytes(LN_TEMPFILE("data5"), data5, LN_ARRAY_SIZE_OF(data5));
 
 	detail::CryptedAssetArchiveWriter aw;
-	aw.open(LN_TEMPFILE("test.lna"), u"pass");
+	aw.open(LN_TEMPFILE("test.lca"), u"pass");
 	aw.addFile(LN_TEMPFILE("data0"), u"data0");
 	aw.addFile(LN_TEMPFILE("data1"), u"data1");
 	aw.addFile(LN_TEMPFILE("data2"), u"data2");
@@ -37,7 +37,7 @@ TEST_F(Test_Asset_AssetArchive, CryptedAssetArchive)
 
 	{
 		detail::CryptedAssetArchiveReader ar;
-		ASSERT_EQ(true, ar.open(LN_TEMPFILE("test.lna"), u"pass", false));
+		ASSERT_EQ(true, ar.open(LN_TEMPFILE("test.lca"), u"pass", false));
 		
 		byte_t buf[512];
 
@@ -135,6 +135,10 @@ TEST_F(Test_Asset_AssetArchive, CryptedAssetArchive)
 TEST_F(Test_Asset_AssetArchive, AddAssetArchive)
 {
     detail::EngineDomain::assetManager()->addAssetArchive(LN_ASSETFILE("test.lca"), u"pass");
-    bool r = Asset::existsFile(u"data1");
-    printf("");
+	ASSERT_EQ(false, Asset::existsFile(u"dataX"));
+	ASSERT_EQ(true, Asset::existsFile(u"data1"));
+
+	auto buf = Asset::readAllBytes(u"data1");
+	ASSERT_EQ(1, buf->size());
+	ASSERT_EQ(0, buf->data()[0]);
 }
