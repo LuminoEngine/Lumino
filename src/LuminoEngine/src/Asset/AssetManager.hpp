@@ -21,12 +21,16 @@ public:
     void addAssetArchive(const StringRef& filePath, const StringRef& password);
 
 	bool existsFile(const StringRef& filePath) const;
+    Ref<Stream> openFileStream(const StringRef& filePath);
 	Ref<ByteBuffer> readAllBytes(const StringRef& filePath);
 	Ref<Texture2D> loadTexture(const StringRef& filePath);
 
-    Ref<Stream> openFileStream(const StringRef& filePath);
 
 private:
+	bool existsFileInternal(const StringRef& filePath, const Char** exts, int extsCount) const;
+	Ref<Stream> openFileStreamInternal(const StringRef& filePath, const Char** exts, int extsCount);
+	void makeFindPaths(const StringRef& filePath, const Char** exts, int extsCount, List<Path>* paths) const;
+
     List<Ref<AssetArchive>> m_archives;
 };
 

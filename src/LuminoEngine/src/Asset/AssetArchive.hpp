@@ -71,7 +71,6 @@ private:
 	{
 		uint32_t dataOffset;
 		uint32_t dataSize;
-		//String relativePath;
 	};
 
 	struct ComparePath {

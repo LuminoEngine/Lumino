@@ -39,9 +39,7 @@ void CryptedArchiveHelper::encrypt128(const uint32_t* keys, byte_t* data)
 		byte_t t = ccbyte(localKeys);
 		shiftKey(localKeys, data[i]);
 		data[i] = t ^ data[i];
-		//data[i] = data[i] ^ ccbyte(keys, i);
 	}
-	//(t=decrypt_byte(pkeys,pcrc_32_tab), update_keys(pkeys,pcrc_32_tab,c), t^(c))
 }
 
 void CryptedArchiveHelper::decrypt128(const uint32_t* keys, byte_t* data)
