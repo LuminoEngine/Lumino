@@ -2,6 +2,7 @@
 
 namespace ln {
 class Texture2D;
+class Shader;
 namespace detail {
 class AssetArchive;
 
@@ -24,6 +25,7 @@ public:
     Ref<Stream> openFileStream(const StringRef& filePath);
 	Ref<ByteBuffer> readAllBytes(const StringRef& filePath);
 	Ref<Texture2D> loadTexture(const StringRef& filePath);
+    Ref<Shader> loadShader(const StringRef& filePath);
 
 
 private:

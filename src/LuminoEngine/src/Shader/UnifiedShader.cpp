@@ -151,10 +151,9 @@ bool UnifiedShader::save(const Path& filePath)
 	return true;
 }
 
-bool UnifiedShader::load(const Path& filePath)
+bool UnifiedShader::load(Stream* stream)
 {
-	auto file = FileStream::create(filePath, FileOpenMode::Read);
-	auto reader = ln::makeRef<BinaryReader>(file);
+	auto reader = ln::makeRef<BinaryReader>(stream);
 
 	int fileVersion = 0;
 

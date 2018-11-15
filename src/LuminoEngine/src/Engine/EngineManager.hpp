@@ -90,6 +90,7 @@ public:
 
 	const Ref<UIFrameWindow>& mainWindow() const { return m_mainWindow; }
     const Ref<UIViewport>& mainViewport() const { return m_mainViewport; }
+    const Ref<Camera>& mainCamera() const { return m_mainCamera; }
 
 private:
 	virtual bool onPlatformEvent(const PlatformEventArgs& e) override;

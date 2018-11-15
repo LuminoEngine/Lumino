@@ -3,7 +3,7 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
-#include <LuminoEngine/Rendering/ToneImageEffect.hpp>
+#include <LuminoEngine/ImageEffect/ToneImageEffect.hpp>
 
 namespace ln {
 

@@ -30,6 +30,7 @@ public:
 	static GraphicsContext* graphicsContext();
 	static UIFrameWindow* mainWindow();
     static UIViewport* mainViewport();
+    //static UIViewport* mainCamera();
 
 };
 

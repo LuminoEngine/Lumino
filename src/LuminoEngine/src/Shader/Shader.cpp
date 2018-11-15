@@ -204,45 +204,8 @@ void Shader::initialize(const StringRef& hlslEffectFilePath, ShaderCompilationPr
 
 	if (Path(hlslEffectFilePath).hasExtension(detail::UnifiedShader::FileExt))
 	{
-		detail::UnifiedShader unifiedShader(localDiag);
-		if (unifiedShader.load(hlslEffectFilePath))
-		{
-			for (int iTech = 0; iTech < unifiedShader.techniqueCount(); iTech++)
-			{
-				detail::UnifiedShader::TechniqueId techId = unifiedShader.techniqueId(iTech);
-				auto tech = newObject<ShaderTechnique>(String::fromStdString(unifiedShader.techniqueName(techId)));
-				tech->setOwner(this);
-				m_techniques.add(tech);
-
-				for (int iPass = 0; iPass < unifiedShader.passCount(); iPass++)
-				{
-					detail::UnifiedShader::PassId passId = unifiedShader.passId(iPass);
-					detail::UnifiedShader::CodeContainerId vscodeId = unifiedShader.vertexShader(passId);
-					detail::UnifiedShader::CodeContainerId pscodeId = unifiedShader.pixelShader(passId);
-
-					const std::string* vscode = nullptr;
-					const std::string* pscode = nullptr;
-					if (vscodeId) {
-						vscode = &unifiedShader.getCode(vscodeId, detail::CodeKind::Glsl);
-					}
-					if (pscodeId) {
-						pscode = &unifiedShader.getCode(pscodeId, detail::CodeKind::Glsl);
-					}
-
-					auto rhiPass = createRHIShaderPass(
-						(vscode) ? vscode->c_str() : nullptr, (vscode) ? vscode->length() : 0,
-						(pscode) ? pscode->c_str() : nullptr, (pscode) ? pscode->length() : 0,
-						localDiag);
-					if (rhiPass)
-					{
-						auto pass = newObject<ShaderPass>(rhiPass);
-						pass->m_renderState = unifiedShader.renderState(passId);
-						tech->addShaderPass(pass);
-						pass->setupParameters();
-					}
-				}
-			}
-		}
+        auto file = FileStream::create(hlslEffectFilePath, FileOpenMode::Read);
+        createFromUnifiedShader(file, localDiag);
 	}
 	else
 	{
@@ -326,6 +289,65 @@ void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& 
 			LN_LOG_WARNING << localDiag->toString();
 		}
 	}
+}
+
+void Shader::initialize(Stream* stream)
+{
+    Shader::initialize();
+    Ref<DiagnosticsManager> localDiag = newObject<DiagnosticsManager>();
+
+    createFromUnifiedShader(stream, localDiag);
+
+    if (localDiag->hasError()) {
+        LN_ERROR(localDiag->toString());
+        return;
+    }
+    else if (localDiag->hasWarning()) {
+        LN_LOG_WARNING << localDiag->toString(); 
+    }
+}
+
+void Shader::createFromUnifiedShader(Stream* stream, DiagnosticsManager* diag)
+{
+    detail::UnifiedShader unifiedShader(diag);
+    if (unifiedShader.load(stream))
+    {
+        for (int iTech = 0; iTech < unifiedShader.techniqueCount(); iTech++)
+        {
+            detail::UnifiedShader::TechniqueId techId = unifiedShader.techniqueId(iTech);
+            auto tech = newObject<ShaderTechnique>(String::fromStdString(unifiedShader.techniqueName(techId)));
+            tech->setOwner(this);
+            m_techniques.add(tech);
+
+            for (int iPass = 0; iPass < unifiedShader.passCount(); iPass++)
+            {
+                detail::UnifiedShader::PassId passId = unifiedShader.passId(iPass);
+                detail::UnifiedShader::CodeContainerId vscodeId = unifiedShader.vertexShader(passId);
+                detail::UnifiedShader::CodeContainerId pscodeId = unifiedShader.pixelShader(passId);
+
+                const std::string* vscode = nullptr;
+                const std::string* pscode = nullptr;
+                if (vscodeId) {
+                    vscode = &unifiedShader.getCode(vscodeId, detail::CodeKind::Glsl);
+                }
+                if (pscodeId) {
+                    pscode = &unifiedShader.getCode(pscodeId, detail::CodeKind::Glsl);
+                }
+
+                auto rhiPass = createRHIShaderPass(
+                    (vscode) ? vscode->c_str() : nullptr, (vscode) ? vscode->length() : 0,
+                    (pscode) ? pscode->c_str() : nullptr, (pscode) ? pscode->length() : 0,
+                    diag);
+                if (rhiPass)
+                {
+                    auto pass = newObject<ShaderPass>(rhiPass);
+                    pass->m_renderState = unifiedShader.renderState(passId);
+                    tech->addShaderPass(pass);
+                    pass->setupParameters();
+                }
+            }
+        }
+    }
 }
 
 void Shader::dispose()

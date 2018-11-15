@@ -27,7 +27,7 @@ public:
 	virtual ~UnifiedShader();
 
 	bool save(const Path& filePath);
-	bool load(const Path& filePath);
+	bool load(Stream* stream);
 
 	bool addCodeContainer(const std::string& entryPointName, CodeContainerId* outId);
 	void setCode(CodeContainerId container, CodeKind kind, const std::string& code);

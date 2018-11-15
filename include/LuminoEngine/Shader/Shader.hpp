@@ -88,11 +88,13 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 	void initialize(const StringRef& hlslEffectFilePath, ShaderCompilationProperties* properties = nullptr);
 	void initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCodeType codeType, ShaderCompilationProperties* properties = nullptr);
+    void initialize(Stream* stream);
 	virtual void dispose() override;
 
 	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
 
 private:
+    void createFromUnifiedShader(Stream* stream, DiagnosticsManager* diag);
 	Ref<detail::IShaderPass> createShaderPass(
 		const char* vsData, size_t vsLen, const char* vsEntryPoint,
 		const char* psData, size_t psLen, const char* psEntryPoint,

@@ -5,7 +5,7 @@
 #include <LuminoEngine/UI/UIViewport.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include "../Graphics/GraphicsManager.hpp"
-#include "../Rendering/ImageEffectRenderer.hpp"
+#include "../ImageEffect/ImageEffectRenderer.hpp"
 #include "UIManager.hpp"
 
 namespace ln {

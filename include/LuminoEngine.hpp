@@ -37,7 +37,9 @@
 #include "LuminoEngine/Rendering/RenderFeature.hpp"
 #include "LuminoEngine/Rendering/RenderingContext.hpp"
 
-#include "LuminoEngine/Rendering/ToneImageEffect.hpp"
+#include "LuminoEngine/ImageEffect/ImageEffect.hpp"
+#include "LuminoEngine/ImageEffect/ToneImageEffect.hpp"
+#include "LuminoEngine/ImageEffect/ScreenBlurImageEffect.hpp"
 
 #include "LuminoEngine/Visual/LightComponent.hpp"
 #include "LuminoEngine/Visual/SpriteComponent.hpp"

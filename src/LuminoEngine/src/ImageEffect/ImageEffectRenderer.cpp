@@ -1,11 +1,11 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
-#include <LuminoEngine/Rendering/ImageEffect.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/ImageEffect/ImageEffect.hpp>
 #include "ImageEffectRenderer.hpp"
-#include "RenderingManager.hpp"
-#include "RenderTargetTextureCache.hpp"
+#include "../Rendering/RenderTargetTextureCache.hpp"
+#include "../Rendering/RenderingManager.hpp"
 
 namespace ln {
 namespace detail {

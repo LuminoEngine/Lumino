@@ -3,15 +3,15 @@
 
 namespace ln {
 
-class ScreenMotionBlurImageEffect
+class ScreenBlurImageEffect
 	: public ImageEffect
 {
 protected:
     virtual void onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 LN_CONSTRUCT_ACCESS:
-    ScreenMotionBlurImageEffect();
-	virtual ~ScreenMotionBlurImageEffect();
+    ScreenBlurImageEffect();
+	virtual ~ScreenBlurImageEffect();
 	void initialize();
 
 private:

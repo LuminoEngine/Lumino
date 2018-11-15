@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include "../../LuminoCore/src/IO/PathHelper.hpp"
 #include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoEngine/Shader/Shader.hpp>
 #include "AssetArchive.hpp"
 #include "AssetManager.hpp"
 
@@ -82,6 +83,22 @@ Ref<Texture2D> AssetManager::loadTexture(const StringRef& filePath)
 
 	auto ref = newObject<Texture2D>(filePath, TextureFormat::RGBA32, true);
 	return ref;
+}
+
+Ref<Shader> AssetManager::loadShader(const StringRef& filePath)
+{
+    static const Char* exts[] = {
+        u"lcfx",
+        u"fx",
+    };
+
+    auto stream = openFileStreamInternal(filePath, exts, LN_ARRAY_SIZE_OF(exts));
+    if (LN_ENSURE_IO(stream, filePath)) return nullptr;
+
+    // TODO: cache
+
+    auto ref = newObject<Shader>(stream);
+    return ref;
 }
 
 bool AssetManager::existsFileInternal(const StringRef& filePath, const Char** exts, int extsCount) const

@@ -21,6 +21,9 @@ enum class BuiltinShader
 	DepthPrepass,
 	ShadowCaster,
 	//LegacyDiffuse,		// Lambert Shading
+
+    ScreenBlurImageEffect,
+    ToneImageEffect,
 };
 
 
