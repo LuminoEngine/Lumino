@@ -723,10 +723,21 @@ void OpenGLDeviceContext::onPresent(ISwapChain* swapChain)
 
     SizeI bufferSize = s->getColorBuffer()->realSize();
 
+
+
 	// SwapChain の Framebuffer をウィンドウのバックバッファへ転送
     {
         GL_CHECK(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, s->defaultFBO()));
         GL_CHECK(glBindFramebuffer(GL_READ_FRAMEBUFFER, s->fbo()));
+
+        LN_LOG_INFO << endpointSize.width << ", " << endpointSize.height << ":" << bufferSize.width << ", " << bufferSize.height;
+
+        // FIXME:
+        // Viewport を転送元に合わせないと、転送先全体に拡大してBlitできなかった。
+        // ちょっと腑に落ちないが・・・。
+        GL_CHECK(glDisable(GL_SCISSOR_TEST));
+        GL_CHECK(glScissor(0, 0, bufferSize.width, bufferSize.height));
+        GL_CHECK(glViewport(0, 0, bufferSize.width, bufferSize.height));
 
         //// 現在のフレームバッファにアタッチされているカラーバッファのレンダーバッファ名を取得
         //GLint colorBufferName = 0;

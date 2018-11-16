@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 namespace ln {
+class TypeInfo;
 
 #define LN_OBJECT
 #ifndef LN_CONSTRUCT_ACCESS
@@ -46,6 +47,10 @@ public:
 	 * @attention このメソッドは virtual です。RAII の実装を目的としてデストラクタで呼び出すことはできません。代わりに finalize() からコールされます。
 	 */
 	virtual void dispose();
+
+private:
+    virtual TypeInfo* _lnref_getThisTypeInfo() const;
+    friend TypeInfo;
 };
 
 class ObjectHelper

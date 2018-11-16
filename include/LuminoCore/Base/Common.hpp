@@ -217,6 +217,10 @@ enum class StringSplitOptions
 #define LN_ARRAY_SIZE_OF(ary) ( sizeof(ary) / sizeof( ary[0] ) )
 #endif
 
+#ifndef LN_MEMBER_OFFSETOF
+#define LN_MEMBER_OFFSETOF(type, member) (reinterpret_cast<std::size_t>(&reinterpret_cast<char const volatile&>(((type*)0)->member)))
+#endif
+
 //------------------------------------------------------------------------------
 #include <stdint.h>
 

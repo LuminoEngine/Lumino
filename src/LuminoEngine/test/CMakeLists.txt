@@ -6,6 +6,7 @@ set(LN_SOURCES
 	Common.hpp
 	Main.cpp
 	Test_Asset_AssetArchive.cpp
+	Test_Engine_Object.cpp
 	Test_Graphics_Bitmap.cpp
 	Test_Graphics_HlslEffect.cpp
 	Test_Graphics_LowLevelRendering.cpp
