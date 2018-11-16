@@ -124,7 +124,7 @@ void EngineManager::initializeAllManagers()
 	initializePlatformManager();
 	initializeAnimationManager();
 	initializeInputManager();
-	initializeAudioManager();
+	//initializeAudioManager();
 	initializePhysicsManager();
 	initializeShaderManager();
 	initializeGraphicsManager();
@@ -278,6 +278,10 @@ void EngineManager::initializeAssetManager()
 
         m_assetManager = ln::makeRef<AssetManager>();
         m_assetManager->initialize(settings);
+
+        for (auto& e : m_settings.assetArchives) {
+            m_assetManager->addAssetArchive(e.filePath, e.password);
+        }
     }
 }
 

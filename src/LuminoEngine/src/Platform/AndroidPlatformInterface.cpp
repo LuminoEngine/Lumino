@@ -1,8 +1,12 @@
 ﻿
 #if defined(__ANDROID__)
+#include "Internal.hpp"
+#include <LuminoEngine/Engine/Engine.hpp>
 #include <LuminoEngine/Engine/Application.hpp>
 #include <LuminoEngine/Graphics/SwapChain.hpp>
 #include <LuminoEngine/Platform/AndroidPlatformInterface.hpp>
+#include <LuminoEngine/UI/UIFrameWindow.hpp>
+#include "../Engine/EngineManager.hpp"
 
 extern "C" ::ln::Application* LuminoCreateApplicationInstance();
 
@@ -15,7 +19,7 @@ void AndroidPlatformInterface::initialize(int viewWidth, int viewHeight)
     ln::GlobalLogger::addLogcatAdapter();
     g_app = ::LuminoCreateApplicationInstance();
     ln::detail::ApplicationHelper::initialize(g_app);
-    ln::detail::SwapChainHelper::setBackendBufferSize(ln::Engine::mainWindow()->swapChain(), width, height);
+    ln::detail::SwapChainHelper::setBackendBufferSize(ln::Engine::mainWindow()->swapChain(), viewWidth, viewHeight);
 }
 
 void AndroidPlatformInterface::finalize()
@@ -30,8 +34,9 @@ void AndroidPlatformInterface::updateFrame()
     ln::detail::ApplicationHelper::processTick(g_app);
 }
 
-void AndroidPlatformInterface::addAssetArchive(const ln::String& fileFullPath)
+void AndroidPlatformInterface::addAssetArchive(const ln::StringRef& fileFullPath, const ln::StringRef& password)
 {
+    detail::EngineDomain::engineManager()->settings().assetArchives.add({ fileFullPath, password });
 }
 
 } // namespace ln

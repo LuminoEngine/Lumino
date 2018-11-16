@@ -29,12 +29,18 @@ class VisualManager;
 class SceneManager;
 class UIManager;
 
+struct EngineSettingsAssetArchiveEntry
+{
+    Path filePath;
+    String password;    // TODO: 平文保持はよくない。MD5
+};
 
 struct EngineSettings
 {
 	SizeI mainWindowSize = SizeI(640, 480);
 	SizeI mainBackBufferSize = SizeI(640, 480);
 	String mainWindowTitle = _T("Lumino");
+    List<EngineSettingsAssetArchiveEntry> assetArchives;
 };
 
 class EngineManager

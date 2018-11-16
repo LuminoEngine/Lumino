@@ -6,13 +6,21 @@
 int ArchiveCommand::execute(Project* project)
 {
     ln::detail::CryptedAssetArchiveWriter writer;
-    writer.open(ln::Path(project->buildDir(), u"Assets.lca"), u"pass");
+    auto outputFilePath = ln::Path(project->buildDir(), u"Assets.lca");
+    writer.open(outputFilePath, u"j7OeF8Hh");
 
     for (auto& file : ln::FileSystem::getFiles(project->assetsDir(), ln::StringRef(), ln::SearchOption::Recursive)) {
-        writer.addFile(file, project->assetsDir().makeRelative(file));
+        if (file.hasExtension(".fx")) {
+            // ignore
+        }
+        else {
+            writer.addFile(file, project->assetsDir().makeRelative(file));
+        }
     }
 
     writer.close();
+
+    CLI::info(u"Compilation succeeded; see " + outputFilePath);
 
     return 0;
 }

@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Common.hpp"
+#include "GeometryStructs.hpp"
 
 namespace ln {
 class VertexDeclaration;

@@ -49,7 +49,7 @@ static void readOptionalBool(BinaryReader* r, Optional<bool>* outValue)
 //=============================================================================
 // UnifiedShader
 
-const String UnifiedShader::FileExt = u"lufx";
+const String UnifiedShader::FileExt = u"lcfx";
 
 UnifiedShader::UnifiedShader(DiagnosticsManager* diag)
 	: m_diag(diag)

@@ -88,8 +88,8 @@ Ref<Texture2D> AssetManager::loadTexture(const StringRef& filePath)
 Ref<Shader> AssetManager::loadShader(const StringRef& filePath)
 {
     static const Char* exts[] = {
-        u"lcfx",
-        u"fx",
+        u".lcfx",
+        u".fx",
     };
 
     auto stream = openFileStreamInternal(filePath, exts, LN_ARRAY_SIZE_OF(exts));
