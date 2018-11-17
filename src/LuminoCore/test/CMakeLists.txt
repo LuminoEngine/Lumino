@@ -16,6 +16,7 @@ set(LN_SOURCES
 	Test_Base_RefObject.cpp
 	Test_Base_String.cpp
 	Test_Base_StringRef.cpp
+	Test_Base_Variant.cpp
 	Test_IO_BinaryReader.cpp
 	Test_IO_CommandLineParser.cpp
 	Test_IO_FileStream.cpp

@@ -72,11 +72,11 @@ enum class PropertySetSource
     ::ln::TypeInfo* classType::_lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); }
 
 #define LN_PROPERTY_DECLARE(valueType, propertyName) \
-    static const ::ln::Ref<::ln::PropertyInfo> propertyName##Id;
+    static const ::ln::Ref<::ln::PropertyInfo> propertyName##PropertyId;
     //static const ::ln::PropertyInfo* propertyName##Id;
 
 #define LN_PROPERTY_IMPLEMENT(classType, propertyName, member, metadata) \
-    const ::ln::Ref<::ln::PropertyInfo> classType::propertyName##Id = ::ln::makeRef<::ln::PropertyInfo>( \
+    const ::ln::Ref<::ln::PropertyInfo> classType::propertyName##PropertyId = ::ln::makeRef<::ln::PropertyInfo>( \
         ::ln::TypeInfo::getTypeInfo<classType>(), \
         [](Object* obj) -> PropertyBase* { return &static_cast<classType*>(obj)->member; }, \
         metadata);
@@ -95,18 +95,33 @@ public:
     {
     }
 
+    std::pair<Ref<Object>, PropertyBase*> resolve()
+    {
+        auto ptr = m_propOwner.resolve();
+        if (ptr != nullptr) {
+            return { ptr, m_prop };
+        }
+        else {
+            return std::pair<Ref<Object>, PropertyBase*>();
+        }
+    }
+
     template<typename TValue>
     void setTypedValue(const TValue& value)
     {
         auto ptr = m_propOwner.resolve();
-        if (ptr != nullptr) m_prop->set(value);
+        if (ptr != nullptr) {
+            static_cast<Property<TValue>*>(m_prop)->set(value);
+        }
     }
 
     template<typename TValue>
     const TValue& getTypedValue() const
     {
         auto ptr = m_propOwner.resolve();
-        if (ptr != nullptr) return m_prop->get();
+        if (ptr != nullptr) {
+            return static_cast<Property<TValue>*>(m_prop)->get();
+        }
         LN_ERROR();
         return TValue();
     }
@@ -292,7 +307,7 @@ public:
 
     virtual Variant getValue() const override
     {
-        return Variant(m_value);
+        return Variant(get());
     }
 
     /** プロパティのローカル値を設定します。*/
