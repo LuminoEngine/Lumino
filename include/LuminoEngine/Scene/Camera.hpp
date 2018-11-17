@@ -17,6 +17,12 @@ public:
     /** 既定の設定で Camera を作成します。 */
     static Ref<Camera> create();
 
+    /** Y 方向視野角の設定 */
+    void setFovY(float value) { m_component->setFovY(value); }
+
+    /** Y 方向視野角の取得 */
+    float fovY() const { return m_component->getFovY(); }
+
     /** 最も近いビュープレーン位置を設定します。(0 は無効値です) */
     void setNearClip(float value) { m_component->setNearClip(value); }
 

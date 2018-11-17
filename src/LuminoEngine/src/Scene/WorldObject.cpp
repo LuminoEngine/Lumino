@@ -93,6 +93,11 @@ void WorldObject::initialize()
 	}
 }
 
+void WorldObject::lookAt(const Vector3& target, const Vector3& up)
+{
+    m_transform->lookAt(target, up);
+}
+
 void WorldObject::addComponent(Component* component)
 {
     component->m_object = this;
