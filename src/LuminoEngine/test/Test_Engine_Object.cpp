@@ -6,7 +6,7 @@ class Test_Engine_Object : public ::testing::Test {};
 class TestObjectA
     : public Object
 {
-    LN_OBJECT2;
+    LN_OBJECT;
 public:
     LN_PROPERTY_DECLARE(int, Prop1);
 
@@ -23,7 +23,7 @@ private:
     Property<int> m_prop1;
 };
 
-LN_OBJECT2_IMPLEMENT(TestObjectA, Object);
+LN_OBJECT_IMPLEMENT(TestObjectA, Object);
 LN_PROPERTY_IMPLEMENT(TestObjectA, Prop1, m_prop1, PropertyMetadata(TestObjectA::onProp1Changed));
 
 void TestObjectA::initialize()
@@ -40,24 +40,16 @@ void TestObjectA::onProp1Changed(Object* obj)
 class TestObjectB
     : public Object
 {
-    LN_OBJECT2;
+    LN_OBJECT;
 public:
 };
 
-//LN_OBJECT2_IMPLEMENT(TestObjectB, Object);
-TypeInfo* TestObjectB::_lnref_getTypeInfo()
-{
-    static TypeInfo typeInfo("TestObjectB", ::ln::TypeInfo::getTypeInfo<Object>());
-    return &typeInfo;
-}
-::ln::TypeInfo* TestObjectB::_lnref_getThisTypeInfo() const {
-    return _lnref_getTypeInfo(); }
-
+LN_OBJECT_IMPLEMENT(TestObjectB, Object);
 
 class TestObjectC
     : public Object
 {
-    LN_OBJECT2;
+    LN_OBJECT;
 public:
     LN_PROPERTY_DECLARE(int, V1);
     LN_PROPERTY_DECLARE(TestObjectA*, V2);
@@ -89,7 +81,7 @@ public:
     static void onV4Changed(Object* obj) { static_cast<TestObjectC*>(obj)->m_lastChangedProp = V4PropertyId; }
 };
 
-LN_OBJECT2_IMPLEMENT(TestObjectC, Object);
+LN_OBJECT_IMPLEMENT(TestObjectC, Object);
 LN_PROPERTY_IMPLEMENT(TestObjectC, V1, m_V1, PropertyMetadata(onV1Changed));
 LN_PROPERTY_IMPLEMENT(TestObjectC, V2, m_V2, PropertyMetadata(onV2Changed));
 //LN_PROPERTY_IMPLEMENT(TestObjectC, V3, m_V3, PropertyMetadata(onV3Changed));

@@ -82,6 +82,7 @@ public:
 
 	EngineSettings& settings() { return m_settings; }
 	const Ref<PlatformManager>& platformManager() const { return m_platformManager; }
+    const Ref<AnimationManager>& animationManager() const { return m_animationManager; }
 	const Ref<InputManager>& inputManager() const { return m_inputManager; }
 	const Ref<AudioManager>& audioManager() const { return m_audioManager; }
 	const Ref<ShaderManager>& shaderManager() const { return m_shaderManager; }
@@ -104,7 +105,7 @@ private:
 	EngineSettings m_settings;
 
 	Ref<PlatformManager>				m_platformManager;
-	//Ref<AnimationManager>			m_animationManager;
+	Ref<AnimationManager>			m_animationManager;
 	Ref<InputManager>				m_inputManager;
 	Ref<AudioManager>				m_audioManager;
 	//Ref<PhysicsManager>		m_physicsManager;

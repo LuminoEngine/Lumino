@@ -11,6 +11,7 @@
 #include "../Rendering/RenderTargetTextureCache.hpp"
 
 #include "../Platform/PlatformManager.hpp"
+#include "../Animation/AnimationManager.hpp"
 #include "../Input/InputManager.hpp"
 #include "../Audio/AudioManager.hpp"
 #include "../Shader/ShaderManager.hpp"
@@ -115,6 +116,7 @@ void EngineManager::dispose()
 	if (m_graphicsManager) m_graphicsManager->dispose();
 	if (m_audioManager) m_audioManager->dispose();
 	if (m_inputManager) m_inputManager->dispose();
+    if (m_animationManager) m_animationManager->dispose();
 	if (m_platformManager) m_platformManager->dispose();
 }
 
@@ -167,6 +169,12 @@ void EngineManager::initializePlatformManager()
 
 void EngineManager::initializeAnimationManager()
 {
+    if (!m_animationManager)
+    {
+        AnimationManager::Settings settings;
+        m_animationManager = ln::makeRef<AnimationManager>();
+        m_animationManager->initialize(settings);
+    }
 }
 
 void EngineManager::initializeInputManager()

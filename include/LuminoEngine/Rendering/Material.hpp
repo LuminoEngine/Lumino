@@ -227,7 +227,7 @@ private:
 class PhongMaterial
 	: public AbstractMaterial
 {
-	LN_OBJECT;
+	//LN_OBJECT;
 public:
 	static const String DiffuseParameterName;
 	static const String AmbientParameterName;

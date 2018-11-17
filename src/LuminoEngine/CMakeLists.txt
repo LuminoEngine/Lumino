@@ -64,6 +64,19 @@ set(LN_SOURCES_Grammar
     src/Grammar/Token.hpp
 )
 
+set(LN_SOURCES_Animation
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/AnimationClock.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/AnimationCurve.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/AnimationTrack.hpp
+    src/Animation/Internal.hpp
+    src/Animation/AnimationClock.cpp
+    src/Animation/AnimationCurve.cpp
+    src/Animation/AnimationManager.cpp
+    src/Animation/AnimationManager.hpp
+    src/Animation/AnimationTrack.cpp
+)
+
 set(LN_SOURCES_Input
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Input/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Input/Input.hpp
@@ -356,6 +369,7 @@ source_group("Engine"    FILES ${LN_SOURCES_Engine})
 source_group("Platform"  FILES ${LN_SOURCES_Platform})
 source_group("Input"     FILES ${LN_SOURCES_Input})
 source_group("Grammar"   FILES ${LN_SOURCES_Grammar})
+source_group("Animation" FILES ${LN_SOURCES_Animation})
 source_group("Audio"     FILES ${LN_SOURCES_Audio})
 source_group("Graphics"  FILES ${LN_SOURCES_Graphics})
 source_group("Shader"    FILES ${LN_SOURCES_Shader})
@@ -363,7 +377,7 @@ source_group("Font"      FILES ${LN_SOURCES_Font})
 source_group("Mesh"      FILES ${LN_SOURCES_Mesh})
 source_group("Rendering" FILES ${LN_SOURCES_Rendering})
 source_group("ImageEffect" FILES ${LN_SOURCES_ImageEffect})
-source_group("Asset"     FILES ${LN_SOURCES_Asset})
+source_group("Asset"	 FILES ${LN_SOURCES_Asset})
 source_group("Scene"     FILES ${LN_SOURCES_Scene})
 source_group("Visual"    FILES ${LN_SOURCES_Visual})
 source_group("UI"        FILES ${LN_SOURCES_UI})
@@ -375,6 +389,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Engine}
     ${LN_SOURCES_Platform}
     ${LN_SOURCES_Grammar}
+    ${LN_SOURCES_Animation}
     ${LN_SOURCES_Input}
 	${LN_SOURCES_Audio}
     ${LN_SOURCES_Graphics}

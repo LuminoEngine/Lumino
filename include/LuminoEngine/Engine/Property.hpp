@@ -58,19 +58,6 @@ enum class PropertySetSource
     ByAnimation = 3,
 };
 
-#define LN_OBJECT2 \
-    friend class ::ln::TypeInfo; \
-    static TypeInfo* _lnref_getTypeInfo(); \
-    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override;
-
-#define LN_OBJECT2_IMPLEMENT(classType, baseclassType) \
-    TypeInfo* classType::_lnref_getTypeInfo() \
-    { \
-        static TypeInfo typeInfo(#classType, ::ln::TypeInfo::getTypeInfo<baseclassType>()); \
-        return &typeInfo; \
-    } \
-    ::ln::TypeInfo* classType::_lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); }
-
 #define LN_PROPERTY_DECLARE(valueType, propertyName) \
     static const ::ln::Ref<::ln::PropertyInfo> propertyName##PropertyId;
     //static const ::ln::PropertyInfo* propertyName##Id;
@@ -150,43 +137,7 @@ private:
 
 
 
-class TypeInfo
-    : public RefObject
-{
-public:
-    TypeInfo(const char* className, TypeInfo* baseType)
-        : m_name(className)
-        , m_baseType(baseType)
-    {}
 
-    /** クラス名を取得します。 */
-    const String& name() const { return m_name; }
-
-    /** ベースクラスの型情報を取得します。 */
-    TypeInfo* baseType() const { return m_baseType; }
-
-    void registerProperty(PropertyInfo* prop);
-    const List<PropertyInfo*>& properties() const { return m_properties; }
-
-    /** 型引数に指定したクラス型の型情報を取得します。 */
-    template<class T>
-    static TypeInfo* getTypeInfo()
-    {
-        return T::_lnref_getTypeInfo();
-    }
-
-    static TypeInfo* getTypeInfo(const Object* obj)
-    {
-        return obj->_lnref_getThisTypeInfo();
-    }
-
-    static void initializeObjectProperties(Object* obj);
-
-private:
-    String m_name;
-    TypeInfo* m_baseType;
-    List<PropertyInfo*> m_properties;
-};
 
 class PropertyMetadata
 {

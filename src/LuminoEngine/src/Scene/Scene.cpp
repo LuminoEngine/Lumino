@@ -8,7 +8,7 @@ namespace ln {
 //==============================================================================
 // Scene
 
-//LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Scene, Object);
+LN_OBJECT_IMPLEMENT(Scene, Object);
 
 Scene::Scene()
 {
