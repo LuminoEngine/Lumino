@@ -574,6 +574,7 @@ ShaderTechnique* Shader::findTechnique(const StringRef& name) const
 	return nullptr;
 }
 
+// TODO: 名前の指定方法をもう少しいい感じにしたい。ImageEffect を Forward_Geometry_UnLighting と書かなければならないなど、煩雑。
 ShaderTechnique* Shader::findTechniqueByClass(const detail::ShaderTechniqueClass& techniqueClass) const
 {
 	for (auto& tech : m_techniques)
@@ -648,7 +649,7 @@ void ShaderParameter::initialize(ShaderConstantBuffer* owner, const detail::Shad
 	m_owner = owner;
 	m_desc = desc;
 	m_name = name;
-	m_value.reset(desc.type, desc.elements);
+	//m_value.reset(desc.type, desc.elements);
 }
 
 void ShaderParameter::initialize(ShaderParameterClass parameterClass, const String& name)

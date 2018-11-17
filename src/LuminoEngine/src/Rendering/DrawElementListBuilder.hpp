@@ -95,6 +95,7 @@ private:
 	SpriteRenderFeatureStageParameters m_spriteRenderFeatureStageParameters;
 	MeshRenderFeatureStageParameters m_meshRenderFeatureStageParameters;
 
+    Ref<AbstractMaterial> m_defaultMaterial;
 	bool m_modified;
 };
 

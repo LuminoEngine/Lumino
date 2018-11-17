@@ -156,7 +156,7 @@ private:
 	// RenderStage 関係のデータ (ステートやコマンド) 用の LinearAllocatorPageManager
 	Ref<LinearAllocatorPageManager> m_stageDataPageManager;
 
-	std::array<Ref<Shader>, 4> m_builtinShaders;
+	std::array<Ref<Shader>, 6> m_builtinShaders;
 };
 
 } // namespace detail

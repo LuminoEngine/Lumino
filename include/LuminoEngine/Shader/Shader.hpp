@@ -72,7 +72,9 @@ public:
 	//void setMatrixArray(const StringRef& name, const Matrix* value, int count);
 	//void setTexture(const StringRef& name, Texture* value);
 
+    // _Global と Texture を検索する
 	ShaderParameter* findParameter(const StringRef& name) const;
+
 	ShaderConstantBuffer* findConstantBuffer(const StringRef& name) const;
 	ShaderTechnique* findTechnique(const StringRef& name) const;
 
@@ -153,6 +155,9 @@ public:
 	void setTexture(Texture* value);
 	void setPointer(void* value);
 
+    // TODO: internal
+    //void setShaderParameterValue(const detail::ShaderParameterValue& value) { m_value = value; }
+
 LN_CONSTRUCT_ACCESS:
 	ShaderParameter();
 	virtual ~ShaderParameter();
@@ -168,7 +173,7 @@ private:
 	ShaderConstantBuffer* m_owner;
 	detail::ShaderUniformTypeDesc m_desc;
 	String m_name;
-	detail::ShaderParameterValue m_value;
+	//detail::ShaderParameterValue m_value;
 
 	Ref<Texture> m_textureValue;
 

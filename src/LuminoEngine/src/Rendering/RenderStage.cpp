@@ -35,6 +35,10 @@ RenderDrawElement::~RenderDrawElement()
 {
 }
 
+void RenderDrawElement::onSubsetInfoOverride(SubsetInfo* subsetInfo)
+{
+}
+
 //==============================================================================
 // RenderStage
 

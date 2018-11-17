@@ -9,6 +9,7 @@ namespace ln {
 class VisualComponent
 	: public Component
 {
+    LN_OBJECT;
 protected:
 
 LN_CONSTRUCT_ACCESS:

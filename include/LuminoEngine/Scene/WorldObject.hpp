@@ -40,6 +40,7 @@ private:
 class WorldObject
 	: public Object
 {
+    LN_OBJECT;
 public:
     void addComponent(Component* component);
 

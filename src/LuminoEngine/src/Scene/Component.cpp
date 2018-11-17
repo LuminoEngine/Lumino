@@ -8,6 +8,8 @@ namespace ln {
 //==============================================================================
 // Component
 
+LN_OBJECT_IMPLEMENT(Component, Object);
+
 Component::Component()
     : m_object(nullptr)
 {

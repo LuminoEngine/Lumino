@@ -55,12 +55,14 @@ void AbstractMaterial::setFloat(const StringRef& name, float value)
 
 void AbstractMaterial::setVector(const StringRef& name, const Vector4& value)
 {
-	LN_NOTIMPLEMENTED();
+    detail::ShaderParameterValue* param = getValue(name);
+    param->setVector(value);
 }
 
 void AbstractMaterial::setMatrix(const StringRef& name, const Matrix& value)
 {
-	LN_NOTIMPLEMENTED();
+    detail::ShaderParameterValue* param = getValue(name);
+    param->setMatrix(value);
 }
 
 void AbstractMaterial::setTexture(const StringRef& name, Texture* value)
@@ -87,6 +89,58 @@ detail::ShaderParameterValue* AbstractMaterial::getValue(const ln::StringRef& na
 	return m_values.back().second.get();
 }
 
+void AbstractMaterial::updateShaderVariables(Shader* target)
+{
+    // Material から Shader へ検索をかける。
+    // Shader はビルトインの変数がいくつか含まれているので、この方が高速に検索できる。
+
+    for (auto& pair : m_values) {
+        ShaderParameter* param = target->findParameter(pair.first);
+        if (param) {
+            switch (pair.second->type())
+            {
+            case ShaderVariableType::Unknown:
+                LN_UNREACHABLE();
+                break;
+            case ShaderVariableType::Bool:
+                LN_NOTIMPLEMENTED();
+                break;
+            case ShaderVariableType::BoolArray:
+                LN_NOTIMPLEMENTED();
+                break;
+            case ShaderVariableType::Int:
+                param->setInt(pair.second->getInt());
+                break;
+            case ShaderVariableType::Float:
+                param->setFloat(pair.second->getFloat());
+                break;
+            case ShaderVariableType::FloatArray:
+                param->setFloatArray(pair.second->getFloatArray(), pair.second->getArrayLength());
+                break;
+            case ShaderVariableType::Vector:
+                param->setVector(pair.second->getVector());
+                break;
+            case ShaderVariableType::VectorArray:
+                param->setVectorArray(pair.second->getVectorArray(), pair.second->getArrayLength());
+                break;
+            case ShaderVariableType::Matrix:
+                param->setMatrix(pair.second->getMatrix());
+                break;
+            case ShaderVariableType::MatrixArray:
+                param->setMatrixArray(pair.second->getMatrixArray(), pair.second->getArrayLength());
+                break;
+            case ShaderVariableType::Texture:
+                param->setTexture(pair.second->getTexture());
+                break;
+            case ShaderVariableType::Pointer:
+                LN_NOTIMPLEMENTED();
+                break;
+            default:
+                break;
+            }
+        }
+    }
+}
 
 //==============================================================================
 // Material

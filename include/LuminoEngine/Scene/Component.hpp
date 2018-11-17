@@ -13,6 +13,7 @@ namespace detail {
 class Component
 	: public Object
 {
+    LN_OBJECT;
 protected:
     // アタッチされた WorldObject の transform へのポインタ
     detail::WorldObjectTransform* transrom() const;

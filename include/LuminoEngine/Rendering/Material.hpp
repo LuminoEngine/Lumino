@@ -141,6 +141,9 @@ public:	// TODO:
 	//static const Color DefaultEmissive;	// (0.0f, 0.0f, 0.0f, 0.0f)
 	//static const float DefaultPower;	// (50.0f)
 
+    // TODO: internal
+    void updateShaderVariables(Shader* target);
+
 private:
 	//void LinkVariables();
 	//ShaderValue* FindShaderValue(const StringRef& name);

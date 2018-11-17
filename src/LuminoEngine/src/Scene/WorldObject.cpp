@@ -70,6 +70,8 @@ void WorldObjectTransform::updateWorldMatrix(const Matrix* parent)
 //  Component にしてしまうと、m_components リストを操作するときに混ざりこんでしまって危険かもしれない。
 //  特に必要性が出てくるまではこのスタイルにしておく。
 
+LN_OBJECT_IMPLEMENT(WorldObject, Object);
+
 WorldObject::WorldObject()
     : m_world(nullptr)
     , m_transform(makeRef<detail::WorldObjectTransform>())

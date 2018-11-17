@@ -91,33 +91,41 @@ void RenderingContext::popState()
     m_builder->popState();
 }
 
+void RenderingContext::blit(RenderTargetTexture* source, RenderTargetTexture* destination)
+{
+    blit(source, destination, nullptr);
+}
+
 void RenderingContext::blit(RenderTargetTexture* source, RenderTargetTexture* destination, AbstractMaterial* material) 
 {
     class Blit : public detail::RenderDrawElement
     {
     public:
+        Ref<RenderTargetTexture> source;
+
+        virtual void onSubsetInfoOverride(detail::SubsetInfo* subsetInfo)
+        {
+            if (source) {
+                subsetInfo->materialTexture = source;
+            }
+        }
+
         virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
         {
             static_cast<detail::BlitRenderFeature*>(renderFeatures)->blit(context);
         }
     };
-    if (source) {
-        LN_NOTIMPLEMENTED();
-        return;
-    }
 
     // TODO: scoped_gurad
     RenderTargetTexture* oldTarget = renderTarget(0);
     setRenderTarget(0, destination);
-
-
-    // TODO: material 指定なしでも呼び出せるように、RenderTarget のように Cache 持っておきたい。
 
     m_builder->setMaterial(material);
     auto* element = m_builder->addNewDrawElement<Blit>(
         m_manager->blitRenderFeature(),
         m_builder->blitRenderFeatureStageParameters());
     element->targetPhase = detail::RendringPhase::ImageEffect;
+    element->source = source;
 
     setRenderTarget(0, oldTarget);
 }

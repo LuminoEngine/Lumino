@@ -7,6 +7,8 @@ namespace ln {
 //=============================================================================
 // VisualComponent
 
+LN_OBJECT_IMPLEMENT(VisualComponent, Component);
+
 VisualComponent::VisualComponent()
 {
 }

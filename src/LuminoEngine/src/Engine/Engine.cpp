@@ -7,6 +7,7 @@
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>
+#include <LuminoEngine/Scene/Camera.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 
 namespace ln {
@@ -76,6 +77,11 @@ UIFrameWindow* Engine::mainWindow()
 UIViewport* Engine::mainViewport()
 {
     return detail::EngineDomain::engineManager()->mainViewport();
+}
+
+Camera* Engine::mainCamera()
+{
+    return detail::EngineDomain::engineManager()->mainCamera();
 }
 
 } // namespace ln

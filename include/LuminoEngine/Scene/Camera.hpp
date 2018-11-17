@@ -12,7 +12,7 @@ class CameraComponent;
 class Camera
 	: public WorldObject
 {
-	LN_OBJECT;
+	//LN_OBJECT;
 public:
     /** 既定の設定で Camera を作成します。 */
     static Ref<Camera> create();

@@ -11,7 +11,7 @@ namespace detail {
 
 DrawElementListBuilder::DrawElementListBuilder()
 {
-
+    m_defaultMaterial = newObject<Material>();
 }
 
 void DrawElementListBuilder::setTargetList(DrawElementList * targetList)
@@ -118,8 +118,12 @@ void DrawElementListBuilder::setShadingModel(const Optional<ShadingModel>& value
 	}
 }
 
-void DrawElementListBuilder::setMaterial(AbstractMaterial * value)
+void DrawElementListBuilder::setMaterial(AbstractMaterial* value)
 {
+    if (!value) {
+        value = m_defaultMaterial;
+    }
+
 	if (primaryGeometryStageParameters().m_material != value) {
 		primaryGeometryStageParameters().m_material = value;
 		m_modified = true;

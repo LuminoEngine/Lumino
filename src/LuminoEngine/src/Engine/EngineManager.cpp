@@ -80,7 +80,7 @@ void EngineManager::initialize()
 		m_mainWindow->m_viewport = m_mainViewport;
 	}
 
-#if 0
+#if 1
     m_mainWorld = newObject<World>();
     m_sceneManager->setActiveWorld(m_mainWorld);
 	m_mainCamera = newObject<Camera>();

@@ -207,6 +207,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 			subsetInfo.colorScale = currentStage->getColorScaleFinal();
 			subsetInfo.blendColor = currentStage->getBlendColorFinal();
 			subsetInfo.tone = currentStage->getToneFinal();
+            element->onSubsetInfoOverride(&subsetInfo);
 
 			ShaderTechnique* tech = pass->selectShaderTechnique(
 				ShaderTechniqueClass_MeshProcess::StaticMesh,
@@ -222,6 +223,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
                 PbrMaterialData pbrMaterialData;
                 finalMaterial->translateToPBRMaterialData(&pbrMaterialData);
                 semanticsManager->updateSubsetVariables_PBR(pbrMaterialData);
+                finalMaterial->updateShaderVariables(tech->shader());
             }
 
 			onSetAdditionalShaderPassVariables(tech->shader());

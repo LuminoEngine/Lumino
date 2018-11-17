@@ -317,6 +317,7 @@ void RenderTargetTexture::initialize(int width, int height, TextureFormat reques
 	m_rhiObject = manager()->deviceContext()->createRenderTarget(width, height, requestFormat, mipmap);
 	setSize(m_rhiObject->realSize());
 	setMipmap(mipmap);
+    setFormat(m_rhiObject->getTextureFormat());
 }
 
 void RenderTargetTexture::initialize(detail::ITexture* ref)
@@ -324,6 +325,7 @@ void RenderTargetTexture::initialize(detail::ITexture* ref)
 	Texture::initialize();
 	m_rhiObject = ref;
 	setSize(m_rhiObject->realSize());
+    setFormat(m_rhiObject->getTextureFormat());
 }
 
 void RenderTargetTexture::dispose()

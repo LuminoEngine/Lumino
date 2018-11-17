@@ -77,7 +77,7 @@ int main(int argc, char** argv)
 
 	//printf("");
 
-#if 0
+#if 1
     auto font = Font::create(u"VL PGothic", 20);
 
 	auto light1 = AmbientLight::create();
@@ -96,24 +96,30 @@ int main(int argc, char** argv)
     //auto sprite = newObject<UISprite>();
     //sprite->setTexture(tex);
 
-    //auto imageEffect = newObject<ToneImageEffect>();
-    //Engine::mainViewport()->addImageEffect(imageEffect);
+    auto imageEffect = newObject<ScreenBlurImageEffect>();
+    imageEffect->setAmount(0.7);
+    imageEffect->setRadialScale(1.05);
+    Engine::mainViewport()->addImageEffect(imageEffect);
 #endif
 
+#if 0
     //auto sound = newObject<Sound>(u"D:\\tmp\\4_Battle_win.wav");
     auto sound = newObject<Sound>(u"D:/Music/momentum/02 - momentum.wav");
 
     sound->play();
     //sound->setPitch(1.2);
+#endif
 
     while (Engine::update())
     {
+#if 0
         if (Mouse::isPressed(MouseButtons::Left))
         {
             float pitch = (Mouse::position().x / 640)  + 0.5;
             //std::cout << pitch << std::endl;
             sound->setPitch(pitch);
         }
+#endif
         
     }
 

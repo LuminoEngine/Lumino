@@ -14,6 +14,7 @@ class RenderFeature;
 namespace detail {
 class RenderStage;
 class DrawElementList;
+struct SubsetInfo;
 
 // DrawElementList::newFrameData() で確保するデータのインターフェイス。
 // 描画終了時にデストラクタを呼び出すために使用する。
@@ -199,6 +200,10 @@ public:
 	RenderDrawElement();
 	virtual ~RenderDrawElement();
 
+    // 必要に応じて SubsetInfo の調整を行う。
+    // 特に不透明度の操作など、Phase との整合性に注意すること。
+    // 現在は blit のような特殊な用途に置いて、Material 確保などのメモリ節約のために使用している。
+    virtual void onSubsetInfoOverride(SubsetInfo* subsetInfo);
 
 	// 描画実行。
 	// 純粋に描画のみを行うこと。

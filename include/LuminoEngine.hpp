@@ -44,6 +44,7 @@
 #include "LuminoEngine/Visual/LightComponent.hpp"
 #include "LuminoEngine/Visual/SpriteComponent.hpp"
 
+#include "LuminoEngine/Scene/Camera.hpp"
 #include "LuminoEngine/Scene/Light.hpp"
 #include "LuminoEngine/Scene/Sprite.hpp"
 
