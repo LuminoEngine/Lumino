@@ -63,7 +63,7 @@ enum class PropertySetSource
     virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override;
 
 #define LN_OBJECT2_IMPLEMENT(classType) \
-    const ::ln::Ref<::ln::TypeInfo> classType::_lnref_typeInfo = ::ln::makeRef<::ln::TypeInfo>(); \
+    const ::ln::Ref<::ln::TypeInfo> classType::_lnref_typeInfo = ::ln::makeRef<::ln::TypeInfo>(#classType); \
     ::ln::TypeInfo* classType::_lnref_getThisTypeInfo() const { return _lnref_typeInfo.get(); }
 
 #define LN_PROPERTY_DECLARE(valueType, propertyName) \
@@ -83,6 +83,12 @@ class TypeInfo
     : public RefObject
 {
 public:
+    TypeInfo(const char* className)
+        : m_name(className)
+    {}
+
+    const String& name() const { return m_name; }
+
     void registerProperty(PropertyInfo* prop);
     const List<PropertyInfo*>& properties() const { return m_properties; }
 
@@ -101,6 +107,7 @@ public:
     static void initializeObjectProperties(Object* obj);
 
 private:
+    String m_name;
     List<PropertyInfo*> m_properties;
 };
 
@@ -212,7 +219,7 @@ public:
         {
             m_value = m_defaultValue;
             m_valueSource = PropertySetSource::Default;
-            PropertyInfo::notifyPropertyChanged(getOwnerObject(), this, propertyInfo(), m_valueSource);
+            PropertyInfo::notifyPropertyChanged(ownerObject(), this, propertyInfo(), m_valueSource);
         }
     }
 
@@ -222,12 +229,12 @@ public:
     //const PropertyInfo* getPropertyInfo() const { return m_propId; }
 
 LN_INTERNAL_ACCESS:
-    uint32_t getHashCode() const
-    {
-        return
-            Hash::calcHash(reinterpret_cast<const char*>(&m_value), sizeof(m_value)) +
-            Hash::calcHash(reinterpret_cast<const char*>(&m_valueSource), sizeof(m_valueSource));
-    }
+    //uint32_t getHashCode() const
+    //{
+    //    return
+    //        Hash::calcHash(reinterpret_cast<const char*>(&m_value), sizeof(m_value)) +
+    //        Hash::calcHash(reinterpret_cast<const char*>(&m_valueSource), sizeof(m_valueSource));
+    //}
 
     bool inherit(const Property& parent)
     {

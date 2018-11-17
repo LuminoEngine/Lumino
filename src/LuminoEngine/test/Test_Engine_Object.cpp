@@ -3,14 +3,12 @@
 
 class Test_Engine_Object : public ::testing::Test {};
 
-class PropertyTestObjectA
+class TestObjectA
     : public Object
 {
     LN_OBJECT2;
 public:
     LN_PROPERTY_DECLARE(int, Prop1);
-    //static PropertyInitializer iniii;
-    //static const ::ln::Ref<::ln::PropertyInfo> ppp;
 
     void initialize();
 
@@ -25,33 +23,56 @@ private:
     Property<int> m_prop1;
 };
 
-LN_OBJECT2_IMPLEMENT(PropertyTestObjectA);
-//LN_TR_PROPERTY_IMPLEMENT(PropertyTestObjectA, Prop1, m_prop1, PropertyMetadata([](Object* obj) { static_cast<PropertyTestObjectA*>(obj)->onProp1Changed(); }));
-LN_PROPERTY_IMPLEMENT(PropertyTestObjectA, Prop1, m_prop1, PropertyMetadata(PropertyTestObjectA::onProp1Changed));
+LN_OBJECT2_IMPLEMENT(TestObjectA);
+LN_PROPERTY_IMPLEMENT(TestObjectA, Prop1, m_prop1, PropertyMetadata(TestObjectA::onProp1Changed));
 
-//const ::ln::Ref<::ln::PropertyInfo> PropertyTestObjectA::ppp = ::ln::makeRef<::ln::PropertyInfo>(PropertyMetadata(PropertyTestObjectA::onProp1Changed));
-//PropertyInitializer PropertyTestObjectA::iniii((PropertyMetadata(PropertyTestObjectA::onProp1Changed)));
-
-void PropertyTestObjectA::initialize()
+void TestObjectA::initialize()
 {
     Object::initialize();
 }
 
-void PropertyTestObjectA::onProp1Changed(Object* obj)
+void TestObjectA::onProp1Changed(Object* obj)
 {
-    static_cast<PropertyTestObjectA*>(obj)->m_count++;
+    static_cast<TestObjectA*>(obj)->m_count++;
+}
+
+
+class TestObjectB
+    : public Object
+{
+    LN_OBJECT2;
+public:
+};
+
+LN_OBJECT2_IMPLEMENT(TestObjectB);
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Engine_Object, TypeInfo)
+{
+    auto obj1 = newObject<TestObjectA>();
+    auto obj2 = newObject<TestObjectB>();
+
+    //* [ ] can get by object pointer
+    TypeInfo* type1 = TypeInfo::getTypeInfo(obj1);
+    ASSERT_EQ(true, type1 != nullptr);
+    ASSERT_EQ(u"TestObjectA", type1->name());
+
+    //* [ ] can get by template
+    TypeInfo* type2 = TypeInfo::getTypeInfo<TestObjectB>();
+    ASSERT_EQ(true, type2 != nullptr);
+    ASSERT_EQ(u"TestObjectB", type2->name());
 }
 
 //------------------------------------------------------------------------------
 TEST_F(Test_Engine_Object, Property)
 {
-    auto objA = newObject<PropertyTestObjectA>();
+    auto objA = newObject<TestObjectA>();
     objA->setProp1(5);
     ASSERT_EQ(5, objA->prop1());
 
+    //* [ ] PropertyChanged コールバックが呼ばれている
     ASSERT_EQ(1, objA->m_count);
 
-
     //* [ ] PropertyInfo が取れる
-    ASSERT_EQ(true, PropertyTestObjectA::Prop1Id != nullptr);
+    ASSERT_EQ(true, TestObjectA::Prop1Id != nullptr);
 }
