@@ -2,7 +2,7 @@
 #include <LuminoCore/Base/RefObject.hpp>
 
 //==============================================================================
-//# Logger
+//# RefObject
 class Test_Base_RefObject : public ::testing::Test { };
 
 class TestObjA : public RefObject

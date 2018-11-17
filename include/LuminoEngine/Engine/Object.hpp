@@ -1,7 +1,12 @@
 ﻿#pragma once
+#include <mutex>
 
 namespace ln {
 class TypeInfo;
+namespace detail {
+class WeakRefInfo; 
+class ObjectHelper;
+}
 
 #define LN_OBJECT
 #ifndef LN_CONSTRUCT_ACCESS
@@ -49,15 +54,155 @@ public:
 	virtual void dispose();
 
 private:
+    detail::WeakRefInfo* requestWeakRefInfo();
+    static TypeInfo* _lnref_getTypeInfo();
     virtual TypeInfo* _lnref_getThisTypeInfo() const;
-    friend TypeInfo;
+
+    detail::WeakRefInfo* m_weakRefInfo;
+    std::mutex m_weakRefInfoMutex;
+
+    friend class TypeInfo;
+    friend class detail::ObjectHelper;
 };
 
 class ObjectHelper
 {
 public:
-	static void dispose(Object* obj) { if (obj) obj->dispose(); }
+	static void dispose(Object* obj)
+    {
+        if (obj) obj->dispose();
+    }
 };
+
+
+namespace detail {
+
+class ObjectHelper
+{
+public:
+    template<class T>
+    inline static detail::WeakRefInfo* requestWeakRefInfo(T* obj)
+    {
+        return obj->requestWeakRefInfo();
+    }
+};
+
+class WeakRefInfo final
+{
+public:
+    Object* owner;
+    std::atomic<int> weakRefCount;
+    WeakRefInfo();
+    void addRef();
+    void release();
+};
+
+} // namespace detail
+
+
+/**
+    @brief
+    @details
+        監視しているオブジェクトにアクセスする場合は isAlive() と resolve() を併用しないでください。
+        マルチスレッドプログラムで不正アクセスの危険があります。
+        次のコードは間違いです。
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        WeakRefPtr<MyClass> weak(obj);
+        if (weak.isAlive())
+            weak->resolve()->Func();
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        正しいコードは次の通りです。
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        WeakRefPtr<MyClass> weak(obj);
+        Ref<MyClass> ptr = weak.resolve();
+        if (ptr != nullptr)
+            ptr->Func();
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
+template <class T>
+class WeakRefPtr
+{
+public:
+
+    /** コンストラクタ */
+    WeakRefPtr()
+        : m_weakRefInfo(nullptr)
+    {}
+
+    /** コンストラクタ */
+    WeakRefPtr(T* obj)
+        : m_weakRefInfo(nullptr)
+    {
+        set(detail::ObjectHelper::requestWeakRefInfo(obj));
+    }
+
+    /** コピーコンストラクタ */
+    WeakRefPtr(const WeakRefPtr<T>& obj)
+        : m_weakRefInfo(nullptr)
+    {
+        set(obj.m_weakRefInfo);
+    }
+
+    /** デストラクタ */
+    virtual ~WeakRefPtr()
+    {
+        release();
+    }
+
+    /** 監視しているオブジェクトが削除されておらず、使用できるかを確認します。*/
+    bool isAlive() const
+    {
+        return (m_weakRefInfo != nullptr && m_weakRefInfo->owner != nullptr);
+    }
+
+    /** 監視しているオブジェクトへの Ref を取得します。*/
+    Ref<T> resolve() const
+    {
+        if (!isAlive())
+        {
+            return Ref<T>();
+        }
+        return Ref<T>(static_cast<T*>(m_weakRefInfo->owner));
+    }
+
+    /** */
+    WeakRefPtr<T>& operator =(const WeakRefPtr<T>& obj)
+    {
+        set(obj.m_weakRefInfo);
+        return *this;
+    }
+
+    /** */
+    WeakRefPtr<T>& operator =(T* obj)
+    {
+        set(detail::ObjectHelper::requestWeakRefInfo(obj));
+        return *this;
+    }
+
+private:
+
+    void set(detail::WeakRefInfo* info)
+    {
+        release();
+        m_weakRefInfo = info;
+        if (m_weakRefInfo != nullptr)
+        {
+            m_weakRefInfo->addRef();
+        }
+    }
+
+    void release()
+    {
+        if (m_weakRefInfo != nullptr)
+        {
+            m_weakRefInfo->release();
+            m_weakRefInfo = nullptr;
+        }
+    }
+
+    detail::WeakRefInfo*	m_weakRefInfo;
+};
+
 
 } // namespace ln
 

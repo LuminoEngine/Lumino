@@ -45,6 +45,7 @@ namespace ln {
 
 class PropertyInfo;
 class PropertyBase;
+template<typename T> class Property;
 using GetPropertyCallback = PropertyBase*(*)(Object* obj);
 using StaticPropertyChangedCallback = void(*)(Object* obj);
 
@@ -59,12 +60,16 @@ enum class PropertySetSource
 
 #define LN_OBJECT2 \
     friend class ::ln::TypeInfo; \
-    static const ::ln::Ref<::ln::TypeInfo> _lnref_typeInfo; \
+    static TypeInfo* _lnref_getTypeInfo(); \
     virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override;
 
-#define LN_OBJECT2_IMPLEMENT(classType) \
-    const ::ln::Ref<::ln::TypeInfo> classType::_lnref_typeInfo = ::ln::makeRef<::ln::TypeInfo>(#classType); \
-    ::ln::TypeInfo* classType::_lnref_getThisTypeInfo() const { return _lnref_typeInfo.get(); }
+#define LN_OBJECT2_IMPLEMENT(classType, baseclassType) \
+    TypeInfo* classType::_lnref_getTypeInfo() \
+    { \
+        static TypeInfo typeInfo(#classType, ::ln::TypeInfo::getTypeInfo<baseclassType>()); \
+        return &typeInfo; \
+    } \
+    ::ln::TypeInfo* classType::_lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); }
 
 #define LN_PROPERTY_DECLARE(valueType, propertyName) \
     static const ::ln::Ref<::ln::PropertyInfo> propertyName##Id;
@@ -79,24 +84,80 @@ enum class PropertySetSource
     //const ::ln::PropertyInfo* ownerClass::propertyName##Id = &_##ownerClass##_##propertyName##Id;
 
 
+
+
+class PropertyRef
+{
+public:
+    PropertyRef(Object* propOwner, PropertyBase* prop)
+        : m_propOwner(propOwner)
+        , m_prop(prop)
+    {
+    }
+
+    template<typename TValue>
+    void setTypedValue(const TValue& value)
+    {
+        auto ptr = m_propOwner.resolve();
+        if (ptr != nullptr) m_prop->set(value);
+    }
+
+    template<typename TValue>
+    const TValue& getTypedValue() const
+    {
+        auto ptr = m_propOwner.resolve();
+        if (ptr != nullptr) return m_prop->get();
+        LN_ERROR();
+        return TValue();
+    }
+
+    void clearValue();
+
+    Ref<Object> owenr();
+
+    //const PropertyInfo* propertyInfo() const
+    //{
+    //    return m_prop.getPropertyInfo();
+    //}
+
+    template<typename TValue>
+    Property<TValue>* getTypedProperty()
+    {
+        return static_cast<Property<TValue>*>(m_prop);
+    }
+
+private:
+    WeakRefPtr<Object>	m_propOwner;
+    PropertyBase* m_prop;
+};
+
+
+
+
+
 class TypeInfo
     : public RefObject
 {
 public:
-    TypeInfo(const char* className)
+    TypeInfo(const char* className, TypeInfo* baseType)
         : m_name(className)
+        , m_baseType(baseType)
     {}
 
+    /** クラス名を取得します。 */
     const String& name() const { return m_name; }
+
+    /** ベースクラスの型情報を取得します。 */
+    TypeInfo* baseType() const { return m_baseType; }
 
     void registerProperty(PropertyInfo* prop);
     const List<PropertyInfo*>& properties() const { return m_properties; }
 
     /** 型引数に指定したクラス型の型情報を取得します。 */
     template<class T>
-    static const Ref<TypeInfo>& getTypeInfo()
+    static TypeInfo* getTypeInfo()
     {
-        return T::_lnref_typeInfo;
+        return T::_lnref_getTypeInfo();
     }
 
     static TypeInfo* getTypeInfo(const Object* obj)
@@ -108,12 +169,18 @@ public:
 
 private:
     String m_name;
+    TypeInfo* m_baseType;
     List<PropertyInfo*> m_properties;
 };
 
 class PropertyMetadata
 {
 public:
+    PropertyMetadata()
+        : m_staticPropertyChangedCallback(nullptr)
+    {
+    }
+
     PropertyMetadata(StaticPropertyChangedCallback callback)
         : m_staticPropertyChangedCallback(callback)
     {
@@ -137,6 +204,15 @@ public:
     {
         ownerClassType->registerProperty(this);
     }
+
+    template<typename TValue>
+    static void setTypedValue(Object* obj, PropertyInfo* propertyInfo, TValue&& value)
+    {
+        PropertyBase* prop = propertyInfo->m_getPropertyCallback();
+        static_cast<Property<TValue>*>(prop)->set(std::forward(value));
+    }
+    
+    static PropertyRef getPropertyRef(Object* obj, PropertyInfo* propertyInfo);
 
     // TODO: Helper でいい
     static void notifyPropertyChanged(Object* ownerObject, PropertyBase* target, const PropertyInfo* prop, PropertySetSource source);
@@ -162,6 +238,11 @@ private:
 
 class PropertyBase
 {
+public:
+    virtual void setValue(const Variant& value) = 0;
+    virtual Variant getValue() const = 0;
+    virtual void clearValue() = 0;
+
 protected:
     PropertyBase()
         : m_owner(nullptr)
@@ -169,6 +250,7 @@ protected:
     {
     }
 
+public: // TODO: Helper
     Object* ownerObject() const { return m_owner; }
     PropertyInfo* propertyInfo() const { return m_propertyInfo; }
 
@@ -203,6 +285,16 @@ public:
     ~Property()
     {}
 
+    virtual void setValue(const Variant& value) override
+    {
+        set(value.get<TValue>());
+    }
+
+    virtual Variant getValue() const override
+    {
+        return Variant(m_value);
+    }
+
     /** プロパティのローカル値を設定します。*/
     void set(const TValue& value)
     {
@@ -213,7 +305,7 @@ public:
     const TValue& get() const { return m_value; }
 
     /** プロパティのローカル値を消去します。*/
-    void clearValue()
+    virtual void clearValue() override
     {
         if (m_value != m_defaultValue || m_valueSource != PropertySetSource::Default)
         {
@@ -299,8 +391,6 @@ inline bool operator != (const TValue& lhs, const Property<TValue>& rhs)
 {
     return lhs != rhs.get();
 }
-
-
 
 
 
