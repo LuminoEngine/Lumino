@@ -151,7 +151,7 @@ public:
 			// internalFormat,		pixelFormat,		elementType
 			{ GL_NONE,				GL_NONE,			GL_NONE },			// TextureFormat::Unknown
 			{ GL_RGBA8,				GL_RGBA,			GL_UNSIGNED_BYTE },	// TextureFormat::R8G8B8A8,            ///< 32 ビットのアルファ付きフォーマット (uint32_t アクセス時の表現。lnByte[4] にすると、ABGR)
-			//{ GL_RGBA8,				GL_RGB,			GL_UNSIGNED_BYTE },	// TextureFormat::R8G8B8X8,	※元々 GL_RGB だったが、それだと glGetTexImage で強制終了
+			{ GL_RGB8,				GL_RGB,			GL_UNSIGNED_BYTE },	// TextureFormat::R8G8B8X8,	※元々 GL_RGB だったが、それだと glGetTexImage で強制終了
 			{ GL_RGBA16F,			GL_RGBA,			GL_HALF_FLOAT },	// TextureFormat::A16B16G16R16F,       ///< 64 ビットの浮動小数点フォーマット
 			{ GL_RGBA32F,			GL_RGBA,			GL_FLOAT },			// TextureFormat::A32B32G32R32F,       ///< 128 ビットの浮動小数点フォーマット
 			{ GL_R16F,				GL_RED,				GL_HALF_FLOAT },	// TextureFormat::R16F,
@@ -840,7 +840,7 @@ void GLSwapChain::getBackendBufferSize(SizeI* outSize)
 void GLSwapChain::genBackbuffer(uint32_t width, uint32_t height)
 {
 	m_backbuffer = makeRef<GLRenderTargetTexture>();
-	m_backbuffer->initialize(width, height, TextureFormat::RGBA32, false);
+	m_backbuffer->initialize(width, height, TextureFormat::RGB24, false);
 
 	GL_CHECK(glGenFramebuffers(1, &m_fbo));
 	GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_fbo));

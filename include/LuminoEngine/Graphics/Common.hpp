@@ -128,6 +128,7 @@ enum class PixelFormat
 	A8,
 
 	RGBA32,
+    RGB24,
 
 	R32G32B32A32Float,
 };
@@ -142,8 +143,8 @@ enum class TextureFormat : uint8_t
 	/** 32 ビットのアルファ付きフォーマット (GPUネイティブフォーマット。D3D_FMT_A8B8G8R8, DXGI_FORMAT_R8G8B8A8_UNORM) */
 	RGBA32,
 
-	/** 32 ビットのアルファ無しフォーマット */
-	//RGBX32,
+	/** 24 ビットのアルファ無しフォーマット */
+	RGB24,
 
 	/** 64 ビットの浮動小数点フォーマット */
 	R16G16B16A16Float,

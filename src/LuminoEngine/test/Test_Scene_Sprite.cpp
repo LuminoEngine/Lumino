@@ -17,6 +17,6 @@ TEST_F(Test_Scene_Sprite, Basic)
         sprite1->setPosition(5, 0, 0);
 
         TestEnv::updateFrame();
-        ASSERT_SCREEN_S(LN_ASSETFILE("Result/Test_Scene_Sprite-Basic-1.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Scene_Sprite-Basic-1.png"));
 	}
 }

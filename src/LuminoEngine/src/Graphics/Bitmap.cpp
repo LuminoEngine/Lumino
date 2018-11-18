@@ -58,11 +58,23 @@ public:
 
 	// データは Bitmap クラスから直接渡されることを想定し、downflow で渡すこと。
 	// フォーマットは RGBA
-	void save(Stream* stream, const byte_t* data, const SizeI& size);
+	void save(Stream* stream, const byte_t* data, const SizeI& size, PixelFormat format);
 };
 
-void PngBitmapEncoder::save(Stream* stream, const byte_t* data, const SizeI& size)
+void PngBitmapEncoder::save(Stream* stream, const byte_t* data, const SizeI& size, PixelFormat format)
 {
+    int colorType = 0;
+    if (format == PixelFormat::RGBA32) {
+        colorType = PNG_COLOR_TYPE_RGBA;
+    }
+    else if (format == PixelFormat::RGB24) {
+        colorType = PNG_COLOR_TYPE_RGB;
+    }
+    else {
+        LN_ERROR();
+        return;
+    }
+
 	png_struct* png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	if (LN_ENSURE(png, "png_create_write_struct() failed")) return;
 
@@ -70,11 +82,13 @@ void PngBitmapEncoder::save(Stream* stream, const byte_t* data, const SizeI& siz
 	auto se = makeScopedCall([&]() {png_destroy_write_struct(&png, &info_ptr); }); // finalizer
 	if (LN_ENSURE(info_ptr, "png_create_info_struct() failed")) return;
 
+
+
 	png_set_IHDR(
 		png, info_ptr,
 		size.width, size.height,
 		8,						// 各色 8 bit
-		PNG_COLOR_TYPE_RGBA,	// RGBA フォーマット
+        colorType,	// RGBA フォーマット
 		PNG_INTERLACE_NONE,
 		PNG_COMPRESSION_TYPE_DEFAULT,
 		PNG_FILTER_TYPE_DEFAULT);
@@ -496,6 +510,11 @@ Color32 Bitmap2D::getPixel32(int x, int y) const
 		const uint8_t* pixel = m_buffer->data() + ((y * m_size.width) + x) * 4;
 		return Color32(pixel[0], pixel[1], pixel[2], pixel[3]);
 	}
+    else if (m_format == PixelFormat::RGB24)
+    {
+        const uint8_t* pixel = m_buffer->data() + ((y * m_size.width) + x) * 3;
+        return Color32(pixel[0], pixel[1], pixel[2], 0xFF);
+    }
 	else
 	{
 		LN_NOTIMPLEMENTED();
@@ -530,6 +549,19 @@ void Bitmap2D::flipVerticalFlow()
 		for (int y = 0; y < (m_size.height / 2); ++y) {
 			for (int x = 0; x < m_size.width; ++x) {
 				std::swap(pixels[(y * m_size.width) + x], pixels[((m_size.height - 1 - y) * m_size.width) + x]);
+			}
+		}
+	}
+	else if (pixelSize == 3)
+	{
+        byte_t* pixels = (byte_t*)m_buffer->data();
+		for (int y = 0; y < (m_size.height / 2); ++y) {
+			for (int x = 0; x < m_size.width; ++x) {
+                byte_t* h0 = pixels + ((y * m_size.width) + x) * 3;
+                byte_t* h1 = pixels + (((m_size.height - 1 - y) * m_size.width) + x) * 3;
+				std::swap(h0[0], h1[0]);
+                std::swap(h0[1], h1[1]);
+                std::swap(h0[2], h1[2]);
 			}
 		}
 	}
@@ -569,7 +601,7 @@ void Bitmap2D::save(const StringRef& filePath)
 {
 	auto file = FileStream::create(filePath, FileOpenMode::Write | FileOpenMode::Truncate);
 	detail::PngBitmapEncoder encoder;
-	encoder.save(file, m_buffer->data(), m_size);
+	encoder.save(file, m_buffer->data(), m_size, m_format);
 }
 
 Ref<Bitmap2D> Bitmap2D::transcodeTo(PixelFormat format, const Color32& color) const
@@ -621,6 +653,7 @@ int Bitmap2D::getPixelFormatByteSize(PixelFormat format)
 		1,	// A1,
 		1,	// A8,
 		4,	// RGBA32,
+        3,	// RGB24,
 		16,	// R32G32B32A32Float,
 	};
 	return table[(int)format];
