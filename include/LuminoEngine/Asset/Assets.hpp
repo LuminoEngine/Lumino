@@ -5,7 +5,7 @@
 namespace ln {
 class Shader;
 
-class Asset
+class Assets
 {
 public:
     static bool existsFile(const StringRef& filePath);

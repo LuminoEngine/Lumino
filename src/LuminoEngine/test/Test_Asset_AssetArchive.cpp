@@ -135,10 +135,10 @@ TEST_F(Test_Asset_AssetArchive, CryptedAssetArchive)
 TEST_F(Test_Asset_AssetArchive, AddAssetArchive)
 {
     detail::EngineDomain::assetManager()->addAssetArchive(LN_ASSETFILE("test.lca"), u"pass");
-	ASSERT_EQ(false, Asset::existsFile(u"dataX"));
-	ASSERT_EQ(true, Asset::existsFile(u"data1"));
+	ASSERT_EQ(false, Assets::existsFile(u"dataX"));
+	ASSERT_EQ(true, Assets::existsFile(u"data1"));
 
-	auto buf = Asset::readAllBytes(u"data1");
+	auto buf = Assets::readAllBytes(u"data1");
 	ASSERT_EQ(1, buf->size());
 	ASSERT_EQ(0, buf->data()[0]);
 }

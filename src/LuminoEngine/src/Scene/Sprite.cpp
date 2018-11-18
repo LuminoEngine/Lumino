@@ -45,5 +45,20 @@ void Sprite::setSize(const Size& size)
     m_component->setSize(size);
 }
 
+void Sprite::setSourceRect(const Rect& rect)
+{
+    m_component->setSourceRect(rect);
+}
+
+void Sprite::setSourceRect(float x, float y, float width, float height)
+{
+    setSourceRect(Rect(x, y, width, height));
+}
+
+const Rect& Sprite::sourceRect() const
+{
+    return m_component->sourceRect();
+}
+
 } // namespace ln
 

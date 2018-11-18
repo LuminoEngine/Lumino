@@ -83,7 +83,7 @@ int main(int argc, char** argv)
 	auto light1 = AmbientLight::create();
 
     //auto tex = newObject<Texture2D>(u"D:/tmp/110220c_as019.png");
-    auto tex = Asset::loadTexture(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Sprite1.png");
+    auto tex = Assets::loadTexture(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Sprite1.png");
     //tex->drawText(u"Hello!", Rect(0, 0, 100, 100), font, Color::White);
     //auto tex = newObject<Texture2D>(2, 2);
     //auto bmp1 = tex->map(MapMode::Write);

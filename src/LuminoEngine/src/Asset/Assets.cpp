@@ -1,29 +1,29 @@
 ﻿
 #include "Internal.hpp"
 #include "AssetManager.hpp"
-#include <LuminoEngine/Asset/Asset.hpp>
+#include <LuminoEngine/Asset/Assets.hpp>
 
 namespace ln {
 
 //=============================================================================
 // Asset
 
-bool Asset::existsFile(const StringRef& filePath)
+bool Assets::existsFile(const StringRef& filePath)
 {
     return detail::EngineDomain::assetManager()->existsFile(filePath);
 }
 
-Ref<Texture2D> Asset::loadTexture(const StringRef& filePath)
+Ref<Texture2D> Assets::loadTexture(const StringRef& filePath)
 {
     return detail::EngineDomain::assetManager()->loadTexture(filePath);
 }
 
-Ref<Shader> Asset::loadShader(const StringRef& filePath)
+Ref<Shader> Assets::loadShader(const StringRef& filePath)
 {
     return detail::EngineDomain::assetManager()->loadShader(filePath);
 }
 
-Ref<ByteBuffer> Asset::readAllBytes(const StringRef& filePath)
+Ref<ByteBuffer> Assets::readAllBytes(const StringRef& filePath)
 {
 	return detail::EngineDomain::assetManager()->readAllBytes(filePath);
 }

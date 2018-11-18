@@ -38,6 +38,14 @@ public:
 	/** このオブジェクトの拡大率を取得します。 */
 	LN_METHOD(Property)
 	const Vector3& scale() const { return m_scale; }
+    
+	/** このオブジェクトのローカルの中心位置を設定します。 */
+	LN_METHOD(Property)
+	void setCenterPoint(const Vector3& value);
+    
+	/** このオブジェクトのローカルの中心位置を取得します。 */
+	LN_METHOD(Property)
+	const Vector3& centerPoint() const { return m_center; }
 
     // TODO:Forward?
     Vector3 getFront() const
@@ -110,6 +118,17 @@ public:
 	LN_METHOD(Property)
 	const Vector3& scale() const { return m_transform->scale(); }
     
+	/** このオブジェクトのローカルの中心位置を設定します。 */
+	LN_METHOD(Property)
+	void setCenterPoint(const Vector3& value) { m_transform->setCenterPoint(value); }
+    
+	/** このオブジェクトのローカルの中心位置を設定します。 */
+    LN_METHOD(OverloadPostfix = "XYZ")
+	void setCenterPoint(float x, float y, float z) { setCenterPoint(Vector3(x, y, z)); }
+
+	/** このオブジェクトのローカルの中心位置を取得します。 */
+	LN_METHOD(Property)
+	const Vector3& centerPoint() const { return m_transform->centerPoint(); }
 
     void lookAt(const Vector3& target, const Vector3& up = Vector3::UnitY);
 

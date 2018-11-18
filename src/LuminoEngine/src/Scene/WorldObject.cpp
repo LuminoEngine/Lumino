@@ -47,6 +47,15 @@ void WorldObjectTransform::setScale(const Vector3& scale)
     }
 }
 
+void WorldObjectTransform::setCenterPoint(const Vector3& value)
+{
+    if (m_center != value)
+    {
+        m_center = value;
+        m_parent->notifyTransformChanged();
+    }
+}
+
 void WorldObjectTransform::lookAt(const Vector3& target, const Vector3& up)
 {
     if (target == m_position) return;
@@ -77,7 +86,8 @@ void WorldObjectTransform::lookAt(const Vector3& target, const Vector3& up)
 
 Matrix WorldObjectTransform::getLocalMatrix() const
 {
-    return Matrix::makeAffineTransformation(m_scale, m_center, m_rotation, m_position);
+    return Matrix::makeAffineTransformation(m_scale, Vector3::Zero, m_rotation, m_position - m_center);
+    //return Matrix::makeAffineTransformation(m_scale, m_center, m_rotation, m_position);
 }
 
 //void WorldObjectTransform::updateWorldMatrix(const Matrix* parent)

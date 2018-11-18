@@ -279,9 +279,9 @@ set(LN_SOURCES_ImageEffect
 
 set(LN_SOURCES_Asset
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Asset/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Asset/Asset.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Asset/Assets.hpp
     src/Asset/Internal.hpp
-    src/Asset/Asset.cpp
+    src/Asset/Assets.cpp
     src/Asset/AssetManager.cpp
     src/Asset/AssetManager.hpp
     src/Asset/AssetArchive.cpp

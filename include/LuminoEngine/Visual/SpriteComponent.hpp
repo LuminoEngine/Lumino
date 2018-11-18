@@ -21,6 +21,14 @@ public:
     /** スプライトの大きさを設定します。 */
     void setSize(const Size& size);
 
+
+    /**
+        @brief		テクスチャのどの部分を表示するかを示す転送矩形を設定します。(ピクセル単位)
+    */
+    void setSourceRect(const Rect& rect);
+
+    const Rect& sourceRect() const { return m_srcRect; }
+
 protected:
     void onRender(RenderingContext* context);
 

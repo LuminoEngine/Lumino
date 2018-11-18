@@ -52,6 +52,11 @@ void SpriteComponent::setSize(const Size& size)
     m_size = size;
 }
 
+void SpriteComponent::setSourceRect(const Rect& rect)
+{
+    m_srcRect = rect;
+}
+
 void SpriteComponent::onRender(RenderingContext* context)
 {
     // 転送元矩形が負値ならテクスチャ全体を転送する
