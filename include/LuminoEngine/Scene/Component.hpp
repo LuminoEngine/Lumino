@@ -20,6 +20,7 @@ protected:
 
     WorldObject* worldObject() const { return m_object; }
 
+
     // 以下、すべて空実装
     //virtual void onAttached();
     //virtual void onDetaching();
@@ -34,6 +35,9 @@ LN_CONSTRUCT_ACCESS:
 
 public:
     WorldObject* m_object;
+
+private:
+    virtual void render(RenderingContext* context);
 
     friend class World;
 };

@@ -18,6 +18,7 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 private:
+    virtual void render(RenderingContext* context) override;
 };
 
 } // namespace ln

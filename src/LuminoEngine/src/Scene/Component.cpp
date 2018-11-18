@@ -29,6 +29,11 @@ detail::WorldObjectTransform* Component::transrom() const
     return worldObject()->transform();
 }
 
+void Component::render(RenderingContext* context)
+{
+    onRender(context);
+}
+
 void Component::onUpdate(float elapsedSeconds)
 {
 }

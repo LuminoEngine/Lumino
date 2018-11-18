@@ -22,5 +22,10 @@ void VisualComponent::initialize()
     Component::initialize();
 }
 
+void VisualComponent::render(RenderingContext* context)
+{
+    onRender(context);
+}
+
 } // namespace ln
 

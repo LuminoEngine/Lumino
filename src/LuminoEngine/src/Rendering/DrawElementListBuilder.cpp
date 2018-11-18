@@ -247,6 +247,8 @@ RenderStage * DrawElementListBuilder::prepareRenderStage(RenderFeature* renderFe
 		newStage->renderFeature = renderFeature;
 		newStage->renderFeatureStageParameters = featureParams;
 
+        // FrameBufferStageParameters と GeometryStageParameters は、内容が本当に変更されていなければ、
+        // メモリ節約のためにひとつ前の Stage が持っているものとインスタンスを共有する。
 		bool sharedFrameBufferStageParameters = false;
 		bool sharedGeometryStageParameters = false;
 		if (lastStage) {

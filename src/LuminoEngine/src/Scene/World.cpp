@@ -83,7 +83,7 @@ void World::render()
         {
 
             c->onPrepareRender(m_renderingContext); // TODO: 全体の前にした方がいいかも
-            c->onRender(m_renderingContext);
+            c->render(m_renderingContext);
         }
     }
 }
