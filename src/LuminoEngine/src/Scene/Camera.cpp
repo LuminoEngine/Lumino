@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
 
 namespace ln {
@@ -15,6 +16,7 @@ Ref<Camera> Camera::create()
 Camera::Camera()
 	: WorldObject()
 	, m_component(nullptr)
+    , m_ownerRenderView(nullptr)
 {
 }
 
@@ -26,11 +28,20 @@ void Camera::initialize()
 {
 	WorldObject::initialize();
     m_component = newObject<CameraComponent>();
+    addComponent(m_component);
+    setPosition(0, 0, -10.0f);
 }
 
 CameraComponent* Camera::cameraComponent() const
 {
 	return m_component;
+}
+
+void Camera::onUpdate(float elapsedSeconds)
+{
+    if (m_ownerRenderView) {
+        m_component->updateMatrices(m_ownerRenderView->actualPixelSize());
+    }
 }
 
 //void Camera::setCameraComponent(CameraComponent* component)

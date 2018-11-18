@@ -37,6 +37,9 @@ public:
 	// TODO: internal
 	//detail::CameraInfo mainCameraInfo;
 
+    // フレーム開始時に決定
+    const Size& actualPixelSize() const { return m_actualPixelSize; }
+
 protected:
    
 

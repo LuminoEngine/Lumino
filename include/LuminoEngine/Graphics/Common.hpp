@@ -143,7 +143,7 @@ enum class TextureFormat : uint8_t
 	RGBA32,
 
 	/** 32 ビットのアルファ無しフォーマット */
-	RGBX32,
+	//RGBX32,
 
 	/** 64 ビットの浮動小数点フォーマット */
 	R16G16B16A16Float,

@@ -20,8 +20,8 @@ PixelFormat GraphicsHelper::translateToPixelFormat(TextureFormat format)
 		return PixelFormat::Unknown;
 	case TextureFormat::RGBA32:
 		return PixelFormat::RGBA32;
-	case TextureFormat::RGBX32:
-		return PixelFormat::Unknown;
+	//case TextureFormat::RGBX32:
+	//	return PixelFormat::RGBA32;
 	case TextureFormat::R16G16B16A16Float:
 		return PixelFormat::Unknown;
 	case TextureFormat::R32G32B32A32Float:

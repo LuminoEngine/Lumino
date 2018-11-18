@@ -23,6 +23,7 @@ public:
 	void initialize();
 
 protected:
+    virtual Size arrangeOverride(const Size& finalSize) override;
     //virtual void render(UIRenderingContext* context);
 	virtual void onRender(UIRenderingContext* context);
 

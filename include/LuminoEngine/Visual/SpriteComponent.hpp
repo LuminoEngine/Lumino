@@ -16,6 +16,8 @@ public:
     LN_METHOD(Property)
     void setTexture(Texture* texture);
 
+    Texture* texture() const;
+
     /** スプライトの大きさを設定します。 */
     void setSize(const Size& size);
 
@@ -30,6 +32,8 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     Ref<Material> m_material;
+    Size m_size;
+    Rect m_srcRect;
 };
 
 } // namespace ln

@@ -10,7 +10,7 @@ class Sprite
 	: public WorldObject
 {
 public:
-    static Ref<Sprite> create(float width, float height);
+    static Ref<Sprite> create(float width, float height, Texture* texture = nullptr);
 
     /** スプライトが表示するテクスチャを設定します。 */
     LN_METHOD(Property)
@@ -25,7 +25,7 @@ LN_CONSTRUCT_ACCESS:
 	Sprite();
 	virtual ~Sprite();
 	void initialize();
-    void initialize(float width, float height);
+    void initialize(float width, float height, Texture* texture = nullptr);
 
 private:
     Ref<SpriteComponent> m_component;

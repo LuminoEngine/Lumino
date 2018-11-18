@@ -1,4 +1,5 @@
 ﻿#include "Common.hpp"
+#include "../src/Engine/EngineManager.hpp"
 #include "TestEnv.hpp"
 
 void TestEnv::setup()
@@ -6,12 +7,19 @@ void TestEnv::setup()
 	GlobalLogger::addStdErrAdapter();
 	EngineSettings::setMainWindowSize(160, 120);
 	EngineSettings::setMainBackBufferSize(160, 120);
-	Engine::initialize();
+    detail::EngineDomain::engineManager()->initialize();
 }
 
 void TestEnv::teardown()
 {
-	Engine::terminate();
+    detail::EngineDomain::release();
+}
+
+void TestEnv::updateFrame()
+{
+    detail::EngineDomain::engineManager()->updateFrame();
+    detail::EngineDomain::engineManager()->renderFrame();
+    detail::EngineDomain::engineManager()->presentFrame();
 }
 
 Ref<Bitmap2D> TestEnv::capture()

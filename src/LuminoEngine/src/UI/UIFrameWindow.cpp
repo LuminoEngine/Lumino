@@ -26,6 +26,7 @@ void UIFrameWindow::initialize(detail::PlatformWindow* platformMainWindow, const
 {
 	UIElement::initialize();
 	m_manager = detail::EngineDomain::uiManager();
+    m_platformWindow = platformMainWindow;
 	m_swapChain = newObject<SwapChain>(platformMainWindow, backbufferSize);
 	m_renderView = newObject<UIRenderView>();
 }
@@ -34,11 +35,13 @@ void UIFrameWindow::dispose()
 {
 	if (m_swapChain) {
 		m_swapChain->dispose();
+        m_swapChain = nullptr;
 	}
 
 	if (m_platformWindow) {
 		m_platformWindow->detachEventListener(this);
 		detail::EngineDomain::platformManager()->windowManager()->destroyWindow(m_platformWindow);	// TODO: dispose で破棄で。
+        m_platformWindow = nullptr;
 	}
 }
 
@@ -69,6 +72,13 @@ SwapChain* UIFrameWindow::swapChain() const
 UIElement* UIFrameWindow::getVisualChild(int index) const
 {
 	return m_viewport;
+}
+
+void UIFrameWindow::updateLayout()
+{
+    SizeI size;
+    m_platformWindow->getSize(&size);
+    UIElement::updateLayout(size.toFloatSize());
 }
 
 bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)

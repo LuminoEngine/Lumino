@@ -4,6 +4,7 @@
 #include "WorldObject.hpp"
 
 namespace ln {
+class WorldRenderView;
 class CameraComponent;
 
 /**
@@ -38,6 +39,10 @@ public:
 
 	CameraComponent* cameraComponent() const;
 
+protected:
+    // WorldObject interface
+    virtual void onUpdate(float elapsedSeconds) override;
+
 LN_CONSTRUCT_ACCESS:
 	Camera();
 	virtual ~Camera();
@@ -47,7 +52,10 @@ LN_CONSTRUCT_ACCESS:
 //	void setCameraComponent(CameraComponent* component);
 
 private:
-	Ref<CameraComponent>	m_component;
+	Ref<CameraComponent> m_component;
+    WorldRenderView* m_ownerRenderView;
+
+    friend class WorldRenderView;
 };
 
 

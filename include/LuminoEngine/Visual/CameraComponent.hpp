@@ -82,6 +82,8 @@ public:	// internal
 	const Matrix& getViewProjectionMatrix() const { return m_viewProjMatrix; }
 
 protected:
+    // Component interface
+    //virtual void onUpdate(float elapsedSeconds) override;
 
 	// Component interface
 	//virtual void onUpdate(float deltaSceonds) override;

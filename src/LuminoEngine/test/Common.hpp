@@ -11,3 +11,11 @@ using namespace ln;
 #include <LuminoCore/Testing/TestHelper.hpp>
 #include "TestEnv.hpp"
 
+// テストフィクスチャ終了時に World をクリーンアップする
+class LuminoSceneTest : public ::testing::Test
+{
+    virtual void TearDown() override
+    {
+        //Engine:()->removeAllObjects();
+    }
+};

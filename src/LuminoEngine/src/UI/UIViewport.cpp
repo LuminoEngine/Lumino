@@ -44,6 +44,15 @@ void UIViewport::removeImageEffect(ImageEffect* effect)
     m_imageEffectRenderer->removeImageEffect(effect);
 }
 
+Size UIViewport::arrangeOverride(const Size& finalSize)
+{
+    // TODO: tmp
+    for (auto& rv : m_renderViews) {
+        rv->setActualPixelSize(finalSize);
+    }
+    return UIContainerElement::arrangeOverride(finalSize);
+}
+
 //void UIViewport::render(UIRenderingContext* context)
 //{
 //}

@@ -58,9 +58,14 @@ void CameraComponent::initialize()
 //	return Vector3::transformCoord(v, m_viewProjMatrixI);
 //}
 
+//void CameraComponent::onUpdate(float elapsedSeconds)
+//{
+//
+//}
+
 void CameraComponent::updateMatrices(const Size& viewSize)
 {
-    const Matrix& worldMatrix = transrom()->worldMatrix();
+    const Matrix& worldMatrix = worldObject()->worldMatrix();
 
 	// 注視点
     Vector3 lookAt = Vector3::transformCoord(Vector3(0, 0, 1), worldMatrix);

@@ -8,9 +8,9 @@ namespace ln {
 //==============================================================================
 // Sprite
 
-Ref<Sprite> Sprite::create(float width, float height)
+Ref<Sprite> Sprite::create(float width, float height, Texture* texture)
 {
-    return newObject<Sprite>(width, height);
+    return newObject<Sprite>(width, height, texture);
 }
 
 Sprite::Sprite()
@@ -28,10 +28,11 @@ void Sprite::initialize()
     addComponent(m_component);
 }
 
-void Sprite::initialize(float width, float height)
+void Sprite::initialize(float width, float height, Texture* texture)
 {
     initialize();
     setSize(Size(width, height));
+    setTexture(texture);
 }
 
 void Sprite::setTexture(Texture* texture)

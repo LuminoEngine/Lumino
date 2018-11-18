@@ -37,7 +37,7 @@ protected:
                     親要素は、各子要素の Arrange を呼び出し、適切に配置する必要があります。
                     そうでない場合、子要素はレンダリングされません。(UIElement::arrangeOverride() は、子要素の配置は行いません)
     */
-    //virtual Size arrangeOverride(const Size& finalSize) override;
+    virtual Size arrangeOverride(const Size& finalSize);
 
 
 	/** この要素内の子ビジュアル要素の数を取得します。 */

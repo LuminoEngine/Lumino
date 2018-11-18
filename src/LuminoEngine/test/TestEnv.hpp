@@ -5,6 +5,7 @@ class TestEnv
 public:
 	static void setup();
 	static void teardown();
+    static void updateFrame();
 
 	static Ref<Bitmap2D> capture();
 	static void saveScreenShot(const Char* filePath);

@@ -25,6 +25,12 @@ void UIElement::initialize()
     }
 }
 
+Size UIElement::arrangeOverride(const Size& finalSize)
+{
+    // TODO: tmp
+    return finalSize;
+}
+
 int UIElement::getVisualChildrenCount() const
 {
 	return 0;
@@ -41,6 +47,9 @@ void UIElement::onRender(UIRenderingContext* context)
 
 void UIElement::updateLayout(const Size& size)
 {
+    // TODO: tmp
+    arrangeOverride(size);
+
     // TODO: Layoutelement に実装を持っていく
 
     // child elements

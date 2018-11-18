@@ -348,6 +348,13 @@ void EngineManager::updateFrame()
 		m_platformManager->windowManager()->processSystemEventQueue();
 	}
 
+    // onUpdate のユーザー処理として、2D <-> 3D 変換したいことがあるが、それには ViewPixelSize が必要になる。
+    // 初期化直後や、Platform からの SizeChanged イベントの直後に一度レイアウトを更新することで、
+    // ユーザー処理の前に正しい ViewPixelSize を計算しておく。
+    if (m_mainWindow) {
+        m_mainWindow->updateLayout();
+    }
+
 	// いくつかの入力状態は onEvent 経由で Platform モジュールから Input モジュールに伝えられる。
 	// このときはまだ押されているかどうかだけを覚えておく。
 	// 次に InputManager::updateFrame で、現在時間を考慮して各種状態を更新する。

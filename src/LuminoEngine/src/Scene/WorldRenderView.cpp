@@ -39,7 +39,19 @@ void WorldRenderView::setTargetWorld(World* world)
 
 void WorldRenderView::setCamera(Camera* camera)
 {
+    if (camera) {
+        if (LN_REQUIRE(!camera->m_ownerRenderView)) return;
+    }
+
+    if (m_camera) {
+        m_camera->m_ownerRenderView = nullptr;
+    }
+
 	m_camera = camera;
+
+    if (m_camera) {
+        m_camera->m_ownerRenderView = this;
+    }
 }
 
 void WorldRenderView::render(GraphicsContext* graphicsContext)
@@ -62,7 +74,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
 			CameraComponent* cc = m_camera->cameraComponent();
 
 			camera.viewPixelSize = Size(fb.renderTarget[0]->width(), fb.renderTarget[0]->height());	// TODO: 必要？
-			camera.viewPosition = m_camera->m_transform->position;
+			camera.viewPosition = m_camera->position();
 			camera.viewDirection = cc->getDirectionInternal().xyz();
 			camera.viewMatrix = cc->getViewMatrix();
 			camera.projMatrix = cc->getProjectionMatrix();

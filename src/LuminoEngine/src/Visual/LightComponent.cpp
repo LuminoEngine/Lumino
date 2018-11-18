@@ -193,7 +193,7 @@ void DirectionalLightComponent::onPrepareRender(RenderingContext* context)
 {
 	if (m_enabled)
 	{
-        const Matrix& t = transrom()->worldMatrix();
+        const Matrix& t = worldObject()->worldMatrix();
 		context->addDirectionalLight(m_color, m_intensity, t.front());
 
 		//if (m_shadowCasterPass != nullptr)
@@ -235,7 +235,7 @@ void PointLightComponent::onPrepareRender(RenderingContext* context)
 {
 	if (m_enabled)
 	{
-		const Matrix& t = transrom()->worldMatrix();
+		const Matrix& t = worldObject()->worldMatrix();
 		context->addPointLight(m_color, m_intensity, t.position(), m_range, m_attenuation);
 	}
 }
@@ -269,7 +269,7 @@ void SpotLightComponent::onPrepareRender(RenderingContext* context)
 {
 	if (m_enabled)
 	{
-        const Matrix& t = transrom()->worldMatrix();
+        const Matrix& t = worldObject()->worldMatrix();
 		context->addSpotLight(
 			m_color, m_intensity, t.position(), t.front(),
 			m_range, m_attenuation, m_spotAngle, m_spotPenumbra);

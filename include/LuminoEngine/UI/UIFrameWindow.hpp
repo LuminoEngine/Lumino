@@ -31,6 +31,8 @@ public:
 	virtual int getVisualChildrenCount() const override { return 1; }
 	virtual UIElement* getVisualChild(int index) const override;
 
+    // TODO: inernal
+    void updateLayout();
 
 LN_CONSTRUCT_ACCESS:
 	UIFrameWindow();

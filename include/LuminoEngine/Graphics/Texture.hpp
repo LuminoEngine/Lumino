@@ -35,6 +35,9 @@ public:
 	/** このテクスチャに関連付ける SamplerState を設定します。 */
 	void setSamplerState(SamplerState* value);
 
+    // TODO: internal
+    const SizeI& size() const { return m_size; }
+
 protected:
 	Texture();
 	virtual ~Texture();
@@ -44,7 +47,7 @@ protected:
 	void setFormat(TextureFormat format) { m_format = format; }
 	void setMipmap(bool mipmap) { m_mipmap = mipmap; }
 
-	SizeI m_size;
+	SizeI m_size;   // TODO: リアルタイムな部分で使うのは float が多い。対して、blit など lumino としてはあまりリアルタイムにしてほしくない部分は int がおおい。ので、float にしたい。
 	TextureFormat m_format;
 	Ref<SamplerState> m_samplerState;
 	bool m_mipmap;
