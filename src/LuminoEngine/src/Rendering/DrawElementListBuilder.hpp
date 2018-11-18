@@ -46,6 +46,7 @@ public:
 	void setColorScale(const Color& value);
 	void setBlendColor(const Color& value);
 	void setTone(const ToneF& value);
+    void setBaseBuiltinEffectData(const Optional<BuiltinEffectData>& data);
 
     void pushState(bool reset);
     void popState();
@@ -74,6 +75,7 @@ private:
         FrameBufferStageParameters frameBufferStageParameters;
         GeometryStageParameters geometryStageParameters;
         BuiltinEffectData builtinEffectData;
+        Optional<BuiltinEffectData> baseBuiltinEffectData;
     };
 
     enum class DirtyFlags

@@ -75,6 +75,14 @@ public:
 			blendColor == other->blendColor &&
 			tone == other->tone;
 	}
+
+    void inherit(const BuiltinEffectData& parent)
+    {
+        opacity *= parent.opacity;
+        colorScale.multiplyClamp(parent.colorScale);
+        blendColor.addClamp(parent.blendColor);
+        tone.addClamp(parent.tone);
+    }
 };
 
 // インスタンスは DrawElementList の LinearAllocator に配置される。
@@ -238,7 +246,7 @@ public:
     BuiltinEffectData* builtinEffectData;
 
 private:
-	Matrix m_combinedWorldMatrix;		// TODO: Element はたくさん作られるので、メモリ消費量が大きいかもしれない
+	Matrix m_combinedWorldMatrix;
 	RenderStage* m_stage;
 	RenderDrawElement* m_next;
 

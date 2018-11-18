@@ -171,6 +171,25 @@ void DrawElementListBuilder::setTone(const ToneF & value)
 	}
 }
 
+void DrawElementListBuilder::setBaseBuiltinEffectData(const Optional<BuiltinEffectData>& data)
+{
+    bool modify = false;
+    if (primaryState()->baseBuiltinEffectData.hasValue() != data.hasValue()) {
+        modify = true;
+    }
+    else if (!primaryState()->baseBuiltinEffectData.hasValue()) {
+        // 両方値を持っていない
+    }
+    else if (!primaryState()->baseBuiltinEffectData.value().equals(&data.value())) {
+        modify = true;
+    }
+
+    if (modify) {
+        primaryState()->baseBuiltinEffectData = data;
+        m_dirtyFlags.set(DirtyFlags::BuiltinEffect);
+    }
+}
+
 void DrawElementListBuilder::pushState(bool reset)
 {
     Ref<State> state;
@@ -189,6 +208,8 @@ void DrawElementListBuilder::pushState(bool reset)
         // 現在のステートを保持
         state->frameBufferStageParameters.copyFrom(primaryFrameBufferStageParameters());
         state->geometryStageParameters.copyFrom(primaryGeometryStageParameters());
+        state->builtinEffectData = primaryState()->builtinEffectData;
+        state->baseBuiltinEffectData = primaryState()->baseBuiltinEffectData;
     }
 
     m_aliveStateStack.add(state);
@@ -278,14 +299,20 @@ void DrawElementListBuilder::prepareRenderDrawElement(RenderDrawElement* newElem
     // newElement が持つべき BuiltinEffectData を決定する
     BuiltinEffectData* data = nullptr;
     if (m_dirtyFlags.hasFlag(DirtyFlags::BuiltinEffect)) {
-        data = m_targetList->newFrameData<BuiltinEffectData>(primaryState()->builtinEffectData);
+        // make new
     }
     else {
         if (lastElement) {
             data = lastElement->builtinEffectData;
         }
         else {
-            data = m_targetList->newFrameData<BuiltinEffectData>(primaryState()->builtinEffectData);
+            // make new
+        }
+    }
+    if (!data) {
+        data = m_targetList->newFrameData<BuiltinEffectData>(primaryState()->builtinEffectData);
+        if (primaryState()->baseBuiltinEffectData.hasValue()) {
+            data->inherit(primaryState()->baseBuiltinEffectData.value());
         }
     }
 
