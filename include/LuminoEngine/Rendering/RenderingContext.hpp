@@ -14,6 +14,7 @@ namespace detail {
 class RenderingManager;
 class DrawElementList;
 class DrawElementListBuilder;
+class BuiltinEffectData;
 } // namespace detail
 
 class RenderingContext
@@ -120,6 +121,10 @@ public:
 	void addSpotLight(const Color& color, float intensity, const Vector3& position, const Vector3& direction, float range, float attenuation, float spotAngle, float spotPenumbra);
 
 	/** @} */
+
+    // TODO: internal
+    void setBaseTransfrom(const Optional<Matrix>& value);
+    void setBaseBuiltinEffectData(const Optional<detail::BuiltinEffectData>& value);
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	RenderingContext();

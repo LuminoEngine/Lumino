@@ -39,16 +39,17 @@ public:
 
 	void setShadingModel(const Optional<ShadingModel>& value);
 	void setMaterial(AbstractMaterial* value);  // 一度 set したマテリアルは描画完了まで変更してはならない。TODO: Freezed みたいな状態にしたい
+	void setTransfrom(const Matrix& value);
+    void setBaseTransfrom(const Optional<Matrix>& value);
 
 	// BuiltinEffectData
-	//void setTransfrom(const Matrix& value);
 	void setOpacity(float value);
 	void setColorScale(const Color& value);
 	void setBlendColor(const Color& value);
 	void setTone(const ToneF& value);
-    void setBaseBuiltinEffectData(const Optional<BuiltinEffectData>& data);
+    void setBaseBuiltinEffectData(const Optional<BuiltinEffectData>& value);
 
-    void pushState(bool reset);
+    void pushState(bool reset); // ※ 単純に state を退避するための仕組みなので、OpenGL の push/pop Matrix のように transform の乗算などは行わない。
     void popState();
 
     BlitRenderFeatureStageParameters* blitRenderFeatureStageParameters() { return &m_blitRenderFeatureStageParameters; }
@@ -76,6 +77,11 @@ private:
         GeometryStageParameters geometryStageParameters;
         BuiltinEffectData builtinEffectData;
         Optional<BuiltinEffectData> baseBuiltinEffectData;
+        Matrix transform;
+        Optional<Matrix> baseTransform;
+
+        void reset();
+        void copyFrom(const State* other);
     };
 
     enum class DirtyFlags

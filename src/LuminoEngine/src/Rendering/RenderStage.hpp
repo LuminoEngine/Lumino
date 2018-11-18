@@ -14,6 +14,7 @@ class RenderFeature;
 namespace detail {
 class RenderStage;
 class DrawElementList;
+class DrawElementListBuilder;
 struct SubsetInfo;
 
 // DrawElementList::newFrameData() で確保するデータのインターフェイス。
@@ -251,6 +252,7 @@ private:
 	RenderDrawElement* m_next;
 
 	friend class DrawElementList;
+    friend class DrawElementListBuilder;
 };
 
 /*

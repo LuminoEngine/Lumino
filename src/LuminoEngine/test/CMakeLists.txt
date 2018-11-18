@@ -11,6 +11,7 @@ set(LN_SOURCES
 	Test_Graphics_HlslEffect.cpp
 	Test_Graphics_LowLevelRendering.cpp
 	Test_Scene_Sprite.cpp
+	Test_Scene_WorldObject.cpp
 	TestEnv.cpp
 	TestEnv.hpp
 )

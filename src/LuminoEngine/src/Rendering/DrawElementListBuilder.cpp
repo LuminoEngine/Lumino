@@ -36,8 +36,7 @@ void DrawElementListBuilder::resetForBeginRendering()
 
 void DrawElementListBuilder::reset2()
 {
-	primaryFrameBufferStageParameters().reset();
-	primaryGeometryStageParameters().reset();
+    primaryState()->reset();
     m_dirtyFlags = DirtyFlags::All;
 	m_modified = true;
 }
@@ -131,13 +130,15 @@ void DrawElementListBuilder::setMaterial(AbstractMaterial* value)
 	}
 }
 
-//void DrawElementListBuilder::setTransfrom(const Matrix & value)
-//{
-//	if (primaryGeometryStageParameters().builtinEffectData.m_transfrom != value) {
-//		primaryGeometryStageParameters().builtinEffectData.m_transfrom = value;
-//		m_modified = true;
-//	}
-//}
+void DrawElementListBuilder::setTransfrom(const Matrix & value)
+{
+    primaryState()->transform = value;
+}
+
+void DrawElementListBuilder::setBaseTransfrom(const Optional<Matrix>& value)
+{
+    primaryState()->baseTransform = value;
+}
 
 void DrawElementListBuilder::setOpacity(float value)
 {
@@ -171,21 +172,21 @@ void DrawElementListBuilder::setTone(const ToneF & value)
 	}
 }
 
-void DrawElementListBuilder::setBaseBuiltinEffectData(const Optional<BuiltinEffectData>& data)
+void DrawElementListBuilder::setBaseBuiltinEffectData(const Optional<BuiltinEffectData>& value)
 {
     bool modify = false;
-    if (primaryState()->baseBuiltinEffectData.hasValue() != data.hasValue()) {
+    if (primaryState()->baseBuiltinEffectData.hasValue() != value.hasValue()) {
         modify = true;
     }
     else if (!primaryState()->baseBuiltinEffectData.hasValue()) {
         // 両方値を持っていない
     }
-    else if (!primaryState()->baseBuiltinEffectData.value().equals(&data.value())) {
+    else if (!primaryState()->baseBuiltinEffectData.value().equals(&value.value())) {
         modify = true;
     }
 
     if (modify) {
-        primaryState()->baseBuiltinEffectData = data;
+        primaryState()->baseBuiltinEffectData = value;
         m_dirtyFlags.set(DirtyFlags::BuiltinEffect);
     }
 }
@@ -206,10 +207,7 @@ void DrawElementListBuilder::pushState(bool reset)
     }
     else {
         // 現在のステートを保持
-        state->frameBufferStageParameters.copyFrom(primaryFrameBufferStageParameters());
-        state->geometryStageParameters.copyFrom(primaryGeometryStageParameters());
-        state->builtinEffectData = primaryState()->builtinEffectData;
-        state->baseBuiltinEffectData = primaryState()->baseBuiltinEffectData;
+        state->copyFrom(primaryState());
     }
 
     m_aliveStateStack.add(state);
@@ -318,6 +316,35 @@ void DrawElementListBuilder::prepareRenderDrawElement(RenderDrawElement* newElem
 
     newElement->builtinEffectData = data;
     m_dirtyFlags.unset(DirtyFlags::BuiltinEffect);
+
+    // transform
+    if (primaryState()->baseTransform.hasValue()) {
+        newElement->m_combinedWorldMatrix = primaryState()->baseTransform.value() * primaryState()->transform;
+    }
+    else {
+        newElement->m_combinedWorldMatrix = primaryState()->transform;
+    }
+}
+
+
+void DrawElementListBuilder::State::reset()
+{
+    frameBufferStageParameters.reset();
+    geometryStageParameters.reset();
+    builtinEffectData = BuiltinEffectData::DefaultValue;
+    baseBuiltinEffectData = nullptr;
+    transform = Matrix::Identity;
+    baseTransform = nullptr;
+}
+
+void DrawElementListBuilder::State::copyFrom(const State* other)
+{
+    frameBufferStageParameters.copyFrom(other->frameBufferStageParameters);
+    geometryStageParameters.copyFrom(other->geometryStageParameters);
+    builtinEffectData = other->builtinEffectData;
+    baseBuiltinEffectData = other->baseBuiltinEffectData;
+    transform = other->transform;
+    baseTransform = other->baseTransform;
 }
 
 } // namespace detail

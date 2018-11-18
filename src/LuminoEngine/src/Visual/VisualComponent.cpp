@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Scene/WorldObject.hpp>
 #include <LuminoEngine/Visual/VisualComponent.hpp>
 
 namespace ln {
@@ -24,6 +25,8 @@ void VisualComponent::initialize()
 
 void VisualComponent::render(RenderingContext* context)
 {
+    context->setBaseTransfrom(worldObject()->worldMatrix());
+    // TODO: setBaseBuiltinEffectData
     onRender(context);
 }
 

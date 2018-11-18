@@ -8,6 +8,14 @@ namespace ln {
 
 //=============================================================================
 // SpriteComponent
+/*
+ * 正面方向について
+ * --------
+ * Luminoは 奥方向を正面としている。なら Sprite も面方向と法線はデフォルトで Z+ を向いた方がよいのでは？
+ * → Sprite は普通、常にカメラ方向を向くビルボードとして使われることを想定している。
+ *   まぁ、3D 空間に看板オブジェクトみたいに板ポリ置くのに使えないことはないけれど、
+ *   それってマップオブジェクトを表現するための Mesh としたほうがいいよね。
+ */
 
 SpriteComponent::SpriteComponent()
     : m_material(nullptr)
@@ -68,8 +76,8 @@ void SpriteComponent::onRender(RenderingContext* context)
     renderSourceRect.height /= texSize.height;
 
 
-    context->setBlendMode(BlendMode::Alpha);
-    context->setOpacity(0.5);
+    //context->setBlendMode(BlendMode::Alpha);
+    //context->setOpacity(0.5);
 
     context->drawSprite(
         Matrix(), renderSize, Vector2(0, 0), renderSourceRect, Color::White,
