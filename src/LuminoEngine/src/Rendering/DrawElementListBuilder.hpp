@@ -62,6 +62,7 @@ public:
 		RenderStage* stage = prepareRenderStage(renderFeature, params);
 		if (LN_ENSURE(stage)) return nullptr;
 		TElement* element = m_targetList->newFrameData<TElement>();
+        prepareRenderDrawElement(element, m_targetList->lastElement());
 		m_targetList->addElement(stage, element);
 		return element;
 	}
@@ -72,9 +73,19 @@ private:
     public:
         FrameBufferStageParameters frameBufferStageParameters;
         GeometryStageParameters geometryStageParameters;
+        BuiltinEffectData builtinEffectData;
+    };
+
+    enum class DirtyFlags
+    {
+        None = 0x00,
+        BuiltinEffect = 0x02,
+        All = 0xFFFF,
     };
 
 	RenderStage* prepareRenderStage(RenderFeature* renderFeature, RenderFeatureStageParameters* featureParams);
+    void prepareRenderDrawElement(RenderDrawElement* newElement, RenderDrawElement* lastElement);
+    const Ref<State>& primaryState() { return m_aliveStateStack.front(); }
     FrameBufferStageParameters& primaryFrameBufferStageParameters() { return m_aliveStateStack.front()->frameBufferStageParameters; }
     const FrameBufferStageParameters& primaryFrameBufferStageParameters() const { return m_aliveStateStack.front()->frameBufferStageParameters; }
     GeometryStageParameters& primaryGeometryStageParameters() { return m_aliveStateStack.front()->geometryStageParameters; }
@@ -96,7 +107,9 @@ private:
 	MeshRenderFeatureStageParameters m_meshRenderFeatureStageParameters;
 
     Ref<AbstractMaterial> m_defaultMaterial;
+    Flags<DirtyFlags> m_dirtyFlags;
 	bool m_modified;
+
 };
 
 } // namespace detail

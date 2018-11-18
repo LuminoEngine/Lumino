@@ -151,6 +151,26 @@ bool RenderStage::isDepthWriteEnabledFinal(AbstractMaterial* finalMaterial) cons
 	return true;
 }
 
+float RenderStage::getOpacityFinal(RenderDrawElement* element) const
+{
+    return element->builtinEffectData->opacity;
+}
+
+const Color& RenderStage::getColorScaleFinal(RenderDrawElement* element) const
+{
+    return element->builtinEffectData->colorScale;
+}
+
+const Color& RenderStage::getBlendColorFinal(RenderDrawElement* element) const
+{
+    return element->builtinEffectData->blendColor;
+}
+
+const ToneF& RenderStage::getToneFinal(RenderDrawElement* element) const
+{
+    return element->builtinEffectData->tone;
+}
+
 //==============================================================================
 // DrawElementList
 

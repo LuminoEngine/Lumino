@@ -203,10 +203,10 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 
 			SubsetInfo subsetInfo;
 			subsetInfo.materialTexture = (finalMaterial) ? finalMaterial->mainTexture() : nullptr;
-			subsetInfo.opacity = currentStage->getOpacityFinal();
-			subsetInfo.colorScale = currentStage->getColorScaleFinal();
-			subsetInfo.blendColor = currentStage->getBlendColorFinal();
-			subsetInfo.tone = currentStage->getToneFinal();
+			subsetInfo.opacity = currentStage->getOpacityFinal(element);
+			subsetInfo.colorScale = currentStage->getColorScaleFinal(element);
+			subsetInfo.blendColor = currentStage->getBlendColorFinal(element);
+			subsetInfo.tone = currentStage->getToneFinal(element);
             element->onSubsetInfoOverride(&subsetInfo);
 
 			ShaderTechnique* tech = pass->selectShaderTechnique(

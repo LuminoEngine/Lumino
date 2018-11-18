@@ -76,6 +76,26 @@ void RenderingContext::setDepthWriteEnabled(Optional<bool> value)
 	m_builder->setDepthWriteEnabled(value);
 }
 
+void RenderingContext::setOpacity(float value)
+{
+    m_builder->setOpacity(value);
+}
+
+void RenderingContext::setColorScale(const Color& value)
+{
+    m_builder->setColorScale(value);
+}
+
+void RenderingContext::setBlendColor(const Color& value)
+{
+    m_builder->setBlendColor(value);
+}
+
+void RenderingContext::setTone(const ToneF& value)
+{
+    m_builder->setTone(value);
+}
+
 void RenderingContext::resetState()
 {
     m_builder->reset2();

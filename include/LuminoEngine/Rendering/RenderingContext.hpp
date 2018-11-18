@@ -66,6 +66,14 @@ public:
 
 	/** @} */
 
+
+    // BuiltinEffectData
+    //void setTransfrom(const Matrix& value);
+    void setOpacity(float value);
+    void setColorScale(const Color& value);
+    void setBlendColor(const Color& value);
+    void setTone(const ToneF& value);
+
     void resetState();
     void pushState(bool reset = true);  // TODO: enum, scoped_guard
     void popState();

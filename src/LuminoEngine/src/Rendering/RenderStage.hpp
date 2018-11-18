@@ -18,6 +18,7 @@ struct SubsetInfo;
 
 // DrawElementList::newFrameData() で確保するデータのインターフェイス。
 // 描画終了時にデストラクタを呼び出すために使用する。
+// このクラスはフレーム終了時に開放されるため、自分で参照を管理する必要はないが、寿命に注意すること。
 class IDrawElementListFrameData
 {
 protected:
@@ -31,11 +32,12 @@ private:
 	friend class DrawElementList;
 };
 
-struct BuiltinEffectData
+class BuiltinEffectData
+    : public IDrawElementListFrameData
 {
+public:
 	static const BuiltinEffectData DefaultValue;
 
-	//Ref<Shader>	shader;
 	float opacity;
 	Color colorScale;
 	Color blendColor;
@@ -45,6 +47,14 @@ struct BuiltinEffectData
 	{
 		reset();
 	}
+
+    BuiltinEffectData(const BuiltinEffectData& other)
+        : opacity(other.opacity)
+        , colorScale(other.colorScale)
+        , blendColor(other.blendColor)
+        , tone(other.tone)
+    {
+    }
 
 	void reset()
 	{
@@ -131,7 +141,6 @@ public:
 	Optional<bool>				m_depthTestEnabled;
 	Optional<bool>				m_depthWriteEnabled;
 	Optional<ShadingModel>		shadingModel;
-	BuiltinEffectData builtinEffectData;	// TODO: RenderState 変更のコストは高いけど、Uniform 変更のコストはそんなに高くない。これは Element 側に持って行ってもいい気がする。
 
 	GeometryStageParameters()
 	{
@@ -146,19 +155,19 @@ public:
 		m_depthTestEnabled = nullptr;
 		m_depthWriteEnabled = nullptr;
 		shadingModel = nullptr;
-		builtinEffectData.reset();
+		//builtinEffectData.reset();
 	}
 
 	bool equals(const GeometryStageParameters* other) const
 	{
-		return
-			m_material == other->m_material &&
-			m_blendMode == other->m_blendMode &&
-			m_cullingMode == other->m_cullingMode &&
-			m_depthTestEnabled == other->m_depthTestEnabled &&
-			m_depthWriteEnabled == other->m_depthWriteEnabled &&
-			shadingModel == other->shadingModel &&
-			builtinEffectData.equals(&other->builtinEffectData);
+        return
+            m_material == other->m_material &&
+            m_blendMode == other->m_blendMode &&
+            m_cullingMode == other->m_cullingMode &&
+            m_depthTestEnabled == other->m_depthTestEnabled &&
+            m_depthWriteEnabled == other->m_depthWriteEnabled &&
+            shadingModel == other->shadingModel;// &&
+			//builtinEffectData.equals(&other->builtinEffectData);
 	}
 
     void copyFrom(const GeometryStageParameters& other)
@@ -221,6 +230,12 @@ public:
 
     // FIXME: Unity では CommandBuffer (を実行するメソッド) 単位で持つが・・・
     RendringPhase targetPhase = RendringPhase::Default;
+
+    // Uniform 変数を変更するようなパラメータは RenderStage ではなく RenderDrawElement に持っておくことで、
+    // opacity などが少しでも変わることで RenderStage がたくさん作られてしまう問題に対処する。
+    // RenderDrawElement の描画のたびに Uniform 変数を更新することになるが、RenderState 変更に比べれはコストは低い。
+    // (結局、WorldMatrix など必須パラメータと同じ ConstantBuffer で送信する)
+    BuiltinEffectData* builtinEffectData;
 
 private:
 	Matrix m_combinedWorldMatrix;		// TODO: Element はたくさん作られるので、メモリ消費量が大きいかもしれない
@@ -293,10 +308,10 @@ public:
 	//AbstractMaterial* getPriorityMaterialFinal() const { return renderingContextParameters.getPriorityMaterial(); }
 	// BuiltinEffectData
 	//Shader* getShaderFinal(AbstractMaterial* finalMaterial) const;	// getMaterialFinal() で確定した Material を渡すこと
-	float getOpacityFinal() const { return geometryStageParameters->builtinEffectData.opacity; }
-	const Color& getColorScaleFinal() const { return geometryStageParameters->builtinEffectData.colorScale; }
-	const Color& getBlendColorFinal() const { return geometryStageParameters->builtinEffectData.blendColor; }
-	const ToneF& getToneFinal() const { return geometryStageParameters->builtinEffectData.tone; }
+    float getOpacityFinal(RenderDrawElement* element) const;
+    const Color& getColorScaleFinal(RenderDrawElement* element) const;
+    const Color& getBlendColorFinal(RenderDrawElement* element) const;
+    const ToneF& getToneFinal(RenderDrawElement* element) const;
 
 
 private:
@@ -319,11 +334,11 @@ public:
 
 	void clear();
 
-	template<class T>
-	T* newFrameData()
+	template<class T, class... TArgs>
+	T* newFrameData(TArgs&&... args)
 	{
 		void* buffer = m_dataAllocator->allocate(sizeof(T));
-		T* data = new (buffer)T();
+		T* data = new (buffer)T(std::forward<TArgs>(args)...);
 		addFrameData(data);
 		return data;
 	}
@@ -333,6 +348,7 @@ public:
 	void addElement(RenderStage* parentStage, RenderDrawElement* element);
 
 	RenderDrawElement* headElement() const { return m_headElement; }
+    RenderDrawElement* lastElement() const { return m_tailElement; }
 
 	void addDynamicLightInfo(const DynamicLightInfo& info) { return m_dynamicLightInfoList.add(info); }
 

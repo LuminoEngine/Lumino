@@ -67,6 +67,10 @@ void SpriteComponent::onRender(RenderingContext* context)
     renderSourceRect.y /= texSize.height;
     renderSourceRect.height /= texSize.height;
 
+
+    context->setBlendMode(BlendMode::Alpha);
+    context->setOpacity(0.5);
+
     context->drawSprite(
         Matrix(), renderSize, Vector2(0, 0), renderSourceRect, Color::White,
         SpriteBaseDirection::ZMinus, BillboardType::None, m_material);

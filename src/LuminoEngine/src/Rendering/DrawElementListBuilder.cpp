@@ -38,6 +38,7 @@ void DrawElementListBuilder::reset2()
 {
 	primaryFrameBufferStageParameters().reset();
 	primaryGeometryStageParameters().reset();
+    m_dirtyFlags = DirtyFlags::All;
 	m_modified = true;
 }
 
@@ -140,33 +141,33 @@ void DrawElementListBuilder::setMaterial(AbstractMaterial* value)
 
 void DrawElementListBuilder::setOpacity(float value)
 {
-	if (primaryGeometryStageParameters().builtinEffectData.opacity != value) {
-		primaryGeometryStageParameters().builtinEffectData.opacity = value;
-		m_modified = true;
+	if (primaryState()->builtinEffectData.opacity != value) {
+        primaryState()->builtinEffectData.opacity = value;
+		m_dirtyFlags.set(DirtyFlags::BuiltinEffect);
 	}
 }
 
 void DrawElementListBuilder::setColorScale(const Color & value)
 {
-	if (primaryGeometryStageParameters().builtinEffectData.colorScale != value) {
-		primaryGeometryStageParameters().builtinEffectData.colorScale = value;
-		m_modified = true;
+	if (primaryState()->builtinEffectData.colorScale != value) {
+        primaryState()->builtinEffectData.colorScale = value;
+        m_dirtyFlags.set(DirtyFlags::BuiltinEffect);
 	}
 }
 
 void DrawElementListBuilder::setBlendColor(const Color & value)
 {
-	if (primaryGeometryStageParameters().builtinEffectData.blendColor != value) {
-		primaryGeometryStageParameters().builtinEffectData.blendColor = value;
-		m_modified = true;
+	if (primaryState()->builtinEffectData.blendColor != value) {
+        primaryState()->builtinEffectData.blendColor = value;
+        m_dirtyFlags.set(DirtyFlags::BuiltinEffect);
 	}
 }
 
 void DrawElementListBuilder::setTone(const ToneF & value)
 {
-	if (primaryGeometryStageParameters().builtinEffectData.tone != value) {
-		primaryGeometryStageParameters().builtinEffectData.tone = value;
-		m_modified = true;
+	if (primaryState()->builtinEffectData.tone != value) {
+        primaryState()->builtinEffectData.tone = value;
+        m_dirtyFlags.set(DirtyFlags::BuiltinEffect);
 	}
 }
 
@@ -204,7 +205,7 @@ void DrawElementListBuilder::popState()
     m_freeStateStack.add(state);
 }
 
-RenderStage * DrawElementListBuilder::prepareRenderStage(RenderFeature* renderFeature, RenderFeatureStageParameters * featureParams)
+RenderStage* DrawElementListBuilder::prepareRenderStage(RenderFeature* renderFeature, RenderFeatureStageParameters * featureParams)
 {
 	RenderStage* lastStage = nullptr;
 	RenderStage* newStage = nullptr;
@@ -270,6 +271,26 @@ RenderStage * DrawElementListBuilder::prepareRenderStage(RenderFeature* renderFe
 		// ステートに変化がないので、最後の Stage に追記できる
 		return m_targetList->last();
 	}
+}
+
+void DrawElementListBuilder::prepareRenderDrawElement(RenderDrawElement* newElement, RenderDrawElement* lastElement)
+{
+    // newElement が持つべき BuiltinEffectData を決定する
+    BuiltinEffectData* data = nullptr;
+    if (m_dirtyFlags.hasFlag(DirtyFlags::BuiltinEffect)) {
+        data = m_targetList->newFrameData<BuiltinEffectData>(primaryState()->builtinEffectData);
+    }
+    else {
+        if (lastElement) {
+            data = lastElement->builtinEffectData;
+        }
+        else {
+            data = m_targetList->newFrameData<BuiltinEffectData>(primaryState()->builtinEffectData);
+        }
+    }
+
+    newElement->builtinEffectData = data;
+    m_dirtyFlags.unset(DirtyFlags::BuiltinEffect);
 }
 
 } // namespace detail
