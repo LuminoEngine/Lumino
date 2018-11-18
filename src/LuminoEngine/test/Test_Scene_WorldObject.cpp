@@ -33,6 +33,6 @@ TEST_F(Test_Scene_WorldObject, Transform)
         sprite4->setCenterPoint(0, 3, 0);
 
         TestEnv::updateFrame();
-        ASSERT_SCREEN_S(LN_ASSETFILE("Result/Test_Scene_WorldObject-Transform-1.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Scene_WorldObject-Transform-1.png"));
 	}
 }

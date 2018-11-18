@@ -23,6 +23,6 @@ TEST_F(Test_Visual_VisualComponent, BuiltinEffects)
         sprite2->setPosition(-2, 0, 0);
 
         TestEnv::updateFrame();
-        ASSERT_SCREEN_S(LN_ASSETFILE("Result/Test_Visual_VisualComponent-BuiltinEffects-1.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Visual_VisualComponent-BuiltinEffects-1.png"));
 	}
 }
