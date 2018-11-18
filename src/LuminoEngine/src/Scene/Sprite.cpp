@@ -23,9 +23,10 @@ Sprite::~Sprite()
 
 void Sprite::initialize()
 {
-    WorldObject::initialize();
+    VisualObject::initialize();
     m_component = newObject<SpriteComponent>();
     addComponent(m_component);
+    setMainVisualComponent(m_component);
 }
 
 void Sprite::initialize(float width, float height, Texture* texture)

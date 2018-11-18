@@ -11,6 +11,7 @@ namespace ln {
 LN_OBJECT_IMPLEMENT(VisualComponent, Component);
 
 VisualComponent::VisualComponent()
+    : m_isVisible(true)
 {
 }
 
@@ -25,9 +26,12 @@ void VisualComponent::initialize()
 
 void VisualComponent::render(RenderingContext* context)
 {
-    context->setBaseTransfrom(worldObject()->worldMatrix());
-    // TODO: setBaseBuiltinEffectData
-    onRender(context);
+    if (m_isVisible)
+    {
+        context->setBaseTransfrom(worldObject()->worldMatrix());
+        // TODO: setBaseBuiltinEffectData
+        onRender(context);
+    }
 }
 
 } // namespace ln

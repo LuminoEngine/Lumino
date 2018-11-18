@@ -1,13 +1,13 @@
 ﻿
 #pragma once
-#include "WorldObject.hpp"
+#include "VisualObject.hpp"
 
 namespace ln {
 class Texture;
 class SpriteComponent;
 
 class Sprite
-	: public WorldObject
+	: public VisualObject
 {
 public:
     static Ref<Sprite> create(float width, float height, Texture* texture = nullptr);
