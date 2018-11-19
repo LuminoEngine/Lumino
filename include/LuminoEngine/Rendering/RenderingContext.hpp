@@ -53,6 +53,11 @@ public:
 	/** @name render status */
 	/** @{ */
 
+    // このあたりの設定は Material の設定をオーバーライドする。
+    // 主な用途としては、Mesh のように複数のマテリアルを含むオブジェクトを描画する際、
+    // サブセット全体の設定をオーバーライドするようなケースを想定している。
+    // (特に、ヒットエフェクトのための BlendColor や、エディタでの両面表示設定など、Material 自体のパラメータを変更したくない場合)
+
 	/** BlendMode を設定します。 シーンの既定値を使用する場合は nullptr を指定します。 */
 	void setBlendMode(Optional<BlendMode> value);
 

@@ -33,6 +33,16 @@ bool VisualObject::isVisible() const
     return mainVisualComponent()->isVisible();
 }
 
+void VisualObject::setBlendMode(const Optional<BlendMode>& mode)
+{
+    mainVisualComponent()->setBlendMode(mode);
+}
+
+const Optional<BlendMode>& VisualObject::blendMode() const
+{
+    return mainVisualComponent()->blendMode();
+}
+
 void VisualObject::setMainVisualComponent(VisualComponent* component)
 {
     m_component = component;

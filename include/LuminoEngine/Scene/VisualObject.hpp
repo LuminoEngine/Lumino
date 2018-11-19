@@ -19,6 +19,14 @@ public:
     LN_METHOD(Property)
     bool isVisible() const;
 
+    /** 合成方法を設定します。(default: BlendMode::Normal) */
+    void setBlendMode(const Optional<BlendMode>& mode);
+
+    /** 合成方法を取得します。*/
+    const Optional<BlendMode>& blendMode() const;
+
+    const Ref<VisualComponent>& mainVisualComponent() const { return m_component; }
+
 LN_CONSTRUCT_ACCESS:
     VisualObject();
 	virtual ~VisualObject();
@@ -26,7 +34,6 @@ LN_CONSTRUCT_ACCESS:
 
 protected:
     void setMainVisualComponent(VisualComponent* component);
-    const Ref<VisualComponent>& mainVisualComponent() const { return m_component; }
 
 private:
     Ref<VisualComponent> m_component;

@@ -293,7 +293,7 @@ namespace LuminoBuild.Tasks
                         BuildProject(builder, "libpng", t.Config, reposDir, dirName, generator, args);
                         BuildProject(builder, "freetype2", t.Config, reposDir, dirName, generator, args);
                         BuildProject(builder, "ogg", t.Config, reposDir, dirName, generator, args);
-                        BuildProject(builder, "vorbis", t.Config, reposDir, dirName, generator, $"-DOGG_ROOT={oggInstallDir} " + args);
+                        BuildProject(builder, "vorbis", t.Config, reposDir, dirName, generator, $"-DOGG_ROOT={oggInstallDir} -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH　" + args);
                     }
                 }
 

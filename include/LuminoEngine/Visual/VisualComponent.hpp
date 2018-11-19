@@ -5,6 +5,10 @@
 #include "../Scene/Component.hpp"
 
 namespace ln {
+namespace detail {
+class GeometryStageParameters;
+class BuiltinEffectData;
+}
 
 class VisualComponent
 	: public Component
@@ -19,6 +23,18 @@ public:
 	LN_METHOD(Property)
 	bool isVisible() const { return m_isVisible; }
 
+    /** 合成方法を設定します。(default: BlendMode::Normal) */
+    void setBlendMode(const Optional<BlendMode>& mode);
+
+    /** 合成方法を取得します。*/
+    const Optional<BlendMode>& blendMode() const;
+
+    /** 不透明度を設定します。(default: 1.0) */
+    void setOpacity(float value);
+
+    /** 不透明度を取得します。 */
+    float opacity() const;
+
 protected:
 
 LN_CONSTRUCT_ACCESS:
@@ -29,6 +45,8 @@ LN_CONSTRUCT_ACCESS:
 private:
     virtual void render(RenderingContext* context) override;
 
+    std::unique_ptr<detail::GeometryStageParameters> m_geometryStageParameters;
+    std::unique_ptr<detail::BuiltinEffectData> m_builtinEffectData;
     bool m_isVisible;
 };
 

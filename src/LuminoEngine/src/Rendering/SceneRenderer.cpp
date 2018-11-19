@@ -212,7 +212,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 			ShaderTechnique* tech = pass->selectShaderTechnique(
 				ShaderTechniqueClass_MeshProcess::StaticMesh,
                 finalMaterial->shader(),
-				ShadingModel::UnLighting);
+                currentStage->getShadingModelFinal(finalMaterial));
 
 			detail::ShaderSemanticsManager* semanticsManager = tech->shader()->semanticsManager();
 			semanticsManager->updateCameraVariables(cameraInfo);
