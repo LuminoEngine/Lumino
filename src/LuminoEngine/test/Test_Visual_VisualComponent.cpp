@@ -13,12 +13,12 @@ TEST_F(Test_Visual_VisualComponent, BuiltinEffects)
 
         auto tex1 = Assets::loadTexture(LN_ASSETFILE("Sprite1.png"));
 
-        //* [ ] Visibility
+        //* [ ] Hide
         auto sprite1 = Sprite::create(2, 2, tex1);
         sprite1->setPosition(-4, 0, 0);
         sprite1->setVisible(false);
 
-        //* [ ]
+        //* [ ] Normal
         auto sprite2 = Sprite::create(2, 2, tex1);
         sprite2->setPosition(-2, 0, 0);
 

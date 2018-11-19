@@ -162,7 +162,7 @@ namespace LuminoBuild.Tasks
                 // 3.3 リリース後、そのタグで clone するようにしておく。
                 if (Utils.IsMac)
                 {
-                    Utils.CallProcess("git", "clone --progress --depth 1 https://github.com/glfw/glfw.git glfw");
+                    Utils.CallProcess("git", "clone --progress https://github.com/glfw/glfw.git glfw");
                     Directory.SetCurrentDirectory("glfw");
                     Utils.CallProcess("git", "checkout 5afcd0981bf2fe9b9550f24ba298857aac6c35c2");
                     Directory.SetCurrentDirectory(reposDir);
