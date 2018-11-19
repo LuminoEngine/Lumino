@@ -197,12 +197,12 @@ namespace LuminoBuild.Tasks
             }
             if (!Directory.Exists("freetype2"))
             {
+                Utils.CallProcess("git", "clone --progress --depth 1 -b VER-2-7-1 git://git.sv.nongnu.org/freetype/freetype2.git freetype2");
+                
                 // freetype2 の CMakeList.txt は iOS ツールチェインを独自で持っているが、
-                // SIMULATOR64 のサポートは 2018/11/19 時点ではタグが降られていないため、現時点の最新を使う。
-                Utils.CallProcess("git", "clone --progress git://git.sv.nongnu.org/freetype/freetype2.git freetype2");
-                Directory.SetCurrentDirectory("freetype2");
-                Utils.CallProcess("git", "checkout c13635ee4bf34e621816cd09d7f2baf918e20af8");
-                Directory.SetCurrentDirectory(reposDir);
+                // 2018/11/19 時点では master のサポートでもビルドを通すことができない。
+                // そのため ↑のほうにある ios-cmake を有効にするため、IOS_PLATFORM に関する設定を削除した CMakeLists.txt を使用する。
+                Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "freetype2", "CMakeLists.txt"), "freetype2");
             }
             if (!Directory.Exists("ogg"))
             {
@@ -283,7 +283,7 @@ namespace LuminoBuild.Tasks
                     
                     foreach (var t in targetInfos)
                     {
-                        var dirName = $"iOS-{t.Platform}-{t.Config}";
+                        var dirName = $"iOS-{t.Platform}";
                         var args = $"-DCMAKE_TOOLCHAIN_FILE=\"{iOSToolchainFile}\" -DIOS_PLATFORM={t.Platform}";
                         var generator = "Xcode";
                         
