@@ -35,6 +35,24 @@ public:
     /** 不透明度を取得します。 */
     float opacity() const;
 
+    /** カラースケールを設定します。(default: Color(1, 1, 1, 1)) */
+    void setColorScale(const Color& value);
+
+    /** カラースケールを取得します。 */
+    const Color& colorScale() const;
+
+    /** ブレンドカラーを設定します。(default: Color(0, 0, 0, 0)) */
+    void setBlendColor(const Color& value);
+
+    /** ブレンドカラーを取得します。 */
+    const Color& blendColor() const;
+
+    /** 色調を設定します。(default: Tone(0, 0, 0, 0)) */
+    void setTone(const ToneF& value);
+
+    /** 色調を取得します。 */
+    const ToneF& tone() const;
+
 protected:
 
 LN_CONSTRUCT_ACCESS:

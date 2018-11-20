@@ -18,6 +18,10 @@ float2		ln_ViewportPixelSize;
 Texture2D		ln_MaterialTexture;
 SamplerState	ln_MaterialTextureSamplerState;
 
+// Builtin effect colors
+float4		ln_ColorScale = float4(1, 1, 1, 1);
+float4		ln_BlendColor = float4(0, 0, 0, 1);
+float4		ln_ToneColor = float4(0, 0, 0, 0);
 
 struct LN_VSInput
 {
@@ -109,5 +113,24 @@ float4 LN_Square(float4 x)
 	return x * x;
 }
 
+float4 LN_CalculateToneColor(float4 inColor, float4 inToneColor)
+{
+	float4 outColor = inColor;
+	float y = (0.208012 * outColor.r + 0.586611 * outColor.g + 0.114478 * outColor.b) * inToneColor.w;
+	outColor.rgb = (outColor.rgb * (1.0 - inToneColor.w)) + y + inToneColor.rgb;
+	return outColor;
+}
+
+float4 LN_GetBuiltinEffectColor(float4 inColor)
+{
+	// apply color scale.
+	float4 outColor = inColor * ln_ColorScale;
+	
+	// apply blend color.
+	outColor.rgb = lerp(outColor.rgb, ln_BlendColor.rgb, ln_BlendColor.a);
+
+	// apply tone. (NTSC Coef method)
+	return LN_CalculateToneColor(outColor, ln_ToneColor);
+}
 
 #endif // LUMINO_INCLUDED

@@ -312,6 +312,8 @@ void ShaderSemanticsManager::updateSubsetVariables(const SubsetInfo& info)
 		case BuiltinSemantics::MaterialTexture:
 			varInfo.variable->setTexture(info.materialTexture);
 			break;
+
+            // TODO: 以下、グループ化して 別の .fxh に分けておけば、include しないシェーダは全部この for 回さずパフォーマンス上げられそう
 		case BuiltinSemantics::ColorScale:
 		{
 			Color c = info.colorScale;

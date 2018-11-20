@@ -43,6 +43,46 @@ const Optional<BlendMode>& VisualObject::blendMode() const
     return mainVisualComponent()->blendMode();
 }
 
+void VisualObject::setOpacity(float value)
+{
+    mainVisualComponent()->setOpacity(value);
+}
+
+float VisualObject::opacity() const
+{
+    return mainVisualComponent()->opacity();
+}
+
+void VisualObject::setColorScale(const Color& value)
+{
+    mainVisualComponent()->setColorScale(value);
+}
+
+const Color& VisualObject::colorScale() const
+{
+    return mainVisualComponent()->colorScale();
+}
+
+void VisualObject::setBlendColor(const Color& value)
+{
+    mainVisualComponent()->setBlendColor(value);
+}
+
+const Color& VisualObject::blendColor() const
+{
+    return mainVisualComponent()->blendColor();
+}
+
+void VisualObject::setTone(const ToneF& value)
+{
+    mainVisualComponent()->setTone(value);
+}
+
+const ToneF& VisualObject::tone() const
+{
+    return mainVisualComponent()->tone();
+}
+
 void VisualObject::setMainVisualComponent(VisualComponent* component)
 {
     m_component = component;

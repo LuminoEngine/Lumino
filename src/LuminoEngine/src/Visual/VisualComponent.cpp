@@ -47,6 +47,36 @@ float VisualComponent::opacity() const
     return m_builtinEffectData->opacity;
 }
 
+void VisualComponent::setColorScale(const Color& value)
+{
+    m_builtinEffectData->colorScale = value;
+}
+
+const Color& VisualComponent::colorScale() const
+{
+    return m_builtinEffectData->colorScale;
+}
+
+void VisualComponent::setBlendColor(const Color& value)
+{
+    m_builtinEffectData->blendColor = value;
+}
+
+const Color& VisualComponent::blendColor() const
+{
+    return m_builtinEffectData->blendColor;
+}
+
+void VisualComponent::setTone(const ToneF& value)
+{
+    m_builtinEffectData->tone = value;
+}
+
+const ToneF& VisualComponent::tone() const
+{
+    return m_builtinEffectData->tone;
+}
+
 void VisualComponent::render(RenderingContext* context)
 {
     if (m_isVisible)
