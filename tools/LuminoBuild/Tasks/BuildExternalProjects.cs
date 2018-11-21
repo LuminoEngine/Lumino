@@ -125,7 +125,6 @@ namespace LuminoBuild.Tasks
             {
                 Utils.CallProcess("git", "clone --progress --depth 1 -b v1.2.11 https://github.com/madler/zlib.git zlib");
                 Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "zlib", "CMakeLists.txt"), "zlib");
-                Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "minizip", "CMakeLists.txt"), "zlib/contrib/minizip");
             }
             if (!Directory.Exists("libpng"))
             {
@@ -225,7 +224,6 @@ namespace LuminoBuild.Tasks
                         var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"Android-{target.ABI}-{target.BuildType}", "ExternalInstall", "ogg"));
 
                         BuildProjectAndroid(builder, "zlib", reposDir, target.ABI, target.BuildType);
-                        BuildProjectAndroid(builder, "zlib/contrib/minizip", reposDir, target.ABI, target.BuildType, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
                         BuildProjectAndroid(builder, "libpng", reposDir, target.ABI, target.BuildType, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
                         BuildProjectAndroid(builder, "freetype2", reposDir, target.ABI, target.BuildType);
                         BuildProjectAndroid(builder, "ogg", reposDir, target.ABI, target.BuildType);
@@ -240,7 +238,6 @@ namespace LuminoBuild.Tasks
                     var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall", "ogg"));
 
                     BuildProjectEm(builder, "zlib", reposDir, "Emscripten");
-                    BuildProjectEm(builder, "zlib/contrib/minizip", reposDir, "Emscripten", $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
                     BuildProjectEm(builder, "libpng", reposDir, "Emscripten", $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
                     BuildProjectEm(builder, "glad", reposDir, "Emscripten", "-DGLAD_INSTALL=ON");
                     BuildProjectEm(builder, "freetype2", reposDir, "Emscripten");
@@ -255,7 +252,6 @@ namespace LuminoBuild.Tasks
                     var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{target.DirName}-{target.BuildType}", "ExternalInstall", "ogg"));
 
                     BuildProject(builder, "zlib", target.BuildType, reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
-                    BuildProject(builder, "zlib/contrib/minizip", target.BuildType, reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
                     BuildProject(builder, "libpng", target.BuildType, reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
                     BuildProject(builder, "glslang", target.BuildType, reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
                     BuildProject(builder, "SPIRV-Cross", target.BuildType, reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
@@ -289,7 +285,6 @@ namespace LuminoBuild.Tasks
                         
                         var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, dirName, "ExternalInstall", "ogg"));
 
-                        BuildProject(builder, "zlib/contrib/minizip", t.Config, reposDir, dirName, generator, args);
                         BuildProject(builder, "libpng", t.Config, reposDir, dirName, generator, args);
                         BuildProject(builder, "freetype2", t.Config, reposDir, dirName, generator, args);
                         BuildProject(builder, "ogg", t.Config, reposDir, dirName, generator, args);
@@ -316,7 +311,6 @@ namespace LuminoBuild.Tasks
 
                     var generator = "Xcode";
                     BuildProject(builder, "zlib", t.Config, reposDir, dirName, generator, args);
-                    BuildProject(builder, "zlib/contrib/minizip", t.Config, reposDir, dirName, generator, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include " + args);
                     BuildProject(builder, "libpng", t.Config, reposDir, dirName, generator, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include " + args);
                     BuildProject(builder, "glslang", t.Config, reposDir, dirName, generator, args);
                     BuildProject(builder, "SPIRV-Cross", t.Config, reposDir, dirName, generator, args);

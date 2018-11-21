@@ -56,7 +56,6 @@
 
 #ifdef LN_MSVC_AUTO_LINK_LIBRARIES
 #pragma comment(lib, "glfw3.lib")
-#pragma comment(lib, "minizip.lib")
 #pragma comment(lib, "ogg.lib")
 #pragma comment(lib, "spirv-cross-core.lib")
 #pragma comment(lib, "spirv-cross-cpp.lib")

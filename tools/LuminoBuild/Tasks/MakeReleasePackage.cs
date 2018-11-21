@@ -54,7 +54,6 @@ namespace LuminoBuild.Tasks
                 "glfw",
                 "glslang",
                 "libpng",
-                "minizip",
                 "ogg",
                 "openal-soft",
                 "SDL2",
