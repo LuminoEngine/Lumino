@@ -174,7 +174,7 @@ public:
     template<typename TValue>
     static void setTypedValue(Object* obj, PropertyInfo* propertyInfo, TValue&& value)
     {
-        PropertyBase* prop = propertyInfo->m_getPropertyCallback();
+        PropertyBase* prop = propertyInfo->m_getPropertyCallback(obj);
         static_cast<Property<TValue>*>(prop)->set(std::forward(value));
     }
     

@@ -206,6 +206,8 @@ endif()
 
 if (LN_EMSCRIPTEN)
 
+elseif(APPLE)
+    # Use OpenAL.framework
 else()
     ln_make_external_find_path(OpenAL_ROOT openal-soft)
 

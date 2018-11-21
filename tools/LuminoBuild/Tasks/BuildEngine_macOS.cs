@@ -14,7 +14,7 @@ namespace LuminoBuild.Tasks
         {
             string cmakeOutputDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "macOS");
 
-            string buildDir = Path.Combine(builder.LuminoBuildDir, "macOS");
+            string buildDir = Path.Combine(builder.LuminoBuildDir, "macOS-Release");
             Directory.CreateDirectory(buildDir);
             Directory.SetCurrentDirectory(buildDir);
 
@@ -28,7 +28,7 @@ namespace LuminoBuild.Tasks
                 $"-G", "\"Xcode\"",
             };
             Utils.CallProcess("cmake", string.Join(' ', args));
-            Utils.CallProcess("cmake", $"--build . --config Debug --target install");
+            //Utils.CallProcess("cmake", $"--build . --config Debug --target install");
             Utils.CallProcess("cmake", $"--build . --config Release --target install");
         }
     }

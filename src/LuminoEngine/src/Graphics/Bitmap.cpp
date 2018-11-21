@@ -92,7 +92,7 @@ void PngBitmapEncoder::save(Stream* stream, const byte_t* data, const SizeI& siz
 		PNG_INTERLACE_NONE,
 		PNG_COMPRESSION_TYPE_DEFAULT,
 		PNG_FILTER_TYPE_DEFAULT);
-	png_set_compression_level(png, 1);
+	//png_set_compression_level(png, 1);
 	png_set_write_fn(png, stream, pngWriteCallback, NULL);
 
 	std::vector<png_byte*> rows(size.height);

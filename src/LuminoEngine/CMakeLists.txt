@@ -433,11 +433,18 @@ elseif (APPLE)
     find_library(COCOA_LIBRARY Cocoa)
     find_library(CoreVideo_LIBRARY CoreVideo)
     find_library(IOKit_LIBRARY IOKit)
+    #find_library(OpenAL_LIBRARY OpenAL)
+    
+    #find_package(OpenAL)
     list(APPEND LN_PLATFORM_LIBS ${COCOA_LIBRARY})
     list(APPEND LN_PLATFORM_LIBS ${CoreVideo_LIBRARY})
     list(APPEND LN_PLATFORM_LIBS ${IOKit_LIBRARY})
-    list(APPEND LN_PLATFORM_LIBS OpenAL)
-    list(APPEND LN_PLATFORM_LIBS SDL2)
+    #list(APPEND LN_PLATFORM_LIBS ${OpenAL_LIBRARY})
+    #list(APPEND LN_PLATFORM_LIBS OpenAL)
+    
+    list(APPEND LN_PLATFORM_LIBS "-framework OpenAL")
+    #list(APPEND LN_PLATFORM_LIBS SDL2)
+    
     
 elseif (UNIX)
     if (LN_ANDROID)
