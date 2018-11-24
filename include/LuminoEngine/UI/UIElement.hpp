@@ -4,6 +4,7 @@
 namespace ln {
 class UIRenderingContext;
 class UIRenderView;
+class UIStyle;
 namespace detail { class UIManager; }
 
 class UIElement
@@ -56,6 +57,9 @@ protected:
 
 private:
     detail::UIManager* m_manager;
+
+    Ref<UIStyle> m_localStyle;
+    Ref<UIStyle> m_actualStyle;
 
     friend class UIRenderView;
 };

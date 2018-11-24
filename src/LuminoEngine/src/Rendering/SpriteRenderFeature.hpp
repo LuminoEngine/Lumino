@@ -147,6 +147,8 @@ public:
 
 	virtual void flush(GraphicsContext* context) override;
 
+    static void makeRenderSizeAndSourceRectHelper(Texture* texture, const Size& size, const Rect& sourceRect, Size* outSize, Rect* outSourceRect);
+
 LN_CONSTRUCT_ACCESS:
 	SpriteRenderFeature();
 	void initialize(RenderingManager* manager);

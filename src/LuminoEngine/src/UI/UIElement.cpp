@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
 #include <LuminoEngine/UI/UIContainerElement.hpp>
 #include "UIManager.hpp"
@@ -11,6 +12,8 @@ namespace ln {
 
 UIElement::UIElement()
     : m_manager(nullptr)
+    ,  m_localStyle(newObject<UIStyle>()) // TODO: ふつうは static なオブジェクトのほうが多くなるので、必要なやつだけ遅延作成でいいと思う
+    , m_actualStyle(nullptr)
 {
 }
 

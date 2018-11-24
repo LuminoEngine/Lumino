@@ -342,6 +342,7 @@ set(LN_SOURCES_UI
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIRenderingContext.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIRenderView.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UISprite.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIStyle.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIViewport.hpp
     src/UI/UIContainerElement.cpp
     src/UI/UIControl.cpp
@@ -354,6 +355,7 @@ set(LN_SOURCES_UI
     src/UI/UIRenderingContext.cpp
     src/UI/UIRenderView.cpp
     src/UI/UISprite.cpp
+    src/UI/UIStyle.cpp
     src/UI/UIViewport.cpp
 )
 

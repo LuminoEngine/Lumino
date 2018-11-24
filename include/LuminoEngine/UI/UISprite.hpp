@@ -20,6 +20,8 @@ protected:
 
 private:
     Ref<Material> m_material;
+    Size m_size;
+    Rect m_sourceRect;
 };
 
 } // namespace ln

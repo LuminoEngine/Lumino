@@ -457,6 +457,35 @@ void SpriteRenderFeature::flush(GraphicsContext* context)
 		});
 }
 
+void SpriteRenderFeature::makeRenderSizeAndSourceRectHelper(Texture* texture, const Size& size, const Rect& sourceRect, Size* outSize, Rect* outSourceRect)
+{
+    LN_DCHECK(outSize);
+    LN_DCHECK(outSourceRect);
+
+    // 転送元矩形が負値ならテクスチャ全体を転送する
+    const SizeI& texSize = (texture != nullptr) ? texture->size() : SizeI::Zero;
+    Rect renderSourceRect = sourceRect;
+    if (renderSourceRect.width < 0 && renderSourceRect.height < 0)
+    {
+        renderSourceRect.width = texSize.width;
+        renderSourceRect.height = texSize.height;
+    }
+    Size renderSize = size;
+    if (renderSize.width < 0 && renderSize.height < 0)
+    {
+        renderSize.width = renderSourceRect.width;
+        renderSize.height = renderSourceRect.height;
+    }
+
+    renderSourceRect.x /= texSize.width;
+    renderSourceRect.width /= texSize.width;
+    renderSourceRect.y /= texSize.height;
+    renderSourceRect.height /= texSize.height;
+
+    *outSize = renderSize;
+    *outSourceRect = renderSourceRect;
+}
+
 } // namespace detail
 } // namespace ln
 

@@ -27,7 +27,7 @@ public:
     */
     void setSourceRect(const Rect& rect);
 
-    const Rect& sourceRect() const { return m_srcRect; }
+    const Rect& sourceRect() const { return m_sourceRect; }
 
 protected:
     void onRender(RenderingContext* context);
@@ -41,7 +41,7 @@ LN_CONSTRUCT_ACCESS:
 private:
     Ref<Material> m_material;
     Size m_size;
-    Rect m_srcRect;
+    Rect m_sourceRect;
 };
 
 } // namespace ln
