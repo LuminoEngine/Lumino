@@ -51,6 +51,15 @@ public:
     {
         return m_value;
     }
+    const T& getOrDefault(const T& defaultValue) const
+    {
+        if (hasValue()) {
+            return m_value;
+        }
+        else {
+            return defaultValue;
+        }
+    }
 
     bool hasValue() const
     {
@@ -133,6 +142,14 @@ class UIStyle
     : public Object
 {
 public:
+    detail::UIStyleAttribute<Thickness> margin;
+    detail::UIStyleAttribute<Thickness> padding;
+
+    detail::UIStyleAttribute<Vector3> position;
+    detail::UIStyleAttribute<Quaternion> rotation;
+    detail::UIStyleAttribute<Vector3> scale;
+    detail::UIStyleAttribute<Vector3> centerPoint;
+
     detail::UIStyleAttribute<float> opacity;
     detail::UIStyleAttribute<Color> colorScale;
     detail::UIStyleAttribute<Color> blendColor;

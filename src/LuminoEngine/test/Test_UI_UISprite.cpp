@@ -14,7 +14,7 @@ TEST_F(Test_UI_UISprite, Basic)
         //* [ ] Hide
         auto sprite1 = newObject<UISprite>();
         sprite1->setTexture(tex1);
-        //sprite1->setPosition(-6, 0, 0);
+        sprite1->setPosition(20, 0, 0);
         //sprite1->setVisible(false);
         TestEnv::updateFrame();
         ASSERT_SCREEN_S(LN_ASSETFILE("Result/Test_UI_UISprite-Basic-1.png"));
