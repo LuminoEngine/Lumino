@@ -19,14 +19,17 @@ public:
     /** スプライトの大きさを設定します。 */
     void setSize(const Size& size);
 
+	/** テクスチャのどの部分を表示するかを示す転送矩形を設定します。(ピクセル単位) デフォルトは Rect::Empty で、テクスチャ全体を転送することを示します。 */
+	LN_METHOD(Property)
+	void setSourceRect(const Rect& rect);
 
-    /**
-        @brief		テクスチャのどの部分を表示するかを示す転送矩形を設定します。(ピクセル単位)
-    */
-    void setSourceRect(const Rect& rect);
-    void setSourceRect(float x, float y, float width, float height);	/**< @overload setSourceRect */
+	/** @overload setSourceRect */
+	LN_METHOD(OverloadPostfix = "XYWH")
+	void setSourceRect(float x, float y, float width, float height);
 
-    const Rect& sourceRect() const;
+	/** テクスチャのどの部分を表示するかを示す転送矩形を取得します。(ピクセル単位) */
+	LN_METHOD(Property)
+	const Rect& sourceRect() const;
 
 protected:
 

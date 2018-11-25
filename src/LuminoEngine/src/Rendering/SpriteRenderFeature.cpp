@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/Shader/ShaderInterfaceFramework.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 #include "SpriteRenderFeature.hpp"
 #include "RenderingManager.hpp"
@@ -42,7 +43,8 @@ void InternalSpriteRenderer::drawRequest(
 	const Rect& srcRect,
 	const Color& color,
 	SpriteBaseDirection baseDir,
-	BillboardType billboardType)
+	BillboardType billboardType,
+    const Size& textureRealSize)
 {
 	SpriteData sprite;
 
@@ -202,7 +204,7 @@ void InternalSpriteRenderer::drawRequest(
 	sprite.vertices[3].color = color;
 
 	// テクスチャ
-	if (Math::nearEqual(m_state.textureRealSize.width, 0) || Math::nearEqual(m_state.textureRealSize.height, 0))
+	if (Math::nearEqual(textureRealSize.width, 0) || Math::nearEqual(textureRealSize.height, 0))
 	{
 		sprite.vertices[0].uv.x = 0;
 		sprite.vertices[0].uv.y = 0;
@@ -215,12 +217,16 @@ void InternalSpriteRenderer::drawRequest(
 	}
 	else
 	{
-		Vector2 texSizeInv(1.0f / m_state.textureRealSize.width, 1.0f / m_state.textureRealSize.height);
+		//Vector2 texSizeInv(1.0f / textureRealSize.width, 1.0f / textureRealSize.height);
 		Rect sr(srcRect);
-		float l = sr.x * texSizeInv.x;
-		float t = sr.y * texSizeInv.y;
-		float r = (sr.x + sr.width) * texSizeInv.x;
-		float b = (sr.y + sr.height) * texSizeInv.y;
+		//float l = sr.x * texSizeInv.x;
+		//float t = sr.y * texSizeInv.y;
+		//float r = (sr.x + sr.width) * texSizeInv.x;
+		//float b = (sr.y + sr.height) * texSizeInv.y;
+        float l = sr.x;
+        float t = sr.y;
+        float r = (sr.x + sr.width);
+        float b = (sr.y + sr.height);
 		sprite.vertices[0].uv.x = l;
 		sprite.vertices[0].uv.y = t;
 		sprite.vertices[1].uv.x = r;
@@ -400,25 +406,6 @@ void SpriteRenderFeature::setSortInfo(
 	m_state.sortingBasis = sortingBasis;
 }
 
-void SpriteRenderFeature::setState(
-	const Matrix& viewMatrix,
-	const Matrix& projMatrix,
-	const Size& textureRealSize)
-{
-	m_state.viewMatrix = viewMatrix;
-	m_state.projMatrix = projMatrix;
-	m_state.textureRealSize = textureRealSize;
-
-	GraphicsManager* manager = m_manager->graphicsManager();
-	LN_ENQUEUE_RENDER_COMMAND_2(
-		SpriteRenderFeature_setState, manager,
-		InternalSpriteRenderer*, m_internal,
-		InternalSpriteRenderer::State, m_state,
-		{
-			m_internal->setState(m_state);
-		});
-}
-
 void SpriteRenderFeature::drawRequest(
 	const Matrix& transform,
 	const Vector2& size,
@@ -426,22 +413,41 @@ void SpriteRenderFeature::drawRequest(
 	const Rect& srcRect,
 	const Color& color,
 	SpriteBaseDirection baseDirection,
-	BillboardType billboardType)
+	BillboardType billboardType,
+    const Size& textureRealSize)
 {
 	GraphicsManager* manager = m_manager->graphicsManager();
+    Vector4 sizeAndTextureRealSize(size.x, size.y, textureRealSize.width, textureRealSize.height);
 	LN_ENQUEUE_RENDER_COMMAND_8(
 		SpriteRenderFeature_drawRequest, manager,
 		InternalSpriteRenderer*, m_internal,
 		Matrix, transform,
-		Vector2, size,
+		Vector4, sizeAndTextureRealSize,
 		Vector2, anchorRatio,
 		Rect, srcRect,
 		Color, color,
 		SpriteBaseDirection, baseDirection,
 		BillboardType, billboardType,
 		{
-			m_internal->drawRequest(transform, size, anchorRatio, srcRect, color, baseDirection, billboardType);
+			m_internal->drawRequest(transform, sizeAndTextureRealSize.xy(), anchorRatio, srcRect, color, baseDirection, billboardType, Size(sizeAndTextureRealSize.z, sizeAndTextureRealSize.w));
 		});
+}
+
+void SpriteRenderFeature::onActiveRenderFeatureChanged(const detail::CameraInfo& mainCameraInfo)
+{
+    // TODO: CameraInfo は SceneRenderer 開始時点で確定しているので、RenderStage 変更ごとに設定する必要はない。少し最適化できそう。
+
+    m_state.viewMatrix = mainCameraInfo.viewMatrix;
+    m_state.projMatrix = mainCameraInfo.projMatrix;
+
+    GraphicsManager* manager = m_manager->graphicsManager();
+    LN_ENQUEUE_RENDER_COMMAND_2(
+        SpriteRenderFeature_setState, manager,
+        InternalSpriteRenderer*, m_internal,
+        InternalSpriteRenderer::State, m_state,
+        {
+            m_internal->setState(m_state);
+        });
 }
 
 void SpriteRenderFeature::flush(GraphicsContext* context)

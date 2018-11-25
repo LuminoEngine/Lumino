@@ -232,7 +232,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 			{
 				graphicsContext->setShaderPass(pass);
 
-				element->onDraw(graphicsContext, currentStage->renderFeature);
+				element->onDraw(graphicsContext, currentStage->renderFeature, finalMaterial);
 			}
 		}
 	}

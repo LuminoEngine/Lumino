@@ -37,7 +37,7 @@ public:
 	{
 		Matrix viewMatrix;
 		Matrix projMatrix;
-		Size textureRealSize;
+		//Size textureRealSize;
 		SpriteSortMode sortMode = SpriteSortMode::DepthBackToFront;
 		SortingDistanceBasis sortingBasis = SortingDistanceBasis::ViewPont;
 
@@ -46,7 +46,7 @@ public:
 			return
 				viewMatrix == other.viewMatrix &&
 				projMatrix == other.projMatrix &&
-				textureRealSize == other.textureRealSize &&
+				//textureRealSize == other.textureRealSize &&
 				sortMode == other.sortMode &&
 				sortingBasis == other.sortingBasis;
 		}
@@ -64,7 +64,8 @@ public:
 		const Rect& srcRect,
 		const Color& color,
 		SpriteBaseDirection baseDir,
-		BillboardType billboardType);
+		BillboardType billboardType,
+        const Size& textureRealSize);
 
 	void flush(IGraphicsDeviceContext* context);
 	void clear();
@@ -131,11 +132,6 @@ public:
 		SpriteSortMode sortMode,
 		SortingDistanceBasis sortingBasis);
 
-	void setState(
-		const Matrix& viewMatrix,
-		const Matrix& projMatrix,
-		const Size& textureRealSize);
-
 	void drawRequest(
 		const Matrix& transform,
 		const Vector2& size,
@@ -143,8 +139,10 @@ public:
 		const Rect& srcRect,
 		const Color& color,
 		SpriteBaseDirection baseDirection,
-		BillboardType billboardType);
+		BillboardType billboardType,
+        const Size& textureRealSize);
 
+    virtual void onActiveRenderFeatureChanged(const detail::CameraInfo& mainCameraInfo) override;
 	virtual void flush(GraphicsContext* context) override;
 
     static void makeRenderSizeAndSourceRectHelper(Texture* texture, const Size& size, const Rect& sourceRect, Size* outSize, Rect* outSourceRect);

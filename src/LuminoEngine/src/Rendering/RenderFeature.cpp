@@ -3,12 +3,13 @@
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 
 namespace ln {
-namespace detail {
 
 //==============================================================================
 // RenderFeature
 
-	
-} // namespace detail
+void RenderFeature::onActiveRenderFeatureChanged(const detail::CameraInfo& mainCameraInfo)
+{
+}
+
 } // namespace ln
 
