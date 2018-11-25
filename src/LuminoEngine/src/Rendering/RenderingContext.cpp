@@ -130,7 +130,7 @@ void RenderingContext::blit(RenderTargetTexture* source, RenderTargetTexture* de
             }
         }
 
-        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, AbstractMaterial* finalMaterial) override
+        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
         {
             static_cast<detail::BlitRenderFeature*>(renderFeatures)->blit(context);
         }
@@ -171,17 +171,10 @@ void RenderingContext::drawSprite(
 		SpriteBaseDirection baseDirection;
 		BillboardType billboardType;
 
-		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, AbstractMaterial* finalMaterial) override
+		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
 		{
-            Size textureSize = Size(0, 0);
-            Texture* texture = finalMaterial->mainTexture();
-            if (texture) {
-                textureSize.width = texture->width();
-                textureSize.height = texture->height();
-            }
-
 			static_cast<detail::SpriteRenderFeature*>(renderFeatures)->drawRequest(
-				transform, size, anchorRatio, srcRect, color, baseDirection, billboardType, textureSize);
+				transform, size, anchorRatio, srcRect, color, baseDirection, billboardType);
 		}
 	};
 
@@ -210,7 +203,7 @@ void RenderingContext::drawMesh(MeshContainer* meshContainer, int sectionIndex)
 		Ref<MeshContainer> meshContainer;
 		int sectionIndex;
 
-		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, AbstractMaterial* finalMaterial) override
+		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
 		{
 			// TODO: LOD Level
 			MeshResource* mesh = meshContainer->selectLODResource(0);

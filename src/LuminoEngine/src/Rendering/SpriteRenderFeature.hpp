@@ -37,7 +37,6 @@ public:
 	{
 		Matrix viewMatrix;
 		Matrix projMatrix;
-		//Size textureRealSize;
 		SpriteSortMode sortMode = SpriteSortMode::DepthBackToFront;
 		SortingDistanceBasis sortingBasis = SortingDistanceBasis::ViewPont;
 
@@ -46,7 +45,6 @@ public:
 			return
 				viewMatrix == other.viewMatrix &&
 				projMatrix == other.projMatrix &&
-				//textureRealSize == other.textureRealSize &&
 				sortMode == other.sortMode &&
 				sortingBasis == other.sortingBasis;
 		}
@@ -64,8 +62,7 @@ public:
 		const Rect& srcRect,
 		const Color& color,
 		SpriteBaseDirection baseDir,
-		BillboardType billboardType,
-        const Size& textureRealSize);
+		BillboardType billboardType);
 
 	void flush(IGraphicsDeviceContext* context);
 	void clear();
@@ -132,6 +129,9 @@ public:
 		SpriteSortMode sortMode,
 		SortingDistanceBasis sortingBasis);
 
+    // srcRect は UV 座標系上の値を設定する。 (通常0～1)
+    // 以前は 2D メインな Sprite なのでピクセル単位で指定していたが、
+    // 考え方として他の RenderFeature と同様に「最終的な描画に使うメッシュを作る」方針で統一したい。
 	void drawRequest(
 		const Matrix& transform,
 		const Vector2& size,
@@ -139,8 +139,7 @@ public:
 		const Rect& srcRect,
 		const Color& color,
 		SpriteBaseDirection baseDirection,
-		BillboardType billboardType,
-        const Size& textureRealSize);
+		BillboardType billboardType);
 
     virtual void onActiveRenderFeatureChanged(const detail::CameraInfo& mainCameraInfo) override;
 	virtual void flush(GraphicsContext* context) override;

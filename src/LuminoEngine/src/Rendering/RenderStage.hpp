@@ -228,8 +228,7 @@ public:
 	// ステートは RenderFeature::onStateChanged に通知済み。
 	// もしどうしてもステートを変更したい場合、描画した後は必ず元に戻さなければならない。
 	// この中で使えるのは GraphicsContext のみ。RenderingContext や Device 側の機能を呼び出してはならない。
-    // finalMaterial : 参照用。今のところ SpriteRenderFeature でテクスチャサイズが欲しいので渡している。
-	virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeature, AbstractMaterial* finalMaterial) = 0;
+	virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeature) = 0;
 
 	const Matrix& combinedWorldMatrix() const { return m_combinedWorldMatrix; }
 	RenderStage* stage() const { return m_stage; }
