@@ -90,6 +90,7 @@ void AudioManager::processThread()
 	catch (Exception& e)
 	{
 		m_audioThreadException.reset(e.copy());
+        LN_LOG_ERROR << m_audioThreadException->getMessage();
 	}
 }
 

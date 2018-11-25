@@ -730,7 +730,7 @@ void OpenGLDeviceContext::onPresent(ISwapChain* swapChain)
         GL_CHECK(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, s->defaultFBO()));
         GL_CHECK(glBindFramebuffer(GL_READ_FRAMEBUFFER, s->fbo()));
 
-        LN_LOG_INFO << endpointSize.width << ", " << endpointSize.height << ":" << bufferSize.width << ", " << bufferSize.height;
+        //LN_LOG_INFO << endpointSize.width << ", " << endpointSize.height << ":" << bufferSize.width << ", " << bufferSize.height;
 
         // FIXME:
         // Viewport を転送元に合わせないと、転送先全体に拡大してBlitできなかった。

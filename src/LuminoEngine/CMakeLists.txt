@@ -103,6 +103,7 @@ set(LN_SOURCES_Input
 set(LN_SOURCES_Audio
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioContext.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioGainNode.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioListener.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioNode.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/GameAudio.hpp
@@ -116,10 +117,13 @@ set(LN_SOURCES_Audio
     src/Audio/AudioDecoder.hpp
     src/Audio/AudioDevice.cpp
     src/Audio/AudioDevice.hpp
+    src/Audio/AudioGainNode.cpp
     src/Audio/AudioListener.cpp
     src/Audio/AudioManager.cpp
     src/Audio/AudioManager.hpp
     src/Audio/AudioNode.cpp
+    src/Audio/CAGainNode.cpp
+    src/Audio/CAGainNode.hpp
     src/Audio/ChromiumWebCore.cpp
     src/Audio/ChromiumWebCore.hpp
     src/Audio/CoreAudioNode.cpp

@@ -82,8 +82,8 @@ int main(int argc, char** argv)
 
 	auto light1 = AmbientLight::create();
 
-    //auto tex = newObject<Texture2D>(u"D:/tmp/110220c_as019.png");
-    auto tex = Assets::loadTexture(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Sprite1.png");
+    auto tex = newObject<Texture2D>(u"D:/tmp/110220c_as019.png");
+    //auto tex = Assets::loadTexture(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Sprite1.png");
     //tex->drawText(u"Hello!", Rect(0, 0, 100, 100), font, Color::White);
     //auto tex = newObject<Texture2D>(2, 2);
     //auto bmp1 = tex->map(MapMode::Write);
@@ -92,7 +92,7 @@ int main(int argc, char** argv)
     //bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
     //bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
 
-    auto sprite = newObject<Sprite>();
+    auto sprite = newObject<UISprite>();
     sprite->setTexture(tex);
     //auto sprite = newObject<UISprite>();
     //sprite->setTexture(tex);
@@ -103,7 +103,7 @@ int main(int argc, char** argv)
     //Engine::mainViewport()->addImageEffect(imageEffect);
 #endif
 
-#if 0
+#if 1
     //auto sound = newObject<Sound>(u"D:\\tmp\\4_Battle_win.wav");
     auto sound = newObject<Sound>(u"D:/Music/momentum/02 - momentum.wav");
 
@@ -113,12 +113,14 @@ int main(int argc, char** argv)
 
     while (Engine::update())
     {
-#if 0
+#if 1
         if (Mouse::isPressed(MouseButtons::Left))
         {
             float pitch = (Mouse::position().x / 640)  + 0.5;
+            float volume = (Mouse::position().y / 480);
             //std::cout << pitch << std::endl;
             sound->setPitch(pitch);
+            sound->setVolume(volume);
         }
 #endif
         

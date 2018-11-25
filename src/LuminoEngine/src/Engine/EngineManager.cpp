@@ -126,7 +126,7 @@ void EngineManager::initializeAllManagers()
 	initializePlatformManager();
 	initializeAnimationManager();
 	initializeInputManager();
-	//initializeAudioManager();
+	initializeAudioManager();
 	initializePhysicsManager();
 	initializeShaderManager();
 	initializeGraphicsManager();

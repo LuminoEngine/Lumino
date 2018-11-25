@@ -2,6 +2,7 @@
 
 namespace ln {
 class AudioSourceNode;
+class AudioGainNode;
 
 class Sound
 	: public Object
@@ -179,6 +180,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     Ref<AudioSourceNode> m_sourceNode;
+    Ref<AudioGainNode> m_gainNode;
 };
 
 } // namespace ln

@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Audio/AudioContext.hpp>
 #include <LuminoEngine/Audio/AudioNode.hpp>
+#include <LuminoEngine/Audio/AudioGainNode.hpp>
 #include <LuminoEngine/Audio/Sound.hpp>
 #include "AudioManager.hpp"
 
@@ -25,8 +26,12 @@ void Sound::initialize(const StringRef& filePath)
     detail::AudioManager* manager = detail::EngineDomain::audioManager();
 
     m_sourceNode = newObject<AudioSourceNode>(filePath);
-    AudioNode::connect(m_sourceNode, manager->primaryContext()->destination());
+    m_gainNode = newObject<AudioGainNode>();
 
+
+    //AudioNode::connect(m_sourceNode, manager->primaryContext()->destination());
+    AudioNode::connect(m_sourceNode, m_gainNode);
+    AudioNode::connect(m_gainNode, manager->primaryContext()->destination());
 
     //auto panner = newObject<AudioPannerNode>();
     //AudioNode::connect(source, panner);
@@ -37,7 +42,7 @@ void Sound::initialize(const StringRef& filePath)
 
 void Sound::setVolume(float volume)
 {
-    LN_NOTIMPLEMENTED();
+    m_gainNode->setGain(volume);
 }
 
 float Sound::getVolume() const
