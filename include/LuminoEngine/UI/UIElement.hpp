@@ -5,6 +5,9 @@ namespace ln {
 class UIRenderingContext;
 class UIRenderView;
 class UIStyle;
+enum class BlendMode : uint8_t;
+struct Color;
+struct ToneF;
 namespace detail { class UIManager; }
 
 class UIElement
@@ -78,6 +81,48 @@ public:
 	/** このオブジェクトのローカルの中心位置を取得します。 */
 	LN_METHOD(Property)
 	const Vector3& centerPoint() const;
+
+
+
+
+    
+	/** 可視状態を設定します。false の場合、コンポーネントの描画は行われません。(default: true) */
+    LN_METHOD(Property)
+    void setVisible(bool value);
+
+	/** 可視状態を取得します。*/
+    LN_METHOD(Property)
+    bool isVisible() const;
+
+    /** 合成方法を設定します。(default: BlendMode::Normal) */
+    void setBlendMode(const Optional<BlendMode>& value);
+
+    /** 合成方法を取得します。*/
+    const BlendMode& blendMode() const;
+
+    /** 不透明度を設定します。(default: 1.0) */
+    void setOpacity(float value);
+
+    /** 不透明度を取得します。 */
+    float opacity() const;
+
+    /** カラースケールを設定します。(default: Color(1, 1, 1, 1)) */
+    void setColorScale(const Color& value);
+
+    /** カラースケールを取得します。 */
+    const Color& colorScale() const;
+
+    /** ブレンドカラーを設定します。(default: Color(0, 0, 0, 0)) */
+    void setBlendColor(const Color& value);
+
+    /** ブレンドカラーを取得します。 */
+    const Color& blendColor() const;
+
+    /** 色調を設定します。(default: Tone(0, 0, 0, 0)) */
+    void setTone(const ToneF& value);
+
+    /** 色調を取得します。 */
+    const ToneF& tone() const;
 
 
 

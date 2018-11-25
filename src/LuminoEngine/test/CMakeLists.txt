@@ -12,6 +12,7 @@ set(LN_SOURCES
 	Test_Graphics_LowLevelRendering.cpp
 	Test_Scene_Sprite.cpp
 	Test_Scene_WorldObject.cpp
+	Test_UI_UIElement.cpp
 	Test_UI_UISprite.cpp
 	Test_Visual_VisualComponent.cpp
 	TestEnv.cpp

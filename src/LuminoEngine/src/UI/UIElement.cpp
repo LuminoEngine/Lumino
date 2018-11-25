@@ -1,9 +1,11 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/UI//UIRenderingContext.hpp>
+#include <LuminoEngine/Graphics/RenderState.hpp>
+#include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
 #include <LuminoEngine/UI/UIContainerElement.hpp>
+#include "../Rendering/RenderStage.hpp"
 #include "UIManager.hpp"
 
 namespace ln {
@@ -89,6 +91,71 @@ const Vector3 & UIElement::centerPoint() const
     return m_localStyle->centerPoint.getOrDefault(Vector3::Zero);
 }
 
+void UIElement::setVisible(bool value)
+{
+    m_localStyle->visible = value;
+}
+
+bool UIElement::isVisible() const
+{
+    return m_localStyle->visible.getOrDefault(true);
+}
+
+void UIElement::setBlendMode(const Optional<BlendMode>& value)
+{
+    if (value.hasValue()) {
+        m_localStyle->blendMode = value.value();
+    }
+    else {
+        m_localStyle->blendMode.reset();
+    }
+}
+
+const BlendMode & UIElement::blendMode() const
+{
+    return m_localStyle->blendMode.getOrDefault(BlendMode::Alpha);
+}
+
+void UIElement::setOpacity(float value)
+{
+    m_localStyle->opacity = value;
+}
+
+float UIElement::opacity() const
+{
+    return m_localStyle->opacity.getOrDefault(detail::BuiltinEffectData::DefaultValue.opacity);
+}
+
+void UIElement::setColorScale(const Color & value)
+{
+    m_localStyle->colorScale = value;
+}
+
+const Color & UIElement::colorScale() const
+{
+    return m_localStyle->colorScale.getOrDefault(detail::BuiltinEffectData::DefaultValue.colorScale);
+}
+
+void UIElement::setBlendColor(const Color & value)
+{
+    m_localStyle->blendColor = value;
+}
+
+const Color & UIElement::blendColor() const
+{
+    return m_localStyle->blendColor.getOrDefault(detail::BuiltinEffectData::DefaultValue.blendColor);
+}
+
+void UIElement::setTone(const ToneF & value)
+{
+    m_localStyle->tone = value;
+}
+
+const ToneF & UIElement::tone() const
+{
+    return m_localStyle->tone.getOrDefault(detail::BuiltinEffectData::DefaultValue.tone);
+}
+
 Size UIElement::measureOverride(const Size& constraint)
 {
     // TODO: tmp
@@ -131,16 +198,35 @@ void UIElement::updateLayout(const Size& size)
 
 void UIElement::render(UIRenderingContext* context)
 {
-    context->setBaseTransfrom(Matrix::makeAffineTransformation(
-        scale(), Vector3::Zero, rotation(), position() - centerPoint()));
+    if (isVisible())
+    {
 
-	onRender(context);
 
-	// child elements
-	int count = getVisualChildrenCount();
-	for (int i = 0; i < count; i++) {
-		getVisualChild(i)->render(context);
-	}
+        context->pushState();
+
+
+        context->setBaseTransfrom(Matrix::makeAffineTransformation(
+            scale(), Vector3::Zero, rotation(), position() - centerPoint()));
+        detail::BuiltinEffectData data;
+        data.opacity = opacity();
+        data.colorScale = colorScale();
+        data.blendColor = blendColor();
+        data.tone = tone();
+        context->setBaseBuiltinEffectData(data);
+        context->setBlendMode(blendMode());
+        // TODO: setMaterial
+        onRender(context);
+
+        context->popState();	// TODO: scoped
+
+        //onRender(context);
+
+        // child elements
+        int count = getVisualChildrenCount();
+        for (int i = 0; i < count; i++) {
+            getVisualChild(i)->render(context);
+        }
+    }
 }
 
 } // namespace ln

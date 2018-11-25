@@ -150,6 +150,9 @@ public:
     detail::UIStyleAttribute<Vector3> scale;
     detail::UIStyleAttribute<Vector3> centerPoint;
 
+    detail::UIStyleAttribute<float> visible;
+    detail::UIStyleAttribute<BlendMode> blendMode;
+
     detail::UIStyleAttribute<float> opacity;
     detail::UIStyleAttribute<Color> colorScale;
     detail::UIStyleAttribute<Color> blendColor;
