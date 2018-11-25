@@ -10,6 +10,16 @@ namespace ln {
 //==============================================================================
 // UISprite
 
+Ref<UISprite> UISprite::create()
+{
+    return newObject<UISprite>();
+}
+
+Ref<UISprite> UISprite::create(Texture* texture)
+{
+    return newObject<UISprite>(texture);
+}
+
 UISprite::UISprite()
 {
 }
@@ -22,9 +32,30 @@ void UISprite::initialize()
     m_sourceRect = Rect(0, 0, -1, -1);
 }
 
+void UISprite::initialize(Texture* texture)
+{
+    initialize();
+    setTexture(texture);
+}
+
 void UISprite::setTexture(Texture* texture)
 {
     m_material->setMainTexture(texture);
+}
+
+void UISprite::setSourceRect(const Rect & rect)
+{
+    m_sourceRect = rect;
+}
+
+void UISprite::setSourceRect(float x, float y, float width, float height)
+{
+    m_sourceRect = Rect(x, y, width, height);
+}
+
+const Rect & UISprite::sourceRect() const
+{
+    return m_sourceRect;
 }
 
 void UISprite::onRender(UIRenderingContext* context)
@@ -37,10 +68,6 @@ void UISprite::onRender(UIRenderingContext* context)
     context->drawSprite(
         Matrix(), renderSize, Vector2(0, 0), renderSourceRect, Color::White,
         SpriteBaseDirection::Basic2D, BillboardType::None, m_material);
-
-    //context->drawSprite(
-    //    Matrix(), Size(200, 100), Vector2(0, 0), Rect(0, 0, 1, 1), Color::White,
-    //    SpriteBaseDirection::Basic2D, BillboardType::None, m_material);
 }
 
 } // namespace ln

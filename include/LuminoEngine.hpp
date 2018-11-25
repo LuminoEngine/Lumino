@@ -15,6 +15,7 @@
 #include "LuminoEngine/Audio/AudioContext.hpp"
 #include "LuminoEngine/Audio/AudioNode.hpp"
 #include "LuminoEngine/Audio/Sound.hpp"
+#include "LuminoEngine/Audio/GameAudio.hpp"
 
 #include "LuminoEngine/Shader/Shader.hpp"
 
