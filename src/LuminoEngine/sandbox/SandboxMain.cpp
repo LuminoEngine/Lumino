@@ -2,7 +2,7 @@
 #define LN_MSVC_DISABLE_LIBRARY_LINK
 #include <LuminoEngine.hpp>
 #include <LuminoCore/Testing/TestHelper.hpp>
-#include "../src/Audio/Mp3AudioDecoder.hpp"
+#include "../src/Audio/AudioDecoder.hpp"
 #include "Common.hpp"
 #include "../src/Engine/EngineDomain.hpp"
 #include "../src/Rendering/RenderingManager.hpp"
@@ -36,6 +36,11 @@ int main(int argc, char** argv)
 
 	GlobalLogger::addStdErrAdapter();
 	Engine::initialize();
+
+    auto file = FileStream::create(u"D:/Tech/Audio/WebAudioTest1/2018-11-29T13_00_15.686Z.wav");
+    auto diag = newObject<DiagnosticsManager>();
+    detail::WaveDecoder d;
+    d.initialize(file, diag);
 
 
 	//detail::ZipAssetArchiveMaker ar;
@@ -103,7 +108,7 @@ int main(int argc, char** argv)
     //Engine::mainViewport()->addImageEffect(imageEffect);
 #endif
 
-#if 1
+#if 0
     //auto sound = newObject<Sound>(u"D:\\tmp\\4_Battle_win.wav");
     auto sound = newObject<Sound>(u"D:/Music/momentum/02 - momentum.wav");
 
@@ -113,7 +118,7 @@ int main(int argc, char** argv)
 
     while (Engine::update())
     {
-#if 1
+#if 0
         if (Mouse::isPressed(MouseButtons::Left))
         {
             float pitch = (Mouse::position().x / 640)  + 0.5;

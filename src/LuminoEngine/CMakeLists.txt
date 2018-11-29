@@ -106,6 +106,7 @@ set(LN_SOURCES_Audio
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioGainNode.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioListener.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioNode.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioProcessorNode.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/GameAudio.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/InternalSharedMutex.inc
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/Sound.hpp
@@ -122,8 +123,11 @@ set(LN_SOURCES_Audio
     src/Audio/AudioManager.cpp
     src/Audio/AudioManager.hpp
     src/Audio/AudioNode.cpp
+    src/Audio/AudioProcessorNode.cpp
     src/Audio/CAGainNode.cpp
     src/Audio/CAGainNode.hpp
+    src/Audio/CAProcessorNode.cpp
+    src/Audio/CAProcessorNode.hpp
     src/Audio/ChromiumWebCore.cpp
     src/Audio/ChromiumWebCore.hpp
     src/Audio/CoreAudioNode.cpp
