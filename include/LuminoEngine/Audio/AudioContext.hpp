@@ -22,6 +22,9 @@ public:
 	virtual void dispose();
 	void process();
 
+    /** この AudioContext 内でベースとして使われるサンプルレート(1秒あたりのサンプル数)を取得します。 */
+    int sampleRate() const;
+
 	AudioDestinationNode* destination() const;
 
 	// TODO: internal

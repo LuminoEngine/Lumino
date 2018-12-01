@@ -24,8 +24,9 @@ void CAProcessorNode::initialize(int numberOfInputChannels, int numberOfOutputCh
 
 void CAProcessorNode::process()
 {
-    CIAudioBus* destination = outputPin(0)->bus();
-    CIAudioBus* source = inputPin(0)->bus();
+    AudioBus* source = inputPin(0)->bus();
+    AudioBus* destination = outputPin(0)->bus();
+    m_ownerNode->onAudioProcess(source, destination);
 }
 
 } // namespace detail

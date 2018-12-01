@@ -41,9 +41,8 @@ void AudioProcessorNode::commit()
     //m_coreObject->setGain(m_gain);
 }
 
-void AudioProcessorNode::onAudioProcess(/* AudioBus* input, AudioBus* output */)
+void AudioProcessorNode::onAudioProcess(AudioBus* input, AudioBus* output)
 {
-
 }
 
 } // namespace ln

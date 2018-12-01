@@ -1,22 +1,21 @@
 ﻿
-#include "../Internal.hpp"
-#include "CIAudioBus.hpp"
-#include "../ChromiumWebCore.hpp"
-#include "../blink/VectorMath.h"
+#include "Internal.hpp"
+#include <LuminoEngine/Audio/AudioBus.hpp>
+#include "ChromiumWebCore.hpp"
+#include "blink/VectorMath.h"
 
 namespace ln {
-namespace detail {
 
 //==============================================================================
-// CIAudioChannel
+// AudioChannel
 
-CIAudioChannel::CIAudioChannel(size_t length)
+AudioChannel::AudioChannel(size_t length)
 	: m_isSilent(true)
 {
 	m_data.resize(length);
 }
 
-void CIAudioChannel::setSilentAndZero()
+void AudioChannel::setSilentAndZero()
 {
 	if (!m_isSilent)
 	{
@@ -25,7 +24,7 @@ void CIAudioChannel::setSilentAndZero()
 	}
 }
 
-void CIAudioChannel::copyTo(float* buffer, size_t bufferLength, size_t stride) const
+void AudioChannel::copyTo(float* buffer, size_t bufferLength, size_t stride) const
 {
 	const float* src = constData();
 	if (stride == 1) {
@@ -41,7 +40,7 @@ void CIAudioChannel::copyTo(float* buffer, size_t bufferLength, size_t stride) c
 	}
 }
 
-void CIAudioChannel::copyFrom(const float * buffer, size_t bufferLength, size_t stride)
+void AudioChannel::copyFrom(const float * buffer, size_t bufferLength, size_t stride)
 {
 	float* dst = mutableData();
 	if (stride == 1) {
@@ -57,7 +56,7 @@ void CIAudioChannel::copyFrom(const float * buffer, size_t bufferLength, size_t 
 	}
 }
 
-void CIAudioChannel::copyFrom(const CIAudioChannel* ch)
+void AudioChannel::copyFrom(const AudioChannel* ch)
 {
 	bool isSafe = (ch && ch->length() >= length());
 	assert(isSafe);
@@ -73,7 +72,7 @@ void CIAudioChannel::copyFrom(const CIAudioChannel* ch)
 	memcpy(mutableData(), ch->constData(), sizeof(float) * length());
 }
 
-void CIAudioChannel::sumFrom(const CIAudioChannel * ch)
+void AudioChannel::sumFrom(const AudioChannel * ch)
 {
 	if (ch->isSilent()) {
 		return;
@@ -88,32 +87,32 @@ void CIAudioChannel::sumFrom(const CIAudioChannel * ch)
 	}
 }
 
-void CIAudioChannel::fillZero(size_t start, size_t length)
+void AudioChannel::fillZero(size_t start, size_t length)
 {
     if (LN_REQUIRE(start + length <= m_data.size())) return;
     memset(m_data.data() + start, 0, sizeof(float) * length);
 }
 
 //==============================================================================
-// CIAudioBus
+// AudioBus
 
 const unsigned kMaxBusChannels = 32;
 
-CIAudioBus::CIAudioBus()
+AudioBus::AudioBus()
 {
 }
 
-void CIAudioBus::initialize2(int channelCount, size_t length, int sampleRate)
+void AudioBus::initialize2(int channelCount, size_t length, int sampleRate)
 {
 	for (int i = 0; i < channelCount; ++i)
 	{
-		m_channels.add(makeRef<CIAudioChannel>(length));
+		m_channels.add(makeRef<AudioChannel>(length));
 	}
 	m_validLength = length;
 	m_sampleRate = sampleRate;
 }
 
-CIAudioChannel* CIAudioBus::channelByType(unsigned channel_type)
+AudioChannel* AudioBus::channelByType(unsigned channel_type)
 {
 	// For now we only support canonical channel layouts...
 	if (m_layout != kLayoutCanonical)
@@ -188,26 +187,26 @@ CIAudioChannel* CIAudioBus::channelByType(unsigned channel_type)
 	return nullptr;
 }
 
-const CIAudioChannel* CIAudioBus::channelByType(unsigned type) const
+const AudioChannel* AudioBus::channelByType(unsigned type) const
 {
-	return const_cast<CIAudioBus*>(this)->channelByType(type);
+	return const_cast<AudioBus*>(this)->channelByType(type);
 }
 
-void CIAudioBus::setSilentAndZero()
+void AudioBus::setSilentAndZero()
 {
 	for (auto& ch : m_channels) {
 		ch->setSilentAndZero();
 	}
 }
 
-void CIAudioBus::clearSilentFlag()
+void AudioBus::clearSilentFlag()
 {
 	for (auto& ch : m_channels) {
 		ch->clearSilentFlag();
 	}
 }
 
-bool CIAudioBus::isSilent() const
+bool AudioBus::isSilent() const
 {
 	for (auto& ch : m_channels) {
 		if (!ch->isSilent()) {
@@ -217,14 +216,14 @@ bool CIAudioBus::isSilent() const
 	return true;
 }
 
-void CIAudioBus::fillZero(size_t start, size_t length)
+void AudioBus::fillZero(size_t start, size_t length)
 {
     for (int i = 0; i < m_channels.size(); i++) {
         m_channels[i]->fillZero(start, length);
     }
 }
 
-void CIAudioBus::mergeToChannelBuffers(float* buffer, size_t length)
+void AudioBus::mergeToChannelBuffers(float* buffer, size_t length)
 {
 	assert(m_channels.size() == 2);
 	assert(m_channels[0]->length() * 2 == length);
@@ -240,7 +239,7 @@ void CIAudioBus::mergeToChannelBuffers(float* buffer, size_t length)
 	}
 }
 
-void CIAudioBus::separateFrom(const float * buffer, size_t length, int channelCount)
+void AudioBus::separateFrom(const float * buffer, size_t length, int channelCount)
 {
 	assert(m_channels.size() == 2);
 	assert(m_channels[0]->length() * 2 >= length);	// length が少ない分にはOK。多いのはあふれるのでNG
@@ -251,7 +250,7 @@ void CIAudioBus::separateFrom(const float * buffer, size_t length, int channelCo
 	}
 }
 
-void CIAudioBus::sumFrom(const CIAudioBus* bus)
+void AudioBus::sumFrom(const AudioBus* bus)
 {
 	int thisChannelCount = channelCount();
 	if (thisChannelCount == bus->channelCount())
@@ -267,7 +266,24 @@ void CIAudioBus::sumFrom(const CIAudioBus* bus)
 	}
 }
 
-void CIAudioBus::copyWithGainFrom(const CIAudioBus& source_bus, float gain)
+void AudioBus::copyFrom(AudioBus* source)
+{
+    if (source == this)
+        return;
+
+    unsigned numberOfSourceChannels = source->numberOfChannels();
+    unsigned numberOfDestinationChannels = numberOfChannels();
+
+    if (numberOfDestinationChannels == numberOfSourceChannels) {
+        for (unsigned i = 0; i < numberOfSourceChannels; ++i)
+            channel(i)->copyFrom(source->channel(i));
+    }
+    else {
+        LN_NOTIMPLEMENTED();
+    }
+}
+
+void AudioBus::copyWithGainFrom(const AudioBus& source_bus, float gain)
 {
 	if (!topologyMatches(source_bus)) {
 		LN_UNREACHABLE();
@@ -321,8 +337,8 @@ void CIAudioBus::copyWithGainFrom(const CIAudioBus& source_bus, float gain)
 		}
 	}
 }
-void CIAudioBus::copyBySampleRateConverting(
-	const CIAudioBus* source_bus,
+void AudioBus::copyBySampleRateConverting(
+	const AudioBus* source_bus,
 	int new_sample_rate) {
 	// sourceBus's sample-rate must be known.
 	LN_DCHECK(source_bus);
@@ -367,7 +383,7 @@ void CIAudioBus::copyBySampleRateConverting(
 		// Directly resample without down-mixing.
 		resampler_source_bus = source_bus;
 	}*/
-	const CIAudioBus* resampler_source_bus = source_bus;
+	const AudioBus* resampler_source_bus = source_bus;
 
 	// Calculate destination length based on the sample-rates.
 	int source_length = resampler_source_bus->length();
@@ -388,7 +404,7 @@ void CIAudioBus::copyBySampleRateConverting(
 		const float* source = resampler_source_bus->Channel(i)->Data();
 		float* destination = channel(i)->mutableData();
 
-		blink::SincResampler resampler(sample_rate_ratio);
+		detail::blink::SincResampler resampler(sample_rate_ratio);
 		resampler.Process(source, destination, source_length, channel(i)->length());
 	}
 
@@ -397,7 +413,7 @@ void CIAudioBus::copyBySampleRateConverting(
 }
 
 // Returns true if the channel count and frame-size match.
-bool CIAudioBus::topologyMatches(const CIAudioBus& bus) const
+bool AudioBus::topologyMatches(const AudioBus& bus) const
 {
 	if (NumberOfChannels() != bus.NumberOfChannels())
 		return false;  // channel mismatch
@@ -409,6 +425,5 @@ bool CIAudioBus::topologyMatches(const CIAudioBus& bus) const
 	return true;
 }
 
-} // namespace detail
 } // namespace ln
 

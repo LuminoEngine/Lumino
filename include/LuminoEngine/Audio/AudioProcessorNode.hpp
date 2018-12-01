@@ -2,6 +2,7 @@
 #include "AudioNode.hpp"
 
 namespace ln {
+class AudioBus;
 namespace detail {
 class CAProcessorNode;
 }
@@ -12,7 +13,7 @@ class AudioProcessorNode
 public:
 
 protected:
-    virtual void onAudioProcess(/* AudioBus* input, AudioBus* output */);
+    virtual void onAudioProcess(AudioBus* input, AudioBus* output);
 
 LN_CONSTRUCT_ACCESS:
     AudioProcessorNode();
@@ -23,6 +24,8 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	Ref<detail::CAProcessorNode> m_coreObject;
+
+    //Event<PhysicsObjectComponent*>	m_onAudioProcess;
 
     friend class detail::CAProcessorNode;
 };

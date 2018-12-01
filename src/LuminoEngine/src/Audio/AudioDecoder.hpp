@@ -22,7 +22,7 @@ struct AudioDataInfo
 	int channelCount;
 	int sampleRate;
 	double totalSeconds;
-	size_t frameSize; // samples の、1フレームの要素数 (channelCount * bits per sample)
+	size_t frameSize; // samples の、1フレームの要素数 (channelCount * byteParSample)
 	size_t totalSamples;	// 全サンプル数。ステレオの場合、複数チャンネル込み。
 	//std::vector<float> samples;
 	PCMFormat sourceFormat;
@@ -58,6 +58,8 @@ public:
     virtual void seekToFrame(size_t frameNumber) override;
 	virtual uint32_t read2(float* buffer, uint32_t requestFrames) override;
 	virtual void reset() override;
+
+    std::vector<float> readAllSamples();
 
 private:
 	Ref<Stream> m_stream;

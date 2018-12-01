@@ -29,8 +29,8 @@
 #define CHECK_GT(x, y) CHECK((x) > (y))
 
 namespace ln {
+class AudioBus;
 namespace detail {
-class CIAudioBus;
 
 namespace WTF {
 	class Partitions {
@@ -45,7 +45,6 @@ namespace WTF {
 }
 
 namespace blink {
-using AudioBus = CIAudioBus;
 
 class HRTFDatabaseLoader;
 

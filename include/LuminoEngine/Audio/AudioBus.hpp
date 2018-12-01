@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 namespace ln {
-namespace detail {
 
 //namespace blink {
 //	class SincResampler;
@@ -21,12 +20,12 @@ namespace detail {
 
 // The buffer used for data stream between a audio nodes.
 // Data is floating point, and range is -1.0 ~ +1.0
-class CIAudioChannel
+class AudioChannel
 	: public RefObject
 {
 public:
-	CIAudioChannel(size_t length);
-	virtual ~CIAudioChannel() = default;
+	AudioChannel(size_t length);
+	virtual ~AudioChannel() = default;
 
 	float* mutableData() { clearSilentFlag();  return m_data.data(); }	// Direct access to PCM sample data. clears silent flag.
 	const float* constData() const { return m_data.data(); }
@@ -39,8 +38,8 @@ public:
 	//void clear();
 	void copyTo(float* buffer, size_t bufferLength, size_t stride) const;
 	void copyFrom(const float* buffer, size_t bufferLength, size_t stride);
-	void copyFrom(const CIAudioChannel* ch);
-	void sumFrom(const CIAudioChannel* ch);
+	void copyFrom(const AudioChannel* ch);
+	void sumFrom(const AudioChannel* ch);
     void fillZero(size_t start, size_t length); // isSilent は変化しない
 
 	// chromium interface
@@ -54,7 +53,7 @@ private:
 };
 
 // collection of a audio channels.
-class CIAudioBus
+class AudioBus
 	: public RefObject
 {
 public:
@@ -79,8 +78,8 @@ public:
 		kChannelSurroundRight = 5,
 	};
 
-	CIAudioBus();
-	virtual ~CIAudioBus() = default;
+	AudioBus();
+	virtual ~AudioBus() = default;
 	void initialize2(int channelCount, size_t length, int sampleRate = 0);
 
 	size_t length() const { return m_validLength; }	// フレーム数
@@ -92,9 +91,9 @@ public:
 	int channelCount() const { return m_channels.size(); }
 	int numberOfChannels() const { return m_channels.size(); }
 
-	CIAudioChannel* channel(int index) const { return m_channels[index]; }
-	CIAudioChannel* channelByType(unsigned  type);
-	const CIAudioChannel* channelByType(unsigned  type) const;
+	AudioChannel* channel(int index) const { return m_channels[index]; }
+	AudioChannel* channelByType(unsigned  type);
+	const AudioChannel* channelByType(unsigned  type) const;
 
 	void setSilentAndZero();	// set silent flag, and zero clear buffers if needed. if set a valid samples in process(), please call clearSilentFlag()
 	void clearSilentFlag();
@@ -103,26 +102,26 @@ public:
     void fillZero(size_t start, size_t length);
 	void mergeToChannelBuffers(float* buffer, size_t length);
 	void separateFrom(const float* buffer, size_t length, int channelCount);
-	void sumFrom(const CIAudioBus* bus);
+	void sumFrom(const AudioBus* bus);
 
-	void copyWithGainFrom(const CIAudioBus& source_bus, float gain);
-	void copyBySampleRateConverting(const CIAudioBus* source_bus, int new_sample_rate);
-	bool topologyMatches(const CIAudioBus& bus) const;
+    void copyFrom(AudioBus* source);
+	void copyWithGainFrom(const AudioBus& source_bus, float gain);
+	void copyBySampleRateConverting(const AudioBus* source_bus, int new_sample_rate);
+	bool topologyMatches(const AudioBus& bus) const;
 
 	// chromium interface
 	int NumberOfChannels() const { return m_channels.size(); }
-	CIAudioChannel* Channel(int index) const { return channel(index); }
-	CIAudioChannel* ChannelByType(unsigned  type) { return channelByType(type); }
+	AudioChannel* Channel(int index) const { return channel(index); }
+	AudioChannel* ChannelByType(unsigned  type) { return channelByType(type); }
 
 
 private:
-	List<Ref<CIAudioChannel>> m_channels;
+	List<Ref<AudioChannel>> m_channels;
 	size_t m_validLength;
 	int m_sampleRate;
 
 	int m_layout = kLayoutCanonical;
 };
 
-} // namespace detail
 } // namespace ln
 

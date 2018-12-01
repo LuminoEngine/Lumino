@@ -25,9 +25,8 @@ void CAGainNode::initialize()
 
 void CAGainNode::process()
 {
-    CIAudioBus* destination = outputPin(0)->bus();
-    CIAudioBus* source = inputPin(0)->bus();
-    std::cout << m_gain << std::endl;
+    AudioBus* destination = outputPin(0)->bus();
+    AudioBus* source = inputPin(0)->bus();
     destination->copyWithGainFrom(*source, Math::clamp01(m_gain));
 }
 

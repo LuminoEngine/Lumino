@@ -13,7 +13,10 @@
 #include "LuminoEngine/Input/Mouse.hpp"
 
 #include "LuminoEngine/Audio/AudioContext.hpp"
+#include "LuminoEngine/Audio/AudioBus.hpp"
 #include "LuminoEngine/Audio/AudioNode.hpp"
+#include "LuminoEngine/Audio/AudioGainNode.hpp"
+#include "LuminoEngine/Audio/AudioProcessorNode.hpp"
 #include "LuminoEngine/Audio/Sound.hpp"
 #include "LuminoEngine/Audio/GameAudio.hpp"
 

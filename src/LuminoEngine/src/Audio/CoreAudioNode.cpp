@@ -50,22 +50,22 @@ PropagationParameters::PropagationParameters()
 CoreAudioInputPin::CoreAudioInputPin(int channels)
 	: m_ownerNode(nullptr)
 {
-	m_summingBus = makeRef<CIAudioBus>();
+	m_summingBus = makeRef<AudioBus>();
 	m_summingBus->initialize2(channels, CoreAudioNode::ProcessingSizeInFrames);
 }
 
-CIAudioBus* CoreAudioInputPin::bus() const
+AudioBus* CoreAudioInputPin::bus() const
 {
 	return m_summingBus;
 }
 
-CIAudioBus* CoreAudioInputPin::pull()
+AudioBus* CoreAudioInputPin::pull()
 {
 	m_summingBus->setSilentAndZero();
 
 	for (auto& output : m_connectedOutputPins)
 	{
-		CIAudioBus* bus = output->pull();
+		AudioBus* bus = output->pull();
 		m_summingBus->sumFrom(bus);
 	}
 
@@ -103,16 +103,16 @@ void CoreAudioInputPin::disconnectAll()
 CoreAudioOutputPin::CoreAudioOutputPin(int channels)
 	: m_ownerNode(nullptr)
 {
-	m_resultBus = makeRef<CIAudioBus>();
+	m_resultBus = makeRef<AudioBus>();
 	m_resultBus->initialize2(channels, CoreAudioNode::ProcessingSizeInFrames);
 }
 
-CIAudioBus * CoreAudioOutputPin::bus() const
+AudioBus * CoreAudioOutputPin::bus() const
 {
 	return m_resultBus;
 }
 
-CIAudioBus * CoreAudioOutputPin::pull()
+AudioBus * CoreAudioOutputPin::pull()
 {
 	m_ownerNode->processIfNeeded();
 	return m_resultBus;
@@ -306,11 +306,11 @@ void CoreAudioSourceNode::resetSourceBuffers()
 
 	m_readBuffer.resize(m_readFrames * numChannels);
 	if (m_resampler) {
-		m_resamplingBus = makeRef<CIAudioBus>();
+		m_resamplingBus = makeRef<AudioBus>();
 		m_resamplingBus->initialize2(numChannels, m_readFrames, m_decoder->audioDataInfo().sampleRate);
 	}
 
-	m_sourceBus = makeRef<CIAudioBus>();
+	m_sourceBus = makeRef<AudioBus>();
 	m_sourceBus->initialize2(numChannels, baseFrames);
 
 
@@ -337,7 +337,7 @@ void CoreAudioSourceNode::process()
 	updatePlayingState();
 
 
-	CIAudioBus* result = outputPin(0)->bus();
+	AudioBus* result = outputPin(0)->bus();
 
 	if (m_playingState != PlayingState::Playing) {
 		result->setSilentAndZero();
@@ -494,7 +494,7 @@ void CoreAudioSourceNode::process()
 	m_virtualReadIndex = virtualReadIndex;
 }
 
-bool CoreAudioSourceNode::renderSilenceAndFinishIfNotLooping(CIAudioBus * bus, unsigned index, size_t framesToProcess)
+bool CoreAudioSourceNode::renderSilenceAndFinishIfNotLooping(AudioBus * bus, unsigned index, size_t framesToProcess)
 {
 	if (!loop())
 	{
@@ -555,14 +555,14 @@ void CoreAudioPannerNode::process()
 
 
 
-	CIAudioBus* destination = outputPin(0)->bus();
+	AudioBus* destination = outputPin(0)->bus();
 
 	if (!m_panner.get()) {
 		destination->setSilentAndZero();
 		return;
 	}
 
-	CIAudioBus* source = inputPin(0)->bus();
+	AudioBus* source = inputPin(0)->bus();
 	if (!source) {
 		destination->setSilentAndZero();
 		return;
@@ -573,7 +573,7 @@ void CoreAudioPannerNode::process()
 	azimuthElevation(&azimuth, &elevation);
 	//printf("azimuth:%f\n", azimuth);
 
-	m_panner->Pan(azimuth, elevation, source, destination, destination->length(), CIAudioBus::kSpeakers);
+	m_panner->Pan(azimuth, elevation, source, destination, destination->length(), AudioBus::kSpeakers);
 
 	float total_gain = distanceConeGain();
 	//printf("tt:%f\n", total_gain);
@@ -625,14 +625,14 @@ void CoreAudioDestinationNode::initialize()
 
 void CoreAudioDestinationNode::render(float * outputBuffer, int length)
 {
-	CIAudioBus* bus = inputPin(0)->pull();
+	AudioBus* bus = inputPin(0)->pull();
 
 	// Clamp values at 0db (i.e., [-1.0, 1.0])
 	const float kLowThreshold = -1.0f;
 	const float kHighThreshold = 1.0f;
 	for (unsigned i = 0; i < bus->numberOfChannels(); ++i)
 	{
-		CIAudioChannel * channel = bus->channel(i);
+		AudioChannel * channel = bus->channel(i);
 		::blink::VectorMath::vclip(channel->constData(), 1, &kLowThreshold, &kHighThreshold, channel->mutableData(), 1, channel->length());
 	}
 

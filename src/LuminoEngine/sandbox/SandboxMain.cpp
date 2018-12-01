@@ -18,14 +18,69 @@
 #include "../src/Asset/AssetArchive.hpp"
 using namespace ln;
 
-class TestRenderView
-	: public RenderView
+class TestProcessorNode : public AudioProcessorNode
 {
 public:
-	void drawScene();
-	void render();
+    double step = 0.0;
+    float frequency = 440;
+    int counter = 0;
 
-	FrameBuffer frameBuffer;
+    void initialize()
+    {
+        AudioProcessorNode::initialize(0, 2);
+    }
+
+    virtual void onAudioProcess(AudioBus* input, AudioBus* output) override
+    {
+        // TODO: 隠蔽したいところ・・・
+        output->setSampleRate(context()->sampleRate());
+
+        AudioChannel* ch1 = output->channel(0);
+        AudioChannel* ch2 = output->channel(1);
+        float* data1 = ch1->mutableData();
+        float* data2 = ch2->mutableData();
+
+        for (int i = 0; i < output->length(); i++) {
+            float v = std::sin(2.0 * Math::PI * step);
+            data1[i] = data2[i] = v;
+            step += frequency / output->sampleRate();//4096;
+        }
+
+        //step = 0;
+        counter++;
+        std::cout << counter << std::endl;
+    }
+};
+
+
+class TestRecoderNode : public AudioProcessorNode
+{
+public:
+    std::vector<float> data;
+    std::atomic<bool> end = false;
+
+    void initialize()
+    {
+        AudioProcessorNode::initialize(2, 2);
+    }
+
+    virtual void onAudioProcess(AudioBus* input, AudioBus* output) override
+    {
+        output->copyFrom(input);
+
+        if (data.size() < context()->sampleRate())
+        {
+            size_t begin = data.size();
+            size_t size = input->length() * input->channelCount();
+            data.resize(data.size() + size);
+            input->mergeToChannelBuffers(data.data() + begin, size);
+            printf("put\n");
+        }
+        else
+        {
+            end = true;
+        }
+    }
 };
 
 int main(int argc, char** argv)
@@ -36,6 +91,11 @@ int main(int argc, char** argv)
 
 	GlobalLogger::addStdErrAdapter();
 	Engine::initialize();
+
+
+    while (Engine::update())
+    {
+    }
 
     auto file = FileStream::create(u"D:/Tech/Audio/WebAudioTest1/2018-11-29T13_00_15.686Z.wav");
     auto diag = newObject<DiagnosticsManager>();
@@ -115,6 +175,22 @@ int main(int argc, char** argv)
     sound->play();
     //sound->setPitch(1.2);
 #endif
+    auto source = newObject<AudioSourceNode>(u"D:/Tech/Audio/WebAudioTest1/2018-11-29T13_00_15.686Z.wav");
+    //auto source = newObject<AudioSourceNode>(u"D:/Music/momentum/02 - momentum.wav");
+    //auto source = newObject<TestProcessorNode>();
+    //AudioNode::connect(source, AudioContext::primary()->destination());
+    
+    auto recoder = newObject<TestRecoderNode>();
+    AudioNode::connect(source, recoder);
+    AudioNode::connect(recoder, AudioContext::primary()->destination());
+
+    //auto gain = newObject<AudioGainNode>();
+    //AudioNode::connect(source, gain);
+    //AudioNode::connect(gain, AudioContext::primary()->destination());
+
+    source->start();
+
+    //auto filedata = d.readAllSamples();
 
     while (Engine::update())
     {
@@ -128,6 +204,10 @@ int main(int argc, char** argv)
             sound->setVolume(volume);
         }
 #endif
+        if (recoder->end)
+        {
+            printf("a\n");
+        }
         
     }
 

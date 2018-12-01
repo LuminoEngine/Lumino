@@ -344,6 +344,21 @@ uint32_t WaveDecoder::read2(float* buffer, uint32_t requestFrames)
 	return readFrames;
 }
 
+std::vector<float> WaveDecoder::readAllSamples()
+{
+    std::vector<byte_t> data;
+    data.resize(m_pcmDataLength);
+
+    m_stream->seek(m_pcmDataOffset, SeekOrigin::Begin);
+    size_t readSize = m_stream->read(data.data(), m_pcmDataLength);
+
+
+    std::vector<float> ret;
+    ret.resize(m_info.totalSamples);
+    convertToFloat32(ret.data(), data.data(), ret.size(), PCMFormat::S16L);
+    return ret;
+}
+
 void WaveDecoder::reset()
 {
 }

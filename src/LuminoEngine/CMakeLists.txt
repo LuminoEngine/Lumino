@@ -102,6 +102,7 @@ set(LN_SOURCES_Input
 
 set(LN_SOURCES_Audio
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioBus.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioContext.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioGainNode.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioListener.hpp
@@ -113,6 +114,7 @@ set(LN_SOURCES_Audio
     src/Audio/Internal.hpp
     src/Audio/ALAudioDevice.cpp
     src/Audio/ALAudioDevice.hpp
+    src/Audio/AudioBus.cpp
     src/Audio/AudioContext.cpp
     src/Audio/AudioDecoder.cpp
     src/Audio/AudioDecoder.hpp
@@ -144,8 +146,6 @@ set(LN_SOURCES_Audio
     src/Audio/Sound.cpp
     src/Audio/blink/VectorMath.cpp
     src/Audio/blink/VectorMath.h
-    src/Audio/core/CIAudioBus.cpp
-    src/Audio/core/CIAudioBus.hpp
 )
 
 set(LN_SOURCES_Graphics

@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "AudioDevice.hpp"	// for IAudioDeviceRenderCallback
-#include "core/CIAudioBus.hpp"
+#include <LuminoEngine/Audio/AudioBus.hpp>
 
 #include <float.h>	// for FLT_EPSILON
 
@@ -53,9 +53,9 @@ public:
 	CoreAudioInputPin(int channels);
 	virtual ~CoreAudioInputPin() = default;
 
-	CIAudioBus* bus() const;
+	AudioBus* bus() const;
 
-	CIAudioBus* pull();
+	AudioBus* pull();
 
 	// TODO: internal
 	void setOwnerNode(CoreAudioNode* node) { m_ownerNode = node; }
@@ -70,7 +70,7 @@ public:
 private:
 
 	CoreAudioNode * m_ownerNode;
-	Ref<CIAudioBus> m_summingBus;	// Total output
+	Ref<AudioBus> m_summingBus;	// Total output
 	List<Ref<CoreAudioOutputPin>> m_connectedOutputPins;
 };
 
@@ -81,10 +81,10 @@ public:
 	CoreAudioOutputPin(int channels);
 	virtual ~CoreAudioOutputPin() = default;
 
-	CIAudioBus* bus() const;
+	AudioBus* bus() const;
 
 	// process() から呼び出してはならない
-	CIAudioBus* pull();
+	AudioBus* pull();
 
 
 	// TODO: internal
@@ -98,7 +98,7 @@ public:
 
 private:
 	CoreAudioNode* m_ownerNode;
-	Ref<CIAudioBus> m_resultBus;	// result of m_ownerNode->process()
+	Ref<AudioBus> m_resultBus;	// result of m_ownerNode->process()
 	List<Ref<CoreAudioInputPin>> m_connectedInputPins;
 };
 
@@ -177,14 +177,14 @@ private:
 	unsigned numberOfChannels() const;
 	void resetSourceBuffers();
 	double calculatePitchRate();
-	bool renderSilenceAndFinishIfNotLooping(CIAudioBus * bus, unsigned index, size_t framesToProcess);
+	bool renderSilenceAndFinishIfNotLooping(AudioBus * bus, unsigned index, size_t framesToProcess);
 	void updatePlayingState();
 
 	Ref<AudioDecoder> m_decoder;
 	std::vector<float> m_readBuffer;
-	Ref<CIAudioBus> m_sourceBus;	// resampled
+	Ref<AudioBus> m_sourceBus;	// resampled
 	std::unique_ptr<blink::SincResampler> m_resampler;
-	Ref<CIAudioBus> m_resamplingBus;
+	Ref<AudioBus> m_resamplingBus;
 	//std::vector<float> m_resamplingBuffer;
 
 	// Current playback position.

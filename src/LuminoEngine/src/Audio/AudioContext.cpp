@@ -82,6 +82,11 @@ void AudioContext::process()
 	}
 }
 
+int AudioContext::sampleRate() const
+{
+    return m_audioDevice->deviceSamplingRate();
+}
+
 AudioDestinationNode* AudioContext::destination() const
 {
 	return m_destinationNode;
