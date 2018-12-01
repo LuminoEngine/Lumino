@@ -37,6 +37,8 @@ private:
 	AudioListenerParams m_listener;
 	int m_masterChannels;
 	std::vector<float> m_renderdBuffer;
+    ElapsedTimer m_failoutTimer;
+    uint64_t m_failoutMilliseconds;
 };
 
 class NullAudioDevice

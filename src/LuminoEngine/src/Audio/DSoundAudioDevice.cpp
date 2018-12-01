@@ -13,19 +13,23 @@ namespace detail {
 // DSoundAudioDevice
 
 DSoundAudioDevice::DSoundAudioDevice()
-	: m_nextSectorNumber(0)
-	, m_sctorSize(0)
+	//: m_nextSectorNumber(0)
+	//, m_sctorSize(0)
 {
+    m_chunkCount = 4;
 }
 
 void DSoundAudioDevice::initialize(int frameLength)
 {
 	AudioDevice::initialize(frameLength, 2);
 
-	DWORD bufferSize = frameLength;
-	bufferSize *= 2;	// channel.
-	bufferSize *= 2;	// double buffering
-	bufferSize *= sizeof(int16_t);
+
+    m_chunkSize = frameLength;
+    m_chunkSize *= 2;	// channel.
+    m_chunkSize *= sizeof(int16_t);
+    size_t bufferSize = m_chunkSize* m_chunkCount;
+
+    m_lastChunk = m_chunkCount;
 
 	HWND hWnd = GetDesktopWindow();
 
@@ -151,7 +155,7 @@ void DSoundAudioDevice::initialize(int frameLength)
 		return;
 	}
 	DWORD dsBufferSize = dsbcaps.dwBufferBytes;
-	m_sctorSize = dsBufferSize / 2;
+	//m_sctorSize = dsBufferSize / 2;
 
 	// initial clear
 	{
@@ -193,29 +197,55 @@ void DSoundAudioDevice::dispose()
 
 int DSoundAudioDevice::deviceSamplingRate()
 {
+    //return 48000;
 	return 44100;
 }
 
 void DSoundAudioDevice::updateProcess()
 {
-	void* AP1 = 0, *AP2 = 0;
-	DWORD AB1 = 0, AB2 = 0;
-	DWORD point = 0;
-	m_secondaryBuffer->GetCurrentPosition(&point, 0);
-	if (m_nextSectorNumber == 0 && m_sctorSize <= point) {
-		if (SUCCEEDED(m_secondaryBuffer->Lock(0, m_sctorSize, &AP1, &AB1, &AP2, &AB2, 0))) {
-			render((int16_t*)AP1, AB1 / sizeof(int16_t));
-			m_secondaryBuffer->Unlock(AP1, AB1, AP2, AB2);
-			m_nextSectorNumber = 1;
-		}
-	}
-	else if (m_nextSectorNumber == 1 && point < m_sctorSize) {
-		if (SUCCEEDED(m_secondaryBuffer->Lock(m_sctorSize, m_sctorSize, &AP1, &AB1, &AP2, &AB2, 0))) {
-			render((int16_t*)AP1, AB1 / sizeof(int16_t));
-			m_secondaryBuffer->Unlock(AP1, AB1, AP2, AB2);
-			m_nextSectorNumber = 0;
-		}
-	}
+    DWORD dummy = 0;
+    DWORD cursor = 0;
+    //m_secondaryBuffer->GetCurrentPosition(&cursor, 0);
+    m_secondaryBuffer->GetCurrentPosition(&dummy, &cursor);
+
+    size_t cursorChunk = cursor / m_chunkSize;
+    //
+
+    if (m_lastChunk != cursorChunk)
+    {
+        m_lastChunk = cursorChunk;
+        DWORD start = ((cursorChunk + 1) % m_chunkCount) * m_chunkSize;
+
+        //std::cout << "cursorChunk:" << cursorChunk << std::endl;
+
+        void* AP1 = 0, *AP2 = 0;
+        DWORD AB1 = 0, AB2 = 0;
+        if (SUCCEEDED(m_secondaryBuffer->Lock(start, m_chunkSize, &AP1, &AB1, &AP2, &AB2, 0))) {
+            render((int16_t*)AP1, AB1 / sizeof(int16_t));
+            m_secondaryBuffer->Unlock(AP1, AB1, AP2, AB2);
+            //m_nextSectorNumber = 1;
+        }
+    }
+
+
+
+
+	//DWORD point = 0;
+	//m_secondaryBuffer->GetCurrentPosition(&point, 0);
+	//if (m_nextSectorNumber == 0 && point < m_sctorSize) {
+	//	if (SUCCEEDED(m_secondaryBuffer->Lock(0, m_sctorSize, &AP1, &AB1, &AP2, &AB2, 0))) {
+	//		render((int16_t*)AP1, AB1 / sizeof(int16_t));
+	//		//m_secondaryBuffer->Unlock(AP1, AB1, AP2, AB2);
+	//		m_nextSectorNumber = 1;
+	//	}
+	//}
+	//else if (m_nextSectorNumber == 1 && m_sctorSize <= point) {
+	//	if (SUCCEEDED(m_secondaryBuffer->Lock(m_sctorSize, m_sctorSize, &AP1, &AB1, &AP2, &AB2, 0))) {
+	//		render((int16_t*)AP1, AB1 / sizeof(int16_t));
+	//		//m_secondaryBuffer->Unlock(AP1, AB1, AP2, AB2);
+	//		m_nextSectorNumber = 0;
+	//	}
+	//}
 
 	DWORD status = 0;
 	m_secondaryBuffer->GetStatus(&status);

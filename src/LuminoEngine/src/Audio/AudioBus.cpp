@@ -17,9 +17,9 @@ AudioChannel::AudioChannel(size_t length)
 
 void AudioChannel::setSilentAndZero()
 {
+		memset(mutableData(), 0, sizeof(float) * length());
 	if (!m_isSilent)
 	{
-		memset(mutableData(), 0, sizeof(float) * length());
 		m_isSilent = true;
 	}
 }

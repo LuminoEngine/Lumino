@@ -37,6 +37,7 @@ void AudioContext::initialize()
 	m_audioDevice = device;
 #elif defined(LN_OS_WIN32)
     auto device = makeRef<detail::DSoundAudioDevice>();
+    //auto device = makeRef<detail::ALAudioDevice>();
     device->initialize(detail::CoreAudioNode::ProcessingSizeInFrames);
     m_audioDevice = device;
 #else
@@ -75,10 +76,16 @@ void AudioContext::dispose()
 void AudioContext::process()
 {
 	if (m_audioDevice) {
+        //ElapsedTimer timer;
+
+
 		commitGraphs();
 		m_audioDevice->updateProcess();
 
 		m_audioDevice->run();
+
+        //std::cout << "time:" << timer.elapsedMilliseconds() << std::endl;
+        
 	}
 }
 

@@ -92,11 +92,6 @@ int main(int argc, char** argv)
 	GlobalLogger::addStdErrAdapter();
 	Engine::initialize();
 
-
-    while (Engine::update())
-    {
-    }
-
     auto file = FileStream::create(u"D:/Tech/Audio/WebAudioTest1/2018-11-29T13_00_15.686Z.wav");
     auto diag = newObject<DiagnosticsManager>();
     detail::WaveDecoder d;
@@ -168,33 +163,35 @@ int main(int argc, char** argv)
     //Engine::mainViewport()->addImageEffect(imageEffect);
 #endif
 
-#if 0
+#if 1
     //auto sound = newObject<Sound>(u"D:\\tmp\\4_Battle_win.wav");
     auto sound = newObject<Sound>(u"D:/Music/momentum/02 - momentum.wav");
 
     sound->play();
     //sound->setPitch(1.2);
 #endif
-    auto source = newObject<AudioSourceNode>(u"D:/Tech/Audio/WebAudioTest1/2018-11-29T13_00_15.686Z.wav");
-    //auto source = newObject<AudioSourceNode>(u"D:/Music/momentum/02 - momentum.wav");
+#if 0
+    //auto source = newObject<AudioSourceNode>(u"D:/Tech/Audio/WebAudioTest1/2018-11-29T13_00_15.686Z.wav");
+    auto source = newObject<AudioSourceNode>(u"D:/Music/momentum/02 - momentum.wav");
     //auto source = newObject<TestProcessorNode>();
     //AudioNode::connect(source, AudioContext::primary()->destination());
     
-    auto recoder = newObject<TestRecoderNode>();
-    AudioNode::connect(source, recoder);
-    AudioNode::connect(recoder, AudioContext::primary()->destination());
+    //auto recoder = newObject<TestRecoderNode>();
+    //AudioNode::connect(source, recoder);
+    //AudioNode::connect(recoder, AudioContext::primary()->destination());
 
-    //auto gain = newObject<AudioGainNode>();
-    //AudioNode::connect(source, gain);
-    //AudioNode::connect(gain, AudioContext::primary()->destination());
+    auto gain = newObject<AudioGainNode>();
+    AudioNode::connect(source, gain);
+    AudioNode::connect(gain, AudioContext::primary()->destination());
 
     source->start();
 
     //auto filedata = d.readAllSamples();
+#endif
 
     while (Engine::update())
     {
-#if 0
+#if 1
         if (Mouse::isPressed(MouseButtons::Left))
         {
             float pitch = (Mouse::position().x / 640)  + 0.5;
@@ -204,10 +201,10 @@ int main(int argc, char** argv)
             sound->setVolume(volume);
         }
 #endif
-        if (recoder->end)
-        {
-            printf("a\n");
-        }
+        //if (recoder->end)
+        //{
+        //    printf("a\n");
+        //}
         
     }
 

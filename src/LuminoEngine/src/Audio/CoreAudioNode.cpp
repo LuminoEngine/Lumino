@@ -625,6 +625,24 @@ void CoreAudioDestinationNode::initialize()
 
 void CoreAudioDestinationNode::render(float * outputBuffer, int length)
 {
+
+
+    ////AudioChannel* ch1 = output->channel(0);
+    ////AudioChannel* ch2 = output->channel(1);
+    ////float* data1 = ch1->mutableData();
+    ////float* data2 = ch2->mutableData();
+    //static float step = 0.0;
+    //static float frequency = 440;
+
+    //for (int i = 0; i < length / 2; i++) {
+    //    float v = std::sin(2.0 * Math::PI * step);
+    //    outputBuffer[(i*2) + 0] = outputBuffer[(i * 2) + 1] = v;
+    //    step += frequency / context()->deviceSamplingRate();//4096;
+    //}
+
+    //return;
+
+
 	AudioBus* bus = inputPin(0)->pull();
 
 	// Clamp values at 0db (i.e., [-1.0, 1.0])

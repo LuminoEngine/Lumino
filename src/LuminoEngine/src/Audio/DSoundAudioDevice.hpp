@@ -23,8 +23,11 @@ private:
 	IDirectSound8 * m_dsound;
 	IDirectSoundBuffer* m_primaryBuffer;
 	IDirectSoundBuffer* m_secondaryBuffer;
-	size_t m_nextSectorNumber;
-	size_t m_sctorSize;
+	//size_t m_nextSectorNumber;
+	//size_t m_sctorSize;
+    size_t m_chunkCount;
+    size_t m_chunkSize;
+    size_t m_lastChunk; // ここまでデータが入っている
 };
 
 } // namespace detail

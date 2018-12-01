@@ -754,6 +754,7 @@ void OpenGLDeviceContext::onPresent(ISwapChain* swapChain)
 
         // Blit
         // ※EAGL(iOS) は destination が FBO ではない場合失敗する。それ以外は RenderTarget でも成功していた。
+        // TODO: デュアルディスプレイで指しなおすと、次回起動時に失敗する。PC再起動で治る。
         GL_CHECK(glBlitFramebuffer(0, 0, bufferSize.width, bufferSize.height, 0, 0, endpointSize.width, endpointSize.height, GL_COLOR_BUFFER_BIT, GL_NEAREST));
        
         GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, s->defaultFBO()));
