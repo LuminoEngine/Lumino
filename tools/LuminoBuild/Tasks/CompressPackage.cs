@@ -16,7 +16,11 @@ namespace LuminoBuild.Tasks
             string releasePackage = Path.Combine(builder.LuminoBuildDir, builder.ReleasePackageName);
 
             Directory.Move(localPackage, releasePackage);
-            Utils.CreateZipFile(releasePackage, Path.Combine(builder.LuminoBuildDir, builder.ReleasePackageName + ".zip"), true);
+
+            var zipPath = Path.Combine(builder.LuminoBuildDir, builder.ReleasePackageName + ".zip");
+            Utils.CreateZipFile(releasePackage, zipPath, true);
+
+            Console.WriteLine(zipPath);
         }
     }
 }

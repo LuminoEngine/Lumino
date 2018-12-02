@@ -57,11 +57,12 @@ class TestRecoderNode : public AudioProcessorNode
 {
 public:
     std::vector<float> data;
-    std::atomic<bool> end = false;
+    std::atomic<bool> end;
 
     void initialize()
     {
         AudioProcessorNode::initialize(2, 2);
+		end = false;
     }
 
     virtual void onAudioProcess(AudioBus* input, AudioBus* output) override

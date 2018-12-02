@@ -48,6 +48,7 @@ namespace LuminoBuild
             builder.Tasks.Add(new Tasks.BuildEngine_iOS());
             builder.Tasks.Add(new Tasks.BuildDocuments());
             builder.Tasks.Add(new Tasks.BuildEngine_MSVC());
+            builder.Tasks.Add(new Tasks.CompressPackage());
             builder.Tasks.Add(new Tasks.MakeNuGetPackage_Core());
             builder.Tasks.Add(new Tasks.BuildEngine_AndroidJNI());
             builder.Tasks.Add(new Tasks.BuildEngine_Emscripten());

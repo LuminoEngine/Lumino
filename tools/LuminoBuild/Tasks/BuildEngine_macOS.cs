@@ -12,7 +12,7 @@ namespace LuminoBuild.Tasks
 
         public override void Build(Builder builder)
         {
-            string cmakeOutputDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "macOS");
+            string cmakeOutputDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "macOS-Release");
 
             string buildDir = Path.Combine(builder.LuminoBuildDir, "macOS-Release");
             Directory.CreateDirectory(buildDir);
