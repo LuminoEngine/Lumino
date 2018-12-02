@@ -6,16 +6,9 @@ Module['preRun'] = function () {
         false // 書き込み許可(今回の例はfalseでもよさげ)
     );
     FS.createPreloadedFile(
-        '/Assets',// 親フォルダの指定
-        'test.txt',// ソース中でのファイル名
-        '/Assets/test.txt',  // httpでアクセスする際のURLを指定
-        true,
-        false
-    );
-    FS.createPreloadedFile(
-        '/Assets',// 親フォルダの指定
-        '8_MapBGM2.wav',// ソース中でのファイル名
-        '/Assets/8_MapBGM2.wav',  // httpでアクセスする際のURLを指定
+        '/',// 親フォルダの指定
+        'LineWave.lufx',// ソース中でのファイル名
+        '/LineWave.lufx',  // httpでアクセスする際のURLを指定
         true,
         false
     );
