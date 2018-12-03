@@ -383,10 +383,10 @@ std::string ShaderCodeTranspiler::generateGlsl()
 
 	// Set some options.
 	spirv_cross::CompilerGLSL::Options options;
-	//options.version = 410;
-	//options.es = false;
-	options.version = 300;
-	options.es = true;
+	options.version = 410;
+	options.es = false;
+	//options.version = 300;
+	//options.es = true;
 	glsl.set_common_options(options);
 
 

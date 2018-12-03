@@ -13,7 +13,7 @@ int CocoaPlatformInterface::Main()
 {
 	g_app = ::LuminoCreateApplicationInstance();
 
-	ln::detail::ApplicationHelper::initialize(g_app);
+	//ln::detail::ApplicationHelper::initialize(g_app);
 	ln::detail::ApplicationHelper::run(g_app);
 	ln::detail::ApplicationHelper::finalize(g_app);
 	ln::RefObjectHelper::release(g_app);

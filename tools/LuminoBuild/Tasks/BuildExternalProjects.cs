@@ -296,6 +296,7 @@ namespace LuminoBuild.Tasks
                 var targetArgs = new []
                 {
                     // macOS
+                    new { DirName = "macOS", Config = "Debug",Args = "" },
                     new { DirName = "macOS", Config = "Release",Args = "" },
 
                     // iOS
@@ -316,7 +317,7 @@ namespace LuminoBuild.Tasks
                     BuildProject(builder, "SPIRV-Cross", t.Config, reposDir, dirName, generator, args);
                     BuildProject(builder, "glfw", t.Config, reposDir, dirName, generator, $"-DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF -DGLFW_INSTALL=ON");
                     BuildProject(builder, "glad", t.Config, reposDir, dirName, generator, $"-DGLAD_INSTALL=ON " + args);
-                    BuildProject(builder, "freetype2", t.Config, reposDir, dirName, generator, args);
+                    BuildProject(builder, "freetype2", t.Config, reposDir, dirName, generator, $"-DWITH_ZLIB=OFF -DWITH_BZip2=OFF  -DWITH_PNG=OFF -DWITH_HarfBuzz=OFF " + args);
                     BuildProject(builder, "ogg", t.Config, reposDir, dirName, generator, args);
                     BuildProject(builder, "vorbis", t.Config, reposDir, dirName, generator, $"-DOGG_ROOT={oggInstallDir} " + args);
                 }

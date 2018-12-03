@@ -31,7 +31,11 @@ void AudioContext::initialize()
 {
 	m_manager = detail::EngineDomain::audioManager();
 
-#if defined(LN_USE_SDL)
+#if defined(LN_OS_MAC) || defined(LN_OS_IOS)
+	auto device = makeRef<detail::ALAudioDevice>();
+	device->initialize();
+	m_audioDevice = device;
+#elif defined(LN_USE_SDL)
 	auto device = makeRef<detail::SDLAudioDevice>();
 	device->initialize();
 	m_audioDevice = device;

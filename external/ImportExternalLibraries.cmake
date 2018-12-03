@@ -240,8 +240,8 @@ endif()
 
 ln_make_external_find_path(FreeType_ROOT "freetype2")
 
-find_library(FreeType_LIBRARY_RELEASE NAMES freetype libfreetype PATHS ${FreeType_ROOT} PATH_SUFFIXES lib)
-find_library(FreeType_LIBRARY_DEBUG NAMES freetyped libfreetyped PATHS ${FreeType_ROOT} PATH_SUFFIXES lib)
+find_library(FreeType_LIBRARY_RELEASE NAMES freetype libfreetype PATHS ${FreeType_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(FreeType_LIBRARY_DEBUG NAMES freetyped libfreetyped PATHS ${FreeType_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 
 add_library(FreeType STATIC IMPORTED)
 set_target_properties(FreeType PROPERTIES IMPORTED_LOCATION_RELEASE "${FreeType_LIBRARY_RELEASE}")
