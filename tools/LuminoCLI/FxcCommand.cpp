@@ -74,7 +74,7 @@ bool FxcCommand::generate(const ln::Path& inputFile)
 		{
             // Vertex shader
             {
-				if (!unifiedShader->hasCode(pass.vertexShader, ln::detail::CodeKind::Glsl))
+                if (!unifiedShader->hasCode(pass.vertexShader, { "glsl", 430, "" }))
 				{
 					ln::detail::ShaderCodeTranspiler transpiler;
 					transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, &definitions, m_diag);
@@ -82,13 +82,13 @@ bool FxcCommand::generate(const ln::Path& inputFile)
 						return false;
 					}
 
-					unifiedShader->setCode(pass.vertexShader, ln::detail::CodeKind::Glsl, transpiler.generateGlsl());
+					unifiedShader->setCode(pass.vertexShader, { "glsl", 430, "" }, transpiler.generateGlsl());
 				}
             }
 
             // Pixel shader
             {
-				if (!unifiedShader->hasCode(pass.pixelShader, ln::detail::CodeKind::Glsl))
+				if (!unifiedShader->hasCode(pass.pixelShader, { "glsl", 430, "" }))
 				{
 					ln::detail::ShaderCodeTranspiler transpiler;
 					transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, &definitions, m_diag);
@@ -96,7 +96,7 @@ bool FxcCommand::generate(const ln::Path& inputFile)
 						return false;
 					}
 
-					unifiedShader->setCode(pass.pixelShader, ln::detail::CodeKind::Glsl, transpiler.generateGlsl());
+					unifiedShader->setCode(pass.pixelShader, { "glsl", 430, "" }, transpiler.generateGlsl());
 				}
             }
         }

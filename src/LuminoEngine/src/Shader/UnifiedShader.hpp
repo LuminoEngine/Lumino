@@ -6,12 +6,6 @@ namespace ln {
 namespace detail {
 class ShaderRenderState;
 
-enum class CodeKind
-{
-	Glsl = 0,
-};
-
-
 /*
  * データ構造
  * --------
@@ -30,6 +24,13 @@ enum class CodeKind
  * ### Technique
  * HLSL の Technique 相当。
  * Pass をグループ化する。
+ *
+ * Triple
+ * --------
+ * <target>-<version>-<option>
+ * - hlsl-5-.
+ * - glsl-430-.
+ * - glsl-300-es
  */
 class UnifiedShader
 	: public RefObject
@@ -43,6 +44,13 @@ public:
 	static const int FileVersion = 1;
 	static const String FileExt;
 
+    struct Triple
+    {
+        std::string target;
+        uint32_t version;
+        std::string option;
+    };
+
 	UnifiedShader(DiagnosticsManager* diag);
 	virtual ~UnifiedShader();
 
@@ -50,11 +58,11 @@ public:
 	bool load(Stream* stream);
 
 	bool addCodeContainer(const std::string& entryPointName, CodeContainerId* outId);
-	void setCode(CodeContainerId container, CodeKind kind, const std::string& code);
-	void setCode(const std::string& entryPointName, CodeKind kind, const std::string& code);
-	bool hasCode(const std::string& entryPointName, CodeKind kind) const;
+	void setCode(CodeContainerId container, const Triple& triple, const std::string& code);
+	void setCode(const std::string& entryPointName, const Triple& triple, const std::string& code);
+	bool hasCode(const std::string& entryPointName, const Triple& triple) const;
 	bool findCodeContainer(const std::string& entryPointName, CodeContainerId* outId) const;
-	const std::string& getCode(CodeContainerId conteinreId, CodeKind kind) const;
+	const std::string* findCode(CodeContainerId conteinreId, const Triple& triple) const;
 	 
 	bool addTechnique(const std::string& name, TechniqueId* outTech);
 	int techniqueCount() const { return m_techniques.size(); }
@@ -83,10 +91,16 @@ private:
 	static std::string readString(BinaryReader* r);
 	static bool checkSignature(BinaryReader* r, const char* sig, size_t len, DiagnosticsManager* diag);
 
+    struct CodeInfo
+    {
+        Triple triple;
+        std::string code;
+    };
+
 	struct CodeContainerInfo
 	{
 		std::string entryPointName;
-		std::array<std::string, 1> codes;
+		std::vector<CodeInfo> codes;
 	};
 
 	struct TechniqueInfo

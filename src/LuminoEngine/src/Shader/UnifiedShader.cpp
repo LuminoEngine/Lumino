@@ -81,11 +81,14 @@ bool UnifiedShader::save(const Path& filePath)
 			CodeContainerInfo* info = &m_codeContainers[i];
 			writeString(writer, info->entryPointName);
 
-			// GLSL
-			{
-				writer->write("GLSL....", 8);	// Chunk signature
-				writeString(writer, info->codes[(int)CodeKind::Glsl]);
-			}
+            writer->writeUInt8(info->codes.size());
+            for (int iCode = 0; iCode < info->codes.size(); iCode++)
+            {
+                writeString(writer, info->codes[iCode].triple.target);
+                writer->writeUInt32(info->codes[iCode].triple.version);
+                writeString(writer, info->codes[iCode].triple.option);
+                writeString(writer, info->codes[iCode].code);
+            }
 		}
 	}
 
@@ -178,16 +181,27 @@ bool UnifiedShader::load(Stream* stream)
 			CodeContainerInfo info;
 			info.entryPointName = readString(reader);
 
+            uint8_t count = reader->readUInt8();
+            for (int iCode = 0; iCode < count; iCode++)
+            {
+                CodeInfo code;
+                code.triple.target = readString(reader);
+                code.triple.version = reader->readUInt32();
+                code.triple.option = readString(reader);
+                code.code = readString(reader);
+                info.codes.push_back(std::move(code));
+            }
+
 			// GLSL
-			{
-				if (!checkSignature(reader, "GLSL....", 8, m_diag)) {
-					return false;
-				}
+			//{
+			//	if (!checkSignature(reader, "GLSL....", 8, m_diag)) {
+			//		return false;
+			//	}
 
-				info.codes[(int)CodeKind::Glsl] = readString(reader);
-			}
+			//	info.codes[(int)CodeKind::Glsl] = readString(reader);
+			//}
 
-			m_codeContainers.add(info);
+			m_codeContainers.add(std::move(info));
 		}
 	}
 
@@ -274,12 +288,12 @@ bool UnifiedShader::addCodeContainer(const std::string& entryPointName, CodeCont
 	return true;
 }
 
-void UnifiedShader::setCode(CodeContainerId container, CodeKind kind, const std::string& code)
+void UnifiedShader::setCode(CodeContainerId container, const Triple& triple, const std::string& code)
 {
-	m_codeContainers[idToIndex(container)].codes[(int)kind] = code;
+    m_codeContainers[idToIndex(container)].codes.push_back({triple, code});
 }
 
-void UnifiedShader::setCode(const std::string& entryPointName, CodeKind kind, const std::string& code)
+void UnifiedShader::setCode(const std::string& entryPointName, const Triple& triple, const std::string& code)
 {
 	int index = findCodeContainerInfoIndex(entryPointName);
 	if (index < 0) {
@@ -288,14 +302,14 @@ void UnifiedShader::setCode(const std::string& entryPointName, CodeKind kind, co
 		index = idToIndex(newId);
 	}
 
-	setCode(indexToId(index), kind, code);
+	setCode(indexToId(index), triple, code);
 }
 
-bool UnifiedShader::hasCode(const std::string& entryPointName, CodeKind kind) const
+bool UnifiedShader::hasCode(const std::string& entryPointName, const Triple& triple) const
 {
 	int index = findCodeContainerInfoIndex(entryPointName);
 	if (index >= 0) {
-		return !m_codeContainers[indexToId(index)].codes[(int)kind].empty();
+        return findCode(indexToId(index), triple) != nullptr;
 	}
 	else {
 		return false;
@@ -308,10 +322,47 @@ bool UnifiedShader::findCodeContainer(const std::string& entryPointName, CodeCon
 	return (*outId) >= 0;
 }
 
-const std::string& UnifiedShader::getCode(CodeContainerId conteinreId, CodeKind kind) const
+const std::string* UnifiedShader::findCode(CodeContainerId conteinreId, const Triple& triple) const
 {
-	return m_codeContainers[idToIndex(conteinreId)].codes[(int)kind];
+    if (LN_REQUIRE(!triple.target.empty())) {
+        return nullptr;
+    }
+
+    auto& codes = m_codeContainers[idToIndex(conteinreId)].codes;
+
+    size_t candidateVersion = 0;
+    size_t candidate = -1;
+    for (size_t iCode = 0; iCode < codes.size(); iCode++) {
+        auto& codeTriple = codes[iCode].triple;
+        if (codeTriple.target != triple.target) {
+            // not adopted
+        }
+        else if (!triple.option.empty() && codeTriple.option != triple.option) {
+            // not adopted
+        }
+        else {
+            // check version
+            if (codeTriple.version <= triple.version &&    // first, less than requested version
+                codeTriple.version > candidateVersion) {
+                candidate = iCode;
+                candidateVersion = codeTriple.version;
+            }
+        }
+    }
+
+    if (candidate >= 0) {
+        return &codes[candidate].code;
+    }
+    else {
+        return nullptr;
+    }
 }
+
+//const std::string& UnifiedShader::getCode(CodeContainerId conteinreId, const std::string& kindTriple) const
+//{
+//
+//	return m_codeContainers[idToIndex(conteinreId)].codes[(int)kind];
+//}
 
 bool UnifiedShader::addTechnique(const std::string& name, TechniqueId* outTech)
 {

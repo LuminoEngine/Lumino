@@ -328,10 +328,10 @@ void Shader::createFromUnifiedShader(Stream* stream, DiagnosticsManager* diag)
                 const std::string* vscode = nullptr;
                 const std::string* pscode = nullptr;
                 if (vscodeId) {
-                    vscode = &unifiedShader.getCode(vscodeId, detail::CodeKind::Glsl);
+                    vscode = unifiedShader.findCode(vscodeId, { "glsl", 430, "" });
                 }
                 if (pscodeId) {
-                    pscode = &unifiedShader.getCode(pscodeId, detail::CodeKind::Glsl);
+                    pscode = unifiedShader.findCode(pscodeId, { "glsl", 430, "" });
                 }
 
                 auto rhiPass = createRHIShaderPass(
