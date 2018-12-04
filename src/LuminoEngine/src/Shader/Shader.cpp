@@ -9,7 +9,7 @@
 #include "../Engine/RenderingCommandList.hpp"
 #include "UnifiedShader.hpp"
 #include "ShaderManager.hpp"
-#include "ShaderAnalyzer.hpp"
+#include "ShaderTranspiler.hpp"
 #include "HLSLMetadataParser.hpp"
 
 

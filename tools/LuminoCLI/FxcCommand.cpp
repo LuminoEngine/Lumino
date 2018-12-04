@@ -1,6 +1,6 @@
 
 #include "../../src/LuminoEngine/src/Shader/ShaderManager.hpp"
-#include "../../src/LuminoEngine/src/Shader/ShaderAnalyzer.hpp"
+#include "../../src/LuminoEngine/src/Shader/ShaderTranspiler.hpp"
 #include "../../src/LuminoEngine/src/Shader/HLSLMetadataParser.hpp"
 #include "../../src/LuminoEngine/src/Shader/UnifiedShader.hpp"
 #include "Project.hpp"

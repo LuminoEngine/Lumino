@@ -196,9 +196,9 @@ set(LN_SOURCES_Shader
     src/Shader/HLSLMetadataParser.cpp
     src/Shader/HLSLMetadataParser.hpp
     src/Shader/Shader.cpp
+    src/Shader/ShaderTranspiler.cpp
+    src/Shader/ShaderTranspiler.hpp
     src/Shader/ShaderHelper.cpp
-    src/Shader/ShaderAnalyzer.cpp
-    src/Shader/ShaderAnalyzer.hpp
     src/Shader/ShaderInterfaceFramework.cpp
     src/Shader/ShaderManager.cpp
     src/Shader/ShaderManager.hpp

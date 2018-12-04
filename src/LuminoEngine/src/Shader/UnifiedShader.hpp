@@ -11,6 +11,26 @@ enum class CodeKind
 	Glsl = 0,
 };
 
+
+/*
+ * データ構造
+ * --------
+ * ### CodeContainer
+ * ターゲットごとのシェーダコードが入っている。
+ * 例えば、GLSL, HLSL, SPIR-V など、これらをまとめるものが CodeContainer。
+ * Pass から参照される。
+ *
+ * ### Pass
+ * HLSL の Pass 相当。
+ * - VertexShader (CodeContainer)
+ * - PixelShader (CodeContainer)
+ * - RenderState
+ * などを持っている。
+ *
+ * ### Technique
+ * HLSL の Technique 相当。
+ * Pass をグループ化する。
+ */
 class UnifiedShader
 	: public RefObject
 {

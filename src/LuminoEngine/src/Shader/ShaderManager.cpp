@@ -1,7 +1,7 @@
 
 #include "Internal.hpp"
 #include "ShaderManager.hpp"
-#include "ShaderAnalyzer.hpp"
+#include "ShaderTranspiler.hpp"
 
 namespace ln {
 namespace detail {

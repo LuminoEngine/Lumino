@@ -9,7 +9,7 @@
 #include "../Grammar/CppLexer.hpp"
 #include <LuminoEngine/Shader/ShaderHelper.hpp>
 #include "ShaderManager.hpp"
-#include "ShaderAnalyzer.hpp"
+#include "ShaderTranspiler.hpp"
 
 namespace ln {
 namespace detail {
