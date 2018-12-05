@@ -312,6 +312,7 @@ void Shader::createFromUnifiedShader(Stream* stream, DiagnosticsManager* diag)
     detail::UnifiedShader unifiedShader(diag);
     if (unifiedShader.load(stream))
     {
+        auto& triple = manager()->deviceContext()->caps().requestedShaderTriple;
         for (int iTech = 0; iTech < unifiedShader.techniqueCount(); iTech++)
         {
             detail::UnifiedShader::TechniqueId techId = unifiedShader.techniqueId(iTech);
@@ -328,10 +329,10 @@ void Shader::createFromUnifiedShader(Stream* stream, DiagnosticsManager* diag)
                 const std::string* vscode = nullptr;
                 const std::string* pscode = nullptr;
                 if (vscodeId) {
-                    vscode = unifiedShader.findCode(vscodeId, { "glsl", 430, "" });
+                    vscode = unifiedShader.findCode(vscodeId, triple);
                 }
                 if (pscodeId) {
-                    pscode = unifiedShader.findCode(pscodeId, { "glsl", 430, "" });
+                    pscode = unifiedShader.findCode(pscodeId, triple);
                 }
 
                 auto rhiPass = createRHIShaderPass(
