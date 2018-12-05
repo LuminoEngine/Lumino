@@ -2,12 +2,19 @@
 #include "../src/Engine/EngineManager.hpp"
 #include "TestEnv.hpp"
 
+String TestEnv::LuminoCLI;
+
 void TestEnv::setup()
 {
 	GlobalLogger::addStdErrAdapter();
 	EngineSettings::setMainWindowSize(160, 120);
 	EngineSettings::setMainBackBufferSize(160, 120);
     detail::EngineDomain::engineManager()->initialize();
+
+#ifdef LN_OS_WIN32
+	LuminoCLI = Path::combine(Path(ln::Environment::executablePath()).parent().parent().parent().parent(), u"tools", u"LuminoCLI", u"Debug", u"lumino-cli.exe");
+#else
+#endif
 }
 
 void TestEnv::teardown()

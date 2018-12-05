@@ -76,6 +76,7 @@ void GraphicsManager::initialize(const Settings& settings)
 	openglSettings.mainWindow = settings.mainWindow;
 	auto ctx = makeRef<OpenGLDeviceContext>();
 	ctx->initialize(openglSettings);
+	ctx->refreshCaps();
 	m_deviceContext = ctx;
 
 	m_graphicsContext = newObject<GraphicsContext>(m_deviceContext);

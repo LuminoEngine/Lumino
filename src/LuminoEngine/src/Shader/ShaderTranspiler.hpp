@@ -32,7 +32,7 @@ public:
 		ShaderCodeStage stage, const char* code, size_t length, const std::string& entryPoint,
 		const List<Path>& includeDir, const List<String>* definitions, DiagnosticsManager* diag);
 
-	std::string generateGlsl();
+	std::string generateGlsl(uint32_t version, bool es);
 
 
 private:

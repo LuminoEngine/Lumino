@@ -2,11 +2,14 @@
 
 namespace ln {
 
+namespace detail {
 
-//enum class ShaderCodeType
-//{
-//	Hlsl,
-//	HlslEffect,
-//};
+struct UnifiedShaderTriple
+{
+	std::string target;
+	uint32_t version;
+	std::string option;
+};
 
+} // namespace detail
 } // namespace ln

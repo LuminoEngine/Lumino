@@ -82,7 +82,18 @@ bool FxcCommand::generate(const ln::Path& inputFile)
 						return false;
 					}
 
-					unifiedShader->setCode(pass.vertexShader, { "glsl", 430, "" }, transpiler.generateGlsl());
+					unifiedShader->setCode(pass.vertexShader, { "glsl", 430, "" }, transpiler.generateGlsl(430, false));
+				}
+
+				if (!unifiedShader->hasCode(pass.vertexShader, { "glsl", 300, "es" }))
+				{
+					ln::detail::ShaderCodeTranspiler transpiler;
+					transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, &definitions, m_diag);
+					if (m_diag->hasError()) {
+						return false;
+					}
+
+					unifiedShader->setCode(pass.vertexShader, { "glsl", 300, "es" }, transpiler.generateGlsl(300, true));
 				}
             }
 
@@ -96,7 +107,18 @@ bool FxcCommand::generate(const ln::Path& inputFile)
 						return false;
 					}
 
-					unifiedShader->setCode(pass.pixelShader, { "glsl", 430, "" }, transpiler.generateGlsl());
+					unifiedShader->setCode(pass.pixelShader, { "glsl", 430, "" }, transpiler.generateGlsl(430, false));
+				}
+
+				if (!unifiedShader->hasCode(pass.pixelShader, { "glsl", 300, "es" }))
+				{
+					ln::detail::ShaderCodeTranspiler transpiler;
+					transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, &definitions, m_diag);
+					if (m_diag->hasError()) {
+						return false;
+					}
+
+					unifiedShader->setCode(pass.pixelShader, { "glsl", 300, "es" }, transpiler.generateGlsl(300, true));
 				}
             }
         }

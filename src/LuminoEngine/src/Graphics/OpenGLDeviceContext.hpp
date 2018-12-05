@@ -17,7 +17,7 @@
  * そういった諸々の管理を考えると実装が複雑になってしまう。
  * 
  *
- * マルチスレッドスレッドについて
+ * マルチスレッドについて
  * ----------
  * OpenGLDeviceContext はマルチスレッドレンダリングをサポートしない。
  * 大きな理由は、マルチスレッドでの動作がちゃんと規格化されていないから。
@@ -116,6 +116,7 @@ public:
 	void setActiveShaderPass(GLShaderPass* pass);
 
 protected:
+	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) override;
 	virtual void onEnterMainThread() override;
 	virtual void onLeaveMainThread() override;
 	virtual void onSaveExternalRenderState() override;

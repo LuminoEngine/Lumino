@@ -257,6 +257,19 @@ void OpenGLDeviceContext::setActiveShaderPass(GLShaderPass* pass)
 	}
 }
 
+void OpenGLDeviceContext::onGetCaps(GraphicsDeviceCaps* outCaps)
+{
+#ifdef LN_GRAPHICS_OPENGLES
+	outCaps->requestedShaderTriple.target = "glsl";
+	outCaps->requestedShaderTriple.version = 300;
+	outCaps->requestedShaderTriple.option = "es";
+#else
+	outCaps->requestedShaderTriple.target = "glsl";
+	outCaps->requestedShaderTriple.version = 430;
+	outCaps->requestedShaderTriple.option = "";
+#endif
+}
+
 void OpenGLDeviceContext::onEnterMainThread()
 {
 	//m_glContext->makeCurrent();

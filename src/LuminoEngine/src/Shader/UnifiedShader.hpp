@@ -44,13 +44,6 @@ public:
 	static const int FileVersion = 1;
 	static const String FileExt;
 
-    struct Triple
-    {
-        std::string target;
-        uint32_t version;
-        std::string option;
-    };
-
 	UnifiedShader(DiagnosticsManager* diag);
 	virtual ~UnifiedShader();
 
@@ -58,11 +51,11 @@ public:
 	bool load(Stream* stream);
 
 	bool addCodeContainer(const std::string& entryPointName, CodeContainerId* outId);
-	void setCode(CodeContainerId container, const Triple& triple, const std::string& code);
-	void setCode(const std::string& entryPointName, const Triple& triple, const std::string& code);
-	bool hasCode(const std::string& entryPointName, const Triple& triple) const;
+	void setCode(CodeContainerId container, const UnifiedShaderTriple& triple, const std::string& code);
+	void setCode(const std::string& entryPointName, const UnifiedShaderTriple& triple, const std::string& code);
+	bool hasCode(const std::string& entryPointName, const UnifiedShaderTriple& triple) const;
 	bool findCodeContainer(const std::string& entryPointName, CodeContainerId* outId) const;
-	const std::string* findCode(CodeContainerId conteinreId, const Triple& triple) const;
+	const std::string* findCode(CodeContainerId conteinreId, const UnifiedShaderTriple& triple) const;
 	 
 	bool addTechnique(const std::string& name, TechniqueId* outTech);
 	int techniqueCount() const { return m_techniques.size(); }
@@ -93,7 +86,7 @@ private:
 
     struct CodeInfo
     {
-        Triple triple;
+		UnifiedShaderTriple triple;
         std::string code;
     };
 

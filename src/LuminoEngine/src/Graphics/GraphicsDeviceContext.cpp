@@ -20,6 +20,11 @@ void IGraphicsDeviceContext::dispose()
 {
 }
 
+void IGraphicsDeviceContext::refreshCaps()
+{
+	onGetCaps(&m_caps);
+}
+
 void IGraphicsDeviceContext::enterMainThread()
 {
 }

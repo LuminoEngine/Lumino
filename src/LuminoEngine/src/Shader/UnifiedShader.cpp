@@ -288,12 +288,12 @@ bool UnifiedShader::addCodeContainer(const std::string& entryPointName, CodeCont
 	return true;
 }
 
-void UnifiedShader::setCode(CodeContainerId container, const Triple& triple, const std::string& code)
+void UnifiedShader::setCode(CodeContainerId container, const UnifiedShaderTriple& triple, const std::string& code)
 {
     m_codeContainers[idToIndex(container)].codes.push_back({triple, code});
 }
 
-void UnifiedShader::setCode(const std::string& entryPointName, const Triple& triple, const std::string& code)
+void UnifiedShader::setCode(const std::string& entryPointName, const UnifiedShaderTriple& triple, const std::string& code)
 {
 	int index = findCodeContainerInfoIndex(entryPointName);
 	if (index < 0) {
@@ -305,7 +305,7 @@ void UnifiedShader::setCode(const std::string& entryPointName, const Triple& tri
 	setCode(indexToId(index), triple, code);
 }
 
-bool UnifiedShader::hasCode(const std::string& entryPointName, const Triple& triple) const
+bool UnifiedShader::hasCode(const std::string& entryPointName, const UnifiedShaderTriple& triple) const
 {
 	int index = findCodeContainerInfoIndex(entryPointName);
 	if (index >= 0) {
@@ -322,7 +322,7 @@ bool UnifiedShader::findCodeContainer(const std::string& entryPointName, CodeCon
 	return (*outId) >= 0;
 }
 
-const std::string* UnifiedShader::findCode(CodeContainerId conteinreId, const Triple& triple) const
+const std::string* UnifiedShader::findCode(CodeContainerId conteinreId, const UnifiedShaderTriple& triple) const
 {
     if (LN_REQUIRE(!triple.target.empty())) {
         return nullptr;

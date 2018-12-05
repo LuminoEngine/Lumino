@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <LuminoEngine/Graphics/RenderState.hpp>
+#include <LuminoEngine/Shader/Common.hpp>
 
 namespace ln {
 struct SizeI;
@@ -26,6 +27,11 @@ enum class DeviceTextureType
 	RenderTarget,
 };
 
+struct GraphicsDeviceCaps
+{
+	UnifiedShaderTriple requestedShaderTriple;
+};
+
 class IGraphicsDeviceContext
 	: public RefObject
 {
@@ -35,6 +41,8 @@ public:
 
 	void initialize();
 	virtual void dispose();
+	const GraphicsDeviceCaps& caps() { return m_caps; }
+	void refreshCaps();
 	void enterMainThread();
 	void leaveMainThread();
 	void enterRenderState();
@@ -70,6 +78,7 @@ public:
 	void present(ISwapChain* swapChain);
 
 protected:
+	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) = 0;
 	virtual void onEnterMainThread() = 0;
 	virtual void onLeaveMainThread() = 0;
 	virtual void onSaveExternalRenderState() = 0;
@@ -115,6 +124,7 @@ private:
 		IShaderPass* shaderPass = nullptr;
 	};
 
+	GraphicsDeviceCaps m_caps;
 	State m_staging;
 };
 

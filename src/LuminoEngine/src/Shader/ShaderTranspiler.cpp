@@ -355,7 +355,7 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
 	return true;
 }
 
-std::string ShaderCodeTranspiler::generateGlsl()
+std::string ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es)
 {
 	spirv_cross::CompilerGLSL glsl(m_spirvCode);
 
@@ -383,8 +383,10 @@ std::string ShaderCodeTranspiler::generateGlsl()
 
 	// Set some options.
 	spirv_cross::CompilerGLSL::Options options;
-	options.version = 410;
-	options.es = false;
+	options.version = version;
+	options.es = es;
+	//options.version = 410;
+	//options.es = false;
 	//options.version = 300;
 	//options.es = true;
 	glsl.set_common_options(options);
