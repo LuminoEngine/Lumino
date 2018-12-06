@@ -55,6 +55,9 @@ Result CppLanguageContext::applyTemplates()
 		}
 
 		copyEngine();
+
+		// Assets
+		ln::FileSystem::copyDirectory(ln::Path(srcRoot, u"Assets"), ln::Path(dstRoot, u"Assets"), true, true);
 	}
 
 	// Windows

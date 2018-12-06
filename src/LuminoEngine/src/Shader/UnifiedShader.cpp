@@ -330,9 +330,9 @@ const std::string* UnifiedShader::findCode(CodeContainerId conteinreId, const Un
 
     auto& codes = m_codeContainers[idToIndex(conteinreId)].codes;
 
-    size_t candidateVersion = 0;
-    size_t candidate = -1;
-    for (size_t iCode = 0; iCode < codes.size(); iCode++) {
+    int candidateVersion = 0;
+	int candidate = -1;
+    for (int iCode = 0; iCode < codes.size(); iCode++) {
         auto& codeTriple = codes[iCode].triple;
         if (codeTriple.target != triple.target) {
             // not adopted

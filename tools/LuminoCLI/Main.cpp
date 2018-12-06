@@ -14,7 +14,7 @@ int main(int argc, char** argv)
 	{
 		//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects");
 		//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\HelloLumino");
-		::SetCurrentDirectoryW(L"D:\\Documents\\LuminoProjects\\HelloLumino");
+		::SetCurrentDirectoryW(L"C:/Proj/GitHub/Lumino/build/MSVC2017-x86-MT-Debug/tools/LuminoCLI/test/LuminoTestProj");
 	
 		const char* debugArgv[] = {
 			"<program>",
@@ -32,9 +32,9 @@ int main(int argc, char** argv)
 
 			//"restore",
 
-            //"fxc", "Assets/LineWave.fx",
+            "fxc", "Assets/LineWave.fx",
 
-            "asset-archive",
+            //"asset-archive",
 		};
 		argc = sizeof(debugArgv) / sizeof(char*);
 		argv = (char**)debugArgv;

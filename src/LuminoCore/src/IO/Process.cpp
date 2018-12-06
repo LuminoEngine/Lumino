@@ -18,7 +18,7 @@ Process::Process()
 	, m_stdoutEncoding(nullptr)
 	, m_stderrEncoding(nullptr)
 {
-	m_startInfo.useShellExecute = true;
+	//m_startInfo.useShellExecute = true;
 	createRedirectStreams();
 }
 
