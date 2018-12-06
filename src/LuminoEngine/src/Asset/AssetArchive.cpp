@@ -10,6 +10,7 @@ namespace detail {
 //=============================================================================
 // CryptedArchiveHelper
 
+const String CryptedArchiveHelper::DefaultPassword = u"n7OeL8Hh";
 const char CryptedArchiveHelper::FileSignature[4] = { 'l', 'c', 'a', 'c' };
 const uint16_t CryptedArchiveHelper::FileVersion = 1;
 const char CryptedArchiveHelper::FileEntrySignature[4] = { 'l', 'c', '3', '4' };
@@ -79,14 +80,22 @@ CryptedAssetArchiveWriter::CryptedAssetArchiveWriter()
 
 void CryptedAssetArchiveWriter::open(const StringRef& filePath, const StringRef& password)
 {
-	CryptedArchiveHelper::initKeys(password.toStdString().c_str(), m_keys);
+    ln::String actualPassword;
+    if (password.isEmpty()) {
+        actualPassword = CryptedArchiveHelper::DefaultPassword;
+    }
+    else {
+        actualPassword = password;
+    }
+
+	CryptedArchiveHelper::initKeys(actualPassword.toStdString().c_str(), m_keys);
 
 	m_file = FileStream::create(filePath, FileOpenMode::Write | FileOpenMode::Truncate);
 	m_writer = makeRef<BinaryWriter>(m_file);
 
 	m_writer->write(CryptedArchiveHelper::FileSignature, 4);
 	m_writer->writeUInt16(CryptedArchiveHelper::FileVersion);
-	m_writer->writeUInt32(CRCHash::compute(password.data(), password.length()));
+	m_writer->writeUInt32(CRCHash::compute(actualPassword.c_str(), actualPassword.length()));
 }
 
 void CryptedAssetArchiveWriter::close()
@@ -156,7 +165,15 @@ CryptedAssetArchiveReader::~CryptedAssetArchiveReader()
 
 bool CryptedAssetArchiveReader::open(const StringRef& filePath, const StringRef& password, bool pathAsRawRelative)
 {
-	CryptedArchiveHelper::initKeys(password.toStdString().c_str(), m_keys);
+    ln::String actualPassword;
+    if (password.isEmpty()) {
+        actualPassword = CryptedArchiveHelper::DefaultPassword;
+    }
+    else {
+        actualPassword = password;
+    }
+
+	CryptedArchiveHelper::initKeys(actualPassword.toStdString().c_str(), m_keys);
 
 	ln::Path virtualDirFullPath = ln::Path(filePath).canonicalize().replaceExtension(u"");
 
@@ -171,7 +188,7 @@ bool CryptedAssetArchiveReader::open(const StringRef& filePath, const StringRef&
 	uint32_t passwordHash = m_reader->readUInt32();
 
 	// check password
-	if (passwordHash != CRCHash::compute(password.data(), password.length())) {
+	if (passwordHash != CRCHash::compute(actualPassword.c_str(), actualPassword.length())) {
 		return false;
 	}
 

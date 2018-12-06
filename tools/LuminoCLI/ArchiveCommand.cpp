@@ -7,7 +7,7 @@ int ArchiveCommand::execute(Project* project)
 {
     ln::detail::CryptedAssetArchiveWriter writer;
     auto outputFilePath = ln::Path(project->buildDir(), u"Assets.lca");
-    writer.open(outputFilePath, u"j7OeF8Hh");
+    writer.open(outputFilePath, ln::detail::CryptedArchiveHelper::DefaultPassword);
 
     for (auto& file : ln::FileSystem::getFiles(project->assetsDir(), ln::StringRef(), ln::SearchOption::Recursive)) {
         if (file.hasExtension(".fx")) {

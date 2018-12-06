@@ -19,6 +19,8 @@ public:
 class CryptedArchiveHelper
 {
 public:
+    static const String DefaultPassword;
+
 	static const char FileSignature[4];
 	static const uint16_t FileVersion;
 	static const char FileEntrySignature[4];
