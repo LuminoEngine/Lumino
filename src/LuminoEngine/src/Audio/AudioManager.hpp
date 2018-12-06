@@ -7,6 +7,7 @@ namespace ln {
 class AudioContext;
 namespace detail {
 class AudioDecoder;
+class AssetManager;
 
 class AudioManager
 	: public RefObject
@@ -14,6 +15,7 @@ class AudioManager
 public:
 	struct Settings
 	{
+        AssetManager* assetManager;
 	};
 
 	AudioManager();
@@ -31,6 +33,7 @@ public:
 private:
 	void processThread();
 
+    AssetManager* m_assetManager;
 	Ref<AudioContext> m_primaryContext;
 	//Ref<LinearAllocatorPageManager> m_linearAllocatorPageManager;
 	//Ref<RenderingCommandList> m_primaryRenderingCommandList;

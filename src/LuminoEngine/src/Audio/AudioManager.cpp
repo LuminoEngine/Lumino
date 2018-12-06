@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "../Engine/LinearAllocator.hpp"
+#include "../Asset/AssetManager.hpp"
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Audio/AudioContext.hpp>
 #include "AudioDecoder.hpp"
@@ -23,6 +24,7 @@ AudioManager::~AudioManager()
 
 void AudioManager::initialize(const Settings& settings)
 {
+    m_assetManager = settings.assetManager;
 	m_primaryContext = makeRef<AudioContext>();
 	m_primaryContext->initialize();
 
@@ -70,9 +72,11 @@ Ref<AudioDecoder> AudioManager::createAudioDecoder(const StringRef & filePath)
 	// TODO: diag
 	auto diag = newObject<DiagnosticsManager>();
 
+    auto stream = m_assetManager->openFileStream(filePath);
+
 	// TODO: cache
 	auto decoder = makeRef<WaveDecoder>();
-	decoder->initialize(FileStream::create(filePath), diag);
+	decoder->initialize(stream, diag);
 	return decoder;
 }
 
