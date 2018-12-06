@@ -393,8 +393,8 @@ Ref<detail::IShaderPass> Shader::createShaderPass(
 		return nullptr;
 	}
 
-	std::string vsCode = vsCodeGen.generateGlsl(430, false);
-	std::string psCode = psCodeGen.generateGlsl(430, false);
+	std::string vsCode = vsCodeGen.generateGlsl(400, false);
+	std::string psCode = psCodeGen.generateGlsl(400, false);
 
 	Ref<detail::IShaderPass> pass = createRHIShaderPass(
 		vsCode.c_str(), vsCode.length(),

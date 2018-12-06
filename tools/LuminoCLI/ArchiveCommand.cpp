@@ -15,6 +15,7 @@ int ArchiveCommand::execute(Project* project)
         }
         else {
             writer.addFile(file, project->assetsDir().makeRelative(file));
+            CLI::info(file);
         }
     }
 

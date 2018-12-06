@@ -265,7 +265,7 @@ void OpenGLDeviceContext::onGetCaps(GraphicsDeviceCaps* outCaps)
 	outCaps->requestedShaderTriple.option = "es";
 #else
 	outCaps->requestedShaderTriple.target = "glsl";
-	outCaps->requestedShaderTriple.version = 430;
+	outCaps->requestedShaderTriple.version = 400;
 	outCaps->requestedShaderTriple.option = "";
 #endif
 }
