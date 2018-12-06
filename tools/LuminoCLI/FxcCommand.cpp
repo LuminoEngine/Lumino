@@ -12,11 +12,11 @@
 
 
     ## "HLSL" Chunc
-    ÉoÉCÉgÉRÅ[ÉhÇ≈Ç¢Ç¢Ç©Ç»ÅBíºãﬂÇ≈ÇÕïKóvÇ»Ç¢ÇÃÇ≈å„Ç≈çlÇ¶ÇÈÅB
+    „Éê„Ç§„Éà„Ç≥„Éº„Éâ„Åß„ÅÑ„ÅÑ„Åã„Å™„ÄÇÁõ¥Ëøë„Åß„ÅØÂøÖË¶Å„Å™„ÅÑ„ÅÆ„ÅßÂæå„ÅßËÄÉ„Åà„Çã„ÄÇ
 
     ## "GLSL"
-    ÉpÉâÉÅÅ[É^Ç∆ÇµÇƒñºëOÇéùÇ¬ÅB
-    Ç‡Çµ OpenGL Ç∆ÇµÇƒìÆçÏÇµÇƒÇ¢Ç»ÇØÇÍÇŒì«Ç›îÚÇŒÇµÇƒÇÊÇ¢ÅB
+    „Éë„É©„É°„Éº„Çø„Å®„Åó„Å¶ÂêçÂâç„ÇíÊåÅ„Å§„ÄÇ
+    „ÇÇ„Åó OpenGL „Å®„Åó„Å¶Âãï‰Ωú„Åó„Å¶„ÅÑ„Å™„Åë„Çå„Å∞Ë™≠„ÅøÈ£õ„Å∞„Åó„Å¶„Çà„ÅÑ„ÄÇ
 
 
 */
@@ -62,19 +62,19 @@ bool FxcCommand::generate(const ln::Path& inputFile)
         return false;
     }
 
-    // glslang ÇÕ hlsl ÇÃ technique ÉuÉçÉbÉNÇóùâÇ≈Ç´Ç»Ç¢ÇÃÇ≈ÅAãÛîíÇ≈í◊ÇµÇƒÇ®Ç≠
+    // glslang „ÅØ hlsl „ÅÆ technique „Éñ„É≠„ÉÉ„ÇØ„ÇíÁêÜËß£„Åß„Åç„Å™„ÅÑ„ÅÆ„Åß„ÄÅÁ©∫ÁôΩ„ÅßÊΩ∞„Åó„Å¶„Åä„Åè
     for (auto& tech : metadataParser.techniques) {
         memset(inputCode + tech.blockBegin, ' ', tech.blockEnd - tech.blockBegin);
     }
 
-	// Ç‹Ç∏ÇÕ Code ÇçÏÇÈ
+	// „Åæ„Åö„ÅØ Code „Çí‰Ωú„Çã
     for (auto& tech : metadataParser.techniques)
 	{
         for (auto& pass : tech.passes)
 		{
             // Vertex shader
             {
-                if (!unifiedShader->hasCode(pass.vertexShader, { "glsl", 430, "" }))
+                if (!unifiedShader->hasCode(pass.vertexShader, { "glsl", 400, "" }))
 				{
 					ln::detail::ShaderCodeTranspiler transpiler;
 					transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, &definitions, m_diag);
@@ -82,7 +82,7 @@ bool FxcCommand::generate(const ln::Path& inputFile)
 						return false;
 					}
 
-					unifiedShader->setCode(pass.vertexShader, { "glsl", 430, "" }, transpiler.generateGlsl(430, false));
+					unifiedShader->setCode(pass.vertexShader, { "glsl", 400, "" }, transpiler.generateGlsl(400, false));
 				}
 
 				if (!unifiedShader->hasCode(pass.vertexShader, { "glsl", 300, "es" }))
@@ -99,7 +99,7 @@ bool FxcCommand::generate(const ln::Path& inputFile)
 
             // Pixel shader
             {
-				if (!unifiedShader->hasCode(pass.pixelShader, { "glsl", 430, "" }))
+				if (!unifiedShader->hasCode(pass.pixelShader, { "glsl", 400, "" }))
 				{
 					ln::detail::ShaderCodeTranspiler transpiler;
 					transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, &definitions, m_diag);
@@ -107,7 +107,7 @@ bool FxcCommand::generate(const ln::Path& inputFile)
 						return false;
 					}
 
-					unifiedShader->setCode(pass.pixelShader, { "glsl", 430, "" }, transpiler.generateGlsl(430, false));
+					unifiedShader->setCode(pass.pixelShader, { "glsl", 400, "" }, transpiler.generateGlsl(400, false));
 				}
 
 				if (!unifiedShader->hasCode(pass.pixelShader, { "glsl", 300, "es" }))
@@ -124,7 +124,7 @@ bool FxcCommand::generate(const ln::Path& inputFile)
         }
     }
 
-	// Tech Ç∆ Pass ÇçÏÇÈ
+	// Tech „Å® Pass „Çí‰Ωú„Çã
 	for (auto& tech : metadataParser.techniques)
 	{
 		ln::detail::UnifiedShader::TechniqueId techId;
