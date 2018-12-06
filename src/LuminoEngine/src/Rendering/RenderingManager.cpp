@@ -79,8 +79,8 @@ void RenderingManager::initialize(const Settings& settings)
 	std::cout << "RenderingManager 13" << std::endl;
 	m_builtinShaders[(int)BuiltinShader::DepthPrepass] = Shader::create(u"/Users/lriki/Proj/Lumino/src/LuminoEngine/src/Rendering/Resource/DepthPrepass.hlsl");
 	
-	std::cout << "RenderingManager 14" << std::endl;
-	m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(u"/Users/lriki/Proj/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.hlsl");
+	//std::cout << "RenderingManager 14" << std::endl;
+	//m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(u"/Users/lriki/Proj/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.hlsl");
 #endif
 
     LN_LOG_DEBUG << "RenderingManager Initialization ended.";
