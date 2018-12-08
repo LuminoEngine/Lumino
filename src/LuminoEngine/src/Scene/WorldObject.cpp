@@ -116,6 +116,7 @@ WorldObject::WorldObject()
     , m_transform(makeRef<detail::WorldObjectTransform>(this))
     , m_components(makeRef<List<Ref<Component>>>())
     , m_children(makeRef<List<Ref<WorldObject>>>())
+    , m_isSpecialObject(false)
 {
 }
 

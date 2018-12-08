@@ -621,13 +621,16 @@ float4	ln_MaterialAmbient;	// TODO: とりあえず MMD モデル用のために
 
 float4 _lngs_PS_UnLighting(_lngs_PSInput input) : COLOR0
 {
-	float4 result = input.Color * ln_MaterialColor;
+	//float4 result = input.Color * ln_MaterialColor;
 
-	float3 ambient = float3(1, 1, 1) * ln_MaterialAmbient.rgb;
-	result.rgb = saturate(result.rgb + ambient);
+	//float3 ambient = float3(1, 1, 1) * ln_MaterialAmbient.rgb;
+	//result.rgb = saturate(result.rgb + ambient);
+
+	return float4(1, 0, 0, 1);
 
 	//result *= (tex2D(MaterialTextureSampler, input.common.UV));
-	result *= ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.UV);
+	//result *= ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.UV);
+	float4 result = ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.UV);
 
 	return result;
 }
@@ -655,6 +658,15 @@ technique Forward_Geometry
 	{
 		VertexShader = _lngs_VS_ClusteredForward_Geometry;
 		PixelShader	 = _lngs_PS_ClusteredForward_Geometry;
+	}
+}
+
+technique Forward_Geometry_StaticMesh_UnLighting
+{
+	pass Pass1
+	{
+		VertexShader = _lngs_VS_ClusteredForward_Geometry;
+		PixelShader	 = _lngs_PS_UnLighting;
 	}
 }
 

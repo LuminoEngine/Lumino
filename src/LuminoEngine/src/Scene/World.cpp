@@ -34,6 +34,18 @@ void World::addObject(WorldObject* obj)
     //obj->onAttachedWorld(this);
 }
 
+void World::removeAllObjects()
+{
+    for (int i = m_rootWorldObjectList.size() - 1; i >= 0; i--)
+    {
+        if (!m_rootWorldObjectList[i]->isSpecialObject())
+        {
+            m_rootWorldObjectList[i]->m_world = nullptr;
+            m_rootWorldObjectList.removeAt(i);
+        }
+    }
+}
+
 void World::updateFrame(float elapsedSeconds)
 {
     onPreUpdate(elapsedSeconds);

@@ -109,20 +109,22 @@ TEST_F(Test_Visual_VisualComponent, DepthTest)
 
         TestEnv::updateFrame();
         ASSERT_SCREEN_S(LN_ASSETFILE("Result/Visual/Test_Visual_VisualComponent-DepthTest-1.png"));
+        Engine::mainWorld()->removeAllObjects();
     }
 
     //* [ ] disable depth test
     {
-        //auto sprite1 = Sprite::create(5, 5, texture1);
-        //sprite1->setPosition(0, 0, 0);
-        //sprite1->setEulerAngles(0, Math::PI / 4, 0);
+        auto sprite1 = Sprite::create(4, 4, texture1);
+        sprite1->setPosition(0, 0, 0);
+        sprite1->setEulerAngles(0, Math::PI / 4, 0);
 
-        //auto sprite2 = Sprite::create(5, 5, texture2);
-        //sprite2->setPosition(0, 0, 0);
-        //sprite2->setEulerAngles(0, -Math::PI / 4, 0);
+        auto sprite2 = Sprite::create(4, 4, texture2);
+        sprite2->setPosition(0, 0, 0);
+        sprite2->setEulerAngles(0, -Math::PI / 4, 0);
 
         TestEnv::updateFrame();
         ASSERT_SCREEN_S(LN_ASSETFILE("Result/Visual/Test_Visual_VisualComponent-DepthTest-2.png"));
+        Engine::mainWorld()->removeAllObjects();
     }
 }
 

@@ -20,6 +20,9 @@ public:
     /** オブジェクトを World に追加します。 */
     void addObject(WorldObject* obj);
 
+    /** この World に含まれている全てのオブジェクトを World から除外します。 */
+    void removeAllObjects();
+
 protected:
     // update sequence
     virtual void onPreUpdate(float elapsedSeconds);

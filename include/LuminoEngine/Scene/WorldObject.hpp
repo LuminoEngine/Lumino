@@ -156,6 +156,8 @@ public: // TODO:
         Transform = 0x01,
     };
 
+    void setSpecialObject(bool enalbed) { m_isSpecialObject = true; }
+    bool isSpecialObject() const { return m_isSpecialObject; }
     detail::WorldObjectTransform* transform() const { return m_transform; }
     void preUpdateFrame();
     void updateFrame(float elapsedSeconds);
@@ -170,6 +172,7 @@ public: // TODO:
     Ref<List<Ref<WorldObject>>> m_children;
     Flags<DirtyFlags> m_dirtyFlags;
     Matrix m_worldMatrix;
+    bool m_isSpecialObject;
 
     friend class World;
 };

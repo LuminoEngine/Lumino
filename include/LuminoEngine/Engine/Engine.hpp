@@ -4,6 +4,7 @@ namespace ln {
 class GraphicsContext;
 class UIFrameWindow;
 class UIViewport;
+class World;
 class Camera;
 
 /** アプリケーション全体にかかわる処理を行います。 */
@@ -31,6 +32,7 @@ public:
 	static GraphicsContext* graphicsContext();
 	static UIFrameWindow* mainWindow();
     static UIViewport* mainViewport();
+    static World* mainWorld();
     static Camera* mainCamera();
 
 };
