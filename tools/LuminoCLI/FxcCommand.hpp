@@ -1,6 +1,12 @@
 ﻿#pragma once
 #include <unordered_map>
 
+namespace ln {
+namespace detail {
+class ShaderManager;
+}
+}
+
 class FxcCommand
 {
 public:
@@ -11,6 +17,7 @@ public:
 private:
 	bool generate(const ln::Path& inputFile);
 
+    ln::Ref<ln::detail::ShaderManager> m_manager;
 	ln::Ref<ln::DiagnosticsManager> m_diag;
 
     //struct ShaderCode

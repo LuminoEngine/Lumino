@@ -381,13 +381,13 @@ Ref<detail::IShaderPass> Shader::createShaderPass(
 		for (auto& path : properties->m_includeDirectories) includeDirs.add(path);
 	}
 
-	detail::ShaderCodeTranspiler vsCodeGen;
+	detail::ShaderCodeTranspiler vsCodeGen(m_manager);
 	if (!vsCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Vertex, vsData, vsLen, vsEntryPoint, includeDirs, (properties) ? &properties->m_definitions : nullptr, diag))
 	{
 		return nullptr;
 	}
 
-	detail::ShaderCodeTranspiler psCodeGen;
+	detail::ShaderCodeTranspiler psCodeGen(m_manager);
 	if (!psCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Fragment, psData, psLen, psEntryPoint, includeDirs, (properties) ? &properties->m_definitions : nullptr, diag))
 	{
 		return nullptr;

@@ -53,35 +53,67 @@ void RenderingManager::initialize(const Settings& settings)
 
 	//m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(u"D:/Proj/GitHub/Lumino/src/LuminoEngine/sandbox/Assets/SpriteTest.hlsl");
 
-#if 0
-	m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.hlsl");
-	m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.hlsl");
-	m_builtinShaders[(int)BuiltinShader::DepthPrepass] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/DepthPrepass.hlsl");
-	m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.hlsl");
-#endif
-#if 0
-	m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.hlsl");
-	m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.hlsl");
-	m_builtinShaders[(int)BuiltinShader::DepthPrepass] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/DepthPrepass.hlsl");
-	m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.hlsl");
-    m_builtinShaders[(int)BuiltinShader::ScreenBlurImageEffect] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ScreenBlurImageEffect.fx");
-    //m_builtinShaders[(int)BuiltinShader::ToneImageEffect] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ToneImageEffect.hlsl");
-#endif
-#if 1
+    // ClusteredShadingDefault.lcfx.h
+    {
+        static const unsigned char data[] =
+        {
+#include "Resource/ClusteredShadingDefault.lcfx.h"
+        };
+        static const size_t size = LN_ARRAY_SIZE_OF(data);
+        MemoryStream stream(data, size);
+        m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = newObject<Shader>(&stream);
+    }
+    // DepthPrepass.lcfx.h
+    {
+        static const unsigned char data[] =
+        {
+#include "Resource/DepthPrepass.lcfx.h"
+        };
+        static const size_t size = LN_ARRAY_SIZE_OF(data);
+        MemoryStream stream(data, size);
+        m_builtinShaders[(int)BuiltinShader::DepthPrepass] = newObject<Shader>(&stream);
+    }
+    // Sprite.lcfx.h
+    {
+        static const unsigned char data[] =
+        {
+#include "Resource/Sprite.lcfx.h"
+        };
+        static const size_t size = LN_ARRAY_SIZE_OF(data);
+        MemoryStream stream(data, size);
+        m_builtinShaders[(int)BuiltinShader::Sprite] = newObject<Shader>(&stream);
+    }
 
 
-	m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(
-		u"/Users/lriki/Proj/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.hlsl");
-	
-	std::cout << "RenderingManager 12" << std::endl;
-	m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(u"/Users/lriki/Proj/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.hlsl");
-	
-	std::cout << "RenderingManager 13" << std::endl;
-	m_builtinShaders[(int)BuiltinShader::DepthPrepass] = Shader::create(u"/Users/lriki/Proj/Lumino/src/LuminoEngine/src/Rendering/Resource/DepthPrepass.hlsl");
-	
-	//std::cout << "RenderingManager 14" << std::endl;
-	//m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(u"/Users/lriki/Proj/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.hlsl");
-#endif
+//#if 0
+//	m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.hlsl");
+//	m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.hlsl");
+//	m_builtinShaders[(int)BuiltinShader::DepthPrepass] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/DepthPrepass.hlsl");
+//	m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.hlsl");
+//#endif
+//#if 1
+//	m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.hlsl");
+//	m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.hlsl");
+//	m_builtinShaders[(int)BuiltinShader::DepthPrepass] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/DepthPrepass.hlsl");
+//	m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.hlsl");
+//    m_builtinShaders[(int)BuiltinShader::ScreenBlurImageEffect] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ScreenBlurImageEffect.fx");
+//    //m_builtinShaders[(int)BuiltinShader::ToneImageEffect] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ToneImageEffect.hlsl");
+//#endif
+//#if 0
+//
+//
+//	m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(
+//		u"/Users/lriki/Proj/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.hlsl");
+//	
+//	std::cout << "RenderingManager 12" << std::endl;
+//	m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(u"/Users/lriki/Proj/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.hlsl");
+//	
+//	std::cout << "RenderingManager 13" << std::endl;
+//	m_builtinShaders[(int)BuiltinShader::DepthPrepass] = Shader::create(u"/Users/lriki/Proj/Lumino/src/LuminoEngine/src/Rendering/Resource/DepthPrepass.hlsl");
+//	
+//	//std::cout << "RenderingManager 14" << std::endl;
+//	//m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(u"/Users/lriki/Proj/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.hlsl");
+//#endif
 
     LN_LOG_DEBUG << "RenderingManager Initialization ended.";
 }

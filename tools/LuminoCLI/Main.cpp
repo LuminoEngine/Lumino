@@ -32,7 +32,8 @@ int main(int argc, char** argv)
 
 			//"restore",
 
-            "fxc", "Assets/LineWave.fx",
+            //"fxc", "Assets/LineWave.fx",
+            "fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.hlsl"
 
             //"asset-archive",
 		};

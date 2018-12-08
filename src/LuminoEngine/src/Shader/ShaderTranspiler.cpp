@@ -230,8 +230,9 @@ void ShaderCodeTranspiler::finalizeGlobals()
 	glslang::FinalizeProcess();
 }
 
-ShaderCodeTranspiler::ShaderCodeTranspiler()
-	: m_stage(ShaderCodeStage::Vertex)
+ShaderCodeTranspiler::ShaderCodeTranspiler(ShaderManager* manager)
+	: m_manager(manager)
+    , m_stage(ShaderCodeStage::Vertex)
 {
 }
 
@@ -242,7 +243,7 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
 	m_stage = stage;
 
 	LocalIncluder includer;
-    includer.m_manager = detail::EngineDomain::shaderManager();
+    includer.m_manager = m_manager;
 	includer.includeDirs = &includeDir;
 
 

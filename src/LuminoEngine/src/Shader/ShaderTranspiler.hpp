@@ -9,6 +9,7 @@ namespace ln {
 class Token;
 
 namespace detail {
+class ShaderManager;
 class GraphicsManager;
 class ShaderRenderState;
 
@@ -26,7 +27,7 @@ public:
 	static void initializeGlobals();
 	static void finalizeGlobals();
 
-    ShaderCodeTranspiler();
+    ShaderCodeTranspiler(ShaderManager* manager);
 
 	bool parseAndGenerateSpirv(
 		ShaderCodeStage stage, const char* code, size_t length, const std::string& entryPoint,
@@ -36,6 +37,7 @@ public:
 
 
 private:
+    ShaderManager* m_manager;
 	ShaderCodeStage m_stage;
 	std::vector<uint32_t> m_spirvCode;
 };

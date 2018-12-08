@@ -25,8 +25,8 @@
 int FxcCommand::execute(const ln::Path& inputFile)
 {
 	ln::detail::ShaderManager::Settings settings;
-	auto shaderManager = ln::makeRef<ln::detail::ShaderManager>();
-	shaderManager->initialize(settings);
+    m_manager = ln::makeRef<ln::detail::ShaderManager>();
+    m_manager->initialize(settings);
 
 	m_diag = ln::newObject<ln::DiagnosticsManager>();
 
@@ -34,7 +34,7 @@ int FxcCommand::execute(const ln::Path& inputFile)
 
 	m_diag->dumpToLog();
 
-	shaderManager->dispose();
+    m_manager->dispose();
 
 	return ((!result) || m_diag->hasError()) ? 1 : 0;
 }
@@ -76,7 +76,7 @@ bool FxcCommand::generate(const ln::Path& inputFile)
             {
                 if (!unifiedShader->hasCode(pass.vertexShader, { "glsl", 400, "" }))
 				{
-					ln::detail::ShaderCodeTranspiler transpiler;
+					ln::detail::ShaderCodeTranspiler transpiler(m_manager);
 					transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, &definitions, m_diag);
 					if (m_diag->hasError()) {
 						return false;
@@ -87,7 +87,7 @@ bool FxcCommand::generate(const ln::Path& inputFile)
 
 				if (!unifiedShader->hasCode(pass.vertexShader, { "glsl", 300, "es" }))
 				{
-					ln::detail::ShaderCodeTranspiler transpiler;
+					ln::detail::ShaderCodeTranspiler transpiler(m_manager);
 					transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, &definitions, m_diag);
 					if (m_diag->hasError()) {
 						return false;
@@ -101,7 +101,7 @@ bool FxcCommand::generate(const ln::Path& inputFile)
             {
 				if (!unifiedShader->hasCode(pass.pixelShader, { "glsl", 400, "" }))
 				{
-					ln::detail::ShaderCodeTranspiler transpiler;
+					ln::detail::ShaderCodeTranspiler transpiler(m_manager);
 					transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, &definitions, m_diag);
 					if (m_diag->hasError()) {
 						return false;
@@ -112,7 +112,7 @@ bool FxcCommand::generate(const ln::Path& inputFile)
 
 				if (!unifiedShader->hasCode(pass.pixelShader, { "glsl", 300, "es" }))
 				{
-					ln::detail::ShaderCodeTranspiler transpiler;
+					ln::detail::ShaderCodeTranspiler transpiler(m_manager);
 					transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, &definitions, m_diag);
 					if (m_diag->hasError()) {
 						return false;
