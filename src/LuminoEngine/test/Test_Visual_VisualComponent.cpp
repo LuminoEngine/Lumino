@@ -85,3 +85,44 @@ TEST_F(Test_Visual_VisualComponent, BlendMode)
         ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Visual_VisualComponent-BlendMode-1.png"));
     }
 }
+
+//------------------------------------------------------------------------------
+//## DepthTest, DepthWrite
+TEST_F(Test_Visual_VisualComponent, DepthTest)
+{
+    auto light1 = AmbientLight::create();
+
+    auto texture1 = Texture2D::create(32, 32);
+    auto texture2 = Texture2D::create(32, 32);
+    texture1->clear(Color::Red);
+    texture2->clear(Color::Green);
+
+    //* [ ] default (enabled depth test and write)
+    {
+        auto sprite1 = Sprite::create(5, 5, texture1);
+        sprite1->setPosition(0, 0, 0);
+        sprite1->setEulerAngles(0, Math::PI / 4, 0);
+
+        auto sprite2 = Sprite::create(5, 5, texture2);
+        sprite2->setPosition(0, 0, 0);
+        sprite2->setEulerAngles(0, -Math::PI / 4, 0);
+
+        TestEnv::updateFrame();
+        ASSERT_SCREEN_S(LN_ASSETFILE("Result/Visual/Test_Visual_VisualComponent-DepthTest-1.png"));
+    }
+
+    //* [ ] disable depth test
+    {
+        //auto sprite1 = Sprite::create(5, 5, texture1);
+        //sprite1->setPosition(0, 0, 0);
+        //sprite1->setEulerAngles(0, Math::PI / 4, 0);
+
+        //auto sprite2 = Sprite::create(5, 5, texture2);
+        //sprite2->setPosition(0, 0, 0);
+        //sprite2->setEulerAngles(0, -Math::PI / 4, 0);
+
+        TestEnv::updateFrame();
+        ASSERT_SCREEN_S(LN_ASSETFILE("Result/Visual/Test_Visual_VisualComponent-DepthTest-2.png"));
+    }
+}
+

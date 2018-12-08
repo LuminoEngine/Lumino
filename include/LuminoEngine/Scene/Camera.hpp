@@ -37,6 +37,16 @@ public:
     float getFarClip() const { return m_component->getFarClip(); }
 
 
+    /** ビュー行列を取得します。カメラの姿勢に同期するように別のオブジェクトの更新を行う場合、onPostUpdate() でこの行列を取得します。onUpdate() 時点では最新の行列が返るとは限りません。 */
+    const Matrix& viewMatrix() const;
+
+    /** プロジェクション行列を取得します。カメラの姿勢に同期するように別のオブジェクトの更新を行う場合、onPostUpdate() でこの行列を取得します。onUpdate() 時点では最新の行列が返るとは限りません。 */
+    const Matrix& projectionMatrix() const;
+
+    /** ビュー行列とプロジェクション行列の積を取得します。カメラの姿勢に同期するように別のオブジェクトの更新を行う場合、onPostUpdate() でこの行列を取得します。onUpdate() 時点では最新の行列が返るとは限りません。 */
+    const Matrix& viewProjectionMatrix() const;
+
+
 	CameraComponent* cameraComponent() const;
 
 protected:

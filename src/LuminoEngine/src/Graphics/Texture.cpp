@@ -44,6 +44,11 @@ void Texture::setSamplerState(SamplerState* value)
 //==============================================================================
 // Texture2D
 
+Ref<Texture2D> Texture2D::create(int width, int height, TextureFormat format, bool mipmap, GraphicsResourceUsage usage)
+{
+    return newObject<Texture2D>(width, height, format, mipmap, usage);
+}
+
 Texture2D::Texture2D()
 	: m_rhiObject(nullptr)
 	, m_usage(GraphicsResourceUsage::Static)
@@ -107,6 +112,12 @@ Bitmap2D* Texture2D::map(MapMode mode)
 void Texture2D::setResourcePool(GraphicsResourcePool pool)
 {
 	m_pool = pool;
+}
+
+void Texture2D::clear(const Color& color)
+{
+    Bitmap2D* bitmap = map(MapMode::Write);
+    bitmap->clear(color.to32BitColor());
 }
 
 void Texture2D::drawText(const StringRef& text, const Rect& rect, Font* font, const Color& color)

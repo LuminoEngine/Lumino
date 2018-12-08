@@ -73,6 +73,9 @@ public:
     /** バッファの先頭へのポインタを取得します。 */
     const byte_t* data() const LN_NOEXCEPT { return m_buffer; }
 
+    /** バッファをクリアします。 */
+    void clear();
+
     /** バッファを指定した値で埋めます。 */
     void fill(const byte_t& value);
 

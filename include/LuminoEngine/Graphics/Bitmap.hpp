@@ -193,6 +193,7 @@ public:
 
 	Color32 getPixel32(int x, int y) const;
 	void setPixel32(int x, int y, const Color32& color);
+    void clear(const Color32& color);
 
 	/** バッファの先頭へのポインタを取得します。 */
 	byte_t* data() LN_NOEXCEPT { return m_buffer->data(); }

@@ -61,6 +61,8 @@ class Texture2D
 	: public Texture
 {
 public:
+    static Ref<Texture2D> create(int width, int height, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
+
 
 	/** テクスチャが保持するビットマップデータにアクセスします。 */
 	Bitmap2D* map(MapMode mode);
@@ -68,6 +70,7 @@ public:
 	/** リソースの管理方法を変更します。(default: Managed) */
 	void setResourcePool(GraphicsResourcePool pool);
 
+    void clear(const Color& color);
     void drawText(const StringRef& text, const Rect& rect, Font* font, const Color& color);
 
 LN_CONSTRUCT_ACCESS:

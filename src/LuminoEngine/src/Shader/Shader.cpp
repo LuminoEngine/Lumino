@@ -298,6 +298,8 @@ void Shader::initialize(Stream* stream)
 
     createFromUnifiedShader(stream, localDiag);
 
+    postInitialize();
+
     if (localDiag->hasError()) {
         LN_ERROR(localDiag->toString());
         return;

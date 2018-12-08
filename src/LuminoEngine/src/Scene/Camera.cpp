@@ -32,6 +32,21 @@ void Camera::initialize()
     setPosition(0, 0, -10.0f);
 }
 
+const Matrix& Camera::viewMatrix() const
+{
+    return m_component->getViewMatrix();
+}
+
+const Matrix& Camera::projectionMatrix() const
+{
+    return m_component->getProjectionMatrix();
+}
+
+const Matrix& Camera::viewProjectionMatrix() const
+{
+    return m_component->getViewProjectionMatrix();
+}
+
 CameraComponent* Camera::cameraComponent() const
 {
 	return m_component;

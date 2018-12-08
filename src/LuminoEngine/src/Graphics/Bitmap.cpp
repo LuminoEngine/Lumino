@@ -535,6 +535,49 @@ void Bitmap2D::setPixel32(int x, int y, const Color32& color)
 	}
 }
 
+void Bitmap2D::clear(const Color32& color)
+{
+    // Clear the buffer if completely transparent.
+    if (color.r == 0x00 && color.g == 0x00 && color.b == 0x00 && color.a == 0x00)
+    {
+        m_buffer->clear();
+    }
+    else
+    {
+        switch (m_format)
+        {
+        case PixelFormat::A1:
+            return;
+        case PixelFormat::A8:
+            return;
+        case PixelFormat::RGBA32:
+        //case PixelFormat::R8G8B8X8:
+        {
+            byte_t c[4] = { color.r, color.g, color.b, color.a };
+            uint32_t* dst = (uint32_t*)m_buffer->data();
+            int count = m_buffer->size() / 4;
+            for (int i = 0; i < count; ++i)
+            {
+                dst[i] = *((uint32_t*)c);
+            }
+            return;
+        }
+        //case PixelFormat::B8G8R8A8:
+        //case PixelFormat::B8G8R8X8:
+        //    byte_t c[4] = { color.b, color.g, color.r, color.a };
+        //    uint32_t* dst = (uint32_t*)m_bitmapData.getData();
+        //    int count = m_bitmapData.getSize() / 4;
+        //    for (int i = 0; i < count; ++i)
+        //    {
+        //        dst[i] = *((uint32_t*)c);
+        //    }
+        //    return;
+        }
+
+        LN_NOTIMPLEMENTED();
+    }
+}
+
 void Bitmap2D::flipVerticalFlow()
 {
 	if (LN_REQUIRE(m_format != PixelFormat::Unknown)) return;
