@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Engine/Application.hpp>
 #include <LuminoEngine/Platform/iOSPlatformInterface.hpp>
+#include "../Engine/EngineManager.hpp"
 
 static ln::Application* g_app = nullptr;
 
@@ -13,6 +14,11 @@ void iOSPlatformInterface::nativeInitialize(int viewWidth, int viewHeight)
 {
 	g_app = ::LuminoCreateApplicationInstance();
 	ln::detail::ApplicationHelper::initialize(g_app);
+}
+
+void iOSPlatformInterface::addAssetArchive(const StringRef& fileFullPath, const StringRef& password)
+{
+    detail::EngineDomain::engineManager()->settings().assetArchives.add({ fileFullPath, password });
 }
 
 void iOSPlatformInterface::nativeUpdateFrame()

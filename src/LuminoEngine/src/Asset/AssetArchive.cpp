@@ -61,7 +61,7 @@ void CryptedArchiveHelper::shiftKey(uint32_t* keys, int c)
 	(*(keys + 1)) += (*(keys + 0)) & 0xff;
 	(*(keys + 1)) = (*(keys + 1)) * 134775813L + 1;
 	{
-		register int keyshift = (int)((*(keys + 1)) >> 24);
+		int keyshift = (int)((*(keys + 1)) >> 24);
 		(*(keys + 2)) = crc((*(keys + 2)), keyshift);
 	}
 }

@@ -70,6 +70,7 @@ elseif (LN_ANDROID)
 
 elseif (DEFINED IOS_PLATFORM)
     set(LN_IOS ON)
+    set(LN_USE_OPENAL ON)
     add_definitions(-DLN_GRAPHICS_OPENGLES)
     set(CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "10.0" CACHE string "iOS Deployment Target")
 

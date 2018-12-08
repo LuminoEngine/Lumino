@@ -28,6 +28,11 @@
 		glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &backendWidth);
 		glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &backendHeight);
 		
+		// Add standard asset archive
+		NSBundle* bundle = [NSBundle mainBundle];
+		NSString* assetsPath = [bundle pathForResource:@"Assets" ofType:@"lca"];
+		ln::iOSPlatformInterface::addAssetArchive(ln::String::fromStdString(std::string([assetsPath UTF8String])), "");
+		
 		ln::iOSPlatformInterface::nativeInitialize(backendWidth, backendHeight);
 		ln::detail::SwapChainHelper::setBackendBufferSize(ln::Engine::mainWindow()->swapChain(), backendWidth, backendHeight);
         ln::detail::SwapChainHelper::setOpenGLBackendFBO(ln::Engine::mainWindow()->swapChain(), backendFBO);
