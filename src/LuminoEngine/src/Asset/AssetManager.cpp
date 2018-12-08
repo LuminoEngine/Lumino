@@ -1,4 +1,4 @@
-
+ï»¿
 #include "Internal.hpp"
 #include "../../LuminoCore/src/IO/PathHelper.hpp"
 #include <LuminoEngine/Graphics/Texture.hpp>
@@ -105,7 +105,7 @@ Ref<Shader> AssetManager::loadShader(const StringRef& filePath)
 bool AssetManager::existsFileInternal(const StringRef& filePath, const Char** exts, int extsCount) const
 {
 	List<Path> paths;
-	paths.reserve(extsCount);	// TODO: –ˆ‰ñƒƒ‚ƒŠŠm•Û‚µ‚½‚­‚È‚¢‹C‚ª‚·‚é‚Ì‚ÅAtemplate ‚Æ lambda ‚ÈƒR[ƒ‹ƒoƒbƒN‚Åˆ—‚µ‚Ä‚İ‚½‚¢
+	paths.reserve(extsCount);	// TODO: æ¯å›ãƒ¡ãƒ¢ãƒªç¢ºä¿ã—ãŸããªã„æ°—ãŒã™ã‚‹ã®ã§ã€template ã¨ lambda ãªã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã§å‡¦ç†ã—ã¦ã¿ãŸã„
 	makeFindPaths(filePath, exts, extsCount, &paths);
 
 	auto unifiedFilePath = Path(filePath).unify();
