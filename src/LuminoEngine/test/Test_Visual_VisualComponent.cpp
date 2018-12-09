@@ -149,3 +149,57 @@ TEST_F(Test_Visual_VisualComponent, DepthTest)
     }
 }
 
+//------------------------------------------------------------------------------
+//## CullMode
+TEST_F(Test_Visual_VisualComponent, CullMode)
+{
+    auto texture1 = Texture2D::create(32, 32);
+    auto texture2 = Texture2D::create(32, 32);
+    texture1->clear(Color::Red);
+    texture2->clear(Color::Green);
+
+    //* [ ] CullMode
+    {
+        // Back(default), FrontFace -> Visible
+        auto sprite1 = Sprite::create(3, 3, texture1);
+        sprite1->setShadingModel(ShadingModel::UnLighting);
+        sprite1->setPosition(-1.5, 3, 0);
+
+        // Back(default), BackFace -> Hide
+        auto sprite2 = Sprite::create(3, 3, texture2);
+        sprite2->setShadingModel(ShadingModel::UnLighting);
+        sprite2->setPosition(1.5, 3, 0);
+        sprite2->setEulerAngles(0, Math::PI, 0);
+
+        // Front, FrontFace -> Hide
+        auto sprite3 = Sprite::create(3, 3, texture1);
+        sprite3->setShadingModel(ShadingModel::UnLighting);
+        sprite3->setPosition(-1.5, 0, 0);
+        sprite3->setCullMode(CullMode::Front);
+
+        // Front, BackFace -> Hide
+        auto sprite4 = Sprite::create(3, 3, texture2);
+        sprite4->setShadingModel(ShadingModel::UnLighting);
+        sprite4->setPosition(1.5, 0, 0);
+        sprite4->setCullMode(CullMode::Front);
+        sprite4->setEulerAngles(0, Math::PI, 0);
+
+        // None, FrontFace -> Visible
+        auto sprite5 = Sprite::create(3, 3, texture1);
+        sprite5->setShadingModel(ShadingModel::UnLighting);
+        sprite5->setPosition(-1.5, -3, 0);
+        sprite5->setCullMode(CullMode::None);
+
+        // None, BackFace -> Visible
+        auto sprite6 = Sprite::create(3, 3, texture2);
+        sprite6->setShadingModel(ShadingModel::UnLighting);
+        sprite6->setCullMode(CullMode::None);
+        sprite6->setPosition(1.5, -3, 0);
+        sprite6->setEulerAngles(0, Math::PI, 0);
+
+        TestEnv::updateFrame();
+        ASSERT_SCREEN_S(LN_ASSETFILE("Result/Visual/Test_Visual_VisualComponent-CullMode-1.png"));
+        LN_TEST_CLEAN_SCENE;
+    }
+}
+
