@@ -199,13 +199,13 @@ LN_CONSTRUCT_ACCESS:	// TODO: 内部でしか new しないから private とか
 
 private:
 	Shader* owner() const { return m_owner; }
-	detail::IShaderUniformBuffer* getRhiObject() const { return m_rhiObject; }
+    const std::string& asciiName() const { return m_asciiName; }
 	ByteBuffer& buffer() { return m_buffer; }
 	void commit(detail::IShaderUniformBuffer* rhiObject);
 
 	Shader* m_owner;
-	detail::IShaderUniformBuffer* m_rhiObject;
 	String m_name;
+    std::string m_asciiName;
 	ByteBuffer m_buffer;
 	List<Ref<ShaderParameter>> m_parameters;
 

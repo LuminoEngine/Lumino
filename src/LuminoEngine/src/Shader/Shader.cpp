@@ -610,7 +610,7 @@ ShaderConstantBuffer* Shader::getOrCreateConstantBuffer(detail::IShaderUniformBu
 {
 	for (auto& buffer : m_buffers)
 	{
-		if (buffer->getRhiObject()->name() == rhiBuffer->name())
+		if (buffer->asciiName() == rhiBuffer->name())
 		{
             LN_CHECK(rhiBuffer->bufferSize() == buffer->size());
 			return buffer;
@@ -742,7 +742,6 @@ void ShaderParameter::setPointer(void* value)
 
 ShaderConstantBuffer::ShaderConstantBuffer()
 	: m_owner(nullptr)
-	, m_rhiObject(nullptr)
 {
 }
 
@@ -754,13 +753,13 @@ void ShaderConstantBuffer::initialize(Shader* owner, detail::IShaderUniformBuffe
 {
 	Object::initialize();
 	m_owner = owner;
-	m_rhiObject = rhiObject;
-	m_name = String::fromStdString(m_rhiObject->name());
-	m_buffer.resize(m_rhiObject->bufferSize());
+    m_name = String::fromStdString(rhiObject->name());
+    m_asciiName = rhiObject->name();
+	m_buffer.resize(rhiObject->bufferSize());
 
-	for (int i = 0; i < m_rhiObject->getUniformCount(); i++)
+	for (int i = 0; i < rhiObject->getUniformCount(); i++)
 	{
-		detail::IShaderUniform* field = m_rhiObject->getUniform(i);
+		detail::IShaderUniform* field = rhiObject->getUniform(i);
 		m_parameters.add(newObject<ShaderParameter>(this, field->desc(), String::fromStdString(field->name())));
 	}
 }
