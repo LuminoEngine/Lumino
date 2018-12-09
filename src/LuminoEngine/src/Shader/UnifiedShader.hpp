@@ -80,7 +80,7 @@ private:
 	uint32_t indexToId(int index) const { return index + 1; }
 	int findCodeContainerInfoIndex(const std::string& entryPointName) const;
 	int findTechniqueInfoIndex(const std::string& name) const;
-	int findPassInfoIndex(const std::string& name) const;
+	int findPassInfoIndex(TechniqueId tech, const std::string& name) const;
 
 	static void writeString(BinaryWriter* w, const std::string& str);
 	static std::string readString(BinaryReader* r);

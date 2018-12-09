@@ -378,8 +378,8 @@ bool UnifiedShader::addTechnique(const std::string& name, TechniqueId* outTech)
 
 bool UnifiedShader::addPass(TechniqueId parentTech, const std::string& name, PassId* outPass)
 {
-	if (findPassInfoIndex(name) >= 0) {
-		m_diag->reportError(String::fromStdString("Pass '" + name + "' is already exists."));
+	if (findPassInfoIndex(parentTech, name) >= 0) {
+		m_diag->reportError(String::fromStdString("Pass '" + name + "' in '" + m_techniques[idToIndex(parentTech)].name + "' is already exists."));
 		return false;
 	}
 
@@ -440,9 +440,18 @@ int UnifiedShader::findTechniqueInfoIndex(const std::string& name) const
 	return m_techniques.indexOfIf([&](const TechniqueInfo& info) { return info.name == name; });
 }
 
-int UnifiedShader::findPassInfoIndex(const std::string& name) const
+int UnifiedShader::findPassInfoIndex(TechniqueId tech, const std::string& name) const
 {
-	return m_passes.indexOfIf([&](const PassInfo& info) { return info.name == name; });
+    auto& t = m_techniques[idToIndex(tech)];
+    for (auto& passId : t.passes)
+    {
+        int index = idToIndex(passId);
+        if (m_passes[index].name == name) {
+            return index;
+        }
+    }
+    return -1;
+	//return t.passes.indexOfIf([&](const PassInfo& info) { return info.name == name; });
 }
 
 void UnifiedShader::writeString(BinaryWriter* w, const std::string& str)

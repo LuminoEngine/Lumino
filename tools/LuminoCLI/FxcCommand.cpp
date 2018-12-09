@@ -161,6 +161,7 @@ bool FxcCommand::generate(const ln::Path& inputFile)
 		return false;
 	}
 
+    CLI::info(u"");
 	CLI::info(u"Compilation succeeded; see " + outputFilePath);
 
 	return true;

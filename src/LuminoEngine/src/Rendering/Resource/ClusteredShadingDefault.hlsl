@@ -660,28 +660,6 @@ technique Forward_Geometry
 	}
 }
 
-
-
-
-struct VSInput
-{
-    float3 Pos : POSITION;
-};
-struct VSOutput
-{
-    float4 svPos : SV_POSITION;
-};
-VSOutput VS_WriteLinearDepth(VSInput input)
-{
-    VSOutput output;
-    output.svPos = float4(input.Pos, 1.0);
-    return output;
-}
-float4 PS_WriteLinearDepth() : COLOR0
-{
-    //float z = (input.ViewPos.z - ln_NearClip) / (ln_FarClip - ln_NearClip);
-    return float4(1, 0, 0, 1);
-}
 technique Forward_Geometry_StaticMesh_UnLighting
 {
 	pass Pass1
