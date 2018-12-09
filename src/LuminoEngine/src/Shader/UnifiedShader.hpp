@@ -63,6 +63,8 @@ public:
 	const std::string& techniqueName(TechniqueId techId) { return m_techniques[idToIndex(techId)].name; }
 
 	bool addPass(TechniqueId parentTech, const std::string& name, PassId* outPass);
+    int getPassCountInTechnique(TechniqueId parentTech) const;
+    PassId getPassIdInTechnique(TechniqueId parentTech, int index) const;
 	int passCount() const { return m_passes.size(); }
 	PassId passId(int index) const { return indexToId(index); }
 	const std::string& passName(PassId passId) { return m_passes[idToIndex(passId)].name; }

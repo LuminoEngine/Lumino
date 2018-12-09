@@ -390,6 +390,16 @@ bool UnifiedShader::addPass(TechniqueId parentTech, const std::string& name, Pas
 	return true;
 }
 
+int UnifiedShader::getPassCountInTechnique(TechniqueId parentTech) const
+{
+    return m_techniques[idToIndex(parentTech)].passes.size();
+}
+
+UnifiedShader::PassId UnifiedShader::getPassIdInTechnique(TechniqueId parentTech, int index) const
+{
+    return m_techniques[idToIndex(parentTech)].passes[index];
+}
+
 void UnifiedShader::setVertexShader(PassId pass, CodeContainerId code)
 {
 	m_passes[idToIndex(pass)].vertexShader = code;

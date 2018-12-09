@@ -322,9 +322,10 @@ void Shader::createFromUnifiedShader(Stream* stream, DiagnosticsManager* diag)
             tech->setOwner(this);
             m_techniques.add(tech);
 
-            for (int iPass = 0; iPass < unifiedShader.passCount(); iPass++)
+            int passCount = unifiedShader.getPassCountInTechnique(techId);
+            for (int iPass = 0; iPass < passCount; iPass++)
             {
-                detail::UnifiedShader::PassId passId = unifiedShader.passId(iPass);
+                detail::UnifiedShader::PassId passId = unifiedShader.getPassIdInTechnique(techId, iPass);
                 detail::UnifiedShader::CodeContainerId vscodeId = unifiedShader.vertexShader(passId);
                 detail::UnifiedShader::CodeContainerId pscodeId = unifiedShader.pixelShader(passId);
 
@@ -611,6 +612,7 @@ ShaderConstantBuffer* Shader::getOrCreateConstantBuffer(detail::IShaderUniformBu
 	{
 		if (buffer->getRhiObject()->name() == rhiBuffer->name())
 		{
+            LN_CHECK(rhiBuffer->bufferSize() == buffer->size());
 			return buffer;
 		}
 	}

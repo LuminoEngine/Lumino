@@ -188,6 +188,7 @@ class LN_API ShaderConstantBuffer
 public:
 	const String& name() const { return m_name; }
 	void setData(const void* data, int size);
+    int size() const { return m_buffer.size(); }
 
 	ShaderParameter* findParameter(const StringRef& name) const;
 
