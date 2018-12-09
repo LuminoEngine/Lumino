@@ -37,6 +37,46 @@ const Optional<BlendMode>& VisualComponent::blendMode() const
     return m_geometryStageParameters->m_blendMode;
 }
 
+void VisualComponent::setShadingModel(const Optional<ShadingModel>& value)
+{
+    m_geometryStageParameters->shadingModel = value;
+}
+
+const Optional<ShadingModel>& VisualComponent::shadingModel() const
+{
+    return m_geometryStageParameters->shadingModel;
+}
+
+void VisualComponent::setDepthTestEnabled(const Optional<bool>& enabled)
+{
+    m_geometryStageParameters->m_depthTestEnabled = enabled;
+}
+
+const Optional<bool>& VisualComponent::isDepthTestEnabled() const
+{
+    return m_geometryStageParameters->m_depthTestEnabled;
+}
+
+void VisualComponent::setDepthWriteEnabled(const Optional<bool>& enabled)
+{
+    m_geometryStageParameters->m_depthWriteEnabled = enabled;
+}
+
+const Optional<bool>& VisualComponent::isDepthWriteEnabled() const
+{
+    return m_geometryStageParameters->m_depthWriteEnabled;
+}
+
+void VisualComponent::setCullMode(const Optional<CullMode>& mode)
+{
+    m_geometryStageParameters->m_cullingMode = mode;
+}
+
+const Optional<CullMode>& VisualComponent::cullMode() const
+{
+    return m_geometryStageParameters->m_cullingMode;
+}
+
 void VisualComponent::setOpacity(float value)
 {
     m_builtinEffectData->opacity = value;
@@ -86,6 +126,7 @@ void VisualComponent::render(RenderingContext* context)
         context->setBaseTransfrom(worldObject()->worldMatrix());
         context->setBaseBuiltinEffectData(*m_builtinEffectData);
         context->setBlendMode(m_geometryStageParameters->m_blendMode);
+        context->setShadingModel(m_geometryStageParameters->shadingModel);
         context->setCullingMode(m_geometryStageParameters->m_cullingMode);
         context->setDepthTestEnabled(m_geometryStageParameters->m_depthTestEnabled);
         context->setDepthWriteEnabled(m_geometryStageParameters->m_depthWriteEnabled);

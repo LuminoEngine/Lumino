@@ -776,7 +776,7 @@ ShaderParameter* ShaderConstantBuffer::findParameter(const StringRef& name) cons
 	return (result) ? *result : nullptr;
 }
 
-void ShaderConstantBuffer::commit()
+void ShaderConstantBuffer::commit(detail::IShaderUniformBuffer* rhiObject)
 {
 	auto* manager = owner()->manager();
 	detail::RenderBulkData data = manager->primaryRenderingCommandList()->allocateBulkData(m_buffer.size());
@@ -785,9 +785,9 @@ void ShaderConstantBuffer::commit()
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		ShaderConstantBuffer_commit, manager,
 		detail::RenderBulkData, data,
-		Ref<detail::IShaderUniformBuffer>, m_rhiObject,
+		Ref<detail::IShaderUniformBuffer>, rhiObject,
 		{
-			m_rhiObject->setData(data.data(), data.size());
+            rhiObject->setData(data.data(), data.size());
 		});
 }
 
@@ -859,13 +859,13 @@ void ShaderPass::setupParameters()
 	//	m_parameters.add(param);
 	//}
 
-	m_buffers.clear();
+    m_bufferEntries.clear();
 
 	for (int i = 0; i < m_rhiPass->getUniformBufferCount(); i++)
 	{
 		detail::IShaderUniformBuffer* rhi = m_rhiPass->getUniformBuffer(i);
 		ShaderConstantBuffer* buf = m_owner->shader()->getOrCreateConstantBuffer(rhi);
-		m_buffers.add(buf);
+        m_bufferEntries.add({ buf, Ref<detail::IShaderUniformBuffer>(rhi) });
 	}
 
 
@@ -919,9 +919,9 @@ void ShaderPass::commit()
 		});
 #endif
 
-	for (auto& buffer : m_buffers)
+	for (auto& e : m_bufferEntries)
 	{
-		buffer->commit();
+		e.buffer->commit(e.rhiObject);
 	}
 
 	// TODO: 1つのバッファにまとめるとか、一括で送りたい。

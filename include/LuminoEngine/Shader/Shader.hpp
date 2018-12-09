@@ -201,7 +201,7 @@ private:
 	Shader* owner() const { return m_owner; }
 	detail::IShaderUniformBuffer* getRhiObject() const { return m_rhiObject; }
 	ByteBuffer& buffer() { return m_buffer; }
-	void commit();
+	void commit(detail::IShaderUniformBuffer* rhiObject);
 
 	Shader* m_owner;
 	detail::IShaderUniformBuffer* m_rhiObject;
@@ -258,6 +258,12 @@ LN_CONSTRUCT_ACCESS:
 	virtual void dispose() override;
 
 private:
+    struct ConstantBufferEntry
+    {
+        ShaderConstantBuffer* buffer;
+        Ref<detail::IShaderUniformBuffer> rhiObject;
+    };
+
 	void setOwner(ShaderTechnique* owner) { m_owner = owner; }
 	void setupParameters();
 	void commit();
@@ -266,7 +272,7 @@ private:
 	ShaderTechnique* m_owner;
 	Ref<detail::IShaderPass> m_rhiPass;
 	//List<ShaderParameter*> m_parameters;
-	List<ShaderConstantBuffer*> m_buffers;
+	List<ConstantBufferEntry> m_bufferEntries;
 	List<ShaderParameter*> m_textureParameters;
     Ref<detail::ShaderRenderState> m_renderState;
 

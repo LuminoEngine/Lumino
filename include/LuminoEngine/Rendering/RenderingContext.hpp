@@ -61,6 +61,9 @@ public:
 	/** BlendMode を設定します。 シーンの既定値を使用する場合は nullptr を指定します。 */
 	void setBlendMode(Optional<BlendMode> value);
 
+    /** ShadingModel を設定します。 シーンの既定値を使用する場合は nullptr を指定します。 */
+    void setShadingModel(Optional<ShadingModel> value);
+
 	/** CullMode を設定します。 シーンの既定値を使用する場合は nullptr を指定します。 */
 	void setCullingMode(Optional<CullMode> value);
 

@@ -61,6 +61,11 @@ void RenderingContext::setBlendMode(Optional<BlendMode> value)
 	m_builder->setBlendMode(value);
 }
 
+void RenderingContext::setShadingModel(Optional<ShadingModel> value)
+{
+    m_builder->setShadingModel(value);
+}
+
 void RenderingContext::setCullingMode(Optional<CullMode> value)
 {
 	m_builder->setCullingMode(value);

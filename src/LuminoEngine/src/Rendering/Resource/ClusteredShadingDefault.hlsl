@@ -626,7 +626,7 @@ float4 _lngs_PS_UnLighting(_lngs_PSInput input) : COLOR0
 	//float3 ambient = float3(1, 1, 1) * ln_MaterialAmbient.rgb;
 	//result.rgb = saturate(result.rgb + ambient);
 
-	return float4(1, 0, 0, 1);
+	//return float4(1, 0, 0, 1);
 
 	//result *= (tex2D(MaterialTextureSampler, input.common.UV));
 	//result *= ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.UV);
@@ -651,7 +651,6 @@ technique ClusteredForward
 	}
 }
 */
-
 technique Forward_Geometry
 {
 	pass Pass1
@@ -661,6 +660,28 @@ technique Forward_Geometry
 	}
 }
 
+
+
+
+struct VSInput
+{
+    float3 Pos : POSITION;
+};
+struct VSOutput
+{
+    float4 svPos : SV_POSITION;
+};
+VSOutput VS_WriteLinearDepth(VSInput input)
+{
+    VSOutput output;
+    output.svPos = float4(input.Pos, 1.0);
+    return output;
+}
+float4 PS_WriteLinearDepth() : COLOR0
+{
+    //float z = (input.ViewPos.z - ln_NearClip) / (ln_FarClip - ln_NearClip);
+    return float4(1, 0, 0, 1);
+}
 technique Forward_Geometry_StaticMesh_UnLighting
 {
 	pass Pass1
@@ -669,6 +690,7 @@ technique Forward_Geometry_StaticMesh_UnLighting
 		PixelShader	 = _lngs_PS_UnLighting;
 	}
 }
+
 
 /*
 technique Forward_Geometry_SkinnedMesh

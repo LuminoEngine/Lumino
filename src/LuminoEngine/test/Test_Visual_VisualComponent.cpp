@@ -90,8 +90,6 @@ TEST_F(Test_Visual_VisualComponent, BlendMode)
 //## DepthTest, DepthWrite
 TEST_F(Test_Visual_VisualComponent, DepthTest)
 {
-    auto light1 = AmbientLight::create();
-
     auto texture1 = Texture2D::create(32, 32);
     auto texture2 = Texture2D::create(32, 32);
     texture1->clear(Color::Red);
@@ -101,30 +99,53 @@ TEST_F(Test_Visual_VisualComponent, DepthTest)
     {
         auto sprite1 = Sprite::create(5, 5, texture1);
         sprite1->setPosition(0, 0, 0);
-        sprite1->setEulerAngles(0, Math::PI / 4, 0);
+        sprite1->setEulerAngles(0, -Math::PI / 4, 0);
+        sprite1->setShadingModel(ShadingModel::UnLighting);
 
         auto sprite2 = Sprite::create(5, 5, texture2);
         sprite2->setPosition(0, 0, 0);
-        sprite2->setEulerAngles(0, -Math::PI / 4, 0);
+        sprite2->setEulerAngles(0, Math::PI / 4, 0);
+        sprite2->setShadingModel(ShadingModel::UnLighting);
 
         TestEnv::updateFrame();
-        ASSERT_SCREEN_S(LN_ASSETFILE("Result/Visual/Test_Visual_VisualComponent-DepthTest-1.png"));
-        Engine::mainWorld()->removeAllObjects();
+        ASSERT_SCREEN(LN_ASSETFILE("Result/Visual/Test_Visual_VisualComponent-DepthTest-1.png"));
+        LN_TEST_CLEAN_SCENE;
     }
 
     //* [ ] disable depth test
     {
         auto sprite1 = Sprite::create(4, 4, texture1);
         sprite1->setPosition(0, 0, 0);
-        sprite1->setEulerAngles(0, Math::PI / 4, 0);
+        sprite1->setEulerAngles(0, -Math::PI / 4, 0);
+        sprite1->setShadingModel(ShadingModel::UnLighting);
 
         auto sprite2 = Sprite::create(4, 4, texture2);
         sprite2->setPosition(0, 0, 0);
-        sprite2->setEulerAngles(0, -Math::PI / 4, 0);
+        sprite2->setEulerAngles(0, Math::PI / 4, 0);
+        sprite2->setShadingModel(ShadingModel::UnLighting);
+        sprite2->setDepthTestEnabled(false);
 
         TestEnv::updateFrame();
-        ASSERT_SCREEN_S(LN_ASSETFILE("Result/Visual/Test_Visual_VisualComponent-DepthTest-2.png"));
-        Engine::mainWorld()->removeAllObjects();
+        ASSERT_SCREEN(LN_ASSETFILE("Result/Visual/Test_Visual_VisualComponent-DepthTest-2.png"));
+        LN_TEST_CLEAN_SCENE;
+    }
+
+    //* [ ] disable depth write
+    {
+        auto sprite1 = Sprite::create(4, 4, texture1);
+        sprite1->setPosition(0, 0, 0);
+        sprite1->setEulerAngles(0, -Math::PI / 4, 0);
+        sprite1->setShadingModel(ShadingModel::UnLighting);
+        sprite1->setDepthWriteEnabled(false);
+
+        auto sprite2 = Sprite::create(4, 4, texture2);
+        sprite2->setPosition(0, 0, 0);
+        sprite2->setEulerAngles(0, Math::PI / 4, 0);
+        sprite2->setShadingModel(ShadingModel::UnLighting);
+
+        TestEnv::updateFrame();
+        ASSERT_SCREEN(LN_ASSETFILE("Result/Visual/Test_Visual_VisualComponent-DepthTest-3.png"));
+        LN_TEST_CLEAN_SCENE;
     }
 }
 

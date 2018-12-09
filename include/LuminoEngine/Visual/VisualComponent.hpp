@@ -23,11 +23,45 @@ public:
 	LN_METHOD(Property)
 	bool isVisible() const { return m_isVisible; }
 
+    //-------------------------------------------------------------------------
+    /** @name RenderState */
+    /** @{ */
+
     /** 合成方法を設定します。(default: BlendMode::Normal) */
     void setBlendMode(const Optional<BlendMode>& mode);
 
     /** 合成方法を取得します。*/
     const Optional<BlendMode>& blendMode() const;
+
+    /** ShadingModel を設定します。(default: ShadingModel::Default) */
+    void setShadingModel(const Optional<ShadingModel>& value);
+
+    /** ShadingModel を取得します。*/
+    const Optional<ShadingModel>& shadingModel() const;
+
+    /** このノードを描画する際の深度テストの有無を設定します。(default: true) */
+    void setDepthTestEnabled(const Optional<bool>& enabled);
+
+    /** このノードを描画する際の深度テストの有無を取得します。*/
+    const Optional<bool>& isDepthTestEnabled() const;
+
+    /** このノードを描画する際の深度書き込みの有無を設定します。(default: true) */
+    void setDepthWriteEnabled(const Optional<bool>& enabled);
+
+    /** このノードを描画する際の深度書き込みの有無を取得します。*/
+    const Optional<bool>& isDepthWriteEnabled() const;
+
+    /** このノードを描画する際のカリング方法を設定します。(default: CullMode::Back) */
+    void setCullMode(const Optional<CullMode>& mode);
+
+    /** このノードを描画する際のカリング方法を取得します。*/
+    const Optional<CullMode>& cullMode() const;
+
+    /** @} */
+
+    //-------------------------------------------------------------------------
+    /** @name Effects */
+    /** @{ */
 
     /** 不透明度を設定します。(default: 1.0) */
     void setOpacity(float value);
@@ -52,6 +86,8 @@ public:
 
     /** 色調を取得します。 */
     const ToneF& tone() const;
+
+    /** @} */
 
 protected:
 
