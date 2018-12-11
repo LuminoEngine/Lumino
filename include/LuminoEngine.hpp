@@ -60,6 +60,8 @@
 
 #include "LuminoEngine/Asset/Assets.hpp"
 
+#include "LuminoEngine/Tilemap/Tilemap.hpp"
+
 #ifdef LN_MSVC_AUTO_LINK_LIBRARIES
 #pragma comment(lib, "glfw3.lib")
 #pragma comment(lib, "ogg.lib")

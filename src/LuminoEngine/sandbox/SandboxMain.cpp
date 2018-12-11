@@ -153,8 +153,8 @@ int main(int argc, char** argv)
     //bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
     //bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
 
-    auto sprite = newObject<UISprite>();
-    sprite->setTexture(tex);
+    //auto sprite = newObject<UISprite>();
+    //sprite->setTexture(tex);
     //auto sprite = newObject<UISprite>();
     //sprite->setTexture(tex);
 
@@ -162,13 +162,16 @@ int main(int argc, char** argv)
     //imageEffect->setAmount(0.7);
     //imageEffect->setRadialScale(1.05);
     //Engine::mainViewport()->addImageEffect(imageEffect);
+
+    auto tilemap = newObject<Tilemap>();
+    tilemap->setShadingModel(ShadingModel::UnLighting);
 #endif
 
 #if 1
     //auto sound = newObject<Sound>(u"D:\\tmp\\4_Battle_win.wav");
     auto sound = newObject<Sound>(u"D:/Music/momentum/02 - momentum.wav");
 
-    sound->play();
+    //sound->play();
     //sound->setPitch(1.2);
 #endif
 #if 0

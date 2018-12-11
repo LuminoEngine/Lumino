@@ -367,6 +367,21 @@ set(LN_SOURCES_UI
     src/UI/UIViewport.cpp
 )
 
+set(LN_SOURCES_Tilemap
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/Tilemap.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/TilemapComponent.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/TilemapLayer.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/TilemapModel.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/Tileset.hpp
+    src/Tilemap/Internal.hpp
+    src/Tilemap/Tilemap.cpp
+    src/Tilemap/TilemapComponent.cpp
+    src/Tilemap/TilemapLayer.cpp
+    src/Tilemap/TilemapModel.cpp
+    src/Tilemap/Tileset.cpp
+)
+
 if (APPLE)
     set(LN_SOURCES_Platform
         ${LN_SOURCES_Platform}
@@ -393,6 +408,7 @@ source_group("Asset"	 FILES ${LN_SOURCES_Asset})
 source_group("Scene"     FILES ${LN_SOURCES_Scene})
 source_group("Visual"    FILES ${LN_SOURCES_Visual})
 source_group("UI"        FILES ${LN_SOURCES_UI})
+source_group("Tilemap"   FILES ${LN_SOURCES_Tilemap})
 
 set(LN_SOURCES
     src/LuminoEngine.PCH.cpp
@@ -414,6 +430,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Scene}
     ${LN_SOURCES_Visual}
     ${LN_SOURCES_UI}
+    ${LN_SOURCES_Tilemap}
     #${LN_SOURCES_LuminoCore}
 )
 

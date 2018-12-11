@@ -1,55 +1,23 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Scene/Scene.hpp>
-#include "SceneManager.hpp"
+#include <LuminoEngine/Tilemap/TilemapModel.hpp>
 
 namespace ln {
 
 //==============================================================================
-// Scene
+// TilemapModel
 
-LN_OBJECT_IMPLEMENT(Scene, Object);
-
-Scene::Scene()
+TilemapModel::TilemapModel()
 {
 }
 
-Scene::~Scene()
+TilemapModel::~TilemapModel()
 {
 }
 
-void Scene::initialize()
+void TilemapModel::initialize()
 {
-
-}
-
-void Scene::onCreated()
-{
-}
-
-void Scene::onClosed()
-{
-}
-
-void Scene::onActivated()
-{
-}
-
-void Scene::onDeactivated()
-{
-}
-
-void Scene::onUpdate()
-{
-	//for (auto& ptr : m_gameObjectList)
-	//{
-	//	ptr->onUpdate();
-	//}
-}
-
-void Scene::update()
-{
-	onUpdate();
+    Object::initialize();
 }
 
 } // namespace ln
