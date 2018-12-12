@@ -10,12 +10,14 @@ class RenderTargetTexture;
 class DepthBuffer;
 class AbstractMaterial;
 class MeshContainer;
+class RenderViewPoint;
 namespace detail {
 class RenderingManager;
 class DrawElementList;
 class DrawElementListBuilder;
 class BuiltinEffectData;
 } // namespace detail
+
 
 class RenderingContext
 	: public RefObject  // TODO: Object
@@ -130,9 +132,13 @@ public:
 
 	/** @} */
 
+    RenderViewPoint* viewPoint() const;
+
+
     // TODO: internal
     void setBaseTransfrom(const Optional<Matrix>& value);
     void setBaseBuiltinEffectData(const Optional<detail::BuiltinEffectData>& value);
+    void setViewPoint(RenderViewPoint* value);
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	RenderingContext();

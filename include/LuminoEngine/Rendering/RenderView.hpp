@@ -56,5 +56,26 @@ private:
     Size m_actualPixelSize;
 };
 
+
+// RenderingContext を使った描画の起点となった視点情報。
+// 特に Partcle や Tilemap で使用する。これらは Camera が視点となるが、onRender() から Camera までの参照はかなり遠い。
+// また UI でも使うことがあるため、単に Camera ではなく、もう一段抽象化したデータ構造を用意しておく。(UI では Camera という概念はイメージしづらい)
+class RenderViewPoint
+    : public Object
+{
+public:
+    Matrix worldMatrix;
+    Size		viewPixelSize;
+    Vector3		viewPosition;
+    Vector3		viewDirection;
+    Matrix		viewMatrix;
+    Matrix		projMatrix;
+    Matrix		viewProjMatrix;
+    ViewFrustum	viewFrustum;
+
+    float		nearClip = 0;
+    float		farClip = 0;
+};
+
 } // namespace ln
 

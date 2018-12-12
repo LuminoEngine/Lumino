@@ -8,6 +8,7 @@ class WorldRenderView;
 class WorldObject;
 class Component;
 namespace detail {
+class CameraInfo;
 class EngineManager;
 class DrawElementList;
 class WorldSceneGraphRenderingContext;
@@ -38,7 +39,7 @@ LN_CONSTRUCT_ACCESS:
 
 public: // TODO: internal
     void updateFrame(float elapsedSeconds);
-    void render();  // call by WorldRenderView
+    void render(RenderViewPoint* viewPoint);  // call by WorldRenderView
 
     List<Ref<WorldObject>> m_rootWorldObjectList;
 

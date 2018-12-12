@@ -26,6 +26,7 @@ void WorldRenderView::initialize()
     m_sceneRenderingPipeline = makeRef<detail::SceneRenderingPipeline>();
     m_sceneRenderingPipeline->initialize();
     m_drawElementListCollector = makeRef<detail::DrawElementListCollector>();
+    m_viewPoint = newObject<RenderViewPoint>();
 }
 
 void WorldRenderView::setTargetWorld(World* world)
@@ -58,38 +59,43 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
 {
 	if (m_camera)
 	{
-        // DrawList 構築
-        if (m_targetWorld) {
-            m_targetWorld->render();
+
+        FrameBuffer fb;
+        fb.renderTarget[0] = graphicsContext->colorBuffer(0);
+        fb.depthBuffer = graphicsContext->depthBuffer();
+
+        // TODO:
+        detail::CameraInfo camera;
+        {
+            CameraComponent* cc = m_camera->cameraComponent();
+            
+            m_viewPoint->worldMatrix = m_camera->worldMatrix();
+            m_viewPoint->viewPixelSize = camera.viewPixelSize = Size(fb.renderTarget[0]->width(), fb.renderTarget[0]->height());	// TODO: 必要？
+            m_viewPoint->viewPosition = camera.viewPosition = m_camera->position();
+            m_viewPoint->viewDirection = camera.viewDirection = cc->getDirectionInternal().xyz();
+            m_viewPoint->viewMatrix = camera.viewMatrix = cc->getViewMatrix();
+            m_viewPoint->projMatrix = camera.projMatrix = cc->getProjectionMatrix();
+            m_viewPoint->viewProjMatrix = camera.viewProjMatrix = cc->getViewProjectionMatrix();
+            m_viewPoint->viewFrustum = camera.viewFrustum = cc->getViewFrustum();
+
+            m_viewPoint->nearClip = camera.nearClip = cc->getNearClip();
+            m_viewPoint->farClip = camera.farClip = cc->getFarClip();
+
+            //Size size(fb.renderTarget[0]->width(), fb.renderTarget[0]->height());
+            //Vector3 pos = Vector3(5, 5, -5);
+            //camera.makePerspective(pos, Vector3::normalize(Vector3::Zero - pos), Math::PI / 3.0f, size, 0.1f, 100.0f);
+
         }
 
 
-		FrameBuffer fb;
-		fb.renderTarget[0] = graphicsContext->colorBuffer(0);
-		fb.depthBuffer = graphicsContext->depthBuffer();
-
-		// TODO:
-		detail::CameraInfo camera;
-		{
-			CameraComponent* cc = m_camera->cameraComponent();
-
-			camera.viewPixelSize = Size(fb.renderTarget[0]->width(), fb.renderTarget[0]->height());	// TODO: 必要？
-			camera.viewPosition = m_camera->position();
-			camera.viewDirection = cc->getDirectionInternal().xyz();
-			camera.viewMatrix = cc->getViewMatrix();
-			camera.projMatrix = cc->getProjectionMatrix();
-			camera.viewProjMatrix = cc->getViewProjectionMatrix();
-			camera.viewFrustum = cc->getViewFrustum();
-
-			camera.nearClip = cc->getNearClip();
-			camera.farClip = cc->getFarClip();
 
 
-			//Size size(fb.renderTarget[0]->width(), fb.renderTarget[0]->height());
-			//Vector3 pos = Vector3(5, 5, -5);
-			//camera.makePerspective(pos, Vector3::normalize(Vector3::Zero - pos), Math::PI / 3.0f, size, 0.1f, 100.0f);
+        // DrawList 構築
+        if (m_targetWorld) {
+            m_targetWorld->render(m_viewPoint);
+        }
 
-		}
+
 
 		m_sceneRenderingPipeline->render(graphicsContext, fb, &camera, &elementListManagers());
 	}

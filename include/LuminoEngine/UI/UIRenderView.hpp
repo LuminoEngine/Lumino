@@ -30,6 +30,7 @@ private:
 	Ref<UIRenderingContext> m_renderingContext;
 	Ref<detail::FlatRenderingPipeline> m_sceneRenderingPipeline;
 	Ref<detail::DrawElementListCollector> m_drawElementListCollector;
+    Ref<RenderViewPoint> m_viewPoint;
     Ref<UIElement> m_rootElement;
 };
 

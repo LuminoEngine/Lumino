@@ -260,6 +260,11 @@ void RenderingContext::addSpotLight(const Color& color, float intensity, const V
 	m_builder->targetList()->addDynamicLightInfo(detail::DynamicLightInfo::makeSpotLightInfo(color, intensity, position, direction, range, attenuation, spotAngle, spotPenumbra));
 }
 
+RenderViewPoint* RenderingContext::viewPoint() const
+{
+    return m_builder->viewPoint();
+}
+
 void RenderingContext::setBaseTransfrom(const Optional<Matrix>& value)
 {
     m_builder->setBaseTransfrom(value);
@@ -268,7 +273,11 @@ void RenderingContext::setBaseTransfrom(const Optional<Matrix>& value)
 void RenderingContext::setBaseBuiltinEffectData(const Optional<detail::BuiltinEffectData>& value)
 {
     m_builder->setBaseBuiltinEffectData(value);
+}
 
+void RenderingContext::setViewPoint(RenderViewPoint* value)
+{
+    m_builder->setViewPoint(value);
 }
 
 } // namespace ln

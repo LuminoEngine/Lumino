@@ -5,6 +5,8 @@
 #include "MeshRenderFeature.hpp"
 
 namespace ln {
+class RenderViewPoint;
+
 namespace detail {
 
 // CommandBuffer から使われることを想定。
@@ -49,6 +51,9 @@ public:
 	void setTone(const ToneF& value);
     void setBaseBuiltinEffectData(const Optional<BuiltinEffectData>& value);
 
+    void setViewPoint(RenderViewPoint* value);
+    RenderViewPoint* viewPoint() const;
+
     void pushState(bool reset); // ※ 単純に state を退避するための仕組みなので、OpenGL の push/pop Matrix のように transform の乗算などは行わない。
     void popState();
 
@@ -79,6 +84,7 @@ private:
         Optional<BuiltinEffectData> baseBuiltinEffectData;
         Matrix transform;
         Optional<Matrix> baseTransform;
+        RenderViewPoint* viewPoint; // DrawElement には流れない、RenderingContext を使う人のための情報
 
         void reset();
         void copyFrom(const State* other);
@@ -94,6 +100,7 @@ private:
 	RenderStage* prepareRenderStage(RenderFeature* renderFeature, RenderFeatureStageParameters* featureParams);
     void prepareRenderDrawElement(RenderDrawElement* newElement, RenderDrawElement* lastElement);
     const Ref<State>& primaryState() { return m_aliveStateStack.front(); }
+    const Ref<State>& primaryStateConst() const { return m_aliveStateStack.front(); }
     FrameBufferStageParameters& primaryFrameBufferStageParameters() { return m_aliveStateStack.front()->frameBufferStageParameters; }
     const FrameBufferStageParameters& primaryFrameBufferStageParameters() const { return m_aliveStateStack.front()->frameBufferStageParameters; }
     GeometryStageParameters& primaryGeometryStageParameters() { return m_aliveStateStack.front()->geometryStageParameters; }

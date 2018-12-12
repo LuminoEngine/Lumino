@@ -191,6 +191,16 @@ void DrawElementListBuilder::setBaseBuiltinEffectData(const Optional<BuiltinEffe
     }
 }
 
+void DrawElementListBuilder::setViewPoint(RenderViewPoint* value)
+{
+    primaryState()->viewPoint = value;
+}
+
+RenderViewPoint* DrawElementListBuilder::viewPoint() const
+{
+    return primaryStateConst()->viewPoint;
+}
+
 void DrawElementListBuilder::pushState(bool reset)
 {
     Ref<State> state;

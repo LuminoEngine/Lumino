@@ -83,9 +83,10 @@ void World::onPostUpdate(float elapsedSeconds)
 {
 }
 
-void World::render()
+void World::render(RenderViewPoint* viewPoint)
 {
     m_renderingContext->resetForBeginRendering();
+    m_renderingContext->setViewPoint(viewPoint);
 
     for (auto& obj : m_rootWorldObjectList)
     {

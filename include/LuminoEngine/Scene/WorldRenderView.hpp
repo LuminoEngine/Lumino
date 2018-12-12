@@ -31,6 +31,7 @@ private:
     Ref<detail::DrawElementListCollector> m_drawElementListCollector;
     Ref<World> m_targetWorld;
 	Ref<Camera> m_camera;
+    Ref<RenderViewPoint> m_viewPoint;
 };
 
 } // namespace ln
