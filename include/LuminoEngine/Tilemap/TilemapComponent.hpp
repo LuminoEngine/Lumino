@@ -4,6 +4,7 @@
 
 namespace ln {
 class Material;
+class TilemapModel;
 
 class TilemapComponent
 	: public VisualComponent
@@ -19,7 +20,7 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 private:
-    Ref<Material> m_material;
+    Ref<TilemapModel> m_tilemap;
 };
 
 } // namespace ln

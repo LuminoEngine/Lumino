@@ -8,6 +8,11 @@ namespace ln {
 //==============================================================================
 // Tilemap
 
+Ref<Tilemap> Tilemap::create()
+{
+    return newObject<Tilemap>();
+}
+
 Tilemap::Tilemap()
 {
 }

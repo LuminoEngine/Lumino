@@ -9,6 +9,7 @@ class Tilemap
 	: public VisualObject
 {
 public:
+    static Ref<Tilemap> create();
 
 
 protected:

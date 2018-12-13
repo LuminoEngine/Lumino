@@ -60,6 +60,9 @@
 
 #include "LuminoEngine/Asset/Assets.hpp"
 
+#include "LuminoEngine/Tilemap/Tileset.hpp"
+#include "LuminoEngine/Tilemap/TilemapLayer.hpp"
+#include "LuminoEngine/Tilemap/TilemapModel.hpp"
 #include "LuminoEngine/Tilemap/Tilemap.hpp"
 
 #ifdef LN_MSVC_AUTO_LINK_LIBRARIES
