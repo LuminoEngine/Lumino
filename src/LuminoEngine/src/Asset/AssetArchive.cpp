@@ -165,6 +165,8 @@ CryptedAssetArchiveReader::~CryptedAssetArchiveReader()
 
 bool CryptedAssetArchiveReader::open(const StringRef& filePath, const StringRef& password, bool pathAsRawRelative)
 {
+    LN_LOG_DEBUG << "Archive: " << filePath;
+
     ln::String actualPassword;
     if (password.isEmpty()) {
         actualPassword = CryptedArchiveHelper::DefaultPassword;
@@ -229,10 +231,12 @@ bool CryptedAssetArchiveReader::open(const StringRef& filePath, const StringRef&
 
             if (pathAsRawRelative) {
                 m_fileEntries.insert({ path.unify(), fe });
+                LN_LOG_DEBUG << "File: " << path.unify();
             }
             else {
                 ln::Path virtualFullPath = ln::Path(virtualDirFullPath, path).canonicalize().unify();
                 m_fileEntries.insert({ virtualFullPath, fe });
+                LN_LOG_DEBUG << "File: " << virtualFullPath;
             }
 
 		}

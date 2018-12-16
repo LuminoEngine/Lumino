@@ -5,6 +5,7 @@
 #include <emscripten.h>
 #include "Internal.hpp"
 #include <LuminoEngine/Engine/Application.hpp>
+#include "../Engine/EngineManager.hpp"
 
 extern "C" ::ln::Application* LuminoCreateApplicationInstance();
 
@@ -20,6 +21,8 @@ int main(int argc, char** argv)
     ln::GlobalLogger::addStdErrAdapter();
     
     g_app = ::LuminoCreateApplicationInstance();
+
+    ln::detail::EngineDomain::engineManager()->settings().assetArchives.add({ u"Assets.lca", ln::StringRef() });
 
     ln::detail::ApplicationHelper::initialize(g_app);
 

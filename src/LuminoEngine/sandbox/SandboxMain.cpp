@@ -114,6 +114,18 @@ int main(int argc, char** argv)
 	//aw.addFile(u"C:/LocalProj/tmp/CMakeLists.txt", u"CMakeLists.txt");
 	//aw.close();
 
+    struct PosColor
+    {
+        ln::Vector4 pos;
+        ln::Vector2 uv;
+    };
+    PosColor v1[] = {
+        { { -1, 1, 0, 1 }, { 0, 0 } },
+        { { 1, 1, 0, 1 }, { 0, 1 } },
+        { { -1, -1, 0, 1 }, { 1, 0 } },
+        { { 1, -1, 0, 1 }, { 1, 1 } },
+    };
+    auto m_vertexBuffer = ln::newObject<ln::VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
     
 	detail::EngineDomain::fontManager()->registerFontFile(LN_LOCALFILE("../../../tools/VLGothic/VL-PGothic-Regular.ttf"));
 

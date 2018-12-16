@@ -36,7 +36,7 @@ Java_org_lumino_lib_luminoapp_LuminoRenderer_nativeAddAssetArchive(
     jstring filePath)
 {
     const char* str = env->GetStringUTFChars(filePath, 0);
-    ln::AndroidPlatformInterface::addAssetArchive(ln::String::fromCString(str), u"j7OeF8Hh");
+    ln::AndroidPlatformInterface::addAssetArchive(ln::String::fromCString(str));
     env->ReleaseStringUTFChars(filePath, str);
 }
 

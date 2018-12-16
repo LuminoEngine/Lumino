@@ -1,7 +1,9 @@
 
 #include "../../src/LuminoEngine/src/Asset/AssetArchive.hpp"
+#include "../../src/LuminoEngine/src/Shader/UnifiedShader.hpp"
 #include "Project.hpp"
 #include "ArchiveCommand.hpp"
+#include "FxcCommand.hpp"
 
 int ArchiveCommand::execute(Project* project)
 {
@@ -11,7 +13,14 @@ int ArchiveCommand::execute(Project* project)
 
     for (auto& file : ln::FileSystem::getFiles(project->assetsDir(), ln::StringRef(), ln::SearchOption::Recursive)) {
         if (file.hasExtension(".fx")) {
-            // ignore
+            auto workFile = ln::Path(project->buildDir(), file.fileName().replaceExtension(ln::detail::UnifiedShader::FileExt));
+
+            FxcCommand cmd;
+            cmd.outputFile = workFile;
+            cmd.execute(file);
+
+            writer.addFile(workFile, project->assetsDir().makeRelative(file).replaceExtension(ln::detail::UnifiedShader::FileExt));
+            CLI::info(file);
         }
         else {
             writer.addFile(file, project->assetsDir().makeRelative(file));
@@ -20,6 +29,13 @@ int ArchiveCommand::execute(Project* project)
     }
 
     writer.close();
+
+    // Android
+    {
+        auto dst = ln::Path::combine(project->androidProjectDir(), u"app", u"src", u"main", u"assets", u"Assets.lca");
+        ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
+        CLI::info(u"Copy to " + dst);
+    }
 
     CLI::info(u"Compilation succeeded; see " + outputFilePath);
 

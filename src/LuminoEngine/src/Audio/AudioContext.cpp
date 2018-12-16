@@ -46,6 +46,7 @@ void AudioContext::initialize()
     m_audioDevice = device;
 #else
 	auto device = makeRef<detail::NullAudioDevice>();
+    m_audioDevice = device;
 #endif
 	m_coreDestinationNode = makeRef<detail::CoreAudioDestinationNode>(m_audioDevice);
 	m_coreDestinationNode->initialize();

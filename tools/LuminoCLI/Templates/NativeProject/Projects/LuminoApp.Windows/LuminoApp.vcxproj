@@ -68,7 +68,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\Engine\Native\lib\MSVC2017-x86-MT</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\Engine\Native\lib\MSVC2017-x86-MT-Debug</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -90,7 +90,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\Engine\Native\lib\MSVC2017-x86-MT</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\Engine\Native\lib\MSVC2017-x86-MT-Release</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <!-- XXX -->

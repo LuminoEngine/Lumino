@@ -14,7 +14,8 @@ int main(int argc, char** argv)
 	{
 		//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects");
 		//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\HelloLumino");
-		::SetCurrentDirectoryW(L"C:/Proj/GitHub/Lumino/build/MSVC2017-x86-MT-Debug/tools/LuminoCLI/test/LuminoTestProj");
+		//::SetCurrentDirectoryW(L"D:/Documents/LuminoProjects");
+        ::SetCurrentDirectoryW(L"D:/Documents/LuminoProjects/HelloLumino");
 	
 		const char* debugArgv[] = {
 			"<program>",
@@ -33,9 +34,9 @@ int main(int argc, char** argv)
 			//"restore",
 
             //"fxc", "Assets/LineWave.fx",
-            "fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.hlsl"
+            //"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.hlsl"
 
-            //"asset-archive",
+            "build-assets",
 		};
 		argc = sizeof(debugArgv) / sizeof(char*);
 		argv = (char**)debugArgv;
@@ -81,8 +82,8 @@ int main(int argc, char** argv)
 		auto fxcCommand_outputArg = fxcCommand->addPositionalArgument(u"output", u"Output file.", ln::CommandLinePositionalArgumentFlags::Optional);
         
         //--------------------------------------------------------------------------------
-        // asset-archive command
-        auto assetArchiveCommand = parser.addCommand(u"asset-archive", u"Make assets archive.");
+        // build-assets command
+        auto buildAssetsCommand = parser.addCommand(u"build-assets", u"Make assets archive.");
 
 
 		//--------------------------------------------------------------------------------
@@ -169,8 +170,8 @@ int main(int argc, char** argv)
                 return cmd.execute(fxcCommand_inputArg->value());
             }
             //--------------------------------------------------------------------------------
-            // asset-archive command
-            else if (parser.has(assetArchiveCommand)) {
+            // build-assets command
+            else if (parser.has(buildAssetsCommand)) {
                 if (!workspace->openProject(ln::Environment::currentDirectory())) {
                     return 1;
                 }

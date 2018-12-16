@@ -8,7 +8,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
     //auto archive = ln::Path(ln::Path(ln::Environment::executablePath()).parent(), u"Assets.lca");
     auto archive = ln::Path::combine(ln::Path(ln::Environment::executablePath()).parent().parent().parent().parent().parent(), u".ln", u"Assets.lca");
-    ln::Win32PlatformInterface::addAssetArchive(archive, u"j7OeF8Hh");
+    ln::Win32PlatformInterface::addAssetArchive(archive);
     ln::Win32PlatformInterface::initialize();
 	return ln::Win32PlatformInterface::WinMain();
 }

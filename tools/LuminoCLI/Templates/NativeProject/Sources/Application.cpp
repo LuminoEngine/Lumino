@@ -30,7 +30,7 @@ void HelloApp::onStart()
     //m_shader = newObject<Shader>(u"LineWave.lufx");
     //m_shader = newObject<Shader>(u"D:/Documents/LuminoProjects/HelloLumino/Assets/LineWave.lufx");
 	//m_shader = ln::Shader::create("LineWave.lufx");
-    m_shader = ln::Asset::loadShader(u"LineWave");
+    m_shader = ln::Assets::loadShader(u"LineWave");
     
     m_time = 0;
 #endif
