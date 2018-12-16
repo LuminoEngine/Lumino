@@ -37,6 +37,20 @@ int ArchiveCommand::execute(Project* project)
         CLI::info(u"Copy to " + dst);
     }
 
+    // macOS
+    {
+        auto dst = ln::Path::combine(project->macOSProjectDir(), u"LuminoApp.macOS", u"Assets.lca");
+        ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
+        CLI::info(u"Copy to " + dst);
+    }
+
+    // iOS
+    {
+        auto dst = ln::Path::combine(project->macOSProjectDir(), u"LuminoApp.iOS", u"Assets.lca");
+        ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
+        CLI::info(u"Copy to " + dst);
+    }
+
     CLI::info(u"Compilation succeeded; see " + outputFilePath);
 
     return 0;
