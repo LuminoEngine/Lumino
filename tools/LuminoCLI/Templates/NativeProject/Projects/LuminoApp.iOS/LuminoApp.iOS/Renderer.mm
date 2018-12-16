@@ -31,7 +31,7 @@
 		// Add standard asset archive
 		NSBundle* bundle = [NSBundle mainBundle];
 		NSString* assetsPath = [bundle pathForResource:@"Assets" ofType:@"lca"];
-		ln::iOSPlatformInterface::addAssetArchive(ln::String::fromStdString(std::string([assetsPath UTF8String])), "");
+		ln::iOSPlatformInterface::addAssetArchive(ln::String::fromStdString(std::string([assetsPath UTF8String])));
 		
 		ln::iOSPlatformInterface::nativeInitialize(backendWidth, backendHeight);
 		ln::detail::SwapChainHelper::setBackendBufferSize(ln::Engine::mainWindow()->swapChain(), backendWidth, backendHeight);

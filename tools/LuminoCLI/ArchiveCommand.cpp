@@ -33,6 +33,7 @@ int ArchiveCommand::execute(Project* project)
     // Android
     {
         auto dst = ln::Path::combine(project->androidProjectDir(), u"app", u"src", u"main", u"assets", u"Assets.lca");
+        ln::FileSystem::createDirectory(dst.parent());
         ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
         CLI::info(u"Copy to " + dst);
     }
@@ -46,12 +47,12 @@ int ArchiveCommand::execute(Project* project)
 
     // iOS
     {
-        auto dst = ln::Path::combine(project->macOSProjectDir(), u"LuminoApp.iOS", u"Assets.lca");
+        auto dst = ln::Path::combine(project->iOSProjectDir(), u"LuminoApp.iOS", u"Assets.lca");
         ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
         CLI::info(u"Copy to " + dst);
     }
 
-    CLI::info(u"Compilation succeeded; see " + outputFilePath);
+    CLI::info(u"Compilation succeeded.");
 
     return 0;
 }

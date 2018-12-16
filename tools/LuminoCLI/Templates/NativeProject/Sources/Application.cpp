@@ -1,9 +1,9 @@
-﻿
+
 #include "Application.h"
 
 HelloApp::HelloApp()
 {
-	ln::GlobalLogger::setLevel(LogLevel::Debug);
+	ln::GlobalLogger::setLevel(ln::LogLevel::Debug);
 }
 
 void HelloApp::onStart()
@@ -22,7 +22,7 @@ void HelloApp::onStart()
 	};
 
 
-	m_vertexBuffer = ln::newObject<ln::VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
+	m_vertexBuffer = ln::newObject<ln::VertexBuffer>(sizeof(v1), v1, ln::GraphicsResourceUsage::Static);
 	m_vertexDeclaration = ln::newObject<ln::VertexDeclaration>();
 	m_vertexDeclaration->addVertexElement(0, ln::VertexElementType::Float4, ln::VertexElementUsage::Position, 0);
 	m_vertexDeclaration->addVertexElement(0, ln::VertexElementType::Float2, ln::VertexElementUsage::TexCoord, 0);
