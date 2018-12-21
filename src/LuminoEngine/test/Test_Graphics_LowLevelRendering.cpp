@@ -37,6 +37,7 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 		auto vertexBuffer = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
 		auto ctx = Engine::graphicsContext();
+		TestEnv::resetGraphicsContext(ctx);
 		ctx->setVertexDeclaration(m_vertexDecl1);
 		ctx->setVertexBuffer(0, vertexBuffer);
 		ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
@@ -78,6 +79,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 		vb2->setResourcePool(pool);
 
 		auto ctx = Engine::graphicsContext();
+		TestEnv::resetGraphicsContext(ctx);
 		ctx->setVertexDeclaration(m_vertexDecl1);
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
@@ -187,6 +189,7 @@ TEST_F(Test_Graphics_LowLevelRendering, MultiStreamVertexBuffer)
 	vd1->addVertexElement(2, VertexElementType::Float4, VertexElementUsage::TexCoord, 1);
 
 	auto ctx = Engine::graphicsContext();
+	TestEnv::resetGraphicsContext(ctx);
 	ctx->setVertexBuffer(0, vb1);
 	ctx->setVertexBuffer(1, vb2);
 	ctx->setVertexBuffer(2, vb3);
@@ -236,6 +239,7 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 		ib1->setResourcePool(pool);
 
 		auto ctx = Engine::graphicsContext();
+		TestEnv::resetGraphicsContext(ctx);
 		ctx->setVertexDeclaration(m_vertexDecl1);
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setIndexBuffer(ib1);
@@ -294,6 +298,7 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
 	auto vertexBuffer = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
 	auto ctx = Engine::graphicsContext();
+	TestEnv::resetGraphicsContext(ctx);
 	ctx->setVertexDeclaration(m_vertexDecl1);
 	ctx->setVertexBuffer(0, vertexBuffer);
 	ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
@@ -357,6 +362,7 @@ TEST_F(Test_Graphics_LowLevelRendering, ConstantBuffer)
 	};
 	auto vertexBuffer = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 	auto ctx = Engine::graphicsContext();
+	TestEnv::resetGraphicsContext(ctx);
 	ctx->setVertexDeclaration(m_vertexDecl1);
 	ctx->setVertexBuffer(0, vertexBuffer);
 	ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
@@ -605,6 +611,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture)
 	shader1->findParameter("g_texture1")->setTexture(tex1);
 
 	auto ctx = Engine::graphicsContext();
+	TestEnv::resetGraphicsContext(ctx);
 	ctx->setVertexDeclaration(vertexDecl1);
 	ctx->setVertexBuffer(0, vb1);
 	ctx->setIndexBuffer(nullptr);
@@ -651,6 +658,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture3D)
 	shader1->findParameter("g_texture1")->setTexture(tex1);
 
 	auto ctx = Engine::graphicsContext();
+	TestEnv::resetGraphicsContext(ctx);
 	ctx->setVertexDeclaration(vertexDecl1);
 	ctx->setVertexBuffer(0, vb1);
 	ctx->setIndexBuffer(nullptr);
@@ -697,6 +705,7 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 	shader1->findParameter("g_texture1")->setTexture(tex1);
 
 	auto ctx = Engine::graphicsContext();
+	TestEnv::resetGraphicsContext(ctx);
 	ctx->setVertexDeclaration(vertexDecl1);
 	ctx->setVertexBuffer(0, vb1);
 	ctx->setIndexBuffer(nullptr);
@@ -761,8 +770,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 	auto vb3 = newObject<VertexBuffer>(sizeof(v3), v3, GraphicsResourceUsage::Static);
 
 	auto ctx = Engine::graphicsContext();
-	ctx->setColorBuffer(0, Engine::mainWindow()->swapChain()->colorBuffer());
-	ctx->setDepthBuffer(Engine::mainWindow()->swapChain()->depthBuffer());
+	TestEnv::resetGraphicsContext(ctx);
 	ctx->setVertexDeclaration(vertexDecl1);
 	ctx->setIndexBuffer(nullptr);
 	ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);

@@ -29,6 +29,12 @@ void TestEnv::updateFrame()
     detail::EngineDomain::engineManager()->presentFrame();
 }
 
+void TestEnv::resetGraphicsContext(GraphicsContext* context)
+{
+	context->setColorBuffer(0, Engine::mainWindow()->swapChain()->colorBuffer());
+	context->setDepthBuffer(Engine::mainWindow()->swapChain()->depthBuffer());
+}
+
 Ref<Bitmap2D> TestEnv::capture()
 {
 	return Engine::mainWindow()->swapChain()->colorBuffer()->readData();

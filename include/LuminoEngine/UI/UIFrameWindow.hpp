@@ -48,8 +48,22 @@ private:
 	Ref<UIRenderView> m_renderView;
 
 	Event<UIEventHandler> m_onClosed;
-
+	bool m_autoDisposePlatformWindow;
 };
+
+
+//class LN_API UIMainWindow
+//	: public UIFrameWindow
+//{
+//public:
+//
+//LN_CONSTRUCT_ACCESS :
+//	UIMainWindow();
+//	virtual ~UIMainWindow();
+//	void initialize(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
+//
+//private:
+//};
 
 } // namespace ln
 

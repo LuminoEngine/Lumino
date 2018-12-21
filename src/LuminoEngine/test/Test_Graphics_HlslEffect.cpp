@@ -28,7 +28,7 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 	vd1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
 
 	auto ctx = Engine::graphicsContext();
-	ctx->setColorBuffer(0, Engine::mainWindow()->swapChain()->colorBuffer());
+	TestEnv::resetGraphicsContext(ctx);
 	
 	//* [ ] Basic rendering
 	{
@@ -77,7 +77,7 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 	vd1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
 
 	auto ctx = Engine::graphicsContext();
-	ctx->setColorBuffer(0, Engine::mainWindow()->swapChain()->colorBuffer());
+	TestEnv::resetGraphicsContext(ctx);
 
 	//* [ ] #if
 	{
@@ -175,7 +175,7 @@ TEST_F(Test_Graphics_HlslEffect, UnifiedShader)
 	vd1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
 
 	auto ctx = Engine::graphicsContext();
-	ctx->setColorBuffer(0, Engine::mainWindow()->swapChain()->colorBuffer());
+	TestEnv::resetGraphicsContext(ctx);
 
 	//* [ ] Basic rendering
 	{
@@ -211,7 +211,7 @@ TEST_F(Test_Graphics_HlslEffect, Sample)
 	vd1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
 
 	auto ctx = Engine::graphicsContext();
-	ctx->setColorBuffer(0, Engine::mainWindow()->swapChain()->colorBuffer());
+	TestEnv::resetGraphicsContext(ctx);
 	ctx->setVertexDeclaration(vd1);
 	ctx->setVertexBuffer(0, vb1);
 	ctx->setIndexBuffer(nullptr);

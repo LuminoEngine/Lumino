@@ -7,6 +7,7 @@ public:
 	static void teardown();
     static void updateFrame();
 
+	static void resetGraphicsContext(GraphicsContext* context);
 	static Ref<Bitmap2D> capture();
 	static void saveScreenShot(const Char* filePath);
 	static bool equalsScreenShot(const Char* filePath, int passRate);
