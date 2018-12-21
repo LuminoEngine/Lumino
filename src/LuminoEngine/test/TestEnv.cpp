@@ -137,6 +137,7 @@ bool TestEnv::checkScreenShot(const Char* filePath, int passRate, bool save)
 	}
 	else
 	{
+		saveScreenShot(LN_ASSETFILE("Result/0.png"));
 		return equalsScreenShot(filePath, passRate);
 	}
 }

@@ -34,9 +34,9 @@ int main(int argc, char** argv)
 			//"restore",
 
             //"fxc", "Assets/LineWave.fx",
-            //"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.hlsl"
+            "fxc", "C:/Proj/GitHub/Lumino/src/LuminoEngine/test/Assets/Shader/FxcTest1.fx",
 
-            "build-assets",
+            //"build-assets",
 		};
 		argc = sizeof(debugArgv) / sizeof(char*);
 		argv = (char**)debugArgv;

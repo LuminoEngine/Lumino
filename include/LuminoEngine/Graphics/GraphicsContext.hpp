@@ -24,7 +24,7 @@ class LN_API GraphicsContext
 	: public Object
 {
 public:
-
+	void resetState();
 	void setBlendState(const BlendStateDesc& value);
 	void setRasterizerState(const RasterizerStateDesc& value);
 	void setDepthStencilState(const DepthStencilStateDesc& value);

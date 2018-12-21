@@ -28,6 +28,7 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 	vd1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
 
 	auto ctx = Engine::graphicsContext();
+	ctx->setColorBuffer(0, Engine::mainWindow()->swapChain()->colorBuffer());
 	
 	//* [ ] Basic rendering
 	{
@@ -40,7 +41,7 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_HlslEffect-Basic-1.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Shader/Test_Graphics_HlslEffect-Basic-1.png"));
 	}
 	
 	//* [ ] Nested struct
@@ -52,7 +53,7 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 		
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_HlslEffect-Basic-3.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Shader/Test_Graphics_HlslEffect-Basic-3.png"));
 	}
 }
 
@@ -76,6 +77,7 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 	vd1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
 
 	auto ctx = Engine::graphicsContext();
+	ctx->setColorBuffer(0, Engine::mainWindow()->swapChain()->colorBuffer());
 
 	//* [ ] #if
 	{
@@ -87,7 +89,7 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_HlslEffect-Basic-4.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Shader/Test_Graphics_HlslEffect-Basic-4.png"));
 	}
 
 	//* [ ] #ifdef
@@ -100,7 +102,7 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_HlslEffect-Basic-5.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Shader/Test_Graphics_HlslEffect-Basic-5.png"));
 	}
 
 	//* [ ] #include
@@ -114,7 +116,7 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_HlslEffect-Basic-1.png"));	// 1 と同じ結果でよい
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Shader/Test_Graphics_HlslEffect-Basic-1.png"));	// 1 と同じ結果でよい
 	}
 }
 
@@ -173,10 +175,11 @@ TEST_F(Test_Graphics_HlslEffect, UnifiedShader)
 	vd1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
 
 	auto ctx = Engine::graphicsContext();
+	ctx->setColorBuffer(0, Engine::mainWindow()->swapChain()->colorBuffer());
 
 	//* [ ] Basic rendering
 	{
-		auto shader = newObject<Shader>(LN_ASSETFILE("FxcTest1.lufx"));
+		auto shader = newObject<Shader>(LN_ASSETFILE("Shader/FxcTest1.1.lcfx"));
 		shader->findConstantBuffer("ConstBuff")->findParameter("g_color")->setVector(Vector4(0, 1, 0, 1));
 
 		ctx->setVertexDeclaration(vd1);
@@ -185,7 +188,7 @@ TEST_F(Test_Graphics_HlslEffect, UnifiedShader)
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_HlslEffect-UnifiedShader-1.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Result/Shader/Test_Graphics_HlslEffect-UnifiedShader-1.png"));
 	}
 }
 
@@ -208,6 +211,7 @@ TEST_F(Test_Graphics_HlslEffect, Sample)
 	vd1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
 
 	auto ctx = Engine::graphicsContext();
+	ctx->setColorBuffer(0, Engine::mainWindow()->swapChain()->colorBuffer());
 	ctx->setVertexDeclaration(vd1);
 	ctx->setVertexBuffer(0, vb1);
 	ctx->setIndexBuffer(nullptr);
@@ -283,6 +287,6 @@ TEST_F(Test_Graphics_HlslEffect, Sample)
 
 
 
-	//ASSERT_SCREEN_S(LN_ASSETFILE("Result/Test_Graphics_HlslEffect-Sample-1.png"));
+	//ASSERT_SCREEN_S(LN_ASSETFILE("Result/Shader/Test_Graphics_HlslEffect-Sample-1.png"));
 #endif
 }

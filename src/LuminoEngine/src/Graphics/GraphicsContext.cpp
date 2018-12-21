@@ -30,13 +30,17 @@ void GraphicsContext::initialize(detail::IGraphicsDeviceContext* device)
 {
 	m_manager = detail::EngineDomain::graphicsManager();
 	m_device = device;
-
-	m_staging.reset();
 	m_current.reset();
+	resetState();
 }
 
 void GraphicsContext::dispose()
 {
+}
+
+void GraphicsContext::resetState()
+{
+	m_staging.reset();
 }
 
 void GraphicsContext::setBlendState(const BlendStateDesc& value)
