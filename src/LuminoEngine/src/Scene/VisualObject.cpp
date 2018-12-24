@@ -123,6 +123,11 @@ const ToneF& VisualObject::tone() const
     return mainVisualComponent()->tone();
 }
 
+void VisualObject::setRenderPriority(int value)
+{
+    mainVisualComponent()->setRenderPriority(value);
+}
+
 void VisualObject::setMainVisualComponent(VisualComponent* component)
 {
     m_component = component;

@@ -55,10 +55,6 @@ public:
 	//void setCameraBehavior(CameraBehavior* behavior);
 	//CameraBehavior* getCameraBehavior() const { return m_cameraBehavior; }
 
-	// 3D→2D
-	Vector3 worldToViewportPoint(const Vector3& position) const;
-	// 2D→3D
-	Vector3 viewportToWorldPoint(const Vector3& position) const;
 
 	void setProjectionMode(ProjectionMode value) { m_projectionMode = value; }
 
@@ -80,6 +76,7 @@ public:	// internal
 	const Matrix& getViewMatrix() const { return m_viewMatrix; }
 	const Matrix& getProjectionMatrix() const { return m_projMatrix; }
 	const Matrix& getViewProjectionMatrix() const { return m_viewProjMatrix; }
+    const Matrix& getViewProjectionMatrixInverse() const { return m_viewProjMatrixI; }
 
 protected:
     // Component interface

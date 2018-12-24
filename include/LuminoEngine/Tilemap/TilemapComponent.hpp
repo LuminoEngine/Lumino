@@ -10,6 +10,7 @@ class TilemapComponent
 	: public VisualComponent
 {
 public:
+    void setTilemapModel(TilemapModel* tilemapModel);
 
 protected:
     void onRender(RenderingContext* context);

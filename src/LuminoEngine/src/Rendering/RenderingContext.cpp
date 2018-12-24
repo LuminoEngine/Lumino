@@ -270,6 +270,11 @@ void RenderingContext::setBaseTransfrom(const Optional<Matrix>& value)
     m_builder->setBaseTransfrom(value);
 }
 
+void RenderingContext::setRenderPriority(int value)
+{
+    m_builder->setRenderPriority(value);
+}
+
 void RenderingContext::setBaseBuiltinEffectData(const Optional<detail::BuiltinEffectData>& value)
 {
     m_builder->setBaseBuiltinEffectData(value);

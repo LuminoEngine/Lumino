@@ -140,6 +140,11 @@ void DrawElementListBuilder::setBaseTransfrom(const Optional<Matrix>& value)
     primaryState()->baseTransform = value;
 }
 
+void DrawElementListBuilder::setRenderPriority(int value)
+{
+    primaryState()->renderPriority = value;
+}
+
 void DrawElementListBuilder::setOpacity(float value)
 {
 	if (primaryState()->builtinEffectData.opacity != value) {
@@ -334,6 +339,8 @@ void DrawElementListBuilder::prepareRenderDrawElement(RenderDrawElement* newElem
     else {
         newElement->m_combinedWorldMatrix = primaryState()->transform;
     }
+
+    newElement->priority = primaryState()->renderPriority;
 }
 
 
@@ -344,6 +351,7 @@ void DrawElementListBuilder::State::reset()
     builtinEffectData = BuiltinEffectData::DefaultValue;
     baseBuiltinEffectData = nullptr;
     transform = Matrix::Identity;
+    renderPriority = 0;
     baseTransform = nullptr;
 }
 
@@ -354,6 +362,7 @@ void DrawElementListBuilder::State::copyFrom(const State* other)
     builtinEffectData = other->builtinEffectData;
     baseBuiltinEffectData = other->baseBuiltinEffectData;
     transform = other->transform;
+    renderPriority = other->renderPriority;
     baseTransform = other->baseTransform;
 }
 

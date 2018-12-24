@@ -138,6 +138,7 @@ public:
     // TODO: internal
     void setBaseTransfrom(const Optional<Matrix>& value);
     void setBaseBuiltinEffectData(const Optional<detail::BuiltinEffectData>& value);
+    void setRenderPriority(int value);
     void setViewPoint(RenderViewPoint* value);
 
 LN_PROTECTED_INTERNAL_ACCESS:

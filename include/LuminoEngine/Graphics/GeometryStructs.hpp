@@ -434,6 +434,15 @@ public:
 	int getBottom() const { return y + height; }
 	SizeI getSize() const { return SizeI(width, height); }
 
+    bool contains(const Point point) const { return contains(point.x, point.y); }
+    bool contains(float x_, float y_) const
+    {
+        if (isEmpty()) {
+            return false;
+        }
+        return ((x_ >= x) && (x_ - width <= x) && (y_ >= y) && (y_ - height <= y));
+    }
+
 	void clip(const RectI& rect) { detail::GeometryStructsHelper::clip(this, rect); }
 
 	static RectI fromFloatRect(const Rect& rect) { return RectI((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height); }

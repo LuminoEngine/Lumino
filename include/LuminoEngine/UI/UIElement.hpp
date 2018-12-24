@@ -76,7 +76,7 @@ public:
     
 	/** このオブジェクトのローカルの中心位置を設定します。 */
     LN_METHOD(OverloadPostfix = "XYZ")
-	void setCenterPoint(float x, float y, float z) { setCenterPoint(Vector3(x, y, z)); }
+	void setCenterPoint(float x, float y, float z = 0.0f) { setCenterPoint(Vector3(x, y, z)); }
 
 	/** このオブジェクトのローカルの中心位置を取得します。 */
 	LN_METHOD(Property)
@@ -130,6 +130,7 @@ public:
 	void initialize();
 
 public: // TODO: internal
+    void setRenderPriority(int value);
     void updateFrame(float elapsedSeconds);
 
 protected:
@@ -177,6 +178,7 @@ private:
 
     Ref<UIStyle> m_localStyle;
     Ref<UIStyle> m_actualStyle;
+    int m_renderPriority;
 
     friend class UIRenderView;
 };

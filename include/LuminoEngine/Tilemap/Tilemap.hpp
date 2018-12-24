@@ -11,6 +11,7 @@ class Tilemap
 public:
     static Ref<Tilemap> create();
 
+    void setTilemapModel(TilemapModel* tilemapModel);
 
 protected:
 

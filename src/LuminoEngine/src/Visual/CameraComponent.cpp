@@ -42,21 +42,6 @@ void CameraComponent::initialize()
 //	m_cameraBehavior->setTargetCamera(this);
 //}
 
-//Vector3 CameraComponent::worldToViewportPoint(const Vector3& position) const
-//{
-//	const Size& size = m_ownerLayer->getViewSize();
-//	return Vector3::project(position, m_viewProjMatrix, 0.0f, 0.0f, size.width, size.height, m_nearClip, m_farClip);
-//}
-//
-//Vector3 CameraComponent::viewportToWorldPoint(const Vector3& position) const
-//{
-//	const Size& size = m_ownerLayer->getViewSize();
-//	Vector3 v;
-//	v.x = (((position.x - 0) / size.width) * 2.0f) - 1.0f;
-//	v.y = -((((position.y - 0) / size.height) * 2.0f) - 1.0f);
-//	v.z = (position.z - m_nearClip) / (m_farClip - m_nearClip);
-//	return Vector3::transformCoord(v, m_viewProjMatrixI);
-//}
 
 //void CameraComponent::onUpdate(float elapsedSeconds)
 //{

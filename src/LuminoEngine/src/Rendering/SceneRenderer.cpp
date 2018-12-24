@@ -479,9 +479,9 @@ void SceneRenderer::prepare()
 		{
 			//if (lhs->m_stateFence == rhs->m_stateFence)
 			//{
-			//	if (lhs->metadata.priority == rhs->metadata.priority)
+				if (lhs->priority == rhs->priority)
 					return lhs->zDistance > rhs->zDistance;
-			//	return lhs->metadata.priority < rhs->metadata.priority;
+				return lhs->priority < rhs->priority;
 			//}
 			//else
 			//{

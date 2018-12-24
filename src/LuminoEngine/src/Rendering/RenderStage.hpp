@@ -235,7 +235,7 @@ public:
 	RenderDrawElement* next() const { return m_next; }
 
 	float zDistance = 0;	//  TODO: internal
-
+    int priority = 0;
 
     // FIXME: Unity では CommandBuffer (を実行するメソッド) 単位で持つが・・・
     RendringPhase targetPhase = RendringPhase::Default;

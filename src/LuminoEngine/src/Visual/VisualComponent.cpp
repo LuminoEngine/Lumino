@@ -14,6 +14,7 @@ LN_OBJECT_IMPLEMENT(VisualComponent, Component);
 VisualComponent::VisualComponent()
     : m_geometryStageParameters(std::make_unique<detail::GeometryStageParameters>())    // TODO: ふつうは static なオブジェクトのほうが多くなるので、必要なやつだけ遅延作成でいいと思う
     , m_builtinEffectData(std::make_unique<detail::BuiltinEffectData>())    // TODO: ふつうは static なオブジェクトのほうが多くなるので、必要なやつだけ遅延作成でいいと思う
+    , m_renderPriority(0)
     , m_isVisible(true)
 {
 }
@@ -117,12 +118,18 @@ const ToneF& VisualComponent::tone() const
     return m_builtinEffectData->tone;
 }
 
+void VisualComponent::setRenderPriority(int value)
+{
+    m_renderPriority = value;
+}
+
 void VisualComponent::render(RenderingContext* context)
 {
     if (m_isVisible)
     {
         context->pushState();
 
+        context->setRenderPriority(m_renderPriority);
         context->setBaseTransfrom(worldObject()->worldMatrix());
         context->setBaseBuiltinEffectData(*m_builtinEffectData);
         context->setBlendMode(m_geometryStageParameters->m_blendMode);

@@ -14,9 +14,10 @@ namespace ln {
 // UIElement
 
 UIElement::UIElement()
-: m_manager(nullptr)
-,  m_localStyle(newObject<UIStyle>()) // TODO: ふつうは static なオブジェクトのほうが多くなるので、必要なやつだけ遅延作成でいいと思う
-, m_actualStyle(nullptr)
+    : m_manager(nullptr)
+    , m_localStyle(newObject<UIStyle>()) // TODO: ふつうは static なオブジェクトのほうが多くなるので、必要なやつだけ遅延作成でいいと思う
+    , m_actualStyle(nullptr)
+    , m_renderPriority(0)
 {
 }
 
@@ -156,6 +157,11 @@ const ToneF & UIElement::tone() const
     return m_localStyle->tone.getOrDefault(detail::BuiltinEffectData::DefaultValue.tone);
 }
 
+void UIElement::setRenderPriority(int value)
+{
+    m_renderPriority = value;
+}
+
 void UIElement::updateFrame(float elapsedSeconds)
 {
     onUpdateFrame(elapsedSeconds);
@@ -229,6 +235,7 @@ void UIElement::render(UIRenderingContext* context)
         data.tone = tone();
         context->setBaseBuiltinEffectData(data);
         context->setBlendMode(blendMode());
+        context->setRenderPriority(m_renderPriority);
         // TODO: setMaterial
         onRender(context);
 

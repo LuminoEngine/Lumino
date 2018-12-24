@@ -47,6 +47,24 @@ const Matrix& Camera::viewProjectionMatrix() const
     return m_component->getViewProjectionMatrix();
 }
 
+Vector3 Camera::worldToViewportPoint(const Vector3& position) const
+{
+	const Size& size = m_ownerRenderView->actualPixelSize();
+	return Vector3::project(position, m_component->getViewProjectionMatrix(), 0.0f, 0.0f, size.width, size.height, m_component->getNearClip(), m_component->getFarClip());
+}
+
+Vector3 Camera::viewportToWorldPoint(const Vector3& position) const
+{
+	const Size& size = m_ownerRenderView->actualPixelSize();
+    float nearClip = m_component->getNearClip();
+    float farClip = m_component->getFarClip();
+	Vector3 v;
+	v.x = (((position.x - 0) / size.width) * 2.0f) - 1.0f;
+	v.y = -((((position.y - 0) / size.height) * 2.0f) - 1.0f);
+	v.z = (position.z - nearClip) / (farClip - nearClip);
+	return Vector3::transformCoord(v, m_component->getViewProjectionMatrixInverse());
+}
+
 CameraComponent* Camera::cameraComponent() const
 {
 	return m_component;

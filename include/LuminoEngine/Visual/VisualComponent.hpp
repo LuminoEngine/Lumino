@@ -89,6 +89,9 @@ public:
 
     /** @} */
 
+    // TODO: internal
+    void setRenderPriority(int value);
+
 protected:
 
 LN_CONSTRUCT_ACCESS:
@@ -101,6 +104,7 @@ private:
 
     std::unique_ptr<detail::GeometryStageParameters> m_geometryStageParameters;
     std::unique_ptr<detail::BuiltinEffectData> m_builtinEffectData;
+    int m_renderPriority;
     bool m_isVisible;
 };
 

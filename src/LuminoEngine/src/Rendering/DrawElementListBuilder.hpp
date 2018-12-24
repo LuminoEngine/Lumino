@@ -43,6 +43,7 @@ public:
 	void setMaterial(AbstractMaterial* value);  // 一度 set したマテリアルは描画完了まで変更してはならない。TODO: Freezed みたいな状態にしたい
 	void setTransfrom(const Matrix& value);
     void setBaseTransfrom(const Optional<Matrix>& value);
+    void setRenderPriority(int value);
 
 	// BuiltinEffectData
 	void setOpacity(float value);
@@ -84,6 +85,7 @@ private:
         Optional<BuiltinEffectData> baseBuiltinEffectData;
         Matrix transform;
         Optional<Matrix> baseTransform;
+        int renderPriority;
         RenderViewPoint* viewPoint; // DrawElement には流れない、RenderingContext を使う人のための情報
 
         void reset();

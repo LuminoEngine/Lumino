@@ -46,6 +46,11 @@ void TilemapComponent::initialize()
     m_tilemap->addLayer(layer);
 }
 
+void TilemapComponent::setTilemapModel(TilemapModel* tilemapModel)
+{
+    m_tilemap = tilemapModel;
+}
+
 void TilemapComponent::onRender(RenderingContext* context)
 {
     Matrix worldInverse = Matrix::makeInverse(worldObject()->worldMatrix());

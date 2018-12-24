@@ -204,6 +204,8 @@ class Material
 	//LN_OBJECT;
 public:
 	static Ref<Material> create();
+    static Ref<Material> create(Texture* mainTexture);
+    static Ref<Material> create(Texture* mainTexture, ShadingModel shadingModel);
 
 public:
 	void setColor(const Color& value);
@@ -220,6 +222,8 @@ LN_CONSTRUCT_ACCESS:
 	Material();
 	virtual ~Material();
 	void initialize();
+    void initialize(Texture* mainTexture);
+    void initialize(Texture* mainTexture, ShadingModel shadingModel);
 
 private:
 	detail::PbrMaterialData m_data;

@@ -187,7 +187,7 @@ int main(int argc, char** argv)
     //auto sound = newObject<Sound>(u"D:\\tmp\\4_Battle_win.wav");
     auto sound = newObject<Sound>(u"D:/Music/momentum/02 - momentum.wav");
 
-    //sound->play();
+    sound->play();
     //sound->setPitch(1.2);
 #endif
 #if 0

@@ -29,5 +29,10 @@ void Tilemap::initialize()
     setMainVisualComponent(m_component);
 }
 
+void Tilemap::setTilemapModel(TilemapModel* tilemapModel)
+{
+    m_component->setTilemapModel(tilemapModel);
+}
+
 } // namespace ln
 

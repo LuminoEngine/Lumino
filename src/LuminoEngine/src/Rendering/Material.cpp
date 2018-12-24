@@ -182,6 +182,18 @@ void Material::initialize()
 	AbstractMaterial::initialize();
 }
 
+void Material::initialize(Texture* mainTexture)
+{
+    initialize(mainTexture, ShadingModel::Default);
+}
+
+void Material::initialize(Texture* mainTexture, ShadingModel shadingModel)
+{
+    initialize();
+    setMainTexture(mainTexture);
+    this->shadingModel = shadingModel;
+}
+
 void Material::setColor(const Color& value)
 {
 	m_data.color = value;

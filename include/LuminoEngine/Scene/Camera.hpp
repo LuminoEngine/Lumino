@@ -46,6 +46,10 @@ public:
     /** ビュー行列とプロジェクション行列の積を取得します。カメラの姿勢に同期するように別のオブジェクトの更新を行う場合、onPostUpdate() でこの行列を取得します。onUpdate() 時点では最新の行列が返るとは限りません。 */
     const Matrix& viewProjectionMatrix() const;
 
+    // 3D→2D
+    Vector3 worldToViewportPoint(const Vector3& position) const;
+    // 2D→3D
+    Vector3 viewportToWorldPoint(const Vector3& position) const;
 
 	CameraComponent* cameraComponent() const;
 

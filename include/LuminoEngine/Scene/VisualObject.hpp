@@ -87,6 +87,10 @@ public:
 
     const Ref<VisualComponent>& mainVisualComponent() const { return m_component; }
 
+
+    // TODO: internal
+    void setRenderPriority(int value);
+
 LN_CONSTRUCT_ACCESS:
     VisualObject();
 	virtual ~VisualObject();
