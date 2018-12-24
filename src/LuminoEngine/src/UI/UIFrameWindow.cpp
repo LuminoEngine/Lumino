@@ -72,11 +72,11 @@ SwapChain* UIFrameWindow::swapChain() const
 {
 	return m_swapChain;
 }
-
-UIElement* UIFrameWindow::getVisualChild(int index) const
-{
-	return m_viewport;
-}
+//
+//UIElement* UIFrameWindow::getVisualChild(int index) const
+//{
+//	return m_viewport;
+//}
 
 void UIFrameWindow::updateLayout()
 {

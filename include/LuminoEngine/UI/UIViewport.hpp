@@ -25,7 +25,8 @@ public:
 protected:
     virtual Size arrangeOverride(const Size& finalSize) override;
     //virtual void render(UIRenderingContext* context);
-	virtual void onRender(UIRenderingContext* context);
+    virtual void onUpdateFrame(float elapsedSeconds) override;
+	virtual void onRender(UIRenderingContext* context) override;
 
 private:
     detail::UIManager* m_manager;

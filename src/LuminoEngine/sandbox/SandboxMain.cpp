@@ -175,6 +175,10 @@ int main(int argc, char** argv)
     //imageEffect->setRadialScale(1.05);
     //Engine::mainViewport()->addImageEffect(imageEffect);
 
+    auto imageEffect = newObject<ToneImageEffect>();
+    imageEffect->play(ToneF(0.0, -0.5, -0.8, 1.0), 5);
+    Engine::mainViewport()->addImageEffect(imageEffect);
+
     auto tilemap = newObject<Tilemap>();
     tilemap->setShadingModel(ShadingModel::UnLighting);
 #endif
@@ -183,7 +187,7 @@ int main(int argc, char** argv)
     //auto sound = newObject<Sound>(u"D:\\tmp\\4_Battle_win.wav");
     auto sound = newObject<Sound>(u"D:/Music/momentum/02 - momentum.wav");
 
-    sound->play();
+    //sound->play();
     //sound->setPitch(1.2);
 #endif
 #if 0

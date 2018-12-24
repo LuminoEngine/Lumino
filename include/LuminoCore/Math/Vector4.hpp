@@ -173,6 +173,8 @@ public:
      */
     static Vector4 catmullRom(const Vector4& vec1, const Vector4& vec2, const Vector4& vec3, const Vector4& vec4, float t);
 
+    static bool nearEqual(const Vector4& value1, const Vector4& value2);
+
 public:
     Vector4& operator+=(const Vector4& v);
     Vector4& operator+=(float v);

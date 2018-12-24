@@ -69,6 +69,7 @@ set(LN_SOURCES_Animation
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/AnimationClock.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/AnimationCurve.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/AnimationTrack.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/EasingFunctions.hpp
     src/Animation/Internal.hpp
     src/Animation/AnimationClock.cpp
     src/Animation/AnimationCurve.cpp

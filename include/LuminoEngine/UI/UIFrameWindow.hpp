@@ -2,7 +2,7 @@
 
 #include "Common.hpp"
 #include "UIEvents.hpp"
-#include "UIElement.hpp"
+#include "UIContainerElement.hpp"
 #include "../Platform/PlatformEvent.hpp"
 #include "../Graphics/GeometryStructs.hpp"
 
@@ -13,7 +13,7 @@ class UIRenderView;
 class UIViewport;
 
 class LN_API UIFrameWindow
-	: public UIElement
+	: public UIContainerElement
 	, public detail::IPlatforEventListener
 {
 public:
@@ -27,9 +27,9 @@ public:
 
 
 	// TODO: UI ツリーのシステムをちゃんと作っていないが、ひとまず UIViewport を使った動きを作りたいので一時的に設けてある
-	Ref<UIViewport> m_viewport;
-	virtual int getVisualChildrenCount() const override { return 1; }
-	virtual UIElement* getVisualChild(int index) const override;
+	//Ref<UIViewport> m_viewport;
+	//virtual int getVisualChildrenCount() const override { return 1; }
+	//virtual UIElement* getVisualChild(int index) const override;
 
     // TODO: inernal
     void updateLayout();

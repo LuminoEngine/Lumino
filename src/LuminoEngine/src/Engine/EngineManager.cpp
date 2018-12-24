@@ -77,7 +77,7 @@ void EngineManager::initialize()
 	if (m_uiManager) {
 		m_mainWindow = newObject<UIFrameWindow>(m_platformManager->mainWindow(), m_settings.mainBackBufferSize);
 		m_mainViewport = newObject<UIViewport>();
-		m_mainWindow->m_viewport = m_mainViewport;
+        m_mainWindow->addElement(m_mainViewport);
 	}
 
 #if 1
@@ -351,11 +351,13 @@ void EngineManager::updateFrame()
 		m_platformManager->windowManager()->processSystemEventQueue();
 	}
 
-    // onUpdate のユーザー処理として、2D <-> 3D 変換したいことがあるが、それには ViewPixelSize が必要になる。
-    // 初期化直後や、Platform からの SizeChanged イベントの直後に一度レイアウトを更新することで、
-    // ユーザー処理の前に正しい ViewPixelSize を計算しておく。
     if (m_mainWindow) {
+        // onUpdate のユーザー処理として、2D <-> 3D 変換したいことがあるが、それには ViewPixelSize が必要になる。
+        // 初期化直後や、Platform からの SizeChanged イベントの直後に一度レイアウトを更新することで、
+        // ユーザー処理の前に正しい ViewPixelSize を計算しておく。
         m_mainWindow->updateLayout();
+
+        m_mainWindow->updateFrame(0.016);	// TODO: time
     }
 
 	// いくつかの入力状態は onEvent 経由で Platform モジュールから Input モジュールに伝えられる。

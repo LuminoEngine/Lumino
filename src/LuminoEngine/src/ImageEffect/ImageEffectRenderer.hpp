@@ -14,6 +14,7 @@ public:
     ImageEffectRenderer();
     void addImageEffect(ImageEffect* effect);
     void removeImageEffect(ImageEffect* effect);
+    void updateFrame(float elapsedSeconds);
     void render(RenderingContext* context, RenderTargetTexture* inout);
 
 private:

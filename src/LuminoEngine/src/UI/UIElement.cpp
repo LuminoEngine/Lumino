@@ -156,6 +156,21 @@ const ToneF & UIElement::tone() const
     return m_localStyle->tone.getOrDefault(detail::BuiltinEffectData::DefaultValue.tone);
 }
 
+void UIElement::updateFrame(float elapsedSeconds)
+{
+    onUpdateFrame(elapsedSeconds);
+
+    // child elements
+    int count = getVisualChildrenCount();
+    for (int i = 0; i < count; i++) {
+        getVisualChild(i)->updateFrame(elapsedSeconds);
+    }
+}
+
+void UIElement::onUpdateFrame(float elapsedSeconds)
+{
+}
+
 Size UIElement::measureOverride(const Size& constraint)
 {
     // TODO: tmp

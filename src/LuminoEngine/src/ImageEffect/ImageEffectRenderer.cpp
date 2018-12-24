@@ -31,6 +31,13 @@ void ImageEffectRenderer::removeImageEffect(ImageEffect* effect)
     m_imageEffects.remove(effect);
 }
 
+void ImageEffectRenderer::updateFrame(float elapsedSeconds)
+{
+    for (auto& imageEffect : m_imageEffects) {
+        imageEffect->updateFrame(elapsedSeconds);
+    }
+}
+
 void ImageEffectRenderer::render(RenderingContext* context, RenderTargetTexture* inout)
 {
     if (!m_imageEffects.isEmpty())

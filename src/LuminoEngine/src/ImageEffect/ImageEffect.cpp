@@ -21,5 +21,14 @@ void ImageEffect::initialize()
     Object::initialize();
 }
 
+void ImageEffect::updateFrame(float elapsedSeconds)
+{
+    onUpdateFrame(elapsedSeconds);
+}
+
+void ImageEffect::onUpdateFrame(float elapsedSeconds)
+{
+}
+
 } // namespace ln
 

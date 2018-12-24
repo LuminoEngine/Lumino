@@ -7,6 +7,9 @@
 #include "LuminoEngine/Engine/Application.hpp"
 #include "LuminoEngine/Engine/Diagnostics.hpp"
 
+#include "LuminoEngine/Animation/Common.hpp"
+#include "LuminoEngine/Animation/EasingFunctions.hpp"
+
 #include "LuminoEngine/Input/Common.hpp"
 #include "LuminoEngine/Input/Input.hpp"
 #include "LuminoEngine/Input/InputBinding.hpp"

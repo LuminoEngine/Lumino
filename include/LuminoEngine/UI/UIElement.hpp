@@ -129,8 +129,11 @@ public:
     UIElement();
 	void initialize();
 
-protected:
+public: // TODO: internal
+    void updateFrame(float elapsedSeconds);
 
+protected:
+    virtual void onUpdateFrame(float elapsedSeconds);
 
     /**
         @brief		この要素を表示するために必要なサイズを計測します。

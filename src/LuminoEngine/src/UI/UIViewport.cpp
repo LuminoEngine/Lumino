@@ -57,6 +57,11 @@ Size UIViewport::arrangeOverride(const Size& finalSize)
 //{
 //}
 
+void UIViewport::onUpdateFrame(float elapsedTimer)
+{
+    m_imageEffectRenderer->updateFrame(elapsedTimer);
+}
+
 void UIViewport::onRender(UIRenderingContext* context)
 {
     // TODO: ViewBoxTransform
