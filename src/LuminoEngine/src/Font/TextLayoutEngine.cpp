@@ -17,12 +17,12 @@ TextLayoutEngine::TextLayoutEngine()
     , m_length(0)
     , m_pos(0)
     , m_areaSize()
-    , m_options(TextLayoutOptions::None)
+    , m_alignment(TextAlignment::Left)
     , m_globalMetrics()
 {
 }
 
-void TextLayoutEngine::layout(FontCore* font, const Char* text, size_t length, const Size& areaSize, TextLayoutOptions options)
+void TextLayoutEngine::layout(FontCore* font, const Char* text, size_t length, const Size& areaSize, TextAlignment alignment)
 {
     if (LN_REQUIRE(font)) return;
     if (LN_REQUIRE(text)) return;
@@ -32,7 +32,7 @@ void TextLayoutEngine::layout(FontCore* font, const Char* text, size_t length, c
     m_length = length;
     m_pos = 0;
     m_areaSize = areaSize;
-    m_options = options;
+    m_alignment = alignment;
     m_font->getGlobalMetrics(&m_globalMetrics);
 
     layoutTextHorizontal();
@@ -117,13 +117,13 @@ void MeasureTextLayoutEngine::onPlacementGlyph(UTF32 ch, const Vector2& pos, con
 //==============================================================================
 // BitmapTextRenderer
 
-void BitmapTextRenderer::render(Bitmap2D* bitmap, const StringRef& text, const Rect& rect, Font* font, const Color& color, TextLayoutOptions options)
+void BitmapTextRenderer::render(Bitmap2D* bitmap, const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment)
 {
     m_bitmap = bitmap;
     m_rect = rect;
     m_color = color;
     m_font = FontHelper::resolveFontCore(font);
-    layout(m_font, text.data(), text.length(), rect.getSize(), options);
+    layout(m_font, text.data(), text.length(), rect.getSize(), alignment);
 }
 
 void BitmapTextRenderer::onPlacementGlyph(UTF32 ch, const Vector2& pos, const FontGlyphMetrics& metrix)

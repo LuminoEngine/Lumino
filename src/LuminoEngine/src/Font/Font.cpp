@@ -123,7 +123,7 @@ Size Font::measureRenderSize(const StringRef& text)
 {
     detail::FontCore* font = resolveFontCore();
     detail::MeasureTextLayoutEngine measureLayout;
-    measureLayout.layout(font, text.data(), text.length(), Size(), detail::TextLayoutOptions::None);
+    measureLayout.layout(font, text.data(), text.length(), Size(), TextAlignment::Left);
     return measureLayout.areaSize;
 }
 

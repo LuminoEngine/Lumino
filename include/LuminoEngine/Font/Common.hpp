@@ -3,6 +3,23 @@
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
 
 namespace ln {
+
+/** テキストの配置方法 */
+enum class TextAlignment
+{
+    /** 左揃え */
+    Left,
+    
+    /** 中央揃え */
+    Center,
+
+    /** 右揃え */
+    Right,
+
+    /** 両端揃え */
+    Justify,
+};
+
 namespace detail {
 
 class FontDesc

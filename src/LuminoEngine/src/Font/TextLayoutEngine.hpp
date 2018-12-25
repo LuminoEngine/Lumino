@@ -6,18 +6,13 @@ class Font;
 namespace detail {
 class FontCore;
 
-enum class TextLayoutOptions
-{
-    None = 0x0000,
-};
-
 class TextLayoutEngine
 	: public RefObject
 {
 public:
     TextLayoutEngine();
 
-    void layout(FontCore* font, const Char* text, size_t length, const Size& areaSize, TextLayoutOptions options);
+    void layout(FontCore* font, const Char* text, size_t length, const Size& areaSize, TextAlignment alignment);
 
 protected:
     // pos : upper left
@@ -33,7 +28,7 @@ private:
     size_t m_length;
     size_t m_pos;
     Size m_areaSize;
-    TextLayoutOptions m_options;
+    TextAlignment m_alignment;
     FontGlobalMetrics m_globalMetrics;
 };
 
@@ -52,7 +47,7 @@ class BitmapTextRenderer
     : public TextLayoutEngine
 {
 public:
-    void render(Bitmap2D* bitmap, const StringRef& text, const Rect& rect, Font* font, const Color& color, TextLayoutOptions options);
+    void render(Bitmap2D* bitmap, const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment);
 
 protected:
     virtual void onPlacementGlyph(UTF32 ch, const Vector2& pos, const FontGlyphMetrics& metrix) override;

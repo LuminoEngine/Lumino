@@ -120,11 +120,11 @@ void Texture2D::clear(const Color& color)
     bitmap->clear(color.to32BitColor());
 }
 
-void Texture2D::drawText(const StringRef& text, const Rect& rect, Font* font, const Color& color)
+void Texture2D::drawText(const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment)
 {
     Bitmap2D* bitmap = map(MapMode::Write);
     detail::BitmapTextRenderer renderer;
-    renderer.render(bitmap, text, rect, font, color, detail::TextLayoutOptions::None);
+    renderer.render(bitmap, text, rect, font, color, alignment);
 }
 
 void Texture2D::onChangeDevice(detail::IGraphicsDeviceContext* device)

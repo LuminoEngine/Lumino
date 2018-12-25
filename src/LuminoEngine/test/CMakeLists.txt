@@ -10,6 +10,7 @@ set(LN_SOURCES
 	Test_Graphics_Bitmap.cpp
 	Test_Graphics_HlslEffect.cpp
 	Test_Graphics_LowLevelRendering.cpp
+	Test_Graphics_Texture.cpp
 	Test_Scene_Sprite.cpp
 	Test_Scene_WorldObject.cpp
 	Test_Shader_Shader.cpp

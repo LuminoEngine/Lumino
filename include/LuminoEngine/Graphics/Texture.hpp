@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "../Font/Common.hpp"
 #include "GraphicsResource.hpp"
 #include "ColorStructs.hpp"
 #include "GeometryStructs.hpp"
@@ -71,7 +72,7 @@ public:
 	void setResourcePool(GraphicsResourcePool pool);
 
     void clear(const Color& color);
-    void drawText(const StringRef& text, const Rect& rect, Font* font, const Color& color);
+    void drawText(const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment);
 
 LN_CONSTRUCT_ACCESS:
 	Texture2D();
