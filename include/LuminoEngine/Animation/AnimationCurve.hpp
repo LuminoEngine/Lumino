@@ -86,8 +86,13 @@ public:
 	/** キーフレームを追加します。 */
 	void addKeyFrame(const AnimationKeyFrame& keyFrame);
 
-	/** キーフレームを追加します。leftTangentMode は前のキーフレームの rightTangentMode を設定します。 */
-	void addKeyFrame(float time, float value, TangentMode rightTangentMode, float rightTangent = 0.0f);
+	/** 
+     * キーフレームを追加します。
+     *
+     * rightTangentMode は、新しく追加するキーフレームの右側の補間方法です。
+     * 新しく追加するキーフレームの左側の保管方法は、そのひとつ前のキーフレームの右側の保管方法が設定されます。
+     */
+	void addKeyFrame(float time, float value, TangentMode rightTangentMode, float tangent = 0.0f);
 
 LN_CONSTRUCT_ACCESS:
 	KeyFrameAnimationCurve();

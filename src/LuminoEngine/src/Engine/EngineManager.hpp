@@ -17,7 +17,6 @@ class AnimationManager;
 class PhysicsManager;
 class InputManager;
 class AudioManager;
-class AnimationManager;
 class ShaderManager;
 class GraphicsManager;
 class FontManager;

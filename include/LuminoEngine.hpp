@@ -8,6 +8,10 @@
 #include "LuminoEngine/Engine/Diagnostics.hpp"
 
 #include "LuminoEngine/Animation/Common.hpp"
+#include "LuminoEngine/Animation/AnimationCurve.hpp"
+#include "LuminoEngine/Animation/AnimationTrack.hpp"
+#include "LuminoEngine/Animation/AnimationClip.hpp"
+#include "LuminoEngine/Animation/AnimationClock.hpp"
 #include "LuminoEngine/Animation/EasingFunctions.hpp"
 
 #include "LuminoEngine/Input/Common.hpp"

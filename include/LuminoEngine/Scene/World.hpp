@@ -4,6 +4,7 @@
 #include "Common.hpp"
 
 namespace ln {
+class AnimationContext;
 class WorldRenderView;
 class WorldObject;
 class Component;
@@ -38,9 +39,11 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 public: // TODO: internal
+    const Ref<AnimationContext>& animationContext() const { return m_animationContext; }
     void updateFrame(float elapsedSeconds);
     void render(RenderViewPoint* viewPoint);  // call by WorldRenderView
 
+    Ref<AnimationContext> m_animationContext;
     List<Ref<WorldObject>> m_rootWorldObjectList;
 
     Ref<detail::WorldSceneGraphRenderingContext> m_renderingContext;

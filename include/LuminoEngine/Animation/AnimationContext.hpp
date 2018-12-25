@@ -19,7 +19,8 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~AnimationContext();
 
 private:
-	List<Ref<AnimationClock>> m_clockList;
+	List<WeakRefPtr<AnimationClock>> m_clockList;
+
 };
 
 } // namespace ln

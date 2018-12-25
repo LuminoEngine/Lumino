@@ -3,6 +3,7 @@
 #include "Common.hpp"
 
 namespace ln {
+class AnimationCurve;
 class AnimationState;
 
 /** 補間されたアニメーション値の型 */
@@ -56,7 +57,6 @@ class AnimationTrack
 	: public Object
 {
 public:
-
 	/** このトラックのアニメーションが適用される要素の名前。（スキンメッシュアニメーションではボーン名、UIElement のアニメーションではプロパティ名など） */
 	const String& targetName() const { return m_targetName; }
 
@@ -66,6 +66,7 @@ public:
 protected:
 	AnimationTrack(AnimationValueType type);
 	virtual ~AnimationTrack();
+    void initialize();
 	virtual void evaluate(float time, AnimationValue* outResult) = 0;
 	void setTargetName(const String& name) { m_targetName = name; }
 
@@ -81,6 +82,26 @@ class ScalarAnimationTrack
 	: public AnimationTrack
 {
 public:
+    static Ref<ScalarAnimationTrack> create();
+
+    void setCurve(AnimationCurve* curve);
+
+
+    /** アニメーションの終端の時間を取得します。 */
+    float lastFrameTime() const;
+
+    float evaluate(float time);
+
+protected:
+    virtual void evaluate(float time, AnimationValue* outResult) override;
+
+LN_CONSTRUCT_ACCESS:
+    ScalarAnimationTrack();
+    virtual ~ScalarAnimationTrack();
+    void initialize();
+
+private:
+    Ref<AnimationCurve> m_curve;
 };
 
 /** TODO */

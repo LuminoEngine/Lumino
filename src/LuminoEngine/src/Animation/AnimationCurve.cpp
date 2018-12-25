@@ -67,27 +67,25 @@ void KeyFrameAnimationCurve::addKeyFrame(const AnimationKeyFrame& keyFrame)
 	}
 }
 
-void KeyFrameAnimationCurve::addKeyFrame(float time, float value, TangentMode rightTangentMode, float rightTangent)
+void KeyFrameAnimationCurve::addKeyFrame(float time, float value, TangentMode rightTangentMode, float tangent)
 {
 	AnimationKeyFrame k;
 	k.time = time;
 	k.value = value;
 	k.rightTangentMode = rightTangentMode;
-	k.rightTangent = rightTangent;
+	k.rightTangent = tangent;
 
-	k.leftTangentMode = rightTangentMode;
-	k.leftTangent = rightTangent;
-	//if (!m_keyFrames.isEmpty() && m_keyFrames.getFront().time <= time)
-	//{
-	//	const AnimationKeyFrame* key0 = findKeyFrame(time);
-	//	k.leftTangentMode = key0->rightTangentMode;
-	//	k.leftTangent = -key0->rightTangent;
-	//}
-	//else
-	//{
-	//	k.leftTangentMode = TangentMode::Constant;
-	//	k.leftTangent = 0.0f;
-	//}
+	if (!m_keyFrames.isEmpty() && m_keyFrames.front().time <= time)
+	{
+		const AnimationKeyFrame* key0 = findKeyFrame(time);
+		k.leftTangentMode = key0->rightTangentMode;
+		k.leftTangent = -key0->rightTangent;
+	}
+	else
+	{
+		k.leftTangentMode = TangentMode::Constant;
+		k.leftTangent = 0.0f;
+	}
 
 	addKeyFrame(k);
 }
@@ -148,7 +146,7 @@ float KeyFrameAnimationCurve::onEvaluate(float time)
 		{
 			switch (modes[i])
 			{
-				// 補間無し
+			// 補間無し
 			case TangentMode::Constant:
 			{
 				values[i] = p0;
@@ -164,9 +162,8 @@ float KeyFrameAnimationCurve::onEvaluate(float time)
 			case TangentMode::Tangent:
 			{
 				values[i] = Math::hermite(
-					p0, p1,
-					key0->rightTangent,
-					key1->leftTangent,
+					p0, key0->rightTangent,
+					p1, key1->leftTangent,
 					t);
 				break;
 			}

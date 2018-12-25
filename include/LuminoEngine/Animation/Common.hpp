@@ -16,4 +16,11 @@ enum class AnimationWrapMode
     RoundTrip,
 };
 
+enum class AnimationClockAffiliation
+{
+    Standalone,
+
+    ActiveWorld,
+};
+
 } // namespace ln

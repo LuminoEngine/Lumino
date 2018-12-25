@@ -314,8 +314,12 @@ void EngineManager::initializeSceneManager()
 {
     if (!m_sceneManager)
     {
+        initializeAnimationManager();
+
         m_sceneManager = ln::makeRef<SceneManager>();
         m_sceneManager->initialize();
+
+        m_animationManager->setSceneManager(m_sceneManager);
     }
 }
 
@@ -472,6 +476,11 @@ EngineManager* EngineDomain::engineManager()
 PlatformManager* EngineDomain::platformManager()
 {
 	return engineManager()->platformManager();
+}
+
+AnimationManager* EngineDomain::animationManager()
+{
+    return engineManager()->animationManager();
 }
 
 InputManager* EngineDomain::inputManager()

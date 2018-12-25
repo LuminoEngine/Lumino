@@ -3,6 +3,7 @@
 #include "Common.hpp"
 
 namespace ln {
+class AnimationTrack;
 
 /**  */
 // Context に管理され、経過時間が通知される。
@@ -22,8 +23,24 @@ protected:
 LN_CONSTRUCT_ACCESS:
     AnimationClock();
 	virtual ~AnimationClock();
+    void initialize(AnimationClockAffiliation affiliation);
 
 private:
+};
+
+class SingleAnimationClock
+    : public AnimationClock
+{
+public:
+    void setTrack(AnimationTrack* track);
+
+LN_CONSTRUCT_ACCESS:
+    SingleAnimationClock();
+    virtual ~SingleAnimationClock();
+    void initialize();
+
+private:
+    Ref<AnimationTrack> m_track;
 };
 
 class PropertyAnimation

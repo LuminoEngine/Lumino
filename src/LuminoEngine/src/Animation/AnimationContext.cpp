@@ -27,9 +27,11 @@ void AnimationContext::advanceTime(float deltaTime)
 	auto end = m_clockList.end();
 	while (itr != end)
 	{
-		if (!(*itr)->isFinished())
+        auto clock = itr->resolve();
+
+		if (!clock->isFinished())
 		{
-			(*itr)->advanceTime(deltaTime);
+            clock->advanceTime(deltaTime);
 			++itr;
 		}
 		else

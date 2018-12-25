@@ -165,11 +165,9 @@ int main(int argc, char** argv)
     //bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
     //bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
 
-    //auto sprite = newObject<UISprite>();
-    //sprite->setTexture(tex);
-    //auto sprite = newObject<UISprite>();
-    //sprite->setTexture(tex);
-
+    auto sprite = newObject<UISprite>();
+    sprite->setTexture(tex);
+    //sprite->setPosition(20, 10);
     //auto imageEffect = newObject<ScreenBlurImageEffect>();
     //imageEffect->setAmount(0.7);
     //imageEffect->setRadialScale(1.05);
@@ -179,15 +177,15 @@ int main(int argc, char** argv)
     imageEffect->play(ToneF(0.0, -0.5, -0.8, 1.0), 5);
     Engine::mainViewport()->addImageEffect(imageEffect);
 
-    auto tilemap = newObject<Tilemap>();
-    tilemap->setShadingModel(ShadingModel::UnLighting);
+    //auto tilemap = newObject<Tilemap>();
+    //tilemap->setShadingModel(ShadingModel::UnLighting);
 #endif
 
 #if 1
     //auto sound = newObject<Sound>(u"D:\\tmp\\4_Battle_win.wav");
     auto sound = newObject<Sound>(u"D:/Music/momentum/02 - momentum.wav");
 
-    sound->play();
+    //sound->play();
     //sound->setPitch(1.2);
 #endif
 #if 0
@@ -209,8 +207,22 @@ int main(int argc, char** argv)
     //auto filedata = d.readAllSamples();
 #endif
 
+    auto curve1 = KeyFrameAnimationCurve::create();
+    curve1->addKeyFrame(0, 0.0f, TangentMode::Tangent);
+    curve1->addKeyFrame(2, 100.0f, TangentMode::Linear);
+    curve1->addKeyFrame(5, 100.0f, TangentMode::Tangent);
+    curve1->addKeyFrame(7, 200.0f, TangentMode::Constant);
+
+    auto track1 = ScalarAnimationTrack::create();
+    track1->setCurve(curve1);
+
+    float time = 0;
+
     while (Engine::update())
     {
+        sprite->setPosition(0, track1->evaluate(time));
+        //std::cout << track1->evaluate(time) << std::endl;
+        time += 0.016;
 #if 1
         if (Mouse::isPressed(MouseButtons::Left))
         {

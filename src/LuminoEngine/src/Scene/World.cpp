@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "../Rendering/RenderStage.hpp"
+#include <LuminoEngine/Animation/AnimationContext.hpp>
 #include <LuminoEngine/Scene/Component.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
 #include <LuminoEngine/Scene/World.hpp>
@@ -21,6 +22,7 @@ World::~World()
 void World::initialize()
 {
     Object::initialize();
+    m_animationContext = newObject<AnimationContext>();
     m_renderingContext = makeRef<detail::WorldSceneGraphRenderingContext>();
 }
 

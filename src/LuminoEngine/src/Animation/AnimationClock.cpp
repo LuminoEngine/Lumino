@@ -1,6 +1,8 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Animation/AnimationClock.hpp>
+#include <LuminoEngine/Animation/AnimationTrack.hpp>
+#include "AnimationManager.hpp"
 
 namespace ln {
 
@@ -13,6 +15,12 @@ AnimationClock::AnimationClock()
 
 AnimationClock::~AnimationClock()
 {
+}
+
+void AnimationClock::initialize(AnimationClockAffiliation affiliation)
+{
+    Object::initialize();
+    detail::EngineDomain::animationManager()->addClockToAffiliation(this, affiliation);
 }
 
 bool AnimationClock::isFinished() const
@@ -29,6 +37,27 @@ void AnimationClock::advanceTime(float deltaTime)
 	//{
 	//	m_timelineInstance->advanceTime(deltaTime);
 	//}
+}
+
+//==============================================================================
+// SingleAnimationClock
+
+SingleAnimationClock::SingleAnimationClock()
+{
+}
+
+SingleAnimationClock::~SingleAnimationClock()
+{
+}
+
+void SingleAnimationClock::initialize()
+{
+    AnimationClock::initialize(AnimationClockAffiliation::ActiveWorld);
+}
+
+void SingleAnimationClock::setTrack(AnimationTrack* track)
+{
+    m_track = track;
 }
 
 } // namespace ln

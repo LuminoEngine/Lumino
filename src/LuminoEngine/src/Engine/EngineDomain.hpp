@@ -15,9 +15,9 @@ namespace detail
 {
 class EngineManager;
 class PlatformManager;
+class AnimationManager;
 class InputManager;
 class AudioManager;
-class AnimationManager;
 class ShaderManager;
 class GraphicsManager;
 class FontManager;
@@ -34,6 +34,7 @@ public:
 	static void release();
 	static EngineManager* engineManager();
 	static PlatformManager* platformManager();
+    static AnimationManager* animationManager();
 	static InputManager* inputManager();
 	static AudioManager* audioManager();
 	static ShaderManager* shaderManager();
@@ -45,23 +46,6 @@ public:
     static VisualManager* visualManager();
     static SceneManager* sceneManager();
 	static UIManager* uiManager();
-
-	//static Application* application;
-
-	//static PhysicsWorld* getPhysicsWorld3D();
-
-
-
-	//static AnimationManager* getAnimationManager();
-	//static GraphicsManager* getGraphicsManager();
-	//static UIManager* getUIManager();
-
-	//static SceneGraphManager* getSceneGraphManager();
-	//static World2D* defaultWorld2D();
-	//static World3D* defaultWorld3D();
-
-	//static void release();
-
 };
 
 } // namespace detail
