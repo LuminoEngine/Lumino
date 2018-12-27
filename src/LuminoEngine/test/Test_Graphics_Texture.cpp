@@ -3,24 +3,43 @@
 //==============================================================================
 class Test_Graphics_Texture : public ::testing::Test {};
 
-#if 0
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_Texture, drawText)
 {
-    auto font = Font::create();
-    auto texture = Texture2D::create(160, 120);
-    texture->drawText(_LT("Left"), Rect(0, 0, 160, 120), font, Color::White, TextAlignment::Left);
-    texture->drawText(_LT("Center"), Rect(0, 0, 160, 120), font, Color::White, TextAlignment::Center);
-    texture->drawText(_LT("Rigth"), Rect(0, 0, 160, 120), font, Color::White, TextAlignment::Right);
-    //texture->drawText("Justify", Rect(0, 32, 120, 160), font, Color32::White, Color32::White, 0, TextAlignment::Justify);
-    auto sprite = Sprite2D::create(texture);
-    sprite->setBlendMode(BlendMode::Alpha);
-    Engine::update();
+	auto font = Font::create();
 
-    ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Texture.DrawText1.png"), 99));
+	//* [ ] 余白がある場合の配置テスト
+	{
+		auto texture = Texture2D::create(160, 120);
+		texture->drawText(u"Left", Rect(10, 10, 140, 100), font, Color::White, TextAlignment::Left);
+		texture->drawText(u"Center", Rect(10, 10, 140, 100), font, Color::White, TextAlignment::Center);
+		texture->drawText(u"Right", Rect(10, 10, 140, 100), font, Color::White, TextAlignment::Right);
+		texture->drawText(u"Justify", Rect(10, 50, 140, 100), font, Color::White, TextAlignment::Justify);
+		auto sprite = UISprite::create(texture);
+		sprite->setBlendMode(BlendMode::Alpha);
 
-    sprite->removeFromWorld();
+		TestEnv::updateFrame();
+		ASSERT_SCREEN_S(LN_ASSETFILE("Result/Graphics/Test_Graphics_Texture-drawText-2.png"));
+		LN_TEST_CLEAN_SCENE;
+	}
+
+	//* [ ] 余白がない場合の配置テスト
+	{
+		auto texture = Texture2D::create(160, 120);
+		texture->drawText(u"Left", Rect(0, 0, 160, 120), font, Color::White, TextAlignment::Left);
+		texture->drawText(u"Center", Rect(0, 0, 160, 120), font, Color::White, TextAlignment::Center);
+		texture->drawText(u"Right", Rect(0, 0, 160, 120), font, Color::White, TextAlignment::Right);
+		texture->drawText(u"Justify", Rect(0, 30, 160, 160), font, Color::White, TextAlignment::Justify);
+		auto sprite = UISprite::create(texture);
+		sprite->setBlendMode(BlendMode::Alpha);
+
+		TestEnv::updateFrame();
+		ASSERT_SCREEN_S(LN_ASSETFILE("Result/Graphics/Test_Graphics_Texture-drawText-1.png"));
+		LN_TEST_CLEAN_SCENE;
+	}
 }
+
+#if 0
 
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_Texture, setPixel)

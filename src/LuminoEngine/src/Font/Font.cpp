@@ -25,6 +25,11 @@ void Font::setDefaultFont(Font* font)
     detail::EngineDomain::fontManager()->setDefaultFontDesc(font->m_desc);
 }
 
+void Font::registerFontFile(const StringRef& fontFilePath)
+{
+	detail::EngineDomain::fontManager()->registerFontFile(fontFilePath);
+}
+
 Font::Font()
     : m_manager(detail::EngineDomain::fontManager())
     , m_desc()
@@ -123,7 +128,7 @@ Size Font::measureRenderSize(const StringRef& text)
 {
     detail::FontCore* font = resolveFontCore();
     detail::MeasureTextLayoutEngine measureLayout;
-    measureLayout.layout(font, text.data(), text.length(), Size(), TextAlignment::Left);
+    measureLayout.layout(font, text.data(), text.length(), Rect(), 0, TextAlignment::Left);
     return measureLayout.areaSize;
 }
 

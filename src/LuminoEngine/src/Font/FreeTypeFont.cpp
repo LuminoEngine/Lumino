@@ -75,17 +75,47 @@ void FreeTypeFont::initialize(FontManager* manager, const FontDesc& desc)
 	if (LN_REQUIRE(manager)) return;
 	FontCore::initialize(manager);
 
+	FT_Error err = 0;
 	m_desc = desc;
 
-	const String* name = &m_desc.Family;
-	if (LN_REQUIRE(!name->isEmpty())) return;
+	//const String* name = &m_desc.Family;
+	//if (LN_REQUIRE(!name->isEmpty())) return;
+	String name = m_desc.Family;
+	if (name.isEmpty()) name = manager->defaultFontDesc().Family;
+	if (LN_REQUIRE(!name.isEmpty())) return;
 
-	m_ftFaceId = (FTC_FaceID)CRCHash::compute(name->c_str());
+	m_ftFaceId = (FTC_FaceID)CRCHash::compute(name.c_str());
 	FTC_Manager ftc_manager = manager->ftCacheManager();
 	//m_manager->m_requesterFaceName = name->c_str();
 
-	FT_Error err = FTC_Manager_LookupFace(ftc_manager, m_ftFaceId, &m_ftFace);
+
+#define RESOLUTION_X 96
+#define RESOLUTION_Y 96
+	//#define SCALE_X(x) (FT_MulFix(x, em_scale))
+	//#define SCALE_Y(y) (FT_MulFix(y, em_scale))
+
+	// m_fontSize に対する本当の文字サイズを取得する
+	FTC_ScalerRec scaler;
+	scaler.face_id = m_ftFaceId;
+	scaler.width = 0;// m_desc.Size << 6;
+	scaler.height = m_desc.Size << 6;
+	scaler.pixel = 0;
+	scaler.x_res = RESOLUTION_X;
+	scaler.y_res = RESOLUTION_Y;
+	FT_Size ft_size;
+	err = FTC_Manager_LookupSize(ftc_manager, &scaler, &ft_size);	// FTC 使う場合は FT_Set_Char_Size の代わりにこれを使う。内部で FT_Set_Char_Size が呼ばれる。
+	if (LN_ENSURE(err == 0, "failed FTC_Manager_LookupSize : %d\n", err)) return;
+
+	//FTC_Manager_Reset(ftc_manager);
+
+
+
+	err = FTC_Manager_LookupFace(ftc_manager, m_ftFaceId, &m_ftFace);
 	if (LN_ENSURE(err == 0, "failed FTC_Manager_LookupFace : %d\n", err)) return;
+
+	//FT_Set_Char_Size(m_ftFace, scaler.width, scaler.height, scaler.x_res, scaler.y_res);
+
+	//err = FT_Set_Char_Size(m_ftFace, 0, m_desc.Size << 6, 0, RESOLUTION_Y);
 
 	if (m_desc.isItalic)
 	{
@@ -107,23 +137,6 @@ void FreeTypeFont::initialize(FontManager* manager, const FontDesc& desc)
 	// グリフを取りだすときはそのインデックスを指定する必要があるので、ここで覚えておく。
 	m_ftCacheMapIndex = FT_Get_Charmap_Index(m_ftFace->charmap);
 
-#define RESOLUTION_X 72
-#define RESOLUTION_Y 72
-	//#define SCALE_X(x) (FT_MulFix(x, em_scale))
-	//#define SCALE_Y(y) (FT_MulFix(y, em_scale))
-
-	// m_fontSize に対する本当の文字サイズを取得する
-	FTC_ScalerRec scaler;
-	scaler.face_id = m_ftFaceId;
-	scaler.width = 0;
-	scaler.height = m_desc.Size << 6;
-	scaler.pixel = 0;
-	scaler.x_res = RESOLUTION_X;
-	scaler.y_res = RESOLUTION_Y;
-	FT_Size ft_size;
-	err = FTC_Manager_LookupSize(ftc_manager, &scaler, &ft_size);
-	if (LN_ENSURE(err == 0, "failed FTC_Manager_LookupSize : %d\n", err)) return;
-
 	//m_lineHeight = ft_size->metrics.height >> 6;
 
 	if (FT_IS_SCALABLE(m_ftFace)) {	// has outline?
@@ -137,6 +150,8 @@ void FreeTypeFont::initialize(FontManager* manager, const FontDesc& desc)
 		}
 	}
 	//int hh = m_ftFace->height;
+
+
 
 
 	//m_glyphData.releaseGlyph();
@@ -155,7 +170,7 @@ void FreeTypeFont::initialize(FontManager* manager, const FontDesc& desc)
 
 	// font_typeを設定
 	m_ftImageType.face_id = m_ftFaceId;
-	m_ftImageType.width = 0;
+	m_ftImageType.width = m_desc.Size;
 	m_ftImageType.height = m_desc.Size;
 	updateImageFlags();
 
@@ -170,6 +185,34 @@ void FreeTypeFont::initialize(FontManager* manager, const FontDesc& desc)
 
 	// ラスタライズで使用する
 	//mPixelList = LN_NEW PixelData[m_fontSize * m_fontSize * 4];
+
+	// TODO:
+	// 以下、FTC_ImageCache_Lookup を一度呼び出しておかないと、初回の Glyph の metrix が正しく取れなくなる。
+	// どうも FreeType のキャッシュは ビットマップやグリフはいい感じにキャッシュしてくれるが、
+	// それ以外のメトリクスなどの情報は上手く取れない。
+	// 
+	// https://stackoverflow.com/questions/15121595/tutorial-on-freetype-cache-subsystem
+	// そのうちキャッシュを自前で作って、FreeType のキャッシュシステムは使わない方がよさそう。
+
+	//BitmapGlyphInfo info;
+	//info.glyphBitmap = nullptr;
+	//lookupGlyphBitmap('a', &info);
+	FT_UInt glyphIndex = FTC_CMapCache_Lookup(
+		this->manager()->ftCacheMapCache(),
+		m_ftFaceId,
+		m_ftCacheMapIndex,
+		'a');
+	if (LN_ENSURE(glyphIndex != 0, "failed FTC_CMapCache_Lookup")) return;
+
+	FT_Glyph glyph;
+	err = FTC_ImageCache_Lookup(
+		this->manager()->ftCImageCache(),
+		&m_ftImageType,
+		glyphIndex,
+		&glyph,
+		NULL);
+	if (LN_ENSURE(err == 0, "failed FTC_ImageCache_Lookup : %d\n", err)) return;
+
 }
 
 void FreeTypeFont::dispose()
@@ -213,6 +256,9 @@ void FreeTypeFont::getGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics
 	// グリフメトリクスにアクセスするため、グリフスロット(m_ftFace->glyph) に glyphIndex で示すグリフの情報をロードする
 	FT_Error err = FT_Load_Glyph(m_ftFace, glyphIndex, FT_LOAD_DEFAULT);
 	if (LN_ENSURE(err == 0)) return;
+
+	//FT_Error err = FT_Load_Char(m_ftFace, utf32Code, FT_LOAD_DEFAULT);
+	//if (LN_ENSURE(err == 0)) return;
 
 	outMetrics->size.width = FLValueToFloatPx(m_ftFace->glyph->metrics.width);
 	outMetrics->size.height = FLValueToFloatPx(m_ftFace->glyph->metrics.height);

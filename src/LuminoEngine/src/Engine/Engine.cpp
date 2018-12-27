@@ -80,6 +80,11 @@ UIViewport* Engine::mainViewport()
     return detail::EngineDomain::engineManager()->mainViewport();
 }
 
+UIContainerElement* Engine::mainUIRoot()
+{
+	return detail::EngineDomain::engineManager()->mainUIRoot();
+}
+
 World* Engine::mainWorld()
 {
     return detail::EngineDomain::engineManager()->mainWorld();

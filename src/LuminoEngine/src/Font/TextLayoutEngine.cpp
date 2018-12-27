@@ -16,13 +16,13 @@ TextLayoutEngine::TextLayoutEngine()
     , m_text(nullptr)
     , m_length(0)
     , m_pos(0)
-    , m_areaSize()
+    , m_targetArea()
     , m_alignment(TextAlignment::Left)
     , m_globalMetrics()
 {
 }
 
-void TextLayoutEngine::layout(FontCore* font, const Char* text, size_t length, const Size& areaSize, TextAlignment alignment)
+void TextLayoutEngine::layout(FontCore* font, const Char* text, size_t length, const Rect& targetArea, float strokeSize, TextAlignment alignment)
 {
     if (LN_REQUIRE(font)) return;
     if (LN_REQUIRE(text)) return;
@@ -31,11 +31,16 @@ void TextLayoutEngine::layout(FontCore* font, const Char* text, size_t length, c
     m_text = text;
     m_length = length;
     m_pos = 0;
-    m_areaSize = areaSize;
+    m_targetArea = targetArea;
+	m_strokeSize = strokeSize;
     m_alignment = alignment;
     m_font->getGlobalMetrics(&m_globalMetrics);
 
-    layoutTextHorizontal();
+	resetStream();
+    layoutTextHorizontal(LayoutMode::Measure);
+
+
+	placementTextHorizontal();
 }
 
 // "\r\n" => '\n'
@@ -63,20 +68,31 @@ UTF32 TextLayoutEngine::readChar()
     return ch;
 }
 
-void TextLayoutEngine::layoutTextHorizontal()
+void TextLayoutEngine::resetStream()
+{
+	m_pos = 0;
+}
+
+//void TextLayoutEngine::onMeasureGlyph(UTF32 ch, const Vector2& pos, const FontGlyphMetrics& metrix, Size* outSizeOffset)
+//{
+//}
+
+void TextLayoutEngine::layoutTextHorizontal(LayoutMode mode)
 {
     float baselineY = m_globalMetrics.ascender;
 
-    while (layoutLineHorizontal(baselineY))
+    while (layoutLineHorizontal(baselineY, mode))
     {
         baselineY += m_globalMetrics.lineSpace;
     }
 }
 
-bool TextLayoutEngine::layoutLineHorizontal(float baselineY)
+bool TextLayoutEngine::layoutLineHorizontal(float baselineY, LayoutMode mode)
 {
+	LayoutLine layoutLine;
     UTF32 prev = 0;
     Vector2 pos;// (0, baselineY - m_globalMetrics.ascender);
+	//pos.x = m_renderAreaOffset.x;
     while (UTF32 ch = readChar())
     {
         if (ch == '\r' || ch == '\n') {
@@ -92,25 +108,97 @@ bool TextLayoutEngine::layoutLineHorizontal(float baselineY)
         FontGlyphMetrics metrics;
         m_font->getGlyphMetrics(ch, &metrics);
 
-        pos.y = baselineY - metrics.bearingY;
-        onPlacementGlyph(ch, pos, metrics);
+        pos.y = /*m_renderAreaOffset.y + */(baselineY - metrics.bearingY);
 
-        pos.x += metrics.advance.x;
+		//if (mode == LayoutMode::Measure) {
+			m_renderAreaSize.width = std::max(m_renderAreaSize.width, (pos.x + m_strokeSize * 2) + metrics.size.width);
+			m_renderAreaSize.height = std::max(m_renderAreaSize.height, (pos.y + m_strokeSize * 2) + metrics.size.height);
+			layoutLine.glyphs.add({ ch, pos, metrics.size });
+		//}
+		//else {
+		//	onPlacementGlyph(ch, pos, metrics);
+		//}
+
+        pos.x += metrics.advance.x + (m_strokeSize * 2);
 
         prev = ch;
     }
 
+	//if (mode == LayoutMode::Measure) {
+		m_layoutLines.add(std::move(layoutLine));
+	//}
+
     return false;   // end with EOF or Error
 }
 
+void TextLayoutEngine::placementTextHorizontal()
+{
+	for (auto& layoutLine : m_layoutLines) {
+		calculateRenderAreaHorizontalOffset(&layoutLine);
+		placementLineHorizontal(layoutLine);
+	}
+}
+
+void TextLayoutEngine::placementLineHorizontal(const LayoutLine& layoutLine)
+{
+	for (auto& glyph : layoutLine.glyphs) {
+		onPlacementGlyph(glyph.ch, glyph.pos + m_renderAreaOffset, glyph.size);
+	}
+}
+
+void TextLayoutEngine::calculateRenderAreaHorizontalOffset(LayoutLine* layoutLine)
+{
+	TextAlignment alignment = m_alignment;
+	if (alignment == TextAlignment::Justify) {
+		if (layoutLine->glyphs.size() == 0) {
+			alignment = TextAlignment::Left;
+		}
+		else if (layoutLine->glyphs.size() == 1) {
+			alignment = TextAlignment::Center;
+		}
+	}
+
+	switch (alignment)
+	{
+		case TextAlignment::Left:
+			m_renderAreaOffset.x = 0;
+			break;
+		case TextAlignment::Center:
+			m_renderAreaOffset.x = (m_targetArea.width - m_renderAreaSize.width) / 2;
+			break;
+		case TextAlignment::Right:
+			m_renderAreaOffset.x = m_targetArea.width - m_renderAreaSize.width;
+			break;
+		case TextAlignment::Justify:
+		{
+			// "A B C" などの時の空白数
+			int blank = layoutLine->glyphs.size() - 1;
+
+			// 余りの空白量
+			float remain = m_targetArea.width - m_renderAreaSize.width;
+
+			float sw = remain / blank;
+
+			for (int i = 1; i < layoutLine->glyphs.size() - 1; i++) {
+				layoutLine->glyphs[i].pos.x += sw * i;
+			}
+
+			// 最後の一つは右詰 (加算誤差で微妙に見切れないようにする)
+			layoutLine->glyphs.back().pos.x = m_targetArea.width - layoutLine->glyphs.back().size.width;
+
+			break;
+		}
+	}
+
+}
 
 //==============================================================================
 // MeasureTextLayoutEngine
 
-void MeasureTextLayoutEngine::onPlacementGlyph(UTF32 ch, const Vector2& pos, const FontGlyphMetrics& metrix)
+void MeasureTextLayoutEngine::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size)
 {
-    areaSize.width = std::max(areaSize.width, pos.x + metrix.size.width);
-    areaSize.height = std::max(areaSize.height, pos.y + metrix.size.height);
+    areaSize.width = std::max(areaSize.width, pos.x + size.width);
+    areaSize.height = std::max(areaSize.height, pos.y + size.height);
 }
 
 
@@ -123,10 +211,10 @@ void BitmapTextRenderer::render(Bitmap2D* bitmap, const StringRef& text, const R
     m_rect = rect;
     m_color = color;
     m_font = FontHelper::resolveFontCore(font);
-    layout(m_font, text.data(), text.length(), rect.getSize(), alignment);
+    layout(m_font, text.data(), text.length(), rect, 0, alignment);
 }
 
-void BitmapTextRenderer::onPlacementGlyph(UTF32 ch, const Vector2& pos, const FontGlyphMetrics& metrix)
+void BitmapTextRenderer::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size)
 {
     BitmapGlyphInfo info;
     info.glyphBitmap = nullptr; // 内部ビットマップをもらう

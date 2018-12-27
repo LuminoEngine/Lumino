@@ -22,6 +22,11 @@ void UIContainerElement::addElement(UIElement* element)
 	m_children.add(element);
 }
 
+void UIContainerElement::removeAllChildren()
+{
+	m_children.clear();
+}
+
 int UIContainerElement::getVisualChildrenCount() const
 {
 	return m_children.size();

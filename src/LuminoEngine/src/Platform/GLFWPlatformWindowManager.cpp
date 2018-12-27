@@ -163,6 +163,17 @@ void GLFWPlatformWindow::initialize(const WindowCreationSettings& settings)
 	glfwSetCursorPosCallback(m_glfwWindow, window_mousePos_callback);
 	
 
+
+	//GLFWmonitor* primary = glfwGetPrimaryMonitor();
+	//int widthMM, heightMM;
+	//glfwGetMonitorPhysicalSize(primary, &widthMM, &heightMM);
+	//const GLFWvidmode* mode = glfwGetVideoMode(primary);
+	//const double dpi = mode->width / (widthMM / 25.4);
+	//printf("a\n");
+	// 96dpi, 600ppi
+	// 1インチ (= 25.4 mm) 
+
+
 	//glfwMakeContextCurrent(m_glfwWindow);
 	//glewInit();
 	////GLuint mProgram = glCreateProgram();// LN_CHECK_GLERROR();

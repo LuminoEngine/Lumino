@@ -16,7 +16,7 @@ namespace detail {
 class FontCore;
 
 // RefObject のキャッシュ管理。
-// RefObject を作りたいときは、まず先に findObject を呼び出してキャッシュ探す。なければ作る。
+// RefObject を作りたいときは、まず先に findObject を呼び出してキャッシュ探す。なければ呼び出し側で作って registerObject()。
 // RefObject は普通に makeRef で作ってよい。また、作った直後は registerObject() で登録しておく。
 // RefObject を release するとき、その直前で releaseObject() に渡しておく。
 template<class TKey>

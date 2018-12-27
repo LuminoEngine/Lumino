@@ -96,6 +96,7 @@ public:
 
 	const Ref<UIFrameWindow>& mainWindow() const { return m_mainWindow; }
     const Ref<UIViewport>& mainViewport() const { return m_mainViewport; }
+	const Ref<UIContainerElement>& mainUIRoot() const { return m_mainUIRoot; }
     const Ref<World>& mainWorld() const { return m_mainWorld; }
     const Ref<Camera>& mainCamera() const { return m_mainCamera; }
 

@@ -154,6 +154,11 @@ void FontManager::registerFontFile(const StringRef& fontFilePath)
 			e.collectionIndex = 0;
 			m_ttfDataEntryMap.insert({ key, e });
 			LN_LOG_INFO << "Registered font file." << familyName;
+
+			// set default name, if first
+			if (m_defaultFontDesc.Family.isEmpty()) {
+				m_defaultFontDesc.Family = familyName;
+			}
 		}
 	}
 	// Fase が複数 (.ttc)
@@ -179,6 +184,11 @@ void FontManager::registerFontFile(const StringRef& fontFilePath)
 				e.collectionIndex = 0;
 				m_ttfDataEntryMap.insert({ key, e });
 				LN_LOG_INFO << "Registered font file." << familyName;
+
+				// set default name, if first
+				if (m_defaultFontDesc.Family.isEmpty()) {
+					m_defaultFontDesc.Family = familyName;
+				}
 			}
 			FT_Done_Face(face);
 		}

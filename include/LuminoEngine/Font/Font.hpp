@@ -22,6 +22,9 @@ public:
     /** デフォルトのフォントを設定します。 */
     static void setDefaultFont(Font* font);
 
+	/** フォントを登録します。以降、ファミリ名でフォントを使用できるようになります。 */
+	static void registerFontFile(const StringRef& fontFilePath);
+
 public:
     /** フォントファミリ名の設定 */
     void setFamily(const String& familyName);

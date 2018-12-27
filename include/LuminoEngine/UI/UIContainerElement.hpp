@@ -12,6 +12,8 @@ public:
 
 	void addElement(UIElement* element);
 
+	void removeAllChildren();
+
 protected:
 	/** この要素内の子ビジュアル要素の数を取得します。 */
 	virtual int getVisualChildrenCount() const;
