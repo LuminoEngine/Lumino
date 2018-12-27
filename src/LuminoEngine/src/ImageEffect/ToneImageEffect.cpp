@@ -10,6 +10,11 @@ namespace ln {
 //==============================================================================
 // ToneImageEffect
 
+Ref<ToneImageEffect> ToneImageEffect::create()
+{
+    return newObject<ToneImageEffect>();
+}
+
 ToneImageEffect::ToneImageEffect()
 {
 }

@@ -85,6 +85,11 @@ UIContainerElement* Engine::mainUIRoot()
 	return detail::EngineDomain::engineManager()->mainUIRoot();
 }
 
+Size Engine::mainViewSize()
+{
+    return mainViewport()->actualViewboxSize();
+}
+
 World* Engine::mainWorld()
 {
     return detail::EngineDomain::engineManager()->mainWorld();

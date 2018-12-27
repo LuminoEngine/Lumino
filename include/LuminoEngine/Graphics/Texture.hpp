@@ -72,7 +72,7 @@ public:
 	void setResourcePool(GraphicsResourcePool pool);
 
     void clear(const Color& color);
-    void drawText(const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment);
+    void drawText(const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment = TextAlignment::Left);
 
 LN_CONSTRUCT_ACCESS:
 	Texture2D();

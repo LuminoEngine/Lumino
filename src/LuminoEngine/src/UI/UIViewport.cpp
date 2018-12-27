@@ -50,6 +50,7 @@ Size UIViewport::arrangeOverride(const Size& finalSize)
     for (auto& rv : m_renderViews) {
         rv->setActualPixelSize(finalSize);
     }
+    m_actualViewboxSize = finalSize;
     return UIContainerElement::arrangeOverride(finalSize);
 }
 

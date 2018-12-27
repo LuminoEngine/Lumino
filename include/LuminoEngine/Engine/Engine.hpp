@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "../Graphics/GeometryStructs.hpp"
 
 namespace ln {
 class GraphicsContext;
@@ -34,6 +35,7 @@ public:
 	static UIFrameWindow* mainWindow();
     static UIViewport* mainViewport();
 	static UIContainerElement* mainUIRoot();
+    static Size mainViewSize();
     static World* mainWorld();
     static Camera* mainCamera();
 

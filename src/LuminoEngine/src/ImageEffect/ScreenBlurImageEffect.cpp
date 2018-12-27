@@ -11,6 +11,11 @@ namespace ln {
 //==============================================================================
 // ScreenBlurImageEffect
 
+Ref<ScreenBlurImageEffect> ScreenBlurImageEffect::create()
+{
+    return newObject<ScreenBlurImageEffect>();
+}
+
 ScreenBlurImageEffect::ScreenBlurImageEffect()
     : m_material(nullptr)
     , m_amount(0.0f)

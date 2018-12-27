@@ -9,6 +9,8 @@ class ToneImageEffect
 	: public ImageEffect
 {
 public:
+    static Ref<ToneImageEffect> create();
+
     // [experimental]
     void play(const ToneF& tone, double time);
 

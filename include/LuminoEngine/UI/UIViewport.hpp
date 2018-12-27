@@ -22,6 +22,9 @@ public:
     UIViewport();
 	void initialize();
 
+    // TODO: internal
+    const Size& actualViewboxSize() const { return m_actualViewboxSize; }
+
 protected:
     virtual Size arrangeOverride(const Size& finalSize) override;
     //virtual void render(UIRenderingContext* context);
@@ -32,6 +35,7 @@ private:
     detail::UIManager* m_manager;
     Ref<detail::ImageEffectRenderer> m_imageEffectRenderer;
     List<Ref<RenderView>> m_renderViews;
+    Size m_actualViewboxSize;
 };
 
 } // namespace ln

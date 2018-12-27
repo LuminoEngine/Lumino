@@ -124,7 +124,8 @@ public:
     /** 色調を取得します。 */
     const ToneF& tone() const;
 
-
+    // TODO: ↑の WorldObject 的なものは、派生クラスの UIVisual 的なクラスにユーティリティとして持っていく。
+    // UIElement としては RenderTransform, Style 扱いにしたい。
 
     UIElement();
 	void initialize();

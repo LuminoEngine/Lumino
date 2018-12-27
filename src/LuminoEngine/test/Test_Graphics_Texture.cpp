@@ -4,6 +4,37 @@
 class Test_Graphics_Texture : public ::testing::Test {};
 
 //-----------------------------------------------------------------------------
+TEST_F(Test_Graphics_Texture, clear)
+{
+    auto font = Font::create();
+    auto texture = Texture2D::create(100, 100);
+
+    //* [ ] クリア
+    {
+        texture->clear(Color::Red);
+
+        auto sprite = UISprite::create(texture);
+        sprite->setBlendMode(BlendMode::Alpha);
+
+        TestEnv::updateFrame();
+        ASSERT_SCREEN(LN_ASSETFILE("Result/Graphics/Test_Graphics_Texture-clear-1.png"));
+        LN_TEST_CLEAN_SCENE;
+    }
+
+    //* [ ] 別色クリア
+    {
+        texture->clear(Color::Green);
+
+        auto sprite = UISprite::create(texture);
+        sprite->setBlendMode(BlendMode::Alpha);
+
+        TestEnv::updateFrame();
+        ASSERT_SCREEN(LN_ASSETFILE("Result/Graphics/Test_Graphics_Texture-clear-2.png"));
+        LN_TEST_CLEAN_SCENE;
+    }
+}
+
+//-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_Texture, drawText)
 {
 	auto font = Font::create();
@@ -79,31 +110,32 @@ TEST_F(Test_Graphics_Texture, blit)
 	// TODO: destroy のほうがいいかな
 	sprite->removeFromWorld();
 }
-
+#endif
 
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_Texture, Issues)
 {
-	// <Issue> Clear の後に Drawtext すると、Clear されていない問題の修正。
-	// <Issue> Drawtext 連続で描画すると、1フレーム前の内容がクリアされる問題の修正。
-	{
-		auto font = Font::create();
-		auto texture = Texture2D::create(160, 120);
-		texture->drawText(_LT("__________"), RectI(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
-		auto sprite = Sprite2D::create(texture);
-		Engine::update();
+    //* [ ] <Issue> Clear の後に Drawtext すると、Clear されていない問題の修正。
+    //* [ ] <Issue> Drawtext 連続で描画すると、1フレーム前の内容がクリアされる問題の修正。
+    {
+        auto font = Font::create();
+        auto texture = Texture2D::create(160, 120);
+        texture->drawText(_LT("Clear0"), Rect(60, 0, 160, 120), font, Color::White, TextAlignment::Left);
+        auto sprite = UISprite::create(texture);
+        sprite->setBlendMode(BlendMode::Alpha);
+        TestEnv::updateFrame();
+        // ^ "Clear0" disappears
 
-		texture->clear(Color32(0, 0, 0, 0));
-		texture->drawText(_LT("Clear1"), RectI(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
-		Engine::update();
+        // line 1 : "Clear1"
+        texture->clear(Color(0, 0, 0, 0));
+        texture->drawText(_LT("Clear1"), Rect(0, 0, 160, 120), font, Color::White, TextAlignment::Left);
+        TestEnv::updateFrame();
 
-		texture->drawText(_LT("Clear2"), RectI(0, 32, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
-		Engine::update();
+        // line 2 : "Clear2"
+        texture->drawText(_LT("Clear2"), Rect(0, 32, 160, 120), font, Color::White, TextAlignment::Left);
+        TestEnv::updateFrame();
 
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Texture.Clear1.png"), 95));
-
-		sprite->removeFromWorld();
-	}
+        ASSERT_SCREEN_S(LN_ASSETFILE("Result/Graphics/Test_Graphics_Texture-Issues-1.png"));
+        LN_TEST_CLEAN_SCENE;
+    }
 }
-#endif
-

@@ -7,6 +7,8 @@ class ScreenBlurImageEffect
 	: public ImageEffect
 {
 public:
+    static Ref<ScreenBlurImageEffect> create();
+
     /** 画像内に残す前のフレームの量 (0.0～1.0)。値が高くなるほど、モーショントレイルが長くなります。(default:0.0) */
     void setAmount(float amount) { m_amount = amount; }
 
