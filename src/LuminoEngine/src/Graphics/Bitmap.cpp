@@ -306,6 +306,7 @@ void BlitHelper::bitBltInternalTemplate(
 {
     SrcBuffer<TSrcConverter> srcBuf(src->data(), src->width(), false, srcRect, TSrcConverter(mulColorRGBA));
     DestBuffer<TDestConverter> dstBuf(dest->data(), dest->width(), false, destRect, TDestConverter(mulColorRGBA));
+    bool mulColor = mulColorRGBA.r != 255 || mulColorRGBA.g != 255 || mulColorRGBA.b != 255 || mulColorRGBA.a != 255;
 
     if (alphaBlend)
     {
@@ -316,14 +317,40 @@ void BlitHelper::bitBltInternalTemplate(
             for (int x = 0; x < srcRect.width; ++x)
             {
                 ClColor src = srcBuf.getPixel(x);
-                uint8_t src_alpha = src.a;
+                if (src.a == 0) continue;
+
+                ClColor dst = dstBuf.getPixel(x);
+
+                uint8_t a, r, g, b;
+                // TODO: 速度調査
+
+                if (mulColor)
+                {
+                    r = (mulColorRGBA.r * (255 - src.a) / 255) + (src.r * src.a / 255);
+                    g = (mulColorRGBA.g * (255 - src.a) / 255) + (src.g * src.a / 255);
+                    b = (mulColorRGBA.b * (255 - src.a) / 255) + (src.b * src.a / 255);
+                    a = std::min(mulColorRGBA.a + src.a, 255);
+
+                    r = (dst.r * (255 - a) / 255) + (r * a / 255);
+                    g = (dst.g * (255 - a) / 255) + (g * a / 255);
+                    b = (dst.b * (255 - a) / 255) + (b * a / 255);
+                    a = std::min(dst.a + a, 255);
+                }
+                else
+                {
+                    r = (dst.r * (255 - src.a) / 255) + (src.r * src.a / 255);
+                    g = (dst.g * (255 - src.a) / 255) + (src.g * src.a / 255);
+                    b = (dst.b * (255 - src.a) / 255) + (src.b * src.a / 255);
+                    a = std::min(dst.a + src.a, 255);
+                }
+
+                dstBuf.setPixel(x, ClColor{ r, g, b, a });
+
+#if 0
                 if (src_alpha == 0) continue;     // フォントならコレでかなり高速化できるはず
-
-
-                ClColor dest_color = dstBuf.getPixel(x);
+                uint8_t src_alpha = src.a;
                 uint8_t dest_alpha = dest_color.a;
                 uint8_t a, r, g, b;
-
                 a = src_alpha;
 
                 // まず、src と mul をまぜまぜ
@@ -359,6 +386,8 @@ void BlitHelper::bitBltInternalTemplate(
                 a = (a > 255) ? 255 : a;
 
                 dstBuf.setPixel(x, ClColor{ r, g, b, a });
+#endif
+
             }
         }
     }

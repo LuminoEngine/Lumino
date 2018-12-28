@@ -46,7 +46,10 @@ LN_VSOutput_Common VS_ClusteredForward_Geometry(LN_VSInput input)
 
 float4 PS_Main(LN_PSInput_Common input) : SV_TARGET
 {
-	float4 color = ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.UV);
+	float2 uv =  input.UV;
+	//uv.y = (uv.y * -1) + 1;
+	float4 color = ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, uv);
+	color.g = 1;
 	return LN_CalculateToneColor(color, _Tone);
 	//return color;
 	//return float4(input.UV, 1, 1);

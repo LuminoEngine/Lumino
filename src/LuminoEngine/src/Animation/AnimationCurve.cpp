@@ -18,7 +18,35 @@ AnimationCurve::~AnimationCurve()
 
 float AnimationCurve::evaluate(float time)
 {
-	return onEvaluate(time);
+    float localTime = 0.0f;
+
+    switch (m_wrapMode)
+    {
+        case AnimationWrapMode::Once:
+            localTime = time;
+            break;
+        case AnimationWrapMode::Loop:
+            localTime = std::fmod(time, lastFrameTime());
+            break;
+        case AnimationWrapMode::RoundTrip:
+        {
+            float freq = lastFrameTime() * 2;
+            float t = std::fmod(time, freq);
+            float phase = t / freq;
+            if (phase <= 0.5) {
+                localTime = t;
+            }
+            else {
+                localTime = freq - t;
+            }
+            break;
+        }
+        default:
+            LN_UNREACHABLE();
+            break;
+    }
+
+	return onEvaluate(localTime);
 }
 
 float AnimationCurve::lastFrameTime() const

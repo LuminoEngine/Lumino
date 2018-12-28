@@ -65,6 +65,16 @@ bool Engine::update()
 	return !detail::EngineDomain::engineManager()->isExitRequested();
 }
 
+void Engine::quit()
+{
+    detail::EngineDomain::engineManager()->quit();
+}
+
+void Engine::resetFrameDelay()
+{
+    detail::EngineDomain::engineManager()->resetFrameDelay();
+}
+
 GraphicsContext* Engine::graphicsContext()
 {
 	return detail::EngineDomain::graphicsManager()->graphicsContext();

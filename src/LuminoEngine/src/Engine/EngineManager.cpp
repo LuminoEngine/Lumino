@@ -416,14 +416,14 @@ void EngineManager::presentFrame()
     }
 
     // TODO:
-	Thread::sleep(1);
+	Thread::sleep(16);
 }
 
 void EngineManager::resetFrameDelay()
 {
 }
 
-void EngineManager::exit()
+void EngineManager::quit()
 {
 	m_exitRequested = true;
 }
@@ -433,7 +433,7 @@ bool EngineManager::onPlatformEvent(const PlatformEventArgs& e)
 	switch (e.type)
 	{
 	case PlatformEventType::close:
-		exit();
+		quit();
 		break;
 	default:
 		break;

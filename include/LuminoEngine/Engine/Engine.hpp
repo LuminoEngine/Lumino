@@ -31,6 +31,10 @@ public:
 	LN_METHOD()
 	static bool update();
 
+    static void quit();
+
+    static void resetFrameDelay();
+
 	static GraphicsContext* graphicsContext();
 	static UIFrameWindow* mainWindow();
     static UIViewport* mainViewport();

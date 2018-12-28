@@ -165,20 +165,33 @@ int main(int argc, char** argv)
     //bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
     //bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
 
-    auto sprite = newObject<UISprite>();
-    sprite->setTexture(tex);
+    //auto sprite = newObject<UISprite>();
+    //sprite->setTexture(tex);
     //sprite->setPosition(20, 10);
     //auto imageEffect = newObject<ScreenBlurImageEffect>();
     //imageEffect->setAmount(0.7);
     //imageEffect->setRadialScale(1.05);
     //Engine::mainViewport()->addImageEffect(imageEffect);
 
-    auto imageEffect = newObject<ToneImageEffect>();
-    imageEffect->play(ToneF(0.0, -0.5, -0.8, 1.0), 5);
-    Engine::mainViewport()->addImageEffect(imageEffect);
+    //auto imageEffect = newObject<ToneImageEffect>();
+    //imageEffect->play(ToneF(0.0, -0.5, -0.8, 1.0), 5);
+    //Engine::mainViewport()->addImageEffect(imageEffect);
 
     //auto tilemap = newObject<Tilemap>();
     //tilemap->setShadingModel(ShadingModel::UnLighting);
+
+
+
+    auto ToneLayer = ToneImageEffect::create();
+    Engine::mainViewport()->addImageEffect(ToneLayer);
+
+    auto ToneLayer2 = ToneImageEffect::create();
+    Engine::mainViewport()->addImageEffect(ToneLayer2);
+
+    //auto BlurLayer = ToneImageEffect::create();
+    //Engine::mainViewport()->addImageEffect(BlurLayer);
+
+    auto mLogoSprite = ln::UISprite::create(ln::Assets::loadTexture(u"D:/Proj/Volkoff/Assets/Data/Graphics/Frontend/Logo_1.png"));
 #endif
 
 #if 1
@@ -207,6 +220,8 @@ int main(int argc, char** argv)
     //auto filedata = d.readAllSamples();
 #endif
 
+
+
     auto curve1 = KeyFrameAnimationCurve::create();
     curve1->addKeyFrame(0, 0.0f, TangentMode::Tangent);
     curve1->addKeyFrame(2, 100.0f, TangentMode::Linear);
@@ -220,7 +235,7 @@ int main(int argc, char** argv)
 
     while (Engine::update())
     {
-        sprite->setPosition(0, track1->evaluate(time));
+        //sprite->setPosition(0, track1->evaluate(time));
         //std::cout << track1->evaluate(time) << std::endl;
         time += 0.016;
 #if 1

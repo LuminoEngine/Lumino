@@ -120,6 +120,14 @@ void Texture2D::clear(const Color& color)
     bitmap->clear(color.to32BitColor());
 }
 
+void Texture2D::blit(int x, int y, Texture2D* srcTexture, const RectI& srcRect)
+{
+    if (LN_REQUIRE(srcTexture)) return;
+    Bitmap2D* dst = map(MapMode::Write);
+    Bitmap2D* src = srcTexture->map(MapMode::Read);
+    dst->blit(RectI(x, y, srcRect.getSize()), src, srcRect, Color32::White, BitmapBlitOptions::AlphaBlend);
+}
+
 void Texture2D::drawText(const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment)
 {
     Bitmap2D* bitmap = map(MapMode::Write);

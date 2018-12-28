@@ -163,6 +163,16 @@ Ref<Material> Material::create()
 	return newObject<Material>();
 }
 
+Ref<Material> Material::create(Texture* mainTexture)
+{
+    return newObject<Material>(mainTexture);
+}
+
+Ref<Material> Material::create(Texture* mainTexture, ShadingModel shadingModel)
+{
+    return newObject<Material>(mainTexture, shadingModel);
+}
+
 Material::Material()
 	: AbstractMaterial(detail::MaterialType::PBR)
 {

@@ -299,6 +299,11 @@ private:
 
     void updateValue()
     {
+        if (Math::nearEqual(m_totalTime, 0.0f)) {
+            m_value = m_targetValue;
+            return;
+        }
+
         TTime time;
         switch (m_wrapMode)
         {

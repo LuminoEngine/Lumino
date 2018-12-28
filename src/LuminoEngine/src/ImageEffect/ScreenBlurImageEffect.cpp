@@ -18,7 +18,7 @@ Ref<ScreenBlurImageEffect> ScreenBlurImageEffect::create()
 
 ScreenBlurImageEffect::ScreenBlurImageEffect()
     : m_material(nullptr)
-    , m_amount(0.0f)
+    , m_amountValue()
     , m_accumTexture(nullptr)
     , m_center()
     , m_scale(1.0f)
@@ -37,9 +37,22 @@ void ScreenBlurImageEffect::initialize()
     //m_material->setBlendMode(BlendMode::Alpha);
 }
 
+void ScreenBlurImageEffect::play(float amount, const Vector2& center, float scale, float duration)
+{
+    setRadialCenter(center);
+    setRadialScale(scale);
+    m_amountValue.start(amount, 0.0f, duration);
+}
+
+void ScreenBlurImageEffect::onUpdateFrame(float elapsedSeconds)
+{
+    m_amountValue.advanceTime(elapsedSeconds);
+}
+
 void ScreenBlurImageEffect::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
-    if (m_amount <= 0.0f) {
+    float amount = m_amountValue.getValue();
+    if (amount <= 0.0f) {
         context->blit(source, destination);
         return;
     }
@@ -56,7 +69,7 @@ void ScreenBlurImageEffect::onRender(RenderingContext* context, RenderTargetText
         blurMatrix.scale(m_scale);
         blurMatrix.translate(m_center.x, m_center.y, 0);
 
-        m_material->setVector(u"_BlurColor", Vector4(1, 1, 1, m_amount));
+        m_material->setVector(u"_BlurColor", Vector4(1, 1, 1, amount));
         m_material->setMatrix(u"_BlurMatrix", blurMatrix);
 
         //// m_accumTexture > source

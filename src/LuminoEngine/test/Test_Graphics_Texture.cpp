@@ -89,28 +89,25 @@ TEST_F(Test_Graphics_Texture, setPixel)
 
 	sprite->removeFromWorld();
 }
+#endif
 
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_Texture, blit)
 {
-	auto tex1 = Texture2D::create(LN_LOCALFILE("TestData/Numbers1.png"));
+	auto tex1 = Assets::loadTexture(LN_ASSETFILE("Graphics/Numbers1.png"));
 	auto tex2 = Texture2D::create(100, 100);
 	tex2->blit(20 * 0, 20 * 0, tex1, RectI(8 * 0, 14 * 0, 8, 14));
 	tex2->blit(20 * 1, 20 * 1, tex1, RectI(8 * 1, 14 * 1, 8, 14));
 	tex2->blit(20 * 2, 20 * 2, tex1, RectI(8 * 2, 14 * 2, 8, 14));
 	tex2->blit(20 * 3, 20 * 3, tex1, RectI(8 * 3, 14 * 3, 8, 14));
 
-	auto sprite = Sprite2D::create(tex2);
+    auto sprite = UISprite::create(tex2);
 	sprite->setBlendMode(BlendMode::Alpha);
-	Engine::update();
+    TestEnv::updateFrame();
 
-	// TODO: 完全一致するはずだが Rが1違う
-	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Texture.Blit1.png"), 95));
-
-	// TODO: destroy のほうがいいかな
-	sprite->removeFromWorld();
+    ASSERT_SCREEN(LN_ASSETFILE("Result/Graphics/Test_Graphics_Texture-blit-1.png"));
+    LN_TEST_CLEAN_SCENE;
 }
-#endif
 
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_Texture, Issues)
