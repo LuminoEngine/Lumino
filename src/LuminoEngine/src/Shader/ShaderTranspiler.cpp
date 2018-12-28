@@ -398,11 +398,16 @@ std::string ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es)
 	// Builds a mapping for all combinations of images and samplers.
 	glsl.build_combined_image_samplers();
 
+
+    std::vector<std::string> combinedImageSamplerNames;
+
 	// Give the remapped combined samplers new names.
 	// Here you can also set up decorations if you want (binding = #N).
 	for (auto &remap : glsl.get_combined_image_samplers())
 	{
-		glsl.set_name(remap.combined_id, "lnCIS_lnT_" + glsl.get_name(remap.image_id) + "_lnS_" + glsl.get_name(remap.sampler_id));
+        std::string name = "lnCIS_lnT_" + glsl.get_name(remap.image_id) + "_lnS_" + glsl.get_name(remap.sampler_id);
+		glsl.set_name(remap.combined_id, name);
+        combinedImageSamplerNames.push_back(std::move(name));
 		//glsl.set_name(remap.combined_id, "test" /*join("SPIRV_Cross_Combined", glsl.get_name(remap.image_id), glsl.get_name(remap.sampler_id))*/);
 	}
 
@@ -522,13 +527,29 @@ std::string ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es)
 		// Modify the decoration to prepare it for GLSL.
 		glsl.unset_decoration(resources.uniform_buffers[i].id, spv::DecorationBinding);
 		
-		
+        //const spirv_cross::SPIRType &type = glsl.get_type(resources.uniform_buffers[i].id);
+        //type.
 		
 		// Some arbitrary remapping if we want.
 		//glsl.set_decoration(resource.id, spv::DecorationBinding, set * 16 + binding);
 	}
 
-	return glsl.compile();
+
+
+    std::string declsIsRT;
+    for (auto& name : combinedImageSamplerNames) {
+        declsIsRT += "uniform int " + name + "_IsRT;\n";
+    }
+
+    std::string code = glsl.compile();
+
+    code = code.insert(13,
+        declsIsRT +
+        "vec4 xxTexture(int isRT, sampler2D s, vec2 uv) { if (isRT != 0) { return texture(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); } else { return texture(s, uv); } }\n"
+        "#define texture(s, uv) xxTexture(s##_IsRT, s, uv)\n"
+    );
+
+    return code;
 }
 
 } // namespace detail

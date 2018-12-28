@@ -560,6 +560,7 @@ public:
 	GLLocalShaderSamplerBuffer();
 	virtual ~GLLocalShaderSamplerBuffer() = default;
 	void addGlslSamplerUniform(const std::string& name, GLint uniformLocation);
+    void addIsRenderTargetUniform(const std::string& name, GLint uniformLocation);
 	void bind();
 
 	virtual int registerCount() const override;
@@ -573,9 +574,10 @@ private:
 	{
 		std::string textureRegisterName;
 		std::string samplerRegisterName;
-		GLint uniformLocation = 0;
+		GLint uniformLocation = -1;
 		ITexture* texture = nullptr;
 		GLSamplerState* samplerState = nullptr;
+        GLint isRenderTargetUniformLocation = -1;
 	};
 
 	std::vector<Entry> m_table;

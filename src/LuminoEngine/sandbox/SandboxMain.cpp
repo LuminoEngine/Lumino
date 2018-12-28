@@ -182,14 +182,14 @@ int main(int argc, char** argv)
 
 
 
-    auto ToneLayer = ToneImageEffect::create();
-    Engine::mainViewport()->addImageEffect(ToneLayer);
+    //auto ToneLayer = ToneImageEffect::create();
+    //Engine::mainViewport()->addImageEffect(ToneLayer);
 
-    auto ToneLayer2 = ToneImageEffect::create();
-    Engine::mainViewport()->addImageEffect(ToneLayer2);
+    //auto ToneLayer2 = ToneImageEffect::create();
+    //Engine::mainViewport()->addImageEffect(ToneLayer2);
 
-    //auto BlurLayer = ToneImageEffect::create();
-    //Engine::mainViewport()->addImageEffect(BlurLayer);
+    auto BlurLayer = ScreenBlurImageEffect::create();
+    Engine::mainViewport()->addImageEffect(BlurLayer);
 
     auto mLogoSprite = ln::UISprite::create(ln::Assets::loadTexture(u"D:/Proj/Volkoff/Assets/Data/Graphics/Frontend/Logo_1.png"));
 #endif
@@ -233,8 +233,12 @@ int main(int argc, char** argv)
 
     float time = 0;
 
+
+    int frameCount = 0;
     while (Engine::update())
     {
+        BlurLayer->play(0.7f, Vector2(0, 0.0), 1.05);
+
         //sprite->setPosition(0, track1->evaluate(time));
         //std::cout << track1->evaluate(time) << std::endl;
         time += 0.016;
@@ -252,6 +256,7 @@ int main(int argc, char** argv)
         //{
         //    printf("a\n");
         //}
+        frameCount++;
         
     }
 

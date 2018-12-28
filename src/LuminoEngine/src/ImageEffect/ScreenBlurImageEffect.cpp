@@ -33,15 +33,23 @@ void ScreenBlurImageEffect::initialize()
 {
     ImageEffect::initialize();
     m_material = newObject<Material>();
-    m_material->setShader(detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::ScreenBlurImageEffect));
+    //m_material->setShader(detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::ScreenBlurImageEffect));
     //m_material->setBlendMode(BlendMode::Alpha);
+    auto shader = newObject<Shader>(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ScreenBlurImageEffect.fx");
+    m_material->setShader(shader);
 }
 
 void ScreenBlurImageEffect::play(float amount, const Vector2& center, float scale, float duration)
 {
     setRadialCenter(center);
     setRadialScale(scale);
-    m_amountValue.start(amount, 0.0f, duration);
+
+    if (duration == 0.0f) {
+        m_amountValue.start(amount, duration);
+    }
+    else {
+        m_amountValue.start(amount, 0.0f, duration);
+    }
 }
 
 void ScreenBlurImageEffect::onUpdateFrame(float elapsedSeconds)
