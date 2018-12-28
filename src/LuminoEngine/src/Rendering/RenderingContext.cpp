@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Mesh/Mesh.hpp>
@@ -114,6 +115,30 @@ void RenderingContext::pushState(bool reset)
 void RenderingContext::popState()
 {
     m_builder->popState();
+}
+
+void RenderingContext::clear(Flags<ClearFlags> flags, const Color& color, float z, uint8_t stencil)
+{
+	class Clear : public detail::RenderDrawElement
+	{
+	public:
+		ClearFlags flags;
+		Color color;
+		float z;
+		uint8_t stencil;
+
+		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+		{
+			context->clear(flags, color, z, stencil);
+		}
+	};
+
+	auto* element = m_builder->addNewDrawElement<Clear>(nullptr, nullptr);
+	element->elementType = detail::RenderDrawElementType::Clear;
+	element->flags = flags;
+	element->color = color;
+	element->z = z;
+	element->stencil = stencil;
 }
 
 void RenderingContext::blit(RenderTargetTexture* source, RenderTargetTexture* destination)

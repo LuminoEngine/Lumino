@@ -51,6 +51,13 @@ public:
     // 2D→3D
     Vector3 viewportToWorldPoint(const Vector3& position) const;
 
+
+	RenderViewClearMode clearMode() const;
+	void setClearMode(RenderViewClearMode value);
+
+	const Color& backgroundColor() const;
+	void setBackgroundColor(const Color& value);
+
 	CameraComponent* cameraComponent() const;
 
 protected:

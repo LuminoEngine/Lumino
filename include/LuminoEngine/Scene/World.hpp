@@ -41,7 +41,8 @@ LN_CONSTRUCT_ACCESS:
 public: // TODO: internal
     const Ref<AnimationContext>& animationContext() const { return m_animationContext; }
     void updateFrame(float elapsedSeconds);
-    void render(RenderViewPoint* viewPoint);  // call by WorldRenderView
+	detail::WorldSceneGraphRenderingContext* prepareRender(RenderViewPoint* viewPoint);
+    void renderObjects();  // call by WorldRenderView
 
     Ref<AnimationContext> m_animationContext;
     List<Ref<WorldObject>> m_rootWorldObjectList;

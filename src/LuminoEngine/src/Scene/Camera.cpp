@@ -65,6 +65,36 @@ Vector3 Camera::viewportToWorldPoint(const Vector3& position) const
 	return Vector3::transformCoord(v, m_component->getViewProjectionMatrixInverse());
 }
 
+RenderViewClearMode Camera::clearMode() const
+{
+	if (m_ownerRenderView) {
+		return m_ownerRenderView->clearMode();
+	}
+	return RenderViewClearMode::None;
+}
+
+void Camera::setClearMode(RenderViewClearMode value)
+{
+	if (m_ownerRenderView) {
+		m_ownerRenderView->setClearMode(value);
+	}
+}
+
+const Color& Camera::backgroundColor() const
+{
+	if (m_ownerRenderView) {
+		return m_ownerRenderView->backgroundColor();
+	}
+	return Color::Transparency;
+}
+
+void Camera::setBackgroundColor(const Color& value)
+{
+	if (m_ownerRenderView) {
+		m_ownerRenderView->setBackgroundColor(value);
+	}
+}
+
 CameraComponent* Camera::cameraComponent() const
 {
 	return m_component;

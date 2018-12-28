@@ -92,7 +92,13 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
 
         // DrawList 構築
         if (m_targetWorld) {
-            m_targetWorld->render(m_viewPoint);
+			detail::WorldSceneGraphRenderingContext* renderingContext = m_targetWorld->prepareRender(m_viewPoint);
+
+			if (clearMode() == RenderViewClearMode::ColorAndDepth) {
+				renderingContext->clear(ClearFlags::All, backgroundColor(), 1.0f, 0x00);
+			}
+
+            m_targetWorld->renderObjects();
         }
 
 

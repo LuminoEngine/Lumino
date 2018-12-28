@@ -64,6 +64,8 @@ void SceneRenderer::render(
     const CameraInfo& mainCameraInfo,
     RendringPhase targetPhase)
 {
+	//if (LN_REQUIRE(m_defaultMaterial)) return;
+
 	m_renderingPipeline = renderingPipeline;
 	m_defaultFrameBuffer = &defaultFrameBuffer;
     m_mainCameraInfo = mainCameraInfo;
@@ -151,6 +153,11 @@ void SceneRenderer::render(
 	//coreRenderer->end();
 }
 
+//void SceneRenderer::setDefaultMaterial(AbstractMaterial* material)
+//{
+//	m_defaultMaterial = material;
+//}
+
 void SceneRenderer::addPass(SceneRendererPass* pass)
 {
 	m_renderingPassList.add(pass);
@@ -192,47 +199,58 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 		{
 			applyGeometryStatus(graphicsContext, currentStage, nullptr);
 
-			AbstractMaterial* finalMaterial = currentStage->getMaterialFinal(nullptr);
-
-			ElementInfo elementInfo;
-			elementInfo.viewProjMatrix = &cameraInfo.viewProjMatrix;
-			elementInfo.WorldMatrix = element->combinedWorldMatrix();
-			elementInfo.WorldViewProjectionMatrix = elementInfo.WorldMatrix * (*elementInfo.viewProjMatrix);
-			elementInfo.boneTexture = m_skinningMatricesTexture;
-			elementInfo.boneLocalQuaternionTexture = m_skinningLocalQuaternionsTexture;
-
-			SubsetInfo subsetInfo;
-			subsetInfo.materialTexture = (finalMaterial) ? finalMaterial->mainTexture() : nullptr;
-			subsetInfo.opacity = currentStage->getOpacityFinal(element);
-			subsetInfo.colorScale = currentStage->getColorScaleFinal(element);
-			subsetInfo.blendColor = currentStage->getBlendColorFinal(element);
-			subsetInfo.tone = currentStage->getToneFinal(element);
-            element->onSubsetInfoOverride(&subsetInfo);
-
-			ShaderTechnique* tech = pass->selectShaderTechnique(
-				ShaderTechniqueClass_MeshProcess::StaticMesh,
-                finalMaterial->shader(),
-                currentStage->getShadingModelFinal(finalMaterial));
-
-			detail::ShaderSemanticsManager* semanticsManager = tech->shader()->semanticsManager();
-			semanticsManager->updateCameraVariables(cameraInfo);
-			semanticsManager->updateElementVariables(cameraInfo, elementInfo);
-			semanticsManager->updateSubsetVariables(subsetInfo);
-
-            if (finalMaterial) {
-                PbrMaterialData pbrMaterialData;
-                finalMaterial->translateToPBRMaterialData(&pbrMaterialData);
-                semanticsManager->updateSubsetVariables_PBR(pbrMaterialData);
-                finalMaterial->updateShaderVariables(tech->shader());
-            }
-
-			onSetAdditionalShaderPassVariables(tech->shader());
-
-			for (ShaderPass* pass : tech->passes())
+			if (element->elementType == RenderDrawElementType::Geometry)
 			{
-				graphicsContext->setShaderPass(pass);
+				AbstractMaterial* finalMaterial = currentStage->getMaterialFinal(nullptr);
 
+				ElementInfo elementInfo;
+				elementInfo.viewProjMatrix = &cameraInfo.viewProjMatrix;
+				elementInfo.WorldMatrix = element->combinedWorldMatrix();
+				elementInfo.WorldViewProjectionMatrix = elementInfo.WorldMatrix * (*elementInfo.viewProjMatrix);
+				elementInfo.boneTexture = m_skinningMatricesTexture;
+				elementInfo.boneLocalQuaternionTexture = m_skinningLocalQuaternionsTexture;
+
+				SubsetInfo subsetInfo;
+				subsetInfo.materialTexture = (finalMaterial) ? finalMaterial->mainTexture() : nullptr;
+				subsetInfo.opacity = currentStage->getOpacityFinal(element);
+				subsetInfo.colorScale = currentStage->getColorScaleFinal(element);
+				subsetInfo.blendColor = currentStage->getBlendColorFinal(element);
+				subsetInfo.tone = currentStage->getToneFinal(element);
+				element->onSubsetInfoOverride(&subsetInfo);
+
+				ShaderTechnique* tech = pass->selectShaderTechnique(
+					ShaderTechniqueClass_MeshProcess::StaticMesh,
+					finalMaterial->shader(),
+					currentStage->getShadingModelFinal(finalMaterial));
+
+				detail::ShaderSemanticsManager* semanticsManager = tech->shader()->semanticsManager();
+				semanticsManager->updateCameraVariables(cameraInfo);
+				semanticsManager->updateElementVariables(cameraInfo, elementInfo);
+				semanticsManager->updateSubsetVariables(subsetInfo);
+
+				if (finalMaterial) {
+					PbrMaterialData pbrMaterialData;
+					finalMaterial->translateToPBRMaterialData(&pbrMaterialData);
+					semanticsManager->updateSubsetVariables_PBR(pbrMaterialData);
+					finalMaterial->updateShaderVariables(tech->shader());
+				}
+
+				onSetAdditionalShaderPassVariables(tech->shader());
+
+				for (ShaderPass* pass : tech->passes())
+				{
+					graphicsContext->setShaderPass(pass);
+
+					element->onDraw(graphicsContext, currentStage->renderFeature);
+				}
+			}
+			else if (element->elementType == RenderDrawElementType::Clear)
+			{
 				element->onDraw(graphicsContext, currentStage->renderFeature);
+			}
+			else
+			{
+				LN_UNREACHABLE();
 			}
 		}
 	}

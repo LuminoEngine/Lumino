@@ -10,7 +10,9 @@ void TestEnv::setup()
 	EngineSettings::setMainWindowSize(160, 120);
 	EngineSettings::setMainBackBufferSize(160, 120);
     detail::EngineDomain::engineManager()->initialize();
+
 	Font::registerFontFile(LN_LOCALFILE("../../../tools/VLGothic/VL-Gothic-Regular.ttf"));
+	Engine::mainCamera()->setBackgroundColor(Color(0.5, 0.5, 0.5, 1.0));
 
 #ifdef LN_OS_WIN32
 	LuminoCLI = Path::combine(Path(ln::Environment::executablePath()).parent().parent().parent().parent(), u"tools", u"LuminoCLI", u"Debug", u"lumino-cli.exe");

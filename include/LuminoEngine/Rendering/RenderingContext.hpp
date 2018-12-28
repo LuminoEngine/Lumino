@@ -93,6 +93,8 @@ public:
 	/** @name drawing */
 	/** @{ */
 
+	void clear(Flags<ClearFlags> flags, const Color& color, float z, uint8_t stencil);
+
     // これは主に Post effect の実装で使用します。
     // 実際に処理が行われるのはレンダリングパイプラインの ImageEffect フェーズです。
     // 通常、drawMesh や drawSprite とは実行されるタイミングが異なるため、Post effect の実装のみを目的として使用してください。

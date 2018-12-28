@@ -65,6 +65,8 @@ protected:
 	SceneRenderer();
 	void initialize();
 
+	//void setDefaultMaterial(AbstractMaterial* material);
+
 	void addPass(SceneRendererPass* pass);
 
 	void renderPass(GraphicsContext* graphicsContext, SceneRendererPass* pass);
@@ -93,6 +95,7 @@ private:
     RenderingPipeline* m_renderingPipeline;
 	const FrameBuffer* m_defaultFrameBuffer;
 	ZSortDistanceBase m_zSortDistanceBase;
+	//Ref<AbstractMaterial> m_defaultMaterial;
 
     // 1つのパイプラインの別フェーズで SceneRenderer を使うとき、
     // viewproj 行列を分けたいことがある (Default と ImageEffect など) ため、SceneRenderer 側に実態で持つ 

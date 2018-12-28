@@ -208,6 +208,12 @@ private:
 	size_t m_typeId;
 };
 
+enum class RenderDrawElementType
+{
+	Geometry,	// Material を用いてポリゴンを描画する
+	Clear,		// clear など、ポリゴンを描画しないが、レンダーターゲットを変更する
+};
+
 // インスタンスは DrawElementList の LinearAllocator に配置される。
 // clear や draw 系のメソッド呼び出しをおこなう。
 // ステートは変更するべきではない。
@@ -239,6 +245,8 @@ public:
 
     // FIXME: Unity では CommandBuffer (を実行するメソッド) 単位で持つが・・・
     RendringPhase targetPhase = RendringPhase::Default;
+
+	RenderDrawElementType elementType = RenderDrawElementType::Geometry;
 
     // Uniform 変数を変更するようなパラメータは RenderStage ではなく RenderDrawElement に持っておくことで、
     // opacity などが少しでも変わることで RenderStage がたくさん作られてしまう問題に対処する。

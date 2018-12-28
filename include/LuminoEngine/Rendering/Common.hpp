@@ -60,6 +60,11 @@ enum class LightType
 	Spot,
 };
 
+enum class RenderViewClearMode
+{
+	None,
+	ColorAndDepth,
+};
 
 namespace detail {
 

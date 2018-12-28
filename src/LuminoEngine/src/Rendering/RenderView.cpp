@@ -10,6 +10,16 @@ namespace ln {
 //==============================================================================
 // RenderView
 
+RenderView::RenderView()
+	: m_clearMode(RenderViewClearMode::ColorAndDepth)
+	, m_backgroundColor(Color::White)
+{
+}
+
+RenderView::~RenderView()
+{
+}
+
 void RenderView::initialize()
 {
 	Object::initialize();
