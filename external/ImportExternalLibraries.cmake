@@ -266,3 +266,27 @@ set_target_properties(vorbis PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${vorbis_R
 add_library(vorbisfile STATIC IMPORTED)
 set_target_properties(vorbisfile PROPERTIES IMPORTED_LOCATION_RELEASE "${vorbisfile_LIBRARY_RELEASE}")
 set_target_properties(vorbisfile PROPERTIES IMPORTED_LOCATION_DEBUG "${vorbisfile_LIBRARY_DEBUG}")
+
+#--------------------------------------
+# bullet
+ln_make_external_find_path(bullet3_ROOT "bullet3")
+
+find_library(LinearMath_LIBRARY_RELEASE NAMES LinearMath libLinearMath PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(LinearMath_LIBRARY_DEBUG NAMES LinearMath_Debug libLinearMath_Debug PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(BulletCollision_LIBRARY_RELEASE NAMES BulletCollision libBulletCollision PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(BulletCollision_LIBRARY_DEBUG NAMES BulletCollision_Debug libBulletCollision_Debug PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(BulletDynamics_LIBRARY_RELEASE NAMES BulletDynamics libBulletDynamics PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(BulletDynamics_LIBRARY_DEBUG NAMES BulletDynamics_Debug libBulletDynamics_Debug PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+
+add_library(LinearMath STATIC IMPORTED)
+set_target_properties(LinearMath PROPERTIES IMPORTED_LOCATION_RELEASE "${LinearMath_LIBRARY_RELEASE}")
+set_target_properties(LinearMath PROPERTIES IMPORTED_LOCATION_DEBUG "${LinearMath_LIBRARY_DEBUG}")
+set_target_properties(LinearMath PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${bullet3_ROOT}/include/bullet)
+
+add_library(BulletCollision STATIC IMPORTED)
+set_target_properties(BulletCollision PROPERTIES IMPORTED_LOCATION_RELEASE "${BulletCollision_LIBRARY_RELEASE}")
+set_target_properties(BulletCollision PROPERTIES IMPORTED_LOCATION_DEBUG "${BulletCollision_LIBRARY_DEBUG}")
+
+add_library(BulletDynamics STATIC IMPORTED)
+set_target_properties(BulletDynamics PROPERTIES IMPORTED_LOCATION_RELEASE "${BulletDynamics_LIBRARY_RELEASE}")
+set_target_properties(BulletDynamics PROPERTIES IMPORTED_LOCATION_DEBUG "${BulletDynamics_LIBRARY_DEBUG}")

@@ -549,6 +549,28 @@ std::string ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es)
         "#define texture(s, uv) xxTexture(s##_IsRT, s, uv)\n"
     );
 
+    /*
+    DirectX に合わせたテクスチャ座標系(左上が原点)で OpenGL を使おうとすると、
+    OpenGL のレンダリングターゲットをサンプリングするときに問題となる。
+
+    普通のテクスチャは glTexImage などで画像を転送するときに上下反転するなど、自分で制御できる。
+    しかし、レンダリングターゲットは OpenGL が書き込むため、上下の制御ができない。
+
+    このためシェーダでは、レンダリングターゲットをサンプリングするときに限り上下反転する必要がある。
+
+
+    bgfx の issue:
+    https://github.com/bkaradzic/bgfx/issues/973
+
+    TEXTURE COORDINATES – D3D VS. OPENGL:
+    https://www.puredevsoftware.com/blog/2018/03/17/texture-coordinates-d3d-vs-opengl/
+    通常テクスチャなら、glTexImage による反転と、サンプリング時の反転により正しく描画できる。
+    
+    Unity は内部的にうまいことやってくれているらしい:
+    https://forum.unity.com/threads/fix-for-directx-flipping-vertical-screen-coordinates-in-image-effects-not-working.266455/
+
+    */
+
     return code;
 }
 

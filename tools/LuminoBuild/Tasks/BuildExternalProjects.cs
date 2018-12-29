@@ -211,7 +211,21 @@ namespace LuminoBuild.Tasks
             {
                 Utils.CallProcess("git", "clone --progress --depth 1 -b v1.3.6 https://github.com/xiph/vorbis.git vorbis");
             }
+            if (!Directory.Exists("bullet3"))
+            {
+                //Utils.CallProcess("git", "clone --progress --depth 1 -b 2.87 https://github.com/bulletphysics/bullet3.git bullet3");
 
+                // 2.87 時点では Android ターゲットのビルドができない。
+                // - ルートの CMakeLists.txt が python を探しに行く、{} 初期化リストで暗黙変換を使っている。など。
+                // 2018/12/29 時点の master では対策されていたのでこれを使用する。
+                Utils.CallProcess("git", "clone --progress https://github.com/bulletphysics/bullet3.git bullet3");
+                Directory.SetCurrentDirectory("bullet3");
+                Utils.CallProcess("git", "checkout 8bc1c8e01b1b2b9284df08385da0e03241f4e6aa");
+                Directory.SetCurrentDirectory(reposDir);
+            }
+
+
+            const string bulletOptions = "-DBUILD_BULLET2_DEMOS=OFF -DBUILD_CLSOCKET=OFF -DBUILD_CPU_DEMOS=OFF -DBUILD_ENET=OFF -DBUILD_EXTRAS=OFF -DBUILD_OPENGL3_DEMOS=OFF -DBUILD_UNIT_TESTS=OFF -DINSTALL_LIBS=ON";
 
             if (Utils.IsWin32)
             {
@@ -228,6 +242,7 @@ namespace LuminoBuild.Tasks
                         BuildProjectAndroid(builder, "freetype2", reposDir, target.ABI, target.BuildType);
                         BuildProjectAndroid(builder, "ogg", reposDir, target.ABI, target.BuildType);
                         BuildProjectAndroid(builder, "vorbis", reposDir, target.ABI, target.BuildType, $"-DOGG_ROOT={oggInstallDir} -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH");
+                        BuildProjectAndroid(builder, "bullet3", reposDir, target.ABI, target.BuildType, bulletOptions);
                     }
                 }
 
@@ -243,6 +258,7 @@ namespace LuminoBuild.Tasks
                     BuildProjectEm(builder, "freetype2", reposDir, "Emscripten");
                     BuildProjectEm(builder, "ogg", reposDir, "Emscripten");
                     BuildProjectEm(builder, "vorbis", reposDir, "Emscripten", $"-DOGG_ROOT={oggInstallDir} -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH");
+                    BuildProjectEm(builder, "bullet3", reposDir, "Emscripten", bulletOptions);
                 }
 
                 // Visual C++
@@ -262,6 +278,7 @@ namespace LuminoBuild.Tasks
                     BuildProject(builder, "freetype2", target.BuildType, reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
                     BuildProject(builder, "ogg", target.BuildType, reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
                     BuildProject(builder, "vorbis", target.BuildType, reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DOGG_ROOT={oggInstallDir}");
+                    BuildProject(builder, "bullet3", target.BuildType, reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} " + bulletOptions);
                 }
             }
             else
@@ -288,7 +305,8 @@ namespace LuminoBuild.Tasks
                         BuildProject(builder, "libpng", t.Config, reposDir, dirName, generator, args);
                         BuildProject(builder, "freetype2", t.Config, reposDir, dirName, generator, $"-DWITH_ZLIB=OFF -DWITH_BZip2=OFF  -DWITH_PNG=OFF -DWITH_HarfBuzz=OFF " + args);
                         BuildProject(builder, "ogg", t.Config, reposDir, dirName, generator, args);
-                        BuildProject(builder, "vorbis", t.Config, reposDir, dirName, generator, $"-DOGG_ROOT={oggInstallDir} -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH　" + args);
+                        BuildProject(builder, "vorbis", t.Config, reposDir, dirName, generator, $"-DOGG_ROOT={oggInstallDir} -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH " + args);
+                        BuildProject(builder, "bullet3", t.Config, reposDir, dirName, generator, $"{bulletOptions} " + args);
                     }
                 }
 
@@ -320,6 +338,7 @@ namespace LuminoBuild.Tasks
                     BuildProject(builder, "freetype2", t.Config, reposDir, dirName, generator, $"-DWITH_ZLIB=OFF -DWITH_BZip2=OFF  -DWITH_PNG=OFF -DWITH_HarfBuzz=OFF " + args);
                     BuildProject(builder, "ogg", t.Config, reposDir, dirName, generator, args);
                     BuildProject(builder, "vorbis", t.Config, reposDir, dirName, generator, $"-DOGG_ROOT={oggInstallDir} " + args);
+                    BuildProject(builder, "bullet3", t.Config, reposDir, dirName, generator, $"{bulletOptions} " + args);
                 }
             }
         }

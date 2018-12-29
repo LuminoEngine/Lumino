@@ -19,6 +19,7 @@
 #include "../Font/FontManager.hpp"
 #include "../Mesh/MeshManager.hpp"
 #include "../Rendering/RenderingManager.hpp"
+#include "../Physics/PhysicsManager.hpp"
 #include "../Asset/AssetManager.hpp"
 #include "../Visual/VisualManager.hpp"
 #include "../Scene/SceneManager.hpp"
@@ -109,6 +110,7 @@ void EngineManager::dispose()
     if (m_sceneManager) m_sceneManager->dispose();
     if (m_visualManager) m_visualManager->dispose();
 	if (m_assetManager) m_assetManager->dispose();
+    if (m_physicsManager) m_physicsManager->dispose();
 	if (m_renderingManager) m_renderingManager->dispose();
 	if (m_meshManager) m_meshManager->dispose();
 	if (m_fontManager) m_fontManager->dispose();
@@ -127,11 +129,11 @@ void EngineManager::initializeAllManagers()
 	initializeAnimationManager();
 	initializeInputManager();
 	initializeAudioManager();
-	initializePhysicsManager();
 	initializeShaderManager();
 	initializeGraphicsManager();
 	initializeFontManager();
 	initializeMeshManager();
+    initializePhysicsManager();
 	initializeAssetManager();
 	initializeRenderingManager();
     initializeVisualManager();
@@ -205,10 +207,6 @@ void EngineManager::initializeAudioManager()
 	}
 }
 
-void EngineManager::initializePhysicsManager()
-{
-}
-
 void EngineManager::initializeShaderManager()
 {
 	if (!m_shaderManager)
@@ -279,6 +277,17 @@ void EngineManager::initializeRenderingManager()
 		m_renderingManager = ln::makeRef<RenderingManager>();
 		m_renderingManager->initialize(settings);
 	}
+}
+
+void EngineManager::initializePhysicsManager()
+{
+    if (!m_physicsManager)
+    {
+        PhysicsManager::Settings settings;
+
+        m_physicsManager = ln::makeRef<PhysicsManager>();
+        m_physicsManager->initialize(settings);
+    }
 }
 
 void EngineManager::initializeAssetManager()
@@ -516,6 +525,11 @@ MeshManager* EngineDomain::meshManager()
 RenderingManager* EngineDomain::renderingManager()
 {
 	return engineManager()->renderingManager();
+}
+
+PhysicsManager* EngineDomain::physicsManager()
+{
+    return engineManager()->physicsManager();
 }
 
 AssetManager* EngineDomain::assetManager()

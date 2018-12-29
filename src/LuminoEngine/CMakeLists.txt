@@ -292,6 +292,15 @@ set(LN_SOURCES_ImageEffect
     src/ImageEffect/ToneImageEffect.cpp
 )
 
+set(LN_SOURCES_Physics
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/PhysicsWorld.hpp
+    src/Physics/Internal.hpp
+    src/Physics/PhysicsManager.cpp
+    src/Physics/PhysicsManager.hpp
+    src/Physics/PhysicsWorld.cpp
+)
+
 set(LN_SOURCES_Asset
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Asset/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Asset/Assets.hpp
@@ -411,6 +420,7 @@ source_group("Font"      FILES ${LN_SOURCES_Font})
 source_group("Mesh"      FILES ${LN_SOURCES_Mesh})
 source_group("Rendering" FILES ${LN_SOURCES_Rendering})
 source_group("ImageEffect" FILES ${LN_SOURCES_ImageEffect})
+source_group("Physics"	 FILES ${LN_SOURCES_Physics})
 source_group("Asset"	 FILES ${LN_SOURCES_Asset})
 source_group("Scene"     FILES ${LN_SOURCES_Scene})
 source_group("Visual"    FILES ${LN_SOURCES_Visual})
@@ -433,6 +443,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Mesh}
     ${LN_SOURCES_Rendering}
     ${LN_SOURCES_ImageEffect}
+    ${LN_SOURCES_Physics}
     ${LN_SOURCES_Asset}
     ${LN_SOURCES_Scene}
     ${LN_SOURCES_Visual}
@@ -519,7 +530,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE ${LN_PLATFORM_DEFINITIONS})
 #target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive ${PROJECT_NAME}-static -Wl,--no-whole-archive)
 #target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-static)
 target_link_libraries(${PROJECT_NAME} INTERFACE LuminoCore ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore ZLIB PNG FreeType ogg vorbis vorbisfile ${LN_PLATFORM_LIBS})
+target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore ZLIB PNG FreeType ogg vorbis vorbisfile LinearMath BulletCollision BulletDynamics ${LN_PLATFORM_LIBS})
 #target_link_libraries(${PROJECT_NAME} PRIVATE glslang)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")

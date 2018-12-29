@@ -20,7 +20,6 @@ void OggAudioDecoder::initialize(Stream* stream, DiagnosticsManager* diag)
 	m_stream = stream;
 	BinaryReader reader(stream);
 
-
     ov_callbacks callbacks = {
         readOggCallback,
         seekOggCallback,

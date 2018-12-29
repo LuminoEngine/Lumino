@@ -14,7 +14,6 @@ class Camera;
 namespace detail {
 class PlatformManager;
 class AnimationManager;
-class PhysicsManager;
 class InputManager;
 class AudioManager;
 class ShaderManager;
@@ -23,6 +22,7 @@ class FontManager;
 class MeshManager;
 class RenderingManager;
 class EffectManager;
+class PhysicsManager;
 class AssetManager;
 class VisualManager;
 class SceneManager;
@@ -59,13 +59,13 @@ public:
 	void initializeAnimationManager();
 	void initializeInputManager();
 	void initializeAudioManager();
-	void initializePhysicsManager();
 	void initializeShaderManager();
 	void initializeGraphicsManager();
 	void initializeFontManager();
 	void initializeMeshManager();
 	void initializeRenderingManager();
 	//void initializeEffectManager();
+    void initializePhysicsManager();
 	void initializeAssetManager();
     void initializeVisualManager();
     void initializeSceneManager();
@@ -89,6 +89,7 @@ public:
 	const Ref<FontManager>& fontManager() const { return m_fontManager; }
 	const Ref<MeshManager>& meshManager() const { return m_meshManager; }
 	const Ref<RenderingManager>& renderingManager() const { return m_renderingManager; }
+    const Ref<PhysicsManager>& physicsManager() const { return m_physicsManager; }
     const Ref<AssetManager>& assetManager() const { return m_assetManager; }
     const Ref<VisualManager>& visualManager() const { return m_visualManager; }
 	const Ref<SceneManager>& sceneManager() const { return m_sceneManager; }
@@ -109,7 +110,6 @@ private:
 	Ref<AnimationManager>			m_animationManager;
 	Ref<InputManager>				m_inputManager;
 	Ref<AudioManager>				m_audioManager;
-	//Ref<PhysicsManager>		m_physicsManager;
 	Ref<ShaderManager> m_shaderManager;
 	Ref<GraphicsManager>			m_graphicsManager;
 	Ref<FontManager> m_fontManager;
@@ -117,6 +117,7 @@ private:
 	Ref<RenderingManager>			m_renderingManager;
 	//Ref<EffectManager>				m_effectManager;
 	//Ref<ModelManager>				m_modelManager;
+	Ref<PhysicsManager>		m_physicsManager;
 	Ref<AssetManager>						m_assetManager;
     Ref<VisualManager>					m_visualManager;
     Ref<SceneManager>					m_sceneManager;

@@ -49,6 +49,7 @@ namespace LuminoBuild.Tasks
 
             var externalLibs = new string[]
             {
+                "bullet3",
                 "freetype2",
                 "glad",
                 "glfw",

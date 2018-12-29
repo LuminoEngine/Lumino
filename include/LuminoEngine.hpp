@@ -83,6 +83,7 @@
 #pragma comment(lib, "spirv-cross-reflect.lib")
 #pragma comment(lib, "spirv-cross-util.lib")
 #pragma comment(lib, "vorbis.lib")
+#pragma comment(lib, "vorbisfile.lib")
 
 #ifdef _DEBUG
 #pragma comment(lib, "LuminoEngined.lib")
@@ -96,6 +97,9 @@
 #pragma comment(lib, "SPIRVd.lib")
 #pragma comment(lib, "SPVRemapperd.lib")
 #pragma comment(lib, "zlibd.lib")
+#pragma comment(lib, "LinearMath_Debug.lib")
+#pragma comment(lib, "BulletCollision_Debug.lib")
+#pragma comment(lib, "BulletDynamics_Debug.lib")
 #else
 #pragma comment(lib, "LuminoEngine.lib")
 #pragma comment(lib, "freetype.lib")
@@ -108,5 +112,8 @@
 #pragma comment(lib, "SPIRV.lib")
 #pragma comment(lib, "SPVRemapper.lib")
 #pragma comment(lib, "zlib.lib")
+#pragma comment(lib, "LinearMath.lib")
+#pragma comment(lib, "BulletCollision.lib")
+#pragma comment(lib, "BulletDynamics.lib")
 #endif
 #endif
