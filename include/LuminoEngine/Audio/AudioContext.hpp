@@ -9,6 +9,7 @@ class CoreAudioDestinationNode;
 } // namespace detail
 class AudioNode;
 class AudioDestinationNode;
+class Sound;
 
 class AudioContext
 	: public RefObject
@@ -20,7 +21,7 @@ public:
 	virtual ~AudioContext() = default;
 	void initialize();
 	virtual void dispose();
-	void process();
+	void process(float elapsedSeconds);
 
     /** この AudioContext 内でベースとして使われるサンプルレート(1秒あたりのサンプル数)を取得します。 */
     int sampleRate() const;
@@ -35,6 +36,8 @@ public:
 	void sendConnect(AudioNode* outputSide, AudioNode* inputSide);
 	void sendDisconnect(AudioNode* outputSide, AudioNode* inputSide);
 	void sendDisconnectAllAndDispose(AudioNode* node);
+
+    void addSound(Sound* sound);
 
 LN_INTERNAL_ACCESS:
 	detail::AudioRWMutex m_commitMutex;
@@ -59,7 +62,7 @@ private:
 	};
 
 	// call by aduio thread.
-	void commitGraphs();
+	void commitGraphs(float elapsedSeconds);
 
 	detail::AudioManager* m_manager;
 	Ref<detail::AudioDevice> m_audioDevice;
@@ -71,6 +74,8 @@ private:
 
 	// commitGraphs() 中、m_allAudioNodes の AudioNode のインスタンスが消えないように参照を持っておくための list
 	//List<Ref<AudioNode>> m_allAudioNodes_onCommit;
+
+    List<WeakRefPtr<Sound>> m_soundList;
 };
 
 } // namespace ln

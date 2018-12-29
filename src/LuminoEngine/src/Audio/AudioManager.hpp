@@ -8,6 +8,7 @@ class AudioContext;
 namespace detail {
 class AudioDecoder;
 class AssetManager;
+class GameAudioImpl;
 
 class AudioManager
 	: public RefObject
@@ -22,9 +23,10 @@ public:
 	virtual ~AudioManager();
 	void initialize(const Settings& settings);
 	void dispose();
-	void update();
+	void update(float elapsedSeconds);
 
 	const Ref<AudioContext>& primaryContext() const { return m_primaryContext; }
+    const Ref<GameAudioImpl>& gameAudio() const { return m_gameAudio; }
 	//RenderingType renderingType() const { return RenderingType::Immediate; }
 	//const Ref<RenderingCommandList>& primaryRenderingCommandList() const { return m_primaryRenderingCommandList; }
 
@@ -35,6 +37,7 @@ private:
 
     AssetManager* m_assetManager;
 	Ref<AudioContext> m_primaryContext;
+    Ref<GameAudioImpl> m_gameAudio;
 	//Ref<LinearAllocatorPageManager> m_linearAllocatorPageManager;
 	//Ref<RenderingCommandList> m_primaryRenderingCommandList;
 

@@ -225,8 +225,9 @@ CoreAudioSourceNode::CoreAudioSourceNode(AudioDevice* context)
 	, m_playbackRate(1.0f)
 	, m_seekFrame(0)
 	, m_playingState(PlayingState::Stopped)
-	, m_requestedPlayingState(PlayingState::None)
+	//, m_requestedPlayingState(PlayingState::None)
 	, m_resetRequested(false)
+    , m_loop(false)
 {
 }
 
@@ -258,12 +259,14 @@ void CoreAudioSourceNode::setPlaybackRate(float rate)
 
 void CoreAudioSourceNode::start()
 {
-	m_requestedPlayingState = PlayingState::Playing;
+    m_playingState = PlayingState::Playing;
+	//m_requestedPlayingState = PlayingState::Playing;
 }
 
 void CoreAudioSourceNode::stop()
 {
-	m_requestedPlayingState = PlayingState::Stopped;
+    m_playingState = PlayingState::Stopped;
+	//m_requestedPlayingState = PlayingState::Stopped;
 	m_resetRequested = true;
 }
 
@@ -274,7 +277,8 @@ void CoreAudioSourceNode::reset()
 
 void CoreAudioSourceNode::finish()
 {
-	m_requestedPlayingState = PlayingState::Stopped;
+    m_playingState = PlayingState::Stopped;
+	//m_requestedPlayingState = PlayingState::Stopped;
 }
 
 unsigned CoreAudioSourceNode::numberOfChannels() const
@@ -522,7 +526,7 @@ void CoreAudioSourceNode::updatePlayingState()
 		reset();
 	}
 
-	m_playingState = m_requestedPlayingState;
+	//m_playingState = m_requestedPlayingState;
 }
 
 //==============================================================================

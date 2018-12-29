@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Audio/AudioNode.hpp>
 #include <LuminoEngine/Audio/AudioContext.hpp>
+#include <LuminoEngine/Audio/Sound.hpp>
 #include "CoreAudioNode.hpp"
 #include "AudioManager.hpp"
 #include "DSoundAudioDevice.hpp"
@@ -70,7 +71,7 @@ void AudioContext::dispose()
 		m_coreDestinationNode.reset();
 	}
 
-	commitGraphs();
+	commitGraphs(0);
 
 	if (m_audioDevice) {
 		m_audioDevice->dispose();
@@ -78,13 +79,13 @@ void AudioContext::dispose()
 	}
 }
 
-void AudioContext::process()
+void AudioContext::process(float elapsedSeconds)
 {
 	if (m_audioDevice) {
         //ElapsedTimer timer;
 
 
-		commitGraphs();
+		commitGraphs(elapsedSeconds);
 		m_audioDevice->updateProcess();
 
 		m_audioDevice->run();
@@ -140,6 +141,12 @@ void AudioContext::sendDisconnectAllAndDispose(AudioNode* node)
 	m_connectionCommands.push_back({ OperationCode::DisconnectionAllAndDispose, node });
 }
 
+void AudioContext::addSound(Sound* sound)
+{
+    detail::ScopedWriteLock lock(commitMutex());
+    m_soundList.add(sound);
+}
+
 void AudioContext::addAudioNode(AudioNode* node)
 {
     detail::ScopedWriteLock lock(commitMutex());
@@ -157,7 +164,7 @@ void AudioContext::disposeNodeOnGenericThread(AudioNode* node)
 	}
 }
 
-void AudioContext::commitGraphs()
+void AudioContext::commitGraphs(float elapsedSeconds)
 {
     detail::ScopedWriteLock lock(commitMutex());
 	//for (AudioNode* node : m_allAudioNodes)
@@ -199,6 +206,14 @@ void AudioContext::commitGraphs()
 	{
 		node->commit();
 	}
+
+    for (auto& ref : m_soundList)
+    {
+        auto sound = ref.resolve();
+        if (sound) {
+            sound->process(elapsedSeconds);
+        }
+    }
 }
 
 } // namespace ln

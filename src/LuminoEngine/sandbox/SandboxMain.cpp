@@ -198,8 +198,10 @@ int main(int argc, char** argv)
     //auto sound = newObject<Sound>(u"D:\\tmp\\4_Battle_win.wav");
     //auto sound = newObject<Sound>(u"D:/Music/momentum/02 - momentum.wav");
     auto sound = newObject<Sound>(u"D:/Proj/Volkoff/Assets/Data/Sound/BGM/monochrome.ogg");
-    sound->play();
+    //sound->play();
     //sound->setPitch(1.2);
+
+    GameAudio::playBGM(u"D:/Proj/Volkoff/Assets/Data/Sound/BGM/monochrome.ogg");
 #endif
 #if 0
     //auto source = newObject<AudioSourceNode>(u"D:/Tech/Audio/WebAudioTest1/2018-11-29T13_00_15.686Z.wav");

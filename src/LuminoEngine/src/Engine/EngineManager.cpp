@@ -381,7 +381,7 @@ void EngineManager::updateFrame()
 	}
 
 	if (m_audioManager) {
-		m_audioManager->update();
+		m_audioManager->update(0.016);
 	}
 
     if (m_mainWorld) {

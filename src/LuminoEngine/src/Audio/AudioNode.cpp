@@ -27,7 +27,13 @@ void AudioNode::initialize()
 void AudioNode::dispose()
 {
 	Object::dispose();
+
+    // TODO: dispose は finalize からも呼ばれる。この時は this の参照カウントが 0 で、
+    // dispose 終了後にデストラクタが呼ばれる。そのため、↓のようにして別の Ref に参照を持たせても
+    // オブジェクトはデストラクトされてしまう。
+    // 修正方針のひとつとして、dispose を参照カウント 0 の状態で呼び出さないようにするのもありかもしれない。・・・でも atomic になるように注意して調査すること。
 	if (m_context) {
+        LN_CHECK(RefObjectHelper::getReferenceCount(this) > 0);
 		m_context->disposeNodeOnGenericThread(this);
 	}
 }
@@ -130,7 +136,7 @@ void AudioNode::disconnect()
 AudioSourceNode::AudioSourceNode()
 {
 	m_commitState.playbackRate = 1.0f;
-	m_commitState.currentState = PlayingState::NoChanged;
+	m_commitState.requestedState = PlayingState::NoChanged;
 	m_commitState.resetRequire = false;
 }
 
@@ -147,10 +153,20 @@ void AudioSourceNode::setPlaybackRate(float rate)
 	//	});
 }
 
+void AudioSourceNode::setLoop(bool value)
+{
+    m_commitState.loop = value;
+}
+
+bool AudioSourceNode::loop() const
+{
+    return m_commitState.loop;
+}
+
 void AudioSourceNode::start()
 {
 	m_commitState.resetRequire = true;
-	m_commitState.currentState = PlayingState::Play;
+	m_commitState.requestedState = PlayingState::Play;
 	//LN_ENQUEUE_RENDER_COMMAND_1(
 	//	start, context()->manager(),
 	//	Ref<detail::CoreAudioSourceNode>, m_coreObject,
@@ -162,7 +178,7 @@ void AudioSourceNode::start()
 void AudioSourceNode::stop()
 {
 	m_commitState.resetRequire = true;
-	m_commitState.currentState = PlayingState::Stop;
+	m_commitState.requestedState = PlayingState::Stop;
 	//LN_ENQUEUE_RENDER_COMMAND_1(
 	//	start, context()->manager(),
 	//	Ref<detail::CoreAudioSourceNode>, m_coreObject,
@@ -195,6 +211,23 @@ detail::CoreAudioNode * AudioSourceNode::coreNode()
 	return m_coreObject;
 }
 
+AudioSourceNode::PlayingState AudioSourceNode::playingState() const
+{
+    switch (m_coreObject->playingState())
+    {
+    case detail::CoreAudioSourceNode::PlayingState::None:
+    case detail::CoreAudioSourceNode::PlayingState::Stopped:
+        return PlayingState::Stop;
+    case detail::CoreAudioSourceNode::PlayingState::Playing:
+        return PlayingState::Play;
+    case detail::CoreAudioSourceNode::PlayingState::Pausing:
+        return PlayingState::Pause;
+    default:
+        LN_UNREACHABLE();
+        return PlayingState::Stop;
+    }
+}
+
 void AudioSourceNode::commit()
 {
 	AudioNode::commit();
@@ -206,7 +239,7 @@ void AudioSourceNode::commit()
 		m_commitState.resetRequire = false;
 	}
 
-	switch (m_commitState.currentState)
+	switch (m_commitState.requestedState)
 	{
 	case PlayingState::NoChanged:
 		break;
@@ -222,9 +255,10 @@ void AudioSourceNode::commit()
 	default:
 		break;
 	}
-	m_commitState.currentState = PlayingState::NoChanged;
+	m_commitState.requestedState = PlayingState::NoChanged;
 
 	m_coreObject->setPlaybackRate(m_commitState.playbackRate);
+    m_coreObject->setLoop(m_commitState.loop);
 }
 
 //==============================================================================

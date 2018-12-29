@@ -12,6 +12,10 @@ namespace ln {
 // Sound
 
 Sound::Sound()
+    : m_gameAudioFlags(0)
+    , m_fadeValue()
+    , m_fadeBehavior(SoundFadeBehavior::Continue)
+    , m_fading(false)
 {
 }
 
@@ -40,9 +44,23 @@ void Sound::initialize(const StringRef& filePath)
     //source->start();
 }
 
+void Sound::dispose()
+{
+    if (m_gainNode) {
+        m_gainNode->dispose();
+        m_sourceNode = nullptr;
+    }
+    if (m_sourceNode) {
+        m_sourceNode->dispose();
+        m_sourceNode = nullptr;
+    }
+    Object::dispose();
+}
+
 void Sound::setVolume(float volume)
 {
-    m_gainNode->setGain(volume);
+    std::lock_guard<std::mutex> lock(m_playerStateLock);
+    setVolumeInternal(volume);
 }
 
 float Sound::getVolume() const
@@ -64,13 +82,12 @@ float Sound::getPitch() const
 
 void Sound::setLoopEnabled(bool enabled)
 {
-    LN_NOTIMPLEMENTED();
+    m_sourceNode->setLoop(enabled);
 }
 
 bool Sound::isLoopEnabled() const
 {
-    LN_NOTIMPLEMENTED();
-    return false;
+    return m_sourceNode->loop();
 }
 
 void Sound::SetLoopRange(uint32_t begin, uint32_t length)
@@ -80,17 +97,20 @@ void Sound::SetLoopRange(uint32_t begin, uint32_t length)
 
 void Sound::play()
 {
-    m_sourceNode->start();
+    std::lock_guard<std::mutex> lock(m_playerStateLock);
+    playInternal();
 }
 
 void Sound::stop()
 {
-    LN_NOTIMPLEMENTED();
+    std::lock_guard<std::mutex> lock(m_playerStateLock);
+    stopInternal();
 }
 
 void Sound::pause()
 {
-    LN_NOTIMPLEMENTED();
+    std::lock_guard<std::mutex> lock(m_playerStateLock);
+    pauseInternal();
 }
 
 void Sound::resume()
@@ -152,6 +172,96 @@ int Sound::getSamplingRate() const
 {
     LN_NOTIMPLEMENTED();
     return 0;
+}
+
+SoundPlayingState Sound::playingState() const
+{
+    switch (m_sourceNode->playingState())
+    {
+    case AudioSourceNode::PlayingState::NoChanged:
+    case AudioSourceNode::PlayingState::Stop:
+        return SoundPlayingState::Stopped;
+    case AudioSourceNode::PlayingState::Play:
+        return SoundPlayingState::Playing;
+    case AudioSourceNode::PlayingState::Pause:
+        return SoundPlayingState::Pausing;
+    default:
+        LN_UNREACHABLE();
+        return SoundPlayingState::Stopped;
+    }
+}
+
+void Sound::fadeVolume(float targetVolume, double time, SoundFadeBehavior behavior)
+{
+    std::lock_guard<std::mutex> lock(m_playerStateLock);
+
+    // 現在の音量から targetVolume への遷移
+    targetVolume = Math::clamp(targetVolume, 0.0f, 1.0f);
+    m_fadeValue.start(getVolume(), targetVolume, time);
+    m_fadeBehavior = behavior;
+    m_fading = true;
+}
+
+void Sound::process(float elapsedSeconds)
+{
+    std::lock_guard<std::mutex> lock(m_playerStateLock);
+
+    // フェード中の場合 (m_playerState の Volume,PlayingState 上書き)
+    if (m_fading)
+    {
+        m_fadeValue.advanceTime(elapsedSeconds);
+        setVolumeInternal(m_fadeValue.getValue());
+
+        // フェード完了
+        if (m_fadeValue.isFinished())
+        {
+            m_fading = false;
+
+            // フェード終了時の動作によって分岐
+            switch (m_fadeBehavior)
+            {
+                // 継続する場合
+            case SoundFadeBehavior::Continue:
+                break;
+                // 停止する場合
+            case SoundFadeBehavior::stop:
+            case SoundFadeBehavior::StopReset:
+                playInternal();
+                break;
+                // 一時停止する場合
+            case SoundFadeBehavior::pause:
+            case SoundFadeBehavior::PauseReset:
+                pauseInternal();
+                break;
+            }
+
+            // 音量を元に戻す
+            if (m_fadeBehavior == SoundFadeBehavior::StopReset || SoundFadeBehavior::StopReset == SoundFadeBehavior::PauseReset)
+            {
+                setVolumeInternal(m_fadeValue.getStartValue());
+            }
+        }
+    }
+}
+
+void Sound::playInternal()
+{
+    m_sourceNode->start();
+}
+
+void Sound::stopInternal()
+{
+    m_sourceNode->stop();
+}
+
+void Sound::pauseInternal()
+{
+    LN_NOTIMPLEMENTED();
+}
+
+void Sound::setVolumeInternal(float volume)
+{
+    m_gainNode->setGain(volume);
 }
 
 } // namespace ln

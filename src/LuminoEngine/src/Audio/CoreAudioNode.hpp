@@ -159,19 +159,30 @@ protected:
 	virtual void process() override;
 
 public:
+    // scheduling
+    enum class PlayingState
+    {
+        None,
+        Stopped,
+        Playing,
+        Pausing,
+    };
+
 	CoreAudioSourceNode(AudioDevice* context);
 	virtual ~CoreAudioSourceNode() = default;
 	void initialize(const Ref<AudioDecoder>& decoder);
 
 	void setPlaybackRate(float rate);
 
-	bool loop() const { return true; }
+    void setLoop(bool value) { m_loop = value; }
+	bool loop() const { return m_loop; }
 
 	
 	void start();
 	void stop();
 	void reset();	// TODO: internal
 	void finish();	// TODO: internal
+    PlayingState playingState() const { return m_playingState; }
 
 private:
 	unsigned numberOfChannels() const;
@@ -195,17 +206,10 @@ private:
 	size_t m_readFrames;
 	size_t m_seekFrame;
 
-	// scheduling
-	enum class PlayingState
-	{
-		None,
-		Stopped,
-		Playing,
-		Pausing,
-	};
 	PlayingState m_playingState;
-	PlayingState m_requestedPlayingState;
+	//PlayingState m_requestedPlayingState;
 	bool m_resetRequested;
+    bool m_loop;
 };
 
 

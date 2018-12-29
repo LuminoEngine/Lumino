@@ -11,8 +11,7 @@ namespace ln {
 
 static detail::GameAudioImpl* coreInstance()
 {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
+    return detail::EngineDomain::audioManager()->gameAudio();
 }
 
 void GameAudio::playBGM(const StringRef& filePath, float volume, float pitch, double fadeTime)

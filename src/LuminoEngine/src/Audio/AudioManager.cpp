@@ -6,6 +6,7 @@
 #include <LuminoEngine/Audio/AudioContext.hpp>
 #include "AudioDecoder.hpp"
 #include "OggAudioDecoder.hpp"
+#include "GameAudioImpl.hpp"
 #include "AudioManager.hpp"
 
 namespace ln {
@@ -32,16 +33,21 @@ void AudioManager::initialize(const Settings& settings)
 	//m_linearAllocatorPageManager = makeRef<LinearAllocatorPageManager>();
 	//m_primaryRenderingCommandList = makeRef<RenderingCommandList>(m_linearAllocatorPageManager);
 
-
-
 #ifdef LN_AUDIO_THREAD_ENABLED
 	m_endRequested = false;
 	m_audioThread = std::make_unique<std::thread>(std::bind(&AudioManager::processThread, this));
 #endif
+
+    m_gameAudio = makeRef<GameAudioImpl>(this);
 }
 
 void AudioManager::dispose()
 {
+    if (m_gameAudio) {
+        m_gameAudio->dispose();
+        m_gameAudio = nullptr;
+    }
+
 #ifdef LN_AUDIO_THREAD_ENABLED
 	m_endRequested = true;
 
@@ -58,12 +64,12 @@ void AudioManager::dispose()
 	}
 }
 
-void AudioManager::update()
+void AudioManager::update(float elapsedSeconds)
 {
 	if (!m_audioThread) {
 		// not thread processing.
 		if (m_primaryContext) {
-			m_primaryContext->process();
+			m_primaryContext->process(elapsedSeconds);
 		}
 	}
 }
@@ -89,8 +95,10 @@ void AudioManager::processThread()
 		while (!m_endRequested)
 		{
 			if (m_primaryContext) {
-				m_primaryContext->process();
+				m_primaryContext->process(0.02);
 			}
+
+            Thread::sleep(20);
 		}
 	}
 	catch (Exception& e)

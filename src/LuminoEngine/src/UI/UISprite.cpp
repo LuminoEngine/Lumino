@@ -30,6 +30,7 @@ void UISprite::initialize()
     m_material = newObject<Material>();
     m_size = Size(-1, -1);
     m_sourceRect = Rect(0, 0, -1, -1);
+    setBlendMode(BlendMode::Alpha);
 }
 
 void UISprite::initialize(Texture* texture)

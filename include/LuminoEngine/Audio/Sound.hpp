@@ -1,8 +1,30 @@
 ﻿#pragma once
+#include <mutex>
+#include "../Animation/EasingFunctions.hpp"
 
 namespace ln {
+class AudioContext;
 class AudioSourceNode;
 class AudioGainNode;
+namespace detail { class GameAudioImpl; }
+
+/** 音声の再生状態を表します。*/
+enum class SoundPlayingState
+{
+    Stopped,		/**< 停止中 */
+    Playing,			/**< 再生中 */
+    Pausing,			/**< 一時停止中 */
+};
+
+/** 音量フェード完了時の動作を表します。*/
+enum class SoundFadeBehavior
+{
+    Continue,		/**< 再生を継続する */
+    stop,				/**< 停止する */
+    StopReset,			/**< 停止して、次の再生に備えてサウンドの音量を元の値に戻す */
+    pause,				/**< 一時停止する */
+    PauseReset,			/**< 一時停止して、次の再生に備えてサウンドの音量を元の値に戻す */
+};
 
 class Sound
 	: public Object
@@ -144,11 +166,11 @@ public:
 	 */
 	int getSamplingRate() const;
 
+    /**
+     * この Sound の現在の再生状態を取得します。
+     */
+    SoundPlayingState playingState() const;
 #if 0
-	/**
-	 * この Sound の現在の再生状態を取得します。	
-	 */
-	SoundPlayingState getPlayingState() const;
 
 	/**
 	 * 音声データの再生方法を設定します。(規定値:Unknown)
@@ -161,6 +183,7 @@ public:
 	 * 音声データの再生方法を取得します。
 	 */
 	SoundPlayingMode getPlayingMode() const;
+#endif
 
 	/**
 	 * 音量のフェードを開始します。
@@ -171,16 +194,33 @@ public:
 	 * フェード中は音量が変更され、getVolume() で取得できる値が変わります。
 	 */
 	void fadeVolume(float targetVolume, double time, SoundFadeBehavior behavior);
-#endif
 
 LN_CONSTRUCT_ACCESS:
     Sound();
     virtual ~Sound();
     void initialize(const StringRef& filePath);
+    virtual void dispose() override;
 
 private:
+    void setGameAudioFlags(uint32_t flags) { m_gameAudioFlags = flags; }
+    uint32_t gameAudioFlags() const { return m_gameAudioFlags; }
+    void process(float elapsedSeconds);
+    void playInternal();
+    void stopInternal();
+    void pauseInternal();
+    void setVolumeInternal(float volume);
+
     Ref<AudioSourceNode> m_sourceNode;
     Ref<AudioGainNode> m_gainNode;
+    uint32_t m_gameAudioFlags;
+
+    std::mutex m_playerStateLock;    // TODO: 性質上、スピンロックの方が効率がいいかもしれない
+    EasingValue<float> m_fadeValue;
+    SoundFadeBehavior m_fadeBehavior;
+    bool m_fading;
+
+    friend class detail::GameAudioImpl;
+    friend class AudioContext;
 };
 
 } // namespace ln
