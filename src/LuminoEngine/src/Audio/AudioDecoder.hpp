@@ -23,7 +23,7 @@ struct AudioDataInfo
 	int sampleRate;
 	double totalSeconds;
 	size_t frameSize; // samples の、1フレームの要素数 (channelCount * byteParSample)
-	size_t totalSamples;	// 全サンプル数。ステレオの場合、複数チャンネル込み。
+	size_t totalSamples;	// 全サンプル数。frameCount * channelCount
 	//std::vector<float> samples;
 	PCMFormat sourceFormat;
 	size_t byteParSample;

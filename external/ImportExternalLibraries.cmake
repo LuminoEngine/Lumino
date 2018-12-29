@@ -9,7 +9,6 @@ message("LN_TARGET_ARCH: ${LN_TARGET_ARCH}")
 message("CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
 #-------------------------------------------------------------------------------
-
 # Visual Studio ソリューションフォルダを作るようにする
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -19,7 +18,6 @@ endif()
 
 
 #-------------------------------------------------------------------------------
-
 macro(ln_make_external_find_path varName projectDirName)
     if(DEFINED LN_EXTERNAL_FIND_PATH_MODE)
         if (${LN_EXTERNAL_FIND_PATH_MODE} STREQUAL "build")
@@ -29,7 +27,6 @@ macro(ln_make_external_find_path varName projectDirName)
         set(${varName} ${LUMINO_ENGINE_ROOT}/lib/${LN_TARGET_ARCH}-${CMAKE_BUILD_TYPE})
     endif()
 endmacro()
-
 
 
 #--------------------------------------
@@ -47,7 +44,6 @@ endif()
 
 #--------------------------------------
 # glad
-
 if (LN_OS_DESKTOP)# OR LN_EMSCRIPTEN)
 
     set(LIB_NAME GLAD)
@@ -69,7 +65,6 @@ endif()
 
 #--------------------------------------
 # zlib
-
 if (ANDROID_ABI)
     # zlib を "ZLIB" 変数で参照できるようにする
     find_package(ZLIB REQUIRED)
@@ -101,7 +96,6 @@ endif()
 
 #--------------------------------------
 # libpng
-
 ln_make_external_find_path(PNG_ROOT libpng)
 find_library(PNG_LIBRARY_RELEASE NAMES libpng16 png16 PATHS ${PNG_ROOT} PATH_SUFFIXES lib)
 find_library(PNG_LIBRARY_DEBUG NAMES libpng16d png16d PATHS ${PNG_ROOT} PATH_SUFFIXES lib)
@@ -115,7 +109,6 @@ set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${PNG
 
 #--------------------------------------
 # glslang
-
 if (LN_OS_DESKTOP)
 
     ln_make_external_find_path(GLSLANG_ROOT glslang)
@@ -176,7 +169,6 @@ endif()
 
 #--------------------------------------
 # SPIRV-Cross
-
 if (LN_OS_DESKTOP)
     ln_make_external_find_path(SPIRV-Cross_ROOT SPIRV-Cross)
     #set(SPIRV-Cross_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/SPIRV-Cross)
@@ -203,7 +195,6 @@ endif()
 
 #--------------------------------------
 # openal-soft
-
 if (LN_EMSCRIPTEN)
 
 elseif(APPLE)
@@ -222,7 +213,6 @@ endif()
 
 #--------------------------------------
 # SDL2
-
 if (LN_USE_SDL)
     ln_make_external_find_path(SDL2_ROOT SDL2)
     find_library(SDL2_LIBRARY_RELEASE NAMES SDL2 PATHS ${SDL2_ROOT} PATH_SUFFIXES lib)
@@ -237,7 +227,6 @@ endif()
 
 #--------------------------------------
 # freetype
-
 ln_make_external_find_path(FreeType_ROOT "freetype2")
 
 find_library(FreeType_LIBRARY_RELEASE NAMES freetype libfreetype PATHS ${FreeType_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
@@ -247,3 +236,33 @@ add_library(FreeType STATIC IMPORTED)
 set_target_properties(FreeType PROPERTIES IMPORTED_LOCATION_RELEASE "${FreeType_LIBRARY_RELEASE}")
 set_target_properties(FreeType PROPERTIES IMPORTED_LOCATION_DEBUG "${FreeType_LIBRARY_DEBUG}")
 set_target_properties(FreeType PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${FreeType_ROOT}/include/freetype2)
+
+#--------------------------------------
+# ogg
+ln_make_external_find_path(ogg_ROOT "ogg")
+
+find_library(ogg_LIBRARY_RELEASE NAMES ogg libogg PATHS ${ogg_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(ogg_LIBRARY_DEBUG NAMES ogg libogg PATHS ${ogg_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+
+add_library(ogg STATIC IMPORTED)
+set_target_properties(ogg PROPERTIES IMPORTED_LOCATION_RELEASE "${ogg_LIBRARY_RELEASE}")
+set_target_properties(ogg PROPERTIES IMPORTED_LOCATION_DEBUG "${ogg_LIBRARY_DEBUG}")
+set_target_properties(ogg PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ogg_ROOT}/include)
+
+#--------------------------------------
+# vorbis
+ln_make_external_find_path(vorbis_ROOT "vorbis")
+
+find_library(vorbis_LIBRARY_RELEASE NAMES vorbis libvorbis PATHS ${vorbis_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(vorbis_LIBRARY_DEBUG NAMES vorbis libvorbis PATHS ${vorbis_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(vorbisfile_LIBRARY_RELEASE NAMES vorbisfile libvorbisfile PATHS ${vorbis_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(vorbisfile_LIBRARY_DEBUG NAMES vorbisfile libvorbisfile PATHS ${vorbis_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+
+add_library(vorbis STATIC IMPORTED)
+set_target_properties(vorbis PROPERTIES IMPORTED_LOCATION_RELEASE "${vorbis_LIBRARY_RELEASE}")
+set_target_properties(vorbis PROPERTIES IMPORTED_LOCATION_DEBUG "${vorbis_LIBRARY_DEBUG}")
+set_target_properties(vorbis PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${vorbis_ROOT}/include)
+
+add_library(vorbisfile STATIC IMPORTED)
+set_target_properties(vorbisfile PROPERTIES IMPORTED_LOCATION_RELEASE "${vorbisfile_LIBRARY_RELEASE}")
+set_target_properties(vorbisfile PROPERTIES IMPORTED_LOCATION_DEBUG "${vorbisfile_LIBRARY_DEBUG}")

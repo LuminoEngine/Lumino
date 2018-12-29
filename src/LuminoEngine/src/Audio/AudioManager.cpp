@@ -5,6 +5,7 @@
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Audio/AudioContext.hpp>
 #include "AudioDecoder.hpp"
+#include "OggAudioDecoder.hpp"
 #include "AudioManager.hpp"
 
 namespace ln {
@@ -75,7 +76,8 @@ Ref<AudioDecoder> AudioManager::createAudioDecoder(const StringRef & filePath)
     auto stream = m_assetManager->openFileStream(filePath);
 
 	// TODO: cache
-	auto decoder = makeRef<WaveDecoder>();
+	//auto decoder = makeRef<WaveDecoder>();
+    auto decoder = makeRef<OggAudioDecoder>();
 	decoder->initialize(stream, diag);
 	return decoder;
 }

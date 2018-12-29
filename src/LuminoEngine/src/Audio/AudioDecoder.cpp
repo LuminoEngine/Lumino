@@ -321,9 +321,9 @@ void WaveDecoder::seekToFrame(size_t frameNumber)
 uint32_t WaveDecoder::read2(float* buffer, uint32_t requestFrames)
 {
 	uint32_t requestSamples = requestFrames * m_info.channelCount;
-	size_t requestSize = requestSamples * m_info.byteParSample;
+	size_t requestByteSize = requestSamples * m_info.byteParSample;
 
-    size_t size = std::min(requestSize, m_pcmDataLength - m_pcmDataPos);
+    size_t size = std::min(requestByteSize, m_pcmDataLength - m_pcmDataPos);
     //size_t newPos = m_pcmDataPos + requestSize;
     if (size == 0) {
         return 0;
