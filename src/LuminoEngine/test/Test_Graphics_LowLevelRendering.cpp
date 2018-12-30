@@ -908,3 +908,68 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 	}
 }
 
+//------------------------------------------------------------------------------
+//## RenderTarget
+TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
+{
+    //* [ ] 特に OpenGL を使用している場合に、RT をサンプリングすると上下反転しないことを確認する。
+    {
+        auto shader2 = Shader::create(LN_ASSETFILE("TextureTest-1.vsh"), LN_ASSETFILE("TextureTest-1.psh"));
+
+        Vector4 v1[] = {
+            Vector4(0, 0.5, 0, 1),
+            Vector4(0.5, -0.25, 0, 1),
+            Vector4(-0.5, -0.25, 0, 1),
+        };
+        auto vertexBuffer1 = newObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
+
+        struct Vertex
+        {
+            Vector2 uv;
+            Vector3 pos;
+        };
+        Vertex v[] = {
+            { { 0, 0 }, { -1, 1, 0 }, },
+            { { 1, 0 }, { 1, 1, 0 }, },
+            { { 0, 1 }, { -1, -1, 0 }, },
+            { { 1, 1 }, { 1, -1, 0 }, },
+        };
+        auto vertexBuffer2 = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+        auto vertexDecl2 = newObject<VertexDeclaration>();
+        vertexDecl2->addVertexElement(0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
+        vertexDecl2->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
+
+
+        auto renderTarget1 = newObject<RenderTargetTexture>(160, 120, TextureFormat::RGBA32, false);
+
+        auto ctx = Engine::graphicsContext();
+        TestEnv::resetGraphicsContext(ctx);
+
+        RenderTargetTexture* oldRT = ctx->colorBuffer(0);
+
+        // まず renderTarget1 へ緑色の三角形を描く
+        {
+            m_shader1->findConstantBuffer("ConstBuff")->findParameter("g_color")->setVector(Vector4(0, 1, 0, 1));
+            ctx->setVertexDeclaration(m_vertexDecl1);
+            ctx->setVertexBuffer(0, vertexBuffer1);
+            ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
+            ctx->setColorBuffer(0, renderTarget1);
+            ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
+            ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+        }
+
+        // 次に renderTarget1 からバックバッファへ全体を描く
+        {
+            shader2->findParameter("g_texture1")->setTexture(renderTarget1);
+            ctx->setVertexDeclaration(vertexDecl2);
+            ctx->setVertexBuffer(0, vertexBuffer2);
+            ctx->setShaderPass(shader2->techniques()[0]->passes()[0]);
+            ctx->setColorBuffer(0, oldRT);
+            ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
+            ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
+        }
+
+        ASSERT_SCREEN(LN_ASSETFILE("Result/Graphics/Test_Graphics_LowLevelRendering-RenderTarget-1.png"));
+    }
+}
+
