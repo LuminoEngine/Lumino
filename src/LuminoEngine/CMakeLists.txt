@@ -312,6 +312,23 @@ set(LN_SOURCES_Asset
     src/Asset/AssetArchive.hpp
 )
 
+set(LN_SOURCES_Visual
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/CameraComponent.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/LightComponent.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/SpriteComponent.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/StaticMeshComponent.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/VisualComponent.hpp
+    src/Visual/Internal.hpp
+    src/Visual/CameraComponent.cpp
+    src/Visual/LightComponent.cpp
+    src/Visual/SpriteComponent.cpp
+    src/Visual/StaticMeshComponent.cpp
+    src/Visual/VisualComponent.cpp
+    src/Visual/VisualManager.cpp
+    src/Visual/VisualManager.hpp
+)
+
 set(LN_SOURCES_Scene
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Camera.hpp
@@ -321,6 +338,7 @@ set(LN_SOURCES_Scene
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Scene.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/SceneConductor.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Sprite.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/StaticMesh.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/VisualObject.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/World.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/WorldObject.hpp
@@ -335,25 +353,11 @@ set(LN_SOURCES_Scene
     src/Scene/SceneManager.cpp
     src/Scene/SceneManager.hpp
     src/Scene/Sprite.cpp
+    src/Scene/StaticMesh.cpp
     src/Scene/VisualObject.cpp
     src/Scene/World.cpp
     src/Scene/WorldObject.cpp
     src/Scene/WorldRenderView.cpp
-)
-
-set(LN_SOURCES_Visual
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/CameraComponent.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/LightComponent.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/SpriteComponent.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/VisualComponent.hpp
-    src/Visual/Internal.hpp
-    src/Visual/CameraComponent.cpp
-    src/Visual/LightComponent.cpp
-    src/Visual/SpriteComponent.cpp
-    src/Visual/VisualComponent.cpp
-    src/Visual/VisualManager.cpp
-    src/Visual/VisualManager.hpp
 )
 
 set(LN_SOURCES_UI
@@ -428,8 +432,8 @@ source_group("Rendering" FILES ${LN_SOURCES_Rendering})
 source_group("ImageEffect" FILES ${LN_SOURCES_ImageEffect})
 source_group("Physics"	 FILES ${LN_SOURCES_Physics})
 source_group("Asset"	 FILES ${LN_SOURCES_Asset})
-source_group("Scene"     FILES ${LN_SOURCES_Scene})
 source_group("Visual"    FILES ${LN_SOURCES_Visual})
+source_group("Scene"     FILES ${LN_SOURCES_Scene})
 source_group("UI"        FILES ${LN_SOURCES_UI})
 source_group("Tilemap"   FILES ${LN_SOURCES_Tilemap})
 
@@ -451,8 +455,8 @@ set(LN_SOURCES
     ${LN_SOURCES_ImageEffect}
     ${LN_SOURCES_Physics}
     ${LN_SOURCES_Asset}
-    ${LN_SOURCES_Scene}
     ${LN_SOURCES_Visual}
+    ${LN_SOURCES_Scene}
     ${LN_SOURCES_UI}
     ${LN_SOURCES_Tilemap}
     #${LN_SOURCES_LuminoCore}
