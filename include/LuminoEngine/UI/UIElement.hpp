@@ -4,6 +4,8 @@
 namespace ln {
 class UIRenderingContext;
 class UIRenderView;
+class UIContext;
+class UIEventArgs;
 class UIStyle;
 enum class BlendMode : uint8_t;
 struct Color;
@@ -127,12 +129,17 @@ public:
     // TODO: ↑の WorldObject 的なものは、派生クラスの UIVisual 的なクラスにユーティリティとして持っていく。
     // UIElement としては RenderTransform, Style 扱いにしたい。
 
+    UIContext* context() const { return m_context; }
+
     UIElement();
 	void initialize();
 
 public: // TODO: internal
     void setRenderPriority(int value);
     void updateFrame(float elapsedSeconds);
+    const Rect& finalGlobalRect() const { return m_finalGlobalRect; }
+    void raiseEvent(UIEventArgs* e);
+    virtual UIElement* lookupMouseHoverElement(const Point& globalPt);
 
 protected:
     virtual void onUpdateFrame(float elapsedSeconds);
@@ -168,19 +175,28 @@ protected:
 
 	virtual void onRender(UIRenderingContext* context);
 
+    virtual void onRoutedEvent(UIEventArgs* e);
 
+    virtual bool onHitTest(const Point& localPoint);
 
     // TODO: internal
     void updateLayout(const Size& size);
     virtual void render(UIRenderingContext* context);
 
 private:
+    void raiseEventInternal(UIEventArgs* e);
+
     detail::UIManager* m_manager;
+    UIContext* m_context;
+    UIElement* m_visualParent;
 
     Ref<UIStyle> m_localStyle;
     Ref<UIStyle> m_actualStyle;
     int m_renderPriority;
+    Rect m_finalGlobalRect;
+    bool m_isHitTestVisible;
 
+    friend class UIContext;
     friend class UIRenderView;
 };
 

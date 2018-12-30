@@ -357,6 +357,7 @@ set(LN_SOURCES_Visual
 set(LN_SOURCES_UI
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIContainerElement.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIContext.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIControl.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIElement.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIEvents.hpp
@@ -369,8 +370,11 @@ set(LN_SOURCES_UI
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIStyle.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIViewport.hpp
     src/UI/UIContainerElement.cpp
+    src/UI/UIContext.cpp
     src/UI/UIControl.cpp
     src/UI/UIElement.cpp
+    src/UI/UIEventArgsPool.hpp
+    src/UI/UIEvents.cpp
     src/UI/UIFrameWindow.cpp
     src/UI/UILayoutElement.cpp
     src/UI/UILayoutPanel.cpp

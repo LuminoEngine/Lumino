@@ -2,6 +2,8 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/RenderState.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
+#include <LuminoEngine/UI/UIEvents.hpp>
+#include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
 #include <LuminoEngine/UI/UIContainerElement.hpp>
@@ -15,9 +17,12 @@ namespace ln {
 
 UIElement::UIElement()
     : m_manager(nullptr)
+    , m_context(nullptr)
+    , m_visualParent(nullptr)
     , m_localStyle(newObject<UIStyle>()) // TODO: ふつうは static なオブジェクトのほうが多くなるので、必要なやつだけ遅延作成でいいと思う
     , m_actualStyle(nullptr)
     , m_renderPriority(0)
+    , m_isHitTestVisible(true)
 {
 }
 
@@ -29,6 +34,10 @@ void UIElement::initialize()
     UIContainerElement* primaryElement = m_manager->primaryElement();
     if (primaryElement) {
         primaryElement->addElement(this);
+    }
+
+    if (m_manager->mainContext()) {
+        m_manager->mainContext()->addElement(this);
     }
 }
 
@@ -173,6 +182,39 @@ void UIElement::updateFrame(float elapsedSeconds)
     }
 }
 
+void UIElement::raiseEvent(UIEventArgs* e)
+{
+    raiseEventInternal(e);
+}
+
+UIElement* UIElement::lookupMouseHoverElement(const Point& globalPt)
+{
+    // 後ろからループする。後のモノが上に描画されるので、この方が自然。
+    // TODO: Zオーダーは別のリストにしたほうがいい気がする・・・
+    int count = getVisualChildrenCount();
+    for (int i = count - 1; i >= 0; i--)
+    {
+        UIElement* e = static_cast<UIElement*>(getVisualChild(i))->lookupMouseHoverElement(globalPt);
+        if (e != nullptr) return e;
+    }
+
+    if (m_isHitTestVisible)
+    {
+        Point localPoint = globalPt;
+        if (m_visualParent != nullptr)
+        {
+            localPoint.x -= m_visualParent->m_finalGlobalRect.x;
+            localPoint.y -= m_visualParent->m_finalGlobalRect.y;
+        }
+
+        if (onHitTest(localPoint)) {
+            return this;
+        }
+    }
+
+    return nullptr;
+}
+
 void UIElement::onUpdateFrame(float elapsedSeconds)
 {
 }
@@ -249,6 +291,32 @@ void UIElement::render(UIRenderingContext* context)
             getVisualChild(i)->render(context);
         }
     }
+}
+
+void UIElement::onRoutedEvent(UIEventArgs* e)
+{
+}
+
+bool UIElement::onHitTest(const Point& localPoint)
+{
+    // TODO:
+    return true;
+    //return m_finalLocalActualRect.makeDeflate(m_renderFrameThickness).contains(localPoint);
+}
+
+void UIElement::raiseEventInternal(UIEventArgs* e)
+{
+    if (LN_REQUIRE(e)) return;
+
+    // まずは this に通知
+    onRoutedEvent(e);
+    if (e->handled) return;
+
+    // TODO: bubble
+    //if (m_visualParent != nullptr)
+    //{
+    //    m_visualParent->raiseEventInternal(e);
+    //}
 }
 
 } // namespace ln

@@ -12,6 +12,41 @@ class SwapChain;
 class UIRenderView;
 class UIViewport;
 
+namespace detail {
+   
+class UIInputInjector
+    : public RefObject
+{
+public:
+    UIInputInjector(UIElement* owner);
+    bool injectMouseMove(float clientX, float clientY);
+    bool injectMouseButtonDown(MouseButtons button);
+    bool injectMouseButtonUp(MouseButtons button);
+    bool injectMouseWheel(int delta);
+    bool injectKeyDown(Keys keyCode, ModifierKeys modifierKeys);
+    bool injectKeyUp(Keys keyCode, ModifierKeys modifierKeys);
+    bool injectTextInput(Char ch);
+
+private:
+    void updateMouseHover(float clientX, float clientY);
+    UIElement* capturedElement();
+    UIElement* forcusedElement();
+    UIElement* mouseHoveredElement();
+
+    struct MouseClickTracker
+    {
+        double lastTime = 0.0;
+        int clickCount = 0;
+        UIElement* hoverElement = nullptr;
+    };
+
+    UIElement* m_owner;
+    Point m_mousePosition;
+    MouseClickTracker m_mouseClickTrackers[8];
+};
+
+} // namespace detail
+
 class LN_API UIFrameWindow
 	: public UIContainerElement
 	, public detail::IPlatforEventListener
@@ -44,6 +79,7 @@ private:
 
 	detail::UIManager* m_manager;
 	Ref<detail::PlatformWindow>	m_platformWindow;
+    Ref<detail::UIInputInjector> m_inputInjector;
 	Ref<SwapChain>	m_swapChain;
 	Ref<UIRenderView> m_renderView;
 

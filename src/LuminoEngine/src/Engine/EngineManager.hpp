@@ -3,6 +3,7 @@
 #include <LuminoEngine/Platform/PlatformEvent.hpp>
 
 namespace ln {
+class UIContext;
 class UIFrameWindow;
 class UIViewport;
 class UIRenderView;
@@ -123,6 +124,7 @@ private:
     Ref<SceneManager>					m_sceneManager;
 	Ref<UIManager>					m_uiManager;
 
+    Ref<UIContext> m_mainUIContext;
 	Ref<UIFrameWindow> m_mainWindow;
 	Ref<UIViewport> m_mainViewport;
     Ref<UIRenderView> m_mainUIRenderView;   // m_mainViewport の ViewBox 内部に配置する

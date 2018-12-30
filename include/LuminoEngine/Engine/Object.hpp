@@ -98,6 +98,11 @@ public:
     {
         return obj->requestWeakRefInfo();
     }
+
+    inline static void destructObject(Object* obj)
+    {
+        obj->~Object();
+    }
 };
 
 class WeakRefInfo final

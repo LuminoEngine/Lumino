@@ -323,7 +323,9 @@ void GLFWPlatformWindow::window_mouseButton_callback(GLFWwindow* window, int but
 
 	if (eventType != PlatformEventType::Unknown && mouseButton != MouseButtons::None)
 	{
-		thisWindow->sendEventToAllListener(PlatformEventArgs::makeMouseButtonEvent(thisWindow, eventType, mouseButton, glfwKeyModToLNKeyMod(mods)));
+        //double xpos, ypos;
+        //glfwGetCursorPos(window, &xpos, &ypos);
+		thisWindow->sendEventToAllListener(PlatformEventArgs::makeMouseButtonEvent(thisWindow, eventType, mouseButton/*, (short)xpos, (short)ypos*/, glfwKeyModToLNKeyMod(mods)));
 	}
 }
 

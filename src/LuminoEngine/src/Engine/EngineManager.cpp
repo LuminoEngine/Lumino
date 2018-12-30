@@ -1,6 +1,7 @@
 
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/Graphics/GraphicsContext.hpp>>
+#include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>
 #include <LuminoEngine/UI/UIRenderView.hpp>
@@ -76,9 +77,14 @@ void EngineManager::initialize()
 	initializeAllManagers();
 
 	if (m_uiManager) {
+        m_mainUIContext = newObject<UIContext>();
+        m_uiManager->setMainContext(m_mainUIContext);
+
 		m_mainWindow = newObject<UIFrameWindow>(m_platformManager->mainWindow(), m_settings.mainBackBufferSize);
 		m_mainViewport = newObject<UIViewport>();
         m_mainWindow->addElement(m_mainViewport);
+
+        m_mainUIContext->setLayoutRootElement(m_mainWindow);
 	}
 
 #if 1
@@ -107,6 +113,8 @@ void EngineManager::dispose()
 	}
 
 	if (m_mainWindow) m_mainWindow->dispose();
+    if (m_mainUIContext) m_mainUIContext->dispose();
+
     if (m_sceneManager) m_sceneManager->dispose();
     if (m_visualManager) m_visualManager->dispose();
 	if (m_assetManager) m_assetManager->dispose();

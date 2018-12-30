@@ -75,6 +75,11 @@ public:
 		StringTraits::tstrcpy(outPath, LN_MAX_PATH, path.c_str());
 	}
 #endif
+
+    static uint64_t getTickCount()
+    {
+        return getTickCountNS() / 1000000;
+    }
 };
 
 } // namespace ln

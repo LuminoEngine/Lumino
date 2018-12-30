@@ -30,6 +30,7 @@ protected:
     //virtual void render(UIRenderingContext* context);
     virtual void onUpdateFrame(float elapsedSeconds) override;
 	virtual void onRender(UIRenderingContext* context) override;
+    virtual void onRoutedEvent(UIEventArgs* e) override;
 
 private:
     detail::UIManager* m_manager;
