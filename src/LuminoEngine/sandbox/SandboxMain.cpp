@@ -93,26 +93,9 @@ int main(int argc, char** argv)
 	GlobalLogger::addStdErrAdapter();
 	Engine::initialize();
 
-    auto file = FileStream::create(u"D:/Tech/Audio/WebAudioTest1/2018-11-29T13_00_15.686Z.wav");
-    auto diag = newObject<DiagnosticsManager>();
-    detail::WaveDecoder d;
-    d.initialize(file, diag);
+    auto ctl = newObject<CameraOrbitControlComponent>();
+    Engine::mainCamera()->addComponent(ctl);
 
-
-	//detail::ZipAssetArchiveMaker ar;
-	//ar.open(u"C:/LocalProj/tmp/asset_pass.zip", u"pass");
-	//ar.addFile(u"C:/LocalProj/tmp/Basic.fx", u"Basic.fx");
-	//ar.addFile(u"C:/LocalProj/tmp/CMakeLists.txt", u"CMakeLists.txt");
-	//ar.close();
-
-	//detail::ZipAssetArchive ar2;
-	//ar2.open(u"C:/LocalProj/tmp/asset_pass.zip", u"pass1");
-
-	//detail::CryptedAssetArchiveWriter aw;
-	//aw.open(u"C:/LocalProj/tmp/asset_pass.lna", u"pass");
-	//aw.addFile(u"C:/LocalProj/tmp/Basic.fx", u"Basic.fx");
-	//aw.addFile(u"C:/LocalProj/tmp/CMakeLists.txt", u"CMakeLists.txt");
-	//aw.close();
 
     struct PosColor
     {
@@ -173,9 +156,7 @@ int main(int argc, char** argv)
     //imageEffect->setRadialScale(1.05);
     //Engine::mainViewport()->addImageEffect(imageEffect);
 
-    //auto imageEffect = newObject<ToneImageEffect>();
-    //imageEffect->play(ToneF(0.0, -0.5, -0.8, 1.0), 5);
-    //Engine::mainViewport()->addImageEffect(imageEffect);
+    auto sprite = Sprite::create(3, 3, tex);
 
     //auto tilemap = newObject<Tilemap>();
     //tilemap->setShadingModel(ShadingModel::UnLighting);
@@ -188,10 +169,10 @@ int main(int argc, char** argv)
     //auto ToneLayer2 = ToneImageEffect::create();
     //Engine::mainViewport()->addImageEffect(ToneLayer2);
 
-    auto BlurLayer = ScreenBlurImageEffect::create();
-    Engine::mainViewport()->addImageEffect(BlurLayer);
+    //auto BlurLayer = ScreenBlurImageEffect::create();
+    //Engine::mainViewport()->addImageEffect(BlurLayer);
 
-    auto mLogoSprite = ln::UISprite::create(ln::Assets::loadTexture(u"D:/Proj/Volkoff/Assets/Data/Graphics/Frontend/Logo_1.png"));
+    //auto mLogoSprite = ln::UISprite::create(ln::Assets::loadTexture(u"D:/Proj/Volkoff/Assets/Data/Graphics/Frontend/Logo_1.png"));
 #endif
 
 #if 1
@@ -239,7 +220,7 @@ int main(int argc, char** argv)
     int frameCount = 0;
     while (Engine::update())
     {
-        BlurLayer->play(0.7f, Vector2(0, 0.0), 1.05);
+        //BlurLayer->play(0.7f, Vector2(0, 0.0), 1.05);
 
         //sprite->setPosition(0, track1->evaluate(time));
         //std::cout << track1->evaluate(time) << std::endl;

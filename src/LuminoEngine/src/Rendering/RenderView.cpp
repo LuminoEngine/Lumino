@@ -36,6 +36,16 @@ void RenderView::addDrawElementListManager(detail::DrawElementListCollector* ele
 	m_elementListManagers.add(elementListManager);
 }
 
+EventConnection RenderView::connectOnUIEvent(UIEventHandler handler)
+{
+    return m_onUIEvent.connect(handler);
+}
+
+void RenderView::onRoutedEvent(UIEventArgs* e)
+{
+    m_onUIEvent.raise(e);
+}
+
 //void RenderView::render(GraphicsContext* graphicsContext, const FrameBuffer& frameBuffer, detail::SceneRenderer* sceneRenderer)
 //{
 //	m_renderingFrameBufferSize = SizeI(frameBuffer.renderTarget[0]->width(), frameBuffer.renderTarget[0]->height());

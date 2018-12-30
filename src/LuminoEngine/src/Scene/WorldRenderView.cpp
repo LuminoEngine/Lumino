@@ -107,5 +107,12 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
 	}
 }
 
+//void WorldRenderView::onRoutedEvent(UIEventArgs* e)
+//{
+//    if (m_camera)
+//    {
+//    }
+//}
+
 } // namespace ln
 

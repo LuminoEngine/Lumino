@@ -81,7 +81,12 @@ void UIViewport::onRender(UIRenderingContext* context)
 
 void UIViewport::onRoutedEvent(UIEventArgs* e)
 {
-    std::cout << e->type() << std::endl;
+    for (auto& view : m_renderViews)
+    {
+        view->onRoutedEvent(e);
+        if (e->handled) return;
+    }
+
     UIContainerElement::onRoutedEvent(e);
 }
 

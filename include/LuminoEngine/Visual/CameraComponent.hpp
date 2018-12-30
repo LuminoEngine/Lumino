@@ -57,7 +57,7 @@ public:
 
 
 	void setProjectionMode(ProjectionMode value) { m_projectionMode = value; }
-
+    ProjectionMode projectionMode() const { return m_projectionMode; }
 	
 	void setOrthographicSize(float value) { m_orthographicSize = value; }
 

@@ -19,10 +19,10 @@ public:
     static Ref<Camera> create();
 
     /** Y 方向視野角の設定 */
-    void setFovY(float value) { m_component->setFovY(value); }
+    void setFov(float value) { m_component->setFovY(value); }
 
     /** Y 方向視野角の取得 */
-    float fovY() const { return m_component->getFovY(); }
+    float fov() const { return m_component->getFovY(); }
 
     /** 最も近いビュープレーン位置を設定します。(0 は無効値です) */
     void setNearClip(float value) { m_component->setNearClip(value); }
@@ -60,6 +60,8 @@ public:
 
 	CameraComponent* cameraComponent() const;
 
+    WorldRenderView* renderView() const { return m_ownerRenderView; }
+
 protected:
     // WorldObject interface
     virtual void onUpdate(float elapsedSeconds) override;
@@ -78,6 +80,5 @@ private:
 
     friend class WorldRenderView;
 };
-
 
 } // namespace ln

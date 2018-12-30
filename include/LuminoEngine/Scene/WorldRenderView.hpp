@@ -21,6 +21,9 @@ public:
     // TODO: internal
     virtual void render(GraphicsContext* graphicsContext) override;
 
+protected:
+    //virtual void onRoutedEvent(UIEventArgs* e) override;
+
 LN_CONSTRUCT_ACCESS:
     WorldRenderView();
 	virtual ~WorldRenderView();

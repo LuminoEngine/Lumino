@@ -3,10 +3,12 @@
 #include "../Graphics/Texture.hpp"
 #include "../Graphics/DepthBuffer.hpp"
 #include "../Shader/ShaderInterfaceFramework.hpp"
+#include "../UI/UIEvents.hpp"
 #include "Common.hpp"
 
 namespace ln {
 class GraphicsContext;
+class UIEventArgs;
 namespace detail {
 class RenderingManager;
 class FrameBufferCache;
@@ -49,7 +51,11 @@ public:
     // フレーム開始時に決定
     const Size& actualPixelSize() const { return m_actualPixelSize; }
 
-protected:
+    LN_METHOD(Event)
+    EventConnection connectOnUIEvent(UIEventHandler handler);
+
+public: // TODO: protected
+    virtual void onRoutedEvent(UIEventArgs* e);
 
 LN_INTERNAL_ACCESS:
 	const List<detail::DrawElementListCollector*>& elementListManagers() const { return m_elementListManagers; }
@@ -65,6 +71,7 @@ private:
 	Color m_backgroundColor;
     Size m_actualPixelSize;
 
+    Event<UIEventHandler> m_onUIEvent;
 };
 
 

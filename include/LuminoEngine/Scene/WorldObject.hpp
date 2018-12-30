@@ -53,6 +53,11 @@ public:
         return Vector3::transform(Vector3::UnitZ, m_rotation);
     }
 
+    Vector3 up() const
+    {
+        return Vector3::transform(Vector3::UnitY, m_rotation);
+    }
+
     void lookAt(const Vector3& target, const Vector3& up = Vector3::UnitY);
 
     Matrix getLocalMatrix() const;

@@ -34,6 +34,14 @@ void Component::render(RenderingContext* context)
     onRender(context);
 }
 
+void Component::onAttached(WorldObject* owner)
+{
+}
+
+void Component::onDetaching(WorldObject* owner)
+{
+}
+
 void Component::onUpdate(float elapsedSeconds)
 {
 }

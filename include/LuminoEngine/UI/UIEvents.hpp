@@ -23,64 +23,64 @@ class UIEvents
 {
 public:
     /** GotFocusEvent イベントの識別子 (UIEventArgs) */
-    static UIEventType	GotFocusEvent;
+    static const UIEventType	GotFocusEvent;
 
     /** LostFocusEvent イベントの識別子 (UIEventArgs) */
-    static UIEventType	LostFocusEvent;
+    static const UIEventType	LostFocusEvent;
 
     /** MouseMove イベントの識別子 (UIMouseEventArgs) */
-    static UIEventType	MouseMoveEvent;
+    static const UIEventType	MouseMoveEvent;
 
     /** MouseDown イベントの識別子 (UIMouseEventArgs) */
-    static UIEventType	MouseDownEvent;
+    static const UIEventType	MouseDownEvent;
 
     /** MouseUp イベントの識別子 (UIMouseEventArgs) */
-    static UIEventType	MouseUpEvent;
+    static const UIEventType	MouseUpEvent;
 
     /** MouseWheel イベントの識別子 (UIMouseWheelEventArgs) */
-    static UIEventType	MouseWheelEvent;
+    static const UIEventType	MouseWheelEvent;
 
     /** MouseEnterEvent イベントの識別子 (UIMouseEventArgs) */
-    static UIEventType	MouseEnterEvent;
+    static const UIEventType	MouseEnterEvent;
 
     /** MouseLeaveEvent イベントの識別子 (UIMouseEventArgs) */
-    static UIEventType	MouseLeaveEvent;
+    static const UIEventType	MouseLeaveEvent;
 
     /** KeyDownEvent イベントの識別子 (UIKeyEventArgs) */
-    static UIEventType	KeyDownEvent;
+    static const UIEventType	KeyDownEvent;
 
     /** KeyUpEvent イベントの識別子 (UIKeyEventArgs) */
-    static UIEventType	KeyUpEvent;
+    static const UIEventType	KeyUpEvent;
 
     /** TextInputEvent イベントの識別子 (UIKeyEventArgs) */
-    static UIEventType	TextInputEvent;
+    static const UIEventType	TextInputEvent;
 
     /** Checked イベントの識別子 (UIEventArgs) */
-    static UIEventType	CheckedEvent;
+    static const UIEventType	CheckedEvent;
 
     /** Unchecked イベントの識別子 (UIEventArgs) */
-    static UIEventType	UncheckedEvent;
+    static const UIEventType	UncheckedEvent;
 
     /** DragStartedEvent イベントの識別子 (UIEventArgs) マウスドラッグを開始したときに発生するイベントを表します。*/
-    static UIEventType	ScrollDragStartedEvent;
+    static const UIEventType	ScrollDragStartedEvent;
 
     /** DragDeltaEvent イベントの識別子 (UIEventArgs) マウスドラッグ中に発生するイベントを表します。 */
-    static UIEventType	ScrollDragDeltaEvent;
+    static const UIEventType	ScrollDragDeltaEvent;
 
     /** DragCompletedEvent イベントの識別子 (UIEventArgs) マウスドラッグが完了したときに発生するイベントを表します。 */
-    static UIEventType	ScrollDragCompletedEvent;
+    static const UIEventType	ScrollDragCompletedEvent;
 
     /** DragCanceledEvent イベントの識別子 (UIEventArgs) マウスドラッグを中断したときに発生するイベントを表します。 */
-    static UIEventType	ScrollDragCanceledEvent;
+    static const UIEventType	ScrollDragCanceledEvent;
 
     /** ScrollEvent イベントの識別子 (UIEventArgs) */
-    static UIEventType	ScrollEvent;
+    static const UIEventType	ScrollEvent;
 
     /** DragEnter イベントの識別子 (UIDragDropEventArgs) */
-    static UIEventType	DragEnterEvent;
+    static const UIEventType	DragEnterEvent;
 
     /** DragDrop イベントの識別子 (UIDragDropEventArgs) */
-    static UIEventType	DragDropEvent;
+    static const UIEventType	DragDropEvent;
 };
 
 /**
@@ -227,6 +227,28 @@ public:
 	DataObject* m_data;
 	DragDropEffects	m_effect;
 };
+
+
+/**
+	@brief		特定のイベントデータを持たない、UIイベントを処理するハンドラです。
+	@param[in]	e		: イベントのデータ
+*/
+LN_DELEGATE()
+using UIEventHandler = std::function<void(UIEventArgs* e)>;
+
+/**
+	@brief		マウス操作が関係する UIイベントを処理するハンドラです。
+	@param[in]	e		: イベントのデータ
+*/
+LN_DELEGATE()
+using UIMouseEventHandler = std::function<void(UIMouseEventArgs* e)>;
+
+/**
+	@brief		ドラッグアンドドロップ操作が関係する UIイベントを処理するハンドラです。
+	@param[in]	e		: イベントのデータ
+*/
+LN_DELEGATE()
+using UIDragDropEventHandler = std::function<void(UIDragDropEventArgs* e)>;
 
 } // namespace ln
 

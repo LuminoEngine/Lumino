@@ -10,26 +10,26 @@ namespace ln {
 //==============================================================================
 // UIEvents
 
-UIEventType	UIEvents::GotFocusEvent = 1;
-UIEventType	UIEvents::LostFocusEvent = 2;
-UIEventType	UIEvents::MouseMoveEvent = 3;
-UIEventType	UIEvents::MouseDownEvent = 4;
-UIEventType	UIEvents::MouseUpEvent = 5;
-UIEventType	UIEvents::MouseWheelEvent = 6;
-UIEventType	UIEvents::MouseEnterEvent = 7;
-UIEventType	UIEvents::MouseLeaveEvent = 8;
-UIEventType	UIEvents::KeyDownEvent = 9;
-UIEventType	UIEvents::KeyUpEvent = 10;
-UIEventType	UIEvents::TextInputEvent = 11;
-UIEventType	UIEvents::CheckedEvent = 12;
-UIEventType	UIEvents::UncheckedEvent = 13;
-UIEventType	UIEvents::ScrollDragStartedEvent = 14;
-UIEventType	UIEvents::ScrollDragDeltaEvent = 15;
-UIEventType	UIEvents::ScrollDragCompletedEvent = 16;
-UIEventType	UIEvents::ScrollDragCanceledEvent = 17;
-UIEventType	UIEvents::ScrollEvent = 18;
-UIEventType	UIEvents::DragEnterEvent = 19;
-UIEventType	UIEvents::DragDropEvent = 20;
+const UIEventType	UIEvents::GotFocusEvent = 1;
+const UIEventType	UIEvents::LostFocusEvent = 2;
+const UIEventType	UIEvents::MouseMoveEvent = 3;
+const UIEventType	UIEvents::MouseDownEvent = 4;
+const UIEventType	UIEvents::MouseUpEvent = 5;
+const UIEventType	UIEvents::MouseWheelEvent = 6;
+const UIEventType	UIEvents::MouseEnterEvent = 7;
+const UIEventType	UIEvents::MouseLeaveEvent = 8;
+const UIEventType	UIEvents::KeyDownEvent = 9;
+const UIEventType	UIEvents::KeyUpEvent = 10;
+const UIEventType	UIEvents::TextInputEvent = 11;
+const UIEventType	UIEvents::CheckedEvent = 12;
+const UIEventType	UIEvents::UncheckedEvent = 13;
+const UIEventType	UIEvents::ScrollDragStartedEvent = 14;
+const UIEventType	UIEvents::ScrollDragDeltaEvent = 15;
+const UIEventType	UIEvents::ScrollDragCompletedEvent = 16;
+const UIEventType	UIEvents::ScrollDragCanceledEvent = 17;
+const UIEventType	UIEvents::ScrollEvent = 18;
+const UIEventType	UIEvents::DragEnterEvent = 19;
+const UIEventType	UIEvents::DragDropEvent = 20;
 
 //==============================================================================
 // UIEventArgs

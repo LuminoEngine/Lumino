@@ -146,6 +146,7 @@ void WorldObject::addComponent(Component* component)
 
     component->m_object = this;
     m_components->add(component);
+    component->onAttached(this);
 }
 
 const Matrix& WorldObject::worldMatrix()
