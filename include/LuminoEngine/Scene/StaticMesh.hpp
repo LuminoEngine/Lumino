@@ -11,6 +11,8 @@ class StaticMesh
 public:
     static Ref<StaticMesh> create();
 
+    StaticMeshComponent* staticMeshComponent() const;
+
 protected:
 
 LN_CONSTRUCT_ACCESS:

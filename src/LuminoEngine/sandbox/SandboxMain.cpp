@@ -156,7 +156,7 @@ int main(int argc, char** argv)
     //imageEffect->setRadialScale(1.05);
     //Engine::mainViewport()->addImageEffect(imageEffect);
 
-    auto sprite = Sprite::create(3, 3, tex);
+    //auto sprite = Sprite::create(3, 3, tex);
 
     //auto tilemap = newObject<Tilemap>();
     //tilemap->setShadingModel(ShadingModel::UnLighting);
@@ -172,13 +172,44 @@ int main(int argc, char** argv)
     //auto BlurLayer = ScreenBlurImageEffect::create();
     //Engine::mainViewport()->addImageEffect(BlurLayer);
 
-    auto texture2 = Texture2D::create(100, 100);
-    texture2->clear(Color::Gray);
-    //font->setAntiAlias(false);
-    texture2->drawText(u"Left", Rect(0, 0, 0, 0), font, Color::Black);
-    auto sprite2 = ln::UISprite::create(texture2);
-    //sprite2->setPosition(200, 100);
-    sprite2->setCenterPoint(50, 50);
+    //auto texture2 = Texture2D::create(100, 100);
+    //texture2->clear(Color::Gray);
+    ////font->setAntiAlias(false);
+    //texture2->drawText(u"Left", Rect(0, 0, 0, 0), font, Color::Black);
+    //auto sprite2 = ln::UISprite::create(texture2);
+    ////sprite2->setPosition(200, 100);
+    //sprite2->setCenterPoint(50, 50);
+
+
+    auto meshMaterial = Material::create();
+    meshMaterial->setMainTexture(tex);
+
+    auto meshRes = newObject<MeshResource>();
+    meshRes->resizeVertexBuffer(4);
+    meshRes->resizeIndexBuffer(6);
+    meshRes->resizeSections(1);
+    meshRes->setVertex(0, ln::Vertex{ Vector3(-3, 2, 0), -Vector3::UnitZ, Vector2(0, 0), Color::White });
+    meshRes->setVertex(1, ln::Vertex{ Vector3(3, 1, 0), -Vector3::UnitZ, Vector2(1, 0), Color::White });
+    meshRes->setVertex(2, ln::Vertex{ Vector3(-3, -1, 0), -Vector3::UnitZ, Vector2(0, 1), Color::White });
+    meshRes->setVertex(3, ln::Vertex{ Vector3(3, -1, 0), -Vector3::UnitZ, Vector2(1, 1), Color::White });
+    meshRes->setIndex(0, 0);
+    meshRes->setIndex(1, 1);
+    meshRes->setIndex(2, 2);
+    meshRes->setIndex(3, 2);
+    meshRes->setIndex(4, 1);
+    meshRes->setIndex(5, 3);
+    meshRes->setSection(0, 0, 2, 0);
+
+    auto meshContainer = newObject<MeshContainer>();
+    meshContainer->setMeshResource(meshRes);
+
+    auto meshModel = newObject<MeshModel>();
+    meshModel->addMeshContainer(meshContainer);
+    meshModel->addMaterial(meshMaterial);
+
+    auto mesh1 = newObject<StaticMesh>();
+    mesh1->staticMeshComponent()->setModel(meshModel);
+
 #endif
 
 #if 1

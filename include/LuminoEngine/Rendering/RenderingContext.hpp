@@ -9,6 +9,7 @@ class Texture;
 class RenderTargetTexture;
 class DepthBuffer;
 class AbstractMaterial;
+class MeshResource;
 class MeshContainer;
 class RenderViewPoint;
 namespace detail {
@@ -77,6 +78,8 @@ public:
 
 	/** @} */
 
+    void setMaterial(AbstractMaterial* material);
+
 
     // BuiltinEffectData
     //void setTransfrom(const Matrix& value);
@@ -113,7 +116,8 @@ public:
 		BillboardType billboardType,
 		AbstractMaterial* material);
 
-	void drawMesh(MeshContainer* meshContainer, int sectionIndex);
+    void drawMesh(MeshResource* meshResource, int sectionIndex);
+	//void drawMesh(MeshContainer* meshContainer, int sectionIndex);
 
 	/** @} */
 

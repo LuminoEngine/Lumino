@@ -26,6 +26,8 @@ Get started
 
 [Contributing](.github/CONTRIBUTING.md)
 
+[Blog](http://luminolog.hatenablog.com/)
+
 
 開発状況 / 開発版について
 --------

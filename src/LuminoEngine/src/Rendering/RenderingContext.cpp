@@ -87,6 +87,11 @@ void RenderingContext::setOpacity(float value)
     m_builder->setOpacity(value);
 }
 
+void RenderingContext::setMaterial(AbstractMaterial* material)
+{
+    m_builder->setMaterial(material);
+}
+
 void RenderingContext::setColorScale(const Color& value)
 {
     m_builder->setColorScale(value);
@@ -225,40 +230,64 @@ void RenderingContext::drawSprite(
 	//ptr->setLocalBoundingSphere(sphere);
 }
 
-void RenderingContext::drawMesh(MeshContainer* meshContainer, int sectionIndex)
+// LOD なし。というか直接描画
+void RenderingContext::drawMesh(MeshResource* meshResource, int sectionIndex)
 {
-	class DrawMesh : public detail::RenderDrawElement
-	{
-	public:
-		Ref<MeshContainer> meshContainer;
-		int sectionIndex;
+    class DrawMesh : public detail::RenderDrawElement
+    {
+    public:
+        Ref<MeshResource> meshResource;
+        int sectionIndex;
 
-		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
-		{
-			// TODO: LOD Level
-			MeshResource* mesh = meshContainer->selectLODResource(0);
+        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+        {
+            static_cast<detail::MeshRenderFeature*>(renderFeatures)->drawMesh(context, meshResource, sectionIndex);
+        }
+    };
 
-			static_cast<detail::MeshRenderFeature*>(renderFeatures)->drawMesh(context, mesh, sectionIndex);
-		}
-	};
+    auto* element = m_builder->addNewDrawElement<DrawMesh>(
+        m_manager->meshRenderFeature(),
+        m_builder->meshRenderFeatureStageParameters());
+    element->meshResource = meshResource;
+    element->sectionIndex = sectionIndex;
 
-
-	MeshResource* mesh = meshContainer->meshResource();
-	int materialIndex = mesh->sections()[sectionIndex].materialIndex;
-
-	m_builder->setMaterial(
-		meshContainer->meshModel()->materials()[materialIndex]);
-
-	auto* element = m_builder->addNewDrawElement<DrawMesh>(
-		m_manager->meshRenderFeature(),
-		m_builder->meshRenderFeatureStageParameters());
-	element->meshContainer = meshContainer;
-	element->sectionIndex = sectionIndex;
-	// TODO
-	//detail::Sphere sphere;
-	//detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &sphere);
-	//ptr->setLocalBoundingSphere(sphere);
+    // TODO: bounding
 }
+
+//void RenderingContext::drawMesh(MeshContainer* meshContainer, int sectionIndex)
+//{
+//	class DrawMesh : public detail::RenderDrawElement
+//	{
+//	public:
+//		Ref<MeshContainer> meshContainer;
+//		int sectionIndex;
+//
+//		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+//		{
+//			// TODO: LOD Level
+//			MeshResource* mesh = meshContainer->selectLODResource(0);
+//
+//			static_cast<detail::MeshRenderFeature*>(renderFeatures)->drawMesh(context, mesh, sectionIndex);
+//		}
+//	};
+//
+//
+//	MeshResource* mesh = meshContainer->meshResource();
+//	int materialIndex = mesh->sections()[sectionIndex].materialIndex;
+//
+//	m_builder->setMaterial(
+//		meshContainer->meshModel()->materials()[materialIndex]);
+//
+//	auto* element = m_builder->addNewDrawElement<DrawMesh>(
+//		m_manager->meshRenderFeature(),
+//		m_builder->meshRenderFeatureStageParameters());
+//	element->meshContainer = meshContainer;
+//	element->sectionIndex = sectionIndex;
+//	// TODO
+//	//detail::Sphere sphere;
+//	//detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &sphere);
+//	//ptr->setLocalBoundingSphere(sphere);
+//}
 
 void RenderingContext::addAmbientLight(const Color& color, float intensity)
 {

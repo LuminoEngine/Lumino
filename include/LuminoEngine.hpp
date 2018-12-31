@@ -55,6 +55,7 @@
 
 #include "LuminoEngine/Visual/LightComponent.hpp"
 #include "LuminoEngine/Visual/SpriteComponent.hpp"
+#include "LuminoEngine/Visual/StaticMeshComponent.hpp"
 
 #include "LuminoEngine/Scene/World.hpp"
 #include "LuminoEngine/Scene/WorldObject.hpp"
@@ -62,6 +63,7 @@
 #include "LuminoEngine/Scene/CameraOrbitControlComponent.hpp"
 #include "LuminoEngine/Scene/Light.hpp"
 #include "LuminoEngine/Scene/Sprite.hpp"
+#include "LuminoEngine/Scene/StaticMesh.hpp"
 
 #include "LuminoEngine/UI/UIFrameWindow.hpp"
 #include "LuminoEngine/UI/UIViewport.hpp"

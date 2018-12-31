@@ -29,5 +29,10 @@ void StaticMesh::initialize()
     setMainVisualComponent(m_component);
 }
 
+StaticMeshComponent* StaticMesh::staticMeshComponent() const
+{
+    return m_component;
+}
+
 } // namespace ln
 
