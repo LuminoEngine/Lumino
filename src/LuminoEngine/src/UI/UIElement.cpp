@@ -268,8 +268,13 @@ void UIElement::render(UIRenderingContext* context)
         context->pushState();
 
 
-        context->setBaseTransfrom(Matrix::makeAffineTransformation(
-            scale(), Vector3::Zero, rotation(), position() - centerPoint()));
+        {
+            Matrix m = Matrix::makeTranslation(-centerPoint());
+            m.scale(scale());
+            m.rotateQuaternion(rotation());
+            m.translate(position());
+            context->setBaseTransfrom(m);
+        }
         detail::BuiltinEffectData data;
         data.opacity = opacity();
         data.colorScale = colorScale();
