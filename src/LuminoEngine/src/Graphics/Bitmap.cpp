@@ -326,22 +326,50 @@ void BlitHelper::bitBltInternalTemplate(
 
                 if (mulColor)
                 {
-                    r = (mulColorRGBA.r * (255 - src.a) / 255) + (src.r * src.a / 255);
-                    g = (mulColorRGBA.g * (255 - src.a) / 255) + (src.g * src.a / 255);
-                    b = (mulColorRGBA.b * (255 - src.a) / 255) + (src.b * src.a / 255);
-                    a = std::min(mulColorRGBA.a + src.a, 255);
+                    // mulColor と src のブレンド
+                    {
+                        int src_a = src.a;
+                        int dst_r = mulColorRGBA.r * mulColorRGBA.a / 255;
+                        int dst_g = mulColorRGBA.g * mulColorRGBA.a / 255;
+                        int dst_b = mulColorRGBA.b * mulColorRGBA.a / 255;
+                        r = (dst_r * (255 - src_a) / 255) + (src.r * src_a / 255);
+                        g = (dst_g * (255 - src_a) / 255) + (src.g * src_a / 255);
+                        b = (dst_b * (255 - src_a) / 255) + (src.b * src_a / 255);
+                        a = (mulColorRGBA.a * src.a) / 255;//std::min(mulColorRGBA.a + src.a, 255);
+                    }
 
-                    r = (dst.r * (255 - a) / 255) + (r * a / 255);
-                    g = (dst.g * (255 - a) / 255) + (g * a / 255);
-                    b = (dst.b * (255 - a) / 255) + (b * a / 255);
-                    a = std::min(dst.a + a, 255);
+                    // dst と ↑のブレンド
+                    {
+                        int dst_r = dst.r * dst.a / 255;
+                        int dst_g = dst.g * dst.a / 255;
+                        int dst_b = dst.b * dst.a / 255;
+                        r = (dst_r * (255 - a) / 255) + (r * a / 255);
+                        g = (dst_g * (255 - a) / 255) + (g * a / 255);
+                        b = (dst_b * (255 - a) / 255) + (b * a / 255);
+                        a = std::min(dst.a + a, 255);
+                    }
                 }
                 else
                 {
-                    r = (dst.r * (255 - src.a) / 255) + (src.r * src.a / 255);
-                    g = (dst.g * (255 - src.a) / 255) + (src.g * src.a / 255);
-                    b = (dst.b * (255 - src.a) / 255) + (src.b * src.a / 255);
-                    a = std::min(dst.a + src.a, 255);
+                    if (dst.a == 0)
+                    {
+                        r = src.r;
+                        g = src.g;
+                        b = src.b;
+                        a = src.a;
+                    }
+                    else
+                    {
+                        int src_a = src.a;
+                        int dst_r = dst.r * dst.a / 255;
+                        int dst_g = dst.g * dst.a / 255;
+                        int dst_b = dst.b * dst.a / 255;
+
+                        r = (dst_r * (255 - src_a) / 255) + (src.r * src_a / 255);
+                        g = (dst_g * (255 - src_a) / 255) + (src.g * src_a / 255);
+                        b = (dst_b * (255 - src_a) / 255) + (src.b * src_a / 255);
+                        a = std::min(dst.a + src.a, 255);
+                    }
                 }
 
                 dstBuf.setPixel(x, ClColor{ r, g, b, a });

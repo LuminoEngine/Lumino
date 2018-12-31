@@ -172,7 +172,13 @@ int main(int argc, char** argv)
     //auto BlurLayer = ScreenBlurImageEffect::create();
     //Engine::mainViewport()->addImageEffect(BlurLayer);
 
-    //auto mLogoSprite = ln::UISprite::create(ln::Assets::loadTexture(u"D:/Proj/Volkoff/Assets/Data/Graphics/Frontend/Logo_1.png"));
+    auto texture2 = Texture2D::create(100, 100);
+    texture2->clear(Color::Gray);
+    //font->setAntiAlias(false);
+    texture2->drawText(u"Left", Rect(0, 0, 0, 0), font, Color::Black);
+    auto sprite2 = ln::UISprite::create(texture2);
+    //sprite2->setPosition(200, 100);
+    sprite2->setCenterPoint(50, 50);
 #endif
 
 #if 1
