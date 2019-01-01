@@ -72,6 +72,7 @@ public:
 	void setResourcePool(GraphicsResourcePool pool);
 
     void clear(const Color& color);
+    void setPixel(int x, int y, const Color& color);
     void blit(int x, int y, Texture2D* srcTexture, const RectI& srcRect);	// TODO: アルファブレンド有無
     void drawText(const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment = TextAlignment::Left);
 

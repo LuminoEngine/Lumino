@@ -70,26 +70,22 @@ TEST_F(Test_Graphics_Texture, drawText)
 	}
 }
 
-#if 0
-
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_Texture, setPixel)
 {
-	auto tex1 = Texture2D::create(2, 2, TextureFormat::R8G8B8A8);
+	auto tex1 = Texture2D::create(2, 2);
 	tex1->setPixel(0, 0, Color::Red);
-	tex1->setPixel(0, 1, Color::Green);
 	tex1->setPixel(1, 0, Color::Blue);
+	tex1->setPixel(0, 1, Color::Green);
 	tex1->setPixel(1, 1, Color::White);
 
-	auto sprite = Sprite2D::create(tex1);
-	sprite->setBlendMode(BlendMode::Alpha);
-	Engine::update();
+	auto sprite = UISprite::create(tex1);
+    sprite->setScale(20);
 
-	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Texture.setPixel1.png"), 100));
-
-	sprite->removeFromWorld();
+    TestEnv::updateFrame();
+    ASSERT_SCREEN(LN_ASSETFILE("Result/Graphics/Test_Graphics_Texture-setPixel-1.png"));
+    LN_TEST_CLEAN_SCENE;
 }
-#endif
 
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_Texture, blit)

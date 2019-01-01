@@ -13,7 +13,7 @@ GTEST_API_ int main(int argc, char **argv)
 	char* testArgs[] = {
 		argv[0],
 		"--gtest_break_on_failure",
-		"--gtest_filter=Test_Graphics_Texture.drawText"
+		"--gtest_filter=Test_Graphics_Texture.setPixel"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);

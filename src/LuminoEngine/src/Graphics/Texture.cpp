@@ -120,6 +120,12 @@ void Texture2D::clear(const Color& color)
     bitmap->clear(color.to32BitColor());
 }
 
+void Texture2D::setPixel(int x, int y, const Color& color)
+{
+    Bitmap2D* bitmap = map(MapMode::Write);
+    bitmap->setPixel32(x, y, color.to32BitColor());
+}
+
 void Texture2D::blit(int x, int y, Texture2D* srcTexture, const RectI& srcRect)
 {
     if (LN_REQUIRE(srcTexture)) return;
