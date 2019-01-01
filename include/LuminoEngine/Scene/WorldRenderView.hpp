@@ -6,6 +6,8 @@
 namespace ln {
 class World;
 class Camera;
+class RenderingContext;
+class StaticMeshModel;
 namespace detail {
 class SceneRenderingPipeline;
 }
@@ -30,11 +32,18 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 private:
+    void createGridPlane();
+    void renderGridPlane(RenderingContext* renderingContext, RenderView* renderView);
+    void adjustGridPlane(const ViewFrustum& viewFrustum, RenderView* renderView);
+
     Ref<detail::SceneRenderingPipeline> m_sceneRenderingPipeline;
     Ref<detail::DrawElementListCollector> m_drawElementListCollector;
     Ref<World> m_targetWorld;
 	Ref<Camera> m_camera;
     Ref<RenderViewPoint> m_viewPoint;
+
+    Ref<StaticMeshModel> m_gridPlane;
+    bool m_visibleGridPlane;
 };
 
 } // namespace ln

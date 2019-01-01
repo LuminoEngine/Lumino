@@ -95,7 +95,7 @@ int main(int argc, char** argv)
 
     auto ctl = newObject<CameraOrbitControlComponent>();
     Engine::mainCamera()->addComponent(ctl);
-    Engine::mainCamera()->setBackgroundColor(Color::Gray);
+    //Engine::mainCamera()->setBackgroundColor(Color::Gray);
 
 
     struct PosColor
@@ -185,9 +185,11 @@ int main(int argc, char** argv)
     //auto mesh1 = newObject<StaticMesh>(u"D:/tmp/cube.obj");
     auto mesh1 = newObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
     //auto mesh1 = newObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/usemtl-issue-68.obj");
-
+    mesh1->setPosition(0, -1, 0);
     //
 
+    auto mesh2 = newObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
+    mesh2->setPosition(5, 0, 0);
 #endif
 
 #if 0
