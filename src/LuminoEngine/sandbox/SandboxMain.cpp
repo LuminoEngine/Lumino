@@ -95,6 +95,7 @@ int main(int argc, char** argv)
 
     auto ctl = newObject<CameraOrbitControlComponent>();
     Engine::mainCamera()->addComponent(ctl);
+    Engine::mainCamera()->setBackgroundColor(Color::Gray);
 
 
     struct PosColor
@@ -137,6 +138,7 @@ int main(int argc, char** argv)
     auto font = Font::create(u"VL PGothic", 20);
 
 	auto light1 = AmbientLight::create();
+    auto light2 = DirectionalLight::create();
 
     auto tex = newObject<Texture2D>(u"D:/tmp/110220c_as019.png");
     //auto tex = Assets::loadTexture(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Sprite1.png");
@@ -180,7 +182,15 @@ int main(int argc, char** argv)
     ////sprite2->setPosition(200, 100);
     //sprite2->setCenterPoint(50, 50);
 
+    //auto mesh1 = newObject<StaticMesh>(u"D:/tmp/cube.obj");
+    auto mesh1 = newObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
+    //auto mesh1 = newObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/usemtl-issue-68.obj");
 
+    //
+
+#endif
+
+#if 0
     auto meshMaterial = Material::create();
     meshMaterial->setMainTexture(tex);
 
@@ -203,13 +213,12 @@ int main(int argc, char** argv)
     auto meshContainer = newObject<MeshContainer>();
     meshContainer->setMeshResource(meshRes);
 
-    auto meshModel = newObject<MeshModel>();
+    auto meshModel = newObject<StaticMeshModel>();
     meshModel->addMeshContainer(meshContainer);
     meshModel->addMaterial(meshMaterial);
 
     auto mesh1 = newObject<StaticMesh>();
     mesh1->staticMeshComponent()->setModel(meshModel);
-
 #endif
 
 #if 1
@@ -417,7 +426,7 @@ int main(int argc, char** argv)
 		auto meshContainer = newObject<MeshContainer>();
 		meshContainer->setMeshResource(meshRes);
 
-		auto meshModel = newObject<MeshModel>();
+		auto meshModel = newObject<StaticMeshModel>();
 		meshModel->addMeshContainer(meshContainer);
 		meshModel->addMaterial(material);
 #endif

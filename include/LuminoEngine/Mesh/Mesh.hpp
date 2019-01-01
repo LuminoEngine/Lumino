@@ -8,7 +8,7 @@ class VertexBuffer;
 class IndexBuffer;
 class AbstractMaterial;
 class MeshContainer;
-class MeshModel;
+class StaticMeshModel;
 namespace detail {
 class MeshManager;
 }
@@ -58,9 +58,14 @@ public:
 	/** セクションの情報を設定します。 */
 	void setSection(int sectionIndex, int startIndex, int primitiveCount, int materialIndex);
 
+    /** セクションの情報を追加します。 */
+    void addSection(int startIndex, int primitiveCount, int materialIndex);
+
 	// TODO: internal
 	void commitRenderData(int sectionIndex, MeshSection* outSection, VertexDeclaration** outDecl, VertexBuffer** outVBs, int* outVBCount, IndexBuffer** outIB);
 	const List<MeshSection>& sections() const { return m_sections; }
+    void getVertexBuffers(VertexBuffer** basic);
+    void setVertexBuffers(VertexBuffer* basic);
 
 LN_CONSTRUCT_ACCESS:
 	MeshResource();
@@ -121,6 +126,8 @@ public:
 	/** メインの MeshResource を取得します。 */
 	MeshResource* meshResource() const;
 
+    void addMeshResource(MeshResource* mesh);
+
 	/** メッシュの境界ボックスを取得します。 */
 	const Box& bounds() const { return m_boundingBox; }
 
@@ -129,7 +136,7 @@ public:
 
 	void calculateBounds();
 
-	MeshModel* meshModel() const { return m_meshModel; }
+	StaticMeshModel* meshModel() const { return m_meshModel; }
 
 LN_CONSTRUCT_ACCESS:
 	MeshContainer();
@@ -139,15 +146,15 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 private:
-	MeshModel* m_meshModel;
+	StaticMeshModel* m_meshModel;
 	ln::String m_name;
 	Box m_boundingBox;
 	List<Ref<MeshResource>> m_lodResources;
 
-	friend class MeshModel;
+	friend class StaticMeshModel;
 };
 
-class MeshModel
+class StaticMeshModel
 	: public Object
 {
 public:

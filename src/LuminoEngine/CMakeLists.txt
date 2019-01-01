@@ -235,10 +235,14 @@ set(LN_SOURCES_Mesh
     src/Mesh/GMesh.cpp
     src/Mesh/GMesh.hpp
     src/Mesh/Mesh.cpp
+    src/Mesh/MeshImporter.cpp
+    src/Mesh/MeshImporter.hpp
     src/Mesh/MeshManager.cpp
     src/Mesh/MeshManager.hpp
     src/Mesh/MqoImporter.cpp
     src/Mesh/MqoImporter.hpp
+    src/Mesh/ObjMeshImporter.cpp
+    src/Mesh/ObjMeshImporter.hpp
 )
 
 set(LN_SOURCES_Rendering

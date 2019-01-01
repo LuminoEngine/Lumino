@@ -152,7 +152,7 @@ void AbstractMaterial::updateShaderVariables(Shader* target)
 //static const uint32_t Material_MetallicPropertyNameId = CRCHash::compute(_LT("Metallic"));
 //static const uint32_t Material_SpecularPropertyNameId = CRCHash::compute(_LT("Specular"));
 
-static const Color Material_DefaultColor = Color(0.5f, 0.5f, 0.5f, 1.0f);
+static const Color Material_DefaultColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
 static const float Material_DefaultRoughness = 0.5f;
 static const float Material_DefaultMetallic = 0.5f;
 static const float Material_DefaultSpecular = 0.5f;
@@ -202,6 +202,14 @@ void Material::initialize(Texture* mainTexture, ShadingModel shadingModel)
     initialize();
     setMainTexture(mainTexture);
     this->shadingModel = shadingModel;
+}
+
+void Material::initialize(Texture* mainTexture, const detail::PhongMaterialData& phongMaterialData)
+{
+    initialize();
+    setMainTexture(mainTexture);
+    setColor(phongMaterialData.diffuse);
+    setSpecular(phongMaterialData.power);
 }
 
 void Material::setColor(const Color& value)

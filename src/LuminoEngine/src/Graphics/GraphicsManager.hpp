@@ -5,6 +5,7 @@
 namespace ln {
 class GraphicsContext; 
 class GraphicsResource;
+class Texture2D;
 class SamplerState;
 
 namespace detail {
@@ -40,7 +41,10 @@ public:
 	RenderingType renderingType() const { return RenderingType::Immediate; }
 	const Ref<RenderingCommandList>& primaryRenderingCommandList() const { return m_primaryRenderingCommandList; }
 
+    const Ref<Texture2D>& blackTexture() const { return m_blackTexture; }
+    const Ref<Texture2D>& whiteTexture() const { return m_whiteTexture; }
 	const Ref<SamplerState>& defaultSamplerState() const { return m_defaultSamplerState; }
+
 
 private:
 	Ref<IGraphicsDeviceContext> m_deviceContext;
@@ -49,6 +53,8 @@ private:
 	Ref<RenderingCommandList> m_primaryRenderingCommandList;
 	List<GraphicsResource*> m_graphicsResources;
 
+    Ref<Texture2D> m_blackTexture;
+    Ref<Texture2D> m_whiteTexture;
 	Ref<SamplerState> m_defaultSamplerState;
 };
 

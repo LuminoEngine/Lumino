@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/GraphicsResource.hpp>
+#include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include "GraphicsManager.hpp"
 #include "OpenGLDeviceContext.hpp"
@@ -95,6 +96,12 @@ void GraphicsManager::initialize(const Settings& settings)
 
 	// default objects
 	{
+        m_blackTexture = newObject<Texture2D>(32, 32, TextureFormat::RGBA32, false, GraphicsResourceUsage::Static);
+        m_blackTexture->clear(Color::Black);
+
+        m_whiteTexture = newObject<Texture2D>(32, 32, TextureFormat::RGBA32, false, GraphicsResourceUsage::Static);
+        m_whiteTexture->clear(Color::White);
+
 		m_defaultSamplerState = newObject<SamplerState>();
 		m_defaultSamplerState->setFrozen(true);
 	}

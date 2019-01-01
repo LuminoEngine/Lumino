@@ -2,8 +2,10 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include "../Graphics/GraphicsManager.hpp"
 #include "RenderStage.hpp"
 #include "RenderingPipeline.hpp"
+#include "RenderingManager.hpp"
 #include "SceneRenderer.hpp"
 
 namespace ln {
@@ -203,6 +205,14 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 			{
 				AbstractMaterial* finalMaterial = currentStage->getMaterialFinal(nullptr);
 
+                Texture* mainTexture = nullptr;
+                if (finalMaterial) {
+                    mainTexture = finalMaterial->mainTexture();
+                }
+                if (!mainTexture) {
+                    mainTexture = m_manager->graphicsManager()->whiteTexture();
+                }
+
 				ElementInfo elementInfo;
 				elementInfo.viewProjMatrix = &cameraInfo.viewProjMatrix;
 				elementInfo.WorldMatrix = element->combinedWorldMatrix();
@@ -211,7 +221,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 				elementInfo.boneLocalQuaternionTexture = m_skinningLocalQuaternionsTexture;
 
 				SubsetInfo subsetInfo;
-				subsetInfo.materialTexture = (finalMaterial) ? finalMaterial->mainTexture() : nullptr;
+				subsetInfo.materialTexture = mainTexture;
 				subsetInfo.opacity = currentStage->getOpacityFinal(element);
 				subsetInfo.colorScale = currentStage->getColorScaleFinal(element);
 				subsetInfo.blendColor = currentStage->getBlendColorFinal(element);

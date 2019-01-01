@@ -5,6 +5,7 @@ namespace ln {
 class DiagnosticsManager;
 class VertexDeclaration;
 class Texture;
+class StaticMeshModel;
 namespace detail {
 class AssetManager;
 
@@ -33,6 +34,7 @@ public:
 	void dispose();
 	VertexDeclaration* getPredefinedVertexLayout(PredefinedVertexLayoutFlags flags);
 
+    Ref<StaticMeshModel> createStaticMeshModel(const Path& filePath);
 	Ref<Texture> createTexture(const Path& parentDir, const StringRef& filePath, DiagnosticsManager* diag);
 
 	GraphicsManager* graphicsManager() const { return m_graphicsManager; }

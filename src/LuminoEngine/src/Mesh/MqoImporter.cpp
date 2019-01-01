@@ -58,7 +58,7 @@ void MqoParser::parse(MeshManager* manager, const Path& filePath, DiagnosticsMan
 	}
 }
 
-//Ref<MeshModel> MqoParser::import2(ModelManager* manager, const Path& filePath)
+//Ref<StaticMeshModel> MqoParser::import2(ModelManager* manager, const Path& filePath)
 //{
 //	auto mesh = import(manager, filePath);
 //	mesh->calculateNormals();
@@ -335,9 +335,9 @@ MqoImporter::MqoImporter()
 {
 }
 
-Ref<MeshModel> MqoImporter::import(MeshManager* manager, const Path& filePath, DiagnosticsManager* diag)
+Ref<StaticMeshModel> MqoImporter::import(MeshManager* manager, const Path& filePath, DiagnosticsManager* diag)
 {
-	m_model = newObject<MeshModel>();
+	m_model = newObject<StaticMeshModel>();
 	parse(manager, filePath, diag);
 
 	// TODO: on end ほしい

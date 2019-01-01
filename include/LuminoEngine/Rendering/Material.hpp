@@ -211,7 +211,7 @@ public:
 	void setColor(const Color& value);
 	void setRoughness(float value);
 	void setMetallic(float value);
-	void setSpecular(float value);
+	void setSpecular(float value);  // TODO: 不要？http://envgameartist.blogspot.com/2014/12/pbr.html
     void setEmissive(const Color& value);
 
 protected:
@@ -224,6 +224,7 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
     void initialize(Texture* mainTexture);
     void initialize(Texture* mainTexture, ShadingModel shadingModel);
+    void initialize(Texture* mainTexture, const detail::PhongMaterialData& phongMaterialData);
 
 private:
 	detail::PbrMaterialData m_data;

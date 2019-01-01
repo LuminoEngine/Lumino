@@ -102,6 +102,15 @@ void MeshResource::setSection(int sectionIndex, int startIndex, int primitiveCou
 	section.materialIndex = materialIndex;
 }
 
+void MeshResource::addSection(int startIndex, int primitiveCount, int materialIndex)
+{
+    MeshSection section;
+    section.startIndex = startIndex;
+    section.primitiveCount = primitiveCount;
+    section.materialIndex = materialIndex;
+    m_sections.add(section);
+}
+
 int MeshResource::realVertexCount(VertexBufferGroup group) const
 {
 	if (m_vertexBuffers[group]) {
@@ -330,9 +339,9 @@ void MeshContainer::calculateBounds()
 }
 
 //==============================================================================
-// MeshModel
+// StaticMeshModel
 
-void MeshModel::addMeshContainer(MeshContainer* meshContainer)
+void StaticMeshModel::addMeshContainer(MeshContainer* meshContainer)
 {
 	if (LN_REQUIRE(meshContainer)) return;
 	if (LN_REQUIRE(!meshContainer->m_meshModel)) return;
@@ -340,7 +349,7 @@ void MeshModel::addMeshContainer(MeshContainer* meshContainer)
 	meshContainer->m_meshModel = this;
 }
 
-void MeshModel::addMaterial(AbstractMaterial* material)
+void StaticMeshModel::addMaterial(AbstractMaterial* material)
 {
 	m_materials.add(material);
 }

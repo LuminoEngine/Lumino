@@ -3,13 +3,13 @@
 #include "VisualComponent.hpp"
 
 namespace ln {
-class MeshModel;
+class StaticMeshModel;
 
 class StaticMeshComponent
 	: public VisualComponent
 {
 public:
-    void setModel(MeshModel* model);
+    void setModel(StaticMeshModel* model);
 
 protected:
     void onRender(RenderingContext* context);
@@ -20,7 +20,7 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 private:
-    Ref<MeshModel> m_model;
+    Ref<StaticMeshModel> m_model;
 };
 
 } // namespace ln

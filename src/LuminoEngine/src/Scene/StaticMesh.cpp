@@ -1,7 +1,9 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Mesh/Mesh.hpp>
 #include <LuminoEngine/Visual/StaticMeshComponent.hpp>
 #include <LuminoEngine/Scene/StaticMesh.hpp>
+#include "../Mesh/MeshManager.hpp"
 
 namespace ln {
 
@@ -11,6 +13,11 @@ namespace ln {
 Ref<StaticMesh> StaticMesh::create()
 {
     return newObject<StaticMesh>();
+}
+
+Ref<StaticMesh> StaticMesh::create(const StringRef& filePath)
+{
+    return newObject<StaticMesh>(filePath);
 }
 
 StaticMesh::StaticMesh()
@@ -27,6 +34,12 @@ void StaticMesh::initialize()
     m_component = newObject<StaticMeshComponent>();
     addComponent(m_component);
     setMainVisualComponent(m_component);
+}
+
+void StaticMesh::initialize(const StringRef& filePath)
+{
+    initialize();
+    m_component->setModel(detail::EngineDomain::meshManager()->createStaticMeshModel(filePath));
 }
 
 StaticMeshComponent* StaticMesh::staticMeshComponent() const

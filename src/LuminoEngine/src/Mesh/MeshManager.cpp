@@ -4,6 +4,7 @@
 #include <LuminoEngine/Graphics/VertexDeclaration.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include "../Asset/AssetManager.hpp"
+#include "ObjMeshImporter.hpp"
 #include "MeshManager.hpp"
 
 namespace ln {
@@ -112,6 +113,22 @@ VertexDeclaration* MeshManager::getPredefinedVertexLayout(PredefinedVertexLayout
 
 		return vertexLayout;
 	}
+}
+
+Ref<StaticMeshModel> MeshManager::createStaticMeshModel(const Path& filePath)
+{
+    Ref<StaticMeshModel> mesh;
+
+    {
+        auto diag = newObject<DiagnosticsManager>();
+
+        ObjMeshImporter importer;
+        mesh = importer.import(filePath, diag);
+
+        diag->dumpToLog();
+    }
+
+    return mesh;
 }
 
 Ref<Texture> MeshManager::createTexture(const Path& parentDir, const StringRef& filePath, DiagnosticsManager* diag)

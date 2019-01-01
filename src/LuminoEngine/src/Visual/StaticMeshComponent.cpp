@@ -24,7 +24,7 @@ void StaticMeshComponent::initialize()
     VisualComponent::initialize();
 }
 
-void StaticMeshComponent::setModel(MeshModel* model)
+void StaticMeshComponent::setModel(StaticMeshModel* model)
 {
     m_model = model;
 }
