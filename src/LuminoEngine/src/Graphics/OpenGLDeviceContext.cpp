@@ -1217,6 +1217,7 @@ GLTexture2D::GLTexture2D()
 	, m_textureFormat(TextureFormat::Unknown)
 	, m_pixelFormat(0)
 	, m_elementType(0)
+    , m_mipmap(false)
 {
 }
 
@@ -1228,10 +1229,11 @@ void GLTexture2D::initialize(uint32_t width, uint32_t height, TextureFormat requ
 {
 	m_size = SizeI(width, height);
 	m_textureFormat = requestFormat;
+    m_mipmap = mipmap;
 
 	// http://marina.sys.wakayama-u.ac.jp/~tokoi/?date=20040914
 
-	GLint levels = (mipmap) ? 4 : 0;	// TODO:DirectX だと 0 の場合は全レベル作成するけど、今ちょっと計算めんどうなので 
+    GLint levels = 0;// (m_mipmap) ? 4 : 0;	// TODO:DirectX だと 0 の場合は全レベル作成するけど、今ちょっと計算めんどうなので 
 
 	GLenum internalFormat;
 	OpenGLHelper::getGLTextureFormat(requestFormat, &internalFormat, &m_pixelFormat, &m_elementType);
@@ -1241,31 +1243,40 @@ void GLTexture2D::initialize(uint32_t width, uint32_t height, TextureFormat requ
 	GL_CHECK(glBindTexture(GL_TEXTURE_2D, m_id));
 	GL_CHECK(glTexImage2D(GL_TEXTURE_2D, levels, internalFormat, m_size.width, m_size.height, 0, m_pixelFormat, m_elementType, initialData));
 
+    //if (mipmap) {
+    //    glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+    //}
+
 	// デフォルトのサンプラステート (セットしておかないとサンプリングできない)
 	//setGLSamplerState(m_samplerState);
 	//{
 
-	//	GLint filter[] =
-	//	{
-	//		GL_NEAREST,			// TextureFilterMode_Point,
-	//		GL_LINEAR,			// TextureFilterMode_Linear,
-	//	};
+		GLint filter[] =
+		{
+			GL_NEAREST,			// TextureFilterMode_Point,
+			GL_LINEAR,			// TextureFilterMode_Linear,
+		};
 	//	GLint wrap[] =
 	//	{
 	//		GL_REPEAT,			// TextureWrapMode_Repeat
 	//		GL_CLAMP_TO_EDGE,	// TextureWrapMode_Clamp
 	//	};
 
-	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter[1]);
-	//	//if (LN_ENSURE_GLERROR()) return;
-	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter[1]);
-	//	//if (LN_ENSURE_GLERROR()) return;
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter[1]);
+		//if (LN_ENSURE_GLERROR()) return;
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter[1]);
+		//if (LN_ENSURE_GLERROR()) return;
 
 	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap[1]);
 	//	//if (LN_ENSURE_GLERROR()) return;
 	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap[1]);
 	//	//if (LN_ENSURE_GLERROR()) return;
 	//}
+
+    if (m_mipmap) {
+        GL_CHECK(glGenerateMipmap(GL_TEXTURE_2D));
+    }
+
 
 	GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
 }
@@ -1300,11 +1311,13 @@ void GLTexture2D::setSubData(int x, int y, int width, int height, const void* da
 {
 	GL_CHECK(glBindTexture(GL_TEXTURE_2D, m_id));
 
+    GLint levels = (m_mipmap) ? 4 : 0;	// TODO:DirectX だと 0 の場合は全レベル作成するけど、今ちょっと計算めんどうなので 
+
 	/* テクスチャ画像はバイト単位に詰め込まれている */
 	//glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	GL_CHECK(glTexSubImage2D(
 		GL_TEXTURE_2D,
-		0,	// TODO: Mipmap
+        levels,
 		x,
 		/*m_realSize.Height - */y,
 		width,
@@ -1312,6 +1325,11 @@ void GLTexture2D::setSubData(int x, int y, int width, int height, const void* da
 		m_pixelFormat,
 		m_elementType,
 		data));
+
+    if (m_mipmap) {
+        GL_CHECK(glGenerateMipmap(GL_TEXTURE_2D));
+    }
+    
 
 	GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
 }
@@ -1550,22 +1568,34 @@ GLSamplerState::~GLSamplerState()
 
 void GLSamplerState::initialize(const SamplerStateData& desc)
 {
-	const GLint filter[] =
-	{
-		GL_NEAREST,			// TextureFilterMode::Point,
-		GL_LINEAR,			// TextureFilterMode::Linear,
-	};
-	const GLint address[] =
-	{
-		GL_REPEAT,			// TextureAddressMode::Repeat
-		GL_CLAMP_TO_EDGE,	// TextureAddressMode::Clamp
-	};
+    static const GLenum magFilterTable[] =
+    {
+        GL_NEAREST, // TextureFilterMode::Point,
+        GL_LINEAR,  // TextureFilterMode::Linear,
+    };
+
+    static const GLenum minFilterTable[][2] =
+    {
+        { GL_NEAREST, GL_NEAREST_MIPMAP_NEAREST },  // TextureFilterMode::Point,
+        { GL_LINEAR,  GL_LINEAR_MIPMAP_LINEAR  },   // TextureFilterMode::Linear,
+    };
+    const GLint addressTable[] =
+    {
+        GL_REPEAT,			// TextureAddressMode::Repeat
+        GL_CLAMP_TO_EDGE,	// TextureAddressMode::Clamp
+    };
 
 	GL_CHECK(glGenSamplers(1, &m_id));
-	GL_CHECK(glSamplerParameteri(m_id, GL_TEXTURE_MIN_FILTER, filter[static_cast<int>(desc.filter)]));
-	GL_CHECK(glSamplerParameteri(m_id, GL_TEXTURE_MAG_FILTER, filter[static_cast<int>(desc.filter)]));
-	GL_CHECK(glSamplerParameteri(m_id, GL_TEXTURE_WRAP_S, address[static_cast<int>(desc.address)]));
-	GL_CHECK(glSamplerParameteri(m_id, GL_TEXTURE_WRAP_T, address[static_cast<int>(desc.address)]));
+    GL_CHECK(glSamplerParameteri(m_id, GL_TEXTURE_MAG_FILTER, magFilterTable[static_cast<int>(desc.filter)]));
+	GL_CHECK(glSamplerParameteri(m_id, GL_TEXTURE_MIN_FILTER, minFilterTable[static_cast<int>(desc.filter)][0]));
+	GL_CHECK(glSamplerParameteri(m_id, GL_TEXTURE_WRAP_S, addressTable[static_cast<int>(desc.address)]));
+	GL_CHECK(glSamplerParameteri(m_id, GL_TEXTURE_WRAP_T, addressTable[static_cast<int>(desc.address)]));
+
+    GL_CHECK(glGenSamplers(1, &m_idMip));
+    GL_CHECK(glSamplerParameteri(m_idMip, GL_TEXTURE_MAG_FILTER, magFilterTable[static_cast<int>(desc.filter)]));
+    GL_CHECK(glSamplerParameteri(m_idMip, GL_TEXTURE_MIN_FILTER, minFilterTable[static_cast<int>(desc.filter)][1]));
+    GL_CHECK(glSamplerParameteri(m_idMip, GL_TEXTURE_WRAP_S, addressTable[static_cast<int>(desc.address)]));
+    GL_CHECK(glSamplerParameteri(m_idMip, GL_TEXTURE_WRAP_T, addressTable[static_cast<int>(desc.address)]));
 }
 
 void GLSamplerState::dispose()
@@ -1574,6 +1604,10 @@ void GLSamplerState::dispose()
 		GL_CHECK(glDeleteSamplers(1, &m_id));
 		m_id = 0;
 	}
+    if (m_idMip) {
+        GL_CHECK(glDeleteSamplers(1, &m_idMip));
+        m_idMip = 0;
+    }
 	ISamplerState::dispose();
 }
 
@@ -2183,7 +2217,7 @@ void GLLocalShaderSamplerBuffer::bind()
 			GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
 			GL_CHECK(glBindTexture(GL_TEXTURE_3D, 0));
 		}
-		GL_CHECK(glBindSampler(unitIndex, (entry.samplerState) ? entry.samplerState->id() : 0));
+		GL_CHECK(glBindSampler(unitIndex, (entry.samplerState) ? entry.samplerState->resolveId(t->mipmap()) : 0));
 		GL_CHECK(glUniform1i(entry.uniformLocation, unitIndex));
 
 

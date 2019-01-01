@@ -314,6 +314,7 @@ public:
 	virtual ~GLTextureBase() = default;
 
 	virtual GLuint id() const = 0;
+    virtual bool mipmap() const = 0;
 };
 
 
@@ -334,6 +335,7 @@ public:
 	virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
 
 	virtual GLuint id() const override { return m_id; }
+    virtual bool mipmap() const override  { return m_mipmap; }
 
 private:
 	GLuint m_id;
@@ -341,6 +343,7 @@ private:
 	TextureFormat m_textureFormat;
 	GLenum m_pixelFormat;
 	GLenum m_elementType;
+    bool m_mipmap;
 };
 
 class GLTexture3D
@@ -360,6 +363,7 @@ public:
 	virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
 
 	virtual GLuint id() const override { return m_id; }
+    virtual bool mipmap() const override { return false; }
 
 private:
 	GLuint m_id;
@@ -380,7 +384,6 @@ public:
 	void initialize(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
 	virtual void dispose() override;
 
-	virtual GLuint id() const override { return m_id; }
 
 	virtual DeviceTextureType type() const override { return DeviceTextureType::RenderTarget; }
 	virtual void readData(void* outData) override;
@@ -389,6 +392,8 @@ public:
 	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) override;
 	virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
 
+    virtual GLuint id() const override { return m_id; }
+    virtual bool mipmap() const override { return false; }
 
 private:
 	SizeI m_size;
@@ -451,10 +456,13 @@ public:
 	void initialize(const SamplerStateData& desc);
 	virtual void dispose() override;
 
-	GLuint id() const { return m_id; }
+    GLuint resolveId(bool mipmap) const { return (mipmap) ? m_idMip : m_id; }
+	//GLuint id2() const { return m_id; }
 
 private:
 	GLuint m_id;
+    GLuint m_idMip;
+    SamplerStateData m_desc;
 };
 
 class GLSLShader
