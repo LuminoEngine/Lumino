@@ -10,6 +10,7 @@ namespace detail {
 // DrawElementListBuilder
 
 DrawElementListBuilder::DrawElementListBuilder()
+    : m_currentCommandFence(0)
 {
     m_defaultMaterial = newObject<Material>();
 }
@@ -32,6 +33,7 @@ void DrawElementListBuilder::resetForBeginRendering()
     }
     m_aliveStateStack.clear();
     pushState(true);	// 1つスタックに積んでおく。コレがルートのステート
+    m_currentCommandFence = 0;
 }
 
 void DrawElementListBuilder::reset2()
@@ -41,11 +43,17 @@ void DrawElementListBuilder::reset2()
 	m_modified = true;
 }
 
+void DrawElementListBuilder::advanceFence()
+{
+    m_currentCommandFence++;
+}
+
 void DrawElementListBuilder::setRenderTarget(int index, RenderTargetTexture * value)
 {
 	if (primaryFrameBufferStageParameters().m_renderTargets[index] != value) {
 		primaryFrameBufferStageParameters().m_renderTargets[index] = value;
 		m_modified = true;
+        advanceFence();
 	}
 }
 
@@ -59,6 +67,7 @@ void DrawElementListBuilder::setDepthBuffer(DepthBuffer * value)
 	if (primaryFrameBufferStageParameters().m_depthBuffer != value) {
 		primaryFrameBufferStageParameters().m_depthBuffer = value;
 		m_modified = true;
+        advanceFence();
 	}
 }
 
@@ -143,6 +152,11 @@ void DrawElementListBuilder::setBaseTransfrom(const Optional<Matrix>& value)
 void DrawElementListBuilder::setRenderPriority(int value)
 {
     primaryState()->renderPriority = value;
+}
+
+void DrawElementListBuilder::setRenderPhase(RendringPhase value)
+{
+    primaryState()->rendringPhase = value;
 }
 
 void DrawElementListBuilder::setOpacity(float value)
@@ -341,6 +355,8 @@ void DrawElementListBuilder::prepareRenderDrawElement(RenderDrawElement* newElem
     }
 
     newElement->priority = primaryState()->renderPriority;
+    newElement->targetPhase = primaryState()->rendringPhase;
+    newElement->commandFence = m_currentCommandFence;
 }
 
 
@@ -353,6 +369,7 @@ void DrawElementListBuilder::State::reset()
     transform = Matrix::Identity;
     renderPriority = 0;
     baseTransform = nullptr;
+    rendringPhase = RendringPhase::Default;
 }
 
 void DrawElementListBuilder::State::copyFrom(const State* other)
@@ -364,6 +381,7 @@ void DrawElementListBuilder::State::copyFrom(const State* other)
     transform = other->transform;
     renderPriority = other->renderPriority;
     baseTransform = other->baseTransform;
+    rendringPhase = other->rendringPhase;
 }
 
 } // namespace detail

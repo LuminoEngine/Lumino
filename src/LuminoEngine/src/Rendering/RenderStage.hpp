@@ -243,6 +243,19 @@ public:
 	float zDistance = 0;	//  TODO: internal
     int priority = 0;
 
+    // 将来的に CommandBuffer をサポートするとき、次のような書き方をすることがある。
+    //   buf->setRenderTarget(x);
+    //   buf->clear(all);
+    //   buf->drawMesh(mesh1);
+    //   buf->drawMesh(mesh2);
+    //   buf->blit();
+    //   buf->drawMesh(mesh3);
+    //   buf->drawMesh(mesh4);
+    // Lumino は clear や blit など、画面全体の更新も DrawElement として実行するので、特に Zソートのターゲットとは明確に区別しなければならない。
+    // 例えば上記の場合に mesh1と2 は clear(all) や blit() をまたいでZソートしてはならない。
+    // commandFence はこれの境界を識別してZソートを制御するために用意されている。
+    int commandFence = 0;
+
     // FIXME: Unity では CommandBuffer (を実行するメソッド) 単位で持つが・・・
     RendringPhase targetPhase = RendringPhase::Default;
 
@@ -396,11 +409,11 @@ class DrawElementListCollector
 {
 public:
 	void clear();
-	void addDrawElementList(RendringPhase phase, DrawElementList* list);
-	const List<DrawElementList*>& lists(RendringPhase phase) const;
+	void addDrawElementList(/*RendringPhase phase, */DrawElementList* list);
+	const List<DrawElementList*>& lists(/*RendringPhase phase*/) const;
 
 private:
-	List<DrawElementList*> m_lists[(int)RendringPhase::_Count];
+    List<DrawElementList*> m_lists;// [(int)RendringPhase::_Count];
 };
 
 } // namespace detail

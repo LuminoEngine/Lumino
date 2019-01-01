@@ -27,6 +27,7 @@ public:
 	void setTargetList(DrawElementList* targetList);
     void resetForBeginRendering();  // 描画開始時のリセット。スタックもクリアする
 	void reset2();   // スタックに積んである分はリセットしないしスタックも消さない
+    void advanceFence();
 
 	void setRenderTarget(int index, RenderTargetTexture* value);
     RenderTargetTexture* renderTarget(int index) const;
@@ -44,6 +45,7 @@ public:
 	void setTransfrom(const Matrix& value);
     void setBaseTransfrom(const Optional<Matrix>& value);
     void setRenderPriority(int value);
+    void setRenderPhase(RendringPhase value);
 
 	// BuiltinEffectData
 	void setOpacity(float value);
@@ -79,13 +81,18 @@ private:
     class State : public RefObject
     {
     public:
+        // Infomation for RenderStage
         FrameBufferStageParameters frameBufferStageParameters;
         GeometryStageParameters geometryStageParameters;
+
+        // Infomation for RenderDrawElement
         BuiltinEffectData builtinEffectData;
         Optional<BuiltinEffectData> baseBuiltinEffectData;
         Matrix transform;
         Optional<Matrix> baseTransform;
         int renderPriority;
+        RendringPhase rendringPhase;
+
         RenderViewPoint* viewPoint; // DrawElement には流れない、RenderingContext を使う人のための情報
 
         void reset();
@@ -113,6 +120,7 @@ private:
 	//GeometryStageParameters m_primaryGeometryStageParameters;
     List<Ref<State>> m_freeStateStack;
     List<Ref<State>> m_aliveStateStack;	// size >= 1
+    int m_currentCommandFence;
 
 
 	// 以下、各 RenderFeature のステート。

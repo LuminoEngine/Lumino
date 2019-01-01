@@ -258,19 +258,21 @@ void DrawElementList::addFrameData(IDrawElementListFrameData* data)
 
 void DrawElementListCollector::clear()
 {
-	for (auto& list : m_lists) {
-		list.clear();
-	}
+    m_lists.clear();
+	//for (auto& list : m_lists) {
+	//	list.clear();
+	//}
 }
 
-void DrawElementListCollector::addDrawElementList(RendringPhase phase, DrawElementList* list)
+void DrawElementListCollector::addDrawElementList(/*RendringPhase phase, */DrawElementList* list)
 {
-	m_lists[(int)phase].add(list);
+    m_lists.add(list);
+	//m_lists[(int)phase].add(list);
 }
 
-const List<DrawElementList*>& DrawElementListCollector::lists(RendringPhase phase) const
+const List<DrawElementList*>& DrawElementListCollector::lists(/*RendringPhase phase*/) const
 {
-	return m_lists[(int)phase];
+    return m_lists;// [(int)phase];
 }
 
 } // namespace detail
