@@ -122,6 +122,10 @@ public:
     void drawMesh(MeshResource* meshResource, int sectionIndex);
 	//void drawMesh(MeshContainer* meshContainer, int sectionIndex);
 
+
+    void drawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor);
+
+
 	/** @} */
 
 

@@ -21,6 +21,7 @@ RenderingManager::RenderingManager()
 	, m_standardVertexDeclaration(nullptr)
 	, m_spriteRenderFeature(nullptr)
 	, m_meshRenderFeature(nullptr)
+    , m_primitiveRenderFeature(nullptr)
 	, m_stageDataPageManager(nullptr)
 {
 }
@@ -48,6 +49,7 @@ void RenderingManager::initialize(const Settings& settings)
     m_blitRenderFeature = newObject<BlitRenderFeature>(this);
 	m_spriteRenderFeature = newObject<SpriteRenderFeature>(this);
 	m_meshRenderFeature = newObject<MeshRenderFeature>(this);
+    m_primitiveRenderFeature = newObject<PrimitiveRenderFeature>(this);
 
 	m_stageDataPageManager = makeRef<LinearAllocatorPageManager>();
 
@@ -123,6 +125,7 @@ void RenderingManager::dispose()
 		m_builtinShaders[i] = nullptr;
 	}
 	m_stageDataPageManager = nullptr;
+    m_primitiveRenderFeature = nullptr;
 	m_meshRenderFeature = nullptr;
 	m_spriteRenderFeature = nullptr;
     m_blitRenderFeature = nullptr;

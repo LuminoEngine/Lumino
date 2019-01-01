@@ -3,6 +3,7 @@
 #include "BlitRenderFeature.hpp"
 #include "SpriteRenderFeature.hpp"
 #include "MeshRenderFeature.hpp"
+#include "PrimitiveRenderFeature.hpp"
 
 namespace ln {
 class RenderViewPoint;
@@ -63,6 +64,7 @@ public:
     BlitRenderFeatureStageParameters* blitRenderFeatureStageParameters() { return &m_blitRenderFeatureStageParameters; }
 	SpriteRenderFeatureStageParameters* spriteRenderFeatureStageParameters() { return &m_spriteRenderFeatureStageParameters; }
 	MeshRenderFeatureStageParameters* meshRenderFeatureStageParameters() { return &m_meshRenderFeatureStageParameters; }
+    PrimitiveRenderFeatureStageParameters* primitiveRenderFeatureStageParameters() { return &m_primitiveRenderFeatureStageParameters; }
 
 	template<class TElement>
 	TElement* addNewDrawElement(
@@ -130,6 +132,7 @@ private:
     BlitRenderFeatureStageParameters m_blitRenderFeatureStageParameters;
 	SpriteRenderFeatureStageParameters m_spriteRenderFeatureStageParameters;
 	MeshRenderFeatureStageParameters m_meshRenderFeatureStageParameters;
+    PrimitiveRenderFeatureStageParameters m_primitiveRenderFeatureStageParameters;
 
     Ref<AbstractMaterial> m_defaultMaterial;
     Flags<DirtyFlags> m_dirtyFlags;

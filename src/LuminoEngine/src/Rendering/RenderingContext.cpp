@@ -303,6 +303,31 @@ void RenderingContext::drawMesh(MeshResource* meshResource, int sectionIndex)
 //	//ptr->setLocalBoundingSphere(sphere);
 //}
 
+void RenderingContext::drawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor)
+{
+    class DrawLine : public detail::RenderDrawElement
+    {
+    public:
+        Vector3 from; Color fromColor;
+        Vector3 to; Color toColor;
+
+        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+        {
+            static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawLine(from, fromColor, to, toColor);
+        }
+    };
+
+    auto* element = m_builder->addNewDrawElement<DrawLine>(
+        m_manager->primitiveRenderFeature(),
+        m_builder->primitiveRenderFeatureStageParameters());
+    element->from = from;
+    element->fromColor = fromColor;
+    element->to = to;
+    element->toColor = toColor;
+    // TODO:
+    //ptr->makeBoundingSphere(Vector3::min(position1, position2), Vector3::max(position1, position2));
+}
+
 void RenderingContext::addAmbientLight(const Color& color, float intensity)
 {
 	m_builder->targetList()->addDynamicLightInfo(detail::DynamicLightInfo::makeAmbientLightInfo(color, intensity));

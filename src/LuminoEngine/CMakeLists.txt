@@ -266,6 +266,8 @@ set(LN_SOURCES_Rendering
     src/Rendering/Material.cpp
     src/Rendering/MeshRenderFeature.cpp
     src/Rendering/MeshRenderFeature.hpp
+    src/Rendering/PrimitiveRenderFeature.cpp
+    src/Rendering/PrimitiveRenderFeature.hpp
     src/Rendering/RenderFeature.cpp
     src/Rendering/RenderingContext.cpp
     src/Rendering/RenderingManager.cpp

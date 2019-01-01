@@ -6,8 +6,8 @@
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Mesh/Mesh.hpp>
 #include "../Graphics/GraphicsManager.hpp"
-#include "MeshRenderFeature.hpp"
 #include "RenderingManager.hpp"
+#include "MeshRenderFeature.hpp"
 
 namespace ln {
 namespace detail {
