@@ -546,7 +546,9 @@ std::string ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es)
     code = code.insert(13,
         declsIsRT +
         "vec4 xxTexture(int isRT, sampler2D s, vec2 uv) { if (isRT != 0) { return texture(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); } else { return texture(s, uv); } }\n"
+        "vec4 xxTexture(int isRT, sampler3D s, vec3 uv) { if (isRT != 0) { return texture(s, vec3(uv.x, (uv.y * -1.0) + 1.0, uv.z)); } else { return texture(s, uv); } }\n"
         "#define texture(s, uv) xxTexture(s##_IsRT, s, uv)\n"
+        "#line 1\n"
     );
 
     /*
