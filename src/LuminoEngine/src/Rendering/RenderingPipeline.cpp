@@ -1,4 +1,4 @@
-
+﻿
 #include "Internal.hpp"
 #include "RenderingPipeline.hpp"
 #include "ClusteredShadingSceneRenderer.hpp"
@@ -50,13 +50,17 @@ void SceneRenderingPipeline::render(
 
     m_sceneRenderer->render(graphicsContext, this, frameBuffer, *mainCameraInfo, RendringPhase::Default);
 
+
+    // TODO: ひとまずテストとしてデバッグ用グリッドを描画したいため、効率は悪いけどここで BeforeTransparencies をやっておく。
+    m_sceneRenderer->render(graphicsContext, this, frameBuffer, *mainCameraInfo, RendringPhase::BeforeTransparencies);
+
     {
         CameraInfo camera;
         camera.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
         m_sceneRenderer_ImageEffectPhase->render(graphicsContext, this, frameBuffer, camera, RendringPhase::ImageEffect);
     }
 
-    // ��p�h�~
+    // 誤用防止
     m_renderingFrameBufferSize = SizeI();
     m_elementListManagers = nullptr;
 }
@@ -93,14 +97,13 @@ void FlatRenderingPipeline::render(
 
 	m_sceneRenderer->render(graphicsContext, this, frameBuffer, *mainCameraInfo, RendringPhase::Default);
 
-
     {
         CameraInfo camera;
         camera.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
         m_sceneRenderer_ImageEffectPhase->render(graphicsContext, this, frameBuffer, camera, RendringPhase::ImageEffect);
     }
 
-	// ��p�h�~
+	// 誤用防止
 	m_renderingFrameBufferSize = SizeI();
 	m_elementListManagers = nullptr;
 }

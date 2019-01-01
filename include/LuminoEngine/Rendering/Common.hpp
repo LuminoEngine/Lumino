@@ -66,9 +66,6 @@ enum class RenderViewClearMode
 	ColorAndDepth,
 };
 
-namespace detail {
-
-
 // 
 // https://docs.unity3d.com/ja/current/Manual/GraphicsCommandBuffers.html
 // の各〇に相当する。
@@ -82,12 +79,20 @@ namespace detail {
 enum class RendringPhase
 {
     Default = 0,
+
+    // 不透明オブジェクト描画後・半透明オブジェクト描画前
+    BeforeTransparencies,
+
     ImageEffect,
 
     // https://docs.unity3d.com/ja/2017.4/ScriptReference/Rendering.CameraEvent.html
 
     _Count,
 };
+
+namespace detail {
+
+
 
 struct DynamicLightInfo
 {

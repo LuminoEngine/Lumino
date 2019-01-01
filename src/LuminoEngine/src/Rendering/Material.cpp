@@ -76,6 +76,26 @@ void AbstractMaterial::setColor(const StringRef& name, const Color& value)
 	param->setVector(value);
 }
 
+void AbstractMaterial::setBlendMode(Optional<BlendMode> mode)
+{
+    blendMode = mode;
+}
+
+void AbstractMaterial::setCullingMode(Optional<CullMode> mode)
+{
+    cullingMode = mode;
+}
+
+void AbstractMaterial::setDepthTestEnabled(Optional<bool> enabled)
+{
+    depthTestEnabled = enabled;
+}
+
+void AbstractMaterial::setDepthWriteEnabled(Optional<bool> enabled)
+{
+    depthWriteEnabled = enabled;
+}
+
 detail::ShaderParameterValue* AbstractMaterial::getValue(const ln::StringRef& name)
 {
 	for (auto& pair : m_values) {

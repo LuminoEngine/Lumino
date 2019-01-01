@@ -81,6 +81,9 @@ public:
     void setMaterial(AbstractMaterial* material);
 
 
+
+    void setRenderPhase(RendringPhase value);
+
     // BuiltinEffectData
     //void setTransfrom(const Matrix& value);
     void setOpacity(float value);

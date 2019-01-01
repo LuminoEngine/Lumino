@@ -136,13 +136,13 @@ void SceneRenderer::render(
 
 	for (SceneRendererPass* pass : m_renderingActualPassList)
 	{
-		renderPass(graphicsContext, pass);
+        renderPass(graphicsContext, pass);
 	}
 
 	for (SceneRendererPass* pass : m_renderingActualPassList)
 	{
 		pass->onEndRender(this);
-	}
+    }
 
 	//// Flush
 	//{
@@ -181,8 +181,6 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 
 	prepare();
 
-
-
 	RenderStage* currentStage = nullptr;
 	for (RenderDrawElement* element : m_renderingElementList)
 	{
@@ -199,11 +197,11 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 
 		// DrawElement drawing.
 		{
-			applyGeometryStatus(graphicsContext, currentStage, nullptr);
 
 			if (element->elementType == RenderDrawElementType::Geometry)
 			{
 				AbstractMaterial* finalMaterial = currentStage->getMaterialFinal(nullptr);
+                applyGeometryStatus(graphicsContext, currentStage, finalMaterial);
 
                 Texture* mainTexture = nullptr;
                 if (finalMaterial) {
@@ -256,6 +254,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 			}
 			else if (element->elementType == RenderDrawElementType::Clear)
 			{
+                applyGeometryStatus(graphicsContext, currentStage, nullptr);
 				element->onDraw(graphicsContext, currentStage->renderFeature);
 			}
 			else
@@ -417,7 +416,7 @@ void SceneRenderer::collect(/*SceneRendererPass* pass, */const detail::CameraInf
 		// TODO: とりあえず Default
 		
 
-		for (auto& elementList : elementListManager->lists(RendringPhase::Default))
+		for (auto& elementList : elementListManager->lists(/*RendringPhase::Default*/))
 		{
 			//elementList->setDefaultRenderTarget(m_renderingDefaultRenderTarget);
 			//elementList->setDefaultDepthBuffer(m_renderingDefaultDepthBuffer);
@@ -505,16 +504,16 @@ void SceneRenderer::prepare()
 		m_renderingElementList.begin(), m_renderingElementList.end(),
 		[](const RenderDrawElement* lhs, const RenderDrawElement* rhs)
 		{
-			//if (lhs->m_stateFence == rhs->m_stateFence)
-			//{
+			if (lhs->commandFence == rhs->commandFence)
+			{
 				if (lhs->priority == rhs->priority)
 					return lhs->zDistance > rhs->zDistance;
 				return lhs->priority < rhs->priority;
-			//}
-			//else
-			//{
-			//	return lhs->m_stateFence < rhs->m_stateFence;
-			//}
+			}
+			else
+			{
+				return lhs->commandFence < rhs->commandFence;
+			}
 		});
 }
 

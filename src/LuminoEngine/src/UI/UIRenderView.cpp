@@ -26,7 +26,7 @@ void UIRenderView::initialize()
 	m_drawElementListCollector = makeRef<detail::DrawElementListCollector>();
     m_viewPoint = newObject<RenderViewPoint>();
 
-	m_drawElementListCollector->addDrawElementList(detail::RendringPhase::Default, m_renderingContext->m_elementList);
+	m_drawElementListCollector->addDrawElementList(/*RendringPhase::Default, */m_renderingContext->m_elementList);
 	addDrawElementListManager(m_drawElementListCollector);
 }
 

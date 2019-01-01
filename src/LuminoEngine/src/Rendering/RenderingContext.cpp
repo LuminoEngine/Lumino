@@ -92,6 +92,11 @@ void RenderingContext::setMaterial(AbstractMaterial* material)
     m_builder->setMaterial(material);
 }
 
+void RenderingContext::setRenderPhase(RendringPhase value)
+{
+    m_builder->setRenderPhase(value);
+}
+
 void RenderingContext::setColorScale(const Color& value)
 {
     m_builder->setColorScale(value);
@@ -138,12 +143,16 @@ void RenderingContext::clear(Flags<ClearFlags> flags, const Color& color, float 
 		}
 	};
 
+    m_builder->advanceFence();
+
 	auto* element = m_builder->addNewDrawElement<Clear>(nullptr, nullptr);
 	element->elementType = detail::RenderDrawElementType::Clear;
 	element->flags = flags;
 	element->color = color;
 	element->z = z;
 	element->stencil = stencil;
+
+    m_builder->advanceFence();
 }
 
 void RenderingContext::blit(RenderTargetTexture* source, RenderTargetTexture* destination)
@@ -176,13 +185,18 @@ void RenderingContext::blit(RenderTargetTexture* source, RenderTargetTexture* de
     setRenderTarget(0, destination);
 
     m_builder->setMaterial(material);
+
+    m_builder->advanceFence();
+
     auto* element = m_builder->addNewDrawElement<Blit>(
         m_manager->blitRenderFeature(),
         m_builder->blitRenderFeatureStageParameters());
-    element->targetPhase = detail::RendringPhase::ImageEffect;
+    element->targetPhase = RendringPhase::ImageEffect;
     element->source = source;
 
     setRenderTarget(0, oldTarget);
+
+    m_builder->advanceFence();
 }
 
 void RenderingContext::drawSprite(
