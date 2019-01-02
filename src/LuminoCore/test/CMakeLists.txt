@@ -56,6 +56,8 @@ if (DEFINED EMSCRIPTEN)
 	em_link_pre_js(LuminoCore-Test ${CMAKE_CURRENT_SOURCE_DIR}/pre.js)
 endif()
 
+#------------------------------------------------------------------------------
+# ctest
 add_test(NAME LuminoCore-Test-all COMMAND $<TARGET_FILE:LuminoCore-Test>)
 
 #set_target_properties(${PROJECT_NAME} PROPERTIES

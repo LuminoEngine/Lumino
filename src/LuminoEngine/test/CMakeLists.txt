@@ -29,3 +29,7 @@ include_directories(
 add_executable(${PROJECT_NAME} ${LN_SOURCES})
 target_link_libraries(${PROJECT_NAME} LuminoEngine)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
+
+#------------------------------------------------------------------------------
+# ctest
+add_test(NAME LuminoEngine-Test-all COMMAND $<TARGET_FILE:LuminoEngine-Test>)

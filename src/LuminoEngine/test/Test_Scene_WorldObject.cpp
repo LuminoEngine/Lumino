@@ -34,5 +34,6 @@ TEST_F(Test_Scene_WorldObject, Transform)
 
         TestEnv::updateFrame();
         ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Scene_WorldObject-Transform-1.png"));
+        LN_TEST_CLEAN_SCENE;
 	}
 }

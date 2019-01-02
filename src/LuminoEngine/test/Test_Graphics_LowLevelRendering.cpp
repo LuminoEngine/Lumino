@@ -793,7 +793,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		ctx->setVertexBuffer(0, vb2);
 		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
 
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Graphics/Test_Graphics_LowLevelRendering-RenderStateTest-1.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-1.png"));
 
 		ctx->setBlendState(BlendStateDesc());	// 戻しておく
 	}

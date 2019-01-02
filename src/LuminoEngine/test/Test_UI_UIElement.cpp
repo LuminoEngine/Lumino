@@ -8,6 +8,7 @@ class Test_UI_UIElement : public LuminoSceneTest {};
 //## Basic
 TEST_F(Test_UI_UIElement, RenderEffects)
 {
+    //* [ ] UISprite はデフォルトで BlendMode=Alpha
 	{
         auto tex1 = Assets::loadTexture(LN_ASSETFILE("Sprite1.png"));
 
@@ -49,5 +50,6 @@ TEST_F(Test_UI_UIElement, RenderEffects)
 
         TestEnv::updateFrame();
         ASSERT_SCREEN(LN_ASSETFILE("Result/Test_UI_UIElement-RenderEffects-1.png"));
+        LN_TEST_CLEAN_SCENE;
 	}
 }

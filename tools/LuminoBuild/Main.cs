@@ -12,7 +12,7 @@ namespace LuminoBuild
             // default
             if (args.Length == 0)
             {
-                args = new string[] { "MakePackage" };
+                args = new string[] { "BuildEngine_MSVC" };
             }
 
             Assembly thisAssembly = Assembly.GetEntryAssembly();

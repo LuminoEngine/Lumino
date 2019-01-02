@@ -45,6 +45,7 @@ TEST_F(Test_Visual_VisualComponent, BuiltinEffects)
 
         TestEnv::updateFrame();
         ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Visual_VisualComponent-BuiltinEffects-1.png"));
+        LN_TEST_CLEAN_SCENE;
 	}
 }
 
@@ -83,6 +84,7 @@ TEST_F(Test_Visual_VisualComponent, BlendMode)
 
         TestEnv::updateFrame();
         ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Visual_VisualComponent-BlendMode-1.png"));
+        LN_TEST_CLEAN_SCENE;
     }
 }
 
@@ -198,7 +200,7 @@ TEST_F(Test_Visual_VisualComponent, CullMode)
         sprite6->setEulerAngles(0, Math::PI, 0);
 
         TestEnv::updateFrame();
-        ASSERT_SCREEN_S(LN_ASSETFILE("Result/Visual/Test_Visual_VisualComponent-CullMode-1.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("Result/Visual/Test_Visual_VisualComponent-CullMode-1.png"));
         LN_TEST_CLEAN_SCENE;
     }
 }

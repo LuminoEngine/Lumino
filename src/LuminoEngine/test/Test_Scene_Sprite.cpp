@@ -10,6 +10,7 @@ TEST_F(Test_Scene_Sprite, Basic)
 {
 	//* [ ] can be drawn
 	//* [ ] setSourceRect
+    //* [ ] Sprite はデフォルトで BlendModel=Aplha
 	{
 
         auto light1 = AmbientLight::create();
@@ -29,5 +30,6 @@ TEST_F(Test_Scene_Sprite, Basic)
 
         TestEnv::updateFrame();
         ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Scene_Sprite-Basic-1.png"));
+        LN_TEST_CLEAN_SCENE;
 	}
 }

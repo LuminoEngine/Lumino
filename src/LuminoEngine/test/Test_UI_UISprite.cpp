@@ -26,7 +26,8 @@ TEST_F(Test_UI_UISprite, Basic)
         sprite3->setSourceRect(16, 16, 16, 16);
 
         TestEnv::updateFrame();
-        ASSERT_SCREEN_S(LN_ASSETFILE("Result/Test_UI_UISprite-Basic-1.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("Result/Test_UI_UISprite-Basic-1.png"));
+        LN_TEST_CLEAN_SCENE;
 	}
 }
 
