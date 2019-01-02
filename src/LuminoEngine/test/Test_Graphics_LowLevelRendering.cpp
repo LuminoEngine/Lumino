@@ -44,7 +44,7 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-BasicTriangle-1.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-BasicTriangle-1.png"));
 	}
 }
 
@@ -96,7 +96,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-			ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-VertexBuffer-2.png"));
+			ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-VertexBuffer-2.png"));
 		}
 
 		// * [ ] 一度レンダリングに使用されたバッファを、再更新できること
@@ -111,7 +111,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-			ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-VertexBuffer-3.png"));
+			ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-VertexBuffer-3.png"));
 		}
 
 		// * [ ] まだ一度もレンダリングに使用されていないバッファを、拡張できること
@@ -132,7 +132,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
 
-			ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-VertexBuffer-4.png"));
+			ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-VertexBuffer-4.png"));
 		}
 
 		// * [ ] 一度レンダリングに使用されたバッファを、拡張できること
@@ -153,7 +153,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 3);
 
-			ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-VertexBuffer-5.png"));
+			ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-VertexBuffer-5.png"));
 		}
 	}
 
@@ -199,7 +199,7 @@ TEST_F(Test_Graphics_LowLevelRendering, MultiStreamVertexBuffer)
 	ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 	ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-	ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-MultiStreamVertexBuffer-1.png"));
+	ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-MultiStreamVertexBuffer-1.png"));
 }
 
 //------------------------------------------------------------------------------
@@ -253,7 +253,7 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 			ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->drawPrimitiveIndexed(PrimitiveType::TriangleList, 0, 1);
 
-			ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-IndexBuffer-1.png"));
+			ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-IndexBuffer-1.png"));
 		}
 
 		// * [ ] 一度レンダリングに使用されたバッファを、再更新できること
@@ -264,7 +264,7 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 			ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->drawPrimitiveIndexed(PrimitiveType::TriangleList, 0, 1);
 
-			ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-IndexBuffer-2.png"));
+			ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-IndexBuffer-2.png"));
 		}
 
 		// * [ ] フォーマット変更 16 -> 32
@@ -279,7 +279,7 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 				ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 				ctx->drawPrimitiveIndexed(PrimitiveType::TriangleList, 0, 1);
 
-				ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-IndexBuffer-2.png"));	// ↑と同じ結果
+				ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-IndexBuffer-2.png"));	// ↑と同じ結果
 			}
 		}
 	}
@@ -313,7 +313,7 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
 		ctx->setViewportRect(Rect(80, 60, 80, 60));		// 右下
 		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-ViewportAndScissor-1.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-ViewportAndScissor-1.png"));
 
 		ctx->setViewportRect(Rect(0, 0, 160, 120));		// reset
 	}
@@ -328,7 +328,7 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
 		ctx->setScissorRect(Rect(80, 60, 80, 60));		// 右下
 		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-ViewportAndScissor-2.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-ViewportAndScissor-2.png"));
 
 		ctx->setScissorRect(Rect(0, 0, 160, 120));		// reset
 	}
@@ -341,7 +341,7 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
 		ctx->setScissorRect(Rect(40, 30, 80, 60));		// 中央
 		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-ViewportAndScissor-3.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-ViewportAndScissor-3.png"));
 
 		ctx->setViewportRect(Rect(0, 0, 160, 120));		// reset
 		ctx->setScissorRect(Rect(0, 0, 160, 120));		// reset
@@ -622,7 +622,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture)
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
 
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-TextureTest-1.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-TextureTest-1.png"));
 	}
 }
 
@@ -669,7 +669,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture3D)
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
 
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-Texture3D-1.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Texture3D-1.png"));
 	}
 }
 
@@ -715,7 +715,7 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 	{
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-SamplerState-1.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-SamplerState-1.png"));
 	}
 
 	// * [ ] Linear, Clamp
@@ -726,7 +726,7 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 		tex1->setSamplerState(sampler);
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Graphics_LowLevelRendering-SamplerState-2.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-SamplerState-2.png"));
 	}
 }
 
@@ -817,7 +817,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 赤は描かれない
 		ctx->setVertexBuffer(0, vb3);
 		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 緑は描かれる
-		ASSERT_SCREEN_S(LN_ASSETFILE("Result/Graphics/Test_Graphics_LowLevelRendering-RenderStateTest-2-1.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-2-1.png"));
 
 		ctx->setRasterizerState(state2);
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
@@ -825,7 +825,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 赤は描かれる
 		ctx->setVertexBuffer(0, vb3);
 		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 緑は描かれない
-		ASSERT_SCREEN_S(LN_ASSETFILE("Result/Graphics/Test_Graphics_LowLevelRendering-RenderStateTest-2-2.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-2-2.png"));
 
 		ctx->setRasterizerState(state3);
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
@@ -833,13 +833,13 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 赤は描かれる
 		ctx->setVertexBuffer(0, vb3);
 		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 緑は描かれる
-		ASSERT_SCREEN_S(LN_ASSETFILE("Result/Graphics/Test_Graphics_LowLevelRendering-RenderStateTest-2-3.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-2-3.png"));
 
 		ctx->setRasterizerState(state4);
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->setVertexBuffer(0, vb2);
 		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Graphics/Test_Graphics_LowLevelRendering-RenderStateTest-2-4.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-2-4.png"));
 
 		ctx->setRasterizerState(RasterizerStateDesc());	// 戻しておく
 	}
@@ -851,7 +851,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 青 (z=0)
 		ctx->setVertexBuffer(0, vb1);
 		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 赤 (z=0.5)
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Graphics/Test_Graphics_LowLevelRendering-RenderStateTest-3-1.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-3-1.png"));
 
 
 		DepthStencilStateDesc state1;
@@ -863,7 +863,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 青 (z=0)
 		ctx->setVertexBuffer(0, vb1);
 		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 赤 (z=0.5)
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Graphics/Test_Graphics_LowLevelRendering-RenderStateTest-3-2.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-3-2.png"));
 
 
 		DepthStencilStateDesc state2;
@@ -875,7 +875,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 青 (z=0)
 		ctx->setVertexBuffer(0, vb1);
 		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 赤 (z=0.5)
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Graphics/Test_Graphics_LowLevelRendering-RenderStateTest-3-3.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-3-3.png"));
 
 		ctx->setDepthStencilState(DepthStencilStateDesc());	// 戻しておく
 	}
@@ -900,7 +900,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		ctx->setVertexBuffer(0, vb2);
 		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 青 (z=0)
 
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Graphics/Test_Graphics_LowLevelRendering-RenderStateTest-4-1.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-4-1.png"));
 
 		ctx->setDepthStencilState(DepthStencilStateDesc());	// 戻しておく
 
@@ -969,7 +969,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
             ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
         }
 
-        ASSERT_SCREEN(LN_ASSETFILE("Result/Graphics/Test_Graphics_LowLevelRendering-RenderTarget-1.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderTarget-1.png"));
     }
 }
 

@@ -59,20 +59,25 @@ class LN_API Shader
 {
 public:
 	static Ref<Shader> create(const StringRef& hlslEffectFilePath, ShaderCompilationProperties* properties = nullptr);
+
+    /*
+     * Lumino の独自拡張 (technique 構文など) を使用しない HLSL シェーダをコンパイルし、Shader オブジェクトを作成します。
+     * 
+     * 作成された Shader は、1 つの ShaderTechnique と 1 つの ShaderPass を持ちます。
+     */
 	static Ref<Shader> create(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCompilationProperties* properties = nullptr);
 
-	//void setBool(const StringRef& name, bool value);
-	//void setInt(const StringRef& name, int value);
-	//void setBoolArray(const StringRef& name, const bool* value, int count);
-	//void setFloat(const StringRef& name, float value);
-	//void setFloatArray(const StringRef& name, const float* value, int count);
-	//void setVector(const StringRef& name, const Vector4& value);
-	//void setVectorArray(const StringRef& name, const Vector4* value, int count);
-	//void setMatrix(const StringRef& name, const Matrix& value);
-	//void setMatrixArray(const StringRef& name, const Matrix* value, int count);
-	//void setTexture(const StringRef& name, Texture* value);
-
-    // _Global と Texture を検索する
+    /*
+     * 名前を指定して ShaderParameter を検索します。
+     *
+     * @param[in] name : パラメータの名前
+     *
+     * この関数の検索対象は次の通りです。
+     * - "_Global" という名前の付いた ShaderConstantBuffer (cbuffer 構文を使用せず、グローバルスコープに直接定義した変数)
+     * - texture 型のパラメータ
+     *
+     * @attention 現在、SamplerState の設定は未サポートです。将来的には、この関数で SamplerState 型のパラメータを検索できるようにする予定です。
+     */
 	ShaderParameter* findParameter(const StringRef& name) const;
 
 	ShaderConstantBuffer* findConstantBuffer(const StringRef& name) const;

@@ -356,6 +356,16 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
 	return true;
 }
 
+//static std::string ensure_valid_identifier(const std::string &name)
+//{
+//    if (name[0] == '_') {
+//        return name.substr(1);
+//    }
+//    else {
+//        return name;
+//    }
+//}
+
 std::string ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es)
 {
 	spirv_cross::CompilerGLSL glsl(m_spirvCode);
@@ -405,6 +415,7 @@ std::string ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es)
 	// Here you can also set up decorations if you want (binding = #N).
 	for (auto &remap : glsl.get_combined_image_samplers())
 	{
+        //std::string name = "lnCIS_lnT_" + ensure_valid_identifier(glsl.get_name(remap.image_id)) + "_lnS_" + ensure_valid_identifier(glsl.get_name(remap.sampler_id));
         std::string name = "lnCIS_lnT_" + glsl.get_name(remap.image_id) + "_lnS_" + glsl.get_name(remap.sampler_id);
 		glsl.set_name(remap.combined_id, name);
         combinedImageSamplerNames.push_back(std::move(name));

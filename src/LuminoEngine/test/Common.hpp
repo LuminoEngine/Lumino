@@ -6,7 +6,7 @@
 #include <LuminoEngine.hpp>
 using namespace ln;
 
-#include "../../src/LuminoEngine/src/Internal.hpp"
+#include "../../src/LuminoEngine/src/Engine/EngineDomain.hpp"
 
 #include <LuminoCore/Testing/TestHelper.hpp>
 #include "TestEnv.hpp"
