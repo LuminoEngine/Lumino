@@ -58,7 +58,7 @@ ShaderTechnique* DepthPrepass::selectShaderTechnique(
 	ShadingModel requestedShadingModel)
 {
 	// force default
-	return m_defaultShader->techniques().front();
+	return m_defaultShader->techniques()->front();
 }
 
 //==============================================================================
@@ -214,7 +214,7 @@ ShaderTechnique* ShadowCasterPass::selectShaderTechnique(
 	ShadingModel requestedShadingModel)
 {
 	// force default
-	return m_defaultShader->techniques().front();
+	return m_defaultShader->techniques()->front();
 }
 
 //void ShadowCasterPass::overrideCameraInfo(detail::CameraInfo* cameraInfo)

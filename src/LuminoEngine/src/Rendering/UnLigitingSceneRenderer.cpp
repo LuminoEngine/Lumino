@@ -39,7 +39,7 @@ ShaderTechnique* UnLigitingSceneRendererPass::selectShaderTechnique(
 		return tech;
 	}
 	else {
-		return m_defaultShader->techniques().front();
+		return m_defaultShader->techniques()->front();
 	}
 }
 

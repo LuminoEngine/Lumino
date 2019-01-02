@@ -582,8 +582,6 @@ const List<TItem>* Ref<const List<TItem>>::operator->() const LN_NOEXCEPT
 }
 #endif
 
-
-
 TEST_F(Test_Base_List, RefList)
 {
 	Ref<List<int>> list1 = makeList({1, 2, 3});
@@ -595,5 +593,23 @@ TEST_F(Test_Base_List, RefList)
 	Ref<ReadOnlyList<int>> list2 = list1;
 	ASSERT_EQ(3, list2->size_internal());
 	ASSERT_EQ(10, list2->at_internal(0));
+
+
+    Ref<ReadOnlyList<int>> rlist1 = list1;
+
+    ASSERT_EQ(10, rlist1->front());
+    ASSERT_EQ(10, rlist1[0]);
+    List<int> tmp;
+    for (int v : rlist1) {
+        tmp.add(v);
+    }
+    ASSERT_EQ(10, tmp[0]);
+    ASSERT_EQ(20, tmp[1]);
+    ASSERT_EQ(3, tmp[2]);
+
+
+
+    //rlist1->front();
+
 }
 

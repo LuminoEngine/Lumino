@@ -17,12 +17,46 @@ template<typename T> class List;
 template<typename TItem>
 class ReadOnlyList : public RefObject
 {
+public:
+    typedef typename std::vector<TItem>::iterator iterator;
+    typedef typename std::vector<TItem>::const_iterator const_iterator;
+    typedef typename std::vector<TItem>::reference reference;
+    typedef typename std::vector<TItem>::const_reference const_reference;
+
+    /** 先頭要素の参照を返します。*/
+    reference front() { return at_internal(0); }
+
+    /** 先頭要素の参照を返します。*/
+    const_reference front() const { return at_internal(0); }
+
+    /** 終端要素の参照を返します。*/
+    reference back() { return at_internal(size_internal() - 1); }
+
+    /** 終端要素の参照を返します。*/
+    const_reference back() const { return at_internal(size_internal() - 1); }
+
+    /** 指定したインデックスにある要素への参照を取得します。*/
+    TItem& operator[](int index) { return at_internal(index); }
+
+    /** 指定したインデックスにある要素への参照を取得します。*/
+    const TItem& operator[](int index) const { return at_internal(index); }
+
+    /** 先頭要素を指すイテレータを取得します。 */
+    iterator begin() LN_NOEXCEPT { return begin_internal(); }
+
+    /** 先頭要素を指すイテレータを取得します。 */
+    const_iterator begin() const LN_NOEXCEPT { return begin_internal(); }
+
+    /** 末尾の次を指すイテレータを取得します。 */
+    iterator end() LN_NOEXCEPT { return end_internal(); }
+
+    /** 末尾の次を指すイテレータを取得します。 */
+    const_iterator end() const LN_NOEXCEPT { return end_internal(); }
+
 protected:
 	ReadOnlyList() {}
 
 public:	// TODO: internal}
-	typedef typename std::vector<TItem>::iterator iterator;
-	typedef typename std::vector<TItem>::const_iterator const_iterator;
 
 	List<TItem>& derived() { return *static_cast<List<TItem>*>(this); }
 	const List<TItem>& derived() const { return *static_cast<const List<TItem> *>(this); }
@@ -557,301 +591,26 @@ bool List<T>::isOutOfRange(int index) const
 
 //================================================================================
 
-#if 1
-/** RefObject 用 スマートポインタ */
-template <typename TItem>
-class Ref<List<TItem>>
-{
-public:
-    /** null 値を表します。 */
-    static const Ref<List<TItem>> Null;
+#define LN_SPECIALIZED_TYPE List<TItem>
+#include <LuminoCore/Base/Ref.inl>
+#undef LN_SPECIALIZED_TYPE
 
-    /** 参照を持たない空の Ref を構築します。 */
-    LN_CONSTEXPR Ref() LN_NOEXCEPT;
+#define LN_SPECIALIZED_TYPE ReadOnlyList<TItem>
+#include <LuminoCore/Base/Ref.inl>
+#undef LN_SPECIALIZED_TYPE
 
-    /** 参照を持たない空の Ref を構築します。 */
-    LN_CONSTEXPR Ref(std::nullptr_t) LN_NOEXCEPT;
-
-    /** 生ポインタの所有権を受け取ります。 */
-    Ref(List<TItem>* ptr);
-
-    /** 生ポインタの所有権を受け取ります。retain が false の場合、参照カウントをインクリメントせずに参照します。 */
-    Ref(List<TItem>* ptr, bool retain);
-
-    /** 他の Ref と、参照を共有します。(コピーコンストラクタ) */
-    Ref(const Ref& ref) LN_NOEXCEPT;
-
-    /** 他の Ref と、参照を共有します。 */
-    template<class Y>
-    Ref(const Ref<Y>& ref) LN_NOEXCEPT;
-
-    /** 他の Ref から参照をムーブします。 */
-    Ref(Ref&& ref) LN_NOEXCEPT;
-
-    /** 他の Ref から参照をムーブします。 */
-    template<class Y>
-    Ref(Ref<Y>&& ref) LN_NOEXCEPT;
-
-    /** 保持しているオブジェクトの参照を開放します。 */
-    ~Ref();
-
-    /**
-     * 保持しているオブジェクトの所有権を放棄し、指定されたオブジェクトの参照を設定します。
-     *
-     * @param[in]  ptr    : 管理対象としてセットするオブジェクト
-     * @param[in]  retain : 参照カウントをインクリメントするかどうか。false の場合、参照カウントをインクリメントせずに参照します。
-     */
-    void reset(List<TItem>* ptr, bool retain = true);
-
-    /** 保持しているオブジェクトの参照を放棄します。 */
-    void reset();
-
-    /** 2つの Ref オブジェクトを入れ替えます。 */
-    void swap(Ref<List<TItem>>& other);
-
-    /** 保持しているオブジェクトの参照を放棄します。参照カウントはデクリメントしません。 */
-    List<TItem>* detach();
-
-    /** 保持しているオブジェクトへのポインタを取得します。 */
-    List<TItem>* get() const;
-
-    /** 保持しているオブジェクトの所有権を放棄し、他の Ref が持つ参照を共有します。 */
-    Ref& operator=(const Ref& ref) LN_NOEXCEPT;
-
-    /** 保持しているオブジェクトの所有権を放棄し、他の Ref が持つ参照を共有します。 */
-    template<class Y>
-    Ref& operator=(const Ref<Y>& ref) LN_NOEXCEPT;
-
-    /** 保持しているオブジェクトの所有権を放棄し、他の Ref が持つをムーブします。 */
-    Ref& operator=(Ref&& ref) LN_NOEXCEPT;
-
-    /** 保持しているオブジェクトの所有権を放棄し、他の Ref が持つをムーブします。 */
-    template<class Y>
-    Ref& operator=(Ref<Y>&& ref) LN_NOEXCEPT;
-
-    /** ポインタを間接参照します。 */
-    List<TItem>& operator*() const LN_NOEXCEPT;
-
-    /** ポインタを通してオブジェクトにアクセスします。 */
-    List<TItem>* operator->() const LN_NOEXCEPT;
-
-    /** 有効なポインタを保持しているかを確認します。 */
-    explicit operator bool() const LN_NOEXCEPT { return (m_ptr != nullptr); }
-
-    /** オブジェクトのポインタへの変換をサポートします。 */
-    operator List<TItem>*() const { return static_cast<List<TItem>*>(m_ptr); } // ここでコンパイルエラーとなる場合、List<TItem> の定義があるヘッダファイルを include しているか確認すること。
-
-    RefObject* basePointer() const { return m_ptr; }
-
-
-
-
-
-
-    /** 指定したインデックスにある要素への参照を取得します。*/
-    TItem& operator[](int index) { return m_ptr->operator[](index); }
-
-    /** 指定したインデックスにある要素への参照を取得します。*/
-    const TItem& operator[](int index) const { return m_ptr->operator[](index); }
-
-    typedef typename std::vector<TItem>::iterator iterator;
-    typedef typename std::vector<TItem>::const_iterator const_iterator;
-
-    /** 先頭要素を指すイテレータを取得します。 */
-    iterator begin() LN_NOEXCEPT { return m_ptr->begin(); }
-
-    /** 先頭要素を指すイテレータを取得します。 */
-    const_iterator begin() const LN_NOEXCEPT { return m_ptr->begin(); }
-
-    /** 末尾の次を指すイテレータを取得します。 */
-    iterator end() LN_NOEXCEPT { return m_ptr->end(); }
-
-    /** 末尾の次を指すイテレータを取得します。 */
-    const_iterator end() const LN_NOEXCEPT { return m_ptr->end(); }
-
-protected:
-    void safeAddRef()
-    {
-        LN_SAFE_RETAIN(m_ptr);
-    }
-
-    void safeRelease()
-    {
-        LN_SAFE_RELEASE(m_ptr);
-    }
-
-    List<TItem>* m_ptr;
-
-    template<class U> friend class Ref;
-};
-
-//template<class TItem>
-//const Ref<List<TItem>> Ref<List<TItem>>::Null;
-//
+/** Ref<List> を構築します。 */
 template<class TItem>
-LN_CONSTEXPR Ref<List<TItem>>::Ref() LN_NOEXCEPT
-    : m_ptr(nullptr)
+inline Ref<List<TItem>> makeList()
 {
+    return Ref<List<TItem>>(LN_NEW List<TItem>(), false);
 }
 
-template<class TItem>
-LN_CONSTEXPR Ref<List<TItem>>::Ref(std::nullptr_t) LN_NOEXCEPT
-    : m_ptr(nullptr)
-{
-}
-
-template<class TItem>
-Ref<List<TItem>>::Ref(List<TItem>* ptr)
-    : Ref(ptr, true)
-{
-}
-
-template<class TItem>
-Ref<List<TItem>>::Ref(List<TItem>* ptr, bool retain)
-    : m_ptr(ptr)
-{
-    if (retain) {
-        LN_SAFE_RETAIN(m_ptr);
-    }
-}
-
-template<class TItem>
-Ref<List<TItem>>::Ref(const Ref& ref) LN_NOEXCEPT
-    : m_ptr(ref.m_ptr)
-{
-    LN_SAFE_RETAIN(m_ptr);
-}
-
-template<class TItem>
-template<class Y>
-Ref<List<TItem>>::Ref(const Ref<Y>& ref) LN_NOEXCEPT
-    : m_ptr(static_cast<List<TItem>*>(ref.get()))
-{
-    LN_SAFE_RETAIN(m_ptr);
-}
-
-template<class TItem>
-Ref<List<TItem>>::Ref(Ref&& ref) LN_NOEXCEPT
-{
-    m_ptr = ref.m_ptr;
-    ref.m_ptr = nullptr;
-}
-
-template<class TItem>
-template<class Y>
-Ref<List<TItem>>::Ref(Ref<Y>&& ref) LN_NOEXCEPT
-{
-    m_ptr = static_cast<List<TItem>*>(ref.get());
-    ref.m_ptr = nullptr;
-}
-
-template<class TItem>
-Ref<List<TItem>>::~Ref()
-{
-    LN_SAFE_RELEASE(m_ptr);
-}
-
-template<class TItem>
-void Ref<List<TItem>>::reset(List<TItem>* ptr, bool retain)
-{
-    if (ptr != m_ptr) {
-        safeRelease();
-        m_ptr = ptr;
-        if (retain) {
-            safeAddRef();
-        }
-    }
-}
-
-template<class TItem>
-void Ref<List<TItem>>::reset()
-{
-    safeRelease();
-}
-
-template<class TItem>
-void Ref<List<TItem>>::swap(Ref<List<TItem>>& other)
-{
-    if (&other != this) {
-        List<TItem>* t = m_ptr;
-        m_ptr = other.m_ptr;
-        other.m_ptr = t;
-    }
-}
-
-template<class TItem>
-List<TItem>* Ref<List<TItem>>::detach()
-{
-    RefObject* ptr = m_ptr;
-    m_ptr = nullptr;
-    return static_cast<List<TItem>*>(ptr);
-}
-
-template<class TItem>
-List<TItem>* Ref<List<TItem>>::get() const
-{
-    return static_cast<List<TItem>*>(m_ptr);
-}
-
-template<class TItem>
-Ref<List<TItem>>& Ref<List<TItem>>::operator=(const Ref<List<TItem>>& ref) LN_NOEXCEPT
-{
-    LN_REFOBJ_SET(m_ptr, ref.m_ptr);
-    return *this;
-}
-
-template<class TItem>
-template<class Y>
-Ref<List<TItem>>& Ref<List<TItem>>::operator=(const Ref<Y>& ref) LN_NOEXCEPT
-{
-    LN_REFOBJ_SET(m_ptr, static_cast<List<TItem>*>(ref.get()));
-    return *this;
-}
-
-template<class TItem>
-Ref<List<TItem>>& Ref<List<TItem>>::operator=(Ref&& ref) LN_NOEXCEPT
-{
-    if (&ref != this) {
-        LN_SAFE_RELEASE(m_ptr);
-        m_ptr = ref.m_ptr;
-        ref.m_ptr = nullptr;
-    }
-    return *this;
-}
-
-template<class TItem>
-template<class Y>
-Ref<List<TItem>>& Ref<List<TItem>>::operator=(Ref<Y>&& ref) LN_NOEXCEPT
-{
-    LN_SAFE_RELEASE(m_ptr);
-    m_ptr = static_cast<List<TItem>*>(ref.get());
-    ref.m_ptr = nullptr;
-    return *this;
-}
-
-template<class TItem>
-List<TItem>& Ref<List<TItem>>::operator*() const LN_NOEXCEPT
-{
-    assert(m_ptr != nullptr);
-    return *static_cast<List<TItem>*>(m_ptr);
-}
-
-template<class TItem>
-List<TItem>* Ref<List<TItem>>::operator->() const LN_NOEXCEPT
-{
-    assert(m_ptr != nullptr);
-    return static_cast<List<TItem>*>(m_ptr);
-}
-
-/** Ref を構築します。受け取った引数リストを型 T のコンストラクタへ渡してオブジェクトを構築します。 */
+/** Ref<List> を構築します。受け取った引数リストを要素としてオブジェクトを構築します。 */
 template<class TItem>
 inline Ref<List<TItem>> makeList(std::initializer_list<TItem> list)
 {
     return Ref<List<TItem>>(LN_NEW List<TItem>(std::forward<std::initializer_list<TItem>>(list)), false);
 }
-
-#endif
-
-
 
 } // namespace ln

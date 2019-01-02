@@ -181,6 +181,7 @@ Ref<Shader> Shader::create(const StringRef& vertexShaderFilePath, const StringRe
 
 Shader::Shader()
 	: m_manager(detail::EngineDomain::shaderManager())
+    , m_techniques(makeList<Ref<ShaderTechnique>>())
 	, m_globalConstantBuffer(nullptr)
 {
 
@@ -228,7 +229,7 @@ void Shader::initialize(const StringRef& hlslEffectFilePath, ShaderCompilationPr
 		{
 			auto tech = newObject<ShaderTechnique>(String::fromStdString(hlslTech.name));
 			tech->setOwner(this);
-			m_techniques.add(tech);
+			m_techniques->add(tech);
 
 			for (auto& hlslPass : hlslTech.passes)
 			{
@@ -320,7 +321,7 @@ void Shader::createFromUnifiedShader(Stream* stream, DiagnosticsManager* diag)
             detail::UnifiedShader::TechniqueId techId = unifiedShader.techniqueId(iTech);
             auto tech = newObject<ShaderTechnique>(String::fromStdString(unifiedShader.techniqueName(techId)));
             tech->setOwner(this);
-            m_techniques.add(tech);
+            m_techniques->add(tech);
 
             int passCount = unifiedShader.getPassCountInTechnique(techId);
             for (int iPass = 0; iPass < passCount; iPass++)
@@ -363,7 +364,7 @@ void Shader::dispose()
 			pass->dispose();
 		}
 	}
-	m_techniques.clear();
+	m_techniques->clear();
 
 	GraphicsResource::dispose();
 }
@@ -437,7 +438,7 @@ void Shader::createSinglePassShader(const char* vsData, size_t vsLen, const char
 
 	auto tech = newObject<ShaderTechnique>(u"Main");	// TODO: 名前指定できた方がいいかも
 	tech->setOwner(this);
-	m_techniques.add(tech);
+	m_techniques->add(tech);
 
 	auto pass = newObject<ShaderPass>(rhiPass);
 	tech->addShaderPass(pass);
@@ -576,6 +577,11 @@ ShaderTechnique* Shader::findTechnique(const StringRef& name) const
 		}
 	}
 	return nullptr;
+}
+
+Ref<ReadOnlyList<Ref<ShaderTechnique>>> Shader::techniques() const
+{
+    return m_techniques;
 }
 
 // TODO: 名前の指定方法をもう少しいい感じにしたい。ImageEffect を Forward_Geometry_UnLighting と書かなければならないなど、煩雑。

@@ -427,6 +427,15 @@ ShaderRenderState* ShaderHelper::getShaderRenderState(ShaderPass* pass)
     return pass->m_renderState;
 }
 
+detail::ShaderSemanticsManager* ShaderHelper::semanticsManager(Shader* shader)
+{
+    return shader->semanticsManager();
+}
+
+ShaderTechnique* ShaderHelper::findTechniqueByClass(Shader* shader, const detail::ShaderTechniqueClass& techniqueClass)
+{
+    return shader->findTechniqueByClass(techniqueClass);
+}
 
 } // namespace detail
 } // namespace ln

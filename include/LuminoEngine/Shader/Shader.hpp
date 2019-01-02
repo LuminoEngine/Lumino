@@ -7,7 +7,6 @@
 
 namespace ln {
 class DiagnosticsManager;
-//class ShaderParameter;
 class Texture;
 class Shader;
 class ShaderConstantBuffer;
@@ -16,12 +15,11 @@ class ShaderTechnique;
 class ShaderPass;
 class GraphicsContext;
 namespace detail {
+class ShaderHelper;
 class ShaderManager;
 class IShaderPass;
 class IShaderUniformBuffer;
-//class HLSLPass;
 }
-
 
 enum class ShaderCodeType
 {
@@ -68,7 +66,7 @@ public:
 	static Ref<Shader> create(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCompilationProperties* properties = nullptr);
 
     /*
-     * 名前を指定して ShaderParameter を検索します。
+     * 名前を指定してこの Shader に含まれる ShaderParameter を検索します。
      *
      * @param[in]   name : パラメータの名前
      * @return      一致した ShaderParameter。見つからない場合は nullptr。
@@ -81,14 +79,31 @@ public:
      */
 	ShaderParameter* findParameter(const StringRef& name) const;
 
+    /*
+     * 名前を指定してこの Shader に含まれる ShaderConstantBuffer を検索します。
+     *
+     * @param[in]   name : 定数バッファの名前
+     * @return      一致した ShaderConstantBuffer。見つからない場合は nullptr。
+     */
 	ShaderConstantBuffer* findConstantBuffer(const StringRef& name) const;
+
+    /*
+     * 名前を指定してこの Shader に含まれる ShaderTechnique を検索します。
+     *
+     * @param[in]   name : 定数バッファの名前
+     * @return      一致した ShaderConstantBuffer。見つからない場合は nullptr。
+     */
 	ShaderTechnique* findTechnique(const StringRef& name) const;
 
-	const List<Ref<ShaderTechnique>>& techniques() const { return m_techniques; }
+    /*
+     * この Shader に含まれる ShaderTechnique を取得します。
+     */
+    Ref<ReadOnlyList<Ref<ShaderTechnique>>> techniques() const;
 
-	// TODO: inernal
-	detail::ShaderSemanticsManager* semanticsManager() { return& m_semanticsManager; }
-	ShaderTechnique* findTechniqueByClass(const detail::ShaderTechniqueClass& techniqueClass) const;
+    virtual void dispose() override;
+
+protected:
+    virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
 
 LN_CONSTRUCT_ACCESS:
 	Shader();
@@ -97,11 +112,10 @@ LN_CONSTRUCT_ACCESS:
 	void initialize(const StringRef& hlslEffectFilePath, ShaderCompilationProperties* properties = nullptr);
 	void initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCodeType codeType, ShaderCompilationProperties* properties = nullptr);
     void initialize(Stream* stream);
-	virtual void dispose() override;
-
-	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
 
 private:
+    detail::ShaderSemanticsManager* semanticsManager() { return&m_semanticsManager; }
+    ShaderTechnique* findTechniqueByClass(const detail::ShaderTechniqueClass& techniqueClass) const;
     void createFromUnifiedShader(Stream* stream, DiagnosticsManager* diag);
 	Ref<detail::IShaderPass> createShaderPass(
 		const char* vsData, size_t vsLen, const char* vsEntryPoint,
@@ -113,22 +127,18 @@ private:
 		DiagnosticsManager* diag);
 	void createSinglePassShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen, DiagnosticsManager* diag, ShaderCompilationProperties* properties);
 	void postInitialize();
-	//ShaderParameter* getShaderParameter(const detail::ShaderUniformTypeDesc& desc, const String& name);
 	ShaderConstantBuffer* getOrCreateConstantBuffer(detail::IShaderUniformBuffer* buffer);
 	ShaderParameter* getOrCreateTextureParameter(const String& name);
 
 	detail::ShaderManager* m_manager;
-	//Ref<DiagnosticsManager> m_diag;
-	//List<Ref<ShaderParameter>> m_parameters;
 	List<Ref<ShaderConstantBuffer>> m_buffers;
-	List<Ref<ShaderTechnique>> m_techniques;
-
+	Ref<List<Ref<ShaderTechnique>>> m_techniques;
 	List<Ref<ShaderParameter>> m_textureParameters;
-
 	ShaderConstantBuffer* m_globalConstantBuffer;
 	detail::ShaderSemanticsManager m_semanticsManager;
 
 	friend class ShaderPass;
+    friend class detail::ShaderHelper;
 };
 
 

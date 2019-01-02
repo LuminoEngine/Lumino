@@ -6,6 +6,7 @@
 
 namespace ln {
 class Texture;
+class Shader;
 class ShaderPass;
 
 namespace detail {
@@ -131,6 +132,8 @@ class ShaderHelper
 {
 public:
     static ShaderRenderState* getShaderRenderState(ShaderPass* pass);
+    static detail::ShaderSemanticsManager* semanticsManager(Shader* shader);
+    static ShaderTechnique* findTechniqueByClass(Shader* shader, const detail::ShaderTechniqueClass& techniqueClass);
 };
 
 } // namespace detail
