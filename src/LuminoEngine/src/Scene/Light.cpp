@@ -124,6 +124,8 @@ void DirectionalLight::initialize()
 	WorldObject::initialize();
 	m_component = newObject<DirectionalLightComponent>();
 	addComponent(m_component);
+    setPosition(10, 10, -10);
+    lookAt(Vector3(0, 0, 0));
 }
 
 void DirectionalLight::initialize(const Color& color)
