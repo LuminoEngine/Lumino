@@ -76,10 +76,7 @@ public:
 	}
 #endif
 
-    static uint64_t getTickCount()
-    {
-        return getTickCountNS() / 1000000;
-    }
+    static uint64_t getTickCount();
 };
 
 } // namespace ln

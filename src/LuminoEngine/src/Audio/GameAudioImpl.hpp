@@ -1,5 +1,6 @@
-﻿#pragma once
+#pragma once
 #include <mutex>
+#include <list>
 
 namespace ln {
 class Sound;

@@ -3,6 +3,7 @@
 #include "RenderStage.hpp"
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Mesh/MeshFactory.hpp"
+#include "RenderingManager.hpp"
 
 namespace ln {
 class MeshResource;

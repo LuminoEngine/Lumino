@@ -6,7 +6,6 @@
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include "../Graphics/GraphicsDeviceContext.hpp"
-#include "RenderingManager.hpp"
 #include "PrimitiveRenderFeature.hpp"
 
 namespace ln {
