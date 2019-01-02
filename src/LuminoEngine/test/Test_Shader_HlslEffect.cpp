@@ -41,7 +41,7 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Shader/Test_Graphics_HlslEffect-Basic-1.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-1.png"));
 	}
 	
 	//* [ ] Nested struct
@@ -53,7 +53,7 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 		
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Shader/Test_Graphics_HlslEffect-Basic-3.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-3.png"));
 	}
 }
 
@@ -89,7 +89,7 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Shader/Test_Graphics_HlslEffect-Basic-4.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-4.png"));
 	}
 
 	//* [ ] #ifdef
@@ -102,7 +102,7 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Shader/Test_Graphics_HlslEffect-Basic-5.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-5.png"));
 	}
 
 	//* [ ] #include
@@ -116,7 +116,7 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Shader/Test_Graphics_HlslEffect-Basic-1.png"));	// 1 と同じ結果でよい
+		ASSERT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-1.png"));	// 1 と同じ結果でよい
 	}
 }
 
@@ -188,7 +188,7 @@ TEST_F(Test_Graphics_HlslEffect, UnifiedShader)
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Shader/Test_Graphics_HlslEffect-UnifiedShader-1.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-UnifiedShader-1.png"));
 	}
 }
 

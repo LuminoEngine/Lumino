@@ -8,11 +8,11 @@ set(LN_SOURCES
 	Test_Asset_AssetArchive.cpp
 	Test_Engine_Object.cpp
 	Test_Graphics_Bitmap.cpp
-	Test_Graphics_HlslEffect.cpp
 	Test_Graphics_LowLevelRendering.cpp
 	Test_Graphics_Texture.cpp
 	Test_Scene_Sprite.cpp
 	Test_Scene_WorldObject.cpp
+	Test_Shader_HlslEffect.cpp
 	Test_Shader_Shader.cpp
 	Test_UI_UIElement.cpp
 	Test_UI_UISprite.cpp
