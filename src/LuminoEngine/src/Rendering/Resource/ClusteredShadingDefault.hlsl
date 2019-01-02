@@ -604,7 +604,7 @@ _lngs_PSOutput _lngs_PS_ClusteredForward_Geometry(_lngs_PSInput input)
 	// ・・・というより、ピクセルシェーダ全体を生成する。フラグメントの結合じゃダメ。
 
 	// TODO: SurfaceShader を入れるのはこのあたり
-	surface.Albedo = ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.UV);// * input.Color;
+	surface.Albedo = ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.UV) * input.Color;
 	surface.Albedo *= ln_MaterialColor;
 
 	surface.Emission = (ln_MaterialEmissive.rgb * ln_MaterialEmissive.a);

@@ -184,6 +184,10 @@ void WorldRenderView::renderGridPlane(RenderingContext* renderingContext, Render
     if (m_visibleGridPlane)
     {
 
+        //renderingContext->pushState();
+        renderingContext->drawLine(Vector3(0, 0, 0), Color::Red, Vector3(-1, 1, 1), Color::Red);
+        //renderingContext->popState();
+
         renderingContext->pushState();
 
         

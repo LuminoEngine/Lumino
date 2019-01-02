@@ -4,6 +4,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Mesh/Mesh.hpp>
+#include "../Mesh/MeshFactory.hpp"
 #include "RenderingManager.hpp"
 #include "DrawElementListBuilder.hpp"
 
@@ -308,22 +309,24 @@ void RenderingContext::drawLine(const Vector3& from, const Color& fromColor, con
     class DrawLine : public detail::RenderDrawElement
     {
     public:
-        Vector3 from; Color fromColor;
-        Vector3 to; Color toColor;
+        //Vector3 from; Color fromColor;
+        //Vector3 to; Color toColor;
+        detail::SingleLineGenerater data;
 
         virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
         {
-            static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawLine(from, fromColor, to, toColor);
+            static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::SingleLineGenerater>(data);
+            //static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawLine(from, fromColor, to, toColor);
         }
     };
 
     auto* element = m_builder->addNewDrawElement<DrawLine>(
         m_manager->primitiveRenderFeature(),
         m_builder->primitiveRenderFeatureStageParameters());
-    element->from = from;
-    element->fromColor = fromColor;
-    element->to = to;
-    element->toColor = toColor;
+    element->data.point1 = from;
+    element->data.point1Color = fromColor;
+    element->data.point2 = to;
+    element->data.point2Color = toColor;
     // TODO:
     //ptr->makeBoundingSphere(Vector3::min(position1, position2), Vector3::max(position1, position2));
 }

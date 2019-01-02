@@ -1,10 +1,44 @@
 ﻿#pragma once
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include "RenderStage.hpp"
+#include "../Graphics/GraphicsManager.hpp"
+#include "../Mesh/MeshFactory.hpp"
 
 namespace ln {
 class MeshResource;
 namespace detail {
+
+class InternalPrimitiveRenderer
+    : public RefObject
+{
+public:
+    InternalPrimitiveRenderer();
+    void initialize(RenderingManager* manager);
+
+    void drawMeshGenerater(const MeshGenerater* generator);
+
+    void flush();
+
+private:
+    void prepareBuffers(IGraphicsDeviceContext* context, int vertexCount, int indexCount);
+
+    RenderingManager* m_manager;
+    Ref<LinearAllocator> m_linearAllocator;
+    List<MeshGenerater*> m_generators;
+    PrimitiveType m_primitiveType;
+    Ref<IVertexDeclaration> m_vertexDeclaration;
+    Ref<IVertexBuffer> m_vertexBuffer;
+    Ref<IIndexBuffer> m_indexBuffer;
+
+    /*
+     0.4.0 までは CacheBuffer という、内部実装は vector なバッファを使っていたが、
+     これだと常に最大使用量のメモリが確保されたままになるので、メモリ効率が良くない。
+     LinearAllocator を使うことで平均化できるが、一方こちらはバッファがひとつながりではないので、
+     CacheBuffer の時のように頂点バッファデータをキャッシュすることはできなくなる。
+     そのため Sprite と同じように、まずは描画情報 (MeshGenerater) をリストで持って、
+     flush 時に頂点データ化するという流れで描画を行う。
+    */
+};
 
 // 特に state とかないので不要なのだが、実装を他と合わせてイメージを持ちやすいようにしている。
 // TODO: 後で消す。
@@ -46,15 +80,36 @@ public:
 
 
 
+    //void drawMeshGenerater(const MeshGenerater* generator);
+    template<class TFactory>
+    void drawMeshGenerater(const TFactory& generator)
+    {
+        if (m_lastPrimitiveType.hasValue() && m_lastPrimitiveType != generator.primitiveType()) {
+            flush(m_manager->graphicsManager()->graphicsContext());
+        }
+        m_lastPrimitiveType = generator.primitiveType();
 
-    void drawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor);
+        GraphicsManager* manager = m_manager->graphicsManager();
+        LN_ENQUEUE_RENDER_COMMAND_2(
+            PrimitiveRenderFeature_drawMeshGenerater, manager,
+            InternalPrimitiveRenderer*, m_internal,
+            TFactory, generator,
+            {
+                m_internal->drawMeshGenerater(&generator);
+            });
+    }
+
+
+    //void drawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor);
 
 
 
 	virtual void flush(GraphicsContext* context) override;
 
 private:
+    Optional<PrimitiveType> m_lastPrimitiveType;
 	RenderingManager* m_manager;
+    Ref<InternalPrimitiveRenderer> m_internal;
 };
 
 } // namespace detail

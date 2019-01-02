@@ -235,6 +235,8 @@ set(LN_SOURCES_Mesh
     src/Mesh/GMesh.cpp
     src/Mesh/GMesh.hpp
     src/Mesh/Mesh.cpp
+    src/Mesh/MeshFactory.cpp
+    src/Mesh/MeshFactory.hpp
     src/Mesh/MeshImporter.cpp
     src/Mesh/MeshImporter.hpp
     src/Mesh/MeshManager.cpp
