@@ -189,7 +189,9 @@ int main(int argc, char** argv)
     //
 
     auto mesh2 = newObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
-    mesh2->setPosition(5, 0, 0);
+    mesh2->setPosition(2, 0, 0);
+
+    //auto mesh3 = newObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
 #endif
 
 #if 0

@@ -78,6 +78,7 @@ public:
 
 	/** @} */
 
+    // デフォルトは nullptr。この場合、既定のマテリアルが使用される。
     void setMaterial(AbstractMaterial* material);
 
 

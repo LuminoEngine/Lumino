@@ -49,10 +49,22 @@ RenderStage::RenderStage()
 
 bool RenderStage::equals(const RenderStage* other) const
 {
+    // clear の場合は renderFeatureStageParameters が null になる。
+    bool renderFeatureStageParametersEqual = false;
+    if (renderFeatureStageParameters != other->renderFeatureStageParameters && renderFeatureStageParameters == nullptr) {
+        renderFeatureStageParametersEqual = true;
+    }
+    else if (renderFeatureStageParameters == nullptr || other->renderFeatureStageParameters == nullptr) {
+        renderFeatureStageParametersEqual = false;
+    }
+    else {
+        renderFeatureStageParametersEqual = renderFeatureStageParameters->equals(other->renderFeatureStageParameters);
+    }
+
 	return
+        renderFeatureStageParametersEqual &&
 		frameBufferStageParameters->equals(other->frameBufferStageParameters) &&
 		geometryStageParameters->equals(other->geometryStageParameters) &&
-		renderFeatureStageParameters->equals(renderFeatureStageParameters) &&
 		renderFeature == other->renderFeature;
 }
 
@@ -63,7 +75,7 @@ void RenderStage::flush(GraphicsContext* context)
 	}
 }
 
-AbstractMaterial* RenderStage::getMaterialFinal(AbstractMaterial* priorityValue) const
+AbstractMaterial* RenderStage::getMaterialFinal(AbstractMaterial* priorityValue, AbstractMaterial* sceneDefaultMaterial) const
 {
 	// specified drawXXXX()
 	if (priorityValue) {
@@ -80,11 +92,8 @@ AbstractMaterial* RenderStage::getMaterialFinal(AbstractMaterial* priorityValue)
 	// specified context->setMaterial() or meshObj->setMaterial()
 	if (geometryStageParameters->m_material) return geometryStageParameters->m_material;
 
-	LN_UNREACHABLE();
-	return nullptr;
-
-	// default は SceneRenderer に決めてもらう
-	//return defaultValue;
+    // default は SceneRenderer に決めてもらう
+	return sceneDefaultMaterial;
 }
 
 ShadingModel RenderStage::getShadingModelFinal(AbstractMaterial* finalMaterial) const

@@ -17,7 +17,7 @@ public:
 
     void drawMeshGenerater(const MeshGenerater* generator);
 
-    void flush();
+    void flush(IGraphicsDeviceContext* context);
 
 private:
     void prepareBuffers(IGraphicsDeviceContext* context, int vertexCount, int indexCount);

@@ -3,6 +3,7 @@
 namespace ln {
 class VertexDeclaration;
 class Shader;
+class Material;
 
 namespace detail {
 class LinearAllocatorPageManager;
@@ -27,6 +28,11 @@ enum class BuiltinShader
     ToneImageEffect,
 };
 
+enum class BuiltinMaterial
+{
+    Default,
+    UnLighting,
+};
 
 /* 
  * RenderingManager
@@ -143,6 +149,7 @@ public:
     const Ref<PrimitiveRenderFeature>& primitiveRenderFeature() const { return m_primitiveRenderFeature; }
 	const Ref<LinearAllocatorPageManager>& stageDataPageManager() const { return m_stageDataPageManager; }
 	const Ref<Shader>& builtinShader(BuiltinShader shader) const { return m_builtinShaders[(int)shader]; }
+    const Ref<Material>& builtinMaterials(BuiltinMaterial material) const { return m_builtinMaterials[(int)material]; }
 
 private:
 	GraphicsManager* m_graphicsManager;
@@ -160,6 +167,7 @@ private:
 	Ref<LinearAllocatorPageManager> m_stageDataPageManager;
 
 	std::array<Ref<Shader>, 6> m_builtinShaders;
+    std::array<Ref<Material>, 2> m_builtinMaterials;
 };
 
 } // namespace detail

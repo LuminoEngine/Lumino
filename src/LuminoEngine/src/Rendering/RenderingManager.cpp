@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/VertexDeclaration.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
 #include "../Engine/LinearAllocator.hpp"
 #include "DrawElementListBuilder.hpp"
 #include "BlitRenderFeature.hpp"
@@ -30,28 +31,28 @@ void RenderingManager::initialize(const Settings& settings)
 {
     LN_LOG_DEBUG << "RenderingManager Initialization started.";
 
-	m_graphicsManager = settings.graphicsManager;
+    m_graphicsManager = settings.graphicsManager;
 
-	m_renderTargetTextureCacheManager = makeRef<RenderTargetTextureCacheManager>();
-	m_depthBufferCacheManager = makeRef<DepthBufferCacheManager>();
+    m_renderTargetTextureCacheManager = makeRef<RenderTargetTextureCacheManager>();
+    m_depthBufferCacheManager = makeRef<DepthBufferCacheManager>();
     m_frameBufferCache = makeRef<detail::FrameBufferCache>(m_renderTargetTextureCacheManager, m_depthBufferCacheManager);
 
-	static VertexElement elements[] =
-	{
-		{ 0, VertexElementType::Float3, VertexElementUsage::Position, 0 },
-		{ 0, VertexElementType::Float3, VertexElementUsage::Normal, 0 },
-		{ 0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0 },
-		{ 0, VertexElementType::Float4, VertexElementUsage::Color, 0 },
-	};
-	m_standardVertexDeclaration = newObject<VertexDeclaration>(elements, 4);
-	m_renderStageListBuilder = makeRef<DrawElementListBuilder>();
+    static VertexElement elements[] =
+    {
+        { 0, VertexElementType::Float3, VertexElementUsage::Position, 0 },
+        { 0, VertexElementType::Float3, VertexElementUsage::Normal, 0 },
+        { 0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0 },
+        { 0, VertexElementType::Float4, VertexElementUsage::Color, 0 },
+    };
+    m_standardVertexDeclaration = newObject<VertexDeclaration>(elements, 4);
+    m_renderStageListBuilder = makeRef<DrawElementListBuilder>();
 
     m_blitRenderFeature = newObject<BlitRenderFeature>(this);
-	m_spriteRenderFeature = newObject<SpriteRenderFeature>(this);
-	m_meshRenderFeature = newObject<MeshRenderFeature>(this);
+    m_spriteRenderFeature = newObject<SpriteRenderFeature>(this);
+    m_meshRenderFeature = newObject<MeshRenderFeature>(this);
     m_primitiveRenderFeature = newObject<PrimitiveRenderFeature>(this);
 
-	m_stageDataPageManager = makeRef<LinearAllocatorPageManager>();
+    m_stageDataPageManager = makeRef<LinearAllocatorPageManager>();
 
 #if 1
     // ClusteredShadingDefault.lcfx.h
@@ -86,17 +87,17 @@ void RenderingManager::initialize(const Settings& settings)
     }
 #endif
 
-//#if 0
-//	m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.hlsl");
-//	m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.hlsl");
-//	m_builtinShaders[(int)BuiltinShader::DepthPrepass] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/DepthPrepass.hlsl");
-//	m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.hlsl");
-//#endif
+    //#if 0
+    //	m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.hlsl");
+    //	m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.hlsl");
+    //	m_builtinShaders[(int)BuiltinShader::DepthPrepass] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/DepthPrepass.hlsl");
+    //	m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.hlsl");
+    //#endif
 #if 1
-	m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.hlsl");
-	m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.hlsl");
-	//m_builtinShaders[(int)BuiltinShader::DepthPrepass] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/DepthPrepass.hlsl");
-	//m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.hlsl");
+    m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.hlsl");
+    m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.hlsl");
+    //m_builtinShaders[(int)BuiltinShader::DepthPrepass] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/DepthPrepass.hlsl");
+    //m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.hlsl");
  //   m_builtinShaders[(int)BuiltinShader::ScreenBlurImageEffect] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ScreenBlurImageEffect.fx");
     //m_builtinShaders[(int)BuiltinShader::ToneImageEffect] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ToneImageEffect.hlsl");
 #endif
@@ -115,6 +116,16 @@ void RenderingManager::initialize(const Settings& settings)
 //	//std::cout << "RenderingManager 14" << std::endl;
 //	//m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(u"/Users/lriki/Proj/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.hlsl");
 //#endif
+
+    {
+        m_builtinMaterials[(int)BuiltinMaterial::Default] = Material::create();
+    }
+    {
+        auto material = Material::create();
+        material->shadingModel = ShadingModel::UnLighting;
+        m_builtinMaterials[(int)BuiltinMaterial::UnLighting] = material;
+    }
+
 
     LN_LOG_DEBUG << "RenderingManager Initialization ended.";
 }

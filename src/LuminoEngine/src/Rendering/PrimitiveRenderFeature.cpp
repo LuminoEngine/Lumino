@@ -38,10 +38,8 @@ void InternalPrimitiveRenderer::drawMeshGenerater(const MeshGenerater* generator
     m_generators.add(gen);
 }
 
-void InternalPrimitiveRenderer::flush()
+void InternalPrimitiveRenderer::flush(IGraphicsDeviceContext* context)
 {
-    IGraphicsDeviceContext* context = m_manager->graphicsManager()->deviceContext();
-
     // Prepare buffers
     int vertexCount = 0;
     int indexCount = 0;
@@ -178,11 +176,13 @@ void PrimitiveRenderFeature::initialize(RenderingManager* manager)
 void PrimitiveRenderFeature::flush(GraphicsContext* context)
 {
     GraphicsManager* manager = m_manager->graphicsManager();
-    LN_ENQUEUE_RENDER_COMMAND_1(
+    IGraphicsDeviceContext* deviceContext = context->commitState();
+    LN_ENQUEUE_RENDER_COMMAND_2(
         PrimitiveRenderFeature_flush, manager,
         InternalPrimitiveRenderer*, m_internal,
+        IGraphicsDeviceContext*, deviceContext,
         {
-            m_internal->flush();
+            m_internal->flush(deviceContext);
         });
 
     m_lastPrimitiveType = nullptr;

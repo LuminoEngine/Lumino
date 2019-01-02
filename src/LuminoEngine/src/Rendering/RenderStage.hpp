@@ -326,7 +326,7 @@ public:
 	const RectI& getScissorRectFinal() const { return frameBufferStageParameters->m_scissorRect; }
 
 
-	AbstractMaterial* getMaterialFinal(AbstractMaterial* priorityValue) const;
+	AbstractMaterial* getMaterialFinal(AbstractMaterial* priorityValue, AbstractMaterial* sceneDefaultMaterial) const;
 	ShadingModel getShadingModelFinal(AbstractMaterial* finalMaterial) const;	// getMaterialFinal() で確定した Material を渡すこと
 	BlendMode getBlendModeFinal(AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
 	CullMode getCullingModeFinal(AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと

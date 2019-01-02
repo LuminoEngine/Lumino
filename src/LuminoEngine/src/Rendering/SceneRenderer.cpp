@@ -200,7 +200,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 
 			if (element->elementType == RenderDrawElementType::Geometry)
 			{
-				AbstractMaterial* finalMaterial = currentStage->getMaterialFinal(nullptr);
+				AbstractMaterial* finalMaterial = currentStage->getMaterialFinal(nullptr, m_manager->builtinMaterials(BuiltinMaterial::Default));
                 applyGeometryStatus(graphicsContext, currentStage, finalMaterial);
 
                 Texture* mainTexture = nullptr;
