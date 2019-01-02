@@ -1,6 +1,6 @@
 
-Texture2D myTexture;
-SamplerState mySamplerState;
+Texture2D _Texture;
+SamplerState _SamplerState;
 
 struct VS_INPUT
 {
@@ -29,7 +29,7 @@ struct PS_INPUT
 
 float4 psMain(PS_INPUT input) : SV_TARGET
 {
-    float4 color = myTexture.Sample(mySamplerState, input.UV);
+    float4 color = _Texture.Sample(_SamplerState, input.UV);
     return color;
 }
 

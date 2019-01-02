@@ -40,7 +40,7 @@ TEST_F(Test_Shader_Shader, IndependentSamplerState)
     samplerState->setFilterMode(TextureFilterMode::Linear);
     tex1->setSamplerState(samplerState);
 
-    shader1->findParameter("myTexture")->setTexture(tex1);
+    shader1->findParameter("_Texture")->setTexture(tex1);
 
     auto ctx = Engine::graphicsContext();
     TestEnv::resetGraphicsContext(ctx);

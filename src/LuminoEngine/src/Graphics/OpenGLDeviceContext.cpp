@@ -1817,7 +1817,7 @@ void GLShaderPass::buildUniforms()
 			m_samplerBuffer->addGlslSamplerUniform(name, loc);
 		}
 
-        if (strncmp(name, "lnCIS_lnT_", 10) == 0 && strncmp(name + name_len - 5, "_IsRT", 5) == 0)
+        if (strncmp(name, LN_CIS_PREFIX, std::strlen(LN_CIS_PREFIX)) == 0 && strncmp(name + name_len - std::strlen(LN_IS_RT_POSTFIX), LN_IS_RT_POSTFIX, std::strlen(LN_IS_RT_POSTFIX)) == 0)
         {
             m_samplerBuffer->addIsRenderTargetUniform(name, loc);
         }
@@ -2131,13 +2131,13 @@ GLLocalShaderSamplerBuffer::GLLocalShaderSamplerBuffer()
 
 void GLLocalShaderSamplerBuffer::addGlslSamplerUniform(const std::string& name, GLint uniformLocation)
 {
-    auto keyword = name.find("lnCIS");
-    auto textureSep = name.find("_lnT_");
-    auto samplerSep = name.find("_lnS_");
+    auto keyword = name.find(LN_CIS_PREFIX);
+    auto textureSep = name.find(LN_TO_PREFIX);
+    auto samplerSep = name.find(LN_SO_PREFIX);
     if (keyword != std::string::npos && textureSep != std::string::npos && samplerSep && std::string::npos)
     {
-        auto textureName = name.substr(textureSep + 5, samplerSep - (textureSep + 5));
-        auto samplerName = name.substr(samplerSep + 5);
+        auto textureName = name.substr(textureSep + LN_TO_PREFIX_LEN, samplerSep - (textureSep + LN_TO_PREFIX_LEN));
+        auto samplerName = name.substr(samplerSep + LN_SO_PREFIX_LEN);
         auto itr = std::find_if(m_table.begin(), m_table.end(), [&](const Entry& e) {
             return e.textureRegisterName == textureName && e.samplerRegisterName == samplerName; });
         if (itr != m_table.end()) {
@@ -2146,38 +2146,22 @@ void GLLocalShaderSamplerBuffer::addGlslSamplerUniform(const std::string& name, 
         else {
             Entry e;
             e.uniformLocation = uniformLocation;
-            e.textureRegisterName = name.substr(textureSep + 5, samplerSep - (textureSep + 5));
-            e.samplerRegisterName = name.substr(samplerSep + 5);
+            e.textureRegisterName = name.substr(textureSep + LN_TO_PREFIX_LEN, samplerSep - (textureSep + LN_TO_PREFIX_LEN));
+            e.samplerRegisterName = name.substr(samplerSep + LN_SO_PREFIX_LEN);
             m_table.push_back(e);
         }
     }
-	//auto keyword = name.find("lnCIS");
-	//auto textureSep = name.find("_lnT_");
-	//auto samplerSep = name.find("_lnS_");
-	//if (keyword != std::string::npos && textureSep != std::string::npos && samplerSep && std::string::npos)
-	//{
-	//	Entry e;
-	//	e.uniformLocation = uniformLocation;
-	//	e.textureRegisterName = name.substr(textureSep + 5, samplerSep - (textureSep + 5));
-	//	e.samplerRegisterName = name.substr(samplerSep + 5);
-	//	m_table.push_back(e);
-	//	LN_LOG_VERBOSE << name << " is added to ShaderSamplerBuffer.";
-	//}
-	//else
-	//{
-	//	LN_LOG_VERBOSE << name << " is not added to ShaderSamplerBuffer.";
-	//}
 }
 
 void GLLocalShaderSamplerBuffer::addIsRenderTargetUniform(const std::string& name, GLint uniformLocation)
 {
-    auto keyword = name.find("lnCIS");
-    auto textureSep = name.find("_lnT_");
-    auto samplerSep = name.find("_lnS_");
+    auto keyword = name.find(LN_CIS_PREFIX);
+    auto textureSep = name.find(LN_TO_PREFIX);
+    auto samplerSep = name.find(LN_SO_PREFIX);
     if (keyword != std::string::npos && textureSep != std::string::npos && samplerSep && std::string::npos)
     {
-        auto textureName = name.substr(textureSep + 5, samplerSep - (textureSep + 5));
-        auto samplerName = name.substr(samplerSep + 5);
+        auto textureName = name.substr(textureSep + LN_TO_PREFIX_LEN, samplerSep - (textureSep + LN_TO_PREFIX_LEN));
+        auto samplerName = name.substr(samplerSep + LN_SO_PREFIX_LEN);
         auto itr = std::find_if(m_table.begin(), m_table.end(), [&](const Entry& e) {
             return e.textureRegisterName == textureName && e.samplerRegisterName == samplerName; });
         if (itr != m_table.end()) {
@@ -2185,8 +2169,8 @@ void GLLocalShaderSamplerBuffer::addIsRenderTargetUniform(const std::string& nam
         }
         else {
             Entry e;
-            e.textureRegisterName = name.substr(textureSep + 5, samplerSep - (textureSep + 5));
-            e.samplerRegisterName = name.substr(samplerSep + 5);
+            e.textureRegisterName = name.substr(textureSep + LN_TO_PREFIX_LEN, samplerSep - (textureSep + LN_TO_PREFIX_LEN));
+            e.samplerRegisterName = name.substr(samplerSep + LN_SO_PREFIX_LEN);
             e.isRenderTargetUniformLocation = uniformLocation;
             m_table.push_back(e);
         }

@@ -415,8 +415,10 @@ std::string ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es)
 	// Here you can also set up decorations if you want (binding = #N).
 	for (auto &remap : glsl.get_combined_image_samplers())
 	{
+        // ここで結合するキーワードにに _ を含めないこと。
+        // 識別子内に連続する _ があると、SPIRV-Cross が内部でひとつの _ に変換するため、不整合が起こることがある。
         //std::string name = "lnCIS_lnT_" + ensure_valid_identifier(glsl.get_name(remap.image_id)) + "_lnS_" + ensure_valid_identifier(glsl.get_name(remap.sampler_id));
-        std::string name = "lnCIS_lnT_" + glsl.get_name(remap.image_id) + "_lnS_" + glsl.get_name(remap.sampler_id);
+        std::string name = (LN_CIS_PREFIX LN_TO_PREFIX) + glsl.get_name(remap.image_id) + LN_SO_PREFIX + glsl.get_name(remap.sampler_id);
 		glsl.set_name(remap.combined_id, name);
         combinedImageSamplerNames.push_back(std::move(name));
 		//glsl.set_name(remap.combined_id, "test" /*join("SPIRV_Cross_Combined", glsl.get_name(remap.image_id), glsl.get_name(remap.sampler_id))*/);
@@ -549,7 +551,7 @@ std::string ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es)
 
     std::string declsIsRT;
     for (auto& name : combinedImageSamplerNames) {
-        declsIsRT += "uniform int " + name + "_IsRT;\n";
+        declsIsRT += "uniform int " + name + (LN_IS_RT_POSTFIX ";\n");
     }
 
     std::string code = glsl.compile();
@@ -558,7 +560,7 @@ std::string ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es)
         declsIsRT +
         "vec4 xxTexture(int isRT, sampler2D s, vec2 uv) { if (isRT != 0) { return texture(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); } else { return texture(s, uv); } }\n"
         "vec4 xxTexture(int isRT, sampler3D s, vec3 uv) { if (isRT != 0) { return texture(s, vec3(uv.x, (uv.y * -1.0) + 1.0, uv.z)); } else { return texture(s, uv); } }\n"
-        "#define texture(s, uv) xxTexture(s##_IsRT, s, uv)\n"
+        "#define texture(s, uv) xxTexture(s##lnIsRT, s, uv)\n"
         "#line 1\n"
     );
 

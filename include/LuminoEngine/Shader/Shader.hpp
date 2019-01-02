@@ -70,7 +70,8 @@ public:
     /*
      * 名前を指定して ShaderParameter を検索します。
      *
-     * @param[in] name : パラメータの名前
+     * @param[in]   name : パラメータの名前
+     * @return      一致した ShaderParameter。見つからない場合は nullptr。
      *
      * この関数の検索対象は次の通りです。
      * - "_Global" という名前の付いた ShaderConstantBuffer (cbuffer 構文を使用せず、グローバルスコープに直接定義した変数)

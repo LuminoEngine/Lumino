@@ -179,7 +179,7 @@ TEST_F(Test_Graphics_HlslEffect, UnifiedShader)
 
 	//* [ ] Basic rendering
 	{
-		auto shader = newObject<Shader>(LN_ASSETFILE("Shader/FxcTest1.1.lcfx"));
+		auto shader = newObject<Shader>(LN_ASSETFILE("Shader/FxcTest1.v1.lcfx"));
 		shader->findConstantBuffer("ConstBuff")->findParameter("g_color")->setVector(Vector4(0, 1, 0, 1));
 
 		ctx->setVertexDeclaration(vd1);
