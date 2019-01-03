@@ -3,13 +3,29 @@
 #include "Common.hpp"
 #include "../Graphics/GraphicsResource.hpp"
 #include "../Graphics/RenderState.hpp"
+#include "ShaderInterfaceFramework.hpp"
 
 namespace ln {
 class Texture;
 class Shader;
+class ShaderTechnique;
 class ShaderPass;
 
+/** ShaderParameter を分類します。 */
+enum class ShaderParameterClass
+{
+    /** 定数バッファに含まれるスカラー、ベクトル、行列 */
+    Constant,
+
+    /** texture 型の変数 */
+    Texture,
+
+    /** SamplerState 型の変数 */
+    SamplerState,
+};
+
 namespace detail {
+class ShaderSemanticsManager;
 
 class ShaderParameterValue
 {
@@ -134,6 +150,7 @@ public:
     static ShaderRenderState* getShaderRenderState(ShaderPass* pass);
     static detail::ShaderSemanticsManager* semanticsManager(Shader* shader);
     static ShaderTechnique* findTechniqueByClass(Shader* shader, const detail::ShaderTechniqueClass& techniqueClass);
+    static const detail::ShaderTechniqueClass& techniqueClass(ShaderTechnique* technique);
 };
 
 } // namespace detail

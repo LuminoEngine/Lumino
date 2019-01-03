@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "../../../LuminoCore/src/Base/LinearAllocator.hpp"
 #include <LuminoEngine/Graphics/Common.hpp>
 

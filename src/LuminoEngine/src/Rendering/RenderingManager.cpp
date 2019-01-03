@@ -63,7 +63,7 @@ void RenderingManager::initialize(const Settings& settings)
         };
         static const size_t size = LN_ARRAY_SIZE_OF(data);
         MemoryStream stream(data, size);
-        m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = newObject<Shader>(&stream);
+        m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = newObject<Shader>(u"ClusteredShadingDefault", &stream);
     }
     // DepthPrepass.lcfx.h
     {
@@ -73,7 +73,7 @@ void RenderingManager::initialize(const Settings& settings)
         };
         static const size_t size = LN_ARRAY_SIZE_OF(data);
         MemoryStream stream(data, size);
-        m_builtinShaders[(int)BuiltinShader::DepthPrepass] = newObject<Shader>(&stream);
+        m_builtinShaders[(int)BuiltinShader::DepthPrepass] = newObject<Shader>(u"DepthPrepass", &stream);
     }
     // Sprite.lcfx.h
     {
@@ -83,7 +83,7 @@ void RenderingManager::initialize(const Settings& settings)
         };
         static const size_t size = LN_ARRAY_SIZE_OF(data);
         MemoryStream stream(data, size);
-        m_builtinShaders[(int)BuiltinShader::Sprite] = newObject<Shader>(&stream);
+        m_builtinShaders[(int)BuiltinShader::Sprite] = newObject<Shader>(u"Sprite", &stream);
     }
 #endif
 

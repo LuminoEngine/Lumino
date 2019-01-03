@@ -2,7 +2,6 @@
 #pragma once
 #include "Common.hpp"
 #include "../Graphics/GraphicsResource.hpp"
-#include "ShaderInterfaceFramework.hpp"
 #include "ShaderHelper.hpp"
 
 namespace ln {
@@ -13,6 +12,7 @@ class ShaderConstantBuffer;
 class ShaderParameter;
 class ShaderTechnique;
 class ShaderPass;
+class ShaderCompilationProperties;
 class GraphicsContext;
 namespace detail {
 class ShaderHelper;
@@ -21,42 +21,26 @@ class IShaderPass;
 class IShaderUniformBuffer;
 }
 
-enum class ShaderCodeType
-{
-	RawGLSL,
-};
-
-class ShaderCompilationProperties
-	: public Object
-{
-public:
-	void addIncludeDirectory(const StringRef& value);
-	void addDefinition(const StringRef& value);
-	void setDiagnostics(DiagnosticsManager* diag);
-
-LN_CONSTRUCT_ACCESS:
-	ShaderCompilationProperties();
-	virtual ~ShaderCompilationProperties();
-	void initialize();
-
-private:
-	List<String> m_includeDirectories;
-	List<String> m_definitions;
-	Ref<DiagnosticsManager> m_diag;
-
-	friend class Shader;
-};
-
 /**
- * プログラマブルシェーダーを表すクラスです。
+ * シェーダーを表すクラスです。
  *
  * このクラスは DirectX9 ～ 11 世代に提供されていた「エフェクト」と同様の、シェーダーステージをまとめて管理・適用する機能を持っています。
  */
-class LN_API Shader
+class LN_API Shader final
 	: public GraphicsResource
 {
 public:
-	static Ref<Shader> create(const StringRef& hlslEffectFilePath, ShaderCompilationProperties* properties = nullptr);
+    /*
+     * 事前コンパイル済みシェーダファイルまたはシェーダプログラムファイルから Shader オブジェクトを作成します。
+     *
+     * @param[in]   filePath : 入力ファイル名
+     *
+     * シェーダプログラムファイル の読み込み機能はデバッグを目的として用意されています。
+     *
+     * シェーダプログラムファイルを読み込むことができるのは、デスクトップターゲットのみです。
+     * モバイルターゲット、Web ターゲットでは事前コンパイル済みシェーダファイルのみを読み込むことができます。
+     */
+	static Ref<Shader> create(const StringRef& filePath, ShaderCompilationProperties* properties = nullptr);
 
     /*
      * Lumino の独自拡張 (technique 構文など) を使用しない HLSL シェーダをコンパイルし、Shader オブジェクトを作成します。
@@ -95,9 +79,7 @@ public:
      */
 	ShaderTechnique* findTechnique(const StringRef& name) const;
 
-    /*
-     * この Shader に含まれる ShaderTechnique を取得します。
-     */
+    /** この Shader に含まれる ShaderTechnique を取得します。 */
     Ref<ReadOnlyList<Ref<ShaderTechnique>>> techniques() const;
 
     virtual void dispose() override;
@@ -107,11 +89,11 @@ protected:
 
 LN_CONSTRUCT_ACCESS:
 	Shader();
-	virtual ~Shader();
+	virtual ~Shader() = default;
 	void initialize();
-	void initialize(const StringRef& hlslEffectFilePath, ShaderCompilationProperties* properties = nullptr);
-	void initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCodeType codeType, ShaderCompilationProperties* properties = nullptr);
-    void initialize(Stream* stream);
+	void initialize(const StringRef& filePath, ShaderCompilationProperties* properties = nullptr);
+	void initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCompilationProperties* properties = nullptr);
+    void initialize(const String& name, Stream* stream);
 
 private:
     detail::ShaderSemanticsManager* semanticsManager() { return&m_semanticsManager; }
@@ -131,6 +113,7 @@ private:
 	ShaderParameter* getOrCreateTextureParameter(const String& name);
 
 	detail::ShaderManager* m_manager;
+    String m_name;
 	List<Ref<ShaderConstantBuffer>> m_buffers;
 	Ref<List<Ref<ShaderTechnique>>> m_techniques;
 	List<Ref<ShaderParameter>> m_textureParameters;
@@ -141,56 +124,62 @@ private:
     friend class detail::ShaderHelper;
 };
 
-
-template class LN_API List<Ref<ShaderConstantBuffer>>;
-
-
-enum class ShaderParameterClass
-{
-	Constant,
-	Texture,
-	Sampler,
-};
-
-class LN_API ShaderParameter
+/**
+ * シェーダプログラムに含まれる 1 つの入力パラメーターを表します。
+ */
+class LN_API ShaderParameter final
 	: public Object
 {
 public:
+    /** パラメータの名前を取得します。 */
 	const String& name() const { return m_name; }
 
+    /** bool 値を設定します。 */
 	void setBool(bool value);
-	//void setBoolArray(const bool* value, int count);
+
+    /** 整数値を設定します。 */
 	void setInt(int value);
+
+    /** 整数値の配列を設定します。 */
 	void setIntArray(const int* value, int count);
+
+    /** 浮動小数点値を設定します。 */
 	void setFloat(float value);
+
+    /** 浮動小数点値の配列を設定します。 */
 	void setFloatArray(const float* value, int count);
+
+    /** ベクトルを設定します。 */
 	void setVector(const Vector4& value);
+
+    /** ベクトルの配列を設定します。 */
 	void setVectorArray(const Vector4* value, int count);
+
+    /** 行列を設定します。 */
 	void setMatrix(const Matrix& value);
+
+    /** 行列の配列を設定します。 */
 	void setMatrixArray(const Matrix* value, int count);
+
+    /** テクスチャを設定します。 */
 	void setTexture(Texture* value);
-	void setPointer(void* value);
 
-    // TODO: internal
-    //void setShaderParameterValue(const detail::ShaderParameterValue& value) { m_value = value; }
-
-LN_CONSTRUCT_ACCESS:
-	ShaderParameter();
-	virtual ~ShaderParameter();
-	void initialize(ShaderConstantBuffer* owner, const detail::ShaderUniformTypeDesc& desc, const String& name);
-	void initialize(ShaderParameterClass parameterClass, const String& name);
 	virtual void dispose() override;
 
 private:
+    LN_INTERNAL_NEW_OBJECT;
+	ShaderParameter();
+	virtual ~ShaderParameter() = default;
+	void initialize(ShaderConstantBuffer* owner, const detail::ShaderUniformTypeDesc& desc, const String& name);
+	void initialize(ShaderParameterClass parameterClass, const String& name);
+
 	const detail::ShaderUniformTypeDesc& desc() const { return m_desc; }
 	const Ref<Texture>& texture() const { return m_textureValue; }
-	
-	ShaderParameterClass m_class;
-	ShaderConstantBuffer* m_owner;
+
+    ShaderConstantBuffer* m_owner;
+    ShaderParameterClass m_class;
 	detail::ShaderUniformTypeDesc m_desc;
 	String m_name;
-	//detail::ShaderParameterValue m_value;
-
 	Ref<Texture> m_textureValue;
 
 	friend class Shader;
@@ -198,22 +187,36 @@ private:
 	friend class detail::ShaderValueSerializer;
 };
 
-class LN_API ShaderConstantBuffer
+/**
+ * シェーダプログラムに含まれる 1 つの定数バッファを表します。
+ */
+class LN_API ShaderConstantBuffer final
 	: public Object
 {
 public:
+    /** 定数バッファの名前を取得します。 */
 	const String& name() const { return m_name; }
+
+    /** 定数バッファにデータを設定します。通常、シェーダプログラムで定義したレイアウトと同じ構造体を転送します。 */
 	void setData(const void* data, int size);
+
+    /** 定数バッファのバイトサイズを取得します。 */
     int size() const { return m_buffer.size(); }
 
+    /*
+     * 名前を指定してこの定数バッファに含まれる ShaderParameter を検索します。
+     *
+     * @param[in]   name : パラメータの名前
+     * @return      一致した ShaderParameter。見つからない場合は nullptr。
+     */
 	ShaderParameter* findParameter(const StringRef& name) const;
 
-LN_CONSTRUCT_ACCESS:	// TODO: 内部でしか new しないから private とかでいい気がする
+private:
+    LN_INTERNAL_NEW_OBJECT;
 	ShaderConstantBuffer();
-	virtual ~ShaderConstantBuffer();
+	virtual ~ShaderConstantBuffer() = default;
 	void initialize(Shader* owner, detail::IShaderUniformBuffer* rhiObject);
 
-private:
 	Shader* owner() const { return m_owner; }
     const std::string& asciiName() const { return m_asciiName; }
 	ByteBuffer& buffer() { return m_buffer; }
@@ -230,50 +233,62 @@ private:
 	friend class ShaderPass;
 };
 
-class LN_API ShaderTechnique
+/**
+ * シェーダプログラムに含まれる 1 つのテクニックを表します。
+ */
+class LN_API ShaderTechnique final
 	: public Object
 {
 public:
+    /** この ShaderPass が含まれている Shader を取得します。 */
 	Shader* shader() const { return m_owner; }
+
+    /** テクニックの名前を取得します。 */
 	const String& name() const { return m_name; }
 
-	const List<Ref<ShaderPass>>& passes() const { return m_passes; }
-
-	// TODO: internal
-	const detail::ShaderTechniqueClass& techniqueClass() const { return m_techniqueClass; }
-
-LN_CONSTRUCT_ACCESS:
-	ShaderTechnique();
-	virtual ~ShaderTechnique();
-	void initialize(const String& name);
+    /** このテクニックに含まれる ShaderPass を取得します。 */
+    Ref<ReadOnlyList<Ref<ShaderPass>>> passes() const;
 
 private:
+    LN_INTERNAL_NEW_OBJECT;
+	ShaderTechnique();
+	virtual ~ShaderTechnique() = default;
+	void initialize(const String& name);
+
 	void setOwner(Shader* owner) { m_owner = owner; }
 	void addShaderPass(ShaderPass* pass);
 
 	Shader* m_owner;
 	String m_name;
-	List<Ref<ShaderPass>> m_passes;
+	Ref<List<Ref<ShaderPass>>> m_passes;
 	detail::ShaderTechniqueClass m_techniqueClass;
 
 	friend class Shader;
 	friend class ShaderPass;
+    friend class detail::ShaderHelper;
 };
 
-class LN_API ShaderPass
+/**
+ * シェーダプログラムに含まれる 1 つのパスを表します。
+ */
+class LN_API ShaderPass final
 	: public Object
 {
 public:
 	/** この ShaderPass が含まれている Shader を取得します。 */
 	Shader* shader() const;
 
-LN_CONSTRUCT_ACCESS:
-	ShaderPass();
-	virtual ~ShaderPass();
-	void initialize(detail::IShaderPass* rhiPass, detail::ShaderRenderState* renderState = nullptr);
+    /** パスの名前を取得します。 */
+    const String& name() const { return m_name; }
+
 	virtual void dispose() override;
 
 private:
+    LN_INTERNAL_NEW_OBJECT;
+	ShaderPass();
+	virtual ~ShaderPass() = default;
+	void initialize(const String& name, detail::IShaderPass* rhiPass, detail::ShaderRenderState* renderState = nullptr);
+
     struct ConstantBufferEntry
     {
         ShaderConstantBuffer* buffer;
@@ -286,8 +301,8 @@ private:
 	detail::IShaderPass* resolveRHIObject();
 
 	ShaderTechnique* m_owner;
+    String m_name;
 	Ref<detail::IShaderPass> m_rhiPass;
-	//List<ShaderParameter*> m_parameters;
 	List<ConstantBufferEntry> m_bufferEntries;
 	List<ShaderParameter*> m_textureParameters;
     Ref<detail::ShaderRenderState> m_renderState;
@@ -299,6 +314,25 @@ private:
     friend class detail::ShaderHelper;
 };
 
+class ShaderCompilationProperties
+    : public Object
+{
+public:
+    void addIncludeDirectory(const StringRef& value);
+    void addDefinition(const StringRef& value);
+    void setDiagnostics(DiagnosticsManager* diag);
 
+LN_CONSTRUCT_ACCESS:
+    ShaderCompilationProperties();
+    virtual ~ShaderCompilationProperties();
+    void initialize();
+
+private:
+    List<String> m_includeDirectories;
+    List<String> m_definitions;
+    Ref<DiagnosticsManager> m_diag;
+
+    friend class Shader;
+};
 
 } // namespace ln

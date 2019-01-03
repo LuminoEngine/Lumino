@@ -22,6 +22,10 @@ class ObjectHelper;
     } \
     ::ln::TypeInfo* classType::_lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); }
 
+#define LN_INTERNAL_NEW_OBJECT \
+    template<class T, typename... TArgs> friend ln::Ref<T> ln::newObject(TArgs&&... args); \
+    template<class T, typename... TArgs> friend void ln::placementNewObject(void* ptr, TArgs&&... args); 
+
 #ifndef LN_CONSTRUCT_ACCESS
 #define LN_CONSTRUCT_ACCESS \
 		template<class T, typename... TArgs> friend ln::Ref<T> ln::newObject(TArgs&&... args); \

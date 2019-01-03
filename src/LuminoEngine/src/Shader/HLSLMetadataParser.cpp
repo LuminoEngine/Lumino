@@ -1,4 +1,4 @@
-
+﻿
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 #include "Internal.hpp"
 #include "../Grammar/CppLexer.hpp"

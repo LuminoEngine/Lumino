@@ -32,7 +32,7 @@ ShaderTechnique* UnLigitingSceneRendererPass::selectShaderTechnique(
 			requestedMeshProcess,
 			ShaderTechniqueClass_ShadingModel::UnLighting,	// requestedShadingModel が同指定されていても、Pass 優先
 		};
-		tech = requestedShader->findTechniqueByClass(key);
+		tech = ShaderHelper::findTechniqueByClass(requestedShader, key);
 	}
 
 	if (tech) {

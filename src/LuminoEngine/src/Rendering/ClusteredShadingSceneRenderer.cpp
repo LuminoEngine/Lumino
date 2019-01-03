@@ -1,4 +1,4 @@
-
+﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
@@ -110,7 +110,7 @@ ShaderTechnique* ClusteredShadingGeometryRenderingPass::selectShaderTechnique(
 	classSet.phase = ShaderTechniqueClass_Phase::Geometry;
 	classSet.meshProcess = requestedMeshProcess;
 	classSet.shadingModel = tlanslateShadingModel(requestedShadingModel);
-	ShaderTechnique* technique = shader->findTechniqueByClass(classSet);
+    ShaderTechnique* technique = ShaderHelper::findTechniqueByClass(shader, classSet);
 	if (technique)
 		return technique;
 	else

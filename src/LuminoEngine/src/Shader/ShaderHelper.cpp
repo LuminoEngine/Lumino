@@ -437,5 +437,10 @@ ShaderTechnique* ShaderHelper::findTechniqueByClass(Shader* shader, const detail
     return shader->findTechniqueByClass(techniqueClass);
 }
 
+const detail::ShaderTechniqueClass& ShaderHelper::techniqueClass(ShaderTechnique* technique)
+{
+    return technique->m_techniqueClass;
+}
+
 } // namespace detail
 } // namespace ln

@@ -231,7 +231,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 					finalMaterial->shader(),
 					currentStage->getShadingModelFinal(finalMaterial));
 
-				detail::ShaderSemanticsManager* semanticsManager = tech->shader()->semanticsManager();
+                detail::ShaderSemanticsManager* semanticsManager = ShaderHelper::semanticsManager(tech->shader());
 				semanticsManager->updateCameraVariables(cameraInfo);
 				semanticsManager->updateElementVariables(cameraInfo, elementInfo);
 				semanticsManager->updateSubsetVariables(subsetInfo);

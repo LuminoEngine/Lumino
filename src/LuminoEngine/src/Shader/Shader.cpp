@@ -1,4 +1,4 @@
-
+﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
@@ -12,72 +12,7 @@
 #include "ShaderTranspiler.hpp"
 #include "HLSLMetadataParser.hpp"
 
-
 namespace ln {
-
-namespace detail {
-
-
-
-} // namespace detail
-
-//static void alignIntToBuffer(const int* values, int valuesCount, int elements, size_t offset, size_t stride, void* buffer)
-//{
-//	byte_t* head = static_cast<byte_t*>(buffer) + offset;
-//	int loop = std::min(valuesCount, elements);
-//	for (int i = 0; i < loop; i++) {
-//		memcpy(head + stride * i, values + i, sizeof(int));
-//	}
-//
-//	memcpy(static_cast<byte_t*>(buffer) + offset, &value, sizeof(float) * columns);
-//}
-
-//struct IntVector4
-//{
-//	int x, y, z, w;
-//};
-//
-//static void alignIntVector4ToBuffer(const IntVector4& value, int columns, size_t offset, void* buffer)
-//{
-//	memcpy(static_cast<byte_t*>(buffer) + offset, &value, sizeof(int) * columns);
-//}
-//
-//static void alignIntVector4ArrayToBuffer(const IntVector4* values, int valuesCount, int elements, size_t offset, size_t stride, void* buffer)
-//{
-//	int loop = std::min(valuesCount, elements);
-//	for (int i = 0; i < loop; i++) {
-//		alignIntVector4ToBuffer(values[i], stride / sizeof(int), offset + stride * i, buffer);
-//	}
-//}
-//
-//static void alignVector4ToBuffer(const Vector4& value, int columns, size_t offset, void* buffer)
-//{
-//	memcpy(static_cast<byte_t*>(buffer) + offset, &value, sizeof(float) * columns);
-//}
-//
-//static void alignVector4ArrayToBuffer(const Vector4* values, int elements, size_t offset, size_t stride, void* buffer)
-//{
-//	for (int i = 0; i < elements; i++) {
-//		alignVector4ToBuffer(values[i], stride / sizeof(float), offset + stride * i, buffer);
-//	}
-//}
-//
-//
-//struct AlignmentSource
-//{
-//	const byte_t* data;
-//	size_t unit;			// 1 要素のサイズ。sizeof
-//	size_t columns;
-//	size_t rows;			// 行列の列数。ベクトルやスカラの時は 1 にする。
-//	size_t elements;		// 配列要素数。スカラの時は 1 にする。
-//};
-//
-//struct AligmentTarget
-//{
-//	byte_t* buffer;
-//	size_t bufferSize;
-//	size_t unit;			// 1 要素のサイズ。sizeof
-//};
 
 // int or float
 static void alignScalarsToBuffer(
@@ -176,18 +111,17 @@ Ref<Shader> Shader::create(const StringRef& hlslEffectFilePath, ShaderCompilatio
 
 Ref<Shader> Shader::create(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCompilationProperties* properties)
 {
-	return ln::newObject<Shader>(vertexShaderFilePath, pixelShaderFilePath, ShaderCodeType::RawGLSL, properties);
+	return ln::newObject<Shader>(vertexShaderFilePath, pixelShaderFilePath, properties);
 }
 
 Shader::Shader()
 	: m_manager(detail::EngineDomain::shaderManager())
+    , m_name()
+    , m_buffers()
     , m_techniques(makeList<Ref<ShaderTechnique>>())
+    , m_textureParameters()
 	, m_globalConstantBuffer(nullptr)
-{
-
-}
-
-Shader::~Shader()
+    , m_semanticsManager()
 {
 }
 
@@ -196,23 +130,23 @@ void Shader::initialize()
 	GraphicsResource::initialize();
 }
 
-void Shader::initialize(const StringRef& hlslEffectFilePath, ShaderCompilationProperties* properties)
+void Shader::initialize(const StringRef& filePath, ShaderCompilationProperties* properties)
 {
 	Shader::initialize();
 	Ref<DiagnosticsManager> localDiag = nullptr;
 	if (properties) localDiag = properties->m_diag;
 	if (!localDiag) localDiag = newObject<DiagnosticsManager>();
 
-	if (Path(hlslEffectFilePath).hasExtension(detail::UnifiedShader::FileExt))
+	if (Path(filePath).hasExtension(detail::UnifiedShader::FileExt))
 	{
-        auto file = FileStream::create(hlslEffectFilePath, FileOpenMode::Read);
+        auto file = FileStream::create(filePath, FileOpenMode::Read);
         createFromUnifiedShader(file, localDiag);
 	}
 	else
 	{
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 
-		auto data = FileSystem::readAllBytes(hlslEffectFilePath);
+		auto data = FileSystem::readAllBytes(filePath);
 		auto code = reinterpret_cast<char*>(data.data());
 		auto codeLen = data.size();
 
@@ -239,7 +173,7 @@ void Shader::initialize(const StringRef& hlslEffectFilePath, ShaderCompilationPr
 					localDiag, properties);
 				if (rhiPass)
 				{
-					auto pass = newObject<ShaderPass>(rhiPass, hlslPass.renderState);
+					auto pass = newObject<ShaderPass>(String::fromStdString(hlslPass.name), rhiPass, hlslPass.renderState);
 					tech->addShaderPass(pass);
 					pass->setupParameters();
 				}
@@ -251,6 +185,7 @@ void Shader::initialize(const StringRef& hlslEffectFilePath, ShaderCompilationPr
 	}
 
 	postInitialize();
+    m_name = Path(filePath).fileNameWithoutExtension();
 
 	if (!properties || !properties->m_diag) {
 		if (localDiag->hasError()) {
@@ -263,7 +198,7 @@ void Shader::initialize(const StringRef& hlslEffectFilePath, ShaderCompilationPr
 	}
 }
 
-void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCodeType codeType, ShaderCompilationProperties* properties)
+void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCompilationProperties* properties)
 {
 	Shader::initialize();
 	Ref<DiagnosticsManager> localDiag = nullptr;
@@ -279,7 +214,9 @@ void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& 
 		localDiag, properties);
 
 	postInitialize();
-
+    m_name = Path(vertexShaderFilePath).fileNameWithoutExtension();
+    m_name += u",";
+    m_name += Path(pixelShaderFilePath).fileNameWithoutExtension();
 
 	if (!properties || !properties->m_diag) {
 		if (localDiag->hasError()) {
@@ -292,7 +229,7 @@ void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& 
 	}
 }
 
-void Shader::initialize(Stream* stream)
+void Shader::initialize(const String& name, Stream* stream)
 {
     Shader::initialize();
     Ref<DiagnosticsManager> localDiag = newObject<DiagnosticsManager>();
@@ -300,6 +237,7 @@ void Shader::initialize(Stream* stream)
     createFromUnifiedShader(stream, localDiag);
 
     postInitialize();
+    m_name = name;
 
     if (localDiag->hasError()) {
         LN_ERROR(localDiag->toString());
@@ -345,7 +283,7 @@ void Shader::createFromUnifiedShader(Stream* stream, DiagnosticsManager* diag)
                     diag);
                 if (rhiPass)
                 {
-                    auto pass = newObject<ShaderPass>(rhiPass);
+                    auto pass = newObject<ShaderPass>(String::fromStdString(unifiedShader.passName(passId)), rhiPass);
                     pass->m_renderState = unifiedShader.renderState(passId);
                     tech->addShaderPass(pass);
                     pass->setupParameters();
@@ -440,7 +378,7 @@ void Shader::createSinglePassShader(const char* vsData, size_t vsLen, const char
 	tech->setOwner(this);
 	m_techniques->add(tech);
 
-	auto pass = newObject<ShaderPass>(rhiPass);
+	auto pass = newObject<ShaderPass>(u"Main", rhiPass);
 	tech->addShaderPass(pass);
 	pass->setupParameters();
 }
@@ -589,28 +527,13 @@ ShaderTechnique* Shader::findTechniqueByClass(const detail::ShaderTechniqueClass
 {
 	for (auto& tech : m_techniques)
 	{
-		if (detail::ShaderTechniqueClass::equals(tech->techniqueClass(), techniqueClass))
+		if (detail::ShaderTechniqueClass::equals(detail::ShaderHelper::techniqueClass(tech), techniqueClass))
 		{
 			return tech;
 		}
 	}
 	return nullptr;
 }
-
-//ShaderParameter* Shader::getShaderParameter(const detail::ShaderUniformTypeDesc& desc, const String& name)
-//{
-//	for (auto& param : m_parameters)
-//	{
-//		if (detail::ShaderUniformTypeDesc::equals(param->desc(), desc) && param->name() == name)
-//		{
-//			return param;
-//		}
-//	}
-//
-//	auto param = newObject<ShaderParameter>(desc, name);
-//	m_parameters.add(param);
-//	return param;
-//}
 
 ShaderConstantBuffer* Shader::getOrCreateConstantBuffer(detail::IShaderUniformBuffer* rhiBuffer)
 {
@@ -646,7 +569,11 @@ ShaderParameter* Shader::getOrCreateTextureParameter(const String& name)
 // ShaderParameter
 
 ShaderParameter::ShaderParameter()
-	: m_class(ShaderParameterClass::Constant)
+	: m_owner(nullptr)
+    , m_class(ShaderParameterClass::Constant)
+    , m_desc()
+    , m_name()
+    , m_textureValue(nullptr)
 {
 }
 
@@ -660,7 +587,6 @@ void ShaderParameter::initialize(ShaderConstantBuffer* owner, const detail::Shad
 	m_owner = owner;
 	m_desc = desc;
 	m_name = name;
-	//m_value.reset(desc.type, desc.elements);
 }
 
 void ShaderParameter::initialize(ShaderParameterClass parameterClass, const String& name)
@@ -675,7 +601,6 @@ void ShaderParameter::dispose()
 	Object::dispose();
 }
 
-
 void ShaderParameter::setInt(int value)
 {
 	alignScalarsToBuffer((const byte_t*)&value, sizeof(int), 1, m_owner->buffer().data(), m_desc.offset, 1, 0);
@@ -683,7 +608,7 @@ void ShaderParameter::setInt(int value)
 
 void ShaderParameter::setIntArray(const int* value, int count)
 {
-	LN_NOTIMPLEMENTED();
+    alignScalarsToBuffer((const byte_t*)value, sizeof(int), count, m_owner->buffer().data(), m_desc.offset, m_desc.elements, m_desc.arrayStride);
 }
 
 void ShaderParameter::setFloat(float value)
@@ -748,6 +673,10 @@ void ShaderParameter::setPointer(void* value)
 
 ShaderConstantBuffer::ShaderConstantBuffer()
 	: m_owner(nullptr)
+    , m_name()
+    , m_asciiName()
+    , m_buffer()
+    , m_parameters()
 {
 }
 
@@ -800,6 +729,7 @@ void ShaderConstantBuffer::commit(detail::IShaderUniformBuffer* rhiObject)
 // ShaderTechnique
 
 ShaderTechnique::ShaderTechnique()
+    : m_passes(makeList<Ref<ShaderPass>>())
 {
 }
 
@@ -814,9 +744,14 @@ void ShaderTechnique::initialize(const String& name)
 	detail::ShaderTechniqueClass::parseTechniqueClassString(m_name, &m_techniqueClass);
 }
 
+Ref<ReadOnlyList<Ref<ShaderPass>>> ShaderTechnique::passes() const
+{
+    return m_passes;
+}
+
 void ShaderTechnique::addShaderPass(ShaderPass* pass)
 {
-	m_passes.add(pass);
+	m_passes->add(pass);
 	pass->setOwner(this);
 }
 
@@ -824,7 +759,12 @@ void ShaderTechnique::addShaderPass(ShaderPass* pass)
 // ShaderPass
 
 ShaderPass::ShaderPass()
-	: m_rhiPass(nullptr)
+    : m_owner(nullptr)
+    , m_name()
+    , m_rhiPass(nullptr)
+    , m_bufferEntries()
+    , m_textureParameters()
+    , m_renderState(nullptr)
 {
 }
 
@@ -832,11 +772,12 @@ ShaderPass::~ShaderPass()
 {
 }
 
-void ShaderPass::initialize(detail::IShaderPass* rhiPass, detail::ShaderRenderState* renderState)
+void ShaderPass::initialize(const String& name, detail::IShaderPass* rhiPass, detail::ShaderRenderState* renderState)
 {
 	if (LN_REQUIRE(rhiPass)) return;
 	Object::initialize();
 
+    m_name = name;
 	m_rhiPass = rhiPass;
     m_renderState = renderState;
 }
@@ -855,15 +796,6 @@ Shader* ShaderPass::shader() const
 
 void ShaderPass::setupParameters()
 {
-	//m_parameters.clear();
-
-	//for (int i = 0; i < m_rhiPass->getUniformCount(); i++)
-	//{
-	//	detail::IShaderUniform* uni = m_rhiPass->getUniform(i);
-	//	ShaderParameter* param = m_owner->owner()->getShaderParameter(uni->desc(), String::fromStdString(uni->name()));
-	//	m_parameters.add(param);
-	//}
-
     m_bufferEntries.clear();
 
 	for (int i = 0; i < m_rhiPass->getUniformBufferCount(); i++)
@@ -872,7 +804,6 @@ void ShaderPass::setupParameters()
 		ShaderConstantBuffer* buf = m_owner->shader()->getOrCreateConstantBuffer(rhi);
         m_bufferEntries.add({ buf, Ref<detail::IShaderUniformBuffer>(rhi) });
 	}
-
 
 	m_textureParameters.clear();
 	detail::IShaderSamplerBuffer* samplerBuffer = m_rhiPass->samplerBuffer();
@@ -886,43 +817,9 @@ void ShaderPass::setupParameters()
 	}
 }
 
-//// TODO:
-//static void tttt(const detail::RenderBulkData& data,
-//	const Ref<detail::IShaderPass>& m_rhiPass)
-//{
-//	detail::ShaderValueDeserializer deserializer(data.data(), data.size());
-//	for (int i = 0; i < m_rhiPass->getUniformCount(); i++)
-//	{
-//		size_t size = 0;
-//		ShaderVariableType type = ShaderVariableType::Unknown;
-//		const void* rawData = deserializer.readValue(&size, &type);
-//		m_rhiPass->setUniformValue(i, rawData, size);
-//	}
-//
-//}
-//
-
 void ShaderPass::commit()
 {
 	auto* manager = m_owner->shader()->manager();
-
-#if 0
-	detail::RenderBulkData data = manager->primaryRenderingCommandList()->allocateBulkData(detail::ShaderValueSerializer::measureBufferSize(this));
-
-	detail::ShaderValueSerializer serializer(data.writableData(), data.size());
-	
-	for (auto& param : m_parameters) {
-		serializer.writeValue(param->m_value);
-	}
-
-	LN_ENQUEUE_RENDER_COMMAND_2(
-		ShaderPass_commit, manager,
-		detail::RenderBulkData, data,
-		Ref<detail::IShaderPass>, m_rhiPass,
-		{
-			tttt(data, m_rhiPass);
-		});
-#endif
 
 	for (auto& e : m_bufferEntries)
 	{
@@ -933,7 +830,6 @@ void ShaderPass::commit()
 	detail::IShaderSamplerBuffer* samplerBuffer = m_rhiPass->samplerBuffer();
 	if (samplerBuffer)
 	{
-
 		for (int i = 0; i < samplerBuffer->registerCount(); i++)
 		{
 			auto* manager = m_owner->shader()->manager();
@@ -959,8 +855,6 @@ void ShaderPass::commit()
 					samplerBuffer->setTexture(i, rhiTexture);
 					samplerBuffer->setSamplerState(i, rhiSampler);
 				});
-
-			//samplerBuffer->setTexture(i, m_textureParameters[i]->texture());
 		}
 	}
 }

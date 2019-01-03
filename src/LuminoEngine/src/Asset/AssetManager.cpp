@@ -98,7 +98,7 @@ Ref<Shader> AssetManager::loadShader(const StringRef& filePath)
 
     // TODO: cache
 
-    auto ref = newObject<Shader>(stream);
+    auto ref = newObject<Shader>(Path(filePath).fileNameWithoutExtension(), stream);
     return ref;
 }
 
