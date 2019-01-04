@@ -600,3 +600,6 @@ install(
 install(
     FILES "LuminoEngineConfig.cmake"
     DESTINATION "cmake")
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ../../../../lib/)

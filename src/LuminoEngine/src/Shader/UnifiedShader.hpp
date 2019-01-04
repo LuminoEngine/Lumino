@@ -118,11 +118,6 @@ private:
 	List<PassInfo> m_passes;
 };
 
-
-#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-#endif // LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-
-
 } // namespace detail
 } // namespace ln
 

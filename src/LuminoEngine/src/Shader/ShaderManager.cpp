@@ -11,6 +11,7 @@ namespace detail {
 
 ShaderManager::ShaderManager()
 	: m_graphicsManager(nullptr)
+    , m_builtinShaderList()
 {
 }
 
@@ -21,7 +22,6 @@ ShaderManager::~ShaderManager()
 void ShaderManager::initialize(const Settings& settings)
 {
 	m_graphicsManager = settings.graphicsManager;
-
 
     // Lumino.fxh.h
     {
@@ -72,11 +72,6 @@ void ShaderManager::initialize(const Settings& settings)
         static const size_t size = LN_ARRAY_SIZE_OF(data);
         m_builtinShaderList.push_back({ "LuminoSkinning.fxh", std::string((const char*)data, size) });
     }
-
-//#ifdef LN_DEBUG
-//	Path debugIncludePath = Path((Path(String::fromCString(__FILE__)).parent()), u"Resource");
-//	m_shaderIncludePaths.add(debugIncludePath);
-//#endif
 
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 	ShaderCodeTranspiler::initializeGlobals();

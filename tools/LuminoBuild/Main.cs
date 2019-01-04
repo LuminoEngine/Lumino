@@ -12,7 +12,7 @@ namespace LuminoBuild
             // default
             if (args.Length == 0)
             {
-                args = new string[] { "BuildEngine_MSVC" };
+                args = new string[] { "MakeVSProjects" };
             }
 
             Assembly thisAssembly = Assembly.GetEntryAssembly();
@@ -49,6 +49,7 @@ namespace LuminoBuild
             builder.Tasks.Add(new Tasks.BuildDocuments());
             builder.Tasks.Add(new Tasks.BuildEngine_MSVC());
             builder.Tasks.Add(new Tasks.CompressPackage());
+            builder.Tasks.Add(new Tasks.CopyEngineLibsToRepoRoot());
             builder.Tasks.Add(new Tasks.MakeNuGetPackage_Core());
             builder.Tasks.Add(new Tasks.BuildEngine_AndroidJNI());
             builder.Tasks.Add(new Tasks.BuildEngine_Emscripten());

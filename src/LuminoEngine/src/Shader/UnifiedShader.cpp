@@ -6,7 +6,6 @@
 namespace ln {
 namespace detail {
 
-
 template<typename TValue>
 static void writeOptionalUInt8(BinaryWriter* w, const Optional<TValue>& value)
 {
@@ -45,7 +44,6 @@ static void readOptionalBool(BinaryReader* r, Optional<bool>* outValue)
 	}
 }
 
-
 //=============================================================================
 // UnifiedShader
 
@@ -53,6 +51,9 @@ const String UnifiedShader::FileExt = u"lcfx";
 
 UnifiedShader::UnifiedShader(DiagnosticsManager* diag)
 	: m_diag(diag)
+    , m_codeContainers()
+    , m_techniques()
+    , m_passes()
 {
 }
 
@@ -358,12 +359,6 @@ const std::string* UnifiedShader::findCode(CodeContainerId conteinreId, const Un
     }
 }
 
-//const std::string& UnifiedShader::getCode(CodeContainerId conteinreId, const std::string& kindTriple) const
-//{
-//
-//	return m_codeContainers[idToIndex(conteinreId)].codes[(int)kind];
-//}
-
 bool UnifiedShader::addTechnique(const std::string& name, TechniqueId* outTech)
 {
 	if (findTechniqueInfoIndex(name) >= 0) {
@@ -451,7 +446,6 @@ int UnifiedShader::findPassInfoIndex(TechniqueId tech, const std::string& name) 
         }
     }
     return -1;
-	//return t.passes.indexOfIf([&](const PassInfo& info) { return info.name == name; });
 }
 
 void UnifiedShader::writeString(BinaryWriter* w, const std::string& str)
@@ -489,10 +483,6 @@ bool UnifiedShader::checkSignature(BinaryReader* r, const char* sig, size_t len,
 	}
 	return true;
 }
-
-#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-#endif // LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-
 
 } // namespace detail
 } // namespace ln

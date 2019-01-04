@@ -577,10 +577,6 @@ ShaderParameter::ShaderParameter()
 {
 }
 
-ShaderParameter::~ShaderParameter()
-{
-}
-
 void ShaderParameter::initialize(ShaderConstantBuffer* owner, const detail::ShaderUniformTypeDesc& desc, const String& name)
 {
 	Object::initialize();
@@ -680,10 +676,6 @@ ShaderConstantBuffer::ShaderConstantBuffer()
 {
 }
 
-ShaderConstantBuffer::~ShaderConstantBuffer()
-{
-}
-
 void ShaderConstantBuffer::initialize(Shader* owner, detail::IShaderUniformBuffer* rhiObject)
 {
 	Object::initialize();
@@ -733,10 +725,6 @@ ShaderTechnique::ShaderTechnique()
 {
 }
 
-ShaderTechnique::~ShaderTechnique()
-{
-}
-
 void ShaderTechnique::initialize(const String& name)
 {
 	Object::initialize();
@@ -765,10 +753,6 @@ ShaderPass::ShaderPass()
     , m_bufferEntries()
     , m_textureParameters()
     , m_renderState(nullptr)
-{
-}
-
-ShaderPass::~ShaderPass()
 {
 }
 

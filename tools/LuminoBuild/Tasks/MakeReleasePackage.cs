@@ -47,22 +47,6 @@ namespace LuminoBuild.Tasks
                     "include/\nlib/\n");
             }
 
-            var externalLibs = new string[]
-            {
-                "bullet3",
-                "freetype2",
-                "glad",
-                "glfw",
-                "glslang",
-                "libpng",
-                "ogg",
-                "openal-soft",
-                "SDL2",
-                "SPIRV-Cross",
-                "vorbis",
-                "zlib",
-            };
-
             // C++ Engine
             {
                 // include files
@@ -73,49 +57,7 @@ namespace LuminoBuild.Tasks
                 }
 
                 // lib files
-                foreach (var arch in BuildEnvironment.TargetArchs)
-                {
-                    if (Directory.Exists(Path.Combine(tempInstallDir, arch.SourceDirName)))   // copy if directory exists.
-                    {
-                        // Engine libs
-                        var targetDir = Path.Combine(nativeEngineRoot, "lib", arch.DestDirName);
-                        Utils.CopyDirectory(
-                            Path.Combine(tempInstallDir, arch.SourceDirName/*, "lib"*/),
-                            targetDir);
-
-                        // External libs
-                        var externalInstallDir = Path.Combine(builder.LuminoBuildDir, arch.SourceDirName, "ExternalInstall");
-                        foreach (var lib in externalLibs)
-                        {
-                            var srcDir = Path.Combine(externalInstallDir, lib, "lib");
-                            if (Directory.Exists(srcDir))   // copy if directory exists. openal-soft etc are optional.
-                            {
-                                Utils.CopyDirectory(
-                                    srcDir,
-                                    targetDir);
-                            }
-                        }
-
-                        // .pdb
-                        // CMake では static library の PDB 出力先をコントロールできない。https://cmake.org/cmake/help/v3.1/prop_tgt/PDB_OUTPUT_DIRECTORY.html
-                        // そのためビルドスクリプト側でコントロールする。
-                        // 以下、パスに "Debug" を含む者のうち、lib と同じ名前の pdb ファイルをコピーする。
-                        if (arch.PdbCopy)
-                        {
-                            var libfiles = Directory.GetFiles(targetDir, "*.lib", SearchOption.TopDirectoryOnly);
-                            var libnames = new HashSet<string>(libfiles.Select(x => Path.GetFileNameWithoutExtension(x)));
-                            var files1 = Directory.GetFiles(Path.Combine(builder.LuminoBuildDir, arch.SourceDirName), "*.pdb", SearchOption.AllDirectories);
-                            foreach (var file in files1)
-                            {
-                                if (file.Contains("Debug") && libnames.Contains(Path.GetFileNameWithoutExtension(file)))
-                                {
-                                    File.Copy(file, Path.Combine(targetDir, Path.GetFileName(file)), true);
-                                    Console.WriteLine(file);
-                                }
-                            }
-                        }
-                    }
-                }
+                CopyEngineLibs(builder, tempInstallDir, nativeEngineRoot);
 
                 // bin files
                 {
@@ -150,6 +92,69 @@ namespace LuminoBuild.Tasks
                 Utils.CopyDirectory(
                     Path.Combine(builder.LuminoToolsDir, "LuminoCLI", "Templates", "NativeProject"),
                     Path.Combine(targetRootDir, "Tools", "Templates", "NativeProject"));
+            }
+        }
+
+        public static void CopyEngineLibs(Builder builder, string tempInstallDir, string nativeEngineRoot)
+        {
+            var externalLibs = new string[]
+            {
+                "bullet3",
+                "freetype2",
+                "glad",
+                "glfw",
+                "glslang",
+                "libpng",
+                "ogg",
+                "openal-soft",
+                "SDL2",
+                "SPIRV-Cross",
+                "vorbis",
+                "zlib",
+            };
+
+            foreach (var arch in BuildEnvironment.TargetArchs)
+            {
+                if (Directory.Exists(Path.Combine(tempInstallDir, arch.SourceDirName)))   // copy if directory exists.
+                {
+                    // Engine libs
+                    var targetDir = Path.Combine(nativeEngineRoot, "lib", arch.DestDirName);
+                    Utils.CopyDirectory(
+                        Path.Combine(tempInstallDir, arch.SourceDirName/*, "lib"*/),
+                        targetDir);
+
+                    // External libs
+                    var externalInstallDir = Path.Combine(builder.LuminoBuildDir, arch.SourceDirName, "ExternalInstall");
+                    foreach (var lib in externalLibs)
+                    {
+                        var srcDir = Path.Combine(externalInstallDir, lib, "lib");
+                        if (Directory.Exists(srcDir))   // copy if directory exists. openal-soft etc are optional.
+                        {
+                            Utils.CopyDirectory(
+                                srcDir,
+                                targetDir);
+                        }
+                    }
+
+                    // .pdb
+                    // CMake では static library の PDB 出力先をコントロールできない。https://cmake.org/cmake/help/v3.1/prop_tgt/PDB_OUTPUT_DIRECTORY.html
+                    // そのためビルドスクリプト側でコントロールする。
+                    // 以下、パスに "Debug" を含む者のうち、lib と同じ名前の pdb ファイルをコピーする。
+                    if (arch.PdbCopy)
+                    {
+                        var libfiles = Directory.GetFiles(targetDir, "*.lib", SearchOption.TopDirectoryOnly);
+                        var libnames = new HashSet<string>(libfiles.Select(x => Path.GetFileNameWithoutExtension(x)));
+                        var files1 = Directory.GetFiles(Path.Combine(builder.LuminoBuildDir, arch.SourceDirName), "*.pdb", SearchOption.AllDirectories);
+                        foreach (var file in files1)
+                        {
+                            if (file.Contains("Debug") && libnames.Contains(Path.GetFileNameWithoutExtension(file)))
+                            {
+                                File.Copy(file, Path.Combine(targetDir, Path.GetFileName(file)), true);
+                                Console.WriteLine(file);
+                            }
+                        }
+                    }
+                }
             }
         }
     }
