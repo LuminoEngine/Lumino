@@ -8,6 +8,7 @@ class UIFrameWindow;
 class UIViewport;
 class UIRenderView;
 class UIContainerElement;
+class PhysicsWorld;
 class World;
 class WorldRenderView;
 class Camera;
@@ -101,6 +102,7 @@ public:
 	const Ref<UIContainerElement>& mainUIRoot() const { return m_mainUIRoot; }
     const Ref<World>& mainWorld() const { return m_mainWorld; }
     const Ref<Camera>& mainCamera() const { return m_mainCamera; }
+    const Ref<PhysicsWorld>& mainPhysicsWorld() const { return m_mainPhysicsWorld; }
 
 private:
 	virtual bool onPlatformEvent(const PlatformEventArgs& e) override;
@@ -132,6 +134,7 @@ private:
     Ref<World> m_mainWorld;
     Ref<WorldRenderView> m_mainWorldRenderView;
 	Ref<Camera> m_mainCamera;
+    Ref<PhysicsWorld> m_mainPhysicsWorld;
 
 	bool m_exitRequested;
 };

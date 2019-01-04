@@ -205,5 +205,15 @@ void WorldObject::resolveWorldMatrix()
     }
 }
 
+void WorldObject::updateWorldMatrixHierarchical()
+{
+    resolveWorldMatrix();
+
+    for (auto& child : m_children)
+    {
+        child->updateWorldMatrixHierarchical();
+    }
+}
+
 } // namespace ln
 

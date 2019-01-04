@@ -302,11 +302,18 @@ set(LN_SOURCES_ImageEffect
 
 set(LN_SOURCES_Physics
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/CollisionShape.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/PhysicsWorld.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/PhysicsObject.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/RigidBody.hpp
     src/Physics/Internal.hpp
+    src/Physics/BulletUtils.hpp
+    src/Physics/CollisionShape.cpp
     src/Physics/PhysicsManager.cpp
     src/Physics/PhysicsManager.hpp
+    src/Physics/PhysicsObject.cpp
     src/Physics/PhysicsWorld.cpp
+    src/Physics/RigidBody.cpp
 )
 
 set(LN_SOURCES_Asset

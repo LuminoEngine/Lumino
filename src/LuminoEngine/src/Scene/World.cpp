@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include "../Rendering/RenderStage.hpp"
 #include <LuminoEngine/Animation/AnimationContext.hpp>
+#include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Scene/Component.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
 #include <LuminoEngine/Scene/World.hpp>
@@ -23,6 +24,7 @@ void World::initialize()
 {
     Object::initialize();
     m_animationContext = newObject<AnimationContext>();
+    m_physicsWorld = newObject<PhysicsWorld>();
     m_renderingContext = makeRef<detail::WorldSceneGraphRenderingContext>();
 }
 
@@ -48,6 +50,14 @@ void World::removeAllObjects()
     }
 }
 
+void World::updateObjectsWorldMatrix()
+{
+    for (auto& obj : m_rootWorldObjectList)
+    {
+        obj->updateWorldMatrixHierarchical();
+    }
+}
+
 void World::updateFrame(float elapsedSeconds)
 {
     onPreUpdate(elapsedSeconds);
@@ -67,6 +77,14 @@ void World::onPreUpdate(float elapsedSeconds)
 
 void World::onInternalPhysicsUpdate(float elapsedSeconds)
 {
+    // Physics モジュールの Component が、WorldObject の WorldMatrix を元にシミュレーション前準備を行うことがあるので
+    // ここで WorldMatrix を更新しておく。
+    updateObjectsWorldMatrix();
+
+    if (m_physicsWorld != nullptr)
+    {
+        m_physicsWorld->stepSimulation(elapsedSeconds);
+    }
 }
 
 void World::onUpdate(float elapsedSeconds)

@@ -169,6 +169,7 @@ public: // TODO:
     void render();
     void notifyTransformChanged();
     void resolveWorldMatrix();
+    void updateWorldMatrixHierarchical();
 
     World* m_world;
     WorldObject* m_parent;

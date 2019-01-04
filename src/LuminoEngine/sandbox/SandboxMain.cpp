@@ -194,6 +194,11 @@ int main(int argc, char** argv)
     //auto mesh3 = newObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
 #endif
 
+    auto shape1 = BoxCollisionShape::create(5, 2, 5);
+    auto body1 = newObject<RigidBody>();
+    body1->addCollisionShape(shape1);
+    Engine::mainPhysicsWorld()->addPhysicsObject(body1);
+
 #if 0
     auto meshMaterial = Material::create();
     meshMaterial->setMainTexture(tex);

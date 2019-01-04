@@ -1,11 +1,12 @@
-
+﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/GraphicsContext.hpp>>
+#include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>
 #include <LuminoEngine/UI/UIRenderView.hpp>
 #include <LuminoEngine/UI/UIContainerElement.hpp>
+#include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
@@ -90,6 +91,9 @@ void EngineManager::initialize()
 #if 1
     m_mainWorld = newObject<World>();
     m_sceneManager->setActiveWorld(m_mainWorld);
+
+    m_mainPhysicsWorld = m_mainWorld->physicsWorld();
+
 	m_mainCamera = newObject<Camera>();
     m_mainWorldRenderView = newObject<WorldRenderView>();
     m_mainWorldRenderView->setTargetWorld(m_mainWorld);

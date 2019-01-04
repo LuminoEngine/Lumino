@@ -7,6 +7,7 @@
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>
+#include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
 #include "../Graphics/GraphicsManager.hpp"
@@ -108,6 +109,11 @@ World* Engine::mainWorld()
 Camera* Engine::mainCamera()
 {
     return detail::EngineDomain::engineManager()->mainCamera();
+}
+
+PhysicsWorld* Engine::mainPhysicsWorld()
+{
+    return detail::EngineDomain::engineManager()->mainPhysicsWorld();
 }
 
 } // namespace ln

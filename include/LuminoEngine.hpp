@@ -53,6 +53,11 @@
 #include "LuminoEngine/ImageEffect/ToneImageEffect.hpp"
 #include "LuminoEngine/ImageEffect/ScreenBlurImageEffect.hpp"
 
+#include "LuminoEngine/Physics/CollisionShape.hpp"
+#include "LuminoEngine/Physics/PhysicsWorld.hpp"
+#include "LuminoEngine/Physics/PhysicsObject.hpp"
+#include "LuminoEngine/Physics/RigidBody.hpp"
+
 #include "LuminoEngine/Visual/LightComponent.hpp"
 #include "LuminoEngine/Visual/SpriteComponent.hpp"
 #include "LuminoEngine/Visual/StaticMeshComponent.hpp"

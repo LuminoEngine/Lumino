@@ -8,7 +8,7 @@ namespace detail {
 class MeshGeneraterBuffer
 {
 public:
-    void setBuffer(Vertex* vertexBuffer, void* indexBuffer, IndexBufferFormat indexFormat);
+    void setBuffer(Vertex* vertexBuffer, void* indexBuffer, IndexBufferFormat indexFormat, uint32_t indexNumberOffset);
 
     void setV(int index, const Vertex& v)
     {
@@ -26,15 +26,16 @@ public:
     void setI(int index, uint32_t i)
     {
         if (m_indexFormat == IndexBufferFormat::UInt16)
-            ((uint16_t*)m_indexBuffer)[index] = i;
+            ((uint16_t*)m_indexBuffer)[index] = m_indexNumberOffset + i;
         else
-            ((uint32_t*)m_indexBuffer)[index] = i;
+            ((uint32_t*)m_indexBuffer)[index] = m_indexNumberOffset + i;
     }
 
 private:
     Vertex* m_vertexBuffer;
     void* m_indexBuffer;
     IndexBufferFormat m_indexFormat;
+    uint32_t m_indexNumberOffset;
     Color m_color;
     Matrix m_transform;
 };
@@ -69,7 +70,7 @@ public:
         buf->setV(0, Vertex{ point1, Vector3::UnitY, Vector2::Zero, point1Color });
         buf->setV(1, Vertex{ point2, Vector3::UnitY, Vector2::Zero, point2Color });
         buf->setI(0, 0);
-        buf->setI(0, 1);
+        buf->setI(1, 1);
     }
     virtual MeshGenerater* clone(LinearAllocator* allocator) const
     {

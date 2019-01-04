@@ -11,27 +11,39 @@
 #include <BulletCollision/BroadphaseCollision/btDbvtBroadphase.h>
 #include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolver.h>
 
+#include <LuminoEngine/Rendering/RenderingContext.hpp>
+#include <LuminoEngine/Physics/PhysicsObject.hpp>
+#include <LuminoEngine/Physics/RigidBody.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 
 namespace ln {
 
 //==============================================================================
 // PhysicsDebugRenderer
+namespace detail {
 
 class PhysicsDebugRenderer
     : public btIDebugDraw
 {
-protected:
-    virtual void drawLine(const btVector3& from, const btVector3& to, const btVector3& color)
+public:
+    RenderingContext* context = nullptr;
+
+    virtual void drawLine(const btVector3& from, const btVector3& to, const btVector3& color) override
     {
         drawLine(from, to, color, color);
     }
 
     virtual void drawLine(const btVector3& from, const btVector3& to, const btVector3& fromColor, const btVector3& toColor) override
     {
+        printf("drawLine\n");
+        context->drawLine(
+            Vector3(from.getX(), from.getY(), from.getZ()),
+            Color(fromColor.getX(), fromColor.getY(), fromColor.getZ()),
+            Vector3(to.getX(), to.getY(), to.getZ()),
+            Color(toColor.getX(), toColor.getY(), toColor.getZ(), 1.0f));
     }
 
-    virtual void drawContactPoint(const btVector3& PointOnB, const btVector3& normalOnB, btScalar distance, int lifeTime, const btVector3& color)
+    virtual void drawContactPoint(const btVector3& PointOnB, const btVector3& normalOnB, btScalar distance, int lifeTime, const btVector3& color) override
     {
     }
 
@@ -46,15 +58,19 @@ protected:
 
     virtual void setDebugMode(int debugMode) override
     {
+        m_debugMode = debugMode;
     }
 
     virtual int getDebugMode() const override
     {
-        return 0;
+        return m_debugMode;
     }
 
 private:
+    int m_debugMode = 0;
 };
+
+} // namespace detail
 
 //==============================================================================
 // PhysicsWorld
@@ -128,7 +144,7 @@ void PhysicsWorld::initialize()
     //m_btWorld = LN_NEW btSoftRigidDynamicsWorld( m_btCollisionDispatcher, m_btBroadphase, m_btSolver, m_btCollisionConfig, NULL );
     m_btWorld = new btDiscreteDynamicsWorld(m_btCollisionDispatcher, m_btBroadphase, m_btSolver, m_btCollisionConfig);
 
-    m_debugRenderer = std::make_unique<PhysicsDebugRenderer>();
+    m_debugRenderer = std::make_unique<detail::PhysicsDebugRenderer>();
     m_btWorld->setDebugDrawer(m_debugRenderer.get());
     //m_btWorld->setInternalTickCallback(pickingPreTickCallback,this,true);
     //m_btWorld->getDispatchInfo().m_enableSPU = true;
@@ -179,6 +195,84 @@ void PhysicsWorld::dispose()
     LN_SAFE_DELETE(m_btBroadphase);
     LN_SAFE_DELETE(m_btCollisionDispatcher);
     LN_SAFE_DELETE(m_btCollisionConfig);
+}
+
+void PhysicsWorld::addPhysicsObject(PhysicsObject* physicsObject)
+{
+    if (LN_REQUIRE(physicsObject)) return;
+    if (LN_REQUIRE(!physicsObject->physicsWorld())) return;
+    m_physicsObjectList.add(physicsObject);
+    //addObjectInternal(physicsObject);
+    physicsObject->setPhysicsWorld(this);
+}
+
+void PhysicsWorld::removePhysicsObject(PhysicsObject* physicsObject)
+{
+    if (LN_REQUIRE(physicsObject)) return;
+    if (LN_REQUIRE(physicsObject->physicsWorld() == this)) return;
+    m_physicsObjectList.remove(physicsObject);
+    removeObjectInternal(physicsObject);
+    physicsObject->setPhysicsWorld(nullptr);
+}
+
+void PhysicsWorld::stepSimulation(float elapsedSeconds)
+{
+    for (auto& obj : m_physicsObjectList) {
+    	obj->onBeforeStepSimulation();
+    }
+
+    // TODO: FPS を Engine からもらう
+    const float internalTimeUnit = 1.0f / 60.0f;
+
+    // http://d.hatena.ne.jp/ousttrue/20100425/1272165711
+    // m_elapsedTime が 1.0(1秒) より小さい間は 16ms を最大 60 回繰り返して追いつこうとする設定。
+    // m_elapsedTime が 1.0 を超えている場合は追いつけずに、物体の移動が遅くなる。
+    // FIXME: MMD
+    //m_btWorld->stepSimulation(elapsedTime, 120, 0.008333334f);
+    m_btWorld->stepSimulation(elapsedSeconds, 1, internalTimeUnit);
+
+    // m_elapsedTime が 16ms より大きい場合は、1回 16ms 分のシミュレーションを可能な限り繰り返して m_elapsedTime に追いついていく設定。
+    // 遅れるほど計算回数が増えるので、最終的に破綻するかもしれない。
+    //m_btWorld->stepSimulation(m_elapsedTime, 1 + (int)(m_elapsedTime / internalUnit), internalUnit);
+
+    for (auto& obj : m_physicsObjectList) {
+        obj->onAfterStepSimulation();
+    }
+}
+
+void PhysicsWorld::renderDebug(RenderingContext* context)
+{
+    m_debugRenderer->context = context;
+    m_btWorld->getDebugDrawer()->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
+    printf("----\n");
+    m_btWorld->debugDrawWorld();
+    printf("----\n");
+}
+
+void PhysicsWorld::addObjectInternal(PhysicsObject* obj)
+{
+    switch (obj->physicsObjectType())
+    {
+    case PhysicsObjectType::RigidBody:
+        m_btWorld->addRigidBody(static_cast<RigidBody*>(obj)->body());
+        break;
+    default:
+        LN_UNREACHABLE();
+        break;
+    }
+}
+
+void PhysicsWorld::removeObjectInternal(PhysicsObject* obj)
+{
+    switch (obj->physicsObjectType())
+    {
+    case PhysicsObjectType::RigidBody:
+        m_btWorld->addRigidBody(static_cast<RigidBody*>(obj)->body());
+        break;
+    default:
+        LN_UNREACHABLE();
+        break;
+    }
 }
 
 } // namespace ln

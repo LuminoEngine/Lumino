@@ -6,6 +6,7 @@ class GraphicsContext;
 class UIFrameWindow;
 class UIViewport;
 class UIContainerElement;
+class PhysicsWorld;
 class World;
 class Camera;
 
@@ -42,6 +43,7 @@ public:
     static Size mainViewSize();
     static World* mainWorld();
     static Camera* mainCamera();
+    static PhysicsWorld* mainPhysicsWorld();
 
 };
 

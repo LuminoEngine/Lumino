@@ -3,12 +3,27 @@
 #include "Common.hpp"
 
 namespace ln {
+class RenderingContext;
+class PhysicsObject;
+namespace detail {
 class PhysicsDebugRenderer;
+}
 
 class PhysicsWorld
 	: public Object
 {
 public:
+    void addPhysicsObject(PhysicsObject* physicsObject);
+
+    // TODO: 衝突コールバック内から呼ばれるとNG。
+    // destory() でマーク付けて後で GC する仕組みにしておく。
+    // ※前は addingList, removingList 作ってたけど複雑すぎた。
+    void removePhysicsObject(PhysicsObject* physicsObject);
+
+public: // TODO: internal
+    btDiscreteDynamicsWorld* getBtWorld() { return m_btWorld; }
+    void stepSimulation(float elapsedSeconds);
+    void renderDebug(RenderingContext* context);
 
 LN_CONSTRUCT_ACCESS:
     PhysicsWorld();
@@ -17,11 +32,8 @@ LN_CONSTRUCT_ACCESS:
     virtual void dispose() override;
 
 private:
-    class IDebugRenderer
-    {
-    public:
-        virtual void drawLine(const Vector3& from, const Vector3& to, const Vector3& fromColor, const Vector3& toColor) = 0;
-    };
+    void addObjectInternal(PhysicsObject* obj);
+    void removeObjectInternal(PhysicsObject* obj);
 
     btDefaultCollisionConfiguration*		m_btCollisionConfig;
     btCollisionDispatcher*					m_btCollisionDispatcher;
@@ -32,7 +44,9 @@ private:
     //btSoftRigidDynamicsWorld*				m_btWorld;
     btGhostPairCallback*					m_btGhostPairCallback;
     btSoftBodyWorldInfo*					m_softBodyWorldInfo;
-    std::unique_ptr<PhysicsDebugRenderer> m_debugRenderer;
+    std::unique_ptr<detail::PhysicsDebugRenderer> m_debugRenderer;
+
+    List<Ref<PhysicsObject>> m_physicsObjectList;
 };
 
 } // namespace ln
