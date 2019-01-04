@@ -35,7 +35,6 @@ public:
 
     virtual void drawLine(const btVector3& from, const btVector3& to, const btVector3& fromColor, const btVector3& toColor) override
     {
-        printf("drawLine\n");
         context->drawLine(
             Vector3(from.getX(), from.getY(), from.getZ()),
             Color(fromColor.getX(), fromColor.getY(), fromColor.getZ()),
@@ -242,11 +241,11 @@ void PhysicsWorld::stepSimulation(float elapsedSeconds)
 
 void PhysicsWorld::renderDebug(RenderingContext* context)
 {
+    context->pushState();
     m_debugRenderer->context = context;
     m_btWorld->getDebugDrawer()->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
-    printf("----\n");
     m_btWorld->debugDrawWorld();
-    printf("----\n");
+    context->popState();
 }
 
 void PhysicsWorld::addObjectInternal(PhysicsObject* obj)
