@@ -193,25 +193,25 @@ void PhysicsWorld::initialize()
 
 
 
-    // 地面作成、ワールドに追加
-    {
-        // コリジョン形状　箱
-        btBoxShape* ground_shape = new btBoxShape(btVector3(btScalar(80.0f), btScalar(80.0f), btScalar(80.0f)));
-        //aCollisionShapes.push_back(ground_shape);
+    //// 地面作成、ワールドに追加
+    //{
+    //    // コリジョン形状　箱
+    //    btBoxShape* ground_shape = new btBoxShape(btVector3(btScalar(80.0f), btScalar(80.0f), btScalar(80.0f)));
+    //    //aCollisionShapes.push_back(ground_shape);
 
-        btTransform ground_pos;
-        ground_pos.setIdentity();
-        ground_pos.setOrigin(btVector3(0, -85, 0));
+    //    btTransform ground_pos;
+    //    ground_pos.setIdentity();
+    //    ground_pos.setOrigin(btVector3(0, -85, 0));
 
-        // 動かないので質量0　慣性0
-        btScalar mass(0.0f);
-        btVector3 inertia(0, 0, 0);
+    //    // 動かないので質量0　慣性0
+    //    btScalar mass(0.0f);
+    //    btVector3 inertia(0, 0, 0);
 
-        btDefaultMotionState* motion_state = new btDefaultMotionState(ground_pos);
-        btRigidBody::btRigidBodyConstructionInfo rb_cinfo(mass, motion_state, ground_shape, inertia);
-        btRigidBody* body = new btRigidBody(rb_cinfo);
-        m_btWorld->addRigidBody(body);
-    }
+    //    btDefaultMotionState* motion_state = new btDefaultMotionState(ground_pos);
+    //    btRigidBody::btRigidBodyConstructionInfo rb_cinfo(mass, motion_state, ground_shape, inertia);
+    //    btRigidBody* body = new btRigidBody(rb_cinfo);
+    //    m_btWorld->addRigidBody(body);
+    //}
 }
 
 void PhysicsWorld::dispose()

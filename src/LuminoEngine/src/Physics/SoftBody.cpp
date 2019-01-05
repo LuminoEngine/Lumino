@@ -52,17 +52,19 @@ void SoftBody::createFromMesh(MeshResource* mesh, PhysicsWorld* world)
     //    btSoftBody* psb = btSoftBodyHelpers::CreatePatch(*world->softBodyWorldInfo(), p[0], p[1], p[2], p[3], r, r, 1 + 2 + 4 + 8, true);
     //    world->getBtWorld()->addSoftBody(psb);
     //    psb->m_cfg.piterations = 1;
+    //    psb->m_cfg.collisions |= btSoftBody::fCollision::VF_SS;//SB同士のコリジョン
     //}
 
     //{
     //    //TRACEDEMO
     //    btSoftBody* psb = btSoftBodyHelpers::CreateEllipsoid(*world->softBodyWorldInfo(), btVector3(0, 5, 0),
     //        btVector3(1, 1, 1) * 3,
-    //        512);
+    //        64);
     //    psb->m_materials[0]->m_kLST = 0.45;
     //    psb->m_cfg.kVC = 20;
-    //    psb->setTotalMass(50, true);
+    //    psb->setTotalMass(25, false);
     //    psb->setPose(true, false);
+    //    psb->m_cfg.collisions |= btSoftBody::fCollision::VF_SS;//SB同士のコリジョン
     //    world->getBtWorld()->addSoftBody(psb);
 
     //    //Ctor_BigPlate(pdemo);
