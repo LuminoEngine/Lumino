@@ -41,38 +41,38 @@ void SoftBody::initialize()
 
 void SoftBody::createFromMesh(MeshResource* mesh, PhysicsWorld* world)
 {
-    //{
-    //    const btScalar s = 6;
-    //    const btScalar h = -2;
-    //    const int r = 16;
-    //    const btVector3 p[] = { btVector3(+s, h, -s),
-    //                           btVector3(-s, h, -s),
-    //                           btVector3(+s, h, +s),
-    //                           btVector3(-s, h, +s) };
-    //    btSoftBody* psb = btSoftBodyHelpers::CreatePatch(*world->softBodyWorldInfo(), p[0], p[1], p[2], p[3], r, r, 1 + 2 + 4 + 8, true);
-    //    world->getBtWorld()->addSoftBody(psb);
-    //    psb->m_cfg.piterations = 1;
-    //    psb->m_cfg.collisions |= btSoftBody::fCollision::VF_SS;//SB同士のコリジョン
-    //}
+    {
+        const btScalar s = 6;
+        const btScalar h =0;
+        const int r = 10;
+        const btVector3 p[] = { btVector3(+s, h, -s),
+                               btVector3(-s, h, -s),
+                               btVector3(+s, h, +s),
+                               btVector3(-s, h, +s) };
+        btSoftBody* psb = btSoftBodyHelpers::CreatePatch(*world->softBodyWorldInfo(), p[0], p[1], p[2], p[3], r, r, 1 + 2 + 4 + 8, true);
+        world->getBtWorld()->addSoftBody(psb);
+        psb->m_cfg.piterations = 1;
+        psb->m_cfg.collisions |= btSoftBody::fCollision::VF_SS;//SB同士のコリジョン
+    }
 
-    //{
-    //    //TRACEDEMO
-    //    btSoftBody* psb = btSoftBodyHelpers::CreateEllipsoid(*world->softBodyWorldInfo(), btVector3(0, 5, 0),
-    //        btVector3(1, 1, 1) * 3,
-    //        64);
-    //    psb->m_materials[0]->m_kLST = 0.45;
-    //    psb->m_cfg.kVC = 20;
-    //    psb->setTotalMass(25, false);
-    //    psb->setPose(true, false);
-    //    psb->m_cfg.collisions |= btSoftBody::fCollision::VF_SS;//SB同士のコリジョン
-    //    world->getBtWorld()->addSoftBody(psb);
+    {
+        //TRACEDEMO
+        btSoftBody* psb = btSoftBodyHelpers::CreateEllipsoid(*world->softBodyWorldInfo(), btVector3(0, 5, 0),
+            btVector3(1, 1, 1) * 2,
+            64);
+        psb->m_materials[0]->m_kLST = 0.45;
+        psb->m_cfg.kVC = 20;
+        psb->setTotalMass(25, false);
+        psb->setPose(true, false);
+        psb->m_cfg.collisions |= btSoftBody::fCollision::VF_SS;//SB同士のコリジョン
+        world->getBtWorld()->addSoftBody(psb);
 
-    //    //Ctor_BigPlate(pdemo);
-    //    //Ctor_LinearStair(pdemo, btVector3(0, 0, 0), btVector3(2, 1, 5), 0, 10);
-    //    //pdemo->m_autocam = true;
-    //}
+        //Ctor_BigPlate(pdemo);
+        //Ctor_LinearStair(pdemo, btVector3(0, 0, 0), btVector3(2, 1, 5), 0, 10);
+        //pdemo->m_autocam = true;
+    }
 
-    //return;
+    return;
 
 
     std::vector<btScalar> btVertices;
