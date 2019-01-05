@@ -67,6 +67,17 @@ enum class BuiltinSemantics
 	BlendColor,				// vector (Built-in effect)
 	ToneColor,				// vector (Built-in effect)
 
+
+    //--------------------
+    // SceneRenderer internal
+    GlobalLightInfoTexture,
+    LocalLightInfoTexture,
+    LightClustersTexture,
+    NearClip2,
+    FarClip2,
+    CameraPosition2,
+    FogParams,
+
 	_Count,
 };
 
@@ -165,6 +176,7 @@ public:
 	void updateSubsetVariables(const SubsetInfo& info);
 	void updateSubsetVariables_PBR(const PbrMaterialData& materialData);
 	void updateSubsetVariables_Phong(const PhongMaterialData& materialData);
+    ShaderParameter* getParameterBySemantics(BuiltinSemantics semantics) const;
 
 private:
 	struct VariableKindPair
@@ -177,10 +189,9 @@ private:
 	List<VariableKindPair>	m_cameraVariables;
 	List<VariableKindPair>	m_elementVariables;
 	List<VariableKindPair>	m_subsetVariables;
-	//intptr_t				m_lastCameraInfoId;
-
-	//MemoryStream			m_tempBuffer;
-	//BinaryWriter			m_tempBufferWriter;
+    // TODO: 実質↑のほとんどの変数は使うので、リストを分けるとかえって変にメモリ使ってしまうかも。
+    // ↓のような全体でひとつのテーブル使う方がかえって検索効率もよくなる。後でこっちにする。
+    std::array<ShaderParameter*, (int)BuiltinSemantics::_Count> m_variablesTable;
 };
 
 

@@ -191,7 +191,7 @@ int main(int argc, char** argv)
     //auto mesh2 = newObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
     //mesh2->setPosition(2, 0, 0);
 
-    auto mesh3 = newObject<StaticMesh>(u"D:/GameProjects/GameProjects/HH10T/sphere3.obj", 2);
+    auto mesh3 = newObject<StaticMesh>(u"D:/Proj/TH-10/Assets/Graphics/test/sphere3.obj", 2);
     mesh3->setVisible(false);
 #endif
 

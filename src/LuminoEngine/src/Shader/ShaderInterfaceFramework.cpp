@@ -88,11 +88,28 @@ static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_SubsetUnit 
 	{ _LT("ln_ToneColor"), BuiltinSemantics::ToneColor },
 };
 
+struct BuiltinSemanticsNamePair
+{
+    String name;
+    BuiltinSemantics semantics;
+};
+static BuiltinSemanticsNamePair g_builtinSemanticsNamePairMap[] =
+{
+    { _LT("ln_GlobalLightInfoTexture"), BuiltinSemantics::GlobalLightInfoTexture },
+    { _LT("ln_pointLightInfoTexture"), BuiltinSemantics::LocalLightInfoTexture },
+    { _LT("ln_clustersTexture"), BuiltinSemantics::LightClustersTexture },
+    { _LT("ln_nearClip"), BuiltinSemantics::NearClip2 },
+    { _LT("ln_farClip"), BuiltinSemantics::FarClip2 },
+    { _LT("ln_cameraPos"), BuiltinSemantics::CameraPosition2 },
+    { _LT("ln_FogParams"), BuiltinSemantics::FogParams },
+};
+
 ShaderSemanticsManager::ShaderSemanticsManager()
 	: m_sceneVariables()
 	, m_cameraVariables()
 	, m_elementVariables()
 	, m_subsetVariables()
+    , m_variablesTable{}
 	//, m_lastCameraInfoId(0)
 	//, m_tempBufferWriter(&m_tempBuffer)
 {
@@ -131,6 +148,14 @@ void ShaderSemanticsManager::prepareParameter(ShaderParameter* var)
 			return;
 		}
 	}
+
+    {
+        for (auto& pair : g_builtinSemanticsNamePairMap) {
+            if (name == pair.name) {
+                m_variablesTable[(int)pair.semantics] = var;
+            }
+        }
+    }
 }
 
 void ShaderSemanticsManager::updateSceneVariables(const SceneInfo& info)
@@ -381,6 +406,11 @@ void ShaderSemanticsManager::updateSubsetVariables_Phong(const PhongMaterialData
 			break;
 		}
 	}
+}
+
+ShaderParameter* ShaderSemanticsManager::getParameterBySemantics(BuiltinSemantics semantics) const
+{
+    return m_variablesTable[(int)semantics];
 }
 
 //=============================================================================

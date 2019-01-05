@@ -109,6 +109,7 @@
 #pragma comment(lib, "LinearMath_Debug.lib")
 #pragma comment(lib, "BulletCollision_Debug.lib")
 #pragma comment(lib, "BulletDynamics_Debug.lib")
+#pragma comment(lib, "BulletSoftBody_Debug.lib")
 #else
 #pragma comment(lib, "LuminoEngine.lib")
 #pragma comment(lib, "freetype.lib")
@@ -124,5 +125,6 @@
 #pragma comment(lib, "LinearMath.lib")
 #pragma comment(lib, "BulletCollision.lib")
 #pragma comment(lib, "BulletDynamics.lib")
+#pragma comment(lib, "BulletSoftBody.lib")
 #endif
 #endif

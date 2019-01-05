@@ -62,6 +62,16 @@ private:
 	detail::GraphicsManager* m_manager;
 	detail::IGraphicsDeviceContext* m_device;
 
+    // TODO: 途中
+    enum ModifiedFlags
+    {
+        ModifiedFlags_None = 0,
+        ModifiedFlags_VertexBuffers = 1 << 2,
+        ModifiedFlags_IndexBuffer = 1 << 3,
+        ModifiedFlags_ShaderPass = 1 << 4,
+        ModifiedFlags_All = 0xFFFFFFFF,
+    };
+
 	struct State
 	{
 		BlendStateDesc blendState;
@@ -81,7 +91,8 @@ private:
 	};
 
 	State m_staging;
-	State m_current;
+	State m_lastCommit;
+    uint32_t m_modifiedFlags;
 };
 
 } // namespace ln

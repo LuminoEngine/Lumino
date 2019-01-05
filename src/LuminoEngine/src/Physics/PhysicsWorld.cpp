@@ -247,12 +247,14 @@ void PhysicsWorld::removePhysicsObject(PhysicsObject* physicsObject)
 
 void PhysicsWorld::stepSimulation(float elapsedSeconds)
 {
+    //ElapsedTimer t;
     for (auto& obj : m_physicsObjectList) {
     	obj->onBeforeStepSimulation();
     }
 
     // TODO: FPS を Engine からもらう
     const float internalTimeUnit = 1.0f / 60.0f;
+
 
     // http://d.hatena.ne.jp/ousttrue/20100425/1272165711
     // m_elapsedTime が 1.0(1秒) より小さい間は 16ms を最大 60 回繰り返して追いつこうとする設定。
@@ -261,6 +263,7 @@ void PhysicsWorld::stepSimulation(float elapsedSeconds)
     //m_btWorld->stepSimulation(elapsedTime, 120, 0.008333334f);
     m_btWorld->stepSimulation(elapsedSeconds, 1, internalTimeUnit);
 
+
     // m_elapsedTime が 16ms より大きい場合は、1回 16ms 分のシミュレーションを可能な限り繰り返して m_elapsedTime に追いついていく設定。
     // 遅れるほど計算回数が増えるので、最終的に破綻するかもしれない。
     //m_btWorld->stepSimulation(m_elapsedTime, 1 + (int)(m_elapsedTime / internalUnit), internalUnit);
@@ -268,6 +271,7 @@ void PhysicsWorld::stepSimulation(float elapsedSeconds)
     for (auto& obj : m_physicsObjectList) {
         obj->onAfterStepSimulation();
     }
+    //std::cout << t.elapsedMilliseconds() << std::endl;
 }
 
 void PhysicsWorld::renderDebug(RenderingContext* context)

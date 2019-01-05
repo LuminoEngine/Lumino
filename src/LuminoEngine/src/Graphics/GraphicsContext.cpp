@@ -19,6 +19,7 @@ namespace ln {
 
 GraphicsContext::GraphicsContext()
 	: m_device(nullptr)
+    , m_modifiedFlags(ModifiedFlags_All)
 {
 }
 
@@ -30,7 +31,7 @@ void GraphicsContext::initialize(detail::IGraphicsDeviceContext* device)
 {
 	m_manager = detail::EngineDomain::graphicsManager();
 	m_device = device;
-	m_current.reset();
+    m_lastCommit.reset();
 	resetState();
 }
 
@@ -100,26 +101,36 @@ void GraphicsContext::setVertexDeclaration(VertexDeclaration* value)
 
 void GraphicsContext::setVertexBuffer(int streamIndex, VertexBuffer* value)
 {
-	m_staging.vertexBuffers[streamIndex] = value;
+    if (m_staging.vertexBuffers[streamIndex] != value) {
+        m_staging.vertexBuffers[streamIndex] = value;
+        m_modifiedFlags |= ModifiedFlags_VertexBuffers;
+    }
 }
 
 void GraphicsContext::setIndexBuffer(IndexBuffer* value)
 {
-	m_staging.indexBuffer = value;
+    if (m_staging.indexBuffer != value) {
+        m_staging.indexBuffer = value;
+        m_modifiedFlags |= ModifiedFlags_IndexBuffer;
+    }
 }
 
 void GraphicsContext::setShaderPass(ShaderPass* pass)
 {
-	if (pass)
-	{
-		m_staging.shader = pass->shader();
-		m_staging.shaderPass = pass;
-	}
-	else
-	{
-		m_staging.shader = nullptr;
-		m_staging.shaderPass = nullptr;
-	}
+    if (m_staging.shaderPass != pass)
+    {
+        if (pass)
+        {
+            m_staging.shader = pass->shader();
+            m_staging.shaderPass = pass;
+        }
+        else
+        {
+            m_staging.shader = nullptr;
+            m_staging.shaderPass = nullptr;
+        }
+        m_modifiedFlags |= ModifiedFlags_ShaderPass;
+    }
 }
 
 void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
@@ -246,6 +257,7 @@ detail::IGraphicsDeviceContext* GraphicsContext::commitState()
 			});
 	}
 
+    if ((m_modifiedFlags & ModifiedFlags_VertexBuffers) != 0)
 	{
 		for (int i = 0; i < m_staging.vertexBuffers.size(); i++)
 		{
@@ -260,8 +272,11 @@ detail::IGraphicsDeviceContext* GraphicsContext::commitState()
 					m_device->setVertexBuffer(i, rhiObject);
 				});
 		}
+
+        m_lastCommit.vertexBuffers = m_staging.vertexBuffers;
 	}
 
+    if ((m_modifiedFlags & ModifiedFlags_IndexBuffer) != 0)
 	{
 		auto& value = m_staging.indexBuffer;
 		detail::IIndexBuffer* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
@@ -272,8 +287,11 @@ detail::IGraphicsDeviceContext* GraphicsContext::commitState()
 			{
 				m_device->setIndexBuffer(rhiObject);
 			});
+
+        m_lastCommit.indexBuffer = m_staging.indexBuffer;
 	}
 
+    if ((m_modifiedFlags & ModifiedFlags_ShaderPass) != 0)
 	{
 		auto& value = m_staging.shaderPass;
 		detail::IShaderPass* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
@@ -284,7 +302,12 @@ detail::IGraphicsDeviceContext* GraphicsContext::commitState()
 			{
 				m_device->setShaderPass(rhiObject);
 			});
+
+        m_lastCommit.shader = m_staging.shader;
+        m_lastCommit.shaderPass = m_staging.shaderPass;
 	}
+
+    m_modifiedFlags = ModifiedFlags_None;
 
 	return m_manager->deviceContext();
 }
