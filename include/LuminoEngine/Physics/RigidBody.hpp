@@ -72,6 +72,7 @@ public:
     /** 衝突グループマスクを設定します。 */
     void setCollisionGroupMask(uint32_t groupMask);
 
+    void setTransform(const Matrix& transform);
 
     /** 重心に力を加えます。 */
     void applyForce(const Vector3& force);

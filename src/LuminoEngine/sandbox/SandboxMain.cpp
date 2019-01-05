@@ -183,21 +183,29 @@ int main(int argc, char** argv)
     //sprite2->setCenterPoint(50, 50);
 
     //auto mesh1 = newObject<StaticMesh>(u"D:/tmp/cube.obj");
-    auto mesh1 = newObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
+    //auto mesh1 = newObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
     //auto mesh1 = newObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/usemtl-issue-68.obj");
-    mesh1->setPosition(0, -1, 0);
+    //mesh1->setPosition(0, -1, 0);
     //
 
-    auto mesh2 = newObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
-    mesh2->setPosition(2, 0, 0);
+    //auto mesh2 = newObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
+    //mesh2->setPosition(2, 0, 0);
 
-    //auto mesh3 = newObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
+    auto mesh3 = newObject<StaticMesh>(u"D:/GameProjects/GameProjects/HH10T/sphere1.obj", 2);
 #endif
 
     auto shape1 = BoxCollisionShape::create(5, 2, 5);
     auto body1 = newObject<RigidBody>();
     body1->addCollisionShape(shape1);
     Engine::mainPhysicsWorld()->addPhysicsObject(body1);
+
+
+    auto shape2 = BoxCollisionShape::create(1, 1, 1);
+    auto body2 = newObject<RigidBody>();
+    body2->addCollisionShape(shape2);
+    body2->setTransform(Matrix::makeTranslation(0, 5, 0));
+    body2->setMass(1.0f);
+    Engine::mainPhysicsWorld()->addPhysicsObject(body2);
 
 #if 0
     auto meshMaterial = Material::create();

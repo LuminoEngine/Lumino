@@ -133,7 +133,7 @@ public:
 //==============================================================================
 // ObjMeshImporter
 
-Ref<StaticMeshModel> ObjMeshImporter::import(const Path& filePath, DiagnosticsManager* diag)
+Ref<StaticMeshModel> ObjMeshImporter::import(const Path& filePath, float scale, DiagnosticsManager* diag)
 {
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
@@ -186,7 +186,7 @@ Ref<StaticMeshModel> ObjMeshImporter::import(const Path& filePath, DiagnosticsMa
 
             int v = vertexIndex.vertex_index;
             vertex.position = Vector3(attrib.vertices[3 * v + 0], attrib.vertices[3 * v + 1], attrib.vertices[3 * v + 2]);
-            vertex.position /= 100;
+            vertex.position *= scale;
 
             int n = vertexIndex.normal_index;
             if (n >= 0) {

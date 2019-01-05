@@ -15,9 +15,9 @@ Ref<StaticMesh> StaticMesh::create()
     return newObject<StaticMesh>();
 }
 
-Ref<StaticMesh> StaticMesh::create(const StringRef& filePath)
+Ref<StaticMesh> StaticMesh::create(const StringRef& filePath, float scale)
 {
-    return newObject<StaticMesh>(filePath);
+    return newObject<StaticMesh>(filePath, scale);
 }
 
 StaticMesh::StaticMesh()
@@ -36,10 +36,10 @@ void StaticMesh::initialize()
     setMainVisualComponent(m_component);
 }
 
-void StaticMesh::initialize(const StringRef& filePath)
+void StaticMesh::initialize(const StringRef& filePath, float scale)
 {
     initialize();
-    m_component->setModel(detail::EngineDomain::meshManager()->createStaticMeshModel(filePath));
+    m_component->setModel(detail::EngineDomain::meshManager()->createStaticMeshModel(filePath, scale));
 }
 
 StaticMeshComponent* StaticMesh::staticMeshComponent() const

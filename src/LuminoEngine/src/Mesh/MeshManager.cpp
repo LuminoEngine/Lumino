@@ -115,7 +115,7 @@ VertexDeclaration* MeshManager::getPredefinedVertexLayout(PredefinedVertexLayout
 	}
 }
 
-Ref<StaticMeshModel> MeshManager::createStaticMeshModel(const Path& filePath)
+Ref<StaticMeshModel> MeshManager::createStaticMeshModel(const Path& filePath, float scale)
 {
     Ref<StaticMeshModel> mesh;
 
@@ -123,7 +123,7 @@ Ref<StaticMeshModel> MeshManager::createStaticMeshModel(const Path& filePath)
         auto diag = newObject<DiagnosticsManager>();
 
         ObjMeshImporter importer;
-        mesh = importer.import(filePath, diag);
+        mesh = importer.import(filePath, scale, diag);
 
         diag->dumpToLog();
     }

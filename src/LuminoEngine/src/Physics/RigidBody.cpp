@@ -155,6 +155,12 @@ void RigidBody::setCollisionGroupMask(uint32_t groupMask)
     m_modifiedFlags |= Modified_ReaddToWorld;
 }
 
+void RigidBody::setTransform(const Matrix& transform)
+{
+    m_transform = transform;
+    m_modifiedFlags |= Modified_WorldTransform;
+}
+
 void RigidBody::applyForce(const Vector3& force)
 {
     m_appliedCenterForce += force;

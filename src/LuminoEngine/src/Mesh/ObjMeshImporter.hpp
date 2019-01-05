@@ -9,7 +9,7 @@ class ObjMeshImporter
     : public MeshImporter
 {
 public:
-    Ref<StaticMeshModel> import(const Path& filePath, DiagnosticsManager* diag);
+    Ref<StaticMeshModel> import(const Path& filePath, float scale, DiagnosticsManager* diag);
 
 private:
 };

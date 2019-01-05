@@ -34,7 +34,7 @@ public:
 	void dispose();
 	VertexDeclaration* getPredefinedVertexLayout(PredefinedVertexLayoutFlags flags);
 
-    Ref<StaticMeshModel> createStaticMeshModel(const Path& filePath);
+    Ref<StaticMeshModel> createStaticMeshModel(const Path& filePath, float scale);
 	Ref<Texture> createTexture(const Path& parentDir, const StringRef& filePath, DiagnosticsManager* diag);
 
 	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
