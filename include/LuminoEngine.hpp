@@ -57,6 +57,7 @@
 #include "LuminoEngine/Physics/PhysicsWorld.hpp"
 #include "LuminoEngine/Physics/PhysicsObject.hpp"
 #include "LuminoEngine/Physics/RigidBody.hpp"
+#include "LuminoEngine/Physics/SoftBody.hpp"
 
 #include "LuminoEngine/Visual/LightComponent.hpp"
 #include "LuminoEngine/Visual/SpriteComponent.hpp"

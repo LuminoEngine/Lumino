@@ -10,6 +10,7 @@ class StaticMeshComponent
 {
 public:
     void setModel(StaticMeshModel* model);
+    StaticMeshModel* model() const;
 
 protected:
     void onRender(RenderingContext* context);

@@ -158,6 +158,26 @@ void IndexBuffer::setIndex(int index, int vertexIndex)
 	}
 }
 
+int IndexBuffer::index(int index)
+{
+    void* indexBuffer = map(MapMode::Read);
+
+    if (m_format == IndexBufferFormat::UInt16)
+    {
+        uint16_t* i = (uint16_t*)indexBuffer;
+        return i[index];
+    }
+    else if (m_format == IndexBufferFormat::UInt32)
+    {
+        uint32_t* i = (uint32_t*)indexBuffer;
+        return i[index];
+    }
+    else
+    {
+        LN_NOTIMPLEMENTED();
+    }
+}
+
 void IndexBuffer::setResourceUsage(GraphicsResourceUsage usage)
 {
 	// Prohibit while direct locking.

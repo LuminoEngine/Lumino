@@ -306,6 +306,7 @@ set(LN_SOURCES_Physics
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/PhysicsWorld.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/PhysicsObject.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/RigidBody.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/SoftBody.hpp
     src/Physics/Internal.hpp
     src/Physics/BulletUtils.hpp
     src/Physics/CollisionShape.cpp
@@ -314,6 +315,7 @@ set(LN_SOURCES_Physics
     src/Physics/PhysicsObject.cpp
     src/Physics/PhysicsWorld.cpp
     src/Physics/RigidBody.cpp
+    src/Physics/SoftBody.cpp
 )
 
 set(LN_SOURCES_Asset
@@ -555,7 +557,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE ${LN_PLATFORM_DEFINITIONS})
 #target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive ${PROJECT_NAME}-static -Wl,--no-whole-archive)
 #target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-static)
 target_link_libraries(${PROJECT_NAME} INTERFACE LuminoCore ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore ZLIB PNG FreeType ogg vorbis vorbisfile LinearMath BulletCollision BulletDynamics ${LN_PLATFORM_LIBS})
+target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore ZLIB PNG FreeType ogg vorbis vorbisfile LinearMath BulletCollision BulletDynamics BulletSoftBody ${LN_PLATFORM_LIBS})
 #target_link_libraries(${PROJECT_NAME} PRIVATE glslang)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")

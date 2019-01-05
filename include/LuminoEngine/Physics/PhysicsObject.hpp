@@ -8,6 +8,7 @@ class CollisionShape;
 enum class PhysicsObjectType
 {
     RigidBody,
+    SoftBody,
     //CollisionBody,
     //Joint,
 };

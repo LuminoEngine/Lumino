@@ -12,6 +12,7 @@ class btSoftRigidDynamicsWorld;
 class btCollisionShape;
 class btCompoundShape;
 class btRigidBody;
+class btSoftBody;
 class btGhostObject;
 class btGhostPairCallback;
 class btTypedConstraint;

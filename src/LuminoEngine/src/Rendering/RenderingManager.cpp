@@ -12,6 +12,9 @@
 #include "RenderingManager.hpp"
 
 namespace ln {
+
+const Vertex Vertex::Default;
+
 namespace detail {
 
 //==============================================================================

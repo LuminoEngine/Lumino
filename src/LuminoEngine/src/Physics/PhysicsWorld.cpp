@@ -11,6 +11,10 @@
 #include <BulletCollision/BroadphaseCollision/btDbvtBroadphase.h>
 #include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolver.h>
 
+// test
+#include <BulletCollision/CollisionShapes/btBoxShape.h>
+#include <LinearMath/btDefaultMotionState.h>
+
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Physics/PhysicsObject.hpp>
 #include <LuminoEngine/Physics/RigidBody.hpp>
@@ -106,9 +110,9 @@ void PhysicsWorld::initialize()
     // コリジョンコンフィグ
     btDefaultCollisionConstructionInfo defaultCollisionConstructionInfo;
     //defaultCollisionConstructionInfo.m_defaultMaxPersistentManifoldPoolSize = 32768;
-    m_btCollisionConfig = new btDefaultCollisionConfiguration(defaultCollisionConstructionInfo);
+    //m_btCollisionConfig = new btDefaultCollisionConfiguration(defaultCollisionConstructionInfo);
     // ソフトボディ使うとき
-    //m_btCollisionConfig = LN_NEW btSoftBodyRigidBodyCollisionConfiguration();// 
+    m_btCollisionConfig = LN_NEW btSoftBodyRigidBodyCollisionConfiguration();// 
 
     // コリジョンディスパッチャ
 #ifdef LN_USE_PARALLEL
@@ -140,8 +144,8 @@ void PhysicsWorld::initialize()
 #endif
 
     // ワールドの作成
-    //m_btWorld = LN_NEW btSoftRigidDynamicsWorld( m_btCollisionDispatcher, m_btBroadphase, m_btSolver, m_btCollisionConfig, NULL );
-    m_btWorld = new btDiscreteDynamicsWorld(m_btCollisionDispatcher, m_btBroadphase, m_btSolver, m_btCollisionConfig);
+    m_btWorld = LN_NEW btSoftRigidDynamicsWorld( m_btCollisionDispatcher, m_btBroadphase, m_btSolver, m_btCollisionConfig, NULL );
+    //m_btWorld = new btDiscreteDynamicsWorld(m_btCollisionDispatcher, m_btBroadphase, m_btSolver, m_btCollisionConfig);
 
     m_debugRenderer = std::make_unique<detail::PhysicsDebugRenderer>();
     m_btWorld->setDebugDrawer(m_debugRenderer.get());
@@ -180,7 +184,34 @@ void PhysicsWorld::initialize()
     m_softBodyWorldInfo->m_broadphase = m_btBroadphase;
     m_softBodyWorldInfo->m_dispatcher = m_btCollisionDispatcher;
     m_softBodyWorldInfo->m_sparsesdf.Initialize();
-    m_softBodyWorldInfo->m_sparsesdf.Reset();
+    //m_softBodyWorldInfo->m_sparsesdf.Reset();
+
+
+
+
+
+
+
+
+    // 地面作成、ワールドに追加
+    {
+        // コリジョン形状　箱
+        btBoxShape* ground_shape = new btBoxShape(btVector3(btScalar(80.0f), btScalar(80.0f), btScalar(80.0f)));
+        //aCollisionShapes.push_back(ground_shape);
+
+        btTransform ground_pos;
+        ground_pos.setIdentity();
+        ground_pos.setOrigin(btVector3(0, -85, 0));
+
+        // 動かないので質量0　慣性0
+        btScalar mass(0.0f);
+        btVector3 inertia(0, 0, 0);
+
+        btDefaultMotionState* motion_state = new btDefaultMotionState(ground_pos);
+        btRigidBody::btRigidBodyConstructionInfo rb_cinfo(mass, motion_state, ground_shape, inertia);
+        btRigidBody* body = new btRigidBody(rb_cinfo);
+        m_btWorld->addRigidBody(body);
+    }
 }
 
 void PhysicsWorld::dispose()

@@ -29,6 +29,11 @@ void StaticMeshComponent::setModel(StaticMeshModel* model)
     m_model = model;
 }
 
+StaticMeshModel* StaticMeshComponent::model() const
+{
+    return m_model;
+}
+
 void StaticMeshComponent::onRender(RenderingContext* context)
 {
     for (auto& meshContainer : m_model->meshContainers())

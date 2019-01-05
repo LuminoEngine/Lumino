@@ -21,7 +21,9 @@ public:
     void removePhysicsObject(PhysicsObject* physicsObject);
 
 public: // TODO: internal
-    btDiscreteDynamicsWorld* getBtWorld() { return m_btWorld; }
+    //btDiscreteDynamicsWorld* getBtWorld() { return m_btWorld; }
+    btSoftRigidDynamicsWorld* getBtWorld() { return m_btWorld; }
+    btSoftBodyWorldInfo* softBodyWorldInfo() const { return m_softBodyWorldInfo; }
     void stepSimulation(float elapsedSeconds);
     void renderDebug(RenderingContext* context);
 
@@ -40,8 +42,8 @@ private:
     btDbvtBroadphase*						m_btBroadphase;
     //btAxisSweep3*							m_btBroadphase;
     btSequentialImpulseConstraintSolver*	m_btSolver;
-    btDiscreteDynamicsWorld*				m_btWorld;
-    //btSoftRigidDynamicsWorld*				m_btWorld;
+    //btDiscreteDynamicsWorld*				m_btWorld;
+    btSoftRigidDynamicsWorld*				m_btWorld;
     btGhostPairCallback*					m_btGhostPairCallback;
     btSoftBodyWorldInfo*					m_softBodyWorldInfo;
     std::unique_ptr<detail::PhysicsDebugRenderer> m_debugRenderer;

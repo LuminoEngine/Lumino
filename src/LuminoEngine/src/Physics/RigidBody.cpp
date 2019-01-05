@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <BulletCollision/CollisionShapes/btCollisionShape.h>
 #include <btBulletDynamicsCommon.h>
+#include <BulletSoftBody/btSoftRigidDynamicsWorld.h>
 #include <LinearMath/btMotionState.h>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Physics/RigidBody.hpp>
@@ -48,7 +49,7 @@ RigidBody::RigidBody()
     , m_transform()
     , m_mass(0.0f)
     , m_scale(1.0f)
-    , m_group(0xffffffff)
+    , m_group(1)
     , m_groupMask(0xffffffff)
     , m_kinematicObject(false)
     , m_additionalDamping(false)
@@ -447,7 +448,7 @@ void RigidBody::createBtRigidBody()
     else
     {
         // TODO: フラグ、よくない気がする
-        m_btRigidBody->setActivationState( /*m_btRigidBody->getActivationState() | */DISABLE_DEACTIVATION);
+        //m_btRigidBody->setActivationState( /*m_btRigidBody->getActivationState() | */DISABLE_DEACTIVATION);
     }
     // TODO: よくない気がする
     m_btRigidBody->setSleepingThresholds(0.0f, 0.0f);
@@ -472,7 +473,7 @@ void RigidBody::setTransformFromMotionState(const btTransform& transform)
 void RigidBody::addToWorld()
 {
     if (m_btRigidBody) {
-        physicsWorld()->getBtWorld()->addRigidBody(m_btRigidBody, m_group, m_groupMask);
+        physicsWorld()->getBtWorld()->addRigidBody(m_btRigidBody/*, m_group, m_groupMask*/);
     }
 }
 
@@ -480,7 +481,7 @@ void RigidBody::readdToWorld()
 {
     if (m_btRigidBody) {
         physicsWorld()->getBtWorld()->removeRigidBody(m_btRigidBody);
-        physicsWorld()->getBtWorld()->addRigidBody(m_btRigidBody, m_group, m_groupMask);
+        physicsWorld()->getBtWorld()->addRigidBody(m_btRigidBody/*, m_group, m_groupMask*/);
     }
 }
 

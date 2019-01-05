@@ -277,6 +277,8 @@ find_library(BulletCollision_LIBRARY_RELEASE NAMES BulletCollision libBulletColl
 find_library(BulletCollision_LIBRARY_DEBUG NAMES BulletCollision_Debug libBulletCollision_Debug PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 find_library(BulletDynamics_LIBRARY_RELEASE NAMES BulletDynamics libBulletDynamics PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 find_library(BulletDynamics_LIBRARY_DEBUG NAMES BulletDynamics_Debug libBulletDynamics_Debug PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(BulletSoftBody_LIBRARY_RELEASE NAMES BulletSoftBody libBulletSoftBody PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(BulletSoftBody_LIBRARY_DEBUG NAMES BulletSoftBody_Debug libBulletSoftBody_Debug PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 
 add_library(LinearMath STATIC IMPORTED)
 set_target_properties(LinearMath PROPERTIES IMPORTED_LOCATION_RELEASE "${LinearMath_LIBRARY_RELEASE}")
@@ -290,3 +292,7 @@ set_target_properties(BulletCollision PROPERTIES IMPORTED_LOCATION_DEBUG "${Bull
 add_library(BulletDynamics STATIC IMPORTED)
 set_target_properties(BulletDynamics PROPERTIES IMPORTED_LOCATION_RELEASE "${BulletDynamics_LIBRARY_RELEASE}")
 set_target_properties(BulletDynamics PROPERTIES IMPORTED_LOCATION_DEBUG "${BulletDynamics_LIBRARY_DEBUG}")
+
+add_library(BulletSoftBody STATIC IMPORTED)
+set_target_properties(BulletSoftBody PROPERTIES IMPORTED_LOCATION_RELEASE "${BulletSoftBody_LIBRARY_RELEASE}")
+set_target_properties(BulletSoftBody PROPERTIES IMPORTED_LOCATION_DEBUG "${BulletSoftBody_LIBRARY_DEBUG}")

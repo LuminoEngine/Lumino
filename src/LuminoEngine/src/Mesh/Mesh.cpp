@@ -85,6 +85,14 @@ void MeshResource::setVertex(int index, const Vertex& value)
 	*(v + index) = value;
 }
 
+const Vertex& MeshResource::vertex(int index)
+{
+    if (LN_REQUIRE_RANGE(index, 0, vertexCount())) return Vertex::Default;
+
+    Vertex* v = (Vertex*)requestVertexData(VBG_Basic);
+    return *(v + index);
+}
+
 void MeshResource::setIndex(int index, int value)
 {
 	if (LN_REQUIRE_RANGE(index, 0, indexCount())) return;
@@ -92,6 +100,15 @@ void MeshResource::setIndex(int index, int value)
 	IndexBuffer* indexBuffer;
 	requestBuffers(VBG_Basic, nullptr, &indexBuffer);
 	indexBuffer->setIndex(index, value);
+}
+
+int MeshResource::index(int index)
+{
+    if (LN_REQUIRE_RANGE(index, 0, indexCount())) return 0;
+
+    IndexBuffer* indexBuffer;
+    requestBuffers(VBG_Basic, nullptr, &indexBuffer);
+    return indexBuffer->index(index);
 }
 
 void MeshResource::setSection(int sectionIndex, int startIndex, int primitiveCount, int materialIndex)

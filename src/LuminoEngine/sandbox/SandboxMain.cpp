@@ -191,21 +191,27 @@ int main(int argc, char** argv)
     //auto mesh2 = newObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
     //mesh2->setPosition(2, 0, 0);
 
-    auto mesh3 = newObject<StaticMesh>(u"D:/GameProjects/GameProjects/HH10T/sphere1.obj", 2);
+    auto mesh3 = newObject<StaticMesh>(u"D:/GameProjects/GameProjects/HH10T/sphere3.obj", 2);
+    mesh3->setVisible(false);
 #endif
 
-    auto shape1 = BoxCollisionShape::create(5, 2, 5);
+    auto shape1 = BoxCollisionShape::create(5, 1, 5);
     auto body1 = newObject<RigidBody>();
     body1->addCollisionShape(shape1);
+    body1->setTransform(Matrix::makeTranslation(0, -3, 0));
     Engine::mainPhysicsWorld()->addPhysicsObject(body1);
 
 
-    auto shape2 = BoxCollisionShape::create(1, 1, 1);
+    auto shape2 = CapsuleCollisionShape::create(0.5, 3);
     auto body2 = newObject<RigidBody>();
     body2->addCollisionShape(shape2);
-    body2->setTransform(Matrix::makeTranslation(0, 5, 0));
+    body2->setTransform(Matrix::makeTranslation(0, -2, 0));
     body2->setMass(1.0f);
+    body2->setKinematic(true);
     Engine::mainPhysicsWorld()->addPhysicsObject(body2);
+
+    auto body3 = newObject<SoftBody>();
+    body3->createFromMesh(mesh3->staticMeshComponent()->model()->meshContainers().front()->meshResource(), Engine::mainPhysicsWorld());
 
 #if 0
     auto meshMaterial = Material::create();

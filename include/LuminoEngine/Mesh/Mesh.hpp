@@ -49,11 +49,17 @@ public:
 	/** セクションの数を変更します。 */
 	void resizeSections(int sectionCount);	// TODO: setSectionCount のほうがいいかな？Unity は mesh.submeshCount = 2; だし
 
-	/** 頂点情報を設定します。 */
+	/** 頂点を設定します。 */
 	void setVertex(int index, const Vertex& value);
+
+    /** 頂点を取得します。 */
+    const Vertex& vertex(int index);
 
 	/** インデックス値を設定します。 */
 	void setIndex(int index, int value);
+
+    /** インデックス値を取得します。 */
+    int index(int index);
 
 	/** セクションの情報を設定します。 */
 	void setSection(int sectionIndex, int startIndex, int primitiveCount, int materialIndex);
