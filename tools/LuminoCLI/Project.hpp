@@ -14,7 +14,7 @@ public:
 	Project(Workspace* owner);
 	virtual ~Project();
 
-	Result newProject(const ln::Path& projectDir, const ln::String& projectName);
+	Result newProject(const ln::Path& projectDir, const ln::String& projectName, const ln::String& engineSource = ln::String::Empty);
 	Result openProject(const ln::Path& dir);
 	Result saveProject();
 	Result loadProject();
@@ -60,12 +60,12 @@ class ProjectProperties
 {
 public:
 	ln::String language;	// "cpp", "cs" ...
-	ln::String engineVersion = u"system";	// "x.y.z" or "system"
+	ln::String engine = u"";	// "x.y.z" or "" or "repo:master"
 
 	LN_SERIALIZE_CLASS_VERSION(1)
 	void serialize(ln::Archive& ar)
 	{
 		ar & LN_NVP(language);
-		ar & LN_NVP(engineVersion);
+		ar & LN_NVP(engine);
 	}
 };

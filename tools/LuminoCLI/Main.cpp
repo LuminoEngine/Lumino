@@ -2,6 +2,7 @@
 #include "EnvironmentSettings.hpp"
 #include "Workspace.hpp"
 #include "Project.hpp"
+#include "InitCommand.hpp"
 #include "FxcCommand.hpp"
 #include "ArchiveCommand.hpp"
 
@@ -15,11 +16,12 @@ int main(int argc, char** argv)
 		//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects");
 		//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\HelloLumino");
 		//::SetCurrentDirectoryW(L"D:/Documents/LuminoProjects");
-        ::SetCurrentDirectoryW(L"D:/Documents/LuminoProjects/HelloLumino");
-	
+        //::SetCurrentDirectoryW(L"D:/Documents/LuminoProjects/HelloLumino");
+        ::SetCurrentDirectoryW(L"D:/Proj");
+    
 		const char* debugArgv[] = {
 			"<program>",
-			//"init", "HelloLumino",
+			"init", "TH-10", "--engine=repo:0.10.0"
 
 			//"<program>", "dev-install-tools",
 
@@ -35,7 +37,7 @@ int main(int argc, char** argv)
 
             //"fxc", "Assets/LineWave.fx",
             //"fxc", "C:/Proj/GitHub/Lumino/src/LuminoEngine/test/Assets/Shader/FxcTest1.fx",
-            "fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.hlsl",
+            //"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.hlsl",
 
             //"build-assets",
 		};
@@ -60,7 +62,8 @@ int main(int argc, char** argv)
 		//--------------------------------------------------------------------------------
 		// init command
 		auto initCommand = parser.addCommand(u"init", u"Create a Lumino project in the current directory.");
-		auto initCommand_projectName = initCommand->addPositionalArgument(u"project-name", u"project name.");
+		auto initCommand_projectNameArg = initCommand->addPositionalArgument(u"project-name", u"project name.");
+        auto initCommand_engineArg = initCommand->addValueOption(u"e", u"engine", u"engine source.");
 
 		//--------------------------------------------------------------------------------
 		// build command
@@ -103,17 +106,11 @@ int main(int argc, char** argv)
 			// init command
 			if (parser.has(initCommand))
 			{
-				if (Project::existsProjectFile(ln::Environment::currentDirectory())) {
-					CLI::error("Project file already exists.");
-					return 1;
-				}
-				else {
-					if (!workspace->newProject(
-						ln::Path(ln::Environment::currentDirectory(), initCommand_projectName->value()),
-						initCommand_projectName->value())) {
-						return 1;
-					}
-				}
+                InitCommand cmd;
+                if (initCommand_engineArg->hasValue()) {
+                    cmd.engineSource = initCommand_engineArg->value();
+                }
+                return cmd.execute(workspace, initCommand_projectNameArg->value());
 			}
 			//--------------------------------------------------------------------------------
 			// build command

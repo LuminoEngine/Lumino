@@ -13,12 +13,6 @@ Workspace::~Workspace()
 {
 }
 
-Result Workspace::newProject(const ln::Path& projectDir, const ln::String& projectName)
-{
-	m_project = ln::makeRef<Project>(this);
-	return m_project->newProject(projectDir, projectName);
-}
-
 Result Workspace::openProject(const ln::Path& dir)
 {
 	m_project = ln::makeRef<Project>(this);

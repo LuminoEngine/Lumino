@@ -54,8 +54,6 @@ Result CppLanguageContext::applyTemplates()
 			ln::FileSystem::copyFile(ln::Path(srcRoot, file), filePath, ln::FileCopyOption::Overwrite);
 		}
 
-		copyEngine();
-
 		// Assets
 		ln::FileSystem::copyDirectory(ln::Path(srcRoot, u"Assets"), ln::Path(dstRoot, u"Assets"), true, true);
 	}
@@ -108,29 +106,62 @@ Result CppLanguageContext::applyTemplates()
 	return Result::Success;
 }
 
-void CppLanguageContext::restore()
+Result CppLanguageContext::applyEngine()
 {
-	if (project()->properties()->engineVersion == u"system") {
-		copyEngine();
-	}
-	else {
-		LN_NOTIMPLEMENTED();
-	}
+    if (project()->properties()->engine.indexOf(u"repo:") == 0)
+    {
+        auto engineRoot = ln::Path::combine(project()->engineDirPath(), u"Native");
+        auto branch = project()->properties()->engine.substr(5);
+        int result = 0;
+
+        result = ln::Process::execute(
+            u"git",
+            {
+                u"clone",
+                u"--progress",
+                u"-b", branch,
+                u"https://github.com/lriki/Lumino.git",
+                engineRoot,
+            });
+        if (result != 0) {
+            return Result::Fail;
+        }
+
+        result = ln::Process::execute(u"dotnet", { u"run", u"--project", ln::Path(engineRoot, u"build.csproj"), u"--", u"BuildForCI_1" });
+        if (result != 0) {
+            return Result::Fail;
+        }
+
+        result = ln::Process::execute(u"dotnet", { u"run", u"--project", ln::Path(engineRoot, u"build.csproj"), u"--", u"BuildForCI_2" });
+        if (result != 0) {
+            return Result::Fail;
+        }
+
+        result = ln::Process::execute(u"dotnet", { u"run", u"--project", ln::Path(engineRoot, u"build.csproj"), u"--", u"CopyEngineLibsToRepoRoot" });
+        if (result != 0) {
+            return Result::Fail;
+        }
+    }
+    else
+    {
+        if (!ln::FileSystem::getFile(project()->engineDirPath()).isEmpty()) {
+            CLI::warning(u"File exists in the engine folder.");
+        }
+        else {
+            CLI::info("Copying Engine...");
+
+            ln::FileSystem::copyDirectory(
+                ln::Path::combine(project()->workspace()->buildEnvironment()->luminoPackageRootDir(), u"Engine", u"Native"),
+                ln::Path::combine(project()->engineDirPath(), u"Native"),
+                true, true);
+
+            CLI::info("Copied Engine.");
+        }
+    }
+    return Result::Success;
 }
 
-void CppLanguageContext::copyEngine()
+void CppLanguageContext::restore()
 {
-	if (!ln::FileSystem::getFile(project()->engineDirPath()).isEmpty()) {
-		CLI::warning(u"File exists in the engine folder.");
-	}
-	else {
-		CLI::info("Copying Engine...");
-
-		ln::FileSystem::copyDirectory(
-			ln::Path::combine(project()->workspace()->buildEnvironment()->luminoPackageRootDir(), u"Engine", u"Native"),
-            ln::Path::combine(project()->engineDirPath(), u"Native"),
-            true, true);
-
-		CLI::info("Copied Engine.");
-	}
+    applyEngine();
 }
