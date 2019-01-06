@@ -158,25 +158,26 @@ void MeshResource::requestBuffers(VertexBufferGroup group, VertexBuffer** outVer
 		}
 	}
 
-	// prepare index buffer
-	if (!m_indexBuffer) {
-		m_indexBuffer = ln::newObject<IndexBuffer>(m_indexCount, detail::GraphicsResourceHelper::selectIndexBufferFormat(m_vertexCount), m_usage);
-	}
-	else if (realIndexCount() != m_indexCount) {
-		m_indexBuffer->resize(m_indexCount);
-	}
-
-	// check index buffer format
-	if (m_indexBuffer->format() == IndexBufferFormat::UInt16) {
-		if (m_vertexCount > 0xFFFF) {
-			m_indexBuffer->setFormat(IndexBufferFormat::UInt32);
-		}
-	}
-
 	if (outVertexBuffer) {
 		*outVertexBuffer = m_vertexBuffers[group];
 	}
+
+    // Create index buffer if requested
 	if (outIndexBuffer) {
+        // prepare index buffer
+        if (!m_indexBuffer) {
+            m_indexBuffer = ln::newObject<IndexBuffer>(m_indexCount, detail::GraphicsResourceHelper::selectIndexBufferFormat(m_vertexCount), m_usage);
+        }
+        else if (realIndexCount() != m_indexCount) {
+            m_indexBuffer->resize(m_indexCount);
+        }
+
+        // check index buffer format
+        if (m_indexBuffer->format() == IndexBufferFormat::UInt16) {
+            if (m_vertexCount > 0xFFFF) {
+                m_indexBuffer->setFormat(IndexBufferFormat::UInt32);
+            }
+        }
 		*outIndexBuffer = m_indexBuffer;
 	}
 }
@@ -252,6 +253,7 @@ void MeshResource::commitRenderData(int sectionIndex, MeshSection* outSection, V
 		if (m_vertexBuffers[VBG_AdditionalUVs]) flags |= detail::PredefinedVertexLayoutFlags_AdditionalUV;
 		if (m_vertexBuffers[VBG_SdefInfo]) flags |= detail::PredefinedVertexLayoutFlags_SdefInfo;
 		if (m_vertexBuffers[VBG_MmdExtra]) flags |= detail::PredefinedVertexLayoutFlags_MmdExtra;
+        if (LN_REQUIRE(flags != 0)) return;
 		*outDecl = m_manager->getPredefinedVertexLayout((detail::PredefinedVertexLayoutFlags)flags);
 	}
 
@@ -269,6 +271,16 @@ void MeshResource::commitRenderData(int sectionIndex, MeshSection* outSection, V
 	
 	// IndexBuffer
 	*outIB = m_indexBuffer;
+}
+
+bool MeshResource::isInitialEmpty() const
+{
+    for (auto& buf : m_vertexBuffers) {
+        if (buf) {
+            return false;
+        }
+    }
+    return true;
 }
 
 //==============================================================================

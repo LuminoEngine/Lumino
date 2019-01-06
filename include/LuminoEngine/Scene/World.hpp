@@ -10,7 +10,7 @@ class WorldObject;
 class Component;
 class PhysicsWorld;
 namespace detail {
-class CameraInfo;
+struct CameraInfo;
 class EngineManager;
 class DrawElementList;
 class WorldSceneGraphRenderingContext;

@@ -72,6 +72,7 @@ public:
 	const List<MeshSection>& sections() const { return m_sections; }
     void getVertexBuffers(VertexBuffer** basic);
     void setVertexBuffers(VertexBuffer* basic);
+    bool isInitialEmpty() const;
 
 LN_CONSTRUCT_ACCESS:
 	MeshResource();

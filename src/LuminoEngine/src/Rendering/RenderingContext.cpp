@@ -260,6 +260,8 @@ void RenderingContext::drawMesh(MeshResource* meshResource, int sectionIndex)
         }
     };
 
+    if (meshResource->isInitialEmpty()) return;
+
     auto* element = m_builder->addNewDrawElement<DrawMesh>(
         m_manager->meshRenderFeature(),
         m_builder->meshRenderFeatureStageParameters());
