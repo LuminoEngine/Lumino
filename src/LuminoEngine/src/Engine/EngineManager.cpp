@@ -10,6 +10,7 @@
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
+#include <LuminoEngine/Scene/Light.hpp>
 #include "../Rendering/RenderTargetTextureCache.hpp"
 
 #include "../Platform/PlatformManager.hpp"
@@ -88,9 +89,11 @@ void EngineManager::initialize()
         m_mainUIContext->setLayoutRootElement(m_mainWindow);
 	}
 
-#if 1
     m_mainWorld = newObject<World>();
     m_sceneManager->setActiveWorld(m_mainWorld);
+
+    m_mainAmbientLight = newObject<AmbientLight>();
+    m_mainDirectionalLight = newObject<DirectionalLight>();
 
     m_mainPhysicsWorld = m_mainWorld->physicsWorld();
 
@@ -107,7 +110,6 @@ void EngineManager::initialize()
     m_mainUIRoot = newObject<UIContainerElement>();
     m_mainUIRenderView->setRootElement(m_mainUIRoot);
     m_uiManager->setPrimaryElement(m_mainUIRoot);
-#endif
 }
 
 void EngineManager::dispose()

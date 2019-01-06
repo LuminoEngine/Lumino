@@ -137,8 +137,8 @@ int main(int argc, char** argv)
 #if 1
     auto font = Font::create(u"VL PGothic", 20);
 
-	auto light1 = AmbientLight::create();
-    auto light2 = DirectionalLight::create();
+	//auto light1 = AmbientLight::create();
+ //   auto light2 = DirectionalLight::create();
 
     auto tex = newObject<Texture2D>(u"D:/tmp/110220c_as019.png");
     //auto tex = Assets::loadTexture(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Sprite1.png");

@@ -9,6 +9,8 @@ class UIContainerElement;
 class PhysicsWorld;
 class World;
 class Camera;
+class AmbientLight;
+class DirectionalLight;
 
 /** アプリケーション全体にかかわる処理を行います。 */
 LN_CLASS(Static)
@@ -43,6 +45,8 @@ public:
     static Size mainViewSize();
     static World* mainWorld();
     static Camera* mainCamera();
+    static AmbientLight* mainAmbientLight();
+    static DirectionalLight* mainDirectionalLight();
     static PhysicsWorld* mainPhysicsWorld();
 
 };

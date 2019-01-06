@@ -10,6 +10,7 @@
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
+#include <LuminoEngine/Scene/Light.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 
 namespace ln {
@@ -109,6 +110,16 @@ World* Engine::mainWorld()
 Camera* Engine::mainCamera()
 {
     return detail::EngineDomain::engineManager()->mainCamera();
+}
+
+AmbientLight* Engine::mainAmbientLight()
+{
+    return detail::EngineDomain::engineManager()->mainAmbientLight();
+}
+
+DirectionalLight* Engine::mainDirectionalLight()
+{
+    return detail::EngineDomain::engineManager()->mainDirectionalLight();
 }
 
 PhysicsWorld* Engine::mainPhysicsWorld()

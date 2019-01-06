@@ -12,6 +12,8 @@ class PhysicsWorld;
 class World;
 class WorldRenderView;
 class Camera;
+class AmbientLight;
+class DirectionalLight;
 
 namespace detail {
 class PlatformManager;
@@ -102,6 +104,8 @@ public:
 	const Ref<UIContainerElement>& mainUIRoot() const { return m_mainUIRoot; }
     const Ref<World>& mainWorld() const { return m_mainWorld; }
     const Ref<Camera>& mainCamera() const { return m_mainCamera; }
+    const Ref<AmbientLight>& mainAmbientLight() const { return m_mainAmbientLight; }
+    const Ref<DirectionalLight>& mainDirectionalLight() const { return m_mainDirectionalLight; }
     const Ref<PhysicsWorld>& mainPhysicsWorld() const { return m_mainPhysicsWorld; }
 
 private:
@@ -132,8 +136,11 @@ private:
     Ref<UIRenderView> m_mainUIRenderView;   // m_mainViewport の ViewBox 内部に配置する
     Ref<UIContainerElement> m_mainUIRoot;   // m_mainUIRenderView の RootElement
     Ref<World> m_mainWorld;
+    Ref<Camera> m_mainCamera;
+    Ref<AmbientLight> m_mainAmbientLight;
+    Ref<DirectionalLight> m_mainDirectionalLight;
+
     Ref<WorldRenderView> m_mainWorldRenderView;
-	Ref<Camera> m_mainCamera;
     Ref<PhysicsWorld> m_mainPhysicsWorld;
 
 	bool m_exitRequested;

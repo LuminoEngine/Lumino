@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "../Visual/LightComponent.hpp"
 #include "WorldObject.hpp"
 
 namespace ln {
