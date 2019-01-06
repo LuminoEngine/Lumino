@@ -6,6 +6,7 @@
 #include <LuminoEngine/Mesh/Mesh.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Physics/SoftBody.hpp>
+#include "BulletUtils.hpp"
 
 namespace ln {
 
@@ -23,8 +24,11 @@ SoftBody::SoftBody()
     , m_mass(1.0f)
     , m_group(1)
     , m_groupMask(0xffffffff)
+    , m_LST(1.0f)
+    , m_AST(1.0f)
+    , m_VST(1.0f)
     , configLST_(DEFAULT_CONFIG_VALUE)
-    , configMT_(DEFAULT_CONFIG_VALUE)
+    , m_MT(0.0f)
     , configVC_(DEFAULT_CONFIG_VALUE)
     , configPR_(DEFAULT_CONFIG_PR)
 {
@@ -37,6 +41,59 @@ SoftBody::~SoftBody()
 void SoftBody::initialize()
 {
     PhysicsObject::initialize();
+}
+
+void SoftBody::setTransform(const Matrix& transform)
+{
+    m_body->transform( detail::BulletUtil::LNMatrixToBtTransform(transform));
+}
+
+void SoftBody::setMass(float mass)
+{
+    m_mass = std::max(mass, 0.0f);
+    // TODO: readdToWorld
+    //m_body->setTotalMass(mass);
+}
+
+void SoftBody::setLinearStiffness(float value)
+{
+    m_LST = Math::clamp01(value);
+}
+
+void SoftBody::setAngularStiffness(float value)
+{
+    m_AST = Math::clamp01(value);
+}
+
+void SoftBody::setVolumeStiffness(float value)
+{
+    m_VST = Math::clamp01(value);
+}
+
+void SoftBody::setPoseMatching(float value)
+{
+    m_MT = Math::clamp01(value);
+}
+
+
+int SoftBody::nodeCount() const
+{
+    return m_body->m_nodes.size();
+}
+
+Vector3 SoftBody::nodePosition(int nodeIndex) const
+{
+    return detail::BulletUtil::btVector3ToLNVector3(m_body->m_nodes[nodeIndex].m_x);
+}
+
+Vector3 SoftBody::nodeVelocity(int nodeIndex) const
+{
+    return detail::BulletUtil::btVector3ToLNVector3(m_body->m_nodes[nodeIndex].m_v);
+}
+
+void SoftBody::setNodeMass(int nodeIndex, float mass)
+{
+    m_body->setMass(nodeIndex, mass);
 }
 
 void SoftBody::createFromMesh(MeshResource* mesh, PhysicsWorld* world)
@@ -132,7 +189,7 @@ void SoftBody::createFromMesh(MeshResource* mesh, PhysicsWorld* world)
     //    m_body->m_cfg.kLF = 0.05f;
     //    m_body->m_cfg.kDG = 0.01f;
     //}
-
+    m_body->generateBendingConstraints(2);
     // void SoftBody::CopyNodesTransform()
     //{
 
@@ -142,10 +199,6 @@ void SoftBody::createFromMesh(MeshResource* mesh, PhysicsWorld* world)
     //}
 
     // void SoftBody::UpdateMass()
-    if (m_mass > 0.0f)
-    {
-        m_body->setTotalMass(m_mass, true);
-    }
 
     //m_body->setVolumeMass(m_mass);
     //m_body->m_cfg.collisions = btSoftBody::fCollision::CL_SS + btSoftBody::fCollision::CL_RS;
@@ -153,7 +206,7 @@ void SoftBody::createFromMesh(MeshResource* mesh, PhysicsWorld* world)
     ///pass zero in generateClusters to create  cluster for each tetrahedron or triangle
     m_body->generateClusters(8);
     //psb->m_materials[0]->m_kLST=.2;
-    m_body->m_cfg.kDF = 10.;
+    //m_body->m_cfg.kDF = 10.;
 
     //btSoftRigidDynamicsWorld* world = (btSoftRigidDynamicsWorld*)physicsWorld()->getBtWorld();
     btSoftRigidDynamicsWorld* worldw = world->getBtWorld();//physicsWorld()->getBtWorld();
@@ -168,17 +221,28 @@ void SoftBody::createFromMesh(MeshResource* mesh, PhysicsWorld* world)
 
 void SoftBody::setDefaultConfiguration()
 {
+    // btSoftBody のコンストラクタで Material はひとつ作られる。
+    // Material は Node や Link など、Feature をベースとした各データクラスが参照する。
+    // 各データ Add 時に指定するか、指定しない場合は m_materials[0] が使われる。
+
     // minimum default settings just to keep the volume, some what, intact
-    m_body->m_materials[0]->m_kLST = (btScalar)configLST_; // Linear stiffness coefficient [0,1]
-    m_body->m_cfg.kMT = (btScalar)configMT_;  // Pose matching coefficient [0,1]
-    m_body->m_cfg.kVC = (btScalar)configVC_;  // Volume conservation coefficient [0,+inf]
-    m_body->m_cfg.kPR = (btScalar)configPR_;  // Pressure coefficient [-inf,+inf]
+    //m_body->m_materials[0]->m_kLST = 0.45;//(btScalar)configLST_; // Linear stiffness coefficient [0,1]
+    m_body->m_cfg.kMT = m_MT;// (btScalar)configMT_;  // Pose matching coefficient [0,1]
+    m_body->m_cfg.kVC = 20;// (btScalar)configVC_;  // Volume conservation coefficient [0,+inf]
+    //m_body->m_cfg.kPR = (btScalar)configPR_;  // Pressure coefficient [-inf,+inf]
 
     m_body->m_cfg.piterations = 4;     // ばねによる位置修正の最大反復回数
-    m_body->m_materials[0]->m_kLST = 0.5; // 剛性(Linear Stiffness Coefficient) (変形のしやすさ)
+    m_body->m_materials[0]->m_kLST = m_LST;//0.5; // 剛性(Linear Stiffness Coefficient) (変形のしやすさ)
+    m_body->m_materials[0]->m_kAST = m_AST;
+    m_body->m_materials[0]->m_kVST = m_VST;
     //btSoftBody::fMaterial::DebugDraw;
 
-    m_body->m_cfg.collisions |= btSoftBody::fCollision::VF_SS;//SB同士のコリジョン
+    //m_body->m_cfg.collisions |= btSoftBody::fCollision::VF_SS;//SB同士のコリジョン
+
+    if (m_mass > 0.0f)
+    {
+        m_body->setTotalMass(m_mass, true);
+    }
 
     m_body->setPose(true, true);
     m_body->getCollisionShape()->setMargin(DEFAULT_COLLISION_MARGIN);

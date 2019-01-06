@@ -10,6 +10,36 @@ class SoftBody
 	: public PhysicsObject
 {
 public:
+    void setTransform(const Matrix& transform);
+
+    void setMass(float mass);
+
+
+
+    int nodeCount() const;
+
+    Vector3 nodePosition(int nodeIndex) const;
+    Vector3 nodeVelocity(int nodeIndex) const;
+
+    /** 指定したインデックスのノードの質量を設定します。0 を設定すると、静的なノードとなります。 */
+    void setNodeMass(int nodeIndex, float mass);
+
+
+    // material, ↓各剛性係数。変形しやすさ。
+
+    /** Linear stiffness coefficient [0,1], default:1.0 */
+    void setLinearStiffness(float value);
+
+    /** Area/Angular stiffness coefficient [0,1], default:1.0 */
+    void setAngularStiffness(float value);
+
+    /** Volume stiffness coefficient [0,1], default:1.0 */
+    void setVolumeStiffness(float value);
+
+
+    /** Pose matching coefficient [0,1] (setPoseの効果) */
+    void setPoseMatching(float value);
+
 
     // TODO: internal
     void createFromMesh(MeshResource* mesh, PhysicsWorld* world);
@@ -27,10 +57,14 @@ private:
     uint32_t m_group;
     uint32_t m_groupMask;
 
+    float m_LST;
+    float m_AST;
+    float m_VST;
+
     /// Linear stiffness coefficient [0,1]
     float configLST_;
-    /// Pose matching coefficient [0,1]
-    float configMT_;
+    /// 
+    float m_MT;
     /// Volume conservation coefficient [0,+inf]
     float configVC_;
     /// Pressure coefficient [-inf,+inf]
