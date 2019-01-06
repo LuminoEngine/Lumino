@@ -30,9 +30,13 @@ class RigidBody
 	: public PhysicsObject
 {
 public:
+    /** 指定した形状で、質量が 0 である静的な RigidBody を作成します。 */
+    static Ref<RigidBody> create(CollisionShape* shape);
+
     RigidBody();
     ~RigidBody();
     void initialize();
+    void initialize(CollisionShape* shape);
 
 
     /** 質量を設定します。0 を設定すると静的なボディとなります。 */
@@ -142,6 +146,7 @@ private:
         Modified_ApplyCenterImpulse = 0x0020,
         Modified_ApplyTorque = 0x20000,
         Modified_ApplyTorqueImpulse = 0x40000,
+        Modified_All = 0xFFFFFFFF,
     };
 
     btRigidBody* m_btRigidBody;

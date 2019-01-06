@@ -42,6 +42,11 @@ public:
 //   ※Urho3D とかはシミュレーション中は一切 set できないように封印されているが、
 //     ユーザーにそれを気を付けてねとは言いたくない・・・。
 
+Ref<RigidBody> RigidBody::create(CollisionShape* shape)
+{
+    return newObject<RigidBody>(shape);
+}
+
 RigidBody::RigidBody()
     : PhysicsObject(PhysicsObjectType::RigidBody)
     , m_btRigidBody(nullptr)
@@ -65,7 +70,7 @@ RigidBody::RigidBody()
     , m_appliedCenterImpulse()
     , m_appliedTorque()
     , m_appliedTorqueImpulse()
-    , m_modifiedFlags(Modified_InitialUpdate)
+    , m_modifiedFlags(Modified_All)
 {
 }
 
@@ -82,6 +87,12 @@ RigidBody::~RigidBody()
 void RigidBody::initialize()
 {
     Object::initialize();
+}
+
+void RigidBody::initialize(CollisionShape* shape)
+{
+    initialize();
+    addCollisionShape(shape);
 }
 
 void RigidBody::setMass(float mass)
@@ -473,7 +484,7 @@ void RigidBody::setTransformFromMotionState(const btTransform& transform)
 void RigidBody::addToWorld()
 {
     if (m_btRigidBody) {
-        physicsWorld()->getBtWorld()->addRigidBody(m_btRigidBody/*, m_group, m_groupMask*/);
+        physicsWorld()->getBtWorld()->addRigidBody(m_btRigidBody, m_group, m_groupMask);
     }
 }
 
@@ -481,7 +492,7 @@ void RigidBody::readdToWorld()
 {
     if (m_btRigidBody) {
         physicsWorld()->getBtWorld()->removeRigidBody(m_btRigidBody);
-        physicsWorld()->getBtWorld()->addRigidBody(m_btRigidBody/*, m_group, m_groupMask*/);
+        physicsWorld()->getBtWorld()->addRigidBody(m_btRigidBody, m_group, m_groupMask);
     }
 }
 
