@@ -175,6 +175,7 @@ int IndexBuffer::index(int index)
     else
     {
         LN_NOTIMPLEMENTED();
+        return 0;
     }
 }
 

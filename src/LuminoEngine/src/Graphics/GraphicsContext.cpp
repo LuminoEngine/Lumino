@@ -257,7 +257,7 @@ detail::IGraphicsDeviceContext* GraphicsContext::commitState()
 			});
 	}
 
-    if ((m_modifiedFlags & ModifiedFlags_VertexBuffers) != 0)
+    //if ((m_modifiedFlags & ModifiedFlags_VertexBuffers) != 0)
 	{
 		for (int i = 0; i < m_staging.vertexBuffers.size(); i++)
 		{
@@ -276,7 +276,7 @@ detail::IGraphicsDeviceContext* GraphicsContext::commitState()
         m_lastCommit.vertexBuffers = m_staging.vertexBuffers;
 	}
 
-    if ((m_modifiedFlags & ModifiedFlags_IndexBuffer) != 0)
+    //if ((m_modifiedFlags & ModifiedFlags_IndexBuffer) != 0)
 	{
 		auto& value = m_staging.indexBuffer;
 		detail::IIndexBuffer* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
@@ -291,7 +291,7 @@ detail::IGraphicsDeviceContext* GraphicsContext::commitState()
         m_lastCommit.indexBuffer = m_staging.indexBuffer;
 	}
 
-    if ((m_modifiedFlags & ModifiedFlags_ShaderPass) != 0)
+    //if ((m_modifiedFlags & ModifiedFlags_ShaderPass) != 0)
 	{
 		auto& value = m_staging.shaderPass;
 		detail::IShaderPass* rhiObject = (value) ? value->resolveRHIObject() : nullptr;

@@ -203,7 +203,7 @@ public:
 };
 
 /** イージングによりシンプルに遷移する値のクラスです。 */
-template < typename TValue, typename TTime = double >
+template < typename TValue, typename TTime = float >
 class EasingValue
 {
 public:
