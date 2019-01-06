@@ -191,7 +191,7 @@ int main(int argc, char** argv)
     //auto mesh2 = newObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
     //mesh2->setPosition(2, 0, 0);
 
-    auto mesh3 = newObject<StaticMesh>(u"D:/Proj/TH-10/Assets/Graphics/test/sphere3.obj", 2);
+    auto mesh3 = newObject<StaticMesh>(u"D:/Proj/TH-10/Assets/Graphics/test/sphere4.obj", 2);
     mesh3->setVisible(false);
 #endif
 
@@ -199,7 +199,7 @@ int main(int argc, char** argv)
     auto body1 = newObject<RigidBody>();
     body1->addCollisionShape(shape1);
     body1->setTransform(Matrix::makeTranslation(0, -3, 0));
-    //Engine::mainPhysicsWorld()->addPhysicsObject(body1);
+    Engine::mainPhysicsWorld()->addPhysicsObject(body1);
 
 
     auto shape2 = CapsuleCollisionShape::create(0.5, 3);
