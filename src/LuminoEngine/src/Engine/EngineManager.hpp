@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <LuminoEngine/Graphics/GeometryStructs.hpp>
 #include <LuminoEngine/Platform/PlatformEvent.hpp>
+#include "FpsController.hpp"
 
 namespace ln {
 class UIContext;
@@ -44,6 +45,8 @@ struct EngineSettings
 	SizeI mainBackBufferSize = SizeI(640, 480);
 	String mainWindowTitle = _T("Lumino");
     List<EngineSettingsAssetArchiveEntry> assetArchives;
+	bool standaloneFpsControl = false;
+	int frameRate = 60;
 };
 
 class EngineManager
@@ -129,6 +132,7 @@ private:
     Ref<VisualManager>					m_visualManager;
     Ref<SceneManager>					m_sceneManager;
 	Ref<UIManager>					m_uiManager;
+	FpsController m_fpsController;
 
     Ref<UIContext> m_mainUIContext;
 	Ref<UIFrameWindow> m_mainWindow;

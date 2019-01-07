@@ -78,6 +78,9 @@ void EngineManager::initialize()
 {
 	initializeAllManagers();
 
+	m_fpsController.setFrameRate(m_settings.frameRate);
+	m_fpsController.setEnableFpsTest(true);
+
 	if (m_uiManager) {
         m_mainUIContext = newObject<UIContext>();
         m_uiManager->setMainContext(m_mainUIContext);
@@ -438,12 +441,20 @@ void EngineManager::presentFrame()
         m_renderingManager->frameBufferCache()->endRenderSection();
     }
 
-    // TODO:
-	Thread::sleep(16);
+
+	if (m_settings.standaloneFpsControl) {
+		m_fpsController.process();
+	}
+	else {
+		m_fpsController.processForMeasure();
+	}
+
+	std::cout << m_fpsController.getFps() << " : " << m_fpsController.getCapacityFps() << std::endl;
 }
 
 void EngineManager::resetFrameDelay()
 {
+	m_fpsController.refreshSystemDelay();
 }
 
 void EngineManager::quit()

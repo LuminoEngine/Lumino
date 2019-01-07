@@ -127,5 +127,16 @@ PhysicsWorld* Engine::mainPhysicsWorld()
     return detail::EngineDomain::engineManager()->mainPhysicsWorld();
 }
 
+// TODO: time
+//Engine::elapsedSeconds()
+//Engine::totalRealTime()
+//Engine::frameCount()
+//
+//World::elapsedSeconds()
+//World::totalTime()
+//Engine::frameCount()
+//World::timeScale
+
+
 } // namespace ln
 

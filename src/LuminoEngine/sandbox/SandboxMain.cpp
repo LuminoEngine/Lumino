@@ -5,6 +5,7 @@
 #include "../src/Audio/AudioDecoder.hpp"
 #include "Common.hpp"
 #include "../src/Engine/EngineDomain.hpp"
+#include "../src/Engine/EngineManager.hpp"
 #include "../src/Rendering/RenderingManager.hpp"
 #include "../src/Rendering/SpriteRenderFeature.hpp"
 #include "../src/Rendering/DrawElementListBuilder.hpp"
@@ -91,6 +92,7 @@ int main(int argc, char** argv)
 #endif
 
 	GlobalLogger::addStdErrAdapter();
+	detail::EngineDomain::engineManager()->settings().standaloneFpsControl = true;
 	Engine::initialize();
 
     auto ctl = newObject<CameraOrbitControlComponent>();
@@ -191,15 +193,15 @@ int main(int argc, char** argv)
     //auto mesh2 = newObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
     //mesh2->setPosition(2, 0, 0);
 
-    auto mesh3 = newObject<StaticMesh>(u"D:/Proj/TH-10/Assets/Graphics/test/sphere4.obj", 2);
-    mesh3->setVisible(false);
+    //auto mesh3 = newObject<StaticMesh>(u"D:/Proj/TH-10/Assets/Graphics/test/sphere4.obj", 2);
+    //mesh3->setVisible(false);
 #endif
 
     auto shape1 = BoxCollisionShape::create(5, 1, 5);
     auto body1 = newObject<RigidBody>();
     body1->addCollisionShape(shape1);
     body1->setTransform(Matrix::makeTranslation(0, -3, 0));
-    Engine::mainPhysicsWorld()->addPhysicsObject(body1);
+    //Engine::mainPhysicsWorld()->addPhysicsObject(body1);
 
 
     auto shape2 = CapsuleCollisionShape::create(0.5, 3);
@@ -210,8 +212,8 @@ int main(int argc, char** argv)
     body2->setKinematic(true);
     //Engine::mainPhysicsWorld()->addPhysicsObject(body2);
 
-    auto body3 = newObject<SoftBody>();
-    body3->createFromMesh(mesh3->staticMeshComponent()->model()->meshContainers().front()->meshResource(), Engine::mainPhysicsWorld());
+    //auto body3 = newObject<SoftBody>();
+    //body3->createFromMesh(mesh3->staticMeshComponent()->model()->meshContainers().front()->meshResource(), Engine::mainPhysicsWorld());
 
 #if 0
     auto meshMaterial = Material::create();
@@ -244,7 +246,7 @@ int main(int argc, char** argv)
     mesh1->staticMeshComponent()->setModel(meshModel);
 #endif
 
-#if 1
+#if 0
     //auto sound = newObject<Sound>(u"D:\\tmp\\4_Battle_win.wav");
     //auto sound = newObject<Sound>(u"D:/Music/momentum/02 - momentum.wav");
     auto sound = newObject<Sound>(u"D:/Proj/Volkoff/Assets/Data/Sound/BGM/monochrome.ogg");
@@ -294,7 +296,7 @@ int main(int argc, char** argv)
         //sprite->setPosition(0, track1->evaluate(time));
         //std::cout << track1->evaluate(time) << std::endl;
         time += 0.016;
-#if 1
+#if 0
         if (Mouse::isPressed(MouseButtons::Left))
         {
             float pitch = (Mouse::position().x / 640)  + 0.5;

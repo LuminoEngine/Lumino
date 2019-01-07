@@ -24,6 +24,8 @@ set(LN_SOURCES_Engine
     src/Engine/EngineDomain.hpp
     src/Engine/EngineManager.cpp
     src/Engine/EngineManager.hpp
+    src/Engine/FpsController.cpp
+    src/Engine/FpsController.hpp
     src/Engine/LinearAllocator.hpp
     src/Engine/RenderingCommandList.cpp
     src/Engine/RenderingCommandList.hpp
