@@ -225,7 +225,11 @@ namespace LuminoBuild.Tasks
             }
             if (!Directory.Exists("tinyobjloader"))
             {
-                Utils.CallProcess("git", "clone --progress --depth 1 -b v1.0.6 https://github.com/syoyo/tinyobjloader.git tinyobjloader");
+                // v1.0.6 より後はタグが降られていないが、頂点カラーなどの対応が入っている。それを持ってくる。
+                Utils.CallProcess("git", "clone --progress https://github.com/syoyo/tinyobjloader.git tinyobjloader");
+                Directory.SetCurrentDirectory("tinyobjloader");
+                Utils.CallProcess("git", "checkout f37fed32f3eb0912cc10a970f78774cd98598ef6");
+                Directory.SetCurrentDirectory(reposDir);
             }
 
 

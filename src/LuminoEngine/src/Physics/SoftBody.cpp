@@ -27,6 +27,7 @@ SoftBody::SoftBody()
     , m_LST(1.0f)
     , m_AST(1.0f)
     , m_VST(1.0f)
+    , m_collisionMargin(0.25f)
     , configLST_(DEFAULT_CONFIG_VALUE)
     , m_MT(0.0f)
     , configVC_(DEFAULT_CONFIG_VALUE)
@@ -75,6 +76,10 @@ void SoftBody::setPoseMatching(float value)
     m_MT = Math::clamp01(value);
 }
 
+void SoftBody::setCollisionMargin(float value)
+{
+    m_collisionMargin = value;
+}
 
 int SoftBody::nodeCount() const
 {
@@ -153,10 +158,10 @@ void SoftBody::createFromMesh(MeshResource* mesh, PhysicsWorld* world)
     {
         btIndices[i] = mesh->index(i);
     }
-    //for (int i = 0; i < numIndices / 3; i++)
-    //{
-    //    std::swap(btIndices[i * 3 + 1], btIndices[i * 3 + 2]);
-    //}
+    for (int i = 0; i < numIndices / 3; i++)
+    {
+        std::swap(btIndices[i * 3 + 1], btIndices[i * 3 + 2]);
+    }
 
 
 
@@ -214,9 +219,25 @@ void SoftBody::createFromMesh(MeshResource* mesh, PhysicsWorld* world)
     //inWorld_ = true;
 
 
+    //btSoftBody::sRayCast result;
+    //bool r = m_body->rayTest(btVector3(0.02, 0.02, -10), btVector3(0.02, 0.02, 10), result);
+    //Vector3 pos = Vector3::lerp(Vector3(0.02, 0.02, -10), Vector3(0.02, 0.02, 10), result.fraction);
 
+}
 
+bool SoftBody::raycast(const Vector3& from, const Vector3& to, float* outFraction) const
+{
+    if (Vector3::nearEqual(from, to)) return false;
 
+    btSoftBody::sRayCast result;
+    bool r = m_body->rayTest(
+        detail::BulletUtil::LNVector3ToBtVector3(from),
+        detail::BulletUtil::LNVector3ToBtVector3(to),
+        result);
+    if (outFraction) {
+        *outFraction = result.fraction;
+    }
+    return r;
 }
 
 void SoftBody::setDefaultConfiguration()
@@ -231,7 +252,7 @@ void SoftBody::setDefaultConfiguration()
     m_body->m_cfg.kVC = 20;// (btScalar)configVC_;  // Volume conservation coefficient [0,+inf]
     //m_body->m_cfg.kPR = (btScalar)configPR_;  // Pressure coefficient [-inf,+inf]
 
-    m_body->m_cfg.piterations = 4;     // ばねによる位置修正の最大反復回数
+    m_body->m_cfg.piterations = 1;     // ばねによる位置修正の最大反復回数
     m_body->m_materials[0]->m_kLST = m_LST;//0.5; // 剛性(Linear Stiffness Coefficient) (変形のしやすさ)
     m_body->m_materials[0]->m_kAST = m_AST;
     m_body->m_materials[0]->m_kVST = m_VST;
@@ -245,7 +266,7 @@ void SoftBody::setDefaultConfiguration()
     }
 
     m_body->setPose(true, true);
-    m_body->getCollisionShape()->setMargin(DEFAULT_COLLISION_MARGIN);
+    m_body->getCollisionShape()->setMargin(m_collisionMargin);
 }
 
 } // namespace ln

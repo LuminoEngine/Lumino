@@ -124,9 +124,10 @@ public:
 
     virtual bool operator()(const std::string &matId,
         std::vector<tinyobj::material_t> *materials,
-        std::map<std::string, int> *matMap, std::string *err)
+        std::map<std::string, int> *matMap, std::string *warn,
+        std::string *err) override
     {
-        return tinyobj::MaterialFileReader::operator()(matId, materials, matMap, err);
+        return tinyobj::MaterialFileReader::operator()(matId, materials, matMap, warn, err);
     }
 };
 
@@ -139,12 +140,17 @@ Ref<StaticMeshModel> ObjMeshImporter::import(const Path& filePath, float scale, 
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
     std::string err;
+    std::string warn;
     LocalMaterialFileReader materialReader(filePath.parent().str().toStdString() + "/");
 
 
     std::ifstream ifs(filePath.str().toStdString());
-    tinyobj::LoadObj(&attrib, &shapes, &materials, &err, &ifs, &materialReader, true);
+    tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, &ifs, &materialReader, true);
 
+    // TODO: message
+    if (!warn.empty()) {
+        std::cerr << warn << std::endl;
+    }
     if (!err.empty()) {
         std::cerr << err << std::endl;
     }
@@ -199,6 +205,13 @@ Ref<StaticMeshModel> ObjMeshImporter::import(const Path& filePath, float scale, 
             int t = vertexIndex.texcoord_index;
             if (t >= 0) {
                 vertex.uv = Vector2(attrib.texcoords[2 * t + 0], attrib.texcoords[2 * t + 1]);
+            }
+
+            if (attrib.colors.empty()) {
+                vertex.color = Vector4(1, 1, 1, 1);
+            }
+            else {
+                vertex.color = Vector4(attrib.colors[3 * v + 0], attrib.colors[3 * v + 1], attrib.colors[3 * v + 2], 1);
             }
 
             meshResource->setVertex(iVertex, vertex);

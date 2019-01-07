@@ -39,11 +39,12 @@ public:
 
     virtual void drawLine(const btVector3& from, const btVector3& to, const btVector3& fromColor, const btVector3& toColor) override
     {
+        const float r = 0.7;    // 少し色を濃くする
         context->drawLine(
             Vector3(from.getX(), from.getY(), from.getZ()),
-            Color(fromColor.getX(), fromColor.getY(), fromColor.getZ()),
+            Color(fromColor.getX() * r, fromColor.getY() * r, fromColor.getZ() * r, 1.0f),
             Vector3(to.getX(), to.getY(), to.getZ()),
-            Color(toColor.getX(), toColor.getY(), toColor.getZ(), 1.0f));
+            Color(toColor.getX() * r, toColor.getY() * r, toColor.getZ() * r, 1.0f));
     }
 
     virtual void drawContactPoint(const btVector3& PointOnB, const btVector3& normalOnB, btScalar distance, int lifeTime, const btVector3& color) override

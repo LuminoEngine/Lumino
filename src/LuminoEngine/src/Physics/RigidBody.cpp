@@ -107,6 +107,18 @@ void RigidBody::setVelocity(const Vector3& velocity)
     m_modifiedFlags |= Modified_LinearVelocity;
 }
 
+//const Vector3& RigidBody::velocity() const
+Vector3 RigidBody::velocity() const
+{
+    // TODO: 取り方よく考える
+    if (!m_btRigidBody) {
+        return m_linearVelocity;
+    }
+    else {
+        return detail::BulletUtil::btVector3ToLNVector3(m_btRigidBody->getLinearVelocity());
+    }
+}
+
 void RigidBody::setAngularVelocity(const Vector3& velocity)
 {
     m_angularVelocity = velocity;
@@ -345,8 +357,8 @@ void RigidBody::onBeforeStepSimulation()
         // clearForces 要求
         if ((m_modifiedFlags & Modified_ClearForces) != 0)
         {
-            //m_btRigidBody->setLinearVelocity(btVector3(0.0f, 0.0f, 0.0f));
-            //m_btRigidBody->setAngularVelocity(btVector3(0.0f, 0.0f, 0.0f));
+            m_btRigidBody->setLinearVelocity(btVector3(0.0f, 0.0f, 0.0f));
+            m_btRigidBody->setAngularVelocity(btVector3(0.0f, 0.0f, 0.0f));
             //m_btRigidBody->setInterpolationLinearVelocity(btVector3(0.0f, 0.0f, 0.0f));
             //m_btRigidBody->setInterpolationAngularVelocity(btVector3(0.0f, 0.0f, 0.0f));
             //m_btRigidBody->setInterpolationWorldTransform(m_btRigidBody->getCenterOfMassTransform());
@@ -386,6 +398,12 @@ void RigidBody::onBeforeStepSimulation()
 
 void RigidBody::onAfterStepSimulation()
 {
+    if (!m_kinematicObject)
+    {
+        btTransform transform;
+        m_btRigidBody->getMotionState()->getWorldTransform(transform);
+        transform.getOpenGLMatrix((btScalar*)&m_transform);
+    }
 }
 
 void RigidBody::createBtRigidBody()
@@ -470,6 +488,7 @@ void RigidBody::createBtRigidBody()
     m_btRigidBody->setUserPointer(this);
 
     addToWorld();
+
 }
 
 void RigidBody::setTransformFromMotionState(const btTransform& transform)

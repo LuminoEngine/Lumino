@@ -25,6 +25,7 @@ enum class RigidBodyLimitFlags
     /** 全ての軸の動作に制約を持たせる */
     LockedAll = 0x007,
 };
+LN_FLAGS_OPERATORS(RigidBodyLimitFlags);
 
 class RigidBody
 	: public PhysicsObject
@@ -44,6 +45,9 @@ public:
 
     /** 速度を設定します。 */
     void setVelocity(const Vector3& velocity);
+
+    //const Vector3& velocity() const;
+    Vector3 velocity() const;
 
     /** 角速度を設定します。 */
     void setAngularVelocity(const Vector3& velocity);
@@ -77,6 +81,7 @@ public:
     void setCollisionGroupMask(uint32_t groupMask);
 
     void setTransform(const Matrix& transform);
+    const Matrix& transform() const { return m_transform; }
 
     /** 重心に力を加えます。 */
     void applyForce(const Vector3& force);

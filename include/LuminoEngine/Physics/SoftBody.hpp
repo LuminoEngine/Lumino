@@ -41,8 +41,13 @@ public:
     void setPoseMatching(float value);
 
 
+    /** default:0.25 */
+    void setCollisionMargin(float value);
+
+
     // TODO: internal
     void createFromMesh(MeshResource* mesh, PhysicsWorld* world);
+    bool raycast(const Vector3& from, const Vector3& to, float* outFraction = nullptr) const;
 
 LN_CONSTRUCT_ACCESS:
     SoftBody();
@@ -60,6 +65,8 @@ private:
     float m_LST;
     float m_AST;
     float m_VST;
+
+    float m_collisionMargin;
 
     /// Linear stiffness coefficient [0,1]
     float configLST_;
