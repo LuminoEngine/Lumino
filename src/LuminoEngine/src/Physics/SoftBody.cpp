@@ -225,7 +225,7 @@ void SoftBody::createFromMesh(MeshResource* mesh, PhysicsWorld* world)
 
 }
 
-bool SoftBody::raycast(const Vector3& from, const Vector3& to, float* outFraction) const
+bool SoftBody::raycast(const Vector3& from, const Vector3& to, Vector3* outHitPosition, Vector3* outHitNormal) const
 {
     if (Vector3::nearEqual(from, to)) return false;
 
@@ -234,8 +234,14 @@ bool SoftBody::raycast(const Vector3& from, const Vector3& to, float* outFractio
         detail::BulletUtil::LNVector3ToBtVector3(from),
         detail::BulletUtil::LNVector3ToBtVector3(to),
         result);
-    if (outFraction) {
-        *outFraction = result.fraction;
+    if (outHitPosition) {
+        *outHitPosition = Vector3::lerp(from, to, result.fraction);
+    }
+
+    if (outHitNormal) {
+        if (result.feature == btSoftBody::eFeature::Face) {
+            *outHitNormal = detail::BulletUtil::btVector3ToLNVector3(m_body->m_faces[result.index].m_normal);
+        }
     }
     return r;
 }

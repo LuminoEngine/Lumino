@@ -47,7 +47,7 @@ public:
 
     // TODO: internal
     void createFromMesh(MeshResource* mesh, PhysicsWorld* world);
-    bool raycast(const Vector3& from, const Vector3& to, float* outFraction = nullptr) const;
+    bool raycast(const Vector3& from, const Vector3& to, Vector3* outHitPosition, Vector3* outHitNormal) const;
 
 LN_CONSTRUCT_ACCESS:
     SoftBody();
