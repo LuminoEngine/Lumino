@@ -272,7 +272,7 @@ void PhysicsWorld::stepSimulation(float elapsedSeconds)
     for (auto& obj : m_physicsObjectList) {
         obj->onAfterStepSimulation();
     }
-    //std::cout << t.elapsedMilliseconds() << std::endl;
+    //std::cout << "tt:" << t.elapsedMilliseconds() << std::endl;
 }
 
 void PhysicsWorld::renderDebug(RenderingContext* context)

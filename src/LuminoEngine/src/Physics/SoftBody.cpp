@@ -255,10 +255,10 @@ void SoftBody::setDefaultConfiguration()
     // minimum default settings just to keep the volume, some what, intact
     //m_body->m_materials[0]->m_kLST = 0.45;//(btScalar)configLST_; // Linear stiffness coefficient [0,1]
     m_body->m_cfg.kMT = m_MT;// (btScalar)configMT_;  // Pose matching coefficient [0,1]
-    m_body->m_cfg.kVC = 20;// (btScalar)configVC_;  // Volume conservation coefficient [0,+inf]
+    //m_body->m_cfg.kVC = 20;// (btScalar)configVC_;  // Volume conservation coefficient [0,+inf]
     //m_body->m_cfg.kPR = (btScalar)configPR_;  // Pressure coefficient [-inf,+inf]
 
-    m_body->m_cfg.piterations = 1;     // ばねによる位置修正の最大反復回数
+    //m_body->m_cfg.piterations = 1;     // ばねによる位置修正の最大反復回数
     m_body->m_materials[0]->m_kLST = m_LST;//0.5; // 剛性(Linear Stiffness Coefficient) (変形のしやすさ)
     m_body->m_materials[0]->m_kAST = m_AST;
     m_body->m_materials[0]->m_kVST = m_VST;
