@@ -62,7 +62,7 @@ void RenderingManager::initialize(const Settings& settings)
     {
         static const unsigned char data[] =
         {
-#include "Resource/ClusteredShadingDefault.lcfx.h"
+#include "Resource/ClusteredShadingDefault.lcfx.inl"
         };
         static const size_t size = LN_ARRAY_SIZE_OF(data);
         MemoryStream stream(data, size);
@@ -72,7 +72,7 @@ void RenderingManager::initialize(const Settings& settings)
     {
         static const unsigned char data[] =
         {
-#include "Resource/DepthPrepass.lcfx.h"
+#include "Resource/DepthPrepass.lcfx.inl"
         };
         static const size_t size = LN_ARRAY_SIZE_OF(data);
         MemoryStream stream(data, size);
@@ -82,7 +82,7 @@ void RenderingManager::initialize(const Settings& settings)
     {
         static const unsigned char data[] =
         {
-#include "Resource/Sprite.lcfx.h"
+#include "Resource/Sprite.lcfx.inl"
         };
         static const size_t size = LN_ARRAY_SIZE_OF(data);
         MemoryStream stream(data, size);
@@ -97,8 +97,8 @@ void RenderingManager::initialize(const Settings& settings)
     //	m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.fx");
     //#endif
 #if 1
-    m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.fx");
-    m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx");
+    //m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.fx");
+    //m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx");
     //m_builtinShaders[(int)BuiltinShader::DepthPrepass] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/DepthPrepass.fx");
     //m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.fx");
  //   m_builtinShaders[(int)BuiltinShader::ScreenBlurImageEffect] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ScreenBlurImageEffect.fx");

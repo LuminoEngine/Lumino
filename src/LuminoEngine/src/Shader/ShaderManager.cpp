@@ -27,7 +27,7 @@ void ShaderManager::initialize(const Settings& settings)
     {
         static const unsigned char data[] =
         {
-#include "Resource/Lumino.fxh.h"
+#include "Resource/Lumino.fxh.inl"
         };
         static const size_t size = LN_ARRAY_SIZE_OF(data);
         m_builtinShaderList.push_back({ "Lumino.fxh", std::string((const char*)data, size) });
@@ -37,7 +37,7 @@ void ShaderManager::initialize(const Settings& settings)
     {
         static const unsigned char data[] =
         {
-#include "Resource/LuminoForward.fxh.h"
+#include "Resource/LuminoForward.fxh.inl"
         };
         static const size_t size = LN_ARRAY_SIZE_OF(data);
         m_builtinShaderList.push_back({ "LuminoForward.fxh", std::string((const char*)data, size) });
@@ -47,7 +47,7 @@ void ShaderManager::initialize(const Settings& settings)
     {
         static const unsigned char data[] =
         {
-#include "Resource/LuminoPBR.fxh.h"
+#include "Resource/LuminoPBR.fxh.inl"
         };
         static const size_t size = LN_ARRAY_SIZE_OF(data);
         m_builtinShaderList.push_back({ "LuminoPBR.fxh", std::string((const char*)data, size) });
@@ -57,7 +57,7 @@ void ShaderManager::initialize(const Settings& settings)
     {
         static const unsigned char data[] =
         {
-#include "Resource/LuminoShadow.fxh.h"
+#include "Resource/LuminoShadow.fxh.inl"
         };
         static const size_t size = LN_ARRAY_SIZE_OF(data);
         m_builtinShaderList.push_back({ "LuminoShadow.fxh", std::string((const char*)data, size) });
@@ -67,7 +67,7 @@ void ShaderManager::initialize(const Settings& settings)
     {
         static const unsigned char data[] =
         {
-#include "Resource/LuminoSkinning.fxh.h"
+#include "Resource/LuminoSkinning.fxh.inl"
         };
         static const size_t size = LN_ARRAY_SIZE_OF(data);
         m_builtinShaderList.push_back({ "LuminoSkinning.fxh", std::string((const char*)data, size) });

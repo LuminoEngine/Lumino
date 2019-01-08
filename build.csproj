@@ -24,6 +24,7 @@
     <Compile Include="tools/LuminoBuild/Tasks/MakeVSProjects.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildEngine_MSVC.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildDocuments.cs" />
+    <Compile Include="tools/LuminoBuild/Tasks/BuildEmbeddedResources.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildEngine_Linux.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildEngine_macOS.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildEngine_iOS.cs" />

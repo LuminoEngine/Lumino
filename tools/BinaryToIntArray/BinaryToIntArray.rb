@@ -9,5 +9,5 @@ for i in 0...binary.size
   output += "\n" if (i > 0) and (i % 16 == 15)
 end
 
-open(ARGV[0] + ".h", "w") { |file| file.write(output) }
+open(ARGV[0] + ".inl", "w") { |file| file.write(output) }
 

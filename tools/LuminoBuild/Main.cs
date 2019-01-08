@@ -12,7 +12,7 @@ namespace LuminoBuild
             // default
             if (args.Length == 0)
             {
-                args = new string[] { "MakeVSProjects" };
+                args = new string[] { "MakePackage" };
             }
 
             Assembly thisAssembly = Assembly.GetEntryAssembly();
@@ -47,6 +47,7 @@ namespace LuminoBuild
             builder.Tasks.Add(new Tasks.BuildEngine_macOS());
             builder.Tasks.Add(new Tasks.BuildEngine_iOS());
             builder.Tasks.Add(new Tasks.BuildDocuments());
+            builder.Tasks.Add(new Tasks.BuildEmbeddedResources());
             builder.Tasks.Add(new Tasks.BuildEngine_MSVC());
             builder.Tasks.Add(new Tasks.CompressPackage());
             builder.Tasks.Add(new Tasks.CopyEngineLibsToRepoRoot());
