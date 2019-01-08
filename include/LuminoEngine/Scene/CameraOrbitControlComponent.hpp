@@ -49,6 +49,7 @@ private:
     void handleMouseMoveRotate(const Vector2& mousePos);
     void handleMouseMoveDolly(const Vector2& mousePos);
     void handleMouseMovePan(const Vector2& mousePos);
+    void handleMouseWheel(int delta);
     void rotateLeft(float angle);
     void rotateUp(float angle);
     void dollyIn(float dollyScale);

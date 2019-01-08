@@ -75,6 +75,12 @@ void CameraOrbitControlComponent::handleUIEvent(UIEventArgs* e)
     {
         m_state = State::None;
     }
+    else if (e->type() == UIEvents::MouseWheelEvent)
+    {
+        auto me = static_cast<UIMouseWheelEventArgs*>(e);
+        handleMouseWheel(me->getDelta());
+        e->handled = true;
+    }
 }
 
 void CameraOrbitControlComponent::startRotate(const Vector2& mousePos)
@@ -139,6 +145,18 @@ void CameraOrbitControlComponent::handleMouseMovePan(const Vector2& mousePos)
     pan(m_panDelta.x, m_panDelta.y);
 
     m_panStart = m_panEnd;
+
+    update();
+}
+
+void CameraOrbitControlComponent::handleMouseWheel(int delta)
+{
+    if (delta < 0) {
+        dollyOut(zoomScale());
+    }
+    else if (delta > 0) {
+        dollyIn(zoomScale());
+    }
 
     update();
 }

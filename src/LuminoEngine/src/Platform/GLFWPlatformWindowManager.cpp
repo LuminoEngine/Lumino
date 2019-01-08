@@ -227,7 +227,8 @@ void GLFWPlatformWindow::initialize(const WindowCreationSettings& settings)
 	glfwSetKeyCallback(m_glfwWindow, window_key_callback);
 	glfwSetMouseButtonCallback(m_glfwWindow, window_mouseButton_callback);
 	glfwSetCursorPosCallback(m_glfwWindow, window_mousePos_callback);
-	
+    glfwSetScrollCallback(m_glfwWindow, window_scroll_callback);
+
     glfwSetWindowCenter(m_glfwWindow);
 
 	//GLFWmonitor* primary = glfwGetPrimaryMonitor();
@@ -413,6 +414,12 @@ void GLFWPlatformWindow::window_mousePos_callback(GLFWwindow* window, double xpo
 #else
 	LN_NOTIMPLEMENTED();
 #endif
+}
+
+void GLFWPlatformWindow::window_scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    GLFWPlatformWindow* thisWindow = (GLFWPlatformWindow*)glfwGetWindowUserPointer(window);
+    thisWindow->sendEventToAllListener(PlatformEventArgs::makeMouseWheelEvent(thisWindow, yoffset));
 }
 
 ModifierKeys GLFWPlatformWindow::glfwKeyModToLNKeyMod(int mods)
