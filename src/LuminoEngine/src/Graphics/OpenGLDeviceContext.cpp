@@ -1642,7 +1642,7 @@ bool GLSLShader::create(const byte_t* code, int length, GLenum type, ShaderCompi
         (const GLchar*)code,
     };
 
-	GLint codeSize[2] = {
+	GLint codeSize[] = {
         //strlen(extcode),
         length,
     };

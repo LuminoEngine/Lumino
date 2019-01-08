@@ -16,7 +16,6 @@ if (MSVC)
     add_definitions("/wd4996")        # pragma warning disable
 endif()
 
-
 #-------------------------------------------------------------------------------
 macro(ln_make_external_find_path varName projectDirName)
     if(DEFINED LN_EXTERNAL_FIND_PATH_MODE)
@@ -28,11 +27,11 @@ macro(ln_make_external_find_path varName projectDirName)
     endif()
 endmacro()
 
-
 #--------------------------------------
 # glfw
 if (LN_OS_DESKTOP)
-    set(GLFW_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/glfw)
+    ln_make_external_find_path(GLFW_ROOT glfw)
+
     find_library(GLFW_LIBRARY_RELEASE NAMES glfw3 libglfw3 PATHS ${GLFW_ROOT} PATH_SUFFIXES lib)
     find_library(GLFW_LIBRARY_DEBUG NAMES glfw3 libglfw3 PATHS ${GLFW_ROOT} PATH_SUFFIXES lib)
 
@@ -44,21 +43,16 @@ endif()
 
 #--------------------------------------
 # glad
-if (LN_OS_DESKTOP)# OR LN_EMSCRIPTEN)
+if (LN_OS_DESKTOP)
+    ln_make_external_find_path(GLAD_ROOT glad)
+
+    find_library(GLAD_LIBRARY_RELEASE NAMES glad libglad PATHS ${GLAD_ROOT} PATH_SUFFIXES lib)
+    find_library(GLAD_LIBRARY_DEBUG NAMES gladd libgladd PATHS ${GLAD_ROOT} PATH_SUFFIXES lib)
 
     set(LIB_NAME GLAD)
     add_library(${LIB_NAME} STATIC IMPORTED)
-
-    #if (LN_EMSCRIPTEN)
-        # reference to installed libs by "build.csproj"
-    #    set(GLAD_ROOT ${EMSCRIPTEN_ROOT_PATH}/system)
-    #else()
-        set(GLAD_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/glad)
-        find_library(GLAD_LIBRARY_RELEASE NAMES glad libglad PATHS ${GLAD_ROOT} PATH_SUFFIXES lib)
-        find_library(GLAD_LIBRARY_DEBUG NAMES gladd libgladd PATHS ${GLAD_ROOT} PATH_SUFFIXES lib)
-        set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
-        set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
-    #endif()
+    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
+    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
 
     set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${${LIB_NAME}_ROOT}/include)
 endif()
@@ -112,8 +106,6 @@ set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${PNG
 if (LN_OS_DESKTOP)
 
     ln_make_external_find_path(GLSLANG_ROOT glslang)
-    #set(GLSLANG_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/glslang)
-    #set(CMAKE_PREFIX_PATH ${GLSLANG_ROOT})        # for Linux
 
     find_library(glslang_LIBRARY_RELEASE NAMES libglslang glslang PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
     find_library(glslang_LIBRARY_DEBUG NAMES libglslangd glslangd PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
@@ -171,7 +163,6 @@ endif()
 # SPIRV-Cross
 if (LN_OS_DESKTOP)
     ln_make_external_find_path(SPIRV-Cross_ROOT SPIRV-Cross)
-    #set(SPIRV-Cross_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/SPIRV-Cross)
 
     find_library(spirv-cross-core_LIBRARY_RELEASE NAMES spirv-cross-core PATHS ${SPIRV-Cross_ROOT} PATH_SUFFIXES lib)
     find_library(spirv-cross-core_LIBRARY_DEBUG NAMES spirv-cross-core PATHS ${SPIRV-Cross_ROOT} PATH_SUFFIXES lib)
