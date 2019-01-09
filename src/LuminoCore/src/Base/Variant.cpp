@@ -13,6 +13,10 @@ Variant::Variant()
 	: m_type(VariantType::Null)
 {}
 
+Variant::Variant(nullptr_t)
+	: Variant()
+{}
+
 Variant::Variant(bool value)
 	: m_type(VariantType::Bool)
 	, v_Bool(value)

@@ -36,6 +36,7 @@ public:
 	static const Variant Empty;
 
 	Variant();
+	Variant(nullptr_t);
 	Variant(bool value);
 	Variant(Char value);
 	Variant(int8_t value);
