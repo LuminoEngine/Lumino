@@ -287,3 +287,15 @@ set_target_properties(BulletDynamics PROPERTIES IMPORTED_LOCATION_DEBUG "${Bulle
 add_library(BulletSoftBody STATIC IMPORTED)
 set_target_properties(BulletSoftBody PROPERTIES IMPORTED_LOCATION_RELEASE "${BulletSoftBody_LIBRARY_RELEASE}")
 set_target_properties(BulletSoftBody PROPERTIES IMPORTED_LOCATION_DEBUG "${BulletSoftBody_LIBRARY_DEBUG}")
+
+#--------------------------------------
+# pcre
+ln_make_external_find_path(pcre_ROOT "pcre")
+
+find_library(pcre_LIBRARY_RELEASE NAMES pcre2-16 libpcre2-16 PATHS ${pcre_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(pcre_LIBRARY_DEBUG NAMES pcre2-16d libpcre2-16d PATHS ${pcre_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+
+add_library(pcre STATIC IMPORTED)
+set_target_properties(pcre PROPERTIES IMPORTED_LOCATION_RELEASE "${pcre_LIBRARY_RELEASE}")
+set_target_properties(pcre PROPERTIES IMPORTED_LOCATION_DEBUG "${pcre_LIBRARY_DEBUG}")
+set_target_properties(pcre PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${pcre_ROOT}/include)

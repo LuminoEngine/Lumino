@@ -30,7 +30,7 @@ namespace LuminoBuild.Tasks
             Directory.SetCurrentDirectory(reposDir);
 
             var repoRoot = Path.Combine(reposDir, "llvm");
-            var packageDir = Path.Combine(builder.LuminoBuildDir, "LLVMPackage");
+            var packageDir = Path.Combine(reposDir, "LLVMPackage");
             BuildProject(repoRoot, Path.Combine(repoRoot, "_Build-Debug"), Path.Combine(packageDir, "Debug"), "Debug");
             BuildProject(repoRoot, Path.Combine(repoRoot, "_Build-Release"), Path.Combine(packageDir, "Release"), "Release");
         }

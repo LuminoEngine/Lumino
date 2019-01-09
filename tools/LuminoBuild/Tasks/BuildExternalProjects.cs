@@ -229,7 +229,19 @@ namespace LuminoBuild.Tasks
                 Utils.CallProcess("git", "checkout f37fed32f3eb0912cc10a970f78774cd98598ef6");
                 Directory.SetCurrentDirectory(reposDir);
             }
-
+            if (!Directory.Exists("Streams"))
+            {
+                Utils.CallProcess("git", "clone --progress https://github.com/jscheiny/Streams.git Streams");
+                Directory.SetCurrentDirectory("Streams");
+                Utils.CallProcess("git", "checkout 8fc0657b977cfd8f075ad0afb4dca3800630b56c");
+                Directory.SetCurrentDirectory(reposDir);
+            }
+            if (!Directory.Exists("pcre"))
+            {
+                Utils.DownloadFile("ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre2-10.31.zip", "pcre2-10.31.zip");
+                Utils.ExtractZipFile("pcre2-10.31.zip", reposDir, true);
+                Directory.Move("pcre2-10.31", "pcre");
+            }
 
             const string bulletOptions = "-DBUILD_BULLET2_DEMOS=OFF -DBUILD_CLSOCKET=OFF -DBUILD_CPU_DEMOS=OFF -DBUILD_ENET=OFF -DBUILD_EXTRAS=OFF -DBUILD_OPENGL3_DEMOS=OFF -DBUILD_UNIT_TESTS=OFF -DINSTALL_LIBS=ON";
 
@@ -249,6 +261,7 @@ namespace LuminoBuild.Tasks
                         BuildProjectAndroid(builder, "ogg", reposDir, target.ABI, target.BuildType);
                         BuildProjectAndroid(builder, "vorbis", reposDir, target.ABI, target.BuildType, $"-DOGG_ROOT={oggInstallDir} -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH");
                         BuildProjectAndroid(builder, "bullet3", reposDir, target.ABI, target.BuildType, bulletOptions);
+                        BuildProjectAndroid(builder, "pcre", reposDir, target.ABI, target.BuildType, "-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF");
                     }
                 }
 
@@ -265,6 +278,7 @@ namespace LuminoBuild.Tasks
                     BuildProjectEm(builder, "ogg", reposDir, "Emscripten");
                     BuildProjectEm(builder, "vorbis", reposDir, "Emscripten", $"-DOGG_ROOT={oggInstallDir} -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH");
                     BuildProjectEm(builder, "bullet3", reposDir, "Emscripten", bulletOptions);
+                    BuildProjectEm(builder, "bullet3", reposDir, "Emscripten", "-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF");
                 }
 
                 // Visual C++
@@ -285,6 +299,7 @@ namespace LuminoBuild.Tasks
                     BuildProject(builder, "ogg", target.BuildType, reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
                     BuildProject(builder, "vorbis", target.BuildType, reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DOGG_ROOT={oggInstallDir}");
                     BuildProject(builder, "bullet3", target.BuildType, reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} " + bulletOptions);
+                    BuildProject(builder, "pcre", target.BuildType, reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF");
                 }
             }
             else
@@ -313,6 +328,7 @@ namespace LuminoBuild.Tasks
                         BuildProject(builder, "ogg", t.Config, reposDir, dirName, generator, args);
                         BuildProject(builder, "vorbis", t.Config, reposDir, dirName, generator, $"-DOGG_ROOT={oggInstallDir} -DCMAKE_IOS_DEVELOPER_ROOT={builder.LuminoBuildDir} " + args);
                         BuildProject(builder, "bullet3", t.Config, reposDir, dirName, generator, $"{bulletOptions} " + args);
+                        BuildProject(builder, "pcre", t.Config, reposDir, dirName, generator, $"-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF " + args);
                     }
                 }
 
@@ -345,6 +361,7 @@ namespace LuminoBuild.Tasks
                     BuildProject(builder, "ogg", t.Config, reposDir, dirName, generator, args);
                     BuildProject(builder, "vorbis", t.Config, reposDir, dirName, generator, $"-DOGG_ROOT={oggInstallDir} " + args);
                     BuildProject(builder, "bullet3", t.Config, reposDir, dirName, generator, $"{bulletOptions} " + args);
+                    BuildProject(builder, "pcre", t.Config, reposDir, dirName, generator, $"-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF " + args);
                 }
             }
         }

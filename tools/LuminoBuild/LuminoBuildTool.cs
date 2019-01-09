@@ -369,9 +369,9 @@ namespace LuminoBuild
         /// <summary>
         /// フォルダから .zip を作る
         /// </summary>
-        public static void ExtractZipFile(string zipFilePath, string dirPath)
+        public static void ExtractZipFile(string zipFilePath, string dirPath, bool force = false)
         {
-            if (!Directory.Exists(dirPath))
+            if (!Directory.Exists(dirPath) || force)
             {
                 ZipFile.ExtractToDirectory(zipFilePath, dirPath);
             }

@@ -14,6 +14,7 @@ set(LN_SOURCES
 	Test_Base_Logger.cpp
 	Test_Base_Optional.cpp
 	Test_Base_RefObject.cpp
+	Test_Base_Regex.cpp
 	Test_Base_String.cpp
 	Test_Base_StringRef.cpp
 	Test_Base_Variant.cpp
