@@ -155,26 +155,26 @@ int main(int argc, char** argv)
     //auto sprite = newObject<UISprite>();
     //sprite->setTexture(tex);
     //sprite->setPosition(20, 10);
-    //auto imageEffect = newObject<ScreenBlurImageEffect>();
-    //imageEffect->setAmount(0.7);
-    //imageEffect->setRadialScale(1.05);
-    //Engine::mainViewport()->addImageEffect(imageEffect);
+    auto imageEffect = newObject<ScreenBlurImageEffect>();
+    imageEffect->setAmount(0.7);
+    imageEffect->setRadialScale(1.05);
+    Engine::mainViewport()->addImageEffect(imageEffect);
 
-    //auto sprite = Sprite::create(3, 3, tex);
+    auto sprite = Sprite::create(3, 3, tex);
 
     //auto tilemap = newObject<Tilemap>();
     //tilemap->setShadingModel(ShadingModel::UnLighting);
 
 
 
-    //auto ToneLayer = ToneImageEffect::create();
-    //Engine::mainViewport()->addImageEffect(ToneLayer);
+    auto ToneLayer = ToneImageEffect::create();
+    Engine::mainViewport()->addImageEffect(ToneLayer);
 
     //auto ToneLayer2 = ToneImageEffect::create();
     //Engine::mainViewport()->addImageEffect(ToneLayer2);
 
-    //auto BlurLayer = ScreenBlurImageEffect::create();
-    //Engine::mainViewport()->addImageEffect(BlurLayer);
+    auto BlurLayer = ScreenBlurImageEffect::create();
+    Engine::mainViewport()->addImageEffect(BlurLayer);
 
     //auto texture2 = Texture2D::create(100, 100);
     //texture2->clear(Color::Gray);

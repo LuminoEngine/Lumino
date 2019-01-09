@@ -16,9 +16,6 @@ namespace detail {
 ImageEffectRenderer::ImageEffectRenderer()
     : m_manager(detail::EngineDomain::renderingManager())
 {
-    m_blitMaterial = newObject<Material>();
-    auto shader = newObject<Shader>(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ToneImageEffect.fx");
-    m_blitMaterial->setShader(shader);
 }
 
 void ImageEffectRenderer::addImageEffect(ImageEffect* effect)
@@ -65,8 +62,7 @@ void ImageEffectRenderer::render(RenderingContext* context, RenderTargetTexture*
 
         context->resetState();
 
-        m_blitMaterial->setMainTexture(primaryTarget); // TODO: blit が source 指定未対応なので
-        context->blit(nullptr, inout, m_blitMaterial);
+        context->blit(primaryTarget, inout);
 
         context->popState();
 
