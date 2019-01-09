@@ -32,6 +32,9 @@ option(LN_BUILD_TESTS "build unit test projects." ON)
 # build tool projects
 option(LN_BUILD_TOOLS "build tool projects." ON)
 
+# build language bindings projects
+option(LN_BUILD_BINDINGS "build language bindings." OFF)
+
 # build only LuminoCore.
 option(LN_BUILD_CORE_ONLY "build only LuminoCore." OFF)
 
@@ -109,10 +112,14 @@ else()
     include(external/ImportExternalLibraries.cmake)
     add_subdirectory(src/LuminoCore)
     add_subdirectory(src/LuminoEngine)
+endif()
+
     
-    if (LN_BUILD_TOOLS)
-        add_subdirectory(tools/LuminoCLI)
-    endif()
+if (LN_BUILD_TOOLS)
+    add_subdirectory(tools/LuminoCLI)
+endif()
+if (LN_BUILD_BINDINGS)
+    add_subdirectory(tools/lumino-wg)
 endif()
 
 if (LN_OS_DESKTOP)

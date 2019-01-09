@@ -12,14 +12,14 @@ namespace LuminoBuild
             // default
             if (args.Length == 0)
             {
-                args = new string[] { "MakePackage" };
+                args = new string[] { "BuildExternalProjects" };
             }
 
             Assembly thisAssembly = Assembly.GetEntryAssembly();
             string exeDir = Path.GetDirectoryName(thisAssembly.Location);
 
             var builder = new LuminoBuild.Builder();
-
+            builder.Args = args;
 
             builder.LuminoRootDir = Path.GetFullPath(Path.Combine(exeDir, "../../../../../../")) + "/";
             builder.LuminoBuildDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "build"));

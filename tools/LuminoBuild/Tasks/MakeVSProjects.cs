@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Linq;
 using LuminoBuild;
 
 namespace LuminoBuild.Tasks
@@ -20,17 +21,23 @@ namespace LuminoBuild.Tasks
     {
         public static CMakeTargetInfo[] Targets = new CMakeTargetInfo[]
         {
-            // for Native Engine
+            // static runtime
             new CMakeTargetInfo { DirName = "MSVC2017-x86-MT", BuildType = "Debug", VSTarget = "Visual Studio 15", Platform="Win32", MSVCStaticRuntime = "ON", AdditionalOptions="" },
             new CMakeTargetInfo { DirName = "MSVC2017-x86-MT", BuildType = "Release", VSTarget = "Visual Studio 15", Platform="Win32", MSVCStaticRuntime = "ON", AdditionalOptions="" },
-
-            // for Nuget (LuminoCore only)
-            new CMakeTargetInfo { DirName = "MSVC2017-x86-MD", BuildType = "Debug", VSTarget = "Visual Studio 15", Platform="Win32", MSVCStaticRuntime = "OFF", AdditionalOptions = "-DLN_BUILD_CORE_ONLY=ON" },
-            new CMakeTargetInfo { DirName = "MSVC2017-x86-MD", BuildType = "Release", VSTarget = "Visual Studio 15", Platform="Win32", MSVCStaticRuntime = "OFF", AdditionalOptions = "-DLN_BUILD_CORE_ONLY=ON" },
+            
+            // dynamic runtime
+            new CMakeTargetInfo { DirName = "MSVC2017-x86-MD", BuildType = "Debug", VSTarget = "Visual Studio 15", Platform="Win32", MSVCStaticRuntime = "OFF", AdditionalOptions = "" },
+            new CMakeTargetInfo { DirName = "MSVC2017-x86-MD", BuildType = "Release", VSTarget = "Visual Studio 15", Platform="Win32", MSVCStaticRuntime = "OFF", AdditionalOptions = "" },
             new CMakeTargetInfo { DirName = "MSVC2017-x64-MD", BuildType = "Debug", VSTarget = "Visual Studio 15 Win64", Platform="x64", MSVCStaticRuntime = "OFF", AdditionalOptions = "-DLN_BUILD_CORE_ONLY=ON" },
             new CMakeTargetInfo { DirName = "MSVC2017-x64-MD", BuildType = "Release", VSTarget = "Visual Studio 15 Win64", Platform="x64", MSVCStaticRuntime = "OFF", AdditionalOptions = "-DLN_BUILD_CORE_ONLY=ON" },
         };
-        
+
+        //public static CMakeTargetInfo[] BindingBuildTargets = new CMakeTargetInfo[]
+        //{
+        //    new CMakeTargetInfo { DirName = "MSVC2017-x86-MD", BuildType = "Debug", VSTarget = "Visual Studio 15", Platform="Win32", MSVCStaticRuntime = "OFF", AdditionalOptions = "-DLN_BUILD_BINDINGS=ON" },
+        //    new CMakeTargetInfo { DirName = "MSVC2017-x86-MD", BuildType = "Release", VSTarget = "Visual Studio 15", Platform="Win32", MSVCStaticRuntime = "OFF", AdditionalOptions = "-DLN_BUILD_BINDINGS=ON" },
+        //};
+
         public override string CommandName { get { return "MakeVSProjects"; } }
 
         public override string Description { get { return "Make visual studio projects."; } }
@@ -49,6 +56,12 @@ namespace LuminoBuild.Tasks
                     Directory.SetCurrentDirectory(Path.Combine(builder.LuminoBuildDir, targetName));
 
                     var installDir = Path.Combine(builder.LuminoRootDir, "build", BuildEnvironment.CMakeTargetInstallDir, targetName);
+
+                    var additional = "";
+                    if (builder.Args.Contains("--enable-bindings") && t.MSVCStaticRuntime == "OFF" && t.Platform == "Win32")
+                    {
+                        additional += " -DLN_BUILD_BINDINGS=ON";
+                    }
                     
                     var args = new string[]
                     {
@@ -60,7 +73,7 @@ namespace LuminoBuild.Tasks
                         $"-DLN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=ON",
                         $"-DLN_TARGET_ARCH={t.DirName}",
                         $"-DCMAKE_BUILD_TYPE={t.BuildType}",
-                        t.AdditionalOptions,
+                        t.AdditionalOptions + additional,
                         $" ../..",
                     };
 

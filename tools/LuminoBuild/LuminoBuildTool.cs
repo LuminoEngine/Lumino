@@ -36,6 +36,7 @@ namespace LuminoBuild
         public string LuminoExternalDir;
         public List<BuildTask> Tasks = new List<BuildTask>();
         public List<BuildRule> Rules = new List<BuildRule>();
+        public string[] Args;
 
         public string LocalPackageName
         {

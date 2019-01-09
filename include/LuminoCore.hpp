@@ -21,6 +21,7 @@
 #include "LuminoCore/Base/StringHelper.hpp"
 #include "LuminoCore/Base/Uuid.hpp"
 #include "LuminoCore/Base/Variant.hpp"
+#include "LuminoCore/Base/Regex.hpp"
 
 #include "LuminoCore/IO/Common.hpp"
 #include "LuminoCore/IO/BinaryReader.hpp"
