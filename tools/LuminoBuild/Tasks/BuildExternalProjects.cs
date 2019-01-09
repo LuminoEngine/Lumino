@@ -44,8 +44,6 @@ namespace LuminoBuild.Tasks
             Utils.CallProcess("cmake", string.Join(' ', args));
             Utils.CallProcess("cmake", $"--build . --config {buildType}");
             Utils.CallProcess("cmake", $"--build . --config {buildType} --target install");
-            //Utils.CallProcess("cmake", "--build . --config Release");
-            //Utils.CallProcess("cmake", "--build . --config Release --target install");
 
             /*
                 MSVC と Xcode は Debug,Release の 2 つの構成をもつプロジェクトが出力される。

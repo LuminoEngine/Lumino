@@ -32,6 +32,7 @@
     <Compile Include="tools/LuminoBuild/Tasks/BuildEngine_AndroidJNI.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildEngine_Emscripten.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildExternalProjects.cs" />
+    <Compile Include="tools/LuminoBuild/Tasks/BuildLLVM.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/MakeReleasePackage.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/MakeInstaller_Win32.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/CompressPackage.cs" />
