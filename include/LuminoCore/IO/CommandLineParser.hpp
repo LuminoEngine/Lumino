@@ -18,6 +18,9 @@ enum class CommandLineOptionFlags
 
     /** オプションをフラグとして扱います。フラグは値を持ちません。 */
     Flag = 0x0001,
+
+	/** オプションを省略可能とします。 */
+	Optional = 0x0002,
 };
 LN_FLAGS_OPERATORS(CommandLineOptionFlags);
 
@@ -48,6 +51,7 @@ public:
     void setNamedValues(const List<String>& values) { m_namedValues = values; }
     void setDefaultValue(const String& value) { m_defaultValue = value; }
     void setFlags(CommandLineOptionFlags value) { m_flags = value; }
+	CommandLineOptionFlags flags() const { return m_flags; }
 
     bool isSet() const { return m_isSet; }
     bool hasValue() const { return !m_values.isEmpty(); }
@@ -64,7 +68,7 @@ private:
     void set(bool value) { m_isSet = value; }
     bool isFlagOption() const { return testFlag(m_flags, CommandLineOptionFlags::Flag); }
     bool isValueOption() const { return !testFlag(m_flags, CommandLineOptionFlags::Flag); }
-    bool isRequired() const { return isValueOption() && m_defaultValue.isEmpty(); }
+    bool isRequired() const { return !testFlag(m_flags, CommandLineOptionFlags::Optional); }
 
     void makeDislayParamsName(String* shortName, String* longName) const;
 

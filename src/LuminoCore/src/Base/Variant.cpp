@@ -13,7 +13,7 @@ Variant::Variant()
 	: m_type(VariantType::Null)
 {}
 
-Variant::Variant(nullptr_t)
+Variant::Variant(std::nullptr_t)
 	: Variant()
 {}
 

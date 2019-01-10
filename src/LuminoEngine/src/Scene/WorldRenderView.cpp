@@ -144,15 +144,14 @@ void WorldRenderView::createGridPlane()
     m_gridPlane = newObject<StaticMeshModel>();
     m_gridPlane->addMeshContainer(meshContainer);
 
-#if 0
-    static const byte_t shaderCode[] =
-    {
-#include "Scene/Resource/InfinitePlaneGrid.lfx.h"
-    };
-    static const size_t shaderCodeLen = LN_ARRAY_SIZE_OF(shaderCode);
-    auto shader = Ref<Shader>::makeRef();
-    shader->initialize(gm, shaderCode, shaderCodeLen);
-    m_gridPlane->getMaterial(0)->setShader(shader);
+#if 1
+	static const unsigned char data[] =
+	{
+#include "../Rendering/Resource/InfinitePlaneGrid.lcfx.inl"
+	};
+	static const size_t size = LN_ARRAY_SIZE_OF(data);
+	MemoryStream stream(data, size);
+	auto shader = newObject<Shader>(u"InfinitePlaneGrid", &stream);
 #else
     auto shader = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/InfinitePlaneGrid.fx");
 #endif

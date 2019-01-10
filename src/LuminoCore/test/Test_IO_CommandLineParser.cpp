@@ -6,6 +6,19 @@
 //# CommandLineParser
 class Test_IO_CommandLineParser : public ::testing::Test { };
 
+//# Requested defaults
+TEST_F(Test_IO_CommandLineParser, RequestedDefaults)
+{
+	//# CommandLineOption is Optional
+	{
+		ln::CommandLineParser parser;
+		auto* forceOption = parser.addFlagOption(u"f", u"force", u"force operation.");
+		auto* sizeOption = parser.addValueOption(u"", u"size", u"buffer size.");
+		ASSERT_EQ(true, testFlag(forceOption->flags(), CommandLineOptionFlags::Optional));
+		ASSERT_EQ(true, testFlag(sizeOption->flags(), CommandLineOptionFlags::Optional));
+	}
+}
+
 //# simple example
 TEST_F(Test_IO_CommandLineParser, SimpleOptions)
 {

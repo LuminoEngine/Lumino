@@ -223,7 +223,7 @@ int main(int argc, char** argv)
 	{
 		argv[0],
 		"--gtest_break_on_failure",
-		//"--gtest_filter=Test_Base_List.*",
+		//"--gtest_filter=Test_IO_CommandLineParser.*",
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 

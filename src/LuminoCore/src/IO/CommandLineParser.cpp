@@ -156,7 +156,7 @@ CommandLineOption* CommandLineCommandBase::addFlagOptionInternal(const StringRef
     option->setShortName(shortName);
     option->setLongName(longName);
     option->setDescription(description);
-    option->setFlags(CommandLineOptionFlags::Flag);
+    option->setFlags(CommandLineOptionFlags::Flag | CommandLineOptionFlags::Optional);
     m_options.add(option);
     return option;
 }
@@ -168,7 +168,7 @@ CommandLineOption* CommandLineCommandBase::addValueOptionInternal(const StringRe
     option->setLongName(longName);
     option->setDescription(description);
     option->setDefaultValue(defaultValue);
-    option->setFlags(CommandLineOptionFlags::None);
+    option->setFlags(CommandLineOptionFlags::Optional);
     m_options.add(option);
     return option;
 }
@@ -181,7 +181,7 @@ CommandLineOption* CommandLineCommandBase::addNamedValueOptionInternal(const Str
     option->setDescription(description);
     option->setNamedValues(namedValues);
     option->setDefaultValue(defaultValue);
-    option->setFlags(CommandLineOptionFlags::None);
+    option->setFlags(CommandLineOptionFlags::Optional);
     m_options.add(option);
     return option;
 }
