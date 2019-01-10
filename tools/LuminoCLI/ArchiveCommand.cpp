@@ -52,6 +52,13 @@ int ArchiveCommand::execute(Project* project)
         CLI::info(u"Copy to " + dst);
     }
 
+	// Windows
+	{
+		auto dst = ln::Path::combine(project->windowsProjectDir(), u"Assets.lca");
+		ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
+		CLI::info(u"Copy to " + dst);
+	}
+
     CLI::info(u"Compilation succeeded.");
 
     return 0;

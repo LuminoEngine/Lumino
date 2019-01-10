@@ -40,6 +40,13 @@ void AssetManager::addAssetArchive(const StringRef& filePath, const StringRef& p
     m_archives.add(archive);
 }
 
+void AssetManager::addAssetDirectory(const StringRef& path)
+{
+	auto archive = makeRef<FileSystemReader>();
+	archive->setRootPath(path);
+	m_archives.add(archive);
+}
+
 bool AssetManager::existsFile(const StringRef& filePath) const
 {
     auto unifiedFilePath = Path(filePath).unify();

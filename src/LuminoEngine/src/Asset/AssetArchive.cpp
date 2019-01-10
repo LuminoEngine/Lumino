@@ -389,6 +389,33 @@ void CryptedArchiveFileStream::flush()
 {
 }
 
+
+//=============================================================================
+// FileSystemReader
+
+FileSystemReader::FileSystemReader()
+{
+}
+
+void FileSystemReader::setRootPath(const StringRef& path)
+{
+	m_rootPath = Path(path);
+}
+
+void FileSystemReader::close()
+{
+}
+
+bool FileSystemReader::existsFile(const Path& unifiedFilePath) const
+{
+	return FileSystem::existsFile(Path(m_rootPath, unifiedFilePath));
+}
+
+Ref<Stream> FileSystemReader::openFileStream(const Path& unifiedFilePath)
+{
+	return FileStream::create(Path(m_rootPath, unifiedFilePath), FileOpenMode::Read);
+}
+
 } // namespace detail
 } // namespace ln
 

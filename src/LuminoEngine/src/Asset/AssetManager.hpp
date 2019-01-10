@@ -20,6 +20,7 @@ public:
 	void dispose();
 
     void addAssetArchive(const StringRef& filePath, const StringRef& password);
+	void addAssetDirectory(const StringRef& path);
 
 	bool existsFile(const StringRef& filePath) const;
     Ref<Stream> openFileStream(const StringRef& filePath);

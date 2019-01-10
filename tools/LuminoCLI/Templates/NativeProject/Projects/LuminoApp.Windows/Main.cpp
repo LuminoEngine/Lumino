@@ -6,9 +6,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_ LPWSTR    lpCmdLine,
 	_In_ int       nCmdShow)
 {
-    //auto archive = ln::Path(ln::Path(ln::Environment::executablePath()).parent(), u"Assets.lca");
-    auto archive = ln::Path::combine(ln::Path(ln::Environment::executablePath()).parent().parent().parent().parent().parent(), u".ln", u"Assets.lca");
-    ln::Win32PlatformInterface::addAssetArchive(archive);
+	auto archive = u"Assets.lca";
+	if (ln::FileSystem::existsFile(archive)) {
+		ln::Win32PlatformInterface::addAssetArchive(archive);
+	}
+
     ln::Win32PlatformInterface::initialize();
 	return ln::Win32PlatformInterface::WinMain();
 }

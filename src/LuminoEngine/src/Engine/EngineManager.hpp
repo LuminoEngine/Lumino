@@ -45,6 +45,7 @@ struct EngineSettings
 	SizeI mainBackBufferSize = SizeI(640, 480);
 	String mainWindowTitle = _T("Lumino");
     List<EngineSettingsAssetArchiveEntry> assetArchives;
+	List<Path> assetDirectories;
 	bool standaloneFpsControl = false;
 	int frameRate = 60;
 };

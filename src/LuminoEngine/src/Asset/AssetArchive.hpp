@@ -112,5 +112,19 @@ private:
 	size_t m_position;
 };
 
+class FileSystemReader
+	: public AssetArchive
+{
+public:
+	FileSystemReader();
+	void setRootPath(const StringRef& path);
+	virtual void close();
+	virtual bool existsFile(const Path& unifiedFilePath) const;
+	virtual Ref<Stream> openFileStream(const Path& unifiedFilePath);
+
+private:
+	Path m_rootPath;
+};
+
 } // namespace detail
 } // namespace ln
