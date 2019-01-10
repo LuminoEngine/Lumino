@@ -107,6 +107,7 @@ namespace LuminoBuild.Tasks
                 "libpng",
                 "ogg",
                 "openal-soft",
+                "pcre",
                 "SDL2",
                 "SPIRV-Cross",
                 "vorbis",

@@ -94,6 +94,7 @@ int main(int argc, char** argv)
 	GlobalLogger::addStdErrAdapter();
 	detail::EngineDomain::engineManager()->settings().standaloneFpsControl = true;
 	Engine::initialize();
+	Engine::mainWindow()->freezeRender = false;
 
     auto ctl = newObject<CameraOrbitControlComponent>();
     Engine::mainCamera()->addComponent(ctl);

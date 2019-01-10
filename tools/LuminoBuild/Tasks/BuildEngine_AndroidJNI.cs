@@ -59,6 +59,7 @@ namespace LuminoBuild.Tasks
                     $"-DANDROID_STL=c++_shared",
                     $"-DCMAKE_TOOLCHAIN_FILE={BuildEnvironment.AndroidCMakeToolchain}",
                     $"-DCMAKE_MAKE_PROGRAM={BuildEnvironment.AndroidSdkNinja}",
+                    $"-DANDROID_NATIVE_API_LEVEL=26",
                     $"-G\"Android Gradle - Ninja\"",
                 };
 

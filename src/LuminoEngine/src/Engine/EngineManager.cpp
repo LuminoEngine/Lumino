@@ -451,8 +451,6 @@ void EngineManager::presentFrame()
 	else {
 		m_fpsController.processForMeasure();
 	}
-
-	std::cout << m_fpsController.getFps() << " : " << m_fpsController.getCapacityFps() << std::endl;
 }
 
 void EngineManager::resetFrameDelay()

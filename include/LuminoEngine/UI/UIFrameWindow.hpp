@@ -68,6 +68,7 @@ public:
 
     // TODO: inernal
     void updateLayout();
+	bool freezeRender = true;	// TODO: ProjectTemplate で使用している GraphicsContext を使った描画に影響でないようにする対策 
 
 LN_CONSTRUCT_ACCESS:
 	UIFrameWindow();

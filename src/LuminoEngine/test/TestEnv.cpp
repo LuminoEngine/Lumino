@@ -13,7 +13,7 @@ void TestEnv::setup()
 
 	Font::registerFontFile(LN_LOCALFILE("../../../tools/VLGothic/VL-Gothic-Regular.ttf"));
 	Engine::mainCamera()->setBackgroundColor(Color(0.5, 0.5, 0.5, 1.0));
-
+	Engine::mainWindow()->freezeRender = false;
 #ifdef LN_OS_WIN32
 	LuminoCLI = Path::combine(Path(ln::Environment::executablePath()).parent().parent().parent().parent(), u"tools", u"LuminoCLI", u"Debug", u"lumino-cli.exe");
 #else

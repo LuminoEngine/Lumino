@@ -262,14 +262,14 @@ set_target_properties(vorbisfile PROPERTIES IMPORTED_LOCATION_DEBUG "${vorbisfil
 # bullet
 ln_make_external_find_path(bullet3_ROOT "bullet3")
 
-find_library(LinearMath_LIBRARY_RELEASE NAMES LinearMath libLinearMath PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(LinearMath_LIBRARY_DEBUG NAMES LinearMath_Debug libLinearMath_Debug PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(BulletCollision_LIBRARY_RELEASE NAMES BulletCollision libBulletCollision PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(BulletCollision_LIBRARY_DEBUG NAMES BulletCollision_Debug libBulletCollision_Debug PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(BulletDynamics_LIBRARY_RELEASE NAMES BulletDynamics libBulletDynamics PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(BulletDynamics_LIBRARY_DEBUG NAMES BulletDynamics_Debug libBulletDynamics_Debug PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(BulletSoftBody_LIBRARY_RELEASE NAMES BulletSoftBody libBulletSoftBody PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(BulletSoftBody_LIBRARY_DEBUG NAMES BulletSoftBody_Debug libBulletSoftBody_Debug PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(LinearMath_LIBRARY_RELEASE NAMES LinearMath PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(LinearMath_LIBRARY_DEBUG NAMES LinearMath LinearMath_Debug PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(BulletCollision_LIBRARY_RELEASE NAMES BulletCollision PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(BulletCollision_LIBRARY_DEBUG NAMES BulletCollision BulletCollision_Debug PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(BulletDynamics_LIBRARY_RELEASE NAMES BulletDynamics PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(BulletDynamics_LIBRARY_DEBUG NAMES BulletDynamics BulletDynamics_Debug PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(BulletSoftBody_LIBRARY_RELEASE NAMES BulletSoftBody PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(BulletSoftBody_LIBRARY_DEBUG NAMES BulletSoftBody BulletSoftBody_Debug PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 
 add_library(LinearMath STATIC IMPORTED)
 set_target_properties(LinearMath PROPERTIES IMPORTED_LOCATION_RELEASE "${LinearMath_LIBRARY_RELEASE}")
@@ -293,7 +293,7 @@ set_target_properties(BulletSoftBody PROPERTIES IMPORTED_LOCATION_DEBUG "${Bulle
 ln_make_external_find_path(pcre_ROOT "pcre")
 
 find_library(pcre_LIBRARY_RELEASE NAMES pcre2-16 libpcre2-16 PATHS ${pcre_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(pcre_LIBRARY_DEBUG NAMES pcre2-16d libpcre2-16d PATHS ${pcre_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(pcre_LIBRARY_DEBUG NAMES pcre2-16 libpcre2-16 PATHS ${pcre_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 
 add_library(pcre STATIC IMPORTED)
 set_target_properties(pcre PROPERTIES IMPORTED_LOCATION_RELEASE "${pcre_LIBRARY_RELEASE}")
