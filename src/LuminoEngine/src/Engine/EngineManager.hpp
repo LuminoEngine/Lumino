@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <LuminoEngine/Engine/Common.hpp>
 #include <LuminoEngine/Graphics/GeometryStructs.hpp>
 #include <LuminoEngine/Platform/PlatformEvent.hpp>
 #include "FpsController.hpp"
@@ -41,6 +42,7 @@ struct EngineSettingsAssetArchiveEntry
 
 struct EngineSettings
 {
+    Flags<EngineFeature> features = EngineFeature::Public;
 	SizeI mainWindowSize = SizeI(640, 480);
 	SizeI mainBackBufferSize = SizeI(640, 480);
 	String mainWindowTitle = _T("Lumino");

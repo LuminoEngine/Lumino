@@ -92,9 +92,9 @@ int main(int argc, char** argv)
 #endif
 
 	GlobalLogger::addStdErrAdapter();
+    EngineSettings::setEngineFeatures(EngineFeature::Experimental);
 	detail::EngineDomain::engineManager()->settings().standaloneFpsControl = true;
 	Engine::initialize();
-	Engine::mainWindow()->freezeRender = false;
 
     auto ctl = newObject<CameraOrbitControlComponent>();
     Engine::mainCamera()->addComponent(ctl);
@@ -138,7 +138,7 @@ int main(int argc, char** argv)
 	//printf("");
 
 #if 1
-    auto font = Font::create(u"VL PGothic", 20);
+    //auto font = Font::create(u"VL PGothic", 20);
 
 	//auto light1 = AmbientLight::create();
  //   auto light2 = DirectionalLight::create();
@@ -156,10 +156,10 @@ int main(int argc, char** argv)
     //auto sprite = newObject<UISprite>();
     //sprite->setTexture(tex);
     //sprite->setPosition(20, 10);
-    auto imageEffect = newObject<ScreenBlurImageEffect>();
-    imageEffect->setAmount(0.7);
-    imageEffect->setRadialScale(1.05);
-    Engine::mainViewport()->addImageEffect(imageEffect);
+    //auto imageEffect = newObject<ScreenBlurImageEffect>();
+    //imageEffect->setAmount(0.7);
+    //imageEffect->setRadialScale(1.05);
+    //Engine::mainViewport()->addImageEffect(imageEffect);
 
     auto sprite = Sprite::create(3, 3, tex);
 
@@ -168,14 +168,14 @@ int main(int argc, char** argv)
 
 
 
-    auto ToneLayer = ToneImageEffect::create();
-    Engine::mainViewport()->addImageEffect(ToneLayer);
+    //auto ToneLayer = ToneImageEffect::create();
+    //Engine::mainViewport()->addImageEffect(ToneLayer);
 
     //auto ToneLayer2 = ToneImageEffect::create();
     //Engine::mainViewport()->addImageEffect(ToneLayer2);
 
-    auto BlurLayer = ScreenBlurImageEffect::create();
-    Engine::mainViewport()->addImageEffect(BlurLayer);
+    //auto BlurLayer = ScreenBlurImageEffect::create();
+    //Engine::mainViewport()->addImageEffect(BlurLayer);
 
     //auto texture2 = Texture2D::create(100, 100);
     //texture2->clear(Color::Gray);
@@ -198,19 +198,19 @@ int main(int argc, char** argv)
     //mesh3->setVisible(false);
 #endif
 
-    auto shape1 = BoxCollisionShape::create(5, 1, 5);
-    auto body1 = newObject<RigidBody>();
-    body1->addCollisionShape(shape1);
-    body1->setTransform(Matrix::makeTranslation(0, -3, 0));
+    //auto shape1 = BoxCollisionShape::create(5, 1, 5);
+    //auto body1 = newObject<RigidBody>();
+    //body1->addCollisionShape(shape1);
+    //body1->setTransform(Matrix::makeTranslation(0, -3, 0));
     //Engine::mainPhysicsWorld()->addPhysicsObject(body1);
 
 
-    auto shape2 = CapsuleCollisionShape::create(0.5, 3);
-    auto body2 = newObject<RigidBody>();
-    body2->addCollisionShape(shape2);
-    body2->setTransform(Matrix::makeTranslation(0, -2, 0));
-    body2->setMass(1.0f);
-    body2->setKinematic(true);
+    //auto shape2 = CapsuleCollisionShape::create(0.5, 3);
+    //auto body2 = newObject<RigidBody>();
+    //body2->addCollisionShape(shape2);
+    //body2->setTransform(Matrix::makeTranslation(0, -2, 0));
+    //body2->setMass(1.0f);
+    //body2->setKinematic(true);
     //Engine::mainPhysicsWorld()->addPhysicsObject(body2);
 
     //auto body3 = newObject<SoftBody>();
@@ -249,9 +249,9 @@ int main(int argc, char** argv)
 
 #if 0
     //auto sound = newObject<Sound>(u"D:\\tmp\\4_Battle_win.wav");
-    //auto sound = newObject<Sound>(u"D:/Music/momentum/02 - momentum.wav");
-    auto sound = newObject<Sound>(u"D:/Proj/Volkoff/Assets/Data/Sound/BGM/monochrome.ogg");
-    //sound->play();
+    auto sound = newObject<Sound>(u"D:/Music/momentum/02 - momentum.wav");
+    //auto sound = newObject<Sound>(u"D:/Proj/Volkoff/Assets/Data/Sound/BGM/monochrome.ogg");
+    sound->play();
     //sound->setPitch(1.2);
 
     //GameAudio::playBGM(u"D:/Proj/Volkoff/Assets/Data/Sound/BGM/monochrome.ogg");
@@ -277,18 +277,16 @@ int main(int argc, char** argv)
 
 
 
-    auto curve1 = KeyFrameAnimationCurve::create();
-    curve1->addKeyFrame(0, 0.0f, TangentMode::Tangent);
-    curve1->addKeyFrame(2, 100.0f, TangentMode::Linear);
-    curve1->addKeyFrame(5, 100.0f, TangentMode::Tangent);
-    curve1->addKeyFrame(7, 200.0f, TangentMode::Constant);
+    //auto curve1 = KeyFrameAnimationCurve::create();
+    //curve1->addKeyFrame(0, 0.0f, TangentMode::Tangent);
+    //curve1->addKeyFrame(2, 100.0f, TangentMode::Linear);
+    //curve1->addKeyFrame(5, 100.0f, TangentMode::Tangent);
+    //curve1->addKeyFrame(7, 200.0f, TangentMode::Constant);
 
-    auto track1 = ScalarAnimationTrack::create();
-    track1->setCurve(curve1);
+    //auto track1 = ScalarAnimationTrack::create();
+    //track1->setCurve(curve1);
 
     float time = 0;
-
-
     int frameCount = 0;
     while (Engine::update())
     {

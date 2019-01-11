@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "Common.hpp"
 
 namespace ln {
 
@@ -45,6 +46,8 @@ public:
 //	/** 既に作成済みの IDirect3DDevice9 インターフェイスを利用する場合、そのポインタを指定します。*/
 //	static void setD3D9Device(void* device);
 //#endif
+
+    static void setEngineFeatures(Flags<EngineFeature> features);
 };
 
 } // namespace ln

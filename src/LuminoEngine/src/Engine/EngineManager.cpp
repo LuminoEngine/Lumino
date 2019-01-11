@@ -92,27 +92,30 @@ void EngineManager::initialize()
         m_mainUIContext->setLayoutRootElement(m_mainWindow);
 	}
 
-    m_mainWorld = newObject<World>();
-    m_sceneManager->setActiveWorld(m_mainWorld);
+    if (m_sceneManager)
+    {
+        m_mainWorld = newObject<World>();
+        m_sceneManager->setActiveWorld(m_mainWorld);
 
-    m_mainAmbientLight = newObject<AmbientLight>();
-    m_mainDirectionalLight = newObject<DirectionalLight>();
+        m_mainAmbientLight = newObject<AmbientLight>();
+        m_mainDirectionalLight = newObject<DirectionalLight>();
 
-    m_mainPhysicsWorld = m_mainWorld->physicsWorld();
+        m_mainPhysicsWorld = m_mainWorld->physicsWorld();
 
-	m_mainCamera = newObject<Camera>();
-    m_mainWorldRenderView = newObject<WorldRenderView>();
-    m_mainWorldRenderView->setTargetWorld(m_mainWorld);
-	m_mainWorldRenderView->setCamera(m_mainCamera);
-    m_mainViewport->addRenderView(m_mainWorldRenderView);
+        m_mainCamera = newObject<Camera>();
+        m_mainWorldRenderView = newObject<WorldRenderView>();
+        m_mainWorldRenderView->setTargetWorld(m_mainWorld);
+        m_mainWorldRenderView->setCamera(m_mainCamera);
+        m_mainViewport->addRenderView(m_mainWorldRenderView);
 
 
-    m_mainUIRenderView = newObject<UIRenderView>();
-    m_mainViewport->addRenderView(m_mainUIRenderView);
+        m_mainUIRenderView = newObject<UIRenderView>();
+        m_mainViewport->addRenderView(m_mainUIRenderView);
 
-    m_mainUIRoot = newObject<UIContainerElement>();
-    m_mainUIRenderView->setRootElement(m_mainUIRoot);
-    m_uiManager->setPrimaryElement(m_mainUIRoot);
+        m_mainUIRoot = newObject<UIContainerElement>();
+        m_mainUIRenderView->setRootElement(m_mainUIRoot);
+        m_uiManager->setPrimaryElement(m_mainUIRoot);
+    }
 }
 
 void EngineManager::dispose()
@@ -168,7 +171,7 @@ void EngineManager::initializeCommon()
 
 void EngineManager::initializePlatformManager()
 {
-	if (!m_platformManager)
+	if (!m_platformManager && m_settings.features.hasFlag(EngineFeature::Application))
 	{
 		initializeCommon();
 
@@ -188,7 +191,7 @@ void EngineManager::initializePlatformManager()
 
 void EngineManager::initializeAnimationManager()
 {
-    if (!m_animationManager)
+    if (!m_animationManager && m_settings.features.hasFlag(EngineFeature::Rendering))
     {
         AnimationManager::Settings settings;
         m_animationManager = ln::makeRef<AnimationManager>();
@@ -198,7 +201,7 @@ void EngineManager::initializeAnimationManager()
 
 void EngineManager::initializeInputManager()
 {
-	if (!m_inputManager)
+	if (!m_inputManager && m_settings.features.hasFlag(EngineFeature::Input))
 	{
 		initializePlatformManager();
 
@@ -211,7 +214,7 @@ void EngineManager::initializeInputManager()
 
 void EngineManager::initializeAudioManager()
 {
-	if (!m_audioManager)
+	if (!m_audioManager && m_settings.features.hasFlag(EngineFeature::Audio))
 	{
 		initializeCommon();
         initializeAssetManager();
@@ -226,7 +229,7 @@ void EngineManager::initializeAudioManager()
 
 void EngineManager::initializeShaderManager()
 {
-	if (!m_shaderManager)
+	if (!m_shaderManager && m_settings.features.hasFlag(EngineFeature::Graphics))
 	{
 		initializeGraphicsManager();
 
@@ -240,7 +243,7 @@ void EngineManager::initializeShaderManager()
 
 void EngineManager::initializeGraphicsManager()
 {
-	if (!m_graphicsManager)
+	if (!m_graphicsManager && m_settings.features.hasFlag(EngineFeature::Graphics))
 	{
 		initializePlatformManager();
 
@@ -254,7 +257,7 @@ void EngineManager::initializeGraphicsManager()
 
 void EngineManager::initializeFontManager()
 {
-	if (!m_fontManager)
+	if (!m_fontManager && m_settings.features.hasFlag(EngineFeature::Graphics))
 	{
 		initializeAssetManager();
 
@@ -268,7 +271,7 @@ void EngineManager::initializeFontManager()
 
 void EngineManager::initializeMeshManager()
 {
-	if (!m_meshManager)
+	if (!m_meshManager && m_settings.features.hasFlag(EngineFeature::Rendering))
 	{
 		initializeGraphicsManager();
 		initializeAssetManager();
@@ -284,7 +287,7 @@ void EngineManager::initializeMeshManager()
 
 void EngineManager::initializeRenderingManager()
 {
-	if (!m_renderingManager)
+	if (!m_renderingManager && m_settings.features.hasFlag(EngineFeature::Rendering))
 	{
 		initializeGraphicsManager();
 
@@ -298,7 +301,7 @@ void EngineManager::initializeRenderingManager()
 
 void EngineManager::initializePhysicsManager()
 {
-    if (!m_physicsManager)
+    if (!m_physicsManager && m_settings.features.hasFlag(EngineFeature::Rendering))
     {
         PhysicsManager::Settings settings;
 
@@ -309,7 +312,7 @@ void EngineManager::initializePhysicsManager()
 
 void EngineManager::initializeAssetManager()
 {
-    if (!m_assetManager)
+    if (!m_assetManager && m_settings.features.hasFlag(EngineFeature::Application))
     {
         AssetManager::Settings settings;
 
@@ -327,7 +330,7 @@ void EngineManager::initializeAssetManager()
 
 void EngineManager::initializeVisualManager()
 {
-    if (!m_visualManager)
+    if (!m_visualManager && m_settings.features.hasFlag(EngineFeature::Rendering))
     {
         initializeGraphicsManager();
 
@@ -341,7 +344,7 @@ void EngineManager::initializeVisualManager()
 
 void EngineManager::initializeSceneManager()
 {
-    if (!m_sceneManager)
+    if (!m_sceneManager && m_settings.features.hasFlag(EngineFeature::Rendering))
     {
         initializeAnimationManager();
 
@@ -354,7 +357,7 @@ void EngineManager::initializeSceneManager()
 
 void EngineManager::initializeUIManager()
 {
-	if (!m_uiManager)
+	if (!m_uiManager && m_settings.features.hasFlag(EngineFeature::Application))
 	{
 		initializeGraphicsManager();
 

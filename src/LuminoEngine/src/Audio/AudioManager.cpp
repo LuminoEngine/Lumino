@@ -82,8 +82,8 @@ Ref<AudioDecoder> AudioManager::createAudioDecoder(const StringRef & filePath)
     auto stream = m_assetManager->openFileStream(filePath);
 
 	// TODO: cache
-	//auto decoder = makeRef<WaveDecoder>();
-    auto decoder = makeRef<OggAudioDecoder>();
+	auto decoder = makeRef<WaveDecoder>();
+    //auto decoder = makeRef<OggAudioDecoder>();
 	decoder->initialize(stream, diag);
 	return decoder;
 }

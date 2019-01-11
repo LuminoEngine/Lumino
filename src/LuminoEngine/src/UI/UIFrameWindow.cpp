@@ -209,7 +209,10 @@ void UIFrameWindow::initialize(detail::PlatformWindow* platformMainWindow, const
     m_platformWindow = platformMainWindow;
 	m_autoDisposePlatformWindow = false;
 	m_swapChain = newObject<SwapChain>(platformMainWindow, backbufferSize);
-	m_renderView = newObject<UIRenderView>();
+
+    if (detail::EngineDomain::renderingManager()) {
+        m_renderView = newObject<UIRenderView>();
+    }
 
     m_inputInjector = makeRef<detail::UIInputInjector>(this);
 
@@ -245,7 +248,7 @@ void UIFrameWindow::present()
 {
 	GraphicsContext* ctx = m_manager->graphicsManager()->graphicsContext();
 
-	if (!freezeRender)
+	if (m_renderView)
 	{
 		m_renderView->setRootElement(this);
 		m_renderView->render(ctx);

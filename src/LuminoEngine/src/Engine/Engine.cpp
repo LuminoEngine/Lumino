@@ -34,6 +34,11 @@ void EngineSettings::setMainWindowTitle(const StringRef& title)
 	detail::EngineDomain::engineManager()->settings().mainWindowTitle = title;
 }
 
+void EngineSettings::setEngineFeatures(Flags<EngineFeature> features)
+{
+    detail::EngineDomain::engineManager()->settings().features = features;
+}
+
 //==============================================================================
 // Engine
 
