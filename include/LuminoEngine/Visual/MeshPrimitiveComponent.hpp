@@ -9,6 +9,7 @@ class SphereComponent
 	: public VisualComponent
 {
 public:
+    void setMaterial(Material* material);
 
 protected:
     void onRender(RenderingContext* context);
@@ -19,6 +20,7 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 private:
+    Ref<Material> m_material;
 };
 
 } // namespace ln

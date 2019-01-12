@@ -2187,6 +2187,8 @@ void GLLocalShaderSamplerBuffer::bind()
 
 		GL_CHECK(glActiveTexture(GL_TEXTURE0 + unitIndex));
 
+        bool mipmap = false;
+        bool renderTarget = false;
 		if (t) {
 			if (t->type() == DeviceTextureType::Texture3D) {
 				GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
@@ -2196,22 +2198,25 @@ void GLLocalShaderSamplerBuffer::bind()
 				GL_CHECK(glBindTexture(GL_TEXTURE_2D, t->id()));
 				GL_CHECK(glBindTexture(GL_TEXTURE_3D, 0));
 			}
+            mipmap = t->mipmap();
+            renderTarget = (t->type() == DeviceTextureType::RenderTarget);
 		}
 		else {
 			GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
 			GL_CHECK(glBindTexture(GL_TEXTURE_3D, 0));
 		}
-		GL_CHECK(glBindSampler(unitIndex, (entry.samplerState) ? entry.samplerState->resolveId(t->mipmap()) : 0));
+		//GL_CHECK(glBindSampler(unitIndex, (entry.samplerState) ? entry.samplerState->resolveId(t->mipmap()) : 0));
+        GL_CHECK(glBindSampler(unitIndex, (entry.samplerState) ? entry.samplerState->resolveId(mipmap) : 0));
 		GL_CHECK(glUniform1i(entry.uniformLocation, unitIndex));
 
-
         if (entry.isRenderTargetUniformLocation >= 0) {
-            if (t->type() == DeviceTextureType::RenderTarget) {
-                GL_CHECK(glUniform1i(entry.isRenderTargetUniformLocation, 1));
-            }
-            else {
-                GL_CHECK(glUniform1i(entry.isRenderTargetUniformLocation, 0));
-            }
+            GL_CHECK(glUniform1i(entry.isRenderTargetUniformLocation, (renderTarget) ? 1 : 0));
+            //if (t->type() == DeviceTextureType::RenderTarget) {
+            //    GL_CHECK(glUniform1i(entry.isRenderTargetUniformLocation, 1));
+            //}
+            //else {
+            //    GL_CHECK(glUniform1i(entry.isRenderTargetUniformLocation, 0));
+            //}
         }
 	}
 }

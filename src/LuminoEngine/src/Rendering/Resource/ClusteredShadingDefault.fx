@@ -271,8 +271,8 @@ float4 _LN_PS_ClusteredForward_Default(
 	geometry.viewDir = normalize(vViewPosition);//vViewPosition);
 
 	/**/
-	float metallic = 0.0;//0.5;	// TODO:
-	float roughness = 1.0;//0.3;	// TODO:
+	float metallic = ln_MaterialMetallic;//0.0;//0.5;	// TODO:
+	float roughness = ln_MaterialRoughness;//1.0;//0.3;	// TODO:
 	LN_PBRMaterial material;
 	material.diffuseColor = lerp(surface.Albedo.xyz, float3(0, 0, 0), metallic);
 	material.specularColor = lerp(float3(0.04, 0.04, 0.04), surface.Albedo.xyz, metallic);

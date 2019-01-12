@@ -218,13 +218,20 @@ int main(int argc, char** argv)
     //body3->createFromMesh(mesh3->staticMeshComponent()->model()->meshContainers().front()->meshResource(), Engine::mainPhysicsWorld());
 
     List<Ref<WorldObject>> spheres;
-    for (int i = 0; i < 5; i++)
+    for (int y = 0; y < 5; y++)
     {
-        auto obj2 = newObject<WorldObject>();
-        auto cmp2 = newObject<SphereComponent>();
-        obj2->addComponent(cmp2);
-        obj2->setPosition(i, 0, 0);
-        spheres.add(obj2);
+        for (int i = 0; i < 5; i++)
+        {
+            auto obj2 = newObject<WorldObject>();
+            auto cmp2 = newObject<SphereComponent>();
+            auto mat2 = Material::create();
+            mat2->setMetallic(static_cast<float>(i) / 5);
+            mat2->setRoughness(std::max(static_cast<float>(y) / 5, 0.001f));
+            obj2->addComponent(cmp2);
+            obj2->setPosition(i, -y, 0);
+            cmp2->setMaterial(mat2);
+            spheres.add(obj2);
+        }
     }
 
 #if 0

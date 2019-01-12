@@ -17,9 +17,15 @@ void SphereComponent::initialize()
     VisualComponent::initialize();
 }
 
+void SphereComponent::setMaterial(Material* material)
+{
+    m_material = material;
+}
+
 void SphereComponent::onRender(RenderingContext* context)
 {
-    context->drawSphere(1, 8, 8, Color::White);
+    context->setMaterial(m_material);
+    context->drawSphere(0.5, 8, 8, Color::White);
 }
 
 } // namespace ln
