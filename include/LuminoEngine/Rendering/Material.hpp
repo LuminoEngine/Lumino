@@ -211,7 +211,7 @@ public:
 	void setColor(const Color& value);
 	void setRoughness(float value);
 	void setMetallic(float value);
-	void setSpecular(float value);  // TODO: 不要？http://envgameartist.blogspot.com/2014/12/pbr.html
+	//void setSpecular(float value);  // TODO: 不要？http://envgameartist.blogspot.com/2014/12/pbr.html
     void setEmissive(const Color& value);
 
 protected:

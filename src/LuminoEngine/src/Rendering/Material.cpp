@@ -175,7 +175,7 @@ void AbstractMaterial::updateShaderVariables(Shader* target)
 static const Color Material_DefaultColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
 static const float Material_DefaultRoughness = 0.5f;
 static const float Material_DefaultMetallic = 0.5f;
-static const float Material_DefaultSpecular = 0.5f;
+//static const float Material_DefaultSpecular = 0.5f;
 static const Color Material_DefaultEmmisive = Color(0, 0, 0, 0);
 
 Ref<Material> Material::create()
@@ -199,7 +199,7 @@ Material::Material()
 	m_data.color = Material_DefaultColor;
 	m_data.roughness = Material_DefaultRoughness;
 	m_data.metallic = Material_DefaultMetallic;
-	m_data.specular = Material_DefaultSpecular;
+	//m_data.specular = Material_DefaultSpecular;
     m_data.emissive = Material_DefaultEmmisive;
 }
 
@@ -229,7 +229,7 @@ void Material::initialize(Texture* mainTexture, const detail::PhongMaterialData&
     initialize();
     setMainTexture(mainTexture);
     setColor(phongMaterialData.diffuse);
-    setSpecular(phongMaterialData.power);
+    //setSpecular(phongMaterialData.power);
 }
 
 void Material::setColor(const Color& value)
@@ -246,11 +246,11 @@ void Material::setMetallic(float value)
 {
 	m_data.metallic = value;
 }
-
-void Material::setSpecular(float value)
-{
-	m_data.specular = value;
-}
+//
+//void Material::setSpecular(float value)
+//{
+//	m_data.specular = value;
+//}
 
 void Material::setEmissive(const Color& value)
 {
@@ -339,7 +339,7 @@ void PhongMaterial::translateToPBRMaterialData(detail::PbrMaterialData* outData)
 	outData->color = m_data.diffuse;
 	outData->roughness = Material_DefaultRoughness;
 	outData->metallic = Material_DefaultMetallic;
-	outData->specular = Material_DefaultSpecular;
+	//outData->specular = Material_DefaultSpecular;
 }
 
 void PhongMaterial::translateToPhongMaterialData(detail::PhongMaterialData* outData)

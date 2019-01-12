@@ -54,7 +54,7 @@ enum class BuiltinSemantics
 	MaterialColor,		// [PBR] vector
 	MaterialRoughness,	// [PBR] float
 	MaterialMetallic,		// [PBR] float
-	MaterialSpecular,		// [PBR] float
+	//MaterialSpecular,		// [PBR] float
     MaterialEmissive,		// [PBR] vector
 
 	PhongMaterialDiffuse,		// [Phong] vector
@@ -86,7 +86,7 @@ struct PbrMaterialData
 	Color color;
 	float roughness;
 	float metallic;
-	float specular;
+	//float specular;
     Color emissive;
 };
 

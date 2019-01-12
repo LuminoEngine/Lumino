@@ -76,7 +76,7 @@ static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_SubsetUnit 
 	{ _LT("ln_MaterialColor"), BuiltinSemantics::MaterialColor },
 	{ _LT("ln_MaterialRoughness"), BuiltinSemantics::MaterialRoughness },
 	{ _LT("ln_MaterialMetallic"), BuiltinSemantics::MaterialMetallic },
-	{ _LT("ln_MaterialSpecular"), BuiltinSemantics::MaterialSpecular },
+	//{ _LT("ln_MaterialSpecular"), BuiltinSemantics::MaterialSpecular },
     { _LT("ln_MaterialEmissive"), BuiltinSemantics::MaterialEmissive },
 	{ _LT("ln_PhongMaterialDiffuse"), BuiltinSemantics::PhongMaterialDiffuse },
 	{ _LT("ln_PhongMaterialAmbient"), BuiltinSemantics::PhongMaterialAmbient },
@@ -373,9 +373,9 @@ void ShaderSemanticsManager::updateSubsetVariables_PBR(const PbrMaterialData& ma
 		case BuiltinSemantics::MaterialMetallic:
 			varInfo.variable->setFloat(materialData.metallic);
 			break;
-		case BuiltinSemantics::MaterialSpecular:
-			varInfo.variable->setFloat(materialData.specular);
-			break;
+		//case BuiltinSemantics::MaterialSpecular:
+		//	varInfo.variable->setFloat(materialData.specular);
+		//	break;
         case BuiltinSemantics::MaterialEmissive:
             varInfo.variable->setVector(materialData.emissive);
             break;
