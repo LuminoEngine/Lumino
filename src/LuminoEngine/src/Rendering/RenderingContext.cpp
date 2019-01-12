@@ -200,7 +200,7 @@ void RenderingContext::drawSphere(float radius, int slices, int stacks, const Co
     element->data.m_slices = slices;
     element->data.m_stacks = stacks;
     element->data.setColor(color);
-    element->data.setTransform(localTransform);
+    element->data.setTransform(element->combinedWorldMatrix() * localTransform);
 }
 
 void RenderingContext::blit(RenderTargetTexture* source, RenderTargetTexture* destination)

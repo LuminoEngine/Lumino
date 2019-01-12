@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 #include "RenderStage.hpp"
 #include "RenderingPipeline.hpp"
@@ -213,7 +214,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 
 				ElementInfo elementInfo;
 				elementInfo.viewProjMatrix = &cameraInfo.viewProjMatrix;
-				elementInfo.WorldMatrix = element->combinedWorldMatrix();
+				elementInfo.WorldMatrix = (currentStage->renderFeature && !currentStage->renderFeature->drawElementTransformNegate()) ? element->combinedWorldMatrix() : Matrix();
 				elementInfo.WorldViewProjectionMatrix = elementInfo.WorldMatrix * (*elementInfo.viewProjMatrix);
 				elementInfo.boneTexture = m_skinningMatricesTexture;
 				elementInfo.boneLocalQuaternionTexture = m_skinningLocalQuaternionsTexture;

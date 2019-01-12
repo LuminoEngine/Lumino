@@ -106,6 +106,7 @@ public:
 
 
 	virtual void flush(GraphicsContext* context) override;
+    virtual bool drawElementTransformNegate() const override { return true; }
 
 private:
     Optional<PrimitiveType> m_lastPrimitiveType;

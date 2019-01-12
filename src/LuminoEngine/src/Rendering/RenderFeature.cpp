@@ -11,5 +11,10 @@ void RenderFeature::onActiveRenderFeatureChanged(const detail::CameraInfo& mainC
 {
 }
 
+bool RenderFeature::drawElementTransformNegate() const
+{
+    return false;
+}
+
 } // namespace ln
 

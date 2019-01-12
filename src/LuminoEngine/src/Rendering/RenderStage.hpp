@@ -236,7 +236,9 @@ public:
 	// この中で使えるのは GraphicsContext のみ。RenderingContext や Device 側の機能を呼び出してはならない。
 	virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeature) = 0;
 
+    // DrawElementListBuilder で DrawElement が作られたときに確定する。
 	const Matrix& combinedWorldMatrix() const { return m_combinedWorldMatrix; }
+
 	RenderStage* stage() const { return m_stage; }
 	RenderDrawElement* next() const { return m_next; }
 
