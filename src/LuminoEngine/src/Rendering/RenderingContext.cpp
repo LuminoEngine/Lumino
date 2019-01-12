@@ -4,7 +4,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Mesh/Mesh.hpp>
-#include "../Mesh/MeshFactory.hpp"
+#include "../Mesh/MeshGenerater.hpp"
 #include "RenderingManager.hpp"
 #include "DrawElementListBuilder.hpp"
 

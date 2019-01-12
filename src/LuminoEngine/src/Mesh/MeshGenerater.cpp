@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Rendering/Vertex.hpp>
-#include "MeshFactory.hpp"
+#include "MeshGenerater.hpp"
 
 namespace ln {
 namespace detail {
