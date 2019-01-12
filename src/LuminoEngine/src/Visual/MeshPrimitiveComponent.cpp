@@ -19,7 +19,7 @@ void SphereComponent::initialize()
 
 void SphereComponent::onRender(RenderingContext* context)
 {
-    context->drawSphere(1, 8, 8, Color::Gray);
+    context->drawSphere(1, 8, 8, Color::White);
 }
 
 } // namespace ln

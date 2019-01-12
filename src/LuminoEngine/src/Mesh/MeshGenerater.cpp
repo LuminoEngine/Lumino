@@ -14,6 +14,14 @@ void MeshGeneraterBuffer::setBuffer(Vertex* vertexBuffer, void* indexBuffer, Ind
     m_indexNumberOffset = indexNumberOffset;
 }
 
+void MeshGeneraterBuffer::setV(int index, const Vector3&	position, const Vector2& uv, const Vector3& normal)
+{
+    m_vertexBuffer[index].position = position;
+    m_vertexBuffer[index].uv = uv;
+    m_vertexBuffer[index].normal = normal;
+    m_vertexBuffer[index].color = m_color;
+}
+
 } // namespace detail
 } // namespace ln
 

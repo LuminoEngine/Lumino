@@ -162,7 +162,7 @@ int main(int argc, char** argv)
     //imageEffect->setRadialScale(1.05);
     //Engine::mainViewport()->addImageEffect(imageEffect);
 
-    auto sprite = Sprite::create(3, 3, tex);
+    //auto sprite = Sprite::create(3, 3, tex);
 
     //auto tilemap = newObject<Tilemap>();
     //tilemap->setShadingModel(ShadingModel::UnLighting);
@@ -217,9 +217,15 @@ int main(int argc, char** argv)
     //auto body3 = newObject<SoftBody>();
     //body3->createFromMesh(mesh3->staticMeshComponent()->model()->meshContainers().front()->meshResource(), Engine::mainPhysicsWorld());
 
-    auto obj2 = newObject<WorldObject>();
-    auto cmp2 = newObject<SphereComponent>();
-    obj2->addComponent(cmp2);
+    List<Ref<WorldObject>> spheres;
+    for (int i = 0; i < 5; i++)
+    {
+        auto obj2 = newObject<WorldObject>();
+        auto cmp2 = newObject<SphereComponent>();
+        obj2->addComponent(cmp2);
+        obj2->setPosition(i, 0, 0);
+        spheres.add(obj2);
+    }
 
 #if 0
     auto meshMaterial = Material::create();

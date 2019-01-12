@@ -9,8 +9,6 @@ class MeshGeneraterBuffer
 {
 public:
     void setBuffer(Vertex* vertexBuffer, void* indexBuffer, IndexBufferFormat indexFormat, uint32_t indexNumberOffset);
-    void setColor(const Color& color) { m_color = color; }
-    void setTransform(const Matrix& transform) { m_transform = transform; }
 
 
     Vertex* vertexBuffer() const { return m_vertexBuffer; }
@@ -20,13 +18,7 @@ public:
         m_vertexBuffer[index] = v;
     }
 
-    void setV(int index, const Vector3&	position, const Vector2& uv, const Vector3& normal)
-    {
-        m_vertexBuffer[index].position = position;
-        m_vertexBuffer[index].uv = uv;
-        m_vertexBuffer[index].normal = normal;
-        m_vertexBuffer[index].color = m_color;
-    }
+    void setV(int index, const Vector3&	position, const Vector2& uv, const Vector3& normal);
 
     void setI(int index, uint32_t i)
     {
@@ -35,6 +27,31 @@ public:
         else
             ((uint32_t*)m_indexBuffer)[index] = m_indexNumberOffset + i;
     }
+
+    Color m_color;
+
+private:
+    Vertex* m_vertexBuffer;
+    void* m_indexBuffer;
+    IndexBufferFormat m_indexFormat;
+    uint32_t m_indexNumberOffset;
+};
+
+// 描画コマンドのバッファに詰め込まれるのであまり大きいデータは持たせないように。
+class MeshGenerater
+{
+public:
+    void setColor(const Color& color) { m_color = color; }
+    void setTransform(const Matrix& transform) { m_transform = transform; }
+
+    //virtual size_t instanceSize() const = 0;
+    //virtual void copyTo(MeshGenerater* other) const = 0;
+    virtual int vertexCount() const = 0;
+    virtual int indexCount() const = 0;
+    virtual PrimitiveType primitiveType() const = 0;
+    virtual MeshGenerater* clone(LinearAllocator* allocator) const = 0;
+    virtual void generate(MeshGeneraterBuffer* buf) = 0;
+
 
     void transform(Vertex* begin, int vertexCount)
     {
@@ -48,26 +65,9 @@ public:
         }
     }
 
-private:
-    Vertex* m_vertexBuffer;
-    void* m_indexBuffer;
-    IndexBufferFormat m_indexFormat;
-    uint32_t m_indexNumberOffset;
+protected:
     Color m_color;
     Matrix m_transform;
-};
-
-// 描画コマンドのバッファに詰め込まれるのであまり大きいデータは持たせないように。
-class MeshGenerater
-{
-public:
-    //virtual size_t instanceSize() const = 0;
-    //virtual void copyTo(MeshGenerater* other) const = 0;
-    virtual int vertexCount() const = 0;
-    virtual int indexCount() const = 0;
-    virtual PrimitiveType primitiveType() const = 0;
-    virtual MeshGenerater* clone(LinearAllocator* allocator) const = 0;
-    virtual void generate(MeshGeneraterBuffer* buf) = 0;
 };
 
 class SingleLineGenerater
@@ -131,6 +131,7 @@ public:
 
     virtual void generate(MeshGeneraterBuffer* buf) override
     {
+        buf->m_color = m_color;
         makeSinCosTable();
 
         uint32_t iV = 0;
@@ -208,7 +209,7 @@ public:
             }
         }
 
-        buf->transform(buf->vertexBuffer(), vertexCount());
+        transform(buf->vertexBuffer(), vertexCount());
     }
 
     void makeSinCosTable()
