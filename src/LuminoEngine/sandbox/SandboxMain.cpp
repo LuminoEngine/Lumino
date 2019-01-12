@@ -12,7 +12,8 @@
 #include "../src/Rendering/UnLigitingSceneRenderer.hpp"
 #include "../src/Rendering/ClusteredShadingSceneRenderer.hpp"
 #include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/Rendering/RenderingContext.hpp>
+#include <LuminoEngine/Rendering/RenderingContext.hpp>>
+#include <LuminoEngine/Visual/MeshPrimitiveComponent.hpp>
 #include "../src/Mesh/MqoImporter.hpp"
 #include "../src/Font/FontManager.hpp"
 #include "../src/Font/FontCore.hpp"
@@ -215,6 +216,10 @@ int main(int argc, char** argv)
 
     //auto body3 = newObject<SoftBody>();
     //body3->createFromMesh(mesh3->staticMeshComponent()->model()->meshContainers().front()->meshResource(), Engine::mainPhysicsWorld());
+
+    auto obj2 = newObject<WorldObject>();
+    auto cmp2 = newObject<SphereComponent>();
+    obj2->addComponent(cmp2);
 
 #if 0
     auto meshMaterial = Material::create();

@@ -156,6 +156,51 @@ void RenderingContext::clear(Flags<ClearFlags> flags, const Color& color, float 
     m_builder->advanceFence();
 }
 
+void RenderingContext::drawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor)
+{
+    class DrawLine : public detail::RenderDrawElement
+    {
+    public:
+        detail::SingleLineGenerater data;
+
+        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+        {
+            static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::SingleLineGenerater>(data);
+        }
+    };
+
+    auto* element = m_builder->addNewDrawElement<DrawLine>(
+        m_manager->primitiveRenderFeature(),
+        m_builder->primitiveRenderFeatureStageParameters());
+    element->data.point1 = from;
+    element->data.point1Color = fromColor;
+    element->data.point2 = to;
+    element->data.point2Color = toColor;
+    // TODO:
+    //ptr->makeBoundingSphere(Vector3::min(position1, position2), Vector3::max(position1, position2));
+}
+
+void RenderingContext::drawSphere(float radius, int slices, int stacks, const Color& color, const Matrix& localTransform)
+{
+    class DrawSphere : public detail::RenderDrawElement
+    {
+    public:
+        detail::RegularSphereMeshFactory data;
+
+        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+        {
+            static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::RegularSphereMeshFactory>(data);
+        }
+    };
+
+    auto* element = m_builder->addNewDrawElement<DrawSphere>(
+        m_manager->primitiveRenderFeature(),
+        m_builder->primitiveRenderFeatureStageParameters());
+    element->data.m_radius = radius;
+    element->data.m_slices = slices;
+    element->data.m_stacks = stacks;
+}
+
 void RenderingContext::blit(RenderTargetTexture* source, RenderTargetTexture* destination)
 {
     blit(source, destination, nullptr);
@@ -305,33 +350,6 @@ void RenderingContext::drawMesh(MeshResource* meshResource, int sectionIndex)
 //	//detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &sphere);
 //	//ptr->setLocalBoundingSphere(sphere);
 //}
-
-void RenderingContext::drawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor)
-{
-    class DrawLine : public detail::RenderDrawElement
-    {
-    public:
-        //Vector3 from; Color fromColor;
-        //Vector3 to; Color toColor;
-        detail::SingleLineGenerater data;
-
-        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
-        {
-            static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::SingleLineGenerater>(data);
-            //static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawLine(from, fromColor, to, toColor);
-        }
-    };
-
-    auto* element = m_builder->addNewDrawElement<DrawLine>(
-        m_manager->primitiveRenderFeature(),
-        m_builder->primitiveRenderFeatureStageParameters());
-    element->data.point1 = from;
-    element->data.point1Color = fromColor;
-    element->data.point2 = to;
-    element->data.point2Color = toColor;
-    // TODO:
-    //ptr->makeBoundingSphere(Vector3::min(position1, position2), Vector3::max(position1, position2));
-}
 
 void RenderingContext::addAmbientLight(const Color& color, float intensity)
 {
