@@ -200,7 +200,7 @@ void OpenGLDeviceContext::initialize(const Settings& settings)
 	LN_LOG_INFO << "OpenGL ES enabled.";
 #endif
 
-#if defined(LN_EMSCRIPTEN) || defined(LN_GRAPHICS_OPENGLES)
+#if defined(LN_GRAPHICS_OPENGLES)
 #else
 	int result = gladLoadGL();
 	if (LN_ENSURE(result, "Failed gladLoadGL()")) return;

@@ -240,7 +240,8 @@ void Shader::initialize(const String& name, Stream* stream)
     m_name = name;
 
     if (localDiag->hasError()) {
-        LN_ERROR(localDiag->toString());
+        LN_LOG_ERROR << localDiag->toString();
+        LN_ERROR(name);
         return;
     }
     else if (localDiag->hasWarning()) {

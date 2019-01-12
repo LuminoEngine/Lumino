@@ -551,18 +551,46 @@ std::string ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es)
 
     std::string declsIsRT;
     for (auto& name : combinedImageSamplerNames) {
-        declsIsRT += "uniform int " + name + (LN_IS_RT_POSTFIX ";\n");
+        declsIsRT += "uniform int " + name + (LN_IS_RT_POSTFIX ";");
     }
 
     std::string code = glsl.compile();
 
-    code = code.insert(13,
-        declsIsRT +
-        "vec4 xxTexture(int isRT, sampler2D s, vec2 uv) { if (isRT != 0) { return texture(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); } else { return texture(s, uv); } }\n"
-        "vec4 xxTexture(int isRT, sampler3D s, vec3 uv) { if (isRT != 0) { return texture(s, vec3(uv.x, (uv.y * -1.0) + 1.0, uv.z)); } else { return texture(s, uv); } }\n"
-        "#define texture(s, uv) xxTexture(s##lnIsRT, s, uv)\n"
-        "#line 1\n"
-    );
+    if (es)
+    {
+        if (m_stage == ShaderCodeStage::Vertex)
+        {
+            // VertexShader は精度指定子を記述する必要はないので、自動生成はされない。
+            // https://qiita.com/konweb/items/ec8fa8cd3bc33df14933#%E7%B2%BE%E5%BA%A6%E4%BF%AE%E9%A3%BE%E5%AD%90
+            code = code.insert(16,
+                declsIsRT + "\n" +
+                //"vec4 xxTexture(int isRT, sampler2D s, vec2 uv) { if (isRT != 0) { return texture2D(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); } else { return texture2D(s, uv); } }\n"
+                "vec4 xxTexture(int isRT, sampler2D s, vec2 uv) { if (isRT != 0) { return texture(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); } else { return texture(s, uv); } }\n"
+                "#define texture(s, uv) xxTexture(s##lnIsRT, s, uv)\n"
+                "#line 1\n"
+            );
+        }
+        else
+        {
+            code = code.insert(16 + 45,
+                declsIsRT + "\n" +
+                //"vec4 xxTexture(int isRT, sampler2D s, vec2 uv) { if (isRT != 0) { return texture2D(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); } else { return texture2D(s, uv); } }\n"
+                "highp vec4 xxTexture(int isRT, sampler2D s, vec2 uv) { if (isRT != 0) { return texture(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); } else { return texture(s, uv); } }\n"
+                "#define texture(s, uv) xxTexture(s##lnIsRT, s, uv)\n"
+                "#line 1\n"
+            );
+        }
+    }
+    else
+    {
+        code = code.insert(13,
+            declsIsRT + "\n" +
+            "vec4 xxTexture(int isRT, sampler2D s, vec2 uv) { if (isRT != 0) { return texture(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); } else { return texture(s, uv); } }\n"
+            "vec4 xxTexture(int isRT, sampler3D s, vec3 uv) { if (isRT != 0) { return texture(s, vec3(uv.x, (uv.y * -1.0) + 1.0, uv.z)); } else { return texture(s, uv); } }\n"
+            "#define texture(s, uv) xxTexture(s##lnIsRT, s, uv)\n"
+            "#line 1\n"
+        );
+    }
 
     /*
     DirectX に合わせたテクスチャ座標系(左上が原点)で OpenGL を使おうとすると、

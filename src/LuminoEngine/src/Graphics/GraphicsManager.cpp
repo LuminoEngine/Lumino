@@ -73,12 +73,20 @@ GraphicsManager::GraphicsManager()
 
 void GraphicsManager::initialize(const Settings& settings)
 {
+    LN_LOG_DEBUG << "GraphicsManager Initialization started.";
+
 	OpenGLDeviceContext::Settings openglSettings;
 	openglSettings.mainWindow = settings.mainWindow;
 	auto ctx = makeRef<OpenGLDeviceContext>();
 	ctx->initialize(openglSettings);
 	ctx->refreshCaps();
 	m_deviceContext = ctx;
+
+    {
+        auto& triple = m_deviceContext->caps().requestedShaderTriple;
+        LN_LOG_INFO << "requestedShaderTriple:" << triple.target << "-" << triple.version << "-" << triple.option;
+    }
+
 
 	m_graphicsContext = newObject<GraphicsContext>(m_deviceContext);
 
@@ -105,6 +113,8 @@ void GraphicsManager::initialize(const Settings& settings)
 		m_defaultSamplerState = newObject<SamplerState>();
 		m_defaultSamplerState->setFrozen(true);
 	}
+
+    LN_LOG_DEBUG << "GraphicsManager Initialization ended.";
 }
 
 void GraphicsManager::dispose()
