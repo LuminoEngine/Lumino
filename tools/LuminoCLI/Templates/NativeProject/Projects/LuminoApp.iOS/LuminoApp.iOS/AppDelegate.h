@@ -5,7 +5,7 @@
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
-@property(nonatomic, readonly) GameViewController* viewController;
+@property(readwrite) GameViewController* viewController;
 @property (strong, nonatomic) UIWindow *window;
 
 @end
