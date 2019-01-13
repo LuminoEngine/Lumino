@@ -132,6 +132,7 @@ public:
     UIContext* context() const { return m_context; }
 
     UIElement();
+    virtual ~UIElement();
 	void initialize();
 
 public: // TODO: internal

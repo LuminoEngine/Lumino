@@ -13,7 +13,13 @@ UIContainerElement::UIContainerElement()
 
 void UIContainerElement::initialize()
 {
-    Object::initialize();
+    UIElement::initialize();
+}
+
+void UIContainerElement::dispose()
+{
+    UIContainerElement::initialize();
+    removeAllChildren();
 }
 
 void UIContainerElement::addElement(UIElement* element)

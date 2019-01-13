@@ -35,6 +35,7 @@ class SceneRenderingPipeline
 {
 public:
     SceneRenderingPipeline();
+    virtual ~SceneRenderingPipeline();
 
     void initialize();
     void render(

@@ -247,6 +247,8 @@ void OpenGLDeviceContext::dispose()
 		GL_CHECK(glDeleteFramebuffers(1, &m_fbo));
 		m_fbo = 0;
 	}
+
+    IGraphicsDeviceContext::dispose();
 }
 
 void OpenGLDeviceContext::setActiveShaderPass(GLShaderPass* pass)
@@ -1692,6 +1694,10 @@ GLShaderPass::GLShaderPass()
 {
 }
 
+GLShaderPass::~GLShaderPass()
+{
+}
+
 void GLShaderPass::initialize(OpenGLDeviceContext* context, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCode, int fsCodeLen, ShaderCompilationDiag* diag)
 {
 	m_context = context;
@@ -2006,6 +2012,10 @@ GLShaderUniform::GLShaderUniform(const ShaderUniformTypeDesc& desc, const GLchar
 	: m_desc(desc)
 	, m_name(name)
 	, m_location(location)
+{
+}
+
+GLShaderUniform::~GLShaderUniform()
 {
 }
 

@@ -20,7 +20,9 @@ public:
     void removeImageEffect(ImageEffect* effect);
 
     UIViewport();
+    virtual ~UIViewport();
 	void initialize();
+    virtual void dispose() override;
 
     // TODO: internal
     const Size& actualViewboxSize() const { return m_actualViewboxSize; }

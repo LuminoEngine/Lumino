@@ -29,6 +29,7 @@ GraphicsContext::~GraphicsContext()
 
 void GraphicsContext::initialize(detail::IGraphicsDeviceContext* device)
 {
+    Object::initialize();
 	m_manager = detail::EngineDomain::graphicsManager();
 	m_device = device;
     m_lastCommit.reset();
@@ -37,6 +38,9 @@ void GraphicsContext::initialize(detail::IGraphicsDeviceContext* device)
 
 void GraphicsContext::dispose()
 {
+    Object::dispose();
+    m_lastCommit.reset();
+    m_staging.reset();
 }
 
 void GraphicsContext::resetState()

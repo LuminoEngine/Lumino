@@ -125,6 +125,10 @@ Shader::Shader()
 {
 }
 
+Shader::~Shader()
+{
+}
+
 void Shader::initialize()
 {
 	GraphicsResource::initialize();
@@ -726,6 +730,10 @@ ShaderTechnique::ShaderTechnique()
 {
 }
 
+ShaderTechnique::~ShaderTechnique()
+{
+}
+
 void ShaderTechnique::initialize(const String& name)
 {
 	Object::initialize();
@@ -754,6 +762,10 @@ ShaderPass::ShaderPass()
     , m_bufferEntries()
     , m_textureParameters()
     , m_renderState(nullptr)
+{
+}
+
+ShaderPass::~ShaderPass()
 {
 }
 

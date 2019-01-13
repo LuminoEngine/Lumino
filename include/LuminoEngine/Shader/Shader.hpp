@@ -89,7 +89,7 @@ protected:
 
 LN_CONSTRUCT_ACCESS:
 	Shader();
-	virtual ~Shader() = default;
+    virtual ~Shader();
 	void initialize();
 	void initialize(const StringRef& filePath, ShaderCompilationProperties* properties = nullptr);
 	void initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCompilationProperties* properties = nullptr);
@@ -252,7 +252,7 @@ public:
 private:
     LN_INTERNAL_NEW_OBJECT;
 	ShaderTechnique();
-	virtual ~ShaderTechnique() = default;
+    virtual ~ShaderTechnique();
 	void initialize(const String& name);
 
 	void setOwner(Shader* owner) { m_owner = owner; }
@@ -286,7 +286,7 @@ public:
 private:
     LN_INTERNAL_NEW_OBJECT;
 	ShaderPass();
-	virtual ~ShaderPass() = default;
+    virtual ~ShaderPass();
 	void initialize(const String& name, detail::IShaderPass* rhiPass, detail::ShaderRenderState* renderState = nullptr);
 
     struct ConstantBufferEntry

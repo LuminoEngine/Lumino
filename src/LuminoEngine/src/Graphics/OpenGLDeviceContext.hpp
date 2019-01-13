@@ -491,7 +491,7 @@ class GLShaderPass
 {
 public:
 	GLShaderPass();
-	virtual ~GLShaderPass() = default;
+    virtual ~GLShaderPass();
 	void initialize(OpenGLDeviceContext* context, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag);
 	virtual void dispose() override;
 
@@ -547,7 +547,7 @@ class GLShaderUniform
 {
 public:
 	GLShaderUniform(const ShaderUniformTypeDesc& desc, const GLchar* name, GLint location);
-	virtual ~GLShaderUniform() = default;
+    virtual ~GLShaderUniform();
 	virtual void dispose() override;
 	virtual const ShaderUniformTypeDesc& desc() const override { return m_desc; }
 	virtual const std::string& name() const override { return m_name; }

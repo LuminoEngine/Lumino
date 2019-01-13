@@ -24,6 +24,7 @@ class DrawElementListBuilder
 {
 public:
 	DrawElementListBuilder();
+    virtual ~DrawElementListBuilder();
 	DrawElementList* targetList() const { return m_targetList; }
 	void setTargetList(DrawElementList* targetList);
     void resetForBeginRendering();  // 描画開始時のリセット。スタックもクリアする

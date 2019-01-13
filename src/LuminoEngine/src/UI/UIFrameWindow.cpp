@@ -221,6 +221,10 @@ void UIFrameWindow::initialize(detail::PlatformWindow* platformMainWindow, const
 
 void UIFrameWindow::dispose()
 {
+    if (m_renderView) {
+        m_renderView->dispose();
+        m_renderView = nullptr;
+    }
 	if (m_swapChain) {
 		m_swapChain->dispose();
         m_swapChain = nullptr;

@@ -26,6 +26,10 @@ UIElement::UIElement()
 {
 }
 
+UIElement::~UIElement()
+{
+}
+
 void UIElement::initialize()
 {
     Object::initialize();

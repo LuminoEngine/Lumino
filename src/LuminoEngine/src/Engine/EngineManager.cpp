@@ -81,6 +81,7 @@ void EngineManager::initialize()
 	m_fpsController.setFrameRate(m_settings.frameRate);
 	m_fpsController.setEnableFpsTest(true);
 
+    // Main UI contents.
 	if (m_uiManager) {
         m_mainUIContext = newObject<UIContext>();
         m_uiManager->setMainContext(m_mainUIContext);
@@ -90,24 +91,6 @@ void EngineManager::initialize()
         m_mainWindow->addElement(m_mainViewport);
 
         m_mainUIContext->setLayoutRootElement(m_mainWindow);
-	}
-
-    if (m_sceneManager)
-    {
-        m_mainWorld = newObject<World>();
-        m_sceneManager->setActiveWorld(m_mainWorld);
-
-        m_mainAmbientLight = newObject<AmbientLight>();
-        m_mainDirectionalLight = newObject<DirectionalLight>();
-
-        m_mainPhysicsWorld = m_mainWorld->physicsWorld();
-
-        m_mainCamera = newObject<Camera>();
-        m_mainWorldRenderView = newObject<WorldRenderView>();
-        m_mainWorldRenderView->setTargetWorld(m_mainWorld);
-        m_mainWorldRenderView->setCamera(m_mainCamera);
-        m_mainViewport->addRenderView(m_mainWorldRenderView);
-
 
         m_mainUIRenderView = newObject<UIRenderView>();
         m_mainViewport->addRenderView(m_mainUIRenderView);
@@ -115,18 +98,89 @@ void EngineManager::initialize()
         m_mainUIRoot = newObject<UIContainerElement>();
         m_mainUIRenderView->setRootElement(m_mainUIRoot);
         m_uiManager->setPrimaryElement(m_mainUIRoot);
+	}
+
+    // Main world contents.
+    if (m_sceneManager)
+    {
+        m_mainWorld = newObject<World>();
+        m_sceneManager->setActiveWorld(m_mainWorld);
+        m_mainAmbientLight = newObject<AmbientLight>();
+        m_mainDirectionalLight = newObject<DirectionalLight>();
+        m_mainCamera = newObject<Camera>();
+
+        m_mainWorldRenderView = newObject<WorldRenderView>();
+        m_mainWorldRenderView->setTargetWorld(m_mainWorld);
+        m_mainWorldRenderView->setCamera(m_mainCamera);
+        m_mainViewport->addRenderView(m_mainWorldRenderView);
+
+        m_mainPhysicsWorld = m_mainWorld->physicsWorld();
     }
 }
 
 void EngineManager::dispose()
 {
+    if (m_uiManager) {
+        m_uiManager->setPrimaryElement(nullptr);
+        m_uiManager->setMainContext(nullptr);
+    }
+
 	if (m_platformManager) {
 		m_platformManager->mainWindow()->detachEventListener(this);
 	}
 
-	if (m_mainWindow) m_mainWindow->dispose();
-    if (m_mainUIContext) m_mainUIContext->dispose();
+    m_mainPhysicsWorld = nullptr;
 
+
+    // Main world contents.
+    {
+        if (m_mainWorldRenderView) {
+            m_mainWorldRenderView->dispose();
+            m_mainWorldRenderView = nullptr;
+        }
+        if (m_mainAmbientLight) {
+            m_mainAmbientLight->dispose();
+            m_mainAmbientLight = nullptr;
+        }
+        if (m_mainDirectionalLight) {
+            m_mainDirectionalLight->dispose();
+            m_mainDirectionalLight = nullptr;
+        }
+        if (m_mainCamera) {
+            m_mainCamera->dispose();
+            m_mainCamera = nullptr;
+        }
+        if (m_mainWorld) {
+            m_mainWorld->dispose();
+            m_mainWorld = nullptr;
+        }
+    }
+
+    // Main UI contents.
+    {
+        if (m_mainUIRoot) {
+            m_mainUIRoot->dispose();
+            m_mainUIRoot = nullptr;
+        }
+        if (m_mainUIRenderView) {
+            m_mainUIRenderView->dispose();
+            m_mainUIRenderView = nullptr;
+        }
+        if (m_mainViewport) {
+            m_mainViewport->dispose();
+            m_mainViewport = nullptr;
+        }
+        if (m_mainWindow) {
+            m_mainWindow->dispose();
+            m_mainWindow = nullptr;
+        }
+        if (m_mainUIContext) {
+            m_mainUIContext->dispose();
+            m_mainUIContext = nullptr;
+        }
+    }
+
+    if (m_uiManager) m_uiManager->dispose();
     if (m_sceneManager) m_sceneManager->dispose();
     if (m_visualManager) m_visualManager->dispose();
 	if (m_assetManager) m_assetManager->dispose();

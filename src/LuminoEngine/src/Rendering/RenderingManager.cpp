@@ -48,7 +48,7 @@ void RenderingManager::initialize(const Settings& settings)
         { 0, VertexElementType::Float4, VertexElementUsage::Color, 0 },
     };
     m_standardVertexDeclaration = newObject<VertexDeclaration>(elements, 4);
-    m_renderStageListBuilder = makeRef<DrawElementListBuilder>();
+    //m_renderStageListBuilder = makeRef<DrawElementListBuilder>();
 
     m_blitRenderFeature = newObject<BlitRenderFeature>(this);
     m_spriteRenderFeature = newObject<SpriteRenderFeature>(this);
@@ -143,7 +143,7 @@ void RenderingManager::dispose()
 	m_meshRenderFeature = nullptr;
 	m_spriteRenderFeature = nullptr;
     m_blitRenderFeature = nullptr;
-	m_renderStageListBuilder = nullptr;
+	//m_renderStageListBuilder = nullptr;
 	m_standardVertexDeclaration = nullptr;
 	m_depthBufferCacheManager = nullptr;
 	m_renderTargetTextureCacheManager = nullptr;

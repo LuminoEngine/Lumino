@@ -19,10 +19,20 @@ UIViewport::UIViewport()
 {
 }
 
+UIViewport::~UIViewport()
+{
+}
+
 void UIViewport::initialize()
 {
 	UIContainerElement::initialize();
     m_imageEffectRenderer = makeRef<detail::ImageEffectRenderer>();
+}
+
+void UIViewport::dispose()
+{
+    UIContainerElement::dispose();
+    m_renderViews.clear();
 }
 
 void UIViewport::addRenderView(RenderView* view)

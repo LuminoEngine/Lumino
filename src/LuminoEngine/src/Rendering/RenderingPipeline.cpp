@@ -27,6 +27,10 @@ SceneRenderingPipeline::SceneRenderingPipeline()
 {
 }
 
+SceneRenderingPipeline::~SceneRenderingPipeline()
+{
+}
+
 void SceneRenderingPipeline::initialize()
 {
     RenderingPipeline::initialize();

@@ -15,6 +15,10 @@ DrawElementListBuilder::DrawElementListBuilder()
     m_defaultMaterial = newObject<Material>();
 }
 
+DrawElementListBuilder::~DrawElementListBuilder()
+{
+}
+
 void DrawElementListBuilder::setTargetList(DrawElementList * targetList)
 {
 	m_targetList = targetList;

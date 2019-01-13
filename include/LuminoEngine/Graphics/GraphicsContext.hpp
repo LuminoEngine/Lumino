@@ -55,7 +55,7 @@ LN_CONSTRUCT_ACCESS:
 	void initialize(detail::IGraphicsDeviceContext* device);
 
 LN_INTERNAL_ACCESS:
-	virtual void dispose();
+	virtual void dispose() override;
 
 private:
 

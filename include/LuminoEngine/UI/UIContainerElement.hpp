@@ -9,6 +9,7 @@ class UIContainerElement
 public:
 	UIContainerElement();
 	void initialize();
+    virtual void dispose() override;
 
 	void addElement(UIElement* element);
 
