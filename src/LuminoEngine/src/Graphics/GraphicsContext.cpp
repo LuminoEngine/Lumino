@@ -305,6 +305,10 @@ detail::IGraphicsDeviceContext* GraphicsContext::commitState()
 
         m_lastCommit.shader = m_staging.shader;
         m_lastCommit.shaderPass = m_staging.shaderPass;
+
+        if (value) {
+            value->commitContantBuffers();
+        }
 	}
 
     m_modifiedFlags = ModifiedFlags_None;

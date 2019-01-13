@@ -298,6 +298,7 @@ private:
 	void setOwner(ShaderTechnique* owner) { m_owner = owner; }
 	void setupParameters();
 	void commit();
+    void commitContantBuffers();
 	detail::IShaderPass* resolveRHIObject();
 
 	ShaderTechnique* m_owner;
