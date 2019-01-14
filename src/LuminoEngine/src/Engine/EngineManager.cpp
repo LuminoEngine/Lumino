@@ -101,8 +101,6 @@ void EngineManager::initialize()
         m_mainAmbientLight = newObject<AmbientLight>();
         m_mainDirectionalLight = newObject<DirectionalLight>();
 
-        m_mainPhysicsWorld = m_mainWorld->physicsWorld();
-
         m_mainCamera = newObject<Camera>();
         m_mainWorldRenderView = newObject<WorldRenderView>();
         m_mainWorldRenderView->setTargetWorld(m_mainWorld);
@@ -116,6 +114,8 @@ void EngineManager::initialize()
         m_mainUIRoot = newObject<UIContainerElement>();
         m_mainUIRenderView->setRootElement(m_mainUIRoot);
         m_uiManager->setPrimaryElement(m_mainUIRoot);
+
+        m_mainPhysicsWorld = m_mainWorld->physicsWorld();
     }
 }
 

@@ -16,7 +16,7 @@ protected:
 
 LN_CONSTRUCT_ACCESS:
     SphereComponent();
-	virtual ~SphereComponent() = default;
+    virtual ~SphereComponent();
 	void initialize();
 
 private:

@@ -22,6 +22,11 @@ void MeshGeneraterBuffer::setV(int index, const Vector3&	position, const Vector2
     m_vertexBuffer[index].color = m_color;
 }
 
+
+MeshGenerater::~MeshGenerater()
+{
+}
+
 } // namespace detail
 } // namespace ln
 

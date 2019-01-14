@@ -38,6 +38,7 @@ LN_CONSTRUCT_ACCESS:
 	World();
 	virtual ~World();
 	void initialize();
+    virtual void dispose() override;
 
 public: // TODO: internal
     const Ref<AnimationContext>& animationContext() const { return m_animationContext; }

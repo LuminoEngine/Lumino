@@ -15,6 +15,10 @@ InternalPrimitiveRenderer::InternalPrimitiveRenderer()
 {
 }
 
+InternalPrimitiveRenderer::~InternalPrimitiveRenderer()
+{
+}
+
 void InternalPrimitiveRenderer::initialize(RenderingManager* manager)
 {
     m_manager = manager;
@@ -39,6 +43,8 @@ void InternalPrimitiveRenderer::drawMeshGenerater(const MeshGenerater* generator
 
 void InternalPrimitiveRenderer::flush(IGraphicsDeviceContext* context)
 {
+    if (m_generators.isEmpty()) return;
+
     // Prepare buffers
     int vertexCount = 0;
     int indexCount = 0;
@@ -94,6 +100,10 @@ void InternalPrimitiveRenderer::flush(IGraphicsDeviceContext* context)
     context->setVertexBuffer(0, m_vertexBuffer);
     context->setIndexBuffer(m_indexBuffer);
     context->drawPrimitiveIndexed(m_primitiveType, 0, primitiveCount);
+
+    for (MeshGenerater* gen : m_generators) {
+        gen->~MeshGenerater();
+    }
 
     m_linearAllocator->cleanup();
     m_generators.clear();

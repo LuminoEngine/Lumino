@@ -12,6 +12,10 @@ SphereComponent::SphereComponent()
 {
 }
 
+SphereComponent::~SphereComponent()
+{
+}
+
 void SphereComponent::initialize()
 {
     VisualComponent::initialize();

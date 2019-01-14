@@ -41,6 +41,8 @@ private:
 class MeshGenerater
 {
 public:
+    virtual ~MeshGenerater();
+
     void setColor(const Color& color) { m_color = color; }
     void setTransform(const Matrix& transform) { m_transform = transform; }
 
@@ -66,6 +68,13 @@ public:
     }
 
 protected:
+
+    void copyFrom(const MeshGenerater* other)
+    {
+        m_color = other->m_color;
+        m_transform = other->m_transform;
+    }
+
     Color m_color;
     Matrix m_transform;
 };
@@ -119,8 +128,21 @@ public:
     virtual PrimitiveType primitiveType() const override { return PrimitiveType::TriangleList; }
     virtual MeshGenerater* clone(LinearAllocator* allocator) const override
     {
-        auto* ptr = allocator->allocate(sizeof(RegularSphereMeshFactory));
+        void* ptr = allocator->allocate(sizeof(RegularSphereMeshFactory));
         return new (ptr)RegularSphereMeshFactory(*this);
+        //auto* ss = new (ptr)RegularSphereMeshFactory(*this);
+        //auto* ss = new (ptr)RegularSphereMeshFactory/*()*/;
+        //ss->~RegularSphereMeshFactory();
+        //return ss;
+        //ss->copyFrom(this);
+        //return (MeshGenerater*)ptr;//
+    }
+    void copyFrom(const RegularSphereMeshFactory* other)
+    {
+        MeshGenerater::copyFrom(other);
+        m_radius = other->m_radius;
+        m_slices = other->m_slices;
+        m_stacks = other->m_stacks;
     }
 
     struct sinCos

@@ -14,6 +14,7 @@ class InternalPrimitiveRenderer
 {
 public:
     InternalPrimitiveRenderer();
+    virtual ~InternalPrimitiveRenderer();
     void initialize(RenderingManager* manager);
 
     void drawMeshGenerater(const MeshGenerater* generator);

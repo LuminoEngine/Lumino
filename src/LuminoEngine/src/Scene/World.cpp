@@ -28,6 +28,15 @@ void World::initialize()
     m_renderingContext = makeRef<detail::WorldSceneGraphRenderingContext>();
 }
 
+void World::dispose()
+{
+    removeAllObjects();
+    m_renderingContext.reset();
+    m_physicsWorld.reset();
+    m_animationContext.reset();
+    Object::dispose();
+}
+
 void World::addObject(WorldObject* obj)
 {
     if (LN_REQUIRE(obj)) return;

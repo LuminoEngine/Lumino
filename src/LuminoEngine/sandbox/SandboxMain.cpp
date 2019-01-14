@@ -12,7 +12,7 @@
 #include "../src/Rendering/UnLigitingSceneRenderer.hpp"
 #include "../src/Rendering/ClusteredShadingSceneRenderer.hpp"
 #include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/Rendering/RenderingContext.hpp>>
+#include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Visual/MeshPrimitiveComponent.hpp>
 #include "../src/Mesh/MqoImporter.hpp"
 #include "../src/Font/FontManager.hpp"
@@ -218,9 +218,9 @@ int main(int argc, char** argv)
     //body3->createFromMesh(mesh3->staticMeshComponent()->model()->meshContainers().front()->meshResource(), Engine::mainPhysicsWorld());
 
     List<Ref<WorldObject>> spheres;
-    for (int y = 0; y < 5; y++)
+    for (int y = 0; y < 1; y++)
     {
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 1; i++)
         {
             auto obj2 = newObject<WorldObject>();
             auto cmp2 = newObject<SphereComponent>();
@@ -303,6 +303,19 @@ int main(int argc, char** argv)
 
     //auto track1 = ScalarAnimationTrack::create();
     //track1->setCurve(curve1);
+
+
+
+
+
+    //Engine::update();
+
+    //Engine::terminate();
+    //return 0;
+
+
+
+
 
     float time = 0;
     int frameCount = 0;
