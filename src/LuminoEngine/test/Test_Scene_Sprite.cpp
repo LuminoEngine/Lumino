@@ -4,6 +4,9 @@
 //# スプライトのテスト
 class Test_Scene_Sprite : public LuminoSceneTest {};
 
+
+#if 0   // TODO: Rendering の デフォルトシェーダ確定後
+
 //------------------------------------------------------------------------------
 //## 画像を表示する
 TEST_F(Test_Scene_Sprite, Basic)
@@ -33,3 +36,5 @@ TEST_F(Test_Scene_Sprite, Basic)
         LN_TEST_CLEAN_SCENE;
 	}
 }
+
+#endif

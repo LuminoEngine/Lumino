@@ -18,6 +18,13 @@ void TestEnv::setup()
 	LuminoCLI = Path::combine(Path(ln::Environment::executablePath()).parent().parent().parent().parent(), u"tools", u"LuminoCLI", u"Debug", u"lumino-cli.exe");
 #else
 #endif
+
+    Engine::mainAmbientLight()->setColor(Color::White);
+    Engine::mainAmbientLight()->setIntensity(0.5);
+    Engine::mainDirectionalLight()->setColor(Color::White);
+    Engine::mainDirectionalLight()->setIntensity(0.5);
+    Engine::mainDirectionalLight()->setPosition(10, 10, -10);
+    Engine::mainDirectionalLight()->lookAt(Vector3(0, 0, 0));
 }
 
 void TestEnv::teardown()

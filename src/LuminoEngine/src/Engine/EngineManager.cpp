@@ -81,16 +81,34 @@ void EngineManager::initialize()
 	m_fpsController.setFrameRate(m_settings.frameRate);
 	m_fpsController.setEnableFpsTest(true);
 
-    // Main UI contents.
-	if (m_uiManager) {
+
+    if (m_uiManager) {
         m_mainUIContext = newObject<UIContext>();
         m_uiManager->setMainContext(m_mainUIContext);
 
-		m_mainWindow = newObject<UIFrameWindow>(m_platformManager->mainWindow(), m_settings.mainBackBufferSize);
-		m_mainViewport = newObject<UIViewport>();
+        m_mainWindow = newObject<UIFrameWindow>(m_platformManager->mainWindow(), m_settings.mainBackBufferSize);
+        m_mainViewport = newObject<UIViewport>();
         m_mainWindow->addElement(m_mainViewport);
 
         m_mainUIContext->setLayoutRootElement(m_mainWindow);
+    }
+
+    if (m_sceneManager)
+    {
+        m_mainWorld = newObject<World>();
+        m_sceneManager->setActiveWorld(m_mainWorld);
+
+        m_mainAmbientLight = newObject<AmbientLight>();
+        m_mainDirectionalLight = newObject<DirectionalLight>();
+
+        m_mainPhysicsWorld = m_mainWorld->physicsWorld();
+
+        m_mainCamera = newObject<Camera>();
+        m_mainWorldRenderView = newObject<WorldRenderView>();
+        m_mainWorldRenderView->setTargetWorld(m_mainWorld);
+        m_mainWorldRenderView->setCamera(m_mainCamera);
+        m_mainViewport->addRenderView(m_mainWorldRenderView);
+
 
         m_mainUIRenderView = newObject<UIRenderView>();
         m_mainViewport->addRenderView(m_mainUIRenderView);
@@ -98,23 +116,6 @@ void EngineManager::initialize()
         m_mainUIRoot = newObject<UIContainerElement>();
         m_mainUIRenderView->setRootElement(m_mainUIRoot);
         m_uiManager->setPrimaryElement(m_mainUIRoot);
-	}
-
-    // Main world contents.
-    if (m_sceneManager)
-    {
-        m_mainWorld = newObject<World>();
-        m_sceneManager->setActiveWorld(m_mainWorld);
-        m_mainAmbientLight = newObject<AmbientLight>();
-        m_mainDirectionalLight = newObject<DirectionalLight>();
-        m_mainCamera = newObject<Camera>();
-
-        m_mainWorldRenderView = newObject<WorldRenderView>();
-        m_mainWorldRenderView->setTargetWorld(m_mainWorld);
-        m_mainWorldRenderView->setCamera(m_mainCamera);
-        m_mainViewport->addRenderView(m_mainWorldRenderView);
-
-        m_mainPhysicsWorld = m_mainWorld->physicsWorld();
     }
 }
 
