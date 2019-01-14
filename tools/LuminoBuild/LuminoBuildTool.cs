@@ -17,7 +17,7 @@ namespace LuminoBuild
         public string InstallerProductGUID_MSVC2017 = "FF69C51F-DB0F-411A-A552-3F1B4783B538";
         
         public int MajorVersion = 0;
-        public int MinorVersion = 6;
+        public int MinorVersion = 7;
         public int RevisionVersion = 0;
         public int BuildVersion = 0;
         public string VersionString => string.Format("{0}.{1}.{2}", MajorVersion, MinorVersion, RevisionVersion);

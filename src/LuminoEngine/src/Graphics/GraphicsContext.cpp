@@ -311,7 +311,7 @@ detail::IGraphicsDeviceContext* GraphicsContext::commitState()
         m_lastCommit.shaderPass = m_staging.shaderPass;
 
         if (value) {
-            value->commitContantBuffers();
+            //value->commitContantBuffers();
         }
 	}
 

@@ -817,7 +817,7 @@ void ShaderPass::setupParameters()
 void ShaderPass::commit()
 {
 	auto* manager = m_owner->shader()->manager();
-
+    commitContantBuffers();
 }
 
 void ShaderPass::commitContantBuffers()

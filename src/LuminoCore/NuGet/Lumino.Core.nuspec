@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Lumino.Core</id>
-    <version>0.6.0</version>
+    <version>0.7.0</version>
     <authors>lriki</authors>
     <owners>lriki</owners>
     <licenseUrl>https://github.com/lriki/Lumino/blob/master/LICENSE</licenseUrl>
