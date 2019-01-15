@@ -24,7 +24,7 @@ public:
 
 	/** エンジンの終了処理を行います。 */
 	LN_METHOD()
-	static void terminate();
+	static void finalize();
 
 	/**
 	@brief		1フレーム分の更新処理を行います。

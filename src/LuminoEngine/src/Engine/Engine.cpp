@@ -59,7 +59,7 @@ void Engine::initialize()
 	beginFrame();
 }
 
-void Engine::terminate()
+void Engine::finalize()
 {
 	endFrame();
 	detail::EngineDomain::release();

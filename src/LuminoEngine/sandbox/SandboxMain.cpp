@@ -711,7 +711,7 @@ int main(int argc, char** argv)
 	}
 #endif
 
-	Engine::terminate();
+	Engine::finalize();
 
 	return 0;
 }
