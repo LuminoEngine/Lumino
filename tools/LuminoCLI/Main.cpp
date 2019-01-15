@@ -145,7 +145,7 @@ int main(int argc, char** argv)
 
 				BuildCommand cmd;
 				cmd.target = target;
-				if (!cmd.execute(workspace, workspace->project())) {
+				if (cmd.execute(workspace, workspace->project()) != 0) {
 					return 1;
 				}
 
