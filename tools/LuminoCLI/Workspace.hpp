@@ -11,7 +11,6 @@ public:
 	virtual ~Workspace();
 
 	Result openProject(const ln::Path& dir);
-	Result buildProject(const ln::String& target);
 	Result runProject(const ln::String& target);
 	Result restoreProject();
 

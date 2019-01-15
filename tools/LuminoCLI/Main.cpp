@@ -4,7 +4,7 @@
 #include "Project.hpp"
 #include "InitCommand.hpp"
 #include "FxcCommand.hpp"
-#include "ArchiveCommand.hpp"
+#include "BuildCommand.hpp"
 
 static int commnad_localInitialSetup(const char* packageDir_);
 
@@ -87,7 +87,7 @@ int main(int argc, char** argv)
         
         //--------------------------------------------------------------------------------
         // build-assets command
-        auto buildAssetsCommand = parser.addCommand(u"build-assets", u"Make assets archive.");
+        //auto buildAssetsCommand = parser.addCommand(u"build-assets", u"Make assets archive.");
 
 
 		//--------------------------------------------------------------------------------
@@ -124,9 +124,10 @@ int main(int argc, char** argv)
 				if (!workspace->openProject(ln::Environment::currentDirectory())) {
 					return 1;
 				}
-				if (!workspace->buildProject(target)) {
-					return 1;
-				}
+
+				BuildCommand cmd;
+				cmd.target = target;
+				return cmd.execute(workspace, workspace->project());
 			}
 			//--------------------------------------------------------------------------------
 			// run command
@@ -140,9 +141,14 @@ int main(int argc, char** argv)
 				if (!workspace->openProject(ln::Environment::currentDirectory())) {
 					return 1;
 				}
-				if (!workspace->buildProject(target)) {
+
+
+				BuildCommand cmd;
+				cmd.target = target;
+				if (!cmd.execute(workspace, workspace->project())) {
 					return 1;
 				}
+
 				if (!workspace->runProject(target)) {
 					return 1;
 				}
@@ -169,13 +175,13 @@ int main(int argc, char** argv)
             }
             //--------------------------------------------------------------------------------
             // build-assets command
-            else if (parser.has(buildAssetsCommand)) {
-                if (!workspace->openProject(ln::Environment::currentDirectory())) {
-                    return 1;
-                }
-                ArchiveCommand cmd;
-                return cmd.execute(workspace->project());
-            }
+            //else if (parser.has(buildAssetsCommand)) {
+            //    if (!workspace->openProject(ln::Environment::currentDirectory())) {
+            //        return 1;
+            //    }
+            //    ArchiveCommand cmd;
+            //    return cmd.execute(workspace->project());
+            //}
 			//--------------------------------------------------------------------------------
 			else if (parser.has(dev_installTools))
 			{
