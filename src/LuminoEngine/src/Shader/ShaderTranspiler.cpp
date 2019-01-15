@@ -254,7 +254,6 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
 		}
 	}
 
-
 	// -d オプション
 	//const int defaultVersion = Options & EOptionDefaultDesktop ? 110 : 100;
 	const int defaultVersion = 100;
@@ -338,193 +337,35 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
 
 	}
 
-
 	program.buildReflection();
 	program.dumpReflection();
-#if 0
-
-	for (int i = 0; i < program.getNumLiveAttributes(); i++)
-	{
-		auto* type = program.getAttributeTType(i);
-		printf("");
-	}
-	// 変数名はどこで作られる？
-#endif
 
 	glslang::GlslangToSpv(*program.getIntermediate(lang), m_spirvCode);
 
 	return true;
 }
 
-//static std::string ensure_valid_identifier(const std::string &name)
-//{
-//    if (name[0] == '_') {
-//        return name.substr(1);
-//    }
-//    else {
-//        return name;
-//    }
-//}
-
 std::string ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es)
 {
 	spirv_cross::CompilerGLSL glsl(m_spirvCode);
-
-#if 1
 	spirv_cross::ShaderResources resources = glsl.get_shader_resources();
-
-	// Get all sampled images in the shader.
-	for (auto &resource : resources.sampled_images)
-	{
-		unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
-		unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
-		printf("Image %s at set = %u, binding = %u\n", resource.name.c_str(), set, binding);
-
-		// Modify the decoration to prepare it for GLSL.
-		glsl.unset_decoration(resource.id, spv::DecorationDescriptorSet);
-		
-		
-
-		// Some arbitrary remapping if we want.
-		glsl.set_decoration(resource.id, spv::DecorationBinding, set * 16 + binding);
-	}
-
-
-#endif
 
 	// Set some options.
 	spirv_cross::CompilerGLSL::Options options;
 	options.version = version;
 	options.es = es;
-	//options.version = 410;
-	//options.es = false;
-	//options.version = 300;
-	//options.es = true;
 	glsl.set_common_options(options);
 
-
-
-	// From main.cpp
-	// Builds a mapping for all combinations of images and samplers.
-	glsl.build_combined_image_samplers();
-
-
-    std::vector<std::string> combinedImageSamplerNames;
-
-	// Give the remapped combined samplers new names.
-	// Here you can also set up decorations if you want (binding = #N).
-	for (auto &remap : glsl.get_combined_image_samplers())
-	{
-        // ここで結合するキーワードにに _ を含めないこと。
-        // 識別子内に連続する _ があると、SPIRV-Cross が内部でひとつの _ に変換するため、不整合が起こることがある。
-        //std::string name = "lnCIS_lnT_" + ensure_valid_identifier(glsl.get_name(remap.image_id)) + "_lnS_" + ensure_valid_identifier(glsl.get_name(remap.sampler_id));
-        std::string name = (LN_CIS_PREFIX LN_TO_PREFIX) + glsl.get_name(remap.image_id) + LN_SO_PREFIX + glsl.get_name(remap.sampler_id);
-		glsl.set_name(remap.combined_id, name);
-        combinedImageSamplerNames.push_back(std::move(name));
-		//glsl.set_name(remap.combined_id, "test" /*join("SPIRV_Cross_Combined", glsl.get_name(remap.image_id), glsl.get_name(remap.sampler_id))*/);
-	}
-
-
-
-
-
-	// uniform textureXX
-	for (auto &resource : resources.separate_images)
+	// DescriptorSet は Vulkan 固有のものであるため、他のAPIがバインディングを理解できるように再マップする。
+	// https://github.com/KhronosGroup/SPIRV-Cross#descriptor-sets-vulkan-glsl-for-backends-which-do-not-support-them-hlslglslmetal
+	for (auto &resource : resources.sampled_images)
 	{
 		unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
 		unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
-		printf("Image %s at set = %u, binding = %u\n", resource.name.c_str(), set, binding);
-	}
+		LN_LOG_VERBOSE << "Image " << resource.name.c_str() << " as set = " << set << ", binding = " << binding;
 
-	// uniform textureXX
-	for (auto &resource : resources.separate_samplers)
-	{
-		unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
-		unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
-		printf("Image %s at set = %u, binding = %u\n", resource.name.c_str(), set, binding);
-		
-	}
-
-
-	{
-		// TODO: 名前一致対応したい
-		/*
-			今のままだと、頂点シェーダの出力とピクセルシェーダの入力構造体のレイアウトが一致していなければ、
-			glUseProgram が INVALID を返すみたいな原因のわかりにくい問題となる。
-		
-			glslang がセマンティクスまで理解していればいいが、そうでなければ構造体メンバの名前一致で
-			指定できるようにしたい。
-
-		*/
-
-
-		if (m_stage == ShaderCodeStage::Vertex)
-		{
-			for (size_t i = 0; i < resources.stage_outputs.size(); i++)
-			{
-				// _entryPointOutput_Color
-
-				//auto s = "ln_varying_" + resources.stage_outputs[i].name.substr(18);
-
-				//
-
-				std::stringstream s;
-				s << "ln_varying_" << i;
-				glsl.set_name(resources.stage_outputs[i].id, s.str());
-				glsl.set_name(resources.stage_outputs[i].id, s.str());
-			}
-
-
-
-			//for (auto &resource : resources.stage_inputs)
-			//{
-			//	auto s = glsl.get_decoration_string(resource.id, spv::DecorationHlslSemanticGOOGLE);
-			//	std::cout << s << std::endl;
-			//}
-
-			//
-			
-		}
-		else if (m_stage == ShaderCodeStage::Fragment)
-		{
-			for (size_t i = 0; i < resources.stage_inputs.size(); i++)
-			{
-				//auto s = "ln_varying_" + resources.stage_inputs[i].name.substr(6);
-				std::stringstream s;
-				s << "ln_varying_" << i;
-				glsl.set_name(resources.stage_inputs[i].id, s.str());
-			}
-
-			for (size_t i = 0; i < resources.stage_outputs.size(); i++)
-			{
-				//glsl.set_decoration(resources.stage_outputs[i].id, spv::DecorationLocation, 6);
-				//glsl.unset_decoration(resources.stage_outputs[i].id, spv::DecorationLocation);
-			}
-		}
-
-		////auto resources = compiler.get_shader_resources();
-		//// For fragment shaders
-		//for (auto &v : resources.stage_inputs)
-		//	if (glsl.get_decoration(v.id, spv::DecorationLocation) == 0)
-		//	{
-		//		//glsl.set_name(v.id, "FFFF");
-		//		//printf("%s\n", v.);
-		//		//auto s = glsl.get_name(v.id);
-		//		//glsl.set_name(v.base_type_id, "VertexFragmentLinkage");
-
-		//		auto& a = glsl.get_type(v.type_id);
-		//		std::cout  << std::endl;
-		//		
-
-		//	}
-		//// For vertex shaders
-		//for (auto &v : resources.stage_outputs)
-		//	if (glsl.get_decoration(v.id, spv::DecorationLocation) == 0)
-		//	{
-		//		//auto s = glsl.get_name(v.id);
-		//		//glsl.set_name(v.base_type_id, "VertexFragmentLinkage");
-
-		//	}
+		glsl.unset_decoration(resource.id, spv::DecorationDescriptorSet);
+		glsl.set_decoration(resource.id, spv::DecorationBinding, set * 16 + binding);
 	}
 
 	// デフォルトでは binding の値が格納されており、 GLSL に出力すると１
@@ -537,82 +378,123 @@ std::string ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es)
 	// こうしておくと、glsl.compile() で binding 指定を含まない GLSL を生成することができる。
 	for (size_t i = 0; i < resources.uniform_buffers.size(); i++)
 	{
-		// Modify the decoration to prepare it for GLSL.
 		glsl.unset_decoration(resources.uniform_buffers[i].id, spv::DecorationBinding);
-		
-        //const spirv_cross::SPIRType &type = glsl.get_type(resources.uniform_buffers[i].id);
-        //type.
-		
-		// Some arbitrary remapping if we want.
-		//glsl.set_decoration(resource.id, spv::DecorationBinding, set * 16 + binding);
 	}
 
+	// HLSL では Texture と SamplerState は独立しているが、GLSL では統合されている。
+	// ここでは "キーワード + Texture名 + SamplerState名" というような名前を付けておく。
+	// 実行時に GLSLShader の中で uniform を列挙してこの規則の uniform を見つけ、実際の Texture と SamplerState の対応付けを行う。
+	std::vector<std::string> combinedImageSamplerNames;
+	{
+		// From main.cpp
+		// Builds a mapping for all combinations of images and samplers.
+		glsl.build_combined_image_samplers();
 
+		// Give the remapped combined samplers new names.
+		// Here you can also set up decorations if you want (binding = #N).
+		for (auto &remap : glsl.get_combined_image_samplers())
+		{
+			// ここで結合するキーワードにに _ を含めないこと。
+			// 識別子内に連続する _ があると、SPIRV-Cross が内部でひとつの _ に変換するため、不整合が起こることがある。
+			std::string name = (LN_CIS_PREFIX LN_TO_PREFIX) + glsl.get_name(remap.image_id) + LN_SO_PREFIX + glsl.get_name(remap.sampler_id);
+			glsl.set_name(remap.combined_id, name);
+			combinedImageSamplerNames.push_back(std::move(name));
+		}
+	}
 
-    std::string declsIsRT;
-    for (auto& name : combinedImageSamplerNames) {
-        declsIsRT += "uniform int " + name + (LN_IS_RT_POSTFIX ";");
-    }
+	// VertexShader から FragmentShader に渡す頂点データ (いわゆる昔の varying 変数) に同じ名前を付ける。
+	{
+		/*  TODO: 名前一致対応したい
+			今のままだと、頂点シェーダの出力とピクセルシェーダの入力構造体のレイアウトが一致していなければ、
+			glUseProgram が INVALID を返すみたいな原因のわかりにくい問題となる。
+			glslang がセマンティクスまで理解していればいいが、そうでなければ構造体メンバの名前一致で指定できるようにしたい。
+		*/
 
-    std::string code = glsl.compile();
+		if (m_stage == ShaderCodeStage::Vertex)
+		{
+			for (size_t i = 0; i < resources.stage_outputs.size(); i++)
+			{
+				std::stringstream s;
+				s << "ln_varying_" << i;
+				glsl.set_name(resources.stage_outputs[i].id, s.str());
+				glsl.set_name(resources.stage_outputs[i].id, s.str());
+			}
+		}
+		else if (m_stage == ShaderCodeStage::Fragment)
+		{
+			for (size_t i = 0; i < resources.stage_inputs.size(); i++)
+			{
+				std::stringstream s;
+				s << "ln_varying_" << i;
+				glsl.set_name(resources.stage_inputs[i].id, s.str());
+			}
+		}
+	}
 
-    if (es)
-    {
-        if (m_stage == ShaderCodeStage::Vertex)
-        {
-            // VertexShader は精度指定子を記述する必要はないので、自動生成はされない。
-            // https://qiita.com/konweb/items/ec8fa8cd3bc33df14933#%E7%B2%BE%E5%BA%A6%E4%BF%AE%E9%A3%BE%E5%AD%90
-            code = code.insert(16,
-                declsIsRT + "\n" +
-                //"vec4 xxTexture(int isRT, sampler2D s, vec2 uv) { if (isRT != 0) { return texture2D(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); } else { return texture2D(s, uv); } }\n"
-                "vec4 xxTexture(int isRT, sampler2D s, vec2 uv) { if (isRT != 0) { return texture(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); } else { return texture(s, uv); } }\n"
-                "#define texture(s, uv) xxTexture(s##lnIsRT, s, uv)\n"
-                "#line 1\n"
-            );
-        }
-        else
-        {
-            code = code.insert(16 + 45,
-                declsIsRT + "\n" +
-                //"vec4 xxTexture(int isRT, sampler2D s, vec2 uv) { if (isRT != 0) { return texture2D(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); } else { return texture2D(s, uv); } }\n"
-                "highp vec4 xxTexture(int isRT, sampler2D s, vec2 uv) { if (isRT != 0) { return texture(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); } else { return texture(s, uv); } }\n"
-                "#define texture(s, uv) xxTexture(s##lnIsRT, s, uv)\n"
-                "#line 1\n"
-            );
-        }
-    }
-    else
-    {
-        code = code.insert(13,
-            declsIsRT + "\n" +
-            "vec4 xxTexture(int isRT, sampler2D s, vec2 uv) { if (isRT != 0) { return texture(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); } else { return texture(s, uv); } }\n"
-            "vec4 xxTexture(int isRT, sampler3D s, vec3 uv) { if (isRT != 0) { return texture(s, vec3(uv.x, (uv.y * -1.0) + 1.0, uv.z)); } else { return texture(s, uv); } }\n"
-            "#define texture(s, uv) xxTexture(s##lnIsRT, s, uv)\n"
-            "#line 1\n"
-        );
-    }
+	// Generate GLSL code.
+	std::string code = glsl.compile();
 
-    /*
-    DirectX に合わせたテクスチャ座標系(左上が原点)で OpenGL を使おうとすると、
-    OpenGL のレンダリングターゲットをサンプリングするときに問題となる。
+	// テクスチャサンプリング時にレンダリングターゲットであるかを判断し、上下反転するマクロコードを挿入する。
+	{
+		std::string declsIsRT;
+		for (auto& name : combinedImageSamplerNames) {
+			declsIsRT += "uniform int " + name + (LN_IS_RT_POSTFIX ";");
+		}
 
-    普通のテクスチャは glTexImage などで画像を転送するときに上下反転するなど、自分で制御できる。
-    しかし、レンダリングターゲットは OpenGL が書き込むため、上下の制御ができない。
+		if (es)
+		{
+			if (m_stage == ShaderCodeStage::Vertex)
+			{
+				// VertexShader は精度指定子を記述する必要はないので、自動生成はされない。
+				// https://qiita.com/konweb/items/ec8fa8cd3bc33df14933#%E7%B2%BE%E5%BA%A6%E4%BF%AE%E9%A3%BE%E5%AD%90
+				code = code.insert(16,
+					declsIsRT + "\n" +
+					"vec4 LN_xxTexture(int isRT, sampler2D s, vec2 uv) { if (isRT != 0) { return texture(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); } else { return texture(s, uv); } }\n"
+					"#define texture(s, uv) LN_xxTexture(s##lnIsRT, s, uv)\n"
+					"#line 1\n"
+				);
+			}
+			else
+			{
+				code = code.insert(16 + 45,
+					declsIsRT + "\n" +
+					"highp vec4 LN_xxTexture(int isRT, sampler2D s, vec2 uv) { if (isRT != 0) { return texture(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); } else { return texture(s, uv); } }\n"
+					"#define texture(s, uv) LN_xxTexture(s##lnIsRT, s, uv)\n"
+					"#line 1\n"
+				);
+			}
+		}
+		else
+		{
+			code = code.insert(13,
+				declsIsRT + "\n" +
+				"vec4 LN_xxTexture(int isRT, sampler2D s, vec2 uv) { if (isRT != 0) { return texture(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); } else { return texture(s, uv); } }\n"
+				"vec4 LN_xxTexture(int isRT, sampler3D s, vec3 uv) { if (isRT != 0) { return texture(s, vec3(uv.x, (uv.y * -1.0) + 1.0, uv.z)); } else { return texture(s, uv); } }\n"
+				"#define texture(s, uv) LN_xxTexture(s##lnIsRT, s, uv)\n"
+				"#line 1\n"
+			);
+		}
 
-    このためシェーダでは、レンダリングターゲットをサンプリングするときに限り上下反転する必要がある。
+		/*
+			DirectX に合わせたテクスチャ座標系(左上が原点)で OpenGL を使おうとすると、
+			OpenGL のレンダリングターゲットをサンプリングするときに問題となる。
 
+			普通のテクスチャは glTexImage などで画像を転送するときに上下反転するなど、自分で制御できる。
+			しかし、レンダリングターゲットは OpenGL が書き込むため、上下の制御ができない。
 
-    bgfx の issue:
-    https://github.com/bkaradzic/bgfx/issues/973
+			このためシェーダでは、レンダリングターゲットをサンプリングするときに限り上下反転する必要がある。
 
-    TEXTURE COORDINATES – D3D VS. OPENGL:
-    https://www.puredevsoftware.com/blog/2018/03/17/texture-coordinates-d3d-vs-opengl/
-    通常テクスチャなら、glTexImage による反転と、サンプリング時の反転により正しく描画できる。
-    
-    Unity は内部的にうまいことやってくれているらしい:
-    https://forum.unity.com/threads/fix-for-directx-flipping-vertical-screen-coordinates-in-image-effects-not-working.266455/
+			bgfx の issue:
+			https://github.com/bkaradzic/bgfx/issues/973
 
-    */
+			TEXTURE COORDINATES – D3D VS. OPENGL:
+			https://www.puredevsoftware.com/blog/2018/03/17/texture-coordinates-d3d-vs-opengl/
+			通常テクスチャなら、glTexImage による反転と、サンプリング時の反転により正しく描画できる。
+
+			Unity は内部的にうまいことやってくれているらしい:
+			https://forum.unity.com/threads/fix-for-directx-flipping-vertical-screen-coordinates-in-image-effects-not-working.266455/
+		*/
+	}
 
     return code;
 }
