@@ -195,6 +195,13 @@ Result BuildCommand::buildAssets()
 		CLI::info(u"Copy to " + dst);
 	}
 
+	// Web
+	{
+		auto dst = ln::Path::combine(m_project->buildDir(), u"Web", u"Assets.lca");
+		ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
+		CLI::info(u"Copy to " + dst);
+	}
+
 	CLI::info(u"Compilation succeeded.");
 
 	return Result::Success;
