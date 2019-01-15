@@ -1,6 +1,5 @@
 ﻿
 #pragma once
-#include "String.hpp"
 
 namespace ln {
 

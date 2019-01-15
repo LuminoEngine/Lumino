@@ -2,6 +2,8 @@
 
 #include <LuminoCore.hpp>
 
+#include "LuminoEngine/Base/Regex.hpp"
+
 #include "LuminoEngine/Engine/EngineSettings.hpp"
 #include "LuminoEngine/Engine/Engine.hpp"
 #include "LuminoEngine/Engine/Application.hpp"

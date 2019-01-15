@@ -9,6 +9,13 @@ set(LN_ENGINE_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/../../include)
 #------------------------------------------------------------------------------
 # Files
 
+set(LN_SOURCES_Base
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/Regex.hpp
+    src/Base/Internal.hpp
+    src/Base/Regex.cpp
+)
+
 set(LN_SOURCES_Engine
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Application.hpp
@@ -439,6 +446,7 @@ if (APPLE)
 endif()
 
 # Grouping.
+source_group("Base"      FILES ${LN_SOURCES_Base})
 source_group("Engine"    FILES ${LN_SOURCES_Engine})
 source_group("Platform"  FILES ${LN_SOURCES_Platform})
 source_group("Input"     FILES ${LN_SOURCES_Input})
@@ -462,6 +470,7 @@ set(LN_SOURCES
     src/LuminoEngine.PCH.cpp
     src/LuminoEngine.PCH.h
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine.hpp
+    ${LN_SOURCES_Base}
     ${LN_SOURCES_Engine}
     ${LN_SOURCES_Platform}
     ${LN_SOURCES_Grammar}
@@ -561,7 +570,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE ${LN_PLATFORM_DEFINITIONS})
 #target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive ${PROJECT_NAME}-static -Wl,--no-whole-archive)
 #target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-static)
 target_link_libraries(${PROJECT_NAME} INTERFACE LuminoCore ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore ZLIB PNG FreeType vorbisfile vorbis ogg BulletSoftBody BulletDynamics BulletCollision LinearMath ${LN_PLATFORM_LIBS})
+target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore pcre ZLIB PNG FreeType vorbisfile vorbis ogg BulletSoftBody BulletDynamics BulletCollision LinearMath ${LN_PLATFORM_LIBS})
 #target_link_libraries(${PROJECT_NAME} PRIVATE glslang)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")

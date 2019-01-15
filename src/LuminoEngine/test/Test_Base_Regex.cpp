@@ -1,5 +1,4 @@
 ﻿#include "Common.hpp"
-#include <LuminoCore/Base/Regex.hpp>
 
 class Test_Base_Regex : public ::testing::Test {};
 

@@ -112,17 +112,10 @@ else()
     include(external/ImportExternalLibraries.cmake)
     add_subdirectory(src/LuminoCore)
     add_subdirectory(src/LuminoEngine)
+    if (LN_BUILD_TOOLS)
+        add_subdirectory(tools/LuminoCLI)
+    endif()
+    if (LN_BUILD_BINDINGS)
+        add_subdirectory(tools/lumino-wg)
+    endif()
 endif()
-
-    
-if (LN_BUILD_TOOLS)
-    add_subdirectory(tools/LuminoCLI)
-endif()
-if (LN_BUILD_BINDINGS)
-    add_subdirectory(tools/lumino-wg)
-endif()
-
-if (LN_OS_DESKTOP)
-    #add_subdirectory(src/LuminoRuntime)
-endif()
-
