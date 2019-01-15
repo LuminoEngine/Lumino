@@ -47,6 +47,7 @@ Result Workspace::runProject(const ln::String& target)
 			}
 
 			ln::Process proc2;
+            proc2.setUseShellExecute(true);
 			proc2.setProgram(u"http://localhost:8000/" + (*files.begin()).fileName());
 			proc2.start();
 		}
