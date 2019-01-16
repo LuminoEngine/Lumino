@@ -14,6 +14,7 @@ namespace LuminoBuild.Rules
         public override void Build(Builder builder)
         {
             builder.DoTask("MakeReleasePackage");
+            builder.DoTask("CompressPackage");
             
             if (Utils.IsWin32)
             {
