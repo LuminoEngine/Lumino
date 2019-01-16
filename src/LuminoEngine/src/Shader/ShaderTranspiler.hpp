@@ -15,8 +15,8 @@ class ShaderRenderState;
 
 enum class ShaderCodeStage
 {
-	Vertex,
-	Fragment,
+    Vertex,
+    Fragment,
 };
 
 // シェーダコード１つ分。
@@ -24,22 +24,26 @@ enum class ShaderCodeStage
 class ShaderCodeTranspiler
 {
 public:
-	static void initializeGlobals();
-	static void finalizeGlobals();
+    static void initializeGlobals();
+    static void finalizeGlobals();
 
     ShaderCodeTranspiler(ShaderManager* manager);
 
-	bool parseAndGenerateSpirv(
-		ShaderCodeStage stage, const char* code, size_t length, const std::string& entryPoint,
-		const List<Path>& includeDir, const List<String>* definitions, DiagnosticsManager* diag);
+    bool parseAndGenerateSpirv(
+        ShaderCodeStage stage,
+        const char* code,
+        size_t length,
+        const std::string& entryPoint,
+        const List<Path>& includeDir,
+        const List<String>* definitions,
+        DiagnosticsManager* diag);
 
-	std::string generateGlsl(uint32_t version, bool es);
-
+    std::string generateGlsl(uint32_t version, bool es);
 
 private:
     ShaderManager* m_manager;
-	ShaderCodeStage m_stage;
-	std::vector<uint32_t> m_spirvCode;
+    ShaderCodeStage m_stage;
+    std::vector<uint32_t> m_spirvCode;
 };
 
 } // namespace detail
