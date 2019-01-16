@@ -8,8 +8,6 @@ public:
 
 	static void nativeInitialize(int viewWidth, int viewHeight);
 
-	static void addAssetArchive(const StringRef& fileFullPath, const StringRef& password = StringRef());
-
 	static void nativeUpdateFrame();
 
 	static void nativeFinalize();

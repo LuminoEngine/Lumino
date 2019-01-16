@@ -28,16 +28,6 @@ int Win32PlatformInterface::WinMain()
 	return 0;
 }
 
-void Win32PlatformInterface::addAssetArchive(const ln::StringRef& fileFullPath, const ln::StringRef& password)
-{
-    detail::EngineDomain::engineManager()->settings().assetArchives.add({ fileFullPath, password });
-}
-
-void Win32PlatformInterface::addAssetDirectory(const ln::StringRef& path)
-{
-    detail::EngineDomain::engineManager()->settings().assetDirectories.add(path);
-}
-
 } // namespace ln
 
 #endif

@@ -16,11 +16,6 @@ void iOSPlatformInterface::nativeInitialize(int viewWidth, int viewHeight)
 	ln::detail::ApplicationHelper::initialize(g_app);
 }
 
-void iOSPlatformInterface::addAssetArchive(const StringRef& fileFullPath, const StringRef& password)
-{
-    detail::EngineDomain::engineManager()->settings().assetArchives.add({ fileFullPath, password });
-}
-
 void iOSPlatformInterface::nativeUpdateFrame()
 {
 	ln::detail::ApplicationHelper::processTick(g_app);

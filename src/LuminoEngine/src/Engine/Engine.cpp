@@ -34,6 +34,21 @@ void EngineSettings::setMainWindowTitle(const StringRef& title)
 	detail::EngineDomain::engineManager()->settings().mainWindowTitle = title;
 }
 
+void EngineSettings::addAssetDirectory(const ln::StringRef& path)
+{
+	detail::EngineDomain::engineManager()->settings().assetDirectories.add(path);
+}
+
+void EngineSettings::addAssetArchive(const ln::StringRef& fileFullPath, const ln::StringRef& password)
+{
+	detail::EngineDomain::engineManager()->settings().assetArchives.add({ fileFullPath, password });
+}
+
+void EngineSettings::setAssetStorageAccessPriority(AssetStorageAccessPriority value)
+{
+	detail::EngineDomain::engineManager()->settings().assetStorageAccessPriority = value;
+}
+
 void EngineSettings::setEngineFeatures(Flags<EngineFeature> features)
 {
     detail::EngineDomain::engineManager()->settings().features = features;

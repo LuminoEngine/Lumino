@@ -5,6 +5,11 @@
 namespace ln {
 namespace detail {
 
+enum class AssetArchiveStorageKind
+{
+	Directory,
+	ArchiveFile,
+};
 
 class AssetArchive
     : public RefObject
@@ -13,6 +18,7 @@ public:
     virtual void close() = 0;
     virtual bool existsFile(const Path& unifiedFilePath) const = 0;
 	virtual Ref<Stream> openFileStream(const Path& unifiedFilePath) = 0;
+	virtual AssetArchiveStorageKind storageKind() const = 0;
 };
 
 
@@ -67,6 +73,7 @@ public:
 	size_t read(byte_t* data, size_t count, size_t dataOffset, size_t dataSize, size_t seekPoint);
     virtual bool existsFile(const Path& unifiedFilePath) const override;
 	virtual Ref<Stream> openFileStream(const Path& unifiedFilePath) override;
+	virtual AssetArchiveStorageKind storageKind() const override { return AssetArchiveStorageKind::ArchiveFile; }
 
 private:
 	struct FileEntry
@@ -118,9 +125,10 @@ class FileSystemReader
 public:
 	FileSystemReader();
 	void setRootPath(const StringRef& path);
-	virtual void close();
-	virtual bool existsFile(const Path& unifiedFilePath) const;
-	virtual Ref<Stream> openFileStream(const Path& unifiedFilePath);
+	virtual void close() override;
+	virtual bool existsFile(const Path& unifiedFilePath) const override;
+	virtual Ref<Stream> openFileStream(const Path& unifiedFilePath) override;
+	virtual AssetArchiveStorageKind storageKind() const override { return AssetArchiveStorageKind::Directory; }
 
 private:
 	Path m_rootPath;

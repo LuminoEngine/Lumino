@@ -13,6 +13,7 @@ namespace detail {
 // AssetManager
 
 AssetManager::AssetManager()
+	: m_storageAccessPriority(AssetStorageAccessPriority::DirectoryFirst)
 {
 }
 
@@ -26,10 +27,18 @@ void AssetManager::initialize(const Settings& settings)
 
 void AssetManager::dispose()
 {
-    for (auto& archive : m_archives) {
+    for (auto& archive : m_requestedArchives) {
         archive->close();
     }
-    m_archives.clear();
+	m_requestedArchives.clear();
+}
+
+void AssetManager::addAssetDirectory(const StringRef& path)
+{
+	auto archive = makeRef<FileSystemReader>();
+	archive->setRootPath(path);
+	m_requestedArchives.add(archive);
+	refreshActualArchives();
 }
 
 void AssetManager::addAssetArchive(const StringRef& filePath, const StringRef& password)
@@ -37,20 +46,20 @@ void AssetManager::addAssetArchive(const StringRef& filePath, const StringRef& p
     auto archive = makeRef<CryptedAssetArchiveReader>();
     bool result = archive->open(filePath, password, true);
     if (LN_ENSURE(result)) return;
-    m_archives.add(archive);
+	m_requestedArchives.add(archive);
+	refreshActualArchives();
 }
 
-void AssetManager::addAssetDirectory(const StringRef& path)
+void AssetManager::setAssetStorageAccessPriority(AssetStorageAccessPriority value)
 {
-	auto archive = makeRef<FileSystemReader>();
-	archive->setRootPath(path);
-	m_archives.add(archive);
+	m_storageAccessPriority = value;
+	refreshActualArchives();
 }
 
 bool AssetManager::existsFile(const StringRef& filePath) const
 {
     auto unifiedFilePath = Path(filePath).unify();
-    for (auto& archive : m_archives) {
+    for (auto& archive : m_actualArchives) {
         if (archive->existsFile(unifiedFilePath)) {
             return true;
         }
@@ -64,7 +73,7 @@ bool AssetManager::existsFile(const StringRef& filePath) const
 Ref<Stream> AssetManager::openFileStream(const StringRef& filePath)
 {
 	auto unifiedFilePath = Path(filePath).unify();
-	for (auto& archive : m_archives) {
+	for (auto& archive : m_actualArchives) {
 		auto stream = archive->openFileStream(unifiedFilePath);
 		if (stream) {
 			return stream;
@@ -109,6 +118,49 @@ Ref<Shader> AssetManager::loadShader(const StringRef& filePath)
     return ref;
 }
 
+void AssetManager::refreshActualArchives()
+{
+	m_actualArchives.clear();
+
+	switch (m_storageAccessPriority)
+	{
+	case AssetStorageAccessPriority::DirectoryFirst:
+		for (auto& ac : m_requestedArchives) {
+			if (ac->storageKind() == AssetArchiveStorageKind::Directory) {
+				m_actualArchives.add(ac);
+			}
+		}
+		for (auto& ac : m_requestedArchives) {
+			if (ac->storageKind() == AssetArchiveStorageKind::ArchiveFile) {
+				m_actualArchives.add(ac);
+			}
+		}
+		break;
+	case AssetStorageAccessPriority::ArchiveFirst:
+		for (auto& ac : m_requestedArchives) {
+			if (ac->storageKind() == AssetArchiveStorageKind::ArchiveFile) {
+				m_actualArchives.add(ac);
+			}
+		}
+		for (auto& ac : m_requestedArchives) {
+			if (ac->storageKind() == AssetArchiveStorageKind::Directory) {
+				m_actualArchives.add(ac);
+			}
+		}
+		break;
+	case AssetStorageAccessPriority::ArchiveOnly:
+		for (auto& ac : m_requestedArchives) {
+			if (ac->storageKind() == AssetArchiveStorageKind::ArchiveFile) {
+				m_actualArchives.add(ac);
+			}
+		}
+		break;
+	default:
+		LN_UNREACHABLE();
+		break;
+	}
+}
+
 bool AssetManager::existsFileInternal(const StringRef& filePath, const Char** exts, int extsCount) const
 {
 	List<Path> paths;
@@ -116,7 +168,7 @@ bool AssetManager::existsFileInternal(const StringRef& filePath, const Char** ex
 	makeFindPaths(filePath, exts, extsCount, &paths);
 
 	auto unifiedFilePath = Path(filePath).unify();
-	for (auto& archive : m_archives) {
+	for (auto& archive : m_actualArchives) {
 		for (auto& path : paths) {
 			if (archive->existsFile(path)) {
 				return true;
@@ -124,9 +176,7 @@ bool AssetManager::existsFileInternal(const StringRef& filePath, const Char** ex
 		}
 	}
 
-	// TODO: dummy archive
-
-	return FileSystem::existsFile(filePath);
+	return false;
 }
 
 Ref<Stream> AssetManager::openFileStreamInternal(const StringRef& filePath, const Char** exts, int extsCount)
@@ -136,7 +186,7 @@ Ref<Stream> AssetManager::openFileStreamInternal(const StringRef& filePath, cons
 	makeFindPaths(filePath, exts, extsCount, &paths);
 
 	auto unifiedFilePath = Path(filePath).unify();
-	for (auto& archive : m_archives) {
+	for (auto& archive : m_actualArchives) {
 		for (auto& path : paths) {
 			auto stream = archive->openFileStream(path);
 			if (stream) {
@@ -145,9 +195,7 @@ Ref<Stream> AssetManager::openFileStreamInternal(const StringRef& filePath, cons
 		}
 	}
 
-	// TODO: dummy archive
-
-	return FileStream::create(filePath, FileOpenMode::Read);
+	return nullptr;
 }
 
 void AssetManager::makeFindPaths(const StringRef& filePath, const Char** exts, int extsCount, List<Path>* paths) const

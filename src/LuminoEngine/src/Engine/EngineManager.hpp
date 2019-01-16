@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <LuminoEngine/Engine/Common.hpp>
+#include <LuminoEngine/Asset/Common.hpp>
 #include <LuminoEngine/Graphics/GeometryStructs.hpp>
 #include <LuminoEngine/Platform/PlatformEvent.hpp>
 #include "FpsController.hpp"
@@ -46,6 +47,7 @@ struct EngineSettings
 	SizeI mainWindowSize = SizeI(640, 480);
 	SizeI mainBackBufferSize = SizeI(640, 480);
 	String mainWindowTitle = _T("Lumino");
+	AssetStorageAccessPriority assetStorageAccessPriority = AssetStorageAccessPriority::DirectoryFirst;
     List<EngineSettingsAssetArchiveEntry> assetArchives;
 	List<Path> assetDirectories;
 	bool standaloneFpsControl = false;

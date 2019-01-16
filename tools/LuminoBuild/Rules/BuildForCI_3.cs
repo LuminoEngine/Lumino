@@ -13,7 +13,6 @@ namespace LuminoBuild.Rules
 
         public override void Build(Builder builder)
         {
-            builder.DoTask("BuildDocuments");
             builder.DoTask("MakeReleasePackage");
             
             if (Utils.IsWin32)

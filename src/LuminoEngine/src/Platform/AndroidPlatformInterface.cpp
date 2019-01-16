@@ -34,10 +34,5 @@ void AndroidPlatformInterface::updateFrame()
     ln::detail::ApplicationHelper::processTick(g_app);
 }
 
-void AndroidPlatformInterface::addAssetArchive(const ln::StringRef& fileFullPath, const ln::StringRef& password)
-{
-    detail::EngineDomain::engineManager()->settings().assetArchives.add({ fileFullPath, password });
-}
-
 } // namespace ln
 #endif
