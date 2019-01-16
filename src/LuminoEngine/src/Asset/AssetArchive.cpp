@@ -413,7 +413,12 @@ bool FileSystemReader::existsFile(const Path& unifiedFilePath) const
 
 Ref<Stream> FileSystemReader::openFileStream(const Path& unifiedFilePath)
 {
-	return FileStream::create(Path(m_rootPath, unifiedFilePath), FileOpenMode::Read);
+	if (FileSystem::existsFile(Path(m_rootPath, unifiedFilePath))) {
+		return FileStream::create(Path(m_rootPath, unifiedFilePath), FileOpenMode::Read);
+	}
+	else {
+		return nullptr;
+	}
 }
 
 } // namespace detail

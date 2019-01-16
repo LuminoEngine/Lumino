@@ -13,5 +13,7 @@ private:
 	Result buildAndroidTarget();
 	Result buildAssets();
 
+	Result buildAsset_Shader(const ln::Path& inputFile, ln::Path* outputFile);
+
 	Project* m_project;
 };

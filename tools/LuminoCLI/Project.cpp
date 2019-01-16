@@ -138,6 +138,7 @@ void Project::setupPathes()
 	m_sourcesDir = ln::Path(m_rootDir, u"Sources");
 	m_assetsDir = ln::Path(m_rootDir, u"Assets");
 	m_buildDir = ln::Path(m_rootDir, u".ln");
+	m_intermediateAssetsDir = ln::Path(m_buildDir, u"Assets");
 
 	auto files = ln::FileSystem::getFiles(m_rootDir, u"*" + ProjectFileExt);
 	if (!files.isEmpty()) {

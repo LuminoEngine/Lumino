@@ -149,13 +149,13 @@ Result BuildCommand::buildAssets()
 
 	for (auto& file : ln::FileSystem::getFiles(m_project->assetsDir(), ln::StringRef(), ln::SearchOption::Recursive)) {
 		if (file.hasExtension(".fx")) {
-			auto workFile = ln::Path(m_project->buildDir(), file.fileName().replaceExtension(ln::detail::UnifiedShader::FileExt));
 
-			FxcCommand cmd;
-			cmd.outputFile = workFile;
-			cmd.execute(file);
+			ln::Path outputFile;
+			if (!buildAsset_Shader(file, &outputFile)) {
+				return Result::Fail;
+			}
 
-			writer.addFile(workFile, m_project->assetsDir().makeRelative(file).replaceExtension(ln::detail::UnifiedShader::FileExt));
+			writer.addFile(outputFile, m_project->assetsDir().makeRelative(file).replaceExtension(ln::detail::UnifiedShader::FileExt));
 			CLI::info(file);
 		}
 		else {
@@ -197,12 +197,31 @@ Result BuildCommand::buildAssets()
 
 	// Web
 	{
-		auto dst = ln::Path::combine(m_project->buildDir(), u"Web", u"Assets.lca");
+		auto dstDir = ln::Path::combine(m_project->buildDir(), u"Web");
+		ln::FileSystem::createDirectory(dstDir);
+
+		auto dst = ln::Path::combine(dstDir, u"Assets.lca");
 		ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
 		CLI::info(u"Copy to " + dst);
 	}
 
 	CLI::info(u"Compilation succeeded.");
 
+	return Result::Success;
+}
+
+Result BuildCommand::buildAsset_Shader(const ln::Path& inputFile, ln::Path* outputFile)
+{
+	auto rel = m_project->assetsDir().makeRelative(inputFile);
+	auto workFile = ln::Path::combine(m_project->intermediateAssetsDir(), rel.parent(), inputFile.fileName().replaceExtension(ln::detail::UnifiedShader::FileExt));
+	ln::FileSystem::createDirectory(workFile.parent());
+
+	FxcCommand cmd;
+	cmd.outputFile = workFile;
+	if (cmd.execute(inputFile) != 0) {
+		return Result::Fail;
+	}
+
+	*outputFile = workFile;
 	return Result::Success;
 }

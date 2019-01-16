@@ -168,8 +168,8 @@ bool AssetManager::existsFileInternal(const StringRef& filePath, const Char** ex
 	makeFindPaths(filePath, exts, extsCount, &paths);
 
 	auto unifiedFilePath = Path(filePath).unify();
-	for (auto& archive : m_actualArchives) {
-		for (auto& path : paths) {
+	for (auto& path : paths) {
+		for (auto& archive : m_actualArchives) {
 			if (archive->existsFile(path)) {
 				return true;
 			}
@@ -186,8 +186,8 @@ Ref<Stream> AssetManager::openFileStreamInternal(const StringRef& filePath, cons
 	makeFindPaths(filePath, exts, extsCount, &paths);
 
 	auto unifiedFilePath = Path(filePath).unify();
-	for (auto& archive : m_actualArchives) {
-		for (auto& path : paths) {
+	for (auto& path : paths) {
+		for (auto& archive : m_actualArchives) {
 			auto stream = archive->openFileStream(path);
 			if (stream) {
 				return stream;

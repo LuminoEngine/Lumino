@@ -5,17 +5,18 @@
 
 int main(int argc, const char * argv[])
 {
-	ln::GlobalLogger::addStdErrAdapter();
+    ln::GlobalLogger::addStdErrAdapter();
 
 #ifdef LN_DEBUG
-    auto projectRoot = ln::Path(ln::Enviroment::executablePath()).parent().parent().parent().parent();
-    ln::Engine::addAssetDirectory(projectRoot);
+    auto projectRoot = ln::Path(ln::Environment::executablePath()).parent().parent().parent().parent().parent();
+    ln::EngineSettings::addAssetDirectory(ln::Path::combine(projectRoot, u"Assets"));
+    ln::EngineSettings::addAssetDirectory(ln::Path::combine(projectRoot, u".ln", u"Assets"));
 #endif
 
-	NSBundle* bundle = [NSBundle mainBundle];
-	NSString* assetsPath = [bundle pathForResource:@"Assets" ofType:@"lca"];
-	ln::Engine::addAssetArchive(
-		ln::String::fromStdString(std::string([assetsPath UTF8String])));
+    NSBundle* bundle = [NSBundle mainBundle];
+    NSString* assetsPath = [bundle pathForResource:@"Assets" ofType:@"lca"];
+    ln::Engine::addAssetArchive(
+        ln::String::fromStdString(std::string([assetsPath UTF8String])));
 
-	return ln::CocoaPlatformInterface::Main();
+    return ln::CocoaPlatformInterface::Main();
 }

@@ -7,13 +7,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_ int       nCmdShow)
 {
 #ifdef LN_DEBUG
-    auto projectRoot = ln::Path(ln::Enviroment::executablePath()).parent().parent().parent().parent().parent();
-    ln::Engine::addAssetDirectory(projectRoot);
+    auto projectRoot = ln::Path(ln::Environment::executablePath()).parent().parent().parent().parent().parent();
+    ln::EngineSettings::addAssetDirectory(ln::Path::combine(projectRoot, u"Assets"));
+	ln::EngineSettings::addAssetDirectory(ln::Path::combine(projectRoot, u".ln", u"Assets"));
 #endif
 
     auto archive = u"Assets.lca";
     if (ln::FileSystem::existsFile(archive)) {
-        ln::Engine::addAssetArchive(archive);
+        ln::EngineSettings::addAssetArchive(archive);
     }
 
     ln::Win32PlatformInterface::initialize();

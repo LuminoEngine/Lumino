@@ -27,6 +27,7 @@ public:
 	const ln::Path& rootDirPath() const { return m_rootDir; }
     const ln::Path& assetsDir() const { return m_assetsDir; }
 	const ln::Path& buildDir() const { return m_buildDir; }
+	const ln::Path& intermediateAssetsDir() const { return m_intermediateAssetsDir; }
 
 	ln::Path projectsDir() const { return ln::Path(rootDirPath(), u"Projects"); }
 	ln::Path emscriptenProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.Web"); }
@@ -52,6 +53,7 @@ private:
 	ln::Path m_sourcesDir;
 	ln::Path m_assetsDir;
 	ln::Path m_buildDir;
+	ln::Path m_intermediateAssetsDir;
 };
 
 // プロジェクトファイルに保存する情報

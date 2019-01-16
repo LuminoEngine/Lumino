@@ -17,11 +17,12 @@ int main(int argc, char** argv)
 		//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\HelloLumino");
 		//::SetCurrentDirectoryW(L"D:/Documents/LuminoProjects");
         //::SetCurrentDirectoryW(L"D:/Documents/LuminoProjects/HelloLumino");
-        ::SetCurrentDirectoryW(L"D:/Proj");
+        //::SetCurrentDirectoryW(L"D:/Proj");
+		::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\Test3");
     
 		const char* debugArgv[] = {
 			"<program>",
-			"init", "TH-10", "--engine=repo:0.10.0"
+			//"init", "TH-10", "--engine=repo:0.10.0"
 
 			//"<program>", "dev-install-tools",
 
@@ -39,7 +40,7 @@ int main(int argc, char** argv)
             //"fxc", "C:/Proj/GitHub/Lumino/src/LuminoEngine/test/Assets/Shader/FxcTest1.fx",
             //"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.hlsl",
 
-            //"build-assets",
+            "build", "assets",
 		};
 		argc = sizeof(debugArgv) / sizeof(char*);
 		argv = (char**)debugArgv;
