@@ -406,6 +406,10 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = LuminoApp.macOS/Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"LN_XCODE_PROJECT_DIR=\\\"\"$PROJECT_DIR\"\\\"",
+				);
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Engine/Native/include";
 				INFOPLIST_FILE = LuminoApp.macOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -428,6 +432,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = LuminoApp.macOS/Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Engine/Native/include";
 				INFOPLIST_FILE = LuminoApp.macOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
