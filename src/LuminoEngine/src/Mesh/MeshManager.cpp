@@ -131,6 +131,12 @@ Ref<StaticMeshModel> MeshManager::createStaticMeshModel(const Path& filePath, fl
     return mesh;
 }
 
+Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, float scale)
+{
+	LN_NOTIMPLEMENTED();
+	return nullptr;
+}
+
 Ref<Texture> MeshManager::createTexture(const Path& parentDir, const StringRef& filePath, DiagnosticsManager* diag)
 {
 	Path path(parentDir, filePath);

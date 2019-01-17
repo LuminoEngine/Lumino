@@ -6,6 +6,7 @@ class DiagnosticsManager;
 class VertexDeclaration;
 class Texture;
 class StaticMeshModel;
+class SkinnedMeshModel;
 namespace detail {
 class AssetManager;
 
@@ -35,6 +36,7 @@ public:
 	VertexDeclaration* getPredefinedVertexLayout(PredefinedVertexLayoutFlags flags);
 
     Ref<StaticMeshModel> createStaticMeshModel(const Path& filePath, float scale);
+    Ref<SkinnedMeshModel> createSkinnedMeshModel(const Path& filePath, float scale);
 	Ref<Texture> createTexture(const Path& parentDir, const StringRef& filePath, DiagnosticsManager* diag);
 
 	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
