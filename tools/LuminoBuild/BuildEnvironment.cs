@@ -142,8 +142,27 @@ namespace LuminoBuild
                     };
                     
                     Utils.CallProcess(skdmanager, "cmake;3.6.4111459", env, (stdin) => stdin.WriteLine("y"));
-                    Utils.CallProcess(skdmanager, "ndk-bundle", env, (stdin) => stdin.WriteLine("y"));
-                    //Utils.CallProcess(skdmanager, "lldb;3.1", env, (stdin) => stdin.WriteLine("y"));
+                    //Utils.CallProcess(skdmanager, "ndk-bundle", env, (stdin) => stdin.WriteLine("y"));
+                }
+
+                // sdkmanager でインストールできるのは最新版のみ。
+                // r19 では find_package(zlib) が失敗していて、その時点 (2019/1/18) では不具合情報も無いので対策しようがなかった。
+                // そのため r18 を直接ダウンロードして配置する。
+                var ndkDir = Path.Combine(androidSdk, "ndk-bundle");
+                if (!Directory.Exists(ndkDir))
+                {
+                    Console.WriteLine("Downloading Android NDK...");
+                    var zip = Path.Combine(BuildToolsDir, "android-ndk-r18b.zip");
+                    // https://developer.android.com/ndk/downloads/older_releases
+                    if (Utils.IsWin32)
+                        Utils.DownloadFile("https://dl.google.com/android/repository/android-ndk-r18b-windows-x86_64.zip", zip);
+                    else if (Utils.IsMac)
+                        Utils.DownloadFile("https://dl.google.com/android/repository/android-ndk-r18b-darwin-x86_64.zip", zip);
+
+                    Console.WriteLine("Extracting Android NDK...");
+                    var tmpDir = Path.Combine(BuildToolsDir, "android-ndk-r18b");
+                    Utils.ExtractZipFile(zip, tmpDir);
+                    Directory.Move(Path.Combine(tmpDir, "android-ndk-r18b"), ndkDir);
                 }
             }
         }
