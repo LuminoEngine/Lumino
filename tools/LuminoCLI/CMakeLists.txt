@@ -1,8 +1,7 @@
 cmake_minimum_required (VERSION 3.0.0)
 project(lumino-cli)
 
-
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 
 file(
     GLOB
@@ -18,10 +17,12 @@ include_directories(
 )
 
 add_executable(${PROJECT_NAME} ${LN_SOURCES})
+target_compile_definitions(${PROJECT_NAME} PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
 target_link_libraries(${PROJECT_NAME} LuminoEngine)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "LuminoCLI.PCH.hpp" "LuminoCLI.PCH.cpp")
 
+add_subdirectory(test)
 
 #------------------------------------------------------------------------------
 # Install

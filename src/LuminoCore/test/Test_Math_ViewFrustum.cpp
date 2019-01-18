@@ -85,6 +85,43 @@ TEST_F(Test_ViewFrustum, intersects)
 }
 
 //------------------------------------------------------------------------------
+TEST_F(Test_ViewFrustum, intersects_Box)
+{
+	Matrix view = Matrix::makeLookAtLH(Vector3(0, 0, 0), Vector3(0, 0, 1), Vector3(0, 1, 0));
+	Matrix proj1 = Matrix::makePerspectiveFovLH(Math::PI / 4, 640.0f / 480.0f, 1, 1000);
+	ViewFrustum vf1(view * proj1);
+
+	IntersectResult r;
+	ASSERT_EQ(IntersectResult::Outside, vf1.intersects(Box({ 0, 0, 1001 }, 1)));
+	ASSERT_EQ(IntersectResult::Intersect, vf1.intersects(Box({ 0, 0, 1000 }, 1)));
+	ASSERT_EQ(IntersectResult::Inside, vf1.intersects(Box({ 0, 0, 999 }, 1)));
+
+	ASSERT_EQ(IntersectResult::Outside, vf1.intersects(Box({ 2000, 0, 500 }, 1)));
+	ASSERT_EQ(IntersectResult::Outside, vf1.intersects(Box({ -2000, 0, 500 }, 1)));
+	ASSERT_EQ(IntersectResult::Outside, vf1.intersects(Box({ 0, 2000, 500 }, 1)));
+	ASSERT_EQ(IntersectResult::Outside, vf1.intersects(Box({ 0, -2000, 500 }, 1)));
+
+	ASSERT_EQ(IntersectResult::Inside, vf1.intersects(Box({ 20, 0, 500 }, 1)));
+	ASSERT_EQ(IntersectResult::Inside, vf1.intersects(Box({ -20, 0, 500 }, 1)));
+	ASSERT_EQ(IntersectResult::Inside, vf1.intersects(Box({ 0, 20, 500 }, 1)));
+	ASSERT_EQ(IntersectResult::Inside, vf1.intersects(Box({ 0, -20, 500 }, 1)));
+
+	// 非常に縦長
+	ASSERT_EQ(IntersectResult::Intersect, vf1.intersects(Box({ 0, 0, 500 }, 1, 10000, 1)));
+	ASSERT_EQ(IntersectResult::Intersect, vf1.intersects(Box({ 0, 0, 500 }, 10000, 1, 1)));
+	ASSERT_EQ(IntersectResult::Intersect, vf1.intersects(Box({ 0, 0, 500 }, 1, 1, 10000)));
+
+	// 視点の後ろ
+	ASSERT_EQ(IntersectResult::Outside, vf1.intersects(Box({ 0, 0, -1 }, 1)));
+
+	// 視点と同じ位置に大きなオブジェクトがある場合
+	ASSERT_EQ(IntersectResult::Intersect, vf1.intersects(Box({ 0, 0, 0 }, 100)));
+
+	// Flustum 全体を覆うオブジェクトの場合
+	ASSERT_EQ(IntersectResult::Intersect, vf1.intersects(Box({ 0, 0, 0 }, 10000)));
+}
+
+//------------------------------------------------------------------------------
 TEST_F(Test_ViewFrustum, getCornerPoints)
 {
 	// <Test> 左手系の PerspectiveFov
@@ -115,4 +152,24 @@ TEST_F(Test_ViewFrustum, getCornerPoints)
 		ASSERT_VEC3_NEAR(320.000000, -239.999985, 1000.000000, points[6]);
 		ASSERT_VEC3_NEAR(320.000000, 239.999985, 1000.000000, points[7]);
 	}
+}
+
+
+//------------------------------------------------------------------------------
+TEST_F(Test_ViewFrustum, BoxTransform)	// TODO: move
+{
+	Box b1(1);
+	Box r;
+	r = Box::transform(b1, Matrix::makeRotationY(Math::PI / 4));
+	ASSERT_FLOAT_NEAR(1.41421354, r.width);
+	ASSERT_FLOAT_NEAR(1.0, r.height);
+	ASSERT_FLOAT_NEAR(1.41421354, r.depth);
+
+	r = Box::transform(b1, Matrix::makeRotationY(Math::PI / 4) * Matrix::makeTranslation(5, 0, -5));
+	ASSERT_FLOAT_NEAR(5, r.center.x);
+	ASSERT_FLOAT_NEAR(0, r.center.y);
+	ASSERT_FLOAT_NEAR(-5, r.center.z);
+	ASSERT_FLOAT_NEAR(1.41421318, r.width);
+	ASSERT_FLOAT_NEAR(1.0, r.height);
+	ASSERT_FLOAT_NEAR(1.41421318, r.depth);
 }

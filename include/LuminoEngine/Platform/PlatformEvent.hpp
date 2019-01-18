@@ -180,8 +180,8 @@ struct PlatformEventArgs
 		struct
 		{
 			MouseButtons	button;	/** ボタン番号 */
-			//short			x;				/** マウスイベント生成時のマウスの X 座標 (クライアント領域外は -1) */
-			//short			y;				/** マウスイベント生成時のマウスの Y 座標 (クライアント領域外は -1) */
+            //short			screenX;				/** マウスイベント生成時のマウスの X 座標 (スクリーン座標) */
+            //short			screenY;				/** マウスイベント生成時のマウスの Y 座標 (スクリーン座標) */
 			//short			moveX;			/** X 座標の移動量 */
 			//short			moveY;			/** Y 座標の移動量 */
 			ModifierKeys	modifierKeys;	/** 修飾キー */
@@ -238,7 +238,7 @@ public:
 	static PlatformEventArgs makeClosingEvent(PlatformWindow* sender);
 	static PlatformEventArgs makeWindowSizeChangedEvent(PlatformWindow* sender, int width, int height);
 	static PlatformEventArgs makeActivateChangedEvent(PlatformWindow* sender, bool active);
-	static PlatformEventArgs makeMouseButtonEvent(PlatformWindow* sender, PlatformEventType type, MouseButtons button/*, short x, short y*/, ModifierKeys modifierKeys);
+	static PlatformEventArgs makeMouseButtonEvent(PlatformWindow* sender, PlatformEventType type, MouseButtons button/*, short screenX, short screenY*/, ModifierKeys modifierKeys);
 	static PlatformEventArgs makeMouseMoveEvent(PlatformWindow* sender, PlatformEventType type, short screenX, short screenY);
 	static PlatformEventArgs makeKeyEvent(PlatformWindow* sender, PlatformEventType type, Keys keyCode, ModifierKeys modifierKeys, char keyChar);
 	static PlatformEventArgs makeMouseWheelEvent(PlatformWindow* sender, int delta);

@@ -35,14 +35,14 @@ void BuildEnvironment::setupPathes()
         }
         
 #ifdef  LN_DEBUG
-        // デバッグ用。実行ファイルの位置からさかのぼっていって、.git が見つかればそこから必要なパスを作ってみる
+        // デバッグ用。実行ファイルの位置からさかのぼっていって、build.csproj が見つかればそこから必要なパスを作ってみる
         if (m_luminoPackageRootDir.isEmpty())
         {
             ln::Path path = ln::Environment::executablePath();
             ln::Path luminoRepoRoot;
             while (!path.isRoot())
             {
-                if (ln::FileSystem::existsDirectory(ln::Path(path, u".git"))) {
+                if (ln::FileSystem::existsFile(ln::Path(path, u"build.csproj"))) {
                     luminoRepoRoot = path;
                     break;
                 }
@@ -52,11 +52,7 @@ void BuildEnvironment::setupPathes()
 
             LN_LOG_DEBUG << luminoRepoRoot;
 
-#if defined(LN_OS_WIN32)
-            m_luminoPackageRootDir = ln::Path(luminoRepoRoot, u"Lumino-0.6.0-Windows");
-#elif defined(LN_OS_MAC)
-            m_luminoPackageRootDir = ln::Path(luminoRepoRoot, u"Lumino-0.6.0-macOS");
-#endif
+            m_luminoPackageRootDir = ln::Path::combine(luminoRepoRoot, u"build", u"LocalPackage");
         }
 #endif
         // まだ見つからなければ環境変数を探してみる

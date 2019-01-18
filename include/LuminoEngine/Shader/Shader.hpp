@@ -1,308 +1,344 @@
-﻿
+﻿// Copyright (c) 2019 lriki. Distributed under the MIT license.
 #pragma once
 #include "Common.hpp"
 #include "../Graphics/GraphicsResource.hpp"
+#include "ShaderHelper.hpp"
 
 namespace ln {
 class DiagnosticsManager;
-//class ShaderParameter;
 class Texture;
+class Shader;
 class ShaderConstantBuffer;
 class ShaderParameter;
 class ShaderTechnique;
 class ShaderPass;
+class ShaderCompilationProperties;
 class GraphicsContext;
-
 namespace detail {
+class ShaderHelper;
+class ShaderManager;
 class IShaderPass;
 class IShaderUniformBuffer;
+}
 
-class ShaderParameterValue
+/**
+ * シェーダーを表すクラスです。
+ *
+ * このクラスは DirectX9 ～ 11 世代に提供されていた「エフェクト」と同様の、シェーダーステージをまとめて管理・適用する機能を持っています。
+ */
+class LN_API Shader final
+    : public GraphicsResource
 {
 public:
-	ShaderParameterValue();
+    /*
+     * 事前コンパイル済みシェーダファイルまたはシェーダプログラムファイルから Shader オブジェクトを作成します。
+     *
+     * @param[in]   filePath : 入力ファイル名
+     *
+     * シェーダプログラムファイル の読み込み機能はデバッグを目的として用意されています。
+     *
+     * シェーダプログラムファイルを読み込むことができるのは、デスクトップターゲットのみです。
+     * モバイルターゲット、Web ターゲットでは事前コンパイル済みシェーダファイルのみを読み込むことができます。
+     */
+    static Ref<Shader> create(const StringRef& filePath, ShaderCompilationProperties* properties = nullptr);
 
-	void reset(ShaderVariableType type, int elements);
+    /*
+     * Lumino の独自拡張 (technique 構文など) を使用しない HLSL シェーダをコンパイルし、Shader オブジェクトを作成します。
+     * 
+     * 作成された Shader は、1 つの ShaderTechnique と 1 つの ShaderPass を持ちます。
+     */
+    static Ref<Shader> create(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCompilationProperties* properties = nullptr);
 
-	ShaderVariableType type() const { return m_type; }
+    /*
+     * 名前を指定してこの Shader に含まれる ShaderParameter を検索します。
+     *
+     * @param[in]   name : パラメータの名前
+     * @return      一致した ShaderParameter。見つからない場合は nullptr。
+     *
+     * この関数の検索対象は次の通りです。
+     * - "_Global" という名前の付いた ShaderConstantBuffer (cbuffer 構文を使用せず、グローバルスコープに直接定義した変数)
+     * - texture 型のパラメータ
+     *
+     * @attention 現在、SamplerState の設定は未サポートです。将来的には、この関数で SamplerState 型のパラメータを検索できるようにする予定です。
+     */
+    ShaderParameter* findParameter(const StringRef& name) const;
 
-	void setBool(bool value);
-	bool getBool() const { return m_data.Bool; }
-	void setInt(int value);
-	int getInt() const { return m_data.Int; }
-	void setBoolArray(const bool* values, int count);
-	const bool* getBoolArray() const { return reinterpret_cast<const bool*>(m_buffer.data()); }
-	void setFloat(float value);
-	float getFloat() const { return m_data.Float; }
-	void setFloatArray(const float* values, int count);
-	const float* getFloatArray() const { return reinterpret_cast<const float*>(m_buffer.data()); }
-	void setVector(const Vector4& vec);
-	const Vector4& getVector() const { return *reinterpret_cast<const Vector4*>(m_data.Vector4); }
-	void setVectorArray(const Vector4* vectors, int count);
-	const Vector4* getVectorArray() const { return reinterpret_cast<const Vector4*>(m_buffer.data()); }
-	void setMatrix(const Matrix& matrix);
-	const Matrix& getMatrix() const { return *reinterpret_cast<const Matrix*>(m_data.Matrix4x4); }
-	void setMatrixArray(const Matrix* matrices, int count);
-	const Matrix* getMatrixArray() const { return reinterpret_cast<const Matrix*>(m_buffer.data()); }
-	void setTexture(Texture* texture);
-	Texture* getTexture() const { return m_data.texture; }
-	void setPointer(void* value);
-	void* getPointer() const { return m_data.Pointer; }
+    /*
+     * 名前を指定してこの Shader に含まれる ShaderConstantBuffer を検索します。
+     *
+     * @param[in]   name : 定数バッファの名前
+     * @return      一致した ShaderConstantBuffer。見つからない場合は nullptr。
+     */
+    ShaderConstantBuffer* findConstantBuffer(const StringRef& name) const;
 
-	int getDataByteSize() const;
-	int getArrayLength() const;
+    /*
+     * 名前を指定してこの Shader に含まれる ShaderTechnique を検索します。
+     *
+     * @param[in]   name : 定数バッファの名前
+     * @return      一致した ShaderConstantBuffer。見つからない場合は nullptr。
+     */
+    ShaderTechnique* findTechnique(const StringRef& name) const;
+
+    /** この Shader に含まれる ShaderTechnique を取得します。 */
+    Ref<ReadOnlyList<Ref<ShaderTechnique>>> techniques() const;
+
+    virtual void dispose() override;
+
+protected:
+    virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
+
+    LN_CONSTRUCT_ACCESS : Shader();
+    virtual ~Shader();
+    void initialize();
+    void initialize(const StringRef& filePath, ShaderCompilationProperties* properties = nullptr);
+    void initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCompilationProperties* properties = nullptr);
+    void initialize(const String& name, Stream* stream);
 
 private:
-	LN_DISALLOW_COPY_AND_ASSIGN(ShaderParameterValue);
+    detail::ShaderSemanticsManager* semanticsManager() { return &m_semanticsManager; }
+    ShaderTechnique* findTechniqueByClass(const detail::ShaderTechniqueClass& techniqueClass) const;
+    void createFromUnifiedShader(Stream* stream, DiagnosticsManager* diag);
+    Ref<detail::IShaderPass> createShaderPass(
+        const char* vsData,
+        size_t vsLen,
+        const char* vsEntryPoint,
+        const char* psData,
+        size_t psLen,
+        const char* psEntryPoint,
+        DiagnosticsManager* diag,
+        ShaderCompilationProperties* properties);
+    Ref<detail::IShaderPass> createRHIShaderPass(
+        const char* vsData,
+        size_t vsLen,
+        const char* psData,
+        size_t psLen,
+        DiagnosticsManager* diag);
+    void createSinglePassShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen, DiagnosticsManager* diag, ShaderCompilationProperties* properties);
+    void postInitialize();
+    ShaderConstantBuffer* getOrCreateConstantBuffer(detail::IShaderUniformBuffer* buffer);
+    ShaderParameter* getOrCreateTextureParameter(const String& name);
 
-	void dirty();
-	void allocValueBuffer(size_t size);
-	static bool isShortSizeType(ShaderVariableType type);
+    detail::ShaderManager* m_manager;
+    String m_name;
+    List<Ref<ShaderConstantBuffer>> m_buffers;
+    Ref<List<Ref<ShaderTechnique>>> m_techniques;
+    List<Ref<ShaderParameter>> m_textureParameters;
+    ShaderConstantBuffer* m_globalConstantBuffer;
+    detail::ShaderSemanticsManager m_semanticsManager;
 
-	union Data
-	{
-		bool Bool;
-		int				Int;
-		float			Float;
-		float		Vector4[4];
-		float	Matrix4x4[16];
-		Texture* texture;
-		void* Pointer;		// any object pointer (e.g Texture)
-	};
-
-	ShaderVariableType m_type;
-	Data m_data;
-	ByteBuffer m_buffer;
+    friend class ShaderPass;
+    friend class detail::ShaderHelper;
 };
 
-class ShaderValueSerializer
+/**
+ * シェーダプログラムに含まれる 1 つの入力パラメーターを表します。
+ */
+class LN_API ShaderParameter final
+    : public Object
 {
 public:
-	static size_t measureBufferSize(const ShaderPass* pass);
+    /** パラメータの名前を取得します。 */
+    const String& name() const { return m_name; }
 
-	ShaderValueSerializer(void* buffer, size_t size);
+    /** bool 値を設定します。 */
+    void setBool(bool value);
 
-	//void beginWriteValues(void* buffer);
-	void writeValue(const ShaderParameterValue& value);
-	//void endWriteValues();
+    /** 整数値を設定します。 */
+    void setInt(int value);
+
+    /** 整数値の配列を設定します。 */
+    void setIntArray(const int* value, int count);
+
+    /** 浮動小数点値を設定します。 */
+    void setFloat(float value);
+
+    /** 浮動小数点値の配列を設定します。 */
+    void setFloatArray(const float* value, int count);
+
+    /** ベクトルを設定します。 */
+    void setVector(const Vector4& value);
+
+    /** ベクトルの配列を設定します。 */
+    void setVectorArray(const Vector4* value, int count);
+
+    /** 行列を設定します。 */
+    void setMatrix(const Matrix& value);
+
+    /** 行列の配列を設定します。 */
+    void setMatrixArray(const Matrix* value, int count);
+
+    /** テクスチャを設定します。 */
+    void setTexture(Texture* value);
+
+    virtual void dispose() override;
 
 private:
-	MemoryStream m_stream;
-	BinaryWriter m_writer;
+    LN_INTERNAL_NEW_OBJECT;
+    ShaderParameter();
+    virtual ~ShaderParameter() = default;
+    void initialize(ShaderConstantBuffer* owner, const detail::ShaderUniformTypeDesc& desc, const String& name);
+    void initialize(ShaderParameterClass parameterClass, const String& name);
 
+    const detail::ShaderUniformTypeDesc& desc() const { return m_desc; }
+    const Ref<Texture>& texture() const { return m_textureValue; }
+
+    ShaderConstantBuffer* m_owner;
+    ShaderParameterClass m_class;
+    detail::ShaderUniformTypeDesc m_desc;
+    String m_name;
+    Ref<Texture> m_textureValue;
+
+    friend class Shader;
+    friend class ShaderPass;
+    friend class detail::ShaderValueSerializer;
 };
 
-class ShaderValueDeserializer
+/**
+ * シェーダプログラムに含まれる 1 つの定数バッファを表します。
+ */
+class LN_API ShaderConstantBuffer final
+    : public Object
 {
 public:
-	ShaderValueDeserializer(const void* buffer, size_t size);
-	const void* readValue(size_t* outSize, ShaderVariableType* outType);	// return nullptr if eof
-	//void endReadValues();
+    /** 定数バッファの名前を取得します。 */
+    const String& name() const { return m_name; }
+
+    /** 定数バッファにデータを設定します。通常、シェーダプログラムで定義したレイアウトと同じ構造体を転送します。 */
+    void setData(const void* data, int size);
+
+    /** 定数バッファのバイトサイズを取得します。 */
+    int size() const { return m_buffer.size(); }
+
+    /*
+     * 名前を指定してこの定数バッファに含まれる ShaderParameter を検索します。
+     *
+     * @param[in]   name : パラメータの名前
+     * @return      一致した ShaderParameter。見つからない場合は nullptr。
+     */
+    ShaderParameter* findParameter(const StringRef& name) const;
 
 private:
-	MemoryStream m_stream;
-	BinaryReader m_reader;
+    LN_INTERNAL_NEW_OBJECT;
+    ShaderConstantBuffer();
+    virtual ~ShaderConstantBuffer() = default;
+    void initialize(Shader* owner, detail::IShaderUniformBuffer* rhiObject);
+
+    Shader* owner() const { return m_owner; }
+    const std::string& asciiName() const { return m_asciiName; }
+    ByteBuffer& buffer() { return m_buffer; }
+    void commit(detail::IShaderUniformBuffer* rhiObject);
+
+    Shader* m_owner;
+    String m_name;
+    std::string m_asciiName;
+    ByteBuffer m_buffer;
+    List<Ref<ShaderParameter>> m_parameters;
+
+    friend class Shader;
+    friend class ShaderParameter;
+    friend class ShaderPass;
 };
 
-} // namespace detail
-
-enum class ShaderCodeType
-{
-	RawGLSL,
-};
-
-class LN_API Shader
-	: public GraphicsResource
+/**
+ * シェーダプログラムに含まれる 1 つのテクニックを表します。
+ */
+class LN_API ShaderTechnique final
+    : public Object
 {
 public:
-	static Ref<Shader> create(const StringRef& hlslEffectFilePath);
-	static Ref<Shader> create(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath);
+    /** この ShaderPass が含まれている Shader を取得します。 */
+    Shader* shader() const { return m_owner; }
 
-	//void setBool(const StringRef& name, bool value);
-	//void setInt(const StringRef& name, int value);
-	//void setBoolArray(const StringRef& name, const bool* value, int count);
-	//void setFloat(const StringRef& name, float value);
-	//void setFloatArray(const StringRef& name, const float* value, int count);
-	//void setVector(const StringRef& name, const Vector4& value);
-	//void setVectorArray(const StringRef& name, const Vector4* value, int count);
-	//void setMatrix(const StringRef& name, const Matrix& value);
-	//void setMatrixArray(const StringRef& name, const Matrix* value, int count);
-	//void setTexture(const StringRef& name, Texture* value);
+    /** テクニックの名前を取得します。 */
+    const String& name() const { return m_name; }
 
-	ShaderParameter* findParameter(const StringRef& name) const;
-	ShaderConstantBuffer* findConstantBuffer(const StringRef& name) const;
-
-	const List<Ref<ShaderTechnique>>& techniques() const { return m_techniques; }
-
-LN_CONSTRUCT_ACCESS:
-	Shader();
-	virtual ~Shader();
-	void initialize();
-	void initialize(const StringRef& hlslEffectFilePath);
-	void initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCodeType codeType);
-	virtual void dispose() override;
-
-	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
+    /** このテクニックに含まれる ShaderPass を取得します。 */
+    Ref<ReadOnlyList<Ref<ShaderPass>>> passes() const;
 
 private:
-	Ref<detail::IShaderPass> createShaderPass(
-		const char* vsData, size_t vsLen, const char* vsEntryPoint,
-		const char* psData, size_t psLen, const char* psEntryPoint);
-	void buildShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen);
-	//ShaderParameter* getShaderParameter(const detail::ShaderUniformTypeDesc& desc, const String& name);
-	ShaderConstantBuffer* getOrCreateConstantBuffer(detail::IShaderUniformBuffer* buffer);
-	ShaderParameter* getOrCreateTextureParameter(const String& name);
+    LN_INTERNAL_NEW_OBJECT;
+    ShaderTechnique();
+    virtual ~ShaderTechnique();
+    void initialize(const String& name);
 
-	Ref<DiagnosticsManager> m_diag;
-	//List<Ref<ShaderParameter>> m_parameters;
-	List<Ref<ShaderConstantBuffer>> m_buffers;
-	List<Ref<ShaderTechnique>> m_techniques;
+    void setOwner(Shader* owner) { m_owner = owner; }
+    void addShaderPass(ShaderPass* pass);
 
-	List<Ref<ShaderParameter>> m_textureParameters;
+    Shader* m_owner;
+    String m_name;
+    Ref<List<Ref<ShaderPass>>> m_passes;
+    detail::ShaderTechniqueClass m_techniqueClass;
 
-	friend class ShaderPass;
+    friend class Shader;
+    friend class ShaderPass;
+    friend class detail::ShaderHelper;
 };
 
-
-template class LN_API List<Ref<ShaderConstantBuffer>>;
-
-
-enum class ShaderParameterClass
-{
-	Constant,
-	Texture,
-	Sampler,
-};
-
-class LN_API ShaderParameter
-	: public Object
+/**
+ * シェーダプログラムに含まれる 1 つのパスを表します。
+ */
+class LN_API ShaderPass final
+    : public Object
 {
 public:
-	const String& name() const { return m_name; }
+    /** この ShaderPass が含まれている Shader を取得します。 */
+    Shader* shader() const;
 
-	void setBool(bool value);
-	//void setBoolArray(const bool* value, int count);
-	void setInt(int value);
-	void setIntArray(const int* value, int count);
-	void setFloat(float value);
-	void setFloatArray(const float* value, int count);
-	void setVector(const Vector4& value);
-	void setVectorArray(const Vector4* value, int count);
-	void setMatrix(const Matrix& value);
-	void setMatrixArray(const Matrix* value, int count);
-	void setTexture(Texture* value);
-	void setPointer(void* value);
+    /** パスの名前を取得します。 */
+    const String& name() const { return m_name; }
 
-LN_CONSTRUCT_ACCESS:
-	ShaderParameter();
-	virtual ~ShaderParameter();
-	void initialize(ShaderConstantBuffer* owner, const detail::ShaderUniformTypeDesc& desc, const String& name);
-	void initialize(ShaderParameterClass parameterClass, const String& name);
-	virtual void dispose() override;
+    virtual void dispose() override;
 
 private:
-	const detail::ShaderUniformTypeDesc& desc() const { return m_desc; }
-	const Ref<Texture>& texture() const { return m_textureValue; }
-	
-	ShaderParameterClass m_class;
-	ShaderConstantBuffer* m_owner;
-	detail::ShaderUniformTypeDesc m_desc;
-	String m_name;
-	detail::ShaderParameterValue m_value;
+    LN_INTERNAL_NEW_OBJECT;
+    ShaderPass();
+    virtual ~ShaderPass();
+    void initialize(const String& name, detail::IShaderPass* rhiPass, detail::ShaderRenderState* renderState = nullptr);
 
-	Ref<Texture> m_textureValue;
+    struct ConstantBufferEntry
+    {
+        ShaderConstantBuffer* buffer;
+        Ref<detail::IShaderUniformBuffer> rhiObject;
+    };
 
-	friend class Shader;
-	friend class ShaderPass;
-	friend class detail::ShaderValueSerializer;
+    void setOwner(ShaderTechnique* owner) { m_owner = owner; }
+    void setupParameters();
+    void commit();
+    void commitContantBuffers();
+    detail::IShaderPass* resolveRHIObject();
+
+    ShaderTechnique* m_owner;
+    String m_name;
+    Ref<detail::IShaderPass> m_rhiPass;
+    List<ConstantBufferEntry> m_bufferEntries;
+    List<ShaderParameter*> m_textureParameters;
+    Ref<detail::ShaderRenderState> m_renderState;
+
+    friend class Shader;
+    friend class ShaderTechnique;
+    friend class detail::ShaderValueSerializer;
+    friend class GraphicsContext;
+    friend class detail::ShaderHelper;
 };
 
-class LN_API ShaderConstantBuffer
-	: public Object
+class ShaderCompilationProperties
+    : public Object
 {
 public:
-	const String& name() const { return m_name; }
-	void setData(const void* data, int size);
+    void addIncludeDirectory(const StringRef& value);
+    void addDefinition(const StringRef& value);
+    void setDiagnostics(DiagnosticsManager* diag);
 
-	ShaderParameter* findParameter(const StringRef& name) const;
-
-LN_CONSTRUCT_ACCESS:	// TODO: 内部でしか new しないから private とかでいい気がする
-	ShaderConstantBuffer();
-	virtual ~ShaderConstantBuffer();
-	void initialize(Shader* owner, detail::IShaderUniformBuffer* rhiObject);
+    LN_CONSTRUCT_ACCESS : ShaderCompilationProperties();
+    virtual ~ShaderCompilationProperties();
+    void initialize();
 
 private:
-	Shader* owner() const { return m_owner; }
-	detail::IShaderUniformBuffer* getRhiObject() const { return m_rhiObject; }
-	ByteBuffer& buffer() { return m_buffer; }
-	void commit();
+    List<String> m_includeDirectories;
+    List<String> m_definitions;
+    Ref<DiagnosticsManager> m_diag;
 
-	Shader* m_owner;
-	detail::IShaderUniformBuffer* m_rhiObject;
-	String m_name;
-	ByteBuffer m_buffer;
-	List<Ref<ShaderParameter>> m_parameters;
-
-	friend class Shader;
-	friend class ShaderParameter;
-	friend class ShaderPass;
+    friend class Shader;
 };
-
-class LN_API ShaderTechnique
-	: public Object
-{
-public:
-
-	const List<Ref<ShaderPass>>& passes() const { return m_passes; }
-
-LN_CONSTRUCT_ACCESS:
-	ShaderTechnique();
-	virtual ~ShaderTechnique();
-	void initialize();
-
-private:
-	void setOwner(Shader* owner) { m_owner = owner; }
-	Shader* owner() const { return m_owner; }
-	void addShaderPass(ShaderPass* pass);
-
-	Shader* m_owner;
-	List<Ref<ShaderPass>> m_passes;
-
-	friend class Shader;
-	friend class ShaderPass;
-};
-
-class LN_API ShaderPass
-	: public Object
-{
-public:
-	/** この ShaderPass が含まれている Shader を取得します。 */
-	Shader* shader() const;
-
-LN_CONSTRUCT_ACCESS:
-	ShaderPass();
-	virtual ~ShaderPass();
-	void initialize(detail::IShaderPass* rhiPass);
-	virtual void dispose() override;
-
-private:
-	void setOwner(ShaderTechnique* owner) { m_owner = owner; }
-	void setupParameters();
-	void commit();
-	detail::IShaderPass* resolveRHIObject();
-
-	ShaderTechnique* m_owner;
-	Ref<detail::IShaderPass> m_rhiPass;
-	//List<ShaderParameter*> m_parameters;
-	List<ShaderConstantBuffer*> m_buffers;
-	List<ShaderParameter*> m_textureParameters;
-
-	friend class Shader;
-	friend class ShaderTechnique;
-	friend class detail::ShaderValueSerializer;
-	friend class GraphicsContext;
-};
-
-
 
 } // namespace ln

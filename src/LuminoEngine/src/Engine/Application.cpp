@@ -64,7 +64,7 @@ void Application::run()
 #ifdef __EMSCRIPTEN__
 	LN_UNREACHABLE();
 #endif
-	initInternal();
+	//initInternal();
 
 	while (updateInertnal());
 

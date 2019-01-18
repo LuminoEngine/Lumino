@@ -9,6 +9,13 @@
 /* Begin PBXBuildFile section */
 		8C32BB002171A1D8003E4BAC /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C32BAFF2171A1D8003E4BAC /* QuartzCore.framework */; };
 		8C561D1E2170D8A5009F0306 /* libLuminoEngine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC4475A216F8B98002F20DA /* libLuminoEngine.a */; };
+		8C613DE021C66D7E005915F0 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C613DDF21C66D7E005915F0 /* OpenAL.framework */; };
+		8C613DE221C66DF8005915F0 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C613DE121C66DF7005915F0 /* libfreetype.a */; };
+		8C613DE321C66FAD005915F0 /* Assets.lca in Resources */ = {isa = PBXBuildFile; fileRef = 8C613DDE21C66D0D005915F0 /* Assets.lca */; };
+		8C82306E21EB517C0003E1F3 /* libLinearMath.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C82306A21EB517C0003E1F3 /* libLinearMath.a */; };
+		8C82306F21EB517C0003E1F3 /* libBulletSoftBody.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C82306B21EB517C0003E1F3 /* libBulletSoftBody.a */; };
+		8C82307021EB517C0003E1F3 /* libBulletCollision.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C82306C21EB517C0003E1F3 /* libBulletCollision.a */; };
+		8C82307121EB517C0003E1F3 /* libBulletDynamics.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C82306D21EB517C0003E1F3 /* libBulletDynamics.a */; };
 		8C95E8C6213BC8B100772569 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8C5213BC8B100772569 /* AppDelegate.mm */; };
 		8C95E8C9213BC8B100772569 /* Renderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8C8213BC8B100772569 /* Renderer.mm */; };
 		8C95E8CC213BC8B100772569 /* GameViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8CB213BC8B100772569 /* GameViewController.mm */; };
@@ -31,6 +38,13 @@
 		8C32BAFF2171A1D8003E4BAC /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		8C561D1B2170D81B009F0306 /* Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
 		8C561D1C2170D86E009F0306 /* libLuminoEngined.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLuminoEngined.a; path = "../../Engine/Native/lib/iOS-SIMULATOR64-Debug/libLuminoEngined.a"; sourceTree = "<group>"; };
+		8C613DDE21C66D0D005915F0 /* Assets.lca */ = {isa = PBXFileReference; lastKnownFileType = file; path = Assets.lca; sourceTree = "<group>"; };
+		8C613DDF21C66D7E005915F0 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
+		8C613DE121C66DF7005915F0 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = "../../Engine/Native/lib/iOS-SIMULATOR64-Release/libfreetype.a"; sourceTree = "<group>"; };
+		8C82306A21EB517C0003E1F3 /* libLinearMath.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLinearMath.a; path = "../../Engine/Native/lib/iOS-SIMULATOR64-Release/libLinearMath.a"; sourceTree = "<group>"; };
+		8C82306B21EB517C0003E1F3 /* libBulletSoftBody.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libBulletSoftBody.a; path = "../../Engine/Native/lib/iOS-SIMULATOR64-Release/libBulletSoftBody.a"; sourceTree = "<group>"; };
+		8C82306C21EB517C0003E1F3 /* libBulletCollision.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libBulletCollision.a; path = "../../Engine/Native/lib/iOS-SIMULATOR64-Release/libBulletCollision.a"; sourceTree = "<group>"; };
+		8C82306D21EB517C0003E1F3 /* libBulletDynamics.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libBulletDynamics.a; path = "../../Engine/Native/lib/iOS-SIMULATOR64-Release/libBulletDynamics.a"; sourceTree = "<group>"; };
 		8C95E8C1213BC8B100772569 /* LuminoApp.iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LuminoApp.iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C95E8C4213BC8B100772569 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		8C95E8C5213BC8B100772569 /* AppDelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AppDelegate.mm; sourceTree = "<group>"; };
@@ -62,15 +76,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8C613DE021C66D7E005915F0 /* OpenAL.framework in Frameworks */,
 				8C32BB002171A1D8003E4BAC /* QuartzCore.framework in Frameworks */,
-				8C561D1E2170D8A5009F0306 /* libLuminoEngine.a in Frameworks */,
 				8CC44767216F8C76002F20DA /* OpenGLES.framework in Frameworks */,
 				8CC44765216F8C6E002F20DA /* GLKit.framework in Frameworks */,
 				8CC44763216F8C24002F20DA /* Foundation.framework in Frameworks */,
 				8CC44761216F8BF7002F20DA /* UIKit.framework in Frameworks */,
+				8C82306E21EB517C0003E1F3 /* libLinearMath.a in Frameworks */,
+				8C82306F21EB517C0003E1F3 /* libBulletSoftBody.a in Frameworks */,
+				8C82307021EB517C0003E1F3 /* libBulletCollision.a in Frameworks */,
+				8C82307121EB517C0003E1F3 /* libBulletDynamics.a in Frameworks */,
+				8C613DE221C66DF8005915F0 /* libfreetype.a in Frameworks */,
 				8CC4475F216F8BBA002F20DA /* libz.tbd in Frameworks */,
 				8CC4475B216F8B98002F20DA /* libpng16.a in Frameworks */,
 				8CC4475C216F8B98002F20DA /* libLuminoCore.a in Frameworks */,
+				8C561D1E2170D8A5009F0306 /* libLuminoEngine.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -98,6 +118,7 @@
 		8C95E8C3213BC8B100772569 /* LuminoApp.iOS */ = {
 			isa = PBXGroup;
 			children = (
+				8C613DDE21C66D0D005915F0 /* Assets.lca */,
 				8C95E8C4213BC8B100772569 /* AppDelegate.h */,
 				8C95E8C5213BC8B100772569 /* AppDelegate.mm */,
 				8C95E8C7213BC8B100772569 /* Renderer.h */,
@@ -129,6 +150,12 @@
 		8CC44757216F8B97002F20DA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8C82306C21EB517C0003E1F3 /* libBulletCollision.a */,
+				8C82306D21EB517C0003E1F3 /* libBulletDynamics.a */,
+				8C82306B21EB517C0003E1F3 /* libBulletSoftBody.a */,
+				8C82306A21EB517C0003E1F3 /* libLinearMath.a */,
+				8C613DE121C66DF7005915F0 /* libfreetype.a */,
+				8C613DDF21C66D7E005915F0 /* OpenAL.framework */,
 				8C32BAFF2171A1D8003E4BAC /* QuartzCore.framework */,
 				8C561D1C2170D86E009F0306 /* libLuminoEngined.a */,
 				8CC44766216F8C76002F20DA /* OpenGLES.framework */,
@@ -201,6 +228,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8C613DE321C66FAD005915F0 /* Assets.lca in Resources */,
 				8C95E8D7213BC8B100772569 /* LaunchScreen.storyboard in Resources */,
 				8C95E8D4213BC8B100772569 /* Assets.xcassets in Resources */,
 				8C95E8D2213BC8B100772569 /* Main.storyboard in Resources */,

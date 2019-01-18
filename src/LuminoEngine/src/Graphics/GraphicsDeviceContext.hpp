@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <LuminoEngine/Graphics/RenderState.hpp>
+#include <LuminoEngine/Shader/Common.hpp>
 
 namespace ln {
 struct SizeI;
@@ -19,6 +20,18 @@ class IShaderUniformBuffer;
 class IShaderUniform;
 class IShaderSamplerBuffer;
 
+enum class DeviceTextureType
+{
+	Texture2D,
+	Texture3D,
+	RenderTarget,
+};
+
+struct GraphicsDeviceCaps
+{
+	UnifiedShaderTriple requestedShaderTriple;
+};
+
 class IGraphicsDeviceContext
 	: public RefObject
 {
@@ -28,6 +41,8 @@ public:
 
 	void initialize();
 	virtual void dispose();
+	const GraphicsDeviceCaps& caps() { return m_caps; }
+	void refreshCaps();
 	void enterMainThread();
 	void leaveMainThread();
 	void enterRenderState();
@@ -38,16 +53,20 @@ public:
 	Ref<IVertexBuffer> createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData = nullptr);
 	Ref<IIndexBuffer> createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData = nullptr);
 	Ref<ITexture> createTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData = nullptr);
+	Ref<ITexture> createTexture3D(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData = nullptr);
 	Ref<ITexture> createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
 	Ref<IDepthBuffer> createDepthBuffer(uint32_t width, uint32_t height);
 	Ref<ISamplerState> createSamplerState(const SamplerStateData& desc);
 	Ref<IShaderPass> createShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag);
+    // TODO: ↑ 多くの場合、VertexShader は共有、とかするので、わけで作れるようにしておくとリソース効率がいい。
 
 	void setBlendState(const BlendStateDesc& value);
 	void setRasterizerState(const RasterizerStateDesc& value);
 	void setDepthStencilState(const DepthStencilStateDesc& value);
 	void setColorBuffer(int index, ITexture* value);
 	void setDepthBuffer(IDepthBuffer* value);
+	void setViewportRect(const RectI& value);
+	void setScissorRect(const RectI& value);
 	void setVertexDeclaration(IVertexDeclaration* value);
 	void setVertexBuffer(int streamIndex, IVertexBuffer* value);
 	void setIndexBuffer(IIndexBuffer* value);
@@ -60,6 +79,7 @@ public:
 	void present(ISwapChain* swapChain);
 
 protected:
+	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) = 0;
 	virtual void onEnterMainThread() = 0;
 	virtual void onLeaveMainThread() = 0;
 	virtual void onSaveExternalRenderState() = 0;
@@ -69,6 +89,7 @@ protected:
 	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) = 0;
 	virtual Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) = 0;
 	virtual Ref<ITexture> onCreateTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) = 0;
+	virtual Ref<ITexture> onCreateTexture3D(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) = 0;
 	virtual Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) = 0;
 	virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) = 0;
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) = 0;
@@ -76,14 +97,13 @@ protected:
 
 	virtual void onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState) = 0;
 	virtual void onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer) = 0;
+	virtual void onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize) = 0;
 	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) = 0;
 	virtual void onUpdateShaderPass(IShaderPass* newPass) = 0;
 
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
 	virtual void onDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) = 0;
 	virtual void onDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) = 0;
-
-	//virtual void onSetShaderPass(IShaderPass* pass) = 0;
 
 	virtual void onPresent(ISwapChain* swapChain) = 0;
 
@@ -97,12 +117,15 @@ private:
 		DepthStencilStateDesc depthStencilState;
 		std::array<ITexture*, 4> renderTargets = {};
 		IDepthBuffer* depthBuffer = nullptr;
+		RectI viewportRect;
+		RectI scissorRect;
 		IVertexDeclaration* vertexDeclaration = nullptr;
 		std::array<IVertexBuffer*, 4> vertexBuffers = {};
 		IIndexBuffer* indexBuffer = nullptr;
 		IShaderPass* shaderPass = nullptr;
 	};
 
+	GraphicsDeviceCaps m_caps;
 	State m_staging;
 };
 
@@ -147,6 +170,7 @@ class IVertexBuffer
 {
 public:
 	virtual size_t getBytesSize() = 0;
+	virtual GraphicsResourceUsage usage() const = 0;
 	virtual void setSubData(size_t offset, const void* data, size_t length) = 0;
 	virtual void* map() = 0;
 	virtual void unmap() = 0;
@@ -162,6 +186,7 @@ class IIndexBuffer
 {
 public:
 	virtual size_t getBytesSize() = 0;
+	virtual GraphicsResourceUsage usage() const = 0;
 	virtual void setSubData(size_t offset, const void* data, size_t length) = 0;
 	virtual void* map() = 0;
 	virtual void unmap() = 0;
@@ -176,9 +201,10 @@ class ITexture
 	: public IGraphicsDeviceObject
 {
 public:
-
+	virtual DeviceTextureType type() const = 0;
 
 	virtual const SizeI& realSize() = 0;
+
 	virtual TextureFormat getTextureFormat() const = 0;
 
 	// データは up flow (上下反転)
@@ -207,6 +233,7 @@ public:
 	// データ転送 (TODO:部分更新は未実装…)
 	// data に渡されるイメージデータは上下が反転している状態。
 	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
+	virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
 
 	//virtual void setSubData3D(const Box32& box, const void* data, size_t dataBytes) = 0;
 

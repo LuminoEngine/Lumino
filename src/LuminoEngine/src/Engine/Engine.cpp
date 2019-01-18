@@ -6,6 +6,11 @@
 #include <LuminoEngine/Engine/EngineSettings.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
+#include <LuminoEngine/UI/UIViewport.hpp>
+#include <LuminoEngine/Physics/PhysicsWorld.hpp>
+#include <LuminoEngine/Scene/World.hpp>
+#include <LuminoEngine/Scene/Camera.hpp>
+#include <LuminoEngine/Scene/Light.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 
 namespace ln {
@@ -29,6 +34,26 @@ void EngineSettings::setMainWindowTitle(const StringRef& title)
 	detail::EngineDomain::engineManager()->settings().mainWindowTitle = title;
 }
 
+void EngineSettings::addAssetDirectory(const ln::StringRef& path)
+{
+	detail::EngineDomain::engineManager()->settings().assetDirectories.add(path);
+}
+
+void EngineSettings::addAssetArchive(const ln::StringRef& fileFullPath, const ln::StringRef& password)
+{
+	detail::EngineDomain::engineManager()->settings().assetArchives.add({ fileFullPath, password });
+}
+
+void EngineSettings::setAssetStorageAccessPriority(AssetStorageAccessPriority value)
+{
+	detail::EngineDomain::engineManager()->settings().assetStorageAccessPriority = value;
+}
+
+void EngineSettings::setEngineFeatures(Flags<EngineFeature> features)
+{
+    detail::EngineDomain::engineManager()->settings().features = features;
+}
+
 //==============================================================================
 // Engine
 
@@ -49,7 +74,7 @@ void Engine::initialize()
 	beginFrame();
 }
 
-void Engine::terminate()
+void Engine::finalize()
 {
 	endFrame();
 	detail::EngineDomain::release();
@@ -62,6 +87,16 @@ bool Engine::update()
 	return !detail::EngineDomain::engineManager()->isExitRequested();
 }
 
+void Engine::quit()
+{
+    detail::EngineDomain::engineManager()->quit();
+}
+
+void Engine::resetFrameDelay()
+{
+    detail::EngineDomain::engineManager()->resetFrameDelay();
+}
+
 GraphicsContext* Engine::graphicsContext()
 {
 	return detail::EngineDomain::graphicsManager()->graphicsContext();
@@ -71,6 +106,57 @@ UIFrameWindow* Engine::mainWindow()
 {
 	return detail::EngineDomain::engineManager()->mainWindow();
 }
+
+UIViewport* Engine::mainViewport()
+{
+    return detail::EngineDomain::engineManager()->mainViewport();
+}
+
+UIContainerElement* Engine::mainUIRoot()
+{
+	return detail::EngineDomain::engineManager()->mainUIRoot();
+}
+
+Size Engine::mainViewSize()
+{
+    return mainViewport()->actualViewboxSize();
+}
+
+World* Engine::mainWorld()
+{
+    return detail::EngineDomain::engineManager()->mainWorld();
+}
+
+Camera* Engine::mainCamera()
+{
+    return detail::EngineDomain::engineManager()->mainCamera();
+}
+
+AmbientLight* Engine::mainAmbientLight()
+{
+    return detail::EngineDomain::engineManager()->mainAmbientLight();
+}
+
+DirectionalLight* Engine::mainDirectionalLight()
+{
+    return detail::EngineDomain::engineManager()->mainDirectionalLight();
+}
+
+PhysicsWorld* Engine::mainPhysicsWorld()
+{
+    return detail::EngineDomain::engineManager()->mainPhysicsWorld();
+}
+
+// TODO: time
+//Engine::elapsedSeconds()
+//Engine::totalRealTime()
+//Engine::frameCount()
+//
+//World::elapsedSeconds()
+//World::totalTime()
+//Engine::frameCount()
+//World::timeScale
+
 
 } // namespace ln
 

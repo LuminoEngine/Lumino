@@ -48,7 +48,7 @@ enum class MapMode
 };
 
 /** 頂点宣言の要素の型 */
-enum class VertexElementType
+enum class VertexElementType : uint8_t
 {
 	/** Unknown */
 	Unknown,
@@ -128,13 +128,14 @@ enum class PixelFormat
 	A8,
 
 	RGBA32,
+    RGB24,
 
 	R32G32B32A32Float,
 };
 
 /** テクスチャのピクセルフォーマット */
 LN_ENUM()
-enum class TextureFormat
+enum class TextureFormat : uint8_t
 {
 	/** Unknown */
 	Unknown,
@@ -142,8 +143,8 @@ enum class TextureFormat
 	/** 32 ビットのアルファ付きフォーマット (GPUネイティブフォーマット。D3D_FMT_A8B8G8R8, DXGI_FORMAT_R8G8B8A8_UNORM) */
 	RGBA32,
 
-	/** 32 ビットのアルファ無しフォーマット */
-	RGBX32,
+	/** 24 ビットのアルファ無しフォーマット */
+	RGB24,
 
 	/** 64 ビットの浮動小数点フォーマット */
 	R16G16B16A16Float,
@@ -170,7 +171,7 @@ enum class DepthBufferFormat
 };
 
 /** 描画プリミティブの種類 */
-enum class PrimitiveType
+enum class PrimitiveType    // TODO: topology?
 {
 	TriangleList,
 	TriangleStrip,
@@ -253,6 +254,8 @@ struct SamplerStateData
 };
 
 namespace detail {
+static const int MaxMultiRenderTargets = 4;
+static const int MaxVertexStreams = 16;
 
 using ShaderRefrectionParameterType = ShaderVariableType;
 //enum class ShaderRefrectionParameterType

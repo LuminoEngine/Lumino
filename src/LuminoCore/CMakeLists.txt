@@ -44,6 +44,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${LN_CORE_INCLUDE_DIR}>  
     $<INSTALL_INTERFACE:../../include>  # <prefix>/include
 )
+target_include_directories(${PROJECT_NAME} PRIVATE src)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LN_LINK_LIBS})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "src/LuminoCore.PCH.h" "src/LuminoCore.PCH.cpp")
@@ -90,3 +91,5 @@ install(
     FILES "LuminoCoreConfig.cmake"
     DESTINATION "cmake")
 
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ../../../../lib/${LN_TARGET_ARCH}-${CMAKE_BUILD_TYPE})

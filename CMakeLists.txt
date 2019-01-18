@@ -32,6 +32,9 @@ option(LN_BUILD_TESTS "build unit test projects." ON)
 # build tool projects
 option(LN_BUILD_TOOLS "build tool projects." ON)
 
+# build language bindings projects
+option(LN_BUILD_BINDINGS "build language bindings." OFF)
+
 # build only LuminoCore.
 option(LN_BUILD_CORE_ONLY "build only LuminoCore." OFF)
 
@@ -40,6 +43,9 @@ option(LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER "build tool projects.build embedde
 
 # MSVC Runtime library.
 option(LN_MSVC_STATIC_RUNTIME "static runtime (/MT, /MTd) or DLL runtime (/MD, /MDd) or to link either." OFF)
+
+# use SDL on MSVC
+option(LN_MSVC_USE_SDL "use SDL on MSVC" OFF)
 
 #------------------------------------------------------------------------------
 
@@ -60,22 +66,31 @@ if (DEFINED EMSCRIPTEN)
     add_definitions(-DLN_GLFW)
     #add_definitions(-DGLFW_INCLUDE_ES2) # glfw3.h 内で include するヘッダを制御する
 
+    set(LN_USE_SDL ON)
 
 elseif (LN_ANDROID)
     add_definitions(-DLN_GRAPHICS_OPENGLES)
 
 elseif (DEFINED IOS_PLATFORM)
     set(LN_IOS ON)
+    set(LN_USE_OPENAL ON)
     add_definitions(-DLN_GRAPHICS_OPENGLES)
-    set (CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "10.0" CACHE string "iOS Deployment Target")
+    set(CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "10.0" CACHE string "iOS Deployment Target")
 
 elseif(WIN32 OR APPLE OR UNIX)
     add_definitions(-DLN_GLFW)
     set(GLFW_INSTALL ON CACHE BOOL "" FORCE)
     set(LN_OS_DESKTOP ON)
+    set(LN_USE_OPENAL ON)
 
 endif()
 
+
+if (MSVC AND LN_MSVC_USE_SDL)
+    set(LN_USE_SDL ON)
+else()
+    set(LN_USE_SDL OFF)
+endif()
 
 #------------------------------------------------------------------------------
 # gtest
@@ -97,13 +112,10 @@ else()
     include(external/ImportExternalLibraries.cmake)
     add_subdirectory(src/LuminoCore)
     add_subdirectory(src/LuminoEngine)
-    
     if (LN_BUILD_TOOLS)
         add_subdirectory(tools/LuminoCLI)
     endif()
+    if (LN_BUILD_BINDINGS)
+        add_subdirectory(tools/lumino-wg)
+    endif()
 endif()
-
-if (LN_OS_DESKTOP)
-    #add_subdirectory(src/LuminoRuntime)
-endif()
-

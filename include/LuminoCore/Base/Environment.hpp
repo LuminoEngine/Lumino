@@ -69,6 +69,9 @@ public:
 
 	/** 現在の環境のバイトオーダー (エンディアン) を確認します。 */
 	static ByteOrder byteOrder();
+
+    /** システム起動からの時間を ms 単位で取得します。 */
+    static uint64_t getTickCount();
 };
 
 } // namespace ln

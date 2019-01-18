@@ -1,10 +1,11 @@
 ﻿
-#pragma once 
+#pragma once
+#include "Common.hpp"
 
 namespace ln {
 
 /** ブレンディングの演算方法 */
-enum class BlendOp
+enum class BlendOp : uint8_t
 {
 	Add,						/**< 転送元に転送先を加算する。*/
 	Subtract,					/**< 転送元から転送先を減算する。*/
@@ -14,7 +15,7 @@ enum class BlendOp
 };
 
 /** ブレンディングの係数 */
-enum class BlendFactor
+enum class BlendFactor : uint8_t
 {
 	Zero,						/**< ブレンディング係数は、(0, 0, 0, 0) */
 	One,						/**< ブレンディング係数は、(1, 1, 1, 1) */
@@ -28,8 +29,18 @@ enum class BlendFactor
 	InverseDestinationAlpha,	/**< ブレンディング係数は、(1-Ad, 1-Ad, 1-Ad, 1-Ad) */
 };
 
+/** 塗りつぶし方法 */
+enum class FillMode : uint8_t
+{
+    /** 面を塗りつぶす */
+    Solid,
+
+    /** ワイヤーフレーム */
+    Wireframe,
+};
+
 /** カリング方法 */
-enum class CullingMode
+enum class CullMode : uint8_t
 {
 	/** 両面を描画します。 */
 	None,
@@ -41,18 +52,8 @@ enum class CullingMode
 	Back,
 };
 
-/** 塗りつぶし方法 */
-enum class FillMode
-{
-	/** 面を塗りつぶす */
-	Solid,
-
-	/** ワイヤーフレーム */
-	Wireframe,
-};
-
 /// 比較関数の定数
-enum class ComparisonFunc
+enum class ComparisonFunc : uint8_t
 {
 	Never,					///< 常に失敗します。
 	Less,						///< (新しいピクセル値 < 現在のピクセル値) 新しいピクセル値が、現在のピクセル値未満の場合に、新しいピクセル値を採用します。
@@ -65,7 +66,7 @@ enum class ComparisonFunc
 };
 
 /// ステンシルテストの結果に応じたステンシル処理方法です。
-enum class StencilOp
+enum class StencilOp : uint8_t
 {
 	Keep,					///< 既存のステンシル データを保持します。(何もしません)
 	Replace,					///< ステンシルデータをステンシル参照値に設定します。
@@ -87,7 +88,7 @@ enum class StencilOp
 //	BlendFactor destinationBlend;
 //
 //	/** カリング方法 */
-//	CullingMode cullingMode;
+//	CullMode cullingMode;
 //
 //	/** 塗りつぶし方法 */
 //	FillMode fillMode;
@@ -150,7 +151,7 @@ struct RasterizerStateDesc
 	FillMode fillMode;
 
 	/** カリング方法 (default:Back) */
-	CullingMode cullMode;
+	CullMode cullMode;
 
 	RasterizerStateDesc();
 };
@@ -176,8 +177,8 @@ struct StencilOpDesc
 /** 深度ステンシルステート */
 struct DepthStencilStateDesc
 {
-	/** 深度テストの有効状態 (default:true) */
-	bool depthTestEnabled;
+	/** 深度テストの有効状態 (default:ComparisonFunc::LessEqual) */
+    ComparisonFunc depthTestFunc;
 
 	/** 深度書き込みの有効状態 (default:true) */
 	bool depthWriteEnabled;
@@ -185,7 +186,7 @@ struct DepthStencilStateDesc
 	/** ステンシルテストの有効状態 (default:false) */
 	bool stencilEnabled;
 
-	/** ステンシルテストの参照値 (default:0) */
+	/** ステンシルテストの参照値 (default:0xFF) */
 	uint8_t stencilReferenceValue;
 
 	/** 法線がカメラの方向を向いている面のステンシル処理 */
@@ -196,11 +197,6 @@ struct DepthStencilStateDesc
 
 	DepthStencilStateDesc();
 };
-
-
-
-
-
 
 
 
@@ -232,7 +228,7 @@ public:
 	BlendFactor		destinationBlend;	/**< ブレンディングの係数 (default: Zero) */
 	
 	BlendMode		Blend;	/*TODO: 廃止予定*/		///< 合成方法 (default:BlendMode::Alpha)
-	CullingMode		Culling;		///< カリング方法 (default:CullingMode_Back)
+	CullMode		Culling;		///< カリング方法 (default:CullingMode_Back)
 	FillMode		Fill;			///< 塗りつぶし方法 (default:FillMode_Solid)
 	bool			AlphaTest;      ///< アルファテストの有無 (default:true)
 	//bool			PointSprite;	///< ポイントスプライトモードの有無 (default:false)

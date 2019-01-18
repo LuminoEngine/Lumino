@@ -17,7 +17,7 @@ Project::~Project()
 {
 }
 
-Result Project::newProject(const ln::Path& projectDir, const ln::String& projectName)
+Result Project::newProject(const ln::Path& projectDir, const ln::String& projectName, const ln::String& engineSource)
 {
 	m_rootDir = projectDir.canonicalize();
 	m_projectName = projectName;
@@ -36,6 +36,7 @@ Result Project::newProject(const ln::Path& projectDir, const ln::String& project
 	CLI::info(u"\nCreating a new Lumino app in " + m_rootDir + u"\n");
 
 	m_properties->language = u"cpp";
+    m_properties->engine = engineSource;
 	ln::FileSystem::createDirectory(m_engineDir);
 	ln::FileSystem::createDirectory(m_sourcesDir);
 	ln::FileSystem::createDirectory(m_assetsDir);
@@ -47,6 +48,9 @@ Result Project::newProject(const ln::Path& projectDir, const ln::String& project
 	if (!m_context->applyTemplates()) {
 		return Result::Fail;
 	}
+    if (!m_context->applyEngine()) {
+        return Result::Fail;
+    }
 	
 	Result result = saveProject();
 	CLI::info(u"\nSuccess! Created " + m_projectName + u" at " + m_rootDir + u"\n");
@@ -134,6 +138,7 @@ void Project::setupPathes()
 	m_sourcesDir = ln::Path(m_rootDir, u"Sources");
 	m_assetsDir = ln::Path(m_rootDir, u"Assets");
 	m_buildDir = ln::Path(m_rootDir, u".ln");
+	m_intermediateAssetsDir = ln::Path(m_buildDir, u"Assets");
 
 	auto files = ln::FileSystem::getFiles(m_rootDir, u"*" + ProjectFileExt);
 	if (!files.isEmpty()) {

@@ -26,7 +26,7 @@ namespace LuminoBuild
         public static string emcmake { get; set; }
 
 
-        public const string AndroidTargetPlatform = "android-24";
+        public const string AndroidTargetPlatform = "android-26";
         public static bool AndroidStudioFound { get; set; }
         public static string AndroidSdkRootDir { get; set; }
         public static string AndroidSdkCMake { get; set; }
@@ -38,17 +38,19 @@ namespace LuminoBuild
 
         public static TargetArch[] TargetArchs = new TargetArch[]
         {
-            new TargetArch(){ SourceDirName = "MSVC2017-x86-MT", DestDirName = "MSVC2017-x86-MT", PdbCopy = true },
-            new TargetArch(){ SourceDirName = "Emscripten", DestDirName = "Emscripten" },
-            new TargetArch(){ SourceDirName = "Android-arm64-v8a-Debug", DestDirName = "Android-arm64-v8a" },
-            new TargetArch(){ SourceDirName = "Android-arm64-v8a-Release", DestDirName = "Android-arm64-v8a" },
-            new TargetArch(){ SourceDirName = "Android-armeabi-v7a-Debug", DestDirName = "Android-armeabi-v7a" },
-            new TargetArch(){ SourceDirName = "Android-armeabi-v7a-Release", DestDirName = "Android-armeabi-v7a" },
-            new TargetArch(){ SourceDirName = "Android-x86-Debug", DestDirName = "Android-x86" },
-            new TargetArch(){ SourceDirName = "Android-x86-Release", DestDirName = "Android-x86" },
-            new TargetArch(){ SourceDirName = "Android-x86_64-Debug", DestDirName = "Android-x86_64" },
-            new TargetArch(){ SourceDirName = "Android-x86_64-Release", DestDirName = "Android-x86_64" },
-            new TargetArch(){ SourceDirName = "macOS", DestDirName = "macOS" },
+            new TargetArch(){ SourceDirName = "MSVC2017-x86-MT-Debug", DestDirName = "MSVC2017-x86-MT-Debug", PdbCopy = true },
+            new TargetArch(){ SourceDirName = "MSVC2017-x86-MT-Release", DestDirName = "MSVC2017-x86-MT-Release", PdbCopy = true },
+            new TargetArch(){ SourceDirName = "Emscripten", DestDirName = "Emscripten-Release" },
+            new TargetArch(){ SourceDirName = "Android-arm64-v8a-Debug", DestDirName = "Android-arm64-v8a-Debug" },
+            new TargetArch(){ SourceDirName = "Android-arm64-v8a-Release", DestDirName = "Android-arm64-v8a-Release" },
+            new TargetArch(){ SourceDirName = "Android-armeabi-v7a-Debug", DestDirName = "Android-armeabi-v7a-Debug" },
+            new TargetArch(){ SourceDirName = "Android-armeabi-v7a-Release", DestDirName = "Android-armeabi-v7a-Release" },
+            new TargetArch(){ SourceDirName = "Android-x86-Debug", DestDirName = "Android-x86-Debug" },
+            new TargetArch(){ SourceDirName = "Android-x86-Release", DestDirName = "Android-x86-Release" },
+            new TargetArch(){ SourceDirName = "Android-x86_64-Debug", DestDirName = "Android-x86_64-Debug" },
+            new TargetArch(){ SourceDirName = "Android-x86_64-Release", DestDirName = "Android-x86_64-Release" },
+            new TargetArch(){ SourceDirName = "macOS-Debug", DestDirName = "macOS-Debug" },
+            new TargetArch(){ SourceDirName = "macOS-Release", DestDirName = "macOS-Release" },
             new TargetArch(){ SourceDirName = "iOS-SIMULATOR64-Debug", DestDirName = "iOS-SIMULATOR64-Debug" },
             new TargetArch(){ SourceDirName = "iOS-SIMULATOR64-Release", DestDirName = "iOS-SIMULATOR64-Release" },
             new TargetArch(){ SourceDirName = "iOS-OS-Debug", DestDirName = "iOS-OS-Debug" },
@@ -85,10 +87,10 @@ namespace LuminoBuild
             }
 
 
-            InstallTools();
+            InstallTools(repoRootDir);
         }
 
-        private static void InstallTools()
+        private static void InstallTools(string repoRootDir)
         {
             Directory.CreateDirectory(BuildToolsDir);
 
@@ -107,6 +109,10 @@ namespace LuminoBuild
                         Utils.CallProcess("emsdk.bat", "install " + emsdkVer);
                     else
                         Utils.CallProcess("emsdk", "install " + emsdkVer);
+
+                    Utils.CopyFile(
+                        Path.Combine(repoRootDir, "external", "emscripten", "Emscripten.cmake"),
+                        Path.Combine(EmscriptenDir, "cmake", "Modules", "Platform"));
                 }
             }
 
@@ -136,8 +142,27 @@ namespace LuminoBuild
                     };
                     
                     Utils.CallProcess(skdmanager, "cmake;3.6.4111459", env, (stdin) => stdin.WriteLine("y"));
-                    Utils.CallProcess(skdmanager, "ndk-bundle", env, (stdin) => stdin.WriteLine("y"));
-                    //Utils.CallProcess(skdmanager, "lldb;3.1", env, (stdin) => stdin.WriteLine("y"));
+                    //Utils.CallProcess(skdmanager, "ndk-bundle", env, (stdin) => stdin.WriteLine("y"));
+                }
+
+                // sdkmanager でインストールできるのは最新版のみ。
+                // r19 では find_package(zlib) が失敗していて、その時点 (2019/1/18) では不具合情報も無いので対策しようがなかった。
+                // そのため r18 を直接ダウンロードして配置する。
+                var ndkDir = Path.Combine(androidSdk, "ndk-bundle");
+                if (!Directory.Exists(ndkDir))
+                {
+                    Console.WriteLine("Downloading Android NDK...");
+                    var zip = Path.Combine(BuildToolsDir, "android-ndk-r18b.zip");
+                    // https://developer.android.com/ndk/downloads/older_releases
+                    if (Utils.IsWin32)
+                        Utils.DownloadFile("https://dl.google.com/android/repository/android-ndk-r18b-windows-x86_64.zip", zip);
+                    else if (Utils.IsMac)
+                        Utils.DownloadFile("https://dl.google.com/android/repository/android-ndk-r18b-darwin-x86_64.zip", zip);
+
+                    Console.WriteLine("Extracting Android NDK...");
+                    var tmpDir = Path.Combine(BuildToolsDir, "android-ndk-r18b");
+                    Utils.ExtractZipFile(zip, tmpDir);
+                    Directory.Move(Path.Combine(tmpDir, "android-ndk-r18b"), ndkDir);
                 }
             }
         }

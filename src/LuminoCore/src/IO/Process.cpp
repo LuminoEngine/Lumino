@@ -18,7 +18,7 @@ Process::Process()
 	, m_stdoutEncoding(nullptr)
 	, m_stderrEncoding(nullptr)
 {
-	m_startInfo.useShellExecute = true;
+	//m_startInfo.useShellExecute = true;
 	createRedirectStreams();
 }
 
@@ -105,7 +105,7 @@ StreamReader* Process::openStderr()
 void Process::start()
 {
 	if (m_startInfo.useShellExecute) {
-		if (LN_REQUIRE(!m_startInfo.stdinPipe && !m_startInfo.stdoutPipe && !m_startInfo.stderrPipe)) return;
+		if (LN_REQUIRE(!m_startInfo.stdinPipe && !m_startInfo.stdoutPipe && !m_startInfo.stderrPipe, "Use with setUseShellExecute(false).")) return;
 		// TODO: 環境変数指定も NG
 		m_impl->startWithShell(m_startInfo);
 	}

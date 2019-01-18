@@ -6,91 +6,20 @@
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/DepthBuffer.hpp>
+#include <LuminoEngine/Graphics/SwapChain.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
 #include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
-#include "OpenGLDeviceContext.hpp"
 #include "../Engine/RenderingCommandList.hpp"
 
 namespace ln {
-
-//==============================================================================
-// SwapChain
-
-SwapChain::SwapChain()
-	: m_rhiObject(nullptr)
-	, m_colorBuffer(nullptr)
-{
-}
-
-SwapChain::~SwapChain()
-{
-}
-
-void SwapChain::initialize(detail::PlatformWindow* window, const SizeI& backbufferSize)
-{
-	// TODO: GraphicsResource にして、onChangeDevice でバックバッファをアタッチ
-	Object::initialize();
-	m_rhiObject = detail::EngineDomain::graphicsManager()->deviceContext()->createSwapChain(window, backbufferSize);
-	m_colorBuffer = newObject<RenderTargetTexture>(m_rhiObject->getColorBuffer());
-	m_depthBuffer = newObject<DepthBuffer>(m_colorBuffer->width(), m_colorBuffer->height());
-}
-
-void SwapChain::dispose()
-{
-	m_rhiObject.reset();
-	m_depthBuffer.reset();
-	m_colorBuffer.reset();
-	Object::dispose();
-}
-
-RenderTargetTexture* SwapChain::colorBuffer() const
-{
-	return m_colorBuffer;
-}
-
-DepthBuffer* SwapChain::depthBuffer() const
-{
-	return m_depthBuffer;
-}
-
-void SwapChain::wait()
-{
-	// TODO
-}
-
-detail::ISwapChain* SwapChain::resolveRHIObject() const
-{
-	return m_rhiObject;
-}
-
-//==============================================================================
-// GraphicsContext
-namespace detail {
-
-void SwapChainHelper::setBackendBufferSize(SwapChain* swapChain, int width, int height)
-{
-    LN_DCHECK(swapChain);
-    if (GLSwapChain* glswap = dynamic_cast<GLSwapChain*>(swapChain->resolveRHIObject())) {
-        glswap->setBackendBufferSize(width, height);
-    }
-}
-
-void SwapChainHelper::setOpenGLBackendFBO(SwapChain* swapChain, uint32_t id)
-{
-    LN_DCHECK(swapChain);
-    if (GLSwapChain* glswap = dynamic_cast<GLSwapChain*>(swapChain->resolveRHIObject())) {
-        glswap->setDefaultFBO(id);
-    }
-}
-
-} // namespace detail
 
 //==============================================================================
 // GraphicsContext
 
 GraphicsContext::GraphicsContext()
 	: m_device(nullptr)
+    , m_modifiedFlags(ModifiedFlags_All)
 {
 }
 
@@ -100,15 +29,23 @@ GraphicsContext::~GraphicsContext()
 
 void GraphicsContext::initialize(detail::IGraphicsDeviceContext* device)
 {
+    Object::initialize();
 	m_manager = detail::EngineDomain::graphicsManager();
 	m_device = device;
-
-	m_staging.reset();
-	m_current.reset();
+    m_lastCommit.reset();
+	resetState();
 }
 
 void GraphicsContext::dispose()
 {
+    Object::dispose();
+    m_lastCommit.reset();
+    m_staging.reset();
+}
+
+void GraphicsContext::resetState()
+{
+	m_staging.reset();
 }
 
 void GraphicsContext::setBlendState(const BlendStateDesc& value)
@@ -129,11 +66,36 @@ void GraphicsContext::setDepthStencilState(const DepthStencilStateDesc& value)
 void GraphicsContext::setColorBuffer(int index, RenderTargetTexture* value)
 {
 	m_staging.renderTargets[index] = value;
+	if (index == 0 && value) {
+		auto rect = Rect(0, 0, value->width(), value->height());
+		setViewportRect(rect);
+		setScissorRect(rect);
+	}
+}
+
+RenderTargetTexture* GraphicsContext::colorBuffer(int index) const
+{
+    return m_staging.renderTargets[index];
 }
 
 void GraphicsContext::setDepthBuffer(DepthBuffer* value)
 {
 	m_staging.depthBuffer = value;
+}
+
+DepthBuffer* GraphicsContext::depthBuffer() const
+{
+    return m_staging.depthBuffer;
+}
+
+void GraphicsContext::setViewportRect(const Rect& value)
+{
+	m_staging.viewportRect = value;
+}
+
+void GraphicsContext::setScissorRect(const Rect& value)	// 使用するのは主に UI なので、ピクセル単位で指定
+{
+	m_staging.scissorRect = value;
 }
 
 void GraphicsContext::setVertexDeclaration(VertexDeclaration* value)
@@ -143,38 +105,48 @@ void GraphicsContext::setVertexDeclaration(VertexDeclaration* value)
 
 void GraphicsContext::setVertexBuffer(int streamIndex, VertexBuffer* value)
 {
-	m_staging.vertexBuffers[streamIndex] = value;
+    if (m_staging.vertexBuffers[streamIndex] != value) {
+        m_staging.vertexBuffers[streamIndex] = value;
+        m_modifiedFlags |= ModifiedFlags_VertexBuffers;
+    }
 }
 
 void GraphicsContext::setIndexBuffer(IndexBuffer* value)
 {
-	m_staging.indexBuffer = value;
+    if (m_staging.indexBuffer != value) {
+        m_staging.indexBuffer = value;
+        m_modifiedFlags |= ModifiedFlags_IndexBuffer;
+    }
 }
 
 void GraphicsContext::setShaderPass(ShaderPass* pass)
 {
-	if (pass)
-	{
-		m_staging.shader = pass->shader();
-		m_staging.shaderPass = pass;
-	}
-	else
-	{
-		m_staging.shader = nullptr;
-		m_staging.shaderPass = nullptr;
-	}
+    if (m_staging.shaderPass != pass)
+    {
+        if (pass)
+        {
+            m_staging.shader = pass->shader();
+            m_staging.shaderPass = pass;
+        }
+        else
+        {
+            m_staging.shader = nullptr;
+            m_staging.shaderPass = nullptr;
+        }
+        m_modifiedFlags |= ModifiedFlags_ShaderPass;
+    }
 }
 
 void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
-	commitStatus();
+	commitState();
 	// TODO: threading
 	m_device->clearBuffers(flags, color, z, stencil);
 }
 
 void GraphicsContext::drawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
 {
-	commitStatus();
+	commitState();
 	LN_ENQUEUE_RENDER_COMMAND_4(
 		GraphicsContext_setIndexBuffer, m_manager,
 		detail::IGraphicsDeviceContext*, m_device,
@@ -188,7 +160,7 @@ void GraphicsContext::drawPrimitive(PrimitiveType primitive, int startVertex, in
 
 void GraphicsContext::drawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
 {
-	commitStatus();
+	commitState();
 	LN_ENQUEUE_RENDER_COMMAND_4(
 		GraphicsContext_setIndexBuffer, m_manager,
 		detail::IGraphicsDeviceContext*, m_device,
@@ -206,9 +178,10 @@ void GraphicsContext::present(SwapChain* swapChain)
 
 	// TODO: threading
 	m_device->present(swapChain->resolveRHIObject());
+    m_manager->primaryRenderingCommandList()->clear();
 }
 
-void GraphicsContext::commitStatus()
+detail::IGraphicsDeviceContext* GraphicsContext::commitState()
 {
 	// ポインタとしては変わっていなくても、resolve は毎回呼び出す。
 	// こうしておかないと、
@@ -263,6 +236,20 @@ void GraphicsContext::commitStatus()
 	}
 
 	{
+		RectI viewportRect = RectI::fromFloatRect(m_staging.viewportRect);
+		RectI scissorRect = RectI::fromFloatRect(m_staging.scissorRect);
+		LN_ENQUEUE_RENDER_COMMAND_3(
+			GraphicsContext_setDepthBuffer, m_manager,
+			detail::IGraphicsDeviceContext*, m_device,
+			RectI, viewportRect,
+			RectI, scissorRect,
+			{
+				m_device->setViewportRect(viewportRect);
+				m_device->setScissorRect(scissorRect);
+			});
+	}
+
+	{
 		auto& value = m_staging.vertexDeclaration;
 		detail::IVertexDeclaration* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
 		LN_ENQUEUE_RENDER_COMMAND_2(
@@ -274,11 +261,12 @@ void GraphicsContext::commitStatus()
 			});
 	}
 
+    //if ((m_modifiedFlags & ModifiedFlags_VertexBuffers) != 0)
 	{
 		for (int i = 0; i < m_staging.vertexBuffers.size(); i++)
 		{
 			auto& value = m_staging.vertexBuffers[i];
-			detail::IVertexBuffer* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
+			detail::IVertexBuffer* rhiObject = detail::GraphicsResourceHelper::resolveRHIObject<detail::IVertexBuffer>(value);
 			LN_ENQUEUE_RENDER_COMMAND_3(
 				GraphicsContext_setVertexBuffer, m_manager,
 				detail::IGraphicsDeviceContext*, m_device,
@@ -288,8 +276,11 @@ void GraphicsContext::commitStatus()
 					m_device->setVertexBuffer(i, rhiObject);
 				});
 		}
+
+        m_lastCommit.vertexBuffers = m_staging.vertexBuffers;
 	}
 
+    //if ((m_modifiedFlags & ModifiedFlags_IndexBuffer) != 0)
 	{
 		auto& value = m_staging.indexBuffer;
 		detail::IIndexBuffer* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
@@ -300,8 +291,11 @@ void GraphicsContext::commitStatus()
 			{
 				m_device->setIndexBuffer(rhiObject);
 			});
+
+        m_lastCommit.indexBuffer = m_staging.indexBuffer;
 	}
 
+    //if ((m_modifiedFlags & ModifiedFlags_ShaderPass) != 0)
 	{
 		auto& value = m_staging.shaderPass;
 		detail::IShaderPass* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
@@ -312,7 +306,18 @@ void GraphicsContext::commitStatus()
 			{
 				m_device->setShaderPass(rhiObject);
 			});
+
+        m_lastCommit.shader = m_staging.shader;
+        m_lastCommit.shaderPass = m_staging.shaderPass;
+
+        if (value) {
+            //value->commitContantBuffers();
+        }
 	}
+
+    m_modifiedFlags = ModifiedFlags_None;
+
+	return m_manager->deviceContext();
 }
 
 void GraphicsContext::State::reset()
@@ -325,6 +330,7 @@ void GraphicsContext::State::reset()
 	vertexDeclaration = nullptr;
 	vertexBuffers = {};
 	indexBuffer = nullptr;
+    shader = nullptr;
 	shaderPass = nullptr;
 }
 

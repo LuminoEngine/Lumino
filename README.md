@@ -11,8 +11,8 @@ Build and Unit Tests
 --------
 | Package | Status  |
 |---------|---------|
-| Windows | [![Build Status](https://dev.azure.com/lriki/Lumino/_apis/build/status/Lumino-Windows)](https://dev.azure.com/lriki/Lumino/_build/latest?definitionId=2) |
-| macOS   | [![Build Status](https://dev.azure.com/lriki/Lumino/_apis/build/status/Lumino-macOS)](https://dev.azure.com/lriki/Lumino/_build/latest?definitionId=3) |
+| Windows | [![Build Status](https://dev.azure.com/lriki/Lumino/_apis/build/status/Lumino-CI-master-Windows?branchName=master)](https://dev.azure.com/lriki/Lumino/_build/latest?definitionId=8?branchName=master) |
+| macOS   | [![Build Status](https://dev.azure.com/lriki/Lumino/_apis/build/status/Lumino-CI-master-macOS?branchName=master)](https://dev.azure.com/lriki/Lumino/_build/latest?definitionId=9?branchName=master) |
 
 
 Get started
@@ -25,6 +25,8 @@ Get started
 [How to build](docs/HowToBuild.md)
 
 [Contributing](.github/CONTRIBUTING.md)
+
+[Blog](http://luminolog.hatenablog.com/)
 
 
 開発状況 / 開発版について

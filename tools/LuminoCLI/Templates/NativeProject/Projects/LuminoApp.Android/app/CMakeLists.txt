@@ -1,12 +1,15 @@
 cmake_minimum_required(VERSION 3.4.1)
 
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
+
 #set(LUMINO_ENGINE_ROOT $ENV{LUMINO_ROOT}/Engine/Native)
 set(LUMINO_ENGINE_ROOT ${CMAKE_CURRENT_LIST_DIR}/../../../Engine/Native)
 set(LN_TARGET_ARCH Android-${ANDROID_ABI})
 
-
 list(APPEND CMAKE_FIND_ROOT_PATH ${LUMINO_ENGINE_ROOT}/lib/Android-${ANDROID_ABI})
-
 
 include(${LUMINO_ENGINE_ROOT}/lib/LuminoSetup.cmake)
 
@@ -47,8 +50,6 @@ find_library( # Sets the name of the path variable.
 # Specifies libraries CMake should link to your target library. You
 # can link multiple libraries, such as libraries you define in this
 # build script, prebuilt third-party libraries, or system libraries.
-
-#message(${ZLIB_LIBRARY_RELEASE})
 
 add_dependencies(PNG ZLIB)
 

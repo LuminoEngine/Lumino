@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/GraphicsResource.hpp>
+#include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include "GraphicsManager.hpp"
 #include "OpenGLDeviceContext.hpp"
@@ -20,8 +21,8 @@ PixelFormat GraphicsHelper::translateToPixelFormat(TextureFormat format)
 		return PixelFormat::Unknown;
 	case TextureFormat::RGBA32:
 		return PixelFormat::RGBA32;
-	case TextureFormat::RGBX32:
-		return PixelFormat::Unknown;
+    case TextureFormat::RGB24:
+		return PixelFormat::RGB24;
 	case TextureFormat::R16G16B16A16Float:
 		return PixelFormat::Unknown;
 	case TextureFormat::R32G32B32A32Float:
@@ -49,6 +50,8 @@ TextureFormat GraphicsHelper::translateToTextureFormat(PixelFormat format)
 		return TextureFormat::Unknown;
 	case PixelFormat::RGBA32:
 		return TextureFormat::RGBA32;
+    case PixelFormat::RGB24:
+        return TextureFormat::RGB24;
 	case PixelFormat::R32G32B32A32Float:
 		return TextureFormat::R32G32B32A32Float;
 	default:
@@ -70,11 +73,20 @@ GraphicsManager::GraphicsManager()
 
 void GraphicsManager::initialize(const Settings& settings)
 {
+    LN_LOG_DEBUG << "GraphicsManager Initialization started.";
+
 	OpenGLDeviceContext::Settings openglSettings;
 	openglSettings.mainWindow = settings.mainWindow;
 	auto ctx = makeRef<OpenGLDeviceContext>();
 	ctx->initialize(openglSettings);
+	ctx->refreshCaps();
 	m_deviceContext = ctx;
+
+    {
+        auto& triple = m_deviceContext->caps().requestedShaderTriple;
+        LN_LOG_INFO << "requestedShaderTriple:" << triple.target << "-" << triple.version << "-" << triple.option;
+    }
+
 
 	m_graphicsContext = newObject<GraphicsContext>(m_deviceContext);
 
@@ -92,9 +104,17 @@ void GraphicsManager::initialize(const Settings& settings)
 
 	// default objects
 	{
+        m_blackTexture = newObject<Texture2D>(32, 32, TextureFormat::RGBA32, false, GraphicsResourceUsage::Static);
+        m_blackTexture->clear(Color::Black);
+
+        m_whiteTexture = newObject<Texture2D>(32, 32, TextureFormat::RGBA32, false, GraphicsResourceUsage::Static);
+        m_whiteTexture->clear(Color::White);
+
 		m_defaultSamplerState = newObject<SamplerState>();
 		m_defaultSamplerState->setFrozen(true);
 	}
+
+    LN_LOG_DEBUG << "GraphicsManager Initialization ended.";
 }
 
 void GraphicsManager::dispose()

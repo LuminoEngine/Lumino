@@ -58,11 +58,23 @@ public:
 
 	// データは Bitmap クラスから直接渡されることを想定し、downflow で渡すこと。
 	// フォーマットは RGBA
-	void save(Stream* stream, const byte_t* data, const SizeI& size);
+	void save(Stream* stream, const byte_t* data, const SizeI& size, PixelFormat format);
 };
 
-void PngBitmapEncoder::save(Stream* stream, const byte_t* data, const SizeI& size)
+void PngBitmapEncoder::save(Stream* stream, const byte_t* data, const SizeI& size, PixelFormat format)
 {
+    int colorType = 0;
+    if (format == PixelFormat::RGBA32) {
+        colorType = PNG_COLOR_TYPE_RGBA;
+    }
+    else if (format == PixelFormat::RGB24) {
+        colorType = PNG_COLOR_TYPE_RGB;
+    }
+    else {
+        LN_ERROR();
+        return;
+    }
+
 	png_struct* png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	if (LN_ENSURE(png, "png_create_write_struct() failed")) return;
 
@@ -70,15 +82,17 @@ void PngBitmapEncoder::save(Stream* stream, const byte_t* data, const SizeI& siz
 	auto se = makeScopedCall([&]() {png_destroy_write_struct(&png, &info_ptr); }); // finalizer
 	if (LN_ENSURE(info_ptr, "png_create_info_struct() failed")) return;
 
+
+
 	png_set_IHDR(
 		png, info_ptr,
 		size.width, size.height,
 		8,						// 各色 8 bit
-		PNG_COLOR_TYPE_RGBA,	// RGBA フォーマット
+        colorType,	// RGBA フォーマット
 		PNG_INTERLACE_NONE,
 		PNG_COMPRESSION_TYPE_DEFAULT,
 		PNG_FILTER_TYPE_DEFAULT);
-	png_set_compression_level(png, 1);
+	//png_set_compression_level(png, 1);
 	png_set_write_fn(png, stream, pngWriteCallback, NULL);
 
 	std::vector<png_byte*> rows(size.height);
@@ -87,12 +101,12 @@ void PngBitmapEncoder::save(Stream* stream, const byte_t* data, const SizeI& siz
 		rows[y] = (png_byte*)data + (rowBytes * y);
 
 	// write PNG information to file
-	png_write_info(png, info_ptr);
+	//png_write_info(png, info_ptr);
 
 	png_set_rows(png, info_ptr, rows.data());
 	png_write_png(png, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
 
-	png_write_end(png, info_ptr);
+	//png_write_end(png, info_ptr);
 }
 
 
@@ -278,6 +292,225 @@ private:
 	BitmapFrame m_frame;
 };
 
+
+
+
+//==============================================================================
+// BlitHelper
+
+template<class TDestConverter, class TSrcConverter>
+void BlitHelper::bitBltInternalTemplate(
+    Bitmap2D* dest, const RectI& destRect,
+    const Bitmap2D* src, const RectI& srcRect,
+    ClColor mulColorRGBA, bool alphaBlend) throw()
+{
+    SrcBuffer<TSrcConverter> srcBuf(src->data(), src->width(), false, srcRect, TSrcConverter(mulColorRGBA));
+    DestBuffer<TDestConverter> dstBuf(dest->data(), dest->width(), false, destRect, TDestConverter(mulColorRGBA));
+    bool mulColor = mulColorRGBA.r != 255 || mulColorRGBA.g != 255 || mulColorRGBA.b != 255 || mulColorRGBA.a != 255;
+
+    if (alphaBlend)
+    {
+        for (int y = 0; y < srcRect.height; ++y)
+        {
+            dstBuf.setLine(y);
+            srcBuf.setLine(y);
+            for (int x = 0; x < srcRect.width; ++x)
+            {
+                ClColor src = srcBuf.getPixel(x);
+                if (src.a == 0) continue;
+
+                ClColor dst = dstBuf.getPixel(x);
+
+                uint8_t a, r, g, b;
+                // TODO: 速度調査
+
+                if (mulColor)
+                {
+                    // mulColor と src のブレンド
+                    {
+                        int src_a = src.a;
+                        int dst_r = mulColorRGBA.r * mulColorRGBA.a / 255;
+                        int dst_g = mulColorRGBA.g * mulColorRGBA.a / 255;
+                        int dst_b = mulColorRGBA.b * mulColorRGBA.a / 255;
+                        r = (dst_r * (255 - src_a) / 255) + (src.r * src_a / 255);
+                        g = (dst_g * (255 - src_a) / 255) + (src.g * src_a / 255);
+                        b = (dst_b * (255 - src_a) / 255) + (src.b * src_a / 255);
+                        a = (mulColorRGBA.a * src.a) / 255;//std::min(mulColorRGBA.a + src.a, 255);
+                    }
+
+                    // dst と ↑のブレンド
+                    {
+                        int dst_r = dst.r * dst.a / 255;
+                        int dst_g = dst.g * dst.a / 255;
+                        int dst_b = dst.b * dst.a / 255;
+                        r = (dst_r * (255 - a) / 255) + (r * a / 255);
+                        g = (dst_g * (255 - a) / 255) + (g * a / 255);
+                        b = (dst_b * (255 - a) / 255) + (b * a / 255);
+                        a = std::min(dst.a + a, 255);
+                    }
+                }
+                else
+                {
+                    if (dst.a == 0)
+                    {
+                        r = src.r;
+                        g = src.g;
+                        b = src.b;
+                        a = src.a;
+                    }
+                    else
+                    {
+                        int src_a = src.a;
+                        int dst_r = dst.r * dst.a / 255;
+                        int dst_g = dst.g * dst.a / 255;
+                        int dst_b = dst.b * dst.a / 255;
+
+                        r = (dst_r * (255 - src_a) / 255) + (src.r * src_a / 255);
+                        g = (dst_g * (255 - src_a) / 255) + (src.g * src_a / 255);
+                        b = (dst_b * (255 - src_a) / 255) + (src.b * src_a / 255);
+                        a = std::min(dst.a + src.a, 255);
+                    }
+                }
+
+                dstBuf.setPixel(x, ClColor{ r, g, b, a });
+
+#if 0
+                if (src_alpha == 0) continue;     // フォントならコレでかなり高速化できるはず
+                uint8_t src_alpha = src.a;
+                uint8_t dest_alpha = dest_color.a;
+                uint8_t a, r, g, b;
+                a = src_alpha;
+
+                // まず、src と mul をまぜまぜ
+                r = (mulColorRGBA.r * src.r) >> 8;
+                g = (mulColorRGBA.g * src.g) >> 8;
+                b = (mulColorRGBA.b * src.b) >> 8;
+                a = (mulColorRGBA.a * src_alpha) >> 8;
+
+                // photoshop 等のツール系の計算式ではやや時間がかかるため、
+                // DirectX 同様、dest のアルファは無視する方向で実装する。
+                // ただし、このままだと dest(0, 0, 0, 0) に半透明の色を合成する場合、
+                // 黒ずみが発生してしまう。テクスチャのデフォルトはこの状態。
+                // dest(1, 0, 0, 0) とかなら、ユーザーが黒と合成されることを意図していると考えられるが、
+                // 流石に完全に透明なのに黒ずむのはどうかと…。
+                // というわけで、dest_alpha == 0 なら src が 100% になるように細工している。
+                if (dest_alpha != 0)
+                {
+                    r = ((dest_color.r * (0xff - a)) >> 8) +
+                        ((r * a) >> 8);
+
+                    g = ((dest_color.g * (0xff - a)) >> 8) +
+                        ((g * a) >> 8);
+
+                    b = ((dest_color.b * (0xff - a)) >> 8) +
+                        ((b * a) >> 8);
+                }
+
+                // 書き込み用に再計算。
+                // 乗算だと、半透明を重ねるごとに薄くなってしまう。
+                // イメージとしては、重ねるごとに濃くなる加算が適切だと思う。
+                // TODO: 本来はブレンドファンクションで表現するべきか…
+                a = (dest_alpha + a);
+                a = (a > 255) ? 255 : a;
+
+                dstBuf.setPixel(x, ClColor{ r, g, b, a });
+#endif
+
+            }
+        }
+    }
+    else
+    {
+        for (int y = 0; y < srcRect.height; ++y)
+        {
+            dstBuf.setLine(y);
+            srcBuf.setLine(y);
+            for (int x = 0; x < srcRect.width; ++x)
+            {
+                ClColor src = srcBuf.getPixel(x);
+                ClColor c = {
+                    static_cast<uint8_t>((mulColorRGBA.r * src.r) >> 8),
+                    static_cast<uint8_t>((mulColorRGBA.g * src.g) >> 8),
+                    static_cast<uint8_t>((mulColorRGBA.b * src.b) >> 8),
+                    static_cast<uint8_t>((mulColorRGBA.a * src.a) >> 8) };
+                dstBuf.setPixel(x, c);
+            }
+        }
+    }
+}
+
+template<class TDestConverter>
+void BlitHelper::bitBltInternalTemplateHelper(
+    Bitmap2D* dest, const RectI& destRect,
+    const Bitmap2D* src, const RectI& srcRect,
+    ClColor mulColorRGBA, bool alphaBlend)
+{
+    switch (src->m_format)
+    {
+    case PixelFormat::A8:
+        bitBltInternalTemplate<TDestConverter, PixelAccessor_A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+        break;
+    case PixelFormat::RGBA32:
+        bitBltInternalTemplate<TDestConverter, PixelAccessor_R8G8B8A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+        break;
+    //case PixelFormat::R8G8B8X8:
+    //    bitBltInternalTemplate<TDestConverter, ConverterR8G8B8X8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+    //    break;
+    //case PixelFormat::B8G8R8A8:
+    //    bitBltInternalTemplate<TDestConverter, ConverterB8G8R8A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+    //    break;
+    //case PixelFormat::B8G8R8X8:
+    //    bitBltInternalTemplate<TDestConverter, ConverterB8G8R8X8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+    //    break;
+        //case PixelFormat_R32G32B32A32_Float:
+        //	break;
+    default:
+        LN_NOTIMPLEMENTED();
+        break;
+    }
+}
+
+void BlitHelper::bitBltInternal(
+    Bitmap2D* dest, const RectI& destRect_,
+    const Bitmap2D* src, const RectI& srcRect_,
+    ClColor mulColorRGBA, bool alphaBlend)
+{
+    // 双方の矩形を RawBitmap からはみ出ないようにクリッピングし、範囲の大きさは dest に合わせる。
+    // (拡縮はしない。srcRect が小さければ、余分な部分は何もしない)
+    RectI destRect = destRect_;
+    RectI srcRect = srcRect_;
+    destRect.clip(RectI(0, 0, dest->m_size));
+    srcRect.clip(RectI(0, 0, src->m_size));
+    srcRect.width = std::min(srcRect.width, destRect.width);
+    srcRect.height = std::min(srcRect.height, destRect.height);
+
+    switch (dest->m_format)
+    {
+    case PixelFormat::A8:
+        bitBltInternalTemplateHelper<PixelAccessor_A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+        break;
+    case PixelFormat::RGBA32:
+        bitBltInternalTemplateHelper<PixelAccessor_R8G8B8A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+        break;
+    //case PixelFormat::R8G8B8X8:
+    //    bitBltInternalTemplateHelper<ConverterR8G8B8X8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+    //    break;
+    //case PixelFormat::B8G8R8A8:
+    //    bitBltInternalTemplateHelper<ConverterB8G8R8A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+    //    break;
+    //case PixelFormat::B8G8R8X8:
+    //    bitBltInternalTemplateHelper<ConverterB8G8R8X8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+    //    break;
+        //case PixelFormat_R32G32B32A32_Float:
+        //	break;
+    default:
+        LN_NOTIMPLEMENTED();
+        break;
+    }
+}
+
+
+
 } // namespace detail
 
 
@@ -334,6 +567,11 @@ Color32 Bitmap2D::getPixel32(int x, int y) const
 		const uint8_t* pixel = m_buffer->data() + ((y * m_size.width) + x) * 4;
 		return Color32(pixel[0], pixel[1], pixel[2], pixel[3]);
 	}
+    else if (m_format == PixelFormat::RGB24)
+    {
+        const uint8_t* pixel = m_buffer->data() + ((y * m_size.width) + x) * 3;
+        return Color32(pixel[0], pixel[1], pixel[2], 0xFF);
+    }
 	else
 	{
 		LN_NOTIMPLEMENTED();
@@ -354,6 +592,49 @@ void Bitmap2D::setPixel32(int x, int y, const Color32& color)
 	}
 }
 
+void Bitmap2D::clear(const Color32& color)
+{
+    // Clear the buffer if completely transparent.
+    if (color.r == 0x00 && color.g == 0x00 && color.b == 0x00 && color.a == 0x00)
+    {
+        m_buffer->clear();
+    }
+    else
+    {
+        switch (m_format)
+        {
+        case PixelFormat::A1:
+            return;
+        case PixelFormat::A8:
+            return;
+        case PixelFormat::RGBA32:
+        //case PixelFormat::R8G8B8X8:
+        {
+            byte_t c[4] = { color.r, color.g, color.b, color.a };
+            uint32_t* dst = (uint32_t*)m_buffer->data();
+            int count = m_buffer->size() / 4;
+            for (int i = 0; i < count; ++i)
+            {
+                dst[i] = *((uint32_t*)c);
+            }
+            return;
+        }
+        //case PixelFormat::B8G8R8A8:
+        //case PixelFormat::B8G8R8X8:
+        //    byte_t c[4] = { color.b, color.g, color.r, color.a };
+        //    uint32_t* dst = (uint32_t*)m_bitmapData.getData();
+        //    int count = m_bitmapData.getSize() / 4;
+        //    for (int i = 0; i < count; ++i)
+        //    {
+        //        dst[i] = *((uint32_t*)c);
+        //    }
+        //    return;
+        }
+
+        LN_NOTIMPLEMENTED();
+    }
+}
+
 void Bitmap2D::flipVerticalFlow()
 {
 	if (LN_REQUIRE(m_format != PixelFormat::Unknown)) return;
@@ -368,6 +649,19 @@ void Bitmap2D::flipVerticalFlow()
 		for (int y = 0; y < (m_size.height / 2); ++y) {
 			for (int x = 0; x < m_size.width; ++x) {
 				std::swap(pixels[(y * m_size.width) + x], pixels[((m_size.height - 1 - y) * m_size.width) + x]);
+			}
+		}
+	}
+	else if (pixelSize == 3)
+	{
+        byte_t* pixels = (byte_t*)m_buffer->data();
+		for (int y = 0; y < (m_size.height / 2); ++y) {
+			for (int x = 0; x < m_size.width; ++x) {
+                byte_t* h0 = pixels + ((y * m_size.width) + x) * 3;
+                byte_t* h1 = pixels + (((m_size.height - 1 - y) * m_size.width) + x) * 3;
+				std::swap(h0[0], h1[0]);
+                std::swap(h0[1], h1[1]);
+                std::swap(h0[2], h1[2]);
 			}
 		}
 	}
@@ -407,7 +701,48 @@ void Bitmap2D::save(const StringRef& filePath)
 {
 	auto file = FileStream::create(filePath, FileOpenMode::Write | FileOpenMode::Truncate);
 	detail::PngBitmapEncoder encoder;
-	encoder.save(file, m_buffer->data(), m_size);
+	encoder.save(file, m_buffer->data(), m_size, m_format);
+}
+
+Ref<Bitmap2D> Bitmap2D::transcodeTo(PixelFormat format, const Color32& color) const
+{
+	auto dstBitmap = newObject<Bitmap2D>(m_size.width, m_size.height, format);
+
+	RectI rect(0, 0, m_size.width, m_size.height);
+    detail::ClColor c{ color.r, color.g, color.b, color.a };
+	detail::SrcBuffer<detail::PixelAccessor_A8> src(data(), width(), false, rect, detail::PixelAccessor_A8(c));
+	detail::DestBuffer<detail::PixelAccessor_R8G8B8A8> dst(dstBitmap->data(), dstBitmap->width(), false, rect, detail::PixelAccessor_R8G8B8A8(c));
+
+	for (int y = 0; y < rect.height; y++)
+	{
+		src.setLine(y);
+		dst.setLine(y);
+		for (int x = 0; x < rect.width; x++)
+		{
+			dst.setPixel(x, src.getPixel(x));
+		}
+	}
+
+	//struct U32
+	//{
+	//	byte_t D[4];
+	//};
+
+	//if (m_format == PixelFormat::A8 && format == PixelFormat::RGBA32)
+	//{
+
+	//}
+	//else
+	//{
+	//	LN_NOTIMPLEMENTED();
+	//}
+
+	return dstBitmap;
+}
+
+void Bitmap2D::blit(const RectI& destRect, const Bitmap2D* srcBitmap, const RectI& srcRect, const Color32& color, BitmapBlitOptions options)
+{
+    detail::BlitHelper::bitBltInternal(this, destRect, srcBitmap, srcRect, detail::ClColor{ color.r, color.g, color.b, color.a }, testFlag(options, BitmapBlitOptions::AlphaBlend));
 }
 
 int Bitmap2D::getPixelFormatByteSize(PixelFormat format)
@@ -418,6 +753,7 @@ int Bitmap2D::getPixelFormatByteSize(PixelFormat format)
 		1,	// A1,
 		1,	// A8,
 		4,	// RGBA32,
+        3,	// RGB24,
 		16,	// R32G32B32A32Float,
 	};
 	return table[(int)format];
@@ -426,6 +762,49 @@ int Bitmap2D::getPixelFormatByteSize(PixelFormat format)
 int Bitmap2D::getBitmapByteSize(int width, int height, int depth, PixelFormat format)
 {
 	return getPixelFormatByteSize(format) * width * height * depth;
+}
+
+//==============================================================================
+// Bitmap3D
+
+Bitmap3D::Bitmap3D()
+	: m_buffer(makeRef<ByteBuffer>())
+	, m_width(0)
+	, m_height(0)
+	, m_depth(0)
+	, m_format(PixelFormat::Unknown)
+{
+}
+
+Bitmap3D::~Bitmap3D()
+{
+}
+
+void Bitmap3D::initialize(int width, int height, int depth, PixelFormat format)
+{
+	if (LN_REQUIRE(width > 0)) return;
+	if (LN_REQUIRE(height > 0)) return;
+	if (LN_REQUIRE(depth > 0)) return;
+	Object::initialize();
+	m_width = width;
+	m_height = height;
+	m_depth = depth;
+	m_format = format;
+	m_buffer->resize(Bitmap2D::getBitmapByteSize(m_width, m_height, m_depth, m_format));
+}
+
+void Bitmap3D::setPixel32(int x, int y, int z, const Color32& color)
+{
+	if (m_format == PixelFormat::RGBA32)
+	{
+		size_t faceSize = m_width * m_height;
+		Color32* pixel = reinterpret_cast<Color32*>(m_buffer->data() + ((z * faceSize) + ((y * m_width) + x)) * 4);
+		*pixel = color;
+	}
+	else
+	{
+		LN_NOTIMPLEMENTED();
+	}
 }
 
 //==============================================================================
@@ -459,6 +838,27 @@ void BitmapHelper::blitRawSimple(void* dst, const void* src, size_t width, size_
 		}
 	}
 }
+
+void BitmapHelper::blitRawSimple3D(void* dst, const void* src, size_t width, size_t height, size_t depth, size_t pixelBytes, bool flipVertical)
+{
+	if (LN_REQUIRE(dst)) return;
+	if (LN_REQUIRE(src)) return;
+	if (LN_REQUIRE(dst != src)) return;
+	size_t faceBytes = (width * pixelBytes) * height;
+
+	for (size_t z = 0; z < depth; z++)
+	{
+		blitRawSimple(
+			static_cast<byte_t*>(dst) + (faceBytes * z),
+			static_cast<const byte_t*>(src) + (faceBytes * z),
+			width, height, pixelBytes, flipVertical);
+	}
+}
+
+//void BitmapHelper::drawText(Bitmap2D* bitmap, const StringRef& text, const RectI& rect, Font* font, const Color& color)
+//{
+//
+//}
 
 } // namespace detail
 

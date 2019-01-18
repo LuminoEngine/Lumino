@@ -151,7 +151,7 @@ public:
 			// internalFormat,		pixelFormat,		elementType
 			{ GL_NONE,				GL_NONE,			GL_NONE },			// TextureFormat::Unknown
 			{ GL_RGBA8,				GL_RGBA,			GL_UNSIGNED_BYTE },	// TextureFormat::R8G8B8A8,            ///< 32 ビットのアルファ付きフォーマット (uint32_t アクセス時の表現。lnByte[4] にすると、ABGR)
-			{ GL_RGBA8,				GL_RGBA,			GL_UNSIGNED_BYTE },	// TextureFormat::R8G8B8X8,	※元々 GL_RGB だったが、それだと glGetTexImage で強制終了
+			{ GL_RGB8,				GL_RGB,			GL_UNSIGNED_BYTE },	// TextureFormat::R8G8B8X8,	※元々 GL_RGB だったが、それだと glGetTexImage で強制終了
 			{ GL_RGBA16F,			GL_RGBA,			GL_HALF_FLOAT },	// TextureFormat::A16B16G16R16F,       ///< 64 ビットの浮動小数点フォーマット
 			{ GL_RGBA32F,			GL_RGBA,			GL_FLOAT },			// TextureFormat::A32B32G32R32F,       ///< 128 ビットの浮動小数点フォーマット
 			{ GL_R16F,				GL_RED,				GL_HALF_FLOAT },	// TextureFormat::R16F,
@@ -200,7 +200,7 @@ void OpenGLDeviceContext::initialize(const Settings& settings)
 	LN_LOG_INFO << "OpenGL ES enabled.";
 #endif
 
-#if defined(LN_EMSCRIPTEN) || defined(LN_GRAPHICS_OPENGLES)
+#if defined(LN_GRAPHICS_OPENGLES)
 #else
 	int result = gladLoadGL();
 	if (LN_ENSURE(result, "Failed gladLoadGL()")) return;
@@ -247,6 +247,8 @@ void OpenGLDeviceContext::dispose()
 		GL_CHECK(glDeleteFramebuffers(1, &m_fbo));
 		m_fbo = 0;
 	}
+
+    IGraphicsDeviceContext::dispose();
 }
 
 void OpenGLDeviceContext::setActiveShaderPass(GLShaderPass* pass)
@@ -255,6 +257,19 @@ void OpenGLDeviceContext::setActiveShaderPass(GLShaderPass* pass)
 		m_activeShaderPass = pass;
 		::glUseProgram((m_activeShaderPass) ? m_activeShaderPass->program() : 0);
 	}
+}
+
+void OpenGLDeviceContext::onGetCaps(GraphicsDeviceCaps* outCaps)
+{
+#ifdef LN_GRAPHICS_OPENGLES
+	outCaps->requestedShaderTriple.target = "glsl";
+	outCaps->requestedShaderTriple.version = 300;
+	outCaps->requestedShaderTriple.option = "es";
+#else
+	outCaps->requestedShaderTriple.target = "glsl";
+	outCaps->requestedShaderTriple.version = 400;
+	outCaps->requestedShaderTriple.option = "";
+#endif
 }
 
 void OpenGLDeviceContext::onEnterMainThread()
@@ -315,6 +330,13 @@ Ref<ITexture> OpenGLDeviceContext::onCreateTexture2D(uint32_t width, uint32_t he
 {
 	auto ptr = makeRef<GLTexture2D>();
 	ptr->initialize(width, height, requestFormat, mipmap, initialData);
+	return ptr;
+}
+
+Ref<ITexture> OpenGLDeviceContext::onCreateTexture3D(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
+{
+	auto ptr = makeRef<GLTexture3D>();
+	ptr->initialize(width, height, depth, requestFormat, mipmap, initialData);
 	return ptr;
 }
 
@@ -452,14 +474,14 @@ void OpenGLDeviceContext::onUpdatePipelineState(const BlendStateDesc& blendState
 		{
 			switch (rasterizerState.cullMode)
 			{
-			case CullingMode::None:
+			case CullMode::None:
 				GL_CHECK(glDisable(GL_CULL_FACE));
 				break;
-			case CullingMode::Front:
+			case CullMode::Front:
 				GL_CHECK(glEnable(GL_CULL_FACE));
 				GL_CHECK(glCullFace(GL_BACK));
 				break;
-			case CullingMode::Back:
+			case CullMode::Back:
 				GL_CHECK(glEnable(GL_CULL_FACE));
 				GL_CHECK(glCullFace(GL_FRONT));
 				break;
@@ -481,13 +503,21 @@ void OpenGLDeviceContext::onUpdatePipelineState(const BlendStateDesc& blendState
 			GL_ALWAYS,		// Always
 		};
 
-		// depthTestEnabled
-		if (depthStencilState.depthTestEnabled) {
-			GL_CHECK(glEnable(GL_DEPTH_TEST));
-		}
-		else {
-			GL_CHECK(glDisable(GL_DEPTH_TEST));
-		}
+		//// depthTestEnabled
+		//if (depthStencilState.depthTestEnabled) {
+		//	GL_CHECK(glEnable(GL_DEPTH_TEST));
+		//}
+		//else {
+		//	GL_CHECK(glDisable(GL_DEPTH_TEST));
+		//}
+
+        if (depthStencilState.depthTestFunc == ComparisonFunc::Always) {
+            GL_CHECK(glDisable(GL_DEPTH_TEST));
+        }
+        else {
+            GL_CHECK(glEnable(GL_DEPTH_TEST));
+            GL_CHECK(glDepthFunc(cmpFuncTable[(int)depthStencilState.depthTestFunc]));
+        }
 
 		// depthWriteEnabled
 		GL_CHECK(glDepthMask(depthStencilState.depthWriteEnabled ? GL_TRUE : GL_FALSE));
@@ -551,6 +581,16 @@ void OpenGLDeviceContext::onUpdateFrameBuffers(ITexture** renderTargets, int ren
 	LN_ENSURE(GL_FRAMEBUFFER_COMPLETE == glCheckFramebufferStatus(GL_FRAMEBUFFER),
 		"glCheckFramebufferStatus failed 0x%08x",
 		glCheckFramebufferStatus(GL_FRAMEBUFFER));
+}
+
+void OpenGLDeviceContext::onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize)
+{
+	GL_CHECK(glViewport(viewportRect.x, targetSize.height - (viewportRect.y + viewportRect.height), viewportRect.width, viewportRect.height));
+	//GL_CHECK(glViewport(0, 0, 160, 60));
+	//GL_CHECK(glViewport(0, 0, 80, 60));
+
+	GL_CHECK(glEnable(GL_SCISSOR_TEST));
+	GL_CHECK(glScissor(scissorRect.x, targetSize.height - (scissorRect.y + scissorRect.height), scissorRect.width, scissorRect.height));
 }
 
 void OpenGLDeviceContext::onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer)
@@ -666,7 +706,7 @@ void OpenGLDeviceContext::onDrawPrimitive(PrimitiveType primitive, int startVert
 	GLenum gl_prim;
 	int vertexCount;
 	getPrimitiveInfo(primitive, primitiveCount, &gl_prim, &vertexCount);
-
+	
 	GL_CHECK(glDrawArrays(gl_prim, startVertex, vertexCount));
 }
 
@@ -698,10 +738,21 @@ void OpenGLDeviceContext::onPresent(ISwapChain* swapChain)
 
     SizeI bufferSize = s->getColorBuffer()->realSize();
 
+
+
 	// SwapChain の Framebuffer をウィンドウのバックバッファへ転送
     {
         GL_CHECK(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, s->defaultFBO()));
         GL_CHECK(glBindFramebuffer(GL_READ_FRAMEBUFFER, s->fbo()));
+
+        //LN_LOG_INFO << endpointSize.width << ", " << endpointSize.height << ":" << bufferSize.width << ", " << bufferSize.height;
+
+        // FIXME:
+        // Viewport を転送元に合わせないと、転送先全体に拡大してBlitできなかった。
+        // ちょっと腑に落ちないが・・・。
+        GL_CHECK(glDisable(GL_SCISSOR_TEST));
+        GL_CHECK(glScissor(0, 0, bufferSize.width, bufferSize.height));
+        GL_CHECK(glViewport(0, 0, bufferSize.width, bufferSize.height));
 
         //// 現在のフレームバッファにアタッチされているカラーバッファのレンダーバッファ名を取得
         //GLint colorBufferName = 0;
@@ -718,6 +769,7 @@ void OpenGLDeviceContext::onPresent(ISwapChain* swapChain)
 
         // Blit
         // ※EAGL(iOS) は destination が FBO ではない場合失敗する。それ以外は RenderTarget でも成功していた。
+        // TODO: デュアルディスプレイで指しなおすと、次回起動時に失敗する。PC再起動で治る。
         GL_CHECK(glBlitFramebuffer(0, 0, bufferSize.width, bufferSize.height, 0, 0, endpointSize.width, endpointSize.height, GL_COLOR_BUFFER_BIT, GL_NEAREST));
        
         GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, s->defaultFBO()));
@@ -804,7 +856,7 @@ void GLSwapChain::getBackendBufferSize(SizeI* outSize)
 void GLSwapChain::genBackbuffer(uint32_t width, uint32_t height)
 {
 	m_backbuffer = makeRef<GLRenderTargetTexture>();
-	m_backbuffer->initialize(width, height, TextureFormat::RGBA32, false);
+	m_backbuffer->initialize(width, height, TextureFormat::RGB24, false);
 
 	GL_CHECK(glGenFramebuffers(1, &m_fbo));
 	GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_fbo));
@@ -978,8 +1030,8 @@ GLVertexBuffer::GLVertexBuffer()
 	: m_glVertexBuffer(0)
 	//, m_byteCount(0)
 	//, m_data(NULL)
-	, m_usage(0)
-	, m_format(GraphicsResourceUsage::Static)
+	, m_usage(GraphicsResourceUsage::Static)
+	//, m_format(GraphicsResourceUsage::Static)
 	, m_size(0)
 {
 }
@@ -990,7 +1042,8 @@ GLVertexBuffer::~GLVertexBuffer()
 
 void GLVertexBuffer::initialize(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
 {
-	m_format = usage;
+	//m_format = usage;
+	m_usage = usage;
 	m_size = bufferSize;
 	//m_byteCount = bufferSize;
 	//m_data = LN_NEW byte_t[m_byteCount];
@@ -1001,16 +1054,16 @@ void GLVertexBuffer::initialize(GraphicsResourceUsage usage, size_t bufferSize, 
 	//	memset(m_data, 0, m_byteCount);
 	//}
 
-	if (m_format == GraphicsResourceUsage::Dynamic) {
-		m_usage = GL_DYNAMIC_DRAW;
-	}
-	else {
-		m_usage = GL_STATIC_DRAW;
-	}
+	//if (m_format == GraphicsResourceUsage::Dynamic) {
+	//	m_usage = GL_DYNAMIC_DRAW;
+	//}
+	//else {
+	//	m_usage = GL_STATIC_DRAW;
+	//}
 
 	GL_CHECK(glGenBuffers(1, &m_glVertexBuffer));
 	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, m_glVertexBuffer));
-	GL_CHECK(glBufferData(GL_ARRAY_BUFFER, bufferSize, initialData, m_usage));
+	GL_CHECK(glBufferData(GL_ARRAY_BUFFER, bufferSize, initialData, (m_usage == GraphicsResourceUsage::Static) ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW));
 	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
 }
 
@@ -1102,7 +1155,7 @@ void GLVertexBuffer::unmap()
 GLIndexBuffer::GLIndexBuffer()
 	: m_indexBufferId(0)
 	, m_format(IndexBufferFormat::UInt16)
-	, m_usage(GL_STATIC_DRAW)
+	, m_usage(GraphicsResourceUsage::Static)
 	, m_size(0)
 {
 }
@@ -1114,13 +1167,13 @@ GLIndexBuffer::~GLIndexBuffer()
 void GLIndexBuffer::initialize(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
 {
 	m_format = format;
-	m_usage = (usage == GraphicsResourceUsage::Static) ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
+	m_usage = usage;
 	int stride = (m_format == IndexBufferFormat::UInt16) ? 2 : 4;
 	m_size = stride * indexCount;
 
 	GL_CHECK(glGenBuffers(1, &m_indexBufferId));
 	GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBufferId));
-	GL_CHECK(glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_size, initialData, m_usage));
+	GL_CHECK(glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_size, initialData, (m_usage == GraphicsResourceUsage::Static) ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW));
 	GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 }
 
@@ -1166,6 +1219,7 @@ GLTexture2D::GLTexture2D()
 	, m_textureFormat(TextureFormat::Unknown)
 	, m_pixelFormat(0)
 	, m_elementType(0)
+    , m_mipmap(false)
 {
 }
 
@@ -1177,10 +1231,11 @@ void GLTexture2D::initialize(uint32_t width, uint32_t height, TextureFormat requ
 {
 	m_size = SizeI(width, height);
 	m_textureFormat = requestFormat;
+    m_mipmap = mipmap;
 
 	// http://marina.sys.wakayama-u.ac.jp/~tokoi/?date=20040914
 
-	GLint levels = (mipmap) ? 4 : 0;	// TODO:DirectX だと 0 の場合は全レベル作成するけど、今ちょっと計算めんどうなので 
+    GLint levels = 0;// (m_mipmap) ? 4 : 0;	// TODO:DirectX だと 0 の場合は全レベル作成するけど、今ちょっと計算めんどうなので 
 
 	GLenum internalFormat;
 	OpenGLHelper::getGLTextureFormat(requestFormat, &internalFormat, &m_pixelFormat, &m_elementType);
@@ -1190,31 +1245,40 @@ void GLTexture2D::initialize(uint32_t width, uint32_t height, TextureFormat requ
 	GL_CHECK(glBindTexture(GL_TEXTURE_2D, m_id));
 	GL_CHECK(glTexImage2D(GL_TEXTURE_2D, levels, internalFormat, m_size.width, m_size.height, 0, m_pixelFormat, m_elementType, initialData));
 
+    //if (mipmap) {
+    //    glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+    //}
+
 	// デフォルトのサンプラステート (セットしておかないとサンプリングできない)
 	//setGLSamplerState(m_samplerState);
 	//{
 
-	//	GLint filter[] =
-	//	{
-	//		GL_NEAREST,			// TextureFilterMode_Point,
-	//		GL_LINEAR,			// TextureFilterMode_Linear,
-	//	};
+		GLint filter[] =
+		{
+			GL_NEAREST,			// TextureFilterMode_Point,
+			GL_LINEAR,			// TextureFilterMode_Linear,
+		};
 	//	GLint wrap[] =
 	//	{
 	//		GL_REPEAT,			// TextureWrapMode_Repeat
 	//		GL_CLAMP_TO_EDGE,	// TextureWrapMode_Clamp
 	//	};
 
-	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter[1]);
-	//	//if (LN_ENSURE_GLERROR()) return;
-	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter[1]);
-	//	//if (LN_ENSURE_GLERROR()) return;
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter[1]);
+		//if (LN_ENSURE_GLERROR()) return;
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter[1]);
+		//if (LN_ENSURE_GLERROR()) return;
 
 	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap[1]);
 	//	//if (LN_ENSURE_GLERROR()) return;
 	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap[1]);
 	//	//if (LN_ENSURE_GLERROR()) return;
 	//}
+
+    if (m_mipmap) {
+        GL_CHECK(glGenerateMipmap(GL_TEXTURE_2D));
+    }
+
 
 	GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
 }
@@ -1249,11 +1313,13 @@ void GLTexture2D::setSubData(int x, int y, int width, int height, const void* da
 {
 	GL_CHECK(glBindTexture(GL_TEXTURE_2D, m_id));
 
+    GLint levels = (m_mipmap) ? 4 : 0;	// TODO:DirectX だと 0 の場合は全レベル作成するけど、今ちょっと計算めんどうなので 
+
 	/* テクスチャ画像はバイト単位に詰め込まれている */
 	//glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	GL_CHECK(glTexSubImage2D(
 		GL_TEXTURE_2D,
-		0,	// TODO: Mipmap
+        levels,
 		x,
 		/*m_realSize.Height - */y,
 		width,
@@ -1262,7 +1328,108 @@ void GLTexture2D::setSubData(int x, int y, int width, int height, const void* da
 		m_elementType,
 		data));
 
+    if (m_mipmap) {
+        GL_CHECK(glGenerateMipmap(GL_TEXTURE_2D));
+    }
+    
+
 	GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+}
+
+void GLTexture2D::setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
+{
+	LN_UNREACHABLE();
+}
+
+//=============================================================================
+// GLTexture3D
+
+GLTexture3D::GLTexture3D()
+	: m_id(0)
+	, m_width(0)
+	, m_height(0)
+	, m_depth(0)
+	, m_textureFormat(TextureFormat::Unknown)
+	, m_pixelFormat(0)
+	, m_elementType(0)
+{
+}
+
+GLTexture3D::~GLTexture3D()
+{
+}
+
+void GLTexture3D::initialize(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
+{
+	m_width = width;
+	m_height = height;
+	m_depth = depth;
+	m_textureFormat = requestFormat;
+	GLint levels = (mipmap) ? 4 : 0;	// TODO:DirectX だと 0 の場合は全レベル作成するけど、今ちょっと計算めんどうなので 
+
+	GLenum internalFormat;
+	OpenGLHelper::getGLTextureFormat(requestFormat, &internalFormat, &m_pixelFormat, &m_elementType);
+
+	GLuint tex;
+	GL_CHECK(glGenTextures(1, &m_id));
+	GL_CHECK(glBindTexture(GL_TEXTURE_3D, m_id));
+	GL_CHECK(glTexImage3D(GL_TEXTURE_3D, levels, internalFormat, m_width, m_height, m_depth, 0, m_pixelFormat, m_elementType, initialData));
+
+	//// テクスチャの拡大・縮小に線形補間を用いる
+	//glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	//// テクスチャからはみ出た部分には境界色を用いる
+	//glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	//glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	//glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
+
+	// テクスチャの境界色を設定する (ボリュームの外には何もない)
+	//static const GLfloat black[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	//glTexParameterfv(GL_TEXTURE_3D, GL_TEXTURE_BORDER_COLOR, black);
+
+	GL_CHECK(glBindTexture(GL_TEXTURE_3D, 0));
+}
+
+void GLTexture3D::dispose()
+{
+	if (m_id != 0)
+	{
+		GL_CHECK(glDeleteTextures(1, &m_id));
+		m_id = 0;
+	}
+
+	GLTextureBase::dispose();
+}
+
+void GLTexture3D::readData(void* outData)
+{
+	LN_UNREACHABLE();
+}
+
+const SizeI& GLTexture3D::realSize()
+{
+	LN_NOTIMPLEMENTED();
+	return SizeI::Zero;
+}
+
+TextureFormat GLTexture3D::getTextureFormat() const
+{
+	return m_textureFormat;
+}
+
+void GLTexture3D::setSubData(int x, int y, int width, int height, const void* data, size_t dataSize)
+{
+	LN_UNREACHABLE();
+}
+
+void GLTexture3D::setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
+{
+	GL_CHECK(glBindTexture(GL_TEXTURE_3D, m_id));
+	GL_CHECK(glTexSubImage3D(GL_TEXTURE_3D,
+		0,	// TODO: Mipmap
+		x, y, z, width, height, depth, m_pixelFormat, m_elementType, data));
+	GL_CHECK(glBindTexture(GL_TEXTURE_3D, 0));
 }
 
 //=============================================================================
@@ -1357,6 +1524,11 @@ void GLRenderTargetTexture::setSubData(int x, int y, int width, int height, cons
 	LN_UNREACHABLE();
 }
 
+void GLRenderTargetTexture::setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
+{
+	LN_UNREACHABLE();
+}
+
 //=============================================================================
 // GLDepthBuffer
 
@@ -1398,22 +1570,34 @@ GLSamplerState::~GLSamplerState()
 
 void GLSamplerState::initialize(const SamplerStateData& desc)
 {
-	const GLint filter[] =
-	{
-		GL_NEAREST,			// TextureFilterMode::Point,
-		GL_LINEAR,			// TextureFilterMode::Linear,
-	};
-	const GLint address[] =
-	{
-		GL_REPEAT,			// TextureAddressMode::Repeat
-		GL_CLAMP_TO_EDGE,	// TextureAddressMode::Clamp
-	};
+    static const GLenum magFilterTable[] =
+    {
+        GL_NEAREST, // TextureFilterMode::Point,
+        GL_LINEAR,  // TextureFilterMode::Linear,
+    };
+
+    static const GLenum minFilterTable[][2] =
+    {
+        { GL_NEAREST, GL_NEAREST_MIPMAP_NEAREST },  // TextureFilterMode::Point,
+        { GL_LINEAR,  GL_LINEAR_MIPMAP_LINEAR  },   // TextureFilterMode::Linear,
+    };
+    const GLint addressTable[] =
+    {
+        GL_REPEAT,			// TextureAddressMode::Repeat
+        GL_CLAMP_TO_EDGE,	// TextureAddressMode::Clamp
+    };
 
 	GL_CHECK(glGenSamplers(1, &m_id));
-	GL_CHECK(glSamplerParameteri(m_id, GL_TEXTURE_MIN_FILTER, filter[static_cast<int>(desc.filter)]));
-	GL_CHECK(glSamplerParameteri(m_id, GL_TEXTURE_MAG_FILTER, filter[static_cast<int>(desc.filter)]));
-	GL_CHECK(glSamplerParameteri(m_id, GL_TEXTURE_WRAP_S, address[static_cast<int>(desc.address)]));
-	GL_CHECK(glSamplerParameteri(m_id, GL_TEXTURE_WRAP_T, address[static_cast<int>(desc.address)]));
+    GL_CHECK(glSamplerParameteri(m_id, GL_TEXTURE_MAG_FILTER, magFilterTable[static_cast<int>(desc.filter)]));
+	GL_CHECK(glSamplerParameteri(m_id, GL_TEXTURE_MIN_FILTER, minFilterTable[static_cast<int>(desc.filter)][0]));
+	GL_CHECK(glSamplerParameteri(m_id, GL_TEXTURE_WRAP_S, addressTable[static_cast<int>(desc.address)]));
+	GL_CHECK(glSamplerParameteri(m_id, GL_TEXTURE_WRAP_T, addressTable[static_cast<int>(desc.address)]));
+
+    GL_CHECK(glGenSamplers(1, &m_idMip));
+    GL_CHECK(glSamplerParameteri(m_idMip, GL_TEXTURE_MAG_FILTER, magFilterTable[static_cast<int>(desc.filter)]));
+    GL_CHECK(glSamplerParameteri(m_idMip, GL_TEXTURE_MIN_FILTER, minFilterTable[static_cast<int>(desc.filter)][1]));
+    GL_CHECK(glSamplerParameteri(m_idMip, GL_TEXTURE_WRAP_S, addressTable[static_cast<int>(desc.address)]));
+    GL_CHECK(glSamplerParameteri(m_idMip, GL_TEXTURE_WRAP_T, addressTable[static_cast<int>(desc.address)]));
 }
 
 void GLSamplerState::dispose()
@@ -1422,6 +1606,10 @@ void GLSamplerState::dispose()
 		GL_CHECK(glDeleteSamplers(1, &m_id));
 		m_id = 0;
 	}
+    if (m_idMip) {
+        GL_CHECK(glDeleteSamplers(1, &m_idMip));
+        m_idMip = 0;
+    }
 	ISamplerState::dispose();
 }
 
@@ -1447,8 +1635,20 @@ bool GLSLShader::create(const byte_t* code, int length, GLenum type, ShaderCompi
 	m_shader = glCreateShader(m_type);
 	if (LN_ENSURE(m_shader != 0, "Failed to create shader.")) return false;
 
-	GLint codeSize[1] = { length };
-	GL_CHECK(glShaderSource(m_shader, 1, (const GLchar**)&code, codeSize));
+    //const char* extcode =
+    //    "vec4 xxTexture(int isRT, sampler2D s, vec2 uv) { if (isRT != 0) { return texture(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); } else { return texture(s, uv); } }\n"
+    //    "#define texture(s, uv) xxTexture(s#_IsRT, s, uv)\n";
+
+    const GLchar* codes[] = {
+        //extcode,
+        (const GLchar*)code,
+    };
+
+	GLint codeSize[] = {
+        //strlen(extcode),
+        length,
+    };
+	GL_CHECK(glShaderSource(m_shader, LN_ARRAY_SIZE_OF(codeSize), codes, codeSize));
 	GL_CHECK(glCompileShader(m_shader));
 
 	// result
@@ -1491,6 +1691,10 @@ GLShaderPass::GLShaderPass()
 	: m_context(nullptr)
 	, m_program(0)
 	, m_uniforms()
+{
+}
+
+GLShaderPass::~GLShaderPass()
 {
 }
 
@@ -1553,7 +1757,9 @@ void GLShaderPass::apply()
 		buf->bind(m_program);
 	}
 
-	m_samplerBuffer->bind();
+	if (m_samplerBuffer) {
+		m_samplerBuffer->bind();
+	}
 }
 
 int GLShaderPass::getUniformCount() const
@@ -1616,6 +1822,11 @@ void GLShaderPass::buildUniforms()
 		{
 			m_samplerBuffer->addGlslSamplerUniform(name, loc);
 		}
+
+        if (strncmp(name, LN_CIS_PREFIX, std::strlen(LN_CIS_PREFIX)) == 0 && strncmp(name + name_len - std::strlen(LN_IS_RT_POSTFIX), LN_IS_RT_POSTFIX, std::strlen(LN_IS_RT_POSTFIX)) == 0)
+        {
+            m_samplerBuffer->addIsRenderTargetUniform(name, loc);
+        }
 
 		//// テクスチャ型の変数にステージ番号を振っていく。
 		//if (passVar.Variable->getType() == ShaderVariableType::DeviceTexture)
@@ -1804,6 +2015,10 @@ GLShaderUniform::GLShaderUniform(const ShaderUniformTypeDesc& desc, const GLchar
 {
 }
 
+GLShaderUniform::~GLShaderUniform()
+{
+}
+
 void GLShaderUniform::dispose()
 {
 	IShaderUniform::dispose();
@@ -1926,34 +2141,93 @@ GLLocalShaderSamplerBuffer::GLLocalShaderSamplerBuffer()
 
 void GLLocalShaderSamplerBuffer::addGlslSamplerUniform(const std::string& name, GLint uniformLocation)
 {
-	auto keyword = name.find("lnCIS");
-	auto textureSep = name.find("_lnT_");
-	auto samplerSep = name.find("_lnS_");
-	if (keyword != std::string::npos && textureSep != std::string::npos && samplerSep && std::string::npos)
-	{
-		Entry e;
-		e.uniformLocation = uniformLocation;
-		e.textureRegisterName = name.substr(textureSep + 5, samplerSep - (textureSep + 5));
-		e.samplerRegisterName = name.substr(samplerSep + 5);
-		m_table.push_back(e);
-		LN_LOG_VERBOSE << name << " is added to ShaderSamplerBuffer.";
-	}
-	else
-	{
-		LN_LOG_VERBOSE << name << " is not added to ShaderSamplerBuffer.";
-	}
+    auto keyword = name.find(LN_CIS_PREFIX);
+    auto textureSep = name.find(LN_TO_PREFIX);
+    auto samplerSep = name.find(LN_SO_PREFIX);
+    if (keyword != std::string::npos && textureSep != std::string::npos && samplerSep && std::string::npos)
+    {
+        auto textureName = name.substr(textureSep + LN_TO_PREFIX_LEN, samplerSep - (textureSep + LN_TO_PREFIX_LEN));
+        auto samplerName = name.substr(samplerSep + LN_SO_PREFIX_LEN);
+        auto itr = std::find_if(m_table.begin(), m_table.end(), [&](const Entry& e) {
+            return e.textureRegisterName == textureName && e.samplerRegisterName == samplerName; });
+        if (itr != m_table.end()) {
+            itr->uniformLocation = uniformLocation;
+        }
+        else {
+            Entry e;
+            e.uniformLocation = uniformLocation;
+            e.textureRegisterName = name.substr(textureSep + LN_TO_PREFIX_LEN, samplerSep - (textureSep + LN_TO_PREFIX_LEN));
+            e.samplerRegisterName = name.substr(samplerSep + LN_SO_PREFIX_LEN);
+            m_table.push_back(e);
+        }
+    }
+}
+
+void GLLocalShaderSamplerBuffer::addIsRenderTargetUniform(const std::string& name, GLint uniformLocation)
+{
+    auto keyword = name.find(LN_CIS_PREFIX);
+    auto textureSep = name.find(LN_TO_PREFIX);
+    auto samplerSep = name.find(LN_SO_PREFIX);
+    if (keyword != std::string::npos && textureSep != std::string::npos && samplerSep && std::string::npos)
+    {
+        auto textureName = name.substr(textureSep + LN_TO_PREFIX_LEN, samplerSep - (textureSep + LN_TO_PREFIX_LEN));
+        auto samplerName = name.substr(samplerSep + LN_SO_PREFIX_LEN);
+        auto itr = std::find_if(m_table.begin(), m_table.end(), [&](const Entry& e) {
+            return e.textureRegisterName == textureName && e.samplerRegisterName == samplerName; });
+        if (itr != m_table.end()) {
+            itr->isRenderTargetUniformLocation = uniformLocation;
+        }
+        else {
+            Entry e;
+            e.textureRegisterName = name.substr(textureSep + LN_TO_PREFIX_LEN, samplerSep - (textureSep + LN_TO_PREFIX_LEN));
+            e.samplerRegisterName = name.substr(samplerSep + LN_SO_PREFIX_LEN);
+            e.isRenderTargetUniformLocation = uniformLocation;
+            m_table.push_back(e);
+        }
+    }
 }
 
 void GLLocalShaderSamplerBuffer::bind()
 {
 	for (int i = 0; i < m_table.size(); i++)
 	{
+        const Entry& entry = m_table[i];
 		int unitIndex = i;
-		GLTextureBase* t = static_cast<GLTextureBase*>(m_table[i].texture);
+		GLTextureBase* t = static_cast<GLTextureBase*>(entry.texture);
+
 		GL_CHECK(glActiveTexture(GL_TEXTURE0 + unitIndex));
-		GL_CHECK(glBindTexture(GL_TEXTURE_2D, (t) ? t->id() : 0));
-		GL_CHECK(glBindSampler(unitIndex, (m_table[i].samplerState) ? m_table[i].samplerState->id() : 0));
-		GL_CHECK(glUniform1i(m_table[i].uniformLocation, unitIndex));
+
+        bool mipmap = false;
+        bool renderTarget = false;
+		if (t) {
+			if (t->type() == DeviceTextureType::Texture3D) {
+				GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+				GL_CHECK(glBindTexture(GL_TEXTURE_3D, t->id()));
+			}
+			else {
+				GL_CHECK(glBindTexture(GL_TEXTURE_2D, t->id()));
+				GL_CHECK(glBindTexture(GL_TEXTURE_3D, 0));
+			}
+            mipmap = t->mipmap();
+            renderTarget = (t->type() == DeviceTextureType::RenderTarget);
+		}
+		else {
+			GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+			GL_CHECK(glBindTexture(GL_TEXTURE_3D, 0));
+		}
+		//GL_CHECK(glBindSampler(unitIndex, (entry.samplerState) ? entry.samplerState->resolveId(t->mipmap()) : 0));
+        GL_CHECK(glBindSampler(unitIndex, (entry.samplerState) ? entry.samplerState->resolveId(mipmap) : 0));
+		GL_CHECK(glUniform1i(entry.uniformLocation, unitIndex));
+
+        if (entry.isRenderTargetUniformLocation >= 0) {
+            GL_CHECK(glUniform1i(entry.isRenderTargetUniformLocation, (renderTarget) ? 1 : 0));
+            //if (t->type() == DeviceTextureType::RenderTarget) {
+            //    GL_CHECK(glUniform1i(entry.isRenderTargetUniformLocation, 1));
+            //}
+            //else {
+            //    GL_CHECK(glUniform1i(entry.isRenderTargetUniformLocation, 0));
+            //}
+        }
 	}
 }
 

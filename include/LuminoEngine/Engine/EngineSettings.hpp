@@ -1,5 +1,7 @@
 ﻿
 #pragma once
+#include "Common.hpp"
+#include "../Asset/Common.hpp"
 
 namespace ln {
 
@@ -16,6 +18,15 @@ public:
 
 	/** メインウィンドウのタイトル文字列を設定します。*/
 	static void setMainWindowTitle(const StringRef& title);
+
+	/** アセットが保存されているディレクトリを登録します。 */
+	static void addAssetDirectory(const ln::StringRef& path);
+
+	/** アセットファイルを登録します。 */
+	static void addAssetArchive(const ln::StringRef& fileFullPath, const ln::StringRef& password = StringRef());
+
+	/** アセットが保存されている場所へのアクセス優先度を設定します。(default:DirectoryFirst) */
+	static void setAssetStorageAccessPriority(AssetStorageAccessPriority value);
 	
 //	/** デバッグ用のログファイルの出力有無を設定します。(default: Debug ビルドの場合true、それ以外は false) */
 //	static void setEngineLogEnabled(bool enabled);
@@ -45,6 +56,8 @@ public:
 //	/** 既に作成済みの IDirect3DDevice9 インターフェイスを利用する場合、そのポインタを指定します。*/
 //	static void setD3D9Device(void* device);
 //#endif
+
+    static void setEngineFeatures(Flags<EngineFeature> features);
 };
 
 } // namespace ln

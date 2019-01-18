@@ -15,12 +15,18 @@ namespace detail
 {
 class EngineManager;
 class PlatformManager;
-class InputManager;
 class AnimationManager;
+class InputManager;
+class AudioManager;
 class ShaderManager;
 class GraphicsManager;
-class ModelManager;
-class ArchiveManager;
+class FontManager;
+class MeshManager;
+class RenderingManager;
+class PhysicsManager;
+class AssetManager;
+class VisualManager;
+class SceneManager;
 class UIManager;
 
 class EngineDomain
@@ -29,29 +35,19 @@ public:
 	static void release();
 	static EngineManager* engineManager();
 	static PlatformManager* platformManager();
+    static AnimationManager* animationManager();
 	static InputManager* inputManager();
+	static AudioManager* audioManager();
 	static ShaderManager* shaderManager();
 	static GraphicsManager* graphicsManager();
+	static FontManager* fontManager();
+	static MeshManager* meshManager();
+	static RenderingManager* renderingManager();
+    static PhysicsManager* physicsManager();
+    static AssetManager* assetManager();
+    static VisualManager* visualManager();
+    static SceneManager* sceneManager();
 	static UIManager* uiManager();
-
-	//static Application* application;
-
-	//static PhysicsWorld* getPhysicsWorld3D();
-
-
-
-	//static ArchiveManager* getArchiveManager();
-	//static AnimationManager* getAnimationManager();
-	//static GraphicsManager* getGraphicsManager();
-	//static ModelManager* getModelManager();
-	//static UIManager* getUIManager();
-
-	//static SceneGraphManager* getSceneGraphManager();
-	//static World2D* defaultWorld2D();
-	//static World3D* defaultWorld3D();
-
-	//static void release();
-
 };
 
 } // namespace detail

@@ -630,6 +630,49 @@ int64_t FileSystemInternal::calcSeekPoint(int64_t curPoint, int64_t maxSize, int
     return newPoint;
 }
 
+void FileGlob::glob(const Path& rootDir, const Path& pathspec, const List<String>& filters, bool recursive, List<Path>* outPathes)
+{
+    auto path = ln::Path(rootDir, pathspec);
+
+    if (ln::FileSystem::existsFile(path))
+    {
+        // ファイルを指していたらそのまま追加
+        outPathes->add(path);
+    }
+    else if (ln::FileSystem::existsDirectory(path))
+    {
+        // フォルダだったらその中のファイルを全部追加
+        auto files = ln::FileSystem::getFiles(path, ln::StringRef(), (recursive) ? ln::SearchOption::Recursive : ln::SearchOption::TopDirectoryOnly);
+        for (auto& file : files) {
+            if (filterFilePath(filters, file)) {
+                outPathes->add(file);
+            }
+        }
+    }
+    else if (pathspec.str().contains('*'))
+    {
+        // ワイルドカード入っているっぽい
+        auto files = ln::FileSystem::getFiles(path.parent(), pathspec.fileName(), (recursive) ? ln::SearchOption::Recursive : ln::SearchOption::TopDirectoryOnly);
+        for (auto& file : files) {
+            if (filterFilePath(filters, file)) {
+                outPathes->add(file);
+            }
+        }
+    }
+    else
+    {
+        LN_ERROR("invalid path");
+    }
+}
+
+bool FileGlob::filterFilePath(const ln::List<ln::String>& filters, const ln::String& filePath)
+{
+    return std::any_of(filters.begin(), filters.end(), [&filePath](const ln::String& filter)
+    {
+        return ln::StringHelper::match(filter.c_str(), filePath.c_str());
+    });
+}
+
 } // namespace detail
 
 namespace detail {

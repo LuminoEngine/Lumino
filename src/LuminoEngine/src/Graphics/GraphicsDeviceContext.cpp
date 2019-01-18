@@ -20,6 +20,11 @@ void IGraphicsDeviceContext::dispose()
 {
 }
 
+void IGraphicsDeviceContext::refreshCaps()
+{
+	onGetCaps(&m_caps);
+}
+
 void IGraphicsDeviceContext::enterMainThread()
 {
 }
@@ -61,6 +66,11 @@ Ref<IIndexBuffer> IGraphicsDeviceContext::createIndexBuffer(GraphicsResourceUsag
 Ref<ITexture> IGraphicsDeviceContext::createTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
 	return onCreateTexture2D(width, height, requestFormat, mipmap, initialData);
+}
+
+Ref<ITexture> IGraphicsDeviceContext::createTexture3D(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
+{
+	return onCreateTexture3D(width, height, depth, requestFormat, mipmap, initialData);
 }
 
 Ref<ITexture> IGraphicsDeviceContext::createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
@@ -117,6 +127,16 @@ void IGraphicsDeviceContext::setDepthBuffer(IDepthBuffer* value)
 	m_staging.depthBuffer = value;
 }
 
+void IGraphicsDeviceContext::setViewportRect(const RectI& value)
+{
+	m_staging.viewportRect = value;
+}
+
+void IGraphicsDeviceContext::setScissorRect(const RectI& value)
+{
+	m_staging.scissorRect = value;
+}
+
 void IGraphicsDeviceContext::setVertexDeclaration(IVertexDeclaration* value)
 {
 	m_staging.vertexDeclaration = value;
@@ -171,6 +191,8 @@ void IGraphicsDeviceContext::commitStatus()
 	onUpdateShaderPass(m_staging.shaderPass);
 
 	onUpdateFrameBuffers(m_staging.renderTargets.data(), m_staging.renderTargets.size(), m_staging.depthBuffer);
+
+	onUpdateRegionRects(m_staging.viewportRect, m_staging.scissorRect, m_staging.renderTargets[0]->realSize());
 
 	onUpdatePrimitiveData(m_staging.vertexDeclaration, m_staging.vertexBuffers.data(), m_staging.vertexBuffers.size(), m_staging.indexBuffer);
 	

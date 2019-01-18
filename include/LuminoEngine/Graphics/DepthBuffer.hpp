@@ -9,6 +9,11 @@ class DepthBuffer
 	: public GraphicsResource
 {
 public:
+	/** 幅を取得します。(ピクセル単位) */
+	int width() const { return m_size.width; }
+
+	/** 高さを取得します。 (ピクセル単位) */
+	int height() const { return m_size.height; }
 
 LN_CONSTRUCT_ACCESS:
 	DepthBuffer();
@@ -22,6 +27,7 @@ LN_INTERNAL_ACCESS:
 
 private:
 	Ref<detail::IDepthBuffer> m_rhiObject;
+	SizeI m_size;
 };
 
 } // namespace ln

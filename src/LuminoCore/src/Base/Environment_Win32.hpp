@@ -71,6 +71,13 @@ public:
 
 		*outPath = path;
 	}
+
+    static uint64_t getTickCount()
+    {
+        // timeGetTime() は timeBeginPeriod() によって精度が変わるため、
+        // GetTickCount() の方が無難かもしれない
+        return ::GetTickCount();
+    }
 };
 
 } // namespace ln

@@ -213,6 +213,10 @@ public:
 	static const Color Transparency;			///< 透明 (0.0, 0.0, 0.0, 0.0)
 	static const Color TransparencyWhite;		///< 白透明 (1.0, 1.0, 1.0, 0.0)
 
+    static const Color Red;                   /** #FF0000 (1, 0, 0) */
+    static const Color Green;                 /** #00FF00 (0, 1, 0) */
+    static const Color Blue;                  /** #0000FF (0, 0, 1) */
+
 	// see https://msdn.microsoft.com/ja-jp/library/system.windows.media.colors(v=vs.110).aspx
 	static const Color AliceBlue;             /** #F0F8FF (0.941176, 0.972549, 1) */
 	static const Color AntiqueWhite;          /** #FAEBD7 (0.980392, 0.921569, 0.843137) */
@@ -223,7 +227,6 @@ public:
 	static const Color Bisque;                /** #FFE4C4 (1, 0.894118, 0.768627) */
 	static const Color Black;                 /** #000000 (0, 0, 0) */
 	static const Color BlanchedAlmond;        /** #FFEBCD (1, 0.921569, 0.803922) */
-	static const Color Blue;                  /** #0000FF (0, 0, 1) */
 	static const Color BlueViolet;            /** #8A2BE2 (0.541176, 0.168627, 0.886275) */
 	static const Color Brown;                 /** #A52A2A (0.647059, 0.164706, 0.164706) */
 	static const Color BurlyWood;             /** #DEB887 (0.870588, 0.721569, 0.529412) */
@@ -265,7 +268,6 @@ public:
 	static const Color Gold;                  /** #FFD700 (1, 0.843137, 0) */
 	static const Color Goldenrod;             /** #DAA520 (0.854902, 0.647059, 0.12549) */
 	static const Color Gray;                  /** #808080 (0.5, 0.5, 0.5) */
-	static const Color Green;                 /** #008000 (0, 0.5, 0) */
 	static const Color GreenYellow;           /** #ADFF2F (0.678431, 1, 0.184314) */
 	static const Color Honeydew;              /** #F0FFF0 (0.941176, 1, 0.941176) */
 	static const Color HotPink;               /** #FF69B4 (1, 0.411765, 0.705882) */
@@ -327,7 +329,6 @@ public:
 	static const Color Plum;                  /** #DDA0DD (0.866667, 0.627451, 0.866667) */
 	static const Color PowderBlue;            /** #B0E0E6 (0.690196, 0.878431, 0.901961) */
 	static const Color Purple;                /** #800080 (0.5, 0, 0.5) */
-	static const Color Red;                   /** #FF0000 (1, 0, 0) */
 	static const Color RosyBrown;             /** #BC8F8F (0.737255, 0.560784, 0.560784) */
 	static const Color RoyalBlue;             /** #4169E1 (0.254902, 0.411765, 0.882353) */
 	static const Color SaddleBrown;           /** #8B4513 (0.545098, 0.270588, 0.0745098) */
@@ -460,7 +461,7 @@ public:
 /**
 	@brief	色調を定義します。
 */
-class ToneF	// TODO: ColorTone とかのほうがいいかな？
+struct ToneF	// TODO: ColorTone とかのほうがいいかな？
 {
 public:
 	static const ToneF Zero;	///< ToneF(0, 0, 0, 0);

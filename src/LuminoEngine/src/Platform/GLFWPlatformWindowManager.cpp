@@ -1,4 +1,4 @@
-
+﻿
 #ifdef LN_GLFW
 
 
@@ -13,6 +13,72 @@
 #endif
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
 #include "GLFWPlatformWindowManager.hpp"
+
+// https://github.com/glfw/glfw/issues/310
+static void glfwSetWindowCenter(GLFWwindow* window) {
+    // Get window position and size
+    int window_x, window_y;
+    glfwGetWindowPos(window, &window_x, &window_y);
+
+    int window_width, window_height;
+    glfwGetWindowSize(window, &window_width, &window_height);
+
+    // Halve the window size and use it to adjust the window position to the center of the window
+    window_width *= 0.5;
+    window_height *= 0.5;
+
+    window_x += window_width;
+    window_y += window_height;
+
+    // Get the list of monitors
+    int monitors_length;
+    GLFWmonitor **monitors = glfwGetMonitors(&monitors_length);
+
+    if (monitors == NULL) {
+        // Got no monitors back
+        return;
+    }
+
+    // Figure out which monitor the window is in
+    GLFWmonitor *owner = NULL;
+    int owner_x, owner_y, owner_width, owner_height;
+
+    for (int i = 0; i < monitors_length; i++) {
+        // Get the monitor position
+        int monitor_x, monitor_y;
+        glfwGetMonitorPos(monitors[i], &monitor_x, &monitor_y);
+
+        // Get the monitor size from its video mode
+        int monitor_width, monitor_height;
+        GLFWvidmode *monitor_vidmode = (GLFWvidmode*)glfwGetVideoMode(monitors[i]);
+
+        if (monitor_vidmode == NULL) {
+            // Video mode is required for width and height, so skip this monitor
+            continue;
+
+        }
+        else {
+            monitor_width = monitor_vidmode->width;
+            monitor_height = monitor_vidmode->height;
+        }
+
+        // Set the owner to this monitor if the center of the window is within its bounding box
+        if ((window_x > monitor_x && window_x < (monitor_x + monitor_width)) && (window_y > monitor_y && window_y < (monitor_y + monitor_height))) {
+            owner = monitors[i];
+
+            owner_x = monitor_x;
+            owner_y = monitor_y;
+
+            owner_width = monitor_width;
+            owner_height = monitor_height;
+        }
+    }
+
+    if (owner != NULL) {
+        // Set the window position to the center of the owner monitor
+        glfwSetWindowPos(window, owner_x + (owner_width * 0.5) - window_width, owner_y + (owner_height * 0.5) - window_height);
+    }
+}
 
 namespace ln {
 namespace detail {
@@ -142,8 +208,10 @@ void GLFWPlatformWindow::initialize(const WindowCreationSettings& settings)
 	//else
 	{
 		// FIXME: macOS だとバージョン指定が効かない？
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+		// glGenSamplers を使うのに最低 3.3 必要。
+		// https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glGenSamplers.xhtml
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 		glfwWindowHint(GLFW_RESIZABLE, (settings.resizable) ? GL_TRUE : GL_FALSE);
 		glfwWindowHint(GLFW_DECORATED, GL_TRUE);
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);	// for NSGL(macOS)
@@ -159,7 +227,19 @@ void GLFWPlatformWindow::initialize(const WindowCreationSettings& settings)
 	glfwSetKeyCallback(m_glfwWindow, window_key_callback);
 	glfwSetMouseButtonCallback(m_glfwWindow, window_mouseButton_callback);
 	glfwSetCursorPosCallback(m_glfwWindow, window_mousePos_callback);
-	
+    glfwSetScrollCallback(m_glfwWindow, window_scroll_callback);
+
+    glfwSetWindowCenter(m_glfwWindow);
+
+	//GLFWmonitor* primary = glfwGetPrimaryMonitor();
+	//int widthMM, heightMM;
+	//glfwGetMonitorPhysicalSize(primary, &widthMM, &heightMM);
+	//const GLFWvidmode* mode = glfwGetVideoMode(primary);
+	//const double dpi = mode->width / (widthMM / 25.4);
+	//printf("a\n");
+	// 96dpi, 600ppi
+	// 1インチ (= 25.4 mm) 
+
 
 	//glfwMakeContextCurrent(m_glfwWindow);
 	//glewInit();
@@ -310,7 +390,9 @@ void GLFWPlatformWindow::window_mouseButton_callback(GLFWwindow* window, int but
 
 	if (eventType != PlatformEventType::Unknown && mouseButton != MouseButtons::None)
 	{
-		thisWindow->sendEventToAllListener(PlatformEventArgs::makeMouseButtonEvent(thisWindow, eventType, mouseButton, glfwKeyModToLNKeyMod(mods)));
+        //double xpos, ypos;
+        //glfwGetCursorPos(window, &xpos, &ypos);
+		thisWindow->sendEventToAllListener(PlatformEventArgs::makeMouseButtonEvent(thisWindow, eventType, mouseButton/*, (short)xpos, (short)ypos*/, glfwKeyModToLNKeyMod(mods)));
 	}
 }
 
@@ -332,6 +414,12 @@ void GLFWPlatformWindow::window_mousePos_callback(GLFWwindow* window, double xpo
 #else
 	LN_NOTIMPLEMENTED();
 #endif
+}
+
+void GLFWPlatformWindow::window_scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    GLFWPlatformWindow* thisWindow = (GLFWPlatformWindow*)glfwGetWindowUserPointer(window);
+    thisWindow->sendEventToAllListener(PlatformEventArgs::makeMouseWheelEvent(thisWindow, yoffset));
 }
 
 ModifierKeys GLFWPlatformWindow::glfwKeyModToLNKeyMod(int mods)

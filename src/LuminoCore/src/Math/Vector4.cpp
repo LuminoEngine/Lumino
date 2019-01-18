@@ -148,4 +148,13 @@ Vector4 Vector4::catmullRom(const Vector4& vec1, const Vector4& vec2, const Vect
         Math::catmullRom(vec1.w, vec2.w, vec3.w, vec4.w, t));
 }
 
+bool Vector4::nearEqual(const Vector4& value1, const Vector4& value2)
+{
+    return
+        Math::nearEqual(value1.x, value2.x) &&
+        Math::nearEqual(value1.y, value2.y) &&
+        Math::nearEqual(value1.z, value2.z) &&
+        Math::nearEqual(value1.w, value2.w);
+}
+
 } // namespace ln

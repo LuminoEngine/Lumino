@@ -10,12 +10,11 @@ public:
 	Workspace();
 	virtual ~Workspace();
 
-	Result newProject(const ln::Path& projectDir, const ln::String& projectName);
 	Result openProject(const ln::Path& dir);
-	Result buildProject(const ln::String& target);
 	Result runProject(const ln::String& target);
 	Result restoreProject();
 
+    const ln::Ref<Project>& project() const { return m_project; }
 	const ln::Ref<BuildEnvironment>& buildEnvironment() const { return m_devTools; }
 
 	Result dev_installTools() const;

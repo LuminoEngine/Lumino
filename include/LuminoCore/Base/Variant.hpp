@@ -26,6 +26,7 @@ enum class VariantType
 	Float,
 	Double,
 	String,
+    RefObject,
 	List,
 };
 
@@ -35,6 +36,7 @@ public:
 	static const Variant Empty;
 
 	Variant();
+	Variant(std::nullptr_t);
 	Variant(bool value);
 	Variant(Char value);
 	Variant(int8_t value);
@@ -50,6 +52,12 @@ public:
 	Variant(const Char* value);
 	Variant(const String& value);
 	Variant(const Variant& value);
+    Variant(RefObject* value);
+    template<class TValue>
+    Variant(const Ref<TValue>& value)
+        : m_type(VariantType::RefObject)
+        , v_RefObject(value)
+    {}
 	Variant(List<Variant>* value);
 	Variant(const List<Variant>& value);
 	Variant(const Ref<List<Variant>>& value);
@@ -74,6 +82,13 @@ public:
 	template<typename TValue>
 	TValue get() const;
 
+    template<typename TValue>
+    Ref<TValue> getObject() const
+    {
+        if (LN_REQUIRE(type() == VariantType::RefObject)) return nullptr;
+        return static_pointer_cast<TValue>(v_RefObject);
+    }
+
 	/** utility *get<Ref<List<Variantl>>>() */
 	List<Variant>& list();
 	const List<Variant>& list() const;
@@ -94,6 +109,7 @@ private:
 	void assign(float value);
 	void assign(double value);
 	void assign(const String& value);
+    void assign(const Ref<RefObject>& value);
 	void assign(const Ref<List<Variant>>& value);
 	void copy(const Variant& value);
 
@@ -114,6 +130,7 @@ private:
 		float v_Float;
 		double v_Double;
 		String v_String;
+        Ref<RefObject> v_RefObject;
 		Ref<List<Variant>> v_List;
 	};
 
@@ -170,6 +187,8 @@ T VariantHelper::convertToNumeric(const Variant& value)
 {
 	switch (value.type())
 	{
+    case VariantType::Char:
+        return static_cast<T>(value.v_Char);
 	case VariantType::Int8:
 		return static_cast<T>(value.v_Int8);
 	case VariantType::Int16:
@@ -215,6 +234,12 @@ struct VariantValueTraits<bool>
 {
 	static bool canConvertFrom(const Variant& value) { return value.type() == VariantType::Bool; }
 	static bool convert(const Variant& value) { return detail::VariantHelper::getRawBool(value); }
+};
+template<>
+struct VariantValueTraits<Char>
+{
+    static bool canConvertFrom(const Variant& value) { return detail::VariantHelper::canConvertToNumeric(value); }
+    static Char convert(const Variant& value) { return detail::VariantHelper::convertToNumeric<Char>(value); }
 };
 template<>
 struct VariantValueTraits<int8_t>

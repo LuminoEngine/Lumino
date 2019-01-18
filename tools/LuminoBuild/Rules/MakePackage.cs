@@ -23,7 +23,6 @@ namespace LuminoBuild.Rules
             {
                 builder.DoTask("BuildEngine_macOS");
                 builder.DoTask("BuildEngine_iOS");
-                
             }
 
             if (BuildEnvironment.AndroidStudioFound)
@@ -34,7 +33,9 @@ namespace LuminoBuild.Rules
             builder.DoTask("BuildDocuments");
 
             builder.DoTask("MakeReleasePackage");
-            
+            builder.DoTask("CompressPackage");
+
+
             if (Utils.IsWin32)
             {
                 builder.DoTask("MakeNuGetPackage_Core");

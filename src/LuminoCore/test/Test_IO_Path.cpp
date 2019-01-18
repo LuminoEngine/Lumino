@@ -55,8 +55,9 @@ TEST_F(Test_IO_Path, Concat)
 	}
 	//* [ ] with empty path
 	{
-		Path path1(Path(), _TT("a/b.txt"));
-		//ASSERT_EQ(_TT("a/b.txt"), path1.str());
+		ASSERT_EQ(u"a/b.txt", Path(Path(), u"a/b.txt").str());
+		ASSERT_EQ(u"a", Path(Path(u"a"), u"").str());
+		ASSERT_EQ(u"", Path(Path(), u"").str());
 	}
 
 	//* [ ] combine

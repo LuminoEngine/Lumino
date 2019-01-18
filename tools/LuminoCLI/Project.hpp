@@ -14,7 +14,7 @@ public:
 	Project(Workspace* owner);
 	virtual ~Project();
 
-	Result newProject(const ln::Path& projectDir, const ln::String& projectName);
+	Result newProject(const ln::Path& projectDir, const ln::String& projectName, const ln::String& engineSource = ln::String::Empty);
 	Result openProject(const ln::Path& dir);
 	Result saveProject();
 	Result loadProject();
@@ -25,12 +25,15 @@ public:
 	Workspace* workspace() const { return m_workspace; }
 	const ln::Path& engineDirPath() const { return m_engineDir; }
 	const ln::Path& rootDirPath() const { return m_rootDir; }
+    const ln::Path& assetsDir() const { return m_assetsDir; }
 	const ln::Path& buildDir() const { return m_buildDir; }
+	const ln::Path& intermediateAssetsDir() const { return m_intermediateAssetsDir; }
 
 	ln::Path projectsDir() const { return ln::Path(rootDirPath(), u"Projects"); }
 	ln::Path emscriptenProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.Web"); }
 	ln::Path androidProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.Android"); }
 	ln::Path macOSProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.macOS");  }
+	ln::Path iOSProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.iOS");  }
 	ln::Path windowsProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.Windows"); }
 
 	/** 指定フォルダにプロジェクトファイルが含まれているかを確認する */
@@ -50,6 +53,7 @@ private:
 	ln::Path m_sourcesDir;
 	ln::Path m_assetsDir;
 	ln::Path m_buildDir;
+	ln::Path m_intermediateAssetsDir;
 };
 
 // プロジェクトファイルに保存する情報
@@ -58,12 +62,12 @@ class ProjectProperties
 {
 public:
 	ln::String language;	// "cpp", "cs" ...
-	ln::String engineVersion = u"system";	// "x.y.z" or "system"
+	ln::String engine = u"";	// "x.y.z" or "" or "repo:master"
 
 	LN_SERIALIZE_CLASS_VERSION(1)
 	void serialize(ln::Archive& ar)
 	{
 		ar & LN_NVP(language);
-		ar & LN_NVP(engineVersion);
+		ar & LN_NVP(engine);
 	}
 };

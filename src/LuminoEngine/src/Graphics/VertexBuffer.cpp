@@ -87,7 +87,7 @@ void VertexBuffer::resize(int size)
 void* VertexBuffer::map(MapMode mode)
 {
 	// if have not entried the Command List at least once, can rewrite directly with map().
-	if (m_initialUpdate && m_pool == GraphicsResourcePool::None)
+	if (m_initialUpdate && m_usage == GraphicsResourceUsage::Static &&m_pool == GraphicsResourcePool::None)
 	{
 		if (!m_rhiObject) {
 			m_rhiObject = manager()->deviceContext()->createVertexBuffer(m_usage, size(), nullptr);
@@ -119,6 +119,16 @@ void VertexBuffer::clear()
 	m_modified = true;
 }
 
+void VertexBuffer::setResourceUsage(GraphicsResourceUsage usage)
+{
+	// Prohibit while direct locking.
+	if (LN_REQUIRE(!m_rhiLockedBuffer)) return;
+	if (m_usage != usage) {
+		m_usage = usage;
+		m_modified = true;
+	}
+}
+
 void VertexBuffer::setResourcePool(GraphicsResourcePool pool)
 {
 	m_pool = pool;
@@ -136,7 +146,7 @@ detail::IVertexBuffer* VertexBuffer::resolveRHIObject()
 		else
 		{
 			size_t requiredSize = size();
-			if (!m_rhiObject || m_rhiObject->getBytesSize() != requiredSize)
+			if (!m_rhiObject || m_rhiObject->getBytesSize() != requiredSize || m_rhiObject->usage() != m_usage)
 			{
 				m_rhiObject = manager()->deviceContext()->createVertexBuffer(m_usage, m_buffer.size(), m_buffer.data());
 			}
@@ -157,7 +167,7 @@ detail::IVertexBuffer* VertexBuffer::resolveRHIObject()
 
 	if (LN_ENSURE(m_rhiObject)) return nullptr;
 
-	if (m_pool == GraphicsResourcePool::None) {
+	if (m_usage == GraphicsResourceUsage::Static && m_pool == GraphicsResourcePool::None) {
 		m_buffer.clear();
 		m_buffer.shrink_to_fit();
 	}

@@ -9,6 +9,65 @@
 #include "Optional.hpp"
 
 namespace ln {
+template<typename T> class List;
+
+/**
+ * Ref クラスから List クラスへ読み取り専用アクセスする際に使用するインターフェイスです。
+ */
+template<typename TItem>
+class ReadOnlyList : public RefObject
+{
+public:
+    typedef typename std::vector<TItem>::iterator iterator;
+    typedef typename std::vector<TItem>::const_iterator const_iterator;
+    typedef typename std::vector<TItem>::reference reference;
+    typedef typename std::vector<TItem>::const_reference const_reference;
+
+    /** 先頭要素の参照を返します。*/
+    reference front() { return at_internal(0); }
+
+    /** 先頭要素の参照を返します。*/
+    const_reference front() const { return at_internal(0); }
+
+    /** 終端要素の参照を返します。*/
+    reference back() { return at_internal(size_internal() - 1); }
+
+    /** 終端要素の参照を返します。*/
+    const_reference back() const { return at_internal(size_internal() - 1); }
+
+    /** 指定したインデックスにある要素への参照を取得します。*/
+    TItem& operator[](int index) { return at_internal(index); }
+
+    /** 指定したインデックスにある要素への参照を取得します。*/
+    const TItem& operator[](int index) const { return at_internal(index); }
+
+    /** 先頭要素を指すイテレータを取得します。 */
+    iterator begin() LN_NOEXCEPT { return begin_internal(); }
+
+    /** 先頭要素を指すイテレータを取得します。 */
+    const_iterator begin() const LN_NOEXCEPT { return begin_internal(); }
+
+    /** 末尾の次を指すイテレータを取得します。 */
+    iterator end() LN_NOEXCEPT { return end_internal(); }
+
+    /** 末尾の次を指すイテレータを取得します。 */
+    const_iterator end() const LN_NOEXCEPT { return end_internal(); }
+
+protected:
+	ReadOnlyList() {}
+
+public:	// TODO: internal}
+
+	List<TItem>& derived() { return *static_cast<List<TItem>*>(this); }
+	const List<TItem>& derived() const { return *static_cast<const List<TItem> *>(this); }
+	int size_internal() const LN_NOEXCEPT { return derived().size(); }
+	TItem& at_internal(int index) { return derived().at(index); }
+	const TItem& at_internal(int index) const { return derived().at(index); }
+	iterator begin_internal() LN_NOEXCEPT { return derived().begin(); }
+	const_iterator begin_internal() const LN_NOEXCEPT { return derived().begin(); }
+	iterator end_internal() LN_NOEXCEPT { return derived().end(); }
+	const_iterator end_internal() const LN_NOEXCEPT { return derived().end(); }
+};
 
 /**
  * 参照カウントを持つ可変長配列のコンテナテンプレートクラスです。
@@ -17,7 +76,7 @@ namespace ln {
  * std::vector とおなじように使用できますが、ヒープに確保された List のインスタンスはベースクラスの RefObject が持つ参照カウントによっても寿命を管理されます。
  */
 template<typename T>
-class List : public RefObject
+class List : public ReadOnlyList<T>
 {
 public:
     typedef typename std::vector<T>::value_type value_type;
@@ -526,6 +585,32 @@ template<typename T>
 bool List<T>::isOutOfRange(int index) const
 {
     return (index < 0 || size() <= index);
+}
+
+
+
+//================================================================================
+
+#define LN_SPECIALIZED_TYPE List<TItem>
+#include <LuminoCore/Base/Ref.inl>
+#undef LN_SPECIALIZED_TYPE
+
+#define LN_SPECIALIZED_TYPE ReadOnlyList<TItem>
+#include <LuminoCore/Base/Ref.inl>
+#undef LN_SPECIALIZED_TYPE
+
+/** Ref<List> を構築します。 */
+template<class TItem>
+inline Ref<List<TItem>> makeList()
+{
+    return Ref<List<TItem>>(LN_NEW List<TItem>(), false);
+}
+
+/** Ref<List> を構築します。受け取った引数リストを要素としてオブジェクトを構築します。 */
+template<class TItem>
+inline Ref<List<TItem>> makeList(std::initializer_list<TItem> list)
+{
+    return Ref<List<TItem>>(LN_NEW List<TItem>(std::forward<std::initializer_list<TItem>>(list)), false);
 }
 
 } // namespace ln

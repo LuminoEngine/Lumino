@@ -7,6 +7,7 @@ namespace ln {
 class Win32PlatformInterface
 {
 public:
+    static void initialize();
 	static int WinMain();
 };
 

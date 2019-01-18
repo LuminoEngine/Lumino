@@ -32,7 +32,14 @@ void PlatformManager::initialize(const Settings& settings)
 
 void PlatformManager::dispose()
 {
-	m_windowManager->dispose();
+	if (m_mainWindow) {
+		m_windowManager->destroyWindow(m_mainWindow);
+		m_mainWindow = nullptr;
+	}
+	if (m_windowManager) {
+		m_windowManager->dispose();
+		m_windowManager = nullptr;
+	}
 }
 
 } // namespace detail

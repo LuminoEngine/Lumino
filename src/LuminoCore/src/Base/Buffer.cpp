@@ -97,6 +97,11 @@ void ByteBuffer::resize(int size)
     resizeInternal(size, m_autoClear);
 }
 
+void ByteBuffer::clear()
+{
+    memset(m_buffer, 0, m_size);
+}
+
 void ByteBuffer::fill(const byte_t& value)
 {
     for (int i = 0; i < m_size; i++) {

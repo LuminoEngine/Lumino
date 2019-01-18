@@ -42,6 +42,15 @@
     - name: コマンドライン引数の解析
       href: IO/CommandLineParser.md
 
+- name: Shader
+  items: 
+    - name: シェーダの概要
+      href: Shader/ShaderOverview.md
+    - name: シェーダの使い方
+      href: Shader/ShaderUsing.md
+    - name: API固有のレンダリングの違いについて
+      href: Shader/ShaderBackendCompatibility.md
+
 #- name: エンジン
 #  href: index.md
 #  items:

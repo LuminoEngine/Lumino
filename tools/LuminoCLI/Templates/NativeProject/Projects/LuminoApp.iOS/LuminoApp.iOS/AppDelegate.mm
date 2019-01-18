@@ -18,6 +18,7 @@
 	// startMainLoop
 	{
 		_displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(displayDidRefresh:)];
+		_displayLink.preferredFramesPerSecond = 60;
 		[_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
 	}
 	
@@ -26,7 +27,8 @@
 
 - (void)displayDidRefresh:(CADisplayLink *)displayLink
 {
-	ln::iOSPlatformInterface::nativeUpdateFrame();
+	UIView* view = [_viewController view];
+	[view setNeedsDisplay];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application

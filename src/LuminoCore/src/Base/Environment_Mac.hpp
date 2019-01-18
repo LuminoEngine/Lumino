@@ -75,6 +75,8 @@ public:
 		StringTraits::tstrcpy(outPath, LN_MAX_PATH, path.c_str());
 	}
 #endif
+
+    static uint64_t getTickCount();
 };
 
 } // namespace ln

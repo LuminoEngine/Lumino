@@ -33,4 +33,17 @@ private:
 	detail::GraphicsManager* m_manager;
 };
 
+
+namespace detail {
+
+class GraphicsResourceHelper
+{
+public:
+	template<class TReturn, class TObject>
+	static TReturn* resolveRHIObject(TObject& obj) { return (obj) ? obj->resolveRHIObject() : nullptr; }
+
+	static IndexBufferFormat selectIndexBufferFormat(int vertexCount) { return (vertexCount > 0xFFFF) ? IndexBufferFormat::UInt32 : IndexBufferFormat::UInt16; }
+};
+
+} // namespace detail
 } // namespace ln

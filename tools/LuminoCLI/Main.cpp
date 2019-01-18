@@ -2,6 +2,9 @@
 #include "EnvironmentSettings.hpp"
 #include "Workspace.hpp"
 #include "Project.hpp"
+#include "InitCommand.hpp"
+#include "FxcCommand.hpp"
+#include "BuildCommand.hpp"
 
 static int commnad_localInitialSetup(const char* packageDir_);
 
@@ -12,23 +15,32 @@ int main(int argc, char** argv)
 	{
 		//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects");
 		//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\HelloLumino");
-		::SetCurrentDirectoryW(L"D:\\Documents\\LuminoProjects\\HelloLumino");
-	
+		//::SetCurrentDirectoryW(L"D:/Documents/LuminoProjects");
+        //::SetCurrentDirectoryW(L"D:/Documents/LuminoProjects/HelloLumino");
+        //::SetCurrentDirectoryW(L"D:/Proj");
+		::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\Test3");
+    
 		const char* debugArgv[] = {
 			"<program>",
-			//"init", "HelloLumino",
+			//"init", "TH-10", "--engine=repo:0.10.0"
 
 			//"<program>", "dev-install-tools",
 
 			//"build", "Web",
 
-			"run", "Web", //"Windows",
+			//"run", "Web", //"Windows",
 
 			//"dev-openide", "vs",
 			
 			//"--local-initial-setup", "/Users/lriki/Proj/Lumino/ReleasePackage.macOS"
 
 			//"restore",
+
+            //"fxc", "Assets/LineWave.fx",
+            //"fxc", "C:/Proj/GitHub/Lumino/src/LuminoEngine/test/Assets/Shader/FxcTest1.fx",
+            //"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.hlsl",
+
+            "build", "assets",
 		};
 		argc = sizeof(debugArgv) / sizeof(char*);
 		argv = (char**)debugArgv;
@@ -43,13 +55,16 @@ int main(int argc, char** argv)
 			return commnad_localInitialSetup(argv[2]);
 		}
 	
+        ln::GlobalLogger::addStdErrAdapter();
 
 		ln::CommandLineParser parser;
+        parser.addHelpOption();
 
 		//--------------------------------------------------------------------------------
 		// init command
 		auto initCommand = parser.addCommand(u"init", u"Create a Lumino project in the current directory.");
-		auto initCommand_projectName = initCommand->addPositionalArgument(u"project-name", u"project name.");
+		auto initCommand_projectNameArg = initCommand->addPositionalArgument(u"project-name", u"project name.");
+        auto initCommand_engineArg = initCommand->addValueOption(u"e", u"engine", u"engine source.");
 
 		//--------------------------------------------------------------------------------
 		// build command
@@ -65,11 +80,22 @@ int main(int argc, char** argv)
 		// restore command
 		auto restoreCommand = parser.addCommand(u"restore", u"Restore engines included in the project.");
 
+        //--------------------------------------------------------------------------------
+        // fxc command
+        auto fxcCommand = parser.addCommand(u"fxc", u"Compile shader.");
+        auto fxcCommand_inputArg = fxcCommand->addPositionalArgument(u"input", u"Input file.");
+		auto fxcCommand_outputArg = fxcCommand->addPositionalArgument(u"output", u"Output file.", ln::CommandLinePositionalArgumentFlags::Optional);
+        
+        //--------------------------------------------------------------------------------
+        // build-assets command
+        //auto buildAssetsCommand = parser.addCommand(u"build-assets", u"Make assets archive.");
+
+
 		//--------------------------------------------------------------------------------
-		auto dev_installTools = parser.addCommand(u"dev-install-tools", u"description.");
+		auto dev_installTools = parser.addCommand(u"dev-install-tools", u"internal.");
 
 
-		auto dev_openide = parser.addCommand(u"dev-openide", u"description.");
+		auto dev_openide = parser.addCommand(u"dev-openide", u"internal.");
 		auto dev_openide_targetArg = dev_openide->addPositionalArgument(u"target", u"target.");
 
 
@@ -81,17 +107,11 @@ int main(int argc, char** argv)
 			// init command
 			if (parser.has(initCommand))
 			{
-				if (Project::existsProjectFile(ln::Environment::currentDirectory())) {
-					CLI::error("Project file already exists.");
-					return 1;
-				}
-				else {
-					if (!workspace->newProject(
-						ln::Path(ln::Environment::currentDirectory(), initCommand_projectName->value()),
-						initCommand_projectName->value())) {
-						return 1;
-					}
-				}
+                InitCommand cmd;
+                if (initCommand_engineArg->hasValue()) {
+                    cmd.engineSource = initCommand_engineArg->value();
+                }
+                return cmd.execute(workspace, initCommand_projectNameArg->value());
 			}
 			//--------------------------------------------------------------------------------
 			// build command
@@ -105,9 +125,10 @@ int main(int argc, char** argv)
 				if (!workspace->openProject(ln::Environment::currentDirectory())) {
 					return 1;
 				}
-				if (!workspace->buildProject(target)) {
-					return 1;
-				}
+
+				BuildCommand cmd;
+				cmd.target = target;
+				return cmd.execute(workspace, workspace->project());
 			}
 			//--------------------------------------------------------------------------------
 			// run command
@@ -121,9 +142,14 @@ int main(int argc, char** argv)
 				if (!workspace->openProject(ln::Environment::currentDirectory())) {
 					return 1;
 				}
-				if (!workspace->buildProject(target)) {
+
+
+				BuildCommand cmd;
+				cmd.target = target;
+				if (cmd.execute(workspace, workspace->project()) != 0) {
 					return 1;
 				}
+
 				if (!workspace->runProject(target)) {
 					return 1;
 				}
@@ -139,6 +165,25 @@ int main(int argc, char** argv)
 					return 1;
 				}
 			}
+            //--------------------------------------------------------------------------------
+            // fxc command
+            else if (parser.has(fxcCommand)) {
+                FxcCommand cmd;
+				if (fxcCommand_outputArg->hasValue()) {
+					cmd.outputFile = fxcCommand_outputArg->value();
+				}
+                return cmd.execute(fxcCommand_inputArg->value());
+            }
+            //--------------------------------------------------------------------------------
+            // build-assets command
+            //else if (parser.has(buildAssetsCommand)) {
+            //    if (!workspace->openProject(ln::Environment::currentDirectory())) {
+            //        return 1;
+            //    }
+            //    ArchiveCommand cmd;
+            //    return cmd.execute(workspace->project());
+            //}
+			//--------------------------------------------------------------------------------
 			else if (parser.has(dev_installTools))
 			{
 				if (!workspace->dev_installTools()) {
@@ -152,7 +197,14 @@ int main(int argc, char** argv)
 				}
 				workspace->dev_openIde(dev_openide_targetArg->value());
 			}
+            else
+            {
+                parser.printHelp();
+            }
 		}
+        else {
+            parser.printHelp();
+        }
 	}
 	catch (ln::Exception& e)
 	{

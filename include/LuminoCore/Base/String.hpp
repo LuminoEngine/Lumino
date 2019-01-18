@@ -283,7 +283,7 @@ public:
      * @return      正常に変換された場合は true。それ以外の場合は false。
      * @see         toInt
      */
-    bool tryToInt(int8_t* outValue, int base = 0) const;
+    bool tryToInt(int* outValue, int base = 0) const;
     bool tryToInt8(int8_t* outValue, int base = 0) const;
     bool tryToInt16(int16_t* outValue, int base = 0) const;   /**< @copydoc tryToInt */
     bool tryToInt32(int32_t* outValue, int base = 0) const;   /**< @copydoc tryToInt */

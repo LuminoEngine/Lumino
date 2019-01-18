@@ -20,10 +20,9 @@ namespace LuminoBuild.Tasks
 
             var targets = new[]
             {
-                //new { ContentFilesDir = builder.LuminoPackageDir + "Release/Lumino/MSVC2015", WXSFileTemplate = builder.LuminoPackageSourceDir + "Installer/LuminoInstaller_MSVC2015.wxs.template", TargetDirId = "LUMINO_MSVC2015", ProductGUID = builder.InstallerProductGUID_MSVC2015, Output = "LuminoInstaller_MSVC2015.msi" },
                 new
                 {
-                    ContentFilesDir = Path.Combine(builder.LuminoRootDir, builder.ReleasePackageName),
+                    ContentFilesDir = Path.Combine(builder.LuminoBuildDir, builder.LocalPackageName),
                     WXSFileTemplate = Path.Combine(pkgSrcInstallerDir, "LuminoInstaller.wxs.template"),
                     TargetDirId = "ID_LUMINO_DIR",
                     ProductGUID = builder.InstallerProductGUID_MSVC2017,

@@ -12,6 +12,8 @@ class String;
 
 #define _LN_CHECK(expr, exception, ...)			(!(expr)) && ln::detail::notifyException<exception>(__FILE__, __LINE__, #expr, ##__VA_ARGS__)
 
+#define LN_ERROR(...)							ln::detail::notifyException<::ln::Exception>(__FILE__, __LINE__, nullptr, ##__VA_ARGS__)
+
 /**
  * コードを実行する前の前提条件を検証するためのマクロです。
  * 
@@ -227,6 +229,7 @@ inline bool notifyException(const char* file, int line, const char* exprString, 
 	const size_t BUFFER_SIZE = 512;
 	Char str[BUFFER_SIZE] = {};
 	errorPrintf(str, BUFFER_SIZE, args...);
+
 	TException e(str);
 	detail::Exception_setSourceLocationInfo(e, file, line, exprString);
 	auto h = Exception::notificationHandler();

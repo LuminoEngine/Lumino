@@ -16,6 +16,7 @@ set(LN_SOURCES
 	Test_Base_RefObject.cpp
 	Test_Base_String.cpp
 	Test_Base_StringRef.cpp
+	Test_Base_Variant.cpp
 	Test_IO_BinaryReader.cpp
 	Test_IO_CommandLineParser.cpp
 	Test_IO_FileStream.cpp
@@ -55,6 +56,8 @@ if (DEFINED EMSCRIPTEN)
 	em_link_pre_js(LuminoCore-Test ${CMAKE_CURRENT_SOURCE_DIR}/pre.js)
 endif()
 
+#------------------------------------------------------------------------------
+# ctest
 add_test(NAME LuminoCore-Test-all COMMAND $<TARGET_FILE:LuminoCore-Test>)
 
 #set_target_properties(${PROJECT_NAME} PROPERTIES

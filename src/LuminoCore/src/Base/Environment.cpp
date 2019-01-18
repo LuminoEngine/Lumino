@@ -65,4 +65,9 @@ ByteOrder Environment::byteOrder()
 		return ByteOrder::BigEndian;
 }
 
+uint64_t Environment::getTickCount()
+{
+    return PlatformEnvironment::getTickCount();
+}
+
 } // namespace ln

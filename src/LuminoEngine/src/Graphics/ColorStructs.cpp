@@ -274,9 +274,13 @@ Color32 Color32::fromString(const StringRef& str)
 
 //==============================================================================
 // Color
-//==============================================================================
+
 const Color Color::Transparency(0.0f, 0.0f, 0.0f, 0.0f);
 const Color Color::TransparencyWhite(1.0f, 1.0f, 1.0f, 0.0f);
+const Color Color::Red(1.0f, 0.0f, 0.0f);
+const Color Color::Green(0.0f, 1.0f, 0.0f);
+const Color Color::Blue(0.0f, 0.0f, 1.0f);
+
 const Color Color::AliceBlue(0.941176f, 0.972549f, 1.0f);
 const Color Color::AntiqueWhite(0.980392f, 0.921569f, 0.843137f);
 const Color Color::Aqua(0.0f, 1.0f, 1.0f);
@@ -286,7 +290,6 @@ const Color Color::Beige(0.960784f, 0.960784f, 0.862745f);
 const Color Color::Bisque(1.0f, 0.894118f, 0.768627f);
 const Color Color::Black(0.0f, 0.0f, 0.0f);
 const Color Color::BlanchedAlmond(1.0f, 0.921569f, 0.803922f);
-const Color Color::Blue(0.0f, 0.0f, 1.0f);
 const Color Color::BlueViolet(0.541176f, 0.168627f, 0.886275f);
 const Color Color::Brown(0.647059f, 0.164706f, 0.164706f);
 const Color Color::BurlyWood(0.870588f, 0.721569f, 0.529412f);
@@ -328,7 +331,6 @@ const Color Color::GhostWhite(0.972549f, 0.972549f, 1.0f);
 const Color Color::Gold(1.0f, 0.843137f, 0.0f);
 const Color Color::Goldenrod(0.854902f, 0.647059f, 0.12549f);
 const Color Color::Gray(0.5f, 0.5f, 0.5f);
-const Color Color::Green(0.0f, 0.5f, 0.0f);
 const Color Color::GreenYellow(0.678431f, 1.0f, 0.184314f);
 const Color Color::Honeydew(0.941176f, 1.0f, 0.941176f);
 const Color Color::HotPink(1.0f, 0.411765f, 0.705882f);
@@ -390,7 +392,6 @@ const Color Color::Pink(1.0f, 0.752941f, 0.796078f);
 const Color Color::Plum(0.866667f, 0.627451f, 0.866667f);
 const Color Color::PowderBlue(0.690196f, 0.878431f, 0.901961f);
 const Color Color::Purple(0.5f, 0.0f, 0.5f);
-const Color Color::Red(1.0f, 0.0f, 0.0f);
 const Color Color::RosyBrown(0.737255f, 0.560784f, 0.560784f);
 const Color Color::RoyalBlue(0.254902f, 0.411765f, 0.882353f);
 const Color Color::SaddleBrown(0.545098f, 0.270588f, 0.0745098f);

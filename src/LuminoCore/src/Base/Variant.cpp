@@ -13,6 +13,10 @@ Variant::Variant()
 	: m_type(VariantType::Null)
 {}
 
+Variant::Variant(std::nullptr_t)
+	: Variant()
+{}
+
 Variant::Variant(bool value)
 	: m_type(VariantType::Bool)
 	, v_Bool(value)
@@ -32,7 +36,7 @@ Variant::Variant(int8_t value)
 }
 
 Variant::Variant(int16_t value)
-	: m_type(VariantType::Int64)
+	: m_type(VariantType::Int16)
 	, v_Int64(value)
 {
 }
@@ -96,6 +100,12 @@ Variant::Variant(const String& value)
 {
 }
 
+Variant::Variant(RefObject* value)
+    : m_type(VariantType::RefObject)
+    , v_RefObject(value)
+{
+}
+
 Variant::Variant(List<Variant>* value)
 	: m_type(VariantType::List)
 	, v_List(value)
@@ -145,6 +155,9 @@ void Variant::clear() LN_NOEXCEPT
 	case VariantType::String:
 		v_String.~String();
 		break;
+    case VariantType::RefObject:
+        v_RefObject.~Ref();
+        break;
 	case VariantType::List:
 		v_List.~Ref();
 		break;
@@ -256,6 +269,12 @@ void Variant::assign(const String& value)
 	new(&v_String) String(value);
 }
 
+void Variant::assign(const Ref<RefObject>& value)
+{
+    m_type = VariantType::RefObject;
+    new(&v_RefObject) Ref<RefObject>(value);
+}
+
 void Variant::assign(const Ref<List<Variant>>& value)
 {
 	m_type = VariantType::List;
@@ -307,6 +326,9 @@ void Variant::copy(const Variant& value)
 	case VariantType::String:
 		assign(value.v_String);
 		break;
+    case VariantType::RefObject:
+        assign(value.v_RefObject);
+        break;
 	case VariantType::List:
 		assign(value.v_List);
 		break;

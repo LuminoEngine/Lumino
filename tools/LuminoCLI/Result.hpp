@@ -31,7 +31,7 @@ enum class ResultCode
 	Success,
 };
 
-class [[nodiscard]] Result
+class Result
 {
 public:
 	static const Result Fail;

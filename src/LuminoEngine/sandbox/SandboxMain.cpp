@@ -2,164 +2,716 @@
 #define LN_MSVC_DISABLE_LIBRARY_LINK
 #include <LuminoEngine.hpp>
 #include <LuminoCore/Testing/TestHelper.hpp>
+#include "../src/Audio/AudioDecoder.hpp"
 #include "Common.hpp"
+#include "../src/Engine/EngineDomain.hpp"
+#include "../src/Engine/EngineManager.hpp"
+#include "../src/Rendering/RenderingManager.hpp"
+#include "../src/Rendering/SpriteRenderFeature.hpp"
+#include "../src/Rendering/DrawElementListBuilder.hpp"
+#include "../src/Rendering/UnLigitingSceneRenderer.hpp"
+#include "../src/Rendering/ClusteredShadingSceneRenderer.hpp"
+#include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/RenderingContext.hpp>
+#include <LuminoEngine/Visual/MeshPrimitiveComponent.hpp>
+#include "../src/Mesh/MqoImporter.hpp"
+#include "../src/Font/FontManager.hpp"
+#include "../src/Font/FontCore.hpp"
+#include "../src/Asset/AssetArchive.hpp"
 using namespace ln;
 
-using FuncP = int(*)(int* buf, int i);
-
-int* g_buf;
-int m_format;
-FuncP g_fucnc;
-
-int readFunc(int* buf, int i)
+class TestProcessorNode : public AudioProcessorNode
 {
-	return buf[i % 2048];
-}
-int readFuncB(int* buf, int i)
-{
-	return buf[i % 512];
-}
+public:
+    double step = 0.0;
+    float frequency = 440;
+    int counter = 0;
 
-int readPixel1(int i)
-{
-	switch (m_format)
-	{
-	case 0:
-		return g_buf[i % 512];
-		break;
-	case 5:
-		return g_buf[i % 64];
-		break;
-	case 4:
-		return g_buf[i % 32];
-		break;
-	case 3:
-		return g_buf[i % 128];
-		break;
-	case 2:
-		return g_buf[i % 1024];
-		break;
-	case 10:
-		return g_buf[i % 8];
-		break;
-	case 9:
-		return g_buf[i % 512];
-		break;
-	case 50:
-		return g_buf[i % 64];
-		break;
-	case 40:
-		return g_buf[i % 32];
-		break;
-	case 30:
-		return g_buf[i % 128];
-		break;
-	case 20:
-		return g_buf[i % 1024];
-		break;
-	case 66:
-		return g_buf[i % 8];
-		break;
-	default:
-		break;
-	}
-	//if (m_format)
-	//{
-	//	return g_buf[i % 2048];
-	//}
-	//else
-	//{
-	//	return g_buf[i % 512];
-	//}
-	return 0;
-}
+    void initialize()
+    {
+        AudioProcessorNode::initialize(0, 2);
+    }
 
-int readPixel2(int i)
-{
-	return g_fucnc(g_buf, i);
-}
+    virtual void onAudioProcess(AudioBus* input, AudioBus* output) override
+    {
+        // TODO: 隠蔽したいところ・・・
+        output->setSampleRate(context()->sampleRate());
 
-int g_loop;
+        AudioChannel* ch1 = output->channel(0);
+        AudioChannel* ch2 = output->channel(1);
+        float* data1 = ch1->mutableData();
+        float* data2 = ch2->mutableData();
+
+        for (int i = 0; i < output->length(); i++) {
+            float v = std::sin(2.0 * Math::PI * step);
+            data1[i] = data2[i] = v;
+            step += frequency / output->sampleRate();//4096;
+        }
+
+        //step = 0;
+        counter++;
+        std::cout << counter << std::endl;
+    }
+};
+
+
+class TestRecoderNode : public AudioProcessorNode
+{
+public:
+    std::vector<float> data;
+    std::atomic<bool> end;
+
+    void initialize()
+    {
+        AudioProcessorNode::initialize(2, 2);
+		end = false;
+    }
+
+    virtual void onAudioProcess(AudioBus* input, AudioBus* output) override
+    {
+        output->copyFrom(input);
+
+        if (data.size() < context()->sampleRate())
+        {
+            size_t begin = data.size();
+            size_t size = input->length() * input->channelCount();
+            data.resize(data.size() + size);
+            input->mergeToChannelBuffers(data.data() + begin, size);
+            printf("put\n");
+        }
+        else
+        {
+            end = true;
+        }
+    }
+};
 
 int main(int argc, char** argv)
 {
 #ifdef _WIN32
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
+
+	GlobalLogger::addStdErrAdapter();
+    EngineSettings::setEngineFeatures(EngineFeature::Experimental);
+	detail::EngineDomain::engineManager()->settings().standaloneFpsControl = true;
+	Engine::initialize();
+
+    auto ctl = newObject<CameraOrbitControlComponent>();
+    Engine::mainCamera()->addComponent(ctl);
+    //Engine::mainCamera()->setBackgroundColor(Color::Gray);
+
+
+    struct PosColor
+    {
+        ln::Vector4 pos;
+        ln::Vector2 uv;
+    };
+    PosColor v1[] = {
+        { { -1, 1, 0, 1 }, { 0, 0 } },
+        { { 1, 1, 0, 1 }, { 0, 1 } },
+        { { -1, -1, 0, 1 }, { 1, 0 } },
+        { { 1, -1, 0, 1 }, { 1, 1 } },
+    };
+    auto m_vertexBuffer = ln::newObject<ln::VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
+    
+	detail::EngineDomain::fontManager()->registerFontFile(LN_LOCALFILE("../../../tools/VLGothic/VL-PGothic-Regular.ttf"));
+
+	//detail::FontDesc desc;
+	//desc.Family = "VL PGothic";
+	//desc.isBold = true;
+	//auto font1 = detail::EngineDomain::fontManager()->lookupFontCore(desc);
+	//auto font2 = detail::EngineDomain::fontManager()->lookupFontCore(desc);
+
+	//detail::FontGlobalMetrics gm;
+	//font2->getGlobalMetrics(&gm);
+
+	//detail::BitmapGlyphInfo bmpInfo;
+	////auto bmp = newObject<Bitmap2D>();
+	////bmpInfo.glyphBitmap = bmp;
+	//bmpInfo.glyphBitmap = nullptr;
+	//font2->lookupGlyphBitmap('A', &bmpInfo);
+	//bmpInfo.glyphBitmap->transcodeTo(PixelFormat::RGBA32)->save("C:/LocalProj/tmp/test.png");
+	//font2->lookupGlyphBitmap('A', &bmpInfo);
+
+	//auto ker = font2->getKerning('i', 'j');
+
+	//printf("");
+
+#if 1
+    //auto font = Font::create(u"VL PGothic", 20);
+
+	//auto light1 = AmbientLight::create();
+ //   auto light2 = DirectionalLight::create();
+
+    auto tex = newObject<Texture2D>(u"D:/tmp/110220c_as019.png");
+    //auto tex = Assets::loadTexture(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Sprite1.png");
+    //tex->drawText(u"Hello!", Rect(0, 0, 100, 100), font, Color::White);
+    //auto tex = newObject<Texture2D>(2, 2);
+    //auto bmp1 = tex->map(MapMode::Write);
+    //bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
+    //bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
+    //bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
+    //bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
+
+    //auto sprite = newObject<UISprite>();
+    //sprite->setTexture(tex);
+    //sprite->setPosition(20, 10);
+    //auto imageEffect = newObject<ScreenBlurImageEffect>();
+    //imageEffect->setAmount(0.7);
+    //imageEffect->setRadialScale(1.05);
+    //Engine::mainViewport()->addImageEffect(imageEffect);
+
+    //auto sprite = Sprite::create(3, 3, tex);
+
+    //auto tilemap = newObject<Tilemap>();
+    //tilemap->setShadingModel(ShadingModel::UnLighting);
+
+
+
+    //auto ToneLayer = ToneImageEffect::create();
+    //Engine::mainViewport()->addImageEffect(ToneLayer);
+
+    //auto ToneLayer2 = ToneImageEffect::create();
+    //Engine::mainViewport()->addImageEffect(ToneLayer2);
+
+    //auto BlurLayer = ScreenBlurImageEffect::create();
+    //Engine::mainViewport()->addImageEffect(BlurLayer);
+
+    //auto texture2 = Texture2D::create(100, 100);
+    //texture2->clear(Color::Gray);
+    ////font->setAntiAlias(false);
+    //texture2->drawText(u"Left", Rect(0, 0, 0, 0), font, Color::Black);
+    //auto sprite2 = ln::UISprite::create(texture2);
+    ////sprite2->setPosition(200, 100);
+    //sprite2->setCenterPoint(50, 50);
+
+    //auto mesh1 = newObject<StaticMesh>(u"D:/tmp/cube.obj");
+    //auto mesh1 = newObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
+    //auto mesh1 = newObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/usemtl-issue-68.obj");
+    //mesh1->setPosition(0, -1, 0);
+    //
+
+    //auto mesh2 = newObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
+    //mesh2->setPosition(2, 0, 0);
+
+    //auto mesh3 = newObject<StaticMesh>(u"D:/Proj/TH-10/Assets/Graphics/test/sphere4.obj", 2);
+    //mesh3->setVisible(false);
+#endif
+
+    //auto shape1 = BoxCollisionShape::create(5, 1, 5);
+    //auto body1 = newObject<RigidBody>();
+    //body1->addCollisionShape(shape1);
+    //body1->setTransform(Matrix::makeTranslation(0, -3, 0));
+    //Engine::mainPhysicsWorld()->addPhysicsObject(body1);
+
+
+    //auto shape2 = CapsuleCollisionShape::create(0.5, 3);
+    //auto body2 = newObject<RigidBody>();
+    //body2->addCollisionShape(shape2);
+    //body2->setTransform(Matrix::makeTranslation(0, -2, 0));
+    //body2->setMass(1.0f);
+    //body2->setKinematic(true);
+    //Engine::mainPhysicsWorld()->addPhysicsObject(body2);
+
+    //auto body3 = newObject<SoftBody>();
+    //body3->createFromMesh(mesh3->staticMeshComponent()->model()->meshContainers().front()->meshResource(), Engine::mainPhysicsWorld());
+
+    List<Ref<WorldObject>> spheres;
+    for (int y = 0; y < 1; y++)
+    {
+        for (int i = 0; i < 1; i++)
+        {
+            auto obj2 = newObject<WorldObject>();
+            auto cmp2 = newObject<SphereComponent>();
+            auto mat2 = Material::create();
+            mat2->setMetallic(static_cast<float>(i) / 5);
+            mat2->setRoughness(std::max(static_cast<float>(y) / 5, 0.001f));
+            obj2->addComponent(cmp2);
+            obj2->setPosition(i, -y, 0);
+            cmp2->setMaterial(mat2);
+            spheres.add(obj2);
+        }
+    }
+
 #if 0
-	g_buf = (int*)malloc(2048);
+    auto meshMaterial = Material::create();
+    meshMaterial->setMainTexture(tex);
 
-	m_format = argc;
-	if (m_format) g_fucnc = readFunc;
-	else g_fucnc = readFuncB;
+    auto meshRes = newObject<MeshResource>();
+    meshRes->resizeVertexBuffer(4);
+    meshRes->resizeIndexBuffer(6);
+    meshRes->resizeSections(1);
+    meshRes->setVertex(0, ln::Vertex{ Vector3(-3, 2, 0), -Vector3::UnitZ, Vector2(0, 0), Color::White });
+    meshRes->setVertex(1, ln::Vertex{ Vector3(3, 1, 0), -Vector3::UnitZ, Vector2(1, 0), Color::White });
+    meshRes->setVertex(2, ln::Vertex{ Vector3(-3, -1, 0), -Vector3::UnitZ, Vector2(0, 1), Color::White });
+    meshRes->setVertex(3, ln::Vertex{ Vector3(3, -1, 0), -Vector3::UnitZ, Vector2(1, 1), Color::White });
+    meshRes->setIndex(0, 0);
+    meshRes->setIndex(1, 1);
+    meshRes->setIndex(2, 2);
+    meshRes->setIndex(3, 2);
+    meshRes->setIndex(4, 1);
+    meshRes->setIndex(5, 3);
+    meshRes->setSection(0, 0, 2, 0);
 
-	for (int j = 0; j < 10; j++)
-	{
-		int sum = 0;
-		ElapsedTimer timer1;
-		for (int i = 0; i < 100000; i++)
-		{
-			sum += readPixel1(i);
-		}
-		uint64_t t1 = timer1.elapsedNanoseconds();
+    auto meshContainer = newObject<MeshContainer>();
+    meshContainer->setMeshResource(meshRes);
 
-		ElapsedTimer timer2;
-		for (int i = 0; i < 100000; i++)
-		{
-			sum += readPixel2(i);
-		}
-		uint64_t t2 = timer2.elapsedNanoseconds();
+    auto meshModel = newObject<StaticMeshModel>();
+    meshModel->addMeshContainer(meshContainer);
+    meshModel->addMaterial(meshMaterial);
 
-		printf("%llu : %llu %d\n", t1, t2, sum);
-	}
+    auto mesh1 = newObject<StaticMesh>();
+    mesh1->staticMeshComponent()->setModel(meshModel);
+#endif
 
-	return 0;
+#if 0
+    //auto sound = newObject<Sound>(u"D:\\tmp\\4_Battle_win.wav");
+    auto sound = newObject<Sound>(u"D:/Music/momentum/02 - momentum.wav");
+    //auto sound = newObject<Sound>(u"D:/Proj/Volkoff/Assets/Data/Sound/BGM/monochrome.ogg");
+    sound->play();
+    //sound->setPitch(1.2);
+
+    //GameAudio::playBGM(u"D:/Proj/Volkoff/Assets/Data/Sound/BGM/monochrome.ogg");
+#endif
+#if 0
+    //auto source = newObject<AudioSourceNode>(u"D:/Tech/Audio/WebAudioTest1/2018-11-29T13_00_15.686Z.wav");
+    auto source = newObject<AudioSourceNode>(u"D:/Music/momentum/02 - momentum.wav");
+    //auto source = newObject<TestProcessorNode>();
+    //AudioNode::connect(source, AudioContext::primary()->destination());
+    
+    //auto recoder = newObject<TestRecoderNode>();
+    //AudioNode::connect(source, recoder);
+    //AudioNode::connect(recoder, AudioContext::primary()->destination());
+
+    auto gain = newObject<AudioGainNode>();
+    AudioNode::connect(source, gain);
+    AudioNode::connect(gain, AudioContext::primary()->destination());
+
+    source->start();
+
+    //auto filedata = d.readAllSamples();
 #endif
 
 
 
+    //auto curve1 = KeyFrameAnimationCurve::create();
+    //curve1->addKeyFrame(0, 0.0f, TangentMode::Tangent);
+    //curve1->addKeyFrame(2, 100.0f, TangentMode::Linear);
+    //curve1->addKeyFrame(5, 100.0f, TangentMode::Tangent);
+    //curve1->addKeyFrame(7, 200.0f, TangentMode::Constant);
+
+    //auto track1 = ScalarAnimationTrack::create();
+    //track1->setCurve(curve1);
 
 
 
-	GlobalLogger::addStdErrAdapter();
-	Engine::initialize();
 
 
-	auto ctx = Engine::graphicsContext();
-	//ctx->setColorBuffer(0, Engine::mainWindow()->swapChain()->colorBuffer());
+    //Engine::update();
 
-	int loop = 0;
-	while (Engine::update())
+    //Engine::terminate();
+    //return 0;
+
+
+
+
+
+    float time = 0;
+    int frameCount = 0;
+    while (Engine::update())
+    {
+        //BlurLayer->play(0.7f, Vector2(0, 0.0), 1.05);
+
+        //sprite->setPosition(0, track1->evaluate(time));
+        //std::cout << track1->evaluate(time) << std::endl;
+        time += 0.016;
+#if 0
+        if (Mouse::isPressed(MouseButtons::Left))
+        {
+            float pitch = (Mouse::position().x / 640)  + 0.5;
+            float volume = (Mouse::position().y / 480);
+            //std::cout << pitch << std::endl;
+            sound->setPitch(pitch);
+            sound->setVolume(volume);
+        }
+#endif
+        //if (recoder->end)
+        //{
+        //    printf("a\n");
+        //}
+        frameCount++;
+        
+    }
+
+
+#if 0
 	{
-		//auto pt = Mouse::position();
-		//std::cout << pt.x << ", " << pt.y << std::endl;
-
-		if (Input::isTriggered(InputButtons::Left)) {
-			std::cout << "Left" << std::endl;
-		}
-		if (Input::isOffTriggered(InputButtons::Left)) {
-			std::cout << "isOffTriggered" << std::endl;
-		}
-		if (Input::isRepeated(InputButtons::Left)) {
-			std::cout << "isRepeated" << std::endl;
-		}
-
-		if (Mouse::isPressed(MouseButtons::Left)) {
-			//std::cout << "isPressed" << std::endl;
-		}
-		if (Mouse::isTriggered(MouseButtons::Left)) {
-			std::cout << "isTriggered" << std::endl;
-		}
-		if (Mouse::isOffTriggered(MouseButtons::Left)) {
-			std::cout << "isOffTriggered" << std::endl;
-		}
-		if (Mouse::isRepeated(MouseButtons::Left)) {
-			std::cout << "isRepeated" << std::endl;
-		}
-
+		auto ss = FileStream::create(u"D:\\tmp\\light_song_instrumental_0.mp3");
+		detail::Mp3AudioDecoder dec;
+		auto diag = newObject<DiagnosticsManager>();
+		dec.initialize(ss, diag);
 	}
 
-	Engine::terminate();
+	
+#if 0
+	auto source = newObject<AudioSourceNode>(u"D:\\tmp\\8_MapBGM2.wav");
+	auto panner = newObject<AudioPannerNode>();
+	AudioNode::connect(source, panner);
+	AudioNode::connect(panner, AudioContext::primary()->destination());
+	source->setPlaybackRate(1.2);
+	source->start();
+#else
+	auto source = newObject<AudioSourceNode>(u"D:\\tmp\\3_EventScene_variation2.wav");
+	//auto source = newObject<AudioSourceNode>(u"D:\\tmp\\8_MapBGM2.wav");
+	AudioNode::connect(source, AudioContext::primary()->destination());
+	//source->setPlaybackRate(1.2);
+	source->start();
+#endif
+
+	auto shader = Shader::create(
+		LN_LOCALFILE("Assets/simple.vert"),
+		LN_LOCALFILE("Assets/simple.frag"));
+	//shader->setVector("g_color", Vector4(0, 1, 0, 1));
+
+	//Engine::graphicsContext()->setShaderPass(shader->techniques()[0]->passes()[0]);
+
+	struct Vertex
+	{
+		Vector4 pos;
+	};
+	Vertex v[] = {
+		Vector4(0, 1, 0, 1),
+		Vector4(-1, 1, 0, 1),
+		Vector4(0, -1, 0, 1),
+	};
+
+	auto vb = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+
+	auto decl = newObject<VertexDeclaration>();
+	decl->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
+
+	//auto renderTarget = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBX32, false);
+
+
+
+
+	while (Engine::update())
+	{
+		class TestRenderView : public RenderView
+		{
+		public:
+			// 本番では、World が持っていたりする。
+			Ref<detail::WorldSceneGraphRenderingContext> m_context;
+
+			Ref<detail::DrawElementListCollector> m_elementListManager;
+
+			//Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer;
+			Ref<detail::ClusteredShadingSceneRenderer> m_sceneRenderer;
+			
+			TestRenderView()
+			{
+				m_elementListManager = makeRef<detail::DrawElementListCollector>();
+				m_context = makeRef<detail::WorldSceneGraphRenderingContext>();
+				m_elementListManager->addDrawElementList(detail::RendringPhase::Default, m_context->m_elementList);
+				addDrawElementListManager(m_elementListManager);
+
+				//m_sceneRenderer = makeRef<detail::UnLigitingSceneRenderer>();
+				//m_sceneRenderer->initialize(detail::EngineDomain::renderingManager());
+				m_sceneRenderer = makeRef<detail::ClusteredShadingSceneRenderer>();
+				m_sceneRenderer->initialize(detail::EngineDomain::renderingManager());
+			}
+
+			void render()
+			{
+
+				auto swapChain = Engine::mainWindow()->swapChain();
+				FrameBuffer fb;
+				fb.renderTarget[0] = swapChain->colorBuffer();
+				fb.depthBuffer = swapChain->depthBuffer();
+
+				{
+					Size size(fb.renderTarget[0]->width(), fb.renderTarget[0]->height());
+					Vector3 pos = Vector3(5, 5, -5);
+					mainCameraInfo.makePerspective(pos, Vector3::normalize(Vector3::Zero - pos), Math::PI / 3.0f, size, 0.1f, 100.0f);
+
+				}
+
+				RenderView::render(Engine::graphicsContext(), fb, m_sceneRenderer);
+			}
+		};
+
+		auto renderView = newObject<TestRenderView>();
+
+		auto tex1 = newObject<Texture2D>(2, 2);
+		auto bmp1 = tex1->map(MapMode::Write);
+		bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
+		bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
+		bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
+		bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
+		auto material = Material::create();
+		material->setMainTexture(tex1);
+
+#if 1
+		auto diag = newObject<DiagnosticsManager>();
+		detail::MqoImporter importer;
+		auto meshModel = importer.import(detail::EngineDomain::meshManager(),
+			u"D:\\Documents\\LuminoProjects\\TestModels\\grass-1.mqo", diag);
+		auto meshContainer = meshModel->meshContainers()[0];
+
+		//meshModel->materials()[0]->setMainTexture(tex1);
+
+#else
+		auto meshRes = newObject<MeshResource>();
+		meshRes->resizeVertexBuffer(4);
+		meshRes->resizeIndexBuffer(6);
+		meshRes->resizeSections(1);
+		meshRes->setVertex(0, Vertex{ Vector3(-3, 1, 0), -Vector3::UnitZ, Vector2(0, 0), Color::White });
+		meshRes->setVertex(1, Vertex{ Vector3(3, 1, 0), -Vector3::UnitZ, Vector2(1, 0), Color::White });
+		meshRes->setVertex(2, Vertex{ Vector3(-3, -1, 0), -Vector3::UnitZ, Vector2(0, 1), Color::White });
+		meshRes->setVertex(3, Vertex{ Vector3(3, -1, 0), -Vector3::UnitZ, Vector2(1, 1), Color::White });
+		meshRes->setIndex(0, 0);
+		meshRes->setIndex(1, 1);
+		meshRes->setIndex(2, 2);
+		meshRes->setIndex(3, 2);
+		meshRes->setIndex(4, 1);
+		meshRes->setIndex(5, 3);
+		meshRes->setSection(0, 0, 2, 0);
+
+		auto meshContainer = newObject<MeshContainer>();
+		meshContainer->setMeshResource(meshRes);
+
+		auto meshModel = newObject<StaticMeshModel>();
+		meshModel->addMeshContainer(meshContainer);
+		meshModel->addMaterial(material);
+#endif
+
+		while (Engine::update())
+		{
+			renderView->m_context->reset();
+
+			renderView->m_context->setCullingMode(CullMode::None);
+
+			renderView->m_context->drawMesh(meshContainer, 0);
+
+			renderView->m_context->addPointLight(Color::White, 1.0, Vector3(0, 1, -1), 10.0, 1.0);
+
+			renderView->render();
+		}
+#endif
+#if 0
+		class TestRenderView : public RenderView
+		{
+		public:
+			// 本番では、World が持っていたりする。
+			Ref<detail::WorldSceneGraphRenderingContext> m_context;
+
+			Ref<detail::DrawElementListCollector> m_elementListManager;
+
+			Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer;
+
+			TestRenderView()
+			{
+				m_elementListManager = makeRef<detail::DrawElementListCollector>();
+				m_context = makeRef<detail::WorldSceneGraphRenderingContext>();
+				m_elementListManager->addDrawElementList(detail::RendringPhase::Default, m_context->m_elementList);
+				addDrawElementListManager(m_elementListManager);
+
+				m_sceneRenderer = makeRef<detail::UnLigitingSceneRenderer>();
+				m_sceneRenderer->initialize(detail::EngineDomain::renderingManager());
+			}
+
+			void render()
+			{
+
+				auto swapChain = Engine::mainWindow()->swapChain();
+				FrameBuffer fb;
+				fb.renderTarget[0] = swapChain->colorBuffer();
+				fb.depthBuffer = swapChain->depthBuffer();
+
+				RenderView::render(Engine::graphicsContext(), fb, m_sceneRenderer);
+			}
+		};
+
+		auto renderView = newObject<TestRenderView>();
+
+		auto tex1 = newObject<Texture2D>(2, 2);
+		auto bmp1 = tex1->map(MapMode::Write);
+		bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
+		bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
+		bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
+		bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
+		auto material = Material::create();
+		material->setMainTexture(tex1);
+
+		while (Engine::update())
+		{
+			renderView->m_context->reset();
+
+			renderView->m_context->drawSprite(
+				Matrix(), Size(1, 1), Vector2(0, 0), Rect(0, 0, 1, 1), Color::Blue,
+				SpriteBaseDirection::ZMinus, BillboardType::None, material);
+
+			renderView->render();
+
+			if (::GetKeyState('Z') < 0)
+			{
+				break;
+			}
+		}
+#endif
+#if 0
+		class TestRenderView : public RenderView
+		{
+		public:
+			// 本番では、World が持っていたりする。
+			Ref<detail::DrawElementListCollector> m_elementListManager;
+			Ref<detail::DrawElementList> m_elementList;
+
+			Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer;
+
+			TestRenderView()
+			{
+				m_elementListManager = makeRef<detail::DrawElementListCollector>();
+				m_elementList = makeRef<detail::DrawElementList>(detail::EngineDomain::renderingManager());
+				m_elementListManager->addDrawElementList(detail::RendringPhase::Default, m_elementList);
+				addDrawElementListManager(m_elementListManager);
+
+				m_sceneRenderer = makeRef<detail::UnLigitingSceneRenderer>();
+				m_sceneRenderer->initialize(detail::EngineDomain::renderingManager());
+			}
+
+			void render()
+			{
+				auto swapChain = Engine::mainWindow()->swapChain();
+				FrameBuffer fb;
+				fb.renderTarget[0] = swapChain->colorBuffer();
+				fb.depthBuffer = swapChain->depthBuffer();
+
+				RenderView::render(Engine::graphicsContext(), fb, m_sceneRenderer);
+			}
+		};
+
+		auto renderView = newObject<TestRenderView>();
+
+		auto builder = detail::EngineDomain::renderingManager()->renderStageListBuilder();
+		builder->setTargetList(renderView->m_elementList);
+
+		auto spriteRender = detail::EngineDomain::renderingManager()->spriteRenderFeature();
+
+
+
+		auto tex1 = newObject<Texture2D>(2, 2);
+		auto bmp1 = tex1->map(MapMode::Write);
+		bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
+		bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
+		bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
+		bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
+		auto material = Material::create();
+		material->setMainTexture(tex1);
+
+		while (Engine::update())
+		{
+			renderView->m_elementList->clear();
+			builder->reset();
+
+			class DrawSprite : public detail::RenderDrawElement
+			{
+			public:
+				virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+				{
+					static_cast<detail::SpriteRenderFeature*>(renderFeatures)->drawRequest(
+						Matrix(), Vector2(1, 1), Vector2(0, 0), Rect(0, 0, 1, 1), Color::Blue, SpriteBaseDirection::ZMinus, BillboardType::None);
+				}
+			};
+
+			// drawSprite
+			{
+				builder->setMaterial(material);
+				auto* element = builder->addNewDrawElement<DrawSprite>(spriteRender, builder->spriteRenderFeatureStageParameters());
+			}
+
+			renderView->render();
+
+			if (::GetKeyState('Z') < 0)
+			{
+				break;
+			}
+		}
+#endif
+#if 0
+		auto shader = Shader::create(LN_LOCALFILE("Assets/SpriteTest.hlsl"));
+
+		//auto shader = Shader::create(
+		//	LN_LOCALFILE("Assets/simple.vert"),
+		//	LN_LOCALFILE("Assets/simple.frag"));
+		//shader->setVector("g_color", Vector4(0, 1, 0, 1));
+
+		//Engine::graphicsContext()->setShaderPass(shader->techniques()[0]->passes()[0]);
+
+		//auto tex1 = newObject<Texture2D>(LN_LOCALFILE("Assets/Sprite1.png"));
+		auto tex1 = newObject<Texture2D>(2, 2);
+		auto bmp1 = tex1->map(MapMode::Write);
+		bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
+		bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
+		bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
+		bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
+
+		ShaderParameter* param = shader->findParameter("g_texture1");
+		param->setTexture(tex1);
+
+		auto ctx = Engine::graphicsContext();
+		//ctx->setColorBuffer(0, Engine::mainWindow()->swapChain()->colorBuffer());
+
+		auto sr = detail::EngineDomain::renderingManager()->spriteRenderFeature();
+
+		auto list = makeRef<detail::DrawElementList>(detail::EngineDomain::renderingManager());
+		auto builder = detail::EngineDomain::renderingManager()->renderStageListBuilder();
+		builder->setTargetList(list);
+
+		int loop = 0;
+		while (Engine::update())
+		{
+			ctx->setShaderPass(shader->techniques()[0]->passes()[0]);
+
+			list->clear();
+			builder->reset();
+			class DrawSprite : public detail::RenderDrawElement
+			{
+			public:
+				virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+				{
+					static_cast<detail::SpriteRenderFeature*>(renderFeatures)->drawRequest(
+						Matrix(), Vector2(1, 1), Vector2(0, 0), Rect(0, 0, 1, 1), Color::Blue, SpriteBaseDirection::ZMinus, BillboardType::None);
+				}
+			};
+
+			auto* element = builder->addNewDrawElement<DrawSprite>(sr, builder->spriteRenderFeatureStageParameters());
+
+			auto* ie = list->headElement();
+			while (ie)
+			{
+				auto* stage = ie->stage();
+				// TODO: applystate
+				ie->onDraw(ctx, stage->renderFeature);
+				stage->flush();
+				ie = ie->next();
+			}
+
+			//ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+
+			//sr->drawRequest(Matrix(), Vector2(1, 1), Vector2(0, 0), Rect(0, 0, 1, 1), Color::Blue, SpriteBaseDirection::ZMinus, BillboardType::None);
+			//sr->flush();
+
+			if (::GetKeyState('Z') < 0)
+			{
+				break;
+			}
+		}
+	}
+#endif
+
+	Engine::finalize();
 
 	return 0;
 }

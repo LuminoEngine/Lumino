@@ -17,7 +17,7 @@
  * そういった諸々の管理を考えると実装が複雑になってしまう。
  * 
  *
- * マルチスレッドスレッドについて
+ * マルチスレッドについて
  * ----------
  * OpenGLDeviceContext はマルチスレッドレンダリングをサポートしない。
  * 大きな理由は、マルチスレッドでの動作がちゃんと規格化されていないから。
@@ -46,7 +46,23 @@
  */
 #pragma once
 
-#if defined(LN_GRAPHICS_OPENGLES)
+#ifdef LN_EMSCRIPTEN
+#define LN_GRAPHICS_OPENGLES
+#endif
+
+#if defined(LN_EMSCRIPTEN)
+#include <emscripten.h>
+#define GL_GLEXT_PROTOTYPES
+#define EGL_EGLEXT_PROTOTYPES
+#include <GL/gl.h>
+
+//#include <GLES2/gl2.h>
+//#include <GLES2/gl2ext.h>
+
+#include <GLES3/gl3.h>
+//#include <GLES3/gl2ext.h>
+
+#elif defined(LN_GRAPHICS_OPENGLES)
 #ifdef __APPLE__
 #include <unistd.h>
 #include <sys/resource.h>
@@ -64,17 +80,6 @@
 //#include <glad/glad.h>
 #endif
 
-#elif defined(LN_EMSCRIPTEN)
-#include <emscripten.h>
-#define GL_GLEXT_PROTOTYPES
-#define EGL_EGLEXT_PROTOTYPES
-#include <GL/gl.h>
-
-//#include <GLES2/gl2.h>
-//#include <GLES2/gl2ext.h>
-
-#include <GLES3/gl3.h>
-//#include <GLES3/gl2ext.h>
 
 #else
 #include <glad/glad.h>
@@ -116,6 +121,7 @@ public:
 	void setActiveShaderPass(GLShaderPass* pass);
 
 protected:
+	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) override;
 	virtual void onEnterMainThread() override;
 	virtual void onLeaveMainThread() override;
 	virtual void onSaveExternalRenderState() override;
@@ -125,12 +131,14 @@ protected:
 	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) override;
 	virtual Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) override;
 	virtual Ref<ITexture> onCreateTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
+	virtual Ref<ITexture> onCreateTexture3D(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
 	virtual Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) override;
 	virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
 	virtual Ref<IShaderPass> onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag) override;
 	virtual void onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState) override;
 	virtual void onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer) override;
+	virtual void onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize) override;
 	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) override;
 	virtual void onUpdateShaderPass(IShaderPass* newPass) override;
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
@@ -267,14 +275,15 @@ public:
 	GLuint vertexBufferId() const { return m_glVertexBuffer; }
 
 	virtual size_t getBytesSize() override { return m_size; }
+	virtual GraphicsResourceUsage usage() const override { return m_usage; }
 	virtual void setSubData(size_t offset, const void* data, size_t length) override;
 	virtual void* map() override;
 	virtual void unmap() override;
 
 private:
 	GLuint m_glVertexBuffer;
-	GLenum m_usage;
-	GraphicsResourceUsage m_format;
+	GraphicsResourceUsage m_usage;
+	//GraphicsResourceUsage m_format;
 	size_t m_size;
 };
 
@@ -291,6 +300,7 @@ public:
 	IndexBufferFormat format() const { return m_format; }
 
 	virtual size_t getBytesSize() override { return m_size; }
+	virtual GraphicsResourceUsage usage() const override { return m_usage; }
 	virtual void setSubData(size_t offset, const void* data, size_t length) override;
 	virtual void* map() override;
 	virtual void unmap() override;
@@ -298,7 +308,7 @@ public:
 private:
 	GLuint m_indexBufferId;
 	IndexBufferFormat m_format;
-	GLenum m_usage;
+	GraphicsResourceUsage m_usage;
 	size_t m_size;
 };
 
@@ -309,6 +319,7 @@ public:
 	virtual ~GLTextureBase() = default;
 
 	virtual GLuint id() const = 0;
+    virtual bool mipmap() const = 0;
 };
 
 
@@ -321,16 +332,49 @@ public:
 	void initialize(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData);
 	virtual void dispose() override;
 
+	virtual DeviceTextureType type() const override { return DeviceTextureType::Texture2D; }
 	virtual void readData(void* outData) override;
 	virtual const SizeI& realSize() override;
 	virtual TextureFormat getTextureFormat() const override;
 	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) override;
+	virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
 
 	virtual GLuint id() const override { return m_id; }
+    virtual bool mipmap() const override  { return m_mipmap; }
 
 private:
 	GLuint m_id;
 	SizeI m_size;
+	TextureFormat m_textureFormat;
+	GLenum m_pixelFormat;
+	GLenum m_elementType;
+    bool m_mipmap;
+};
+
+class GLTexture3D
+	: public GLTextureBase
+{
+public:
+	GLTexture3D();
+	virtual ~GLTexture3D();
+	void initialize(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData);
+	virtual void dispose() override;
+
+	virtual DeviceTextureType type() const override { return DeviceTextureType::Texture3D; }
+	virtual void readData(void* outData) override;
+	virtual const SizeI& realSize() override;
+	virtual TextureFormat getTextureFormat() const override;
+	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) override;
+	virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
+
+	virtual GLuint id() const override { return m_id; }
+    virtual bool mipmap() const override { return false; }
+
+private:
+	GLuint m_id;
+	uint32_t m_width;
+	uint32_t m_height;
+	uint32_t m_depth;
 	TextureFormat m_textureFormat;
 	GLenum m_pixelFormat;
 	GLenum m_elementType;
@@ -345,13 +389,16 @@ public:
 	void initialize(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
 	virtual void dispose() override;
 
-	virtual GLuint id() const override { return m_id; }
 
+	virtual DeviceTextureType type() const override { return DeviceTextureType::RenderTarget; }
 	virtual void readData(void* outData) override;
 	virtual const SizeI& realSize() override;
 	virtual TextureFormat getTextureFormat() const override;
 	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) override;
+	virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
 
+    virtual GLuint id() const override { return m_id; }
+    virtual bool mipmap() const override { return false; }
 
 private:
 	SizeI m_size;
@@ -414,10 +461,13 @@ public:
 	void initialize(const SamplerStateData& desc);
 	virtual void dispose() override;
 
-	GLuint id() const { return m_id; }
+    GLuint resolveId(bool mipmap) const { return (mipmap) ? m_idMip : m_id; }
+	//GLuint id2() const { return m_id; }
 
 private:
 	GLuint m_id;
+    GLuint m_idMip;
+    SamplerStateData m_desc;
 };
 
 class GLSLShader
@@ -441,7 +491,7 @@ class GLShaderPass
 {
 public:
 	GLShaderPass();
-	virtual ~GLShaderPass() = default;
+    virtual ~GLShaderPass();
 	void initialize(OpenGLDeviceContext* context, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag);
 	virtual void dispose() override;
 
@@ -497,7 +547,7 @@ class GLShaderUniform
 {
 public:
 	GLShaderUniform(const ShaderUniformTypeDesc& desc, const GLchar* name, GLint location);
-	virtual ~GLShaderUniform() = default;
+    virtual ~GLShaderUniform();
 	virtual void dispose() override;
 	virtual const ShaderUniformTypeDesc& desc() const override { return m_desc; }
 	virtual const std::string& name() const override { return m_name; }
@@ -523,6 +573,7 @@ public:
 	GLLocalShaderSamplerBuffer();
 	virtual ~GLLocalShaderSamplerBuffer() = default;
 	void addGlslSamplerUniform(const std::string& name, GLint uniformLocation);
+    void addIsRenderTargetUniform(const std::string& name, GLint uniformLocation);
 	void bind();
 
 	virtual int registerCount() const override;
@@ -536,9 +587,10 @@ private:
 	{
 		std::string textureRegisterName;
 		std::string samplerRegisterName;
-		GLint uniformLocation = 0;
+		GLint uniformLocation = -1;
 		ITexture* texture = nullptr;
 		GLSamplerState* samplerState = nullptr;
+        GLint isRenderTargetUniformLocation = -1;
 	};
 
 	std::vector<Entry> m_table;

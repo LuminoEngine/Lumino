@@ -79,13 +79,16 @@ void Path::assignUnderBasePath(const Path& basePath, const StringRef& relativePa
     else {
         m_path = basePath.m_path;
 
-        // 末尾にセパレータがなければ付加する
-        if (!detail::PathTraits::endWithSeparator(m_path.c_str(), m_path.length())) {
-            m_path += detail::PathTraits::DirectorySeparatorChar;
-        }
+		if (!relativePath.isEmpty())
+		{
+			// 末尾にセパレータがなければ付加する
+			if (!detail::PathTraits::endWithSeparator(m_path.c_str(), m_path.length())) {
+				m_path += detail::PathTraits::DirectorySeparatorChar;
+			}
 
-        // relativePath 結合
-        m_path += relativePath;
+			// relativePath 結合
+			m_path += relativePath;
+		}
     }
 }
 

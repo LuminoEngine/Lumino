@@ -1,5 +1,6 @@
 ﻿
 #include <LuminoCore/Math/Matrix.hpp>
+#include <LuminoCore/Math/Geometries.hpp>
 #include <LuminoCore/Math/ViewFrustum.hpp>
 
 namespace ln {
@@ -50,6 +51,52 @@ bool ViewFrustum::intersects(const Vector3& center, float radius) const
         }
     }
     return true;
+}
+
+IntersectResult ViewFrustum::intersects(const Box& box) const
+{
+    IntersectResult result = IntersectResult::Inside;
+    auto mins = box.minPoint();
+    auto maxs = box.maxPoint();
+    Vector3 vmin, vmax;
+
+    for (int i = 0; i < FrustumPlane_Max; i++) {
+        Vector3 normal = m_planes[i].normal;
+
+        // X axis
+        if (m_planes[i].normal.x > 0) {
+            vmin.x = mins.x;
+            vmax.x = maxs.x;
+        } else {
+            vmin.x = maxs.x;
+            vmax.x = mins.x;
+        }
+        // Y axis
+        if (m_planes[i].normal.y > 0) {
+            vmin.y = mins.y;
+            vmax.y = maxs.y;
+        } else {
+            vmin.y = maxs.y;
+            vmax.y = mins.y;
+        }
+        // Z axis
+        if (m_planes[i].normal.z > 0) {
+            vmin.z = mins.z;
+            vmax.z = maxs.z;
+        } else {
+            vmin.z = maxs.z;
+            vmax.z = mins.z;
+        }
+
+        if (m_planes[i].getDistanceToPoint(vmin) > 0) {
+            return IntersectResult::Outside;
+        }
+        if (m_planes[i].getDistanceToPoint(vmax) >= 0) {
+            result = IntersectResult::Intersect;
+        }
+    }
+
+    return result;
 }
 
 void ViewFrustum::getCornerPoints(Vector3* points) const

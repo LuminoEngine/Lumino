@@ -13,120 +13,10 @@ Workspace::~Workspace()
 {
 }
 
-Result Workspace::newProject(const ln::Path& projectDir, const ln::String& projectName)
-{
-	m_project = ln::makeRef<Project>(this);
-	return m_project->newProject(projectDir, projectName);
-}
-
 Result Workspace::openProject(const ln::Path& dir)
 {
 	m_project = ln::makeRef<Project>(this);
 	return m_project->openProject(dir);
-}
-
-Result Workspace::buildProject(const ln::String& target)
-{
-	// Windows
-	if (ln::String::compare(target, u"Windows", ln::CaseSensitivity::CaseInsensitive) == 0)
-	{
-		auto file = ln::FileSystem::getFile(m_project->rootDirPath(), u"*.sln");
-		if (file.isEmpty()) {
-			CLI::error(".sln file not found.");
-			return Result::Fail;
-		}
-
-		if (ln::Process::execute(m_devTools->msbuild(), { file.str(), u"/t:build", u"/p:Configuration=Debug;Platform=\"x86\"" }) != 0) {
-			CLI::error("Failed MSBuild.");
-			return Result::Fail;
-		}
-	}
-#if 0
-	// Android
-	else if (ln::String::compare(target, u"Android", ln::CaseSensitivity::CaseInsensitive) == 0)
-	{
-		putenv("JAVA_HOME=\"D:\\Program Files\\Android\\Android Studio\\jre\"");
-
-		ln::Process::execute(u"gradlew.bat", { u"assemble" });	// Debug, Release 両方ビルド
-
-		// https://qiita.com/tkc_tsuchiya/items/6485714615ace9e19918
-
-#if 0
-		ln::String abi = u"x86_64";
-		ln::String platform = "android-26";
-		ln::String buildType = "Release";
-		ln::String targetName = u"Android-" + abi;
-		ln::Path outputDir = ln::Path(m_project->androidProjectDir(), u"app/build/intermediates/cmake/release/obj/" + abi);
-		ln::Path luminoPackageDir = ln::Path(m_devTools->luminoPackageRootDir(), u"Engine/Cpp/Android-" + abi);
-		ln::Path cmakeHomeDir = ln::Path(m_project->androidProjectDir(), u"app");
-		ln::Path buildDir = ln::Path::combine(m_project->buildDir(), targetName);
-
-		ln::List<ln::String> args = {
-			u"-H" + cmakeHomeDir,
-			u"-B" + buildDir,
-			u"-DLN_TARGET_ARCH_NAME=" + targetName,
-			u"-DANDROID_ABI=" + abi,
-			u"-DANDROID_PLATFORM=" + platform,
-			u"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=" + outputDir.str().replace("\\", "/"),
-			u"-DCMAKE_BUILD_TYPE=" + buildType,
-			u"-DANDROID_NDK=" + m_environmentSettings->androidNdkRootDir(),
-			u"-DCMAKE_CXX_FLAGS=-std=c++14",
-			u"-DCMAKE_TOOLCHAIN_FILE=" + m_environmentSettings->androidCMakeToolchain(),
-			u"-DCMAKE_MAKE_PROGRAM=" + m_environmentSettings->androidSdkNinja(),
-
-			u"-DANDROID_STL=c++_shared",
-			u"-DLumino_DIR=" + luminoPackageDir.str().replace("\\", "/"),
-
-			u"-G\"Android Gradle - Ninja\"",
-		};
-
-		ln::Process::execute(m_environmentSettings->androidSdkCMake(), args);
-
-		ln::Process::execute(m_environmentSettings->androidSdkCMake(), {u"--build", buildDir });
-#endif
-	}
-#endif
-	// Web
-	else if (ln::String::compare(target, u"Web", ln::CaseSensitivity::CaseInsensitive) == 0)
-	{
-		// emsdk がなければインストールする
-		m_devTools->prepareEmscriptenSdk();
-
-		auto buildDir = ln::Path::combine(m_project->buildDir(), u"Web").canonicalize();
-		auto installDir = ln::Path::combine(buildDir, u"Release");
-		auto cmakeSourceDir = m_project->emscriptenProjectDir();
-		auto script = ln::Path::combine(buildDir, u"build.bat");
-
-		ln::FileSystem::createDirectory(buildDir);
-
-		{
-			ln::List<ln::String> emcmakeArgs = {
-				u"-DCMAKE_BUILD_TYPE=Release",
-				u"-DCMAKE_INSTALL_PREFIX=" + installDir,
-				u"-DLUMINO_ENGINE_ROOT=\"" + ln::Path(m_project->engineDirPath(), u"Native").str().replace("\\", "/") + u"\"",
-				u"-DLN_TARGET_ARCH=Emscripten",
-				u"-G \"MinGW Makefiles\"",
-				cmakeSourceDir,
-			};
-
-			ln::StreamWriter sw(script);
-			sw.writeLineFormat(u"cd /d \"{0}\"", m_devTools->emsdkDirPath());
-			sw.writeLineFormat(u"call emsdk activate " + m_devTools->emsdkName());
-			sw.writeLineFormat(u"call emsdk_env.bat");
-			sw.writeLineFormat(u"cd /d \"{0}\"", buildDir);
-			sw.writeLineFormat(u"call emcmake cmake " + ln::String::join(emcmakeArgs, u" "));
-			sw.writeLineFormat(u"call cmake --build .");
-		}
-
-		ln::Process::execute(script);
-	}
-	else
-	{
-		CLI::error(ln::String::format(u"{0} is invalid target.", target));
-		return Result::Fail;
-	}
-
-	return Result::Success;
 }
 
 Result Workspace::runProject(const ln::String& target)
@@ -157,6 +47,7 @@ Result Workspace::runProject(const ln::String& target)
 			}
 
 			ln::Process proc2;
+            proc2.setUseShellExecute(true);
 			proc2.setProgram(u"http://localhost:8000/" + (*files.begin()).fileName());
 			proc2.start();
 		}

@@ -17,7 +17,7 @@ namespace LuminoBuild
         public string InstallerProductGUID_MSVC2017 = "FF69C51F-DB0F-411A-A552-3F1B4783B538";
         
         public int MajorVersion = 0;
-        public int MinorVersion = 6;
+        public int MinorVersion = 7;
         public int RevisionVersion = 0;
         public int BuildVersion = 0;
         public string VersionString => string.Format("{0}.{1}.{2}", MajorVersion, MinorVersion, RevisionVersion);
@@ -36,7 +36,16 @@ namespace LuminoBuild
         public string LuminoExternalDir;
         public List<BuildTask> Tasks = new List<BuildTask>();
         public List<BuildRule> Rules = new List<BuildRule>();
+        public string[] Args;
 
+        public string LocalPackageName
+        {
+            get
+            {
+                return "LocalPackage";
+            }
+        }
+        
         public string ReleasePackageName
         {
             get
@@ -50,6 +59,7 @@ namespace LuminoBuild
                 return $"Lumino-{VersionString}-{targetEnvName}";
             }
         }
+
 
         public void DoTaskOrRule(string name)
         {
@@ -360,9 +370,9 @@ namespace LuminoBuild
         /// <summary>
         /// フォルダから .zip を作る
         /// </summary>
-        public static void ExtractZipFile(string zipFilePath, string dirPath)
+        public static void ExtractZipFile(string zipFilePath, string dirPath, bool force = false)
         {
-            if (!Directory.Exists(dirPath))
+            if (!Directory.Exists(dirPath) || force)
             {
                 ZipFile.ExtractToDirectory(zipFilePath, dirPath);
             }

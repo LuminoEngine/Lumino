@@ -5,60 +5,35 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 #set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
 #set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
 
-#-------------------------------------------------------------------------------
+message("LN_TARGET_ARCH: ${LN_TARGET_ARCH}")
+message("CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
+#-------------------------------------------------------------------------------
 # Visual Studio ソリューションフォルダを作るようにする
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-# サードパーティライブラリ用の共通設定
-macro(ln_add_dependencies_common_property_full projectName includeDir)
-    set_target_properties(${projectName} PROPERTIES PREFIX "")
-    set_target_properties(${projectName} PROPERTIES FOLDER "Dependencies")    # Visual Studio solution folder
-    set(LN_DEPENDENCIES_LIBRARIES ${LN_DEPENDENCIES_LIBRARIES} ${projectName})
-    set(LN_DEPENDENCIES_INCLUDE_DIRECTORIES ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${includeDir})
-endmacro()
-macro(ln_add_dependencies_common_property projectName)
-    set_target_properties(${projectName} PROPERTIES FOLDER "Dependencies")    # Visual Studio solution folder
-endmacro()
-macro(ln_mark_non_dependencies projectName)
-    set_target_properties(${projectName} PROPERTIES FOLDER "Dependencies")    # Visual Studio solution folder
-endmacro()
 
 if (MSVC)
     add_definitions("/wd4996")        # pragma warning disable
 endif()
 
-
 #-------------------------------------------------------------------------------
-
-message("EMSCRIPTEN_ROOT_PATH: ${EMSCRIPTEN_ROOT_PATH}")
-message("CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
-
-
-
-
 macro(ln_make_external_find_path varName projectDirName)
-    #if (LN_EMSCRIPTEN)
-        # reference to installed libs by "build.csproj"
-        #set(${varName} ${EMSCRIPTEN_ROOT_PATH}/system)
-    #else
     if(DEFINED LN_EXTERNAL_FIND_PATH_MODE)
         if (${LN_EXTERNAL_FIND_PATH_MODE} STREQUAL "build")
             set(${varName} ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/${projectDirName})
         endif()
     else()
-    set(${varName} ${LUMINO_ENGINE_ROOT}/lib/${LN_TARGET_ARCH})
+        set(${varName} ${LUMINO_ENGINE_ROOT}/lib/${LN_TARGET_ARCH}-${CMAKE_BUILD_TYPE})
     endif()
 endmacro()
-
-
 
 #--------------------------------------
 # glfw
 if (LN_OS_DESKTOP)
-    set(GLFW_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/glfw)
+    ln_make_external_find_path(GLFW_ROOT glfw)
+
     find_library(GLFW_LIBRARY_RELEASE NAMES glfw3 libglfw3 PATHS ${GLFW_ROOT} PATH_SUFFIXES lib)
-    find_library(GLFW_LIBRARY_DEBUG NAMES glfw3d libglfw3d PATHS ${GLFW_ROOT} PATH_SUFFIXES lib)
+    find_library(GLFW_LIBRARY_DEBUG NAMES glfw3 libglfw3 PATHS ${GLFW_ROOT} PATH_SUFFIXES lib)
 
     add_library(glfw STATIC IMPORTED)
     set_target_properties(glfw PROPERTIES IMPORTED_LOCATION_RELEASE "${GLFW_LIBRARY_RELEASE}")
@@ -68,32 +43,22 @@ endif()
 
 #--------------------------------------
 # glad
-#add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/glad)
-#set(LN_DEPENDENCIES_INCLUDE_DIRECTORIES ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} "${CMAKE_CURRENT_LIST_DIR}/glad/include")
-#ln_add_dependencies_common_property(glad)
+if (LN_OS_DESKTOP)
+    ln_make_external_find_path(GLAD_ROOT glad)
 
-if (LN_OS_DESKTOP)# OR LN_EMSCRIPTEN)
+    find_library(GLAD_LIBRARY_RELEASE NAMES glad libglad PATHS ${GLAD_ROOT} PATH_SUFFIXES lib)
+    find_library(GLAD_LIBRARY_DEBUG NAMES gladd libgladd PATHS ${GLAD_ROOT} PATH_SUFFIXES lib)
 
     set(LIB_NAME GLAD)
     add_library(${LIB_NAME} STATIC IMPORTED)
-
-    #if (LN_EMSCRIPTEN)
-        # reference to installed libs by "build.csproj"
-    #    set(GLAD_ROOT ${EMSCRIPTEN_ROOT_PATH}/system)
-    #else()
-        set(GLAD_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/glad)
-        find_library(GLAD_LIBRARY_RELEASE NAMES glad libglad PATHS ${GLAD_ROOT} PATH_SUFFIXES lib)
-        find_library(GLAD_LIBRARY_DEBUG NAMES gladd libgladd PATHS ${GLAD_ROOT} PATH_SUFFIXES lib)
-        set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
-        set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
-    #endif()
+    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
+    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
 
     set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${${LIB_NAME}_ROOT}/include)
 endif()
 
 #--------------------------------------
 # zlib
-
 if (ANDROID_ABI)
     # zlib を "ZLIB" 変数で参照できるようにする
     find_package(ZLIB REQUIRED)
@@ -125,7 +90,6 @@ endif()
 
 #--------------------------------------
 # libpng
-
 ln_make_external_find_path(PNG_ROOT libpng)
 find_library(PNG_LIBRARY_RELEASE NAMES libpng16 png16 PATHS ${PNG_ROOT} PATH_SUFFIXES lib)
 find_library(PNG_LIBRARY_DEBUG NAMES libpng16d png16d PATHS ${PNG_ROOT} PATH_SUFFIXES lib)
@@ -139,12 +103,9 @@ set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${PNG
 
 #--------------------------------------
 # glslang
-
 if (LN_OS_DESKTOP)
 
     ln_make_external_find_path(GLSLANG_ROOT glslang)
-    #set(GLSLANG_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/glslang)
-    #set(CMAKE_PREFIX_PATH ${GLSLANG_ROOT})        # for Linux
 
     find_library(glslang_LIBRARY_RELEASE NAMES libglslang glslang PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
     find_library(glslang_LIBRARY_DEBUG NAMES libglslangd glslangd PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
@@ -200,15 +161,13 @@ endif()
 
 #--------------------------------------
 # SPIRV-Cross
-
 if (LN_OS_DESKTOP)
     ln_make_external_find_path(SPIRV-Cross_ROOT SPIRV-Cross)
-    #set(SPIRV-Cross_ROOT ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/SPIRV-Cross)
 
     find_library(spirv-cross-core_LIBRARY_RELEASE NAMES spirv-cross-core PATHS ${SPIRV-Cross_ROOT} PATH_SUFFIXES lib)
-    find_library(spirv-cross-core_LIBRARY_DEBUG NAMES spirv-cross-cored PATHS ${SPIRV-Cross_ROOT} PATH_SUFFIXES lib)
+    find_library(spirv-cross-core_LIBRARY_DEBUG NAMES spirv-cross-core PATHS ${SPIRV-Cross_ROOT} PATH_SUFFIXES lib)
     find_library(spirv-cross-glsl_LIBRARY_RELEASE NAMES spirv-cross-glsl PATHS ${SPIRV-Cross_ROOT} PATH_SUFFIXES lib)
-    find_library(spirv-cross-glsl_LIBRARY_DEBUG NAMES spirv-cross-glsld PATHS ${SPIRV-Cross_ROOT} PATH_SUFFIXES lib)
+    find_library(spirv-cross-glsl_LIBRARY_DEBUG NAMES spirv-cross-glsl PATHS ${SPIRV-Cross_ROOT} PATH_SUFFIXES lib)
 
     set(LIB_NAME spirv-cross-core)
     add_library(${LIB_NAME} STATIC IMPORTED)
@@ -224,3 +183,119 @@ if (LN_OS_DESKTOP)
     set(spirv-cross_INCLUDE_DIRS "${SPIRV-Cross_ROOT}/include")
     set(spirv-cross_LIBRARIES spirv-cross-core spirv-cross-glsl)
 endif()
+
+#--------------------------------------
+# openal-soft
+if (LN_EMSCRIPTEN)
+
+elseif(APPLE)
+    # Use OpenAL.framework
+else()
+    ln_make_external_find_path(OpenAL_ROOT openal-soft)
+
+    find_library(OpenAL_LIBRARY_RELEASE NAMES OpenAL32 PATHS ${OpenAL_ROOT} PATH_SUFFIXES lib)
+    find_library(OpenAL_LIBRARY_DEBUG NAMES OpenAL32 PATHS ${OpenAL_ROOT} PATH_SUFFIXES lib)
+
+    add_library(OpenAL STATIC IMPORTED)
+    set_target_properties(OpenAL PROPERTIES IMPORTED_LOCATION_RELEASE "${OpenAL_LIBRARY_RELEASE}")
+    set_target_properties(OpenAL PROPERTIES IMPORTED_LOCATION_DEBUG "${OpenAL_LIBRARY_DEBUG}")
+    set_target_properties(OpenAL PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${OpenAL_ROOT}/include)
+endif()
+
+#--------------------------------------
+# SDL2
+if (LN_USE_SDL)
+    ln_make_external_find_path(SDL2_ROOT SDL2)
+    find_library(SDL2_LIBRARY_RELEASE NAMES SDL2 PATHS ${SDL2_ROOT} PATH_SUFFIXES lib)
+    find_library(SDL2_LIBRARY_DEBUG NAMES SDL2d PATHS ${SDL2_ROOT} PATH_SUFFIXES lib)
+
+    set(LIB_NAME SDL2)
+    add_library(${LIB_NAME} STATIC IMPORTED)
+    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
+    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
+    set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${SDL2_ROOT}/include)
+endif()
+
+#--------------------------------------
+# freetype
+ln_make_external_find_path(FreeType_ROOT "freetype2")
+
+find_library(FreeType_LIBRARY_RELEASE NAMES freetype libfreetype PATHS ${FreeType_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(FreeType_LIBRARY_DEBUG NAMES freetyped libfreetyped PATHS ${FreeType_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+
+add_library(FreeType STATIC IMPORTED)
+set_target_properties(FreeType PROPERTIES IMPORTED_LOCATION_RELEASE "${FreeType_LIBRARY_RELEASE}")
+set_target_properties(FreeType PROPERTIES IMPORTED_LOCATION_DEBUG "${FreeType_LIBRARY_DEBUG}")
+set_target_properties(FreeType PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${FreeType_ROOT}/include/freetype2)
+
+#--------------------------------------
+# ogg
+ln_make_external_find_path(ogg_ROOT "ogg")
+
+find_library(ogg_LIBRARY_RELEASE NAMES ogg libogg PATHS ${ogg_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(ogg_LIBRARY_DEBUG NAMES ogg libogg PATHS ${ogg_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+
+add_library(ogg STATIC IMPORTED)
+set_target_properties(ogg PROPERTIES IMPORTED_LOCATION_RELEASE "${ogg_LIBRARY_RELEASE}")
+set_target_properties(ogg PROPERTIES IMPORTED_LOCATION_DEBUG "${ogg_LIBRARY_DEBUG}")
+set_target_properties(ogg PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ogg_ROOT}/include)
+
+#--------------------------------------
+# vorbis
+ln_make_external_find_path(vorbis_ROOT "vorbis")
+
+find_library(vorbis_LIBRARY_RELEASE NAMES vorbis libvorbis PATHS ${vorbis_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(vorbis_LIBRARY_DEBUG NAMES vorbis libvorbis PATHS ${vorbis_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(vorbisfile_LIBRARY_RELEASE NAMES vorbisfile libvorbisfile PATHS ${vorbis_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(vorbisfile_LIBRARY_DEBUG NAMES vorbisfile libvorbisfile PATHS ${vorbis_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+
+add_library(vorbis STATIC IMPORTED)
+set_target_properties(vorbis PROPERTIES IMPORTED_LOCATION_RELEASE "${vorbis_LIBRARY_RELEASE}")
+set_target_properties(vorbis PROPERTIES IMPORTED_LOCATION_DEBUG "${vorbis_LIBRARY_DEBUG}")
+set_target_properties(vorbis PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${vorbis_ROOT}/include)
+
+add_library(vorbisfile STATIC IMPORTED)
+set_target_properties(vorbisfile PROPERTIES IMPORTED_LOCATION_RELEASE "${vorbisfile_LIBRARY_RELEASE}")
+set_target_properties(vorbisfile PROPERTIES IMPORTED_LOCATION_DEBUG "${vorbisfile_LIBRARY_DEBUG}")
+
+#--------------------------------------
+# bullet
+ln_make_external_find_path(bullet3_ROOT "bullet3")
+
+find_library(LinearMath_LIBRARY_RELEASE NAMES LinearMath PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(LinearMath_LIBRARY_DEBUG NAMES LinearMath LinearMath_Debug PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(BulletCollision_LIBRARY_RELEASE NAMES BulletCollision PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(BulletCollision_LIBRARY_DEBUG NAMES BulletCollision BulletCollision_Debug PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(BulletDynamics_LIBRARY_RELEASE NAMES BulletDynamics PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(BulletDynamics_LIBRARY_DEBUG NAMES BulletDynamics BulletDynamics_Debug PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(BulletSoftBody_LIBRARY_RELEASE NAMES BulletSoftBody PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(BulletSoftBody_LIBRARY_DEBUG NAMES BulletSoftBody BulletSoftBody_Debug PATHS ${bullet3_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+
+add_library(LinearMath STATIC IMPORTED)
+set_target_properties(LinearMath PROPERTIES IMPORTED_LOCATION_RELEASE "${LinearMath_LIBRARY_RELEASE}")
+set_target_properties(LinearMath PROPERTIES IMPORTED_LOCATION_DEBUG "${LinearMath_LIBRARY_DEBUG}")
+set_target_properties(LinearMath PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${bullet3_ROOT}/include/bullet)
+
+add_library(BulletCollision STATIC IMPORTED)
+set_target_properties(BulletCollision PROPERTIES IMPORTED_LOCATION_RELEASE "${BulletCollision_LIBRARY_RELEASE}")
+set_target_properties(BulletCollision PROPERTIES IMPORTED_LOCATION_DEBUG "${BulletCollision_LIBRARY_DEBUG}")
+
+add_library(BulletDynamics STATIC IMPORTED)
+set_target_properties(BulletDynamics PROPERTIES IMPORTED_LOCATION_RELEASE "${BulletDynamics_LIBRARY_RELEASE}")
+set_target_properties(BulletDynamics PROPERTIES IMPORTED_LOCATION_DEBUG "${BulletDynamics_LIBRARY_DEBUG}")
+
+add_library(BulletSoftBody STATIC IMPORTED)
+set_target_properties(BulletSoftBody PROPERTIES IMPORTED_LOCATION_RELEASE "${BulletSoftBody_LIBRARY_RELEASE}")
+set_target_properties(BulletSoftBody PROPERTIES IMPORTED_LOCATION_DEBUG "${BulletSoftBody_LIBRARY_DEBUG}")
+
+#--------------------------------------
+# pcre
+ln_make_external_find_path(pcre_ROOT "pcre")
+
+find_library(pcre_LIBRARY_RELEASE NAMES pcre2-16 libpcre2-16 PATHS ${pcre_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(pcre_LIBRARY_DEBUG NAMES pcre2-16d pcre2-16 libpcre2-16 PATHS ${pcre_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+
+add_library(pcre STATIC IMPORTED)
+set_target_properties(pcre PROPERTIES IMPORTED_LOCATION_RELEASE "${pcre_LIBRARY_RELEASE}")
+set_target_properties(pcre PROPERTIES IMPORTED_LOCATION_DEBUG "${pcre_LIBRARY_DEBUG}")
+set_target_properties(pcre PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${pcre_ROOT}/include)

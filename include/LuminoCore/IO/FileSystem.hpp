@@ -283,5 +283,12 @@ public:
     static int64_t calcSeekPoint(int64_t curPoint, int64_t maxSize, int64_t offset, int origin);
 };
 
+class FileGlob
+{
+public:
+    static void glob(const Path& rootDir, const Path& pathspec, const List<String>& filters, bool recursive, List<Path>* outPathes);
+    static bool filterFilePath(const List<String>& filters, const String& filePath);
+};
+
 } // namespace detail
 } // namespace ln

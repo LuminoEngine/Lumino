@@ -49,6 +49,30 @@ void DiagnosticsManager::reportInfo(StringRef message)
 	m_items.add(item);
 }
 
+ln::String DiagnosticsManager::toString() const
+{
+	ln::String str;
+	for (auto& item : m_items)
+	{
+		switch (item->level())
+		{
+		case DiagnosticsLevel::Error:
+			str += u"[Error] " + item->message();
+			break;
+		case DiagnosticsLevel::Warning:
+			str += u"[Warning] " + item->message();
+			break;
+		case DiagnosticsLevel::Info:
+			str += u"[Info] " + item->message();
+			break;
+		default:
+			LN_UNREACHABLE();
+			break;
+		}
+	}
+	return str;
+}
+
 void DiagnosticsManager::dumpToLog() const
 {
 	for (auto& item : m_items)

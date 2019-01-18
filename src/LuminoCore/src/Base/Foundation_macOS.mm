@@ -80,5 +80,12 @@ void PlatformEnvironment::getSpecialFolderPath(SpecialFolder specialFolder, Stri
 			break;
 	}
 }
+
+uint64_t PlatformEnvironment::getTickCount()
+{
+	auto time = [NSDate timeIntervalSinceReferenceDate];
+	return (uint64_t)time;
+}
+
 } // namespace ln
 

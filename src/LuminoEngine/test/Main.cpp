@@ -1,4 +1,4 @@
-﻿
+
 #include <stdio.h>
 #include "Common.hpp"
 #include "TestEnv.hpp"
@@ -13,7 +13,7 @@ GTEST_API_ int main(int argc, char **argv)
 	char* testArgs[] = {
 		argv[0],
 		"--gtest_break_on_failure",
-		//"--gtest_filter=Test_Graphics_HlslEffect.Sample"
+		//"--gtest_filter=Test_Base_Regex.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);

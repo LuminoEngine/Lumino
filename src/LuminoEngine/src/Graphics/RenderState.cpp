@@ -32,7 +32,7 @@ BlendStateDesc::BlendStateDesc()
 
 RasterizerStateDesc::RasterizerStateDesc()
 	: fillMode(FillMode::Solid)
-	, cullMode(CullingMode::Back)
+	, cullMode(CullMode::Back)
 {
 }
 
@@ -51,14 +51,14 @@ StencilOpDesc::StencilOpDesc()
 // DepthStencilStateDesc
 
 DepthStencilStateDesc::DepthStencilStateDesc()
-	: depthTestEnabled(true)
+	: depthTestFunc(ComparisonFunc::LessEqual)  //　Note: DX=LessEqual, GL=Less
 	, depthWriteEnabled(true)
 	, stencilEnabled(false)
 	, stencilReferenceValue(0xFF)
 	, frontFace()
 	, backFace()
 {
-}
+} 
 
 ////==============================================================================
 //// RenderStateDesc
@@ -68,7 +68,7 @@ DepthStencilStateDesc::DepthStencilStateDesc()
 //	, blendOp(BlendOp::Add)
 //	, sourceBlend(BlendFactor::One)
 //	, destinationBlend(BlendFactor::Zero)
-//	, cullingMode(CullingMode::Back)
+//	, cullingMode(CullMode::Back)
 //	, fillMode(FillMode::Solid)
 //{
 //}
@@ -86,7 +86,7 @@ RenderState::RenderState()
 	, sourceBlend(BlendFactor::One)
 	, destinationBlend(BlendFactor::Zero)
 	, Blend(BlendMode::Normal)
-	, Culling(CullingMode::Back)
+	, Culling(CullMode::Back)
 	, Fill(FillMode_Solid)
 	, AlphaTest(true)
 {}

@@ -19,7 +19,7 @@ namespace LuminoBuild
             string exeDir = Path.GetDirectoryName(thisAssembly.Location);
 
             var builder = new LuminoBuild.Builder();
-
+            builder.Args = args;
 
             builder.LuminoRootDir = Path.GetFullPath(Path.Combine(exeDir, "../../../../../../")) + "/";
             builder.LuminoBuildDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "build"));
@@ -42,18 +42,23 @@ namespace LuminoBuild
             builder.Tasks = new List<LuminoBuild.BuildTask>();
             builder.Tasks.Add(new Tasks.SetupTools());
             builder.Tasks.Add(new Tasks.BuildExternalProjects());
+            builder.Tasks.Add(new Tasks.BuildLLVM());
             builder.Tasks.Add(new Tasks.MakeVSProjects());
             builder.Tasks.Add(new Tasks.BuildEngine_Linux());
             builder.Tasks.Add(new Tasks.BuildEngine_macOS());
             builder.Tasks.Add(new Tasks.BuildEngine_iOS());
             builder.Tasks.Add(new Tasks.BuildDocuments());
+            builder.Tasks.Add(new Tasks.BuildEmbeddedResources());
             builder.Tasks.Add(new Tasks.BuildEngine_MSVC());
+            builder.Tasks.Add(new Tasks.CompressPackage());
+            builder.Tasks.Add(new Tasks.CopyEngineLibsToRepoRoot());
             builder.Tasks.Add(new Tasks.MakeNuGetPackage_Core());
             builder.Tasks.Add(new Tasks.BuildEngine_AndroidJNI());
             builder.Tasks.Add(new Tasks.BuildEngine_Emscripten());
             builder.Tasks.Add(new Tasks.MakeReleasePackage());
             builder.Tasks.Add(new Tasks.MakeInstaller_Win32());
             builder.Rules.Add(new Rules.MakePackage());
+            builder.Rules.Add(new Rules.MakeLocalPackage());
             builder.Rules.Add(new Rules.BuildForCI_1());
             builder.Rules.Add(new Rules.BuildForCI_2());
             builder.Rules.Add(new Rules.BuildForCI_3());

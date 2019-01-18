@@ -400,6 +400,14 @@ public:
 };
 
 // 内部用
+struct BoxSizeI
+{
+	int		width;
+	int		height;
+	int		depth;
+};
+
+// 内部用
 class RectI
 {
 public:
@@ -425,6 +433,15 @@ public:
 	int getRight() const { return x + width; }
 	int getBottom() const { return y + height; }
 	SizeI getSize() const { return SizeI(width, height); }
+
+    bool contains(const Point point) const { return contains(point.x, point.y); }
+    bool contains(float x_, float y_) const
+    {
+        if (isEmpty()) {
+            return false;
+        }
+        return ((x_ >= x) && (x_ - width <= x) && (y_ >= y) && (y_ - height <= y));
+    }
 
 	void clip(const RectI& rect) { detail::GeometryStructsHelper::clip(this, rect); }
 

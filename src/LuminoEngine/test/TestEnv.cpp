@@ -1,17 +1,48 @@
 ﻿#include "Common.hpp"
+#include "../src/Engine/EngineManager.hpp"
 #include "TestEnv.hpp"
+
+String TestEnv::LuminoCLI;
 
 void TestEnv::setup()
 {
 	GlobalLogger::addStdErrAdapter();
 	EngineSettings::setMainWindowSize(160, 120);
 	EngineSettings::setMainBackBufferSize(160, 120);
-	Engine::initialize();
+    EngineSettings::setEngineFeatures(EngineFeature::Experimental);
+    detail::EngineDomain::engineManager()->initialize();
+
+	Font::registerFontFile(LN_LOCALFILE("../../../tools/VLGothic/VL-Gothic-Regular.ttf"));
+	Engine::mainCamera()->setBackgroundColor(Color(0.5, 0.5, 0.5, 1.0));
+#ifdef LN_OS_WIN32
+	LuminoCLI = Path::combine(Path(ln::Environment::executablePath()).parent().parent().parent().parent(), u"tools", u"LuminoCLI", u"Debug", u"lumino-cli.exe");
+#else
+#endif
+
+    Engine::mainAmbientLight()->setColor(Color::White);
+    Engine::mainAmbientLight()->setIntensity(0.5);
+    Engine::mainDirectionalLight()->setColor(Color::White);
+    Engine::mainDirectionalLight()->setIntensity(0.5);
+    Engine::mainDirectionalLight()->setPosition(10, 10, -10);
+    Engine::mainDirectionalLight()->lookAt(Vector3(0, 0, 0));
 }
 
 void TestEnv::teardown()
 {
-	Engine::terminate();
+    detail::EngineDomain::release();
+}
+
+void TestEnv::updateFrame()
+{
+    detail::EngineDomain::engineManager()->updateFrame();
+    detail::EngineDomain::engineManager()->renderFrame();
+    detail::EngineDomain::engineManager()->presentFrame();
+}
+
+void TestEnv::resetGraphicsContext(GraphicsContext* context)
+{
+	context->setColorBuffer(0, Engine::mainWindow()->swapChain()->colorBuffer());
+	context->setDepthBuffer(Engine::mainWindow()->swapChain()->depthBuffer());
 }
 
 Ref<Bitmap2D> TestEnv::capture()
@@ -122,6 +153,7 @@ bool TestEnv::checkScreenShot(const Char* filePath, int passRate, bool save)
 	}
 	else
 	{
+		saveScreenShot(LN_ASSETFILE("Result/0.png"));
 		return equalsScreenShot(filePath, passRate);
 	}
 }

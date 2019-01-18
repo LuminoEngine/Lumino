@@ -6,5 +6,16 @@
 #include <LuminoEngine.hpp>
 using namespace ln;
 
+#include "../../src/LuminoEngine/src/Engine/EngineDomain.hpp"
+
 #include <LuminoCore/Testing/TestHelper.hpp>
 #include "TestEnv.hpp"
+
+// テストフィクスチャ終了時に World をクリーンアップする
+class LuminoSceneTest : public ::testing::Test
+{
+    virtual void TearDown() override
+    {
+        //Engine:()->removeAllObjects();
+    }
+};

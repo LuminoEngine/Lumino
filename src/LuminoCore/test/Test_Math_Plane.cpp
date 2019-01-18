@@ -114,6 +114,14 @@ TEST_F(Test_Plane, Basic)
 		Plane pl2 = Plane::transform(pl1, mat);
 		ASSERT_PLANE_NEAR(-0.569803, 0.455842, 0.683764, 15.669580, pl2);
 	}
+	// Plane::transform
+	{
+		Plane pl1 = Plane(Vector3(0, 1, 0));
+		ASSERT_NEAR(1.0, pl1.getDistanceToPoint(Vector3(0, 1, 0)), LN_FLOAT_THRESHOLD);
+		ASSERT_NEAR(-0.5, pl1.getDistanceToPoint(Vector3(0, -0.5, 0)), LN_FLOAT_THRESHOLD);
+		ASSERT_NEAR(1.0, pl1.getDistanceToPoint(Vector3(1, 1, 0)), LN_FLOAT_THRESHOLD);
+		ASSERT_NEAR(0.0, pl1.getDistanceToPoint(Vector3(1, 0, 0)), LN_FLOAT_THRESHOLD);
+	}
 
 #ifdef D3DX9_TEST
 	// D3DXPlaneFromPointNormal
