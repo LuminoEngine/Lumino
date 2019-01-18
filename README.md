@@ -11,8 +11,8 @@ Build and Unit Tests
 --------
 | Package | Status  |
 |---------|---------|
-| Windows | [![Build status](https://dev.azure.com/lriki/Lumino/_apis/build/status/Lumino-CI-master-Windows)](https://dev.azure.com/lriki/Lumino/_build/latest?definitionId=0) |
-| macOS   | [![Build status](https://dev.azure.com/lriki/Lumino/_apis/build/status/Lumino-CI-master-macOS)](https://dev.azure.com/lriki/Lumino/_build/latest?definitionId=0) |
+| Windows | [![Build Status](https://dev.azure.com/lriki/Lumino/_apis/build/status/Lumino-CI-master-Windows?branchName=master)](https://dev.azure.com/lriki/Lumino/_build/latest?definitionId=8?branchName=master) |
+| macOS   | [![Build Status](https://dev.azure.com/lriki/Lumino/_apis/build/status/Lumino-CI-master-macOS?branchName=master)](https://dev.azure.com/lriki/Lumino/_build/latest?definitionId=9?branchName=master) |
 
 
 Get started
