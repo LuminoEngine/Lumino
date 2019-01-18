@@ -21,22 +21,11 @@ namespace LuminoBuild.Tasks
     {
         public static CMakeTargetInfo[] Targets = new CMakeTargetInfo[]
         {
-            // static runtime
-            new CMakeTargetInfo { DirName = "MSVC2017-x86-MT", BuildType = "Debug", VSTarget = "Visual Studio 15", Platform="Win32", MSVCStaticRuntime = "ON", AdditionalOptions="" },
-            new CMakeTargetInfo { DirName = "MSVC2017-x86-MT", BuildType = "Release", VSTarget = "Visual Studio 15", Platform="Win32", MSVCStaticRuntime = "ON", AdditionalOptions="" },
-            
-            // dynamic runtime
             new CMakeTargetInfo { DirName = "MSVC2017-x86-MD", BuildType = "Debug", VSTarget = "Visual Studio 15", Platform="Win32", MSVCStaticRuntime = "OFF", AdditionalOptions = "" },
             new CMakeTargetInfo { DirName = "MSVC2017-x86-MD", BuildType = "Release", VSTarget = "Visual Studio 15", Platform="Win32", MSVCStaticRuntime = "OFF", AdditionalOptions = "" },
-            new CMakeTargetInfo { DirName = "MSVC2017-x64-MD", BuildType = "Debug", VSTarget = "Visual Studio 15 Win64", Platform="x64", MSVCStaticRuntime = "OFF", AdditionalOptions = "-DLN_BUILD_CORE_ONLY=ON" },
-            new CMakeTargetInfo { DirName = "MSVC2017-x64-MD", BuildType = "Release", VSTarget = "Visual Studio 15 Win64", Platform="x64", MSVCStaticRuntime = "OFF", AdditionalOptions = "-DLN_BUILD_CORE_ONLY=ON" },
+            new CMakeTargetInfo { DirName = "MSVC2017-x64-MD", BuildType = "Debug", VSTarget = "Visual Studio 15 Win64", Platform="x64", MSVCStaticRuntime = "OFF", AdditionalOptions = "" },
+            new CMakeTargetInfo { DirName = "MSVC2017-x64-MD", BuildType = "Release", VSTarget = "Visual Studio 15 Win64", Platform="x64", MSVCStaticRuntime = "OFF", AdditionalOptions = "" },
         };
-
-        //public static CMakeTargetInfo[] BindingBuildTargets = new CMakeTargetInfo[]
-        //{
-        //    new CMakeTargetInfo { DirName = "MSVC2017-x86-MD", BuildType = "Debug", VSTarget = "Visual Studio 15", Platform="Win32", MSVCStaticRuntime = "OFF", AdditionalOptions = "-DLN_BUILD_BINDINGS=ON" },
-        //    new CMakeTargetInfo { DirName = "MSVC2017-x86-MD", BuildType = "Release", VSTarget = "Visual Studio 15", Platform="Win32", MSVCStaticRuntime = "OFF", AdditionalOptions = "-DLN_BUILD_BINDINGS=ON" },
-        //};
 
         public override string CommandName { get { return "MakeVSProjects"; } }
 

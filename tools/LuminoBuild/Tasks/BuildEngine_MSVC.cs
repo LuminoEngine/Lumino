@@ -19,10 +19,7 @@ namespace LuminoBuild.Tasks
             {
                 foreach (var t in MakeVSProjects.Targets)
                 {
-                    if (t.MSVCStaticRuntime == "ON")
-                    {
-                        BuildTarget(builder, t);
-                    }
+                    BuildTarget(builder, t);
                 }
             }
             else
