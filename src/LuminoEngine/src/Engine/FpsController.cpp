@@ -207,7 +207,13 @@ void FpsController::process()
 
 void FpsController::processForMeasure()
 {
-    m_currentTime = 0.001f * (Environment::getTickCount() - m_startTime);
+    double tick = 0.001 * static_cast<double>(Environment::getTickCount());
+    if (tick < m_startTime) {
+        LN_NOTIMPLEMENTED();
+        return;
+    }
+
+    m_currentTime = tick - m_startTime;
 
     m_elapsedGameTime = m_currentTime - m_lastTime;
     m_elapsedRealTime = m_currentTime - m_lastRealTime;
