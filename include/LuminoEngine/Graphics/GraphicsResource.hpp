@@ -24,7 +24,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	GraphicsResource();
 	virtual ~GraphicsResource();
-	void initialize();
+	void init();
 
 LN_INTERNAL_ACCESS:
 	detail::GraphicsManager* manager() const { return m_manager; }

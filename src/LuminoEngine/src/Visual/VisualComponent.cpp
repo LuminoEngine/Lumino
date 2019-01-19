@@ -23,9 +23,9 @@ VisualComponent::~VisualComponent()
 {
 }
 
-void VisualComponent::initialize()
+void VisualComponent::init()
 {
-    Component::initialize();
+    Component::init();
 }
 
 void VisualComponent::setBlendMode(const Optional<BlendMode>& mode)

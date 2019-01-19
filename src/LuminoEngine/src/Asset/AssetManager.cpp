@@ -21,7 +21,7 @@ AssetManager::~AssetManager()
 {
 }
 
-void AssetManager::initialize(const Settings& settings)
+void AssetManager::init(const Settings& settings)
 {
 }
 

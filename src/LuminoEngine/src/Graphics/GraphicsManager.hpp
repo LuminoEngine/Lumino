@@ -24,7 +24,7 @@ public:
 	GraphicsManager();
 	virtual ~GraphicsManager() = default;
 
-	void initialize(const Settings& settings);
+	void init(const Settings& settings);
 	void dispose();
 
 	void addGraphicsResource(GraphicsResource* resource);

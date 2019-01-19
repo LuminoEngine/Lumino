@@ -51,7 +51,7 @@ public:
 	};
 
 	InternalSpriteRenderer();
-	void initialize(RenderingManager* manager);
+	void init(RenderingManager* manager);
 
 	void setState(const State& state);
 
@@ -148,7 +148,7 @@ public:
 
 LN_CONSTRUCT_ACCESS:
 	SpriteRenderFeature();
-	void initialize(RenderingManager* manager);
+	void init(RenderingManager* manager);
 
 private:
 	RenderingManager* m_manager;

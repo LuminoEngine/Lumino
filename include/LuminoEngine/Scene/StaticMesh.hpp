@@ -19,8 +19,8 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	StaticMesh();
 	virtual ~StaticMesh();
-	void initialize();
-    void initialize(const StringRef& filePath, float scale);
+	void init();
+    void init(const StringRef& filePath, float scale);
 
 private:
     Ref<StaticMeshComponent> m_component;

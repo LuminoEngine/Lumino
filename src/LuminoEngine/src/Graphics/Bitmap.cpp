@@ -545,14 +545,14 @@ Bitmap2D::~Bitmap2D()
 {
 }
 
-void Bitmap2D::initialize()
+void Bitmap2D::init()
 {
 	m_size.width = 0;
 	m_size.height = 0;
 	m_format = PixelFormat::Unknown;
 }
 
-void Bitmap2D::initialize(int width, int height, PixelFormat format)
+void Bitmap2D::init(int width, int height, PixelFormat format)
 {
 	m_size.width = width;
 	m_size.height = height;
@@ -780,12 +780,12 @@ Bitmap3D::~Bitmap3D()
 {
 }
 
-void Bitmap3D::initialize(int width, int height, int depth, PixelFormat format)
+void Bitmap3D::init(int width, int height, int depth, PixelFormat format)
 {
 	if (LN_REQUIRE(width > 0)) return;
 	if (LN_REQUIRE(height > 0)) return;
 	if (LN_REQUIRE(depth > 0)) return;
-	Object::initialize();
+	Object::init();
 	m_width = width;
 	m_height = height;
 	m_depth = depth;

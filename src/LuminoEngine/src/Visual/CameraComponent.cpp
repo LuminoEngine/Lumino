@@ -28,9 +28,9 @@ CameraComponent::~CameraComponent()
 {
 }
 
-void CameraComponent::initialize()
+void CameraComponent::init()
 {
-    VisualComponent::initialize();
+    VisualComponent::init();
 }
 
 //void CameraComponent::setCameraBehavior(CameraBehavior* behavior)

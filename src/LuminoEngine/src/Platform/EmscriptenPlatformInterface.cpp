@@ -24,7 +24,7 @@ int main(int argc, char** argv)
 
     ln::detail::EngineDomain::engineManager()->settings().assetArchives.add({ u"Assets.lca", ln::StringRef() });
 
-    ln::detail::ApplicationHelper::initialize(g_app);
+    ln::detail::ApplicationHelper::init(g_app);
 
 	emscripten_set_main_loop(ln_main_loop, 0, true);
     // the next to emscripten_set_main_loop is unreachable.

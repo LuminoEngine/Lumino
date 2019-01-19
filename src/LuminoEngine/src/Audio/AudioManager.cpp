@@ -24,11 +24,11 @@ AudioManager::~AudioManager()
 {
 }
 
-void AudioManager::initialize(const Settings& settings)
+void AudioManager::init(const Settings& settings)
 {
     m_assetManager = settings.assetManager;
 	m_primaryContext = makeRef<AudioContext>();
-	m_primaryContext->initialize();
+	m_primaryContext->init();
 
 	//m_linearAllocatorPageManager = makeRef<LinearAllocatorPageManager>();
 	//m_primaryRenderingCommandList = makeRef<RenderingCommandList>(m_linearAllocatorPageManager);
@@ -84,7 +84,7 @@ Ref<AudioDecoder> AudioManager::createAudioDecoder(const StringRef & filePath)
 	// TODO: cache
 	auto decoder = makeRef<WaveDecoder>();
     //auto decoder = makeRef<OggAudioDecoder>();
-	decoder->initialize(stream, diag);
+	decoder->init(stream, diag);
 	return decoder;
 }
 

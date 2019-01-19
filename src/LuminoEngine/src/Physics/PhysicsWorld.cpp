@@ -87,9 +87,9 @@ PhysicsWorld::~PhysicsWorld()
 {
 }
 
-void PhysicsWorld::initialize()
+void PhysicsWorld::init()
 {
-    Object::initialize();
+    Object::init();
 
 
     // ↓以下で出てくる単語とか

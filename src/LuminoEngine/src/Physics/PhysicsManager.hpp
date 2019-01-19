@@ -13,7 +13,7 @@ public:
 
     PhysicsManager();
 	virtual ~PhysicsManager();
-	void initialize(const Settings& settings);
+	void init(const Settings& settings);
 	void dispose();
 
 private:

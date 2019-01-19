@@ -39,7 +39,7 @@ public:
 	IGraphicsDeviceContext();
 	virtual ~IGraphicsDeviceContext() = default;
 
-	void initialize();
+	void init();
 	virtual void dispose();
 	const GraphicsDeviceCaps& caps() { return m_caps; }
 	void refreshCaps();

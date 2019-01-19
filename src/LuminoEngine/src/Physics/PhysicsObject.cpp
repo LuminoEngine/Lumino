@@ -19,9 +19,9 @@ PhysicsObject::~PhysicsObject()
 {
 }
 
-void PhysicsObject::initialize()
+void PhysicsObject::init()
 {
-	Object::initialize();
+	Object::init();
 }
 
 void PhysicsObject::setPhysicsWorld(PhysicsWorld* owner)

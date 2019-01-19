@@ -11,14 +11,14 @@ UIContainerElement::UIContainerElement()
 {
 }
 
-void UIContainerElement::initialize()
+void UIContainerElement::init()
 {
-    UIElement::initialize();
+    UIElement::init();
 }
 
 void UIContainerElement::dispose()
 {
-    UIContainerElement::initialize();
+    UIContainerElement::init();
     removeAllChildren();
 }
 

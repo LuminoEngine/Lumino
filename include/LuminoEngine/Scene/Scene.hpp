@@ -40,7 +40,7 @@ LN_CONSTRUCT_ACCESS:
 
 	/** Initialize */
 	LN_METHOD()
-	void initialize();
+	void init();
 
 private:
 	void update();

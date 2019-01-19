@@ -69,7 +69,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	Camera();
 	virtual ~Camera();
-	void initialize(/*CameraWorld proj, bool defcmp*/);
+	void init(/*CameraWorld proj, bool defcmp*/);
 
 //LN_INTERNAL_ACCESS:
 //	void setCameraComponent(CameraComponent* component);

@@ -28,9 +28,9 @@ LightComponent::~LightComponent()
 }
 
 //------------------------------------------------------------------------------
-void LightComponent::initialize(LightType type)
+void LightComponent::init(LightType type)
 {
-    VisualComponent::initialize();
+    VisualComponent::init();
 	m_lightInfo = makeRef<detail::DynamicLightInfo>();
 	//m_lightInfo->m_type = type;
 	//m_lightInfo->m_color.set(1.0f, 1.0f, 1.0f, 1.0f);
@@ -105,9 +105,9 @@ AmbientLightComponent::~AmbientLightComponent()
 {
 }
 
-void AmbientLightComponent::initialize()
+void AmbientLightComponent::init()
 {
-	VisualComponent::initialize();
+	VisualComponent::init();
 }
 
 void AmbientLightComponent::onPrepareRender(RenderingContext* context)
@@ -135,9 +135,9 @@ HemisphereLightComponent::~HemisphereLightComponent()
 {
 }
 
-void HemisphereLightComponent::initialize()
+void HemisphereLightComponent::init()
 {
-	VisualComponent::initialize();
+	VisualComponent::init();
 }
 
 void HemisphereLightComponent::onPrepareRender(RenderingContext* context)
@@ -164,9 +164,9 @@ DirectionalLightComponent::~DirectionalLightComponent()
 {
 }
 
-void DirectionalLightComponent::initialize()
+void DirectionalLightComponent::init()
 {
-	VisualComponent::initialize();
+	VisualComponent::init();
 }
 
 void DirectionalLightComponent::setShadowCast(bool enabled)
@@ -226,9 +226,9 @@ PointLightComponent::~PointLightComponent()
 {
 }
 
-void PointLightComponent::initialize()
+void PointLightComponent::init()
 {
-	VisualComponent::initialize();
+	VisualComponent::init();
 }
 
 void PointLightComponent::onPrepareRender(RenderingContext* context)
@@ -260,9 +260,9 @@ SpotLightComponent::~SpotLightComponent()
 {
 }
 
-void SpotLightComponent::initialize()
+void SpotLightComponent::init()
 {
-	VisualComponent::initialize();
+	VisualComponent::init();
 }
 
 void SpotLightComponent::onPrepareRender(RenderingContext* context)

@@ -18,7 +18,7 @@ Scene::~Scene()
 {
 }
 
-void Scene::initialize()
+void Scene::init()
 {
 
 }

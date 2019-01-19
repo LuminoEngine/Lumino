@@ -16,9 +16,9 @@ ImageEffect::~ImageEffect()
 {
 }
 
-void ImageEffect::initialize()
+void ImageEffect::init()
 {
-    Object::initialize();
+    Object::init();
 }
 
 void ImageEffect::updateFrame(float elapsedSeconds)

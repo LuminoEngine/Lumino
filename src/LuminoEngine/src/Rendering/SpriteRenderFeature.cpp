@@ -17,7 +17,7 @@ InternalSpriteRenderer::InternalSpriteRenderer()
 {
 }
 
-void InternalSpriteRenderer::initialize(RenderingManager* manager)
+void InternalSpriteRenderer::init(RenderingManager* manager)
 {
 	//m_device = manager->graphicsManager()->deviceContext();
 	m_buffersReservedSpriteCount = 0;
@@ -371,12 +371,12 @@ SpriteRenderFeature::SpriteRenderFeature()
 {
 }
 
-void SpriteRenderFeature::initialize(RenderingManager* manager)
+void SpriteRenderFeature::init(RenderingManager* manager)
 {
-	RenderFeature::initialize();
+	RenderFeature::init();
 	m_manager = manager;
 	m_internal = makeRef<InternalSpriteRenderer>();
-	m_internal->initialize(manager);
+	m_internal->init(manager);
 }
 
 void SpriteRenderFeature::setSortInfo(

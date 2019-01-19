@@ -17,9 +17,9 @@ UIStyle::~UIStyle()
 {
 }
 
-void UIStyle::initialize()
+void UIStyle::init()
 {
-    Object::initialize();
+    Object::init();
 }
 
 } // namespace ln

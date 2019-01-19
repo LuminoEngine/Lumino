@@ -66,7 +66,7 @@ public:
 protected:
 	AnimationTrack(AnimationValueType type);
 	virtual ~AnimationTrack();
-    void initialize();
+    void init();
 	virtual void evaluate(float time, AnimationValue* outResult) = 0;
 	void setTargetName(const String& name) { m_targetName = name; }
 
@@ -98,7 +98,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
     ScalarAnimationTrack();
     virtual ~ScalarAnimationTrack();
-    void initialize();
+    void init();
 
 private:
     Ref<AnimationCurve> m_curve;

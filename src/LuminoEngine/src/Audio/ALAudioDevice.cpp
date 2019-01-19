@@ -19,9 +19,9 @@ ALAudioDevice::ALAudioDevice()
 {
 }
 
-void ALAudioDevice::initialize()
+void ALAudioDevice::init()
 {
-	AudioDevice::initialize(CoreAudioNode::ProcessingSizeInFrames, 2);
+	AudioDevice::init(CoreAudioNode::ProcessingSizeInFrames, 2);
 	m_finalRenderdBuffer.resize(CoreAudioNode::ProcessingSizeInFrames * 2);
 
 	m_alDevice = alcOpenDevice(nullptr);

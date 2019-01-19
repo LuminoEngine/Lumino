@@ -19,7 +19,7 @@ class DepthPrepass
 public:
 	DepthPrepass();
 	virtual ~DepthPrepass();
-	void initialize();
+	void init();
 
 
 	virtual void onBeginRender(SceneRenderer* sceneRenderer) override;
@@ -47,7 +47,7 @@ class ClusteredShadingGeometryRenderingPass
 public:
 	ClusteredShadingGeometryRenderingPass();
 	virtual ~ClusteredShadingGeometryRenderingPass();
-	void initialize();
+	void init();
 
 	virtual ShaderTechnique* selectShaderTechnique(
 		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
@@ -74,7 +74,7 @@ public:
 
 	ShadowCasterPass();
 	virtual ~ShadowCasterPass();
-	void initialize();
+	void init();
 
 	//virtual Shader* getDefaultShader() const override;
 
@@ -103,7 +103,7 @@ class ClusteredShadingSceneRenderer
 public:
 	ClusteredShadingSceneRenderer();
 	virtual ~ClusteredShadingSceneRenderer();
-	void initialize(RenderingManager* manager);
+	void init(RenderingManager* manager);
 	//void setSceneGlobalRenderSettings(const SceneGlobalRenderSettings& settings) { m_renderSettings = settings; }
 	void setFogParams(const FogParams& params) { m_fogParams = params; }
 	DepthPrepass* getDepthPrepass() const { return m_depthPrepass; }

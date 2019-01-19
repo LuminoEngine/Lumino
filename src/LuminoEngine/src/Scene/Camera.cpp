@@ -24,9 +24,9 @@ Camera::~Camera()
 {
 }
 
-void Camera::initialize()
+void Camera::init()
 {
-	WorldObject::initialize();
+	WorldObject::init();
     m_component = newObject<CameraComponent>();
     addComponent(m_component);
     setPosition(0, 0, -10.0f);

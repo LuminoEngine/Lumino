@@ -41,9 +41,9 @@ MeshResource::~MeshResource()
 {
 }
 
-void MeshResource::initialize()
+void MeshResource::init()
 {
-	Object::initialize();
+	Object::init();
 	m_manager = detail::EngineDomain::meshManager();
 }
 
@@ -297,9 +297,9 @@ MeshContainer::~MeshContainer()
 {
 }
 
-void MeshContainer::initialize()
+void MeshContainer::init()
 {
-	Object::initialize();
+	Object::init();
 	m_lodResources.resize(1);
 }
 

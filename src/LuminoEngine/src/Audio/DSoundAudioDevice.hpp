@@ -14,7 +14,7 @@ class DSoundAudioDevice
 public:
 	DSoundAudioDevice();
 	virtual ~DSoundAudioDevice() = default;
-	void initialize(int frameLength);
+	void init(int frameLength);
 	virtual void dispose() override;
 	virtual int deviceSamplingRate() override;
 	virtual void updateProcess() override;

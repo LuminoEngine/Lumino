@@ -15,7 +15,7 @@ class InternalPrimitiveRenderer
 public:
     InternalPrimitiveRenderer();
     virtual ~InternalPrimitiveRenderer();
-    void initialize(RenderingManager* manager);
+    void init(RenderingManager* manager);
 
     void drawMeshGenerater(const MeshGenerater* generator);
 
@@ -78,7 +78,7 @@ class PrimitiveRenderFeature
 public:
     PrimitiveRenderFeature();
 	~PrimitiveRenderFeature();
-	void initialize(RenderingManager* manager);
+	void init(RenderingManager* manager);
 
 
 

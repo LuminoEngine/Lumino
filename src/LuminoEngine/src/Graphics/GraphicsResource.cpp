@@ -20,7 +20,7 @@ GraphicsResource::~GraphicsResource()
 
 }
 
-void GraphicsResource::initialize()
+void GraphicsResource::init()
 {
 	if (LN_REQUIRE(!m_manager)) return;
 	m_manager = detail::EngineDomain::graphicsManager();

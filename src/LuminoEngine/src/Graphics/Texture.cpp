@@ -26,9 +26,9 @@ Texture::~Texture()
 {
 }
 
-void Texture::initialize()
+void Texture::init()
 {
-	GraphicsResource::initialize();
+	GraphicsResource::init();
 }
 
 SamplerState* Texture::samplerState() const
@@ -64,9 +64,9 @@ Texture2D::~Texture2D()
 {
 }
 
-void Texture2D::initialize(int width, int height, TextureFormat format, bool mipmap, GraphicsResourceUsage usage)
+void Texture2D::init(int width, int height, TextureFormat format, bool mipmap, GraphicsResourceUsage usage)
 {
-	Texture::initialize();
+	Texture::init();
 	m_bitmap = newObject<Bitmap2D>(width, height, GraphicsHelper::translateToPixelFormat(format));
 	m_usage = usage;
 	m_initialUpdate = true;
@@ -76,9 +76,9 @@ void Texture2D::initialize(int width, int height, TextureFormat format, bool mip
 	setMipmap(mipmap);
 }
 
-void Texture2D::initialize(const StringRef& filePath, TextureFormat format, bool mipmap, GraphicsResourceUsage usage)
+void Texture2D::init(const StringRef& filePath, TextureFormat format, bool mipmap, GraphicsResourceUsage usage)
 {
-    Texture::initialize();
+    Texture::init();
 	m_bitmap = newObject<Bitmap2D>();
 	m_bitmap->load(filePath);
 
@@ -222,9 +222,9 @@ Texture3D::~Texture3D()
 {
 }
 
-void Texture3D::initialize(int width, int height, int depth, TextureFormat format, bool mipmap, GraphicsResourceUsage usage)
+void Texture3D::init(int width, int height, int depth, TextureFormat format, bool mipmap, GraphicsResourceUsage usage)
 {
-	Texture::initialize();
+	Texture::init();
 	m_depth = depth;
 	m_bitmap = newObject<Bitmap3D>(width, height, depth, GraphicsHelper::translateToPixelFormat(format));
 	m_usage = usage;
@@ -332,9 +332,9 @@ RenderTargetTexture::~RenderTargetTexture()
 {
 }
 
-void RenderTargetTexture::initialize(int width, int height, TextureFormat requestFormat, bool mipmap)
+void RenderTargetTexture::init(int width, int height, TextureFormat requestFormat, bool mipmap)
 {
-	Texture::initialize();
+	Texture::init();
 	//m_size.width = width;
 	//m_size.height = height;
 	//m_requestFormat = requestFormat;
@@ -345,9 +345,9 @@ void RenderTargetTexture::initialize(int width, int height, TextureFormat reques
     setFormat(m_rhiObject->getTextureFormat());
 }
 
-void RenderTargetTexture::initialize(detail::ITexture* ref)
+void RenderTargetTexture::init(detail::ITexture* ref)
 {
-	Texture::initialize();
+	Texture::init();
 	m_rhiObject = ref;
 	setSize(m_rhiObject->realSize());
     setFormat(m_rhiObject->getTextureFormat());

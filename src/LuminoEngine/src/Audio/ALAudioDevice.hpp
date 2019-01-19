@@ -20,7 +20,7 @@ class ALAudioDevice
 public:
 	ALAudioDevice();
 	virtual ~ALAudioDevice() = default;
-	void initialize();
+	void init();
 	virtual void dispose() override;
 	virtual int deviceSamplingRate() override;
 	virtual void updateProcess() override;

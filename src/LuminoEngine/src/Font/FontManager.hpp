@@ -122,7 +122,7 @@ public:
 	};
 
     FontManager();
-	void initialize(const Settings& settings);
+	void init(const Settings& settings);
 	void dispose();
 	void registerFontFile(const StringRef& fontFilePath);
 	Ref<FontCore> lookupFontCore(const FontDesc& keyDesc);

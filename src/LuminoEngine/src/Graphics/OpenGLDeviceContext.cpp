@@ -181,13 +181,13 @@ OpenGLDeviceContext::OpenGLDeviceContext()
 {
 }
 
-void OpenGLDeviceContext::initialize(const Settings& settings)
+void OpenGLDeviceContext::init(const Settings& settings)
 {
-	LN_LOG_DEBUG << "OpenGLDeviceContext::initialize start";
+	LN_LOG_DEBUG << "OpenGLDeviceContext::init start";
 
 #ifdef LN_GLFW
 	auto glfwContext = makeRef<GLFWContext>();
-	glfwContext->initialize(settings.mainWindow);
+	glfwContext->init(settings.mainWindow);
 	m_glContext = glfwContext;
 #endif
 	if (!m_glContext)
@@ -230,7 +230,7 @@ void OpenGLDeviceContext::initialize(const Settings& settings)
     GL_CHECK(glGenVertexArrays(1, &m_vao));
 	GL_CHECK(glGenFramebuffers(1, &m_fbo));
 
-	LN_LOG_DEBUG << "OpenGLDeviceContext::initialize end";
+	LN_LOG_DEBUG << "OpenGLDeviceContext::init end";
 }
 
 void OpenGLDeviceContext::dispose()
@@ -308,63 +308,63 @@ Ref<ISwapChain> OpenGLDeviceContext::onCreateSwapChain(PlatformWindow* window, c
 Ref<IVertexDeclaration> OpenGLDeviceContext::onCreateVertexDeclaration(const VertexElement* elements, int elementsCount)
 {
 	auto ptr = makeRef<GLVertexDeclaration>();
-	ptr->initialize(elements, elementsCount);
+	ptr->init(elements, elementsCount);
 	return ptr;
 }
 
 Ref<IVertexBuffer> OpenGLDeviceContext::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
 {
 	auto ptr = makeRef<GLVertexBuffer>();
-	ptr->initialize(usage, bufferSize, initialData);
+	ptr->init(usage, bufferSize, initialData);
 	return ptr;
 }
 
 Ref<IIndexBuffer> OpenGLDeviceContext::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
 {
 	auto ptr = makeRef<GLIndexBuffer>();
-	ptr->initialize(usage, format, indexCount, initialData);
+	ptr->init(usage, format, indexCount, initialData);
 	return ptr;
 }
 
 Ref<ITexture> OpenGLDeviceContext::onCreateTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
 	auto ptr = makeRef<GLTexture2D>();
-	ptr->initialize(width, height, requestFormat, mipmap, initialData);
+	ptr->init(width, height, requestFormat, mipmap, initialData);
 	return ptr;
 }
 
 Ref<ITexture> OpenGLDeviceContext::onCreateTexture3D(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
 	auto ptr = makeRef<GLTexture3D>();
-	ptr->initialize(width, height, depth, requestFormat, mipmap, initialData);
+	ptr->init(width, height, depth, requestFormat, mipmap, initialData);
 	return ptr;
 }
 
 Ref<ITexture> OpenGLDeviceContext::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
 {
 	auto ptr = makeRef<GLRenderTargetTexture>();
-	ptr->initialize(width, height, requestFormat, mipmap);
+	ptr->init(width, height, requestFormat, mipmap);
 	return ptr;
 }
 
 Ref<IDepthBuffer> OpenGLDeviceContext::onCreateDepthBuffer(uint32_t width, uint32_t height)
 {
 	auto ptr = makeRef<GLDepthBuffer>();
-	ptr->initialize(width, height);
+	ptr->init(width, height);
 	return ptr;
 }
 
 Ref<ISamplerState> OpenGLDeviceContext::onCreateSamplerState(const SamplerStateData& desc)
 {
 	auto ptr = makeRef<GLSamplerState>();
-	ptr->initialize(desc);
+	ptr->init(desc);
 	return ptr;
 }
 
 Ref<IShaderPass> OpenGLDeviceContext::onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* psCode, int psCodeLen, ShaderCompilationDiag* diag)
 {
 	auto ptr = makeRef<GLShaderPass>();
-	ptr->initialize(this, vsCode, vsCodeLen, psCode, psCodeLen, diag);
+	ptr->init(this, vsCode, vsCodeLen, psCode, psCodeLen, diag);
 	return ptr;
 }
 
@@ -856,7 +856,7 @@ void GLSwapChain::getBackendBufferSize(SizeI* outSize)
 void GLSwapChain::genBackbuffer(uint32_t width, uint32_t height)
 {
 	m_backbuffer = makeRef<GLRenderTargetTexture>();
-	m_backbuffer->initialize(width, height, TextureFormat::RGB24, false);
+	m_backbuffer->init(width, height, TextureFormat::RGB24, false);
 
 	GL_CHECK(glGenFramebuffers(1, &m_fbo));
 	GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_fbo));
@@ -913,7 +913,7 @@ GLVertexDeclaration::~GLVertexDeclaration()
 {
 }
 
-void GLVertexDeclaration::initialize(const VertexElement* elements, int elementsCount)
+void GLVertexDeclaration::init(const VertexElement* elements, int elementsCount)
 {
 	if (LN_REQUIRE(elements != nullptr)) return;
 	if (LN_REQUIRE(elementsCount >= 0)) return;
@@ -1040,7 +1040,7 @@ GLVertexBuffer::~GLVertexBuffer()
 {
 }
 
-void GLVertexBuffer::initialize(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
+void GLVertexBuffer::init(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
 {
 	//m_format = usage;
 	m_usage = usage;
@@ -1164,7 +1164,7 @@ GLIndexBuffer::~GLIndexBuffer()
 {
 }
 
-void GLIndexBuffer::initialize(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
+void GLIndexBuffer::init(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
 {
 	m_format = format;
 	m_usage = usage;
@@ -1227,7 +1227,7 @@ GLTexture2D::~GLTexture2D()
 {
 }
 
-void GLTexture2D::initialize(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
+void GLTexture2D::init(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
 	m_size = SizeI(width, height);
 	m_textureFormat = requestFormat;
@@ -1359,7 +1359,7 @@ GLTexture3D::~GLTexture3D()
 {
 }
 
-void GLTexture3D::initialize(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
+void GLTexture3D::init(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
 	m_width = width;
 	m_height = height;
@@ -1443,7 +1443,7 @@ GLRenderTargetTexture::~GLRenderTargetTexture()
 {
 }
 
-void GLRenderTargetTexture::initialize(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
+void GLRenderTargetTexture::init(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
 {
 	if (mipmap) {
 		LN_NOTIMPLEMENTED();
@@ -1537,7 +1537,7 @@ GLDepthBuffer::GLDepthBuffer()
 {
 }
 
-void GLDepthBuffer::initialize(uint32_t width, uint32_t height)
+void GLDepthBuffer::init(uint32_t width, uint32_t height)
 {
 	if (LN_REQUIRE(!m_id)) return;
 	GL_CHECK(glGenRenderbuffers(1, &m_id));
@@ -1568,7 +1568,7 @@ GLSamplerState::~GLSamplerState()
 {
 }
 
-void GLSamplerState::initialize(const SamplerStateData& desc)
+void GLSamplerState::init(const SamplerStateData& desc)
 {
     static const GLenum magFilterTable[] =
     {
@@ -1698,7 +1698,7 @@ GLShaderPass::~GLShaderPass()
 {
 }
 
-void GLShaderPass::initialize(OpenGLDeviceContext* context, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCode, int fsCodeLen, ShaderCompilationDiag* diag)
+void GLShaderPass::init(OpenGLDeviceContext* context, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCode, int fsCodeLen, ShaderCompilationDiag* diag)
 {
 	m_context = context;
 

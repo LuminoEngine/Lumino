@@ -32,7 +32,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	DiagnosticsManager();
 	virtual ~DiagnosticsManager();
-	void initialize();
+	void init();
 
 private:
 	List<Ref<DiagnosticsItem>> m_items;
@@ -50,7 +50,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	DiagnosticsItem();
 	virtual ~DiagnosticsItem();
-	void initialize();
+	void init();
 
 private:
 	void setLevel(DiagnosticsLevel level) { m_level = level; }

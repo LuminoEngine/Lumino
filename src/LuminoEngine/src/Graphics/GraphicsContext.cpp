@@ -27,9 +27,9 @@ GraphicsContext::~GraphicsContext()
 {
 }
 
-void GraphicsContext::initialize(detail::IGraphicsDeviceContext* device)
+void GraphicsContext::init(detail::IGraphicsDeviceContext* device)
 {
-    Object::initialize();
+    Object::init();
 	m_manager = detail::EngineDomain::graphicsManager();
 	m_device = device;
     m_lastCommit.reset();

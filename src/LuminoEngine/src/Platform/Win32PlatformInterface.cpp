@@ -12,10 +12,10 @@ namespace ln {
 
 static ln::Application* g_app = nullptr;
 
-void Win32PlatformInterface::initialize()
+void Win32PlatformInterface::init()
 {
     g_app = ::LuminoCreateApplicationInstance();
-    ln::detail::ApplicationHelper::initialize(g_app);
+    ln::detail::ApplicationHelper::init(g_app);
 }
 
 int Win32PlatformInterface::WinMain()

@@ -72,7 +72,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIFrameWindow();
 	virtual ~UIFrameWindow();
-	void initialize(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
+	void init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
 
 private:
 	virtual bool onPlatformEvent(const detail::PlatformEventArgs& e) override;
@@ -96,7 +96,7 @@ private:
 //LN_CONSTRUCT_ACCESS :
 //	UIMainWindow();
 //	virtual ~UIMainWindow();
-//	void initialize(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
+//	void init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
 //
 //private:
 //};

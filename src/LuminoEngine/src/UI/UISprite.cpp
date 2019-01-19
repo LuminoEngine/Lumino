@@ -24,18 +24,18 @@ UISprite::UISprite()
 {
 }
 
-void UISprite::initialize()
+void UISprite::init()
 {
-    UIElement::initialize();
+    UIElement::init();
     m_material = newObject<Material>();
     m_size = Size(-1, -1);
     m_sourceRect = Rect(0, 0, -1, -1);
     setBlendMode(BlendMode::Alpha);
 }
 
-void UISprite::initialize(Texture* texture)
+void UISprite::init(Texture* texture)
 {
-    initialize();
+    init();
     setTexture(texture);
 }
 

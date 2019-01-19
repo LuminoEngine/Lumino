@@ -98,7 +98,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIEventArgs();
 	virtual ~UIEventArgs();
-	void initialize(UIElement* sender, UIEventType type);
+	void init(UIElement* sender, UIEventType type);
 
 public:
     bool handled;
@@ -135,7 +135,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIMouseEventArgs();
 	virtual ~UIMouseEventArgs();
-	void initialize(UIElement* sender, UIEventType type, MouseButtons button, float x, float y, int clickCount);
+	void init(UIElement* sender, UIEventType type, MouseButtons button, float x, float y, int clickCount);
 
 private:
 	MouseButtons	m_button;
@@ -167,7 +167,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIKeyEventArgs();
 	virtual ~UIKeyEventArgs();
-	void initialize(UIElement* sender, UIEventType type, Keys keyCode, ModifierKeys modifierKeys, Char charCode);
+	void init(UIElement* sender, UIEventType type, Keys keyCode, ModifierKeys modifierKeys, Char charCode);
 
 private:
 	Keys			m_keyCode;
@@ -193,7 +193,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIMouseWheelEventArgs();
 	virtual ~UIMouseWheelEventArgs();
-	void initialize(UIElement* sender, UIEventType type, int delta);
+	void init(UIElement* sender, UIEventType type, int delta);
 
 public:
 	int		m_delta;
@@ -218,7 +218,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIDragDropEventArgs();
 	virtual ~UIDragDropEventArgs();
-	void initialize(UIElement* sender, UIEventType type, DataObject* data, DragDropEffects effect);
+	void init(UIElement* sender, UIEventType type, DataObject* data, DragDropEffects effect);
 
 LN_INTERNAL_ACCESS:
 	static Ref<UIDragDropEventArgs> create(UIElement* sender, UIEventType type, DataObject* data, DragDropEffects effect, bool caching = true);

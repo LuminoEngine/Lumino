@@ -10,7 +10,7 @@ class TestObjectA
 public:
     LN_PROPERTY_DECLARE(int, Prop1);
 
-    void initialize();
+    void init();
 
     void setProp1(int value) { m_prop1 = value; }
     int prop1() const { return m_prop1; }
@@ -26,9 +26,9 @@ private:
 LN_OBJECT_IMPLEMENT(TestObjectA, Object);
 LN_PROPERTY_IMPLEMENT(TestObjectA, Prop1, m_prop1, PropertyMetadata(TestObjectA::onProp1Changed));
 
-void TestObjectA::initialize()
+void TestObjectA::init()
 {
-    Object::initialize();
+    Object::init();
 }
 
 void TestObjectA::onProp1Changed(Object* obj)

@@ -21,7 +21,7 @@ public:
 
 	AudioManager();
 	virtual ~AudioManager();
-	void initialize(const Settings& settings);
+	void init(const Settings& settings);
 	void dispose();
 	void update(float elapsedSeconds);
 

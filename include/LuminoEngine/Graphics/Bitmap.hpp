@@ -216,8 +216,8 @@ public:
 LN_CONSTRUCT_ACCESS:
 	Bitmap2D();
 	virtual ~Bitmap2D();
-	void initialize();
-	void initialize(int width, int height, PixelFormat format);
+	void init();
+	void init(int width, int height, PixelFormat format);
 
 LN_INTERNAL_ACCESS:
 	ByteBuffer* rawBuffer() { return m_buffer; }
@@ -252,7 +252,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	Bitmap3D();
 	virtual ~Bitmap3D();
-	void initialize(int width, int height, int depth, PixelFormat format);
+	void init(int width, int height, int depth, PixelFormat format);
 
 LN_INTERNAL_ACCESS:
 	ByteBuffer* rawBuffer() { return m_buffer; }

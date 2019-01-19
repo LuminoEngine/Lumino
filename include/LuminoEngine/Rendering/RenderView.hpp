@@ -31,7 +31,7 @@ class RenderView
 public:
 	RenderView();
 	virtual ~RenderView();
-	void initialize();
+	void init();
 
 	// World の描画などでは RenderView のインスタンスを持ち回り、描画してほしい人が Manager を ここに add していく。
 	void clearDrawElementListManagers();

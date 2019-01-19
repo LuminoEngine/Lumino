@@ -70,7 +70,7 @@ static void endFrame()
 
 void Engine::initialize()
 {
-	detail::EngineDomain::engineManager()->initialize();
+	detail::EngineDomain::engineManager()->init();
 	beginFrame();
 }
 

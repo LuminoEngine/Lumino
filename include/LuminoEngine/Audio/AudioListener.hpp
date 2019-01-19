@@ -28,7 +28,7 @@ public:
 private:
 	AudioListener();
 	virtual ~AudioListener() = default;
-	void initialize();
+	void init();
 
 	detail::AudioListenerParams m_params;
 

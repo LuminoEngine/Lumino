@@ -74,7 +74,7 @@ EngineManager::~EngineManager()
 {
 }
 
-void EngineManager::initialize()
+void EngineManager::init()
 {
 	initializeAllManagers();
 
@@ -238,7 +238,7 @@ void EngineManager::initializePlatformManager()
 		//settings.mainWindowSettings.userWindow = m_settings.userMainWindow;
 
 		m_platformManager = ln::makeRef<PlatformManager>();
-		m_platformManager->initialize(settings);
+		m_platformManager->init(settings);
 
 		m_platformManager->mainWindow()->attachEventListener(this);
 	}
@@ -250,7 +250,7 @@ void EngineManager::initializeAnimationManager()
     {
         AnimationManager::Settings settings;
         m_animationManager = ln::makeRef<AnimationManager>();
-        m_animationManager->initialize(settings);
+        m_animationManager->init(settings);
     }
 }
 
@@ -263,7 +263,7 @@ void EngineManager::initializeInputManager()
 		InputManager::Settings settings;
 		settings.mainWindow = m_platformManager->mainWindow();
 		m_inputManager = ln::makeRef<InputManager>();
-		m_inputManager->initialize(settings);
+		m_inputManager->init(settings);
 	}
 }
 
@@ -278,7 +278,7 @@ void EngineManager::initializeAudioManager()
         settings.assetManager = m_assetManager;
 
 		m_audioManager = ln::makeRef<AudioManager>();
-		m_audioManager->initialize(settings);
+		m_audioManager->init(settings);
 	}
 }
 
@@ -292,7 +292,7 @@ void EngineManager::initializeShaderManager()
 		settings.graphicsManager = m_graphicsManager;
 
 		m_shaderManager = ln::makeRef<ShaderManager>();
-		m_shaderManager->initialize(settings);
+		m_shaderManager->init(settings);
 	}
 }
 
@@ -306,7 +306,7 @@ void EngineManager::initializeGraphicsManager()
 		settings.mainWindow = m_platformManager->mainWindow();
 
 		m_graphicsManager = ln::makeRef<GraphicsManager>();
-		m_graphicsManager->initialize(settings);
+		m_graphicsManager->init(settings);
 	}
 }
 
@@ -320,7 +320,7 @@ void EngineManager::initializeFontManager()
 		settings.assetManager = m_assetManager;
 
 		m_fontManager = ln::makeRef<FontManager>();
-		m_fontManager->initialize(settings);
+		m_fontManager->init(settings);
 	}
 }
 
@@ -336,7 +336,7 @@ void EngineManager::initializeMeshManager()
 		settings.assetManager = m_assetManager;
 
 		m_meshManager = ln::makeRef<MeshManager>();
-		m_meshManager->initialize(settings);
+		m_meshManager->init(settings);
 	}
 }
 
@@ -350,7 +350,7 @@ void EngineManager::initializeRenderingManager()
 		settings.graphicsManager = m_graphicsManager;
 
 		m_renderingManager = ln::makeRef<RenderingManager>();
-		m_renderingManager->initialize(settings);
+		m_renderingManager->init(settings);
 	}
 }
 
@@ -361,7 +361,7 @@ void EngineManager::initializePhysicsManager()
         PhysicsManager::Settings settings;
 
         m_physicsManager = ln::makeRef<PhysicsManager>();
-        m_physicsManager->initialize(settings);
+        m_physicsManager->init(settings);
     }
 }
 
@@ -372,7 +372,7 @@ void EngineManager::initializeAssetManager()
         AssetManager::Settings settings;
 
         m_assetManager = ln::makeRef<AssetManager>();
-        m_assetManager->initialize(settings);
+        m_assetManager->init(settings);
 
         for (auto& e : m_settings.assetArchives) {
             m_assetManager->addAssetArchive(e.filePath, e.password);
@@ -393,7 +393,7 @@ void EngineManager::initializeVisualManager()
         settings.graphicsManager = m_graphicsManager;
 
         m_visualManager = ln::makeRef<VisualManager>();
-        m_visualManager->initialize(settings);
+        m_visualManager->init(settings);
     }
 }
 
@@ -404,7 +404,7 @@ void EngineManager::initializeSceneManager()
         initializeAnimationManager();
 
         m_sceneManager = ln::makeRef<SceneManager>();
-        m_sceneManager->initialize();
+        m_sceneManager->init();
 
         m_animationManager->setSceneManager(m_sceneManager);
     }
@@ -420,7 +420,7 @@ void EngineManager::initializeUIManager()
 		settings.graphicsManager = m_graphicsManager;
 		
 		m_uiManager = makeRef<UIManager>();
-		m_uiManager->initialize(settings);
+		m_uiManager->init(settings);
 	}
 }
 

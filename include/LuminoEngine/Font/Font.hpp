@@ -65,9 +65,9 @@ public:
 LN_CONSTRUCT_ACCESS:
     Font();
     virtual ~Font();
-    void initialize();
-    void initialize(const String& family, float size);
-    //void initialize(detail::GraphicsManager* manager, FontCore* builtinRawFont);
+    void init();
+    void init(const String& family, float size);
+    //void init(detail::GraphicsManager* manager, FontCore* builtinRawFont);
 
 private:
     detail::FontCore* resolveFontCore();

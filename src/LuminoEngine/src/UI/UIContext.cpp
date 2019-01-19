@@ -14,9 +14,9 @@ UIContext::UIContext()
 {
 }
 
-void UIContext::initialize()
+void UIContext::init()
 {
-    Object::initialize();
+    Object::init();
 }
 
 void UIContext::setLayoutRootElement(UIElement* element)

@@ -19,7 +19,7 @@ ShaderManager::~ShaderManager()
 {
 }
 
-void ShaderManager::initialize(const Settings& settings)
+void ShaderManager::init(const Settings& settings)
 {
     m_graphicsManager = settings.graphicsManager;
 

@@ -18,9 +18,9 @@ VisualObject::~VisualObject()
 {
 }
 
-void VisualObject::initialize()
+void VisualObject::init()
 {
-    WorldObject::initialize();
+    WorldObject::init();
 }
 
 void VisualObject::setVisible(bool value)

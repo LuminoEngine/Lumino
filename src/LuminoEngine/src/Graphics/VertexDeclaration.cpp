@@ -26,14 +26,14 @@ VertexDeclaration::~VertexDeclaration()
 {
 }
 
-void VertexDeclaration::initialize()
+void VertexDeclaration::init()
 {
-	GraphicsResource::initialize();
+	GraphicsResource::init();
 }
 
-void VertexDeclaration::initialize(const VertexElement* elements, int count)
+void VertexDeclaration::init(const VertexElement* elements, int count)
 {
-	initialize();
+	init();
 
 	for (int i = 0; i < count; ++i)
 	{

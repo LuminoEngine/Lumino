@@ -15,15 +15,15 @@ namespace detail {
 //{
 //}
 //
-//void AudioContextCore::initialize()
+//void AudioContextCore::init()
 //{
 //#ifdef LN_USE_SDL
 //	auto device = makeRef<SDLAudioDevice>();
-//	device->initialize();
+//	device->init();
 //	m_device = device;
 //#else
 //	auto device = makeRef<ALAudioDevice>();
-//	device->initialize();
+//	device->init();
 //	m_device = device;
 //#endif
 //}
@@ -151,9 +151,9 @@ CoreAudioNode::CoreAudioNode(AudioDevice* context)
 {
 }
 
-void CoreAudioNode::initialize()
+void CoreAudioNode::init()
 {
-	Object::initialize();
+	Object::init();
 }
 
 CoreAudioInputPin * CoreAudioNode::inputPin(int index) const
@@ -231,13 +231,13 @@ CoreAudioSourceNode::CoreAudioSourceNode(AudioDevice* context)
 {
 }
 
-void CoreAudioSourceNode::initialize(const Ref<AudioDecoder>& decoder)
+void CoreAudioSourceNode::init(const Ref<AudioDecoder>& decoder)
 {
-	CoreAudioNode::initialize();
+	CoreAudioNode::init();
 
 	// TODO:
 	//auto decoder = makeRef<WaveDecoder>();
-	//decoder->initialize(FileStream::create(filePath), diag);
+	//decoder->init(FileStream::create(filePath), diag);
 	m_decoder = decoder;
 	//tmpBuffer.resize(CoreAudioNode::ProcessingSizeInFrames * m_masterChannels);
 
@@ -537,9 +537,9 @@ CoreAudioPannerNode::CoreAudioPannerNode(AudioDevice* context)
 {
 }
 
-void CoreAudioPannerNode::initialize()
+void CoreAudioPannerNode::init()
 {
-	CoreAudioNode::initialize();
+	CoreAudioNode::init();
 
 	unsigned numChannels = 2;
 	addOutputPin(numChannels);
@@ -621,9 +621,9 @@ CoreAudioDestinationNode::CoreAudioDestinationNode(AudioDevice* context)
 {
 }
 
-void CoreAudioDestinationNode::initialize()
+void CoreAudioDestinationNode::init()
 {
-	CoreAudioNode::initialize();
+	CoreAudioNode::init();
 	addInputPin(2);
 }
 

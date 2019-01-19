@@ -18,9 +18,9 @@ DiagnosticsManager::~DiagnosticsManager()
 {
 }
 
-void DiagnosticsManager::initialize()
+void DiagnosticsManager::init()
 {
-	Object::initialize();
+	Object::init();
 }
 
 void DiagnosticsManager::reportError(StringRef message)
@@ -108,9 +108,9 @@ DiagnosticsItem::~DiagnosticsItem()
 {
 }
 
-void DiagnosticsItem::initialize()
+void DiagnosticsItem::init()
 {
-	Object::initialize();
+	Object::init();
 }
 
 } // namespace ln

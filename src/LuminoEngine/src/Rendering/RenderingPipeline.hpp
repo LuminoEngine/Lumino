@@ -17,7 +17,7 @@ class RenderingPipeline
 	: public RefObject
 {
 public:
-    void initialize();
+    void init();
 
     const SizeI& renderingFrameBufferSize() const { return m_renderingFrameBufferSize; }
     //const Ref<detail::FrameBufferCache>& frameBufferCache() const { return m_frameBufferCache; }
@@ -37,7 +37,7 @@ public:
     SceneRenderingPipeline();
     virtual ~SceneRenderingPipeline();
 
-    void initialize();
+    void init();
     void render(
         GraphicsContext* graphicsContext,
         const FrameBuffer& frameBuffer,
@@ -56,7 +56,7 @@ class FlatRenderingPipeline
 {
 public:
 	FlatRenderingPipeline();
-	void initialize();
+	void init();
 	void render(
 		GraphicsContext* graphicsContext,
 		const FrameBuffer& frameBuffer,

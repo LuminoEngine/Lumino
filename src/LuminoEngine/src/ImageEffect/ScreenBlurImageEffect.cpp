@@ -29,9 +29,9 @@ ScreenBlurImageEffect::~ScreenBlurImageEffect()
 {
 }
 
-void ScreenBlurImageEffect::initialize()
+void ScreenBlurImageEffect::init()
 {
-    ImageEffect::initialize();
+    ImageEffect::init();
     m_material = newObject<Material>();
     //m_material->setShader(detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::ScreenBlurImageEffect));
     //m_material->setBlendMode(BlendMode::Alpha);

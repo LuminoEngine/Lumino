@@ -44,17 +44,17 @@ VertexBuffer::~VertexBuffer()
 {
 }
 
-void VertexBuffer::initialize(size_t bufferSize, GraphicsResourceUsage usage)
+void VertexBuffer::init(size_t bufferSize, GraphicsResourceUsage usage)
 {
-	GraphicsResource::initialize();
+	GraphicsResource::init();
 	m_usage = usage;
 	m_modified = true;
 	resize(bufferSize);
 }
 
-void VertexBuffer::initialize(size_t bufferSize, const void* initialData, GraphicsResourceUsage usage)
+void VertexBuffer::init(size_t bufferSize, const void* initialData, GraphicsResourceUsage usage)
 {
-	VertexBuffer::initialize(bufferSize, usage);
+	VertexBuffer::init(bufferSize, usage);
 	if (initialData)
 	{
 		m_rhiObject = manager()->deviceContext()->createVertexBuffer(m_usage, bufferSize, initialData);

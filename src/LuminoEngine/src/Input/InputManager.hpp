@@ -26,7 +26,7 @@ public:
 	InputManager();
 	virtual ~InputManager();
 
-	void initialize(const Settings& settings);
+	void init(const Settings& settings);
 	void dispose();
 
 	const Ref<InputDriver>& inputDriver() const { return m_inputDriver; }

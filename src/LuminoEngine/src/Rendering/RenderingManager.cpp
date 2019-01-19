@@ -30,7 +30,7 @@ RenderingManager::RenderingManager()
 {
 }
 
-void RenderingManager::initialize(const Settings& settings)
+void RenderingManager::init(const Settings& settings)
 {
     LN_LOG_DEBUG << "RenderingManager Initialization started.";
 

@@ -37,7 +37,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	World();
 	virtual ~World();
-	void initialize();
+	void init();
     virtual void dispose() override;
 
 public: // TODO: internal

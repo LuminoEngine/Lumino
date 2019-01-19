@@ -40,9 +40,9 @@ AudioListener::AudioListener()
 
 }
 
-void AudioListener::initialize()
+void AudioListener::init()
 {
-	Object::initialize();
+	Object::init();
 }
 
 } // namespace ln

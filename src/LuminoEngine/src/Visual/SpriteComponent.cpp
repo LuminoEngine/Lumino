@@ -28,9 +28,9 @@ SpriteComponent::~SpriteComponent()
 {
 }
 
-void SpriteComponent::initialize()
+void SpriteComponent::init()
 {
-    VisualComponent::initialize();
+    VisualComponent::init();
     m_sourceRect.set(0, 0, -1, -1);
     setSize(Size(1, 1));
 

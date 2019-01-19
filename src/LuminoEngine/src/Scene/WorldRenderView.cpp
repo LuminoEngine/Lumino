@@ -26,11 +26,11 @@ WorldRenderView::~WorldRenderView()
 {
 }
 
-void WorldRenderView::initialize()
+void WorldRenderView::init()
 {
-    RenderView::initialize();
+    RenderView::init();
     m_sceneRenderingPipeline = makeRef<detail::SceneRenderingPipeline>();
-    m_sceneRenderingPipeline->initialize();
+    m_sceneRenderingPipeline->init();
     m_drawElementListCollector = makeRef<detail::DrawElementListCollector>();
     m_viewPoint = newObject<RenderViewPoint>();
 

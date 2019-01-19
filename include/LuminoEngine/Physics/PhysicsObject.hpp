@@ -26,7 +26,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
     PhysicsObject(PhysicsObjectType type);
     virtual ~PhysicsObject();
-    void initialize();
+    void init();
 
 
 private:

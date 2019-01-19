@@ -27,9 +27,9 @@ public:
     float frequency = 440;
     int counter = 0;
 
-    void initialize()
+    void init()
     {
-        AudioProcessorNode::initialize(0, 2);
+        AudioProcessorNode::init(0, 2);
     }
 
     virtual void onAudioProcess(AudioBus* input, AudioBus* output) override
@@ -61,9 +61,9 @@ public:
     std::vector<float> data;
     std::atomic<bool> end;
 
-    void initialize()
+    void init()
     {
-        AudioProcessorNode::initialize(2, 2);
+        AudioProcessorNode::init(2, 2);
 		end = false;
     }
 

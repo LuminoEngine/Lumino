@@ -62,7 +62,7 @@ public:
 	EngineManager();
 	virtual ~EngineManager();
 
-	void initialize();
+	void init();
 	void dispose();
 
 	void initializeAllManagers();

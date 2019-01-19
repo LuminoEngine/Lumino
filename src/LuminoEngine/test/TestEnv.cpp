@@ -10,7 +10,7 @@ void TestEnv::setup()
 	EngineSettings::setMainWindowSize(160, 120);
 	EngineSettings::setMainBackBufferSize(160, 120);
     EngineSettings::setEngineFeatures(EngineFeature::Experimental);
-    detail::EngineDomain::engineManager()->initialize();
+    detail::EngineDomain::engineManager()->init();
 
 	Font::registerFontFile(LN_LOCALFILE("../../../tools/VLGothic/VL-Gothic-Regular.ttf"));
 	Engine::mainCamera()->setBackgroundColor(Color(0.5, 0.5, 0.5, 1.0));

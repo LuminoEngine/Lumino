@@ -17,7 +17,7 @@ PhysicsManager::~PhysicsManager()
 {
 }
 
-void PhysicsManager::initialize(const Settings& settings)
+void PhysicsManager::init(const Settings& settings)
 {
     auto ttest = newObject<PhysicsWorld>();
 }

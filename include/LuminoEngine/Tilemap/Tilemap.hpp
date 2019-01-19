@@ -18,7 +18,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
     Tilemap();
 	virtual ~Tilemap();
-	void initialize();
+	void init();
 
 private:
     Ref<TilemapComponent> m_component;

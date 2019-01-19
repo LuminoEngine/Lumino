@@ -19,7 +19,7 @@ BlitRenderFeature::BlitRenderFeature()
 {
 }
 
-void BlitRenderFeature::initialize(RenderingManager* manager)
+void BlitRenderFeature::init(RenderingManager* manager)
 {
 	if (LN_REQUIRE(manager != nullptr)) return;
 	m_manager = manager;

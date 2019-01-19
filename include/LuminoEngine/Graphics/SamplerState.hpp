@@ -18,7 +18,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	SamplerState();
 	virtual ~SamplerState();
-	virtual void initialize();
+	virtual void init();
 	virtual void dispose() override;
 
 LN_INTERNAL_ACCESS:

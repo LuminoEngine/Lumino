@@ -10,7 +10,7 @@ class UILayoutPanel
 {
 public:
     UILayoutPanel();
-	void initialize();
+	void init();
 
 private:
 };
@@ -27,7 +27,7 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
     UIFrameLayout();
     virtual ~UIFrameLayout();
-    void initialize();
+    void init();
 
     // UIElement interface
     virtual Size measureOverride(const Size& constraint) override;

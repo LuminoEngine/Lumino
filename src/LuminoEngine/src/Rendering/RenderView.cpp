@@ -20,9 +20,9 @@ RenderView::~RenderView()
 {
 }
 
-void RenderView::initialize()
+void RenderView::init()
 {
-	Object::initialize();
+	Object::init();
 	m_manager = detail::EngineDomain::renderingManager();
 }
 

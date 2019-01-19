@@ -198,7 +198,7 @@ enum WaveFormatCode
 //==============================================================================
 // WaveDecoder
 
-void WaveDecoder::initialize(Stream* stream, DiagnosticsManager* diag)
+void WaveDecoder::init(Stream* stream, DiagnosticsManager* diag)
 {
 	if (LN_REQUIRE(stream)) return;
 

@@ -27,9 +27,9 @@ class ObjectA : public Object {
 
 LN_PROPERTY_IMPLEMENT(ObjectA, m_prop1, metadata);
 
-ObjectA::initialize()
+ObjectA::init()
 {
-    Object::initialize();   // 必須
+    Object::init();   // 必須
 }
 
 void ObjectA::onProp1Changed()

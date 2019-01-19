@@ -15,9 +15,9 @@ CAProcessorNode::CAProcessorNode(AudioDevice* context, AudioProcessorNode* owner
 {
 }
 
-void CAProcessorNode::initialize(int numberOfInputChannels, int numberOfOutputChannels)
+void CAProcessorNode::init(int numberOfInputChannels, int numberOfOutputChannels)
 {
-    CoreAudioNode::initialize();
+    CoreAudioNode::init();
     addInputPin(numberOfInputChannels);
     addOutputPin(numberOfOutputChannels);
 }

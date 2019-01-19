@@ -17,12 +17,12 @@ UIRenderView::UIRenderView()
 {
 }
 
-void UIRenderView::initialize()
+void UIRenderView::init()
 {
-	RenderView::initialize();
+	RenderView::init();
 	m_renderingContext = makeRef<UIRenderingContext>();
 	m_sceneRenderingPipeline = makeRef<detail::FlatRenderingPipeline>();
-	m_sceneRenderingPipeline->initialize();
+	m_sceneRenderingPipeline->init();
 	m_drawElementListCollector = makeRef<detail::DrawElementListCollector>();
     m_viewPoint = newObject<RenderViewPoint>();
 

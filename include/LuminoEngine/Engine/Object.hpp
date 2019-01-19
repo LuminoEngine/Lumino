@@ -37,7 +37,7 @@ template<class T, typename... TArgs>
 Ref<T> newObject(TArgs&&... args)
 {
 	auto ptr = Ref<T>(new T(), false);
-	ptr->initialize(std::forward<TArgs>(args)...);
+	ptr->init(std::forward<TArgs>(args)...);
 	return ptr;
 }
 
@@ -45,7 +45,7 @@ template<class T, typename... TArgs>
 void placementNewObject(void* ptr, TArgs&&... args)
 {
 	new (ptr)T();
-	static_cast<T*>(ptr)->initialize(std::forward<TArgs>(args)...);
+	static_cast<T*>(ptr)->init(std::forward<TArgs>(args)...);
 }
 
 class LN_API Object
@@ -53,7 +53,7 @@ class LN_API Object
 {
 LN_CONSTRUCT_ACCESS:
 	Object();
-	void initialize();
+	void init();
 
 protected:
 	virtual ~Object();

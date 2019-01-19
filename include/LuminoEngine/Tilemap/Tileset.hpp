@@ -26,7 +26,7 @@ public: // TODO: internal
 LN_CONSTRUCT_ACCESS:
     Tileset();
 	virtual ~Tileset();
-	void initialize();
+	void init();
 
 private:
     int m_tilePixelWidth;

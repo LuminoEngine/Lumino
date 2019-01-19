@@ -36,8 +36,8 @@ public:
 
     RigidBody();
     ~RigidBody();
-    void initialize();
-    void initialize(CollisionShape* shape);
+    void init();
+    void init(CollisionShape* shape);
 
 
     /** 質量を設定します。0 を設定すると静的なボディとなります。 */

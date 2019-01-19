@@ -13,7 +13,7 @@ OggAudioDecoder::OggAudioDecoder()
 {
 }
 
-void OggAudioDecoder::initialize(Stream* stream, DiagnosticsManager* diag)
+void OggAudioDecoder::init(Stream* stream, DiagnosticsManager* diag)
 {
 	if (LN_REQUIRE(stream)) return;
 

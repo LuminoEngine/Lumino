@@ -17,7 +17,7 @@ VisualManager::~VisualManager()
 {
 }
 
-void VisualManager::initialize(const Settings& settings)
+void VisualManager::init(const Settings& settings)
 {
 	m_graphicsManager = settings.graphicsManager;
 }

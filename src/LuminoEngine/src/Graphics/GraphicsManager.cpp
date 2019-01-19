@@ -71,14 +71,14 @@ GraphicsManager::GraphicsManager()
 {
 }
 
-void GraphicsManager::initialize(const Settings& settings)
+void GraphicsManager::init(const Settings& settings)
 {
     LN_LOG_DEBUG << "GraphicsManager Initialization started.";
 
 	OpenGLDeviceContext::Settings openglSettings;
 	openglSettings.mainWindow = settings.mainWindow;
 	auto ctx = makeRef<OpenGLDeviceContext>();
-	ctx->initialize(openglSettings);
+	ctx->init(openglSettings);
 	ctx->refreshCaps();
 	m_deviceContext = ctx;
 

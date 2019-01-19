@@ -42,7 +42,7 @@ public:
 protected:
 	Texture();
 	virtual ~Texture();
-	void initialize();
+	void init();
 	virtual detail::ITexture* resolveRHIObject() = 0;
 	void setSize(const SizeI& size) { m_size = size; }
 	void setFormat(TextureFormat format) { m_format = format; }
@@ -80,8 +80,8 @@ public:
 LN_CONSTRUCT_ACCESS:
 	Texture2D();
 	virtual ~Texture2D();
-	void initialize(int width, int height, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
-	void initialize(const StringRef& filePath, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
+	void init(int width, int height, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
+	void init(const StringRef& filePath, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
 
 protected:
 	virtual void dispose() override;
@@ -120,7 +120,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	Texture3D();
 	virtual ~Texture3D();
-	void initialize(int width, int height, int depth, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
+	void init(int width, int height, int depth, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
 
 protected:
 	virtual void dispose() override;
@@ -150,8 +150,8 @@ public:
 LN_CONSTRUCT_ACCESS:
 	RenderTargetTexture();
 	virtual ~RenderTargetTexture();
-	void initialize(int width, int height, TextureFormat requestFormat, bool mipmap);
-	void initialize(detail::ITexture* ref);
+	void init(int width, int height, TextureFormat requestFormat, bool mipmap);
+	void init(detail::ITexture* ref);
 
 LN_INTERNAL_ACCESS:
 	virtual detail::ITexture* resolveRHIObject() override;

@@ -12,7 +12,7 @@ namespace detail {
 //==============================================================================
 // RenderingPipeline
 
-void RenderingPipeline::initialize()
+void RenderingPipeline::init()
 {
     //RenderingManager* manager = detail::EngineDomain::renderingManager();
     //m_frameBufferCache = makeRef<detail::FrameBufferCache>(
@@ -31,16 +31,16 @@ SceneRenderingPipeline::~SceneRenderingPipeline()
 {
 }
 
-void SceneRenderingPipeline::initialize()
+void SceneRenderingPipeline::init()
 {
-    RenderingPipeline::initialize();
+    RenderingPipeline::init();
     RenderingManager* manager = detail::EngineDomain::renderingManager();
 
     m_sceneRenderer = makeRef<detail::ClusteredShadingSceneRenderer>();
-    m_sceneRenderer->initialize(manager);
+    m_sceneRenderer->init(manager);
 
     m_sceneRenderer_ImageEffectPhase = makeRef<detail::UnLigitingSceneRenderer>();
-    m_sceneRenderer_ImageEffectPhase->initialize(manager);
+    m_sceneRenderer_ImageEffectPhase->init(manager);
 }
 
 void SceneRenderingPipeline::render(
@@ -78,16 +78,16 @@ FlatRenderingPipeline::FlatRenderingPipeline()
 {
 }
 
-void FlatRenderingPipeline::initialize()
+void FlatRenderingPipeline::init()
 {
-	RenderingPipeline::initialize();
+	RenderingPipeline::init();
 	RenderingManager* manager = detail::EngineDomain::renderingManager();
 
 	m_sceneRenderer = makeRef<detail::UnLigitingSceneRenderer>();
-	m_sceneRenderer->initialize(manager);
+	m_sceneRenderer->init(manager);
 
     m_sceneRenderer_ImageEffectPhase = makeRef<detail::UnLigitingSceneRenderer>();
-    m_sceneRenderer_ImageEffectPhase->initialize(manager);
+    m_sceneRenderer_ImageEffectPhase->init(manager);
 }
 
 void FlatRenderingPipeline::render(

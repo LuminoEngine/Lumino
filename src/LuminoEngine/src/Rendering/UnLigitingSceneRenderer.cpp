@@ -14,7 +14,7 @@ UnLigitingSceneRendererPass::UnLigitingSceneRendererPass()
 {
 }
 
-void UnLigitingSceneRendererPass::initialize(RenderingManager* manager)
+void UnLigitingSceneRendererPass::init(RenderingManager* manager)
 {
 	m_defaultShader = manager->builtinShader(BuiltinShader::Sprite);
 }
@@ -46,10 +46,10 @@ ShaderTechnique* UnLigitingSceneRendererPass::selectShaderTechnique(
 //==============================================================================
 // UnLigitingSceneRenderer
 
-void UnLigitingSceneRenderer::initialize(RenderingManager* manager)
+void UnLigitingSceneRenderer::init(RenderingManager* manager)
 {
 	auto pass = makeRef<UnLigitingSceneRendererPass>();
-	pass->initialize(manager);
+	pass->init(manager);
 	addPass(pass);
 }
 

@@ -84,14 +84,14 @@ RigidBody::~RigidBody()
     }
 }
 
-void RigidBody::initialize()
+void RigidBody::init()
 {
-    Object::initialize();
+    Object::init();
 }
 
-void RigidBody::initialize(CollisionShape* shape)
+void RigidBody::init(CollisionShape* shape)
 {
-    initialize();
+    init();
     addCollisionShape(shape);
 }
 
@@ -484,7 +484,7 @@ void RigidBody::createBtRigidBody()
 
     m_modifiedFlags |= Modified_Activate;
 
-    //BodyBase::initialize(m_btRigidBody);
+    //BodyBase::init(m_btRigidBody);
     m_btRigidBody->setUserPointer(this);
 
     addToWorld();

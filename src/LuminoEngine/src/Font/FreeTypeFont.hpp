@@ -11,7 +11,7 @@ class FreeTypeFont
 {
 public:
     FreeTypeFont();
-	void initialize(FontManager* manager, const FontDesc& desc);
+	void init(FontManager* manager, const FontDesc& desc);
 	virtual void dispose() override;
 
 	virtual void getGlobalMetrics(FontGlobalMetrics* outMetrics) override;

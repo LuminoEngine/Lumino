@@ -36,7 +36,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
     SpriteComponent();
 	virtual ~SpriteComponent();
-	void initialize();
+	void init();
 
 private:
     Ref<Material> m_material;

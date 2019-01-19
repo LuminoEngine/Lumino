@@ -39,7 +39,7 @@ class BlitRenderFeature
 {
 public:
     BlitRenderFeature();
-	void initialize(RenderingManager* manager);
+	void init(RenderingManager* manager);
 
 	void blit(GraphicsContext* context);
 

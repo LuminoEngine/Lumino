@@ -89,8 +89,8 @@ protected:
 LN_INTERNAL_ACCESS:
 	CameraComponent();
 	virtual ~CameraComponent();
-    void initialize();
-	//void initialize(CameraWorld proj);
+    void init();
+	//void init(CameraWorld proj);
 	//void setCameraDirection(CameraDirection mode) { m_directionMode = mode; }
 	//CameraWorld getCameraWorld() const { return m_cameraWorld; }
 

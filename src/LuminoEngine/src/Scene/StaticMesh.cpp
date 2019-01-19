@@ -28,17 +28,17 @@ StaticMesh::~StaticMesh()
 {
 }
 
-void StaticMesh::initialize()
+void StaticMesh::init()
 {
-    VisualObject::initialize();
+    VisualObject::init();
     m_component = newObject<StaticMeshComponent>();
     addComponent(m_component);
     setMainVisualComponent(m_component);
 }
 
-void StaticMesh::initialize(const StringRef& filePath, float scale)
+void StaticMesh::init(const StringRef& filePath, float scale)
 {
-    initialize();
+    init();
     m_component->setModel(detail::EngineDomain::meshManager()->createStaticMeshModel(filePath, scale));
 }
 

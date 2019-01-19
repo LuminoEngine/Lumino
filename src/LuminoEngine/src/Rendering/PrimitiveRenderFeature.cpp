@@ -19,7 +19,7 @@ InternalPrimitiveRenderer::~InternalPrimitiveRenderer()
 {
 }
 
-void InternalPrimitiveRenderer::initialize(RenderingManager* manager)
+void InternalPrimitiveRenderer::init(RenderingManager* manager)
 {
     m_manager = manager;
     m_linearAllocator = makeRef<LinearAllocator>(m_manager->graphicsManager()->linearAllocatorPageManager());
@@ -136,12 +136,12 @@ PrimitiveRenderFeature::~PrimitiveRenderFeature()
 {
 }
 
-void PrimitiveRenderFeature::initialize(RenderingManager* manager)
+void PrimitiveRenderFeature::init(RenderingManager* manager)
 {
 	if (LN_REQUIRE(manager != nullptr)) return;
 	m_manager = manager;
     m_internal = makeRef<InternalPrimitiveRenderer>();
-    m_internal->initialize(manager);
+    m_internal->init(manager);
 }
 
 //void PrimitiveRenderFeature::drawMeshGenerater(const MeshGenerater* generator)

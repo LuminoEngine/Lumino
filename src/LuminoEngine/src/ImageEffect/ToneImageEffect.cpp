@@ -23,9 +23,9 @@ ToneImageEffect::~ToneImageEffect()
 {
 }
 
-void ToneImageEffect::initialize()
+void ToneImageEffect::init()
 {
-    ImageEffect::initialize();
+    ImageEffect::init();
     auto shader = newObject<Shader>(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ToneImageEffect.fx");
 
     m_material = newObject<Material>();

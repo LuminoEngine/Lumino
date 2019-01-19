@@ -90,7 +90,7 @@ public:
 
 protected:
     FontCore();
-	void initialize(FontManager* manager);
+	void init(FontManager* manager);
 	virtual void finalize();
 
 private:

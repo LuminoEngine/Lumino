@@ -11,9 +11,9 @@ UILayoutPanel::UILayoutPanel()
 {
 }
 
-void UILayoutPanel::initialize()
+void UILayoutPanel::init()
 {
-    UIElement::initialize();
+    UIElement::init();
 }
 
 //==============================================================================

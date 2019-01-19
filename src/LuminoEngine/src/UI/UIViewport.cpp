@@ -23,9 +23,9 @@ UIViewport::~UIViewport()
 {
 }
 
-void UIViewport::initialize()
+void UIViewport::init()
 {
-	UIContainerElement::initialize();
+	UIContainerElement::init();
     m_imageEffectRenderer = makeRef<detail::ImageEffectRenderer>();
 }
 

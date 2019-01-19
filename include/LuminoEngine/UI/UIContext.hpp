@@ -17,7 +17,7 @@ public: // TODO: internal
 LN_CONSTRUCT_ACCESS:
     UIContext();
     virtual ~UIContext() = default;
-	void initialize();
+	void init();
 
 private:
     Ref<UIElement> m_layoutRootElement;

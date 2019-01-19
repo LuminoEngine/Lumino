@@ -31,7 +31,7 @@ PlatformWindowManager::PlatformWindowManager()
 {
 }
 
-void PlatformWindowManager::initialize()
+void PlatformWindowManager::init()
 {
 
 }

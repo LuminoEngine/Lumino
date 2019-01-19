@@ -30,7 +30,7 @@ public: // TODO: internal
 LN_CONSTRUCT_ACCESS:
     PhysicsWorld();
 	virtual ~PhysicsWorld();
-	void initialize();
+	void init();
     virtual void dispose() override;
 
 private:

@@ -28,29 +28,29 @@ AudioContext::AudioContext()
 {
 }
 
-void AudioContext::initialize()
+void AudioContext::init()
 {
 	m_manager = detail::EngineDomain::audioManager();
 
 #if defined(LN_OS_MAC) || defined(LN_OS_IOS)
 	auto device = makeRef<detail::ALAudioDevice>();
-	device->initialize();
+	device->init();
 	m_audioDevice = device;
 #elif defined(LN_USE_SDL)
 	auto device = makeRef<detail::SDLAudioDevice>();
-	device->initialize();
+	device->init();
 	m_audioDevice = device;
 #elif defined(LN_OS_WIN32)
     auto device = makeRef<detail::DSoundAudioDevice>();
     //auto device = makeRef<detail::ALAudioDevice>();
-    device->initialize(detail::CoreAudioNode::ProcessingSizeInFrames);
+    device->init(detail::CoreAudioNode::ProcessingSizeInFrames);
     m_audioDevice = device;
 #else
 	auto device = makeRef<detail::NullAudioDevice>();
     m_audioDevice = device;
 #endif
 	m_coreDestinationNode = makeRef<detail::CoreAudioDestinationNode>(m_audioDevice);
-	m_coreDestinationNode->initialize();
+	m_coreDestinationNode->init();
 	m_audioDevice->setRenderCallback(m_coreDestinationNode);
 
 	m_destinationNode = newObject<AudioDestinationNode>(m_coreDestinationNode);

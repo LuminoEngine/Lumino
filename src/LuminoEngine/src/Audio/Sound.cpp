@@ -23,9 +23,9 @@ Sound::~Sound()
 {
 }
 
-void Sound::initialize(const StringRef& filePath)
+void Sound::init(const StringRef& filePath)
 {
-    Object::initialize();
+    Object::init();
 
     detail::AudioManager* manager = detail::EngineDomain::audioManager();
 

@@ -11,7 +11,7 @@ public:
     GLFWInputDriver();
     virtual ~GLFWInputDriver();
 
-    void initialize();
+    void init();
     virtual void dispose() override;
 
     virtual int getJoystickCount() override;

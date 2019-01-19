@@ -202,9 +202,9 @@ UIFrameWindow::~UIFrameWindow()
 {
 }
 
-void UIFrameWindow::initialize(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize)
+void UIFrameWindow::init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize)
 {
-	UIElement::initialize();
+	UIElement::init();
 	m_manager = detail::EngineDomain::uiManager();
     m_platformWindow = platformMainWindow;
 	m_autoDisposePlatformWindow = false;

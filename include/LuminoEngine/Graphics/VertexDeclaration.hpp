@@ -20,8 +20,8 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	VertexDeclaration();
 	virtual ~VertexDeclaration();
-	void initialize();
-	void initialize(const VertexElement* elements, int count);
+	void init();
+	void init(const VertexElement* elements, int count);
 
 LN_INTERNAL_ACCESS:
 	detail::IVertexDeclaration* resolveRHIObject();

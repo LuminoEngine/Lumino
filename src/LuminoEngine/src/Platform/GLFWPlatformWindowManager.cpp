@@ -189,7 +189,7 @@ GLFWPlatformWindow::~GLFWPlatformWindow()
 {
 }
 
-void GLFWPlatformWindow::initialize(const WindowCreationSettings& settings)
+void GLFWPlatformWindow::init(const WindowCreationSettings& settings)
 {
 	initKeyTable();
 
@@ -442,9 +442,9 @@ GLFWPlatformWindowManager::~GLFWPlatformWindowManager()
 {
 }
 
-void GLFWPlatformWindowManager::initialize()
+void GLFWPlatformWindowManager::init()
 {
-	PlatformWindowManager::initialize();
+	PlatformWindowManager::init();
 
 	int result = glfwInit();
 	if (LN_ENSURE(result != 0)) return;
@@ -466,7 +466,7 @@ void GLFWPlatformWindowManager::dispose()
 Ref<PlatformWindow> GLFWPlatformWindowManager::createWindow(const WindowCreationSettings& settings)
 {
 	auto obj = ln::makeRef<GLFWPlatformWindow>();
-	obj->initialize(settings);
+	obj->init(settings);
 	return obj;
 }
 

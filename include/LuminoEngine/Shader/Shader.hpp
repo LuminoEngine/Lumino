@@ -89,10 +89,10 @@ protected:
 
     LN_CONSTRUCT_ACCESS : Shader();
     virtual ~Shader();
-    void initialize();
-    void initialize(const StringRef& filePath, ShaderCompilationProperties* properties = nullptr);
-    void initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCompilationProperties* properties = nullptr);
-    void initialize(const String& name, Stream* stream);
+    void init();
+    void init(const StringRef& filePath, ShaderCompilationProperties* properties = nullptr);
+    void init(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCompilationProperties* properties = nullptr);
+    void init(const String& name, Stream* stream);
 
 private:
     detail::ShaderSemanticsManager* semanticsManager() { return &m_semanticsManager; }
@@ -176,8 +176,8 @@ private:
     LN_INTERNAL_NEW_OBJECT;
     ShaderParameter();
     virtual ~ShaderParameter() = default;
-    void initialize(ShaderConstantBuffer* owner, const detail::ShaderUniformTypeDesc& desc, const String& name);
-    void initialize(ShaderParameterClass parameterClass, const String& name);
+    void init(ShaderConstantBuffer* owner, const detail::ShaderUniformTypeDesc& desc, const String& name);
+    void init(ShaderParameterClass parameterClass, const String& name);
 
     const detail::ShaderUniformTypeDesc& desc() const { return m_desc; }
     const Ref<Texture>& texture() const { return m_textureValue; }
@@ -221,7 +221,7 @@ private:
     LN_INTERNAL_NEW_OBJECT;
     ShaderConstantBuffer();
     virtual ~ShaderConstantBuffer() = default;
-    void initialize(Shader* owner, detail::IShaderUniformBuffer* rhiObject);
+    void init(Shader* owner, detail::IShaderUniformBuffer* rhiObject);
 
     Shader* owner() const { return m_owner; }
     const std::string& asciiName() const { return m_asciiName; }
@@ -259,7 +259,7 @@ private:
     LN_INTERNAL_NEW_OBJECT;
     ShaderTechnique();
     virtual ~ShaderTechnique();
-    void initialize(const String& name);
+    void init(const String& name);
 
     void setOwner(Shader* owner) { m_owner = owner; }
     void addShaderPass(ShaderPass* pass);
@@ -293,7 +293,7 @@ private:
     LN_INTERNAL_NEW_OBJECT;
     ShaderPass();
     virtual ~ShaderPass();
-    void initialize(const String& name, detail::IShaderPass* rhiPass, detail::ShaderRenderState* renderState = nullptr);
+    void init(const String& name, detail::IShaderPass* rhiPass, detail::ShaderRenderState* renderState = nullptr);
 
     struct ConstantBufferEntry
     {
@@ -331,7 +331,7 @@ public:
 
     LN_CONSTRUCT_ACCESS : ShaderCompilationProperties();
     virtual ~ShaderCompilationProperties();
-    void initialize();
+    void init();
 
 private:
     List<String> m_includeDirectories;

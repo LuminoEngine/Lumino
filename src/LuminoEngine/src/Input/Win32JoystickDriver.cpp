@@ -104,10 +104,10 @@ Win32JoystickDriver::~Win32JoystickDriver()
 }
 
 //------------------------------------------------------------------------------
-void Win32JoystickDriver::initialize( IDirectInputDevice8* device, HWND hwnd, int xinputNumber, bool forcefeedback )
+void Win32JoystickDriver::init( IDirectInputDevice8* device, HWND hwnd, int xinputNumber, bool forcefeedback )
 {
 	HRESULT hr;
-	XInputModule::initialize();
+	XInputModule::init();
 	dispose();
 
 	mDevice = device;
@@ -453,7 +453,7 @@ XInputModule::MD_XInputGetState	XInputModule::XInputGetState;
 XInputModule::MD_XInputSetState	XInputModule::XInputSetState;
 HMODULE XInputModule::m_XInputModule;
 
-void XInputModule::initialize()
+void XInputModule::init()
 {
 	if (!XInputGetState)
 	{

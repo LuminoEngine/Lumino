@@ -133,7 +133,7 @@ public:
 
     UIElement();
     virtual ~UIElement();
-	void initialize();
+	void init();
 
 public: // TODO: internal
     void setRenderPriority(int value);

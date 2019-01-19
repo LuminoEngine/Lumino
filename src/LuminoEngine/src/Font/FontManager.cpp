@@ -62,7 +62,7 @@ FontManager::FontManager()
 {
 }
 
-void FontManager::initialize(const Settings& settings)
+void FontManager::init(const Settings& settings)
 {
     m_assetManager = settings.assetManager;
     m_charToUTF32Converter.setDestinationEncoding(TextEncoding::utf32Encoding());
@@ -77,16 +77,16 @@ void FontManager::initialize(const Settings& settings)
     // FreeType
     {
         FT_Error err = FT_Init_FreeType(&m_ftLibrary);
-        if (LN_ENSURE(err == 0, "failed initialize font library : %d\n", err)) return;
+        if (LN_ENSURE(err == 0, "failed init font library : %d\n", err)) return;
 
         err = FTC_Manager_New(m_ftLibrary, 0, 0, 0, callbackFaceRequester, this, &m_ftCacheManager);
-        if (LN_ENSURE(err == 0, "failed initialize font cache manager : %d\n", err)) return;
+        if (LN_ENSURE(err == 0, "failed init font cache manager : %d\n", err)) return;
 
         err = FTC_CMapCache_New(m_ftCacheManager, &m_ftCMapCache);
-        if (LN_ENSURE(err == 0, "failed initialize font cache map : %d\n", err)) return;
+        if (LN_ENSURE(err == 0, "failed init font cache map : %d\n", err)) return;
 
         err = FTC_ImageCache_New(m_ftCacheManager, &m_ftImageCache);
-        if (LN_ENSURE(err == 0, "failed initialize font image cache : %d\n", err)) return;
+        if (LN_ENSURE(err == 0, "failed init font image cache : %d\n", err)) return;
     }
 }
 
@@ -207,7 +207,7 @@ Ref<FontCore> FontManager::lookupFontCore(const FontDesc& keyDesc)
 	}
 	else {
 		auto font = makeRef<FreeTypeFont>();
-		font->initialize(this, keyDesc);
+		font->init(this, keyDesc);
 		m_fontCoreCache.registerObject(key, font);
 		return font;
 	}

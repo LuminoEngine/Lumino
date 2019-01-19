@@ -25,9 +25,9 @@ Tileset::~Tileset()
 {
 }
 
-void Tileset::initialize()
+void Tileset::init()
 {
-    Object::initialize();
+    Object::init();
 
     m_material = Material::create();
     m_material->setMainTexture(newObject<Texture2D>(u"D:/tmp/110220c_as019.png"));

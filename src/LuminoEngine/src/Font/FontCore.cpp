@@ -14,7 +14,7 @@ FontCore::FontCore()
 {
 }
 
-void FontCore::initialize(FontManager* manager)
+void FontCore::init(FontManager* manager)
 {
 	if (LN_REQUIRE(manager)) return;
 	m_manager = manager;

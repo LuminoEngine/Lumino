@@ -17,7 +17,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
     SphereComponent();
     virtual ~SphereComponent();
-	void initialize();
+	void init();
 
 private:
     Ref<Material> m_material;

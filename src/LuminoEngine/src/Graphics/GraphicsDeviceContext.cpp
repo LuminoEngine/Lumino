@@ -12,7 +12,7 @@ IGraphicsDeviceContext::IGraphicsDeviceContext()
 {
 }
 
-void IGraphicsDeviceContext::initialize()
+void IGraphicsDeviceContext::init()
 {
 }
 

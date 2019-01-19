@@ -30,7 +30,7 @@ public:
 	};
 
 	MeshManager();
-	void initialize(const Settings& settings);
+	void init(const Settings& settings);
 	void dispose();
 	VertexDeclaration* getPredefinedVertexLayout(PredefinedVertexLayoutFlags flags);
 

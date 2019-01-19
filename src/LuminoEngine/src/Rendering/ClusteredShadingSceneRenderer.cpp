@@ -23,9 +23,9 @@ DepthPrepass::~DepthPrepass()
 {
 }
 
-void DepthPrepass::initialize()
+void DepthPrepass::init()
 {
-	SceneRendererPass::initialize();
+	SceneRendererPass::init();
 	m_defaultShader = manager()->builtinShader(BuiltinShader::DepthPrepass);
 }
 
@@ -75,9 +75,9 @@ ClusteredShadingGeometryRenderingPass::~ClusteredShadingGeometryRenderingPass()
 {
 }
 
-void ClusteredShadingGeometryRenderingPass::initialize()
+void ClusteredShadingGeometryRenderingPass::init()
 {
-	SceneRendererPass::initialize();
+	SceneRendererPass::init();
 
 	{
 		m_defaultShader = manager()->builtinShader(BuiltinShader::ClusteredShadingDefault);
@@ -181,9 +181,9 @@ ShadowCasterPass::~ShadowCasterPass()
 }
 
 //RenderTargetTexture* g_m_shadowMap  = nullptr;
-void ShadowCasterPass::initialize()
+void ShadowCasterPass::init()
 {
-	SceneRendererPass::initialize();
+	SceneRendererPass::init();
 
 	m_defaultShader = manager()->builtinShader(BuiltinShader::ShadowCaster);
 
@@ -239,9 +239,9 @@ ClusteredShadingSceneRenderer::~ClusteredShadingSceneRenderer()
 {
 }
 
-void ClusteredShadingSceneRenderer::initialize(RenderingManager* manager)
+void ClusteredShadingSceneRenderer::init(RenderingManager* manager)
 {
-	SceneRenderer::initialize();
+	SceneRenderer::init();
 
 	m_depthPrepass = newObject<DepthPrepass>();
 	//addPass(m_depthPrepass);

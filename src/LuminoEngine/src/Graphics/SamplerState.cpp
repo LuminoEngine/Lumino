@@ -27,9 +27,9 @@ SamplerState::~SamplerState()
 {
 }
 
-void SamplerState::initialize()
+void SamplerState::init()
 {
-	GraphicsResource::initialize();
+	GraphicsResource::init();
 }
 
 void SamplerState::dispose()

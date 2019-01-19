@@ -24,7 +24,7 @@ MeshRenderFeature::~MeshRenderFeature()
 {
 }
 
-void MeshRenderFeature::initialize(RenderingManager* manager)
+void MeshRenderFeature::init(RenderingManager* manager)
 {
 	if (LN_REQUIRE(manager != nullptr)) return;
 	m_manager = manager;

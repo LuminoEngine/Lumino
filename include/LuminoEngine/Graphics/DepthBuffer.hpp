@@ -18,7 +18,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	DepthBuffer();
 	virtual ~DepthBuffer();
-	void initialize(int width, int height);
+	void init(int width, int height);
 	virtual void dispose() override;
 	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
 

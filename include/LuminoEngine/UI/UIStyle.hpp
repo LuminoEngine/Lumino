@@ -161,7 +161,7 @@ public:
 LN_CONSTRUCT_ACCESS:
     UIStyle();
     virtual ~UIStyle();
-	void initialize();
+	void init();
 
 private:
 };

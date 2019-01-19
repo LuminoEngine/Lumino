@@ -30,9 +30,9 @@ UIElement::~UIElement()
 {
 }
 
-void UIElement::initialize()
+void UIElement::init()
 {
-    Object::initialize();
+    Object::init();
     m_manager = detail::EngineDomain::uiManager();
 
     UIContainerElement* primaryElement = m_manager->primaryElement();

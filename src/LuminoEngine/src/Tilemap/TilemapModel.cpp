@@ -23,9 +23,9 @@ TilemapModel::~TilemapModel()
 {
 }
 
-void TilemapModel::initialize()
+void TilemapModel::init()
 {
-    Object::initialize();
+    Object::init();
 }
 
 void TilemapModel::addTileset(Tileset* tileset)

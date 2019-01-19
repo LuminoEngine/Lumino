@@ -74,7 +74,7 @@ public:
 protected:
 	AbstractMaterial(detail::MaterialType type);
 	virtual ~AbstractMaterial();
-	void initialize();
+	void init();
 
 public: // TODO: internal
 	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) = 0;
@@ -221,10 +221,10 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	Material();
 	virtual ~Material();
-	void initialize();
-    void initialize(Texture* mainTexture);
-    void initialize(Texture* mainTexture, ShadingModel shadingModel);
-    void initialize(Texture* mainTexture, const detail::PhongMaterialData& phongMaterialData);
+	void init();
+    void init(Texture* mainTexture);
+    void init(Texture* mainTexture, ShadingModel shadingModel);
+    void init(Texture* mainTexture, const detail::PhongMaterialData& phongMaterialData);
 
 private:
 	detail::PbrMaterialData m_data;
@@ -264,7 +264,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	PhongMaterial();
 	virtual ~PhongMaterial();
-	void initialize();
+	void init();
 
 private:
 	detail::PhongMaterialData m_data;

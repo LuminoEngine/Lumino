@@ -36,8 +36,8 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	Sprite();
 	virtual ~Sprite();
-	void initialize();
-    void initialize(float width, float height, Texture* texture = nullptr);
+	void init();
+    void init(float width, float height, Texture* texture = nullptr);
 
 private:
     Ref<SpriteComponent> m_component;

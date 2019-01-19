@@ -18,14 +18,14 @@ AudioProcessorNode::~AudioProcessorNode()
 {
 }
 
-void AudioProcessorNode::initialize(int numberOfInputChannels, int numberOfOutputChannels)
+void AudioProcessorNode::init(int numberOfInputChannels, int numberOfOutputChannels)
 {
-    // TODO: AudioNode::initialize() の後にしたい。
+    // TODO: AudioNode::init() の後にしたい。
     // detail::EngineDomain::audioManager()->primaryContext() じゃなくて context() にしたい
     m_coreObject = makeRef<detail::CAProcessorNode>(detail::EngineDomain::audioManager()->primaryContext()->coreObject(), this);
-    m_coreObject->initialize(numberOfInputChannels, numberOfOutputChannels);
+    m_coreObject->init(numberOfInputChannels, numberOfOutputChannels);
 
-	AudioNode::initialize();
+	AudioNode::init();
 }
 
 detail::CoreAudioNode* AudioProcessorNode::coreNode()

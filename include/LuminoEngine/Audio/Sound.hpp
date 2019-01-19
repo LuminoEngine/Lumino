@@ -198,7 +198,7 @@ public:
 LN_CONSTRUCT_ACCESS:
     Sound();
     virtual ~Sound();
-    void initialize(const StringRef& filePath);
+    void init(const StringRef& filePath);
     virtual void dispose() override;
 
 private:

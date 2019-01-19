@@ -70,10 +70,10 @@ FreeTypeFont::FreeTypeFont()
 {
 }
 
-void FreeTypeFont::initialize(FontManager* manager, const FontDesc& desc)
+void FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
 {
 	if (LN_REQUIRE(manager)) return;
-	FontCore::initialize(manager);
+	FontCore::init(manager);
 
 	FT_Error err = 0;
 	m_desc = desc;

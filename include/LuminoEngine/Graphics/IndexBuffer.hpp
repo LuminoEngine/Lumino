@@ -60,7 +60,7 @@ LN_CONSTRUCT_ACCESS:
 	 * @param[in]	format			: インデックスバッファのフォーマット
 	 * @param[in]	usage			: リソースの使用方法
 	 */
-	void initialize(int indexCount, IndexBufferFormat format, GraphicsResourceUsage usage);
+	void init(int indexCount, IndexBufferFormat format, GraphicsResourceUsage usage);
 
 	/**
 	 * インデックスバッファを作成します。
@@ -69,7 +69,7 @@ LN_CONSTRUCT_ACCESS:
 	 * @param[in]	initialData		: 初期値として設定するインデックスデータ
 	 * @param[in]	usage			: リソースの使用方法
 	 */
-	void initialize(int indexCount, IndexBufferFormat format, const void* initialData, GraphicsResourceUsage usage);
+	void init(int indexCount, IndexBufferFormat format, const void* initialData, GraphicsResourceUsage usage);
 
 LN_INTERNAL_ACCESS:
 	int getIndexStride() const;

@@ -28,10 +28,10 @@ SwapChain::~SwapChain()
 {
 }
 
-void SwapChain::initialize(detail::PlatformWindow* window, const SizeI& backbufferSize)
+void SwapChain::init(detail::PlatformWindow* window, const SizeI& backbufferSize)
 {
 	// TODO: GraphicsResource にして、onChangeDevice でバックバッファをアタッチ
-	Object::initialize();
+	Object::init();
 	m_rhiObject = detail::EngineDomain::graphicsManager()->deviceContext()->createSwapChain(window, backbufferSize);
 	m_colorBuffer = newObject<RenderTargetTexture>(m_rhiObject->getColorBuffer());
 	m_depthBuffer = newObject<DepthBuffer>(m_colorBuffer->width(), m_colorBuffer->height());

@@ -14,7 +14,7 @@ class SceneManager
 public:
 	SceneManager();
 	virtual ~SceneManager();
-	void initialize();
+	void init();
 	void dispose();
 
 	void gotoScene(Scene* scene);

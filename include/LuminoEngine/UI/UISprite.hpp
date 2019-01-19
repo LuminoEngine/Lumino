@@ -29,8 +29,8 @@ public:
 
 
     UISprite();
-	void initialize();
-    void initialize(Texture* texture);
+	void init();
+    void init(Texture* texture);
 
 protected:
     virtual void onRender(UIRenderingContext* context);

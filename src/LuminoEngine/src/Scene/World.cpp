@@ -20,9 +20,9 @@ World::~World()
 {
 }
 
-void World::initialize()
+void World::init()
 {
-    Object::initialize();
+    Object::init();
     m_animationContext = newObject<AnimationContext>();
     m_physicsWorld = newObject<PhysicsWorld>();
     m_renderingContext = makeRef<detail::WorldSceneGraphRenderingContext>();

@@ -24,7 +24,7 @@ SceneRendererPass::~SceneRendererPass()
 {
 }
 
-void SceneRendererPass::initialize()
+void SceneRendererPass::init()
 {
 }
 
@@ -50,7 +50,7 @@ SceneRenderer::SceneRenderer()
 {
 }
 
-void SceneRenderer::initialize()
+void SceneRenderer::init()
 {
 	m_skinningMatricesTexture = newObject<Texture2D>(4, 1024, TextureFormat::R32G32B32A32Float, false, GraphicsResourceUsage::Dynamic);
 	m_skinningLocalQuaternionsTexture = newObject<Texture2D>(1, 1024, TextureFormat::R32G32B32A32Float, false, GraphicsResourceUsage::Dynamic);

@@ -29,7 +29,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
     WorldRenderView();
 	virtual ~WorldRenderView();
-	void initialize();
+	void init();
 
 private:
     void createGridPlane();

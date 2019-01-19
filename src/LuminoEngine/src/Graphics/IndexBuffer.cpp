@@ -27,18 +27,18 @@ IndexBuffer::~IndexBuffer()
 {
 }
 
-void IndexBuffer::initialize(int indexCount, IndexBufferFormat format, GraphicsResourceUsage usage)
+void IndexBuffer::init(int indexCount, IndexBufferFormat format, GraphicsResourceUsage usage)
 {
-	GraphicsResource::initialize();
+	GraphicsResource::init();
 	m_format = format;
 	m_usage = usage;
 	m_modified = true;
 	resize(indexCount);
 }
 
-void IndexBuffer::initialize(int indexCount, IndexBufferFormat format, const void* initialData, GraphicsResourceUsage usage)
+void IndexBuffer::init(int indexCount, IndexBufferFormat format, const void* initialData, GraphicsResourceUsage usage)
 {
-	IndexBuffer::initialize(indexCount, format, usage);
+	IndexBuffer::init(indexCount, format, usage);
 	if (initialData)
 	{
 		m_rhiObject = manager()->deviceContext()->createIndexBuffer(m_usage, m_format, indexCount, initialData);

@@ -21,7 +21,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
     ToneImageEffect();
 	virtual ~ToneImageEffect();
-	void initialize();
+	void init();
 
 private:
     Ref<Material> m_material;

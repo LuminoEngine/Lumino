@@ -24,7 +24,7 @@ class SceneRendererPass
 public:
 	SceneRendererPass();
 	virtual ~SceneRendererPass();
-	void initialize();
+	void init();
 
 	virtual void onBeginRender(SceneRenderer* sceneRenderer);
 	virtual void onEndRender(SceneRenderer* sceneRenderer);
@@ -63,7 +63,7 @@ public:
 
 protected:
 	SceneRenderer();
-	void initialize();
+	void init();
 
 	//void setDefaultMaterial(AbstractMaterial* material);
 

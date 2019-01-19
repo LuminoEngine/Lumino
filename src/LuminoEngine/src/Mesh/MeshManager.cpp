@@ -19,7 +19,7 @@ MeshManager::MeshManager()
 {
 }
 
-void MeshManager::initialize(const Settings& settings)
+void MeshManager::init(const Settings& settings)
 {
 	m_graphicsManager = settings.graphicsManager;
 	m_assetManager = settings.assetManager;

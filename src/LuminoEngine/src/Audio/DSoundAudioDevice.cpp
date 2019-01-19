@@ -19,9 +19,9 @@ DSoundAudioDevice::DSoundAudioDevice()
     m_chunkCount = 4;
 }
 
-void DSoundAudioDevice::initialize(int frameLength)
+void DSoundAudioDevice::init(int frameLength)
 {
-	AudioDevice::initialize(frameLength, 2);
+	AudioDevice::init(frameLength, 2);
 
 
     m_chunkSize = frameLength;

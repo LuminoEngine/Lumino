@@ -111,7 +111,7 @@ public:
 	OpenGLDeviceContext();
 	virtual ~OpenGLDeviceContext() = default;
 
-	void initialize(const Settings& settings);
+	void init(const Settings& settings);
 	virtual void dispose() override;
 
 	// uniform set の時、Vector4[] → vec2[] に変換するための一時バッファ 
@@ -240,7 +240,7 @@ class GLVertexDeclaration
 public:
 	GLVertexDeclaration();
 	virtual ~GLVertexDeclaration();
-	void initialize(const VertexElement* elements, int elementsCount);
+	void init(const VertexElement* elements, int elementsCount);
 	virtual void dispose() override;
 
 	const List<GLVertexElement>& vertexElements() const { return m_vertexElements; }
@@ -267,7 +267,7 @@ class GLVertexBuffer
 public:
 	GLVertexBuffer();
 	virtual ~GLVertexBuffer();
-	void initialize(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData);
+	void init(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData);
 	virtual void dispose() override;
 
 	GLuint getGLVertexBuffer() const { return m_glVertexBuffer; }
@@ -293,7 +293,7 @@ class GLIndexBuffer
 public:
 	GLIndexBuffer();
 	virtual ~GLIndexBuffer();
-	void initialize(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData);
+	void init(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData);
 	virtual void dispose() override;
 
 	GLuint indexBufferId() const { return m_indexBufferId; }
@@ -329,7 +329,7 @@ class GLTexture2D
 public:
 	GLTexture2D();
 	virtual ~GLTexture2D();
-	void initialize(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData);
+	void init(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData);
 	virtual void dispose() override;
 
 	virtual DeviceTextureType type() const override { return DeviceTextureType::Texture2D; }
@@ -357,7 +357,7 @@ class GLTexture3D
 public:
 	GLTexture3D();
 	virtual ~GLTexture3D();
-	void initialize(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData);
+	void init(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData);
 	virtual void dispose() override;
 
 	virtual DeviceTextureType type() const override { return DeviceTextureType::Texture3D; }
@@ -386,7 +386,7 @@ class GLRenderTargetTexture
 public:
 	GLRenderTargetTexture();
 	virtual ~GLRenderTargetTexture();
-	void initialize(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
+	void init(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
 	virtual void dispose() override;
 
 
@@ -443,7 +443,7 @@ class GLDepthBuffer
 {
 public:
 	GLDepthBuffer();
-	void initialize(uint32_t width, uint32_t height);
+	void init(uint32_t width, uint32_t height);
 	virtual void dispose() override;
 
 	GLuint id() const { return m_id; }
@@ -458,7 +458,7 @@ class GLSamplerState
 public:
 	GLSamplerState();
 	virtual ~GLSamplerState();
-	void initialize(const SamplerStateData& desc);
+	void init(const SamplerStateData& desc);
 	virtual void dispose() override;
 
     GLuint resolveId(bool mipmap) const { return (mipmap) ? m_idMip : m_id; }
@@ -492,7 +492,7 @@ class GLShaderPass
 public:
 	GLShaderPass();
     virtual ~GLShaderPass();
-	void initialize(OpenGLDeviceContext* context, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag);
+	void init(OpenGLDeviceContext* context, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag);
 	virtual void dispose() override;
 
 	GLuint program() const { return m_program; }

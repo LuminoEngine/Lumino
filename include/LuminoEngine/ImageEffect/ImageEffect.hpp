@@ -16,7 +16,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	ImageEffect();
 	virtual ~ImageEffect();
-	void initialize();
+	void init();
     void updateFrame(float elapsedSeconds);
 
 private:

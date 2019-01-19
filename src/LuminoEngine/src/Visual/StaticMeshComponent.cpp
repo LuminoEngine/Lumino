@@ -20,9 +20,9 @@ StaticMeshComponent::~StaticMeshComponent()
 {
 }
 
-void StaticMeshComponent::initialize()
+void StaticMeshComponent::init()
 {
-    VisualComponent::initialize();
+    VisualComponent::init();
 }
 
 void StaticMeshComponent::setModel(StaticMeshModel* model)

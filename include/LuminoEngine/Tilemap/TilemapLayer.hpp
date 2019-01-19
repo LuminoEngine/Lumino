@@ -34,8 +34,8 @@ public: // TODO: internal
 LN_CONSTRUCT_ACCESS:
     TilemapLayer();
 	virtual ~TilemapLayer();
-	void initialize();
-    void initialize(int width, int height);
+	void init();
+    void init(int width, int height);
 
 private:
     List<int> m_data;

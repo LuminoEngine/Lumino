@@ -19,7 +19,7 @@ public:
 
 	AudioContext();
 	virtual ~AudioContext() = default;
-	void initialize();
+	void init();
 	virtual void dispose();
 	void process(float elapsedSeconds);
 

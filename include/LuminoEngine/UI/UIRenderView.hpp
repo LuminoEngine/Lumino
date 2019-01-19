@@ -17,7 +17,7 @@ class UIRenderView	// TODO: detail かも
 {
 public:
     UIRenderView();
-	void initialize();
+	void init();
 
     void setRootElement(UIElement* element);
 

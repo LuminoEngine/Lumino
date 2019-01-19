@@ -16,7 +16,7 @@ SceneManager::~SceneManager()
 {
 }
 
-void SceneManager::initialize()
+void SceneManager::init()
 {
 }
 

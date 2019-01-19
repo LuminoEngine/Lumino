@@ -33,7 +33,7 @@ public:
 public:
 
 	/// 初期化 (xinputNumber は XInput 用コントローラの割り当て番号。XInput 以外のものは -1 を渡すこと)
-	void initialize(IDirectInputDevice8* device, HWND hwnd, int xinputNumber, bool forcefeedback);
+	void init(IDirectInputDevice8* device, HWND hwnd, int xinputNumber, bool forcefeedback);
 
 	/// 解放
 	void dispose();
@@ -84,7 +84,7 @@ private:
 class XInputModule
 {
 public:
-	static void initialize();
+	static void init();
 
 	typedef DWORD(WINAPI *MD_XInputGetState)(
 		DWORD         dwUserIndex,

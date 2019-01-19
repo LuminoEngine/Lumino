@@ -32,7 +32,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	SwapChain();
 	virtual ~SwapChain();
-	void initialize(detail::PlatformWindow* window, const SizeI& backbufferSize);
+	void init(detail::PlatformWindow* window, const SizeI& backbufferSize);
 
 LN_INTERNAL_ACCESS:
 	detail::ISwapChain* resolveRHIObject() const;

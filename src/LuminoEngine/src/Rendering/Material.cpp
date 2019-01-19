@@ -17,9 +17,9 @@ AbstractMaterial::~AbstractMaterial()
 {
 }
 
-void AbstractMaterial::initialize()
+void AbstractMaterial::init()
 {
-	Object::initialize();
+	Object::init();
 }
 
 void AbstractMaterial::setMainTexture(Texture* value)
@@ -207,26 +207,26 @@ Material::~Material()
 {
 }
 
-void Material::initialize()
+void Material::init()
 {
-	AbstractMaterial::initialize();
+	AbstractMaterial::init();
 }
 
-void Material::initialize(Texture* mainTexture)
+void Material::init(Texture* mainTexture)
 {
-    initialize(mainTexture, ShadingModel::Default);
+    init(mainTexture, ShadingModel::Default);
 }
 
-void Material::initialize(Texture* mainTexture, ShadingModel shadingModel)
+void Material::init(Texture* mainTexture, ShadingModel shadingModel)
 {
-    initialize();
+    init();
     setMainTexture(mainTexture);
     this->shadingModel = shadingModel;
 }
 
-void Material::initialize(Texture* mainTexture, const detail::PhongMaterialData& phongMaterialData)
+void Material::init(Texture* mainTexture, const detail::PhongMaterialData& phongMaterialData)
 {
-    initialize();
+    init();
     setMainTexture(mainTexture);
     setColor(phongMaterialData.diffuse);
     //setSpecular(phongMaterialData.power);
@@ -299,9 +299,9 @@ PhongMaterial::~PhongMaterial()
 {
 }
 
-void PhongMaterial::initialize()
+void PhongMaterial::init()
 {
-	AbstractMaterial::initialize();
+	AbstractMaterial::init();
 }
 
 void PhongMaterial::setDiffuse(const Color& value)

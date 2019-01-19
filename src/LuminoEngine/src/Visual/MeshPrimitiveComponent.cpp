@@ -16,9 +16,9 @@ SphereComponent::~SphereComponent()
 {
 }
 
-void SphereComponent::initialize()
+void SphereComponent::init()
 {
-    VisualComponent::initialize();
+    VisualComponent::init();
 }
 
 void SphereComponent::setMaterial(Material* material)

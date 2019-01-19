@@ -17,9 +17,9 @@ DepthBuffer::~DepthBuffer()
 {
 }
 
-void DepthBuffer::initialize(int width, int height)
+void DepthBuffer::init(int width, int height)
 {
-	GraphicsResource::initialize();
+	GraphicsResource::init();
 	m_rhiObject = deviceContext()->createDepthBuffer(width, height);
 	m_size.width = width;
 	m_size.height = height;

@@ -26,7 +26,7 @@ int FxcCommand::execute(const ln::Path& inputFile)
 {
 	ln::detail::ShaderManager::Settings settings;
     m_manager = ln::makeRef<ln::detail::ShaderManager>();
-    m_manager->initialize(settings);
+    m_manager->init(settings);
 
 	m_diag = ln::newObject<ln::DiagnosticsManager>();
 

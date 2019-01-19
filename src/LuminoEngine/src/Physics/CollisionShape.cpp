@@ -39,7 +39,7 @@ CollisionShape::~CollisionShape()
 }
 
 //------------------------------------------------------------------------------
-void CollisionShape::initialize(btCollisionShape* shape)
+void CollisionShape::init(btCollisionShape* shape)
 {
 	m_shape = shape;
 }
@@ -78,9 +78,9 @@ PlaneCollisionShape::~PlaneCollisionShape()
 }
 
 //------------------------------------------------------------------------------
-void PlaneCollisionShape::initialize(const Vector3& direction)
+void PlaneCollisionShape::init(const Vector3& direction)
 {
-	CollisionShape::initialize(new btStaticPlaneShape(detail::BulletUtil::LNVector3ToBtVector3(Vector3::normalize(direction)), 0.0f));
+	CollisionShape::init(new btStaticPlaneShape(detail::BulletUtil::LNVector3ToBtVector3(Vector3::normalize(direction)), 0.0f));
 }
 
 //==============================================================================
@@ -111,9 +111,9 @@ BoxCollisionShape::~BoxCollisionShape()
 }
 
 //------------------------------------------------------------------------------
-void BoxCollisionShape::initialize(const Vector3& size)
+void BoxCollisionShape::init(const Vector3& size)
 {
-	CollisionShape::initialize(new btBoxShape(detail::BulletUtil::LNVector3ToBtVector3(size * 0.5f)));
+	CollisionShape::init(new btBoxShape(detail::BulletUtil::LNVector3ToBtVector3(size * 0.5f)));
 	// ※PMD の剛体サイズは bullet のと同じなので注意
 }
 
@@ -139,9 +139,9 @@ SphereCollisionShape::~SphereCollisionShape()
 }
 
 //------------------------------------------------------------------------------
-void SphereCollisionShape::initialize(float radius)
+void SphereCollisionShape::init(float radius)
 {
-	CollisionShape::initialize(new btSphereShape(radius));
+	CollisionShape::init(new btSphereShape(radius));
 }
 
 //==============================================================================
@@ -166,9 +166,9 @@ CapsuleCollisionShape::~CapsuleCollisionShape()
 }
 
 //------------------------------------------------------------------------------
-void CapsuleCollisionShape::initialize(float radius, float height)
+void CapsuleCollisionShape::init(float radius, float height)
 {
-	CollisionShape::initialize(new btCapsuleShape(radius, height));
+	CollisionShape::init(new btCapsuleShape(radius, height));
 }
 
 //==============================================================================
@@ -195,7 +195,7 @@ MeshCollisionShape::~MeshCollisionShape()
 }
 
 //------------------------------------------------------------------------------
-void MeshCollisionShape::initialize(MeshResource* mesh)
+void MeshCollisionShape::init(MeshResource* mesh)
 {
 	if (LN_REQUIRE(mesh != nullptr)) return;
 	if (LN_REQUIRE(m_btMeshData == nullptr)) return;
@@ -223,7 +223,7 @@ void MeshCollisionShape::initialize(MeshResource* mesh)
 	//	mesh->getTriangleCount(), (int*)ib, mesh->getIndexStride(),
 	//	mesh->getVertexCount(), (btScalar*)vb, sizeof(Vertex));
 	
-	CollisionShape::initialize(new btBvhTriangleMeshShape(m_btMeshData, true));
+	CollisionShape::init(new btBvhTriangleMeshShape(m_btMeshData, true));
 #endif
 }
 

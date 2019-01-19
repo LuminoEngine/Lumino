@@ -16,7 +16,7 @@ public:
 LN_CONSTRUCT_ACCESS:
     AudioGainNode();
     virtual ~AudioGainNode();
-	void initialize();
+	void init();
 	virtual detail::CoreAudioNode* coreNode() override;
     virtual void commit() override;
 

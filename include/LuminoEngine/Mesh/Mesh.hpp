@@ -79,7 +79,7 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~MeshResource();
 
 	/** MeshResource を作成します。 */
-	void initialize();
+	void init();
 
 private:
 	enum VertexBufferGroup
@@ -150,7 +150,7 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~MeshContainer();
 
 	/** MeshContainer を作成します。 */
-	void initialize();
+	void init();
 
 private:
 	StaticMeshModel* m_meshModel;

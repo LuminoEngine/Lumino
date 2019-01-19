@@ -36,7 +36,7 @@ class LN_API ApplicationHelper
 {
 public:
 	// for external main loop (emscripten, android)
-	static void initialize(Application* app);
+	static void init(Application* app);
 	static bool processTick(Application* app);
 	static void finalize(Application* app);
 

@@ -21,7 +21,7 @@ public:
 
     UIViewport();
     virtual ~UIViewport();
-	void initialize();
+	void init();
     virtual void dispose() override;
 
     // TODO: internal

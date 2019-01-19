@@ -52,7 +52,7 @@ public:
 LN_CONSTRUCT_ACCESS:
     SoftBody();
     virtual ~SoftBody();
-    void initialize();
+    void init();
 
 private:
     void setDefaultConfiguration();

@@ -18,7 +18,7 @@ Mp3AudioDecoder::Mp3AudioDecoder()
 {
 }
 
-void Mp3AudioDecoder::initialize(Stream* stream, DiagnosticsManager* diag)
+void Mp3AudioDecoder::init(Stream* stream, DiagnosticsManager* diag)
 {
 	if (LN_REQUIRE(stream)) return;
 	m_stream = stream;

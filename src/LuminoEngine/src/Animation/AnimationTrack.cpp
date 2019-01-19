@@ -61,9 +61,9 @@ AnimationTrack::~AnimationTrack()
 {
 }
 
-void AnimationTrack::initialize()
+void AnimationTrack::init()
 {
-    Object::initialize();
+    Object::init();
 }
 
 //==============================================================================
@@ -83,7 +83,7 @@ ScalarAnimationTrack::~ScalarAnimationTrack()
 {
 }
 
-void ScalarAnimationTrack::initialize()
+void ScalarAnimationTrack::init()
 {
 }
 

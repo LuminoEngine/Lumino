@@ -11,9 +11,9 @@ UIControl::UIControl()
 {
 }
 
-void UIControl::initialize()
+void UIControl::init()
 {
-    UIElement::initialize();
+    UIElement::init();
 }
 
 } // namespace ln

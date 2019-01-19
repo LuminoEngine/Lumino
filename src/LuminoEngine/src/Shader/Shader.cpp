@@ -100,7 +100,7 @@ ShaderCompilationProperties::~ShaderCompilationProperties()
 {
 }
 
-void ShaderCompilationProperties::initialize()
+void ShaderCompilationProperties::init()
 {
 }
 
@@ -147,14 +147,14 @@ Shader::~Shader()
 {
 }
 
-void Shader::initialize()
+void Shader::init()
 {
-    GraphicsResource::initialize();
+    GraphicsResource::init();
 }
 
-void Shader::initialize(const StringRef& filePath, ShaderCompilationProperties* properties)
+void Shader::init(const StringRef& filePath, ShaderCompilationProperties* properties)
 {
-    Shader::initialize();
+    Shader::init();
     Ref<DiagnosticsManager> localDiag = nullptr;
     if (properties) localDiag = properties->m_diag;
     if (!localDiag) localDiag = newObject<DiagnosticsManager>();
@@ -210,9 +210,9 @@ void Shader::initialize(const StringRef& filePath, ShaderCompilationProperties* 
     }
 }
 
-void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCompilationProperties* properties)
+void Shader::init(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCompilationProperties* properties)
 {
-    Shader::initialize();
+    Shader::init();
     Ref<DiagnosticsManager> localDiag = nullptr;
     if (properties) localDiag = properties->m_diag;
     if (!localDiag) localDiag = newObject<DiagnosticsManager>();
@@ -238,9 +238,9 @@ void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& 
     }
 }
 
-void Shader::initialize(const String& name, Stream* stream)
+void Shader::init(const String& name, Stream* stream)
 {
-    Shader::initialize();
+    Shader::init();
     Ref<DiagnosticsManager> localDiag = newObject<DiagnosticsManager>();
 
     createFromUnifiedShader(stream, localDiag);
@@ -571,17 +571,17 @@ ShaderParameter::ShaderParameter()
 {
 }
 
-void ShaderParameter::initialize(ShaderConstantBuffer* owner, const detail::ShaderUniformTypeDesc& desc, const String& name)
+void ShaderParameter::init(ShaderConstantBuffer* owner, const detail::ShaderUniformTypeDesc& desc, const String& name)
 {
-    Object::initialize();
+    Object::init();
     m_owner = owner;
     m_desc = desc;
     m_name = name;
 }
 
-void ShaderParameter::initialize(ShaderParameterClass parameterClass, const String& name)
+void ShaderParameter::init(ShaderParameterClass parameterClass, const String& name)
 {
-    Object::initialize();
+    Object::init();
     m_class = parameterClass;
     m_name = name;
 }
@@ -670,9 +670,9 @@ ShaderConstantBuffer::ShaderConstantBuffer()
 {
 }
 
-void ShaderConstantBuffer::initialize(Shader* owner, detail::IShaderUniformBuffer* rhiObject)
+void ShaderConstantBuffer::init(Shader* owner, detail::IShaderUniformBuffer* rhiObject)
 {
-    Object::initialize();
+    Object::init();
     m_owner = owner;
     m_name = String::fromStdString(rhiObject->name());
     m_asciiName = rhiObject->name();
@@ -719,9 +719,9 @@ ShaderTechnique::~ShaderTechnique()
 {
 }
 
-void ShaderTechnique::initialize(const String& name)
+void ShaderTechnique::init(const String& name)
 {
-    Object::initialize();
+    Object::init();
     m_name = name;
     detail::ShaderTechniqueClass::parseTechniqueClassString(m_name, &m_techniqueClass);
 }
@@ -754,10 +754,10 @@ ShaderPass::~ShaderPass()
 {
 }
 
-void ShaderPass::initialize(const String& name, detail::IShaderPass* rhiPass, detail::ShaderRenderState* renderState)
+void ShaderPass::init(const String& name, detail::IShaderPass* rhiPass, detail::ShaderRenderState* renderState)
 {
     if (LN_REQUIRE(rhiPass)) return;
-    Object::initialize();
+    Object::init();
 
     m_name = name;
     m_rhiPass = rhiPass;

@@ -18,9 +18,9 @@ CameraOrbitControlComponent::CameraOrbitControlComponent()
 {
 }
 
-void CameraOrbitControlComponent::initialize()
+void CameraOrbitControlComponent::init()
 {
-    Object::initialize();
+    Object::init();
 }
 
 void CameraOrbitControlComponent::onAttached(WorldObject* owner)

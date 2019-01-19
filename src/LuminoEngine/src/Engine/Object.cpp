@@ -26,7 +26,7 @@ Object::~Object()
     }
 }
 
-void Object::initialize()
+void Object::init()
 {
     TypeInfo::initializeObjectProperties(this);
 }

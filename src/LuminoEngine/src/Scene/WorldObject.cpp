@@ -124,9 +124,9 @@ WorldObject::~WorldObject()
 {
 }
 
-void WorldObject::initialize()
+void WorldObject::init()
 {
-    Object::initialize();
+    Object::init();
 
 	World* activeWorld = detail::EngineDomain::sceneManager()->activeWorld();
 	if (activeWorld) {

@@ -153,7 +153,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	WorldObject();
 	virtual ~WorldObject();
-	void initialize();
+	void init();
 
 public: // TODO:
     enum class DirtyFlags

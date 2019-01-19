@@ -42,14 +42,14 @@ Font::~Font()
 {
 }
 
-void Font::initialize()
+void Font::init()
 {
     m_desc = m_manager->defaultFontDesc();
 }
 
-void Font::initialize(const String& family, float size)
+void Font::init(const String& family, float size)
 {
-    initialize();
+    init();
     setFamily(family);
     setSize(size);
 }

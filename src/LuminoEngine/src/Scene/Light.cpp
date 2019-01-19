@@ -32,16 +32,16 @@ AmbientLight::~AmbientLight()
 {
 }
 
-void AmbientLight::initialize()
+void AmbientLight::init()
 {
-	WorldObject::initialize();
+	WorldObject::init();
 	m_component = newObject<AmbientLightComponent>();
 	addComponent(m_component);
 }
 
-void AmbientLight::initialize(const Color& color)
+void AmbientLight::init(const Color& color)
 {
-	initialize();
+	init();
 	setColor(color);
 }
 
@@ -75,16 +75,16 @@ HemisphereLight::~HemisphereLight()
 {
 }
 
-void HemisphereLight::initialize()
+void HemisphereLight::init()
 {
-	WorldObject::initialize();
+	WorldObject::init();
 	m_component = newObject<HemisphereLightComponent>();
 	addComponent(m_component);
 }
 
-void HemisphereLight::initialize(const Color& skyColor, const Color& groundColor)
+void HemisphereLight::init(const Color& skyColor, const Color& groundColor)
 {
-	initialize();
+	init();
 	setSkyColor(skyColor);
 	setGroundColor(groundColor);
 }
@@ -119,18 +119,18 @@ DirectionalLight::~DirectionalLight()
 {
 }
 
-void DirectionalLight::initialize()
+void DirectionalLight::init()
 {
-	WorldObject::initialize();
+	WorldObject::init();
 	m_component = newObject<DirectionalLightComponent>();
 	addComponent(m_component);
     setPosition(10, 10, -10);
     lookAt(Vector3(0, 0, 0));
 }
 
-void DirectionalLight::initialize(const Color& color)
+void DirectionalLight::init(const Color& color)
 {
-	initialize();
+	init();
 	setColor(color);
 }
 
@@ -164,16 +164,16 @@ PointLight::~PointLight()
 {
 }
 
-void PointLight::initialize()
+void PointLight::init()
 {
-	WorldObject::initialize();
+	WorldObject::init();
 	m_component = newObject<PointLightComponent>();
 	addComponent(m_component);
 }
 
-void PointLight::initialize(const Color& color, float range)
+void PointLight::init(const Color& color, float range)
 {
-	initialize();
+	init();
 	setColor(color);
 	setRange(range);
 }
@@ -208,16 +208,16 @@ SpotLight::~SpotLight()
 {
 }
 
-void SpotLight::initialize()
+void SpotLight::init()
 {
-	WorldObject::initialize();
+	WorldObject::init();
 	m_component = newObject<SpotLightComponent>();
 	addComponent(m_component);
 }
 
-void SpotLight::initialize(const Color& color, float range, float angle)
+void SpotLight::init(const Color& color, float range, float angle)
 {
-	initialize();
+	init();
 	setColor(color);
 	setRange(range);
 	setAngle(angle);

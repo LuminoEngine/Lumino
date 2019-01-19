@@ -17,9 +17,9 @@ AudioNode::AudioNode()
 {
 }
 
-void AudioNode::initialize()
+void AudioNode::init()
 {
-	Object::initialize();
+	Object::init();
 	m_context =	detail::EngineDomain::audioManager()->primaryContext();
 	m_context->addAudioNode(this);
 }
@@ -197,13 +197,13 @@ void AudioSourceNode::resume()
 	LN_NOTIMPLEMENTED();
 }
 
-void AudioSourceNode::initialize(const StringRef & filePath)
+void AudioSourceNode::init(const StringRef & filePath)
 {
     Ref<detail::AudioDecoder> decoder = detail::EngineDomain::audioManager()->createAudioDecoder(filePath);
 	m_coreObject = makeRef<detail::CoreAudioSourceNode>(detail::EngineDomain::audioManager()->primaryContext()->coreObject());
-	m_coreObject->initialize(decoder);
+	m_coreObject->init(decoder);
 
-    AudioNode::initialize();
+    AudioNode::init();
 }
 
 detail::CoreAudioNode * AudioSourceNode::coreNode()
@@ -268,11 +268,11 @@ AudioPannerNode::AudioPannerNode()
 {
 }
 
-void AudioPannerNode::initialize()
+void AudioPannerNode::init()
 {
-	AudioNode::initialize();
+	AudioNode::init();
 	m_coreObject = makeRef<detail::CoreAudioPannerNode>(context()->coreObject());
-	m_coreObject->initialize();
+	m_coreObject->init();
 }
 
 detail::CoreAudioNode* AudioPannerNode::coreNode()
@@ -287,9 +287,9 @@ AudioDestinationNode::AudioDestinationNode()
 {
 }
 
-void AudioDestinationNode::initialize(detail::CoreAudioDestinationNode* core)
+void AudioDestinationNode::init(detail::CoreAudioDestinationNode* core)
 {
-	AudioNode::initialize();
+	AudioNode::init();
 	m_coreObject = core;
 }
 

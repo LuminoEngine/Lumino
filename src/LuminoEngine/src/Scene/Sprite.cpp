@@ -21,17 +21,17 @@ Sprite::~Sprite()
 {
 }
 
-void Sprite::initialize()
+void Sprite::init()
 {
-    VisualObject::initialize();
+    VisualObject::init();
     m_component = newObject<SpriteComponent>();
     addComponent(m_component);
     setMainVisualComponent(m_component);
 }
 
-void Sprite::initialize(float width, float height, Texture* texture)
+void Sprite::init(float width, float height, Texture* texture)
 {
-    initialize();
+    init();
     setSize(Size(width, height));
     setTexture(texture);
 }

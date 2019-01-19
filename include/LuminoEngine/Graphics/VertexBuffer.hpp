@@ -56,10 +56,10 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~VertexBuffer();
 
 	/** @copydoc create(size_t, GraphicsResourceUsage) */
-	void initialize(size_t bufferSize, GraphicsResourceUsage usage);
+	void init(size_t bufferSize, GraphicsResourceUsage usage);
 
 	/** @copydoc create(size_t, const void*, GraphicsResourceUsage) */
-	void initialize(size_t bufferSize, const void* initialData, GraphicsResourceUsage usage);
+	void init(size_t bufferSize, const void* initialData, GraphicsResourceUsage usage);
 
 private:
 	detail::IVertexBuffer* resolveRHIObject();
