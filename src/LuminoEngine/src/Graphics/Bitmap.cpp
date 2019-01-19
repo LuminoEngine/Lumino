@@ -683,18 +683,22 @@ void Bitmap2D::flipVerticalFlow()
 void Bitmap2D::load(const StringRef& filePath)
 {
 	auto file = FileStream::create(filePath);
-	detail::PngBitmapDecoder decoder;
+    load(file);
+}
 
-	auto diag = newObject<DiagnosticsManager>();
-	decoder.load(file, diag);
-	diag->dumpToLog();
-	if (diag->succeeded())
-	{
-		detail::BitmapFrame* frame = decoder.getBitmapFrame();
-		m_buffer = frame->data;
-		m_size = frame->size;
-		m_format = frame->format;
-	}
+void Bitmap2D::load(Stream* stream)
+{
+    detail::PngBitmapDecoder decoder;
+    auto diag = newObject<DiagnosticsManager>();
+    decoder.load(stream, diag);
+    diag->dumpToLog();
+    if (diag->succeeded())
+    {
+        detail::BitmapFrame* frame = decoder.getBitmapFrame();
+        m_buffer = frame->data;
+        m_size = frame->size;
+        m_format = frame->format;
+    }
 }
 
 void Bitmap2D::save(const StringRef& filePath)

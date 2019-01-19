@@ -18,7 +18,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
     SkinnedMeshComponent();
 	virtual ~SkinnedMeshComponent();
-	void initialize();
+	void init();
 
 private:
     Ref<SkinnedMeshModel> m_model;

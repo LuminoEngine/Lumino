@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Mesh/Mesh.hpp>
+#include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoEngine/Visual/SkinnedMeshComponent.hpp>
 #include <LuminoEngine/Scene/SkinnedMesh.hpp>
 #include "../Mesh/MeshManager.hpp"
@@ -28,17 +28,17 @@ SkinnedMesh::~SkinnedMesh()
 {
 }
 
-void SkinnedMesh::initialize()
+void SkinnedMesh::init()
 {
-    VisualObject::initialize();
+    VisualObject::init();
     m_component = newObject<SkinnedMeshComponent>();
     addComponent(m_component);
     setMainVisualComponent(m_component);
 }
 
-void SkinnedMesh::initialize(const StringRef& filePath, float scale)
+void SkinnedMesh::init(const StringRef& filePath, float scale)
 {
-    initialize();
+    init();
     m_component->setModel(detail::EngineDomain::meshManager()->createSkinnedMeshModel(filePath, scale));
 }
 

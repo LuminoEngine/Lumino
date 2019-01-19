@@ -240,6 +240,7 @@ set(LN_SOURCES_Font
 set(LN_SOURCES_Mesh
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/Mesh.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/SkinnedMeshModel.hpp
     src/Mesh/Internal.hpp
     src/Mesh/GMesh.cpp
     src/Mesh/GMesh.hpp
@@ -254,6 +255,9 @@ set(LN_SOURCES_Mesh
     src/Mesh/MqoImporter.hpp
     src/Mesh/ObjMeshImporter.cpp
     src/Mesh/ObjMeshImporter.hpp
+    src/Mesh/PmxImporter.cpp
+    src/Mesh/PmxImporter.hpp
+    src/Mesh/SkinnedMeshModel.cpp
 )
 
 set(LN_SOURCES_Rendering
@@ -343,6 +347,7 @@ set(LN_SOURCES_Visual
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/CameraComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/LightComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/MeshPrimitiveComponent.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/SkinnedMeshComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/SpriteComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/StaticMeshComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/VisualComponent.hpp
@@ -350,6 +355,7 @@ set(LN_SOURCES_Visual
     src/Visual/CameraComponent.cpp
     src/Visual/LightComponent.cpp
     src/Visual/MeshPrimitiveComponent.cpp
+    src/Visual/SkinnedMeshComponent.cpp
     src/Visual/SpriteComponent.cpp
     src/Visual/StaticMeshComponent.cpp
     src/Visual/VisualComponent.cpp
@@ -365,6 +371,7 @@ set(LN_SOURCES_Scene
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Light.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Scene.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/SceneConductor.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/SkinnedMesh.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Sprite.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/StaticMesh.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/VisualObject.hpp
@@ -380,6 +387,7 @@ set(LN_SOURCES_Scene
     src/Scene/SceneConductor.cpp
     src/Scene/SceneManager.cpp
     src/Scene/SceneManager.hpp
+    src/Scene/SkinnedMesh.cpp
     src/Scene/Sprite.cpp
     src/Scene/StaticMesh.cpp
     src/Scene/VisualObject.cpp

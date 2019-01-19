@@ -78,18 +78,24 @@ void Texture2D::init(int width, int height, TextureFormat format, bool mipmap, G
 
 void Texture2D::init(const StringRef& filePath, TextureFormat format, bool mipmap, GraphicsResourceUsage usage)
 {
+	auto bitmap = newObject<Bitmap2D>();
+    bitmap->load(filePath);
+    init(bitmap, format, mipmap, usage);
+}
+
+void Texture2D::init(Bitmap2D* bitmap, TextureFormat format, bool mipmap, GraphicsResourceUsage usage)
+{
     Texture::init();
-	m_bitmap = newObject<Bitmap2D>();
-	m_bitmap->load(filePath);
+    m_bitmap = bitmap;
 
-	// TODO: check and convert format
+    // TODO: check and convert format
 
-	m_usage = usage;
-	m_initialUpdate = true;
-	m_modified = true;
-	setSize(SizeI(m_bitmap->width(), m_bitmap->height()));
-	setFormat(format);
-	setMipmap(mipmap);
+    m_usage = usage;
+    m_initialUpdate = true;
+    m_modified = true;
+    setSize(SizeI(m_bitmap->width(), m_bitmap->height()));
+    setFormat(format);
+    setMipmap(mipmap);
 }
 
 void Texture2D::dispose()

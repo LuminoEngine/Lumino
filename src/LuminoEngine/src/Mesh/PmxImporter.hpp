@@ -1,13 +1,13 @@
 ﻿
 #pragma once
+#include <LuminoEngine/Mesh/Mesh.hpp>
 
 namespace ln {
 class BinaryReader;
 class Texture2D;
-class PmxSkinnedMeshResource;
+class AbstractMaterial;
 namespace detail {
-class ModelManager;
-
+class MeshManager;
 class PmxSkinnedMeshResource;
 
 // モデルファイルのフォーマット
@@ -18,24 +18,25 @@ enum ModelFormat
 	ModelFormat_PMX,
 };
 
-LN_ENUM_FLAGS(BoneType)
+// ボーンフラグ
+enum class BoneType
 {
-	LinkTargetByBoneIndex = 1,
-	Rotate,
-	XYZ = 4,
-	draw = 8,
-	Operatable = 16,
-	IK = 32,
-	IK_Child = 64,
-	Unvisible = 128,
-	InhereRotate = 256, // 回転付与
-	InhereXYZ = 512,       // 移動付与
-	FixAxis = 1024,
-	LocalAxis = 2048,
-	TransformAfterPhysics = 4096,
-	ParentTransform = 8192
+	LinkTargetByBoneIndex = 0x0001, // 接続先(PMD子ボーン指定)表示方法 -> 0:座標オフセットで指定 1:ボーンで指定
+	Rotate = 0x0002,                // 回転可能
+	XYZ = 0x0004,                   // 移動可能
+	Draw = 0x0008,                  // 表示
+	Operatable = 0x0010,            // 操作可
+	IK = 0x0020,                    // IK
+	IK_Child = 0x0040,              // (PMX 仕様書記載なし)
+	Unvisible = 0x0080,             // ローカル付与 | 付与対象 0:ユーザー変形値／IKリンク／多重付与 1:親のローカル変形量
+	InhereRotate = 0x0100,          // 回転付与
+	InhereXYZ = 0x0200,             // 移動付与
+	FixAxis = 0x0400,               // 軸固定
+	LocalAxis = 0x0800,             // ローカル軸
+	TransformAfterPhysics = 0x1000, // 物理後変形
+	ParentTransform = 0x2000,       // 外部親変形
 };
-LN_ENUM_FLAGS_DECLARE(BoneType);
+LN_FLAGS_OPERATORS(BoneType);
 
 // ボーンフラグ 接続先(PMD子ボーン指定)表示方法
 enum BoneConnectType
@@ -117,7 +118,7 @@ public:
 	Color						Emissive;			// 物体の発光色 ( 光源の影響を受けない色 )
 	float						Power;				// 光沢の強さ
 
-	Ref<Shader>				Shader;				// シェーダ
+	//Ref<Shader>				Shader;				// シェーダ
 	Ref<ln::Texture>			Texture;			// テクスチャ
 	Ref<ln::Texture>			ToonTexture;		// [PMD] トゥーンテクスチャ
 	Ref<ln::Texture>			SphereTexture;		// [PMD] スフィアテクスチャ
@@ -147,7 +148,7 @@ public:
 		DrawingFlags = 0;
 	}
 
-	Ref<CommonMaterial> MakeCommonMaterial() const;
+	Ref<AbstractMaterial> MakeCommonMaterial() const;
 };
 
 // 共有ボーンデータ
@@ -410,9 +411,7 @@ public:
 // モデルの共有データクラス
 class PmxSkinnedMeshResource
 	: public MeshResource
-	, public ICacheObject
 {
-	LN_CACHE_OBJECT_DECL;
 public:
 	virtual ~PmxSkinnedMeshResource();
 	void refreshInitialValues();
@@ -468,7 +467,7 @@ public:
 	PmxLoader();
 	~PmxLoader();
 
-	Ref<PmxSkinnedMeshResource> load(detail::ModelManager* manager, Stream* stream, const PathName& baseDir, bool isDynamic, ModelCreationFlag flags);
+	Ref<PmxSkinnedMeshResource> load(detail::MeshManager* manager, Stream* stream, const Path& baseDir, bool isDynamic/*, ModelCreationFlag flags*/);
 
 private:
 	PMX_Encode getEncode() { return (PMX_Encode)m_pmxHeader.Data[0]; }
@@ -483,7 +482,7 @@ private:
 	void loadModelInfo(BinaryReader* reader);
 	void loadVertices(BinaryReader* reader);
 	void loadIndices(BinaryReader* reader);
-	void loadTextureTable(BinaryReader* reader, const PathName& baseDir);
+	void loadTextureTable(BinaryReader* reader, const Path& baseDir);
 	void loadMaterials(BinaryReader* reader);
 	void loadBones(BinaryReader* reader);
 	void loadMorphs(BinaryReader* reader);
@@ -496,9 +495,9 @@ private:
 	void adjustPosition(Vector3* pos) const;
 	void adjustAngle(Vector3* angles) const;
 
-	detail::ModelManager*			m_manager;
+	detail::MeshManager*			m_manager;
 	bool							m_isDynamic;
-	ModelCreationFlag				m_flags;
+	//ModelCreationFlag				m_flags;
 	Ref<PmxSkinnedMeshResource>	m_modelCore;		// 最終出力
 	PMX_Header						m_pmxHeader;
 	List<Ref<Texture>>			m_textureTable;

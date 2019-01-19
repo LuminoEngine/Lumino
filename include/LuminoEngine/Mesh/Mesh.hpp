@@ -74,6 +74,14 @@ public:
     void setVertexBuffers(VertexBuffer* basic);
     bool isInitialEmpty() const;
 
+    // TODO: MMD
+    void setBlendWeights(int index, float v0, float v1, float v2, float v3);
+    void setBlendIndices(int index, float v0, float v1, float v2, float v3);	// TODO: int
+    const VertexBlendWeight& vertexBlendWeight(int index);
+    void setSdefInfo(int index, const Vector4& sdefC, const Vector3& sdefR0, const Vector3& sdefR1);
+    void setMmdExtra(int index, float edgeWeight, float vertexIndex);
+
+
 LN_CONSTRUCT_ACCESS:
 	MeshResource();
 	virtual ~MeshResource();

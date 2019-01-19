@@ -14,6 +14,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Visual/MeshPrimitiveComponent.hpp>
+#include <LuminoEngine/Scene/SkinnedMesh.hpp>
 #include "../src/Mesh/MqoImporter.hpp"
 #include "../src/Font/FontManager.hpp"
 #include "../src/Font/FontCore.hpp"
@@ -164,8 +165,8 @@ int main(int argc, char** argv)
 
     //auto sprite = Sprite::create(3, 3, tex);
 
-    auto tilemap = newObject<Tilemap>();
-    tilemap->setShadingModel(ShadingModel::UnLighting);
+    //auto tilemap = newObject<Tilemap>();
+    //tilemap->setShadingModel(ShadingModel::UnLighting);
 
 
 
@@ -197,6 +198,8 @@ int main(int argc, char** argv)
 
     //auto mesh3 = newObject<StaticMesh>(u"D:/Proj/TH-10/Assets/Graphics/test/sphere4.obj", 2);
     //mesh3->setVisible(false);
+
+    auto smesh1 = SkinnedMesh::create(u"D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku.pmx");
 #endif
 
     //auto shape1 = BoxCollisionShape::create(5, 1, 5);

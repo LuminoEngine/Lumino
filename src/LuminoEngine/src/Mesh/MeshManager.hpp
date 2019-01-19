@@ -5,6 +5,7 @@ namespace ln {
 class DiagnosticsManager;
 class VertexDeclaration;
 class Texture;
+class Texture2D;
 class StaticMeshModel;
 class SkinnedMeshModel;
 namespace detail {
@@ -40,6 +41,7 @@ public:
 	Ref<Texture> createTexture(const Path& parentDir, const StringRef& filePath, DiagnosticsManager* diag);
 
 	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
+    const Ref<Texture2D>& getMMDDefaultToonTexture(int index) const { return  m_mmdDefaultToonTexture[index]; }
 
 	//const Ref<VertexDeclaration>& predefinedVertexLayout(PredefinedVertexLayout kind) const { return m_predefinedVertexLayouts[kind]; }
 
@@ -53,6 +55,8 @@ private:
 	//Ref<VertexDeclaration> m_predefinedVertexLayout_AdditionalUV;
 	//Ref<VertexDeclaration> m_predefinedVertexLayout_SdefInfo;
 	//Ref<VertexDeclaration> m_predefinedVertexLayout_SdefInfo;
+
+    std::array<Ref<Texture2D>, 10> m_mmdDefaultToonTexture;
 };
 
 } // namespace detail

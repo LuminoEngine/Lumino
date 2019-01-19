@@ -93,6 +93,49 @@ const Vertex& MeshResource::vertex(int index)
     return *(v + index);
 }
 
+void MeshResource::setBlendWeights(int index, float v0, float v1, float v2, float v3)
+{
+    if (LN_REQUIRE_RANGE(index, 0, vertexCount())) return;
+    VertexBlendWeight* v = ((VertexBlendWeight*)requestVertexData(VBG_BlendWeights) + index);
+    v->weights[0] = v0;
+    v->weights[1] = v1;
+    v->weights[2] = v2;
+    v->weights[3] = v3;
+}
+
+void MeshResource::setBlendIndices(int index, float v0, float v1, float v2, float v3)
+{
+    if (LN_REQUIRE_RANGE(index, 0, vertexCount())) return;
+    VertexBlendWeight* v = ((VertexBlendWeight*)requestVertexData(VBG_BlendWeights) + index);
+    v->indices[0] = v0;
+    v->indices[1] = v1;
+    v->indices[2] = v2;
+    v->indices[3] = v3;
+}
+
+const VertexBlendWeight& MeshResource::vertexBlendWeight(int index)
+{
+    if (LN_REQUIRE_RANGE(index, 0, vertexCount())) return VertexBlendWeight::Default;
+    return *((VertexBlendWeight*)requestVertexData(VBG_BlendWeights) + index);
+}
+
+void MeshResource::setSdefInfo(int index, const Vector4& sdefC, const Vector3& sdefR0, const Vector3& sdefR1)
+{
+    if (LN_REQUIRE_RANGE(index, 0, vertexCount())) return;
+    VertexSdefInfo* v = ((VertexSdefInfo*)requestVertexData(VBG_SdefInfo) + index);
+    v->sdefC = sdefC;
+    v->sdefR0 = sdefR0;
+    v->sdefR1 = sdefR1;
+}
+
+void MeshResource::setMmdExtra(int index, float edgeWeight, float vertexIndex)
+{
+    if (LN_REQUIRE_RANGE(index, 0, vertexCount())) return;
+    VertexMmdExtra* v = ((VertexMmdExtra*)requestVertexData(VBG_MmdExtra) + index);
+    v->edgeWeight = edgeWeight;
+    v->index = vertexIndex;
+}
+
 void MeshResource::setIndex(int index, int value)
 {
 	if (LN_REQUIRE_RANGE(index, 0, indexCount())) return;

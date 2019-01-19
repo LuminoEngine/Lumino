@@ -16,6 +16,8 @@ struct Vertex
 
 struct VertexBlendWeight
 {
+    static const VertexBlendWeight Default;
+
 	float		weights[4];
 	float		indices[4];
 };

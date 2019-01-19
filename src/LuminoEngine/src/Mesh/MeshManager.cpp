@@ -2,9 +2,12 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Graphics/VertexDeclaration.hpp>
+#include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include "../Asset/AssetManager.hpp"
 #include "ObjMeshImporter.hpp"
+#include "PmxImporter.hpp"
 #include "MeshManager.hpp"
 
 namespace ln {
@@ -13,6 +16,66 @@ namespace detail {
 //==============================================================================
 // MeshManager
 	
+static const unsigned char toon01Data[] =
+{
+#include "Resource/toon01.png.h"
+};
+static const size_t toon01DataLen = LN_ARRAY_SIZE_OF(toon01Data);
+
+static const unsigned char toon02Data[] =
+{
+#include "Resource/toon02.png.h"
+};
+static const size_t toon02DataLen = LN_ARRAY_SIZE_OF(toon02Data);
+
+static const unsigned char toon03Data[] =
+{
+#include "Resource/toon03.png.h"
+};
+static const size_t toon03DataLen = LN_ARRAY_SIZE_OF(toon03Data);
+
+static const unsigned char toon04Data[] =
+{
+#include "Resource/toon04.png.h"
+};
+static const size_t toon04DataLen = LN_ARRAY_SIZE_OF(toon04Data);
+
+static const unsigned char toon05Data[] =
+{
+#include "Resource/toon05.png.h"
+};
+static const size_t toon05DataLen = LN_ARRAY_SIZE_OF(toon05Data);
+
+static const unsigned char toon06Data[] =
+{
+#include "Resource/toon06.png.h"
+};
+static const size_t toon06DataLen = LN_ARRAY_SIZE_OF(toon06Data);
+
+static const unsigned char toon07Data[] =
+{
+#include "Resource/toon07.png.h"
+};
+static const size_t toon07DataLen = LN_ARRAY_SIZE_OF(toon07Data);
+
+static const unsigned char toon08Data[] =
+{
+#include "Resource/toon08.png.h"
+};
+static const size_t toon08DataLen = LN_ARRAY_SIZE_OF(toon08Data);
+
+static const unsigned char toon09Data[] =
+{
+#include "Resource/toon09.png.h"
+};
+static const size_t toon09DataLen = LN_ARRAY_SIZE_OF(toon09Data);
+
+static const unsigned char toon10Data[] =
+{
+#include "Resource/toon10.png.h"
+};
+static const size_t toon10DataLen = LN_ARRAY_SIZE_OF(toon10Data);
+
 MeshManager::MeshManager()
 	: m_graphicsManager(nullptr)
 	//, m_predefinedVertexLayouts{}
@@ -47,10 +110,34 @@ void MeshManager::init(const Settings& settings)
 	//	};
 	//	m_predefinedVertexLayouts[PredefinedVertexLayout_Standard_BlendWeight] = newObject<VertexDeclaration>(elements, 4);
 	//}
+
+#define LN_CREATE_MMD_TOON_TEXTURE(index, toonData, toonDataLen) \
+    { \
+        MemoryStream data(toonData, toonDataLen); \
+        auto bmp = newObject<Bitmap2D>(); \
+        bmp->load(&data); \
+        m_mmdDefaultToonTexture[index] = newObject<Texture2D>(bmp, TextureFormat::RGBA32, false, GraphicsResourceUsage::Static); \
+    }
+    LN_CREATE_MMD_TOON_TEXTURE(0, toon01Data, toon01DataLen);
+    LN_CREATE_MMD_TOON_TEXTURE(1, toon02Data, toon02DataLen);
+    LN_CREATE_MMD_TOON_TEXTURE(2, toon03Data, toon03DataLen);
+    LN_CREATE_MMD_TOON_TEXTURE(3, toon04Data, toon04DataLen);
+    LN_CREATE_MMD_TOON_TEXTURE(4, toon05Data, toon05DataLen);
+    LN_CREATE_MMD_TOON_TEXTURE(5, toon06Data, toon06DataLen);
+    LN_CREATE_MMD_TOON_TEXTURE(6, toon07Data, toon07DataLen);
+    LN_CREATE_MMD_TOON_TEXTURE(7, toon08Data, toon08DataLen);
+    LN_CREATE_MMD_TOON_TEXTURE(8, toon09Data, toon09DataLen);
+    LN_CREATE_MMD_TOON_TEXTURE(9, toon10Data, toon10DataLen);
+#undef LN_CREATE_MMD_TOON_TEXTURE
 }
 
 void MeshManager::dispose()
 {
+    for (auto tex : m_mmdDefaultToonTexture)
+    {
+        tex.reset();
+    }
+
 	m_predefinedVertexLayouts.clear();
 }
 
@@ -133,8 +220,18 @@ Ref<StaticMeshModel> MeshManager::createStaticMeshModel(const Path& filePath, fl
 
 Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, float scale)
 {
-	LN_NOTIMPLEMENTED();
-	return nullptr;
+    //Ref<MeshResource> mesh;
+
+    PmxLoader  importer;
+    auto file = FileStream::create(filePath);
+    auto mesh = importer.load(this, file, filePath.parent(), false);
+
+    auto meshModel = newObject<SkinnedMeshModel>();
+
+    auto meshContainer = newObject<MeshContainer>();
+    meshContainer->setMeshResource(mesh);
+    meshModel->addMeshContainer(meshContainer);
+	return meshModel;
 }
 
 Ref<Texture> MeshManager::createTexture(const Path& parentDir, const StringRef& filePath, DiagnosticsManager* diag)

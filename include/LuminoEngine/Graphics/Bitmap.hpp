@@ -203,7 +203,8 @@ public:
 
 	void flipVerticalFlow();
 
-	void load(const StringRef& filePath);
+	void load(const StringRef& filePath);  // TODO: 種類の指定
+    void load(Stream* stream);   // TODO: 種類の指定
 	void save(const StringRef& filePath);
 
 	Ref<Bitmap2D> transcodeTo(PixelFormat format, const Color32& color = Color32::White) const;

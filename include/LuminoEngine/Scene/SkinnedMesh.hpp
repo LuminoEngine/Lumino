@@ -19,8 +19,8 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	SkinnedMesh();
 	virtual ~SkinnedMesh();
-	void initialize();
-    void initialize(const StringRef& filePath, float scale);
+	void init();
+    void init(const StringRef& filePath, float scale);
 
 private:
     Ref<SkinnedMeshComponent> m_component;
