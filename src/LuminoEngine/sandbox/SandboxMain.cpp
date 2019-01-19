@@ -164,8 +164,8 @@ int main(int argc, char** argv)
 
     //auto sprite = Sprite::create(3, 3, tex);
 
-    //auto tilemap = newObject<Tilemap>();
-    //tilemap->setShadingModel(ShadingModel::UnLighting);
+    auto tilemap = newObject<Tilemap>();
+    tilemap->setShadingModel(ShadingModel::UnLighting);
 
 
 

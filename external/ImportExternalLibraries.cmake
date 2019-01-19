@@ -299,3 +299,15 @@ add_library(pcre STATIC IMPORTED)
 set_target_properties(pcre PROPERTIES IMPORTED_LOCATION_RELEASE "${pcre_LIBRARY_RELEASE}")
 set_target_properties(pcre PROPERTIES IMPORTED_LOCATION_DEBUG "${pcre_LIBRARY_DEBUG}")
 set_target_properties(pcre PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${pcre_ROOT}/include)
+
+#--------------------------------------
+# tmxlite
+ln_make_external_find_path(tmxlite_ROOT "tmxlite")
+
+find_library(tmxlite_LIBRARY_RELEASE NAMES tmxlite-s libtmxlite-s PATHS ${tmxlite_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(tmxlite_LIBRARY_DEBUG NAMES tmxlite-s-d libtmxlite-s-d PATHS ${tmxlite_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+
+add_library(tmxlite STATIC IMPORTED)
+set_target_properties(tmxlite PROPERTIES IMPORTED_LOCATION_RELEASE "${tmxlite_LIBRARY_RELEASE}")
+set_target_properties(tmxlite PROPERTIES IMPORTED_LOCATION_DEBUG "${tmxlite_LIBRARY_DEBUG}")
+set_target_properties(tmxlite PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${tmxlite_ROOT}/include)

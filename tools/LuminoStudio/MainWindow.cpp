@@ -6,6 +6,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    m_sceneListDock = new SceneListDock(this);
+    addDockWidget(Qt::LeftDockWidgetArea, m_sceneListDock);
 }
 
 MainWindow::~MainWindow()

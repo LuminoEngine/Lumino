@@ -35,6 +35,9 @@ option(LN_BUILD_TOOLS "build tool projects." ON)
 # build language bindings projects
 option(LN_BUILD_BINDINGS "build language bindings." OFF)
 
+# build editor projects
+option(LN_BUILD_EDITOR "build editor projects." OFF)
+
 # build only LuminoCore.
 option(LN_BUILD_CORE_ONLY "build only LuminoCore." OFF)
 
@@ -117,5 +120,8 @@ else()
     endif()
     if (LN_BUILD_BINDINGS)
         add_subdirectory(tools/lumino-wg)
+    endif()
+    if (LN_BUILD_EDITOR)
+        add_subdirectory(tools/LuminoStudio)
     endif()
 endif()

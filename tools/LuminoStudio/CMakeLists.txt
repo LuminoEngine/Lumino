@@ -16,16 +16,20 @@ set(CMAKE_AUTOUIC ON)
 find_package(Qt5Widgets CONFIG REQUIRED)
 
 # Populate a CMake variable with the sources
-set(LuminoStudio_SOURCES
-    MainWindow.ui
-    MainWindow.cpp
-    Main.cpp
-)
+#set(LuminoStudio_SOURCES
+#    MainWindow.ui
+#    MainWindow.cpp
+#    Main.cpp
+#)
+
+file(GLOB LuminoStudio_SOURCES "*.h" "*.cpp" "*.ui")
+source_group("Sources" FILES ${LuminoStudio_SOURCES})
+
 # Tell CMake to create the ${PROJECT_NAME} executable
 add_executable(${PROJECT_NAME} WIN32 ${LuminoStudio_SOURCES})
 # Use the Widgets module from Qt 5
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
-
+target_link_libraries(${PROJECT_NAME} LuminoEngine Qt5::Widgets)
+ln_add_pch(${PROJECT_NAME} "PCH.h" "PCH.cpp")
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy "${LN_QT_ROOT}/bin/Qt5Cored.dll" "Qt5Cored.dll"
