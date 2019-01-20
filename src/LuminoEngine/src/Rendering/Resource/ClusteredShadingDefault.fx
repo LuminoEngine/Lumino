@@ -167,6 +167,181 @@ bool _LN_GetLocalLightInfo(_LN_LocalLightContext context, float index, out Light
 }
 
 
+float3 _LN_ComputePBRLocalLights(_LN_LocalLightContext localLightContext, const LN_PBRGeometry geometry, LN_PBRMaterial material)
+{
+	LN_ReflectedLight reflectedLight = {float3(0,0,0),float3(0,0,0),float3(0,0,0),float3(0,0,0)};
+	LN_IncidentLight directLight;
+	
+	//float3 result = float3(0, 0, 0);
+	///////////////////////////
+	for (int i = 0; i < 4; i++)
+	{
+		//if (lightIndices[i] > 0)
+		LightInfo light;
+		if (_LN_GetLocalLightInfo(localLightContext, i, light))
+		{
+			//PointLight light = LN_GetPointLight((lightIndices[i] * 255) + 0.5 - 1);
+			//LightInfo light = _LN_GetLightInfoClusterd((lightIndices[i] * 255) + 0.5 - 1);
+			//LightInfo light = _LN_GetLocalLightInfo(localLightContext, i);
+			
+			
+			if (light.spotAngles.x > 0.0)
+			{
+				// Spot light
+				LN_SpotLight spotLight;
+				spotLight.position = light.position;
+				spotLight.direction = light.direction;
+				spotLight.color = light.color.xyz;// * light.color.a;
+				spotLight.distance = light.range;
+				spotLight.decay = light.attenuation;
+				spotLight.coneCos = light.spotAngles.x;
+				spotLight.penumbraCos = light.spotAngles.y;
+				LN_GetSpotDirectLightIrradiance(spotLight, geometry, directLight);
+				if (directLight.visible)
+				{
+					LN_RE_Direct(directLight, geometry, material, reflectedLight);
+				}
+			}
+			else
+			{
+				// Point light
+				LN_PointLight pointLight;
+				pointLight.position = light.position;
+				pointLight.color = light.color.xyz;// * light.color.a;
+				pointLight.distance = light.range;
+				pointLight.decay = light.attenuation;
+				LN_GetPointDirectLightIrradiance(pointLight, geometry, directLight);
+				if (directLight.visible)
+				{
+					//　FixMe: ↓ ライト位置が 0, 0, 0 だと dotNL が 0 になってしまう・・・？
+					LN_RE_Direct(directLight, geometry, material, reflectedLight);
+
+		/*			
+	// コサイン項
+	//float dotNL = saturate(dot(geometry.normal, directLight.direction));
+	float dotNL = 
+						geometry.normal.x * directLight.direction.x+
+						geometry.normal.y * directLight.direction.y+
+						geometry.normal.z * directLight.direction.z;
+
+	// 放射照度 = コサイン項 * 放射輝度
+	float3 irradiance = dotNL * directLight.color;
+	//return float4(directLight.direction, 1);
+					//return float4(abs(dotNL) * 10000, 0, 0, 1);
+					//return float4(
+					//	geometry.normal.x * directLight.direction.x,
+					//	geometry.normal.y * directLight.direction.y,
+					//	geometry.normal.z * directLight.direction.z,
+					//	1);
+					*/
+				}
+			}
+			
+	#if 0
+			float LightRadiusMask = 1.0;
+			{
+				float3 ToLight = light.position.xyz - worldPos.xyz;
+				float DistanceSqr = dot(ToLight, ToLight);
+				float3 L = ToLight * rsqrt(DistanceSqr);
+				
+				//return float4(rsqrt(DistanceSqr), 0, 0, 1);
+				//return float4(L, 1);
+				
+				float LightInvRadius = 1.0 / light.range;
+				float LightFalloffExponent = 0;
+				
+				//if (DeferredLightUniforms.LightFalloffExponent == 0)
+				{
+					LightRadiusMask = LN_Square(saturate( 1 - LN_Square(DistanceSqr * LN_Square(LightInvRadius))));
+				}
+				//else
+				//{
+				//	LightRadiusMask = RadialAttenuation(ToLight * DeferredLightUniforms.LightInvRadius, DeferredLightUniforms.LightFalloffExponent);
+				//}
+			}
+				
+			
+			if (light.spotAngles.x > 0.0)
+			{
+				float3 L = normalize(light.position.xyz - worldPos.xyz);
+				//float3 SpotDirection = float3(1, 0, 0);
+				//float2 SpotAngle = float2(cos(3.14 / 3), 1.0 / cos(3.14 / 4));
+				result += _LN_CalculateSpotAttenuation(L, light.direction, light.spotAngles) * LightRadiusMask;
+			}
+			else
+			{
+				result += LightRadiusMask;
+			}
+	#endif
+			
+		}
+	}
+	/////////////////////////////////////
+	
+	float3 ambientIrradiance = float3(0, 0, 0);
+	{
+    	float3 color = float3(0, 0, 0);
+		float count = LN_EPSILON;
+	    for (int i = 0; i < LN_MAX_GLOBAL_LIGHTS; i++)
+		{
+			GlobalLightInfo light = _LN_GetGlobalLightInfo(i);
+
+			// HemisphereLight
+			if (light.directionAndType.w >= 3.0)
+			{
+				//float3 up = float3(0, 1, 0);
+				//float hemisphere = (dot(surface.Normal, up) + 1.0) * 0.5;
+				//float4 c = lerp((light.groundColor.rgb * light.groundColor.a)), (light.color.rgb * light.color.a), hemisphere);
+				//ambientColor = saturate(ambientColor + c.xyz * c.a);
+				LN_HemisphereLight tl;
+				tl.upDirection = float3(0, 1, 0);
+				tl.skyColor = (light.color.rgb * light.color.a);
+				tl.groundColor = (light.groundColor.rgb * light.groundColor.a);
+				ambientIrradiance += LN_GetHemisphereLightIrradiance(tl, geometry);
+			}
+			// AmbientLight
+			else if (light.directionAndType.w >= 2.0)
+			{
+				//return light.color;
+				//ambientColor = saturate(ambientColor + light.color.rgb * light.color.a);
+				ambientIrradiance += LN_GetAmbientLightIrradiance(light.color.rgb * light.color.a);
+			}
+			// DirectionalLight
+			else if (light.directionAndType.w >= 1.0)
+			{
+				color += saturate(max(0, (light.color.rgb * light.color.a) * dot(geometry.normal, -light.directionAndType.xyz)));
+	            count += 1.0f;
+				
+				/**/
+				LN_DirectionalLight tl;
+				tl.direction = light.directionAndType.xyz;//mul(float4(light.directionAndType.xyz, 1.0), ln_View).xyz;//light.directionAndType.xyz;
+				tl.color = (light.color.rgb * light.color.a);
+				LN_GetDirectionalDirectLightIrradiance(tl, geometry, directLight);
+				LN_RE_Direct(directLight, geometry, material, reflectedLight);
+	        }
+			else
+			{
+				break;
+			}
+	    }
+	    //result.rgb += color;
+	}
+
+
+	// TODO: ひとまず
+	reflectedLight.directDiffuse += ambientIrradiance * material.diffuseColor;
+
+	float3 outgoingLight =
+		//surface.Emission +
+		reflectedLight.directDiffuse +
+		reflectedLight.directSpecular +
+		reflectedLight.indirectDiffuse +
+		reflectedLight.indirectSpecular;
+
+	return outgoingLight;
+}
+
+
 
 
 
@@ -215,12 +390,13 @@ float4 _LN_PS_ClusteredForward_Default(
 	material.diffuseColor = lerp(surface.Albedo.xyz, float3(0, 0, 0), metallic);
 	material.specularColor = lerp(float3(0.04, 0.04, 0.04), surface.Albedo.xyz, metallic);
 	material.specularRoughness = roughness;
-	
+
+	float3 result = float3(0, 0, 0);
+#if 0
 	/**/
 	LN_ReflectedLight reflectedLight = {float3(0,0,0),float3(0,0,0),float3(0,0,0),float3(0,0,0)};
 	LN_IncidentLight directLight;
 	
-	float3 result = float3(0, 0, 0);
 	///////////////////////////
 	for (int i = 0; i < 4; i++)
 	{
@@ -378,7 +554,7 @@ float4 _LN_PS_ClusteredForward_Default(
 
 	// TODO: ひとまず
 	reflectedLight.directDiffuse += ambientIrradiance * material.diffuseColor;
-
+#endif
 	//RE_IndirectDiffuse_BlinnPhong(ambientIrradiance, geometry, material, reflectedLight);
 
 #endif
@@ -394,14 +570,14 @@ float4 _LN_PS_ClusteredForward_Default(
 
 	/**/
 	float opacity = 1.0;
-	float3 outgoingLight =
-		surface.Emission +
-		reflectedLight.directDiffuse +
-		reflectedLight.directSpecular +
-		reflectedLight.indirectDiffuse +
-		reflectedLight.indirectSpecular;
+	float3 outgoingLight = _LN_ComputePBRLocalLights(localLightContext, geometry, material);
+	//	surface.Emission +
+	//	reflectedLight.directDiffuse +
+	//	reflectedLight.directSpecular +
+	//	reflectedLight.indirectDiffuse +
+	//	reflectedLight.indirectSpecular;
 
-	return float4(outgoingLight, opacity);
+	return float4(surface.Emission + outgoingLight, opacity);
 	
 	// Shadow
     //float4 posInLight = extra.vInLightPosition;
