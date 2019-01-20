@@ -253,7 +253,7 @@ float3 LN_SpecularBRDF(const LN_IncidentLight directLight, const LN_PBRGeometry 
 }
 
 // RenderEquations(RE)
-void LN_RE_Direct(const in LN_IncidentLight directLight, const LN_PBRGeometry geometry, const LN_PBRMaterial material, inout LN_ReflectedLight reflectedLight)
+void LN_RE_Direct_BlinnPhong(const in LN_IncidentLight directLight, const LN_PBRGeometry geometry, const LN_PBRMaterial material, inout LN_ReflectedLight reflectedLight)
 {
 	// コサイン項
 	float dotNL = saturate(dot(geometry.normal, directLight.direction));
@@ -270,15 +270,23 @@ void LN_RE_Direct(const in LN_IncidentLight directLight, const LN_PBRGeometry ge
 	// 鏡面反射成分
 	reflectedLight.directSpecular += irradiance * LN_SpecularBRDF(directLight, geometry, material.specularColor, material.specularRoughness);
 }
+// RE_Direct_BlinnPhong
+// RE_Direct_Physical
 
 float3 BRDF_Diffuse_Lambert(const float3 diffuseColor)
 {
 	return LN_RECIPROCAL_PI * diffuseColor;
 }
 
-void RE_IndirectDiffuse_BlinnPhong(const float3 irradiance, const LN_PBRGeometry geometry, const LN_PBRMaterial material, inout LN_ReflectedLight reflectedLight)
+void LN_RE_IndirectDiffuse_BlinnPhong(const float3 irradiance, const LN_PBRGeometry geometry, const LN_PBRMaterial material, inout LN_ReflectedLight reflectedLight)
 {
 	reflectedLight.indirectDiffuse += irradiance * BRDF_Diffuse_Lambert( material.diffuseColor );
 }
+
+#define LN_RE_Direct				LN_RE_Direct_BlinnPhong
+#define LN_RE_IndirectDiffuse		LN_RE_IndirectDiffuse_BlinnPhong
+
+
+
 
 #endif // LUMINO_PBR_INCLUDED

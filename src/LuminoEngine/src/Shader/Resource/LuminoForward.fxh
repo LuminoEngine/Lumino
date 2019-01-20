@@ -54,6 +54,8 @@ LN_VSOutput_ClusteredForward LN_ProcessVertex_ClusteredForward(LN_VSInput input)
 }
 
 
+
+
 struct GlobalLightInfo
 {
 	float4	color;
