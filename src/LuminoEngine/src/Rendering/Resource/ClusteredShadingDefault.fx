@@ -8,99 +8,15 @@
 #include <LuminoShadow.fxh>
 #include <LuminoSkinning.fxh>
 
-
-
 //------------------------------------------------------------------------------
 // Lib (ClusteredForward)
 
-
-static const int MaxLights = 16;
-
-/*
-sampler3D	clustersSampler = sampler_state
-{
-	texture = <ln_clustersTexture>;
-	MinFilter = Point; 
-	MagFilter = Point;
-	MipFilter = None;
-	AddressU = Clamp;
-	AddressV = Clamp;
-};
-*/
 
 float4	ln_AmbientColor;
 float4	ln_AmbientSkyColor;
 float4	ln_AmbientGroundColor;
 float4	ln_FogParams;
 
-
-
-
-
-
-
-
-
-
-
-/*
-struct PointLight
-{
-	float4	pos;
-	float4	color;
-};
-
-PointLight LN_GetPointLight(int index)
-{
-	float2 uv = 1.0 / LightInfoTextureSize;
-	float4 tc0 = float4((0.0 + 0.5f) * uv.x, (index + 0.5f) * uv.y, 0, 1);	// +0.5 は半ピクセル分
-	float4 tc1 = float4((1.0 + 0.5f) * uv.x, (index + 0.5f) * uv.y, 0, 1);	// +0.5 は半ピクセル分
-	PointLight o;
-	
-	tc0.y = 1.0 - tc0.y;
-	tc1.y = 1.0 - tc1.y;
-	//o.pos = tex2Dlod(m_pointLightInfoSampler, tc0);
-	//o.color = tex2Dlod(m_pointLightInfoSampler, tc1);
-	o.pos = tex2D(pointLightInfoSampler, tc0.xy);
-	o.color = tex2D(pointLightInfoSampler, tc1.xy);
-	return o;
-}
-*/
-
-/*
-float2 _LN_FlipV(float2 uv)
-{
-	return float2(uv.x, 1.0 - uv.y);
-}
-*/
-
-
-
-
-/** 
- * Calculates attenuation for a spot light.
- * toLight			: normalize vector to light. 
- * spotDirection	: the direction of the spot light.
- * spotAngles		: x=cos(outerRadius), y=1.0/cos(innerRadius)
- */
-float _LN_CalculateSpotAttenuation(float3 toLight, float3 spotDirection, float2 spotAngles)
-{
-	float t = saturate((dot(toLight, -spotDirection) - spotAngles.x) * spotAngles.y);
-	return t * t;
-}
-
-
-/** 
- * Returns a radial attenuation factor for a point light.  
- * WorldLightVector is the vector from the position being shaded to the light, divided by the radius of the light. 
- */
-float RadialAttenuation(float3 WorldLightVector, float FalloffExponent)
-{
-	float NormalizeDistanceSquared = dot(WorldLightVector, WorldLightVector);
-
-	// UE3 (fast, but now we not use the default of 2 which looks quite bad):
-	return pow(1.0f - saturate(NormalizeDistanceSquared), FalloffExponent); 
-}
 
 
 
@@ -133,8 +49,7 @@ float4 _LN_PS_ClusteredForward_Default(
 	_LN_LocalLightContext localLightContext;
 	_LN_InitLocalLightContext(localLightContext, vertexPos, viewPos);
 	
-	float4 mc = surface.Albedo;// * ln_ColorScale;//(tex2D(MaterialTextureSampler, p.UV) * p.Color) * ln_ColorScale;
-	
+	float4 mc = surface.Albedo;
 	
 	/**/
 	LN_PBRGeometry geometry;
@@ -164,11 +79,6 @@ float4 _LN_PS_ClusteredForward_Default(
 	/**/
 	float opacity = 1.0;
 	float3 outgoingLight = _LN_ComputePBRLocalLights(localLightContext, geometry, material);
-	//	surface.Emission +
-	//	reflectedLight.directDiffuse +
-	//	reflectedLight.directSpecular +
-	//	reflectedLight.indirectDiffuse +
-	//	reflectedLight.indirectSpecular;
 
 	return float4(surface.Emission + outgoingLight, opacity);
 	
