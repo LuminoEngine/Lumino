@@ -240,16 +240,16 @@ int main(int argc, char** argv)
     auto plane1 = newObject<WorldObject>();
     auto planecmp2 = newObject<PlaneComponent>();
     auto planemat2 = Material::create();
-    planemat2->setMetallic(0.1);
-    planemat2->setRoughness(0.1);
+    //planemat2->setMetallic(0.1);
+    //planemat2->setRoughness(0.1);
     plane1->addComponent(planecmp2);
     planecmp2->setMaterial(planemat2);
 
-    auto light1 = PointLight::create();
-    light1->setPosition(-3, 0.1, -2);
+    //auto light1 = PointLight::create();
+    //light1->setPosition(-3, 0.1, -2);
 
-    auto light2 = SpotLight::create();
-    light2->setPosition(3, 0.1, -2);
+    //auto light2 = SpotLight::create();
+    //light2->setPosition(3, 0.1, -2);
 
 #if 0
     auto meshMaterial = Material::create();

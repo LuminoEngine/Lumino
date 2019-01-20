@@ -12,7 +12,7 @@ namespace LuminoBuild
             // default
             if (args.Length == 0)
             {
-                args = new string[] { "MakePackage" };
+                args = new string[] { "BuildEmbeddedResources" };
             }
 
             Assembly thisAssembly = Assembly.GetEntryAssembly();

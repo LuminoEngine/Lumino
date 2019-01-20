@@ -120,7 +120,9 @@ float3 LN_GetAmbientLightIrradiance(const in float3 color)
 {
 	float3 irradiance = color;
 
-	irradiance *= LN_PI;	// PHYSICALLY_CORRECT_LIGHTS
+#ifndef PHYSICALLY_CORRECT_LIGHTS
+	irradiance *= LN_PI;
+#endif
 
 	return irradiance;
 }
@@ -131,11 +133,11 @@ float3 LN_GetHemisphereLightIrradiance(const in LN_HemisphereLight hemiLight, co
 	float dotNL = dot(geometry.normal, hemiLight.upDirection);
 	float hemiDiffuseWeight = 0.5 * dotNL + 0.5;
 
-	float3 skyColor = hemiLight.skyColor;
-	float3 groundColor = hemiLight.groundColor;
-	float3 irradiance = lerp(groundColor, skyColor, hemiDiffuseWeight);
+	float3 irradiance = lerp(hemiLight.groundColor, hemiLight.skyColor, hemiDiffuseWeight);
 
+#ifndef PHYSICALLY_CORRECT_LIGHTS
 	irradiance *= LN_PI;	// PHYSICALLY_CORRECT_LIGHTS
+#endif
 
 	return irradiance;
 }
