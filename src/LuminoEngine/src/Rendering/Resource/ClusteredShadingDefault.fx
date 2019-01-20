@@ -14,35 +14,6 @@
 // Lib (ClusteredForward)
 
 
-
-Texture2D ln_GlobalLightInfoTexture;
-SamplerState ln_GlobalLightInfoTextureSamplerState;
-/*
-sampler2D ln_GlobalLightInfoSampler = sampler_state
-{
-	Texture = <ln_GlobalLightInfoTexture>;
-	MinFilter = Point; 
-	MagFilter = Point;
-	MipFilter = None;
-	AddressU = Clamp;
-	AddressV = Clamp;
-};
-*/
-
-Texture2D ln_pointLightInfoTexture;
-SamplerState ln_pointLightInfoTextureSamplerState;
-/*
-sampler2D pointLightInfoSampler = sampler_state
-{
-	Texture = <ln_pointLightInfoTexture>;
-	MinFilter = Point; 
-	MagFilter = Point;
-	MipFilter = None;
-	AddressU = Clamp;
-	AddressV = Clamp;
-};
-*/
-
 static const int MaxLights = 16;
 
 float		ln_nearClip;
@@ -80,7 +51,6 @@ float4	ln_FogParams;
 
 
 
-static float2 LightInfoTextureSize = float2(4, 64);
 
 // LightClusters の bias の逆変換
 float _LN_FlustumClustereDepthBias(float z)
@@ -110,93 +80,16 @@ PointLight LN_GetPointLight(int index)
 	return o;
 }
 */
-struct LightInfo
-{
-	float3	position;
-	float	range;
-	float	attenuation;
-	float4	color;
-	float3	direction;
-	float2	spotAngles;
-};
 
-struct GlobalLightInfo
-{
-	float4	color;
-	float4	groundColor;
-	float4	directionAndType;
-};
-
+/*
 float2 _LN_FlipV(float2 uv)
 {
 	return float2(uv.x, 1.0 - uv.y);
 }
-
-LightInfo _LN_GetLightInfoClusterd(int index)
-{
-	float2 s = 1.0 / LightInfoTextureSize;
-	float y = (float)index;
-	y += 0.5;
-	//float4 tc0 = float4((0.0 + 0.5f) * s.x, (index + 0.5f) * s.y, 0, 1);	// +0.5 は半ピクセル分
-	//float4 tc1 = float4((1.0 + 0.5f) * s.x, (index + 0.5f) * s.y, 0, 1);	// +0.5 は半ピクセル分
-	//tc0.y = 1.0 - tc0.y;
-	//tc1.y = 1.0 - tc1.y;
-	
-	//float4 posAndRange = tex2D(pointLightInfoSampler, tc0.xy);
-	//float4 spotDirection = tex2D(pointLightInfoSampler, tc1.xy);
-
-	//float4 posAndRange = tex2D(pointLightInfoSampler, (float2(0.0, y) * s));
-	//float4 spotDirection = tex2D(pointLightInfoSampler, (float2(1.0, y) * s));
-	//float4 spotAngle = tex2D(pointLightInfoSampler, (float2(2.0, y) * s));
-	//float4 color = tex2D(pointLightInfoSampler, (float2(3.0, y) * s));
-	float4 posAndRange = ln_pointLightInfoTexture.Sample(ln_pointLightInfoTextureSamplerState, (float2(0.0, y) * s));
-	float4 spotDirection = ln_pointLightInfoTexture.Sample(ln_pointLightInfoTextureSamplerState, (float2(1.0, y) * s));
-	float4 spotAngle = ln_pointLightInfoTexture.Sample(ln_pointLightInfoTextureSamplerState, (float2(2.0, y) * s));
-	float4 color = ln_pointLightInfoTexture.Sample(ln_pointLightInfoTextureSamplerState, (float2(3.0, y) * s));
-	
-	LightInfo light;
-	light.position = posAndRange.xyz;
-	light.range = posAndRange.w;
-	light.attenuation = spotDirection.w;
-	light.color = color;
-	light.direction = spotDirection.xyz;
-	light.spotAngles = spotAngle.xy;
-	
-	/*
-	float2 uv = 1.0 / LightInfoTextureSize;
-	float4 tc0 = float4((0.0 + 0.5f) * uv.x, (index + 0.5f) * uv.y, 0, 1);	// +0.5 は半ピクセル分
-	float4 tc1 = float4((1.0 + 0.5f) * uv.x, (index + 0.5f) * uv.y, 0, 1);	// +0.5 は半ピクセル分
-	LightInfo light;
-	
-	tc0.y = 1.0 - tc0.y;
-	tc1.y = 1.0 - tc1.y;
-	//o.pos = tex2Dlod(m_pointLightInfoSampler, tc0);
-	//o.color = tex2Dlod(m_pointLightInfoSampler, tc1);
-	light.position = tex2D(pointLightInfoSampler, tc0.xy);
-	light.color = tex2D(pointLightInfoSampler, tc1.xy);
-	
-	light.range = 1;
-	light.direction = float3(1, 0, 0);
-	light.spotAngles = float2(0, 0);
-	*/
-	return light;
-}
+*/
 
 
-GlobalLightInfo _LN_GetGlobalLightInfo(int index)
-{
-	float2 s = 1.0 / LightInfoTextureSize;
-	float y = (float)index;
-	y += 0.5;
-	GlobalLightInfo info;
-	//info.color = tex2D(ln_GlobalLightInfoSampler, (float2(0.0, y) * s));
-	//info.groundColor = tex2D(ln_GlobalLightInfoSampler, (float2(1.5, y) * s));
-	//info.directionAndType = tex2D(ln_GlobalLightInfoSampler, (float2(2.5, y) * s));
-	info.color = ln_GlobalLightInfoTexture.Sample(ln_GlobalLightInfoTextureSamplerState, (float2(0.0, y) * s));
-	info.groundColor = ln_GlobalLightInfoTexture.Sample(ln_GlobalLightInfoTextureSamplerState, (float2(1.5, y) * s));
-	info.directionAndType = ln_GlobalLightInfoTexture.Sample(ln_GlobalLightInfoTextureSamplerState, (float2(2.5, y) * s));
-	return info;
-}
+
 
 /** 
  * Calculates attenuation for a spot light.

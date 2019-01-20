@@ -1,4 +1,7 @@
-
+/*
+ Note:
+   計算は View 空間上で行われる。
+ */
 
 #ifndef LUMINO_PBR_INCLUDED
 #define LUMINO_PBR_INCLUDED
@@ -45,7 +48,7 @@ struct LN_ReflectedLight
 // PBR 用 形状情報
 struct LN_PBRGeometry
 {
-	float3 position;
+	float3 position;	// in view space
 	float3 normal;
 	float3 viewDir;
 };
@@ -79,7 +82,7 @@ struct LN_DirectionalLight
 // ポイントライトの情報
 struct LN_PointLight
 {
-	float3 position;
+	float3 position;	// View 空間上の、ライトの中心点
 	float3 color;
 	float distance;
 	float decay;
@@ -106,9 +109,8 @@ bool LN_TestLightInRange(const in float lightDistance, const in float cutoffDist
 // 光源からの減衰率
 float LN_PunctualLightIntensityToIrradianceFactor(const in float lightDistance, const in float cutoffDistance, const in float decayExponent)
 {
-	if (decayExponent > 0.0)
-	{
-		return pow(saturate(-lightDistance / cutoffDistance + 1.0), decayExponent);
+	if( cutoffDistance > 0.0 && decayExponent > 0.0 ) {
+		return pow( saturate( -lightDistance / cutoffDistance + 1.0 ), decayExponent );
 	}
 	return 1.0;
 }
@@ -149,6 +151,15 @@ void LN_GetDirectionalDirectLightIrradiance(const LN_DirectionalLight directiona
 // ポイントライトの放射輝度の計算
 void LN_GetPointDirectLightIrradiance(const in LN_PointLight pointLight, const in LN_PBRGeometry geometry, out LN_IncidentLight directLight)
 {
+	float3 lVector = pointLight.position - geometry.position;
+	directLight.direction = normalize(lVector);
+
+	float lightDistance = length( lVector );
+
+	directLight.color = pointLight.color;
+	directLight.color *= LN_PunctualLightIntensityToIrradianceFactor( lightDistance, pointLight.distance, pointLight.decay );
+	directLight.visible = ( directLight.color != float3(0.0, 0.0, 0.0) );
+	/*
 	float3 L = pointLight.position - geometry.position;
 	directLight.direction = normalize(L);
 
@@ -164,6 +175,7 @@ void LN_GetPointDirectLightIrradiance(const in LN_PointLight pointLight, const i
 		directLight.color = float3(0,0,0);
 		directLight.visible = false;
 	}
+	*/
 }
 
 // ポイントライトの放射輝度の計算

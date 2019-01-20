@@ -220,22 +220,22 @@ int main(int argc, char** argv)
     //auto body3 = newObject<SoftBody>();
     //body3->createFromMesh(mesh3->staticMeshComponent()->model()->meshContainers().front()->meshResource(), Engine::mainPhysicsWorld());
 
-    //List<Ref<WorldObject>> spheres;
-    //for (int y = 0; y < 5; y++)
-    //{
-    //    for (int i = 0; i < 5; i++)
-    //    {
-    //        auto obj2 = newObject<WorldObject>();
-    //        auto cmp2 = newObject<SphereComponent>();
-    //        auto mat2 = Material::create();
-    //        mat2->setMetallic(static_cast<float>(i) / 5);
-    //        mat2->setRoughness(std::max(static_cast<float>(y) / 5, 0.001f));
-    //        obj2->addComponent(cmp2);
-    //        obj2->setPosition(i, -y, 0);
-    //        cmp2->setMaterial(mat2);
-    //        spheres.add(obj2);
-    //    }
-    //}
+    List<Ref<WorldObject>> spheres;
+    for (int y = 0; y < 5; y++)
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            auto obj2 = newObject<WorldObject>();
+            auto cmp2 = newObject<SphereComponent>();
+            auto mat2 = Material::create();
+            mat2->setMetallic(static_cast<float>(i) / 5);
+            mat2->setRoughness(std::max(static_cast<float>(y) / 5, 0.001f));
+            obj2->addComponent(cmp2);
+            obj2->setPosition(i, -y, 0);
+            cmp2->setMaterial(mat2);
+            spheres.add(obj2);
+        }
+    }
 
     auto plane1 = newObject<WorldObject>();
     auto planecmp2 = newObject<PlaneComponent>();
@@ -244,6 +244,12 @@ int main(int argc, char** argv)
     planemat2->setRoughness(0.1);
     plane1->addComponent(planecmp2);
     planecmp2->setMaterial(planemat2);
+
+    auto light1 = PointLight::create();
+    light1->setPosition(-3, 0.1, -2);
+
+    auto light2 = SpotLight::create();
+    light2->setPosition(3, 0.1, -2);
 
 #if 0
     auto meshMaterial = Material::create();
