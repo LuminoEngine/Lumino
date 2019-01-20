@@ -6,6 +6,35 @@
 namespace ln {
 
 //=============================================================================
+// PlaneComponent
+
+PlaneComponent::PlaneComponent()
+    : m_width(10.0f)
+    , m_depth(10.0f)
+{
+}
+
+PlaneComponent::~PlaneComponent()
+{
+}
+
+void PlaneComponent::init()
+{
+    VisualComponent::init();
+}
+
+void PlaneComponent::setMaterial(Material* material)
+{
+    m_material = material;
+}
+
+void PlaneComponent::onRender(RenderingContext* context)
+{
+    context->setMaterial(m_material);
+    context->drawPlane(m_width, m_depth, Color::White);
+}
+
+//=============================================================================
 // SphereComponent
 
 SphereComponent::SphereComponent()

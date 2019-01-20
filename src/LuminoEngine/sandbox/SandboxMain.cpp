@@ -199,7 +199,7 @@ int main(int argc, char** argv)
     //auto mesh3 = newObject<StaticMesh>(u"D:/Proj/TH-10/Assets/Graphics/test/sphere4.obj", 2);
     //mesh3->setVisible(false);
 
-    auto smesh1 = SkinnedMesh::create(u"D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku.pmx");
+    //auto smesh1 = SkinnedMesh::create(u"D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku.pmx");
 #endif
 
     //auto shape1 = BoxCollisionShape::create(5, 1, 5);
@@ -220,22 +220,30 @@ int main(int argc, char** argv)
     //auto body3 = newObject<SoftBody>();
     //body3->createFromMesh(mesh3->staticMeshComponent()->model()->meshContainers().front()->meshResource(), Engine::mainPhysicsWorld());
 
-    List<Ref<WorldObject>> spheres;
-    for (int y = 0; y < 1; y++)
-    {
-        for (int i = 0; i < 1; i++)
-        {
-            auto obj2 = newObject<WorldObject>();
-            auto cmp2 = newObject<SphereComponent>();
-            auto mat2 = Material::create();
-            mat2->setMetallic(static_cast<float>(i) / 5);
-            mat2->setRoughness(std::max(static_cast<float>(y) / 5, 0.001f));
-            obj2->addComponent(cmp2);
-            obj2->setPosition(i, -y, 0);
-            cmp2->setMaterial(mat2);
-            spheres.add(obj2);
-        }
-    }
+    //List<Ref<WorldObject>> spheres;
+    //for (int y = 0; y < 5; y++)
+    //{
+    //    for (int i = 0; i < 5; i++)
+    //    {
+    //        auto obj2 = newObject<WorldObject>();
+    //        auto cmp2 = newObject<SphereComponent>();
+    //        auto mat2 = Material::create();
+    //        mat2->setMetallic(static_cast<float>(i) / 5);
+    //        mat2->setRoughness(std::max(static_cast<float>(y) / 5, 0.001f));
+    //        obj2->addComponent(cmp2);
+    //        obj2->setPosition(i, -y, 0);
+    //        cmp2->setMaterial(mat2);
+    //        spheres.add(obj2);
+    //    }
+    //}
+
+    auto plane1 = newObject<WorldObject>();
+    auto planecmp2 = newObject<PlaneComponent>();
+    auto planemat2 = Material::create();
+    planemat2->setMetallic(0.1);
+    planemat2->setRoughness(0.1);
+    plane1->addComponent(planecmp2);
+    planecmp2->setMaterial(planemat2);
 
 #if 0
     auto meshMaterial = Material::create();

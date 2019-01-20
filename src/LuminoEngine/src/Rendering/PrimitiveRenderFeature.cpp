@@ -62,7 +62,8 @@ void InternalPrimitiveRenderer::flush(IGraphicsDeviceContext* context)
     size_t indexOffset = 0;
     for (MeshGenerater* gen : m_generators) {
         buffer.setBuffer(vertexBuffer + vertexOffset, indexBuffer + indexOffset, IndexBufferFormat::UInt16, vertexOffset);
-        gen->generate(&buffer);
+        buffer.generate(gen);
+        //gen->generate(&buffer);
         vertexOffset += gen->vertexCount();
         indexOffset += gen->indexCount();
     }

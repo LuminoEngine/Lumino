@@ -4,11 +4,14 @@
 
 namespace ln {
 namespace detail {
+class MeshGenerater;
 
 class MeshGeneraterBuffer
 {
 public:
     void setBuffer(Vertex* vertexBuffer, void* indexBuffer, IndexBufferFormat indexFormat, uint32_t indexNumberOffset);
+
+    void generate(MeshGenerater* generator);
 
 
     Vertex* vertexBuffer() const { return m_vertexBuffer; }
@@ -28,14 +31,22 @@ public:
             ((uint32_t*)m_indexBuffer)[index] = m_indexNumberOffset + i;
     }
 
-    Color m_color;
-
 private:
     Vertex* m_vertexBuffer;
     void* m_indexBuffer;
     IndexBufferFormat m_indexFormat;
     uint32_t m_indexNumberOffset;
+    MeshGenerater* m_generator;
 };
+
+#define LN_MESHGENERATOR_CLONE_IMPLEMENT(type) \
+    virtual MeshGenerater* clone(LinearAllocator* allocator) const override \
+    { \
+        auto* ptr = allocator->allocate(sizeof(type)); \
+        type* p = new (ptr)type(/**this*/); \
+        p->copyFrom(this); \
+        return p; \
+    }
 
 // 描画コマンドのバッファに詰め込まれるのであまり大きいデータは持たせないように。
 class MeshGenerater
@@ -44,6 +55,7 @@ public:
     virtual ~MeshGenerater();
 
     void setColor(const Color& color) { m_color = color; }
+    const Color& color() const { return m_color; }
     void setTransform(const Matrix& transform) { m_transform = transform; }
 
     //virtual size_t instanceSize() const = 0;
@@ -52,7 +64,7 @@ public:
     virtual int indexCount() const = 0;
     virtual PrimitiveType primitiveType() const = 0;
     virtual MeshGenerater* clone(LinearAllocator* allocator) const = 0;
-    virtual void generate(MeshGeneraterBuffer* buf) = 0;
+    virtual void onGenerate(MeshGeneraterBuffer* buf) = 0;
 
 
     void transform(Vertex* begin, int vertexCount)
@@ -91,18 +103,54 @@ public:
     virtual int vertexCount() const override { return 2; }
     virtual int indexCount() const override { return 2; }
     virtual PrimitiveType primitiveType() const override { return PrimitiveType::LineList; }
-    virtual MeshGenerater* clone(LinearAllocator* allocator) const override
-    {
-        auto* ptr = allocator->allocate(sizeof(SingleLineGenerater));
-        return new (ptr)SingleLineGenerater(*this);
-    }
-    virtual void generate(MeshGeneraterBuffer* buf) override
+    virtual void onGenerate(MeshGeneraterBuffer* buf) override
     {
         buf->setV(0, Vertex{ point1, Vector3::UnitY, Vector2::Zero, point1Color });
         buf->setV(1, Vertex{ point2, Vector3::UnitY, Vector2::Zero, point2Color });
         buf->setI(0, 0);
         buf->setI(1, 1);
     }
+    void copyFrom(const SingleLineGenerater* other)
+    {
+        MeshGenerater::copyFrom(other);
+        point1 = other->point1;
+        point1Color = other->point1Color;
+        point2 = other->point2;
+        point2Color = other->point2Color;
+    }
+    LN_MESHGENERATOR_CLONE_IMPLEMENT(SingleLineGenerater);
+};
+
+// Y+ を正面とする
+class PlaneMeshGenerater
+    : public MeshGenerater
+{
+public:
+    Vector2	size;
+
+    virtual int vertexCount() const override { return 4; }
+    virtual int indexCount() const override { return 6; }
+    virtual PrimitiveType primitiveType() const override { return PrimitiveType::TriangleList; }
+    virtual void onGenerate(MeshGeneraterBuffer* buf) override
+    {
+        Vector2 half = size / 2;
+        buf->setV(0, Vector3(-half.x, 0, half.y), Vector2(0.0f, 0.0f), Vector3::UnitY);
+        buf->setV(1, Vector3(half.x, 0, half.y), Vector2(1.0f, 0.0f), Vector3::UnitY);
+        buf->setV(2, Vector3(-half.x, 0, -half.y), Vector2(0.0f, 1.0f), Vector3::UnitY);
+        buf->setV(3, Vector3(half.x, 0, -half.y), Vector2(1.0f, 1.0f), Vector3::UnitY);
+        buf->setI(0, 0);
+        buf->setI(1, 1);
+        buf->setI(2, 2);
+        buf->setI(3, 2);
+        buf->setI(4, 1);
+        buf->setI(5, 3);
+    }
+    void copyFrom(const PlaneMeshGenerater* other)
+    {
+        MeshGenerater::copyFrom(other);
+        size = other->size;
+    }
+    LN_MESHGENERATOR_CLONE_IMPLEMENT(PlaneMeshGenerater);
 };
 
 class RegularSphereMeshFactory
@@ -151,9 +199,8 @@ public:
         float	cos;
     };
 
-    virtual void generate(MeshGeneraterBuffer* buf) override
+    virtual void onGenerate(MeshGeneraterBuffer* buf) override
     {
-        buf->m_color = m_color;
         makeSinCosTable();
 
         uint32_t iV = 0;

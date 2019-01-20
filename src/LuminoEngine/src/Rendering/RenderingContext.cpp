@@ -180,6 +180,27 @@ void RenderingContext::drawLine(const Vector3& from, const Color& fromColor, con
     //ptr->makeBoundingSphere(Vector3::min(position1, position2), Vector3::max(position1, position2));
 }
 
+void RenderingContext::drawPlane(float width, float depth, const Color& color)
+{
+    class DrawPlane : public detail::RenderDrawElement
+    {
+    public:
+        detail::PlaneMeshGenerater data;
+
+        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+        {
+            static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::PlaneMeshGenerater>(data);
+        }
+    };
+
+    auto* element = m_builder->addNewDrawElement<DrawPlane>(
+        m_manager->primitiveRenderFeature(),
+        m_builder->primitiveRenderFeatureStageParameters());
+    element->data.size.set(width, depth);
+    element->data.setColor(color);
+    element->data.setTransform(element->combinedWorldMatrix());
+}
+
 void RenderingContext::drawSphere(float radius, int slices, int stacks, const Color& color, const Matrix& localTransform)
 {
     class DrawSphere : public detail::RenderDrawElement
