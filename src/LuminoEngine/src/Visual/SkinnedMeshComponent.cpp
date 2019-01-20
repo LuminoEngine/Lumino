@@ -42,7 +42,7 @@ void SkinnedMeshComponent::onRender(RenderingContext* context)
         MeshResource* meshResource = meshContainer->meshResource();
         for (int iSection = 0; iSection < meshResource->sections().size(); iSection++)
         {
-            //context->setMaterial(m_model->materials()[meshResource->sections()[iSection].materialIndex]);
+            context->setMaterial(m_model->materials()[meshResource->sections()[iSection].materialIndex]);
             context->drawMesh(meshResource, iSection);
         }
     }

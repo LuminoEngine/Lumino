@@ -199,9 +199,10 @@ int main(int argc, char** argv)
     //auto mesh3 = newObject<StaticMesh>(u"D:/Proj/TH-10/Assets/Graphics/test/sphere4.obj", 2);
     //mesh3->setVisible(false);
 
-    //auto smesh1 = SkinnedMesh::create(u"D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku.pmx");
+    auto smesh1 = SkinnedMesh::create(u"D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku.pmx");
 #endif
 
+#if 0
     //auto shape1 = BoxCollisionShape::create(5, 1, 5);
     //auto body1 = newObject<RigidBody>();
     //body1->addCollisionShape(shape1);
@@ -252,6 +253,7 @@ int main(int argc, char** argv)
 
     auto light2 = SpotLight::create();
     light2->setPosition(3, 0.1, -2);
+#endif
 
 #if 0
     auto meshMaterial = Material::create();

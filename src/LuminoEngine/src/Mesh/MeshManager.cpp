@@ -4,6 +4,7 @@
 #include <LuminoEngine/Graphics/VertexDeclaration.hpp>
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include "../Asset/AssetManager.hpp"
 #include "ObjMeshImporter.hpp"
@@ -231,6 +232,12 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
     auto meshContainer = newObject<MeshContainer>();
     meshContainer->setMeshResource(mesh);
     meshModel->addMeshContainer(meshContainer);
+
+    for (auto& pmxMaterial : mesh->materials) {
+        auto m = pmxMaterial->MakeCommonMaterial();
+        meshModel->addMaterial(m);
+    }
+
 	return meshModel;
 }
 

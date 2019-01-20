@@ -19,6 +19,14 @@ namespace detail {
 Ref<AbstractMaterial> PmxMaterialResource::MakeCommonMaterial() const
 {
     auto m = newObject<Material>();
+    m->setMainTexture(Texture);
+    m->setColor(Diffuse);
+    m->setEmissive(Emissive);
+
+    // MMD 用ではないデフォルトシェーダで描画される場合に備える
+    m->setMetallic(0.01);
+    m->setRoughness(0.8);
+
 	//m->setBuiltinColorParameter(
 	//	AbstractMaterial::DiffuseParameter,
 	//	Diffuse.r,
@@ -410,10 +418,14 @@ void PmxLoader::loadIndices(BinaryReader* reader)
 		//memcpy(buf, indices, sizeof(uint16_t) * indexCount);
 		for (int i = 0; i < indexCount; i += 3)
 		{
+            m_modelCore->setIndex(i + 0, indices[i + 0]);
+            m_modelCore->setIndex(i + 1, indices[i + 1]);
+            m_modelCore->setIndex(i + 2, indices[i + 2]);
+
 			// PMX と Lumino では面方向が逆なので反転する
-			m_modelCore->setIndex(i + 0, indices[i + 0]);
-			m_modelCore->setIndex(i + 1, indices[i + 2]);
-			m_modelCore->setIndex(i + 2, indices[i + 1]);
+			//m_modelCore->setIndex(i + 0, indices[i + 0]);
+			//m_modelCore->setIndex(i + 1, indices[i + 2]);
+			//m_modelCore->setIndex(i + 2, indices[i + 1]);
 		}
 	}
 	// 2 or 4 バイトインデックス
@@ -423,10 +435,14 @@ void PmxLoader::loadIndices(BinaryReader* reader)
 		//memcpy(buf, indices, sizeof(uint32_t) * indexCount);
 		for (int i = 0; i < indexCount; i += 3)
 		{
+            m_modelCore->setIndex(i + 0, indices[i + 0]);
+            m_modelCore->setIndex(i + 1, indices[i + 1]);
+            m_modelCore->setIndex(i + 2, indices[i + 2]);
+
 			// PMX と Lumino では面方向が逆なので反転する
-			m_modelCore->setIndex(i + 0, indices[i + 0]);
-			m_modelCore->setIndex(i + 1, indices[i + 2]);
-			m_modelCore->setIndex(i + 2, indices[i + 1]);
+			//m_modelCore->setIndex(i + 0, indices[i + 0]);
+			//m_modelCore->setIndex(i + 1, indices[i + 2]);
+			//m_modelCore->setIndex(i + 2, indices[i + 1]);
 		}
 	}
 }
@@ -446,7 +462,8 @@ void PmxLoader::loadTextureTable(BinaryReader* reader, const Path& baseDir)
 
 		// 作成
 		Path filePath(baseDir, name);
-        m_textureTable.add(Assets::loadTexture(filePath));
+        m_textureTable.add(newObject<Texture2D>(filePath));
+        //m_textureTable.add(Assets::loadTexture(filePath));
 		//m_textureTable.add(m_manager->createTexture(baseDir, filePath, m_flags));
 	}
 }
