@@ -220,6 +220,7 @@ int main(int argc, char** argv)
     //auto body3 = newObject<SoftBody>();
     //body3->createFromMesh(mesh3->staticMeshComponent()->model()->meshContainers().front()->meshResource(), Engine::mainPhysicsWorld());
 
+    auto tex2 = Assets::loadTexture(u"D:/Documents/Modeling/grid_uv_2.png");
     List<Ref<WorldObject>> spheres;
     for (int y = 0; y < 5; y++)
     {
@@ -230,6 +231,7 @@ int main(int argc, char** argv)
             auto mat2 = Material::create();
             mat2->setMetallic(static_cast<float>(i) / 5);
             mat2->setRoughness(std::max(static_cast<float>(y) / 5, 0.001f));
+            //mat2->setMainTexture(tex2);
             obj2->addComponent(cmp2);
             obj2->setPosition(i, -y, 0);
             cmp2->setMaterial(mat2);
@@ -245,11 +247,11 @@ int main(int argc, char** argv)
     plane1->addComponent(planecmp2);
     planecmp2->setMaterial(planemat2);
 
-    //auto light1 = PointLight::create();
-    //light1->setPosition(-3, 0.1, -2);
+    auto light1 = PointLight::create();
+    light1->setPosition(-3, 0.1, -2);
 
-    //auto light2 = SpotLight::create();
-    //light2->setPosition(3, 0.1, -2);
+    auto light2 = SpotLight::create();
+    light2->setPosition(3, 0.1, -2);
 
 #if 0
     auto meshMaterial = Material::create();

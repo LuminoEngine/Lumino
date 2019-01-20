@@ -2,6 +2,13 @@
 #ifndef LUMINO_FORWARD_INCLUDED
 #define LUMINO_FORWARD_INCLUDED
 
+float		ln_nearClip;
+float		ln_farClip;
+//float3		ln_cameraPos;
+
+Texture3D ln_clustersTexture;
+SamplerState ln_clustersTextureSamplerState;
+
 Texture2D ln_GlobalLightInfoTexture;
 SamplerState ln_GlobalLightInfoTextureSamplerState;
 
@@ -139,5 +146,51 @@ LightInfo _LN_GetLightInfoClusterd(int index)
 	*/
 	return light;
 }
+
+
+
+
+
+
+
+// ライト情報の取り出しを抽象化するためのデータ
+struct _LN_LocalLightContext
+{
+	float lightIndices[4]; 
+};
+
+// LightClusters の bias の逆変換
+float _LN_FlustumClustereDepthBias(float z)
+{
+	return sqrt(z);
+}
+
+void _LN_InitLocalLightContext(out _LN_LocalLightContext context, float3 vertexPos, float4 viewPos)
+{
+	float depth = (viewPos.z - ln_nearClip) / (ln_farClip - ln_nearClip);
+
+	float4 vp = mul(float4(vertexPos, 1.0f), ln_WorldViewProjection);
+	vp.xyz /= vp.w;
+	
+	float cx = (vp.x + 1.0) / 2.0;
+	float cy = (vp.y + 1.0) / 2.0;
+	float cz = _LN_FlustumClustereDepthBias(depth);
+
+	float4 cluster = ln_clustersTexture.Sample(ln_clustersTextureSamplerState, float3(cx, cy, cz));
+	float lightIndices[4] = {cluster.r, cluster.g, cluster.b, cluster.a};
+	context.lightIndices = lightIndices;
+}
+
+bool _LN_GetLocalLightInfo(_LN_LocalLightContext context, float index, out LightInfo light)
+{
+	if (context.lightIndices[index] > 0.0) {
+		light = _LN_GetLightInfoClusterd((context.lightIndices[index] * 255) + 0.5 - 1);
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 
 #endif // LUMINO_FORWARD_INCLUDED
