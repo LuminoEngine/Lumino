@@ -58,8 +58,8 @@ LN_VSOutput_ClusteredForward LN_ProcessVertex_ClusteredForward(LN_VSInput input)
 
 struct GlobalLightInfo
 {
-	float4	color;
-	float4	groundColor;
+	float3	color;	// intensity 適用済み
+	float3	groundColor;	// intensity 適用済み
 	float4	directionAndType;
 };
 
@@ -68,7 +68,7 @@ struct LightInfo
 	float3	position;
 	float	range;
 	float	attenuation;
-	float4	color;
+	float3	color;	// intensity 適用済み
 	float3	direction;
 	float2	spotAngles;
 };

@@ -183,7 +183,7 @@ float3 _LN_ComputePBRLocalLights(_LN_LocalLightContext localLightContext, const 
 				LN_SpotLight spotLight;
 				spotLight.position = light.position;
 				spotLight.direction = light.direction;
-				spotLight.color = light.color.xyz;// * light.color.a;
+				spotLight.color = light.color;
 				spotLight.distance = light.range;
 				spotLight.decay = light.attenuation;
 				spotLight.coneCos = light.spotAngles.x;
@@ -199,7 +199,7 @@ float3 _LN_ComputePBRLocalLights(_LN_LocalLightContext localLightContext, const 
 				// Point light
 				LN_PointLight pointLight;
 				pointLight.position = light.position;
-				pointLight.color = light.color.xyz;// * light.color.a;
+				pointLight.color = light.color;
 				pointLight.distance = light.range;
 				pointLight.decay = light.attenuation;
 				LN_GetPointDirectLightIrradiance(pointLight, geometry, directLight);
@@ -249,8 +249,8 @@ float3 _LN_ComputePBRLocalLights(_LN_LocalLightContext localLightContext, const 
 				//ambientColor = saturate(ambientColor + c.xyz * c.a);
 				LN_HemisphereLight tl;
 				tl.upDirection = float3(0, 1, 0);
-				tl.skyColor = (light.color.rgb);// * light.color.a);
-				tl.groundColor = (light.groundColor.rgb);// * light.groundColor.a);
+				tl.skyColor = light.color;
+				tl.groundColor = light.groundColor;
 				irradiance += LN_GetHemisphereLightIrradiance(tl, geometry);
 			}
 			// AmbientLight
@@ -269,7 +269,7 @@ float3 _LN_ComputePBRLocalLights(_LN_LocalLightContext localLightContext, const 
 				/**/
 				LN_DirectionalLight tl;
 				tl.direction = light.directionAndType.xyz;//mul(float4(light.directionAndType.xyz, 1.0), ln_View).xyz;//light.directionAndType.xyz;
-				tl.color = (light.color.rgb);// * light.color.a);
+				tl.color = light.color;
 				LN_GetDirectionalDirectLightIrradiance(tl, geometry, directLight);
 				
 				// TODO: Three.js ではここで Shadow の処理を行っていた
