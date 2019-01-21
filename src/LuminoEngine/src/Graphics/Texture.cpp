@@ -106,7 +106,7 @@ void Texture2D::dispose()
 
 Bitmap2D* Texture2D::map(MapMode mode)
 {
-	if (m_initialUpdate && m_pool == GraphicsResourcePool::None)
+	if (m_initialUpdate && m_usage == GraphicsResourceUsage::Static && m_pool == GraphicsResourcePool::None)
 	{
 		LN_NOTIMPLEMENTED();
 	}
@@ -200,7 +200,7 @@ detail::ITexture* Texture2D::resolveRHIObject()
 
 	if (LN_ENSURE(m_rhiObject)) return nullptr;
 
-	if (m_pool == GraphicsResourcePool::None) {
+    if (m_usage == GraphicsResourceUsage::Static && m_pool == GraphicsResourcePool::None) {
 		m_bitmap.reset();
 	}
 

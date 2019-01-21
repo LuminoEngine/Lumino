@@ -1,9 +1,11 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Mesh/Mesh.hpp>
+#include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include "../Mesh/MeshGenerater.hpp"
 #include "RenderingManager.hpp"
 #include "DrawElementListBuilder.hpp"
@@ -321,6 +323,26 @@ void RenderingContext::drawMesh(MeshResource* meshResource, int sectionIndex)
     public:
         Ref<MeshResource> meshResource;
         int sectionIndex;
+
+        virtual void onElementInfoOverride(detail::ElementInfo* elementInfo, detail::ShaderTechniqueClass_MeshProcess* meshProcess) override
+        {
+            if (elementInfo->boneTexture && elementInfo->boneLocalQuaternionTexture) {
+                if (MeshContainer* container = meshResource->ownerContainer()) {
+                    if (StaticMeshModel* model = container->meshModel()) {
+                        if (model->meshModelType() == detail::InternalMeshModelType::SkinnedMesh) {
+                            //elementInfo->boneTexture->map()
+                            printf("skinned\n");
+                            *meshProcess = detail::ShaderTechniqueClass_MeshProcess::SkinnedMesh;
+                            Bitmap2D* bmp1 = elementInfo->boneTexture->map(MapMode::Write);
+                            Bitmap2D* bmp2 = elementInfo->boneLocalQuaternionTexture->map(MapMode::Write);
+                            static_cast<SkinnedMeshModel*>(model)->writeSkinningMatrices(
+                                reinterpret_cast<Matrix*>(bmp1->data()),
+                                reinterpret_cast<Quaternion*>(bmp2->data()));
+                        }
+                    }
+                }
+            }
+        }
 
         virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
         {

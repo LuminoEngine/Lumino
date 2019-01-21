@@ -43,10 +43,16 @@ public:
 	//const List<Ref<MeshContainer>>& meshContainers() const { return m_meshContainers; }
 	//const List<Ref<AbstractMaterial>>& materials() const { return m_materials; }
 
+
     // TODO: internal
+    void writeSkinningMatrices(Matrix* matrixesBuffer, Quaternion* localQuaternionsBuffer);
+
     List<Ref<SkinnedMeshBone>>		m_allBoneList;				// 全ボーンリスト
     List<SkinnedMeshBone*>			m_ikBoneList;
     List<SkinnedMeshBone*>			m_rootBoneList;				// ルートボーンリスト (親を持たないボーンリスト)
+
+LN_CONSTRUCT_ACCESS:
+    SkinnedMeshModel();
 
 private:
 	//List<Ref<MeshContainer>> m_meshContainers;

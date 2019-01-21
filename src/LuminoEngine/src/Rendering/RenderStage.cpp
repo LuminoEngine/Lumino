@@ -35,6 +35,10 @@ RenderDrawElement::~RenderDrawElement()
 {
 }
 
+void RenderDrawElement::onElementInfoOverride(ElementInfo* elementInfo, ShaderTechniqueClass_MeshProcess* meshProcess)
+{
+}
+
 void RenderDrawElement::onSubsetInfoOverride(SubsetInfo* subsetInfo)
 {
 }

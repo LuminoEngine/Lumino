@@ -212,12 +212,15 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
                     mainTexture = m_manager->graphicsManager()->whiteTexture();
                 }
 
+                ShaderTechniqueClass_MeshProcess meshProcess = ShaderTechniqueClass_MeshProcess::StaticMesh;
+
 				ElementInfo elementInfo;
 				elementInfo.viewProjMatrix = &cameraInfo.viewProjMatrix;
 				elementInfo.WorldMatrix = (currentStage->renderFeature && !currentStage->renderFeature->drawElementTransformNegate()) ? element->combinedWorldMatrix() : Matrix();
 				elementInfo.WorldViewProjectionMatrix = elementInfo.WorldMatrix * (*elementInfo.viewProjMatrix);
 				elementInfo.boneTexture = m_skinningMatricesTexture;
 				elementInfo.boneLocalQuaternionTexture = m_skinningLocalQuaternionsTexture;
+                element->onElementInfoOverride(&elementInfo, &meshProcess);
 
 				SubsetInfo subsetInfo;
 				subsetInfo.materialTexture = mainTexture;
@@ -228,7 +231,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 				element->onSubsetInfoOverride(&subsetInfo);
 
 				ShaderTechnique* tech = pass->selectShaderTechnique(
-					ShaderTechniqueClass_MeshProcess::StaticMesh,
+                    meshProcess,
 					finalMaterial->shader(),
 					currentStage->getShadingModelFinal(finalMaterial));
 

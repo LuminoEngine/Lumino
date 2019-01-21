@@ -28,6 +28,7 @@ const std::array<size_t, MeshResource::VBG_Count> MeshResource::VertexStrideTabl
 
 MeshResource::MeshResource()
 	: m_manager()
+    , m_ownerContainer(nullptr)
 	, m_vertexCount(0)
 	, m_indexCount(0)
 	, m_usage(GraphicsResourceUsage::Static)
@@ -348,7 +349,9 @@ void MeshContainer::init()
 
 void MeshContainer::setMeshResource(MeshResource* mesh)
 {
-	m_lodResources[0] = mesh;
+    if (LN_REQUIRE(!mesh->m_ownerContainer)) return;
+    m_lodResources[0] = mesh;
+    mesh->m_ownerContainer = this;
 }
 
 MeshResource* MeshContainer::meshResource() const
@@ -412,6 +415,16 @@ void MeshContainer::calculateBounds()
 
 //==============================================================================
 // StaticMeshModel
+
+StaticMeshModel::StaticMeshModel()
+    : m_type(detail::InternalMeshModelType::StaticMesh)
+{
+}
+
+StaticMeshModel::StaticMeshModel(detail::InternalMeshModelType type)
+    : m_type(type)
+{
+}
 
 void StaticMeshModel::addMeshContainer(MeshContainer* meshContainer)
 {

@@ -200,9 +200,9 @@ int main(int argc, char** argv)
     //mesh3->setVisible(false);
 
     auto smesh1 = SkinnedMesh::create(u"D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku.pmx");
-    smesh1->setBlendMode(BlendMode::Alpha);
-    smesh1->setEulerAngles(0, Math::PI, 0);
-    smesh1->setShadingModel(ShadingModel::UnLighting);
+    //smesh1->setBlendMode(BlendMode::Alpha);
+    //smesh1->setEulerAngles(0, Math::PI, 0);
+    //smesh1->setShadingModel(ShadingModel::UnLighting);
 
     //auto sprite = UISprite::create(Assets::loadTexture(u"D:/MMD/Materials/モデル/Appearance Miku/A4.bmp"));
 #endif

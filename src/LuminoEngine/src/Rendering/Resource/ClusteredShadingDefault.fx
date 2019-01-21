@@ -182,17 +182,29 @@ _lngs_VSOutput _lngs_VS_ClusteredForward_Geometry(LN_VSInput vsi)
 	return output;
 }
 // auto generation
-/*
+
 _lngs_VSOutput _lngs_VS_ClusteredForward_Geometry_SkinnedMesh(LN_VSInput vsi)
 {
-	_lngs_VSOutput o;
-	o.common	= LN_ProcessVertex_SkinnedCommon(vsi);
-	o.extra		= LN_ProcessVertex_ClusteredForward(vsi);
+	LN_VSOutput_Common common = LN_ProcessVertex_SkinnedCommon(vsi);
+	LN_VSOutput_ClusteredForward extra = LN_ProcessVertex_ClusteredForward(vsi);
+
+	_lngs_VSOutput output;
+	output.svPos = common.svPos;
+	output.Normal = common.Normal;
+	output.UV = common.UV;
+	output.Color = common.Color;
+	output.WorldPos = extra.WorldPos;
+	output.VertexPos = extra.VertexPos;
+	return output;
+
+	//_lngs_VSOutput o;
+	//o.common	= LN_ProcessVertex_SkinnedCommon(vsi);
+	//o.extra		= LN_ProcessVertex_ClusteredForward(vsi);
 	// ★ Scene固有のコードはここに直接生成する (ピクセルシェーダと書き方を合わせたい)
-	MyVFMain(vsi, o.user);	// ★ User定義呼び出し
-	return o;
+	//MyVFMain(vsi, o.user);	// ★ User定義呼び出し
+	//return o;
 }
-*/
+
 
 
 struct _lngs_PSInput
@@ -290,8 +302,6 @@ technique Forward_Geometry_StaticMesh_UnLighting
 	}
 }
 
-
-/*
 technique Forward_Geometry_SkinnedMesh
 {
 	pass Pass1
@@ -309,7 +319,6 @@ technique Forward_Geometry_SkinnedMesh_UnLighting
 		PixelShader	 = _lngs_PS_UnLighting;
 	}
 }
-*/
 
 //END_HLSL
 

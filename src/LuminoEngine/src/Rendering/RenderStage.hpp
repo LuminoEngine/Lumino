@@ -3,6 +3,7 @@
 #include <LuminoEngine/Graphics/RenderState.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/DepthBuffer.hpp>
+#include <LuminoEngine/Shader/ShaderInterfaceFramework.hpp>
 #include <LuminoEngine/Rendering/Common.hpp>
 #include "../Engine/LinearAllocator.hpp"
 
@@ -15,6 +16,7 @@ namespace detail {
 class RenderStage;
 class DrawElementList;
 class DrawElementListBuilder;
+struct ElementInfo;
 struct SubsetInfo;
 
 // DrawElementList::newFrameData() で確保するデータのインターフェイス。
@@ -223,6 +225,10 @@ class RenderDrawElement
 public:
 	RenderDrawElement();
 	virtual ~RenderDrawElement();
+
+    // SkinnedMesh の BoneMatrix を書き込むために用意してある。
+    // それ以外の要素の変更は想定していない。
+    virtual void onElementInfoOverride(ElementInfo* elementInfo, ShaderTechniqueClass_MeshProcess* meshProcess);
 
     // 必要に応じて SubsetInfo の調整を行う。
     // 特に不透明度の操作など、Phase との整合性に注意すること。
