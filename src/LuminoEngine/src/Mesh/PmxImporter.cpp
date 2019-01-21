@@ -8,6 +8,7 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
+#include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include "MeshManager.hpp"
 #include "PmxImporter.hpp"
 
@@ -161,6 +162,108 @@ void PmxSkinnedMeshResource::refreshInitialValues()
 		b->refreshInitialValues();
 	}
 }
+
+Ref<SkinnedMeshModel> PmxSkinnedMeshResource::createSkinnedMeshModel()
+{
+    auto model = newObject<SkinnedMeshModel>();
+
+    auto meshContainer = newObject<MeshContainer>();
+    meshContainer->setMeshResource(this);
+    model->addMeshContainer(meshContainer);
+
+    //---------------------------------------------------------
+    // マテリアルのインスタンス化
+    {
+        for (auto& pmxMaterial : materials) {
+            auto m = pmxMaterial->MakeCommonMaterial();
+            model->addMaterial(m);
+        }
+    }
+
+    //---------------------------------------------------------
+    // Bone のインスタンス化
+    int boneCount = bones.size();
+    if (boneCount > 0)
+    {
+        model->m_allBoneList.resize(boneCount);
+
+        // まずは Bone を作る
+        for (int i = 0; i < boneCount; i++)
+        {
+            model->m_allBoneList[i] = createBoneModel(bones[i]);
+            model->m_allBoneList[i]->m_boneIndex = i;
+
+            // IK ボーンを集める
+            if (bones[i]->IsIK) {
+                model->m_ikBoneList.add(model->m_allBoneList[i]);
+            }
+        }
+
+        // 次に子と親を繋げる
+        for (int i = 0; i < boneCount; i++)
+        {
+            int parentIndex = bones[i]->ParentBoneIndex;
+            if (0 <= parentIndex && parentIndex < boneCount) {
+                model->m_allBoneList[parentIndex]->addChildBone(model->m_allBoneList[i]);
+            }
+            else {
+                model->m_rootBoneList.add(model->m_allBoneList[i]);	// 親がいない。ルートボーンとして覚えておく
+            }
+        }
+        for (SkinnedMeshBone* rootBone : model->m_rootBoneList)
+        {
+            rootBone->postInitialize(model, 0);
+        }
+        for (PmxIKResource* ik : iks)
+        {
+            model->m_allBoneList[ik->IKBoneIndex]->m_ikInfo = ik;
+        }
+
+        // TODO: animation
+        //m_animationController = newObject<AnimationController>(this);
+    }
+
+    // 後の計算回数を減らすため、IKボーンを BoneIndex の昇順、深さの昇順で並べ替える。
+    struct BoneComparer
+    {
+        int boneCount;
+
+        bool operator () (SkinnedMeshBone* x, SkinnedMeshBone* y) const
+        {
+            //後であればあるほどスコアが大きくなるように計算する
+            int xScore = 0;
+            int yScore = 0;
+            if (x->m_data->TransformAfterPhysics)
+            {
+                xScore += boneCount * boneCount;
+            }
+            if (y->m_data->TransformAfterPhysics)
+            {
+                yScore += boneCount * boneCount;
+            }
+            xScore += boneCount * x->m_depth;
+            yScore += boneCount * y->m_depth;
+            xScore += x->m_data->getBoneIndex();
+            yScore += y->m_data->getBoneIndex();
+            return xScore < yScore;
+        }
+
+    } cmp;
+    cmp.boneCount = model->m_allBoneList.size();
+    std::sort(model->m_ikBoneList.begin(), model->m_ikBoneList.end(), cmp);
+
+    return model;
+}
+
+Ref<SkinnedMeshBone> PmxSkinnedMeshResource::createBoneModel(PmxBoneResource* boneData)
+{
+    auto bone = newObject<SkinnedMeshBone>();
+    bone->m_data = boneData;
+    return bone;
+}
+
+
+
 
 // PMX モデルの頂点情報
 struct PMX_Vertex

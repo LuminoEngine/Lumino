@@ -416,6 +416,9 @@ public:
 	virtual ~PmxSkinnedMeshResource();
 	void refreshInitialValues();
 
+    Ref<SkinnedMeshModel> createSkinnedMeshModel();
+    Ref<SkinnedMeshBone> createBoneModel(PmxBoneResource* boneData);
+
 public:
 	ModelFormat				Format;
 

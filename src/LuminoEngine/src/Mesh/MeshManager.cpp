@@ -227,18 +227,7 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
     auto file = FileStream::create(filePath);
     auto mesh = importer.load(this, file, filePath.parent(), false);
 
-    auto meshModel = newObject<SkinnedMeshModel>();
-
-    auto meshContainer = newObject<MeshContainer>();
-    meshContainer->setMeshResource(mesh);
-    meshModel->addMeshContainer(meshContainer);
-
-    for (auto& pmxMaterial : mesh->materials) {
-        auto m = pmxMaterial->MakeCommonMaterial();
-        meshModel->addMaterial(m);
-    }
-
-	return meshModel;
+    return mesh->createSkinnedMeshModel();
 }
 
 Ref<Texture> MeshManager::createTexture(const Path& parentDir, const StringRef& filePath, DiagnosticsManager* diag)
