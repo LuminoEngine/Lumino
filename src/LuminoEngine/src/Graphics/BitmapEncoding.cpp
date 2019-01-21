@@ -1,8 +1,10 @@
 ﻿
 #include "Internal.hpp"
-#include "BitmapEncoding.hpp"
 #include <png.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include "../../../../build/ExternalSource/stb/stb_image.h"
 #include <LuminoEngine/Engine/Diagnostics.hpp>
+#include "BitmapEncoding.hpp"
 
 namespace ln {
 namespace detail {
@@ -271,12 +273,43 @@ private:
 	BitmapFrame m_frame;
 };
 
+
+class StbBitmapDecoder
+    : public IBitmapDecoder
+{
+public:
+    Result load(Stream* stream)
+    {
+        ByteBuffer buffer(stream->length());
+        stream->read(buffer.data(), buffer.size());
+
+        int width;
+        int height;
+        int bpp;
+        unsigned char* pixels = stbi_load_from_memory(buffer.data(), buffer.size(), &width, &height, &bpp, 4);
+
+        m_frame.size.width = width;
+        m_frame.size.height = height;
+        m_frame.format = PixelFormat::RGBA32;
+        m_frame.data = makeRef<ByteBuffer>(pixels, 4 * m_frame.size.width * m_frame.size.height);
+
+
+        stbi_image_free(pixels);
+        return true;
+    }
+
+    virtual BitmapFrame* getBitmapFrame() override { return &m_frame; }
+
+private:
+    BitmapFrame m_frame;
+};
+
 //==============================================================================
 // IBitmapEncoder
 
 void IBitmapEncoder::save(Stream* stream, const byte_t* data, const SizeI& size, PixelFormat format)
 {
-    detail::PngBitmapEncoder encoder;
+    PngBitmapEncoder encoder;
     encoder.save(stream, data, size, format);
 }
 
@@ -285,9 +318,18 @@ void IBitmapEncoder::save(Stream* stream, const byte_t* data, const SizeI& size,
 
 Ref<IBitmapDecoder> IBitmapDecoder::load(Stream* stream, DiagnosticsManager* diag)
 {
-    auto decoder = makeRef<detail::PngBitmapDecoder>();
-    decoder->load(stream, diag);
-    return decoder;
+    {
+        auto decoder = makeRef<StbBitmapDecoder>();
+        if (decoder->load(stream)) {
+            return decoder;
+        }
+    }
+
+    {
+        auto decoder = makeRef<PngBitmapDecoder>();
+        decoder->load(stream, diag);
+        return decoder;
+    }
 }
 
 } // namespace detail

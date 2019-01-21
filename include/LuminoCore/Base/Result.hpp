@@ -39,6 +39,10 @@ public:
 	static const Result Fail;
 	static const Result Success;
 
+    Result(bool result)
+        : m_code(result ? ResultCode::Success : ResultCode::Fail)
+    {}
+
 	Result(ResultCode code)
 		: m_code(code)
 	{}
