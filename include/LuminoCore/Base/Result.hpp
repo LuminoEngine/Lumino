@@ -25,6 +25,8 @@ http://doc.qt.io/qt-5/exceptionsafety.html
 
 #pragma once
 
+namespace ln {
+
 enum class ResultCode
 {
 	Fail,
@@ -57,4 +59,5 @@ private:
 	ResultCode m_code;
 };
 
+} // namespace ln
 

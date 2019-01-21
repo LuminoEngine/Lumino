@@ -181,6 +181,8 @@ set(LN_SOURCES_Graphics
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/VertexDeclaration.hpp
     src/Graphics/Internal.hpp
     src/Graphics/Bitmap.cpp
+    src/Graphics/BitmapEncoding.cpp
+    src/Graphics/BitmapEncoding.hpp
     src/Graphics/ColorStructs.cpp
     src/Graphics/DepthBuffer.cpp
     src/Graphics/GeometryStructs.cpp
