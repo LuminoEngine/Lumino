@@ -250,44 +250,49 @@ namespace LuminoBuild.Tasks
                 Utils.CallProcess("git", "checkout 8ed41071fe0774947fc7f7c6ece77de3061a5239");
                 Directory.SetCurrentDirectory(reposDir);
             }
+            if (!Directory.Exists("stb"))
+            {
+                Utils.CallProcess("git", "clone --progress https://github.com/nothings/stb.git stb");
+                Utils.CallProcess("git", "-C stb checkout e6afb9cbae4064da8c3e69af3ff5c4629579c1d2");
+            }
 
             const string bulletOptions = "-DBUILD_BULLET2_DEMOS=OFF -DBUILD_CLSOCKET=OFF -DBUILD_CPU_DEMOS=OFF -DBUILD_ENET=OFF -DBUILD_EXTRAS=OFF -DBUILD_OPENGL3_DEMOS=OFF -DBUILD_UNIT_TESTS=OFF -DINSTALL_LIBS=ON";
 
             if (Utils.IsWin32)
             {
-                //// Android
-                //if (BuildEnvironment.AndroidStudioFound)
-                //{
-                //    foreach (var target in BuildEngine_AndroidJNI.Targets)
-                //    {
-                //        var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"Android-{target.ABI}-{target.BuildType}", "ExternalInstall", "zlib"));
-                //        var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"Android-{target.ABI}-{target.BuildType}", "ExternalInstall", "ogg"));
+                // Android
+                if (BuildEnvironment.AndroidStudioFound)
+                {
+                    foreach (var target in BuildEngine_AndroidJNI.Targets)
+                    {
+                        var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"Android-{target.ABI}-{target.BuildType}", "ExternalInstall", "zlib"));
+                        var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"Android-{target.ABI}-{target.BuildType}", "ExternalInstall", "ogg"));
 
-                //        BuildProjectAndroid(builder, "zlib", reposDir, target.ABI, target.BuildType);
-                //        BuildProjectAndroid(builder, "libpng", reposDir, target.ABI, target.BuildType, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
-                //        BuildProjectAndroid(builder, "freetype2", reposDir, target.ABI, target.BuildType);
-                //        BuildProjectAndroid(builder, "ogg", reposDir, target.ABI, target.BuildType);
-                //        BuildProjectAndroid(builder, "vorbis", reposDir, target.ABI, target.BuildType, $"-DOGG_ROOT={oggInstallDir} -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH");
-                //        BuildProjectAndroid(builder, "bullet3", reposDir, target.ABI, target.BuildType, bulletOptions);
-                //        BuildProjectAndroid(builder, "pcre", reposDir, target.ABI, target.BuildType, "-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF");
-                //    }
-                //}
+                        BuildProjectAndroid(builder, "zlib", reposDir, target.ABI, target.BuildType);
+                        BuildProjectAndroid(builder, "libpng", reposDir, target.ABI, target.BuildType, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
+                        BuildProjectAndroid(builder, "freetype2", reposDir, target.ABI, target.BuildType);
+                        BuildProjectAndroid(builder, "ogg", reposDir, target.ABI, target.BuildType);
+                        BuildProjectAndroid(builder, "vorbis", reposDir, target.ABI, target.BuildType, $"-DOGG_ROOT={oggInstallDir} -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH");
+                        BuildProjectAndroid(builder, "bullet3", reposDir, target.ABI, target.BuildType, bulletOptions);
+                        BuildProjectAndroid(builder, "pcre", reposDir, target.ABI, target.BuildType, "-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF");
+                    }
+                }
 
-                //// Emscripten
-                //{
-                //    var externalInstallDir = Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall");
-                //    var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall", "zlib"));
-                //    var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall", "ogg"));
+                // Emscripten
+                {
+                    var externalInstallDir = Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall");
+                    var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall", "zlib"));
+                    var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall", "ogg"));
 
-                //    BuildProjectEm(builder, "zlib", reposDir, "Emscripten");
-                //    BuildProjectEm(builder, "libpng", reposDir, "Emscripten", $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
-                //    BuildProjectEm(builder, "glad", reposDir, "Emscripten", "-DGLAD_INSTALL=ON");
-                //    BuildProjectEm(builder, "freetype2", reposDir, "Emscripten");
-                //    BuildProjectEm(builder, "ogg", reposDir, "Emscripten");
-                //    BuildProjectEm(builder, "vorbis", reposDir, "Emscripten", $"-DOGG_ROOT={oggInstallDir} -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH");
-                //    BuildProjectEm(builder, "bullet3", reposDir, "Emscripten", bulletOptions);
-                //    BuildProjectEm(builder, "pcre", reposDir, "Emscripten", "-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF");
-                //}
+                    BuildProjectEm(builder, "zlib", reposDir, "Emscripten");
+                    BuildProjectEm(builder, "libpng", reposDir, "Emscripten", $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
+                    BuildProjectEm(builder, "glad", reposDir, "Emscripten", "-DGLAD_INSTALL=ON");
+                    BuildProjectEm(builder, "freetype2", reposDir, "Emscripten");
+                    BuildProjectEm(builder, "ogg", reposDir, "Emscripten");
+                    BuildProjectEm(builder, "vorbis", reposDir, "Emscripten", $"-DOGG_ROOT={oggInstallDir} -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH");
+                    BuildProjectEm(builder, "bullet3", reposDir, "Emscripten", bulletOptions);
+                    BuildProjectEm(builder, "pcre", reposDir, "Emscripten", "-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF");
+                }
 
                 // Visual C++
                 foreach (var target in MakeVSProjects.Targets)

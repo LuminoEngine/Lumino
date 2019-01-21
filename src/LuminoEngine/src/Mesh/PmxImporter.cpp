@@ -2,6 +2,7 @@
 // PMX: https://gist.github.com/felixjones/f8a06bd48f9da9a4539f
 
 #include "Internal.hpp"
+#include <float.h>
 #include <LuminoCore/IO/BinaryReader.hpp>
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
