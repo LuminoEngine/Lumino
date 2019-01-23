@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
 using System.Text;
+using System.Linq;
 using System.ComponentModel;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
@@ -171,6 +172,11 @@ namespace LuminoBuild
         //        }
         //    }
         //}
+
+        public bool HasFlagArgument(string name)
+        {
+            return Args.Contains(name);
+        }
     }
 
 

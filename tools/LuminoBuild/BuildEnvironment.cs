@@ -11,6 +11,18 @@ namespace LuminoBuild
         public bool PdbCopy { get; set; } = false;
     }
 
+    [Flags]
+    public enum BuildTargetFlags
+    {
+        None = 0x0000,
+        Windows = 0x0001,
+        Android = 0x0002,
+        macOS = 0x0004,
+        iOS = 0x0008,
+        Web = 0x0010,
+        All = 0xFFFF,
+    }
+
     public class BuildEnvironment
     {
         public const string VSWhereUrl = @"https://github.com/Microsoft/vswhere/releases/download/2.5.2/vswhere.exe";
@@ -34,7 +46,7 @@ namespace LuminoBuild
         public static string AndroidNdkRootDir { get; set; }
         public static string AndroidCMakeToolchain { get; set; }
 
-
+        public static BuildTargetFlags BuildTarget { get; set; }
 
         public static TargetArch[] TargetArchs = new TargetArch[]
         {
@@ -66,7 +78,6 @@ namespace LuminoBuild
             emcmake = Path.Combine(EmscriptenDir, Utils.IsWin32 ? "emcmake.bat" : "emcmake");
 
 
-
             if (Utils.IsWin32)
             {
                 //string localAppDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
@@ -95,6 +106,7 @@ namespace LuminoBuild
             Directory.CreateDirectory(BuildToolsDir);
 
             // Install emsdk
+            if (BuildTarget.HasFlag(BuildTargetFlags.Web))
             {
                 if (!Directory.Exists(EmsdkDir))
                 {
@@ -117,6 +129,7 @@ namespace LuminoBuild
             }
 
             // Install Android SDK
+            if (BuildTarget.HasFlag(BuildTargetFlags.Android))
             {
                 var androidSdk = Path.Combine(BuildToolsDir, "android-sdk");
                 if (!Directory.Exists(androidSdk))

@@ -33,6 +33,14 @@ namespace LuminoBuild
             builder.LuminoPackageSourceDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "tools/PackageSource"));
             builder.LuminoExternalDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "external"));
 
+            BuildEnvironment.BuildTarget = BuildTargetFlags.None;
+            if (builder.HasFlagArgument("Windows")) BuildEnvironment.BuildTarget |= BuildTargetFlags.Windows;
+            if (builder.HasFlagArgument("Android")) BuildEnvironment.BuildTarget |= BuildTargetFlags.Android;
+            if (builder.HasFlagArgument("macOS")) BuildEnvironment.BuildTarget |= BuildTargetFlags.macOS;
+            if (builder.HasFlagArgument("iOS")) BuildEnvironment.BuildTarget |= BuildTargetFlags.iOS;
+            if (builder.HasFlagArgument("Web")) BuildEnvironment.BuildTarget |= BuildTargetFlags.Web;
+            if (BuildEnvironment.BuildTarget == BuildTargetFlags.None) BuildEnvironment.BuildTarget = BuildTargetFlags.All;
+
             BuildEnvironment.Initialize(builder.LuminoRootDir);
 
 
