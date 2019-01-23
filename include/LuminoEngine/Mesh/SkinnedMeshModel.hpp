@@ -80,6 +80,7 @@ public:
 
 
 	void updateBoneTransformHierarchy();
+    void updateIK();
 	void updateSkinningMatrices();
 
     void writeSkinningMatrices(Matrix* matrixesBuffer, Quaternion* localQuaternionsBuffer);

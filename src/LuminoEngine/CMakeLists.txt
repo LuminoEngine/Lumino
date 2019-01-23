@@ -248,6 +248,8 @@ set(LN_SOURCES_Mesh
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/Mesh.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/SkinnedMeshModel.hpp
     src/Mesh/Internal.hpp
+    src/Mesh/CCDIKSolver.cpp
+    src/Mesh/CCDIKSolver.hpp
     src/Mesh/GMesh.cpp
     src/Mesh/GMesh.hpp
     src/Mesh/Mesh.cpp

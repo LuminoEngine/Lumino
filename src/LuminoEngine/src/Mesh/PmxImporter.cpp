@@ -361,6 +361,8 @@ Ref<PmxSkinnedMeshResource> PmxLoader::load(detail::MeshManager* manager, Stream
 		calcSDEFCorrection();
 	}
 
+    m_modelCore->refreshInitialValues();
+
 	return m_modelCore;
 }
 

@@ -102,6 +102,7 @@ int main(int argc, char** argv)
 
     auto ctl = newObject<CameraOrbitControlComponent>();
     Engine::mainCamera()->addComponent(ctl);
+    Engine::mainCamera()->setPosition(0, 0, -20);
     //Engine::mainCamera()->setBackgroundColor(Color::Gray);
 
 

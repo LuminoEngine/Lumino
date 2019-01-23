@@ -4,6 +4,7 @@
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include "PmxImporter.hpp"	// TODO: 依存したくない
 #include "MeshManager.hpp"
+#include "CCDIKSolver.hpp"
 
 namespace ln {
 
@@ -40,12 +41,12 @@ void SkinnedMeshBone::updateGlobalTransform(bool hierarchical)
 	// 適用されていなければ Identity。
 	//m_combinedMatrix = m_localTransform;
 	// TODO: * ではなく一気に作ったほうがはやいかも
-	m_combinedMatrix =
-		Matrix::makeTranslation(-m_data->OrgPosition) *
-		Matrix::makeScaling(m_localTransform.scale) *
-		Matrix::makeRotationQuaternion(m_localTransform.rotation) *
-		Matrix::makeTranslation(m_localTransform.translation) *
-        Matrix::makeTranslation(m_data->OrgPosition);
+    m_combinedMatrix =
+        //Matrix::makeTranslation(-m_data->OrgPosition) *
+        Matrix::makeScaling(m_localTransform.scale) *
+        Matrix::makeRotationQuaternion(m_localTransform.rotation) *
+        Matrix::makeTranslation(m_localTransform.translation);// *
+        //Matrix::makeTranslation(m_data->OrgPosition);
 
 
 															 // 親からの平行移動量
@@ -122,11 +123,11 @@ void SkinnedMeshModel::postUpdate()
 #ifdef SMESH_MIG
 	updateMorph();
 
+#endif
 	// IK 更新
 	updateIK();
-#endif
 
-	//updateBoneTransformHierarchy();
+	updateBoneTransformHierarchy();
 
 #ifdef SMESH_MIG
 	// 付与適用
@@ -160,6 +161,13 @@ void SkinnedMeshModel::updateBoneTransformHierarchy()
 	{
 		bone->updateGlobalTransform(true);
 	}
+}
+
+void SkinnedMeshModel::updateIK()
+{
+    detail::CCDIKSolver ik;
+    ik.owner = this;
+    ik.UpdateTransform();
 }
 
 void SkinnedMeshModel::updateSkinningMatrices()
