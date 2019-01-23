@@ -1570,6 +1570,8 @@ GLSamplerState::~GLSamplerState()
 
 void GLSamplerState::init(const SamplerStateData& desc)
 {
+    m_desc = desc;
+
     static const GLenum magFilterTable[] =
     {
         GL_NEAREST, // TextureFilterMode::Point,

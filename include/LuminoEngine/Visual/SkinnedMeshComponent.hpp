@@ -13,7 +13,8 @@ public:
     SkinnedMeshModel* model() const;
 
 protected:
-    void onRender(RenderingContext* context);
+	virtual void onUpdate(float elapsedSeconds) override;
+	virtual void onRender(RenderingContext* context) override;
 
 LN_CONSTRUCT_ACCESS:
     SkinnedMeshComponent();

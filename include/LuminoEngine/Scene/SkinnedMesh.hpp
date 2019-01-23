@@ -12,7 +12,7 @@ public:
     static Ref<SkinnedMesh> create();
     static Ref<SkinnedMesh> create(const StringRef& filePath, float scale = 1.0f);
 
-    SkinnedMeshComponent* staticMeshComponent() const;
+    SkinnedMeshComponent* skinnedMeshComponent() const;
 
 protected:
 

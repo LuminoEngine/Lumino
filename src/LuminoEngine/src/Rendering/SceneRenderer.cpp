@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include "../Graphics/GraphicsManager.hpp"
@@ -58,6 +59,11 @@ void SceneRenderer::init()
 	// skinning texture は毎フレーム更新されるものなので、デバイスリセット時に復元する必要はない
 	m_skinningMatricesTexture->setResourcePool(GraphicsResourcePool::None);
 	m_skinningLocalQuaternionsTexture->setResourcePool(GraphicsResourcePool::None);
+
+    auto samperState = newObject<SamplerState>();
+    samperState->setFilterMode(TextureFilterMode::Point);
+    m_skinningMatricesTexture->setSamplerState(samperState);
+    m_skinningLocalQuaternionsTexture->setSamplerState(samperState);
 }
 
 void SceneRenderer::render(

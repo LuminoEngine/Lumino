@@ -42,7 +42,7 @@ void SkinnedMesh::init(const StringRef& filePath, float scale)
     m_component->setModel(detail::EngineDomain::meshManager()->createSkinnedMeshModel(filePath, scale));
 }
 
-SkinnedMeshComponent* SkinnedMesh::staticMeshComponent() const
+SkinnedMeshComponent* SkinnedMesh::skinnedMeshComponent() const
 {
     return m_component;
 }

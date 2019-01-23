@@ -106,6 +106,8 @@ public:
 	*/
 	void seek(int offset);
 
+	bool isEof() const;
+
 private:
 	Ref<Stream> m_stream;
 	std::vector<byte_t> m_stringCache;

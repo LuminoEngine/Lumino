@@ -172,6 +172,9 @@ void WorldObject::onRender()
 void WorldObject::updateFrame(float elapsedSeconds)
 {
     onUpdate(elapsedSeconds);
+    for (auto& c : m_components) {
+        c->onUpdate(elapsedSeconds);
+    }
 }
 
 void WorldObject::render()

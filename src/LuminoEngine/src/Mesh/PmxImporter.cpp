@@ -9,6 +9,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
+#include <LuminoEngine/Animation/AnimationController.hpp>	// TODO: これは Importer の中で利用する必要はないはず
 #include "MeshManager.hpp"
 #include "PmxImporter.hpp"
 
@@ -219,8 +220,8 @@ Ref<SkinnedMeshModel> PmxSkinnedMeshResource::createSkinnedMeshModel()
             model->m_allBoneList[ik->IKBoneIndex]->m_ikInfo = ik;
         }
 
-        // TODO: animation
-        //m_animationController = newObject<AnimationController>(this);
+        // animation
+		model->m_animationController = newObject<AnimationController>(model);
     }
 
     // 後の計算回数を減らすため、IKボーンを BoneIndex の昇順、深さの昇順で並べ替える。

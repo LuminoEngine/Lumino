@@ -14,6 +14,8 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Visual/MeshPrimitiveComponent.hpp>
+#include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
+#include <LuminoEngine/Visual/SkinnedMeshComponent.hpp>
 #include <LuminoEngine/Scene/SkinnedMesh.hpp>
 #include "../src/Mesh/MqoImporter.hpp"
 #include "../src/Font/FontManager.hpp"
@@ -199,10 +201,16 @@ int main(int argc, char** argv)
     //auto mesh3 = newObject<StaticMesh>(u"D:/Proj/TH-10/Assets/Graphics/test/sphere4.obj", 2);
     //mesh3->setVisible(false);
 
+    auto clip1 = VmdAnimationClip::create(u"D:/MMD/Materials/モーション/Love&Joy/love&joyお面無しver.vmd");
+
     auto smesh1 = SkinnedMesh::create(u"D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku.pmx");
     //smesh1->setBlendMode(BlendMode::Alpha);
     //smesh1->setEulerAngles(0, Math::PI, 0);
     //smesh1->setShadingModel(ShadingModel::UnLighting);
+
+    smesh1->skinnedMeshComponent()->model()->animationController()->addClip(u"anim1", clip1);
+    smesh1->skinnedMeshComponent()->model()->animationController()->play(u"anim1");
+
 
     //auto sprite = UISprite::create(Assets::loadTexture(u"D:/MMD/Materials/モデル/Appearance Miku/A4.bmp"));
 #endif

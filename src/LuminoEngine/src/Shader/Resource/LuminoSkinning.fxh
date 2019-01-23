@@ -94,11 +94,12 @@ float4x4 LN_GetBoneMatrix4x4(int boneIndex)
 	//	0, 1, 0, 0,
 	//	0, 0, 1, 0,
 	//	0, 0, 0, 1);
+	float offset = 0.25;	// DX9 の half pixel offset に備える
 	float2 uv = ln_BoneTextureReciprocalSize;
-	float4 tc0 = float4( 0.5f * uv.x, (boneIndex + 0.5f) * uv.y, 0, 1 );	// +0.5 は半ピクセル分
-	float4 tc1 = float4( 1.5f * uv.x, (boneIndex + 0.5f) * uv.y, 0, 1 );
-	float4 tc2 = float4( 2.5f * uv.x, (boneIndex + 0.5f) * uv.y, 0, 1 );
-	float4 tc3 = float4( 3.5f * uv.x, (boneIndex + 0.5f) * uv.y, 0, 1 );
+	float4 tc0 = float4( (0.0 + offset) * uv.x, (boneIndex + offset) * uv.y, 0, 1 );	
+	float4 tc1 = float4( (1.0 + offset) * uv.x, (boneIndex + offset) * uv.y, 0, 1 );
+	float4 tc2 = float4( (2.0 + offset) * uv.x, (boneIndex + offset) * uv.y, 0, 1 );
+	float4 tc3 = float4( (3.0 + offset) * uv.x, (boneIndex + offset) * uv.y, 0, 1 );
 	
 	
 	return float4x4(
@@ -117,8 +118,9 @@ float4x4 LN_GetBoneMatrix4x4(int boneIndex)
 
 float4 LN_GetBoneLocalQuaternion(int boneIndex)
 {
+	float offset = 0.25;	// DX9 の half pixel offset に備える
 	float2 uv = ln_BoneTextureReciprocalSize;
-	float4 tc0 = float4(0.5f, (boneIndex + 0.5f) * uv.y, 0, 1);	// +0.5 は半ピクセル分
+	float4 tc0 = float4(offset, (boneIndex + offset) * uv.y, 0, 1);
 	return ln_BoneLocalQuaternionTexture.SampleLevel(ln_BoneLocalQuaternionTextureSamplerState, tc0, 0);
 	//return tex2Dlod(ln_BoneLocalQuaternionSampler, tc0);
 }
