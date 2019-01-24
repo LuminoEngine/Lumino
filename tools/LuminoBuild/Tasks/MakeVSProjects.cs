@@ -61,6 +61,7 @@ namespace LuminoBuild.Tasks
                         $"-DLN_BUILD_TOOLS=ON",
                         $"-DLN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=ON",
                         $"-DLN_TARGET_ARCH={t.DirName}",
+                        $"-DLN_BUILD_TYPE={t.BuildType}",
                         $"-DCMAKE_BUILD_TYPE={t.BuildType}",
                         t.AdditionalOptions + additional,
                         $" ../..",

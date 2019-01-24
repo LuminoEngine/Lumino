@@ -17,12 +17,12 @@ Chocolatey をインストールしてください。
 - [Win + X] > [Windows PowerShell(管理者)]
 
 ```
-choco install cmake
-choco install nuget.commandline
-choco install docfx
-choco install doxygen.portable
-choco install python3 --pre
-choco install wixtoolset
+choco install -y cmake --installargs 'ADD_CMAKE_TO_PATH=System'
+choco install -y nuget.commandline
+choco install -y docfx
+choco install -y doxygen.install
+choco install -y python3 --pre
+choco install -y wixtoolset
 ```
 
 ### macOS
