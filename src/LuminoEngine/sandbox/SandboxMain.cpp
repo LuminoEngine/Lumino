@@ -17,6 +17,7 @@
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoEngine/Visual/SkinnedMeshComponent.hpp>
 #include <LuminoEngine/Scene/SkinnedMesh.hpp>
+#include <LuminoEngine/Scene/OffscreenWorldRenderView.hpp>
 #include "../src/Mesh/MqoImporter.hpp"
 #include "../src/Font/FontManager.hpp"
 #include "../src/Font/FontCore.hpp"
@@ -214,6 +215,23 @@ int main(int argc, char** argv)
 
 
     //auto sprite = UISprite::create(Assets::loadTexture(u"D:/MMD/Materials/モデル/Appearance Miku/A4.bmp"));
+
+    Engine::update();
+    Engine::update();
+    {
+        auto camera = newObject<Camera>();
+        camera->setPosition(0, 0, -20);
+        auto ofs = newObject<OffscreenWorldRenderView>();
+        auto rt1 = newObject<RenderTargetTexture>(640, 480, TextureFormat::RGBA32, false);
+        ofs->setRenderTarget(rt1);
+        ofs->setTargetWorld(Engine::mainWorld());
+        ofs->setCamera(camera);
+        ofs->render();
+        auto bitmap = rt1->readData();
+        bitmap->save(u"test1.png");
+    }
+
+
 #endif
 
 #if 0

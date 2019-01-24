@@ -16,7 +16,7 @@ Ref<Camera> Camera::create()
 Camera::Camera()
 	: WorldObject()
 	, m_component(nullptr)
-    , m_ownerRenderView(nullptr)
+    //, m_ownerRenderView(nullptr)
 {
 }
 
@@ -49,13 +49,15 @@ const Matrix& Camera::viewProjectionMatrix() const
 
 Vector3 Camera::worldToViewportPoint(const Vector3& position) const
 {
-	const Size& size = m_ownerRenderView->actualPixelSize();
+    WorldRenderView* view = renderView();
+	const Size& size = view->actualPixelSize();
 	return Vector3::project(position, m_component->getViewProjectionMatrix(), 0.0f, 0.0f, size.width, size.height, m_component->getNearClip(), m_component->getFarClip());
 }
 
 Vector3 Camera::viewportToWorldPoint(const Vector3& position) const
 {
-	const Size& size = m_ownerRenderView->actualPixelSize();
+    WorldRenderView* view = renderView();
+	const Size& size = view->actualPixelSize();
     float nearClip = m_component->getNearClip();
     float farClip = m_component->getFarClip();
 	Vector3 v;
@@ -67,31 +69,35 @@ Vector3 Camera::viewportToWorldPoint(const Vector3& position) const
 
 RenderViewClearMode Camera::clearMode() const
 {
-	if (m_ownerRenderView) {
-		return m_ownerRenderView->clearMode();
+    WorldRenderView* view = renderView();
+	if (view) {
+		return view->clearMode();
 	}
 	return RenderViewClearMode::None;
 }
 
 void Camera::setClearMode(RenderViewClearMode value)
 {
-	if (m_ownerRenderView) {
-		m_ownerRenderView->setClearMode(value);
+    WorldRenderView* view = renderView();
+	if (view) {
+        view->setClearMode(value);
 	}
 }
 
 const Color& Camera::backgroundColor() const
 {
-	if (m_ownerRenderView) {
-		return m_ownerRenderView->backgroundColor();
+    WorldRenderView* view = renderView();
+	if (view) {
+		return view->backgroundColor();
 	}
 	return Color::Transparency;
 }
 
 void Camera::setBackgroundColor(const Color& value)
 {
-	if (m_ownerRenderView) {
-		m_ownerRenderView->setBackgroundColor(value);
+    WorldRenderView* view = renderView();
+	if (view) {
+        view->setBackgroundColor(value);
 	}
 }
 
@@ -100,11 +106,14 @@ CameraComponent* Camera::cameraComponent() const
 	return m_component;
 }
 
+WorldRenderView* Camera::renderView() const
+{
+    return (m_component) ? m_component->ownerRenderView() : nullptr;
+}
+
 void Camera::onUpdate(float elapsedSeconds)
 {
-    if (m_ownerRenderView) {
-        m_component->updateMatrices(m_ownerRenderView->actualPixelSize());
-    }
+    m_component->updateMatrices();
 }
 
 //void Camera::setCameraComponent(CameraComponent* component)

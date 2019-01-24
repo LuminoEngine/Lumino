@@ -3,6 +3,7 @@
 #include "WorldRenderView.hpp"
 
 namespace ln {
+namespace detail { class RenderingManager; }
 
 class OffscreenWorldRenderView
 	: public WorldRenderView
@@ -18,6 +19,7 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 private:
+    detail::RenderingManager* m_renderingManager;
 	Ref<RenderTargetTexture> m_renderTarget;
 };
 

@@ -49,33 +49,34 @@ void WorldRenderView::setTargetWorld(World* world)
 void WorldRenderView::setCamera(Camera* camera)
 {
     if (camera) {
-        if (LN_REQUIRE(!camera->m_ownerRenderView)) return;
+        if (LN_REQUIRE(camera->cameraComponent())) return;
+        if (LN_REQUIRE(!camera->cameraComponent()->ownerRenderView())) return;
     }
 
     if (m_camera) {
-        m_camera->m_ownerRenderView = nullptr;
+        m_camera->cameraComponent()->setOwnerRenderView(nullptr);
     }
 
 	m_camera = camera;
 
     if (m_camera) {
-        m_camera->m_ownerRenderView = this;
+        m_camera->cameraComponent()->setOwnerRenderView(this);
     }
 }
 
-void WorldRenderView::render(GraphicsContext* graphicsContext)
+void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthbuffer)
 {
 	if (m_camera)
 	{
-
         FrameBuffer fb;
-        fb.renderTarget[0] = graphicsContext->colorBuffer(0);
-        fb.depthBuffer = graphicsContext->depthBuffer();
+        fb.renderTarget[0] = renderTarget;
+        fb.depthBuffer = depthbuffer;
 
         // TODO:
         detail::CameraInfo camera;
         {
             CameraComponent* cc = m_camera->cameraComponent();
+            cc->updateMatrices();
             
             m_viewPoint->worldMatrix = m_camera->worldMatrix();
             m_viewPoint->viewPixelSize = camera.viewPixelSize = Size(fb.renderTarget[0]->width(), fb.renderTarget[0]->height());	// TODO: 必要？

@@ -3,6 +3,7 @@
 #include "VisualComponent.hpp"
 
 namespace ln {
+class WorldRenderView;
     
 /** カメラの投影方法 */
 enum class ProjectionMode
@@ -65,9 +66,11 @@ public:
 
 
 public:	// internal
+    void setOwnerRenderView(WorldRenderView* view) { m_ownerRenderView = view;; }
+    WorldRenderView* ownerRenderView() const { return m_ownerRenderView; }
 
 	/// 各行列を更新する (SceneNode::updateFrameHierarchy() の後で呼び出すこと)
-	void updateMatrices(const Size& viewSize);
+	void updateMatrices();
 
 	// 向きの取得 (シェーダ設定用。updateMatrices() の後で呼び出すこと)
 	const Vector4& getDirectionInternal() const { return m_direction; }
@@ -122,6 +125,7 @@ private:
 	Matrix				m_viewProjMatrixI;
 
 	//Plane				m_reflectionPlane;
+    WorldRenderView* m_ownerRenderView;
 };
 
 } // namespace ln

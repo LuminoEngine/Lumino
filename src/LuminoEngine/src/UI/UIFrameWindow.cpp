@@ -255,7 +255,7 @@ void UIFrameWindow::present()
 	if (m_renderView)
 	{
 		m_renderView->setRootElement(this);
-		m_renderView->render(ctx);
+		m_renderView->render(ctx, ctx->colorBuffer(0), ctx->depthBuffer());
 	}
 
 	ctx->present(m_swapChain);

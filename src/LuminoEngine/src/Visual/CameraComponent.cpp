@@ -1,25 +1,29 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>   // TODO: WorldObjectTransform の定義を Component.hpp にもってくればいらなくなる
 #include <LuminoEngine/Visual/CameraComponent.hpp>
 
 namespace ln {
 
-    
+ 
 //==============================================================================
 // CameraComponent
+//   ProjectionMatrix を求めるためには ViewSize (アスペクト比) が必須となる。
+//   そのため親 RenderView (m_ownerRenderView) は CameraComponent が持っておく。
 
 CameraComponent::CameraComponent()
-	: VisualComponent()
-	, m_projectionMode(ProjectionMode::Perspective)
-	, m_upDirection(Vector3::UnitY)
-	, m_fovY(Math::PI / 3.0f)	// Unity based.
-	, m_aspect(0.0f)
-	, m_nearClip(0.3f)			// Unity based.
-	, m_farClip(1000.0f)
-	, m_orthographicSize(5.0f)	// Unity based.
-	//, m_zSortDistanceBase(ZSortDistanceBase::CameraDistance)
-	//, m_cameraBehavior(nullptr)
+    : VisualComponent()
+    , m_projectionMode(ProjectionMode::Perspective)
+    , m_upDirection(Vector3::UnitY)
+    , m_fovY(Math::PI / 3.0f)	// Unity based.
+    , m_aspect(0.0f)
+    , m_nearClip(0.3f)			// Unity based.
+    , m_farClip(1000.0f)
+    , m_orthographicSize(5.0f)	// Unity based.
+    , m_ownerRenderView(nullptr)
+//, m_zSortDistanceBase(ZSortDistanceBase::CameraDistance)
+//, m_cameraBehavior(nullptr)
 {
 	// ※ 2D では m_nearClip を0より大きくしたり、Z位置をマイナスにすると何も見えなくなるので注意。 
 }
@@ -48,49 +52,57 @@ void CameraComponent::init()
 //
 //}
 
-void CameraComponent::updateMatrices(const Size& viewSize)
+void CameraComponent::updateMatrices()
 {
-    const Matrix& worldMatrix = worldObject()->worldMatrix();
+    // TODO: 1フレームに何回か呼ばれる。更新不要ならしないようにしておく。
+    // ・Cameraオブジェクトとしての onUpdate
+    // ・１度も update されない状態での描画に備える render
 
-	// 注視点
-    Vector3 lookAt = Vector3::transformCoord(Vector3(0, 0, 1), worldMatrix);
+    if (m_ownerRenderView) {
+        const Size& viewSize = m_ownerRenderView->actualPixelSize();
 
-	// ビュー行列
-	m_viewMatrix = Matrix::makeLookAtLH(worldMatrix.position(), lookAt, m_upDirection);
+        const Matrix& worldMatrix = worldObject()->worldMatrix();
 
-	//if (m_reflectionPlane.Normal != Vector3::Zero)
-	//{
-	//	m_viewMatrix = Matrix::makeReflection(m_reflectionPlane) * m_viewMatrix;
-	//}
+	    // 注視点
+        Vector3 lookAt = Vector3::transformCoord(Vector3(0, 0, 1), worldMatrix);
 
-	if (m_projectionMode == ProjectionMode::Perspective)
-	{
-		float aspect = m_aspect;
-		aspect = (m_aspect > 0.0f) ? m_aspect : viewSize.width / viewSize.height;
+	    // ビュー行列
+	    m_viewMatrix = Matrix::makeLookAtLH(worldMatrix.position(), lookAt, m_upDirection);
 
-		// プロジェクション行列の更新
-		// https://sites.google.com/site/mmereference/home/Annotations-and-Semantics-of-the-parameter/2-1-geometry-translation
-		m_projMatrix = Matrix::makePerspectiveFovLH(m_fovY, aspect, m_nearClip, m_farClip);
-	}
-	else
-	{
-		float aspect = viewSize.width / viewSize.height;
-		float width = m_orthographicSize * aspect;
-		m_projMatrix = Matrix::makeOrthoLH(width, m_orthographicSize, m_nearClip, m_farClip);
-	}
+	    //if (m_reflectionPlane.Normal != Vector3::Zero)
+	    //{
+	    //	m_viewMatrix = Matrix::makeReflection(m_reflectionPlane) * m_viewMatrix;
+	    //}
 
-	m_viewProjMatrix = m_viewMatrix * m_projMatrix;
+	    if (m_projectionMode == ProjectionMode::Perspective)
+	    {
+		    float aspect = m_aspect;
+		    aspect = (m_aspect > 0.0f) ? m_aspect : viewSize.width / viewSize.height;
 
-	// 正面方向
-	Vector3 d = lookAt - worldMatrix.position();
-	d.normalize();
-	m_direction = Vector4(d, 0.0f);
+		    // プロジェクション行列の更新
+		    // https://sites.google.com/site/mmereference/home/Annotations-and-Semantics-of-the-parameter/2-1-geometry-translation
+		    m_projMatrix = Matrix::makePerspectiveFovLH(m_fovY, aspect, m_nearClip, m_farClip);
+	    }
+	    else
+	    {
+		    float aspect = viewSize.width / viewSize.height;
+		    float width = m_orthographicSize * aspect;
+		    m_projMatrix = Matrix::makeOrthoLH(width, m_orthographicSize, m_nearClip, m_farClip);
+	    }
 
-    // ViewFrustum
-	m_viewFrustum = ViewFrustum(m_viewProjMatrix);
+	    m_viewProjMatrix = m_viewMatrix * m_projMatrix;
 
-    // ShadowMap 作成などでよく使うのでここで計算しておく
-	m_viewProjMatrixI = Matrix::makeInverse(m_viewProjMatrix);
+	    // 正面方向
+	    Vector3 d = lookAt - worldMatrix.position();
+	    d.normalize();
+	    m_direction = Vector4(d, 0.0f);
+
+        // ViewFrustum
+	    m_viewFrustum = ViewFrustum(m_viewProjMatrix);
+
+        // ShadowMap 作成などでよく使うのでここで計算しておく
+	    m_viewProjMatrixI = Matrix::makeInverse(m_viewProjMatrix);
+    }
 }
 
 //void CameraComponent::onUIEvent(UIEventArgs* e)

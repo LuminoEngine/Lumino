@@ -21,7 +21,7 @@ public:
 
 
     // TODO: internal
-    virtual void render(GraphicsContext* graphicsContext) override;
+    virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthbuffer) override;
 
 protected:
     //virtual void onRoutedEvent(UIEventArgs* e) override;

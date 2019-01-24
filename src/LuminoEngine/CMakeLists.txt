@@ -377,6 +377,7 @@ set(LN_SOURCES_Scene
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/CameraOrbitControlComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Component.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Light.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/OffscreenWorldRenderView.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Scene.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/SceneConductor.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/SkinnedMesh.hpp
@@ -391,6 +392,7 @@ set(LN_SOURCES_Scene
     src/Scene/CameraOrbitControlComponent.cpp
     src/Scene/Component.cpp
     src/Scene/Light.cpp
+    src/Scene/OffscreenWorldRenderView.cpp
     src/Scene/Scene.cpp
     src/Scene/SceneConductor.cpp
     src/Scene/SceneManager.cpp

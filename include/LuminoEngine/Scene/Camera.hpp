@@ -60,7 +60,7 @@ public:
 
 	CameraComponent* cameraComponent() const;
 
-    WorldRenderView* renderView() const { return m_ownerRenderView; }
+    WorldRenderView* renderView() const;
 
 protected:
     // WorldObject interface
@@ -76,9 +76,9 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	Ref<CameraComponent> m_component;
-    WorldRenderView* m_ownerRenderView;
+    //WorldRenderView* m_ownerRenderView;
 
-    friend class WorldRenderView;
+    //friend class WorldRenderView;
 };
 
 } // namespace ln

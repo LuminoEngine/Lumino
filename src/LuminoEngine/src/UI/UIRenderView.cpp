@@ -35,7 +35,7 @@ void UIRenderView::setRootElement(UIElement* element)
     m_rootElement = element;
 }
 
-void UIRenderView::render(GraphicsContext* graphicsContext)
+void UIRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthbuffer)
 {
     if (m_rootElement)
     {

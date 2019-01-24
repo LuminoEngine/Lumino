@@ -14,7 +14,7 @@
 namespace ln {
 
 const Vertex Vertex::Default;
-const VertexBlendWeight VertexBlendWeight::Default;
+const VertexBlendWeight VertexBlendWeight::Default{ {0, 0, 0, 0}, {0, 0, 0, 0} };
 
 namespace detail {
 
