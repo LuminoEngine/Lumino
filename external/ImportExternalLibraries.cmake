@@ -22,8 +22,10 @@ macro(ln_make_external_find_path varName projectDirName)
         if (${LN_EXTERNAL_FIND_PATH_MODE} STREQUAL "build")
             set(${varName} ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/${projectDirName})
         endif()
-    else()
+    elseif(DEFINED CMAKE_BUILD_TYPE)
         set(${varName} ${LUMINO_ENGINE_ROOT}/lib/${LN_TARGET_ARCH}-${CMAKE_BUILD_TYPE})
+    else()
+        set(${varName} ${LUMINO_ENGINE_ROOT}/lib/${LN_TARGET_ARCH})
     endif()
 endmacro()
 
@@ -39,6 +41,7 @@ if (LN_OS_DESKTOP)
     set_target_properties(glfw PROPERTIES IMPORTED_LOCATION_RELEASE "${GLFW_LIBRARY_RELEASE}")
     set_target_properties(glfw PROPERTIES IMPORTED_LOCATION_DEBUG "${GLFW_LIBRARY_DEBUG}")
     set_target_properties(glfw PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${GLFW_ROOT}/include)
+    list(APPEND LN_EXTERNAL_LIBS glfw)
 endif()
 
 #--------------------------------------
@@ -53,8 +56,8 @@ if (LN_OS_DESKTOP)
     add_library(${LIB_NAME} STATIC IMPORTED)
     set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
     set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
-
     set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${${LIB_NAME}_ROOT}/include)
+    list(APPEND LN_EXTERNAL_LIBS GLAD)
 endif()
 
 #--------------------------------------
@@ -65,6 +68,7 @@ if (ANDROID_ABI)
     add_library(ZLIB STATIC IMPORTED)
     set_target_properties(ZLIB PROPERTIES IMPORTED_LOCATION "${ZLIB_LIBRARIES}")
     set_target_properties(ZLIB PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ZLIB_INCLUDE_DIRS})
+    list(APPEND LN_EXTERNAL_LIBS ZLIB)
     
 elseif (LN_OS_DESKTOP OR DEFINED EMSCRIPTEN)
     ln_make_external_find_path(ZLIB_ROOT zlib)
@@ -76,6 +80,7 @@ elseif (LN_OS_DESKTOP OR DEFINED EMSCRIPTEN)
     set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
     set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
     set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ZLIB_ROOT}/include)
+    list(APPEND LN_EXTERNAL_LIBS ZLIB)
 
 elseif (LN_IOS)
     # use system zlib.
@@ -84,6 +89,7 @@ elseif (LN_IOS)
     set_target_properties(ZLIB PROPERTIES IMPORTED_LOCATION_RELEASE ${ZLIB_LIBRARIES})
     set_target_properties(ZLIB PROPERTIES IMPORTED_LOCATION_DEBUG ${ZLIB_LIBRARIES})
     set_target_properties(ZLIB PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ZLIB_INCLUDE_DIRS})
+    list(APPEND LN_EXTERNAL_LIBS ZLIB)
 
 else()
 endif()
@@ -99,6 +105,7 @@ add_library(${LIB_NAME} STATIC IMPORTED)
 set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
 set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
 set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${PNG_ROOT}/include)
+list(APPEND LN_EXTERNAL_LIBS PNG)
 
 
 #--------------------------------------
@@ -127,36 +134,42 @@ if (LN_OS_DESKTOP)
     set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
     set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
     set(glslang_LIBRARIES ${glslang_LIBRARIES} ${LIB_NAME})
+    list(APPEND LN_EXTERNAL_LIBS glslang)
 
     set(LIB_NAME HLSL)
     add_library(${LIB_NAME} STATIC IMPORTED)
     set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
     set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
     set(glslang_LIBRARIES ${glslang_LIBRARIES} ${LIB_NAME})
+    list(APPEND LN_EXTERNAL_LIBS HLSL)
 
     set(LIB_NAME OGLCompiler)
     add_library(${LIB_NAME} STATIC IMPORTED)
     set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
     set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
     set(glslang_LIBRARIES ${glslang_LIBRARIES} ${LIB_NAME})
+    list(APPEND LN_EXTERNAL_LIBS OGLCompiler)
 
     set(LIB_NAME OSDependent)
     add_library(${LIB_NAME} STATIC IMPORTED)
     set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
     set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
     set(glslang_LIBRARIES ${glslang_LIBRARIES} ${LIB_NAME})
+    list(APPEND LN_EXTERNAL_LIBS OSDependent)
 
     set(LIB_NAME SPIRV)
     add_library(${LIB_NAME} STATIC IMPORTED)
     set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
     set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
     set(glslang_LIBRARIES ${glslang_LIBRARIES} ${LIB_NAME})
+    list(APPEND LN_EXTERNAL_LIBS SPIRV)
 
     set(LIB_NAME SPVRemapper)
     add_library(${LIB_NAME} STATIC IMPORTED)
     set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
     set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
     set(glslang_LIBRARIES ${glslang_LIBRARIES} ${LIB_NAME})
+    list(APPEND LN_EXTERNAL_LIBS SPVRemapper)
 endif()
 
 #--------------------------------------
@@ -174,11 +187,13 @@ if (LN_OS_DESKTOP)
     #set_property(TARGET spirv-cross-core APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
     set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
     set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
+    list(APPEND LN_EXTERNAL_LIBS spirv-cross-core)
 
     add_library(spirv-cross-glsl STATIC IMPORTED)
     #set_property(TARGET spirv-cross-glsl APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
     set_target_properties(spirv-cross-glsl PROPERTIES IMPORTED_LOCATION_RELEASE "${spirv-cross-glsl_LIBRARY_RELEASE}")
     set_target_properties(spirv-cross-glsl PROPERTIES IMPORTED_LOCATION_DEBUG "${spirv-cross-glsl_LIBRARY_DEBUG}")
+    list(APPEND LN_EXTERNAL_LIBS spirv-cross-glsl)
 
     set(spirv-cross_INCLUDE_DIRS "${SPIRV-Cross_ROOT}/include")
     set(spirv-cross_LIBRARIES spirv-cross-core spirv-cross-glsl)
@@ -200,6 +215,7 @@ else()
     set_target_properties(OpenAL PROPERTIES IMPORTED_LOCATION_RELEASE "${OpenAL_LIBRARY_RELEASE}")
     set_target_properties(OpenAL PROPERTIES IMPORTED_LOCATION_DEBUG "${OpenAL_LIBRARY_DEBUG}")
     set_target_properties(OpenAL PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${OpenAL_ROOT}/include)
+    list(APPEND LN_EXTERNAL_LIBS OpenAL)
 endif()
 
 #--------------------------------------
@@ -214,6 +230,7 @@ if (LN_USE_SDL)
     set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
     set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
     set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${SDL2_ROOT}/include)
+    list(APPEND LN_EXTERNAL_LIBS SDL2)
 endif()
 
 #--------------------------------------
@@ -227,6 +244,7 @@ add_library(FreeType STATIC IMPORTED)
 set_target_properties(FreeType PROPERTIES IMPORTED_LOCATION_RELEASE "${FreeType_LIBRARY_RELEASE}")
 set_target_properties(FreeType PROPERTIES IMPORTED_LOCATION_DEBUG "${FreeType_LIBRARY_DEBUG}")
 set_target_properties(FreeType PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${FreeType_ROOT}/include/freetype2)
+list(APPEND LN_EXTERNAL_LIBS FreeType)
 
 #--------------------------------------
 # ogg
@@ -239,6 +257,7 @@ add_library(ogg STATIC IMPORTED)
 set_target_properties(ogg PROPERTIES IMPORTED_LOCATION_RELEASE "${ogg_LIBRARY_RELEASE}")
 set_target_properties(ogg PROPERTIES IMPORTED_LOCATION_DEBUG "${ogg_LIBRARY_DEBUG}")
 set_target_properties(ogg PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ogg_ROOT}/include)
+list(APPEND LN_EXTERNAL_LIBS ogg)
 
 #--------------------------------------
 # vorbis
@@ -253,10 +272,12 @@ add_library(vorbis STATIC IMPORTED)
 set_target_properties(vorbis PROPERTIES IMPORTED_LOCATION_RELEASE "${vorbis_LIBRARY_RELEASE}")
 set_target_properties(vorbis PROPERTIES IMPORTED_LOCATION_DEBUG "${vorbis_LIBRARY_DEBUG}")
 set_target_properties(vorbis PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${vorbis_ROOT}/include)
+list(APPEND LN_EXTERNAL_LIBS vorbis)
 
 add_library(vorbisfile STATIC IMPORTED)
 set_target_properties(vorbisfile PROPERTIES IMPORTED_LOCATION_RELEASE "${vorbisfile_LIBRARY_RELEASE}")
 set_target_properties(vorbisfile PROPERTIES IMPORTED_LOCATION_DEBUG "${vorbisfile_LIBRARY_DEBUG}")
+list(APPEND LN_EXTERNAL_LIBS vorbisfile)
 
 #--------------------------------------
 # bullet
@@ -275,18 +296,22 @@ add_library(LinearMath STATIC IMPORTED)
 set_target_properties(LinearMath PROPERTIES IMPORTED_LOCATION_RELEASE "${LinearMath_LIBRARY_RELEASE}")
 set_target_properties(LinearMath PROPERTIES IMPORTED_LOCATION_DEBUG "${LinearMath_LIBRARY_DEBUG}")
 set_target_properties(LinearMath PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${bullet3_ROOT}/include/bullet)
+list(APPEND LN_EXTERNAL_LIBS LinearMath)
 
 add_library(BulletCollision STATIC IMPORTED)
 set_target_properties(BulletCollision PROPERTIES IMPORTED_LOCATION_RELEASE "${BulletCollision_LIBRARY_RELEASE}")
 set_target_properties(BulletCollision PROPERTIES IMPORTED_LOCATION_DEBUG "${BulletCollision_LIBRARY_DEBUG}")
+list(APPEND LN_EXTERNAL_LIBS BulletCollision)
 
 add_library(BulletDynamics STATIC IMPORTED)
 set_target_properties(BulletDynamics PROPERTIES IMPORTED_LOCATION_RELEASE "${BulletDynamics_LIBRARY_RELEASE}")
 set_target_properties(BulletDynamics PROPERTIES IMPORTED_LOCATION_DEBUG "${BulletDynamics_LIBRARY_DEBUG}")
+list(APPEND LN_EXTERNAL_LIBS BulletDynamics)
 
 add_library(BulletSoftBody STATIC IMPORTED)
 set_target_properties(BulletSoftBody PROPERTIES IMPORTED_LOCATION_RELEASE "${BulletSoftBody_LIBRARY_RELEASE}")
 set_target_properties(BulletSoftBody PROPERTIES IMPORTED_LOCATION_DEBUG "${BulletSoftBody_LIBRARY_DEBUG}")
+list(APPEND LN_EXTERNAL_LIBS BulletSoftBody)
 
 #--------------------------------------
 # pcre
@@ -299,6 +324,7 @@ add_library(pcre STATIC IMPORTED)
 set_target_properties(pcre PROPERTIES IMPORTED_LOCATION_RELEASE "${pcre_LIBRARY_RELEASE}")
 set_target_properties(pcre PROPERTIES IMPORTED_LOCATION_DEBUG "${pcre_LIBRARY_DEBUG}")
 set_target_properties(pcre PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${pcre_ROOT}/include)
+list(APPEND LN_EXTERNAL_LIBS pcre)
 
 #--------------------------------------
 # tmxlite
@@ -311,3 +337,4 @@ add_library(tmxlite STATIC IMPORTED)
 set_target_properties(tmxlite PROPERTIES IMPORTED_LOCATION_RELEASE "${tmxlite_LIBRARY_RELEASE}")
 set_target_properties(tmxlite PROPERTIES IMPORTED_LOCATION_DEBUG "${tmxlite_LIBRARY_DEBUG}")
 set_target_properties(tmxlite PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${tmxlite_ROOT}/include)
+#list(APPEND LN_EXTERNAL_LIBS tmxlite)

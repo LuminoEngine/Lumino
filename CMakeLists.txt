@@ -54,12 +54,16 @@ option(LN_MSVC_USE_SDL "use SDL on MSVC" OFF)
 
 set(CMAKE_DEBUG_POSTFIX "d")
 
-include(src/LuminoCommon.cmake)
+include(src/LuminoBuildCommon.cmake)
 
 set(LUMINO_ROOT_PATH "${CMAKE_CURRENT_LIST_DIR}")
 set(LUMINO_INCLUDE_DIRECTORIES
     "${LUMINO_ROOT_PATH}/src/LuminoCore/include"
     "${LUMINO_ROOT_PATH}/src/LuminoEngine/include")
+
+
+
+
 
 if (DEFINED EMSCRIPTEN)
     include_directories("${EMSCRIPTEN_ROOT_PATH}/system/lib/libcxxabi/include")
@@ -94,6 +98,8 @@ if (MSVC AND LN_MSVC_USE_SDL)
 else()
     set(LN_USE_SDL OFF)
 endif()
+
+
 
 #------------------------------------------------------------------------------
 # gtest

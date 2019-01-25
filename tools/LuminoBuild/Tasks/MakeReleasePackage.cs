@@ -34,13 +34,22 @@ namespace LuminoBuild.Tasks
 
             // C++ Engine (common)
             {
+                string nativeEngineCMakeDir = Path.Combine(nativeEngineRoot, "lib", "cmake");
+                Directory.CreateDirectory(nativeEngineCMakeDir);
+
                 File.Copy(
                     Path.Combine(builder.LuminoSourceDir, "LuminoSetup.cmake"),
-                    Path.Combine(nativeEngineLib, "LuminoSetup.cmake"), true);
+                    Path.Combine(nativeEngineCMakeDir, "LuminoSetup.cmake"), true);
+                File.Copy(
+                    Path.Combine(builder.LuminoSourceDir, "LuminoCommon.cmake"),
+                    Path.Combine(nativeEngineCMakeDir, "LuminoCommon.cmake"), true);
+                File.Copy(
+                    Path.Combine(builder.LuminoSourceDir, "LuminoConfig.cmake"),
+                    Path.Combine(nativeEngineCMakeDir, "LuminoConfig.cmake"), true);
 
                 File.Copy(
                     Path.Combine(builder.LuminoExternalDir, "ImportExternalLibraries.cmake"),
-                    Path.Combine(nativeEngineLib, "ImportExternalLibraries.cmake"), true);
+                    Path.Combine(nativeEngineCMakeDir, "ImportExternalLibraries.cmake"), true);
 
                 File.WriteAllText(
                     Path.Combine(nativeEngineRoot, ".gitignore"),
