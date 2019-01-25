@@ -9,7 +9,6 @@ namespace LuminoBuild.Tasks
     class CMakeTargetInfo
     {
         public string DirName;
-        public string BuildType;
         public string VSTarget;
         public string Unicode;
         public string Platform;
@@ -21,10 +20,8 @@ namespace LuminoBuild.Tasks
     {
         public static CMakeTargetInfo[] Targets = new CMakeTargetInfo[]
         {
-            new CMakeTargetInfo { DirName = "MSVC2017-x86-MD", BuildType = "Debug", VSTarget = "Visual Studio 15", Platform="Win32", MSVCStaticRuntime = "OFF", AdditionalOptions = "" },
-            new CMakeTargetInfo { DirName = "MSVC2017-x86-MD", BuildType = "Release", VSTarget = "Visual Studio 15", Platform="Win32", MSVCStaticRuntime = "OFF", AdditionalOptions = "" },
-            new CMakeTargetInfo { DirName = "MSVC2017-x64-MD", BuildType = "Debug", VSTarget = "Visual Studio 15 Win64", Platform="x64", MSVCStaticRuntime = "OFF", AdditionalOptions = "" },
-            new CMakeTargetInfo { DirName = "MSVC2017-x64-MD", BuildType = "Release", VSTarget = "Visual Studio 15 Win64", Platform="x64", MSVCStaticRuntime = "OFF", AdditionalOptions = "" },
+            new CMakeTargetInfo { DirName = "MSVC2017-x86-MD", VSTarget = "Visual Studio 15", Platform="Win32", MSVCStaticRuntime = "OFF", AdditionalOptions = "" },
+            new CMakeTargetInfo { DirName = "MSVC2017-x64-MD", VSTarget = "Visual Studio 15 Win64", Platform="x64", MSVCStaticRuntime = "OFF", AdditionalOptions = "" },
         };
 
         public override string CommandName { get { return "MakeVSProjects"; } }
@@ -39,7 +36,7 @@ namespace LuminoBuild.Tasks
                 // cmake で .sln を作ってビルドする
                 foreach (var t in Targets)
                 {
-                    var targetName = t.DirName + "-" + t.BuildType;
+                    var targetName = t.DirName;
 
                     Directory.CreateDirectory(Path.Combine(builder.LuminoBuildDir, targetName));
                     Directory.SetCurrentDirectory(Path.Combine(builder.LuminoBuildDir, targetName));
@@ -56,13 +53,12 @@ namespace LuminoBuild.Tasks
                     {
                         $"-G\"{t.VSTarget}\"",
                         $"-DCMAKE_INSTALL_PREFIX=\"{installDir}\"",
+                        $"-DCMAKE_DEBUG_POSTFIX=d",     // cmake の find_package で Debug/Release 両対応するために、同じフォルダに lib を入れておきたい。(Qt 参考)
                         $"-DLN_MSVC_STATIC_RUNTIME={t.MSVCStaticRuntime}",
                         $"-DLN_BUILD_TESTS=ON",
                         $"-DLN_BUILD_TOOLS=ON",
                         $"-DLN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=ON",
                         $"-DLN_TARGET_ARCH={t.DirName}",
-                        $"-DLN_BUILD_TYPE={t.BuildType}",
-                        $"-DCMAKE_BUILD_TYPE={t.BuildType}",
                         t.AdditionalOptions + additional,
                         $" ../..",
                     };

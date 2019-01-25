@@ -31,17 +31,27 @@ namespace LuminoBuild.Tasks
 
             var repoRoot = Path.Combine(reposDir, "llvm");
             var packageDir = Path.Combine(reposDir, "LLVMPackage");
-            BuildProject(repoRoot, Path.Combine(repoRoot, "_Build-Debug"), Path.Combine(packageDir, "Debug"), "Debug");
-            BuildProject(repoRoot, Path.Combine(repoRoot, "_Build-Release"), Path.Combine(packageDir, "Release"), "Release");
+            BuildProject(repoRoot, Path.Combine(repoRoot, "_Build"), Path.Combine(packageDir));
+            //BuildProject(repoRoot, Path.Combine(repoRoot, "_Build-Debug"), Path.Combine(packageDir, "Debug"), "Debug");
+            //BuildProject(repoRoot, Path.Combine(repoRoot, "_Build-Release"), Path.Combine(packageDir, "Release"), "Release");
         }
 
-        public void BuildProject(string cmakeHomeDir, string buildDir, string installDir, string buildConfig)
+        public void BuildProject(string cmakeHomeDir, string buildDir, string installDir)
         {
             Directory.CreateDirectory(buildDir);
             Directory.SetCurrentDirectory(buildDir);
+            
+            var args = new string[]
+            {
+                $"{cmakeHomeDir}",
+                $"-G\"Visual Studio 15 2017\"",
+                $"-DCMAKE_INSTALL_PREFIX=\"{installDir}\"",
+                $"-DCMAKE_DEBUG_POSTFIX=d",
+            };
 
-            Utils.CallProcess("cmake", $"{cmakeHomeDir} -G\"Visual Studio 15 2017\" -DCMAKE_INSTALL_PREFIX={installDir}");
-            Utils.CallProcess("cmake", $"--build . --config {buildConfig} --target install");
+            Utils.CallProcess("cmake", string.Join(' ', args));
+            Utils.CallProcess("cmake", $"--build . --config Debug --target install");
+            Utils.CallProcess("cmake", $"--build . --config Release --target install");
         }
     }
 }

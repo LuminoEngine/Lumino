@@ -44,10 +44,35 @@ namespace LuminoBuild.Tasks
             Utils.CallProcess("cmake", string.Join(' ', args));
             Utils.CallProcess("cmake", $"--build . --config {buildType}");
             Utils.CallProcess("cmake", $"--build . --config {buildType} --target install");
+        }
+        private void BuildProjectMSVC(Builder builder, string projectDirName, string externalSourceDir, string buildArch, string generator, string additionalOptions = "")
+        {
+            var projectName = Path.GetFileName(projectDirName); // zlib/contrib/minizip のような場合に minizip だけ取り出す
+            var targetName = buildArch;
+            var buildDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, targetName, "ExternalBuild", projectName));
+            var installDir = Path.Combine(builder.LuminoBuildDir, targetName, "ExternalInstall", projectName);
+            var cmakeSourceDir = Path.Combine(externalSourceDir, projectDirName);
+            var ov = Path.Combine(builder.LuminoRootDir, "src", "CFlagOverrides.cmake");
 
-            /*
-                MSVC と Xcode は Debug,Release の 2 つの構成をもつプロジェクトが出力される。
-            */
+            Logger.WriteLine($"BuildProject ({projectDirName}) buildDir:{buildDir}");
+
+            Directory.CreateDirectory(buildDir);
+            Directory.SetCurrentDirectory(buildDir);
+
+            var args = new string[]
+            {
+                $"-DCMAKE_INSTALL_PREFIX={installDir}",
+                $"-DCMAKE_DEBUG_POSTFIX=d",     // cmake の find_package で Debug/Release 両対応するために、同じフォルダに lib を入れておきたい。(Qt 参考)
+                $"-DCMAKE_USER_MAKE_RULES_OVERRIDE={ov}",
+                $"{additionalOptions}",
+                $"-G \"{generator}\"",
+                $"{cmakeSourceDir}",
+            };
+            Utils.CallProcess("cmake", string.Join(' ', args));
+            Utils.CallProcess("cmake", $"--build . --config Debug");
+            Utils.CallProcess("cmake", $"--build . --config Debug --target install");
+            Utils.CallProcess("cmake", $"--build . --config Release");
+            Utils.CallProcess("cmake", $"--build . --config Release --target install");
         }
 
         private void BuildProjectEm(Builder builder, string projectDirName, string externalSourceDir, string buildArchDir, string additionalOptions = "")
@@ -275,6 +300,7 @@ namespace LuminoBuild.Tasks
                         BuildProjectAndroid(builder, "vorbis", reposDir, target.ABI, target.BuildType, $"-DOGG_ROOT={oggInstallDir} -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH");
                         BuildProjectAndroid(builder, "bullet3", reposDir, target.ABI, target.BuildType, bulletOptions);
                         BuildProjectAndroid(builder, "pcre", reposDir, target.ABI, target.BuildType, "-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF");
+                        BuildProjectAndroid(builder, "tmxlite/tmxlite", reposDir, target.ABI, target.BuildType, "-DTMXLITE_STATIC_LIB=ON");
                     }
                 }
 
@@ -293,6 +319,7 @@ namespace LuminoBuild.Tasks
                     BuildProjectEm(builder, "vorbis", reposDir, "Emscripten", $"-DOGG_ROOT={oggInstallDir} -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH");
                     BuildProjectEm(builder, "bullet3", reposDir, "Emscripten", bulletOptions);
                     BuildProjectEm(builder, "pcre", reposDir, "Emscripten", "-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF");
+                    BuildProjectEm(builder, "tmxlite/tmxlite", reposDir, "Emscripten", "-DTMXLITE_STATIC_LIB=ON");
                 }
 
                 // Visual C++
@@ -300,24 +327,24 @@ namespace LuminoBuild.Tasks
                 {
                     foreach (var target in MakeVSProjects.Targets)
                     {
-                        var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{target.DirName}-{target.BuildType}", "ExternalInstall", "zlib"));
-                        var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{target.DirName}-{target.BuildType}", "ExternalInstall", "ogg"));
+                        var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{target.DirName}", "ExternalInstall", "zlib"));
+                        var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{target.DirName}", "ExternalInstall", "ogg"));
                         var bulletRuntime = "-DUSE_MSVC_RUNTIME_LIBRARY_DLL=" + (target.MSVCStaticRuntime == "ON" ? "OFF" : "ON");
 
-                        BuildProject(builder, "zlib", target.BuildType, reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
-                        BuildProject(builder, "libpng", target.BuildType, reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
-                        BuildProject(builder, "glslang", target.BuildType, reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
-                        BuildProject(builder, "SPIRV-Cross", target.BuildType, reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
-                        BuildProject(builder, "glfw", target.BuildType, reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF -DGLFW_INSTALL=ON");
-                        BuildProject(builder, "glad", target.BuildType, reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DGLAD_INSTALL=ON");
-                        BuildProject(builder, "openal-soft", target.BuildType, reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
-                        BuildProject(builder, "SDL2", target.BuildType, reposDir, target.DirName, target.VSTarget, $"-DSDL_SHARED=OFF -DSDL_STATIC=ON -DSSE=OFF -DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
-                        BuildProject(builder, "freetype2", target.BuildType, reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
-                        BuildProject(builder, "ogg", target.BuildType, reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
-                        BuildProject(builder, "vorbis", target.BuildType, reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DOGG_ROOT={oggInstallDir}");
-                        BuildProject(builder, "bullet3", target.BuildType, reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} {bulletRuntime} {bulletOptions}");
-                        BuildProject(builder, "pcre", target.BuildType, reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF");
-                        BuildProject(builder, "tmxlite/tmxlite", target.BuildType, reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DTMXLITE_STATIC_LIB=ON");
+                        BuildProjectMSVC(builder, "zlib", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
+                        BuildProjectMSVC(builder, "libpng", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
+                        BuildProjectMSVC(builder, "glslang", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
+                        BuildProjectMSVC(builder, "SPIRV-Cross", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
+                        BuildProjectMSVC(builder, "glfw", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF -DGLFW_INSTALL=ON");
+                        BuildProjectMSVC(builder, "glad", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DGLAD_INSTALL=ON");
+                        BuildProjectMSVC(builder, "openal-soft", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
+                        BuildProjectMSVC(builder, "SDL2", reposDir, target.DirName, target.VSTarget, $"-DSDL_SHARED=OFF -DSDL_STATIC=ON -DSSE=OFF -DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
+                        BuildProjectMSVC(builder, "freetype2", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
+                        BuildProjectMSVC(builder, "ogg", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
+                        BuildProjectMSVC(builder, "vorbis", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DOGG_ROOT={oggInstallDir}");
+                        BuildProjectMSVC(builder, "bullet3", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} {bulletRuntime} {bulletOptions}");
+                        BuildProjectMSVC(builder, "pcre", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF");
+                        BuildProjectMSVC(builder, "tmxlite/tmxlite", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DTMXLITE_STATIC_LIB=ON");
                     }
                 }
             }
@@ -348,7 +375,8 @@ namespace LuminoBuild.Tasks
                         BuildProject(builder, "ogg", t.Config, reposDir, dirName, generator, args);
                         BuildProject(builder, "vorbis", t.Config, reposDir, dirName, generator, $"-DOGG_ROOT={oggInstallDir} -DCMAKE_IOS_DEVELOPER_ROOT={builder.LuminoBuildDir} " + args);
                         BuildProject(builder, "bullet3", t.Config, reposDir, dirName, generator, $"{bulletOptions} " + args);
-                        BuildProject(builder, "pcre", t.Config, reposDir, dirName, generator, $"-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF -DPCRE2_BUILD_TESTS=OFF" + args);
+                        BuildProject(builder, "pcre", t.Config, reposDir, dirName, generator, $"-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF -DPCRE2_BUILD_TESTS=OFF " + args);
+                        BuildProject(builder, "tmxlite/tmxlite", t.Config, reposDir, dirName, generator, $"-DTMXLITE_STATIC_LIB=ON " + args);
                     }
                 }
 
@@ -380,6 +408,7 @@ namespace LuminoBuild.Tasks
                         BuildProject(builder, "vorbis", t.Config, reposDir, dirName, generator, $"-DOGG_ROOT={oggInstallDir} " + args);
                         BuildProject(builder, "bullet3", t.Config, reposDir, dirName, generator, $"{bulletOptions} " + args);
                         BuildProject(builder, "pcre", t.Config, reposDir, dirName, generator, $"-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF " + args);
+                        BuildProject(builder, "tmxlite/tmxlite", t.Config, reposDir, dirName, generator, $"-DTMXLITE_STATIC_LIB=ON " + args);
                     }
                 }
             }
