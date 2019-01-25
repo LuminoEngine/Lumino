@@ -207,6 +207,8 @@ set(LN_SOURCES_Graphics
     src/Graphics/Texture.cpp
     src/Graphics/VertexBuffer.cpp
     src/Graphics/VertexDeclaration.cpp
+    src/Graphics/VulkanDeviceContext.cpp
+    src/Graphics/VulkanDeviceContext.hpp
 )
 
 set(LN_SOURCES_Shader
