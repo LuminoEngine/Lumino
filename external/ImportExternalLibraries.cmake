@@ -338,3 +338,14 @@ set_target_properties(tmxlite PROPERTIES IMPORTED_LOCATION_RELEASE "${tmxlite_LI
 set_target_properties(tmxlite PROPERTIES IMPORTED_LOCATION_DEBUG "${tmxlite_LIBRARY_DEBUG}")
 set_target_properties(tmxlite PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${tmxlite_ROOT}/include)
 #list(APPEND LN_EXTERNAL_LIBS tmxlite)
+
+#--------------------------------------
+# Vulkan
+find_package(Vulkan REQUIRED)
+
+if (WIN32)
+    add_library(VulkanImported STATIC IMPORTED)
+    set_target_properties(VulkanImported PROPERTIES IMPORTED_LOCATION_RELEASE ${Vulkan_LIBRARY})
+    set_target_properties(VulkanImported PROPERTIES IMPORTED_LOCATION_DEBUG ${Vulkan_LIBRARY})
+    set_target_properties(VulkanImported PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${Vulkan_INCLUDE_DIRS})
+endif()

@@ -530,6 +530,8 @@ elseif (WIN32)
     #list(APPEND LN_PLATFORM_LIBS user32 gdi32 winmm imm32 ole32 oleaut32 version uuid)
     list(APPEND LN_PLATFORM_LIBS winmm imm32 version)
     list(APPEND LN_PLATFORM_LIBS OpenAL)
+    list(APPEND LN_PLATFORM_LIBS VulkanImported)
+    
 
 elseif (APPLE)
     list(APPEND LN_PLATFORM_LIBS glfw GLAD)
