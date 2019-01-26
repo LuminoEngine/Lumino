@@ -6,6 +6,7 @@
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include "GraphicsManager.hpp"
 #include "OpenGLDeviceContext.hpp"
+#include "VulkanDeviceContext.hpp"
 #include "../Engine/LinearAllocator.hpp"
 
 namespace ln {
@@ -75,12 +76,20 @@ void GraphicsManager::init(const Settings& settings)
 {
     LN_LOG_DEBUG << "GraphicsManager Initialization started.";
 
+#if 1
+    VulkanDeviceContext::Settings dcSettings;
+    dcSettings.debugEnabled = true;
+    auto ctx = makeRef<VulkanDeviceContext>();
+    ctx->init(dcSettings);
+    m_deviceContext = ctx;
+#else
 	OpenGLDeviceContext::Settings openglSettings;
 	openglSettings.mainWindow = settings.mainWindow;
 	auto ctx = makeRef<OpenGLDeviceContext>();
 	ctx->init(openglSettings);
 	ctx->refreshCaps();
 	m_deviceContext = ctx;
+#endif
 
     {
         auto& triple = m_deviceContext->caps().requestedShaderTriple;

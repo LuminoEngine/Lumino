@@ -5,6 +5,7 @@
 #include <LuminoEngine/Engine/Application.hpp>
 #include <LuminoEngine/Platform/Win32PlatformInterface.hpp>
 #include "../Engine/EngineManager.hpp"
+#include "GLFWPlatformWindowManager.hpp"
 
 extern "C" ::ln::Application* LuminoCreateApplicationInstance();
 

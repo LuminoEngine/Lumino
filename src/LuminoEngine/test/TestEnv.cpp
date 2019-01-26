@@ -9,7 +9,7 @@ void TestEnv::setup()
 	GlobalLogger::addStdErrAdapter();
 	EngineSettings::setMainWindowSize(160, 120);
 	EngineSettings::setMainBackBufferSize(160, 120);
-    EngineSettings::setEngineFeatures(EngineFeature::Experimental);
+    //EngineSettings::setEngineFeatures(EngineFeature::Experimental);
     detail::EngineDomain::engineManager()->init();
 
 	Font::registerFontFile(LN_LOCALFILE("../../../tools/VLGothic/VL-Gothic-Regular.ttf"));
