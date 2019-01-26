@@ -8,6 +8,23 @@
     - name: ダウンロード
       href: GettingStarted/download.md
 
+
+- name: 入門チュートリアル
+  href: tutorial/index.md
+  items:
+    - name: Lumino をはじめる
+      href: tutorial/basics.md
+    - name: 画像を表示する
+      href: tutorial/display-sprites.md
+
+
+- name: プログラミングガイド
+  href: programming-guide/index.md
+  items:
+    - name: C++
+      href: programming-guide/cpp.md
+
+
 - name: Core
   items:
     - name: 文字列の取り扱い
