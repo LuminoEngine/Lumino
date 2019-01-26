@@ -12,7 +12,7 @@ public:
 
 	Project* project() const { return m_project; }
 
-	virtual Result applyTemplates() = 0;
+	virtual Result applyTemplates(const ln::String& templateName) = 0;
     virtual Result applyEngine() = 0;
 	virtual void restore() = 0;
 
@@ -27,7 +27,7 @@ public:
 	CppLanguageContext(Project* project);
 	virtual ~CppLanguageContext();
 
-	virtual Result applyTemplates() override;
+	virtual Result applyTemplates(const ln::String& templateName) override;
     virtual Result applyEngine() override;
 	virtual void restore() override;
 

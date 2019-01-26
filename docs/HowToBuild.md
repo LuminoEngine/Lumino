@@ -9,6 +9,11 @@
 #### Visual Studio
 Visual Studio 2017 をインストールしてください。
 
+また、Visual Studio Installer では次のワークロードをインストールしてください。
+* C++ によるデスクトップ開発
+* .NET Core クロスプラットフォームの開発
+
+
 #### Chocolatey
 Chocolatey をインストールしてください。
 ― [Chocolatey installation](https://chocolatey.org/docs/installation)

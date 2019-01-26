@@ -17,7 +17,7 @@ Project::~Project()
 {
 }
 
-Result Project::newProject(const ln::Path& projectDir, const ln::String& projectName, const ln::String& engineSource)
+Result Project::newProject(const ln::Path& projectDir, const ln::String& projectName, const ln::String& engineSource, const ln::String& templateName)
 {
 	m_rootDir = projectDir.canonicalize();
 	m_projectName = projectName;
@@ -45,7 +45,7 @@ Result Project::newProject(const ln::Path& projectDir, const ln::String& project
 	ln::FileSystem::setAttribute(m_buildDir, ln::FileAttribute::Hidden);
 
 	m_context = ln::makeRef<CppLanguageContext>(this);
-	if (!m_context->applyTemplates()) {
+	if (!m_context->applyTemplates(templateName)) {
 		return Result::Fail;
 	}
     if (!m_context->applyEngine()) {

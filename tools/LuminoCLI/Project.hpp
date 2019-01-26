@@ -14,7 +14,7 @@ public:
 	Project(Workspace* owner);
 	virtual ~Project();
 
-	Result newProject(const ln::Path& projectDir, const ln::String& projectName, const ln::String& engineSource = ln::String::Empty);
+	Result newProject(const ln::Path& projectDir, const ln::String& projectName, const ln::String& engineSource, const ln::String& templateName);
 	Result openProject(const ln::Path& dir);
 	Result saveProject();
 	Result loadProject();

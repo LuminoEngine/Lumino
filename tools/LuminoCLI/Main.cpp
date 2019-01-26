@@ -63,8 +63,9 @@ int main(int argc, char** argv)
 		//--------------------------------------------------------------------------------
 		// init command
 		auto initCommand = parser.addCommand(u"init", u"Create a Lumino project in the current directory.");
-		auto initCommand_projectNameArg = initCommand->addPositionalArgument(u"project-name", u"project name.");
-        auto initCommand_engineArg = initCommand->addValueOption(u"e", u"engine", u"engine source.");
+		auto initCommand_projectNameArg = initCommand->addPositionalArgument(u"project-name", u"Project name.");
+        auto initCommand_templateArg = initCommand->addValueOption(u"t", u"template", u"Project template.");
+        auto initCommand_engineArg = initCommand->addValueOption(u"e", u"engine", u"Engine source.");
 
 		//--------------------------------------------------------------------------------
 		// build command
@@ -110,6 +111,9 @@ int main(int argc, char** argv)
                 InitCommand cmd;
                 if (initCommand_engineArg->hasValue()) {
                     cmd.engineSource = initCommand_engineArg->value();
+                }
+                if (initCommand_templateArg->hasValue()) {
+                    cmd.templateName = initCommand_templateArg->value();
                 }
                 return cmd.execute(workspace, initCommand_projectNameArg->value());
 			}
