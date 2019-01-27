@@ -156,6 +156,57 @@ void VulkanAllocator::free(void* ptr) noexcept
 //=============================================================================
 // VulkanDeviceContext
 
+bool VulkanPipelineCache::init(VulkanDeviceContext* deviceContext)
+{
+    m_deviceContext = deviceContext;
+    return true;
+}
+
+void VulkanPipelineCache::add(uint64_t key, VkPipeline value)
+{
+    invalidate(key);
+    m_hashMap.insert({ key, value });
+}
+
+VkPipeline VulkanPipelineCache::find(uint64_t key) const
+{
+    auto it = m_hashMap.find(key);
+    if (it != m_hashMap.end())
+    {
+        return it->second;
+    }
+
+    return 0;
+}
+
+void VulkanPipelineCache::invalidate(uint64_t key)
+{
+    auto it = m_hashMap.find(key);
+    if (it != m_hashMap.end())
+    {
+        vkDestroyPipeline(m_deviceContext->vulkanDevice(), it->second, m_deviceContext->vulkanAllocator());
+        m_hashMap.erase(it);
+    }
+}
+
+void VulkanPipelineCache::clear()
+{
+    for (typename HashMap::iterator it = m_hashMap.begin(), itEnd = m_hashMap.end(); it != itEnd; ++it)
+    {
+        vkDestroyPipeline(m_deviceContext->vulkanDevice(), it->second, m_deviceContext->vulkanAllocator());
+    }
+
+    m_hashMap.clear();
+}
+
+uint32_t VulkanPipelineCache::count() const
+{
+    return uint32_t(m_hashMap.size());
+}
+
+//=============================================================================
+// VulkanDeviceContext
+
 VulkanDeviceContext::VulkanDeviceContext()
     : m_instance(nullptr)
     , m_allocatorCallbacks()
@@ -545,11 +596,17 @@ bool VulkanDeviceContext::init(const Settings& settings)
         }
     }
 
+    if (!m_pipelineCache.init(this)) {
+        return false;
+    }
+
     return true;
 }
 
 void VulkanDeviceContext::dispose()
 {
+    m_pipelineCache.clear();
+
     if (m_transferQueue) {
         m_transferQueue->dispose();
         m_transferQueue = nullptr;
@@ -717,6 +774,8 @@ void VulkanDeviceContext::onUpdateShaderPass(IShaderPass* newPass)
 
 void VulkanDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
+    const State& state = committedState();
+
     LN_NOTIMPLEMENTED();
 }
 
@@ -1116,6 +1175,10 @@ bool VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* w
     m_imageFormat = VK_FORMAT_UNDEFINED;
     m_colorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
     {
+        // 事前に取り出しておいた GraphicsQueue が、Present をサポートするかを確認する
+        // Note: 丁寧にやるなら、もう一度すべての Queue を列挙して調べなおすのがよい。
+        //       ただし、チュートリアルにもあるように、ほとんどのケースでは同じ Queue が選択される。
+        //       https://vulkan-tutorial.com/Drawing_a_triangle/Presentation/Window_surface
         auto familyIndex = m_graphicsQueue->familyIndex();
         VkBool32 support = VK_FALSE;
         if (vkGetPhysicalDeviceSurfaceSupportKHR(vulkanPhysicalDevice, familyIndex, m_surface, &support) != VK_SUCCESS) {
@@ -1292,6 +1355,8 @@ bool VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* w
             LN_LOG_ERROR << "Failed vkGetSwapchainImagesKHR";
             return false;
         }
+
+        // ここで取り出した Image は VkSwapchainKHR が破棄されると自動的にクリーンアップされるので、クリーンアップコードを追加する必要はない。
     }
 
     // イメージビューを生成.
@@ -1339,6 +1404,7 @@ bool VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* w
     }
 
     // Change image layout
+    // https://sites.google.com/site/monshonosuana/vulkan/vulkan_002
     {
         auto commandBuffer = makeRef<VulkanCommandList>();
         if (!commandBuffer->init(m_deviceContext, VulkanCommandList::Type::COMMANDLIST_TYPE_DIRECT)) {
@@ -1417,6 +1483,16 @@ ITexture* VulkanSwapChain::getColorBuffer() const
     return nullptr;
 }
 
+bool VulkanSwapChain::present()
+{
+    VkPresentInfoKHR presentInfo = {};
+    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+    // 実際に Presentation が行われる前に待機するセマフォを指定する。
+    // これは VkSubmitInfo に指定したものと同一とする。
+    //presentInfo.waitSemaphoreCount = 1;
+    //presentInfo.pWaitSemaphores = signalSemaphores;
+}
 
 //==============================================================================
 // VulkanVertexDeclaration

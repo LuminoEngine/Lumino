@@ -79,6 +79,21 @@ public:
 	void present(ISwapChain* swapChain);
 
 protected:
+    struct State
+    {
+        BlendStateDesc blendState;
+        RasterizerStateDesc rasterizerState;
+        DepthStencilStateDesc depthStencilState;
+        std::array<ITexture*, 4> renderTargets = {};
+        IDepthBuffer* depthBuffer = nullptr;
+        RectI viewportRect;
+        RectI scissorRect;
+        IVertexDeclaration* vertexDeclaration = nullptr;
+        std::array<IVertexBuffer*, 4> vertexBuffers = {};
+        IIndexBuffer* indexBuffer = nullptr;
+        IShaderPass* shaderPass = nullptr;
+    };
+
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) = 0;
 	virtual void onEnterMainThread() = 0;
 	virtual void onLeaveMainThread() = 0;
@@ -107,26 +122,14 @@ protected:
 
 	virtual void onPresent(ISwapChain* swapChain) = 0;
 
+    const State& committedState() const { return m_committed; }
+
 private:
 	void commitStatus();
 
-	struct State
-	{
-		BlendStateDesc blendState;
-		RasterizerStateDesc rasterizerState;
-		DepthStencilStateDesc depthStencilState;
-		std::array<ITexture*, 4> renderTargets = {};
-		IDepthBuffer* depthBuffer = nullptr;
-		RectI viewportRect;
-		RectI scissorRect;
-		IVertexDeclaration* vertexDeclaration = nullptr;
-		std::array<IVertexBuffer*, 4> vertexBuffers = {};
-		IIndexBuffer* indexBuffer = nullptr;
-		IShaderPass* shaderPass = nullptr;
-	};
-
 	GraphicsDeviceCaps m_caps;
 	State m_staging;
+    State m_committed;
 };
 
 class IGraphicsDeviceObject

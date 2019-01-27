@@ -196,6 +196,7 @@ void IGraphicsDeviceContext::commitStatus()
 
 	onUpdatePrimitiveData(m_staging.vertexDeclaration, m_staging.vertexBuffers.data(), m_staging.vertexBuffers.size(), m_staging.indexBuffer);
 	
+    m_committed = m_staging;
 }
 
 

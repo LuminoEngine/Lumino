@@ -4,9 +4,11 @@
 #define VK_USE_PLATFORM_WIN32_KHR
 #include <vulkan/vulkan.h>
 #include "GraphicsDeviceContext.hpp"
+#include "MixHash.hpp"
 
 namespace ln {
 namespace detail {
+class VulkanDeviceContext;
 class VulkanQueue;
 class VulkanSwapChain;
 class VulkanIndexBuffer;
@@ -30,6 +32,23 @@ private:
     size_t m_allocationSize[VK_SYSTEM_ALLOCATION_SCOPE_RANGE_SIZE];
 };
 
+class VulkanPipelineCache
+{
+public:
+    bool init(VulkanDeviceContext* deviceContext);
+    void add(uint64_t key, VkPipeline value);
+    VkPipeline find(uint64_t key) const;
+    void invalidate(uint64_t key);
+    void clear();
+    uint32_t count() const;
+
+private:
+    using HashMap = std::unordered_map<uint64_t, VkPipeline>;
+
+    VulkanDeviceContext* m_deviceContext;
+    HashMap m_hashMap;
+};
+
 class VulkanDeviceContext
     : public IGraphicsDeviceContext
 {
@@ -47,6 +66,7 @@ public:
     bool init(const Settings& settings);
     virtual void dispose() override;
 
+    const VkAllocationCallbacks* vulkanAllocator() const { return &m_allocatorCallbacks; }
     VkInstance vulkanInstance() const { return m_instance; }
     VkDevice vulkanDevice() const { return m_device; }
     VkPhysicalDevice vulkanPhysicalDevice() const;
@@ -110,11 +130,12 @@ private:
     uint32_t m_physicalDeviceCount;
     std::vector<PhysicalDeviceInfo> m_physicalDeviceInfos;
     VkDevice m_device;
-    Ref<VulkanQueue> m_graphicsQueue;
+    Ref<VulkanQueue> m_graphicsQueue;   // graphics and presentation queue
     Ref<VulkanQueue> m_computeQueue;
     Ref<VulkanQueue> m_transferQueue;
     DeviceCaps m_caps;
     uint64_t m_timeStampFrequency;
+    VulkanPipelineCache m_pipelineCache;
 
     bool m_ext_EXT_KHR_PUSH_DESCRIPTOR;
     bool m_ext_EXT_KHR_DESCRIPTOR_UPDATE_TEMPLATE;
@@ -208,6 +229,8 @@ public:
     bool init(VulkanDeviceContext* deviceContext, PlatformWindow* window, const SwapChainDesc& desc);
     virtual void dispose() override;
     virtual ITexture* getColorBuffer() const override;
+
+    bool present();
 
 private:
     VulkanDeviceContext* m_deviceContext;
