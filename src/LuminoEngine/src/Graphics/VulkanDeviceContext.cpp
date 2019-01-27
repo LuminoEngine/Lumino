@@ -776,6 +776,52 @@ void VulkanDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, f
 {
     const State& state = committedState();
 
+
+    VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
+    colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+    colorBlendAttachment.blendEnable = VK_FALSE;
+
+
+    VkPipelineRasterizationStateCreateInfo rasterizer = {};
+    rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+    rasterizer.depthClampEnable = VK_FALSE;
+    rasterizer.rasterizerDiscardEnable = VK_FALSE;
+    rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
+    rasterizer.lineWidth = 1.0f;
+    rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+    rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+    rasterizer.depthBiasEnable = VK_FALSE;
+
+    VkPipelineDepthStencilStateCreateInfo depthStencilStateInfo = {};
+
+    VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
+    vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+    vertexInputInfo.vertexBindingDescriptionCount = 0;
+    vertexInputInfo.vertexAttributeDescriptionCount = 0;
+
+
+
+
+    // command
+
+
+    //VkViewport vp;
+    //vp.x = rect.m_x;
+    //vp.y = rect.m_y;
+    //vp.width = rect.m_width;
+    //vp.height = rect.m_height;
+    //vp.minDepth = 0.0f;
+    //vp.maxDepth = 1.0f;
+    //vkCmdSetViewport(m_commandBuffer, 0, 1, &vp);
+
+    //VkRect2D rc;
+    //rc.offset.x = viewScissorRect.m_x;
+    //rc.offset.y = viewScissorRect.m_y;
+    //rc.extent.width = viewScissorRect.m_x + viewScissorRect.m_width;
+    //rc.extent.height = viewScissorRect.m_y + viewScissorRect.m_height;
+    //vkCmdSetScissor(m_commandBuffer, 0, 1, &rc);
+
+
     LN_NOTIMPLEMENTED();
 }
 
@@ -1492,6 +1538,8 @@ bool VulkanSwapChain::present()
     // これは VkSubmitInfo に指定したものと同一とする。
     //presentInfo.waitSemaphoreCount = 1;
     //presentInfo.pWaitSemaphores = signalSemaphores;
+
+    return true;
 }
 
 //==============================================================================
