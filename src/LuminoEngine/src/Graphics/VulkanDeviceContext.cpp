@@ -1196,7 +1196,7 @@ bool VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* w
 #if defined(LN_OS_WIN32)
     {
         HWND hWnd = (HWND)PlatformSupport::getWin32WindowHandle(window);
-        HINSTANCE hInstance = (HINSTANCE)::GetWindowLong(hWnd, GWL_HINSTANCE);
+        HINSTANCE hInstance = ::GetModuleHandle(NULL);
 
         VkWin32SurfaceCreateInfoKHR info = {};
         info.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
