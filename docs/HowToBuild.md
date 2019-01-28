@@ -30,6 +30,11 @@ choco install -y python3 --pre
 choco install -y wixtoolset
 ```
 
+
+#### Vulkan SDK
+[LunarG website](https://vulkan.lunarg.com/) から Vulkan SDK のインストーラをダウンロードし、インストールしてください。
+
+
 ### macOS
 [dotnet](https://docs.microsoft.com/ja-jp/dotnet/core/macos-prerequisites?tabs=netcore2x) をインストールしてください。
 
