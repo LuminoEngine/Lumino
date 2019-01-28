@@ -135,6 +135,8 @@ struct RenderTargetBlendDesc
 /** ブレンディングステート */
 struct BlendStateDesc
 {
+    static const int MaxRenderTargets = 8;
+
 	/** レンダーターゲットで独立したブレンディングを有効にするには、true に設定します。(default:false) */
 	bool independentBlendEnable;
 

@@ -218,6 +218,8 @@ enum class ShaderVariableType
 class GraphicsHelper
 {
 public:
+    static size_t getVertexSize(const VertexElement* vertexElements, int elementsCount, int streamIndex);
+    static size_t getVertexElementTypeSize(VertexElementType type);
 	static PixelFormat translateToPixelFormat(TextureFormat format);
 	static TextureFormat translateToTextureFormat(PixelFormat format);
 };

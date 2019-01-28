@@ -948,7 +948,7 @@ void GLVertexDeclaration::createGLVertexElements(const VertexElement* vertexElem
 			&elm.normalized);
 
 		elm.byteOffset = sizeInStream[elm.streamIndex];
-		sizeInStream[elm.streamIndex] += getVertexElementTypeSize(vertexElements[i].Type);
+		sizeInStream[elm.streamIndex] += GraphicsHelper::getVertexElementTypeSize(vertexElements[i].Type);
 
 		//elm.stride = getVertexSize(vertexElements, elementsCount, elm.streamIndex);
 		//elm.byteOffset = totalSize;
@@ -961,37 +961,6 @@ void GLVertexDeclaration::createGLVertexElements(const VertexElement* vertexElem
 	{
 		e.stride = sizeInStream[e.streamIndex];
 	}
-}
-
-int GLVertexDeclaration::getVertexSize(const VertexElement* vertexElements, int elementsCount, int streamIndex)
-{
-	int size = 0;
-	for (int i = 0; i < elementsCount; ++i)
-	{
-		if (vertexElements[i].StreamIndex == streamIndex) {
-			size += getVertexElementTypeSize(vertexElements[i].Type);
-		}
-	}
-	return size;
-}
-
-int GLVertexDeclaration::getVertexElementTypeSize(VertexElementType type)
-{
-	switch (type)
-	{
-		case VertexElementType::Float1:	return sizeof(float);
-		case VertexElementType::Float2:	return sizeof(float) * 2;
-		case VertexElementType::Float3:	return sizeof(float) * 3;
-		case VertexElementType::Float4:	return sizeof(float) * 4;
-		case VertexElementType::Ubyte4:	return sizeof(unsigned char) * 4;
-		case VertexElementType::Color4:	return sizeof(unsigned char) * 4;
-		case VertexElementType::Short2:	return sizeof(short) * 2;
-		case VertexElementType::Short4:	return sizeof(short) * 4;
-		default:
-			LN_UNREACHABLE();
-			break;
-	}
-	return 0;
 }
 
 void GLVertexDeclaration::convertDeclTypeLNToGL(VertexElementType type, GLenum* gl_type, GLint* size, GLboolean* normalized)

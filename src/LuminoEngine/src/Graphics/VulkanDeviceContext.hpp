@@ -255,10 +255,12 @@ class VulkanVertexDeclaration
 public:
     VulkanVertexDeclaration();
     virtual ~VulkanVertexDeclaration();
-    void init(const VertexElement* elements, int elementsCount);
+    bool init(const VertexElement* elements, int elementsCount);
     virtual void dispose() override;
 
 private:
+    std::vector<VkVertexInputBindingDescription> m_bindings;
+    std::vector<VkVertexInputAttributeDescription> m_attributes;    
 };
 
 class VulkanVertexBuffer

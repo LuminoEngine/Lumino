@@ -248,13 +248,7 @@ public:
 	// 頂点宣言から GL 用の頂点宣言を生成する
 	static void createGLVertexElements(const VertexElement* vertexElements, int elementsCount, List<GLVertexElement>* outList);
 
-	// 頂点宣言から頂点1つ分のデータサイズ (バイト数) を求める
-	static int getVertexSize(const VertexElement* vertexElements, int elementsCount, int streamIndex);
-
-	// 頂点宣言の型のサイズ (バイト数) を求める
-	static int getVertexElementTypeSize(VertexElementType type);
-
-	// 頂点宣言の型から GLVertexElement 用のデータを作る
+    // 頂点宣言の型から GLVertexElement 用のデータを作る
 	static void convertDeclTypeLNToGL(VertexElementType type, GLenum* gl_type, GLint* size, GLboolean* normalized);
 
 private:

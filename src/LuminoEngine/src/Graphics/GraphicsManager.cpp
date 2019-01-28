@@ -14,6 +14,37 @@ namespace ln {
 //==============================================================================
 // GraphicsHelper
 
+size_t GraphicsHelper::getVertexSize(const VertexElement* vertexElements, int elementsCount, int streamIndex)
+{
+    int size = 0;
+    for (int i = 0; i < elementsCount; ++i)
+    {
+        if (vertexElements[i].StreamIndex == streamIndex) {
+            size += getVertexElementTypeSize(vertexElements[i].Type);
+        }
+    }
+    return size;
+}
+
+size_t GraphicsHelper::getVertexElementTypeSize(VertexElementType type)
+{
+    switch (type)
+    {
+    case VertexElementType::Float1:	return sizeof(float);
+    case VertexElementType::Float2:	return sizeof(float) * 2;
+    case VertexElementType::Float3:	return sizeof(float) * 3;
+    case VertexElementType::Float4:	return sizeof(float) * 4;
+    case VertexElementType::Ubyte4:	return sizeof(unsigned char) * 4;
+    case VertexElementType::Color4:	return sizeof(unsigned char) * 4;
+    case VertexElementType::Short2:	return sizeof(short) * 2;
+    case VertexElementType::Short4:	return sizeof(short) * 4;
+    default:
+        LN_UNREACHABLE();
+        break;
+    }
+    return 0;
+}
+
 PixelFormat GraphicsHelper::translateToPixelFormat(TextureFormat format)
 {
 	switch (format)

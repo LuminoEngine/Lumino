@@ -95,6 +95,7 @@ struct FormatConversionItem
     TextureFormat lnFormat;
     bool isCompress;
 };
+
 static FormatConversionItem g_formatConversionTable[] =
 {
     { VK_FORMAT_UNDEFINED, 0, TextureFormat::Unknown, false },
@@ -111,6 +112,167 @@ static VkFormat LNFormatToVkFormat(TextureFormat format)
 {
     assert(g_formatConversionTable[(int)format].lnFormat == format);
     return g_formatConversionTable[(int)format].vulkanFormat;
+}
+
+struct BlendFactorConversionItem
+{
+    BlendFactor lnValue;
+    VkBlendFactor vkValueColor;
+    VkBlendFactor vkValueAlpha;
+};
+
+static const BlendFactorConversionItem s_blendFactorConversionTable[] =
+{
+    { BlendFactor::Zero, VK_BLEND_FACTOR_ZERO, VK_BLEND_FACTOR_ZERO },
+    { BlendFactor::One, VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ONE },
+    { BlendFactor::SourceColor, VK_BLEND_FACTOR_SRC_COLOR, VK_BLEND_FACTOR_SRC_ALPHA },
+    { BlendFactor::InverseSourceColor, VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA },
+    { BlendFactor::SourceAlpha, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_SRC_ALPHA },
+    { BlendFactor::InverseSourceAlpha, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA },
+    { BlendFactor::DestinationColor, VK_BLEND_FACTOR_DST_COLOR, VK_BLEND_FACTOR_DST_ALPHA },
+    { BlendFactor::InverseDestinationColor, VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR, VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA },
+    { BlendFactor::DestinationAlpha,VK_BLEND_FACTOR_DST_ALPHA, VK_BLEND_FACTOR_DST_ALPHA },
+    { BlendFactor::InverseDestinationAlpha, VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA },
+};
+
+static VkBlendFactor LNBlendFactorToVkBlendFactor_Color(BlendFactor value)
+{
+    assert(s_blendFactorConversionTable[(int)value].lnValue == value);
+    return s_blendFactorConversionTable[(int)value].vkValueColor;
+}
+
+static VkBlendFactor LNBlendFactorToVkBlendFactor_Alpha(BlendFactor value)
+{
+    assert(s_blendFactorConversionTable[(int)value].lnValue == value);
+    return s_blendFactorConversionTable[(int)value].vkValueAlpha;
+}
+
+struct BlendOpConversionItem
+{
+    BlendOp lnValue;
+    VkBlendOp vkValue;
+};
+
+static const BlendOpConversionItem s_blendOpConversionTable[] =
+{
+    { BlendOp::Add, VK_BLEND_OP_ADD },
+    { BlendOp::Subtract, VK_BLEND_OP_SUBTRACT },
+    { BlendOp::ReverseSubtract, VK_BLEND_OP_REVERSE_SUBTRACT },
+    { BlendOp::Min, VK_BLEND_OP_MIN },
+    { BlendOp::Max, VK_BLEND_OP_MAX },
+};
+
+static VkBlendOp LNBlendOpToVkBlendOp(BlendOp value)
+{
+    assert(s_blendOpConversionTable[(int)value].lnValue == value);
+    return s_blendOpConversionTable[(int)value].vkValue;
+}
+
+struct ComparisonFuncConversionItem
+{
+    ComparisonFunc lnValue;
+    VkCompareOp vkValue;
+};
+
+static const ComparisonFuncConversionItem s_comparisoFuncConversionTable[] =
+{
+    { ComparisonFunc::Never, VK_COMPARE_OP_NEVER },
+    { ComparisonFunc::Less, VK_COMPARE_OP_LESS },
+    { ComparisonFunc::LessEqual, VK_COMPARE_OP_LESS_OR_EQUAL },
+    { ComparisonFunc::Greater, VK_COMPARE_OP_GREATER },
+    { ComparisonFunc::GreaterEqual, VK_COMPARE_OP_GREATER_OR_EQUAL },
+    { ComparisonFunc::Equal, VK_COMPARE_OP_EQUAL },
+    { ComparisonFunc::NotEqual, VK_COMPARE_OP_NOT_EQUAL },
+    { ComparisonFunc::Always, VK_COMPARE_OP_ALWAYS },
+};
+
+static VkCompareOp LNComparisonFuncToVkCompareOp(ComparisonFunc value)
+{
+    assert(s_comparisoFuncConversionTable[(int)value].lnValue == value);
+    return s_comparisoFuncConversionTable[(int)value].vkValue;
+}
+
+struct FillModeConversionItem
+{
+    FillMode lnValue;
+    VkPolygonMode vkValue;
+};
+
+static const FillModeConversionItem s_fillModeConversionTable[] =
+{
+    { FillMode::Solid, VK_POLYGON_MODE_FILL },
+    { FillMode::Wireframe, VK_POLYGON_MODE_LINE },
+};
+
+static VkPolygonMode LNFillModeToVkPolygonMode(FillMode value)
+{
+    assert(s_fillModeConversionTable[(int)value].lnValue == value);
+    return s_fillModeConversionTable[(int)value].vkValue;
+}
+
+struct CullModeConversionItem
+{
+    CullMode lnValue;
+    VkCullModeFlagBits vkValue;
+};
+
+static const CullModeConversionItem s_cullModeConversionTable[] =
+{
+    { CullMode::None, VK_CULL_MODE_NONE },
+    { CullMode::Front, VK_CULL_MODE_FRONT_BIT },
+    { CullMode::Back, VK_CULL_MODE_BACK_BIT },
+};
+
+static VkCullModeFlagBits LNCullModeToVkCullMode(CullMode value)
+{
+    assert(s_cullModeConversionTable[(int)value].lnValue == value);
+    return s_cullModeConversionTable[(int)value].vkValue;
+}
+
+struct StencilOpConversionItem
+{
+    StencilOp lnValue;
+    VkStencilOp vkValue;
+};
+
+static const StencilOpConversionItem s_stencilOpConversionTable[] =
+{
+    { StencilOp::Keep,  VK_STENCIL_OP_KEEP },
+    { StencilOp::Replace, VK_STENCIL_OP_REPLACE },
+};
+
+static VkStencilOp LNStencilOpToVkStencilOp(StencilOp value)
+{
+    assert(s_stencilOpConversionTable[(int)value].lnValue == value);
+    return s_stencilOpConversionTable[(int)value].vkValue;
+}
+
+struct VertexElementTypeConversionItem
+{
+    VertexElementType lnValue;
+    VkFormat vkValue;
+};
+
+static const VertexElementTypeConversionItem s_vertexElementTypeConversionTable[] =
+{
+    { VertexElementType::Unknown, VK_FORMAT_UNDEFINED },
+
+    { VertexElementType::Float1, VK_FORMAT_R32_SFLOAT },
+    { VertexElementType::Float2, VK_FORMAT_R32G32_SFLOAT },
+    { VertexElementType::Float3, VK_FORMAT_R32G32B32_SFLOAT },
+    { VertexElementType::Float4, VK_FORMAT_R32G32B32A32_SFLOAT },
+
+    { VertexElementType::Ubyte4, VK_FORMAT_R8G8B8A8_UINT },
+    { VertexElementType::Color4, VK_FORMAT_R8G8B8A8_UNORM },    // UNORM : https://msdn.microsoft.com/ja-jp/library/ee415736%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396
+
+    { VertexElementType::Short2, VK_FORMAT_R16G16_SINT },
+    { VertexElementType::Short4, VK_FORMAT_R16G16B16A16_SINT },
+};
+
+static VkFormat LNVertexElementTypeToVkFormat(VertexElementType value)
+{
+    assert(s_vertexElementTypeConversionTable[(int)value].lnValue == value);
+    return s_vertexElementTypeConversionTable[(int)value].vkValue;
 }
 
 //=============================================================================
@@ -774,30 +936,249 @@ void VulkanDeviceContext::onUpdateShaderPass(IShaderPass* newPass)
 
 void VulkanDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
-    const State& state = committedState();
+    const State& committed = committedState();
 
+    VkPipelineColorBlendStateCreateInfo colorBlending = {};
+    VkPipelineColorBlendAttachmentState colorBlendAttachments[BlendStateDesc::MaxRenderTargets] = {};
+    {
+        const BlendStateDesc& state = committed.blendState;
+        int attachmentsCount = 0;
+        for (int i = 0; i < BlendStateDesc::MaxRenderTargets; i++)
+        {
+            colorBlendAttachments[i].blendEnable = (state.renderTargets[i].blendEnable) ? VK_TRUE : VK_FALSE;
 
-    VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
-    colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-    colorBlendAttachment.blendEnable = VK_FALSE;
+            colorBlendAttachments[i].srcColorBlendFactor = LNBlendFactorToVkBlendFactor_Color(state.renderTargets[i].sourceBlend);
+            colorBlendAttachments[i].dstColorBlendFactor = LNBlendFactorToVkBlendFactor_Color(state.renderTargets[i].destinationBlend);
+            colorBlendAttachments[i].colorBlendOp = LNBlendOpToVkBlendOp(state.renderTargets[i].blendOp);
 
+            colorBlendAttachments[i].srcAlphaBlendFactor = LNBlendFactorToVkBlendFactor_Alpha(state.renderTargets[i].sourceBlendAlpha);
+            colorBlendAttachments[i].dstAlphaBlendFactor = LNBlendFactorToVkBlendFactor_Alpha(state.renderTargets[i].destinationBlendAlpha);
+            colorBlendAttachments[i].alphaBlendOp = LNBlendOpToVkBlendOp(state.renderTargets[i].blendOpAlpha);
 
-    VkPipelineRasterizationStateCreateInfo rasterizer = {};
-    rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-    rasterizer.depthClampEnable = VK_FALSE;
-    rasterizer.rasterizerDiscardEnable = VK_FALSE;
-    rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
-    rasterizer.lineWidth = 1.0f;
-    rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-    rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
-    rasterizer.depthBiasEnable = VK_FALSE;
+            colorBlendAttachments[i].colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+        
+            attachmentsCount++;
+
+            if (!state.independentBlendEnable) {
+                break;
+            }
+        }
+
+        colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+        colorBlending.logicOpEnable = VK_FALSE;
+        colorBlending.logicOp = VK_LOGIC_OP_COPY;
+        colorBlending.attachmentCount = attachmentsCount;
+        colorBlending.pAttachments = colorBlendAttachments;
+        colorBlending.blendConstants[0] = 0.0f;
+        colorBlending.blendConstants[1] = 0.0f;
+        colorBlending.blendConstants[2] = 0.0f;
+        colorBlending.blendConstants[3] = 0.0f;
+    }
+
+    VkPipelineRasterizationStateCreateInfo rasterizerInfo = {};
+    {
+        const RasterizerStateDesc& state = committed.rasterizerState;
+
+        rasterizerInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+        rasterizerInfo.depthClampEnable = VK_FALSE;
+        rasterizerInfo.rasterizerDiscardEnable = VK_FALSE;
+        rasterizerInfo.polygonMode = LNFillModeToVkPolygonMode(state.fillMode);
+        rasterizerInfo.cullMode = LNCullModeToVkCullMode(state.cullMode);
+        rasterizerInfo.frontFace = VK_FRONT_FACE_CLOCKWISE; // 右回り
+        rasterizerInfo.depthBiasEnable = VK_FALSE;
+        rasterizerInfo.depthBiasConstantFactor = 0.0f;
+        rasterizerInfo.depthBiasClamp = 0.0f;
+        rasterizerInfo.depthBiasSlopeFactor = 0.0f;
+        rasterizerInfo.lineWidth = 1.0f;
+    }
 
     VkPipelineDepthStencilStateCreateInfo depthStencilStateInfo = {};
+    {
+        const DepthStencilStateDesc& state = committed.depthStencilState;
 
+        depthStencilStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+        depthStencilStateInfo.pNext = nullptr;
+        depthStencilStateInfo.flags = 0;
+        depthStencilStateInfo.depthTestEnable = (state.depthTestFunc == ComparisonFunc::Never ? VK_FALSE : VK_TRUE);
+        depthStencilStateInfo.depthWriteEnable = (state.depthWriteEnabled ? VK_TRUE : VK_FALSE);
+        depthStencilStateInfo.depthCompareOp = LNComparisonFuncToVkCompareOp(state.depthTestFunc);
+        depthStencilStateInfo.depthBoundsTestEnable = VK_FALSE;
+        depthStencilStateInfo.stencilTestEnable = (state.stencilEnabled ? VK_TRUE : VK_FALSE);
+
+        depthStencilStateInfo.front.failOp = LNStencilOpToVkStencilOp(state.frontFace.stencilFailOp);
+        depthStencilStateInfo.front.passOp = LNStencilOpToVkStencilOp(state.frontFace.stencilPassOp);
+        depthStencilStateInfo.front.depthFailOp = LNStencilOpToVkStencilOp(state.frontFace.stencilDepthFailOp);
+        depthStencilStateInfo.front.compareOp = LNComparisonFuncToVkCompareOp(state.frontFace.stencilFunc);
+        depthStencilStateInfo.front.compareMask = UINT32_MAX;
+        depthStencilStateInfo.front.writeMask = UINT32_MAX;
+        depthStencilStateInfo.front.reference = state.stencilReferenceValue;
+
+        depthStencilStateInfo.back.failOp = LNStencilOpToVkStencilOp(state.backFace.stencilFailOp);
+        depthStencilStateInfo.back.passOp = LNStencilOpToVkStencilOp(state.backFace.stencilPassOp);
+        depthStencilStateInfo.back.depthFailOp = LNStencilOpToVkStencilOp(state.backFace.stencilDepthFailOp);
+        depthStencilStateInfo.back.compareOp = LNComparisonFuncToVkCompareOp(state.backFace.stencilFunc);
+        depthStencilStateInfo.back.compareMask = UINT32_MAX;
+        depthStencilStateInfo.back.writeMask = UINT32_MAX;
+        depthStencilStateInfo.back.reference = state.stencilReferenceValue;
+
+        depthStencilStateInfo.minDepthBounds = 0.0f;
+        depthStencilStateInfo.maxDepthBounds = 1.0f;
+    }
+
+
+    VkPipelineMultisampleStateCreateInfo multisampleState;
+    {
+        multisampleState.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+        multisampleState.pNext = nullptr;
+        multisampleState.flags = 0;
+        multisampleState.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+        multisampleState.sampleShadingEnable = VK_FALSE;
+        multisampleState.minSampleShading = 0.0f;
+        multisampleState.pSampleMask = nullptr;
+        multisampleState.alphaToCoverageEnable = VK_FALSE;
+        multisampleState.alphaToOneEnable = VK_FALSE;
+    }
+
+    // TODO:
     VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     vertexInputInfo.vertexBindingDescriptionCount = 0;
     vertexInputInfo.vertexAttributeDescriptionCount = 0;
+
+
+    VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
+    inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;   // TODO
+    inputAssembly.primitiveRestartEnable = VK_FALSE;
+
+    // viewport と scissor については DynamicState として Command で設定するため、 ここではダミーの値を登録しておく。
+    VkPipelineViewportStateCreateInfo  viewportState;
+    VkViewport viewport;
+    VkRect2D scissor;
+    {
+        viewport.x = 0.0f;
+        viewport.y = 0.0f;
+        viewport.width = 1.0f;
+        viewport.height = 1.0f;
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+
+        scissor.offset.x = 0;
+        scissor.offset.y = 0;
+        scissor.extent.width = 1;
+        scissor.extent.height = 1;
+
+        viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+        viewportState.pNext = nullptr;
+        viewportState.flags = 0;
+        viewportState.viewportCount = 1;
+        viewportState.pViewports = &viewport;
+        viewportState.scissorCount = 1;
+        viewportState.pScissors = &scissor;
+    }
+
+
+    //VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
+    {
+        // MaxRenderTargets + 1枚の depthbuffer
+        VkAttachmentDescription attachmentDescs[MaxRenderTargets + 1] = {};
+        VkAttachmentReference attachmentRefs[MaxRenderTargets + 1] = {};
+        VkAttachmentReference* depthAttachmentRef = nullptr;
+        int attachmentCount = 0;
+        int colorAttachmentCount = 0;
+
+        for (int i = 0; i < MaxRenderTargets; i++)
+        {
+            if (committed.renderTargets[i])
+            {
+                attachmentDescs[i].flags = 0;
+                attachmentDescs[i].format = LNFormatToVkFormat(committed.renderTargets[i]->getTextureFormat());
+                attachmentDescs[i].samples = VK_SAMPLE_COUNT_1_BIT;
+                attachmentDescs[i].loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+                attachmentDescs[i].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+                attachmentDescs[i].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+                attachmentDescs[i].stencilStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
+                attachmentDescs[i].initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+                attachmentDescs[i].finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+                attachmentRefs[i].attachment = attachmentCount;
+                attachmentRefs[i].layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+                attachmentCount++;
+                colorAttachmentCount++;
+            }
+            else {
+                break;
+            }
+        }
+
+        if (committed.depthBuffer)
+        {
+            int i = colorAttachmentCount;
+
+            attachmentDescs[i].flags = 0;
+            attachmentDescs[i].format = VK_FORMAT_D32_SFLOAT_S8_UINT;
+            attachmentDescs[i].samples = VK_SAMPLE_COUNT_1_BIT;
+            attachmentDescs[i].loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+            attachmentDescs[i].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+            attachmentDescs[i].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+            attachmentDescs[i].stencilStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
+            attachmentDescs[i].initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+            attachmentDescs[i].finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+            attachmentRefs[i].attachment = attachmentCount;
+            attachmentRefs[i].layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+            depthAttachmentRef = &attachmentRefs[i];
+            attachmentCount++;
+        }
+        
+        VkSubpassDescription subpass;
+        subpass.flags = 0;
+        subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+        subpass.inputAttachmentCount = 0;
+        subpass.pInputAttachments = nullptr;
+        subpass.colorAttachmentCount = colorAttachmentCount;
+        subpass.pColorAttachments = attachmentRefs;
+        subpass.pResolveAttachments = nullptr;
+        subpass.pDepthStencilAttachment = depthAttachmentRef;
+        subpass.preserveAttachmentCount = 0;
+        subpass.pPreserveAttachments = nullptr;
+
+        VkRenderPassCreateInfo renderPassInfo = {};
+        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+        renderPassInfo.pNext = nullptr;
+        renderPassInfo.flags = 0;
+        renderPassInfo.attachmentCount = attachmentCount;
+        renderPassInfo.pAttachments = attachmentDescs;
+        renderPassInfo.subpassCount = 1;
+        renderPassInfo.pSubpasses = &subpass;
+        renderPassInfo.dependencyCount = 0;
+        renderPassInfo.pDependencies = nullptr;
+
+        if (vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create render pass!");
+        }
+    }
+
+    VkGraphicsPipelineCreateInfo pipelineInfo = {};
+    pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+    pipelineInfo.stageCount = 0; // TODO: まずはシェーダ無し //2;
+    pipelineInfo.pStages = nullptr;// TODO: まずはシェーダ無し //shaderStages;
+    pipelineInfo.pVertexInputState = &vertexInputInfo;
+    pipelineInfo.pInputAssemblyState = &inputAssembly;
+    pipelineInfo.pViewportState = &viewportState;
+    pipelineInfo.pRasterizationState = &rasterizerInfo;
+    pipelineInfo.pMultisampleState = &multisampleState;
+    pipelineInfo.pColorBlendState = &colorBlending;
+    pipelineInfo.layout = 0; // TODO: まずは VertexDecl なし //pipelineLayout;
+    pipelineInfo.renderPass = renderPass;
+    pipelineInfo.subpass = 0;
+    pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+
+    if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create graphics pipeline!");
+    }
 
 
 
@@ -1553,9 +1934,28 @@ VulkanVertexDeclaration::~VulkanVertexDeclaration()
 {
 }
 
-void VulkanVertexDeclaration::init(const VertexElement* elements, int elementsCount)
+bool VulkanVertexDeclaration::init(const VertexElement* elements, int elementsCount)
 {
-    LN_NOTIMPLEMENTED();
+    uint32_t bindingCount = 0;
+    for (int i = 0; i < elementsCount; i++) {
+        bindingCount = std::max(bindingCount, elements[i].StreamIndex);
+    }
+    m_bindings.resize(bindingCount);
+
+    uint32_t loc = 0;
+    for (int i = 0; i < elementsCount; i++) {
+        VkVertexInputAttributeDescription attr;
+        attr.location += loc;   // TODO: ひとまず先頭から1ずつ
+        attr.binding = elements[i].StreamIndex;
+        attr.format = LNVertexElementTypeToVkFormat(elements[i].Type);
+        attr.offset = m_bindings[attr.binding].stride;
+        m_bindings[attr.binding].stride += GraphicsHelper::getVertexElementTypeSize(elements[i].Type);
+
+        // TODO: Lumino のシェーダとしては、location と Semantics の対応を固定してもいいかもしれない。
+        // たとえば、location=0 は POSITION0 とか。
+    }
+
+    return true;
 }
 
 void VulkanVertexDeclaration::dispose()

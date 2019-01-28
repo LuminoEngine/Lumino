@@ -79,6 +79,8 @@ public:
 	void present(ISwapChain* swapChain);
 
 protected:
+    static const int MaxRenderTargets = 4;
+
     struct State
     {
         BlendStateDesc blendState;
@@ -89,7 +91,7 @@ protected:
         RectI viewportRect;
         RectI scissorRect;
         IVertexDeclaration* vertexDeclaration = nullptr;
-        std::array<IVertexBuffer*, 4> vertexBuffers = {};
+        std::array<IVertexBuffer*, MaxRenderTargets> vertexBuffers = {};
         IIndexBuffer* indexBuffer = nullptr;
         IShaderPass* shaderPass = nullptr;
     };
