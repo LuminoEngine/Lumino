@@ -36,6 +36,26 @@ class IGraphicsDeviceContext
 	: public RefObject
 {
 public:
+	static const int MaxRenderTargets = 4;
+
+	struct State
+	{
+		BlendStateDesc blendState;
+		RasterizerStateDesc rasterizerState;
+		DepthStencilStateDesc depthStencilState;
+		std::array<ITexture*, 4> renderTargets = {};
+		IDepthBuffer* depthBuffer = nullptr;
+		IVertexDeclaration* vertexDeclaration = nullptr;
+		IShaderPass* shaderPass = nullptr;
+
+		RectI viewportRect;
+		RectI scissorRect;
+		std::array<IVertexBuffer*, MaxRenderTargets> vertexBuffers = {};
+		IIndexBuffer* indexBuffer = nullptr;
+
+		//uint64_t computeStateHash() const;
+	};
+
 	IGraphicsDeviceContext();
 	virtual ~IGraphicsDeviceContext() = default;
 
@@ -79,22 +99,6 @@ public:
 	void present(ISwapChain* swapChain);
 
 protected:
-    static const int MaxRenderTargets = 4;
-
-    struct State
-    {
-        BlendStateDesc blendState;
-        RasterizerStateDesc rasterizerState;
-        DepthStencilStateDesc depthStencilState;
-        std::array<ITexture*, 4> renderTargets = {};
-        IDepthBuffer* depthBuffer = nullptr;
-        RectI viewportRect;
-        RectI scissorRect;
-        IVertexDeclaration* vertexDeclaration = nullptr;
-        std::array<IVertexBuffer*, MaxRenderTargets> vertexBuffers = {};
-        IIndexBuffer* indexBuffer = nullptr;
-        IShaderPass* shaderPass = nullptr;
-    };
 
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) = 0;
 	virtual void onEnterMainThread() = 0;
@@ -265,6 +269,8 @@ class IDepthBuffer
 	: public IGraphicsDeviceObject
 {
 public:
+
+	virtual int format() const { return 0; }
 
 protected:
 	IDepthBuffer();

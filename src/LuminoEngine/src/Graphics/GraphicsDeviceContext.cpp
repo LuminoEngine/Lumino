@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include "MixHash.hpp"
 #include "GraphicsDeviceContext.hpp"
 
 namespace ln {

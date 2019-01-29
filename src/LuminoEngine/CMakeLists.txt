@@ -202,6 +202,7 @@ set(LN_SOURCES_Graphics
     src/Graphics/RenderState.cpp
     src/Graphics/SamplerState.cpp
     src/Graphics/SwapChain.cpp
+    src/Graphics/MixHash.hpp
     src/Graphics/OpenGLDeviceContext.cpp
     src/Graphics/OpenGLDeviceContext.hpp
     src/Graphics/Texture.cpp

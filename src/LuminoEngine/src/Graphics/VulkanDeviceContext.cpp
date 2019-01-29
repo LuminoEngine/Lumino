@@ -39,7 +39,7 @@ void* VKAPI_CALL AllocCallback(
     return allocator->alloc(size, alignment, scope);
 }
 
-VKAPI_ATTR 
+VKAPI_ATTR
 void* VKAPI_CALL ReallocCallback(
     void* pUserData,
     void* pOriginal,
@@ -71,17 +71,13 @@ VkBool32 VKAPI_CALL DebugReportCallback(
 {
     if (msgFlags & VK_DEBUG_REPORT_ERROR_BIT_EXT) {
         LN_LOG_ERROR << "[" << pLayerPrefix << "] Code " << msgCode << " : " << pMsg;
-    }
-    else if (msgFlags & VK_DEBUG_REPORT_WARNING_BIT_EXT) {
+    } else if (msgFlags & VK_DEBUG_REPORT_WARNING_BIT_EXT) {
         LN_LOG_WARNING << "[" << pLayerPrefix << "] Code " << msgCode << " : " << pMsg;
-    }
-    else if (msgFlags & VK_DEBUG_REPORT_INFORMATION_BIT_EXT) {
+    } else if (msgFlags & VK_DEBUG_REPORT_INFORMATION_BIT_EXT) {
         LN_LOG_INFO << "[" << pLayerPrefix << "] Code " << msgCode << " : " << pMsg;
-    }
-    else if (msgFlags & VK_DEBUG_REPORT_DEBUG_BIT_EXT) {
+    } else if (msgFlags & VK_DEBUG_REPORT_DEBUG_BIT_EXT) {
         LN_LOG_DEBUG << "[" << pLayerPrefix << "] Code " << msgCode << " : " << pMsg;
-    }
-    else if (msgFlags & VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT) {
+    } else if (msgFlags & VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT) {
         LN_LOG_DEBUG << "Performance Warning [" << pLayerPrefix << "] Code " << msgCode << " : " << pMsg;
     }
 
@@ -97,15 +93,15 @@ struct FormatConversionItem
 };
 
 static FormatConversionItem g_formatConversionTable[] =
-{
-    { VK_FORMAT_UNDEFINED, 0, TextureFormat::Unknown, false },
-    { VK_FORMAT_R8G8B8A8_UNORM, 32, TextureFormat::RGBA32, false },
-    { VK_FORMAT_UNDEFINED, 0, TextureFormat::RGB24, false },    // TODO: remove
-    { VK_FORMAT_R16G16B16A16_SFLOAT, 64, TextureFormat::R16G16B16A16Float, false },
-    { VK_FORMAT_R32G32B32A32_SFLOAT, 128, TextureFormat::R32G32B32A32Float, false },
-    { VK_FORMAT_R16_SFLOAT, 16, TextureFormat::R16Float, false },
-    { VK_FORMAT_R32_SFLOAT, 32, TextureFormat::R32Float, false },
-    { VK_FORMAT_R32_UINT, 32, TextureFormat::R32UInt, false },
+    {
+        {VK_FORMAT_UNDEFINED, 0, TextureFormat::Unknown, false},
+        {VK_FORMAT_R8G8B8A8_UNORM, 32, TextureFormat::RGBA32, false},
+        {VK_FORMAT_UNDEFINED, 0, TextureFormat::RGB24, false}, // TODO: remove
+        {VK_FORMAT_R16G16B16A16_SFLOAT, 64, TextureFormat::R16G16B16A16Float, false},
+        {VK_FORMAT_R32G32B32A32_SFLOAT, 128, TextureFormat::R32G32B32A32Float, false},
+        {VK_FORMAT_R16_SFLOAT, 16, TextureFormat::R16Float, false},
+        {VK_FORMAT_R32_SFLOAT, 32, TextureFormat::R32Float, false},
+        {VK_FORMAT_R32_UINT, 32, TextureFormat::R32UInt, false},
 };
 
 static VkFormat LNFormatToVkFormat(TextureFormat format)
@@ -122,17 +118,17 @@ struct BlendFactorConversionItem
 };
 
 static const BlendFactorConversionItem s_blendFactorConversionTable[] =
-{
-    { BlendFactor::Zero, VK_BLEND_FACTOR_ZERO, VK_BLEND_FACTOR_ZERO },
-    { BlendFactor::One, VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ONE },
-    { BlendFactor::SourceColor, VK_BLEND_FACTOR_SRC_COLOR, VK_BLEND_FACTOR_SRC_ALPHA },
-    { BlendFactor::InverseSourceColor, VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA },
-    { BlendFactor::SourceAlpha, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_SRC_ALPHA },
-    { BlendFactor::InverseSourceAlpha, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA },
-    { BlendFactor::DestinationColor, VK_BLEND_FACTOR_DST_COLOR, VK_BLEND_FACTOR_DST_ALPHA },
-    { BlendFactor::InverseDestinationColor, VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR, VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA },
-    { BlendFactor::DestinationAlpha,VK_BLEND_FACTOR_DST_ALPHA, VK_BLEND_FACTOR_DST_ALPHA },
-    { BlendFactor::InverseDestinationAlpha, VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA },
+    {
+        {BlendFactor::Zero, VK_BLEND_FACTOR_ZERO, VK_BLEND_FACTOR_ZERO},
+        {BlendFactor::One, VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ONE},
+        {BlendFactor::SourceColor, VK_BLEND_FACTOR_SRC_COLOR, VK_BLEND_FACTOR_SRC_ALPHA},
+        {BlendFactor::InverseSourceColor, VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA},
+        {BlendFactor::SourceAlpha, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_SRC_ALPHA},
+        {BlendFactor::InverseSourceAlpha, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA},
+        {BlendFactor::DestinationColor, VK_BLEND_FACTOR_DST_COLOR, VK_BLEND_FACTOR_DST_ALPHA},
+        {BlendFactor::InverseDestinationColor, VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR, VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA},
+        {BlendFactor::DestinationAlpha, VK_BLEND_FACTOR_DST_ALPHA, VK_BLEND_FACTOR_DST_ALPHA},
+        {BlendFactor::InverseDestinationAlpha, VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA},
 };
 
 static VkBlendFactor LNBlendFactorToVkBlendFactor_Color(BlendFactor value)
@@ -154,12 +150,12 @@ struct BlendOpConversionItem
 };
 
 static const BlendOpConversionItem s_blendOpConversionTable[] =
-{
-    { BlendOp::Add, VK_BLEND_OP_ADD },
-    { BlendOp::Subtract, VK_BLEND_OP_SUBTRACT },
-    { BlendOp::ReverseSubtract, VK_BLEND_OP_REVERSE_SUBTRACT },
-    { BlendOp::Min, VK_BLEND_OP_MIN },
-    { BlendOp::Max, VK_BLEND_OP_MAX },
+    {
+        {BlendOp::Add, VK_BLEND_OP_ADD},
+        {BlendOp::Subtract, VK_BLEND_OP_SUBTRACT},
+        {BlendOp::ReverseSubtract, VK_BLEND_OP_REVERSE_SUBTRACT},
+        {BlendOp::Min, VK_BLEND_OP_MIN},
+        {BlendOp::Max, VK_BLEND_OP_MAX},
 };
 
 static VkBlendOp LNBlendOpToVkBlendOp(BlendOp value)
@@ -175,15 +171,15 @@ struct ComparisonFuncConversionItem
 };
 
 static const ComparisonFuncConversionItem s_comparisoFuncConversionTable[] =
-{
-    { ComparisonFunc::Never, VK_COMPARE_OP_NEVER },
-    { ComparisonFunc::Less, VK_COMPARE_OP_LESS },
-    { ComparisonFunc::LessEqual, VK_COMPARE_OP_LESS_OR_EQUAL },
-    { ComparisonFunc::Greater, VK_COMPARE_OP_GREATER },
-    { ComparisonFunc::GreaterEqual, VK_COMPARE_OP_GREATER_OR_EQUAL },
-    { ComparisonFunc::Equal, VK_COMPARE_OP_EQUAL },
-    { ComparisonFunc::NotEqual, VK_COMPARE_OP_NOT_EQUAL },
-    { ComparisonFunc::Always, VK_COMPARE_OP_ALWAYS },
+    {
+        {ComparisonFunc::Never, VK_COMPARE_OP_NEVER},
+        {ComparisonFunc::Less, VK_COMPARE_OP_LESS},
+        {ComparisonFunc::LessEqual, VK_COMPARE_OP_LESS_OR_EQUAL},
+        {ComparisonFunc::Greater, VK_COMPARE_OP_GREATER},
+        {ComparisonFunc::GreaterEqual, VK_COMPARE_OP_GREATER_OR_EQUAL},
+        {ComparisonFunc::Equal, VK_COMPARE_OP_EQUAL},
+        {ComparisonFunc::NotEqual, VK_COMPARE_OP_NOT_EQUAL},
+        {ComparisonFunc::Always, VK_COMPARE_OP_ALWAYS},
 };
 
 static VkCompareOp LNComparisonFuncToVkCompareOp(ComparisonFunc value)
@@ -199,9 +195,9 @@ struct FillModeConversionItem
 };
 
 static const FillModeConversionItem s_fillModeConversionTable[] =
-{
-    { FillMode::Solid, VK_POLYGON_MODE_FILL },
-    { FillMode::Wireframe, VK_POLYGON_MODE_LINE },
+    {
+        {FillMode::Solid, VK_POLYGON_MODE_FILL},
+        {FillMode::Wireframe, VK_POLYGON_MODE_LINE},
 };
 
 static VkPolygonMode LNFillModeToVkPolygonMode(FillMode value)
@@ -217,10 +213,10 @@ struct CullModeConversionItem
 };
 
 static const CullModeConversionItem s_cullModeConversionTable[] =
-{
-    { CullMode::None, VK_CULL_MODE_NONE },
-    { CullMode::Front, VK_CULL_MODE_FRONT_BIT },
-    { CullMode::Back, VK_CULL_MODE_BACK_BIT },
+    {
+        {CullMode::None, VK_CULL_MODE_NONE},
+        {CullMode::Front, VK_CULL_MODE_FRONT_BIT},
+        {CullMode::Back, VK_CULL_MODE_BACK_BIT},
 };
 
 static VkCullModeFlagBits LNCullModeToVkCullMode(CullMode value)
@@ -236,9 +232,9 @@ struct StencilOpConversionItem
 };
 
 static const StencilOpConversionItem s_stencilOpConversionTable[] =
-{
-    { StencilOp::Keep,  VK_STENCIL_OP_KEEP },
-    { StencilOp::Replace, VK_STENCIL_OP_REPLACE },
+    {
+        {StencilOp::Keep, VK_STENCIL_OP_KEEP},
+        {StencilOp::Replace, VK_STENCIL_OP_REPLACE},
 };
 
 static VkStencilOp LNStencilOpToVkStencilOp(StencilOp value)
@@ -254,19 +250,19 @@ struct VertexElementTypeConversionItem
 };
 
 static const VertexElementTypeConversionItem s_vertexElementTypeConversionTable[] =
-{
-    { VertexElementType::Unknown, VK_FORMAT_UNDEFINED },
+    {
+        {VertexElementType::Unknown, VK_FORMAT_UNDEFINED},
 
-    { VertexElementType::Float1, VK_FORMAT_R32_SFLOAT },
-    { VertexElementType::Float2, VK_FORMAT_R32G32_SFLOAT },
-    { VertexElementType::Float3, VK_FORMAT_R32G32B32_SFLOAT },
-    { VertexElementType::Float4, VK_FORMAT_R32G32B32A32_SFLOAT },
+        {VertexElementType::Float1, VK_FORMAT_R32_SFLOAT},
+        {VertexElementType::Float2, VK_FORMAT_R32G32_SFLOAT},
+        {VertexElementType::Float3, VK_FORMAT_R32G32B32_SFLOAT},
+        {VertexElementType::Float4, VK_FORMAT_R32G32B32A32_SFLOAT},
 
-    { VertexElementType::Ubyte4, VK_FORMAT_R8G8B8A8_UINT },
-    { VertexElementType::Color4, VK_FORMAT_R8G8B8A8_UNORM },    // UNORM : https://msdn.microsoft.com/ja-jp/library/ee415736%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396
+        {VertexElementType::Ubyte4, VK_FORMAT_R8G8B8A8_UINT},
+        {VertexElementType::Color4, VK_FORMAT_R8G8B8A8_UNORM}, // UNORM : https://msdn.microsoft.com/ja-jp/library/ee415736%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396
 
-    { VertexElementType::Short2, VK_FORMAT_R16G16_SINT },
-    { VertexElementType::Short4, VK_FORMAT_R16G16B16A16_SINT },
+        {VertexElementType::Short2, VK_FORMAT_R16G16_SINT},
+        {VertexElementType::Short4, VK_FORMAT_R16G16B16A16_SINT},
 };
 
 static VkFormat LNVertexElementTypeToVkFormat(VertexElementType value)
@@ -315,55 +311,106 @@ void VulkanAllocator::free(void* ptr) noexcept
 #endif
 }
 
+
 //=============================================================================
-// VulkanDeviceContext
+// VulkanPipelineCache
 
-bool VulkanPipelineCache::init(VulkanDeviceContext* deviceContext)
+uint64_t VulkanPipelineCache::computeHash(const IGraphicsDeviceContext::State& state)
 {
-    m_deviceContext = deviceContext;
-    return true;
+	MixHash hash;
+	hash.add(state.blendState);
+	hash.add(state.rasterizerState);
+	hash.add(state.depthStencilState);
+	hash.add(state.vertexDeclaration);
+	hash.add(state.shaderPass);
+	for (auto& t : state.renderTargets) {
+		hash.add(t->getTextureFormat());
+	}
+	hash.add(state.depthBuffer->format());
+	return hash.value();
 }
 
-void VulkanPipelineCache::add(uint64_t key, VkPipeline value)
+
+//=============================================================================
+// VulkanRenderPassCache
+
+uint64_t VulkanRenderPassCache::computeHash(ITexture* const* renderTargets, size_t renderTargetCount, IDepthBuffer* depthBuffer)
 {
-    invalidate(key);
-    m_hashMap.insert({ key, value });
+	MixHash hash;
+	for (size_t i = 0; i < renderTargetCount; i++) {
+		hash.add(renderTargets[i]->getTextureFormat());
+	}
+	hash.add(VK_FORMAT_D32_SFLOAT_S8_UINT);	// TODO: DepthFormat
+	return hash.value();
 }
 
-VkPipeline VulkanPipelineCache::find(uint64_t key) const
-{
-    auto it = m_hashMap.find(key);
-    if (it != m_hashMap.end())
-    {
-        return it->second;
-    }
+//=============================================================================
+// VulkanRenderPassCache
 
-    return 0;
+bool VulkanFrameBuffer::init(VulkanDeviceContext* deviceContext, ITexture* const* renderTargets, size_t renderTargetCount, IDepthBuffer* depthBuffer)
+{
+	m_deviceContext = deviceContext;
+	m_renderTargetCount = renderTargetCount;
+	for (size_t i = 0; i < renderTargetCount; i++) {
+		m_renderTargets[i] = renderTargets[i];
+	}
+	m_depthBuffer = depthBuffer;
+
+
+
+	VulkanTextureBase::TextureDesc desc = static_cast<VulkanTextureBase*>(m_renderTargets[0])->desc();
+
+
+	VkRenderPass renderPass;
+	if (!deviceContext->getVkRenderPass(renderTargets, renderTargetCount, depthBuffer, &renderPass)) {
+		return false;
+	}
+	else
+	{
+		VkImageView attachments[IGraphicsDeviceContext::MaxRenderTargets] = {};
+		for (size_t i = 0; i < renderTargetCount; i++) {
+			attachments[i] = static_cast<VulkanTextureBase*>(m_renderTargets[i])->vulkanImageView();
+		}
+
+		VkFramebufferCreateInfo framebufferInfo = {};
+		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebufferInfo.renderPass = renderPass;
+		framebufferInfo.attachmentCount = 1;
+		framebufferInfo.pAttachments = attachments;
+		framebufferInfo.width = desc.Width;
+		framebufferInfo.height = desc.Height;
+		framebufferInfo.layers = 1;
+
+		if (vkCreateFramebuffer(m_deviceContext->vulkanDevice(), &framebufferInfo, m_deviceContext->vulkanAllocator(), &m_framebuffer) != VK_SUCCESS) {
+			LN_LOG_ERROR << "Failed vkCreateFramebuffer";
+			return false;
+		}
+	}
+
+	return true;
 }
 
-void VulkanPipelineCache::invalidate(uint64_t key)
+void VulkanFrameBuffer::dispose()
 {
-    auto it = m_hashMap.find(key);
-    if (it != m_hashMap.end())
-    {
-        vkDestroyPipeline(m_deviceContext->vulkanDevice(), it->second, m_deviceContext->vulkanAllocator());
-        m_hashMap.erase(it);
-    }
+	if (m_framebuffer) {
+		vkDestroyFramebuffer(m_deviceContext->vulkanDevice(), m_framebuffer, m_deviceContext->vulkanAllocator());
+		m_framebuffer = 0;
+	}
 }
 
-void VulkanPipelineCache::clear()
+bool VulkanFrameBuffer::containsRenderTarget(ITexture* renderTarget) const
 {
-    for (typename HashMap::iterator it = m_hashMap.begin(), itEnd = m_hashMap.end(); it != itEnd; ++it)
-    {
-        vkDestroyPipeline(m_deviceContext->vulkanDevice(), it->second, m_deviceContext->vulkanAllocator());
-    }
-
-    m_hashMap.clear();
+	for (size_t i = 0; i < m_renderTargetCount; i++) {
+		if (renderTarget == m_renderTargets[i]) {
+			return true;
+		}
+	}
+	return false;
 }
 
-uint32_t VulkanPipelineCache::count() const
+bool VulkanFrameBuffer::containsDepthBuffer(IDepthBuffer* depthBuffer) const
 {
-    return uint32_t(m_hashMap.size());
+	return m_depthBuffer == depthBuffer;
 }
 
 //=============================================================================
@@ -382,9 +429,9 @@ VulkanDeviceContext::~VulkanDeviceContext()
 
 bool VulkanDeviceContext::init(const Settings& settings)
 {
-//#ifdef LN_OS_WIN32
-//    Win32PlatformInterface::getWin32WindowHandle(settings.mainWindow);
-//#endif
+    //#ifdef LN_OS_WIN32
+    //    Win32PlatformInterface::getWin32WindowHandle(settings.mainWindow);
+    //#endif
 
     const char* instanceExtension[] = {
         VK_KHR_SURFACE_EXTENSION_NAME,
@@ -397,7 +444,7 @@ bool VulkanDeviceContext::init(const Settings& settings)
 #endif
         VK_EXT_DEBUG_REPORT_EXTENSION_NAME,
     };
-    size_t instanceExtensionCount = 2;
+    size_t instanceExtensionCount = 1;
 
     const char* layerNames[] = {
         "VK_LAYER_LUNARG_standard_validation",
@@ -416,7 +463,8 @@ bool VulkanDeviceContext::init(const Settings& settings)
         instanceExtension,
         &extensions);
     std::vector<const char*> extensionPtrs;
-    for (auto& str : extensions) extensionPtrs.push_back(str.c_str());
+    for (auto& str : extensions)
+        extensionPtrs.push_back(str.c_str());
 
     VkApplicationInfo appInfo = {};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -449,16 +497,14 @@ bool VulkanDeviceContext::init(const Settings& settings)
         return false;
     }
 
-    if (settings.debugEnabled)
-    {
+    if (settings.debugEnabled) {
         vkCreateDebugReportCallback = GetVkInstanceProc<PFN_vkCreateDebugReportCallbackEXT>("vkCreateDebugReportCallbackEXT");
         vkDestroyDebugReportCallback = GetVkInstanceProc<PFN_vkDestroyDebugReportCallbackEXT>("vkDestroyDebugReportCallbackEXT");
         vkDebugReportMessage = GetVkInstanceProc<PFN_vkDebugReportMessageEXT>("vkDebugReportMessageEXT");
 
         if (vkCreateDebugReportCallback != nullptr &&
             vkDestroyDebugReportCallback != nullptr &&
-            vkDebugReportMessage != nullptr)
-        {
+            vkDebugReportMessage != nullptr) {
             VkFlags flags = VK_DEBUG_REPORT_ERROR_BIT_EXT;
             flags |= VK_DEBUG_REPORT_WARNING_BIT_EXT;
             flags |= VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT;
@@ -473,10 +519,10 @@ bool VulkanDeviceContext::init(const Settings& settings)
             info.flags = flags;
 
             if (vkCreateDebugReportCallback(
-                m_instance,
-                &info,
-                nullptr,
-                &vkDebugReportCallback) != VK_SUCCESS) {
+                    m_instance,
+                    &info,
+                    nullptr,
+                    &vkDebugReportCallback) != VK_SUCCESS) {
                 LN_LOG_ERROR << "Failed vkCreateDebugReportCallback";
                 return false;
             }
@@ -501,8 +547,7 @@ bool VulkanDeviceContext::init(const Settings& settings)
             return false;
         }
 
-        for (auto i = 0u; i < count; ++i)
-        {
+        for (auto i = 0u; i < count; ++i) {
             m_physicalDeviceInfos[i].device = gpuDevices[i];
             vkGetPhysicalDeviceMemoryProperties(gpuDevices[i], &m_physicalDeviceInfos[i].memoryProperty);
             vkGetPhysicalDeviceProperties(gpuDevices[i], &m_physicalDeviceInfos[i].deviceProperty);
@@ -528,12 +573,10 @@ bool VulkanDeviceContext::init(const Settings& settings)
             std::vector<VkQueueFamilyProperties> queueFamilyPros(propCount);
             vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &propCount, queueFamilyPros.data());
 
-
             std::vector<VkDeviceQueueCreateInfo> queueInfos(propCount);
             int queueIndex = 0;
             int totalQueueCount = 0;
-            for (int i = 0; i < propCount; ++i)
-            {
+            for (int i = 0; i < propCount; ++i) {
                 queueInfos[i].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
                 queueInfos[i].pNext = nullptr;
                 queueInfos[i].flags = 0;
@@ -543,10 +586,8 @@ bool VulkanDeviceContext::init(const Settings& settings)
                 totalQueueCount += queueFamilyPros[i].queueCount;
 
                 // Graphics queue
-                if (queueFamilyPros[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
-                {
-                    if (graphicsFamilyIndex == UINT32_MAX)
-                    {
+                if (queueFamilyPros[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+                    if (graphicsFamilyIndex == UINT32_MAX) {
                         graphicsFamilyIndex = i;
                         graphicsQueueIndex = queueIndex;
                         queueIndex++;
@@ -554,11 +595,8 @@ bool VulkanDeviceContext::init(const Settings& settings)
                 }
 
                 // Compute queue
-                if ((queueFamilyPros[i].queueFlags & VK_QUEUE_COMPUTE_BIT)
-                    && ((queueFamilyPros[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) != VK_QUEUE_GRAPHICS_BIT))
-                {
-                    if (computeFamilyIndex == UINT32_MAX)
-                    {
+                if ((queueFamilyPros[i].queueFlags & VK_QUEUE_COMPUTE_BIT) && ((queueFamilyPros[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) != VK_QUEUE_GRAPHICS_BIT)) {
+                    if (computeFamilyIndex == UINT32_MAX) {
                         computeFamilyIndex = i;
                         computeQueueIndex = queueIndex;
                         queueIndex++;
@@ -566,11 +604,8 @@ bool VulkanDeviceContext::init(const Settings& settings)
                 }
 
                 // Transfer queue
-                if ((queueFamilyPros[i].queueFlags & VK_QUEUE_TRANSFER_BIT)
-                    && ((queueFamilyPros[i].queueFlags & VK_QUEUE_TRANSFER_BIT) != VK_QUEUE_GRAPHICS_BIT))
-                {
-                    if (transferFamilyIndex == UINT32_MAX)
-                    {
+                if ((queueFamilyPros[i].queueFlags & VK_QUEUE_TRANSFER_BIT) && ((queueFamilyPros[i].queueFlags & VK_QUEUE_TRANSFER_BIT) != VK_QUEUE_GRAPHICS_BIT)) {
+                    if (transferFamilyIndex == UINT32_MAX) {
                         transferFamilyIndex = i;
                         transferQueueindex = queueIndex;
                         queueIndex++;
@@ -579,14 +614,10 @@ bool VulkanDeviceContext::init(const Settings& settings)
             }
 
             // 1つも見つからなければ仕方ないので共用のものを探す.
-            if (computeFamilyIndex == UINT32_MAX)
-            {
-                for (auto i = 0u; i < propCount; ++i)
-                {
-                    if (queueFamilyPros[i].queueFlags & VK_QUEUE_COMPUTE_BIT)
-                    {
-                        if (computeFamilyIndex == UINT32_MAX)
-                        {
+            if (computeFamilyIndex == UINT32_MAX) {
+                for (auto i = 0u; i < propCount; ++i) {
+                    if (queueFamilyPros[i].queueFlags & VK_QUEUE_COMPUTE_BIT) {
+                        if (computeFamilyIndex == UINT32_MAX) {
                             computeFamilyIndex = i;
                             computeQueueIndex = queueIndex;
                             queueIndex++;
@@ -596,14 +627,10 @@ bool VulkanDeviceContext::init(const Settings& settings)
             }
 
             // 1つも見つからなければ仕方ないので共用のものを探す.
-            if (transferFamilyIndex == UINT32_MAX)
-            {
-                for (auto i = 0u; i < propCount; ++i)
-                {
-                    if (queueFamilyPros[i].queueFlags & VK_QUEUE_TRANSFER_BIT)
-                    {
-                        if (transferFamilyIndex == UINT32_MAX)
-                        {
+            if (transferFamilyIndex == UINT32_MAX) {
+                for (auto i = 0u; i < propCount; ++i) {
+                    if (queueFamilyPros[i].queueFlags & VK_QUEUE_TRANSFER_BIT) {
+                        if (transferFamilyIndex == UINT32_MAX) {
                             transferFamilyIndex = i;
                             transferQueueindex = queueIndex;
                             queueIndex++;
@@ -624,20 +651,16 @@ bool VulkanDeviceContext::init(const Settings& settings)
 
             std::vector<float> queuePriorities(totalQueueCount);
             uint32_t offset = 0u;
-            for (uint32_t i = 0u; i < propCount; ++i)
-            {
+            for (uint32_t i = 0u; i < propCount; ++i) {
                 queueInfos[i].pQueuePriorities = &queuePriorities[offset];
                 offset += queueInfos[i].queueCount;
             }
 
             //a3d::dynamic_array<char*> deviceExtensions;
             std::vector<std::string> deviceExtensions;
-            if (settings.debugEnabled)
-            {
+            if (settings.debugEnabled) {
                 deviceExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
-            }
-            else
-            {
+            } else {
                 GetDeviceExtension(
                     nullptr,
                     physicalDevice,
@@ -646,8 +669,7 @@ bool VulkanDeviceContext::init(const Settings& settings)
                 m_ext_EXT_KHR_PUSH_DESCRIPTOR = false;
                 m_ext_EXT_KHR_DESCRIPTOR_UPDATE_TEMPLATE = false;
                 m_ext_EXT_NVX_DEVICE_GENERATE_COMMAND = false;
-                for (size_t i = 0; i < deviceExtensions.size(); ++i)
-                {
+                for (size_t i = 0; i < deviceExtensions.size(); ++i) {
 #if defined(VK_KHR_push_descriptor)
                     if (deviceExtensions[i] == VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME) {
                         m_ext_EXT_KHR_PUSH_DESCRIPTOR = true;
@@ -679,17 +701,17 @@ bool VulkanDeviceContext::init(const Settings& settings)
                 }
             }
 
-
             std::vector<const char*> deviceExtensionPtrs;
-            for (auto& str : deviceExtensions) deviceExtensionPtrs.push_back(str.c_str());
+            for (auto& str : deviceExtensions)
+                deviceExtensionPtrs.push_back(str.c_str());
 
             VkDeviceCreateInfo deviceInfo = {};
             deviceInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
             deviceInfo.pNext = nullptr;
             deviceInfo.queueCreateInfoCount = propCount;
             deviceInfo.pQueueCreateInfos = queueInfos.data();
-            deviceInfo.enabledLayerCount = 0;               // deprecated https://www.khronos.org/registry/vulkan/specs/1.1-extensions/man/html/VkDeviceCreateInfo.html
-            deviceInfo.ppEnabledLayerNames = nullptr;       // deprecated https://www.khronos.org/registry/vulkan/specs/1.1-extensions/man/html/VkDeviceCreateInfo.html
+            deviceInfo.enabledLayerCount = 0;         // deprecated https://www.khronos.org/registry/vulkan/specs/1.1-extensions/man/html/VkDeviceCreateInfo.html
+            deviceInfo.ppEnabledLayerNames = nullptr; // deprecated https://www.khronos.org/registry/vulkan/specs/1.1-extensions/man/html/VkDeviceCreateInfo.html
             deviceInfo.enabledExtensionCount = (uint32_t)deviceExtensionPtrs.size();
             deviceInfo.ppEnabledExtensionNames = deviceExtensionPtrs.data();
             deviceInfo.pEnabledFeatures = nullptr;
@@ -701,8 +723,7 @@ bool VulkanDeviceContext::init(const Settings& settings)
         }
 
 #if defined(VK_EXT_debug_marker)
-        if (m_ext_EXT_DEBUG_MARKER)
-        {
+        if (m_ext_EXT_DEBUG_MARKER) {
             vkDebugMarkerSetObjectTag = GetVkDeviceProc<PFN_vkDebugMarkerSetObjectTagEXT>("vkDebugMarkerSetObjectTagEXT");
             vkDebugMarkerSetObjectName = GetVkDeviceProc<PFN_vkDebugMarkerSetObjectNameEXT>("vkDebugMarkerSetObjectNameEXT");
             vkCmdDebugMarkerBegin = GetVkDeviceProc<PFN_vkCmdDebugMarkerBeginEXT>("vkCmdDebugMarkerBeginEXT");
@@ -711,14 +732,12 @@ bool VulkanDeviceContext::init(const Settings& settings)
         }
 #endif
 #if defined(VK_KHR_push_descriptor)
-        if (m_ext_EXT_KHR_PUSH_DESCRIPTOR)
-        {
+        if (m_ext_EXT_KHR_PUSH_DESCRIPTOR) {
             vkCmdPushDescriptorSet = GetVkDeviceProc<PFN_vkCmdPushDescriptorSetKHR>("vkCmdPushDescriptorSetKHR");
         }
 #endif
 #if defined(VK_EXT_hdr_metadata)
-        if (m_ext_EXT_HDR_METADATA)
-        {
+        if (m_ext_EXT_HDR_METADATA) {
             vkSetHdrMetadata = GetVkDeviceProc<PFN_vkSetHdrMetadataEXT>("vkSetHdrMetadataEXT");
         }
 #endif
@@ -752,22 +771,31 @@ bool VulkanDeviceContext::init(const Settings& settings)
         if (limits.timestampComputeAndGraphics) {
             auto nanoToSec = 1000 * 1000 * 1000;
             m_timeStampFrequency = static_cast<uint64_t>(limits.timestampPeriod * nanoToSec);
-        }
-        else {
+        } else {
             m_timeStampFrequency = 1;
         }
     }
 
-    if (!m_pipelineCache.init(this)) {
+	if (!m_renderPassCache.init([this](VkRenderPass v) { vkDestroyRenderPass(m_device, v, &m_allocatorCallbacks); })) {
         return false;
     }
+
+    if (!m_pipelineCache.init([this](Ref<VulkanPipeline> v) { v->dispose(); })) {
+        return false;
+    }
+
+	if (!m_frameBufferCache.init([this](Ref<VulkanFrameBuffer> v) { v->dispose(); })) {
+		return false;
+	}
 
     return true;
 }
 
 void VulkanDeviceContext::dispose()
 {
+	m_frameBufferCache.clear();
     m_pipelineCache.clear();
+    m_renderPassCache.clear();
 
     if (m_transferQueue) {
         m_transferQueue->dispose();
@@ -782,15 +810,13 @@ void VulkanDeviceContext::dispose()
         m_graphicsQueue = nullptr;
     }
 
-    if (m_device)
-    {
+    if (m_device) {
         vkDeviceWaitIdle(m_device);
         vkDestroyDevice(m_device, nullptr);
         m_device = nullptr;
     }
 
-    if (vkDebugReportCallback != 0)
-    {
+    if (vkDebugReportCallback != 0) {
         vkDestroyDebugReportCallback(
             m_instance,
             vkDebugReportCallback,
@@ -798,13 +824,106 @@ void VulkanDeviceContext::dispose()
         vkDebugReportCallback = 0;
     }
 
-    if (m_instance)
-    {
+    if (m_instance) {
         vkDestroyInstance(m_instance, &m_allocatorCallbacks);
         m_instance = nullptr;
     }
 
     IGraphicsDeviceContext::dispose();
+}
+
+bool VulkanDeviceContext::getVkRenderPass(ITexture* const* renderTargets, size_t renderTargetCount, IDepthBuffer* depthBuffer, VkRenderPass* outPass)
+{
+	uint64_t hash = VulkanRenderPassCache::computeHash(renderTargets, renderTargetCount, depthBuffer);
+	VkRenderPass renderPass = 0;
+	if (renderPassCache().find(hash, &renderPass)) {
+		// use renderPass
+	}
+	else
+	{
+		// MaxRenderTargets + 1枚の depthbuffer
+		VkAttachmentDescription attachmentDescs[IGraphicsDeviceContext::MaxRenderTargets + 1] = {};
+		VkAttachmentReference attachmentRefs[IGraphicsDeviceContext::MaxRenderTargets + 1] = {};
+		VkAttachmentReference* depthAttachmentRef = nullptr;
+		int attachmentCount = 0;
+		int colorAttachmentCount = 0;
+
+		for (int i = 0; i < IGraphicsDeviceContext::MaxRenderTargets; i++) {
+			if (renderTargets[i]) {
+				attachmentDescs[i].flags = 0;
+				attachmentDescs[i].format = LNFormatToVkFormat(renderTargets[i]->getTextureFormat());
+				attachmentDescs[i].samples = VK_SAMPLE_COUNT_1_BIT;
+				attachmentDescs[i].loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+				attachmentDescs[i].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+				attachmentDescs[i].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+				attachmentDescs[i].stencilStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
+				attachmentDescs[i].initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+				attachmentDescs[i].finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+				attachmentRefs[i].attachment = attachmentCount;
+				attachmentRefs[i].layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+				attachmentCount++;
+				colorAttachmentCount++;
+			}
+			else {
+				break;
+			}
+		}
+
+		if (depthBuffer) {
+			int i = colorAttachmentCount;
+
+			attachmentDescs[i].flags = 0;
+			attachmentDescs[i].format = VK_FORMAT_D32_SFLOAT_S8_UINT;
+			attachmentDescs[i].samples = VK_SAMPLE_COUNT_1_BIT;
+			attachmentDescs[i].loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+			attachmentDescs[i].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+			attachmentDescs[i].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+			attachmentDescs[i].stencilStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
+			attachmentDescs[i].initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+			attachmentDescs[i].finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+			attachmentRefs[i].attachment = attachmentCount;
+			attachmentRefs[i].layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+			depthAttachmentRef = &attachmentRefs[i];
+			attachmentCount++;
+		}
+
+		VkSubpassDescription subpass;
+		subpass.flags = 0;
+		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+		subpass.inputAttachmentCount = 0;
+		subpass.pInputAttachments = nullptr;
+		subpass.colorAttachmentCount = colorAttachmentCount;
+		subpass.pColorAttachments = attachmentRefs;
+		subpass.pResolveAttachments = nullptr;
+		subpass.pDepthStencilAttachment = depthAttachmentRef;
+		subpass.preserveAttachmentCount = 0;
+		subpass.pPreserveAttachments = nullptr;
+
+		VkRenderPassCreateInfo renderPassInfo = {};
+		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+		renderPassInfo.pNext = nullptr;
+		renderPassInfo.flags = 0;
+		renderPassInfo.attachmentCount = attachmentCount;
+		renderPassInfo.pAttachments = attachmentDescs;
+		renderPassInfo.subpassCount = 1;
+		renderPassInfo.pSubpasses = &subpass;
+		renderPassInfo.dependencyCount = 0;
+		renderPassInfo.pDependencies = nullptr;
+
+		if (vkCreateRenderPass(vulkanDevice(), &renderPassInfo, vulkanAllocator(), &renderPass) != VK_SUCCESS) {
+			LN_LOG_ERROR << "Failed vkCreateRenderPass";
+			return false;
+		}
+
+		renderPassCache().add(hash, renderPass);
+	}
+
+	*outPass = renderPass;
+	return true;
 }
 
 VkPhysicalDevice VulkanDeviceContext::vulkanPhysicalDevice() const
@@ -814,7 +933,7 @@ VkPhysicalDevice VulkanDeviceContext::vulkanPhysicalDevice() const
 
 void VulkanDeviceContext::onGetCaps(GraphicsDeviceCaps* outCaps)
 {
-    outCaps->requestedShaderTriple.target = "spirv";
+    outCaps->requestedShaderTriple.target = "spv";
     outCaps->requestedShaderTriple.version = 0;
     outCaps->requestedShaderTriple.option = "";
 }
@@ -938,270 +1057,10 @@ void VulkanDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, f
 {
     const State& committed = committedState();
 
-    VkPipelineColorBlendStateCreateInfo colorBlending = {};
-    VkPipelineColorBlendAttachmentState colorBlendAttachments[BlendStateDesc::MaxRenderTargets] = {};
-    {
-        const BlendStateDesc& state = committed.blendState;
-        int attachmentsCount = 0;
-        for (int i = 0; i < BlendStateDesc::MaxRenderTargets; i++)
-        {
-            colorBlendAttachments[i].blendEnable = (state.renderTargets[i].blendEnable) ? VK_TRUE : VK_FALSE;
-
-            colorBlendAttachments[i].srcColorBlendFactor = LNBlendFactorToVkBlendFactor_Color(state.renderTargets[i].sourceBlend);
-            colorBlendAttachments[i].dstColorBlendFactor = LNBlendFactorToVkBlendFactor_Color(state.renderTargets[i].destinationBlend);
-            colorBlendAttachments[i].colorBlendOp = LNBlendOpToVkBlendOp(state.renderTargets[i].blendOp);
-
-            colorBlendAttachments[i].srcAlphaBlendFactor = LNBlendFactorToVkBlendFactor_Alpha(state.renderTargets[i].sourceBlendAlpha);
-            colorBlendAttachments[i].dstAlphaBlendFactor = LNBlendFactorToVkBlendFactor_Alpha(state.renderTargets[i].destinationBlendAlpha);
-            colorBlendAttachments[i].alphaBlendOp = LNBlendOpToVkBlendOp(state.renderTargets[i].blendOpAlpha);
-
-            colorBlendAttachments[i].colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-        
-            attachmentsCount++;
-
-            if (!state.independentBlendEnable) {
-                break;
-            }
-        }
-
-        colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-        colorBlending.logicOpEnable = VK_FALSE;
-        colorBlending.logicOp = VK_LOGIC_OP_COPY;
-        colorBlending.attachmentCount = attachmentsCount;
-        colorBlending.pAttachments = colorBlendAttachments;
-        colorBlending.blendConstants[0] = 0.0f;
-        colorBlending.blendConstants[1] = 0.0f;
-        colorBlending.blendConstants[2] = 0.0f;
-        colorBlending.blendConstants[3] = 0.0f;
-    }
-
-    VkPipelineRasterizationStateCreateInfo rasterizerInfo = {};
-    {
-        const RasterizerStateDesc& state = committed.rasterizerState;
-
-        rasterizerInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-        rasterizerInfo.depthClampEnable = VK_FALSE;
-        rasterizerInfo.rasterizerDiscardEnable = VK_FALSE;
-        rasterizerInfo.polygonMode = LNFillModeToVkPolygonMode(state.fillMode);
-        rasterizerInfo.cullMode = LNCullModeToVkCullMode(state.cullMode);
-        rasterizerInfo.frontFace = VK_FRONT_FACE_CLOCKWISE; // 右回り
-        rasterizerInfo.depthBiasEnable = VK_FALSE;
-        rasterizerInfo.depthBiasConstantFactor = 0.0f;
-        rasterizerInfo.depthBiasClamp = 0.0f;
-        rasterizerInfo.depthBiasSlopeFactor = 0.0f;
-        rasterizerInfo.lineWidth = 1.0f;
-    }
-
-    VkPipelineDepthStencilStateCreateInfo depthStencilStateInfo = {};
-    {
-        const DepthStencilStateDesc& state = committed.depthStencilState;
-
-        depthStencilStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-        depthStencilStateInfo.pNext = nullptr;
-        depthStencilStateInfo.flags = 0;
-        depthStencilStateInfo.depthTestEnable = (state.depthTestFunc == ComparisonFunc::Never ? VK_FALSE : VK_TRUE);
-        depthStencilStateInfo.depthWriteEnable = (state.depthWriteEnabled ? VK_TRUE : VK_FALSE);
-        depthStencilStateInfo.depthCompareOp = LNComparisonFuncToVkCompareOp(state.depthTestFunc);
-        depthStencilStateInfo.depthBoundsTestEnable = VK_FALSE;
-        depthStencilStateInfo.stencilTestEnable = (state.stencilEnabled ? VK_TRUE : VK_FALSE);
-
-        depthStencilStateInfo.front.failOp = LNStencilOpToVkStencilOp(state.frontFace.stencilFailOp);
-        depthStencilStateInfo.front.passOp = LNStencilOpToVkStencilOp(state.frontFace.stencilPassOp);
-        depthStencilStateInfo.front.depthFailOp = LNStencilOpToVkStencilOp(state.frontFace.stencilDepthFailOp);
-        depthStencilStateInfo.front.compareOp = LNComparisonFuncToVkCompareOp(state.frontFace.stencilFunc);
-        depthStencilStateInfo.front.compareMask = UINT32_MAX;
-        depthStencilStateInfo.front.writeMask = UINT32_MAX;
-        depthStencilStateInfo.front.reference = state.stencilReferenceValue;
-
-        depthStencilStateInfo.back.failOp = LNStencilOpToVkStencilOp(state.backFace.stencilFailOp);
-        depthStencilStateInfo.back.passOp = LNStencilOpToVkStencilOp(state.backFace.stencilPassOp);
-        depthStencilStateInfo.back.depthFailOp = LNStencilOpToVkStencilOp(state.backFace.stencilDepthFailOp);
-        depthStencilStateInfo.back.compareOp = LNComparisonFuncToVkCompareOp(state.backFace.stencilFunc);
-        depthStencilStateInfo.back.compareMask = UINT32_MAX;
-        depthStencilStateInfo.back.writeMask = UINT32_MAX;
-        depthStencilStateInfo.back.reference = state.stencilReferenceValue;
-
-        depthStencilStateInfo.minDepthBounds = 0.0f;
-        depthStencilStateInfo.maxDepthBounds = 1.0f;
-    }
 
 
-    VkPipelineMultisampleStateCreateInfo multisampleState;
-    {
-        multisampleState.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-        multisampleState.pNext = nullptr;
-        multisampleState.flags = 0;
-        multisampleState.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
-        multisampleState.sampleShadingEnable = VK_FALSE;
-        multisampleState.minSampleShading = 0.0f;
-        multisampleState.pSampleMask = nullptr;
-        multisampleState.alphaToCoverageEnable = VK_FALSE;
-        multisampleState.alphaToOneEnable = VK_FALSE;
-    }
-
-    // TODO:
-    VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
-    vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-    vertexInputInfo.vertexBindingDescriptionCount = 0;
-    vertexInputInfo.vertexAttributeDescriptionCount = 0;
-
-
-    VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
-    inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;   // TODO
-    inputAssembly.primitiveRestartEnable = VK_FALSE;
-
-    // viewport と scissor については DynamicState として Command で設定するため、 ここではダミーの値を登録しておく。
-    VkPipelineViewportStateCreateInfo  viewportState;
-    VkViewport viewport;
-    VkRect2D scissor;
-    {
-        viewport.x = 0.0f;
-        viewport.y = 0.0f;
-        viewport.width = 1.0f;
-        viewport.height = 1.0f;
-        viewport.minDepth = 0.0f;
-        viewport.maxDepth = 1.0f;
-
-        scissor.offset.x = 0;
-        scissor.offset.y = 0;
-        scissor.extent.width = 1;
-        scissor.extent.height = 1;
-
-        viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-        viewportState.pNext = nullptr;
-        viewportState.flags = 0;
-        viewportState.viewportCount = 1;
-        viewportState.pViewports = &viewport;
-        viewportState.scissorCount = 1;
-        viewportState.pScissors = &scissor;
-    }
-
-
-    //VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
-    {
-        // MaxRenderTargets + 1枚の depthbuffer
-        VkAttachmentDescription attachmentDescs[MaxRenderTargets + 1] = {};
-        VkAttachmentReference attachmentRefs[MaxRenderTargets + 1] = {};
-        VkAttachmentReference* depthAttachmentRef = nullptr;
-        int attachmentCount = 0;
-        int colorAttachmentCount = 0;
-
-        for (int i = 0; i < MaxRenderTargets; i++)
-        {
-            if (committed.renderTargets[i])
-            {
-                attachmentDescs[i].flags = 0;
-                attachmentDescs[i].format = LNFormatToVkFormat(committed.renderTargets[i]->getTextureFormat());
-                attachmentDescs[i].samples = VK_SAMPLE_COUNT_1_BIT;
-                attachmentDescs[i].loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-                attachmentDescs[i].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-                attachmentDescs[i].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-                attachmentDescs[i].stencilStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
-                attachmentDescs[i].initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-                attachmentDescs[i].finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-                attachmentRefs[i].attachment = attachmentCount;
-                attachmentRefs[i].layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-                attachmentCount++;
-                colorAttachmentCount++;
-            }
-            else {
-                break;
-            }
-        }
-
-        if (committed.depthBuffer)
-        {
-            int i = colorAttachmentCount;
-
-            attachmentDescs[i].flags = 0;
-            attachmentDescs[i].format = VK_FORMAT_D32_SFLOAT_S8_UINT;
-            attachmentDescs[i].samples = VK_SAMPLE_COUNT_1_BIT;
-            attachmentDescs[i].loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-            attachmentDescs[i].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-            attachmentDescs[i].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-            attachmentDescs[i].stencilStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
-            attachmentDescs[i].initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-            attachmentDescs[i].finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-            attachmentRefs[i].attachment = attachmentCount;
-            attachmentRefs[i].layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-            depthAttachmentRef = &attachmentRefs[i];
-            attachmentCount++;
-        }
-        
-        VkSubpassDescription subpass;
-        subpass.flags = 0;
-        subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-        subpass.inputAttachmentCount = 0;
-        subpass.pInputAttachments = nullptr;
-        subpass.colorAttachmentCount = colorAttachmentCount;
-        subpass.pColorAttachments = attachmentRefs;
-        subpass.pResolveAttachments = nullptr;
-        subpass.pDepthStencilAttachment = depthAttachmentRef;
-        subpass.preserveAttachmentCount = 0;
-        subpass.pPreserveAttachments = nullptr;
-
-        VkRenderPassCreateInfo renderPassInfo = {};
-        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-        renderPassInfo.pNext = nullptr;
-        renderPassInfo.flags = 0;
-        renderPassInfo.attachmentCount = attachmentCount;
-        renderPassInfo.pAttachments = attachmentDescs;
-        renderPassInfo.subpassCount = 1;
-        renderPassInfo.pSubpasses = &subpass;
-        renderPassInfo.dependencyCount = 0;
-        renderPassInfo.pDependencies = nullptr;
-
-        if (vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create render pass!");
-        }
-    }
-
-    VkGraphicsPipelineCreateInfo pipelineInfo = {};
-    pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-    pipelineInfo.stageCount = 0; // TODO: まずはシェーダ無し //2;
-    pipelineInfo.pStages = nullptr;// TODO: まずはシェーダ無し //shaderStages;
-    pipelineInfo.pVertexInputState = &vertexInputInfo;
-    pipelineInfo.pInputAssemblyState = &inputAssembly;
-    pipelineInfo.pViewportState = &viewportState;
-    pipelineInfo.pRasterizationState = &rasterizerInfo;
-    pipelineInfo.pMultisampleState = &multisampleState;
-    pipelineInfo.pColorBlendState = &colorBlending;
-    pipelineInfo.layout = 0; // TODO: まずは VertexDecl なし //pipelineLayout;
-    pipelineInfo.renderPass = renderPass;
-    pipelineInfo.subpass = 0;
-    pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
-
-    if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create graphics pipeline!");
-    }
-
-
-
-
-    // command
-
-
-    //VkViewport vp;
-    //vp.x = rect.m_x;
-    //vp.y = rect.m_y;
-    //vp.width = rect.m_width;
-    //vp.height = rect.m_height;
-    //vp.minDepth = 0.0f;
-    //vp.maxDepth = 1.0f;
-    //vkCmdSetViewport(m_commandBuffer, 0, 1, &vp);
-
-    //VkRect2D rc;
-    //rc.offset.x = viewScissorRect.m_x;
-    //rc.offset.y = viewScissorRect.m_y;
-    //rc.extent.width = viewScissorRect.m_x + viewScissorRect.m_width;
-    //rc.extent.height = viewScissorRect.m_y + viewScissorRect.m_height;
-    //vkCmdSetScissor(m_commandBuffer, 0, 1, &rc);
-
+	{
+	}
 
     LN_NOTIMPLEMENTED();
 }
@@ -1229,27 +1088,23 @@ void VulkanDeviceContext::CheckInstanceExtension(
     std::vector<std::string>* result)
 {
     uint32_t count;
-    vkEnumerateInstanceExtensionProperties(layer, &count, nullptr);
+    auto t = vkEnumerateInstanceExtensionProperties(layer, &count, nullptr);
 
     std::vector<VkExtensionProperties> exts;
     exts.resize(count);
     vkEnumerateInstanceExtensionProperties(layer, &count, exts.data());
 
     result->reserve(count);
-    for (size_t i = 0; i < exts.size(); ++i)
-    {
+    for (size_t i = 0; i < exts.size(); ++i) {
         bool hit = false;
-        for (size_t j = 0; j < requestCount; ++j)
-        {
-            if (strcmp(exts[i].extensionName, requestNames[j]) == 0)
-            {
+        for (size_t j = 0; j < requestCount; ++j) {
+            if (strcmp(exts[i].extensionName, requestNames[j]) == 0) {
                 hit = true;
                 break;
             }
         }
 
-        if (!hit)
-        {
+        if (!hit) {
             continue;
         }
 
@@ -1270,8 +1125,7 @@ void VulkanDeviceContext::GetDeviceExtension(
     vkEnumerateDeviceExtensionProperties(physicalDevice, layer, &count, exts.data());
 
     result->reserve(count);
-    for (size_t i = 0; i < exts.size(); ++i)
-    {
+    for (size_t i = 0; i < exts.size(); ++i) {
         result->push_back(exts[i].extensionName);
     }
 }
@@ -1288,8 +1142,7 @@ VulkanQueue::VulkanQueue()
     , m_waitSemaphore{}
     , m_fence{}
 {
-    for (uint32_t i = 0; i < MaxBufferCount; i++)
-    {
+    for (uint32_t i = 0; i < MaxBufferCount; i++) {
         m_waitSemaphore[i] = 0;
         m_signalSemaphore[i] = 0;
         m_fence[i] = 0;
@@ -1309,8 +1162,7 @@ bool VulkanQueue::init(VulkanDeviceContext* deviceContext, uint32_t familyIndex,
         info.pNext = nullptr;
         info.flags = 0;
 
-        for (int i = 0; i < MaxBufferCount; i++)
-        {
+        for (int i = 0; i < MaxBufferCount; i++) {
             if (vkCreateSemaphore(vulkanDevice, &info, nullptr, &m_signalSemaphore[i]) != VK_SUCCESS) {
                 LN_LOG_ERROR << "Failed vkCreateSemaphore";
                 return false;
@@ -1329,8 +1181,7 @@ bool VulkanQueue::init(VulkanDeviceContext* deviceContext, uint32_t familyIndex,
         info.pNext = nullptr;
         info.flags = 0;
 
-        for (auto i = 0; i < MaxBufferCount; ++i)
-        {
+        for (auto i = 0; i < MaxBufferCount; ++i) {
             if (vkCreateFence(vulkanDevice, &info, nullptr, &m_fence[i]) != VK_SUCCESS) {
                 LN_LOG_ERROR << "Failed vkCreateFence";
                 return false;
@@ -1364,13 +1215,11 @@ void VulkanQueue::dispose()
     VkDevice vulkanDevice = m_deviceContext->vulkanDevice();
 
     // Wait for complation
-    if (m_queue)
-    {
+    if (m_queue) {
         vkQueueWaitIdle(m_queue);
     }
 
-    for (uint32_t i = 0; i < MaxBufferCount; i++)
-    {
+    for (uint32_t i = 0; i < MaxBufferCount; i++) {
         if (m_signalSemaphore[i]) {
             vkDestroySemaphore(vulkanDevice, m_signalSemaphore[i], nullptr);
             m_signalSemaphore[i] = 0;
@@ -1413,11 +1262,9 @@ bool VulkanCommandList::init(VulkanDeviceContext* deviceContext, Type type)
         VulkanQueue* queue = nullptr;
         if (type == Type::COMMANDLIST_TYPE_DIRECT) {
             queue = m_deviceContext->graphicsQueue();
-        }
-        else if (type == Type::COMMANDLIST_TYPE_COMPUTE) {
+        } else if (type == Type::COMMANDLIST_TYPE_COMPUTE) {
             queue = m_deviceContext->computeQueue();
-        }
-        else if (type == Type::COMMANDLIST_TYPE_COPY) {
+        } else if (type == Type::COMMANDLIST_TYPE_COPY) {
             queue = m_deviceContext->transferQueue();
         }
 
@@ -1437,8 +1284,7 @@ bool VulkanCommandList::init(VulkanDeviceContext* deviceContext, Type type)
         }
     }
 
-    if (type == Type::COMMANDLIST_TYPE_BUNDLE)
-    {
+    if (type == Type::COMMANDLIST_TYPE_BUNDLE) {
         VkCommandBufferAllocateInfo info = {};
         info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
         info.pNext = nullptr;
@@ -1450,9 +1296,7 @@ bool VulkanCommandList::init(VulkanDeviceContext* deviceContext, Type type)
             LN_LOG_ERROR << "Failed vkAllocateCommandBuffers";
             return false;
         }
-    }
-    else
-    {
+    } else {
         VkCommandBufferAllocateInfo info = {};
         info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
         info.pNext = nullptr;
@@ -1518,7 +1362,7 @@ void VulkanCommandList::begin()
     VkRect2D dummyScissor = {};
     vkCmdSetScissor(m_commandBuffer, 0, 1, &dummyScissor);
 
-    float blendConstant[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    float blendConstant[4] = {1.0f, 1.0f, 1.0f, 1.0f};
     vkCmdSetBlendConstants(m_commandBuffer, blendConstant);
 
     vkCmdSetStencilReference(m_commandBuffer, VK_STENCIL_FRONT_AND_BACK, 0);
@@ -1557,6 +1401,210 @@ void VulkanCommandList::flush()
     vkQueueWaitIdle(vulkanQueue);
 }
 
+//==============================================================================
+// VulkanPipeline
+
+VulkanPipeline::VulkanPipeline()
+{
+}
+
+VulkanPipeline::~VulkanPipeline()
+{
+}
+
+bool VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsDeviceContext::State& committed)
+{
+	m_deviceContext = deviceContext;
+
+	VkPipelineColorBlendStateCreateInfo colorBlending = {};
+	VkPipelineColorBlendAttachmentState colorBlendAttachments[BlendStateDesc::MaxRenderTargets] = {};
+	{
+		const BlendStateDesc& state = committed.blendState;
+		int attachmentsCount = 0;
+		for (int i = 0; i < BlendStateDesc::MaxRenderTargets; i++) {
+			colorBlendAttachments[i].blendEnable = (state.renderTargets[i].blendEnable) ? VK_TRUE : VK_FALSE;
+
+			colorBlendAttachments[i].srcColorBlendFactor = LNBlendFactorToVkBlendFactor_Color(state.renderTargets[i].sourceBlend);
+			colorBlendAttachments[i].dstColorBlendFactor = LNBlendFactorToVkBlendFactor_Color(state.renderTargets[i].destinationBlend);
+			colorBlendAttachments[i].colorBlendOp = LNBlendOpToVkBlendOp(state.renderTargets[i].blendOp);
+
+			colorBlendAttachments[i].srcAlphaBlendFactor = LNBlendFactorToVkBlendFactor_Alpha(state.renderTargets[i].sourceBlendAlpha);
+			colorBlendAttachments[i].dstAlphaBlendFactor = LNBlendFactorToVkBlendFactor_Alpha(state.renderTargets[i].destinationBlendAlpha);
+			colorBlendAttachments[i].alphaBlendOp = LNBlendOpToVkBlendOp(state.renderTargets[i].blendOpAlpha);
+
+			colorBlendAttachments[i].colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+
+			attachmentsCount++;
+
+			if (!state.independentBlendEnable) {
+				break;
+			}
+		}
+
+		colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+		colorBlending.logicOpEnable = VK_FALSE;
+		colorBlending.logicOp = VK_LOGIC_OP_COPY;
+		colorBlending.attachmentCount = attachmentsCount;
+		colorBlending.pAttachments = colorBlendAttachments;
+		colorBlending.blendConstants[0] = 0.0f;
+		colorBlending.blendConstants[1] = 0.0f;
+		colorBlending.blendConstants[2] = 0.0f;
+		colorBlending.blendConstants[3] = 0.0f;
+	}
+
+	VkPipelineRasterizationStateCreateInfo rasterizerInfo = {};
+	{
+		const RasterizerStateDesc& state = committed.rasterizerState;
+
+		rasterizerInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+		rasterizerInfo.depthClampEnable = VK_FALSE;
+		rasterizerInfo.rasterizerDiscardEnable = VK_FALSE;
+		rasterizerInfo.polygonMode = LNFillModeToVkPolygonMode(state.fillMode);
+		rasterizerInfo.cullMode = LNCullModeToVkCullMode(state.cullMode);
+		rasterizerInfo.frontFace = VK_FRONT_FACE_CLOCKWISE; // 右回り
+		rasterizerInfo.depthBiasEnable = VK_FALSE;
+		rasterizerInfo.depthBiasConstantFactor = 0.0f;
+		rasterizerInfo.depthBiasClamp = 0.0f;
+		rasterizerInfo.depthBiasSlopeFactor = 0.0f;
+		rasterizerInfo.lineWidth = 1.0f;
+	}
+
+	VkPipelineDepthStencilStateCreateInfo depthStencilStateInfo = {};
+	{
+		const DepthStencilStateDesc& state = committed.depthStencilState;
+
+		depthStencilStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+		depthStencilStateInfo.pNext = nullptr;
+		depthStencilStateInfo.flags = 0;
+		depthStencilStateInfo.depthTestEnable = (state.depthTestFunc == ComparisonFunc::Never ? VK_FALSE : VK_TRUE);
+		depthStencilStateInfo.depthWriteEnable = (state.depthWriteEnabled ? VK_TRUE : VK_FALSE);
+		depthStencilStateInfo.depthCompareOp = LNComparisonFuncToVkCompareOp(state.depthTestFunc);
+		depthStencilStateInfo.depthBoundsTestEnable = VK_FALSE;
+		depthStencilStateInfo.stencilTestEnable = (state.stencilEnabled ? VK_TRUE : VK_FALSE);
+
+		depthStencilStateInfo.front.failOp = LNStencilOpToVkStencilOp(state.frontFace.stencilFailOp);
+		depthStencilStateInfo.front.passOp = LNStencilOpToVkStencilOp(state.frontFace.stencilPassOp);
+		depthStencilStateInfo.front.depthFailOp = LNStencilOpToVkStencilOp(state.frontFace.stencilDepthFailOp);
+		depthStencilStateInfo.front.compareOp = LNComparisonFuncToVkCompareOp(state.frontFace.stencilFunc);
+		depthStencilStateInfo.front.compareMask = UINT32_MAX;
+		depthStencilStateInfo.front.writeMask = UINT32_MAX;
+		depthStencilStateInfo.front.reference = state.stencilReferenceValue;
+
+		depthStencilStateInfo.back.failOp = LNStencilOpToVkStencilOp(state.backFace.stencilFailOp);
+		depthStencilStateInfo.back.passOp = LNStencilOpToVkStencilOp(state.backFace.stencilPassOp);
+		depthStencilStateInfo.back.depthFailOp = LNStencilOpToVkStencilOp(state.backFace.stencilDepthFailOp);
+		depthStencilStateInfo.back.compareOp = LNComparisonFuncToVkCompareOp(state.backFace.stencilFunc);
+		depthStencilStateInfo.back.compareMask = UINT32_MAX;
+		depthStencilStateInfo.back.writeMask = UINT32_MAX;
+		depthStencilStateInfo.back.reference = state.stencilReferenceValue;
+
+		depthStencilStateInfo.minDepthBounds = 0.0f;
+		depthStencilStateInfo.maxDepthBounds = 1.0f;
+	}
+
+	VkPipelineMultisampleStateCreateInfo multisampleState;
+	{
+		multisampleState.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+		multisampleState.pNext = nullptr;
+		multisampleState.flags = 0;
+		multisampleState.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+		multisampleState.sampleShadingEnable = VK_FALSE;
+		multisampleState.minSampleShading = 0.0f;
+		multisampleState.pSampleMask = nullptr;
+		multisampleState.alphaToCoverageEnable = VK_FALSE;
+		multisampleState.alphaToOneEnable = VK_FALSE;
+	}
+
+	// TODO:
+	VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
+	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+	vertexInputInfo.vertexBindingDescriptionCount = 0;
+	vertexInputInfo.vertexAttributeDescriptionCount = 0;
+
+	VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
+	inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+	inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST; // TODO
+	inputAssembly.primitiveRestartEnable = VK_FALSE;
+
+	// viewport と scissor については DynamicState として Command で設定するため、 ここではダミーの値を登録しておく。
+	VkPipelineViewportStateCreateInfo viewportState;
+	VkViewport viewport;
+	VkRect2D scissor;
+	{
+		viewport.x = 0.0f;
+		viewport.y = 0.0f;
+		viewport.width = 1.0f;
+		viewport.height = 1.0f;
+		viewport.minDepth = 0.0f;
+		viewport.maxDepth = 1.0f;
+
+		scissor.offset.x = 0;
+		scissor.offset.y = 0;
+		scissor.extent.width = 1;
+		scissor.extent.height = 1;
+
+		viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+		viewportState.pNext = nullptr;
+		viewportState.flags = 0;
+		viewportState.viewportCount = 1;
+		viewportState.pViewports = &viewport;
+		viewportState.scissorCount = 1;
+		viewportState.pScissors = &scissor;
+	}
+
+	//VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
+
+	VkRenderPass renderPass;
+	if (!m_deviceContext->getVkRenderPass(committed.renderTargets.data(), committed.renderTargets.size(), committed.depthBuffer, &renderPass)) {
+		return false;
+	}
+
+	VkGraphicsPipelineCreateInfo pipelineInfo = {};
+	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+	pipelineInfo.stageCount = 0;    // TODO: まずはシェーダ無し //2;
+	pipelineInfo.pStages = nullptr; // TODO: まずはシェーダ無し //shaderStages;
+	pipelineInfo.pVertexInputState = &vertexInputInfo;
+	pipelineInfo.pInputAssemblyState = &inputAssembly;
+	pipelineInfo.pViewportState = &viewportState;
+	pipelineInfo.pRasterizationState = &rasterizerInfo;
+	pipelineInfo.pMultisampleState = &multisampleState;
+	pipelineInfo.pColorBlendState = &colorBlending;
+	pipelineInfo.layout = 0; // TODO: まずは VertexDecl なし //pipelineLayout;
+	pipelineInfo.renderPass = renderPass;
+	pipelineInfo.subpass = 0;
+	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+
+	if (vkCreateGraphicsPipelines(m_deviceContext->vulkanDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, m_deviceContext->vulkanAllocator(), &m_pipeline) != VK_SUCCESS) {
+		LN_LOG_ERROR << "Failed vkCreateGraphicsPipelines";
+		return false;
+	}
+
+	// command
+
+	//VkViewport vp;
+	//vp.x = rect.m_x;
+	//vp.y = rect.m_y;
+	//vp.width = rect.m_width;
+	//vp.height = rect.m_height;
+	//vp.minDepth = 0.0f;
+	//vp.maxDepth = 1.0f;
+	//vkCmdSetViewport(m_commandBuffer, 0, 1, &vp);
+
+	//VkRect2D rc;
+	//rc.offset.x = viewScissorRect.m_x;
+	//rc.offset.y = viewScissorRect.m_y;
+	//rc.extent.width = viewScissorRect.m_x + viewScissorRect.m_width;
+	//rc.extent.height = viewScissorRect.m_y + viewScissorRect.m_height;
+	//vkCmdSetScissor(m_commandBuffer, 0, 1, &rc);
+
+	return true;
+}
+
+void VulkanPipeline::dispose()
+{
+}
+
+
 //=============================================================================
 // VulkanSwapChain
 
@@ -1566,7 +1614,6 @@ VulkanSwapChain::VulkanSwapChain()
 
 VulkanSwapChain::~VulkanSwapChain()
 {
-
 }
 
 bool VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* window, const SwapChainDesc& desc)
@@ -1633,11 +1680,9 @@ bool VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* w
         auto nativeFormat = LNFormatToVkFormat(m_desc.Format);
         auto nativeColorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
 
-        for (int i = 0; i < m_surfaceFormats.size(); i++)
-        {
+        for (int i = 0; i < m_surfaceFormats.size(); i++) {
             if (nativeFormat == m_surfaceFormats[i].format &&
-                nativeColorSpace == m_surfaceFormats[i].colorSpace)
-            {
+                nativeColorSpace == m_surfaceFormats[i].colorSpace) {
                 m_imageFormat = m_surfaceFormats[i].format;
                 m_colorSpace = m_surfaceFormats[i].colorSpace;
                 //found = true;
@@ -1667,8 +1712,7 @@ bool VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* w
 
         if (capabilities.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR) {
             m_preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
-        }
-        else {
+        } else {
             m_preTransform = capabilities.currentTransform;
         }
 
@@ -1701,26 +1745,20 @@ bool VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* w
         }
 
         bool found = false;
-        for (uint32_t i = 0; i < presentModeCount; i++)
-        {
-            if (m_desc.SyncInterval == 0)
-            {
+        for (uint32_t i = 0; i < presentModeCount; i++) {
+            if (m_desc.SyncInterval == 0) {
                 if (presentModes[i] == VK_PRESENT_MODE_IMMEDIATE_KHR) {
                     m_presentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
                     found = true;
                     break;
                 }
-            }
-            else if (m_desc.SyncInterval == -1)
-            {
+            } else if (m_desc.SyncInterval == -1) {
                 if (presentModes[i] == VK_PRESENT_MODE_FIFO_RELAXED_KHR) {
                     m_presentMode = VK_PRESENT_MODE_FIFO_RELAXED_KHR;
                     found = true;
                     break;
                 }
-            }
-            else
-            {
+            } else {
                 if (presentModes[i] == VK_PRESENT_MODE_FIFO_KHR) {
                     m_presentMode = VK_PRESENT_MODE_FIFO_KHR;
                     found = true;
@@ -1745,7 +1783,7 @@ bool VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* w
         createInfo.minImageCount = m_desc.BufferCount;
         createInfo.imageFormat = m_imageFormat;
         createInfo.imageColorSpace = m_colorSpace;
-        createInfo.imageExtent = { m_desc.Width, m_desc.Height };
+        createInfo.imageExtent = {m_desc.Width, m_desc.Height};
         createInfo.imageArrayLayers = 1;
         createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
         createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
@@ -1757,7 +1795,7 @@ bool VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* w
         createInfo.clipped = VK_TRUE;
         createInfo.oldSwapchain = 0;
 
-        if (vkCreateSwapchainKHR(vulkanDevice, &createInfo, nullptr, &m_swapChain) != VK_SUCCESS){
+        if (vkCreateSwapchainKHR(vulkanDevice, &createInfo, nullptr, &m_swapChain) != VK_SUCCESS) {
             LN_LOG_ERROR << "Failed vkCreateSwapchainKHR";
             return false;
         }
@@ -1795,8 +1833,7 @@ bool VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* w
         range.baseArrayLayer = 0;
         range.levelCount = m_desc.MipLevels;
 
-        for (auto i = 0u; i < m_desc.BufferCount; ++i)
-        {
+        for (auto i = 0u; i < m_desc.BufferCount; ++i) {
             VkImageViewCreateInfo viewInfo = {};
             viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
             viewInfo.pNext = nullptr;
@@ -1820,9 +1857,8 @@ bool VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* w
     // バックバッファに Texture としてアクセスできるようにラップしたインスタンスを作っておく
     {
         m_buffers.resize(m_desc.BufferCount);
-        for (auto i = 0u; i < m_desc.BufferCount; ++i)
-        {
-            auto texture = makeRef<VulkanTexture2D>();
+        for (auto i = 0u; i < m_desc.BufferCount; ++i) {
+            auto texture = makeRef<VulkanRenderTargetTexture>();
             if (!texture->init(m_deviceContext, m_desc, m_images[i], m_imageViews[i])) {
                 return false;
             }
@@ -1841,8 +1877,7 @@ bool VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* w
         commandBuffer->begin();
         VkCommandBuffer cmdBuffer = commandBuffer->vulkanCommandBuffer();
 
-        for (auto i = 0u; i < m_desc.BufferCount; ++i)
-        {
+        for (auto i = 0u; i < m_desc.BufferCount; ++i) {
             VkImageMemoryBarrier barrier = {};
             barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
             barrier.pNext = nullptr;
@@ -1864,7 +1899,13 @@ bool VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* w
                 cmdBuffer,
                 VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
                 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-                0, 0, nullptr, 0, nullptr, 1, &barrier);
+                0,
+                0,
+                nullptr,
+                0,
+                nullptr,
+                1,
+                &barrier);
         }
 
         commandBuffer->end();
@@ -1945,11 +1986,13 @@ bool VulkanVertexDeclaration::init(const VertexElement* elements, int elementsCo
     uint32_t loc = 0;
     for (int i = 0; i < elementsCount; i++) {
         VkVertexInputAttributeDescription attr;
-        attr.location += loc;   // TODO: ひとまず先頭から1ずつ
+        attr.location = loc; // TODO: ひとまず先頭から1ずつ
         attr.binding = elements[i].StreamIndex;
         attr.format = LNVertexElementTypeToVkFormat(elements[i].Type);
         attr.offset = m_bindings[attr.binding].stride;
         m_bindings[attr.binding].stride += GraphicsHelper::getVertexElementTypeSize(elements[i].Type);
+
+		loc++;
 
         // TODO: Lumino のシェーダとしては、location と Semantics の対応を固定してもいいかもしれない。
         // たとえば、location=0 は POSITION0 とか。
@@ -2084,31 +2127,6 @@ VulkanTexture2D::~VulkanTexture2D()
 {
 }
 
-bool VulkanTexture2D::init(VulkanDeviceContext* deviceContext, const VulkanSwapChain::SwapChainDesc& desc, VkImage image, VkImageView view)
-{
-    m_deviceContext = deviceContext;
-    m_isExternal = true;
-
-    m_image = image;
-    m_imageAspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
-    m_deviceMemory = 0;
-    //m_Desc.Dimension = RESOURCE_DIMENSION_TEXTURE2D;
-    //m_Desc.Width = desc.Extent.Width;
-    //m_Desc.Height = desc.Extent.Height;
-    m_desc.DepthOrArraySize = 1;
-    //m_Desc.Format = desc.Format;
-    m_desc.MipLevels = desc.MipLevels;
-    //m_Desc.SampleCount = desc.SampleCount;
-    //m_Desc.Layout = RESOURCE_LAYOUT_OPTIMAL;
-    //m_Desc.InitState = RESOURCE_STATE_UNKNOWN;
-    //m_Desc.HeapProperty.Type = HEAP_TYPE_DEFAULT;
-    //m_Desc.HeapProperty.CpuPageProperty = CPU_PAGE_PROPERTY_NOT_AVAILABLE;
-
-    vkGetImageMemoryRequirements(m_deviceContext->vulkanDevice(), image, &m_memoryRequirements);
-
-    return true;
-}
-
 bool VulkanTexture2D::init(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
     LN_NOTIMPLEMENTED();
@@ -2117,27 +2135,6 @@ bool VulkanTexture2D::init(uint32_t width, uint32_t height, TextureFormat reques
 
 void VulkanTexture2D::dispose()
 {
-    if (!m_isExternal)
-    {
-        if (m_image) {
-            vkDestroyImage(m_deviceContext->vulkanDevice(), m_image, nullptr);
-            m_image = 0;
-        }
-
-        if (m_deviceMemory) {
-            vkFreeMemory(m_deviceContext->vulkanDevice(), m_deviceMemory, nullptr);
-            m_deviceMemory = 0;
-        }
-    }
-    else
-    {
-        m_image = 0;
-        m_deviceMemory = 0;
-    }
-
-    memset(&m_memoryRequirements, 0, sizeof(m_memoryRequirements));
-    //memset(&m_Desc, 0, sizeof(m_Desc));
-
     VulkanTextureBase::dispose();
 }
 
@@ -2238,13 +2235,63 @@ VulkanRenderTargetTexture::~VulkanRenderTargetTexture()
 {
 }
 
-void VulkanRenderTargetTexture::init(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
+bool VulkanRenderTargetTexture::init(VulkanDeviceContext* deviceContext, const VulkanSwapChain::SwapChainDesc& desc, VkImage image, VkImageView view)
 {
+	m_deviceContext = deviceContext;
+	m_isExternal = true;
+
+	m_image = image;
+	m_imageView = view;
+	m_imageAspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
+	m_deviceMemory = 0;
+	//m_Desc.Dimension = RESOURCE_DIMENSION_TEXTURE2D;
+	m_desc.Width = desc.Width;
+	m_desc.Height = desc.Height;
+	m_desc.DepthOrArraySize = 1;
+	//m_Desc.Format = desc.Format;
+	m_desc.MipLevels = desc.MipLevels;
+	//m_Desc.SampleCount = desc.SampleCount;
+	//m_Desc.Layout = RESOURCE_LAYOUT_OPTIMAL;
+	//m_Desc.InitState = RESOURCE_STATE_UNKNOWN;
+	//m_Desc.HeapProperty.Type = HEAP_TYPE_DEFAULT;
+	//m_Desc.HeapProperty.CpuPageProperty = CPU_PAGE_PROPERTY_NOT_AVAILABLE;
+
+	vkGetImageMemoryRequirements(m_deviceContext->vulkanDevice(), image, &m_memoryRequirements);
+
+	return true;
+}
+
+void VulkanRenderTargetTexture::init(VulkanDeviceContext* context, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
+{
+	m_deviceContext = context;
     LN_NOTIMPLEMENTED();
 }
 
 void VulkanRenderTargetTexture::dispose()
 {
+	if (m_deviceContext) {
+		m_deviceContext->frameBufferCache().invalidateRenderTarget(this);
+	}
+
+	if (!m_isExternal) {
+		if (m_image) {
+			vkDestroyImage(m_deviceContext->vulkanDevice(), m_image, nullptr);
+			m_image = 0;
+		}
+
+		if (m_deviceMemory) {
+			vkFreeMemory(m_deviceContext->vulkanDevice(), m_deviceMemory, nullptr);
+			m_deviceMemory = 0;
+		}
+	}
+	else {
+		m_image = 0;
+		m_deviceMemory = 0;
+	}
+
+	memset(&m_memoryRequirements, 0, sizeof(m_memoryRequirements));
+	//memset(&m_Desc, 0, sizeof(m_Desc));
+
     LN_NOTIMPLEMENTED();
     VulkanTextureBase::dispose();
 }
@@ -2292,13 +2339,18 @@ VulkanDepthBuffer::~VulkanDepthBuffer()
 {
 }
 
-void VulkanDepthBuffer::init(uint32_t width, uint32_t height)
+void VulkanDepthBuffer::init(VulkanDeviceContext* context, uint32_t width, uint32_t height)
 {
+	m_deviceContext = context;
     LN_NOTIMPLEMENTED();
 }
 
 void VulkanDepthBuffer::dispose()
 {
+	if (m_deviceContext) {
+		m_deviceContext->frameBufferCache().invalidateDepthBuffer(this);
+	}
+
     IDepthBuffer::dispose();
 }
 
@@ -2431,7 +2483,6 @@ void VulkanShaderUniformBuffer::setData(const void* data, size_t size)
     LN_NOTIMPLEMENTED();
 }
 
-
 //=============================================================================
 // VulkanShaderUniform
 
@@ -2502,4 +2553,3 @@ void VulkanLocalShaderSamplerBuffer::setSamplerState(int registerIndex, ISampler
 
 } // namespace detail
 } // namespace ln
-

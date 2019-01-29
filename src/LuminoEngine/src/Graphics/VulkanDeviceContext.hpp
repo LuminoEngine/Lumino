@@ -10,6 +10,7 @@ namespace ln {
 namespace detail {
 class VulkanDeviceContext;
 class VulkanQueue;
+class VulkanPipeline;
 class VulkanSwapChain;
 class VulkanIndexBuffer;
 class VulkanTexture2D;
@@ -32,21 +33,128 @@ private:
     size_t m_allocationSize[VK_SYSTEM_ALLOCATION_SCOPE_RANGE_SIZE];
 };
 
-class VulkanPipelineCache
+template<class T>
+class HashedObjectCache
 {
 public:
-    bool init(VulkanDeviceContext* deviceContext);
-    void add(uint64_t key, VkPipeline value);
-    VkPipeline find(uint64_t key) const;
-    void invalidate(uint64_t key);
-    void clear();
-    uint32_t count() const;
+	template<class TDeletor>
+    bool init(TDeletor deletor)
+    {
+		m_deletor = deletor;
+        return true;
+    }
+
+    void add(uint64_t key, T value)
+    {
+        invalidate(key);
+        m_hashMap.insert({key, value});
+    }
+
+    bool find(uint64_t key, T* outObj) const
+    {
+        auto it = m_hashMap.find(key);
+        if (it != m_hashMap.end()) {
+            *outObj = it->second;
+			return true;
+        }
+		return false;
+    }
+
+    void invalidate(uint64_t key)
+    {
+        auto it = m_hashMap.find(key);
+        if (it != m_hashMap.end()) {
+            m_deletor(it->second);
+            m_hashMap.erase(it);
+        }
+    }
+
+    void clear()
+    {
+        for (auto it = m_hashMap.begin(), itEnd = m_hashMap.end(); it != itEnd; ++it) {
+            m_deletor(it->second);
+        }
+
+        m_hashMap.clear();
+    }
+
+    uint32_t count() const
+    {
+        return m_hashMap.size();
+    }
+
+protected:
+    std::unordered_map<uint64_t, T> m_hashMap;
+    std::function<void(T)> m_deletor;
+};
+
+class VulkanPipelineCache
+	: public HashedObjectCache<Ref<VulkanPipeline>>
+{
+	// Pipeline state の Hash を計算する。
+	// viewportRect, scissorRect, VertexBuffer, IndexBuffer は含まない。
+	// RenderTarget と DepthBuffer についてはフォーマットを含む。オブジェクトは含まない。
+	static uint64_t computeHash(const IGraphicsDeviceContext::State& state);
+
+	// TODO: 長い間使われない Item を消すような処理
+};
+
+
+class VulkanRenderPassCache
+	: public HashedObjectCache<VkRenderPass>
+{
+public:
+	// VkRenderPass は、FrameBuffer のフォーマットというかスキーマのようなものを管理する。
+	// ほかのオブジェクトを参照することはない。
+	// ひとまず、アプリ動作中に VkRenderPass を Destroy はせず、終了時にすべて Destory する。
+
+	static uint64_t computeHash(ITexture* const* renderTargets, size_t renderTargetCount, IDepthBuffer* depthBuffer);
+};
+
+class VulkanFrameBuffer
+	: public RefObject
+{
+public:
+	bool init(VulkanDeviceContext* deviceContext, ITexture* const* renderTargets, size_t renderTargetCount, IDepthBuffer* depthBuffer);
+	void dispose();
+	bool containsRenderTarget(ITexture* renderTarget) const;
+	bool containsDepthBuffer(IDepthBuffer* depthBuffer) const;
 
 private:
-    using HashMap = std::unordered_map<uint64_t, VkPipeline>;
+	VulkanDeviceContext* m_deviceContext;
+	VkFramebuffer m_framebuffer;
+	std::array<ITexture*, IGraphicsDeviceContext::MaxRenderTargets> m_renderTargets = {};
+	size_t m_renderTargetCount;
+	IDepthBuffer* m_depthBuffer = nullptr;
+};
 
-    VulkanDeviceContext* m_deviceContext;
-    HashMap m_hashMap;
+class VulkanFrameBufferCache
+	: public HashedObjectCache<Ref<VulkanFrameBuffer>>
+{
+public:
+	void invalidateRenderTarget(ITexture* renderTarget)
+	{
+		for (auto itr = m_hashMap.begin(); itr != m_hashMap.end(); ++itr) {
+			if (itr->second->containsRenderTarget(renderTarget)) {
+				m_deletor(itr->second);
+				itr = m_hashMap.erase(itr);
+			}
+		}
+	}
+
+	void invalidateDepthBuffer(IDepthBuffer* depthBuffer)
+	{
+		for (auto itr = m_hashMap.begin(); itr != m_hashMap.end(); ++itr) {
+			if (itr->second->containsDepthBuffer(depthBuffer)) {
+				m_deletor(itr->second);
+				itr = m_hashMap.erase(itr);
+			}
+		}
+	}
+
+	// 関連付けられている RenderTarget と DepthBuffer がひとつでも解放されたら
+	// 登録してある VkRenderPass も削除する。
+	// もっと厳密に参照カウントで管理することもできるけど大変なので、まずはこの方式で。
 };
 
 class VulkanDeviceContext
@@ -73,6 +181,12 @@ public:
     const Ref<VulkanQueue>& graphicsQueue() const { return m_graphicsQueue; }
     const Ref<VulkanQueue>& computeQueue() const { return m_computeQueue; }
     const Ref<VulkanQueue>& transferQueue() const { return m_transferQueue; }
+	VulkanRenderPassCache& renderPassCache() { return m_renderPassCache; }
+	VulkanPipelineCache& pipelineCache() { return m_pipelineCache; }
+	VulkanFrameBufferCache& frameBufferCache() { return m_frameBufferCache; }
+
+	bool getVkRenderPass(ITexture* const* renderTargets, size_t renderTargetCount, IDepthBuffer* depthBuffer, VkRenderPass* outPass);
+
 
 protected:
     virtual void onGetCaps(GraphicsDeviceCaps* outCaps) override;
@@ -109,20 +223,27 @@ private:
     };
     struct DeviceCaps
     {
-        uint32_t    ConstantBufferMemoryAlignment;
-        uint32_t    MaxTargetWidth;
-        uint32_t    MaxTargetHeight;
-        uint32_t    MaxTargetArraySize;
-        uint32_t    MaxColorSampleCount;
-        uint32_t    MaxDepthSampleCount;
-        uint32_t    MaxStencilSampleCount;
+        uint32_t ConstantBufferMemoryAlignment;
+        uint32_t MaxTargetWidth;
+        uint32_t MaxTargetHeight;
+        uint32_t MaxTargetArraySize;
+        uint32_t MaxColorSampleCount;
+        uint32_t MaxDepthSampleCount;
+        uint32_t MaxStencilSampleCount;
     };
-
 
     static void CheckInstanceExtension(const char* layer, size_t requestCount, const char** requestNames, std::vector<std::string>* result);
     static void GetDeviceExtension(const char* layer, VkPhysicalDevice physicalDevice, std::vector<std::string>* result);
-    template<typename T> inline T GetVkInstanceProc(const char* name) { return reinterpret_cast<T>(vkGetInstanceProcAddr(m_instance, name)); }
-    template<typename T> inline T GetVkDeviceProc(const char* name) { return reinterpret_cast<T>(vkGetDeviceProcAddr(m_device, name)); }
+    template<typename T>
+    inline T GetVkInstanceProc(const char* name)
+    {
+        return reinterpret_cast<T>(vkGetInstanceProcAddr(m_instance, name));
+    }
+    template<typename T>
+    inline T GetVkDeviceProc(const char* name)
+    {
+        return reinterpret_cast<T>(vkGetDeviceProcAddr(m_device, name));
+    }
 
     VkInstance m_instance;
     VkAllocationCallbacks m_allocatorCallbacks;
@@ -130,12 +251,14 @@ private:
     uint32_t m_physicalDeviceCount;
     std::vector<PhysicalDeviceInfo> m_physicalDeviceInfos;
     VkDevice m_device;
-    Ref<VulkanQueue> m_graphicsQueue;   // graphics and presentation queue
+    Ref<VulkanQueue> m_graphicsQueue; // graphics and presentation queue
     Ref<VulkanQueue> m_computeQueue;
     Ref<VulkanQueue> m_transferQueue;
     DeviceCaps m_caps;
     uint64_t m_timeStampFrequency;
-    VulkanPipelineCache m_pipelineCache;
+	VulkanRenderPassCache m_renderPassCache;
+	VulkanPipelineCache m_pipelineCache;
+	VulkanFrameBufferCache m_frameBufferCache;
 
     bool m_ext_EXT_KHR_PUSH_DESCRIPTOR;
     bool m_ext_EXT_KHR_DESCRIPTOR_UPDATE_TEMPLATE;
@@ -158,7 +281,7 @@ public:
     uint32_t familyIndex() const { return m_familyIndex; }
     uint32_t currentBufferIndex() const { return m_currentBufferIndex; }
     uint32_t previousBufferIndex() const { return m_previousBufferIndex; }
-    
+
     VkQueue vulkanQueue() const { return m_queue; }
     VkSemaphore signalSemaphore(uint32_t index) const { return m_signalSemaphore[index]; }
     VkSemaphore vulkanWaitSemaphore(uint32_t index) const { return m_waitSemaphore[index]; }
@@ -207,6 +330,19 @@ private:
     VkCommandBuffer m_commandBuffer;
 };
 
+class VulkanPipeline
+	: public RefObject
+{
+public:
+	VulkanPipeline();
+	virtual ~VulkanPipeline();
+	bool init(VulkanDeviceContext* deviceContext, const IGraphicsDeviceContext::State& committed);
+	void dispose();
+
+private:
+	VulkanDeviceContext* m_deviceContext;
+	VkPipeline m_pipeline;	// 管理は Cache に任せるので、このクラスの中で Destroy しない
+};
 
 class VulkanSwapChain
     : public ISwapChain
@@ -214,14 +350,14 @@ class VulkanSwapChain
 public:
     struct SwapChainDesc
     {
-        uint32_t    Width;
-        uint32_t    Height;
-        TextureFormat     Format;
-        uint32_t            MipLevels;
-        uint32_t            SampleCount;
-        uint32_t            BufferCount;
-        uint32_t            SyncInterval;
-        bool                EnableFullScreen;
+        uint32_t Width;
+        uint32_t Height;
+        TextureFormat Format;
+        uint32_t MipLevels;
+        uint32_t SampleCount;
+        uint32_t BufferCount;
+        uint32_t SyncInterval;
+        bool EnableFullScreen;
     };
 
     VulkanSwapChain();
@@ -245,7 +381,7 @@ private:
     VkPresentModeKHR m_presentMode;
     std::vector<VkImage> m_images;
     std::vector<VkImageView> m_imageViews;
-    std::vector<Ref<VulkanTexture2D>> m_buffers;
+    std::vector<Ref<VulkanRenderTargetTexture>> m_buffers;
     uint32_t m_currentBufferIndex;
 };
 
@@ -260,7 +396,7 @@ public:
 
 private:
     std::vector<VkVertexInputBindingDescription> m_bindings;
-    std::vector<VkVertexInputAttributeDescription> m_attributes;    
+    std::vector<VkVertexInputAttributeDescription> m_attributes;
 };
 
 class VulkanVertexBuffer
@@ -301,37 +437,42 @@ class VulkanTextureBase
     : public ITexture
 {
 public:
+	struct TextureDesc
+	{
+		//    RESOURCE_DIMENSION      Dimension;
+		uint32_t                Width;
+		uint32_t                Height;
+		uint32_t DepthOrArraySize;
+		//    RESOURCE_FORMAT         Format;
+		uint32_t MipLevels;
+		//    uint32_t                SampleCount;
+		//    RESOURCE_LAYOUT         Layout;
+		//    uint32_t                Usage;
+		//    RESOURCE_STATE          InitState;
+		//    HeapProperty            HeapProperty;
+	};
+
     VulkanTextureBase();
     virtual ~VulkanTextureBase();
+
+	virtual const TextureDesc& desc() const = 0;
+	virtual VkImage vulkanImage() const = 0;
+	virtual VkImageView vulkanImageView() const = 0;
 };
 
 class VulkanTexture2D
     : public VulkanTextureBase
 {
 public:
-    struct TextureDesc
-    {
-    //    RESOURCE_DIMENSION      Dimension; 
-    //    uint32_t                Width;
-    //    uint32_t                Height;
-        uint32_t                DepthOrArraySize;
-    //    RESOURCE_FORMAT         Format;
-        uint32_t                MipLevels;
-    //    uint32_t                SampleCount;
-    //    RESOURCE_LAYOUT         Layout;
-    //    uint32_t                Usage;
-    //    RESOURCE_STATE          InitState;
-    //    HeapProperty            HeapProperty;
-    };
 
     VulkanTexture2D();
     virtual ~VulkanTexture2D();
-    bool init(VulkanDeviceContext* deviceContext, const VulkanSwapChain::SwapChainDesc& desc, VkImage image, VkImageView view);
     bool init(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData);
     virtual void dispose() override;
 
-    const TextureDesc& desc() const { return m_desc; }
-    VkImage vulkanImage() const { return m_image; }
+	virtual const TextureDesc& desc() const override { return m_desc; }
+	virtual VkImage vulkanImage() const override { return m_image; }
+	virtual VkImageView vulkanImageView() const override { return m_imageView; }
 
     virtual DeviceTextureType type() const override;
     virtual void readData(void* outData) override;
@@ -342,13 +483,9 @@ public:
 
 private:
     VulkanDeviceContext* m_deviceContext;
-    TextureDesc m_desc;
-    VkImage m_image;
-    VkImageAspectFlags m_imageAspectFlags;
-    VkDeviceMemory m_deviceMemory;
-    VkMemoryRequirements m_memoryRequirements;
-
-    bool m_isExternal;
+	TextureDesc m_desc;
+	VkImage m_image;
+	VkImageView m_imageView;
 };
 
 class VulkanTexture3D
@@ -376,8 +513,13 @@ class VulkanRenderTargetTexture
 public:
     VulkanRenderTargetTexture();
     virtual ~VulkanRenderTargetTexture();
-    void init(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
+	bool init(VulkanDeviceContext* deviceContext, const VulkanSwapChain::SwapChainDesc& desc, VkImage image, VkImageView view);
+    void init(VulkanDeviceContext* context, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
     virtual void dispose() override;
+
+	virtual const TextureDesc& desc() const override { return m_desc; }
+	virtual VkImage vulkanImage() const override { return m_image; }
+	virtual VkImageView vulkanImageView() const override { return m_imageView; }
 
     virtual DeviceTextureType type() const override;
     virtual void readData(void* outData) override;
@@ -387,6 +529,15 @@ public:
     virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
 
 private:
+	VulkanDeviceContext* m_deviceContext;
+	TextureDesc m_desc;
+	VkImage m_image;
+	VkImageView m_imageView;
+	VkImageAspectFlags m_imageAspectFlags;
+	VkDeviceMemory m_deviceMemory;
+	VkMemoryRequirements m_memoryRequirements;
+
+	bool m_isExternal;
 };
 
 class VulkanDepthBuffer
@@ -395,10 +546,11 @@ class VulkanDepthBuffer
 public:
     VulkanDepthBuffer();
     virtual ~VulkanDepthBuffer();
-    void init(uint32_t width, uint32_t height);
+    void init(VulkanDeviceContext* context, uint32_t width, uint32_t height);
     virtual void dispose() override;
 
 private:
+	VulkanDeviceContext* m_deviceContext;
 };
 
 class VulkanSamplerState
@@ -487,4 +639,3 @@ private:
 
 } // namespace detail
 } // namespace ln
-
