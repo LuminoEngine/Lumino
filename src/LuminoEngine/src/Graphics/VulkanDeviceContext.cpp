@@ -92,22 +92,32 @@ struct FormatConversionItem
     bool isCompress;
 };
 
-static FormatConversionItem g_formatConversionTable[] =
-    {
-        {VK_FORMAT_UNDEFINED, 0, TextureFormat::Unknown, false},
-        {VK_FORMAT_R8G8B8A8_UNORM, 32, TextureFormat::RGBA32, false},
-        {VK_FORMAT_UNDEFINED, 0, TextureFormat::RGB24, false}, // TODO: remove
-        {VK_FORMAT_R16G16B16A16_SFLOAT, 64, TextureFormat::R16G16B16A16Float, false},
-        {VK_FORMAT_R32G32B32A32_SFLOAT, 128, TextureFormat::R32G32B32A32Float, false},
-        {VK_FORMAT_R16_SFLOAT, 16, TextureFormat::R16Float, false},
-        {VK_FORMAT_R32_SFLOAT, 32, TextureFormat::R32Float, false},
-        {VK_FORMAT_R32_UINT, 32, TextureFormat::R32UInt, false},
+static FormatConversionItem s_formatConversionTable[] =
+{
+    {VK_FORMAT_UNDEFINED, 0, TextureFormat::Unknown, false},
+    {VK_FORMAT_R8G8B8A8_UNORM, 32, TextureFormat::RGBA32, false},
+    {VK_FORMAT_UNDEFINED, 0, TextureFormat::RGB24, false}, // TODO: remove
+    {VK_FORMAT_R16G16B16A16_SFLOAT, 64, TextureFormat::R16G16B16A16Float, false},
+    {VK_FORMAT_R32G32B32A32_SFLOAT, 128, TextureFormat::R32G32B32A32Float, false},
+    {VK_FORMAT_R16_SFLOAT, 16, TextureFormat::R16Float, false},
+    {VK_FORMAT_R32_SFLOAT, 32, TextureFormat::R32Float, false},
+    {VK_FORMAT_R32_UINT, 32, TextureFormat::R32UInt, false},
 };
 
 static VkFormat LNFormatToVkFormat(TextureFormat format)
 {
-    assert(g_formatConversionTable[(int)format].lnFormat == format);
-    return g_formatConversionTable[(int)format].vulkanFormat;
+    assert(s_formatConversionTable[(int)format].lnFormat == format);
+    return s_formatConversionTable[(int)format].vulkanFormat;
+}
+
+static TextureFormat VkFormatToLNFormat(VkFormat format)
+{
+    for (auto& i : s_formatConversionTable) {
+        if (i.vulkanFormat == format) {
+            return i.lnFormat;
+        }
+    }
+    return TextureFormat::Unknown;
 }
 
 struct BlendFactorConversionItem
@@ -788,6 +798,15 @@ bool VulkanDeviceContext::init(const Settings& settings)
 		return false;
 	}
 
+    m_activeCommandBuffer = makeRef<VulkanCommandList>();
+    if (!m_activeCommandBuffer->init(this, VulkanCommandList::Type::COMMANDLIST_TYPE_DIRECT)) {
+        return false;
+    }
+
+    if (!beginActiveCommandBuffer()) {
+        return false;
+    }
+
     return true;
 }
 
@@ -926,6 +945,39 @@ bool VulkanDeviceContext::getVkRenderPass(ITexture* const* renderTargets, size_t
 	return true;
 }
 
+bool VulkanDeviceContext::beginActiveCommandBuffer()
+{
+    VkCommandBufferInheritanceInfo inheritanceInfo = {};
+    inheritanceInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
+    inheritanceInfo.pNext = nullptr;
+    inheritanceInfo.renderPass = 0;
+    inheritanceInfo.subpass = 0;
+    inheritanceInfo.framebuffer = 0;
+    inheritanceInfo.occlusionQueryEnable = VK_FALSE;
+    inheritanceInfo.queryFlags = 0;
+    inheritanceInfo.pipelineStatistics = 0;
+
+    VkCommandBufferBeginInfo beginInfo = {};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.pNext = nullptr;
+    beginInfo.flags = 0;
+    beginInfo.pInheritanceInfo = &inheritanceInfo;
+
+    if (!vkBeginCommandBuffer(m_activeCommandBuffer->vulkanCommandBuffer(), &beginInfo)) {
+        LN_LOG_ERROR << "Failed vkBeginCommandBuffer";
+        return false;
+    }
+
+    return true;
+}
+
+bool VulkanDeviceContext::endActiveCommandBuffer()
+{
+    // TODO: vkCmdEndRenderPass
+
+    vkEndCommandBuffer(m_activeCommandBuffer->vulkanCommandBuffer());
+}
+
 VkPhysicalDevice VulkanDeviceContext::vulkanPhysicalDevice() const
 {
     return m_physicalDeviceInfos[0].device;
@@ -1012,8 +1064,9 @@ Ref<ITexture> VulkanDeviceContext::onCreateRenderTarget(uint32_t width, uint32_t
 
 Ref<IDepthBuffer> VulkanDeviceContext::onCreateDepthBuffer(uint32_t width, uint32_t height)
 {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
+    auto ptr = makeRef<VulkanDepthBuffer>();
+    ptr->init(this, width, height);
+    return ptr;
 }
 
 Ref<ISamplerState> VulkanDeviceContext::onCreateSamplerState(const SamplerStateData& desc)
@@ -1030,27 +1083,22 @@ Ref<IShaderPass> VulkanDeviceContext::onCreateShaderPass(const byte_t* vsCode, i
 
 void VulkanDeviceContext::onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState)
 {
-    LN_NOTIMPLEMENTED();
 }
 
 void VulkanDeviceContext::onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer)
 {
-    LN_NOTIMPLEMENTED();
 }
 
 void VulkanDeviceContext::onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize)
 {
-    LN_NOTIMPLEMENTED();
 }
 
 void VulkanDeviceContext::onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer)
 {
-    LN_NOTIMPLEMENTED();
 }
 
 void VulkanDeviceContext::onUpdateShaderPass(IShaderPass* newPass)
 {
-    LN_NOTIMPLEMENTED();
 }
 
 void VulkanDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
@@ -1640,7 +1688,7 @@ bool VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* w
     }
 #endif
 
-    m_graphicsQueue = m_deviceContext->graphicsQueue();
+    VulkanQueue* graphicsQueue = m_deviceContext->graphicsQueue();
 
     VkDevice vulkanDevice = m_deviceContext->vulkanDevice();
     VkPhysicalDevice vulkanPhysicalDevice = m_deviceContext->vulkanPhysicalDevice();
@@ -1653,7 +1701,7 @@ bool VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* w
         // Note: 丁寧にやるなら、もう一度すべての Queue を列挙して調べなおすのがよい。
         //       ただし、チュートリアルにもあるように、ほとんどのケースでは同じ Queue が選択される。
         //       https://vulkan-tutorial.com/Drawing_a_triangle/Presentation/Window_surface
-        auto familyIndex = m_graphicsQueue->familyIndex();
+        auto familyIndex = graphicsQueue->familyIndex();
         VkBool32 support = VK_FALSE;
         if (vkGetPhysicalDeviceSurfaceSupportKHR(vulkanPhysicalDevice, familyIndex, m_surface, &support) != VK_SUCCESS) {
             LN_LOG_ERROR << "Failed vkGetPhysicalDeviceSurfaceSupportKHR";
@@ -1913,18 +1961,22 @@ bool VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* w
         commandBuffer->dispose();
     }
 
-    // Get current backbuffer index
-    {
-        uint32_t index = m_graphicsQueue->currentBufferIndex();
-        VkSemaphore semaphore = m_graphicsQueue->vulkanWaitSemaphore(index);
-        VkFence fence = m_graphicsQueue->vulkanFence(index);
-        if (vkAcquireNextImageKHR(vulkanDevice, m_swapChain, UINT64_MAX, semaphore, fence, &m_currentBufferIndex) != VK_SUCCESS) {
-            LN_LOG_ERROR << "Failed vkAcquireNextImageKHR";
-            return false;
-        }
 
-        vkWaitForFences(vulkanDevice, 1, &fence, VK_FALSE, UINT64_MAX);
-        vkResetFences(vulkanDevice, 1, &fence);
+
+    m_inactiveCommandBuffer = makeRef<VulkanCommandList>();
+    if (!m_inactiveCommandBuffer->init(m_deviceContext, VulkanCommandList::Type::COMMANDLIST_TYPE_DIRECT)) {
+        return false;
+    }
+
+    // フレーム開始時に一度 vkAcquireNextImageKHR を実行しているが、
+    // これは公式チュートリアルや bgfx とは違うところ。asura-sdk と同じ。
+    // これをしない場合は present の先頭で行うことになるが、そうすると present までは
+    // バックバッファを示す Image がわからない。そのため、OpenGL のように
+    // 0(nullptr) を「デフォルトのフレームバッファとする」というような対応をとる必要がある。
+    // この方式にしてしまうと GraphicsContext と SwapChain が強く結びついてしまうので、
+    // OpenGL 対応で複数 SwapChain サポートに苦労したときと同じことになってしまう。
+    if (!acquireNextImage()) {
+        return false;
     }
 
     return true;
@@ -1947,12 +1999,47 @@ void VulkanSwapChain::dispose()
 
 ITexture* VulkanSwapChain::getColorBuffer() const
 {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
+    return m_buffers[m_currentBufferIndex];
 }
 
 bool VulkanSwapChain::present()
 {
+    if (!m_deviceContext->endActiveCommandBuffer()) {
+        return false;
+    }
+
+
+    //m_inactiveCommandBuffer
+
+    VkQueue graphicsQueue = m_deviceContext->graphicsQueue()->vulkanQueue();
+    
+
+    {
+        VkSubmitInfo submitInfo = {};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+        // コマンドバッファが実行を開始する前に待機するセマフォ
+        VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame] };
+        VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+        submitInfo.waitSemaphoreCount = 1;
+        submitInfo.pWaitSemaphores = waitSemaphores;
+        submitInfo.pWaitDstStageMask = waitStages;
+
+        // 実行するコマンド
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = &commandBuffers[imageIndex];
+
+        // 実行を完了したときに通知されるセマフォ
+        VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame] };
+        submitInfo.signalSemaphoreCount = 1;
+        submitInfo.pSignalSemaphores = signalSemaphores;
+
+        // コマンド実行通知。fence は、この実行の完了が通知される。
+        if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS) {
+            throw std::runtime_error("failed to submit draw command buffer!");
+        }
+    }
+
     VkPresentInfoKHR presentInfo = {};
     presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 
@@ -1961,8 +2048,48 @@ bool VulkanSwapChain::present()
     //presentInfo.waitSemaphoreCount = 1;
     //presentInfo.pWaitSemaphores = signalSemaphores;
 
+
+    VkPresentInfoKHR info = {};
+    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+    presentInfo.waitSemaphoreCount = 0;
+    presentInfo.pWaitSemaphores = nullptr;  // Present を発行する前に待機するセマフォ
+    presentInfo.pNext = nullptr;
+    presentInfo.swapchainCount = 1;
+    presentInfo.pSwapchains = &m_swapChain;
+    presentInfo.pImageIndices = &m_currentBufferIndex;
+    presentInfo.pResults = nullptr;
+
+    if (!vkQueuePresentKHR(graphicsQueue, &info) != VK_SUCCESS) {
+        LN_LOG_ERROR << "Failed vkQueuePresentKHR";
+        return false;
+    }
+
     return true;
 }
+
+bool VulkanSwapChain::acquireNextImage()
+{
+    VulkanQueue* graphicsQueue = m_deviceContext->graphicsQueue();
+    VkDevice vulkanDevice = m_deviceContext->vulkanDevice();
+
+    // Get current backbuffer index
+    {
+        uint32_t index = graphicsQueue->currentBufferIndex();
+        VkSemaphore semaphore = graphicsQueue->vulkanWaitSemaphore(index);
+        VkFence fence = graphicsQueue->vulkanFence(index);
+        if (vkAcquireNextImageKHR(vulkanDevice, m_swapChain, UINT64_MAX, semaphore, fence, &m_currentBufferIndex) != VK_SUCCESS) {
+            LN_LOG_ERROR << "Failed vkAcquireNextImageKHR";
+            return false;
+        }
+
+        // TODO: ここで待つのは効率悪い。
+        // 本当はバックバッファを示す RenderTarget を CommandBuffer に Add するとき、
+        // その直前で WaitForFence を挿入するようなことができればベスト。
+        vkWaitForFences(vulkanDevice, 1, &fence, VK_FALSE, UINT64_MAX);
+        vkResetFences(vulkanDevice, 1, &fence);
+    }
+}
+
 
 //==============================================================================
 // VulkanVertexDeclaration
@@ -2148,7 +2275,7 @@ void VulkanTexture2D::readData(void* outData)
     LN_UNREACHABLE();
 }
 
-const SizeI& VulkanTexture2D::realSize()
+SizeI VulkanTexture2D::realSize()
 {
     LN_NOTIMPLEMENTED();
     return SizeI::Zero;
@@ -2202,7 +2329,7 @@ void VulkanTexture3D::readData(void* outData)
     LN_UNREACHABLE();
 }
 
-const SizeI& VulkanTexture3D::realSize()
+SizeI VulkanTexture3D::realSize()
 {
     LN_NOTIMPLEMENTED();
     return SizeI::Zero;
@@ -2258,6 +2385,9 @@ bool VulkanRenderTargetTexture::init(VulkanDeviceContext* deviceContext, const V
 
 	vkGetImageMemoryRequirements(m_deviceContext->vulkanDevice(), image, &m_memoryRequirements);
 
+
+    m_format = desc.Format;//VkFormatToLNFormat(desc.Format);
+
 	return true;
 }
 
@@ -2306,16 +2436,14 @@ void VulkanRenderTargetTexture::readData(void* outData)
     LN_NOTIMPLEMENTED();
 }
 
-const SizeI& VulkanRenderTargetTexture::realSize()
+SizeI VulkanRenderTargetTexture::realSize()
 {
-    LN_NOTIMPLEMENTED();
-    return SizeI::Zero;
+    return SizeI(m_desc.Width, m_desc.Height);
 }
 
 TextureFormat VulkanRenderTargetTexture::getTextureFormat() const
 {
-    LN_NOTIMPLEMENTED();
-    return TextureFormat::Unknown;
+    return m_format;
 }
 
 void VulkanRenderTargetTexture::setSubData(int x, int y, int width, int height, const void* data, size_t dataSize)
@@ -2342,7 +2470,6 @@ VulkanDepthBuffer::~VulkanDepthBuffer()
 void VulkanDepthBuffer::init(VulkanDeviceContext* context, uint32_t width, uint32_t height)
 {
 	m_deviceContext = context;
-    LN_NOTIMPLEMENTED();
 }
 
 void VulkanDepthBuffer::dispose()

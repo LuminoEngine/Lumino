@@ -10,6 +10,7 @@ namespace ln {
 namespace detail {
 class VulkanDeviceContext;
 class VulkanQueue;
+class VulkanCommandList;
 class VulkanPipeline;
 class VulkanSwapChain;
 class VulkanIndexBuffer;
@@ -184,9 +185,11 @@ public:
 	VulkanRenderPassCache& renderPassCache() { return m_renderPassCache; }
 	VulkanPipelineCache& pipelineCache() { return m_pipelineCache; }
 	VulkanFrameBufferCache& frameBufferCache() { return m_frameBufferCache; }
+    const Ref<VulkanCommandList>& activeCommandBuffer() const { return m_activeCommandBuffer; }
 
 	bool getVkRenderPass(ITexture* const* renderTargets, size_t renderTargetCount, IDepthBuffer* depthBuffer, VkRenderPass* outPass);
-
+    bool beginActiveCommandBuffer();
+    bool endActiveCommandBuffer();
 
 protected:
     virtual void onGetCaps(GraphicsDeviceCaps* outCaps) override;
@@ -245,6 +248,7 @@ private:
         return reinterpret_cast<T>(vkGetDeviceProcAddr(m_device, name));
     }
 
+
     VkInstance m_instance;
     VkAllocationCallbacks m_allocatorCallbacks;
     VulkanAllocator m_allocator;
@@ -259,6 +263,7 @@ private:
 	VulkanRenderPassCache m_renderPassCache;
 	VulkanPipelineCache m_pipelineCache;
 	VulkanFrameBufferCache m_frameBufferCache;
+    Ref<VulkanCommandList> m_activeCommandBuffer;   // present でほかの SwapChain が持っている CommandBuffer と swap
 
     bool m_ext_EXT_KHR_PUSH_DESCRIPTOR;
     bool m_ext_EXT_KHR_DESCRIPTOR_UPDATE_TEMPLATE;
@@ -369,11 +374,13 @@ public:
     bool present();
 
 private:
+    bool acquireNextImage();
+
     VulkanDeviceContext* m_deviceContext;
     SwapChainDesc m_desc;
     VkSurfaceKHR m_surface;
     VkSwapchainKHR m_swapChain;
-    VulkanQueue* m_graphicsQueue;
+    //VulkanQueue* m_graphicsQueue;
     std::vector<VkSurfaceFormatKHR> m_surfaceFormats;
     VkFormat m_imageFormat;
     VkColorSpaceKHR m_colorSpace;
@@ -383,6 +390,7 @@ private:
     std::vector<VkImageView> m_imageViews;
     std::vector<Ref<VulkanRenderTargetTexture>> m_buffers;
     uint32_t m_currentBufferIndex;
+    Ref<VulkanCommandList> m_inactiveCommandBuffer;
 };
 
 class VulkanVertexDeclaration
@@ -476,7 +484,7 @@ public:
 
     virtual DeviceTextureType type() const override;
     virtual void readData(void* outData) override;
-    virtual const SizeI& realSize() override;
+    virtual SizeI realSize() override;
     virtual TextureFormat getTextureFormat() const override;
     virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) override;
     virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
@@ -499,7 +507,7 @@ public:
 
     virtual DeviceTextureType type() const override;
     virtual void readData(void* outData) override;
-    virtual const SizeI& realSize() override;
+    virtual SizeI realSize() override;
     virtual TextureFormat getTextureFormat() const override;
     virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) override;
     virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
@@ -523,7 +531,7 @@ public:
 
     virtual DeviceTextureType type() const override;
     virtual void readData(void* outData) override;
-    virtual const SizeI& realSize() override;
+    virtual SizeI realSize() override;
     virtual TextureFormat getTextureFormat() const override;
     virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) override;
     virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
@@ -537,6 +545,7 @@ private:
 	VkDeviceMemory m_deviceMemory;
 	VkMemoryRequirements m_memoryRequirements;
 
+    TextureFormat m_format;
 	bool m_isExternal;
 };
 

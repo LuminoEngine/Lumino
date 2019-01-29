@@ -1268,7 +1268,7 @@ void GLTexture2D::readData(void* outData)
 	LN_UNREACHABLE();
 }
 
-const SizeI& GLTexture2D::realSize()
+SizeI GLTexture2D::realSize()
 {
 	return m_size;
 }
@@ -1376,7 +1376,7 @@ void GLTexture3D::readData(void* outData)
 	LN_UNREACHABLE();
 }
 
-const SizeI& GLTexture3D::realSize()
+SizeI GLTexture3D::realSize()
 {
 	LN_NOTIMPLEMENTED();
 	return SizeI::Zero;
@@ -1478,7 +1478,7 @@ void GLRenderTargetTexture::readData(void* outData)
 #endif
 }
 
-const SizeI& GLRenderTargetTexture::realSize()
+SizeI GLRenderTargetTexture::realSize()
 {
 	return m_size;
 }

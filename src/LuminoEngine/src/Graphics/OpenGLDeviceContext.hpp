@@ -328,7 +328,7 @@ public:
 
 	virtual DeviceTextureType type() const override { return DeviceTextureType::Texture2D; }
 	virtual void readData(void* outData) override;
-	virtual const SizeI& realSize() override;
+	virtual SizeI realSize() override;
 	virtual TextureFormat getTextureFormat() const override;
 	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) override;
 	virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
@@ -356,7 +356,7 @@ public:
 
 	virtual DeviceTextureType type() const override { return DeviceTextureType::Texture3D; }
 	virtual void readData(void* outData) override;
-	virtual const SizeI& realSize() override;
+	virtual SizeI realSize() override;
 	virtual TextureFormat getTextureFormat() const override;
 	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) override;
 	virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
@@ -386,7 +386,7 @@ public:
 
 	virtual DeviceTextureType type() const override { return DeviceTextureType::RenderTarget; }
 	virtual void readData(void* outData) override;
-	virtual const SizeI& realSize() override;
+	virtual SizeI realSize() override;
 	virtual TextureFormat getTextureFormat() const override;
 	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) override;
 	virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;

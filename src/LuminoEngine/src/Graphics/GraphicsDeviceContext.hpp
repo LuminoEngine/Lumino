@@ -212,7 +212,7 @@ class ITexture
 public:
 	virtual DeviceTextureType type() const = 0;
 
-	virtual const SizeI& realSize() = 0;
+	virtual SizeI realSize() = 0;
 
 	virtual TextureFormat getTextureFormat() const = 0;
 
