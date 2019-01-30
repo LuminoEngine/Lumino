@@ -23,7 +23,8 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
     {
         auto ctx = Engine::graphicsContext();
         TestEnv::resetGraphicsContext(ctx);
-        ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
+        ctx->setDepthBuffer(nullptr);
+        ctx->clear(ClearFlags::All, Color::Blue, 1.0f, 0);
         ctx->present(Engine::mainWindow()->swapChain());
         ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-1.png"));
     }

@@ -198,6 +198,8 @@ public:
 	VulkanFrameBufferCache& frameBufferCache() { return m_frameBufferCache; }
     const Ref<VulkanCommandList>& activeCommandBuffer() const { return m_activeCommandBuffer; }
 	void setActiveCommandBuffer(const Ref<VulkanCommandList>& commandBuffer) { m_activeCommandBuffer = commandBuffer; }
+    VkShaderModule defaultVertexShaderModule() const { return m_defaultVertexShaderModule; }
+    VkShaderModule defaultFragmentShaderModule() const { return m_defaultFragmentShaderModule; }
 
 	bool getVkRenderPass(ITexture* const* renderTargets, size_t renderTargetCount, IDepthBuffer* depthBuffer, VkRenderPass* outPass);
     bool beginActiveCommandBuffer();
@@ -276,6 +278,8 @@ private:
 	VulkanPipelineCache m_pipelineCache;
 	VulkanFrameBufferCache m_frameBufferCache;
     Ref<VulkanCommandList> m_activeCommandBuffer;   // present でほかの SwapChain が持っている CommandBuffer と swap
+    VkShaderModule m_defaultVertexShaderModule;     // shader の省略はできないのでデフォルトを用意する
+    VkShaderModule m_defaultFragmentShaderModule;
 
 	bool m_requiredChangePipeline;
 	bool m_requiredChangeRenderPass;
@@ -367,7 +371,8 @@ public:
 
 private:
 	VulkanDeviceContext* m_deviceContext;
-	VkPipeline m_pipeline;	// 管理は Cache に任せるので、このクラスの中で Destroy しない
+    VkPipelineLayout m_pipelineLayout;
+    VkPipeline m_pipeline;	// 管理は Cache に任せるので、このクラスの中で Destroy しない
 };
 
 class VulkanSwapChain

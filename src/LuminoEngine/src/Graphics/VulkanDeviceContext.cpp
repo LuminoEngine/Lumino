@@ -242,9 +242,9 @@ struct StencilOpConversionItem
 };
 
 static const StencilOpConversionItem s_stencilOpConversionTable[] =
-    {
-        {StencilOp::Keep, VK_STENCIL_OP_KEEP},
-        {StencilOp::Replace, VK_STENCIL_OP_REPLACE},
+{
+    {StencilOp::Keep, VK_STENCIL_OP_KEEP},
+    {StencilOp::Replace, VK_STENCIL_OP_REPLACE},
 };
 
 static VkStencilOp LNStencilOpToVkStencilOp(StencilOp value)
@@ -260,19 +260,19 @@ struct VertexElementTypeConversionItem
 };
 
 static const VertexElementTypeConversionItem s_vertexElementTypeConversionTable[] =
-    {
-        {VertexElementType::Unknown, VK_FORMAT_UNDEFINED},
+{
+    {VertexElementType::Unknown, VK_FORMAT_UNDEFINED},
 
-        {VertexElementType::Float1, VK_FORMAT_R32_SFLOAT},
-        {VertexElementType::Float2, VK_FORMAT_R32G32_SFLOAT},
-        {VertexElementType::Float3, VK_FORMAT_R32G32B32_SFLOAT},
-        {VertexElementType::Float4, VK_FORMAT_R32G32B32A32_SFLOAT},
+    {VertexElementType::Float1, VK_FORMAT_R32_SFLOAT},
+    {VertexElementType::Float2, VK_FORMAT_R32G32_SFLOAT},
+    {VertexElementType::Float3, VK_FORMAT_R32G32B32_SFLOAT},
+    {VertexElementType::Float4, VK_FORMAT_R32G32B32A32_SFLOAT},
 
-        {VertexElementType::Ubyte4, VK_FORMAT_R8G8B8A8_UINT},
-        {VertexElementType::Color4, VK_FORMAT_R8G8B8A8_UNORM}, // UNORM : https://msdn.microsoft.com/ja-jp/library/ee415736%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396
+    {VertexElementType::Ubyte4, VK_FORMAT_R8G8B8A8_UINT},
+    {VertexElementType::Color4, VK_FORMAT_R8G8B8A8_UNORM}, // UNORM : https://msdn.microsoft.com/ja-jp/library/ee415736%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396
 
-        {VertexElementType::Short2, VK_FORMAT_R16G16_SINT},
-        {VertexElementType::Short4, VK_FORMAT_R16G16B16A16_SINT},
+    {VertexElementType::Short2, VK_FORMAT_R16G16_SINT},
+    {VertexElementType::Short4, VK_FORMAT_R16G16B16A16_SINT},
 };
 
 static VkFormat LNVertexElementTypeToVkFormat(VertexElementType value)
@@ -334,9 +334,13 @@ uint64_t VulkanPipelineCache::computeHash(const IGraphicsDeviceContext::State& s
 	hash.add(state.vertexDeclaration);
 	hash.add(state.shaderPass);
 	for (auto& t : state.renderTargets) {
-		hash.add(t->getTextureFormat());
+        if (t) {
+            hash.add(t->getTextureFormat());
+        }
 	}
-	hash.add(state.depthBuffer->format());
+    if (state.depthBuffer) {
+        hash.add(state.depthBuffer->format());
+    }
 	return hash.value();
 }
 
@@ -348,9 +352,13 @@ uint64_t VulkanRenderPassCache::computeHash(ITexture* const* renderTargets, size
 {
 	MixHash hash;
 	for (size_t i = 0; i < renderTargetCount; i++) {
-		hash.add(renderTargets[i]->getTextureFormat());
+        if (renderTargets[i]) {
+            hash.add(renderTargets[i]->getTextureFormat());
+        }
 	}
-	hash.add(VK_FORMAT_D32_SFLOAT_S8_UINT);	// TODO: DepthFormat
+    if (depthBuffer) {
+        hash.add(depthBuffer->format());
+    }
 	return hash.value();
 }
 
@@ -378,7 +386,12 @@ bool VulkanFrameBuffer::init(VulkanDeviceContext* deviceContext, ITexture* const
 	{
 		VkImageView attachments[IGraphicsDeviceContext::MaxRenderTargets] = {};
 		for (size_t i = 0; i < renderTargetCount; i++) {
-			attachments[i] = static_cast<VulkanTextureBase*>(m_renderTargets[i])->vulkanImageView();
+            if (m_renderTargets[i]) {
+                attachments[i] = static_cast<VulkanTextureBase*>(m_renderTargets[i])->vulkanImageView();
+            }
+            else {
+                attachments[i] = 0;
+            }
 		}
 
 		VkFramebufferCreateInfo framebufferInfo = {};
@@ -671,7 +684,8 @@ bool VulkanDeviceContext::init(const Settings& settings)
             std::vector<std::string> deviceExtensions;
             if (settings.debugEnabled) {
                 deviceExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
-            } else {
+            }
+            else {
                 GetDeviceExtension(
                     nullptr,
                     physicalDevice,
@@ -768,6 +782,35 @@ bool VulkanDeviceContext::init(const Settings& settings)
         }
     }
 
+    // Default Shader
+    {
+        auto code = FileSystem::readAllBytes("D:/Proj/LivePixel/Engine/Native/src/LuminoEngine/src/Graphics/Resource/default.vert.spv");
+
+        VkShaderModuleCreateInfo createInfo = {};
+        createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+        createInfo.codeSize = code.size();
+        createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
+
+        if (vkCreateShaderModule(m_device, &createInfo, &m_allocatorCallbacks, &m_defaultVertexShaderModule) != VK_SUCCESS) {
+            LN_LOG_ERROR << "Failed vkCreateShaderModule";
+            return false;
+        }
+    }
+    // Default Shader
+    {
+        auto code = FileSystem::readAllBytes("D:/Proj/LivePixel/Engine/Native/src/LuminoEngine/src/Graphics/Resource/default.frag.spv");
+
+        VkShaderModuleCreateInfo createInfo = {};
+        createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+        createInfo.codeSize = code.size();
+        createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
+
+        if (vkCreateShaderModule(m_device, &createInfo, &m_allocatorCallbacks, &m_defaultFragmentShaderModule) != VK_SUCCESS) {
+            LN_LOG_ERROR << "Failed vkCreateShaderModule";
+            return false;
+        }
+    }
+
     // Get device infomation
     {
         auto& limits = m_physicalDeviceInfos[0].deviceProperty.limits;
@@ -832,6 +875,16 @@ void VulkanDeviceContext::dispose()
     if (m_graphicsQueue) {
         m_graphicsQueue->dispose();
         m_graphicsQueue = nullptr;
+    }
+
+    if (m_defaultVertexShaderModule) {
+        vkDestroyShaderModule(m_device, m_defaultVertexShaderModule, &m_allocatorCallbacks);
+        m_defaultVertexShaderModule = VK_NULL_HANDLE;
+    }
+
+    if (m_defaultFragmentShaderModule) {
+        vkDestroyShaderModule(m_device, m_defaultFragmentShaderModule, &m_allocatorCallbacks);
+        m_defaultFragmentShaderModule = VK_NULL_HANDLE;
     }
 
     if (m_device) {
@@ -1098,12 +1151,60 @@ void VulkanDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, f
 {
 	submitStatus();
 
+    const State& state = committedState();
 
+    SizeI size = state.renderTargets[0]->realSize();
 	{
+        VkClearRect rect[1];
+        rect[0].rect.offset.x = 0;
+        rect[0].rect.offset.y = 0;
+        rect[0].rect.extent.width = size.width;
+        rect[0].rect.extent.height = size.height;
+        rect[0].baseArrayLayer = 0;
+        rect[0].layerCount = 1;
+
+        VkClearAttachment attachments[IGraphicsDeviceContext::MaxRenderTargets + 1] = {};
+
+        uint32_t count = 0;
+        uint32_t rtCount = 1;
+
+        if (testFlag(flags, ClearFlags::Color))
+        {
+            float frgba[4] = { color.r, color.g, color.b, color.a, };
+
+            for (uint32_t ii = 0; ii < rtCount; ++ii)
+            {
+                attachments[count].colorAttachment = count;
+                attachments[count].aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+                attachments[count].clearValue.color.float32[0] = color.r;
+                attachments[count].clearValue.color.float32[1] = color.g;
+                attachments[count].clearValue.color.float32[2] = color.b;
+                attachments[count].clearValue.color.float32[3] = color.a;
+                ++count;
+            }
+        }
+
+        if (state.depthBuffer != nullptr &&
+            testFlag(flags, (ClearFlags)(ClearFlags::Depth | ClearFlags::Stencil)))
+        {
+            attachments[count].colorAttachment = count;
+            attachments[count].aspectMask = 0;
+            attachments[count].aspectMask |= (testFlag(flags, ClearFlags::Depth)) ? VK_IMAGE_ASPECT_DEPTH_BIT : 0;
+            attachments[count].aspectMask |= (testFlag(flags, ClearFlags::Stencil)) ? VK_IMAGE_ASPECT_STENCIL_BIT : 0;
+            attachments[count].clearValue.depthStencil.stencil = stencil;
+            attachments[count].clearValue.depthStencil.depth = z;
+            ++count;
+        }
+
+        vkCmdClearAttachments(
+            m_activeCommandBuffer->vulkanCommandBuffer()
+            , count
+            , attachments
+            , LN_ARRAY_SIZE_OF(rect)
+            , rect
+        );
 
 	}
-
-    LN_NOTIMPLEMENTED();
 }
 
 void VulkanDeviceContext::onDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
@@ -1118,7 +1219,9 @@ void VulkanDeviceContext::onDrawPrimitiveIndexed(PrimitiveType primitive, int st
 
 void VulkanDeviceContext::onPresent(ISwapChain* swapChain)
 {
-    LN_NOTIMPLEMENTED();
+    if (!static_cast<VulkanSwapChain*>(swapChain)->present()) {
+        LN_ERROR();
+    }
 }
 
 bool VulkanDeviceContext::submitStatus()
@@ -1623,27 +1726,75 @@ bool VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsDev
 		viewportState.pScissors = &scissor;
 	}
 
-	//VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
 
-	VkRenderPass renderPass;
+    //VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
+
+    VkPipelineShaderStageCreateInfo shaderStages[2];
+    {
+        shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        shaderStages[0].pNext = nullptr;
+        shaderStages[0].flags = 0;
+        shaderStages[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
+        shaderStages[0].module = m_deviceContext->defaultVertexShaderModule();
+        shaderStages[0].pName = "main";
+        shaderStages[0].pSpecializationInfo = nullptr;
+        shaderStages[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        shaderStages[1].pNext = nullptr;
+        shaderStages[1].flags = 0;
+        shaderStages[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+        shaderStages[1].module = m_deviceContext->defaultFragmentShaderModule();
+        shaderStages[1].pName = "main";
+        shaderStages[1].pSpecializationInfo = nullptr;
+    }
+
+    const VkDynamicState dynamicStates[] =
+    {
+        VK_DYNAMIC_STATE_VIEWPORT,
+        VK_DYNAMIC_STATE_SCISSOR,
+        VK_DYNAMIC_STATE_BLEND_CONSTANTS,
+        VK_DYNAMIC_STATE_STENCIL_REFERENCE,
+    };
+    VkPipelineDynamicStateCreateInfo dynamicState;
+    dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+    dynamicState.pNext = nullptr;
+    dynamicState.flags = 0;
+    dynamicState.dynamicStateCount = LN_ARRAY_SIZE_OF(dynamicStates);
+    dynamicState.pDynamicStates = dynamicStates;
+
+	VkRenderPass renderPass = 0;
 	if (!m_deviceContext->getVkRenderPass(committed.renderTargets.data(), committed.renderTargets.size(), committed.depthBuffer, &renderPass)) {
 		return false;
 	}
 
+    VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
+    pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    pipelineLayoutInfo.setLayoutCount = 0;
+    pipelineLayoutInfo.pushConstantRangeCount = 0;
+    if (vkCreatePipelineLayout(m_deviceContext->vulkanDevice(), &pipelineLayoutInfo, m_deviceContext->vulkanAllocator(), &m_pipelineLayout) != VK_SUCCESS) {
+        LN_LOG_ERROR << "Failed vkCreatePipelineLayout";
+        return false;
+    }
+
 	VkGraphicsPipelineCreateInfo pipelineInfo = {};
 	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-	pipelineInfo.stageCount = 0;    // TODO: まずはシェーダ無し //2;
-	pipelineInfo.pStages = nullptr; // TODO: まずはシェーダ無し //shaderStages;
+    pipelineInfo.pNext = nullptr;
+    pipelineInfo.flags = 0;
+	pipelineInfo.stageCount = LN_ARRAY_SIZE_OF(shaderStages);
+	pipelineInfo.pStages = shaderStages;
 	pipelineInfo.pVertexInputState = &vertexInputInfo;
 	pipelineInfo.pInputAssemblyState = &inputAssembly;
+    pipelineInfo.pTessellationState = nullptr;
 	pipelineInfo.pViewportState = &viewportState;
 	pipelineInfo.pRasterizationState = &rasterizerInfo;
 	pipelineInfo.pMultisampleState = &multisampleState;
+    pipelineInfo.pDepthStencilState = &depthStencilStateInfo;
 	pipelineInfo.pColorBlendState = &colorBlending;
-	pipelineInfo.layout = 0; // TODO: まずは VertexDecl なし //pipelineLayout;
+    pipelineInfo.pDynamicState = &dynamicState;
+    pipelineInfo.layout = m_pipelineLayout;
 	pipelineInfo.renderPass = renderPass;
 	pipelineInfo.subpass = 0;
 	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+    pipelineInfo.basePipelineIndex = 0;
 
 	if (vkCreateGraphicsPipelines(m_deviceContext->vulkanDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, m_deviceContext->vulkanAllocator(), &m_pipeline) != VK_SUCCESS) {
 		LN_LOG_ERROR << "Failed vkCreateGraphicsPipelines";
@@ -1673,6 +1824,17 @@ bool VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsDev
 
 void VulkanPipeline::dispose()
 {
+    //if (vkCreatePipelineLayout(m_deviceContext->vulkanDevice(), &pipelineLayoutInfo, m_deviceContext->vulkanAllocator(), &m_pipelineLayout) != VK_SUCCESS) {
+
+    if (m_pipelineLayout) {
+        vkDestroyPipelineLayout(m_deviceContext->vulkanDevice(), m_pipelineLayout, m_deviceContext->vulkanAllocator());
+        m_pipelineLayout = 0;
+    }
+
+    if (m_pipeline) {
+        vkDestroyPipeline(m_deviceContext->vulkanDevice(), m_pipeline, m_deviceContext->vulkanAllocator());
+        m_pipeline = 0;
+    }
 }
 
 
@@ -2133,7 +2295,7 @@ bool VulkanSwapChain::present()
 		presentInfo.pSwapchains = &m_swapChain;
 		presentInfo.pImageIndices = &m_currentBufferIndex;
 		presentInfo.pResults = nullptr;
-		if (!vkQueuePresentKHR(graphicsQueue, &presentInfo) != VK_SUCCESS) {
+		if (vkQueuePresentKHR(graphicsQueue, &presentInfo) != VK_SUCCESS) {
 			LN_LOG_ERROR << "Failed vkQueuePresentKHR";
 			return false;
 		}
