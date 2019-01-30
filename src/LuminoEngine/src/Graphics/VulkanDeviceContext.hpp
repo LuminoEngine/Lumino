@@ -92,6 +92,8 @@ protected:
 class VulkanPipelineCache
 	: public HashedObjectCache<Ref<VulkanPipeline>>
 {
+public:
+
 	// Pipeline state の Hash を計算する。
 	// viewportRect, scissorRect, VertexBuffer, IndexBuffer は含まない。
 	// RenderTarget と DepthBuffer についてはフォーマットを含む。オブジェクトは含まない。
@@ -120,9 +122,13 @@ public:
 	void dispose();
 	bool containsRenderTarget(ITexture* renderTarget) const;
 	bool containsDepthBuffer(IDepthBuffer* depthBuffer) const;
+	VkRenderPass vulkanRenderPass() const { return m_renderPass; }
+	VkFramebuffer vulkanFramebuffer() const { return m_framebuffer; }
+	SizeI extent() const { return m_renderTargets[0]->realSize(); }
 
 private:
 	VulkanDeviceContext* m_deviceContext;
+	VkRenderPass m_renderPass;
 	VkFramebuffer m_framebuffer;
 	std::array<ITexture*, IGraphicsDeviceContext::MaxRenderTargets> m_renderTargets = {};
 	size_t m_renderTargetCount;
@@ -133,6 +139,11 @@ class VulkanFrameBufferCache
 	: public HashedObjectCache<Ref<VulkanFrameBuffer>>
 {
 public:
+	static uint64_t computeHash(ITexture* const* renderTargets, size_t renderTargetCount, IDepthBuffer* depthBuffer)
+	{
+		return VulkanRenderPassCache::computeHash(renderTargets, renderTargetCount, depthBuffer);
+	}
+
 	void invalidateRenderTarget(ITexture* renderTarget)
 	{
 		for (auto itr = m_hashMap.begin(); itr != m_hashMap.end(); ++itr) {
@@ -236,6 +247,7 @@ private:
         uint32_t MaxStencilSampleCount;
     };
 
+	bool submitStatus();
     static void CheckInstanceExtension(const char* layer, size_t requestCount, const char** requestNames, std::vector<std::string>* result);
     static void GetDeviceExtension(const char* layer, VkPhysicalDevice physicalDevice, std::vector<std::string>* result);
     template<typename T>
@@ -248,7 +260,6 @@ private:
     {
         return reinterpret_cast<T>(vkGetDeviceProcAddr(m_device, name));
     }
-
 
     VkInstance m_instance;
     VkAllocationCallbacks m_allocatorCallbacks;
@@ -265,6 +276,9 @@ private:
 	VulkanPipelineCache m_pipelineCache;
 	VulkanFrameBufferCache m_frameBufferCache;
     Ref<VulkanCommandList> m_activeCommandBuffer;   // present でほかの SwapChain が持っている CommandBuffer と swap
+
+	bool m_requiredChangePipeline;
+	bool m_requiredChangeRenderPass;
 
     bool m_ext_EXT_KHR_PUSH_DESCRIPTOR;
     bool m_ext_EXT_KHR_DESCRIPTOR_UPDATE_TEMPLATE;
@@ -327,15 +341,19 @@ public:
     VkCommandBuffer vulkanCommandBuffer() const { return m_commandBuffer; }
 	VkFence vulkanInFlightFence() const { return m_inFlightFence; }
 
-    void begin();
-    void end();
-    void flush();
+    bool begin();
+	bool end();
+	bool flush();
+
+	void addPipelineCmd(VulkanPipeline* pipeline);
+	void addFrameBufferCmd(VulkanFrameBuffer* frameBuffer);
 
 private:
     VulkanDeviceContext* m_deviceContext;
     VkCommandPool m_commandPool;
     VkCommandBuffer m_commandBuffer;
 	VkFence m_inFlightFence;	// コマンド実行完了を通知するための Fence
+	VulkanFrameBuffer* m_currentFrameBuffer;
 };
 
 class VulkanPipeline
@@ -397,7 +415,7 @@ private:
 
 	static const int MaxPresentationFrameIndex = 2;
 	int m_currentPresentationFrameIndex;
-	VkSemaphore m_renderFinishedSemaphores[MaxPresentationFrameIndex];	// チュートリアルに沿って用意したもので、現状未使用
+	VkSemaphore m_renderFinishedSemaphores[MaxPresentationFrameIndex];
 	VkSemaphore m_imageAvailableSemaphores[MaxPresentationFrameIndex];
 	VkFence m_imageAvailableFences[MaxPresentationFrameIndex];
 
