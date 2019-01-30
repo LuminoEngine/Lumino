@@ -1186,15 +1186,7 @@ VulkanQueue::VulkanQueue()
     , m_familyIndex(0)
     , m_maxSubmitCount(0)
     , m_queue(nullptr)
-    , m_signalSemaphore{}
-    , m_waitSemaphore{}
-    , m_fence{}
 {
-    for (uint32_t i = 0; i < MaxBufferCount; i++) {
-        m_waitSemaphore[i] = 0;
-        m_signalSemaphore[i] = 0;
-        m_fence[i] = 0;
-    }
 }
 
 bool VulkanQueue::init(VulkanDeviceContext* deviceContext, uint32_t familyIndex, uint32_t queueIndex, uint32_t maxSubmitCount)
@@ -1203,43 +1195,6 @@ bool VulkanQueue::init(VulkanDeviceContext* deviceContext, uint32_t familyIndex,
     m_deviceContext = deviceContext;
     VkDevice vulkanDevice = m_deviceContext->vulkanDevice();
 
-    // Create semaphore
-    {
-        VkSemaphoreCreateInfo info = {};
-        info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-        info.pNext = nullptr;
-        info.flags = 0;
-
-        for (int i = 0; i < MaxBufferCount; i++) {
-            if (vkCreateSemaphore(vulkanDevice, &info, nullptr, &m_signalSemaphore[i]) != VK_SUCCESS) {
-                LN_LOG_ERROR << "Failed vkCreateSemaphore";
-                return false;
-            }
-            if (vkCreateSemaphore(vulkanDevice, &info, nullptr, &m_waitSemaphore[i]) != VK_SUCCESS) {
-                LN_LOG_ERROR << "Failed vkCreateSemaphore";
-                return false;
-            }
-        }
-    }
-
-    // Create fence
-    {
-        VkFenceCreateInfo info = {};
-        info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-        info.pNext = nullptr;
-        info.flags = 0;
-
-        for (auto i = 0; i < MaxBufferCount; ++i) {
-            if (vkCreateFence(vulkanDevice, &info, nullptr, &m_fence[i]) != VK_SUCCESS) {
-                LN_LOG_ERROR << "Failed vkCreateFence";
-                return false;
-            }
-
-            if (vkResetFences(vulkanDevice, 1, &m_fence[i]) != VK_SUCCESS) {
-                info.flags = 0;
-            }
-        }
-    }
 
     vkGetDeviceQueue(vulkanDevice, familyIndex, queueIndex, &m_queue);
 
@@ -1251,9 +1206,9 @@ bool VulkanQueue::init(VulkanDeviceContext* deviceContext, uint32_t familyIndex,
         m_submitList[i] = 0;
     }
 
-    m_submitIndex = 0;
-    m_currentBufferIndex = 0;
-    m_previousBufferIndex = 0;
+    //m_submitIndex = 0;
+    //m_currentBufferIndex = 0;
+    //m_previousBufferIndex = 0;
 
     return true;
 }
@@ -1267,23 +1222,6 @@ void VulkanQueue::dispose()
         vkQueueWaitIdle(m_queue);
     }
 
-    for (uint32_t i = 0; i < MaxBufferCount; i++) {
-        if (m_signalSemaphore[i]) {
-            vkDestroySemaphore(vulkanDevice, m_signalSemaphore[i], nullptr);
-            m_signalSemaphore[i] = 0;
-        }
-
-        if (m_waitSemaphore[i]) {
-            vkDestroySemaphore(vulkanDevice, m_waitSemaphore[i], nullptr);
-            m_waitSemaphore[i] = 0;
-        }
-
-        if (m_fence[i]) {
-            vkDestroyFence(vulkanDevice, m_fence[i], nullptr);
-            m_fence[i] = 0;
-        }
-    }
-
     m_submitList.clear();
     m_queue = 0;
 }
@@ -1292,6 +1230,7 @@ void VulkanQueue::dispose()
 // VulkanCommandList
 
 VulkanCommandList::VulkanCommandList()
+	: m_inFlightFence(0)
 {
 }
 
@@ -1358,6 +1297,14 @@ bool VulkanCommandList::init(VulkanDeviceContext* deviceContext, Type type)
         }
     }
 
+	VkFenceCreateInfo fenceInfo = {};
+	fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+	fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;	// Signal 状態 = コマンド実行完了状態にしておく
+	if (vkCreateFence(m_deviceContext->vulkanDevice(), &fenceInfo, nullptr, &m_inFlightFence) != VK_SUCCESS) {
+		LN_LOG_ERROR << "Failed vkCreateFence";
+		return false;
+	}
+
     return true;
 }
 
@@ -1369,9 +1316,14 @@ void VulkanCommandList::dispose()
     }
 
     if (m_commandPool) {
-        vkDestroyCommandPool(m_deviceContext->vulkanDevice(), m_commandPool, nullptr);
+        vkDestroyCommandPool(m_deviceContext->vulkanDevice(), m_commandPool, m_deviceContext->vulkanAllocator());
         m_commandPool = 0;
     }
+
+	if (m_inFlightFence) {
+		vkDestroyFence(m_deviceContext->vulkanDevice(), m_inFlightFence, m_deviceContext->vulkanAllocator());
+		m_inFlightFence = 0;
+	}
 }
 
 void VulkanCommandList::begin()
@@ -1657,7 +1609,13 @@ void VulkanPipeline::dispose()
 // VulkanSwapChain
 
 VulkanSwapChain::VulkanSwapChain()
+	: m_currentPresentationFrameIndex(0)
 {
+	for (uint32_t i = 0; i < MaxPresentationFrameIndex; i++) {
+		m_renderFinishedSemaphores[i] = 0;
+		m_imageAvailableSemaphores[i] = 0;
+		m_imageAvailableFences[i] = 0;
+	}
 }
 
 VulkanSwapChain::~VulkanSwapChain()
@@ -1961,6 +1919,37 @@ bool VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* w
         commandBuffer->dispose();
     }
 
+	{
+		VkSemaphoreCreateInfo semaphoreInfo = {};
+		semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+		semaphoreInfo.pNext = nullptr;
+		semaphoreInfo.flags = 0;
+
+		for (int i = 0; i < MaxPresentationFrameIndex; i++) {
+			if (vkCreateSemaphore(vulkanDevice, &semaphoreInfo, m_deviceContext->vulkanAllocator(), &m_renderFinishedSemaphores[i]) != VK_SUCCESS) {
+				LN_LOG_ERROR << "Failed vkCreateSemaphore";
+				return false;
+			}
+			if (vkCreateSemaphore(vulkanDevice, &semaphoreInfo, m_deviceContext->vulkanAllocator(), &m_imageAvailableSemaphores[i]) != VK_SUCCESS) {
+				LN_LOG_ERROR << "Failed vkCreateSemaphore";
+				return false;
+			}
+		}
+
+
+		for (auto i = 0; i < MaxPresentationFrameIndex; ++i) {
+			VkFenceCreateInfo fenceInfo = {};
+			fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+			fenceInfo.pNext = nullptr;
+			fenceInfo.flags = 0;
+			if (vkCreateFence(vulkanDevice, &fenceInfo, nullptr, &m_imageAvailableFences[i]) != VK_SUCCESS) {
+				LN_LOG_ERROR << "Failed vkCreateFence";
+				return false;
+			}
+			if (vkResetFences(vulkanDevice, 1, &m_imageAvailableFences[i]) != VK_SUCCESS) {
+			}
+		}
+	}
 
 
     m_inactiveCommandBuffer = makeRef<VulkanCommandList>();
@@ -1985,14 +1974,29 @@ bool VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* w
 void VulkanSwapChain::dispose()
 {
     if (m_swapChain) {
-        vkDestroySwapchainKHR(m_deviceContext->vulkanDevice(), m_swapChain, nullptr);
+        vkDestroySwapchainKHR(m_deviceContext->vulkanDevice(), m_swapChain, m_deviceContext->vulkanAllocator());
         m_swapChain = 0;
     }
 
     if (m_surface) {
-        vkDestroySurfaceKHR(m_deviceContext->vulkanInstance(), m_surface, nullptr);
+        vkDestroySurfaceKHR(m_deviceContext->vulkanInstance(), m_surface, m_deviceContext->vulkanAllocator());
         m_surface = 0;
     }
+
+	for (uint32_t i = 0; i < MaxPresentationFrameIndex; i++) {
+		if (m_renderFinishedSemaphores[i]) {
+			vkDestroySemaphore(m_deviceContext->vulkanDevice(), m_renderFinishedSemaphores[i], m_deviceContext->vulkanAllocator());
+			m_renderFinishedSemaphores[i] = 0;
+		}
+		if (m_imageAvailableSemaphores[i]) {
+			vkDestroySemaphore(m_deviceContext->vulkanDevice(), m_imageAvailableSemaphores[i], m_deviceContext->vulkanAllocator());
+			m_imageAvailableSemaphores[i] = 0;
+		}
+		if (m_imageAvailableFences[i]) {
+			vkDestroyFence(m_deviceContext->vulkanDevice(), m_imageAvailableFences[i], m_deviceContext->vulkanAllocator());
+			m_imageAvailableFences[i] = 0;
+		}
+	}
 
     ISwapChain::dispose();
 }
@@ -2008,6 +2012,13 @@ bool VulkanSwapChain::present()
         return false;
     }
 
+	VkDevice vulkanDevice = m_deviceContext->vulkanDevice();
+
+	// 前回この SwapChain で実行要求したコマンドの完了を待機する
+	VkFence inFlightFence = m_inactiveCommandBuffer->vulkanInFlightFence();
+	vkWaitForFences(vulkanDevice, 1, &inFlightFence, VK_TRUE, std::numeric_limits<uint64_t>::max());
+	vkResetFences(vulkanDevice, 1, &inFlightFence);
+
 
     //m_inactiveCommandBuffer
 
@@ -2017,25 +2028,27 @@ bool VulkanSwapChain::present()
     {
         VkSubmitInfo submitInfo = {};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		submitInfo.pNext = nullptr;
 
-        // コマンドバッファが実行を開始する前に待機するセマフォ
-        VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame] };
+        // 実行を開始する前に待機するセマフォ
+        VkSemaphore waitSemaphores[] = { m_imageAvailableSemaphores[m_currentPresentationFrameIndex] };
         VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
         submitInfo.waitSemaphoreCount = 1;
         submitInfo.pWaitSemaphores = waitSemaphores;
         submitInfo.pWaitDstStageMask = waitStages;
 
         // 実行するコマンド
+		VkCommandBuffer commandBuffers[] = { m_deviceContext->activeCommandBuffer()->vulkanCommandBuffer() };
         submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = &commandBuffers[imageIndex];
+        submitInfo.pCommandBuffers = commandBuffers;
 
         // 実行を完了したときに通知されるセマフォ
-        VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame] };
+        VkSemaphore signalSemaphores[] = { m_renderFinishedSemaphores[m_currentPresentationFrameIndex] };
         submitInfo.signalSemaphoreCount = 1;
         submitInfo.pSignalSemaphores = signalSemaphores;
 
         // コマンド実行通知。fence は、この実行の完了が通知される。
-        if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS) {
+        if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, m_deviceContext->activeCommandBuffer()->vulkanInFlightFence()) != VK_SUCCESS) {
             throw std::runtime_error("failed to submit draw command buffer!");
         }
     }
@@ -2064,6 +2077,16 @@ bool VulkanSwapChain::present()
         return false;
     }
 
+
+	// swap
+	{
+		auto t = m_deviceContext->activeCommandBuffer();
+		m_deviceContext->setActiveCommandBuffer(m_inactiveCommandBuffer);
+		m_inactiveCommandBuffer = t;
+	
+		m_currentPresentationFrameIndex = (m_currentPresentationFrameIndex + 1) % MaxPresentationFrameIndex;
+	}
+
     return true;
 }
 
@@ -2074,9 +2097,10 @@ bool VulkanSwapChain::acquireNextImage()
 
     // Get current backbuffer index
     {
-        uint32_t index = graphicsQueue->currentBufferIndex();
-        VkSemaphore semaphore = graphicsQueue->vulkanWaitSemaphore(index);
-        VkFence fence = graphicsQueue->vulkanFence(index);
+		// SwapChain の Image の準備ができたら通知する Semaphore と Fence
+		VkSemaphore semaphore = m_imageAvailableSemaphores[m_currentPresentationFrameIndex];
+		VkFence fence = m_imageAvailableFences[m_currentPresentationFrameIndex];
+
         if (vkAcquireNextImageKHR(vulkanDevice, m_swapChain, UINT64_MAX, semaphore, fence, &m_currentBufferIndex) != VK_SUCCESS) {
             LN_LOG_ERROR << "Failed vkAcquireNextImageKHR";
             return false;

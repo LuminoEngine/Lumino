@@ -186,6 +186,7 @@ public:
 	VulkanPipelineCache& pipelineCache() { return m_pipelineCache; }
 	VulkanFrameBufferCache& frameBufferCache() { return m_frameBufferCache; }
     const Ref<VulkanCommandList>& activeCommandBuffer() const { return m_activeCommandBuffer; }
+	void setActiveCommandBuffer(const Ref<VulkanCommandList>& commandBuffer) { m_activeCommandBuffer = commandBuffer; }
 
 	bool getVkRenderPass(ITexture* const* renderTargets, size_t renderTargetCount, IDepthBuffer* depthBuffer, VkRenderPass* outPass);
     bool beginActiveCommandBuffer();
@@ -277,34 +278,34 @@ class VulkanQueue
     : public RefObject
 {
 public:
-    static const uint32_t MaxBufferCount = 2;
+    //static const uint32_t MaxBufferCount = 2;
 
     VulkanQueue();
     bool init(VulkanDeviceContext* deviceContext, uint32_t familyIndex, uint32_t queueIndex, uint32_t maxSubmitCount);
     void dispose();
 
     uint32_t familyIndex() const { return m_familyIndex; }
-    uint32_t currentBufferIndex() const { return m_currentBufferIndex; }
-    uint32_t previousBufferIndex() const { return m_previousBufferIndex; }
+    //uint32_t currentBufferIndex() const { return m_currentBufferIndex; }
+    //uint32_t previousBufferIndex() const { return m_previousBufferIndex; }
 
     VkQueue vulkanQueue() const { return m_queue; }
-    VkSemaphore signalSemaphore(uint32_t index) const { return m_signalSemaphore[index]; }
-    VkSemaphore vulkanWaitSemaphore(uint32_t index) const { return m_waitSemaphore[index]; }
-    VkFence vulkanFence(uint32_t index) const { return m_fence[index]; }
+    //VkSemaphore signalSemaphore(uint32_t index) const { return m_signalSemaphore[index]; }
+    //VkSemaphore vulkanWaitSemaphore(uint32_t index) const { return m_waitSemaphore[index]; }
+    //VkFence vulkanFence(uint32_t index) const { return m_fence[index]; }
 
 private:
     VulkanDeviceContext* m_deviceContext;
     uint32_t m_familyIndex;
     uint32_t m_maxSubmitCount;
     VkQueue m_queue;
-    VkSemaphore m_signalSemaphore[MaxBufferCount];
-    VkSemaphore m_waitSemaphore[MaxBufferCount];
-    VkFence m_fence[MaxBufferCount];
+    //VkSemaphore m_signalSemaphore[MaxBufferCount];
+    //VkSemaphore m_waitSemaphore[MaxBufferCount];
+    //VkFence m_fence[MaxBufferCount];
     std::vector<VkCommandBuffer> m_submitList;
 
-    uint32_t m_submitIndex;
-    uint32_t m_currentBufferIndex;
-    uint32_t m_previousBufferIndex;
+    //uint32_t m_submitIndex;
+    //uint32_t m_currentBufferIndex;
+    //uint32_t m_previousBufferIndex;
 };
 
 class VulkanCommandList
@@ -324,6 +325,7 @@ public:
     bool init(VulkanDeviceContext* deviceContext, Type type);
     void dispose();
     VkCommandBuffer vulkanCommandBuffer() const { return m_commandBuffer; }
+	VkFence vulkanInFlightFence() const { return m_inFlightFence; }
 
     void begin();
     void end();
@@ -333,6 +335,7 @@ private:
     VulkanDeviceContext* m_deviceContext;
     VkCommandPool m_commandPool;
     VkCommandBuffer m_commandBuffer;
+	VkFence m_inFlightFence;	// コマンド実行完了を通知するための Fence
 };
 
 class VulkanPipeline
@@ -391,6 +394,14 @@ private:
     std::vector<Ref<VulkanRenderTargetTexture>> m_buffers;
     uint32_t m_currentBufferIndex;
     Ref<VulkanCommandList> m_inactiveCommandBuffer;
+
+	static const int MaxPresentationFrameIndex = 2;
+	int m_currentPresentationFrameIndex;
+	VkSemaphore m_renderFinishedSemaphores[MaxPresentationFrameIndex];	// チュートリアルに沿って用意したもので、現状未使用
+	VkSemaphore m_imageAvailableSemaphores[MaxPresentationFrameIndex];
+	VkFence m_imageAvailableFences[MaxPresentationFrameIndex];
+
+
 };
 
 class VulkanVertexDeclaration
