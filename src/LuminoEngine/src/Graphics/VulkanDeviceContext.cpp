@@ -1941,6 +1941,20 @@ bool VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* w
         if (capabilities.maxImageExtent.height < m_desc.Height) {
             m_desc.Height = capabilities.maxImageExtent.height;
         }
+
+        if (1)
+        {
+            // SwapChain の Image を直接読み取るには VK_IMAGE_USAGE_TRANSFER_SRC_BIT が必要
+            // https://stackoverflow.com/questions/38985094/how-to-copy-swap-chain-image-to-a-vkbuffer-in-vulkan
+            if (capabilities.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_SRC_BIT) LN_LOG_INFO << "VK_IMAGE_USAGE_TRANSFER_SRC_BIT";
+            if (capabilities.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_DST_BIT) LN_LOG_INFO << "VK_IMAGE_USAGE_TRANSFER_DST_BIT";
+            if (capabilities.supportedUsageFlags & VK_IMAGE_USAGE_SAMPLED_BIT) LN_LOG_INFO << "VK_IMAGE_USAGE_SAMPLED_BIT";
+            if (capabilities.supportedUsageFlags & VK_IMAGE_USAGE_STORAGE_BIT) LN_LOG_INFO << "VK_IMAGE_USAGE_STORAGE_BIT";
+            if (capabilities.supportedUsageFlags & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT) LN_LOG_INFO << "VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT";
+            if (capabilities.supportedUsageFlags & VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT) LN_LOG_INFO << "VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT";
+            if (capabilities.supportedUsageFlags & VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT) LN_LOG_INFO << "VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT";
+            if (capabilities.supportedUsageFlags & VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT) LN_LOG_INFO << "VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT";
+        }
     }
 
     // Select present mode
