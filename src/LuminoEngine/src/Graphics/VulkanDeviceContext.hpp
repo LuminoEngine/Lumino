@@ -198,8 +198,7 @@ public:
 	VulkanFrameBufferCache& frameBufferCache() { return m_frameBufferCache; }
     const Ref<VulkanCommandList>& activeCommandBuffer() const { return m_activeCommandBuffer; }
 	void setActiveCommandBuffer(const Ref<VulkanCommandList>& commandBuffer) { m_activeCommandBuffer = commandBuffer; }
-    VkShaderModule defaultVertexShaderModule() const { return m_defaultVertexShaderModule; }
-    VkShaderModule defaultFragmentShaderModule() const { return m_defaultFragmentShaderModule; }
+	VulkanShaderPass* defaultShaderPass() const { return m_defaultShaderPass; }
 
 	bool getVkRenderPass(ITexture* const* renderTargets, size_t renderTargetCount, IDepthBuffer* depthBuffer, VkRenderPass* outPass);
     bool beginActiveCommandBuffer();
@@ -278,8 +277,7 @@ private:
 	VulkanPipelineCache m_pipelineCache;
 	VulkanFrameBufferCache m_frameBufferCache;
     Ref<VulkanCommandList> m_activeCommandBuffer;   // present でほかの SwapChain が持っている CommandBuffer と swap
-    VkShaderModule m_defaultVertexShaderModule;     // shader の省略はできないのでデフォルトを用意する
-    VkShaderModule m_defaultFragmentShaderModule;
+	Ref<VulkanShaderPass> m_defaultShaderPass;		// vulkan は shader の省略はできないのでデフォルトを用意する
 
 	bool m_requiredChangePipeline;
 	bool m_requiredChangeRenderPass;
@@ -614,8 +612,11 @@ class VulkanShaderPass
 public:
     VulkanShaderPass();
     virtual ~VulkanShaderPass();
-    void init(VulkanDeviceContext* context, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag);
+    bool init(VulkanDeviceContext* context, const void* spvVert, size_t spvVertLen, const void* spvFrag, size_t spvFragLen);
     virtual void dispose() override;
+
+	VkShaderModule vertShaderModule() const { return m_vertShaderModule; }
+	VkShaderModule fragShaderModule() const { return m_fragShaderModule; }
 
     virtual int getUniformCount() const override;
     virtual IShaderUniform* getUniform(int index) const override;
@@ -625,6 +626,9 @@ public:
     virtual IShaderSamplerBuffer* samplerBuffer() const override;
 
 private:
+	VulkanDeviceContext* m_deviceContext;
+	VkShaderModule m_vertShaderModule;
+	VkShaderModule m_fragShaderModule;
 };
 
 class VulkanShaderUniformBuffer

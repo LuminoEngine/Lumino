@@ -663,16 +663,6 @@ bool VulkanDeviceContext::init(const Settings& settings)
                 }
             }
 
-            //auto pPriorities = new float[totalQueueCount];
-            //if (pPriorities == nullptr)
-            //{
-            //    delete[] pProps;
-            //    delete[] pQueueInfos;
-            //    return false;
-            //}
-
-            //memset(pPriorities, 0, sizeof(float) * totalQueueCount);
-
             std::vector<float> queuePriorities(totalQueueCount);
             uint32_t offset = 0u;
             for (uint32_t i = 0u; i < propCount; ++i) {
@@ -680,7 +670,6 @@ bool VulkanDeviceContext::init(const Settings& settings)
                 offset += queueInfos[i].queueCount;
             }
 
-            //a3d::dynamic_array<char*> deviceExtensions;
             std::vector<std::string> deviceExtensions;
             if (settings.debugEnabled) {
                 deviceExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
@@ -784,31 +773,22 @@ bool VulkanDeviceContext::init(const Settings& settings)
 
     // Default Shader
     {
-        auto code = FileSystem::readAllBytes("D:/Proj/LivePixel/Engine/Native/src/LuminoEngine/src/Graphics/Resource/default.vert.spv");
+		static const unsigned char vertData[] =
+		{
+#include "Resource/default.vert.spv.inl"
+		};
+		static const size_t vertSize = LN_ARRAY_SIZE_OF(vertData);
 
-        VkShaderModuleCreateInfo createInfo = {};
-        createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-        createInfo.codeSize = code.size();
-        createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
+		static const unsigned char fragData[] =
+		{
+#include "Resource/default.frag.spv.inl"
+		};
+		static const size_t fragSize = LN_ARRAY_SIZE_OF(fragData);
 
-        if (vkCreateShaderModule(m_device, &createInfo, &m_allocatorCallbacks, &m_defaultVertexShaderModule) != VK_SUCCESS) {
-            LN_LOG_ERROR << "Failed vkCreateShaderModule";
-            return false;
-        }
-    }
-    // Default Shader
-    {
-        auto code = FileSystem::readAllBytes("D:/Proj/LivePixel/Engine/Native/src/LuminoEngine/src/Graphics/Resource/default.frag.spv");
-
-        VkShaderModuleCreateInfo createInfo = {};
-        createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-        createInfo.codeSize = code.size();
-        createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
-
-        if (vkCreateShaderModule(m_device, &createInfo, &m_allocatorCallbacks, &m_defaultFragmentShaderModule) != VK_SUCCESS) {
-            LN_LOG_ERROR << "Failed vkCreateShaderModule";
-            return false;
-        }
+		m_defaultShaderPass = makeRef<VulkanShaderPass>();
+		if (!m_defaultShaderPass->init(this, vertData, vertSize, fragData, fragSize)) {
+			return false;
+		}
     }
 
     // Get device infomation
@@ -864,6 +844,11 @@ void VulkanDeviceContext::dispose()
     m_pipelineCache.clear();
     m_renderPassCache.clear();
 
+	if (m_defaultShaderPass) {
+		m_defaultShaderPass->dispose();
+		m_defaultShaderPass = nullptr;
+	}
+
     if (m_transferQueue) {
         m_transferQueue->dispose();
         m_transferQueue = nullptr;
@@ -875,16 +860,6 @@ void VulkanDeviceContext::dispose()
     if (m_graphicsQueue) {
         m_graphicsQueue->dispose();
         m_graphicsQueue = nullptr;
-    }
-
-    if (m_defaultVertexShaderModule) {
-        vkDestroyShaderModule(m_device, m_defaultVertexShaderModule, &m_allocatorCallbacks);
-        m_defaultVertexShaderModule = VK_NULL_HANDLE;
-    }
-
-    if (m_defaultFragmentShaderModule) {
-        vkDestroyShaderModule(m_device, m_defaultFragmentShaderModule, &m_allocatorCallbacks);
-        m_defaultFragmentShaderModule = VK_NULL_HANDLE;
     }
 
     if (m_device) {
@@ -1735,14 +1710,14 @@ bool VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsDev
         shaderStages[0].pNext = nullptr;
         shaderStages[0].flags = 0;
         shaderStages[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
-        shaderStages[0].module = m_deviceContext->defaultVertexShaderModule();
+        shaderStages[0].module = m_deviceContext->defaultShaderPass()->vertShaderModule();
         shaderStages[0].pName = "main";
         shaderStages[0].pSpecializationInfo = nullptr;
         shaderStages[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
         shaderStages[1].pNext = nullptr;
         shaderStages[1].flags = 0;
         shaderStages[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-        shaderStages[1].module = m_deviceContext->defaultFragmentShaderModule();
+        shaderStages[1].module = m_deviceContext->defaultShaderPass()->fragShaderModule();
         shaderStages[1].pName = "main";
         shaderStages[1].pSpecializationInfo = nullptr;
     }
@@ -2762,6 +2737,9 @@ void VulkanSamplerState::dispose()
 // VulkanShaderPass
 
 VulkanShaderPass::VulkanShaderPass()
+	: m_deviceContext(nullptr)
+	, m_vertShaderModule(0)
+	, m_fragShaderModule(0)
 {
 }
 
@@ -2769,13 +2747,49 @@ VulkanShaderPass::~VulkanShaderPass()
 {
 }
 
-void VulkanShaderPass::init(VulkanDeviceContext* context, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCode, int fsCodeLen, ShaderCompilationDiag* diag)
+bool VulkanShaderPass::init(VulkanDeviceContext* context, const void* spvVert, size_t spvVertLen, const void* spvFrag, size_t spvFragLen)
 {
-    LN_NOTIMPLEMENTED();
+	m_deviceContext = context;
+
+	{
+		VkShaderModuleCreateInfo createInfo = {};
+		createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+		createInfo.codeSize = spvVertLen;
+		createInfo.pCode = reinterpret_cast<const uint32_t*>(spvVert);
+
+		if (vkCreateShaderModule(m_deviceContext->vulkanDevice(), &createInfo, m_deviceContext->vulkanAllocator(), &m_vertShaderModule) != VK_SUCCESS) {
+			LN_LOG_ERROR << "Failed vkCreateShaderModule";
+			return false;
+		}
+	}
+
+	{
+		VkShaderModuleCreateInfo createInfo = {};
+		createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+		createInfo.codeSize = spvFragLen;
+		createInfo.pCode = reinterpret_cast<const uint32_t*>(spvFrag);
+
+		if (vkCreateShaderModule(m_deviceContext->vulkanDevice(), &createInfo, m_deviceContext->vulkanAllocator(), &m_fragShaderModule) != VK_SUCCESS) {
+			LN_LOG_ERROR << "Failed vkCreateShaderModule";
+			return false;
+		}
+	}
+
+	return true;
 }
 
 void VulkanShaderPass::dispose()
 {
+	if (m_vertShaderModule) {
+		vkDestroyShaderModule(m_deviceContext->vulkanDevice(), m_vertShaderModule, m_deviceContext->vulkanAllocator());
+		m_vertShaderModule = 0;
+	}
+
+	if (m_fragShaderModule) {
+		vkDestroyShaderModule(m_deviceContext->vulkanDevice(), m_fragShaderModule, m_deviceContext->vulkanAllocator());
+		m_fragShaderModule = 0;
+	}
+
     IShaderPass::dispose();
 }
 
