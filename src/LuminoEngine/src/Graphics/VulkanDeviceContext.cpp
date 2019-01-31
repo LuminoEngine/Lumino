@@ -1336,6 +1336,38 @@ void VulkanQueue::dispose()
     m_queue = 0;
 }
 
+bool VulkanQueue::submit(VulkanCommandList* commandBuffer, VkSemaphore waitSemaphore, VkSemaphore signalSemaphore)
+{
+    VkSubmitInfo submitInfo = {};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.pNext = nullptr;
+
+    // 実行を開始する前に待機するセマフォ
+    VkSemaphore waitSemaphores[] = { waitSemaphore };
+    VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+    submitInfo.waitSemaphoreCount = 1;
+    submitInfo.pWaitSemaphores = waitSemaphores;
+    submitInfo.pWaitDstStageMask = waitStages;
+
+    // 実行するコマンド
+    VkCommandBuffer commandBuffers[] = { commandBuffer->vulkanCommandBuffer() };
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = commandBuffers;
+
+    // 実行を完了したときに通知されるセマフォ
+    VkSemaphore signalSemaphores[] = { signalSemaphore };
+    submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pSignalSemaphores = signalSemaphores;
+
+    // コマンド実行通知。fence は、この実行の完了が通知される。
+    if (vkQueueSubmit(m_queue, 1, &submitInfo, commandBuffer->vulkanInFlightFence()) != VK_SUCCESS) {
+        LN_LOG_ERROR << "Failed vkQueueSubmit";
+        return false;
+    }
+
+    return true;
+}
+
 //=============================================================================
 // VulkanCommandList
 
@@ -2246,30 +2278,11 @@ bool VulkanSwapChain::present()
 
     // Submit
     {
-        VkSubmitInfo submitInfo = {};
-        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-		submitInfo.pNext = nullptr;
-
-        // 実行を開始する前に待機するセマフォ
-        VkSemaphore waitSemaphores[] = { m_imageAvailableSemaphores[m_currentPresentationFrameIndex] };
-        VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-        submitInfo.waitSemaphoreCount = 1;
-        submitInfo.pWaitSemaphores = waitSemaphores;
-        submitInfo.pWaitDstStageMask = waitStages;
-
-        // 実行するコマンド
-		VkCommandBuffer commandBuffers[] = { m_deviceContext->activeCommandBuffer()->vulkanCommandBuffer() };
-        submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = commandBuffers;
-
-        // 実行を完了したときに通知されるセマフォ
-        VkSemaphore signalSemaphores[] = { m_renderFinishedSemaphores[m_currentPresentationFrameIndex] };
-        submitInfo.signalSemaphoreCount = 1;
-        submitInfo.pSignalSemaphores = signalSemaphores;
-
-        // コマンド実行通知。fence は、この実行の完了が通知される。
-        if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, m_deviceContext->activeCommandBuffer()->vulkanInFlightFence()) != VK_SUCCESS) {
-            throw std::runtime_error("failed to submit draw command buffer!");
+        if (!m_deviceContext->graphicsQueue()->submit(
+            m_deviceContext->activeCommandBuffer(),
+            m_imageAvailableSemaphores[m_currentPresentationFrameIndex],
+            m_renderFinishedSemaphores[m_currentPresentationFrameIndex])) {
+            return false;
         }
     }
 
@@ -2677,6 +2690,10 @@ DeviceTextureType VulkanRenderTargetTexture::type() const
 
 void VulkanRenderTargetTexture::readData(void* outData)
 {
+    //vkCmdCopyImageToBuffer(
+    //    m_deviceContext->activeCommandBuffer()->vulkanCommandBuffer();
+    //)
+
     LN_NOTIMPLEMENTED();
 }
 

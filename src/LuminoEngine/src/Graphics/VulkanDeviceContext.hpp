@@ -294,34 +294,21 @@ class VulkanQueue
     : public RefObject
 {
 public:
-    //static const uint32_t MaxBufferCount = 2;
-
     VulkanQueue();
     bool init(VulkanDeviceContext* deviceContext, uint32_t familyIndex, uint32_t queueIndex, uint32_t maxSubmitCount);
     void dispose();
 
     uint32_t familyIndex() const { return m_familyIndex; }
-    //uint32_t currentBufferIndex() const { return m_currentBufferIndex; }
-    //uint32_t previousBufferIndex() const { return m_previousBufferIndex; }
-
     VkQueue vulkanQueue() const { return m_queue; }
-    //VkSemaphore signalSemaphore(uint32_t index) const { return m_signalSemaphore[index]; }
-    //VkSemaphore vulkanWaitSemaphore(uint32_t index) const { return m_waitSemaphore[index]; }
-    //VkFence vulkanFence(uint32_t index) const { return m_fence[index]; }
+
+    bool submit(VulkanCommandList* commandBuffer, VkSemaphore waitSemaphore, VkSemaphore signalSemaphore);
 
 private:
     VulkanDeviceContext* m_deviceContext;
     uint32_t m_familyIndex;
     uint32_t m_maxSubmitCount;
     VkQueue m_queue;
-    //VkSemaphore m_signalSemaphore[MaxBufferCount];
-    //VkSemaphore m_waitSemaphore[MaxBufferCount];
-    //VkFence m_fence[MaxBufferCount];
     std::vector<VkCommandBuffer> m_submitList;
-
-    //uint32_t m_submitIndex;
-    //uint32_t m_currentBufferIndex;
-    //uint32_t m_previousBufferIndex;
 };
 
 class VulkanCommandList
