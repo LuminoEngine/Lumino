@@ -2902,37 +2902,8 @@ void VulkanSwapchainRenderTargetTexture::readData(void* outData)
     uint32_t height = m_desc.Height;
     VkImage srcImage = m_images[prevBufferIndex()];
 
-    VkImage dstImage;
     auto dstImageMemory = makeRef<VulkanBuffer>();
     {
-        // Create the linear tiled destination image to copy to and to read the memory from
-        VkImageCreateInfo imageCreateCI = {};//(vks::initializers::imageCreateInfo());
-        imageCreateCI.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-        imageCreateCI.imageType = VK_IMAGE_TYPE_2D;
-        // Note that vkCmdBlitImage (if supported) will also do format conversions if the swapchain color format would differ
-        imageCreateCI.format = VK_FORMAT_R8G8B8A8_UNORM;
-        imageCreateCI.extent.width = width;
-        imageCreateCI.extent.height = height;
-        imageCreateCI.extent.depth = 1;
-        imageCreateCI.arrayLayers = 1;
-        imageCreateCI.mipLevels = 1;
-        imageCreateCI.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        imageCreateCI.samples = VK_SAMPLE_COUNT_1_BIT;
-        imageCreateCI.tiling = VK_IMAGE_TILING_LINEAR;
-        imageCreateCI.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-        // Create the image
-        vkCreateImage(device, &imageCreateCI, nullptr, &dstImage);
-
-        // Create memory to back up the image
-        //VkMemoryRequirements memRequirements;
-        //VkMemoryAllocateInfo memAllocInfo(vks::initializers::memoryAllocateInfo());
-        //VkDeviceMemory dstImageMemory;
-        //vkGetImageMemoryRequirements(device, dstImage, &memRequirements);
-        //memAllocInfo.allocationSize = memRequirements.size;
-        //// Memory must be host visible to copy from
-        //memAllocInfo.memoryTypeIndex = vulkanDevice->getMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-        //vkAllocateMemory(device, &memAllocInfo, nullptr, &dstImageMemory);
-        //vkBindImageMemory(device, dstImage, dstImageMemory, 0);
 
         // とりあえず buffer はいらないが、MemoryBuffer がほしい
         dstImageMemory->init(
@@ -2967,25 +2938,6 @@ void VulkanSwapchainRenderTargetTexture::readData(void* outData)
 
     }
 
-    // transitionImageLayout
-    {
-        VkImageMemoryBarrier imageMemoryBarrier = {};
-        imageMemoryBarrier.srcAccessMask = 0;
-        imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-        imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-        imageMemoryBarrier.image = dstImage;
-        imageMemoryBarrier.subresourceRange = VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
-
-        vkCmdPipelineBarrier(
-            copyCmd,
-            VK_PIPELINE_STAGE_TRANSFER_BIT,
-            VK_PIPELINE_STAGE_TRANSFER_BIT,
-            0,
-            0, nullptr,
-            0, nullptr,
-            1, &imageMemoryBarrier);
-    }
 
     // transitionImageLayout
     {
@@ -3037,51 +2989,6 @@ void VulkanSwapchainRenderTargetTexture::readData(void* outData)
             1, &region);
     }
 
-    if (supportsBlit)
-    {
-        LN_NOTIMPLEMENTED();
-    }
-    else
-    {
-        // Otherwise use image copy (requires us to manually flip components)
-        VkImageCopy imageCopyRegion{};
-        imageCopyRegion.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-        imageCopyRegion.srcSubresource.layerCount = 1;
-        imageCopyRegion.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-        imageCopyRegion.dstSubresource.layerCount = 1;
-        imageCopyRegion.extent.width = width;
-        imageCopyRegion.extent.height = height;
-        imageCopyRegion.extent.depth = 1;
-
-        //// Issue the copy command
-        //vkCmdCopyImage(
-        //    copyCmd,
-        //    srcImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-        //    dstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-        //    1,
-        //    &imageCopyRegion);
-    }
-
-
-    // transitionImageLayout
-    {
-        VkImageMemoryBarrier imageMemoryBarrier = {};
-        imageMemoryBarrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-        imageMemoryBarrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-        imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-        imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_GENERAL;
-        imageMemoryBarrier.image = dstImage;
-        imageMemoryBarrier.subresourceRange = VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
-
-        vkCmdPipelineBarrier(
-            copyCmd,
-            VK_PIPELINE_STAGE_TRANSFER_BIT,
-            VK_PIPELINE_STAGE_TRANSFER_BIT,
-            0,
-            0, nullptr,
-            0, nullptr,
-            1, &imageMemoryBarrier);
-    }
 
     // transitionImageLayout
     {
@@ -3104,58 +3011,6 @@ void VulkanSwapchainRenderTargetTexture::readData(void* outData)
     }
 
 
-
-    //VkDeviceSize size = m_desc.Width * m_desc.Height * 4; // TODO
-
-
-    //VulkanCommandList* commandBuffer = m_deviceContext->activeCommandBuffer();
-
-
-    ////transitionImageLayout(commandBuffer->vulkanCommandBuffer(), m_image, m_vulkanFormat, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-    //// transitionImageLayout
-    //{
-    //    VkImageMemoryBarrier imageMemoryBarrier = {};
-    //    imageMemoryBarrier.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-    //    imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-    //    imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-    //    imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-    //    imageMemoryBarrier.image = m_image;
-    //    imageMemoryBarrier.subresourceRange = VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
-
-    //    vkCmdPipelineBarrier(
-    //        commandBuffer->vulkanCommandBuffer(),
-    //        VK_PIPELINE_STAGE_TRANSFER_BIT,
-    //        VK_PIPELINE_STAGE_TRANSFER_BIT,
-    //        0,
-    //        0, nullptr,
-    //        0, nullptr,
-    //        1, &imageMemoryBarrier);
-    //}
-
-
-
-    //// transitionImageLayout
-    //{
-    //    VkImageMemoryBarrier imageMemoryBarrier = {};
-    //    imageMemoryBarrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-    //    imageMemoryBarrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-    //    imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-    //    imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-    //    imageMemoryBarrier.image = m_image;
-    //    imageMemoryBarrier.subresourceRange = VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
-
-    //    vkCmdPipelineBarrier(
-    //        commandBuffer->vulkanCommandBuffer(),
-    //        VK_PIPELINE_STAGE_TRANSFER_BIT,
-    //        VK_PIPELINE_STAGE_TRANSFER_BIT,
-    //        0,
-    //        0, nullptr,
-    //        0, nullptr,
-    //        1, &imageMemoryBarrier);
-    //}
-
-
-    //commandBuffer->end();
 
     {
         vkEndCommandBuffer(copyCmd);
@@ -3194,22 +3049,6 @@ void VulkanSwapchainRenderTargetTexture::readData(void* outData)
         //vkQueueWaitIdle(m_deviceContext->graphicsQueue()->vulkanQueue());
     }
 
-    {
-
-        // Get layout of the image (including row pitch)
-        VkImageSubresource subResource{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 0 };
-        VkSubresourceLayout subResourceLayout;
-        vkGetImageSubresourceLayout(device, dstImage, &subResource, &subResourceLayout);
-
-        // Map image memory so we can start copying from it
-        const char* data;
-        vkMapMemory(device, dstImageMemory->vulkanBufferMemory(), 0, size, 0, (void**)&data);
-        data += subResourceLayout.offset;
-
-        memcpy(outData, data, static_cast<size_t>(size));
-
-        vkUnmapMemory(device, dstImageMemory->vulkanBufferMemory());
-    }
 
     {
 
@@ -3226,16 +3065,6 @@ void VulkanSwapchainRenderTargetTexture::readData(void* outData)
                 for (uint32_t x = 0; x < width; x++)
                 {
                     std::swap(row[0], row[2]);
-                    //if (colorSwizzle)
-                    //{
-                        //file.write((char*)row + 2, 1);
-                        //file.write((char*)row + 1, 1);
-                        //file.write((char*)row, 1);
-                    //}
-                    //else
-                    //{
-                    //    file.write((char*)row, 3);
-                    //}
                     row += 4;
                 }
                 data += width * 4;//subResourceLayout.rowPitch;
@@ -3256,11 +3085,6 @@ void VulkanSwapchainRenderTargetTexture::readData(void* outData)
 
 
     dstImageMemory->dispose();
-    {
-        //vkUnmapMemory(device, dstImageMemory);
-        //vkFreeMemory(device, dstImageMemory, nullptr);
-        vkDestroyImage(device, dstImage, nullptr);
-    }
 }
 
 SizeI VulkanSwapchainRenderTargetTexture::realSize()
