@@ -126,7 +126,7 @@ public:
 	VkFramebuffer vulkanFramebuffer() const { return m_framebuffer; }
 	SizeI extent() const { return m_renderTargets[0]->realSize(); }
 
-private:
+public: // TODO:
 	VulkanDeviceContext* m_deviceContext;
 	VkRenderPass m_renderPass;
 	VkFramebuffer m_framebuffer;
@@ -330,6 +330,7 @@ public:
     bool init(VulkanDeviceContext* deviceContext, Type type);
     void dispose();
     VkCommandBuffer vulkanCommandBuffer() const { return m_commandBuffer; }
+    VkCommandPool vulkanCommandPool() const { return m_commandPool; }
 	VkFence vulkanInFlightFence() const { return m_inFlightFence; }
 
     bool begin();

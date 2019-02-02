@@ -2825,11 +2825,31 @@ void VulkanRenderTargetTexture::readData(void* outData)
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
     }
 
-    auto commandBuffer = makeRef<VulkanCommandList>();
-    commandBuffer->init(m_deviceContext, VulkanCommandList::Type::COMMANDLIST_TYPE_DIRECT);
-    VkCommandBuffer copyCmd = commandBuffer->vulkanCommandBuffer();
+    //VulkanCommandList* commandBuffer = m_deviceContext->activeCommandBuffer();
+    //auto commandBuffer = makeRef<VulkanCommandList>();
+    //commandBuffer->init(m_deviceContext, VulkanCommandList::Type::COMMANDLIST_TYPE_DIRECT);
+    //VkCommandBuffer copyCmd = commandBuffer->vulkanCommandBuffer();
+    //commandBuffer->begin();
 
-    commandBuffer->begin();
+    VkCommandBuffer copyCmd = 0;
+    {
+        VkCommandBufferAllocateInfo cmdBufAllocateInfo = {};
+        cmdBufAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        cmdBufAllocateInfo.commandPool = m_deviceContext->activeCommandBuffer()->vulkanCommandPool();
+        cmdBufAllocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        cmdBufAllocateInfo.commandBufferCount = 1;
+
+        vkAllocateCommandBuffers(device, &cmdBufAllocateInfo, &copyCmd);
+
+        // If requested, also start recording for the new command buffer
+        if (1)
+        {
+            VkCommandBufferBeginInfo cmdBufInfo = {};
+            cmdBufInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+            vkBeginCommandBuffer(copyCmd, &cmdBufInfo);
+        }
+
+    }
 
     // transitionImageLayout
     {
@@ -2842,7 +2862,7 @@ void VulkanRenderTargetTexture::readData(void* outData)
         imageMemoryBarrier.subresourceRange = VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
 
         vkCmdPipelineBarrier(
-            commandBuffer->vulkanCommandBuffer(),
+            copyCmd,
             VK_PIPELINE_STAGE_TRANSFER_BIT,
             VK_PIPELINE_STAGE_TRANSFER_BIT,
             0,
@@ -2862,13 +2882,43 @@ void VulkanRenderTargetTexture::readData(void* outData)
         imageMemoryBarrier.subresourceRange = VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
 
         vkCmdPipelineBarrier(
-            commandBuffer->vulkanCommandBuffer(),
+            copyCmd,
             VK_PIPELINE_STAGE_TRANSFER_BIT,
             VK_PIPELINE_STAGE_TRANSFER_BIT,
             0,
             0, nullptr,
             0, nullptr,
             1, &imageMemoryBarrier);
+    }
+
+
+    auto buffer = makeRef<VulkanBuffer>();
+    buffer->init(
+        m_deviceContext, size,
+        VK_BUFFER_USAGE_TRANSFER_DST_BIT,   // 転送先として作成
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    {
+        VkBufferImageCopy region = {};
+        region.bufferOffset = 0;
+        region.bufferRowLength = 0;
+        region.bufferImageHeight = 0;
+        region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        region.imageSubresource.mipLevel = 0;
+        region.imageSubresource.baseArrayLayer = 0;
+        region.imageSubresource.layerCount = 1;
+        region.imageOffset = { 0, 0, 0 };
+        region.imageExtent = {
+            m_desc.Width,
+            m_desc.Height,
+            1
+        };
+
+        vkCmdCopyImageToBuffer(
+            copyCmd,
+            m_image,
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            buffer->vulkanBuffer(),
+            1, &region);
     }
 
     if (supportsBlit)
@@ -2908,7 +2958,7 @@ void VulkanRenderTargetTexture::readData(void* outData)
         imageMemoryBarrier.subresourceRange = VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
 
         vkCmdPipelineBarrier(
-            commandBuffer->vulkanCommandBuffer(),
+            copyCmd,
             VK_PIPELINE_STAGE_TRANSFER_BIT,
             VK_PIPELINE_STAGE_TRANSFER_BIT,
             0,
@@ -2928,7 +2978,7 @@ void VulkanRenderTargetTexture::readData(void* outData)
         imageMemoryBarrier.subresourceRange = VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
 
         vkCmdPipelineBarrier(
-            commandBuffer->vulkanCommandBuffer(),
+            copyCmd,
             VK_PIPELINE_STAGE_TRANSFER_BIT,
             VK_PIPELINE_STAGE_TRANSFER_BIT,
             0,
@@ -2940,11 +2990,6 @@ void VulkanRenderTargetTexture::readData(void* outData)
 
 
     //VkDeviceSize size = m_desc.Width * m_desc.Height * 4; // TODO
-    //auto buffer = makeRef<VulkanBuffer>();
-    //buffer->init(
-    //    m_deviceContext, size,
-    //    VK_BUFFER_USAGE_TRANSFER_DST_BIT,   // 転送先として作成
-    //    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
 
     //VulkanCommandList* commandBuffer = m_deviceContext->activeCommandBuffer();
@@ -2973,28 +3018,6 @@ void VulkanRenderTargetTexture::readData(void* outData)
 
 
 
-    //VkBufferImageCopy region = {};
-    //region.bufferOffset = 0;
-    //region.bufferRowLength = 0;
-    //region.bufferImageHeight = 0;
-    //region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-    //region.imageSubresource.mipLevel = 0;
-    //region.imageSubresource.baseArrayLayer = 0;
-    //region.imageSubresource.layerCount = 1;
-    //region.imageOffset = { 0, 0, 0 };
-    //region.imageExtent = {
-    //    m_desc.Width,
-    //    m_desc.Height,
-    //    1
-    //};
-
-    //vkCmdCopyImageToBuffer(
-    //    commandBuffer->vulkanCommandBuffer(),
-    //    m_image,
-    //    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-    //    buffer->vulkanBuffer(),
-    //    1, &region);
-
     //// transitionImageLayout
     //{
     //    VkImageMemoryBarrier imageMemoryBarrier = {};
@@ -3016,7 +3039,11 @@ void VulkanRenderTargetTexture::readData(void* outData)
     //}
 
 
-    commandBuffer->end();
+    //commandBuffer->end();
+
+    {
+        vkEndCommandBuffer(copyCmd);
+    }
 
     // Submit
     {
@@ -3034,12 +3061,11 @@ void VulkanRenderTargetTexture::readData(void* outData)
         VkFence fence = 0;;
         vkCreateFence(device, &fenceInfo, nullptr, &fence);
 
-#define DEFAULT_FENCE_TIMEOUT 100000000000
 
         // Submit to the queue
         auto r = vkQueueSubmit(queue, 1, &submitInfo, fence);
         // Wait for the fence to signal that command buffer has finished executing
-        vkWaitForFences(device, 1, &fence, VK_TRUE, DEFAULT_FENCE_TIMEOUT);
+        vkWaitForFences(device, 1, &fence, VK_TRUE, UINT64_MAX);
 
         vkDestroyFence(device, fence, nullptr);
 
@@ -3061,7 +3087,7 @@ void VulkanRenderTargetTexture::readData(void* outData)
 
         // Map image memory so we can start copying from it
         const char* data;
-        vkMapMemory(device, dstImageMemory->vulkanBufferMemory(), 0, VK_WHOLE_SIZE, 0, (void**)&data);
+        vkMapMemory(device, dstImageMemory->vulkanBufferMemory(), 0, size, 0, (void**)&data);
         data += subResourceLayout.offset;
 
         memcpy(outData, data, static_cast<size_t>(size));
@@ -3069,17 +3095,20 @@ void VulkanRenderTargetTexture::readData(void* outData)
         vkUnmapMemory(device, dstImageMemory->vulkanBufferMemory());
     }
 
-    //void* data;
-    //vkMapMemory(m_deviceContext->vulkanDevice(), buffer->vulkanBufferMemory(), 0, size, 0, &data);
-    //memcpy(outData, data, static_cast<size_t>(size));
-    //vkUnmapMemory(m_deviceContext->vulkanDevice(), buffer->vulkanBufferMemory());
+    {
+
+        void* data;
+        vkMapMemory(m_deviceContext->vulkanDevice(), buffer->vulkanBufferMemory(), 0, size, 0, &data);
+        memcpy(outData, data, static_cast<size_t>(size));
+        vkUnmapMemory(m_deviceContext->vulkanDevice(), buffer->vulkanBufferMemory());
+    }
 
     //buffer->dispose();
 
 
     //transitionImageLayout(commandBuffer->vulkanCommandBuffer(), m_image, m_vulkanFormat, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 
-    commandBuffer->dispose();
+    //commandBuffer->dispose();
 
     dstImageMemory->dispose();
     {
