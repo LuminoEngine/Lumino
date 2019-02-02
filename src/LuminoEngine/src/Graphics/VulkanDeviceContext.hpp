@@ -199,6 +199,7 @@ public:
     const Ref<VulkanCommandList>& activeCommandBuffer() const { return m_activeCommandBuffer; }
 	void setActiveCommandBuffer(const Ref<VulkanCommandList>& commandBuffer) { m_activeCommandBuffer = commandBuffer; }
 	VulkanShaderPass* defaultShaderPass() const { return m_defaultShaderPass; }
+    uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
 	bool getVkRenderPass(ITexture* const* renderTargets, size_t renderTargetCount, IDepthBuffer* depthBuffer, VkRenderPass* outPass);
     bool beginActiveCommandBuffer();
@@ -267,6 +268,7 @@ private:
     VulkanAllocator m_allocator;
     uint32_t m_physicalDeviceCount;
     std::vector<PhysicalDeviceInfo> m_physicalDeviceInfos;
+    VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE; 
     VkDevice m_device;
     Ref<VulkanQueue> m_graphicsQueue; // graphics and presentation queue
     Ref<VulkanQueue> m_computeQueue;
@@ -360,6 +362,21 @@ private:
     VkPipeline m_pipeline;	// 管理は Cache に任せるので、このクラスの中で Destroy しない
 };
 
+class VulkanBuffer
+    : public RefObject
+{
+public:
+    bool init(VulkanDeviceContext* deviceContext, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
+    void dispose();
+    VkBuffer vulkanBuffer() const { return m_buffer; }
+    VkDeviceMemory vulkanBufferMemory() const { return m_bufferMemory; }
+
+private:
+    VulkanDeviceContext* m_deviceContext;
+    VkBuffer m_buffer;
+    VkDeviceMemory m_bufferMemory;
+};
+
 class VulkanSwapChain
     : public ISwapChain
 {
@@ -369,6 +386,7 @@ public:
         uint32_t Width;
         uint32_t Height;
         TextureFormat Format;
+        VkFormat vulkanFormat;
         uint32_t MipLevels;
         uint32_t SampleCount;
         uint32_t BufferCount;
@@ -555,6 +573,8 @@ public:
     virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) override;
     virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
 
+    static void transitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+
 private:
 	VulkanDeviceContext* m_deviceContext;
 	TextureDesc m_desc;
@@ -565,6 +585,7 @@ private:
 	VkMemoryRequirements m_memoryRequirements;
 
     TextureFormat m_format;
+    VkFormat m_vulkanFormat;
 	bool m_isExternal;
 };
 
