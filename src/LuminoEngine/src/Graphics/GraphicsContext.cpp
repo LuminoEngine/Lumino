@@ -179,6 +179,7 @@ void GraphicsContext::present(SwapChain* swapChain)
 	// TODO: threading
 	m_device->present(swapChain->resolveRHIObject());
     m_manager->primaryRenderingCommandList()->clear();
+    swapChain->onPostPresent();
 }
 
 detail::IGraphicsDeviceContext* GraphicsContext::commitState()

@@ -65,6 +65,11 @@ detail::ISwapChain* SwapChain::resolveRHIObject() const
 	return m_rhiObject;
 }
 
+void SwapChain::onPostPresent()
+{
+    m_colorBuffer->resetSwapchainFrame(m_rhiObject->getColorBuffer());
+}
+
 //==============================================================================
 // GraphicsContext
 namespace detail {

@@ -158,6 +158,8 @@ LN_INTERNAL_ACCESS:
 	virtual detail::ITexture* resolveRHIObject() override;
 	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
 
+    void resetSwapchainFrame(detail::ITexture* ref);
+
 private:
 	Ref<detail::ITexture> m_rhiObject;
 	//SizeI m_size;

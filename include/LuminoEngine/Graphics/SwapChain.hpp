@@ -36,6 +36,7 @@ LN_CONSTRUCT_ACCESS:
 
 LN_INTERNAL_ACCESS:
 	detail::ISwapChain* resolveRHIObject() const;
+    void onPostPresent();
 
 private:
 	Ref<detail::ISwapChain> m_rhiObject;

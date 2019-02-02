@@ -354,9 +354,7 @@ void RenderTargetTexture::init(int width, int height, TextureFormat requestForma
 void RenderTargetTexture::init(detail::ITexture* ref)
 {
 	Texture::init();
-	m_rhiObject = ref;
-	setSize(m_rhiObject->realSize());
-    setFormat(m_rhiObject->getTextureFormat());
+    resetSwapchainFrame(ref);
 }
 
 void RenderTargetTexture::dispose()
@@ -393,6 +391,13 @@ detail::ITexture* RenderTargetTexture::resolveRHIObject()
 void RenderTargetTexture::onChangeDevice(detail::IGraphicsDeviceContext* device)
 {
 	LN_NOTIMPLEMENTED();
+}
+
+void RenderTargetTexture::resetSwapchainFrame(detail::ITexture* ref)
+{
+    m_rhiObject = ref;
+    setSize(m_rhiObject->realSize());
+    setFormat(m_rhiObject->getTextureFormat());
 }
 
 namespace detail {

@@ -337,8 +337,8 @@ public:
 	bool end();
 	bool flush();
 
-	void addPipelineCmd(VulkanPipeline* pipeline);
 	void addFrameBufferCmd(VulkanFrameBuffer* frameBuffer);
+	void addPipelineCmd(VulkanPipeline* pipeline);
 
 private:
     VulkanDeviceContext* m_deviceContext;
@@ -356,6 +356,8 @@ public:
 	virtual ~VulkanPipeline();
 	bool init(VulkanDeviceContext* deviceContext, const IGraphicsDeviceContext::State& committed);
 	void dispose();
+
+    VkPipeline vulkanPipeline() const { return m_pipeline; }
 
 private:
 	VulkanDeviceContext* m_deviceContext;
@@ -574,7 +576,9 @@ public:
     virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) override;
     virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
 
-    static void transitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+    //void resestSwapchainFrame(VkImage image, VkImageView view);
+
+    //static void transitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 
 private:
 	VulkanDeviceContext* m_deviceContext;
@@ -583,7 +587,6 @@ private:
 	VkImageView m_imageView;
 	VkImageAspectFlags m_imageAspectFlags;
 	VkDeviceMemory m_deviceMemory;
-	VkMemoryRequirements m_memoryRequirements;
 
     TextureFormat m_format;
     VkFormat m_vulkanFormat;

@@ -1217,6 +1217,21 @@ bool VulkanDeviceContext::submitStatus()
 {
 	const State& state = committedState();
 
+	if (m_requiredChangeRenderPass) {
+		uint64_t hash = VulkanRenderPassCache::computeHash(state.renderTargets.data(), state.renderTargets.size(), state.depthBuffer);
+		Ref<VulkanFrameBuffer> framebuffer;
+		if (frameBufferCache().find(hash, &framebuffer)) {
+		}
+		else {
+			framebuffer = makeRef<VulkanFrameBuffer>();
+			if (!framebuffer->init(this, state.renderTargets.data(), state.renderTargets.size(), state.depthBuffer)) {
+				return false;
+			}
+		}
+
+		m_activeCommandBuffer->addFrameBufferCmd(framebuffer);
+	}
+
 
 	if (m_requiredChangePipeline) {
 		uint64_t hash = VulkanPipelineCache::computeHash(state);
@@ -1233,22 +1248,6 @@ bool VulkanDeviceContext::submitStatus()
 		m_activeCommandBuffer->addPipelineCmd(pipeline);
 
 	}
-
-	if (m_requiredChangeRenderPass) {
-		uint64_t hash = VulkanRenderPassCache::computeHash(state.renderTargets.data(), state.renderTargets.size(), state.depthBuffer);
-		Ref<VulkanFrameBuffer> framebuffer;
-		if (frameBufferCache().find(hash, &framebuffer)) {
-		}
-		else {
-			framebuffer = makeRef<VulkanFrameBuffer>();
-			if (!framebuffer->init(this, state.renderTargets.data(), state.renderTargets.size(), state.depthBuffer)) {
-				return false;
-			}
-		}
-
-		m_activeCommandBuffer->addFrameBufferCmd(framebuffer);
-	}
-
 	return true;
 }
 
@@ -1379,7 +1378,8 @@ bool VulkanQueue::submit(VulkanCommandList* commandBuffer, VkSemaphore waitSemap
     submitInfo.pSignalSemaphores = signalSemaphores;
 
     // コマンド実行通知。fence は、この実行の完了が通知される。
-    if (vkQueueSubmit(m_queue, 1, &submitInfo, commandBuffer->vulkanInFlightFence()) != VK_SUCCESS) {
+    auto r = vkQueueSubmit(m_queue, 1, &submitInfo, commandBuffer->vulkanInFlightFence());
+    if (r != VK_SUCCESS) {
         LN_LOG_ERROR << "Failed vkQueueSubmit";
         return false;
     }
@@ -1568,10 +1568,6 @@ bool VulkanCommandList::flush()
 	return true;
 }
 
-void VulkanCommandList::addPipelineCmd(VulkanPipeline* pipeline)
-{
-}
-
 void VulkanCommandList::addFrameBufferCmd(VulkanFrameBuffer* frameBuffer)
 {
 	if (frameBuffer != m_currentFrameBuffer)
@@ -1599,6 +1595,11 @@ void VulkanCommandList::addFrameBufferCmd(VulkanFrameBuffer* frameBuffer)
 			vkCmdBeginRenderPass(m_commandBuffer, &beginInfo, VK_SUBPASS_CONTENTS_INLINE);
 		}
 	}
+}
+
+void VulkanCommandList::addPipelineCmd(VulkanPipeline* pipeline)
+{
+    vkCmdBindPipeline(m_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->vulkanPipeline());
 }
 
 //==============================================================================
@@ -2380,7 +2381,11 @@ bool VulkanSwapChain::present()
 		m_inactiveCommandBuffer = t;
 	
 		m_currentPresentationFrameIndex = (m_currentPresentationFrameIndex + 1) % MaxPresentationFrameIndex;
-	}
+        
+        if (!acquireNextImage()) {
+            return false;
+        }
+    }
 
 
 	if (!m_deviceContext->beginActiveCommandBuffer()) {
@@ -2401,6 +2406,7 @@ bool VulkanSwapChain::acquireNextImage()
 		VkSemaphore semaphore = m_imageAvailableSemaphores[m_currentPresentationFrameIndex];
 		VkFence fence = m_imageAvailableFences[m_currentPresentationFrameIndex];
 
+        // 毎フレーム行わないと、次の VkQueueSubmit で VK_ERROR_DEVICE_LOST する
         if (vkAcquireNextImageKHR(vulkanDevice, m_swapChain, UINT64_MAX, semaphore, fence, &m_currentBufferIndex) != VK_SUCCESS) {
             LN_LOG_ERROR << "Failed vkAcquireNextImageKHR";
             return false;
@@ -2710,8 +2716,6 @@ bool VulkanRenderTargetTexture::init(VulkanDeviceContext* deviceContext, const V
 	//m_Desc.HeapProperty.Type = HEAP_TYPE_DEFAULT;
 	//m_Desc.HeapProperty.CpuPageProperty = CPU_PAGE_PROPERTY_NOT_AVAILABLE;
 
-	vkGetImageMemoryRequirements(m_deviceContext->vulkanDevice(), image, &m_memoryRequirements);
-
 
     m_format = desc.Format;//VkFormatToLNFormat(desc.Format);
     m_vulkanFormat = desc.vulkanFormat;
@@ -2746,9 +2750,6 @@ void VulkanRenderTargetTexture::dispose()
 		m_image = 0;
 		m_deviceMemory = 0;
 	}
-
-	memset(&m_memoryRequirements, 0, sizeof(m_memoryRequirements));
-	//memset(&m_Desc, 0, sizeof(m_Desc));
 
     LN_NOTIMPLEMENTED();
     VulkanTextureBase::dispose();
@@ -3137,6 +3138,13 @@ void VulkanRenderTargetTexture::setSubData3D(int x, int y, int z, int width, int
 {
     LN_UNREACHABLE();
 }
+
+//void VulkanRenderTargetTexture::resestSwapchainFrame(VkImage image, VkImageView view)
+//{
+//    LN_CHECK(m_isExternal);
+//    m_image = image;
+//    m_imageView = view;
+//}
 
 //void VulkanRenderTargetTexture::transitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
 //{
