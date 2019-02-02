@@ -189,7 +189,7 @@ public:
     const VkAllocationCallbacks* vulkanAllocator() const { return &m_allocatorCallbacks; }
     VkInstance vulkanInstance() const { return m_instance; }
     VkDevice vulkanDevice() const { return m_device; }
-    VkPhysicalDevice vulkanPhysicalDevice() const;
+    VkPhysicalDevice vulkanPhysicalDevice() const { return m_physicalDevice; }
     const Ref<VulkanQueue>& graphicsQueue() const { return m_graphicsQueue; }
     const Ref<VulkanQueue>& computeQueue() const { return m_computeQueue; }
     const Ref<VulkanQueue>& transferQueue() const { return m_transferQueue; }

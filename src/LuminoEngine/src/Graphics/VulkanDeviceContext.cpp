@@ -1012,11 +1012,6 @@ bool VulkanDeviceContext::endActiveCommandBuffer()
 	return true;
 }
 
-VkPhysicalDevice VulkanDeviceContext::vulkanPhysicalDevice() const
-{
-    return m_physicalDeviceInfos[0].device;
-}
-
 void VulkanDeviceContext::onGetCaps(GraphicsDeviceCaps* outCaps)
 {
     outCaps->requestedShaderTriple.target = "spv";
@@ -2766,18 +2761,96 @@ DeviceTextureType VulkanRenderTargetTexture::type() const
 
 void VulkanRenderTargetTexture::readData(void* outData)
 {
+    VkDevice device = m_deviceContext->vulkanDevice();
+
+    bool supportsBlit = true;
+    {
+        // Check blit support for source and destination
+        VkFormatProperties formatProps;
+
+        // Check if the device supports blitting from optimal images (the swapchain images are in optimal format)
+        vkGetPhysicalDeviceFormatProperties(m_deviceContext->vulkanPhysicalDevice(), m_vulkanFormat, &formatProps);
+        if (!(formatProps.optimalTilingFeatures & VK_FORMAT_FEATURE_BLIT_SRC_BIT)) {
+            std::cerr << "Device does not support blitting from optimal tiled images, using copy instead of blit!" << std::endl;
+            supportsBlit = false;
+        }
+
+        // Check if the device supports blitting to linear images 
+        vkGetPhysicalDeviceFormatProperties(m_deviceContext->vulkanPhysicalDevice(), VK_FORMAT_R8G8B8A8_UNORM, &formatProps);
+        if (!(formatProps.linearTilingFeatures & VK_FORMAT_FEATURE_BLIT_DST_BIT)) {
+            std::cerr << "Device does not support blitting to linear tiled images, using copy instead of blit!" << std::endl;
+            supportsBlit = false;
+        }
+    }
+
     VkDeviceSize size = m_desc.Width * m_desc.Height * 4; // TODO
-    auto buffer = makeRef<VulkanBuffer>();
-    buffer->init(
-        m_deviceContext, size,
-        VK_BUFFER_USAGE_TRANSFER_DST_BIT,   // 転送先として作成
-        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    uint32_t width = m_desc.Width;
+    uint32_t height = m_desc.Height;
+    VkImage dstImage;
+    auto dstImageMemory = makeRef<VulkanBuffer>();
+    {
+        // Create the linear tiled destination image to copy to and to read the memory from
+        VkImageCreateInfo imageCreateCI = {};//(vks::initializers::imageCreateInfo());
+        imageCreateCI.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+        imageCreateCI.imageType = VK_IMAGE_TYPE_2D;
+        // Note that vkCmdBlitImage (if supported) will also do format conversions if the swapchain color format would differ
+        imageCreateCI.format = VK_FORMAT_R8G8B8A8_UNORM;
+        imageCreateCI.extent.width = width;
+        imageCreateCI.extent.height = height;
+        imageCreateCI.extent.depth = 1;
+        imageCreateCI.arrayLayers = 1;
+        imageCreateCI.mipLevels = 1;
+        imageCreateCI.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        imageCreateCI.samples = VK_SAMPLE_COUNT_1_BIT;
+        imageCreateCI.tiling = VK_IMAGE_TILING_LINEAR;
+        imageCreateCI.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+        // Create the image
+        vkCreateImage(device, &imageCreateCI, nullptr, &dstImage);
 
+        // Create memory to back up the image
+        //VkMemoryRequirements memRequirements;
+        //VkMemoryAllocateInfo memAllocInfo(vks::initializers::memoryAllocateInfo());
+        //VkDeviceMemory dstImageMemory;
+        //vkGetImageMemoryRequirements(device, dstImage, &memRequirements);
+        //memAllocInfo.allocationSize = memRequirements.size;
+        //// Memory must be host visible to copy from
+        //memAllocInfo.memoryTypeIndex = vulkanDevice->getMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+        //vkAllocateMemory(device, &memAllocInfo, nullptr, &dstImageMemory);
+        //vkBindImageMemory(device, dstImage, dstImageMemory, 0);
 
-    VulkanCommandList* commandBuffer = m_deviceContext->activeCommandBuffer();
+        // とりあえず buffer はいらないが、MemoryBuffer がほしい
+        dstImageMemory->init(
+            m_deviceContext, size,
+            VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    }
 
+    auto commandBuffer = makeRef<VulkanCommandList>();
+    commandBuffer->init(m_deviceContext, VulkanCommandList::Type::COMMANDLIST_TYPE_DIRECT);
+    VkCommandBuffer copyCmd = commandBuffer->vulkanCommandBuffer();
 
-    //transitionImageLayout(commandBuffer->vulkanCommandBuffer(), m_image, m_vulkanFormat, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+    commandBuffer->begin();
+
+    // transitionImageLayout
+    {
+        VkImageMemoryBarrier imageMemoryBarrier = {};
+        imageMemoryBarrier.srcAccessMask = 0;
+        imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+        imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+        imageMemoryBarrier.image = dstImage;
+        imageMemoryBarrier.subresourceRange = VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
+
+        vkCmdPipelineBarrier(
+            commandBuffer->vulkanCommandBuffer(),
+            VK_PIPELINE_STAGE_TRANSFER_BIT,
+            VK_PIPELINE_STAGE_TRANSFER_BIT,
+            0,
+            0, nullptr,
+            0, nullptr,
+            1, &imageMemoryBarrier);
+    }
+
     // transitionImageLayout
     {
         VkImageMemoryBarrier imageMemoryBarrier = {};
@@ -2798,29 +2871,51 @@ void VulkanRenderTargetTexture::readData(void* outData)
             1, &imageMemoryBarrier);
     }
 
+    if (supportsBlit)
+    {
+        LN_NOTIMPLEMENTED();
+    }
+    else
+    {
+        // Otherwise use image copy (requires us to manually flip components)
+        VkImageCopy imageCopyRegion{};
+        imageCopyRegion.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        imageCopyRegion.srcSubresource.layerCount = 1;
+        imageCopyRegion.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        imageCopyRegion.dstSubresource.layerCount = 1;
+        imageCopyRegion.extent.width = width;
+        imageCopyRegion.extent.height = height;
+        imageCopyRegion.extent.depth = 1;
+
+        // Issue the copy command
+        vkCmdCopyImage(
+            copyCmd,
+            m_image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+            dstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            1,
+            &imageCopyRegion);
+    }
 
 
-    VkBufferImageCopy region = {};
-    region.bufferOffset = 0;
-    region.bufferRowLength = 0;
-    region.bufferImageHeight = 0;
-    region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-    region.imageSubresource.mipLevel = 0;
-    region.imageSubresource.baseArrayLayer = 0;
-    region.imageSubresource.layerCount = 1;
-    region.imageOffset = { 0, 0, 0 };
-    region.imageExtent = {
-        m_desc.Width,
-        m_desc.Height,
-        1
-    };
+    // transitionImageLayout
+    {
+        VkImageMemoryBarrier imageMemoryBarrier = {};
+        imageMemoryBarrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+        imageMemoryBarrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+        imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+        imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_GENERAL;
+        imageMemoryBarrier.image = dstImage;
+        imageMemoryBarrier.subresourceRange = VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
 
-    vkCmdCopyImageToBuffer(
-        commandBuffer->vulkanCommandBuffer(),
-        m_image,
-        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-        buffer->vulkanBuffer(),
-        1, &region);
+        vkCmdPipelineBarrier(
+            commandBuffer->vulkanCommandBuffer(),
+            VK_PIPELINE_STAGE_TRANSFER_BIT,
+            VK_PIPELINE_STAGE_TRANSFER_BIT,
+            0,
+            0, nullptr,
+            0, nullptr,
+            1, &imageMemoryBarrier);
+    }
 
     // transitionImageLayout
     {
@@ -2843,28 +2938,155 @@ void VulkanRenderTargetTexture::readData(void* outData)
     }
 
 
+
+    //VkDeviceSize size = m_desc.Width * m_desc.Height * 4; // TODO
+    //auto buffer = makeRef<VulkanBuffer>();
+    //buffer->init(
+    //    m_deviceContext, size,
+    //    VK_BUFFER_USAGE_TRANSFER_DST_BIT,   // 転送先として作成
+    //    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+
+    //VulkanCommandList* commandBuffer = m_deviceContext->activeCommandBuffer();
+
+
+    ////transitionImageLayout(commandBuffer->vulkanCommandBuffer(), m_image, m_vulkanFormat, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+    //// transitionImageLayout
+    //{
+    //    VkImageMemoryBarrier imageMemoryBarrier = {};
+    //    imageMemoryBarrier.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+    //    imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+    //    imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+    //    imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+    //    imageMemoryBarrier.image = m_image;
+    //    imageMemoryBarrier.subresourceRange = VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
+
+    //    vkCmdPipelineBarrier(
+    //        commandBuffer->vulkanCommandBuffer(),
+    //        VK_PIPELINE_STAGE_TRANSFER_BIT,
+    //        VK_PIPELINE_STAGE_TRANSFER_BIT,
+    //        0,
+    //        0, nullptr,
+    //        0, nullptr,
+    //        1, &imageMemoryBarrier);
+    //}
+
+
+
+    //VkBufferImageCopy region = {};
+    //region.bufferOffset = 0;
+    //region.bufferRowLength = 0;
+    //region.bufferImageHeight = 0;
+    //region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    //region.imageSubresource.mipLevel = 0;
+    //region.imageSubresource.baseArrayLayer = 0;
+    //region.imageSubresource.layerCount = 1;
+    //region.imageOffset = { 0, 0, 0 };
+    //region.imageExtent = {
+    //    m_desc.Width,
+    //    m_desc.Height,
+    //    1
+    //};
+
+    //vkCmdCopyImageToBuffer(
+    //    commandBuffer->vulkanCommandBuffer(),
+    //    m_image,
+    //    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+    //    buffer->vulkanBuffer(),
+    //    1, &region);
+
+    //// transitionImageLayout
+    //{
+    //    VkImageMemoryBarrier imageMemoryBarrier = {};
+    //    imageMemoryBarrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+    //    imageMemoryBarrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+    //    imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+    //    imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+    //    imageMemoryBarrier.image = m_image;
+    //    imageMemoryBarrier.subresourceRange = VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
+
+    //    vkCmdPipelineBarrier(
+    //        commandBuffer->vulkanCommandBuffer(),
+    //        VK_PIPELINE_STAGE_TRANSFER_BIT,
+    //        VK_PIPELINE_STAGE_TRANSFER_BIT,
+    //        0,
+    //        0, nullptr,
+    //        0, nullptr,
+    //        1, &imageMemoryBarrier);
+    //}
+
+
+    commandBuffer->end();
+
     // Submit
     {
-        m_deviceContext->graphicsQueue()->submit(
-            commandBuffer,
-            VK_NULL_HANDLE,
-            VK_NULL_HANDLE);
+        auto queue = m_deviceContext->graphicsQueue()->vulkanQueue();
 
-        // wait
-        vkQueueWaitIdle(m_deviceContext->graphicsQueue()->vulkanQueue());
+        VkSubmitInfo submitInfo = {};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = &copyCmd;
+
+        // Create fence to ensure that the command buffer has finished executing
+        VkFenceCreateInfo fenceInfo = {};
+        fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+        fenceInfo.flags = 0;
+        VkFence fence = 0;;
+        vkCreateFence(device, &fenceInfo, nullptr, &fence);
+
+#define DEFAULT_FENCE_TIMEOUT 100000000000
+
+        // Submit to the queue
+        auto r = vkQueueSubmit(queue, 1, &submitInfo, fence);
+        // Wait for the fence to signal that command buffer has finished executing
+        vkWaitForFences(device, 1, &fence, VK_TRUE, DEFAULT_FENCE_TIMEOUT);
+
+        vkDestroyFence(device, fence, nullptr);
+
+        //m_deviceContext->graphicsQueue()->submit(
+        //    commandBuffer,
+        //    VK_NULL_HANDLE,
+        //    VK_NULL_HANDLE);
+
+        //// wait
+        //vkQueueWaitIdle(m_deviceContext->graphicsQueue()->vulkanQueue());
     }
 
+    {
 
-    void* data;
-    vkMapMemory(m_deviceContext->vulkanDevice(), buffer->vulkanBufferMemory(), 0, size, 0, &data);
-    memcpy(outData, data, static_cast<size_t>(size));
-    vkUnmapMemory(m_deviceContext->vulkanDevice(), buffer->vulkanBufferMemory());
+        // Get layout of the image (including row pitch)
+        VkImageSubresource subResource{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 0 };
+        VkSubresourceLayout subResourceLayout;
+        vkGetImageSubresourceLayout(device, dstImage, &subResource, &subResourceLayout);
 
-    buffer->dispose();
+        // Map image memory so we can start copying from it
+        const char* data;
+        vkMapMemory(device, dstImageMemory->vulkanBufferMemory(), 0, VK_WHOLE_SIZE, 0, (void**)&data);
+        data += subResourceLayout.offset;
+
+        memcpy(outData, data, static_cast<size_t>(size));
+
+        vkUnmapMemory(device, dstImageMemory->vulkanBufferMemory());
+    }
+
+    //void* data;
+    //vkMapMemory(m_deviceContext->vulkanDevice(), buffer->vulkanBufferMemory(), 0, size, 0, &data);
+    //memcpy(outData, data, static_cast<size_t>(size));
+    //vkUnmapMemory(m_deviceContext->vulkanDevice(), buffer->vulkanBufferMemory());
+
+    //buffer->dispose();
 
 
     //transitionImageLayout(commandBuffer->vulkanCommandBuffer(), m_image, m_vulkanFormat, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 
+    commandBuffer->dispose();
+
+    dstImageMemory->dispose();
+    {
+        //vkUnmapMemory(device, dstImageMemory);
+        //vkFreeMemory(device, dstImageMemory, nullptr);
+        vkDestroyImage(device, dstImage, nullptr);
+    }
 }
 
 SizeI VulkanRenderTargetTexture::realSize()
