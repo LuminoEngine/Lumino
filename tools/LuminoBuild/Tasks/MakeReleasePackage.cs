@@ -119,6 +119,7 @@ namespace LuminoBuild.Tasks
                 "pcre",
                 "SDL2",
                 "SPIRV-Cross",
+                "tmxlite",
                 "vorbis",
                 "zlib",
             };

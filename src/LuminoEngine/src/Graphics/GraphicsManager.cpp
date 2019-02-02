@@ -6,7 +6,9 @@
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include "GraphicsManager.hpp"
 #include "OpenGLDeviceContext.hpp"
+#ifdef LN_USE_VULKAN
 #include "VulkanDeviceContext.hpp"
+#endif
 #include "../Engine/LinearAllocator.hpp"
 
 namespace ln {
@@ -107,7 +109,7 @@ void GraphicsManager::init(const Settings& settings)
 {
     LN_LOG_DEBUG << "GraphicsManager Initialization started.";
 
-#if 1
+#ifdef LN_USE_VULKAN
     VulkanDeviceContext::Settings dcSettings;
     dcSettings.debugEnabled = true;
     auto ctx = makeRef<VulkanDeviceContext>();

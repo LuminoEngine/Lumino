@@ -12,7 +12,7 @@ namespace LuminoBuild
             // default
             if (args.Length == 0)
             {
-                args = new string[] { "BuildEngine_MSVC" };
+                args = new string[] { "CopyEngineLibsToRepoRoot" };
             }
 
             Assembly thisAssembly = Assembly.GetEntryAssembly();

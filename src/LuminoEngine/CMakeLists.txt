@@ -208,8 +208,6 @@ set(LN_SOURCES_Graphics
     src/Graphics/Texture.cpp
     src/Graphics/VertexBuffer.cpp
     src/Graphics/VertexDeclaration.cpp
-    src/Graphics/VulkanDeviceContext.cpp
-    src/Graphics/VulkanDeviceContext.hpp
 )
 
 set(LN_SOURCES_Shader
@@ -457,7 +455,19 @@ set(LN_SOURCES_Tilemap
     src/Tilemap/Tileset.cpp
 )
 
-if (APPLE)
+if (LN_ENABLE_VULKAN)
+    set(LN_SOURCES_Graphics
+        ${LN_SOURCES_Graphics}
+        src/Graphics/VulkanDeviceContext.cpp
+        src/Graphics/VulkanDeviceContext.hpp
+    )
+    list(APPEND LN_PLATFORM_DEFINITIONS LN_USE_VULKAN=1)
+endif()
+
+
+if (WIN32)
+
+elseif (APPLE)
     set(LN_SOURCES_Platform
         ${LN_SOURCES_Platform}
         src/Platform/iOSPlatformInterface.mm
@@ -533,7 +543,6 @@ elseif (WIN32)
     #list(APPEND LN_PLATFORM_LIBS user32 gdi32 winmm imm32 ole32 oleaut32 version uuid)
     list(APPEND LN_PLATFORM_LIBS winmm imm32 version)
     list(APPEND LN_PLATFORM_LIBS OpenAL)
-    list(APPEND LN_PLATFORM_LIBS VulkanImported)
     
 
 elseif (APPLE)

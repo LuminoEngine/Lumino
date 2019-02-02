@@ -52,6 +52,8 @@ namespace LuminoBuild
         {
             new TargetArch(){ SourceDirName = "MSVC2017-x86-MD", DestDirName = "MSVC2017-x86-MD", PdbCopy = true },
             new TargetArch(){ SourceDirName = "MSVC2017-x64-MD", DestDirName = "MSVC2017-x64-MD", PdbCopy = true },
+            new TargetArch(){ SourceDirName = "MSVC2017-x86-MT", DestDirName = "MSVC2017-x86-MT", PdbCopy = true },
+            new TargetArch(){ SourceDirName = "MSVC2017-x64-MT", DestDirName = "MSVC2017-x64-MT", PdbCopy = true },
             new TargetArch(){ SourceDirName = "Emscripten", DestDirName = "Emscripten-Release" },
             new TargetArch(){ SourceDirName = "Android-arm64-v8a-Debug", DestDirName = "Android-arm64-v8a-Debug" },
             new TargetArch(){ SourceDirName = "Android-arm64-v8a-Release", DestDirName = "Android-arm64-v8a-Release" },

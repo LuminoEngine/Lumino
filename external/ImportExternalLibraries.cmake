@@ -341,11 +341,12 @@ set_target_properties(tmxlite PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${tmxlite
 
 #--------------------------------------
 # Vulkan
-find_package(Vulkan REQUIRED)
 
-if (WIN32)
+if (LN_ENABLE_VULKAN)
+    find_package(Vulkan REQUIRED)
     add_library(VulkanImported STATIC IMPORTED)
     set_target_properties(VulkanImported PROPERTIES IMPORTED_LOCATION_RELEASE ${Vulkan_LIBRARY})
     set_target_properties(VulkanImported PROPERTIES IMPORTED_LOCATION_DEBUG ${Vulkan_LIBRARY})
     set_target_properties(VulkanImported PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${Vulkan_INCLUDE_DIRS})
+    list(APPEND LN_EXTERNAL_LIBS VulkanImported)
 endif()

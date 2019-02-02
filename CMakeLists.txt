@@ -50,6 +50,10 @@ option(LN_MSVC_STATIC_RUNTIME "static runtime (/MT, /MTd) or DLL runtime (/MD, /
 # use SDL on MSVC
 option(LN_MSVC_USE_SDL "use SDL on MSVC" OFF)
 
+# Vulkan
+option(LN_ENABLE_VULKAN "Vulkan" OFF)
+
+
 #------------------------------------------------------------------------------
 
 set(CMAKE_DEBUG_POSTFIX "d")
@@ -99,7 +103,9 @@ else()
     set(LN_USE_SDL OFF)
 endif()
 
-
+if (MSVC)
+    add_definitions("/MP")
+endif()
 
 #------------------------------------------------------------------------------
 # gtest

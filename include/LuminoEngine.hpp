@@ -84,49 +84,43 @@
 #include "LuminoEngine/Tilemap/TilemapModel.hpp"
 #include "LuminoEngine/Tilemap/Tilemap.hpp"
 
-#ifdef LN_MSVC_AUTO_LINK_LIBRARIES
-#pragma comment(lib, "glfw3.lib")
-#pragma comment(lib, "ogg.lib")
-#pragma comment(lib, "spirv-cross-core.lib")
-#pragma comment(lib, "spirv-cross-cpp.lib")
-#pragma comment(lib, "spirv-cross-glsl.lib")
-#pragma comment(lib, "spirv-cross-msl.lib")
-#pragma comment(lib, "spirv-cross-reflect.lib")
-#pragma comment(lib, "spirv-cross-util.lib")
-#pragma comment(lib, "vorbis.lib")
-#pragma comment(lib, "vorbisfile.lib")
 
 #ifdef _DEBUG
-#pragma comment(lib, "LuminoEngined.lib")
-#pragma comment(lib, "freetyped.lib")
-#pragma comment(lib, "gladd.lib")
-#pragma comment(lib, "glslangd.lib")
-#pragma comment(lib, "HLSLd.lib")
-#pragma comment(lib, "libpng16d.lib")
-#pragma comment(lib, "OGLCompilerd.lib")
-#pragma comment(lib, "OSDependentd.lib")
-#pragma comment(lib, "SPIRVd.lib")
-#pragma comment(lib, "SPVRemapperd.lib")
-#pragma comment(lib, "zlibd.lib")
-#pragma comment(lib, "LinearMath_Debug.lib")
-#pragma comment(lib, "BulletCollision_Debug.lib")
-#pragma comment(lib, "BulletDynamics_Debug.lib")
-#pragma comment(lib, "BulletSoftBody_Debug.lib")
+#define LN_MSVC_AUTO_LINK_POSTFIX    "d"
 #else
-#pragma comment(lib, "LuminoEngine.lib")
-#pragma comment(lib, "freetype.lib")
-#pragma comment(lib, "glad.lib")
-#pragma comment(lib, "glslang.lib")
-#pragma comment(lib, "HLSL.lib")
-#pragma comment(lib, "libpng16.lib")
-#pragma comment(lib, "OGLCompiler.lib")
-#pragma comment(lib, "OSDependent.lib")
-#pragma comment(lib, "SPIRV.lib")
-#pragma comment(lib, "SPVRemapper.lib")
-#pragma comment(lib, "zlib.lib")
-#pragma comment(lib, "LinearMath.lib")
-#pragma comment(lib, "BulletCollision.lib")
-#pragma comment(lib, "BulletDynamics.lib")
-#pragma comment(lib, "BulletSoftBody.lib")
+#define LN_MSVC_AUTO_LINK_POSTFIX
 #endif
+
+#ifdef LN_MSVC_AUTO_LINK_LIBRARIES
+#pragma comment(lib, "glfw3" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "ogg" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "spirv-cross-core" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "spirv-cross-cpp" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "spirv-cross-glsl" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "spirv-cross-msl" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "spirv-cross-reflect" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "spirv-cross-util" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "vorbis" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "vorbisfile" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "LuminoEngine" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "freetype" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "glad" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "glslang" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "HLSL" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "libpng16" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "OGLCompiler" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "OSDependent" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "SPIRV" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "SPVRemapper" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "zlib" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "LinearMath" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "BulletCollision" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "BulletDynamics" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "BulletSoftBody" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#endif
+
+#ifdef _DEBUG
+#pragma comment(lib, "tmxlite-s-d.lib")
+#else
+#pragma comment(lib, "tmxlite-s.lib")
 #endif
