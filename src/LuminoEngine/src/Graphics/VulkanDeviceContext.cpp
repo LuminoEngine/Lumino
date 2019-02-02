@@ -2011,6 +2011,8 @@ bool VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* w
         if (m_imageFormat == VK_FORMAT_UNDEFINED) {
             m_imageFormat = m_surfaceFormats[0].format;
             m_colorSpace = m_surfaceFormats[0].colorSpace;
+            m_desc.vulkanFormat = m_imageFormat;  // TODO: 多重管理辞めたい
+            LN_LOG_WARNING << "Requested format is not supported.";
         }
 
         //if (!found) {
@@ -2133,6 +2135,8 @@ bool VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* w
     }
 
     // Get swap chain images
+    std::vector<VkImage> images;
+    std::vector<VkImageView> imageViews;
     {
         uint32_t chainCount;
         if (vkGetSwapchainImagesKHR(vulkanDevice, m_swapChain, &chainCount, nullptr) != VK_SUCCESS) {
@@ -2144,10 +2148,10 @@ bool VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* w
             return false;
         }
 
-        m_images.resize(chainCount);
-        m_imageViews.resize(chainCount);
+        images.resize(chainCount);
+        imageViews.resize(chainCount);
 
-        if (vkGetSwapchainImagesKHR(vulkanDevice, m_swapChain, &chainCount, m_images.data()) != VK_SUCCESS) {
+        if (vkGetSwapchainImagesKHR(vulkanDevice, m_swapChain, &chainCount, images.data()) != VK_SUCCESS) {
             LN_LOG_ERROR << "Failed vkGetSwapchainImagesKHR";
             return false;
         }
@@ -2169,7 +2173,7 @@ bool VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* w
             viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
             viewInfo.pNext = nullptr;
             viewInfo.flags = 0;
-            viewInfo.image = m_images[i];
+            viewInfo.image = images[i];
             viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
             viewInfo.format = m_imageFormat;
             viewInfo.components.r = VK_COMPONENT_SWIZZLE_R;
@@ -2178,7 +2182,7 @@ bool VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* w
             viewInfo.components.a = VK_COMPONENT_SWIZZLE_A;
             viewInfo.subresourceRange = range;
 
-            if (vkCreateImageView(vulkanDevice, &viewInfo, nullptr, &m_imageViews[i]) != VK_SUCCESS) {
+            if (vkCreateImageView(vulkanDevice, &viewInfo, nullptr, &imageViews[i]) != VK_SUCCESS) {
                 LN_LOG_ERROR << "Failed vkCreateImageView";
                 return false;
             }
@@ -2187,14 +2191,9 @@ bool VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* w
 
     // バックバッファに Texture としてアクセスできるようにラップしたインスタンスを作っておく
     {
-        m_buffers.resize(m_desc.BufferCount);
-        for (auto i = 0u; i < m_desc.BufferCount; ++i) {
-            auto texture = makeRef<VulkanRenderTargetTexture>();
-            if (!texture->init(m_deviceContext, m_desc, m_images[i], m_imageViews[i])) {
-                return false;
-            }
-            m_buffers[i] = texture;
-        }
+        m_colorBuffer = makeRef<VulkanSwapchainRenderTargetTexture>();
+        m_colorBuffer->init(m_deviceContext);
+        m_colorBuffer->reset(m_desc, images, imageViews);
     }
 
     // Change image layout
@@ -2218,13 +2217,13 @@ bool VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* w
             barrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
             barrier.srcQueueFamilyIndex = 0;
             barrier.dstQueueFamilyIndex = 0;
-            barrier.image = m_buffers[i]->vulkanImage();
+            barrier.image = m_colorBuffer->vulkanImage(i);
 
             barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
             barrier.subresourceRange.baseArrayLayer = 0;
             barrier.subresourceRange.baseMipLevel = 0;
-            barrier.subresourceRange.layerCount = m_buffers[i]->desc().DepthOrArraySize;
-            barrier.subresourceRange.levelCount = m_buffers[i]->desc().MipLevels;
+            barrier.subresourceRange.layerCount = m_colorBuffer->desc().DepthOrArraySize;
+            barrier.subresourceRange.levelCount = m_colorBuffer->desc().MipLevels;
 
             vkCmdPipelineBarrier(
                 cmdBuffer,
@@ -2328,7 +2327,7 @@ void VulkanSwapChain::dispose()
 
 ITexture* VulkanSwapChain::getColorBuffer() const
 {
-    return m_buffers[m_currentBufferIndex];
+    return m_colorBuffer;
 }
 
 bool VulkanSwapChain::present()
@@ -2411,6 +2410,8 @@ bool VulkanSwapChain::acquireNextImage()
             LN_LOG_ERROR << "Failed vkAcquireNextImageKHR";
             return false;
         }
+
+        m_colorBuffer->setBufferIndex(m_currentBufferIndex);
 
         // TODO: ここで待つのは効率悪い。
         // 本当はバックバッファを示す RenderTarget を CommandBuffer に Add するとき、
@@ -2695,34 +2696,6 @@ VulkanRenderTargetTexture::~VulkanRenderTargetTexture()
 {
 }
 
-bool VulkanRenderTargetTexture::init(VulkanDeviceContext* deviceContext, const VulkanSwapChain::SwapChainDesc& desc, VkImage image, VkImageView view)
-{
-	m_deviceContext = deviceContext;
-	m_isExternal = true;
-
-	m_image = image;
-	m_imageView = view;
-	m_imageAspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
-	m_deviceMemory = 0;
-	//m_Desc.Dimension = RESOURCE_DIMENSION_TEXTURE2D;
-	m_desc.Width = desc.Width;
-	m_desc.Height = desc.Height;
-	m_desc.DepthOrArraySize = 1;
-	//m_Desc.Format = desc.Format;
-	m_desc.MipLevels = desc.MipLevels;
-	//m_Desc.SampleCount = desc.SampleCount;
-	//m_Desc.Layout = RESOURCE_LAYOUT_OPTIMAL;
-	//m_Desc.InitState = RESOURCE_STATE_UNKNOWN;
-	//m_Desc.HeapProperty.Type = HEAP_TYPE_DEFAULT;
-	//m_Desc.HeapProperty.CpuPageProperty = CPU_PAGE_PROPERTY_NOT_AVAILABLE;
-
-
-    m_format = desc.Format;//VkFormatToLNFormat(desc.Format);
-    m_vulkanFormat = desc.vulkanFormat;
-
-	return true;
-}
-
 void VulkanRenderTargetTexture::init(VulkanDeviceContext* context, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
 {
 	m_deviceContext = context;
@@ -2751,7 +2724,6 @@ void VulkanRenderTargetTexture::dispose()
 		m_deviceMemory = 0;
 	}
 
-    LN_NOTIMPLEMENTED();
     VulkanTextureBase::dispose();
 }
 
@@ -2761,6 +2733,147 @@ DeviceTextureType VulkanRenderTargetTexture::type() const
 }
 
 void VulkanRenderTargetTexture::readData(void* outData)
+{
+    LN_NOTIMPLEMENTED();
+}
+
+SizeI VulkanRenderTargetTexture::realSize()
+{
+    return SizeI(m_desc.Width, m_desc.Height);
+}
+
+TextureFormat VulkanRenderTargetTexture::getTextureFormat() const
+{
+    return m_format;
+}
+
+void VulkanRenderTargetTexture::setSubData(int x, int y, int width, int height, const void* data, size_t dataSize)
+{
+    LN_UNREACHABLE();
+}
+
+void VulkanRenderTargetTexture::setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
+{
+    LN_UNREACHABLE();
+}
+
+//void VulkanRenderTargetTexture::resestSwapchainFrame(VkImage image, VkImageView view)
+//{
+//    LN_CHECK(m_isExternal);
+//    m_image = image;
+//    m_imageView = view;
+//}
+
+//void VulkanRenderTargetTexture::transitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
+//{
+//    VkImageMemoryBarrier barrier = {};
+//    barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+//    barrier.oldLayout = oldLayout;
+//    barrier.newLayout = newLayout;
+//    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+//    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+//    barrier.image = image;
+//    barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+//    barrier.subresourceRange.baseMipLevel = 0;
+//    barrier.subresourceRange.levelCount = 1;
+//    barrier.subresourceRange.baseArrayLayer = 0;
+//    barrier.subresourceRange.layerCount = 1;
+//
+//    VkPipelineStageFlags sourceStage;
+//    VkPipelineStageFlags destinationStage;
+//
+//    if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
+//        barrier.srcAccessMask = 0;
+//        barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+//
+//        sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+//        destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+//    }
+//    else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+//        barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;   // ホスト側によってメモリ書き込みされた (かもしれない)
+//        barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+//
+//        sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+//        destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+//    } 
+//    else if (oldLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR && newLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) {
+//        barrier.srcAccessMask = 0;
+//        barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+//
+//        sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+//        destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+//    }
+//    else {
+//        LN_ERROR("unsupported layout transition!");
+//        return;
+//    }
+//
+//    vkCmdPipelineBarrier(
+//        commandBuffer,
+//        sourceStage, destinationStage,
+//        0,
+//        0, nullptr,
+//        0, nullptr,
+//        1, &barrier
+//    );
+//}
+
+
+//=============================================================================
+// VulkanSwapchainRenderTargetTexture
+
+VulkanSwapchainRenderTargetTexture::VulkanSwapchainRenderTargetTexture()
+{
+}
+
+VulkanSwapchainRenderTargetTexture::~VulkanSwapchainRenderTargetTexture()
+{
+}
+
+bool VulkanSwapchainRenderTargetTexture::init(VulkanDeviceContext* deviceContext)
+{
+    m_deviceContext = deviceContext;
+    m_bufferIndex = 0;
+    return true;
+}
+
+void VulkanSwapchainRenderTargetTexture::dispose()
+{
+    m_images.clear();
+    m_imageViews.clear();
+    VulkanTextureBase::dispose();
+}
+
+void VulkanSwapchainRenderTargetTexture::reset(const VulkanSwapChain::SwapChainDesc& desc, std::vector<VkImage> images, std::vector<VkImageView> views)
+{
+    m_images = std::move(images);
+    m_imageViews = std::move(views);
+    //m_imageAspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
+    //m_deviceMemory = 0;
+    //m_Desc.Dimension = RESOURCE_DIMENSION_TEXTURE2D;
+    m_desc.Width = desc.Width;
+    m_desc.Height = desc.Height;
+    m_desc.DepthOrArraySize = 1;
+    //m_Desc.Format = desc.Format;
+    m_desc.MipLevels = desc.MipLevels;
+    //m_Desc.SampleCount = desc.SampleCount;
+    //m_Desc.Layout = RESOURCE_LAYOUT_OPTIMAL;
+    //m_Desc.InitState = RESOURCE_STATE_UNKNOWN;
+    //m_Desc.HeapProperty.Type = HEAP_TYPE_DEFAULT;
+    //m_Desc.HeapProperty.CpuPageProperty = CPU_PAGE_PROPERTY_NOT_AVAILABLE;
+
+
+    m_format = desc.Format;//VkFormatToLNFormat(desc.Format);
+    m_vulkanFormat = desc.vulkanFormat;
+
+}
+
+DeviceTextureType VulkanSwapchainRenderTargetTexture::type() const
+{
+    return DeviceTextureType::RenderTarget;
+}
+
+void VulkanSwapchainRenderTargetTexture::readData(void* outData)
 {
     VkDevice device = m_deviceContext->vulkanDevice();
 
@@ -2787,6 +2900,8 @@ void VulkanRenderTargetTexture::readData(void* outData)
     VkDeviceSize size = m_desc.Width * m_desc.Height * 4; // TODO
     uint32_t width = m_desc.Width;
     uint32_t height = m_desc.Height;
+    VkImage srcImage = m_images[prevBufferIndex()];
+
     VkImage dstImage;
     auto dstImageMemory = makeRef<VulkanBuffer>();
     {
@@ -2879,7 +2994,7 @@ void VulkanRenderTargetTexture::readData(void* outData)
         imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
         imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
         imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-        imageMemoryBarrier.image = m_image;
+        imageMemoryBarrier.image = srcImage;
         imageMemoryBarrier.subresourceRange = VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
 
         vkCmdPipelineBarrier(
@@ -2916,7 +3031,7 @@ void VulkanRenderTargetTexture::readData(void* outData)
 
         vkCmdCopyImageToBuffer(
             copyCmd,
-            m_image,
+            srcImage,
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
             buffer->vulkanBuffer(),
             1, &region);
@@ -2938,13 +3053,13 @@ void VulkanRenderTargetTexture::readData(void* outData)
         imageCopyRegion.extent.height = height;
         imageCopyRegion.extent.depth = 1;
 
-        // Issue the copy command
-        vkCmdCopyImage(
-            copyCmd,
-            m_image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-            dstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-            1,
-            &imageCopyRegion);
+        //// Issue the copy command
+        //vkCmdCopyImage(
+        //    copyCmd,
+        //    srcImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+        //    dstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+        //    1,
+        //    &imageCopyRegion);
     }
 
 
@@ -2975,7 +3090,7 @@ void VulkanRenderTargetTexture::readData(void* outData)
         imageMemoryBarrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
         imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
         imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-        imageMemoryBarrier.image = m_image;
+        imageMemoryBarrier.image = srcImage;
         imageMemoryBarrier.subresourceRange = VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
 
         vkCmdPipelineBarrier(
@@ -3098,9 +3213,36 @@ void VulkanRenderTargetTexture::readData(void* outData)
 
     {
 
-        void* data;
-        vkMapMemory(m_deviceContext->vulkanDevice(), buffer->vulkanBufferMemory(), 0, size, 0, &data);
-        memcpy(outData, data, static_cast<size_t>(size));
+        void* rawData;
+        vkMapMemory(m_deviceContext->vulkanDevice(), buffer->vulkanBufferMemory(), 0, size, 0, &rawData);
+
+
+        // TODO: まだ Bitmap クラス側が BGRA の save に対応していないのでここで変換してしまう。
+        if (m_vulkanFormat == VK_FORMAT_B8G8R8A8_UNORM) {
+            unsigned char* data = (unsigned char*)rawData;
+            for (uint32_t y = 0; y < height; y++)
+            {
+                unsigned char *row = data;
+                for (uint32_t x = 0; x < width; x++)
+                {
+                    std::swap(row[0], row[2]);
+                    //if (colorSwizzle)
+                    //{
+                        //file.write((char*)row + 2, 1);
+                        //file.write((char*)row + 1, 1);
+                        //file.write((char*)row, 1);
+                    //}
+                    //else
+                    //{
+                    //    file.write((char*)row, 3);
+                    //}
+                    row += 4;
+                }
+                data += width * 4;//subResourceLayout.rowPitch;
+            }
+        }
+
+        memcpy(outData, rawData, static_cast<size_t>(size));
         vkUnmapMemory(m_deviceContext->vulkanDevice(), buffer->vulkanBufferMemory());
     }
 
@@ -3111,6 +3253,8 @@ void VulkanRenderTargetTexture::readData(void* outData)
 
     //commandBuffer->dispose();
 
+
+
     dstImageMemory->dispose();
     {
         //vkUnmapMemory(device, dstImageMemory);
@@ -3119,86 +3263,25 @@ void VulkanRenderTargetTexture::readData(void* outData)
     }
 }
 
-SizeI VulkanRenderTargetTexture::realSize()
+SizeI VulkanSwapchainRenderTargetTexture::realSize()
 {
     return SizeI(m_desc.Width, m_desc.Height);
 }
 
-TextureFormat VulkanRenderTargetTexture::getTextureFormat() const
+TextureFormat VulkanSwapchainRenderTargetTexture::getTextureFormat() const
 {
     return m_format;
 }
 
-void VulkanRenderTargetTexture::setSubData(int x, int y, int width, int height, const void* data, size_t dataSize)
+void VulkanSwapchainRenderTargetTexture::setSubData(int x, int y, int width, int height, const void* data, size_t dataSize)
 {
     LN_UNREACHABLE();
 }
 
-void VulkanRenderTargetTexture::setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
+void VulkanSwapchainRenderTargetTexture::setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
 {
     LN_UNREACHABLE();
 }
-
-//void VulkanRenderTargetTexture::resestSwapchainFrame(VkImage image, VkImageView view)
-//{
-//    LN_CHECK(m_isExternal);
-//    m_image = image;
-//    m_imageView = view;
-//}
-
-//void VulkanRenderTargetTexture::transitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
-//{
-//    VkImageMemoryBarrier barrier = {};
-//    barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-//    barrier.oldLayout = oldLayout;
-//    barrier.newLayout = newLayout;
-//    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-//    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-//    barrier.image = image;
-//    barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-//    barrier.subresourceRange.baseMipLevel = 0;
-//    barrier.subresourceRange.levelCount = 1;
-//    barrier.subresourceRange.baseArrayLayer = 0;
-//    barrier.subresourceRange.layerCount = 1;
-//
-//    VkPipelineStageFlags sourceStage;
-//    VkPipelineStageFlags destinationStage;
-//
-//    if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
-//        barrier.srcAccessMask = 0;
-//        barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-//
-//        sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-//        destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-//    }
-//    else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
-//        barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;   // ホスト側によってメモリ書き込みされた (かもしれない)
-//        barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-//
-//        sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-//        destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-//    } 
-//    else if (oldLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR && newLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) {
-//        barrier.srcAccessMask = 0;
-//        barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-//
-//        sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-//        destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-//    }
-//    else {
-//        LN_ERROR("unsupported layout transition!");
-//        return;
-//    }
-//
-//    vkCmdPipelineBarrier(
-//        commandBuffer,
-//        sourceStage, destinationStage,
-//        0,
-//        0, nullptr,
-//        0, nullptr,
-//        1, &barrier
-//    );
-//}
 
 //=============================================================================
 // VulkanDepthBuffer

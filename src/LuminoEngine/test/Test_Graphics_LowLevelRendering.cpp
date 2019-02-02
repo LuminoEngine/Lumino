@@ -26,7 +26,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
         ctx->setDepthBuffer(nullptr);
         ctx->clear(ClearFlags::All, Color::Blue, 1.0f, 0);
         ctx->present(Engine::mainWindow()->swapChain());
-        //ASSERT_SCREEN_S(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-1.png"));
+        ASSERT_SCREEN_S(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-1.png"));
     }
     {
         auto ctx = Engine::graphicsContext();

@@ -16,6 +16,7 @@ class VulkanSwapChain;
 class VulkanIndexBuffer;
 class VulkanTexture2D;
 class VulkanRenderTargetTexture;
+class VulkanSwapchainRenderTargetTexture;
 class VulkanShaderPass;
 class VulkanShaderUniformBuffer;
 class VulkanShaderUniform;
@@ -418,9 +419,10 @@ private:
     VkColorSpaceKHR m_colorSpace;
     VkSurfaceTransformFlagBitsKHR m_preTransform;
     VkPresentModeKHR m_presentMode;
-    std::vector<VkImage> m_images;
-    std::vector<VkImageView> m_imageViews;
-    std::vector<Ref<VulkanRenderTargetTexture>> m_buffers;
+    //std::vector<VkImage> m_images;
+    //std::vector<VkImageView> m_imageViews;
+    Ref<VulkanSwapchainRenderTargetTexture> m_colorBuffer;
+    //std::vector<Ref<VulkanRenderTargetTexture>> m_buffers;
     uint32_t m_currentBufferIndex;
     Ref<VulkanCommandList> m_inactiveCommandBuffer;
 
@@ -561,7 +563,6 @@ class VulkanRenderTargetTexture
 public:
     VulkanRenderTargetTexture();
     virtual ~VulkanRenderTargetTexture();
-	bool init(VulkanDeviceContext* deviceContext, const VulkanSwapChain::SwapChainDesc& desc, VkImage image, VkImageView view);
     void init(VulkanDeviceContext* context, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
     virtual void dispose() override;
 
@@ -591,6 +592,48 @@ private:
     TextureFormat m_format;
     VkFormat m_vulkanFormat;
 	bool m_isExternal;
+};
+
+// ダブルバッファを管理するため、通常の RenderTargetTexture とは別にする。
+// IGraphicsDeviceContext は DX11 相当の IF に合わせているので、ダブルバッファの実装はこちら側で隠蔽したい。
+class VulkanSwapchainRenderTargetTexture
+    : public VulkanTextureBase
+{
+public:
+    VulkanSwapchainRenderTargetTexture();
+    virtual ~VulkanSwapchainRenderTargetTexture();
+    bool init(VulkanDeviceContext* deviceContext);
+    virtual void dispose() override;
+
+    void reset(const VulkanSwapChain::SwapChainDesc& desc, std::vector<VkImage> images, std::vector<VkImageView> views);
+    void setBufferIndex(int index) { m_bufferIndex = index; }
+    VkImage vulkanImage(int index) const { return m_images[index]; }
+    VkImageView vulkanImageView(int index) const { return m_imageViews[index]; }
+
+    virtual const TextureDesc& desc() const override { return m_desc; }
+    virtual VkImage vulkanImage() const override { return m_images[m_bufferIndex]; }
+    virtual VkImageView vulkanImageView() const override { return m_imageViews[m_bufferIndex]; }
+
+    virtual DeviceTextureType type() const override;
+    virtual void readData(void* outData) override;
+    virtual SizeI realSize() override;
+    virtual TextureFormat getTextureFormat() const override;
+    virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) override;
+    virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
+
+    int prevBufferIndex() const { return (m_bufferIndex == 0) ? m_images.size() - 1 : m_bufferIndex - 1; }
+
+private:
+    VulkanDeviceContext* m_deviceContext;
+    TextureDesc m_desc;
+    std::vector<VkImage> m_images;
+    std::vector<VkImageView> m_imageViews;
+    int m_bufferIndex;
+    //VkImageAspectFlags m_imageAspectFlags;
+    //VkDeviceMemory m_deviceMemory;
+
+    TextureFormat m_format;
+    VkFormat m_vulkanFormat;
 };
 
 class VulkanDepthBuffer
