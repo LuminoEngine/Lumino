@@ -57,6 +57,7 @@ public:
 //	static void setD3D9Device(void* device);
 //#endif
 
+    static void setStandaloneFpsControl(bool enabled);
     static void setEngineFeatures(Flags<EngineFeature> features);
 };
 

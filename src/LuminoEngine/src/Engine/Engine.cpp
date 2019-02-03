@@ -49,6 +49,11 @@ void EngineSettings::setAssetStorageAccessPriority(AssetStorageAccessPriority va
 	detail::EngineDomain::engineManager()->settings().assetStorageAccessPriority = value;
 }
 
+void EngineSettings::setStandaloneFpsControl(bool enabled)
+{
+    detail::EngineDomain::engineManager()->settings().standaloneFpsControl = enabled;
+}
+
 void EngineSettings::setEngineFeatures(Flags<EngineFeature> features)
 {
     detail::EngineDomain::engineManager()->settings().features = features;
