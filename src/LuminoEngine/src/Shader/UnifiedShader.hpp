@@ -41,7 +41,14 @@ public:
     using TechniqueId = uint32_t;
     using PassId = uint32_t;
 
-    static const int FileVersion = 1;
+    //static const int FileVersion = 1;
+	enum FileVersion {
+		FileVersion_1,		// v0.7.0
+		FileVersion_2,
+
+		FileVersion_Last,
+		FileVersion_Current = FileVersion_Last - 1,
+	};
     static const String FileExt;
 
     UnifiedShader(DiagnosticsManager* diag);
@@ -51,11 +58,11 @@ public:
     bool load(Stream* stream);
 
     bool addCodeContainer(const std::string& entryPointName, CodeContainerId* outId);
-    void setCode(CodeContainerId container, const UnifiedShaderTriple& triple, const std::string& code);
-    void setCode(const std::string& entryPointName, const UnifiedShaderTriple& triple, const std::string& code);
+    void setCode(CodeContainerId container, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code);
+    void setCode(const std::string& entryPointName, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code);
     bool hasCode(const std::string& entryPointName, const UnifiedShaderTriple& triple) const;
     bool findCodeContainer(const std::string& entryPointName, CodeContainerId* outId) const;
-    const std::string* findCode(CodeContainerId conteinreId, const UnifiedShaderTriple& triple) const;
+    const std::vector<byte_t>* findCode(CodeContainerId conteinreId, const UnifiedShaderTriple& triple) const;
 
     bool addTechnique(const std::string& name, TechniqueId* outTech);
     int techniqueCount() const { return m_techniques.size(); }
@@ -71,9 +78,11 @@ public:
     void setVertexShader(PassId pass, CodeContainerId code);
     void setPixelShader(PassId pass, CodeContainerId code);
     void setRenderState(PassId pass, ShaderRenderState* state);
+	void setAttributeSemantics(PassId pass, const std::vector<VertexInputAttribute>& semantics);
     CodeContainerId vertexShader(PassId pass) const;
     CodeContainerId pixelShader(PassId pass) const;
     ShaderRenderState* renderState(PassId pass) const;
+	const std::vector<VertexInputAttribute>& attributeSemantics(PassId pass) const;
 
 private:
     int idToIndex(uint32_t id) const { return id - 1; }
@@ -83,13 +92,15 @@ private:
     int findPassInfoIndex(TechniqueId tech, const std::string& name) const;
 
     static void writeString(BinaryWriter* w, const std::string& str);
+	static void writeByteArray(BinaryWriter* w, const std::vector<byte_t>& data);
     static std::string readString(BinaryReader* r);
+	static std::vector<byte_t> readByteArray(BinaryReader* r);
     static bool checkSignature(BinaryReader* r, const char* sig, size_t len, DiagnosticsManager* diag);
 
     struct CodeInfo
     {
         UnifiedShaderTriple triple;
-        std::string code;
+		std::vector<byte_t> code;
     };
 
     struct CodeContainerInfo
@@ -110,6 +121,7 @@ private:
         CodeContainerId vertexShader;
         CodeContainerId pixelShader;
         Ref<ShaderRenderState> renderState;
+		std::vector<VertexInputAttribute> attributeSemantics;
     };
 
     DiagnosticsManager* m_diag;

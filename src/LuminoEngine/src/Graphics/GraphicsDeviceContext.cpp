@@ -89,12 +89,12 @@ Ref<ISamplerState> IGraphicsDeviceContext::createSamplerState(const SamplerState
 	return onCreateSamplerState(desc);
 }
 
-Ref<IShaderPass> IGraphicsDeviceContext::createShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag)
+Ref<IShaderPass> IGraphicsDeviceContext::createShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, const ShaderVertexInputAttributeTable* attributeTable, ShaderCompilationDiag* diag)
 {
 	diag->level = ShaderCompilationResultLevel::Success;
 	diag->message.clear();
 
-	auto pass = onCreateShaderPass(vsCode, vsCodeLen, fsCodeLen, psCodeLen, diag);
+	auto pass = onCreateShaderPass(vsCode, vsCodeLen, fsCodeLen, psCodeLen, attributeTable, diag);
 
 	if (!diag->message.empty()) {
 		LN_LOG_VERBOSE << diag->message;

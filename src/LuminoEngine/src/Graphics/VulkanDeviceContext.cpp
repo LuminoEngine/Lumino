@@ -791,7 +791,7 @@ bool VulkanDeviceContext::init(const Settings& settings)
 		static const size_t fragSize = LN_ARRAY_SIZE_OF(fragData);
 
 		m_defaultShaderPass = makeRef<VulkanShaderPass>();
-		if (!m_defaultShaderPass->init(this, vertData, vertSize, fragData, fragSize)) {
+		if (!m_defaultShaderPass->init(this, vertData, vertSize, fragData, fragSize, nullptr)) {
 			return false;
 		}
     }
@@ -1015,7 +1015,7 @@ bool VulkanDeviceContext::endActiveCommandBuffer()
 void VulkanDeviceContext::onGetCaps(GraphicsDeviceCaps* outCaps)
 {
     outCaps->requestedShaderTriple.target = "spv";
-    outCaps->requestedShaderTriple.version = 0;
+    outCaps->requestedShaderTriple.version = 110;
     outCaps->requestedShaderTriple.option = "";
 }
 
@@ -1105,7 +1105,7 @@ Ref<ISamplerState> VulkanDeviceContext::onCreateSamplerState(const SamplerStateD
     return nullptr;
 }
 
-Ref<IShaderPass> VulkanDeviceContext::onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* psCode, int psCodeLen, ShaderCompilationDiag* diag)
+Ref<IShaderPass> VulkanDeviceContext::onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* psCode, int psCodeLen, const ShaderVertexInputAttributeTable* attributeTable, ShaderCompilationDiag* diag)
 {
     LN_NOTIMPLEMENTED();
     return nullptr;
@@ -1716,11 +1716,31 @@ bool VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsDev
 		multisampleState.alphaToOneEnable = VK_FALSE;
 	}
 
-	// TODO:
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
-	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-	vertexInputInfo.vertexBindingDescriptionCount = 0;
-	vertexInputInfo.vertexAttributeDescriptionCount = 0;
+	std::array<VkVertexInputAttributeDescription, 16> vertexAttributeDescriptions;
+	{
+		VulkanVertexDeclaration* decl = static_cast<VulkanVertexDeclaration*>(committed.vertexDeclaration);
+		VulkanShaderPass* shaderPass = static_cast<VulkanShaderPass*>(committed.shaderPass);
+
+		for (size_t i = 0; i < decl->vertexAttributeTemplate().size(); i++) {
+			vertexAttributeDescriptions[i] = decl->vertexAttributeTemplate()[i];
+			auto& element = decl->elements()[i];
+			if (!shaderPass->findAttributeLocation(element.Usage, element.UsageIndex, &vertexAttributeDescriptions[i].location)) {
+				LN_NOTIMPLEMENTED();
+				return false;
+			}
+		}
+
+		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+		vertexInputInfo.pNext = nullptr;
+		vertexInputInfo.flags = 0;
+
+		vertexInputInfo.vertexBindingDescriptionCount = decl->vertexBindingDescriptions().size();
+		vertexInputInfo.pVertexBindingDescriptions = decl->vertexBindingDescriptions().data();
+
+		vertexInputInfo.vertexAttributeDescriptionCount = decl->vertexAttributeTemplate().size();
+		vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptions.data();
+	}
 
 	VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
 	inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -1752,9 +1772,6 @@ bool VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsDev
 		viewportState.scissorCount = 1;
 		viewportState.pScissors = &scissor;
 	}
-
-
-    //VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
 
     VkPipelineShaderStageCreateInfo shaderStages[2];
     {
@@ -2438,22 +2455,30 @@ VulkanVertexDeclaration::~VulkanVertexDeclaration()
 
 bool VulkanVertexDeclaration::init(const VertexElement* elements, int elementsCount)
 {
-    uint32_t bindingCount = 0;
+	m_maxStreamCount = 0;
     for (int i = 0; i < elementsCount; i++) {
-        bindingCount = std::max(bindingCount, elements[i].StreamIndex);
+		m_maxStreamCount = std::max(m_maxStreamCount, elements[i].StreamIndex);
+		m_elements.push_back(elements[i]);
     }
-    m_bindings.resize(bindingCount);
+	m_elements.resize(m_maxStreamCount);
 
-    uint32_t loc = 0;
+    //uint32_t loc = 0;
     for (int i = 0; i < elementsCount; i++) {
+		auto& element = m_elements[i];
+
         VkVertexInputAttributeDescription attr;
-        attr.location = loc; // TODO: ひとまず先頭から1ずつ
+		attr.location = 0;
         attr.binding = elements[i].StreamIndex;
         attr.format = LNVertexElementTypeToVkFormat(elements[i].Type);
         attr.offset = m_bindings[attr.binding].stride;
-        m_bindings[attr.binding].stride += GraphicsHelper::getVertexElementTypeSize(elements[i].Type);
+		m_attributeTemplate.push_back(attr);
 
-		loc++;
+
+        m_bindings[element.StreamIndex].stride += GraphicsHelper::getVertexElementTypeSize(elements[i].Type);
+
+		//loc++;
+
+		
 
         // TODO: Lumino のシェーダとしては、location と Semantics の対応を固定してもいいかもしれない。
         // たとえば、location=0 は POSITION0 とか。
@@ -3168,7 +3193,7 @@ VulkanShaderPass::~VulkanShaderPass()
 {
 }
 
-bool VulkanShaderPass::init(VulkanDeviceContext* context, const void* spvVert, size_t spvVertLen, const void* spvFrag, size_t spvFragLen)
+bool VulkanShaderPass::init(VulkanDeviceContext* context, const void* spvVert, size_t spvVertLen, const void* spvFrag, size_t spvFragLen, const ShaderVertexInputAttributeTable* attributeTable)
 {
 	m_deviceContext = context;
 
@@ -3196,6 +3221,10 @@ bool VulkanShaderPass::init(VulkanDeviceContext* context, const void* spvVert, s
 		}
 	}
 
+	if (attributeTable) {
+		m_inputAttributeTable = *attributeTable;
+	}
+
 	return true;
 }
 
@@ -3212,6 +3241,17 @@ void VulkanShaderPass::dispose()
 	}
 
     IShaderPass::dispose();
+}
+
+bool VulkanShaderPass::findAttributeLocation(VertexElementUsage usage, uint32_t usageIndex, uint32_t* outLocation) const
+{
+	for (auto& i : m_inputAttributeTable) {
+		if (i.usage == usage && i.index == usageIndex) {
+			*outLocation = i.layoutLocation;
+			return true;
+		}
+	}
+	return false;
 }
 
 int VulkanShaderPass::getUniformCount() const

@@ -274,8 +274,8 @@ void Shader::createFromUnifiedShader(Stream* stream, DiagnosticsManager* diag)
                 detail::UnifiedShader::CodeContainerId vscodeId = unifiedShader.vertexShader(passId);
                 detail::UnifiedShader::CodeContainerId pscodeId = unifiedShader.pixelShader(passId);
 
-                const std::string* vscode = nullptr;
-                const std::string* pscode = nullptr;
+                const std::vector<byte_t>* vscode = nullptr;
+                const std::vector<byte_t>* pscode = nullptr;
                 if (vscodeId) {
                     vscode = unifiedShader.findCode(vscodeId, triple);
                 }
@@ -284,7 +284,12 @@ void Shader::createFromUnifiedShader(Stream* stream, DiagnosticsManager* diag)
                 }
 
                 auto rhiPass = createRHIShaderPass(
-                    (vscode) ? vscode->c_str() : nullptr, (vscode) ? vscode->length() : 0, (pscode) ? pscode->c_str() : nullptr, (pscode) ? pscode->length() : 0, diag);
+                    (vscode) ? vscode->data() : nullptr,
+					(vscode) ? vscode->size() : 0,
+					(pscode) ? pscode->data() : nullptr,
+					(pscode) ? pscode->size() : 0,
+					&unifiedShader.attributeSemantics(passId),
+					diag);
                 if (rhiPass) {
                     auto pass = newObject<ShaderPass>(String::fromStdString(unifiedShader.passName(passId)), rhiPass);
                     pass->m_renderState = unifiedShader.renderState(passId);
@@ -340,11 +345,11 @@ Ref<detail::IShaderPass> Shader::createShaderPass(
         return nullptr;
     }
 
-    std::string vsCode = vsCodeGen.generateGlsl(400, false);
-    std::string psCode = psCodeGen.generateGlsl(400, false);
+	std::vector<byte_t> vsCode = vsCodeGen.generateGlsl(400, false);
+	std::vector<byte_t> psCode = psCodeGen.generateGlsl(400, false);
 
     Ref<detail::IShaderPass> pass = createRHIShaderPass(
-        vsCode.c_str(), vsCode.length(), psCode.c_str(), psCode.length(), diag);
+		vsCode.data(), vsCode.size(), psCode.data(), psCode.size(), nullptr, diag);
 
     return pass;
 #else
@@ -354,15 +359,45 @@ Ref<detail::IShaderPass> Shader::createShaderPass(
 }
 
 Ref<detail::IShaderPass> Shader::createRHIShaderPass(
-    const char* vsData,
+    const byte_t* vsData,
     size_t vsLen,
-    const char* psData,
+    const byte_t* psData,
     size_t psLen,
+	const detail::VertexInputAttributeTable* vertexInputAttributeTable,
     DiagnosticsManager* diag)
 {
+	detail::ShaderVertexInputAttributeTable attributeTable;
+	if (vertexInputAttributeTable) {
+		struct AttributeUsageConvertionItem
+		{
+			detail::AttributeUsage usage1;
+			VertexElementUsage usage2;
+		};
+		static const AttributeUsageConvertionItem s_AttributeUsageConvertionTable[] = {
+			{ detail::AttributeUsage_Unknown, VertexElementUsage::Unknown },
+			{ detail::AttributeUsage_Position, VertexElementUsage::PointSize },
+			{ detail::AttributeUsage_BlendIndices, VertexElementUsage::BlendIndices },
+			{ detail::AttributeUsage_BlendWeight, VertexElementUsage::BlendWeight },
+			{ detail::AttributeUsage_Normal, VertexElementUsage::Normal },
+			{ detail::AttributeUsage_TexCoord, VertexElementUsage::TexCoord },
+			{ detail::AttributeUsage_Tangent, VertexElementUsage::Unknown },	// TODO:
+			{ detail::AttributeUsage_Binormal, VertexElementUsage::Unknown },	// TODO:
+			{ detail::AttributeUsage_Color, VertexElementUsage::Color },
+		};
+
+		for (size_t i = 0; i < vertexInputAttributeTable->size(); i++) {
+			detail::ShaderVertexInputAttribute attr;
+			assert(i == s_AttributeUsageConvertionTable[i].usage1);
+			attr.usage = s_AttributeUsageConvertionTable[(int)vertexInputAttributeTable->at(i).usage].usage2;
+			attr.index = vertexInputAttributeTable->at(i).index;
+			attr.layoutLocation = vertexInputAttributeTable->at(i).layoutLocation;
+			attributeTable.push_back(attr);
+		}
+	}
+
     ShaderCompilationDiag sdiag;
     Ref<detail::IShaderPass> pass = deviceContext()->createShaderPass(
-        reinterpret_cast<const byte_t*>(vsData), vsLen, reinterpret_cast<const byte_t*>(psData), psLen, &sdiag);
+        vsData, vsLen, psData, psLen, &attributeTable, &sdiag);
 
     if (sdiag.level == ShaderCompilationResultLevel::Error) {
         diag->reportError(String::fromStdString(sdiag.message));

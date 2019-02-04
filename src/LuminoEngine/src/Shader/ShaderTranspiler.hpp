@@ -3,6 +3,7 @@
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 
 #include <LuminoEngine/Engine/Diagnostics.hpp>
+#include <LuminoEngine/Shader/Common.hpp>
 #include "../Grammar/Token.hpp"
 
 namespace ln {
@@ -38,11 +39,14 @@ public:
         const List<String>* definitions,
         DiagnosticsManager* diag);
 
-    std::string generateGlsl(uint32_t version, bool es);
+	const std::vector<VertexInputAttribute>& attributes() const { return m_attributes; }
+	std::vector<byte_t> spirvCode() const;
+    std::vector<byte_t> generateGlsl(uint32_t version, bool es);
 
 private:
     ShaderManager* m_manager;
     ShaderCodeStage m_stage;
+	std::vector<VertexInputAttribute> m_attributes;
     std::vector<uint32_t> m_spirvCode;
 };
 

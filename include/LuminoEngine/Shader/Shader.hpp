@@ -107,11 +107,12 @@ private:
         const char* psEntryPoint,
         DiagnosticsManager* diag,
         ShaderCompilationProperties* properties);
-    Ref<detail::IShaderPass> createRHIShaderPass(
-        const char* vsData,
-        size_t vsLen,
-        const char* psData,
-        size_t psLen,
+	Ref<detail::IShaderPass> createRHIShaderPass(
+		const byte_t* vsData,
+		size_t vsLen,
+		const byte_t* psData,
+		size_t psLen,
+		const detail::VertexInputAttributeTable* vertexInputAttributeTable,
         DiagnosticsManager* diag);
     void createSinglePassShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen, DiagnosticsManager* diag, ShaderCompilationProperties* properties);
     void postInitialize();

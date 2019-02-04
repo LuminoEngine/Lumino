@@ -254,7 +254,7 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
 
     // -d オプション
     //const int defaultVersion = Options & EOptionDefaultDesktop ? 110 : 100;
-    const int defaultVersion = 100;
+    const int defaultVersion = 110;
 
     glslang::EShSource sourceType = glslang::EShSourceHlsl;
     const int ClientInputSemanticsVersion = 410; //320;
@@ -332,12 +332,71 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
     program.buildReflection();
     program.dumpReflection();
 
+	// get input attributes
+	{
+		m_attributes.clear();
+
+		for (int iAttr = 0; iAttr < program.getNumLiveAttributes(); iAttr++)
+		{
+			auto name = program.getAttributeName(iAttr);
+			const glslang::TType* tt = program.getAttributeTType(iAttr);
+			const glslang::TQualifier& qual = tt->getQualifier();
+
+			VertexInputAttribute attr;
+			int keywordLen = 0;
+			if (strnicmp(qual.semanticName, "POSITION", 8) == 0) {
+				attr.usage = AttributeUsage_Position;
+				keywordLen = 8;
+			}
+			else if (strnicmp(qual.semanticName, "BLENDWEIGHT", 11) == 0) {
+				attr.usage = AttributeUsage_BlendWeight;
+				keywordLen = 11;
+			}
+			else if (strnicmp(qual.semanticName, "BLENDINDICES", 12) == 0) {
+				attr.usage = AttributeUsage_BlendIndices;
+				keywordLen = 12;
+			}
+			else if (strnicmp(qual.semanticName, "NORMAL", 6) == 0) {
+				attr.usage = AttributeUsage_Normal;
+				keywordLen = 6;
+			}
+			else if (strnicmp(qual.semanticName, "TEXCOORD", 8) == 0) {
+				attr.usage = AttributeUsage_TexCoord;
+				keywordLen = 8;
+			}
+			else if (strnicmp(qual.semanticName, "TANGENT", 7) == 0) {
+				attr.usage = AttributeUsage_Tangent;
+				keywordLen = 7;
+			}
+			else if (strnicmp(qual.semanticName, "BINORMAL", 8) == 0) {
+				attr.usage = AttributeUsage_Binormal;
+				keywordLen = 8;
+			}
+			else if (strnicmp(qual.semanticName, "COLOR", 5) == 0) {
+				attr.usage = AttributeUsage_Color;
+				keywordLen = 5;
+			}
+
+			attr.index = atoi(qual.semanticName + keywordLen);
+			attr.layoutLocation = qual.layoutLocation;
+
+			m_attributes.push_back(attr);
+		}
+	}
+
     glslang::GlslangToSpv(*program.getIntermediate(lang), m_spirvCode);
 
     return true;
 }
 
-std::string ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es)
+std::vector<byte_t> ShaderCodeTranspiler::spirvCode() const
+{
+	auto begin = reinterpret_cast<const byte_t*>(m_spirvCode.data());
+	auto end = begin + (m_spirvCode.size() * sizeof(uint32_t));
+	return std::vector<byte_t>(begin, end);
+}
+
+std::vector<byte_t> ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es)
 {
     spirv_cross::CompilerGLSL glsl(m_spirvCode);
     spirv_cross::ShaderResources resources = glsl.get_shader_resources();
@@ -465,7 +524,7 @@ std::string ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es)
 		*/
     }
 
-    return code;
+    return std::vector<byte_t>(code.begin(), code.end());
 }
 
 } // namespace detail

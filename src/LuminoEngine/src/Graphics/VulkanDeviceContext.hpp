@@ -221,7 +221,7 @@ protected:
     virtual Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) override;
     virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
     virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
-    virtual Ref<IShaderPass> onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag) override;
+    virtual Ref<IShaderPass> onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, const ShaderVertexInputAttributeTable* attributeTable, ShaderCompilationDiag* diag) override;
     virtual void onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState) override;
     virtual void onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer) override;
     virtual void onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize) override;
@@ -443,10 +443,15 @@ public:
     virtual ~VulkanVertexDeclaration();
     bool init(const VertexElement* elements, int elementsCount);
     virtual void dispose() override;
+	const std::vector<VertexElement>& elements() const { return m_elements; }
+	const std::vector<VkVertexInputBindingDescription>& vertexBindingDescriptions() const { return m_bindings; }
+	const std::vector<VkVertexInputAttributeDescription>& vertexAttributeTemplate() const { return m_attributeTemplate; }
 
 private:
+	std::vector<VertexElement> m_elements;
+	uint32_t m_maxStreamCount;
     std::vector<VkVertexInputBindingDescription> m_bindings;
-    std::vector<VkVertexInputAttributeDescription> m_attributes;
+    std::vector<VkVertexInputAttributeDescription> m_attributeTemplate;	// location 未設定。Pipleline 作成時にこれをコピーして各定する。
 };
 
 class VulkanVertexBuffer
@@ -667,11 +672,13 @@ class VulkanShaderPass
 public:
     VulkanShaderPass();
     virtual ~VulkanShaderPass();
-    bool init(VulkanDeviceContext* context, const void* spvVert, size_t spvVertLen, const void* spvFrag, size_t spvFragLen);
+    bool init(VulkanDeviceContext* context, const void* spvVert, size_t spvVertLen, const void* spvFrag, size_t spvFragLen, const ShaderVertexInputAttributeTable* attributeTable);
     virtual void dispose() override;
 
 	VkShaderModule vertShaderModule() const { return m_vertShaderModule; }
 	VkShaderModule fragShaderModule() const { return m_fragShaderModule; }
+	const ShaderVertexInputAttributeTable& inputAttributeTable() const { return m_inputAttributeTable; }
+	bool findAttributeLocation(VertexElementUsage usage, uint32_t usageIndex, uint32_t* outLocation) const;
 
     virtual int getUniformCount() const override;
     virtual IShaderUniform* getUniform(int index) const override;
@@ -684,6 +691,7 @@ private:
 	VulkanDeviceContext* m_deviceContext;
 	VkShaderModule m_vertShaderModule;
 	VkShaderModule m_fragShaderModule;
+	ShaderVertexInputAttributeTable m_inputAttributeTable;
 };
 
 class VulkanShaderUniformBuffer

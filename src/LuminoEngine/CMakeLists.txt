@@ -455,7 +455,7 @@ set(LN_SOURCES_Tilemap
     src/Tilemap/Tileset.cpp
 )
 
-if (LN_ENABLE_VULKAN)
+if (LN_USE_VULKAN)
     set(LN_SOURCES_Graphics
         ${LN_SOURCES_Graphics}
         src/Graphics/VulkanDeviceContext.cpp
@@ -544,6 +544,9 @@ elseif (WIN32)
     list(APPEND LN_PLATFORM_LIBS winmm imm32 version)
     list(APPEND LN_PLATFORM_LIBS OpenAL)
     
+    if (LN_USE_VULKAN)
+        list(APPEND LN_PLATFORM_LIBS VulkanImported)
+    endif()
 
 elseif (APPLE)
     list(APPEND LN_PLATFORM_LIBS glfw GLAD)

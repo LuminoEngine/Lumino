@@ -74,51 +74,61 @@ bool FxcCommand::generate(const ln::Path& inputFile)
 		{
             // Vertex shader
             {
-                if (!unifiedShader->hasCode(pass.vertexShader, { "glsl", 400, "" }))
-				{
-					ln::detail::ShaderCodeTranspiler transpiler(m_manager);
-					transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, &definitions, m_diag);
-					if (m_diag->hasError()) {
-						return false;
-					}
-
-					unifiedShader->setCode(pass.vertexShader, { "glsl", 400, "" }, transpiler.generateGlsl(400, false));
+				ln::detail::ShaderCodeTranspiler transpiler(m_manager);
+				transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, &definitions, m_diag);
+				if (m_diag->hasError()) {
+					return false;
 				}
 
-				if (!unifiedShader->hasCode(pass.vertexShader, { "glsl", 300, "es" }))
 				{
-					ln::detail::ShaderCodeTranspiler transpiler(m_manager);
-					transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, &definitions, m_diag);
-					if (m_diag->hasError()) {
-						return false;
+					ln::detail::UnifiedShaderTriple triple = { "spv", 110, "" };
+					if (!unifiedShader->hasCode(pass.vertexShader, triple)) {
+						unifiedShader->setCode(pass.vertexShader, triple, transpiler.spirvCode());
 					}
+				}
 
-					unifiedShader->setCode(pass.vertexShader, { "glsl", 300, "es" }, transpiler.generateGlsl(300, true));
+				{
+					ln::detail::UnifiedShaderTriple triple = { "glsl", 400, "" };
+					if (!unifiedShader->hasCode(pass.vertexShader, triple)) {
+						unifiedShader->setCode(pass.vertexShader, triple, transpiler.generateGlsl(400, false));
+					}
+				}
+
+				{
+					ln::detail::UnifiedShaderTriple triple = { "glsl", 300, "es" };
+					if (!unifiedShader->hasCode(pass.vertexShader, triple)) {
+						unifiedShader->setCode(pass.vertexShader, triple, transpiler.generateGlsl(300, true));
+					}
 				}
             }
 
             // Pixel shader
             {
-				if (!unifiedShader->hasCode(pass.pixelShader, { "glsl", 400, "" }))
-				{
-					ln::detail::ShaderCodeTranspiler transpiler(m_manager);
-					transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, &definitions, m_diag);
-					if (m_diag->hasError()) {
-						return false;
-					}
-
-					unifiedShader->setCode(pass.pixelShader, { "glsl", 400, "" }, transpiler.generateGlsl(400, false));
+				ln::detail::ShaderCodeTranspiler transpiler(m_manager);
+				transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, &definitions, m_diag);
+				if (m_diag->hasError()) {
+					return false;
 				}
 
-				if (!unifiedShader->hasCode(pass.pixelShader, { "glsl", 300, "es" }))
 				{
-					ln::detail::ShaderCodeTranspiler transpiler(m_manager);
-					transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, &definitions, m_diag);
-					if (m_diag->hasError()) {
-						return false;
+					ln::detail::UnifiedShaderTriple triple = { "spv", 110, "" };
+					if (!unifiedShader->hasCode(pass.pixelShader, triple)) {
+						unifiedShader->setCode(pass.pixelShader, triple, transpiler.spirvCode());
 					}
+				}
 
-					unifiedShader->setCode(pass.pixelShader, { "glsl", 300, "es" }, transpiler.generateGlsl(300, true));
+				{
+					ln::detail::UnifiedShaderTriple triple = { "glsl", 400, "" };
+					if (!unifiedShader->hasCode(pass.pixelShader, triple)) {
+						unifiedShader->setCode(pass.pixelShader, triple, transpiler.generateGlsl(400, false));
+					}
+				}
+
+				{
+					ln::detail::UnifiedShaderTriple triple = { "glsl", 300, "es" };
+					if (!unifiedShader->hasCode(pass.pixelShader, triple)) {
+						unifiedShader->setCode(pass.pixelShader, triple, transpiler.generateGlsl(300, true));
+					}
 				}
             }
         }

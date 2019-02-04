@@ -69,7 +69,7 @@ bool UnifiedShader::save(const Path& filePath)
     // File header
     {
         writer->write("lufx", 4); // magic number
-        writer->writeUInt32(FileVersion);
+        writer->writeUInt32(FileVersion_Current);
     }
 
     // Code container
@@ -86,7 +86,7 @@ bool UnifiedShader::save(const Path& filePath)
                 writeString(writer, info->codes[iCode].triple.target);
                 writer->writeUInt32(info->codes[iCode].triple.version);
                 writeString(writer, info->codes[iCode].triple.option);
-                writeString(writer, info->codes[iCode].code);
+				writeByteArray(writer, info->codes[iCode].code);
             }
         }
     }
@@ -144,6 +144,17 @@ bool UnifiedShader::save(const Path& filePath)
                 writeOptionalUInt8(writer, renderState->stencilPassOp);
                 writeOptionalUInt8(writer, renderState->stencilFunc);
             }
+
+			// Input attribute semantices
+			{
+				auto& semantics = info->attributeSemantics;
+				writer->writeUInt32(semantics.size());
+				for (size_t i = 0; i < semantics.size(); i++) {
+					writer->writeUInt8(semantics[i].usage);
+					writer->writeUInt8(semantics[i].index);
+					writer->writeUInt8(semantics[i].layoutLocation);
+				}
+			}
         }
     }
 
@@ -182,7 +193,7 @@ bool UnifiedShader::load(Stream* stream)
                 code.triple.target = readString(reader);
                 code.triple.version = reader->readUInt32();
                 code.triple.option = readString(reader);
-                code.code = readString(reader);
+                code.code = readByteArray(reader);
                 info.codes.push_back(std::move(code));
             }
 
@@ -260,7 +271,20 @@ bool UnifiedShader::load(Stream* stream)
                 readOptionalUInt8(reader, &renderState->stencilFunc);
             }
 
-            m_passes.add(info);
+			// Input attribute semantices
+			if (fileVersion >= FileVersion_2)
+			{
+				size_t count = reader->readUInt32();
+				for (size_t i = 0; i < count; i++) {
+					VertexInputAttribute attr;
+					attr.usage = (AttributeUsage)reader->readUInt8();
+					attr.index = reader->readUInt8();
+					attr.layoutLocation = reader->readUInt8();
+					info.attributeSemantics.push_back(attr);
+				}
+			}
+
+            m_passes.add(std::move(info));
         }
     }
 
@@ -279,12 +303,12 @@ bool UnifiedShader::addCodeContainer(const std::string& entryPointName, CodeCont
     return true;
 }
 
-void UnifiedShader::setCode(CodeContainerId container, const UnifiedShaderTriple& triple, const std::string& code)
+void UnifiedShader::setCode(CodeContainerId container, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code)
 {
     m_codeContainers[idToIndex(container)].codes.push_back({triple, code});
 }
 
-void UnifiedShader::setCode(const std::string& entryPointName, const UnifiedShaderTriple& triple, const std::string& code)
+void UnifiedShader::setCode(const std::string& entryPointName, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code)
 {
     int index = findCodeContainerInfoIndex(entryPointName);
     if (index < 0) {
@@ -312,7 +336,7 @@ bool UnifiedShader::findCodeContainer(const std::string& entryPointName, CodeCon
     return (*outId) >= 0;
 }
 
-const std::string* UnifiedShader::findCode(CodeContainerId conteinreId, const UnifiedShaderTriple& triple) const
+const std::vector<byte_t>* UnifiedShader::findCode(CodeContainerId conteinreId, const UnifiedShaderTriple& triple) const
 {
     if (LN_REQUIRE(!triple.target.empty())) {
         return nullptr;
@@ -396,6 +420,11 @@ void UnifiedShader::setRenderState(PassId pass, ShaderRenderState* state)
     m_passes[idToIndex(pass)].renderState = state;
 }
 
+void UnifiedShader::setAttributeSemantics(PassId pass, const std::vector<VertexInputAttribute>& semantics)
+{
+	m_passes[idToIndex(pass)].attributeSemantics = semantics;
+}
+
 UnifiedShader::CodeContainerId UnifiedShader::vertexShader(PassId pass) const
 {
     return m_passes[idToIndex(pass)].vertexShader;
@@ -409,6 +438,11 @@ UnifiedShader::CodeContainerId UnifiedShader::pixelShader(PassId pass) const
 ShaderRenderState* UnifiedShader::renderState(PassId pass) const
 {
     return m_passes[idToIndex(pass)].renderState;
+}
+
+const std::vector<VertexInputAttribute>& UnifiedShader::attributeSemantics(PassId pass) const
+{
+	return m_passes[idToIndex(pass)].attributeSemantics;
 }
 
 int UnifiedShader::findCodeContainerInfoIndex(const std::string& entryPointName) const
@@ -439,6 +473,12 @@ void UnifiedShader::writeString(BinaryWriter* w, const std::string& str)
     w->write(str.data(), str.length());
 }
 
+void UnifiedShader::writeByteArray(BinaryWriter* w, const std::vector<byte_t>& data)
+{
+	w->writeUInt32(data.size());
+	w->write(data.data(), data.size());
+}
+
 std::string UnifiedShader::readString(BinaryReader* r)
 {
     uint32_t len = r->readUInt32();
@@ -454,6 +494,15 @@ std::string UnifiedShader::readString(BinaryReader* r)
         r->read(buf.data(), len);
         return std::string(buf.begin(), buf.end());
     }
+}
+
+std::vector<byte_t> UnifiedShader::readByteArray(BinaryReader* r)
+{
+	uint32_t len = r->readUInt32();
+	std::vector<byte_t> buf;
+	buf.resize(len);
+	r->read(buf.data(), len);
+	return buf;
 }
 
 bool UnifiedShader::checkSignature(BinaryReader* r, const char* sig, size_t len, DiagnosticsManager* diag)

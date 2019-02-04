@@ -40,7 +40,8 @@ int main(int argc, char** argv)
             //"fxc", "C:/Proj/GitHub/Lumino/src/LuminoEngine/test/Assets/Shader/FxcTest1.fx",
             //"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.hlsl",
 
-            "build", "assets",
+            //"build", "assets",
+			"fxc", "D:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Basic.fx"
 		};
 		argc = sizeof(debugArgv) / sizeof(char*);
 		argv = (char**)debugArgv;
