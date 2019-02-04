@@ -375,7 +375,7 @@ Ref<detail::IShaderPass> Shader::createRHIShaderPass(
 		};
 		static const AttributeUsageConvertionItem s_AttributeUsageConvertionTable[] = {
 			{ detail::AttributeUsage_Unknown, VertexElementUsage::Unknown },
-			{ detail::AttributeUsage_Position, VertexElementUsage::PointSize },
+			{ detail::AttributeUsage_Position, VertexElementUsage::Position },
 			{ detail::AttributeUsage_BlendIndices, VertexElementUsage::BlendIndices },
 			{ detail::AttributeUsage_BlendWeight, VertexElementUsage::BlendWeight },
 			{ detail::AttributeUsage_Normal, VertexElementUsage::Normal },

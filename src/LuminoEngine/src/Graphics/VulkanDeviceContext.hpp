@@ -460,7 +460,7 @@ class VulkanVertexBuffer
 public:
     VulkanVertexBuffer();
     virtual ~VulkanVertexBuffer();
-    void init(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData);
+    bool init(VulkanDeviceContext* deviceContext, GraphicsResourceUsage usage, size_t bufferSize, const void* initialData);
     virtual void dispose() override;
     virtual size_t getBytesSize() override;
     virtual GraphicsResourceUsage usage() const override;
@@ -468,7 +468,12 @@ public:
     virtual void* map() override;
     virtual void unmap() override;
 
+    VkBuffer vulkanVertexBuffer() const { return m_vertexBuffer; }
+
 private:
+    VulkanDeviceContext* m_deviceContext;
+    VkBuffer m_vertexBuffer;
+    VkDeviceMemory m_vertexBufferMemory;
 };
 
 class VulkanIndexBuffer

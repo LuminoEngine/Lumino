@@ -46,20 +46,21 @@ class IGraphicsDeviceContext
 {
 public:
 	static const int MaxRenderTargets = 4;
+    static const int MaxVertexStreams = 4;
 
 	struct State
 	{
 		BlendStateDesc blendState;
 		RasterizerStateDesc rasterizerState;
 		DepthStencilStateDesc depthStencilState;
-		std::array<ITexture*, 4> renderTargets = {};
+		std::array<ITexture*, MaxRenderTargets> renderTargets = {};
 		IDepthBuffer* depthBuffer = nullptr;
 		IVertexDeclaration* vertexDeclaration = nullptr;
 		IShaderPass* shaderPass = nullptr;
 
 		RectI viewportRect;
 		RectI scissorRect;
-		std::array<IVertexBuffer*, MaxRenderTargets> vertexBuffers = {};
+		std::array<IVertexBuffer*, MaxVertexStreams> vertexBuffers = {};
 		IIndexBuffer* indexBuffer = nullptr;
 
 		//uint64_t computeStateHash() const;

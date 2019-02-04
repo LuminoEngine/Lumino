@@ -67,6 +67,9 @@ bool FxcCommand::generate(const ln::Path& inputFile)
         memset(inputCode + tech.blockBegin, ' ', tech.blockEnd - tech.blockBegin);
     }
 
+    // VertexShader 名, inputLayout
+    std::unordered_map<std::string, std::vector<ln::detail::VertexInputAttribute>> vertexInputAttributeMap;
+
 	// まずは Code を作る
     for (auto& tech : metadataParser.techniques)
 	{
@@ -79,6 +82,8 @@ bool FxcCommand::generate(const ln::Path& inputFile)
 				if (m_diag->hasError()) {
 					return false;
 				}
+
+                vertexInputAttributeMap[pass.vertexShader] = transpiler.attributes();
 
 				{
 					ln::detail::UnifiedShaderTriple triple = { "spv", 110, "" };
@@ -164,6 +169,9 @@ bool FxcCommand::generate(const ln::Path& inputFile)
 
 			// ShaderRenderState
 			unifiedShader->setRenderState(passId, pass.renderState);
+
+            // InputLayout
+            unifiedShader->setAttributeSemantics(passId, vertexInputAttributeMap[pass.vertexShader]);
 		}
 	}
 

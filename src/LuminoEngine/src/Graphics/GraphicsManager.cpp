@@ -120,9 +120,9 @@ void GraphicsManager::init(const Settings& settings)
 	openglSettings.mainWindow = settings.mainWindow;
 	auto ctx = makeRef<OpenGLDeviceContext>();
 	ctx->init(openglSettings);
-	ctx->refreshCaps();
 	m_deviceContext = ctx;
 #endif
+    m_deviceContext->refreshCaps();
 
     {
         auto& triple = m_deviceContext->caps().requestedShaderTriple;

@@ -1058,14 +1058,20 @@ Ref<ISwapChain> VulkanDeviceContext::onCreateSwapChain(PlatformWindow* window, c
 
 Ref<IVertexDeclaration> VulkanDeviceContext::onCreateVertexDeclaration(const VertexElement* elements, int elementsCount)
 {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
+    auto ptr = makeRef<VulkanVertexDeclaration>();
+    if (!ptr->init(elements, elementsCount)) {
+        return nullptr;
+    }
+    return ptr;
 }
 
 Ref<IVertexBuffer> VulkanDeviceContext::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
 {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
+    auto ptr = makeRef<VulkanVertexBuffer>();
+    if (!ptr->init(this, usage, bufferSize, initialData)) {
+        return nullptr;
+    }
+    return ptr;
 }
 
 Ref<IIndexBuffer> VulkanDeviceContext::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
@@ -1107,8 +1113,11 @@ Ref<ISamplerState> VulkanDeviceContext::onCreateSamplerState(const SamplerStateD
 
 Ref<IShaderPass> VulkanDeviceContext::onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* psCode, int psCodeLen, const ShaderVertexInputAttributeTable* attributeTable, ShaderCompilationDiag* diag)
 {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
+    auto ptr = makeRef<VulkanShaderPass>();
+    if (!ptr->init(this, vsCode, vsCodeLen, psCode, psCodeLen, attributeTable)) {
+        return nullptr;
+    }
+    return ptr;
 }
 
 void VulkanDeviceContext::onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState)
@@ -1198,7 +1207,9 @@ void VulkanDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, f
 
 void VulkanDeviceContext::onDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
 {
-    LN_NOTIMPLEMENTED();
+    submitStatus();
+
+    vkCmdDraw(m_activeCommandBuffer->vulkanCommandBuffer(), primitiveCount * 3, primitiveCount, startVertex, 0);
 }
 
 void VulkanDeviceContext::onDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
@@ -1246,8 +1257,24 @@ bool VulkanDeviceContext::submitStatus()
 		}
 
 		m_activeCommandBuffer->addPipelineCmd(pipeline);
-
 	}
+
+
+    VkCommandBuffer commandBuffer = m_activeCommandBuffer->vulkanCommandBuffer();
+
+    // TODO: modify チェック
+    for (int i = 0; i < IGraphicsDeviceContext::MaxVertexStreams; i++)
+    {
+        if (state.vertexBuffers[i])
+        {
+            VkBuffer vertexBuffers[] = { static_cast<VulkanVertexBuffer*>(state.vertexBuffers[i])->vulkanVertexBuffer() };
+            VkDeviceSize offsets[] = { 0 };
+            vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+        }
+        
+
+    }
+
 	return true;
 }
 
@@ -2460,7 +2487,8 @@ bool VulkanVertexDeclaration::init(const VertexElement* elements, int elementsCo
 		m_maxStreamCount = std::max(m_maxStreamCount, elements[i].StreamIndex);
 		m_elements.push_back(elements[i]);
     }
-	m_elements.resize(m_maxStreamCount);
+    m_maxStreamCount++;
+    m_bindings.resize(m_maxStreamCount);
 
     //uint32_t loc = 0;
     for (int i = 0; i < elementsCount; i++) {
@@ -2503,13 +2531,65 @@ VulkanVertexBuffer::~VulkanVertexBuffer()
 {
 }
 
-void VulkanVertexBuffer::init(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
+bool VulkanVertexBuffer::init(VulkanDeviceContext* deviceContext, GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
 {
-    LN_NOTIMPLEMENTED();
+    m_deviceContext = deviceContext;
+
+    VkDevice device = m_deviceContext->vulkanDevice();
+
+    VkBufferCreateInfo bufferInfo = {};
+    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+    bufferInfo.pNext = nullptr;
+    bufferInfo.flags = 0;
+    bufferInfo.size = bufferSize;
+    bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+    bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    bufferInfo.queueFamilyIndexCount = 0;
+    bufferInfo.pQueueFamilyIndices = nullptr;
+
+    if (vkCreateBuffer(device, &bufferInfo, nullptr, &m_vertexBuffer) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create vertex buffer!");
+    }
+
+    VkMemoryRequirements memRequirements;
+    vkGetBufferMemoryRequirements(device, m_vertexBuffer, &memRequirements);
+
+    VkMemoryAllocateInfo allocInfo = {};
+    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    allocInfo.allocationSize = memRequirements.size;
+    allocInfo.memoryTypeIndex = m_deviceContext->findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+    if (vkAllocateMemory(device, &allocInfo, nullptr, &m_vertexBufferMemory) != VK_SUCCESS) {
+        throw std::runtime_error("failed to allocate vertex buffer memory!");
+    }
+
+    vkBindBufferMemory(device, m_vertexBuffer, m_vertexBufferMemory, 0);
+
+    if (initialData)
+    {
+        void* data;
+        vkMapMemory(device, m_vertexBufferMemory, 0, bufferInfo.size, 0, &data);
+        memcpy(data, initialData, (size_t)bufferInfo.size);
+        vkUnmapMemory(device, m_vertexBufferMemory);
+    }
+
+    return true;
 }
 
 void VulkanVertexBuffer::dispose()
 {
+    VkDevice device = m_deviceContext->vulkanDevice();
+
+    if (m_vertexBuffer) {
+        vkDestroyBuffer(device, m_vertexBuffer, nullptr);
+        m_vertexBuffer = 0;
+    }
+
+    if (m_vertexBufferMemory) {
+        vkFreeMemory(device, m_vertexBufferMemory, nullptr);
+        m_vertexBufferMemory = 0;
+    }
+
     IVertexBuffer::dispose();
 }
 
@@ -3274,7 +3354,6 @@ void VulkanShaderPass::setUniformValue(int index, const void* data, size_t size)
 
 int VulkanShaderPass::getUniformBufferCount() const
 {
-    LN_NOTIMPLEMENTED();
     return 0;
 }
 
@@ -3286,8 +3365,7 @@ IShaderUniformBuffer* VulkanShaderPass::getUniformBuffer(int index) const
 
 IShaderSamplerBuffer* VulkanShaderPass::samplerBuffer() const
 {
-    LN_NOTIMPLEMENTED();
-    return 0;
+    return nullptr;
 }
 
 //=============================================================================
