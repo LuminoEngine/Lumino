@@ -9,11 +9,11 @@ void TestEnv::setup()
 	GlobalLogger::addStdErrAdapter();
 	EngineSettings::setMainWindowSize(160, 120);
 	EngineSettings::setMainBackBufferSize(160, 120);
-	EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);
-    EngineSettings::setEngineFeatures(EngineFeature::Experimental);
+	EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);
+    //EngineSettings::setEngineFeatures(EngineFeature::Experimental);
     detail::EngineDomain::engineManager()->init();
 
-    if (1)  // Experimental
+    if (0)  // Experimental
     {
         Font::registerFontFile(LN_LOCALFILE("../../../tools/VLGothic/VL-Gothic-Regular.ttf"));
         Engine::mainCamera()->setBackgroundColor(Color(0.5, 0.5, 0.5, 1.0));

@@ -1035,10 +1035,10 @@ const char* VulkanDeviceContext::getVkResultName(VkResult result)
 		VK_RESULT_VALUE(VK_ERROR_INCOMPATIBLE_DISPLAY_KHR);
 		VK_RESULT_VALUE(VK_ERROR_VALIDATION_FAILED_EXT);
 		VK_RESULT_VALUE(VK_ERROR_INVALID_SHADER_NV);
-		VK_RESULT_VALUE(VK_ERROR_INVALID_DRM_FORMAT_MODIFIER_PLANE_LAYOUT_EXT);
+		//VK_RESULT_VALUE(VK_ERROR_INVALID_DRM_FORMAT_MODIFIER_PLANE_LAYOUT_EXT);
 		VK_RESULT_VALUE(VK_ERROR_FRAGMENTATION_EXT);
 		VK_RESULT_VALUE(VK_ERROR_NOT_PERMITTED_EXT);
-		VK_RESULT_VALUE(VK_ERROR_INVALID_DEVICE_ADDRESS_EXT);
+		//VK_RESULT_VALUE(VK_ERROR_INVALID_DEVICE_ADDRESS_EXT);
 		VK_RESULT_VALUE(VK_RESULT_RANGE_SIZE);
 		VK_RESULT_VALUE(VK_RESULT_MAX_ENUM);
 	}
@@ -1706,7 +1706,7 @@ bool VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsDev
 		rasterizerInfo.depthClampEnable = VK_FALSE;
 		rasterizerInfo.rasterizerDiscardEnable = VK_FALSE;
 		rasterizerInfo.polygonMode = LNFillModeToVkPolygonMode(state.fillMode);
-		rasterizerInfo.cullMode = LNCullModeToVkCullMode(state.cullMode);
+        rasterizerInfo.cullMode = LNCullModeToVkCullMode(state.cullMode);
 		rasterizerInfo.frontFace = VK_FRONT_FACE_CLOCKWISE; // 右回り
 		rasterizerInfo.depthBiasEnable = VK_FALSE;
 		rasterizerInfo.depthBiasConstantFactor = 0.0f;
@@ -1722,7 +1722,7 @@ bool VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsDev
 		depthStencilStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
 		depthStencilStateInfo.pNext = nullptr;
 		depthStencilStateInfo.flags = 0;
-		depthStencilStateInfo.depthTestEnable = (state.depthTestFunc == ComparisonFunc::Never ? VK_FALSE : VK_TRUE);
+		depthStencilStateInfo.depthTestEnable = (state.depthTestFunc == ComparisonFunc::Always ? VK_FALSE : VK_TRUE);
 		depthStencilStateInfo.depthWriteEnable = (state.depthWriteEnabled ? VK_TRUE : VK_FALSE);
 		depthStencilStateInfo.depthCompareOp = LNComparisonFuncToVkCompareOp(state.depthTestFunc);
 		depthStencilStateInfo.depthBoundsTestEnable = VK_FALSE;
@@ -1820,19 +1820,24 @@ bool VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsDev
 
     VkPipelineShaderStageCreateInfo shaderStages[2];
     {
+        VulkanShaderPass* pass = static_cast<VulkanShaderPass*>(committed.pipelineState.shaderPass);
+        if (!pass) {
+            pass = m_deviceContext->defaultShaderPass();
+        }
+
         shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
         shaderStages[0].pNext = nullptr;
         shaderStages[0].flags = 0;
         shaderStages[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
-        shaderStages[0].module = m_deviceContext->defaultShaderPass()->vertShaderModule();
-        shaderStages[0].pName = "main";
+        shaderStages[0].module = pass->vertShaderModule();
+        shaderStages[0].pName = "vsMain";
         shaderStages[0].pSpecializationInfo = nullptr;
         shaderStages[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
         shaderStages[1].pNext = nullptr;
         shaderStages[1].flags = 0;
         shaderStages[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-        shaderStages[1].module = m_deviceContext->defaultShaderPass()->fragShaderModule();
-        shaderStages[1].pName = "main";
+        shaderStages[1].module = pass->fragShaderModule();
+        shaderStages[1].pName = "psMain";
         shaderStages[1].pSpecializationInfo = nullptr;
     }
 

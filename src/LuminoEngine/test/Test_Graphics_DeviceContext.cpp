@@ -40,8 +40,8 @@ TEST_F(Test_Graphics_DeviceContext, BasicTriangle)
     };
     PosColor v1[3] = {
         { { -1, 1, 0 }, { 1, 0, 0, 1 } },
-        { {-1, 0, 0}, { 0, 0, 1, 1 } },
         { {0, 1, 0}, { 0, 1, 0, 1 } },
+        { {-1, 0, 0}, { 0, 0, 1, 1 } },
     };
 
     auto vertexBuffer = newObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
@@ -50,14 +50,26 @@ TEST_F(Test_Graphics_DeviceContext, BasicTriangle)
     vertexDecl1->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
     vertexDecl1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
 
+
     auto ctx = Engine::graphicsContext();
     TestEnv::resetGraphicsContext(ctx);
+    {
+        DepthStencilStateDesc state;
+        state.depthWriteEnabled = false;
+        state.depthTestFunc = ComparisonFunc::Always;
+        ctx->setDepthStencilState(state);
+    }
+    {
+        RasterizerStateDesc state;
+        state.cullMode = CullMode::None;
+        ctx->setRasterizerState(state);
+    }
     ctx->setDepthBuffer(nullptr);
     ctx->setVertexDeclaration(vertexDecl1);
     ctx->setVertexBuffer(0, vertexBuffer);
     ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
-    ctx->clear(ClearFlags::All, Color::Gray, 1.0f, 0);
-	ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+    ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+    //ctx->clear(ClearFlags::All, Color::Gray, 1.0f, 0);
     ctx->drawPrimitive(0, 1);
     ctx->present(Engine::mainWindow()->swapChain());
     ASSERT_SCREEN_S(LN_ASSETFILE("Graphics/Result/Test_Graphics_DeviceContext-BasicTriangle-1.png"));
