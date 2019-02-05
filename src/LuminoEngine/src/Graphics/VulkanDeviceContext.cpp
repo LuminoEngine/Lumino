@@ -137,17 +137,17 @@ struct BlendFactorConversionItem
 };
 
 static const BlendFactorConversionItem s_blendFactorConversionTable[] =
-    {
-        {BlendFactor::Zero, VK_BLEND_FACTOR_ZERO, VK_BLEND_FACTOR_ZERO},
-        {BlendFactor::One, VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ONE},
-        {BlendFactor::SourceColor, VK_BLEND_FACTOR_SRC_COLOR, VK_BLEND_FACTOR_SRC_ALPHA},
-        {BlendFactor::InverseSourceColor, VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA},
-        {BlendFactor::SourceAlpha, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_SRC_ALPHA},
-        {BlendFactor::InverseSourceAlpha, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA},
-        {BlendFactor::DestinationColor, VK_BLEND_FACTOR_DST_COLOR, VK_BLEND_FACTOR_DST_ALPHA},
-        {BlendFactor::InverseDestinationColor, VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR, VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA},
-        {BlendFactor::DestinationAlpha, VK_BLEND_FACTOR_DST_ALPHA, VK_BLEND_FACTOR_DST_ALPHA},
-        {BlendFactor::InverseDestinationAlpha, VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA},
+{
+	{BlendFactor::Zero, VK_BLEND_FACTOR_ZERO, VK_BLEND_FACTOR_ZERO},
+	{BlendFactor::One, VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ONE},
+	{BlendFactor::SourceColor, VK_BLEND_FACTOR_SRC_COLOR, VK_BLEND_FACTOR_SRC_ALPHA},
+	{BlendFactor::InverseSourceColor, VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA},
+	{BlendFactor::SourceAlpha, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_SRC_ALPHA},
+	{BlendFactor::InverseSourceAlpha, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA},
+	{BlendFactor::DestinationColor, VK_BLEND_FACTOR_DST_COLOR, VK_BLEND_FACTOR_DST_ALPHA},
+	{BlendFactor::InverseDestinationColor, VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR, VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA},
+	{BlendFactor::DestinationAlpha, VK_BLEND_FACTOR_DST_ALPHA, VK_BLEND_FACTOR_DST_ALPHA},
+	{BlendFactor::InverseDestinationAlpha, VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA},
 };
 
 static VkBlendFactor LNBlendFactorToVkBlendFactor_Color(BlendFactor value)
@@ -169,12 +169,12 @@ struct BlendOpConversionItem
 };
 
 static const BlendOpConversionItem s_blendOpConversionTable[] =
-    {
-        {BlendOp::Add, VK_BLEND_OP_ADD},
-        {BlendOp::Subtract, VK_BLEND_OP_SUBTRACT},
-        {BlendOp::ReverseSubtract, VK_BLEND_OP_REVERSE_SUBTRACT},
-        {BlendOp::Min, VK_BLEND_OP_MIN},
-        {BlendOp::Max, VK_BLEND_OP_MAX},
+{
+    {BlendOp::Add, VK_BLEND_OP_ADD},
+    {BlendOp::Subtract, VK_BLEND_OP_SUBTRACT},
+    {BlendOp::ReverseSubtract, VK_BLEND_OP_REVERSE_SUBTRACT},
+    {BlendOp::Min, VK_BLEND_OP_MIN},
+    {BlendOp::Max, VK_BLEND_OP_MAX},
 };
 
 static VkBlendOp LNBlendOpToVkBlendOp(BlendOp value)
@@ -190,15 +190,15 @@ struct ComparisonFuncConversionItem
 };
 
 static const ComparisonFuncConversionItem s_comparisoFuncConversionTable[] =
-    {
-        {ComparisonFunc::Never, VK_COMPARE_OP_NEVER},
-        {ComparisonFunc::Less, VK_COMPARE_OP_LESS},
-        {ComparisonFunc::LessEqual, VK_COMPARE_OP_LESS_OR_EQUAL},
-        {ComparisonFunc::Greater, VK_COMPARE_OP_GREATER},
-        {ComparisonFunc::GreaterEqual, VK_COMPARE_OP_GREATER_OR_EQUAL},
-        {ComparisonFunc::Equal, VK_COMPARE_OP_EQUAL},
-        {ComparisonFunc::NotEqual, VK_COMPARE_OP_NOT_EQUAL},
-        {ComparisonFunc::Always, VK_COMPARE_OP_ALWAYS},
+{
+    {ComparisonFunc::Never, VK_COMPARE_OP_NEVER},
+    {ComparisonFunc::Less, VK_COMPARE_OP_LESS},
+    {ComparisonFunc::LessEqual, VK_COMPARE_OP_LESS_OR_EQUAL},
+    {ComparisonFunc::Greater, VK_COMPARE_OP_GREATER},
+    {ComparisonFunc::GreaterEqual, VK_COMPARE_OP_GREATER_OR_EQUAL},
+    {ComparisonFunc::Equal, VK_COMPARE_OP_EQUAL},
+    {ComparisonFunc::NotEqual, VK_COMPARE_OP_NOT_EQUAL},
+    {ComparisonFunc::Always, VK_COMPARE_OP_ALWAYS},
 };
 
 static VkCompareOp LNComparisonFuncToVkCompareOp(ComparisonFunc value)
@@ -214,9 +214,9 @@ struct FillModeConversionItem
 };
 
 static const FillModeConversionItem s_fillModeConversionTable[] =
-    {
-        {FillMode::Solid, VK_POLYGON_MODE_FILL},
-        {FillMode::Wireframe, VK_POLYGON_MODE_LINE},
+{
+    {FillMode::Solid, VK_POLYGON_MODE_FILL},
+    {FillMode::Wireframe, VK_POLYGON_MODE_LINE},
 };
 
 static VkPolygonMode LNFillModeToVkPolygonMode(FillMode value)
@@ -232,10 +232,10 @@ struct CullModeConversionItem
 };
 
 static const CullModeConversionItem s_cullModeConversionTable[] =
-    {
-        {CullMode::None, VK_CULL_MODE_NONE},
-        {CullMode::Front, VK_CULL_MODE_FRONT_BIT},
-        {CullMode::Back, VK_CULL_MODE_BACK_BIT},
+{
+    {CullMode::None, VK_CULL_MODE_NONE},
+    {CullMode::Front, VK_CULL_MODE_FRONT_BIT},
+    {CullMode::Back, VK_CULL_MODE_BACK_BIT},
 };
 
 static VkCullModeFlagBits LNCullModeToVkCullMode(CullMode value)
@@ -1110,8 +1110,11 @@ Ref<IVertexBuffer> VulkanDeviceContext::onCreateVertexBuffer(GraphicsResourceUsa
 
 Ref<IIndexBuffer> VulkanDeviceContext::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
 {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
+	auto ptr = makeRef<VulkanIndexBuffer>();
+	if (!ptr->init(this, usage, format, indexCount, initialData)) {
+		return nullptr;
+	}
+	return ptr;
 }
 
 Ref<ITexture> VulkanDeviceContext::onCreateTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
@@ -1239,14 +1242,14 @@ void VulkanDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, f
 	}
 }
 
-void VulkanDeviceContext::onDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
+void VulkanDeviceContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount)
 {
     submitStatus();
 
     vkCmdDraw(m_activeCommandBuffer->vulkanCommandBuffer(), primitiveCount * 3, primitiveCount, startVertex, 0);
 }
 
-void VulkanDeviceContext::onDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
+void VulkanDeviceContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount)
 {
     LN_NOTIMPLEMENTED();
 }
@@ -1301,7 +1304,7 @@ bool VulkanDeviceContext::submitStatus()
     {
         if (state.vertexBuffers[i])
         {
-            VkBuffer vertexBuffers[] = { static_cast<VulkanVertexBuffer*>(state.vertexBuffers[i])->vulkanVertexBuffer() };
+            VkBuffer vertexBuffers[] = { static_cast<VulkanVertexBuffer*>(state.vertexBuffers[i])->vulkanBuffer() };
             VkDeviceSize offsets[] = { 0 };
             vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
         }
@@ -1920,9 +1923,10 @@ void VulkanPipeline::dispose()
 //=============================================================================
 // VulkanBuffer
 
-bool VulkanBuffer::init(VulkanDeviceContext* deviceContext, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
+Result VulkanBuffer::init(VulkanDeviceContext* deviceContext, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
 {
     m_deviceContext = deviceContext;
+	m_size = size;
 
     VkBufferCreateInfo bufferInfo = {};
     bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -2489,40 +2493,23 @@ VulkanVertexBuffer::~VulkanVertexBuffer()
 
 Result VulkanVertexBuffer::init(VulkanDeviceContext* deviceContext, GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
 {
-    m_deviceContext = deviceContext;
+	m_usage = usage;
 
-    VkDevice device = m_deviceContext->vulkanDevice();
+	VkBufferUsageFlags vkusage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+	if (usage == GraphicsResourceUsage::Dynamic) {
+		vkusage |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+	}
 
-    VkBufferCreateInfo bufferInfo = {};
-    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    bufferInfo.pNext = nullptr;
-    bufferInfo.flags = 0;
-    bufferInfo.size = bufferSize;
-    bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-    bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-    bufferInfo.queueFamilyIndexCount = 0;
-    bufferInfo.pQueueFamilyIndices = nullptr;
-
-	LN_VK_CHECK(vkCreateBuffer(device, &bufferInfo, nullptr, &m_vertexBuffer));
-
-    VkMemoryRequirements memRequirements;
-    vkGetBufferMemoryRequirements(device, m_vertexBuffer, &memRequirements);
-
-    VkMemoryAllocateInfo allocInfo = {};
-    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    allocInfo.allocationSize = memRequirements.size;
-    allocInfo.memoryTypeIndex = m_deviceContext->findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-
-	LN_VK_CHECK(vkAllocateMemory(device, &allocInfo, nullptr, &m_vertexBufferMemory));
-
-    vkBindBufferMemory(device, m_vertexBuffer, m_vertexBufferMemory, 0);
+	if (!m_buffer.init(deviceContext, bufferSize, vkusage, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
+		return false;
+	}
 
     if (initialData)
     {
         void* data;
-        vkMapMemory(device, m_vertexBufferMemory, 0, bufferInfo.size, 0, &data);
-        memcpy(data, initialData, (size_t)bufferInfo.size);
-        vkUnmapMemory(device, m_vertexBufferMemory);
+        vkMapMemory(deviceContext->vulkanDevice(), vulkanDeviceMemory(), 0, bufferSize, 0, &data);
+        memcpy(data, initialData, bufferSize);
+        vkUnmapMemory(deviceContext->vulkanDevice(), vulkanDeviceMemory());
     }
 
     return true;
@@ -2530,31 +2517,8 @@ Result VulkanVertexBuffer::init(VulkanDeviceContext* deviceContext, GraphicsReso
 
 void VulkanVertexBuffer::dispose()
 {
-    VkDevice device = m_deviceContext->vulkanDevice();
-
-    if (m_vertexBuffer) {
-        vkDestroyBuffer(device, m_vertexBuffer, nullptr);
-        m_vertexBuffer = 0;
-    }
-
-    if (m_vertexBufferMemory) {
-        vkFreeMemory(device, m_vertexBufferMemory, nullptr);
-        m_vertexBufferMemory = 0;
-    }
-
+	m_buffer.dispose();
     IVertexBuffer::dispose();
-}
-
-size_t VulkanVertexBuffer::getBytesSize()
-{
-    LN_NOTIMPLEMENTED();
-    return 0;
-}
-
-GraphicsResourceUsage VulkanVertexBuffer::usage() const
-{
-    LN_NOTIMPLEMENTED();
-    return GraphicsResourceUsage::Static;
 }
 
 void VulkanVertexBuffer::setSubData(size_t offset, const void* data, size_t length)
@@ -2584,27 +2548,36 @@ VulkanIndexBuffer::~VulkanIndexBuffer()
 {
 }
 
-void VulkanIndexBuffer::init(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
+Result VulkanIndexBuffer::init(VulkanDeviceContext* deviceContext, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
 {
-    LN_NOTIMPLEMENTED();
+	size_t stride = (format == IndexBufferFormat::UInt16) ? 2 : 4;
+	size_t bufferSize = stride * indexCount;
+	m_usage = usage;
+
+	VkBufferUsageFlags vkusage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+	if (usage == GraphicsResourceUsage::Dynamic) {
+		vkusage |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+	}
+
+	if (!m_buffer.init(deviceContext, bufferSize, vkusage, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
+		return false;
+	}
+
+	if (initialData)
+	{
+		void* data;
+		vkMapMemory(deviceContext->vulkanDevice(), vulkanDeviceMemory(), 0, bufferSize, 0, &data);
+		memcpy(data, initialData, bufferSize);
+		vkUnmapMemory(deviceContext->vulkanDevice(), vulkanDeviceMemory());
+	}
+
+	return true;
 }
 
 void VulkanIndexBuffer::dispose()
 {
-    LN_NOTIMPLEMENTED();
+	m_buffer.dispose();
     IIndexBuffer::dispose();
-}
-
-size_t VulkanIndexBuffer::getBytesSize()
-{
-    LN_NOTIMPLEMENTED();
-    return 0;
-}
-
-GraphicsResourceUsage VulkanIndexBuffer::usage() const
-{
-    LN_NOTIMPLEMENTED();
-    return GraphicsResourceUsage::Static;
 }
 
 void VulkanIndexBuffer::setSubData(size_t offset, const void* data, size_t length)

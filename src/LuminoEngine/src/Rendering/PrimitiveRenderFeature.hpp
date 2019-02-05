@@ -27,7 +27,7 @@ private:
     RenderingManager* m_manager;
     Ref<LinearAllocator> m_linearAllocator;
     List<MeshGenerater*> m_generators;
-    PrimitiveType m_primitiveType;
+    PrimitiveTopology m_primitiveType;
     Ref<IVertexDeclaration> m_vertexDeclaration;
     Ref<IVertexBuffer> m_vertexBuffer;
     Ref<IIndexBuffer> m_indexBuffer;
@@ -110,7 +110,7 @@ public:
     virtual bool drawElementTransformNegate() const override { return true; }
 
 private:
-    Optional<PrimitiveType> m_lastPrimitiveType;
+    Optional<PrimitiveTopology> m_lastPrimitiveType;
 	RenderingManager* m_manager;
     Ref<InternalPrimitiveRenderer> m_internal;
 };

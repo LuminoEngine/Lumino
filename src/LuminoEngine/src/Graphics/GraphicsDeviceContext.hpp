@@ -44,6 +44,7 @@ struct DevicePipelineState
 	DepthStencilStateDesc depthStencilState;
 	IVertexDeclaration* vertexDeclaration = nullptr;
 	IShaderPass* shaderPass = nullptr;
+	PrimitiveTopology topology = PrimitiveTopology::TriangleList;
 };
 
 struct DeviceFramebufferState
@@ -113,10 +114,11 @@ public:
 	void setVertexBuffer(int streamIndex, IVertexBuffer* value);
 	void setIndexBuffer(IIndexBuffer* value);
 	void setShaderPass(IShaderPass* value);
+	void setPrimitiveTopology(PrimitiveTopology value);
 
 	void clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil);
-	void drawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount);
-	void drawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount);
+	void drawPrimitive(int startVertex, int primitiveCount);
+	void drawPrimitiveIndexed(int startIndex, int primitiveCount);
 
 	void present(ISwapChain* swapChain);
 
@@ -145,8 +147,8 @@ protected:
 	virtual void onUpdateShaderPass(IShaderPass* newPass) = 0;
 
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
-	virtual void onDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) = 0;
-	virtual void onDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) = 0;
+	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) = 0;
+	virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount) = 0;
 
 	virtual void onPresent(ISwapChain* swapChain) = 0;
 

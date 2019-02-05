@@ -37,7 +37,8 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 		ctx->setVertexBuffer(0, vertexBuffer);
 		ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
-		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+		ctx->drawPrimitive(0, 1);
 
 		ASSERT_SCREEN_S(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-BasicTriangle.png"));
 	}
@@ -89,7 +90,8 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			memcpy(vb1->map(MapMode::Write), v1, vb1->size());
 
 			ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
-			ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+			ctx->drawPrimitive(0, 1);
 
 			ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-VertexBuffer-2.png"));
 		}
@@ -104,7 +106,8 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			memcpy(vb1->map(MapMode::Write), v2, vb1->size());
 
 			ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
-			ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+			ctx->drawPrimitive(0, 1);
 
 			ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-VertexBuffer-3.png"));
 		}
@@ -125,7 +128,8 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 
 			ctx->setVertexBuffer(0, vb2);
 			ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
-			ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
+			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+			ctx->drawPrimitive(0, 2);
 
 			ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-VertexBuffer-4.png"));
 		}
@@ -146,7 +150,8 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			memcpy(vb2->map(MapMode::Write), v2, vb2->size());
 
 			ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
-			ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 3);
+			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+			ctx->drawPrimitive(0, 3);
 
 			ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-VertexBuffer-5.png"));
 		}
@@ -192,7 +197,8 @@ TEST_F(Test_Graphics_LowLevelRendering, MultiStreamVertexBuffer)
 	ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 
 	ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
-	ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+	ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+	ctx->drawPrimitive(0, 1);
 
 	ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-MultiStreamVertexBuffer-1.png"));
 }
@@ -246,7 +252,8 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 			memcpy(ib1->map(MapMode::Write), indices, ib1->bytesSize());
 
 			ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
-			ctx->drawPrimitiveIndexed(PrimitiveType::TriangleList, 0, 1);
+			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+			ctx->drawPrimitiveIndexed(0, 1);
 
 			ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-IndexBuffer-1.png"));
 		}
@@ -257,7 +264,8 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 			memcpy(ib1->map(MapMode::Write), indices, ib1->bytesSize());
 
 			ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
-			ctx->drawPrimitiveIndexed(PrimitiveType::TriangleList, 0, 1);
+			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+			ctx->drawPrimitiveIndexed(0, 1);
 
 			ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-IndexBuffer-2.png"));
 		}
@@ -272,7 +280,8 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 				ib1->setFormat(IndexBufferFormat::UInt32);
 
 				ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
-				ctx->drawPrimitiveIndexed(PrimitiveType::TriangleList, 0, 1);
+				ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+				ctx->drawPrimitiveIndexed(0, 1);
 
 				ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-IndexBuffer-2.png"));	// ↑と同じ結果
 			}
@@ -303,10 +312,12 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 
 		ctx->setViewportRect(Rect(0, 0, 80, 60));		// 左上
-		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+		ctx->drawPrimitive(0, 1);
 
 		ctx->setViewportRect(Rect(80, 60, 80, 60));		// 右下
-		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+		ctx->drawPrimitive(0, 1);
 
 		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-ViewportAndScissor-1.png"));
 
@@ -318,10 +329,12 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 
 		ctx->setScissorRect(Rect(0, 0, 80, 60));		// 左上
-		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+		ctx->drawPrimitive(0, 1);
 
 		ctx->setScissorRect(Rect(80, 60, 80, 60));		// 右下
-		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+		ctx->drawPrimitive(0, 1);
 
 		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-ViewportAndScissor-2.png"));
 
@@ -334,7 +347,8 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
 
 		ctx->setViewportRect(Rect(0, 0, 80, 60));		// 左上
 		ctx->setScissorRect(Rect(40, 30, 80, 60));		// 中央
-		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+		ctx->drawPrimitive(0, 1);
 
 		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-ViewportAndScissor-3.png"));
 
@@ -364,7 +378,8 @@ TEST_F(Test_Graphics_LowLevelRendering, ConstantBuffer)
 
 	auto renderAndCapture = [&]() {
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
-		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+		ctx->drawPrimitive(0, 1);
 		return TestEnv::capture()->getPixel32(0, 0);
 	};
 
@@ -615,7 +630,8 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture)
 	// * [ ] default
 	{
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
-		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+		ctx->drawPrimitive(0, 2);
 
 		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-TextureTest-1.png"));
 	}
@@ -662,7 +678,8 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture3D)
 	// * [ ] default
 	{
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
-		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+		ctx->drawPrimitive(0, 2);
 
 		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Texture3D-1.png"));
 	}
@@ -709,7 +726,8 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 	// * [ ] default (Point, Reprat)
 	{
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
-		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+		ctx->drawPrimitive(0, 2);
 		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-SamplerState-1.png"));
 	}
 
@@ -720,7 +738,8 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 		sampler->setAddressMode(TextureAddressMode::Clamp);
 		tex1->setSamplerState(sampler);
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
-		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+		ctx->drawPrimitive(0, 2);
 		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-SamplerState-2.png"));
 	}
 }
@@ -782,11 +801,13 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 
 		ctx->setBlendState(BlendStateDesc());
 		ctx->setVertexBuffer(0, vb1);
-		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+		ctx->drawPrimitive(0, 2);
 		
 		ctx->setBlendState(state1);
 		ctx->setVertexBuffer(0, vb2);
-		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+		ctx->drawPrimitive(0, 2);
 
 		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-1.png"));
 
@@ -809,31 +830,38 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		ctx->setRasterizerState(state1);
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->setVertexBuffer(0, vb1);
-		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 赤は描かれない
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+		ctx->drawPrimitive(0, 2);	// 赤は描かれない
 		ctx->setVertexBuffer(0, vb3);
-		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 緑は描かれる
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+		ctx->drawPrimitive(0, 2);	// 緑は描かれる
 		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-2-1.png"));
 
 		ctx->setRasterizerState(state2);
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->setVertexBuffer(0, vb1);
-		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 赤は描かれる
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+		ctx->drawPrimitive(0, 2);	// 赤は描かれる
 		ctx->setVertexBuffer(0, vb3);
-		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 緑は描かれない
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+		ctx->drawPrimitive(0, 2);	// 緑は描かれない
 		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-2-2.png"));
 
 		ctx->setRasterizerState(state3);
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->setVertexBuffer(0, vb1);
-		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 赤は描かれる
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+		ctx->drawPrimitive(0, 2);	// 赤は描かれる
 		ctx->setVertexBuffer(0, vb3);
-		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 緑は描かれる
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+		ctx->drawPrimitive(0, 2);	// 緑は描かれる
 		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-2-3.png"));
 
 		ctx->setRasterizerState(state4);
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->setVertexBuffer(0, vb2);
-		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+		ctx->drawPrimitive(0, 2);
 		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-2-4.png"));
 
 		ctx->setRasterizerState(RasterizerStateDesc());	// 戻しておく
@@ -843,9 +871,11 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 	{
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->setVertexBuffer(0, vb2);
-		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 青 (z=0)
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+		ctx->drawPrimitive(0, 2);	// 青 (z=0)
 		ctx->setVertexBuffer(0, vb1);
-		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 赤 (z=0.5)
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+		ctx->drawPrimitive(0, 2);	// 赤 (z=0.5)
 		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-3-1.png"));
 
 
@@ -855,9 +885,11 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		ctx->setDepthStencilState(state1);
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->setVertexBuffer(0, vb2);
-		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 青 (z=0)
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+		ctx->drawPrimitive(0, 2);	// 青 (z=0)
 		ctx->setVertexBuffer(0, vb1);
-		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 赤 (z=0.5)
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+		ctx->drawPrimitive(0, 2);	// 赤 (z=0.5)
 		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-3-2.png"));
 
 
@@ -867,9 +899,11 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		ctx->setDepthStencilState(state2);
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->setVertexBuffer(0, vb2);
-		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 青 (z=0)
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+		ctx->drawPrimitive(0, 2);	// 青 (z=0)
 		ctx->setVertexBuffer(0, vb1);
-		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 赤 (z=0.5)
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+		ctx->drawPrimitive(0, 2);	// 赤 (z=0.5)
 		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-3-3.png"));
 
 		ctx->setDepthStencilState(DepthStencilStateDesc());	// 戻しておく
@@ -885,7 +919,8 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		ctx->setDepthStencilState(state1);
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->setVertexBuffer(0, vb1);
-		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 赤 (z=0.5)
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+		ctx->drawPrimitive(0, 2);	// 赤 (z=0.5)
 
 		// ステンシルテスト
 		DepthStencilStateDesc state2;
@@ -893,7 +928,8 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		state2.frontFace.stencilFunc = ComparisonFunc::Equal;	// 0xFF(デフォルト値)と等しければ成功 → カラーバッファ書き込み
 		ctx->setDepthStencilState(state2);
 		ctx->setVertexBuffer(0, vb2);
-		ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);	// 青 (z=0)
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+		ctx->drawPrimitive(0, 2);	// 青 (z=0)
 
 		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-4-1.png"));
 
@@ -950,7 +986,8 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
             ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
             ctx->setColorBuffer(0, renderTarget1);
             ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
-            ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+            ctx->drawPrimitive(0, 1);
         }
 
         // 次に renderTarget1 からバックバッファへ全体を描く
@@ -961,7 +998,8 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
             ctx->setShaderPass(shader2->techniques()[0]->passes()[0]);
             ctx->setColorBuffer(0, oldRT);
             ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
-            ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
+			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+            ctx->drawPrimitive(0, 2);
         }
 
         ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderTarget-1.png"));

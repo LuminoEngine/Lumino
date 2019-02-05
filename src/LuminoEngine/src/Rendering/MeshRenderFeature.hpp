@@ -62,7 +62,7 @@ private:
 		Ref<IIndexBuffer>		indexBuffer;
 		int									startIndex;
 		int									primitiveCount;
-		PrimitiveType						primitiveType;
+		PrimitiveTopology						primitiveType;
 	};
 
 	void drawMeshImplOnRenderThread(IGraphicsDeviceContext* context, const DrawMeshCommandData& data);

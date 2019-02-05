@@ -158,22 +158,27 @@ void IGraphicsDeviceContext::setShaderPass(IShaderPass* value)
 	m_staging.pipelineState.shaderPass = value;
 }
 
+void IGraphicsDeviceContext::setPrimitiveTopology(PrimitiveTopology value)
+{
+	m_staging.pipelineState.topology = value;
+}
+
 void IGraphicsDeviceContext::clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
 	commitStatus();
 	onClearBuffers(flags, color, z, stencil);
 }
 
-void IGraphicsDeviceContext::drawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
+void IGraphicsDeviceContext::drawPrimitive(int startVertex, int primitiveCount)
 {
 	commitStatus();
-	onDrawPrimitive(primitive, startVertex, primitiveCount);
+	onDrawPrimitive(m_staging.pipelineState.topology, startVertex, primitiveCount);
 }
 
-void IGraphicsDeviceContext::drawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
+void IGraphicsDeviceContext::drawPrimitiveIndexed(int startIndex, int primitiveCount)
 {
 	commitStatus();
-	onDrawPrimitiveIndexed(primitive, startIndex, primitiveCount);
+	onDrawPrimitiveIndexed(m_staging.pipelineState.topology, startIndex, primitiveCount);
 }
 
 void IGraphicsDeviceContext::present(ISwapChain* swapChain)

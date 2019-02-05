@@ -142,12 +142,12 @@ protected:
 	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) override;
 	virtual void onUpdateShaderPass(IShaderPass* newPass) override;
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
-	virtual void onDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) override;
-	virtual void onDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) override;
+	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) override;
+	virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount) override;
 	virtual void onPresent(ISwapChain* swapChain) override;
 
 private:
-	static void getPrimitiveInfo(PrimitiveType primitive, int primitiveCount, GLenum* gl_prim, int* vertexCount);
+	static void getPrimitiveInfo(PrimitiveTopology primitive, int primitiveCount, GLenum* gl_prim, int* vertexCount);
 
 	Ref<GLContext> m_glContext;
 	MemoryStream m_uniformTempBuffer;

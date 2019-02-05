@@ -52,7 +52,8 @@ TEST_F(Test_Shader_Shader, IndependentSamplerState)
     // * [ ] default
     {
         ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
-        ctx->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+        ctx->drawPrimitive(0, 2);
 
         ASSERT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-IndependentSamplerState-1.png"));
     }

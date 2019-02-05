@@ -57,7 +57,8 @@ void BlitRenderFeature::blitImplOnRenderThread(IGraphicsDeviceContext* context)
 {
 	context->setVertexDeclaration(m_vertexDeclaration);
 	context->setVertexBuffer(0, m_vertexBuffer);
-	context->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
+	context->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+	context->drawPrimitive(0, 2);
 }
 
 } // namespace detail

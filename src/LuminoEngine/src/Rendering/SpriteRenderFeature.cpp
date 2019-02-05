@@ -312,7 +312,8 @@ void InternalSpriteRenderer::flush(IGraphicsDeviceContext* context)
 	context->setVertexDeclaration(m_vertexDeclaration);
 	context->setVertexBuffer(0, m_vertexBuffer);
 	context->setIndexBuffer(m_indexBuffer);
-	context->drawPrimitiveIndexed(PrimitiveType::TriangleList, 0, spriteCount * 2);
+	context->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+	context->drawPrimitiveIndexed(0, spriteCount * 2);
 
 	// Cleanup
 	clear();

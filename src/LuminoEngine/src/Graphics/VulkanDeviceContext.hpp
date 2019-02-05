@@ -230,8 +230,8 @@ protected:
     virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) override;
     virtual void onUpdateShaderPass(IShaderPass* newPass) override;
     virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
-    virtual void onDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) override;
-    virtual void onDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) override;
+    virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) override;
+    virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount) override;
     virtual void onPresent(ISwapChain* swapChain) override;
 
 private:
@@ -368,12 +368,14 @@ private:
     VkPipeline m_pipeline;	// 管理は Cache に任せるので、このクラスの中で Destroy しない
 };
 
+// 頂点バッファ、インデックスバッファ、レンダーターゲット転送のための一時バッファなど、様々な目的で使用する汎用バッファ。
 class VulkanBuffer
     : public RefObject
 {
 public:
-    bool init(VulkanDeviceContext* deviceContext, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
+    Result init(VulkanDeviceContext* deviceContext, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
     void dispose();
+	size_t size() const { return m_size; }
     VkBuffer vulkanBuffer() const { return m_buffer; }
     VkDeviceMemory vulkanBufferMemory() const { return m_bufferMemory; }
 
@@ -381,6 +383,7 @@ private:
     VulkanDeviceContext* m_deviceContext;
     VkBuffer m_buffer;
     VkDeviceMemory m_bufferMemory;
+	size_t m_size;
 };
 
 class VulkanSwapChain
@@ -464,18 +467,18 @@ public:
     virtual ~VulkanVertexBuffer();
 	Result init(VulkanDeviceContext* deviceContext, GraphicsResourceUsage usage, size_t bufferSize, const void* initialData);
     virtual void dispose() override;
-    virtual size_t getBytesSize() override;
-    virtual GraphicsResourceUsage usage() const override;
+	virtual size_t getBytesSize() override { return m_buffer.size(); }
+	virtual GraphicsResourceUsage usage() const override { return m_usage; }
     virtual void setSubData(size_t offset, const void* data, size_t length) override;
     virtual void* map() override;
     virtual void unmap() override;
 
-    VkBuffer vulkanVertexBuffer() const { return m_vertexBuffer; }
+    VkBuffer vulkanBuffer() const { return m_buffer.vulkanBuffer(); }
+	VkDeviceMemory vulkanDeviceMemory() const { return m_buffer.vulkanBufferMemory(); }
 
 private:
-    VulkanDeviceContext* m_deviceContext;
-    VkBuffer m_vertexBuffer;
-    VkDeviceMemory m_vertexBufferMemory;
+	VulkanBuffer m_buffer;
+	GraphicsResourceUsage m_usage;
 };
 
 class VulkanIndexBuffer
@@ -484,15 +487,20 @@ class VulkanIndexBuffer
 public:
     VulkanIndexBuffer();
     virtual ~VulkanIndexBuffer();
-    void init(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData);
+    Result init(VulkanDeviceContext* deviceContext, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData);
     virtual void dispose() override;
-    virtual size_t getBytesSize() override;
-    virtual GraphicsResourceUsage usage() const override;
+	virtual size_t getBytesSize() override { return m_buffer.size(); }
+	virtual GraphicsResourceUsage usage() const override { return m_usage; }
     virtual void setSubData(size_t offset, const void* data, size_t length) override;
     virtual void* map() override;
     virtual void unmap() override;
 
+	VkBuffer vulkanBuffer() const { return m_buffer.vulkanBuffer(); }
+	VkDeviceMemory vulkanDeviceMemory() const { return m_buffer.vulkanBufferMemory(); }
+
 private:
+	VulkanBuffer m_buffer;
+	GraphicsResourceUsage m_usage;
 };
 
 class VulkanTextureBase

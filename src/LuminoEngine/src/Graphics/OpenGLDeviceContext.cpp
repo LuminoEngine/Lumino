@@ -701,7 +701,7 @@ void OpenGLDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, f
 	GL_CHECK(glClear(glflags));
 }
 
-void OpenGLDeviceContext::onDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
+void OpenGLDeviceContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount)
 {
 	GLenum gl_prim;
 	int vertexCount;
@@ -710,7 +710,7 @@ void OpenGLDeviceContext::onDrawPrimitive(PrimitiveType primitive, int startVert
 	GL_CHECK(glDrawArrays(gl_prim, startVertex, vertexCount));
 }
 
-void OpenGLDeviceContext::onDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
+void OpenGLDeviceContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount)
 {
 	GLenum gl_prim;
 	int vertexCount;
@@ -778,31 +778,31 @@ void OpenGLDeviceContext::onPresent(ISwapChain* swapChain)
 	m_glContext->swap(s);
 }
 
-void OpenGLDeviceContext::getPrimitiveInfo(PrimitiveType primitive, int primitiveCount, GLenum* gl_prim, int* vertexCount)
+void OpenGLDeviceContext::getPrimitiveInfo(PrimitiveTopology primitive, int primitiveCount, GLenum* gl_prim, int* vertexCount)
 {
 	switch (primitive)
 	{
-	case PrimitiveType::TriangleList:
+	case PrimitiveTopology::TriangleList:
 		*gl_prim = GL_TRIANGLES;
 		*vertexCount = primitiveCount * 3;
 		break;
-	case PrimitiveType::TriangleStrip:
+	case PrimitiveTopology::TriangleStrip:
 		*gl_prim = GL_TRIANGLE_STRIP;
 		*vertexCount = 2 + primitiveCount;
 		break;
-	case PrimitiveType::TriangleFan:
+	case PrimitiveTopology::TriangleFan:
 		*gl_prim = GL_TRIANGLE_FAN;
 		*vertexCount = 2 + primitiveCount;
 		break;
-	case PrimitiveType::LineList:
+	case PrimitiveTopology::LineList:
 		*gl_prim = GL_LINES;
 		*vertexCount = primitiveCount * 2;
 		break;
-	case PrimitiveType::LineStrip:
+	case PrimitiveTopology::LineStrip:
 		*gl_prim = GL_LINE_STRIP;
 		*vertexCount = 1 + primitiveCount;
 		break;
-	case PrimitiveType::PointList:
+	case PrimitiveTopology::PointList:
 		*gl_prim = GL_POINTS;
 		*vertexCount = primitiveCount;
 		break;

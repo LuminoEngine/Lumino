@@ -62,7 +62,7 @@ public:
     //virtual void copyTo(MeshGenerater* other) const = 0;
     virtual int vertexCount() const = 0;
     virtual int indexCount() const = 0;
-    virtual PrimitiveType primitiveType() const = 0;
+    virtual PrimitiveTopology primitiveType() const = 0;
     virtual MeshGenerater* clone(LinearAllocator* allocator) const = 0;
     virtual void onGenerate(MeshGeneraterBuffer* buf) = 0;
 
@@ -102,7 +102,7 @@ public:
 
     virtual int vertexCount() const override { return 2; }
     virtual int indexCount() const override { return 2; }
-    virtual PrimitiveType primitiveType() const override { return PrimitiveType::LineList; }
+    virtual PrimitiveTopology primitiveType() const override { return PrimitiveTopology::LineList; }
     virtual void onGenerate(MeshGeneraterBuffer* buf) override
     {
         buf->setV(0, Vertex{ point1, Vector3::UnitY, Vector2::Zero, point1Color });
@@ -130,7 +130,7 @@ public:
 
     virtual int vertexCount() const override { return 4; }
     virtual int indexCount() const override { return 6; }
-    virtual PrimitiveType primitiveType() const override { return PrimitiveType::TriangleList; }
+    virtual PrimitiveTopology primitiveType() const override { return PrimitiveTopology::TriangleList; }
     virtual void onGenerate(MeshGeneraterBuffer* buf) override
     {
         Vector2 half = size / 2;
@@ -173,7 +173,7 @@ public:
 
     virtual int vertexCount() const override { return (m_slices + 1) * (m_stacks + 1); }
     virtual int indexCount() const override { return m_slices * m_stacks * 6; }
-    virtual PrimitiveType primitiveType() const override { return PrimitiveType::TriangleList; }
+    virtual PrimitiveTopology primitiveType() const override { return PrimitiveTopology::TriangleList; }
     virtual MeshGenerater* clone(LinearAllocator* allocator) const override
     {
         void* ptr = allocator->allocate(sizeof(RegularSphereMeshFactory));

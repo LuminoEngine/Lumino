@@ -173,7 +173,7 @@ enum class DepthBufferFormat
 };
 
 /** 描画プリミティブの種類 */
-enum class PrimitiveType    // TODO: topology?
+enum class PrimitiveTopology
 {
 	TriangleList,
 	TriangleStrip,

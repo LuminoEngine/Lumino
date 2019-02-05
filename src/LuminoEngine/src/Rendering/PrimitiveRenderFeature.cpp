@@ -74,22 +74,22 @@ void InternalPrimitiveRenderer::flush(IGraphicsDeviceContext* context)
     int primitiveCount = 0;
     switch (m_primitiveType)
     {
-    case ln::PrimitiveType::TriangleList:
+    case ln::PrimitiveTopology::TriangleList:
         primitiveCount = indexCount / 3;
         break;
-    case ln::PrimitiveType::TriangleStrip:
+    case ln::PrimitiveTopology::TriangleStrip:
         LN_NOTIMPLEMENTED();
         break;
-    case ln::PrimitiveType::TriangleFan:
+    case ln::PrimitiveTopology::TriangleFan:
         LN_NOTIMPLEMENTED();
         break;
-    case ln::PrimitiveType::LineList:
+    case ln::PrimitiveTopology::LineList:
         primitiveCount = indexCount / 2;
         break;
-    case ln::PrimitiveType::LineStrip:
+    case ln::PrimitiveTopology::LineStrip:
         LN_NOTIMPLEMENTED();
         break;
-    case ln::PrimitiveType::PointList:
+    case ln::PrimitiveTopology::PointList:
         LN_NOTIMPLEMENTED();
         break;
     default:
@@ -100,7 +100,8 @@ void InternalPrimitiveRenderer::flush(IGraphicsDeviceContext* context)
     context->setVertexDeclaration(m_vertexDeclaration);
     context->setVertexBuffer(0, m_vertexBuffer);
     context->setIndexBuffer(m_indexBuffer);
-    context->drawPrimitiveIndexed(m_primitiveType, 0, primitiveCount);
+	context->setPrimitiveTopology(m_primitiveType);
+    context->drawPrimitiveIndexed(0, primitiveCount);
 
     for (MeshGenerater* gen : m_generators) {
         gen->~MeshGenerater();

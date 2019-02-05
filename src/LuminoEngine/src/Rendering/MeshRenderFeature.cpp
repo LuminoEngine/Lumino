@@ -58,7 +58,7 @@ void MeshRenderFeature::drawMesh(GraphicsContext* context, MeshResource* mesh, i
 	data.indexBuffer = (ib) ? ib->resolveRHIObject() : nullptr;
 	data.startIndex = section.startIndex;
 	data.primitiveCount = section.primitiveCount;
-	data.primitiveType = PrimitiveType::TriangleList;
+	data.primitiveType = PrimitiveTopology::TriangleList;
 
 	if (LN_REQUIRE(data.vertexBuffers[0])) return;
 
@@ -83,12 +83,13 @@ void MeshRenderFeature::drawMeshImplOnRenderThread(IGraphicsDeviceContext* conte
 	for (int i = 0; i < data.vertexBuffersCount; ++i) {
 		context->setVertexBuffer(i, data.vertexBuffers[i]);
 	}
+	context->setPrimitiveTopology(data.primitiveType);
     if (data.indexBuffer) {
         context->setIndexBuffer(data.indexBuffer);
-        context->drawPrimitiveIndexed(data.primitiveType, data.startIndex, data.primitiveCount);
+        context->drawPrimitiveIndexed(data.startIndex, data.primitiveCount);
     }
     else {
-        context->drawPrimitive(data.primitiveType, data.startIndex, data.primitiveCount);
+        context->drawPrimitive(data.startIndex, data.primitiveCount);
     }
 }
 

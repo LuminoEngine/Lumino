@@ -57,7 +57,8 @@ TEST_F(Test_Graphics_DeviceContext, BasicTriangle)
     ctx->setVertexBuffer(0, vertexBuffer);
     ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
     ctx->clear(ClearFlags::All, Color::Gray, 1.0f, 0);
-    ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+	ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+    ctx->drawPrimitive(0, 1);
     ctx->present(Engine::mainWindow()->swapChain());
     ASSERT_SCREEN_S(LN_ASSETFILE("Graphics/Result/Test_Graphics_DeviceContext-BasicTriangle-1.png"));
 }

@@ -39,7 +39,8 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
-		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+		ctx->drawPrimitive(0, 1);
 
 		ASSERT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-1.png"));
 	}
@@ -51,7 +52,8 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 		
 		ctx->setShaderPass(shader2->techniques()[0]->passes()[0]);
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
-		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+		ctx->drawPrimitive(0, 1);
 		
 		ASSERT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-3.png"));
 	}
@@ -87,7 +89,8 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 
 		ctx->setShaderPass(shader2->techniques()[0]->passes()[0]);
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
-		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+		ctx->drawPrimitive(0, 1);
 
 		ASSERT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-4.png"));
 	}
@@ -100,7 +103,8 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 
 		ctx->setShaderPass(shader2->techniques()[0]->passes()[0]);
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
-		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+		ctx->drawPrimitive(0, 1);
 
 		ASSERT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-5.png"));
 	}
@@ -114,7 +118,8 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 
 		ctx->setShaderPass(shader2->techniques()[0]->passes()[0]);
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
-		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+		ctx->drawPrimitive(0, 1);
 
 		ASSERT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-1.png"));	// 1 と同じ結果でよい
 	}
@@ -186,7 +191,8 @@ TEST_F(Test_Graphics_HlslEffect, UnifiedShader)
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setShaderPass(shader->techniques()[0]->passes()[0]);
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
-		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
+		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+		ctx->drawPrimitive(0, 1);
 
 		ASSERT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-UnifiedShader-1.png"));
 	}

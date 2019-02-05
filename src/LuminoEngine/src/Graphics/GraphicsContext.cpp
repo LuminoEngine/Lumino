@@ -137,6 +137,13 @@ void GraphicsContext::setShaderPass(ShaderPass* pass)
     }
 }
 
+void GraphicsContext::setPrimitiveTopology(PrimitiveTopology value)
+{
+	if (m_staging.topology != value) {
+		m_staging.topology = value;
+	}
+}
+
 void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
 	commitState();
@@ -144,31 +151,29 @@ void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8
 	m_device->clearBuffers(flags, color, z, stencil);
 }
 
-void GraphicsContext::drawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
+void GraphicsContext::drawPrimitive(int startVertex, int primitiveCount)
 {
 	commitState();
-	LN_ENQUEUE_RENDER_COMMAND_4(
+	LN_ENQUEUE_RENDER_COMMAND_3(
 		GraphicsContext_setIndexBuffer, m_manager,
 		detail::IGraphicsDeviceContext*, m_device,
-		PrimitiveType, primitive,
 		int, startVertex,
 		int, primitiveCount,
 		{
-			m_device->drawPrimitive(primitive, startVertex, primitiveCount);
+			m_device->drawPrimitive(startVertex, primitiveCount);
 		});
 }
 
-void GraphicsContext::drawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
+void GraphicsContext::drawPrimitiveIndexed(int startIndex, int primitiveCount)
 {
 	commitState();
-	LN_ENQUEUE_RENDER_COMMAND_4(
+	LN_ENQUEUE_RENDER_COMMAND_3(
 		GraphicsContext_setIndexBuffer, m_manager,
 		detail::IGraphicsDeviceContext*, m_device,
-		PrimitiveType, primitive,
 		int, startIndex,
 		int, primitiveCount,
 		{
-			m_device->drawPrimitiveIndexed(primitive, startIndex, primitiveCount);
+			m_device->drawPrimitiveIndexed(startIndex, primitiveCount);
 		});
 }
 
@@ -316,6 +321,17 @@ detail::IGraphicsDeviceContext* GraphicsContext::commitState()
         }
 	}
 
+	{
+		auto& topology = m_staging.topology;
+		LN_ENQUEUE_RENDER_COMMAND_2(
+			GraphicsContext_setShaderPass, m_manager,
+			detail::IGraphicsDeviceContext*, m_device,
+			PrimitiveTopology, topology,
+			{
+				m_device->setPrimitiveTopology(topology);
+			});
+	}
+
     m_modifiedFlags = ModifiedFlags_None;
 
 	return m_manager->deviceContext();
@@ -333,6 +349,7 @@ void GraphicsContext::State::reset()
 	indexBuffer = nullptr;
     shader = nullptr;
 	shaderPass = nullptr;
+	topology = PrimitiveTopology::TriangleList;
 }
 
 } // namespace ln
