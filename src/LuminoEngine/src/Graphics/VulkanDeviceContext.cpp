@@ -1299,6 +1299,26 @@ bool VulkanDeviceContext::submitStatus()
 
     VkCommandBuffer commandBuffer = m_activeCommandBuffer->vulkanCommandBuffer();
 
+
+    // TODO: modify チェック
+    {
+        VkViewport viewport;
+        viewport.x = state.viewportRect.x;
+        viewport.y = state.viewportRect.y;
+        viewport.width = state.viewportRect.width;
+        viewport.height = state.viewportRect.height;
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+        vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+
+        VkRect2D scissor;
+        scissor.offset.x = state.scissorRect.x;
+        scissor.offset.y = state.scissorRect.y;
+        scissor.extent.width = state.scissorRect.width;
+        scissor.extent.height = state.scissorRect.height;
+        vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+    }
+
     // TODO: modify チェック
     for (int i = 0; i < MaxVertexStreams; i++)
     {
@@ -1567,6 +1587,7 @@ bool VulkanCommandList::begin()
     VkRect2D dummyScissor = {};
     vkCmdSetScissor(m_commandBuffer, 0, 1, &dummyScissor);
 
+    // TODO: これは固定でいい気がする
     float blendConstant[4] = {1.0f, 1.0f, 1.0f, 1.0f};
     vkCmdSetBlendConstants(m_commandBuffer, blendConstant);
 
