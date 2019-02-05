@@ -39,7 +39,7 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-		ASSERT_SCREEN_S(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-BasicTriangle-1.png"));
+		ASSERT_SCREEN_S(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-BasicTriangle.png"));
 	}
 }
 

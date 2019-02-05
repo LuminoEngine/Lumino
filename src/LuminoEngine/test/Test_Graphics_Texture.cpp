@@ -17,7 +17,7 @@ TEST_F(Test_Graphics_Texture, clear)
         sprite->setBlendMode(BlendMode::Alpha);
 
         TestEnv::updateFrame();
-        ASSERT_SCREEN(LN_ASSETFILE("Result/Graphics/Test_Graphics_Texture-clear-1.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_Texture-clear-1.png"));
         LN_TEST_CLEAN_SCENE;
     }
 
@@ -29,7 +29,7 @@ TEST_F(Test_Graphics_Texture, clear)
         sprite->setBlendMode(BlendMode::Alpha);
 
         TestEnv::updateFrame();
-        ASSERT_SCREEN(LN_ASSETFILE("Result/Graphics/Test_Graphics_Texture-clear-2.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_Texture-clear-2.png"));
         LN_TEST_CLEAN_SCENE;
     }
 }
@@ -50,7 +50,7 @@ TEST_F(Test_Graphics_Texture, drawText)
 		sprite->setBlendMode(BlendMode::Alpha);
 
 		TestEnv::updateFrame();
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Graphics/Test_Graphics_Texture-drawText-2.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_Texture-drawText-2.png"));
 		LN_TEST_CLEAN_SCENE;
 	}
 
@@ -65,7 +65,7 @@ TEST_F(Test_Graphics_Texture, drawText)
 		sprite->setBlendMode(BlendMode::Alpha);
 
 		TestEnv::updateFrame();
-		ASSERT_SCREEN(LN_ASSETFILE("Result/Graphics/Test_Graphics_Texture-drawText-1.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_Texture-drawText-1.png"));
 		LN_TEST_CLEAN_SCENE;
 	}
 }
@@ -83,7 +83,7 @@ TEST_F(Test_Graphics_Texture, setPixel)
     sprite->setScale(20);
 
     TestEnv::updateFrame();
-    ASSERT_SCREEN(LN_ASSETFILE("Result/Graphics/Test_Graphics_Texture-setPixel-1.png"));
+    ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_Texture-setPixel-1.png"));
     LN_TEST_CLEAN_SCENE;
 }
 
@@ -101,7 +101,7 @@ TEST_F(Test_Graphics_Texture, blit)
 	sprite->setBlendMode(BlendMode::Alpha);
     TestEnv::updateFrame();
 
-    ASSERT_SCREEN(LN_ASSETFILE("Result/Graphics/Test_Graphics_Texture-blit-1.png"));
+    ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_Texture-blit-1.png"));
     LN_TEST_CLEAN_SCENE;
 }
 
@@ -128,7 +128,7 @@ TEST_F(Test_Graphics_Texture, Issues)
         texture->drawText(_LT("Clear2"), Rect(0, 32, 160, 120), font, Color::White, TextAlignment::Left);
         TestEnv::updateFrame();
 
-        ASSERT_SCREEN(LN_ASSETFILE("Result/Graphics/Test_Graphics_Texture-Issues-1.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_Texture-Issues-1.png"));
         LN_TEST_CLEAN_SCENE;
     }
 }
