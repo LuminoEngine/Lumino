@@ -1304,9 +1304,9 @@ bool VulkanDeviceContext::submitStatus()
     {
         VkViewport viewport;
         viewport.x = state.viewportRect.x;
-        viewport.y = state.viewportRect.y;
+        viewport.y = state.viewportRect.height + state.viewportRect.y;
         viewport.width = state.viewportRect.width;
-        viewport.height = state.viewportRect.height;
+        viewport.height = -state.viewportRect.height;
         viewport.minDepth = 0.0f;
         viewport.maxDepth = 1.0f;
         vkCmdSetViewport(commandBuffer, 0, 1, &viewport);

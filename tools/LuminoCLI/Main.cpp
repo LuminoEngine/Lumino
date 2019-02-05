@@ -19,6 +19,7 @@ int main(int argc, char** argv)
         //::SetCurrentDirectoryW(L"D:/Documents/LuminoProjects/HelloLumino");
         //::SetCurrentDirectoryW(L"D:/Proj");
 		::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\Test3");
+        ln::GlobalLogger::setLevel(ln::LogLevel::Verbose);
     
 		const char* debugArgv[] = {
 			"<program>",
@@ -41,10 +42,11 @@ int main(int argc, char** argv)
             //"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.hlsl",
 
             //"build", "assets",
-			"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Graphics/SimplePosColor.fx"
+			"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Graphics/SimpleConstantBuffer.fx"
 		};
 		argc = sizeof(debugArgv) / sizeof(char*);
 		argv = (char**)debugArgv;
+
 	}
 #endif
 	try

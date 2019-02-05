@@ -40,8 +40,8 @@ TEST_F(Test_Graphics_DeviceContext, BasicTriangle)
     };
     PosColor v1[3] = {
         { { 0, 0.5, 0 }, { 1, 0, 0, 1 } },
-        { { 0.5, -0.25, 0 }, { 0, 1, 0, 1 } },
-        { {-0.5, -0.25, 0 }, { 0, 0, 1, 1 } },
+        { { 0.5, -0.5, 0 }, { 0, 1, 0, 1 } },
+        { {-0.5, -0.5, 0 }, { 0, 0, 1, 1 } },
     };
 
     auto vertexBuffer = newObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);

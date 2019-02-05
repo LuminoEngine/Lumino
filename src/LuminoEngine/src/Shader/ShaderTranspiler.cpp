@@ -382,6 +382,32 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
 
 			m_attributes.push_back(attr);
 		}
+
+        // ```
+        // float4 g_color1;
+        // cbuffer ConstBuff : register(b0) { float4 g_color2; };
+        // ```
+        // というコードがある場合、g_color1 は "g_color1"、"g_color2" は "g_color2" というように、そのままの名前で取得。
+        for (int i = 0; i < program.getNumLiveUniformVariables(); i++)
+        {
+            const char* name = program.getUniformName(i);
+            int ownerUiformBufferIndex = program.getUniformBlockIndex(i);
+
+            LN_LOG_VERBOSE << "Uniform[" << i << "] : ";
+            LN_LOG_VERBOSE << "  name : " << name;
+            LN_LOG_VERBOSE << "  ownerUiformBufferIndex : " << ownerUiformBufferIndex << "(" << program.getUniformBlockName(ownerUiformBufferIndex) << ")";
+
+            printf("");
+        }
+
+        // $Global
+        for (int i = 0; i < program.getNumLiveUniformBlocks(); i++)
+        {
+            //int block = program.getUniformBlockIndex(i);
+            //const char* name = program.getUniformBlockName(block);
+
+            printf("");
+        }
 	}
 
     glslang::GlslangToSpv(*program.getIntermediate(lang), m_spirvCode);
