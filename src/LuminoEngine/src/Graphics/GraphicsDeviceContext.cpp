@@ -105,27 +105,27 @@ Ref<IShaderPass> IGraphicsDeviceContext::createShaderPass(const byte_t* vsCode, 
 
 void IGraphicsDeviceContext::setBlendState(const BlendStateDesc& value)
 {
-	m_staging.blendState = value;
+	m_staging.pipelineState.blendState = value;
 }
 
 void IGraphicsDeviceContext::setRasterizerState(const RasterizerStateDesc& value)
 {
-	m_staging.rasterizerState = value;
+	m_staging.pipelineState.rasterizerState = value;
 }
 
 void IGraphicsDeviceContext::setDepthStencilState(const DepthStencilStateDesc& value)
 {
-	m_staging.depthStencilState = value;
+	m_staging.pipelineState.depthStencilState = value;
 }
 
 void IGraphicsDeviceContext::setColorBuffer(int index, ITexture* value)
 {
-	m_staging.renderTargets[index] = value;
+	m_staging.framebufferState.renderTargets[index] = value;
 }
 
 void IGraphicsDeviceContext::setDepthBuffer(IDepthBuffer* value)
 {
-	m_staging.depthBuffer = value;
+	m_staging.framebufferState.depthBuffer = value;
 }
 
 void IGraphicsDeviceContext::setViewportRect(const RectI& value)
@@ -140,7 +140,7 @@ void IGraphicsDeviceContext::setScissorRect(const RectI& value)
 
 void IGraphicsDeviceContext::setVertexDeclaration(IVertexDeclaration* value)
 {
-	m_staging.vertexDeclaration = value;
+	m_staging.pipelineState.vertexDeclaration = value;
 }
 
 void IGraphicsDeviceContext::setVertexBuffer(int streamIndex, IVertexBuffer* value)
@@ -155,7 +155,7 @@ void IGraphicsDeviceContext::setIndexBuffer(IIndexBuffer* value)
 
 void IGraphicsDeviceContext::setShaderPass(IShaderPass* value)
 {
-	m_staging.shaderPass = value;
+	m_staging.pipelineState.shaderPass = value;
 }
 
 void IGraphicsDeviceContext::clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
@@ -183,19 +183,19 @@ void IGraphicsDeviceContext::present(ISwapChain* swapChain)
 
 void IGraphicsDeviceContext::commitStatus()
 {
-	if (LN_REQUIRE(m_staging.renderTargets[0])) return;
+	if (LN_REQUIRE(m_staging.framebufferState.renderTargets[0])) return;
 
 	// TODO: modified check
 
-	onUpdatePipelineState(m_staging.blendState, m_staging.rasterizerState, m_staging.depthStencilState);
+	onUpdatePipelineState(m_staging.pipelineState.blendState, m_staging.pipelineState.rasterizerState, m_staging.pipelineState.depthStencilState);
 
-	onUpdateShaderPass(m_staging.shaderPass);
+	onUpdateShaderPass(m_staging.pipelineState.shaderPass);
 
-	onUpdateFrameBuffers(m_staging.renderTargets.data(), m_staging.renderTargets.size(), m_staging.depthBuffer);
+	onUpdateFrameBuffers(m_staging.framebufferState.renderTargets.data(), m_staging.framebufferState.renderTargets.size(), m_staging.framebufferState.depthBuffer);
 
-	onUpdateRegionRects(m_staging.viewportRect, m_staging.scissorRect, m_staging.renderTargets[0]->realSize());
+	onUpdateRegionRects(m_staging.viewportRect, m_staging.scissorRect, m_staging.framebufferState.renderTargets[0]->realSize());
 
-	onUpdatePrimitiveData(m_staging.vertexDeclaration, m_staging.vertexBuffers.data(), m_staging.vertexBuffers.size(), m_staging.indexBuffer);
+	onUpdatePrimitiveData(m_staging.pipelineState.vertexDeclaration, m_staging.vertexBuffers.data(), m_staging.vertexBuffers.size(), m_staging.indexBuffer);
 	
     m_committed = m_staging;
 }

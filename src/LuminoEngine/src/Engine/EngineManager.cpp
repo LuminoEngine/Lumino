@@ -304,6 +304,7 @@ void EngineManager::initializeGraphicsManager()
 
 		GraphicsManager::Settings settings;
 		settings.mainWindow = m_platformManager->mainWindow();
+		settings.graphicsAPI = m_settings.graphicsAPI;
 
 		m_graphicsManager = ln::makeRef<GraphicsManager>();
 		m_graphicsManager->init(settings);

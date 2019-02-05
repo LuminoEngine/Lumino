@@ -4,7 +4,9 @@ namespace ln {
 
 enum class GraphicsAPI
 {
+	Default,
 	OpenGL,
+	Vulkan,
 };
 
 enum class ClearFlags

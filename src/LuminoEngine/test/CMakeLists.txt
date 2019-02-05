@@ -9,6 +9,7 @@ set(LN_SOURCES
 	Test_Base_Regex.cpp
 	Test_Engine_Object.cpp
 	Test_Graphics_Bitmap.cpp
+	Test_Graphics_DeviceContext.cpp
 	Test_Graphics_LowLevelRendering.cpp
 	Test_Graphics_Texture.cpp
 	Test_Scene_Sprite.cpp

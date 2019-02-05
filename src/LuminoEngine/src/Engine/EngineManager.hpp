@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <LuminoEngine/Engine/Common.hpp>
 #include <LuminoEngine/Asset/Common.hpp>
+#include <LuminoEngine/Graphics/Common.hpp>
 #include <LuminoEngine/Graphics/GeometryStructs.hpp>
 #include <LuminoEngine/Platform/PlatformEvent.hpp>
 #include "FpsController.hpp"
@@ -50,6 +51,7 @@ struct EngineSettings
 	AssetStorageAccessPriority assetStorageAccessPriority = AssetStorageAccessPriority::DirectoryFirst;
     List<EngineSettingsAssetArchiveEntry> assetArchives;
 	List<Path> assetDirectories;
+	GraphicsAPI graphicsAPI = GraphicsAPI::Default;
 	bool standaloneFpsControl = false;
 	int frameRate = 60;
 };

@@ -19,6 +19,7 @@ public:
 	struct Settings
 	{
 		PlatformWindow* mainWindow = nullptr;
+		GraphicsAPI graphicsAPI;
 	};
 
 	GraphicsManager();
@@ -47,6 +48,9 @@ public:
 
 
 private:
+	void createOpenGLContext(const Settings& settings);
+	void createVulkanContext(const Settings& settings);
+
 	Ref<IGraphicsDeviceContext> m_deviceContext;
 	Ref<GraphicsContext> m_graphicsContext;
 	Ref<LinearAllocatorPageManager> m_linearAllocatorPageManager;

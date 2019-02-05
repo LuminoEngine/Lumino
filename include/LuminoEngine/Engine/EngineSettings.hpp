@@ -2,6 +2,7 @@
 #pragma once
 #include "Common.hpp"
 #include "../Asset/Common.hpp"
+#include "../Graphics/Common.hpp"
 
 namespace ln {
 
@@ -34,9 +35,9 @@ public:
 //	/** 指定したフォルダをアセットフォルダとして扱います。アセットフォルダのファイルにアクセスするには Assets クラスの機能を使用します。 */
 //	static void addAssetsDirectory(const StringRef& directoryPath);
 //
-//	/** グラフィックス機能で使用する描画 API を設定します。(default: Windows の場合 DirectX9、それ以外は OpenGL) */
-//	static void setGraphicsAPI(GraphicsAPI graphicsAPI);
-//
+	/** グラフィックス機能で使用する描画 API を設定します。(default: Default) */
+	static void setGraphicsAPI(GraphicsAPI graphicsAPI);
+
 //	/** グラフィックス機能で使用するレンダリング方法を設定します。(default: Threaded) */
 //	static void setGraphicsRenderingType(RenderingType renderingType);
 //	

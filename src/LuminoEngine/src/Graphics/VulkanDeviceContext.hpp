@@ -98,7 +98,7 @@ public:
 	// Pipeline state の Hash を計算する。
 	// viewportRect, scissorRect, VertexBuffer, IndexBuffer は含まない。
 	// RenderTarget と DepthBuffer についてはフォーマットを含む。オブジェクトは含まない。
-	static uint64_t computeHash(const IGraphicsDeviceContext::State& state);
+	static uint64_t computeHash(const DevicePipelineState& state, const DeviceFramebufferState& framebuffer);
 
 	// TODO: 長い間使われない Item を消すような処理
 };
@@ -112,14 +112,14 @@ public:
 	// ほかのオブジェクトを参照することはない。
 	// ひとまず、アプリ動作中に VkRenderPass を Destroy はせず、終了時にすべて Destory する。
 
-	static uint64_t computeHash(ITexture* const* renderTargets, size_t renderTargetCount, IDepthBuffer* depthBuffer);
+	static uint64_t computeHash(const DeviceFramebufferState& state);
 };
 
 class VulkanFrameBuffer
 	: public RefObject
 {
 public:
-	bool init(VulkanDeviceContext* deviceContext, ITexture* const* renderTargets, size_t renderTargetCount, IDepthBuffer* depthBuffer);
+	bool init(VulkanDeviceContext* deviceContext, const DeviceFramebufferState& state);
 	void dispose();
 	bool containsRenderTarget(ITexture* renderTarget) const;
 	bool containsDepthBuffer(IDepthBuffer* depthBuffer) const;
@@ -131,7 +131,7 @@ public: // TODO:
 	VulkanDeviceContext* m_deviceContext;
 	VkRenderPass m_renderPass;
 	VkFramebuffer m_framebuffer;
-	std::array<ITexture*, IGraphicsDeviceContext::MaxRenderTargets> m_renderTargets = {};
+	std::array<ITexture*, MaxMultiRenderTargets> m_renderTargets = {};
 	size_t m_renderTargetCount;
 	IDepthBuffer* m_depthBuffer = nullptr;
 };
@@ -140,10 +140,10 @@ class VulkanFrameBufferCache
 	: public HashedObjectCache<Ref<VulkanFrameBuffer>>
 {
 public:
-	static uint64_t computeHash(ITexture* const* renderTargets, size_t renderTargetCount, IDepthBuffer* depthBuffer)
-	{
-		return VulkanRenderPassCache::computeHash(renderTargets, renderTargetCount, depthBuffer);
-	}
+	//static uint64_t computeHash(ITexture* const* renderTargets, size_t renderTargetCount, IDepthBuffer* depthBuffer)
+	//{
+	//	return VulkanRenderPassCache::computeHash(renderTargets, renderTargetCount, depthBuffer);
+	//}
 
 	void invalidateRenderTarget(ITexture* renderTarget)
 	{
@@ -202,9 +202,11 @@ public:
 	VulkanShaderPass* defaultShaderPass() const { return m_defaultShaderPass; }
     uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
-	bool getVkRenderPass(ITexture* const* renderTargets, size_t renderTargetCount, IDepthBuffer* depthBuffer, VkRenderPass* outPass);
+	bool getVkRenderPass(const DeviceFramebufferState& state, VkRenderPass* outPass);
     bool beginActiveCommandBuffer();
     bool endActiveCommandBuffer();
+
+	static const char* getVkResultName(VkResult result);
 
 protected:
     virtual void onGetCaps(GraphicsDeviceCaps* outCaps) override;
@@ -460,7 +462,7 @@ class VulkanVertexBuffer
 public:
     VulkanVertexBuffer();
     virtual ~VulkanVertexBuffer();
-    bool init(VulkanDeviceContext* deviceContext, GraphicsResourceUsage usage, size_t bufferSize, const void* initialData);
+	Result init(VulkanDeviceContext* deviceContext, GraphicsResourceUsage usage, size_t bufferSize, const void* initialData);
     virtual void dispose() override;
     virtual size_t getBytesSize() override;
     virtual GraphicsResourceUsage usage() const override;

@@ -5,10 +5,10 @@ class Test_Graphics_LowLevelRendering : public ::testing::Test
 public:
 	virtual void SetUp()
 	{
-		//m_shader1 = Shader::create(LN_ASSETFILE("simple.vsh"), LN_ASSETFILE("simple.psh"));
+		m_shader1 = Shader::create(LN_ASSETFILE("simple.vsh"), LN_ASSETFILE("simple.psh"));
 
-		//m_vertexDecl1 = newObject<VertexDeclaration>();
-		//m_vertexDecl1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
+		m_vertexDecl1 = newObject<VertexDeclaration>();
+		m_vertexDecl1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
 	}
 
 	virtual void TearDown() {}
@@ -18,62 +18,7 @@ public:
 };
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Graphics_LowLevelRendering, Clear)
-{
-    {
-        auto ctx = Engine::graphicsContext();
-        TestEnv::resetGraphicsContext(ctx);
-        ctx->setDepthBuffer(nullptr);
-        ctx->clear(ClearFlags::All, Color::Blue, 1.0f, 0);
-        ctx->present(Engine::mainWindow()->swapChain());
-        ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-1.png"));
-    }
-    {
-        auto ctx = Engine::graphicsContext();
-        TestEnv::resetGraphicsContext(ctx);
-        ctx->setDepthBuffer(nullptr);
-        ctx->clear(ClearFlags::All, Color::Red, 1.0f, 0);
-        ctx->present(Engine::mainWindow()->swapChain());
-        ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-2.png"));
-    }
-}
-
-//------------------------------------------------------------------------------
 TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
-{
-    auto shader1 = Shader::create(LN_ASSETFILE("Graphics/SimplePosColor.lcfx"));
-
-    struct PosColor
-    {
-        Vector3 pos;
-        Vector4 color;
-    };
-    PosColor v1[3] = {
-        { { -1, 1, 0 }, { 1, 0, 0, 1 } },
-        { {-1, 0, 0}, { 0, 0, 1, 1 } },
-        { {0, 1, 0}, { 0, 1, 0, 1 } },
-    };
-
-    auto vertexBuffer = newObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
-
-    auto vertexDecl1 = newObject<VertexDeclaration>();
-    vertexDecl1->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
-    vertexDecl1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
-
-    auto ctx = Engine::graphicsContext();
-    TestEnv::resetGraphicsContext(ctx);
-    ctx->setDepthBuffer(nullptr);
-    ctx->setVertexDeclaration(vertexDecl1);
-    ctx->setVertexBuffer(0, vertexBuffer);
-    ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
-    ctx->clear(ClearFlags::All, Color::Gray, 1.0f, 0);
-    ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
-    ctx->present(Engine::mainWindow()->swapChain());
-    ASSERT_SCREEN_S(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-BasicTriangle-1.png"));
-}
-
-//------------------------------------------------------------------------------
-TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle2)
 {
 	// # 時計回り (左ねじ) で描画できること
 	{
@@ -94,7 +39,7 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle2)
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
 
-		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-BasicTriangle2-1.png"));
+		ASSERT_SCREEN_S(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-BasicTriangle-1.png"));
 	}
 }
 

@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <LuminoCore/Base/Result.hpp>
+#include <LuminoEngine/Graphics/Common.hpp>
 #include <LuminoEngine/Graphics/RenderState.hpp>
 #include <LuminoEngine/Shader/Common.hpp>
 
@@ -20,6 +22,9 @@ class IShaderUniformBuffer;
 class IShaderUniform;
 class IShaderSamplerBuffer;
 
+//static const int MaxRenderTargets = 4;
+//static const int MaxVertexStreams = 4;
+
 enum class DeviceTextureType
 {
 	Texture2D,
@@ -30,6 +35,21 @@ enum class DeviceTextureType
 struct GraphicsDeviceCaps
 {
 	UnifiedShaderTriple requestedShaderTriple;
+};
+
+struct DevicePipelineState
+{
+	BlendStateDesc blendState;
+	RasterizerStateDesc rasterizerState;
+	DepthStencilStateDesc depthStencilState;
+	IVertexDeclaration* vertexDeclaration = nullptr;
+	IShaderPass* shaderPass = nullptr;
+};
+
+struct DeviceFramebufferState
+{
+	std::array<ITexture*, MaxMultiRenderTargets> renderTargets = {};
+	IDepthBuffer* depthBuffer = nullptr;
 };
 
 struct ShaderVertexInputAttribute
@@ -45,26 +65,18 @@ class IGraphicsDeviceContext
 	: public RefObject
 {
 public:
-	static const int MaxRenderTargets = 4;
-    static const int MaxVertexStreams = 4;
-
 	struct State
 	{
-		BlendStateDesc blendState;
-		RasterizerStateDesc rasterizerState;
-		DepthStencilStateDesc depthStencilState;
-		std::array<ITexture*, MaxRenderTargets> renderTargets = {};
-		IDepthBuffer* depthBuffer = nullptr;
-		IVertexDeclaration* vertexDeclaration = nullptr;
-		IShaderPass* shaderPass = nullptr;
-
-		RectI viewportRect;
-		RectI scissorRect;
 		std::array<IVertexBuffer*, MaxVertexStreams> vertexBuffers = {};
 		IIndexBuffer* indexBuffer = nullptr;
 
-		//uint64_t computeStateHash() const;
+		RectI viewportRect;
+		RectI scissorRect;
+
+		DevicePipelineState pipelineState;
+		DeviceFramebufferState framebufferState;
 	};
+
 
 	IGraphicsDeviceContext();
 	virtual ~IGraphicsDeviceContext() = default;

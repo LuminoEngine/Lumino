@@ -109,19 +109,21 @@ void GraphicsManager::init(const Settings& settings)
 {
     LN_LOG_DEBUG << "GraphicsManager Initialization started.";
 
-#ifdef LN_USE_VULKAN
-    VulkanDeviceContext::Settings dcSettings;
-    dcSettings.debugEnabled = true;
-    auto ctx = makeRef<VulkanDeviceContext>();
-    ctx->init(dcSettings);
-    m_deviceContext = ctx;
-#else
-	OpenGLDeviceContext::Settings openglSettings;
-	openglSettings.mainWindow = settings.mainWindow;
-	auto ctx = makeRef<OpenGLDeviceContext>();
-	ctx->init(openglSettings);
-	m_deviceContext = ctx;
-#endif
+	// Create device context
+	{
+		if (settings.graphicsAPI == GraphicsAPI::OpenGL) {
+			createOpenGLContext(settings);
+		}
+		else if (settings.graphicsAPI == GraphicsAPI::Vulkan) {
+			createVulkanContext(settings);
+		}
+
+		// Default
+		if (!m_deviceContext) {
+			createOpenGLContext(settings);
+		}
+	}
+
     m_deviceContext->refreshCaps();
 
     {
@@ -187,6 +189,26 @@ void GraphicsManager::addGraphicsResource(GraphicsResource* resource)
 void GraphicsManager::removeGraphicsResource(GraphicsResource* resource)
 {
 	m_graphicsResources.remove(resource);
+}
+
+void GraphicsManager::createOpenGLContext(const Settings& settings)
+{
+	OpenGLDeviceContext::Settings openglSettings;
+	openglSettings.mainWindow = settings.mainWindow;
+	auto ctx = makeRef<OpenGLDeviceContext>();
+	ctx->init(openglSettings);
+	m_deviceContext = ctx;
+}
+
+void GraphicsManager::createVulkanContext(const Settings& settings)
+{
+#ifdef LN_USE_VULKAN
+	VulkanDeviceContext::Settings dcSettings;
+	dcSettings.debugEnabled = true;
+	auto ctx = makeRef<VulkanDeviceContext>();
+	ctx->init(dcSettings);
+	m_deviceContext = ctx;
+#endif
 }
 
 } // namespace detail
