@@ -38,17 +38,17 @@ TEST_F(Test_Graphics_DeviceContext, BasicTriangle)
         Vector3 pos;
         Vector4 color;
     };
-    PosColor v1[3] = {
+    PosColor v1[] = {
         { { 0, 0.5, 0 }, { 1, 0, 0, 1 } },
         { { 0.5, -0.5, 0 }, { 0, 1, 0, 1 } },
         { {-0.5, -0.5, 0 }, { 0, 0, 1, 1 } },
     };
 
-    auto vertexBuffer = newObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
+	auto vertexDecl1 = newObject<VertexDeclaration>();
+	vertexDecl1->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
+	vertexDecl1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
 
-    auto vertexDecl1 = newObject<VertexDeclaration>();
-    vertexDecl1->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
-    vertexDecl1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
+    auto vertexBuffer = newObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
 
 
     auto ctx = Engine::graphicsContext();
@@ -73,4 +73,44 @@ TEST_F(Test_Graphics_DeviceContext, BasicTriangle)
     ctx->drawPrimitive(0, 1);
     ctx->present(Engine::mainWindow()->swapChain());
     ASSERT_SCREEN_S(LN_ASSETFILE("Graphics/Result/Test_Graphics_DeviceContext-BasicTriangle-1.png"));
+}
+
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Graphics_DeviceContext, IndexBuffer)
+{
+	auto shader1 = Shader::create(LN_ASSETFILE("Graphics/SimplePosColor.lcfx"));
+
+	struct PosColor
+	{
+		Vector3 pos;
+		Vector4 color;
+	};
+	PosColor v1[] = {
+		{ { -0.5, 0.5, 0 }, { 1, 0, 0, 1 } },
+		{ { 0.5, 0.5, 0 }, { 0, 1, 0, 1 } },
+		{ { -0.5, -0.5, 0 }, { 0, 0, 1, 1 } },
+		{ { 0.5, -0.5, 0 }, { 1, 1, 1, 1 } },
+	};
+	uint16_t i1[] = { 0, 1, 2, 2, 1, 3 };
+
+	auto vertexDecl1 = newObject<VertexDeclaration>();
+	vertexDecl1->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
+	vertexDecl1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
+
+	auto vertexBuffer = newObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
+	auto indexBuffer = newObject<IndexBuffer>(LN_ARRAY_SIZE_OF(i1), IndexBufferFormat::UInt16, i1, GraphicsResourceUsage::Static);
+
+	auto ctx = Engine::graphicsContext();
+	TestEnv::resetGraphicsContext(ctx);
+
+	ctx->setVertexDeclaration(vertexDecl1);
+	ctx->setVertexBuffer(0, vertexBuffer);
+	ctx->setIndexBuffer(indexBuffer);
+	ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
+	ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+	ctx->clear(ClearFlags::All, Color::Gray, 1.0f, 0);
+	ctx->drawPrimitiveIndexed(0, 2);
+	ctx->present(Engine::mainWindow()->swapChain());
+	ASSERT_SCREEN_S(LN_ASSETFILE("Graphics/Result/Test_Graphics_DeviceContext-IndexBuffer-1.png"));
 }

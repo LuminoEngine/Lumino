@@ -155,6 +155,28 @@ bool UnifiedShader::save(const Path& filePath)
 					writer->writeUInt8(semantics[i].layoutLocation);
 				}
 			}
+
+			// Uniform buffers
+			{
+				auto& buffers = info->uniformBuffers;
+				writer->writeUInt32(buffers.size());
+				for (size_t i = 0; i < buffers.size(); i++) {
+					writeString(writer, buffers[i].name);
+					writer->writeUInt32(buffers[i].size);
+
+					writer->writeUInt32(buffers[i].members.size());
+					for (size_t iMember = 0; iMember < buffers[i].members.size(); iMember++) {
+						auto& member = buffers[i].members[iMember];
+						writeString(writer, member.name);
+						writer->writeUInt16(member.type);
+						writer->writeUInt16(member.offset);
+						writer->writeUInt16(member.vectorElements);
+						writer->writeUInt16(member.arrayElements);
+						writer->writeUInt16(member.matrixRows);
+						writer->writeUInt16(member.matrixColumns);
+					}
+				}
+			}
         }
     }
 
@@ -281,6 +303,31 @@ bool UnifiedShader::load(Stream* stream)
 					attr.index = reader->readUInt8();
 					attr.layoutLocation = reader->readUInt8();
 					info.attributeSemantics.push_back(attr);
+				}
+			}
+
+			// Uniform buffers
+			{
+				size_t count = reader->readUInt32();
+				for (size_t i = 0; i < count; i++) {
+					ShaderUniformBufferInfo buffer;
+					buffer.name = readString(reader);
+					buffer.size = reader->readUInt32();
+
+					size_t memberCount = reader->readUInt32();
+					for (size_t iMember = 0; iMember < memberCount; iMember++) {
+						ShaderUniformInfo member;
+						member.name = readString(reader);
+						member.type = reader->readUInt16();
+						member.offset = reader->readUInt16();
+						member.vectorElements = reader->readUInt16();
+						member.arrayElements = reader->readUInt16();
+						member.matrixRows = reader->readUInt16();
+						member.matrixColumns = reader->readUInt16();
+						buffer.members.push_back(std::move(member));
+					}
+
+					info.uniformBuffers.push_back(std::move(buffer));
 				}
 			}
 
@@ -423,6 +470,11 @@ void UnifiedShader::setRenderState(PassId pass, ShaderRenderState* state)
 void UnifiedShader::setAttributeSemantics(PassId pass, const std::vector<VertexInputAttribute>& semantics)
 {
 	m_passes[idToIndex(pass)].attributeSemantics = semantics;
+}
+
+void UnifiedShader::setUniformBuffers(PassId pass, const std::vector<ShaderUniformBufferInfo>& buffers)
+{
+	m_passes[idToIndex(pass)].uniformBuffers = buffers;
 }
 
 UnifiedShader::CodeContainerId UnifiedShader::vertexShader(PassId pass) const

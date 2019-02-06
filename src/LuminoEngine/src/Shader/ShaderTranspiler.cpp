@@ -2,6 +2,7 @@
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 #include "Internal.hpp"
 #include <sstream>
+#include <glad/glad.h>
 #include <glslang/Public/ShaderLang.h>
 #include <glslang/Include/ResourceLimits.h>
 #include <SPIRV/GlslangToSpv.h>
@@ -214,6 +215,46 @@ public:
 //=============================================================================
 // ShaderCodeTranspiler
 
+struct OpenGLTypeConvertionItem
+{
+	GLenum glType;
+	ShaderUniformType lnType;
+	//uint32_t vectorElements;
+	//uint32_t matrixRows;
+	//uint32_t matrixColumns;
+};
+static const OpenGLTypeConvertionItem s_openGLTypeConvertionTable[] =
+{
+	{ GL_FLOAT, ShaderUniformType_Float },
+	{ GL_FLOAT_VEC2, ShaderUniformType_Vector },
+	{ GL_FLOAT_VEC3, ShaderUniformType_Vector },
+	{ GL_FLOAT_VEC4, ShaderUniformType_Vector },
+	{ GL_INT, ShaderUniformType_Int },
+	{ GL_BOOL, ShaderUniformType_Bool },
+	{ GL_FLOAT_MAT2, ShaderUniformType_Matrix },
+	{ GL_FLOAT_MAT3, ShaderUniformType_Matrix },
+	{ GL_FLOAT_MAT4, ShaderUniformType_Matrix },
+	{ GL_FLOAT_MAT2x3, ShaderUniformType_Matrix },
+	{ GL_FLOAT_MAT2x4, ShaderUniformType_Matrix },
+	{ GL_FLOAT_MAT3x2, ShaderUniformType_Matrix },
+	{ GL_FLOAT_MAT3x4, ShaderUniformType_Matrix },
+	{ GL_FLOAT_MAT4x2, ShaderUniformType_Matrix },
+	{ GL_FLOAT_MAT4x3, ShaderUniformType_Matrix },
+	{ GL_SAMPLER_2D, ShaderUniformType_Texture },
+	{ GL_SAMPLER_CUBE, ShaderUniformType_Texture },
+	{ GL_SAMPLER_3D, ShaderUniformType_Texture },
+};
+static bool GLTypeToLNUniformType(GLenum value, uint16_t* outType)
+{
+	for (int i = 0; i < LN_ARRAY_SIZE_OF(s_openGLTypeConvertionTable); i++) {
+		if (s_openGLTypeConvertionTable[i].glType == value) {
+			*outType = s_openGLTypeConvertionTable[i].lnType;
+			return true;
+		}
+	}
+	return false;
+}
+
 void ShaderCodeTranspiler::initializeGlobals()
 {
     glslang::InitializeProcess();
@@ -383,30 +424,100 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
 			m_attributes.push_back(attr);
 		}
 
-        // ```
-        // float4 g_color1;
-        // cbuffer ConstBuff : register(b0) { float4 g_color2; };
-        // ```
-        // というコードがある場合、g_color1 は "g_color1"、"g_color2" は "g_color2" というように、そのままの名前で取得。
+
+
+		// $Global
+		for (int i = 0; i < program.getNumLiveUniformBlocks(); i++)
+		{
+			ShaderUniformBufferInfo info;
+			info.name = program.getUniformBlockName(i);
+			info.size = program.getUniformBlockSize(i);
+
+			LN_LOG_VERBOSE << "UniformBuffer[" << i << "] : ";
+			LN_LOG_VERBOSE << "  name : " << info.name;
+			LN_LOG_VERBOSE << "  size : " << info.size;
+
+			m_uniformBuffers.push_back(std::move(info));
+		}
+
+
+
+		
+
+		// ```
+		// float4 g_color1;
+		// cbuffer ConstBuff : register(b0) { float4 g_color2; };
+		// ```
+		// というコードがある場合、g_color1 は "g_color1"、"g_color2" は "g_color2" というように、そのままの名前で取得。
+		//
+		//
+		// ```
+		// cbuffer ConstBuff1 {
+		//     float4 g_pos1;
+		//     float4 g_pos2;
+		// };
+		// cbuffer ConstBuff2 {
+		//     float4 g_pos3;
+		//     float4 g_pos4;
+		// };
+		// vsMain() {
+		//     return g_pos2;
+	    // }
+		// ```
+		// というように g_pos2 だけ使われている場合、
+		// - ConstBuff1 は Live となる
+		// - ConstBuff2 は Live ではないので getNumLiveUniformBlocks() には含まれない
+		// - g_pos1 も Live ではないので getNumLiveUniformVariables には含まれない
+		// - ConstBuff1 は size = 32(vec4 2つ分) で Live
+		// - g_pos2 はバッファ先頭からのオフセット 16
+		// 必要な分の最小限だけ Live になる。ただし、UniformBuffer の領域は維持される。
+		//
+		// また、これらはシェーダ単位で行われる。OpenGL でいうところの、VertexShader と PixelShader をリンクした後の program ではないので注意。
+		//
         for (int i = 0; i < program.getNumLiveUniformVariables(); i++)
         {
-            const char* name = program.getUniformName(i);
-            int ownerUiformBufferIndex = program.getUniformBlockIndex(i);
+			int ownerUiformBufferIndex = program.getUniformBlockIndex(i);
+			if (ownerUiformBufferIndex >= 0)
+			{
 
-            LN_LOG_VERBOSE << "Uniform[" << i << "] : ";
-            LN_LOG_VERBOSE << "  name : " << name;
-            LN_LOG_VERBOSE << "  ownerUiformBufferIndex : " << ownerUiformBufferIndex << "(" << program.getUniformBlockName(ownerUiformBufferIndex) << ")";
 
-            printf("");
-        }
+				ShaderUniformInfo info;
+				info.name = program.getUniformName(i);
 
-        // $Global
-        for (int i = 0; i < program.getNumLiveUniformBlocks(); i++)
-        {
-            //int block = program.getUniformBlockIndex(i);
-            //const char* name = program.getUniformBlockName(block);
+				if (!GLTypeToLNUniformType(program.getUniformType(i), &info.type)) {
+					diag->reportError("Invalid type.");
+					return false;
+				}
 
-            printf("");
+				//info.size = 0;
+				info.offset = program.getUniformBufferOffset(i);
+
+				const glslang::TType* type = program.getUniformTType(i);
+				info.vectorElements = type->getVectorSize();
+				info.arrayElements = program.getUniformArraySize(i);
+				info.matrixRows = type->getMatrixRows();
+				info.matrixColumns = type->getMatrixCols();
+
+				//auto aa = type->getTypeName();
+				//int a = GL_FLOAT_VEC4;
+
+
+
+				LN_LOG_VERBOSE << "Uniform[" << i << "] : ";
+				LN_LOG_VERBOSE << "  name : " << info.name;
+				LN_LOG_VERBOSE << "  type : " << info.type;
+				LN_LOG_VERBOSE << "  offset : " << info.offset;
+				LN_LOG_VERBOSE << "  vectorElements : " << info.vectorElements;
+				LN_LOG_VERBOSE << "  arrayElements : " << info.arrayElements;
+				LN_LOG_VERBOSE << "  matrixRows : " << info.matrixRows;
+				LN_LOG_VERBOSE << "  matrixColumns : " << info.matrixColumns;
+				LN_LOG_VERBOSE << "  ownerUiformBufferIndex : " << ownerUiformBufferIndex << "(" << program.getUniformBlockName(ownerUiformBufferIndex) << ")";
+
+				m_uniformBuffers[ownerUiformBufferIndex].members.push_back(std::move(info));
+			}
+			else {
+				// TODO: texture など
+			}
         }
 	}
 
@@ -551,6 +662,49 @@ std::vector<byte_t> ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es
     }
 
     return std::vector<byte_t>(code.begin(), code.end());
+}
+
+//=============================================================================
+// ShaderUniformBufferInfo
+
+void ShaderUniformBufferInfo::mergeFrom(const ShaderUniformBufferInfo& other)
+{
+	LN_CHECK(name == other.name);
+	LN_CHECK(size == other.size);
+
+	for (auto& om : other.members)
+	{
+		auto itr = std::find_if(members.begin(), members.end(), [&](const ShaderUniformInfo& x) { return x.name == om.name; });
+		if (itr != members.end()) {
+			LN_CHECK(itr->name == om.name);
+			LN_CHECK(itr->type == om.type);
+			LN_CHECK(itr->offset == om.offset);
+		}
+		else {
+			members.push_back(om);
+		}
+	}
+
+	std::sort(members.begin(), members.end(), [](const ShaderUniformInfo& a, const ShaderUniformInfo& b) { return a.offset < b.offset; });
+}
+
+void ShaderUniformBufferInfo::mergeBuffers(
+	const std::vector<ShaderUniformBufferInfo>& a,
+	const std::vector<ShaderUniformBufferInfo>& b,
+	std::vector<ShaderUniformBufferInfo>* out)
+{
+	*out = a;
+
+	for (auto& buffer : b)
+	{
+		auto itr = std::find_if(out->begin(), out->end(), [&](const ShaderUniformBufferInfo& x) { return x.name == buffer.name; });
+		if (itr != out->end()) {
+			itr->mergeFrom(buffer);
+		}
+		else {
+			out->push_back(buffer);
+		}
+	}
 }
 
 } // namespace detail

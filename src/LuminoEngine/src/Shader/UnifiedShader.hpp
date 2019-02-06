@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include <LuminoEngine/Engine/Diagnostics.hpp>
+#include "ShaderTranspiler.hpp"
 
 namespace ln {
 namespace detail {
@@ -79,6 +80,7 @@ public:
     void setPixelShader(PassId pass, CodeContainerId code);
     void setRenderState(PassId pass, ShaderRenderState* state);
 	void setAttributeSemantics(PassId pass, const std::vector<VertexInputAttribute>& semantics);
+	void setUniformBuffers(PassId pass, const std::vector<ShaderUniformBufferInfo>& buffers);
     CodeContainerId vertexShader(PassId pass) const;
     CodeContainerId pixelShader(PassId pass) const;
     ShaderRenderState* renderState(PassId pass) const;
@@ -122,6 +124,7 @@ private:
         CodeContainerId pixelShader;
         Ref<ShaderRenderState> renderState;
 		std::vector<VertexInputAttribute> attributeSemantics;
+		std::vector<ShaderUniformBufferInfo> uniformBuffers;
     };
 
     DiagnosticsManager* m_diag;

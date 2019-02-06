@@ -68,7 +68,8 @@ bool FxcCommand::generate(const ln::Path& inputFile)
     }
 
     // VertexShader 名, inputLayout
-    std::unordered_map<std::string, std::vector<ln::detail::VertexInputAttribute>> vertexInputAttributeMap;
+   //std::unordered_map<std::string, std::vector<ln::detail::VertexInputAttribute>> vertexInputAttributeMap;
+	std::unordered_map<std::string, std::shared_ptr<ln::detail::ShaderCodeTranspiler>> transpilerMap;
 
 	// まずは Code を作る
     for (auto& tech : metadataParser.techniques)
@@ -77,62 +78,62 @@ bool FxcCommand::generate(const ln::Path& inputFile)
 		{
             // Vertex shader
             {
-				ln::detail::ShaderCodeTranspiler transpiler(m_manager);
-				transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, &definitions, m_diag);
+				auto transpiler = std::make_shared<ln::detail::ShaderCodeTranspiler>(m_manager);
+				transpiler->parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, &definitions, m_diag);
 				if (m_diag->hasError()) {
 					return false;
 				}
-
-                vertexInputAttributeMap[pass.vertexShader] = transpiler.attributes();
+				transpilerMap[pass.vertexShader] = transpiler;
 
 				{
 					ln::detail::UnifiedShaderTriple triple = { "spv", 110, "" };
 					if (!unifiedShader->hasCode(pass.vertexShader, triple)) {
-						unifiedShader->setCode(pass.vertexShader, triple, transpiler.spirvCode());
+						unifiedShader->setCode(pass.vertexShader, triple, transpiler->spirvCode());
 					}
 				}
 
 				{
 					ln::detail::UnifiedShaderTriple triple = { "glsl", 400, "" };
 					if (!unifiedShader->hasCode(pass.vertexShader, triple)) {
-						unifiedShader->setCode(pass.vertexShader, triple, transpiler.generateGlsl(400, false));
+						unifiedShader->setCode(pass.vertexShader, triple, transpiler->generateGlsl(400, false));
 					}
 				}
 
 				{
 					ln::detail::UnifiedShaderTriple triple = { "glsl", 300, "es" };
 					if (!unifiedShader->hasCode(pass.vertexShader, triple)) {
-						unifiedShader->setCode(pass.vertexShader, triple, transpiler.generateGlsl(300, true));
+						unifiedShader->setCode(pass.vertexShader, triple, transpiler->generateGlsl(300, true));
 					}
 				}
             }
 
             // Pixel shader
             {
-				ln::detail::ShaderCodeTranspiler transpiler(m_manager);
-				transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, &definitions, m_diag);
+				auto transpiler = std::make_shared<ln::detail::ShaderCodeTranspiler>(m_manager);
+				transpiler->parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, &definitions, m_diag);
 				if (m_diag->hasError()) {
 					return false;
 				}
+				transpilerMap[pass.pixelShader] = transpiler;
 
 				{
 					ln::detail::UnifiedShaderTriple triple = { "spv", 110, "" };
 					if (!unifiedShader->hasCode(pass.pixelShader, triple)) {
-						unifiedShader->setCode(pass.pixelShader, triple, transpiler.spirvCode());
+						unifiedShader->setCode(pass.pixelShader, triple, transpiler->spirvCode());
 					}
 				}
 
 				{
 					ln::detail::UnifiedShaderTriple triple = { "glsl", 400, "" };
 					if (!unifiedShader->hasCode(pass.pixelShader, triple)) {
-						unifiedShader->setCode(pass.pixelShader, triple, transpiler.generateGlsl(400, false));
+						unifiedShader->setCode(pass.pixelShader, triple, transpiler->generateGlsl(400, false));
 					}
 				}
 
 				{
 					ln::detail::UnifiedShaderTriple triple = { "glsl", 300, "es" };
 					if (!unifiedShader->hasCode(pass.pixelShader, triple)) {
-						unifiedShader->setCode(pass.pixelShader, triple, transpiler.generateGlsl(300, true));
+						unifiedShader->setCode(pass.pixelShader, triple, transpiler->generateGlsl(300, true));
 					}
 				}
             }
@@ -171,7 +172,15 @@ bool FxcCommand::generate(const ln::Path& inputFile)
 			unifiedShader->setRenderState(passId, pass.renderState);
 
             // InputLayout
-            unifiedShader->setAttributeSemantics(passId, vertexInputAttributeMap[pass.vertexShader]);
+            unifiedShader->setAttributeSemantics(passId, transpilerMap[pass.vertexShader]->attributes());
+
+			// UniformBuffers
+			std::vector<ln::detail::ShaderUniformBufferInfo> buffers;
+			ln::detail::ShaderUniformBufferInfo::mergeBuffers(
+				transpilerMap[pass.vertexShader]->uniformBuffers(),
+				transpilerMap[pass.pixelShader]->uniformBuffers(),
+				&buffers);
+			unifiedShader->setUniformBuffers(passId, buffers);
 		}
 	}
 

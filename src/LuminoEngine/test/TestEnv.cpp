@@ -6,14 +6,16 @@ String TestEnv::LuminoCLI;
 
 void TestEnv::setup()
 {
+	EngineFeature feature = EngineFeature::Experimental;// EngineFeature::Public;//
+
 	GlobalLogger::addStdErrAdapter();
 	EngineSettings::setMainWindowSize(160, 120);
 	EngineSettings::setMainBackBufferSize(160, 120);
-	EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);
-    //EngineSettings::setEngineFeatures(EngineFeature::Experimental);
+	EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);
+    EngineSettings::setEngineFeatures(feature);
     detail::EngineDomain::engineManager()->init();
 
-    if (0)  // Experimental
+    if (feature == EngineFeature::Experimental)  // Experimental
     {
         Font::registerFontFile(LN_LOCALFILE("../../../tools/VLGothic/VL-Gothic-Regular.ttf"));
         Engine::mainCamera()->setBackgroundColor(Color(0.5, 0.5, 0.5, 1.0));
