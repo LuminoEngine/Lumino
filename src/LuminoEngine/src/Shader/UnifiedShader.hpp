@@ -44,9 +44,7 @@ public:
 
     //static const int FileVersion = 1;
 	enum FileVersion {
-		FileVersion_1 = 1,		// v0.7.0
-		FileVersion_2,
-
+		FileVersion_1 = 1,
 		FileVersion_Last,
 		FileVersion_Current = FileVersion_Last - 1,
 	};
@@ -80,11 +78,12 @@ public:
     void setPixelShader(PassId pass, CodeContainerId code);
     void setRenderState(PassId pass, ShaderRenderState* state);
 	void setAttributeSemantics(PassId pass, const std::vector<VertexInputAttribute>& semantics);
-	void setUniformBuffers(PassId pass, const std::vector<ShaderUniformBufferInfo>& buffers);
+	void setRefrection(PassId pass, UnifiedShaderRefrectionInfo* value);
     CodeContainerId vertexShader(PassId pass) const;
     CodeContainerId pixelShader(PassId pass) const;
     ShaderRenderState* renderState(PassId pass) const;
 	const std::vector<VertexInputAttribute>& attributeSemantics(PassId pass) const;
+    UnifiedShaderRefrectionInfo* refrection(PassId pass) const;
 
 private:
     int idToIndex(uint32_t id) const { return id - 1; }
@@ -124,7 +123,7 @@ private:
         CodeContainerId pixelShader;
         Ref<ShaderRenderState> renderState;
 		std::vector<VertexInputAttribute> attributeSemantics;
-		std::vector<ShaderUniformBufferInfo> uniformBuffers;
+        Ref<UnifiedShaderRefrectionInfo> refrection;
     };
 
     DiagnosticsManager* m_diag;

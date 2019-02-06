@@ -100,7 +100,7 @@ public:
 	Ref<ITexture> createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
 	Ref<IDepthBuffer> createDepthBuffer(uint32_t width, uint32_t height);
 	Ref<ISamplerState> createSamplerState(const SamplerStateData& desc);
-	Ref<IShaderPass> createShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, const ShaderVertexInputAttributeTable* attributeTable, ShaderCompilationDiag* diag);
+	Ref<IShaderPass> createShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, const ShaderVertexInputAttributeTable* attributeTable, const UnifiedShaderRefrectionInfo* refrection, ShaderCompilationDiag* diag);
     // TODO: ↑ 多くの場合、VertexShader は共有、とかするので、わけで作れるようにしておくとリソース効率がいい。
 
 	void setBlendState(const BlendStateDesc& value);
@@ -138,7 +138,7 @@ protected:
 	virtual Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) = 0;
 	virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) = 0;
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) = 0;
-	virtual Ref<IShaderPass> onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, const ShaderVertexInputAttributeTable* attributeTable, ShaderCompilationDiag* diag) = 0;
+	virtual Ref<IShaderPass> onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, const ShaderVertexInputAttributeTable* attributeTable, const UnifiedShaderRefrectionInfo* refrection, ShaderCompilationDiag* diag) = 0;
 
 	virtual void onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState) = 0;
 	virtual void onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer) = 0;

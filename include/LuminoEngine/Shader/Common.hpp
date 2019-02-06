@@ -44,5 +44,61 @@ struct VertexInputAttribute
 
 using VertexInputAttributeTable = std::vector<VertexInputAttribute>;
 
+
+enum ShaderUniformType
+{
+    ShaderUniformType_Unknown = 0,
+    ShaderUniformType_Bool = 1,
+    //ShaderUniformType_BoolArray = 2,
+    ShaderUniformType_Int = 3,
+    //ShaderUniformType_IntArray = 4,
+    ShaderUniformType_Float = 5,
+    //ShaderUniformType_FloatArray = 6,
+    ShaderUniformType_Vector = 7,
+    //ShaderUniformType_VectorArray = 8,
+    ShaderUniformType_Matrix = 9,
+    //ShaderUniformType_MatrixArray = 10,
+    ShaderUniformType_Texture = 11,
+};
+
+struct ShaderUniformInfo
+{
+    std::string name;
+    uint16_t type;		// ShaderUniformType
+    //uint16_t ownerBufferIndex;
+
+    uint16_t offset;		// UniformBuffer 先頭からのオフセットバイト数
+    //uint16_t size;		// Uniform 1つ分の全体サイズ (配列、行列の分も含む)
+
+    uint16_t vectorElements;
+    uint16_t arrayElements;	// 配列要素数
+    uint16_t matrixRows;
+    uint16_t matrixColumns;
+
+    //uint16_t arrayStride;		// 配列の場合、要素のバイトサイズ (float2=8, float3=12)
+    //uint16_t matrixStride;	// 行列の "横" 方向のバイト数。実際のメモリ上に値を並べる時の行間を表す。(float4x4=16)
+};
+
+struct ShaderUniformBufferInfo
+{
+    std::string name;
+    uint32_t size;		// UniformBuffer 全体のサイズ
+    std::vector<ShaderUniformInfo> members;
+
+    void mergeFrom(const ShaderUniformBufferInfo& other);
+
+    static void mergeBuffers(
+        const std::vector<ShaderUniformBufferInfo>& a,
+        const std::vector<ShaderUniformBufferInfo>& b,
+        std::vector<ShaderUniformBufferInfo>* out);
+};
+
+class UnifiedShaderRefrectionInfo
+    : public RefObject
+{
+public:
+    std::vector<ShaderUniformBufferInfo> buffers;
+};
+
 } // namespace detail
 } // namespace ln

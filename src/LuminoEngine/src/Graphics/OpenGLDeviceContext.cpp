@@ -361,7 +361,7 @@ Ref<ISamplerState> OpenGLDeviceContext::onCreateSamplerState(const SamplerStateD
 	return ptr;
 }
 
-Ref<IShaderPass> OpenGLDeviceContext::onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* psCode, int psCodeLen, const ShaderVertexInputAttributeTable* attributeTable, ShaderCompilationDiag* diag)
+Ref<IShaderPass> OpenGLDeviceContext::onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* psCode, int psCodeLen, const ShaderVertexInputAttributeTable* attributeTable, const UnifiedShaderRefrectionInfo* refrection, ShaderCompilationDiag* diag)
 {
 	auto ptr = makeRef<GLShaderPass>();
 	ptr->init(this, vsCode, vsCodeLen, psCode, psCodeLen, diag);

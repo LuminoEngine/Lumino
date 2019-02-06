@@ -784,7 +784,7 @@ bool VulkanDeviceContext::init(const Settings& settings)
 		static const size_t fragSize = LN_ARRAY_SIZE_OF(fragData);
 
 		m_defaultShaderPass = makeRef<VulkanShaderPass>();
-		if (!m_defaultShaderPass->init(this, vertData, vertSize, fragData, fragSize, nullptr)) {
+		if (!m_defaultShaderPass->init(this, vertData, vertSize, fragData, fragSize, nullptr, nullptr)) {
 			return false;
 		}
     }
@@ -1148,10 +1148,10 @@ Ref<ISamplerState> VulkanDeviceContext::onCreateSamplerState(const SamplerStateD
     return nullptr;
 }
 
-Ref<IShaderPass> VulkanDeviceContext::onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* psCode, int psCodeLen, const ShaderVertexInputAttributeTable* attributeTable, ShaderCompilationDiag* diag)
+Ref<IShaderPass> VulkanDeviceContext::onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* psCode, int psCodeLen, const ShaderVertexInputAttributeTable* attributeTable, const UnifiedShaderRefrectionInfo* refrection, ShaderCompilationDiag* diag)
 {
     auto ptr = makeRef<VulkanShaderPass>();
-    if (!ptr->init(this, vsCode, vsCodeLen, psCode, psCodeLen, attributeTable)) {
+    if (!ptr->init(this, vsCode, vsCodeLen, psCode, psCodeLen, attributeTable, refrection)) {
         return nullptr;
     }
     return ptr;
@@ -3224,7 +3224,7 @@ VulkanShaderPass::~VulkanShaderPass()
 {
 }
 
-bool VulkanShaderPass::init(VulkanDeviceContext* context, const void* spvVert, size_t spvVertLen, const void* spvFrag, size_t spvFragLen, const ShaderVertexInputAttributeTable* attributeTable)
+bool VulkanShaderPass::init(VulkanDeviceContext* context, const void* spvVert, size_t spvVertLen, const void* spvFrag, size_t spvFragLen, const ShaderVertexInputAttributeTable* attributeTable, const UnifiedShaderRefrectionInfo* refrection)
 {
 	m_deviceContext = context;
 
@@ -3249,6 +3249,10 @@ bool VulkanShaderPass::init(VulkanDeviceContext* context, const void* spvVert, s
 	if (attributeTable) {
 		m_inputAttributeTable = *attributeTable;
 	}
+
+    if (refrection) {
+        printf("");
+    }
 
 	return true;
 }

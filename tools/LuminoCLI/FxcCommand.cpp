@@ -175,12 +175,13 @@ bool FxcCommand::generate(const ln::Path& inputFile)
             unifiedShader->setAttributeSemantics(passId, transpilerMap[pass.vertexShader]->attributes());
 
 			// UniformBuffers
-			std::vector<ln::detail::ShaderUniformBufferInfo> buffers;
+            auto refrection = ln::makeRef<ln::detail::UnifiedShaderRefrectionInfo>();
 			ln::detail::ShaderUniformBufferInfo::mergeBuffers(
 				transpilerMap[pass.vertexShader]->uniformBuffers(),
 				transpilerMap[pass.pixelShader]->uniformBuffers(),
-				&buffers);
-			unifiedShader->setUniformBuffers(passId, buffers);
+				&refrection->buffers);
+
+			unifiedShader->setRefrection(passId, refrection);
 		}
 	}
 

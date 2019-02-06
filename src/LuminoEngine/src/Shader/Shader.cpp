@@ -289,6 +289,7 @@ void Shader::createFromUnifiedShader(Stream* stream, DiagnosticsManager* diag)
 					(pscode) ? pscode->data() : nullptr,
 					(pscode) ? pscode->size() : 0,
 					&unifiedShader.attributeSemantics(passId),
+                    unifiedShader.refrection(passId),
 					diag);
                 if (rhiPass) {
                     auto pass = newObject<ShaderPass>(String::fromStdString(unifiedShader.passName(passId)), rhiPass);
@@ -349,7 +350,7 @@ Ref<detail::IShaderPass> Shader::createShaderPass(
 	std::vector<byte_t> psCode = psCodeGen.generateGlsl(400, false);
 
     Ref<detail::IShaderPass> pass = createRHIShaderPass(
-		vsCode.data(), vsCode.size(), psCode.data(), psCode.size(), nullptr, diag);
+		vsCode.data(), vsCode.size(), psCode.data(), psCode.size(), nullptr, nullptr, diag);
 
     return pass;
 #else
@@ -364,6 +365,7 @@ Ref<detail::IShaderPass> Shader::createRHIShaderPass(
     const byte_t* psData,
     size_t psLen,
 	const detail::VertexInputAttributeTable* vertexInputAttributeTable,
+    const detail::UnifiedShaderRefrectionInfo* refrection,
     DiagnosticsManager* diag)
 {
 	detail::ShaderVertexInputAttributeTable attributeTable;
@@ -397,7 +399,7 @@ Ref<detail::IShaderPass> Shader::createRHIShaderPass(
 
     ShaderCompilationDiag sdiag;
     Ref<detail::IShaderPass> pass = deviceContext()->createShaderPass(
-        vsData, vsLen, psData, psLen, &attributeTable, &sdiag);
+        vsData, vsLen, psData, psLen, &attributeTable, refrection, &sdiag);
 
     if (sdiag.level == ShaderCompilationResultLevel::Error) {
         diag->reportError(String::fromStdString(sdiag.message));

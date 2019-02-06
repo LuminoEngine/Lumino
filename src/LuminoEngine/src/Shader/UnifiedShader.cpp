@@ -158,7 +158,7 @@ bool UnifiedShader::save(const Path& filePath)
 
 			// Uniform buffers
 			{
-				auto& buffers = info->uniformBuffers;
+				auto& buffers = info->refrection->buffers;
 				writer->writeUInt32(buffers.size());
 				for (size_t i = 0; i < buffers.size(); i++) {
 					writeString(writer, buffers[i].name);
@@ -265,6 +265,7 @@ bool UnifiedShader::load(Stream* stream)
             info.name = readString(reader);
             info.vertexShader = reader->readUInt32();
             info.pixelShader = reader->readUInt32();
+            info.refrection = makeRef<UnifiedShaderRefrectionInfo>();
 
             // ShaderRenderState
             {
@@ -294,7 +295,6 @@ bool UnifiedShader::load(Stream* stream)
             }
 
 			// Input attribute semantices
-			if (fileVersion >= FileVersion_2)
 			{
 				size_t count = reader->readUInt32();
 				for (size_t i = 0; i < count; i++) {
@@ -327,7 +327,7 @@ bool UnifiedShader::load(Stream* stream)
 						buffer.members.push_back(std::move(member));
 					}
 
-					info.uniformBuffers.push_back(std::move(buffer));
+					info.refrection->buffers.push_back(std::move(buffer));
 				}
 			}
 
@@ -435,7 +435,11 @@ bool UnifiedShader::addPass(TechniqueId parentTech, const std::string& name, Pas
         return false;
     }
 
-    m_passes.add({name});
+    PassInfo info;
+    info.name = name;
+    //info.refrection = makeRef<UnifiedShaderRefrectionInfo>();
+
+    m_passes.add(std::move(info));
     int index = m_passes.size() - 1;
     m_techniques[idToIndex(parentTech)].passes.add(indexToId(index));
     *outPass = indexToId(index);
@@ -467,14 +471,14 @@ void UnifiedShader::setRenderState(PassId pass, ShaderRenderState* state)
     m_passes[idToIndex(pass)].renderState = state;
 }
 
-void UnifiedShader::setAttributeSemantics(PassId pass, const std::vector<VertexInputAttribute>& semantics)
+void UnifiedShader::setAttributeSemantics(PassId pass, const std::vector<VertexInputAttribute>& value)
 {
-	m_passes[idToIndex(pass)].attributeSemantics = semantics;
+	m_passes[idToIndex(pass)].attributeSemantics = value;
 }
 
-void UnifiedShader::setUniformBuffers(PassId pass, const std::vector<ShaderUniformBufferInfo>& buffers)
+void UnifiedShader::setRefrection(PassId pass, UnifiedShaderRefrectionInfo* buffers)
 {
-	m_passes[idToIndex(pass)].uniformBuffers = buffers;
+	m_passes[idToIndex(pass)].refrection = buffers;
 }
 
 UnifiedShader::CodeContainerId UnifiedShader::vertexShader(PassId pass) const
@@ -495,6 +499,11 @@ ShaderRenderState* UnifiedShader::renderState(PassId pass) const
 const std::vector<VertexInputAttribute>& UnifiedShader::attributeSemantics(PassId pass) const
 {
 	return m_passes[idToIndex(pass)].attributeSemantics;
+}
+
+UnifiedShaderRefrectionInfo* UnifiedShader::refrection(PassId pass) const
+{
+    return m_passes[idToIndex(pass)].refrection;
 }
 
 int UnifiedShader::findCodeContainerInfoIndex(const std::string& entryPointName) const

@@ -114,3 +114,9 @@ TEST_F(Test_Graphics_DeviceContext, IndexBuffer)
 	ctx->present(Engine::mainWindow()->swapChain());
 	ASSERT_SCREEN_S(LN_ASSETFILE("Graphics/Result/Test_Graphics_DeviceContext-IndexBuffer-1.png"));
 }
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Graphics_DeviceContext, ConstantBuffer)
+{
+    auto shader1 = Shader::create(LN_ASSETFILE("Graphics/SimpleConstantBuffer.lcfx"));
+}
