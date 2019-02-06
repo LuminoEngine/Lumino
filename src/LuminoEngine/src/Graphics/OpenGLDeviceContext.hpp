@@ -492,9 +492,9 @@ public:
 	GLuint program() const { return m_program; }
 	void apply();
 
-	virtual int getUniformCount() const override;
-	virtual IShaderUniform* getUniform(int index) const override;
-	virtual void setUniformValue(int index, const void* data, size_t size) override;
+	//virtual int getUniformCount() const override;
+	//virtual IShaderUniform* getUniform(int index) const override;
+	//virtual void setUniformValue(int index, const void* data, size_t size) override;
 
 	virtual int getUniformBufferCount() const override;
 	virtual IShaderUniformBuffer* getUniformBuffer(int index) const override;

@@ -3250,8 +3250,16 @@ bool VulkanShaderPass::init(VulkanDeviceContext* context, const void* spvVert, s
 		m_inputAttributeTable = *attributeTable;
 	}
 
-    if (refrection) {
-        printf("");
+    if (refrection)
+    {
+        for (auto& info : refrection->buffers)
+        {
+            auto buf = makeRef<VulkanShaderUniformBuffer>();
+            if (!buf->init(info)) {
+                return false;
+            }
+            m_uniformBuffers.push_back(buf);
+        }
     }
 
 	return true;
@@ -3283,23 +3291,23 @@ bool VulkanShaderPass::findAttributeLocation(VertexElementUsage usage, uint32_t 
 	return false;
 }
 
-int VulkanShaderPass::getUniformCount() const
-{
-    LN_NOTIMPLEMENTED();
-    return 0;
-}
-
-IShaderUniform* VulkanShaderPass::getUniform(int index) const
-{
-    // TODO: 必要？
-    LN_NOTIMPLEMENTED();
-    return nullptr;
-}
-
-void VulkanShaderPass::setUniformValue(int index, const void* data, size_t size)
-{
-    LN_NOTIMPLEMENTED();
-}
+//int VulkanShaderPass::getUniformCount() const
+//{
+//    LN_NOTIMPLEMENTED();
+//    return 0;
+//}
+//
+//IShaderUniform* VulkanShaderPass::getUniform(int index) const
+//{
+//    // TODO: 必要？
+//    LN_NOTIMPLEMENTED();
+//    return nullptr;
+//}
+//
+//void VulkanShaderPass::setUniformValue(int index, const void* data, size_t size)
+//{
+//    LN_NOTIMPLEMENTED();
+//}
 
 int VulkanShaderPass::getUniformBufferCount() const
 {
@@ -3328,9 +3336,20 @@ VulkanShaderUniformBuffer::~VulkanShaderUniformBuffer()
 {
 }
 
-void VulkanShaderUniformBuffer::init()
+Result VulkanShaderUniformBuffer::init(const ShaderUniformBufferInfo& info)
 {
-    LN_NOTIMPLEMENTED();
+    m_name = info.name;
+
+    for (auto& member : info.members)
+    {
+        auto uniform = makeRef<VulkanShaderUniform>();
+        if (!uniform->init(member)) {
+            return false;
+        }
+        m_uniforms.push_back(uniform);
+    }
+
+    return true;
 }
 
 void VulkanShaderUniformBuffer::dispose()
@@ -3378,9 +3397,10 @@ VulkanShaderUniform::~VulkanShaderUniform()
 {
 }
 
-void VulkanShaderUniform::init()
+Result VulkanShaderUniform::init(const ShaderUniformInfo& info)
 {
     LN_NOTIMPLEMENTED();
+    return true;
 }
 
 void VulkanShaderUniform::dispose()

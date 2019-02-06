@@ -695,9 +695,9 @@ public:
 	const ShaderVertexInputAttributeTable& inputAttributeTable() const { return m_inputAttributeTable; }
 	bool findAttributeLocation(VertexElementUsage usage, uint32_t usageIndex, uint32_t* outLocation) const;
 
-    virtual int getUniformCount() const override;
-    virtual IShaderUniform* getUniform(int index) const override;
-    virtual void setUniformValue(int index, const void* data, size_t size) override;
+    //virtual int getUniformCount() const override;
+    //virtual IShaderUniform* getUniform(int index) const override;
+    //virtual void setUniformValue(int index, const void* data, size_t size) override;
     virtual int getUniformBufferCount() const override;
     virtual IShaderUniformBuffer* getUniformBuffer(int index) const override;
     virtual IShaderSamplerBuffer* samplerBuffer() const override;
@@ -707,6 +707,7 @@ private:
 	VkShaderModule m_vertShaderModule;
 	VkShaderModule m_fragShaderModule;
 	ShaderVertexInputAttributeTable m_inputAttributeTable;
+    std::vector<Ref<VulkanShaderUniformBuffer>> m_uniformBuffers;
 };
 
 class VulkanShaderUniformBuffer
@@ -715,7 +716,7 @@ class VulkanShaderUniformBuffer
 public:
     VulkanShaderUniformBuffer();
     virtual ~VulkanShaderUniformBuffer();
-    void init();
+    Result init(const ShaderUniformBufferInfo& info);
     virtual void dispose() override;
 
     virtual const std::string& name() const override;
@@ -726,6 +727,7 @@ public:
 
 private:
     std::string m_name;
+    std::vector<Ref<VulkanShaderUniform>> m_uniforms;
 };
 
 class VulkanShaderUniform
@@ -734,7 +736,7 @@ class VulkanShaderUniform
 public:
     VulkanShaderUniform();
     virtual ~VulkanShaderUniform();
-    void init();
+    Result init(const ShaderUniformInfo& info);
     virtual void dispose() override;
     virtual const ShaderUniformTypeDesc& desc() const override { return m_desc; }
     virtual const std::string& name() const override { return m_name; }

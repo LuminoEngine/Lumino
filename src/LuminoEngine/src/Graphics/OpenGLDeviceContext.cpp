@@ -1733,21 +1733,21 @@ void GLShaderPass::apply()
 	}
 }
 
-int GLShaderPass::getUniformCount() const
-{
-	return m_uniforms.size();
-}
-
-IShaderUniform* GLShaderPass::getUniform(int index) const
-{
-	return m_uniforms[index];
-}
-
-void GLShaderPass::setUniformValue(int index, const void* data, size_t size)
-{
-	m_context->setActiveShaderPass(this);
-	m_uniforms[index]->setUniformValue(m_context, data, size);
-}
+//int GLShaderPass::getUniformCount() const
+//{
+//	return m_uniforms.size();
+//}
+//
+//IShaderUniform* GLShaderPass::getUniform(int index) const
+//{
+//	return m_uniforms[index];
+//}
+//
+//void GLShaderPass::setUniformValue(int index, const void* data, size_t size)
+//{
+//	m_context->setActiveShaderPass(this);
+//	m_uniforms[index]->setUniformValue(m_context, data, size);
+//}
 
 int GLShaderPass::getUniformBufferCount() const
 {
