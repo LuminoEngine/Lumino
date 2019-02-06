@@ -1245,13 +1245,13 @@ void VulkanDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, f
 void VulkanDeviceContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount)
 {
     submitStatus();
-
     vkCmdDraw(m_activeCommandBuffer->vulkanCommandBuffer(), primitiveCount * 3, primitiveCount, startVertex, 0);
 }
 
 void VulkanDeviceContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount)
 {
-    LN_NOTIMPLEMENTED();
+    submitStatus();
+    vkCmdDrawIndexed(m_activeCommandBuffer->vulkanCommandBuffer(), primitiveCount * 3, 1, startIndex, 0, 0);
 }
 
 void VulkanDeviceContext::onPresent(ISwapChain* swapChain)
@@ -1330,6 +1330,13 @@ bool VulkanDeviceContext::submitStatus()
         }
         
 
+    }
+
+    // TODO: modify チェック
+    if (state.indexBuffer)
+    {
+        VkBuffer indexBuffer = static_cast<VulkanIndexBuffer*>(state.indexBuffer)->vulkanBuffer();
+        vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16);  // TODO: format
     }
 
 	return true;

@@ -104,6 +104,7 @@ TEST_F(Test_Graphics_DeviceContext, IndexBuffer)
 	auto ctx = Engine::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
 
+    ctx->setDepthBuffer(nullptr);
 	ctx->setVertexDeclaration(vertexDecl1);
 	ctx->setVertexBuffer(0, vertexBuffer);
 	ctx->setIndexBuffer(indexBuffer);
