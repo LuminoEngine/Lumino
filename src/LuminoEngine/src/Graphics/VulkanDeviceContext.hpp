@@ -692,6 +692,7 @@ public:
 
 	VkShaderModule vertShaderModule() const { return m_vertShaderModule; }
 	VkShaderModule fragShaderModule() const { return m_fragShaderModule; }
+	VkDescriptorSetLayout descriptorSetLayout() const { return m_descriptorSetLayout; }
 	const ShaderVertexInputAttributeTable& inputAttributeTable() const { return m_inputAttributeTable; }
 	bool findAttributeLocation(VertexElementUsage usage, uint32_t usageIndex, uint32_t* outLocation) const;
 
@@ -707,6 +708,8 @@ private:
 	VkShaderModule m_vertShaderModule;
 	VkShaderModule m_fragShaderModule;
 	ShaderVertexInputAttributeTable m_inputAttributeTable;
+
+	VkDescriptorSetLayout m_descriptorSetLayout;
 };
 
 class VulkanShaderUniformBuffer

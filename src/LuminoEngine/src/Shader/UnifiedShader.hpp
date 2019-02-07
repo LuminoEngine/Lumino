@@ -59,8 +59,8 @@ public:
     bool load(Stream* stream);
 
     bool addCodeContainer(const std::string& entryPointName, CodeContainerId* outId);
-    void setCode(CodeContainerId container, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code);
-    void setCode(const std::string& entryPointName, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code);
+    void setCode(CodeContainerId container, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code, const std::vector<ShaderUniformBufferInfo>* refrection);
+    void setCode(const std::string& entryPointName, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code, const std::vector<ShaderUniformBufferInfo>* refrection);
     bool hasCode(const std::string& entryPointName, const UnifiedShaderTriple& triple) const;
     bool findCodeContainer(const std::string& entryPointName, CodeContainerId* outId) const;
     const std::vector<byte_t>* findCode(CodeContainerId conteinreId, const UnifiedShaderTriple& triple) const;
@@ -80,7 +80,6 @@ public:
     void setPixelShader(PassId pass, CodeContainerId code);
     void setRenderState(PassId pass, ShaderRenderState* state);
 	void setAttributeSemantics(PassId pass, const std::vector<VertexInputAttribute>& semantics);
-	void setUniformBuffers(PassId pass, const std::vector<ShaderUniformBufferInfo>& buffers);
     CodeContainerId vertexShader(PassId pass) const;
     CodeContainerId pixelShader(PassId pass) const;
     ShaderRenderState* renderState(PassId pass) const;
@@ -103,6 +102,7 @@ private:
     {
         UnifiedShaderTriple triple;
 		std::vector<byte_t> code;
+		std::vector<ShaderUniformBufferInfo> uniformBuffers;
     };
 
     struct CodeContainerInfo
@@ -124,7 +124,6 @@ private:
         CodeContainerId pixelShader;
         Ref<ShaderRenderState> renderState;
 		std::vector<VertexInputAttribute> attributeSemantics;
-		std::vector<ShaderUniformBufferInfo> uniformBuffers;
     };
 
     DiagnosticsManager* m_diag;

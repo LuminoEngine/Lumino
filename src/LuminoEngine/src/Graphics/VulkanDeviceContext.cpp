@@ -1839,25 +1839,26 @@ bool VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsDev
 		viewportState.pScissors = &scissor;
 	}
 
+
+	VulkanShaderPass* shaderPass = static_cast<VulkanShaderPass*>(committed.pipelineState.shaderPass);
+	if (!shaderPass) {
+		shaderPass = m_deviceContext->defaultShaderPass();
+	}
+
     VkPipelineShaderStageCreateInfo shaderStages[2];
     {
-        VulkanShaderPass* pass = static_cast<VulkanShaderPass*>(committed.pipelineState.shaderPass);
-        if (!pass) {
-            pass = m_deviceContext->defaultShaderPass();
-        }
-
         shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
         shaderStages[0].pNext = nullptr;
         shaderStages[0].flags = 0;
         shaderStages[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
-        shaderStages[0].module = pass->vertShaderModule();
+        shaderStages[0].module = shaderPass->vertShaderModule();
         shaderStages[0].pName = "vsMain";
         shaderStages[0].pSpecializationInfo = nullptr;
         shaderStages[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
         shaderStages[1].pNext = nullptr;
         shaderStages[1].flags = 0;
         shaderStages[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-        shaderStages[1].module = pass->fragShaderModule();
+        shaderStages[1].module = shaderPass->fragShaderModule();
         shaderStages[1].pName = "psMain";
         shaderStages[1].pSpecializationInfo = nullptr;
     }
@@ -1881,10 +1882,15 @@ bool VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsDev
 		return false;
 	}
 
-    VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
+	std::array<VkDescriptorSetLayout, 1> descriptorSetLayouts = { shaderPass->descriptorSetLayout() };
+    VkPipelineLayoutCreateInfo pipelineLayoutInfo;
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = 0;
-    pipelineLayoutInfo.pushConstantRangeCount = 0;
+	pipelineLayoutInfo.pNext = nullptr;
+	pipelineLayoutInfo.flags = 0;
+    pipelineLayoutInfo.setLayoutCount = descriptorSetLayouts.size();
+	pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
+	pipelineLayoutInfo.pushConstantRangeCount = 0;
+	pipelineLayoutInfo.pPushConstantRanges = nullptr;
 	LN_VK_CHECK(vkCreatePipelineLayout(m_deviceContext->vulkanDevice(), &pipelineLayoutInfo, m_deviceContext->vulkanAllocator(), &m_pipelineLayout));
 
 	VkGraphicsPipelineCreateInfo pipelineInfo = {};
@@ -3227,6 +3233,7 @@ VulkanShaderPass::~VulkanShaderPass()
 bool VulkanShaderPass::init(VulkanDeviceContext* context, const void* spvVert, size_t spvVertLen, const void* spvFrag, size_t spvFragLen, const ShaderVertexInputAttributeTable* attributeTable)
 {
 	m_deviceContext = context;
+	VkDevice device = m_deviceContext->vulkanDevice();
 
 	{
 		VkShaderModuleCreateInfo createInfo = {};
@@ -3234,7 +3241,7 @@ bool VulkanShaderPass::init(VulkanDeviceContext* context, const void* spvVert, s
 		createInfo.codeSize = spvVertLen;
 		createInfo.pCode = reinterpret_cast<const uint32_t*>(spvVert);
 
-		LN_VK_CHECK(vkCreateShaderModule(m_deviceContext->vulkanDevice(), &createInfo, m_deviceContext->vulkanAllocator(), &m_vertShaderModule));
+		LN_VK_CHECK(vkCreateShaderModule(device, &createInfo, m_deviceContext->vulkanAllocator(), &m_vertShaderModule));
 	}
 
 	{
@@ -3243,11 +3250,64 @@ bool VulkanShaderPass::init(VulkanDeviceContext* context, const void* spvVert, s
 		createInfo.codeSize = spvFragLen;
 		createInfo.pCode = reinterpret_cast<const uint32_t*>(spvFrag);
 
-		LN_VK_CHECK(vkCreateShaderModule(m_deviceContext->vulkanDevice(), &createInfo, m_deviceContext->vulkanAllocator(), &m_fragShaderModule));
+		LN_VK_CHECK(vkCreateShaderModule(device, &createInfo, m_deviceContext->vulkanAllocator(), &m_fragShaderModule));
 	}
 
 	if (attributeTable) {
 		m_inputAttributeTable = *attributeTable;
+	}
+
+	// createDescriptorSetLayout
+	{
+
+#if 1
+		std::vector<VkDescriptorSetLayoutBinding> bindings;
+		for (int i = 0; i < x; i++)
+		{
+			VkDescriptorSetLayoutBinding uboLayoutBinding;
+			uboLayoutBinding.binding = i;			// TODO: GLSL で layout(binding = 0) とか書かれたやつのインデックス？
+			uboLayoutBinding.descriptorCount = 1;	// バッファ自体の要素数。主に sampler で使う。https://vulkan.lunarg.com/doc/view/1.0.33.0/linux/vkspec.chunked/ch13s02.html
+			uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; // TODO: or VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
+			uboLayoutBinding.pImmutableSamplers = nullptr;
+			uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+		}
+
+		VkDescriptorSetLayoutCreateInfo layoutInfo;
+		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		layoutInfo.pNext = nullptr;
+		layoutInfo.flags = 0;
+		layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+		layoutInfo.pBindings = bindings.data();
+
+		if (vkCreateDescriptorSetLayout(device, &layoutInfo, m_deviceContext->vulkanAllocator(), &m_descriptorSetLayout) != VK_SUCCESS) {
+			throw std::runtime_error("failed to create descriptor set layout!");
+		}
+#endif
+		/*
+		VkDescriptorSetLayoutBinding uboLayoutBinding = {};
+		uboLayoutBinding.binding = 0;
+		uboLayoutBinding.descriptorCount = 1;
+		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		uboLayoutBinding.pImmutableSamplers = nullptr;
+		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+		VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
+		samplerLayoutBinding.binding = 1;
+		samplerLayoutBinding.descriptorCount = 1;
+		samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		samplerLayoutBinding.pImmutableSamplers = nullptr;
+		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+		std::array<VkDescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, samplerLayoutBinding };
+		VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+		layoutInfo.pBindings = bindings.data();
+
+		if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) {
+			throw std::runtime_error("failed to create descriptor set layout!");
+		}
+		*/
 	}
 
 	return true;
@@ -3255,13 +3315,20 @@ bool VulkanShaderPass::init(VulkanDeviceContext* context, const void* spvVert, s
 
 void VulkanShaderPass::dispose()
 {
+	VkDevice device = m_deviceContext->vulkanDevice();
+
+	if (m_descriptorSetLayout) {
+		vkDestroyDescriptorSetLayout(device, m_descriptorSetLayout, m_deviceContext->vulkanAllocator());
+		m_descriptorSetLayout = 0;
+	}
+
 	if (m_vertShaderModule) {
-		vkDestroyShaderModule(m_deviceContext->vulkanDevice(), m_vertShaderModule, m_deviceContext->vulkanAllocator());
+		vkDestroyShaderModule(device, m_vertShaderModule, m_deviceContext->vulkanAllocator());
 		m_vertShaderModule = 0;
 	}
 
 	if (m_fragShaderModule) {
-		vkDestroyShaderModule(m_deviceContext->vulkanDevice(), m_fragShaderModule, m_deviceContext->vulkanAllocator());
+		vkDestroyShaderModule(device, m_fragShaderModule, m_deviceContext->vulkanAllocator());
 		m_fragShaderModule = 0;
 	}
 
