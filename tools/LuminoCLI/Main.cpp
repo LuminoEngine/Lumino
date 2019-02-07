@@ -222,7 +222,7 @@ int main(int argc, char** argv)
 	return 0;
 }
 
-// .profile ƒtƒ@ƒCƒ‹‚É’Ç‹L‚·‚é
+// .profile ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½É’Ç‹Lï¿½ï¿½ï¿½ï¿½
 static int commnad_localInitialSetup(const char* packageDir_)
 {
 	ln::Path packageDir = packageDir_;

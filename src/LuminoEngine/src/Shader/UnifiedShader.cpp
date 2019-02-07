@@ -83,10 +83,33 @@ bool UnifiedShader::save(const Path& filePath)
 
             writer->writeUInt8(info->codes.size());
             for (int iCode = 0; iCode < info->codes.size(); iCode++) {
-                writeString(writer, info->codes[iCode].triple.target);
-                writer->writeUInt32(info->codes[iCode].triple.version);
-                writeString(writer, info->codes[iCode].triple.option);
-				writeByteArray(writer, info->codes[iCode].code);
+				CodeInfo* codeInfo = &info->codes[iCode];
+                writeString(writer, codeInfo->triple.target);
+                writer->writeUInt32(codeInfo->triple.version);
+                writeString(writer, codeInfo->triple.option);
+				writeByteArray(writer, codeInfo->code);
+
+				// Refrection
+				{
+					auto& buffers = codeInfo->uniformBuffers;
+					writer->writeUInt32(buffers.size());
+					for (size_t i = 0; i < buffers.size(); i++) {
+						writeString(writer, buffers[i].name);
+						writer->writeUInt32(buffers[i].size);
+
+						writer->writeUInt32(buffers[i].members.size());
+						for (size_t iMember = 0; iMember < buffers[i].members.size(); iMember++) {
+							auto& member = buffers[i].members[iMember];
+							writeString(writer, member.name);
+							writer->writeUInt16(member.type);
+							writer->writeUInt16(member.offset);
+							writer->writeUInt16(member.vectorElements);
+							writer->writeUInt16(member.arrayElements);
+							writer->writeUInt16(member.matrixRows);
+							writer->writeUInt16(member.matrixColumns);
+						}
+					}
+				}
             }
         }
     }
@@ -155,28 +178,6 @@ bool UnifiedShader::save(const Path& filePath)
 					writer->writeUInt8(semantics[i].layoutLocation);
 				}
 			}
-
-			// Uniform buffers
-			{
-				auto& buffers = info->refrection->buffers;
-				writer->writeUInt32(buffers.size());
-				for (size_t i = 0; i < buffers.size(); i++) {
-					writeString(writer, buffers[i].name);
-					writer->writeUInt32(buffers[i].size);
-
-					writer->writeUInt32(buffers[i].members.size());
-					for (size_t iMember = 0; iMember < buffers[i].members.size(); iMember++) {
-						auto& member = buffers[i].members[iMember];
-						writeString(writer, member.name);
-						writer->writeUInt16(member.type);
-						writer->writeUInt16(member.offset);
-						writer->writeUInt16(member.vectorElements);
-						writer->writeUInt16(member.arrayElements);
-						writer->writeUInt16(member.matrixRows);
-						writer->writeUInt16(member.matrixColumns);
-					}
-				}
-			}
         }
     }
 
@@ -216,7 +217,33 @@ bool UnifiedShader::load(Stream* stream)
                 code.triple.version = reader->readUInt32();
                 code.triple.option = readString(reader);
                 code.code = readByteArray(reader);
-                info.codes.push_back(std::move(code));
+
+				// Uniform buffers
+				{
+					size_t count = reader->readUInt32();
+					for (size_t i = 0; i < count; i++) {
+						ShaderUniformBufferInfo buffer;
+						buffer.name = readString(reader);
+						buffer.size = reader->readUInt32();
+
+						size_t memberCount = reader->readUInt32();
+						for (size_t iMember = 0; iMember < memberCount; iMember++) {
+							ShaderUniformInfo member;
+							member.name = readString(reader);
+							member.type = reader->readUInt16();
+							member.offset = reader->readUInt16();
+							member.vectorElements = reader->readUInt16();
+							member.arrayElements = reader->readUInt16();
+							member.matrixRows = reader->readUInt16();
+							member.matrixColumns = reader->readUInt16();
+							buffer.members.push_back(std::move(member));
+						}
+
+						code.uniformBuffers.push_back(std::move(buffer));
+					}
+				}
+
+				info.codes.push_back(std::move(code));
             }
 
             // GLSL
@@ -306,31 +333,6 @@ bool UnifiedShader::load(Stream* stream)
 				}
 			}
 
-			// Uniform buffers
-			{
-				size_t count = reader->readUInt32();
-				for (size_t i = 0; i < count; i++) {
-					ShaderUniformBufferInfo buffer;
-					buffer.name = readString(reader);
-					buffer.size = reader->readUInt32();
-
-					size_t memberCount = reader->readUInt32();
-					for (size_t iMember = 0; iMember < memberCount; iMember++) {
-						ShaderUniformInfo member;
-						member.name = readString(reader);
-						member.type = reader->readUInt16();
-						member.offset = reader->readUInt16();
-						member.vectorElements = reader->readUInt16();
-						member.arrayElements = reader->readUInt16();
-						member.matrixRows = reader->readUInt16();
-						member.matrixColumns = reader->readUInt16();
-						buffer.members.push_back(std::move(member));
-					}
-
-					info.refrection->buffers.push_back(std::move(buffer));
-				}
-			}
-
             m_passes.add(std::move(info));
         }
     }
@@ -350,12 +352,15 @@ bool UnifiedShader::addCodeContainer(const std::string& entryPointName, CodeCont
     return true;
 }
 
-void UnifiedShader::setCode(CodeContainerId container, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code)
+void UnifiedShader::setCode(CodeContainerId container, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code, const std::vector<ShaderUniformBufferInfo>* refrection)
 {
-    m_codeContainers[idToIndex(container)].codes.push_back({triple, code});
+	if (refrection)
+		m_codeContainers[idToIndex(container)].codes.push_back({triple, code, *refrection });
+	else
+		m_codeContainers[idToIndex(container)].codes.push_back({ triple, code });
 }
 
-void UnifiedShader::setCode(const std::string& entryPointName, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code)
+void UnifiedShader::setCode(const std::string& entryPointName, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code, const std::vector<ShaderUniformBufferInfo>* refrection)
 {
     int index = findCodeContainerInfoIndex(entryPointName);
     if (index < 0) {
@@ -364,7 +369,7 @@ void UnifiedShader::setCode(const std::string& entryPointName, const UnifiedShad
         index = idToIndex(newId);
     }
 
-    setCode(indexToId(index), triple, code);
+    setCode(indexToId(index), triple, code, refrection);
 }
 
 bool UnifiedShader::hasCode(const std::string& entryPointName, const UnifiedShaderTriple& triple) const

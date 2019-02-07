@@ -88,21 +88,21 @@ bool FxcCommand::generate(const ln::Path& inputFile)
 				{
 					ln::detail::UnifiedShaderTriple triple = { "spv", 110, "" };
 					if (!unifiedShader->hasCode(pass.vertexShader, triple)) {
-						unifiedShader->setCode(pass.vertexShader, triple, transpiler->spirvCode());
+						unifiedShader->setCode(pass.vertexShader, triple, transpiler->spirvCode(), &transpiler->uniformBuffers());
 					}
 				}
 
 				{
 					ln::detail::UnifiedShaderTriple triple = { "glsl", 400, "" };
 					if (!unifiedShader->hasCode(pass.vertexShader, triple)) {
-						unifiedShader->setCode(pass.vertexShader, triple, transpiler->generateGlsl(400, false));
+						unifiedShader->setCode(pass.vertexShader, triple, transpiler->generateGlsl(400, false), nullptr);
 					}
 				}
 
 				{
 					ln::detail::UnifiedShaderTriple triple = { "glsl", 300, "es" };
 					if (!unifiedShader->hasCode(pass.vertexShader, triple)) {
-						unifiedShader->setCode(pass.vertexShader, triple, transpiler->generateGlsl(300, true));
+						unifiedShader->setCode(pass.vertexShader, triple, transpiler->generateGlsl(300, true), nullptr);
 					}
 				}
             }
@@ -119,21 +119,21 @@ bool FxcCommand::generate(const ln::Path& inputFile)
 				{
 					ln::detail::UnifiedShaderTriple triple = { "spv", 110, "" };
 					if (!unifiedShader->hasCode(pass.pixelShader, triple)) {
-						unifiedShader->setCode(pass.pixelShader, triple, transpiler->spirvCode());
+						unifiedShader->setCode(pass.pixelShader, triple, transpiler->spirvCode(), &transpiler->uniformBuffers());
 					}
 				}
 
 				{
 					ln::detail::UnifiedShaderTriple triple = { "glsl", 400, "" };
 					if (!unifiedShader->hasCode(pass.pixelShader, triple)) {
-						unifiedShader->setCode(pass.pixelShader, triple, transpiler->generateGlsl(400, false));
+						unifiedShader->setCode(pass.pixelShader, triple, transpiler->generateGlsl(400, false), nullptr);
 					}
 				}
 
 				{
 					ln::detail::UnifiedShaderTriple triple = { "glsl", 300, "es" };
 					if (!unifiedShader->hasCode(pass.pixelShader, triple)) {
-						unifiedShader->setCode(pass.pixelShader, triple, transpiler->generateGlsl(300, true));
+						unifiedShader->setCode(pass.pixelShader, triple, transpiler->generateGlsl(300, true), nullptr);
 					}
 				}
             }
