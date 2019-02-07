@@ -88,21 +88,21 @@ bool FxcCommand::generate(const ln::Path& inputFile)
 				{
 					ln::detail::UnifiedShaderTriple triple = { "spv", 110, "" };
 					if (!unifiedShader->hasCode(pass.vertexShader, triple)) {
-						unifiedShader->setCode(pass.vertexShader, triple, transpiler->spirvCode(), &transpiler->uniformBuffers());
+						unifiedShader->setCode(pass.vertexShader, triple, transpiler->spirvCode(), transpiler->refrection());
 					}
 				}
 
 				{
 					ln::detail::UnifiedShaderTriple triple = { "glsl", 400, "" };
 					if (!unifiedShader->hasCode(pass.vertexShader, triple)) {
-						unifiedShader->setCode(pass.vertexShader, triple, transpiler->generateGlsl(400, false), nullptr);
+						unifiedShader->setCode(pass.vertexShader, triple, transpiler->generateGlsl(400, false), ln::makeRef<ln::detail::UnifiedShaderRefrectionInfo>());
 					}
 				}
 
 				{
 					ln::detail::UnifiedShaderTriple triple = { "glsl", 300, "es" };
 					if (!unifiedShader->hasCode(pass.vertexShader, triple)) {
-						unifiedShader->setCode(pass.vertexShader, triple, transpiler->generateGlsl(300, true), nullptr);
+						unifiedShader->setCode(pass.vertexShader, triple, transpiler->generateGlsl(300, true), ln::makeRef<ln::detail::UnifiedShaderRefrectionInfo>());
 					}
 				}
             }
@@ -119,21 +119,21 @@ bool FxcCommand::generate(const ln::Path& inputFile)
 				{
 					ln::detail::UnifiedShaderTriple triple = { "spv", 110, "" };
 					if (!unifiedShader->hasCode(pass.pixelShader, triple)) {
-						unifiedShader->setCode(pass.pixelShader, triple, transpiler->spirvCode(), &transpiler->uniformBuffers());
+						unifiedShader->setCode(pass.pixelShader, triple, transpiler->spirvCode(), transpiler->refrection());
 					}
 				}
 
 				{
 					ln::detail::UnifiedShaderTriple triple = { "glsl", 400, "" };
 					if (!unifiedShader->hasCode(pass.pixelShader, triple)) {
-						unifiedShader->setCode(pass.pixelShader, triple, transpiler->generateGlsl(400, false), nullptr);
+						unifiedShader->setCode(pass.pixelShader, triple, transpiler->generateGlsl(400, false), ln::makeRef<ln::detail::UnifiedShaderRefrectionInfo>());
 					}
 				}
 
 				{
 					ln::detail::UnifiedShaderTriple triple = { "glsl", 300, "es" };
 					if (!unifiedShader->hasCode(pass.pixelShader, triple)) {
-						unifiedShader->setCode(pass.pixelShader, triple, transpiler->generateGlsl(300, true), nullptr);
+						unifiedShader->setCode(pass.pixelShader, triple, transpiler->generateGlsl(300, true), ln::makeRef<ln::detail::UnifiedShaderRefrectionInfo>());
 					}
 				}
             }
@@ -175,13 +175,13 @@ bool FxcCommand::generate(const ln::Path& inputFile)
             unifiedShader->setAttributeSemantics(passId, transpilerMap[pass.vertexShader]->attributes());
 
 			// UniformBuffers
-            auto refrection = ln::makeRef<ln::detail::UnifiedShaderRefrectionInfo>();
-			ln::detail::ShaderUniformBufferInfo::mergeBuffers(
-				transpilerMap[pass.vertexShader]->uniformBuffers(),
-				transpilerMap[pass.pixelShader]->uniformBuffers(),
-				&refrection->buffers);
+   //         auto refrection = ln::makeRef<ln::detail::UnifiedShaderRefrectionInfo>();
+			//ln::detail::ShaderUniformBufferInfo::mergeBuffers(
+			//	transpilerMap[pass.vertexShader]->uniformBuffers(),
+			//	transpilerMap[pass.pixelShader]->uniformBuffers(),
+			//	&refrection->buffers);
 
-			unifiedShader->setRefrection(passId, refrection);
+			//unifiedShader->setRefrection(passId, refrection);
 		}
 	}
 

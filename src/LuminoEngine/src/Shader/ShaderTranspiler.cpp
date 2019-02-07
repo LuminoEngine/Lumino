@@ -281,6 +281,7 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
     DiagnosticsManager* diag)
 {
     m_stage = stage;
+    m_refrection = makeRef<UnifiedShaderRefrectionInfo>();
 
     LocalIncluder includer;
     includer.m_manager = m_manager;
@@ -437,7 +438,7 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
 			LN_LOG_VERBOSE << "  name : " << info.name;
 			LN_LOG_VERBOSE << "  size : " << info.size;
 
-			m_uniformBuffers.push_back(std::move(info));
+            m_refrection->buffers.push_back(std::move(info));
 		}
 
 
@@ -513,7 +514,7 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
 				LN_LOG_VERBOSE << "  matrixColumns : " << info.matrixColumns;
 				LN_LOG_VERBOSE << "  ownerUiformBufferIndex : " << ownerUiformBufferIndex << "(" << program.getUniformBlockName(ownerUiformBufferIndex) << ")";
 
-				m_uniformBuffers[ownerUiformBufferIndex].members.push_back(std::move(info));
+                m_refrection->buffers[ownerUiformBufferIndex].members.push_back(std::move(info));
 			}
 			else {
 				// TODO: texture など
@@ -522,6 +523,20 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
 	}
 
     glslang::GlslangToSpv(*program.getIntermediate(lang), m_spirvCode);
+
+
+    spirv_cross::CompilerGLSL glsl(m_spirvCode);
+    spirv_cross::ShaderResources resources = glsl.get_shader_resources();
+
+#if 0   // binding のデフォルト値調査。・・・といっても、全部 0 だった。
+    for (size_t i = 0; i < resources.uniform_buffers.size(); i++) {
+        std::cout << "  name : " << resources.uniform_buffers[i].name << std::endl;
+        std::cout << "  DecorationBinding : " << glsl.get_decoration(resources.uniform_buffers[i].id, spv::DecorationBinding) << std::endl;
+        ;
+
+        //glsl.unset_decoration(resources.uniform_buffers[i].id, spv::DecorationBinding);
+    }
+#endif
 
     return true;
 }

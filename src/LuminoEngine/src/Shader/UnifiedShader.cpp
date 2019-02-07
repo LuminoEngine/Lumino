@@ -91,7 +91,7 @@ bool UnifiedShader::save(const Path& filePath)
 
 				// Refrection
 				{
-					auto& buffers = codeInfo->uniformBuffers;
+					auto& buffers = codeInfo->refrection->buffers;
 					writer->writeUInt32(buffers.size());
 					for (size_t i = 0; i < buffers.size(); i++) {
 						writeString(writer, buffers[i].name);
@@ -217,6 +217,7 @@ bool UnifiedShader::load(Stream* stream)
                 code.triple.version = reader->readUInt32();
                 code.triple.option = readString(reader);
                 code.code = readByteArray(reader);
+                code.refrection = makeRef<UnifiedShaderRefrectionInfo>();
 
 				// Uniform buffers
 				{
@@ -239,7 +240,7 @@ bool UnifiedShader::load(Stream* stream)
 							buffer.members.push_back(std::move(member));
 						}
 
-						code.uniformBuffers.push_back(std::move(buffer));
+                        code.refrection->buffers.push_back(std::move(buffer));
 					}
 				}
 
@@ -292,7 +293,6 @@ bool UnifiedShader::load(Stream* stream)
             info.name = readString(reader);
             info.vertexShader = reader->readUInt32();
             info.pixelShader = reader->readUInt32();
-            info.refrection = makeRef<UnifiedShaderRefrectionInfo>();
 
             // ShaderRenderState
             {
@@ -352,15 +352,13 @@ bool UnifiedShader::addCodeContainer(const std::string& entryPointName, CodeCont
     return true;
 }
 
-void UnifiedShader::setCode(CodeContainerId container, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code, const std::vector<ShaderUniformBufferInfo>* refrection)
+void UnifiedShader::setCode(CodeContainerId container, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code, UnifiedShaderRefrectionInfo* refrection)
 {
-	if (refrection)
-		m_codeContainers[idToIndex(container)].codes.push_back({triple, code, *refrection });
-	else
-		m_codeContainers[idToIndex(container)].codes.push_back({ triple, code });
+    if (LN_REQUIRE(refrection)) return;
+	m_codeContainers[idToIndex(container)].codes.push_back({triple, code, refrection });
 }
 
-void UnifiedShader::setCode(const std::string& entryPointName, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code, const std::vector<ShaderUniformBufferInfo>* refrection)
+void UnifiedShader::setCode(const std::string& entryPointName, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code, UnifiedShaderRefrectionInfo* refrection)
 {
     int index = findCodeContainerInfoIndex(entryPointName);
     if (index < 0) {
@@ -388,7 +386,7 @@ bool UnifiedShader::findCodeContainer(const std::string& entryPointName, CodeCon
     return (*outId) >= 0;
 }
 
-const std::vector<byte_t>* UnifiedShader::findCode(CodeContainerId conteinreId, const UnifiedShaderTriple& triple) const
+const UnifiedShader::CodeInfo* UnifiedShader::findCode(CodeContainerId conteinreId, const UnifiedShaderTriple& triple) const
 {
     if (LN_REQUIRE(!triple.target.empty())) {
         return nullptr;
@@ -415,7 +413,7 @@ const std::vector<byte_t>* UnifiedShader::findCode(CodeContainerId conteinreId, 
     }
 
     if (candidate >= 0) {
-        return &codes[candidate].code;
+        return &codes[candidate];
     } else {
         return nullptr;
     }
@@ -481,10 +479,10 @@ void UnifiedShader::setAttributeSemantics(PassId pass, const std::vector<VertexI
 	m_passes[idToIndex(pass)].attributeSemantics = value;
 }
 
-void UnifiedShader::setRefrection(PassId pass, UnifiedShaderRefrectionInfo* buffers)
-{
-	m_passes[idToIndex(pass)].refrection = buffers;
-}
+//void UnifiedShader::setRefrection(PassId pass, UnifiedShaderRefrectionInfo* buffers)
+//{
+//	m_passes[idToIndex(pass)].refrection = buffers;
+//}
 
 UnifiedShader::CodeContainerId UnifiedShader::vertexShader(PassId pass) const
 {
@@ -506,10 +504,10 @@ const std::vector<VertexInputAttribute>& UnifiedShader::attributeSemantics(PassI
 	return m_passes[idToIndex(pass)].attributeSemantics;
 }
 
-UnifiedShaderRefrectionInfo* UnifiedShader::refrection(PassId pass) const
-{
-    return m_passes[idToIndex(pass)].refrection;
-}
+//UnifiedShaderRefrectionInfo* UnifiedShader::refrection(PassId pass) const
+//{
+//    return m_passes[idToIndex(pass)].refrection;
+//}
 
 int UnifiedShader::findCodeContainerInfoIndex(const std::string& entryPointName) const
 {

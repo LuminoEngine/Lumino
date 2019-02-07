@@ -113,7 +113,8 @@ private:
 		const byte_t* psData,
 		size_t psLen,
 		const detail::VertexInputAttributeTable* vertexInputAttributeTable,
-        const detail::UnifiedShaderRefrectionInfo* refrection,
+        const detail::UnifiedShaderRefrectionInfo* vertexShaderRefrection,
+        const detail::UnifiedShaderRefrectionInfo* pixelShaderRefrection,
         DiagnosticsManager* diag);
     void createSinglePassShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen, DiagnosticsManager* diag, ShaderCompilationProperties* properties);
     void postInitialize();

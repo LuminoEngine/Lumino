@@ -41,7 +41,7 @@ public:
         DiagnosticsManager* diag);
 
 	const std::vector<VertexInputAttribute>& attributes() const { return m_attributes; }
-	const std::vector<ShaderUniformBufferInfo>& uniformBuffers() const { return m_uniformBuffers; }
+	const Ref<UnifiedShaderRefrectionInfo>& refrection() const { return m_refrection; }
 	std::vector<byte_t> spirvCode() const;
     std::vector<byte_t> generateGlsl(uint32_t version, bool es);
 
@@ -49,7 +49,7 @@ private:
     ShaderManager* m_manager;
     ShaderCodeStage m_stage;
 	std::vector<VertexInputAttribute> m_attributes;
-	std::vector<ShaderUniformBufferInfo> m_uniformBuffers;
+	Ref<UnifiedShaderRefrectionInfo> m_refrection;
     std::vector<uint32_t> m_spirvCode;
 
 };

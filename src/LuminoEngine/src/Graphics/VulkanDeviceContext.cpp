@@ -783,8 +783,9 @@ bool VulkanDeviceContext::init(const Settings& settings)
 		};
 		static const size_t fragSize = LN_ARRAY_SIZE_OF(fragData);
 
+        ShaderPassCreateInfo createInfo = { vertData, vertSize, fragData, fragSize, nullptr, nullptr };
 		m_defaultShaderPass = makeRef<VulkanShaderPass>();
-		if (!m_defaultShaderPass->init(this, vertData, vertSize, fragData, fragSize, nullptr, nullptr)) {
+		if (!m_defaultShaderPass->init(this, createInfo)) {
 			return false;
 		}
     }
@@ -1148,10 +1149,10 @@ Ref<ISamplerState> VulkanDeviceContext::onCreateSamplerState(const SamplerStateD
     return nullptr;
 }
 
-Ref<IShaderPass> VulkanDeviceContext::onCreateShaderPass(const byte_t* vsCode, int vsCodeLen, const byte_t* psCode, int psCodeLen, const ShaderVertexInputAttributeTable* attributeTable, const UnifiedShaderRefrectionInfo* refrection, ShaderCompilationDiag* diag)
+Ref<IShaderPass> VulkanDeviceContext::onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag)
 {
     auto ptr = makeRef<VulkanShaderPass>();
-    if (!ptr->init(this, vsCode, vsCodeLen, psCode, psCodeLen, attributeTable, refrection)) {
+    if (!ptr->init(this, createInfo)) {
         return nullptr;
     }
     return ptr;
@@ -3237,37 +3238,37 @@ VulkanShaderPass::~VulkanShaderPass()
 {
 }
 
-bool VulkanShaderPass::init(VulkanDeviceContext* context, const void* spvVert, size_t spvVertLen, const void* spvFrag, size_t spvFragLen, const ShaderVertexInputAttributeTable* attributeTable, const UnifiedShaderRefrectionInfo* refrection)
+bool VulkanShaderPass::init(VulkanDeviceContext* context, const ShaderPassCreateInfo& createInfo)
 {
 	m_deviceContext = context;
 	VkDevice device = m_deviceContext->vulkanDevice();
 
 	{
-		VkShaderModuleCreateInfo createInfo = {};
-		createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-		createInfo.codeSize = spvVertLen;
-		createInfo.pCode = reinterpret_cast<const uint32_t*>(spvVert);
+		VkShaderModuleCreateInfo shaderCreateInfo = {};
+        shaderCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+        shaderCreateInfo.codeSize = createInfo.vsCodeLen;
+        shaderCreateInfo.pCode = reinterpret_cast<const uint32_t*>(createInfo.vsCode);
 
-		LN_VK_CHECK(vkCreateShaderModule(device, &createInfo, m_deviceContext->vulkanAllocator(), &m_vertShaderModule));
+		LN_VK_CHECK(vkCreateShaderModule(device, &shaderCreateInfo, m_deviceContext->vulkanAllocator(), &m_vertShaderModule));
 	}
 
 	{
-		VkShaderModuleCreateInfo createInfo = {};
-		createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-		createInfo.codeSize = spvFragLen;
-		createInfo.pCode = reinterpret_cast<const uint32_t*>(spvFrag);
+		VkShaderModuleCreateInfo shaderCreateInfo = {};
+        shaderCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+        shaderCreateInfo.codeSize = createInfo.psCodeLen;
+        shaderCreateInfo.pCode = reinterpret_cast<const uint32_t*>(createInfo.psCode);
 
-		LN_VK_CHECK(vkCreateShaderModule(device, &createInfo, m_deviceContext->vulkanAllocator(), &m_fragShaderModule));
+		LN_VK_CHECK(vkCreateShaderModule(device, &shaderCreateInfo, m_deviceContext->vulkanAllocator(), &m_fragShaderModule));
 	}
 
-	if (attributeTable) {
-		m_inputAttributeTable = *attributeTable;
+	if (createInfo.attributeTable) {
+		m_inputAttributeTable = *createInfo.attributeTable;
 	}
 
 	// createDescriptorSetLayout
 	{
 
-#if 1
+#if 0
 		std::vector<VkDescriptorSetLayoutBinding> bindings;
 		for (int i = 0; i < x; i++)
 		{
@@ -3316,9 +3317,9 @@ bool VulkanShaderPass::init(VulkanDeviceContext* context, const void* spvVert, s
 		}
 		*/
 	}
-    if (refrection)
+    if (createInfo.vertexShaderRefrection)
     {
-        for (auto& info : refrection->buffers)
+        for (auto& info : createInfo.vertexShaderRefrection->buffers)
         {
             auto buf = makeRef<VulkanShaderUniformBuffer>();
             if (!buf->init(info)) {
