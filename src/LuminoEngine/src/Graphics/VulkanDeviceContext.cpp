@@ -1294,7 +1294,7 @@ bool VulkanDeviceContext::submitStatus()
 			}
 		}
 
-		m_activeCommandBuffer->addPipelineCmd(pipeline);
+        m_activeCommandBuffer->addPipelineCmd(pipeline);
 	}
 
 
@@ -1338,6 +1338,20 @@ bool VulkanDeviceContext::submitStatus()
     {
         VkBuffer indexBuffer = static_cast<VulkanIndexBuffer*>(state.indexBuffer)->vulkanBuffer();
         vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16);  // TODO: format
+    }
+
+    // TODO: modify チェック
+    if (state.pipelineState.shaderPass)
+    {
+        VulkanShaderPass* shaderPass = static_cast<VulkanShaderPass*>(state.pipelineState.shaderPass);
+        VulkanDescriptorManager* manager = shaderPass->getDescriptorManager(m_activeCommandBuffer);
+        if (manager) {
+            return false;
+        }
+
+        VkDescriptorSet descriptorSet = shaderPass->submitDescriptorSet(manager);
+
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shaderPass->descriptorSetLayout(), 0, 1, &descriptorSet, 0, nullptr);
     }
 
 	return true;
@@ -1543,6 +1557,7 @@ bool VulkanCommandList::init(VulkanDeviceContext* deviceContext, Type type)
 	fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 	fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;	// Signal 状態 = コマンド実行完了状態にしておく
 	LN_VK_CHECK(vkCreateFence(m_deviceContext->vulkanDevice(), &fenceInfo, m_deviceContext->vulkanAllocator(), &m_inFlightFence));
+
 
     return true;
 }
@@ -3247,11 +3262,44 @@ void VulkanSamplerState::dispose()
 }
 
 //=============================================================================
+// VulkanDescriptorBuffer
+
+Result VulkanDescriptorBuffer::init(VulkanDeviceContext* deviceContext, VulkanDescriptorManager* owner)
+{
+    for (size_t i = 0; i < owner->m_ownerShaderPass->vertexShaderRefrection()->buffers.size(); i++)
+    {
+        auto& bufferInfo = owner->m_ownerShaderPass->vertexShaderRefrection()->buffers[i];
+
+        auto buffer = makeRef<VulkanBuffer>();
+        if (!buffer->init(deviceContext, bufferInfo.size, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
+            return false;
+        }
+
+        m_uniformBuffers.push_back(buffer);
+    }
+
+    for (size_t i = 0; i < owner->m_ownerShaderPass->vertexShaderRefrection()->buffers.size(); i++)
+    {
+        auto& bufferInfo = owner->m_ownerShaderPass->vertexShaderRefrection()->buffers[i];
+
+        auto buffer = makeRef<VulkanBuffer>();
+        if (!buffer->init(deviceContext, bufferInfo.size, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
+            return false;
+        }
+
+        m_uniformBuffers.push_back(buffer);
+    }
+
+    return true;
+}
+
+//=============================================================================
 // VulkanDescriptorManager
 
-Result VulkanDescriptorManager::init(VulkanDeviceContext* deviceContext, const UnifiedShaderRefrectionInfo* vertexShaderRefrection, const UnifiedShaderRefrectionInfo* pixelShaderRefrection)
+Result VulkanDescriptorManager::init(VulkanDeviceContext* deviceContext, VulkanShaderPass* owner, const UnifiedShaderRefrectionInfo* vertexShaderRefrection, const UnifiedShaderRefrectionInfo* pixelShaderRefrection)
 {
 	m_deviceContext = deviceContext;
+    m_ownerShaderPass = owner;
 
 	// バッファは Binding ごと (UniformBuffer ごと) に作る。
 	// https://github.com/SaschaWillems/Vulkan/blob/master/examples/pbrbasic/pbrbasic.cpp#L362
@@ -3263,29 +3311,6 @@ Result VulkanDescriptorManager::init(VulkanDeviceContext* deviceContext, const U
 	// 共有までやると複雑になるので、ひとまず同一レイアウトでも独立させてみる。
 
 
-	for (size_t i = 0; i < vertexShaderRefrection->buffers.size(); i++)
-	{
-		auto& bufferInfo = vertexShaderRefrection->buffers[i];
-
-		auto buffer = makeRef<VulkanBuffer>();
-		if (!buffer->init(m_deviceContext, bufferInfo.size, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
-			return false;
-		}
-
-		m_vertexStageUniformBuffers.push_back(buffer);
-	}
-
-	for (size_t i = 0; i < pixelShaderRefrection->buffers.size(); i++)
-	{
-		auto& bufferInfo = pixelShaderRefrection->buffers[i];
-
-		auto buffer = makeRef<VulkanBuffer>();
-		if (!buffer->init(m_deviceContext, bufferInfo.size, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
-			return false;
-		}
-
-		m_fragmentStageUniformBuffers.push_back(buffer);
-	}
 
 
 	{
@@ -3335,6 +3360,37 @@ Result VulkanDescriptorManager::allocateDescriptorSet(VkDescriptorSetLayout layo
 	return true;
 }
 
+Result VulkanDescriptorManager::allocateUniformBuffer(VulkanDescriptorBuffer** outBuffer)
+{
+    if (m_aliveBufferCount == m_bufferPool.size())
+    {
+        // Glow
+        int count = m_bufferPool.size();
+        for (int i = 0; i < count; i++) {
+            auto buf = makeRef<VulkanDescriptorBuffer>();
+            if (!buf->init(m_deviceContext, this)) {
+                return false;
+            }
+            m_bufferPool.push_back(buf);
+        }
+    }
+
+    auto buf = m_bufferPool[m_aliveBufferCount];
+    m_aliveBufferCount++;
+    return buf;
+}
+
+void VulkanDescriptorManager::cleanupBuffers()
+{
+    m_aliveBufferCount = 0;
+}
+
+uint64_t VulkanDescriptorManager::computeHash(const VulkanShaderPass* shaderPass)
+{
+    // TODO: とりあえず動作優先で。後でちゃんと中身まで見ておく。
+    return reinterpret_cast<uint64_t>(shaderPass);
+}
+
 //=============================================================================
 // VulkanShaderPass
 
@@ -3352,6 +3408,9 @@ VulkanShaderPass::~VulkanShaderPass()
 bool VulkanShaderPass::init(VulkanDeviceContext* context, const ShaderPassCreateInfo& createInfo)
 {
 	m_deviceContext = context;
+    m_vertexShaderRefrection = createInfo.vertexShaderRefrection;
+    m_pixelShaderRefrection = createInfo.pixelShaderRefrection;
+
 	VkDevice device = m_deviceContext->vulkanDevice();
 
 	{
@@ -3440,15 +3499,15 @@ bool VulkanShaderPass::init(VulkanDeviceContext* context, const ShaderPassCreate
         }
     }
 
-	m_descriptorManagers[0] = makeRef<VulkanDescriptorManager>();
-	if (!m_descriptorManagers[0]->init(m_deviceContext, createInfo.vertexShaderRefrection, createInfo.pixelShaderRefrection)) {
-		return false;
-	}
+	//m_descriptorManagers[0] = makeRef<VulkanDescriptorManager>();
+	//if (!m_descriptorManagers[0]->init(m_deviceContext, createInfo.vertexShaderRefrection, createInfo.pixelShaderRefrection)) {
+	//	return false;
+	//}
 
-	m_descriptorManagers[1] = makeRef<VulkanDescriptorManager>();
-	if (!m_descriptorManagers[1]->init(m_deviceContext, createInfo.vertexShaderRefrection, createInfo.pixelShaderRefrection)) {
-		return false;
-	}
+	//m_descriptorManagers[1] = makeRef<VulkanDescriptorManager>();
+	//if (!m_descriptorManagers[1]->init(m_deviceContext, createInfo.vertexShaderRefrection, createInfo.pixelShaderRefrection)) {
+	//	return false;
+	//}
 
 	return true;
 }
@@ -3457,12 +3516,12 @@ void VulkanShaderPass::dispose()
 {
 	VkDevice device = m_deviceContext->vulkanDevice();
 
-	for (int i = 0; i < LN_ARRAY_SIZE_OF(m_descriptorManagers); i++) {
-		if (m_descriptorManagers[i]) {
-			m_descriptorManagers[i]->dispose();
-			m_descriptorManagers[i] = nullptr;
-		}
-	}
+    for (auto& m : m_descriptorManagerMap) {
+        if (m.second) {
+            m.second->dispose();
+        }
+    }
+    m_descriptorManagerMap.clear();
 
 	if (m_descriptorSetLayout) {
 		vkDestroyDescriptorSetLayout(device, m_descriptorSetLayout, m_deviceContext->vulkanAllocator());
@@ -3527,8 +3586,69 @@ IShaderSamplerBuffer* VulkanShaderPass::samplerBuffer() const
     return nullptr;
 }
 
-VkDescriptorSet VulkanShaderPass::submitDescriptorSet()
+VulkanDescriptorManager* VulkanShaderPass::getDescriptorManager(VulkanCommandList* commandList)
 {
+    auto itr = m_descriptorManagerMap.find(commandList);
+    if (itr != m_descriptorManagerMap.end()) {
+        return itr->second;
+    }
+    else {
+        auto ptr = makeRef<VulkanDescriptorManager>();
+        if (ptr->init(m_deviceContext, this, m_vertexShaderRefrection, m_pixelShaderRefrection)) {
+            return nullptr;
+        }
+        m_descriptorManagerMap[commandList] = ptr;
+        return ptr;
+    }
+}
+
+VkDescriptorSet VulkanShaderPass::submitDescriptorSet(VulkanDescriptorManager* descripterManager)
+{
+    VkDescriptorSet descriptorSet;
+    if (!descripterManager->allocateDescriptorSet(descriptorSetLayout(), &descriptorSet)) {
+        return 0;
+    }
+
+    VulkanDescriptorBuffer* descriptionBuffer;
+    if (!descripterManager->allocateUniformBuffer(&descriptionBuffer)) {
+        return 0;
+    }
+
+    std::array<VkWriteDescriptorSet, 16> descriptorWrites = {};
+    LN_CHECK(descriptorWrites.size() <= descriptionBuffer->m_uniformBuffers.size());
+
+    size_t count = descriptionBuffer->m_uniformBuffers.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        auto& buf = descriptionBuffer->m_uniformBuffers[i];
+
+        VkDescriptorBufferInfo bufferInfo = {};
+        bufferInfo.buffer = buf->vulkanBuffer();
+        bufferInfo.offset = 0;
+        bufferInfo.range = buf->size();
+
+
+        //VkDescriptorImageInfo imageInfo = {};
+        //imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        //imageInfo.imageView = textureImageView;
+        //imageInfo.sampler = textureSampler;
+
+
+        descriptorWrites[i].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrites[i].dstSet = descriptorSet;
+        descriptorWrites[i].dstBinding = 0;
+        descriptorWrites[i].dstArrayElement = 0;
+        descriptorWrites[i].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        descriptorWrites[i].descriptorCount = 1;
+        descriptorWrites[i].pBufferInfo = &bufferInfo;
+
+        vkUpdateDescriptorSets(
+            m_deviceContext->vulkanDevice(),
+            static_cast<uint32_t>(count),
+            descriptorWrites.data(),
+            0, nullptr);
+    }
+
 }
 
 //=============================================================================

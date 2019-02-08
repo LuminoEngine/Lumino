@@ -69,8 +69,8 @@ struct ShaderPassCreateInfo
     const byte_t* psCode;
     int psCodeLen;
     const ShaderVertexInputAttributeTable* attributeTable;
-    const UnifiedShaderRefrectionInfo* vertexShaderRefrection;
-    const UnifiedShaderRefrectionInfo* pixelShaderRefrection;
+    UnifiedShaderRefrectionInfo* vertexShaderRefrection;
+    UnifiedShaderRefrectionInfo* pixelShaderRefrection;
 };
 
 class IGraphicsDeviceContext

@@ -21,6 +21,7 @@ class VulkanShaderPass;
 class VulkanShaderUniformBuffer;
 class VulkanShaderUniform;
 class VulkanLocalShaderSamplerBuffer;
+class VulkanDescriptorManager;
 
 class VulkanAllocator
 {
@@ -349,6 +350,7 @@ private:
     VkCommandBuffer m_commandBuffer;
 	VkFence m_inFlightFence;	// コマンド実行完了を通知するための Fence
 	VulkanFrameBuffer* m_currentFrameBuffer;
+    //std::unordered_map<uint64_t, Ref<VulkanDescriptorManager>> m_descriptorManager;
 };
 
 class VulkanPipeline
@@ -684,26 +686,48 @@ public:
 private:
 };
 
+class VulkanDescriptorBuffer
+    : public RefObject
+{
+public:
+    Result init(VulkanDeviceContext* deviceContext, VulkanDescriptorManager* owner);
+
+    std::vector<Ref<VulkanBuffer>> m_uniformBuffers;
+    //std::vector<Ref<VulkanBuffer>> m_vertexStageUniformBuffers;
+    //std::vector<Ref<VulkanBuffer>> m_fragmentStageUniformBuffers;
+};
+
 // VulkanShaderPass に対するインスタンスのようなデータも管理する。
 class VulkanDescriptorManager
 	: public RefObject
 {
 public:
-	Result init(VulkanDeviceContext* deviceContext, const UnifiedShaderRefrectionInfo* vertexShaderRefrection, const UnifiedShaderRefrectionInfo* pixelShaderRefrection);
+	Result init(VulkanDeviceContext* deviceContext, VulkanShaderPass* owner, const UnifiedShaderRefrectionInfo* vertexShaderRefrection, const UnifiedShaderRefrectionInfo* pixelShaderRefrection);
 	void dispose();
+    // 以下の allocate はコマンドの実行中だけ有効。次に active になるまでに無効になる。
 	Result allocateDescriptorSet(VkDescriptorSetLayout layout, VkDescriptorSet* outDescriptorSet);	// 解放不要
+    Result allocateUniformBuffer(VulkanDescriptorBuffer** outBuffer);
+    void cleanupBuffers();
+
+    static uint64_t computeHash(const VulkanShaderPass* shaderPass);
 
 	VulkanDeviceContext* m_deviceContext;
+    VulkanShaderPass* m_ownerShaderPass;
+
 
 	// CommandBuffer に乗った UniformBuffer のメモリ領域。
 	// CommandBuffer に入れるとき、VulkanShaderUniformBuffer が持っているユーザーデータはここにコピーする。
 	// TODO: これを LinerAllocator みたいに管理する必要があるような気がしてきた
-	std::vector<Ref<VulkanBuffer>> m_vertexStageUniformBuffers;
-	std::vector<Ref<VulkanBuffer>> m_fragmentStageUniformBuffers;
+	//std::vector<Ref<VulkanBuffer>> m_vertexStageUniformBuffers;
+	//std::vector<Ref<VulkanBuffer>> m_fragmentStageUniformBuffers;
 	//VkBuffer m_uniformBuffer;
 	//VkDeviceMemory m_uniformBufferMemory;
 
 	VkDescriptorPool m_descriptorPool;
+
+private:
+    std::vector<Ref<VulkanDescriptorBuffer>> m_bufferPool;
+    size_t m_aliveBufferCount = 0;
 };
 
 class VulkanShaderPass
@@ -731,7 +755,15 @@ public:
     virtual IShaderUniformBuffer* getUniformBuffer(int index) const override;
     virtual IShaderSamplerBuffer* samplerBuffer() const override;
 
-	VkDescriptorSet submitDescriptorSet();
+    // CommandBuffer 側に関連付けたい UniformBuffer の情報。
+    // CommandBuffer に持たせると ShaderPass が削除されたときに合わせて削除するために複雑な参照がひつようとなるため、実態の管理はこちら側で行う。
+    VulkanDescriptorManager* getDescriptorManager(VulkanCommandList* commandList);
+
+	VkDescriptorSet submitDescriptorSet(VulkanDescriptorManager* descripterManager);
+
+    UnifiedShaderRefrectionInfo* vertexShaderRefrection() const { return m_vertexShaderRefrection; }
+    UnifiedShaderRefrectionInfo* pixelShaderRefrection() const { return m_pixelShaderRefrection; }
+
 
 private:
 	VulkanDeviceContext* m_deviceContext;
@@ -741,8 +773,10 @@ private:
     std::vector<Ref<VulkanShaderUniformBuffer>> m_uniformBuffers;
 
 	VkDescriptorSetLayout m_descriptorSetLayout;
-	Ref<VulkanDescriptorManager> m_descriptorManagers[2];	// Statging or Submitted
 
+    Ref<UnifiedShaderRefrectionInfo> m_vertexShaderRefrection;
+    Ref<UnifiedShaderRefrectionInfo> m_pixelShaderRefrection;
+    std::unordered_map<VulkanCommandList*, Ref<VulkanDescriptorManager>> m_descriptorManagerMap;
 };
 
 class VulkanShaderUniformBuffer

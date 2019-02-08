@@ -368,8 +368,8 @@ Ref<detail::IShaderPass> Shader::createRHIShaderPass(
     const byte_t* psData,
     size_t psLen,
 	const detail::VertexInputAttributeTable* vertexInputAttributeTable,
-    const detail::UnifiedShaderRefrectionInfo* vertexShaderRefrection,
-    const detail::UnifiedShaderRefrectionInfo* pixelShaderRefrection,
+    detail::UnifiedShaderRefrectionInfo* vertexShaderRefrection,
+    detail::UnifiedShaderRefrectionInfo* pixelShaderRefrection,
     DiagnosticsManager* diag)
 {
 	detail::ShaderVertexInputAttributeTable attributeTable;
