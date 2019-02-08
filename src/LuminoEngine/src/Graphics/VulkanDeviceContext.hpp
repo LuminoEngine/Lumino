@@ -685,17 +685,25 @@ private:
 };
 
 // VulkanShaderPass に対するインスタンスのようなデータも管理する。
-class VulkanDescriptorSet
+class VulkanDescriptorManager
 	: public RefObject
 {
 public:
 	Result init(VulkanDeviceContext* deviceContext, const UnifiedShaderRefrectionInfo* vertexShaderRefrection, const UnifiedShaderRefrectionInfo* pixelShaderRefrection);
+	void dispose();
+	Result allocateDescriptorSet(VkDescriptorSetLayout layout, VkDescriptorSet* outDescriptorSet);	// 解放不要
 
 	VulkanDeviceContext* m_deviceContext;
+
+	// CommandBuffer に乗った UniformBuffer のメモリ領域。
+	// CommandBuffer に入れるとき、VulkanShaderUniformBuffer が持っているユーザーデータはここにコピーする。
+	// TODO: これを LinerAllocator みたいに管理する必要があるような気がしてきた
 	std::vector<Ref<VulkanBuffer>> m_vertexStageUniformBuffers;
 	std::vector<Ref<VulkanBuffer>> m_fragmentStageUniformBuffers;
 	//VkBuffer m_uniformBuffer;
 	//VkDeviceMemory m_uniformBufferMemory;
+
+	VkDescriptorPool m_descriptorPool;
 };
 
 class VulkanShaderPass
@@ -723,6 +731,8 @@ public:
     virtual IShaderUniformBuffer* getUniformBuffer(int index) const override;
     virtual IShaderSamplerBuffer* samplerBuffer() const override;
 
+	VkDescriptorSet submitDescriptorSet();
+
 private:
 	VulkanDeviceContext* m_deviceContext;
 	VkShaderModule m_vertShaderModule;
@@ -731,7 +741,7 @@ private:
     std::vector<Ref<VulkanShaderUniformBuffer>> m_uniformBuffers;
 
 	VkDescriptorSetLayout m_descriptorSetLayout;
-	Ref<VulkanDescriptorSet> m_descriptorSets[2];	// Statging or Submitted
+	Ref<VulkanDescriptorManager> m_descriptorManagers[2];	// Statging or Submitted
 
 };
 
@@ -741,18 +751,20 @@ class VulkanShaderUniformBuffer
 public:
     VulkanShaderUniformBuffer();
     virtual ~VulkanShaderUniformBuffer();
-    Result init(const ShaderUniformBufferInfo& info);
+    Result init(VulkanDeviceContext* deviceContext, const ShaderUniformBufferInfo& info);
     virtual void dispose() override;
 
-    virtual const std::string& name() const override;
-    virtual int getUniformCount() const override;
-    virtual IShaderUniform* getUniform(int index) const override;
-    virtual size_t bufferSize() const override;
-    virtual void setData(const void* data, size_t size) override;
+	virtual const std::string& name() const override { return m_name; }
+	virtual int getUniformCount() const override { return m_uniforms.size(); }
+	virtual IShaderUniform* getUniform(int index) const override;
+	virtual size_t bufferSize() const override { return m_data.size(); }
+	virtual void setData(const void* data, size_t size) override;
 
 private:
     std::string m_name;
     std::vector<Ref<VulkanShaderUniform>> m_uniforms;
+	ByteBuffer m_data;
+	//Ref<VulkanBuffer> m_data;	// ユーザーメモリ。setData() で書き込む場所。
 };
 
 class VulkanShaderUniform
