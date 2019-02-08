@@ -378,6 +378,9 @@ public:
 	size_t size() const { return m_size; }
     VkBuffer vulkanBuffer() const { return m_buffer; }
     VkDeviceMemory vulkanBufferMemory() const { return m_bufferMemory; }
+	void* map();
+	void unmap();
+	void setData(const void* data, size_t size);
 
 private:
     VulkanDeviceContext* m_deviceContext;
@@ -681,10 +684,27 @@ public:
 private:
 };
 
+// VulkanShaderPass に対するインスタンスのようなデータも管理する。
+class VulkanDescriptorSet
+	: public RefObject
+{
+public:
+	Result init(VulkanDeviceContext* deviceContext, const UnifiedShaderRefrectionInfo* vertexShaderRefrection, const UnifiedShaderRefrectionInfo* pixelShaderRefrection);
+
+	VulkanDeviceContext* m_deviceContext;
+	std::vector<Ref<VulkanBuffer>> m_vertexStageUniformBuffers;
+	std::vector<Ref<VulkanBuffer>> m_fragmentStageUniformBuffers;
+	//VkBuffer m_uniformBuffer;
+	//VkDeviceMemory m_uniformBufferMemory;
+};
+
 class VulkanShaderPass
     : public IShaderPass
 {
 public:
+	static const int Statging = 0;
+	static const int Submitted = 1;
+
     VulkanShaderPass();
     virtual ~VulkanShaderPass();
     bool init(VulkanDeviceContext* context, const ShaderPassCreateInfo& createInfo);
@@ -711,6 +731,8 @@ private:
     std::vector<Ref<VulkanShaderUniformBuffer>> m_uniformBuffers;
 
 	VkDescriptorSetLayout m_descriptorSetLayout;
+	Ref<VulkanDescriptorSet> m_descriptorSets[2];	// Statging or Submitted
+
 };
 
 class VulkanShaderUniformBuffer

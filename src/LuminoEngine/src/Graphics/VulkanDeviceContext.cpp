@@ -2003,6 +2003,28 @@ void VulkanBuffer::dispose()
     }
 }
 
+void* VulkanBuffer::map()
+{
+	void* mapped;
+	if (!vkMapMemory(m_deviceContext->vulkanDevice(), m_bufferMemory, 0, m_size, 0, &mapped)) {
+		LN_LOG_ERROR << "Failed vkMapMemory";
+		return nullptr;
+	}
+	return mapped;
+}
+
+void VulkanBuffer::unmap()
+{
+	vkUnmapMemory(m_deviceContext->vulkanDevice(), m_bufferMemory);
+}
+
+void VulkanBuffer::setData(const void* data, size_t size)
+{
+	void* mapped = map();
+	memcpy(mapped, data, size);
+	unmap();
+}
+
 
 //=============================================================================
 // VulkanSwapChain
@@ -3225,6 +3247,53 @@ void VulkanSamplerState::dispose()
 }
 
 //=============================================================================
+// VulkanDescriptorSet
+
+Result VulkanDescriptorSet::init(VulkanDeviceContext* deviceContext, const UnifiedShaderRefrectionInfo* vertexShaderRefrection, const UnifiedShaderRefrectionInfo* pixelShaderRefrection)
+{
+	m_deviceContext = deviceContext;
+
+	// バッファは Binding ごと (UniformBuffer ごと) に作る。
+	// https://github.com/SaschaWillems/Vulkan/blob/master/examples/pbrbasic/pbrbasic.cpp#L362
+	// https://github.com/SaschaWillems/Vulkan/blob/master/data/shaders/pbrbasic/pbr.vert
+	// https://github.com/SaschaWillems/Vulkan/blob/master/data/shaders/pbrbasic/pbr.frag
+	// ちなみにこのサンプルでは、worldMatrix などを binding=0 として、VS と FS 両方で共有している ()
+	// https://github.com/SaschaWillems/Vulkan/blob/master/examples/pbrbasic/pbrbasic.cpp#L232
+	// 
+	// 共有までやると複雑になるので、ひとまず同一レイアウトでも独立させてみる。
+
+
+	for (size_t i = 0; i < vertexShaderRefrection->buffers.size(); i++)
+	{
+		auto& bufferInfo = vertexShaderRefrection->buffers[i];
+
+		auto buffer = makeRef<VulkanBuffer>();
+		if (!buffer->init(m_deviceContext, bufferInfo.size, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
+			return false;
+		}
+
+		m_vertexStageUniformBuffers.push_back(buffer);
+	}
+
+	for (size_t i = 0; i < pixelShaderRefrection->buffers.size(); i++)
+	{
+		auto& bufferInfo = pixelShaderRefrection->buffers[i];
+
+		auto buffer = makeRef<VulkanBuffer>();
+		if (!buffer->init(m_deviceContext, bufferInfo.size, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
+			return false;
+		}
+
+		m_fragmentStageUniformBuffers.push_back(buffer);
+	}
+
+
+
+
+	return true;
+}
+
+//=============================================================================
 // VulkanShaderPass
 
 VulkanShaderPass::VulkanShaderPass()
@@ -3268,16 +3337,16 @@ bool VulkanShaderPass::init(VulkanDeviceContext* context, const ShaderPassCreate
 	// createDescriptorSetLayout
 	{
 
-#if 0
+#if 1
 		std::vector<VkDescriptorSetLayoutBinding> bindings;
-		for (int i = 0; i < x; i++)
+		for (int i = 0; i < createInfo.vertexShaderRefrection->buffers.size(); i++)
 		{
 			VkDescriptorSetLayoutBinding uboLayoutBinding;
 			uboLayoutBinding.binding = i;			// TODO: GLSL で layout(binding = 0) とか書かれたやつのインデックス？
 			uboLayoutBinding.descriptorCount = 1;	// バッファ自体の要素数。主に sampler で使う。https://vulkan.lunarg.com/doc/view/1.0.33.0/linux/vkspec.chunked/ch13s02.html
 			uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; // TODO: or VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
 			uboLayoutBinding.pImmutableSamplers = nullptr;
-			uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+			uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;// | VK_SHADER_STAGE_FRAGMENT_BIT;
 		}
 
 		VkDescriptorSetLayoutCreateInfo layoutInfo;
@@ -3328,6 +3397,16 @@ bool VulkanShaderPass::init(VulkanDeviceContext* context, const ShaderPassCreate
             m_uniformBuffers.push_back(buf);
         }
     }
+
+	m_descriptorSets[0] = makeRef<VulkanDescriptorSet>();
+	if (!m_descriptorSets[0]->init(m_deviceContext, createInfo.vertexShaderRefrection, createInfo.pixelShaderRefrection)) {
+		return false;
+	}
+
+	m_descriptorSets[1] = makeRef<VulkanDescriptorSet>();
+	if (!m_descriptorSets[1]->init(m_deviceContext, createInfo.vertexShaderRefrection, createInfo.pixelShaderRefrection)) {
+		return false;
+	}
 
 	return true;
 }

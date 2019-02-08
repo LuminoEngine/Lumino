@@ -570,7 +570,7 @@ std::vector<byte_t> ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es
         glsl.set_decoration(resource.id, spv::DecorationBinding, set * 16 + binding);
     }
 
-    // デフォルトでは binding の値が格納されており、 GLSL に出力すると
+    // HLSL で register(b0) のような指定をすると binding の値が生成され、 GLSL に出力すると
     //   layout(binding = 0, std140) uniform ConstBuff
     // というようなコードが出力される。
     // しかし、macOS (Mojave) では binding には対応しておらず、
