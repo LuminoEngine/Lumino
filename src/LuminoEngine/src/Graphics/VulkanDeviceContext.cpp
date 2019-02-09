@@ -783,7 +783,8 @@ bool VulkanDeviceContext::init(const Settings& settings)
 		};
 		static const size_t fragSize = LN_ARRAY_SIZE_OF(fragData);
 
-        ShaderPassCreateInfo createInfo = { vertData, vertSize, fragData, fragSize, nullptr, nullptr };
+        //auto dummyInfo = makeRef<detail::UnifiedShaderRefrectionInfo>();
+        ShaderPassCreateInfo createInfo = { vertData, vertSize, fragData, fragSize, nullptr, nullptr, nullptr };
 		m_defaultShaderPass = makeRef<VulkanShaderPass>();
 		if (!m_defaultShaderPass->init(this, createInfo)) {
 			return false;
@@ -3440,15 +3441,33 @@ bool VulkanShaderPass::init(VulkanDeviceContext* context, const ShaderPassCreate
 
 #if 1
 		std::vector<VkDescriptorSetLayoutBinding> bindings;
-		for (int i = 0; i < createInfo.vertexShaderRefrection->buffers.size(); i++)
-		{
-			VkDescriptorSetLayoutBinding uboLayoutBinding;
-			uboLayoutBinding.binding = i;			// TODO: GLSL で layout(binding = 0) とか書かれたやつのインデックス？
-			uboLayoutBinding.descriptorCount = 1;	// バッファ自体の要素数。主に sampler で使う。https://vulkan.lunarg.com/doc/view/1.0.33.0/linux/vkspec.chunked/ch13s02.html
-			uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; // TODO: or VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
-			uboLayoutBinding.pImmutableSamplers = nullptr;
-			uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;// | VK_SHADER_STAGE_FRAGMENT_BIT;
-		}
+        int bindingIndex = 0;
+        if (createInfo.vertexShaderRefrection)
+        {
+            for (int i = 0; i < createInfo.vertexShaderRefrection->buffers.size(); i++)
+            {
+                VkDescriptorSetLayoutBinding uboLayoutBinding;
+                uboLayoutBinding.binding = bindingIndex;			// TODO: GLSL で layout(binding = 0) とか書かれたやつのインデックス？
+                uboLayoutBinding.descriptorCount = 1;	// バッファ自体の要素数。主に sampler で使う。https://vulkan.lunarg.com/doc/view/1.0.33.0/linux/vkspec.chunked/ch13s02.html
+                uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; // TODO: or VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
+                uboLayoutBinding.pImmutableSamplers = nullptr;
+                uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;// | VK_SHADER_STAGE_FRAGMENT_BIT;
+                bindingIndex++;
+            }
+        }
+        if (createInfo.pixelShaderRefrection)
+        {
+            for (int i = 0; i < createInfo.pixelShaderRefrection->buffers.size(); i++)
+            {
+                VkDescriptorSetLayoutBinding uboLayoutBinding;
+                uboLayoutBinding.binding = bindingIndex;			// TODO: GLSL で layout(binding = 0) とか書かれたやつのインデックス？
+                uboLayoutBinding.descriptorCount = 1;	// バッファ自体の要素数。主に sampler で使う。https://vulkan.lunarg.com/doc/view/1.0.33.0/linux/vkspec.chunked/ch13s02.html
+                uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; // TODO: or VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
+                uboLayoutBinding.pImmutableSamplers = nullptr;
+                uboLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+                bindingIndex++;
+            }
+        }
 
 		VkDescriptorSetLayoutCreateInfo layoutInfo;
 		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
@@ -3487,15 +3506,25 @@ bool VulkanShaderPass::init(VulkanDeviceContext* context, const ShaderPassCreate
 		}
 		*/
 	}
+
+    // TODO: 同名バッファの結合処理
     if (createInfo.vertexShaderRefrection)
     {
         for (auto& info : createInfo.vertexShaderRefrection->buffers)
         {
-            auto buf = makeRef<VulkanShaderUniformBuffer>();
-            if (!buf->init(m_deviceContext, info)) {
+            if (!addUniformBufferIfNeeded(info)) {
                 return false;
             }
-            m_uniformBuffers.push_back(buf);
+        }
+    }
+
+    if (createInfo.pixelShaderRefrection)
+    {
+        for (auto& info : createInfo.pixelShaderRefrection->buffers)
+        {
+            if (!addUniformBufferIfNeeded(info)) {
+                return false;
+            }
         }
     }
 
@@ -3570,15 +3599,10 @@ bool VulkanShaderPass::findAttributeLocation(VertexElementUsage usage, uint32_t 
 //    LN_NOTIMPLEMENTED();
 //}
 
-int VulkanShaderPass::getUniformBufferCount() const
-{
-    return 0;
-}
 
 IShaderUniformBuffer* VulkanShaderPass::getUniformBuffer(int index) const
-{
-    LN_NOTIMPLEMENTED();
-    return nullptr;
+{ 
+    return m_uniformBuffers[index];
 }
 
 IShaderSamplerBuffer* VulkanShaderPass::samplerBuffer() const
@@ -3613,6 +3637,7 @@ VkDescriptorSet VulkanShaderPass::submitDescriptorSet(VulkanDescriptorManager* d
     if (!descripterManager->allocateUniformBuffer(&descriptionBuffer)) {
         return 0;
     }
+    // TODO: このへんでメモリコピー
 
     std::array<VkWriteDescriptorSet, 16> descriptorWrites = {};
     LN_CHECK(descriptorWrites.size() <= descriptionBuffer->m_uniformBuffers.size());
@@ -3649,6 +3674,18 @@ VkDescriptorSet VulkanShaderPass::submitDescriptorSet(VulkanDescriptorManager* d
             0, nullptr);
     }
 
+}
+
+Result VulkanShaderPass::addUniformBufferIfNeeded(const ShaderUniformBufferInfo& info)
+{
+    auto itr = std::find_if(m_uniformBuffers.begin(), m_uniformBuffers.end(), [&](const ShaderUniformBufferInfo& x) { return x.name == info.name; });
+    if (itr == m_uniformBuffers.end()) {
+        auto buf = makeRef<VulkanShaderUniformBuffer>();
+        if (!buf->init(m_deviceContext, info)) {
+            return false;
+        }
+        m_uniformBuffers.push_back(buf);
+    }
 }
 
 //=============================================================================
@@ -3713,6 +3750,9 @@ VulkanShaderUniform::~VulkanShaderUniform()
 
 Result VulkanShaderUniform::init(const ShaderUniformInfo& info)
 {
+    m_name = info.name;
+
+
     LN_NOTIMPLEMENTED();
     return true;
 }

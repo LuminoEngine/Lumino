@@ -402,6 +402,12 @@ Ref<detail::IShaderPass> Shader::createRHIShaderPass(
 	}
 
     detail::ShaderPassCreateInfo createInfo = { vsData, vsLen, psData, psLen, &attributeTable, vertexShaderRefrection, pixelShaderRefrection };
+    //if (!createInfo.vertexShaderRefrection) {
+    //    createInfo.vertexShaderRefrection = makeRef<detail::UnifiedShaderRefrectionInfo>();
+    //}
+    //if (!createInfo.pixelShaderRefrection) {
+    //    createInfo.pixelShaderRefrection = makeRef<detail::UnifiedShaderRefrectionInfo>();
+    //}
     ShaderCompilationDiag sdiag;
     Ref<detail::IShaderPass> pass = deviceContext()->createShaderPass(createInfo, &sdiag);
 

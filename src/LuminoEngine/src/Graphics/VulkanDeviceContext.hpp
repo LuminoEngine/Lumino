@@ -751,7 +751,7 @@ public:
     //virtual int getUniformCount() const override;
     //virtual IShaderUniform* getUniform(int index) const override;
     //virtual void setUniformValue(int index, const void* data, size_t size) override;
-    virtual int getUniformBufferCount() const override;
+    virtual int getUniformBufferCount() const override { return m_uniformBuffers.size(); }
     virtual IShaderUniformBuffer* getUniformBuffer(int index) const override;
     virtual IShaderSamplerBuffer* samplerBuffer() const override;
 
@@ -766,6 +766,8 @@ public:
 
 
 private:
+    Result addUniformBufferIfNeeded(const ShaderUniformBufferInfo& info);
+
 	VulkanDeviceContext* m_deviceContext;
 	VkShaderModule m_vertShaderModule;
 	VkShaderModule m_fragShaderModule;
@@ -794,11 +796,14 @@ public:
 	virtual size_t bufferSize() const override { return m_data.size(); }
 	virtual void setData(const void* data, size_t size) override;
 
+    //void addBindingNumber(int binding) { m_bindingNumbers.push_back(binding); }
+
 private:
     std::string m_name;
     std::vector<Ref<VulkanShaderUniform>> m_uniforms;
 	ByteBuffer m_data;
 	//Ref<VulkanBuffer> m_data;	// ユーザーメモリ。setData() で書き込む場所。
+    std::vector<int> m_bindingNumbers;
 };
 
 class VulkanShaderUniform

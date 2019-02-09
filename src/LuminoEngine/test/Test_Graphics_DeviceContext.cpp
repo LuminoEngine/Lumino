@@ -1,6 +1,6 @@
 ﻿#include "Common.hpp"
 
-#if 0
+#if 1
 
 //==============================================================================
 // IGraphicsDeviceContext 周りのテスト。
@@ -122,6 +122,41 @@ TEST_F(Test_Graphics_DeviceContext, IndexBuffer)
 TEST_F(Test_Graphics_DeviceContext, ConstantBuffer)
 {
     auto shader1 = Shader::create(LN_ASSETFILE("Graphics/SimpleConstantBuffer.lcfx"));
+    shader1->findParameter("g_color")->setVector(Vector4(1, 0, 0, 1));
+
+    Vector3 v1[] = {
+        { 0, 0.5, 0 },
+        { 0.5, -0.5, 0 },
+        {-0.5, -0.5, 0 },
+    };
+
+    auto vertexDecl1 = newObject<VertexDeclaration>();
+    vertexDecl1->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
+
+    auto vertexBuffer = newObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
+
+    auto ctx = Engine::graphicsContext();
+    TestEnv::resetGraphicsContext(ctx);
+    {
+        DepthStencilStateDesc state;
+        state.depthWriteEnabled = false;
+        state.depthTestFunc = ComparisonFunc::Always;
+        ctx->setDepthStencilState(state);
+    }
+    {
+        RasterizerStateDesc state;
+        state.cullMode = CullMode::None;
+        ctx->setRasterizerState(state);
+    }
+    ctx->setDepthBuffer(nullptr);
+    ctx->setVertexDeclaration(vertexDecl1);
+    ctx->setVertexBuffer(0, vertexBuffer);
+    ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
+    ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+    //ctx->clear(ClearFlags::All, Color::Gray, 1.0f, 0);
+    ctx->drawPrimitive(0, 1);
+    ctx->present(Engine::mainWindow()->swapChain());
+    ASSERT_SCREEN_S(LN_ASSETFILE("Graphics/Result/Test_Graphics_DeviceContext-ConstantBuffer-1.png"));
 }
 
 #endif
