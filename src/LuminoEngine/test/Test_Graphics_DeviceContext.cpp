@@ -1,5 +1,7 @@
 ﻿#include "Common.hpp"
 
+#if 0
+
 //==============================================================================
 // IGraphicsDeviceContext 周りのテスト。
 // 新規 DeviceContext 実装時の最低限の動作を見る。
@@ -121,3 +123,5 @@ TEST_F(Test_Graphics_DeviceContext, ConstantBuffer)
 {
     auto shader1 = Shader::create(LN_ASSETFILE("Graphics/SimpleConstantBuffer.lcfx"));
 }
+
+#endif
