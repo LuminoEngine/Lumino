@@ -270,6 +270,7 @@ private:
     VkInstance m_instance;
     VkAllocationCallbacks m_allocatorCallbacks;
     VulkanAllocator m_allocator;
+    VkDebugUtilsMessengerEXT m_debugMessenger = VK_NULL_HANDLE;
     uint32_t m_physicalDeviceCount;
     std::vector<PhysicalDeviceInfo> m_physicalDeviceInfos;
     VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE; 

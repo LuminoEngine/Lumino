@@ -93,6 +93,30 @@ VkBool32 VKAPI_CALL DebugReportCallback(
     return VK_TRUE;
 }
 
+static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback2(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
+{
+    std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
+
+    return VK_FALSE;
+}
+
+VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) {
+    auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
+    if (func != nullptr) {
+        return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
+    }
+    else {
+        return VK_ERROR_EXTENSION_NOT_PRESENT;
+    }
+}
+
+void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) {
+    auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
+    if (func != nullptr) {
+        func(instance, debugMessenger, pAllocator);
+    }
+}
+
 struct FormatConversionItem
 {
     VkFormat vulkanFormat;
@@ -463,6 +487,35 @@ bool VulkanDeviceContext::init(const Settings& settings)
     //    Win32PlatformInterface::getWin32WindowHandle(settings.mainWindow);
     //#endif
 
+
+
+
+    const std::vector<const char*> validationLayers = {
+        "VK_LAYER_LUNARG_standard_validation"
+    };
+    bool support = false;
+    {
+        uint32_t layerCount;
+        vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+
+        std::vector<VkLayerProperties> availableLayers(layerCount);
+        vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+
+        for (const char* layerName : validationLayers) {
+
+            for (const auto& layerProperties : availableLayers) {
+                if (strcmp(layerName, layerProperties.layerName) == 0) {
+                    support = true;
+                    break;
+                }
+            }
+        }
+    }
+
+
+
+
+
     const char* instanceExtension[] = {
         VK_KHR_SURFACE_EXTENSION_NAME,
 #ifdef LN_OS_WIN32
@@ -473,6 +526,7 @@ bool VulkanDeviceContext::init(const Settings& settings)
         VK_KHR_ANDROID_SURFACE_EXTENSION_NAME,
 #endif
         VK_EXT_DEBUG_REPORT_EXTENSION_NAME,
+        VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
     };
     size_t instanceExtensionCount = 2;
 
@@ -487,7 +541,7 @@ bool VulkanDeviceContext::init(const Settings& settings)
     size_t validationLayerCount = 0;
 
     if (settings.debugEnabled) {
-        instanceExtensionCount++;
+        instanceExtensionCount += 2;
         validationLayerCount = 1;//sizeof(validationLayerNames);
     }
 
@@ -530,6 +584,8 @@ bool VulkanDeviceContext::init(const Settings& settings)
 	LN_VK_CHECK(vkCreateInstance(&instanceInfo, &m_allocatorCallbacks, &m_instance));
 
     if (settings.debugEnabled) {
+
+
         vkCreateDebugReportCallback = GetVkInstanceProc<PFN_vkCreateDebugReportCallbackEXT>("vkCreateDebugReportCallbackEXT");
         vkDestroyDebugReportCallback = GetVkInstanceProc<PFN_vkDestroyDebugReportCallbackEXT>("vkDestroyDebugReportCallbackEXT");
         vkDebugReportMessage = GetVkInstanceProc<PFN_vkDebugReportMessageEXT>("vkDebugReportMessageEXT");
@@ -551,6 +607,18 @@ bool VulkanDeviceContext::init(const Settings& settings)
             info.flags = flags;
 
 			LN_VK_CHECK(vkCreateDebugReportCallback(m_instance, &info, nullptr, &vkDebugReportCallback));
+        }
+
+        //if (!enableValidationLayers) return;
+
+        VkDebugUtilsMessengerCreateInfoEXT createInfo = {};
+        createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+        createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+        createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+        createInfo.pfnUserCallback = debugCallback2;
+
+        if (CreateDebugUtilsMessengerEXT(m_instance, &createInfo, nullptr, &m_debugMessenger) != VK_SUCCESS) {
+            throw std::runtime_error("failed to set up debug messenger!");
         }
     }
 
@@ -868,6 +936,11 @@ void VulkanDeviceContext::dispose()
         m_device = nullptr;
     }
 
+    if (m_debugMessenger) {
+        DestroyDebugUtilsMessengerEXT(m_instance, m_debugMessenger, nullptr);
+        m_debugMessenger = VK_NULL_HANDLE;
+    }
+
     if (vkDebugReportCallback != 0) {
         vkDestroyDebugReportCallback(
             m_instance,
@@ -969,6 +1042,14 @@ bool VulkanDeviceContext::getVkRenderPass(const DeviceFramebufferState& state, V
 		subpass.preserveAttachmentCount = 0;
 		subpass.pPreserveAttachments = nullptr;
 
+        VkSubpassDependency dependency = {};
+        dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+        dependency.dstSubpass = 0;
+        dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        dependency.srcAccessMask = 0;
+        dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
 		VkRenderPassCreateInfo renderPassInfo = {};
 		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 		renderPassInfo.pNext = nullptr;
@@ -977,8 +1058,8 @@ bool VulkanDeviceContext::getVkRenderPass(const DeviceFramebufferState& state, V
 		renderPassInfo.pAttachments = attachmentDescs;
 		renderPassInfo.subpassCount = 1;
 		renderPassInfo.pSubpasses = &subpass;
-		renderPassInfo.dependencyCount = 0;
-		renderPassInfo.pDependencies = nullptr;
+		renderPassInfo.dependencyCount = 1;
+		renderPassInfo.pDependencies = &dependency;
 
 		LN_VK_CHECK(vkCreateRenderPass(vulkanDevice(), &renderPassInfo, vulkanAllocator(), &renderPass));
 
@@ -1806,30 +1887,37 @@ bool VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsDev
 		multisampleState.alphaToOneEnable = VK_FALSE;
 	}
 
+
+    VulkanShaderPass* shaderPass = static_cast<VulkanShaderPass*>(committed.pipelineState.shaderPass);
+    if (!shaderPass) {
+        shaderPass = m_deviceContext->defaultShaderPass();
+    }
+
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
 	std::array<VkVertexInputAttributeDescription, 16> vertexAttributeDescriptions;
 	{
+        vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+        vertexInputInfo.pNext = nullptr;
+        vertexInputInfo.flags = 0;
+
 		VulkanVertexDeclaration* decl = static_cast<VulkanVertexDeclaration*>(committed.pipelineState.vertexDeclaration);
-		VulkanShaderPass* shaderPass = static_cast<VulkanShaderPass*>(committed.pipelineState.shaderPass);
+        if (decl)
+        {
+            for (size_t i = 0; i < decl->vertexAttributeTemplate().size(); i++) {
+                vertexAttributeDescriptions[i] = decl->vertexAttributeTemplate()[i];
+                auto& element = decl->elements()[i];
+                if (!shaderPass->findAttributeLocation(element.Usage, element.UsageIndex, &vertexAttributeDescriptions[i].location)) {
+                    LN_NOTIMPLEMENTED();
+                    return false;
+                }
+            }
 
-		for (size_t i = 0; i < decl->vertexAttributeTemplate().size(); i++) {
-			vertexAttributeDescriptions[i] = decl->vertexAttributeTemplate()[i];
-			auto& element = decl->elements()[i];
-			if (!shaderPass->findAttributeLocation(element.Usage, element.UsageIndex, &vertexAttributeDescriptions[i].location)) {
-				LN_NOTIMPLEMENTED();
-				return false;
-			}
-		}
+            vertexInputInfo.vertexBindingDescriptionCount = decl->vertexBindingDescriptions().size();
+            vertexInputInfo.pVertexBindingDescriptions = decl->vertexBindingDescriptions().data();
 
-		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		vertexInputInfo.pNext = nullptr;
-		vertexInputInfo.flags = 0;
-
-		vertexInputInfo.vertexBindingDescriptionCount = decl->vertexBindingDescriptions().size();
-		vertexInputInfo.pVertexBindingDescriptions = decl->vertexBindingDescriptions().data();
-
-		vertexInputInfo.vertexAttributeDescriptionCount = decl->vertexAttributeTemplate().size();
-		vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptions.data();
+            vertexInputInfo.vertexAttributeDescriptionCount = decl->vertexAttributeTemplate().size();
+            vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptions.data();
+        }
 	}
 
 	VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
@@ -1864,10 +1952,6 @@ bool VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsDev
 	}
 
 
-	VulkanShaderPass* shaderPass = static_cast<VulkanShaderPass*>(committed.pipelineState.shaderPass);
-	if (!shaderPass) {
-		shaderPass = m_deviceContext->defaultShaderPass();
-	}
 
     VkPipelineShaderStageCreateInfo shaderStages[2];
     {
@@ -1911,7 +1995,7 @@ bool VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsDev
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	pipelineLayoutInfo.pNext = nullptr;
 	pipelineLayoutInfo.flags = 0;
-    pipelineLayoutInfo.setLayoutCount = descriptorSetLayouts.size();
+    pipelineLayoutInfo.setLayoutCount = 0;// descriptorSetLayouts.size();
 	pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
 	pipelineLayoutInfo.pushConstantRangeCount = 0;
 	pipelineLayoutInfo.pPushConstantRanges = nullptr;
@@ -1929,7 +2013,7 @@ bool VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsDev
 	pipelineInfo.pViewportState = &viewportState;
 	pipelineInfo.pRasterizationState = &rasterizerInfo;
 	pipelineInfo.pMultisampleState = &multisampleState;
-    pipelineInfo.pDepthStencilState = &depthStencilStateInfo;
+    pipelineInfo.pDepthStencilState = nullptr; //&depthStencilStateInfo;
 	pipelineInfo.pColorBlendState = &colorBlending;
     pipelineInfo.pDynamicState = &dynamicState;
     pipelineInfo.layout = m_pipelineLayout;
