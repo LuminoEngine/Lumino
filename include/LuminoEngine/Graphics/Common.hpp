@@ -287,7 +287,7 @@ struct ShaderUniformTypeDesc
 	int elements;
 
 	size_t offset;
-	size_t size;
+	//size_t size;
 	size_t arrayStride;
 	size_t matrixStride;
 

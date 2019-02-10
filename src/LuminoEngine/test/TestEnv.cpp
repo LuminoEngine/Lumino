@@ -6,12 +6,12 @@ String TestEnv::LuminoCLI;
 
 void TestEnv::setup()
 {
-	EngineFeature feature = EngineFeature::Experimental;//EngineFeature::Public;//
+	EngineFeature feature = EngineFeature::Public;//EngineFeature::Experimental;//
 
 	GlobalLogger::addStdErrAdapter();
 	EngineSettings::setMainWindowSize(160, 120);
 	EngineSettings::setMainBackBufferSize(160, 120);
-	EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);//GraphicsAPI::Vulkan);//
+	EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
     EngineSettings::setEngineFeatures(feature);
     detail::EngineDomain::engineManager()->init();
 

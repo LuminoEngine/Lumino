@@ -1874,7 +1874,7 @@ void GLShaderPass::buildUniforms()
 			}
 
 			desc.offset = offsets[iMember];
-			desc.size = dataSize;
+			//desc.size = dataSize;
 			desc.arrayStride = arrayStrides[iMember];
 			desc.matrixStride = matrixStrides[iMember];
 

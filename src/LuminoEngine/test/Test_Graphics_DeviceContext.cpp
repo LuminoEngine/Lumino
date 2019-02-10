@@ -1,6 +1,6 @@
 ﻿#include "Common.hpp"
 
-#if 0
+#if 1
 
 //==============================================================================
 // IGraphicsDeviceContext 周りのテスト。
@@ -122,7 +122,7 @@ TEST_F(Test_Graphics_DeviceContext, IndexBuffer)
 TEST_F(Test_Graphics_DeviceContext, ConstantBuffer)
 {
     auto shader1 = Shader::create(LN_ASSETFILE("Graphics/SimpleConstantBuffer.lcfx"));
-    shader1->findParameter("g_color")->setVector(Vector4(1, 0, 0, 1));
+    shader1->findParameter("_Color")->setVector(Vector4(1, 0, 0, 1));
 
     Vector3 v1[] = {
         { 0, 0.5, 0 },

@@ -3507,7 +3507,6 @@ bool VulkanShaderPass::init(VulkanDeviceContext* context, const ShaderPassCreate
 		*/
 	}
 
-    // TODO: 同名バッファの結合処理
     if (createInfo.vertexShaderRefrection)
     {
         for (auto& info : createInfo.vertexShaderRefrection->buffers)
@@ -3686,6 +3685,8 @@ Result VulkanShaderPass::addUniformBufferIfNeeded(const ShaderUniformBufferInfo&
         }
         m_uniformBuffers.push_back(buf);
     }
+
+    return true;
 }
 
 //=============================================================================
@@ -3702,6 +3703,10 @@ VulkanShaderUniformBuffer::~VulkanShaderUniformBuffer()
 Result VulkanShaderUniformBuffer::init(VulkanDeviceContext* deviceContext, const ShaderUniformBufferInfo& info)
 {
     m_name = info.name;
+    if (m_name == "$Global") {
+        m_name = "_Global";
+    }
+
 	m_data.resize(info.size);
 
     for (auto& member : info.members)
@@ -3751,9 +3756,22 @@ VulkanShaderUniform::~VulkanShaderUniform()
 Result VulkanShaderUniform::init(const ShaderUniformInfo& info)
 {
     m_name = info.name;
+    m_desc.type2 = (ShaderUniformType)info.type;
+    m_desc.rows = info.matrixRows;
+    m_desc.columns = info.matrixColumns;
+    m_desc.elements = info.arrayElements;
 
+    if (m_desc.columns == 0) { // OpenGL Dirver の動作に合わせる
+        m_desc.columns = info.vectorElements * sizeof(float);
+    }
 
-    LN_NOTIMPLEMENTED();
+    m_desc.offset = info.offset;
+    //m_desc.size = 0;
+    if (info.arrayElements > 0) {
+        m_desc.arrayStride = info.elementSize();
+    }
+    m_desc.matrixStride = info.matrixColumns * sizeof(float);
+
     return true;
 }
 

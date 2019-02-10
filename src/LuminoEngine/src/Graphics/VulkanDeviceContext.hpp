@@ -366,7 +366,7 @@ public:
 
 private:
 	VulkanDeviceContext* m_deviceContext;
-    VkPipelineLayout m_pipelineLayout;
+    VkPipelineLayout m_pipelineLayout = 0;
     VkPipeline m_pipeline;	// 管理は Cache に任せるので、このクラスの中で Destroy しない
 };
 
@@ -774,7 +774,7 @@ private:
 	ShaderVertexInputAttributeTable m_inputAttributeTable;
     std::vector<Ref<VulkanShaderUniformBuffer>> m_uniformBuffers;
 
-	VkDescriptorSetLayout m_descriptorSetLayout;
+	VkDescriptorSetLayout m_descriptorSetLayout = 0;
 
     Ref<UnifiedShaderRefrectionInfo> m_vertexShaderRefrection;
     Ref<UnifiedShaderRefrectionInfo> m_pixelShaderRefrection;
