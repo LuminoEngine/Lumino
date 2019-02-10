@@ -43,48 +43,48 @@ public:
 
 	static void convertVariableTypeGLToLN(
 		const char* name, GLenum gl_type, GLsizei gl_var_size,
-		ShaderRefrectionParameterType* outType, int* outRows, int* outColumns, int* outElements)
+        ShaderUniformType* outType, int* outRows, int* outColumns, int* outElements)
 	{
 		*outElements = 0;
 
 #define SET_LNDESC( c_, t_, row_, col_ ) { *outType = (t_); *outRows = (row_); *outColumns = (col_); }
 		switch (gl_type)
 		{
-			case GL_FLOAT:      SET_LNDESC(LN_SVC_SCALAR, ShaderRefrectionParameterType::Float, 1, 1); break;
-			case GL_FLOAT_VEC2: SET_LNDESC(LN_SVC_VECTOR, ShaderRefrectionParameterType::Vector, 1, 2); break;
-			case GL_FLOAT_VEC3: SET_LNDESC(LN_SVC_VECTOR, ShaderRefrectionParameterType::Vector, 1, 3); break;
-			case GL_FLOAT_VEC4: SET_LNDESC(LN_SVC_VECTOR, ShaderRefrectionParameterType::Vector, 1, 4); break;
+			case GL_FLOAT:      SET_LNDESC(LN_SVC_SCALAR, ShaderUniformType_Float, 1, 1); break;
+			case GL_FLOAT_VEC2: SET_LNDESC(LN_SVC_VECTOR, ShaderUniformType_Vector, 1, 2); break;
+			case GL_FLOAT_VEC3: SET_LNDESC(LN_SVC_VECTOR, ShaderUniformType_Vector, 1, 3); break;
+			case GL_FLOAT_VEC4: SET_LNDESC(LN_SVC_VECTOR, ShaderUniformType_Vector, 1, 4); break;
 
-			case GL_INT:        SET_LNDESC(LN_SVC_SCALAR, ShaderRefrectionParameterType::Int, 1, 1); break;
-			//case GL_INT_VEC2:   SET_LNDESC(LN_SVC_VECTOR, ShaderRefrectionParameterType::IntVector, 1, 2); break;
-			//case GL_INT_VEC3:   SET_LNDESC(LN_SVC_VECTOR, ShaderRefrectionParameterType::IntVector, 1, 3); break;
-			//case GL_INT_VEC4:   SET_LNDESC(LN_SVC_VECTOR, ShaderRefrectionParameterType::IntVector, 1, 4); break;
+			case GL_INT:        SET_LNDESC(LN_SVC_SCALAR, ShaderUniformType_Int, 1, 1); break;
+			//case GL_INT_VEC2:   SET_LNDESC(LN_SVC_VECTOR, ShaderUniformType_IntVector, 1, 2); break;
+			//case GL_INT_VEC3:   SET_LNDESC(LN_SVC_VECTOR, ShaderUniformType_IntVector, 1, 3); break;
+			//case GL_INT_VEC4:   SET_LNDESC(LN_SVC_VECTOR, ShaderUniformType_IntVector, 1, 4); break;
 
-			case GL_UNSIGNED_INT:	SET_LNDESC(LN_SVC_SCALAR, ShaderRefrectionParameterType::Int, 1, 1); break;
+			case GL_UNSIGNED_INT:	SET_LNDESC(LN_SVC_SCALAR, ShaderUniformType_Int, 1, 1); break;
 
-			case GL_BOOL:        SET_LNDESC(LN_SVC_SCALAR, ShaderRefrectionParameterType::Bool, 1, 1); break;
-			//case GL_BOOL_VEC2:   SET_LNDESC(LN_SVC_VECTOR, ShaderRefrectionParameterType::BoolVector, 1, 2); break;
-			//case GL_BOOL_VEC3:   SET_LNDESC(LN_SVC_VECTOR, ShaderRefrectionParameterType::BoolVector, 1, 3); break;
-			//case GL_BOOL_VEC4:   SET_LNDESC(LN_SVC_VECTOR, ShaderRefrectionParameterType::BoolVector, 1, 4); break;
+			case GL_BOOL:        SET_LNDESC(LN_SVC_SCALAR, ShaderUniformType_Bool, 1, 1); break;
+			//case GL_BOOL_VEC2:   SET_LNDESC(LN_SVC_VECTOR, ShaderUniformType_BoolVector, 1, 2); break;
+			//case GL_BOOL_VEC3:   SET_LNDESC(LN_SVC_VECTOR, ShaderUniformType_BoolVector, 1, 3); break;
+			//case GL_BOOL_VEC4:   SET_LNDESC(LN_SVC_VECTOR, ShaderUniformType_BoolVector, 1, 4); break;
 
-			case GL_FLOAT_MAT2:     SET_LNDESC(LN_SVC_MATRIX, ShaderRefrectionParameterType::Matrix, 2, 2); break;
-			case GL_FLOAT_MAT3:     SET_LNDESC(LN_SVC_MATRIX, ShaderRefrectionParameterType::Matrix, 3, 3); break;
-			case GL_FLOAT_MAT4:     SET_LNDESC(LN_SVC_MATRIX, ShaderRefrectionParameterType::Matrix, 4, 4); break;
+			case GL_FLOAT_MAT2:     SET_LNDESC(LN_SVC_MATRIX, ShaderUniformType_Matrix, 2, 2); break;
+			case GL_FLOAT_MAT3:     SET_LNDESC(LN_SVC_MATRIX, ShaderUniformType_Matrix, 3, 3); break;
+			case GL_FLOAT_MAT4:     SET_LNDESC(LN_SVC_MATRIX, ShaderUniformType_Matrix, 4, 4); break;
 
 			// es で使えない
-			//case GL_SAMPLER_1D:         SET_LNDESC(LN_SVC_SAMPLER, ShaderRefrectionParameterType::Texture, 1, 1); break;
+			//case GL_SAMPLER_1D:         SET_LNDESC(LN_SVC_SAMPLER, ShaderUniformType_Texture, 1, 1); break;
 
-			case GL_SAMPLER_2D:         SET_LNDESC(LN_SVC_SAMPLER, ShaderRefrectionParameterType::Texture, 1, 1); break;
-			case GL_SAMPLER_CUBE:       SET_LNDESC(LN_SVC_SAMPLER, ShaderRefrectionParameterType::Texture, 1, 1); break;
-			case GL_SAMPLER_3D:         SET_LNDESC(LN_SVC_SAMPLER, ShaderRefrectionParameterType::Texture, 1, 1); break;
+			case GL_SAMPLER_2D:         SET_LNDESC(LN_SVC_SAMPLER, ShaderUniformType_Texture, 1, 1); break;
+			case GL_SAMPLER_CUBE:       SET_LNDESC(LN_SVC_SAMPLER, ShaderUniformType_Texture, 1, 1); break;
+			case GL_SAMPLER_3D:         SET_LNDESC(LN_SVC_SAMPLER, ShaderUniformType_Texture, 1, 1); break;
 
 			//#if !defined(LNOTE_GLES)
-			case GL_FLOAT_MAT2x3:   SET_LNDESC(LN_SVC_MATRIX, ShaderRefrectionParameterType::Matrix, 3, 2); break;
-			case GL_FLOAT_MAT2x4:   SET_LNDESC(LN_SVC_MATRIX, ShaderRefrectionParameterType::Matrix, 4, 2); break;
-			case GL_FLOAT_MAT3x2:   SET_LNDESC(LN_SVC_MATRIX, ShaderRefrectionParameterType::Matrix, 2, 3); break;
-			case GL_FLOAT_MAT3x4:   SET_LNDESC(LN_SVC_MATRIX, ShaderRefrectionParameterType::Matrix, 4, 3); break;
-			case GL_FLOAT_MAT4x2:   SET_LNDESC(LN_SVC_MATRIX, ShaderRefrectionParameterType::Matrix, 2, 4); break;
-			case GL_FLOAT_MAT4x3:   SET_LNDESC(LN_SVC_MATRIX, ShaderRefrectionParameterType::Matrix, 3, 4); break;
+			case GL_FLOAT_MAT2x3:   SET_LNDESC(LN_SVC_MATRIX, ShaderUniformType_Matrix, 3, 2); break;
+			case GL_FLOAT_MAT2x4:   SET_LNDESC(LN_SVC_MATRIX, ShaderUniformType_Matrix, 4, 2); break;
+			case GL_FLOAT_MAT3x2:   SET_LNDESC(LN_SVC_MATRIX, ShaderUniformType_Matrix, 2, 3); break;
+			case GL_FLOAT_MAT3x4:   SET_LNDESC(LN_SVC_MATRIX, ShaderUniformType_Matrix, 4, 3); break;
+			case GL_FLOAT_MAT4x2:   SET_LNDESC(LN_SVC_MATRIX, ShaderUniformType_Matrix, 2, 4); break;
+			case GL_FLOAT_MAT4x3:   SET_LNDESC(LN_SVC_MATRIX, ShaderUniformType_Matrix, 3, 4); break;
 
 			//case GL_FLOAT:      SET_LNDESC( LN_SVC_SCALAR, LN_SVT_FLOAT, 1, 1 ); break;
 			//case GL_FLOAT_VEC2: SET_LNDESC( LN_SVC_VECTOR, LN_SVT_FLOAT, 1, 2 ); break;
@@ -93,11 +93,11 @@ public:
 
 
 			// es で使えない
-			//case GL_SAMPLER_1D_SHADOW:  SET_LNDESC(LN_SVC_SAMPLER, ShaderRefrectionParameterType::Unknown, 1, 1); break;
-			case GL_SAMPLER_2D_SHADOW:  SET_LNDESC(LN_SVC_SAMPLER, ShaderRefrectionParameterType::Unknown, 1, 1); break;
+			//case GL_SAMPLER_1D_SHADOW:  SET_LNDESC(LN_SVC_SAMPLER, ShaderUniformType_Unknown, 1, 1); break;
+			case GL_SAMPLER_2D_SHADOW:  SET_LNDESC(LN_SVC_SAMPLER, ShaderUniformType_Unknown, 1, 1); break;
 				//#endif
 			default:
-				SET_LNDESC(LN_SVC_SAMPLER, ShaderRefrectionParameterType::Unknown, 0, 0);
+				SET_LNDESC(LN_SVC_SAMPLER, ShaderUniformType_Unknown, 0, 0);
 				break;
 		}
 
@@ -1784,12 +1784,12 @@ void GLShaderPass::buildUniforms()
 		ShaderUniformTypeDesc desc;
 		OpenGLHelper::convertVariableTypeGLToLN(
 			name, var_type, var_size,
-			&desc.type, &desc.rows, &desc.columns, &desc.elements);
+			&desc.type2, &desc.rows, &desc.columns, &desc.elements);
 
 		auto uniform = makeRef<GLShaderUniform>(desc, name, loc);
 		m_uniforms.add(uniform);
 
-		if (desc.type == ShaderRefrectionParameterType::Texture)
+		if (desc.type2 == ShaderUniformType_Texture)
 		{
 			m_samplerBuffer->addGlslSamplerUniform(name, loc);
 		}
@@ -1863,7 +1863,7 @@ void GLShaderPass::buildUniforms()
 			ShaderUniformTypeDesc desc;
 			OpenGLHelper::convertVariableTypeGLToLN(
 				name, type, size,
-				&desc.type, &desc.rows, &desc.columns, &desc.elements);
+				&desc.type2, &desc.rows, &desc.columns, &desc.elements);
 
 			size_t dataSize;
 			if (iMember < blockMemberCount - 1) {
@@ -2004,101 +2004,109 @@ void GLShaderUniform::setUniformValue(OpenGLDeviceContext* context, const void* 
 	BinaryWriter* tempWriter = context->uniformTempBufferWriter();
 	tempWriter->seek(0, SeekOrigin::Begin);
 
-	switch (m_desc.type)
-	{
-	case ShaderVariableType::Bool:
-		GL_CHECK(glUniform1i(m_location, *static_cast<const uint8_t*>(data)));
-		break;
-	case ShaderVariableType::BoolArray:
-	{
-		const uint8_t* begin = static_cast<const uint8_t*>(data);
-		const uint8_t* end = begin + m_desc.elements;
-		std::for_each(begin, end, [&tempWriter](bool v) { GLint i = (v) ? 1 : 0; tempWriter->write(&i, sizeof(GLint)); });
-		GL_CHECK(glUniform1iv(m_location, m_desc.elements, (const GLint*)tempBuffer->data()));
-		break;
-	}
-	case ShaderVariableType::Int:
-		GL_CHECK(glUniform1i(m_location, *static_cast<const int32_t*>(data)));
-		break;
-	case ShaderVariableType::Float:
-		GL_CHECK(glUniform1f(m_location, *static_cast<const float*>(data)));
-		break;
-	case ShaderVariableType::Vector:
-	{
-		const Vector4* vec = static_cast<const Vector4*>(data);
-		if (m_desc.columns == 2) {
-			GL_CHECK(glUniform2f(m_location, vec->x, vec->y));
-		}
-		else if (m_desc.columns == 3) {
-			GL_CHECK(glUniform3f(m_location, vec->x, vec->y, vec->z));
-		}
-		else if (m_desc.columns == 4) {
-			GL_CHECK(glUniform4f(m_location, vec->x, vec->y, vec->z, vec->w));
-		}
-		else {
-			LN_UNREACHABLE();
-		}
-		break;
-	}
-	case ShaderVariableType::VectorArray:
-	{
-		const Vector4* begin = static_cast<const Vector4*>(data);
-		const Vector4* end = begin + m_desc.elements;
 
-		if (m_desc.columns == 2)
-		{
-			std::for_each(begin, end, [&tempWriter](const Vector4& v) { tempWriter->write(&v, sizeof(float) * 2); });
-			GL_CHECK(glUniform2fv(m_location, m_desc.elements, (const GLfloat*)tempBuffer->data()));
-		}
-		else if (m_desc.columns == 3)
-		{
-			std::for_each(begin, end, [&tempWriter](const Vector4& v) { tempWriter->write(&v, sizeof(float) * 3); });
-			GL_CHECK(glUniform3fv(m_location, m_desc.elements, (const GLfloat*)tempBuffer->data()));
-		}
-		else if (m_desc.columns == 4)
-		{
-			GL_CHECK(glUniform4fv(m_location, m_desc.elements, (const GLfloat*)begin));
-		}
-		else
-		{
-			LN_UNREACHABLE();
-		}
-		break;
-	}
-	case ShaderVariableType::Matrix:
-	{
-		GL_CHECK(glUniformMatrix4fv(m_location, 1, GL_FALSE, static_cast<const GLfloat*>(data)));
-		break;
-	}
-	case ShaderVariableType::MatrixArray:
-		GL_CHECK(glUniformMatrix4fv(m_location, m_desc.elements, GL_FALSE, static_cast<const GLfloat*>(data)));
-		break;
-	case ShaderVariableType::Texture:
-		LN_NOTIMPLEMENTED();
-		//// textureStageIndex のテクスチャステージにバインド
-		//glActiveTexture(GL_TEXTURE0 + textureStageIndex);
-		//if (LN_ENSURE_GLERROR()) return;
+    switch (m_desc.type2)
+    {
+    case ShaderUniformType_Bool:
+        if (!m_desc.isArray()) {
+            GL_CHECK(glUniform1i(m_location, *static_cast<const uint8_t*>(data)));
+        }
+        else {
+            const uint8_t* begin = static_cast<const uint8_t*>(data);
+            const uint8_t* end = begin + m_desc.elements;
+            std::for_each(begin, end, [&tempWriter](bool v) { GLint i = (v) ? 1 : 0; tempWriter->write(&i, sizeof(GLint)); });
+            GL_CHECK(glUniform1iv(m_location, m_desc.elements, (const GLint*)tempBuffer->data()));
+        }
+        break;
+    case ShaderUniformType_Int:
+        if (!m_desc.isArray()) {
+            GL_CHECK(glUniform1i(m_location, *static_cast<const int32_t*>(data)));
+        }
+        else {
+            LN_NOTIMPLEMENTED();
+        }
+        break;
+    case ShaderUniformType_Float:
+        if (!m_desc.isArray()) {
+            GL_CHECK(glUniform1f(m_location, *static_cast<const float*>(data)));
+        }
+        else {
+            LN_NOTIMPLEMENTED();
+        }
+        break;
+    case ShaderUniformType_Vector:
+        if (!m_desc.isArray()) {
+            const Vector4* vec = static_cast<const Vector4*>(data);
+            if (m_desc.columns == 2) {
+                GL_CHECK(glUniform2f(m_location, vec->x, vec->y));
+            }
+            else if (m_desc.columns == 3) {
+                GL_CHECK(glUniform3f(m_location, vec->x, vec->y, vec->z));
+            }
+            else if (m_desc.columns == 4) {
+                GL_CHECK(glUniform4f(m_location, vec->x, vec->y, vec->z, vec->w));
+            }
+            else {
+                LN_UNREACHABLE();
+            }
+        }
+        else {
+            const Vector4* begin = static_cast<const Vector4*>(data);
+            const Vector4* end = begin + m_desc.elements;
 
-		//if (m_value.getDeviceTexture() != nullptr)
-		//	glBindTexture(GL_TEXTURE_2D, static_cast<GLTextureBase*>(m_value.getDeviceTexture())->getGLTexture());
-		//else
-		//	glBindTexture(GL_TEXTURE_2D, 0);
-		//if (LN_ENSURE_GLERROR()) return;
+            if (m_desc.columns == 2)
+            {
+                std::for_each(begin, end, [&tempWriter](const Vector4& v) { tempWriter->write(&v, sizeof(float) * 2); });
+                GL_CHECK(glUniform2fv(m_location, m_desc.elements, (const GLfloat*)tempBuffer->data()));
+            }
+            else if (m_desc.columns == 3)
+            {
+                std::for_each(begin, end, [&tempWriter](const Vector4& v) { tempWriter->write(&v, sizeof(float) * 3); });
+                GL_CHECK(glUniform3fv(m_location, m_desc.elements, (const GLfloat*)tempBuffer->data()));
+            }
+            else if (m_desc.columns == 4)
+            {
+                GL_CHECK(glUniform4fv(m_location, m_desc.elements, (const GLfloat*)begin));
+            }
+            else
+            {
+                LN_UNREACHABLE();
+            }
+        }
+        break;
+    case ShaderUniformType_Matrix:
+        if (!m_desc.isArray()) {
+            GL_CHECK(glUniformMatrix4fv(m_location, 1, GL_FALSE, static_cast<const GLfloat*>(data)));
+        }
+        else {
+            GL_CHECK(glUniformMatrix4fv(m_location, m_desc.elements, GL_FALSE, static_cast<const GLfloat*>(data)));
+        }
+    case ShaderUniformType_Texture:
+        LN_NOTIMPLEMENTED();
+        //// textureStageIndex のテクスチャステージにバインド
+        //glActiveTexture(GL_TEXTURE0 + textureStageIndex);
+        //if (LN_ENSURE_GLERROR()) return;
+
+        //if (m_value.getDeviceTexture() != nullptr)
+        //	glBindTexture(GL_TEXTURE_2D, static_cast<GLTextureBase*>(m_value.getDeviceTexture())->getGLTexture());
+        //else
+        //	glBindTexture(GL_TEXTURE_2D, 0);
+        //if (LN_ENSURE_GLERROR()) return;
 
 
-		////LNGL::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, mSamplerState->MinFilter);
-		////LNGL::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mSamplerState->MagFilter);
-		////LNGL::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, mSamplerState->AddressU);
-		////LNGL::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, mSamplerState->AddressV);
+        ////LNGL::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, mSamplerState->MinFilter);
+        ////LNGL::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mSamplerState->MagFilter);
+        ////LNGL::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, mSamplerState->AddressU);
+        ////LNGL::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, mSamplerState->AddressV);
 
-		//// テクスチャステージ番号をセット
-		//glUniform1i(m_location, textureStageIndex);
-		//if (LN_ENSURE_GLERROR()) return;
-		break;
-	default:
-		LN_UNREACHABLE();
-		break;
-	}
+        //// テクスチャステージ番号をセット
+        //glUniform1i(m_location, textureStageIndex);
+        //if (LN_ENSURE_GLERROR()) return;
+        break;
+    default:
+        LN_UNREACHABLE();
+        break;
+    }
 }
 
 

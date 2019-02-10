@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "../Shader/Common.hpp"
 
 namespace ln {
 
@@ -280,7 +281,7 @@ using ShaderRefrectionParameterType = ShaderVariableType;
 // rows, columns はデータレイアウトとしての領域サイズ。
 struct ShaderUniformTypeDesc
 {
-	ShaderRefrectionParameterType type;
+    ShaderUniformType type2;
 	int rows;
 	int columns;
 	int elements;
@@ -293,11 +294,13 @@ struct ShaderUniformTypeDesc
 	static bool equals(const ShaderUniformTypeDesc& a, const ShaderUniformTypeDesc& b)
 	{
 		return
-			a.type == b.type &&
+			a.type2 == b.type2 &&
 			a.rows == b.rows &&
 			a.columns == b.columns &&
 			a.elements == b.elements;
 	}
+
+    bool isArray() const { return elements > 0; }
 };
 
 } // namespace detail

@@ -3678,7 +3678,7 @@ VkDescriptorSet VulkanShaderPass::submitDescriptorSet(VulkanDescriptorManager* d
 
 Result VulkanShaderPass::addUniformBufferIfNeeded(const ShaderUniformBufferInfo& info)
 {
-    auto itr = std::find_if(m_uniformBuffers.begin(), m_uniformBuffers.end(), [&](const ShaderUniformBufferInfo& x) { return x.name == info.name; });
+    auto itr = std::find_if(m_uniformBuffers.begin(), m_uniformBuffers.end(), [&](const Ref<VulkanShaderUniformBuffer>& x) { return x->name() == info.name; });
     if (itr == m_uniformBuffers.end()) {
         auto buf = makeRef<VulkanShaderUniformBuffer>();
         if (!buf->init(m_deviceContext, info)) {
