@@ -33,6 +33,7 @@ namespace LuminoBuild
 
         public static string BuildToolsDir { get; set; }
 
+        public static bool EmscriptenFound { get; set; }
         public static string EmsdkDir { get; set; }
         public static string EmscriptenDir { get; set; }
         public static string emcmake { get; set; }
@@ -91,14 +92,7 @@ namespace LuminoBuild
 
                 AndroidNdkRootDir = Path.Combine(AndroidSdkRootDir, "ndk-bundle");
                 AndroidCMakeToolchain = Path.Combine(AndroidNdkRootDir, @"build\cmake\android.toolchain.cmake");
-
-                AndroidStudioFound = true;
             }
-            else
-            {
-                AndroidStudioFound = false;
-            }
-
 
             InstallTools(repoRootDir);
         }
@@ -128,6 +122,8 @@ namespace LuminoBuild
                         Path.Combine(repoRootDir, "external", "emscripten", "Emscripten.cmake"),
                         Path.Combine(EmscriptenDir, "cmake", "Modules", "Platform"));
                 }
+
+                EmscriptenFound = true;
             }
 
             // Install Android SDK
@@ -179,6 +175,8 @@ namespace LuminoBuild
                     Utils.ExtractZipFile(zip, tmpDir);
                     Directory.Move(Path.Combine(tmpDir, "android-ndk-r18b"), ndkDir);
                 }
+
+                AndroidStudioFound = true;
             }
         }
     }

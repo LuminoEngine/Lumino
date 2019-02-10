@@ -18,7 +18,11 @@ namespace LuminoBuild.Rules
             {
                 builder.DoTask("MakeVSProjects");
                 builder.DoTask("BuildEngine_MSVC");
-                builder.DoTask("BuildEngine_Emscripten");
+
+                if (BuildEnvironment.EmscriptenFound)
+                {
+                    builder.DoTask("BuildEngine_Emscripten");
+                }
             }
             if (Utils.IsMac)
             {
@@ -34,6 +38,7 @@ namespace LuminoBuild.Rules
             builder.DoTask("BuildDocuments");
 
             builder.DoTask("MakeReleasePackage");
+            builder.DoTask("CopyEngineLibsToRepoRoot");
         }
     }
 }
