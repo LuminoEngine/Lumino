@@ -38,6 +38,7 @@
 #include "LuminoCore/IO/StringWriter.hpp"
 #include "LuminoCore/IO/TextReader.hpp"
 #include "LuminoCore/IO/TextWriter.hpp"
+#include "LuminoCore/IO/Console.hpp"
 
 #include "LuminoCore/Math/Common.hpp"
 #include "LuminoCore/Math/AttitudeTransform.hpp"

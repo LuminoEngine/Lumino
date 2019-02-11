@@ -57,6 +57,10 @@ endif()
 
 #------------------------------------------------------------------------------
 
+message("LN_TARGET_ARCH:${LN_TARGET_ARCH}")
+
+#------------------------------------------------------------------------------
+
 set(CMAKE_DEBUG_POSTFIX "d")
 
 include(src/LuminoBuildCommon.cmake)
