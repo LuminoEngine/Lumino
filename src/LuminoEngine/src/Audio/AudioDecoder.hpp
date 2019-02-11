@@ -22,14 +22,21 @@ struct AudioDataInfo
 	int channelCount;
 	int sampleRate;
 	double totalSeconds;
-	size_t frameSize; // samples の、1フレームの要素数 (channelCount * byteParSample)
-	size_t totalSamples;	// 全サンプル数。frameCount * channelCount
+	uint32_t frameSize; // samples の、1フレームの要素数 (channelCount * byteParSample)
+    uint32_t totalSamples;	// 全サンプル数。frameCount * channelCount
 	//std::vector<float> samples;
 	PCMFormat sourceFormat;
-	size_t byteParSample;
+    uint32_t byteParSample;
+
+    uint32_t totalFrameCount() const { return totalSamples / channelCount; }
 };
 
 // TODO: できるだけキャッシュして共有して使いたい。シークは read でやる。できるだけmutable な状態を持たない。
+//
+// リサンプリングはされないので注意。
+// 例えば以下のようなフレーム数となる。
+// - 3s,22050Hz=66150
+// - 3s,32000Hz=96000
 class AudioDecoder
 	: public RefObject
 {
@@ -37,7 +44,8 @@ public:
 	virtual ~AudioDecoder() = default;
 	virtual const AudioDataInfo& audioDataInfo() const = 0;
 	virtual void seekToFrame(size_t frameNumber) = 0;
-	virtual uint32_t read2(float* buffer, uint32_t requestFrames) = 0;	// チャンネル数2の時に frames=1 で呼び出すと、2サンプル取り出す。ret は読んだフレーム数
+    // チャンネル数2の時に frames=1 で呼び出すと、2サンプル取り出す。ret は読んだフレーム数
+	virtual uint32_t read2(float* buffer, uint32_t requestFrames) = 0;
 	virtual void reset() = 0;
 
 	static void convertToFloat32(float* dst, const void* src, const size_t frameLength, PCMFormat format);
@@ -52,7 +60,7 @@ class WaveDecoder
 {
 public:
 	virtual ~WaveDecoder() = default;
-	void init(Stream* stream, DiagnosticsManager* diag);
+    bool init(Stream* stream, DiagnosticsManager* diag);
 	virtual const AudioDataInfo& audioDataInfo() const override;
 	//virtual void seekToSample(uint32_t sampleNumber) override;
     virtual void seekToFrame(size_t frameNumber) override;

@@ -102,7 +102,7 @@ public:
     void fillZero(size_t start, size_t length);
 	void mergeToChannelBuffers(float* buffer, size_t length);
 	void separateFrom(const float* buffer, size_t length, int channelCount);
-	void sumFrom(const AudioBus* bus);
+	void sumFrom(const AudioBus* sourceBus);
 
     void copyFrom(AudioBus* source);
 	void copyWithGainFrom(const AudioBus& source_bus, float gain);
@@ -116,6 +116,10 @@ public:
 
 
 private:
+    void sumFromByUpMixing(const AudioBus* sourceBus);
+    void sumFromByDownMixing(const AudioBus* sourceBus);
+    void discreteSumFrom(const AudioBus* sourceBus);
+
 	List<Ref<AudioChannel>> m_channels;
 	size_t m_validLength;
 	int m_sampleRate;

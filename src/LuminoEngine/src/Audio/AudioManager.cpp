@@ -82,9 +82,23 @@ Ref<AudioDecoder> AudioManager::createAudioDecoder(const StringRef & filePath)
     auto stream = m_assetManager->openFileStream(filePath);
 
 	// TODO: cache
-	auto decoder = makeRef<WaveDecoder>();
-    //auto decoder = makeRef<OggAudioDecoder>();
-	decoder->init(stream, diag);
+
+    Ref<AudioDecoder> decoder;
+    if (filePath.endsWith(u".wav", CaseSensitivity::CaseInsensitive)) {
+        auto d = makeRef<WaveDecoder>();
+        d->init(stream, diag);
+        decoder = d;
+    }
+    else if (filePath.endsWith(u".ogg", CaseSensitivity::CaseInsensitive)) {
+        auto d = makeRef<OggAudioDecoder>();
+        d->init(stream, diag);
+        decoder = d;
+    }
+    else {
+        LN_ERROR("Invalid file extentsion.");
+        return nullptr;
+    }
+
 	return decoder;
 }
 

@@ -352,26 +352,26 @@ void CoreAudioSourceNode::process()
 	//size_t bufferLength = //result->length();
 	unsigned numChannels = m_decoder->audioDataInfo().channelCount;
 
-    size_t bufferLength = 0;
+    size_t readFrames = 0;
     {
         if (loop()) {
             size_t requestLength = m_readFrames;
             float* buf = m_readBuffer.data();
             do
             {
-                bufferLength = m_decoder->read2(buf, requestLength);
-                if (bufferLength < requestLength) {    // EOF
+                readFrames = m_decoder->read2(buf, requestLength);
+                if (readFrames < requestLength) {    // EOF
                     m_decoder->seekToFrame(0);
                 }
-                requestLength -= bufferLength;
-                buf += bufferLength;
+                requestLength -= readFrames;
+                buf += readFrames;
             } while (requestLength > 0);
 
-            bufferLength = m_readFrames;
+            readFrames = m_readFrames;
         }
         else {
-            size_t bufferLength = m_decoder->read2(m_readBuffer.data(), m_readFrames);
-            if (bufferLength == 0) {    // EOF
+            readFrames = m_decoder->read2(m_readBuffer.data(), m_readFrames);
+            if (readFrames == 0) {    // EOF
                 result->setSilentAndZero();
                 return;
             }
@@ -382,7 +382,7 @@ void CoreAudioSourceNode::process()
 
 
 
-	size_t readSamples = bufferLength * numChannels;
+	size_t readSamples = readFrames * numChannels;
 
 
     //printf("bufferLength:%d , result->length():%d", bufferLength, result->length());
@@ -391,7 +391,7 @@ void CoreAudioSourceNode::process()
 
 	// 
 
-	unsigned endFrame = bufferLength;
+	unsigned endFrame = readFrames;
 
 	//if (m_virtualReadIndex >= endFrame)
 		m_virtualReadIndex = 0; // reset to start
@@ -401,8 +401,8 @@ void CoreAudioSourceNode::process()
 
 	double virtualReadIndex = m_virtualReadIndex;
 
-	double virtualDeltaFrames = bufferLength;	// Number of frames processed this time process().
-	double virtualEndFrame = bufferLength;
+	double virtualDeltaFrames = readFrames;	// Number of frames processed this time process().
+	double virtualEndFrame = readFrames;
 	// TODO: loop
 
 	if (Math::nearEqual(m_playbackRate, 1.0f))
@@ -441,7 +441,7 @@ void CoreAudioSourceNode::process()
 			// For linear interpolation we need the next sample-frame too.
 			unsigned readIndex2 = readIndex + 1;
 
-			if (readIndex2 >= bufferLength)
+			if (readIndex2 >= readFrames)
 			{
 #if 0           // TODO: loop() と書いてあるが、サンプル数が result->length() より小さいときのみという条件も入れておかないとプチノイズが乗る
 				if (loop()) {
@@ -456,7 +456,7 @@ void CoreAudioSourceNode::process()
 
 			// Final sanity check on buffer access.
 			// FIXME: as an optimization, try to get rid of this inner-loop check and put assertions and guards before the loop.
-			if (readIndex >= bufferLength || readIndex2 >= bufferLength)
+			if (readIndex >= readFrames || readIndex2 >= readFrames)
 				break;
 
 			// Linear interpolation.

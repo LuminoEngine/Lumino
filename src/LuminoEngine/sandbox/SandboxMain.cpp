@@ -203,33 +203,33 @@ int main(int argc, char** argv)
     //auto mesh3 = newObject<StaticMesh>(u"D:/Proj/TH-10/Assets/Graphics/test/sphere4.obj", 2);
     //mesh3->setVisible(false);
 
-    auto clip1 = VmdAnimationClip::create(u"D:/MMD/Materials/モーション/Love&Joy/love&joyお面無しver.vmd");
+    //auto clip1 = VmdAnimationClip::create(u"D:/MMD/Materials/モーション/Love&Joy/love&joyお面無しver.vmd");
 
-    auto smesh1 = SkinnedMesh::create(u"D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku.pmx");
-    //smesh1->setBlendMode(BlendMode::Alpha);
-    //smesh1->setEulerAngles(0, Math::PI, 0);
-    //smesh1->setShadingModel(ShadingModel::UnLighting);
+    //auto smesh1 = SkinnedMesh::create(u"D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku.pmx");
+    ////smesh1->setBlendMode(BlendMode::Alpha);
+    ////smesh1->setEulerAngles(0, Math::PI, 0);
+    ////smesh1->setShadingModel(ShadingModel::UnLighting);
 
-    smesh1->skinnedMeshComponent()->model()->animationController()->addClip(u"anim1", clip1);
-    smesh1->skinnedMeshComponent()->model()->animationController()->play(u"anim1");
+    //smesh1->skinnedMeshComponent()->model()->animationController()->addClip(u"anim1", clip1);
+    //smesh1->skinnedMeshComponent()->model()->animationController()->play(u"anim1");
 
 
     //auto sprite = UISprite::create(Assets::loadTexture(u"D:/MMD/Materials/モデル/Appearance Miku/A4.bmp"));
 
-    Engine::update();
-    Engine::update();
-    {
-        auto camera = newObject<Camera>();
-        camera->setPosition(0, 0, -20);
-        auto ofs = newObject<OffscreenWorldRenderView>();
-        auto rt1 = newObject<RenderTargetTexture>(640, 480, TextureFormat::RGBA32, false);
-        ofs->setRenderTarget(rt1);
-        ofs->setTargetWorld(Engine::mainWorld());
-        ofs->setCamera(camera);
-        ofs->render();
-        auto bitmap = rt1->readData();
-        bitmap->save(u"test1.png");
-    }
+    //Engine::update();
+    //Engine::update();
+    //{
+    //    auto camera = newObject<Camera>();
+    //    camera->setPosition(0, 0, -20);
+    //    auto ofs = newObject<OffscreenWorldRenderView>();
+    //    auto rt1 = newObject<RenderTargetTexture>(640, 480, TextureFormat::RGBA32, false);
+    //    ofs->setRenderTarget(rt1);
+    //    ofs->setTargetWorld(Engine::mainWorld());
+    //    ofs->setCamera(camera);
+    //    ofs->render();
+    //    auto bitmap = rt1->readData();
+    //    bitmap->save(u"test1.png");
+    //}
 
 
 #endif
@@ -345,6 +345,7 @@ int main(int argc, char** argv)
 
     //auto filedata = d.readAllSamples();
 #endif
+    //GameAudio::playBGM(u"D:/Music/momentum/02 - momentum.wav");
 
 
 
@@ -369,11 +370,17 @@ int main(int argc, char** argv)
 
 
 
-
     float time = 0;
     int frameCount = 0;
     while (Engine::update())
     {
+        if (Input::isTriggered(InputButtons::Submit)) {
+            GameAudio::playSE(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Audio/coin04_16bit_mono.wav");
+            //GameAudio::playSE(u"D:/Proj/Volkoff/Assets/Data/Sound/SE/coin04.wav");
+            //GameAudio::playSE(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Audio/sin_440_3s_48000_2ch.wav");
+            //GameAudio::playSE(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Audio/coin04.wav");
+        }
+
         //BlurLayer->play(0.7f, Vector2(0, 0.0), 1.05);
 
         //sprite->setPosition(0, track1->evaluate(time));
