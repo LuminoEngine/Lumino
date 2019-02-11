@@ -318,7 +318,7 @@ int main(int argc, char** argv)
     mesh1->staticMeshComponent()->setModel(meshModel);
 #endif
 
-#if 0
+#if 1
     //auto sound = newObject<Sound>(u"D:\\tmp\\4_Battle_win.wav");
     auto sound = newObject<Sound>(u"D:/Music/momentum/02 - momentum.wav");
     //auto sound = newObject<Sound>(u"D:/Proj/Volkoff/Assets/Data/Sound/BGM/monochrome.ogg");
@@ -386,7 +386,7 @@ int main(int argc, char** argv)
         //sprite->setPosition(0, track1->evaluate(time));
         //std::cout << track1->evaluate(time) << std::endl;
         time += 0.016;
-#if 0
+#if 1
         if (Mouse::isPressed(MouseButtons::Left))
         {
             float pitch = (Mouse::position().x / 640)  + 0.5;

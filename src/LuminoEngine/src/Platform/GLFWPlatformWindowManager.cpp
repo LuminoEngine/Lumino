@@ -254,6 +254,11 @@ void GLFWPlatformWindow::dispose()
 	glfwDestroyWindow(m_glfwWindow);
 }
 
+void GLFWPlatformWindow::setWindowTitle(const String& title)
+{
+    glfwSetWindowTitle(m_glfwWindow, title.toStdString().c_str());
+}
+
 void GLFWPlatformWindow::getSize(SizeI* size)
 {
 	glfwGetWindowSize(m_glfwWindow, &size->width, &size->height);

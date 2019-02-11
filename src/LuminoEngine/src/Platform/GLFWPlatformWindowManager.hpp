@@ -19,6 +19,7 @@ public:
 
 	void init(const WindowCreationSettings& settings);
 	virtual void dispose() override;
+    virtual void setWindowTitle(const String& title) override;
 	virtual void getSize(SizeI* size) override;
 	virtual void getFramebufferSize(int* width, int* height) override;
 	virtual PointI pointFromScreen(const PointI& screenPoint) override;

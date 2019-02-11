@@ -510,6 +510,9 @@ void EngineManager::presentFrame()
 	else {
 		m_fpsController.processForMeasure();
 	}
+
+
+    m_platformManager->mainWindow()->setWindowTitle(String::format(u"FPS:{0:F1}({1:F1})", m_fpsController.getFps(), m_fpsController.getCapacityFps()));
 }
 
 void EngineManager::resetFrameDelay()

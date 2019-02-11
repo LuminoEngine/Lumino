@@ -14,6 +14,7 @@ public:
 	virtual ~PlatformWindow() = default;
 	virtual void dispose() = 0;
 
+    virtual void setWindowTitle(const String& title) = 0;
 	virtual void getSize(SizeI* size) = 0;
 	virtual void getFramebufferSize(int* width, int* height) = 0;
 
