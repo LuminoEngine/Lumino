@@ -17,12 +17,16 @@ namespace LuminoBuild.Rules
             {
                 builder.DoTask("MakeVSProjects");
                 builder.DoTask("BuildEngine_MSVC");
-                builder.DoTask("BuildEngine_Emscripten");
             }
             if (Utils.IsMac)
             {
                 builder.DoTask("BuildEngine_macOS");
                 builder.DoTask("BuildEngine_iOS");
+            }
+
+            if (BuildEnvironment.EmscriptenFound)
+            {
+                builder.DoTask("BuildEngine_Emscripten");
             }
 
             if (BuildEnvironment.AndroidStudioFound)

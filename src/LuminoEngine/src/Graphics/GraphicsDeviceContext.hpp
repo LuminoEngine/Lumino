@@ -65,9 +65,9 @@ using ShaderVertexInputAttributeTable = std::vector<ShaderVertexInputAttribute>;
 struct ShaderPassCreateInfo
 {
     const byte_t* vsCode;
-    int vsCodeLen;
+    size_t vsCodeLen;
     const byte_t* psCode;
-    int psCodeLen;
+    size_t psCodeLen;
     const ShaderVertexInputAttributeTable* attributeTable;
     UnifiedShaderRefrectionInfo* vertexShaderRefrection;
     UnifiedShaderRefrectionInfo* pixelShaderRefrection;
