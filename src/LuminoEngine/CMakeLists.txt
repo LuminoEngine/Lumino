@@ -12,9 +12,11 @@ set(LN_ENGINE_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/../../include)
 set(LN_SOURCES_Base
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/Regex.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/Task.hpp
     src/Base/Internal.hpp
     src/Base/RefObjectCache.hpp
     src/Base/Regex.cpp
+    src/Base/Task.cpp
 )
 
 set(LN_SOURCES_Engine
@@ -131,12 +133,8 @@ set(LN_SOURCES_Audio
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/InternalSharedMutex.inc
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/Sound.hpp
     src/Audio/Internal.hpp
-    src/Audio/ALAudioDevice.cpp
-    src/Audio/ALAudioDevice.hpp
     src/Audio/AudioBus.cpp
     src/Audio/AudioContext.cpp
-    src/Audio/AudioDecoder.cpp
-    src/Audio/AudioDecoder.hpp
     src/Audio/AudioDevice.cpp
     src/Audio/AudioDevice.hpp
     src/Audio/AudioGainNode.cpp
@@ -153,20 +151,30 @@ set(LN_SOURCES_Audio
     src/Audio/ChromiumWebCore.hpp
     src/Audio/CoreAudioNode.cpp
     src/Audio/CoreAudioNode.hpp
-    src/Audio/DSoundAudioDevice.cpp
-    src/Audio/DSoundAudioDevice.hpp
     src/Audio/GameAudio.cpp
     src/Audio/GameAudioImpl.cpp
     src/Audio/GameAudioImpl.hpp
+    src/Audio/Sound.cpp
+    src/Audio/blink/VectorMath.cpp
+    src/Audio/blink/VectorMath.h
+)
+
+set(LN_SOURCES_Audio_Decoder
+    src/Audio/AudioDecoder.cpp
+    src/Audio/AudioDecoder.hpp
     src/Audio/Mp3AudioDecoder.cpp
     src/Audio/Mp3AudioDecoder.hpp
     src/Audio/OggAudioDecoder.cpp
     src/Audio/OggAudioDecoder.hpp
+)
+
+set(LN_SOURCES_Audio_Device
+    src/Audio/ALAudioDevice.cpp
+    src/Audio/ALAudioDevice.hpp
+    src/Audio/DSoundAudioDevice.cpp
+    src/Audio/DSoundAudioDevice.hpp
     src/Audio/SDLAudioDevice.cpp
     src/Audio/SDLAudioDevice.hpp
-    src/Audio/Sound.cpp
-    src/Audio/blink/VectorMath.cpp
-    src/Audio/blink/VectorMath.h
 )
 
 set(LN_SOURCES_Graphics
@@ -485,6 +493,8 @@ source_group("Input"     FILES ${LN_SOURCES_Input})
 source_group("Grammar"   FILES ${LN_SOURCES_Grammar})
 source_group("Animation" FILES ${LN_SOURCES_Animation})
 source_group("Audio"     FILES ${LN_SOURCES_Audio})
+source_group("Audio\\Decoder" FILES ${LN_SOURCES_Audio_Decoder})
+source_group("Audio\\Device" FILES ${LN_SOURCES_Audio_Device})
 source_group("Graphics"  FILES ${LN_SOURCES_Graphics})
 source_group("Shader"    FILES ${LN_SOURCES_Shader})
 source_group("Font"      FILES ${LN_SOURCES_Font})
@@ -498,6 +508,7 @@ source_group("Scene"     FILES ${LN_SOURCES_Scene})
 source_group("UI"        FILES ${LN_SOURCES_UI})
 source_group("Tilemap"   FILES ${LN_SOURCES_Tilemap})
 
+
 set(LN_SOURCES
     src/LuminoEngine.PCH.cpp
     src/LuminoEngine.PCH.h
@@ -509,6 +520,8 @@ set(LN_SOURCES
     ${LN_SOURCES_Animation}
     ${LN_SOURCES_Input}
 	${LN_SOURCES_Audio}
+	${LN_SOURCES_Audio_Decoder}
+	${LN_SOURCES_Audio_Device}
     ${LN_SOURCES_Graphics}
     ${LN_SOURCES_Shader}
     ${LN_SOURCES_Font}

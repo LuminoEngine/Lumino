@@ -12,7 +12,8 @@ TEST_F(Test_Base_ObjectCache, ObjectCounting)
 		TestObj(String n) : name(n) { }
 	};
 
-	detail::ObjectCache<String, TestObj> cache1(2);
+	detail::ObjectCache<String, TestObj> cache1;
+	cache1.init(2);
 
 	auto obj1 = makeRef<TestObj>(u"obj1");
 	auto obj2 = makeRef<TestObj>(u"obj2");
@@ -106,7 +107,6 @@ TEST_F(Test_Base_ObjectCache, ObjectCounting)
 	}
 }
 
-
 TEST_F(Test_Base_ObjectCache, MemoryCounting)
 {
 	class TestObj : public RefObject
@@ -116,7 +116,8 @@ TEST_F(Test_Base_ObjectCache, MemoryCounting)
 		TestObj(String n) : name(n) { }
 	};
 
-	detail::ObjectCache<String, TestObj> cache1(0, 1500);
+	detail::ObjectCache<String, TestObj> cache1;
+	cache1.init(0, 1500);
 
 	auto obj1 = makeRef<TestObj>(u"obj1");
 	auto obj2 = makeRef<TestObj>(u"obj2");
@@ -224,3 +225,40 @@ TEST_F(Test_Base_ObjectCache, MemoryCounting)
 	}
 }
 
+TEST_F(Test_Base_ObjectCache, GCObjects)
+{
+	class TestObj : public RefObject
+	{
+	public:
+		String name;
+		TestObj(String n) : name(n) { }
+	};
+
+	detail::ObjectCache<String, TestObj> cache1;
+	cache1.init(2);
+
+	auto obj1 = makeRef<TestObj>(u"obj1");
+	auto obj2 = makeRef<TestObj>(u"obj2");
+	cache1.registerObject(obj1->name, obj1);
+	cache1.registerObject(obj2->name, obj2);
+
+	// release していないので、すべてのオブジェクトは aliveList に入っている
+	{
+		ASSERT_EQ(obj1, cache1.findObject(u"obj1"));
+		ASSERT_EQ(obj2, cache1.findObject(u"obj2"));
+	}
+
+	// obj1 の参照を切って GC
+	{
+		obj1 = nullptr;
+		cache1.collectUnreferenceObjects();
+
+		auto aliveObjects = cache1.aliveObjects();
+		ASSERT_EQ(1, aliveObjects.size());
+		ASSERT_EQ(u"obj2", aliveObjects[0]->name);
+
+		auto freeObjects = cache1.freeObjects();
+		ASSERT_EQ(1, freeObjects.size());
+		ASSERT_EQ(u"obj1", freeObjects[0]->name);
+	}
+}

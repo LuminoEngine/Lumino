@@ -27,6 +27,9 @@ AudioManager::~AudioManager()
 void AudioManager::init(const Settings& settings)
 {
     m_assetManager = settings.assetManager;
+
+	m_decoderCache.init();
+
 	m_primaryContext = makeRef<AudioContext>();
 	m_primaryContext->init();
 
@@ -36,6 +39,7 @@ void AudioManager::init(const Settings& settings)
 #ifdef LN_AUDIO_THREAD_ENABLED
 	m_endRequested = false;
 	m_audioThread = std::make_unique<std::thread>(std::bind(&AudioManager::processThread, this));
+	m_loadingThread = std::make_unique<std::thread>(std::bind(&AudioManager::loadingThread, this));
 #endif
 
     m_gameAudio = makeRef<GameAudioImpl>(this);
@@ -50,7 +54,9 @@ void AudioManager::dispose()
 
 #ifdef LN_AUDIO_THREAD_ENABLED
 	m_endRequested = true;
-
+	if (m_loadingThread) {
+		m_loadingThread->join();
+	}
 	if (m_audioThread) {
 		m_audioThread->join();
 	}
@@ -74,32 +80,54 @@ void AudioManager::update(float elapsedSeconds)
 	}
 }
 
-Ref<AudioDecoder> AudioManager::createAudioDecoder(const StringRef & filePath)
+Ref<AudioDecoder> AudioManager::createAudioDecoder(const StringRef& filePath)
 {
 	// TODO: diag
 	auto diag = newObject<DiagnosticsManager>();
 
-    auto stream = m_assetManager->openFileStream(filePath);
+	auto path = Path(filePath).unify();
+	Ref<AudioDecoder> decoder;
+	{
+		ScopedReadLock lock(m_cacheMutex);
+		decoder = m_decoderCache.findObject(path);
+	}
 
-	// TODO: cache
+	if (decoder)
+	{
+		return decoder;
+	}
+	else
+	{
+		auto stream = m_assetManager->openFileStream(path);
 
-    Ref<AudioDecoder> decoder;
-    if (filePath.endsWith(u".wav", CaseSensitivity::CaseInsensitive)) {
-        auto d = makeRef<WaveDecoder>();
-        d->init(stream, diag);
-        decoder = d;
-    }
-    else if (filePath.endsWith(u".ogg", CaseSensitivity::CaseInsensitive)) {
-        auto d = makeRef<OggAudioDecoder>();
-        d->init(stream, diag);
-        decoder = d;
-    }
-    else {
-        LN_ERROR("Invalid file extentsion.");
-        return nullptr;
-    }
+		if (filePath.endsWith(u".wav", CaseSensitivity::CaseInsensitive)) {
+			auto d = makeRef<WaveDecoder>();
+			d->init(stream, diag);
+			decoder = d;
+		}
+		else if (filePath.endsWith(u".ogg", CaseSensitivity::CaseInsensitive)) {
+			auto d = makeRef<OggAudioDecoder>();
+			d->init(stream, diag);
+			decoder = d;
+		}
+		else {
+			LN_ERROR("Invalid file extentsion.");
+			return nullptr;
+		}
 
-	return decoder;
+		m_decoderCache.registerObject(path, decoder);
+
+		return decoder;
+	}
+}
+
+void AudioManager::releaseAudioDecoder(AudioDecoder* decoder)
+{
+	ScopedWriteLock lock(m_cacheMutex);
+
+	//if ()
+
+	m_decoderCache.releaseObject(decoder);
 }
 
 void AudioManager::processThread()
@@ -119,6 +147,23 @@ void AudioManager::processThread()
 	{
 		m_audioThreadException.reset(e.copy());
         LN_LOG_ERROR << m_audioThreadException->getMessage();
+	}
+}
+
+void AudioManager::loadingThread()
+{
+	try
+	{
+		while (!m_endRequested)
+		{
+
+			Thread::sleep(5);
+		}
+	}
+	catch (Exception& e)
+	{
+		m_audioThreadException.reset(e.copy());
+		LN_LOG_ERROR << m_audioThreadException->getMessage();
 	}
 }
 

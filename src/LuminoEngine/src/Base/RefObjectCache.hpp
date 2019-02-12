@@ -13,13 +13,20 @@ template<class TKey, class TObject>
 class ObjectCache
 {
 public:
-	ObjectCache(uint32_t maxCacheObjectCount = 64, uint32_t maxCacheMemory = 0)
-		: m_maxCacheObjectCount(maxCacheObjectCount)
-		, m_maxCacheMemory(maxCacheMemory)
+	ObjectCache()
+		: m_maxCacheObjectCount(0)
+		, m_maxCacheMemory(0)
 		, m_aliveList()
 		, m_freeList()
 		, m_freeObjectMemory(0)
 	{}
+
+	void init(uint32_t maxCacheObjectCount = 64, uint32_t maxCacheMemory = 0)
+	{
+		dispose();
+		m_maxCacheObjectCount = maxCacheObjectCount;
+		m_maxCacheMemory = maxCacheMemory;
+	}
 
 	void dispose()
 	{
@@ -83,6 +90,30 @@ public:
 				m_freeObjectMemory += itr->memorySize;
 
 				collectOldObject();
+			}
+		}
+	}
+
+	void collectUnreferenceObjects()
+	{
+		for (auto itr = m_aliveList.begin(); itr != m_aliveList.end();)
+		{
+			if (RefObjectHelper::getReferenceCount(itr->obj) == 1)	// m_aliveList からのみ参照されている
+			{
+				if (itr->memorySize > m_maxCacheMemory) {
+					// キャッシュに入らない大きなオブジェクトはここで削除
+					itr = m_aliveList.erase(itr);
+				}
+				else {
+					m_freeList.push_back(*itr);
+					m_freeObjectMemory += itr->memorySize;
+					itr = m_aliveList.erase(itr);
+
+					collectOldObject();
+				}
+			}
+			else {
+				++itr;
 			}
 		}
 	}
