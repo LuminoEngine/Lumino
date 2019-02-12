@@ -95,10 +95,16 @@ Ref<ByteBuffer> AssetManager::readAllBytes(const StringRef& filePath)
 
 Ref<Texture2D> AssetManager::loadTexture(const StringRef& filePath)
 {
+    static const Char* exts[] = {
+        u".png",
+    };
+
+    auto stream = openFileStreamInternal(filePath, exts, LN_ARRAY_SIZE_OF(exts));
+
 	// TODO: cache
 
     // TODO: mipmap
-	auto ref = newObject<Texture2D>(filePath, TextureFormat::RGBA32, false);
+	auto ref = newObject<Texture2D>(stream, TextureFormat::RGBA32, false);
 	return ref;
 }
 
@@ -203,6 +209,7 @@ void AssetManager::makeFindPaths(const StringRef& filePath, const Char** exts, i
 	const Char* begin = filePath.data();
 	const Char* end = filePath.data() + filePath.length();
 	if (detail::PathTraits::getExtensionBegin(begin, end, false) != end) {
+        // has extension
 		paths->add(filePath);
 	}
 	else {

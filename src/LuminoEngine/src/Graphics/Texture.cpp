@@ -83,6 +83,13 @@ void Texture2D::init(const StringRef& filePath, TextureFormat format, bool mipma
     init(bitmap, format, mipmap, usage);
 }
 
+void Texture2D::init(Stream* stream, TextureFormat format, bool mipmap, GraphicsResourceUsage usage)
+{
+    auto bitmap = newObject<Bitmap2D>();
+    bitmap->load(stream);
+    init(bitmap, format, mipmap, usage);
+}
+
 void Texture2D::init(Bitmap2D* bitmap, TextureFormat format, bool mipmap, GraphicsResourceUsage usage)
 {
     Texture::init();
