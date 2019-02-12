@@ -16,7 +16,212 @@
 
 
 namespace ln {
+    
+//==============================================================================
+// Task
 
+Ref<Task> Task::create(const std::function<void()>& action)
+{
+    // コンストラクタを private にしてあるので new で入れる
+    return Ref<Task>(LN_NEW Task(action), false);
+}
+
+Ref<Task> Task::run(const std::function<void()>& action)
+{
+    auto t = Ref<Task>(LN_NEW Task(action), false);
+    t->start();
+    return t;
+}
+
+Task::Task(const std::function<void()>& action)
+	: m_action(action)
+	, m_status(TaskStatus::Created)
+	, m_exception(nullptr)
+	, m_waiting(false)
+{
+}
+
+Task::~Task()
+{
+	LN_SAFE_DELETE(m_exception);
+}
+
+void Task::start()
+{
+	LN_SAFE_DELETE(m_exception);
+	m_waiting.lock();
+	TaskScheduler::getDefault()->queueTask(this);
+}
+
+void Task::wait()
+{
+	m_waiting.wait();
+}
+
+Task* Task::awaitThen(const std::function<void()>& action, Dispatcher* dispatcher)
+{
+    NextTask n;
+    n.task = create(action);
+    n.scheduler = nullptr;
+    n.dispatcher = (dispatcher) ? dispatcher : Dispatcher::mainThread();
+    return n.task;
+}
+
+TaskStatus Task::status() const
+{
+	return m_status;
+}
+
+bool Task::isCompleted() const
+{
+	return m_status == TaskStatus::Completed;
+}
+
+bool Task::isFaulted() const
+{
+	return m_status == TaskStatus::Faulted;
+}
+
+Exception* Task::exception() const
+{
+	return m_exception;
+}
+
+void Task::execute()
+{
+	m_status = TaskStatus::Running;
+	try
+	{
+		m_action();
+		m_status = TaskStatus::Completed;
+
+        // post next tasks
+        for (auto& n : m_nextTasks) {
+            if (n.dispatcher) {
+                n.dispatcher->post(n.task);
+            }
+        }
+	}
+	catch (Exception& e)
+	{
+		m_exception = e.copy();
+		m_status = TaskStatus::Faulted;
+	}
+	catch (...)
+	{
+		m_exception = LN_NEW Exception();
+		m_status = TaskStatus::Faulted;
+	}
+	m_waiting.unlock();
+}
+
+//==============================================================================
+// Dispatcher
+
+Dispatcher* Dispatcher::mainThread()
+{
+    // TODO: ほんとは外部からもらった方がいい
+    static Dispatcher instance;
+    return &instance;
+}
+
+void Dispatcher::post(Task* task)
+{
+    m_taskQueue.push_back(task);
+}
+
+void Dispatcher::executeTasks(uint32_t maxCount)
+{
+    for (uint32_t i = 0; !m_taskQueue.empty() && i < maxCount; i++)
+    {
+        // キューから1つ取り出す
+        Ref<Task> task = nullptr;
+        {
+            task = m_taskQueue.front();
+            m_taskQueue.pop_front();
+        }
+
+        // 実行。状態変化は内部で行う
+        task->execute();
+        task.reset();
+    }
+}
+
+//==============================================================================
+// TaskScheduler
+
+TaskScheduler* TaskScheduler::getDefault()
+{
+    static TaskScheduler instance(4);
+    return &instance;
+}
+
+TaskScheduler::TaskScheduler(int threadCount)
+    : m_threadList()
+    , m_semaphore()
+    , m_endRequested(false)
+{
+    m_threadList.reserve(threadCount);
+    for (int i = 0; i < threadCount; ++i)
+    {
+        m_threadList.add(std::make_shared<std::thread>(std::bind(&TaskScheduler::executeThread, this)));
+    }
+}
+
+TaskScheduler::~TaskScheduler()
+{
+    m_endRequested = true;
+
+    for (int i = 0; i < m_threadList.size(); i++)	// スレッドの数だけセマフォ増やして全部起こして、
+    {
+        m_semaphore.notify();
+    }
+    for (auto& thr : m_threadList)	// 全部終わるまで待つ
+    {
+        thr->join();
+    }
+    m_threadList.clear();
+}
+
+int TaskScheduler::maxConcurrencyLevel() const
+{
+    return m_threadList.size();
+}
+
+void TaskScheduler::queueTask(Task* task)
+{
+    if (LN_REQUIRE(task != nullptr)) return;
+
+    std::lock_guard<std::mutex> lock(m_taskQueueMutex);
+    m_taskQueue.push_back(task);
+
+    m_semaphore.notify();	// キューに入れたので取り出したい人はどうぞ。
+}
+
+void TaskScheduler::executeThread()
+{
+    while (true)
+    {
+        m_semaphore.wait();	// キューに何か追加されるまで待つ。または終了要求まで。
+
+        // 終了要求がきていたらおしまい
+        if (m_endRequested) {
+            break;
+        }
+
+        // キューから1つ取り出す
+        Ref<Task> task = nullptr;
+        {
+            std::lock_guard<std::mutex> lock(m_taskQueueMutex);
+            task = m_taskQueue.front();
+            m_taskQueue.pop_front();
+        }
+
+        // 実行。状態変化は内部で行う
+        task->execute();
+        task.reset();
+    }
+}
 
 } // namespace ln
 

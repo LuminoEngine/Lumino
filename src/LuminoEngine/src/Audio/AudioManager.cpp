@@ -29,6 +29,7 @@ void AudioManager::init(const Settings& settings)
     m_assetManager = settings.assetManager;
 
 	m_decoderCache.init();
+    m_dispatcher = makeRef<Dispatcher>();
 
 	m_primaryContext = makeRef<AudioContext>();
 	m_primaryContext->init();
@@ -39,7 +40,7 @@ void AudioManager::init(const Settings& settings)
 #ifdef LN_AUDIO_THREAD_ENABLED
 	m_endRequested = false;
 	m_audioThread = std::make_unique<std::thread>(std::bind(&AudioManager::processThread, this));
-	m_loadingThread = std::make_unique<std::thread>(std::bind(&AudioManager::loadingThread, this));
+    m_dispatheThread = std::make_unique<std::thread>(std::bind(&AudioManager::dispatheThread, this));
 #endif
 
     m_gameAudio = makeRef<GameAudioImpl>(this);
@@ -54,8 +55,8 @@ void AudioManager::dispose()
 
 #ifdef LN_AUDIO_THREAD_ENABLED
 	m_endRequested = true;
-	if (m_loadingThread) {
-		m_loadingThread->join();
+	if (m_dispatheThread) {
+        m_dispatheThread->join();
 	}
 	if (m_audioThread) {
 		m_audioThread->join();
@@ -64,6 +65,11 @@ void AudioManager::dispose()
 		throw *m_audioThreadException;
 	}
 #endif
+    if (m_dispatcher) {
+        m_dispatcher->executeTasks();   // 残っているものを実行してしまう
+        m_dispatcher = nullptr;
+    }
+
 	if (m_primaryContext) {
 		m_primaryContext->dispose();
 		m_primaryContext = nullptr;
@@ -77,6 +83,7 @@ void AudioManager::update(float elapsedSeconds)
 		if (m_primaryContext) {
 			m_primaryContext->process(elapsedSeconds);
 		}
+        m_dispatcher->executeTasks(1);
 	}
 }
 
@@ -121,6 +128,16 @@ Ref<AudioDecoder> AudioManager::createAudioDecoder(const StringRef& filePath)
 	}
 }
 
+void AudioManager::createAudioDecoderAsync(const StringRef& filePath, const std::function<void(AudioDecoder* decoder)>& postAction)
+{
+    //auto task = Task::create([this, filePath]() {
+    //    createAudioDecoder(filePath);
+    //});
+    //task->awaitThen([]() {
+    //    postAction
+    //});
+}
+
 void AudioManager::releaseAudioDecoder(AudioDecoder* decoder)
 {
 	ScopedWriteLock lock(m_cacheMutex);
@@ -150,13 +167,13 @@ void AudioManager::processThread()
 	}
 }
 
-void AudioManager::loadingThread()
+void AudioManager::dispatheThread()
 {
 	try
 	{
 		while (!m_endRequested)
 		{
-
+            m_dispatcher->executeTasks(1);
 			Thread::sleep(5);
 		}
 	}

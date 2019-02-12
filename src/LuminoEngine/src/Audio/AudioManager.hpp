@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <memory>
 #include <thread>
+#include <LuminoEngine/Base/Task.hpp>
 #include <LuminoEngine/Audio/InternalSharedMutex.inc>
 #include "../Base/RefObjectCache.hpp"
 #include "../Engine/RenderingCommandList.hpp"
@@ -33,12 +34,14 @@ public:
 	//const Ref<RenderingCommandList>& primaryRenderingCommandList() const { return m_primaryRenderingCommandList; }
 
 	Ref<AudioDecoder> createAudioDecoder(const StringRef& filePath);
-	//void createAudioDecoderAsync(const StringRef& filePath, std::function<void(AudioDecoder* decoder)>);
+	void createAudioDecoderAsync(const StringRef& filePath, const std::function<void(AudioDecoder* decoder)>& postAction);
 	void releaseAudioDecoder(AudioDecoder* decoder);
 
 private:
+    // processThread は少しでも遅れると音声に影響するので、できる限り Mixing に集中する。
+    // 音声データの非同期ロードなどそれ以外は dispatheThread で行う。
 	void processThread();
-	void loadingThread();
+	void dispatheThread();
 
     AssetManager* m_assetManager;
 	Ref<AudioContext> m_primaryContext;
@@ -47,9 +50,10 @@ private:
 	//Ref<LinearAllocatorPageManager> m_linearAllocatorPageManager;
 	//Ref<RenderingCommandList> m_primaryRenderingCommandList;
 	AudioRWMutex m_cacheMutex;
+    Ref<Dispatcher> m_dispatcher;
 
 	std::unique_ptr<std::thread> m_audioThread;
-	std::unique_ptr<std::thread> m_loadingThread;
+	std::unique_ptr<std::thread> m_dispatheThread;
 	std::unique_ptr<Exception> m_audioThreadException;
 	std::atomic<bool> m_endRequested;
 };
