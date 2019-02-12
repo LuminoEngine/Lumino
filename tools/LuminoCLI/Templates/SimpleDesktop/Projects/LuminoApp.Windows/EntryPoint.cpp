@@ -1,6 +1,8 @@
 
 #include <LuminoEngine/Platform/Win32PlatformInterface.hpp>
 
+void Main();
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_opt_ HINSTANCE hPrevInstance,
     _In_ LPWSTR    lpCmdLine,
@@ -17,8 +19,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         ln::EngineSettings::addAssetArchive(archive);
     }
 
-    ln::Win32PlatformInterface::initialize();
-    return ln::Win32PlatformInterface::WinMain();
+    ln::EngineSettings::setEngineFeatures(ln::EngineFeature::Experimental);
+    ln::EngineSettings::setStandaloneFpsControl(true);
+
+    Main();
+
+    ln::Engine::finalize();
 }
 
 int main(int argc, char** argv)

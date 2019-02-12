@@ -513,6 +513,7 @@ set(LN_SOURCES
     src/LuminoEngine.PCH.cpp
     src/LuminoEngine.PCH.h
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino.hpp
     ${LN_SOURCES_Base}
     ${LN_SOURCES_Engine}
     ${LN_SOURCES_Platform}

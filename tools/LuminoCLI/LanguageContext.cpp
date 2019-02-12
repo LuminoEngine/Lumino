@@ -48,8 +48,11 @@ Result CppLanguageContext::applyTemplates(const ln::String& templateName)
 
 	CLI::info(u"Copying template...");
 
-    if (!templateName.isEmpty())
+    if (templateName.isEmpty())
     {
+        CLI::info(u"Template: Default");
+        
+
         // TODO: v0.7.0 時点の動作。else 側に統一したい
 
         // Common
@@ -121,15 +124,18 @@ Result CppLanguageContext::applyTemplates(const ln::String& templateName)
     }
     else
     {
+        CLI::info(u"Template: " + templateName);
+
         // 先にフォルダを作っておく
         for (auto dir : ln::FileSystem::getDirectories(srcRoot, ln::StringRef(), ln::SearchOption::Recursive)) {
-            ln::FileSystem::createDirectory(dir);
+            auto rel = srcRoot.makeRelative(dir);
+            ln::FileSystem::createDirectory(ln::Path(dstRoot, rel));
         }
 
         // ファイルをコピー
         for (auto file : ln::FileSystem::getFiles(srcRoot, ln::StringRef(), ln::SearchOption::Recursive)) {
             auto rel = srcRoot.makeRelative(file);
-            ln::FileSystem::copyFile(file, ln::Path(srcRoot, rel));
+            ln::FileSystem::copyFile(file, ln::Path(dstRoot, rel));
         }
     }
 

@@ -16,14 +16,15 @@ int main(int argc, char** argv)
 		//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects");
 		//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\HelloLumino");
 		//::SetCurrentDirectoryW(L"D:/Documents/LuminoProjects");
-        //::SetCurrentDirectoryW(L"D:/Documents/LuminoProjects/HelloLumino");
+        ::SetCurrentDirectoryW(L"D:/Documents/LuminoProjects");
         //::SetCurrentDirectoryW(L"D:/Proj");
-		::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\Test3");
+		//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\Test3");
         ln::GlobalLogger::setLevel(ln::LogLevel::Verbose);
     
 		const char* debugArgv[] = {
 			"<program>",
 			//"init", "TH-10", "--engine=repo:0.10.0"
+            "init", "RinoTutorial", "-t", "SimpleDesktop",
 
 			//"<program>", "dev-install-tools",
 
@@ -44,7 +45,7 @@ int main(int argc, char** argv)
             //"build", "assets",
 			//"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Graphics/SimplePosColor.fx"
             //"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Graphics/SimpleConstantBuffer.fx"
-			"fxc", "D:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Graphics/SimpleConstantBuffer.fx"
+			//"fxc", "D:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Graphics/SimpleConstantBuffer.fx"
 		};
 		argc = sizeof(debugArgv) / sizeof(char*);
 		argv = (char**)debugArgv;

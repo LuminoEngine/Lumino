@@ -101,6 +101,10 @@ namespace LuminoBuild.Tasks
                 Utils.CopyDirectory(
                     Path.Combine(builder.LuminoToolsDir, "LuminoCLI", "Templates", "NativeProject"),
                     Path.Combine(targetRootDir, "Tools", "Templates", "NativeProject"));
+
+                Utils.CopyDirectory(
+                    Path.Combine(builder.LuminoToolsDir, "LuminoCLI", "Templates", "SimpleDesktop"),
+                    Path.Combine(targetRootDir, "Tools", "Templates", "SimpleDesktop"));
             }
         }
 
