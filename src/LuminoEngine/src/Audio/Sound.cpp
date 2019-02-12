@@ -4,6 +4,7 @@
 #include <LuminoEngine/Audio/AudioNode.hpp>
 #include <LuminoEngine/Audio/AudioGainNode.hpp>
 #include <LuminoEngine/Audio/Sound.hpp>
+#include "AudioDecoder.hpp"
 #include "AudioManager.hpp"
 
 namespace ln {
@@ -29,7 +30,8 @@ void Sound::init(const StringRef& filePath)
 
     detail::AudioManager* manager = detail::EngineDomain::audioManager();
 
-    m_sourceNode = newObject<AudioSourceNode>(filePath);
+    Ref<detail::AudioDecoder> decoder = detail::EngineDomain::audioManager()->createAudioDecoder(filePath);
+    m_sourceNode = newObject<AudioSourceNode>(decoder);
     m_gainNode = newObject<AudioGainNode>();
 
 

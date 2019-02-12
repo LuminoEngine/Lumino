@@ -130,9 +130,12 @@ Ref<AudioDecoder> AudioManager::createAudioDecoder(const StringRef& filePath)
 
 void AudioManager::createAudioDecoderAsync(const StringRef& filePath, const std::function<void(AudioDecoder* decoder)>& postAction)
 {
-    //auto task = Task::create([this, filePath]() {
-    //    createAudioDecoder(filePath);
-    //});
+    auto task = Task::create([this, filePath, postAction]() {
+        auto decoder = createAudioDecoder(filePath);
+        m_dispatcher->post([postAction, decoder]() {
+            postAction(decoder);
+        });
+    });
     //task->awaitThen([]() {
     //    postAction
     //});

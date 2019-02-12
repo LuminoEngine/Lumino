@@ -5,6 +5,7 @@
 namespace ln {
 class AudioContext;
 namespace detail {
+class AudioDecoder;
 class CoreAudioNode;
 class CoreAudioSourceNode;
 class CoreAudioPannerNode;
@@ -82,7 +83,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	AudioSourceNode();
 	virtual ~AudioSourceNode() = default;
-	void init(const StringRef& filePath);
+	void init(detail::AudioDecoder* decoder);
 	virtual detail::CoreAudioNode* coreNode() override;
 	virtual void commit() override;
 

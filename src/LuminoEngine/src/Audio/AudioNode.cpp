@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Audio/AudioContext.hpp>
 #include <LuminoEngine/Audio/AudioNode.hpp>
+#include "AudioDecoder.hpp"
 #include "AudioManager.hpp"
 #include "CoreAudioNode.hpp"
 #include "../Engine/RenderingCommandList.hpp"
@@ -197,9 +198,8 @@ void AudioSourceNode::resume()
 	LN_NOTIMPLEMENTED();
 }
 
-void AudioSourceNode::init(const StringRef & filePath)
+void AudioSourceNode::init(detail::AudioDecoder* decoder)
 {
-    Ref<detail::AudioDecoder> decoder = detail::EngineDomain::audioManager()->createAudioDecoder(filePath);
 	m_coreObject = makeRef<detail::CoreAudioSourceNode>(detail::EngineDomain::audioManager()->primaryContext()->coreObject());
 	m_coreObject->init(decoder);
 

@@ -74,7 +74,7 @@ private:
 };
 
 template<class TResult>
-class Task
+class GenericTask
     : public Task
 {
 
@@ -122,11 +122,13 @@ public:
     static Dispatcher* mainThread();
 
     void post(Task* task);
+    void post(const std::function<void()>& action);
 
     void executeTasks(uint32_t maxCount = UINT32_MAX);
 
 private:
     std::deque<Ref<Task>> m_taskQueue;
+    std::mutex m_taskQueueMutex;
 };
 
 class TaskScheduler

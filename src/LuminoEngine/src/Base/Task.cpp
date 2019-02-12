@@ -127,7 +127,13 @@ Dispatcher* Dispatcher::mainThread()
 
 void Dispatcher::post(Task* task)
 {
+    std::lock_guard<std::mutex> lock(m_taskQueueMutex);
     m_taskQueue.push_back(task);
+}
+
+void Dispatcher::post(const std::function<void()>& action)
+{
+    post(Task::create(action));
 }
 
 void Dispatcher::executeTasks(uint32_t maxCount)
@@ -137,6 +143,7 @@ void Dispatcher::executeTasks(uint32_t maxCount)
         // キューから1つ取り出す
         Ref<Task> task = nullptr;
         {
+            std::lock_guard<std::mutex> lock(m_taskQueueMutex);
             task = m_taskQueue.front();
             m_taskQueue.pop_front();
         }
