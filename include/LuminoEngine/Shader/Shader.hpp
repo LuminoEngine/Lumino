@@ -82,7 +82,7 @@ public:
     /** この Shader に含まれる ShaderTechnique を取得します。 */
     Ref<ReadOnlyList<Ref<ShaderTechnique>>> techniques() const;
 
-    virtual void dispose() override;
+    virtual void onDispose(bool explicitDisposing) override;
 
 protected:
     virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
@@ -173,7 +173,7 @@ public:
     /** テクスチャを設定します。 */
     void setTexture(Texture* value);
 
-    virtual void dispose() override;
+    virtual void onDispose(bool explicitDisposing) override;
 
 private:
     LN_INTERNAL_NEW_OBJECT;
@@ -290,7 +290,7 @@ public:
     /** パスの名前を取得します。 */
     const String& name() const { return m_name; }
 
-    virtual void dispose() override;
+    virtual void onDispose(bool explicitDisposing) override;
 
 private:
     LN_INTERNAL_NEW_OBJECT;

@@ -24,7 +24,7 @@ public:
 	/** このノードをの全ての接続を解除します。 */
 	void disconnect();
 
-    virtual void dispose() override;
+    virtual void onDispose(bool explicitDisposing) override;
 protected:
 	AudioNode();
 	virtual ~AudioNode() = default;

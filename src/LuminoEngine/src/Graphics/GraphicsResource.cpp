@@ -27,13 +27,13 @@ void GraphicsResource::init()
 	m_manager->addGraphicsResource(this);
 }
 
-void GraphicsResource::dispose()
+void GraphicsResource::onDispose(bool explicitDisposing)
 {
 	if (m_manager) {
 		m_manager->removeGraphicsResource(this);
 		m_manager = nullptr;
 	}
-	Object::dispose();
+	Object::onDispose(explicitDisposing);
 }
 
 detail::IGraphicsDeviceContext* GraphicsResource::deviceContext() const

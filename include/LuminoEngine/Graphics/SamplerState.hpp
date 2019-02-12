@@ -19,7 +19,7 @@ LN_CONSTRUCT_ACCESS:
 	SamplerState();
 	virtual ~SamplerState();
 	virtual void init();
-	virtual void dispose() override;
+	virtual void onDispose(bool explicitDisposing) override;
 
 LN_INTERNAL_ACCESS:
 	detail::ISamplerState* resolveRHIObject();

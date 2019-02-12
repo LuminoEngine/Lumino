@@ -215,10 +215,8 @@ void PhysicsWorld::init()
     //}
 }
 
-void PhysicsWorld::dispose()
+void PhysicsWorld::onDispose(bool explicitDisposing)
 {
-    Object::dispose();
-
     LN_SAFE_DELETE(m_softBodyWorldInfo);
     LN_SAFE_DELETE(m_btGhostPairCallback);
     LN_SAFE_DELETE(m_btWorld);
@@ -226,6 +224,8 @@ void PhysicsWorld::dispose()
     LN_SAFE_DELETE(m_btBroadphase);
     LN_SAFE_DELETE(m_btCollisionDispatcher);
     LN_SAFE_DELETE(m_btCollisionConfig);
+
+	Object::onDispose(explicitDisposing);
 }
 
 void PhysicsWorld::addPhysicsObject(PhysicsObject* physicsObject)

@@ -199,7 +199,7 @@ LN_CONSTRUCT_ACCESS:
     Sound();
     virtual ~Sound();
     void init(const StringRef& filePath);
-    virtual void dispose() override;
+    virtual void onDispose(bool explicitDisposing) override;
 
 private:
     void setGameAudioFlags(uint32_t flags) { m_gameAudioFlags = flags; }

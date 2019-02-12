@@ -41,11 +41,11 @@ void VertexDeclaration::init(const VertexElement* elements, int count)
 	}
 }
 
-void VertexDeclaration::dispose()
+void VertexDeclaration::onDispose(bool explicitDisposing)
 {
 	m_deviceObj = nullptr;
 
-	GraphicsResource::dispose();
+	GraphicsResource::onDispose(explicitDisposing);
 }
 
 void VertexDeclaration::addVertexElement(int streamIndex, VertexElementType type, VertexElementUsage usage, int usageIndex)

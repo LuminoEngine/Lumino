@@ -28,13 +28,13 @@ void World::init()
     m_renderingContext = makeRef<detail::WorldSceneGraphRenderingContext>();
 }
 
-void World::dispose()
+void World::onDispose(bool explicitDisposing)
 {
     removeAllObjects();
     m_renderingContext.reset();
     m_physicsWorld.reset();
     m_animationContext.reset();
-    Object::dispose();
+    Object::onDispose(explicitDisposing);
 }
 
 void World::addObject(WorldObject* obj)

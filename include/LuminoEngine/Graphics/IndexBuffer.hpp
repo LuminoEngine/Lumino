@@ -48,7 +48,7 @@ public:
 	void setResourcePool(GraphicsResourcePool pool);
 
 protected:
-	virtual void dispose() override;
+	virtual void onDispose(bool explicitDisposing) override;
 
 LN_CONSTRUCT_ACCESS:
 	IndexBuffer();

@@ -29,10 +29,10 @@ void UIViewport::init()
     m_imageEffectRenderer = makeRef<detail::ImageEffectRenderer>();
 }
 
-void UIViewport::dispose()
+void UIViewport::onDispose(bool explicitDisposing)
 {
-    UIContainerElement::dispose();
     m_renderViews.clear();
+	UIContainerElement::onDispose(explicitDisposing);
 }
 
 void UIViewport::addRenderView(RenderView* view)

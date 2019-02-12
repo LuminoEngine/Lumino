@@ -53,7 +53,7 @@ class LN_API UIFrameWindow
 {
 public:
 
-	virtual void dispose() override;
+	virtual void onDispose(bool explicitDisposing) override;
 
 	void renderContents();
 	void present();

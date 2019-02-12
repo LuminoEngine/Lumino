@@ -38,7 +38,7 @@ LN_CONSTRUCT_ACCESS:
 	World();
 	virtual ~World();
 	void init();
-    virtual void dispose() override;
+    virtual void onDispose(bool explicitDisposing) override;
 
 public: // TODO: internal
     const Ref<AnimationContext>& animationContext() const { return m_animationContext; }

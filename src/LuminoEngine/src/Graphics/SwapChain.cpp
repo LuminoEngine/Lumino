@@ -37,12 +37,12 @@ void SwapChain::init(detail::PlatformWindow* window, const SizeI& backbufferSize
 	m_depthBuffer = newObject<DepthBuffer>(m_colorBuffer->width(), m_colorBuffer->height());
 }
 
-void SwapChain::dispose()
+void SwapChain::onDispose(bool explicitDisposing)
 {
 	m_rhiObject.reset();
 	m_depthBuffer.reset();
 	m_colorBuffer.reset();
-	Object::dispose();
+	Object::onDispose(explicitDisposing);
 }
 
 RenderTargetTexture* SwapChain::colorBuffer() const

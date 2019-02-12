@@ -305,7 +305,7 @@ void Shader::createFromUnifiedShader(Stream* stream, DiagnosticsManager* diag)
     }
 }
 
-void Shader::dispose()
+void Shader::onDispose(bool explicitDisposing)
 {
     for (auto& tech : m_techniques) {
         for (auto& pass : tech->passes()) {
@@ -314,7 +314,7 @@ void Shader::dispose()
     }
     m_techniques->clear();
 
-    GraphicsResource::dispose();
+    GraphicsResource::onDispose(explicitDisposing);
 }
 
 void Shader::onChangeDevice(detail::IGraphicsDeviceContext* device)
@@ -633,9 +633,9 @@ void ShaderParameter::init(ShaderParameterClass parameterClass, const String& na
     m_name = name;
 }
 
-void ShaderParameter::dispose()
+void ShaderParameter::onDispose(bool explicitDisposing)
 {
-    Object::dispose();
+    Object::onDispose(explicitDisposing);
 }
 
 void ShaderParameter::setInt(int value)
@@ -811,11 +811,11 @@ void ShaderPass::init(const String& name, detail::IShaderPass* rhiPass, detail::
     m_renderState = renderState;
 }
 
-void ShaderPass::dispose()
+void ShaderPass::onDispose(bool explicitDisposing)
 {
     m_rhiPass = nullptr;
 
-    Object::dispose();
+    Object::onDispose(explicitDisposing);
 }
 
 Shader* ShaderPass::shader() const

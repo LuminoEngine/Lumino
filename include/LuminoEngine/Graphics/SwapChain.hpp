@@ -25,7 +25,7 @@ public:
 	RenderTargetTexture* colorBuffer() const;
 	DepthBuffer* depthBuffer() const;
 
-	virtual void dispose() override;
+	virtual void onDispose(bool explicitDisposing) override;
 
 	void wait();
 

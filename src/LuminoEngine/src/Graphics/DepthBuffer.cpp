@@ -25,10 +25,10 @@ void DepthBuffer::init(int width, int height)
 	m_size.height = height;
 }
 
-void DepthBuffer::dispose()
+void DepthBuffer::onDispose(bool explicitDisposing)
 {
 	m_rhiObject.reset();
-	GraphicsResource::dispose();
+	GraphicsResource::onDispose(explicitDisposing);
 }
 
 void DepthBuffer::onChangeDevice(detail::IGraphicsDeviceContext* device)

@@ -98,10 +98,10 @@ void Texture2D::init(Bitmap2D* bitmap, TextureFormat format, bool mipmap, Graphi
     setMipmap(mipmap);
 }
 
-void Texture2D::dispose()
+void Texture2D::onDispose(bool explicitDisposing)
 {
     m_rhiObject.reset();
-    Texture::dispose();
+    Texture::onDispose(explicitDisposing);
 }
 
 Bitmap2D* Texture2D::map(MapMode mode)
@@ -257,10 +257,10 @@ void Texture3D::setResourcePool(GraphicsResourcePool pool)
 	m_pool = pool;
 }
 
-void Texture3D::dispose()
+void Texture3D::onDispose(bool explicitDisposing)
 {
 	m_rhiObject.reset();
-	Texture::dispose();
+	Texture::onDispose(explicitDisposing);
 }
 
 void Texture3D::onChangeDevice(detail::IGraphicsDeviceContext* device)
@@ -357,10 +357,10 @@ void RenderTargetTexture::init(detail::ITexture* ref)
     resetSwapchainFrame(ref);
 }
 
-void RenderTargetTexture::dispose()
+void RenderTargetTexture::onDispose(bool explicitDisposing)
 {
 	m_rhiObject.reset();
-	Texture::dispose();
+	Texture::onDispose(explicitDisposing);
 }
 
 Ref<Bitmap2D> RenderTargetTexture::readData()

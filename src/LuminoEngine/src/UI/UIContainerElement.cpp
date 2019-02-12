@@ -16,10 +16,10 @@ void UIContainerElement::init()
     UIElement::init();
 }
 
-void UIContainerElement::dispose()
+void UIContainerElement::onDispose(bool explicitDisposing)
 {
-    UIContainerElement::init();
     removeAllChildren();
+	UIElement::onDispose(explicitDisposing);
 }
 
 void UIContainerElement::addElement(UIElement* element)

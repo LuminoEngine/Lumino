@@ -85,7 +85,7 @@ LN_CONSTRUCT_ACCESS:
     void init(Bitmap2D* bitmap, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
 
 protected:
-	virtual void dispose() override;
+	virtual void onDispose(bool explicitDisposing) override;
 	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
 	virtual detail::ITexture* resolveRHIObject() override;
 
@@ -124,7 +124,7 @@ LN_CONSTRUCT_ACCESS:
 	void init(int width, int height, int depth, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
 
 protected:
-	virtual void dispose() override;
+	virtual void onDispose(bool explicitDisposing) override;
 	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
 	virtual detail::ITexture* resolveRHIObject() override;
 
@@ -146,7 +146,7 @@ class RenderTargetTexture
 public:
 	Ref<Bitmap2D> readData();
 
-	virtual void dispose() override;
+	virtual void onDispose(bool explicitDisposing) override;
 
 LN_CONSTRUCT_ACCESS:
 	RenderTargetTexture();

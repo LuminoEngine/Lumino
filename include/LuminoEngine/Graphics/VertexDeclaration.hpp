@@ -15,7 +15,7 @@ public:
 	void addVertexElement(int streamIndex, VertexElementType type, VertexElementUsage usage, int usageIndex);
 
 protected:
-	virtual void dispose() override;
+	virtual void onDispose(bool explicitDisposing) override;
 
 LN_CONSTRUCT_ACCESS:
 	VertexDeclaration();

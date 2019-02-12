@@ -31,7 +31,7 @@ LN_CONSTRUCT_ACCESS:
     PhysicsWorld();
 	virtual ~PhysicsWorld();
 	void init();
-    virtual void dispose() override;
+    virtual void onDispose(bool explicitDisposing) override;
 
 private:
     void addObjectInternal(PhysicsObject* obj);

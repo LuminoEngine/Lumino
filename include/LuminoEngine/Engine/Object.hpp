@@ -58,13 +58,16 @@ LN_CONSTRUCT_ACCESS:
 protected:
 	virtual ~Object();
 	virtual void finalize() override;
+	virtual void onDispose(bool explicitDisposing);
 
 public:
 	/**
 	 * このオブジェクトが保持しているリソースを開放します。
 	 *
-	 * このメソッドは通常、明示的に呼び出す必要はありません。オブジェクトの参照が無くなった時にフレームワークから呼び出されます。
-	 * 派生クラスで何らかのリソースを開放する必要がある場合はデストラクタや finalize ではなく dispose を実装して開放してください。
+	 * このメソッドは通常、明示的に呼び出す必要はありません。オブジェクトが保持しているリソースの開放の処理は、
+	 * オブジェクトの参照が無くなった時点でフレームワークにより呼び出されます。
+	 *
+	 * 派生クラスで何らかのリソースを開放する必要がある場合は onDispose を実装して開放してください。(デストラクタや finalize、dispose ではな)
 	 *
 	 * @attention このメソッドは virtual です。RAII の実装を目的としてデストラクタで呼び出すことはできません。代わりに finalize() からコールされます。
 	 */

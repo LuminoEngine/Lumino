@@ -22,7 +22,7 @@ public:
     UIViewport();
     virtual ~UIViewport();
 	void init();
-    virtual void dispose() override;
+    virtual void onDispose(bool explicitDisposing) override;
 
     // TODO: internal
     const Size& actualViewboxSize() const { return m_actualViewboxSize; }

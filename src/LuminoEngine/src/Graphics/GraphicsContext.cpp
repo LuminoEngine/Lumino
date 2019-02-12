@@ -36,11 +36,11 @@ void GraphicsContext::init(detail::IGraphicsDeviceContext* device)
 	resetState();
 }
 
-void GraphicsContext::dispose()
+void GraphicsContext::onDispose(bool explicitDisposing)
 {
-    Object::dispose();
     m_lastCommit.reset();
     m_staging.reset();
+    Object::onDispose(explicitDisposing);
 }
 
 void GraphicsContext::resetState()

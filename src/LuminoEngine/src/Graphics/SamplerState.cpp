@@ -32,10 +32,10 @@ void SamplerState::init()
 	GraphicsResource::init();
 }
 
-void SamplerState::dispose()
+void SamplerState::onDispose(bool explicitDisposing)
 {
 	m_rhiObject.reset();
-	GraphicsResource::dispose();
+	GraphicsResource::onDispose(explicitDisposing);
 }
 
 void SamplerState::setFilterMode(TextureFilterMode value)

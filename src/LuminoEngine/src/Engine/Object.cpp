@@ -33,10 +33,15 @@ void Object::init()
 
 void Object::finalize()
 {
-	dispose();
+	onDispose(false);
 }
 
 void Object::dispose()
+{
+	onDispose(true);
+}
+
+void Object::onDispose(bool explicitDisposing)
 {
 }
 

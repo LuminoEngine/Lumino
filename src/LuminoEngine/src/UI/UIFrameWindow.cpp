@@ -219,7 +219,7 @@ void UIFrameWindow::init(detail::PlatformWindow* platformMainWindow, const SizeI
     m_platformWindow->attachEventListener(this);
 }
 
-void UIFrameWindow::dispose()
+void UIFrameWindow::onDispose(bool explicitDisposing)
 {
     if (m_renderView) {
         m_renderView->dispose();
@@ -237,6 +237,8 @@ void UIFrameWindow::dispose()
 		}
         m_platformWindow = nullptr;
 	}
+
+	UIContainerElement::onDispose(explicitDisposing);
 }
 
 void UIFrameWindow::renderContents()

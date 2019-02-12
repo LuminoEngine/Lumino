@@ -19,7 +19,7 @@ LN_CONSTRUCT_ACCESS:
 	DepthBuffer();
 	virtual ~DepthBuffer();
 	void init(int width, int height);
-	virtual void dispose() override;
+	virtual void onDispose(bool explicitDisposing) override;
 	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
 
 LN_INTERNAL_ACCESS:

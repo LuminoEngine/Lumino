@@ -62,10 +62,10 @@ void VertexBuffer::init(size_t bufferSize, const void* initialData, GraphicsReso
 	}
 }
 
-void VertexBuffer::dispose()
+void VertexBuffer::onDispose(bool explicitDisposing)
 {
 	m_rhiObject.reset();
-	GraphicsResource::dispose();
+	GraphicsResource::onDispose(explicitDisposing);
 }
 
 int VertexBuffer::size() const

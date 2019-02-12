@@ -44,7 +44,7 @@ void Sound::init(const StringRef& filePath)
     //source->start();
 }
 
-void Sound::dispose()
+void Sound::onDispose(bool explicitDisposing)
 {
     if (m_gainNode) {
         m_gainNode->dispose();
@@ -54,7 +54,7 @@ void Sound::dispose()
         m_sourceNode->dispose();
         m_sourceNode = nullptr;
     }
-    Object::dispose();
+    Object::onDispose(explicitDisposing);
 }
 
 void Sound::setVolume(float volume)
