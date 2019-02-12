@@ -13,6 +13,7 @@ set(LN_SOURCES_Base
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/Regex.hpp
     src/Base/Internal.hpp
+    src/Base/RefObjectCache.hpp
     src/Base/Regex.cpp
 )
 

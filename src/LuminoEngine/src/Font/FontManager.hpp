@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <list>
 #include <LuminoEngine/Font/Common.hpp>
+#include "../Base/RefObjectCache.hpp"
 
 typedef int FT_Error;
 typedef void*  FT_Pointer;
@@ -14,101 +15,6 @@ typedef struct FT_FaceRec_*  FT_Face;
 namespace ln {
 namespace detail {
 class FontCore;
-
-// RefObject のキャッシュ管理。
-// RefObject を作りたいときは、まず先に findObject を呼び出してキャッシュ探す。なければ呼び出し側で作って registerObject()。
-// RefObject は普通に makeRef で作ってよい。また、作った直後は registerObject() で登録しておく。
-// RefObject を release するとき、その直前で releaseObject() に渡しておく。
-template<class TKey>
-class ObjectCache
-{
-public:
-    ObjectCache()
-        : m_maxCacheObjectCount(64)
-        , m_aliveList()
-        , m_freeList()
-    {}
-
-    void dispose()
-    {
-        m_aliveList.clear();
-        m_freeList.clear();
-        m_maxCacheObjectCount = 0;
-    }
-
-    RefObject* findObject(const TKey& key)
-    {
-        if (LN_REQUIRE(!isDisposed())) return nullptr;
-
-        for (auto itr = m_aliveList.begin(); itr != m_aliveList.end(); ++itr) {
-            if (itr->key == key) {
-                return itr->obj;
-            }
-        }
-
-        for (auto itr = m_freeList.begin(); itr != m_freeList.end(); ++itr) {
-            if (itr->key == key) {
-                m_aliveList.splice(m_aliveList.end(), std::move(m_freeList), itr);
-                return m_aliveList.back().obj;
-            }
-        }
-
-        return nullptr;
-    }
-
-    void registerObject(const TKey& key, RefObject* obj)
-    {
-        if (LN_REQUIRE(!isDisposed())) return;
-
-        if (obj) {
-            m_aliveList.push_back({ key, obj });
-        }
-    }
-
-    void releaseObject(RefObject* obj)
-    {
-        if (LN_REQUIRE(!isDisposed())) return;
-
-        if (obj) {
-            auto itr = m_aliveList.begin();
-            for (; itr != m_aliveList.end(); ++itr) {
-                if (itr->obj == obj) {
-                    break;
-                }
-            }
-            if (LN_REQUIRE(itr != m_aliveList.end())) return;   // not contained m_aliveList
-
-            m_freeList.splice(m_freeList.end(), std::move(m_aliveList), itr);
-            collectOldObject();
-        }
-    }
-
-private:
-    bool isDisposed() const
-    {
-        return m_maxCacheObjectCount <= 0;
-    }
-
-    void collectOldObject()
-    {
-        int count = m_freeList.size() - m_maxCacheObjectCount;
-        if (count > 0) {
-            for (int i = 0; i < count; i++) {
-                m_freeList.pop_front();
-            }
-        }
-    }
-
-    struct Entry
-    {
-        TKey key;
-        Ref<RefObject> obj;
-    };
-
-    int m_maxCacheObjectCount;
-    std::list<Entry> m_aliveList;
-    std::list<Entry> m_freeList;    // front:oldest, back:newest
-};
 
 
 
@@ -157,7 +63,7 @@ private:
     };
 
     AssetManager* m_assetManager;
-	ObjectCache<uint32_t> m_fontCoreCache;
+	ObjectCache<uint32_t, RefObject> m_fontCoreCache;
 	List<FontCore*> m_aliveFontCoreList;
     EncodingConverter m_charToUTF32Converter;
     EncodingConverter m_wcharToUTF32Converter;
