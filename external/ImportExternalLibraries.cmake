@@ -340,6 +340,19 @@ set_target_properties(tmxlite PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${tmxlite
 #list(APPEND LN_EXTERNAL_LIBS tmxlite)
 
 #--------------------------------------
+# Box2D
+ln_make_external_find_path(Box2D_ROOT "Box2D")
+
+find_library(Box2D_LIBRARY_RELEASE NAMES Box2D libBox2D PATHS ${Box2D_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(Box2D_LIBRARY_DEBUG NAMES Box2Dd libBox2Dd PATHS ${Box2D_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+
+add_library(Box2D STATIC IMPORTED)
+set_target_properties(Box2D PROPERTIES IMPORTED_LOCATION_RELEASE "${Box2D_LIBRARY_RELEASE}")
+set_target_properties(Box2D PROPERTIES IMPORTED_LOCATION_DEBUG "${Box2D_LIBRARY_DEBUG}")
+set_target_properties(Box2D PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${Box2D_ROOT}/include)
+list(APPEND LN_EXTERNAL_LIBS Box2D)
+
+#--------------------------------------
 # Vulkan
 
 if (LN_USE_VULKAN)

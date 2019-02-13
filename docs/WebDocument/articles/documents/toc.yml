@@ -13,31 +13,34 @@
   href: tutorial/index.md
   items:
     - name: 最初の 2D ゲーム
-      - name: イントロダクション
+      items:
+      - name: 1. イントロダクション
         href: tutorial/first-2d-game/1-introduction.md
-      - name: フレームワークについて
+      - name: 2. フレームワークについて
         href: tutorial/first-2d-game/2-app-framework.md
-      - name: ゲーム素材の読み込み
+      - name: 3. ゲーム素材の読み込み
         href: tutorial/first-2d-game/3-loading-assets.md
-      - name: ワールドの構築
+      - name: 4. ワールドの構築
         href: tutorial/first-2d-game/4-world-building.md
-      - name: プレイヤーの表示
+      - name: 5. プレイヤーの表示
         href: tutorial/first-2d-game/5-player.md
-      - name: 物理演算
+      - name: 6. 物理演算
         href: tutorial/first-2d-game/6-physics.md
-      - name: 入力とプレイヤー操作
+      - name: 7. 入力とプレイヤー操作
         href: tutorial/first-2d-game/7-input.md
-      - name: アイテムを拾う
+      - name: 8. アイテムを拾う
         href: tutorial/first-2d-game/8-collecting-items.md
-      - name: ゲームオーバー
+      - name: 9. ゲームオーバー
         href: tutorial/first-2d-game/9-boms-and-gameover.md
-      - name: サウンド
+      - name: 10. サウンド
         href: tutorial/first-2d-game/10-sound.md
-      - name: スコアの保存
+      - name: 11. スコアの保存
         href: tutorial/first-2d-game/11-scoring.md
-      - name: タイトル画面
+      - name: 12. タイトル画面
         href: tutorial/first-2d-game/12-game-scene.md
-      - name: リリース
+      - name: 13. リリース
+        href: tutorial/first-2d-game/13-deploy.md
+      - name: TODO: デバッグ
         href: tutorial/first-2d-game/13-deploy.md
 
         
