@@ -145,7 +145,24 @@ Result CppLanguageContext::applyTemplates(const ln::String& templateName)
 
 Result CppLanguageContext::applyEngine()
 {
-    if (project()->properties()->engine.indexOf(u"repo:") == 0)
+    if (project()->properties()->engine.indexOf(u"local") == 0)
+    {
+        if (!ln::FileSystem::getFile(project()->engineDirPath()).isEmpty()) {
+            CLI::warning(u"File exists in the engine folder.");
+        }
+        else {
+            CLI::info("Copying Engine...");
+
+            ln::FileSystem::copyDirectory(
+                ln::Path::combine(project()->workspace()->buildEnvironment()->luminoPackageRootDir(), u"Engine", u"Native"),
+                ln::Path::combine(project()->engineDirPath(), u"Native"),
+                true, true);
+
+            CLI::info("Copied Engine.");
+        }
+    }
+    // リポジトリ clone
+    else if (project()->properties()->engine.indexOf(u"repo:") == 0)
     {
         auto engineRoot = ln::Path::combine(project()->engineDirPath(), u"Native");
         auto branch = project()->properties()->engine.substr(5);
@@ -179,22 +196,11 @@ Result CppLanguageContext::applyEngine()
             return Result::Fail;
         }
     }
-    else
+    else // system
     {
-        if (!ln::FileSystem::getFile(project()->engineDirPath()).isEmpty()) {
-            CLI::warning(u"File exists in the engine folder.");
-        }
-        else {
-            CLI::info("Copying Engine...");
-
-            ln::FileSystem::copyDirectory(
-                ln::Path::combine(project()->workspace()->buildEnvironment()->luminoPackageRootDir(), u"Engine", u"Native"),
-                ln::Path::combine(project()->engineDirPath(), u"Native"),
-                true, true);
-
-            CLI::info("Copied Engine.");
-        }
+        // 各プロジェクトが環境変数でインストール済みパッケージを参照する
     }
+
     return Result::Success;
 }
 

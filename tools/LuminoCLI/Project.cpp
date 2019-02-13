@@ -37,6 +37,10 @@ Result Project::newProject(const ln::Path& projectDir, const ln::String& project
 
 	m_properties->language = u"cpp";
     m_properties->engine = engineSource;
+    if (m_properties->engine.isEmpty()) {
+        m_properties->engine = u"system";
+    }
+
 	ln::FileSystem::createDirectory(m_engineDir);
 	ln::FileSystem::createDirectory(m_sourcesDir);
 	ln::FileSystem::createDirectory(m_assetsDir);
