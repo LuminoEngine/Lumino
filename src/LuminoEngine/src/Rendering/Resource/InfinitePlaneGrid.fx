@@ -25,13 +25,12 @@ VS_OUTPUT Basic_VS(float3 Pos : POSITION)
 
 float4 Basic_PS(VS_OUTPUT input) : COLOR0
 {
-	//return float4(1, 0, 0, 1);
 	float4 texColor = ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.Tex);
 	float4 texColor2 = ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.Tex / 10.0);
 	return texColor + texColor2;
 }
 
-technique Forward_Geometry
+technique Default
 {
 	pass P0
 	{

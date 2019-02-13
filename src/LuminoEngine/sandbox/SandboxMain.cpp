@@ -98,23 +98,23 @@ int main(int argc, char** argv)
 
 	GlobalLogger::addStdErrAdapter();
     EngineSettings::setEngineFeatures(EngineFeature::Experimental);
-	EngineSettings::addAssetDirectory(u"D:/Proj/LN/Lumino/src/LuminoEngine/test/Assets");
+	//EngineSettings::addAssetDirectory(u"D:/Proj/LN/Lumino/src/LuminoEngine/test/Assets");
 	detail::EngineDomain::engineManager()->settings().standaloneFpsControl = true;
 	Engine::initialize();
 
-	auto sprite1 = Sprite::create(2, 2, Assets::loadTexture(u"Sprite1.png"));
+	//auto sprite1 = Sprite::create(2, 2, Assets::loadTexture(u"Sprite1.png"));
 
-	while (Engine::update()) {
-	}
+	//while (Engine::update()) {
+	//}
 
-	Engine::finalize();
-	return 0;
+	//Engine::finalize();
+	//return 0;
 
 
 
     auto ctl = newObject<CameraOrbitControlComponent>();
-    Engine::mainCamera()->addComponent(ctl);
-    Engine::mainCamera()->setPosition(0, 0, -20);
+    //Engine::mainCamera()->addComponent(ctl);
+    Engine::mainCamera()->setPosition(0, 5, -10);
     //Engine::mainCamera()->setBackgroundColor(Color::Gray);
 
 
@@ -329,7 +329,7 @@ int main(int argc, char** argv)
     mesh1->staticMeshComponent()->setModel(meshModel);
 #endif
 
-#if 1
+#if 0
     //auto sound = newObject<Sound>(u"D:\\tmp\\4_Battle_win.wav");
     auto sound = newObject<Sound>(u"D:/Music/momentum/02 - momentum.wav");
     //auto sound = newObject<Sound>(u"D:/Proj/Volkoff/Assets/Data/Sound/BGM/monochrome.ogg");
@@ -397,7 +397,7 @@ int main(int argc, char** argv)
         //sprite->setPosition(0, track1->evaluate(time));
         //std::cout << track1->evaluate(time) << std::endl;
         time += 0.016;
-#if 1
+#if 0
         if (Mouse::isPressed(MouseButtons::Left))
         {
             float pitch = (Mouse::position().x / 640)  + 0.5;

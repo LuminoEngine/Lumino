@@ -27,6 +27,7 @@ ShaderTechnique* UnLigitingSceneRendererPass::selectShaderTechnique(
 	ShaderTechnique* tech = nullptr;
 	if (requestedShader) {
 		ShaderTechniqueClass key = {
+            false,
 			ShaderTechniqueClass_Ligiting::Forward,
 			ShaderTechniqueClass_Phase::Geometry,
 			requestedMeshProcess,

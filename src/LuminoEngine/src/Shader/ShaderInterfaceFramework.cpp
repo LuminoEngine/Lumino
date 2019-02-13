@@ -402,18 +402,26 @@ ShaderParameter* ShaderSemanticsManager::getParameterBySemantics(BuiltinSemantic
 
 void ShaderTechniqueClass::parseTechniqueClassString(const String& str, ShaderTechniqueClass* outClassSet)
 {
+    outClassSet->defaultTechnique = false;
     outClassSet->ligiting = ShaderTechniqueClass_Ligiting::Forward;
     outClassSet->phase = ShaderTechniqueClass_Phase::Geometry;
     outClassSet->meshProcess = ShaderTechniqueClass_MeshProcess::StaticMesh;
     outClassSet->shadingModel = ShaderTechniqueClass_ShadingModel::Default;
-
-    // TODO: splitRef
-    auto tokens = str.split(u"_", StringSplitOptions::RemoveEmptyEntries);
-    for (auto& token : tokens) {
-        if (String::compare(token, u"SkinnedMesh", CaseSensitivity::CaseInsensitive) == 0) {
-            outClassSet->meshProcess = ShaderTechniqueClass_MeshProcess::SkinnedMesh;
-        } else if (String::compare(token, u"UnLighting", CaseSensitivity::CaseInsensitive) == 0) {
-            outClassSet->shadingModel = ShaderTechniqueClass_ShadingModel::UnLighting;
+    if (String::compare(str, u"Default", CaseSensitivity::CaseInsensitive) == 0)
+    {
+        outClassSet->defaultTechnique = true;
+    }
+    else
+    {
+        // TODO: splitRef
+        auto tokens = str.split(u"_", StringSplitOptions::RemoveEmptyEntries);
+        for (auto& token : tokens) {
+            if (String::compare(token, u"SkinnedMesh", CaseSensitivity::CaseInsensitive) == 0) {
+                outClassSet->meshProcess = ShaderTechniqueClass_MeshProcess::SkinnedMesh;
+            }
+            else if (String::compare(token, u"UnLighting", CaseSensitivity::CaseInsensitive) == 0) {
+                outClassSet->shadingModel = ShaderTechniqueClass_ShadingModel::UnLighting;
+            }
         }
     }
 }

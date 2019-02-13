@@ -112,6 +112,7 @@ ShaderTechnique* ClusteredShadingGeometryRenderingPass::selectShaderTechnique(
 	}
 
 	ShaderTechniqueClass classSet;
+    classSet.defaultTechnique = false;
 	classSet.ligiting = ShaderTechniqueClass_Ligiting::Forward;
 	classSet.phase = ShaderTechniqueClass_Phase::Geometry;
 	classSet.meshProcess = requestedMeshProcess;

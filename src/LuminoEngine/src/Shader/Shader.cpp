@@ -572,11 +572,20 @@ Ref<ReadOnlyList<Ref<ShaderTechnique>>> Shader::techniques() const
 // TODO: 名前の指定方法をもう少しいい感じにしたい。ImageEffect を Forward_Geometry_UnLighting と書かなければならないなど、煩雑。
 ShaderTechnique* Shader::findTechniqueByClass(const detail::ShaderTechniqueClass& techniqueClass) const
 {
+    ShaderTechnique* defaultTech = nullptr;
     for (auto& tech : m_techniques) {
         if (detail::ShaderTechniqueClass::equals(detail::ShaderHelper::techniqueClass(tech), techniqueClass)) {
             return tech;
         }
+        if (detail::ShaderHelper::techniqueClass(tech).defaultTechnique) {
+            defaultTech = tech;
+        }
     }
+
+    if (defaultTech) {
+        return defaultTech;
+    }
+
     return nullptr;
 }
 
