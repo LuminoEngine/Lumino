@@ -20,7 +20,7 @@ CameraComponent::CameraComponent()
     , m_aspect(0.0f)
     , m_nearClip(0.3f)			// Unity based.
     , m_farClip(1000.0f)
-    , m_orthographicSize(5.0f)	// Unity based.
+    , m_orthographicSize(10.0f)	// Unity based. ※ Unity は縦幅の "半分" だが、ちょっとイメージしづらいので Lumino では全体
     , m_ownerRenderView(nullptr)
 //, m_zSortDistanceBase(ZSortDistanceBase::CameraDistance)
 //, m_cameraBehavior(nullptr)

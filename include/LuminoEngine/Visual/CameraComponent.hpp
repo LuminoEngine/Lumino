@@ -61,6 +61,7 @@ public:
     ProjectionMode projectionMode() const { return m_projectionMode; }
 	
 	void setOrthographicSize(float value) { m_orthographicSize = value; }
+    float orthographicSize() const { return m_orthographicSize; }
 
 	void setAspect(float value) { m_aspect = value; }
 

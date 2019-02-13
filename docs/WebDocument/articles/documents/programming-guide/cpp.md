@@ -39,6 +39,27 @@ void Main()
 ```
 
 
+### Lumino におけるスマートポインタと通常ポインタの使い分けについて
+
+何らかのオブジェクトを作成して返す関数は、必ずスマートポインタを返します。
+例えば、Assets クラスの loadTexture メソッドの宣言は次のようになっています。
+
+```
+static Ref<Texture2D> loadTexture(const StringRef& filePath);
+```
+
+一方、既に Lumino のエンジン内部やほかのオブジェクトが保持しているオブジェクトを返すだけの関数は、通常のポインタを返します。
+例えば、Engine::initialize() 時に内部で作成されるカメラを返す、Engine クラスの mainCamera() メソッドの宣言は次のようになっています。
+
+```
+static Camera* mainCamera();
+```
+
+どちらにしても、返ってきたポインタの delete は不要です。
+
+
+
+
 
 
 

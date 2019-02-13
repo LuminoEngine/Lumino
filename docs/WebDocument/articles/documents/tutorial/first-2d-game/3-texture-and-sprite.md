@@ -1,0 +1,145 @@
+画像を表示する
+==========
+
+TODO: zip
+
+この中に、このチュートリアルで作成するゲームの素材が入っています。
+
+ゲームを作るために必要な素材のことを `アセット` と呼びます。
+画像や音声など
+
+
+画像を読み込む
+----------
+
+Lumino では通常、画像のことを `テクスチャ` と呼びます。
+
+画像をプログラムで扱うにはまず PNG や JPEG などの画像ファイルを読み込み、テクスチャを作成します。
+
+```cpp
+void Main()
+{
+    Ref<Texture> skyTexture = Assets::loadTexture(u"sky");
+
+    while (Engine::update())
+    {
+    }
+}
+```
+
+まず、`Assets::loadTexture` というメソッドで "sky" という名前の画像ファイルを読み込み、テクスチャを作成します。続いて `Ref<Texture>` という型の変数 skyTexture にテクスチャを格納します。
+
+読み込まれるファイルはプロジェクトの Assets フォルダの中にある sky.png ファイルです。（ファイルの拡張子は省略可能です）
+
+`Ref` は「スマートポインタ」と呼ばれる、解放忘れをはじめとした問題を防止し、ポインタを安全に扱うための機能です。
+
+
+### スマートポインタ について
+
+多くの C++ の入門本やサイトでは「new によってオブジェクトを作成し、必ず delete で解放すること」と解説されています。
+しかし、スマートポインタを使うことで、オブジェクトが不要になったとき自動的に delete されるようになります。
+
+もう一度、プログラムで確認してみましょう。
+
+```cpp
+void Main()
+{
+    Ref<Texture> skyTexture = Assets::loadTexture(u"sky");
+
+    while (Engine::update())
+    {
+    }
+
+    // Main を抜けるとき、もう skyTexture は不要になるため、作成したテクスチャは delete される。
+}
+```
+
+Ref を使っている限り、delete は不要です。というより、*delete してはなりません。*
+
+Ref は Lumino を使う上で非常に重要なキーワードで、今後もたくさん目にすることになります。必ず覚えておいてください。
+
+より詳細な説明は [C++ プログラミングガイドのメモリ管理](../programming-guide/cpp.md#メモリ管理) を参照してください。
+
+
+
+画像を表示する
+----------
+
+画像を表示するためには、`スプライト` と呼ばれるオブジェクトを使用します。
+
+単に画像と言っても、実際のシーンではキャラクターの位置や向き、透明度、アニメーションなど様々な動作が必要になります。スプライトには、そういった操作で必要となる機能が組み込まれています。
+
+ちょうど、テクスチャを張り付ける透明な板のようなものをイメージしてください。
+
+次のプログラムは、画像ファイルを読み込み、スプライトを表示します。
+
+```cpp
+#include <Lumino.hpp>
+
+void Main()
+{
+    Ref<Texture> skyTexture = Assets::loadTexture(u"sky");
+    Ref<Sprite> sprite = Sprite::create(16, 12, skyTexture);
+
+    while (Engine::update())
+    {
+    }
+}
+```
+
+実行すると、次のような画像が表示されます。
+
+![](img/texture-and-sprite-1.png)
+
+
+`Sprite::create(16, 12, skyTexture)` は、横幅16, 縦幅12 の、先ほど読み込んだテクスチャを表示するスプライトを作成します。
+
+作成したスプライトは、Engine::update() によって自動的に画面に描画されます。
+
+
+サイズの単位は？
+----------
+
+16 や 12 という数字はどのようにして求めたのでしょうか？
+
+Lumino は 3D をベースとしたゲームエンジンです（ただし、3D がメインというより、2D ゲームの表現力を高めるために 3D を利用する、と言った方が正しいかもしれません）。そのため、何らかの描画を行うオブジェクトは基本的に 3D 空間に配置されます。
+
+先のチュートリアルになりますが、[デバッグ](14-debug.md) の機能を使って「カメラ」を操作し、先ほどのスプライトを手前右上の位置から見下ろすと次のように表示されます。
+
+![](img/texture-and-sprite-2.png)
+
+16 や 12 という数字は、このグリッドが示す距離の単位です。 (ちなみに、Lumino はこの 1 つ分を 1 メートルと考えています。これは物理演算を考えるときに重要な単位となってきます)
+
+
+
+ぴったりウィンドウに収める
+----------
+
+TODO:
+
+```cpp
+#include <Lumino.hpp>
+
+void Main()
+{
+    Camera* camera = Engine::mainCamera();
+    camera->setProjectionMode(ProjectionMode::Orthographic);
+    camera->setOrthographicSize(12);
+
+    Ref<Texture> skyTexture = Assets::loadTexture(u"sky");
+    Ref<Sprite> sprite = Sprite::create(16, 12, skyTexture);
+
+    while (Engine::update())
+    {
+    }
+}
+```
+
+
+
+
+
+
+
+
+

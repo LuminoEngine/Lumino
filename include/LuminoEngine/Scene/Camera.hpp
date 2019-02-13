@@ -37,6 +37,20 @@ public:
     float getFarClip() const { return m_component->getFarClip(); }
 
 
+    /** カメラの投影モードを設定します。(default: Perspective) */
+    void setProjectionMode(ProjectionMode value) { m_component->setProjectionMode(value); }
+
+    /** カメラの投影モードを取得します。 */
+    ProjectionMode projectionMode() const { return m_component->projectionMode(); }
+
+    /** 平行投影モード時の、ビューの縦幅に対するワールド空間内の距離を設定します。(default: 10.0) */
+    void setOrthographicSize(float value) { m_component->setOrthographicSize(value); }
+
+    /** 平行投影モード時の、ビューの縦幅に対するワールド空間内の距離を取得します。 */
+    float orthographicSize() const { return m_component->orthographicSize(); }
+
+
+
     /** ビュー行列を取得します。カメラの姿勢に同期するように別のオブジェクトの更新を行う場合、onPostUpdate() でこの行列を取得します。onUpdate() 時点では最新の行列が返るとは限りません。 */
     const Matrix& viewMatrix() const;
 

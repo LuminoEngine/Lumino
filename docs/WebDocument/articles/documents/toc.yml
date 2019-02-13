@@ -18,8 +18,8 @@
         href: tutorial/first-2d-game/1-introduction.md
       - name: 2. フレームワークについて
         href: tutorial/first-2d-game/2-app-framework.md
-      - name: 3. ゲーム素材の読み込み
-        href: tutorial/first-2d-game/3-loading-assets.md
+      - name: 3. 画像を表示する
+        href: tutorial/first-2d-game/3-texture-and-sprite.md
       - name: 4. ワールドの構築
         href: tutorial/first-2d-game/4-world-building.md
       - name: 5. プレイヤーの表示
@@ -40,7 +40,7 @@
         href: tutorial/first-2d-game/12-game-scene.md
       - name: 13. リリース
         href: tutorial/first-2d-game/13-deploy.md
-      - name: TODO: デバッグ
+      - name: TODO デバッグ
         href: tutorial/first-2d-game/13-deploy.md
 
         
