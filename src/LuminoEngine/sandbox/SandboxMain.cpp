@@ -98,8 +98,19 @@ int main(int argc, char** argv)
 
 	GlobalLogger::addStdErrAdapter();
     EngineSettings::setEngineFeatures(EngineFeature::Experimental);
+	EngineSettings::addAssetDirectory(u"D:/Proj/LN/Lumino/src/LuminoEngine/test/Assets");
 	detail::EngineDomain::engineManager()->settings().standaloneFpsControl = true;
 	Engine::initialize();
+
+	auto sprite1 = Sprite::create(2, 2, Assets::loadTexture(u"Sprite1.png"));
+
+	while (Engine::update()) {
+	}
+
+	Engine::finalize();
+	return 0;
+
+
 
     auto ctl = newObject<CameraOrbitControlComponent>();
     Engine::mainCamera()->addComponent(ctl);

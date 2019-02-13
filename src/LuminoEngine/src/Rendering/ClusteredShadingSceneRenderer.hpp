@@ -4,6 +4,7 @@
 
 namespace ln {
 namespace detail {
+class ClusteredShadingSceneRenderer;
 
 #if 1
 
@@ -47,7 +48,7 @@ class ClusteredShadingGeometryRenderingPass
 public:
 	ClusteredShadingGeometryRenderingPass();
 	virtual ~ClusteredShadingGeometryRenderingPass();
-	void init();
+	void init(ClusteredShadingSceneRenderer* ownerRenderer);
 
 	virtual ShaderTechnique* selectShaderTechnique(
 		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
@@ -60,8 +61,9 @@ public:
 	//virtual void onBeginPass(DefaultStatus* defaultStatus, RenderView* renderView) override;
 
 private:
-	Ref<Shader>					m_defaultShader;
-	ShaderTechnique*			m_defaultShaderTechnique;
+	ClusteredShadingSceneRenderer* m_ownerRenderer;
+	Ref<Shader> m_defaultShader;
+	ShaderTechnique* m_defaultShaderTechnique;
 	//Ref<Shader>					m_unLightingShader;
 	//ShaderTechnique*			m_unLightingShaderTechnique;
 };
@@ -107,6 +109,7 @@ public:
 	//void setSceneGlobalRenderSettings(const SceneGlobalRenderSettings& settings) { m_renderSettings = settings; }
 	void setFogParams(const FogParams& params) { m_fogParams = params; }
 	DepthPrepass* getDepthPrepass() const { return m_depthPrepass; }
+	const LightClusters& lightClusters() const { return m_lightClusters; }
 
 protected:
 	//virtual void onBeginRender() override;

@@ -98,8 +98,8 @@ void EngineManager::init()
         m_mainWorld = newObject<World>();
         m_sceneManager->setActiveWorld(m_mainWorld);
 
-        m_mainAmbientLight = newObject<AmbientLight>();
-        m_mainDirectionalLight = newObject<DirectionalLight>();
+        //m_mainAmbientLight = newObject<AmbientLight>();
+        //m_mainDirectionalLight = newObject<DirectionalLight>();
 
         m_mainCamera = newObject<Camera>();
         m_mainWorldRenderView = newObject<WorldRenderView>();

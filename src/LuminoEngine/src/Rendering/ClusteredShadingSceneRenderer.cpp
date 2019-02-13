@@ -75,9 +75,10 @@ ClusteredShadingGeometryRenderingPass::~ClusteredShadingGeometryRenderingPass()
 {
 }
 
-void ClusteredShadingGeometryRenderingPass::init()
+void ClusteredShadingGeometryRenderingPass::init(ClusteredShadingSceneRenderer* ownerRenderer)
 {
 	SceneRendererPass::init();
+	m_ownerRenderer = ownerRenderer;
 
 	{
 		m_defaultShader = manager()->builtinShader(BuiltinShader::ClusteredShadingDefault);
@@ -104,6 +105,11 @@ ShaderTechnique* ClusteredShadingGeometryRenderingPass::selectShaderTechnique(
 {
 	Shader* shader = requestedShader;
 	if (!shader) shader = m_defaultShader;
+
+	// ライトがひとつもない場合はライティングなしを選択
+	if (!m_ownerRenderer->lightClusters().hasLight()) {
+		requestedShadingModel = ShadingModel::UnLighting;
+	}
 
 	ShaderTechniqueClass classSet;
 	classSet.ligiting = ShaderTechniqueClass_Ligiting::Forward;
@@ -247,7 +253,7 @@ void ClusteredShadingSceneRenderer::init(RenderingManager* manager)
 	//addPass(m_depthPrepass);
 
 	// pass "Geometry"
-    auto geometryPass = newObject<ClusteredShadingGeometryRenderingPass>();
+    auto geometryPass = newObject<ClusteredShadingGeometryRenderingPass>(this);
 	addPass(geometryPass);
 
 	m_lightClusters.init();

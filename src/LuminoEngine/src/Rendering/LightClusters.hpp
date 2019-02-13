@@ -31,6 +31,7 @@ public:
 	const Ref<Texture2D>& getGlobalLightInfoTexture() const { return m_globalLightInfoTexture; }
 
 	int getGlobalLightCount() const { return m_globalLightInofs.size(); }
+	bool hasLight() const { return m_lightInofs.size() > 1 || m_globalLightInofs.size() > 1; }
 
 private:
 	//static float bias(float b, float x) { return pow(x, log(b) / log(0.5)); }
