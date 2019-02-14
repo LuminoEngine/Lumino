@@ -21,6 +21,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     ln::EngineSettings::setEngineFeatures(ln::EngineFeature::Experimental);
     ln::EngineSettings::setStandaloneFpsControl(true);
+    ln::Engine::initialize();
 
     Main();
 
