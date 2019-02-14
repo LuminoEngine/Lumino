@@ -25,7 +25,7 @@ http://www.microsoft.com/ja-jp/download/details.aspx?id=35
 ライセンス
 --------------------
 The MIT license.
-Lumino Copyright (c) 2013-2018 lriki
+Lumino Copyright (c) 2013-2019 lriki
 
 Lumino は MIT ライセンスです。
 https://opensource.org/licenses/mit-license.php

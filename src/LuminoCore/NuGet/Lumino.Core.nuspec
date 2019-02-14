@@ -11,7 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Portable C++ class library</description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright 2018 lriki</copyright>
+    <copyright>Copyright 2019 lriki</copyright>
     <tags>C++</tags>
   </metadata>
 </package>
