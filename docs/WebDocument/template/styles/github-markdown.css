@@ -269,7 +269,7 @@
 .markdown-body h4,
 .markdown-body h5,
 .markdown-body h6 {
-  margin-top: 0;
+  margin-top: 4px;
   margin-bottom: 0;
 }
 
