@@ -5,6 +5,8 @@
 #include "../Graphics/RenderState.hpp"
 
 namespace ln {
+class VertexDeclaration;
+class VertexBuffer;
 class Texture;
 class RenderTargetTexture;
 class DepthBuffer;
@@ -123,6 +125,8 @@ public:
 		SpriteBaseDirection baseDirection,
 		BillboardType billboardType,
 		AbstractMaterial* material);
+
+	void drawPrimitive(VertexDeclaration* vertexDeclaration, VertexBuffer* vertexBuffer, PrimitiveTopology topology, int startVertex, int primitiveCount);
 
     void drawMesh(MeshResource* meshResource, int sectionIndex);
 	//void drawMesh(MeshContainer* meshContainer, int sectionIndex);

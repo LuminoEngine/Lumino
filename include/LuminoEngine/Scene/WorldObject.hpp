@@ -164,6 +164,8 @@ public: // TODO:
     void setSpecialObject(bool enalbed) { m_isSpecialObject = true; }
     bool isSpecialObject() const { return m_isSpecialObject; }
     detail::WorldObjectTransform* transform() const { return m_transform; }
+	void attachWorld(World* world);
+	void detachWorld();
     void preUpdateFrame();
     void updateFrame(float elapsedSeconds);
     void render();

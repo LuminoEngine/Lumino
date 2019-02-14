@@ -335,6 +335,7 @@ set(LN_SOURCES_Physics
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/CollisionShape.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/PhysicsWorld.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/PhysicsWorld2D.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/PhysicsObject.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/RigidBody.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/SoftBody.hpp
@@ -345,6 +346,7 @@ set(LN_SOURCES_Physics
     src/Physics/PhysicsManager.hpp
     src/Physics/PhysicsObject.cpp
     src/Physics/PhysicsWorld.cpp
+    src/Physics/PhysicsWorld2D.cpp
     src/Physics/RigidBody.cpp
     src/Physics/SoftBody.cpp
 )
@@ -388,6 +390,7 @@ set(LN_SOURCES_Scene
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Component.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Light.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/OffscreenWorldRenderView.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/RigidBodyComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Scene.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/SceneConductor.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/SkinnedMesh.hpp
@@ -403,6 +406,7 @@ set(LN_SOURCES_Scene
     src/Scene/Component.cpp
     src/Scene/Light.cpp
     src/Scene/OffscreenWorldRenderView.cpp
+    src/Scene/RigidBodyComponent.cpp
     src/Scene/Scene.cpp
     src/Scene/SceneConductor.cpp
     src/Scene/SceneManager.cpp

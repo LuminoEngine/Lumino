@@ -42,6 +42,14 @@ void Component::onDetaching(WorldObject* owner)
 {
 }
 
+void Component::onAttachedWorld(World* newOwner)
+{
+}
+
+void Component::onDetachedWorld(World* oldOwner)
+{
+}
+
 void Component::onUpdate(float elapsedSeconds)
 {
 }

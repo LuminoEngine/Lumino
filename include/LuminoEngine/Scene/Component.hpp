@@ -24,6 +24,8 @@ protected:
     // 以下、すべて空実装
     virtual void onAttached(WorldObject* owner);
     virtual void onDetaching(WorldObject* owner);
+	virtual void onAttachedWorld(World* newOwner);
+	virtual void onDetachedWorld(World* oldOwner);
     virtual void onUpdate(float elapsedSeconds);
     virtual void onPrepareRender(RenderingContext* context);
     virtual void onRender(RenderingContext* context);

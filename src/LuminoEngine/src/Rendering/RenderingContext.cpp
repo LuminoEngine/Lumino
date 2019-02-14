@@ -2,6 +2,8 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/Bitmap.hpp>
+#include <LuminoEngine/Graphics/VertexDeclaration.hpp>
+#include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Mesh/Mesh.hpp>
@@ -313,6 +315,34 @@ void RenderingContext::drawSprite(
 	//detail::Sphere sphere;
 	//detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &sphere);
 	//ptr->setLocalBoundingSphere(sphere);
+}
+
+void RenderingContext::drawPrimitive(VertexDeclaration* vertexDeclaration, VertexBuffer* vertexBuffer, PrimitiveTopology topology, int startVertex, int primitiveCount)
+{
+	class DrawPrimitive : public detail::RenderDrawElement
+	{
+	public:
+		Ref<VertexDeclaration> vertexDeclaration;
+		Ref<VertexBuffer> vertexBuffer;
+		PrimitiveTopology topology;
+		int startVertex;
+		int primitiveCount;
+
+		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+		{
+			context->setVertexDeclaration(vertexDeclaration);
+			context->setVertexBuffer(0, vertexBuffer);
+			context->setPrimitiveTopology(topology);
+			context->drawPrimitive(startVertex, primitiveCount);
+		}
+	};
+
+	auto* element = m_builder->addNewDrawElement<DrawPrimitive>(nullptr, nullptr);
+	element->vertexDeclaration = vertexDeclaration;
+	element->vertexBuffer = vertexBuffer;
+	element->topology = topology;
+	element->startVertex = startVertex;
+	element->primitiveCount = primitiveCount;
 }
 
 // LOD なし。というか直接描画

@@ -169,6 +169,28 @@ void WorldObject::onRender()
 
 }
 
+void WorldObject::attachWorld(World* world)
+{
+	if (LN_REQUIRE(world)) return;
+	if (LN_REQUIRE(!m_world)) return;
+	m_world = world;
+	for (auto& c : m_components) {
+		c->onAttachedWorld(world);
+	}
+}
+
+void WorldObject::detachWorld()
+{
+	if (m_world) {
+		World* old = m_world;
+		m_world = nullptr;
+
+		for (auto& c : m_components) {
+			c->onDetachedWorld(old);
+		}
+	}
+}
+
 void WorldObject::updateFrame(float elapsedSeconds)
 {
     onUpdate(elapsedSeconds);

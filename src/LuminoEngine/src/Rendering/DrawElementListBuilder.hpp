@@ -29,7 +29,7 @@ public:
 	void setTargetList(DrawElementList* targetList);
     void resetForBeginRendering();  // 描画開始時のリセット。スタックもクリアする
 	void reset2();   // スタックに積んである分はリセットしないしスタックも消さない
-    void advanceFence();
+    void advanceFence();	// zソートなどの境界。特に、clear や blit など、深度が関係ないものとの境界
 
 	void setRenderTarget(int index, RenderTargetTexture* value);
     RenderTargetTexture* renderTarget(int index) const;

@@ -125,6 +125,7 @@ int main(int argc, char** argv)
 		auto body2 = newObject<RigidBody2D>();
 		body2->addCollisionShape(shape2);
 		body2->setPosition(Vector2(0, 5));
+		body2->setMass(1);
 		p2world->addPhysicsObject(body2);
 
 		for (int i = 0; i < 60; i++) {

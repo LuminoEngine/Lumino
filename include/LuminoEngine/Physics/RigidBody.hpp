@@ -117,6 +117,8 @@ public:
     void setCcdMotionThreshold(float threshold);
     void setTrigger(bool enable);
 
+	// TODO: internal
+
 protected:
     virtual void onBeforeStepSimulation() override;
     virtual void onAfterStepSimulation() override;

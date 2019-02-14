@@ -9,6 +9,7 @@ class WorldRenderView;
 class WorldObject;
 class Component;
 class PhysicsWorld;
+class PhysicsWorld2D;
 namespace detail {
 struct CameraInfo;
 class EngineManager;
@@ -43,6 +44,7 @@ LN_CONSTRUCT_ACCESS:
 public: // TODO: internal
     const Ref<AnimationContext>& animationContext() const { return m_animationContext; }
     const Ref<PhysicsWorld>& physicsWorld() const { return m_physicsWorld; }
+	const Ref<PhysicsWorld2D>& physicsWorld2D() const { return m_physicsWorld2D; }
     void updateObjectsWorldMatrix();
     void updateFrame(float elapsedSeconds);
 	detail::WorldSceneGraphRenderingContext* prepareRender(RenderViewPoint* viewPoint);
@@ -50,6 +52,7 @@ public: // TODO: internal
 
     Ref<AnimationContext> m_animationContext;
     Ref<PhysicsWorld> m_physicsWorld;
+	Ref<PhysicsWorld2D> m_physicsWorld2D;
     List<Ref<WorldObject>> m_rootWorldObjectList;
 
     Ref<detail::WorldSceneGraphRenderingContext> m_renderingContext;

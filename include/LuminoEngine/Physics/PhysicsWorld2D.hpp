@@ -1,4 +1,10 @@
-﻿#pragma once
+﻿
+/*
+ * TODO: 後々、3D と 2D は抽象化して統合していいと思う。
+ * もしかしたら body や shape は 2D つけたクラス名の方がいいかもしれないけど、world はその必要はないだろう。
+ */
+
+#pragma once
 #include <memory>
 #include "Common.hpp"
 
@@ -9,7 +15,9 @@ class b2Fixture;
 class b2World;
 
 namespace ln {
+class RenderingContext;
 class PhysicsWorld2D;
+class PhysicsWorld2DDebugDraw;
 
 class CollisionShape2D
 	: public Object
@@ -55,6 +63,7 @@ public:
 protected:
 	virtual void onBeforeStepSimulation();
 	virtual void onAfterStepSimulation();
+	virtual void onRemoveFromPhysicsWorld();
 
 LN_CONSTRUCT_ACCESS:
 	PhysicsObject2D();
@@ -87,9 +96,13 @@ public:
 
 	void addCollisionShape(CollisionShape2D* shape);
 
+public: // TODO: internal
+	void setEventListener(detail::IPhysicsObjectEventListener* listener) { m_listener = listener; }
+
 protected:
 	virtual void onBeforeStepSimulation() override;
 	virtual void onAfterStepSimulation() override;
+	virtual void onRemoveFromPhysicsWorld() override;
 
 LN_CONSTRUCT_ACCESS:
 	RigidBody2D();
@@ -98,6 +111,7 @@ LN_CONSTRUCT_ACCESS:
 	virtual void onDispose(bool explicitDisposing) override;
 
 private:
+	detail::IPhysicsObjectEventListener* m_listener;
 	b2Body* m_body;
 	b2Fixture* m_fixture;
 	std::vector<Ref<CollisionShape2D>> m_shapes;
@@ -111,7 +125,9 @@ class PhysicsWorld2D
 {
 public:
 	void addPhysicsObject(PhysicsObject2D* physicsObject);
+	void removePhysicsObject(PhysicsObject2D* physicsObject);
 	void stepSimulation(float elapsedSeconds);
+	void renderDebug(RenderingContext* context);
 
 public: // TODO:
 	b2World* box2DWorld() const { return m_world; }
@@ -124,6 +140,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	b2World* m_world;
+	std::unique_ptr<PhysicsWorld2DDebugDraw> m_debugDraw;
 	List<Ref<PhysicsObject2D>> m_objects;
 };
 
