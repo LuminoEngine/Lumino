@@ -206,6 +206,9 @@ public:
 
 	void render(RenderingContext* context)
 	{
+        context->pushState();
+        context->setBlendMode(BlendMode::Alpha);
+
 		context->drawPrimitive(
 			detail::EngineDomain::renderingManager()->standardVertexDeclaration(),
 			m_trianglesBuffer,
@@ -217,6 +220,11 @@ public:
 			m_linesBuffer,
 			PrimitiveTopology::LineList,
 			0, m_linesVertexCount / 2);
+
+        context->popState();    // TODO: scoped
+
+        m_linesVertexCount = 0;
+        m_trianglesVertexCount = 0;
 	}
 
 	/// Draw a closed polygon provided in CCW order.
@@ -240,8 +248,8 @@ public:
 		for (int32 i = 1; i < vertexCount - 1; ++i)
 		{
 			addTriangleVertex(vertices[0], fillColor);
-			addTriangleVertex(vertices[i], fillColor);
 			addTriangleVertex(vertices[i + 1], fillColor);
+			addTriangleVertex(vertices[i], fillColor);
 		}
 
 		b2Vec2 p1 = vertices[vertexCount - 1];
@@ -296,8 +304,8 @@ public:
 			r2.y = sinInc * r1.x + cosInc * r1.y;
 			b2Vec2 v2 = center + radius * r2;
 			addTriangleVertex(v0, fillColor);
-			addTriangleVertex(v1, fillColor);
 			addTriangleVertex(v2, fillColor);
+			addTriangleVertex(v1, fillColor);
 			r1 = r2;
 			v1 = v2;
 		}
@@ -350,22 +358,28 @@ public:
 private:
 	void addLineVertex(const b2Vec2& v, const b2Color& c)
 	{
-		Vertex* buf = (Vertex*)m_linesBuffer->map(MapMode::Write);
-		buf[m_linesVertexCount].position.set(v.x, v.y, 0);
-		buf[m_linesVertexCount].color.set(c.r, c.g, c.b, c.a);
-		buf[m_linesVertexCount].uv = Vector2::Zero;
-		buf[m_linesVertexCount].normal = -Vector3::UnitZ;
-		m_linesVertexCount++;
+        if (m_linesVertexCount < MaxVertexCount)
+        {
+            Vertex* buf = (Vertex*)m_linesBuffer->map(MapMode::Write);
+            buf[m_linesVertexCount].position.set(v.x, v.y, 0);
+            buf[m_linesVertexCount].color.set(c.r, c.g, c.b, c.a);
+            buf[m_linesVertexCount].uv = Vector2::Zero;
+            buf[m_linesVertexCount].normal = -Vector3::UnitZ;
+            m_linesVertexCount++;
+        }
 	}
 
 	void addTriangleVertex(const b2Vec2& v, const b2Color& c)
 	{
-		Vertex* buf = (Vertex*)m_trianglesBuffer->map(MapMode::Write);
-		buf[m_trianglesVertexCount].position.set(v.x, v.y, 0);
-		buf[m_trianglesVertexCount].color.set(c.r, c.g, c.b, c.a);
-		buf[m_trianglesVertexCount].uv = Vector2::Zero;
-		buf[m_trianglesVertexCount].normal = -Vector3::UnitZ;
-		m_trianglesVertexCount++;
+        if (m_trianglesVertexCount < MaxVertexCount)
+        {
+            Vertex* buf = (Vertex*)m_trianglesBuffer->map(MapMode::Write);
+            buf[m_trianglesVertexCount].position.set(v.x, v.y, 0);
+            buf[m_trianglesVertexCount].color.set(c.r, c.g, c.b, c.a);
+            buf[m_trianglesVertexCount].uv = Vector2::Zero;
+            buf[m_trianglesVertexCount].normal = -Vector3::UnitZ;
+            m_trianglesVertexCount++;
+        }
 	}
 
 	Ref<VertexBuffer> m_linesBuffer;
@@ -388,6 +402,8 @@ void PhysicsWorld2D::init()
 
 	m_debugDraw = std::make_unique<PhysicsWorld2DDebugDraw>();
 	m_debugDraw->init();
+    m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit /*| b2Draw::e_aabbBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit*/);
+
 
 	b2Vec2 gravity(0.0f, -9.8);
 	m_world = LN_NEW b2World(gravity);

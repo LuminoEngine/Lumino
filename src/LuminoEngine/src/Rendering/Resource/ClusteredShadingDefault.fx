@@ -234,6 +234,7 @@ _lngs_PSOutput _lngs_PS_ClusteredForward_Geometry(_lngs_PSInput input)
 	
 	// ★ライティングのコードはここに直接生成する (GBuffer生成などではマルチRT書き込みするため、戻り値も変えなければならない)
 	// ・・・というより、ピクセルシェーダ全体を生成する。フラグメントの結合じゃダメ。
+	
 
 	// TODO: SurfaceShader を入れるのはこのあたり
 	surface.Albedo = ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.UV) * input.Color;
@@ -246,6 +247,7 @@ _lngs_PSOutput _lngs_PS_ClusteredForward_Geometry(_lngs_PSInput input)
 	o.color0.a = surface.Albedo.a;
 	//o.color0 = float4(1, 0, 0, 1);
 	o.color0 = LN_GetBuiltinEffectColor(o.color0);
+	
 	return o;
 }
 
@@ -263,7 +265,7 @@ float4 _lngs_PS_UnLighting(_lngs_PSInput input) : COLOR0
 
 	//result *= (tex2D(MaterialTextureSampler, input.common.UV));
 	//result *= ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.UV);
-	float4 result = ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.UV);
+	float4 result = ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.UV) * input.Color;
 
 	return result;
 }

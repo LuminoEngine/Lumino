@@ -6,6 +6,7 @@
 #include <LuminoEngine/Mesh/Mesh.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
+#include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
@@ -109,9 +110,11 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 
             m_targetWorld->renderObjects();
 
-            PhysicsWorld* physicsWorld = m_targetWorld->physicsWorld();
-            if (physicsWorld) {
-                physicsWorld->renderDebug(renderingContext);
+            if (m_targetWorld->physicsWorld()) {
+                m_targetWorld->physicsWorld()->renderDebug(renderingContext);
+            }
+            if (m_targetWorld->physicsWorld2D()) {
+                m_targetWorld->physicsWorld2D()->renderDebug(renderingContext);
             }
 
             adjustGridPlane(m_viewPoint->viewFrustum, this);

@@ -112,32 +112,32 @@ int main(int argc, char** argv)
 	//return 0;
 
 
-	{
+	//{
 
-		auto p2world = newObject<PhysicsWorld2D>();
+	//	auto p2world = newObject<PhysicsWorld2D>();
+    auto p2world = Engine::mainWorld()->physicsWorld2D();
+	auto shape1 = newObject<BoxCollisionShape2D>(Vector2(10, 2));
+	auto body1 = newObject<RigidBody2D>();
+	body1->addCollisionShape(shape1);
+	p2world->addPhysicsObject(body1);
 
-		auto shape1 = newObject<BoxCollisionShape2D>(Vector2(10, 2));
-		auto body1 = newObject<RigidBody2D>();
-		body1->addCollisionShape(shape1);
-		p2world->addPhysicsObject(body1);
+	auto shape2 = newObject<BoxCollisionShape2D>(Vector2(1, 1));
+	auto body2 = newObject<RigidBody2D>();
+	body2->addCollisionShape(shape2);
+	body2->setPosition(Vector2(0, 15));
+	body2->setMass(1);
+	p2world->addPhysicsObject(body2);
 
-		auto shape2 = newObject<BoxCollisionShape2D>(Vector2(1, 1));
-		auto body2 = newObject<RigidBody2D>();
-		body2->addCollisionShape(shape2);
-		body2->setPosition(Vector2(0, 5));
-		body2->setMass(1);
-		p2world->addPhysicsObject(body2);
+	//	for (int i = 0; i < 60; i++) {
+	//		p2world->stepSimulation(1.0 / 60);
 
-		for (int i = 0; i < 60; i++) {
-			p2world->stepSimulation(1.0 / 60);
-
-			printf("%4.2f %4.2f\n", body2->position().x, body2->position().y);
-		}
-	}
+	//		printf("%4.2f %4.2f\n", body2->position().x, body2->position().y);
+	//	}
+	//}
 
 
     auto ctl = newObject<CameraOrbitControlComponent>();
-    //Engine::mainCamera()->addComponent(ctl);
+    Engine::mainCamera()->addComponent(ctl);
     Engine::mainCamera()->setPosition(0, 5, -10);
     //Engine::mainCamera()->setBackgroundColor(Color::Gray);
 
