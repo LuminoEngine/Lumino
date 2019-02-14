@@ -19,7 +19,6 @@ PhysicsManager::~PhysicsManager()
 
 void PhysicsManager::init(const Settings& settings)
 {
-    auto ttest = newObject<PhysicsWorld>();
 }
 
 void PhysicsManager::dispose()
