@@ -4,6 +4,7 @@
 
 namespace ln {
 class Texture;
+class SpriteFrameSet;
 class SpriteComponent;
 
 class Sprite
@@ -11,6 +12,7 @@ class Sprite
 {
 public:
     static Ref<Sprite> create(float width, float height, Texture* texture = nullptr);
+	static Ref<Sprite> create(SpriteFrameSet* frameSet);
 
     /** スプライトが表示するテクスチャを設定します。 */
     LN_METHOD(Property)
@@ -31,6 +33,12 @@ public:
 	LN_METHOD(Property)
 	const Rect& sourceRect() const;
 
+	/** SpriteFrameSet を設定します。 */
+	void setFrameSet(SpriteFrameSet* value);
+
+	/** SpriteFrameSet から適用するフレームインデックスを設定します。デフォルトは -1 で、これはフレームを使用しないことを示します。 */
+	void setFrameIndex(int index);
+
 protected:
 
 LN_CONSTRUCT_ACCESS:
@@ -38,6 +46,7 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~Sprite();
 	void init();
     void init(float width, float height, Texture* texture = nullptr);
+	void init(SpriteFrameSet* frameSet);
 
 private:
     Ref<SpriteComponent> m_component;

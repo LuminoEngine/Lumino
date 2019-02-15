@@ -32,6 +32,9 @@ public:
     /** Vector2(1, 1) */
     static const Vector2 Ones;
 
+	/** Vector2(nan, nan) */
+	static const Vector2 NaN;
+
 public:
     /**
      * すべての要素を 0.0 に設定してインスタンスを初期化します。

@@ -8,6 +8,73 @@
 namespace ln {
 
 //=============================================================================
+// SpriteFrame
+
+SpriteFrame::SpriteFrame()
+	: m_sourceRect()
+	, m_anchorPoint()
+{
+}
+
+void SpriteFrame::init()
+{
+	Object::init();
+	m_anchorPoint = Vector2(Math::NaN, Math::NaN);
+}
+
+//=============================================================================
+// SpriteFrameSet
+
+Ref<SpriteFrameSet> SpriteFrameSet::create(Texture* texture, int frameWidth, int frameHeight, const Vector2& anchorPoint)
+{
+	return newObject<SpriteFrameSet>(texture, frameWidth, frameHeight, anchorPoint);
+}
+
+SpriteFrameSet::SpriteFrameSet()
+{
+}
+
+void SpriteFrameSet::init()
+{
+	Object::init();
+}
+
+void SpriteFrameSet::init(Texture* texture, int frameWidth, int frameHeight, const Vector2& anchorPoint)
+{
+	init();
+
+	if (LN_REQUIRE(texture)) return;
+	if (LN_REQUIRE(frameWidth > 0)) return;
+	if (LN_REQUIRE(frameHeight > 0)) return;
+	m_texture = texture;
+	m_frames = makeList<Ref<SpriteFrame>>();
+
+	int cols = m_texture->width() / frameWidth;
+	int rows = m_texture->height() / frameHeight;
+
+	for (int y = 0; y < rows; y++)
+	{
+		for (int x = 0; x < cols; x++)
+		{
+			// TODO: モノによっては大量の小オブジェクトができるので、できればまとめて alloc したりキャッシュしたい
+			auto frame = newObject<SpriteFrame>();
+			frame->setSourceRect(Rect(x * frameWidth, y * frameHeight, frameWidth, frameHeight));
+			frame->setAnchorPoint(anchorPoint);
+		}
+	}
+}
+
+SpriteFrame* SpriteFrameSet::frame(int index) const
+{
+	if (0 <= index && index < m_frames->size()) {
+		return m_frames[index];
+	}
+	else {
+		return nullptr;
+	}
+}
+
+//=============================================================================
 // SpriteComponent
 /*
  * 正面方向について
@@ -21,6 +88,7 @@ namespace ln {
 SpriteComponent::SpriteComponent()
     : m_material(nullptr)
     , m_size()
+	, m_frameIndex(-1)
 {
 }
 
@@ -59,12 +127,34 @@ void SpriteComponent::setSourceRect(const Rect& rect)
     m_sourceRect = rect;
 }
 
+void SpriteComponent::setFrameSet(SpriteFrameSet* value)
+{
+	m_frameSet = value;
+}
+
+void SpriteComponent::setFrameIndex(int index)
+{
+	m_frameIndex = index;
+}
+
 void SpriteComponent::onRender(RenderingContext* context)
 {
+	Vector2 abchorPoint(0, 0);
+	Rect sourceRect = m_sourceRect;
+
+
+	if (sourceRect.isEmpty() && m_frameSet) {
+		if (SpriteFrame* frame = m_frameSet->frame(m_frameIndex)) {
+			sourceRect = frame->sourceRect();
+			abchorPoint = frame->anchorPoint();
+		}
+	}
+
+
     Size renderSize;
     Rect renderSourceRect;
     detail::SpriteRenderFeature::makeRenderSizeAndSourceRectHelper(
-        texture(), m_size, m_sourceRect, &renderSize, &renderSourceRect);
+        texture(), m_size, sourceRect, &renderSize, &renderSourceRect);
 
     //// 転送元矩形が負値ならテクスチャ全体を転送する
     //Texture* tex = texture();
@@ -92,7 +182,7 @@ void SpriteComponent::onRender(RenderingContext* context)
     //context->setOpacity(0.5);
 
     context->drawSprite(
-        Matrix(), renderSize, Vector2(0, 0), renderSourceRect, Color::White,
+        Matrix(), renderSize, abchorPoint, renderSourceRect, Color::White,
         SpriteBaseDirection::ZMinus, BillboardType::None, m_material);
 }
 

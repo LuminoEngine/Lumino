@@ -87,7 +87,7 @@ Ref は Lumino を使う上で非常に重要なキーワードで、今後も�
 void Main()
 {
     Ref<Texture> skyTexture = Assets::loadTexture(u"sky");
-    Ref<Sprite> sprite = Sprite::create(16, 12, skyTexture);
+    Ref<Sprite> skySprite = Sprite::create(16, 12, skyTexture);
 
     while (Engine::update())
     {
@@ -135,7 +135,7 @@ void Main()
     camera->setOrthographicSize(12);
 
     Ref<Texture> skyTexture = Assets::loadTexture(u"sky");
-    Ref<Sprite> sprite = Sprite::create(16, 12, skyTexture);
+    Ref<Sprite> skySprite = Sprite::create(16, 12, skyTexture);
 
     while (Engine::update())
     {
