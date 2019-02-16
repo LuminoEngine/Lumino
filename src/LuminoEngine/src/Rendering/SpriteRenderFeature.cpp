@@ -54,17 +54,30 @@ void InternalSpriteRenderer::drawRequest(
 	if (baseDir != SpriteBaseDirection::Basic2D)
 	{
 		//Vector3 origin(-center);
+        float l, t, r, b;
+#if 1   // 原点左下、povot.y+ が↑
+        r = size.x;
+        b = 0;
+        l = 0;
+        t = size.y;
+
+        l -= center.x;
+        r -= center.x;
+        t -= center.y;
+        b -= center.y;
+#else
+        // 原点中央 povot.y+ が↓
 		Vector2 harf_size(size * 0.5f);
-		float l, t, r, b;
 		r = harf_size.x;
 		b = -harf_size.y;
 		l = -r;
 		t = -b;
 
-		l -= center.x;
-		r -= center.x;
-		t -= center.y;
-		b -= center.y;
+        l -= center.x;
+        r -= center.x;
+        t -= center.y;
+        b -= center.y;
+#endif
 
 #define LN_WRITE_V3( x_, y_, z_ ) x_, y_, z_
 

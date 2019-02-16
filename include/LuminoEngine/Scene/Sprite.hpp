@@ -11,7 +11,7 @@ class Sprite
 	: public VisualObject
 {
 public:
-    static Ref<Sprite> create(float width, float height, Texture* texture = nullptr);
+    static Ref<Sprite> create(Texture* texture, float width, float height);
 	static Ref<Sprite> create(SpriteFrameSet* frameSet);
 
     /** スプライトが表示するテクスチャを設定します。 */
@@ -39,13 +39,29 @@ public:
 	/** SpriteFrameSet から適用するフレームインデックスを設定します。デフォルトは -1 で、これはフレームを使用しないことを示します。 */
 	void setFrameIndex(int index);
 
+
+
+    /**
+        @brief		スプライトの原点を設定します。
+        @details	値は (0,0) から (1,1) の間で指定します。
+                    デフォルトは (0,0) で、これはスプライトの左下が原点であることを意味します。
+                    (0.5,0.5) はスプライトの中央、(1,1) は右上が原点となります。
+    */
+
+
+    /** アンカーポイント (原点) を設定します。デフォルトは中心(0.5, 0.5) です。 */
+    void setAnchorPoint(const Vector2& value);
+
+    /** アンカーポイント (原点) を取得します。 */
+    const Vector2& anchorPoint() const;
+
 protected:
 
 LN_CONSTRUCT_ACCESS:
 	Sprite();
 	virtual ~Sprite();
 	void init();
-    void init(float width, float height, Texture* texture = nullptr);
+    void init(Texture* texture, float width, float height);
 	void init(SpriteFrameSet* frameSet);
 
 private:

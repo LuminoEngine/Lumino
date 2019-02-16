@@ -88,6 +88,7 @@ SpriteFrame* SpriteFrameSet::frame(int index) const
 SpriteComponent::SpriteComponent()
     : m_material(nullptr)
     , m_size()
+    , m_anchorPoint(0.5, 0.5)
 	, m_frameIndex(-1)
 {
 }
@@ -139,7 +140,7 @@ void SpriteComponent::setFrameIndex(int index)
 
 void SpriteComponent::onRender(RenderingContext* context)
 {
-	Vector2 abchorPoint(0, 0);
+    Vector2 abchorPoint = m_anchorPoint;
 	Rect sourceRect = m_sourceRect;
 
 
@@ -150,36 +151,10 @@ void SpriteComponent::onRender(RenderingContext* context)
 		}
 	}
 
-
     Size renderSize;
     Rect renderSourceRect;
     detail::SpriteRenderFeature::makeRenderSizeAndSourceRectHelper(
         texture(), m_size, sourceRect, &renderSize, &renderSourceRect);
-
-    //// 転送元矩形が負値ならテクスチャ全体を転送する
-    //Texture* tex = texture();
-    //const SizeI& texSize = (tex != nullptr) ? tex->size() : SizeI::Zero;
-    //Rect renderSourceRect = m_srcRect;
-    //if (renderSourceRect.width < 0 && renderSourceRect.height < 0)
-    //{
-    //    renderSourceRect.width = texSize.width;
-    //    renderSourceRect.height = texSize.height;
-    //}
-    //Size renderSize = m_size;
-    //if (renderSize.width < 0 && renderSize.height < 0)
-    //{
-    //    renderSize.width = renderSourceRect.width;
-    //    renderSize.height = renderSourceRect.height;
-    //}
-
-    //renderSourceRect.x /= texSize.width;
-    //renderSourceRect.width /= texSize.width;
-    //renderSourceRect.y /= texSize.height;
-    //renderSourceRect.height /= texSize.height;
-
-
-    //context->setBlendMode(BlendMode::Alpha);
-    //context->setOpacity(0.5);
 
     context->drawSprite(
         Matrix(), renderSize, abchorPoint, renderSourceRect, Color::White,

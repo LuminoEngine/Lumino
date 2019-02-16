@@ -81,6 +81,12 @@ public:
     /** スプライトの大きさを設定します。 */
     void setSize(const Size& size);
 
+    /** アンカーポイント (原点) を設定します。デフォルトは中心 (0.5, 0.5) です。 */
+    void setAnchorPoint(const Vector2& value) { m_anchorPoint = value; }
+
+    /** アンカーポイント (原点) を取得します。 */
+    const Vector2& anchorPoint() const { return m_anchorPoint; }
+
 
     /**
         @brief		テクスチャのどの部分を表示するかを示す転送矩形を設定します。(ピクセル単位)
@@ -108,6 +114,7 @@ private:
     Ref<Material> m_material;
     Size m_size;
     Rect m_sourceRect;
+    Vector2 m_anchorPoint;
 	Ref<SpriteFrameSet> m_frameSet;
 	int m_frameIndex;
 };

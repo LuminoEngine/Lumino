@@ -8,9 +8,9 @@ namespace ln {
 //==============================================================================
 // Sprite
 
-Ref<Sprite> Sprite::create(float width, float height, Texture* texture)
+Ref<Sprite> Sprite::create(Texture* texture, float width, float height)
 {
-    return newObject<Sprite>(width, height, texture);
+    return newObject<Sprite>(texture, width, height);
 }
 
 Ref<Sprite> Sprite::create(SpriteFrameSet* frameSet)
@@ -34,7 +34,7 @@ void Sprite::init()
     setMainVisualComponent(m_component);
 }
 
-void Sprite::init(float width, float height, Texture* texture)
+void Sprite::init(Texture* texture, float width, float height)
 {
     init();
     setSize(Size(width, height));
@@ -80,6 +80,16 @@ void Sprite::setFrameIndex(int index)
 const Rect& Sprite::sourceRect() const
 {
     return m_component->sourceRect();
+}
+
+void Sprite::setAnchorPoint(const Vector2& value)
+{
+    m_component->setAnchorPoint(value);
+}
+
+const Vector2& Sprite::anchorPoint() const
+{
+    return m_component->anchorPoint();
 }
 
 } // namespace ln
