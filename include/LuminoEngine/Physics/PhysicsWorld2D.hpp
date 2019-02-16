@@ -40,6 +40,8 @@ class BoxCollisionShape2D
 	: public CollisionShape2D
 {
 public:
+    static Ref<BoxCollisionShape2D> create(const Vector2& size);
+    static Ref<BoxCollisionShape2D> create(float width, float height);
 
 	virtual b2Shape* box2DShape() override;
 
@@ -47,6 +49,7 @@ LN_CONSTRUCT_ACCESS:
 	BoxCollisionShape2D();
 	virtual ~BoxCollisionShape2D() = default;
 	void init(const Vector2& size);
+    void init(float width, float height);
 
 private:
 	std::unique_ptr<b2PolygonShape> m_shape;
@@ -81,8 +84,12 @@ class RigidBody2D
 {
 public:
 
+    /** 指定した形状で、質量が 0 である静的な RigidBody を作成します。 */
+    static Ref<RigidBody2D> create(CollisionShape2D* shape);
+
 	/** 位置を設定します。(default: 0, 0) */
 	void setPosition(const Vector2& value);
+    void setPosition(const Vector3& value) { return setPosition(value.xy()); }
 
 	const Vector2& position() const { return m_position; }
 
@@ -93,6 +100,9 @@ public:
 	/** キネマティックモードを設定します。 キネマティックモードでは、剛体に力はかかりません。 */
 	void setKinematic(bool value);
 
+    bool isDynamic() const { return !isStatic() && !isKinematic(); }
+    bool isStatic() const { return m_mass == 0.0f; }
+    bool isKinematic() const { return m_kinematic; }
 
 	void addCollisionShape(CollisionShape2D* shape);
 
@@ -108,6 +118,7 @@ LN_CONSTRUCT_ACCESS:
 	RigidBody2D();
 	virtual ~RigidBody2D() = default;
 	void init();
+    void init(CollisionShape2D* shape);
 	virtual void onDispose(bool explicitDisposing) override;
 
 private:

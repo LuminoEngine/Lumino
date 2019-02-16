@@ -116,6 +116,7 @@ void EngineManager::init()
         m_uiManager->setPrimaryElement(m_mainUIRoot);
 
         m_mainPhysicsWorld = m_mainWorld->physicsWorld();
+        m_mainPhysicsWorld2D = m_mainWorld->physicsWorld2D();
     }
 }
 
@@ -131,6 +132,7 @@ void EngineManager::dispose()
 	}
 
     m_mainPhysicsWorld = nullptr;
+    m_mainPhysicsWorld2D = nullptr;
 
 
     // Main world contents.

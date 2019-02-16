@@ -26,6 +26,16 @@ void CollisionShape2D::init()
 //==============================================================================
 // BoxCollisionShape2D
 
+Ref<BoxCollisionShape2D> BoxCollisionShape2D::create(const Vector2& size)
+{
+    return newObject<BoxCollisionShape2D>(size);
+}
+
+Ref<BoxCollisionShape2D> BoxCollisionShape2D::create(float width, float height)
+{
+    return newObject<BoxCollisionShape2D>(width, height);
+}
+
 BoxCollisionShape2D::BoxCollisionShape2D()
 	: m_shape()
 {
@@ -37,6 +47,11 @@ void BoxCollisionShape2D::init(const Vector2& size)
 
 	m_shape = std::make_unique<b2PolygonShape>();
 	m_shape->SetAsBox(size.x * 0.5f, size.y * 0.5f);
+}
+
+void BoxCollisionShape2D::init(float width, float height)
+{
+    init(Vector2(width, height));
 }
 
 b2Shape* BoxCollisionShape2D::box2DShape()
@@ -72,6 +87,11 @@ void PhysicsObject2D::onRemoveFromPhysicsWorld()
 //==============================================================================
 // RigidBody2D
 
+Ref<RigidBody2D> RigidBody2D::create(CollisionShape2D* shape)
+{
+    return newObject<RigidBody2D>();
+}
+
 RigidBody2D::RigidBody2D()
 	: m_listener(nullptr)
 	, m_body(nullptr)
@@ -84,6 +104,12 @@ RigidBody2D::RigidBody2D()
 void RigidBody2D::init()
 {
 	PhysicsObject2D::init();
+}
+
+void RigidBody2D::init(CollisionShape2D* shape)
+{
+    PhysicsObject2D::init();
+    addCollisionShape(shape);
 }
 
 void RigidBody2D::onDispose(bool explicitDisposing)
@@ -120,6 +146,10 @@ void RigidBody2D::addCollisionShape(CollisionShape2D* shape)
 
 void RigidBody2D::onBeforeStepSimulation()
 {
+    if (m_listener) {
+        m_listener->onBeforeStepSimulation();
+    }
+
 	if (physicsWorld() && !m_body)
 	{
 		b2World* world = physicsWorld()->box2DWorld();

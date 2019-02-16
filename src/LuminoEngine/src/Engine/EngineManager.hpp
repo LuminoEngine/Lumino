@@ -13,6 +13,7 @@ class UIViewport;
 class UIRenderView;
 class UIContainerElement;
 class PhysicsWorld;
+class PhysicsWorld2D;
 class World;
 class WorldRenderView;
 class Camera;
@@ -117,6 +118,7 @@ public:
     const Ref<AmbientLight>& mainAmbientLight() const { return m_mainAmbientLight; }
     const Ref<DirectionalLight>& mainDirectionalLight() const { return m_mainDirectionalLight; }
     const Ref<PhysicsWorld>& mainPhysicsWorld() const { return m_mainPhysicsWorld; }
+    const Ref<PhysicsWorld2D>& mainPhysicsWorld2D() const { return m_mainPhysicsWorld2D; }
 
 private:
 	virtual bool onPlatformEvent(const PlatformEventArgs& e) override;
@@ -153,6 +155,7 @@ private:
 
     Ref<WorldRenderView> m_mainWorldRenderView;
     Ref<PhysicsWorld> m_mainPhysicsWorld;
+    Ref<PhysicsWorld2D> m_mainPhysicsWorld2D;
 
 	bool m_exitRequested;
 };

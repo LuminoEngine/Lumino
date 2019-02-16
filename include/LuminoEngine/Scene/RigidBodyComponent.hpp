@@ -10,6 +10,8 @@ class RigidBody2DComponent
 	, protected detail::IPhysicsObjectEventListener
 {
 public:
+    void setMass(float value);
+    void addCollisionShape(CollisionShape2D* shape);
 
 LN_CONSTRUCT_ACCESS:
 	RigidBody2DComponent();
