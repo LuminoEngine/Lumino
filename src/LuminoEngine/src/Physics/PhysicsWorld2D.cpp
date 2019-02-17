@@ -62,6 +62,7 @@ b2Shape* BoxCollisionShape2D::box2DShape()
 	return m_shape.get();
 }
 
+
 //==============================================================================
 // PhysicsObject2D
 
@@ -75,6 +76,36 @@ void PhysicsObject2D::init()
 	Object::init();
 }
 
+EventConnection PhysicsObject2D::connectOnCollisionEnter(Collision2DEventHandler handler)
+{
+    return m_onCollisionEnter.connect(handler);
+}
+
+EventConnection PhysicsObject2D::connectOnCollisionLeave(Collision2DEventHandler handler)
+{
+    return m_onCollisionLeave.connect(handler);
+}
+
+EventConnection PhysicsObject2D::connectOnCollisionStay(Collision2DEventHandler handler)
+{
+    return m_onCollisionStay.connect(handler);
+}
+
+void PhysicsObject2D::onCollisionEnter(PhysicsObject2D* otherObject, ContactPoint2D* contact)
+{
+    m_onCollisionEnter.raise(otherObject, contact);
+}
+
+void PhysicsObject2D::onCollisionLeave(PhysicsObject2D* otherObject, ContactPoint2D* contact)
+{
+    m_onCollisionLeave.raise(otherObject, contact);
+}
+
+void PhysicsObject2D::onCollisionStay(PhysicsObject2D* otherObject, ContactPoint2D* contact)
+{
+    m_onCollisionStay.raise(otherObject, contact);
+}
+
 void PhysicsObject2D::onBeforeStepSimulation()
 {
 }
@@ -85,6 +116,40 @@ void PhysicsObject2D::onAfterStepSimulation()
 
 void PhysicsObject2D::onRemoveFromPhysicsWorld()
 {
+}
+
+
+//==============================================================================
+// CollisionBody2D
+
+EventConnection CollisionBody2D::connectOnTriggerEnter(Trigger2DEventHandler handler)
+{
+    return m_onTriggerEnter.connect(handler);
+}
+
+EventConnection CollisionBody2D::connectOnTriggerLeave(Trigger2DEventHandler handler)
+{
+    return m_onTriggerLeave.connect(handler);
+}
+
+EventConnection CollisionBody2D::connectOnTriggerStay(Trigger2DEventHandler handler)
+{
+    return m_onTriggerStay.connect(handler);
+}
+
+void CollisionBody2D::onTriggerEnter(PhysicsObject2D* otherObject)
+{
+    m_onTriggerEnter.raise(otherObject);
+}
+
+void CollisionBody2D::onTriggerLeave(PhysicsObject2D* otherObject)
+{
+    m_onTriggerLeave.raise(otherObject);
+}
+
+void CollisionBody2D::onTriggerStay(PhysicsObject2D* otherObject)
+{
+    m_onTriggerStay.raise(otherObject);
 }
 
 //==============================================================================
@@ -285,6 +350,8 @@ void RigidBody2D::onBeforeStepSimulation()
         }
     }
     m_applyCommands.clear();
+
+    m_body->GetContactList();
 }
 
 void RigidBody2D::onAfterStepSimulation()
@@ -509,6 +576,41 @@ private:
 //==============================================================================
 // PhysicsWorld2D
 
+class LocalContactListener
+    : public b2ContactListener
+{
+public:
+    // 新しく接触を開始したときのコールバック。接触中は呼ばれない。
+    virtual void BeginContact(b2Contact* contact) override
+    {
+        auto* bodyA = reinterpret_cast<PhysicsObject2D*>(contact->GetFixtureA()->GetBody()->GetUserData());
+        auto* bodyB = reinterpret_cast<PhysicsObject2D*>(contact->GetFixtureB()->GetBody()->GetUserData());
+        
+        bodyA->m_contactBodies.add(bodyB);
+        bodyB->m_contactBodies.add(bodyA);
+
+        bodyA->onCollisionEnter(bodyB, nullptr);
+        bodyB->onCollisionEnter(bodyA, nullptr);
+    }
+
+    virtual void EndContact(b2Contact* contact) override
+    {
+        auto* bodyA = reinterpret_cast<PhysicsObject2D*>(contact->GetFixtureA()->GetBody()->GetUserData());
+        auto* bodyB = reinterpret_cast<PhysicsObject2D*>(contact->GetFixtureB()->GetBody()->GetUserData());
+        
+        if (LN_REQUIRE(bodyA->m_contactBodies.remove(bodyB))) return;
+        if (LN_REQUIRE(bodyB->m_contactBodies.remove(bodyA))) return;
+
+        bodyA->onCollisionLeave(bodyB, nullptr);
+        bodyB->onCollisionLeave(bodyA, nullptr);
+    }
+};
+
+
+
+//==============================================================================
+// PhysicsWorld2D
+
 PhysicsWorld2D::PhysicsWorld2D()
 	: m_world(nullptr)
 {
@@ -518,6 +620,8 @@ void PhysicsWorld2D::init()
 {
 	Object::init();
 
+    m_contactListener = std::make_unique<LocalContactListener>();
+
 	m_debugDraw = std::make_unique<PhysicsWorld2DDebugDraw>();
 	m_debugDraw->init();
     m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit /*| b2Draw::e_aabbBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit*/);
@@ -525,6 +629,7 @@ void PhysicsWorld2D::init()
 
 	b2Vec2 gravity(0.0f, -9.8);
 	m_world = LN_NEW b2World(gravity);
+    m_world->SetContactListener(m_contactListener.get());
 	m_world->SetDebugDraw(m_debugDraw.get());
 }
 

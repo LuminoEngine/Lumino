@@ -16,8 +16,14 @@ class b2World;
 
 namespace ln {
 class RenderingContext;
+class PhysicsObject2D;
 class PhysicsWorld2D;
-class PhysicsWorld2DDebugDraw;
+class PhysicsWorld2DDebugDraw; // TODO: detail
+class LocalContactListener; // TODO: detail
+class ContactPoint2D;
+
+using Collision2DEventHandler = std::function<void(PhysicsObject2D*, ContactPoint2D*)>;
+using Trigger2DEventHandler = std::function<void(PhysicsObject2D*)>;
 
 class CollisionShape2D
 	: public Object
@@ -63,7 +69,31 @@ class PhysicsObject2D
 public:
 	PhysicsWorld2D* physicsWorld() const { return m_ownerWorld; }
 
+
+    /** onTriggerEnter イベントの通知を受け取るコールバックを登録します。*/
+    LN_METHOD(Event)
+    EventConnection connectOnCollisionEnter(Collision2DEventHandler handler);
+
+    /** onTriggerLeave イベントの通知を受け取るコールバックを登録します。*/
+    LN_METHOD(Event)
+    EventConnection connectOnCollisionLeave(Collision2DEventHandler handler);
+
+    /** onTriggerStay イベントの通知を受け取るコールバックを登録します。*/
+    LN_METHOD(Event)
+    EventConnection connectOnCollisionStay(Collision2DEventHandler handler);
+
+
 protected:
+
+    /** 他の PhysicsObject2D が、この CollisionBody との接触を開始したときに呼び出されます。*/
+    virtual void onCollisionEnter(PhysicsObject2D* otherObject, ContactPoint2D* contact);
+
+    /** 他の PhysicsObject2D が、この CollisionBody との接触を終了したときに呼び出されます。*/
+    virtual void onCollisionLeave(PhysicsObject2D* otherObject, ContactPoint2D* contact);
+
+    /** 他の PhysicsObject2D が、この Collider との接触している間呼び出されます。*/
+    virtual void onCollisionStay(PhysicsObject2D* otherObject, ContactPoint2D* contact);
+
 	virtual void onBeforeStepSimulation();
 	virtual void onAfterStepSimulation();
 	virtual void onRemoveFromPhysicsWorld();
@@ -75,8 +105,52 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	PhysicsWorld2D* m_ownerWorld;
+    List<PhysicsObject2D*> m_contactBodies;
+    Event<Collision2DEventHandler> m_onCollisionEnter;
+    Event<Collision2DEventHandler> m_onCollisionLeave;
+    Event<Collision2DEventHandler> m_onCollisionStay;
 
 	friend class PhysicsWorld2D;
+    friend class LocalContactListener;
+};
+
+class CollisionBody2D
+    : public PhysicsObject2D
+{
+public:
+    
+    /** onTriggerEnter イベントの通知を受け取るコールバックを登録します。*/
+    LN_METHOD(Event)
+    EventConnection connectOnTriggerEnter(Trigger2DEventHandler handler);
+
+    /** onTriggerLeave イベントの通知を受け取るコールバックを登録します。*/
+    LN_METHOD(Event)
+    EventConnection connectOnTriggerLeave(Trigger2DEventHandler handler);
+
+    /** onTriggerStay イベントの通知を受け取るコールバックを登録します。*/
+    LN_METHOD(Event)
+    EventConnection connectOnTriggerStay(Trigger2DEventHandler handler);
+
+protected:
+
+    /** 他の PhysicsObject2D が、この CollisionBody との接触を開始したときに呼び出されます。*/
+    virtual void onTriggerEnter(PhysicsObject2D* otherObject);
+
+    /** 他の PhysicsObject2D が、この CollisionBody との接触を終了したときに呼び出されます。*/
+    virtual void onTriggerLeave(PhysicsObject2D* otherObject);
+
+    /** 他の PhysicsObject2D が、この Collider との接触している間呼び出されます。*/
+    virtual void onTriggerStay(PhysicsObject2D* otherObject);
+    
+LN_CONSTRUCT_ACCESS:
+    CollisionBody2D();
+	virtual ~CollisionBody2D() = default;
+	void init();
+
+private:
+    Event<Trigger2DEventHandler> m_onTriggerEnter;
+    Event<Trigger2DEventHandler> m_onTriggerLeave;
+    Event<Trigger2DEventHandler> m_onTriggerStay;
 };
 
 class RigidBody2D
@@ -198,6 +272,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	b2World* m_world;
+    std::unique_ptr<LocalContactListener> m_contactListener;
 	std::unique_ptr<PhysicsWorld2DDebugDraw> m_debugDraw;
 	List<Ref<PhysicsObject2D>> m_objects;
 };
