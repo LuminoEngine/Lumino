@@ -91,11 +91,18 @@ public:
 	void setPosition(const Vector2& value);
     void setPosition(const Vector3& value) { return setPosition(value.xy()); }
 
-	const Vector2& position() const { return m_position; }
+    const Vector2& position() const { return m_position; }
 
-	/** 質量を設定します。0 を設定すると静的なボディとなります。(default: 0.0) */
+    /** 速度を設定します。 (unit: m/s) */
+    void setVelocity(const Vector2& value);
+    const Vector2& velocity() const { return m_velocity; }
+
+
+	/** 質量を設定します。0 を設定すると静的なボディとなります。(unit: kilograms(kg))(default: 0.0) */
 	void setMass(float value);
 
+
+    void setFixedRotation(bool value) { m_fixedRotation = value; }
 
 	/** キネマティックモードを設定します。 キネマティックモードでは、剛体に力はかかりません。 */
 	void setKinematic(bool value);
@@ -105,6 +112,27 @@ public:
     bool isKinematic() const { return m_kinematic; }
 
 	void addCollisionShape(CollisionShape2D* shape);
+
+
+
+    /** 重心に力を加えます。(単位: Newtons (N)) */
+    void applyForce(const Vector2& force);
+
+    /** 指定したローカル位置に力を加えます。 */
+    void applyForce(const Vector2& force, const Vector2& localPosition);
+
+    /** 重心に衝撃を与えます。 */
+    void applyImpulse(const Vector2& impulse);
+
+    /** 指定したローカル位置に衝撃を与えます。 */
+    void applyImpulse(const Vector2& impulse, const Vector2& localPosition);
+
+    /** トルクをかけます。 */
+    void applyTorque(float torque);
+
+    /** トルク衝撃を与えます。 */
+    void applyTorqueImpulse(float torque);
+
 
 public: // TODO: internal
 	void setEventListener(detail::IPhysicsObjectEventListener* listener) { m_listener = listener; }
@@ -122,13 +150,32 @@ LN_CONSTRUCT_ACCESS:
 	virtual void onDispose(bool explicitDisposing) override;
 
 private:
+    enum class ApplyType
+    {
+        SetVelocity,
+        Force,
+        Impulse,
+        Torque,
+        TorqueImpulse,
+    };
+
+    struct ApplyCommand
+    {
+        ApplyType type;
+        Vector2 value;
+        Vector2 center;
+    };
+
 	detail::IPhysicsObjectEventListener* m_listener;
 	b2Body* m_body;
 	b2Fixture* m_fixture;
 	std::vector<Ref<CollisionShape2D>> m_shapes;
 	Vector2 m_position;
+    Vector2 m_velocity;
 	float m_mass;
 	bool m_kinematic;
+    bool m_fixedRotation;
+    std::vector<ApplyCommand> m_applyCommands;  // TODO: linerallocator にしたい
 };
 
 class PhysicsWorld2D

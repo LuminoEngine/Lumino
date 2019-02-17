@@ -229,7 +229,7 @@ const detail::InputDeviceElement* InputController::LockupState(const StringRef& 
 	{
 		return m_inputStateForAny;
 	}
-	auto state = m_inputStatus.findIf([&](auto& item) { return item->name == bindingName; });
+	auto state = m_inputStatus.findIf([&](auto& item) { return String::compare(item->name, bindingName, CaseSensitivity::CaseInsensitive) == 0; });
 	if (state) {
 		return *state;
 	}

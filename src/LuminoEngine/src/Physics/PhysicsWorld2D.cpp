@@ -11,6 +11,9 @@
 
 namespace ln {
 
+static b2Vec2 LnToB2(const Vector2& v) { return b2Vec2(v.x, v.y); }
+static Vector2 B2ToLn(const b2Vec2& v) { return Vector2(v.x, v.y); }
+
 //==============================================================================
 // CollisionShape2D
 
@@ -93,12 +96,14 @@ Ref<RigidBody2D> RigidBody2D::create(CollisionShape2D* shape)
 }
 
 RigidBody2D::RigidBody2D()
-	: m_listener(nullptr)
-	, m_body(nullptr)
-	, m_fixture(nullptr)
-	, m_mass(0.0f)
-	, m_kinematic(false)
+    : m_listener(nullptr)
+    , m_body(nullptr)
+    , m_fixture(nullptr)
+    , m_mass(0.0f)
+    , m_kinematic(false)
+    , m_fixedRotation(false)
 {
+    m_applyCommands.reserve(4);
 }
 
 void RigidBody2D::init()
@@ -128,6 +133,12 @@ void RigidBody2D::setPosition(const Vector2& value)
 	m_position = value;
 }
 
+void RigidBody2D::setVelocity(const Vector2& value)
+{
+    m_velocity = value;
+    m_applyCommands.push_back({ ApplyType::SetVelocity, value, Vector2::Zero });
+}
+
 void RigidBody2D::setMass(float value)
 {
 	m_mass = value;
@@ -143,6 +154,55 @@ void RigidBody2D::addCollisionShape(CollisionShape2D* shape)
 	if (LN_REQUIRE(shape)) return;
 	m_shapes.push_back(shape);
 }
+
+void RigidBody2D::applyForce(const Vector2& force)
+{
+    applyForce(force, Vector2::Zero);
+}
+
+void RigidBody2D::applyForce(const Vector2& force, const Vector2& localPosition)
+{
+    m_applyCommands.push_back({ ApplyType::Force, force, localPosition });
+
+    //m_force += force;
+    //m_torque += b2Cross(point - m_sweep.c, force);
+    //m_body->ApplyForce();
+}
+
+void RigidBody2D::applyImpulse(const Vector2& impulse)
+{
+    applyImpulse(impulse, Vector2::Zero);
+}
+
+void RigidBody2D::applyImpulse(const Vector2& impulse, const Vector2& localPosition)
+{
+    m_applyCommands.push_back({ ApplyType::Impulse, impulse, localPosition });
+
+    //m_linearVelocity += m_invMass * impulse;
+    //m_angularVelocity += m_invI * b2Cross(point - m_sweep.c, impulse);
+    ////m_body->ApplyLinearImpulse();
+}
+
+void RigidBody2D::applyTorque(float torque)
+{
+    m_applyCommands.push_back({ ApplyType::Torque, Vector2(torque, 0), Vector2::Zero });
+    //m_torque += torque;
+    //m_body->ApplyTorque();
+}
+
+void RigidBody2D::applyTorqueImpulse(float torque)
+{
+    m_applyCommands.push_back({ ApplyType::TorqueImpulse, Vector2(torque, 0), Vector2::Zero });
+    //m_angularVelocity += m_invI * impulse;
+    //m_body->ApplyAngularImpulse();
+}
+
+//　SetLinearVelocity
+// SetAngularVelocity(m_angularVelocity)
+// ApplyForce(m_force)
+// ApplyTorque(m_torque)
+
+
 
 void RigidBody2D::onBeforeStepSimulation()
 {
@@ -172,7 +232,7 @@ void RigidBody2D::onBeforeStepSimulation()
 		bodyDef.angularDamping = 0.0f;		// 回転減衰 (0.0 ~ 1.0)
 		bodyDef.allowSleep = true;	// TODO:
 		bodyDef.awake = true;
-		bodyDef.fixedRotation = false;	// TODO:
+		bodyDef.fixedRotation = m_fixedRotation;
 		bodyDef.bullet = false;
 		bodyDef.active = true;
 		bodyDef.userData = this;
@@ -188,7 +248,7 @@ void RigidBody2D::onBeforeStepSimulation()
 		b2FixtureDef fixtureDef;
 		fixtureDef.shape = shape;
 		fixtureDef.userData = this;
-		fixtureDef.friction = 0.2f;			// 摩擦
+		fixtureDef.friction = 0.0f;			// 摩擦
 		fixtureDef.restitution = 0.0f;		// 反発
 		fixtureDef.density = m_mass / volume;	// 密度 = 質量 / 体積
 		fixtureDef.isSensor = false;
@@ -197,13 +257,41 @@ void RigidBody2D::onBeforeStepSimulation()
 		fixtureDef.filter.groupIndex = 0;
 		m_fixture = m_body->CreateFixture(&fixtureDef);
 	}
+
+//    m_body->SetLinearVelocity(LnToB2(m_velocity));
+
+    for (auto& c : m_applyCommands)
+    {
+        switch (c.type)
+        {
+        case ApplyType::SetVelocity:
+            m_body->SetLinearVelocity(LnToB2(c.value));
+            break;
+        case ApplyType::Force:
+            m_body->ApplyForce(LnToB2(c.value), LnToB2(c.center), true);
+            break;
+        case ApplyType::Impulse:
+            m_body->ApplyLinearImpulse(LnToB2(c.value), LnToB2(c.center), true);
+            break;
+        case ApplyType::Torque:
+            m_body->ApplyTorque(c.value.x, true);
+            break;
+        case ApplyType::TorqueImpulse:
+            m_body->ApplyAngularImpulse(c.value.x, true);
+            break;
+        default:
+            LN_UNREACHABLE();
+            break;
+        }
+    }
+    m_applyCommands.clear();
 }
 
 void RigidBody2D::onAfterStepSimulation()
 {
 	if (!m_kinematic) {
-		const b2Vec2& pos = m_body->GetPosition();
-		m_position = Vector2(pos.x, pos.y);
+		m_position = B2ToLn(m_body->GetPosition());
+        m_velocity = B2ToLn(m_body->GetLinearVelocity());
 	}
 
 	if (m_listener) {
