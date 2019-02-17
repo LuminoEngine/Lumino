@@ -7,6 +7,20 @@
 namespace ln {
 
 //=============================================================================
+// Collision
+
+Collision::Collision()
+    : m_worldObject(nullptr)
+{
+}
+
+void Collision::init(WorldObject* worldObject/*, RigidBody2DComponent* component*/)
+{
+    Object::init();
+    m_worldObject = worldObject;
+}
+
+//=============================================================================
 // RigidBody2DComponent
 
 RigidBody2DComponent::RigidBody2DComponent()
@@ -18,6 +32,7 @@ void RigidBody2DComponent::init()
 	Component::init();
 	m_body = newObject<RigidBody2D>();
     m_body->setEventListener(this);
+    m_body->setOwnerData(this);
     detail::EngineDomain::engineManager()->mainPhysicsWorld2D()->addPhysicsObject(m_body);
 }
 
@@ -50,6 +65,45 @@ void RigidBody2DComponent::onAfterStepSimulation()
         float z = worldObject()->position().z;
         worldObject()->setPosition(Vector3(m_body->position(), z));
     }
+}
+
+EventConnection RigidBody2DComponent::connectOnCollisionEnter(CollisionEventHandler handler)
+{
+    return m_onCollisionEnter.connect(handler);
+}
+
+EventConnection RigidBody2DComponent::connectOnCollisionLeave(CollisionEventHandler handler)
+{
+    return m_onCollisionLeave.connect(handler);
+}
+
+EventConnection RigidBody2DComponent::connectOnCollisionStay(CollisionEventHandler handler)
+{
+    return m_onCollisionStay.connect(handler);
+}
+
+void RigidBody2DComponent::onCollisionEnter(PhysicsObject2D* otherObject, ContactPoint2D* contact)
+{
+    auto* ownerComponent = reinterpret_cast<RigidBody2DComponent*>(otherObject->ownerData());
+    // TODO: Cache
+    auto c = newObject<Collision>(ownerComponent->worldObject());
+    m_onCollisionEnter.raise(c);
+}
+
+void RigidBody2DComponent::onCollisionLeave(PhysicsObject2D* otherObject, ContactPoint2D* contact)
+{
+    auto* ownerComponent = reinterpret_cast<RigidBody2DComponent*>(otherObject->ownerData());
+    // TODO: Cache
+    auto c = newObject<Collision>(ownerComponent->worldObject());
+    m_onCollisionLeave.raise(c);
+}
+
+void RigidBody2DComponent::onCollisionStay(PhysicsObject2D* otherObject, ContactPoint2D* contact)
+{
+    auto* ownerComponent = reinterpret_cast<RigidBody2DComponent*>(otherObject->ownerData());
+    // TODO: Cache
+    auto c = newObject<Collision>(ownerComponent->worldObject());
+    m_onCollisionStay.raise(c);
 }
 
 } // namespace ln

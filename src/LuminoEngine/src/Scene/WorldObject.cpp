@@ -114,8 +114,9 @@ WorldObject::WorldObject()
     : m_world(nullptr)
     , m_parent(nullptr)
     , m_transform(makeRef<detail::WorldObjectTransform>(this))
-    , m_components(makeRef<List<Ref<Component>>>())
-    , m_children(makeRef<List<Ref<WorldObject>>>())
+    , m_tags(makeList<String>())
+    , m_components(makeList<Ref<Component>>())
+    , m_children(makeList<Ref<WorldObject>>())
     , m_isSpecialObject(false)
 {
 }

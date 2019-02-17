@@ -83,7 +83,14 @@ public:
     EventConnection connectOnCollisionStay(Collision2DEventHandler handler);
 
 
+public: // TODO: internal
+    void setEventListener(detail::IPhysicsObjectEventListener* listener) { m_listener = listener; }
+    void setOwnerData(void* data) { m_ownerData = data; }
+    void* ownerData() const { return m_ownerData; }
+
 protected:
+    // TODO: internal
+    //detail::IPhysicsObjectEventListener* eventListener() const { return m_listener; }
 
     /** 他の PhysicsObject2D が、この CollisionBody との接触を開始したときに呼び出されます。*/
     virtual void onCollisionEnter(PhysicsObject2D* otherObject, ContactPoint2D* contact);
@@ -104,11 +111,16 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 private:
+    void beginContact(PhysicsObject2D* otherObject);
+    void endContact(PhysicsObject2D* otherObject);
+
 	PhysicsWorld2D* m_ownerWorld;
     List<PhysicsObject2D*> m_contactBodies;
+    detail::IPhysicsObjectEventListener* m_listener;
     Event<Collision2DEventHandler> m_onCollisionEnter;
     Event<Collision2DEventHandler> m_onCollisionLeave;
     Event<Collision2DEventHandler> m_onCollisionStay;
+    void* m_ownerData;
 
 	friend class PhysicsWorld2D;
     friend class LocalContactListener;
@@ -207,10 +219,6 @@ public:
     /** トルク衝撃を与えます。 */
     void applyTorqueImpulse(float torque);
 
-
-public: // TODO: internal
-	void setEventListener(detail::IPhysicsObjectEventListener* listener) { m_listener = listener; }
-
 protected:
 	virtual void onBeforeStepSimulation() override;
 	virtual void onAfterStepSimulation() override;
@@ -240,7 +248,6 @@ private:
         Vector2 center;
     };
 
-	detail::IPhysicsObjectEventListener* m_listener;
 	b2Body* m_body;
 	b2Fixture* m_fixture;
 	std::vector<Ref<CollisionShape2D>> m_shapes;

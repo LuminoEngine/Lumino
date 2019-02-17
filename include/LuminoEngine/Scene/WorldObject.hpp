@@ -139,6 +139,10 @@ public:
 
     void addComponent(Component* component);
 
+    void addTag(const StringRef& tag) { m_tags->add(tag); }
+    void removeTag(const StringRef& tag) { m_tags->remove(tag); }
+    bool hasTag(const StringRef& tag) const { return m_tags->contains(tag); }
+
     const Matrix& worldMatrix();
 
 protected:
@@ -176,6 +180,7 @@ public: // TODO:
     World* m_world;
     WorldObject* m_parent;
     Ref<detail::WorldObjectTransform> m_transform;
+    Ref<List<String>> m_tags;
     Ref<List<Ref<Component>>> m_components;
     Ref<List<Ref<WorldObject>>> m_children;
     Flags<DirtyFlags> m_dirtyFlags;

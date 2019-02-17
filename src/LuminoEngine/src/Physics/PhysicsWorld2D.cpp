@@ -68,6 +68,8 @@ b2Shape* BoxCollisionShape2D::box2DShape()
 
 PhysicsObject2D::PhysicsObject2D()
 	: m_ownerWorld(nullptr)
+    , m_listener(nullptr)
+    , m_ownerData(nullptr)
 {
 }
 
@@ -108,14 +110,38 @@ void PhysicsObject2D::onCollisionStay(PhysicsObject2D* otherObject, ContactPoint
 
 void PhysicsObject2D::onBeforeStepSimulation()
 {
+    if (m_listener) {
+        m_listener->onBeforeStepSimulation();
+    }
 }
 
 void PhysicsObject2D::onAfterStepSimulation()
 {
+    if (m_listener) {
+        m_listener->onAfterStepSimulation();
+    }
 }
 
 void PhysicsObject2D::onRemoveFromPhysicsWorld()
 {
+}
+
+void PhysicsObject2D::beginContact(PhysicsObject2D* otherObject)
+{
+    m_contactBodies.add(otherObject);
+    onCollisionEnter(otherObject, nullptr);
+    if (m_listener) {
+        m_listener->onCollisionEnter(otherObject, nullptr);
+    }
+}
+
+void PhysicsObject2D::endContact(PhysicsObject2D* otherObject)
+{
+    if (LN_REQUIRE(m_contactBodies.remove(otherObject))) return;
+    onCollisionLeave(otherObject, nullptr);
+    if (m_listener) {
+        m_listener->onCollisionLeave(otherObject, nullptr);
+    }
 }
 
 
@@ -161,8 +187,7 @@ Ref<RigidBody2D> RigidBody2D::create(CollisionShape2D* shape)
 }
 
 RigidBody2D::RigidBody2D()
-    : m_listener(nullptr)
-    , m_body(nullptr)
+    : m_body(nullptr)
     , m_fixture(nullptr)
     , m_mass(0.0f)
     , m_kinematic(false)
@@ -271,9 +296,7 @@ void RigidBody2D::applyTorqueImpulse(float torque)
 
 void RigidBody2D::onBeforeStepSimulation()
 {
-    if (m_listener) {
-        m_listener->onBeforeStepSimulation();
-    }
+    PhysicsObject2D::onBeforeStepSimulation();
 
 	if (physicsWorld() && !m_body)
 	{
@@ -361,9 +384,7 @@ void RigidBody2D::onAfterStepSimulation()
         m_velocity = B2ToLn(m_body->GetLinearVelocity());
 	}
 
-	if (m_listener) {
-		m_listener->onAfterStepSimulation();
-	}
+    PhysicsObject2D::onAfterStepSimulation();
 }
 
 void RigidBody2D::onRemoveFromPhysicsWorld()
@@ -585,24 +606,16 @@ public:
     {
         auto* bodyA = reinterpret_cast<PhysicsObject2D*>(contact->GetFixtureA()->GetBody()->GetUserData());
         auto* bodyB = reinterpret_cast<PhysicsObject2D*>(contact->GetFixtureB()->GetBody()->GetUserData());
-        
-        bodyA->m_contactBodies.add(bodyB);
-        bodyB->m_contactBodies.add(bodyA);
-
-        bodyA->onCollisionEnter(bodyB, nullptr);
-        bodyB->onCollisionEnter(bodyA, nullptr);
+        bodyA->beginContact(bodyB);
+        bodyB->beginContact(bodyA);
     }
 
     virtual void EndContact(b2Contact* contact) override
     {
         auto* bodyA = reinterpret_cast<PhysicsObject2D*>(contact->GetFixtureA()->GetBody()->GetUserData());
         auto* bodyB = reinterpret_cast<PhysicsObject2D*>(contact->GetFixtureB()->GetBody()->GetUserData());
-        
-        if (LN_REQUIRE(bodyA->m_contactBodies.remove(bodyB))) return;
-        if (LN_REQUIRE(bodyB->m_contactBodies.remove(bodyA))) return;
-
-        bodyA->onCollisionLeave(bodyB, nullptr);
-        bodyB->onCollisionLeave(bodyA, nullptr);
+        bodyA->endContact(bodyB);
+        bodyB->endContact(bodyA);
     }
 };
 

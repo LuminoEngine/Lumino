@@ -4,6 +4,25 @@
 #include "../Physics/PhysicsWorld2D.hpp"
 
 namespace ln {
+class Collision;
+class RigidBody2DComponent;
+
+using CollisionEventHandler = std::function<void(Collision*)>;
+
+class Collision
+    : public Object
+{
+public:
+    WorldObject* worldObject() const { return m_worldObject; }
+
+LN_CONSTRUCT_ACCESS:
+    Collision();
+    virtual ~Collision() = default;
+    void init(WorldObject* worldObject/*, RigidBody2DComponent* component*/);
+
+private:
+    WorldObject* m_worldObject;
+};
 
 class RigidBody2DComponent
 	: public Component
@@ -36,6 +55,19 @@ public:
 
     /** トルク衝撃を与えます。 */
     void applyTorqueImpulse(float torque) { m_body->applyTorqueImpulse(torque); }
+    
+
+    /** onTriggerEnter イベントの通知を受け取るコールバックを登録します。*/
+    LN_METHOD(Event)
+    EventConnection connectOnCollisionEnter(CollisionEventHandler handler);
+
+    /** onTriggerLeave イベントの通知を受け取るコールバックを登録します。*/
+    LN_METHOD(Event)
+    EventConnection connectOnCollisionLeave(CollisionEventHandler handler);
+
+    /** onTriggerStay イベントの通知を受け取るコールバックを登録します。*/
+    LN_METHOD(Event)
+    EventConnection connectOnCollisionStay(CollisionEventHandler handler);
 
 LN_CONSTRUCT_ACCESS:
 	RigidBody2DComponent();
@@ -47,9 +79,15 @@ protected:
 	virtual void onDetachedWorld(World* oldOwner) override;
 	virtual void onBeforeStepSimulation() override;
 	virtual void onAfterStepSimulation() override;
+    virtual void onCollisionEnter(PhysicsObject2D* otherObject, ContactPoint2D* contact) override;
+    virtual void onCollisionLeave(PhysicsObject2D* otherObject, ContactPoint2D* contact) override;
+    virtual void onCollisionStay(PhysicsObject2D* otherObject, ContactPoint2D* contact) override;
 
 private:
 	Ref<RigidBody2D> m_body;
+    Event<CollisionEventHandler> m_onCollisionEnter;
+    Event<CollisionEventHandler> m_onCollisionLeave;
+    Event<CollisionEventHandler> m_onCollisionStay;
 };
 
 } // namespace ln
