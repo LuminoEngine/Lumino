@@ -76,6 +76,7 @@
 #include "LuminoEngine/UI/UIFrameWindow.hpp"
 #include "LuminoEngine/UI/UIViewport.hpp"
 #include "LuminoEngine/UI/UISprite.hpp"
+#include "LuminoEngine/UI/UITextBlock.hpp"
 
 #include "LuminoEngine/Asset/Assets.hpp"
 

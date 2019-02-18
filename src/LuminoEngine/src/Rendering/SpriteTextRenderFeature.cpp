@@ -56,8 +56,6 @@ void InternalSpriteTextRender::render(IGraphicsDeviceContext* context, const Gly
 		uvSrcRect.y *= texSizeInv.height;
 		uvSrcRect.height *= texSizeInv.height;
 
-        //uvSrcRect = Rect(0, 0, 1, 1);
-
 		Rect dstRect(data.position, (float)data.srcRect.width, (float)data.srcRect.height);
 		internalDrawRectangle(buffer + (i * 4), data.transform, dstRect, uvSrcRect, color);
 	}
@@ -147,6 +145,8 @@ void InternalSpriteTextRender::flush(IGraphicsDeviceContext* context, ITexture* 
 	context->setIndexBuffer(m_indexBuffer);
 	context->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 	context->drawPrimitiveIndexed(0, m_spriteCount * 2);
+
+    m_spriteCount = 0;
 }
 
 //==============================================================================
@@ -244,6 +244,7 @@ void SpriteTextRenderFeature::flushInternal(GraphicsContext* context, FontGlyphT
 				brushData);
 		});
 
+    m_drawingFontGlyphCache->onFlush();
 	m_glyphLayoutDataList.clear();
 	m_drawingFont = nullptr;
 	m_drawingFontGlyphCache = nullptr;

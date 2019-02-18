@@ -402,7 +402,8 @@ int main(int argc, char** argv)
     //Engine::terminate();
     //return 0;
 
-
+    auto uitext = UITextBlock::create();
+    uitext->setText(u"text");
 
 
     float time = 0;

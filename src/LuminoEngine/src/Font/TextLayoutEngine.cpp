@@ -34,6 +34,7 @@ void TextLayoutEngine::layout(FontCore* font, const Char* text, size_t length, c
     m_targetArea = targetArea;
 	m_strokeSize = strokeSize;
     m_alignment = alignment;
+    m_layoutLines.clear();
     m_font->getGlobalMetrics(&m_globalMetrics);
 
 	resetStream();
