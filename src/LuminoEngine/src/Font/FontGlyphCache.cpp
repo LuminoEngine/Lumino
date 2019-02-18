@@ -28,7 +28,8 @@ bool FontGlyphTextureCache::init(FontCore* font)
 	if (LN_REQUIRE(font)) return false;
 
 	m_font = font;
-	m_maxCacheGlyphs = 2048;// TODO 定数なのはなんとかしたい
+	m_maxCacheGlyphs = 1024;// TODO 定数なのはなんとかしたい
+    // TODO: 最大に達するとなんか落ちる
 
 	// すべてのグリフが収まるビットマップサイズ
 	FontGlobalMetrics metrix;
@@ -105,7 +106,7 @@ void FontGlyphTextureCache::lookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, b
 		PointI pt(outInfo->srcRect.x + outInfo->outlineOffset, outInfo->srcRect.y + outInfo->outlineOffset);
 		Bitmap2D* dst = m_fillGlyphsTexture->map(MapMode::Write);
 		dst->blit(RectI(pt.x, pt.y, info.size), bitmapGlyphInfo.glyphBitmap, RectI(0, 0, info.size), Color32::White, BitmapBlitOptions::None);
-	}
+    }
 
 	// 今回、cacheIndex を使うことをマーク
 	if (!m_curPrimUsedFlags[cacheIndex]) {

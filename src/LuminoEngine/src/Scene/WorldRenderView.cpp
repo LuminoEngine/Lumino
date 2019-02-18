@@ -105,6 +105,9 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
         if (m_targetWorld) {
 			detail::WorldSceneGraphRenderingContext* renderingContext = m_targetWorld->prepareRender(m_viewPoint);
 
+
+
+
 			if (clearMode() == RenderViewClearMode::ColorAndDepth) {
 				renderingContext->clear(ClearFlags::All, backgroundColor(), 1.0f, 0x00);
 			}
@@ -118,11 +121,16 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
                 m_targetWorld->physicsWorld2D()->renderDebug(renderingContext);
             }
 
+            // test
+            //renderingContext->pushState();
+            //renderingContext->setBlendMode(BlendMode::Alpha);
+            //renderingContext->drawText(u"Lumino", Font::create(), Color::Blue);
+            //renderingContext->popState();
+
+
             adjustGridPlane(m_viewPoint->viewFrustum, this);
             renderGridPlane(renderingContext, this);
 
-            // test
-            renderingContext->drawText(u"Lumino", Font::create(), Color::Blue);
         }
 
 

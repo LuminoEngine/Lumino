@@ -85,6 +85,7 @@ public:
 
 protected:
 	virtual void flush(GraphicsContext* context) override;
+    virtual void updateRenderParameters(detail::RenderDrawElement* element, ShaderTechnique* tech, const detail::CameraInfo& cameraInfo, const detail::ElementInfo& elementInfo, const detail::SubsetInfo& subsetInfo) override;
 	virtual void onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size) override;
 
 private:
@@ -95,6 +96,17 @@ private:
 	FontCore* m_drawingFont;
 	FontGlyphTextureCache* m_drawingFontGlyphCache;
 	std::vector<InternalSpriteTextRender::GlyphData> m_glyphLayoutDataList;
+};
+
+class DrawTextElement : public RenderDrawElement
+{
+public:
+    Ref<detail::FormattedText> formattedText;
+
+    virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+    {
+        static_cast<detail::SpriteTextRenderFeature*>(renderFeatures)->drawText(context, formattedText);
+    }
 };
 
 } // namespace detail

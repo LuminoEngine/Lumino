@@ -139,7 +139,7 @@ int main(int argc, char** argv)
     auto ctl = newObject<CameraOrbitControlComponent>();
     Engine::mainCamera()->addComponent(ctl);
     Engine::mainCamera()->setPosition(0, 5, -10);
-    //Engine::mainCamera()->setBackgroundColor(Color::Gray);
+    Engine::mainCamera()->setBackgroundColor(Color::Gray);
 
 
     struct PosColor

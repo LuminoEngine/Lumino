@@ -141,6 +141,7 @@ void BlitHelper::bitBltInternalTemplate(
             srcBuf.setLine(y);
             for (int x = 0; x < srcRect.width; ++x)
             {
+                // TODO: 結果が 1減る
                 ClColor src = srcBuf.getPixel(x);
                 ClColor c = {
                     static_cast<uint8_t>((mulColorRGBA.r * src.r) >> 8),

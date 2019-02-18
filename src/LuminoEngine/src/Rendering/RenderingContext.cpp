@@ -429,23 +429,13 @@ void RenderingContext::drawMesh(MeshResource* meshResource, int sectionIndex)
 
 void RenderingContext::drawText(const StringRef& text, Font* font, const Color& color)
 {
-    class DrawText : public detail::RenderDrawElement
-    {
-    public:
-        Ref<detail::FormattedText> formattedText;
-
-        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
-        {
-            static_cast<detail::SpriteTextRenderFeature*>(renderFeatures)->drawText(context, formattedText);
-        }
-    };
 
     // TODO: cache
     auto formattedText = makeRef<detail::FormattedText>();
     formattedText->text = text;
     formattedText->font = font;
 
-    auto* element = m_builder->addNewDrawElement<DrawText>(
+    auto* element = m_builder->addNewDrawElement<detail::DrawTextElement>(
         m_manager->spriteTextRenderFeature(),
         m_builder->spriteTextRenderFeatureStageParameters());
     element->formattedText = formattedText;

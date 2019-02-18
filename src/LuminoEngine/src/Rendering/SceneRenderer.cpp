@@ -242,9 +242,15 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 					currentStage->getShadingModelFinal(finalMaterial));
 
                 detail::ShaderSemanticsManager* semanticsManager = ShaderHelper::semanticsManager(tech->shader());
-				semanticsManager->updateCameraVariables(cameraInfo);
-				semanticsManager->updateElementVariables(cameraInfo, elementInfo);
-				semanticsManager->updateSubsetVariables(subsetInfo);
+				//semanticsManager->updateCameraVariables(cameraInfo);
+				//semanticsManager->updateElementVariables(cameraInfo, elementInfo);
+				//semanticsManager->updateSubsetVariables(subsetInfo);
+                if (currentStage->renderFeature) {
+                    currentStage->renderFeature->updateRenderParameters(element, tech, cameraInfo, elementInfo, subsetInfo);
+                }
+                else {
+                    RenderFeature::updateRenderParametersDefault(tech, cameraInfo, elementInfo, subsetInfo);
+                }
 
 				if (finalMaterial) {
 					PbrMaterialData pbrMaterialData;

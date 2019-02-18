@@ -56,6 +56,8 @@ void InternalSpriteTextRender::render(IGraphicsDeviceContext* context, const Gly
 		uvSrcRect.y *= texSizeInv.height;
 		uvSrcRect.height *= texSizeInv.height;
 
+        //uvSrcRect = Rect(0, 0, 1, 1);
+
 		Rect dstRect(data.position, (float)data.srcRect.width, (float)data.srcRect.height);
 		internalDrawRectangle(buffer + (i * 4), data.transform, dstRect, uvSrcRect, color);
 	}
@@ -115,21 +117,25 @@ void InternalSpriteTextRender::internalDrawRectangle(Vertex* buffer, const Matri
 	buffer[0].position.set(rect.getLeft(), rect.getTop(), 0);
 	buffer[0].position.transformCoord(transform);
 	buffer[0].uv.set(lu, tv);	// 左上
+    buffer[0].normal = Vector3::UnitZ;
 
 	buffer[1].color = color;
 	buffer[1].position.set(rect.getRight(), rect.getTop(), 0);
 	buffer[1].position.transformCoord(transform);
 	buffer[1].uv.set(ru, tv);	// 右上
+    buffer[1].normal = Vector3::UnitZ;
 
 	buffer[2].color = color;
 	buffer[2].position.set(rect.getLeft(), rect.getBottom(), 0);
 	buffer[2].position.transformCoord(transform);
 	buffer[2].uv.set(lu, bv);	// 左下
+    buffer[2].normal = Vector3::UnitZ;
 
 	buffer[3].color = color;
 	buffer[3].position.set(rect.getRight(), rect.getBottom(), 0);
 	buffer[3].position.transformCoord(transform);
 	buffer[3].uv.set(ru, bv);	// 右下
+    buffer[3].normal = Vector3::UnitZ;
 
 	m_spriteCount++;
 }
@@ -172,6 +178,18 @@ void SpriteTextRenderFeature::flush(GraphicsContext* context)
 	flushInternal(context, m_drawingFontGlyphCache);
 }
 
+void SpriteTextRenderFeature::updateRenderParameters(detail::RenderDrawElement* element, ShaderTechnique* tech, const detail::CameraInfo& cameraInfo, const detail::ElementInfo& elementInfo, const detail::SubsetInfo& subsetInfo)
+{
+    auto* e = static_cast<DrawTextElement*>(element);
+    FontCore* font = FontHelper::resolveFontCore(e->formattedText->font);
+
+    // グリフのマスクテクスチャを MainTexture として使う
+    detail::SubsetInfo localSubsetInfo = subsetInfo;
+    localSubsetInfo.materialTexture = font->getFontGlyphTextureCache()->glyphsFillTexture();
+
+    RenderFeature::updateRenderParameters(element, tech, cameraInfo, elementInfo, localSubsetInfo);
+}
+
 void SpriteTextRenderFeature::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size)
 {
 	// 必要なグリフを探す。lookupGlyphInfo() の中で、テクスチャにグリフビットマップが blt される。
@@ -205,7 +223,7 @@ void SpriteTextRenderFeature::flushInternal(GraphicsContext* context, FontGlyphT
 	ITexture* glyphsTexture = GraphicsResourceHelper::resolveRHIObject<ITexture>(cache->glyphsFillTexture());
 
 	InternalSpriteTextRender::BrushData brushData;
-	brushData.color = Color::Red;
+	brushData.color = Color::Blue;
 
 	GraphicsManager* manager = m_internal->manager()->graphicsManager();
 	IGraphicsDeviceContext* deviceContext = context->commitState();
