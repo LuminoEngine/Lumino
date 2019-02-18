@@ -4,6 +4,7 @@
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Graphics/VertexDeclaration.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
+#include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Mesh/Mesh.hpp>
@@ -425,6 +426,35 @@ void RenderingContext::drawMesh(MeshResource* meshResource, int sectionIndex)
 //	//detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &sphere);
 //	//ptr->setLocalBoundingSphere(sphere);
 //}
+
+void RenderingContext::drawText(const StringRef& text, Font* font, const Color& color)
+{
+    class DrawText : public detail::RenderDrawElement
+    {
+    public:
+        Ref<detail::FormattedText> formattedText;
+
+        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+        {
+            static_cast<detail::SpriteTextRenderFeature*>(renderFeatures)->drawText(context, formattedText);
+        }
+    };
+
+    // TODO: cache
+    auto formattedText = makeRef<detail::FormattedText>();
+    formattedText->text = text;
+    formattedText->font = font;
+
+    auto* element = m_builder->addNewDrawElement<DrawText>(
+        m_manager->spriteTextRenderFeature(),
+        m_builder->spriteTextRenderFeatureStageParameters());
+    element->formattedText = formattedText;
+
+    // TODO
+    //detail::Sphere sphere;
+    //detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &sphere);
+    //ptr->setLocalBoundingSphere(sphere);
+}
 
 void RenderingContext::addAmbientLight(const Color& color, float intensity)
 {

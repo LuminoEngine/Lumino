@@ -41,9 +41,10 @@ bool FontGlyphTextureCache::init(FontCore* font)
 	m_glyphWidthCount = (int)(sqrt((double)m_maxCacheGlyphs) + 1.0);
 
 	// キャッシュ用テクスチャ作成
-	int w = m_glyphWidthCount * std::max(mw, mh);
-	m_glyphMaxBitmapSize = SizeI(w, w);
-	m_fillGlyphsTexture = newObject<Texture2D>(m_glyphMaxBitmapSize.width, m_glyphMaxBitmapSize.height, TextureFormat::RGBA32, false, GraphicsResourceUsage::Dynamic);
+    int w = std::max(mw, mh);
+    m_glyphMaxBitmapSize = SizeI(w, w);
+    SizeI textureSize(m_glyphWidthCount * w, m_glyphWidthCount * w);
+	m_fillGlyphsTexture = newObject<Texture2D>(textureSize.width, textureSize.height, TextureFormat::RGBA32, false, GraphicsResourceUsage::Dynamic);
 	// TODO: 最大 DeviceSize チェック
 
 	// 検索に使う情報をリセット

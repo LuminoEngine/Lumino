@@ -50,7 +50,7 @@ struct OutlineInfo
 
 struct BitmapGlyphInfo
 {
-	Bitmap2D* glyphBitmap;	// in,out
+	Bitmap2D* glyphBitmap = nullptr;	// in,out
 	//RawBitmap*			GlyphBitmap;
 	//RawBitmap*			OutlineBitmap;	///< 縁どり線用 (NULL でなければ先にこれをbltし、その上に GlyphBitmap を blt する)
 	//int				OutlineOffset;	///< 縁どり時は、線の分だけサイズが大きくなる。

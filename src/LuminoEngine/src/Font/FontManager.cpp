@@ -74,6 +74,8 @@ void FontManager::init(const Settings& settings)
     m_UTF32ToTCharConverter.setDestinationEncoding(TextEncoding::tcharEncoding());
     m_UTF32ToTCharConverter.getSourceEncoding(TextEncoding::utf32Encoding());
 
+    m_fontCoreCache.init();
+
     // FreeType
     {
         FT_Error err = FT_Init_FreeType(&m_ftLibrary);

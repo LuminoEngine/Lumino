@@ -21,7 +21,7 @@ public:
 	String text;
 	Ref<Font> font;
 	Size area;
-	TextAlignment textAlignment;
+	TextAlignment textAlignment = TextAlignment::Left;
 };
 
 // TODO: 入力は paragraph 単位がいいだろう。単一の装飾とテキスト範囲を表す TextRun のを受け取るイメージ。

@@ -140,7 +140,7 @@ void InternalSpriteTextRender::flush(IGraphicsDeviceContext* context, ITexture* 
 	context->setVertexBuffer(0, m_vertexBuffer);
 	context->setIndexBuffer(m_indexBuffer);
 	context->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-	context->drawPrimitiveIndexed(0, m_spriteCount / 3);
+	context->drawPrimitiveIndexed(0, m_spriteCount * 2);
 }
 
 //==============================================================================
@@ -153,6 +153,7 @@ SpriteTextRenderFeature::SpriteTextRenderFeature()
 
 void SpriteTextRenderFeature::init(RenderingManager* manager)
 {
+    RenderFeature::init();
     m_internal = makeRef<InternalSpriteTextRender>();
     m_internal->init(manager);
 }

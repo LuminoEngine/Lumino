@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
+#include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
 #include <LuminoEngine/Mesh/Mesh.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
@@ -119,8 +120,10 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 
             adjustGridPlane(m_viewPoint->viewFrustum, this);
             renderGridPlane(renderingContext, this);
-        }
 
+            // test
+            renderingContext->drawText(u"Lumino", Font::create(), Color::Blue);
+        }
 
 
 

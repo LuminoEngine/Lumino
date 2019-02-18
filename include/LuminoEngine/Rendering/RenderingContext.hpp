@@ -5,6 +5,7 @@
 #include "../Graphics/RenderState.hpp"
 
 namespace ln {
+class Font;
 class VertexDeclaration;
 class VertexBuffer;
 class Texture;
@@ -132,7 +133,7 @@ public:
 	//void drawMesh(MeshContainer* meshContainer, int sectionIndex);
 
 
-
+    void drawText(const StringRef& text, Font* font, const Color& color);
 
 	/** @} */
 
