@@ -245,6 +245,8 @@ set(LN_SOURCES_Font
     src/Font/Font.cpp
     src/Font/FontCore.cpp
     src/Font/FontCore.hpp
+    src/Font/FontGlyphCache.cpp
+    src/Font/FontGlyphCache.hpp
     src/Font/FontManager.cpp
     src/Font/FontManager.hpp
     src/Font/FreeTypeFont.cpp
@@ -316,6 +318,8 @@ set(LN_SOURCES_Rendering
     src/Rendering/SceneRenderer.hpp
     src/Rendering/SpriteRenderFeature.cpp
     src/Rendering/SpriteRenderFeature.hpp
+    src/Rendering/SpriteTextRenderFeature.cpp
+    src/Rendering/SpriteTextRenderFeature.hpp
     src/Rendering/UnLigitingSceneRenderer.cpp
     src/Rendering/UnLigitingSceneRenderer.hpp
 )

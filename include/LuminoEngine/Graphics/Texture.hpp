@@ -101,6 +101,8 @@ private:
 	void* m_rhiLockedBuffer;
 	bool m_initialUpdate;
 	bool m_modified;
+
+	friend class detail::GraphicsResourceHelper;
 };
 
 

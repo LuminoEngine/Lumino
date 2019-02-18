@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include "FontManager.hpp"
 #include "FontCore.hpp"
+#include "FontGlyphCache.hpp"
 
 namespace ln {
 namespace detail {
@@ -34,6 +35,16 @@ void FontCore::finalize()
 {
 	// ObjectCache から削除されるとき用
 	dispose();
+}
+
+FontGlyphTextureCache* FontCore::getFontGlyphTextureCache()
+{
+	if (!m_fontGlyphTextureCache)
+	{
+		m_fontGlyphTextureCache = makeRef<FontGlyphTextureCache>();
+		m_fontGlyphTextureCache->init(this);
+	}
+	return m_fontGlyphTextureCache;
 }
 
 } // namespace detail

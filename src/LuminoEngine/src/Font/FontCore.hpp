@@ -4,6 +4,7 @@ namespace ln {
 class Bitmap2D;
 namespace detail {
 class FontManager;
+class FontGlyphTextureCache;
 
 // https://www.freetype.org/freetype2/docs/tutorial/step2.html
 struct FontGlobalMetrics
@@ -11,7 +12,7 @@ struct FontGlobalMetrics
     float ascender;       // ベースラインから上側の距離
     float descender;      // ベースラインから下側の距離
     float lineSpace;		// 1行の最大高さ。次の行までの間隔。
-	float boundingMinX;	// Font face 内のすべてのグリフを囲むことができる矩形 (もしビットマップサイズが欲しい場合は小数点以下を切り上げること)
+	float boundingMinX;	// Font face 内のすべてのグリフを囲むことができる矩形 (ピクセル単位。ただし、整数であるとは限らない。もしビットマップサイズが欲しい場合は小数点以下を切り上げること)
 	float boundingMaxX;
 	float boundingMinY;
 	float boundingMaxY;
@@ -88,6 +89,8 @@ public:
 	virtual void lookupGlyphBitmap(UTF32 utf32code, BitmapGlyphInfo* outInfo) = 0;
 	virtual void decomposeOutline(UTF32 utf32code, VectorGlyphInfo* outInfo) = 0;
 
+	FontGlyphTextureCache* getFontGlyphTextureCache();
+
 protected:
     FontCore();
 	void init(FontManager* manager);
@@ -95,6 +98,7 @@ protected:
 
 private:
 	FontManager* m_manager;
+	Ref<FontGlyphTextureCache> m_fontGlyphTextureCache;
 };
 
 } // namespace detail
