@@ -43,11 +43,17 @@ public:
     /** カメラの投影モードを取得します。 */
     ProjectionMode projectionMode() const { return m_component->projectionMode(); }
 
-    /** 平行投影モード時の、ビューの縦幅に対するワールド空間内の距離を設定します。(default: 10.0) */
-    void setOrthographicSize(float value) { m_component->setOrthographicSize(value); }
+    /** 平行投影モード時の、ビューサイズに対するワールド空間内の距離を設定します。(default: (16.0, 12.0)) */
+    void setOrthographicSize(const Size& size) { m_component->setOrthographicSize(size); }
 
-    /** 平行投影モード時の、ビューの縦幅に対するワールド空間内の距離を取得します。 */
-    float orthographicSize() const { return m_component->orthographicSize(); }
+    /** 平行投影モード時の、ビューサイズに対するワールド空間内の距離を設定します。(default: (16.0, 12.0)) */
+    void setOrthographicSize(float width, float height) { setOrthographicSize(Size(width, height)); }
+
+    /** 平行投影モード時の、ビューの縦幅に対するワールド空間内の距離を設定します。(default: (16.0, 12.0)) */
+    void setOrthographicSize(float height) { setOrthographicSize(Size(0.0f, height)); }
+    
+    /** 平行投影モード時の、ビューサイズに対するワールド空間内の距離を取得します。 */
+    const Size& orthographicSize() const { return m_component->orthographicSize(); }
 
 
 

@@ -60,8 +60,14 @@ void SpriteFrameSet::init(Texture* texture, int frameWidth, int frameHeight, con
 			auto frame = newObject<SpriteFrame>();
 			frame->setSourceRect(Rect(x * frameWidth, y * frameHeight, frameWidth, frameHeight));
 			frame->setAnchorPoint(anchorPoint);
+            m_frames->add(frame);
 		}
 	}
+}
+
+Texture* SpriteFrameSet::texture() const
+{
+    return m_texture;
 }
 
 SpriteFrame* SpriteFrameSet::frame(int index) const
@@ -131,6 +137,7 @@ void SpriteComponent::setSourceRect(const Rect& rect)
 void SpriteComponent::setFrameSet(SpriteFrameSet* value)
 {
 	m_frameSet = value;
+    m_material->setMainTexture(m_frameSet->texture());
 }
 
 void SpriteComponent::setFrameIndex(int index)
@@ -140,24 +147,25 @@ void SpriteComponent::setFrameIndex(int index)
 
 void SpriteComponent::onRender(RenderingContext* context)
 {
-    Vector2 abchorPoint = m_anchorPoint;
+    Vector2 anchorPoint = m_anchorPoint;
 	Rect sourceRect = m_sourceRect;
-
+    Texture* tex = texture();
 
 	if (sourceRect.isEmpty() && m_frameSet) {
 		if (SpriteFrame* frame = m_frameSet->frame(m_frameIndex)) {
 			sourceRect = frame->sourceRect();
-			abchorPoint = frame->anchorPoint();
+            anchorPoint = frame->anchorPoint();
+            tex = m_frameSet->texture();
 		}
 	}
 
     Size renderSize;
     Rect renderSourceRect;
     detail::SpriteRenderFeature::makeRenderSizeAndSourceRectHelper(
-        texture(), m_size, sourceRect, &renderSize, &renderSourceRect);
+        tex, m_size, sourceRect, &renderSize, &renderSourceRect);
 
     context->drawSprite(
-        Matrix(), renderSize, abchorPoint, renderSourceRect, Color::White,
+        Matrix(), renderSize, anchorPoint, renderSourceRect, Color::White,
         SpriteBaseDirection::ZMinus, BillboardType::None, m_material);
 }
 

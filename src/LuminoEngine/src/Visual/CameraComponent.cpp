@@ -20,7 +20,7 @@ CameraComponent::CameraComponent()
     , m_aspect(0.0f)
     , m_nearClip(0.3f)			// Unity based.
     , m_farClip(1000.0f)
-    , m_orthographicSize(10.0f)	// Unity based. ※ Unity は縦幅の "半分" だが、ちょっとイメージしづらいので Lumino では全体
+    , m_orthographicSize(0.0f, 10.0f)	// Unity based. ※ Unity は縦幅の "半分" だが、ちょっとイメージしづらいので Lumino では全体
     , m_ownerRenderView(nullptr)
 //, m_zSortDistanceBase(ZSortDistanceBase::CameraDistance)
 //, m_cameraBehavior(nullptr)
@@ -85,9 +85,16 @@ void CameraComponent::updateMatrices()
 	    }
 	    else
 	    {
-		    float aspect = viewSize.width / viewSize.height;
-		    float width = m_orthographicSize * aspect;
-		    m_projMatrix = Matrix::makeOrthoLH(width, m_orthographicSize, m_nearClip, m_farClip);
+            float width = m_orthographicSize.width;
+            float height = m_orthographicSize.height;
+            if (Math::nearEqual(width, 0.0f)) {
+                width = m_orthographicSize.height * (viewSize.width / viewSize.height);
+            }
+            if (Math::nearEqual(height, 0.0f)) {
+                height = m_orthographicSize.width * (viewSize.height / viewSize.width);
+            }
+
+            m_projMatrix = Matrix::makeOrthoLH(width, height, m_nearClip, m_farClip);
 	    }
 
 	    m_viewProjMatrix = m_viewMatrix * m_projMatrix;

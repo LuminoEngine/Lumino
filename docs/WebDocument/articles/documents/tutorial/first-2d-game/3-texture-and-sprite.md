@@ -119,35 +119,3 @@ Lumino は 3D をベースとしたゲームエンジンです（ただし、3D 
 16 や 12 という数字は、このグリッドが示す距離の単位です。 (ちなみに、Lumino はこの 1 つ分を 1 メートルと考えています。これは物理演算を考えるときに重要な単位となってきます)
 
 
-
-ぴったりウィンドウに収める
-----------
-
-TODO:
-
-```cpp
-#include <Lumino.hpp>
-
-void Main()
-{
-    Camera* camera = Engine::mainCamera();
-    camera->setProjectionMode(ProjectionMode::Orthographic);
-    camera->setOrthographicSize(12);
-
-    Ref<Texture> skyTexture = Assets::loadTexture(u"sky");
-    Ref<Sprite> skySprite = Sprite::create(16, 12, skyTexture);
-
-    while (Engine::update())
-    {
-    }
-}
-```
-
-
-
-
-
-
-
-
-

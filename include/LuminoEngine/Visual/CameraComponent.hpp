@@ -60,8 +60,8 @@ public:
 	void setProjectionMode(ProjectionMode value) { m_projectionMode = value; }
     ProjectionMode projectionMode() const { return m_projectionMode; }
 	
-	void setOrthographicSize(float value) { m_orthographicSize = value; }
-    float orthographicSize() const { return m_orthographicSize; }
+	void setOrthographicSize(const Size& value) { m_orthographicSize = value; }
+    const Size& orthographicSize() const { return m_orthographicSize; }
 
 	void setAspect(float value) { m_aspect = value; }
 
@@ -113,7 +113,7 @@ private:
 	float				m_aspect;
 	float				m_nearClip;
 	float				m_farClip;
-	float				m_orthographicSize;	// 縦方向のサイズ。横はアスペクト比から求める
+    Size				m_orthographicSize;
 	//ZSortDistanceBase	m_zSortDistanceBase;
 	//CameraBehavior*		m_cameraBehavior;
 

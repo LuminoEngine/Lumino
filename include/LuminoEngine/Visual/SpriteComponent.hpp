@@ -51,6 +51,7 @@ public:
 
 	static Ref<SpriteFrameSet> create(Texture* texture, int frameWidth, int frameHeight, const Vector2& anchorPoint = Vector2::NaN);
 
+    Texture* texture() const;
 
 public: // TODO: internal
 	int frameCount() const { return m_frames->size(); }
