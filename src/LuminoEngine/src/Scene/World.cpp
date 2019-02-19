@@ -14,6 +14,7 @@ namespace ln {
 // World
 
 World::World()
+	: m_rootWorldObjectList(makeList<Ref<WorldObject>>())
 {
 }
 
@@ -44,20 +45,32 @@ void World::addObject(WorldObject* obj)
 {
     if (LN_REQUIRE(obj)) return;
     if (LN_REQUIRE(!obj->m_world)) return;
-    m_rootWorldObjectList.add(obj);
+    m_rootWorldObjectList->add(obj);
 	obj->attachWorld(this);
 }
 
 void World::removeAllObjects()
 {
-    for (int i = m_rootWorldObjectList.size() - 1; i >= 0; i--)
+    for (int i = m_rootWorldObjectList->size() - 1; i >= 0; i--)
     {
         if (!m_rootWorldObjectList[i]->isSpecialObject())
         {
 			m_rootWorldObjectList[i]->detachWorld();
-            m_rootWorldObjectList.removeAt(i);
+            m_rootWorldObjectList->removeAt(i);
         }
     }
+}
+
+ReadOnlyList<Ref<WorldObject>>* World::rootObjects() const
+{
+	return m_rootWorldObjectList;
+}
+
+void World::removeRootObject(WorldObject* obj)
+{
+	if (m_rootWorldObjectList->remove(obj)) {
+		obj->detachWorld();
+	}
 }
 
 void World::updateObjectsWorldMatrix()
@@ -113,6 +126,9 @@ void World::onInternalAnimationUpdate(float elapsedSeconds)
 
 void World::onPostUpdate(float elapsedSeconds)
 {
+	for (WorldObject* obj : m_destroyList) {
+		obj->removeFromWorld();
+	}
 }
 
 detail::WorldSceneGraphRenderingContext* World::prepareRender(RenderViewPoint* viewPoint)

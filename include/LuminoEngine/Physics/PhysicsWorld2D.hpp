@@ -69,6 +69,8 @@ class PhysicsObject2D
 public:
 	PhysicsWorld2D* physicsWorld() const { return m_ownerWorld; }
 
+	/** このオブジェクトが属している PhysicsWorld2D からこのオブジェクトを除外します。 */
+	void removeFromPhysicsWorld();
 
     /** onTriggerEnter イベントの通知を受け取るコールバックを登録します。*/
     LN_METHOD(Event)

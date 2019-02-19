@@ -23,6 +23,12 @@ public:
     typedef typename std::vector<TItem>::reference reference;
     typedef typename std::vector<TItem>::const_reference const_reference;
 
+	/** 配列が空であるかを確認します。*/
+	bool isEmpty() const LN_NOEXCEPT { return size_internal() == 0; }
+
+	/** 格納されている要素の数を取得します。*/
+	int size() const LN_NOEXCEPT { return size_internal(); }
+
     /** 先頭要素の参照を返します。*/
     reference front() { return at_internal(0); }
 

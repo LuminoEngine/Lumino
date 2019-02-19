@@ -29,6 +29,8 @@ class RigidBody2DComponent
 	, protected detail::IPhysicsObjectEventListener
 {
 public:
+	static Ref<RigidBody2DComponent> create();
+
     void setVelocity(const Vector2& value) { m_body->setVelocity(value); }
 
     const Vector2& velocity() const { return m_body->velocity(); }
@@ -73,6 +75,7 @@ LN_CONSTRUCT_ACCESS:
 	RigidBody2DComponent();
 	virtual ~RigidBody2DComponent() = default;
 	void init();
+	virtual void onDispose(bool explicitDisposing) override;
 
 protected:
 	virtual void onAttachedWorld(World* newOwner) override;

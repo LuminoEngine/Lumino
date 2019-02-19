@@ -23,6 +23,11 @@ void Collision::init(WorldObject* worldObject/*, RigidBody2DComponent* component
 //=============================================================================
 // RigidBody2DComponent
 
+Ref<RigidBody2DComponent> RigidBody2DComponent::create()
+{
+	return newObject<RigidBody2DComponent>();
+}
+
 RigidBody2DComponent::RigidBody2DComponent()
 {
 }
@@ -34,6 +39,17 @@ void RigidBody2DComponent::init()
     m_body->setEventListener(this);
     m_body->setOwnerData(this);
     detail::EngineDomain::engineManager()->mainPhysicsWorld2D()->addPhysicsObject(m_body);
+}
+
+void RigidBody2DComponent::onDispose(bool explicitDisposing)
+{
+	if (m_body) {
+		m_body->setEventListener(nullptr);
+		m_body->removeFromPhysicsWorld();
+		m_body = nullptr;
+	}
+
+	Component::onDispose(explicitDisposing);
 }
 
 void RigidBody2DComponent::setMass(float value)

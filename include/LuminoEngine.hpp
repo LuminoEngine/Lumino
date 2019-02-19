@@ -72,6 +72,7 @@
 #include "LuminoEngine/Scene/Light.hpp"
 #include "LuminoEngine/Scene/Sprite.hpp"
 #include "LuminoEngine/Scene/StaticMesh.hpp"
+#include "LuminoEngine/Scene/RigidBodyComponent.hpp"
 
 #include "LuminoEngine/UI/UIFrameWindow.hpp"
 #include "LuminoEngine/UI/UIViewport.hpp"

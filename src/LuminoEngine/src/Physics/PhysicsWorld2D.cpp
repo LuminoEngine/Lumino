@@ -78,6 +78,13 @@ void PhysicsObject2D::init()
 	Object::init();
 }
 
+void PhysicsObject2D::removeFromPhysicsWorld()
+{
+	if (m_ownerWorld) {
+		m_ownerWorld->removePhysicsObject(this);
+	}
+}
+
 EventConnection PhysicsObject2D::connectOnCollisionEnter(Collision2DEventHandler handler)
 {
     return m_onCollisionEnter.connect(handler);

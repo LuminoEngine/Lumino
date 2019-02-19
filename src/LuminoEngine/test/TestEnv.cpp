@@ -13,6 +13,7 @@ void TestEnv::setup()
 	EngineSettings::setMainBackBufferSize(160, 120);
 	EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);//GraphicsAPI::Vulkan);//
     EngineSettings::setEngineFeatures(feature);
+	EngineSettings::addAssetDirectory(LN_LOCALFILE(u"Assets"));
     detail::EngineDomain::engineManager()->init();
 
     if (feature == EngineFeature::Experimental)  // Experimental
@@ -20,12 +21,12 @@ void TestEnv::setup()
         Font::registerFontFile(LN_LOCALFILE("../../../tools/VLGothic/VL-Gothic-Regular.ttf"));
         Engine::mainCamera()->setBackgroundColor(Color(0.5, 0.5, 0.5, 1.0));
 
-        Engine::mainAmbientLight()->setColor(Color::White);
-        Engine::mainAmbientLight()->setIntensity(0.5);
-        Engine::mainDirectionalLight()->setColor(Color::White);
-        Engine::mainDirectionalLight()->setIntensity(0.5);
-        Engine::mainDirectionalLight()->setPosition(10, 10, -10);
-        Engine::mainDirectionalLight()->lookAt(Vector3(0, 0, 0));
+        //Engine::mainAmbientLight()->setColor(Color::White);
+        //Engine::mainAmbientLight()->setIntensity(0.5);
+        //Engine::mainDirectionalLight()->setColor(Color::White);
+        //Engine::mainDirectionalLight()->setIntensity(0.5);
+        //Engine::mainDirectionalLight()->setPosition(10, 10, -10);
+        //Engine::mainDirectionalLight()->lookAt(Vector3(0, 0, 0));
     }
 
 #ifdef LN_OS_WIN32

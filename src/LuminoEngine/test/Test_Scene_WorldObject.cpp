@@ -9,8 +9,6 @@ class Test_Scene_WorldObject : public LuminoSceneTest {};
 TEST_F(Test_Scene_WorldObject, Transform)
 {
 	{
-        auto light1 = AmbientLight::create();
-
         auto tex1 = Assets::loadTexture(LN_ASSETFILE("Sprite1.png"));
 
         //* [ ] Translation
@@ -39,5 +37,27 @@ TEST_F(Test_Scene_WorldObject, Transform)
         TestEnv::updateFrame();
         ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Scene_WorldObject-Transform-1.png"));
         LN_TEST_CLEAN_SCENE;
+	}
+}
+
+//------------------------------------------------------------------------------
+//## Destroy
+TEST_F(Test_Scene_WorldObject, Destroy)
+{
+	{
+		int count1 = Engine::mainWorld()->rootObjects()->size();
+
+		auto sprite1 = Sprite::create(Assets::loadTexture(LN_ASSETFILE("Sprite1.png")), 5, 5);
+
+		TestEnv::updateFrame();
+		sprite1->destroy();
+		int count2 = Engine::mainWorld()->rootObjects()->size();
+
+		TestEnv::updateFrame();
+		int count3 = Engine::mainWorld()->rootObjects()->size();
+
+		ASSERT_EQ(count1 + 1, count2);
+		ASSERT_EQ(count1, count3);
+		LN_TEST_CLEAN_SCENE;
 	}
 }

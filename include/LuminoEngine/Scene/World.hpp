@@ -27,6 +27,9 @@ public:
     /** この World に含まれている全てのオブジェクトを World から除外します。 */
     void removeAllObjects();
 
+	/** この World に含まれている全てのルートオブジェクトを取得します。 */
+	ReadOnlyList<Ref<WorldObject>>* rootObjects() const;
+
 protected:
     // update sequence
     virtual void onPreUpdate(float elapsedSeconds);
@@ -45,6 +48,7 @@ public: // TODO: internal
     const Ref<AnimationContext>& animationContext() const { return m_animationContext; }
     const Ref<PhysicsWorld>& physicsWorld() const { return m_physicsWorld; }
 	const Ref<PhysicsWorld2D>& physicsWorld2D() const { return m_physicsWorld2D; }
+	void removeRootObject(WorldObject* obj);
     void updateObjectsWorldMatrix();
     void updateFrame(float elapsedSeconds);
 	detail::WorldSceneGraphRenderingContext* prepareRender(RenderViewPoint* viewPoint);
@@ -53,7 +57,8 @@ public: // TODO: internal
     Ref<AnimationContext> m_animationContext;
     Ref<PhysicsWorld> m_physicsWorld;
 	Ref<PhysicsWorld2D> m_physicsWorld2D;
-    List<Ref<WorldObject>> m_rootWorldObjectList;
+    Ref<List<Ref<WorldObject>>> m_rootWorldObjectList;
+	std::vector<WorldObject*> m_destroyList;
 
     Ref<detail::WorldSceneGraphRenderingContext> m_renderingContext;
 

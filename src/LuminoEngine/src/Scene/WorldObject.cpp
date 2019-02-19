@@ -118,6 +118,7 @@ WorldObject::WorldObject()
     , m_components(makeList<Ref<Component>>())
     , m_children(makeList<Ref<WorldObject>>())
     , m_isSpecialObject(false)
+	, m_destroyed(false)
 {
 }
 
@@ -135,6 +136,16 @@ void WorldObject::init()
 	}
 }
 
+void WorldObject::onDispose(bool explicitDisposing)
+{
+	m_destroyed = true;
+	if (m_components) {
+		m_components->clear();
+		m_components = nullptr;
+	}
+	Object::onDispose(explicitDisposing);
+}
+
 void WorldObject::lookAt(const Vector3& target, const Vector3& up)
 {
     m_transform->lookAt(target, up);
@@ -148,6 +159,26 @@ void WorldObject::addComponent(Component* component)
     component->m_object = this;
     m_components->add(component);
     component->onAttached(this);
+}
+
+void WorldObject::destroy()
+{
+	m_destroyed = true;
+	if (m_world) {
+		m_world->m_destroyList.push_back(this);
+	}
+}
+
+void WorldObject::removeFromWorld()
+{
+	if (m_world) {
+		if (m_parent) {
+			LN_NOTIMPLEMENTED();
+		}
+		else {
+			m_world->removeRootObject(this);
+		}
+	}
 }
 
 const Matrix& WorldObject::worldMatrix()

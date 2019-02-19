@@ -13,6 +13,7 @@ set(LN_SOURCES
 	Test_Graphics_DeviceContext.cpp
 	Test_Graphics_LowLevelRendering.cpp
 	Test_Graphics_Texture.cpp
+	Test_Physics_2D.cpp
 	Test_Scene_Sprite.cpp
 	Test_Scene_WorldObject.cpp
 	Test_Shader_HlslEffect.cpp
