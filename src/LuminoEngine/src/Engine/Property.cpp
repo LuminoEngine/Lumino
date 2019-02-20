@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Engine/Property.hpp>
+#include "EngineManager.hpp"
 
 namespace ln {
 
@@ -59,6 +60,14 @@ void PropertyInfo::notifyPropertyChanged(Object* ownerObject, PropertyBase* targ
     if (prop->m_staticPropertyChangedCallback) {
         prop->m_staticPropertyChangedCallback(ownerObject);
     }
+}
+
+//==============================================================================
+// EngineContext
+
+EngineContext* EngineContext::current()
+{
+	return detail::EngineDomain::engineManager()->engineContext();
 }
 
 } // namespace ln

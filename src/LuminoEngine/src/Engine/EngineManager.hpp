@@ -7,6 +7,7 @@
 #include "FpsController.hpp"
 
 namespace ln {
+class EngineContext;
 class UIContext;
 class UIFrameWindow;
 class UIViewport;
@@ -95,6 +96,7 @@ public:
 	void quit();
 
 	EngineSettings& settings() { return m_settings; }
+	const Ref<EngineContext>& engineContext() const { return m_engineContext; }
 	const Ref<PlatformManager>& platformManager() const { return m_platformManager; }
     const Ref<AnimationManager>& animationManager() const { return m_animationManager; }
 	const Ref<InputManager>& inputManager() const { return m_inputManager; }
@@ -125,6 +127,7 @@ private:
 
 	EngineSettings m_settings;
 
+	Ref<EngineContext> m_engineContext;
 	Ref<PlatformManager>				m_platformManager;
 	Ref<AnimationManager>			m_animationManager;
 	Ref<InputManager>				m_inputManager;

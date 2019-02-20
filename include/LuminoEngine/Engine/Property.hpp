@@ -41,8 +41,10 @@ void ObjectA::onProp1Changed()
 
 */
 
-namespace ln {
+#include <unordered_set>
 
+namespace ln {
+class PropertyAccessor;
 class PropertyInfo;
 class PropertyBase;
 template<typename T> class Property;
@@ -171,6 +173,12 @@ public:
         ownerClassType->registerProperty(this);
     }
 
+	PropertyInfo(const char* name, const Ref<PropertyAccessor>& accessor)
+		: m_name(String::fromCString(name))
+		, m_accessor(accessor)
+	{
+	}
+
     template<typename TValue>
     static void setTypedValue(Object* obj, PropertyInfo* propertyInfo, TValue&& value)
     {
@@ -187,6 +195,11 @@ private:
     GetPropertyCallback m_getPropertyCallback;
     StaticPropertyChangedCallback m_staticPropertyChangedCallback;
     bool m_registerd;
+
+	// new model
+	String m_name;
+	Ref<PropertyAccessor> m_accessor;
+
     friend class TypeInfo;
 };
 
@@ -310,6 +323,7 @@ LN_INTERNAL_ACCESS:
         return false;
     }
 
+
 LN_INTERNAL_ACCESS:
     void setValueSource(PropertySetSource source)
     {
@@ -358,8 +372,101 @@ inline bool operator != (const TValue& lhs, const Property<TValue>& rhs)
     return lhs != rhs.get();
 }
 
+//------------------------------------------------------------------------------
+
+class PropertyAccessor : public RefObject
+{
+public:
+	virtual void getValue(const Object* obj, Variant* value) const = 0;
+	virtual void setValue(Object* obj, const Variant& value) = 0;
+};
+
+// 呼び出し側が型を知っている場合、PropertyAccessor からキャストすることで Variant を介すことなく直接値を操作できるようにするための中間クラス
+template<class TValue>
+class TypedPropertyAccessor : public PropertyAccessor
+{
+public:
+	virtual void getValueDirect(const Object* obj, TValue* value) const = 0;
+	virtual void setValueDirect(Object* obj, const TValue& value) = 0;
+};
+
+template<class TClassType, class TValue, class TGetFunction, class TSetFunction>
+class PropertyAccessorImpl : public TypedPropertyAccessor<TValue>
+{
+public:
+	PropertyAccessorImpl(TGetFunction getFunction, TSetFunction setFunction)
+		: m_getFunction(getFunction)
+		, m_setFunction(setFunction)
+	{ }
+
+	void getValue(const Object* obj, Variant* value) const override
+	{
+		LN_DCHECK(obj);
+		LN_DCHECK(value);
+		const auto classPtr = static_cast<const TClassType*>(obj);
+		TValue t;
+		m_getFunction(classPtr, &t);
+		*value = t;
+	}
+
+	void setValue(Object* obj, const Variant& value) override
+	{
+		LN_DCHECK(obj);
+		auto classPtr = static_cast<TClassType*>(obj);
+		m_setFunction(classPtr, value.get<TValue>());
+	}
+
+	virtual void getValueDirect(const Object* obj, TValue* value) const override
+	{
+		LN_CHECK(obj);
+		const auto classPtr = static_cast<const TClassType*>(obj);
+		m_getFunction(classPtr, value);
+	}
+
+	virtual void setValueDirect(Object* obj, const TValue& value) override
+	{
+		LN_DCHECK(obj);
+		auto classPtr = static_cast<TClassType*>(obj);
+		m_setFunction(classPtr, value);
+	}
+
+private:
+	TGetFunction m_getFunction;
+	TSetFunction m_setFunction;
+};
+
+template<class TClassType, class TValue, class TGetFunction, class TSetFunction>
+Ref<PropertyAccessor> makePropertyAccessor(TGetFunction getFunction, TSetFunction setFunction)
+{
+	return Ref<PropertyAccessor>(LN_NEW PropertyAccessorImpl<TClassType, TValue, TGetFunction, TSetFunction>(getFunction, setFunction), false);
+}
 
 
+class EngineContext : public RefObject
+{
+public:
+	static EngineContext* current();
+
+	template<class TClassType>
+	void registerType(std::initializer_list<Ref<PropertyInfo>> propInfos)//(std::initializer_list<Ref<PropertyAccessor>> accessors)
+	{
+		TypeInfo* typeInfo = TypeInfo::getTypeInfo<TClassType>();
+
+		if (m_typeInfoSet.find(typeInfo) == m_typeInfoSet.end())
+		{
+			m_typeInfoSet.insert(typeInfo);
+
+			for (auto& p : propInfos) {
+				typeInfo->registerProperty(p);
+				//typeInfo->registerProperty(makeRef<PropertyInfo>(a));
+			}
+		}
+	}
+
+private:
+	std::unordered_set<TypeInfo*> m_typeInfoSet;
+	//List<TypeInfo*> m_typeInfos;
+};
 
 } // namespace ln
 

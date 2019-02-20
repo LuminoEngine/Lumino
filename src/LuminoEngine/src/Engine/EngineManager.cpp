@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Engine/Property.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
@@ -76,6 +77,8 @@ EngineManager::~EngineManager()
 
 void EngineManager::init()
 {
+	m_engineContext = makeRef<EngineContext>();
+
 	initializeAllManagers();
 
 	m_fpsController.setFrameRate(m_settings.frameRate);

@@ -2,6 +2,7 @@
 #include <mutex>
 
 namespace ln {
+class EngineContext;
 class TypeInfo;
 class PropertyInfo;
 namespace detail {
