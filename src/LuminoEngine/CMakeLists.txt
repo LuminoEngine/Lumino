@@ -13,10 +13,12 @@ set(LN_SOURCES_Base
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/Regex.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/Task.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/Variant.hpp
     src/Base/Internal.hpp
     src/Base/RefObjectCache.hpp
     src/Base/Regex.cpp
     src/Base/Task.cpp
+    src/Base/Variant.cpp
 )
 
 set(LN_SOURCES_Engine

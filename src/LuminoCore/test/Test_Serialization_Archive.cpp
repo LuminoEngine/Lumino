@@ -1,7 +1,6 @@
 ﻿#include "Common.hpp"
 #include <LuminoCore/Json/JsonDocument.hpp>
 #include <LuminoCore/Serialization/Serialization.hpp>
-#include <LuminoCore/Base/Variant.hpp>
 #include <LuminoCore/Math/Math.hpp>
 
 //==============================================================================
@@ -700,93 +699,6 @@ TEST_F(Test_Serialization2, DefaultValue)
 		ar.process(t);
 		ASSERT_EQ(1, t.x);
 		ASSERT_EQ(55, t.z);
-	}
-}
-
-//------------------------------------------------------------------------------
-//## Variant serialization
-TEST_F(Test_Serialization2, VariantTest)
-{
-	String json = _T("{\"v_Int32\":100}");
-
-	struct Data
-	{
-		//Variant v_Null;	// TODO:
-		Variant v_Bool;
-		//Variant v_Char,	// TODO:
-		Variant v_Int8;
-		Variant v_Int16;
-		Variant v_Int32;
-		Variant v_Int64;
-		Variant v_UInt8;
-		Variant v_UInt16;
-		Variant v_UInt32;
-		Variant v_UInt64;
-		Variant v_Float;
-		Variant v_Double;
-		Variant v_String;
-		Variant v_List;
-
-		void serialize(Archive& ar)
-		{
-			ar & LN_NVP(v_Bool);
-			ar & LN_NVP(v_Int8);
-			ar & LN_NVP(v_Int16);
-			ar & LN_NVP(v_Int32);
-			ar & LN_NVP(v_Int64);
-			ar & LN_NVP(v_UInt8);
-			ar & LN_NVP(v_UInt16);
-			ar & LN_NVP(v_UInt32);
-			ar & LN_NVP(v_UInt64);
-			ar & LN_NVP(v_Float);
-			ar & LN_NVP(v_Double);
-			ar & LN_NVP(v_String);
-			ar & LN_NVP(v_List);
-		}
-	};
-
-	//* [ ] Save
-	{
-		JsonTextOutputArchive ar;
-		Data data;
-		data.v_Bool = true;
-		data.v_Int8 = 1;
-		data.v_Int16 = 2;
-		data.v_Int32 = 3;
-		data.v_Int64 = 4;
-		data.v_UInt8 = 5;
-		data.v_UInt16 = 6;
-		data.v_UInt32 = 7;
-		data.v_UInt64 = 8;
-		data.v_Float = 1;
-		data.v_Double = 1;
-		data.v_String = _T("11");
-		data.v_List = Variant({1, 2, 3});
-		ar.process(data);
-		json = ar.toString(JsonFormatting::None);
-	}
-
-	//* [ ] Load
-	{
-		JsonTextInputArchive ar(json);
-		Data data;
-		ar.process(data);
-		ASSERT_EQ(true, data.v_Bool.get<bool>());
-		ASSERT_EQ(1, data.v_Int8.get<int8_t>());
-		ASSERT_EQ(2, data.v_Int16.get<int16_t>());
-		ASSERT_EQ(3, data.v_Int32.get<int32_t>());
-		ASSERT_EQ(4, data.v_Int64.get<int64_t>());
-		ASSERT_EQ(5, data.v_UInt8.get<uint8_t>());
-		ASSERT_EQ(6, data.v_UInt16.get<uint16_t>());
-		ASSERT_EQ(7, data.v_UInt32.get<uint32_t>());
-		ASSERT_EQ(8, data.v_UInt64.get<uint64_t>());
-		ASSERT_EQ(true, Math::nearEqual(1, data.v_Float.get<float>()));
-		ASSERT_EQ(true, Math::nearEqual(1, data.v_Double.get<double>()));
-		ASSERT_EQ(_T("11"), data.v_String.get<String>());
-		ASSERT_EQ(3, data.v_List.list().size());
-		ASSERT_EQ(1, data.v_List.list()[0].get<int32_t>());
-		ASSERT_EQ(2, data.v_List.list()[1].get<int32_t>());
-		ASSERT_EQ(3, data.v_List.list()[2].get<int32_t>());
 	}
 }
 

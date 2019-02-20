@@ -42,6 +42,7 @@ void ObjectA::onProp1Changed()
 */
 
 #include <unordered_set>
+#include "../Base/Variant.hpp"
 
 namespace ln {
 class PropertyAccessor;

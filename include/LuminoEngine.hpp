@@ -3,6 +3,7 @@
 #include <LuminoCore.hpp>
 
 #include "LuminoEngine/Base/Regex.hpp"
+#include "LuminoEngine/Base/Variant.hpp"
 
 #include "LuminoEngine/Engine/EngineSettings.hpp"
 #include "LuminoEngine/Engine/Engine.hpp"

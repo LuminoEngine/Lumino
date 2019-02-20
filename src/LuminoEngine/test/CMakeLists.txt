@@ -8,6 +8,7 @@ set(LN_SOURCES
 	Test_Asset_AssetArchive.cpp
 	Test_Base_ObjectCache.cpp
 	Test_Base_Regex.cpp
+	Test_Base_Variant.cpp
 	Test_Engine_Object.cpp
 	Test_Graphics_Bitmap.cpp
 	Test_Graphics_DeviceContext.cpp

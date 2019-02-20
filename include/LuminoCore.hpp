@@ -20,7 +20,6 @@
 #include "LuminoCore/Base/String.hpp"
 #include "LuminoCore/Base/StringHelper.hpp"
 #include "LuminoCore/Base/Uuid.hpp"
-#include "LuminoCore/Base/Variant.hpp"
 
 #include "LuminoCore/IO/Common.hpp"
 #include "LuminoCore/IO/BinaryReader.hpp"
