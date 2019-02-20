@@ -8,7 +8,7 @@ namespace ln {
 
 class Animator
 	: public Component
-	, public detail::IAnimationController
+	, public detail::IAnimationControllerHolder
 {
 public:
 	/** ステート名を指定してアニメーションクリップを追加します。 (レイヤー0 へ追加されます) */
@@ -18,10 +18,10 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 private:
-	virtual detail::AnimationTargetElementBlendLink* findAnimationTargetElementBlendLink(const StringRef& name) override;
+	virtual void onUpdate(float elapsedSeconds) override;
+	virtual void onUpdateTargetElement(const detail::AnimationTargetElementBlendLink* link) override;
 
-	List<Ref<AnimationLayer>> m_layers;
-	List<Ref<detail::AnimationTargetElementBlendLink>> m_targetElementBlendLinks;
+	Ref<AnimationControllerCore> m_core;
 };
 
 } // namespace ln

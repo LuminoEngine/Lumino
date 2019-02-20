@@ -11,6 +11,7 @@ namespace detail { class AnimationTargetElementBlendLink; }
 class AnimationValue;
 class AnimationTrack;
 class AnimationLayer;
+class AnimationControllerCore;
 class AnimationController;
 
 
@@ -34,10 +35,10 @@ public:
 	bool affectAnimation = false;		// 更新処理の中で、実際に値がセットされたかどうか。セットされていないボーンにはデフォルト値をセットしたりする。
 };
 
-class IAnimationController
+class IAnimationControllerHolder
 {
 public:
-	virtual detail::AnimationTargetElementBlendLink* findAnimationTargetElementBlendLink(const StringRef& name) = 0;
+	virtual void onUpdateTargetElement(const detail::AnimationTargetElementBlendLink* link) = 0;
 };
 
 } // namespace detail
@@ -105,7 +106,7 @@ private:
 		detail::AnimationTargetElementBlendLink* blendLink;
 	};
 
-	void attachToTarget(detail::IAnimationController* animatorController);
+	void attachToTarget(AnimationControllerCore* animatorController);
 	float getBlendWeight() const { return m_blendWeight; }
 	void setBlendWeight(float weight) { m_blendWeight = weight; }
 	void updateTargetElements();
@@ -130,7 +131,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	AnimationLayer();
 	virtual ~AnimationLayer();
-	void init(detail::IAnimationController* owner);
+	void init(AnimationControllerCore* owner);
 
 LN_INTERNAL_ACCESS:
 	AnimationState* addClipAndCreateState(AnimationClip* animationClip);
@@ -151,16 +152,14 @@ private:
 		float startingOffsetTime;
 	};
 
-	detail::IAnimationController* m_owner;
+	AnimationControllerCore* m_owner;
 	List<Ref<AnimationState>> m_animationStatus;
 	AnimationState* m_currentState;
 	Transition m_transition;
 };
 
-/** スキンメッシュアニメーションにおいてキャラクターの挙動を操作するためのクラスです。 */
-class AnimationController
+class AnimationControllerCore
 	: public Object
-	, public detail::IAnimationController
 {
 public:
 
@@ -197,24 +196,89 @@ public:
 
 public:
 
+	void addLayer(const Ref<AnimationLayer>& layer) { m_layers.add(layer); }
+	void addElementBlendLink(const Ref<detail::AnimationTargetElementBlendLink>& link) { m_targetElementBlendLinks.add(link); }
+
+	///// AnimationTargetEntity の検索 (見つからなければ NULL)
+	//detail::AnimationTargetAttributeEntity* findAnimationTargetAttributeEntity(const String& name);
+
+protected:
+
+LN_CONSTRUCT_ACCESS:
+	AnimationControllerCore();
+	~AnimationControllerCore();
+	void init(detail::IAnimationControllerHolder* owner);
+
+LN_INTERNAL_ACCESS:
+	void advanceTime(float elapsedTime);
+	void updateTargetElements();
+	detail::AnimationTargetElementBlendLink* findAnimationTargetElementBlendLink(const StringRef& name);
+
+private:
+	detail::IAnimationControllerHolder* m_owner;
+	List<Ref<AnimationLayer>> m_layers;
+	List<Ref<detail::AnimationTargetElementBlendLink>> m_targetElementBlendLinks;
+};
+
+
+
+
+
+/** スキンメッシュアニメーションにおいてキャラクターの挙動を操作するためのクラスです。 */
+class AnimationController
+	: public Object
+	, public detail::IAnimationControllerHolder
+{
+public:
+
+	/** アニメーションクリップを追加します。 (レイヤー0 へ追加されます) */
+	AnimationState* addClip(AnimationClip* animationClip) { m_core->addClip(animationClip); }
+
+	/** ステート名を指定してアニメーションクリップを追加します。 (レイヤー0 へ追加されます) */
+	AnimationState* addClip(const StringRef& stateName, AnimationClip* animationClip) { m_core->addClip(stateName, animationClip); }
+
+	/** アニメーションクリップを除外します。 (レイヤー0 から除外されます) */
+	void removeClip(AnimationClip* animationClip) { m_core->removeClip(animationClip); }
+
+	/// 再生中であるかを確認する
+	//bool isPlaying() const;
+
+	/// 再生
+	void play(const StringRef& clipName, float duration = 0.3f/*, PlayMode mode = PlayMode_StopSameLayer*/) { m_core->play(clipName, duration); }
+
+	///// ブレンド (アニメーションの再生には影響しない。停止中のアニメーションがこの関数によって再生開始されることはない)
+	//void Blend(const lnKeyChar* animName, lnFloat targetWeight, lnFloat fadeLength);
+
+	///// クロスフェード
+	//void CrossFade(const lnKeyChar* animName, lnFloat fadeLength, PlayMode mode = StopSameLayer);
+
+	///// 前のアニメーションが終了した後、再生を開始する
+	//void PlayQueued(const lnKeyChar* animName, QueueMode queueMode = CompleteOthers, PlayMode playMode = StopSameLayer);
+
+	///// 前のアニメーションが終了するとき、クロスフェードで再生を開始する
+	//void CrossFadeQueued(const lnKeyChar* animName, lnFloat fadeLength, QueueMode queueMode = CompleteOthers, PlayMode playMode = StopSameLayer);
+
+	///// 同レイヤー内のアニメーション再生速度の同期
+	//void SyncLayer(int layer);
+
+
+public:
+
 
 	///// AnimationTargetEntity の検索 (見つからなければ NULL)
 	//detail::AnimationTargetAttributeEntity* findAnimationTargetAttributeEntity(const String& name);
 
 LN_CONSTRUCT_ACCESS:
 	AnimationController();
-	~AnimationController();
 	void init(IAnimationTargetObject* targetObject);
 
 LN_INTERNAL_ACCESS:
 	void advanceTime(float elapsedTime);
-	void updateTargetElements();
-	virtual detail::AnimationTargetElementBlendLink* findAnimationTargetElementBlendLink(const StringRef& name) override;
+	virtual void onUpdateTargetElement(const detail::AnimationTargetElementBlendLink* link) override;
 
 private:
 	IAnimationTargetObject* m_targetObject;
-	List<Ref<AnimationLayer>> m_layers;
-	List<Ref<detail::AnimationTargetElementBlendLink>> m_targetElementBlendLinks;
+	Ref<AnimationControllerCore> m_core;
 };
 
 } // namespace ln

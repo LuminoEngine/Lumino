@@ -45,7 +45,7 @@ void SkinnedMeshComponent::onUpdate(float elapsedSeconds)
 
 	//m_meshModel->getAnimator()->advanceTime(elapsedTime);
 	m_model->animationController()->advanceTime(elapsedSeconds);
-	m_model->animationController()->updateTargetElements();
+	//m_model->animationController()->updateTargetElements();
 	//static bool init = false;
 	//if (!init)
 	//{

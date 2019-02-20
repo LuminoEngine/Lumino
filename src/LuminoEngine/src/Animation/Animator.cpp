@@ -13,9 +13,10 @@ namespace ln {
 void Animator::init()
 {
 	Component::init();
+	m_core = newObject<AnimationControllerCore>(this);
 
 	// TODO: とりあえずの 1 こ
-	m_layers.add(newObject<AnimationLayer>(this));
+	m_core->addLayer(newObject<AnimationLayer>(m_core));
 }
 
 AnimationState* Animator::addClip(const StringRef& stateName, AnimationClip* animationClip)
@@ -27,27 +28,28 @@ AnimationState* Animator::addClip(const StringRef& stateName, AnimationClip* ani
 		path.m_propertyName = track->targetName();
 		PropertyRef prop = PropertyPath::findProperty(worldObject(), &path);
 
-		auto* link = findAnimationTargetElementBlendLink(track->targetName());
+		auto* link = m_core->findAnimationTargetElementBlendLink(track->targetName());
 		if (!link) {
 			// 新規追加
 
 			auto data = makeRef<detail::AnimationTargetElementBlendLink>();
 			data->propertyRef = prop;
 			// TODO: setValueType
-			m_targetElementBlendLinks.add(data);
+			m_core->addElementBlendLink(data);
 		}
 	}
 
-	return m_layers[0]->addClipAndCreateState(animationClip);
+	return m_core->addClip(animationClip);
 }
 
-detail::AnimationTargetElementBlendLink* AnimationController::findAnimationTargetElementBlendLink(const StringRef& name)
+void Animator::onUpdate(float elapsedSeconds)
 {
-	auto data = m_targetElementBlendLinks.findIf([name](const Ref<detail::AnimationTargetElementBlendLink>& data) { return data->name == name; });
-	if (data)
-		return (*data);
-	else
-		return nullptr;
+	// TODO: onPreUpdate がいい。
+	m_core->advanceTime(elapsedSeconds);
+}
+
+void Animator::onUpdateTargetElement(const detail::AnimationTargetElementBlendLink* link)
+{
 }
 
 } // namespace ln

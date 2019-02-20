@@ -40,7 +40,7 @@ void AnimationState::setLocalTime(float time)
 	m_localTime = time;
 }
 
-void AnimationState::attachToTarget(detail::IAnimationController* animatorController)
+void AnimationState::attachToTarget(AnimationControllerCore* animatorController)
 {
 	m_trackInstances.clear();
 
@@ -127,7 +127,7 @@ AnimationLayer::~AnimationLayer()
 {
 }
 
-void AnimationLayer::init(detail::IAnimationController* owner)
+void AnimationLayer::init(AnimationControllerCore* owner)
 {
 	Object::init();
 	m_owner = owner;
@@ -270,68 +270,57 @@ void AnimationLayer::transitionTo(AnimationState* state, float duration)
 }
 
 //==============================================================================
-// AnimationController
-//==============================================================================
+// AnimationControllerCore
 
-AnimationController::AnimationController()
-	: m_targetObject(nullptr)
-	, m_layers()
+AnimationControllerCore::AnimationControllerCore()
+	: m_layers()
 {
 }
 
-AnimationController::~AnimationController()
+AnimationControllerCore::~AnimationControllerCore()
 {
 }
 
-void AnimationController::init(IAnimationTargetObject* targetObject)
+void AnimationControllerCore::init(detail::IAnimationControllerHolder* owner)
 {
 	Object::init();
-	m_targetObject = targetObject;
-	m_layers.add(newObject<AnimationLayer>(this));
-
-	int count = m_targetObject->getAnimationTargetElementCount();
-	for (int i = 0; i < count; i++)
-	{
-		auto data = makeRef<detail::AnimationTargetElementBlendLink>();
-		data->name = m_targetObject->getAnimationTargetElementName(i);
-		data->targetIndex = i;
-		data->rootValue.resetType(m_targetObject->getAnimationTargetElementValueType(i));
-		m_targetElementBlendLinks.add(data);
-	}
+	m_owner = owner;
 }
 
-AnimationState* AnimationController::addClip(AnimationClip* animationClip)
+AnimationState* AnimationControllerCore::addClip(AnimationClip* animationClip)
 {
 	return m_layers[0]->addClipAndCreateState(animationClip);
 }
 
-AnimationState* AnimationController::addClip(const StringRef& stateName, AnimationClip* animationClip)
+AnimationState* AnimationControllerCore::addClip(const StringRef& stateName, AnimationClip* animationClip)
 {
 	AnimationState* state = addClip(animationClip);
 	state->setName(stateName);
 	return state;
 }
 
-void AnimationController::removeClip(AnimationClip* animationClip)
+void AnimationControllerCore::removeClip(AnimationClip* animationClip)
 {
 	m_layers[0]->removeClipAndDeleteState(animationClip);
 }
 
-void AnimationController::play(const StringRef& clipName, float duration)
+void AnimationControllerCore::play(const StringRef& clipName, float duration)
 {
 	AnimationState* state = m_layers[0]->findAnimationState(clipName);
 	m_layers[0]->transitionTo(state, duration);
 }
 
-void AnimationController::advanceTime(float elapsedTime)
+void AnimationControllerCore::advanceTime(float elapsedTime)
 {
 	for (auto& layer : m_layers)
 	{
 		layer->advanceTime(elapsedTime);
 	}
+
+	updateTargetElements();
 }
 
-void AnimationController::updateTargetElements()
+void AnimationControllerCore::updateTargetElements()
 {
 	// reset
 	for (auto& link : m_targetElementBlendLinks)
@@ -358,13 +347,11 @@ void AnimationController::updateTargetElements()
 			}
 		}
 
-		if (link->targetIndex > 0) {
-			m_targetObject->setAnimationTargetElementValue(link->targetIndex, link->rootValue);
-		}
+		m_owner->onUpdateTargetElement(link);
 	}
 }
 
-detail::AnimationTargetElementBlendLink* AnimationController::findAnimationTargetElementBlendLink(const StringRef& name)
+detail::AnimationTargetElementBlendLink* AnimationControllerCore::findAnimationTargetElementBlendLink(const StringRef& name)
 {
 	auto data = m_targetElementBlendLinks.findIf([name](const Ref<detail::AnimationTargetElementBlendLink>& data) { return data->name == name; });
 	if (data)
@@ -372,5 +359,46 @@ detail::AnimationTargetElementBlendLink* AnimationController::findAnimationTarge
 	else
 		return nullptr;
 }
+
+
+
+
+
+AnimationController::AnimationController()
+{
+}
+
+void AnimationController::init(IAnimationTargetObject* targetObject)
+{
+	Object::init();
+
+	m_targetObject = targetObject;
+
+	m_core = newObject<AnimationControllerCore>(this);
+	m_core->addLayer(newObject<AnimationLayer>(m_core));
+
+	int count = m_targetObject->getAnimationTargetElementCount();
+	for (int i = 0; i < count; i++)
+	{
+		auto data = makeRef<detail::AnimationTargetElementBlendLink>();
+		data->name = m_targetObject->getAnimationTargetElementName(i);
+		data->targetIndex = i;
+		data->rootValue.resetType(m_targetObject->getAnimationTargetElementValueType(i));
+		m_core->addElementBlendLink(data);
+	}
+}
+
+void AnimationController::advanceTime(float elapsedTime)
+{
+	m_core->advanceTime(elapsedTime);
+}
+
+void AnimationController::onUpdateTargetElement(const detail::AnimationTargetElementBlendLink* link)
+{
+	if (link->targetIndex > 0) {
+		m_targetObject->setAnimationTargetElementValue(link->targetIndex, link->rootValue);
+	}
+}
+
 
 } // namespace ln
