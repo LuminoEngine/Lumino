@@ -14,119 +14,18 @@ Variant::Variant()
 {}
 
 Variant::Variant(std::nullptr_t)
-	: Variant()
+	: m_type(VariantType::Null)
 {}
-
-Variant::Variant(bool value)
-	: m_type(VariantType::Bool)
-	, v_Bool(value)
-{
-}
-
-Variant::Variant(Char value)
-	: m_type(VariantType::Char)
-	, v_Char(value)
-{
-}
-
-Variant::Variant(int8_t value)
-	: m_type(VariantType::Int8)
-	, v_Int8(value)
-{
-}
-
-Variant::Variant(int16_t value)
-	: m_type(VariantType::Int16)
-	, v_Int64(value)
-{
-}
-
-Variant::Variant(int32_t value)
-	: m_type(VariantType::Int32)
-	, v_Int32(value)
-{
-}
-
-Variant::Variant(int64_t value)
-	: m_type(VariantType::Int64)
-	, v_Int64(value)
-{
-}
-
-Variant::Variant(uint8_t value)
-	: m_type(VariantType::UInt8)
-	, v_UInt8(value)
-{
-}
-
-Variant::Variant(uint16_t value)
-	: m_type(VariantType::UInt16)
-	, v_UInt16(value)
-{
-}
-
-Variant::Variant(uint32_t value)
-	: m_type(VariantType::UInt32)
-	, v_UInt32(value)
-{
-}
-
-Variant::Variant(uint64_t value)
-	: m_type(VariantType::UInt64)
-	, v_UInt64(value)
-{
-}
-
-Variant::Variant(float value)
-	: m_type(VariantType::Float)
-	, v_Float(value)
-{
-}
-
-Variant::Variant(double value)
-	: m_type(VariantType::Double)
-	, v_Double(value)
-{
-}
-
-Variant::Variant(const Char* value)
-	: Variant(String(value))
-{
-}
-
-Variant::Variant(const String& value)
-	: m_type(VariantType::String)
-	, v_String(value)
-{
-}
-
-Variant::Variant(RefObject* value)
-    : m_type(VariantType::RefObject)
-    , v_RefObject(value)
-{
-}
-
-Variant::Variant(List<Variant>* value)
-	: m_type(VariantType::List)
-	, v_List(value)
-{
-}
-
-Variant::Variant(const Ref<List<Variant>>& value)
-	: m_type(VariantType::List)
-	, v_List(value)
-{
-}
-
-Variant::Variant(const List<Variant>& value)
-	: Variant(Ref<List<Variant>>(LN_NEW List<Variant>(value), false))
-{
-}
 
 Variant::Variant(const Variant& value)
 	: m_type(VariantType::Null)
 {
 	copy(value);
+}
+
+Variant::Variant(const List<Variant>& value)
+	: Variant(Ref<List<Variant>>(LN_NEW List<Variant>(value), false))
+{
 }
 
 Variant::~Variant()
@@ -154,6 +53,13 @@ void Variant::clear() LN_NOEXCEPT
 		break;
 	case VariantType::String:
 		v_String.~String();
+		break;
+	case VariantType::Vector3:
+		break;
+	case VariantType::Quaternion:
+		break;
+	case VariantType::Transform:
+		LN_SAFE_DELETE(v_Transform);
 		break;
     case VariantType::RefObject:
         v_RefObject.~Ref();
@@ -193,92 +99,117 @@ const List<Variant>& Variant::list() const
 
 void Variant::assign(bool value)
 {
-	m_type = VariantType::Bool;
+	changeType(VariantType::Bool);
 	v_Bool = value;
 }
 
 void Variant::assign(Char value)
 {
-	m_type = VariantType::Char;
+	changeType(VariantType::Char);
 	v_Char = value;
 }
 
 void Variant::assign(int8_t value)
 {
-	m_type = VariantType::Int8;
+	changeType(VariantType::Int8);
 	v_Int8 = value;
 }
 
 void Variant::assign(int16_t value)
 {
-	m_type = VariantType::Int16;
+	changeType(VariantType::Int16);
 	v_Int16 = value;
 }
 
 void Variant::assign(int32_t value)
 {
-	m_type = VariantType::Int32;
+	changeType(VariantType::Int32);
 	v_Int32 = value;
 }
 
 void Variant::assign(int64_t value)
 {
-	m_type = VariantType::Int64;
+	changeType(VariantType::Int64);
 	v_Int64 = value;
 }
 
 void Variant::assign(uint8_t value)
 {
-	m_type = VariantType::UInt8;
+	changeType(VariantType::UInt8);
 	v_UInt8 = value;
 }
 
 void Variant::assign(uint16_t value)
 {
-	m_type = VariantType::UInt16;
+	changeType(VariantType::UInt16);
 	v_UInt16 = value;
 }
 
 void Variant::assign(uint32_t value)
 {
-	m_type = VariantType::UInt32;
+	changeType(VariantType::UInt32);
 	v_UInt32 = value;
 }
 
 void Variant::assign(uint64_t value)
 {
-	m_type = VariantType::UInt64;
+	changeType(VariantType::UInt64);
 	v_UInt64 = value;
 }
 
 void Variant::assign(float value)
 {
-	m_type = VariantType::Float;
+	changeType(VariantType::Float);
 	v_Float = value;
 }
 
 void Variant::assign(double value)
 {
-	m_type = VariantType::Double;
+	changeType(VariantType::Double);
 	v_Double = value;
 }
 
 void Variant::assign(const String& value)
 {
-	m_type = VariantType::String;
+	changeType(VariantType::String);
 	new(&v_String) String(value);
+}
+
+void Variant::assign(const Vector3& value)
+{
+	changeType(VariantType::Vector3);
+	new(&v_Vector3) Vector3(value);
+}
+
+void Variant::assign(const Quaternion& value)
+{
+	changeType(VariantType::Quaternion);
+	new(&v_Quaternion) Quaternion(value);
+}
+
+void Variant::assign(const AttitudeTransform& value)
+{
+	changeType(VariantType::Transform);
+	v_Transform = LN_NEW AttitudeTransform(value);
 }
 
 void Variant::assign(const Ref<RefObject>& value)
 {
-    m_type = VariantType::RefObject;
+	changeType(VariantType::RefObject);
     new(&v_RefObject) Ref<RefObject>(value);
 }
 
 void Variant::assign(const Ref<List<Variant>>& value)
 {
-	m_type = VariantType::List;
+	changeType(VariantType::List);
 	new(&v_List) Ref<List<Variant>>(value);
+}
+
+void Variant::changeType(VariantType newType)
+{
+	if (m_type == newType) return;
+	clear();
+	m_type = newType;
 }
 
 void Variant::copy(const Variant& value)
@@ -325,6 +256,15 @@ void Variant::copy(const Variant& value)
 		break;
 	case VariantType::String:
 		assign(value.v_String);
+		break;
+	case VariantType::Vector3:
+		assign(value.v_Vector3);
+		break;
+	case VariantType::Quaternion:
+		assign(value.v_Quaternion);
+		break;
+	case VariantType::Transform:
+		assign(*value.v_Transform);
 		break;
     case VariantType::RefObject:
         assign(value.v_RefObject);

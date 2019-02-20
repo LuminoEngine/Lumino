@@ -11,22 +11,33 @@ class Variant;
 
 enum class VariantType
 {
+	// primitive
 	Null,
 	Bool,
 	Char,	// ln::Char
-	Int8,
-	Int16,
-	Int32,
+	Int,
 	Int64,
-	UInt8,
-	UInt16,
-	UInt32,
-	UInt64,
 	Float,
 	Double,
 	String,
+
+	// struct
+	Vector3,
+	Quaternion,
+	Transform,
+
+	// object
     RefObject,
 	List,
+
+	Int8,	// obsolete
+	Int16,	// obsolete
+	//Int64,
+	UInt8,	// obsolete
+	UInt16,	// obsolete
+	UInt32,	// obsolete
+	UInt64,	// obsolete
+	Int32 = Int,
 };
 
 class Variant
@@ -36,30 +47,30 @@ public:
 
 	Variant();
 	Variant(std::nullptr_t);
-	Variant(bool value);
-	Variant(Char value);
-	Variant(int8_t value);
-	Variant(int16_t value);
-	Variant(int32_t value);
-	Variant(int64_t value);
-	Variant(uint8_t value);
-	Variant(uint16_t value);
-	Variant(uint32_t value);
-	Variant(uint64_t value);
-	Variant(float value);
-	Variant(double value);
-	Variant(const Char* value);
-	Variant(const String& value);
 	Variant(const Variant& value);
-    Variant(RefObject* value);
+	Variant(bool value) : Variant() { assign(value); }
+	Variant(Char value) : Variant() { assign(value); }
+	Variant(int8_t value) : Variant() { assign(value); }
+	Variant(int16_t value) : Variant() { assign(value); }
+	Variant(int32_t value) : Variant() { assign(value); }
+	Variant(int64_t value) : Variant() { assign(value); }
+	Variant(uint8_t value) : Variant() { assign(value); }
+	Variant(uint16_t value) : Variant() { assign(value); }
+	Variant(uint32_t value) : Variant() { assign(value); }
+	Variant(uint64_t value) : Variant() { assign(value); }
+	Variant(float value) : Variant() { assign(value); }
+	Variant(double value) : Variant() { assign(value); }
+	Variant(const Char* value) : Variant(String(value)) { }
+	Variant(const String& value) : Variant() { assign(value); }
+	Variant(const Vector3& value) : Variant() { assign(value); }
+	Variant(const Quaternion& value) : Variant() { assign(value); }
+	Variant(const AttitudeTransform& value) : Variant() { assign(value); }
+    Variant(RefObject* value) : Variant() { assign(value); }
     template<class TValue>
-    Variant(const Ref<TValue>& value)
-        : m_type(VariantType::RefObject)
-        , v_RefObject(value)
-    {}
-	Variant(List<Variant>* value);
+    Variant(const Ref<TValue>& value) : Variant() { assign(value.get()); }
+	Variant(List<Variant>* value) : Variant() { assign(value); }
 	Variant(const List<Variant>& value);
-	Variant(const Ref<List<Variant>>& value);
+	Variant(const Ref<List<Variant>>& value) : Variant() { assign(value); }
 	~Variant();
 
 	template<class T>
@@ -108,8 +119,12 @@ private:
 	void assign(float value);
 	void assign(double value);
 	void assign(const String& value);
+	void assign(const Vector3& value);
+	void assign(const Quaternion& value);
+	void assign(const AttitudeTransform& value);
     void assign(const Ref<RefObject>& value);
 	void assign(const Ref<List<Variant>>& value);
+	void changeType(VariantType newType);
 	void copy(const Variant& value);
 
 	VariantType	m_type;
@@ -129,6 +144,9 @@ private:
 		float v_Float;
 		double v_Double;
 		String v_String;
+		Vector3 v_Vector3;
+		Quaternion v_Quaternion;
+		AttitudeTransform* v_Transform;
         Ref<RefObject> v_RefObject;
 		Ref<List<Variant>> v_List;
 	};

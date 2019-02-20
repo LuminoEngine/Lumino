@@ -177,7 +177,7 @@ TEST_F(Test_Base_Variant, Serialization)
 		data.v_Float = 1;
 		data.v_Double = 1;
 		data.v_String = _T("11");
-		data.v_List = Variant({ 1, 2, 3 });
+		data.v_List = Variant(List<int>({ 1, 2, 3 }));
 		ar.process(data);
 		json = ar.toString(JsonFormatting::None);
 	}
