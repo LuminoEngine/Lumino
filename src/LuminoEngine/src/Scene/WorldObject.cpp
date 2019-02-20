@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Engine/Property.hpp>
 #include <LuminoEngine/Scene/Component.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
@@ -199,6 +200,22 @@ void WorldObject::onUpdate(float elapsedSeconds)
 void WorldObject::onRender()
 {
 
+}
+
+bool WorldObject::traverseRefrection(ReflectionObjectVisitor* visitor)
+{
+	// 子 Component のプロパティをこのオブジェクトのものとして通知
+	// TODO: ほんとは "Sprite.FrameIndex" みたいにオブジェクト名も入れた方がいいかも。
+	for (auto& c : m_components) {
+		if (TypeInfo* typeInfo = TypeInfo::getTypeInfo(c)) {
+			for (auto& prop : typeInfo->properties()) {
+				if (visitor->visitProperty(c, prop)) {
+					return true;
+				}
+			}
+		}
+	}
+	return false;
 }
 
 void WorldObject::attachWorld(World* world)

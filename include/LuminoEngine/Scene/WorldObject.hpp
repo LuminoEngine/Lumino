@@ -164,6 +164,9 @@ protected:
 
     virtual void onRender();
 
+
+	virtual bool traverseRefrection(ReflectionObjectVisitor* visitor);
+
 LN_CONSTRUCT_ACCESS:
 	WorldObject();
 	virtual ~WorldObject();

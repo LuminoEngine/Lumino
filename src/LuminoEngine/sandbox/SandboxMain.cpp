@@ -105,18 +105,23 @@ int main(int argc, char** argv)
 	Engine::initialize();
 
 	{
+		auto curve = KeyFrameAnimationCurve::create();
+
+
 		auto cmp = newObject<SpriteComponent>();
 		auto* typeInfo = TypeInfo::getTypeInfo<SpriteComponent>();
 		PropertyPath path;
 		path.m_propertyName = u"FrameIndex";
 		auto ref = PropertyPath::findProperty(cmp, &path);
 		ref.resolve().second->setValue(cmp, Variant(100));
-		printf("");
+
+
+		while (Engine::update()) {
+		}
+
 	}
 	//auto sprite1 = Sprite::create(2, 2, Assets::loadTexture(u"Sprite1.png"));
 
-	//while (Engine::update()) {
-	//}
 
 	//Engine::finalize();
 	//return 0;
