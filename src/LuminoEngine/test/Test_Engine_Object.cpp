@@ -156,12 +156,12 @@ TEST_F(Test_Engine_Object, Property)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Engine_Object, PropertyRef)
+TEST_F(Test_Engine_Object, PropertyRef_old)
 {
     auto obj = newObject<TestObjectC>();
 
     //* [ ] set, get
-    PropertyRef ref = PropertyInfo::getPropertyRef(obj, TestObjectC::V1PropertyId);
+    PropertyRef_old ref = PropertyInfo::getPropertyRef_old(obj, TestObjectC::V1PropertyId);
     auto pair = ref.resolve();
     if (pair.first) {
         pair.second->setValue(7);
@@ -438,10 +438,6 @@ public:
 	static void registerType(EngineContext* context);
 };
 
-#define LN_MAKE_GET_SET_PROPERTY_ACCESSOR(className, typeName, getFunction, setFunction) \
-	makePropertyAccessor<className, typeName>( \
-		[](const className* self, typeName* value) { *value = self->getFunction(); }, \
-		[](className* self, const typeName& value) { self->setFunction(value); }) \
 
 void PropTestObjectA::registerType(EngineContext* context)
 {

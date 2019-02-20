@@ -5,6 +5,7 @@ namespace ln {
 class EngineContext;
 class TypeInfo;
 class PropertyInfo;
+class ReflectionObjectVisitor;
 namespace detail {
 class WeakRefInfo; 
 class ObjectHelper;
@@ -61,6 +62,7 @@ protected:
 	virtual void finalize() override;
 	virtual void onDispose(bool explicitDisposing);
 
+
 public:
 	/**
 	 * このオブジェクトが保持しているリソースを開放します。
@@ -73,6 +75,9 @@ public:
 	 * @attention このメソッドは virtual です。RAII の実装を目的としてデストラクタで呼び出すことはできません。代わりに finalize() からコールされます。
 	 */
 	virtual void dispose();
+
+	// TODO: internal
+	virtual bool traverseRefrection(ReflectionObjectVisitor* visitor);
 
 private:
     detail::WeakRefInfo* requestWeakRefInfo();
@@ -245,7 +250,7 @@ public:
     TypeInfo* baseType() const { return m_baseType; }
 
     void registerProperty(PropertyInfo* prop);
-    const List<PropertyInfo*>& properties() const { return m_properties; }
+    const List<Ref<PropertyInfo>>& properties() const { return m_properties; }
 
     /** 型引数に指定したクラス型の型情報を取得します。 */
     template<class T>
@@ -264,7 +269,7 @@ public:
 private:
     String m_name;
     TypeInfo* m_baseType;
-    List<PropertyInfo*> m_properties;
+    List<Ref<PropertyInfo>> m_properties;
 };
 
 } // namespace ln

@@ -11,6 +11,7 @@
 #include "../src/Rendering/DrawElementListBuilder.hpp"
 #include "../src/Rendering/UnLigitingSceneRenderer.hpp"
 #include "../src/Rendering/ClusteredShadingSceneRenderer.hpp"
+#include <LuminoEngine/Engine/Property.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Visual/MeshPrimitiveComponent.hpp>
@@ -103,6 +104,15 @@ int main(int argc, char** argv)
 	detail::EngineDomain::engineManager()->settings().standaloneFpsControl = true;
 	Engine::initialize();
 
+	{
+		auto cmp = newObject<SpriteComponent>();
+		auto* typeInfo = TypeInfo::getTypeInfo<SpriteComponent>();
+		PropertyPath path;
+		path.m_propertyName = u"FrameIndex";
+		auto ref = PropertyPath::findProperty(cmp, &path);
+		ref.resolve().second->setValue(cmp, Variant(100));
+		printf("");
+	}
 	//auto sprite1 = Sprite::create(2, 2, Assets::loadTexture(u"Sprite1.png"));
 
 	//while (Engine::update()) {

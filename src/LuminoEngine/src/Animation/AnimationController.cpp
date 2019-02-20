@@ -4,20 +4,6 @@
 #include <LuminoEngine/Animation/AnimationController.hpp>
 
 namespace ln {
-namespace detail {
-
-class AnimationTargetElementBlendLink
-	: public RefObject
-{
-public:
-	String name;		// AnimationTargetElement の名前 (ボーン名など)
-	int targetIndex;
-
-	AnimationValue rootValue;	// アニメーション・ブレンドされた値。これを AnimationTargetElement へ送る。
-	bool affectAnimation = false;		// 更新処理の中で、実際に値がセットされたかどうか。セットされていないボーンにはデフォルト値をセットしたりする。
-};
-
-} // namespace detail
 
 
 
@@ -54,7 +40,7 @@ void AnimationState::setLocalTime(float time)
 	m_localTime = time;
 }
 
-void AnimationState::attachToTarget(AnimationController* animatorController)
+void AnimationState::attachToTarget(detail::IAnimationController* animatorController)
 {
 	m_trackInstances.clear();
 
@@ -141,7 +127,7 @@ AnimationLayer::~AnimationLayer()
 {
 }
 
-void AnimationLayer::init(AnimationController* owner)
+void AnimationLayer::init(detail::IAnimationController* owner)
 {
 	Object::init();
 	m_owner = owner;
@@ -372,7 +358,9 @@ void AnimationController::updateTargetElements()
 			}
 		}
 
-		m_targetObject->setAnimationTargetElementValue(link->targetIndex, link->rootValue);
+		if (link->targetIndex > 0) {
+			m_targetObject->setAnimationTargetElementValue(link->targetIndex, link->rootValue);
+		}
 	}
 }
 

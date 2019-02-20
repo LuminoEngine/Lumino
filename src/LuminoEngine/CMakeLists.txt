@@ -86,6 +86,7 @@ set(LN_SOURCES_Animation
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/AnimationController.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/AnimationCurve.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/AnimationTrack.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/Animator.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/EasingFunctions.hpp
     src/Animation/Internal.hpp
     src/Animation/AnimationClip.cpp
@@ -96,6 +97,7 @@ set(LN_SOURCES_Animation
     src/Animation/AnimationManager.cpp
     src/Animation/AnimationManager.hpp
     src/Animation/AnimationTrack.cpp
+    src/Animation/Animator.cpp
     src/Animation/VmdLoader.cpp
     src/Animation/VmdLoader.hpp
 )

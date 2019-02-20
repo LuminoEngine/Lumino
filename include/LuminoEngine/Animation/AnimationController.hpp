@@ -3,6 +3,7 @@
 #include "Common.hpp"
 #include "AnimationTrack.hpp"
 #include "AnimationClip.hpp"
+#include "../Engine/Property.hpp"
 
 namespace ln {
 class Variant;
@@ -11,6 +12,36 @@ class AnimationValue;
 class AnimationTrack;
 class AnimationLayer;
 class AnimationController;
+
+
+namespace detail {
+
+// [curve,track,clip] <=> [bone,property] の橋渡しを行うクラス。
+// アニメーションの値は、実際に各プロパティに送る前に一度ここに集められる
+class AnimationTargetElementBlendLink
+	: public RefObject
+{
+public:
+	// Bone animation 用
+	String name;		// AnimationTargetElement の名前 (ボーン名など)
+	int targetIndex = -1;
+
+	// Property animation 用
+	PropertyRef propertyRef;
+
+	// 共通
+	AnimationValue rootValue;	// アニメーション・ブレンドされた値。これを AnimationTargetElement へ送る。
+	bool affectAnimation = false;		// 更新処理の中で、実際に値がセットされたかどうか。セットされていないボーンにはデフォルト値をセットしたりする。
+};
+
+class IAnimationController
+{
+public:
+	virtual detail::AnimationTargetElementBlendLink* findAnimationTargetElementBlendLink(const StringRef& name) = 0;
+};
+
+} // namespace detail
+
 
 /** ブレンドされた値を設定するオブジェクトのインターフェイスです。 */
 class IAnimationTargetObject
@@ -21,6 +52,8 @@ public:
 	virtual AnimationValueType getAnimationTargetElementValueType(int index) const = 0;
 	virtual void setAnimationTargetElementValue(int index, const AnimationValue& value) = 0;
 };
+
+
 
 
 
@@ -72,7 +105,7 @@ private:
 		detail::AnimationTargetElementBlendLink* blendLink;
 	};
 
-	void attachToTarget(AnimationController* animatorController);
+	void attachToTarget(detail::IAnimationController* animatorController);
 	float getBlendWeight() const { return m_blendWeight; }
 	void setBlendWeight(float weight) { m_blendWeight = weight; }
 	void updateTargetElements();
@@ -85,7 +118,7 @@ private:
 	bool m_active;
 
 	friend class AnimationLayer;
-	friend class AnimationController;
+	//friend class AnimationController;
 };
 
 /** AnimationState をグループ化しアニメーションの適用範囲や方法を制御します。(体と表情のアニメーションを別々に扱う場合などに使用します) */
@@ -97,7 +130,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	AnimationLayer();
 	virtual ~AnimationLayer();
-	void init(AnimationController* owner);
+	void init(detail::IAnimationController* owner);
 
 LN_INTERNAL_ACCESS:
 	AnimationState* addClipAndCreateState(AnimationClip* animationClip);
@@ -118,7 +151,7 @@ private:
 		float startingOffsetTime;
 	};
 
-	AnimationController* m_owner;
+	detail::IAnimationController* m_owner;
 	List<Ref<AnimationState>> m_animationStatus;
 	AnimationState* m_currentState;
 	Transition m_transition;
@@ -127,6 +160,7 @@ private:
 /** スキンメッシュアニメーションにおいてキャラクターの挙動を操作するためのクラスです。 */
 class AnimationController
 	: public Object
+	, public detail::IAnimationController
 {
 public:
 
@@ -175,7 +209,7 @@ LN_CONSTRUCT_ACCESS:
 LN_INTERNAL_ACCESS:
 	void advanceTime(float elapsedTime);
 	void updateTargetElements();
-	detail::AnimationTargetElementBlendLink* findAnimationTargetElementBlendLink(const StringRef& name);
+	virtual detail::AnimationTargetElementBlendLink* findAnimationTargetElementBlendLink(const StringRef& name) override;
 
 private:
 	IAnimationTargetObject* m_targetObject;

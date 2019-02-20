@@ -76,10 +76,10 @@ enum class PropertySetSource
 
 
 
-class PropertyRef
+class PropertyRef_old
 {
 public:
-    PropertyRef(Object* propOwner, PropertyBase* prop)
+    PropertyRef_old(Object* propOwner, PropertyBase* prop)
         : m_propOwner(propOwner)
         , m_prop(prop)
     {
@@ -140,6 +140,42 @@ private:
 
 
 
+class PropertyRef
+{
+public:
+	PropertyRef()
+		: m_propOwner()
+		, m_accessor(nullptr)
+	{}
+
+	PropertyRef(Object* propOwner, PropertyAccessor* accessor)
+		: m_propOwner(propOwner)
+		, m_accessor(accessor)
+	{}
+
+	bool isNull() const
+	{
+		return m_accessor == nullptr;
+	}
+
+	std::pair<Ref<Object>, PropertyAccessor*> resolve()
+	{
+		auto ptr = m_propOwner.resolve();
+		if (ptr != nullptr) {
+			return { ptr, m_accessor };
+		}
+		else {
+			return { nullptr, nullptr };
+		}
+	}
+
+private:
+	WeakRefPtr<Object>	m_propOwner;
+	PropertyAccessor* m_accessor;
+};
+
+
+
 
 
 class PropertyMetadata
@@ -177,8 +213,12 @@ public:
 	PropertyInfo(const char* name, const Ref<PropertyAccessor>& accessor)
 		: m_name(String::fromCString(name))
 		, m_accessor(accessor)
+		, m_registerd(false)
 	{
 	}
+
+	const String& name() const { return m_name; }
+	const Ref<PropertyAccessor>& accessor() const { return m_accessor; }
 
     template<typename TValue>
     static void setTypedValue(Object* obj, PropertyInfo* propertyInfo, TValue&& value)
@@ -187,7 +227,9 @@ public:
         static_cast<Property<TValue>*>(prop)->set(std::forward(value));
     }
     
-    static PropertyRef getPropertyRef(Object* obj, PropertyInfo* propertyInfo);
+    static PropertyRef_old getPropertyRef_old(Object* obj, PropertyInfo* propertyInfo);
+
+	static PropertyRef getPropertyRef(Object* obj, PropertyInfo* propertyInfo);
 
     // TODO: Helper でいい
     static void notifyPropertyChanged(Object* ownerObject, PropertyBase* target, const PropertyInfo* prop, PropertySetSource source);
@@ -468,6 +510,35 @@ private:
 	std::unordered_set<TypeInfo*> m_typeInfoSet;
 	//List<TypeInfo*> m_typeInfos;
 };
+
+
+class PropertyPath
+	: public RefObject
+{
+public:
+	static PropertyRef findProperty(Object* root, const PropertyPath* path);
+
+
+	std::vector<String> m_objectNames;
+
+	String m_propertyName;
+
+	// ローカル部 (リフレクション管理外の、構造体メンバなどを示す。Transform なら "position.x" -> ["position", "x"] など)
+	std::vector<String> m_local;
+};
+
+
+class ReflectionObjectVisitor
+{
+public:
+	//bool visitObject(Object* obj);
+	virtual bool visitProperty(Object* obj, PropertyInfo* prop);
+};
+
+#define LN_MAKE_GET_SET_PROPERTY_ACCESSOR(className, typeName, getFunction, setFunction) \
+	makePropertyAccessor<className, typeName>( \
+		[](const className* self, typeName* value) { *value = self->getFunction(); }, \
+		[](className* self, const typeName& value) { self->setFunction(value); }) \
 
 } // namespace ln
 

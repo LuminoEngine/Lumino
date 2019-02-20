@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Engine/Property.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Visual/SpriteComponent.hpp>
@@ -90,6 +91,15 @@ SpriteFrame* SpriteFrameSet::frame(int index) const
  *   まぁ、3D 空間に看板オブジェクトみたいに板ポリ置くのに使えないことはないけれど、
  *   それってマップオブジェクトを表現するための Mesh としたほうがいいよね。
  */
+
+LN_OBJECT_IMPLEMENT(SpriteComponent, VisualComponent);
+
+void SpriteComponent::registerType(EngineContext* context)
+{
+	context->registerType<SpriteComponent>({
+		makeRef<PropertyInfo>("FrameIndex", LN_MAKE_GET_SET_PROPERTY_ACCESSOR(SpriteComponent, int, frameIndex, setFrameIndex)),
+	});
+}
 
 SpriteComponent::SpriteComponent()
     : m_material(nullptr)

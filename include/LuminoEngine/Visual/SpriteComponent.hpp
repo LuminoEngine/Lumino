@@ -72,6 +72,7 @@ private:
 class SpriteComponent
 	: public VisualComponent
 {
+	LN_OBJECT;
 public:
     /** スプライトが表示するテクスチャを設定します。 */
     LN_METHOD(Property)
@@ -101,6 +102,11 @@ public:
 
 	/** SpriteFrameSet から適用するフレームインデックスを設定します。デフォルトは -1 で、これはフレームを使用しないことを示します。 */
 	void setFrameIndex(int index);
+	int frameIndex() const { return m_frameIndex; }
+
+
+	// TODO: internal
+	static void registerType(EngineContext* context);
 
 protected:
     void onRender(RenderingContext* context);
@@ -110,6 +116,7 @@ LN_CONSTRUCT_ACCESS:
     SpriteComponent();
 	virtual ~SpriteComponent();
 	void init();
+
 
 private:
     Ref<Material> m_material;
