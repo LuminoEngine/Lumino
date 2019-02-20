@@ -10,6 +10,7 @@ namespace ln {
 // AnimationClip
 
 AnimationClip::AnimationClip()
+    : m_lastFrameTime(0)
 {
 }
 
@@ -22,6 +23,13 @@ void AnimationClip::init()
 	Object::init();
 }
 
+void AnimationClip::addTrack(AnimationTrack* track)
+{
+    m_tracks.add(track);
+
+    // TODO: とりあえず
+    m_lastFrameTime = track->lastFrameTime();
+}
 
 
 

@@ -158,7 +158,7 @@ public:
 		return m_accessor == nullptr;
 	}
 
-	std::pair<Ref<Object>, PropertyAccessor*> resolve()
+	std::pair<Ref<Object>, PropertyAccessor*> resolve() const
 	{
 		auto ptr = m_propOwner.resolve();
 		if (ptr != nullptr) {

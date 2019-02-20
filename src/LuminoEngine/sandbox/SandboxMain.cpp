@@ -19,6 +19,7 @@
 #include <LuminoEngine/Visual/SkinnedMeshComponent.hpp>
 #include <LuminoEngine/Scene/SkinnedMesh.hpp>
 #include <LuminoEngine/Scene/OffscreenWorldRenderView.hpp>
+#include <LuminoEngine/Animation/Animator.hpp>
 #include "../src/Mesh/MqoImporter.hpp"
 #include "../src/Font/FontManager.hpp"
 #include "../src/Font/FontCore.hpp"
@@ -105,15 +106,36 @@ int main(int argc, char** argv)
 	Engine::initialize();
 
 	{
+        auto texture = newObject<Texture2D>(u"D:/Documents/LuminoProjects/RinoTutorial/Assets/player.png");
+        auto frameSet = SpriteFrameSet::create(texture, 16, 16);
+
+        auto sprite = Sprite::create(frameSet);
+        sprite->setFrameIndex(0);
+
 		auto curve = KeyFrameAnimationCurve::create();
+        curve->addKeyFrame(0.0, 2);
+        curve->addKeyFrame(1.0, 3);
+        curve->addKeyFrame(2.0, 2);
 
+        auto track = ScalarAnimationTrack::create();
+        track->setTargetName(u"FrameIndex");
+        track->setCurve(curve);
 
-		auto cmp = newObject<SpriteComponent>();
-		auto* typeInfo = TypeInfo::getTypeInfo<SpriteComponent>();
-		PropertyPath path;
-		path.m_propertyName = u"FrameIndex";
-		auto ref = PropertyPath::findProperty(cmp, &path);
-		ref.resolve().second->setValue(cmp, Variant(100));
+        auto clip = newObject<AnimationClip>();
+        clip->setWrapMode(AnimationWrapMode::Loop);
+        clip->addTrack(track);
+
+        auto animator = newObject<Animator>();
+        sprite->addComponent(animator);
+        animator->addClip(u"run", clip);
+
+        animator->play(u"run");
+
+		//auto* typeInfo = TypeInfo::getTypeInfo<SpriteComponent>();
+		//PropertyPath path;
+		//path.m_propertyName = u"FrameIndex";
+		//auto ref = PropertyPath::findProperty(cmp, &path);
+		//ref.resolve().second->setValue(cmp, Variant(100));
 
 
 		while (Engine::update()) {
@@ -123,8 +145,8 @@ int main(int argc, char** argv)
 	//auto sprite1 = Sprite::create(2, 2, Assets::loadTexture(u"Sprite1.png"));
 
 
-	//Engine::finalize();
-	//return 0;
+	Engine::finalize();
+	return 0;
 
 
 	//{

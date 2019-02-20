@@ -21,6 +21,8 @@ public:
 	/** アニメーションの繰り返しの動作を取得します。(default: Once) */
 	void setWrapMode(AnimationWrapMode mode) { m_wrapMode = mode; }
 
+
+    void addTrack(AnimationTrack* track);
 	const List<Ref<AnimationTrack>>& tracks() const { return m_tracks; }
 
 	float lastFrameTime() const { return m_lastFrameTime; }

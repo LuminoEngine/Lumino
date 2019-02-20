@@ -62,25 +62,53 @@ void AnimationState::updateTargetElements()
 {
 	if (m_active)
 	{
-		float time = 0.0f;
-		if (m_clip->wrapMode() == AnimationWrapMode::Loop)
-			time = std::fmod(m_localTime, m_clip->lastFrameTime());
-		else
-			time = m_localTime;
+		float localTime = 0.0f;
+
+        switch (m_clip->wrapMode())
+        {
+        case AnimationWrapMode::Once:
+            localTime = m_localTime;
+            break;
+        case AnimationWrapMode::Loop:
+            localTime = std::fmod(m_localTime, m_clip->lastFrameTime());
+            break;
+        case AnimationWrapMode::RoundTrip:
+        {
+            float freq = m_clip->lastFrameTime() * 2;
+            float t = std::fmod(m_localTime, freq);
+            float phase = t / freq;
+            if (phase <= 0.5) {
+                localTime = t;
+            }
+            else {
+                localTime = freq - t;
+            }
+            break;
+        }
+        default:
+            LN_UNREACHABLE();
+            break;
+        }
+		//if (m_clip->wrapMode() == AnimationWrapMode::Loop)
+		//	time = std::fmod(m_localTime, m_clip->lastFrameTime());
+		//else
+		//	time = m_localTime;
 
 		for (auto& trackInstance : m_trackInstances)
 		{
 			AnimationValue value(trackInstance.track->type());
 			AnimationValue& rootValue = trackInstance.blendLink->rootValue;
 
-			trackInstance.track->evaluate(time, &value);
+			trackInstance.track->evaluate(localTime, &value);
 
 			switch (value.type())
 			{
 			case AnimationValueType::Float:
-				LN_NOTIMPLEMENTED();
-				trackInstance.blendLink->affectAnimation = true;
-				break;
+            {
+                rootValue.v_Float = value.getFloat();
+                trackInstance.blendLink->affectAnimation = true;
+                break;
+            }
 			case AnimationValueType::Vector3:
 				LN_NOTIMPLEMENTED();
 				trackInstance.blendLink->affectAnimation = true;

@@ -33,13 +33,14 @@ AnimationState* Animator::addClip(const StringRef& stateName, AnimationClip* ani
 			// 新規追加
 
 			auto data = makeRef<detail::AnimationTargetElementBlendLink>();
+            data->name = path.m_propertyName;
 			data->propertyRef = prop;
 			// TODO: setValueType
 			m_core->addElementBlendLink(data);
 		}
 	}
 
-	return m_core->addClip(animationClip);
+	return m_core->addClip(stateName, animationClip);
 }
 
 void Animator::onUpdate(float elapsedSeconds)
@@ -50,6 +51,10 @@ void Animator::onUpdate(float elapsedSeconds)
 
 void Animator::onUpdateTargetElement(const detail::AnimationTargetElementBlendLink* link)
 {
+    if (!link->propertyRef.isNull()) {
+        auto pair = link->propertyRef.resolve();
+        pair.second->setValue(pair.first, std::round(link->rootValue.getFloat()));
+    }
 }
 
 } // namespace ln
