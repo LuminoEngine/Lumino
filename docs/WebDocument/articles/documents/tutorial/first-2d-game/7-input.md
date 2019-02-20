@@ -1,4 +1,6 @@
 
+skip
+
 > player の移動
 
 

@@ -22,11 +22,11 @@
         href: tutorial/first-2d-game/3-texture-and-sprite.md
       - name: 4. ワールドの構築
         href: tutorial/first-2d-game/4-world-building.md
-      - name: 5. プレイヤーの表示
+      - name: 5. プレイヤーの表示と移動操作
         href: tutorial/first-2d-game/5-player.md
       - name: 6. 物理演算
         href: tutorial/first-2d-game/6-physics.md
-      - name: 7. 入力とプレイヤー操作
+      - name: 7. ×
         href: tutorial/first-2d-game/7-input.md
       - name: 8. アイテムを拾う
         href: tutorial/first-2d-game/8-collecting-items.md

@@ -25,6 +25,16 @@ void SpriteFrame::init()
 
 //=============================================================================
 // SpriteFrameSet
+/*
+  グリッド分割は ピクセル指定？分割数指定？
+  ----------
+  Unity は両方可能。
+  Tiled はピクセル指定。
+  ポイントは変更の容易さだけど、
+  - 分割数指定はテクスチャ解像度の変更に強い。
+  - ピクセル指定は row を増やすことでのパターン追加に強い。
+  SpriteFrameSet を使うのはドット絵がほとんど。どっちがよくある話かっていうと後者の方が圧倒的に多いだろう。
+*/
 
 Ref<SpriteFrameSet> SpriteFrameSet::create(Texture* texture, int frameWidth, int frameHeight, const Vector2& anchorPoint)
 {
