@@ -206,14 +206,20 @@ void CollisionBody2D::onTriggerStay(PhysicsObject2D* otherObject)
 //==============================================================================
 // RigidBody2D
 
+Ref<RigidBody2D> RigidBody2D::create()
+{
+	return newObject<RigidBody2D>();
+}
+
 Ref<RigidBody2D> RigidBody2D::create(CollisionShape2D* shape)
 {
-    return newObject<RigidBody2D>();
+    return newObject<RigidBody2D>(shape);
 }
 
 RigidBody2D::RigidBody2D()
     : m_body(nullptr)
-    , m_fixture(nullptr)
+    , m_fixtures()
+	, m_rotation(0)
     , m_mass(0.0f)
     , m_kinematic(false)
     , m_fixedRotation(false)
@@ -238,6 +244,7 @@ void RigidBody2D::onDispose(bool explicitDisposing)
 		// m_body->CreateFixture で作成した fixture はこの中で解放される
 		m_body->GetWorld()->DestroyBody(m_body);
 		m_body = nullptr;
+		m_fixtures.clear();
 	}
 
 	PhysicsObject2D::onDispose(explicitDisposing);
@@ -352,24 +359,26 @@ void RigidBody2D::onBeforeStepSimulation()
 		bodyDef.gravityScale = 1.0f;
 		m_body = world->CreateBody(&bodyDef);
 
-		b2Shape* shape = m_shapes[0]->resolveBox2DShape();	// TODO:
+		for (auto& collitionShape : m_shapes)
+		{
+			b2Shape* shape = collitionShape->resolveBox2DShape();	// TODO:
 
-		b2MassData massData;
-		shape->ComputeMass(&massData, 1);
-		float volume = massData.mass;	// ComputeMass に密度 1 で計算すると、質量 = 体積となる
+			b2MassData massData;
+			shape->ComputeMass(&massData, 1);
+			float volume = massData.mass;	// ComputeMass に密度 1 で計算すると、質量 = 体積となる
 
-		b2FixtureDef fixtureDef;
-		fixtureDef.shape = shape;
-		fixtureDef.userData = this;
-		fixtureDef.friction = 0.0f;			// 摩擦
-		fixtureDef.restitution = 0.0f;		// 反発
-		fixtureDef.density = m_mass / volume;	// 密度 = 質量 / 体積
-		fixtureDef.isSensor = false;
-		fixtureDef.filter.categoryBits = 0x0001;
-		fixtureDef.filter.maskBits = 0xFFFF;
-		fixtureDef.filter.groupIndex = 0;
-		m_fixture = m_body->CreateFixture(&fixtureDef);
-
+			b2FixtureDef fixtureDef;
+			fixtureDef.shape = shape;
+			fixtureDef.userData = this;
+			fixtureDef.friction = 0.0f;			// 摩擦
+			fixtureDef.restitution = 0.0f;		// 反発
+			fixtureDef.density = m_mass / volume;	// 密度 = 質量 / 体積
+			fixtureDef.isSensor = false;
+			fixtureDef.filter.categoryBits = 0x0001;
+			fixtureDef.filter.maskBits = 0xFFFF;
+			fixtureDef.filter.groupIndex = 0;
+			m_fixtures.push_back(m_body->CreateFixture(&fixtureDef));
+		}
 	}
 
 //    m_body->SetLinearVelocity(LnToB2(m_velocity));
@@ -405,6 +414,7 @@ void RigidBody2D::onAfterStepSimulation()
 {
 	if (!m_kinematic) {
 		m_position = B2ToLn(m_body->GetPosition());
+		m_rotation = m_body->GetAngle();
         m_velocity = B2ToLn(m_body->GetLinearVelocity());
 	}
 
@@ -416,6 +426,7 @@ void RigidBody2D::onRemoveFromPhysicsWorld()
 	if (m_body) {
 		m_body->GetWorld()->DestroyBody(m_body);
 		m_body = nullptr;
+		m_fixtures.clear();
 	}
 }
 

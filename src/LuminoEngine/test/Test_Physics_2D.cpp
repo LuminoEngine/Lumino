@@ -35,7 +35,25 @@ TEST_F(Test_Physics_2D, Basic)
 //------------------------------------------------------------------------------
 TEST_F(Test_Physics_2D, Compound)
 {
+	// ground
+	auto body1 = RigidBody2D::create();
+	body1->setPosition(Vector3(0, -3, 0));
+	body1->addCollisionShape(BoxCollisionShape2D::create(10, 1));
+	Engine::mainWorld()->physicsWorld2D()->addPhysicsObject(body1);
+
+	// boxes
 	auto shape1 = BoxCollisionShape2D::create(1, 1);
 	auto shape2 = BoxCollisionShape2D::create(1, 1);
+	shape2->setPosition(Vector2(1, 1));
+	auto body2 = RigidBody2D::create();
+	body2->setMass(1);
+	body2->addCollisionShape(shape1);
+	body2->addCollisionShape(shape2);
+	Engine::mainWorld()->physicsWorld2D()->addPhysicsObject(body2);
+
+	for (int i = 0; i < 120; i++) TestEnv::updateFrame();
+
+	// なんとなく時計回りにかたむいてるはず
+	ASSERT_EQ(true, body2->rotation() < -0.6);
 }
 

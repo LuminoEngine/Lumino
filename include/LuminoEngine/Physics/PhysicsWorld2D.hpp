@@ -207,6 +207,8 @@ class RigidBody2D
 	: public PhysicsObject2D
 {
 public:
+	/** 質量が 0 である RigidBody を作成します。形状は addCollisionShape() で追加してください。 */
+	static Ref<RigidBody2D> create();
 
     /** 指定した形状で、質量が 0 である静的な RigidBody を作成します。 */
     static Ref<RigidBody2D> create(CollisionShape2D* shape);
@@ -220,6 +222,12 @@ public:
     /** 速度を設定します。 (unit: m/s) */
     void setVelocity(const Vector2& value);
     const Vector2& velocity() const { return m_velocity; }
+
+	/** 回転角度を設定します。(unit: radian) */
+	void setRotation(float value) { m_rotation = value; }
+
+	/** 回転角度を取得します。(unit: radian) */
+	float rotation() const { return m_rotation; }
 
 
 	/** 質量を設定します。0 を設定すると静的なボディとなります。(unit: kilograms(kg))(default: 0.0) */
@@ -287,9 +295,10 @@ private:
     };
 
 	b2Body* m_body;
-	b2Fixture* m_fixture;
+	std::vector<b2Fixture*> m_fixtures;
 	std::vector<Ref<CollisionShape2D>> m_shapes;
 	Vector2 m_position;
+	float m_rotation;
     Vector2 m_velocity;
 	float m_mass;
 	bool m_kinematic;
