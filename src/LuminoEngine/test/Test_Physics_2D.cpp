@@ -31,3 +31,11 @@ TEST_F(Test_Physics_2D, Basic)
 		LN_TEST_CLEAN_SCENE;
 	}
 }
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Physics_2D, Compound)
+{
+	auto shape1 = BoxCollisionShape2D::create(1, 1);
+	auto shape2 = BoxCollisionShape2D::create(1, 1);
+}
+

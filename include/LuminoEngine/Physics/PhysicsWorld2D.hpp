@@ -7,6 +7,7 @@
 #pragma once
 #include <memory>
 #include "Common.hpp"
+#include <LuminoEngine/Graphics/GeometryStructs.hpp>
 
 class b2Shape;
 class b2PolygonShape;
@@ -25,40 +26,75 @@ class ContactPoint2D;
 using Collision2DEventHandler = std::function<void(PhysicsObject2D*, ContactPoint2D*)>;
 using Trigger2DEventHandler = std::function<void(PhysicsObject2D*)>;
 
+/** 2D 物理演算用の衝突判定形状です。 */
 class CollisionShape2D
 	: public Object
 {
 public:
+	/** この形状のローカルオフセットを設定します。 */
+	void setPosition(const Vector2& value) { m_position = value; dirty(); }
+
+	/** この形状のローカルオフセットを取得します。 */
+	const Vector2& position() const { return m_position; }
+
+	/** この形状のローカルの回転角度を設定します。(単位: radian) */
+	void setRotation(float value) { m_rotation = value; dirty(); }
+
+	/** この形状のローカルの回転角度を取得します。(単位: radian) */
+	float rotation() const { return m_rotation; }
 
 public:	// TODO: internal
-	virtual b2Shape* box2DShape() = 0;
+	virtual b2Shape* resolveBox2DShape() = 0;
 
 LN_CONSTRUCT_ACCESS:
 	CollisionShape2D();
 	virtual ~CollisionShape2D() = default;
 	void init();
 
+protected:
+	void dirty() { m_dirty = true; }
+	void clearDirty() { m_dirty = false; }
+	bool isDirty() const { return m_dirty; }
+
 private:
+	Vector2 m_position;
+	float m_rotation;
+	bool m_dirty;
 };
 
-
+/** 四角形の衝突判定形状です。 */
 class BoxCollisionShape2D
 	: public CollisionShape2D
 {
 public:
-    static Ref<BoxCollisionShape2D> create(const Vector2& size);
+	/** サイズ (1, 1) の BoxCollisionShape2D を作成します。 */
+	static Ref<BoxCollisionShape2D> create();
+
+	/** サイズを指定して BoxCollisionShape2D を作成します。 */
+    static Ref<BoxCollisionShape2D> create(const Size& size);
+
+	/** サイズを指定して BoxCollisionShape2D を作成します。 */
     static Ref<BoxCollisionShape2D> create(float width, float height);
 
-	virtual b2Shape* box2DShape() override;
+	/** サイズを設定します。 */
+	void setSize(const Size& value) { m_size = value; dirty(); }
+
+	/** サイズを取得します。 */
+	const Size& size() const { return m_size; }
+
+protected:
+	virtual b2Shape* resolveBox2DShape() override;
 
 LN_CONSTRUCT_ACCESS:
 	BoxCollisionShape2D();
 	virtual ~BoxCollisionShape2D() = default;
-	void init(const Vector2& size);
+	void init();
+	void init(const Size& size);
     void init(float width, float height);
 
 private:
 	std::unique_ptr<b2PolygonShape> m_shape;
+	Size m_size;
 };
 
 
@@ -280,10 +316,14 @@ LN_CONSTRUCT_ACCESS:
     virtual void onDispose(bool explicitDisposing) override;
 
 private:
+	void removeInternal(PhysicsObject2D* physicsObject);
+
 	b2World* m_world;
     std::unique_ptr<LocalContactListener> m_contactListener;
 	std::unique_ptr<PhysicsWorld2DDebugDraw> m_debugDraw;
 	List<Ref<PhysicsObject2D>> m_objects;
+	std::vector<PhysicsObject2D*> m_removeList;
+	bool m_inStepSimulation;
 };
 
 } // namespace ln

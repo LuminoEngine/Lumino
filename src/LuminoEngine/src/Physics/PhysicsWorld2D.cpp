@@ -18,6 +18,9 @@ static Vector2 B2ToLn(const b2Vec2& v) { return Vector2(v.x, v.y); }
 // CollisionShape2D
 
 CollisionShape2D::CollisionShape2D()
+	: m_position(0, 0)
+	, m_rotation(0)
+	, m_dirty(true)
 {
 }
 
@@ -29,7 +32,12 @@ void CollisionShape2D::init()
 //==============================================================================
 // BoxCollisionShape2D
 
-Ref<BoxCollisionShape2D> BoxCollisionShape2D::create(const Vector2& size)
+Ref<BoxCollisionShape2D> BoxCollisionShape2D::create()
+{
+	return newObject<BoxCollisionShape2D>();
+}
+
+Ref<BoxCollisionShape2D> BoxCollisionShape2D::create(const Size& size)
 {
     return newObject<BoxCollisionShape2D>(size);
 }
@@ -40,25 +48,35 @@ Ref<BoxCollisionShape2D> BoxCollisionShape2D::create(float width, float height)
 }
 
 BoxCollisionShape2D::BoxCollisionShape2D()
-	: m_shape()
+	: m_shape(nullptr)
+	, m_size(1, 1)
 {
 }
 
-void BoxCollisionShape2D::init(const Vector2& size)
+void BoxCollisionShape2D::init()
 {
 	CollisionShape2D::init();
+}
 
-	m_shape = std::make_unique<b2PolygonShape>();
-	m_shape->SetAsBox(size.x * 0.5f, size.y * 0.5f);
+void BoxCollisionShape2D::init(const Size& size)
+{
+	init();
+	m_size = size;
 }
 
 void BoxCollisionShape2D::init(float width, float height)
 {
-    init(Vector2(width, height));
+    init(Size(width, height));
 }
 
-b2Shape* BoxCollisionShape2D::box2DShape()
+b2Shape* BoxCollisionShape2D::resolveBox2DShape()
 {
+	if (!m_shape || isDirty())
+	{
+		m_shape = std::make_unique<b2PolygonShape>();
+		m_shape->SetAsBox(m_size.width * 0.5f, m_size.height * 0.5f, LnToB2(position()), rotation());
+		clearDirty();
+	}
 	return m_shape.get();
 }
 
@@ -334,10 +352,10 @@ void RigidBody2D::onBeforeStepSimulation()
 		bodyDef.gravityScale = 1.0f;
 		m_body = world->CreateBody(&bodyDef);
 
-		b2Shape* shape = m_shapes[0]->box2DShape();	// TODO:
+		b2Shape* shape = m_shapes[0]->resolveBox2DShape();	// TODO:
 
 		b2MassData massData;
-		m_shapes[0]->box2DShape()->ComputeMass(&massData, 1);
+		shape->ComputeMass(&massData, 1);
 		float volume = massData.mass;	// ComputeMass に密度 1 で計算すると、質量 = 体積となる
 
 		b2FixtureDef fixtureDef;
@@ -351,6 +369,7 @@ void RigidBody2D::onBeforeStepSimulation()
 		fixtureDef.filter.maskBits = 0xFFFF;
 		fixtureDef.filter.groupIndex = 0;
 		m_fixture = m_body->CreateFixture(&fixtureDef);
+
 	}
 
 //    m_body->SetLinearVelocity(LnToB2(m_velocity));
@@ -380,8 +399,6 @@ void RigidBody2D::onBeforeStepSimulation()
         }
     }
     m_applyCommands.clear();
-
-    m_body->GetContactList();
 }
 
 void RigidBody2D::onAfterStepSimulation()
@@ -633,6 +650,7 @@ public:
 
 PhysicsWorld2D::PhysicsWorld2D()
 	: m_world(nullptr)
+	, m_inStepSimulation(false)
 {
 }
 
@@ -676,14 +694,18 @@ void PhysicsWorld2D::removePhysicsObject(PhysicsObject2D* physicsObject)
 	if (LN_REQUIRE(physicsObject)) return;
 	if (LN_REQUIRE(physicsObject->m_ownerWorld == this)) return;
 
-	physicsObject->onRemoveFromPhysicsWorld();
-	if (m_objects.remove(physicsObject)) {
-		physicsObject->m_ownerWorld = nullptr;
+	if (m_inStepSimulation) {
+		m_removeList.push_back(physicsObject);
+	}
+	else {
+		removeInternal(physicsObject);
 	}
 }
 
 void PhysicsWorld2D::stepSimulation(float elapsedSeconds)
 {
+	m_inStepSimulation = true;
+
 	// 推奨値 http://box2d.org/manual.pdf
 	const int32 velocityIterations = 8;
 	const int32 positionIterations = 3;
@@ -697,12 +719,27 @@ void PhysicsWorld2D::stepSimulation(float elapsedSeconds)
 	for (auto& obj : m_objects) {
 		obj->onAfterStepSimulation();
 	}
+
+	for (auto& obj : m_removeList) {
+		removeInternal(obj);
+	}
+	m_removeList.clear();
+
+	m_inStepSimulation = false;
 }
 
 void PhysicsWorld2D::renderDebug(RenderingContext* context)
 {
 	m_world->DrawDebugData();
 	m_debugDraw->render(context);
+}
+
+void PhysicsWorld2D::removeInternal(PhysicsObject2D* physicsObject)
+{
+	physicsObject->onRemoveFromPhysicsWorld();
+	if (m_objects.remove(physicsObject)) {
+		physicsObject->m_ownerWorld = nullptr;
+	}
 }
 
 } // namespace ln
