@@ -66,6 +66,7 @@
 #include "LuminoEngine/Visual/SpriteComponent.hpp"
 #include "LuminoEngine/Visual/StaticMeshComponent.hpp"
 
+#include "LuminoEngine/Scene/WorldRenderView.hpp"
 #include "LuminoEngine/Scene/World.hpp"
 #include "LuminoEngine/Scene/WorldObject.hpp"
 #include "LuminoEngine/Scene/Camera.hpp"

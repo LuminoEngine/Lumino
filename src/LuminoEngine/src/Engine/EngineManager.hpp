@@ -119,6 +119,7 @@ public:
     const Ref<Camera>& mainCamera() const { return m_mainCamera; }
     const Ref<AmbientLight>& mainAmbientLight() const { return m_mainAmbientLight; }
     const Ref<DirectionalLight>& mainDirectionalLight() const { return m_mainDirectionalLight; }
+    const Ref<WorldRenderView>& mainRenderView() const { return m_mainWorldRenderView; }
     const Ref<PhysicsWorld>& mainPhysicsWorld() const { return m_mainPhysicsWorld; }
     const Ref<PhysicsWorld2D>& mainPhysicsWorld2D() const { return m_mainPhysicsWorld2D; }
 

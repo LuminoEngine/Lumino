@@ -21,6 +21,7 @@ namespace ln {
 
 WorldRenderView::WorldRenderView()
     : m_visibleGridPlane(false)
+    , m_physicsDebugDrawEnabled(false)
 {
 }
 
@@ -114,11 +115,13 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 
             m_targetWorld->renderObjects();
 
-            if (m_targetWorld->physicsWorld()) {
-                m_targetWorld->physicsWorld()->renderDebug(renderingContext);
-            }
-            if (m_targetWorld->physicsWorld2D()) {
-                m_targetWorld->physicsWorld2D()->renderDebug(renderingContext);
+            if (m_physicsDebugDrawEnabled) {
+                if (m_targetWorld->physicsWorld()) {
+                    m_targetWorld->physicsWorld()->renderDebug(renderingContext);
+                }
+                if (m_targetWorld->physicsWorld2D()) {
+                    m_targetWorld->physicsWorld2D()->renderDebug(renderingContext);
+                }
             }
 
             // test

@@ -6,6 +6,7 @@ class GraphicsContext;
 class UIFrameWindow;
 class UIViewport;
 class UIContainerElement;
+class WorldRenderView;
 class PhysicsWorld;
 class World;
 class Camera;
@@ -47,6 +48,7 @@ public:
     static Camera* mainCamera();
     static AmbientLight* mainAmbientLight();
     static DirectionalLight* mainDirectionalLight();
+    static WorldRenderView* mainRenderView();
     static PhysicsWorld* mainPhysicsWorld();
 
 };

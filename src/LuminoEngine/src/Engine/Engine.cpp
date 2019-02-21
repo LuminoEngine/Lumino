@@ -8,6 +8,7 @@
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
+#include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
 #include <LuminoEngine/Scene/Light.hpp>
@@ -150,6 +151,11 @@ AmbientLight* Engine::mainAmbientLight()
 DirectionalLight* Engine::mainDirectionalLight()
 {
     return detail::EngineDomain::engineManager()->mainDirectionalLight();
+}
+
+WorldRenderView* Engine::mainRenderView()
+{
+    return detail::EngineDomain::engineManager()->mainRenderView();
 }
 
 PhysicsWorld* Engine::mainPhysicsWorld()

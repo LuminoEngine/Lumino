@@ -19,6 +19,7 @@ public:
     void setTargetWorld(World* world);
 	void setCamera(Camera* camera);
 
+    void setPhysicsDebugDrawEnabled(bool value) { m_physicsDebugDrawEnabled = value; }
 
     // TODO: internal
     virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthbuffer) override;
@@ -44,6 +45,7 @@ private:
 
     Ref<StaticMeshModel> m_gridPlane;
     bool m_visibleGridPlane;
+    bool m_physicsDebugDrawEnabled;
 };
 
 } // namespace ln
