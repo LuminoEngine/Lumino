@@ -176,6 +176,9 @@ void SpriteComponent::onRender(RenderingContext* context)
 			sourceRect = frame->sourceRect();
             anchorPoint = frame->anchorPoint();
             tex = m_frameSet->texture();
+
+            anchorPoint.x = (Math::isNaN(anchorPoint.x)) ? m_anchorPoint.x : anchorPoint.x;
+            anchorPoint.y = (Math::isNaN(anchorPoint.y)) ? m_anchorPoint.y : anchorPoint.y;
 		}
 	}
 

@@ -14,7 +14,7 @@ const Vector2 Vector2::Zero = Vector2(0, 0);
 const Vector2 Vector2::UnitX = Vector2(1, 0);
 const Vector2 Vector2::UnitY = Vector2(0, 1);
 const Vector2 Vector2::Ones = Vector2(1, 1);
-const Vector2 Vector2::NaN = Vector2(Math::NaN, Math::NaN);
+const Vector2 Vector2::NaN = Vector2(std::numeric_limits<float>::quiet_NaN(), std::numeric_limits<float>::quiet_NaN());
 
 float Vector2::length() const
 {

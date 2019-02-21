@@ -3,7 +3,7 @@
 #include "Common.hpp"
 
 namespace ln {
-class AnimationKeyFrame;
+struct AnimationKeyFrame;
 class AnimationTrack;
 
 /**
