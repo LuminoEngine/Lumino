@@ -3,6 +3,7 @@
 #include "Common.hpp"
 
 namespace ln {
+class AnimationKeyFrame;
 class AnimationTrack;
 
 /**
@@ -14,11 +15,13 @@ class AnimationClip
 	: public Object
 {
 public:
+	static Ref<AnimationClip> create(const StringRef& name, const StringRef& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes);
+
 
 	/** アニメーションの繰り返しの動作を取得します。 */
 	AnimationWrapMode wrapMode() const { return m_wrapMode; }
 
-	/** アニメーションの繰り返しの動作を取得します。(default: Once) */
+	/** アニメーションの繰り返しの動作を取得します。(default: Loop) */
 	void setWrapMode(AnimationWrapMode mode) { m_wrapMode = mode; }
 
 
@@ -31,8 +34,10 @@ LN_CONSTRUCT_ACCESS:
 	AnimationClip();
 	virtual ~AnimationClip();
 	void init();
+	void init(const StringRef& name, const StringRef& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes);
 
 protected:
+	String m_name;
 	List<Ref<AnimationTrack>> m_tracks;
 	Ref<RefObject> m_srcData;
 	float m_lastFrameTime;

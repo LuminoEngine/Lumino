@@ -1,7 +1,8 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Animation/AnimationClip.hpp>
+#include <LuminoEngine/Animation/AnimationCurve.hpp>
 #include <LuminoEngine/Animation/AnimationTrack.hpp>
+#include <LuminoEngine/Animation/AnimationClip.hpp>
 #include "VmdLoader.hpp"
 
 namespace ln {
@@ -9,8 +10,14 @@ namespace ln {
 //==============================================================================
 // AnimationClip
 
+Ref<AnimationClip> AnimationClip::create(const StringRef& name, const StringRef& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes)
+{
+	return newObject<AnimationClip>(name, targetPath, keyframes);
+}
+
 AnimationClip::AnimationClip()
     : m_lastFrameTime(0)
+	, m_wrapMode(AnimationWrapMode::Loop)
 {
 }
 
@@ -21,6 +28,25 @@ AnimationClip::~AnimationClip()
 void AnimationClip::init()
 {
 	Object::init();
+}
+
+void AnimationClip::init(const StringRef& name, const StringRef& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes)
+{
+	if (LN_REQUIRE(!name.isEmpty())) return;
+
+	init();
+
+	m_name = name;
+
+	auto curve = newObject<KeyFrameAnimationCurve>();
+	for (auto& key : keyframes) {
+		curve->addKeyFrame(key);
+	}
+
+	auto track = ScalarAnimationTrack::create();
+	track->setTargetName(targetPath);
+	track->setCurve(curve);
+	addTrack(track);
 }
 
 void AnimationClip::addTrack(AnimationTrack* track)

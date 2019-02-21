@@ -112,18 +112,27 @@ int main(int argc, char** argv)
         auto sprite = Sprite::create(frameSet);
         sprite->setFrameIndex(0);
 
-		auto curve = KeyFrameAnimationCurve::create();
-        curve->addKeyFrame(0.0, 2);
-        curve->addKeyFrame(1.0, 3);
-        curve->addKeyFrame(2.0, 2);
 
-        auto track = ScalarAnimationTrack::create();
-        track->setTargetName(u"FrameIndex");
-        track->setCurve(curve);
+		auto clip = AnimationClip::create(
+			u"run", u"FrameIndex",
+			{
+				{0.0, 2},
+				{1.0, 3},
+				{2.0, 2},
+			});
 
-        auto clip = newObject<AnimationClip>();
-        clip->setWrapMode(AnimationWrapMode::Loop);
-        clip->addTrack(track);
+		//auto curve = KeyFrameAnimationCurve::create();
+  //      curve->addKeyFrame(0.0, 2);
+  //      curve->addKeyFrame(1.0, 3);
+  //      curve->addKeyFrame(2.0, 2);
+
+  //      auto track = ScalarAnimationTrack::create();
+  //      track->setTargetName(u"FrameIndex");
+  //      track->setCurve(curve);
+
+  //      auto clip = newObject<AnimationClip>();
+  //      clip->setWrapMode(AnimationWrapMode::Loop);
+  //      clip->addTrack(track);
 
         auto animator = newObject<Animator>();
         sprite->addComponent(animator);

@@ -80,6 +80,7 @@ set(LN_SOURCES_Grammar
 
 set(LN_SOURCES_Animation
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/Animation.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/AnimationClip.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/AnimationClock.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/AnimationContext.hpp
@@ -89,6 +90,7 @@ set(LN_SOURCES_Animation
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/Animator.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/EasingFunctions.hpp
     src/Animation/Internal.hpp
+    src/Animation/Animation.cpp
     src/Animation/AnimationClip.cpp
     src/Animation/AnimationClock.cpp
     src/Animation/AnimationController.cpp

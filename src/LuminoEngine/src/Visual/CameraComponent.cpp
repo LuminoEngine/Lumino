@@ -9,8 +9,18 @@ namespace ln {
  
 //==============================================================================
 // CameraComponent
-//   ProjectionMatrix を求めるためには ViewSize (アスペクト比) が必須となる。
-//   そのため親 RenderView (m_ownerRenderView) は CameraComponent が持っておく。
+/*
+ * RenderView の参照を持っておく必要はある？
+ * ----------
+ * ProjectionMatrix を求めるためには ViewSize (アスペクト比) が必須となる。
+ * そのため親 RenderView (m_ownerRenderView) は CameraComponent が持っておく。
+ *
+ * また、できれば RenderView と Camera は 1:1 にしておきたい。
+ * そうしておかないと、WorldObject の onUpdate とかで camera->projectionMatrix() を呼び出したとき、
+ * どの RenderView をベースに計算されたものか、ぱっと見で非常にわかりづらい。
+ *
+ * 今後内部的にデバッグなどの用途で n:1 にしたくなったら、RenderViewPoint を共有しよう。
+ */
 
 CameraComponent::CameraComponent()
     : VisualComponent()
