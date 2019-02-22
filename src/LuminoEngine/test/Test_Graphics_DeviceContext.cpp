@@ -1,6 +1,6 @@
 ﻿#include "Common.hpp"
 
-#if 1
+#if 0
 
 //==============================================================================
 // IGraphicsDeviceContext 周りのテスト。
@@ -12,6 +12,12 @@ class Test_Graphics_DeviceContext : public ::testing::Test {};
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_DeviceContext, Clear)
 {
+	// test
+	while (true) {
+		TestEnv::updateFrame();
+	}
+
+
     {
         auto ctx = Engine::graphicsContext();
         TestEnv::resetGraphicsContext(ctx);

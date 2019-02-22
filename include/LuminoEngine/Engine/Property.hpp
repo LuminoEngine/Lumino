@@ -215,6 +215,8 @@ public:
 		, m_accessor(accessor)
 		, m_registerd(false)
 	{
+		m_getPropertyCallback = nullptr;
+		m_staticPropertyChangedCallback = nullptr;
 	}
 
 	const String& name() const { return m_name; }

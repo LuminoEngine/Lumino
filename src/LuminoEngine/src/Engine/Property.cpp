@@ -33,18 +33,21 @@ void TypeInfo::registerProperty(PropertyInfo* prop)
 
 void TypeInfo::initializeObjectProperties(Object* obj)
 {
-    //// TODO: ベースクラス
-    //TypeInfo* info = getTypeInfo(obj);
-    //if (info)
-    //{
-    //    for (auto& propInfo : info->m_properties)
-    //    {
-    //        if (PropertyBase* prop = propInfo->m_getPropertyCallback(obj)) {
-    //            prop->m_owner = obj;
-    //            prop->m_propertyInfo = propInfo;
-    //        }
-    //    }
-    //}
+    // TODO: ベースクラス
+    TypeInfo* info = getTypeInfo(obj);
+    if (info)
+    {
+        for (auto& propInfo : info->m_properties)
+        {
+			if (propInfo->m_getPropertyCallback)
+			{
+				if (PropertyBase* prop = propInfo->m_getPropertyCallback(obj)) {
+					prop->m_owner = obj;
+					prop->m_propertyInfo = propInfo;
+				}
+			}
+        }
+    }
 }
 
 //==============================================================================

@@ -1604,7 +1604,7 @@ bool VulkanSampleDeviceContext::init(const Settings& settings)
 	SizeI size;
 	glfwWindow->getSize(&size);
 	g_app.initWindow(glfwWindow->glfwWindow(), size.width, size.height);
-	//g_app.initVulkan();
+	g_app.initVulkan();
 	return true;
 }
 

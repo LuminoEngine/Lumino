@@ -53,9 +53,14 @@ void World::removeAllObjects()
 {
     for (int i = m_rootWorldObjectList->size() - 1; i >= 0; i--)
     {
-        if (!m_rootWorldObjectList[i]->isSpecialObject())
+		auto& obj = m_rootWorldObjectList[i];
+        if (!obj->isSpecialObject())
         {
-			m_rootWorldObjectList[i]->detachWorld();
+			if (obj->destroyed()) {
+				m_destroyList.remove(obj);
+			}
+
+			obj->detachWorld();
             m_rootWorldObjectList->removeAt(i);
         }
     }
@@ -69,6 +74,9 @@ ReadOnlyList<Ref<WorldObject>>* World::rootObjects() const
 void World::removeRootObject(WorldObject* obj)
 {
 	if (m_rootWorldObjectList->remove(obj)) {
+		if (obj->destroyed()) {
+			m_destroyList.remove(obj);
+		}
 		obj->detachWorld();
 	}
 }
@@ -127,8 +135,12 @@ void World::onInternalAnimationUpdate(float elapsedSeconds)
 void World::onPostUpdate(float elapsedSeconds)
 {
 	for (WorldObject* obj : m_destroyList) {
-		obj->removeFromWorld();
+		//obj->removeFromWorld();
+
+		obj->detachWorld();
+		m_rootWorldObjectList->remove(obj);
 	}
+	m_destroyList.clear();
 }
 
 detail::WorldSceneGraphRenderingContext* World::prepareRender(RenderViewPoint* viewPoint)
