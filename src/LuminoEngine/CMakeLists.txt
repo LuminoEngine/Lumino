@@ -485,6 +485,10 @@ if (LN_USE_VULKAN)
         ${LN_SOURCES_Graphics}
         src/Graphics/VulkanDeviceContext.cpp
         src/Graphics/VulkanDeviceContext.hpp
+        src/Graphics/VulkanHelper.cpp
+        src/Graphics/VulkanHelper.hpp
+        src/Graphics/VulkanSampleDeviceContext.cpp
+        src/Graphics/VulkanSampleDeviceContext.hpp
     )
     list(APPEND LN_PLATFORM_DEFINITIONS LN_USE_VULKAN=1)
 endif()

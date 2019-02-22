@@ -8,6 +8,7 @@
 #include "OpenGLDeviceContext.hpp"
 #ifdef LN_USE_VULKAN
 #include "VulkanDeviceContext.hpp"
+#include "VulkanSampleDeviceContext.hpp"
 #endif
 #include "../Engine/LinearAllocator.hpp"
 
@@ -203,11 +204,19 @@ void GraphicsManager::createOpenGLContext(const Settings& settings)
 void GraphicsManager::createVulkanContext(const Settings& settings)
 {
 #ifdef LN_USE_VULKAN
+#if 1
+	VulkanSampleDeviceContext::Settings dcSettings;
+	dcSettings.mainWindow = settings.mainWindow;
+	auto ctx = makeRef<VulkanSampleDeviceContext>();
+	ctx->init(dcSettings);
+	m_deviceContext = ctx;
+#else
 	VulkanDeviceContext::Settings dcSettings;
 	dcSettings.debugEnabled = true;
 	auto ctx = makeRef<VulkanDeviceContext>();
 	ctx->init(dcSettings);
 	m_deviceContext = ctx;
+#endif
 #endif
 }
 

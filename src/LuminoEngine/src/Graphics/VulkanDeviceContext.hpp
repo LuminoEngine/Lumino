@@ -1,10 +1,6 @@
 ﻿
 #pragma once
-
-#define VK_USE_PLATFORM_WIN32_KHR
-#include <vulkan/vulkan.h>
-#include "GraphicsDeviceContext.hpp"
-#include "MixHash.hpp"
+#include "VulkanHelper.hpp"
 
 namespace ln {
 namespace detail {
@@ -22,19 +18,6 @@ class VulkanShaderUniformBuffer;
 class VulkanShaderUniform;
 class VulkanLocalShaderSamplerBuffer;
 class VulkanDescriptorManager;
-
-class VulkanAllocator
-{
-public:
-    VulkanAllocator();
-    void* alloc(size_t size, size_t alignment, VkSystemAllocationScope scope) noexcept;
-    void* realloc(void* ptr, size_t size, size_t alignment, VkSystemAllocationScope scope) noexcept;
-    void free(void* ptr) noexcept;
-
-private:
-    int m_counter;
-    size_t m_allocationSize[VK_SYSTEM_ALLOCATION_SCOPE_RANGE_SIZE];
-};
 
 template<class T>
 class HashedObjectCache
@@ -188,7 +171,7 @@ public:
     bool init(const Settings& settings);
     virtual void dispose() override;
 
-    const VkAllocationCallbacks* vulkanAllocator() const { return &m_allocatorCallbacks; }
+    const VkAllocationCallbacks* vulkanAllocator() const { return m_allocator.vulkanAllocator(); }
     VkInstance vulkanInstance() const { return m_instance; }
     VkDevice vulkanDevice() const { return m_device; }
     VkPhysicalDevice vulkanPhysicalDevice() const { return m_physicalDevice; }
@@ -268,7 +251,6 @@ private:
     }
 
     VkInstance m_instance;
-    VkAllocationCallbacks m_allocatorCallbacks;
     VulkanAllocator m_allocator;
     VkDebugUtilsMessengerEXT m_debugMessenger = VK_NULL_HANDLE;
     uint32_t m_physicalDeviceCount;
