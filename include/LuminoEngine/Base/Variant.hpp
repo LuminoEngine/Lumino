@@ -123,6 +123,7 @@ private:
 	void assign(const Quaternion& value);
 	void assign(const AttitudeTransform& value);
     void assign(const Ref<RefObject>& value);
+	void assign(RefObject* value) { assign(Ref<RefObject>(value)); }
 	void assign(const Ref<List<Variant>>& value);
 	void changeType(VariantType newType);
 	void copy(const Variant& value);

@@ -7,15 +7,6 @@
 namespace ln {
 namespace detail {
 
-#define LN_VK_CHECK(f) \
-{ \
-    VkResult r = (f); \
-	if (r != VK_SUCCESS) { \
-        LN_LOG_ERROR << #f << "; VkResult:" << r << "(" << VulkanDeviceContext::getVkResultName(r) << ")"; \
-		return false; \
-	} \
-}
-
 PFN_vkCreateDebugReportCallbackEXT vkCreateDebugReportCallback = nullptr;
 PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallback = nullptr;
 PFN_vkDebugReportMessageEXT vkDebugReportMessage = nullptr;
@@ -36,36 +27,6 @@ PFN_vkCmdPushDescriptorSetKHR vkCmdPushDescriptorSet = nullptr;
 #if defined(VK_EXT_hdr_metadata)
 PFN_vkSetHdrMetadataEXT vkSetHdrMetadata = nullptr;
 #endif
-
-VKAPI_ATTR
-void* VKAPI_CALL AllocCallback(
-    void* pUserData,
-    size_t size,
-    size_t alignment,
-    VkSystemAllocationScope scope)
-{
-    VulkanAllocator* allocator = reinterpret_cast<VulkanAllocator*>(pUserData);
-    return allocator->alloc(size, alignment, scope);
-}
-
-VKAPI_ATTR
-void* VKAPI_CALL ReallocCallback(
-    void* pUserData,
-    void* pOriginal,
-    size_t size,
-    size_t alignment,
-    VkSystemAllocationScope scope)
-{
-    VulkanAllocator* allocator = reinterpret_cast<VulkanAllocator*>(pUserData);
-    return allocator->realloc(pOriginal, size, alignment, scope);
-}
-
-VKAPI_ATTR
-void VKAPI_CALL FreeCallback(void* pUserData, void* pMemory)
-{
-    VulkanAllocator* allocator = reinterpret_cast<VulkanAllocator*>(pUserData);
-    return allocator->free(pMemory);
-}
 
 VKAPI_ATTR
 VkBool32 VKAPI_CALL DebugReportCallback(
@@ -117,242 +78,7 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
     }
 }
 
-struct FormatConversionItem
-{
-    VkFormat vulkanFormat;
-    uint32_t bitPerPixel;
-    TextureFormat lnFormat;
-    bool isCompress;
-};
 
-static FormatConversionItem s_formatConversionTable[] =
-{
-    {VK_FORMAT_UNDEFINED, 0, TextureFormat::Unknown, false},
-    {VK_FORMAT_R8G8B8A8_UNORM, 32, TextureFormat::RGBA32, false},
-    {VK_FORMAT_UNDEFINED, 0, TextureFormat::RGB24, false}, // TODO: remove
-    {VK_FORMAT_R16G16B16A16_SFLOAT, 64, TextureFormat::R16G16B16A16Float, false},
-    {VK_FORMAT_R32G32B32A32_SFLOAT, 128, TextureFormat::R32G32B32A32Float, false},
-    {VK_FORMAT_R16_SFLOAT, 16, TextureFormat::R16Float, false},
-    {VK_FORMAT_R32_SFLOAT, 32, TextureFormat::R32Float, false},
-    {VK_FORMAT_R32_UINT, 32, TextureFormat::R32UInt, false},
-};
-
-static VkFormat LNFormatToVkFormat(TextureFormat format)
-{
-    assert(s_formatConversionTable[(int)format].lnFormat == format);
-    return s_formatConversionTable[(int)format].vulkanFormat;
-}
-
-static TextureFormat VkFormatToLNFormat(VkFormat format)
-{
-    for (auto& i : s_formatConversionTable) {
-        if (i.vulkanFormat == format) {
-            return i.lnFormat;
-        }
-    }
-    return TextureFormat::Unknown;
-}
-
-struct BlendFactorConversionItem
-{
-    BlendFactor lnValue;
-    VkBlendFactor vkValueColor;
-    VkBlendFactor vkValueAlpha;
-};
-
-static const BlendFactorConversionItem s_blendFactorConversionTable[] =
-{
-	{BlendFactor::Zero, VK_BLEND_FACTOR_ZERO, VK_BLEND_FACTOR_ZERO},
-	{BlendFactor::One, VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ONE},
-	{BlendFactor::SourceColor, VK_BLEND_FACTOR_SRC_COLOR, VK_BLEND_FACTOR_SRC_ALPHA},
-	{BlendFactor::InverseSourceColor, VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA},
-	{BlendFactor::SourceAlpha, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_SRC_ALPHA},
-	{BlendFactor::InverseSourceAlpha, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA},
-	{BlendFactor::DestinationColor, VK_BLEND_FACTOR_DST_COLOR, VK_BLEND_FACTOR_DST_ALPHA},
-	{BlendFactor::InverseDestinationColor, VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR, VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA},
-	{BlendFactor::DestinationAlpha, VK_BLEND_FACTOR_DST_ALPHA, VK_BLEND_FACTOR_DST_ALPHA},
-	{BlendFactor::InverseDestinationAlpha, VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA},
-};
-
-static VkBlendFactor LNBlendFactorToVkBlendFactor_Color(BlendFactor value)
-{
-    assert(s_blendFactorConversionTable[(int)value].lnValue == value);
-    return s_blendFactorConversionTable[(int)value].vkValueColor;
-}
-
-static VkBlendFactor LNBlendFactorToVkBlendFactor_Alpha(BlendFactor value)
-{
-    assert(s_blendFactorConversionTable[(int)value].lnValue == value);
-    return s_blendFactorConversionTable[(int)value].vkValueAlpha;
-}
-
-struct BlendOpConversionItem
-{
-    BlendOp lnValue;
-    VkBlendOp vkValue;
-};
-
-static const BlendOpConversionItem s_blendOpConversionTable[] =
-{
-    {BlendOp::Add, VK_BLEND_OP_ADD},
-    {BlendOp::Subtract, VK_BLEND_OP_SUBTRACT},
-    {BlendOp::ReverseSubtract, VK_BLEND_OP_REVERSE_SUBTRACT},
-    {BlendOp::Min, VK_BLEND_OP_MIN},
-    {BlendOp::Max, VK_BLEND_OP_MAX},
-};
-
-static VkBlendOp LNBlendOpToVkBlendOp(BlendOp value)
-{
-    assert(s_blendOpConversionTable[(int)value].lnValue == value);
-    return s_blendOpConversionTable[(int)value].vkValue;
-}
-
-struct ComparisonFuncConversionItem
-{
-    ComparisonFunc lnValue;
-    VkCompareOp vkValue;
-};
-
-static const ComparisonFuncConversionItem s_comparisoFuncConversionTable[] =
-{
-    {ComparisonFunc::Never, VK_COMPARE_OP_NEVER},
-    {ComparisonFunc::Less, VK_COMPARE_OP_LESS},
-    {ComparisonFunc::LessEqual, VK_COMPARE_OP_LESS_OR_EQUAL},
-    {ComparisonFunc::Greater, VK_COMPARE_OP_GREATER},
-    {ComparisonFunc::GreaterEqual, VK_COMPARE_OP_GREATER_OR_EQUAL},
-    {ComparisonFunc::Equal, VK_COMPARE_OP_EQUAL},
-    {ComparisonFunc::NotEqual, VK_COMPARE_OP_NOT_EQUAL},
-    {ComparisonFunc::Always, VK_COMPARE_OP_ALWAYS},
-};
-
-static VkCompareOp LNComparisonFuncToVkCompareOp(ComparisonFunc value)
-{
-    assert(s_comparisoFuncConversionTable[(int)value].lnValue == value);
-    return s_comparisoFuncConversionTable[(int)value].vkValue;
-}
-
-struct FillModeConversionItem
-{
-    FillMode lnValue;
-    VkPolygonMode vkValue;
-};
-
-static const FillModeConversionItem s_fillModeConversionTable[] =
-{
-    {FillMode::Solid, VK_POLYGON_MODE_FILL},
-    {FillMode::Wireframe, VK_POLYGON_MODE_LINE},
-};
-
-static VkPolygonMode LNFillModeToVkPolygonMode(FillMode value)
-{
-    assert(s_fillModeConversionTable[(int)value].lnValue == value);
-    return s_fillModeConversionTable[(int)value].vkValue;
-}
-
-struct CullModeConversionItem
-{
-    CullMode lnValue;
-    VkCullModeFlagBits vkValue;
-};
-
-static const CullModeConversionItem s_cullModeConversionTable[] =
-{
-    {CullMode::None, VK_CULL_MODE_NONE},
-    {CullMode::Front, VK_CULL_MODE_FRONT_BIT},
-    {CullMode::Back, VK_CULL_MODE_BACK_BIT},
-};
-
-static VkCullModeFlagBits LNCullModeToVkCullMode(CullMode value)
-{
-    assert(s_cullModeConversionTable[(int)value].lnValue == value);
-    return s_cullModeConversionTable[(int)value].vkValue;
-}
-
-struct StencilOpConversionItem
-{
-    StencilOp lnValue;
-    VkStencilOp vkValue;
-};
-
-static const StencilOpConversionItem s_stencilOpConversionTable[] =
-{
-    {StencilOp::Keep, VK_STENCIL_OP_KEEP},
-    {StencilOp::Replace, VK_STENCIL_OP_REPLACE},
-};
-
-static VkStencilOp LNStencilOpToVkStencilOp(StencilOp value)
-{
-    assert(s_stencilOpConversionTable[(int)value].lnValue == value);
-    return s_stencilOpConversionTable[(int)value].vkValue;
-}
-
-struct VertexElementTypeConversionItem
-{
-    VertexElementType lnValue;
-    VkFormat vkValue;
-};
-
-static const VertexElementTypeConversionItem s_vertexElementTypeConversionTable[] =
-{
-    {VertexElementType::Unknown, VK_FORMAT_UNDEFINED},
-
-    {VertexElementType::Float1, VK_FORMAT_R32_SFLOAT},
-    {VertexElementType::Float2, VK_FORMAT_R32G32_SFLOAT},
-    {VertexElementType::Float3, VK_FORMAT_R32G32B32_SFLOAT},
-    {VertexElementType::Float4, VK_FORMAT_R32G32B32A32_SFLOAT},
-
-    {VertexElementType::Ubyte4, VK_FORMAT_R8G8B8A8_UINT},
-    {VertexElementType::Color4, VK_FORMAT_R8G8B8A8_UNORM}, // UNORM : https://msdn.microsoft.com/ja-jp/library/ee415736%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396
-
-    {VertexElementType::Short2, VK_FORMAT_R16G16_SINT},
-    {VertexElementType::Short4, VK_FORMAT_R16G16B16A16_SINT},
-};
-
-static VkFormat LNVertexElementTypeToVkFormat(VertexElementType value)
-{
-    assert(s_vertexElementTypeConversionTable[(int)value].lnValue == value);
-    return s_vertexElementTypeConversionTable[(int)value].vkValue;
-}
-
-//=============================================================================
-// VulkanAllocator
-
-VulkanAllocator::VulkanAllocator()
-    : m_counter(0)
-{
-}
-
-void* VulkanAllocator::alloc(size_t size, size_t alignment, VkSystemAllocationScope scope) noexcept
-{
-    m_counter++;
-    m_allocationSize[scope] -= size;
-#ifdef LN_OS_WIN32
-    return _aligned_malloc(size, alignment);
-#else
-    return aligned_alloc(alignment, size);
-#endif
-}
-
-void* VulkanAllocator::realloc(void* ptr, size_t size, size_t alignment, VkSystemAllocationScope scope) noexcept
-{
-    m_counter++;
-#ifdef LN_OS_WIN32
-    return _aligned_realloc(ptr, size, alignment);
-#else
-    A3D_UNUSED(alignment);
-    return realloc(ptr, size);
-#endif
-}
-
-void VulkanAllocator::free(void* ptr) noexcept
-{
-    m_counter--;
-#ifdef LN_OS_WIN32
-    _aligned_free(ptr);
-#else
-    free(ptr);
-#endif
-}
 
 
 //=============================================================================
@@ -472,7 +198,6 @@ bool VulkanFrameBuffer::containsDepthBuffer(IDepthBuffer* depthBuffer) const
 
 VulkanDeviceContext::VulkanDeviceContext()
     : m_instance(nullptr)
-    , m_allocatorCallbacks()
     , m_allocator()
 {
 }
@@ -574,14 +299,11 @@ bool VulkanDeviceContext::init(const Settings& settings)
     instanceInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
     instanceInfo.ppEnabledExtensionNames = extensionPtrs.data();
 
-    m_allocatorCallbacks.pfnAllocation = AllocCallback;
-    m_allocatorCallbacks.pfnFree = FreeCallback;
-    m_allocatorCallbacks.pfnReallocation = ReallocCallback;
-    m_allocatorCallbacks.pfnInternalAllocation = nullptr;
-    m_allocatorCallbacks.pfnInternalFree = nullptr;
-    m_allocatorCallbacks.pUserData = &m_allocator;
+	if (!m_allocator.init()) {
+		return false;
+	}
 
-	LN_VK_CHECK(vkCreateInstance(&instanceInfo, &m_allocatorCallbacks, &m_instance));
+	LN_VK_CHECK(vkCreateInstance(&instanceInfo, m_allocator.vulkanAllocator(), &m_instance));
 
     if (settings.debugEnabled) {
 
@@ -878,7 +600,7 @@ bool VulkanDeviceContext::init(const Settings& settings)
         }
     }
 
-	if (!m_renderPassCache.init([this](VkRenderPass v) { vkDestroyRenderPass(m_device, v, &m_allocatorCallbacks); })) {
+	if (!m_renderPassCache.init([this](VkRenderPass v) { vkDestroyRenderPass(m_device, v, m_allocator.vulkanAllocator()); })) {
         return false;
     }
 
@@ -950,7 +672,7 @@ void VulkanDeviceContext::dispose()
     }
 
     if (m_instance) {
-        vkDestroyInstance(m_instance, &m_allocatorCallbacks);
+        vkDestroyInstance(m_instance, m_allocator.vulkanAllocator());
         m_instance = nullptr;
     }
 
@@ -990,7 +712,7 @@ bool VulkanDeviceContext::getVkRenderPass(const DeviceFramebufferState& state, V
 		for (int i = 0; i < MaxMultiRenderTargets; i++) {
 			if (state.renderTargets[i]) {
 				attachmentDescs[i].flags = 0;
-				attachmentDescs[i].format = LNFormatToVkFormat(state.renderTargets[i]->getTextureFormat());
+				attachmentDescs[i].format = VulkanHelper::LNFormatToVkFormat(state.renderTargets[i]->getTextureFormat());
 				attachmentDescs[i].samples = VK_SAMPLE_COUNT_1_BIT;
 				attachmentDescs[i].loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 				attachmentDescs[i].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -1158,7 +880,7 @@ Ref<ISwapChain> VulkanDeviceContext::onCreateSwapChain(PlatformWindow* window, c
     desc.Width = backbufferSize.width;
     desc.Height = backbufferSize.height;
     desc.Format = TextureFormat::RGBA32;
-    desc.vulkanFormat = LNFormatToVkFormat(desc.Format);
+    desc.vulkanFormat = VulkanHelper::LNFormatToVkFormat(desc.Format);
     desc.MipLevels = 1;
     desc.SampleCount = 1;
     desc.BufferCount = 2;
@@ -1796,13 +1518,13 @@ bool VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsDev
 		for (int i = 0; i < BlendStateDesc::MaxRenderTargets; i++) {
 			colorBlendAttachments[i].blendEnable = (state.renderTargets[i].blendEnable) ? VK_TRUE : VK_FALSE;
 
-			colorBlendAttachments[i].srcColorBlendFactor = LNBlendFactorToVkBlendFactor_Color(state.renderTargets[i].sourceBlend);
-			colorBlendAttachments[i].dstColorBlendFactor = LNBlendFactorToVkBlendFactor_Color(state.renderTargets[i].destinationBlend);
-			colorBlendAttachments[i].colorBlendOp = LNBlendOpToVkBlendOp(state.renderTargets[i].blendOp);
+			colorBlendAttachments[i].srcColorBlendFactor = VulkanHelper::LNBlendFactorToVkBlendFactor_Color(state.renderTargets[i].sourceBlend);
+			colorBlendAttachments[i].dstColorBlendFactor = VulkanHelper::LNBlendFactorToVkBlendFactor_Color(state.renderTargets[i].destinationBlend);
+			colorBlendAttachments[i].colorBlendOp = VulkanHelper::LNBlendOpToVkBlendOp(state.renderTargets[i].blendOp);
 
-			colorBlendAttachments[i].srcAlphaBlendFactor = LNBlendFactorToVkBlendFactor_Alpha(state.renderTargets[i].sourceBlendAlpha);
-			colorBlendAttachments[i].dstAlphaBlendFactor = LNBlendFactorToVkBlendFactor_Alpha(state.renderTargets[i].destinationBlendAlpha);
-			colorBlendAttachments[i].alphaBlendOp = LNBlendOpToVkBlendOp(state.renderTargets[i].blendOpAlpha);
+			colorBlendAttachments[i].srcAlphaBlendFactor = VulkanHelper::LNBlendFactorToVkBlendFactor_Alpha(state.renderTargets[i].sourceBlendAlpha);
+			colorBlendAttachments[i].dstAlphaBlendFactor = VulkanHelper::LNBlendFactorToVkBlendFactor_Alpha(state.renderTargets[i].destinationBlendAlpha);
+			colorBlendAttachments[i].alphaBlendOp = VulkanHelper::LNBlendOpToVkBlendOp(state.renderTargets[i].blendOpAlpha);
 
 			colorBlendAttachments[i].colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 
@@ -1831,8 +1553,8 @@ bool VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsDev
 		rasterizerInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 		rasterizerInfo.depthClampEnable = VK_FALSE;
 		rasterizerInfo.rasterizerDiscardEnable = VK_FALSE;
-		rasterizerInfo.polygonMode = LNFillModeToVkPolygonMode(state.fillMode);
-        rasterizerInfo.cullMode = LNCullModeToVkCullMode(state.cullMode);
+		rasterizerInfo.polygonMode = VulkanHelper::LNFillModeToVkPolygonMode(state.fillMode);
+        rasterizerInfo.cullMode = VulkanHelper::LNCullModeToVkCullMode(state.cullMode);
 		rasterizerInfo.frontFace = VK_FRONT_FACE_CLOCKWISE; // 右回り
 		rasterizerInfo.depthBiasEnable = VK_FALSE;
 		rasterizerInfo.depthBiasConstantFactor = 0.0f;
@@ -1850,22 +1572,22 @@ bool VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsDev
 		depthStencilStateInfo.flags = 0;
 		depthStencilStateInfo.depthTestEnable = (state.depthTestFunc == ComparisonFunc::Always ? VK_FALSE : VK_TRUE);
 		depthStencilStateInfo.depthWriteEnable = (state.depthWriteEnabled ? VK_TRUE : VK_FALSE);
-		depthStencilStateInfo.depthCompareOp = LNComparisonFuncToVkCompareOp(state.depthTestFunc);
+		depthStencilStateInfo.depthCompareOp = VulkanHelper::LNComparisonFuncToVkCompareOp(state.depthTestFunc);
 		depthStencilStateInfo.depthBoundsTestEnable = VK_FALSE;
 		depthStencilStateInfo.stencilTestEnable = (state.stencilEnabled ? VK_TRUE : VK_FALSE);
 
-		depthStencilStateInfo.front.failOp = LNStencilOpToVkStencilOp(state.frontFace.stencilFailOp);
-		depthStencilStateInfo.front.passOp = LNStencilOpToVkStencilOp(state.frontFace.stencilPassOp);
-		depthStencilStateInfo.front.depthFailOp = LNStencilOpToVkStencilOp(state.frontFace.stencilDepthFailOp);
-		depthStencilStateInfo.front.compareOp = LNComparisonFuncToVkCompareOp(state.frontFace.stencilFunc);
+		depthStencilStateInfo.front.failOp = VulkanHelper::LNStencilOpToVkStencilOp(state.frontFace.stencilFailOp);
+		depthStencilStateInfo.front.passOp = VulkanHelper::LNStencilOpToVkStencilOp(state.frontFace.stencilPassOp);
+		depthStencilStateInfo.front.depthFailOp = VulkanHelper::LNStencilOpToVkStencilOp(state.frontFace.stencilDepthFailOp);
+		depthStencilStateInfo.front.compareOp = VulkanHelper::LNComparisonFuncToVkCompareOp(state.frontFace.stencilFunc);
 		depthStencilStateInfo.front.compareMask = UINT32_MAX;
 		depthStencilStateInfo.front.writeMask = UINT32_MAX;
 		depthStencilStateInfo.front.reference = state.stencilReferenceValue;
 
-		depthStencilStateInfo.back.failOp = LNStencilOpToVkStencilOp(state.backFace.stencilFailOp);
-		depthStencilStateInfo.back.passOp = LNStencilOpToVkStencilOp(state.backFace.stencilPassOp);
-		depthStencilStateInfo.back.depthFailOp = LNStencilOpToVkStencilOp(state.backFace.stencilDepthFailOp);
-		depthStencilStateInfo.back.compareOp = LNComparisonFuncToVkCompareOp(state.backFace.stencilFunc);
+		depthStencilStateInfo.back.failOp = VulkanHelper::LNStencilOpToVkStencilOp(state.backFace.stencilFailOp);
+		depthStencilStateInfo.back.passOp = VulkanHelper::LNStencilOpToVkStencilOp(state.backFace.stencilPassOp);
+		depthStencilStateInfo.back.depthFailOp = VulkanHelper::LNStencilOpToVkStencilOp(state.backFace.stencilDepthFailOp);
+		depthStencilStateInfo.back.compareOp = VulkanHelper::LNComparisonFuncToVkCompareOp(state.backFace.stencilFunc);
 		depthStencilStateInfo.back.compareMask = UINT32_MAX;
 		depthStencilStateInfo.back.writeMask = UINT32_MAX;
 		depthStencilStateInfo.back.reference = state.stencilReferenceValue;
@@ -2196,7 +1918,7 @@ bool VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* w
 
         //bool found = false;
 
-        auto nativeFormat = LNFormatToVkFormat(m_desc.Format);
+        auto nativeFormat = VulkanHelper::LNFormatToVkFormat(m_desc.Format);
         auto nativeColorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
 
         for (int i = 0; i < m_surfaceFormats.size(); i++) {
@@ -2619,7 +2341,7 @@ bool VulkanVertexDeclaration::init(const VertexElement* elements, int elementsCo
         VkVertexInputAttributeDescription attr;
 		attr.location = 0;
         attr.binding = elements[i].StreamIndex;
-        attr.format = LNVertexElementTypeToVkFormat(elements[i].Type);
+        attr.format = VulkanHelper::LNVertexElementTypeToVkFormat(elements[i].Type);
         attr.offset = m_bindings[attr.binding].stride;
 		m_attributeTemplate.push_back(attr);
 

@@ -55,5 +55,8 @@ TEST_F(Test_Physics_2D, Compound)
 
 	// なんとなく時計回りにかたむいてるはず
 	ASSERT_EQ(true, body2->rotation() < -0.6);
+
+	Engine::mainWorld()->physicsWorld2D()->removePhysicsObject(body1);
+	Engine::mainWorld()->physicsWorld2D()->removePhysicsObject(body2);
 }
 

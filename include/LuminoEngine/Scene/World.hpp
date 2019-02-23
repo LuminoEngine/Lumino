@@ -58,7 +58,7 @@ public: // TODO: internal
     Ref<PhysicsWorld> m_physicsWorld;
 	Ref<PhysicsWorld2D> m_physicsWorld2D;
     Ref<List<Ref<WorldObject>>> m_rootWorldObjectList;
-	std::vector<WorldObject*> m_destroyList;
+	List<WorldObject*> m_destroyList;
 
     Ref<detail::WorldSceneGraphRenderingContext> m_renderingContext;
 

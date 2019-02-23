@@ -166,7 +166,7 @@ void WorldObject::destroy()
 {
 	m_destroyed = true;
 	if (m_world) {
-		m_world->m_destroyList.push_back(this);
+		m_world->m_destroyList.add(this);
 	}
 }
 
