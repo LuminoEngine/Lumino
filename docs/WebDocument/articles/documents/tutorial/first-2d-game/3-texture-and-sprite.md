@@ -87,7 +87,7 @@ Ref は Lumino を使う上で非常に重要なキーワードで、今後も�
 void Main()
 {
     Ref<Texture> skyTexture = Assets::loadTexture(u"sky");
-    Ref<Sprite> skySprite = Sprite::create(16, 12, skyTexture);
+    Ref<Sprite> skySprite = Sprite::create(skyTexture, 16, 12);
 
     while (Engine::update())
     {
@@ -100,7 +100,7 @@ void Main()
 ![](img/texture-and-sprite-1.png)
 
 
-`Sprite::create(16, 12, skyTexture)` は、横幅16, 縦幅12 の、先ほど読み込んだテクスチャを表示するスプライトを作成します。
+`Sprite::create(skyTexture, 16, 12)` は、先ほど読み込んだテクスチャを表示する、横幅16, 縦幅12 のスプライトを作成します。
 
 作成したスプライトは、Engine::update() によって自動的に画面に描画されます。
 

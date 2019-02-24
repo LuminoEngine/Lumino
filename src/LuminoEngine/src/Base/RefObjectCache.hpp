@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿
+#pragma once
+#include <list>
 
 namespace ln {
 namespace detail {
