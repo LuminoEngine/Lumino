@@ -321,8 +321,8 @@ public:
     void recreateSwapChain() {
         int width = 0, height = 0;
         while (width == 0 || height == 0) {
-            //glfwGetFramebufferSize(window, &width, &height);
-            //glfwWaitEvents();
+            glfwGetFramebufferSize(window, &width, &height);
+            glfwWaitEvents();
         }
 
         vkDeviceWaitIdle(device);
@@ -603,8 +603,8 @@ public:
     }
 
     void createGraphicsPipeline() {
-        auto vertShaderCode = readFile("VulkanSampleDeviceContext_26_shader_depth.vert.spv");
-        auto fragShaderCode = readFile("VulkanSampleDeviceContext_26_shader_depth.frag.spv");
+        auto vertShaderCode = readFile("D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Graphics/Resource/VulkanSampleDeviceContext_26_shader_depth.vert.spv");
+        auto fragShaderCode = readFile("D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Graphics/Resource/VulkanSampleDeviceContext_26_shader_depth.frag.spv");
 
         VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
         VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
@@ -803,7 +803,7 @@ public:
 
     void createTextureImage() {
         int texWidth, texHeight, texChannels;
-        stbi_uc* pixels = stbi_load("textures/texture.jpg", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+        stbi_uc* pixels = stbi_load("D:/tmp/110220c_as019.png", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
         VkDeviceSize imageSize = texWidth * texHeight * 4;
 
         if (!pixels) {
