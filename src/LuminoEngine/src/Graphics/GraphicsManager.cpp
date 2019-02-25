@@ -204,7 +204,7 @@ void GraphicsManager::createOpenGLContext(const Settings& settings)
 void GraphicsManager::createVulkanContext(const Settings& settings)
 {
 #ifdef LN_USE_VULKAN
-#if 1
+#if 0
 	VulkanSampleDeviceContext::Settings dcSettings;
 	dcSettings.mainWindow = settings.mainWindow;
 	auto ctx = makeRef<VulkanSampleDeviceContext>();
@@ -212,7 +212,8 @@ void GraphicsManager::createVulkanContext(const Settings& settings)
 	m_deviceContext = ctx;
 #else
 	VulkanDeviceContext::Settings dcSettings;
-	dcSettings.debugEnabled = true;
+    dcSettings.mainWindow = settings.mainWindow;
+	//dcSettings.debugEnabled = true;
 	auto ctx = makeRef<VulkanDeviceContext>();
 	ctx->init(dcSettings);
 	m_deviceContext = ctx;
