@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "../Graphics/ColorStructs.hpp"
 #include "UILayoutElement.hpp"
 
 namespace ln {
@@ -11,6 +12,29 @@ enum class BlendMode : uint8_t;
 struct Color;
 struct ToneF;
 namespace detail { class UIManager; }
+
+enum class UIFontWeight
+{
+	Normal,
+	Bold,
+};
+
+enum class UIFontStyle
+{
+	Normal,
+	Italic,
+};
+
+namespace detail
+{
+struct UIInheritStyleAttribute
+{
+	Color textColor;
+	String fontFamily;
+	float fontSize;
+	UIFontStyle fontStyle;
+};
+}
 
 class UIElement
 	: public Object
@@ -83,6 +107,35 @@ public:
 	/** このオブジェクトのローカルの中心位置を取得します。 */
 	LN_METHOD(Property)
 	const Vector3& centerPoint() const;
+
+
+
+
+
+
+	/** フォントファミリ名を設定します。*/
+	void setFontFamily(const String& value);
+
+	/** フォントファミリ名を取得します。*/
+	const String& fontFamily() const;
+
+	/** フォントサイズを設定します。*/
+	void setFontSize(float value);
+
+	/** フォントサイズを取得します。*/
+	float fontSize() const;
+
+	/** フォントの太さを設定します。*/
+	void setFontWeight(UIFontWeight value);
+
+	/** フォントの太さを取得します。*/
+	UIFontWeight fontWeight() const;
+
+	/** フォントのスタイルを設定します。*/
+	void setFontStyle(UIFontStyle value);
+
+	/** フォントのスタイルを取得します。*/
+	UIFontStyle fontStyle() const;
 
 
 
@@ -181,7 +234,8 @@ protected:
     virtual bool onHitTest(const Point& localPoint);
 
     // TODO: internal
-    void updateLayout(const Size& size);
+    void updateLayoutHierarchical(const Size& size);
+	void updateStyleHierarchical(const detail::UIInheritStyleAttribute& parentStyleAttribute);
     virtual void render(UIRenderingContext* context);
 
 private:

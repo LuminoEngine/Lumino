@@ -277,7 +277,7 @@ void UIFrameWindow::updateLayout()
 {
     SizeI size;
     m_platformWindow->getSize(&size);
-    UIElement::updateLayout(size.toFloatSize());
+    UIElement::updateLayoutHierarchical(size.toFloatSize());
 }
 
 bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)

@@ -142,15 +142,25 @@ class UIStyle
     : public Object
 {
 public:
+	// layout
     detail::UIStyleAttribute<Thickness> margin;
     detail::UIStyleAttribute<Thickness> padding;
 
+	// layout transform
     detail::UIStyleAttribute<Vector3> position;
     detail::UIStyleAttribute<Quaternion> rotation;
     detail::UIStyleAttribute<Vector3> scale;
     detail::UIStyleAttribute<Vector3> centerPoint;
 
-    detail::UIStyleAttribute<float> visible;
+	// text
+	detail::UIStyleAttribute<Color> textColor;
+	detail::UIStyleAttribute<String> fontFamily;
+	detail::UIStyleAttribute<float> fontSize;
+	detail::UIStyleAttribute<UIFontWeight> fontWeight;
+	detail::UIStyleAttribute<UIFontStyle> fontStyle;
+
+	// render effects
+    detail::UIStyleAttribute<bool> visible;
     detail::UIStyleAttribute<BlendMode> blendMode;
 
     detail::UIStyleAttribute<float> opacity;

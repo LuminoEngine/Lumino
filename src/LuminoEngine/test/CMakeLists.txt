@@ -21,6 +21,7 @@ set(LN_SOURCES
 	Test_Shader_Shader.cpp
 	Test_UI_UIElement.cpp
 	Test_UI_UISprite.cpp
+	Test_UI_UITextBlock.cpp
 	Test_Visual_VisualComponent.cpp
 	TestEnv.cpp
 	TestEnv.hpp

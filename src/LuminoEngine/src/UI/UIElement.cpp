@@ -105,6 +105,46 @@ const Vector3 & UIElement::centerPoint() const
     return m_localStyle->centerPoint.getOrDefault(Vector3::Zero);
 }
 
+void UIElement::setFontFamily(const String& value)
+{
+	m_localStyle->fontFamily = value;
+}
+
+const String& UIElement::fontFamily() const
+{
+	return m_localStyle->fontFamily.getOrDefault(String::Empty);
+}
+
+void UIElement::setFontSize(float value)
+{
+	m_localStyle->fontSize = value;
+}
+
+float UIElement::fontSize() const
+{
+	return m_localStyle->fontSize.getOrDefault(0);
+}
+
+void UIElement::setFontWeight(UIFontWeight value)
+{
+	m_localStyle->fontWeight = value;
+}
+
+UIFontWeight UIElement::fontWeight() const
+{
+	return m_localStyle->fontWeight.getOrDefault(UIFontWeight::Normal);
+}
+
+void UIElement::setFontStyle(UIFontStyle value)
+{
+	m_localStyle->fontStyle = value;
+}
+
+UIFontStyle UIElement::fontStyle() const
+{
+	return m_localStyle->fontStyle.getOrDefault(UIFontStyle::Normal);
+}
+
 void UIElement::setVisible(bool value)
 {
     m_localStyle->visible = value;
@@ -249,7 +289,7 @@ void UIElement::onRender(UIRenderingContext* context)
 {
 }
 
-void UIElement::updateLayout(const Size& size)
+void UIElement::updateLayoutHierarchical(const Size& size)
 {
     // TODO: tmp
     arrangeOverride(size);
@@ -259,8 +299,17 @@ void UIElement::updateLayout(const Size& size)
     // child elements
     int count = getVisualChildrenCount();
     for (int i = 0; i < count; i++) {
-        getVisualChild(i)->updateLayout(size);
+        getVisualChild(i)->updateLayoutHierarchical(size);
     }
+}
+
+void UIElement::updateStyleHierarchical(const detail::UIInheritStyleAttribute& parentStyleAttribute)
+{
+	// child elements
+	int count = getVisualChildrenCount();
+	for (int i = 0; i < count; i++) {
+		getVisualChild(i)->updateStyleHierarchical(parentStyleAttribute);
+	}
 }
 
 void UIElement::render(UIRenderingContext* context)
