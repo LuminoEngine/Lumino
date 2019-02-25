@@ -803,7 +803,7 @@ public:
 
     void createTextureImage() {
         int texWidth, texHeight, texChannels;
-        stbi_uc* pixels = stbi_load("D:/tmp/110220c_as019.png", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+        stbi_uc* pixels = stbi_load("D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Graphics/Resource/texture.jpg", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
         VkDeviceSize imageSize = texWidth * texHeight * 4;
 
         if (!pixels) {
@@ -1224,7 +1224,7 @@ public:
             renderPassInfo.renderArea.extent = swapChainExtent;
 
             std::array<VkClearValue, 2> clearValues = {};
-            clearValues[0].color = {0.0f, 0.0f, 0.0f, 1.0f};
+            clearValues[0].color = {0.0f, 0.0f, 1.0f, 1.0f};
             clearValues[1].depthStencil = {1.0f, 0};
 
             renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
