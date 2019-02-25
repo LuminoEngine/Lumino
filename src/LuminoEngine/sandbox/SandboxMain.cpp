@@ -103,49 +103,17 @@ int main(int argc, char** argv)
     EngineSettings::setEngineFeatures(EngineFeature::Experimental);
 	//EngineSettings::addAssetDirectory(u"D:/Proj/LN/Lumino/src/LuminoEngine/test/Assets");
 	detail::EngineDomain::engineManager()->settings().standaloneFpsControl = true;
+
+
+    GlobalLogger::addStdErrAdapter();
+    EngineSettings::setMainWindowSize(800, 600);
+    EngineSettings::setMainBackBufferSize(800, 600);
+    EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
+    EngineSettings::setEngineFeatures(EngineFeature::Public); EngineFeature::Experimental;//
+
 	Engine::initialize();
 
 	{
-        auto texture = newObject<Texture2D>(u"D:/Documents/LuminoProjects/RinoTutorial/Assets/player.png");
-        auto frameSet = SpriteFrameSet::create(texture, 16, 16);
-
-        auto sprite = Sprite::create(frameSet);
-        sprite->setFrameIndex(0);
-
-
-		auto clip = AnimationClip::create(
-			u"run", u"FrameIndex",
-			{
-				{0.0, 2},
-				{1.0, 3},
-				{2.0, 2},
-			});
-
-		//auto curve = KeyFrameAnimationCurve::create();
-  //      curve->addKeyFrame(0.0, 2);
-  //      curve->addKeyFrame(1.0, 3);
-  //      curve->addKeyFrame(2.0, 2);
-
-  //      auto track = ScalarAnimationTrack::create();
-  //      track->setTargetName(u"FrameIndex");
-  //      track->setCurve(curve);
-
-  //      auto clip = newObject<AnimationClip>();
-  //      clip->setWrapMode(AnimationWrapMode::Loop);
-  //      clip->addTrack(track);
-
-        auto animator = newObject<Animator>();
-        sprite->addComponent(animator);
-        animator->addClip(u"run", clip);
-
-        animator->play(u"run");
-
-		//auto* typeInfo = TypeInfo::getTypeInfo<SpriteComponent>();
-		//PropertyPath path;
-		//path.m_propertyName = u"FrameIndex";
-		//auto ref = PropertyPath::findProperty(cmp, &path);
-		//ref.resolve().second->setValue(cmp, Variant(100));
-
 
 		while (Engine::update()) {
 		}

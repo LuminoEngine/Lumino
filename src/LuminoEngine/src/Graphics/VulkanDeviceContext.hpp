@@ -19,6 +19,13 @@ public:
 	bool init(const Settings& settings);
 	virtual void dispose() override;
 
+    VkInstance vulkanInstance() const { return m_instance; }
+    VkPhysicalDevice vulkanPhysicalDevice() const { return m_physicalDevice; }
+    VkDevice vulkanDevice() const { return m_device; }
+    const VkAllocationCallbacks* vulkanAllocator() const { return nullptr; }// return m_allocator.vulkanAllocator();
+
+    Result findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType);
+
 protected:
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) override;
 	virtual void onEnterMainThread() override;
@@ -45,7 +52,26 @@ protected:
 	virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount) override;
 	virtual void onPresent(ISwapChain* swapChain) override;
 
-private:
+public: // TODO:
+    struct PhysicalDeviceInfo
+    {
+        VkPhysicalDevice device;
+        VkPhysicalDeviceMemoryProperties memoryProperty;
+        VkPhysicalDeviceProperties deviceProperty;
+    };
+
+    Result createInstance();
+    Result setupDebugMessenger();
+    Result pickPhysicalDevice();
+
+    VkInstance m_instance;
+    VkDebugUtilsMessengerEXT m_debugMessenger;
+    VkPhysicalDevice m_physicalDevice;
+    VkDevice m_device;
+    VkCommandPool m_commandPool;
+    //VulkanAllocator m_allocator;
+
+    std::vector<PhysicalDeviceInfo> m_physicalDeviceInfos;
 };
 
 class VulkanSwapChain
@@ -57,6 +83,27 @@ public:
 	virtual ITexture* getColorBuffer() const;
 
 	Ref<VulkanRenderTarget> m_colorBuffer;
+};
+
+class VulkanVertexBuffer
+    : public IVertexBuffer
+{
+public:
+    VulkanVertexBuffer();
+    Result init(VulkanDeviceContext* deviceContext, GraphicsResourceUsage usage, size_t bufferSize, const void* initialData);
+    virtual void dispose() override;
+    virtual size_t getBytesSize() override { return m_buffer.size(); }
+    virtual GraphicsResourceUsage usage() const override { return m_usage; }
+    virtual void setSubData(size_t offset, const void* data, size_t length) override { return m_buffer.setData(offset, data, length); }
+    virtual void* map() override { return m_buffer.map(); }
+    virtual void unmap() override { m_buffer.unmap(); }
+
+    VkBuffer vulkanBuffer() const { return m_buffer.vulkanBuffer(); }
+    VkDeviceMemory vulkanDeviceMemory() const { return m_buffer.vulkanBufferMemory(); }
+
+private:
+    VulkanBuffer m_buffer;
+    GraphicsResourceUsage m_usage;
 };
 
 class VulkanRenderTarget
