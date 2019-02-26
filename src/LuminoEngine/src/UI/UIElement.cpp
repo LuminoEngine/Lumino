@@ -20,7 +20,7 @@ UIElement::UIElement()
     , m_context(nullptr)
     , m_visualParent(nullptr)
     , m_localStyle(newObject<UIStyle>()) // TODO: ふつうは static なオブジェクトのほうが多くなるので、必要なやつだけ遅延作成でいいと思う
-    , m_actualStyle(nullptr)
+    , m_actualStyle(newObject<UIStyle>())
     , m_renderPriority(0)
     , m_isHitTestVisible(true)
 {
@@ -32,7 +32,7 @@ UIElement::~UIElement()
 
 void UIElement::init()
 {
-    Object::init();
+	UILayoutElement::init(m_actualStyle);
     m_manager = detail::EngineDomain::uiManager();
 
     UIContainerElement* primaryElement = m_manager->primaryElement();
@@ -247,8 +247,8 @@ UIElement* UIElement::lookupMouseHoverElement(const Point& globalPt)
         Point localPoint = globalPt;
         if (m_visualParent != nullptr)
         {
-            localPoint.x -= m_visualParent->m_finalGlobalRect.x;
-            localPoint.y -= m_visualParent->m_finalGlobalRect.y;
+            localPoint.x -= m_visualParent->finalGlobalRect().x;
+            localPoint.y -= m_visualParent->finalGlobalRect().y;
         }
 
         if (onHitTest(localPoint)) {
@@ -265,14 +265,12 @@ void UIElement::onUpdateFrame(float elapsedSeconds)
 
 Size UIElement::measureOverride(const Size& constraint)
 {
-    // TODO: tmp
-    return constraint;
+	return UILayoutElement::measureOverride(constraint);
 }
 
 Size UIElement::arrangeOverride(const Size& finalSize)
 {
-    // TODO: tmp
-    return finalSize;
+	return UILayoutElement::arrangeOverride(finalSize);
 }
 
 int UIElement::getVisualChildrenCount() const
@@ -289,27 +287,35 @@ void UIElement::onRender(UIRenderingContext* context)
 {
 }
 
-void UIElement::updateLayoutHierarchical(const Size& size)
+void UIElement::updateStyleHierarchical(UIStyle* parentActualStyle/*const detail::UIInheritStyleAttribute& parentStyleAttribute*/)
 {
-    // TODO: tmp
-    arrangeOverride(size);
+	if (parentActualStyle)
+	{
+		// text 関係は継承する
+		m_localStyle->textColor.inherit(parentActualStyle->textColor);
+		m_localStyle->fontFamily.inherit(parentActualStyle->fontFamily);
+		m_localStyle->fontSize.inherit(parentActualStyle->fontSize);
+		m_localStyle->fontWeight.inherit(parentActualStyle->fontWeight);
+		m_localStyle->fontStyle.inherit(parentActualStyle->fontStyle);
+	}
 
-    // TODO: Layoutelement に実装を持っていく
+
+	// child elements
+	int count = getVisualChildrenCount();
+	for (int i = 0; i < count; i++) {
+		getVisualChild(i)->updateStyleHierarchical(parentActualStyle);
+	}
+}
+
+void UIElement::updateLayoutHierarchical(const Rect& parentFinalGlobalRect)
+{
+	UILayoutElement::updateLayout(parentFinalGlobalRect);
 
     // child elements
     int count = getVisualChildrenCount();
     for (int i = 0; i < count; i++) {
-        getVisualChild(i)->updateLayoutHierarchical(size);
+        getVisualChild(i)->updateLayoutHierarchical(finalGlobalRect());
     }
-}
-
-void UIElement::updateStyleHierarchical(const detail::UIInheritStyleAttribute& parentStyleAttribute)
-{
-	// child elements
-	int count = getVisualChildrenCount();
-	for (int i = 0; i < count; i++) {
-		getVisualChild(i)->updateStyleHierarchical(parentStyleAttribute);
-	}
 }
 
 void UIElement::render(UIRenderingContext* context)

@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Font/Font.hpp>
+#include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UITextBlock.hpp>
 
@@ -26,7 +27,7 @@ void UITextBlock::init()
 
 void UITextBlock::onRender(UIRenderingContext* context)
 {
-    context->drawText(m_text, Font::create(), Color::Green);
+    context->drawText(m_text, Font::create(), actualStyle()->textColor);
 }
 
 } // namespace ln

@@ -6,7 +6,6 @@ namespace ln {
 
 class UILayoutPanel
 	: public UIElement
-    , public detail::ILayoutElement
 {
 public:
     UILayoutPanel();

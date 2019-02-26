@@ -145,6 +145,12 @@ public:
 	// layout
     detail::UIStyleAttribute<Thickness> margin;
     detail::UIStyleAttribute<Thickness> padding;
+	detail::UIStyleAttribute<HAlignment> horizontalAlignment;
+	detail::UIStyleAttribute<VAlignment> verticalAlignment;
+	detail::UIStyleAttribute<float> minWidth;
+	detail::UIStyleAttribute<float> minHeight;
+	detail::UIStyleAttribute<float> maxWidth;
+	detail::UIStyleAttribute<float> maxHeight;
 
 	// layout transform
     detail::UIStyleAttribute<Vector3> position;
@@ -153,7 +159,7 @@ public:
     detail::UIStyleAttribute<Vector3> centerPoint;
 
 	// text
-	detail::UIStyleAttribute<Color> textColor;
+	detail::UIStyleAttribute<Color> textColor;	// (default: Black)
 	detail::UIStyleAttribute<String> fontFamily;
 	detail::UIStyleAttribute<float> fontSize;
 	detail::UIStyleAttribute<UIFontWeight> fontWeight;
@@ -167,6 +173,9 @@ public:
     detail::UIStyleAttribute<Color> colorScale;
     detail::UIStyleAttribute<Color> blendColor;
     detail::UIStyleAttribute<ToneF> tone;
+
+public:	// TODO: internal
+	void setupDefault();
 
 LN_CONSTRUCT_ACCESS:
     UIStyle();

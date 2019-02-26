@@ -273,11 +273,26 @@ SwapChain* UIFrameWindow::swapChain() const
 //	return m_viewport;
 //}
 
-void UIFrameWindow::updateLayout()
+//void UIFrameWindow::updateLayout()
+//{
+//    SizeI size;
+//    m_platformWindow->getSize(&size);
+//    UIElement::updateLayoutHierarchical(size.toFloatSize());
+//}
+
+// 強制的にウィンドウサイズとする
+Size UIFrameWindow::measureOverride(const Size& constraint)
 {
-    SizeI size;
-    m_platformWindow->getSize(&size);
-    UIElement::updateLayoutHierarchical(size.toFloatSize());
+	SizeI size;
+	m_platformWindow->getSize(&size);
+	// TODO: DPI チェック
+	return size.toFloatSize();
+}
+
+// 強制的にウィンドウサイズとする
+Size UIFrameWindow::arrangeOverride(const Size& finalSize)
+{
+	return UIElement::arrangeOverride(desiredSize());
 }
 
 bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)

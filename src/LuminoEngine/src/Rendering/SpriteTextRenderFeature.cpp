@@ -44,7 +44,6 @@ void InternalSpriteTextRender::render(IGraphicsDeviceContext* context, const Gly
 	prepareBuffers(dataCount);
 	Vertex* buffer = reinterpret_cast<Vertex*>(m_vertexBuffer->map());
 
-	Color color = brushData.color;
 	ITexture* srcTexture = glyphsTexture;
 	Size texSizeInv(1.0f / srcTexture->realSize().width, 1.0f / srcTexture->realSize().height);
 	for (int i = 0; i < dataCount; ++i)
@@ -57,7 +56,7 @@ void InternalSpriteTextRender::render(IGraphicsDeviceContext* context, const Gly
 		uvSrcRect.height *= texSizeInv.height;
 
 		Rect dstRect(data.position, (float)data.srcRect.width, (float)data.srcRect.height);
-		internalDrawRectangle(buffer + (i * 4), data.transform, dstRect, uvSrcRect, color);
+		internalDrawRectangle(buffer + (i * 4), data.transform, dstRect, uvSrcRect, data.color);
 	}
 
 	m_vertexBuffer->unmap();
@@ -167,10 +166,13 @@ void SpriteTextRenderFeature::init(RenderingManager* manager)
 void SpriteTextRenderFeature::drawText(GraphicsContext* context, const FormattedText* text)
 {
 	m_drawingGraphicsContext = context;
+	m_drawingFormattedText = text;
 	m_drawingFont = FontHelper::resolveFontCore(text->font);
 	m_drawingFontGlyphCache = m_drawingFont->getFontGlyphTextureCache();
 
 	TextLayoutEngine::layout(m_drawingFont, text->text.c_str(), text->text.length(), Rect(0, 0, text->area), 0, text->textAlignment);
+
+	m_drawingFormattedText = nullptr;
 }
 
 void SpriteTextRenderFeature::flush(GraphicsContext* context)
@@ -205,6 +207,7 @@ void SpriteTextRenderFeature::onPlacementGlyph(UTF32 ch, const Vector2& pos, con
 	InternalSpriteTextRender::GlyphData data;
 	data.transform = Matrix();	// TODO: 文字単位アニメーション //transform;
 	data.position = pos;
+	data.color = m_drawingFormattedText->color;
 	data.srcRect = info.srcRect;
 	data.outlineOffset = info.outlineOffset;
 	m_glyphLayoutDataList.push_back(data);
@@ -223,7 +226,7 @@ void SpriteTextRenderFeature::flushInternal(GraphicsContext* context, FontGlyphT
 	ITexture* glyphsTexture = GraphicsResourceHelper::resolveRHIObject<ITexture>(cache->glyphsFillTexture());
 
 	InternalSpriteTextRender::BrushData brushData;
-	brushData.color = Color::Blue;
+	//brushData.color = Color::Blue;
 
 	GraphicsManager* manager = m_internal->manager()->graphicsManager();
 	IGraphicsDeviceContext* deviceContext = context->commitState();

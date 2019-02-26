@@ -2,6 +2,17 @@
 #pragma once
 #include "VulkanHelper.hpp"
 
+struct GLFWwindow;
+
+struct QueueFamilyIndices {
+	ln::Optional<uint32_t> graphicsFamily;
+	ln::Optional<uint32_t> presentFamily;
+
+	bool isComplete() {
+		return graphicsFamily.hasValue() && presentFamily.hasValue();
+	}
+};
+
 namespace ln {
 namespace detail {
 class VulkanRenderTarget;
@@ -62,12 +73,21 @@ public: // TODO:
 
     Result createInstance();
     Result setupDebugMessenger();
+	Result createSurface();
     Result pickPhysicalDevice();
+	Result createLogicalDevice();
+
+	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+
+	GLFWwindow* m_mainWindow;
+	VkSurfaceKHR m_mainSurface;
 
     VkInstance m_instance;
     VkDebugUtilsMessengerEXT m_debugMessenger;
     VkPhysicalDevice m_physicalDevice;
     VkDevice m_device;
+	VkQueue m_graphicsQueue;
+	VkQueue m_presentQueue;
     VkCommandPool m_commandPool;
     //VulkanAllocator m_allocator;
 

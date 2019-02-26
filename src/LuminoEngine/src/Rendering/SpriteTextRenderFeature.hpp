@@ -18,6 +18,7 @@ public:
 	{
 		Matrix transform;
 		Vector2 position;
+		Color color;
 
 		// Cache から取りだすデータ
 		int outlineOffset;
@@ -26,7 +27,7 @@ public:
 
 	struct BrushData
 	{
-		Color color;
+		//Color color;
 	};
 
 	InternalSpriteTextRender();
@@ -93,6 +94,7 @@ private:
 
 	Ref<InternalSpriteTextRender> m_internal;
 	GraphicsContext* m_drawingGraphicsContext;
+	const FormattedText* m_drawingFormattedText;
 	FontCore* m_drawingFont;
 	FontGlyphTextureCache* m_drawingFontGlyphCache;
 	std::vector<InternalSpriteTextRender::GlyphData> m_glyphLayoutDataList;

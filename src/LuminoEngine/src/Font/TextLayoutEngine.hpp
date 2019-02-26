@@ -20,6 +20,7 @@ class FormattedText
 public:
 	String text;
 	Ref<Font> font;
+	Color color;
 	Size area;
 	TextAlignment textAlignment = TextAlignment::Left;
 };

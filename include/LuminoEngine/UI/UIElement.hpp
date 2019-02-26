@@ -25,20 +25,19 @@ enum class UIFontStyle
 	Italic,
 };
 
-namespace detail
-{
-struct UIInheritStyleAttribute
-{
-	Color textColor;
-	String fontFamily;
-	float fontSize;
-	UIFontStyle fontStyle;
-};
-}
+//namespace detail
+//{
+//struct UIInheritStyleAttribute
+//{
+//	Color textColor;
+//	String fontFamily;
+//	float fontSize;
+//	UIFontStyle fontStyle;
+//};
+//}
 
 class UIElement
-	: public Object
-    , public detail::ILayoutElement
+	: public UILayoutElement
 {
 public:
     /** 要素の margin 値 (外側の余白) を設定します。 */
@@ -191,9 +190,9 @@ public:
 public: // TODO: internal
     void setRenderPriority(int value);
     void updateFrame(float elapsedSeconds);
-    const Rect& finalGlobalRect() const { return m_finalGlobalRect; }
     void raiseEvent(UIEventArgs* e);
     virtual UIElement* lookupMouseHoverElement(const Point& globalPt);
+	const Ref<UIStyle>& actualStyle() const { return m_actualStyle; }
 
 protected:
     virtual void onUpdateFrame(float elapsedSeconds);
@@ -234,8 +233,8 @@ protected:
     virtual bool onHitTest(const Point& localPoint);
 
     // TODO: internal
-    void updateLayoutHierarchical(const Size& size);
-	void updateStyleHierarchical(const detail::UIInheritStyleAttribute& parentStyleAttribute);
+	void updateStyleHierarchical(UIStyle* parentActualStyle/*const detail::UIInheritStyleAttribute& parentStyleAttribute*/);
+    void updateLayoutHierarchical(const Rect& parentFinalGlobalRect);
     virtual void render(UIRenderingContext* context);
 
 private:
@@ -248,7 +247,6 @@ private:
     Ref<UIStyle> m_localStyle;
     Ref<UIStyle> m_actualStyle;
     int m_renderPriority;
-    Rect m_finalGlobalRect;
     bool m_isHitTestVisible;
 
     friend class UIContext;

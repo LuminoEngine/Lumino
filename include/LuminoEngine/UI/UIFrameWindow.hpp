@@ -67,7 +67,11 @@ public:
 	//virtual UIElement* getVisualChild(int index) const override;
 
     // TODO: inernal
-    void updateLayout();
+    //void updateLayout();
+
+protected:
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
 
 LN_CONSTRUCT_ACCESS:
 	UIFrameWindow();

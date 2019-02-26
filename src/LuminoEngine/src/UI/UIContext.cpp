@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIEvents.hpp>
@@ -17,6 +18,9 @@ UIContext::UIContext()
 void UIContext::init()
 {
     Object::init();
+
+	m_defaultStyle = newObject<UIStyle>();
+	m_defaultStyle->setupDefault();
 }
 
 void UIContext::setLayoutRootElement(UIElement* element)
@@ -88,6 +92,22 @@ EXIT:
     }
 
     return false;
+}
+
+void UIContext::updateStyleTree()
+{
+	if (m_layoutRootElement)
+	{
+		m_layoutRootElement->updateStyleHierarchical(m_defaultStyle);
+	}
+}
+
+void UIContext::updateLayoutTree()
+{
+	if (m_layoutRootElement)
+	{
+		m_layoutRootElement->updateLayoutHierarchical(Rect::Zero);
+	}
 }
 
 } // namespace ln

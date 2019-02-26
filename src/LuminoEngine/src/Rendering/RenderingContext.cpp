@@ -434,6 +434,7 @@ void RenderingContext::drawText(const StringRef& text, Font* font, const Color& 
     auto formattedText = makeRef<detail::FormattedText>();
     formattedText->text = text;
     formattedText->font = font;
+	formattedText->color = color;
 
     auto* element = m_builder->addNewDrawElement<detail::DrawTextElement>(
         m_manager->spriteTextRenderFeature(),
