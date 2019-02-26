@@ -26,6 +26,10 @@ public:
 	//void renderTree(GraphicsContext* graphicsContext, UIElement* element);
     virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthbuffer) override;
 
+protected:
+	virtual void onUpdateUIStyle(const detail::StyleData& finalStyle) override;
+	virtual void onUpdateUILayout(const Rect& finalGlobalRect) override;
+
 private:
 	Ref<UIRenderingContext> m_renderingContext;
 	Ref<detail::FlatRenderingPipeline> m_sceneRenderingPipeline;

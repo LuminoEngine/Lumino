@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include "../Graphics/ColorStructs.hpp"
 #include "UIElement.hpp"
 
 namespace ln {
@@ -73,7 +72,7 @@ public:
         // Local 値を持っているので継承する必要はない
         if (m_source == UIStyleAttributeValueSource::ByUserLocal) return false;
 
-        bool inherit = ((int)m_source < ((int)parent.m_source - 1));
+        //bool inherit = ((int)m_source < ((int)parent.m_source - 1));
         //bool inherit = false;
         //if (m_source == UIStyleAttributeValueSource::Default)
         //{
@@ -115,7 +114,7 @@ public:
         //}
 
         bool changed = false;
-        if (inherit)
+        //if (inherit)
         {
             //if (sourceType == UIStyleAttributeInheritSourceType::ParentElement)
             //	m_source = UIStyleAttributeValueSource::InheritParent;
@@ -142,6 +141,42 @@ class UIStyle
     : public Object
 {
 public:
+
+	//// layout
+	//Thickness margin;
+	//Thickness padding;
+	//HAlignment horizontalAlignment;
+	//VAlignment verticalAlignment;
+	//float minWidth;
+	//float minHeight;
+	//float maxWidth;
+	//float maxHeight;
+
+	//// layout transform
+	//Vector3 position;
+	//Quaternion rotation;
+	//Vector3 scale;
+	//Vector3 centerPoint;
+
+	//// text
+	//Color textColor;
+	//String fontFamily;
+	//float fontSize;
+	//UIFontWeight fontWeight;
+	//UIFontStyle fontStyle;
+
+	//// render effects
+	//bool visible;
+	//BlendMode blendMode;
+
+	//float opacity;
+	//Color colorScale;
+	//Color blendColor;
+	//ToneF tone;
+
+
+
+
 	// layout
     detail::UIStyleAttribute<Thickness> margin;
     detail::UIStyleAttribute<Thickness> padding;
@@ -176,6 +211,7 @@ public:
 
 public:	// TODO: internal
 	void setupDefault();
+	static void updateStyleDataHelper(UIStyle* localStyle, const detail::StyleData* parentStyleData, const UIStyle* defaultStyle, detail::StyleData* outStyleData);
 
 LN_CONSTRUCT_ACCESS:
     UIStyle();

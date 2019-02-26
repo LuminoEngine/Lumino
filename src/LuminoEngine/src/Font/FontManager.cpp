@@ -55,6 +55,16 @@ uint64_t FontDesc::calcHash() const
     return *((uint64_t*)&v);
 }
 
+bool FontDesc::equals(const FontDesc& other) const
+{
+	return
+		(Family == other.Family) &&
+		(Size == other.Size) &&
+		(isBold == other.isBold) &&
+		(isItalic == other.isItalic) &&
+		(isAntiAlias == other.isAntiAlias);
+}
+
 //==============================================================================
 // FontManager
 	
@@ -202,14 +212,19 @@ void FontManager::registerFontFile(const StringRef& fontFilePath)
 
 Ref<FontCore> FontManager::lookupFontCore(const FontDesc& keyDesc)
 {
-	uint32_t key = keyDesc.calcHash();
+	FontDesc actual = keyDesc;
+	if (actual.Family.isEmpty()) {
+		actual.Family = m_defaultFontDesc.Family;
+	}
+
+	uint32_t key = actual.calcHash();
 	RefObject* ptr = m_fontCoreCache.findObject(key);
 	if (ptr) {
 		return static_cast<FontCore*>(ptr);
 	}
 	else {
 		auto font = makeRef<FreeTypeFont>();
-		font->init(this, keyDesc);
+		font->init(this, actual);
 		m_fontCoreCache.registerObject(key, font);
 		return font;
 	}

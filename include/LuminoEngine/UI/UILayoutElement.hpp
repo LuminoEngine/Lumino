@@ -1,9 +1,25 @@
 ﻿#pragma once
 #include "../Graphics/GeometryStructs.hpp"
+#include "../Graphics/ColorStructs.hpp"
+#include "../Rendering/Common.hpp"
 
 namespace ln {
+class Font;
 class UIStyle;
 namespace detail { class LayoutHelper; }
+
+
+enum class UIFontWeight
+{
+	Normal,
+	Bold,
+};
+
+enum class UIFontStyle
+{
+	Normal,
+	Italic,
+};
 
 /** 縦方向の表示位置を示します。*/
 enum class VAlignment
@@ -23,6 +39,60 @@ enum class HAlignment
 	Stretch,			/**< 子要素を、親のレイアウト スロット全体に引き伸ばします。*/
 };
 
+
+namespace detail
+{
+//struct UIInheritStyleAttribute
+//{
+//	Color textColor;
+//	String fontFamily;
+//	float fontSize;
+//	UIFontStyle fontStyle;
+//};
+
+// どんな Element でも持つ一般的なスタイル値。
+// メモリ消費を抑えるため、UIStyleAttribute は使わないようにしている。
+struct StyleData
+{
+	UIStyle* sourceLocalStyle;	// 以下のデータの生成元となったローカスのスタイル
+
+	// layout
+	Thickness margin;
+	Thickness padding;
+	HAlignment horizontalAlignment;
+	VAlignment verticalAlignment;
+	float minWidth;
+	float minHeight;
+	float maxWidth;
+	float maxHeight;
+
+	// layout transform
+	Vector3 position;
+	Quaternion rotation;
+	Vector3 scale;
+	Vector3 centerPoint;
+
+	// text
+	Color textColor;
+	Ref<Font> font;
+	//String fontFamily;
+	//float fontSize;
+	//UIFontWeight fontWeight;
+	//UIFontStyle fontStyle;
+
+	// render effects
+	bool visible;
+	BlendMode blendMode;
+
+	float opacity;
+	Color colorScale;
+	Color blendColor;
+	ToneF tone;
+
+	// TODO: 今後サブクラスごとにスタイルを追加する場合は、ここに map を設ける
+};
+}
+
 class UILayoutElement
 	: public Object
 {
@@ -37,7 +107,7 @@ public:	// TODO: internal
 protected:
 	UILayoutElement();
 	virtual ~UILayoutElement();
-	void init(UIStyle* actualStyle);
+	void init(const detail::StyleData* finalStyle);
 
 	virtual Size measureOverride(const Size& constraint);
 	virtual Size arrangeOverride(const Size& finalSize);
@@ -64,7 +134,7 @@ private:
 	void setLayoutFinalGlobalRect(const Rect& rect) { m_finalGlobalRect = rect; }
 
 	Size m_layoutSize;
-	UIStyle* m_actualStyle;
+	const detail::StyleData* m_finalStyle;
 	Size m_desiredSize;
 	Rect m_finalLocalRect;
 	Rect m_finalGlobalRect;

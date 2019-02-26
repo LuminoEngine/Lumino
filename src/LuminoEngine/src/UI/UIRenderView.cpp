@@ -35,6 +35,16 @@ void UIRenderView::setRootElement(UIElement* element)
     m_rootElement = element;
 }
 
+void UIRenderView::onUpdateUIStyle(const detail::StyleData& finalStyle)
+{
+	m_rootElement->updateStyleHierarchical(finalStyle);
+}
+
+void UIRenderView::onUpdateUILayout(const Rect& finalGlobalRect)
+{
+	m_rootElement->updateLayoutHierarchical(finalGlobalRect);
+}
+
 void UIRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthbuffer)
 {
     if (m_rootElement)

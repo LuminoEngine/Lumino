@@ -12,21 +12,8 @@ enum class BlendMode : uint8_t;
 struct Color;
 struct ToneF;
 namespace detail { class UIManager; }
-
-enum class UIFontWeight
+namespace detail
 {
-	Normal,
-	Bold,
-};
-
-enum class UIFontStyle
-{
-	Normal,
-	Italic,
-};
-
-//namespace detail
-//{
 //struct UIInheritStyleAttribute
 //{
 //	Color textColor;
@@ -34,7 +21,7 @@ enum class UIFontStyle
 //	float fontSize;
 //	UIFontStyle fontStyle;
 //};
-//}
+}
 
 class UIElement
 	: public UILayoutElement
@@ -52,6 +39,17 @@ public:
     /** 要素の padding 値 (内側の余白) を取得します。この余白は論理ツリーの子要素のレイアウトに影響します。 */
     const Thickness& padding() const;
 
+	/** 要素の横方向の配置方法を設定します。 */
+	void setHorizontalAlignment(HAlignment value);
+
+	/** 要素の横方向の配置方法を取得します。 */
+	HAlignment horizontalAlignment() const;
+
+	/** 要素の縦方向の配置方法を設定します。 */
+	void setVerticalAlignment(VAlignment value);
+
+	/** 要素の縦方向の配置方法を取得します。 */
+	VAlignment verticalAlignment() const;
 
 
     
@@ -111,6 +109,11 @@ public:
 
 
 
+	/** テキストの色を設定します。*/
+	void setTextColor(const Color& value);
+
+	/** テキストの色を取得します。*/
+	const Color& textColor() const;
 
 	/** フォントファミリ名を設定します。*/
 	void setFontFamily(const String& value);
@@ -135,7 +138,6 @@ public:
 
 	/** フォントのスタイルを取得します。*/
 	UIFontStyle fontStyle() const;
-
 
 
 
@@ -192,10 +194,12 @@ public: // TODO: internal
     void updateFrame(float elapsedSeconds);
     void raiseEvent(UIEventArgs* e);
     virtual UIElement* lookupMouseHoverElement(const Point& globalPt);
-	const Ref<UIStyle>& actualStyle() const { return m_actualStyle; }
+	const detail::StyleData& finalStyle() const { return m_finalStyle; }
 
 protected:
     virtual void onUpdateFrame(float elapsedSeconds);
+	virtual void onUpdateStyle(const detail::StyleData& finalStyle);
+	virtual void onUpdateLayout(const Rect& finalGlobalRect);
 
     /**
         @brief		この要素を表示するために必要なサイズを計測します。
@@ -233,7 +237,7 @@ protected:
     virtual bool onHitTest(const Point& localPoint);
 
     // TODO: internal
-	void updateStyleHierarchical(UIStyle* parentActualStyle/*const detail::UIInheritStyleAttribute& parentStyleAttribute*/);
+	void updateStyleHierarchical(const detail::StyleData& parentFinalStyle);
     void updateLayoutHierarchical(const Rect& parentFinalGlobalRect);
     virtual void render(UIRenderingContext* context);
 
@@ -245,7 +249,7 @@ private:
     UIElement* m_visualParent;
 
     Ref<UIStyle> m_localStyle;
-    Ref<UIStyle> m_actualStyle;
+	detail::StyleData m_finalStyle;
     int m_renderPriority;
     bool m_isHitTestVisible;
 

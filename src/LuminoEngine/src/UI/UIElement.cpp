@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/RenderState.hpp>
+#include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIEvents.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
@@ -20,7 +21,7 @@ UIElement::UIElement()
     , m_context(nullptr)
     , m_visualParent(nullptr)
     , m_localStyle(newObject<UIStyle>()) // TODO: ふつうは static なオブジェクトのほうが多くなるので、必要なやつだけ遅延作成でいいと思う
-    , m_actualStyle(newObject<UIStyle>())
+    , m_finalStyle()
     , m_renderPriority(0)
     , m_isHitTestVisible(true)
 {
@@ -32,7 +33,7 @@ UIElement::~UIElement()
 
 void UIElement::init()
 {
-	UILayoutElement::init(m_actualStyle);
+	UILayoutElement::init(&m_finalStyle);
     m_manager = detail::EngineDomain::uiManager();
 
     UIContainerElement* primaryElement = m_manager->primaryElement();
@@ -63,6 +64,26 @@ void UIElement::setPadding(const Thickness& padding)
 const Thickness& UIElement::padding() const
 {
     return m_localStyle->padding;
+}
+
+void UIElement::setHorizontalAlignment(HAlignment value)
+{
+	m_localStyle->horizontalAlignment = value;
+}
+
+HAlignment UIElement::horizontalAlignment() const
+{
+	return m_localStyle->horizontalAlignment;
+}
+
+void UIElement::setVerticalAlignment(VAlignment value)
+{
+	m_localStyle->verticalAlignment = value;
+}
+
+VAlignment UIElement::verticalAlignment() const
+{
+	return m_localStyle->verticalAlignment;
 }
 
 void UIElement::setPosition(const Vector3 & pos)
@@ -103,6 +124,16 @@ void UIElement::setCenterPoint(const Vector3 & value)
 const Vector3 & UIElement::centerPoint() const
 {
     return m_localStyle->centerPoint.getOrDefault(Vector3::Zero);
+}
+
+void UIElement::setTextColor(const Color& value)
+{
+	m_localStyle->textColor = value;
+}
+
+const Color& UIElement::textColor() const
+{
+	return m_localStyle->textColor;
 }
 
 void UIElement::setFontFamily(const String& value)
@@ -263,6 +294,14 @@ void UIElement::onUpdateFrame(float elapsedSeconds)
 {
 }
 
+void UIElement::onUpdateStyle(const detail::StyleData& finalStyle)
+{
+}
+
+void UIElement::onUpdateLayout(const Rect& finalGlobalRect)
+{
+}
+
 Size UIElement::measureOverride(const Size& constraint)
 {
 	return UILayoutElement::measureOverride(constraint);
@@ -287,29 +326,24 @@ void UIElement::onRender(UIRenderingContext* context)
 {
 }
 
-void UIElement::updateStyleHierarchical(UIStyle* parentActualStyle/*const detail::UIInheritStyleAttribute& parentStyleAttribute*/)
+void UIElement::updateStyleHierarchical(const detail::StyleData& parentFinalStyle)
 {
-	if (parentActualStyle)
-	{
-		// text 関係は継承する
-		m_localStyle->textColor.inherit(parentActualStyle->textColor);
-		m_localStyle->fontFamily.inherit(parentActualStyle->fontFamily);
-		m_localStyle->fontSize.inherit(parentActualStyle->fontSize);
-		m_localStyle->fontWeight.inherit(parentActualStyle->fontWeight);
-		m_localStyle->fontStyle.inherit(parentActualStyle->fontStyle);
-	}
+	UIStyle::updateStyleDataHelper(m_localStyle, &parentFinalStyle, m_context->defaultStyle(), &m_finalStyle);
 
+	onUpdateStyle(m_finalStyle);
 
 	// child elements
 	int count = getVisualChildrenCount();
 	for (int i = 0; i < count; i++) {
-		getVisualChild(i)->updateStyleHierarchical(parentActualStyle);
+		getVisualChild(i)->updateStyleHierarchical(m_finalStyle);
 	}
 }
 
 void UIElement::updateLayoutHierarchical(const Rect& parentFinalGlobalRect)
 {
 	UILayoutElement::updateLayout(parentFinalGlobalRect);
+
+	onUpdateLayout(finalGlobalRect());
 
     // child elements
     int count = getVisualChildrenCount();

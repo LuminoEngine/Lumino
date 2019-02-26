@@ -61,6 +61,25 @@ EventConnection RenderView::connectOnUIEvent(UIEventHandler handler)
     return m_onUIEvent.connect(handler);
 }
 
+void RenderView::updateUIStyle(const detail::StyleData& parentFinalStyle)
+{
+	onUpdateUIStyle(parentFinalStyle);
+}
+
+void RenderView::updateUILayout(const Rect& parentFinalGlobalRect)
+{
+	// TODO: こんなのでいいのか要チェック
+	onUpdateUILayout(Rect(parentFinalGlobalRect.x, parentFinalGlobalRect.y, m_actualPixelSize.width, m_actualPixelSize.height));
+}
+
+void RenderView::onUpdateUIStyle(const detail::StyleData& finalStyle)
+{
+}
+
+void RenderView::onUpdateUILayout(const Rect& finalGlobalRect)
+{
+}
+
 void RenderView::onRoutedEvent(UIEventArgs* e)
 {
     m_onUIEvent.raise(e);

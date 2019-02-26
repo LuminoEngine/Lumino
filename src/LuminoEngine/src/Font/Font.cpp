@@ -44,6 +44,7 @@ Font::~Font()
 
 void Font::init()
 {
+	Object::init();
     m_desc = m_manager->defaultFontDesc();
 }
 
@@ -52,6 +53,12 @@ void Font::init(const String& family, float size)
     init();
     setFamily(family);
     setSize(size);
+}
+
+void Font::init(const detail::FontDesc& desc)
+{
+	Object::init();
+	m_desc = desc;
 }
 
 void Font::setFamily(const String& familyName)

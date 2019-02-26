@@ -26,6 +26,9 @@ UIViewport::~UIViewport()
 void UIViewport::init()
 {
 	UIContainerElement::init();
+	setHorizontalAlignment(HAlignment::Stretch);
+	setVerticalAlignment(VAlignment::Stretch);
+
     m_imageEffectRenderer = makeRef<detail::ImageEffectRenderer>();
 }
 
@@ -55,6 +58,25 @@ void UIViewport::removeImageEffect(ImageEffect* effect)
     m_imageEffectRenderer->removeImageEffect(effect);
 }
 
+void UIViewport::onUpdateFrame(float elapsedTimer)
+{
+    m_imageEffectRenderer->updateFrame(elapsedTimer);
+}
+
+void UIViewport::onUpdateStyle(const detail::StyleData& finalStyle)
+{
+	for (auto& view : m_renderViews) {
+		view->updateUIStyle(finalStyle);
+	}
+}
+
+void UIViewport::onUpdateLayout(const Rect& finalGlobalRect)
+{
+	for (auto& view : m_renderViews) {
+		view->updateUILayout(finalGlobalRect);
+	}
+}
+
 Size UIViewport::arrangeOverride(const Size& finalSize)
 {
     // TODO: tmp
@@ -68,11 +90,6 @@ Size UIViewport::arrangeOverride(const Size& finalSize)
 //void UIViewport::render(UIRenderingContext* context)
 //{
 //}
-
-void UIViewport::onUpdateFrame(float elapsedTimer)
-{
-    m_imageEffectRenderer->updateFrame(elapsedTimer);
-}
 
 void UIViewport::onRender(UIRenderingContext* context)
 {

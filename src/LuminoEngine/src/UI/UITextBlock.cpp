@@ -27,7 +27,7 @@ void UITextBlock::init()
 
 void UITextBlock::onRender(UIRenderingContext* context)
 {
-    context->drawText(m_text, Font::create(), actualStyle()->textColor);
+    context->drawText(m_text, finalStyle().font, finalStyle().textColor);
 }
 
 } // namespace ln

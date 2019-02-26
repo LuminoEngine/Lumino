@@ -21,6 +21,8 @@ void UIContext::init()
 
 	m_defaultStyle = newObject<UIStyle>();
 	m_defaultStyle->setupDefault();
+
+	UIStyle::updateStyleDataHelper(m_defaultStyle, nullptr, m_defaultStyle, &m_finalDefaultStyle);
 }
 
 void UIContext::setLayoutRootElement(UIElement* element)
@@ -98,7 +100,7 @@ void UIContext::updateStyleTree()
 {
 	if (m_layoutRootElement)
 	{
-		m_layoutRootElement->updateStyleHierarchical(m_defaultStyle);
+		m_layoutRootElement->updateStyleHierarchical(m_finalDefaultStyle);
 	}
 }
 

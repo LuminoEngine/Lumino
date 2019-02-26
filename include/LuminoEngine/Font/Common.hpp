@@ -25,7 +25,7 @@ namespace detail {
 class FontDesc
 {
 public:
-    String Family;
+    String Family;	// empty is default font
     int Size;
     bool isBold;
     bool isItalic;
@@ -34,6 +34,7 @@ public:
     FontDesc();
     bool operator < (const FontDesc& right);
     uint64_t calcHash() const;
+	bool equals(const FontDesc& other) const;
 };
 
 } // namespace detail

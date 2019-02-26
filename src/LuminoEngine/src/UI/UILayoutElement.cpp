@@ -16,10 +16,11 @@ UILayoutElement::~UILayoutElement()
 {
 }
 
-void UILayoutElement::init(UIStyle* actualStyle)
+// actualStyle : サブクラスの m_actualStyle へのポインタ。細かい値をとるのにいちいち仮想関数を呼び出すのがパフォーマンス的に心配なのでこの形にしている。
+void UILayoutElement::init(const detail::StyleData* finalStyle)
 {
 	Object::init();
-	m_actualStyle = actualStyle;
+	m_finalStyle = finalStyle;
 }
 
 void UILayoutElement::updateLayout(const Rect& parentFinalGlobalRect)
@@ -188,30 +189,30 @@ Size UILayoutElement::arrangeOverride(const Size& finalSize)
 
 const Thickness& UILayoutElement::getLayoutMargin() const
 {
-	return m_actualStyle->margin.get();// OrDefault(Thickness::Zero);
+	return m_finalStyle->margin;
 }
 
 const Thickness& UILayoutElement::getLayoutPadding() const
 {
-	return m_actualStyle->padding.get();//OrDefault(Thickness::Zero);
+	return m_finalStyle->padding;
 }
 
 HAlignment UILayoutElement::getLayoutHAlignment() const
 {
-	return m_actualStyle->horizontalAlignment.get();//OrDefault(HAlignment::Center);
+	return m_finalStyle->horizontalAlignment;
 }
 
 VAlignment UILayoutElement::getLayoutVAlignment() const
 {
-	return m_actualStyle->verticalAlignment.get();
+	return m_finalStyle->verticalAlignment;
 }
 
 void UILayoutElement::getLayoutMinMaxInfo(Size* outMin, Size* outMax) const
 {
-	outMin->width = m_actualStyle->minWidth.get();
-	outMin->height = m_actualStyle->minHeight.get();
-	outMax->width = m_actualStyle->maxWidth.get();
-	outMax->height = m_actualStyle->maxHeight.get();
+	outMin->width = m_finalStyle->minWidth;
+	outMin->height = m_finalStyle->minHeight;
+	outMax->width = m_finalStyle->maxWidth;
+	outMax->height = m_finalStyle->maxHeight;
 }
 
 //==============================================================================

@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "UILayoutElement.hpp"	// TODO: for StyleData
 
 namespace ln {
 class UIElement;
@@ -14,6 +15,7 @@ public: // TODO: internal
     void addElement(UIElement* element);
     bool updateMouseHover(const Point& mousePos);
     UIElement* mouseHoverElement() const { return m_mouseHoverElement; }
+	const Ref<UIStyle>& defaultStyle() const { return m_defaultStyle; }
 
 	// 各更新の起点。UIContext には複数の UIFrameWindow を追加することもできるので、UIFrameWindow をツリー更新のルートとするのはちょっと違う。
 	// GameEngine としてなら、メインループから。IDE としてなら、メッセージループから呼び出してもらうのが自然だろう。
@@ -31,6 +33,7 @@ private:
     Ref<UIElement> m_layoutRootElement;
     UIElement* m_mouseHoverElement;
 	Ref<UIStyle> m_defaultStyle;
+	detail::StyleData m_finalDefaultStyle;
 };
 
 } // namespace ln

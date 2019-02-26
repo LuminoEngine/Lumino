@@ -26,7 +26,7 @@ public:
 	static void registerFontFile(const StringRef& fontFilePath);
 
 public:
-    /** フォントファミリ名の設定 */
+    /** フォントファミリ名の設定。空文字列はデフォルトのフォントファミリを示します。 */
     void setFamily(const String& familyName);
 
     /** フォントファミリ名の取得 */
@@ -67,6 +67,7 @@ LN_CONSTRUCT_ACCESS:
     virtual ~Font();
     void init();
     void init(const String& family, float size);
+	void init(const detail::FontDesc& desc);
     //void init(detail::GraphicsManager* manager, FontCore* builtinRawFont);
 
 private:
@@ -85,6 +86,7 @@ class FontHelper
 {
 public:
     static detail::FontCore* resolveFontCore(Font* font) { return font->resolveFontCore(); }
+	static bool equalsFontDesc(const Font* font, const FontDesc& desc) { return font->m_desc.equals(desc); }
 };
 } // namespace detail
 } // namespace ln
