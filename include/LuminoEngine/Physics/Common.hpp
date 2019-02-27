@@ -39,7 +39,7 @@ protected:
     virtual void onCollisionLeave(PhysicsObject2D* otherObject, ContactPoint2D* contact) = 0;
     virtual void onCollisionStay(PhysicsObject2D* otherObject, ContactPoint2D* contact) = 0;
 
-    friend class PhysicsObject2D;
+    friend class ::ln::PhysicsObject2D;
 	//friend class RigidBody2D;
 
     // Event<T> よりも Listener interface 登録のほうがメモリ効率が良い。
