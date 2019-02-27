@@ -170,8 +170,9 @@ public:
     VkImageView textureImageView;
     VkSampler textureSampler;
 
-    VkBuffer vertexBuffer;
-    VkDeviceMemory vertexBufferMemory;
+    //VkBuffer vertexBuffer;
+    //VkDeviceMemory vertexBufferMemory;
+    Ref<VulkanVertexBuffer> m_vertexBuffer;
     VkBuffer indexBuffer;
     VkDeviceMemory indexBufferMemory;
 
@@ -286,8 +287,7 @@ public:
         vkDestroyBuffer(device, indexBuffer, nullptr);
         vkFreeMemory(device, indexBufferMemory, nullptr);
 
-        vkDestroyBuffer(device, vertexBuffer, nullptr);
-        vkFreeMemory(device, vertexBufferMemory, nullptr);
+        m_vertexBuffer->dispose();
 
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
             vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
@@ -852,21 +852,25 @@ public:
     void createVertexBuffer() {
         VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 
-        VkBuffer stagingBuffer;
-        VkDeviceMemory stagingBufferMemory;
-        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+        m_vertexBuffer = makeRef<VulkanVertexBuffer>();
+        m_vertexBuffer->init(m_deviceContext, GraphicsResourceUsage::Static, bufferSize, vertices.data());
 
-        void* data;
-        vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
-            memcpy(data, vertices.data(), (size_t) bufferSize);
-        vkUnmapMemory(device, stagingBufferMemory);
 
-        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer, vertexBufferMemory);
+        //VkBuffer stagingBuffer;
+        //VkDeviceMemory stagingBufferMemory;
+        //createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
-        m_deviceContext->copyBufferImmediately(stagingBuffer, vertexBuffer, bufferSize);
+        //void* data;
+        //vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+        //    memcpy(data, vertices.data(), (size_t) bufferSize);
+        //vkUnmapMemory(device, stagingBufferMemory);
 
-        vkDestroyBuffer(device, stagingBuffer, nullptr);
-        vkFreeMemory(device, stagingBufferMemory, nullptr);
+        //createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer, vertexBufferMemory);
+
+        //m_deviceContext->copyBufferImmediately(stagingBuffer, vertexBuffer, bufferSize);
+
+        //vkDestroyBuffer(device, stagingBuffer, nullptr);
+        //vkFreeMemory(device, stagingBufferMemory, nullptr);
     }
 
     void createIndexBuffer() {
@@ -1033,7 +1037,7 @@ public:
 
                 vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
-                VkBuffer vertexBuffers[] = {vertexBuffer};
+                VkBuffer vertexBuffers[] = {m_vertexBuffer->vulkanBuffer()};
                 VkDeviceSize offsets[] = {0};
                 vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
 
@@ -1345,6 +1349,8 @@ bool VulkanDeviceContext::init(const Settings& settings)
 
 void VulkanDeviceContext::dispose()
 {
+    g_app.cleanup();
+
     if (m_commandPool) {
         vkDestroyCommandPool(m_device, m_commandPool, vulkanAllocator());
         m_commandPool = VK_NULL_HANDLE;
@@ -1789,12 +1795,7 @@ Result VulkanVertexBuffer::init(VulkanDeviceContext* deviceContext, GraphicsReso
 
     m_usage = usage;
 
-    VkBufferUsageFlags vkusage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-    if (usage == GraphicsResourceUsage::Dynamic) {
-        vkusage |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
-    }
-
-    if (!m_buffer.init(deviceContext, bufferSize, vkusage, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
+    if (!m_buffer.init(deviceContext, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)) {
         return false;
     }
 
@@ -1808,8 +1809,7 @@ Result VulkanVertexBuffer::init(VulkanDeviceContext* deviceContext, GraphicsReso
         }
         stagingBuffer.setData(0, initialData, bufferSize);
 
-        LN_NOTIMPLEMENTED();
-        //copyBuffer(stagingBuffer, vertexBuffer, bufferSize);
+        deviceContext->copyBufferImmediately(stagingBuffer.vulkanBuffer(), vulkanBuffer(), bufferSize);
 
         stagingBuffer.dispose();
     }
