@@ -10,9 +10,37 @@ namespace ln {
 class Exception;
 class String;
 
-#define _LN_CHECK(expr, exception, ...)			(!(expr)) && ln::detail::notifyException<exception>(__FILE__, __LINE__, #expr, ##__VA_ARGS__)
+#define _LN_CHECK(expr, level, exception, ...)			(!(expr)) && ln::detail::notifyException<exception>(level, __FILE__, __LINE__, #expr, ##__VA_ARGS__)
 
-#define LN_ERROR(...)							ln::detail::notifyException<::ln::Exception>(__FILE__, __LINE__, nullptr, ##__VA_ARGS__)
+/**
+ * アプリケーション実行中に発生した軽微な問題を通知するためのマクロです。
+ *
+ * このマクロが例外ハンドラを呼び出すときのレベルは `Warning` です。
+ * 潜在的な問題の可能性がありますが、プログラムは実行を続けることができます。
+ *
+ * デフォルトの例外ハンドラの動作は、メッセージをロギングしてプログラムを続行します。
+ */
+#define LN_WARNING(...)							ln::detail::notifyException<::ln::Exception>(ExceptionLevel::Warning, __FILE__, __LINE__, nullptr, ##__VA_ARGS__)
+
+/**
+ * アプリケーションが不正な状態になる可能性がある問題を通知するためのマクロです。
+ *
+* このマクロが例外ハンドラを呼び出すときのレベルは `Error` です。
+* オブジェクトが不正な状態となっている可能性がありますので、エラーの発生元となったオブジェクトにアクセスしないことでプログラムは実行を続けることができます。
+*
+* デフォルトの例外ハンドラの動作は、メッセージをロギングしてプログラムを停止します。
+ */
+#define LN_ERROR(...)							ln::detail::notifyException<::ln::Exception>(ExceptionLevel::Error, __FILE__, __LINE__, nullptr, ##__VA_ARGS__)
+
+ /**
+  * アプリケーションの継続が難しい致命的なエラーを通知するためのマクロです。
+  *
+  * このマクロが例外ハンドラを呼び出すときのレベルは `Fatal` です。
+  * アプリケーションは直ちに終了しなければなりません。
+  *
+  * デフォルトの例外ハンドラの動作は、メッセージをロギングしてプログラムを停止します。
+  */
+#define LN_FATAL(...)							ln::detail::notifyException<::ln::Exception>(ExceptionLevel::Fatal, __FILE__, __LINE__, nullptr, ##__VA_ARGS__)
 
 /**
  * コードを実行する前の前提条件を検証するためのマクロです。
@@ -24,8 +52,10 @@ class String;
  * 	   ...
  * }
  * ~~~
+ *
+ * このマクロが例外ハンドラを呼び出すときのレベルは `Warning` です。
  */
-#define LN_REQUIRE(expr, ...)					_LN_CHECK(expr, ::ln::LogicException, ##__VA_ARGS__)
+#define LN_REQUIRE(expr, ...)					_LN_CHECK(expr, ::ln::ExceptionLevel::Warning, ::ln::LogicException, ##__VA_ARGS__)
 
 /**
  * 処理の実行結果を検証するためのマクロです。
@@ -37,27 +67,28 @@ class String;
  *     if (LN_ENSURE(result != -1, "invalid call.")) return;
  * }
  * ~~~
+ *
+ * このマクロが例外ハンドラを呼び出すときのレベルは `Error` です。
  */
-#define LN_ENSURE(expr, ...)					_LN_CHECK(expr, ::ln::RuntimeException, ##__VA_ARGS__)
-
-/**
- * アプリケーションの継続が難しい致命的なエラーを通知するためのマクロです。
- */
-#define LN_FATAL(expr, ...)						_LN_CHECK(expr, ::ln::FatalException, ##__VA_ARGS__)
+#define LN_ENSURE(expr, ...)					_LN_CHECK(expr, ::ln::ExceptionLevel::Error, ::ln::RuntimeException, ##__VA_ARGS__)
 
 /**
  * 到達不能コードをマークするためのマクロです。
+ *
+ * このマクロが例外ハンドラを呼び出すときのレベルは `Fatal` です。
  */
-#define LN_UNREACHABLE()						_LN_CHECK(0, ::ln::LogicException, "Unreachable code.")
+#define LN_UNREACHABLE()						_LN_CHECK(0, ::ln::ExceptionLevel::Fatal, ::ln::LogicException, "Unreachable code.")
 
 /**
  * 未実装の機能をマークするためのマクロです。
+ *
+ * このマクロが例外ハンドラを呼び出すときのレベルは `Fatal` です。
  */
-#define LN_NOTIMPLEMENTED()						_LN_CHECK(0, ln::NotImplementedException)
+#define LN_NOTIMPLEMENTED()						_LN_CHECK(0, ::ln::ExceptionLevel::Fatal, ln::NotImplementedException)
 
-#define LN_REQUIRE_RANGE(value, begin, end)		_LN_CHECK(begin <= value && value < end, ::ln::LogicException)
-#define LN_REQUIRE_KEY(expr, ...)				_LN_CHECK(expr, ln::LogicException, ##__VA_ARGS__)
-#define LN_ENSURE_IO(expr, ...)					_LN_CHECK(expr, ln::IOException, ##__VA_ARGS__)
+#define LN_REQUIRE_RANGE(value, begin, end)		_LN_CHECK(begin <= value && value < end, ::ln::ExceptionLevel::Warning, ::ln::LogicException)
+#define LN_REQUIRE_KEY(expr, ...)				_LN_CHECK(expr, ::ln::ExceptionLevel::Warning, ln::LogicException, ##__VA_ARGS__)
+#define LN_ENSURE_IO(expr, ...)					_LN_CHECK(expr, ::ln::ExceptionLevel::Error, ln::IOException, ##__VA_ARGS__)
 
 // internal
 #ifdef LN_USTRING16
@@ -96,14 +127,23 @@ class String;
 #endif
 
 
+/** 問題の通知レベル */
+enum class ExceptionLevel
+{
+	Fatal,
+	Error,
+	Warning,
+	Info,
+};
+
 
 namespace detail {
 class ExceptionHelper;
 
 template<class TException, typename... TArgs>
-bool notifyException(const char* file, int line, const char* exprString, TArgs... args);
+bool notifyException(ExceptionLevel level, const char* file, int line, const char* exprString, TArgs... args);
 
-void Exception_setSourceLocationInfo(Exception& e, const char* filePath, int fileLine, const char* assertionMessage);
+void Exception_setSourceLocationInfo(Exception& e, ExceptionLevel level, const char* filePath, int fileLine, const char* assertionMessage);
 
 } // namespace detail
 
@@ -145,10 +185,11 @@ protected:
 
 private:
 	void appendMessage(const Char* message, size_t len);
-	void setSourceLocationInfo(const char* filePath, int fileLine, const char* assertionMessage);
+	void setSourceLocationInfo(ExceptionLevel level, const char* filePath, int fileLine, const char* assertionMessage);
 
 	static const int MaxPathSize = 260;
 	static const int MaxAssertionMessageSize = 100;
+	ExceptionLevel m_level;
 	char					m_sourceFilePath[MaxPathSize];
 	int						m_sourceFileLine;
 	char					m_assertionMessage[MaxAssertionMessageSize];
@@ -157,7 +198,7 @@ private:
 	std::basic_string<Char>	m_caption;
 	std::basic_string<Char>	m_message;
 
-	friend void detail::Exception_setSourceLocationInfo(Exception& e, const char* filePath, int fileLine, const char* assertionMessage);
+	friend void detail::Exception_setSourceLocationInfo(Exception& e, ExceptionLevel level, const char* filePath, int fileLine, const char* assertionMessage);
 	friend class detail::ExceptionHelper;
 };
 
@@ -224,18 +265,26 @@ void errorPrintf(Char* buf, size_t bufSize);
 void printError(const Exception& e);
 
 template<class TException, typename... TArgs>
-inline bool notifyException(const char* file, int line, const char* exprString, TArgs... args)
+inline bool notifyException(ExceptionLevel level, const char* file, int line, const char* exprString, TArgs... args)
 {
 	const size_t BUFFER_SIZE = 512;
 	Char str[BUFFER_SIZE] = {};
 	errorPrintf(str, BUFFER_SIZE, args...);
 
 	TException e(str);
-	detail::Exception_setSourceLocationInfo(e, file, line, exprString);
+	detail::Exception_setSourceLocationInfo(e, level, file, line, exprString);
+
 	auto h = Exception::notificationHandler();
-	if (h != nullptr && h(e)) return true;
+	if (h != nullptr && h(e)) {
+		return true;
+	}
+
 	printError(e);
-	throw e;
+
+	if (level == ExceptionLevel::Fatal || level == ExceptionLevel::Error) {
+		throw e;
+	}
+
 	return true;
 }
 

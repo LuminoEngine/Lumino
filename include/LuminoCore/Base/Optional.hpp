@@ -246,70 +246,70 @@ Optional<T>& Optional<T>::operator=(T&& value)
 template<class T>
 LN_CONSTEXPR T& Optional<T>::operator*() &
 {
-    LN_FATAL(m_hasValue);
+    LN_CHECK(m_hasValue);
     return m_value;
 }
 
 template<class T>
 LN_CONSTEXPR const T& Optional<T>::operator*() const &
 {
-    LN_FATAL(m_hasValue);
+    LN_CHECK(m_hasValue);
     return m_value;
 }
 
 template<class T>
 LN_CONSTEXPR T&& Optional<T>::operator*() &&
 {
-    LN_FATAL(m_hasValue);
+    LN_CHECK(m_hasValue);
     return std::move(m_value);
 }
 
 template<class T>
 LN_CONSTEXPR const T&& Optional<T>::operator*() const &&
 {
-    LN_FATAL(m_hasValue);
+    LN_CHECK(m_hasValue);
     return std::move(m_value);
 }
 
 template<class T>
 LN_CONSTEXPR T* Optional<T>::operator->()
 {
-    LN_FATAL(m_hasValue);
+    LN_CHECK(m_hasValue);
     return &m_value;
 }
 
 template<class T>
 LN_CONSTEXPR const T* Optional<T>::operator->() const
 {
-    LN_FATAL(m_hasValue);
+    LN_CHECK(m_hasValue);
     return &m_value;
 }
 
 template<class T>
 LN_CONSTEXPR T& Optional<T>::value() &
 {
-    LN_FATAL(m_hasValue);
+    LN_CHECK(m_hasValue);
     return m_value;
 }
 
 template<class T>
 LN_CONSTEXPR const T& Optional<T>::value() const &
 {
-    LN_FATAL(m_hasValue);
+    LN_CHECK(m_hasValue);
     return m_value;
 }
 
 template<class T>
 LN_CONSTEXPR T&& Optional<T>::value() &&
 {
-    LN_FATAL(m_hasValue);
+    LN_CHECK(m_hasValue);
     return std::move(m_value);
 }
 
 template<class T>
 LN_CONSTEXPR const T&& Optional<T>::value() const &&
 {
-    LN_FATAL(m_hasValue);
+    LN_CHECK(m_hasValue);
     return std::move(m_value);
 }
 

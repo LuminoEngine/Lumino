@@ -682,13 +682,13 @@ inline int String::capacity() const LN_NOEXCEPT
 
 inline CharRef String::operator[](int index)
 {
-    LN_FATAL(0 <= index && index < length());
+	LN_CHECK(0 <= index && index < length());
     return CharRef(*this, index);
 }
 
 inline const Char& String::operator[](int index) const LN_NOEXCEPT
 {
-    LN_FATAL(0 <= index && index < length());
+	LN_CHECK(0 <= index && index < length());
     return getBuffer()[index];
 }
 
