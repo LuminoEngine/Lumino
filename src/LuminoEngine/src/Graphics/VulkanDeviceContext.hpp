@@ -34,7 +34,8 @@ public:
     VkPhysicalDevice vulkanPhysicalDevice() const { return m_physicalDevice; }
     VkDevice vulkanDevice() const { return m_device; }
     const VkAllocationCallbacks* vulkanAllocator() const { return nullptr; }// return m_allocator.vulkanAllocator();
-
+    VkCommandPool vulkanCommandPool() const { return m_commandPool; }
+     
     Result findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType);
 
 protected:
@@ -76,8 +77,12 @@ public: // TODO:
 	Result createSurface();
     Result pickPhysicalDevice();
 	Result createLogicalDevice();
+    Result createCommandPool();
 
 	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+    VkCommandBuffer beginSingleTimeCommands();
+    void endSingleTimeCommands(VkCommandBuffer commandBuffer);
+    void copyBufferImmediately(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
 	GLFWwindow* m_mainWindow;
 	VkSurfaceKHR m_mainSurface;
