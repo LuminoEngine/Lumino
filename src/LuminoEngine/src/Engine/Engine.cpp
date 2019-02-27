@@ -108,6 +108,11 @@ void Engine::resetFrameDelay()
     detail::EngineDomain::engineManager()->resetFrameDelay();
 }
 
+const Path& Engine::persistentDataPath()
+{
+	return detail::EngineDomain::engineManager()->persistentDataPath();
+}
+
 GraphicsContext* Engine::graphicsContext()
 {
 	return detail::EngineDomain::graphicsManager()->graphicsContext();

@@ -47,9 +47,10 @@ struct EngineSettingsAssetArchiveEntry
 struct EngineSettings
 {
     Flags<EngineFeature> features = EngineFeature::Public;
+	String bundleIdentifier = u"lumino";
 	SizeI mainWindowSize = SizeI(640, 480);
 	SizeI mainBackBufferSize = SizeI(640, 480);
-	String mainWindowTitle = _T("Lumino");
+	String mainWindowTitle = u"Lumino";
 	AssetStorageAccessPriority assetStorageAccessPriority = AssetStorageAccessPriority::DirectoryFirst;
     List<EngineSettingsAssetArchiveEntry> assetArchives;
 	List<Path> assetDirectories;
@@ -112,6 +113,8 @@ public:
 	const Ref<SceneManager>& sceneManager() const { return m_sceneManager; }
     const Ref<UIManager>& uiManager() const { return m_uiManager; }
 
+	const Path& persistentDataPath() const { return m_persistentDataPath; }
+
 	const Ref<UIFrameWindow>& mainWindow() const { return m_mainWindow; }
     const Ref<UIViewport>& mainViewport() const { return m_mainViewport; }
 	const Ref<UIContainerElement>& mainUIRoot() const { return m_mainUIRoot; }
@@ -147,6 +150,8 @@ private:
 	Ref<UIManager>					m_uiManager;
 	FpsController m_fpsController;
 
+	Path m_persistentDataPath;
+
     Ref<UIContext> m_mainUIContext;
 	Ref<UIFrameWindow> m_mainWindow;
 	Ref<UIViewport> m_mainViewport;
@@ -156,7 +161,6 @@ private:
     Ref<Camera> m_mainCamera;
     Ref<AmbientLight> m_mainAmbientLight;
     Ref<DirectionalLight> m_mainDirectionalLight;
-
     Ref<WorldRenderView> m_mainWorldRenderView;
     Ref<PhysicsWorld> m_mainPhysicsWorld;
     Ref<PhysicsWorld2D> m_mainPhysicsWorld2D;

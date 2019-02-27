@@ -39,6 +39,9 @@ public:
 
     static void resetFrameDelay();
 
+	/** セーブデータなど、アプリケーションデータを保存するための永続的なデータディレクトリのパスを返します。 */
+	static const Path& persistentDataPath();
+
 	static GraphicsContext* graphicsContext();
 	static UIFrameWindow* mainWindow();
     static UIViewport* mainViewport();

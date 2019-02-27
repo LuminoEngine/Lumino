@@ -77,7 +77,24 @@ EngineManager::~EngineManager()
 
 void EngineManager::init()
 {
+	// check settings
+	{
+		if (m_settings.bundleIdentifier.isEmpty()) {
+			m_settings.bundleIdentifier = u"lumino";
+		}
+
+		if (m_settings.bundleIdentifier.contains(u"lumino", CaseSensitivity::CaseInsensitive)) {
+			LN_WARNING("Bundle Identifier It may not be set.");
+		}
+	}
+
+	// setup pathes
+	{
+		m_persistentDataPath = Path(Environment::specialFolderPath(SpecialFolder::ApplicationData), m_settings.bundleIdentifier);
+	}
+	
 	m_engineContext = makeRef<EngineContext>();
+
 
 	initializeAllManagers();
 
