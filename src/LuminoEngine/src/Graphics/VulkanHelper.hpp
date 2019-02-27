@@ -65,6 +65,7 @@ public:
     VulkanBuffer();
     Result init(VulkanDeviceContext* deviceContext, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
     void dispose();
+    VulkanDeviceContext* deviceContext() const { return m_deviceContext; }
     VkDeviceSize size() const { return m_size; }
     VkBuffer vulkanBuffer() const { return m_buffer; }
     VkDeviceMemory vulkanBufferMemory() const { return m_bufferMemory; }

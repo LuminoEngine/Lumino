@@ -108,7 +108,7 @@ struct UniformBufferObject {
     alignas(16) Matrix proj;
 };
 
-const std::vector<Vertex> vertices = {
+std::vector<Vertex> vertices = {
     {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
     {{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
     {{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
@@ -1047,6 +1047,11 @@ public:
 
                 vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 
+                // test
+                //vertices[0].pos.x = 0;
+                //vertices[0].pos.y = 0;
+                //m_vertexBuffer->setSubData(0, vertices.data(), sizeof(vertices[0]) * vertices.size());
+
             vkCmdEndRenderPass(commandBuffers[i]);
 
             if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS) {
@@ -1803,15 +1808,7 @@ Result VulkanVertexBuffer::init(VulkanDeviceContext* deviceContext, GraphicsReso
         m_buffer.setData(0, initialData, bufferSize);
     }
     else {
-        VulkanBuffer stagingBuffer;
-        if (!stagingBuffer.init(deviceContext, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
-            return false;
-        }
-        stagingBuffer.setData(0, initialData, bufferSize);
-
-        deviceContext->copyBufferImmediately(stagingBuffer.vulkanBuffer(), vulkanBuffer(), bufferSize);
-
-        stagingBuffer.dispose();
+        setSubData(0, initialData, bufferSize);
     }
 
     return true;
@@ -1820,6 +1817,20 @@ Result VulkanVertexBuffer::init(VulkanDeviceContext* deviceContext, GraphicsReso
 void VulkanVertexBuffer::dispose()
 {
     m_buffer.dispose();
+}
+
+void VulkanVertexBuffer::setSubData(size_t offset, const void* data, size_t length)
+{
+    VulkanBuffer stagingBuffer;
+    if (!stagingBuffer.init(m_buffer.deviceContext(), length, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
+        return;
+    }
+    stagingBuffer.setData(offset, data, length);
+
+    m_buffer.deviceContext()->copyBufferImmediately(stagingBuffer.vulkanBuffer(), vulkanBuffer(), length);
+
+    stagingBuffer.dispose();
+    //return m_buffer.setData(offset, data, length);
 }
 
 } // namespace detail
