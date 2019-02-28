@@ -440,6 +440,7 @@ Result VulkanBuffer::init(VulkanDeviceContext* deviceContext)
 {
 	if (LN_REQUIRE(deviceContext)) return false;
 	m_deviceContext = deviceContext;
+    return true;
 }
 
 Result VulkanBuffer::resetBuffer(VkDeviceSize size, VkBufferUsageFlags usage)
@@ -533,6 +534,7 @@ VulkanCommandBuffer::VulkanCommandBuffer()
 Result VulkanCommandBuffer::init(VulkanDeviceContext* deviceContext)
 {
 	if (LN_REQUIRE(deviceContext)) return false;
+    m_deviceContext = deviceContext;
 
 	if (!m_vulkanAllocator.init()) {
 		return false;
@@ -549,11 +551,23 @@ Result VulkanCommandBuffer::init(VulkanDeviceContext* deviceContext)
 	m_stagingBufferPoolUsed = 0;
 	glowStagingBufferPool();
 
+    VkCommandBufferAllocateInfo allocInfo = {};
+    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.commandPool = m_deviceContext->vulkanCommandPool();
+    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandBufferCount = 1;
+
+    LN_VK_CHECK(vkAllocateCommandBuffers(m_deviceContext->vulkanDevice(), &allocInfo, &m_commandBuffer));
+
 	return true;
 }
 
 void VulkanCommandBuffer::dispose()
 {
+    if (m_commandBuffer) {
+        vkFreeCommandBuffers(m_deviceContext->vulkanDevice(), m_deviceContext->vulkanCommandPool(), 1, &m_commandBuffer);
+        m_commandBuffer = VK_NULL_HANDLE;
+    }
 }
 
 VulkanBuffer* VulkanCommandBuffer::cmdCopyBuffer(size_t size, VulkanBuffer* destination)
@@ -594,6 +608,7 @@ Result VulkanCommandBuffer::glowStagingBufferPool()
 	size_t oldSize = 0;
 	size_t newSize = m_stagingBufferPool.empty() ? 64 : m_stagingBufferPool.size() * 2;
 
+    m_stagingBufferPool.resize(newSize);
 	for (size_t i = oldSize; i < newSize; i++) {
 		if (!m_stagingBufferPool[i].init(m_deviceContext)) {
 			return false;
