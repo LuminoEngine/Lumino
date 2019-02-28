@@ -22,7 +22,11 @@ LinearAllocatorPage::~LinearAllocatorPage()
 //=============================================================================
 // LinearAllocatorPageManager
 
-LinearAllocatorPageManager::LinearAllocatorPageManager()
+LinearAllocatorPageManager::LinearAllocatorPageManager(size_t pageSize)
+	: m_pageSize((pageSize == 0) ? DefaultPageSize : pageSize)
+	, m_mutex()
+	, m_pagePool()
+	, m_freePages()
 {
 }
 
@@ -49,7 +53,7 @@ LinearAllocatorPage* LinearAllocatorPageManager::requestPage()
 	}
 
 	if (!resultPage) {
-		auto page = createNewPage(PageSize);
+		auto page = createNewPage(pageSize());
 		m_pagePool.add(page);
 		resultPage = page;
 	}
@@ -80,6 +84,7 @@ LinearAllocator::LinearAllocator(LinearAllocatorPageManager* manager)
 	: m_manager(manager)
 	, m_usedOffset(0)
 	, m_currentPage(nullptr)
+	, m_maxAllocatedLargePageSize(0)
 {
 }
 
@@ -89,11 +94,11 @@ LinearAllocator::~LinearAllocator()
 
 void* LinearAllocator::allocate(size_t size)
 {
-	if (size > LinearAllocatorPageManager::PageSize) {
+	if (size > m_manager->pageSize()) {
 		return allocateLarge(size);
 	}
 
-	if (m_usedOffset + size > LinearAllocatorPageManager::PageSize)
+	if (m_usedOffset + size > m_manager->pageSize())
 	{
 		assert(m_currentPage);
 		m_retiredPages.add(m_currentPage);
@@ -128,10 +133,12 @@ void LinearAllocator::cleanup()
 	m_largePages.clear();
 
     m_usedOffset = 0;
+	m_maxAllocatedLargePageSize = 0;
 }
 
 void* LinearAllocator::allocateLarge(size_t size)
 {
+	m_maxAllocatedLargePageSize = std::max(m_maxAllocatedLargePageSize, size);
 	auto page = LinearAllocatorPageManager::createNewPage(size);
 	m_largePages.add(page);
 	return page->data();

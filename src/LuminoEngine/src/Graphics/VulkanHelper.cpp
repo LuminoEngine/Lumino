@@ -283,7 +283,7 @@ bool VulkanHelper::checkValidationLayerSupport()
 }
 
 //=============================================================================
-// VulkanAllocator
+// AbstractVulkanAllocator
 
 VKAPI_ATTR
 void* VKAPI_CALL AllocCallback(
@@ -292,7 +292,7 @@ void* VKAPI_CALL AllocCallback(
 	size_t alignment,
 	VkSystemAllocationScope scope)
 {
-	VulkanAllocator* allocator = reinterpret_cast<VulkanAllocator*>(pUserData);
+	AbstractVulkanAllocator* allocator = reinterpret_cast<AbstractVulkanAllocator*>(pUserData);
 	return allocator->alloc(size, alignment, scope);
 }
 
@@ -304,25 +304,23 @@ void* VKAPI_CALL ReallocCallback(
 	size_t alignment,
 	VkSystemAllocationScope scope)
 {
-	VulkanAllocator* allocator = reinterpret_cast<VulkanAllocator*>(pUserData);
+	AbstractVulkanAllocator* allocator = reinterpret_cast<AbstractVulkanAllocator*>(pUserData);
 	return allocator->realloc(pOriginal, size, alignment, scope);
 }
 
 VKAPI_ATTR
 void VKAPI_CALL FreeCallback(void* pUserData, void* pMemory)
 {
-	VulkanAllocator* allocator = reinterpret_cast<VulkanAllocator*>(pUserData);
+	AbstractVulkanAllocator* allocator = reinterpret_cast<AbstractVulkanAllocator*>(pUserData);
 	return allocator->free(pMemory);
 }
 
-VulkanAllocator::VulkanAllocator()
+AbstractVulkanAllocator::AbstractVulkanAllocator()
 	: m_allocatorCallbacks()
-	, m_counter(0)
-	, m_allocationSize{}
 {
 }
 
-Result VulkanAllocator::init()
+Result AbstractVulkanAllocator::init()
 {
 	m_allocatorCallbacks.pfnAllocation = AllocCallback;
 	m_allocatorCallbacks.pfnFree = FreeCallback;
@@ -331,6 +329,20 @@ Result VulkanAllocator::init()
 	m_allocatorCallbacks.pfnInternalFree = nullptr;
 	m_allocatorCallbacks.pUserData = this;
 	return true;
+}
+
+//=============================================================================
+// VulkanAllocator
+
+VulkanAllocator::VulkanAllocator()
+	: m_counter(0)
+	, m_allocationSize{}
+{
+}
+
+Result VulkanAllocator::init()
+{
+	return AbstractVulkanAllocator::init();
 }
 
 void* VulkanAllocator::alloc(size_t size, size_t alignment, VkSystemAllocationScope scope) noexcept
@@ -365,6 +377,38 @@ void VulkanAllocator::free(void* ptr) noexcept
 #endif
 }
 
+//=============================================================================
+// VulkanLinearAllocator
+
+VulkanLinearAllocator::VulkanLinearAllocator()
+	: m_linearAllocator(nullptr)
+{
+}
+
+Result VulkanLinearAllocator::init()
+{
+	return AbstractVulkanAllocator::init();
+}
+
+void* VulkanLinearAllocator::alloc(size_t size, size_t alignment, VkSystemAllocationScope scope) noexcept
+{
+	// TODO: alignment
+	void* ptr = m_linearAllocator->allocate(size);
+	assert(((size_t)ptr) % alignment == 0);
+	return ptr;
+}
+
+void* VulkanLinearAllocator::realloc(void* ptr, size_t size, size_t alignment, VkSystemAllocationScope scope) noexcept
+{
+	// TODO: NotImplemented
+	assert(0);
+	return nullptr;
+}
+
+void VulkanLinearAllocator::free(void* ptr) noexcept
+{
+	// フレーム終了時にすべてクリアされるため不要
+}
 
 //=============================================================================
 // VulkanBuffer
@@ -379,31 +423,65 @@ VulkanBuffer::VulkanBuffer()
 
 Result VulkanBuffer::init(VulkanDeviceContext* deviceContext, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
 {
-    if (LN_REQUIRE(deviceContext)) return false;
-    m_deviceContext = deviceContext;
-    m_size = size;
+	if (LN_REQUIRE(deviceContext)) return false;
+	m_deviceContext = deviceContext;
 
-    VkBufferCreateInfo bufferInfo = {};
-    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    bufferInfo.size = size;
-    bufferInfo.usage = usage;
-    bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-    LN_VK_CHECK(vkCreateBuffer(m_deviceContext->vulkanDevice(), &bufferInfo, m_deviceContext->vulkanAllocator(), &m_buffer));
-
-    VkMemoryRequirements memRequirements;
-    vkGetBufferMemoryRequirements(m_deviceContext->vulkanDevice(), m_buffer, &memRequirements);
-
-    VkMemoryAllocateInfo allocInfo = {};
-    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    allocInfo.allocationSize = memRequirements.size;
-    m_deviceContext->findMemoryType(memRequirements.memoryTypeBits, properties, &allocInfo.memoryTypeIndex);
-
-    LN_VK_CHECK(vkAllocateMemory(m_deviceContext->vulkanDevice(), &allocInfo, m_deviceContext->vulkanAllocator(), &m_bufferMemory));
-
-    LN_VK_CHECK(vkBindBufferMemory(m_deviceContext->vulkanDevice(), m_buffer, m_bufferMemory, 0));
+	if (!resetBuffer(size, usage)) {
+		return false;
+	}
+	if (!resetMemoryBuffer(properties, m_deviceContext->vulkanAllocator())) {
+		return false;
+	}
 
     return true;
+}
+
+Result VulkanBuffer::init(VulkanDeviceContext* deviceContext)
+{
+	if (LN_REQUIRE(deviceContext)) return false;
+	m_deviceContext = deviceContext;
+}
+
+Result VulkanBuffer::resetBuffer(VkDeviceSize size, VkBufferUsageFlags usage)
+{
+	if (m_buffer) {
+		vkDestroyBuffer(m_deviceContext->vulkanDevice(), m_buffer, m_deviceContext->vulkanAllocator());
+		m_buffer = VK_NULL_HANDLE;
+	}
+
+	m_size = size;
+
+	VkBufferCreateInfo bufferInfo = {};
+	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+	bufferInfo.size = size;
+	bufferInfo.usage = usage;
+	bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+	LN_VK_CHECK(vkCreateBuffer(m_deviceContext->vulkanDevice(), &bufferInfo, m_deviceContext->vulkanAllocator(), &m_buffer));
+
+	return true;
+}
+
+Result VulkanBuffer::resetMemoryBuffer(VkMemoryPropertyFlags properties, const VkAllocationCallbacks* allocator)
+{
+	if (m_bufferMemory) {
+		vkFreeMemory(m_deviceContext->vulkanDevice(), m_bufferMemory, allocator);
+		m_bufferMemory = VK_NULL_HANDLE;
+	}
+
+	VkMemoryRequirements memRequirements;
+	vkGetBufferMemoryRequirements(m_deviceContext->vulkanDevice(), m_buffer, &memRequirements);
+
+	VkMemoryAllocateInfo allocInfo = {};
+	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+	allocInfo.allocationSize = memRequirements.size;
+	m_deviceContext->findMemoryType(memRequirements.memoryTypeBits, properties, &allocInfo.memoryTypeIndex);
+
+	LN_VK_CHECK(vkAllocateMemory(m_deviceContext->vulkanDevice(), &allocInfo, allocator, &m_bufferMemory));
+
+	LN_VK_CHECK(vkBindBufferMemory(m_deviceContext->vulkanDevice(), m_buffer, m_bufferMemory, 0));
+
+	return true;
 }
 
 void VulkanBuffer::dispose()
@@ -443,6 +521,86 @@ void VulkanBuffer::setData(size_t offset, const void* data, VkDeviceSize size)
         memcpy(mapped + offset, data, size);
         unmap();
     }
+}
+
+//=============================================================================
+// VulkanCommandBuffer
+
+VulkanCommandBuffer::VulkanCommandBuffer()
+{
+}
+
+Result VulkanCommandBuffer::init(VulkanDeviceContext* deviceContext)
+{
+	if (LN_REQUIRE(deviceContext)) return false;
+
+	if (!m_vulkanAllocator.init()) {
+		return false;
+	}
+
+	// ひとまず 16MB (100万頂点くらいでの見積)
+	// 1ページは、更新したいバッファ全体が乗るサイズになっていればよい。
+	// もしあふれる場合は一度 LinearAllocator の LargePage 扱いにして、
+	// 次のフレームに移る前にページサイズを大きくして LinearAllocator を作り直す。
+	// ただ、普通動的なバッファ更新でこんなに大きなサイズを使うことはないような気もする。
+	// なお、静的なバッファの場合は init 時に malloc でメモリをとるようにしているので LinearAllocator は関係ない。
+	resetAllocator(LinearAllocatorPageManager::DefaultPageSize);
+
+	m_stagingBufferPoolUsed = 0;
+	glowStagingBufferPool();
+
+	return true;
+}
+
+void VulkanCommandBuffer::dispose()
+{
+}
+
+VulkanBuffer* VulkanCommandBuffer::cmdCopyBuffer(size_t size, VulkanBuffer* destination)
+{
+	if (m_stagingBufferPoolUsed >= m_stagingBufferPool.size()) {
+		glowStagingBufferPool();
+	}
+
+	VulkanBuffer* buffer = &m_stagingBufferPool[m_stagingBufferPoolUsed];
+	m_stagingBufferPoolUsed++;
+
+	// できるだけ毎回オブジェクトを再構築するのは避けたいので、サイズが小さい時だけにしてみる
+	if (buffer->size() < size) {
+		buffer->resetBuffer(size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+	}
+
+	// LinearAllocator からメモリ確保
+	buffer->resetMemoryBuffer(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_vulkanAllocator.vulkanAllocator());
+
+	// コマンドバッファに乗せる
+	//VkBufferCopy copyRegion = {};
+	//copyRegion.size = size;
+	//vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+
+	// 戻り先で書いてもらう
+	return buffer;
+}
+
+void VulkanCommandBuffer::resetAllocator(size_t pageSize)
+{
+	m_linearAllocatorManager = makeRef<LinearAllocatorPageManager>(pageSize);
+	m_linearAllocator = makeRef<LinearAllocator>(m_linearAllocatorManager);
+	m_vulkanAllocator.setLinearAllocator(m_linearAllocator);
+}
+
+Result VulkanCommandBuffer::glowStagingBufferPool()
+{
+	size_t oldSize = 0;
+	size_t newSize = m_stagingBufferPool.empty() ? 64 : m_stagingBufferPool.size() * 2;
+
+	for (size_t i = oldSize; i < newSize; i++) {
+		if (!m_stagingBufferPool[i].init(m_deviceContext)) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 } // namespace detail
