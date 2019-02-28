@@ -13,6 +13,12 @@ struct QueueFamilyIndices {
 	}
 };
 
+struct SwapChainSupportDetails {
+    VkSurfaceCapabilitiesKHR capabilities;
+    std::vector<VkSurfaceFormatKHR> formats;
+    std::vector<VkPresentModeKHR> presentModes;
+};
+
 namespace ln {
 namespace detail {
 class VulkanRenderTarget;
@@ -104,10 +110,20 @@ class VulkanSwapChain
 {
 public:
 	VulkanSwapChain();
-	bool init();
+	Result init(VulkanDeviceContext* deviceContext, PlatformWindow* platformWindow);
 	virtual ITexture* getColorBuffer() const;
 
 	Ref<VulkanRenderTarget> m_colorBuffer;
+
+private:
+    static SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
+    static VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+    static VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> availablePresentModes);
+    static VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, int width, int height);
+
+    VulkanDeviceContext* m_deviceContext;
+    PlatformWindow* m_platformWindow;
+    VkSurfaceKHR m_surface;
 };
 
 class VulkanVertexBuffer
