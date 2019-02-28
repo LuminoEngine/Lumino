@@ -123,6 +123,7 @@ public:
     virtual void* map() override { return m_buffer.map(); }
     virtual void unmap() override { m_buffer.unmap(); }
 
+    VulkanBuffer* buffer() { return &m_buffer; }
     VkBuffer vulkanBuffer() const { return m_buffer.vulkanBuffer(); }
     VkDeviceMemory vulkanDeviceMemory() const { return m_buffer.vulkanBufferMemory(); }
 

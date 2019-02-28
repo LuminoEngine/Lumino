@@ -588,9 +588,9 @@ VulkanBuffer* VulkanCommandBuffer::cmdCopyBuffer(size_t size, VulkanBuffer* dest
 	buffer->resetMemoryBuffer(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_vulkanAllocator.vulkanAllocator());
 
 	// コマンドバッファに乗せる
-	//VkBufferCopy copyRegion = {};
-	//copyRegion.size = size;
-	//vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+	VkBufferCopy copyRegion = {};
+	copyRegion.size = size;
+	vkCmdCopyBuffer(m_commandBuffer, buffer->vulkanBuffer(), destination->vulkanBuffer(), 1, &copyRegion);
 
 	// 戻り先で書いてもらう
 	return buffer;

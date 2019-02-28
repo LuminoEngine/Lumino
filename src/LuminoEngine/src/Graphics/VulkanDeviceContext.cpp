@@ -1044,6 +1044,12 @@ public:
 
                 vkCmdBindDescriptorSets(commandBuffers[i]->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
 
+                // test
+                //vertices[0].pos.x = 0;
+                //vertices[0].pos.y = 0;
+                //VulkanBuffer* buffer = commandBuffers[i]->cmdCopyBuffer(sizeof(vertices[0]) * vertices.size(), m_vertexBuffer->buffer());
+                //buffer->setData(0, vertices.data(), sizeof(vertices[0]) * vertices.size());
+
                 vkCmdDrawIndexed(commandBuffers[i]->vulkanCommandBuffer(), static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 
                 // test
