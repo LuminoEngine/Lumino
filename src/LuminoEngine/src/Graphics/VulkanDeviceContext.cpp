@@ -170,11 +170,8 @@ public:
     VkImageView textureImageView;
     VkSampler textureSampler;
 
-    //VkBuffer vertexBuffer;
-    //VkDeviceMemory vertexBufferMemory;
     Ref<VulkanVertexBuffer> m_vertexBuffer;
-    VkBuffer indexBuffer;
-    VkDeviceMemory indexBufferMemory;
+    Ref<VulkanIndexBuffer> m_indexBuffer;
 
     std::vector<VkBuffer> uniformBuffers;
     std::vector<VkDeviceMemory> uniformBuffersMemory;
@@ -287,9 +284,7 @@ public:
             vkFreeMemory(device, uniformBuffersMemory[i], nullptr);
         }
 
-        vkDestroyBuffer(device, indexBuffer, nullptr);
-        vkFreeMemory(device, indexBufferMemory, nullptr);
-
+        m_indexBuffer->dispose();
         m_vertexBuffer->dispose();
 
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
@@ -879,21 +874,24 @@ public:
     void createIndexBuffer() {
         VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
 
-        VkBuffer stagingBuffer;
-        VkDeviceMemory stagingBufferMemory;
-        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+        m_indexBuffer = makeRef<VulkanIndexBuffer>();
+        m_indexBuffer->init(m_deviceContext, GraphicsResourceUsage::Static, IndexBufferFormat::UInt16, indices.size(), indices.data());
 
-        void* data;
-        vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
-            memcpy(data, indices.data(), (size_t) bufferSize);
-        vkUnmapMemory(device, stagingBufferMemory);
+        //VkBuffer stagingBuffer;
+        //VkDeviceMemory stagingBufferMemory;
+        //createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
-        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory);
+        //void* data;
+        //vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+        //    memcpy(data, indices.data(), (size_t) bufferSize);
+        //vkUnmapMemory(device, stagingBufferMemory);
 
-        m_deviceContext->copyBufferImmediately(stagingBuffer, indexBuffer, bufferSize);
+        //createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory);
 
-        vkDestroyBuffer(device, stagingBuffer, nullptr);
-        vkFreeMemory(device, stagingBufferMemory, nullptr);
+        //m_deviceContext->copyBufferImmediately(stagingBuffer, indexBuffer, bufferSize);
+
+        //vkDestroyBuffer(device, stagingBuffer, nullptr);
+        //vkFreeMemory(device, stagingBufferMemory, nullptr);
     }
 
     void createUniformBuffers() {
@@ -1040,7 +1038,7 @@ public:
                 VkDeviceSize offsets[] = {0};
                 vkCmdBindVertexBuffers(commandBuffers[i]->vulkanCommandBuffer(), 0, 1, vertexBuffers, offsets);
 
-                vkCmdBindIndexBuffer(commandBuffers[i]->vulkanCommandBuffer(), indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+                vkCmdBindIndexBuffer(commandBuffers[i]->vulkanCommandBuffer(), m_indexBuffer->vulkanBuffer(), 0, m_indexBuffer->indexType());
 
                 vkCmdBindDescriptorSets(commandBuffers[i]->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
 
@@ -1814,7 +1812,13 @@ Result VulkanVertexBuffer::init(VulkanDeviceContext* deviceContext, GraphicsReso
         m_buffer.setData(0, initialData, bufferSize);
     }
     else {
-        setSubData(0, initialData, bufferSize);
+        VulkanBuffer stagingBuffer;
+        if (!stagingBuffer.init(m_buffer.deviceContext(), bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
+            return false;
+        }
+        stagingBuffer.setData(0, initialData, bufferSize);
+        m_buffer.deviceContext()->copyBufferImmediately(stagingBuffer.vulkanBuffer(), vulkanBuffer(), bufferSize);
+        stagingBuffer.dispose();
     }
 
     return true;
@@ -1827,16 +1831,64 @@ void VulkanVertexBuffer::dispose()
 
 void VulkanVertexBuffer::setSubData(size_t offset, const void* data, size_t length)
 {
-    VulkanBuffer stagingBuffer;
-    if (!stagingBuffer.init(m_buffer.deviceContext(), length, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
-        return;
+    // TODO: これは廃止して、CommandList 側に持って行った方がいいと思う。
+    LN_NOTIMPLEMENTED();
+}
+
+//==============================================================================
+// VulkanIndexBuffer
+
+VulkanIndexBuffer::VulkanIndexBuffer()
+    : m_buffer()
+    , m_usage(GraphicsResourceUsage::Static)
+{
+}
+
+Result VulkanIndexBuffer::init(VulkanDeviceContext* deviceContext, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
+{
+    LN_DCHECK(deviceContext);
+
+    m_usage = usage;
+    int stride = 0;
+    if (format == IndexBufferFormat::UInt16) {
+        m_indexType = VK_INDEX_TYPE_UINT16;
+        stride = 2;
     }
-    stagingBuffer.setData(offset, data, length);
+    else {
+        m_indexType = VK_INDEX_TYPE_UINT32;
+        stride = 4;
+    }
+    size_t bufferSize = stride * indexCount;
 
-    m_buffer.deviceContext()->copyBufferImmediately(stagingBuffer.vulkanBuffer(), vulkanBuffer(), length);
+    if (!m_buffer.init(deviceContext, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)) {
+        return false;
+    }
 
-    stagingBuffer.dispose();
-    //return m_buffer.setData(offset, data, length);
+    if (usage == GraphicsResourceUsage::Dynamic) {
+        m_buffer.setData(0, initialData, bufferSize);
+    }
+    else {
+        VulkanBuffer stagingBuffer;
+        if (!stagingBuffer.init(m_buffer.deviceContext(), bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
+            return false;
+        }
+        stagingBuffer.setData(0, initialData, bufferSize);
+        m_buffer.deviceContext()->copyBufferImmediately(stagingBuffer.vulkanBuffer(), vulkanBuffer(), bufferSize);
+        stagingBuffer.dispose();
+    }
+
+    return true;
+}
+
+void VulkanIndexBuffer::dispose()
+{
+    m_buffer.dispose();
+}
+
+void VulkanIndexBuffer::setSubData(size_t offset, const void* data, size_t length)
+{
+    // TODO: これは廃止して、CommandList 側に持って行った方がいいと思う。
+    LN_NOTIMPLEMENTED();
 }
 
 } // namespace detail
