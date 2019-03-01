@@ -71,35 +71,35 @@ struct Vertex {
 	Vector3 color;
 	Vector2 texCoord;
 
-    static VkVertexInputBindingDescription getBindingDescription() {
-        VkVertexInputBindingDescription bindingDescription = {};
-        bindingDescription.binding = 0;
-        bindingDescription.stride = sizeof(Vertex);
-        bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+    //static VkVertexInputBindingDescription getBindingDescription() {
+    //    VkVertexInputBindingDescription bindingDescription = {};
+    //    bindingDescription.binding = 0;
+    //    bindingDescription.stride = sizeof(Vertex);
+    //    bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
-        return bindingDescription;
-    }
+    //    return bindingDescription;
+    //}
 
-    static std::array<VkVertexInputAttributeDescription, 3> getAttributeDescriptions() {
-        std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions = {};
+    //static std::array<VkVertexInputAttributeDescription, 3> getAttributeDescriptions() {
+    //    std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions = {};
 
-        attributeDescriptions[0].binding = 0;
-        attributeDescriptions[0].location = 0;
-        attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-        attributeDescriptions[0].offset = offsetof(Vertex, pos);
+    //    attributeDescriptions[0].binding = 0;
+    //    attributeDescriptions[0].location = 0;
+    //    attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+    //    attributeDescriptions[0].offset = offsetof(Vertex, pos);
 
-        attributeDescriptions[1].binding = 0;
-        attributeDescriptions[1].location = 1;
-        attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-        attributeDescriptions[1].offset = offsetof(Vertex, color);
+    //    attributeDescriptions[1].binding = 0;
+    //    attributeDescriptions[1].location = 1;
+    //    attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+    //    attributeDescriptions[1].offset = offsetof(Vertex, color);
 
-        attributeDescriptions[2].binding = 0;
-        attributeDescriptions[2].location = 2;
-        attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
-        attributeDescriptions[2].offset = offsetof(Vertex, texCoord);
+    //    attributeDescriptions[2].binding = 0;
+    //    attributeDescriptions[2].location = 2;
+    //    attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
+    //    attributeDescriptions[2].offset = offsetof(Vertex, texCoord);
 
-        return attributeDescriptions;
-    }
+    //    return attributeDescriptions;
+    //}
 };
 
 struct UniformBufferObject {
@@ -165,6 +165,7 @@ public:
     Ref<VulkanTexture2D> m_texture;
     VkSampler textureSampler;
 
+    Ref<VulkanVertexDeclaration> m_vertexDeclaration;
     Ref<VulkanVertexBuffer> m_vertexBuffer;
     Ref<VulkanIndexBuffer> m_indexBuffer;
 
@@ -204,6 +205,16 @@ public:
     //}
 
     void initVulkan() {
+
+
+        VertexElement elements[] = {
+            { 0, VertexElementType::Float3, VertexElementUsage::Position, 0 },
+            { 0, VertexElementType::Float3, VertexElementUsage::Color, 0 },
+            { 0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0 },
+        };
+        m_vertexDeclaration = makeRef<VulkanVertexDeclaration>();
+        m_vertexDeclaration->init(elements, 3);
+
         //createInstance();
         //setupDebugMessenger();
         //createSurface();
@@ -473,12 +484,24 @@ public:
         VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
-        auto bindingDescription = Vertex::getBindingDescription();
-        auto attributeDescriptions = Vertex::getAttributeDescriptions();
+        auto bindingDescription = m_vertexDeclaration->vertexBindingDescriptions(); //Vertex::getBindingDescription();
+        //auto attributeDescriptions = Vertex::getAttributeDescriptions();
+        std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
+        {
+            auto& attrs = m_vertexDeclaration->vertexAttributeDescriptionSources();
+            for (int i = 0; i < attrs.size(); i++) {
+                VkVertexInputAttributeDescription desc;
+                desc.location = i;  // UnifiedShader からセマンティクス情報取れなければやむを得ないので連番
+                desc.binding = attrs[i].binding;
+                desc.format = attrs[i].format;
+                desc.offset = attrs[i].offset;
+                attributeDescriptions.push_back(desc);
+            }
+        }
 
         vertexInputInfo.vertexBindingDescriptionCount = 1;
         vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
-        vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+        vertexInputInfo.pVertexBindingDescriptions = bindingDescription.data();
         vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 
         VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
@@ -602,6 +625,7 @@ public:
 
     // fix
     void createVertexBuffer() {
+
         VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 
         m_vertexBuffer = makeRef<VulkanVertexBuffer>();
@@ -702,12 +726,12 @@ public:
     }
 
     void createDescriptorSets() {
-        std::vector<VkDescriptorSetLayout> layouts(swapChainImages.size(), descriptorSetLayout);
+        //std::vector<VkDescriptorSetLayout> layouts(swapChainImages.size(), descriptorSetLayout);
         VkDescriptorSetAllocateInfo allocInfo = {};
         allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
         allocInfo.descriptorPool = descriptorPool;
         allocInfo.descriptorSetCount = 1;
-        allocInfo.pSetLayouts = layouts.data();
+        allocInfo.pSetLayouts = &descriptorSetLayout;
 
         //descriptorSets.resize(swapChainImages.size());
         if (vkAllocateDescriptorSets(device, &allocInfo, &descriptorSet) != VK_SUCCESS) {
@@ -1647,6 +1671,46 @@ bool VulkanSwapChain::init()
 ITexture* VulkanSwapChain::getColorBuffer() const
 {
 	return m_colorBuffer;
+}
+
+//==============================================================================
+// VulkanVertexDeclaration
+
+VulkanVertexDeclaration::VulkanVertexDeclaration()
+{
+}
+
+Result VulkanVertexDeclaration::init(const VertexElement* elements, int elementsCount)
+{
+    LN_DCHECK(elements);
+
+    // 事前に binding がどれだけあるのか調べる
+    m_maxStreamCount = 0;
+    for (int i = 0; i < elementsCount; i++) {
+        m_maxStreamCount = std::max(m_maxStreamCount, elements[i].StreamIndex);
+        m_elements.push_back(elements[i]);
+    }
+    m_maxStreamCount++;
+    m_bindings.resize(m_maxStreamCount);
+
+    // 実際に値を計算する
+    for (int i = 0; i < elementsCount; i++) {
+        auto& element = m_elements[i];
+
+        AttributeDescriptionSource attr;
+        attr.binding = elements[i].StreamIndex;
+        attr.format = VulkanHelper::LNVertexElementTypeToVkFormat(elements[i].Type);
+        attr.offset = m_bindings[attr.binding].stride;
+        m_attributeSources.push_back(attr);
+
+        m_bindings[element.StreamIndex].stride += GraphicsHelper::getVertexElementTypeSize(elements[i].Type);
+    }
+
+    return true;
+}
+
+void VulkanVertexDeclaration::dispose()
+{
 }
 
 //==============================================================================
