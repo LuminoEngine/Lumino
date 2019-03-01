@@ -307,11 +307,6 @@ public:
         createCommandBuffers();
     }
 
-    
-
-    
-   
-
     void createSwapChain() {
         SwapChainSupportDetails swapChainSupport = querySwapChainSupport(m_deviceContext->vulkanPhysicalDevice());
 
@@ -606,11 +601,29 @@ public:
         }
     }
 
+    // fix
+    void createVertexBuffer() {
+        VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
+
+        m_vertexBuffer = makeRef<VulkanVertexBuffer>();
+        m_vertexBuffer->init(m_deviceContext, GraphicsResourceUsage::Static, bufferSize, vertices.data());
+    }
+
+    // fix
+    void createIndexBuffer() {
+        VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
+
+        m_indexBuffer = makeRef<VulkanIndexBuffer>();
+        m_indexBuffer->init(m_deviceContext, GraphicsResourceUsage::Static, IndexBufferFormat::UInt16, indices.size(), indices.data());
+    }
+
+    // fix
     void createDepthResources() {
         m_depthImage = makeRef<VulkanDepthBuffer>();
         m_depthImage->init(m_deviceContext, swapChainExtent.width, swapChainExtent.height);
     }
 
+    // fix
     void createTextureImage() {
         int texWidth, texHeight, texChannels;
         stbi_uc* pixels = stbi_load("D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Graphics/Resource/texture.jpg", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
@@ -665,20 +678,6 @@ public:
         }
 
         return imageView;
-    }
-
-    void createVertexBuffer() {
-        VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
-
-        m_vertexBuffer = makeRef<VulkanVertexBuffer>();
-        m_vertexBuffer->init(m_deviceContext, GraphicsResourceUsage::Static, bufferSize, vertices.data());
-    }
-
-    void createIndexBuffer() {
-        VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
-
-        m_indexBuffer = makeRef<VulkanIndexBuffer>();
-        m_indexBuffer->init(m_deviceContext, GraphicsResourceUsage::Static, IndexBufferFormat::UInt16, indices.size(), indices.data());
     }
 
     void createUniformBuffers() {
@@ -784,16 +783,13 @@ public:
 
 
     
-
+    // fix
     void createCommandBuffers() {
         commandBuffers.resize(swapChainFramebuffers.size());
-
-        
 
         for (size_t i = 0; i < commandBuffers.size(); i++) {
             commandBuffers[i] = makeRef<VulkanCommandBuffer>();
             commandBuffers[i]->init(m_deviceContext);
-
 
             VkCommandBufferBeginInfo beginInfo = {};
             beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -1052,12 +1048,6 @@ public:
         return requiredExtensions.empty();
     }
 
-    
-
-    
-
-    
-
     static std::vector<char> readFile(const std::string& filename) {
         std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
@@ -1195,7 +1185,9 @@ void VulkanDeviceContext::onRestoreExternalRenderState()
 Ref<ISwapChain> VulkanDeviceContext::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
 {
 	auto ptr = makeRef<VulkanSwapChain>();
-	ptr->init();
+    if (!ptr->init()) {
+        return nullptr;
+    }
 	return ptr;
 }
 
@@ -1612,10 +1604,8 @@ void VulkanDeviceContext::copyBufferToImageImmediately(VkBuffer buffer, VkImage 
     endSingleTimeCommands(commandBuffer);
 }
 
-void VulkanDeviceContext::transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
+Result VulkanDeviceContext::transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
 {
-    VkCommandBuffer commandBuffer = beginSingleTimeCommands();
-
     VkImageMemoryBarrier barrier = {};
     barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
     barrier.oldLayout = oldLayout;
@@ -1665,8 +1655,11 @@ void VulkanDeviceContext::transitionImageLayout(VkImage image, VkFormat format, 
         destinationStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
     }
     else {
-        throw std::invalid_argument("unsupported layout transition!");
+        LN_LOG_ERROR << "unsupported layout transition!";
+        return false;
     }
+
+    VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
     vkCmdPipelineBarrier(
         commandBuffer,
@@ -1678,6 +1671,8 @@ void VulkanDeviceContext::transitionImageLayout(VkImage image, VkFormat format, 
     );
 
     endSingleTimeCommands(commandBuffer);
+
+    return true;
 }
 
 //==============================================================================
@@ -1839,9 +1834,15 @@ Result VulkanTexture2D::init(VulkanDeviceContext* deviceContext, uint32_t width,
         // VK_FORMAT_R8G8B8A8_UNORM
         m_image.init(m_deviceContext, width, height, nativeFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
 
-        m_deviceContext->transitionImageLayout(m_image.vulkanImage(), VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+        if (!m_deviceContext->transitionImageLayout(m_image.vulkanImage(), VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)) {
+            return false;
+        }
+
         m_deviceContext->copyBufferToImageImmediately(stagingBuffer.vulkanBuffer(), m_image.vulkanImage(), width, height);
-        m_deviceContext->transitionImageLayout(m_image.vulkanImage(), VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+        if (!m_deviceContext->transitionImageLayout(m_image.vulkanImage(), VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {
+            return false;
+        }
 
         stagingBuffer.dispose();
         //vkDestroyBuffer(device, stagingBuffer, nullptr);
@@ -1870,10 +1871,13 @@ Result VulkanDepthBuffer::init(VulkanDeviceContext* deviceContext, uint32_t widt
 
     VkFormat depthFormat = m_deviceContext->findDepthFormat();
 
-    m_image.init(m_deviceContext, width, height, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_DEPTH_BIT);
+    if (!m_image.init(m_deviceContext, width, height, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_DEPTH_BIT)) {
+        return false;
+    }
 
-    m_deviceContext->transitionImageLayout(m_image.vulkanImage(), depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
-
+    if (!m_deviceContext->transitionImageLayout(m_image.vulkanImage(), depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)) {
+        return false;
+    }
 
     return true;
 }
