@@ -121,15 +121,17 @@ class VulkanImage
 {
 public:
 	VulkanImage();
-	Result init(VulkanDeviceContext* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties);
+	Result init(VulkanDeviceContext* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags);
 	void dispose();
 	VkImage vulkanImage() const { return m_image; }
 	VkDeviceMemory vulkanDeviceMemory() const { return m_imageMemory; }
+    VkImageView vulkanImageView() const { return m_imageView; }
 
 private:
 	VulkanDeviceContext* m_deviceContext;
 	VkImage m_image;
 	VkDeviceMemory m_imageMemory;
+    VkImageView m_imageView;
 };
 
 // ひとつのコマンドバッファ。通常、記録中バッファと実行中バッファなどに分かれるため、インスタンスは複数作られる。

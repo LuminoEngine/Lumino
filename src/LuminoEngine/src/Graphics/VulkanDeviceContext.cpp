@@ -164,12 +164,12 @@ public:
     //VkImage depthImage;
     //VkDeviceMemory depthImageMemory;
 	VulkanImage m_depthImage;
-    VkImageView depthImageView;
+    //VkImageView depthImageView;
 
     //VkImage textureImage;
     //VkDeviceMemory textureImageMemory;
 	VulkanImage m_textureImage;
-    VkImageView textureImageView;
+    //VkImageView textureImageView;
     VkSampler textureSampler;
 
     Ref<VulkanVertexBuffer> m_vertexBuffer;
@@ -223,7 +223,7 @@ public:
         createDepthResources();
         createFramebuffers();
         createTextureImage();
-        createTextureImageView();
+        //createTextureImageView();
         createTextureSampler();
         createVertexBuffer();
         createIndexBuffer();
@@ -244,7 +244,6 @@ public:
     }
 
     void cleanupSwapChain() {
-        vkDestroyImageView(device, depthImageView, nullptr);
 
 		m_depthImage.dispose();
 
@@ -272,7 +271,6 @@ public:
         cleanupSwapChain();
 
         vkDestroySampler(device, textureSampler, nullptr);
-        vkDestroyImageView(device, textureImageView, nullptr);
 
 		m_textureImage.dispose();
 
@@ -597,7 +595,7 @@ public:
         for (size_t i = 0; i < swapChainImageViews.size(); i++) {
             std::array<VkImageView, 2> attachments = {
                 swapChainImageViews[i],
-                depthImageView
+                m_depthImage.vulkanImageView(),
             };
 
             VkFramebufferCreateInfo framebufferInfo = {};
@@ -619,9 +617,9 @@ public:
         VkFormat depthFormat = findDepthFormat();
 
         //createImage(swapChainExtent.width, swapChainExtent.height, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory);
-		m_depthImage.init(m_deviceContext, swapChainExtent.width, swapChainExtent.height, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		m_depthImage.init(m_deviceContext, swapChainExtent.width, swapChainExtent.height, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_DEPTH_BIT);
 		
-		depthImageView = createImageView(m_depthImage.vulkanImage(), depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
+		//depthImageView = createImageView(m_depthImage.vulkanImage(), depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
 
         transitionImageLayout(m_depthImage.vulkanImage(), depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
     }
@@ -674,7 +672,7 @@ public:
         stbi_image_free(pixels);
 
         //createImage(texWidth, texHeight, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory);
-		m_textureImage.init(m_deviceContext, texWidth, texHeight, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		m_textureImage.init(m_deviceContext, texWidth, texHeight, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
 
         transitionImageLayout(m_textureImage.vulkanImage(), VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
             copyBufferToImage(stagingBuffer, m_textureImage.vulkanImage(), static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
@@ -684,9 +682,9 @@ public:
         vkFreeMemory(device, stagingBufferMemory, nullptr);
     }
 
-    void createTextureImageView() {
-        textureImageView = createImageView(m_textureImage.vulkanImage(), VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT);
-    }
+    //void createTextureImageView() {
+    //    textureImageView = createImageView(m_textureImage.vulkanImage(), VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT);
+    //}
 
     void createTextureSampler() {
         VkSamplerCreateInfo samplerInfo = {};
@@ -856,23 +854,6 @@ public:
 
         m_vertexBuffer = makeRef<VulkanVertexBuffer>();
         m_vertexBuffer->init(m_deviceContext, GraphicsResourceUsage::Static, bufferSize, vertices.data());
-
-
-        //VkBuffer stagingBuffer;
-        //VkDeviceMemory stagingBufferMemory;
-        //createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
-
-        //void* data;
-        //vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
-        //    memcpy(data, vertices.data(), (size_t) bufferSize);
-        //vkUnmapMemory(device, stagingBufferMemory);
-
-        //createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer, vertexBufferMemory);
-
-        //m_deviceContext->copyBufferImmediately(stagingBuffer, vertexBuffer, bufferSize);
-
-        //vkDestroyBuffer(device, stagingBuffer, nullptr);
-        //vkFreeMemory(device, stagingBufferMemory, nullptr);
     }
 
     void createIndexBuffer() {
@@ -880,22 +861,6 @@ public:
 
         m_indexBuffer = makeRef<VulkanIndexBuffer>();
         m_indexBuffer->init(m_deviceContext, GraphicsResourceUsage::Static, IndexBufferFormat::UInt16, indices.size(), indices.data());
-
-        //VkBuffer stagingBuffer;
-        //VkDeviceMemory stagingBufferMemory;
-        //createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
-
-        //void* data;
-        //vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
-        //    memcpy(data, indices.data(), (size_t) bufferSize);
-        //vkUnmapMemory(device, stagingBufferMemory);
-
-        //createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory);
-
-        //m_deviceContext->copyBufferImmediately(stagingBuffer, indexBuffer, bufferSize);
-
-        //vkDestroyBuffer(device, stagingBuffer, nullptr);
-        //vkFreeMemory(device, stagingBufferMemory, nullptr);
     }
 
     void createUniformBuffers() {
@@ -948,7 +913,7 @@ public:
 
             VkDescriptorImageInfo imageInfo = {};
             imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            imageInfo.imageView = textureImageView;
+            imageInfo.imageView = m_textureImage.vulkanImageView();
             imageInfo.sampler = textureSampler;
 
             std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};

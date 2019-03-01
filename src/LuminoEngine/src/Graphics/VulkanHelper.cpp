@@ -531,7 +531,7 @@ VulkanImage::VulkanImage()
 {
 }
 
-Result VulkanImage::init(VulkanDeviceContext* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties)
+Result VulkanImage::init(VulkanDeviceContext* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags)
 {
 	LN_DCHECK(deviceContext);
 	m_deviceContext = deviceContext;
@@ -565,13 +565,32 @@ Result VulkanImage::init(VulkanDeviceContext* deviceContext, uint32_t width, uin
 
 	LN_VK_CHECK(vkAllocateMemory(device, &allocInfo, m_deviceContext->vulkanAllocator(), &m_imageMemory));
 
-	vkBindImageMemory(device, m_image, m_imageMemory, 0);
+    {
+        vkBindImageMemory(device, m_image, m_imageMemory, 0);
+
+        VkImageViewCreateInfo viewInfo = {};
+        viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+        viewInfo.image = m_image;
+        viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+        viewInfo.format = format;
+        viewInfo.subresourceRange.aspectMask = aspectFlags;
+        viewInfo.subresourceRange.baseMipLevel = 0;
+        viewInfo.subresourceRange.levelCount = 1;
+        viewInfo.subresourceRange.baseArrayLayer = 0;
+        viewInfo.subresourceRange.layerCount = 1;
+
+        LN_VK_CHECK(vkCreateImageView(device, &viewInfo, m_deviceContext->vulkanAllocator(), &m_imageView));
+    }
 
 	return true;
 }
 
 void VulkanImage::dispose()
 {
+    if (m_imageView) {
+        vkDestroyImageView(m_deviceContext->vulkanDevice(), m_imageView, m_deviceContext->vulkanAllocator());
+        m_imageView = VK_NULL_HANDLE;
+    }
 	if (m_image) {
 		vkDestroyImage(m_deviceContext->vulkanDevice(), m_image, m_deviceContext->vulkanAllocator());
 		m_image = VK_NULL_HANDLE;
