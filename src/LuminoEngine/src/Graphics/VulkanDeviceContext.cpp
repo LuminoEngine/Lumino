@@ -168,7 +168,7 @@ public:
     Ref<VulkanVertexBuffer> m_vertexBuffer;
     Ref<VulkanIndexBuffer> m_indexBuffer;
 
-    std::vector<VulkanBuffer> m_uniformBuffers;
+    VulkanBuffer m_uniformBuffer;
     //std::vector<VkBuffer> uniformBuffers;
     //std::vector<VkDeviceMemory> uniformBuffersMemory;
 
@@ -272,9 +272,7 @@ public:
 
         vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
 
-        for (size_t i = 0; i < swapChainImages.size(); i++) {
-            m_uniformBuffers[i].dispose();
-        }
+        m_uniformBuffer.dispose();
 
         m_indexBuffer->dispose();
         m_vertexBuffer->dispose();
@@ -681,13 +679,7 @@ public:
     }
 
     void createUniformBuffers() {
-        VkDeviceSize bufferSize = sizeof(UniformBufferObject);
-
-        m_uniformBuffers.resize(swapChainImages.size());
-
-        for (size_t i = 0; i < swapChainImages.size(); i++) {
-            m_uniformBuffers[i].init(m_deviceContext, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-        }
+        m_uniformBuffer.init(m_deviceContext, sizeof(UniformBufferObject), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
     }
 
     void createDescriptorPool() {
@@ -723,7 +715,7 @@ public:
 
         for (size_t i = 0; i < swapChainImages.size(); i++) {
             VkDescriptorBufferInfo bufferInfo = {};
-            bufferInfo.buffer = m_uniformBuffers[i].vulkanBuffer();
+            bufferInfo.buffer = m_uniformBuffer.vulkanBuffer();
             bufferInfo.offset = 0;
             bufferInfo.range = sizeof(UniformBufferObject);
 
@@ -837,7 +829,7 @@ public:
         //VulkanBuffer* buffer = commandBuffers[i]->cmdCopyBuffer(sizeof(vertices[0]) * vertices.size(), m_vertexBuffer->buffer());
         //buffer->setData(0, vertices.data(), sizeof(vertices[0]) * vertices.size());
 
-        VulkanBuffer* buffer = commandBuffers[i]->cmdCopyBuffer(sizeof(ubo), &m_uniformBuffers[currentImage]);
+        VulkanBuffer* buffer = commandBuffers[i]->cmdCopyBuffer(sizeof(ubo), &m_uniformBuffer);
         buffer->setData(0, &ubo, sizeof(ubo));
 
         vkCmdDrawIndexed(commandBuffers[i]->vulkanCommandBuffer(), static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
