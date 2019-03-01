@@ -647,6 +647,19 @@ void VulkanCommandBuffer::dispose()
     }
 }
 
+Result VulkanCommandBuffer::begin()
+{
+    m_linearAllocator->cleanup();
+
+    VkCommandBufferBeginInfo beginInfo = {};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+
+    LN_VK_CHECK(vkBeginCommandBuffer(vulkanCommandBuffer(), &beginInfo));
+
+    return true;
+}
+
 VulkanBuffer* VulkanCommandBuffer::cmdCopyBuffer(size_t size, VulkanBuffer* destination)
 {
 	if (m_stagingBufferPoolUsed >= m_stagingBufferPool.size()) {
