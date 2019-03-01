@@ -173,7 +173,8 @@ public:
     //std::vector<VkDeviceMemory> uniformBuffersMemory;
 
     VkDescriptorPool descriptorPool;
-    std::vector<VkDescriptorSet> descriptorSets;
+    VkDescriptorSet descriptorSet;
+    //std::vector<VkDescriptorSet> descriptorSets;
 
     std::vector<Ref<VulkanCommandBuffer>> commandBuffers;
 
@@ -705,15 +706,15 @@ public:
         VkDescriptorSetAllocateInfo allocInfo = {};
         allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
         allocInfo.descriptorPool = descriptorPool;
-        allocInfo.descriptorSetCount = static_cast<uint32_t>(swapChainImages.size());
+        allocInfo.descriptorSetCount = 1;
         allocInfo.pSetLayouts = layouts.data();
 
-        descriptorSets.resize(swapChainImages.size());
-        if (vkAllocateDescriptorSets(device, &allocInfo, descriptorSets.data()) != VK_SUCCESS) {
+        //descriptorSets.resize(swapChainImages.size());
+        if (vkAllocateDescriptorSets(device, &allocInfo, &descriptorSet) != VK_SUCCESS) {
             throw std::runtime_error("failed to allocate descriptor sets!");
         }
 
-        for (size_t i = 0; i < swapChainImages.size(); i++) {
+        //for (size_t i = 0; i < swapChainImages.size(); i++) {
             VkDescriptorBufferInfo bufferInfo = {};
             bufferInfo.buffer = m_uniformBuffer.vulkanBuffer();
             bufferInfo.offset = 0;
@@ -727,7 +728,7 @@ public:
             std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
 
             descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            descriptorWrites[0].dstSet = descriptorSets[i];
+            descriptorWrites[0].dstSet = descriptorSet;
             descriptorWrites[0].dstBinding = 0;
             descriptorWrites[0].dstArrayElement = 0;
             descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -735,7 +736,7 @@ public:
             descriptorWrites[0].pBufferInfo = &bufferInfo;
 
             descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            descriptorWrites[1].dstSet = descriptorSets[i];
+            descriptorWrites[1].dstSet = descriptorSet;
             descriptorWrites[1].dstBinding = 1;
             descriptorWrites[1].dstArrayElement = 0;
             descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -743,10 +744,9 @@ public:
             descriptorWrites[1].pImageInfo = &imageInfo;
 
             vkUpdateDescriptorSets(device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
-        }
+        //}
     }
 
-    // fix
     void createCommandBuffers() {
         commandBuffers.resize(swapChainFramebuffers.size());
 
@@ -816,7 +816,7 @@ public:
 
         vkCmdBindIndexBuffer(commandBuffer->vulkanCommandBuffer(), m_indexBuffer->vulkanBuffer(), 0, m_indexBuffer->indexType());
 
-        vkCmdBindDescriptorSets(commandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[imageIndex], 0, nullptr);
+        vkCmdBindDescriptorSets(commandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
 
         // test
         //vertices[0].pos.x = 0;
