@@ -148,7 +148,8 @@ public:
 
     VkCommandBuffer vulkanCommandBuffer() const { return m_commandBuffer; }
 
-    Result begin();
+    Result beginRecording();
+    Result endRecording();
 
 	// データを destination へ送信するためのコマンドを push する。
 	// 元データは戻り値のメモリ領域に書き込むこと。

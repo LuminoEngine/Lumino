@@ -647,7 +647,7 @@ void VulkanCommandBuffer::dispose()
     }
 }
 
-Result VulkanCommandBuffer::begin()
+Result VulkanCommandBuffer::beginRecording()
 {
     m_linearAllocator->cleanup();
 
@@ -657,6 +657,12 @@ Result VulkanCommandBuffer::begin()
 
     LN_VK_CHECK(vkBeginCommandBuffer(vulkanCommandBuffer(), &beginInfo));
 
+    return true;
+}
+
+Result VulkanCommandBuffer::endRecording()
+{
+    LN_VK_CHECK(vkEndCommandBuffer(vulkanCommandBuffer()));
     return true;
 }
 
