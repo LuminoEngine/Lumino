@@ -160,16 +160,8 @@ public:
     VkPipelineLayout pipelineLayout;
     VkPipeline graphicsPipeline;
 
+    Ref<VulkanDepthBuffer> m_depthImage;
 
-    //VkImage depthImage;
-    //VkDeviceMemory depthImageMemory;
-	VulkanImage m_depthImage;
-    //VkImageView depthImageView;
-
-    //VkImage textureImage;
-    //VkDeviceMemory textureImageMemory;
-	//VulkanImage m_textureImage;
-    //VkImageView textureImageView;
     Ref<VulkanTexture2D> m_texture;
     VkSampler textureSampler;
 
@@ -246,7 +238,7 @@ public:
 
     void cleanupSwapChain() {
 
-		m_depthImage.dispose();
+		m_depthImage->dispose();
 
         for (auto framebuffer : swapChainFramebuffers) {
             vkDestroyFramebuffer(device, framebuffer, nullptr);
@@ -391,7 +383,7 @@ public:
         colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
         VkAttachmentDescription depthAttachment = {};
-        depthAttachment.format = findDepthFormat();
+        depthAttachment.format = m_deviceContext->findDepthFormat();
         depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
         depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
         depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -596,7 +588,7 @@ public:
         for (size_t i = 0; i < swapChainImageViews.size(); i++) {
             std::array<VkImageView, 2> attachments = {
                 swapChainImageViews[i],
-                m_depthImage.vulkanImageView(),
+                m_depthImage->image()->vulkanImageView(),
             };
 
             VkFramebufferCreateInfo framebufferInfo = {};
@@ -615,34 +607,8 @@ public:
     }
 
     void createDepthResources() {
-        VkFormat depthFormat = findDepthFormat();
-
-		m_depthImage.init(m_deviceContext, swapChainExtent.width, swapChainExtent.height, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_DEPTH_BIT);
-
-        m_deviceContext->transitionImageLayout(m_depthImage.vulkanImage(), depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
-    }
-
-    VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
-        for (VkFormat format : candidates) {
-            VkFormatProperties props;
-            vkGetPhysicalDeviceFormatProperties(m_deviceContext->vulkanPhysicalDevice(), format, &props);
-
-            if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
-                return format;
-            } else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) {
-                return format;
-            }
-        }
-
-        throw std::runtime_error("failed to find supported format!");
-    }
-
-    VkFormat findDepthFormat() {
-        return findSupportedFormat(
-        {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
-            VK_IMAGE_TILING_OPTIMAL,
-            VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
-        );
+        m_depthImage = makeRef<VulkanDepthBuffer>();
+        m_depthImage->init(m_deviceContext, swapChainExtent.width, swapChainExtent.height);
     }
 
     void createTextureImage() {
@@ -1269,6 +1235,9 @@ Ref<ITexture> VulkanDeviceContext::onCreateRenderTarget(uint32_t width, uint32_t
 Ref<IDepthBuffer> VulkanDeviceContext::onCreateDepthBuffer(uint32_t width, uint32_t height)
 {
 	auto ptr = makeRef<VulkanDepthBuffer>();
+    if (!ptr->init(this, width, height)) {
+        return nullptr;
+    }
 	return ptr;
 }
 
@@ -1544,6 +1513,33 @@ QueueFamilyIndices VulkanDeviceContext::findQueueFamilies(VkPhysicalDevice devic
 	}
 
 	return indices;
+}
+
+VkFormat VulkanDeviceContext::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features)
+{
+    for (VkFormat format : candidates) {
+        VkFormatProperties props;
+        vkGetPhysicalDeviceFormatProperties(vulkanPhysicalDevice(), format, &props);
+
+        if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
+            return format;
+        }
+        else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) {
+            return format;
+        }
+    }
+
+    LN_UNREACHABLE();
+    return VK_FORMAT_UNDEFINED;
+}
+
+VkFormat VulkanDeviceContext::findDepthFormat()
+{
+    return findSupportedFormat(
+        { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
+        VK_IMAGE_TILING_OPTIMAL,
+        VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
+    );
 }
 
 VkCommandBuffer VulkanDeviceContext::beginSingleTimeCommands()
@@ -1856,6 +1852,33 @@ Result VulkanTexture2D::init(VulkanDeviceContext* deviceContext, uint32_t width,
 }
 
 void VulkanTexture2D::dispose()
+{
+    m_image.dispose();
+}
+
+//==============================================================================
+// VulkanDepthBuffer
+
+VulkanDepthBuffer::VulkanDepthBuffer()
+{
+}
+
+Result VulkanDepthBuffer::init(VulkanDeviceContext* deviceContext, uint32_t width, uint32_t height)
+{
+    LN_DCHECK(deviceContext);
+    m_deviceContext = deviceContext;
+
+    VkFormat depthFormat = m_deviceContext->findDepthFormat();
+
+    m_image.init(m_deviceContext, width, height, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_DEPTH_BIT);
+
+    m_deviceContext->transitionImageLayout(m_image.vulkanImage(), depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+
+
+    return true;
+}
+
+void VulkanDepthBuffer::dispose()
 {
     m_image.dispose();
 }

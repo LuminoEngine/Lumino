@@ -80,6 +80,9 @@ public: // TODO:
     Result createCommandPool();
 
 	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+    VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+    VkFormat findDepthFormat();
+
     VkCommandBuffer beginSingleTimeCommands();
     void endSingleTimeCommands(VkCommandBuffer commandBuffer);
     void copyBufferImmediately(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
@@ -201,7 +204,14 @@ class VulkanDepthBuffer
 	: public IDepthBuffer
 {
 public:
-	VulkanDepthBuffer() {}
+    VulkanDepthBuffer();
+    Result init(VulkanDeviceContext* deviceContext, uint32_t width, uint32_t height);
+    void dispose();
+    const VulkanImage* image() const { return &m_image; }
+
+private:
+    VulkanDeviceContext* m_deviceContext;
+    VulkanImage m_image;
 };
 
 
