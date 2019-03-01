@@ -778,7 +778,7 @@ public:
         }
     }
 
-    void updateFrameData(uint32_t currentImage) {
+    void updateFrameData(uint32_t imageIndex, VulkanCommandBuffer* commandBuffer) {
         static auto startTime = std::chrono::high_resolution_clock::now();
 
         auto currentTime = std::chrono::high_resolution_clock::now();
@@ -790,17 +790,12 @@ public:
 		ubo.proj = Matrix::makePerspectiveFovLH(0.3, swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 10.0f);// glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 10.0f);
         //ubo.proj[1][1] *= -1;
 
-
-
-
-        int i = currentImage;
-
-        commandBuffers[i]->beginRecording();
+        commandBuffer->beginRecording();
 
         VkRenderPassBeginInfo renderPassInfo = {};
         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
         renderPassInfo.renderPass = renderPass;
-        renderPassInfo.framebuffer = swapChainFramebuffers[i];
+        renderPassInfo.framebuffer = swapChainFramebuffers[imageIndex];
         renderPassInfo.renderArea.offset = { 0, 0 };
         renderPassInfo.renderArea.extent = swapChainExtent;
 
@@ -811,37 +806,37 @@ public:
         renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
         renderPassInfo.pClearValues = clearValues.data();
 
-        vkCmdBeginRenderPass(commandBuffers[i]->vulkanCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+        vkCmdBeginRenderPass(commandBuffer->vulkanCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-        vkCmdBindPipeline(commandBuffers[i]->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+        vkCmdBindPipeline(commandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
         VkBuffer vertexBuffers[] = { m_vertexBuffer->vulkanBuffer() };
         VkDeviceSize offsets[] = { 0 };
-        vkCmdBindVertexBuffers(commandBuffers[i]->vulkanCommandBuffer(), 0, 1, vertexBuffers, offsets);
+        vkCmdBindVertexBuffers(commandBuffer->vulkanCommandBuffer(), 0, 1, vertexBuffers, offsets);
 
-        vkCmdBindIndexBuffer(commandBuffers[i]->vulkanCommandBuffer(), m_indexBuffer->vulkanBuffer(), 0, m_indexBuffer->indexType());
+        vkCmdBindIndexBuffer(commandBuffer->vulkanCommandBuffer(), m_indexBuffer->vulkanBuffer(), 0, m_indexBuffer->indexType());
 
-        vkCmdBindDescriptorSets(commandBuffers[i]->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
+        vkCmdBindDescriptorSets(commandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[imageIndex], 0, nullptr);
 
         // test
         //vertices[0].pos.x = 0;
         //vertices[0].pos.y = 0;
-        //VulkanBuffer* buffer = commandBuffers[i]->cmdCopyBuffer(sizeof(vertices[0]) * vertices.size(), m_vertexBuffer->buffer());
+        //VulkanBuffer* buffer = commandBuffer->cmdCopyBuffer(sizeof(vertices[0]) * vertices.size(), m_vertexBuffer->buffer());
         //buffer->setData(0, vertices.data(), sizeof(vertices[0]) * vertices.size());
 
-        VulkanBuffer* buffer = commandBuffers[i]->cmdCopyBuffer(sizeof(ubo), &m_uniformBuffer);
+        VulkanBuffer* buffer = commandBuffer->cmdCopyBuffer(sizeof(ubo), &m_uniformBuffer);
         buffer->setData(0, &ubo, sizeof(ubo));
 
-        vkCmdDrawIndexed(commandBuffers[i]->vulkanCommandBuffer(), static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+        vkCmdDrawIndexed(commandBuffer->vulkanCommandBuffer(), static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 
         // test
         //vertices[0].pos.x = 0;
         //vertices[0].pos.y = 0;
         //m_vertexBuffer->setSubData(0, vertices.data(), sizeof(vertices[0]) * vertices.size());
 
-        vkCmdEndRenderPass(commandBuffers[i]->vulkanCommandBuffer());
+        vkCmdEndRenderPass(commandBuffer->vulkanCommandBuffer());
 
-        commandBuffers[i]->endRecording();
+        commandBuffer->endRecording();
 
         //m_uniformBuffers[currentImage].setData(0, &ubo, sizeof(ubo));
     }
@@ -859,7 +854,7 @@ public:
             throw std::runtime_error("failed to acquire swap chain image!");
         }
 
-        updateFrameData(imageIndex);
+        updateFrameData(imageIndex, commandBuffers[imageIndex]);
 
         VkSubmitInfo submitInfo = {};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
