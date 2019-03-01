@@ -157,6 +157,25 @@ protected:
     VkIndexType m_indexType;
 };
 
+class VulkanTexture2D
+	: public ITexture
+{
+public:
+	VulkanTexture2D();
+	Result init(VulkanDeviceContext* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData);
+	virtual DeviceTextureType type() const { return DeviceTextureType::Texture2D; }
+	virtual SizeI realSize() { return m_size; }
+	virtual TextureFormat getTextureFormat() const = 0;
+	virtual void readData(void* outData) { LN_UNREACHABLE(); }
+	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) { LN_NOTIMPLEMENTED(); }
+	virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) { LN_UNREACHABLE(); }
+
+private:
+	VulkanDeviceContext* m_deviceContext;
+	SizeI m_size;
+	TextureFormat m_format;
+};
+
 class VulkanRenderTarget
 	: public ITexture
 {

@@ -525,6 +525,64 @@ void VulkanBuffer::setData(size_t offset, const void* data, VkDeviceSize size)
 }
 
 //=============================================================================
+// VulkanImage
+
+VulkanImage::VulkanImage()
+{
+}
+
+Result VulkanImage::init(VulkanDeviceContext* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties)
+{
+	LN_DCHECK(deviceContext);
+	m_deviceContext = deviceContext;
+	VkDevice device = m_deviceContext->vulkanDevice();
+
+	VkImageCreateInfo imageInfo = {};
+	imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+	imageInfo.imageType = VK_IMAGE_TYPE_2D;
+	imageInfo.extent.width = width;
+	imageInfo.extent.height = height;
+	imageInfo.extent.depth = 1;
+	imageInfo.mipLevels = 1;
+	imageInfo.arrayLayers = 1;
+	imageInfo.format = format;
+	imageInfo.tiling = tiling;
+	imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	imageInfo.usage = usage;
+	imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+	imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+	LN_VK_CHECK(vkCreateImage(device, &imageInfo, m_deviceContext->vulkanAllocator(), &m_image));
+
+	VkMemoryRequirements memRequirements;
+	vkGetImageMemoryRequirements(device, m_image, &memRequirements);
+
+	VkMemoryAllocateInfo allocInfo = {};
+	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+	allocInfo.allocationSize = memRequirements.size;
+
+	m_deviceContext->findMemoryType(memRequirements.memoryTypeBits, properties, &allocInfo.memoryTypeIndex);
+
+	LN_VK_CHECK(vkAllocateMemory(device, &allocInfo, m_deviceContext->vulkanAllocator(), &m_imageMemory));
+
+	vkBindImageMemory(device, m_image, m_imageMemory, 0);
+
+	return true;
+}
+
+void VulkanImage::dispose()
+{
+	if (m_image) {
+		vkDestroyImage(m_deviceContext->vulkanDevice(), m_image, m_deviceContext->vulkanAllocator());
+		m_image = VK_NULL_HANDLE;
+	}
+	if (m_imageMemory) {
+		vkFreeMemory(m_deviceContext->vulkanDevice(), m_imageMemory, m_deviceContext->vulkanAllocator());
+		m_imageMemory = VK_NULL_HANDLE;
+	}
+}
+
+//=============================================================================
 // VulkanCommandBuffer
 
 VulkanCommandBuffer::VulkanCommandBuffer()

@@ -116,6 +116,22 @@ private:
     VkDeviceSize m_size;
 };
 
+// テクスチャ、レンダーターゲット、デプスバッファなどに使用される Image
+class VulkanImage
+{
+public:
+	VulkanImage();
+	Result init(VulkanDeviceContext* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties);
+	void dispose();
+	VkImage vulkanImage() const { return m_image; }
+	VkDeviceMemory vulkanDeviceMemory() const { return m_imageMemory; }
+
+private:
+	VulkanDeviceContext* m_deviceContext;
+	VkImage m_image;
+	VkDeviceMemory m_imageMemory;
+};
+
 // ひとつのコマンドバッファ。通常、記録中バッファと実行中バッファなどに分かれるため、インスタンスは複数作られる。
 // VkCommandBuffer のほか、動的な各種バッファの変更などで必要となるメモリプールの管理も行う。
 class VulkanCommandBuffer
