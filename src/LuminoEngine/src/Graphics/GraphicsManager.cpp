@@ -94,6 +94,31 @@ TextureFormat GraphicsHelper::translateToTextureFormat(PixelFormat format)
 	}
 }
 
+size_t GraphicsHelper::getPixelSize(TextureFormat format)
+{
+    switch (format)
+    {
+    case TextureFormat::Unknown:
+        return 0;
+    case TextureFormat::RGBA32:
+        return 4;
+    case TextureFormat::RGB24:
+        return 3;
+    case TextureFormat::R16G16B16A16Float:
+        return 8;
+    case TextureFormat::R32G32B32A32Float:
+        return 16;
+    case TextureFormat::R16Float:
+        return 2;
+    case TextureFormat::R32Float:
+        return 4;
+    case TextureFormat::R32UInt:
+        return 4;
+    default:
+        LN_UNREACHABLE();
+        return 0;
+    }
+}
 
 
 namespace detail {

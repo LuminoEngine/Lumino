@@ -168,8 +168,9 @@ public:
 
     //VkImage textureImage;
     //VkDeviceMemory textureImageMemory;
-	VulkanImage m_textureImage;
+	//VulkanImage m_textureImage;
     //VkImageView textureImageView;
+    Ref<VulkanTexture2D> m_texture;
     VkSampler textureSampler;
 
     Ref<VulkanVertexBuffer> m_vertexBuffer;
@@ -272,7 +273,7 @@ public:
 
         vkDestroySampler(device, textureSampler, nullptr);
 
-		m_textureImage.dispose();
+		m_texture->dispose();
 
         vkDestroyDescriptorPool(device, descriptorPool, nullptr);
 
@@ -653,25 +654,10 @@ public:
             throw std::runtime_error("failed to load texture image!");
         }
 
-        VkBuffer stagingBuffer;
-        VkDeviceMemory stagingBufferMemory;
-        createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
-
-        void* data;
-        vkMapMemory(device, stagingBufferMemory, 0, imageSize, 0, &data);
-            memcpy(data, pixels, static_cast<size_t>(imageSize));
-        vkUnmapMemory(device, stagingBufferMemory);
+        m_texture = makeRef<VulkanTexture2D>();
+        m_texture->init(m_deviceContext, texWidth, texHeight, TextureFormat::RGBA32, false, pixels);
 
         stbi_image_free(pixels);
-
-		m_textureImage.init(m_deviceContext, texWidth, texHeight, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
-
-        m_deviceContext->transitionImageLayout(m_textureImage.vulkanImage(), VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-        m_deviceContext->copyBufferToImageImmediately(stagingBuffer, m_textureImage.vulkanImage(), static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
-        m_deviceContext->transitionImageLayout(m_textureImage.vulkanImage(), VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-        vkDestroyBuffer(device, stagingBuffer, nullptr);
-        vkFreeMemory(device, stagingBufferMemory, nullptr);
     }
 
     void createTextureSampler() {
@@ -779,7 +765,7 @@ public:
 
             VkDescriptorImageInfo imageInfo = {};
             imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            imageInfo.imageView = m_textureImage.vulkanImageView();
+            imageInfo.imageView = m_texture->image()->vulkanImageView();
             imageInfo.sampler = textureSampler;
 
             std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
@@ -1829,8 +1815,49 @@ Result VulkanTexture2D::init(VulkanDeviceContext* deviceContext, uint32_t width,
 {
 	LN_DCHECK(deviceContext);
 	m_deviceContext = deviceContext;
+    m_size.width = width;
+    m_size.height = height;
+    m_format = requestFormat;
+
+    VkFormat nativeFormat = VulkanHelper::LNFormatToVkFormat(requestFormat);
+    VkDeviceSize imageSize = width * height * GraphicsHelper::getPixelSize(requestFormat);
+
+    if (!initialData) {
+        LN_NOTIMPLEMENTED();
+    }
+    else {
+        VulkanBuffer stagingBuffer;
+        if (!stagingBuffer.init(m_deviceContext, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
+            return false;
+        }
+        stagingBuffer.setData(0, initialData, imageSize);
+        //VkBuffer stagingBuffer;
+        //VkDeviceMemory stagingBufferMemory;
+        //createBuffer(imageSize, , , stagingBuffer, stagingBufferMemory);
+
+        //void* data;
+        //vkMapMemory(device, stagingBufferMemory, 0, imageSize, 0, &data);
+        //memcpy(data, pixels, static_cast<size_t>(imageSize));
+        //vkUnmapMemory(device, stagingBufferMemory);
+
+        // VK_FORMAT_R8G8B8A8_UNORM
+        m_image.init(m_deviceContext, width, height, nativeFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
+
+        m_deviceContext->transitionImageLayout(m_image.vulkanImage(), VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+        m_deviceContext->copyBufferToImageImmediately(stagingBuffer.vulkanBuffer(), m_image.vulkanImage(), width, height);
+        m_deviceContext->transitionImageLayout(m_image.vulkanImage(), VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+        stagingBuffer.dispose();
+        //vkDestroyBuffer(device, stagingBuffer, nullptr);
+        //vkFreeMemory(device, stagingBufferMemory, nullptr);
+    }
 
 	return true;
+}
+
+void VulkanTexture2D::dispose()
+{
+    m_image.dispose();
 }
 
 } // namespace detail

@@ -225,6 +225,7 @@ public:
     static size_t getVertexElementTypeSize(VertexElementType type);
 	static PixelFormat translateToPixelFormat(TextureFormat format);
 	static TextureFormat translateToTextureFormat(PixelFormat format);
+    static size_t getPixelSize(TextureFormat format);
 };
 
 
