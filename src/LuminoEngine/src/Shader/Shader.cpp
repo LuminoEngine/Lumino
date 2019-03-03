@@ -261,7 +261,7 @@ void Shader::createFromUnifiedShader(Stream* stream, DiagnosticsManager* diag)
 {
     detail::UnifiedShader unifiedShader(diag);
     if (unifiedShader.load(stream)) {
-        auto& triple = manager()->deviceContext()->caps().requestedShaderTriple;
+        
         for (int iTech = 0; iTech < unifiedShader.techniqueCount(); iTech++) {
             detail::UnifiedShader::TechniqueId techId = unifiedShader.techniqueId(iTech);
             auto tech = newObject<ShaderTechnique>(String::fromStdString(unifiedShader.techniqueName(techId)));
@@ -271,29 +271,8 @@ void Shader::createFromUnifiedShader(Stream* stream, DiagnosticsManager* diag)
             int passCount = unifiedShader.getPassCountInTechnique(techId);
             for (int iPass = 0; iPass < passCount; iPass++) {
                 detail::UnifiedShader::PassId passId = unifiedShader.getPassIdInTechnique(techId, iPass);
-                detail::UnifiedShader::CodeContainerId vscodeId = unifiedShader.vertexShader(passId);
-                detail::UnifiedShader::CodeContainerId pscodeId = unifiedShader.pixelShader(passId);
 
-                //const std::vector<byte_t>* vscode = nullptr;
-                //const std::vector<byte_t>* pscode = nullptr;
-                const detail::UnifiedShader::CodeInfo* vscode = nullptr;
-                const detail::UnifiedShader::CodeInfo* pscode = nullptr;
-                if (vscodeId) {
-                    vscode = unifiedShader.findCode(vscodeId, triple);
-                }
-                if (pscodeId) {
-                    pscode = unifiedShader.findCode(pscodeId, triple);
-                }
-
-                auto rhiPass = createRHIShaderPass(
-                    (vscode) ? vscode->code.data() : nullptr,
-					(vscode) ? vscode->code.size() : 0,
-					(pscode) ? pscode->code.data() : nullptr,
-					(pscode) ? pscode->code.size() : 0,
-					&unifiedShader.attributeSemantics(passId),
-                    vscode->refrection,
-                    pscode->refrection,
-					diag);
+                auto rhiPass = manager()->deviceContext()->createShaderPassFromUnifiedShaderPass(&unifiedShader, passId, diag);
                 if (rhiPass) {
                     auto pass = newObject<ShaderPass>(String::fromStdString(unifiedShader.passName(passId)), rhiPass);
                     pass->m_renderState = unifiedShader.renderState(passId);
@@ -372,52 +351,8 @@ Ref<detail::IShaderPass> Shader::createRHIShaderPass(
     detail::UnifiedShaderRefrectionInfo* pixelShaderRefrection,
     DiagnosticsManager* diag)
 {
-	detail::ShaderVertexInputAttributeTable attributeTable;
-	if (vertexInputAttributeTable) {
-		struct AttributeUsageConvertionItem
-		{
-			detail::AttributeUsage usage1;
-			VertexElementUsage usage2;
-		};
-		static const AttributeUsageConvertionItem s_AttributeUsageConvertionTable[] = {
-			{ detail::AttributeUsage_Unknown, VertexElementUsage::Unknown },
-			{ detail::AttributeUsage_Position, VertexElementUsage::Position },
-			{ detail::AttributeUsage_BlendIndices, VertexElementUsage::BlendIndices },
-			{ detail::AttributeUsage_BlendWeight, VertexElementUsage::BlendWeight },
-			{ detail::AttributeUsage_Normal, VertexElementUsage::Normal },
-			{ detail::AttributeUsage_TexCoord, VertexElementUsage::TexCoord },
-			{ detail::AttributeUsage_Tangent, VertexElementUsage::Unknown },	// TODO:
-			{ detail::AttributeUsage_Binormal, VertexElementUsage::Unknown },	// TODO:
-			{ detail::AttributeUsage_Color, VertexElementUsage::Color },
-		};
-
-		for (size_t i = 0; i < vertexInputAttributeTable->size(); i++) {
-			detail::ShaderVertexInputAttribute attr;
-			assert(i == s_AttributeUsageConvertionTable[i].usage1);
-			attr.usage = s_AttributeUsageConvertionTable[(int)vertexInputAttributeTable->at(i).usage].usage2;
-			attr.index = vertexInputAttributeTable->at(i).index;
-			attr.layoutLocation = vertexInputAttributeTable->at(i).layoutLocation;
-			attributeTable.push_back(attr);
-		}
-	}
-
-    detail::ShaderPassCreateInfo createInfo = { vsData, vsLen, psData, psLen, &attributeTable, vertexShaderRefrection, pixelShaderRefrection };
-    //if (!createInfo.vertexShaderRefrection) {
-    //    createInfo.vertexShaderRefrection = makeRef<detail::UnifiedShaderRefrectionInfo>();
-    //}
-    //if (!createInfo.pixelShaderRefrection) {
-    //    createInfo.pixelShaderRefrection = makeRef<detail::UnifiedShaderRefrectionInfo>();
-    //}
-    ShaderCompilationDiag sdiag;
-    Ref<detail::IShaderPass> pass = deviceContext()->createShaderPass(createInfo, &sdiag);
-
-    if (sdiag.level == ShaderCompilationResultLevel::Error) {
-        diag->reportError(String::fromStdString(sdiag.message));
-    } else if (sdiag.level == ShaderCompilationResultLevel::Warning) {
-        diag->reportWarning(String::fromStdString(sdiag.message));
-    }
-
-    return pass;
+    LN_NOTIMPLEMENTED();
+    return nullptr;
 }
 
 void Shader::createSinglePassShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen, DiagnosticsManager* diag, ShaderCompilationProperties* properties)

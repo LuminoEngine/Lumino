@@ -247,7 +247,7 @@ class VulkanShaderPass
 {
 public:
     VulkanShaderPass();
-    Result init(VulkanDeviceContext* deviceContext, const ShaderPassCreateInfo& createInfo);
+    Result init(VulkanDeviceContext* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
     void dispose();
     virtual int getUniformBufferCount() const override { return 0; }
     virtual IShaderUniformBuffer* getUniformBuffer(int index) const override { return nullptr; }

@@ -438,6 +438,7 @@ public:
         }
     }
 
+    // これはシェーダがどんな uniform を持っているかで決める必要がある
     void createDescriptorSetLayout() {
         VkDescriptorSetLayoutBinding uboLayoutBinding = {};
         uboLayoutBinding.binding = 0;
@@ -464,31 +465,56 @@ public:
         }
     }
 
+    VkShaderModule createShaderModule(const std::vector<char>& code) {
+        VkShaderModuleCreateInfo createInfo = {};
+        createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+        createInfo.codeSize = code.size();
+        createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
+
+        VkShaderModule shaderModule;
+        if (vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create shader module!");
+        }
+
+        return shaderModule;
+    }
     void createGraphicsPipeline() {
+        m_deviceContext->refreshCaps();
+        auto diag = newObject<DiagnosticsManager>();
+        auto stream = FileStream::create("D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Graphics/Resource/VulkanSampleDeviceContext_26_shader_depth.lcfx");
+        detail::UnifiedShader unifiedShader(diag);
+        unifiedShader.load(stream);
+        m_shaderPass = ln::dynamic_pointer_cast<VulkanShaderPass>(m_deviceContext->createShaderPassFromUnifiedShaderPass(&unifiedShader, 1, diag));
+
+
         auto vertShaderCode = HelloTriangleApplication::readFile("D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Graphics/Resource/VulkanSampleDeviceContext_26_shader_depth.vert.spv");
         auto fragShaderCode = HelloTriangleApplication::readFile("D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Graphics/Resource/VulkanSampleDeviceContext_26_shader_depth.frag.spv");
 
-        {
-            ShaderPassCreateInfo info = {};
-            info.vsCode = (byte_t*)vertShaderCode.data();
-            info.vsCodeLen = vertShaderCode.size();
-            info.psCode = (byte_t*)fragShaderCode.data();
-            info.psCodeLen = fragShaderCode.size();
-            m_shaderPass = makeRef<VulkanShaderPass>();
-            m_shaderPass->init(m_deviceContext, info);
-        }
+        VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
+        VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
+
+        //{
+        //    ShaderPassCreateInfo info = {};
+        //    info.vsCode = (byte_t*)vertShaderCode.data();
+        //    info.vsCodeLen = vertShaderCode.size();
+        //    info.psCode = (byte_t*)fragShaderCode.data();
+        //    info.psCodeLen = fragShaderCode.size();
+        //    ShaderCompilationDiag diag2;
+        //    m_shaderPass = makeRef<VulkanShaderPass>();
+        //    m_shaderPass->init(m_deviceContext, info, &diag2);
+        //}
 
         VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
         vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
         vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-        vertShaderStageInfo.module = m_shaderPass->vulkanVertShaderModule();
-        vertShaderStageInfo.pName = "main";
+        vertShaderStageInfo.module = m_shaderPass->vulkanVertShaderModule();//vertShaderModule;//
+        vertShaderStageInfo.pName = "vsMain";//"main";//
 
         VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
         fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
         fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-        fragShaderStageInfo.module = m_shaderPass->vulkanFragShaderModule();
-        fragShaderStageInfo.pName = "main";
+        fragShaderStageInfo.module = fragShaderModule;// m_shaderPass->vulkanFragShaderModule();
+        fragShaderStageInfo.pName = "main";//"psMain";
 
         VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
 
@@ -824,6 +850,22 @@ public:
 		ubo.view = Matrix::makeLookAtLH(Vector3(2.0f, 2.0f, 2.0f), Vector3::Zero, Vector3::UnitZ);//glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		ubo.proj = Matrix::makePerspectiveFovLH(0.3, swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 10.0f);// glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 10.0f);
         //ubo.proj[1][1] *= -1;
+        // TODO: 転置
+        // HlslParseContext::setUniformBlockDefaults で、uniform block のデフォルトの行列レイアウトを ElmRowMajor にしているため、
+        // 例えば GLSL コードにすると
+        //   layout(std140) uniform _Global {
+        //     layout(row_major) mat4 model;
+        //     layout(row_major) mat4 view;
+        //     layout(row_major) mat4 proj;
+        //   };
+        // のように出力される。
+        // 外部からこれを制御する方法はなさそうなので、使う側で転置してカバーする。
+        // ちなみに、ElmColumnMajor にすると上の layout(row_major) の部分は消える（GLSL に出力されない）
+        ubo.model.transpose();
+        ubo.view.transpose();
+        ubo.proj.transpose();
+        ////ubo.model = ubo.model * ubo.view * ubo.proj;
+        //ubo.model.transpose();
 
         commandBuffer->beginRecording();
 
@@ -937,20 +979,6 @@ public:
 
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
     }
-
-    //VkShaderModule createShaderModule(const std::vector<char>& code) {
-    //    VkShaderModuleCreateInfo createInfo = {};
-    //    createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-    //    createInfo.codeSize = code.size();
-    //    createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
-
-    //    VkShaderModule shaderModule;
-    //    if (vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
-    //        throw std::runtime_error("failed to create shader module!");
-    //    }
-
-    //    return shaderModule;
-    //}
 
     VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
         if (availableFormats.size() == 1 && availableFormats[0].format == VK_FORMAT_UNDEFINED) {
@@ -1155,6 +1183,9 @@ void VulkanDeviceContext::dispose()
 
 void VulkanDeviceContext::onGetCaps(GraphicsDeviceCaps * outCaps)
 {
+    outCaps->requestedShaderTriple.target = "spv";
+    outCaps->requestedShaderTriple.version = 110;
+    outCaps->requestedShaderTriple.option = "";
 }
 
 void VulkanDeviceContext::onEnterMainThread()
@@ -1232,8 +1263,11 @@ Ref<ISamplerState> VulkanDeviceContext::onCreateSamplerState(const SamplerStateD
 
 Ref<IShaderPass> VulkanDeviceContext::onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag)
 {
-	LN_NOTIMPLEMENTED();
-	return nullptr;
+    auto ptr = makeRef<VulkanShaderPass>();
+    if (!ptr->init(this, createInfo, diag)) {
+        return nullptr;
+    }
+    return ptr;
 }
 
 void VulkanDeviceContext::onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState)
@@ -1915,7 +1949,7 @@ VulkanShaderPass::VulkanShaderPass()
 {
 }
 
-Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPassCreateInfo& createInfo)
+Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag)
 {
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;

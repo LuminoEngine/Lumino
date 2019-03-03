@@ -186,6 +186,98 @@ void IGraphicsDeviceContext::present(ISwapChain* swapChain)
 	onPresent(swapChain);
 }
 
+Ref<IShaderPass> IGraphicsDeviceContext::createShaderPassFromUnifiedShaderPass(const UnifiedShader* unifiedShader, UnifiedShader::PassId passId, DiagnosticsManager* diag)
+{
+    LN_DCHECK(unifiedShader);
+    LN_DCHECK(diag);
+    auto& triple = caps().requestedShaderTriple;
+
+    detail::UnifiedShader::CodeContainerId vscodeId = unifiedShader->vertexShader(passId);
+    detail::UnifiedShader::CodeContainerId pscodeId = unifiedShader->pixelShader(passId);
+
+    //const std::vector<byte_t>* vscode = nullptr;
+    //const std::vector<byte_t>* pscode = nullptr;
+    const detail::UnifiedShader::CodeInfo* vscode = nullptr;
+    const detail::UnifiedShader::CodeInfo* pscode = nullptr;
+    if (vscodeId) {
+        vscode = unifiedShader->findCode(vscodeId, triple);
+    }
+    if (pscodeId) {
+        pscode = unifiedShader->findCode(pscodeId, triple);
+    }
+
+    //auto rhiPass = createRHIShaderPass(
+    //    //(vscode) ? vscode->code.data() : nullptr,
+    //    //(vscode) ? vscode->code.size() : 0,
+    //    //(pscode) ? pscode->code.data() : nullptr,
+    //    //(pscode) ? pscode->code.size() : 0,
+    //    ,
+    //    vscode->refrection,
+    //    pscode->refrection,
+    //    diag);
+
+    // TODO: ポインタの必要なし
+    auto vertexInputAttributeTable = &unifiedShader->attributeSemantics(passId);
+
+
+    detail::ShaderVertexInputAttributeTable attributeTable;
+    if (vertexInputAttributeTable) {
+        struct AttributeUsageConvertionItem
+        {
+            detail::AttributeUsage usage1;
+            VertexElementUsage usage2;
+        };
+        static const AttributeUsageConvertionItem s_AttributeUsageConvertionTable[] = {
+            { detail::AttributeUsage_Unknown, VertexElementUsage::Unknown },
+            { detail::AttributeUsage_Position, VertexElementUsage::Position },
+            { detail::AttributeUsage_BlendIndices, VertexElementUsage::BlendIndices },
+            { detail::AttributeUsage_BlendWeight, VertexElementUsage::BlendWeight },
+            { detail::AttributeUsage_Normal, VertexElementUsage::Normal },
+            { detail::AttributeUsage_TexCoord, VertexElementUsage::TexCoord },
+            { detail::AttributeUsage_Tangent, VertexElementUsage::Unknown },	// TODO:
+            { detail::AttributeUsage_Binormal, VertexElementUsage::Unknown },	// TODO:
+            { detail::AttributeUsage_Color, VertexElementUsage::Color },
+        };
+
+        for (size_t i = 0; i < vertexInputAttributeTable->size(); i++) {
+            detail::ShaderVertexInputAttribute attr;
+            assert(i == s_AttributeUsageConvertionTable[i].usage1);
+            attr.usage = s_AttributeUsageConvertionTable[(int)vertexInputAttributeTable->at(i).usage].usage2;
+            attr.index = vertexInputAttributeTable->at(i).index;
+            attr.layoutLocation = vertexInputAttributeTable->at(i).layoutLocation;
+            attributeTable.push_back(attr);
+        }
+    }
+
+    detail::ShaderPassCreateInfo createInfo =
+    {
+        (vscode) ? vscode->code.data() : nullptr,
+        (vscode) ? vscode->code.size() : 0,
+        (pscode) ? pscode->code.data() : nullptr,
+        (pscode) ? pscode->code.size() : 0,
+        &attributeTable,
+        vscode->refrection,
+        pscode->refrection
+    };
+    //if (!createInfo.vertexShaderRefrection) {
+    //    createInfo.vertexShaderRefrection = makeRef<detail::UnifiedShaderRefrectionInfo>();
+    //}
+    //if (!createInfo.pixelShaderRefrection) {
+    //    createInfo.pixelShaderRefrection = makeRef<detail::UnifiedShaderRefrectionInfo>();
+    //}
+    ShaderCompilationDiag sdiag;
+    Ref<detail::IShaderPass> pass = createShaderPass(createInfo, &sdiag);
+
+    if (sdiag.level == ShaderCompilationResultLevel::Error) {
+        diag->reportError(String::fromStdString(sdiag.message));
+    }
+    else if (sdiag.level == ShaderCompilationResultLevel::Warning) {
+        diag->reportWarning(String::fromStdString(sdiag.message));
+    }
+
+    return pass;
+}
+
 void IGraphicsDeviceContext::commitStatus()
 {
 	if (LN_REQUIRE(m_staging.framebufferState.renderTargets[0])) return;
@@ -204,7 +296,6 @@ void IGraphicsDeviceContext::commitStatus()
 	
     m_committed = m_staging;
 }
-
 
 //=============================================================================
 // IGraphicsDeviceObject

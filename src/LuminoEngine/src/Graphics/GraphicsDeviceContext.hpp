@@ -3,6 +3,7 @@
 #include <LuminoEngine/Graphics/Common.hpp>
 #include <LuminoEngine/Graphics/RenderState.hpp>
 #include <LuminoEngine/Shader/Common.hpp>
+#include "../Shader/UnifiedShader.hpp"
 
 namespace ln {
 struct SizeI;
@@ -132,6 +133,9 @@ public:
 	void drawPrimitiveIndexed(int startIndex, int primitiveCount);
 
 	void present(ISwapChain* swapChain);
+
+    // utility
+    Ref<IShaderPass> createShaderPassFromUnifiedShaderPass(const UnifiedShader* unifiedShader, UnifiedShader::PassId passId, DiagnosticsManager* diag);
 
 protected:
 

@@ -51,12 +51,12 @@ while (Engine::update())
 {
     if (Input::isPressed(u"left"))
     {
-        x += 0.1f;
+        x -= 0.1f;
     }
 
     if (Input::isPressed(u"right"))
     {
-        x -= 0.1f;
+        x += 0.1f;
     }
 
     playerSprite->setPosition(x, 0);

@@ -21,3 +21,19 @@ Lumino は以下の2つの方法でこの差を調整します。
 - レンダーターゲットテクスチャについては、シェーダコンパイラがテクスチャサンプリング時にテクスチャ座標の Y値 を反転するコードを挿入します。
 
 
+シェーダコードにおける行列の演算方法
+----------
+
+Bad:
+```
+pos = proj * view * model * float4(inPosition, 1.0);
+```
+
+Good:
+```
+pos = mul(float4(inPosition, 1.0), model);
+pos = mul(pos, view);
+pos = mul(pos, proj);
+```
+
+
