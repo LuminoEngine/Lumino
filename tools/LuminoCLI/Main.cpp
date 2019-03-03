@@ -24,7 +24,7 @@ int main(int argc, char** argv)
 		const char* debugArgv[] = {
 			"<program>",
 			//"init", "TH-10", "--engine=repo:0.10.0"
-            "init", "RinoTutorial", "-t", "SimpleDesktop",
+            //"init", "RinoTutorial", "-t", "SimpleDesktop",
 
 			//"<program>", "dev-install-tools",
 
@@ -45,7 +45,7 @@ int main(int argc, char** argv)
             //"build", "assets",
 			//"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Graphics/SimplePosColor.fx"
             //"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Graphics/SimpleConstantBuffer.fx"
-			//"fxc", "D:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Graphics/SimpleConstantBuffer.fx"
+			"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Graphics/Resource/VulkanSampleDeviceContext_26_shader_depth.fx"
 		};
 		argc = sizeof(debugArgv) / sizeof(char*);
 		argv = (char**)debugArgv;

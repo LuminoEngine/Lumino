@@ -513,8 +513,8 @@ public:
         VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
         fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
         fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-        fragShaderStageInfo.module = fragShaderModule;// m_shaderPass->vulkanFragShaderModule();
-        fragShaderStageInfo.pName = "main";//"psMain";
+        fragShaderStageInfo.module = m_shaderPass->vulkanFragShaderModule();//fragShaderModule;// 
+        fragShaderStageInfo.pName = "psMain"; //"main";//
 
         VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
 

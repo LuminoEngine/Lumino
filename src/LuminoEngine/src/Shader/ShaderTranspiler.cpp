@@ -336,6 +336,10 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
 		compUnit.stage, glslang::EShClientVulkan, ClientInputSemanticsVersion);
 		shader->setEnvClient(glslang::EShClientVulkan, VulkanClientVersion);
 		*/
+        //shader.setShiftBinding(glslang::EResUbo, 0);
+        //shader.setShiftBinding(glslang::EResSampler, 1);
+        //shader.setShiftBindingForSet(glslang::EResUbo, 0, 0);
+        //shader.setShiftBindingForSet(glslang::EResSampler, 1, 1);
 
         if (preamble.isSet()) {
             shader.setPreamble(preamble.get());
@@ -368,6 +372,10 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
         } else if (shader.getInfoLog()) {
             if (!StringHelper::isNullOrEmpty(shader.getInfoLog())) diag->reportWarning(shader.getInfoLog());
             if (!StringHelper::isNullOrEmpty(shader.getInfoDebugLog())) diag->reportWarning(shader.getInfoDebugLog());
+        }
+
+        if (!program.mapIO()) {
+            LN_NOTIMPLEMENTED();
         }
     }
 
@@ -437,6 +445,7 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
 			LN_LOG_VERBOSE << "UniformBuffer[" << i << "] : ";
 			LN_LOG_VERBOSE << "  name : " << info.name;
 			LN_LOG_VERBOSE << "  size : " << info.size;
+            LN_LOG_VERBOSE << "  bindingIndex : " << program.getUniformBlockBinding(i);
 
             m_refrection->buffers.push_back(std::move(info));
 		}
