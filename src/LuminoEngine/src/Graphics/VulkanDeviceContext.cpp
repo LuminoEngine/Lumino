@@ -155,6 +155,8 @@ public:
     std::vector<VkImageView> swapChainImageViews;
     std::vector<VkFramebuffer> swapChainFramebuffers;
 
+    Ref<VulkanShaderPass> m_shaderPass;
+        
     VkRenderPass renderPass;
     VkDescriptorSetLayout descriptorSetLayout;
     VkPipelineLayout pipelineLayout;
@@ -261,6 +263,8 @@ public:
             c->dispose();
         }
         commandBuffers.clear();
+
+        m_shaderPass->dispose();
 
         vkDestroyPipeline(device, graphicsPipeline, nullptr);
         vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
@@ -461,22 +465,29 @@ public:
     }
 
     void createGraphicsPipeline() {
-        auto vertShaderCode = readFile("D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Graphics/Resource/VulkanSampleDeviceContext_26_shader_depth.vert.spv");
-        auto fragShaderCode = readFile("D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Graphics/Resource/VulkanSampleDeviceContext_26_shader_depth.frag.spv");
+        auto vertShaderCode = HelloTriangleApplication::readFile("D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Graphics/Resource/VulkanSampleDeviceContext_26_shader_depth.vert.spv");
+        auto fragShaderCode = HelloTriangleApplication::readFile("D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Graphics/Resource/VulkanSampleDeviceContext_26_shader_depth.frag.spv");
 
-        VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
-        VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
+        {
+            ShaderPassCreateInfo info = {};
+            info.vsCode = (byte_t*)vertShaderCode.data();
+            info.vsCodeLen = vertShaderCode.size();
+            info.psCode = (byte_t*)fragShaderCode.data();
+            info.psCodeLen = fragShaderCode.size();
+            m_shaderPass = makeRef<VulkanShaderPass>();
+            m_shaderPass->init(m_deviceContext, info);
+        }
 
         VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
         vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
         vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-        vertShaderStageInfo.module = vertShaderModule;
+        vertShaderStageInfo.module = m_shaderPass->vulkanVertShaderModule();
         vertShaderStageInfo.pName = "main";
 
         VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
         fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
         fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-        fragShaderStageInfo.module = fragShaderModule;
+        fragShaderStageInfo.module = m_shaderPass->vulkanFragShaderModule();
         fragShaderStageInfo.pName = "main";
 
         VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
@@ -595,8 +606,8 @@ public:
             throw std::runtime_error("failed to create graphics pipeline!");
         }
 
-        vkDestroyShaderModule(device, fragShaderModule, nullptr);
-        vkDestroyShaderModule(device, vertShaderModule, nullptr);
+        //vkDestroyShaderModule(device, fragShaderModule, nullptr);
+        //vkDestroyShaderModule(device, vertShaderModule, nullptr);
     }
 
     void createFramebuffers() {
@@ -927,19 +938,19 @@ public:
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
     }
 
-    VkShaderModule createShaderModule(const std::vector<char>& code) {
-        VkShaderModuleCreateInfo createInfo = {};
-        createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-        createInfo.codeSize = code.size();
-        createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
+    //VkShaderModule createShaderModule(const std::vector<char>& code) {
+    //    VkShaderModuleCreateInfo createInfo = {};
+    //    createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    //    createInfo.codeSize = code.size();
+    //    createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
 
-        VkShaderModule shaderModule;
-        if (vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create shader module!");
-        }
+    //    VkShaderModule shaderModule;
+    //    if (vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
+    //        throw std::runtime_error("failed to create shader module!");
+    //    }
 
-        return shaderModule;
-    }
+    //    return shaderModule;
+    //}
 
     VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
         if (availableFormats.size() == 1 && availableFormats[0].format == VK_FORMAT_UNDEFINED) {
@@ -1895,6 +1906,58 @@ Result VulkanDepthBuffer::init(VulkanDeviceContext* deviceContext, uint32_t widt
 void VulkanDepthBuffer::dispose()
 {
     m_image.dispose();
+}
+
+//==============================================================================
+// VulkanShaderPass
+
+VulkanShaderPass::VulkanShaderPass()
+{
+}
+
+Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPassCreateInfo& createInfo)
+{
+    LN_DCHECK(deviceContext);
+    m_deviceContext = deviceContext;
+
+    VkDevice device = m_deviceContext->vulkanDevice();
+
+    // vert
+    {
+        VkShaderModuleCreateInfo shaderCreateInfo = {};
+        shaderCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+        shaderCreateInfo.codeSize = createInfo.vsCodeLen;
+        shaderCreateInfo.pCode = reinterpret_cast<const uint32_t*>(createInfo.vsCode);
+
+        LN_VK_CHECK(vkCreateShaderModule(device, &shaderCreateInfo, m_deviceContext->vulkanAllocator(), &m_vertShaderModule));
+    }
+
+    // frag
+    {
+        VkShaderModuleCreateInfo shaderCreateInfo = {};
+        shaderCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+        shaderCreateInfo.codeSize = createInfo.psCodeLen;
+        shaderCreateInfo.pCode = reinterpret_cast<const uint32_t*>(createInfo.psCode);
+
+        LN_VK_CHECK(vkCreateShaderModule(device, &shaderCreateInfo, m_deviceContext->vulkanAllocator(), &m_fragShaderModule));
+    }
+
+    return true;
+}
+
+void VulkanShaderPass::dispose()
+{
+    VkDevice device = m_deviceContext->vulkanDevice();
+
+    if (m_vertShaderModule) {
+        vkDestroyShaderModule(device, m_vertShaderModule, m_deviceContext->vulkanAllocator());
+        m_vertShaderModule = VK_NULL_HANDLE;
+    }
+
+    if (m_fragShaderModule) {
+        vkDestroyShaderModule(device, m_fragShaderModule, m_deviceContext->vulkanAllocator());
+        m_fragShaderModule = VK_NULL_HANDLE;
+    }
 }
 
 } // namespace detail

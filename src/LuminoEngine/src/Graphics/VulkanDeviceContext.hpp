@@ -242,6 +242,25 @@ private:
     VulkanImage m_image;
 };
 
+class VulkanShaderPass
+    : public IShaderPass
+{
+public:
+    VulkanShaderPass();
+    Result init(VulkanDeviceContext* deviceContext, const ShaderPassCreateInfo& createInfo);
+    void dispose();
+    virtual int getUniformBufferCount() const override { return 0; }
+    virtual IShaderUniformBuffer* getUniformBuffer(int index) const override { return nullptr; }
+    virtual IShaderSamplerBuffer* samplerBuffer() const override { return nullptr; }
+
+    VkShaderModule vulkanVertShaderModule() const { return m_vertShaderModule; }
+    VkShaderModule vulkanFragShaderModule() const { return m_fragShaderModule; }
+
+private:
+    VulkanDeviceContext* m_deviceContext;
+    VkShaderModule m_vertShaderModule;
+    VkShaderModule m_fragShaderModule;
+};
 
 } // namespace detail
 } // namespace ln
