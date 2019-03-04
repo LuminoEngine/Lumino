@@ -171,8 +171,8 @@ public:
     Ref<VulkanVertexBuffer> m_vertexBuffer;
     Ref<VulkanIndexBuffer> m_indexBuffer;
 
-    //VulkanBuffer m_uniformBuffer;
-    std::vector<std::shared_ptr<VulkanBuffer>> m_uniformBuffers;
+    VulkanBuffer m_uniformBuffer;
+    //std::vector<std::shared_ptr<VulkanBuffer>> m_uniformBuffers;
     //std::vector<VkBuffer> uniformBuffers;
     //std::vector<VkDeviceMemory> uniformBuffersMemory;
 
@@ -289,10 +289,10 @@ public:
 
         vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
 
-        //m_uniformBuffer.dispose();
-        for (auto& buf : m_uniformBuffers) {
-            buf->dispose();
-        }
+        m_uniformBuffer.dispose();
+        //for (auto& buf : m_uniformBuffers) {
+        //    buf->dispose();
+        //}
 
         m_indexBuffer->dispose();
         m_vertexBuffer->dispose();
@@ -764,12 +764,13 @@ public:
     }
 
     void createUniformBuffers() {
-        for (int i = 0; i < swapChainImages.size(); i++) {
+        //for (int i = 0; i < swapChainImages.size(); i++) {
 
-            auto buf = std::make_shared<VulkanBuffer>();
-            buf->init(m_deviceContext, sizeof(UniformBufferObject), /*VK_BUFFER_USAGE_TRANSFER_DST_BIT | */VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-            m_uniformBuffers.push_back(buf);
-        }
+        //    auto buf = std::make_shared<VulkanBuffer>();
+        //    buf->init(m_deviceContext, sizeof(UniformBufferObject), /*VK_BUFFER_USAGE_TRANSFER_DST_BIT | */VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+        //    m_uniformBuffers.push_back(buf);
+        //}
+        m_uniformBuffer.init(m_deviceContext, sizeof(UniformBufferObject), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
     }
 
     void createDescriptorPool() {
@@ -815,7 +816,8 @@ public:
 
         for (size_t i = 0; i < swapChainImages.size(); i++) {
             VkDescriptorBufferInfo bufferInfo = {};
-            bufferInfo.buffer = m_uniformBuffers[i]->vulkanBuffer();
+            //bufferInfo.buffer = m_uniformBuffers[i]->vulkanBuffer();
+            bufferInfo.buffer = m_uniformBuffer.vulkanBuffer();
             bufferInfo.offset = 0;
             bufferInfo.range = sizeof(UniformBufferObject);
 
@@ -977,14 +979,16 @@ public:
         //VulkanBuffer* buffer = commandBuffer->cmdCopyBuffer(sizeof(vertices[0]) * vertices.size(), m_vertexBuffer->buffer());
         //buffer->setData(0, vertices.data(), sizeof(vertices[0]) * vertices.size());
 
-        // CombindSamper ではなく、個別設定のレイアウトを使っていると、実行中キューと記録中キューの間で共有できないようだ。
-        // SubmitQueue が失敗する。
-#if 1
-        m_uniformBuffers[imageIndex]->setData(0, &ubo, sizeof(ubo));
-#else
-        VulkanBuffer* buffer = commandBuffer->cmdCopyBuffer(sizeof(ubo), m_uniformBuffers[imageIndex].get());//&m_uniformBuffer);
+        VulkanBuffer* buffer = commandBuffer->cmdCopyBuffer(sizeof(ubo), &m_uniformBuffer);
         buffer->setData(0, &ubo, sizeof(ubo));
-#endif
+//#if 1
+//        m_uniformBuffers[imageIndex]->setData(0, &ubo, sizeof(ubo));
+//#else
+//        // CombindSamper ではなく、個別設定のレイアウトを使っていると、実行中キューと記録中キューの間で共有できないようだ。
+//        // SubmitQueue が失敗する。
+//        VulkanBuffer* buffer = commandBuffer->cmdCopyBuffer(sizeof(ubo), m_uniformBuffers[imageIndex].get());//&m_uniformBuffer);
+//        buffer->setData(0, &ubo, sizeof(ubo));
+//#endif
 
         vkCmdDrawIndexed(commandBuffer->vulkanCommandBuffer(), static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 
