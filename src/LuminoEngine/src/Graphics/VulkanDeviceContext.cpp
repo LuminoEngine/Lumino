@@ -881,7 +881,7 @@ public:
             descriptorWrites[1].descriptorCount = 1;
             descriptorWrites[1].pImageInfo = &imageInfo;
 #endif
-
+            // 各 dstSet に指定された DescriptorSet を更新する
             vkUpdateDescriptorSets(device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
         }
     }
@@ -979,6 +979,8 @@ public:
         //VulkanBuffer* buffer = commandBuffer->cmdCopyBuffer(sizeof(vertices[0]) * vertices.size(), m_vertexBuffer->buffer());
         //buffer->setData(0, vertices.data(), sizeof(vertices[0]) * vertices.size());
 
+        // UniformBuffer は copy コマンドを使って更新できる。
+        // TODO: ただし、texture や sampler は vkUpdateDescriptorSets でしか更新できないのでこれもキャッシュしたりする仕組みがほしいところ。
         VulkanBuffer* buffer = commandBuffer->cmdCopyBuffer(sizeof(ubo), &m_uniformBuffer);
         buffer->setData(0, &ubo, sizeof(ubo));
 //#if 1

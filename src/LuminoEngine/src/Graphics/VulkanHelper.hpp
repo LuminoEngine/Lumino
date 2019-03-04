@@ -176,5 +176,27 @@ private:
 	std::vector<VulkanBuffer> m_stagingBufferPool;
 };
 
+// DescriptorSet と、それにアタッチした UniformBuffer。
+// できるだけ共有できるものは共有したいので、コマンドバッファに入れるとき、前回入れた UniformBuffer と差がなければ共有したい。
+// ので、このインスタンスを前回値として CommandBuffer は持っておく。
+// UniformBuffer は CommandBuffer の LeniarAllocator (cmdCopyBuffer()) からとる。
+class VulkanDescriptorSet
+{
+public:
+    VulkanDescriptorSet();
+    Result init();
+
+private:
+};
+
+class VulkanDescriptorSetCache
+{
+public:
+    VulkanDescriptorSetCache();
+    Result init();
+
+private:
+};
+
 } // namespace detail
 } // namespace ln
