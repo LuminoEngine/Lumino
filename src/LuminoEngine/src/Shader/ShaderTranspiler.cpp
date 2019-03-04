@@ -240,16 +240,28 @@ static const OpenGLTypeConvertionItem s_openGLTypeConvertionTable[] =
 	{ GL_FLOAT_MAT3x4, ShaderUniformType_Matrix },
 	{ GL_FLOAT_MAT4x2, ShaderUniformType_Matrix },
 	{ GL_FLOAT_MAT4x3, ShaderUniformType_Matrix },
-	{ GL_SAMPLER_2D, ShaderUniformType_Texture },
+	{ GL_SAMPLER_2D, ShaderUniformType_Texture },		// HLSL で texture2D 型の uniform を定義すると、glslang からは GL_SAMPLER_XXXX として得られる
 	{ GL_SAMPLER_CUBE, ShaderUniformType_Texture },
 	{ GL_SAMPLER_3D, ShaderUniformType_Texture },
 };
-static bool GLTypeToLNUniformType(GLenum value, uint16_t* outType)
+static bool GLTypeToLNUniformType(GLenum value, const glslang::TType* type, uint16_t* outType)
 {
-	for (int i = 0; i < LN_ARRAY_SIZE_OF(s_openGLTypeConvertionTable); i++) {
-		if (s_openGLTypeConvertionTable[i].glType == value) {
-			*outType = s_openGLTypeConvertionTable[i].lnType;
-			return true;
+	if (value == 0) {
+		// see glslang\glslang\Include\Types.h TSampler::getString()
+		if (type->getBasicType() == glslang::EbtSampler) {
+			const glslang::TSampler& sampler = type->getSampler();
+			if (sampler.sampler) {
+				*outType = ShaderUniformType_SamplerState;
+				return true;
+			}
+		}
+	}
+	else {
+		for (int i = 0; i < LN_ARRAY_SIZE_OF(s_openGLTypeConvertionTable); i++) {
+			if (s_openGLTypeConvertionTable[i].glType == value) {
+				*outType = s_openGLTypeConvertionTable[i].lnType;
+				return true;
+			}
 		}
 	}
 	return false;
@@ -337,9 +349,21 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
 		shader->setEnvClient(glslang::EShClientVulkan, VulkanClientVersion);
 		*/
         //shader.setShiftBinding(glslang::EResUbo, 0);
-        //shader.setShiftBinding(glslang::EResSampler, 1);
+        shader.setShiftBinding(glslang::EResSampler, 1);	// sampler state
+		shader.setShiftBinding(glslang::EResTexture, 1);	// texture
+			//shader.setShiftBinding(glslang::EResImage, 1);
+			//	shader.setShiftBinding(glslang::EResUbo, 1);
+			//		shader.setShiftBinding(glslang::EResSsbo, 1);
+			//			shader.setShiftBinding(glslang::EResUav, 1);
         //shader.setShiftBindingForSet(glslang::EResUbo, 0, 0);
         //shader.setShiftBindingForSet(glslang::EResSampler, 1, 1);
+
+		// 実際に使われている UBO, Txture, SamplerState などに、自動的に binding 番号を振る。
+		// false の場合は、すべて未指定 (-1) となる。
+		// 値は program.getUniformBinding() で確認できる。
+		shader.setAutoMapBindings(true);
+		//shader.setAutoMapLocations(true);
+		//shader.setHlslIoMapping(true);
 
         if (preamble.isSet()) {
             shader.setPreamble(preamble.get());
@@ -486,41 +510,47 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
 		//
         for (int i = 0; i < program.getNumLiveUniformVariables(); i++)
         {
+
+			ShaderUniformInfo info;
+			info.name = program.getUniformName(i);
+
+			const glslang::TType* type = program.getUniformTType(i);
+			GLenum gltype = program.getUniformType(i);
+			if (!GLTypeToLNUniformType(gltype, type, &info.type)) {
+				diag->reportError("Invalid type.");
+				return false;
+			}
+
+			//info.size = 0;
+			info.offset = program.getUniformBufferOffset(i);
+
+			info.vectorElements = type->getVectorSize();
+			info.arrayElements = program.getUniformArraySize(i);
+			info.matrixRows = type->getMatrixRows();
+			info.matrixColumns = type->getMatrixCols();
+
+			//auto aa = type->getTypeName();
+			//int a = GL_FLOAT_VEC4;
+			
+
+			LN_LOG_VERBOSE << "Uniform[" << i << "] : ";
+			LN_LOG_VERBOSE << "  name : " << info.name;
+			LN_LOG_VERBOSE << "  type : " << info.type;
+			LN_LOG_VERBOSE << "  basicType : " << type->getBasicTypeString();
+			LN_LOG_VERBOSE << "  basicString : " << type->getBasicString();
+			LN_LOG_VERBOSE << "  offset : " << info.offset;
+			LN_LOG_VERBOSE << "  bindingIndex : " << program.getUniformBinding(i);
+			LN_LOG_VERBOSE << "  vectorElements : " << info.vectorElements;
+			LN_LOG_VERBOSE << "  arrayElements : " << info.arrayElements;
+			LN_LOG_VERBOSE << "  matrixRows : " << info.matrixRows;
+			LN_LOG_VERBOSE << "  matrixColumns : " << info.matrixColumns;
+
+			
+
+
 			int ownerUiformBufferIndex = program.getUniformBlockIndex(i);
 			if (ownerUiformBufferIndex >= 0)
 			{
-
-
-				ShaderUniformInfo info;
-				info.name = program.getUniformName(i);
-
-				if (!GLTypeToLNUniformType(program.getUniformType(i), &info.type)) {
-					diag->reportError("Invalid type.");
-					return false;
-				}
-
-				//info.size = 0;
-				info.offset = program.getUniformBufferOffset(i);
-
-				const glslang::TType* type = program.getUniformTType(i);
-				info.vectorElements = type->getVectorSize();
-				info.arrayElements = program.getUniformArraySize(i);
-				info.matrixRows = type->getMatrixRows();
-				info.matrixColumns = type->getMatrixCols();
-
-				//auto aa = type->getTypeName();
-				//int a = GL_FLOAT_VEC4;
-
-
-
-				LN_LOG_VERBOSE << "Uniform[" << i << "] : ";
-				LN_LOG_VERBOSE << "  name : " << info.name;
-				LN_LOG_VERBOSE << "  type : " << info.type;
-				LN_LOG_VERBOSE << "  offset : " << info.offset;
-				LN_LOG_VERBOSE << "  vectorElements : " << info.vectorElements;
-				LN_LOG_VERBOSE << "  arrayElements : " << info.arrayElements;
-				LN_LOG_VERBOSE << "  matrixRows : " << info.matrixRows;
-				LN_LOG_VERBOSE << "  matrixColumns : " << info.matrixColumns;
 				LN_LOG_VERBOSE << "  ownerUiformBufferIndex : " << ownerUiformBufferIndex << "(" << program.getUniformBlockName(ownerUiformBufferIndex) << ")";
 
                 m_refrection->buffers[ownerUiformBufferIndex].members.push_back(std::move(info));

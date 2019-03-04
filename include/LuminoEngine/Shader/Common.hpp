@@ -59,6 +59,11 @@ enum ShaderUniformType
     ShaderUniformType_Matrix = 9,
     //ShaderUniformType_MatrixArray = 10,
     ShaderUniformType_Texture = 11,
+	ShaderUniformType_SamplerState = 12,	// HLSL の SamplerState
+
+	// texture 型 uniform は "COMBINED_IMAGE_SAMPLER" と呼ばれている。
+	// Lumino の OpenGL ドライバは UnifiedShader としては CombinedImageSampler は扱わない。
+	// OpenGL ドライバ側で、名前一致により検索を行う。
 };
 
 struct ShaderUniformInfo
