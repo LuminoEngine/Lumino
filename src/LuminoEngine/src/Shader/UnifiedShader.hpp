@@ -92,6 +92,8 @@ public:
 	const std::vector<VertexInputAttribute>& attributeSemantics(PassId pass) const;
     //UnifiedShaderRefrectionInfo* refrection(PassId pass) const;
 
+    void saveCodes(const StringRef& perfix) const;
+
 private:
     int idToIndex(uint32_t id) const { return id - 1; }
     uint32_t indexToId(int index) const { return index + 1; }

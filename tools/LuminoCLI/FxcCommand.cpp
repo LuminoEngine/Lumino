@@ -189,6 +189,10 @@ bool FxcCommand::generate(const ln::Path& inputFile)
 		return false;
 	}
 
+    if (saveCodes) {
+        unifiedShader->saveCodes(outputFilePath);
+    }
+
     CLI::info(u"");
 	CLI::info(u"Compilation succeeded; see " + outputFilePath);
 

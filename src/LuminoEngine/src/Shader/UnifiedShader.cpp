@@ -504,6 +504,16 @@ const std::vector<VertexInputAttribute>& UnifiedShader::attributeSemantics(PassI
 	return m_passes[idToIndex(pass)].attributeSemantics;
 }
 
+void UnifiedShader::saveCodes(const StringRef& perfix) const
+{
+    for (auto& container : m_codeContainers) {
+        for (auto& code : container.codes) {
+            auto file = String::format(u"{0}-{1}-{2}-{3}-{4}", perfix, String::fromStdString(container.entryPointName), String::fromStdString(code.triple.target), code.triple.version, String::fromStdString(code.triple.option));
+            FileSystem::writeAllBytes(file, code.code.data(), code.code.size());
+        }
+    }
+}
+
 //UnifiedShaderRefrectionInfo* UnifiedShader::refrection(PassId pass) const
 //{
 //    return m_passes[idToIndex(pass)].refrection;
