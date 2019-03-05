@@ -539,7 +539,7 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
 			LN_LOG_VERBOSE << "  basicType : " << type->getBasicTypeString();
 			LN_LOG_VERBOSE << "  basicString : " << type->getBasicString();
 			LN_LOG_VERBOSE << "  offset : " << info.offset;
-			LN_LOG_VERBOSE << "  bindingIndex : " << program.getUniformBinding(i);
+			LN_LOG_VERBOSE << "  bindingIndex : " << program.getUniformBinding(i);	// cbuffer Global : register(b3) のように書かれると、mapIO しなくても 3 がとれる。
 			LN_LOG_VERBOSE << "  vectorElements : " << info.vectorElements;
 			LN_LOG_VERBOSE << "  arrayElements : " << info.arrayElements;
 			LN_LOG_VERBOSE << "  matrixRows : " << info.matrixRows;
