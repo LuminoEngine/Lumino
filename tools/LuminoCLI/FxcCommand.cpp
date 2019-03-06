@@ -71,74 +71,166 @@ bool FxcCommand::generate(const ln::Path& inputFile)
    //std::unordered_map<std::string, std::vector<ln::detail::VertexInputAttribute>> vertexInputAttributeMap;
 	std::unordered_map<std::string, std::shared_ptr<ln::detail::ShaderCodeTranspiler>> transpilerMap;
 
-	// まずは Code を作る
+    // まずは compile と link を行う
     for (auto& tech : metadataParser.techniques)
-	{
+    {
         for (auto& pass : tech.passes)
-		{
+        {
             // Vertex shader
             {
-				auto transpiler = std::make_shared<ln::detail::ShaderCodeTranspiler>(m_manager);
-				transpiler->compileAndLinkFromHlsl(ln::detail::ShaderCodeStage::Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, &definitions, m_diag);
-				if (m_diag->hasError()) {
-					return false;
-				}
-				transpilerMap[pass.vertexShader] = transpiler;
-
-				{
-					ln::detail::UnifiedShaderTriple triple = { "spv", 110, "" };
-					if (!unifiedShader->hasCode(pass.vertexShader, triple)) {
-						unifiedShader->setCode(pass.vertexShader, triple, transpiler->spirvCode(), transpiler->refrection());
-					}
-				}
-
-				{
-					ln::detail::UnifiedShaderTriple triple = { "glsl", 400, "" };
-					if (!unifiedShader->hasCode(pass.vertexShader, triple)) {
-						unifiedShader->setCode(pass.vertexShader, triple, transpiler->generateGlsl(400, false), ln::makeRef<ln::detail::UnifiedShaderRefrectionInfo>());
-					}
-				}
-
-				{
-					ln::detail::UnifiedShaderTriple triple = { "glsl", 300, "es" };
-					if (!unifiedShader->hasCode(pass.vertexShader, triple)) {
-						unifiedShader->setCode(pass.vertexShader, triple, transpiler->generateGlsl(300, true), ln::makeRef<ln::detail::UnifiedShaderRefrectionInfo>());
-					}
-				}
+                auto transpiler = std::make_shared<ln::detail::ShaderCodeTranspiler>(m_manager);
+                transpiler->compileAndLinkFromHlsl(ln::detail::ShaderCodeStage::Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, &definitions, m_diag);
+                if (m_diag->hasError()) {
+                    return false;
+                }
+                transpilerMap[pass.vertexShader] = transpiler;
             }
 
             // Pixel shader
             {
-				auto transpiler = std::make_shared<ln::detail::ShaderCodeTranspiler>(m_manager);
-				transpiler->compileAndLinkFromHlsl(ln::detail::ShaderCodeStage::Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, &definitions, m_diag);
-				if (m_diag->hasError()) {
-					return false;
-				}
-				transpilerMap[pass.pixelShader] = transpiler;
-
-				{
-					ln::detail::UnifiedShaderTriple triple = { "spv", 110, "" };
-					if (!unifiedShader->hasCode(pass.pixelShader, triple)) {
-						unifiedShader->setCode(pass.pixelShader, triple, transpiler->spirvCode(), transpiler->refrection());
-					}
-				}
-
-				{
-					ln::detail::UnifiedShaderTriple triple = { "glsl", 400, "" };
-					if (!unifiedShader->hasCode(pass.pixelShader, triple)) {
-						unifiedShader->setCode(pass.pixelShader, triple, transpiler->generateGlsl(400, false), ln::makeRef<ln::detail::UnifiedShaderRefrectionInfo>());
-					}
-				}
-
-				{
-					ln::detail::UnifiedShaderTriple triple = { "glsl", 300, "es" };
-					if (!unifiedShader->hasCode(pass.pixelShader, triple)) {
-						unifiedShader->setCode(pass.pixelShader, triple, transpiler->generateGlsl(300, true), ln::makeRef<ln::detail::UnifiedShaderRefrectionInfo>());
-					}
-				}
+                auto transpiler = std::make_shared<ln::detail::ShaderCodeTranspiler>(m_manager);
+                transpiler->compileAndLinkFromHlsl(ln::detail::ShaderCodeStage::Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, &definitions, m_diag);
+                if (m_diag->hasError()) {
+                    return false;
+                }
+                transpilerMap[pass.pixelShader] = transpiler;
             }
         }
     }
+
+    // vertex shader の最大 binding 数を求める
+    size_t maxVertexShaderBindingCounts[ln::detail::DescriptorType_Count] = {};
+    for (auto& pair : transpilerMap) {
+        if (pair.second->stage() == ln::detail::ShaderCodeStage::Vertex) {
+            maxVertexShaderBindingCounts[ln::detail::DescriptorType_UniformBuffer] = std::max(maxVertexShaderBindingCounts[ln::detail::DescriptorType_UniformBuffer], pair.second->descriptorLayout.uniformBufferRegister.size());
+            maxVertexShaderBindingCounts[ln::detail::DescriptorType_Texture] = std::max(maxVertexShaderBindingCounts[ln::detail::DescriptorType_Texture], pair.second->descriptorLayout.textureRegister.size());
+            maxVertexShaderBindingCounts[ln::detail::DescriptorType_SamplerState] = std::max(maxVertexShaderBindingCounts[ln::detail::DescriptorType_SamplerState], pair.second->descriptorLayout.samplerRegister.size());
+        }
+    }
+    // 求めた maxVertexShaderBindingCount を PixelShader の binding の開始値としてマッピングする
+    for (auto& pair : transpilerMap) {
+        if (pair.second->stage() == ln::detail::ShaderCodeStage::Vertex) {
+            for (size_t i = 0; i < pair.second->descriptorLayout.uniformBufferRegister.size(); i++) {
+                pair.second->descriptorLayout.uniformBufferRegister[i].binding = i;
+            }
+            for (size_t i = 0; i < pair.second->descriptorLayout.textureRegister.size(); i++) {
+                pair.second->descriptorLayout.textureRegister[i].binding = i;
+            }
+            for (size_t i = 0; i < pair.second->descriptorLayout.samplerRegister.size(); i++) {
+                pair.second->descriptorLayout.samplerRegister[i].binding = i;
+            }
+        }
+        if (pair.second->stage() == ln::detail::ShaderCodeStage::Fragment) {
+            for (size_t i = 0; i < pair.second->descriptorLayout.uniformBufferRegister.size(); i++) {
+                pair.second->descriptorLayout.uniformBufferRegister[i].binding = maxVertexShaderBindingCounts[ln::detail::DescriptorType_UniformBuffer] + i;
+            }
+            for (size_t i = 0; i < pair.second->descriptorLayout.textureRegister.size(); i++) {
+                pair.second->descriptorLayout.textureRegister[i].binding = maxVertexShaderBindingCounts[ln::detail::DescriptorType_Texture] + i;
+            }
+            for (size_t i = 0; i < pair.second->descriptorLayout.samplerRegister.size(); i++) {
+                pair.second->descriptorLayout.samplerRegister[i].binding = maxVertexShaderBindingCounts[ln::detail::DescriptorType_SamplerState] + i;
+            }
+        }
+    }
+
+    // Code を作る
+    for (auto& pair : transpilerMap) {
+        LN_LOG_VERBOSE << "gen " << pair.first;
+
+        if (!pair.second->mapIOAndGenerateSpirv()) {
+            return false;
+        }
+
+        {
+            ln::detail::UnifiedShaderTriple triple = { "spv", 110, "" };
+            if (!unifiedShader->hasCode(pair.first, triple)) {
+                unifiedShader->setCode(pair.first, triple, pair.second->spirvCode(), pair.second->refrection());
+            }
+        }
+
+        {
+            ln::detail::UnifiedShaderTriple triple = { "glsl", 400, "" };
+            if (!unifiedShader->hasCode(pair.first, triple)) {
+                unifiedShader->setCode(pair.first, triple, pair.second->generateGlsl(400, false), ln::makeRef<ln::detail::UnifiedShaderRefrectionInfo>());
+            }
+        }
+
+        {
+            ln::detail::UnifiedShaderTriple triple = { "glsl", 300, "es" };
+            if (!unifiedShader->hasCode(pair.first, triple)) {
+                unifiedShader->setCode(pair.first, triple, pair.second->generateGlsl(300, true), ln::makeRef<ln::detail::UnifiedShaderRefrectionInfo>());
+            }
+        }
+    }
+
+	// まずは Code を作る
+ //   for (auto& tech : metadataParser.techniques)
+	//{
+ //       for (auto& pass : tech.passes)
+	//	{
+ //           // Vertex shader
+ //           {
+	//			auto transpiler = std::make_shared<ln::detail::ShaderCodeTranspiler>(m_manager);
+	//			transpiler->compileAndLinkFromHlsl(ln::detail::ShaderCodeStage::Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, &definitions, m_diag);
+	//			if (m_diag->hasError()) {
+	//				return false;
+	//			}
+	//			transpilerMap[pass.vertexShader] = transpiler;
+
+	//			{
+	//				ln::detail::UnifiedShaderTriple triple = { "spv", 110, "" };
+	//				if (!unifiedShader->hasCode(pass.vertexShader, triple)) {
+	//					unifiedShader->setCode(pass.vertexShader, triple, transpiler->spirvCode(), transpiler->refrection());
+	//				}
+	//			}
+
+	//			{
+	//				ln::detail::UnifiedShaderTriple triple = { "glsl", 400, "" };
+	//				if (!unifiedShader->hasCode(pass.vertexShader, triple)) {
+	//					unifiedShader->setCode(pass.vertexShader, triple, transpiler->generateGlsl(400, false), ln::makeRef<ln::detail::UnifiedShaderRefrectionInfo>());
+	//				}
+	//			}
+
+	//			{
+	//				ln::detail::UnifiedShaderTriple triple = { "glsl", 300, "es" };
+	//				if (!unifiedShader->hasCode(pass.vertexShader, triple)) {
+	//					unifiedShader->setCode(pass.vertexShader, triple, transpiler->generateGlsl(300, true), ln::makeRef<ln::detail::UnifiedShaderRefrectionInfo>());
+	//				}
+	//			}
+ //           }
+
+ //           // Pixel shader
+ //           {
+	//			auto transpiler = std::make_shared<ln::detail::ShaderCodeTranspiler>(m_manager);
+	//			transpiler->compileAndLinkFromHlsl(ln::detail::ShaderCodeStage::Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, &definitions, m_diag);
+	//			if (m_diag->hasError()) {
+	//				return false;
+	//			}
+	//			transpilerMap[pass.pixelShader] = transpiler;
+
+	//			{
+	//				ln::detail::UnifiedShaderTriple triple = { "spv", 110, "" };
+	//				if (!unifiedShader->hasCode(pass.pixelShader, triple)) {
+	//					unifiedShader->setCode(pass.pixelShader, triple, transpiler->spirvCode(), transpiler->refrection());
+	//				}
+	//			}
+
+	//			{
+	//				ln::detail::UnifiedShaderTriple triple = { "glsl", 400, "" };
+	//				if (!unifiedShader->hasCode(pass.pixelShader, triple)) {
+	//					unifiedShader->setCode(pass.pixelShader, triple, transpiler->generateGlsl(400, false), ln::makeRef<ln::detail::UnifiedShaderRefrectionInfo>());
+	//				}
+	//			}
+
+	//			{
+	//				ln::detail::UnifiedShaderTriple triple = { "glsl", 300, "es" };
+	//				if (!unifiedShader->hasCode(pass.pixelShader, triple)) {
+	//					unifiedShader->setCode(pass.pixelShader, triple, transpiler->generateGlsl(300, true), ln::makeRef<ln::detail::UnifiedShaderRefrectionInfo>());
+	//				}
+	//			}
+ //           }
+ //       }
+ //   }
 
 	// Tech と Pass を作る
 	for (auto& tech : metadataParser.techniques)

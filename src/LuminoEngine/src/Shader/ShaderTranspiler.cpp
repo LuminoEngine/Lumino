@@ -369,8 +369,8 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
 		// false の場合は、すべて未指定 (-1) となる。
 		// 値は m_program->getUniformBinding() で確認できる。
 		m_shader->setAutoMapBindings(true);
-		//m_shader->setAutoMapLocations(true);
-		//m_shader->setHlslIoMapping(true);
+		m_shader->setAutoMapLocations(true);
+		m_shader->setHlslIoMapping(true);
 
         if (preamble.isSet()) {
             m_shader->setPreamble(preamble.get());
@@ -404,114 +404,21 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
             if (!StringHelper::isNullOrEmpty(m_shader->getInfoLog())) diag->reportWarning(m_shader->getInfoLog());
             if (!StringHelper::isNullOrEmpty(m_shader->getInfoDebugLog())) diag->reportWarning(m_shader->getInfoDebugLog());
         }
-
-		class IOMapper : public glslang::TIoMapResolver
-		{
-		public:
-			virtual bool validateBinding(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override
-			{
-				return true;
-			}
-
-			// 結果の/現在のバインディングが問題ない場合はtrueを返します。 基本的な考え方はこれでエイリアスバインディングチェックをすることです。
-			//virtual bool validateBinding(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) = 0;
-			// Should return a value >= 0 if the current binding should be overridden.
-			// Return -1 if the current binding (including no binding) should be kept.
-			virtual int resolveBinding(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override
-			{
-				return -1;
-				//return type.getQualifier().layoutBinding;
-			}
-			// Should return a value >= 0 if the current set should be overridden.
-			// Return -1 if the current set (including no set) should be kept.
-			virtual int resolveSet(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override
-			{
-				return -1;
-				//return type.getQualifier().layoutSet;
-			}
-			// Should return a value >= 0 if the current location should be overridden.
-			// Return -1 if the current location (including no location) should be kept.
-			virtual int resolveUniformLocation(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override
-			{
-				return -1;
-				//return type.getQualifier().layoutLocation;
-			}
-			//結果の/現在の設定で問題ない場合はtrueを返します。
-			//基本的な考え方は、エイリアスチェックを行い、無効な意味名を拒否することです。
-			virtual bool validateInOut(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override
-			{
-				return true;
-			}
-			//現在位置を上書きする必要がある場合は、0以上の値を返す必要があります。
-			//現在地を保存しない場合は-1を返す
-			virtual int resolveInOutLocation(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override
-			{
-				return -1;
-				//return type.getQualifier().inout;
-			}
-			// Should return a value >= 0 if the current component index should be overridden.
-			// Return -1 if the current component index (including no index) should be kept.
-			virtual int resolveInOutComponent(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override
-			{
-				return -1;
-			}
-			// Should return a value >= 0 if the current color index should be overridden.
-			// Return -1 if the current color index (including no index) should be kept.
-			virtual int resolveInOutIndex(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override
-			{
-				return -1;
-			}
-			virtual void notifyBinding(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override {}
-			virtual void notifyInOut(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override {}
-			virtual void endNotifications(EShLanguage stage) {}
-			virtual void beginNotifications(EShLanguage stage) {}
-			virtual void beginResolve(EShLanguage stage) {}
-			virtual void endResolve(EShLanguage stage) {}
-		};
-
-		//OMapper localMapper;
-		glslang::TIntermediate* it = m_program->getIntermediate(LNStageToEShLanguage(m_stage));
+    }
 
 
-		class IntermTraverser : public glslang::TIntermTraverser
-		{
-		public:
-			virtual void visitSymbol(glslang::TIntermSymbol* symbol)
-			{
-				std::cout << "[TIntermSymbol " << symbol << "]" << std::endl;
-				std::cout << symbol->getName() << std::endl;
-				//printf("");
-
-				if (symbol->getName() == "g_texture1")
-				{
-					symbol->getWritableType().getQualifier().layoutSet = 1;
-				}
-				if (symbol->getName() == "g_samplerState1")
-				{
-					symbol->getWritableType().getQualifier().layoutSet = 2;
-				}
-			}
-		};
-		IntermTraverser localIntermTraverser;
-
-		TIntermNode* root = it->getTreeRoot();
-		root->traverse(&localIntermTraverser);
-
-		printf("");
-
-		//auto ioMapper = new glslang::TIoMapper();
-
-		//if (!it->mapTypeToConstructorOp(&localMapper)) {
-		//	LN_NOTIMPLEMENTED();
-		//	return false;
-		//}
-
-
-
-		if (!m_program->mapIO()) {
-			LN_NOTIMPLEMENTED();
-			return false;
-		}
+    ShaderStageFlags stageFlags = ShaderStage_None;
+    switch (stage)
+    {
+    case ln::detail::ShaderCodeStage::Vertex:
+        stageFlags = ShaderStage_Vertex;
+        break;
+    case ln::detail::ShaderCodeStage::Fragment:
+        stageFlags = ShaderStage_Pixel;
+        break;
+    default:
+        LN_UNREACHABLE();
+        break;
     }
 
     m_program->buildReflection();
@@ -577,10 +484,21 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
 			info.name = m_program->getUniformBlockName(i);
 			info.size = m_program->getUniformBlockSize(i);
 
-			LN_LOG_VERBOSE << "UniformBuffer[" << i << "] : ";
-			LN_LOG_VERBOSE << "  name : " << info.name;
-			LN_LOG_VERBOSE << "  size : " << info.size;
-            LN_LOG_VERBOSE << "  bindingIndex : " << m_program->getUniformBlockBinding(i);
+			//LN_LOG_VERBOSE << "UniformBuffer[" << i << "] : ";
+			//LN_LOG_VERBOSE << "  name : " << info.name;
+			//LN_LOG_VERBOSE << "  size : " << info.size;
+   //         LN_LOG_VERBOSE << "  bindingIndex : " << m_program->getUniformBlockBinding(i);
+
+            auto* tt = m_program->getUniformBlockTType(i);
+            printf("★[%p]\n", tt);
+            auto cs = tt->getCompleteString();
+            tt->getQualifier();
+
+            DescriptorLayoutItem item;
+            item.name = info.name;
+            item.stageFlags = stageFlags;
+            item.binding = -1;
+            descriptorLayout.uniformBufferRegister.push_back(std::move(item));
 
             m_refrection->buffers.push_back(std::move(info));
 		}
@@ -644,25 +562,40 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
 			//int a = GL_FLOAT_VEC4;
 			
 
-			LN_LOG_VERBOSE << "Uniform[" << i << "] : ";
-			LN_LOG_VERBOSE << "  name : " << info.name;
-			LN_LOG_VERBOSE << "  type : " << info.type;
-			LN_LOG_VERBOSE << "  basicType : " << type->getBasicTypeString();
-			LN_LOG_VERBOSE << "  basicString : " << type->getBasicString();
-			LN_LOG_VERBOSE << "  offset : " << info.offset;
-			LN_LOG_VERBOSE << "  bindingIndex : " << m_program->getUniformBinding(i);	// cbuffer Global : register(b3) のように書かれると、mapIO しなくても 3 がとれる。
-			LN_LOG_VERBOSE << "  vectorElements : " << info.vectorElements;
-			LN_LOG_VERBOSE << "  arrayElements : " << info.arrayElements;
-			LN_LOG_VERBOSE << "  matrixRows : " << info.matrixRows;
-			LN_LOG_VERBOSE << "  matrixColumns : " << info.matrixColumns;
+			//LN_LOG_VERBOSE << "Uniform[" << i << "] : ";
+			//LN_LOG_VERBOSE << "  name : " << info.name;
+			//LN_LOG_VERBOSE << "  type : " << info.type;
+			//LN_LOG_VERBOSE << "  basicType : " << type->getBasicTypeString();
+			//LN_LOG_VERBOSE << "  basicString : " << type->getBasicString();
+			//LN_LOG_VERBOSE << "  offset : " << info.offset;
+			//LN_LOG_VERBOSE << "  bindingIndex : " << m_program->getUniformBinding(i);	// cbuffer Global : register(b3) のように書かれると、mapIO しなくても 3 がとれる。
+			//LN_LOG_VERBOSE << "  vectorElements : " << info.vectorElements;
+			//LN_LOG_VERBOSE << "  arrayElements : " << info.arrayElements;
+			//LN_LOG_VERBOSE << "  matrixRows : " << info.matrixRows;
+			//LN_LOG_VERBOSE << "  matrixColumns : " << info.matrixColumns;
 
-			
+
+
+            if (info.type == ShaderUniformType_Texture) {
+                DescriptorLayoutItem item;
+                item.name = info.name;
+                item.stageFlags = stageFlags;
+                item.binding = -1;
+                descriptorLayout.textureRegister.push_back(std::move(item));
+            }
+            else if (info.type == ShaderUniformType_SamplerState) {
+                DescriptorLayoutItem item;
+                item.name = info.name;
+                item.stageFlags = stageFlags;
+                item.binding = -1;
+                descriptorLayout.samplerRegister.push_back(std::move(item));
+            }
 
 
 			int ownerUiformBufferIndex = m_program->getUniformBlockIndex(i);
 			if (ownerUiformBufferIndex >= 0)
 			{
-				LN_LOG_VERBOSE << "  ownerUiformBufferIndex : " << ownerUiformBufferIndex << "(" << m_program->getUniformBlockName(ownerUiformBufferIndex) << ")";
+				//LN_LOG_VERBOSE << "  ownerUiformBufferIndex : " << ownerUiformBufferIndex << "(" << m_program->getUniformBlockName(ownerUiformBufferIndex) << ")";
 
                 m_refrection->buffers[ownerUiformBufferIndex].members.push_back(std::move(info));
 			}
@@ -671,6 +604,168 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
 			}
         }
 	}
+    return true;
+}
+
+bool ShaderCodeTranspiler::mapIOAndGenerateSpirv()
+{
+
+    class IOMapper : public glslang::TIoMapResolver
+    {
+    public:
+        virtual bool validateBinding(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override
+        {
+            return true;
+        }
+
+        // 結果の/現在のバインディングが問題ない場合はtrueを返します。 基本的な考え方はこれでエイリアスバインディングチェックをすることです。
+        //virtual bool validateBinding(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) = 0;
+        // Should return a value >= 0 if the current binding should be overridden.
+        // Return -1 if the current binding (including no binding) should be kept.
+        virtual int resolveBinding(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override
+        {
+            return -1;
+            //return type.getQualifier().layoutBinding;
+        }
+        // Should return a value >= 0 if the current set should be overridden.
+        // Return -1 if the current set (including no set) should be kept.
+        virtual int resolveSet(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override
+        {
+            return -1;
+            //return type.getQualifier().layoutSet;
+        }
+        // Should return a value >= 0 if the current location should be overridden.
+        // Return -1 if the current location (including no location) should be kept.
+        virtual int resolveUniformLocation(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override
+        {
+            return -1;
+            //return type.getQualifier().layoutLocation;
+        }
+        //結果の/現在の設定で問題ない場合はtrueを返します。
+        //基本的な考え方は、エイリアスチェックを行い、無効な意味名を拒否することです。
+        virtual bool validateInOut(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override
+        {
+            return true;
+        }
+        //現在位置を上書きする必要がある場合は、0以上の値を返す必要があります。
+        //現在地を保存しない場合は-1を返す
+        virtual int resolveInOutLocation(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override
+        {
+            return -1;
+            //return type.getQualifier().inout;
+        }
+        // Should return a value >= 0 if the current component index should be overridden.
+        // Return -1 if the current component index (including no index) should be kept.
+        virtual int resolveInOutComponent(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override
+        {
+            return -1;
+        }
+        // Should return a value >= 0 if the current color index should be overridden.
+        // Return -1 if the current color index (including no index) should be kept.
+        virtual int resolveInOutIndex(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override
+        {
+            return -1;
+        }
+        virtual void notifyBinding(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override {}
+        virtual void notifyInOut(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override {}
+        virtual void endNotifications(EShLanguage stage) {}
+        virtual void beginNotifications(EShLanguage stage) {}
+        virtual void beginResolve(EShLanguage stage) {}
+        virtual void endResolve(EShLanguage stage) {}
+    };
+
+    //OMapper localMapper;
+    glslang::TIntermediate* it = m_program->getIntermediate(LNStageToEShLanguage(m_stage));
+
+
+    class IntermTraverser : public glslang::TIntermTraverser
+    {
+    public:
+        ShaderCodeTranspiler* owner;
+
+        virtual void visitSymbol(glslang::TIntermSymbol* symbol)
+        {
+            std::cout << "[TIntermSymbol " << symbol << "]" << std::endl;
+            std::cout << symbol->getName() << std::endl;
+            std::cout << symbol->getBasicType() << std::endl;
+            //std::cout << symbol->getType().getTypeName() << std::endl;
+            //printf("");
+
+
+            if (symbol->getBasicType() == glslang::EbtBlock) {
+                auto& name = symbol->getType().getTypeName();
+                //auto* tt = &symbol->getType();
+                //if (symbol->getName().empty()) {
+                //    printf("");
+
+                //}
+
+                auto itr = std::find_if(owner->descriptorLayout.uniformBufferRegister.begin(), owner->descriptorLayout.uniformBufferRegister.end(),
+                    [&](const DescriptorLayoutItem& x) { return strcmp(x.name.c_str(), name.c_str()) == 0; });
+                if (itr != owner->descriptorLayout.uniformBufferRegister.end()) {
+                    symbol->getWritableType().getQualifier().layoutSet = DescriptorType_UniformBuffer;//itr->binding;
+                    symbol->getWritableType().getQualifier().layoutBinding = itr->binding;
+                }
+            }
+            else if (symbol->getBasicType() == glslang::EbtSampler) {
+                // texture と SamplerState　EbtSampler
+                auto& name = symbol->getName();
+                auto& sampler = symbol->getType().getSampler();
+                if (sampler.type == glslang::EbtVoid && sampler.dim == glslang::EsdNone) {
+                    // samplerState
+                    auto itr = std::find_if(owner->descriptorLayout.samplerRegister.begin(), owner->descriptorLayout.samplerRegister.end(),
+                        [&](const DescriptorLayoutItem& x) { return strcmp(x.name.c_str(), name.c_str()) == 0; });
+                    if (itr != owner->descriptorLayout.samplerRegister.end()) {
+                        symbol->getWritableType().getQualifier().layoutSet = DescriptorType_SamplerState;//itr->binding;
+                        symbol->getWritableType().getQualifier().layoutBinding = itr->binding;
+                    }
+                }
+                else {
+                    // texture
+                    auto itr = std::find_if(owner->descriptorLayout.textureRegister.begin(), owner->descriptorLayout.textureRegister.end(),
+                        [&](const DescriptorLayoutItem& x) { return strcmp(x.name.c_str(), name.c_str()) == 0; });
+                    if (itr != owner->descriptorLayout.textureRegister.end()) {
+                        symbol->getWritableType().getQualifier().layoutSet = DescriptorType_Texture;// itr->binding;
+                        symbol->getWritableType().getQualifier().layoutBinding = itr->binding;
+                    }
+                }
+                //EsdNone
+            }
+
+            //if (symbol->getName() == "g_texture1")
+            //{
+            //    symbol->getWritableType().getQualifier().layoutSet = 1;
+            //}
+            //if (symbol->getName() == "g_samplerState1")
+            //{
+            //    symbol->getWritableType().getQualifier().layoutSet = 2;
+            //}
+        }
+    };
+    IntermTraverser localIntermTraverser;
+    localIntermTraverser.owner = this;
+
+    TIntermNode* root = it->getTreeRoot();
+    root->traverse(&localIntermTraverser);
+
+    printf("");
+
+    //auto ioMapper = new glslang::TIoMapper();
+
+    //if (!it->mapTypeToConstructorOp(&localMapper)) {
+    //	LN_NOTIMPLEMENTED();
+    //	return false;
+    //}
+
+
+
+    if (!m_program->mapIO()) {
+        LN_NOTIMPLEMENTED();
+        return false;
+    }
+
+
+    m_program->buildReflection();
 
     glslang::GlslangToSpv(*m_program->getIntermediate(LNStageToEShLanguage(m_stage)), m_spirvCode);
 
@@ -687,6 +782,49 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
         //glsl.unset_decoration(resources.uniform_buffers[i].id, spv::DecorationBinding);
     }
 #endif
+
+    {
+        // UniformBuffers
+        for (int i = 0; i < m_program->getNumLiveUniformBlocks(); i++)
+        {
+            LN_LOG_VERBOSE << "UniformBuffer[" << i << "] : ";
+            LN_LOG_VERBOSE << "  name : " << m_program->getUniformBlockName(i);
+            LN_LOG_VERBOSE << "  size : " << m_program->getUniformBlockSize(i);
+            LN_LOG_VERBOSE << "  bindingIndex : " << m_program->getUniformBlockBinding(i);
+        }
+
+        for (int i = 0; i < m_program->getNumLiveUniformVariables(); i++)
+        {
+            const glslang::TType* type = m_program->getUniformTType(i);
+            GLenum gltype = m_program->getUniformType(i);
+            uint16_t lnType;
+            if (!GLTypeToLNUniformType(gltype, type, &lnType)) {
+                return false;
+            }
+
+            LN_LOG_VERBOSE << "Uniform[" << i << "] : ";
+            LN_LOG_VERBOSE << "  name : " << m_program->getUniformName(i);
+            LN_LOG_VERBOSE << "  type : " << lnType;
+            LN_LOG_VERBOSE << "  basicType : " << type->getBasicTypeString();
+            LN_LOG_VERBOSE << "  basicString : " << type->getBasicString();
+            LN_LOG_VERBOSE << "  offset : " << m_program->getUniformBufferOffset(i);
+            LN_LOG_VERBOSE << "  bindingIndex : " << m_program->getUniformBinding(i);
+            LN_LOG_VERBOSE << "  vectorElements : " << type->getVectorSize();
+            LN_LOG_VERBOSE << "  arrayElements : " << m_program->getUniformArraySize(i);
+            LN_LOG_VERBOSE << "  matrixRows : " << type->getMatrixRows();
+            LN_LOG_VERBOSE << "  matrixColumns : " << type->getMatrixCols();
+
+            int ownerUiformBufferIndex = m_program->getUniformBlockIndex(i);
+            if (ownerUiformBufferIndex >= 0)
+            {
+                LN_LOG_VERBOSE << "  ownerUiformBufferIndex : " << ownerUiformBufferIndex << "(" << m_program->getUniformBlockName(ownerUiformBufferIndex) << ")";
+            }
+            else {
+                // TODO: texture など
+            }
+        }
+
+    }
 
     return true;
 }

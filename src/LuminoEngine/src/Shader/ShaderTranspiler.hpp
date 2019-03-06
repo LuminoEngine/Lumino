@@ -30,7 +30,7 @@ enum class ShaderCodeStage
 class ShaderCodeTranspiler
 {
 public:
-    std::vector<DescriptorLayoutItem> descriptorLayout;
+    DescriptorLayout descriptorLayout;
 
     static void initializeGlobals();
     static void finalizeGlobals();

@@ -134,10 +134,11 @@ public:
 
 enum DescriptorType
 {
-    DescriptorType_Undefined = 0,
-    DescriptorType_UniformBuffer = 1,
-    DescriptorType_Texture = 2,
-    DescriptorType_SamplerState = 3,
+    DescriptorType_UniformBuffer = 0,
+    DescriptorType_Texture = 1,
+    DescriptorType_SamplerState = 2,    // TODO: Sampler。たしか HLSL では sampler も SamplerState も s だったはず
+
+    DescriptorType_Count,
 };
 
 enum ShaderStageFlags
@@ -150,10 +151,18 @@ enum ShaderStageFlags
 struct DescriptorLayoutItem
 {
     std::string name;
-    uint8_t type;       // DescriptorType
+    //uint8_t type;       // DescriptorType
     uint8_t stageFlags; // ShaderStage どのステージで使われるか
     uint8_t binding;
 };
+
+struct DescriptorLayout
+{
+    std::vector<DescriptorLayoutItem> uniformBufferRegister;
+    std::vector<DescriptorLayoutItem> textureRegister;
+    std::vector<DescriptorLayoutItem> samplerRegister;
+};
+
 
 } // namespace detail
 } // namespace ln
