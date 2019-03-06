@@ -51,7 +51,8 @@ public:
 
     //static const int FileVersion = 1;
 	enum FileVersion {
-		FileVersion_1 = 1,
+		FileVersion_1 = 1,  // 0.7.0
+        FileVersion_2,      // 0.8.0
 		FileVersion_Last,
 		FileVersion_Current = FileVersion_Last - 1,
 	};

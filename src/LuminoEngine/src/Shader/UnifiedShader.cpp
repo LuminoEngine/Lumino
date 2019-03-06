@@ -181,6 +181,35 @@ bool UnifiedShader::save(const Path& filePath)
         }
     }
 
+    // Descriptor layout
+    {
+        writer->write("lufx.l..", 8); // Chunk signature
+
+        writer->writeUInt32(m_descriptorLayout.uniformBufferRegister.size());
+        for (size_t i = 0; i < m_descriptorLayout.uniformBufferRegister.size(); i++) {
+            DescriptorLayoutItem* item = &m_descriptorLayout.uniformBufferRegister[i];
+            writeString(writer, item->name);
+            writer->writeUInt8(item->stageFlags);
+            writer->writeUInt8(item->binding);
+        }
+
+        writer->writeUInt32(m_descriptorLayout.textureRegister.size());
+        for (size_t i = 0; i < m_descriptorLayout.textureRegister.size(); i++) {
+            DescriptorLayoutItem* item = &m_descriptorLayout.textureRegister[i];
+            writeString(writer, item->name);
+            writer->writeUInt8(item->stageFlags);
+            writer->writeUInt8(item->binding);
+        }
+
+        writer->writeUInt32(m_descriptorLayout.samplerRegister.size());
+        for (size_t i = 0; i < m_descriptorLayout.samplerRegister.size(); i++) {
+            DescriptorLayoutItem* item = &m_descriptorLayout.samplerRegister[i];
+            writeString(writer, item->name);
+            writer->writeUInt8(item->stageFlags);
+            writer->writeUInt8(item->binding);
+        }
+    }
+
     return true;
 }
 
@@ -334,6 +363,46 @@ bool UnifiedShader::load(Stream* stream)
 			}
 
             m_passes.add(std::move(info));
+        }
+    }
+
+    // Descriptor layout
+    {
+        if (!checkSignature(reader, "lufx.l..", 8, m_diag)) {
+            return false;
+        }
+
+        {
+            size_t count = reader->readUInt32();
+            for (size_t i = 0; i < count; i++) {
+                DescriptorLayoutItem item;
+                item.name = readString(reader);
+                item.stageFlags = reader->readUInt8();
+                item.binding = reader->readUInt8();
+                m_descriptorLayout.uniformBufferRegister.push_back(item);
+            }
+        }
+
+        {
+            size_t count = reader->readUInt32();
+            for (size_t i = 0; i < count; i++) {
+                DescriptorLayoutItem item;
+                item.name = readString(reader);
+                item.stageFlags = reader->readUInt8();
+                item.binding = reader->readUInt8();
+                m_descriptorLayout.textureRegister.push_back(item);
+            }
+        }
+
+        {
+            size_t count = reader->readUInt32();
+            for (size_t i = 0; i < count; i++) {
+                DescriptorLayoutItem item;
+                item.name = readString(reader);
+                item.stageFlags = reader->readUInt8();
+                item.binding = reader->readUInt8();
+                m_descriptorLayout.samplerRegister.push_back(item);
+            }
         }
     }
 
