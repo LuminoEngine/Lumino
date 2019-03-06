@@ -47,7 +47,7 @@ public:
         const List<String>* definitions,
         DiagnosticsManager* diag);
 
-    bool mapIOAndGenerateSpirv();
+    bool mapIOAndGenerateSpirv(const DescriptorLayout& mergedDescriptorLayout);
 
     ShaderCodeStage stage() const { return m_stage; }
 	const std::vector<VertexInputAttribute>& attributes() const { return m_attributes; }

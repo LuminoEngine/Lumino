@@ -112,23 +112,29 @@ bool FxcCommand::generate(const ln::Path& inputFile)
         if (pair.second->stage() == ln::detail::ShaderCodeStage::Vertex) {
             for (size_t i = 0; i < pair.second->descriptorLayout.uniformBufferRegister.size(); i++) {
                 pair.second->descriptorLayout.uniformBufferRegister[i].binding = i;
+                unifiedShader->addMergeDescriptorLayoutItem(ln::detail::DescriptorType_UniformBuffer, pair.second->descriptorLayout.uniformBufferRegister[i]);
             }
             for (size_t i = 0; i < pair.second->descriptorLayout.textureRegister.size(); i++) {
                 pair.second->descriptorLayout.textureRegister[i].binding = i;
+                unifiedShader->addMergeDescriptorLayoutItem(ln::detail::DescriptorType_Texture, pair.second->descriptorLayout.textureRegister[i]);
             }
             for (size_t i = 0; i < pair.second->descriptorLayout.samplerRegister.size(); i++) {
                 pair.second->descriptorLayout.samplerRegister[i].binding = i;
+                unifiedShader->addMergeDescriptorLayoutItem(ln::detail::DescriptorType_SamplerState, pair.second->descriptorLayout.samplerRegister[i]);
             }
         }
         if (pair.second->stage() == ln::detail::ShaderCodeStage::Fragment) {
             for (size_t i = 0; i < pair.second->descriptorLayout.uniformBufferRegister.size(); i++) {
                 pair.second->descriptorLayout.uniformBufferRegister[i].binding = maxVertexShaderBindingCounts[ln::detail::DescriptorType_UniformBuffer] + i;
+                unifiedShader->addMergeDescriptorLayoutItem(ln::detail::DescriptorType_UniformBuffer, pair.second->descriptorLayout.uniformBufferRegister[i]);
             }
             for (size_t i = 0; i < pair.second->descriptorLayout.textureRegister.size(); i++) {
                 pair.second->descriptorLayout.textureRegister[i].binding = maxVertexShaderBindingCounts[ln::detail::DescriptorType_Texture] + i;
+                unifiedShader->addMergeDescriptorLayoutItem(ln::detail::DescriptorType_Texture, pair.second->descriptorLayout.textureRegister[i]);
             }
             for (size_t i = 0; i < pair.second->descriptorLayout.samplerRegister.size(); i++) {
                 pair.second->descriptorLayout.samplerRegister[i].binding = maxVertexShaderBindingCounts[ln::detail::DescriptorType_SamplerState] + i;
+                unifiedShader->addMergeDescriptorLayoutItem(ln::detail::DescriptorType_SamplerState, pair.second->descriptorLayout.samplerRegister[i]);
             }
         }
     }
@@ -137,7 +143,7 @@ bool FxcCommand::generate(const ln::Path& inputFile)
     for (auto& pair : transpilerMap) {
         LN_LOG_VERBOSE << "gen " << pair.first;
 
-        if (!pair.second->mapIOAndGenerateSpirv()) {
+        if (!pair.second->mapIOAndGenerateSpirv(unifiedShader->descriptorLayout())) {
             return false;
         }
 

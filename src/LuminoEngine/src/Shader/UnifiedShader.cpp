@@ -340,6 +340,34 @@ bool UnifiedShader::load(Stream* stream)
     return true;
 }
 
+void UnifiedShader::addMergeDescriptorLayoutItem(DescriptorType registerType, const DescriptorLayoutItem& item)
+{
+    std::vector<DescriptorLayoutItem>* list = nullptr;
+    switch (registerType)
+    {
+    case ln::detail::DescriptorType_UniformBuffer:
+        list = &m_descriptorLayout.uniformBufferRegister;
+        break;
+    case ln::detail::DescriptorType_Texture:
+        list = &m_descriptorLayout.textureRegister;
+        break;
+    case ln::detail::DescriptorType_SamplerState:
+        list = &m_descriptorLayout.samplerRegister;
+        break;
+    default:
+        LN_UNREACHABLE();
+        return;
+    }
+
+    auto itr = std::find_if(list->begin(), list->end(), [&](const DescriptorLayoutItem& x) { return x.name == item.name; });
+    if (itr != list->end()) {
+        itr->stageFlags |= item.stageFlags;
+    }
+    else {
+        list->push_back(item);
+    }
+}
+
 bool UnifiedShader::addCodeContainer(const std::string& entryPointName, CodeContainerId* outId)
 {
     if (findCodeContainerInfoIndex(entryPointName) >= 0) {

@@ -3,8 +3,15 @@ float4x4 model;
 float4x4 view;
 float4x4 proj;
 
+//cbuffer Buf2 {
+//	float4 _Color;
+//}
+
 Texture2D g_texture1;
 SamplerState g_samplerState1;
+
+//Texture2D g_texture2;
+//SamplerState g_samplerState2;
 
 struct VS_INPUT
 {
@@ -31,7 +38,7 @@ VS_OUTPUT vsMain(VS_INPUT input)
     output.Pos = mul(float4(input.Pos, 1), model);
     output.Pos = mul(output.Pos, view);
     output.Pos = mul(output.Pos, proj);
-    output.Color = input.Color;
+    output.Color = input.Color;// + _Color;
     output.TexCoord = input.TexCoord;
     return output;
 }
@@ -45,7 +52,7 @@ struct PS_INPUT
 float4 psMain(PS_INPUT input) : SV_Target
 {
     //return float4(input.TexCoord, 0, 1);
-    return g_texture1.Sample(g_samplerState1, input.TexCoord);
+    return g_texture1.Sample(g_samplerState1, input.TexCoord);// + g_texture2.Sample(g_samplerState2, input.TexCoord) + _Color;
 }
 
 technique MainTech

@@ -63,6 +63,9 @@ public:
     bool save(const Path& filePath);
     bool load(Stream* stream);
 
+    void addMergeDescriptorLayoutItem(DescriptorType registerType, const DescriptorLayoutItem& item);
+    const DescriptorLayout& descriptorLayout() const { return m_descriptorLayout; }
+
     bool addCodeContainer(const std::string& entryPointName, CodeContainerId* outId);
     void setCode(CodeContainerId container, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code, UnifiedShaderRefrectionInfo* refrection);
     void setCode(const std::string& entryPointName, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code, UnifiedShaderRefrectionInfo* refrection);
@@ -132,6 +135,7 @@ private:
     List<CodeContainerInfo> m_codeContainers;
     List<TechniqueInfo> m_techniques;
     List<PassInfo> m_passes;
+    DescriptorLayout m_descriptorLayout;
 };
 
 } // namespace detail

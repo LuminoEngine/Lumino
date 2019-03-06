@@ -607,7 +607,7 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
     return true;
 }
 
-bool ShaderCodeTranspiler::mapIOAndGenerateSpirv()
+bool ShaderCodeTranspiler::mapIOAndGenerateSpirv(const DescriptorLayout& mergedDescriptorLayout)
 {
 
     class IOMapper : public glslang::TIoMapResolver
@@ -681,7 +681,7 @@ bool ShaderCodeTranspiler::mapIOAndGenerateSpirv()
     class IntermTraverser : public glslang::TIntermTraverser
     {
     public:
-        ShaderCodeTranspiler* owner;
+        const DescriptorLayout* mergedDescriptorLayout;
 
         virtual void visitSymbol(glslang::TIntermSymbol* symbol)
         {
@@ -700,9 +700,9 @@ bool ShaderCodeTranspiler::mapIOAndGenerateSpirv()
 
                 //}
 
-                auto itr = std::find_if(owner->descriptorLayout.uniformBufferRegister.begin(), owner->descriptorLayout.uniformBufferRegister.end(),
+                auto itr = std::find_if(mergedDescriptorLayout->uniformBufferRegister.begin(), mergedDescriptorLayout->uniformBufferRegister.end(),
                     [&](const DescriptorLayoutItem& x) { return strcmp(x.name.c_str(), name.c_str()) == 0; });
-                if (itr != owner->descriptorLayout.uniformBufferRegister.end()) {
+                if (itr != mergedDescriptorLayout->uniformBufferRegister.end()) {
                     symbol->getWritableType().getQualifier().layoutSet = DescriptorType_UniformBuffer;//itr->binding;
                     symbol->getWritableType().getQualifier().layoutBinding = itr->binding;
                 }
@@ -713,18 +713,18 @@ bool ShaderCodeTranspiler::mapIOAndGenerateSpirv()
                 auto& sampler = symbol->getType().getSampler();
                 if (sampler.type == glslang::EbtVoid && sampler.dim == glslang::EsdNone) {
                     // samplerState
-                    auto itr = std::find_if(owner->descriptorLayout.samplerRegister.begin(), owner->descriptorLayout.samplerRegister.end(),
+                    auto itr = std::find_if(mergedDescriptorLayout->samplerRegister.begin(), mergedDescriptorLayout->samplerRegister.end(),
                         [&](const DescriptorLayoutItem& x) { return strcmp(x.name.c_str(), name.c_str()) == 0; });
-                    if (itr != owner->descriptorLayout.samplerRegister.end()) {
+                    if (itr != mergedDescriptorLayout->samplerRegister.end()) {
                         symbol->getWritableType().getQualifier().layoutSet = DescriptorType_SamplerState;//itr->binding;
                         symbol->getWritableType().getQualifier().layoutBinding = itr->binding;
                     }
                 }
                 else {
                     // texture
-                    auto itr = std::find_if(owner->descriptorLayout.textureRegister.begin(), owner->descriptorLayout.textureRegister.end(),
+                    auto itr = std::find_if(mergedDescriptorLayout->textureRegister.begin(), mergedDescriptorLayout->textureRegister.end(),
                         [&](const DescriptorLayoutItem& x) { return strcmp(x.name.c_str(), name.c_str()) == 0; });
-                    if (itr != owner->descriptorLayout.textureRegister.end()) {
+                    if (itr != mergedDescriptorLayout->textureRegister.end()) {
                         symbol->getWritableType().getQualifier().layoutSet = DescriptorType_Texture;// itr->binding;
                         symbol->getWritableType().getQualifier().layoutBinding = itr->binding;
                     }
@@ -743,7 +743,7 @@ bool ShaderCodeTranspiler::mapIOAndGenerateSpirv()
         }
     };
     IntermTraverser localIntermTraverser;
-    localIntermTraverser.owner = this;
+    localIntermTraverser.mergedDescriptorLayout = &mergedDescriptorLayout;
 
     TIntermNode* root = it->getTreeRoot();
     root->traverse(&localIntermTraverser);
