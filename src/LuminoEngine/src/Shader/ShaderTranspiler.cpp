@@ -349,8 +349,8 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
 		shader->setEnvClient(glslang::EShClientVulkan, VulkanClientVersion);
 		*/
         //shader.setShiftBinding(glslang::EResUbo, 0);
-        shader.setShiftBinding(glslang::EResSampler, 1);	// sampler state
-		shader.setShiftBinding(glslang::EResTexture, 1);	// texture
+  //      shader.setShiftBinding(glslang::EResSampler, 1);	// sampler state
+		//shader.setShiftBinding(glslang::EResTexture, 1);	// texture
 			//shader.setShiftBinding(glslang::EResImage, 1);
 			//	shader.setShiftBinding(glslang::EResUbo, 1);
 			//		shader.setShiftBinding(glslang::EResSsbo, 1);
@@ -398,9 +398,113 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
             if (!StringHelper::isNullOrEmpty(shader.getInfoDebugLog())) diag->reportWarning(shader.getInfoDebugLog());
         }
 
-        if (!program.mapIO()) {
-            LN_NOTIMPLEMENTED();
-        }
+		class IOMapper : public glslang::TIoMapResolver
+		{
+		public:
+			virtual bool validateBinding(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override
+			{
+				return true;
+			}
+
+			// 結果の/現在のバインディングが問題ない場合はtrueを返します。 基本的な考え方はこれでエイリアスバインディングチェックをすることです。
+			//virtual bool validateBinding(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) = 0;
+			// Should return a value >= 0 if the current binding should be overridden.
+			// Return -1 if the current binding (including no binding) should be kept.
+			virtual int resolveBinding(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override
+			{
+				return -1;
+				//return type.getQualifier().layoutBinding;
+			}
+			// Should return a value >= 0 if the current set should be overridden.
+			// Return -1 if the current set (including no set) should be kept.
+			virtual int resolveSet(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override
+			{
+				return -1;
+				//return type.getQualifier().layoutSet;
+			}
+			// Should return a value >= 0 if the current location should be overridden.
+			// Return -1 if the current location (including no location) should be kept.
+			virtual int resolveUniformLocation(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override
+			{
+				return -1;
+				//return type.getQualifier().layoutLocation;
+			}
+			//結果の/現在の設定で問題ない場合はtrueを返します。
+			//基本的な考え方は、エイリアスチェックを行い、無効な意味名を拒否することです。
+			virtual bool validateInOut(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override
+			{
+				return true;
+			}
+			//現在位置を上書きする必要がある場合は、0以上の値を返す必要があります。
+			//現在地を保存しない場合は-1を返す
+			virtual int resolveInOutLocation(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override
+			{
+				return -1;
+				//return type.getQualifier().inout;
+			}
+			// Should return a value >= 0 if the current component index should be overridden.
+			// Return -1 if the current component index (including no index) should be kept.
+			virtual int resolveInOutComponent(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override
+			{
+				return -1;
+			}
+			// Should return a value >= 0 if the current color index should be overridden.
+			// Return -1 if the current color index (including no index) should be kept.
+			virtual int resolveInOutIndex(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override
+			{
+				return -1;
+			}
+			virtual void notifyBinding(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override {}
+			virtual void notifyInOut(EShLanguage stage, const char* name, const glslang::TType& type, bool is_live) override {}
+			virtual void endNotifications(EShLanguage stage) {}
+			virtual void beginNotifications(EShLanguage stage) {}
+			virtual void beginResolve(EShLanguage stage) {}
+			virtual void endResolve(EShLanguage stage) {}
+		};
+
+		//OMapper localMapper;
+		glslang::TIntermediate* it = program.getIntermediate(lang);
+
+
+		class IntermTraverser : public glslang::TIntermTraverser
+		{
+		public:
+			virtual void visitSymbol(glslang::TIntermSymbol* symbol)
+			{
+				std::cout << "[TIntermSymbol " << symbol << "]" << std::endl;
+				std::cout << symbol->getName() << std::endl;
+				//printf("");
+
+				if (symbol->getName() == "g_texture1")
+				{
+					symbol->getWritableType().getQualifier().layoutSet = 1;
+				}
+				if (symbol->getName() == "g_samplerState1")
+				{
+					symbol->getWritableType().getQualifier().layoutSet = 2;
+				}
+			}
+		};
+		IntermTraverser localIntermTraverser;
+
+		TIntermNode* root = it->getTreeRoot();
+		root->traverse(&localIntermTraverser);
+
+		printf("");
+
+		//auto ioMapper = new glslang::TIoMapper();
+
+		//if (!it->mapTypeToConstructorOp(&localMapper)) {
+		//	LN_NOTIMPLEMENTED();
+		//	return false;
+		//}
+
+
+
+		if (!program.mapIO()) {
+			LN_NOTIMPLEMENTED();
+			return false;
+		}
     }
 
     program.buildReflection();
