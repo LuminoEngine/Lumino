@@ -311,7 +311,8 @@ Ref<detail::IShaderPass> Shader::createShaderPass(
     DiagnosticsManager* diag,
     ShaderCompilationProperties* properties)
 {
-#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
+//#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
+#if 0
     List<Path> includeDirs;
     if (properties) {
         for (auto& path : properties->m_includeDirectories)
@@ -319,12 +320,12 @@ Ref<detail::IShaderPass> Shader::createShaderPass(
     }
 
     detail::ShaderCodeTranspiler vsCodeGen(m_manager);
-    if (!vsCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Vertex, vsData, vsLen, vsEntryPoint, includeDirs, (properties) ? &properties->m_definitions : nullptr, diag)) {
+    if (!vsCodeGen.compileAndLinkFromHlsl(detail::ShaderCodeStage::Vertex, vsData, vsLen, vsEntryPoint, includeDirs, (properties) ? &properties->m_definitions : nullptr, diag)) {
         return nullptr;
     }
 
     detail::ShaderCodeTranspiler psCodeGen(m_manager);
-    if (!psCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Fragment, psData, psLen, psEntryPoint, includeDirs, (properties) ? &properties->m_definitions : nullptr, diag)) {
+    if (!psCodeGen.compileAndLinkFromHlsl(detail::ShaderCodeStage::Fragment, psData, psLen, psEntryPoint, includeDirs, (properties) ? &properties->m_definitions : nullptr, diag)) {
         return nullptr;
     }
 

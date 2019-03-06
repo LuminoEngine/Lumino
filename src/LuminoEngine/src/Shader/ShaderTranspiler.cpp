@@ -267,6 +267,20 @@ static bool GLTypeToLNUniformType(GLenum value, const glslang::TType* type, uint
 	return false;
 }
 
+static EShLanguage LNStageToEShLanguage(ShaderCodeStage stage)
+{
+    switch (stage) {
+    case ShaderCodeStage::Vertex:
+        return EShLanguage::EShLangVertex;
+    case ShaderCodeStage::Fragment:
+        return EShLanguage::EShLangFragment;
+        break;
+    default:
+        LN_NOTIMPLEMENTED();
+        return EShLanguage::EShLangVertex;
+    }
+}
+
 void ShaderCodeTranspiler::initializeGlobals()
 {
     glslang::InitializeProcess();
@@ -283,7 +297,14 @@ ShaderCodeTranspiler::ShaderCodeTranspiler(ShaderManager* manager)
 {
 }
 
-bool ShaderCodeTranspiler::parseAndGenerateSpirv(
+ShaderCodeTranspiler::~ShaderCodeTranspiler()
+{
+    // この２つは開放順が重要。詳細は TProgram の ヘッダや Standalone.cpp CompileAndLinkShaderUnits の一番下に書いてある。
+    m_program.reset();
+    m_shader.reset();
+}
+
+bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
     ShaderCodeStage stage,
     const char* code,
     size_t length,
@@ -316,86 +337,72 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
     bool forwardCompatible = true;
     EShMessages messages = (EShMessages)(EShMsgSpvRules | EShMsgVulkanRules);
 
-    EShLanguage lang;
-    switch (stage) {
-        case ShaderCodeStage::Vertex:
-            lang = EShLanguage::EShLangVertex;
-            break;
-        case ShaderCodeStage::Fragment:
-            lang = EShLanguage::EShLangFragment;
-            break;
-        default:
-            LN_NOTIMPLEMENTED();
-            break;
-    }
-
-    // この２つは開放順が重要。TProgram の ヘッダや Standalone.cpp CompileAndLinkShaderUnits の一番下に書いてある。
-    glslang::TShader shader(lang);
-    glslang::TProgram program;
+    m_shader = std::make_unique<glslang::TShader>(LNStageToEShLanguage(m_stage));
+    m_program = std::make_unique<glslang::TProgram>();
 
     // parse
     {
         const char* shaderCode[1] = {code};
         const int shaderLenght[1] = {static_cast<int>(length)};
         const char* shaderName[1] = {"shadercode"};
-        shader.setStringsWithLengthsAndNames(shaderCode, shaderLenght, shaderName, 1);
-        shader.setEntryPoint(entryPoint.c_str());
+        m_shader->setStringsWithLengthsAndNames(shaderCode, shaderLenght, shaderName, 1);
+        m_shader->setEntryPoint(entryPoint.c_str());
 
-        shader.setEnvInput(sourceType, lang, glslang::EShClientOpenGL, ClientInputSemanticsVersion);
-        shader.setEnvClient(glslang::EShClientOpenGL, OpenGLClientVersion);
+        m_shader->setEnvInput(sourceType, LNStageToEShLanguage(m_stage), glslang::EShClientOpenGL, ClientInputSemanticsVersion);
+        m_shader->setEnvClient(glslang::EShClientOpenGL, OpenGLClientVersion);
         /* Vulkan Rule
 		shader->setEnvInput((Options & EOptionReadHlsl) ? glslang::EShSourceHlsl : glslang::EShSourceGlsl,
 		compUnit.stage, glslang::EShClientVulkan, ClientInputSemanticsVersion);
 		shader->setEnvClient(glslang::EShClientVulkan, VulkanClientVersion);
 		*/
-        //shader.setShiftBinding(glslang::EResUbo, 0);
-  //      shader.setShiftBinding(glslang::EResSampler, 1);	// sampler state
-		//shader.setShiftBinding(glslang::EResTexture, 1);	// texture
-			//shader.setShiftBinding(glslang::EResImage, 1);
-			//	shader.setShiftBinding(glslang::EResUbo, 1);
-			//		shader.setShiftBinding(glslang::EResSsbo, 1);
-			//			shader.setShiftBinding(glslang::EResUav, 1);
-        //shader.setShiftBindingForSet(glslang::EResUbo, 0, 0);
-        //shader.setShiftBindingForSet(glslang::EResSampler, 1, 1);
+        //m_shader->setShiftBinding(glslang::EResUbo, 0);
+  //      m_shader->setShiftBinding(glslang::EResSampler, 1);	// sampler state
+		//m_shader->setShiftBinding(glslang::EResTexture, 1);	// texture
+			//m_shader->setShiftBinding(glslang::EResImage, 1);
+			//	m_shader->setShiftBinding(glslang::EResUbo, 1);
+			//		m_shader->setShiftBinding(glslang::EResSsbo, 1);
+			//			m_shader->setShiftBinding(glslang::EResUav, 1);
+        //m_shader->setShiftBindingForSet(glslang::EResUbo, 0, 0);
+        //m_shader->setShiftBindingForSet(glslang::EResSampler, 1, 1);
 
 		// 実際に使われている UBO, Txture, SamplerState などに、自動的に binding 番号を振る。
 		// false の場合は、すべて未指定 (-1) となる。
-		// 値は program.getUniformBinding() で確認できる。
-		shader.setAutoMapBindings(true);
-		//shader.setAutoMapLocations(true);
-		//shader.setHlslIoMapping(true);
+		// 値は m_program->getUniformBinding() で確認できる。
+		m_shader->setAutoMapBindings(true);
+		//m_shader->setAutoMapLocations(true);
+		//m_shader->setHlslIoMapping(true);
 
         if (preamble.isSet()) {
-            shader.setPreamble(preamble.get());
+            m_shader->setPreamble(preamble.get());
         }
-        shader.addProcesses(preamble.prepro());
+        m_shader->addProcesses(preamble.prepro());
 
         /* TODO: parse でメモリリークしてるぽい。EShLangFragment の時に発生する。
 			Dumping objects ->
 			{12053} normal block at 0x06EB1410, 8 bytes long.
 			 Data: <k       > 6B 0F 00 00 FF FF FF FF 
 		*/
-        if (!shader.parse(&DefaultTBuiltInResource, defaultVersion, forwardCompatible, messages, includer)) {
-            if (!StringHelper::isNullOrEmpty(shader.getInfoLog())) diag->reportError(shader.getInfoLog());
-            if (!StringHelper::isNullOrEmpty(shader.getInfoDebugLog())) diag->reportError(shader.getInfoDebugLog());
+        if (!m_shader->parse(&DefaultTBuiltInResource, defaultVersion, forwardCompatible, messages, includer)) {
+            if (!StringHelper::isNullOrEmpty(m_shader->getInfoLog())) diag->reportError(m_shader->getInfoLog());
+            if (!StringHelper::isNullOrEmpty(m_shader->getInfoDebugLog())) diag->reportError(m_shader->getInfoDebugLog());
             return false;
-        } else if (shader.getInfoLog()) {
-            if (!StringHelper::isNullOrEmpty(shader.getInfoLog())) diag->reportWarning(shader.getInfoLog());
-            if (!StringHelper::isNullOrEmpty(shader.getInfoDebugLog())) diag->reportWarning(shader.getInfoDebugLog());
+        } else if (m_shader->getInfoLog()) {
+            if (!StringHelper::isNullOrEmpty(m_shader->getInfoLog())) diag->reportWarning(m_shader->getInfoLog());
+            if (!StringHelper::isNullOrEmpty(m_shader->getInfoDebugLog())) diag->reportWarning(m_shader->getInfoDebugLog());
         }
     }
 
     // link
     {
-        program.addShader(&shader);
+        m_program->addShader(m_shader.get());
 
-        if (!program.link(messages)) {
-            if (!StringHelper::isNullOrEmpty(shader.getInfoLog())) diag->reportError(shader.getInfoLog());
-            if (!StringHelper::isNullOrEmpty(shader.getInfoDebugLog())) diag->reportError(shader.getInfoDebugLog());
+        if (!m_program->link(messages)) {
+            if (!StringHelper::isNullOrEmpty(m_shader->getInfoLog())) diag->reportError(m_shader->getInfoLog());
+            if (!StringHelper::isNullOrEmpty(m_shader->getInfoDebugLog())) diag->reportError(m_shader->getInfoDebugLog());
             return false;
-        } else if (shader.getInfoLog()) {
-            if (!StringHelper::isNullOrEmpty(shader.getInfoLog())) diag->reportWarning(shader.getInfoLog());
-            if (!StringHelper::isNullOrEmpty(shader.getInfoDebugLog())) diag->reportWarning(shader.getInfoDebugLog());
+        } else if (m_shader->getInfoLog()) {
+            if (!StringHelper::isNullOrEmpty(m_shader->getInfoLog())) diag->reportWarning(m_shader->getInfoLog());
+            if (!StringHelper::isNullOrEmpty(m_shader->getInfoDebugLog())) diag->reportWarning(m_shader->getInfoDebugLog());
         }
 
 		class IOMapper : public glslang::TIoMapResolver
@@ -463,7 +470,7 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
 		};
 
 		//OMapper localMapper;
-		glslang::TIntermediate* it = program.getIntermediate(lang);
+		glslang::TIntermediate* it = m_program->getIntermediate(LNStageToEShLanguage(m_stage));
 
 
 		class IntermTraverser : public glslang::TIntermTraverser
@@ -501,23 +508,23 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
 
 
 
-		if (!program.mapIO()) {
+		if (!m_program->mapIO()) {
 			LN_NOTIMPLEMENTED();
 			return false;
 		}
     }
 
-    program.buildReflection();
-    program.dumpReflection();
+    m_program->buildReflection();
+    m_program->dumpReflection();
 
 	// get input attributes
 	{
 		m_attributes.clear();
 
-		for (int iAttr = 0; iAttr < program.getNumLiveAttributes(); iAttr++)
+		for (int iAttr = 0; iAttr < m_program->getNumLiveAttributes(); iAttr++)
 		{
-			auto name = program.getAttributeName(iAttr);
-			const glslang::TType* tt = program.getAttributeTType(iAttr);
+			auto name = m_program->getAttributeName(iAttr);
+			const glslang::TType* tt = m_program->getAttributeTType(iAttr);
 			const glslang::TQualifier& qual = tt->getQualifier();
 
 			VertexInputAttribute attr;
@@ -564,16 +571,16 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
 
 
 		// $Global
-		for (int i = 0; i < program.getNumLiveUniformBlocks(); i++)
+		for (int i = 0; i < m_program->getNumLiveUniformBlocks(); i++)
 		{
 			ShaderUniformBufferInfo info;
-			info.name = program.getUniformBlockName(i);
-			info.size = program.getUniformBlockSize(i);
+			info.name = m_program->getUniformBlockName(i);
+			info.size = m_program->getUniformBlockSize(i);
 
 			LN_LOG_VERBOSE << "UniformBuffer[" << i << "] : ";
 			LN_LOG_VERBOSE << "  name : " << info.name;
 			LN_LOG_VERBOSE << "  size : " << info.size;
-            LN_LOG_VERBOSE << "  bindingIndex : " << program.getUniformBlockBinding(i);
+            LN_LOG_VERBOSE << "  bindingIndex : " << m_program->getUniformBlockBinding(i);
 
             m_refrection->buffers.push_back(std::move(info));
 		}
@@ -612,24 +619,24 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
 		//
 		// また、これらはシェーダ単位で行われる。OpenGL でいうところの、VertexShader と PixelShader をリンクした後の program ではないので注意。
 		//
-        for (int i = 0; i < program.getNumLiveUniformVariables(); i++)
+        for (int i = 0; i < m_program->getNumLiveUniformVariables(); i++)
         {
 
 			ShaderUniformInfo info;
-			info.name = program.getUniformName(i);
+			info.name = m_program->getUniformName(i);
 
-			const glslang::TType* type = program.getUniformTType(i);
-			GLenum gltype = program.getUniformType(i);
+			const glslang::TType* type = m_program->getUniformTType(i);
+			GLenum gltype = m_program->getUniformType(i);
 			if (!GLTypeToLNUniformType(gltype, type, &info.type)) {
 				diag->reportError("Invalid type.");
 				return false;
 			}
 
 			//info.size = 0;
-			info.offset = program.getUniformBufferOffset(i);
+			info.offset = m_program->getUniformBufferOffset(i);
 
 			info.vectorElements = type->getVectorSize();
-			info.arrayElements = program.getUniformArraySize(i);
+			info.arrayElements = m_program->getUniformArraySize(i);
 			info.matrixRows = type->getMatrixRows();
 			info.matrixColumns = type->getMatrixCols();
 
@@ -643,7 +650,7 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
 			LN_LOG_VERBOSE << "  basicType : " << type->getBasicTypeString();
 			LN_LOG_VERBOSE << "  basicString : " << type->getBasicString();
 			LN_LOG_VERBOSE << "  offset : " << info.offset;
-			LN_LOG_VERBOSE << "  bindingIndex : " << program.getUniformBinding(i);	// cbuffer Global : register(b3) のように書かれると、mapIO しなくても 3 がとれる。
+			LN_LOG_VERBOSE << "  bindingIndex : " << m_program->getUniformBinding(i);	// cbuffer Global : register(b3) のように書かれると、mapIO しなくても 3 がとれる。
 			LN_LOG_VERBOSE << "  vectorElements : " << info.vectorElements;
 			LN_LOG_VERBOSE << "  arrayElements : " << info.arrayElements;
 			LN_LOG_VERBOSE << "  matrixRows : " << info.matrixRows;
@@ -652,10 +659,10 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
 			
 
 
-			int ownerUiformBufferIndex = program.getUniformBlockIndex(i);
+			int ownerUiformBufferIndex = m_program->getUniformBlockIndex(i);
 			if (ownerUiformBufferIndex >= 0)
 			{
-				LN_LOG_VERBOSE << "  ownerUiformBufferIndex : " << ownerUiformBufferIndex << "(" << program.getUniformBlockName(ownerUiformBufferIndex) << ")";
+				LN_LOG_VERBOSE << "  ownerUiformBufferIndex : " << ownerUiformBufferIndex << "(" << m_program->getUniformBlockName(ownerUiformBufferIndex) << ")";
 
                 m_refrection->buffers[ownerUiformBufferIndex].members.push_back(std::move(info));
 			}
@@ -665,7 +672,7 @@ bool ShaderCodeTranspiler::parseAndGenerateSpirv(
         }
 	}
 
-    glslang::GlslangToSpv(*program.getIntermediate(lang), m_spirvCode);
+    glslang::GlslangToSpv(*m_program->getIntermediate(LNStageToEShLanguage(m_stage)), m_spirvCode);
 
 
     spirv_cross::CompilerGLSL glsl(m_spirvCode);

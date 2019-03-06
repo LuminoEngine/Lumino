@@ -131,5 +131,29 @@ public:
     std::vector<ShaderUniformBufferInfo> buffers;
 };
 
+
+enum DescriptorType
+{
+    DescriptorType_Undefined = 0,
+    DescriptorType_UniformBuffer = 1,
+    DescriptorType_Texture = 2,
+    DescriptorType_SamplerState = 3,
+};
+
+enum ShaderStageFlags
+{
+    ShaderStage_None = 0x00,
+    ShaderStage_Vertex = 0x01,
+    ShaderStage_Pixel = 0x02,
+};
+
+struct DescriptorLayoutItem
+{
+    std::string name;
+    uint8_t type;       // DescriptorType
+    uint8_t stageFlags; // ShaderStage どのステージで使われるか
+    uint8_t binding;
+};
+
 } // namespace detail
 } // namespace ln

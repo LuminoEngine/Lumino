@@ -79,7 +79,7 @@ bool FxcCommand::generate(const ln::Path& inputFile)
             // Vertex shader
             {
 				auto transpiler = std::make_shared<ln::detail::ShaderCodeTranspiler>(m_manager);
-				transpiler->parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, &definitions, m_diag);
+				transpiler->compileAndLinkFromHlsl(ln::detail::ShaderCodeStage::Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, &definitions, m_diag);
 				if (m_diag->hasError()) {
 					return false;
 				}
@@ -110,7 +110,7 @@ bool FxcCommand::generate(const ln::Path& inputFile)
             // Pixel shader
             {
 				auto transpiler = std::make_shared<ln::detail::ShaderCodeTranspiler>(m_manager);
-				transpiler->parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, &definitions, m_diag);
+				transpiler->compileAndLinkFromHlsl(ln::detail::ShaderCodeStage::Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, &definitions, m_diag);
 				if (m_diag->hasError()) {
 					return false;
 				}

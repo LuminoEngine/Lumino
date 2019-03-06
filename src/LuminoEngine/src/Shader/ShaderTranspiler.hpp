@@ -6,6 +6,11 @@
 #include <LuminoEngine/Shader/Common.hpp>
 #include "../Grammar/Token.hpp"
 
+namespace glslang {
+class TShader;
+class TProgram;
+}
+
 namespace ln {
 class Token;
 
@@ -25,13 +30,15 @@ enum class ShaderCodeStage
 class ShaderCodeTranspiler
 {
 public:
+    std::vector<DescriptorLayoutItem> descriptorLayout;
 
     static void initializeGlobals();
     static void finalizeGlobals();
 
     ShaderCodeTranspiler(ShaderManager* manager);
+    ~ShaderCodeTranspiler();
 
-    bool parseAndGenerateSpirv(
+    bool compileAndLinkFromHlsl(
         ShaderCodeStage stage,
         const char* code,
         size_t length,
@@ -40,6 +47,9 @@ public:
         const List<String>* definitions,
         DiagnosticsManager* diag);
 
+    bool mapIOAndGenerateSpirv();
+
+    ShaderCodeStage stage() const { return m_stage; }
 	const std::vector<VertexInputAttribute>& attributes() const { return m_attributes; }
 	const Ref<UnifiedShaderRefrectionInfo>& refrection() const { return m_refrection; }
 	std::vector<byte_t> spirvCode() const;
@@ -48,6 +58,8 @@ public:
 private:
     ShaderManager* m_manager;
     ShaderCodeStage m_stage;
+    std::unique_ptr<glslang::TShader> m_shader;
+    std::unique_ptr<glslang::TProgram> m_program;
 	std::vector<VertexInputAttribute> m_attributes;
 	Ref<UnifiedShaderRefrectionInfo> m_refrection;
     std::vector<uint32_t> m_spirvCode;
