@@ -110,6 +110,7 @@ struct ShaderUniformInfo
     }
 };
 
+// TODO: 不要
 struct ShaderUniformBufferInfo
 {
     std::string name;
@@ -154,6 +155,11 @@ struct DescriptorLayoutItem
     //uint8_t type;       // DescriptorType
     uint8_t stageFlags; // ShaderStage どのステージで使われるか
     uint8_t binding;
+    //uint8_t bufferIndex = 0xFF;    // UniformBuffer の場合、対応する DescriptorLayout::buffers のインデックス
+
+
+    uint32_t size = 0;		// UniformBuffer 全体のサイズ
+    std::vector<ShaderUniformInfo> members;
 };
 
 struct DescriptorLayout

@@ -89,27 +89,6 @@ bool UnifiedShader::save(const Path& filePath)
                 writeString(writer, codeInfo->triple.option);
 				writeByteArray(writer, codeInfo->code);
 
-				// Refrection
-				{
-					auto& buffers = codeInfo->refrection->buffers;
-					writer->writeUInt32(buffers.size());
-					for (size_t i = 0; i < buffers.size(); i++) {
-						writeString(writer, buffers[i].name);
-						writer->writeUInt32(buffers[i].size);
-
-						writer->writeUInt32(buffers[i].members.size());
-						for (size_t iMember = 0; iMember < buffers[i].members.size(); iMember++) {
-							auto& member = buffers[i].members[iMember];
-							writeString(writer, member.name);
-							writer->writeUInt16(member.type);
-							writer->writeUInt16(member.offset);
-							writer->writeUInt16(member.vectorElements);
-							writer->writeUInt16(member.arrayElements);
-							writer->writeUInt16(member.matrixRows);
-							writer->writeUInt16(member.matrixColumns);
-						}
-					}
-				}
             }
         }
     }
@@ -191,6 +170,23 @@ bool UnifiedShader::save(const Path& filePath)
             writeString(writer, item->name);
             writer->writeUInt8(item->stageFlags);
             writer->writeUInt8(item->binding);
+
+            // Buffer members
+            {
+                writer->writeUInt32(item->size);
+
+                writer->writeUInt32(item->members.size());
+                for (size_t iMember = 0; iMember < item->members.size(); iMember++) {
+                    auto& member = item->members[iMember];
+                    writeString(writer, member.name);
+                    writer->writeUInt16(member.type);
+                    writer->writeUInt16(member.offset);
+                    writer->writeUInt16(member.vectorElements);
+                    writer->writeUInt16(member.arrayElements);
+                    writer->writeUInt16(member.matrixRows);
+                    writer->writeUInt16(member.matrixColumns);
+                }
+            }
         }
 
         writer->writeUInt32(m_descriptorLayout.textureRegister.size());
@@ -248,30 +244,30 @@ bool UnifiedShader::load(Stream* stream)
                 code.code = readByteArray(reader);
                 code.refrection = makeRef<UnifiedShaderRefrectionInfo>();
 
-				// Uniform buffers
-				{
-					size_t count = reader->readUInt32();
-					for (size_t i = 0; i < count; i++) {
-						ShaderUniformBufferInfo buffer;
-						buffer.name = readString(reader);
-						buffer.size = reader->readUInt32();
+				//// Uniform buffers
+				//{
+				//	size_t count = reader->readUInt32();
+				//	for (size_t i = 0; i < count; i++) {
+				//		ShaderUniformBufferInfo buffer;
+				//		buffer.name = readString(reader);
+				//		buffer.size = reader->readUInt32();
 
-						size_t memberCount = reader->readUInt32();
-						for (size_t iMember = 0; iMember < memberCount; iMember++) {
-							ShaderUniformInfo member;
-							member.name = readString(reader);
-							member.type = reader->readUInt16();
-							member.offset = reader->readUInt16();
-							member.vectorElements = reader->readUInt16();
-							member.arrayElements = reader->readUInt16();
-							member.matrixRows = reader->readUInt16();
-							member.matrixColumns = reader->readUInt16();
-							buffer.members.push_back(std::move(member));
-						}
+				//		size_t memberCount = reader->readUInt32();
+				//		for (size_t iMember = 0; iMember < memberCount; iMember++) {
+				//			ShaderUniformInfo member;
+				//			member.name = readString(reader);
+				//			member.type = reader->readUInt16();
+				//			member.offset = reader->readUInt16();
+				//			member.vectorElements = reader->readUInt16();
+				//			member.arrayElements = reader->readUInt16();
+				//			member.matrixRows = reader->readUInt16();
+				//			member.matrixColumns = reader->readUInt16();
+				//			buffer.members.push_back(std::move(member));
+				//		}
 
-                        code.refrection->buffers.push_back(std::move(buffer));
-					}
-				}
+    //                    code.refrection->buffers.push_back(std::move(buffer));
+				//	}
+				//}
 
 				info.codes.push_back(std::move(code));
             }
@@ -379,6 +375,25 @@ bool UnifiedShader::load(Stream* stream)
                 item.name = readString(reader);
                 item.stageFlags = reader->readUInt8();
                 item.binding = reader->readUInt8();
+
+                // Buffer members
+                {
+                    item.size = reader->readUInt32();
+
+                    size_t count = reader->readUInt32();
+                    for (size_t iMember = 0; iMember < count; iMember++) {
+                        ShaderUniformInfo member;
+                        member.name = readString(reader);
+                        member.type = reader->readUInt16();
+                        member.offset = reader->readUInt16();
+                        member.vectorElements = reader->readUInt16();
+                        member.arrayElements = reader->readUInt16();
+                        member.matrixRows = reader->readUInt16();
+                        member.matrixColumns = reader->readUInt16();
+                        item.members.push_back(std::move(member));
+                    }
+                }
+
                 m_descriptorLayout.uniformBufferRegister.push_back(item);
             }
         }

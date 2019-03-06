@@ -475,29 +475,23 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
 			m_attributes.push_back(attr);
 		}
 
-
-
-		// $Global
+        // UniformBlocks
 		for (int i = 0; i < m_program->getNumLiveUniformBlocks(); i++)
 		{
 			ShaderUniformBufferInfo info;
 			info.name = m_program->getUniformBlockName(i);
 			info.size = m_program->getUniformBlockSize(i);
 
-			//LN_LOG_VERBOSE << "UniformBuffer[" << i << "] : ";
-			//LN_LOG_VERBOSE << "  name : " << info.name;
-			//LN_LOG_VERBOSE << "  size : " << info.size;
-   //         LN_LOG_VERBOSE << "  bindingIndex : " << m_program->getUniformBlockBinding(i);
-
-            auto* tt = m_program->getUniformBlockTType(i);
-            printf("★[%p]\n", tt);
-            auto cs = tt->getCompleteString();
-            tt->getQualifier();
+            //auto* tt = m_program->getUniformBlockTType(i);
+            //printf("★[%p]\n", tt);
+            //auto cs = tt->getCompleteString();
+            //tt->getQualifier();
 
             DescriptorLayoutItem item;
             item.name = info.name;
             item.stageFlags = stageFlags;
             item.binding = -1;
+            item.size = m_program->getUniformBlockSize(i);
             descriptorLayout.uniformBufferRegister.push_back(std::move(item));
 
             m_refrection->buffers.push_back(std::move(info));
@@ -590,18 +584,22 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
                 item.binding = -1;
                 descriptorLayout.samplerRegister.push_back(std::move(item));
             }
+            else {
+
+                int ownerUiformBufferIndex = m_program->getUniformBlockIndex(i);
+                if (ownerUiformBufferIndex >= 0)
+                {
+                    descriptorLayout.uniformBufferRegister[ownerUiformBufferIndex].members.push_back(info);
 
 
-			int ownerUiformBufferIndex = m_program->getUniformBlockIndex(i);
-			if (ownerUiformBufferIndex >= 0)
-			{
-				//LN_LOG_VERBOSE << "  ownerUiformBufferIndex : " << ownerUiformBufferIndex << "(" << m_program->getUniformBlockName(ownerUiformBufferIndex) << ")";
+                    //LN_LOG_VERBOSE << "  ownerUiformBufferIndex : " << ownerUiformBufferIndex << "(" << m_program->getUniformBlockName(ownerUiformBufferIndex) << ")";
 
-                m_refrection->buffers[ownerUiformBufferIndex].members.push_back(std::move(info));
-			}
-			else {
-				// TODO: texture など
-			}
+                    m_refrection->buffers[ownerUiformBufferIndex].members.push_back(std::move(info));
+                }
+                else {
+                    // TODO: texture など
+                }
+            }
         }
 	}
     return true;
