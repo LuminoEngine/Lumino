@@ -10,6 +10,7 @@
 namespace ln {
 namespace detail {
 class VulkanDeviceContext;
+class VulkanShaderPass;
 
 #define LN_VK_CHECK(f) \
 { \
@@ -93,6 +94,15 @@ public:
 
 private:
 	LinearAllocator* m_linearAllocator;
+};
+
+// CommandBuffer から直接参照されるオブジェクト。コマンド実行終了までは解放してはならないもの。
+// 実装先で retain, release すること。
+class IVulkanInFlightResource
+{
+public:
+    virtual void onBind() = 0;
+    virtual void onUnBind() = 0;
 };
 
 // 頂点バッファ、インデックスバッファ、レンダーターゲット転送のための一時バッファなど、様々な目的で使用する汎用バッファ。
@@ -180,27 +190,39 @@ private:
 };
 
 // DescriptorSet と、それにアタッチした UniformBuffer。
+// vulkanDescriptorSets() を vkCmdBindDescriptorSets にセットする。
 // できるだけ共有できるものは共有したいので、コマンドバッファに入れるとき、前回入れた UniformBuffer と差がなければ共有したい。
 // ので、このインスタンスを前回値として CommandBuffer は持っておく。
 // UniformBuffer は CommandBuffer の LeniarAllocator (cmdCopyBuffer()) からとる。
-class VulkanDescriptorSet
+//class VulkanDescriptorSets
+//{
+//public:
+//    VulkanDescriptorSets();
+//    Result init();
+//
+//    const std::vector<VkDescriptorSet>& vulkanDescriptorSets() const { return m_vulkanDescriptorSets; }
+//
+//private:
+//    std::vector<VkDescriptorSet> m_vulkanDescriptorSets;
+//};
+
+// Layout の原因である ShaderPass が削除されたら、その Layout をもとに作られているこの Pool も削除したい。
+// そのため、このインスタンスの生成と削除は ShaderPass が担当する。
+class VulkanDescriptorSetsPool
+    : public RefObject
 {
 public:
-    VulkanDescriptorSet();
-    Result init();
+    VulkanDescriptorSetsPool();
+    Result init(VulkanDeviceContext* deviceContext, VulkanShaderPass* owner);
+    void dispose();
+
+    Result allocateDescriptorSets(std::array<VkDescriptorSet, DescriptorType_Count>* sets);
+    void reset();
 
 private:
-};
-
-class VulkanDescriptorSetCache
-{
-public:
-    VulkanDescriptorSetCache();
-    Result init();
-
-	static uint32_t computeHash(const DescriptorLayout& layoutInfo);
-
-private:
+    VulkanDeviceContext* m_deviceContext;
+    VulkanShaderPass* m_owner;
+    VkDescriptorPool m_descriptorPool;
 };
 
 } // namespace detail

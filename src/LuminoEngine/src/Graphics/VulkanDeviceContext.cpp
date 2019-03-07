@@ -2061,6 +2061,7 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
         {
             std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
             layoutBindings.reserve(createInfo.descriptorLayout->uniformBufferRegister.size());
+            m_bufferDescriptorBufferInfo.reserve(createInfo.descriptorLayout->uniformBufferRegister.size());
             for (auto& item : createInfo.descriptorLayout->uniformBufferRegister) {
                 VkDescriptorSetLayoutBinding layoutBinding = {};
                 layoutBinding.binding = item.binding;
@@ -2070,6 +2071,25 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
                 layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromPixelStage(DescriptorType_UniformBuffer)) ? VK_SHADER_STAGE_FRAGMENT_BIT : 0;
                 layoutBinding.pImmutableSamplers = nullptr;
                 layoutBindings.push_back(layoutBinding);
+
+                VkDescriptorBufferInfo info;
+                info.buffer = VK_NULL_HANDLE;   // set from submitDescriptorWriteInfo
+                info.offset = 0;
+                info.range = item.size;
+                m_bufferDescriptorBufferInfo.push_back(info);
+                
+                VkWriteDescriptorSet set;
+                set.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                set.pNext = nullptr;
+                set.dstSet = VK_NULL_HANDLE;   // set from submitDescriptorWriteInfo
+                set.dstBinding = item.binding;
+                set.dstArrayElement = 0;
+                set.descriptorCount = 1;
+                set.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                set.pImageInfo = nullptr;
+                set.pBufferInfo = &m_bufferDescriptorBufferInfo.back();
+                set.pTexelBufferView = nullptr;
+                m_descriptorWriteInfo.push_back(set);
             }
 
             VkDescriptorSetLayoutCreateInfo layoutInfo = {};
@@ -2083,6 +2103,7 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
         {
             std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
             layoutBindings.reserve(createInfo.descriptorLayout->textureRegister.size());
+            m_textureDescripterImageInfo.reserve(createInfo.descriptorLayout->textureRegister.size());
             for (auto& item : createInfo.descriptorLayout->textureRegister) {
                 VkDescriptorSetLayoutBinding layoutBinding = {};
                 layoutBinding.binding = item.binding;
@@ -2092,6 +2113,25 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
                 layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromPixelStage(DescriptorType_Texture)) ? VK_SHADER_STAGE_FRAGMENT_BIT : 0;
                 layoutBinding.pImmutableSamplers = nullptr;
                 layoutBindings.push_back(layoutBinding);
+
+                VkDescriptorImageInfo info;
+                info.sampler = VK_NULL_HANDLE;
+                info.imageView = VK_NULL_HANDLE;    // set from submitDescriptorWriteInfo
+                info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                m_textureDescripterImageInfo.push_back(info);
+
+                VkWriteDescriptorSet set;
+                set.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                set.pNext = nullptr;
+                set.dstSet = VK_NULL_HANDLE;   // set from submitDescriptorWriteInfo
+                set.dstBinding = item.binding;
+                set.dstArrayElement = 0;
+                set.descriptorCount = 1;
+                set.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+                set.pImageInfo = &m_textureDescripterImageInfo.back();
+                set.pBufferInfo = nullptr;
+                set.pTexelBufferView = nullptr;
+                m_descriptorWriteInfo.push_back(set);
             }
 
             VkDescriptorSetLayoutCreateInfo layoutInfo = {};
@@ -2105,6 +2145,7 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
         {
             std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
             layoutBindings.reserve(createInfo.descriptorLayout->samplerRegister.size());
+            m_samplerDescripterImageInfo.reserve(createInfo.descriptorLayout->samplerRegister.size());
             for (auto& item : createInfo.descriptorLayout->samplerRegister) {
                 VkDescriptorSetLayoutBinding layoutBinding = {};
                 layoutBinding.binding = item.binding;
@@ -2114,6 +2155,25 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
                 layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromPixelStage(DescriptorType_SamplerState)) ? VK_SHADER_STAGE_FRAGMENT_BIT : 0;
                 layoutBinding.pImmutableSamplers = nullptr;
                 layoutBindings.push_back(layoutBinding);
+
+                VkDescriptorImageInfo info;
+                info.sampler = VK_NULL_HANDLE;      // set from submitDescriptorWriteInfo
+                info.imageView = VK_NULL_HANDLE;    // set from submitDescriptorWriteInfo
+                info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                m_samplerDescripterImageInfo.push_back(info);
+
+                VkWriteDescriptorSet set;
+                set.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                set.pNext = nullptr;
+                set.dstSet = VK_NULL_HANDLE;   // set from submitDescriptorWriteInfo
+                set.dstBinding = item.binding;
+                set.dstArrayElement = 0;
+                set.descriptorCount = 1;
+                set.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                set.pImageInfo = &m_samplerDescripterImageInfo.back();
+                set.pBufferInfo = nullptr;
+                set.pTexelBufferView = nullptr;
+                m_descriptorWriteInfo.push_back(set);
             }
 
             VkDescriptorSetLayoutCreateInfo layoutInfo = {};
@@ -2126,12 +2186,16 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
 
 	// UniformBuffers
 	{
+        uint32_t writeIndex = 0;
 		for (auto& item : createInfo.descriptorLayout->uniformBufferRegister)
 		{
 			auto buf = makeRef<VulkanShaderUniformBuffer>();
 			if (!buf->init(m_deviceContext, item.name, item.size, item.members)) {
 				return false;
 			}
+            buf->descriptorWriteInfoIndex = writeIndex;
+            buf->bindingIndex = item.binding;
+            writeIndex++;
 
 			m_uniformBuffers.push_back(buf);
 		}
@@ -2149,6 +2213,11 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
 void VulkanShaderPass::dispose()
 {
     VkDevice device = m_deviceContext->vulkanDevice();
+
+    for (auto& pool : m_descriptorSetsPools) {
+        pool->dispose();
+    }
+    m_descriptorSetsPools.clear();
 
     if (m_localShaderSamplerBuffer) {
         m_localShaderSamplerBuffer->dispose();
@@ -2178,6 +2247,49 @@ IShaderSamplerBuffer* VulkanShaderPass::samplerBuffer() const
     return m_localShaderSamplerBuffer;
 }
 
+const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWriteInfo(const std::array<VkDescriptorSet, DescriptorType_Count>& descriptorSets)
+{
+    //uint32_t index = 0;
+    //for (size_t i = 0; i < m_uniformBuffers.size(); i++) {
+    //    VkDescriptorBufferInfo& info = m_bufferDescriptorBufferInfo[i];
+    //    info.buffer = m_uniformBuffers[i]->vulkanBuffer();
+    //    info.offset = 0;
+    //    info.range = m_uniformBuffers[i]->bufferSize();
+
+    //    VkWriteDescriptorSet& set = m_descriptorWriteInfo[index];
+    //    set.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    //    set.dstSet = descriptorSets[DescriptorType_UniformBuffer];
+    //    set.dstBinding = m_uniformBuffers[i]->bindingIndex;
+    //    set.dstArrayElement = 0;
+    //    set.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    //    set.descriptorCount = 1;
+    //    set.pBufferInfo = &info;
+    //}
+
+    return m_descriptorWriteInfo;
+}
+
+Ref<VulkanDescriptorSetsPool> VulkanShaderPass::getDescriptorSetsPool()
+{
+    if (m_descriptorSetsPools.empty()) {
+        auto ptr = makeRef<VulkanDescriptorSetsPool>();
+        if (!ptr->init(m_deviceContext, this)) {
+            return nullptr;
+        }
+        return ptr;
+    }
+    else {
+        auto ptr = m_descriptorSetsPools.back();
+        m_descriptorSetsPools.pop_back();
+        return ptr;
+    }
+}
+
+void VulkanShaderPass::releaseDescriptorSetsPool(VulkanDescriptorSetsPool* pool)
+{
+    m_descriptorSetsPools.push_back(pool);
+}
+
 //==============================================================================
 // VulkanShaderUniformBuffer
 
@@ -2194,11 +2306,16 @@ Result VulkanShaderUniformBuffer::init(VulkanDeviceContext* deviceContext, const
 
 	m_data.resize(size);
 
+    if (!m_uniformBuffer.init(deviceContext, size, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
+        return false;
+    }
+
 	return true;
 }
 
 void VulkanShaderUniformBuffer::dispose()
 {
+    m_uniformBuffer.dispose();
 	IShaderUniformBuffer::dispose();
 }
 
@@ -2217,18 +2334,26 @@ VulkanLocalShaderSamplerBuffer::VulkanLocalShaderSamplerBuffer()
 
 Result VulkanLocalShaderSamplerBuffer::init(const DescriptorLayout* descriptorLayout)
 {
+    uint32_t writeIndex = descriptorLayout->uniformBufferRegister.size();
+
     // 't' register in HLSL
     for (auto& item : descriptorLayout->textureRegister) {
         Entry e;
         e.textureRegisterName = item.name;
+        e.descriptorWriteInfoIndex = writeIndex;
+        e.bindingIndex = item.binding;
         m_table.push_back(e);
+        writeIndex++;
     }
 
     // 's' register in HLSL (SamplerState and CombinedSampler)
     for (auto& item : descriptorLayout->samplerRegister) {
         Entry e;
         e.samplerRegisterName = item.name;
+        e.descriptorWriteInfoIndex = writeIndex;
+        e.bindingIndex = item.binding;
         m_table.push_back(e);
+        writeIndex++;
     }
 
     return true;

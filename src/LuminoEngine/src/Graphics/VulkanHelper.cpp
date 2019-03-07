@@ -751,31 +751,81 @@ Result VulkanCommandBuffer::glowStagingBufferPool()
 }
 
 //=============================================================================
-// VulkanDescriptorSetCache
+// VulkanDescriptorSetsPool
 
-VulkanDescriptorSetCache::VulkanDescriptorSetCache()
+VulkanDescriptorSetsPool::VulkanDescriptorSetsPool()
 {
 
 }
 
-Result VulkanDescriptorSetCache::init()
+Result VulkanDescriptorSetsPool::init(VulkanDeviceContext* deviceContext, VulkanShaderPass* owner)
 {
+    LN_DCHECK(deviceContext);
+    LN_DCHECK(owner);
+    m_deviceContext = deviceContext;
+    m_owner = owner;
+
+    uint32_t count = 32;    // TODO:
+
+    std::array<VkDescriptorPoolSize, DescriptorType_Count> poolSizes;
+    poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    poolSizes[0].descriptorCount = count;
+    poolSizes[1].type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+    poolSizes[1].descriptorCount = count;
+    poolSizes[2].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    poolSizes[2].descriptorCount = count;
+
+    VkDescriptorPoolCreateInfo poolInfo = {};
+    poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    poolInfo.maxSets = static_cast<uint32_t>(poolSizes.size());//static_cast<uint32_t>(swapChainImages.size());
+    poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+    poolInfo.pPoolSizes = poolSizes.data();
+
+    LN_VK_CHECK(vkCreateDescriptorPool(m_deviceContext->vulkanDevice(), &poolInfo, m_deviceContext->vulkanAllocator(), &m_descriptorPool));
+
 	return true;
 }
 
-uint32_t VulkanDescriptorSetCache::computeHash(const DescriptorLayout& layoutInfo)
+void VulkanDescriptorSetsPool::dispose()
 {
-	MixHash hash;
-	for (int i = 0; i < DescriptorType_Count; i++) {
-		auto& items = layoutInfo.getLayoutItems((DescriptorType)i);
-		for (auto& item : items) {
-			hash.add(item.stageFlags);
-			hash.add(item.binding);
-			hash.add(item.size);
-		}
-	}
-	return hash.value();
+    if (m_descriptorPool) {
+        vkDestroyDescriptorPool(m_deviceContext->vulkanDevice(), m_descriptorPool, m_deviceContext->vulkanAllocator());
+        m_descriptorPool = VK_NULL_HANDLE;
+    }
 }
+
+Result VulkanDescriptorSetsPool::allocateDescriptorSets(std::array<VkDescriptorSet, DescriptorType_Count>* sets)
+{
+    VkDescriptorSetAllocateInfo allocInfo;
+    allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    allocInfo.pNext = nullptr;
+    allocInfo.descriptorPool = m_descriptorPool;
+    allocInfo.descriptorSetCount = m_owner->descriptorSetLayouts().size();
+    allocInfo.pSetLayouts = m_owner->descriptorSetLayouts().data();
+
+    LN_VK_CHECK(vkAllocateDescriptorSets(m_deviceContext->vulkanDevice(), &allocInfo, sets->data()));
+
+    return true;
+}
+
+void VulkanDescriptorSetsPool::reset()
+{
+    vkResetDescriptorPool(m_deviceContext->vulkanDevice(), m_descriptorPool, 0);
+}
+
+//uint32_t VulkanDescriptorSetCache::computeHash(const DescriptorLayout& layoutInfo)
+//{
+//	MixHash hash;
+//	for (int i = 0; i < DescriptorType_Count; i++) {
+//		auto& items = layoutInfo.getLayoutItems((DescriptorType)i);
+//		for (auto& item : items) {
+//			hash.add(item.stageFlags);
+//			hash.add(item.binding);
+//			hash.add(item.size);
+//		}
+//	}
+//	return hash.value();
+//}
 
 } // namespace detail
 } // namespace ln

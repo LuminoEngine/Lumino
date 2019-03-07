@@ -261,6 +261,7 @@ private:
 
 class VulkanShaderPass
     : public IShaderPass
+    , public IVulkanInFlightResource
 {
 public:
     VulkanShaderPass();
@@ -269,10 +270,19 @@ public:
     virtual int getUniformBufferCount() const override { return 0; }
     virtual IShaderUniformBuffer* getUniformBuffer(int index) const override { return nullptr; }
     virtual IShaderSamplerBuffer* samplerBuffer() const override;
+    virtual void onBind() override { RefObjectHelper::retain(this); }
+    virtual void onUnBind() override { RefObjectHelper::release(this); }
 
     VkShaderModule vulkanVertShaderModule() const { return m_vertShaderModule; }
     VkShaderModule vulkanFragShaderModule() const { return m_fragShaderModule; }
     const std::array<VkDescriptorSetLayout, 3>& descriptorSetLayouts() const { return m_descriptorSetLayouts; }
+
+    const std::vector<VkWriteDescriptorSet>& submitDescriptorWriteInfo(const std::array<VkDescriptorSet, DescriptorType_Count>& descriptorSets);
+
+    // CommandBuffer に対するインターフェイス
+    Ref<VulkanDescriptorSetsPool> getDescriptorSetsPool();
+    void releaseDescriptorSetsPool(VulkanDescriptorSetsPool* pool);
+    VulkanDescriptorSetsPool* recodingPool = nullptr; // CommandBuffer に対する、いわゆる UserData のイメージ
 
 private:
     VulkanDeviceContext* m_deviceContext;
@@ -280,7 +290,13 @@ private:
     VkShaderModule m_fragShaderModule;
     std::array<VkDescriptorSetLayout, 3> m_descriptorSetLayouts;
 	std::vector<Ref<VulkanShaderUniformBuffer>> m_uniformBuffers;
+    std::vector<Ref<VulkanDescriptorSetsPool>> m_descriptorSetsPools;
     Ref<VulkanLocalShaderSamplerBuffer> m_localShaderSamplerBuffer;
+
+    std::vector<VkWriteDescriptorSet> m_descriptorWriteInfo;
+    std::vector<VkDescriptorBufferInfo> m_bufferDescriptorBufferInfo;
+    std::vector<VkDescriptorImageInfo> m_textureDescripterImageInfo;
+    std::vector<VkDescriptorImageInfo> m_samplerDescripterImageInfo;
 };
 
 class VulkanShaderUniformBuffer
@@ -297,10 +313,15 @@ public:
 	virtual size_t bufferSize() const override { return m_data.size(); }
 	virtual void setData(const void* data, size_t size) override;
 
+    VkBuffer vulkanBuffer() const { return m_uniformBuffer.vulkanBuffer(); }
+    uint32_t descriptorWriteInfoIndex = 0;
+    uint32_t bindingIndex = 0;
+
 private:
 	std::string m_name;
 	std::vector<byte_t> m_data;
 	std::vector<int> m_bindingNumbers;
+    VulkanBuffer m_uniformBuffer;
 };
 
 
@@ -318,6 +339,8 @@ public:
     virtual void setTexture(int registerIndex, ITexture* texture) override;
     virtual void setSamplerState(int registerIndex, ISamplerState* state) override;
 
+    uint32_t descriptorWriteInfoIndex(int registerIndex) const { return m_table[registerIndex].descriptorWriteInfoIndex; }
+
 private:
     // VkDescriptorImageInfo と同じような情報を持つ。
     struct Entry
@@ -326,6 +349,8 @@ private:
         std::string samplerRegisterName;
         Ref<ITexture> texture;
         Ref<VulkanSamplerState> samplerState;
+        uint32_t descriptorWriteInfoIndex;
+        uint32_t bindingIndex;
     };
 
     std::vector<Entry> m_table;
