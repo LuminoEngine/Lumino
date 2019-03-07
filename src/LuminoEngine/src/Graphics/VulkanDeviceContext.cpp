@@ -848,6 +848,12 @@ public:
     }
 
     void updateFrameData(uint32_t imageIndex, VulkanCommandBuffer* commandBuffer) {
+
+        m_shaderPass->samplerBuffer()->setTexture(0, m_texture);
+        m_shaderPass->samplerBuffer()->setSamplerState(1, m_textureSampler);
+
+
+
         static auto startTime = std::chrono::high_resolution_clock::now();
 
         auto currentTime = std::chrono::high_resolution_clock::now();
@@ -2095,14 +2101,6 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
             LN_VK_CHECK(vkCreateDescriptorSetLayout(device, &layoutInfo, m_deviceContext->vulkanAllocator(), &m_descriptorSetLayouts[1]));
         }
 
-        //VkDescriptorSetLayoutBinding textureLayoutBinding = {};
-        //textureLayoutBinding.binding = 0;
-        //textureLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-        //textureLayoutBinding.descriptorCount = 1;
-        //textureLayoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromVertexStage(DescriptorType_Texture)) ? VK_SHADER_STAGE_VERTEX_BIT : 0;
-        //textureLayoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromPixelStage(DescriptorType_Texture)) ? VK_SHADER_STAGE_FRAGMENT_BIT : 0;
-        //textureLayoutBinding.pImmutableSamplers = nullptr;
-
         // 's' register in HLSL (SamplerState and CombinedSampler)
         {
             std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
@@ -2124,14 +2122,6 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
             layoutInfo.pBindings = layoutBindings.data();
             LN_VK_CHECK(vkCreateDescriptorSetLayout(device, &layoutInfo, m_deviceContext->vulkanAllocator(), &m_descriptorSetLayouts[2]));
         }
-        //VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-        //samplerLayoutBinding.binding = 0;
-        //samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        //samplerLayoutBinding.descriptorCount = 1;
-        //samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-        //samplerLayoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromVertexStage(DescriptorType_SamplerState)) ? VK_SHADER_STAGE_VERTEX_BIT : 0;
-        //samplerLayoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromPixelStage(DescriptorType_SamplerState)) ? VK_SHADER_STAGE_FRAGMENT_BIT : 0;
-        //samplerLayoutBinding.pImmutableSamplers = nullptr;
     }
 
 	// UniformBuffers
@@ -2147,12 +2137,23 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
 		}
 	}
 
+    // SamplerBuffer
+    m_localShaderSamplerBuffer = makeRef<VulkanLocalShaderSamplerBuffer>();
+    if (!m_localShaderSamplerBuffer->init(createInfo.descriptorLayout)) {
+        return false;
+    }
+
     return true;
 }
 
 void VulkanShaderPass::dispose()
 {
     VkDevice device = m_deviceContext->vulkanDevice();
+
+    if (m_localShaderSamplerBuffer) {
+        m_localShaderSamplerBuffer->dispose();
+        m_localShaderSamplerBuffer = nullptr;
+    }
 
     for (auto& layout : m_descriptorSetLayouts) {
         if (layout) {
@@ -2170,6 +2171,11 @@ void VulkanShaderPass::dispose()
         vkDestroyShaderModule(device, m_fragShaderModule, m_deviceContext->vulkanAllocator());
         m_fragShaderModule = VK_NULL_HANDLE;
     }
+}
+
+IShaderSamplerBuffer* VulkanShaderPass::samplerBuffer() const
+{
+    return m_localShaderSamplerBuffer;
 }
 
 //==============================================================================
@@ -2200,6 +2206,46 @@ void VulkanShaderUniformBuffer::setData(const void* data, size_t size)
 {
 	LN_DCHECK(size <= m_data.size());
 	memcpy(m_data.data(), data, size);
+}
+
+//=============================================================================
+// VulkanLocalShaderSamplerBuffer
+
+VulkanLocalShaderSamplerBuffer::VulkanLocalShaderSamplerBuffer()
+{
+}
+
+Result VulkanLocalShaderSamplerBuffer::init(const DescriptorLayout* descriptorLayout)
+{
+    // 't' register in HLSL
+    for (auto& item : descriptorLayout->textureRegister) {
+        Entry e;
+        e.textureRegisterName = item.name;
+        m_table.push_back(e);
+    }
+
+    // 's' register in HLSL (SamplerState and CombinedSampler)
+    for (auto& item : descriptorLayout->samplerRegister) {
+        Entry e;
+        e.samplerRegisterName = item.name;
+        m_table.push_back(e);
+    }
+
+    return true;
+}
+
+void VulkanLocalShaderSamplerBuffer::dispose()
+{
+}
+
+void VulkanLocalShaderSamplerBuffer::setTexture(int registerIndex, ITexture* texture)
+{
+    m_table[registerIndex].texture = texture;
+}
+
+void VulkanLocalShaderSamplerBuffer::setSamplerState(int registerIndex, ISamplerState* state)
+{
+    m_table[registerIndex].samplerState = static_cast<VulkanSamplerState*>(state);
 }
 
 } // namespace detail

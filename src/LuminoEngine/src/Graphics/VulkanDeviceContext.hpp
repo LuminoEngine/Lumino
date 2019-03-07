@@ -17,6 +17,7 @@ namespace ln {
 namespace detail {
 class VulkanRenderTarget;
 class VulkanShaderUniformBuffer;
+class VulkanLocalShaderSamplerBuffer;
 
 class VulkanDeviceContext
 	: public IGraphicsDeviceContext
@@ -267,7 +268,7 @@ public:
     void dispose();
     virtual int getUniformBufferCount() const override { return 0; }
     virtual IShaderUniformBuffer* getUniformBuffer(int index) const override { return nullptr; }
-    virtual IShaderSamplerBuffer* samplerBuffer() const override { return nullptr; }
+    virtual IShaderSamplerBuffer* samplerBuffer() const override;
 
     VkShaderModule vulkanVertShaderModule() const { return m_vertShaderModule; }
     VkShaderModule vulkanFragShaderModule() const { return m_fragShaderModule; }
@@ -279,6 +280,7 @@ private:
     VkShaderModule m_fragShaderModule;
     std::array<VkDescriptorSetLayout, 3> m_descriptorSetLayouts;
 	std::vector<Ref<VulkanShaderUniformBuffer>> m_uniformBuffers;
+    Ref<VulkanLocalShaderSamplerBuffer> m_localShaderSamplerBuffer;
 };
 
 class VulkanShaderUniformBuffer
@@ -299,6 +301,34 @@ private:
 	std::string m_name;
 	std::vector<byte_t> m_data;
 	std::vector<int> m_bindingNumbers;
+};
+
+
+class VulkanLocalShaderSamplerBuffer
+    : public IShaderSamplerBuffer
+{
+public:
+    VulkanLocalShaderSamplerBuffer();
+    Result init(const DescriptorLayout* descriptorLayout);
+    virtual void dispose() override;
+
+    virtual int registerCount() const override { return m_table.size(); }
+    virtual const std::string& getTextureRegisterName(int registerIndex) const override { return m_table[registerIndex].textureRegisterName; }
+    virtual const std::string& getSamplerRegisterName(int registerIndex) const override { return m_table[registerIndex].samplerRegisterName; }
+    virtual void setTexture(int registerIndex, ITexture* texture) override;
+    virtual void setSamplerState(int registerIndex, ISamplerState* state) override;
+
+private:
+    // VkDescriptorImageInfo と同じような情報を持つ。
+    struct Entry
+    {
+        std::string textureRegisterName;
+        std::string samplerRegisterName;
+        Ref<ITexture> texture;
+        Ref<VulkanSamplerState> samplerState;
+    };
+
+    std::vector<Entry> m_table;
 };
 
 } // namespace detail
