@@ -159,7 +159,7 @@ public:
         
     VkRenderPass renderPass;
     //VkDescriptorSetLayout descriptorSetLayout;
-    std::array<VkDescriptorSetLayout, 3> descriptorSetLayouts;
+    std::array<VkDescriptorSetLayout, 4> descriptorSetLayouts;
     VkPipelineLayout pipelineLayout;
     VkPipeline graphicsPipeline;
 
@@ -180,7 +180,7 @@ public:
     VkDescriptorPool descriptorPool;
     //VkDescriptorSet descriptorSet;
     //std::vector<VkDescriptorSet> descriptorSets;
-    std::array<VkDescriptorSet, 3> descriptorSets;
+    std::array<VkDescriptorSet, 4> descriptorSets;
 
     std::vector<Ref<VulkanCommandBuffer>> commandBuffers;
 
@@ -290,7 +290,8 @@ public:
         vkDestroyDescriptorPool(device, descriptorPool, nullptr);
 
         for (auto layout : descriptorSetLayouts) {
-            vkDestroyDescriptorSetLayout(device, layout, nullptr);
+            if (layout)
+                vkDestroyDescriptorSetLayout(device, layout, nullptr);
 
         }
        // vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
@@ -461,7 +462,7 @@ public:
 
         VkDescriptorSetLayoutBinding textureLayoutBinding = {};
         textureLayoutBinding.binding = 0;
-        textureLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+        textureLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         textureLayoutBinding.descriptorCount = 1;
         textureLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
         textureLayoutBinding.pImmutableSamplers = nullptr;
@@ -472,6 +473,26 @@ public:
         samplerLayoutBinding.descriptorCount = 1;
         samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
         samplerLayoutBinding.pImmutableSamplers = nullptr;
+
+        VkDescriptorSetLayoutBinding combinedSamplerLayoutBinding = {};
+        combinedSamplerLayoutBinding.binding = 0;
+        combinedSamplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        combinedSamplerLayoutBinding.descriptorCount = 1;
+        combinedSamplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+        combinedSamplerLayoutBinding.pImmutableSamplers = nullptr;
+
+        //{
+        //    VkDescriptorSetLayoutBinding bindings[] = { uboLayoutBinding , textureLayoutBinding , samplerLayoutBinding , combinedSamplerLayoutBinding };
+
+        //    VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+        //    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        //    layoutInfo.bindingCount = 4;
+        //    layoutInfo.pBindings = bindings;
+
+        //    if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, descriptorSetLayouts.data()) != VK_SUCCESS) {
+        //        throw std::runtime_error("failed to create descriptor set layout!");
+        //    }
+        //}
 
         {
             VkDescriptorSetLayoutCreateInfo layoutInfo = {};
@@ -502,6 +523,17 @@ public:
             layoutInfo.pBindings = &samplerLayoutBinding;
 
             if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &descriptorSetLayouts[2]) != VK_SUCCESS) {
+                throw std::runtime_error("failed to create descriptor set layout!");
+            }
+        }
+
+        {
+            VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+            layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+            layoutInfo.bindingCount = 1;
+            layoutInfo.pBindings = &combinedSamplerLayoutBinding;
+
+            if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &descriptorSetLayouts[3]) != VK_SUCCESS) {
                 throw std::runtime_error("failed to create descriptor set layout!");
             }
         }
@@ -841,13 +873,15 @@ public:
 
     void createDescriptorPool() {
 #if 1
-        std::array<VkDescriptorPoolSize, 3> poolSizes = {};
+        std::array<VkDescriptorPoolSize, 4> poolSizes = {};
         poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         poolSizes[0].descriptorCount = static_cast<uint32_t>(swapChainImages.size());
-        poolSizes[1].type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+        poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         poolSizes[1].descriptorCount = static_cast<uint32_t>(swapChainImages.size());
         poolSizes[2].type = VK_DESCRIPTOR_TYPE_SAMPLER;
         poolSizes[2].descriptorCount = static_cast<uint32_t>(swapChainImages.size());
+        poolSizes[3].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        poolSizes[3].descriptorCount = static_cast<uint32_t>(swapChainImages.size());
 #else
         std::array<VkDescriptorPoolSize, 2> poolSizes = {};
         poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -857,7 +891,7 @@ public:
 #endif
         VkDescriptorPoolCreateInfo poolInfo = {};
         poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-        poolInfo.maxSets = static_cast<uint32_t>(swapChainImages.size());
+        poolInfo.maxSets = static_cast<uint32_t>(poolSizes.size());//static_cast<uint32_t>(swapChainImages.size());
         poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
         poolInfo.pPoolSizes = poolSizes.data();
 
@@ -866,7 +900,7 @@ public:
         }
     }
 
-    void createDescriptorSets() {
+    bool createDescriptorSets() {
         //std::vector<VkDescriptorSetLayout> layouts(swapChainImages.size(), descriptorSetLayout);
         VkDescriptorSetAllocateInfo allocInfo = {};
         allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -878,9 +912,10 @@ public:
 
         //descriptorSets.resize(swapChainImages.size());
         //if (vkAllocateDescriptorSets(device, &allocInfo, &descriptorSet) != VK_SUCCESS) {
-        if (vkAllocateDescriptorSets(device, &allocInfo, descriptorSets.data()) != VK_SUCCESS) {
-            throw std::runtime_error("failed to allocate descriptor sets!");
-        }
+        LN_VK_CHECK(vkAllocateDescriptorSets(device, &allocInfo, descriptorSets.data()));
+        //if (vkAllocateDescriptorSets(device, &allocInfo, descriptorSets.data()) != VK_SUCCESS) {
+        //    throw std::runtime_error("failed to allocate descriptor sets!");
+        //}
 
         //for (size_t i = 0; i < swapChainImages.size(); i++) {
             VkDescriptorBufferInfo bufferInfo = {};
@@ -891,7 +926,7 @@ public:
 
 #if 1
             VkDescriptorImageInfo imageInfo = {};
-            imageInfo.sampler = VK_NULL_HANDLE;
+            imageInfo.sampler = textureSampler;//VK_NULL_HANDLE;
             imageInfo.imageView = m_texture->image()->vulkanImageView();
             imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;//VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL//VK_IMAGE_LAYOUT_GENERAL;
 
@@ -914,7 +949,7 @@ public:
             descriptorWrites[1].dstSet = descriptorSets[1];//s[i];
             descriptorWrites[1].dstBinding = 0;
             descriptorWrites[1].dstArrayElement = 0;
-            descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+            descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
             descriptorWrites[1].descriptorCount = 1;
             descriptorWrites[1].pImageInfo = &imageInfo;
 
@@ -952,6 +987,7 @@ public:
             // 各 dstSet に指定された DescriptorSet を更新する
             vkUpdateDescriptorSets(device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
         //}
+            return true;
     }
 
     void createCommandBuffers() {
@@ -2134,12 +2170,102 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
         LN_VK_CHECK(vkCreateShaderModule(device, &shaderCreateInfo, m_deviceContext->vulkanAllocator(), &m_fragShaderModule));
     }
 
+    // DescriptorSetLayout
+    {
+        // https://docs.microsoft.com/ja-jp/windows/desktop/direct3dhlsl/dx-graphics-hlsl-variable-register
+
+        // 'b' register in HLSL
+        {
+            std::vector<VkDescriptorSetLayoutBinding> layoutBindings(createInfo.descriptorLayout->uniformBufferRegister.size());
+            for (auto& item : createInfo.descriptorLayout->uniformBufferRegister) {
+                VkDescriptorSetLayoutBinding layoutBinding = {};
+                layoutBinding.binding = item.binding;
+                layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                layoutBinding.descriptorCount = 1;
+                layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromVertexStage(DescriptorType_UniformBuffer)) ? VK_SHADER_STAGE_VERTEX_BIT : 0;
+                layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromPixelStage(DescriptorType_UniformBuffer)) ? VK_SHADER_STAGE_FRAGMENT_BIT : 0;
+                layoutBinding.pImmutableSamplers = nullptr;
+                layoutBindings.push_back(layoutBinding);
+            }
+
+            VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+            layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+            layoutInfo.bindingCount = layoutBindings.size();    // 0 で空のインスタンスだけ作ることは可能
+            layoutInfo.pBindings = layoutBindings.data();
+            LN_VK_CHECK(vkCreateDescriptorSetLayout(device, &layoutInfo, m_deviceContext->vulkanAllocator(), &m_descriptorSetLayouts[0]));
+        }
+
+        // 't' register in HLSL
+        {
+            std::vector<VkDescriptorSetLayoutBinding> layoutBindings(createInfo.descriptorLayout->textureRegister.size());
+            for (auto& item : createInfo.descriptorLayout->textureRegister) {
+                VkDescriptorSetLayoutBinding layoutBinding = {};
+                layoutBinding.binding = item.binding;
+                layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                layoutBinding.descriptorCount = 1;
+                layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromVertexStage(DescriptorType_Texture)) ? VK_SHADER_STAGE_VERTEX_BIT : 0;
+                layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromPixelStage(DescriptorType_Texture)) ? VK_SHADER_STAGE_FRAGMENT_BIT : 0;
+                layoutBinding.pImmutableSamplers = nullptr;
+                layoutBindings.push_back(layoutBinding);
+            }
+
+            VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+            layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+            layoutInfo.bindingCount = layoutBindings.size();    // 0 で空のインスタンスだけ作ることは可能
+            layoutInfo.pBindings = layoutBindings.data();
+            LN_VK_CHECK(vkCreateDescriptorSetLayout(device, &layoutInfo, m_deviceContext->vulkanAllocator(), &m_descriptorSetLayouts[1]));
+        }
+
+        //VkDescriptorSetLayoutBinding textureLayoutBinding = {};
+        //textureLayoutBinding.binding = 0;
+        //textureLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+        //textureLayoutBinding.descriptorCount = 1;
+        //textureLayoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromVertexStage(DescriptorType_Texture)) ? VK_SHADER_STAGE_VERTEX_BIT : 0;
+        //textureLayoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromPixelStage(DescriptorType_Texture)) ? VK_SHADER_STAGE_FRAGMENT_BIT : 0;
+        //textureLayoutBinding.pImmutableSamplers = nullptr;
+
+        // 's' register in HLSL (SamplerState and CombinedSampler)
+        {
+            std::vector<VkDescriptorSetLayoutBinding> layoutBindings(createInfo.descriptorLayout->samplerRegister.size());
+            for (auto& item : createInfo.descriptorLayout->samplerRegister) {
+                VkDescriptorSetLayoutBinding layoutBinding = {};
+                layoutBinding.binding = item.binding;
+                layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                layoutBinding.descriptorCount = 1;
+                layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromVertexStage(DescriptorType_SamplerState)) ? VK_SHADER_STAGE_VERTEX_BIT : 0;
+                layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromPixelStage(DescriptorType_SamplerState)) ? VK_SHADER_STAGE_FRAGMENT_BIT : 0;
+                layoutBinding.pImmutableSamplers = nullptr;
+                layoutBindings.push_back(layoutBinding);
+            }
+
+            VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+            layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+            layoutInfo.bindingCount = layoutBindings.size();    // 0 で空のインスタンスだけ作ることは可能
+            layoutInfo.pBindings = layoutBindings.data();
+            LN_VK_CHECK(vkCreateDescriptorSetLayout(device, &layoutInfo, m_deviceContext->vulkanAllocator(), &m_descriptorSetLayouts[2]));
+        }
+        //VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
+        //samplerLayoutBinding.binding = 0;
+        //samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        //samplerLayoutBinding.descriptorCount = 1;
+        //samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+        //samplerLayoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromVertexStage(DescriptorType_SamplerState)) ? VK_SHADER_STAGE_VERTEX_BIT : 0;
+        //samplerLayoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromPixelStage(DescriptorType_SamplerState)) ? VK_SHADER_STAGE_FRAGMENT_BIT : 0;
+        //samplerLayoutBinding.pImmutableSamplers = nullptr;
+    }
     return true;
 }
 
 void VulkanShaderPass::dispose()
 {
     VkDevice device = m_deviceContext->vulkanDevice();
+
+    for (auto& layout : m_descriptorSetLayouts) {
+        if (layout) {
+            vkDestroyDescriptorSetLayout(device, layout, m_deviceContext->vulkanAllocator());
+            layout = VK_NULL_HANDLE;
+        }
+    }
 
     if (m_vertShaderModule) {
         vkDestroyShaderModule(device, m_vertShaderModule, m_deviceContext->vulkanAllocator());

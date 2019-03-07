@@ -137,7 +137,7 @@ enum DescriptorType
 {
     DescriptorType_UniformBuffer = 0,
     DescriptorType_Texture = 1,
-    DescriptorType_SamplerState = 2,    // TODO: Sampler。たしか HLSL では sampler も SamplerState も s だったはず
+    DescriptorType_SamplerState = 2,    // TODO: Sampler。たしか HLSL では sampler も SamplerState も s だったはず。Vulkan でも、CombinedSampler は普通の SamplerState としてシェーダから使える。
 
     DescriptorType_Count,
 };
@@ -153,7 +153,7 @@ struct DescriptorLayoutItem
 {
     std::string name;
     //uint8_t type;       // DescriptorType
-    uint8_t stageFlags; // ShaderStage どのステージで使われるか
+    uint8_t stageFlags; // ShaderStageFlags どのステージで使われるか
     uint8_t binding;
     //uint8_t bufferIndex = 0xFF;    // UniformBuffer の場合、対応する DescriptorLayout::buffers のインデックス
 
@@ -167,6 +167,10 @@ struct DescriptorLayout
     std::vector<DescriptorLayoutItem> uniformBufferRegister;
     std::vector<DescriptorLayoutItem> textureRegister;
     std::vector<DescriptorLayoutItem> samplerRegister;
+
+    const std::vector<DescriptorLayoutItem>& getLayoutItems(DescriptorType registerType) const;
+    bool isReferenceFromVertexStage(DescriptorType registerType) const;
+    bool isReferenceFromPixelStage(DescriptorType registerType) const;
 };
 
 

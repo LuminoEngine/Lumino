@@ -260,6 +260,7 @@ private:
     VulkanDeviceContext* m_deviceContext;
     VkShaderModule m_vertShaderModule;
     VkShaderModule m_fragShaderModule;
+    std::array<VkDescriptorSetLayout, 3> m_descriptorSetLayouts;
 };
 
 } // namespace detail
