@@ -166,7 +166,8 @@ public:
     Ref<VulkanDepthBuffer> m_depthImage;
 
     Ref<VulkanTexture2D> m_texture;
-    VkSampler textureSampler;
+    Ref<VulkanSamplerState> m_textureSampler;
+    //VkSampler textureSampler;
 
     Ref<VulkanVertexDeclaration> m_vertexDeclaration;
     Ref<VulkanVertexBuffer> m_vertexBuffer;
@@ -180,7 +181,7 @@ public:
     VkDescriptorPool descriptorPool;
     //VkDescriptorSet descriptorSet;
     //std::vector<VkDescriptorSet> descriptorSets;
-    std::array<VkDescriptorSet, 4> descriptorSets;
+    std::array<VkDescriptorSet, 3> descriptorSets;
 
     std::vector<Ref<VulkanCommandBuffer>> commandBuffers;
 
@@ -283,7 +284,7 @@ public:
     void cleanup() {
         cleanupSwapChain();
 
-        vkDestroySampler(device, textureSampler, nullptr);
+        m_textureSampler->dispose();
 
 		m_texture->dispose();
 
@@ -726,8 +727,8 @@ public:
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         //pipelineLayoutInfo.setLayoutCount = 1;
         //pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
-        pipelineLayoutInfo.setLayoutCount = descriptorSetLayouts.size();
-        pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
+        pipelineLayoutInfo.setLayoutCount = m_shaderPass->descriptorSetLayouts().size();//descriptorSetLayouts.size();
+        pipelineLayoutInfo.pSetLayouts = m_shaderPass->descriptorSetLayouts().data();//descriptorSetLayouts.data();
 
         if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
             throw std::runtime_error("failed to create pipeline layout!");
@@ -821,24 +822,12 @@ public:
     }
 
     void createTextureSampler() {
-        VkSamplerCreateInfo samplerInfo = {};
-        samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-        samplerInfo.magFilter = VK_FILTER_LINEAR;
-        samplerInfo.minFilter = VK_FILTER_LINEAR;
-        samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-        samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-        samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-        samplerInfo.anisotropyEnable = VK_TRUE;
-        samplerInfo.maxAnisotropy = 16;
-        samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
-        samplerInfo.unnormalizedCoordinates = VK_FALSE;
-        samplerInfo.compareEnable = VK_FALSE;
-        samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
-        samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
 
-        if (vkCreateSampler(device, &samplerInfo, nullptr, &textureSampler) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create texture sampler!");
-        }
+        SamplerStateData desc;
+        desc.filter = TextureFilterMode::Linear;
+        desc.address = TextureAddressMode::Repeat;
+        m_textureSampler = makeRef<VulkanSamplerState>();
+        m_textureSampler->init(m_deviceContext, desc);
     }
 
     VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags) {
@@ -907,8 +896,8 @@ public:
         allocInfo.descriptorPool = descriptorPool;
         //allocInfo.descriptorSetCount = 3;//1;//static_cast<uint32_t>(swapChainImages.size());//
         //allocInfo.pSetLayouts = layouts.data();// &descriptorSetLayout;
-        allocInfo.descriptorSetCount = descriptorSetLayouts.size();
-        allocInfo.pSetLayouts = descriptorSetLayouts.data();// &descriptorSetLayout;
+        allocInfo.descriptorSetCount = m_shaderPass->descriptorSetLayouts().size();//descriptorSetLayouts.size();
+        allocInfo.pSetLayouts = m_shaderPass->descriptorSetLayouts().data();// descriptorSetLayouts.data();// &descriptorSetLayout;
 
         //descriptorSets.resize(swapChainImages.size());
         //if (vkAllocateDescriptorSets(device, &allocInfo, &descriptorSet) != VK_SUCCESS) {
@@ -926,12 +915,12 @@ public:
 
 #if 1
             VkDescriptorImageInfo imageInfo = {};
-            imageInfo.sampler = textureSampler;//VK_NULL_HANDLE;
+            imageInfo.sampler = m_textureSampler->vulkanSampler();
             imageInfo.imageView = m_texture->image()->vulkanImageView();
             imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;//VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL//VK_IMAGE_LAYOUT_GENERAL;
 
             VkDescriptorImageInfo samplerInfo;
-            samplerInfo.sampler = textureSampler;
+            samplerInfo.sampler = m_textureSampler->vulkanSampler();
             samplerInfo.imageView = VK_NULL_HANDLE;
             samplerInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
@@ -2227,7 +2216,8 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
 
         // 'b' register in HLSL
         {
-            std::vector<VkDescriptorSetLayoutBinding> layoutBindings(createInfo.descriptorLayout->uniformBufferRegister.size());
+            std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
+            layoutBindings.reserve(createInfo.descriptorLayout->uniformBufferRegister.size());
             for (auto& item : createInfo.descriptorLayout->uniformBufferRegister) {
                 VkDescriptorSetLayoutBinding layoutBinding = {};
                 layoutBinding.binding = item.binding;
@@ -2248,11 +2238,12 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
 
         // 't' register in HLSL
         {
-            std::vector<VkDescriptorSetLayoutBinding> layoutBindings(createInfo.descriptorLayout->textureRegister.size());
+            std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
+            layoutBindings.reserve(createInfo.descriptorLayout->textureRegister.size());
             for (auto& item : createInfo.descriptorLayout->textureRegister) {
                 VkDescriptorSetLayoutBinding layoutBinding = {};
                 layoutBinding.binding = item.binding;
-                layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
                 layoutBinding.descriptorCount = 1;
                 layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromVertexStage(DescriptorType_Texture)) ? VK_SHADER_STAGE_VERTEX_BIT : 0;
                 layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromPixelStage(DescriptorType_Texture)) ? VK_SHADER_STAGE_FRAGMENT_BIT : 0;
@@ -2277,11 +2268,12 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
 
         // 's' register in HLSL (SamplerState and CombinedSampler)
         {
-            std::vector<VkDescriptorSetLayoutBinding> layoutBindings(createInfo.descriptorLayout->samplerRegister.size());
+            std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
+            layoutBindings.reserve(createInfo.descriptorLayout->samplerRegister.size());
             for (auto& item : createInfo.descriptorLayout->samplerRegister) {
                 VkDescriptorSetLayoutBinding layoutBinding = {};
                 layoutBinding.binding = item.binding;
-                layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;   // VK_DESCRIPTOR_TYPE_SAMPLER としても使える。ただし、ImageView をセットしておく必要がある。
                 layoutBinding.descriptorCount = 1;
                 layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromVertexStage(DescriptorType_SamplerState)) ? VK_SHADER_STAGE_VERTEX_BIT : 0;
                 layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromPixelStage(DescriptorType_SamplerState)) ? VK_SHADER_STAGE_FRAGMENT_BIT : 0;

@@ -251,6 +251,8 @@ public:
 	Result init(VulkanDeviceContext* deviceContext, const SamplerStateData& desc);
 	virtual void dispose() override;
 
+    VkSampler vulkanSampler() const { return m_sampler; }
+
 private:
 	VulkanDeviceContext* m_deviceContext;
 	VkSampler m_sampler;
@@ -269,6 +271,7 @@ public:
 
     VkShaderModule vulkanVertShaderModule() const { return m_vertShaderModule; }
     VkShaderModule vulkanFragShaderModule() const { return m_fragShaderModule; }
+    const std::array<VkDescriptorSetLayout, 3>& descriptorSetLayouts() const { return m_descriptorSetLayouts; }
 
 private:
     VulkanDeviceContext* m_deviceContext;
