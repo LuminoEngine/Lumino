@@ -158,8 +158,6 @@ public:
     Ref<VulkanShaderPass> m_shaderPass;
         
     VkRenderPass renderPass;
-    //VkDescriptorSetLayout descriptorSetLayout;
-    std::array<VkDescriptorSetLayout, 4> descriptorSetLayouts;
     VkPipelineLayout pipelineLayout;
     VkPipeline graphicsPipeline;
 
@@ -229,7 +227,7 @@ public:
         createSwapChain();
         createImageViews();
         createRenderPass();
-        createDescriptorSetLayout();
+        //createDescriptorSetLayout();
         createGraphicsPipeline();
         //createCommandPool();
         createDepthResources();
@@ -289,13 +287,6 @@ public:
 		m_texture->dispose();
 
         vkDestroyDescriptorPool(device, descriptorPool, nullptr);
-
-        for (auto layout : descriptorSetLayouts) {
-            if (layout)
-                vkDestroyDescriptorSetLayout(device, layout, nullptr);
-
-        }
-       // vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
 
         m_uniformBuffer.dispose();
         //for (auto& buf : m_uniformBuffers) {
@@ -450,141 +441,6 @@ public:
         }
     }
 
-    // これはシェーダがどんな uniform を持っているかで決める必要がある
-    void createDescriptorSetLayout() {
-
-#if 1
-        VkDescriptorSetLayoutBinding uboLayoutBinding = {};
-        uboLayoutBinding.binding = 0;
-        uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        uboLayoutBinding.descriptorCount = 1;
-        uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-        uboLayoutBinding.pImmutableSamplers = nullptr;
-
-        VkDescriptorSetLayoutBinding textureLayoutBinding = {};
-        textureLayoutBinding.binding = 0;
-        textureLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        textureLayoutBinding.descriptorCount = 1;
-        textureLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-        textureLayoutBinding.pImmutableSamplers = nullptr;
-
-        VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-        samplerLayoutBinding.binding = 0;
-        samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
-        samplerLayoutBinding.descriptorCount = 1;
-        samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-        samplerLayoutBinding.pImmutableSamplers = nullptr;
-
-        VkDescriptorSetLayoutBinding combinedSamplerLayoutBinding = {};
-        combinedSamplerLayoutBinding.binding = 0;
-        combinedSamplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        combinedSamplerLayoutBinding.descriptorCount = 1;
-        combinedSamplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-        combinedSamplerLayoutBinding.pImmutableSamplers = nullptr;
-
-        //{
-        //    VkDescriptorSetLayoutBinding bindings[] = { uboLayoutBinding , textureLayoutBinding , samplerLayoutBinding , combinedSamplerLayoutBinding };
-
-        //    VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-        //    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-        //    layoutInfo.bindingCount = 4;
-        //    layoutInfo.pBindings = bindings;
-
-        //    if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, descriptorSetLayouts.data()) != VK_SUCCESS) {
-        //        throw std::runtime_error("failed to create descriptor set layout!");
-        //    }
-        //}
-
-        {
-            VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-            layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-            layoutInfo.bindingCount = 1;
-            layoutInfo.pBindings = &uboLayoutBinding;
-
-            if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &descriptorSetLayouts[0]) != VK_SUCCESS) {
-                throw std::runtime_error("failed to create descriptor set layout!");
-            }
-        }
-
-        {
-            VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-            layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-            layoutInfo.bindingCount = 1;
-            layoutInfo.pBindings = &textureLayoutBinding;
-
-            if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &descriptorSetLayouts[1]) != VK_SUCCESS) {
-                throw std::runtime_error("failed to create descriptor set layout!");
-            }
-        }
-
-        {
-            VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-            layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-            layoutInfo.bindingCount = 1;
-            layoutInfo.pBindings = &samplerLayoutBinding;
-
-            if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &descriptorSetLayouts[2]) != VK_SUCCESS) {
-                throw std::runtime_error("failed to create descriptor set layout!");
-            }
-        }
-
-        {
-            VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-            layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-            layoutInfo.bindingCount = 1;
-            layoutInfo.pBindings = &combinedSamplerLayoutBinding;
-
-            if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &descriptorSetLayouts[3]) != VK_SUCCESS) {
-                throw std::runtime_error("failed to create descriptor set layout!");
-            }
-        }
-#else
-        VkDescriptorSetLayoutBinding uboLayoutBinding = {};
-        uboLayoutBinding.binding = 0;
-        uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        uboLayoutBinding.descriptorCount = 1;
-        uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-        uboLayoutBinding.pImmutableSamplers = nullptr;
-
-#if 1
-        VkDescriptorSetLayoutBinding textureLayoutBinding = {};
-        textureLayoutBinding.binding = 0;
-        textureLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-        textureLayoutBinding.descriptorCount = 1;
-        textureLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-        textureLayoutBinding.pImmutableSamplers = nullptr;
-
-        VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-        samplerLayoutBinding.binding = 0;
-        samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
-        samplerLayoutBinding.descriptorCount = 1;
-        samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-        samplerLayoutBinding.pImmutableSamplers = nullptr;
-
-        std::array<VkDescriptorSetLayoutBinding, 3> bindings = { uboLayoutBinding, textureLayoutBinding, samplerLayoutBinding };
-#else
-        VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-        samplerLayoutBinding.binding = 1;
-        samplerLayoutBinding.descriptorCount = 1;
-        samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        samplerLayoutBinding.pImmutableSamplers = nullptr;
-        samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-        std::array<VkDescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, samplerLayoutBinding };
-#endif
-
-        VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-        layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-        layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
-        layoutInfo.pBindings = bindings.data();
-
-        //if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) {
-        if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, descriptorSetLayouts.data()) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create descriptor set layout!");
-        }
-#endif
-    }
-
     VkShaderModule createShaderModule(const std::vector<char>& code) {
         VkShaderModuleCreateInfo createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -725,10 +581,8 @@ public:
 
         VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        //pipelineLayoutInfo.setLayoutCount = 1;
-        //pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
-        pipelineLayoutInfo.setLayoutCount = m_shaderPass->descriptorSetLayouts().size();//descriptorSetLayouts.size();
-        pipelineLayoutInfo.pSetLayouts = m_shaderPass->descriptorSetLayouts().data();//descriptorSetLayouts.data();
+        pipelineLayoutInfo.setLayoutCount = m_shaderPass->descriptorSetLayouts().size();
+        pipelineLayoutInfo.pSetLayouts = m_shaderPass->descriptorSetLayouts().data();
 
         if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
             throw std::runtime_error("failed to create pipeline layout!");
@@ -753,9 +607,6 @@ public:
         if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
             throw std::runtime_error("failed to create graphics pipeline!");
         }
-
-        //vkDestroyShaderModule(device, fragShaderModule, nullptr);
-        //vkDestroyShaderModule(device, vertShaderModule, nullptr);
     }
 
     void createFramebuffers() {
@@ -851,12 +702,6 @@ public:
     }
 
     void createUniformBuffers() {
-        //for (int i = 0; i < swapChainImages.size(); i++) {
-
-        //    auto buf = std::make_shared<VulkanBuffer>();
-        //    buf->init(m_deviceContext, sizeof(UniformBufferObject), /*VK_BUFFER_USAGE_TRANSFER_DST_BIT | */VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-        //    m_uniformBuffers.push_back(buf);
-        //}
         m_uniformBuffer.init(m_deviceContext, sizeof(UniformBufferObject), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
     }
 
@@ -890,21 +735,13 @@ public:
     }
 
     bool createDescriptorSets() {
-        //std::vector<VkDescriptorSetLayout> layouts(swapChainImages.size(), descriptorSetLayout);
         VkDescriptorSetAllocateInfo allocInfo = {};
         allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
         allocInfo.descriptorPool = descriptorPool;
-        //allocInfo.descriptorSetCount = 3;//1;//static_cast<uint32_t>(swapChainImages.size());//
-        //allocInfo.pSetLayouts = layouts.data();// &descriptorSetLayout;
-        allocInfo.descriptorSetCount = m_shaderPass->descriptorSetLayouts().size();//descriptorSetLayouts.size();
-        allocInfo.pSetLayouts = m_shaderPass->descriptorSetLayouts().data();// descriptorSetLayouts.data();// &descriptorSetLayout;
+        allocInfo.descriptorSetCount = m_shaderPass->descriptorSetLayouts().size();
+        allocInfo.pSetLayouts = m_shaderPass->descriptorSetLayouts().data();
 
-        //descriptorSets.resize(swapChainImages.size());
-        //if (vkAllocateDescriptorSets(device, &allocInfo, &descriptorSet) != VK_SUCCESS) {
         LN_VK_CHECK(vkAllocateDescriptorSets(device, &allocInfo, descriptorSets.data()));
-        //if (vkAllocateDescriptorSets(device, &allocInfo, descriptorSets.data()) != VK_SUCCESS) {
-        //    throw std::runtime_error("failed to allocate descriptor sets!");
-        //}
 
         //for (size_t i = 0; i < swapChainImages.size(); i++) {
             VkDescriptorBufferInfo bufferInfo = {};
