@@ -1451,8 +1451,11 @@ Ref<IDepthBuffer> VulkanDeviceContext::onCreateDepthBuffer(uint32_t width, uint3
 
 Ref<ISamplerState> VulkanDeviceContext::onCreateSamplerState(const SamplerStateData& desc)
 {
-	LN_NOTIMPLEMENTED();
-	return nullptr;
+	auto ptr = makeRef<VulkanSamplerState>();
+	if (!ptr->init(this, desc)) {
+		return nullptr;
+	}
+	return ptr;
 }
 
 Ref<IShaderPass> VulkanDeviceContext::onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag)
@@ -2137,6 +2140,54 @@ void VulkanDepthBuffer::dispose()
 }
 
 //==============================================================================
+// VulkanSamplerState
+
+VulkanSamplerState::VulkanSamplerState()
+	: m_deviceContext(nullptr)
+	, m_sampler(VK_NULL_HANDLE)
+{
+}
+
+Result VulkanSamplerState::init(VulkanDeviceContext* deviceContext, const SamplerStateData& desc)
+{
+	LN_DCHECK(deviceContext);
+	m_deviceContext = deviceContext;
+
+	VkFilter filter = VulkanHelper::LNTextureFilterModeToVkFilter(desc.filter);
+	VkSamplerAddressMode address = VulkanHelper::LNTextureAddressModeModeToVkSamplerAddressMode(desc.address);
+
+	VkSamplerCreateInfo samplerInfo = {};
+	samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+	samplerInfo.magFilter = filter;
+	samplerInfo.minFilter = filter;
+	samplerInfo.addressModeU = address;
+	samplerInfo.addressModeV = address;
+	samplerInfo.addressModeW = address;
+	samplerInfo.anisotropyEnable = VK_TRUE;		// TODO:
+	samplerInfo.maxAnisotropy = 16;
+	samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+	samplerInfo.unnormalizedCoordinates = VK_FALSE;
+	samplerInfo.compareEnable = VK_FALSE;
+	samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+	samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+
+	LN_VK_CHECK(vkCreateSampler(m_deviceContext->vulkanDevice(), &samplerInfo, m_deviceContext->vulkanAllocator(), &m_sampler));
+
+	return true;
+}
+
+void VulkanSamplerState::dispose()
+{
+	if (m_sampler) {
+		vkDestroySampler(m_deviceContext->vulkanDevice(), m_sampler, m_deviceContext->vulkanAllocator());
+		m_sampler = VK_NULL_HANDLE;
+	}
+
+	m_deviceContext = nullptr;
+	ISamplerState::dispose();
+}
+
+//==============================================================================
 // VulkanShaderPass
 
 VulkanShaderPass::VulkanShaderPass()
@@ -2253,6 +2304,20 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
         //samplerLayoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromPixelStage(DescriptorType_SamplerState)) ? VK_SHADER_STAGE_FRAGMENT_BIT : 0;
         //samplerLayoutBinding.pImmutableSamplers = nullptr;
     }
+
+	// UniformBuffers
+	{
+		for (auto& item : createInfo.descriptorLayout->uniformBufferRegister)
+		{
+			auto buf = makeRef<VulkanShaderUniformBuffer>();
+			if (!buf->init(m_deviceContext, item.name, item.size, item.members)) {
+				return false;
+			}
+
+			m_uniformBuffers.push_back(buf);
+		}
+	}
+
     return true;
 }
 
@@ -2276,6 +2341,36 @@ void VulkanShaderPass::dispose()
         vkDestroyShaderModule(device, m_fragShaderModule, m_deviceContext->vulkanAllocator());
         m_fragShaderModule = VK_NULL_HANDLE;
     }
+}
+
+//==============================================================================
+// VulkanShaderUniformBuffer
+
+VulkanShaderUniformBuffer::VulkanShaderUniformBuffer()
+{
+}
+
+Result VulkanShaderUniformBuffer::init(VulkanDeviceContext* deviceContext, const std::string& name, size_t size, const std::vector<ShaderUniformInfo>& members)
+{
+	m_name = name;
+	if (m_name == "$Global") {
+		m_name = "_Global";
+	}
+
+	m_data.resize(size);
+
+	return true;
+}
+
+void VulkanShaderUniformBuffer::dispose()
+{
+	IShaderUniformBuffer::dispose();
+}
+
+void VulkanShaderUniformBuffer::setData(const void* data, size_t size)
+{
+	LN_DCHECK(size <= m_data.size());
+	memcpy(m_data.data(), data, size);
 }
 
 } // namespace detail

@@ -61,6 +61,18 @@ struct StencilOpConversionItem
 	VkStencilOp vkValue;
 };
 
+struct FilterModeConversionItem
+{
+	TextureFilterMode lnValue;
+	VkFilter vkValue;
+};
+
+struct AddressModeConversionItem
+{
+	TextureAddressMode lnValue;
+	VkSamplerAddressMode vkValue;
+};
+
 struct VertexElementTypeConversionItem
 {
 	VertexElementType lnValue;
@@ -131,6 +143,18 @@ static const StencilOpConversionItem s_stencilOpConversionTable[] =
 {
 	{StencilOp::Keep, VK_STENCIL_OP_KEEP},
 	{StencilOp::Replace, VK_STENCIL_OP_REPLACE},
+};
+
+static const FilterModeConversionItem s_filterModeConversionTable[] =
+{
+	{TextureFilterMode::Point, VK_FILTER_NEAREST},
+	{TextureFilterMode::Linear, VK_FILTER_LINEAR},
+};
+
+static const AddressModeConversionItem s_addressModeConversionTable[] =
+{
+	{TextureAddressMode::Repeat, VK_SAMPLER_ADDRESS_MODE_REPEAT},
+	{TextureAddressMode::Clamp, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE},
 };
 
 static const VertexElementTypeConversionItem s_vertexElementTypeConversionTable[] =
@@ -205,6 +229,18 @@ VkStencilOp VulkanHelper::LNStencilOpToVkStencilOp(StencilOp value)
 {
 	assert(s_stencilOpConversionTable[(int)value].lnValue == value);
 	return s_stencilOpConversionTable[(int)value].vkValue;
+}
+
+VkFilter VulkanHelper::LNTextureFilterModeToVkFilter(TextureFilterMode value)
+{
+	assert(s_filterModeConversionTable[(int)value].lnValue == value);
+	return s_filterModeConversionTable[(int)value].vkValue;
+}
+
+VkSamplerAddressMode VulkanHelper::LNTextureAddressModeModeToVkSamplerAddressMode(TextureAddressMode value)
+{
+	assert(s_addressModeConversionTable[(int)value].lnValue == value);
+	return s_addressModeConversionTable[(int)value].vkValue;
 }
 
 VkFormat VulkanHelper::LNVertexElementTypeToVkFormat(VertexElementType value)
@@ -712,6 +748,33 @@ Result VulkanCommandBuffer::glowStagingBufferPool()
 	}
 
 	return true;
+}
+
+//=============================================================================
+// VulkanDescriptorSetCache
+
+VulkanDescriptorSetCache::VulkanDescriptorSetCache()
+{
+
+}
+
+Result VulkanDescriptorSetCache::init()
+{
+	return true;
+}
+
+uint32_t VulkanDescriptorSetCache::computeHash(const DescriptorLayout& layoutInfo)
+{
+	MixHash hash;
+	for (int i = 0; i < DescriptorType_Count; i++) {
+		auto& items = layoutInfo.getLayoutItems((DescriptorType)i);
+		for (auto& item : items) {
+			hash.add(item.stageFlags);
+			hash.add(item.binding);
+			hash.add(item.size);
+		}
+	}
+	return hash.value();
 }
 
 } // namespace detail

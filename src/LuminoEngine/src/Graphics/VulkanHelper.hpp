@@ -34,6 +34,9 @@ public:
 	static VkPolygonMode LNFillModeToVkPolygonMode(FillMode value);
 	static VkCullModeFlagBits LNCullModeToVkCullMode(CullMode value);
 	static VkStencilOp LNStencilOpToVkStencilOp(StencilOp value);
+	static VkFilter LNTextureFilterModeToVkFilter(TextureFilterMode value);
+	static VkSamplerAddressMode LNTextureAddressModeModeToVkSamplerAddressMode(TextureAddressMode value);
+
 	static VkFormat LNVertexElementTypeToVkFormat(VertexElementType value);
     static const char* getVkResultName(VkResult result);
     static bool hasStencilComponent(VkFormat format) { return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT; }
@@ -194,6 +197,8 @@ class VulkanDescriptorSetCache
 public:
     VulkanDescriptorSetCache();
     Result init();
+
+	static uint32_t computeHash(const DescriptorLayout& layoutInfo);
 
 private:
 };
