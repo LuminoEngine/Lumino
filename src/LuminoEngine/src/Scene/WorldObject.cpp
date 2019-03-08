@@ -142,7 +142,6 @@ void WorldObject::onDispose(bool explicitDisposing)
 	m_destroyed = true;
 	if (m_components) {
 		m_components->clear();
-		m_components = nullptr;
 	}
 	Object::onDispose(explicitDisposing);
 }

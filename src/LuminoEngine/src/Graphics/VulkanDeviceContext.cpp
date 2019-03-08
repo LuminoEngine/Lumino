@@ -2053,6 +2053,12 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
         LN_VK_CHECK(vkCreateShaderModule(device, &shaderCreateInfo, m_deviceContext->vulkanAllocator(), &m_fragShaderModule));
     }
 
+	// SamplerBuffer
+	m_localShaderSamplerBuffer = makeRef<VulkanLocalShaderSamplerBuffer>();
+	if (!m_localShaderSamplerBuffer->init()) {
+		return false;
+	}
+
     // DescriptorSetLayout
     {
         // https://docs.microsoft.com/ja-jp/windows/desktop/direct3dhlsl/dx-graphics-hlsl-variable-register
@@ -2114,6 +2120,8 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
                 layoutBinding.pImmutableSamplers = nullptr;
                 layoutBindings.push_back(layoutBinding);
 
+				m_localShaderSamplerBuffer->addDescriptor(DescriptorType_Texture, item.binding, item.name, m_descriptorWriteInfo.size());
+
                 VkDescriptorImageInfo info;
                 info.sampler = VK_NULL_HANDLE;
                 info.imageView = VK_NULL_HANDLE;    // set from submitDescriptorWriteInfo
@@ -2155,6 +2163,8 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
                 layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromPixelStage(DescriptorType_SamplerState)) ? VK_SHADER_STAGE_FRAGMENT_BIT : 0;
                 layoutBinding.pImmutableSamplers = nullptr;
                 layoutBindings.push_back(layoutBinding);
+
+				m_localShaderSamplerBuffer->addDescriptor(DescriptorType_SamplerState, item.binding, item.name, m_descriptorWriteInfo.size());
 
                 VkDescriptorImageInfo info;
                 info.sampler = VK_NULL_HANDLE;      // set from submitDescriptorWriteInfo
@@ -2201,12 +2211,6 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
 		}
 	}
 
-    // SamplerBuffer
-    m_localShaderSamplerBuffer = makeRef<VulkanLocalShaderSamplerBuffer>();
-    if (!m_localShaderSamplerBuffer->init(createInfo.descriptorLayout)) {
-        return false;
-    }
-
     return true;
 }
 
@@ -2249,22 +2253,18 @@ IShaderSamplerBuffer* VulkanShaderPass::samplerBuffer() const
 
 const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWriteInfo(const std::array<VkDescriptorSet, DescriptorType_Count>& descriptorSets)
 {
-    //uint32_t index = 0;
-    //for (size_t i = 0; i < m_uniformBuffers.size(); i++) {
-    //    VkDescriptorBufferInfo& info = m_bufferDescriptorBufferInfo[i];
-    //    info.buffer = m_uniformBuffers[i]->vulkanBuffer();
-    //    info.offset = 0;
-    //    info.range = m_uniformBuffers[i]->bufferSize();
+    uint32_t index = 0;
+    for (size_t i = 0; i < m_uniformBuffers.size(); i++) {
+        VkDescriptorBufferInfo& info = m_bufferDescriptorBufferInfo[i];
+        info.buffer = m_uniformBuffers[i]->vulkanBuffer();
 
-    //    VkWriteDescriptorSet& set = m_descriptorWriteInfo[index];
-    //    set.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    //    set.dstSet = descriptorSets[DescriptorType_UniformBuffer];
-    //    set.dstBinding = m_uniformBuffers[i]->bindingIndex;
-    //    set.dstArrayElement = 0;
-    //    set.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    //    set.descriptorCount = 1;
-    //    set.pBufferInfo = &info;
-    //}
+        VkWriteDescriptorSet& set = m_descriptorWriteInfo[index];
+		set.dstSet = descriptorSets[DescriptorType_UniformBuffer];
+		index++;
+    }
+
+	for (auto& item : createInfo.descriptorLayout->textureRegister) {
+	}
 
     return m_descriptorWriteInfo;
 }
@@ -2332,29 +2332,29 @@ VulkanLocalShaderSamplerBuffer::VulkanLocalShaderSamplerBuffer()
 {
 }
 
-Result VulkanLocalShaderSamplerBuffer::init(const DescriptorLayout* descriptorLayout)
+Result VulkanLocalShaderSamplerBuffer::init(/*const DescriptorLayout* descriptorLayout*/)
 {
-    uint32_t writeIndex = descriptorLayout->uniformBufferRegister.size();
+    //uint32_t writeIndex = descriptorLayout->uniformBufferRegister.size();
 
-    // 't' register in HLSL
-    for (auto& item : descriptorLayout->textureRegister) {
-        Entry e;
-        e.textureRegisterName = item.name;
-        e.descriptorWriteInfoIndex = writeIndex;
-        e.bindingIndex = item.binding;
-        m_table.push_back(e);
-        writeIndex++;
-    }
+    //// 't' register in HLSL
+    //for (auto& item : descriptorLayout->textureRegister) {
+    //    Entry e;
+    //    e.textureRegisterName = item.name;
+    //    e.descriptorWriteInfoIndex = writeIndex;
+    //    e.bindingIndex = item.binding;
+    //    m_table.push_back(e);
+    //    writeIndex++;
+    //}
 
-    // 's' register in HLSL (SamplerState and CombinedSampler)
-    for (auto& item : descriptorLayout->samplerRegister) {
-        Entry e;
-        e.samplerRegisterName = item.name;
-        e.descriptorWriteInfoIndex = writeIndex;
-        e.bindingIndex = item.binding;
-        m_table.push_back(e);
-        writeIndex++;
-    }
+    //// 's' register in HLSL (SamplerState and CombinedSampler)
+    //for (auto& item : descriptorLayout->samplerRegister) {
+    //    Entry e;
+    //    e.samplerRegisterName = item.name;
+    //    e.descriptorWriteInfoIndex = writeIndex;
+    //    e.bindingIndex = item.binding;
+    //    m_table.push_back(e);
+    //    writeIndex++;
+    //}
 
     return true;
 }
@@ -2371,6 +2371,20 @@ void VulkanLocalShaderSamplerBuffer::setTexture(int registerIndex, ITexture* tex
 void VulkanLocalShaderSamplerBuffer::setSamplerState(int registerIndex, ISamplerState* state)
 {
     m_table[registerIndex].samplerState = static_cast<VulkanSamplerState*>(state);
+}
+
+void VulkanLocalShaderSamplerBuffer::addDescriptor(DescriptorType type, uint32_t bindingIndex, const std::string& name, uint32_t writeInfoIndex)
+{
+	Entry e;
+	if (type == DescriptorType_Texture) {
+		e.textureRegisterName = name;
+	}
+	else {
+		e.samplerRegisterName = name;
+	}
+	e.descriptorWriteInfoIndex = writeInfoIndex;
+	e.bindingIndex = bindingIndex;
+	m_table.push_back(std::move(e));
 }
 
 } // namespace detail

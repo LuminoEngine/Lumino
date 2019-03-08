@@ -330,7 +330,7 @@ class VulkanLocalShaderSamplerBuffer
 {
 public:
     VulkanLocalShaderSamplerBuffer();
-    Result init(const DescriptorLayout* descriptorLayout);
+    Result init(/*const DescriptorLayout* descriptorLayout*/);
     virtual void dispose() override;
 
     virtual int registerCount() const override { return m_table.size(); }
@@ -339,6 +339,7 @@ public:
     virtual void setTexture(int registerIndex, ITexture* texture) override;
     virtual void setSamplerState(int registerIndex, ISamplerState* state) override;
 
+	void addDescriptor(DescriptorType type, uint32_t bindingIndex, const std::string& name, uint32_t writeInfoIndex);
     uint32_t descriptorWriteInfoIndex(int registerIndex) const { return m_table[registerIndex].descriptorWriteInfoIndex; }
 
 private:

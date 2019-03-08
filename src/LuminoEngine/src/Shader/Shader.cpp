@@ -163,35 +163,27 @@ void Shader::init(const StringRef& filePath, ShaderCompilationProperties* proper
         auto file = FileStream::create(filePath, FileOpenMode::Read);
         createFromStream(file, localDiag);
     } else {
-//#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-#if 0
-        auto data = FileSystem::readAllBytes(filePath);
-        auto code = reinterpret_cast<char*>(data.data());
-        auto codeLen = data.size();
+#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
+		ByteBuffer buffer = FileSystem::readAllBytes(filePath);
 
-        detail::HLSLMetadataParser parser;
-        parser.parse(code, codeLen, localDiag);
+		List<Path> includeDirs;
+		List<String> definitions;
+		if (properties) {
+			for (auto& path : properties->m_includeDirectories) includeDirs.add(path);
+			for (auto& def : properties->m_definitions) definitions.add(def);
+		}
 
-        // glslang は hlsl の technique ブロックを理解できないので、空白で潰しておく
-        for (auto& hlslTech : parser.techniques) {
-            memset(code + hlslTech.blockBegin, ' ', hlslTech.blockEnd - hlslTech.blockBegin);
-        }
+		detail::UnifiedShaderCompiler compiler(m_manager, localDiag);
+		if (!compiler.compile(reinterpret_cast<char*>(buffer.data()), buffer.size(), includeDirs, definitions)) {
+			LN_ERROR();
+			return;
+		}
+		if (!compiler.link()) {
+			LN_ERROR();
+			return;
+		}
 
-        for (auto& hlslTech : parser.techniques) {
-            auto tech = newObject<ShaderTechnique>(String::fromStdString(hlslTech.name));
-            tech->setOwner(this);
-            m_techniques->add(tech);
-
-            for (auto& hlslPass : hlslTech.passes) {
-                auto rhiPass = createShaderPass(
-                    code, codeLen, hlslPass.vertexShader.c_str(), code, codeLen, hlslPass.pixelShader.c_str(), localDiag, properties);
-                if (rhiPass) {
-                    auto pass = newObject<ShaderPass>(String::fromStdString(hlslPass.name), rhiPass, hlslPass.renderState);
-                    tech->addShaderPass(pass);
-                    pass->setupParameters();
-                }
-            }
-        }
+		createFromUnifiedShader(compiler.unifiedShader(), localDiag);
 #else
         LN_NOTIMPLEMENTED();
 #endif
