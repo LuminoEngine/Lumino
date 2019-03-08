@@ -19,12 +19,6 @@ class ShaderManager;
 class GraphicsManager;
 class ShaderRenderState;
 
-enum class ShaderCodeStage
-{
-    Vertex,
-    Fragment,
-};
-
 // シェーダコード１つ分。
 // HLSL 入力可能だが、technique 構文はあらかじめ取り除いておく必要がある。
 class ShaderCodeTranspiler
@@ -39,7 +33,7 @@ public:
     ~ShaderCodeTranspiler();
 
     bool compileAndLinkFromHlsl(
-        ShaderCodeStage stage,
+		ShaderStage2 stage,
         const char* code,
         size_t length,
         const std::string& entryPoint,
@@ -49,7 +43,8 @@ public:
 
     bool mapIOAndGenerateSpirv(const DescriptorLayout& mergedDescriptorLayout);
 
-    ShaderCodeStage stage() const { return m_stage; }
+	ShaderStage2 stage() const { return m_stage; }
+	const std::string& entryPoint() const { return m_entryPoint; }
 	const std::vector<VertexInputAttribute>& attributes() const { return m_attributes; }
 	const Ref<UnifiedShaderRefrectionInfo>& refrection() const { return m_refrection; }
 	std::vector<byte_t> spirvCode() const;
@@ -57,7 +52,8 @@ public:
 
 private:
     ShaderManager* m_manager;
-    ShaderCodeStage m_stage;
+	ShaderStage2 m_stage;
+	std::string m_entryPoint;
     std::unique_ptr<glslang::TShader> m_shader;
     std::unique_ptr<glslang::TProgram> m_program;
 	std::vector<VertexInputAttribute> m_attributes;

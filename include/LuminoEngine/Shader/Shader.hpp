@@ -17,6 +17,7 @@ class GraphicsContext;
 namespace detail {
 class ShaderHelper;
 class ShaderManager;
+class UnifiedShader;
 class IShaderPass;
 class IShaderUniformBuffer;
 }
@@ -97,26 +98,27 @@ protected:
 private:
     detail::ShaderSemanticsManager* semanticsManager() { return &m_semanticsManager; }
     ShaderTechnique* findTechniqueByClass(const detail::ShaderTechniqueClass& techniqueClass) const;
-    void createFromUnifiedShader(Stream* stream, DiagnosticsManager* diag);
-    Ref<detail::IShaderPass> createShaderPass(
-        const char* vsData,
-        size_t vsLen,
-        const char* vsEntryPoint,
-        const char* psData,
-        size_t psLen,
-        const char* psEntryPoint,
-        DiagnosticsManager* diag,
-        ShaderCompilationProperties* properties);
-	Ref<detail::IShaderPass> createRHIShaderPass(
-		const byte_t* vsData,
-		size_t vsLen,
-		const byte_t* psData,
-		size_t psLen,
-		const detail::VertexInputAttributeTable* vertexInputAttributeTable,
-        detail::UnifiedShaderRefrectionInfo* vertexShaderRefrection,
-        detail::UnifiedShaderRefrectionInfo* pixelShaderRefrection,
-        DiagnosticsManager* diag);
-    void createSinglePassShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen, DiagnosticsManager* diag, ShaderCompilationProperties* properties);
+    void createFromStream(Stream* stream, DiagnosticsManager* diag);
+	void createFromUnifiedShader(detail::UnifiedShader* unifiedShader, DiagnosticsManager* diag);
+    //Ref<detail::IShaderPass> createShaderPass(
+    //    const char* vsData,
+    //    size_t vsLen,
+    //    const char* vsEntryPoint,
+    //    const char* psData,
+    //    size_t psLen,
+    //    const char* psEntryPoint,
+    //    DiagnosticsManager* diag,
+    //    ShaderCompilationProperties* properties);
+	//Ref<detail::IShaderPass> createRHIShaderPass(
+	//	const byte_t* vsData,
+	//	size_t vsLen,
+	//	const byte_t* psData,
+	//	size_t psLen,
+	//	const detail::VertexInputAttributeTable* vertexInputAttributeTable,
+ //       detail::UnifiedShaderRefrectionInfo* vertexShaderRefrection,
+ //       detail::UnifiedShaderRefrectionInfo* pixelShaderRefrection,
+ //       DiagnosticsManager* diag);
+    //void createSinglePassShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen, DiagnosticsManager* diag, ShaderCompilationProperties* properties);
     void postInitialize();
     ShaderConstantBuffer* getOrCreateConstantBuffer(detail::IShaderUniformBuffer* buffer);
     ShaderParameter* getOrCreateTextureParameter(const String& name);

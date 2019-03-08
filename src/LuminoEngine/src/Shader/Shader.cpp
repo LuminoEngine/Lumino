@@ -161,10 +161,10 @@ void Shader::init(const StringRef& filePath, ShaderCompilationProperties* proper
 
     if (Path(filePath).hasExtension(detail::UnifiedShader::FileExt)) {
         auto file = FileStream::create(filePath, FileOpenMode::Read);
-        createFromUnifiedShader(file, localDiag);
+        createFromStream(file, localDiag);
     } else {
-#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-
+//#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
+#if 0
         auto data = FileSystem::readAllBytes(filePath);
         auto code = reinterpret_cast<char*>(data.data());
         auto codeLen = data.size();
@@ -220,8 +220,35 @@ void Shader::init(const StringRef& vertexShaderFilePath, const StringRef& pixelS
     auto vsData = FileSystem::readAllBytes(vertexShaderFilePath);
     auto psData = FileSystem::readAllBytes(pixelShaderFilePath);
 
-    createSinglePassShader(
-        reinterpret_cast<const char*>(vsData.data()), vsData.size(), reinterpret_cast<const char*>(psData.data()), psData.size(), localDiag, properties);
+	{
+#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
+		List<Path> includeDirs;
+		if (properties) {
+			for (auto& path : properties->m_includeDirectories)
+				includeDirs.add(path);
+		}
+
+		detail::UnifiedShaderCompiler compiler(m_manager, localDiag);
+		if (!compiler.compileSingleCodes(
+			reinterpret_cast<const char*>(vsData.data()), vsData.size(), "main",
+			reinterpret_cast<const char*>(psData.data()), psData.size(), "main",
+			includeDirs, {})) {
+			LN_ERROR();
+			return;
+		}
+		if (!compiler.link()) {
+			LN_ERROR();
+			return;
+		}
+
+		createFromUnifiedShader(compiler.unifiedShader(), localDiag);
+#else
+LN_NOTIMPLEMENTED();
+return nullptr;
+#endif
+	}
+    //createSinglePassShader(
+    //    reinterpret_cast<const char*>(vsData.data()), vsData.size(), reinterpret_cast<const char*>(psData.data()), psData.size(), localDiag, properties);
 
     postInitialize();
     m_name = Path(vertexShaderFilePath).fileNameWithoutExtension();
@@ -243,7 +270,7 @@ void Shader::init(const String& name, Stream* stream)
     Shader::init();
     Ref<DiagnosticsManager> localDiag = newObject<DiagnosticsManager>();
 
-    createFromUnifiedShader(stream, localDiag);
+    createFromStream(stream, localDiag);
 
     postInitialize();
     m_name = name;
@@ -257,31 +284,35 @@ void Shader::init(const String& name, Stream* stream)
     }
 }
 
-void Shader::createFromUnifiedShader(Stream* stream, DiagnosticsManager* diag)
+void Shader::createFromStream(Stream* stream, DiagnosticsManager* diag)
 {
     detail::UnifiedShader unifiedShader(diag);
     if (unifiedShader.load(stream)) {
-        
-        for (int iTech = 0; iTech < unifiedShader.techniqueCount(); iTech++) {
-            detail::UnifiedShader::TechniqueId techId = unifiedShader.techniqueId(iTech);
-            auto tech = newObject<ShaderTechnique>(String::fromStdString(unifiedShader.techniqueName(techId)));
-            tech->setOwner(this);
-            m_techniques->add(tech);
-
-            int passCount = unifiedShader.getPassCountInTechnique(techId);
-            for (int iPass = 0; iPass < passCount; iPass++) {
-                detail::UnifiedShader::PassId passId = unifiedShader.getPassIdInTechnique(techId, iPass);
-
-                auto rhiPass = manager()->deviceContext()->createShaderPassFromUnifiedShaderPass(&unifiedShader, passId, diag);
-                if (rhiPass) {
-                    auto pass = newObject<ShaderPass>(String::fromStdString(unifiedShader.passName(passId)), rhiPass);
-                    pass->m_renderState = unifiedShader.renderState(passId);
-                    tech->addShaderPass(pass);
-                    pass->setupParameters();
-                }
-            }
-        }
+		createFromUnifiedShader(&unifiedShader, diag);
     }
+}
+
+void Shader::createFromUnifiedShader(detail::UnifiedShader* unifiedShader, DiagnosticsManager* diag)
+{
+	for (int iTech = 0; iTech < unifiedShader->techniqueCount(); iTech++) {
+		detail::UnifiedShader::TechniqueId techId = unifiedShader->techniqueId(iTech);
+		auto tech = newObject<ShaderTechnique>(String::fromStdString(unifiedShader->techniqueName(techId)));
+		tech->setOwner(this);
+		m_techniques->add(tech);
+
+		int passCount = unifiedShader->getPassCountInTechnique(techId);
+		for (int iPass = 0; iPass < passCount; iPass++) {
+			detail::UnifiedShader::PassId passId = unifiedShader->getPassIdInTechnique(techId, iPass);
+
+			auto rhiPass = manager()->deviceContext()->createShaderPassFromUnifiedShaderPass(unifiedShader, passId, diag);
+			if (rhiPass) {
+				auto pass = newObject<ShaderPass>(String::fromStdString(unifiedShader->passName(passId)), rhiPass);
+				pass->m_renderState = unifiedShader->renderState(passId);
+				tech->addShaderPass(pass);
+				pass->setupParameters();
+			}
+		}
+	}
 }
 
 void Shader::onDispose(bool explicitDisposing)
@@ -301,73 +332,69 @@ void Shader::onChangeDevice(detail::IGraphicsDeviceContext* device)
     LN_NOTIMPLEMENTED();
 }
 
-Ref<detail::IShaderPass> Shader::createShaderPass(
-    const char* vsData,
-    size_t vsLen,
-    const char* vsEntryPoint,
-    const char* psData,
-    size_t psLen,
-    const char* psEntryPoint,
-    DiagnosticsManager* diag,
-    ShaderCompilationProperties* properties)
-{
+//Ref<detail::IShaderPass> Shader::createShaderPass(
+//    const char* vsData,
+//    size_t vsLen,
+//    const char* vsEntryPoint,
+//    const char* psData,
+//    size_t psLen,
+//    const char* psEntryPoint,
+//    DiagnosticsManager* diag,
+//    ShaderCompilationProperties* properties)
+//{
 //#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-#if 0
-    List<Path> includeDirs;
-    if (properties) {
-        for (auto& path : properties->m_includeDirectories)
-            includeDirs.add(path);
-    }
+//	List<Path> includeDirs;
+//	if (properties) {
+//		for (auto& path : properties->m_includeDirectories)
+//			includeDirs.add(path);
+//	}
+//
+//	detail::UnifiedShaderCompiler compiler(m_manager, diag);
+//	if (!compiler.compileSingleCodes(
+//		vsData, vsLen, vsEntryPoint,
+//		psData, psLen, psEntryPoint,
+//		includeDirs, {})) {
+//		LN_ERROR();
+//		return nullptr;
+//	}
+//	if (!compiler.link()) {
+//		LN_ERROR();
+//		return nullptr;
+//	}
+//
+//	createFromUnifiedShader(compiler.unifiedShader(), diag);
+//#else
+//    LN_NOTIMPLEMENTED();
+//    return nullptr;
+//#endif
+//}
 
-    detail::ShaderCodeTranspiler vsCodeGen(m_manager);
-    if (!vsCodeGen.compileAndLinkFromHlsl(detail::ShaderCodeStage::Vertex, vsData, vsLen, vsEntryPoint, includeDirs, (properties) ? &properties->m_definitions : nullptr, diag)) {
-        return nullptr;
-    }
-
-    detail::ShaderCodeTranspiler psCodeGen(m_manager);
-    if (!psCodeGen.compileAndLinkFromHlsl(detail::ShaderCodeStage::Fragment, psData, psLen, psEntryPoint, includeDirs, (properties) ? &properties->m_definitions : nullptr, diag)) {
-        return nullptr;
-    }
-
-	std::vector<byte_t> vsCode = vsCodeGen.generateGlsl(400, false);
-	std::vector<byte_t> psCode = psCodeGen.generateGlsl(400, false);
-
-    Ref<detail::IShaderPass> pass = createRHIShaderPass(
-		vsCode.data(), vsCode.size(), psCode.data(), psCode.size(), nullptr, nullptr, nullptr, diag);
-
-    return pass;
-#else
-    LN_NOTIMPLEMENTED();
-    return nullptr;
-#endif
-}
-
-Ref<detail::IShaderPass> Shader::createRHIShaderPass(
-    const byte_t* vsData,
-    size_t vsLen,
-    const byte_t* psData,
-    size_t psLen,
-	const detail::VertexInputAttributeTable* vertexInputAttributeTable,
-    detail::UnifiedShaderRefrectionInfo* vertexShaderRefrection,
-    detail::UnifiedShaderRefrectionInfo* pixelShaderRefrection,
-    DiagnosticsManager* diag)
-{
-    LN_NOTIMPLEMENTED();
-    return nullptr;
-}
-
-void Shader::createSinglePassShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen, DiagnosticsManager* diag, ShaderCompilationProperties* properties)
-{
-    auto rhiPass = createShaderPass(vsData, vsLen, "main", psData, psLen, "main", diag, properties);
-
-    auto tech = newObject<ShaderTechnique>(u"Main"); // TODO: 名前指定できた方がいいかも
-    tech->setOwner(this);
-    m_techniques->add(tech);
-
-    auto pass = newObject<ShaderPass>(u"Main", rhiPass);
-    tech->addShaderPass(pass);
-    pass->setupParameters();
-}
+//Ref<detail::IShaderPass> Shader::createRHIShaderPass(
+//    const byte_t* vsData,
+//    size_t vsLen,
+//    const byte_t* psData,
+//    size_t psLen,
+//	const detail::VertexInputAttributeTable* vertexInputAttributeTable,
+//    detail::UnifiedShaderRefrectionInfo* vertexShaderRefrection,
+//    detail::UnifiedShaderRefrectionInfo* pixelShaderRefrection,
+//    DiagnosticsManager* diag)
+//{
+//    LN_NOTIMPLEMENTED();
+//    return nullptr;
+//}
+//
+//void Shader::createSinglePassShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen, DiagnosticsManager* diag, ShaderCompilationProperties* properties)
+//{
+//    auto rhiPass = createShaderPass(vsData, vsLen, "main", psData, psLen, "main", diag, properties);
+//
+//    auto tech = newObject<ShaderTechnique>(u"Main"); // TODO: 名前指定できた方がいいかも
+//    tech->setOwner(this);
+//    m_techniques->add(tech);
+//
+//    auto pass = newObject<ShaderPass>(u"Main", rhiPass);
+//    tech->addShaderPass(pass);
+//    pass->setupParameters();
+//}
 
 void Shader::postInitialize()
 {

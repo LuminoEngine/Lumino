@@ -142,11 +142,17 @@ enum DescriptorType
     DescriptorType_Count,
 };
 
+enum ShaderStage2
+{
+	ShaderStage2_Vertex = 0,
+	ShaderStage2_Fragment = 1,
+};
+
 enum ShaderStageFlags
 {
-    ShaderStage_None = 0x00,
-    ShaderStage_Vertex = 0x01,
-    ShaderStage_Pixel = 0x02,
+    ShaderStageFlags_None = 0x00,
+    ShaderStageFlags_Vertex = 0x01,
+    ShaderStageFlags_Pixel = 0x02,
 };
 
 struct DescriptorLayoutItem

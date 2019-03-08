@@ -161,6 +161,7 @@ TEST_F(Test_Graphics_HlslEffect, ShaderPassRenderState)
 }
 
 //------------------------------------------------------------------------------
+#if 0
 TEST_F(Test_Graphics_HlslEffect, UnifiedShader)
 {
 	struct PosColor
@@ -197,6 +198,7 @@ TEST_F(Test_Graphics_HlslEffect, UnifiedShader)
 		ASSERT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-UnifiedShader-1.png"));
 	}
 }
+#endif
 
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_HlslEffect, Sample)

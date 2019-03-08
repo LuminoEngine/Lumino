@@ -267,12 +267,12 @@ static bool GLTypeToLNUniformType(GLenum value, const glslang::TType* type, uint
 	return false;
 }
 
-static EShLanguage LNStageToEShLanguage(ShaderCodeStage stage)
+static EShLanguage LNStageToEShLanguage(ShaderStage2 stage)
 {
     switch (stage) {
-    case ShaderCodeStage::Vertex:
+    case ShaderStage2_Vertex:
         return EShLanguage::EShLangVertex;
-    case ShaderCodeStage::Fragment:
+    case ShaderStage2_Fragment:
         return EShLanguage::EShLangFragment;
         break;
     default:
@@ -293,7 +293,7 @@ void ShaderCodeTranspiler::finalizeGlobals()
 
 ShaderCodeTranspiler::ShaderCodeTranspiler(ShaderManager* manager)
     : m_manager(manager)
-    , m_stage(ShaderCodeStage::Vertex)
+    , m_stage(ShaderStage2_Vertex)
 {
 }
 
@@ -305,7 +305,7 @@ ShaderCodeTranspiler::~ShaderCodeTranspiler()
 }
 
 bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
-    ShaderCodeStage stage,
+	ShaderStage2 stage,
     const char* code,
     size_t length,
     const std::string& entryPoint,
@@ -314,6 +314,7 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
     DiagnosticsManager* diag)
 {
     m_stage = stage;
+	m_entryPoint = entryPoint;
     m_refrection = makeRef<UnifiedShaderRefrectionInfo>();
 
     LocalIncluder includer;
@@ -407,14 +408,14 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
     }
 
 
-    ShaderStageFlags stageFlags = ShaderStage_None;
+    ShaderStageFlags stageFlags = ShaderStageFlags_None;
     switch (stage)
     {
-    case ln::detail::ShaderCodeStage::Vertex:
-        stageFlags = ShaderStage_Vertex;
+    case ShaderStage2_Vertex:
+        stageFlags = ShaderStageFlags_Vertex;
         break;
-    case ln::detail::ShaderCodeStage::Fragment:
-        stageFlags = ShaderStage_Pixel;
+    case ShaderStage2_Fragment:
+        stageFlags = ShaderStageFlags_Pixel;
         break;
     default:
         LN_UNREACHABLE();
@@ -819,14 +820,14 @@ std::vector<byte_t> ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es
 			glslang がセマンティクスまで理解していればいいが、そうでなければ構造体メンバの名前一致で指定できるようにしたい。
 		*/
 
-        if (m_stage == ShaderCodeStage::Vertex) {
+        if (m_stage == ShaderStage2_Vertex) {
             for (size_t i = 0; i < resources.stage_outputs.size(); i++) {
                 std::stringstream s;
                 s << "ln_varying_" << i;
                 glsl.set_name(resources.stage_outputs[i].id, s.str());
                 glsl.set_name(resources.stage_outputs[i].id, s.str());
             }
-        } else if (m_stage == ShaderCodeStage::Fragment) {
+        } else if (m_stage == ShaderStage2_Fragment) {
             for (size_t i = 0; i < resources.stage_inputs.size(); i++) {
                 std::stringstream s;
                 s << "ln_varying_" << i;
@@ -846,7 +847,7 @@ std::vector<byte_t> ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es
         }
 
         if (es) {
-            if (m_stage == ShaderCodeStage::Vertex) {
+            if (m_stage == ShaderStage2_Vertex) {
                 // VertexShader は精度指定子を記述する必要はないので、自動生成はされない。
                 // https://qiita.com/konweb/items/ec8fa8cd3bc33df14933#%E7%B2%BE%E5%BA%A6%E4%BF%AE%E9%A3%BE%E5%AD%90
                 code = code.insert(16, declsIsRT + "\n" + "vec4 LN_xxTexture(int isRT, sampler2D s, vec2 uv) { if (isRT != 0) { return texture(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); } else { return texture(s, uv); } }\n"
@@ -953,14 +954,14 @@ const std::vector<DescriptorLayoutItem>& DescriptorLayout::getLayoutItems(Descri
 bool DescriptorLayout::isReferenceFromVertexStage(DescriptorType registerType) const
 {
     auto& items = getLayoutItems(registerType);
-    auto itr = std::find_if(items.begin(), items.end(), [](const DescriptorLayoutItem& x) { return (x.stageFlags & ShaderStage_Vertex) != 0; });
+    auto itr = std::find_if(items.begin(), items.end(), [](const DescriptorLayoutItem& x) { return (x.stageFlags & ShaderStageFlags_Vertex) != 0; });
     return itr != items.end();
 }
 
 bool DescriptorLayout::isReferenceFromPixelStage(DescriptorType registerType) const
 {
     auto& items = getLayoutItems(registerType);
-    auto itr = std::find_if(items.begin(), items.end(), [](const DescriptorLayoutItem& x) { return (x.stageFlags & ShaderStage_Pixel) != 0; });
+    auto itr = std::find_if(items.begin(), items.end(), [](const DescriptorLayoutItem& x) { return (x.stageFlags & ShaderStageFlags_Pixel) != 0; });
     return itr != items.end();
 }
 

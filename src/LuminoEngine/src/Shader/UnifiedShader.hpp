@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include <LuminoEngine/Engine/Diagnostics.hpp>
+#include "HLSLMetadataParser.hpp"
 #include "ShaderTranspiler.hpp"
 
 namespace ln {
@@ -67,11 +68,11 @@ public:
     void addMergeDescriptorLayoutItem(DescriptorType registerType, const DescriptorLayoutItem& item);
     const DescriptorLayout& descriptorLayout() const { return m_descriptorLayout; }
 
-    bool addCodeContainer(const std::string& entryPointName, CodeContainerId* outId);
+    bool addCodeContainer(ShaderStage2 stage, const std::string& entryPointName, CodeContainerId* outId);
     void setCode(CodeContainerId container, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code, UnifiedShaderRefrectionInfo* refrection);
-    void setCode(const std::string& entryPointName, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code, UnifiedShaderRefrectionInfo* refrection);
-    bool hasCode(const std::string& entryPointName, const UnifiedShaderTriple& triple) const;
-    bool findCodeContainer(const std::string& entryPointName, CodeContainerId* outId) const;
+    void setCode(ShaderStage2 stage, const std::string& entryPointName, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code, UnifiedShaderRefrectionInfo* refrection);
+    bool hasCode(ShaderStage2 stage, const std::string& entryPointName, const UnifiedShaderTriple& triple) const;
+    bool findCodeContainer(ShaderStage2 stage, const std::string& entryPointName, CodeContainerId* outId) const;
     const CodeInfo* findCode(CodeContainerId conteinreId, const UnifiedShaderTriple& triple) const;
 
     bool addTechnique(const std::string& name, TechniqueId* outTech);
@@ -101,7 +102,7 @@ public:
 private:
     int idToIndex(uint32_t id) const { return id - 1; }
     uint32_t indexToId(int index) const { return index + 1; }
-    int findCodeContainerInfoIndex(const std::string& entryPointName) const;
+    int findCodeContainerInfoIndex(ShaderStage2 stage, const std::string& entryPointName) const;
     int findTechniqueInfoIndex(const std::string& name) const;
     int findPassInfoIndex(TechniqueId tech, const std::string& name) const;
 
@@ -113,6 +114,7 @@ private:
 
     struct CodeContainerInfo
     {
+		ShaderStage2 stage;
         std::string entryPointName;
         std::vector<CodeInfo> codes;
     };
@@ -138,6 +140,40 @@ private:
     List<PassInfo> m_passes;
     DescriptorLayout m_descriptorLayout;
 };
+
+#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
+
+class UnifiedShaderCompiler
+{
+public:
+	UnifiedShaderCompiler(ShaderManager* manager, DiagnosticsManager* diag);
+
+	// ※ inputCode は非 const。中身が書き換わる。
+	bool compile(
+		char* inputCode, size_t inputCodeLength,
+		const List<Path>& includeDirectories, const List<String>& definitions);
+
+	bool compileSingleCodes(
+		const char* vsData, size_t vsLen, const std::string& vsEntryPoint,
+		const char* psData, size_t psLen, const std::string& psEntryPoint,
+		const List<Path>& includeDirectories, const List<String>& definitions);
+
+	bool link();
+
+	const Ref<UnifiedShader>& unifiedShader() const { return m_unifiedShader; }
+
+private:
+	static std::string makeKey(ShaderStage2 stage, const std::string& entryPoint);
+
+	ShaderManager* m_manager;
+	Ref<UnifiedShader> m_unifiedShader;
+	DiagnosticsManager* m_diag;
+	HLSLMetadataParser m_metadataParser;
+	std::unordered_map<std::string, std::shared_ptr<ShaderCodeTranspiler>> m_transpilerMap;	// kei is "stage:entryPoint"
+	// TODO: ↑ unordered_map やめたい。順序付けされなくなるので。今は makeKey() で 1 とか 2 とか prefix つけることで対策している。
+};
+
+#endif // LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 
 } // namespace detail
 } // namespace ln

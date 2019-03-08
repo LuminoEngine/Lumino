@@ -9,6 +9,7 @@ namespace ln {
 // UILayoutElement
 
 UILayoutElement::UILayoutElement()
+	: m_layoutSize(Math::NaN, Math::NaN)
 {
 }
 
