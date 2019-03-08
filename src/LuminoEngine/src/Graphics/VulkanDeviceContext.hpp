@@ -284,6 +284,7 @@ public:
 
     VkShaderModule vulkanVertShaderModule() const { return m_vertShaderModule; }
     VkShaderModule vulkanFragShaderModule() const { return m_fragShaderModule; }
+    VkPipelineLayout vulkanPipelineLayout() const { return m_pipelineLayout; }
     const std::array<VkDescriptorSetLayout, 3>& descriptorSetLayouts() const { return m_descriptorSetLayouts; }
 
     const std::vector<VkWriteDescriptorSet>& submitDescriptorWriteInfo(const std::array<VkDescriptorSet, DescriptorType_Count>& descriptorSets);
@@ -297,6 +298,7 @@ private:
     VulkanDeviceContext* m_deviceContext;
     VkShaderModule m_vertShaderModule;
     VkShaderModule m_fragShaderModule;
+    VkPipelineLayout m_pipelineLayout;
     std::array<VkDescriptorSetLayout, 3> m_descriptorSetLayouts;
 	std::vector<Ref<VulkanShaderUniformBuffer>> m_uniformBuffers;
     std::vector<Ref<VulkanDescriptorSetsPool>> m_descriptorSetsPools;

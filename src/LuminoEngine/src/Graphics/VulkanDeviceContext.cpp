@@ -158,7 +158,7 @@ public:
     Ref<VulkanShaderPass> m_shaderPass;
         
     VkRenderPass renderPass;
-    VkPipelineLayout pipelineLayout;
+    //VkPipelineLayout pipelineLayout;
     VkPipeline graphicsPipeline;
 
     Ref<VulkanDepthBuffer> m_depthImage;
@@ -269,7 +269,7 @@ public:
         m_shaderPass->dispose();
 
         vkDestroyPipeline(device, graphicsPipeline, nullptr);
-        vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
+        //vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
         vkDestroyRenderPass(device, renderPass, nullptr);
 
         for (auto imageView : swapChainImageViews) {
@@ -579,14 +579,14 @@ public:
         colorBlending.blendConstants[2] = 0.0f;
         colorBlending.blendConstants[3] = 0.0f;
 
-        VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
-        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipelineLayoutInfo.setLayoutCount = m_shaderPass->descriptorSetLayouts().size();
-        pipelineLayoutInfo.pSetLayouts = m_shaderPass->descriptorSetLayouts().data();
+        //VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
+        //pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+        //pipelineLayoutInfo.setLayoutCount = m_shaderPass->descriptorSetLayouts().size();
+        //pipelineLayoutInfo.pSetLayouts = m_shaderPass->descriptorSetLayouts().data();
 
-        if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create pipeline layout!");
-        }
+        //if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
+        //    throw std::runtime_error("failed to create pipeline layout!");
+        //}
 
         VkGraphicsPipelineCreateInfo pipelineInfo = {};
         pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -599,7 +599,7 @@ public:
         pipelineInfo.pMultisampleState = &multisampling;
         pipelineInfo.pDepthStencilState = &depthStencil;
         pipelineInfo.pColorBlendState = &colorBlending;
-        pipelineInfo.layout = pipelineLayout;
+        pipelineInfo.layout = m_shaderPass->vulkanPipelineLayout();
         pipelineInfo.renderPass = renderPass;
         pipelineInfo.subpass = 0;
         pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
@@ -909,7 +909,11 @@ public:
 
         //vkCmdBindDescriptorSets(commandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[imageIndex], 0, nullptr);
         //vkCmdBindDescriptorSets(commandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
-        vkCmdBindDescriptorSets(commandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
+        //vkCmdBindDescriptorSets(commandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_shaderPass->vulkanPipelineLayout(), 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
+
+        std::array<VkDescriptorSet, DescriptorType_Count> sets;
+        commandBuffer->allocateDescriptorSets(m_shaderPass, &sets);
+        vkCmdBindDescriptorSets(commandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_shaderPass->vulkanPipelineLayout(), 0, sets.size(), sets.data(), 0, nullptr);
 
         // test
         //vertices[0].pos.x = 0;
@@ -2094,8 +2098,8 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
                 set.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
                 set.pImageInfo = nullptr;
                 set.pBufferInfo = &m_bufferDescriptorBufferInfo.back();
-                set.pTexelBufferView = nullptr;
-                m_descriptorWriteInfo.push_back(set);
+set.pTexelBufferView = nullptr;
+m_descriptorWriteInfo.push_back(set);
             }
 
             VkDescriptorSetLayoutCreateInfo layoutInfo = {};
@@ -2107,46 +2111,46 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
 
         // 't' register in HLSL
         {
-            std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
-            layoutBindings.reserve(createInfo.descriptorLayout->textureRegister.size());
-            m_textureDescripterImageInfo.reserve(createInfo.descriptorLayout->textureRegister.size());
-            for (auto& item : createInfo.descriptorLayout->textureRegister) {
-                m_localShaderSamplerBuffer->addDescriptor(DescriptorType_Texture, item.binding, item.name, layoutBindings.size(), m_descriptorWriteInfo.size());
+        std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
+        layoutBindings.reserve(createInfo.descriptorLayout->textureRegister.size());
+        m_textureDescripterImageInfo.reserve(createInfo.descriptorLayout->textureRegister.size());
+        for (auto& item : createInfo.descriptorLayout->textureRegister) {
+            m_localShaderSamplerBuffer->addDescriptor(DescriptorType_Texture, item.binding, item.name, layoutBindings.size(), m_descriptorWriteInfo.size());
 
-                VkDescriptorSetLayoutBinding layoutBinding = {};
-                layoutBinding.binding = item.binding;
-                layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-                layoutBinding.descriptorCount = 1;
-                layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromVertexStage(DescriptorType_Texture)) ? VK_SHADER_STAGE_VERTEX_BIT : 0;
-                layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromPixelStage(DescriptorType_Texture)) ? VK_SHADER_STAGE_FRAGMENT_BIT : 0;
-                layoutBinding.pImmutableSamplers = nullptr;
-                layoutBindings.push_back(layoutBinding);
+            VkDescriptorSetLayoutBinding layoutBinding = {};
+            layoutBinding.binding = item.binding;
+            layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+            layoutBinding.descriptorCount = 1;
+            layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromVertexStage(DescriptorType_Texture)) ? VK_SHADER_STAGE_VERTEX_BIT : 0;
+            layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromPixelStage(DescriptorType_Texture)) ? VK_SHADER_STAGE_FRAGMENT_BIT : 0;
+            layoutBinding.pImmutableSamplers = nullptr;
+            layoutBindings.push_back(layoutBinding);
 
-                VkDescriptorImageInfo info;
-                info.sampler = VK_NULL_HANDLE;
-                info.imageView = VK_NULL_HANDLE;    // set from submitDescriptorWriteInfo
-                info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                m_textureDescripterImageInfo.push_back(info);
+            VkDescriptorImageInfo info;
+            info.sampler = VK_NULL_HANDLE;
+            info.imageView = VK_NULL_HANDLE;    // set from submitDescriptorWriteInfo
+            info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            m_textureDescripterImageInfo.push_back(info);
 
-                VkWriteDescriptorSet set;
-                set.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                set.pNext = nullptr;
-                set.dstSet = VK_NULL_HANDLE;   // set from submitDescriptorWriteInfo
-                set.dstBinding = item.binding;
-                set.dstArrayElement = 0;
-                set.descriptorCount = 1;
-                set.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-                set.pImageInfo = &m_textureDescripterImageInfo.back();
-                set.pBufferInfo = nullptr;
-                set.pTexelBufferView = nullptr;
-                m_descriptorWriteInfo.push_back(set);
-            }
+            VkWriteDescriptorSet set;
+            set.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            set.pNext = nullptr;
+            set.dstSet = VK_NULL_HANDLE;   // set from submitDescriptorWriteInfo
+            set.dstBinding = item.binding;
+            set.dstArrayElement = 0;
+            set.descriptorCount = 1;
+            set.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+            set.pImageInfo = &m_textureDescripterImageInfo.back();
+            set.pBufferInfo = nullptr;
+            set.pTexelBufferView = nullptr;
+            m_descriptorWriteInfo.push_back(set);
+        }
 
-            VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-            layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-            layoutInfo.bindingCount = layoutBindings.size();    // 0 で空のインスタンスだけ作ることは可能
-            layoutInfo.pBindings = layoutBindings.data();
-            LN_VK_CHECK(vkCreateDescriptorSetLayout(device, &layoutInfo, m_deviceContext->vulkanAllocator(), &m_descriptorSetLayouts[1]));
+        VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+        layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        layoutInfo.bindingCount = layoutBindings.size();    // 0 で空のインスタンスだけ作ることは可能
+        layoutInfo.pBindings = layoutBindings.data();
+        LN_VK_CHECK(vkCreateDescriptorSetLayout(device, &layoutInfo, m_deviceContext->vulkanAllocator(), &m_descriptorSetLayouts[1]));
         }
 
         // 's' register in HLSL (SamplerState and CombinedSampler)
@@ -2194,6 +2198,15 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
         }
     }
 
+    // PipelineLayout
+    {
+        VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
+        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+        pipelineLayoutInfo.setLayoutCount = descriptorSetLayouts().size();
+        pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts().data();
+        LN_VK_CHECK(vkCreatePipelineLayout(device, &pipelineLayoutInfo, m_deviceContext->vulkanAllocator(), &m_pipelineLayout));
+    }
+
 	// UniformBuffers
 	{
         uint32_t writeIndex = 0;
@@ -2238,6 +2251,11 @@ void VulkanShaderPass::dispose()
         m_localShaderSamplerBuffer = nullptr;
     }
 
+    if (m_pipelineLayout) {
+        vkDestroyPipelineLayout(device, m_pipelineLayout, m_deviceContext->vulkanAllocator());
+        m_pipelineLayout = VK_NULL_HANDLE;
+    }
+
     for (auto& layout : m_descriptorSetLayouts) {
         if (layout) {
             vkDestroyDescriptorSetLayout(device, layout, m_deviceContext->vulkanAllocator());
@@ -2279,15 +2297,18 @@ const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWrite
         uint32_t writeIndex = m_localShaderSamplerBuffer->descriptorWriteInfoIndex(i);
         VkWriteDescriptorSet& writeInfo = m_descriptorWriteInfo[writeIndex];
 
+        auto& texture = m_localShaderSamplerBuffer->texture(i);
+        auto& samplerState = m_localShaderSamplerBuffer->samplerState(i);
+
         if (type == DescriptorType_Texture) {
             VkDescriptorImageInfo& imageInfo = m_textureDescripterImageInfo[imageIndex];
-            imageInfo.imageView = m_localShaderSamplerBuffer->texture(i)->image()->vulkanImageView();
+            imageInfo.imageView = (texture) ? texture->image()->vulkanImageView() : 0;
             writeInfo.dstSet = descriptorSets[DescriptorType_Texture];
         }
         else if (type == DescriptorType_SamplerState) {
-            VkDescriptorImageInfo& imageInfo = m_textureDescripterImageInfo[imageIndex];
-            imageInfo.imageView = m_localShaderSamplerBuffer->texture(i)->image()->vulkanImageView();
-            imageInfo.sampler = m_localShaderSamplerBuffer->samplerState(i)->vulkanSampler();
+            VkDescriptorImageInfo& imageInfo = m_samplerDescripterImageInfo[imageIndex];
+            imageInfo.imageView = (texture) ? texture->image()->vulkanImageView() : 0;
+            imageInfo.sampler = (samplerState) ? samplerState->vulkanSampler() : 0;
             writeInfo.dstSet = descriptorSets[DescriptorType_SamplerState];
         }
         else {
@@ -2316,6 +2337,8 @@ Ref<VulkanDescriptorSetsPool> VulkanShaderPass::getDescriptorSetsPool()
 
 void VulkanShaderPass::releaseDescriptorSetsPool(VulkanDescriptorSetsPool* pool)
 {
+    LN_DCHECK(pool);
+    pool->reset();
     m_descriptorSetsPools.push_back(pool);
 }
 
@@ -2405,6 +2428,7 @@ void VulkanLocalShaderSamplerBuffer::setSamplerState(int registerIndex, ISampler
 void VulkanLocalShaderSamplerBuffer::addDescriptor(DescriptorType type, uint32_t bindingIndex, const std::string& name, uint32_t imageInfoIndex, uint32_t writeInfoIndex)
 {
 	Entry e;
+    e.type = type;
 	if (type == DescriptorType_Texture) {
 		e.textureRegisterName = name;
 	}

@@ -749,6 +749,7 @@ void VulkanCommandBuffer::cleanInFlightResources()
 {
     for (auto& pass : m_usingShaderPasses) {
         pass->releaseDescriptorSetsPool(pass->recodingPool);
+        pass->recodingPool = nullptr;
     }
     m_usingShaderPasses.clear();
 }
@@ -802,7 +803,7 @@ Result VulkanDescriptorSetsPool::init(VulkanDeviceContext* deviceContext, Vulkan
 
     VkDescriptorPoolCreateInfo poolInfo = {};
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-    poolInfo.maxSets = static_cast<uint32_t>(poolSizes.size());//static_cast<uint32_t>(swapChainImages.size());
+    poolInfo.maxSets = count;// static_cast<uint32_t>(poolSizes.size());//static_cast<uint32_t>(swapChainImages.size());
     poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
     poolInfo.pPoolSizes = poolSizes.data();
 
