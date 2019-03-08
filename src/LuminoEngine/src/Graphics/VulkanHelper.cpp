@@ -571,6 +571,8 @@ Result VulkanImage::init(VulkanDeviceContext* deviceContext, uint32_t width, uin
 {
 	LN_DCHECK(deviceContext);
 	m_deviceContext = deviceContext;
+    m_externalManagement = false;
+
 	VkDevice device = m_deviceContext->vulkanDevice();
 
 	VkImageCreateInfo imageInfo = {};
@@ -621,20 +623,31 @@ Result VulkanImage::init(VulkanDeviceContext* deviceContext, uint32_t width, uin
 	return true;
 }
 
+Result VulkanImage::init(VulkanDeviceContext* deviceContext, VkImage image, VkImageView imageView)
+{
+    LN_DCHECK(deviceContext);
+    m_externalManagement = true;
+    m_deviceContext = deviceContext;
+    m_image = image;
+    m_imageView = imageView;
+}
+
 void VulkanImage::dispose()
 {
-    if (m_imageView) {
-        vkDestroyImageView(m_deviceContext->vulkanDevice(), m_imageView, m_deviceContext->vulkanAllocator());
-        m_imageView = VK_NULL_HANDLE;
+    if (!m_externalManagement) {
+        if (m_imageView) {
+            vkDestroyImageView(m_deviceContext->vulkanDevice(), m_imageView, m_deviceContext->vulkanAllocator());
+            m_imageView = VK_NULL_HANDLE;
+        }
+        if (m_image) {
+            vkDestroyImage(m_deviceContext->vulkanDevice(), m_image, m_deviceContext->vulkanAllocator());
+            m_image = VK_NULL_HANDLE;
+        }
+        if (m_imageMemory) {
+            vkFreeMemory(m_deviceContext->vulkanDevice(), m_imageMemory, m_deviceContext->vulkanAllocator());
+            m_imageMemory = VK_NULL_HANDLE;
+        }
     }
-	if (m_image) {
-		vkDestroyImage(m_deviceContext->vulkanDevice(), m_image, m_deviceContext->vulkanAllocator());
-		m_image = VK_NULL_HANDLE;
-	}
-	if (m_imageMemory) {
-		vkFreeMemory(m_deviceContext->vulkanDevice(), m_imageMemory, m_deviceContext->vulkanAllocator());
-		m_imageMemory = VK_NULL_HANDLE;
-	}
 }
 
 //=============================================================================
@@ -838,6 +851,7 @@ Result VulkanDescriptorSetsPool::allocateDescriptorSets(VulkanCommandBuffer* com
     allocInfo.descriptorSetCount = m_owner->descriptorSetLayouts().size();
     allocInfo.pSetLayouts = m_owner->descriptorSetLayouts().data();
 
+    // TODO: 使い切ったときの Page 追加
     LN_VK_CHECK(vkAllocateDescriptorSets(m_deviceContext->vulkanDevice(), &allocInfo, sets->data()));
 
     const std::vector<VkWriteDescriptorSet>& writeInfos = m_owner->submitDescriptorWriteInfo(commandBuffer, *sets);

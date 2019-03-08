@@ -138,16 +138,20 @@ class VulkanImage
 public:
 	VulkanImage();
 	Result init(VulkanDeviceContext* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags);
-	void dispose();
+    Result init(VulkanDeviceContext* deviceContext, VkImage image, VkImageView imageView);
+    void dispose();
 	VkImage vulkanImage() const { return m_image; }
 	VkDeviceMemory vulkanDeviceMemory() const { return m_imageMemory; }
     VkImageView vulkanImageView() const { return m_imageView; }
+
+    //void VulkanSwapchainRenderTargetTexture::reset(const VulkanSwapChain::SwapChainDesc& desc, std::vector<VkImage> images, std::vector<VkImageView> views);
 
 private:
 	VulkanDeviceContext* m_deviceContext;
 	VkImage m_image;
 	VkDeviceMemory m_imageMemory;
     VkImageView m_imageView;
+    bool m_externalManagement;
 };
 
 // ひとつのコマンドバッファ。通常、記録中バッファと実行中バッファなどに分かれるため、インスタンスは複数作られる。

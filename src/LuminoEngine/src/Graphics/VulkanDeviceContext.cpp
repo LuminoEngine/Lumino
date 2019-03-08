@@ -1950,6 +1950,54 @@ void VulkanTexture2D::dispose()
 }
 
 //==============================================================================
+// VulkanSwapchainRenderTargetTexture
+
+VulkanSwapchainRenderTargetTexture::VulkanSwapchainRenderTargetTexture()
+{
+}
+
+Result VulkanSwapchainRenderTargetTexture::init(VulkanDeviceContext* deviceContext)
+{
+    LN_DCHECK(deviceContext);
+    m_deviceContext = deviceContext;
+    return true;
+}
+
+void VulkanSwapchainRenderTargetTexture::dispose()
+{
+    clear();
+    VulkanTexture::dispose();
+}
+
+Result VulkanSwapchainRenderTargetTexture::reset(uint32_t width, uint32_t height, VkFormat format, const std::vector<VkImage>& images, const std::vector<VkImageView>& imageViews)
+{
+    LN_DCHECK(images.size() == imageViews.size());
+    clear();
+
+    m_size.width = width;
+    m_size.height = height;
+    m_format = VulkanHelper::VkFormatToLNFormat(format);
+
+    m_images.resize(images.size());
+    for (int i = 0; i < images.size(); i++) {
+        m_images[i] = std::make_shared<VulkanImage>();
+        if (!m_images[i]->init(m_deviceContext, images[i], imageViews[i])) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+void VulkanSwapchainRenderTargetTexture::clear()
+{
+    for (auto& image : m_images) {
+        image->dispose();
+    }
+    m_images.clear();
+}
+
+//==============================================================================
 // VulkanDepthBuffer
 
 VulkanDepthBuffer::VulkanDepthBuffer()

@@ -239,6 +239,45 @@ public:
 protected:
 };
 
+// ダブルバッファ・トリプルバッファを管理するため、通常の RenderTargetTexture とは別にする。
+// IGraphicsDeviceContext は DX11 相当の IF に合わせているので、ダブルバッファの実装はこちら側で隠蔽したい。
+// 個別に公開するのは、特に readData の対象を外側で認識できるようにする必要があったりするのでちょっと大変。
+class VulkanSwapchainRenderTargetTexture
+    : public VulkanTexture
+{
+public:
+    VulkanSwapchainRenderTargetTexture();
+    Result init(VulkanDeviceContext* deviceContext);
+    virtual void dispose();
+    virtual DeviceTextureType type() const { return DeviceTextureType::Texture2D; }
+    virtual SizeI realSize() { return m_size; }
+    virtual TextureFormat getTextureFormat() const { return m_format; }
+    virtual void readData(void* outData) { LN_UNREACHABLE(); }
+    virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) { LN_NOTIMPLEMENTED(); }
+    virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) { LN_UNREACHABLE(); }
+
+    Result reset(uint32_t width, uint32_t height, VkFormat format, const std::vector<VkImage>& images, const std::vector<VkImageView>& imageViews);
+    void setCurrentBufferIndex(int index) { m_currentBufferIndex = index; }
+
+    //int prevBufferIndex() const { return (m_bufferIndex == 0) ? m_images.size() - 1 : m_bufferIndex - 1; }
+
+private:
+    void clear();
+
+    VulkanDeviceContext* m_deviceContext;
+    std::vector<std::shared_ptr<VulkanImage>> m_images;
+    SizeI m_size;
+    TextureFormat m_format;
+    int m_currentBufferIndex;
+    //TextureDesc m_desc;
+    //std::vector<VkImage> m_images;
+    //std::vector<VkImageView> m_imageViews;
+    ////VkImageAspectFlags m_imageAspectFlags;
+    ////VkDeviceMemory m_deviceMemory;
+
+    //VkFormat m_vulkanFormat;
+};
+
 class VulkanDepthBuffer
 	: public IDepthBuffer
 {
