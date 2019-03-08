@@ -255,9 +255,12 @@ public:
     virtual void readData(void* outData) { LN_UNREACHABLE(); }
     virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) { LN_NOTIMPLEMENTED(); }
     virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) { LN_UNREACHABLE(); }
+    virtual const VulkanImage* image() const override { return m_images[m_currentBufferIndex].get(); }
 
     Result reset(uint32_t width, uint32_t height, VkFormat format, const std::vector<VkImage>& images, const std::vector<VkImageView>& imageViews);
     void setCurrentBufferIndex(int index) { m_currentBufferIndex = index; }
+    uint32_t imageCount() const { return m_images.size(); }
+    VulkanImage* image(uint32_t index) const { return m_images[index].get(); }
 
     //int prevBufferIndex() const { return (m_bufferIndex == 0) ? m_images.size() - 1 : m_bufferIndex - 1; }
 

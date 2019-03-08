@@ -630,6 +630,7 @@ Result VulkanImage::init(VulkanDeviceContext* deviceContext, VkImage image, VkIm
     m_deviceContext = deviceContext;
     m_image = image;
     m_imageView = imageView;
+    return true;
 }
 
 void VulkanImage::dispose()

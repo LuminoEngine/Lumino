@@ -149,11 +149,12 @@ public:
     //VkQueue presentQueue;
 
     VkSwapchainKHR swapChain;
-    std::vector<VkImage> swapChainImages;
     VkFormat swapChainImageFormat;
     VkExtent2D swapChainExtent;
-    std::vector<VkImageView> swapChainImageViews;
+    //std::vector<VkImage> swapChainImages;
+    //std::vector<VkImageView> swapChainImageViews;
     std::vector<VkFramebuffer> swapChainFramebuffers;
+    Ref<VulkanSwapchainRenderTargetTexture> m_swapchainRenderTarget;
 
     Ref<VulkanShaderPass> m_shaderPass;
         
@@ -225,7 +226,7 @@ public:
         //pickPhysicalDevice();   m_deviceContext->m_physicalDevice = physicalDevice;
         //createLogicalDevice();  m_deviceContext->m_device = device;
         createSwapChain();
-        createImageViews();
+        //createImageViews();
         createRenderPass();
         //createDescriptorSetLayout();
         createGraphicsPipeline();
@@ -272,9 +273,11 @@ public:
         //vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
         vkDestroyRenderPass(device, renderPass, nullptr);
 
-        for (auto imageView : swapChainImageViews) {
-            vkDestroyImageView(device, imageView, nullptr);
-        }
+        //for (auto imageView : swapChainImageViews) {
+        //    vkDestroyImageView(device, imageView, nullptr);
+        //}
+        m_swapchainRenderTarget->dispose();
+        m_swapchainRenderTarget = nullptr;
 
         vkDestroySwapchainKHR(device, swapChain, nullptr);
     }
@@ -316,7 +319,7 @@ public:
         cleanupSwapChain();
 
         createSwapChain();
-        createImageViews();
+        //createImageViews();
         createRenderPass();
         createGraphicsPipeline();
         createDepthResources();
@@ -367,20 +370,30 @@ public:
             throw std::runtime_error("failed to create swap chain!");
         }
 
-        vkGetSwapchainImagesKHR(device, swapChain, &imageCount, nullptr);
-        swapChainImages.resize(imageCount);
-        vkGetSwapchainImagesKHR(device, swapChain, &imageCount, swapChainImages.data());
 
-        swapChainImageFormat = surfaceFormat.format;
-        swapChainExtent = extent;
-    }
 
-    void createImageViews() {
-        swapChainImageViews.resize(swapChainImages.size());
+        std::vector<VkImage> swapChainImages;
+        {
+            vkGetSwapchainImagesKHR(device, swapChain, &imageCount, nullptr);
+            swapChainImages.resize(imageCount);
+            vkGetSwapchainImagesKHR(device, swapChain, &imageCount, swapChainImages.data());
 
-        for (uint32_t i = 0; i < swapChainImages.size(); i++) {
-            swapChainImageViews[i] = createImageView(swapChainImages[i], swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT);
+            swapChainImageFormat = surfaceFormat.format;
+            swapChainExtent = extent;
         }
+
+        std::vector<VkImageView> swapChainImageViews;
+        {
+            swapChainImageViews.resize(swapChainImages.size());
+
+            for (uint32_t i = 0; i < swapChainImages.size(); i++) {
+                swapChainImageViews[i] = createImageView(swapChainImages[i], swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT);
+            }
+        }
+
+        m_swapchainRenderTarget = makeRef<VulkanSwapchainRenderTargetTexture>();
+        m_swapchainRenderTarget->init(m_deviceContext);
+        m_swapchainRenderTarget->reset(swapChainExtent.width, swapChainExtent.height, swapChainImageFormat, swapChainImages, swapChainImageViews);
     }
 
     void createRenderPass() {
@@ -610,11 +623,12 @@ public:
     }
 
     void createFramebuffers() {
-        swapChainFramebuffers.resize(swapChainImageViews.size());
+        swapChainFramebuffers.resize(m_swapchainRenderTarget->imageCount());//  swapChainImageViews.size());
 
-        for (size_t i = 0; i < swapChainImageViews.size(); i++) {
+        for (size_t i = 0; i < m_swapchainRenderTarget->imageCount()/*swapChainImageViews.size()*/; i++) {
             std::array<VkImageView, 2> attachments = {
-                swapChainImageViews[i],
+                //swapChainImageViews[i],
+                m_swapchainRenderTarget->image(i)->vulkanImageView(),
                 m_depthImage->image()->vulkanImageView(),
             };
 
@@ -709,13 +723,13 @@ public:
 #if 1
         std::array<VkDescriptorPoolSize, 4> poolSizes = {};
         poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        poolSizes[0].descriptorCount = static_cast<uint32_t>(swapChainImages.size());
+        poolSizes[0].descriptorCount = static_cast<uint32_t>(m_swapchainRenderTarget->imageCount());// swapChainImages.size());
         poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        poolSizes[1].descriptorCount = static_cast<uint32_t>(swapChainImages.size());
+        poolSizes[1].descriptorCount = static_cast<uint32_t>(m_swapchainRenderTarget->imageCount());// swapChainImages.size());
         poolSizes[2].type = VK_DESCRIPTOR_TYPE_SAMPLER;
-        poolSizes[2].descriptorCount = static_cast<uint32_t>(swapChainImages.size());
+        poolSizes[2].descriptorCount = static_cast<uint32_t>(m_swapchainRenderTarget->imageCount());// swapChainImages.size());
         poolSizes[3].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        poolSizes[3].descriptorCount = static_cast<uint32_t>(swapChainImages.size());
+        poolSizes[3].descriptorCount = static_cast<uint32_t>(m_swapchainRenderTarget->imageCount());// swapChainImages.size());
 #else
         std::array<VkDescriptorPoolSize, 2> poolSizes = {};
         poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
