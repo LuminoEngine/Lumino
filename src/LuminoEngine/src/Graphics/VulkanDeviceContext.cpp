@@ -2111,6 +2111,8 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
             layoutBindings.reserve(createInfo.descriptorLayout->textureRegister.size());
             m_textureDescripterImageInfo.reserve(createInfo.descriptorLayout->textureRegister.size());
             for (auto& item : createInfo.descriptorLayout->textureRegister) {
+                m_localShaderSamplerBuffer->addDescriptor(DescriptorType_Texture, item.binding, item.name, layoutBindings.size(), m_descriptorWriteInfo.size());
+
                 VkDescriptorSetLayoutBinding layoutBinding = {};
                 layoutBinding.binding = item.binding;
                 layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
@@ -2119,8 +2121,6 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
                 layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromPixelStage(DescriptorType_Texture)) ? VK_SHADER_STAGE_FRAGMENT_BIT : 0;
                 layoutBinding.pImmutableSamplers = nullptr;
                 layoutBindings.push_back(layoutBinding);
-
-				m_localShaderSamplerBuffer->addDescriptor(DescriptorType_Texture, item.binding, item.name, m_descriptorWriteInfo.size());
 
                 VkDescriptorImageInfo info;
                 info.sampler = VK_NULL_HANDLE;
@@ -2155,6 +2155,8 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
             layoutBindings.reserve(createInfo.descriptorLayout->samplerRegister.size());
             m_samplerDescripterImageInfo.reserve(createInfo.descriptorLayout->samplerRegister.size());
             for (auto& item : createInfo.descriptorLayout->samplerRegister) {
+                m_localShaderSamplerBuffer->addDescriptor(DescriptorType_SamplerState, item.binding, item.name, layoutBindings.size(), m_descriptorWriteInfo.size());
+
                 VkDescriptorSetLayoutBinding layoutBinding = {};
                 layoutBinding.binding = item.binding;
                 layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;   // VK_DESCRIPTOR_TYPE_SAMPLER としても使える。ただし、ImageView をセットしておく必要がある。
@@ -2163,8 +2165,6 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
                 layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromPixelStage(DescriptorType_SamplerState)) ? VK_SHADER_STAGE_FRAGMENT_BIT : 0;
                 layoutBinding.pImmutableSamplers = nullptr;
                 layoutBindings.push_back(layoutBinding);
-
-				m_localShaderSamplerBuffer->addDescriptor(DescriptorType_SamplerState, item.binding, item.name, m_descriptorWriteInfo.size());
 
                 VkDescriptorImageInfo info;
                 info.sampler = VK_NULL_HANDLE;      // set from submitDescriptorWriteInfo
@@ -2218,6 +2218,16 @@ void VulkanShaderPass::dispose()
 {
     VkDevice device = m_deviceContext->vulkanDevice();
 
+    for (auto& buf : m_uniformBuffers) {
+        buf->dispose();
+    }
+    m_uniformBuffers.clear();
+    
+    if (m_localShaderSamplerBuffer) {
+        m_localShaderSamplerBuffer->dispose();
+        m_localShaderSamplerBuffer = nullptr;
+    }
+
     for (auto& pool : m_descriptorSetsPools) {
         pool->dispose();
     }
@@ -2253,18 +2263,37 @@ IShaderSamplerBuffer* VulkanShaderPass::samplerBuffer() const
 
 const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWriteInfo(const std::array<VkDescriptorSet, DescriptorType_Count>& descriptorSets)
 {
-    uint32_t index = 0;
     for (size_t i = 0; i < m_uniformBuffers.size(); i++) {
         VkDescriptorBufferInfo& info = m_bufferDescriptorBufferInfo[i];
         info.buffer = m_uniformBuffers[i]->vulkanBuffer();
 
-        VkWriteDescriptorSet& set = m_descriptorWriteInfo[index];
-		set.dstSet = descriptorSets[DescriptorType_UniformBuffer];
-		index++;
+        VkWriteDescriptorSet& writeInfo = m_descriptorWriteInfo[i];
+        writeInfo.dstSet = descriptorSets[DescriptorType_UniformBuffer];
+		i++;
     }
 
-	for (auto& item : createInfo.descriptorLayout->textureRegister) {
-	}
+    int count = m_localShaderSamplerBuffer->registerCount();
+    for (int i = 0; i < count; i++) {
+        DescriptorType type = m_localShaderSamplerBuffer->descriptorType(i);
+        uint32_t imageIndex = m_localShaderSamplerBuffer->descriptorImageInfoIndex(i);
+        uint32_t writeIndex = m_localShaderSamplerBuffer->descriptorWriteInfoIndex(i);
+        VkWriteDescriptorSet& writeInfo = m_descriptorWriteInfo[writeIndex];
+
+        if (type == DescriptorType_Texture) {
+            VkDescriptorImageInfo& imageInfo = m_textureDescripterImageInfo[imageIndex];
+            imageInfo.imageView = m_localShaderSamplerBuffer->texture(i)->image()->vulkanImageView();
+            writeInfo.dstSet = descriptorSets[DescriptorType_Texture];
+        }
+        else if (type == DescriptorType_SamplerState) {
+            VkDescriptorImageInfo& imageInfo = m_textureDescripterImageInfo[imageIndex];
+            imageInfo.imageView = m_localShaderSamplerBuffer->texture(i)->image()->vulkanImageView();
+            imageInfo.sampler = m_localShaderSamplerBuffer->samplerState(i)->vulkanSampler();
+            writeInfo.dstSet = descriptorSets[DescriptorType_SamplerState];
+        }
+        else {
+            LN_UNREACHABLE();
+        }
+    }
 
     return m_descriptorWriteInfo;
 }
@@ -2365,7 +2394,7 @@ void VulkanLocalShaderSamplerBuffer::dispose()
 
 void VulkanLocalShaderSamplerBuffer::setTexture(int registerIndex, ITexture* texture)
 {
-    m_table[registerIndex].texture = texture;
+    m_table[registerIndex].texture = static_cast<VulkanTexture*>(texture);
 }
 
 void VulkanLocalShaderSamplerBuffer::setSamplerState(int registerIndex, ISamplerState* state)
@@ -2373,7 +2402,7 @@ void VulkanLocalShaderSamplerBuffer::setSamplerState(int registerIndex, ISampler
     m_table[registerIndex].samplerState = static_cast<VulkanSamplerState*>(state);
 }
 
-void VulkanLocalShaderSamplerBuffer::addDescriptor(DescriptorType type, uint32_t bindingIndex, const std::string& name, uint32_t writeInfoIndex)
+void VulkanLocalShaderSamplerBuffer::addDescriptor(DescriptorType type, uint32_t bindingIndex, const std::string& name, uint32_t imageInfoIndex, uint32_t writeInfoIndex)
 {
 	Entry e;
 	if (type == DescriptorType_Texture) {
@@ -2382,6 +2411,7 @@ void VulkanLocalShaderSamplerBuffer::addDescriptor(DescriptorType type, uint32_t
 	else {
 		e.samplerRegisterName = name;
 	}
+    e.descriptorImageInfoIndex = imageInfoIndex;
 	e.descriptorWriteInfoIndex = writeInfoIndex;
 	e.bindingIndex = bindingIndex;
 	m_table.push_back(std::move(e));

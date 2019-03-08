@@ -164,11 +164,14 @@ public:
     Result beginRecording();
     Result endRecording();
 
+    Result allocateDescriptorSets(VulkanShaderPass* shaderPass, std::array<VkDescriptorSet, DescriptorType_Count>* outSets);
+
 	// データを destination へ送信するためのコマンドを push する。
 	// 元データは戻り値のメモリ領域に書き込むこと。
 	VulkanBuffer* cmdCopyBuffer(size_t size, VulkanBuffer* destination);
 
 private:
+    void cleanInFlightResources();
 	//struct StagingBuffer
 	//{
 	//	VkBuffer buffer;
@@ -187,6 +190,8 @@ private:
 
 	size_t m_stagingBufferPoolUsed;
 	std::vector<VulkanBuffer> m_stagingBufferPool;
+
+    std::vector<Ref<VulkanShaderPass>> m_usingShaderPasses;
 };
 
 // DescriptorSet と、それにアタッチした UniformBuffer。

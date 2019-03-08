@@ -687,6 +687,10 @@ Result VulkanCommandBuffer::beginRecording()
 {
     m_linearAllocator->cleanup();
 
+    // 前回の描画で使ったリソースを開放する。
+    // end で解放しないのは、まだその後の実際のコマンド実行で使うリソースであるから。
+    cleanInFlightResources();
+
     VkCommandBufferBeginInfo beginInfo = {};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
@@ -700,6 +704,19 @@ Result VulkanCommandBuffer::endRecording()
 {
     LN_VK_CHECK(vkEndCommandBuffer(vulkanCommandBuffer()));
     return true;
+}
+
+Result VulkanCommandBuffer::allocateDescriptorSets(VulkanShaderPass* shaderPass, std::array<VkDescriptorSet, DescriptorType_Count>* outSets)
+{
+    LN_DCHECK(shaderPass);
+    
+    if (!shaderPass->recodingPool) {
+        // null の場合は begin からここまでではじめて CommandBuffer で使われた、ということで新しく作る
+        shaderPass->recodingPool = shaderPass->getDescriptorSetsPool();
+        m_usingShaderPasses.push_back(shaderPass);
+    }
+
+    return shaderPass->recodingPool->allocateDescriptorSets(outSets);
 }
 
 VulkanBuffer* VulkanCommandBuffer::cmdCopyBuffer(size_t size, VulkanBuffer* destination)
@@ -726,6 +743,14 @@ VulkanBuffer* VulkanCommandBuffer::cmdCopyBuffer(size_t size, VulkanBuffer* dest
 
 	// 戻り先で書いてもらう
 	return buffer;
+}
+
+void VulkanCommandBuffer::cleanInFlightResources()
+{
+    for (auto& pass : m_usingShaderPasses) {
+        pass->releaseDescriptorSetsPool(pass->recodingPool);
+    }
+    m_usingShaderPasses.clear();
 }
 
 void VulkanCommandBuffer::resetAllocator(size_t pageSize)
@@ -804,6 +829,10 @@ Result VulkanDescriptorSetsPool::allocateDescriptorSets(std::array<VkDescriptorS
     allocInfo.pSetLayouts = m_owner->descriptorSetLayouts().data();
 
     LN_VK_CHECK(vkAllocateDescriptorSets(m_deviceContext->vulkanDevice(), &allocInfo, sets->data()));
+
+    const std::vector<VkWriteDescriptorSet>& writeInfos = m_owner->submitDescriptorWriteInfo(*sets);
+
+    vkUpdateDescriptorSets(m_deviceContext->vulkanDevice(), static_cast<uint32_t>(writeInfos.size()), writeInfos.data(), 0, nullptr);
 
     return true;
 }

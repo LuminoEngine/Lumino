@@ -192,8 +192,17 @@ protected:
     VkIndexType m_indexType;
 };
 
+class VulkanTexture
+    : public ITexture
+{
+public:
+    virtual const VulkanImage* image() const = 0;
+
+private:
+};
+
 class VulkanTexture2D
-	: public ITexture
+	: public VulkanTexture
 {
 public:
 	VulkanTexture2D();
@@ -206,7 +215,7 @@ public:
 	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) { LN_NOTIMPLEMENTED(); }
 	virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) { LN_UNREACHABLE(); }
 
-    const VulkanImage* image() const { return &m_image; }
+    virtual const VulkanImage* image() const override { return &m_image; }
 
 private:
 	VulkanDeviceContext* m_deviceContext;
@@ -282,7 +291,7 @@ public:
     // CommandBuffer に対するインターフェイス
     Ref<VulkanDescriptorSetsPool> getDescriptorSetsPool();
     void releaseDescriptorSetsPool(VulkanDescriptorSetsPool* pool);
-    VulkanDescriptorSetsPool* recodingPool = nullptr; // CommandBuffer に対する、いわゆる UserData のイメージ
+    Ref<VulkanDescriptorSetsPool> recodingPool = nullptr; // CommandBuffer に対する、いわゆる UserData のイメージ
 
 private:
     VulkanDeviceContext* m_deviceContext;
@@ -339,17 +348,23 @@ public:
     virtual void setTexture(int registerIndex, ITexture* texture) override;
     virtual void setSamplerState(int registerIndex, ISamplerState* state) override;
 
-	void addDescriptor(DescriptorType type, uint32_t bindingIndex, const std::string& name, uint32_t writeInfoIndex);
+	void addDescriptor(DescriptorType type, uint32_t bindingIndex, const std::string& name, uint32_t imageInfoIndex, uint32_t writeInfoIndex);
+    DescriptorType descriptorType(int registerIndex) const { return m_table[registerIndex].type; }
+    const Ref<VulkanTexture>& texture(int registerIndex) const { return m_table[registerIndex].texture; }
+    const Ref<VulkanSamplerState>& samplerState(int registerIndex) const { return m_table[registerIndex].samplerState; }
+    uint32_t descriptorImageInfoIndex(int registerIndex) const { return m_table[registerIndex].descriptorImageInfoIndex; }
     uint32_t descriptorWriteInfoIndex(int registerIndex) const { return m_table[registerIndex].descriptorWriteInfoIndex; }
 
 private:
     // VkDescriptorImageInfo と同じような情報を持つ。
     struct Entry
     {
+        DescriptorType type;
         std::string textureRegisterName;
         std::string samplerRegisterName;
-        Ref<ITexture> texture;
+        Ref<VulkanTexture> texture;
         Ref<VulkanSamplerState> samplerState;
+        uint32_t descriptorImageInfoIndex;
         uint32_t descriptorWriteInfoIndex;
         uint32_t bindingIndex;
     };
