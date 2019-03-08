@@ -276,8 +276,8 @@ public:
     VulkanShaderPass();
     Result init(VulkanDeviceContext* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
     void dispose();
-    virtual int getUniformBufferCount() const override { return 0; }
-    virtual IShaderUniformBuffer* getUniformBuffer(int index) const override { return nullptr; }
+    virtual int getUniformBufferCount() const override { return m_uniformBuffers.size(); }
+    virtual IShaderUniformBuffer* getUniformBuffer(int index) const override;
     virtual IShaderSamplerBuffer* samplerBuffer() const override;
     virtual void onBind() override { RefObjectHelper::retain(this); }
     virtual void onUnBind() override { RefObjectHelper::release(this); }
@@ -287,12 +287,12 @@ public:
     VkPipelineLayout vulkanPipelineLayout() const { return m_pipelineLayout; }
     const std::array<VkDescriptorSetLayout, 3>& descriptorSetLayouts() const { return m_descriptorSetLayouts; }
 
-    const std::vector<VkWriteDescriptorSet>& submitDescriptorWriteInfo(const std::array<VkDescriptorSet, DescriptorType_Count>& descriptorSets);
+    const std::vector<VkWriteDescriptorSet>& submitDescriptorWriteInfo(VulkanCommandBuffer* commandBuffer, const std::array<VkDescriptorSet, DescriptorType_Count>& descriptorSets);
 
     // CommandBuffer に対するインターフェイス
     Ref<VulkanDescriptorSetsPool> getDescriptorSetsPool();
     void releaseDescriptorSetsPool(VulkanDescriptorSetsPool* pool);
-    Ref<VulkanDescriptorSetsPool> recodingPool = nullptr; // CommandBuffer に対する、いわゆる UserData のイメージ
+    VulkanDescriptorSetsPool* recodingPool = nullptr; // CommandBuffer に対する、いわゆる UserData のイメージ
 
 private:
     VulkanDeviceContext* m_deviceContext;
@@ -324,6 +324,8 @@ public:
 	virtual size_t bufferSize() const override { return m_data.size(); }
 	virtual void setData(const void* data, size_t size) override;
 
+    const std::vector<byte_t>& data() const { return m_data; }
+    VulkanBuffer* buffer() { return &m_uniformBuffer; }
     VkBuffer vulkanBuffer() const { return m_uniformBuffer.vulkanBuffer(); }
     uint32_t descriptorWriteInfoIndex = 0;
     uint32_t bindingIndex = 0;

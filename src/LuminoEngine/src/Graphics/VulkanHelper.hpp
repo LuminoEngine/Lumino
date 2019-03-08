@@ -11,6 +11,7 @@ namespace ln {
 namespace detail {
 class VulkanDeviceContext;
 class VulkanShaderPass;
+class VulkanDescriptorSetsPool;
 
 #define LN_VK_CHECK(f) \
 { \
@@ -191,7 +192,9 @@ private:
 	size_t m_stagingBufferPoolUsed;
 	std::vector<VulkanBuffer> m_stagingBufferPool;
 
-    std::vector<Ref<VulkanShaderPass>> m_usingShaderPasses;
+    std::vector<Ref<VulkanShaderPass>> m_usingShaderPasses; // m_usingDescriptorSetsPools で持っている VulkanDescriptorSetsPool は VulkanShaderPass への強い参照を持たないので、これでカバーする
+    std::vector<Ref<VulkanDescriptorSetsPool>> m_usingDescriptorSetsPools;
+    
 };
 
 // DescriptorSet と、それにアタッチした UniformBuffer。
@@ -221,7 +224,8 @@ public:
     Result init(VulkanDeviceContext* deviceContext, VulkanShaderPass* owner);
     void dispose();
 
-    Result allocateDescriptorSets(std::array<VkDescriptorSet, DescriptorType_Count>* sets);
+    VulkanShaderPass* owner() const { return m_owner; }
+    Result allocateDescriptorSets(VulkanCommandBuffer* commandBuffer, std::array<VkDescriptorSet, DescriptorType_Count>* sets);
     void reset();
 
 private:

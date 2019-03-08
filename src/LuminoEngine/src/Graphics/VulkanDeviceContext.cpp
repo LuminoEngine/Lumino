@@ -911,20 +911,24 @@ public:
         //vkCmdBindDescriptorSets(commandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
         //vkCmdBindDescriptorSets(commandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_shaderPass->vulkanPipelineLayout(), 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
 
+        // UniformBuffer は copy コマンドを使って更新できる。
+        // TODO: ただし、texture や sampler は vkUpdateDescriptorSets でしか更新できないのでこれもキャッシュしたりする仕組みがほしいところ。
+        //VulkanBuffer* buffer = commandBuffer->cmdCopyBuffer(sizeof(ubo), &m_uniformBuffer);
+        VulkanShaderUniformBuffer* uniformBuffer = static_cast<VulkanShaderUniformBuffer*>(m_shaderPass->getUniformBuffer(0));
+        uniformBuffer->setData(&ubo, sizeof(ubo));
+
+
         std::array<VkDescriptorSet, DescriptorType_Count> sets;
         commandBuffer->allocateDescriptorSets(m_shaderPass, &sets);
         vkCmdBindDescriptorSets(commandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_shaderPass->vulkanPipelineLayout(), 0, sets.size(), sets.data(), 0, nullptr);
 
+        //
         // test
         //vertices[0].pos.x = 0;
         //vertices[0].pos.y = 0;
         //VulkanBuffer* buffer = commandBuffer->cmdCopyBuffer(sizeof(vertices[0]) * vertices.size(), m_vertexBuffer->buffer());
         //buffer->setData(0, vertices.data(), sizeof(vertices[0]) * vertices.size());
 
-        // UniformBuffer は copy コマンドを使って更新できる。
-        // TODO: ただし、texture や sampler は vkUpdateDescriptorSets でしか更新できないのでこれもキャッシュしたりする仕組みがほしいところ。
-        VulkanBuffer* buffer = commandBuffer->cmdCopyBuffer(sizeof(ubo), &m_uniformBuffer);
-        buffer->setData(0, &ubo, sizeof(ubo));
 //#if 1
 //        m_uniformBuffers[imageIndex]->setData(0, &ubo, sizeof(ubo));
 //#else
@@ -2098,8 +2102,8 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
                 set.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
                 set.pImageInfo = nullptr;
                 set.pBufferInfo = &m_bufferDescriptorBufferInfo.back();
-set.pTexelBufferView = nullptr;
-m_descriptorWriteInfo.push_back(set);
+                set.pTexelBufferView = nullptr;
+                m_descriptorWriteInfo.push_back(set);
             }
 
             VkDescriptorSetLayoutCreateInfo layoutInfo = {};
@@ -2111,46 +2115,46 @@ m_descriptorWriteInfo.push_back(set);
 
         // 't' register in HLSL
         {
-        std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
-        layoutBindings.reserve(createInfo.descriptorLayout->textureRegister.size());
-        m_textureDescripterImageInfo.reserve(createInfo.descriptorLayout->textureRegister.size());
-        for (auto& item : createInfo.descriptorLayout->textureRegister) {
-            m_localShaderSamplerBuffer->addDescriptor(DescriptorType_Texture, item.binding, item.name, layoutBindings.size(), m_descriptorWriteInfo.size());
+            std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
+            layoutBindings.reserve(createInfo.descriptorLayout->textureRegister.size());
+            m_textureDescripterImageInfo.reserve(createInfo.descriptorLayout->textureRegister.size());
+            for (auto& item : createInfo.descriptorLayout->textureRegister) {
+                m_localShaderSamplerBuffer->addDescriptor(DescriptorType_Texture, item.binding, item.name, layoutBindings.size(), m_descriptorWriteInfo.size());
 
-            VkDescriptorSetLayoutBinding layoutBinding = {};
-            layoutBinding.binding = item.binding;
-            layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-            layoutBinding.descriptorCount = 1;
-            layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromVertexStage(DescriptorType_Texture)) ? VK_SHADER_STAGE_VERTEX_BIT : 0;
-            layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromPixelStage(DescriptorType_Texture)) ? VK_SHADER_STAGE_FRAGMENT_BIT : 0;
-            layoutBinding.pImmutableSamplers = nullptr;
-            layoutBindings.push_back(layoutBinding);
+                VkDescriptorSetLayoutBinding layoutBinding = {};
+                layoutBinding.binding = item.binding;
+                layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+                layoutBinding.descriptorCount = 1;
+                layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromVertexStage(DescriptorType_Texture)) ? VK_SHADER_STAGE_VERTEX_BIT : 0;
+                layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromPixelStage(DescriptorType_Texture)) ? VK_SHADER_STAGE_FRAGMENT_BIT : 0;
+                layoutBinding.pImmutableSamplers = nullptr;
+                layoutBindings.push_back(layoutBinding);
 
-            VkDescriptorImageInfo info;
-            info.sampler = VK_NULL_HANDLE;
-            info.imageView = VK_NULL_HANDLE;    // set from submitDescriptorWriteInfo
-            info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            m_textureDescripterImageInfo.push_back(info);
+                VkDescriptorImageInfo info;
+                info.sampler = VK_NULL_HANDLE;
+                info.imageView = VK_NULL_HANDLE;    // set from submitDescriptorWriteInfo
+                info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                m_textureDescripterImageInfo.push_back(info);
 
-            VkWriteDescriptorSet set;
-            set.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            set.pNext = nullptr;
-            set.dstSet = VK_NULL_HANDLE;   // set from submitDescriptorWriteInfo
-            set.dstBinding = item.binding;
-            set.dstArrayElement = 0;
-            set.descriptorCount = 1;
-            set.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-            set.pImageInfo = &m_textureDescripterImageInfo.back();
-            set.pBufferInfo = nullptr;
-            set.pTexelBufferView = nullptr;
-            m_descriptorWriteInfo.push_back(set);
-        }
+                VkWriteDescriptorSet set;
+                set.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                set.pNext = nullptr;
+                set.dstSet = VK_NULL_HANDLE;   // set from submitDescriptorWriteInfo
+                set.dstBinding = item.binding;
+                set.dstArrayElement = 0;
+                set.descriptorCount = 1;
+                set.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;//VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                set.pImageInfo = &m_textureDescripterImageInfo.back();
+                set.pBufferInfo = nullptr;
+                set.pTexelBufferView = nullptr;
+                m_descriptorWriteInfo.push_back(set);
+            }
 
-        VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-        layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-        layoutInfo.bindingCount = layoutBindings.size();    // 0 で空のインスタンスだけ作ることは可能
-        layoutInfo.pBindings = layoutBindings.data();
-        LN_VK_CHECK(vkCreateDescriptorSetLayout(device, &layoutInfo, m_deviceContext->vulkanAllocator(), &m_descriptorSetLayouts[1]));
+            VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+            layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+            layoutInfo.bindingCount = layoutBindings.size();    // 0 で空のインスタンスだけ作ることは可能
+            layoutInfo.pBindings = layoutBindings.data();
+            LN_VK_CHECK(vkCreateDescriptorSetLayout(device, &layoutInfo, m_deviceContext->vulkanAllocator(), &m_descriptorSetLayouts[1]));
         }
 
         // 's' register in HLSL (SamplerState and CombinedSampler)
@@ -2163,7 +2167,7 @@ m_descriptorWriteInfo.push_back(set);
 
                 VkDescriptorSetLayoutBinding layoutBinding = {};
                 layoutBinding.binding = item.binding;
-                layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;   // VK_DESCRIPTOR_TYPE_SAMPLER としても使える。ただし、ImageView をセットしておく必要がある。
+                layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;   // VK_DESCRIPTOR_TYPE_SAMPLER としても使える。ただし、ImageView をセットしておく必要がある。
                 layoutBinding.descriptorCount = 1;
                 layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromVertexStage(DescriptorType_SamplerState)) ? VK_SHADER_STAGE_VERTEX_BIT : 0;
                 layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromPixelStage(DescriptorType_SamplerState)) ? VK_SHADER_STAGE_FRAGMENT_BIT : 0;
@@ -2183,7 +2187,7 @@ m_descriptorWriteInfo.push_back(set);
                 set.dstBinding = item.binding;
                 set.dstArrayElement = 0;
                 set.descriptorCount = 1;
-                set.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                set.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;//VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
                 set.pImageInfo = &m_samplerDescripterImageInfo.back();
                 set.pBufferInfo = nullptr;
                 set.pTexelBufferView = nullptr;
@@ -2202,8 +2206,8 @@ m_descriptorWriteInfo.push_back(set);
     {
         VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipelineLayoutInfo.setLayoutCount = descriptorSetLayouts().size();
-        pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts().data();
+        pipelineLayoutInfo.setLayoutCount = m_descriptorSetLayouts.size();
+        pipelineLayoutInfo.pSetLayouts = m_descriptorSetLayouts.data();
         LN_VK_CHECK(vkCreatePipelineLayout(device, &pipelineLayoutInfo, m_deviceContext->vulkanAllocator(), &m_pipelineLayout));
     }
 
@@ -2274,16 +2278,27 @@ void VulkanShaderPass::dispose()
     }
 }
 
+IShaderUniformBuffer* VulkanShaderPass::getUniformBuffer(int index) const
+{
+    return m_uniformBuffers[index];
+}
+
 IShaderSamplerBuffer* VulkanShaderPass::samplerBuffer() const
 {
     return m_localShaderSamplerBuffer;
 }
 
-const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWriteInfo(const std::array<VkDescriptorSet, DescriptorType_Count>& descriptorSets)
+const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWriteInfo(VulkanCommandBuffer* commandBuffer, const std::array<VkDescriptorSet, DescriptorType_Count>& descriptorSets)
 {
     for (size_t i = 0; i < m_uniformBuffers.size(); i++) {
+        auto& uniformBuffer = m_uniformBuffers[i];
+
+        // UniformBuffer の内容を CopyCommand に乗せる
+        VulkanBuffer* buffer = commandBuffer->cmdCopyBuffer(uniformBuffer->buffer()->size(), uniformBuffer->buffer());
+        buffer->setData(0, uniformBuffer->data().data(), uniformBuffer->data().size());
+
         VkDescriptorBufferInfo& info = m_bufferDescriptorBufferInfo[i];
-        info.buffer = m_uniformBuffers[i]->vulkanBuffer();
+        info.buffer = uniformBuffer->vulkanBuffer();
 
         VkWriteDescriptorSet& writeInfo = m_descriptorWriteInfo[i];
         writeInfo.dstSet = descriptorSets[DescriptorType_UniformBuffer];
@@ -2358,6 +2373,7 @@ Result VulkanShaderUniformBuffer::init(VulkanDeviceContext* deviceContext, const
 
 	m_data.resize(size);
 
+    // TRANSFER_DST に最適化
     if (!m_uniformBuffer.init(deviceContext, size, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
         return false;
     }

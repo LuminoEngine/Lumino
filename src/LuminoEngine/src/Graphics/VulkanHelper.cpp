@@ -703,6 +703,11 @@ Result VulkanCommandBuffer::beginRecording()
 Result VulkanCommandBuffer::endRecording()
 {
     LN_VK_CHECK(vkEndCommandBuffer(vulkanCommandBuffer()));
+
+    for (auto& pass : m_usingShaderPasses) {
+        pass->recodingPool = nullptr;
+    }
+
     return true;
 }
 
@@ -712,11 +717,13 @@ Result VulkanCommandBuffer::allocateDescriptorSets(VulkanShaderPass* shaderPass,
     
     if (!shaderPass->recodingPool) {
         // null の場合は begin からここまでではじめて CommandBuffer で使われた、ということで新しく作る
-        shaderPass->recodingPool = shaderPass->getDescriptorSetsPool();
+        auto pool = shaderPass->getDescriptorSetsPool();
+        m_usingDescriptorSetsPools.push_back(pool);
+        shaderPass->recodingPool = pool;
         m_usingShaderPasses.push_back(shaderPass);
     }
 
-    return shaderPass->recodingPool->allocateDescriptorSets(outSets);
+    return shaderPass->recodingPool->allocateDescriptorSets(this, outSets);
 }
 
 VulkanBuffer* VulkanCommandBuffer::cmdCopyBuffer(size_t size, VulkanBuffer* destination)
@@ -747,11 +754,13 @@ VulkanBuffer* VulkanCommandBuffer::cmdCopyBuffer(size_t size, VulkanBuffer* dest
 
 void VulkanCommandBuffer::cleanInFlightResources()
 {
-    for (auto& pass : m_usingShaderPasses) {
-        pass->releaseDescriptorSetsPool(pass->recodingPool);
-        pass->recodingPool = nullptr;
+    for (auto& pool : m_usingDescriptorSetsPools) {
+        pool->owner()->releaseDescriptorSetsPool(pool);
     }
     m_usingShaderPasses.clear();
+    m_usingDescriptorSetsPools.clear();
+
+    m_stagingBufferPoolUsed = 0;
 }
 
 void VulkanCommandBuffer::resetAllocator(size_t pageSize)
@@ -796,9 +805,9 @@ Result VulkanDescriptorSetsPool::init(VulkanDeviceContext* deviceContext, Vulkan
     std::array<VkDescriptorPoolSize, DescriptorType_Count> poolSizes;
     poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     poolSizes[0].descriptorCount = count;
-    poolSizes[1].type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+    poolSizes[1].type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;//VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     poolSizes[1].descriptorCount = count;
-    poolSizes[2].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    poolSizes[2].type = VK_DESCRIPTOR_TYPE_SAMPLER;//VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
     poolSizes[2].descriptorCount = count;
 
     VkDescriptorPoolCreateInfo poolInfo = {};
@@ -820,7 +829,7 @@ void VulkanDescriptorSetsPool::dispose()
     }
 }
 
-Result VulkanDescriptorSetsPool::allocateDescriptorSets(std::array<VkDescriptorSet, DescriptorType_Count>* sets)
+Result VulkanDescriptorSetsPool::allocateDescriptorSets(VulkanCommandBuffer* commandBuffer, std::array<VkDescriptorSet, DescriptorType_Count>* sets)
 {
     VkDescriptorSetAllocateInfo allocInfo;
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -831,7 +840,7 @@ Result VulkanDescriptorSetsPool::allocateDescriptorSets(std::array<VkDescriptorS
 
     LN_VK_CHECK(vkAllocateDescriptorSets(m_deviceContext->vulkanDevice(), &allocInfo, sets->data()));
 
-    const std::vector<VkWriteDescriptorSet>& writeInfos = m_owner->submitDescriptorWriteInfo(*sets);
+    const std::vector<VkWriteDescriptorSet>& writeInfos = m_owner->submitDescriptorWriteInfo(commandBuffer, *sets);
 
     vkUpdateDescriptorSets(m_deviceContext->vulkanDevice(), static_cast<uint32_t>(writeInfos.size()), writeInfos.data(), 0, nullptr);
 
