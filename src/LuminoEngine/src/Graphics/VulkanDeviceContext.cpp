@@ -226,12 +226,12 @@ public:
         //pickPhysicalDevice();   m_deviceContext->m_physicalDevice = physicalDevice;
         //createLogicalDevice();  m_deviceContext->m_device = device;
         createSwapChain();
+        createDepthResources();
         //createImageViews();
         createRenderPass();
         //createDescriptorSetLayout();
         createGraphicsPipeline();
         //createCommandPool();
-        createDepthResources();
         createFramebuffers();
         createTextureImage();
         //createTextureImageView();
@@ -271,7 +271,7 @@ public:
 
         vkDestroyPipeline(device, graphicsPipeline, nullptr);
         //vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
-        vkDestroyRenderPass(device, renderPass, nullptr);
+        //vkDestroyRenderPass(device, renderPass, nullptr);
 
         //for (auto imageView : swapChainImageViews) {
         //    vkDestroyImageView(device, imageView, nullptr);
@@ -319,10 +319,10 @@ public:
         cleanupSwapChain();
 
         createSwapChain();
+        createDepthResources();
         //createImageViews();
         createRenderPass();
         createGraphicsPipeline();
-        createDepthResources();
         createFramebuffers();
         createCommandBuffers();
     }
@@ -397,68 +397,81 @@ public:
     }
 
     void createRenderPass() {
-        VkAttachmentDescription colorAttachment = {};
-        colorAttachment.format = swapChainImageFormat;
-        colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-        colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;   // サンプルでは画面全体 clear する前提なので、前回値を保持する必要はない。そのため CLEAR。というか、CLEAR 指定しないと clear しても背景真っ黒になった。
-        //colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;   // 
-        colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-        colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;    // TODO: stencil。今は未対応
-        colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;  // TODO: stencil。今は未対応
-        colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;      // レンダリング前のレイアウト定義。UNDEFINED はレイアウトは何でもよいが、内容の保証はない。サンプルでは全体 clear するので問題ない。
-        colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;  // レンダリング後に自動遷移するレイアウト。スワップチェインはこれ。
-        //colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;  // レンダリング後に自動遷移するレイアウト。普通のレンダーターゲットはこれ。
+        //std::array<VkAttachmentDescription, 2> colorAttachment = {};
+        //colorAttachment[0].format = swapChainImageFormat;
+        //colorAttachment[0].samples = VK_SAMPLE_COUNT_1_BIT;
+        //colorAttachment[0].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;   // サンプルでは画面全体 clear する前提なので、前回値を保持する必要はない。そのため CLEAR。というか、CLEAR 指定しないと clear しても背景真っ黒になった。
+        ////colorAttachment[0].loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;   // 
+        //colorAttachment[0].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        //colorAttachment[0].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;    // TODO: stencil。今は未対応
+        //colorAttachment[0].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;  // TODO: stencil。今は未対応
+        //colorAttachment[0].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;      // レンダリング前のレイアウト定義。UNDEFINED はレイアウトは何でもよいが、内容の保証はない。サンプルでは全体 clear するので問題ない。
+        //colorAttachment[0].finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;  // レンダリング後に自動遷移するレイアウト。スワップチェインはこれ。
+        ////colorAttachment[0].finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;  // レンダリング後に自動遷移するレイアウト。普通のレンダーターゲットはこれ。
 
-        VkAttachmentDescription depthAttachment = {};
-        depthAttachment.format = m_deviceContext->findDepthFormat();
-        depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-        depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+        //colorAttachment[1].format = swapChainImageFormat;
+        //colorAttachment[1].samples = VK_SAMPLE_COUNT_1_BIT;
+        //colorAttachment[1].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;   // サンプルでは画面全体 clear する前提なので、前回値を保持する必要はない。そのため CLEAR。というか、CLEAR 指定しないと clear しても背景真っ黒になった。
+        //colorAttachment[1].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        //colorAttachment[1].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;    // TODO: stencil。今は未対応
+        //colorAttachment[1].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;  // TODO: stencil。今は未対応
+        //colorAttachment[1].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;      // レンダリング前のレイアウト定義。UNDEFINED はレイアウトは何でもよいが、内容の保証はない。サンプルでは全体 clear するので問題ない。
+        //colorAttachment[1].finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;  // レンダリング後に自動遷移するレイアウト。普通のレンダーターゲットはこれ。
 
-        // https://vulkan-tutorial.com/Drawing_a_triangle/Graphics_pipeline_basics/Render_passes
-        // TODO: ポストエフェクト処理の最適化として考えてみてもいいかもしれない。
-        VkAttachmentReference colorAttachmentRef = {};
-        VkAttachmentReference depthAttachmentRef = {};
-        VkSubpassDescription subpass = {};
-        {
-            colorAttachmentRef.attachment = 0;
-            colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-            depthAttachmentRef.attachment = 1;
-            depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+        //VkAttachmentDescription depthAttachment = {};
+        //depthAttachment.format = m_deviceContext->findDepthFormat();
+        //depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+        //depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        //depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        //depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        //depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        //depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        //depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-            subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-            subpass.colorAttachmentCount = 1;
-            subpass.pColorAttachments = &colorAttachmentRef;
-            subpass.pDepthStencilAttachment = &depthAttachmentRef;
-        }
+        //// https://vulkan-tutorial.com/Drawing_a_triangle/Graphics_pipeline_basics/Render_passes
+        //// TODO: ポストエフェクト処理の最適化として考えてみてもいいかもしれない。
+        //std::array<VkAttachmentReference, 2> colorAttachmentRef = {};
+        //VkAttachmentReference depthAttachmentRef = {};
+        //VkSubpassDescription subpass = {};
+        //{
+        //    colorAttachmentRef[0].attachment = 0;
+        //    colorAttachmentRef[0].layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-        // 今は subpass 1 個なのであまり関係はないが、前後の subpass に対してどんなアクションが完了するまで待つべきかという指定を行う。
-        VkSubpassDependency dependency = {};
-        dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-        dependency.dstSubpass = 0;
-        dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        dependency.srcAccessMask = 0;
-        dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        //    colorAttachmentRef[1].attachment = 2;
+        //    colorAttachmentRef[1].layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-        std::array<VkAttachmentDescription, 2> attachments = {colorAttachment, depthAttachment};
-        VkRenderPassCreateInfo renderPassInfo = {};
-        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-        renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-        renderPassInfo.pAttachments = attachments.data();
-        renderPassInfo.subpassCount = 1;
-        renderPassInfo.pSubpasses = &subpass;
-        renderPassInfo.dependencyCount = 1;
-        renderPassInfo.pDependencies = &dependency;
+        //    depthAttachmentRef.attachment = 1;
+        //    depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-        if (vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create render pass!");
-        }
+        //    subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+        //    subpass.colorAttachmentCount = 1;//;colorAttachmentRef.size();
+        //    subpass.pColorAttachments = colorAttachmentRef.data();
+        //    subpass.pDepthStencilAttachment = &depthAttachmentRef;
+        //}
+
+        //// 今は subpass 1 個なのであまり関係はないが、前後の subpass に対してどんなアクションが完了するまで待つべきかという指定を行う。
+        //VkSubpassDependency dependency = {};
+        //dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+        //dependency.dstSubpass = 0;
+        //dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        //dependency.srcAccessMask = 0;
+        //dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        //dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+        //std::array<VkAttachmentDescription, 2> attachments = {colorAttachment[0], depthAttachment/*, colorAttachment[1]*/};
+        //VkRenderPassCreateInfo renderPassInfo = {};
+        //renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+        //renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+        //renderPassInfo.pAttachments = attachments.data();
+        //renderPassInfo.subpassCount = 1;
+        //renderPassInfo.pSubpasses = &subpass;
+        //renderPassInfo.dependencyCount = 1;
+        //renderPassInfo.pDependencies = &dependency;
+
+        //if (vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS) {
+        //    throw std::runtime_error("failed to create render pass!");
+        //}
     }
 
     VkShaderModule createShaderModule(const std::vector<char>& code) {
@@ -607,6 +620,11 @@ public:
         //if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
         //    throw std::runtime_error("failed to create pipeline layout!");
         //}
+
+        DeviceFramebufferState framebufferState;
+        framebufferState.renderTargets[0] = m_swapchainRenderTarget;
+        framebufferState.depthBuffer = m_depthImage;
+        renderPass = m_deviceContext->renderPassCache()->findOrCreate(framebufferState);
 
         VkGraphicsPipelineCreateInfo pipelineInfo = {};
         pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -1200,6 +1218,10 @@ bool VulkanDeviceContext::init(const Settings& settings)
         return false;
     }
 
+    if (!m_renderPassCache.init(this)) {
+        return false;
+    }
+
 	g_app.surface = m_mainSurface;
 	g_app.device = m_device;
 	g_app.initWindow(glfwWindow->glfwWindow(), size.width, size.height);
@@ -1210,6 +1232,8 @@ bool VulkanDeviceContext::init(const Settings& settings)
 void VulkanDeviceContext::dispose()
 {
     g_app.cleanup();
+
+    m_renderPassCache.dispose();
 
     if (m_commandPool) {
         vkDestroyCommandPool(m_device, m_commandPool, vulkanAllocator());
@@ -1981,6 +2005,7 @@ Result VulkanSwapchainRenderTargetTexture::init(VulkanDeviceContext* deviceConte
 {
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
+    m_currentBufferIndex = 0;
     return true;
 }
 
@@ -2002,7 +2027,7 @@ Result VulkanSwapchainRenderTargetTexture::reset(uint32_t width, uint32_t height
     m_images.resize(images.size());
     for (int i = 0; i < images.size(); i++) {
         m_images[i] = std::make_shared<VulkanImage>();
-        if (!m_images[i]->init(m_deviceContext, images[i], imageViews[i])) {
+        if (!m_images[i]->init(m_deviceContext, format, images[i], imageViews[i])) {
             return false;
         }
     }

@@ -138,8 +138,9 @@ class VulkanImage
 public:
 	VulkanImage();
 	Result init(VulkanDeviceContext* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags);
-    Result init(VulkanDeviceContext* deviceContext, VkImage image, VkImageView imageView);
+    Result init(VulkanDeviceContext* deviceContext, VkFormat format, VkImage image, VkImageView imageView);
     void dispose();
+    VkFormat vulkanFormat() const { return m_format; }
 	VkImage vulkanImage() const { return m_image; }
 	VkDeviceMemory vulkanDeviceMemory() const { return m_imageMemory; }
     VkImageView vulkanImageView() const { return m_imageView; }
@@ -148,6 +149,7 @@ public:
 
 private:
 	VulkanDeviceContext* m_deviceContext;
+    VkFormat m_format;
 	VkImage m_image;
 	VkDeviceMemory m_imageMemory;
     VkImageView m_imageView;
@@ -236,6 +238,69 @@ private:
     VulkanDeviceContext* m_deviceContext;
     VulkanShaderPass* m_owner;
     VkDescriptorPool m_descriptorPool;
+};
+
+template<class T, class TSubClass>
+class HashedObjectCache
+{
+public:
+    void add(uint64_t key, T value)
+    {
+        m_hashMap.insert({ key, value });
+    }
+
+    bool find(uint64_t key, T* outObj) const
+    {
+        auto it = m_hashMap.find(key);
+        if (it != m_hashMap.end()) {
+            *outObj = it->second;
+            return true;
+        }
+        return false;
+    }
+
+    void invalidate(uint64_t key)
+    {
+        auto it = m_hashMap.find(key);
+        if (it != m_hashMap.end()) {
+            this->TSubClass::onInvalidate(it->second);
+            m_hashMap.erase(it);
+        }
+    }
+
+    void clear()
+    {
+        for (auto it = m_hashMap.begin(), itEnd = m_hashMap.end(); it != itEnd; ++it) {
+            static_cast<TSubClass*>(this)->onInvalidate(it->second);
+        }
+
+        m_hashMap.clear();
+    }
+
+    uint32_t count() const
+    {
+        return m_hashMap.size();
+    }
+
+protected:
+    std::unordered_map<uint64_t, T> m_hashMap;
+};
+
+// ColorBuffer と DepthBuffer の「種類」によって決まるので、FrameBuffer に比べてトータル数は少ない。
+class VulkanRenderPassCache
+    : public HashedObjectCache<VkRenderPass, VulkanRenderPassCache>
+{
+public:
+    VulkanRenderPassCache();
+    void dispose();
+    Result init(VulkanDeviceContext* deviceContext);
+    VkRenderPass findOrCreate(const DeviceFramebufferState& key);
+
+    void onInvalidate(VkRenderPass value);
+    static uint64_t computeHash(const DeviceFramebufferState& framebuffer);
+
+private:
+    VulkanDeviceContext* m_deviceContext;
 };
 
 } // namespace detail

@@ -40,6 +40,8 @@ public:
      
     Result findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType);
 
+    VulkanRenderPassCache* renderPassCache() { return &m_renderPassCache; }
+
 protected:
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) override;
 	virtual void onEnterMainThread() override;
@@ -102,6 +104,8 @@ public: // TODO:
 	VkQueue m_presentQueue;
     VkCommandPool m_commandPool;
     //VulkanAllocator m_allocator;
+
+    VulkanRenderPassCache m_renderPassCache;
 
     std::vector<PhysicalDeviceInfo> m_physicalDeviceInfos;
 };
