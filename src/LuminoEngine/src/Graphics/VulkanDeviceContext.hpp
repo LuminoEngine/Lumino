@@ -41,6 +41,7 @@ public:
     Result findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType);
 
     VulkanRenderPassCache* renderPassCache() { return &m_renderPassCache; }
+    VulkanFramebufferCache* framebufferCache() { return &m_framebufferCache; }
 
 protected:
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) override;
@@ -106,6 +107,7 @@ public: // TODO:
     //VulkanAllocator m_allocator;
 
     VulkanRenderPassCache m_renderPassCache;
+    VulkanFramebufferCache m_framebufferCache;
 
     std::vector<PhysicalDeviceInfo> m_physicalDeviceInfos;
 };
@@ -233,6 +235,7 @@ class VulkanRenderTarget
 {
 public:
 	VulkanRenderTarget() {}
+    virtual void dispose() override;
 	virtual DeviceTextureType type() const { return DeviceTextureType::RenderTarget; }
 	virtual SizeI realSize() { return SizeI(); }
 	virtual TextureFormat getTextureFormat() const {return TextureFormat::RGBA32; }
@@ -241,6 +244,7 @@ public:
 	virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) {}
 
 protected:
+    VulkanDeviceContext* m_deviceContext = nullptr;
 };
 
 // ダブルバッファ・トリプルバッファを管理するため、通常の RenderTargetTexture とは別にする。

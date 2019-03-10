@@ -516,7 +516,8 @@ public:
         DeviceFramebufferState framebufferState;
         framebufferState.renderTargets[0] = m_swapchainRenderTarget;
         framebufferState.depthBuffer = m_depthImage;
-        renderPass = m_deviceContext->renderPassCache()->findOrCreate(framebufferState);
+        VulkanFrameBuffer* framebuffer = m_deviceContext->framebufferCache()->findOrCreate(framebufferState);
+        renderPass = framebuffer->vulkanRenderPass();//
 
         VkGraphicsPipelineCreateInfo pipelineInfo = {};
         pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -896,6 +897,8 @@ public:
             throw std::runtime_error("failed to acquire swap chain image!");
         }
 
+        m_swapchainRenderTarget->setCurrentBufferIndex(imageIndex);
+
         updateFrameData(imageIndex, commandBuffers[imageIndex]);
 
         VkSubmitInfo submitInfo = {};
@@ -1113,6 +1116,9 @@ bool VulkanDeviceContext::init(const Settings& settings)
     if (!m_renderPassCache.init(this)) {
         return false;
     }
+    if (!m_framebufferCache.init(this)) {
+        return false;
+    }
 
 	g_app.surface = m_mainSurface;
 	g_app.device = m_device;
@@ -1125,6 +1131,7 @@ void VulkanDeviceContext::dispose()
 {
     g_app.cleanup();
 
+    m_framebufferCache.dispose();
     m_renderPassCache.dispose();
 
     if (m_commandPool) {
@@ -1886,6 +1893,18 @@ void VulkanTexture2D::dispose()
     m_image.dispose();
 }
 
+
+//==============================================================================
+// VulkanSwapchainRenderTargetTexture
+
+void VulkanRenderTarget::dispose()
+{
+    if (m_deviceContext) {
+        m_deviceContext->framebufferCache()->invalidateRenderTarget(this);
+        m_deviceContext = nullptr;
+    }
+}
+
 //==============================================================================
 // VulkanSwapchainRenderTargetTexture
 
@@ -1903,6 +1922,11 @@ Result VulkanSwapchainRenderTargetTexture::init(VulkanDeviceContext* deviceConte
 
 void VulkanSwapchainRenderTargetTexture::dispose()
 {
+    if (m_deviceContext) {
+        m_deviceContext->framebufferCache()->invalidateRenderTarget(this);
+        m_deviceContext = nullptr;
+    }
+
     clear();
     VulkanTexture::dispose();
 }
@@ -1962,6 +1986,11 @@ Result VulkanDepthBuffer::init(VulkanDeviceContext* deviceContext, uint32_t widt
 
 void VulkanDepthBuffer::dispose()
 {
+    if (m_deviceContext) {
+        m_deviceContext->framebufferCache()->invalidateDepthBuffer(this);
+        m_deviceContext = nullptr;
+    }
+
     m_image.dispose();
 }
 

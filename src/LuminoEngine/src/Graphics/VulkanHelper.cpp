@@ -572,6 +572,8 @@ Result VulkanImage::init(VulkanDeviceContext* deviceContext, uint32_t width, uin
 	LN_DCHECK(deviceContext);
 	m_deviceContext = deviceContext;
     m_externalManagement = false;
+    //m_width = width;
+    //m_height = height;
     m_format = format;
 
 	VkDevice device = m_deviceContext->vulkanDevice();
@@ -624,10 +626,12 @@ Result VulkanImage::init(VulkanDeviceContext* deviceContext, uint32_t width, uin
 	return true;
 }
 
-Result VulkanImage::init(VulkanDeviceContext* deviceContext, VkFormat format, VkImage image, VkImageView imageView)
+Result VulkanImage::init(VulkanDeviceContext* deviceContext/*, uint32_t width, uint32_t height*/, VkFormat format, VkImage image, VkImageView imageView)
 {
     LN_DCHECK(deviceContext);
     m_externalManagement = true;
+    //m_width = width;
+    //m_height = height;
     m_deviceContext = deviceContext;
     m_format = format;
     m_image = image;
@@ -1106,6 +1110,120 @@ uint64_t VulkanRenderPassCache::computeHash(const DeviceFramebufferState& state)
         hash.add(state.depthBuffer->format());
     }
     return hash.value();
+}
+
+//=============================================================================
+// VulkanFrameBuffer
+
+VulkanFrameBuffer::VulkanFrameBuffer()
+{
+}
+
+Result VulkanFrameBuffer::init(VulkanDeviceContext* deviceContext, const DeviceFramebufferState& state)
+{
+    m_deviceContext = deviceContext;
+    //m_renderTargetCount = state.renderTargets.size();
+    for (size_t i = 0; i < state.renderTargets.size(); i++) {
+        m_renderTargets[i] = state.renderTargets[i];
+    }
+    m_depthBuffer = state.depthBuffer;
+
+    m_renderPass = deviceContext->renderPassCache()->findOrCreate(state);
+    if (m_renderPass == VK_NULL_HANDLE) {
+        return false;
+    }
+    else
+    {
+        VkImageView attachments[MaxMultiRenderTargets + 1] = {};
+        int attachmentsCount = 0;
+        for (size_t i = 0; i < m_renderTargets.size(); i++) {
+            if (m_renderTargets[i]) {
+                attachments[attachmentsCount] = static_cast<VulkanTexture*>(m_renderTargets[i])->image()->vulkanImageView();
+                attachmentsCount++;
+            }
+        }
+        if (m_depthBuffer) {
+            attachments[attachmentsCount] = static_cast<VulkanDepthBuffer*>(m_depthBuffer)->image()->vulkanImageView();
+            attachmentsCount++;
+        }
+
+        SizeI size = m_renderTargets[0]->realSize();
+
+        VkFramebufferCreateInfo framebufferInfo = {};
+        framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+        framebufferInfo.pNext = nullptr;
+        framebufferInfo.flags = 0;
+        framebufferInfo.renderPass = m_renderPass;
+        framebufferInfo.attachmentCount = 1;
+        framebufferInfo.pAttachments = attachments;
+        framebufferInfo.width = size.width;
+        framebufferInfo.height = size.height;
+        framebufferInfo.layers = 1;
+
+        LN_VK_CHECK(vkCreateFramebuffer(m_deviceContext->vulkanDevice(), &framebufferInfo, m_deviceContext->vulkanAllocator(), &m_framebuffer));
+
+        return true;
+    }
+}
+
+void VulkanFrameBuffer::dispose()
+{
+    if (m_framebuffer) {
+        vkDestroyFramebuffer(m_deviceContext->vulkanDevice(), m_framebuffer, m_deviceContext->vulkanAllocator());
+        m_framebuffer = 0;
+    }
+}
+
+bool VulkanFrameBuffer::containsRenderTarget(ITexture* renderTarget) const
+{
+    for (auto& i : m_renderTargets) {
+        if (i == renderTarget) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool VulkanFrameBuffer::containsDepthBuffer(IDepthBuffer* depthBuffer) const
+{
+    return m_depthBuffer == depthBuffer;
+}
+
+
+//=============================================================================
+// VulkanFramebufferCache
+
+VulkanFramebufferCache::VulkanFramebufferCache()
+{
+}
+
+Result VulkanFramebufferCache::init(VulkanDeviceContext* deviceContext)
+{
+    LN_DCHECK(deviceContext);
+    m_deviceContext = deviceContext;
+    return true;
+}
+
+void VulkanFramebufferCache::dispose()
+{
+    clear();
+}
+
+VulkanFrameBuffer* VulkanFramebufferCache::findOrCreate(const DeviceFramebufferState& state)
+{
+    uint64_t hash = computeHash(state);
+    Ref<VulkanFrameBuffer> framebuffer;
+    if (find(hash, &framebuffer)) {
+        return framebuffer;
+    }
+    else {
+        framebuffer = makeRef<VulkanFrameBuffer>();
+        if (!framebuffer->init(m_deviceContext, state)) {
+            return nullptr;
+        }
+        add(hash, framebuffer);
+        return framebuffer;
+    }
 }
 
 } // namespace detail

@@ -138,7 +138,7 @@ class VulkanImage
 public:
 	VulkanImage();
 	Result init(VulkanDeviceContext* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags);
-    Result init(VulkanDeviceContext* deviceContext, VkFormat format, VkImage image, VkImageView imageView);
+    Result init(VulkanDeviceContext* deviceContext/*, uint32_t width, uint32_t height*/, VkFormat format, VkImage image, VkImageView imageView);
     void dispose();
     VkFormat vulkanFormat() const { return m_format; }
 	VkImage vulkanImage() const { return m_image; }
@@ -149,6 +149,8 @@ public:
 
 private:
 	VulkanDeviceContext* m_deviceContext;
+    //uint32_t m_width;
+    //uint32_t m_height;
     VkFormat m_format;
 	VkImage m_image;
 	VkDeviceMemory m_imageMemory;
@@ -287,6 +289,7 @@ protected:
 };
 
 // ColorBuffer と DepthBuffer の「種類」によって決まるので、FrameBuffer に比べてトータル数は少ない。
+// 基本的にこのクラスは直接使わず、VulkanFrameBuffer が持っている RenderPass を使うこと。
 class VulkanRenderPassCache
     : public HashedObjectCache<VkRenderPass, VulkanRenderPassCache>
 {
@@ -298,6 +301,84 @@ public:
 
     void onInvalidate(VkRenderPass value);
     static uint64_t computeHash(const DeviceFramebufferState& framebuffer);
+
+private:
+    VulkanDeviceContext* m_deviceContext;
+};
+
+// VkFramebuffer と、そのレイアウト定義に相当する VkRenderPass をセットで持つ。
+// ※VkRenderPass は VulkanRenderPassCache から取り出すので、m_framebuffer と m_renderPass は 1:1 ではない。
+//   フォーマットが共通なら VkRenderPass は共有される。
+class VulkanFrameBuffer
+    : public RefObject
+{
+public:
+    VulkanFrameBuffer();
+    Result init(VulkanDeviceContext* deviceContext, const DeviceFramebufferState& state);
+    void dispose();
+    bool containsRenderTarget(ITexture* renderTarget) const;
+    bool containsDepthBuffer(IDepthBuffer* depthBuffer) const;
+    VkRenderPass vulkanRenderPass() const { return m_renderPass; }
+    VkFramebuffer vulkanFramebuffer() const { return m_framebuffer; }
+    //SizeI extent() const { return m_renderTargets[0]->realSize(); }
+
+private:
+    VulkanDeviceContext* m_deviceContext;
+    VkRenderPass m_renderPass;
+    VkFramebuffer m_framebuffer;
+    //size_t m_renderTargetCount;
+
+    // 以下、こちらからは参照を持たない。インスタンスが dispose されたときに、このクラスに対して削除要求が飛んでくる。
+    std::array<ITexture*, MaxMultiRenderTargets> m_renderTargets = {};
+    IDepthBuffer* m_depthBuffer = nullptr;
+};
+
+// 関連付けられている RenderTarget と DepthBuffer がひとつでも解放されたら
+// 登録してある VkRenderPass も削除する。
+// もっと厳密に参照カウントで管理することもできるけど大変なので、まずはこの方式で。
+class VulkanFramebufferCache
+    : public HashedObjectCache<Ref<VulkanFrameBuffer>, VulkanFramebufferCache>
+{
+public:
+    VulkanFramebufferCache();
+    Result init(VulkanDeviceContext* deviceContext);
+    void dispose();
+    VulkanFrameBuffer* findOrCreate(const DeviceFramebufferState& key);
+
+    static uint64_t computeHash(const DeviceFramebufferState& state)
+    {
+        return VulkanRenderPassCache::computeHash(state);
+    }
+
+    void invalidateRenderTarget(ITexture* renderTarget)
+    {
+        for (auto itr = m_hashMap.begin(); itr != m_hashMap.end();) {
+            if (itr->second->containsRenderTarget(renderTarget)) {
+                itr = m_hashMap.erase(itr);
+                // invalidateXXXX は dispose から呼ばれるので、ここでは参照を外すだけでよい
+            }
+            else {
+                ++itr;
+            }
+        }
+    }
+
+    void invalidateDepthBuffer(IDepthBuffer* depthBuffer)
+    {
+        for (auto itr = m_hashMap.begin(); itr != m_hashMap.end();) {
+            if (itr->second->containsDepthBuffer(depthBuffer)) {
+                itr = m_hashMap.erase(itr);
+                // invalidateXXXX は dispose から呼ばれるので、ここでは参照を外すだけでよい
+            }
+            else {
+                ++itr;
+            }
+        }
+    }
+
+    void onInvalidate(const Ref<VulkanFrameBuffer>& value)
+    {
+    }
 
 private:
     VulkanDeviceContext* m_deviceContext;
