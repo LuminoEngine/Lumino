@@ -178,11 +178,6 @@ public:
     //std::vector<VkBuffer> uniformBuffers;
     //std::vector<VkDeviceMemory> uniformBuffersMemory;
 
-    VkDescriptorPool descriptorPool;
-    //VkDescriptorSet descriptorSet;
-    //std::vector<VkDescriptorSet> descriptorSets;
-    std::array<VkDescriptorSet, 3> descriptorSets;
-
     std::vector<Ref<VulkanCommandBuffer>> commandBuffers;
 
     std::vector<VkSemaphore> imageAvailableSemaphores;
@@ -239,8 +234,7 @@ public:
         createVertexBuffer();
         createIndexBuffer();
         createUniformBuffers();
-        createDescriptorPool();
-        createDescriptorSets();
+        //createDescriptorPool();
         createCommandBuffers();
         createSyncObjects();
     }
@@ -289,8 +283,6 @@ public:
         m_textureSampler->dispose();
 
 		m_texture->dispose();
-
-        vkDestroyDescriptorPool(device, descriptorPool, nullptr);
 
         m_uniformBuffer.dispose();
         //for (auto& buf : m_uniformBuffers) {
@@ -485,117 +477,6 @@ public:
 
     void createUniformBuffers() {
         m_uniformBuffer.init(m_deviceContext, sizeof(UniformBufferObject), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-    }
-
-    void createDescriptorPool() {
-#if 1
-        std::array<VkDescriptorPoolSize, 4> poolSizes = {};
-        poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        poolSizes[0].descriptorCount = static_cast<uint32_t>(m_swapchainRenderTargets.size());// swapChainImages.size());
-        poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        poolSizes[1].descriptorCount = static_cast<uint32_t>(m_swapchainRenderTargets.size());// swapChainImages.size());
-        poolSizes[2].type = VK_DESCRIPTOR_TYPE_SAMPLER;
-        poolSizes[2].descriptorCount = static_cast<uint32_t>(m_swapchainRenderTargets.size());// swapChainImages.size());
-        poolSizes[3].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        poolSizes[3].descriptorCount = static_cast<uint32_t>(m_swapchainRenderTargets.size());// swapChainImages.size());
-#else
-        std::array<VkDescriptorPoolSize, 2> poolSizes = {};
-        poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        poolSizes[0].descriptorCount = static_cast<uint32_t>(swapChainImages.size());
-        poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        poolSizes[1].descriptorCount = static_cast<uint32_t>(swapChainImages.size());
-#endif
-        VkDescriptorPoolCreateInfo poolInfo = {};
-        poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-        poolInfo.maxSets = static_cast<uint32_t>(poolSizes.size());//static_cast<uint32_t>(swapChainImages.size());
-        poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
-        poolInfo.pPoolSizes = poolSizes.data();
-
-        if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create descriptor pool!");
-        }
-    }
-
-    bool createDescriptorSets() {
-        VkDescriptorSetAllocateInfo allocInfo = {};
-        allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-        allocInfo.descriptorPool = descriptorPool;
-        allocInfo.descriptorSetCount = m_shaderPass->descriptorSetLayouts().size();
-        allocInfo.pSetLayouts = m_shaderPass->descriptorSetLayouts().data();
-
-        LN_VK_CHECK(vkAllocateDescriptorSets(device, &allocInfo, descriptorSets.data()));
-
-        //for (size_t i = 0; i < swapChainImages.size(); i++) {
-            VkDescriptorBufferInfo bufferInfo = {};
-            //bufferInfo.buffer = m_uniformBuffers[i]->vulkanBuffer();
-            bufferInfo.buffer = m_uniformBuffer.vulkanBuffer();
-            bufferInfo.offset = 0;
-            bufferInfo.range = sizeof(UniformBufferObject);
-
-#if 1
-            VkDescriptorImageInfo imageInfo = {};
-            imageInfo.sampler = m_textureSampler->vulkanSampler();
-            imageInfo.imageView = m_texture->image()->vulkanImageView();
-            imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;//VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL//VK_IMAGE_LAYOUT_GENERAL;
-
-            VkDescriptorImageInfo samplerInfo;
-            samplerInfo.sampler = m_textureSampler->vulkanSampler();
-            samplerInfo.imageView = VK_NULL_HANDLE;
-            samplerInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-
-            std::array<VkWriteDescriptorSet, 3> descriptorWrites = {};
-
-            descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            descriptorWrites[0].dstSet = descriptorSets[0];// s[i];
-            descriptorWrites[0].dstBinding = 0;
-            descriptorWrites[0].dstArrayElement = 0;
-            descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            descriptorWrites[0].descriptorCount = 1;
-            descriptorWrites[0].pBufferInfo = &bufferInfo;
-
-            descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            descriptorWrites[1].dstSet = descriptorSets[1];//s[i];
-            descriptorWrites[1].dstBinding = 0;
-            descriptorWrites[1].dstArrayElement = 0;
-            descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            descriptorWrites[1].descriptorCount = 1;
-            descriptorWrites[1].pImageInfo = &imageInfo;
-
-            descriptorWrites[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            descriptorWrites[2].dstSet = descriptorSets[2];//s[i];
-            descriptorWrites[2].dstBinding = 0;
-            descriptorWrites[2].dstArrayElement = 0;
-            descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
-            descriptorWrites[2].descriptorCount = 1;
-            descriptorWrites[2].pImageInfo = &samplerInfo;
-#else
-            VkDescriptorImageInfo imageInfo = {};
-            imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            imageInfo.imageView = m_texture->image()->vulkanImageView();
-            imageInfo.sampler = textureSampler;
-
-            std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
-
-            descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            descriptorWrites[0].dstSet = descriptorSet;
-            descriptorWrites[0].dstBinding = 0;
-            descriptorWrites[0].dstArrayElement = 0;
-            descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            descriptorWrites[0].descriptorCount = 1;
-            descriptorWrites[0].pBufferInfo = &bufferInfo;
-
-            descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            descriptorWrites[1].dstSet = descriptorSet;
-            descriptorWrites[1].dstBinding = 1;
-            descriptorWrites[1].dstArrayElement = 0;
-            descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            descriptorWrites[1].descriptorCount = 1;
-            descriptorWrites[1].pImageInfo = &imageInfo;
-#endif
-            // 各 dstSet に指定された DescriptorSet を更新する
-            vkUpdateDescriptorSets(device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
-        //}
-            return true;
     }
 
     void createCommandBuffers() {
@@ -1771,7 +1652,7 @@ Result VulkanRenderTarget::init(VulkanDeviceContext* deviceContext, uint32_t wid
 {
 	LN_DCHECK(deviceContext);
 	m_deviceContext = deviceContext;
-	reset(width, height, format, image, imageView);
+	return reset(width, height, format, image, imageView);
 }
 
 void VulkanRenderTarget::dispose()
