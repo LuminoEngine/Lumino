@@ -511,6 +511,7 @@ public:
     }
 
     void drawFrame() {
+        // もし前回 vkQueueSubmit したコマンドバッファが完了していなければ待つ
         vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, std::numeric_limits<uint64_t>::max());
 
         uint32_t imageIndex;
@@ -530,16 +531,19 @@ public:
         VkSubmitInfo submitInfo = {};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
+        // 実行を開始する前に待機するセマフォ
         VkSemaphore waitSemaphores[] = {imageAvailableSemaphores[currentFrame]};
         VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
         submitInfo.waitSemaphoreCount = 1;
         submitInfo.pWaitSemaphores = waitSemaphores;
         submitInfo.pWaitDstStageMask = waitStages;
 
+        // 実行するコマンド
         VkCommandBuffer commandBuffer = commandBuffers[imageIndex]->vulkanCommandBuffer();
         submitInfo.commandBufferCount = 1;
         submitInfo.pCommandBuffers = &commandBuffer;
 
+        // 実行を完了したときに通知されるセマフォ
         VkSemaphore signalSemaphores[] = {renderFinishedSemaphores[currentFrame]};
         submitInfo.signalSemaphoreCount = 1;
         submitInfo.pSignalSemaphores = signalSemaphores;
@@ -554,7 +558,7 @@ public:
         presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 
         presentInfo.waitSemaphoreCount = 1;
-        presentInfo.pWaitSemaphores = signalSemaphores;
+        presentInfo.pWaitSemaphores = signalSemaphores; // このセマフォの通知を待ってから実際に present する
 
         VkSwapchainKHR swapChains[] = { m_deviceContext->m_mainSwapchain->vulkanSwapchain() };
         presentInfo.swapchainCount = 1;
