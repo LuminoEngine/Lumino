@@ -154,7 +154,8 @@ public:
     //std::vector<VkImage> swapChainImages;
     //std::vector<VkImageView> swapChainImageViews;
     std::vector<VkFramebuffer> swapChainFramebuffers;
-    Ref<VulkanSwapchainRenderTargetTexture> m_swapchainRenderTarget;
+    //Ref<VulkanSwapchainRenderTargetTexture> m_swapchainRenderTarget;
+	std::vector<Ref<VulkanRenderTarget>> m_swapchainRenderTargets;
 
     Ref<VulkanShaderPass> m_shaderPass;
         
@@ -274,8 +275,12 @@ public:
         //for (auto imageView : swapChainImageViews) {
         //    vkDestroyImageView(device, imageView, nullptr);
         //}
-        m_swapchainRenderTarget->dispose();
-        m_swapchainRenderTarget = nullptr;
+		//m_swapchainRenderTarget->dispose();
+        //m_swapchainRenderTarget = nullptr;
+		for (auto& rt : m_swapchainRenderTargets) {
+			rt->dispose();
+		}
+		m_swapchainRenderTargets.clear();
 
         vkDestroySwapchainKHR(device, swapChain, nullptr);
     }
@@ -388,9 +393,14 @@ public:
             }
         }
 
-        m_swapchainRenderTarget = makeRef<VulkanSwapchainRenderTargetTexture>();
-        m_swapchainRenderTarget->init(m_deviceContext);
-        m_swapchainRenderTarget->reset(swapChainExtent.width, swapChainExtent.height, swapChainImageFormat, swapChainImages, swapChainImageViews);
+		m_swapchainRenderTargets.resize(swapChainImages.size());
+		for (uint32_t i = 0; i < swapChainImages.size(); i++) {
+			auto target = makeRef<VulkanRenderTarget>();
+			target->init(m_deviceContext, swapChainExtent.width, swapChainExtent.height, swapChainImageFormat, swapChainImages[i], swapChainImageViews[i]);
+		}
+        //m_swapchainRenderTarget = makeRef<VulkanSwapchainRenderTargetTexture>();
+        //m_swapchainRenderTarget->init(m_deviceContext);
+        //m_swapchainRenderTarget->reset(swapChainExtent.width, swapChainExtent.height, swapChainImageFormat, swapChainImages, swapChainImageViews);
     }
 
     void createGraphicsPipeline() {
@@ -514,7 +524,7 @@ public:
         //}
 
         DeviceFramebufferState framebufferState;
-        framebufferState.renderTargets[0] = m_swapchainRenderTarget;
+        framebufferState.renderTargets[0] = m_swapchainRenderTargets[0];
         framebufferState.depthBuffer = m_depthImage;
         VulkanFrameBuffer* framebuffer = m_deviceContext->framebufferCache()->findOrCreate(framebufferState);
         renderPass = framebuffer->vulkanRenderPass();//
@@ -541,12 +551,12 @@ public:
     }
 
     void createFramebuffers() {
-        swapChainFramebuffers.resize(m_swapchainRenderTarget->imageCount());//  swapChainImageViews.size());
+		swapChainFramebuffers.resize(m_swapchainRenderTargets.size());//swapChainImageViews.size());//m_swapchainRenderTargets->imageCount());// 
 
-        for (size_t i = 0; i < m_swapchainRenderTarget->imageCount()/*swapChainImageViews.size()*/; i++) {
+        for (size_t i = 0; i < m_swapchainRenderTargets.size()/*m_swapchainRenderTarget->imageCount()*//*swapChainImageViews.size()*/; i++) {
             std::array<VkImageView, 2> attachments = {
                 //swapChainImageViews[i],
-                m_swapchainRenderTarget->image(i)->vulkanImageView(),
+                m_swapchainRenderTargets[i]->image()->vulkanImageView(),
                 m_depthImage->image()->vulkanImageView(),
             };
 
@@ -641,13 +651,13 @@ public:
 #if 1
         std::array<VkDescriptorPoolSize, 4> poolSizes = {};
         poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        poolSizes[0].descriptorCount = static_cast<uint32_t>(m_swapchainRenderTarget->imageCount());// swapChainImages.size());
+        poolSizes[0].descriptorCount = static_cast<uint32_t>(m_swapchainRenderTargets.size());// swapChainImages.size());
         poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        poolSizes[1].descriptorCount = static_cast<uint32_t>(m_swapchainRenderTarget->imageCount());// swapChainImages.size());
+        poolSizes[1].descriptorCount = static_cast<uint32_t>(m_swapchainRenderTargets.size());// swapChainImages.size());
         poolSizes[2].type = VK_DESCRIPTOR_TYPE_SAMPLER;
-        poolSizes[2].descriptorCount = static_cast<uint32_t>(m_swapchainRenderTarget->imageCount());// swapChainImages.size());
+        poolSizes[2].descriptorCount = static_cast<uint32_t>(m_swapchainRenderTargets.size());// swapChainImages.size());
         poolSizes[3].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        poolSizes[3].descriptorCount = static_cast<uint32_t>(m_swapchainRenderTarget->imageCount());// swapChainImages.size());
+        poolSizes[3].descriptorCount = static_cast<uint32_t>(m_swapchainRenderTargets.size());// swapChainImages.size());
 #else
         std::array<VkDescriptorPoolSize, 2> poolSizes = {};
         poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -897,7 +907,7 @@ public:
             throw std::runtime_error("failed to acquire swap chain image!");
         }
 
-        m_swapchainRenderTarget->setCurrentBufferIndex(imageIndex);
+        //m_swapchainRenderTarget->setCurrentBufferIndex(imageIndex);
 
         updateFrameData(imageIndex, commandBuffers[imageIndex]);
 
@@ -1897,6 +1907,17 @@ void VulkanTexture2D::dispose()
 //==============================================================================
 // VulkanSwapchainRenderTargetTexture
 
+VulkanRenderTarget::VulkanRenderTarget()
+{
+}
+
+Result VulkanRenderTarget::init(VulkanDeviceContext* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView)
+{
+	LN_DCHECK(deviceContext);
+	m_deviceContext = deviceContext;
+	reset(width, height, format, image, imageView);
+}
+
 void VulkanRenderTarget::dispose()
 {
     if (m_deviceContext) {
@@ -1905,59 +1926,72 @@ void VulkanRenderTarget::dispose()
     }
 }
 
+Result VulkanRenderTarget::reset(uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView)
+{
+	m_size.width = width;
+	m_size.height = height;
+	m_format = VulkanHelper::VkFormatToLNFormat(format);
+
+	m_image = std::make_unique<VulkanImage>();
+	if (!m_image->init(m_deviceContext, format, image, imageView)) {
+		return false;
+	}
+	return true;
+}
+
 //==============================================================================
 // VulkanSwapchainRenderTargetTexture
 
-VulkanSwapchainRenderTargetTexture::VulkanSwapchainRenderTargetTexture()
-{
-}
-
-Result VulkanSwapchainRenderTargetTexture::init(VulkanDeviceContext* deviceContext)
-{
-    LN_DCHECK(deviceContext);
-    m_deviceContext = deviceContext;
-    m_currentBufferIndex = 0;
-    return true;
-}
-
-void VulkanSwapchainRenderTargetTexture::dispose()
-{
-    if (m_deviceContext) {
-        m_deviceContext->framebufferCache()->invalidateRenderTarget(this);
-        m_deviceContext = nullptr;
-    }
-
-    clear();
-    VulkanTexture::dispose();
-}
-
-Result VulkanSwapchainRenderTargetTexture::reset(uint32_t width, uint32_t height, VkFormat format, const std::vector<VkImage>& images, const std::vector<VkImageView>& imageViews)
-{
-    LN_DCHECK(images.size() == imageViews.size());
-    clear();
-
-    m_size.width = width;
-    m_size.height = height;
-    m_format = VulkanHelper::VkFormatToLNFormat(format);
-
-    m_images.resize(images.size());
-    for (int i = 0; i < images.size(); i++) {
-        m_images[i] = std::make_shared<VulkanImage>();
-        if (!m_images[i]->init(m_deviceContext, format, images[i], imageViews[i])) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-void VulkanSwapchainRenderTargetTexture::clear()
-{
-    for (auto& image : m_images) {
-        image->dispose();
-    }
-    m_images.clear();
-}
+//VulkanSwapchainRenderTargetTexture::VulkanSwapchainRenderTargetTexture()
+//{
+//}
+//
+//Result VulkanSwapchainRenderTargetTexture::init(VulkanDeviceContext* deviceContext)
+//{
+//    LN_DCHECK(deviceContext);
+//    m_deviceContext = deviceContext;
+//    m_currentBufferIndex = 0;
+//    return true;
+//}
+//
+//void VulkanSwapchainRenderTargetTexture::dispose()
+//{
+//    if (m_deviceContext) {
+//        m_deviceContext->framebufferCache()->invalidateRenderTarget(this);
+//        m_deviceContext = nullptr;
+//    }
+//
+//    clear();
+//    VulkanTexture::dispose();
+//}
+//
+//Result VulkanSwapchainRenderTargetTexture::reset(uint32_t width, uint32_t height, VkFormat format, const std::vector<VkImage>& images, const std::vector<VkImageView>& imageViews)
+//{
+//    LN_DCHECK(images.size() == imageViews.size());
+//    clear();
+//
+//    m_size.width = width;
+//    m_size.height = height;
+//    m_format = VulkanHelper::VkFormatToLNFormat(format);
+//
+//    m_images.resize(images.size());
+//    for (int i = 0; i < images.size(); i++) {
+//        m_images[i] = std::make_shared<VulkanImage>();
+//        if (!m_images[i]->init(m_deviceContext, format, images[i], imageViews[i])) {
+//            return false;
+//        }
+//    }
+//
+//    return true;
+//}
+//
+//void VulkanSwapchainRenderTargetTexture::clear()
+//{
+//    for (auto& image : m_images) {
+//        image->dispose();
+//    }
+//    m_images.clear();
+//}
 
 //==============================================================================
 // VulkanDepthBuffer

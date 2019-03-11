@@ -231,10 +231,11 @@ private:
 };
 
 class VulkanRenderTarget
-	: public ITexture
+	: public VulkanTexture
 {
 public:
-	VulkanRenderTarget() {}
+	VulkanRenderTarget();
+	Result init(VulkanDeviceContext* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView);
     virtual void dispose() override;
 	virtual DeviceTextureType type() const { return DeviceTextureType::RenderTarget; }
 	virtual SizeI realSize() { return SizeI(); }
@@ -243,51 +244,58 @@ public:
 	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) {}
 	virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) {}
 
+	virtual const VulkanImage* image() const override { return m_image.get(); }
+
+	Result reset(uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView);
+
 protected:
-    VulkanDeviceContext* m_deviceContext = nullptr;
+    VulkanDeviceContext* m_deviceContext;
+	std::unique_ptr<VulkanImage> m_image;
+	SizeI m_size;
+	TextureFormat m_format;
 };
 
 // ダブルバッファ・トリプルバッファを管理するため、通常の RenderTargetTexture とは別にする。
 // IGraphicsDeviceContext は DX11 相当の IF に合わせているので、ダブルバッファの実装はこちら側で隠蔽したい。
 // 個別に公開するのは、特に readData の対象を外側で認識できるようにする必要があったりするのでちょっと大変。
-class VulkanSwapchainRenderTargetTexture
-    : public VulkanTexture
-{
-public:
-    VulkanSwapchainRenderTargetTexture();
-    Result init(VulkanDeviceContext* deviceContext);
-    virtual void dispose();
-    virtual DeviceTextureType type() const { return DeviceTextureType::Texture2D; }
-    virtual SizeI realSize() { return m_size; }
-    virtual TextureFormat getTextureFormat() const { return m_format; }
-    virtual void readData(void* outData) { LN_UNREACHABLE(); }
-    virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) { LN_NOTIMPLEMENTED(); }
-    virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) { LN_UNREACHABLE(); }
-    virtual const VulkanImage* image() const override { return m_images[m_currentBufferIndex].get(); }
-
-    Result reset(uint32_t width, uint32_t height, VkFormat format, const std::vector<VkImage>& images, const std::vector<VkImageView>& imageViews);
-    void setCurrentBufferIndex(int index) { m_currentBufferIndex = index; }
-    uint32_t imageCount() const { return m_images.size(); }
-    VulkanImage* image(uint32_t index) const { return m_images[index].get(); }
-
-    //int prevBufferIndex() const { return (m_bufferIndex == 0) ? m_images.size() - 1 : m_bufferIndex - 1; }
-
-private:
-    void clear();
-
-    VulkanDeviceContext* m_deviceContext;
-    std::vector<std::shared_ptr<VulkanImage>> m_images;
-    SizeI m_size;
-    TextureFormat m_format;
-    int m_currentBufferIndex;
-    //TextureDesc m_desc;
-    //std::vector<VkImage> m_images;
-    //std::vector<VkImageView> m_imageViews;
-    ////VkImageAspectFlags m_imageAspectFlags;
-    ////VkDeviceMemory m_deviceMemory;
-
-    //VkFormat m_vulkanFormat;
-};
+//class VulkanSwapchainRenderTargetTexture
+//    : public VulkanTexture
+//{
+//public:
+//    VulkanSwapchainRenderTargetTexture();
+//    Result init(VulkanDeviceContext* deviceContext);
+//    virtual void dispose();
+//    virtual DeviceTextureType type() const { return DeviceTextureType::Texture2D; }
+//    virtual SizeI realSize() { return m_size; }
+//    virtual TextureFormat getTextureFormat() const { return m_format; }
+//    virtual void readData(void* outData) { LN_UNREACHABLE(); }
+//    virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) { LN_NOTIMPLEMENTED(); }
+//    virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) { LN_UNREACHABLE(); }
+//    virtual const VulkanImage* image() const override { return m_images[m_currentBufferIndex].get(); }
+//
+//    Result reset(uint32_t width, uint32_t height, VkFormat format, const std::vector<VkImage>& images, const std::vector<VkImageView>& imageViews);
+//    void setCurrentBufferIndex(int index) { m_currentBufferIndex = index; }
+//    uint32_t imageCount() const { return m_images.size(); }
+//    VulkanImage* image(uint32_t index) const { return m_images[index].get(); }
+//
+//    //int prevBufferIndex() const { return (m_bufferIndex == 0) ? m_images.size() - 1 : m_bufferIndex - 1; }
+//
+//private:
+//    void clear();
+//
+//    VulkanDeviceContext* m_deviceContext;
+//    std::vector<std::shared_ptr<VulkanImage>> m_images;
+//    SizeI m_size;
+//    TextureFormat m_format;
+//    int m_currentBufferIndex;
+//    //TextureDesc m_desc;
+//    //std::vector<VkImage> m_images;
+//    //std::vector<VkImageView> m_imageViews;
+//    ////VkImageAspectFlags m_imageAspectFlags;
+//    ////VkDeviceMemory m_deviceMemory;
+//
+//    //VkFormat m_vulkanFormat;
+//};
 
 class VulkanDepthBuffer
 	: public IDepthBuffer
