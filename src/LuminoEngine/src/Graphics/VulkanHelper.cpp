@@ -1173,10 +1173,10 @@ void VulkanFrameBuffer::dispose()
         m_framebuffer = 0;
     }
 
-    if (m_deviceContext) {
-        m_deviceContext->pipelineCache()->invalidateFromFrameBuffer(this);
-        m_deviceContext = nullptr;
-    }
+    //if (m_deviceContext) {
+    //    m_deviceContext->pipelineCache()->invalidateFromFrameBuffer(this);
+    //    m_deviceContext = nullptr;
+    //}
 }
 
 bool VulkanFrameBuffer::containsRenderTarget(ITexture* renderTarget) const
@@ -1238,14 +1238,15 @@ VulkanPipeline::VulkanPipeline()
 {
 }
 
-Result VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsDeviceContext::State& state)
+Result VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsDeviceContext::State& state, VkRenderPass renderPass)
 {
     LN_DCHECK(deviceContext);
+    LN_DCHECK(renderPass);
     m_deviceContext = deviceContext;
 
     auto* vertexDeclaration = static_cast<VulkanVertexDeclaration*>(state.pipelineState.vertexDeclaration);
     m_relatedShaderPass = static_cast<VulkanShaderPass*>(state.pipelineState.shaderPass);
-    m_relatedFramebuffer = m_deviceContext->framebufferCache()->findOrCreate(state.framebufferState);
+    //m_relatedFramebuffer = m_deviceContext->framebufferCache()->findOrCreate(state.framebufferState);
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -1370,7 +1371,7 @@ Result VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsD
     pipelineInfo.pDepthStencilState = &depthStencil;
     pipelineInfo.pColorBlendState = &colorBlending;
     pipelineInfo.layout = m_relatedShaderPass->vulkanPipelineLayout();
-    pipelineInfo.renderPass = m_relatedFramebuffer->vulkanRenderPass();
+    pipelineInfo.renderPass = renderPass;
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
@@ -1416,7 +1417,7 @@ void VulkanPipelineCache::dispose()
     clear();
 }
 
-VulkanPipeline* VulkanPipelineCache::findOrCreate(const IGraphicsDeviceContext::State& state)
+VulkanPipeline* VulkanPipelineCache::findOrCreate(const IGraphicsDeviceContext::State& state, VkRenderPass renderPass)
 {
     uint64_t hash = VulkanPipeline::computeHash(state);
     Ref<VulkanPipeline> pipeline;
@@ -1425,7 +1426,7 @@ VulkanPipeline* VulkanPipelineCache::findOrCreate(const IGraphicsDeviceContext::
     }
     else {
         pipeline = makeRef<VulkanPipeline>();
-        if (!pipeline->init(m_deviceContext, state)) {
+        if (!pipeline->init(m_deviceContext, state, renderPass)) {
             return nullptr;
         }
         add(hash, pipeline);

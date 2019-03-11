@@ -158,10 +158,10 @@ public:
 
     Ref<VulkanShaderPass> m_shaderPass;
         
-    VkRenderPass renderPass;
+    //VkRenderPass renderPass;
     //VkPipelineLayout pipelineLayout;
     //VkPipeline graphicsPipeline;
-    Ref<VulkanPipeline> m_graphicsPipeline;
+    //Ref<VulkanPipeline> m_graphicsPipeline;
 
     Ref<VulkanDepthBuffer> m_depthImage;
 
@@ -267,8 +267,8 @@ public:
 
         //vkDestroyPipeline(device, graphicsPipeline, nullptr);
         //vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
-        m_graphicsPipeline->dispose();
-        m_graphicsPipeline = nullptr;
+        //m_graphicsPipeline->dispose();
+        //m_graphicsPipeline = nullptr;
 
         //for (auto imageView : swapChainImageViews) {
         //    vkDestroyImageView(device, imageView, nullptr);
@@ -410,15 +410,6 @@ public:
         unifiedShader.load(stream);
         m_shaderPass = ln::dynamic_pointer_cast<VulkanShaderPass>(m_deviceContext->createShaderPassFromUnifiedShaderPass(&unifiedShader, 1, diag));
 
-        IGraphicsDeviceContext::State state;
-        state.pipelineState.shaderPass = m_shaderPass;
-        state.pipelineState.vertexDeclaration = m_vertexDeclaration;
-        state.framebufferState.renderTargets[0] = m_swapchainRenderTargets[0];
-        state.framebufferState.depthBuffer = m_depthImage;
-        state.viewportRect.width = swapChainExtent.width;
-        state.viewportRect.height = swapChainExtent.height;
-
-        m_graphicsPipeline = m_deviceContext->pipelineCache()->findOrCreate(state);
 
         //m_graphicsPipeline = makeRef<VulkanPipeline>();
         //m_graphicsPipeline->init(m_deviceContext, state);
@@ -695,7 +686,19 @@ public:
 
         vkCmdBeginRenderPass(commandBuffer->vulkanCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-        vkCmdBindPipeline(commandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphicsPipeline->vulkanPipeline());//graphicsPipeline);
+
+
+        IGraphicsDeviceContext::State state;
+        state.pipelineState.shaderPass = m_shaderPass;
+        state.pipelineState.vertexDeclaration = m_vertexDeclaration;
+        state.framebufferState.renderTargets[0] = m_swapchainRenderTargets[0];
+        state.framebufferState.depthBuffer = m_depthImage;
+        state.viewportRect.width = swapChainExtent.width;
+        state.viewportRect.height = swapChainExtent.height;
+        VulkanPipeline* graphicsPipeline = m_deviceContext->pipelineCache()->findOrCreate(state, framebuffer->vulkanRenderPass());
+
+
+        vkCmdBindPipeline(commandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->vulkanPipeline());//graphicsPipeline);
 
         VkBuffer vertexBuffers[] = { m_vertexBuffer->vulkanBuffer() };
         VkDeviceSize offsets[] = { 0 };
