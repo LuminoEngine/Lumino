@@ -397,6 +397,7 @@ public:
 		for (uint32_t i = 0; i < swapChainImages.size(); i++) {
 			auto target = makeRef<VulkanRenderTarget>();
 			target->init(m_deviceContext, swapChainExtent.width, swapChainExtent.height, swapChainImageFormat, swapChainImages[i], swapChainImageViews[i]);
+            m_swapchainRenderTargets[i] = target;
 		}
         //m_swapchainRenderTarget = makeRef<VulkanSwapchainRenderTargetTexture>();
         //m_swapchainRenderTarget->init(m_deviceContext);
@@ -1908,6 +1909,7 @@ void VulkanTexture2D::dispose()
 // VulkanSwapchainRenderTargetTexture
 
 VulkanRenderTarget::VulkanRenderTarget()
+    : m_deviceContext(nullptr)
 {
 }
 
@@ -1924,6 +1926,7 @@ void VulkanRenderTarget::dispose()
         m_deviceContext->framebufferCache()->invalidateRenderTarget(this);
         m_deviceContext = nullptr;
     }
+    VulkanTexture::dispose();
 }
 
 Result VulkanRenderTarget::reset(uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView)
