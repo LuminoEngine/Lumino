@@ -135,43 +135,20 @@ public:
     VulkanDeviceContext* m_deviceContext;
 
     GLFWwindow* window;
-
-    //VkSurfaceKHR surface;
-
     VkDevice device;
 
-    //VkQueue graphicsQueue;
-    //VkQueue presentQueue;
-
-    //VkSwapchainKHR swapChain;
-    //VkFormat swapChainImageFormat;
-    //VkExtent2D swapChainExtent;
-    //std::vector<VkImage> swapChainImages;
-    //std::vector<VkImageView> swapChainImageViews;
-    //Ref<VulkanSwapchainRenderTargetTexture> m_swapchainRenderTarget;
-	//std::vector<Ref<VulkanRenderTarget>> m_swapchainRenderTargets;
-
     Ref<VulkanShaderPass> m_shaderPass;
-        
-    //VkRenderPass renderPass;
-    //VkPipelineLayout pipelineLayout;
-    //VkPipeline graphicsPipeline;
-    //Ref<VulkanPipeline> m_graphicsPipeline;
 
     Ref<VulkanDepthBuffer> m_depthImage;
 
     Ref<VulkanTexture2D> m_texture;
     Ref<VulkanSamplerState> m_textureSampler;
-    //VkSampler textureSampler;
 
     Ref<VulkanVertexDeclaration> m_vertexDeclaration;
     Ref<VulkanVertexBuffer> m_vertexBuffer;
     Ref<VulkanIndexBuffer> m_indexBuffer;
 
-    VulkanBuffer m_uniformBuffer;
-    //std::vector<std::shared_ptr<VulkanBuffer>> m_uniformBuffers;
-    //std::vector<VkBuffer> uniformBuffers;
-    //std::vector<VkDeviceMemory> uniformBuffersMemory;
+    //VulkanBuffer m_uniformBuffer;
 
     std::vector<Ref<VulkanCommandBuffer>> commandBuffers;
 
@@ -228,7 +205,7 @@ public:
         createTextureSampler();
         createVertexBuffer();
         createIndexBuffer();
-        createUniformBuffers();
+        //createUniformBuffers();
         //createDescriptorPool();
         createCommandBuffers();
         createSyncObjects();
@@ -279,7 +256,7 @@ public:
 
 		m_texture->dispose();
 
-        m_uniformBuffer.dispose();
+        //m_uniformBuffer.dispose();
         //for (auto& buf : m_uniformBuffers) {
         //    buf->dispose();
         //}
@@ -380,9 +357,9 @@ public:
     }
 
 
-    void createUniformBuffers() {
-        m_uniformBuffer.init(m_deviceContext, sizeof(UniformBufferObject), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-    }
+    //void createUniformBuffers() {
+    //    m_uniformBuffer.init(m_deviceContext, sizeof(UniformBufferObject), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    //}
 
     void createCommandBuffers() {
         commandBuffers.resize(m_deviceContext->m_mainSwapchain->swapchainRenderTargets().size());
