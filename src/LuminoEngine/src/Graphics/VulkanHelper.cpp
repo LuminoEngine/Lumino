@@ -1113,13 +1113,13 @@ uint64_t VulkanRenderPassCache::computeHash(const DeviceFramebufferState& state)
 }
 
 //=============================================================================
-// VulkanFrameBuffer
+// VulkanFramebuffer
 
-VulkanFrameBuffer::VulkanFrameBuffer()
+VulkanFramebuffer::VulkanFramebuffer()
 {
 }
 
-Result VulkanFrameBuffer::init(VulkanDeviceContext* deviceContext, const DeviceFramebufferState& state)
+Result VulkanFramebuffer::init(VulkanDeviceContext* deviceContext, const DeviceFramebufferState& state)
 {
     m_deviceContext = deviceContext;
     //m_renderTargetCount = state.renderTargets.size();
@@ -1166,7 +1166,7 @@ Result VulkanFrameBuffer::init(VulkanDeviceContext* deviceContext, const DeviceF
     }
 }
 
-void VulkanFrameBuffer::dispose()
+void VulkanFramebuffer::dispose()
 {
     if (m_framebuffer) {
         vkDestroyFramebuffer(m_deviceContext->vulkanDevice(), m_framebuffer, m_deviceContext->vulkanAllocator());
@@ -1179,7 +1179,7 @@ void VulkanFrameBuffer::dispose()
     //}
 }
 
-bool VulkanFrameBuffer::containsRenderTarget(ITexture* renderTarget) const
+bool VulkanFramebuffer::containsRenderTarget(ITexture* renderTarget) const
 {
     for (auto& i : m_renderTargets) {
         if (i == renderTarget) {
@@ -1189,7 +1189,7 @@ bool VulkanFrameBuffer::containsRenderTarget(ITexture* renderTarget) const
     return false;
 }
 
-bool VulkanFrameBuffer::containsDepthBuffer(IDepthBuffer* depthBuffer) const
+bool VulkanFramebuffer::containsDepthBuffer(IDepthBuffer* depthBuffer) const
 {
     return m_depthBuffer == depthBuffer;
 }
@@ -1214,15 +1214,15 @@ void VulkanFramebufferCache::dispose()
     clear();
 }
 
-VulkanFrameBuffer* VulkanFramebufferCache::findOrCreate(const DeviceFramebufferState& state)
+VulkanFramebuffer* VulkanFramebufferCache::findOrCreate(const DeviceFramebufferState& state)
 {
     uint64_t hash = computeHash(state);
-    Ref<VulkanFrameBuffer> framebuffer;
+    Ref<VulkanFramebuffer> framebuffer;
     if (find(hash, &framebuffer)) {
         return framebuffer;
     }
     else {
-        framebuffer = makeRef<VulkanFrameBuffer>();
+        framebuffer = makeRef<VulkanFramebuffer>();
         if (!framebuffer->init(m_deviceContext, state)) {
             return nullptr;
         }

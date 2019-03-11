@@ -519,7 +519,7 @@ public:
         DeviceFramebufferState framebufferState;
         framebufferState.renderTargets[0] = m_swapchainRenderTargets[imageIndex];
         framebufferState.depthBuffer = m_depthImage;
-        VulkanFrameBuffer* framebuffer = m_deviceContext->framebufferCache()->findOrCreate(framebufferState);
+        VulkanFramebuffer* framebuffer = m_deviceContext->framebufferCache()->findOrCreate(framebufferState);
 
 
         static auto startTime = std::chrono::high_resolution_clock::now();

@@ -304,7 +304,7 @@ protected:
 };
 
 // ColorBuffer と DepthBuffer の「種類」によって決まるので、FrameBuffer に比べてトータル数は少ない。
-// 基本的にこのクラスは直接使わず、VulkanFrameBuffer が持っている RenderPass を使うこと。
+// 基本的にこのクラスは直接使わず、VulkanFramebuffer が持っている RenderPass を使うこと。
 class VulkanRenderPassCache
     : public HashedObjectCache<VkRenderPass, VulkanRenderPassCache>
 {
@@ -324,11 +324,11 @@ private:
 // VkFramebuffer と、そのレイアウト定義に相当する VkRenderPass をセットで持つ。
 // ※VkRenderPass は VulkanRenderPassCache から取り出すので、m_framebuffer と m_renderPass は 1:1 ではない。
 //   フォーマットが共通なら VkRenderPass は共有される。
-class VulkanFrameBuffer
+class VulkanFramebuffer
     : public RefObject
 {
 public:
-    VulkanFrameBuffer();
+    VulkanFramebuffer();
     Result init(VulkanDeviceContext* deviceContext, const DeviceFramebufferState& state);
     void dispose();
     bool containsRenderTarget(ITexture* renderTarget) const;
@@ -352,13 +352,13 @@ private:
 // 登録してある VkRenderPass も削除する。
 // もっと厳密に参照カウントで管理することもできるけど大変なので、まずはこの方式で。
 class VulkanFramebufferCache
-    : public HashedObjectCache<Ref<VulkanFrameBuffer>, VulkanFramebufferCache>
+    : public HashedObjectCache<Ref<VulkanFramebuffer>, VulkanFramebufferCache>
 {
 public:
     VulkanFramebufferCache();
     Result init(VulkanDeviceContext* deviceContext);
     void dispose();
-    VulkanFrameBuffer* findOrCreate(const DeviceFramebufferState& key);
+    VulkanFramebuffer* findOrCreate(const DeviceFramebufferState& key);
 
     static uint64_t computeHash(const DeviceFramebufferState& state)
     {
@@ -396,7 +396,7 @@ public:
         }
     }
 
-    void onInvalidate(const Ref<VulkanFrameBuffer>& value)
+    void onInvalidate(const Ref<VulkanFramebuffer>& value)
     {
         value->dispose();
     }
@@ -423,7 +423,7 @@ public:
     VkPipeline vulkanPipeline() const { return m_pipeline; }
     bool containsShaderPass(VulkanShaderPass* value) const { return m_relatedShaderPass == value; }
     //bool containsVertexDeclaration(VulkanVertexDeclaration* value) const { return m_relatedVertexDeclaration == value; }
-    //bool containsFramebuffer(VulkanFrameBuffer* value) const { return m_relatedFramebuffer == value; }
+    //bool containsFramebuffer(VulkanFramebuffer* value) const { return m_relatedFramebuffer == value; }
 
     static uint64_t computeHash(const IGraphicsDeviceContext::State& state);
 
@@ -432,7 +432,7 @@ private:
     VkPipeline m_pipeline;
     VulkanShaderPass* m_relatedShaderPass;                  // pipeline に関連づいている ShaderPass。これが削除されたらこの pipeline も削除する。
     //VulkanVertexDeclaration* m_relatedVertexDeclaration;    // pipeline に関連づいている VertexDeclaration。これが削除されたらこの pipeline も削除する。
-    //VulkanFrameBuffer* m_relatedFramebuffer;                // pipeline に関連づいている Framebuffer。これに含まれる RenderTarget か DepthBuffer が削除されたらこの pipeline も削除する。
+    //VulkanFramebuffer* m_relatedFramebuffer;                // pipeline に関連づいている Framebuffer。これに含まれる RenderTarget か DepthBuffer が削除されたらこの pipeline も削除する。
 };
 
 class VulkanPipelineCache
@@ -451,7 +451,7 @@ public:
         HashedObjectCache<Ref<VulkanPipeline>, VulkanPipelineCache>::removeAllIf([&](Ref<VulkanPipeline>& x) { return x->containsShaderPass(value); });
     }
 
-    //void invalidateFromFrameBuffer(VulkanFrameBuffer* value)
+    //void invalidateFromFrameBuffer(VulkanFramebuffer* value)
     //{
     //    HashedObjectCache<Ref<VulkanPipeline>, VulkanPipelineCache>::removeAllIf([&](Ref<VulkanPipeline>& x) { return x->containsFramebuffer(value); });
     //}
