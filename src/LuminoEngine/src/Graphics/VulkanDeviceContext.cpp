@@ -418,8 +418,10 @@ public:
         state.viewportRect.width = swapChainExtent.width;
         state.viewportRect.height = swapChainExtent.height;
 
-        m_graphicsPipeline = makeRef<VulkanPipeline>();
-        m_graphicsPipeline->init(m_deviceContext, state);
+        m_graphicsPipeline = m_deviceContext->pipelineCache()->findOrCreate(state);
+
+        //m_graphicsPipeline = makeRef<VulkanPipeline>();
+        //m_graphicsPipeline->init(m_deviceContext, state);
     }
 
     // fix

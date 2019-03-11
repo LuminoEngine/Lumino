@@ -442,7 +442,7 @@ public:
     VulkanPipelineCache();
     Result init(VulkanDeviceContext* deviceContext);
     void dispose();
-    VulkanPipelineCache* findOrCreate(const IGraphicsDeviceContext::State& key);
+    VulkanPipeline* findOrCreate(const IGraphicsDeviceContext::State& key);
 
     void invalidateFromShaderPass(VulkanShaderPass* value)
     {

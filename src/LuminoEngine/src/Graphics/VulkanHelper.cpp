@@ -1406,16 +1406,31 @@ VulkanPipelineCache::VulkanPipelineCache()
 
 Result VulkanPipelineCache::init(VulkanDeviceContext* deviceContext)
 {
+    LN_DCHECK(deviceContext);
+    m_deviceContext = deviceContext;
     return true;
 }
 
 void VulkanPipelineCache::dispose()
 {
+    clear();
 }
 
-VulkanPipelineCache* VulkanPipelineCache::findOrCreate(const IGraphicsDeviceContext::State& key)
+VulkanPipeline* VulkanPipelineCache::findOrCreate(const IGraphicsDeviceContext::State& state)
 {
-    return nullptr;
+    uint64_t hash = VulkanPipeline::computeHash(state);
+    Ref<VulkanPipeline> pipeline;
+    if (find(hash, &pipeline)) {
+        return pipeline;
+    }
+    else {
+        pipeline = makeRef<VulkanPipeline>();
+        if (!pipeline->init(m_deviceContext, state)) {
+            return nullptr;
+        }
+        add(hash, pipeline);
+        return pipeline;
+    }
 }
 
 } // namespace detail
