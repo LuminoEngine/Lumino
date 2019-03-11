@@ -959,6 +959,9 @@ bool VulkanDeviceContext::init(const Settings& settings)
     if (!m_framebufferCache.init(this)) {
         return false;
     }
+    if (!m_pipelineCache.init(this)) {
+        return false;
+    }
 
 	g_app.surface = m_mainSurface;
 	g_app.device = m_device;
@@ -971,6 +974,7 @@ void VulkanDeviceContext::dispose()
 {
     g_app.cleanup();
 
+    m_pipelineCache.dispose();
     m_framebufferCache.dispose();
     m_renderPassCache.dispose();
 
@@ -1572,11 +1576,27 @@ Result VulkanVertexDeclaration::init(const VertexElement* elements, int elements
         m_bindings[element.StreamIndex].stride += GraphicsHelper::getVertexElementTypeSize(elements[i].Type);
     }
 
+    m_hash = computeHash(m_elements);
+
     return true;
 }
 
 void VulkanVertexDeclaration::dispose()
 {
+    IVertexDeclaration::dispose();
+}
+
+uint64_t VulkanVertexDeclaration::computeHash(const std::vector<VertexElement>& elements)
+{
+    MixHash hash;
+    hash.add(elements.size());
+    for (auto& e : elements) {
+        hash.add(e.StreamIndex);
+        hash.add(e.Type);
+        hash.add(e.Usage);
+        hash.add(e.UsageIndex);
+    }
+    return hash.value();
 }
 
 //==============================================================================
@@ -2114,48 +2134,53 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
 
 void VulkanShaderPass::dispose()
 {
-    VkDevice device = m_deviceContext->vulkanDevice();
+    if (m_deviceContext) {
+        VkDevice device = m_deviceContext->vulkanDevice();
 
-    for (auto& buf : m_uniformBuffers) {
-        buf->dispose();
-    }
-    m_uniformBuffers.clear();
-    
-    if (m_localShaderSamplerBuffer) {
-        m_localShaderSamplerBuffer->dispose();
-        m_localShaderSamplerBuffer = nullptr;
-    }
-
-    for (auto& pool : m_descriptorSetsPools) {
-        pool->dispose();
-    }
-    m_descriptorSetsPools.clear();
-
-    if (m_localShaderSamplerBuffer) {
-        m_localShaderSamplerBuffer->dispose();
-        m_localShaderSamplerBuffer = nullptr;
-    }
-
-    if (m_pipelineLayout) {
-        vkDestroyPipelineLayout(device, m_pipelineLayout, m_deviceContext->vulkanAllocator());
-        m_pipelineLayout = VK_NULL_HANDLE;
-    }
-
-    for (auto& layout : m_descriptorSetLayouts) {
-        if (layout) {
-            vkDestroyDescriptorSetLayout(device, layout, m_deviceContext->vulkanAllocator());
-            layout = VK_NULL_HANDLE;
+        for (auto& buf : m_uniformBuffers) {
+            buf->dispose();
         }
-    }
+        m_uniformBuffers.clear();
+    
+        if (m_localShaderSamplerBuffer) {
+            m_localShaderSamplerBuffer->dispose();
+            m_localShaderSamplerBuffer = nullptr;
+        }
 
-    if (m_vertShaderModule) {
-        vkDestroyShaderModule(device, m_vertShaderModule, m_deviceContext->vulkanAllocator());
-        m_vertShaderModule = VK_NULL_HANDLE;
-    }
+        for (auto& pool : m_descriptorSetsPools) {
+            pool->dispose();
+        }
+        m_descriptorSetsPools.clear();
 
-    if (m_fragShaderModule) {
-        vkDestroyShaderModule(device, m_fragShaderModule, m_deviceContext->vulkanAllocator());
-        m_fragShaderModule = VK_NULL_HANDLE;
+        if (m_localShaderSamplerBuffer) {
+            m_localShaderSamplerBuffer->dispose();
+            m_localShaderSamplerBuffer = nullptr;
+        }
+
+        if (m_pipelineLayout) {
+            vkDestroyPipelineLayout(device, m_pipelineLayout, m_deviceContext->vulkanAllocator());
+            m_pipelineLayout = VK_NULL_HANDLE;
+        }
+
+        for (auto& layout : m_descriptorSetLayouts) {
+            if (layout) {
+                vkDestroyDescriptorSetLayout(device, layout, m_deviceContext->vulkanAllocator());
+                layout = VK_NULL_HANDLE;
+            }
+        }
+
+        if (m_vertShaderModule) {
+            vkDestroyShaderModule(device, m_vertShaderModule, m_deviceContext->vulkanAllocator());
+            m_vertShaderModule = VK_NULL_HANDLE;
+        }
+
+        if (m_fragShaderModule) {
+            vkDestroyShaderModule(device, m_fragShaderModule, m_deviceContext->vulkanAllocator());
+            m_fragShaderModule = VK_NULL_HANDLE;
+        }
+
+        m_deviceContext->pipelineCache()->invalidateFromShaderPass(this);
+        m_deviceContext = nullptr;
     }
 }
 

@@ -1172,6 +1172,11 @@ void VulkanFrameBuffer::dispose()
         vkDestroyFramebuffer(m_deviceContext->vulkanDevice(), m_framebuffer, m_deviceContext->vulkanAllocator());
         m_framebuffer = 0;
     }
+
+    if (m_deviceContext) {
+        m_deviceContext->pipelineCache()->invalidateFromFrameBuffer(this);
+        m_deviceContext = nullptr;
+    }
 }
 
 bool VulkanFrameBuffer::containsRenderTarget(ITexture* renderTarget) const
@@ -1238,20 +1243,20 @@ Result VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsD
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
 
-    auto* shaderPass = static_cast<VulkanShaderPass*>(state.pipelineState.shaderPass);
     auto* vertexDeclaration = static_cast<VulkanVertexDeclaration*>(state.pipelineState.vertexDeclaration);
-    
+    m_relatedShaderPass = static_cast<VulkanShaderPass*>(state.pipelineState.shaderPass);
+    m_relatedFramebuffer = m_deviceContext->framebufferCache()->findOrCreate(state.framebufferState);
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-    vertShaderStageInfo.module = shaderPass->vulkanVertShaderModule();
+    vertShaderStageInfo.module = m_relatedShaderPass->vulkanVertShaderModule();
     vertShaderStageInfo.pName = "vsMain";
 
     VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
     fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-    fragShaderStageInfo.module = shaderPass->vulkanFragShaderModule();
+    fragShaderStageInfo.module = m_relatedShaderPass->vulkanFragShaderModule();
     fragShaderStageInfo.pName = "psMain";
 
     VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
@@ -1278,7 +1283,7 @@ Result VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsD
     vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
     vertexInputInfo.pVertexBindingDescriptions = bindingDescription.data();
     vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
-
+    
     VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
     inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
@@ -1351,7 +1356,6 @@ Result VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsD
     //    throw std::runtime_error("failed to create pipeline layout!");
     //}
 
-    VulkanFrameBuffer* framebuffer = m_deviceContext->framebufferCache()->findOrCreate(state.framebufferState);
     //renderPass = framebuffer->vulkanRenderPass();//
 
     VkGraphicsPipelineCreateInfo pipelineInfo = {};
@@ -1365,8 +1369,8 @@ Result VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsD
     pipelineInfo.pMultisampleState = &multisampling;
     pipelineInfo.pDepthStencilState = &depthStencil;
     pipelineInfo.pColorBlendState = &colorBlending;
-    pipelineInfo.layout = shaderPass->vulkanPipelineLayout();
-    pipelineInfo.renderPass = framebuffer->vulkanRenderPass();
+    pipelineInfo.layout = m_relatedShaderPass->vulkanPipelineLayout();
+    pipelineInfo.renderPass = m_relatedFramebuffer->vulkanRenderPass();
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
@@ -1381,6 +1385,37 @@ void VulkanPipeline::dispose()
         vkDestroyPipeline(m_deviceContext->vulkanDevice(), m_pipeline, m_deviceContext->vulkanAllocator());
         m_pipeline = 0;
     }
+}
+
+uint64_t VulkanPipeline::computeHash(const IGraphicsDeviceContext::State& state)
+{
+    auto* vertexDeclaration = static_cast<VulkanVertexDeclaration*>(state.pipelineState.vertexDeclaration);
+    MixHash hash;
+    hash.add(vertexDeclaration->hash());
+    hash.add(static_cast<VulkanShaderPass*>(state.pipelineState.shaderPass));
+    hash.add(VulkanFramebufferCache::computeHash(state.framebufferState));
+    return hash.value();
+}
+
+//==============================================================================
+// VulkanPipelineCache
+
+VulkanPipelineCache::VulkanPipelineCache()
+{
+}
+
+Result VulkanPipelineCache::init(VulkanDeviceContext* deviceContext)
+{
+    return true;
+}
+
+void VulkanPipelineCache::dispose()
+{
+}
+
+VulkanPipelineCache* VulkanPipelineCache::findOrCreate(const IGraphicsDeviceContext::State& key)
+{
+    return nullptr;
 }
 
 } // namespace detail

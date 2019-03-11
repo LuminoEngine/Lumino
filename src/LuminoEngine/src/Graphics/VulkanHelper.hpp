@@ -10,6 +10,7 @@
 namespace ln {
 namespace detail {
 class VulkanDeviceContext;
+class VulkanVertexDeclaration;
 class VulkanShaderPass;
 class VulkanDescriptorSetsPool;
 
@@ -270,6 +271,20 @@ public:
         }
     }
 
+    template<class TPred>
+    void removeAllIf(TPred pred)
+    {
+        for (auto itr = m_hashMap.begin(); itr != m_hashMap.end();) {
+            if (pred(itr->second)) {
+                itr = m_hashMap.erase(itr);
+                // removeAllIf は dispose から呼ばれるので、ここでは参照を外すだけでよい
+            }
+            else {
+                ++itr;
+            }
+        }
+    }
+
     void clear()
     {
         for (auto it = m_hashMap.begin(), itEnd = m_hashMap.end(); it != itEnd; ++it) {
@@ -383,12 +398,20 @@ public:
 
     void onInvalidate(const Ref<VulkanFrameBuffer>& value)
     {
+        value->dispose();
     }
 
 private:
     VulkanDeviceContext* m_deviceContext;
 };
 
+// Dynamic としてマークしている state は次の通り。
+// - VK_DYNAMIC_STATE_VIEWPORT,
+// - VK_DYNAMIC_STATE_SCISSOR,
+// - VK_DYNAMIC_STATE_BLEND_CONSTANTS,
+// - VK_DYNAMIC_STATE_STENCIL_REFERENCE,
+// これらは頻繁に変更される可能性があるためマークしている。
+// なお、これらは computeHash に含める必要はない。
 class VulkanPipeline
     : public RefObject
 {
@@ -398,10 +421,46 @@ public:
     void dispose();
 
     VkPipeline vulkanPipeline() const { return m_pipeline; }
+    bool containsShaderPass(VulkanShaderPass* value) const { return m_relatedShaderPass == value; }
+    //bool containsVertexDeclaration(VulkanVertexDeclaration* value) const { return m_relatedVertexDeclaration == value; }
+    bool containsFramebuffer(VulkanFrameBuffer* value) const { return m_relatedFramebuffer == value; }
+
+    static uint64_t computeHash(const IGraphicsDeviceContext::State& state);
 
 private:
     VulkanDeviceContext* m_deviceContext;
     VkPipeline m_pipeline;
+    VulkanShaderPass* m_relatedShaderPass;                  // pipeline に関連づいている ShaderPass。これが削除されたらこの pipeline も削除する。
+    //VulkanVertexDeclaration* m_relatedVertexDeclaration;    // pipeline に関連づいている VertexDeclaration。これが削除されたらこの pipeline も削除する。
+    VulkanFrameBuffer* m_relatedFramebuffer;                // pipeline に関連づいている Framebuffer。これに含まれる RenderTarget か DepthBuffer が削除されたらこの pipeline も削除する。
+};
+
+class VulkanPipelineCache
+    : public HashedObjectCache<Ref<VulkanPipeline>, VulkanPipelineCache>
+{
+public:
+    VulkanPipelineCache();
+    Result init(VulkanDeviceContext* deviceContext);
+    void dispose();
+    VulkanPipelineCache* findOrCreate(const IGraphicsDeviceContext::State& key);
+
+    void invalidateFromShaderPass(VulkanShaderPass* value)
+    {
+        HashedObjectCache<Ref<VulkanPipeline>, VulkanPipelineCache>::removeAllIf([&](Ref<VulkanPipeline>& x) { return x->containsShaderPass(value); });
+    }
+
+    void invalidateFromFrameBuffer(VulkanFrameBuffer* value)
+    {
+        HashedObjectCache<Ref<VulkanPipeline>, VulkanPipelineCache>::removeAllIf([&](Ref<VulkanPipeline>& x) { return x->containsFramebuffer(value); });
+    }
+
+    void onInvalidate(const Ref<VulkanPipeline>& value)
+    {
+        value->dispose();
+    }
+
+private:
+    VulkanDeviceContext* m_deviceContext;
 };
 
 } // namespace detail
