@@ -13,8 +13,15 @@ struct QueueFamilyIndices {
 	}
 };
 
+struct SwapChainSupportDetails {
+    VkSurfaceCapabilitiesKHR capabilities;
+    std::vector<VkSurfaceFormatKHR> formats;
+    std::vector<VkPresentModeKHR> presentModes;
+};
+
 namespace ln {
 namespace detail {
+class VulkanSwapChain;
 class VulkanRenderTarget;
 class VulkanShaderUniformBuffer;
 class VulkanLocalShaderSamplerBuffer;
@@ -95,8 +102,9 @@ public: // TODO:
     void copyBufferToImageImmediately(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
     Result transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 
-	GLFWwindow* m_mainWindow;
-	VkSurfaceKHR m_mainSurface;
+	GLFWwindow* m_mainWindow; // TODO:
+	VkSurfaceKHR m_mainSurface; // TODO:
+    VulkanSwapChain* m_mainSwapchain = nullptr; // TODO:
 
     VkInstance m_instance;
     VkDebugUtilsMessengerEXT m_debugMessenger;
@@ -120,10 +128,27 @@ class VulkanSwapChain
 public:
 	VulkanSwapChain();
 	Result init(VulkanDeviceContext* deviceContext, PlatformWindow* window, const SizeI& backbufferSize);
+    virtual void dispose() override;
 	virtual ITexture* getColorBuffer() const;
+
+    VkSwapchainKHR vulkanSwapchain() const { return m_swapchain; }
+    VkFormat vulkanSwapchainImageFormat() const { return m_swapchainImageFormat; }
+    VkExtent2D vulkanSwapchainExtent() const { return m_swapchainExtent; }
+    const std::vector<Ref<VulkanRenderTarget>>& swapchainRenderTargets() const { return m_swapchainRenderTargets; }
+
+    static VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+    static VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> availablePresentModes);
+    static VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, uint32_t requiredWidth, uint32_t requiredHeight);
+    static SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
 
 private:
     VulkanDeviceContext* m_deviceContext;
+    VkSurfaceKHR m_surface;
+    VkSwapchainKHR m_swapchain;
+    VkFormat m_swapchainImageFormat;
+    VkExtent2D m_swapchainExtent;
+    std::vector<Ref<VulkanRenderTarget>> m_swapchainRenderTargets;
+
 	Ref<VulkanRenderTarget> m_colorBuffer;
 };
 
