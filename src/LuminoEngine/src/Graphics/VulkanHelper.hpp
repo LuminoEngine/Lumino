@@ -347,7 +347,12 @@ public:
 
     static uint64_t computeHash(const DeviceFramebufferState& state)
     {
-        return VulkanRenderPassCache::computeHash(state);
+        MixHash hash;
+        for (size_t i = 0; i < state.renderTargets.size(); i++) {
+            hash.add(state.renderTargets[i]);
+        }
+        hash.add(state.depthBuffer);
+        return hash.value();
     }
 
     void invalidateRenderTarget(ITexture* renderTarget)
@@ -382,6 +387,21 @@ public:
 
 private:
     VulkanDeviceContext* m_deviceContext;
+};
+
+class VulkanPipeline
+    : public RefObject
+{
+public:
+    VulkanPipeline();
+    Result init(VulkanDeviceContext* deviceContext, const IGraphicsDeviceContext::State& state);
+    void dispose();
+
+    VkPipeline vulkanPipeline() const { return m_pipeline; }
+
+private:
+    VulkanDeviceContext* m_deviceContext;
+    VkPipeline m_pipeline;
 };
 
 } // namespace detail
