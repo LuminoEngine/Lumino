@@ -10,7 +10,7 @@ namespace ln {
 class Exception;
 class String;
 
-#define _LN_CHECK(expr, level, exception, ...)			(!(expr)) && ln::detail::notifyException<exception>(level, __FILE__, __LINE__, #expr, ##__VA_ARGS__)
+#define _LN_CHECK(expr, level, exception, ...) (!(expr)) && ln::detail::notifyException<exception>(level, __FILE__, __LINE__, #expr, ##__VA_ARGS__)
 
 /**
  * アプリケーション実行中に発生した軽微な問題を通知するためのマクロです。
@@ -20,17 +20,18 @@ class String;
  *
  * デフォルトの例外ハンドラの動作は、メッセージをロギングしてプログラムを続行します。
  */
-#define LN_WARNING(...)							ln::detail::notifyException<::ln::Exception>(ExceptionLevel::Warning, __FILE__, __LINE__, nullptr, ##__VA_ARGS__)
+#define LN_WARNING(...) ln::detail::notifyException<::ln::Exception>(ExceptionLevel::Warning, __FILE__, __LINE__, nullptr, ##__VA_ARGS__)
 
 /**
  * アプリケーションが不正な状態になる可能性がある問題を通知するためのマクロです。
  *
-* このマクロが例外ハンドラを呼び出すときのレベルは `Error` です。
-* オブジェクトが不正な状態となっている可能性がありますので、エラーの発生元となったオブジェクトにアクセスしないことでプログラムは実行を続けることができます。
-*
-* デフォルトの例外ハンドラの動作は、メッセージをロギングしてプログラムを停止します。
+ * このマクロが例外ハンドラを呼び出すときのレベルは `Error` です。
+ * オブジェクトが不正な状態となっている可能性があり、プログラムを実行し続けることは危険である状態を示します。
+ * エラーの発生元となったオブジェクトにアクセスしないことでプログラムは実行を続けることができますが、できるだけ早く終了するべきです。
+ *
+ * デフォルトの例外ハンドラの動作は、メッセージをロギングしてプログラムを停止します。
  */
-#define LN_ERROR(...)							ln::detail::notifyException<::ln::Exception>(ExceptionLevel::Error, __FILE__, __LINE__, nullptr, ##__VA_ARGS__)
+#define LN_ERROR(...) ln::detail::notifyException<::ln::Exception>(ExceptionLevel::Error, __FILE__, __LINE__, nullptr, ##__VA_ARGS__)
 
  /**
   * アプリケーションの継続が難しい致命的なエラーを通知するためのマクロです。
@@ -40,7 +41,7 @@ class String;
   *
   * デフォルトの例外ハンドラの動作は、メッセージをロギングしてプログラムを停止します。
   */
-#define LN_FATAL(...)							ln::detail::notifyException<::ln::Exception>(ExceptionLevel::Fatal, __FILE__, __LINE__, nullptr, ##__VA_ARGS__)
+#define LN_FATAL(...) ln::detail::notifyException<::ln::Exception>(ExceptionLevel::Fatal, __FILE__, __LINE__, nullptr, ##__VA_ARGS__)
 
 /**
  * コードを実行する前の前提条件を検証するためのマクロです。
@@ -55,7 +56,7 @@ class String;
  *
  * このマクロが例外ハンドラを呼び出すときのレベルは `Warning` です。
  */
-#define LN_REQUIRE(expr, ...)					_LN_CHECK(expr, ::ln::ExceptionLevel::Warning, ::ln::LogicException, ##__VA_ARGS__)
+#define LN_REQUIRE(expr, ...) _LN_CHECK(expr, ::ln::ExceptionLevel::Warning, ::ln::LogicException, ##__VA_ARGS__)
 
 /**
  * 処理の実行結果を検証するためのマクロです。
@@ -70,14 +71,14 @@ class String;
  *
  * このマクロが例外ハンドラを呼び出すときのレベルは `Error` です。
  */
-#define LN_ENSURE(expr, ...)					_LN_CHECK(expr, ::ln::ExceptionLevel::Error, ::ln::RuntimeException, ##__VA_ARGS__)
+#define LN_ENSURE(expr, ...) _LN_CHECK(expr, ::ln::ExceptionLevel::Error, ::ln::RuntimeException, ##__VA_ARGS__)
 
 /**
  * 到達不能コードをマークするためのマクロです。
  *
  * このマクロが例外ハンドラを呼び出すときのレベルは `Fatal` です。
  */
-#define LN_UNREACHABLE()						_LN_CHECK(0, ::ln::ExceptionLevel::Fatal, ::ln::LogicException, "Unreachable code.")
+#define LN_UNREACHABLE() _LN_CHECK(0, ::ln::ExceptionLevel::Fatal, ::ln::LogicException, "Unreachable code.")
 
 /**
  * 未実装の機能をマークするためのマクロです。

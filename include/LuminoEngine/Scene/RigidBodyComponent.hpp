@@ -13,6 +13,7 @@ class Collision
     : public Object
 {
 public:
+	/** 自分自身と衝突している他の WorldObject */
     WorldObject* worldObject() const { return m_worldObject; }
 
 LN_CONSTRUCT_ACCESS:

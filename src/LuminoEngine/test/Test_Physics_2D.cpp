@@ -60,3 +60,50 @@ TEST_F(Test_Physics_2D, Compound)
 	Engine::mainWorld()->physicsWorld2D()->removePhysicsObject(body2);
 }
 
+//------------------------------------------------------------------------------
+TEST_F(Test_Physics_2D, Collision)
+{
+	auto texture1 = Assets::loadTexture(u"Sprite1");
+
+	// ground
+	auto ground = RigidBody2D::create();
+	ground->setPosition(Vector3(0, -3, 0));
+	ground->addCollisionShape(BoxCollisionShape2D::create(10, 1));
+	Engine::mainWorld()->physicsWorld2D()->addPhysicsObject(ground);
+
+	// box1
+	auto sprite1 = Sprite::create(texture1, 1, 1);
+	sprite1->addTag(u"player");
+	sprite1->setPosition(0, 0, 0);
+	auto body1 = RigidBody2DComponent::create();
+	body1->setMass(5);
+	body1->addCollisionShape(BoxCollisionShape2D::create(1, 1));
+	sprite1->addComponent(body1);
+
+	// box2
+	auto sprite2 = Sprite::create(texture1, 1, 1);
+	sprite2->addTag(u"item");
+	sprite2->setPosition(0, -1.5, 0);
+	auto body2 = RigidBody2DComponent::create();
+	body2->setMass(5);
+	body2->addCollisionShape(BoxCollisionShape2D::create(1, 1));
+	sprite2->addComponent(body2);
+
+	bool contact = false;
+	body1->connectOnCollisionEnter(
+		[&](Collision* collision) {
+			if (collision->worldObject()->hasTag(u"item")) {
+				contact = true;
+				collision->worldObject()->destroy();
+			}
+	});
+	TestEnv::updateFrame();
+	ASSERT_EQ(false, contact);	// 最初はいずれにも接触していない
+
+	while (!contact)
+	{
+		TestEnv::updateFrame();
+	}
+
+	// 接触すればループを抜ける
+}
