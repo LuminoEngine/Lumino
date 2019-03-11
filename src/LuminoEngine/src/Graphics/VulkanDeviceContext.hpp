@@ -119,9 +119,11 @@ class VulkanSwapChain
 {
 public:
 	VulkanSwapChain();
-	bool init();
+	Result init(VulkanDeviceContext* deviceContext, PlatformWindow* window, const SizeI& backbufferSize);
 	virtual ITexture* getColorBuffer() const;
 
+private:
+    VulkanDeviceContext* m_deviceContext;
 	Ref<VulkanRenderTarget> m_colorBuffer;
 };
 

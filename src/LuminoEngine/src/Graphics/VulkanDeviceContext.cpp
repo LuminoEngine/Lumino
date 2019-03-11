@@ -915,7 +915,7 @@ void VulkanDeviceContext::onRestoreExternalRenderState()
 Ref<ISwapChain> VulkanDeviceContext::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
 {
 	auto ptr = makeRef<VulkanSwapChain>();
-    if (!ptr->init()) {
+    if (!ptr->init(this, window, backbufferSize)) {
         return nullptr;
     }
 	return ptr;
@@ -1418,8 +1418,11 @@ VulkanSwapChain::VulkanSwapChain()
 {
 }
 
-bool VulkanSwapChain::init()
+Result VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* window, const SizeI& backbufferSize)
 {
+    LN_DCHECK(deviceContext);
+    m_deviceContext = deviceContext;
+
 	m_colorBuffer = makeRef<VulkanRenderTarget>();
 	return true;
 }
