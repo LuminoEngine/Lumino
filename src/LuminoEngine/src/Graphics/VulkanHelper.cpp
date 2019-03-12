@@ -735,6 +735,10 @@ void VulkanCommandBuffer::dispose()
 
 Result VulkanCommandBuffer::beginRecording()
 {
+    // もし前回 vkQueueSubmit したコマンドバッファが完了していなければ待つ
+    LN_VK_CHECK(vkWaitForFences(m_deviceContext->vulkanDevice(), 1, &m_inFlightFence, VK_TRUE, std::numeric_limits<uint64_t>::max()));
+
+
     m_linearAllocator->cleanup();
 
     // 前回の描画で使ったリソースを開放する。
@@ -757,6 +761,36 @@ Result VulkanCommandBuffer::endRecording()
     for (auto& pass : m_usingShaderPasses) {
         pass->recodingPool = nullptr;
     }
+
+    return true;
+}
+
+Result VulkanCommandBuffer::submit(VkSemaphore waitSemaphore, VkSemaphore signalSemaphore)
+{
+    VkSubmitInfo submitInfo = {};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+    // 実行を開始する前に待機するセマフォ
+    VkSemaphore waitSemaphores[] = { waitSemaphore };//imageAvailableSemaphores[currentFrame] };
+    VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+    submitInfo.waitSemaphoreCount = 1;
+    submitInfo.pWaitSemaphores = waitSemaphores;
+    submitInfo.pWaitDstStageMask = waitStages;
+
+    // 実行するコマンド
+    VkCommandBuffer commandBuffer = vulkanCommandBuffer();
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &commandBuffer;
+
+    // 実行を完了したときに通知されるセマフォ
+    VkSemaphore signalSemaphores[] = { signalSemaphore };// renderFinishedSemaphores[currentFrame]};
+    submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pSignalSemaphores = signalSemaphores;
+
+    // unsignaled にしておく。vkQueueSubmit で発行した実行が完了したときに signaled になる。
+    LN_VK_CHECK(vkResetFences(m_deviceContext->vulkanDevice(), 1, &m_inFlightFence));
+
+    LN_VK_CHECK(vkQueueSubmit(m_deviceContext->m_graphicsQueue, 1, &submitInfo, m_inFlightFence));
 
     return true;
 }

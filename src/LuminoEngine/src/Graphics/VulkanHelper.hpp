@@ -175,6 +175,7 @@ public:
 
     Result beginRecording();
     Result endRecording();
+    Result submit(VkSemaphore waitSemaphore, VkSemaphore signalSemaphore);
 
     Result allocateDescriptorSets(VulkanShaderPass* shaderPass, std::array<VkDescriptorSet, DescriptorType_Count>* outSets);
 
