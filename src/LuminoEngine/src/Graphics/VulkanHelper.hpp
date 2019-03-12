@@ -3,6 +3,11 @@
 
 #define VK_USE_PLATFORM_WIN32_KHR
 #include <vulkan/vulkan.h>
+
+#if defined(LN_OS_WIN32)
+#include <vulkan/vulkan_win32.h>
+#endif
+
 #include "GraphicsDeviceContext.hpp"
 #include "MixHash.hpp"
 #include "../../LuminoCore/src/Base/LinearAllocator.hpp"

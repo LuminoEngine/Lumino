@@ -4,14 +4,14 @@
 
 struct GLFWwindow;
 
-struct QueueFamilyIndices {
-	ln::Optional<uint32_t> graphicsFamily;
-	ln::Optional<uint32_t> presentFamily;
-
-	bool isComplete() {
-		return graphicsFamily.hasValue() && presentFamily.hasValue();
-	}
-};
+//struct QueueFamilyIndices {
+//	ln::Optional<uint32_t> graphicsFamily;
+//	//ln::Optional<uint32_t> presentFamily;
+//
+//	bool isComplete() {
+//        return graphicsFamily.hasValue();// && presentFamily.hasValue();
+//	}
+//};
 
 struct SwapChainSupportDetails {
     VkSurfaceCapabilitiesKHR capabilities;
@@ -44,6 +44,9 @@ public:
     VkDevice vulkanDevice() const { return m_device; }
     const VkAllocationCallbacks* vulkanAllocator() const { return nullptr; }// return m_allocator.vulkanAllocator();
     VkCommandPool vulkanCommandPool() const { return m_commandPool; }
+    uint32_t graphicsQueueFamilyIndex() const { return m_graphicsQueueFamilyIndex; }
+    //uint32_t m_graphicsQueueFamilyIndex;
+    //VkQueue m_graphicsQueue;
      
     Result findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType);
 
@@ -87,12 +90,12 @@ public: // TODO:
 
     Result createInstance();
     Result setupDebugMessenger();
-	Result createSurface();
     Result pickPhysicalDevice();
 	Result createLogicalDevice();
     Result createCommandPool();
 
-	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+	//QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+    bool findPresentQueueFamily(VkSurfaceKHR surface, uint32_t* outIndex);
     VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
     VkFormat findDepthFormat();
 
@@ -103,15 +106,14 @@ public: // TODO:
     Result transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 
 	GLFWwindow* m_mainWindow; // TODO:
-	VkSurfaceKHR m_mainSurface; // TODO:
     VulkanSwapChain* m_mainSwapchain = nullptr; // TODO:
 
     VkInstance m_instance;
     VkDebugUtilsMessengerEXT m_debugMessenger;
     VkPhysicalDevice m_physicalDevice;
     VkDevice m_device;
+    uint32_t m_graphicsQueueFamilyIndex;
 	VkQueue m_graphicsQueue;
-	VkQueue m_presentQueue;
     VkCommandPool m_commandPool;
     //VulkanAllocator m_allocator;
 
@@ -153,6 +155,7 @@ private:
     VulkanDeviceContext* m_deviceContext;
     VkSurfaceKHR m_surface;
     VkSwapchainKHR m_swapchain;
+    VkQueue m_presentQueue;
     VkFormat m_swapchainImageFormat;
     VkExtent2D m_swapchainExtent;
 
