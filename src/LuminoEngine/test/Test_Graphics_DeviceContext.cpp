@@ -1,6 +1,6 @@
 ﻿#include "Common.hpp"
 
-#if 0
+#if 1
 
 //==============================================================================
 // IGraphicsDeviceContext 周りのテスト。
@@ -12,18 +12,16 @@ class Test_Graphics_DeviceContext : public ::testing::Test {};
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_DeviceContext, Clear)
 {
-	// test
-	while (true) {
-		TestEnv::updateFrame();
-	}
-
-
     {
-        auto ctx = Engine::graphicsContext();
-        TestEnv::resetGraphicsContext(ctx);
-        ctx->setDepthBuffer(nullptr);
-        ctx->clear(ClearFlags::All, Color::Blue, 1.0f, 0);
-        ctx->present(Engine::mainWindow()->swapChain());
+        while (1)
+        {
+            auto ctx = Engine::graphicsContext();
+            TestEnv::resetGraphicsContext(ctx);
+            //ctx->setDepthBuffer(nullptr);
+            ctx->clear(ClearFlags::All, Color::Blue, 1.0f, 0);
+            ctx->present(Engine::mainWindow()->swapChain());
+            Thread::sleep(10);
+        }
         ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_DeviceContext-Clear-1.png"));
     }
     {

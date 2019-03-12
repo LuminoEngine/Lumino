@@ -731,6 +731,7 @@ void VulkanDeviceContext::onUpdateShaderPass(IShaderPass* newPass)
 
 void VulkanDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
+    submitStatus(committedState());
 }
 
 void VulkanDeviceContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount)
@@ -743,7 +744,8 @@ void VulkanDeviceContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, in
 
 void VulkanDeviceContext::onPresent(ISwapChain* swapChain)
 {
-	g_app.mainLoop();
+    static_cast<VulkanSwapChain*>(swapChain)->present();
+	//g_app.mainLoop();
 }
 
 Result VulkanDeviceContext::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType)
@@ -1231,6 +1233,102 @@ Result VulkanDeviceContext::transitionImageLayout(VkImage image, VkFormat format
     return true;
 }
 
+Result VulkanDeviceContext::submitStatus(const State& state)
+{
+    m_recodingCommandBuffer->beginRecording();
+
+
+
+
+    {
+        //DeviceFramebufferState framebufferState;
+        //framebufferState.renderTargets[0] = m_deviceContext->m_mainSwapchain->swapchainRenderTargets()[imageIndex];
+        //framebufferState.depthBuffer = m_depthImage;
+        VulkanFramebuffer* framebuffer = framebufferCache()->findOrCreate(state.framebufferState);
+
+        VkRenderPassBeginInfo renderPassInfo = {};
+        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        renderPassInfo.renderPass = framebuffer->vulkanRenderPass();//renderPass;
+        renderPassInfo.framebuffer = framebuffer->vulkanFramebuffer();
+        renderPassInfo.renderArea.offset = { 0, 0 };
+        renderPassInfo.renderArea.extent = m_mainSwapchain->vulkanSwapchainExtent();
+
+        std::array<VkClearValue, 2> clearValues = {};
+        clearValues[0].color = { 0.0f, 0.0f, 1.0f, 1.0f };
+        clearValues[1].depthStencil = { 1.0f, 0 };
+
+        renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+        renderPassInfo.pClearValues = clearValues.data();
+
+        vkCmdBeginRenderPass(m_recodingCommandBuffer->vulkanCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+    }
+
+
+#if 0
+
+    IGraphicsDeviceContext::State state;
+    state.pipelineState.shaderPass = m_shaderPass;
+    state.pipelineState.vertexDeclaration = m_vertexDeclaration;
+    state.framebufferState.renderTargets[0] = m_deviceContext->m_mainSwapchain->swapchainRenderTargets()[0];
+    state.framebufferState.depthBuffer = m_depthImage;
+    state.viewportRect.width = m_deviceContext->m_mainSwapchain->vulkanSwapchainExtent().width;
+    state.viewportRect.height = m_deviceContext->m_mainSwapchain->vulkanSwapchainExtent().height;
+    VulkanPipeline* graphicsPipeline = m_deviceContext->pipelineCache()->findOrCreate(state, framebuffer->vulkanRenderPass());
+
+
+    vkCmdBindPipeline(commandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->vulkanPipeline());//graphicsPipeline);
+
+    VkBuffer vertexBuffers[] = { m_vertexBuffer->vulkanBuffer() };
+    VkDeviceSize offsets[] = { 0 };
+    vkCmdBindVertexBuffers(commandBuffer->vulkanCommandBuffer(), 0, 1, vertexBuffers, offsets);
+
+    vkCmdBindIndexBuffer(commandBuffer->vulkanCommandBuffer(), m_indexBuffer->vulkanBuffer(), 0, m_indexBuffer->indexType());
+
+    // UniformBuffer は copy コマンドを使って更新できる。
+    // TODO: ただし、texture や sampler は vkUpdateDescriptorSets でしか更新できないのでこれもキャッシュしたりする仕組みがほしいところ。
+    //VulkanBuffer* buffer = commandBuffer->cmdCopyBuffer(sizeof(ubo), &m_uniformBuffer);
+    VulkanShaderUniformBuffer* uniformBuffer = static_cast<VulkanShaderUniformBuffer*>(m_shaderPass->getUniformBuffer(0));
+    uniformBuffer->setData(&ubo, sizeof(ubo));
+
+
+    std::array<VkDescriptorSet, DescriptorType_Count> sets;
+    commandBuffer->allocateDescriptorSets(m_shaderPass, &sets);
+    vkCmdBindDescriptorSets(commandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_shaderPass->vulkanPipelineLayout(), 0, sets.size(), sets.data(), 0, nullptr);
+
+    //
+    // test
+    //vertices[0].pos.x = 0;
+    //vertices[0].pos.y = 0;
+    //VulkanBuffer* buffer = commandBuffer->cmdCopyBuffer(sizeof(vertices[0]) * vertices.size(), m_vertexBuffer->buffer());
+    //buffer->setData(0, vertices.data(), sizeof(vertices[0]) * vertices.size());
+
+//#if 1
+//        m_uniformBuffers[imageIndex]->setData(0, &ubo, sizeof(ubo));
+//#else
+//        // CombindSamper ではなく、個別設定のレイアウトを使っていると、実行中キューと記録中キューの間で共有できないようだ。
+//        // SubmitQueue が失敗する。
+//        VulkanBuffer* buffer = commandBuffer->cmdCopyBuffer(sizeof(ubo), m_uniformBuffers[imageIndex].get());//&m_uniformBuffer);
+//        buffer->setData(0, &ubo, sizeof(ubo));
+//#endif
+
+    vkCmdDrawIndexed(commandBuffer->vulkanCommandBuffer(), static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+
+    // test
+    //vertices[0].pos.x = 0;
+    //vertices[0].pos.y = 0;
+    //m_vertexBuffer->setSubData(0, vertices.data(), sizeof(vertices[0]) * vertices.size());
+#endif
+
+    vkCmdEndRenderPass(m_recodingCommandBuffer->vulkanCommandBuffer());
+
+    m_recodingCommandBuffer->endRecording();
+
+
+
+    return true;
+
+}
+
 //==============================================================================
 // VulkanSwapChain
 
@@ -1454,6 +1552,11 @@ ITexture* VulkanSwapChain::getColorBuffer() const
 
 void VulkanSwapChain::present()
 {
+    m_deviceContext->recodingCommandBuffer()->submit(
+        imageAvailableSemaphore(),
+        renderFinishedSemaphore());
+
+
     VkPresentInfoKHR presentInfo = {};
     presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 
