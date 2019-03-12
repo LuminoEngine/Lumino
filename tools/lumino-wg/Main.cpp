@@ -6,18 +6,18 @@
 #include "WrapperIF/WrapperIFGenerator.hpp"
 #include "DotNet/CSStructsGenerator.hpp"
 
-#define TEST_ROOT u"D:/Proj/GitHub/Lumino/"
+#define TEST_ROOT u"D:/Proj/LN/Lumino/"
 
 int main(int argc, char** argv)
 {
 	ln::List<ln::Path> files =
 	{
-		TEST_ROOT"src/LuminoCore/include/Lumino/Math/Vector2.hpp",
-		TEST_ROOT"src/LuminoCore/include/Lumino/Math/Vector3.hpp",
-		TEST_ROOT"src/LuminoCore/include/Lumino/Math/Vector4.hpp",
-		TEST_ROOT"src/LuminoCore/include/Lumino/Math/Quaternion.hpp",
-		TEST_ROOT"src/LuminoCore/include/Lumino/Math/Matrix.hpp",
-		TEST_ROOT"src/LuminoEngine/include/Lumino/Engine/Application.hpp",
+		TEST_ROOT"include/LuminoCore/Math/Vector2.hpp",
+		TEST_ROOT"include/LuminoCore/Math/Vector3.hpp",
+		TEST_ROOT"include/LuminoCore/Math/Vector4.hpp",
+		TEST_ROOT"include/LuminoCore/Math/Quaternion.hpp",
+		TEST_ROOT"include/LuminoCore/Math/Matrix.hpp",
+		TEST_ROOT"include/LuminoEngine/Engine/Application.hpp",
 		//u"C:/Proj/GitHub/Lumino/src/LuminoEngine/include/Lumino/Graphics/Texture.hpp",
 	};
 
@@ -28,9 +28,9 @@ int main(int argc, char** argv)
 	HeaderParser parser;
 	//parser.addIncludePath(_T("D:/Proj/Lumino/Source/LuminoCore/Include"));
 	//parser.addIncludePath(_T("D:/Proj/Lumino/Source/LuminoEngine/Include"));
-	parser.addIncludePath(TEST_ROOT"src/LuminoCore/include");
-	parser.addIncludePath(TEST_ROOT"src/LuminoEngine/include");
-	parser.addForceIncludeFile(TEST_ROOT"src/LuminoCore/include/Lumino/Base/Common.hpp");
+	parser.addIncludePath(TEST_ROOT"include");
+	parser.addIncludePath(TEST_ROOT"include");
+	parser.addForceIncludeFile(TEST_ROOT"include/LuminoCore/Base/Common.hpp");
 
 	for (auto& file : files)
 	{
