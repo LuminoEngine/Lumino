@@ -200,9 +200,9 @@ public:
 	ISwapChain();
     
     // 次のフレーム描画を開始できるようにデバイスに要求し、描画先となるカラーバッファのインデックスを取得する。
-    virtual void acquireNextImage(int* outIndex) = 0;
+    virtual void acquireNextImage(int* outImageIndex) = 0;
 
-	virtual ITexture* getColorBuffer() const = 0;
+	virtual ITexture* getRenderTarget(int imageIndex) const = 0;
 
 
 protected:

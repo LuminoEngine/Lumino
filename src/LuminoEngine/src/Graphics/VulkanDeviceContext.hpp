@@ -139,8 +139,8 @@ public:
 	VulkanSwapChain();
 	Result init(VulkanDeviceContext* deviceContext, PlatformWindow* window, const SizeI& backbufferSize);
     virtual void dispose() override;
-	virtual ITexture* getColorBuffer() const override;
-    virtual void acquireNextImage(int* outIndex) override;
+    virtual void acquireNextImage(int* outImageIndex) override;
+	virtual ITexture* getRenderTarget(int imageIndex) const override;
 
     void present();
 
@@ -175,8 +175,6 @@ private:
     uint32_t m_currentFrame;
 
     std::vector<Ref<VulkanCommandBuffer>> m_inFlightCommandBuffers;
-
-	Ref<VulkanRenderTarget> m_colorBuffer;
 };
 
 class VulkanVertexDeclaration

@@ -192,8 +192,8 @@ public:
 	GLSwapChain();
 	virtual ~GLSwapChain() = default;
 	virtual void dispose() override;
-    virtual void acquireNextImage(int* outIndex) override { *outIndex = 0; }
-	virtual ITexture* getColorBuffer() const override;
+    virtual void acquireNextImage(int* outImageIndex) override { *outImageIndex = 0; }
+    virtual ITexture* getRenderTarget(int imageIndex) const override;
     virtual void getBackendBufferSize(SizeI* outSize);
 
 	void genBackbuffer(uint32_t width, uint32_t height);

@@ -1485,7 +1485,7 @@ Result VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow*
         }
     }
 
-	m_colorBuffer = makeRef<VulkanRenderTarget>();
+	//m_colorBuffer = makeRef<VulkanRenderTarget>();
 	return true;
 }
 
@@ -1545,9 +1545,9 @@ void VulkanSwapChain::acquireNextImage(int* outIndex)
     }
 }
 
-ITexture* VulkanSwapChain::getColorBuffer() const
+ITexture* VulkanSwapChain::getRenderTarget(int imageIndex) const
 {
-	return m_colorBuffer;
+	return m_swapchainRenderTargets[imageIndex];
 }
 
 void VulkanSwapChain::present()
@@ -1569,8 +1569,10 @@ void VulkanSwapChain::present()
 
     presentInfo.pImageIndices = &m_imageIndex;
 
+    printf("11\n");
     VkResult result = vkQueuePresentKHR(m_presentQueue, &presentInfo);
 
+    printf("22\n");
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
         //framebufferResized = false;
         throw std::runtime_error("failed to present swap chain image!");
@@ -1580,6 +1582,7 @@ void VulkanSwapChain::present()
         throw std::runtime_error("failed to present swap chain image!");
     }
 
+    printf("1\n");
     // Swap command buffer
     {
         auto t = m_deviceContext->recodingCommandBuffer();
@@ -1587,7 +1590,15 @@ void VulkanSwapChain::present()
         m_inFlightCommandBuffers[m_currentFrame] = t;
     }
 
+    printf("2\n");
     m_currentFrame = (m_currentFrame + 1) % maxFrameCount();
+
+
+    // TODO: 必要？
+    vkDeviceWaitIdle(m_deviceContext->vulkanDevice());
+
+
+    printf("3\n");
 }
 
 VkSurfaceFormatKHR VulkanSwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
@@ -1979,6 +1990,8 @@ VulkanDepthBuffer::VulkanDepthBuffer()
 Result VulkanDepthBuffer::init(VulkanDeviceContext* deviceContext, uint32_t width, uint32_t height)
 {
     LN_DCHECK(deviceContext);
+    if (LN_REQUIRE(width > 0)) return false;
+    if (LN_REQUIRE(height > 0)) return false;
     m_deviceContext = deviceContext;
 
     VkFormat depthFormat = m_deviceContext->findDepthFormat();

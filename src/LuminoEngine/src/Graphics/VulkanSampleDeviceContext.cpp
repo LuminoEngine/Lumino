@@ -1741,7 +1741,7 @@ bool VulkanSampleSwapChain::init()
 	return true;
 }
 
-ITexture* VulkanSampleSwapChain::getColorBuffer() const
+ITexture* VulkanSampleSwapChain::getRenderTarget(int imageIndex) const
 {
 	return m_colorBuffer;
 }

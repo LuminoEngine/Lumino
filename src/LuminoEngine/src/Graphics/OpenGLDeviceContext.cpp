@@ -736,7 +736,7 @@ void OpenGLDeviceContext::onPresent(ISwapChain* swapChain)
 	SizeI endpointSize;
 	s->getBackendBufferSize(&endpointSize);
 
-    SizeI bufferSize = s->getColorBuffer()->realSize();
+    SizeI bufferSize = s->getRenderTarget(0)->realSize();
 
 
 
@@ -870,7 +870,7 @@ void GLSwapChain::genBackbuffer(uint32_t width, uint32_t height)
 	GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
-ITexture* GLSwapChain::getColorBuffer() const
+ITexture* GLSwapChain::getRenderTarget(int imageIndex) const
 {
 	return m_backbuffer;
 }
