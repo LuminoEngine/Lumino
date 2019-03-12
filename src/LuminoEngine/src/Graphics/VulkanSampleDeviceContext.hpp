@@ -55,6 +55,7 @@ public:
 	VulkanSampleSwapChain();
 	bool init();
 	virtual ITexture* getColorBuffer() const;
+    virtual void acquireNextImage(int* outIndex) { *outIndex = 0; }
 
 	Ref<VulkanSampleRenderTarget> m_colorBuffer;
 };

@@ -42,6 +42,7 @@ private:
 	Ref<detail::ISwapChain> m_rhiObject;
 	Ref<RenderTargetTexture> m_colorBuffer;
 	Ref<DepthBuffer> m_depthBuffer;
+    int m_imageIndex;
 };
 
 namespace detail {

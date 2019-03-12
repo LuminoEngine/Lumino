@@ -129,12 +129,20 @@ public:
 	VulkanSwapChain();
 	Result init(VulkanDeviceContext* deviceContext, PlatformWindow* window, const SizeI& backbufferSize);
     virtual void dispose() override;
-	virtual ITexture* getColorBuffer() const;
+	virtual ITexture* getColorBuffer() const override;
+    virtual void acquireNextImage(int* outIndex) override;
+
+    void present();
 
     VkSwapchainKHR vulkanSwapchain() const { return m_swapchain; }
     VkFormat vulkanSwapchainImageFormat() const { return m_swapchainImageFormat; }
     VkExtent2D vulkanSwapchainExtent() const { return m_swapchainExtent; }
     const std::vector<Ref<VulkanRenderTarget>>& swapchainRenderTargets() const { return m_swapchainRenderTargets; }
+    uint32_t imageIndex() const { return m_imageIndex; }
+
+    uint32_t maxFrameCount() const { return m_swapchainRenderTargets.size(); }
+    VkSemaphore imageAvailableSemaphore() const { return m_imageAvailableSemaphores[m_currentFrame]; }
+    VkSemaphore renderFinishedSemaphore() const { return m_renderFinishedSemaphores[m_currentFrame]; }
 
     static VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
     static VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> availablePresentModes);
@@ -147,7 +155,13 @@ private:
     VkSwapchainKHR m_swapchain;
     VkFormat m_swapchainImageFormat;
     VkExtent2D m_swapchainExtent;
+
     std::vector<Ref<VulkanRenderTarget>> m_swapchainRenderTargets;
+    uint32_t m_imageIndex;
+
+    std::vector<VkSemaphore> m_imageAvailableSemaphores;
+    std::vector<VkSemaphore> m_renderFinishedSemaphores;
+    uint32_t m_currentFrame;
 
 	Ref<VulkanRenderTarget> m_colorBuffer;
 };
