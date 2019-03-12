@@ -712,6 +712,11 @@ Result VulkanCommandBuffer::init(VulkanDeviceContext* deviceContext)
 
     LN_VK_CHECK(vkAllocateCommandBuffers(m_deviceContext->vulkanDevice(), &allocInfo, &m_commandBuffer));
 
+    VkFenceCreateInfo fenceInfo = {};
+    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+    LN_VK_CHECK(vkCreateFence(m_deviceContext->vulkanDevice(), &fenceInfo, m_deviceContext->vulkanAllocator(), &m_inFlightFence));
+
 	return true;
 }
 
@@ -720,6 +725,11 @@ void VulkanCommandBuffer::dispose()
     if (m_commandBuffer) {
         vkFreeCommandBuffers(m_deviceContext->vulkanDevice(), m_deviceContext->vulkanCommandPool(), 1, &m_commandBuffer);
         m_commandBuffer = VK_NULL_HANDLE;
+    }
+
+    if (m_inFlightFence) {
+        vkDestroyFence(m_deviceContext->vulkanDevice(), m_inFlightFence, m_deviceContext->vulkanAllocator());
+        m_inFlightFence = VK_NULL_HANDLE;
     }
 }
 

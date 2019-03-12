@@ -171,6 +171,7 @@ public:
 	void dispose();
 
     VkCommandBuffer vulkanCommandBuffer() const { return m_commandBuffer; }
+    VkFence vulkanInFlightFence() const { return m_inFlightFence; }
 
     Result beginRecording();
     Result endRecording();
@@ -194,6 +195,7 @@ private:
 
 	VulkanDeviceContext* m_deviceContext;
     VkCommandBuffer m_commandBuffer;
+    VkFence m_inFlightFence;
 
 	Ref<LinearAllocatorPageManager> m_linearAllocatorManager;
 	Ref<LinearAllocator> m_linearAllocator;
