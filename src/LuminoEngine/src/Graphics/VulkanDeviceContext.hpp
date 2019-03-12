@@ -54,6 +54,10 @@ public:
     VulkanFramebufferCache* framebufferCache() { return &m_framebufferCache; }
     VulkanPipelineCache* pipelineCache() { return &m_pipelineCache; }
 
+
+    const Ref<VulkanCommandBuffer>& recodingCommandBuffer() const { return m_recodingCommandBuffer; }
+    void setRecodingCommandBuffer(const Ref<VulkanCommandBuffer>& value) { m_recodingCommandBuffer = value; }
+
 protected:
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) override;
 	virtual void onEnterMainThread() override;
@@ -121,6 +125,8 @@ public: // TODO:
     VulkanFramebufferCache m_framebufferCache;
     VulkanPipelineCache m_pipelineCache;
 
+    Ref<VulkanCommandBuffer> m_recodingCommandBuffer;
+
     std::vector<PhysicalDeviceInfo> m_physicalDeviceInfos;
 };
 
@@ -165,6 +171,8 @@ private:
     std::vector<VkSemaphore> m_imageAvailableSemaphores;
     std::vector<VkSemaphore> m_renderFinishedSemaphores;
     uint32_t m_currentFrame;
+
+    std::vector<Ref<VulkanCommandBuffer>> m_inFlightCommandBuffers;
 
 	Ref<VulkanRenderTarget> m_colorBuffer;
 };

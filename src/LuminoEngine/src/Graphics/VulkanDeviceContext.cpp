@@ -150,7 +150,6 @@ public:
 
     //VulkanBuffer m_uniformBuffer;
 
-    std::vector<Ref<VulkanCommandBuffer>> commandBuffers;
 
     //std::vector<VkFence> inFlightFences;
     size_t currentFrame = 0;
@@ -221,11 +220,6 @@ public:
     void cleanupSwapChain() {
 
 		m_depthImage->dispose();
-
-        for (auto c : commandBuffers) {
-            c->dispose();
-        }
-        commandBuffers.clear();
 
         m_shaderPass->dispose();
 
@@ -354,13 +348,6 @@ public:
     //}
 
     void createCommandBuffers() {
-        commandBuffers.resize(m_deviceContext->m_mainSwapchain->swapchainRenderTargets().size());
-
-        for (size_t i = 0; i < commandBuffers.size(); i++) {
-            commandBuffers[i] = makeRef<VulkanCommandBuffer>();
-            commandBuffers[i]->init(m_deviceContext);
-
-        }
     }
 
     void createSyncObjects() {
@@ -487,9 +474,9 @@ public:
     void drawFrame() {
 
         auto imageIndex = m_deviceContext->m_mainSwapchain->imageIndex();
-        updateFrameData(imageIndex, commandBuffers[imageIndex]);
+        updateFrameData(imageIndex, m_deviceContext->recodingCommandBuffer());//commandBuffers[imageIndex]);
 
-        commandBuffers[imageIndex]->submit(
+        m_deviceContext->recodingCommandBuffer()->submit(
             m_deviceContext->m_mainSwapchain->imageAvailableSemaphore(),
             m_deviceContext->m_mainSwapchain->renderFinishedSemaphore());
 
@@ -580,6 +567,11 @@ bool VulkanDeviceContext::init(const Settings& settings)
         return false;
     }
     if (!m_pipelineCache.init(this)) {
+        return false;
+    }
+
+    m_recodingCommandBuffer = makeRef<VulkanCommandBuffer>();
+    if (!m_recodingCommandBuffer->init(this)) {
         return false;
     }
 
@@ -1386,6 +1378,15 @@ Result VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow*
     }
     m_currentFrame = 0;
 
+
+    m_inFlightCommandBuffers.resize(m_swapchainRenderTargets.size());
+    for (size_t i = 0; i < m_inFlightCommandBuffers.size(); i++) {
+        m_inFlightCommandBuffers[i] = makeRef<VulkanCommandBuffer>();
+        if (!m_inFlightCommandBuffers[i]->init(m_deviceContext)) {
+            return false;
+        }
+    }
+
 	m_colorBuffer = makeRef<VulkanRenderTarget>();
 	return true;
 }
@@ -1393,6 +1394,13 @@ Result VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow*
 void VulkanSwapChain::dispose()
 {
     VkDevice device = m_deviceContext->vulkanDevice();
+
+    for (auto c : m_inFlightCommandBuffers) {
+        if (c) {
+            c->dispose();
+        }
+    }
+    m_inFlightCommandBuffers.clear();
 
     for (auto& x : m_imageAvailableSemaphores) {
         vkDestroySemaphore(device, x, m_deviceContext->vulkanAllocator());
@@ -1452,7 +1460,7 @@ void VulkanSwapChain::present()
     presentInfo.waitSemaphoreCount = 1;
     presentInfo.pWaitSemaphores = &m_renderFinishedSemaphores[m_currentFrame]; // このセマフォの通知を待ってから実際に present する
 
-    VkSwapchainKHR swapChains[] = { m_deviceContext->m_mainSwapchain->vulkanSwapchain() };
+    VkSwapchainKHR swapChains[] = { vulkanSwapchain() };
     presentInfo.swapchainCount = 1;
     presentInfo.pSwapchains = swapChains;
 
@@ -1467,6 +1475,13 @@ void VulkanSwapChain::present()
     }
     else if (result != VK_SUCCESS) {
         throw std::runtime_error("failed to present swap chain image!");
+    }
+
+    // Swap command buffer
+    {
+        auto t = m_deviceContext->recodingCommandBuffer();
+        m_deviceContext->setRecodingCommandBuffer(m_inFlightCommandBuffers[m_currentFrame]);
+        m_inFlightCommandBuffers[m_currentFrame] = t;
     }
 
     m_currentFrame = (m_currentFrame + 1) % maxFrameCount();
