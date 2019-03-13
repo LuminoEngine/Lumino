@@ -12,13 +12,78 @@ class Test_Graphics_DeviceContext : public ::testing::Test {};
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_DeviceContext, Clear)
 {
+    auto shader1 = newObject<Shader>(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Graphics/Resource/VulkanSampleDeviceContext_26_shader_depth.lcfx");
+
+    auto texture1 = newObject<Texture2D>(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Graphics/Resource/texture.jpg");
+
+    struct Vertex {
+        Vector3 pos;
+        Vector3 color;
+        Vector2 texCoord;
+    };
+
+    std::vector<Vertex> vertices = {
+        {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+        {{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+        {{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+        {{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
+
+        {{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+        {{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+        {{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+        {{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}
+    };
+
+    const std::vector<uint16_t> indices = {
+        0, 1, 2, 2, 3, 0,
+        4, 5, 6, 6, 7, 4
+    };
+
+    auto vertexBuffer = newObject<VertexBuffer>(sizeof(Vertex) * vertices.size(), vertices.data(), GraphicsResourceUsage::Static);
+    auto indexBuffer = newObject<IndexBuffer>(indices.size(), IndexBufferFormat::UInt16, indices.data(), GraphicsResourceUsage::Static);
+
+    VertexElement elements[] = {
+        { 0, VertexElementType::Float3, VertexElementUsage::Position, 0 },
+        { 0, VertexElementType::Float3, VertexElementUsage::Color, 0 },
+        { 0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0 },
+    };
+    auto vertexDeclaration = newObject<VertexDeclaration>();
+    vertexDeclaration->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
+    vertexDeclaration->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Color, 0);
+    vertexDeclaration->addVertexElement(0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
+
+
     {
         while (1)
         {
+            static auto startTime = std::chrono::high_resolution_clock::now();
+
+            auto currentTime = std::chrono::high_resolution_clock::now();
+            float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+
+            Matrix model = Matrix::makeRotationY(time * 0.01);  //glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+            Matrix view = Matrix::makeLookAtLH(Vector3(2.0f, 2.0f, 2.0f), Vector3::Zero, Vector3::UnitZ);//glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+            Matrix proj = Matrix::makePerspectiveFovLH(0.3, 160.0 / 120.0, 0.1f, 10.0f);// glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 10.0f);
+            model.transpose();
+            view.transpose();
+            proj.transpose();
+            shader1->findParameter(u"model")->setMatrix(model);
+            shader1->findParameter(u"view")->setMatrix(view);
+            shader1->findParameter(u"proj")->setMatrix(proj);
+
+
+
+
             auto ctx = Engine::graphicsContext();
             TestEnv::resetGraphicsContext(ctx);
             //ctx->setDepthBuffer(nullptr);
             ctx->clear(ClearFlags::All, Color::Blue, 1.0f, 0);
+            ctx->setVertexDeclaration(vertexDeclaration);
+            ctx->setVertexBuffer(0, vertexBuffer);
+            ctx->setIndexBuffer(indexBuffer);
+            ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
+            ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+            ctx->drawPrimitiveIndexed(0, 4);
             ctx->present(Engine::mainWindow()->swapChain());
             Thread::sleep(10);
         }

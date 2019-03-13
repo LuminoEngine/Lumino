@@ -122,6 +122,7 @@
 #pragma comment(lib, "BulletDynamics" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "BulletSoftBody" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "Box2D" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "vulkan-1.lib")
 #endif
 
 #ifdef _DEBUG

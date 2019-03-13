@@ -651,17 +651,29 @@ Ref<ISwapChain> VulkanDeviceContext::onCreateSwapChain(PlatformWindow* window, c
 
 Ref<IVertexDeclaration> VulkanDeviceContext::onCreateVertexDeclaration(const VertexElement* elements, int elementsCount)
 {
-	return nullptr;
+    auto ptr = makeRef<VulkanVertexDeclaration>();
+    if (!ptr->init(elements, elementsCount)) {
+        return nullptr;
+    }
+    return ptr;
 }
 
 Ref<IVertexBuffer> VulkanDeviceContext::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
 {
-	return nullptr;
+    auto ptr = makeRef<VulkanVertexBuffer>();
+    if (!ptr->init(this, usage, bufferSize, initialData)) {
+        return nullptr;
+    }
+	return ptr;
 }
 
 Ref<IIndexBuffer> VulkanDeviceContext::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
 {
-	return nullptr;
+    auto ptr = makeRef<VulkanIndexBuffer>();
+    if (!ptr->init(this, usage, format, indexCount, initialData)) {
+        return nullptr;
+    }
+	return ptr;
 }
 
 Ref<ITexture> VulkanDeviceContext::onCreateTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
@@ -2431,19 +2443,71 @@ Result VulkanShaderUniformBuffer::init(VulkanDeviceContext* deviceContext, const
         return false;
     }
 
+    for (auto& member : members) {
+        auto buf = makeRef<VulkanShaderUniform>();
+        if (!buf->init(member)) {
+            return false;
+        }
+        m_members.push_back(buf);
+    }
+
 	return true;
 }
 
 void VulkanShaderUniformBuffer::dispose()
 {
+    for (auto& member : m_members) {
+        member->dispose();
+    }
+    m_members.clear();
+
     m_uniformBuffer.dispose();
 	IShaderUniformBuffer::dispose();
+}
+
+IShaderUniform* VulkanShaderUniformBuffer::getUniform(int index) const
+{
+    return m_members[index];
 }
 
 void VulkanShaderUniformBuffer::setData(const void* data, size_t size)
 {
 	LN_DCHECK(size <= m_data.size());
 	memcpy(m_data.data(), data, size);
+}
+
+//=============================================================================
+// VulkanShaderUniform
+
+VulkanShaderUniform::VulkanShaderUniform()
+{
+}
+
+Result VulkanShaderUniform::init(const ShaderUniformInfo& info)
+{
+    m_name = info.name;
+    m_desc.type2 = (ShaderUniformType)info.type;
+    m_desc.rows = info.matrixRows;
+    m_desc.columns = info.matrixColumns;
+    m_desc.elements = info.arrayElements;
+
+    if (m_desc.columns == 0) { // OpenGL Dirver の動作に合わせる
+        m_desc.columns = info.vectorElements * sizeof(float);
+    }
+
+    m_desc.offset = info.offset;
+    //m_desc.size = 0;
+    if (info.arrayElements > 0) {
+        m_desc.arrayStride = info.elementSize();
+    }
+    m_desc.matrixStride = info.matrixColumns * sizeof(float);
+
+    return true;
+}
+
+void VulkanShaderUniform::dispose()
+{
+    IShaderUniform::dispose();
 }
 
 //=============================================================================

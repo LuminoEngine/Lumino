@@ -24,6 +24,7 @@ namespace detail {
 class VulkanSwapChain;
 class VulkanRenderTarget;
 class VulkanShaderUniformBuffer;
+class VulkanShaderUniform;
 class VulkanLocalShaderSamplerBuffer;
 
 class VulkanDeviceContext
@@ -437,8 +438,8 @@ public:
 	virtual void dispose() override;
 
 	virtual const std::string& name() const override { return m_name; }
-	virtual int getUniformCount() const override { return 0; }
-	virtual IShaderUniform* getUniform(int index) const override { return nullptr; }
+	virtual int getUniformCount() const override { return m_members.size(); }
+    virtual IShaderUniform* getUniform(int index) const override;
 	virtual size_t bufferSize() const override { return m_data.size(); }
 	virtual void setData(const void* data, size_t size) override;
 
@@ -453,8 +454,23 @@ private:
 	std::vector<byte_t> m_data;
 	std::vector<int> m_bindingNumbers;
     VulkanBuffer m_uniformBuffer;
+    std::vector<Ref<VulkanShaderUniform>> m_members;
 };
 
+class VulkanShaderUniform
+    : public IShaderUniform
+{
+public:
+    VulkanShaderUniform();
+    Result init(const ShaderUniformInfo& info);
+    virtual void dispose() override;
+    virtual const ShaderUniformTypeDesc& desc() const override { return m_desc; }
+    virtual const std::string& name() const override { return m_name; }
+
+private:
+    ShaderUniformTypeDesc m_desc;
+    std::string m_name;
+};
 
 class VulkanLocalShaderSamplerBuffer
     : public IShaderSamplerBuffer
