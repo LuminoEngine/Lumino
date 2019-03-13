@@ -34,10 +34,15 @@ void GraphicsContext::init(detail::IGraphicsDeviceContext* device)
 	m_device = device;
     m_lastCommit.reset();
 	resetState();
+	m_device->begin();
 }
 
 void GraphicsContext::onDispose(bool explicitDisposing)
 {
+	if (m_device) {
+		m_device->end();
+		m_device = nullptr;
+	}
     m_lastCommit.reset();
     m_staging.reset();
     Object::onDispose(explicitDisposing);
@@ -181,10 +186,14 @@ void GraphicsContext::present(SwapChain* swapChain)
 {
 	if (LN_REQUIRE(swapChain)) return;
 
+	m_device->end();
+
 	// TODO: threading
 	m_device->present(swapChain->resolveRHIObject());
     m_manager->primaryRenderingCommandList()->clear();
     swapChain->onPostPresent();
+
+	m_device->begin();
 }
 
 detail::IGraphicsDeviceContext* GraphicsContext::commitState()

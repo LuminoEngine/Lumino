@@ -44,7 +44,6 @@ struct DevicePipelineState
 	RasterizerStateDesc rasterizerState;
 	DepthStencilStateDesc depthStencilState;
 	IVertexDeclaration* vertexDeclaration = nullptr;
-	IShaderPass* shaderPass = nullptr;
 	PrimitiveTopology topology = PrimitiveTopology::TriangleList;
 };
 
@@ -52,6 +51,18 @@ struct DeviceFramebufferState
 {
 	std::array<ITexture*, MaxMultiRenderTargets> renderTargets = {};
 	IDepthBuffer* depthBuffer = nullptr;
+};
+
+struct DeviceRegionRectsState
+{
+	RectI viewportRect;
+	RectI scissorRect;
+};
+
+struct DevicePrimitiveState
+{
+	std::array<IVertexBuffer*, MaxVertexStreams> vertexBuffers = {};
+	IIndexBuffer* indexBuffer = nullptr;
 };
 
 struct ShaderVertexInputAttribute
@@ -79,16 +90,24 @@ class IGraphicsDeviceContext
 	: public RefObject
 {
 public:
+	enum StateDirtyFlags
+	{
+		StateDirtyFlags_None = 0x0000,
+		StateDirtyFlags_PipelineState = 0x0001,
+		StateDirtyFlags_FrameBuffers = 0x0002,
+		StateDirtyFlags_RegionRects = 0x0004,
+		StateDirtyFlags_Primitives = 0x0008,
+		StateDirtyFlags_ShaderPass = 0x0010,
+		StateDirtyFlags_All = 0xFFFF,
+	};
+
 	struct State
 	{
-		std::array<IVertexBuffer*, MaxVertexStreams> vertexBuffers = {};
-		IIndexBuffer* indexBuffer = nullptr;
-
-		RectI viewportRect;
-		RectI scissorRect;
-
 		DevicePipelineState pipelineState;
 		DeviceFramebufferState framebufferState;
+		DeviceRegionRectsState regionRects;
+		DevicePrimitiveState primitive;
+		IShaderPass* shaderPass = nullptr;
 	};
 
 
@@ -114,8 +133,9 @@ public:
 	Ref<IDepthBuffer> createDepthBuffer(uint32_t width, uint32_t height);
 	Ref<ISamplerState> createSamplerState(const SamplerStateData& desc);
 	Ref<IShaderPass> createShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
-    // TODO: ↑ 多くの場合、VertexShader は共有、とかするので、わけで作れるようにしておくとリソース効率がいい。
 
+	void begin();
+	void end();
 	void setBlendState(const BlendStateDesc& value);
 	void setRasterizerState(const RasterizerStateDesc& value);
 	void setDepthStencilState(const DepthStencilStateDesc& value);
@@ -156,6 +176,8 @@ protected:
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) = 0;
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) = 0;
 
+	virtual void onBeginCommandRecoding() = 0;
+	virtual void onEndCommandRecoding() = 0;
 	virtual void onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState) = 0;
 	virtual void onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer) = 0;
 	virtual void onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize) = 0;
@@ -174,6 +196,7 @@ private:
 	void commitStatus();
 
 	GraphicsDeviceCaps m_caps;
+	uint32_t m_stateDirtyFlags;
 	State m_staging;
     State m_committed;
 };

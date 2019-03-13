@@ -103,59 +103,97 @@ Ref<IShaderPass> IGraphicsDeviceContext::createShaderPass(const ShaderPassCreate
 	return pass;
 }
 
+void IGraphicsDeviceContext::begin()
+{
+	m_stateDirtyFlags = StateDirtyFlags_All;
+	onBeginCommandRecoding();
+}
+
+void IGraphicsDeviceContext::end()
+{
+	onEndCommandRecoding();
+}
+
 void IGraphicsDeviceContext::setBlendState(const BlendStateDesc& value)
 {
 	m_staging.pipelineState.blendState = value;
+	m_stateDirtyFlags |= StateDirtyFlags_PipelineState;
 }
 
 void IGraphicsDeviceContext::setRasterizerState(const RasterizerStateDesc& value)
 {
 	m_staging.pipelineState.rasterizerState = value;
+	m_stateDirtyFlags |= StateDirtyFlags_PipelineState;
 }
 
 void IGraphicsDeviceContext::setDepthStencilState(const DepthStencilStateDesc& value)
 {
 	m_staging.pipelineState.depthStencilState = value;
+	m_stateDirtyFlags |= StateDirtyFlags_PipelineState;
 }
 
 void IGraphicsDeviceContext::setColorBuffer(int index, ITexture* value)
 {
-	m_staging.framebufferState.renderTargets[index] = value;
+	if (m_staging.framebufferState.renderTargets[index] != value) {
+		m_staging.framebufferState.renderTargets[index] = value;
+		m_stateDirtyFlags |= StateDirtyFlags_FrameBuffers;
+	}
 }
 
 void IGraphicsDeviceContext::setDepthBuffer(IDepthBuffer* value)
 {
-	m_staging.framebufferState.depthBuffer = value;
+	if (m_staging.framebufferState.depthBuffer != value) {
+		m_staging.framebufferState.depthBuffer = value;
+		m_stateDirtyFlags |= StateDirtyFlags_FrameBuffers;
+	}
 }
 
 void IGraphicsDeviceContext::setViewportRect(const RectI& value)
 {
-	m_staging.viewportRect = value;
+	if (m_staging.regionRects.viewportRect != value) {
+		m_staging.regionRects.viewportRect = value;
+		m_stateDirtyFlags |= StateDirtyFlags_RegionRects;
+	}
 }
 
 void IGraphicsDeviceContext::setScissorRect(const RectI& value)
 {
-	m_staging.scissorRect = value;
+	if (m_staging.regionRects.scissorRect != value) {
+		m_staging.regionRects.scissorRect = value;
+		m_stateDirtyFlags |= StateDirtyFlags_RegionRects;
+	}
 }
 
 void IGraphicsDeviceContext::setVertexDeclaration(IVertexDeclaration* value)
 {
-	m_staging.pipelineState.vertexDeclaration = value;
+	if (m_staging.pipelineState.vertexDeclaration != value) {
+		m_staging.pipelineState.vertexDeclaration = value;
+		m_stateDirtyFlags |= StateDirtyFlags_PipelineState;
+	}
 }
 
 void IGraphicsDeviceContext::setVertexBuffer(int streamIndex, IVertexBuffer* value)
 {
-	m_staging.vertexBuffers[streamIndex] = value;
+	if (m_staging.primitive.vertexBuffers[streamIndex] != value) {
+		m_staging.primitive.vertexBuffers[streamIndex] = value;
+		m_stateDirtyFlags |= StateDirtyFlags_Primitives;
+	}
 }
 
 void IGraphicsDeviceContext::setIndexBuffer(IIndexBuffer* value)
 {
-	m_staging.indexBuffer = value;
+	if (m_staging.primitive.indexBuffer != value) {
+		m_staging.primitive.indexBuffer = value;
+		m_stateDirtyFlags |= StateDirtyFlags_Primitives;
+	}
 }
 
 void IGraphicsDeviceContext::setShaderPass(IShaderPass* value)
 {
-	m_staging.pipelineState.shaderPass = value;
+	if (m_staging.shaderPass != value) {
+		m_staging.shaderPass = value;
+		m_stateDirtyFlags |= StateDirtyFlags_ShaderPass;
+	}
 }
 
 void IGraphicsDeviceContext::setPrimitiveTopology(PrimitiveTopology value)
@@ -287,15 +325,16 @@ void IGraphicsDeviceContext::commitStatus()
 
 	onUpdatePipelineState(m_staging.pipelineState.blendState, m_staging.pipelineState.rasterizerState, m_staging.pipelineState.depthStencilState);
 
-	onUpdateShaderPass(m_staging.pipelineState.shaderPass);
+	onUpdateShaderPass(m_staging.shaderPass);
 
 	onUpdateFrameBuffers(m_staging.framebufferState.renderTargets.data(), m_staging.framebufferState.renderTargets.size(), m_staging.framebufferState.depthBuffer);
 
-	onUpdateRegionRects(m_staging.viewportRect, m_staging.scissorRect, m_staging.framebufferState.renderTargets[0]->realSize());
+	onUpdateRegionRects(m_staging.regionRects.viewportRect, m_staging.regionRects.scissorRect, m_staging.framebufferState.renderTargets[0]->realSize());
 
-	onUpdatePrimitiveData(m_staging.pipelineState.vertexDeclaration, m_staging.vertexBuffers.data(), m_staging.vertexBuffers.size(), m_staging.indexBuffer);
+	onUpdatePrimitiveData(m_staging.pipelineState.vertexDeclaration, m_staging.primitive.vertexBuffers.data(), m_staging.primitive.vertexBuffers.size(), m_staging.primitive.indexBuffer);
 	
     m_committed = m_staging;
+	m_stateDirtyFlags = StateDirtyFlags_None;
 }
 
 //=============================================================================

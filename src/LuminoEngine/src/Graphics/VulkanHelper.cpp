@@ -883,46 +883,60 @@ Result VulkanDescriptorSetsPool::init(VulkanDeviceContext* deviceContext, Vulkan
     LN_DCHECK(owner);
     m_deviceContext = deviceContext;
     m_owner = owner;
-
-    uint32_t count = 32;    // TODO:
-
-    std::array<VkDescriptorPoolSize, DescriptorType_Count> poolSizes;
-    poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    poolSizes[0].descriptorCount = count;
-    poolSizes[1].type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;//VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    poolSizes[1].descriptorCount = count;
-    poolSizes[2].type = VK_DESCRIPTOR_TYPE_SAMPLER;//VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
-    poolSizes[2].descriptorCount = count;
-
-    VkDescriptorPoolCreateInfo poolInfo = {};
-    poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-    poolInfo.maxSets = count;// static_cast<uint32_t>(poolSizes.size());//static_cast<uint32_t>(swapChainImages.size());
-    poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
-    poolInfo.pPoolSizes = poolSizes.data();
-
-    LN_VK_CHECK(vkCreateDescriptorPool(m_deviceContext->vulkanDevice(), &poolInfo, m_deviceContext->vulkanAllocator(), &m_descriptorPool));
-
+	m_activePageUsedCount = 0;
 	return true;
 }
 
 void VulkanDescriptorSetsPool::dispose()
 {
-    if (m_descriptorPool) {
-        vkDestroyDescriptorPool(m_deviceContext->vulkanDevice(), m_descriptorPool, m_deviceContext->vulkanAllocator());
-        m_descriptorPool = VK_NULL_HANDLE;
-    }
+	for (auto& page : m_pages) {
+		vkDestroyDescriptorPool(m_deviceContext->vulkanDevice(), page, m_deviceContext->vulkanAllocator());
+	}
+	m_pages.clear();
+	m_freePages.clear();
+	m_activePage = VK_NULL_HANDLE;
 }
 
 Result VulkanDescriptorSetsPool::allocateDescriptorSets(VulkanCommandBuffer* commandBuffer, std::array<VkDescriptorSet, DescriptorType_Count>* sets)
 {
+	if (!m_activePage || m_activePageUsedCount >= MAX_DESCRIPTOR_COUNT)
+	{
+		// active pool を使い切ったので次の pool を確保
+
+		m_activePage = VK_NULL_HANDLE;
+		if (!m_freePages.empty()) {
+			m_activePage = m_freePages.front();
+			m_freePages.pop_front();
+		}
+
+		if (!m_activePage) {
+			std::array<VkDescriptorPoolSize, DescriptorType_Count> poolSizes;
+			poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			poolSizes[0].descriptorCount = MAX_DESCRIPTOR_COUNT;
+			poolSizes[1].type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;//VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			poolSizes[1].descriptorCount = MAX_DESCRIPTOR_COUNT;
+			poolSizes[2].type = VK_DESCRIPTOR_TYPE_SAMPLER;//VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
+			poolSizes[2].descriptorCount = MAX_DESCRIPTOR_COUNT;
+
+			VkDescriptorPoolCreateInfo poolInfo = {};
+			poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+			poolInfo.maxSets = MAX_DESCRIPTOR_COUNT;// static_cast<uint32_t>(poolSizes.size());//static_cast<uint32_t>(swapChainImages.size());
+			poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+			poolInfo.pPoolSizes = poolSizes.data();
+
+			LN_VK_CHECK(vkCreateDescriptorPool(m_deviceContext->vulkanDevice(), &poolInfo, m_deviceContext->vulkanAllocator(), &m_activePage));
+			m_pages.push_back(m_activePage);
+		}
+
+		m_activePageUsedCount = 0;
+	}
+
     VkDescriptorSetAllocateInfo allocInfo;
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     allocInfo.pNext = nullptr;
-    allocInfo.descriptorPool = m_descriptorPool;
+    allocInfo.descriptorPool = m_activePage;
     allocInfo.descriptorSetCount = m_owner->descriptorSetLayouts().size();
     allocInfo.pSetLayouts = m_owner->descriptorSetLayouts().data();
-
-    // TODO: 使い切ったときの Page 追加
     LN_VK_CHECK(vkAllocateDescriptorSets(m_deviceContext->vulkanDevice(), &allocInfo, sets->data()));
 
     const std::vector<VkWriteDescriptorSet>& writeInfos = m_owner->submitDescriptorWriteInfo(commandBuffer, *sets);
@@ -934,7 +948,12 @@ Result VulkanDescriptorSetsPool::allocateDescriptorSets(VulkanCommandBuffer* com
 
 void VulkanDescriptorSetsPool::reset()
 {
-    vkResetDescriptorPool(m_deviceContext->vulkanDevice(), m_descriptorPool, 0);
+	for (auto& page : m_pages) {
+		vkResetDescriptorPool(m_deviceContext->vulkanDevice(), page, 0);
+		m_freePages.push_back(page);
+	}
+
+	m_activePage = VK_NULL_HANDLE;
 }
 
 //uint32_t VulkanDescriptorSetCache::computeHash(const DescriptorLayout& layoutInfo)
@@ -1309,7 +1328,7 @@ Result VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsD
     m_deviceContext = deviceContext;
 
     auto* vertexDeclaration = static_cast<VulkanVertexDeclaration*>(state.pipelineState.vertexDeclaration);
-    m_relatedShaderPass = static_cast<VulkanShaderPass*>(state.pipelineState.shaderPass);
+    m_relatedShaderPass = static_cast<VulkanShaderPass*>(state.shaderPass);
     //m_relatedFramebuffer = m_deviceContext->framebufferCache()->findOrCreate(state.framebufferState);
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
@@ -1357,15 +1376,15 @@ Result VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsD
     VkViewport viewport = {};
     viewport.x = 0.0f;
     viewport.y = 0.0f;
-    viewport.width = state.viewportRect.width; //(float)swapChainExtent.width;
-    viewport.height = state.viewportRect.height;//(float)swapChainExtent.height;
+    viewport.width = state.regionRects.viewportRect.width; //(float)swapChainExtent.width;
+    viewport.height = state.regionRects.viewportRect.height;//(float)swapChainExtent.height;
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
 
     VkRect2D scissor = {};
     scissor.offset = { 0, 0 };
-    scissor.extent.width = state.viewportRect.width;;
-    scissor.extent.height = state.viewportRect.height;;
+    scissor.extent.width = state.regionRects.scissorRect.width;;
+    scissor.extent.height = state.regionRects.scissorRect.height;;
 
     VkPipelineViewportStateCreateInfo viewportState = {};
     viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -1457,7 +1476,7 @@ uint64_t VulkanPipeline::computeHash(const IGraphicsDeviceContext::State& state)
     auto* vertexDeclaration = static_cast<VulkanVertexDeclaration*>(state.pipelineState.vertexDeclaration);
     MixHash hash;
     hash.add(vertexDeclaration->hash());
-    hash.add(static_cast<VulkanShaderPass*>(state.pipelineState.shaderPass));
+    hash.add(static_cast<VulkanShaderPass*>(state.shaderPass));
     hash.add(VulkanFramebufferCache::computeHash(state.framebufferState));
     return hash.value();
 }

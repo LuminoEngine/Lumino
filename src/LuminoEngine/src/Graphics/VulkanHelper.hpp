@@ -247,9 +247,15 @@ public:
     void reset();
 
 private:
+	static const uint32_t MAX_DESCRIPTOR_COUNT = 32;
     VulkanDeviceContext* m_deviceContext;
     VulkanShaderPass* m_owner;
-    VkDescriptorPool m_descriptorPool;
+    //VkDescriptorPool m_descriptorPool;
+
+	std::vector<VkDescriptorPool> m_pages;		// page instances
+	std::deque<VkDescriptorPool> m_freePages;	// page references
+	VkDescriptorPool m_activePage;
+	uint32_t m_activePageUsedCount;
 };
 
 template<class T, class TSubClass>

@@ -413,12 +413,12 @@ public:
 
 
         IGraphicsDeviceContext::State state;
-        state.pipelineState.shaderPass = m_shaderPass;
+        state.shaderPass = m_shaderPass;
         state.pipelineState.vertexDeclaration = m_vertexDeclaration;
         state.framebufferState.renderTargets[0] = m_deviceContext->m_mainSwapchain->swapchainRenderTargets()[0];
         state.framebufferState.depthBuffer = m_depthImage;
-        state.viewportRect.width = m_deviceContext->m_mainSwapchain->vulkanSwapchainExtent().width;
-        state.viewportRect.height = m_deviceContext->m_mainSwapchain->vulkanSwapchainExtent().height;
+        state.regionRects.viewportRect.width = m_deviceContext->m_mainSwapchain->vulkanSwapchainExtent().width;
+        state.regionRects.viewportRect.height = m_deviceContext->m_mainSwapchain->vulkanSwapchainExtent().height;
         VulkanPipeline* graphicsPipeline = m_deviceContext->pipelineCache()->findOrCreate(state, framebuffer->vulkanRenderPass());
 
 
@@ -707,6 +707,16 @@ Ref<IShaderPass> VulkanDeviceContext::onCreateShaderPass(const ShaderPassCreateI
         return nullptr;
     }
     return ptr;
+}
+
+void VulkanDeviceContext::onBeginCommandRecoding()
+{
+	m_recodingCommandBuffer->beginRecording();
+}
+
+void VulkanDeviceContext::onEndCommandRecoding()
+{
+	m_recodingCommandBuffer->endRecording();
 }
 
 void VulkanDeviceContext::onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState)
@@ -1235,7 +1245,7 @@ Result VulkanDeviceContext::transitionImageLayout(VkImage image, VkFormat format
 
 Result VulkanDeviceContext::submitStatus(const State& state)
 {
-    m_recodingCommandBuffer->beginRecording();
+    //m_recodingCommandBuffer->beginRecording();
 
 
 
@@ -1321,7 +1331,7 @@ Result VulkanDeviceContext::submitStatus(const State& state)
 
     vkCmdEndRenderPass(m_recodingCommandBuffer->vulkanCommandBuffer());
 
-    m_recodingCommandBuffer->endRecording();
+    //m_recodingCommandBuffer->endRecording();
 
 
 
