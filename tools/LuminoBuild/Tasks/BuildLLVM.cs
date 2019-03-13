@@ -19,7 +19,9 @@ namespace LuminoBuild.Tasks
 
             if (!Directory.Exists("llvm-project"))
             {
-                Utils.CallProcess("git", "clone --progress --depth 1 -b llvmorg-7.0.1 https://github.com/llvm/llvm-project.git llvm-project");
+                Utils.CallProcess("git", "clone --progress --depth 1 -b llvmorg-7.0.0 https://github.com/llvm/llvm-project.git llvm-project");
+                //Utils.CallProcess("git", "clone --progress --depth 1 -b llvmorg-7.0.1 https://github.com/llvm/llvm-project.git llvm-project");
+                //Utils.CallProcess("git", "clone --progress --depth 1 -b llvmorg-8.0.0-rc5 https://github.com/llvm/llvm-project.git llvm-project");
             }
 
             /* 
@@ -53,12 +55,14 @@ namespace LuminoBuild.Tasks
                 $"-DCMAKE_INSTALL_PREFIX=\"{installDir}\"",
                 $"-DCMAKE_DEBUG_POSTFIX=d",
                 $"-DCMAKE_CXX_FLAGS=\"/MP\"",
-/*
                 // 以下、デフォルトONだけどいらなそうなのでOFF
                 // https://www.llvm.org/docs/CMake.html
-                $"-DCLANG_BUILD_TOOLS=OFF",
+                //$"-DCLANG_BUILD_TOOLS=OFF",
                 $"-DCLANG_INCLUDE_DOCS=OFF",
                 $"-DCLANG_INCLUDE_TESTS=OFF",
+                //$"-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY",
+                //$"-DLLVM_USE_SANITIZER=Memory",
+/*
                 $"-DLLVM_ADD_NATIVE_VISUALIZERS_TO_SOLUTION=OFF",
                 $"-DLLVM_BUILD_RUNTIME=OFF",
                 $"-DLLVM_BUILD_RUNTIMES=OFF",
@@ -74,12 +78,12 @@ namespace LuminoBuild.Tasks
                 $"-DLLVM_INCLUDE_EXAMPLES=OFF",
                 $"-DLLVM_INCLUDE_GO_TESTS=OFF",
                 $"-DLLVM_INCLUDE_RUNTIMES=OFF",
-                $"-DLLVM_INCLUDE_TESTS=OFF",
-                $"-DLLVM_INCLUDE_TOOLS=OFF",
-                $"-DLLVM_INCLUDE_UTILS=OFF",
-                $"-DLLVM_POLLY_BUILD=OFF",
-                $"-DLLVM_POLLY_LINK_INTO_TOOLS=OFF",
                  */
+                //$"-DLLVM_INCLUDE_TESTS=OFF",
+                //$"-DLLVM_INCLUDE_TOOLS=OFF",
+                //$"-DLLVM_INCLUDE_UTILS=OFF",
+                //$"-DLLVM_POLLY_BUILD=OFF",
+                //$"-DLLVM_POLLY_LINK_INTO_TOOLS=OFF",
             };
 
             Utils.CallProcess("cmake", string.Join(' ', args));
