@@ -235,8 +235,8 @@ void Shader::init(const StringRef& vertexShaderFilePath, const StringRef& pixelS
 
 		createFromUnifiedShader(compiler.unifiedShader(), localDiag);
 #else
-LN_NOTIMPLEMENTED();
-return nullptr;
+        LN_NOTIMPLEMENTED();
+        return;
 #endif
 	}
     //createSinglePassShader(

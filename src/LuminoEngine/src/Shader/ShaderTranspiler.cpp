@@ -637,6 +637,21 @@ bool ShaderCodeTranspiler::mapIOAndGenerateSpirv(const DescriptorLayout& mergedD
                     symbol->getWritableType().getQualifier().layoutSet = DescriptorType_UniformBuffer;//itr->binding;
                     symbol->getWritableType().getQualifier().layoutBinding = itr->binding;
                 }
+
+				// glslang::EShSourceHlsl で program を作ると、デフォルトの MatrixLayout が row_major となる。(ElmNone を指定しても layout(row_major) が付く)
+				// ひとまずここで、GLSL デフォルトの column_major に変えておく。https://www.khronos.org/opengl/wiki/Interface_Block_(GLSL)
+				//const glslang::TTypeList* glslangMembers = symbol->getType().getStruct();
+				//for (int i = 0; i < (int)glslangMembers->size(); i++) {
+				//	glslang::TType& glslangMember = *(*glslangMembers)[i].type;
+				//	glslang::TQualifier& memberQualifier = glslangMember.getQualifier();
+				//	if (glslangMember.isMatrix()) {
+				//		glslangMember.getQualifier().layoutMatrix = glslang::ElmColumnMajor;
+				//	}
+				//}
+				// mat3x4 : 縦3, 横4
+				// https://www.khronos.org/opengl/wiki/Data_Type_(GLSL)#Matrices
+				// https://seesaawiki.jp/w/mikk_ni3_92/d/GLM%CA%D401
+
             }
             else if (symbol->getBasicType() == glslang::EbtSampler) {
                 // texture と SamplerState　EbtSampler
@@ -662,6 +677,21 @@ bool ShaderCodeTranspiler::mapIOAndGenerateSpirv(const DescriptorLayout& mergedD
                 }
                 //EsdNone
             }
+
+			//{
+
+			//	auto& type = symbol->getWritableType();
+			//	if (type.isMatrix()) {
+			//		type.getQualifier().layoutMatrix = glslang::ElmColumnMajor;
+			//	}
+			//}
+			//else if (symbol->getBasicType() == glslang::EbtFloat) {
+			//	t.isMatrix
+			//	if (t.getMatrixRows() >= 1 && t.getMatrixCols() >= 1) {
+			//		t.getQualifier().layoutMatrix = glslang::ElmColumnMajor;
+			//		//printf("");
+			//	}
+			//}
 
             //if (symbol->getName() == "g_texture1")
             //{
