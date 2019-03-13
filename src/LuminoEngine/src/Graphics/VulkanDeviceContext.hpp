@@ -498,8 +498,9 @@ private:
     struct Entry
     {
         DescriptorType type;
-        std::string textureRegisterName;
-        std::string samplerRegisterName;
+        std::string name;
+        //std::string textureRegisterName;
+        //std::string samplerRegisterName;
         Ref<VulkanTexture> texture;
         Ref<VulkanSamplerState> samplerState;
         uint32_t descriptorImageInfoIndex;

@@ -678,8 +678,11 @@ Ref<IIndexBuffer> VulkanDeviceContext::onCreateIndexBuffer(GraphicsResourceUsage
 
 Ref<ITexture> VulkanDeviceContext::onCreateTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
-	LN_NOTIMPLEMENTED();
-	return nullptr;
+    auto ptr = makeRef<VulkanTexture2D>();
+    if (!ptr->init(this, width, height, TextureFormat::RGBA32, false, initialData)) {
+        return nullptr;
+    }
+	return ptr;
 }
 
 Ref<ITexture> VulkanDeviceContext::onCreateTexture3D(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
@@ -2562,12 +2565,7 @@ void VulkanLocalShaderSamplerBuffer::addDescriptor(DescriptorType type, uint32_t
 {
 	Entry e;
     e.type = type;
-	if (type == DescriptorType_Texture) {
-		e.textureRegisterName = name;
-	}
-	else {
-		e.samplerRegisterName = name;
-	}
+	e.name = name;
     e.descriptorImageInfoIndex = imageInfoIndex;
 	e.descriptorWriteInfoIndex = writeInfoIndex;
 	e.bindingIndex = bindingIndex;

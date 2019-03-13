@@ -59,7 +59,13 @@ enum ShaderUniformType
     ShaderUniformType_Matrix = 9,
     //ShaderUniformType_MatrixArray = 10,
     ShaderUniformType_Texture = 11,
-	ShaderUniformType_SamplerState = 12,	// HLSL の SamplerState
+	ShaderUniformType_SamplerState = 12,	// HLSL の SamplerState または samplerXX
+
+    // SamplerState か samplerXX であるかは glslang では区別ができない。
+
+    // https://docs.microsoft.com/en-us/windows/desktop/direct3dhlsl/dx-graphics-hlsl-sampler
+    // http://www.kanazawa-net.ne.jp/~pmansato/wpf/wpf_graph_effectsample.htm
+
 
 	// texture 型 uniform は "COMBINED_IMAGE_SAMPLER" と呼ばれている。
 	// Lumino の OpenGL ドライバは UnifiedShader としては CombinedImageSampler は扱わない。

@@ -71,6 +71,8 @@ TEST_F(Test_Graphics_DeviceContext, Clear)
             shader1->findParameter(u"view")->setMatrix(view);
             shader1->findParameter(u"proj")->setMatrix(proj);
 
+            shader1->findParameter(u"g_texture1")->setTexture(texture1);
+            shader1->findParameter(u"g_samplerState1")->setTexture(texture1);
 
 
 

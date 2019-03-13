@@ -3,12 +3,14 @@ float4x4 model;
 float4x4 view;
 float4x4 proj;
 
+//sampler2D g_sampler;
 //cbuffer Buf2 {
 //	float4 _Color;
 //}
 
 Texture2D g_texture1;
 SamplerState g_samplerState1;
+
 
 //Texture2D g_texture2;
 //SamplerState g_samplerState2;
@@ -51,8 +53,9 @@ struct PS_INPUT
 
 float4 psMain(PS_INPUT input) : SV_Target
 {
+	//float4 color2 = tex2D(g_sampler, input.TexCoord);
     //return float4(input.TexCoord, 0, 1);
-    return g_texture1.Sample(g_samplerState1, input.TexCoord);// + g_texture2.Sample(g_samplerState2, input.TexCoord) + _Color;
+    return /*color2 + */ g_texture1.Sample(g_samplerState1, input.TexCoord);// + g_texture2.Sample(g_samplerState2, input.TexCoord) + _Color;
 }
 
 technique MainTech
