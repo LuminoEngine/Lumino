@@ -406,7 +406,7 @@ class IShaderSamplerBuffer
 public:
 	virtual int registerCount() const = 0;
 	virtual const std::string& getTextureRegisterName(int registerIndex) const = 0;
-	virtual const std::string& getSamplerRegisterName(int registerIndex) const = 0;
+	//virtual const std::string& getSamplerRegisterName(int registerIndex) const = 0;
 	virtual void setTexture(int registerIndex, ITexture* texture) = 0;
 	virtual void setSamplerState(int registerIndex, ISamplerState* state) = 0;
 

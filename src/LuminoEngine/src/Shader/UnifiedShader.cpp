@@ -798,6 +798,8 @@ bool UnifiedShaderCompiler::compileSingleCodes(
 
 	tech.passes.push_back(std::move(pass));
 	m_metadataParser.techniques.push_back(std::move(tech));
+
+	return true;
 }
 
 bool UnifiedShaderCompiler::link()

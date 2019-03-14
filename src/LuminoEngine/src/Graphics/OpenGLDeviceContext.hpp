@@ -575,22 +575,37 @@ public:
 
 	virtual int registerCount() const override;
 	virtual const std::string& getTextureRegisterName(int registerIndex) const override;
-	virtual const std::string& getSamplerRegisterName(int registerIndex) const override;
+	//virtual const std::string& getSamplerRegisterName(int registerIndex) const override;
 	virtual void setTexture(int registerIndex, ITexture* texture) override;
 	virtual void setSamplerState(int registerIndex, ISamplerState* state) override;
 
 private:
-	struct Entry
+	// 外部に公開する Uniform 情報。
+	// lnCISlnTOg_texture1lnSOg_samplerState1 は、g_texture1 と g_samplerState1 の２つの uniform であるかのように公開する。
+	struct ExternalUnifrom
 	{
-		std::string textureRegisterName;
-		std::string samplerRegisterName;
-		GLint uniformLocation = -1;
-		ITexture* texture = nullptr;
+		std::string name;
+		GLTextureBase* texture = nullptr;
 		GLSamplerState* samplerState = nullptr;
-        GLint isRenderTargetUniformLocation = -1;
 	};
 
-	std::vector<Entry> m_table;
+	// 内部的な Uniform 情報。
+	// 実際の GLSL の Uniform と一致する。
+	struct Uniform
+	{
+		std::string name;	// lnCISlnTOg_texture1lnSOg_samplerState1 のような FullName
+		//std::string samplerRegisterName;
+		GLint uniformLocation = -1;
+        GLint isRenderTargetUniformLocation = -1;	// texture または sampler の場合、それが RenderTarget であるかを示す値を入力する Uniform の Loc。末尾が lnIsRT になっているもの。
+		int m_textureExternalUnifromIndex = -1;
+		int m_samplerExternalUnifromIndex = -1;
+		//ITexture* texture = nullptr;
+		//GLSamplerState* samplerState = nullptr;
+	};
+
+
+	std::vector<Uniform> m_table;
+	std::vector<ExternalUnifrom> m_externalUniforms;
 };
 
 //=============================================================================

@@ -822,24 +822,50 @@ void ShaderPass::commitContantBuffers()
     // TODO: 1つのバッファにまとめるとか、一括で送りたい。
     detail::IShaderSamplerBuffer* samplerBuffer = m_rhiPass->samplerBuffer();
     if (samplerBuffer) {
-        for (int i = 0; i < samplerBuffer->registerCount(); i++) {
-            auto* manager = m_owner->shader()->manager();
-            Texture* texture = m_textureParameters[i]->texture();
+		for (int i = 0; i < samplerBuffer->registerCount(); i++) {
+			auto* manager = m_owner->shader()->manager();
+			Texture* texture = m_textureParameters[i]->texture();
 
-            SamplerState* sampler;
-            if (texture && texture->samplerState()) {
-                sampler = texture->samplerState();
-            } else {
-                sampler = m_owner->shader()->manager()->defaultSamplerState();
-            }
+			if (texture) {
+#if 1
+				SamplerState* sampler = nullptr;
+				if (texture && texture->samplerState()) {
+					sampler = texture->samplerState();
+				}
+				else {
+					sampler = m_owner->shader()->manager()->defaultSamplerState();
+				}
 
-            detail::ITexture* rhiTexture = (texture) ? texture->resolveRHIObject() : nullptr;
-            detail::ISamplerState* rhiSampler = (sampler) ? sampler->resolveRHIObject() : nullptr;
-            LN_ENQUEUE_RENDER_COMMAND_4(
-                ShaderConstantBuffer_commit_setTexture, manager, detail::IShaderSamplerBuffer*, samplerBuffer, int, i, Ref<detail::ITexture>, rhiTexture, Ref<detail::ISamplerState>, rhiSampler, {
-                    samplerBuffer->setTexture(i, rhiTexture);
-                    samplerBuffer->setSamplerState(i, rhiSampler);
-                });
+				detail::ITexture* rhiTexture = (texture) ? texture->resolveRHIObject() : nullptr;
+				detail::ISamplerState* rhiSampler = (sampler) ? sampler->resolveRHIObject() : nullptr;
+				LN_ENQUEUE_RENDER_COMMAND_4(
+					ShaderConstantBuffer_commit_setTexture, manager, detail::IShaderSamplerBuffer*, samplerBuffer, int, i, Ref<detail::ITexture>, rhiTexture, Ref<detail::ISamplerState>, rhiSampler, {
+						samplerBuffer->setTexture(i, rhiTexture);
+						samplerBuffer->setSamplerState(i, rhiSampler);
+				});
+#else
+				if (texture && texture->samplerState()) {
+					SamplerState* sampler = texture->samplerState();
+					detail::ITexture* rhiTexture = (texture) ? texture->resolveRHIObject() : nullptr;
+					detail::ISamplerState* rhiSampler = (sampler) ? sampler->resolveRHIObject() : nullptr;
+					LN_ENQUEUE_RENDER_COMMAND_4(
+						ShaderConstantBuffer_commit_setTexture, manager, detail::IShaderSamplerBuffer*, samplerBuffer, int, i, Ref<detail::ITexture>, rhiTexture, Ref<detail::ISamplerState>, rhiSampler, {
+							samplerBuffer->setTexture(i, rhiTexture);
+							samplerBuffer->setSamplerState(i, rhiSampler);
+						});
+				}
+				else {
+					detail::ITexture* rhiTexture = (texture) ? texture->resolveRHIObject() : nullptr;
+					LN_ENQUEUE_RENDER_COMMAND_3(
+						ShaderConstantBuffer_commit_setTexture, manager, detail::IShaderSamplerBuffer*, samplerBuffer, int, i, Ref<detail::ITexture>, rhiTexture, {
+							samplerBuffer->setTexture(i, rhiTexture);
+						});
+				}
+#endif
+			}
+			else {
+				// TODO: SamplerState のみの設定
+			}
         }
     }
 }

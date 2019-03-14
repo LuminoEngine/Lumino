@@ -466,7 +466,7 @@ public:
 
     virtual int registerCount() const override { return m_table.size(); }
     virtual const std::string& getTextureRegisterName(int registerIndex) const override { return m_table[registerIndex].textureRegisterName; }
-    virtual const std::string& getSamplerRegisterName(int registerIndex) const override { return m_table[registerIndex].samplerRegisterName; }
+    //virtual const std::string& getSamplerRegisterName(int registerIndex) const override { return m_table[registerIndex].samplerRegisterName; }
     virtual void setTexture(int registerIndex, ITexture* texture) override;
     virtual void setSamplerState(int registerIndex, ISamplerState* state) override;
 

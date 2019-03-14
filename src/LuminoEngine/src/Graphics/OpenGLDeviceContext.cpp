@@ -1794,10 +1794,6 @@ void GLShaderPass::buildUniforms()
 			m_samplerBuffer->addGlslSamplerUniform(name, loc);
 		}
 
-        if (strncmp(name, LN_CIS_PREFIX, std::strlen(LN_CIS_PREFIX)) == 0 && strncmp(name + name_len - std::strlen(LN_IS_RT_POSTFIX), LN_IS_RT_POSTFIX, std::strlen(LN_IS_RT_POSTFIX)) == 0)
-        {
-            m_samplerBuffer->addIsRenderTargetUniform(name, loc);
-        }
 
 		//// テクスチャ型の変数にステージ番号を振っていく。
 		//if (passVar.Variable->getType() == ShaderVariableType::DeviceTexture)
@@ -1809,6 +1805,22 @@ void GLShaderPass::buildUniforms()
 		//{
 		//	passVar.TextureStageIndex = -1;
 		//}
+	}
+
+	// lnIsRT 用にもう一度回す
+	for (int i = 0; i < count; i++)
+	{
+		GLsizei name_len = 0;
+		GLsizei var_size = 0;
+		GLenum  var_type = 0;
+		GLchar  name[256] = { 0 };
+		GL_CHECK(glGetActiveUniform(m_program, i, 256, &name_len, &var_size, &var_type, name));
+		GLint loc = glGetUniformLocation(m_program, name);
+
+		if (strncmp(name, LN_CIS_PREFIX, std::strlen(LN_CIS_PREFIX)) == 0 && strncmp(name + name_len - std::strlen(LN_IS_RT_POSTFIX), LN_IS_RT_POSTFIX, std::strlen(LN_IS_RT_POSTFIX)) == 0)
+		{
+			m_samplerBuffer->addIsRenderTargetUniform(name, loc);
+		}
 	}
 
 	GL_CHECK(glGetProgramiv(m_program, GL_ACTIVE_UNIFORM_BLOCKS, &count));
@@ -2120,59 +2132,97 @@ GLLocalShaderSamplerBuffer::GLLocalShaderSamplerBuffer()
 
 void GLLocalShaderSamplerBuffer::addGlslSamplerUniform(const std::string& name, GLint uniformLocation)
 {
-    auto keyword = name.find(LN_CIS_PREFIX);
-    auto textureSep = name.find(LN_TO_PREFIX);
-    auto samplerSep = name.find(LN_SO_PREFIX);
-    if (keyword != std::string::npos && textureSep != std::string::npos && samplerSep && std::string::npos)
-    {
-        auto textureName = name.substr(textureSep + LN_TO_PREFIX_LEN, samplerSep - (textureSep + LN_TO_PREFIX_LEN));
-        auto samplerName = name.substr(samplerSep + LN_SO_PREFIX_LEN);
-        auto itr = std::find_if(m_table.begin(), m_table.end(), [&](const Entry& e) {
-            return e.textureRegisterName == textureName && e.samplerRegisterName == samplerName; });
-        if (itr != m_table.end()) {
-            itr->uniformLocation = uniformLocation;
-        }
-        else {
-            Entry e;
-            e.uniformLocation = uniformLocation;
-            e.textureRegisterName = name.substr(textureSep + LN_TO_PREFIX_LEN, samplerSep - (textureSep + LN_TO_PREFIX_LEN));
-            e.samplerRegisterName = name.substr(samplerSep + LN_SO_PREFIX_LEN);
-            m_table.push_back(e);
-        }
-    }
+	// 重複チェック
+	auto itr = std::find_if(m_table.begin(), m_table.end(), [&](const Uniform& x) { return x.name == name; });
+	if (itr != m_table.end()) {
+		LN_ERROR();
+		return;
+	}
+
+	Uniform uniform;
+	uniform.name = name;
+	uniform.uniformLocation = uniformLocation;
+
+	auto keyword = name.find(LN_CIS_PREFIX);
+	auto textureSep = name.find(LN_TO_PREFIX);
+	auto samplerSep = name.find(LN_SO_PREFIX);
+
+	if (keyword != std::string::npos && textureSep != std::string::npos && samplerSep && std::string::npos) {
+		// 所定のキーワードを持っていた場合は texture と samplerState に分割して登録
+
+		ExternalUnifrom texture;
+		texture.name = name.substr(textureSep + LN_TO_PREFIX_LEN, samplerSep - (textureSep + LN_TO_PREFIX_LEN));
+		m_externalUniforms.push_back(texture);
+		uniform.m_textureExternalUnifromIndex = m_externalUniforms.size() - 1;
+
+		ExternalUnifrom sampler;
+		sampler.name = name.substr(samplerSep + LN_SO_PREFIX_LEN);
+		m_externalUniforms.push_back(sampler);
+		uniform.m_samplerExternalUnifromIndex = m_externalUniforms.size() - 1;
+	}
+	else {
+		// 所定のキーワードを持たない場合は CombinedSampler
+
+		ExternalUnifrom sampler;
+		sampler.name = name;
+		m_externalUniforms.push_back(sampler);
+		uniform.m_samplerExternalUnifromIndex = m_externalUniforms.size() - 1;
+	}
+
+	m_table.push_back(uniform);
 }
 
 void GLLocalShaderSamplerBuffer::addIsRenderTargetUniform(const std::string& name, GLint uniformLocation)
 {
-    auto keyword = name.find(LN_CIS_PREFIX);
-    auto textureSep = name.find(LN_TO_PREFIX);
-    auto samplerSep = name.find(LN_SO_PREFIX);
-    if (keyword != std::string::npos && textureSep != std::string::npos && samplerSep && std::string::npos)
+    //auto keyword = name.find(LN_CIS_PREFIX);
+    //auto textureSep = name.find(LN_TO_PREFIX);
+    //auto samplerSep = name.find(LN_SO_PREFIX);
+	auto rtMark = name.find(LN_IS_RT_POSTFIX);
+    if (rtMark != std::string::npos)
     {
-        auto textureName = name.substr(textureSep + LN_TO_PREFIX_LEN, samplerSep - (textureSep + LN_TO_PREFIX_LEN));
-        auto samplerName = name.substr(samplerSep + LN_SO_PREFIX_LEN);
-        auto itr = std::find_if(m_table.begin(), m_table.end(), [&](const Entry& e) {
-            return e.textureRegisterName == textureName && e.samplerRegisterName == samplerName; });
-        if (itr != m_table.end()) {
-            itr->isRenderTargetUniformLocation = uniformLocation;
-        }
-        else {
-            Entry e;
-            e.textureRegisterName = name.substr(textureSep + LN_TO_PREFIX_LEN, samplerSep - (textureSep + LN_TO_PREFIX_LEN));
-            e.samplerRegisterName = name.substr(samplerSep + LN_SO_PREFIX_LEN);
-            e.isRenderTargetUniformLocation = uniformLocation;
-            m_table.push_back(e);
-        }
+		auto targetName = name.substr(0, rtMark);
+		auto itr = std::find_if(m_table.begin(), m_table.end(), [&](const Uniform& x) { return x.name == targetName; });
+		if (itr != m_table.end()) {
+			itr->isRenderTargetUniformLocation = uniformLocation;
+		}
+		else {
+			LN_UNREACHABLE();	// ここには来ないはず
+		}
+
+   //     auto textureName = name.substr(textureSep + LN_TO_PREFIX_LEN, samplerSep - (textureSep + LN_TO_PREFIX_LEN));
+   //     auto samplerName = name.substr(samplerSep + LN_SO_PREFIX_LEN);
+   //     auto itr = std::find_if(m_table.begin(), m_table.end(), [&](const Uniform& x) {
+   //         return x.textureRegisterName == textureName && x.samplerRegisterName == samplerName; });
+   //     if (itr != m_table.end()) {
+   //         itr->isRenderTargetUniformLocation = uniformLocation;
+   //     }
+   //     else {
+			//Uniform e;
+   //         e.textureRegisterName = name.substr(textureSep + LN_TO_PREFIX_LEN, samplerSep - (textureSep + LN_TO_PREFIX_LEN));
+   //         e.samplerRegisterName = name.substr(samplerSep + LN_SO_PREFIX_LEN);
+   //         e.isRenderTargetUniformLocation = uniformLocation;
+   //         m_table.push_back(e);
+   //     }
     }
+	else {
+		LN_UNREACHABLE();	// ここには来ないはず
+	}
 }
 
 void GLLocalShaderSamplerBuffer::bind()
 {
 	for (int i = 0; i < m_table.size(); i++)
 	{
-        const Entry& entry = m_table[i];
+        const Uniform& uniform = m_table[i];
 		int unitIndex = i;
-		GLTextureBase* t = static_cast<GLTextureBase*>(entry.texture);
+
+		LN_CHECK(uniform.m_textureExternalUnifromIndex >= 0);
+		LN_CHECK(uniform.m_samplerExternalUnifromIndex >= 0);
+		GLTextureBase* t = m_externalUniforms[uniform.m_textureExternalUnifromIndex].texture;
+		GLSamplerState* samplerState = m_externalUniforms[uniform.m_samplerExternalUnifromIndex].samplerState;
+		if (!samplerState) {
+			samplerState = m_externalUniforms[uniform.m_textureExternalUnifromIndex].samplerState;
+		}
 
 		GL_CHECK(glActiveTexture(GL_TEXTURE0 + unitIndex));
 
@@ -2195,11 +2245,11 @@ void GLLocalShaderSamplerBuffer::bind()
 			GL_CHECK(glBindTexture(GL_TEXTURE_3D, 0));
 		}
 		//GL_CHECK(glBindSampler(unitIndex, (entry.samplerState) ? entry.samplerState->resolveId(t->mipmap()) : 0));
-        GL_CHECK(glBindSampler(unitIndex, (entry.samplerState) ? entry.samplerState->resolveId(mipmap) : 0));
-		GL_CHECK(glUniform1i(entry.uniformLocation, unitIndex));
+        GL_CHECK(glBindSampler(unitIndex, (samplerState) ? samplerState->resolveId(mipmap) : 0));
+		GL_CHECK(glUniform1i(uniform.uniformLocation, unitIndex));
 
-        if (entry.isRenderTargetUniformLocation >= 0) {
-            GL_CHECK(glUniform1i(entry.isRenderTargetUniformLocation, (renderTarget) ? 1 : 0));
+        if (uniform.isRenderTargetUniformLocation >= 0) {
+            GL_CHECK(glUniform1i(uniform.isRenderTargetUniformLocation, (renderTarget) ? 1 : 0));
             //if (t->type() == DeviceTextureType::RenderTarget) {
             //    GL_CHECK(glUniform1i(entry.isRenderTargetUniformLocation, 1));
             //}
@@ -2212,27 +2262,27 @@ void GLLocalShaderSamplerBuffer::bind()
 
 int GLLocalShaderSamplerBuffer::registerCount() const
 {
-	return m_table.size();
+	return m_externalUniforms.size();
 }
 
 const std::string& GLLocalShaderSamplerBuffer::getTextureRegisterName(int registerIndex) const
 {
-	return m_table[registerIndex].textureRegisterName;
+	return m_externalUniforms[registerIndex].name;
 }
 
-const std::string& GLLocalShaderSamplerBuffer::getSamplerRegisterName(int registerIndex) const
-{
-	return m_table[registerIndex].samplerRegisterName;
-}
+//const std::string& GLLocalShaderSamplerBuffer::getSamplerRegisterName(int registerIndex) const
+//{
+//	return m_externalUniforms[registerIndex].samplerRegisterName;
+//}
 
 void GLLocalShaderSamplerBuffer::setTexture(int registerIndex, ITexture* texture)
 {
-	m_table[registerIndex].texture = texture;
+	m_externalUniforms[registerIndex].texture = static_cast<GLTextureBase*>(texture);
 }
 
 void GLLocalShaderSamplerBuffer::setSamplerState(int registerIndex, ISamplerState* state)
 {
-	m_table[registerIndex].samplerState = static_cast<GLSamplerState*>(state);
+	m_externalUniforms[registerIndex].samplerState = static_cast<GLSamplerState*>(state);
 }
 
 } // namespace detail
