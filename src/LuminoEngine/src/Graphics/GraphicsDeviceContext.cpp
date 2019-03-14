@@ -320,6 +320,9 @@ Ref<IShaderPass> IGraphicsDeviceContext::createShaderPassFromUnifiedShaderPass(c
 void IGraphicsDeviceContext::commitStatus()
 {
 	if (LN_REQUIRE(m_staging.framebufferState.renderTargets[0])) return;
+    //if (LN_REQUIRE(m_staging.pipelineState.vertexDeclaration)) return;
+
+
 
 	// TODO: modified check
 

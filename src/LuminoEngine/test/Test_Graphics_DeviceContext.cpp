@@ -1,6 +1,6 @@
 ﻿#include "Common.hpp"
 
-#if 0
+#if 1
 
 //==============================================================================
 // IGraphicsDeviceContext 周りのテスト。
@@ -64,9 +64,9 @@ TEST_F(Test_Graphics_DeviceContext, Clear)
             Matrix model = Matrix::makeRotationY(time * 0.01);  //glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
             Matrix view = Matrix::makeLookAtLH(Vector3(2.0f, 2.0f, 2.0f), Vector3::Zero, Vector3::UnitZ);//glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
             Matrix proj = Matrix::makePerspectiveFovLH(0.3, 160.0 / 120.0, 0.1f, 10.0f);// glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 10.0f);
-            model.transpose();
-            view.transpose();
-            proj.transpose();
+            //model.transpose();
+            //view.transpose();
+            //proj.transpose();
             shader1->findParameter(u"model")->setMatrix(model);
             shader1->findParameter(u"view")->setMatrix(view);
             shader1->findParameter(u"proj")->setMatrix(proj);
@@ -79,7 +79,7 @@ TEST_F(Test_Graphics_DeviceContext, Clear)
             auto ctx = Engine::graphicsContext();
             TestEnv::resetGraphicsContext(ctx);
             //ctx->setDepthBuffer(nullptr);
-            ctx->clear(ClearFlags::All, Color::Blue, 1.0f, 0);
+            //ctx->clear(ClearFlags::All, Color::Blue, 1.0f, 0);
             ctx->setVertexDeclaration(vertexDeclaration);
             ctx->setVertexBuffer(0, vertexBuffer);
             ctx->setIndexBuffer(indexBuffer);

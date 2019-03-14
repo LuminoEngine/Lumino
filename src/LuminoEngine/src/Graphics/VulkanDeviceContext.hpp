@@ -114,7 +114,7 @@ public: // TODO:
 
     Result submitStatus(const State& state);
 
-	GLFWwindow* m_mainWindow; // TODO:
+	//GLFWwindow* m_mainWindow; // TODO:
     VulkanSwapChain* m_mainSwapchain = nullptr; // TODO:
 
     VkInstance m_instance;
@@ -299,7 +299,7 @@ public:
 	Result init(VulkanDeviceContext* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView);
     virtual void dispose() override;
 	virtual DeviceTextureType type() const { return DeviceTextureType::RenderTarget; }
-	virtual SizeI realSize() { return SizeI(); }
+	virtual SizeI realSize() { return m_size; }
 	virtual TextureFormat getTextureFormat() const {return TextureFormat::RGBA32; }
 	virtual void readData(void* outData) {}
 	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) {}
@@ -481,7 +481,7 @@ public:
     virtual void dispose() override;
 
     virtual int registerCount() const override { return m_table.size(); }
-    virtual const std::string& getTextureRegisterName(int registerIndex) const override { return m_table[registerIndex].textureRegisterName; }
+    virtual const std::string& getTextureRegisterName(int registerIndex) const override { return m_table[registerIndex].name; }
     //virtual const std::string& getSamplerRegisterName(int registerIndex) const override { return m_table[registerIndex].samplerRegisterName; }
     virtual void setTexture(int registerIndex, ITexture* texture) override;
     virtual void setSamplerState(int registerIndex, ISamplerState* state) override;

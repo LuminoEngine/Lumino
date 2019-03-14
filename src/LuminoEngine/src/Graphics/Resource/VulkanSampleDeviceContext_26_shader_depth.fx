@@ -37,9 +37,12 @@ VS_OUTPUT vsMain(VS_INPUT input)
     //output.Pos = mul(float4(input.Pos, 1), (model * view * proj));
     //output.Pos = mul(float4(input.Pos, 1), model);
     //output.Pos = mul(float4(input.Pos, 1), (proj * view * model));
+    
     output.Pos = mul(float4(input.Pos, 1), model);
     output.Pos = mul(output.Pos, view);
     output.Pos = mul(output.Pos, proj);
+    //output.Pos = float4(input.Pos, 1);
+    
     output.Color = input.Color;// + _Color;
     output.TexCoord = input.TexCoord;
     return output;
@@ -53,6 +56,7 @@ struct PS_INPUT
 
 float4 psMain(PS_INPUT input) : SV_Target
 {
+	//return float4(1, 0, 0, 1);
 	//float4 color2 = tex2D(g_sampler, input.TexCoord);
     //return float4(input.TexCoord, 0, 1);
     return /*color2 + */ g_texture1.Sample(g_samplerState1, input.TexCoord);// + g_texture2.Sample(g_samplerState2, input.TexCoord) + _Color;

@@ -751,11 +751,18 @@ Result VulkanCommandBuffer::beginRecording()
 
     LN_VK_CHECK(vkBeginCommandBuffer(vulkanCommandBuffer(), &beginInfo));
 
+    m_lastFoundFramebuffer = nullptr;
+
     return true;
 }
 
 Result VulkanCommandBuffer::endRecording()
 {
+    if (m_lastFoundFramebuffer) {
+        vkCmdEndRenderPass(vulkanCommandBuffer());
+        m_lastFoundFramebuffer = nullptr;
+    }
+
     LN_VK_CHECK(vkEndCommandBuffer(vulkanCommandBuffer()));
 
     for (auto& pass : m_usingShaderPasses) {
@@ -884,6 +891,7 @@ Result VulkanDescriptorSetsPool::init(VulkanDeviceContext* deviceContext, Vulkan
     m_deviceContext = deviceContext;
     m_owner = owner;
 	m_activePageUsedCount = 0;
+    m_activePage = VK_NULL_HANDLE;
 	return true;
 }
 
@@ -1202,9 +1210,10 @@ VulkanFramebuffer::VulkanFramebuffer()
 {
 }
 
-Result VulkanFramebuffer::init(VulkanDeviceContext* deviceContext, const DeviceFramebufferState& state)
+Result VulkanFramebuffer::init(VulkanDeviceContext* deviceContext, const DeviceFramebufferState& state, uint64_t hash)
 {
     m_deviceContext = deviceContext;
+    m_hash = hash;
     //m_renderTargetCount = state.renderTargets.size();
     for (size_t i = 0; i < state.renderTargets.size(); i++) {
         m_renderTargets[i] = state.renderTargets[i];
@@ -1306,7 +1315,7 @@ VulkanFramebuffer* VulkanFramebufferCache::findOrCreate(const DeviceFramebufferS
     }
     else {
         framebuffer = makeRef<VulkanFramebuffer>();
-        if (!framebuffer->init(m_deviceContext, state)) {
+        if (!framebuffer->init(m_deviceContext, state, hash)) {
             return nullptr;
         }
         add(hash, framebuffer);

@@ -18,6 +18,7 @@ class VulkanDeviceContext;
 class VulkanVertexDeclaration;
 class VulkanShaderPass;
 class VulkanDescriptorSetsPool;
+class VulkanFramebuffer;
 
 #define LN_VK_CHECK(f) \
 { \
@@ -188,6 +189,9 @@ public:
 	// 元データは戻り値のメモリ領域に書き込むこと。
 	VulkanBuffer* cmdCopyBuffer(size_t size, VulkanBuffer* destination);
 
+public:
+    VulkanFramebuffer* m_lastFoundFramebuffer = nullptr;
+
 private:
     void cleanInFlightResources();
 	//struct StagingBuffer
@@ -344,10 +348,11 @@ class VulkanFramebuffer
 {
 public:
     VulkanFramebuffer();
-    Result init(VulkanDeviceContext* deviceContext, const DeviceFramebufferState& state);
+    Result init(VulkanDeviceContext* deviceContext, const DeviceFramebufferState& state, uint64_t hash);
     void dispose();
     bool containsRenderTarget(ITexture* renderTarget) const;
     bool containsDepthBuffer(IDepthBuffer* depthBuffer) const;
+    uint64_t hash() const { return m_hash; }
     VkRenderPass vulkanRenderPass() const { return m_renderPass; }
     VkFramebuffer vulkanFramebuffer() const { return m_framebuffer; }
     //SizeI extent() const { return m_renderTargets[0]->realSize(); }
@@ -356,6 +361,7 @@ private:
     VulkanDeviceContext* m_deviceContext;
     VkRenderPass m_renderPass;
     VkFramebuffer m_framebuffer;
+    uint64_t m_hash;
     //size_t m_renderTargetCount;
 
     // 以下、こちらからは参照を持たない。インスタンスが dispose されたときに、このクラスに対して削除要求が飛んでくる。
