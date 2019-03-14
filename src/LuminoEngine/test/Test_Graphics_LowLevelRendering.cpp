@@ -437,6 +437,7 @@ TEST_F(Test_Graphics_LowLevelRendering, ConstantBuffer)
 	}
 
 
+#if 0
 	//* [ ] 座標変換したときに一般的な使い方ができるか
 	{
 		auto pos = Vector4(1, 0, 0, 1);
@@ -481,7 +482,7 @@ TEST_F(Test_Graphics_LowLevelRendering, ConstantBuffer)
 		ASSERT_EQ(true, c.g < 10);   // expect 0
 		ASSERT_EQ(true, c.b > 200);  // expect 255
 	}
-
+#endif
 #if 0	// FIXME: AMD Radeon(TM) HD 8490 で転置されてしまった。
 		// 以下、Gforce や macOS では成功するが、Radeon では失敗する。何かパラメータがあるのか？
 		// ひとまず、↑の mul では配列かどうかにかかわらず想定通りに座標変換できたのでこのまま行ってみる。

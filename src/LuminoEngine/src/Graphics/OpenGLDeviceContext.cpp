@@ -79,6 +79,8 @@ public:
 			case GL_SAMPLER_3D:         SET_LNDESC(LN_SVC_SAMPLER, ShaderUniformType_Texture, 1, 1); break;
 
 			//#if !defined(LNOTE_GLES)
+            // https://www.khronos.org/opengl/wiki/Data_Type_(GLSL)#Matrices
+            // GL_FLOAT_MAT3x4 -> mat3x4 -> matNxM (N columns and M rows)
 			case GL_FLOAT_MAT2x3:   SET_LNDESC(LN_SVC_MATRIX, ShaderUniformType_Matrix, 3, 2); break;
 			case GL_FLOAT_MAT2x4:   SET_LNDESC(LN_SVC_MATRIX, ShaderUniformType_Matrix, 4, 2); break;
 			case GL_FLOAT_MAT3x2:   SET_LNDESC(LN_SVC_MATRIX, ShaderUniformType_Matrix, 2, 3); break;
@@ -1858,6 +1860,7 @@ void GLShaderPass::buildUniforms()
 		GLint arrayStrides[32];
 		GL_CHECK(glGetActiveUniformsiv(m_program, blockMemberCount, (const GLuint*)indices, GL_UNIFORM_ARRAY_STRIDE, arrayStrides));
 
+        // 列間、または行間の stride (バイト単位)
 		GLint matrixStrides[32];
 		GL_CHECK(glGetActiveUniformsiv(m_program, blockMemberCount, (const GLuint*)indices, GL_UNIFORM_MATRIX_STRIDE, matrixStrides));
 		
@@ -1892,7 +1895,30 @@ void GLShaderPass::buildUniforms()
 
 			// 検証。縦の大きさはデータサイズから求めたものと一致するはず
 			if (desc.matrixStride > 0 && desc.elements > 0) {
-				assert(desc.rows == dataSize / desc.elements / desc.matrixStride);
+
+                // https://www.opengl.org/archives/resources/faq/technical/transformations.htm
+                // https://stackoverflow.com/questions/17717600/confusion-between-c-and-opengl-matrix-order-row-major-vs-column-major
+                // mat3x4 の場合、col=3, row=4
+                // 実際のレイアウトは DirectX と同じ。GLSL で演算するときの意味が column_major であるか、という違い。
+                // 0  1  2  3
+                // 4  5  6  7
+                // 8  9 10 11
+                // x  x  x  x
+                // mat3x4[3] の場合、dataSize は 144。elements は 3。matrixStride は 16。
+                // [2019/3/4] GeForce GTX 1060 で確認。
+
+                //if (isRowMajors[iMember]) {
+                    assert(desc.columns == dataSize / desc.elements / desc.matrixStride);
+                //}
+                //else {
+                //    // OpenGL default
+                //    assert(desc.columns == dataSize / desc.elements / desc.matrixStride);
+                    
+                    // 0 3 6 9
+                    // 1 4 7 10
+                    // 2 5 8 11
+                    // x x x x
+                //}
 			}
 
 			char* localName = name;

@@ -16,7 +16,7 @@ GTEST_API_ int main(int argc, char **argv)
 		//"--gtest_filter=Test_UI_UITextBlock.*"
 		//"--gtest_filter=Test_Scene_WorldObject.Transform"
 		//"--gtest_filter=Test_Graphics_HlslEffect.*"
-		"--gtest_filter=Test_Graphics_DeviceContext.*"
+		//"--gtest_filter=Test_Graphics_DeviceContext.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);
