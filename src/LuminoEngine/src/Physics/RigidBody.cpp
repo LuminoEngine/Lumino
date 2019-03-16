@@ -267,7 +267,7 @@ void RigidBody::onBeforeStepSimulation()
     }
 
     // setWorldTransform 要求
-    if ((m_modifiedFlags & Modified_WorldTransform) != 0)
+    if ((m_modifiedFlags & Modified_WorldTransform) != 0 | m_kinematicObject)
     {
         /*
             stepSimulation() の中でこれらが関係する処理は以下のとおり。

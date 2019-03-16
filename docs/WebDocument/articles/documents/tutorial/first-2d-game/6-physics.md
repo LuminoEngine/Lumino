@@ -128,6 +128,29 @@ groundSprite->addComponent(groundBody);
 Lumino では質量が 0 である剛体は静的な剛体とみなされます。RigidBody2DComponent::create() で作成した剛体のデフォルトの質量は 0 であるため、作成するだけでそれは静的な剛体となります。
 
 
+キー入力によりプレイヤーを移動する
+----------
+
+それぞれの剛体の設定が終わったところで、改めてプレイヤーの移動がをできるようにします。
+
+
+
+```diff
+
+while (Engine::update())
+{
+    if (Input::isPressed(u"left"))
+    {
+    }
+
+    if (Input::isPressed(u"right"))
+    {
+    }
+
+}
+```
+
+
 コード全体
 ----------
 
