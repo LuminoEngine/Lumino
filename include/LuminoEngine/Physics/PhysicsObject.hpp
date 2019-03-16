@@ -10,7 +10,7 @@ enum class PhysicsObjectType
     RigidBody,
     SoftBody,
     //CollisionBody,
-    //Joint,
+    Joint,
 };
 
 class PhysicsObject

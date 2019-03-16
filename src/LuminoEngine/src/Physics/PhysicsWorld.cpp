@@ -11,6 +11,9 @@
 #include <BulletCollision/BroadphaseCollision/btDbvtBroadphase.h>
 #include <BulletDynamics/ConstraintSolver/btSequentialImpulseConstraintSolver.h>
 
+
+#include <BulletDynamics/ConstraintSolver/btGeneric6DofSpringConstraint.h>
+
 // test
 #include <BulletCollision/CollisionShapes/btBoxShape.h>
 #include <LinearMath/btDefaultMotionState.h>
@@ -19,6 +22,7 @@
 #include <LuminoEngine/Physics/PhysicsObject.hpp>
 #include <LuminoEngine/Physics/RigidBody.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
+#include "BulletUtils.hpp"
 
 namespace ln {
 
@@ -308,6 +312,165 @@ void PhysicsWorld::removeObjectInternal(PhysicsObject* obj)
         LN_UNREACHABLE();
         break;
     }
+}
+
+
+
+
+//==============================================================================
+// SpringJoint
+/*
+    Note:
+        Damping は減衰率。0 は全く元に戻ろうとしなくなる。デフォルトは 1.0
+
+        接合点やLimitなどは、bodyA のローカル座標系の値を扱う。
+        ↓のように設定した状態で bodyA を回転させると bodyB は惑星の公転のように、bodyA の周りを振り回される。
+        一方 bodyB を回転させると、bodyB だけ自転する。（そして、バネにより初期姿勢に戻るように回転しようとする）
+
+        サイズ1x1x1のボックスを上下に安定してつなげる場合、
+        m_joint1->setBodyA(m_body1, Matrix::makeTranslation(0, -0.5, 0));
+        m_joint1->setBodyB(m_body2, Matrix::makeTranslation(0, 0.5, 0));
+        のように、シェイプの下と上に接合点をつける。
+
+        TODO:
+        LinearLimit は Bullet のインターフェイスだとちょっとイメージしづらい気がする。
+        ↑のようなbox2つを、下方向に相対-1まで伸ばせるようにしたければ
+        setLinearLowerLimit(Vector3(0, -1, 0));
+        とする。
+        もし上方向もやりたければ setLinearUpperLimit も設定しなければならない。
+        稼働「範囲」ではなく「位置」で指定するのはちょっとイメージしづらいかも。
+
+*/
+
+Ref<SpringJoint> SpringJoint::create()
+{
+    return newObject<SpringJoint>();
+}
+
+SpringJoint::SpringJoint()
+    : PhysicsObject(PhysicsObjectType::Joint)
+    , m_btDofSpringConstraint(nullptr)
+{
+}
+
+void SpringJoint::init()
+{
+    PhysicsObject::init();
+}
+
+void SpringJoint::onDispose(bool explicitDisposing)
+{
+    LN_SAFE_DELETE(m_btDofSpringConstraint);
+    PhysicsObject::onDispose(explicitDisposing);
+}
+
+void SpringJoint::setBodyA(RigidBody* body, const Matrix& localJunctionPoint)
+{
+    m_bodyA = body;
+    m_localJunctionPointA = localJunctionPoint;
+}
+
+void SpringJoint::setBodyB(RigidBody* body, const Matrix& localJunctionPoint)
+{
+    m_bodyB = body;
+    m_localJunctionPointB = localJunctionPoint;
+}
+
+void SpringJoint::setLinearLowerLimit(const Vector3& value)
+{
+    m_linearLowerLimit = value;
+}
+
+void SpringJoint::setLinearUpperLimit(const Vector3& value)
+{
+    m_linearUpperLimit = value;
+}
+
+void SpringJoint::setAngularLowerLimit(const Vector3& value)
+{
+    m_angularLowerLimit = value;
+}
+
+void SpringJoint::setAngularUpperLimit(const Vector3& value)
+{
+    m_angularUpperLimit = value;
+}
+
+void SpringJoint::setLinearStiffness(const Vector3& value)
+{
+    m_linearStiffness = value;
+}
+
+void SpringJoint::setAngularStiffness(const Vector3& value)
+{
+    m_angularStiffness = value;
+}
+
+void SpringJoint::onBeforeStepSimulation()
+{
+    if (LN_REQUIRE(m_bodyA)) return;
+    if (LN_REQUIRE(m_bodyB)) return;
+
+    if (!m_btDofSpringConstraint)
+    {
+        m_btDofSpringConstraint = new btGeneric6DofSpringConstraint(
+            *m_bodyA->body(), *m_bodyB->body(),
+            detail::BulletUtil::LNMatrixToBtTransform(m_localJunctionPointA),
+            detail::BulletUtil::LNMatrixToBtTransform(m_localJunctionPointB),
+            true);
+
+        // 移動可能範囲
+       
+        m_btDofSpringConstraint->setLinearLowerLimit(detail::BulletUtil::LNVector3ToBtVector3(Vector3::min(m_linearLowerLimit, m_linearUpperLimit)));
+        m_btDofSpringConstraint->setLinearUpperLimit(detail::BulletUtil::LNVector3ToBtVector3(Vector3::max(m_linearLowerLimit, m_linearUpperLimit)));
+
+        // 回転可能範囲
+        m_btDofSpringConstraint->setAngularLowerLimit(detail::BulletUtil::LNVector3ToBtVector3(Vector3::min(m_angularLowerLimit, m_angularUpperLimit)));
+        m_btDofSpringConstraint->setAngularUpperLimit(detail::BulletUtil::LNVector3ToBtVector3(Vector3::max(m_angularLowerLimit, m_angularUpperLimit)));
+
+        // 0 : translation X
+        if (m_linearStiffness.x != 0.0f)
+        {
+            m_btDofSpringConstraint->enableSpring(0, true);
+            m_btDofSpringConstraint->setStiffness(0, m_linearStiffness.x);
+        }
+
+        // 1 : translation Y
+        if (m_linearStiffness.y != 0.0f)
+        {
+            m_btDofSpringConstraint->enableSpring(1, true);
+            m_btDofSpringConstraint->setStiffness(1, m_linearStiffness.y);
+        }
+
+        // 2 : translation Z
+        if (m_linearStiffness.z != 0.0f)
+        {
+            m_btDofSpringConstraint->enableSpring(2, true);
+            m_btDofSpringConstraint->setStiffness(2, m_linearStiffness.z);
+        }
+
+        // 3 : rotation X (3rd Euler rotational around new position of X axis, range [-PI+epsilon, PI-epsilon] )
+        // 4 : rotation Y (2nd Euler rotational around new position of Y axis, range [-PI/2+epsilon, PI/2-epsilon] )
+        // 5 : rotation Z (1st Euler rotational around Z axis, range [-PI+epsilon, PI-epsilon] )
+        m_btDofSpringConstraint->enableSpring(3, true);	m_btDofSpringConstraint->setStiffness(3, m_angularStiffness.x);
+        m_btDofSpringConstraint->enableSpring(4, true);	m_btDofSpringConstraint->setStiffness(4, m_angularStiffness.y);
+        m_btDofSpringConstraint->enableSpring(5, true);	m_btDofSpringConstraint->setStiffness(5, m_angularStiffness.z);
+
+        //m_btDofSpringConstraint->setDamping(0, 10);
+        //m_btDofSpringConstraint->setDamping(1, 10);
+        //m_btDofSpringConstraint->setDamping(2, 10);
+
+        m_btDofSpringConstraint->setEquilibriumPoint();
+
+        if (m_btDofSpringConstraint) {
+            physicsWorld()->getBtWorld()->addConstraint(m_btDofSpringConstraint);
+        }
+    }
+
+}
+
+void SpringJoint::onAfterStepSimulation()
+{
 }
 
 } // namespace ln
