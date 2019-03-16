@@ -20,7 +20,7 @@ public:
 	void gotoScene(Scene* scene);
 	void callScene(Scene* scene);
 	void returnScene();
-	Scene* getActiveScene() const { return m_activeScene; }
+	Scene* activeScene() const { return m_activeScene; }
 
 	void updateFrame();
 

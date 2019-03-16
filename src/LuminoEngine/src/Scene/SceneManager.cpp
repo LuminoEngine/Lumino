@@ -79,6 +79,7 @@ void SceneManager::executeCommands()
 				if (m_activeScene != nullptr)
 				{
 					m_activeScene->onCreated();
+                    m_activeScene->onActivated();
 				}
 				break;
 			}
@@ -88,6 +89,7 @@ void SceneManager::executeCommands()
 				m_sceneStack.push(m_activeScene);
 				m_activeScene = cmd.scene;
 				m_activeScene->onCreated();
+                m_activeScene->onActivated();
 				break;
 			}
 			/////////////// 呼び出し元へ戻る
@@ -95,6 +97,7 @@ void SceneManager::executeCommands()
 			{
 				Ref<Scene> oldScene = m_activeScene;
 				m_activeScene = m_sceneStack.top();
+                oldScene->onDeactivated();
 				oldScene->onClosed();
 				break;
 			}

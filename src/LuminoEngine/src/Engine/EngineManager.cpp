@@ -457,6 +457,9 @@ bool EngineManager::updateUnitily()
 
 void EngineManager::updateFrame()
 {
+    //------------------------------------------------
+    // Pre update phase
+
 	if (m_inputManager) {
 		m_inputManager->preUpdateFrame();
 	}
@@ -473,6 +476,9 @@ void EngineManager::updateFrame()
 		m_mainUIContext->updateStyleTree();
 		m_mainUIContext->updateLayoutTree();
 	}
+
+    //------------------------------------------------
+    // Main update phase
 
     if (m_mainWindow) {
         m_mainWindow->updateFrame(0.016);	// TODO: time
@@ -493,9 +499,14 @@ void EngineManager::updateFrame()
         m_mainWorld->updateFrame(0.016);	// TODO: time
     }
 
-    //if (m_mainWindow) {
-    //    m_mainWindow->
-    //}
+    if (m_sceneManager) {
+        m_sceneManager->updateFrame();
+    }
+
+    //------------------------------------------------
+    // Post update phase
+
+
 }
 
 void EngineManager::renderFrame()
