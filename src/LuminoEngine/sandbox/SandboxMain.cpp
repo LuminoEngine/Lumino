@@ -169,7 +169,8 @@ int main(int argc, char** argv)
     };
     auto m_vertexBuffer = ln::newObject<ln::VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
     
-	detail::EngineDomain::fontManager()->registerFontFile(LN_LOCALFILE("../../../tools/VLGothic/VL-PGothic-Regular.ttf"));
+	//detail::EngineDomain::fontManager()->registerFontFromFile();
+    Font::registerFontFromFile(LN_LOCALFILE("../../../tools/VLGothic/VL-PGothic-Regular.ttf"));
 
 	//detail::FontDesc desc;
 	//desc.Family = "VL PGothic";

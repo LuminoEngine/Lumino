@@ -13,6 +13,7 @@ typedef struct FTC_ImageCacheRec_* FTC_ImageCache;
 typedef struct FT_FaceRec_*  FT_Face;
 
 namespace ln {
+class Font;
 namespace detail {
 class FontCore;
 
@@ -30,7 +31,8 @@ public:
     FontManager();
 	void init(const Settings& settings);
 	void dispose();
-	void registerFontFile(const StringRef& fontFilePath);
+	void registerFontFromFile(const StringRef& fontFilePath, bool defaultFamily);
+    void registerFontFromStream(Stream* stream, bool defaultFamily);
 	Ref<FontCore> lookupFontCore(const FontDesc& keyDesc);
 
 	FTC_Manager ftCacheManager() const { return m_ftCacheManager; }
@@ -40,8 +42,10 @@ public:
 	void addAliveFontCore(FontCore* font) { m_aliveFontCoreList.add(font); }
 	void removeAliveFontCore(FontCore* font) { m_aliveFontCoreList.remove(font); }
 
-    void setDefaultFontDesc(const FontDesc& desc) { m_defaultFontDesc = desc; }
-    FontDesc defaultFontDesc() const { return m_defaultFontDesc; }
+    //void setDefaultFontDesc(const FontDesc& desc) { m_defaultFontDesc = desc; }
+    void setDefaultFont(Font* font);
+    FontDesc defaultFontDesc() const;
+    Font* defaultFont() const;
 
 private:
     static FT_Error callbackFaceRequester(FTC_FaceID face_id, FT_Library library, FT_Pointer request_data, FT_Face* aface);
@@ -78,7 +82,8 @@ private:
     typedef std::unordered_map<intptr_t, TTFDataEntry> TTFDataEntryMap;
     TTFDataEntryMap m_ttfDataEntryMap;
 
-    FontDesc m_defaultFontDesc;
+    //FontDesc m_defaultFontDesc;
+    Ref<Font> m_defaultFont;
 };
 
 } // namespace detail

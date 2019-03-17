@@ -133,8 +133,8 @@ public:
     void drawMesh(MeshResource* meshResource, int sectionIndex);
 	//void drawMesh(MeshContainer* meshContainer, int sectionIndex);
 
-
-    void drawText(const StringRef& text, Font* font, const Color& color);
+    // font が nullptr の場合は defaultFont
+    void drawText(const StringRef& text, const Color& color, Font* font = nullptr);
 
 	/** @} */
 

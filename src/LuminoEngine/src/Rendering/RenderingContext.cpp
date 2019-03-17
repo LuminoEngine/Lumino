@@ -9,6 +9,7 @@
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Mesh/Mesh.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
+#include "../Font/FontManager.hpp"
 #include "../Mesh/MeshGenerater.hpp"
 #include "RenderingManager.hpp"
 #include "DrawElementListBuilder.hpp"
@@ -430,7 +431,7 @@ void RenderingContext::drawMesh(MeshResource* meshResource, int sectionIndex)
 //	//ptr->setLocalBoundingSphere(sphere);
 //}
 
-void RenderingContext::drawText(const StringRef& text, Font* font, const Color& color)
+void RenderingContext::drawText(const StringRef& text, const Color& color, Font* font)
 {
 
     // TODO: cache
@@ -438,6 +439,10 @@ void RenderingContext::drawText(const StringRef& text, Font* font, const Color& 
     formattedText->text = text;
     formattedText->font = font;
 	formattedText->color = color;
+
+    if (!formattedText->font) {
+        formattedText->font = m_manager->fontManager()->defaultFont();
+    }
 
     auto* element = m_builder->addNewDrawElement<detail::DrawTextElement>(
         m_manager->spriteTextRenderFeature(),

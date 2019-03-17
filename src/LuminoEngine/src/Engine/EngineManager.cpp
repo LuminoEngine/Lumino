@@ -371,6 +371,7 @@ void EngineManager::initializeRenderingManager()
 
 		RenderingManager::Settings settings;
 		settings.graphicsManager = m_graphicsManager;
+        settings.fontManager = m_fontManager;
 
 		m_renderingManager = ln::makeRef<RenderingManager>();
 		m_renderingManager->init(settings);

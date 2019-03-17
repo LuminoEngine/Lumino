@@ -23,7 +23,8 @@ namespace detail {
 	
 RenderingManager::RenderingManager()
 	: m_graphicsManager(nullptr)
-	, m_standardVertexDeclaration(nullptr)
+	, m_fontManager(nullptr)
+    , m_standardVertexDeclaration(nullptr)
 	, m_spriteRenderFeature(nullptr)
 	, m_meshRenderFeature(nullptr)
     , m_primitiveRenderFeature(nullptr)
@@ -36,6 +37,7 @@ void RenderingManager::init(const Settings& settings)
     LN_LOG_DEBUG << "RenderingManager Initialization started.";
 
     m_graphicsManager = settings.graphicsManager;
+    m_fontManager = settings.fontManager;
 
     m_renderTargetTextureCacheManager = makeRef<RenderTargetTextureCacheManager>();
     m_depthBufferCacheManager = makeRef<DepthBufferCacheManager>();

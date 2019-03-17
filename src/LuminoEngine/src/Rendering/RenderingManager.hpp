@@ -132,6 +132,7 @@ public:
 	struct Settings
 	{
 		GraphicsManager* graphicsManager;
+        FontManager* fontManager;
 	};
 
 	RenderingManager();
@@ -139,6 +140,7 @@ public:
 	void dispose();
 
 	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
+    FontManager* fontManager() const { return m_fontManager; }
 	const Ref<RenderTargetTextureCacheManager>& renderTargetTextureCacheManager() const { return m_renderTargetTextureCacheManager; }
 	const Ref<DepthBufferCacheManager>& depthBufferCacheManager() const { return m_depthBufferCacheManager; }
     const Ref<FrameBufferCache>& frameBufferCache() const { return m_frameBufferCache; }
@@ -155,6 +157,7 @@ public:
 
 private:
 	GraphicsManager* m_graphicsManager;
+    FontManager* m_fontManager;
 	Ref<RenderTargetTextureCacheManager> m_renderTargetTextureCacheManager;
 	Ref<DepthBufferCacheManager> m_depthBufferCacheManager;
     Ref<FrameBufferCache> m_frameBufferCache;

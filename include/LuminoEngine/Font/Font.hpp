@@ -23,7 +23,7 @@ public:
     static void setDefaultFont(Font* font);
 
 	/** フォントを登録します。以降、ファミリ名でフォントを使用できるようになります。 */
-	static void registerFontFile(const StringRef& fontFilePath);
+	static void registerFontFromFile(const StringRef& fontFilePath, bool defaultFamily = true);
 
 public:
     /** フォントファミリ名の設定。空文字列はデフォルトのフォントファミリを示します。 */
@@ -87,6 +87,7 @@ class FontHelper
 public:
     static detail::FontCore* resolveFontCore(Font* font) { return font->resolveFontCore(); }
 	static bool equalsFontDesc(const Font* font, const FontDesc& desc) { return font->m_desc.equals(desc); }
+    static const FontDesc& getFontDesc(const Font* font) { return font->m_desc; }
 };
 } // namespace detail
 } // namespace ln

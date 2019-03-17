@@ -22,12 +22,13 @@ Ref<Font> Font::create(const String& family, float size)
 void Font::setDefaultFont(Font* font)
 {
     if (LN_REQUIRE(font)) return;
-    detail::EngineDomain::fontManager()->setDefaultFontDesc(font->m_desc);
+    //detail::EngineDomain::fontManager()->setDefaultFontDesc(font->m_desc);
+    detail::EngineDomain::fontManager()->setDefaultFont(font);
 }
 
-void Font::registerFontFile(const StringRef& fontFilePath)
+void Font::registerFontFromFile(const StringRef& fontFilePath, bool defaultFamily)
 {
-	detail::EngineDomain::fontManager()->registerFontFile(fontFilePath);
+	detail::EngineDomain::fontManager()->registerFontFromFile(fontFilePath, defaultFamily);
 }
 
 Font::Font()
