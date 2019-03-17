@@ -82,6 +82,48 @@ b2Shape* BoxCollisionShape2D::resolveBox2DShape()
 
 
 //==============================================================================
+// EdgeCollisionShape2D
+
+Ref<EdgeCollisionShape2D> EdgeCollisionShape2D::create()
+{
+    return newObject<EdgeCollisionShape2D>();
+}
+
+EdgeCollisionShape2D::EdgeCollisionShape2D()
+    : m_shape(nullptr)
+    , m_points()
+    , m_loopEnabled(true)
+{
+}
+
+void EdgeCollisionShape2D::init()
+{
+    CollisionShape2D::init();
+}
+
+void EdgeCollisionShape2D::addPoint(const Vector2& point)
+{
+    m_points.push_back(point);
+    dirty();
+}
+
+b2Shape* EdgeCollisionShape2D::resolveBox2DShape()
+{
+    if (!m_shape || isDirty())
+    {
+        m_shape = std::make_unique<b2ChainShape>();
+        if (m_loopEnabled) {
+            m_shape->CreateLoop(reinterpret_cast<const b2Vec2*>(m_points.data()), m_points.size());
+        }
+        else {
+            m_shape->CreateChain(reinterpret_cast<const b2Vec2*>(m_points.data()), m_points.size());
+        }
+        clearDirty();
+    }
+    return m_shape.get();
+}
+
+//==============================================================================
 // PhysicsObject2D
 
 PhysicsObject2D::PhysicsObject2D()

@@ -11,6 +11,7 @@
 
 class b2Shape;
 class b2PolygonShape;
+class b2ChainShape;
 class b2Body;
 class b2Fixture;
 class b2World;
@@ -97,6 +98,37 @@ private:
 	Size m_size;
 };
 
+/**
+ * 頂点により定義される、連続する任意の線分の衝突判定形状です。
+ *
+ * エッジは衝突判定の境界を表すものであるため、ボリュームを持ちません。そのため、エッジとエッジの衝突はできません。
+ * また、エッジはポリゴンのように閉じている必要はありません。
+ */
+class EdgeCollisionShape2D
+    : public CollisionShape2D
+{
+public:
+    /** EdgeCollisionShape2D を作成します。 */
+    static Ref<EdgeCollisionShape2D> create();
+
+    void addPoint(const Vector2& point);
+
+    /** 始点と終点を自動的に接続するかどうかを設定します。(default: true) */
+    bool setLoopEnabled(bool value);
+
+protected:
+    virtual b2Shape* resolveBox2DShape() override;
+
+LN_CONSTRUCT_ACCESS:
+    EdgeCollisionShape2D();
+    virtual ~EdgeCollisionShape2D() = default;
+    void init();
+
+private:
+    std::unique_ptr<b2ChainShape> m_shape;
+    std::vector<Vector2> m_points;
+    bool m_loopEnabled;
+};
 
 
 class PhysicsObject2D
