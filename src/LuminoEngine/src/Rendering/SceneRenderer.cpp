@@ -85,13 +85,15 @@ void SceneRenderer::render(
 
 
 	//if (clearColorBuffer)
-	//{
-	//	coreRenderer->setRenderTarget(0, defaultRenderTarget);
-	//	coreRenderer->setDepthBuffer(defaultDepthBuffer);
-	//	// TODO: 前回の最後のステートが残っていることがある。clear したいやつの弊害だけ、とりあえず暫定処置。シザーも必要になりそう。
-	//	coreRenderer->setViewport(RectI(0, 0, defaultRenderTarget->getSize()));
-	//	coreRenderer->clear(ClearFlags::All, clearColor);
-	//}
+	{
+        // TODO: 暫定。
+        graphicsContext->setColorBuffer(0, defaultFrameBuffer.renderTarget[0]);
+        graphicsContext->setDepthBuffer(defaultFrameBuffer.depthBuffer);
+        graphicsContext->clear(ClearFlags::Depth, Color::White);
+		// TODO: 前回の最後のステートが残っていることがある。clear したいやつの弊害だけ、とりあえず暫定処置。シザーも必要になりそう。
+		//coreRenderer->setViewport(RectI(0, 0, defaultRenderTarget->getSize()));
+		//coreRenderer->clear(ClearFlags::All, clearColor);
+	}
 
 
 
