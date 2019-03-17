@@ -33,6 +33,7 @@ public:
 	static Ref<RigidBody2DComponent> create();
 
     void setVelocity(const Vector2& value) { m_body->setVelocity(value); }
+    void setVelocity(float x, float y) { setVelocity(Vector2(x, y)); }
 
     const Vector2& velocity() const { return m_body->velocity(); }
 
