@@ -172,7 +172,7 @@ public:
 	bool equals(const GeometryStageParameters* other) const
 	{
         return
-            m_material == other->m_material &&
+            m_material == other->m_material &&  // TODO: Material が一致することはまずない。ちゃんと中身かhashを見ること。
             m_blendMode == other->m_blendMode &&
             m_cullingMode == other->m_cullingMode &&
             m_depthTestEnabled == other->m_depthTestEnabled &&

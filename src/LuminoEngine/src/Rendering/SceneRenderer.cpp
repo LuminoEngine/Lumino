@@ -224,7 +224,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 
 				ElementInfo elementInfo;
 				elementInfo.viewProjMatrix = &cameraInfo.viewProjMatrix;
-				elementInfo.WorldMatrix = (currentStage->renderFeature && !currentStage->renderFeature->drawElementTransformNegate()) ? element->combinedWorldMatrix() : Matrix();
+				elementInfo.WorldMatrix = (currentStage->renderFeature && !currentStage->renderFeature->drawElementTransformNegate()) ? element->combinedWorldMatrix() : Matrix::Identity;
 				elementInfo.WorldViewProjectionMatrix = elementInfo.WorldMatrix * (*elementInfo.viewProjMatrix);
 				elementInfo.boneTexture = m_skinningMatricesTexture;
 				elementInfo.boneLocalQuaternionTexture = m_skinningLocalQuaternionsTexture;

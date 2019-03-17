@@ -163,12 +163,13 @@ void SpriteTextRenderFeature::init(RenderingManager* manager)
     m_internal->init(manager);
 }
 
-void SpriteTextRenderFeature::drawText(GraphicsContext* context, const FormattedText* text)
+void SpriteTextRenderFeature::drawText(GraphicsContext* context, const FormattedText* text, const Matrix& transform)
 {
 	m_drawingGraphicsContext = context;
 	m_drawingFormattedText = text;
 	m_drawingFont = FontHelper::resolveFontCore(text->font);
 	m_drawingFontGlyphCache = m_drawingFont->getFontGlyphTextureCache();
+    m_drawingTransform = transform;
 
 	TextLayoutEngine::layout(m_drawingFont, text->text.c_str(), text->text.length(), Rect(0, 0, text->area), 0, text->textAlignment);
 
@@ -205,7 +206,7 @@ void SpriteTextRenderFeature::onPlacementGlyph(UTF32 ch, const Vector2& pos, con
 	// TODO: Outline
 
 	InternalSpriteTextRender::GlyphData data;
-	data.transform = Matrix();	// TODO: 文字単位アニメーション //transform;
+    data.transform = m_drawingTransform;
 	data.position = pos;
 	data.color = m_drawingFormattedText->color;
 	data.srcRect = info.srcRect;

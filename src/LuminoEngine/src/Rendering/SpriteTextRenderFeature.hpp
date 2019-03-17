@@ -82,12 +82,13 @@ public:
 	SpriteTextRenderFeature();
 	void init(RenderingManager* manager);
 
-	void drawText(GraphicsContext* context, const FormattedText* text);
+	void drawText(GraphicsContext* context, const FormattedText* text, const Matrix& transform);
 
 protected:
 	virtual void flush(GraphicsContext* context) override;
     virtual void updateRenderParameters(detail::RenderDrawElement* element, ShaderTechnique* tech, const detail::CameraInfo& cameraInfo, const detail::ElementInfo& elementInfo, const detail::SubsetInfo& subsetInfo) override;
 	virtual void onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size) override;
+    virtual bool drawElementTransformNegate() const override { return true; }
 
 private:
 	void flushInternal(GraphicsContext* context, FontGlyphTextureCache* cache);
@@ -95,6 +96,7 @@ private:
 	Ref<InternalSpriteTextRender> m_internal;
 	GraphicsContext* m_drawingGraphicsContext;
 	const FormattedText* m_drawingFormattedText;
+    Matrix m_drawingTransform;
 	FontCore* m_drawingFont;
 	FontGlyphTextureCache* m_drawingFontGlyphCache;
 	std::vector<InternalSpriteTextRender::GlyphData> m_glyphLayoutDataList;
@@ -107,7 +109,7 @@ public:
 
     virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
     {
-        static_cast<detail::SpriteTextRenderFeature*>(renderFeatures)->drawText(context, formattedText);
+        static_cast<detail::SpriteTextRenderFeature*>(renderFeatures)->drawText(context, formattedText, combinedWorldMatrix());
     }
 };
 
