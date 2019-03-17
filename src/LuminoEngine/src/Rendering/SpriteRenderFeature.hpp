@@ -62,7 +62,8 @@ public:
 		const Rect& srcRect,
 		const Color& color,
 		SpriteBaseDirection baseDir,
-		BillboardType billboardType);
+		BillboardType billboardType,
+        SpriteFlipFlags flipFlags);
 
 	void flush(IGraphicsDeviceContext* context);
 	void clear();
@@ -139,7 +140,8 @@ public:
 		const Rect& srcRect,
 		const Color& color,
 		SpriteBaseDirection baseDirection,
-		BillboardType billboardType);
+		BillboardType billboardType,
+        SpriteFlipFlags flipFlags);
 
     virtual void onActiveRenderFeatureChanged(const detail::CameraInfo& mainCameraInfo) override;
 	virtual void flush(GraphicsContext* context) override;

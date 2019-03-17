@@ -51,7 +51,7 @@ void Tileset::drawTile(RenderingContext* context, int tileId, const Vector3& pos
         context->drawSprite(
             Matrix::makeTranslation(pos), tileSize, Vector2::Zero,
             Rect(0, 0, 1, 1), Color::White,
-            SpriteBaseDirection::ZMinus, BillboardType::None,
+            SpriteBaseDirection::ZMinus, BillboardType::None, detail::SpriteFlipFlags::None,
             m_material);
     }
 }

@@ -55,6 +55,18 @@ public:
     /** アンカーポイント (原点) を取得します。 */
     const Vector2& anchorPoint() const;
 
+    /** 表示するテクスチャを水平に反転するかどうかを設定します。 */
+    void setFlippedX(bool value);
+
+    /** 表示するテクスチャを水平に反転するかどうかを確認します。 */
+    bool isFlippedX() const;
+
+    /** 表示するテクスチャを垂直に反転するかどうかを設定します。 */
+    void setFlippedY(bool value);
+
+    /** 表示するテクスチャを垂直に反転するかどうかを確認します。 */
+    bool isFlippedY() const;
+
 protected:
 
 LN_CONSTRUCT_ACCESS:

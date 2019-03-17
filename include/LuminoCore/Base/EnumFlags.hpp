@@ -47,6 +47,18 @@ public:
         return *this;
     }
 
+    /** 指定されたビット値を 0 または 1 に設定します。 */
+    Flags<EnumType>& set(EnumType value, bool bit)
+    {
+        if (bit) {
+            set(value);
+        }
+        else {
+            unset(value);
+        }
+        return *this;
+    }
+
 	/** 指定されたビット値を 0 に設定します。 */
     void unset(EnumType value)
     {

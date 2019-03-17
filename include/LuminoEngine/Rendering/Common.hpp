@@ -94,6 +94,14 @@ namespace detail {
 
 
 
+enum class SpriteFlipFlags : uint8_t
+{
+    None = 0,
+    FlipX = 1 << 1,
+    FlipY = 1 << 2,
+};
+LN_FLAGS_OPERATORS(SpriteFlipFlags);
+
 struct DynamicLightInfo
 {
 	DynamicLightInfo()

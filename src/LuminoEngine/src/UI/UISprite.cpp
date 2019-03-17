@@ -68,7 +68,7 @@ void UISprite::onRender(UIRenderingContext* context)
 
     context->drawSprite(
         Matrix(), renderSize, Vector2(0, 0), renderSourceRect, Color::White,
-        SpriteBaseDirection::Basic2D, BillboardType::None, m_material);
+        SpriteBaseDirection::Basic2D, BillboardType::None, detail::SpriteFlipFlags::None, m_material);
 }
 
 } // namespace ln

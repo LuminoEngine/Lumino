@@ -116,6 +116,7 @@ SpriteComponent::SpriteComponent()
     , m_size()
     , m_anchorPoint(0.5, 0.5)
 	, m_frameIndex(-1)
+    , m_flipFlags(detail::SpriteFlipFlags::None)
 {
 }
 
@@ -189,7 +190,7 @@ void SpriteComponent::onRender(RenderingContext* context)
 
     context->drawSprite(
         Matrix(), renderSize, anchorPoint, renderSourceRect, Color::White,
-        SpriteBaseDirection::ZMinus, BillboardType::None, m_material);
+        SpriteBaseDirection::ZMinus, BillboardType::None, m_flipFlags, m_material);
 }
 
 } // namespace ln

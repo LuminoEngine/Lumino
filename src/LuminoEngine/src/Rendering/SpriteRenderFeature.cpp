@@ -43,7 +43,8 @@ void InternalSpriteRenderer::drawRequest(
 	const Rect& srcRect,
 	const Color& color,
 	SpriteBaseDirection baseDir,
-	BillboardType billboardType)
+	BillboardType billboardType,
+    SpriteFlipFlags flipFlags)
 {
 	SpriteData sprite;
 
@@ -221,6 +222,14 @@ void InternalSpriteRenderer::drawRequest(
         float t = srcRect.y;
         float r = (srcRect.x + srcRect.width);
         float b = (srcRect.y + srcRect.height);
+
+        if (testFlag(flipFlags, SpriteFlipFlags::FlipX)) {
+            std::swap(l, r);
+        }
+        if (testFlag(flipFlags, SpriteFlipFlags::FlipY)) {
+            std::swap(t, b);
+        }
+
         sprite.vertices[0].uv.x = l;
         sprite.vertices[0].uv.y = t;
         sprite.vertices[1].uv.x = r;
@@ -408,21 +417,23 @@ void SpriteRenderFeature::drawRequest(
 	const Rect& srcRect,
 	const Color& color,
 	SpriteBaseDirection baseDirection,
-	BillboardType billboardType)
+	BillboardType billboardType,
+    SpriteFlipFlags flipFlags)
 {
 	GraphicsManager* manager = m_manager->graphicsManager();
+    Vector4 sizeAndAnchor(size.x, size.y, anchorRatio.x, anchorRatio.y);
 	LN_ENQUEUE_RENDER_COMMAND_8(
 		SpriteRenderFeature_drawRequest, manager,
 		InternalSpriteRenderer*, m_internal,
 		Matrix, transform,
-        Vector2, size,
-		Vector2, anchorRatio,
+        Vector4, sizeAndAnchor,
 		Rect, srcRect,
 		Color, color,
 		SpriteBaseDirection, baseDirection,
 		BillboardType, billboardType,
+        SpriteFlipFlags, flipFlags,
 		{
-			m_internal->drawRequest(transform, size, anchorRatio, srcRect, color, baseDirection, billboardType);
+			m_internal->drawRequest(transform, Vector2(sizeAndAnchor.x, sizeAndAnchor.y), Vector2(sizeAndAnchor.z, sizeAndAnchor.w), srcRect, color, baseDirection, billboardType, flipFlags);
 		});
 }
 

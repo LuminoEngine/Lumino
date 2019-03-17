@@ -281,6 +281,7 @@ void RenderingContext::drawSprite(
 	const Color& color,
 	SpriteBaseDirection baseDirection,
 	BillboardType billboardType,
+    const Flags<detail::SpriteFlipFlags>& flipFlags,
 	AbstractMaterial* material)
 {
 	class DrawSprite : public detail::RenderDrawElement
@@ -293,11 +294,12 @@ void RenderingContext::drawSprite(
 		Color color;
 		SpriteBaseDirection baseDirection;
 		BillboardType billboardType;
+        detail::SpriteFlipFlags flipFlags;
 
 		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
 		{
 			static_cast<detail::SpriteRenderFeature*>(renderFeatures)->drawRequest(
-				transform, size, anchorRatio, srcRect, color, baseDirection, billboardType);
+				transform, size, anchorRatio, srcRect, color, baseDirection, billboardType, flipFlags);
 		}
 	};
 
@@ -312,6 +314,7 @@ void RenderingContext::drawSprite(
 	element->color = color;
 	element->baseDirection = baseDirection;
 	element->billboardType = billboardType;
+    element->flipFlags = flipFlags;
 	// TODO
 	//detail::Sphere sphere;
 	//detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &sphere);

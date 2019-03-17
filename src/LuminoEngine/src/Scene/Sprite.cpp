@@ -92,5 +92,25 @@ const Vector2& Sprite::anchorPoint() const
     return m_component->anchorPoint();
 }
 
+void Sprite::setFlippedX(bool value)
+{
+    m_component->setFlippedX(value);
+}
+
+bool Sprite::isFlippedX() const
+{
+    return m_component->isFlippedX();
+}
+
+void Sprite::setFlippedY(bool value)
+{
+    m_component->setFlippedY(value);
+}
+
+bool Sprite::isFlippedY() const
+{
+    return m_component->isFlippedY();
+}
+
 } // namespace ln
 

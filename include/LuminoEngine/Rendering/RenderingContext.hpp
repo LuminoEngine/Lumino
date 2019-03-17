@@ -125,6 +125,7 @@ public:
 		const Color& color,
 		SpriteBaseDirection baseDirection,
 		BillboardType billboardType,
+        const Flags<detail::SpriteFlipFlags>& flipFlags,
 		AbstractMaterial* material);
 
 	void drawPrimitive(VertexDeclaration* vertexDeclaration, VertexBuffer* vertexBuffer, PrimitiveTopology topology, int startVertex, int primitiveCount);

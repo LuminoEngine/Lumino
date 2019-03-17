@@ -105,6 +105,19 @@ public:
 	int frameIndex() const { return m_frameIndex; }
 
 
+
+    /** 表示するテクスチャを水平に反転するかどうかを設定します。 */
+    void setFlippedX(bool value) { m_flipFlags.set(detail::SpriteFlipFlags::FlipX, value); }
+
+    /** 表示するテクスチャを水平に反転するかどうかを確認します。 */
+    bool isFlippedX() const { return m_flipFlags.hasFlag(detail::SpriteFlipFlags::FlipX); }
+
+    /** 表示するテクスチャを垂直に反転するかどうかを設定します。 */
+    void setFlippedY(bool value) { m_flipFlags.set(detail::SpriteFlipFlags::FlipY, value); }
+
+    /** 表示するテクスチャを垂直に反転するかどうかを確認します。 */
+    bool isFlippedY() const { return m_flipFlags.hasFlag(detail::SpriteFlipFlags::FlipY); }
+
 	// TODO: internal
 	static void registerType(EngineContext* context);
 
@@ -125,6 +138,7 @@ private:
     Vector2 m_anchorPoint;
 	Ref<SpriteFrameSet> m_frameSet;
 	int m_frameIndex;
+    Flags<detail::SpriteFlipFlags> m_flipFlags;
 };
 
 } // namespace ln
