@@ -15,7 +15,8 @@ class AnimationClip
 	: public Object
 {
 public:
-	static Ref<AnimationClip> create(const StringRef& name, const StringRef& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes);
+    /** ひとつの AnimationTrack を持つ AnimationClip を作成します。 */
+	static Ref<AnimationClip> create(/*const StringRef& name, */const StringRef& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes);
 
 
 	/** アニメーションの繰り返しの動作を取得します。 */
@@ -34,10 +35,10 @@ LN_CONSTRUCT_ACCESS:
 	AnimationClip();
 	virtual ~AnimationClip();
 	void init();
-	void init(const StringRef& name, const StringRef& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes);
+	void init(/*const StringRef& name, */const StringRef& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes);
 
 protected:
-	String m_name;
+	//String m_name;
 	List<Ref<AnimationTrack>> m_tracks;
 	Ref<RefObject> m_srcData;
 	float m_lastFrameTime;

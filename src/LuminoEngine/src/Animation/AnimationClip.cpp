@@ -10,9 +10,9 @@ namespace ln {
 //==============================================================================
 // AnimationClip
 
-Ref<AnimationClip> AnimationClip::create(const StringRef& name, const StringRef& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes)
+Ref<AnimationClip> AnimationClip::create(/*const StringRef& name, */const StringRef& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes)
 {
-	return newObject<AnimationClip>(name, targetPath, keyframes);
+	return newObject<AnimationClip>(/*name, */targetPath, keyframes);
 }
 
 AnimationClip::AnimationClip()
@@ -30,13 +30,13 @@ void AnimationClip::init()
 	Object::init();
 }
 
-void AnimationClip::init(const StringRef& name, const StringRef& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes)
+void AnimationClip::init(/*const StringRef& name, */const StringRef& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes)
 {
-	if (LN_REQUIRE(!name.isEmpty())) return;
+	//if (LN_REQUIRE(!name.isEmpty())) return;
 
 	init();
 
-	m_name = name;
+	//m_name = name;
 
 	auto curve = newObject<KeyFrameAnimationCurve>();
 	for (auto& key : keyframes) {

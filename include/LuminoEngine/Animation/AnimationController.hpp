@@ -176,7 +176,7 @@ public:
 	bool isPlaying() const;
 
 	/// 再生
-	void play(const StringRef& clipName, float duration = 0.3f/*, PlayMode mode = PlayMode_StopSameLayer*/);
+	void play(const StringRef& clipName, float duration/* = 0.3f*//*, PlayMode mode = PlayMode_StopSameLayer*/);
 
 	///// ブレンド (アニメーションの再生には影響しない。停止中のアニメーションがこの関数によって再生開始されることはない)
 	//void Blend(const lnKeyChar* animName, lnFloat targetWeight, lnFloat fadeLength);

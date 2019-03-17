@@ -10,6 +10,11 @@ namespace ln {
 //==============================================================================
 // Animator
 
+Ref<Animator> Animator::create()
+{
+    return newObject<Animator>();
+}
+
 void Animator::init()
 {
 	Component::init();

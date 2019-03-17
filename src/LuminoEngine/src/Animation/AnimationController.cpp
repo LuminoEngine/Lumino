@@ -261,6 +261,12 @@ void AnimationLayer::updateTargetElements()
 
 void AnimationLayer::transitionTo(AnimationState* state, float duration)
 {
+    if (m_currentState == state) {
+        // 同じ場合は遷移しない。現状維持。
+        // play("wait") とか毎フレーム呼ばれることに備える。
+        return;
+    }
+
 	if (Math::nearEqual(duration, 0.0f))
 	{
 		m_transition.stateFrom = nullptr;
