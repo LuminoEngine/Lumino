@@ -205,6 +205,19 @@ bool WorldObject::traverseRefrection(ReflectionObjectVisitor* visitor)
 {
 	// 子 Component のプロパティをこのオブジェクトのものとして通知
 	// TODO: ほんとは "Sprite.FrameIndex" みたいにオブジェクト名も入れた方がいいかも。
+    // Unity だと、後からツリーを変更したときに、AnimationClip の path を修正するのがちょっと大変。
+    // https://qiita.com/nekobako/items/b647a701b6070d1ca872
+    // http://tsubakit1.hateblo.jp/entry/2018/02/08/203747
+    // また、VMD や FBX から読み込んだアニメーションデータのトラックがボーン名しか持っていないときにも対応できるようにしておきたい。
+    //
+    // そうすると、
+    // "FrameIndex" -> FrameIndex という名前のプロパティをすべて探して、最初に見つかったものを採用する。
+    // "SpriteComponent.FrameIndex" -> Sprite の部分は型名またはオブジェクト名。この中のプロパティを探す。
+    // ※ちなみに、SpriteComponent を直接使うことって少なくて、なのに "SpriteComponent" を明示的に指定しなければならないという仕様はちょっとイケてないと思う。
+    //
+    // あと、WPF でいうところの Logical, Visual ツリーの仕組みが必要かもしれない。
+    // まぁ、Unity は持っているし。(ある 3DModel のボーンを示す子ノードの寿命は、親Nodeに完全に依存する)
+    // このプロパティの検索は、ある Logical ノードの管理下にある Visual ツリーをたどることになる。
 	for (auto& c : m_components) {
 		if (TypeInfo* typeInfo = TypeInfo::getTypeInfo(c)) {
 			for (auto& prop : typeInfo->properties()) {
