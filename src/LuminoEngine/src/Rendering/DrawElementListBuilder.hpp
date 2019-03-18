@@ -5,6 +5,7 @@
 #include "MeshRenderFeature.hpp"
 #include "PrimitiveRenderFeature.hpp"
 #include "SpriteTextRenderFeature.hpp"
+#include "FrameRectRenderFeature.hpp"
 
 namespace ln {
 class RenderViewPoint;
@@ -68,6 +69,7 @@ public:
 	MeshRenderFeatureStageParameters* meshRenderFeatureStageParameters() { return &m_meshRenderFeatureStageParameters; }
     PrimitiveRenderFeatureStageParameters* primitiveRenderFeatureStageParameters() { return &m_primitiveRenderFeatureStageParameters; }
 	SpriteTextRenderFeatureStageParameters* spriteTextRenderFeatureStageParameters() { return &m_spriteTextRenderFeatureStageParameters; }
+	FrameRectRenderFeatureStageParameters* frameRectRenderFeatureStageParameters() { return &m_frameRectRenderFeatureStageParameters; }
 
 	template<class TElement>
 	TElement* addNewDrawElement(
@@ -137,6 +139,7 @@ private:
 	MeshRenderFeatureStageParameters m_meshRenderFeatureStageParameters;
     PrimitiveRenderFeatureStageParameters m_primitiveRenderFeatureStageParameters;
 	SpriteTextRenderFeatureStageParameters m_spriteTextRenderFeatureStageParameters;
+	FrameRectRenderFeatureStageParameters m_frameRectRenderFeatureStageParameters;
 
     Ref<AbstractMaterial> m_defaultMaterial;
     Flags<DirtyFlags> m_dirtyFlags;

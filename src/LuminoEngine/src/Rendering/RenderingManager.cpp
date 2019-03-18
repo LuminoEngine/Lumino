@@ -58,6 +58,7 @@ void RenderingManager::init(const Settings& settings)
     m_meshRenderFeature = newObject<MeshRenderFeature>(this);
     m_primitiveRenderFeature = newObject<PrimitiveRenderFeature>(this);
     m_spriteTextRenderFeature = newObject<SpriteTextRenderFeature>(this);
+	m_frameRectRenderFeature = newObject<FrameRectRenderFeature>(this);
 
     m_stageDataPageManager = makeRef<LinearAllocatorPageManager>();
 
@@ -143,6 +144,7 @@ void RenderingManager::dispose()
 		m_builtinShaders[i] = nullptr;
 	}
 	m_stageDataPageManager = nullptr;
+	m_frameRectRenderFeature = nullptr;
     m_spriteTextRenderFeature = nullptr;
     m_primitiveRenderFeature = nullptr;
 	m_meshRenderFeature = nullptr;

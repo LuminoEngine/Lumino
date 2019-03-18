@@ -289,6 +289,7 @@ set(LN_SOURCES_Mesh
 set(LN_SOURCES_Rendering
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/CommandBuffer.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/Drawing.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/Material.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/RenderFeature.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/RenderingContext.hpp
@@ -302,6 +303,9 @@ set(LN_SOURCES_Rendering
     src/Rendering/CommandBuffer.cpp
     src/Rendering/DrawElementListBuilder.cpp
     src/Rendering/DrawElementListBuilder.hpp
+    src/Rendering/Drawing.cpp
+    src/Rendering/FrameRectRenderFeature.cpp
+    src/Rendering/FrameRectRenderFeature.hpp
     src/Rendering/LightClusters.cpp
     src/Rendering/LightClusters.hpp
     src/Rendering/Material.cpp
