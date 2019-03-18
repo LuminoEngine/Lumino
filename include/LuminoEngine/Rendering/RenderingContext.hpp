@@ -170,7 +170,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	void setDrawElementList(detail::DrawElementList* list);
 	void resetForBeginRendering();
 
-private:
+protected:  // TODO:
 	detail::RenderingManager* m_manager;
 	Ref<detail::DrawElementListBuilder> m_builder;
 };

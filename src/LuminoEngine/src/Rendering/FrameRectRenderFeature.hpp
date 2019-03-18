@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
+#include <LuminoEngine/Rendering/Drawing.hpp>
 #include "RenderStage.hpp"
 #include "RenderingManager.hpp"
 
@@ -16,16 +17,25 @@ public:
     void init(RenderingManager* manager);
 	RenderingManager* manager() const { return m_manager; }
 
+    void draw(const Rect& rect, const Matrix& worldTransform, BrushImageDrawMode imageDrawMode, const Thickness& borderThickness, const Rect& srcRect, BrushWrapMode wrapMode, const SizeI& srcTextureSize);
 	void flush(IGraphicsDeviceContext* context);
 
 private:
 	void prepareBuffers(int spriteCount);
+    void addVertex(const Vector3& pos, const Vector2& uv);
+    void putRectangleStretch(const Rect& rect, const Rect& srcUVRect);
+    void putRectangleTiling(const Rect& rect, const Rect& srcPixelRect, const Rect& srcUVRect);
+    void putRectangle(const Rect& rect, const Rect& srcPixelRect, const Rect& srcUVRect, BrushWrapMode wrapMode);
+    void putFrameRectangle(const Rect& rect, const Thickness& borderThickness, Rect srcRect, BrushWrapMode wrapMode, const SizeI& srcTextureSize);
 
 	RenderingManager* m_manager;
 	Ref<IVertexDeclaration> m_vertexDeclaration;
 	Ref<IVertexBuffer> m_vertexBuffer;
 	Ref<IIndexBuffer> m_indexBuffer;
-	size_t m_spriteCount;
+
+    Ref<LinearAllocator> m_vertexAllocator;
+    List<Vertex*> m_vertices;
+
 	size_t m_buffersReservedSpriteCount;
 };
 
@@ -62,23 +72,39 @@ public:
 	FrameRectRenderFeature();
 	void init(RenderingManager* manager);
 
+    void draw(const Rect& rect, const Matrix& worldTransform, BrushImageDrawMode imageDrawMode, const Thickness& borderThickness, const Rect& srcRect, BrushWrapMode wrapMode, const SizeI& srcTextureSize);
+
 protected:
 	virtual void flush(GraphicsContext* context) override;
     virtual bool drawElementTransformNegate() const override { return true; }
 
 private:
-	void flushInternal(GraphicsContext* context);
-
 	Ref<InternalFrameRectRenderer> m_internal;
 };
 
 class DrawFrameRectElement : public RenderDrawElement
 {
 public:
+    Rect rect;
+    Matrix transform;
+    BrushImageDrawMode imageDrawMode;
+    Thickness borderThickness;
+    Rect srcRect;
+    BrushWrapMode wrapMode;
+
+    virtual void onSubsetInfoOverride(SubsetInfo* subsetInfo) override
+    {
+        m_srcTextureSize = subsetInfo->materialTexture->size();
+    }
+
     virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
     {
-		static_cast<detail::FrameRectRenderFeature*>(renderFeatures);
+		static_cast<detail::FrameRectRenderFeature*>(renderFeatures)->draw(
+            rect, transform, imageDrawMode, borderThickness, srcRect, wrapMode, m_srcTextureSize);
     }
+
+private:
+    SizeI m_srcTextureSize;
 };
 
 } // namespace detail
