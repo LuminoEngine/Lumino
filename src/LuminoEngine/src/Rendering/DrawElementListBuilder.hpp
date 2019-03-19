@@ -6,6 +6,7 @@
 #include "PrimitiveRenderFeature.hpp"
 #include "SpriteTextRenderFeature.hpp"
 #include "FrameRectRenderFeature.hpp"
+#include "ShapesRenderFeature.hpp"
 
 namespace ln {
 class RenderViewPoint;
@@ -70,6 +71,7 @@ public:
     PrimitiveRenderFeatureStageParameters* primitiveRenderFeatureStageParameters() { return &m_primitiveRenderFeatureStageParameters; }
 	SpriteTextRenderFeatureStageParameters* spriteTextRenderFeatureStageParameters() { return &m_spriteTextRenderFeatureStageParameters; }
 	FrameRectRenderFeatureStageParameters* frameRectRenderFeatureStageParameters() { return &m_frameRectRenderFeatureStageParameters; }
+	ShapesRenderFeatureStageParameters* shapesRenderFeatureStageParameters() { return &m_shapesRenderFeatureStageParameters; }
 
 	template<class TElement>
 	TElement* addNewDrawElement(
@@ -140,6 +142,7 @@ private:
     PrimitiveRenderFeatureStageParameters m_primitiveRenderFeatureStageParameters;
 	SpriteTextRenderFeatureStageParameters m_spriteTextRenderFeatureStageParameters;
 	FrameRectRenderFeatureStageParameters m_frameRectRenderFeatureStageParameters;
+	ShapesRenderFeatureStageParameters m_shapesRenderFeatureStageParameters;
 
     Ref<AbstractMaterial> m_defaultMaterial;
     Flags<DirtyFlags> m_dirtyFlags;

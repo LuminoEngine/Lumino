@@ -371,6 +371,8 @@ public:
 	bool isEmpty() const { return m_renderStageList.isEmpty(); }
 	RenderStage* last() const { return m_renderStageList.back(); }
 
+	const Ref<LinearAllocator>& dataAllocator() const { return m_dataAllocator; }
+
 	void clear();
 
 	template<class T, class... TArgs>

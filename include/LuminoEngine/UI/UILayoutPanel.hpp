@@ -17,7 +17,7 @@ private:
 /*
 要素を四辺に沿って整列
 */
-class UIFrameLayout
+class UIFrameLayout	// TODO: BorderLayout の方がいいかも https://doc.qt.io/qt-5/qtwidgets-layouts-borderlayout-example.html
     : public UILayoutPanel
 {
 public:

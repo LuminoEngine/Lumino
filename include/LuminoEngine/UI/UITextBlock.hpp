@@ -17,7 +17,8 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 protected:
-    virtual void onRender(UIRenderingContext* context);
+	virtual Size measureOverride(const Size& constraint) override;
+    virtual void onRender(UIRenderingContext* context) override;
 
 private:
     String m_text;

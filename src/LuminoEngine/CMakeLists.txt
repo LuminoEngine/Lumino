@@ -324,6 +324,8 @@ set(LN_SOURCES_Rendering
     src/Rendering/RenderTargetTextureCache.cpp
     src/Rendering/RenderTargetTextureCache.hpp
     src/Rendering/RenderView.cpp
+    src/Rendering/ShapesRenderFeature.cpp
+    src/Rendering/ShapesRenderFeature.hpp
     src/Rendering/SceneRenderer.cpp
     src/Rendering/SceneRenderer.hpp
     src/Rendering/SpriteRenderFeature.cpp
@@ -441,6 +443,7 @@ set(LN_SOURCES_UI
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIControl.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIElement.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIEvents.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIFrame.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIFrameWindow.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UILayoutElement.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UILayoutPanel.hpp
@@ -456,6 +459,7 @@ set(LN_SOURCES_UI
     src/UI/UIElement.cpp
     src/UI/UIEventArgsPool.hpp
     src/UI/UIEvents.cpp
+    src/UI/UIFrame.cpp
     src/UI/UIFrameWindow.cpp
     src/UI/UILayoutElement.cpp
     src/UI/UILayoutPanel.cpp

@@ -217,6 +217,11 @@ void UIFrameWindow::init(detail::PlatformWindow* platformMainWindow, const SizeI
     m_inputInjector = makeRef<detail::UIInputInjector>(this);
 
     m_platformWindow->attachEventListener(this);
+
+	SizeI size;
+	m_platformWindow->getSize(&size);
+	setWidth(size.width);
+	setHeight(size.height);
 }
 
 void UIFrameWindow::onDispose(bool explicitDisposing)
@@ -331,6 +336,8 @@ bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)
         if (m_inputInjector->injectTextInput(e.key.keyChar)) return true;
         break;
     case PlatformEventType::WindowSizeChanged:
+		setWidth(e.size.width);
+		setHeight(e.size.height);
         break;
     case PlatformEventType::DragEnter:
     {

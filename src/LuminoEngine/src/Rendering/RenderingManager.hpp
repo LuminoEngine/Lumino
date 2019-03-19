@@ -17,6 +17,7 @@ class MeshRenderFeature;
 class PrimitiveRenderFeature;
 class SpriteTextRenderFeature;
 class FrameRectRenderFeature;
+class ShapesRenderFeature;
 
 enum class BuiltinShader
 {
@@ -153,6 +154,7 @@ public:
     const Ref<PrimitiveRenderFeature>& primitiveRenderFeature() const { return m_primitiveRenderFeature; }
     const Ref<SpriteTextRenderFeature>& spriteTextRenderFeature() const { return m_spriteTextRenderFeature; }
 	const Ref<FrameRectRenderFeature>& frameRectRenderFeature() const { return m_frameRectRenderFeature; }
+	const Ref<ShapesRenderFeature>& shapesRenderFeature() const { return m_shapesRenderFeature; }
 	const Ref<LinearAllocatorPageManager>& stageDataPageManager() const { return m_stageDataPageManager; }
 	const Ref<Shader>& builtinShader(BuiltinShader shader) const { return m_builtinShaders[(int)shader]; }
     const Ref<Material>& builtinMaterials(BuiltinMaterial material) const { return m_builtinMaterials[(int)material]; }
@@ -171,6 +173,7 @@ private:
     Ref<PrimitiveRenderFeature> m_primitiveRenderFeature;
     Ref<SpriteTextRenderFeature> m_spriteTextRenderFeature;
 	Ref<FrameRectRenderFeature> m_frameRectRenderFeature;
+	Ref<ShapesRenderFeature> m_shapesRenderFeature;
 
 	// RenderStage 関係のデータ (ステートやコマンド) 用の LinearAllocatorPageManager
 	Ref<LinearAllocatorPageManager> m_stageDataPageManager;

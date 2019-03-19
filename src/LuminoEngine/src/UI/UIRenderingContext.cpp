@@ -4,6 +4,7 @@
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/DrawElementListBuilder.hpp"
 #include "../Rendering/FrameRectRenderFeature.hpp"
+#include "../Rendering/ShapesRenderFeature.hpp"
 
 namespace ln {
 
@@ -20,16 +21,28 @@ void UIRenderingContext::drawBoxBackground(const Rect& rect, const Thickness& bo
 {
     m_builder->setMaterial(material);
 
-    auto* element = m_builder->addNewDrawElement<detail::DrawFrameRectElement>(
-        m_manager->frameRectRenderFeature(),
-        m_builder->frameRectRenderFeatureStageParameters());
 
-    element->rect = rect;
-    element->transform = Matrix();  // TODO:
-    element->imageDrawMode = mode;
-    element->borderThickness = borderThickness;
-    element->srcRect = textureSourceRect;
-    element->wrapMode = BrushWrapMode::Stretch;
+	if (0)
+	{
+		auto* element = m_builder->addNewDrawElement<detail::DrawFrameRectElement>(
+			m_manager->frameRectRenderFeature(),
+			m_builder->frameRectRenderFeatureStageParameters());
+
+		element->rect = rect;
+		element->transform = Matrix();  // TODO:
+		element->imageDrawMode = mode;
+		element->borderThickness = borderThickness;
+		element->srcRect = textureSourceRect;
+		element->wrapMode = BrushWrapMode::Stretch;
+	}
+	else
+	{
+		auto* element = m_builder->addNewDrawElement<detail::DrawShapesElement>(
+			m_manager->shapesRenderFeature(),
+			m_builder->shapesRenderFeatureStageParameters());
+
+		element->commandList.addDrawBoxBackground(m_builder->targetList()->dataAllocator(), rect, cornerRadius);
+	}
 
     // TODO: bounding box
 }

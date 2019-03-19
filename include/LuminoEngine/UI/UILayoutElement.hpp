@@ -99,6 +99,13 @@ class UILayoutElement
 public:	// TODO: internal
 	void updateLayout(const Rect& parentFinalGlobalRect);
 
+	void setWidth(float value) { m_layoutSize.width = value; }
+	float width() const { return m_layoutSize.width; }
+
+	void setHeight(float value) { m_layoutSize.height = value; }
+	float height() const { return m_layoutSize.height; }
+
+
 	/** レイアウト処理の測定パスの実行中にこの要素が計算したサイズを取得します。この値は子要素が親要素へ要求する、子要素自身の最低サイズです。*/
 	const Size& desiredSize() const { return m_desiredSize; }
 
