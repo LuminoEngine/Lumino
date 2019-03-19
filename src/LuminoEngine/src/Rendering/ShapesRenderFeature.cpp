@@ -1166,6 +1166,21 @@ void ShapesRenderFeature::init(RenderingManager* manager)
     m_internal->init(manager);
 }
 
+void ShapesRenderFeature::renderCommandList(GraphicsContext* context, const ShapesRendererCommandList& commandList)
+{
+    // commandList が持っているポインタは RenderingCommandList の LinearAllocator で確保したものなのでそのまま RenderCommand に乗せてOK
+
+    GraphicsManager* manager = m_internal->manager()->graphicsManager();
+    IGraphicsDeviceContext* deviceContext = context->commitState();
+    LN_ENQUEUE_RENDER_COMMAND_2(
+        ShapesRenderFeature_renderCommandList, manager,
+        InternalShapesRenderer*, m_internal,
+        ShapesRendererCommandList, commandList,
+        {
+            m_internal->renderCommandList(&commandList);
+        });
+}
+
 void ShapesRenderFeature::flush(GraphicsContext* context)
 {
 }

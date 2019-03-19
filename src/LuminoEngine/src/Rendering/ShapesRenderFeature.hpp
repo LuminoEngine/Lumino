@@ -220,8 +220,8 @@ private:
 	Vector2 getAAExtDir(const BasePoint& pt) const { return (pt.enabledAA) ? pt.exDir : Vector2::Zero; }
 
 	RenderingManager* m_manager;
-	IVertexBuffer*		m_vertexBuffer;
-	IIndexBuffer*		m_indexBuffer;
+	Ref<IVertexBuffer>		m_vertexBuffer;
+	Ref<IIndexBuffer>		m_indexBuffer;
 	CacheBuffer<BasePoint>		m_basePoints;
 	CacheBuffer<OutlinePoint>	m_outlinePoints;
 	List<Path>					m_pathes;
@@ -262,6 +262,8 @@ public:
 	ShapesRenderFeature();
 	void init(RenderingManager* manager);
 
+    void renderCommandList(GraphicsContext* context, const ShapesRendererCommandList& commandList);
+
 protected:
 	virtual void flush(GraphicsContext* context) override;
     virtual bool drawElementTransformNegate() const override { return true; }
@@ -282,7 +284,7 @@ public:
 
     virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
     {
-		static_cast<detail::ShapesRenderFeature*>(renderFeatures);
+		static_cast<detail::ShapesRenderFeature*>(renderFeatures)->renderCommandList(context, commandList);
     }
 
 private:

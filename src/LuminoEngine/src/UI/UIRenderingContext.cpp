@@ -41,7 +41,8 @@ void UIRenderingContext::drawBoxBackground(const Rect& rect, const Thickness& bo
 			m_manager->shapesRenderFeature(),
 			m_builder->shapesRenderFeatureStageParameters());
 
-		element->commandList.addDrawBoxBackground(m_builder->targetList()->dataAllocator(), rect, cornerRadius);
+        
+		element->commandList.addDrawBoxBackground(m_manager->graphicsManager()->primaryRenderingCommandList()->linearAllocator(), rect, cornerRadius);
 	}
 
     // TODO: bounding box
