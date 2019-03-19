@@ -113,6 +113,8 @@ public:
 	const Ref<SceneManager>& sceneManager() const { return m_sceneManager; }
     const Ref<UIManager>& uiManager() const { return m_uiManager; }
 
+    const FpsController& fpsController() const { return m_fpsController; }
+
 	const Path& persistentDataPath() const { return m_persistentDataPath; }
 
 	const Ref<UIFrameWindow>& mainWindow() const { return m_mainWindow; }

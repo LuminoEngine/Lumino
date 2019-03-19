@@ -21,10 +21,10 @@ public:
     float getElapsedRealTime() const { return m_elapsedRealTime; }
 
     // 開始からの総ゲーム時間 (秒) を取得します。
-    float getTotalGameTime() const { return 0.001f * m_totalGameTime; }   // TODO: double にしたい
+    double getTotalGameTime() const { return 0.001 * m_totalGameTime; }
 
     // 開始からの総実時間 (秒) を取得します。
-    float getTotalRealTime() const { return 0.001f * m_totalRealTime; }
+    double getTotalRealTime() const { return 0.001 * m_totalRealTime; }
 
     // 最大 FPS 値を取得します。
     // 処理にどれだけ余裕があるかを示す値を取得します。

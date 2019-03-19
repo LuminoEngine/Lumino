@@ -39,6 +39,9 @@ public:
 
     static void resetFrameDelay();
 
+    /** アプリケーション開始からの経過時間を取得します。この値はタイムスケールの影響を受けます。 */
+    static double totalTime();
+
 	/** セーブデータなど、アプリケーションデータを保存するための永続的なデータディレクトリのパスを返します。 */
 	static const Path& persistentDataPath();
 

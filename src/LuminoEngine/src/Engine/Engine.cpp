@@ -108,6 +108,11 @@ void Engine::resetFrameDelay()
     detail::EngineDomain::engineManager()->resetFrameDelay();
 }
 
+double Engine::totalTime()
+{
+    return detail::EngineDomain::engineManager()->fpsController().getTotalGameTime();
+}
+
 const Path& Engine::persistentDataPath()
 {
 	return detail::EngineDomain::engineManager()->persistentDataPath();

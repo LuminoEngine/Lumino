@@ -17,7 +17,7 @@ public:
 	/** ステート名を指定してアニメーションクリップを追加します。 (レイヤー0 へ追加されます) */
 	AnimationState* addClip(const StringRef& stateName, AnimationClip* animationClip);
 
-    void play(const StringRef& stateName, float duration = 0.0f/*, PlayMode mode = PlayMode_StopSameLayer*/) { m_core->play(stateName, duration); }
+    void setState(const StringRef& stateName, float duration = 0.0f/*, PlayMode mode = PlayMode_StopSameLayer*/) { m_core->play(stateName, duration); }
 
 LN_CONSTRUCT_ACCESS:
 	void init();
