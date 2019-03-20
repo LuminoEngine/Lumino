@@ -53,3 +53,17 @@ TEST_F(Test_UI_UIElement, RenderEffects)
         LN_TEST_CLEAN_SCENE;
 	}
 }
+
+//------------------------------------------------------------------------------
+//## Background
+TEST_F(Test_UI_UIElement, Background)
+{
+	auto e1 = newObject<UIElement>();
+
+	e1->setBackgroundColor(Color::Red);
+
+	TestEnv::updateFrame();
+	ASSERT_SCREEN_S(LN_ASSETFILE("Result/Test_UI_UIElement-Background-1.png"));
+	LN_TEST_CLEAN_SCENE;
+}
+

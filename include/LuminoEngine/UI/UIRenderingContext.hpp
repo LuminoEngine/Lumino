@@ -14,7 +14,7 @@ class UIRenderingContext
 public:
     UIRenderingContext();
 
-    void drawBoxBackground(const Rect& rect, const Thickness& borderThickness, const CornerRadius& cornerRadius, BrushImageDrawMode mode, AbstractMaterial* material, const Rect& textureSourceRect);
+    void drawBoxBackground(const Rect& rect, const Thickness& borderThickness, const CornerRadius& cornerRadius, BrushImageDrawMode mode/*, AbstractMaterial* material*/, const Rect& textureSourceRect, const Color& color);
 
 public: // TODO: inernal
 	void resetForBeginRendering();

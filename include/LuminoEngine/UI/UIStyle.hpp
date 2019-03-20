@@ -2,6 +2,8 @@
 #include "UIElement.hpp"
 
 namespace ln {
+class Shader;
+class Texture;
 namespace detail {
 
 enum class UIStyleAttributeValueSource
@@ -192,6 +194,12 @@ public:
     detail::UIStyleAttribute<Quaternion> rotation;
     detail::UIStyleAttribute<Vector3> scale;
     detail::UIStyleAttribute<Vector3> centerPoint;
+
+	// background
+	detail::UIStyleAttribute<Color> backgroundColor;
+	detail::UIStyleAttribute<Ref<Texture>> backgroundImage;
+	detail::UIStyleAttribute<Ref<Shader>> backgroundShader;
+	// ※ここは Material にはしない。そういった大きなクラスを持たせるとまた Brush の時みたいな問題が出てくる。代わりに Material の構築に必要なものを持たせる
 
 	// text
 	detail::UIStyleAttribute<Color> textColor;	// (default: Black)

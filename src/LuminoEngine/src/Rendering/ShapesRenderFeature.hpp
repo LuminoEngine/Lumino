@@ -86,12 +86,14 @@ public:
 	{
 		CommandType type;
 		ListNode* next;
+		Matrix transform;
 	};
 
 	struct DrawBoxBackgroundCommand : public ListNode
 	{
 		Rect rect;
 		CornerRadius cornerRadius;
+		Color color;
 	};
 
 	struct DrawBoxBorderCommand : public ListNode
@@ -132,7 +134,7 @@ public:
 		bool inset;
 	};
 
-	void addDrawBoxBackground(LinearAllocator* allocator, const Rect& rect, const CornerRadius& cornerRadius);
+	void addDrawBoxBackground(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const CornerRadius& cornerRadius, const Color& color);
 	//void addDrawBoxBorder(LinearAllocator* allocator, const Rect& rect, const Thickness& thickness, const CornerRadius& cornerRadius, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const Color& shadowColor, float shadowBlur, float shadowWidth, bool shadowInset, bool borderInset);
 	//void drawBoxBorderLine(LinearAllocator* allocator, const Rect& rect, const Thickness& thickness, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const CornerRadius& cornerRadius, bool borderInset);
 	//void addDrawBoxShadow(LinearAllocator* allocator, const Rect& rect, const CornerRadius& cornerRadius, const Color& color, float blur, float width, bool inset);
@@ -179,6 +181,7 @@ private:
 		Color			color;
 		PathWinding		winding;
 		PathAttribute	attribute;
+		const Matrix*	transform;	// 実行中のコマンド構造体に乗っている transform への参照
 	};
 
 	struct BorderComponent
@@ -204,7 +207,7 @@ private:
 
 	//void releaseCommandList(ShapesRendererCommandList* commandList);
 	void requestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex);
-	Path* addPath(PathType type, const Color& color, PathWinding winding = PathWinding::CCW, PathAttribute attribute = PathAttribute::None);
+	Path* addPath(PathType type, const Matrix* transform, const Color& color, PathWinding winding = PathWinding::CCW, PathAttribute attribute = PathAttribute::None);
 	void endPath(Path* path);
 	void extractBasePoints(ShapesRendererCommandList* commandList);
 	void extractBasePoints(ShapesRendererCommandList::ListNode* command);

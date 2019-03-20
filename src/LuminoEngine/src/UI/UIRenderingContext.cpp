@@ -17,9 +17,9 @@ UIRenderingContext::UIRenderingContext()
 	setDrawElementList(m_elementList);
 }
 
-void UIRenderingContext::drawBoxBackground(const Rect& rect, const Thickness& borderThickness, const CornerRadius& cornerRadius, BrushImageDrawMode mode, AbstractMaterial* material, const Rect& textureSourceRect)
+void UIRenderingContext::drawBoxBackground(const Rect& rect, const Thickness& borderThickness, const CornerRadius& cornerRadius, BrushImageDrawMode mode/*, AbstractMaterial* material*/, const Rect& textureSourceRect, const Color& color)
 {
-    m_builder->setMaterial(material);
+    //m_builder->setMaterial(material);
 
 
 	if (0)
@@ -41,8 +41,7 @@ void UIRenderingContext::drawBoxBackground(const Rect& rect, const Thickness& bo
 			m_manager->shapesRenderFeature(),
 			m_builder->shapesRenderFeatureStageParameters());
 
-        
-		element->commandList.addDrawBoxBackground(m_manager->graphicsManager()->primaryRenderingCommandList()->linearAllocator(), rect, cornerRadius);
+		element->commandList.addDrawBoxBackground(m_manager->graphicsManager()->primaryRenderingCommandList()->linearAllocator(), element->combinedWorldMatrix(), rect, cornerRadius, color);
 	}
 
     // TODO: bounding box

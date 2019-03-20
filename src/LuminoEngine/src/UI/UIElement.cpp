@@ -1,7 +1,10 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Shader/Shader.hpp>
 #include <LuminoEngine/Graphics/RenderState.hpp>
+#include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Font/Font.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIEvents.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
@@ -35,6 +38,9 @@ void UIElement::init()
 {
 	UILayoutElement::init(&m_finalStyle);
     m_manager = detail::EngineDomain::uiManager();
+
+	// TODO: Material も、実際に描画が必要な Element に限って作成した方がいいだろう
+	m_finalStyle.backgroundMaterial = newObject<Material>();
 
     UIContainerElement* primaryElement = m_manager->primaryElement();
     if (primaryElement) {
@@ -121,9 +127,39 @@ void UIElement::setCenterPoint(const Vector3 & value)
     m_localStyle->centerPoint = value;
 }
 
-const Vector3 & UIElement::centerPoint() const
+const Vector3& UIElement::centerPoint() const
 {
     return m_localStyle->centerPoint.getOrDefault(Vector3::Zero);
+}
+
+void UIElement::setBackgroundColor(const Color& value)
+{
+	m_localStyle->backgroundColor = value;
+}
+
+const Color& UIElement::backgroundColor() const
+{
+	return m_localStyle->backgroundColor;
+}
+
+void UIElement::setBackgroundImage(Texture* value)
+{
+	m_localStyle->backgroundImage = value;
+}
+
+Texture* UIElement::backgroundImage() const
+{
+	return m_localStyle->backgroundImage.getOrDefault(nullptr);
+}
+
+void UIElement::setBackgroundShader(Shader* value)
+{
+	m_localStyle->backgroundShader = value;
+}
+
+Shader* UIElement::backgroundShader() const
+{
+	return m_localStyle->backgroundShader.getOrDefault(nullptr);
 }
 
 void UIElement::setTextColor(const Color& value)
@@ -376,6 +412,19 @@ void UIElement::render(UIRenderingContext* context)
         context->setBaseBuiltinEffectData(data);
         context->setBlendMode(blendMode());
         context->setRenderPriority(m_renderPriority);
+
+		// background
+		{
+			
+			if (m_finalStyle.backgroundColor.a > 0.0f) {
+				//auto tex = newObject<Texture2D>(u"D:/Proj/LN/HC1/Assets/Windowskin/window.png");
+				//auto mat = Material::create(tex);
+				context->setMaterial(m_finalStyle.backgroundMaterial);
+				context->drawBoxBackground(finalGlobalRect(), Thickness(16), CornerRadius(), BrushImageDrawMode::BorderFrame, Rect(64, 0, 64, 64), m_finalStyle.backgroundColor);
+			}
+		}
+
+
         // TODO: setMaterial
         onRender(context);
 

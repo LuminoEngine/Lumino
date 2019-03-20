@@ -5,6 +5,9 @@
 
 namespace ln {
 class Font;
+class Texture;
+class Shader;
+class AbstractMaterial;
 class UIStyle;
 namespace detail { class LayoutHelper; }
 
@@ -51,6 +54,7 @@ namespace detail
 //};
 
 // どんな Element でも持つ一般的なスタイル値。
+// スタイル更新後の最終的な値を表す。
 // メモリ消費を抑えるため、UIStyleAttribute は使わないようにしている。
 struct StyleData
 {
@@ -71,6 +75,12 @@ struct StyleData
 	Quaternion rotation;
 	Vector3 scale;
 	Vector3 centerPoint;
+
+	// background
+	Color backgroundColor;
+	//Ref<Texture> backgroundImage;
+	//Ref<Shader> backgroundShader;
+	Ref<AbstractMaterial> backgroundMaterial;
 
 	// text
 	Color textColor;
@@ -122,7 +132,7 @@ protected:
 	//virtual int getChildLayoutItemCount() const = 0;
 	//virtual ILayoutElement* getChildLayoutItem(int index) const = 0;
 
-private:
+public:	//TODO: internal
 	void measureLayout(const Size& availableSize);
 	void arrangeLayout(const Rect& finalLocalRect);
 	void updateFinalRects(const Rect& parentGlobalRect);

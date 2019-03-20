@@ -33,6 +33,7 @@ TEST_F(Test_UI_UISprite, Basic)
 
 //------------------------------------------------------------------------------
 //## BlendMode
-TEST_F(Test_UI_UISprite, BlendMode)
+// https://developer.mozilla.org/ja/docs/Web/CSS/CSS_Backgrounds_and_Borders
+TEST_F(Test_UI_UISprite, BackgroundsAndBorders)
 {
 }

@@ -1900,25 +1900,38 @@ void GLShaderPass::buildUniforms()
                 // https://stackoverflow.com/questions/17717600/confusion-between-c-and-opengl-matrix-order-row-major-vs-column-major
                 // mat3x4 の場合、col=3, row=4
                 // 実際のレイアウトは DirectX と同じ。GLSL で演算するときの意味が column_major であるか、という違い。
-                // 0  1  2  3
-                // 4  5  6  7
-                // 8  9 10 11
-                // x  x  x  x
+				// float[] = {
+                //   { 0,  1,  2,  3, },
+                //   { 4,  5,  6,  7, },
+                //   { 8,  9, 10, 11, },
+                //   { x,  x,  x,  x, },	// ここは使われないので、全体サイズは 48 byte となる
+				// };
                 // mat3x4[3] の場合、dataSize は 144。elements は 3。matrixStride は 16。
                 // [2019/3/4] GeForce GTX 1060 で確認。
 
-                //if (isRowMajors[iMember]) {
+                if (isRowMajors[iMember]) {
+					// Radeon HD 8490 で確認。
+					// GLSL でレイアウトを指定しない場合のデフォルトのメモリレイアウトは row_major であった。
+					// float[] = {
+					//   { 0,  4,  8, x, },
+					//   { 1,  5,  9, x, },
+					//   { 2,  6, 10, x, },
+					//   { 3,  7, 11, x, },
+					//             // ^ この列は使われないが、領域としては確保されている。全体サイズは 64byte となる。
+					// };
+					// dataSize=192, elements=3, matrixStride=16
+					// mat3x4 の場合、col=3, row=4 ← これは GeForce と同じ。
+                    assert(desc.rows == dataSize / desc.elements / desc.matrixStride);
+                }
+                else {
+                    // OpenGL default
                     assert(desc.columns == dataSize / desc.elements / desc.matrixStride);
-                //}
-                //else {
-                //    // OpenGL default
-                //    assert(desc.columns == dataSize / desc.elements / desc.matrixStride);
                     
-                    // 0 3 6 9
-                    // 1 4 7 10
-                    // 2 5 8 11
-                    // x x x x
-                //}
+                     //0 3 6 9
+                     //1 4 7 10
+                     //2 5 8 11
+                     //x x x x
+                }
 			}
 
 			char* localName = name;

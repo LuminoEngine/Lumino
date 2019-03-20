@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
@@ -21,6 +22,7 @@ void UIContext::init()
 
 	m_defaultStyle = newObject<UIStyle>();
 	m_defaultStyle->setupDefault();
+	m_finalDefaultStyle.backgroundMaterial = newObject<Material>();
 
 	UIStyle::updateStyleDataHelper(m_defaultStyle, nullptr, m_defaultStyle, &m_finalDefaultStyle);
 }

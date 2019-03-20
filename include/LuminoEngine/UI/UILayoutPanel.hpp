@@ -23,6 +23,10 @@ class UIFrameLayout	// TODO: BorderLayout の方がいいかも https://doc.qt.i
 public:
     static Ref<UIFrameLayout> create();
 
+	// TODO: internal
+	static Size staticMeasureOverride(UIElement* ownerElement, const Size& constraint);
+	static Size staticArrangeOverride(UIElement* ownerElement, const Size& finalSize);
+
 LN_PROTECTED_INTERNAL_ACCESS:
     UIFrameLayout();
     virtual ~UIFrameLayout();

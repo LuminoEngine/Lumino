@@ -106,6 +106,23 @@ public:
 	const Vector3& centerPoint() const;
 
 
+	/** 背景の色を設定します。*/
+	void setBackgroundColor(const Color& value);
+
+	/** 背景の色を取得します。*/
+	const Color& backgroundColor() const;
+
+	/** 背景の描画に使用する画像を設定します。*/
+	void setBackgroundImage(Texture* value);
+
+	/** 背景の描画に使用する画像を取得します。*/
+	Texture* backgroundImage() const;
+
+	/** 背景の描画に使用するシェーダを設定します。*/
+	void setBackgroundShader(Shader* value);
+
+	/** 背景の描画に使用するシェーダを取得します。*/
+	Shader* backgroundShader() const;
 
 
 
@@ -196,7 +213,7 @@ public: // TODO: internal
     virtual UIElement* lookupMouseHoverElement(const Point& globalPt);
 	const detail::StyleData& finalStyle() const { return m_finalStyle; }
 
-protected:
+public:	// TODO: internal
     virtual void onUpdateFrame(float elapsedSeconds);
 	virtual void onUpdateStyle(const detail::StyleData& finalStyle);
 	virtual void onUpdateLayout(const Rect& finalGlobalRect);

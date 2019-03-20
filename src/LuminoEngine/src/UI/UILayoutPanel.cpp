@@ -162,5 +162,41 @@ Size UIFrameLayout::arrangeOverride(const Size& finalSize)
     return finalSize;
 }
 
+Size UIFrameLayout::staticMeasureOverride(UIElement* ownerElement, const Size& constraint)
+{
+	int childrenCount = ownerElement->getVisualChildrenCount();
+	Size childMaxSize(0, 0);
+	for (int i = 0; i < childrenCount; i++)
+	{
+		UIElement* child = ownerElement->getVisualChild(i);
+		child->measureLayout(constraint);
+		const Size& desiredSize = child->desiredSize();
+		childMaxSize.width = std::max(childMaxSize.width, desiredSize.width);
+		childMaxSize.height = std::max(childMaxSize.height, desiredSize.height);
+	}
+
+	Size size = ownerElement->getLayoutSize();
+	size.width = Math::isNaN(size.width) ? 0.0 : size.width;
+	size.height = Math::isNaN(size.height) ? 0.0 : size.height;
+	return Size::min(constraint, Size::max(size, childMaxSize));
+}
+
+Size UIFrameLayout::staticArrangeOverride(UIElement* ownerElement, const Size& finalSize)
+{
+	const Thickness& padding = ownerElement->finalStyle().padding;
+	Point childrenOffset(padding.left, padding.top);
+	Size childrenBoundSize(finalSize.width - padding.getWidth(), finalSize.height - padding.getHeight());
+	Rect bounds(childrenOffset, childrenBoundSize);
+
+	int childrenCount = ownerElement->getVisualChildrenCount();
+	for (int i = 0; i < childrenCount; i++)
+	{
+		UIElement* child = ownerElement->getVisualChild(i);
+		child->arrangeLayout(bounds);
+	}
+
+	return finalSize;
+}
+
 } // namespace ln
 

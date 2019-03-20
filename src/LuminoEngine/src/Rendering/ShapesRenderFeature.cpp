@@ -76,7 +76,7 @@ namespace detail {
 //==============================================================================
 // ShapesRendererCommandList
 
-void ShapesRendererCommandList::addDrawBoxBackground(LinearAllocator* allocator, const Rect& rect, const CornerRadius& cornerRadius)
+void ShapesRendererCommandList::addDrawBoxBackground(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const CornerRadius& cornerRadius, const Color& color)
 {
 	auto* cmd = reinterpret_cast<DrawBoxBackgroundCommand*>(allocator->allocate(sizeof(DrawBoxBackgroundCommand)));
 	cmd->type = Cmd_DrawBoxBackground;
@@ -89,8 +89,10 @@ void ShapesRendererCommandList::addDrawBoxBackground(LinearAllocator* allocator,
 	}
 	tail = cmd;
 
+	cmd->transform = transform;
 	cmd->rect = rect;
 	cmd->cornerRadius = cornerRadius;
+	cmd->color = color;
 }
 
 //==============================================================================
@@ -235,9 +237,9 @@ void InternalShapesRenderer::renderCommandList(ShapesRendererCommandList* comman
 //}
 
 //------------------------------------------------------------------------------
-InternalShapesRenderer::Path* InternalShapesRenderer::addPath(PathType type, const Color& color, PathWinding winding, PathAttribute attribute)
+InternalShapesRenderer::Path* InternalShapesRenderer::addPath(PathType type, const Matrix* transform, const Color& color, PathWinding winding, PathAttribute attribute)
 {
-	m_pathes.add(Path{ type, m_outlinePoints.getCount(), 0, color, winding, attribute });
+	m_pathes.add(Path{ type, m_outlinePoints.getCount(), 0, color, winding, attribute, transform });
 	return &m_pathes.back();
 }
 
@@ -277,7 +279,7 @@ void InternalShapesRenderer::extractBasePoints(ShapesRendererCommandList::ListNo
 
 			// center box
 			{
-				auto* path = addPath(PathType::Convex, Color::White, PathWinding::CCW, PathAttribute::Background);
+				auto* path = addPath(PathType::Convex, &cmd->transform, cmd->color, PathWinding::CCW, PathAttribute::Background);
 				for (int iComp = 0; iComp < 4; iComp++)
 				{
 					for (int i = components[iComp].firstPoint; i < components[iComp].lastPoint; i++)	// 終点は次の Componet の開始点と一致するので必要ない
@@ -321,7 +323,7 @@ void InternalShapesRenderer::extractBasePoints(ShapesRendererCommandList::ListNo
 			for (int iInfo = 0; iInfo < 4; iInfo++)
 			{
 				const BorderComponent& component = components[intos[iInfo].componentIndex];
-				auto* path = addPath(PathType::Convex, intos[iInfo].color, PathWinding::CCW);
+				auto* path = addPath(PathType::Convex, &cmd->transform, intos[iInfo].color, PathWinding::CCW);
 
 				if (borderInset)
 				{
@@ -442,7 +444,7 @@ void InternalShapesRenderer::extractBasePoints(ShapesRendererCommandList::ListNo
 			{
 				for (int iComp = 0; iComp < 4; iComp++)
 				{
-					auto* path = addPath(PathType::Strip3Point, shadowColor);
+					auto* path = addPath(PathType::Strip3Point, &cmd->transform, shadowColor);
 					for (int i = components[iComp].firstPoint; i <= components[iComp].lastPoint; i++)
 					{
 						BasePoint& pt = m_basePoints.getAt(i);
@@ -458,7 +460,7 @@ void InternalShapesRenderer::extractBasePoints(ShapesRendererCommandList::ListNo
 			{
 				for (int iComp = 0; iComp < 4; iComp++)
 				{
-					auto* path = addPath(PathType::Strip3Point, shadowColor);
+					auto* path = addPath(PathType::Strip3Point, &cmd->transform, shadowColor);
 					for (int i = components[iComp].firstPoint; i <= components[iComp].lastPoint; i++)
 					{
 						BasePoint& pt = m_basePoints.getAt(i);
@@ -655,7 +657,7 @@ void InternalShapesRenderer::extractBasePoints(ShapesRendererCommandList::ListNo
 			{
 				for (int iComp = 0; iComp < 4; iComp++)
 				{
-					auto* path = addPath(PathType::Strip3Point, shadowColor);
+					auto* path = addPath(PathType::Strip3Point, &cmd->transform, shadowColor);
 					for (int i = shadowComponents[iComp].firstPoint; i <= shadowComponents[iComp].lastPoint; i++)
 					{
 						BasePoint& pt = m_basePoints.getAt(i);
@@ -674,7 +676,7 @@ void InternalShapesRenderer::extractBasePoints(ShapesRendererCommandList::ListNo
 
 			// center box
 			{
-				auto* path = addPath(PathType::Convex, Color::White);
+				auto* path = addPath(PathType::Convex, &cmd->transform, Color::White);
 				for (int iComp = 0; iComp < 4; iComp++)
 				{
 					for (int i = baseComponents[iComp].firstPoint; i < baseComponents[iComp].lastPoint; i++)	// 終点は次の Componet の開始点と一致するので必要ない
@@ -697,7 +699,7 @@ void InternalShapesRenderer::extractBasePoints(ShapesRendererCommandList::ListNo
 				// shadows
 				for (int iComp = 0; iComp < 4; iComp++)
 				{
-					auto* path = addPath(PathType::Strip3Point, shadowColor);
+					auto* path = addPath(PathType::Strip3Point, &cmd->transform, shadowColor);
 					for (int i = shadowComponents[iComp].firstPoint; i <= shadowComponents[iComp].lastPoint; i++)
 					{
 						BasePoint& pt = m_basePoints.getAt(i);
@@ -715,7 +717,7 @@ void InternalShapesRenderer::extractBasePoints(ShapesRendererCommandList::ListNo
 
 			// left border
 			{
-				auto* path = addPath(PathType::Convex, cmd->leftColor/*Color(cmd[9], cmd[10], cmd[11], cmd[12])*/, borderWinding);
+				auto* path = addPath(PathType::Convex, &cmd->transform, cmd->leftColor/*Color(cmd[9], cmd[10], cmd[11], cmd[12])*/, borderWinding);
 
 				for (int i = baseComponents[0].firstPoint; i <= baseComponents[0].lastPoint; i++)
 				{
@@ -733,7 +735,7 @@ void InternalShapesRenderer::extractBasePoints(ShapesRendererCommandList::ListNo
 			}
 			// bottom border
 			{
-				auto* path = addPath(PathType::Convex, cmd->bottomColor/*Color(cmd[21], cmd[22], cmd[23], cmd[24])*/, borderWinding);
+				auto* path = addPath(PathType::Convex, &cmd->transform, cmd->bottomColor/*Color(cmd[21], cmd[22], cmd[23], cmd[24])*/, borderWinding);
 				for (int i = baseComponents[1].firstPoint; i <= baseComponents[1].lastPoint; i++)
 				{
 					BasePoint& pt = m_basePoints.getAt(i);
@@ -750,7 +752,7 @@ void InternalShapesRenderer::extractBasePoints(ShapesRendererCommandList::ListNo
 			}
 			// right border
 			{
-				auto* path = addPath(PathType::Convex, cmd->rightColor/*Color(cmd[17], cmd[18], cmd[19], cmd[20])*/, borderWinding);
+				auto* path = addPath(PathType::Convex, &cmd->transform, cmd->rightColor/*Color(cmd[17], cmd[18], cmd[19], cmd[20])*/, borderWinding);
 				for (int i = baseComponents[2].firstPoint; i <= baseComponents[2].lastPoint; i++)
 				{
 					BasePoint& pt = m_basePoints.getAt(i);
@@ -767,7 +769,7 @@ void InternalShapesRenderer::extractBasePoints(ShapesRendererCommandList::ListNo
 			}
 			// top border
 			{
-				auto* path = addPath(PathType::Convex, cmd->topColor/*Color(cmd[13], cmd[14], cmd[15], cmd[16])*/, borderWinding);
+				auto* path = addPath(PathType::Convex, &cmd->transform, cmd->topColor/*Color(cmd[13], cmd[14], cmd[15], cmd[16])*/, borderWinding);
 				for (int i = baseComponents[3].firstPoint; i <= baseComponents[3].lastPoint; i++)
 				{
 					BasePoint& pt = m_basePoints.getAt(i);
@@ -888,7 +890,9 @@ void InternalShapesRenderer::expandVertices(const Path& path)
 	{
 		const OutlinePoint& pt = m_outlinePoints.getAt(path.pointStart + i);
 		Vertex v;
-		v.position = Vector3(pt.pos + g_finalOffset, 0);
+		v.position = Vector3::transformCoord(Vector3(pt.pos + g_finalOffset, 0), *path.transform);
+		v.normal = Vector3::UnitZ;
+		v.uv = Vector2::Zero;
 		v.color = path.color;
 		v.color.a *= pt.alpha;
 		m_vertexCache.add(v);
@@ -1067,10 +1071,11 @@ void InternalShapesRenderer::expandAntiAliasStroke(const Path& path, int startIn
 
 		pt.pos -= extDir * ext;
 
-		m_vertexCache.getAt(startIndex + i).position = Vector3(pt.pos + g_finalOffset, 0);
+		// TODO: 普通の頂点作成でも同じように transformCoord しているのでちょっと無駄が多い
+		m_vertexCache.getAt(startIndex + i).position = Vector3::transformCoord(Vector3(pt.pos + g_finalOffset, 0), *path.transform);
 
 		Vertex v;
-		v.position = Vector3(pt.pos + extDir * extAA + g_finalOffset, 0);
+		v.position = Vector3::transformCoord(Vector3(pt.pos + extDir * extAA + g_finalOffset, 0), *path.transform);// , *path.transform;
 		v.color = path.color;
 		v.color.a = 0;
 		m_vertexCache.add(v);

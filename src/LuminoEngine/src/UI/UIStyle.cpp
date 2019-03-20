@@ -1,6 +1,8 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Shader/Shader.hpp>
 #include <LuminoEngine/Font/Font.hpp>
+#include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
@@ -27,12 +29,12 @@ void UIStyle::setupDefault()
 {
 	margin = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
 	padding = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
-	horizontalAlignment = HAlignment::Center;
-	verticalAlignment = VAlignment::Center;
-	minWidth = 0.0f;
-	minHeight = 0.0f;
-	maxWidth = 0.0f;
-	maxHeight = 0.0f;
+	horizontalAlignment = HAlignment::Left;
+	verticalAlignment = VAlignment::Top;
+	minWidth = Math::NaN;
+	minHeight = Math::NaN;
+	maxWidth = Math::NaN;
+	maxHeight = Math::NaN;
 
 	position = Vector3::Zero;
 	rotation = Quaternion::Identity;
@@ -76,10 +78,10 @@ void UIStyle::updateStyleDataHelper(UIStyle* localStyle, const detail::StyleData
 		outStyleData->padding = localStyle->padding.getOrDefault(defaultStyle->padding.get());
 		outStyleData->horizontalAlignment = localStyle->horizontalAlignment.getOrDefault(defaultStyle->horizontalAlignment.get());
 		outStyleData->verticalAlignment = localStyle->verticalAlignment.getOrDefault(defaultStyle->verticalAlignment.get());
-		outStyleData->minWidth = localStyle->minWidth.getOrDefault(defaultStyle->minWidth.get());
-		outStyleData->minHeight = localStyle->minHeight.getOrDefault(defaultStyle->minHeight.get());
-		outStyleData->maxWidth = localStyle->maxWidth.getOrDefault(defaultStyle->maxWidth.get());
-		outStyleData->maxHeight = localStyle->maxHeight.getOrDefault(defaultStyle->maxHeight.get());
+		outStyleData->minWidth = localStyle->minWidth.getOrDefault(defaultStyle->minWidth.get());//.getOrDefault(Math::NaN));
+		outStyleData->minHeight = localStyle->minHeight.getOrDefault(defaultStyle->minHeight.get());//.getOrDefault(Math::NaN));
+		outStyleData->maxWidth = localStyle->maxWidth.getOrDefault(defaultStyle->maxWidth.get());//.getOrDefault(Math::NaN));
+		outStyleData->maxHeight = localStyle->maxHeight.getOrDefault(defaultStyle->maxHeight.get());//.getOrDefault(Math::NaN));
 	}
 
 	// layout transform
@@ -88,6 +90,16 @@ void UIStyle::updateStyleDataHelper(UIStyle* localStyle, const detail::StyleData
 		outStyleData->rotation = localStyle->rotation.getOrDefault(defaultStyle->rotation.get());
 		outStyleData->scale = localStyle->scale.getOrDefault(defaultStyle->scale.get());
 		outStyleData->centerPoint = localStyle->centerPoint.getOrDefault(defaultStyle->centerPoint.get());
+	}
+
+	// background
+	{
+		assert(outStyleData->backgroundMaterial);
+		outStyleData->backgroundColor = localStyle->backgroundColor.getOrDefault(defaultStyle->backgroundColor.get());
+		outStyleData->backgroundMaterial->setMainTexture(localStyle->backgroundImage.getOrDefault(defaultStyle->backgroundImage.get()));
+		outStyleData->backgroundMaterial->setShader(localStyle->backgroundShader.getOrDefault(defaultStyle->backgroundShader.get()));
+		//outStyleData->backgroundColor = localStyle->backgroundColor.getOrDefault(defaultStyle->backgroundColor.get());
+		//outStyleData->backgroundImage = 
 	}
 
 	// text
