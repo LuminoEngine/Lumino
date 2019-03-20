@@ -265,6 +265,8 @@ RigidBody2D::RigidBody2D()
     , m_fixtures()
 	, m_rotation(0)
     , m_mass(0.0f)
+    , m_group(0x00000001)
+    , m_groupMask(0x0000FFFF)
     , m_kinematic(false)
     , m_fixedRotation(false)
 {
@@ -319,6 +321,16 @@ void RigidBody2D::addCollisionShape(CollisionShape2D* shape)
 {
 	if (LN_REQUIRE(shape)) return;
 	m_shapes.push_back(shape);
+}
+
+void RigidBody2D::setCollisionGroup(uint32_t value)
+{
+    m_group = value;
+}
+
+void RigidBody2D::setCollisionGroupMask(uint32_t value)
+{
+    m_groupMask = value;
 }
 
 void RigidBody2D::applyForce(const Vector2& force)
@@ -418,8 +430,8 @@ void RigidBody2D::onBeforeStepSimulation()
 			fixtureDef.restitution = 0.0f;		// 反発
 			fixtureDef.density = m_mass / volume;	// 密度 = 質量 / 体積
 			fixtureDef.isSensor = false;
-			fixtureDef.filter.categoryBits = 0x0001;
-			fixtureDef.filter.maskBits = 0xFFFF;
+			fixtureDef.filter.categoryBits = m_group;
+			fixtureDef.filter.maskBits = m_groupMask;
 			fixtureDef.filter.groupIndex = 0;
 			m_fixtures.push_back(m_body->CreateFixture(&fixtureDef));
 		}

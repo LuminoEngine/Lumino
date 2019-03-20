@@ -280,6 +280,13 @@ public:
 
 
 
+    /** 衝突グループを設定します。デフォルトは 0x00000001 で、0番のグループに属することを示します。 */
+    void setCollisionGroup(uint32_t value);
+
+    /** 衝突グループマスクを設定します。デフォルトは 0x0000FFFF で、0～15番のグループと衝突することを示します。 */
+    void setCollisionGroupMask(uint32_t value);
+
+
     /** 重心に力を加えます。(単位: Newtons (N)) */
     void applyForce(const Vector2& force);
 
@@ -334,6 +341,8 @@ private:
 	float m_rotation;
     Vector2 m_velocity;
 	float m_mass;
+    uint32_t m_group;
+    uint32_t m_groupMask;
 	bool m_kinematic;
     bool m_fixedRotation;
     std::vector<ApplyCommand> m_applyCommands;  // TODO: linerallocator にしたい

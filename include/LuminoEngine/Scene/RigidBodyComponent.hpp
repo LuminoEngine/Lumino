@@ -42,6 +42,12 @@ public:
 
     void setFixedRotation(bool value) { m_body->setFixedRotation(value); }
 
+    /** 衝突グループを設定します。デフォルトは 0x00000001 で、0番のグループに属することを示します。 */
+    void setCollisionGroup(uint32_t value) { m_body->setCollisionGroup(value); }
+
+    /** 衝突グループマスクを設定します。デフォルトは 0x0000FFFF で、0～15番のグループと衝突することを示します。 */
+    void setCollisionGroupMask(uint32_t value) { m_body->setCollisionGroupMask(value); }
+
     /** 重心に力を加えます。 */
     void applyForce(const Vector2& force) { m_body->applyForce(force); }
 
