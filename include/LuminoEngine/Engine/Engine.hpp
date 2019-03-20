@@ -8,6 +8,7 @@ class UIViewport;
 class UIContainerElement;
 class WorldRenderView;
 class PhysicsWorld;
+class PhysicsWorld2D;
 class World;
 class Camera;
 class AmbientLight;
@@ -56,6 +57,7 @@ public:
     static DirectionalLight* mainDirectionalLight();
     static WorldRenderView* mainRenderView();
     static PhysicsWorld* mainPhysicsWorld();
+    static PhysicsWorld2D* mainPhysicsWorld2D();
 
 };
 

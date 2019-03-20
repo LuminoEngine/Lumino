@@ -23,6 +23,7 @@ class PhysicsWorld2D;
 class PhysicsWorld2DDebugDraw; // TODO: detail
 class LocalContactListener; // TODO: detail
 class ContactPoint2D;
+class WorldObject;
 
 using Collision2DEventHandler = std::function<void(PhysicsObject2D*, ContactPoint2D*)>;
 using Trigger2DEventHandler = std::function<void(PhysicsObject2D*)>;
@@ -338,10 +339,32 @@ private:
     std::vector<ApplyCommand> m_applyCommands;  // TODO: linerallocator にしたい
 };
 
+struct RaycastResult2D
+{
+    /** レイがヒットした PhysicsObject2D */
+    Ref<PhysicsObject2D> physicsObject;
+
+    /** レイがヒットした PhysicsObject2D がアタッチされている WorldObject */
+    Ref<WorldObject> worldObject;
+
+    /** レイがヒットしたワールド上の位置 */
+    Vector2 point;
+
+    /** レイがヒットしたサーフェスの法線 */
+    Vector2 normal;
+
+    /** レイの原点から衝突点までの距離 */
+    float distance;
+};
+
 class PhysicsWorld2D
 	: public Object
 {
 public:
+    bool raycast(const Vector3& origin, const Vector3& direction, float maxDistance/* = Math::Inf*/, uint32_t layerMask /*= 0xFFFFFFFF*/, bool queryTrigger /*= false*/, RaycastResult2D* outResult);
+    bool raycast(const Vector3& origin, const Vector3& direction, float maxDistance, uint32_t layerMask, RaycastResult2D* outResult) { return raycast(origin, direction, maxDistance, layerMask, false, outResult); }
+
+
 	void addPhysicsObject(PhysicsObject2D* physicsObject);
 	void removePhysicsObject(PhysicsObject2D* physicsObject);
 	void stepSimulation(float elapsedSeconds);

@@ -7,6 +7,8 @@
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
+#include <LuminoEngine/Scene/RigidBodyComponent.hpp>
+#include <LuminoEngine/Scene/WorldObject.hpp>
 #include "../Rendering/RenderingManager.hpp"
 
 namespace ln {
@@ -645,15 +647,15 @@ private:
         {
             Vertex* buf = (Vertex*)m_linesBuffer->map(MapMode::Write);
             buf[m_linesVertexCount].position.set(v.x, v.y, 0);
-            buf[m_linesVertexCount].color.set(c.r, c.g, c.b, c.a);
-            buf[m_linesVertexCount].uv = Vector2::Zero;
-            buf[m_linesVertexCount].normal = -Vector3::UnitZ;
-            m_linesVertexCount++;
+buf[m_linesVertexCount].color.set(c.r, c.g, c.b, c.a);
+buf[m_linesVertexCount].uv = Vector2::Zero;
+buf[m_linesVertexCount].normal = -Vector3::UnitZ;
+m_linesVertexCount++;
         }
-	}
+    }
 
-	void addTriangleVertex(const b2Vec2& v, const b2Color& c)
-	{
+    void addTriangleVertex(const b2Vec2& v, const b2Color& c)
+    {
         if (m_trianglesVertexCount < MaxVertexCount)
         {
             Vertex* buf = (Vertex*)m_trianglesBuffer->map(MapMode::Write);
@@ -663,12 +665,12 @@ private:
             buf[m_trianglesVertexCount].normal = -Vector3::UnitZ;
             m_trianglesVertexCount++;
         }
-	}
+    }
 
-	Ref<VertexBuffer> m_linesBuffer;
-	Ref<VertexBuffer> m_trianglesBuffer;
-	size_t m_linesVertexCount;
-	size_t m_trianglesVertexCount;
+    Ref<VertexBuffer> m_linesBuffer;
+    Ref<VertexBuffer> m_trianglesBuffer;
+    size_t m_linesVertexCount;
+    size_t m_trianglesVertexCount;
 };
 
 //==============================================================================
@@ -702,35 +704,82 @@ public:
 // PhysicsWorld2D
 
 PhysicsWorld2D::PhysicsWorld2D()
-	: m_world(nullptr)
-	, m_inStepSimulation(false)
+    : m_world(nullptr)
+    , m_inStepSimulation(false)
 {
 }
 
 void PhysicsWorld2D::init()
 {
-	Object::init();
+    Object::init();
 
     m_contactListener = std::make_unique<LocalContactListener>();
 
-	m_debugDraw = std::make_unique<PhysicsWorld2DDebugDraw>();
-	m_debugDraw->init();
+    m_debugDraw = std::make_unique<PhysicsWorld2DDebugDraw>();
+    m_debugDraw->init();
     m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit /*| b2Draw::e_aabbBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit*/);
 
 
-	b2Vec2 gravity(0.0f, -9.8);
-	m_world = LN_NEW b2World(gravity);
+    b2Vec2 gravity(0.0f, -9.8);
+    m_world = LN_NEW b2World(gravity);
     m_world->SetContactListener(m_contactListener.get());
-	m_world->SetDebugDraw(m_debugDraw.get());
+    m_world->SetDebugDraw(m_debugDraw.get());
 }
 
 void PhysicsWorld2D::onDispose(bool explicitDisposing)
 {
-	m_objects.clear();
+    m_objects.clear();
 
-	if (m_world) {
-		LN_SAFE_DELETE(m_world);
-	}
+    if (m_world) {
+        LN_SAFE_DELETE(m_world);
+    }
+}
+
+bool PhysicsWorld2D::raycast(const Vector3& origin, const Vector3& direction, float maxDistance, uint32_t layerMask, bool queryTrigger, RaycastResult2D* outResult)
+{
+    class RayCastCallback
+        : public b2RayCastCallback
+    {
+    public:
+        RaycastResult2D* result;
+        Vector3 origin;
+        uint32_t layerMask;
+        bool queryTrigger;
+        bool hit;
+
+        virtual float32 ReportFixture(b2Fixture* fixture, const b2Vec2& point, const b2Vec2& normal, float32 fraction) override
+        {
+            if (!queryTrigger && fixture->IsSensor()) {
+                return -1;  // continue
+            }
+
+            if ((fixture->GetFilterData().categoryBits & layerMask) != 0) {
+                result->physicsObject = reinterpret_cast<PhysicsObject2D*>(fixture->GetBody()->GetUserData());
+                result->point = B2ToLn(point);
+                result->normal = B2ToLn(normal);
+                result->distance = (result->point - origin.xy()).length();
+                hit = true;
+
+                auto* ownerComponent = reinterpret_cast<RigidBody2DComponent*>(result->physicsObject->ownerData());
+                if (ownerComponent) {
+                    result->worldObject = ownerComponent->worldObject();
+                }
+                return 0;   // hit
+            }
+
+            return -1;  // continue
+        }
+
+    } callback;
+    callback.result = outResult;
+    callback.origin = origin;
+    callback.layerMask = layerMask;
+    callback.queryTrigger = queryTrigger;
+    callback.hit = false;
+
+    m_world->RayCast(&callback, LnToB2(origin.xy()), LnToB2((origin.xy() + direction.xy() * maxDistance)));
+
+    return callback.hit;
 }
 
 void PhysicsWorld2D::addPhysicsObject(PhysicsObject2D* physicsObject)

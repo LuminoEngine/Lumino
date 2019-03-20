@@ -14,11 +14,14 @@ class Component
 	: public Object
 {
     LN_OBJECT;
+public:
+
+    WorldObject* worldObject() const { return m_object; }
+
 protected:
     // アタッチされた WorldObject の transform へのポインタ
     detail::WorldObjectTransform* transrom() const;
 
-    WorldObject* worldObject() const { return m_object; }
 
 
     // 以下、すべて空実装

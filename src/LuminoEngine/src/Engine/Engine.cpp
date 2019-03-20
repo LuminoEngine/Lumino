@@ -8,6 +8,7 @@
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
+#include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
@@ -172,6 +173,12 @@ PhysicsWorld* Engine::mainPhysicsWorld()
 {
     return detail::EngineDomain::engineManager()->mainPhysicsWorld();
 }
+
+PhysicsWorld2D* Engine::mainPhysicsWorld2D()
+{
+    return detail::EngineDomain::engineManager()->mainPhysicsWorld2D();
+}
+
 
 // TODO: time
 //Engine::elapsedSeconds()
