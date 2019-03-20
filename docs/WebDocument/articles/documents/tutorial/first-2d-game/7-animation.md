@@ -21,35 +21,19 @@
 | 4 | ジャンプ |
 | 5 | 下降 |
 
+次のセクションから、これらを実装していきます。
 
-### 単純な実装
 
-移動アニメーションを実装するには次のように、setFrameIndex を使って 2 番と 3 番のフレームを一定時間ごとに交互に切り替えればよいことになります。
-
-```cpp
-playerSprite->setFrameIndex(2);
-```
-
-```cpp
-playerSprite->setFrameIndex(3);
-```
-
-一例ですが、ゲーム起動からの経過時間を返す `Engine::totalTime()` を使うと、次のように 2, 3 フレームを 0.2 秒ごとに切り替えることができます。
-
-```cpp
-while (Engine::update())
-{
-    playerSprite->setFrameIndex(2 + fmod(Engine::totalTime(), 0.4) / 0.2);
-
-    ・・・
-}
-```
+移動と待機
+----------
 
 
 
 
+### 左右反転
 
-プロパティ
+
+ジャンプと下降
 ----------
 
 
