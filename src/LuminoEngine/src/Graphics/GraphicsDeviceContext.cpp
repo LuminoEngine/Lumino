@@ -244,7 +244,7 @@ Ref<IShaderPass> IGraphicsDeviceContext::createShaderPassFromUnifiedShaderPass(c
         vscode = unifiedShader->findCode(vscodeId, triple);
     }
     if (pscodeId) {
-        psEntryPointName = unifiedShader->entryPointName(vscodeId).c_str();
+        psEntryPointName = unifiedShader->entryPointName(pscodeId).c_str();
         pscode = unifiedShader->findCode(pscodeId, triple);
     }
 
