@@ -44,6 +44,7 @@ public:
 	void drawPrimitive(int startVertex, int primitiveCount);
 	void drawPrimitiveIndexed(int startIndex, int primitiveCount);
 	void present(SwapChain* swapChain);
+    //void flush();
 
 	// TODO: internal
 	// IGraphicsDeviceContext の clear, draw 系の機能を呼び出したい場合はこの戻り値を使うこと。

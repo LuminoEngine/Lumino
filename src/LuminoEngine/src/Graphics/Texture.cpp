@@ -6,6 +6,7 @@
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
+#include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Font/Font.hpp>
 #include "../Font/TextLayoutEngine.hpp"
 
@@ -372,10 +373,16 @@ void RenderTargetTexture::onDispose(bool explicitDisposing)
 
 Ref<Bitmap2D> RenderTargetTexture::readData()
 {
+    //manager()->graphicsContext()->flush();
+
+    //manager()->deviceContext()->end();
+
 	detail::ITexture* rhiObject = resolveRHIObject();
 
 	SizeI size = rhiObject->realSize();
 	auto bitmap = newObject<Bitmap2D>(size.width, size.height, GraphicsHelper::translateToPixelFormat(rhiObject->getTextureFormat()));
+
+    //manager()->deviceContext()->begin();
 
 	if (manager()->renderingType() == RenderingType::Threaded)
 	{

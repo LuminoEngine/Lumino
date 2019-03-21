@@ -196,6 +196,12 @@ void GraphicsContext::present(SwapChain* swapChain)
 	m_device->begin();
 }
 
+//void GraphicsContext::flush()
+//{
+//    m_device->end();
+//    m_device->begin();
+//}
+//
 detail::IGraphicsDeviceContext* GraphicsContext::commitState()
 {
 	// ポインタとしては変わっていなくても、resolve は毎回呼び出す。
