@@ -235,12 +235,16 @@ Ref<IShaderPass> IGraphicsDeviceContext::createShaderPassFromUnifiedShaderPass(c
 
     //const std::vector<byte_t>* vscode = nullptr;
     //const std::vector<byte_t>* pscode = nullptr;
+    const char* vsEntryPointName = nullptr;
+    const char* psEntryPointName = nullptr;
     const detail::UnifiedShader::CodeInfo* vscode = nullptr;
     const detail::UnifiedShader::CodeInfo* pscode = nullptr;
     if (vscodeId) {
+        vsEntryPointName = unifiedShader->entryPointName(vscodeId).c_str();
         vscode = unifiedShader->findCode(vscodeId, triple);
     }
     if (pscodeId) {
+        psEntryPointName = unifiedShader->entryPointName(vscodeId).c_str();
         pscode = unifiedShader->findCode(pscodeId, triple);
     }
 
@@ -293,6 +297,8 @@ Ref<IShaderPass> IGraphicsDeviceContext::createShaderPassFromUnifiedShaderPass(c
         (vscode) ? vscode->code.size() : 0,
         (pscode) ? pscode->code.data() : nullptr,
         (pscode) ? pscode->code.size() : 0,
+        vsEntryPointName,
+        psEntryPointName,
         &attributeTable,
         vscode->refrection,
         pscode->refrection,

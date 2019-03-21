@@ -74,6 +74,7 @@ public:
     bool hasCode(ShaderStage2 stage, const std::string& entryPointName, const UnifiedShaderTriple& triple) const;
     bool findCodeContainer(ShaderStage2 stage, const std::string& entryPointName, CodeContainerId* outId) const;
     const CodeInfo* findCode(CodeContainerId conteinreId, const UnifiedShaderTriple& triple) const;
+    const std::string& entryPointName(CodeContainerId conteinreId) const;
 
     bool addTechnique(const std::string& name, TechniqueId* outTech);
     int techniqueCount() const { return m_techniques.size(); }

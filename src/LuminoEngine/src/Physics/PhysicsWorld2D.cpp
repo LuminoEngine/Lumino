@@ -661,10 +661,10 @@ private:
         {
             Vertex* buf = (Vertex*)m_linesBuffer->map(MapMode::Write);
             buf[m_linesVertexCount].position.set(v.x, v.y, 0);
-buf[m_linesVertexCount].color.set(c.r, c.g, c.b, c.a);
-buf[m_linesVertexCount].uv = Vector2::Zero;
-buf[m_linesVertexCount].normal = -Vector3::UnitZ;
-m_linesVertexCount++;
+            buf[m_linesVertexCount].color.set(c.r, c.g, c.b, c.a);
+            buf[m_linesVertexCount].uv = Vector2::Zero;
+            buf[m_linesVertexCount].normal = -Vector3::UnitZ;
+            m_linesVertexCount++;
         }
     }
 
@@ -768,15 +768,16 @@ bool PhysicsWorld2D::raycast(const Vector3& origin, const Vector3& direction, fl
             }
 
             if ((fixture->GetFilterData().categoryBits & layerMask) != 0) {
-                result->physicsObject = reinterpret_cast<PhysicsObject2D*>(fixture->GetBody()->GetUserData());
-                result->point = B2ToLn(point);
-                result->normal = B2ToLn(normal);
-                result->distance = (result->point - origin.xy()).length();
                 hit = true;
-
-                auto* ownerComponent = reinterpret_cast<RigidBody2DComponent*>(result->physicsObject->ownerData());
-                if (ownerComponent) {
-                    result->worldObject = ownerComponent->worldObject();
+                if (result) {
+                    result->physicsObject = reinterpret_cast<PhysicsObject2D*>(fixture->GetBody()->GetUserData());
+                    result->point = B2ToLn(point);
+                    result->normal = B2ToLn(normal);
+                    result->distance = (result->point - origin.xy()).length();
+                    auto* ownerComponent = reinterpret_cast<RigidBody2DComponent*>(result->physicsObject->ownerData());
+                    if (ownerComponent) {
+                        result->worldObject = ownerComponent->worldObject();
+                    }
                 }
                 return 0;   // hit
             }

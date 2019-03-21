@@ -762,12 +762,13 @@ void VulkanDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, f
 void VulkanDeviceContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount)
 {
     submitStatus(committedState());
+    vkCmdDraw(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startVertex, 0);
 }
 
 void VulkanDeviceContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount)
 {
     submitStatus(committedState());
-    vkCmdDrawIndexed(m_recodingCommandBuffer->vulkanCommandBuffer(), 16, 1, 0, 0, 0);	// TODO: indices
+    vkCmdDrawIndexed(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startIndex, 0, 0);
 }
 
 void VulkanDeviceContext::onPresent(ISwapChain* swapChain)
@@ -1318,7 +1319,9 @@ Result VulkanDeviceContext::submitStatus(const State& state)
         VkDeviceSize offsets[] = { 0 };
         vkCmdBindVertexBuffers(m_recodingCommandBuffer->vulkanCommandBuffer(), 0, 1, vertexBuffers, offsets);
 
-        vkCmdBindIndexBuffer(m_recodingCommandBuffer->vulkanCommandBuffer(), indexBuffer->vulkanBuffer(), 0, indexBuffer->indexType());
+        if (indexBuffer) {
+            vkCmdBindIndexBuffer(m_recodingCommandBuffer->vulkanCommandBuffer(), indexBuffer->vulkanBuffer(), 0, indexBuffer->indexType());
+        }
     }
 
     {
@@ -2119,6 +2122,8 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
 
     // vert
     {
+        m_vertEntryPointName = createInfo.vsEntryPointName;
+
         VkShaderModuleCreateInfo shaderCreateInfo = {};
         shaderCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
         shaderCreateInfo.codeSize = createInfo.vsCodeLen;
@@ -2129,6 +2134,8 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
 
     // frag
     {
+        m_fragEntryPointName = createInfo.psEntryPointName;
+
         VkShaderModuleCreateInfo shaderCreateInfo = {};
         shaderCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
         shaderCreateInfo.codeSize = createInfo.psCodeLen;

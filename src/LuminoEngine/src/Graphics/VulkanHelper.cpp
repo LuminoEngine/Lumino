@@ -318,6 +318,28 @@ bool VulkanHelper::checkValidationLayerSupport()
     return true;
 }
 
+int VulkanHelper::getPrimitiveVertexCount(PrimitiveTopology primitive, int primitiveCount)
+{
+    switch (primitive)
+    {
+    case PrimitiveTopology::TriangleList:
+        return primitiveCount * 3;
+    case PrimitiveTopology::TriangleStrip:
+        return  2 + primitiveCount;
+    case PrimitiveTopology::TriangleFan:
+        return  2 + primitiveCount;
+    case PrimitiveTopology::LineList:
+        return  primitiveCount * 2;
+    case PrimitiveTopology::LineStrip:
+        return  1 + primitiveCount;
+    case PrimitiveTopology::PointList:
+        return  primitiveCount;
+    default:
+        LN_UNREACHABLE();
+        return 0;
+    }
+}
+
 Result VulkanHelper::createImageView(VulkanDeviceContext* deviceContext, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, VkImageView* outView)
 {
     LN_DCHECK(deviceContext);
@@ -1344,13 +1366,13 @@ Result VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsD
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
     vertShaderStageInfo.module = m_relatedShaderPass->vulkanVertShaderModule();
-    vertShaderStageInfo.pName = "vsMain";
+    vertShaderStageInfo.pName = m_relatedShaderPass->vertEntryPointName().c_str();//"vsMain";
 
     VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
     fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
     fragShaderStageInfo.module = m_relatedShaderPass->vulkanFragShaderModule();
-    fragShaderStageInfo.pName = "psMain";
+    fragShaderStageInfo.pName = m_relatedShaderPass->fragEntryPointName().c_str();//"psMain";
 
     VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
 

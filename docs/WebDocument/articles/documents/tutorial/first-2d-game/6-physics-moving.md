@@ -110,6 +110,19 @@ TODO
 
 
 
+
+```cpp
+Ref<EdgeCollisionShape2D> wallShape = EdgeCollisionShape2D::create();
+wallShape->addPoint(Vector2(-7, -5));
+wallShape->addPoint(Vector2(7, -5));
+wallShape->addPoint(Vector2(7, 5));
+wallShape->addPoint(Vector2(-7, 5));
+Ref<RigidBody2DComponent> wallBody = RigidBody2DComponent::create();
+wallBody->addCollisionShape(wallShape);
+skySprite->addComponent(wallBody);
+```
+
+
 コード全体
 ----------
 

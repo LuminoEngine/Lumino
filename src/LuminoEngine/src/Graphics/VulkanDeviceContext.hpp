@@ -403,6 +403,8 @@ public:
 
     VkShaderModule vulkanVertShaderModule() const { return m_vertShaderModule; }
     VkShaderModule vulkanFragShaderModule() const { return m_fragShaderModule; }
+    const std::string& vertEntryPointName() const { return m_vertEntryPointName; }
+    const std::string& fragEntryPointName() const { return m_fragEntryPointName; }
     VkPipelineLayout vulkanPipelineLayout() const { return m_pipelineLayout; }
     const std::array<VkDescriptorSetLayout, 3>& descriptorSetLayouts() const { return m_descriptorSetLayouts; }
 
@@ -417,6 +419,8 @@ private:
     VulkanDeviceContext* m_deviceContext;
     VkShaderModule m_vertShaderModule;
     VkShaderModule m_fragShaderModule;
+    std::string m_vertEntryPointName;
+    std::string m_fragEntryPointName;
     VkPipelineLayout m_pipelineLayout;
     std::array<VkDescriptorSetLayout, 3> m_descriptorSetLayouts;
 	std::vector<Ref<VulkanShaderUniformBuffer>> m_uniformBuffers;

@@ -532,6 +532,11 @@ const UnifiedShader::CodeInfo* UnifiedShader::findCode(CodeContainerId conteinre
     }
 }
 
+const std::string& UnifiedShader::entryPointName(CodeContainerId conteinreId) const
+{
+    return m_codeContainers[idToIndex(conteinreId)].entryPointName;
+}
+
 bool UnifiedShader::addTechnique(const std::string& name, TechniqueId* outTech)
 {
     if (findTechniqueInfoIndex(name) >= 0) {
