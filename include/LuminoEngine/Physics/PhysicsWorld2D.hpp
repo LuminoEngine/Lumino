@@ -350,11 +350,11 @@ private:
 
 struct RaycastResult2D
 {
-    /** レイがヒットした PhysicsObject2D */
-    Ref<PhysicsObject2D> physicsObject;
-
     /** レイがヒットした PhysicsObject2D がアタッチされている WorldObject */
     Ref<WorldObject> worldObject;
+
+    /** レイがヒットした PhysicsObject2D */
+    Ref<PhysicsObject2D> physicsObject;
 
     /** レイがヒットしたワールド上の位置 */
     Vector2 point;
@@ -370,8 +370,8 @@ class PhysicsWorld2D
 	: public Object
 {
 public:
-    bool raycast(const Vector3& origin, const Vector3& direction, float maxDistance/* = Math::Inf*/, uint32_t layerMask /*= 0xFFFFFFFF*/, bool queryTrigger /*= false*/, RaycastResult2D* outResult);
-    bool raycast(const Vector3& origin, const Vector3& direction, float maxDistance, uint32_t layerMask, RaycastResult2D* outResult) { return raycast(origin, direction, maxDistance, layerMask, false, outResult); }
+    bool raycast(const Vector3& origin, const Vector3& direction, float maxDistance/* = Math::Inf*/, uint32_t layerMask /*= 0xFFFFFFFF*/, bool queryTrigger /*= false*/, RaycastResult2D* outResult = nullptr);
+    bool raycast(const Vector3& origin, const Vector3& direction, float maxDistance, uint32_t layerMask, RaycastResult2D* outResult = nullptr) { return raycast(origin, direction, maxDistance, layerMask, false, outResult); }
 
 
 	void addPhysicsObject(PhysicsObject2D* physicsObject);

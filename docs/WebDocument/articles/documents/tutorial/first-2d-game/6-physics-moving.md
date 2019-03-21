@@ -93,6 +93,13 @@ static const uint32_t PlayerGroup = 1 << 2;
 ----------
 TODO
 
+```cpp
+if (Engine::mainPhysicsWorld2D()->raycast(playerSprite->position(), Vector3(0, -1, 0), 0.6, GroundGroup)) {
+    if (Input::isPressed(u"submit")) {
+        velocity.y = 10.0;
+    }
+}
+```
 
 ### 地面との接触判定
 
