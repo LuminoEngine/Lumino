@@ -307,7 +307,8 @@ public:
 
 	virtual const VulkanImage* image() const override { return m_image.get(); }
 
-    //VkSemaphore imageAvailableSemaphore() const { return m_imageAvailableSemaphore; }
+    void setImageAvailableSemaphoreRef(VkSemaphore* semaphore) { m_imageAvailableSemaphoreRef = semaphore; }
+    VkSemaphore imageAvailableSemaphore() const { return *m_imageAvailableSemaphoreRef; }
     VkSemaphore renderFinishedSemaphore() const { return m_renderFinishedSemaphore; }
 
 	Result reset(uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView);
@@ -318,7 +319,11 @@ protected:
 	SizeI m_size;
 	TextureFormat m_format;
 
-    //VkSemaphore m_imageAvailableSemaphore;
+    // vkAcquireNextImageKHR により準備ができたかどうかを待つためのセマフォ。
+    // この RenderTarget が Swapchain の Backbuffer である場合、そのポインタがセットされる。
+    // present または readData による　CommandBuffer の Submit 時、これが nullptr でなければ待つようにしなければならない。
+    VkSemaphore* m_imageAvailableSemaphoreRef;
+
     VkSemaphore m_renderFinishedSemaphore;
 };
 

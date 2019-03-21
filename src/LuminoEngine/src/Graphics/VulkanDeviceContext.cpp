@@ -1572,8 +1572,11 @@ void VulkanSwapChain::dispose()
 void VulkanSwapChain::acquireNextImage(int* outIndex)
 {
     VkResult result = vkAcquireNextImageKHR(
-        m_deviceContext->vulkanDevice(), /*m_deviceContext->m_mainSwapchain->*/vulkanSwapchain(),
+        m_deviceContext->vulkanDevice(), vulkanSwapchain(),
         std::numeric_limits<uint64_t>::max(), m_imageAvailableSemaphores[m_currentFrame], VK_NULL_HANDLE, &m_imageIndex);
+
+    // 次に present や readData など、この RenderTarget への書き込みコマンドを実行するとき、これを待たなければならない
+    m_swapchainRenderTargets[m_imageIndex]->setImageAvailableSemaphoreRef(&m_imageAvailableSemaphores[m_currentFrame]);
 
     *outIndex = m_imageIndex;
     if (result == VK_ERROR_OUT_OF_DATE_KHR) {
@@ -1595,11 +1598,8 @@ void VulkanSwapChain::present()
 {
     VkSemaphore renderFinishedSemaphore = m_swapchainRenderTargets[m_imageIndex]->renderFinishedSemaphore();
     m_deviceContext->recodingCommandBuffer()->submit(
-        m_imageAvailableSemaphores[m_currentFrame],
+        m_swapchainRenderTargets[m_imageIndex]->imageAvailableSemaphore(),
         renderFinishedSemaphore);
-        //imageAvailableSemaphore(),
-        //renderFinishedSemaphore());
-
 
     VkPresentInfoKHR presentInfo = {};
     presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -1938,6 +1938,7 @@ void VulkanTexture2D::dispose()
 
 VulkanRenderTarget::VulkanRenderTarget()
     : m_deviceContext(nullptr)
+    , m_imageAvailableSemaphoreRef(nullptr)
 {
 }
 
