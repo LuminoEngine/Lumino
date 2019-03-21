@@ -464,6 +464,8 @@ void RigidBody2D::onBeforeStepSimulation()
         }
     }
     m_applyCommands.clear();
+
+    m_body->SetAwake(true);
 }
 
 void RigidBody2D::onAfterStepSimulation()

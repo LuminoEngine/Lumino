@@ -107,7 +107,7 @@ playerBody->setFixedRotation(true);
 
 今はプレイヤーが画面外に落下してしまいますが、地形に対しても剛体をアタッチすることで、プレイヤーが地面の上に立つことができるようにします。
 
-床のスプライトを作成した後に、次のコードを追加します。
+地面のスプライトを作成した後に、次のコードを追加します。
 
 ```cpp
 // 地面の剛体
@@ -127,62 +127,25 @@ groundSprite->addComponent(groundBody);
 
 Lumino では質量が 0 である剛体は静的な剛体とみなされます。RigidBody2DComponent::create() で作成した剛体のデフォルトの質量は 0 であるため、作成するだけでそれは静的な剛体となります。
 
+### 床の剛体を追加しておく
 
-キー入力によりプレイヤーを移動する
-----------
+床もまた、地面と同じように地形の一部です。これらにも静的な剛体を追加しておきます。
 
-それぞれの剛体の設定が終わったところで、改めてプレイヤーの移動をできるようにします。
+床のスプライトを作成した後に、次のコードを追加します。
 
 ```cpp
-while (Engine::update())
-{
-    Vector2 velocity = playerBody->velocity();
-
-    if (Input::isPressed(u"left")) {
-        velocity.x = -5.0f;
-    }
-
-    if (Input::isPressed(u"right")) {
-        velocity.x = 5.0f;
-    }
-
-    playerBody->setVelocity(velocity);
-}
+// 左の床の剛体
+Ref<RigidBody2DComponent> floorBody1 = RigidBody2DComponent::create();
+floorBody1->addCollisionShape(BoxCollisionShape2D::create(4, 1));
+floorSprite1->addComponent(floorBody1);
 ```
 
-### 速度とベクトル
-
-剛体は速度を持っており、X 方向と Y 方向の 2 次元のベクトルで表されます。
-
-Lumino では 2 次元のベクトルを扱うために `Vector2` を使います。（同様に、3次元や4次元を表す Vector3 や Vector4 もあります）
-
-今回のコードは、左右のキーが押されている間は X 方向の速度を直接 5.0 に変更することでプレイヤーを移動しています。（Y 方向の速度は、物理演算によって求められた落下速度などをそのまま使用します）
-
-なお、速度 5.0 は 1 秒間に 5.0 分の座標を移動することを示します。
-
-
-### setPosition による移動と setVelocity による移動の違い
-
-
-setPosition はプレイヤーの位置を直接指定します。実際の振る舞いとしてはワープしているようになります。
-そのため、プレイヤーがとても速く移動している場合、壁などの剛体をすり抜けてしまうことがあります。
-
-一方 setVelocity はプレイヤーの速度だけを指定して、実際にどの位置に移動するべきかは物理演算に任せます。
-これによってすり抜けなどの問題を回避でき、よりリアルな動きができるようになります。
-
-
-ジャンプ
-----------
-TODO
-
-
-### 地面との接触判定
-
-
-画面外への移動を制限する
-----------
-TODO
-
+```cpp
+// 右の床の剛体
+Ref<RigidBody2DComponent> floorBody2 = RigidBody2DComponent::create();
+floorBody2->addCollisionShape(BoxCollisionShape2D::create(4, 1));
+floorSprite2->addComponent(floorBody2);
+```
 
 
 コード全体
@@ -218,10 +181,20 @@ void Main()
     floorSprite1->setSourceRect(0, 8, 32, 8);
     floorSprite1->setPosition(-5, -2, 0);
 
+    // 左の床の剛体
+    Ref<RigidBody2DComponent> floorBody1 = RigidBody2DComponent::create();
+    floorBody1->addCollisionShape(BoxCollisionShape2D::create(4, 1));
+    floorSprite1->addComponent(floorBody1);
+
     // 右の床
     Ref<Sprite> floorSprite2 = Sprite::create(mapTexture, 4, 1);
     floorSprite2->setSourceRect(0, 8, 32, 8);
     floorSprite2->setPosition(5, 0, 0);
+
+    // 右の床の剛体
+    Ref<RigidBody2DComponent> floorBody2 = RigidBody2DComponent::create();
+    floorBody2->addCollisionShape(BoxCollisionShape2D::create(4, 1));
+    floorSprite2->addComponent(floorBody2);
 
     // プレイヤー
     Ref<Texture> playerTexture = Assets::loadTexture(u"player");
@@ -239,17 +212,11 @@ void Main()
     // メインループ
     while (Engine::update())
     {
-        Vector2 velocity = playerBody->velocity();
-
         if (Input::isPressed(u"left")) {
-            velocity.x = -5.0f;
         }
 
         if (Input::isPressed(u"right")) {
-            velocity.x = 5.0f;
         }
-
-        playerBody->setVelocity(velocity);
     }
 }
 ```

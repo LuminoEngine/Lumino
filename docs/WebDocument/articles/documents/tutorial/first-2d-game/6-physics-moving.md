@@ -1,14 +1,16 @@
-物理演算
+移動とジャンプ
 ==========
 
+物理ワールドを構築しましたので、次はプレイヤーの各アクションを実装していきます。
 
 
 キー入力によりプレイヤーを移動する
 ----------
 
-それぞれの剛体の設定が終わったところで、改めてプレイヤーの移動をできるようにします。
+剛体の移動は様々な方法により、速度を与えることで行います。ここでは直接速度を操作します。
 
 ```cpp
+// メインループ
 while (Engine::update())
 {
     Vector2 velocity = playerBody->velocity();
@@ -27,7 +29,7 @@ while (Engine::update())
 
 ### 速度とベクトル
 
-剛体は速度を持っており、X 方向と Y 方向の 2 次元のベクトルで表されます。
+速度は X 方向と Y 方向の 2 次元のベクトルで表されます。
 
 Lumino では 2 次元のベクトルを扱うために `Vector2` を使います。（同様に、3次元や4次元を表す Vector3 や Vector4 もあります）
 
@@ -38,13 +40,54 @@ Lumino では 2 次元のベクトルを扱うために `Vector2` を使いま�
 
 ### setPosition による移動と setVelocity による移動の違い
 
-
 setPosition はプレイヤーの位置を直接指定します。実際の振る舞いとしてはワープしているようになります。
 そのため、プレイヤーがとても速く移動している場合、壁などの剛体をすり抜けてしまうことがあります。
 
 一方 setVelocity はプレイヤーの速度だけを指定して、実際にどの位置に移動するべきかは物理演算に任せます。
-これによってすり抜けなどの問題を回避でき、よりリアルな動きができるようになります。
+これによってすり抜けなどの問題を回避でき、より正確な動きができるようになります。
 
+
+衝突グループを設定する
+----------
+
+```cpp
+static const uint32_t GroundGroup = 1 << 1;
+static const uint32_t PlayerGroup = 1 << 2;
+```
+
+```diff
+  // 地面の剛体
+  Ref<RigidBody2DComponent> groundBody = RigidBody2DComponent::create();
+  groundBody->addCollisionShape(BoxCollisionShape2D::create(16, 1));
++ groundBody->setCollisionGroup(GroundGroup);
+  groundSprite->addComponent(groundBody);
+```
+
+```diff
+  // 左の床の剛体
+  Ref<RigidBody2DComponent> floorBody1 = RigidBody2DComponent::create();
+  floorBody1->addCollisionShape(BoxCollisionShape2D::create(4, 1));
++ floorBody1->setCollisionGroup(GroundGroup);
+  floorSprite1->addComponent(floorBody1);
+```
+
+```diff
+  // 右の床の剛体
+  Ref<RigidBody2DComponent> floorBody2 = RigidBody2DComponent::create();
+  floorBody2->addCollisionShape(BoxCollisionShape2D::create(4, 1));
++ floorBody2->setCollisionGroup(GroundGroup);
+  floorSprite2->addComponent(floorBody2);
+```
+
+```diff
+  // プレイヤーの剛体
+  Ref<RigidBody2DComponent> playerBody = RigidBody2DComponent::create();
+  playerBody->addCollisionShape(BoxCollisionShape2D::create(1, 1));
+  playerBody->setMass(2);
+  playerBody->setFixedRotation(true);
++ playerBody->setCollisionGroup(PlayerGroup);
+  playerSprite->addComponent(playerBody);
+```
 
 ジャンプ
 ----------
