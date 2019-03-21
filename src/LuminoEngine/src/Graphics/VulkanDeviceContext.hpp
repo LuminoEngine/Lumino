@@ -154,8 +154,8 @@ public:
     uint32_t imageIndex() const { return m_imageIndex; }
 
     uint32_t maxFrameCount() const { return m_swapchainRenderTargets.size(); }
-    VkSemaphore imageAvailableSemaphore() const { return m_imageAvailableSemaphores[m_currentFrame]; }
-    VkSemaphore renderFinishedSemaphore() const { return m_renderFinishedSemaphores[m_currentFrame]; }
+    //VkSemaphore imageAvailableSemaphore() const { return m_imageAvailableSemaphores[m_currentFrame]; }
+    //VkSemaphore renderFinishedSemaphore() const { return m_renderFinishedSemaphores[m_currentFrame]; }
 
     static VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
     static VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> availablePresentModes);
@@ -174,7 +174,7 @@ private:
     uint32_t m_imageIndex;
 
     std::vector<VkSemaphore> m_imageAvailableSemaphores;
-    std::vector<VkSemaphore> m_renderFinishedSemaphores;
+    //std::vector<VkSemaphore> m_renderFinishedSemaphores;
     uint32_t m_currentFrame;
 
     std::vector<Ref<VulkanCommandBuffer>> m_inFlightCommandBuffers;
@@ -307,6 +307,9 @@ public:
 
 	virtual const VulkanImage* image() const override { return m_image.get(); }
 
+    //VkSemaphore imageAvailableSemaphore() const { return m_imageAvailableSemaphore; }
+    VkSemaphore renderFinishedSemaphore() const { return m_renderFinishedSemaphore; }
+
 	Result reset(uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView);
 
 protected:
@@ -314,6 +317,9 @@ protected:
 	std::unique_ptr<VulkanImage> m_image;
 	SizeI m_size;
 	TextureFormat m_format;
+
+    //VkSemaphore m_imageAvailableSemaphore;
+    VkSemaphore m_renderFinishedSemaphore;
 };
 
 // ダブルバッファ・トリプルバッファを管理するため、通常の RenderTargetTexture とは別にする。

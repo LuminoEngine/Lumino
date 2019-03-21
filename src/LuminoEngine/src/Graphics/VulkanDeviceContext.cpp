@@ -476,9 +476,9 @@ public:
         auto imageIndex = m_deviceContext->m_mainSwapchain->imageIndex();
         updateFrameData(imageIndex, m_deviceContext->recodingCommandBuffer());//commandBuffers[imageIndex]);
 
-        m_deviceContext->recodingCommandBuffer()->submit(
-            m_deviceContext->m_mainSwapchain->imageAvailableSemaphore(),
-            m_deviceContext->m_mainSwapchain->renderFinishedSemaphore());
+        //m_deviceContext->recodingCommandBuffer()->submit(
+        //    m_deviceContext->m_mainSwapchain->imageAvailableSemaphore(),
+        //    m_deviceContext->m_mainSwapchain->renderFinishedSemaphore());
 
 
         m_deviceContext->m_mainSwapchain->present();
@@ -1495,19 +1495,19 @@ Result VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow*
 
 
     m_imageAvailableSemaphores.resize(maxFrameCount());
-    m_renderFinishedSemaphores.resize(maxFrameCount());
-    //inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
+    //m_renderFinishedSemaphores.resize(maxFrameCount());
+    ////inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
 
     VkSemaphoreCreateInfo semaphoreInfo = {};
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
-    //VkFenceCreateInfo fenceInfo = {};
-    //fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-    //fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+    ////VkFenceCreateInfo fenceInfo = {};
+    ////fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    ////fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
     for (size_t i = 0; i < maxFrameCount(); i++) {
         LN_VK_CHECK(vkCreateSemaphore(device, &semaphoreInfo, m_deviceContext->vulkanAllocator(), &m_imageAvailableSemaphores[i]));
-        LN_VK_CHECK(vkCreateSemaphore(device, &semaphoreInfo, m_deviceContext->vulkanAllocator(), &m_renderFinishedSemaphores[i]));
+        //LN_VK_CHECK(vkCreateSemaphore(device, &semaphoreInfo, m_deviceContext->vulkanAllocator(), &m_renderFinishedSemaphores[i]));
 
         //if ( != VK_SUCCESS ||
         //    vkCreateSemaphore(device, &semaphoreInfo, nullptr, &m_renderFinishedSemaphores[i]) != VK_SUCCESS/* ||
@@ -1546,10 +1546,10 @@ void VulkanSwapChain::dispose()
     }
     m_imageAvailableSemaphores.clear();
 
-    for (auto& x : m_renderFinishedSemaphores) {
-        vkDestroySemaphore(device, x, m_deviceContext->vulkanAllocator());
-    }
-    m_renderFinishedSemaphores.clear();
+    //for (auto& x : m_renderFinishedSemaphores) {
+    //    vkDestroySemaphore(device, x, m_deviceContext->vulkanAllocator());
+    //}
+    //m_renderFinishedSemaphores.clear();
 
     for (auto& x : m_swapchainRenderTargets) {
         x->dispose();
@@ -1593,16 +1593,19 @@ ITexture* VulkanSwapChain::getRenderTarget(int imageIndex) const
 
 void VulkanSwapChain::present()
 {
+    VkSemaphore renderFinishedSemaphore = m_swapchainRenderTargets[m_imageIndex]->renderFinishedSemaphore();
     m_deviceContext->recodingCommandBuffer()->submit(
-        imageAvailableSemaphore(),
-        renderFinishedSemaphore());
+        m_imageAvailableSemaphores[m_currentFrame],
+        renderFinishedSemaphore);
+        //imageAvailableSemaphore(),
+        //renderFinishedSemaphore());
 
 
     VkPresentInfoKHR presentInfo = {};
     presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 
     presentInfo.waitSemaphoreCount = 1;
-    presentInfo.pWaitSemaphores = &m_renderFinishedSemaphores[m_currentFrame]; // このセマフォの通知を待ってから実際に present する
+    presentInfo.pWaitSemaphores = &renderFinishedSemaphore; // このセマフォの通知を待ってから実際に present する
 
     VkSwapchainKHR swapChains[] = { vulkanSwapchain() };
     presentInfo.swapchainCount = 1;
@@ -1942,6 +1945,12 @@ Result VulkanRenderTarget::init(VulkanDeviceContext* deviceContext, uint32_t wid
 {
 	LN_DCHECK(deviceContext);
 	m_deviceContext = deviceContext;
+
+    VkSemaphoreCreateInfo semaphoreInfo = {};
+    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+    //LN_VK_CHECK(vkCreateSemaphore(m_deviceContext->vulkanDevice(), &semaphoreInfo, m_deviceContext->vulkanAllocator(), &m_imageAvailableSemaphore));
+    LN_VK_CHECK(vkCreateSemaphore(m_deviceContext->vulkanDevice(), &semaphoreInfo, m_deviceContext->vulkanAllocator(), &m_renderFinishedSemaphore));
+
 	return reset(width, height, format, image, imageView);
 }
 
@@ -1949,6 +1958,17 @@ void VulkanRenderTarget::dispose()
 {
     if (m_deviceContext) {
         m_deviceContext->framebufferCache()->invalidateRenderTarget(this);
+
+        //if (m_imageAvailableSemaphore) {
+        //    vkDestroySemaphore(m_deviceContext->vulkanDevice(), m_imageAvailableSemaphore, m_deviceContext->vulkanAllocator());
+        //    m_imageAvailableSemaphore = VK_NULL_HANDLE;
+        //}
+
+        if (m_renderFinishedSemaphore) {
+            vkDestroySemaphore(m_deviceContext->vulkanDevice(), m_renderFinishedSemaphore, m_deviceContext->vulkanAllocator());
+            m_renderFinishedSemaphore = VK_NULL_HANDLE;
+        }
+
         m_deviceContext = nullptr;
     }
     VulkanTexture::dispose();
