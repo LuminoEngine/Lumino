@@ -107,7 +107,7 @@ public: // TODO:
     VkFormat findDepthFormat();
 
     VkCommandBuffer beginSingleTimeCommands();
-    void endSingleTimeCommands(VkCommandBuffer commandBuffer);
+    Result endSingleTimeCommands(VkCommandBuffer commandBuffer);
     void copyBufferImmediately(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
     void copyBufferToImageImmediately(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
     Result transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
@@ -301,7 +301,7 @@ public:
 	virtual DeviceTextureType type() const { return DeviceTextureType::RenderTarget; }
 	virtual SizeI realSize() { return m_size; }
 	virtual TextureFormat getTextureFormat() const {return TextureFormat::RGBA32; }
-	virtual void readData(void* outData) {}
+    virtual void readData(void* outData) override;
 	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) {}
 	virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) {}
 

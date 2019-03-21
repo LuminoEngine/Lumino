@@ -1144,7 +1144,7 @@ VkCommandBuffer VulkanDeviceContext::beginSingleTimeCommands()
     return commandBuffer;
 }
 
-void VulkanDeviceContext::endSingleTimeCommands(VkCommandBuffer commandBuffer)
+Result VulkanDeviceContext::endSingleTimeCommands(VkCommandBuffer commandBuffer)
 {
     vkEndCommandBuffer(commandBuffer);
 
@@ -1153,10 +1153,12 @@ void VulkanDeviceContext::endSingleTimeCommands(VkCommandBuffer commandBuffer)
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &commandBuffer;
 
-    vkQueueSubmit(m_graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-    vkQueueWaitIdle(m_graphicsQueue);
+    LN_VK_CHECK(vkQueueSubmit(m_graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE));
+    LN_VK_CHECK(vkQueueWaitIdle(m_graphicsQueue));
 
     vkFreeCommandBuffers(m_device, vulkanCommandPool(), 1, &commandBuffer);
+
+    return true;
 }
 
 void VulkanDeviceContext::copyBufferImmediately(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
@@ -1986,6 +1988,120 @@ Result VulkanRenderTarget::reset(uint32_t width, uint32_t height, VkFormat forma
 		return false;
 	}
 	return true;
+}
+
+void VulkanRenderTarget::readData(void* outData)
+{
+    // Flush
+    m_deviceContext->recodingCommandBuffer()->submit(imageAvailableSemaphore(), renderFinishedSemaphore());
+
+    uint32_t width = m_size.width;
+    uint32_t height = m_size.height;
+    VkDeviceSize size = width * height * 4; // TODO
+
+    // 転送先として作成
+    VulkanBuffer destBuffer;
+    if (!destBuffer.init(m_deviceContext, size, VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
+        LN_ERROR();
+        goto Exit;
+    }
+
+    {
+        VkCommandBuffer commandBuffer = m_deviceContext->beginSingleTimeCommands();
+
+        // Swapchain の Backbuffer (VK_IMAGE_LAYOUT_PRESENT_SRC_KHR) から、転送ソース (VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) へレイアウト変換
+        {
+            VkImageMemoryBarrier imageMemoryBarrier = {};
+            imageMemoryBarrier.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+            imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+            imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+            imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+            imageMemoryBarrier.image = m_image->vulkanImage();
+            imageMemoryBarrier.subresourceRange = VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
+            vkCmdPipelineBarrier(
+                commandBuffer,
+                VK_PIPELINE_STAGE_TRANSFER_BIT,
+                VK_PIPELINE_STAGE_TRANSFER_BIT,
+                0,
+                0, nullptr,
+                0, nullptr,
+                1, &imageMemoryBarrier);
+        }
+
+        // destBuffer へコピー
+        {
+            VkBufferImageCopy region = {};
+            region.bufferOffset = 0;
+            region.bufferRowLength = 0;
+            region.bufferImageHeight = 0;
+            region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            region.imageSubresource.mipLevel = 0;
+            region.imageSubresource.baseArrayLayer = 0;
+            region.imageSubresource.layerCount = 1;
+            region.imageOffset = { 0, 0, 0 };
+            region.imageExtent = { width, height, 1 };
+            vkCmdCopyImageToBuffer(
+                commandBuffer,
+                m_image->vulkanImage(),
+                VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                destBuffer.vulkanBuffer(),
+                1, &region);
+        }
+
+        // レイアウトを元に戻す
+        {
+            VkImageMemoryBarrier imageMemoryBarrier = {};
+            imageMemoryBarrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+            imageMemoryBarrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+            imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+            imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+            imageMemoryBarrier.image = m_image->vulkanImage();
+            imageMemoryBarrier.subresourceRange = VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
+            vkCmdPipelineBarrier(
+                commandBuffer,
+                VK_PIPELINE_STAGE_TRANSFER_BIT,
+                VK_PIPELINE_STAGE_TRANSFER_BIT,
+                0,
+                0, nullptr,
+                0, nullptr,
+                1, &imageMemoryBarrier);
+        }
+
+        // Submit and Wait
+        if (!m_deviceContext->endSingleTimeCommands(commandBuffer)) {
+            LN_ERROR();
+            goto Exit;
+        }
+    }
+
+    // Blit
+    {
+        void* rawData = destBuffer.map();
+
+        // TODO: まだ Bitmap クラス側が BGRA の save に対応していないのでここで変換してしまう。
+        if (m_image->vulkanFormat() == VK_FORMAT_B8G8R8A8_UNORM) {
+            unsigned char* data = (unsigned char*)rawData;
+            for (uint32_t y = 0; y < height; y++)
+            {
+                unsigned char *row = data;
+                for (uint32_t x = 0; x < width; x++)
+                {
+                    std::swap(row[0], row[2]);
+                    row += 4;
+                }
+                data += width * 4;//subResourceLayout.rowPitch;
+            }
+        }
+        else {
+            LN_NOTIMPLEMENTED();
+        }
+
+        memcpy(outData, rawData, static_cast<size_t>(size));
+        destBuffer.unmap();
+    }
+
+Exit:
+    destBuffer.dispose();
 }
 
 //==============================================================================
