@@ -183,6 +183,37 @@ TEST_F(Test_UI_UILayout, StackLayout)
 	{
 		TestEnv::updateFrame();
 		ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-StackLayout-1.png"));
-		LN_TEST_CLEAN_SCENE;
 	}
+
+	//- [ ] Horizontal
+	{
+		auto layout = UIStackLayout::create();
+		layout->setOrientation(Orientation::Horizontal);
+		uiRoot->setLayoutPanel(layout);
+
+		TestEnv::updateFrame();
+		ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-StackLayout-2.png"));
+	}
+
+	//- [ ] ReverseVertical
+	{
+		auto layout = UIStackLayout::create();
+		layout->setOrientation(Orientation::ReverseVertical);
+		uiRoot->setLayoutPanel(layout);
+
+		TestEnv::updateFrame();
+		ASSERT_SCREEN_S(LN_ASSETFILE("UI/Result/Test_UI_UILayout-StackLayout-3.png"));
+	}
+
+	//- [ ] ReverseHorizontal
+	{
+		auto layout = UIStackLayout::create();
+		layout->setOrientation(Orientation::ReverseHorizontal);
+		uiRoot->setLayoutPanel(layout);
+
+		TestEnv::updateFrame();
+		ASSERT_SCREEN_S(LN_ASSETFILE("UI/Result/Test_UI_UILayout-StackLayout-4.png"));
+	}
+
+	LN_TEST_CLEAN_SCENE;
 }
