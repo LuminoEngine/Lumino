@@ -20,6 +20,7 @@ namespace ln {
 GraphicsContext::GraphicsContext()
 	: m_device(nullptr)
     , m_modifiedFlags(ModifiedFlags_All)
+    , m_recordingBegan(false)
 {
 }
 
@@ -34,13 +35,12 @@ void GraphicsContext::init(detail::IGraphicsDeviceContext* device)
 	m_device = device;
     m_lastCommit.reset();
 	resetState();
-	m_device->begin();
 }
 
 void GraphicsContext::onDispose(bool explicitDisposing)
 {
 	if (m_device) {
-		m_device->end();
+        endCommandRecodingIfNeeded();
 		m_device = nullptr;
 	}
     m_lastCommit.reset();
@@ -151,6 +151,7 @@ void GraphicsContext::setPrimitiveTopology(PrimitiveTopology value)
 
 void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
+    beginCommandRecodingIfNeeded();
 	commitState();
 	// TODO: threading
 	m_device->clearBuffers(flags, color, z, stencil);
@@ -158,6 +159,7 @@ void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8
 
 void GraphicsContext::drawPrimitive(int startVertex, int primitiveCount)
 {
+    beginCommandRecodingIfNeeded();
 	commitState();
 	LN_ENQUEUE_RENDER_COMMAND_3(
 		GraphicsContext_setIndexBuffer, m_manager,
@@ -171,6 +173,7 @@ void GraphicsContext::drawPrimitive(int startVertex, int primitiveCount)
 
 void GraphicsContext::drawPrimitiveIndexed(int startIndex, int primitiveCount)
 {
+    beginCommandRecodingIfNeeded();
 	commitState();
 	LN_ENQUEUE_RENDER_COMMAND_3(
 		GraphicsContext_setIndexBuffer, m_manager,
@@ -186,22 +189,35 @@ void GraphicsContext::present(SwapChain* swapChain)
 {
 	if (LN_REQUIRE(swapChain)) return;
 
-	m_device->end();
+    endCommandRecodingIfNeeded();
 
 	// TODO: threading
 	m_device->present(swapChain->resolveRHIObject());
     m_manager->primaryRenderingCommandList()->clear();
     swapChain->onPostPresent();
-
-	m_device->begin();
 }
 
-//void GraphicsContext::flush()
-//{
-//    m_device->end();
-//    m_device->begin();
-//}
-//
+void GraphicsContext::flush()
+{
+    endCommandRecodingIfNeeded();
+}
+
+void GraphicsContext::beginCommandRecodingIfNeeded()
+{
+    if (!m_recordingBegan) {
+        m_device->begin();
+        m_recordingBegan = true;
+    }
+}
+
+void GraphicsContext::endCommandRecodingIfNeeded()
+{
+    if (m_recordingBegan) {
+        m_device->end();
+        m_recordingBegan = false;
+    }
+}
+
 detail::IGraphicsDeviceContext* GraphicsContext::commitState()
 {
 	// ポインタとしては変わっていなくても、resolve は毎回呼び出す。
