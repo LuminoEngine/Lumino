@@ -919,12 +919,24 @@ Result VulkanDeviceContext::submitStatus(const State& state)
     vkCmdBindPipeline(m_recodingCommandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->vulkanPipeline());//graphicsPipeline);
 
     {
-        auto* vertexBuffer = static_cast<VulkanVertexBuffer*>(state.primitive.vertexBuffers[0]);
+        std::array<VkBuffer, MaxVertexStreams> vertexBuffers;
+        int vbCount = 0;
+        for (int i = 0; i < state.primitive.vertexBuffers.size(); i++) {
+            if (state.primitive.vertexBuffers[i]) {
+                auto* vertexBuffer = static_cast<VulkanVertexBuffer*>(state.primitive.vertexBuffers[i]);
+                VkBuffer buffer = vertexBuffer->vulkanBuffer();//[] = { vertexBuffer->vulkanBuffer() };
+                VkDeviceSize offset = 0;//[] = { 0 };
+                vkCmdBindVertexBuffers(m_recodingCommandBuffer->vulkanCommandBuffer(), i, 1, &buffer, &offset);
+            }
+            //else {
+            //    VkBuffer buffer = VK_NULL_HANDLE;
+            //    VkDeviceSize offset = 0;
+            //    vkCmdBindVertexBuffers(m_recodingCommandBuffer->vulkanCommandBuffer(), i, 0, &buffer, &offset);
+            //}
+        }
+
         auto* indexBuffer = static_cast<VulkanIndexBuffer*>(state.primitive.indexBuffer);
 
-        VkBuffer vertexBuffers[] = { vertexBuffer->vulkanBuffer() };
-        VkDeviceSize offsets[] = { 0 };
-        vkCmdBindVertexBuffers(m_recodingCommandBuffer->vulkanCommandBuffer(), 0, 1, vertexBuffers, offsets);
 
         if (indexBuffer) {
             vkCmdBindIndexBuffer(m_recodingCommandBuffer->vulkanCommandBuffer(), indexBuffer->vulkanBuffer(), 0, indexBuffer->indexType());
@@ -1341,6 +1353,7 @@ VulkanVertexDeclaration::VulkanVertexDeclaration()
 {
 }
 
+// https://gist.github.com/SaschaWillems/428d15ed4b5d71ead462bc63adffa93a
 Result VulkanVertexDeclaration::init(const VertexElement* elements, int elementsCount)
 {
     LN_DCHECK(elements);
@@ -1353,6 +1366,12 @@ Result VulkanVertexDeclaration::init(const VertexElement* elements, int elements
     }
     m_maxStreamCount++;
     m_bindings.resize(m_maxStreamCount);
+
+    for (int i = 0; i < m_maxStreamCount; i++)
+    {
+        m_bindings[i].binding = i;  // VkVertexInputAttributeDescription が参照する binding 番号。ひとまず連番
+        m_bindings[i].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+    }
 
     // 実際に値を計算する
     for (int i = 0; i < elementsCount; i++) {
