@@ -1437,7 +1437,7 @@ Result VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow*
     createInfo.imageColorSpace = surfaceFormat.colorSpace;
     createInfo.imageExtent = extent;
     createInfo.imageArrayLayers = 1;
-    createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+    createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;	// readData できるようにするため、VK_IMAGE_USAGE_TRANSFER_SRC_BIT も指定しておく
 
     ///QueueFamilyIndices indices = m_deviceContext->findQueueFamilies(m_deviceContext->vulkanPhysicalDevice());
     uint32_t queueFamilyIndices[] = { m_deviceContext->graphicsQueueFamilyIndex(), presentQueueFamily };
@@ -1995,7 +1995,9 @@ void VulkanRenderTarget::readData(void* outData)
     // Flush
     m_deviceContext->recodingCommandBuffer()->submit(imageAvailableSemaphore(), renderFinishedSemaphore());
 
-    uint32_t width = m_size.width;
+    vkDeviceWaitIdle(m_deviceContext->vulkanDevice());
+
+	uint32_t width = m_size.width;
     uint32_t height = m_size.height;
     VkDeviceSize size = width * height * 4; // TODO
 
@@ -2012,6 +2014,8 @@ void VulkanRenderTarget::readData(void* outData)
         // Swapchain の Backbuffer (VK_IMAGE_LAYOUT_PRESENT_SRC_KHR) から、転送ソース (VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) へレイアウト変換
         {
             VkImageMemoryBarrier imageMemoryBarrier = {};
+            imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+            imageMemoryBarrier.pNext = nullptr;
             imageMemoryBarrier.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
             imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
             imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
@@ -2051,6 +2055,8 @@ void VulkanRenderTarget::readData(void* outData)
         // レイアウトを元に戻す
         {
             VkImageMemoryBarrier imageMemoryBarrier = {};
+            imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+            imageMemoryBarrier.pNext = nullptr;
             imageMemoryBarrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
             imageMemoryBarrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
             imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;

@@ -390,7 +390,9 @@ Ref<Bitmap2D> RenderTargetTexture::readData()
 	}
 	else
 	{
+        manager()->deviceContext()->end();
 		rhiObject->readData(bitmap->data());
+        manager()->deviceContext()->begin();
 	}
 
 	bitmap->flipVerticalFlow();
