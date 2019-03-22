@@ -288,6 +288,13 @@ SwapChain* UIFrameWindow::swapChain() const
 // 強制的にウィンドウサイズとする
 Size UIFrameWindow::measureOverride(const Size& constraint)
 {
+	int childCount = getVisualChildrenCount();
+	for (int i = 0; i < childCount; i++)
+	{
+		UIElement* child = getVisualChild(i);
+		child->measureLayout(constraint);
+	}
+
 	SizeI size;
 	m_platformWindow->getSize(&size);
 	// TODO: DPI チェック
@@ -297,6 +304,13 @@ Size UIFrameWindow::measureOverride(const Size& constraint)
 // 強制的にウィンドウサイズとする
 Size UIFrameWindow::arrangeOverride(const Size& finalSize)
 {
+	int childCount = getVisualChildrenCount();
+	for (int i = 0; i < childCount; i++)
+	{
+		UIElement* child = getVisualChild(i);
+		child->arrangeLayout(Rect(0, 0, finalSize));	// TODO: padding
+	}
+
 	return UIElement::arrangeOverride(desiredSize());
 }
 

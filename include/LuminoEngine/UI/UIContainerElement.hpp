@@ -38,8 +38,10 @@ protected:
 	virtual Size arrangeOverride(const Size& finalSize) override;
 
 private:
+	void setLogicalChildrenHost(UILayoutPanel* panel);
+
 	List<Ref<UIElement>> m_logicalChildren;
-	Ref<UILayoutPanel> m_logicalChildrenHostPanel;
+	Ref<UILayoutPanel> m_logicalChildrenHost;
 
 };
 

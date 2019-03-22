@@ -78,6 +78,7 @@ TEST_F(Test_UI_UILayout, RenderTransform)
 //## BorderLayout
 TEST_F(Test_UI_UILayout, BorderLayout)
 {
+	//- [ ] 8 方向境界と中央への配置
 	{
 		auto e11 = newObject<UIElement>();
 		e11->setBackgroundColor(Color::Red);
@@ -144,6 +145,44 @@ TEST_F(Test_UI_UILayout, BorderLayout)
 
 		TestEnv::updateFrame();
 		ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-BorderLayout-1.png"));
+		LN_TEST_CLEAN_SCENE;
+	}
+}
+
+//------------------------------------------------------------------------------
+//## StackLayout
+TEST_F(Test_UI_UILayout, StackLayout)
+{
+	UIContainerElement* uiRoot = Engine::mainUIRoot();
+
+	auto l1 = UIStackLayout::create();
+	uiRoot->setLayoutPanel(l1);
+
+	auto e1 = newObject<UIElement>();
+	e1->setBackgroundColor(Color::Red);
+	e1->setWidth(20);
+	e1->setHeight(20);
+	e1->setHorizontalAlignment(HAlignment::Left);
+	e1->setVerticalAlignment(VAlignment::Top);
+
+	auto e2 = newObject<UIElement>();
+	e2->setBackgroundColor(Color::Green);
+	e2->setWidth(20);
+	e2->setHeight(20);
+	e2->setHorizontalAlignment(HAlignment::Center);
+	e2->setVerticalAlignment(VAlignment::Center);
+
+	auto e3 = newObject<UIElement>();
+	e3->setBackgroundColor(Color::Blue);
+	e3->setWidth(20);
+	e3->setHeight(20);
+	e3->setHorizontalAlignment(HAlignment::Right);
+	e3->setVerticalAlignment(VAlignment::Bottom);
+
+	//- [ ] default (Vertical)
+	{
+		TestEnv::updateFrame();
+		ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-StackLayout-1.png"));
 		LN_TEST_CLEAN_SCENE;
 	}
 }

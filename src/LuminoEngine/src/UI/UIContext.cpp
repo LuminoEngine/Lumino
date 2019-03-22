@@ -110,7 +110,7 @@ void UIContext::updateLayoutTree()
 {
 	if (m_layoutRootElement)
 	{
-		m_layoutRootElement->updateLayoutHierarchical(Rect(0, 0, m_layoutRootElement->width(), m_layoutRootElement->height()));
+		m_layoutRootElement->updateLayout(Rect(0, 0, m_layoutRootElement->width(), m_layoutRootElement->height()));
 	}
 }
 

@@ -11,7 +11,16 @@ public:
     UILayoutPanel();
 	void init();
 
+protected:
+	virtual int getVisualChildrenCount() const override;
+	virtual UIElement* getVisualChild(int index) const override;
+
+public:	// TODO: internal
+	void addLayoutOwnerLogicalChild(UIElement* element);
+	void clearLayoutOwnerLogicalChildren();
+
 private:
+	List<Ref<UIElement>> m_layoutOwnerLogicalChildren;
 };
 
 /*
@@ -38,6 +47,30 @@ LN_PROTECTED_INTERNAL_ACCESS:
 
 private:
 };
+
+class UIStackLayout
+	: public UILayoutPanel
+{
+public:
+	static Ref<UIStackLayout> create();
+
+	void setOrientation(Orientation orientation) { m_orientation = orientation; }
+	Orientation getOrientation() const { return m_orientation; }
+
+LN_PROTECTED_INTERNAL_ACCESS:
+	UIStackLayout();
+	virtual ~UIStackLayout();
+	void init();
+
+	// UIElement interface
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
+
+private:
+	Orientation m_orientation;
+};
+
+// TODO: GridLayout https://blog.qt.io/jp/2011/01/06/qml-layout/
 
 } // namespace ln
 

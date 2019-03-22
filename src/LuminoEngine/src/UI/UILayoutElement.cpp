@@ -37,7 +37,6 @@ void UILayoutElement::updateLayout(const Rect& parentFinalGlobalRect)
 
 	measureLayout(size);
 	arrangeLayout(parentFinalGlobalRect);
-	updateFinalRects(parentFinalGlobalRect);
 }
 
 void UILayoutElement::measureLayout(const Size& availableSize)
@@ -60,14 +59,14 @@ void UILayoutElement::measureLayout(const Size& availableSize)
 	setLayoutDesiredSize(desiredSize);
 }
 
-void UILayoutElement::arrangeLayout(const Rect& finalLocalRect)
+void UILayoutElement::arrangeLayout(const Rect& finalSlotGlobalRect)
 {
 	// finalLocalRect はこの要素を配置できる領域サイズ。と、親要素内でのオフセット。
 	// 要素に直接設定されているサイズよりも大きいこともある。
 	// TODO: HorizontalAlignment 等を考慮して、最終的な座標とサイズを決定する。
 	//		 この要素のサイズが省略されていれば、Stretch ならサイズは最大に、それ以外なら最小になる。
 
-	const Size& areaSize = finalLocalRect.getSize();
+	const Size& areaSize = finalSlotGlobalRect.getSize();
 
 #if 1
 	HAlignment		hAlign = getLayoutHAlignment();
@@ -115,28 +114,32 @@ void UILayoutElement::arrangeLayout(const Rect& finalLocalRect)
 	Size finalContentAreaSize = arrangeOverride(contentAreaSize);
 
 
-	Rect finalRenderRect;
-	Rect finalContentRect;
-	finalRenderRect.x = finalLocalRect.x + margin.left + arrangeRect.x;
-	finalRenderRect.y = finalLocalRect.y + margin.top + arrangeRect.y;
-	finalRenderRect.width = finalContentAreaSize.width + padding.getWidth();
-	finalRenderRect.height = finalContentAreaSize.height + padding.getHeight();
+	Rect finalLocalRect;
+	//Rect finalContentRect;
+	finalLocalRect.x = /*finalLocalRect.x + */margin.left + arrangeRect.x;
+	finalLocalRect.y = /*finalLocalRect.y + */margin.top + arrangeRect.y;
+	finalLocalRect.width = finalContentAreaSize.width + padding.getWidth();
+	finalLocalRect.height = finalContentAreaSize.height + padding.getHeight();
 	//finalContentRect.x = finalRenderRect.x + padding.left;
 	//finalContentRect.y = finalRenderRect.y + padding.top;
 	//finalContentRect.width = finalRenderRect.width - padding.getWidth();
 	//finalContentRect.height = finalRenderRect.height - padding.getHeight();
-	setLayoutFinalLocalRect(finalRenderRect/*, finalContentRect*/);
+	setLayoutFinalLocalRect(finalLocalRect/*, finalContentRect*/);
+
+	updateFinalRects(finalSlotGlobalRect);
+
+	onUpdateLayout(finalGlobalRect());
 }
 
-void UILayoutElement::updateFinalRects(const Rect& parentGlobalRect)
+void UILayoutElement::updateFinalRects(const Rect& finalSlotGlobalRect)
 {
 	Rect localRenderRect = getLayoutFinalLocalRect();
 
 	Rect finalGlobalRect;
 	//if (m_parent != nullptr)
 	//{
-	finalGlobalRect.x = parentGlobalRect.x + localRenderRect.x;
-	finalGlobalRect.y = parentGlobalRect.y + localRenderRect.y;
+	finalGlobalRect.x = finalSlotGlobalRect.x + localRenderRect.x;
+	finalGlobalRect.y = finalSlotGlobalRect.y + localRenderRect.y;
 	//m_combinedOpacity = m_parent->m_combinedOpacity * m_opacity;	// 不透明度もココで混ぜてしまう
 //}
 //else
@@ -156,11 +159,11 @@ void UILayoutElement::updateFinalRects(const Rect& parentGlobalRect)
 	//	parentGlobalRect.y + localContentRect.y,
 	//	localContentRect.width,
 	//	localContentRect.height);
-	Rect finalGlobalContentRect(
-		parentGlobalRect.x + localRenderRect.x,
-		parentGlobalRect.y + localRenderRect.y,
-		localRenderRect.width,
-		localRenderRect.height);
+	//Rect finalGlobalContentRect(
+	//	finalSlotGlobalRect.x + localRenderRect.x,
+	//	finalSlotGlobalRect.y + localRenderRect.y,
+	//	localRenderRect.width,
+	//	localRenderRect.height);
 
 	//int childCount = getVisualChildrenCount();
 	//for (int i = 0; i < childCount; i++)
@@ -186,6 +189,10 @@ Size UILayoutElement::measureOverride(const Size& constraint)
 Size UILayoutElement::arrangeOverride(const Size& finalSize)
 {
 	return finalSize;
+}
+
+void UILayoutElement::onUpdateLayout(const Rect& finalGlobalRect)
+{
 }
 
 const Thickness& UILayoutElement::getLayoutMargin() const

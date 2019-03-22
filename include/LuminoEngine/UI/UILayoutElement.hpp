@@ -2,6 +2,7 @@
 #include "../Graphics/GeometryStructs.hpp"
 #include "../Graphics/ColorStructs.hpp"
 #include "../Rendering/Common.hpp"
+#include "Common.hpp"
 
 namespace ln {
 class Font;
@@ -107,6 +108,7 @@ class UILayoutElement
 	: public Object
 {
 public:	// TODO: internal
+	// 基本的にルート要素のみ呼び出すべき
 	void updateLayout(const Rect& parentFinalGlobalRect);
 
 	void setWidth(float value) { m_layoutSize.width = value; }
@@ -132,10 +134,13 @@ protected:
 	//virtual int getChildLayoutItemCount() const = 0;
 	//virtual ILayoutElement* getChildLayoutItem(int index) const = 0;
 
+
+	virtual void onUpdateLayout(const Rect& finalGlobalRect);
+
 public:	//TODO: internal
 	void measureLayout(const Size& availableSize);
-	void arrangeLayout(const Rect& finalLocalRect);
-	void updateFinalRects(const Rect& parentGlobalRect);
+	void arrangeLayout(const Rect& finalSlotGlobalRect);
+	void updateFinalRects(const Rect& finalSlotGlobalRect);
 
 	const Size& getLayoutSize() const { return m_layoutSize; }
 	void setLayoutDesiredSize(const Size& size) { m_desiredSize = size; }

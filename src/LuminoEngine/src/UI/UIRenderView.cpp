@@ -42,7 +42,7 @@ void UIRenderView::onUpdateUIStyle(const detail::StyleData& finalStyle)
 
 void UIRenderView::onUpdateUILayout(const Rect& finalGlobalRect)
 {
-	m_rootElement->updateLayoutHierarchical(finalGlobalRect);
+	m_rootElement->updateLayout(finalGlobalRect);
 }
 
 void UIRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthbuffer)

@@ -21,6 +21,7 @@ namespace ln {
 
 UIElement::UIElement()
     : m_manager(nullptr)
+	, m_objectManagementFlags(detail::ObjectManagementFlags::AutoAddToActiveScene)
     , m_context(nullptr)
     , m_visualParent(nullptr)
     , m_localStyle(newObject<UIStyle>()) // TODO: ふつうは static なオブジェクトのほうが多くなるので、必要なやつだけ遅延作成でいいと思う
@@ -42,10 +43,12 @@ void UIElement::init()
 	// TODO: Material も、実際に描画が必要な Element に限って作成した方がいいだろう
 	m_finalStyle.backgroundMaterial = newObject<Material>();
 
-    UIContainerElement* primaryElement = m_manager->primaryElement();
-    if (primaryElement) {
-        primaryElement->addElement(this);
-    }
+	if (m_objectManagementFlags.hasFlag(detail::ObjectManagementFlags::AutoAddToActiveScene)) {
+		UIContainerElement* primaryElement = m_manager->primaryElement();
+		if (primaryElement) {
+			primaryElement->addElement(this);
+		}
+	}
 
     if (m_manager->mainContext()) {
         m_manager->mainContext()->addElement(this);
@@ -333,10 +336,10 @@ void UIElement::onUpdateFrame(float elapsedSeconds)
 void UIElement::onUpdateStyle(const detail::StyleData& finalStyle)
 {
 }
-
-void UIElement::onUpdateLayout(const Rect& finalGlobalRect)
-{
-}
+//
+//void UIElement::onUpdateLayout(const Rect& finalGlobalRect)
+//{
+//}
 
 Size UIElement::measureOverride(const Size& constraint)
 {
@@ -375,18 +378,18 @@ void UIElement::updateStyleHierarchical(const detail::StyleData& parentFinalStyl
 	}
 }
 
-void UIElement::updateLayoutHierarchical(const Rect& parentFinalGlobalRect)
-{
-	UILayoutElement::updateLayout(parentFinalGlobalRect);
-
-	onUpdateLayout(finalGlobalRect());
-
-    // child elements
-    int count = getVisualChildrenCount();
-    for (int i = 0; i < count; i++) {
-        getVisualChild(i)->updateLayoutHierarchical(finalGlobalRect());
-    }
-}
+//void UIElement::updateLayoutHierarchical(const Rect& parentFinalGlobalRect)
+//{
+//	UILayoutElement::updateLayout(parentFinalGlobalRect);
+//
+//	//onUpdateLayout(finalGlobalRect());
+//
+// //   // child elements
+// //   int count = getVisualChildrenCount();
+// //   for (int i = 0; i < count; i++) {
+// //       getVisualChild(i)->updateLayoutHierarchical(finalGlobalRect());
+// //   }
+//}
 
 void UIElement::render(UIRenderingContext* context)
 {

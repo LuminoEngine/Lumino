@@ -216,7 +216,6 @@ public: // TODO: internal
 public:	// TODO: internal
     virtual void onUpdateFrame(float elapsedSeconds);
 	virtual void onUpdateStyle(const detail::StyleData& finalStyle);
-	virtual void onUpdateLayout(const Rect& finalGlobalRect);
 
     /**
         @brief		この要素を表示するために必要なサイズを計測します。
@@ -224,6 +223,9 @@ public:	// TODO: internal
         @return		この要素のレイアウトの際に必要となる最低限のサイズ。
                     この要素のサイズと、全ての子要素のサイズに基づき決定します。NaN や Inf であってはなりません。
         @details	constraint は、ScrollViewer 等のコンテンツとなった場合は Infinity が渡されることがあります。
+
+		このメソッドはフレームワークから呼び出されます。直接呼び出しても正しい結果は得られません。
+		このメソッドの実装から子要素の measure を行う場合は measureLayout() を呼び出します。
     */
     virtual Size measureOverride(const Size& constraint);
 
@@ -244,7 +246,12 @@ public:	// TODO: internal
 	/** この要素内の子ビジュアル要素の数を取得します。 */
 	virtual int getVisualChildrenCount() const;
 
-	/** 子ビジュアル要素を取得します。奥にある要素が先、手前にある要素が後になります。(Zオーダーやアクティブ状態の考慮は実装側で行うこと) */
+	/**
+	 * 子ビジュアル要素を取得します。
+	 *
+	 * このメソッドが返した UIElement はレイアウトの対象となります。
+	 * 装側は、奥にある要素が先、手前にある要素が後になるようにZオーダーやアクティブ状態を考慮する必要があります。
+	 */
 	virtual UIElement* getVisualChild(int index) const;
 
 	virtual void onRender(UIRenderingContext* context);
@@ -255,13 +262,16 @@ public:	// TODO: internal
 
     // TODO: internal
 	void updateStyleHierarchical(const detail::StyleData& parentFinalStyle);
-    void updateLayoutHierarchical(const Rect& parentFinalGlobalRect);
+    //void updateLayoutHierarchical(const Rect& parentFinalGlobalRect);
     virtual void render(UIRenderingContext* context);
+
+	Flags<detail::ObjectManagementFlags>& objectManagementFlags() { return m_objectManagementFlags; }
 
 private:
     void raiseEventInternal(UIEventArgs* e);
 
     detail::UIManager* m_manager;
+	Flags<detail::ObjectManagementFlags> m_objectManagementFlags;
     UIContext* m_context;
     UIElement* m_visualParent;
 
