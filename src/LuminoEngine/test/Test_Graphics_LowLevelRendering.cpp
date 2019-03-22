@@ -218,7 +218,7 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 	};
 	Param params[] =
 	{
-		{ GraphicsResourceUsage::Static, GraphicsResourcePool::None },
+		//{ GraphicsResourceUsage::Static, GraphicsResourcePool::None },
 		{ GraphicsResourceUsage::Static, GraphicsResourcePool::Managed },
 		{ GraphicsResourceUsage::Dynamic, GraphicsResourcePool::None },
 		{ GraphicsResourceUsage::Dynamic, GraphicsResourcePool::Managed },
@@ -418,6 +418,14 @@ TEST_F(Test_Graphics_LowLevelRendering, ConstantBuffer)
 		buffer1->findParameter("g_type")->setInt(11);
 		buffer1->findParameter("g_float1ary3")->setFloatArray(ary1, 3);
 		ASSERT_EQ(true, renderAndCapture().r > 100);
+
+        // TODO: Vulkan で、array は要素が常に 16byte アライメントされる。
+        //   float g_float1ary3[3];	// offset:112
+        //   float2 g_float2ary3[3];	// offset:160
+        // 差は 48、3 で割ると 16
+        //  float g_float1ary3[4];	// offset:112
+        //  float2 g_float2ary3[4];	// offset:176
+        // 
 	}
 	// * [ ] float2[]
 	{

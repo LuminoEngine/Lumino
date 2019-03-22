@@ -2320,7 +2320,7 @@ Result VulkanShaderUniform::init(const ShaderUniformInfo& info)
     m_desc.elements = info.arrayElements;
 
     if (m_desc.columns == 0) { // OpenGL Dirver の動作に合わせる
-        m_desc.columns = info.vectorElements * sizeof(float);
+        m_desc.columns = info.vectorElements;// *sizeof(float);
     }
 
     m_desc.offset = info.offset;
@@ -2328,7 +2328,7 @@ Result VulkanShaderUniform::init(const ShaderUniformInfo& info)
     if (info.arrayElements > 0) {
         m_desc.arrayStride = info.elementSize();
     }
-    m_desc.matrixStride = info.matrixColumns * sizeof(float);
+    m_desc.matrixStride = info.matrixColumns *sizeof(float);
 
     return true;
 }
