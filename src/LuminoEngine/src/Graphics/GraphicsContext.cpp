@@ -189,7 +189,7 @@ void GraphicsContext::present(SwapChain* swapChain)
 {
 	if (LN_REQUIRE(swapChain)) return;
 
-    endCommandRecodingIfNeeded();
+    flushCommandRecoding(swapChain->colorBuffer());
 
 	// TODO: threading
 	m_device->present(swapChain->resolveRHIObject());
@@ -197,15 +197,21 @@ void GraphicsContext::present(SwapChain* swapChain)
     swapChain->onPostPresent();
 }
 
-void GraphicsContext::flush()
-{
-    endCommandRecodingIfNeeded();
-}
-
+//void GraphicsContext::flush()
+//{
+//    endCommandRecodingIfNeeded();
+//}
+//
 void GraphicsContext::beginCommandRecodingIfNeeded()
 {
     if (!m_recordingBegan) {
-        m_device->begin();
+        LN_ENQUEUE_RENDER_COMMAND_1(
+            GraphicsContext_beginCommandRecodingIfNeeded, m_manager,
+            detail::IGraphicsDeviceContext*, m_device,
+            {
+                m_device->begin();
+            });
+
         m_recordingBegan = true;
     }
 }
@@ -213,8 +219,31 @@ void GraphicsContext::beginCommandRecodingIfNeeded()
 void GraphicsContext::endCommandRecodingIfNeeded()
 {
     if (m_recordingBegan) {
-        m_device->end();
+        LN_ENQUEUE_RENDER_COMMAND_1(
+            GraphicsContext_beginCommandRecodingIfNeeded, m_manager,
+            detail::IGraphicsDeviceContext*, m_device,
+            {
+                m_device->end();
+            });
         m_recordingBegan = false;
+    }
+}
+
+void GraphicsContext::flushCommandRecoding(RenderTargetTexture* affectRendreTarget)
+{
+    // Vulkan: CommandBuffer が空の状態で VkSubmitQueue するとエラーするので、一度もコマンドを作っていない場合は flush が呼ばれても何もしないようにする
+    if (m_recordingBegan)
+    {
+        endCommandRecodingIfNeeded();
+
+        detail::ITexture* rhiObject = affectRendreTarget->resolveRHIObject();
+        LN_ENQUEUE_RENDER_COMMAND_2(
+            GraphicsContext_beginCommandRecodingIfNeeded, m_manager,
+            detail::IGraphicsDeviceContext*, m_device,
+            detail::ITexture*, rhiObject,
+            {
+                m_device->flushCommandBuffer(rhiObject);
+            });
     }
 }
 

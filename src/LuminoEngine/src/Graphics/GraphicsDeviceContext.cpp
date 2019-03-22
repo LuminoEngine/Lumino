@@ -219,6 +219,11 @@ void IGraphicsDeviceContext::drawPrimitiveIndexed(int startIndex, int primitiveC
 	onDrawPrimitiveIndexed(m_staging.pipelineState.topology, startIndex, primitiveCount);
 }
 
+void IGraphicsDeviceContext::flushCommandBuffer(ITexture* affectRendreTarget)
+{
+    onFlushCommandBuffer(affectRendreTarget);
+}
+
 void IGraphicsDeviceContext::present(ISwapChain* swapChain)
 {
 	onPresent(swapChain);

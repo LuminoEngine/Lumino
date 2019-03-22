@@ -85,6 +85,7 @@ protected:
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
 	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) override;
 	virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount) override;
+    virtual void onFlushCommandBuffer(ITexture* affectRendreTarget) override;
 	virtual void onPresent(ISwapChain* swapChain) override;
 
 public: // TODO:
@@ -230,6 +231,7 @@ public:
     VkDeviceMemory vulkanDeviceMemory() const { return m_buffer.vulkanBufferMemory(); }
 
 private:
+    VulkanDeviceContext* m_deviceContext;
     VulkanBuffer m_buffer;
     GraphicsResourceUsage m_usage;
 };
@@ -308,7 +310,7 @@ public:
 	virtual const VulkanImage* image() const override { return m_image.get(); }
 
     void setImageAvailableSemaphoreRef(VkSemaphore* semaphore) { m_imageAvailableSemaphoreRef = semaphore; }
-    VkSemaphore imageAvailableSemaphore() const { return *m_imageAvailableSemaphoreRef; }
+    VkSemaphore imageAvailableSemaphore() const { return (m_imageAvailableSemaphoreRef) ? *m_imageAvailableSemaphoreRef : VK_NULL_HANDLE; }
     VkSemaphore renderFinishedSemaphore() const { return m_renderFinishedSemaphore; }
 
 	Result reset(uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView);

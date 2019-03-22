@@ -361,6 +361,21 @@ void VulkanDeviceContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, in
     vkCmdDrawIndexed(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startIndex, 0, 0);
 }
 
+void VulkanDeviceContext::onFlushCommandBuffer(ITexture* affectRendreTarget)
+{
+    auto* t = static_cast<VulkanRenderTarget*>(affectRendreTarget);
+    recodingCommandBuffer()->submit(
+        t->imageAvailableSemaphore(),
+        t->renderFinishedSemaphore());
+
+    // [GeForce GTX 1060] 既にシグナル状態のセマフォを vkQueueSubmit で待つように指定すると、vkQueueSubmit が VK_ERROR_DEVICE_LOST を返す。
+    // 通常は vkAcquireNextImageKHR と vkQueueSubmit が交互に実行されるので問題ないが、
+    // RenderTarget の Read で一度 CommnadBuffer を vkQueueSubmit し、続けて CommnadBuffer の記録を再開 → vkQueueSubmit したときに問題になる。
+    // vkQueueSubmit で待ちたいのは vkAcquireNextImageKHR で準備開始された RenderTarget が本当に準備終わったかどうかなので、一度待てば十分。
+    // ということで、一度でも submit したら、↓ は null をセットして、次回の submit では何も待たないようにしておく。
+    t->setImageAvailableSemaphoreRef(nullptr);
+}
+
 void VulkanDeviceContext::onPresent(ISwapChain* swapChain)
 {
     static_cast<VulkanSwapChain*>(swapChain)->present();
@@ -1163,6 +1178,11 @@ void VulkanSwapChain::dispose()
 
 void VulkanSwapChain::acquireNextImage(int* outIndex)
 {
+    //static bool tt = false;
+
+    //if (tt) return;
+    //tt = true;
+
     VkResult result = vkAcquireNextImageKHR(
         m_deviceContext->vulkanDevice(), vulkanSwapchain(),
         std::numeric_limits<uint64_t>::max(), m_imageAvailableSemaphores[m_currentFrame], VK_NULL_HANDLE, &m_imageIndex);
@@ -1189,9 +1209,9 @@ ITexture* VulkanSwapChain::getRenderTarget(int imageIndex) const
 void VulkanSwapChain::present()
 {
     VkSemaphore renderFinishedSemaphore = m_swapchainRenderTargets[m_imageIndex]->renderFinishedSemaphore();
-    m_deviceContext->recodingCommandBuffer()->submit(
-        m_swapchainRenderTargets[m_imageIndex]->imageAvailableSemaphore(),
-        renderFinishedSemaphore);
+    //m_deviceContext->recodingCommandBuffer()->submit(
+    //    m_swapchainRenderTargets[m_imageIndex]->imageAvailableSemaphore(),
+    //    renderFinishedSemaphore);
 
     VkPresentInfoKHR presentInfo = {};
     presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -1382,6 +1402,7 @@ VulkanVertexBuffer::VulkanVertexBuffer()
 Result VulkanVertexBuffer::init(VulkanDeviceContext* deviceContext, GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
 {
     LN_DCHECK(deviceContext);
+    m_deviceContext = deviceContext;
 
     m_usage = usage;
 
@@ -1413,10 +1434,12 @@ void VulkanVertexBuffer::dispose()
     m_buffer.dispose();
 }
 
+// TODO: これは廃止して、CommandList 側に持って行った方がいいと思う。
 void VulkanVertexBuffer::setSubData(size_t offset, const void* data, size_t length)
 {
-    // TODO: これは廃止して、CommandList 側に持って行った方がいいと思う。
-    LN_NOTIMPLEMENTED();
+    // static/dynamic にかかわらず、コマンド経由で転送しなければ整合性が取れなくなる
+    VulkanBuffer* buffer = m_deviceContext->recodingCommandBuffer()->cmdCopyBuffer(length, &m_buffer);
+    buffer->setData(offset, data, length);
 }
 
 //==============================================================================
@@ -1589,7 +1612,7 @@ Result VulkanRenderTarget::reset(uint32_t width, uint32_t height, VkFormat forma
 void VulkanRenderTarget::readData(void* outData)
 {
     // Flush
-    m_deviceContext->recodingCommandBuffer()->submit(imageAvailableSemaphore(), renderFinishedSemaphore());
+    //m_deviceContext->recodingCommandBuffer()->submit(imageAvailableSemaphore(), renderFinishedSemaphore());
 
     vkDeviceWaitIdle(m_deviceContext->vulkanDevice());
 

@@ -154,6 +154,7 @@ public:
 	void clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil);
 	void drawPrimitive(int startVertex, int primitiveCount);
 	void drawPrimitiveIndexed(int startIndex, int primitiveCount);
+    void flushCommandBuffer(ITexture* affectRendreTarget);  // 呼ぶ前に end しておくこと
 
 	void present(ISwapChain* swapChain);
 
@@ -189,6 +190,7 @@ protected:
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
 	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) = 0;
 	virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount) = 0;
+    virtual void onFlushCommandBuffer(ITexture* affectRendreTarget) = 0;
 
 	virtual void onPresent(ISwapChain* swapChain) = 0;
 

@@ -44,11 +44,12 @@ public:
 	void drawPrimitive(int startVertex, int primitiveCount);
 	void drawPrimitiveIndexed(int startIndex, int primitiveCount);
 	void present(SwapChain* swapChain);
-    void flush();
+    //void flush();
 
 	// TODO: internal
     void beginCommandRecodingIfNeeded();
     void endCommandRecodingIfNeeded();
+    void flushCommandRecoding(RenderTargetTexture* affectRendreTarget);
 	// IGraphicsDeviceContext の clear, draw 系の機能を呼び出したい場合はこの戻り値を使うこと。
 	// GraphicsContext は変更中のステートをキャッシュするが、それを確実に IGraphicsDeviceContext へ送信した状態にする。
 	detail::IGraphicsDeviceContext* commitState();

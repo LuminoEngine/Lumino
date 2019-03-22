@@ -390,7 +390,8 @@ Ref<Bitmap2D> RenderTargetTexture::readData()
 	}
 	else
 	{
-        manager()->graphicsContext()->flush();
+        //manager()->graphicsContext()->flush();
+        manager()->graphicsContext()->flushCommandRecoding(this);
 		rhiObject->readData(bitmap->data());
 	}
 
