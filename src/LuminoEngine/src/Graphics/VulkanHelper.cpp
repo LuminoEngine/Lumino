@@ -706,6 +706,10 @@ VulkanCommandBuffer::VulkanCommandBuffer()
 {
 }
 
+VulkanCommandBuffer::~VulkanCommandBuffer()
+{
+}
+
 Result VulkanCommandBuffer::init(VulkanDeviceContext* deviceContext)
 {
 	if (LN_REQUIRE(deviceContext)) return false;
@@ -744,6 +748,9 @@ Result VulkanCommandBuffer::init(VulkanDeviceContext* deviceContext)
 
 void VulkanCommandBuffer::dispose()
 {
+    m_usingShaderPasses.clear();
+    m_usingDescriptorSetsPools.clear();
+
     if (m_commandBuffer) {
         vkFreeCommandBuffers(m_deviceContext->vulkanDevice(), m_deviceContext->vulkanCommandPool(), 1, &m_commandBuffer);
         m_commandBuffer = VK_NULL_HANDLE;

@@ -174,6 +174,7 @@ class VulkanCommandBuffer
 {
 public:
 	VulkanCommandBuffer();
+    ~VulkanCommandBuffer();
 	Result init(VulkanDeviceContext* deviceContext);
 	void dispose();
 
