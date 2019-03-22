@@ -1500,6 +1500,7 @@ VulkanIndexBuffer::VulkanIndexBuffer()
 Result VulkanIndexBuffer::init(VulkanDeviceContext* deviceContext, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
 {
     LN_DCHECK(deviceContext);
+    m_deviceContext = deviceContext;
 
     m_usage = usage;
     int stride = 0;
@@ -1536,10 +1537,12 @@ void VulkanIndexBuffer::dispose()
     m_buffer.dispose();
 }
 
+// TODO: これは廃止して、CommandList 側に持って行った方がいいと思う。
 void VulkanIndexBuffer::setSubData(size_t offset, const void* data, size_t length)
 {
-    // TODO: これは廃止して、CommandList 側に持って行った方がいいと思う。
-    LN_NOTIMPLEMENTED();
+    // static/dynamic にかかわらず、コマンド経由で転送しなければ整合性が取れなくなる
+    VulkanBuffer* buffer = m_deviceContext->recodingCommandBuffer()->cmdCopyBuffer(length, &m_buffer);
+    buffer->setData(offset, data, length);
 }
 
 //==============================================================================

@@ -256,6 +256,7 @@ public:
     VkIndexType indexType() const { return m_indexType; }
 
 protected:
+    VulkanDeviceContext* m_deviceContext;
     VulkanBuffer m_buffer;
     GraphicsResourceUsage m_usage;
     VkIndexType m_indexType;
