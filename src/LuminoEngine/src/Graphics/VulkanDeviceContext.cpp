@@ -757,6 +757,65 @@ void VulkanDeviceContext::onUpdateShaderPass(IShaderPass* newPass)
 void VulkanDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
     submitStatus(committedState());
+    //return;
+
+    const State& state = committedState();
+
+    SizeI size = state.framebufferState.renderTargets[0]->realSize();
+    {
+        VkClearRect rect[1];
+        rect[0].rect.offset.x = 0;
+        rect[0].rect.offset.y = 0;
+        rect[0].rect.extent.width = size.width;
+        rect[0].rect.extent.height = size.height;
+        rect[0].baseArrayLayer = 0;
+        rect[0].layerCount = 1;
+
+        VkClearAttachment attachments[MaxMultiRenderTargets + 1] = {};
+
+        uint32_t count = 0;
+        //uint32_t rtCount = 1;
+
+        if (testFlag(flags, ClearFlags::Color))
+        {
+            float frgba[4] = { color.r, color.g, color.b, color.a, };
+
+            for (uint32_t ii = 0; ii < state.framebufferState.renderTargets.size(); ++ii)
+            {
+                if (state.framebufferState.renderTargets[ii])
+                {
+                    attachments[count].colorAttachment = count;
+                    attachments[count].aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+                    attachments[count].clearValue.color.float32[0] = color.r;
+                    attachments[count].clearValue.color.float32[1] = color.g;
+                    attachments[count].clearValue.color.float32[2] = color.b;
+                    attachments[count].clearValue.color.float32[3] = color.a;
+                    ++count;
+                }
+            }
+        }
+
+        if (state.framebufferState.depthBuffer != nullptr &&
+            testFlag(flags, (ClearFlags)(ClearFlags::Depth | ClearFlags::Stencil)))
+        {
+            attachments[count].colorAttachment = count;
+            attachments[count].aspectMask = 0;
+            attachments[count].aspectMask |= (testFlag(flags, ClearFlags::Depth)) ? VK_IMAGE_ASPECT_DEPTH_BIT : 0;
+            attachments[count].aspectMask |= (testFlag(flags, ClearFlags::Stencil)) ? VK_IMAGE_ASPECT_STENCIL_BIT : 0;
+            attachments[count].clearValue.depthStencil.stencil = stencil;
+            attachments[count].clearValue.depthStencil.depth = z;
+            ++count;
+        }
+
+        vkCmdClearAttachments(
+            m_recodingCommandBuffer->vulkanCommandBuffer()
+            , count
+            , attachments
+            , LN_ARRAY_SIZE_OF(rect)
+            , rect
+        );
+
+    }
 }
 
 void VulkanDeviceContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount)
@@ -1292,8 +1351,8 @@ Result VulkanDeviceContext::submitStatus(const State& state)
             clearValues[0].color = { 0.0f, 0.0f, 1.0f, 1.0f };
             clearValues[1].depthStencil = { 1.0f, 0 };
 
-            renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-            renderPassInfo.pClearValues = clearValues.data();
+            renderPassInfo.clearValueCount = 0;//static_cast<uint32_t>(clearValues.size());//
+            renderPassInfo.pClearValues = nullptr;//clearValues.data();// 
 
             vkCmdBeginRenderPass(m_recodingCommandBuffer->vulkanCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
         }

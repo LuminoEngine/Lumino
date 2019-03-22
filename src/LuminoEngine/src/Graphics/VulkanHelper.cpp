@@ -1043,8 +1043,8 @@ VkRenderPass VulkanRenderPassCache::findOrCreate(const DeviceFramebufferState& s
                 attachmentDescs[i].flags = 0;
                 attachmentDescs[i].format = static_cast<VulkanTexture*>(state.renderTargets[i])->image()->vulkanFormat();//VulkanHelper::LNFormatToVkFormat(state.renderTargets[i]->getTextureFormat());
                 attachmentDescs[i].samples = VK_SAMPLE_COUNT_1_BIT;
-                //attachmentDescs[i].loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-                attachmentDescs[i].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;// サンプルでは画面全体 clear する前提なので、前回値を保持する必要はない。そのため CLEAR。というか、CLEAR 指定しないと clear しても背景真っ黒になった。
+                attachmentDescs[i].loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+                //attachmentDescs[i].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;// サンプルでは画面全体 clear する前提なので、前回値を保持する必要はない。そのため CLEAR。というか、CLEAR 指定しないと clear しても背景真っ黒になった。
                 attachmentDescs[i].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
                 attachmentDescs[i].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;    // TODO: stencil。今は未対応
                 attachmentDescs[i].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;//VK_ATTACHMENT_STORE_OP_STORE;    // TODO: stencil。今は未対応
@@ -1075,7 +1075,8 @@ VkRenderPass VulkanRenderPassCache::findOrCreate(const DeviceFramebufferState& s
             attachmentDescs[i].flags = 0;
             attachmentDescs[i].format = m_deviceContext->findDepthFormat();//VK_FORMAT_D32_SFLOAT_S8_UINT; 
             attachmentDescs[i].samples = VK_SAMPLE_COUNT_1_BIT;
-            attachmentDescs[i].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;// VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+            attachmentDescs[i].loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+            //attachmentDescs[i].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;// VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             attachmentDescs[i].storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;// VK_ATTACHMENT_STORE_OP_STORE;
             attachmentDescs[i].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             attachmentDescs[i].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;// VK_ATTACHMENT_STORE_OP_STORE;
