@@ -73,6 +73,12 @@ struct AddressModeConversionItem
 	VkSamplerAddressMode vkValue;
 };
 
+struct PrimitiveTopologyConversionItem
+{
+    PrimitiveTopology lnValue;
+    VkPrimitiveTopology vkValue;
+};
+
 struct VertexElementTypeConversionItem
 {
 	VertexElementType lnValue;
@@ -155,6 +161,16 @@ static const AddressModeConversionItem s_addressModeConversionTable[] =
 {
 	{TextureAddressMode::Repeat, VK_SAMPLER_ADDRESS_MODE_REPEAT},
 	{TextureAddressMode::Clamp, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE},
+};
+
+static const PrimitiveTopologyConversionItem s_primitiveTopologyConversionTable[] =
+{
+    {PrimitiveTopology::TriangleList, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST},
+    {PrimitiveTopology::TriangleStrip, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP},
+    {PrimitiveTopology::TriangleFan, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN},
+    {PrimitiveTopology::LineList, VK_PRIMITIVE_TOPOLOGY_LINE_LIST},
+    {PrimitiveTopology::LineStrip, VK_PRIMITIVE_TOPOLOGY_LINE_STRIP},
+    {PrimitiveTopology::PointList, VK_PRIMITIVE_TOPOLOGY_POINT_LIST},
 };
 
 static const VertexElementTypeConversionItem s_vertexElementTypeConversionTable[] =
@@ -241,6 +257,12 @@ VkSamplerAddressMode VulkanHelper::LNTextureAddressModeModeToVkSamplerAddressMod
 {
 	assert(s_addressModeConversionTable[(int)value].lnValue == value);
 	return s_addressModeConversionTable[(int)value].vkValue;
+}
+
+VkPrimitiveTopology VulkanHelper::LNPrimitiveTopologyToVkPrimitiveTopology(PrimitiveTopology value)
+{
+    assert(s_primitiveTopologyConversionTable[(int)value].lnValue == value);
+    return s_primitiveTopologyConversionTable[(int)value].vkValue;
 }
 
 VkFormat VulkanHelper::LNVertexElementTypeToVkFormat(VertexElementType value)
@@ -1409,7 +1431,7 @@ Result VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsD
     
     VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    inputAssembly.topology = VulkanHelper::LNPrimitiveTopologyToVkPrimitiveTopology(state.pipelineState.topology);
     inputAssembly.primitiveRestartEnable = VK_FALSE;
 
     VkViewport viewport = {};
@@ -1514,6 +1536,10 @@ uint64_t VulkanPipeline::computeHash(const IGraphicsDeviceContext::State& state)
 {
     auto* vertexDeclaration = static_cast<VulkanVertexDeclaration*>(state.pipelineState.vertexDeclaration);
     MixHash hash;
+    hash.add(state.pipelineState.blendState);
+    hash.add(state.pipelineState.rasterizerState);
+    hash.add(state.pipelineState.depthStencilState);
+    hash.add(state.pipelineState.topology);
     hash.add(vertexDeclaration->hash());
     hash.add(static_cast<VulkanShaderPass*>(state.shaderPass));
     hash.add(VulkanFramebufferCache::computeHash(state.framebufferState));

@@ -1406,7 +1406,33 @@ Result VulkanVertexBuffer::init(VulkanDeviceContext* deviceContext, GraphicsReso
 
     m_usage = usage;
 
+#if 1   // TODO: Dynamic という特別な状態を持たせる必要があるか、まだわからない。
+        // VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT で十分なのか、VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT を使った方がいいのか、
+        // 実際にパフォーマンス測定できる段になったら改めて調査する。
     if (!m_buffer.init(deviceContext, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)) {
+        return false;
+    }
+
+    if (initialData)
+    {
+        VulkanBuffer stagingBuffer;
+        if (!stagingBuffer.init(m_buffer.deviceContext(), bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
+            return false;
+        }
+        stagingBuffer.setData(0, initialData, bufferSize);
+        m_buffer.deviceContext()->copyBufferImmediately(stagingBuffer.vulkanBuffer(), vulkanBuffer(), bufferSize);
+        stagingBuffer.dispose();
+    }
+#else
+    VkMemoryPropertyFlags properties = 0;
+    if (usage == GraphicsResourceUsage::Dynamic) {
+        properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+    }
+    else {
+        properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+    }
+
+    if (!m_buffer.init(deviceContext, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, properties)) {
         return false;
     }
 
@@ -1425,6 +1451,7 @@ Result VulkanVertexBuffer::init(VulkanDeviceContext* deviceContext, GraphicsReso
             stagingBuffer.dispose();
         }
     }
+#endif
 
     return true;
 }
@@ -1473,18 +1500,13 @@ Result VulkanIndexBuffer::init(VulkanDeviceContext* deviceContext, GraphicsResou
 
     if (initialData)
     {
-        if (usage == GraphicsResourceUsage::Dynamic) {
-            m_buffer.setData(0, initialData, bufferSize);
+        VulkanBuffer stagingBuffer;
+        if (!stagingBuffer.init(m_buffer.deviceContext(), bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
+            return false;
         }
-        else {
-            VulkanBuffer stagingBuffer;
-            if (!stagingBuffer.init(m_buffer.deviceContext(), bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
-                return false;
-            }
-            stagingBuffer.setData(0, initialData, bufferSize);
-            m_buffer.deviceContext()->copyBufferImmediately(stagingBuffer.vulkanBuffer(), vulkanBuffer(), bufferSize);
-            stagingBuffer.dispose();
-        }
+        stagingBuffer.setData(0, initialData, bufferSize);
+        m_buffer.deviceContext()->copyBufferImmediately(stagingBuffer.vulkanBuffer(), vulkanBuffer(), bufferSize);
+        stagingBuffer.dispose();
     }
 
     return true;

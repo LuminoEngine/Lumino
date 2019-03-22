@@ -40,7 +40,7 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 		ctx->drawPrimitive(0, 1);
 
-		ASSERT_SCREEN_S(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-BasicTriangle.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-BasicTriangle.png"));
 	}
 }
 
@@ -57,14 +57,14 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 	};
 	Param params[] =
 	{
-		{ GraphicsResourceUsage::Static, GraphicsResourcePool::None },
-		{ GraphicsResourceUsage::Static, GraphicsResourcePool::Managed },
 		{ GraphicsResourceUsage::Dynamic, GraphicsResourcePool::None },
+		{ GraphicsResourceUsage::Static, GraphicsResourcePool::Managed },
 		{ GraphicsResourceUsage::Dynamic, GraphicsResourcePool::Managed },
+		//{ GraphicsResourceUsage::Static, GraphicsResourcePool::None },
 	};
 
 	// test static and dynamic
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < LN_ARRAY_SIZE_OF(params); i++)
 	{
 		auto usage = params[i].usage;
 		auto pool = params[i].pool;
@@ -93,6 +93,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 			ctx->drawPrimitive(0, 1);
 
+            //ctx->present(Engine::mainWindow()->swapChain());
 			ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-VertexBuffer-2.png"));
 		}
 
@@ -109,6 +110,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 			ctx->drawPrimitive(0, 1);
 
+            //ctx->present(Engine::mainWindow()->swapChain());
 			ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-VertexBuffer-3.png"));
 		}
 

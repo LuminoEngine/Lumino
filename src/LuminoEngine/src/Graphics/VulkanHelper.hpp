@@ -45,6 +45,7 @@ public:
 	static VkStencilOp LNStencilOpToVkStencilOp(StencilOp value);
 	static VkFilter LNTextureFilterModeToVkFilter(TextureFilterMode value);
 	static VkSamplerAddressMode LNTextureAddressModeModeToVkSamplerAddressMode(TextureAddressMode value);
+    static VkPrimitiveTopology LNPrimitiveTopologyToVkPrimitiveTopology(PrimitiveTopology value);
 
 	static VkFormat LNVertexElementTypeToVkFormat(VertexElementType value);
     static const char* getVkResultName(VkResult result);
