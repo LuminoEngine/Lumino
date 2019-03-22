@@ -1389,17 +1389,20 @@ Result VulkanVertexBuffer::init(VulkanDeviceContext* deviceContext, GraphicsReso
         return false;
     }
 
-    if (usage == GraphicsResourceUsage::Dynamic) {
-        m_buffer.setData(0, initialData, bufferSize);
-    }
-    else {
-        VulkanBuffer stagingBuffer;
-        if (!stagingBuffer.init(m_buffer.deviceContext(), bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
-            return false;
+    if (initialData)
+    {
+        if (usage == GraphicsResourceUsage::Dynamic) {
+            m_buffer.setData(0, initialData, bufferSize);
         }
-        stagingBuffer.setData(0, initialData, bufferSize);
-        m_buffer.deviceContext()->copyBufferImmediately(stagingBuffer.vulkanBuffer(), vulkanBuffer(), bufferSize);
-        stagingBuffer.dispose();
+        else {
+            VulkanBuffer stagingBuffer;
+            if (!stagingBuffer.init(m_buffer.deviceContext(), bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
+                return false;
+            }
+            stagingBuffer.setData(0, initialData, bufferSize);
+            m_buffer.deviceContext()->copyBufferImmediately(stagingBuffer.vulkanBuffer(), vulkanBuffer(), bufferSize);
+            stagingBuffer.dispose();
+        }
     }
 
     return true;
@@ -1445,17 +1448,20 @@ Result VulkanIndexBuffer::init(VulkanDeviceContext* deviceContext, GraphicsResou
         return false;
     }
 
-    if (usage == GraphicsResourceUsage::Dynamic) {
-        m_buffer.setData(0, initialData, bufferSize);
-    }
-    else {
-        VulkanBuffer stagingBuffer;
-        if (!stagingBuffer.init(m_buffer.deviceContext(), bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
-            return false;
+    if (initialData)
+    {
+        if (usage == GraphicsResourceUsage::Dynamic) {
+            m_buffer.setData(0, initialData, bufferSize);
         }
-        stagingBuffer.setData(0, initialData, bufferSize);
-        m_buffer.deviceContext()->copyBufferImmediately(stagingBuffer.vulkanBuffer(), vulkanBuffer(), bufferSize);
-        stagingBuffer.dispose();
+        else {
+            VulkanBuffer stagingBuffer;
+            if (!stagingBuffer.init(m_buffer.deviceContext(), bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
+                return false;
+            }
+            stagingBuffer.setData(0, initialData, bufferSize);
+            m_buffer.deviceContext()->copyBufferImmediately(stagingBuffer.vulkanBuffer(), vulkanBuffer(), bufferSize);
+            stagingBuffer.dispose();
+        }
     }
 
     return true;
