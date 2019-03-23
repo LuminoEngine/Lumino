@@ -68,6 +68,7 @@ EngineManager::EngineManager()
 	//, m_uiManager(nullptr)
 	, m_assetManager(nullptr)
 	, m_exitRequested(false)
+    , m_showDebugFpsEnabled(false)
 {
 }
 
@@ -549,8 +550,9 @@ void EngineManager::presentFrame()
 		m_fpsController.processForMeasure();
 	}
 
-
-    //m_platformManager->mainWindow()->setWindowTitle(String::format(u"FPS:{0:F1}({1:F1})", m_fpsController.getFps(), m_fpsController.getCapacityFps()));
+    if (m_showDebugFpsEnabled) {
+        m_platformManager->mainWindow()->setWindowTitle(String::format(u"FPS:{0:F1}({1:F1})", m_fpsController.getFps(), m_fpsController.getCapacityFps()));
+    }
 }
 
 void EngineManager::resetFrameDelay()
