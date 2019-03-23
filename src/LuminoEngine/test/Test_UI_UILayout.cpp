@@ -192,7 +192,7 @@ TEST_F(Test_UI_UILayout, StackLayout)
 		uiRoot->setLayoutPanel(layout);
 
 		TestEnv::updateFrame();
-		ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-StackLayout-2.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-StackLayout-2.png"));
 	}
 
 	//- [ ] ReverseVertical
@@ -202,7 +202,7 @@ TEST_F(Test_UI_UILayout, StackLayout)
 		uiRoot->setLayoutPanel(layout);
 
 		TestEnv::updateFrame();
-		ASSERT_SCREEN_S(LN_ASSETFILE("UI/Result/Test_UI_UILayout-StackLayout-3.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-StackLayout-3.png"));
 	}
 
 	//- [ ] ReverseHorizontal
@@ -212,7 +212,7 @@ TEST_F(Test_UI_UILayout, StackLayout)
 		uiRoot->setLayoutPanel(layout);
 
 		TestEnv::updateFrame();
-		ASSERT_SCREEN_S(LN_ASSETFILE("UI/Result/Test_UI_UILayout-StackLayout-4.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-StackLayout-4.png"));
 	}
 
 	LN_TEST_CLEAN_SCENE;
