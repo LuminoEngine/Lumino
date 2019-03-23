@@ -285,12 +285,14 @@ struct ShaderUniformTypeDesc
     ShaderUniformType type2;
 	int rows;
 	int columns;
-	int elements;
+	int elements;   // 配列要素数。glslang から取り出せるのは 実際に使われているサイズ。float values[3] だけれどシェーダ内で value[1] しか使っていなければ elements=2 になる
 
 	size_t offset;
 	//size_t size;
-	size_t arrayStride;
+	size_t arrayStride;     // 1要素のバイトサイズ
 	size_t matrixStride;
+
+    //size_t aligndElementSize;   // アライメントが考慮された配列1要素分のサイズ
 
 	static bool equals(const ShaderUniformTypeDesc& a, const ShaderUniformTypeDesc& b)
 	{

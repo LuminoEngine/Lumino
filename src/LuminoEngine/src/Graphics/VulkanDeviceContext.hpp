@@ -480,7 +480,7 @@ class VulkanShaderUniform
 {
 public:
     VulkanShaderUniform();
-    Result init(const ShaderUniformInfo& info);
+    Result init(const ShaderUniformInfo& info/*, size_t memberByteSize*/);
     virtual void dispose() override;
     virtual const ShaderUniformTypeDesc& desc() const override { return m_desc; }
     virtual const std::string& name() const override { return m_name; }

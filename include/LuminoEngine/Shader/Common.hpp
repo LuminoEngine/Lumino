@@ -82,38 +82,39 @@ struct ShaderUniformInfo
     //uint16_t size;		// Uniform 1つ分の全体サイズ (配列、行列の分も含む)
 
     uint16_t vectorElements;
-    uint16_t arrayElements;	// 配列要素数
+    uint16_t arrayElements;	// 配列要素数。配列で廃場合は 0
     uint16_t matrixRows;
     uint16_t matrixColumns;
+    //bool rowMajor;
 
     //uint16_t arrayStride;		// 配列の場合、要素のバイトサイズ (float2=8, float3=12)
     //uint16_t matrixStride;	// 行列の "横" 方向のバイト数。実際のメモリ上に値を並べる時の行間を表す。(float4x4=16)
 
-    // 1要素のバイトサイズ
-    size_t elementSize() const
-    {
-        switch (type)
-        {
-        case ln::detail::ShaderUniformType_Unknown:
-            return 0;
-        case ln::detail::ShaderUniformType_Bool:
-            return 1;
-        case ln::detail::ShaderUniformType_Int:
-            return 4;
-        case ln::detail::ShaderUniformType_Float:
-            return 4;
-        case ln::detail::ShaderUniformType_Vector:
-            return vectorElements * 4;
-        case ln::detail::ShaderUniformType_Matrix:
-            return matrixRows * matrixColumns * 4;
-        case ln::detail::ShaderUniformType_Texture:
-            LN_NOTIMPLEMENTED();
-            return 0;
-        default:
-            LN_UNREACHABLE();
-            return 0;
-        }
-    }
+    //// 1要素のバイトサイズ
+    //size_t elementSize() const
+    //{
+    //    switch (type)
+    //    {
+    //    case ln::detail::ShaderUniformType_Unknown:
+    //        return 0;
+    //    case ln::detail::ShaderUniformType_Bool:
+    //        return 1;
+    //    case ln::detail::ShaderUniformType_Int:
+    //        return 4;
+    //    case ln::detail::ShaderUniformType_Float:
+    //        return 4;
+    //    case ln::detail::ShaderUniformType_Vector:
+    //        return vectorElements * 4;
+    //    case ln::detail::ShaderUniformType_Matrix:
+    //        return matrixRows * matrixColumns * 4;
+    //    case ln::detail::ShaderUniformType_Texture:
+    //        LN_NOTIMPLEMENTED();
+    //        return 0;
+    //    default:
+    //        LN_UNREACHABLE();
+    //        return 0;
+    //    }
+    //}
 };
 
 // TODO: 不要

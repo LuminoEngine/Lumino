@@ -361,6 +361,8 @@ void VulkanDeviceContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, in
     vkCmdDrawIndexed(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startIndex, 0, 0);
 }
 
+// TODO: もし複数 swapchain へのレンダリングを1つの CommandBuffer でやる場合、flush 時には描画するすべての swapchain の image 準備を待たなければならない。
+// CommandBuffer 単位で、setRenderTarget された SwapChain の RenderTarget をすべて覚えておく仕組みが必要だろう。
 void VulkanDeviceContext::onFlushCommandBuffer(ITexture* affectRendreTarget)
 {
     auto* t = static_cast<VulkanRenderTarget*>(affectRendreTarget);
@@ -2272,6 +2274,21 @@ Result VulkanShaderUniformBuffer::init(VulkanDeviceContext* deviceContext, const
     }
 
     for (auto& member : members) {
+
+        //size_t memberByteSize = 0;
+        //{
+        //    uint16_t nextOffset = UINT16_MAX;
+        //    for (size_t i = 0; i < members.size(); i++) {
+        //        if (member.offset < members[i].offset) {
+        //            nextOffset = std::min(nextOffset, members[i].offset);
+        //        }
+        //    }
+        //    if (nextOffset == UINT16_MAX) {
+        //        nextOffset = size;
+        //    }
+        //    memberByteSize = nextOffset - member.offset;
+        //}
+
         auto buf = makeRef<VulkanShaderUniform>();
         if (!buf->init(member)) {
             return false;
@@ -2311,7 +2328,7 @@ VulkanShaderUniform::VulkanShaderUniform()
 {
 }
 
-Result VulkanShaderUniform::init(const ShaderUniformInfo& info)
+Result VulkanShaderUniform::init(const ShaderUniformInfo& info/*, size_t memberByteSize*/)
 {
     m_name = info.name;
     m_desc.type2 = (ShaderUniformType)info.type;
@@ -2326,7 +2343,7 @@ Result VulkanShaderUniform::init(const ShaderUniformInfo& info)
     m_desc.offset = info.offset;
     //m_desc.size = 0;
     if (info.arrayElements > 0) {
-        m_desc.arrayStride = info.elementSize();
+        VulkanHelper::resolveStd140Layout(info, &m_desc.arrayStride);
     }
     m_desc.matrixStride = info.matrixColumns *sizeof(float);
 
