@@ -606,7 +606,7 @@ private:
 
 
 	std::vector<Uniform> m_table;
-	std::vector<ExternalUnifrom> m_externalUniforms;
+	std::vector<ExternalUnifrom> m_externalUniforms;    // TODO: 名前、virtual のほうがいいかも
 };
 
 //=============================================================================

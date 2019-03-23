@@ -1896,7 +1896,7 @@ Result VulkanSamplerState::init(VulkanDeviceContext* deviceContext, const Sample
 	samplerInfo.unnormalizedCoordinates = VK_FALSE;
 	samplerInfo.compareEnable = VK_FALSE;
 	samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
-	samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+	samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
 
 	LN_VK_CHECK(vkCreateSampler(m_deviceContext->vulkanDevice(), &samplerInfo, m_deviceContext->vulkanAllocator(), &m_sampler));
 
@@ -2014,7 +2014,7 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
 
                 VkDescriptorSetLayoutBinding layoutBinding = {};
                 layoutBinding.binding = item.binding;
-                layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+                layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;//VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
                 layoutBinding.descriptorCount = 1;
                 layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromVertexStage(DescriptorType_Texture)) ? VK_SHADER_STAGE_VERTEX_BIT : 0;
                 layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromPixelStage(DescriptorType_Texture)) ? VK_SHADER_STAGE_FRAGMENT_BIT : 0;
@@ -2034,7 +2034,7 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
                 set.dstBinding = item.binding;
                 set.dstArrayElement = 0;
                 set.descriptorCount = 1;
-                set.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;//VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                set.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER; VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;//VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
                 set.pImageInfo = &m_textureDescripterImageInfo.back();
                 set.pBufferInfo = nullptr;
                 set.pTexelBufferView = nullptr;
@@ -2058,7 +2058,7 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
 
                 VkDescriptorSetLayoutBinding layoutBinding = {};
                 layoutBinding.binding = item.binding;
-                layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;   // VK_DESCRIPTOR_TYPE_SAMPLER としても使える。ただし、ImageView をセットしておく必要がある。
+                layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER; //VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;//   // VK_DESCRIPTOR_TYPE_SAMPLER としても使える。ただし、ImageView をセットしておく必要がある。
                 layoutBinding.descriptorCount = 1;
                 layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromVertexStage(DescriptorType_SamplerState)) ? VK_SHADER_STAGE_VERTEX_BIT : 0;
                 layoutBinding.stageFlags |= (createInfo.descriptorLayout->isReferenceFromPixelStage(DescriptorType_SamplerState)) ? VK_SHADER_STAGE_FRAGMENT_BIT : 0;
@@ -2078,7 +2078,7 @@ Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPa
                 set.dstBinding = item.binding;
                 set.dstArrayElement = 0;
                 set.descriptorCount = 1;
-                set.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;//VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                set.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;//VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;//VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
                 set.pImageInfo = &m_samplerDescripterImageInfo.back();
                 set.pBufferInfo = nullptr;
                 set.pTexelBufferView = nullptr;
@@ -2213,6 +2213,7 @@ const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWrite
         if (type == DescriptorType_Texture) {
             VkDescriptorImageInfo& imageInfo = m_textureDescripterImageInfo[imageIndex];
             imageInfo.imageView = (texture) ? texture->image()->vulkanImageView() : 0;
+            imageInfo.sampler = (samplerState) ? samplerState->vulkanSampler() : 0;
             writeInfo.dstSet = descriptorSets[DescriptorType_Texture];
         }
         else if (type == DescriptorType_SamplerState) {

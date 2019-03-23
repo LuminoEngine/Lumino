@@ -1032,9 +1032,9 @@ Result VulkanDescriptorSetsPool::allocateDescriptorSets(VulkanCommandBuffer* com
 			std::array<VkDescriptorPoolSize, DescriptorType_Count> poolSizes;
 			poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 			poolSizes[0].descriptorCount = MAX_DESCRIPTOR_COUNT;
-			poolSizes[1].type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;//VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;//VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;//
 			poolSizes[1].descriptorCount = MAX_DESCRIPTOR_COUNT;
-			poolSizes[2].type = VK_DESCRIPTOR_TYPE_SAMPLER;//VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
+            poolSizes[2].type = VK_DESCRIPTOR_TYPE_SAMPLER;//VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;// 
 			poolSizes[2].descriptorCount = MAX_DESCRIPTOR_COUNT;
 
 			VkDescriptorPoolCreateInfo poolInfo = {};

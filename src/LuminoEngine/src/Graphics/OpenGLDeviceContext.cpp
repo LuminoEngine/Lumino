@@ -1819,7 +1819,8 @@ void GLShaderPass::buildUniforms()
 		GL_CHECK(glGetActiveUniform(m_program, i, 256, &name_len, &var_size, &var_type, name));
 		GLint loc = glGetUniformLocation(m_program, name);
 
-		if (strncmp(name, LN_CIS_PREFIX, std::strlen(LN_CIS_PREFIX)) == 0 && strncmp(name + name_len - std::strlen(LN_IS_RT_POSTFIX), LN_IS_RT_POSTFIX, std::strlen(LN_IS_RT_POSTFIX)) == 0)
+		//if (strncmp(name, LN_CIS_PREFIX, std::strlen(LN_CIS_PREFIX)) == 0 && strncmp(name + name_len - std::strlen(LN_IS_RT_POSTFIX), LN_IS_RT_POSTFIX, std::strlen(LN_IS_RT_POSTFIX)) == 0)
+        if (strncmp(name + name_len - std::strlen(LN_IS_RT_POSTFIX), LN_IS_RT_POSTFIX, std::strlen(LN_IS_RT_POSTFIX)) == 0)
 		{
 			m_samplerBuffer->addIsRenderTargetUniform(name, loc);
 		}
@@ -2205,7 +2206,8 @@ void GLLocalShaderSamplerBuffer::addGlslSamplerUniform(const std::string& name, 
 		ExternalUnifrom sampler;
 		sampler.name = name;
 		m_externalUniforms.push_back(sampler);
-		uniform.m_samplerExternalUnifromIndex = m_externalUniforms.size() - 1;
+		uniform.m_textureExternalUnifromIndex = m_externalUniforms.size() - 1;
+        uniform.m_samplerExternalUnifromIndex = m_externalUniforms.size() - 1;
 	}
 
 	m_table.push_back(uniform);

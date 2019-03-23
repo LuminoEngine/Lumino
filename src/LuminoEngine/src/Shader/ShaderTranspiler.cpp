@@ -100,6 +100,16 @@ const TBuiltInResource DefaultTBuiltInResource = {
     /* .MaxCullDistances = */ 8,
     /* .MaxCombinedClipAndCullDistances = */ 8,
     /* .MaxSamples = */ 4,
+    /* .maxMeshOutputVerticesNV = */ 256,
+    /* .maxMeshOutputPrimitivesNV = */ 512,
+    /* .maxMeshWorkGroupSizeX_NV = */ 32,
+    /* .maxMeshWorkGroupSizeY_NV = */ 1,
+    /* .maxMeshWorkGroupSizeZ_NV = */ 1,
+    /* .maxTaskWorkGroupSizeX_NV = */ 32,
+    /* .maxTaskWorkGroupSizeY_NV = */ 1,
+    /* .maxTaskWorkGroupSizeZ_NV = */ 1,
+    /* .maxMeshViewCountNV = */ 4,
+
     /* .limits = */ {
         /* .nonInductiveForLoops = */ 1,
         /* .whileLoops = */ 1,
@@ -336,7 +346,7 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
     const int ClientInputSemanticsVersion = 410; //320;
     glslang::EshTargetClientVersion OpenGLClientVersion = glslang::EShTargetOpenGL_450;
     bool forwardCompatible = true;
-    EShMessages messages = (EShMessages)(EShMsgSpvRules | EShMsgVulkanRules);
+    EShMessages messages = (EShMessages)(EShMsgSpvRules | EShMsgVulkanRules | EShMsgHlslDX9Compatible);
 
     m_shader = std::make_unique<glslang::TShader>(LNStageToEShLanguage(m_stage));
     m_program = std::make_unique<glslang::TProgram>();
@@ -778,6 +788,17 @@ bool ShaderCodeTranspiler::mapIOAndGenerateSpirv(const DescriptorLayout& mergedD
 
     }
 
+
+    glsl.build_combined_image_samplers();
+    for (auto& remap : glsl.get_combined_image_samplers()) {
+        // ここで結合するキーワードにに _ を含めないこと。
+        // 識別子内に連続する _ があると、SPIRV-Cross が内部でひとつの _ に変換するため、不整合が起こることがある。
+        std::string name = (LN_CIS_PREFIX LN_TO_PREFIX) + glsl.get_name(remap.image_id) + LN_SO_PREFIX + glsl.get_name(remap.sampler_id);
+        //glsl.set_name(remap.combined_id, name);
+        //combinedImageSamplerNames.push_back(std::move(name));
+        printf("");
+    }
+
     return true;
 }
 
@@ -799,6 +820,8 @@ std::vector<byte_t> ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es
     options.es = es;
     glsl.set_common_options(options);
 
+    std::vector<std::string> combinedImageSamplerNames;
+
     // DescriptorSet は Vulkan 固有のものであるため、他のAPIがバインディングを理解できるように再マップする。
     // https://github.com/KhronosGroup/SPIRV-Cross#descriptor-sets-vulkan-glsl-for-backends-which-do-not-support-them-hlslglslmetal
     for (auto& resource : resources.sampled_images) {
@@ -808,6 +831,8 @@ std::vector<byte_t> ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es
 
         glsl.unset_decoration(resource.id, spv::DecorationDescriptorSet);
         glsl.set_decoration(resource.id, spv::DecorationBinding, set * 16 + binding);
+
+        combinedImageSamplerNames.push_back(resource.name.c_str());
     }
 
     // HLSL で register(b0) のような指定をすると binding の値が生成され、 GLSL に出力すると
@@ -825,7 +850,6 @@ std::vector<byte_t> ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es
     // HLSL では Texture と SamplerState は独立しているが、GLSL では統合されている。
     // ここでは "キーワード + Texture名 + SamplerState名" というような名前を付けておく。
     // 実行時に GLSLShader の中で uniform を列挙してこの規則の uniform を見つけ、実際の Texture と SamplerState の対応付けを行う。
-    std::vector<std::string> combinedImageSamplerNames;
     {
         // From main.cpp
         // Builds a mapping for all combinations of images and samplers.
