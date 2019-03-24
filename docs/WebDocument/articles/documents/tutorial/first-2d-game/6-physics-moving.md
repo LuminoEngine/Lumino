@@ -108,7 +108,6 @@ static const uint32_t PlayerGroup = 0x02;   // プレイヤーの衝突グルー
 
 ```cpp
 bool onGround = Physics2D::raycast(playerSprite->position(), Vector2(0, -1), 0.6, GroundGroup);
-
 if (onGround) {
     if (Input::isPressed(u"submit")) {
         velocity.y = 10.0;
@@ -144,10 +143,10 @@ if (onGround) {
 
 ```cpp
 Ref<EdgeCollisionShape2D> wallShape = EdgeCollisionShape2D::create();
-wallShape->addPoint(Vector2(-8, 6));    // 左上
-wallShape->addPoint(Vector2(8, 6));     // 右上
-wallShape->addPoint(Vector2(8, -6));    // 右下
-wallShape->addPoint(Vector2(-8, -6));   // 左下
+wallShape->addPoint(-8, 6);    // 左上
+wallShape->addPoint(8, 6);     // 右上
+wallShape->addPoint(8, -6);    // 右下
+wallShape->addPoint(-8, -6);   // 左下
 Ref<RigidBody2DComponent> wallBody = RigidBody2DComponent::create();
 wallBody->addCollisionShape(wallShape);
 skySprite->addComponent(wallBody);
@@ -236,10 +235,10 @@ void Main()
 
     // 画面外への移動を制限するための剛体
     Ref<EdgeCollisionShape2D> wallShape = EdgeCollisionShape2D::create();
-    wallShape->addPoint(Vector2(-8, -6));
-    wallShape->addPoint(Vector2(8, -6));
-    wallShape->addPoint(Vector2(8, 6));
-    wallShape->addPoint(Vector2(-8, 6));
+    wallShape->addPoint(-8, -6);
+    wallShape->addPoint(8, -6);
+    wallShape->addPoint(8, 6);
+    wallShape->addPoint(-8, 6);
     Ref<RigidBody2DComponent> wallBody = RigidBody2DComponent::create();
     wallBody->addCollisionShape(wallShape);
     skySprite->addComponent(wallBody);
@@ -249,6 +248,7 @@ void Main()
     {
         Vector2 velocity = playerBody->velocity();
 
+        // プレイヤーの移動処理
         if (Input::isPressed(u"right")) {
             velocity.x = 5.0f;
         }
@@ -259,8 +259,8 @@ void Main()
             velocity.x = 0.0f;
         }
 
+        // プレイヤーのジャンプ処理
         bool onGround = Physics2D::raycast(playerSprite->position(), -Vector2::UnitY, 0.6, GroundGroup);
-
         if (onGround) {
             if (Input::isPressed(u"submit")) {
                 velocity.y = 10.0;

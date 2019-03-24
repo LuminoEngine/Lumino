@@ -95,11 +95,11 @@ Lumino の座標系は次のように、右方向を X+、上方向を Y+ とし
 ```cpp
 Ref<Sprite> floorSprite1 = Sprite::create(mapTexture, 4, 1);
 floorSprite1->setSourceRect(0, 8, 32, 8);
-floorSprite1->setPosition(-5, -2, 0);
+floorSprite1->setPosition(-4.5, -2, 0);
 
 Ref<Sprite> floorSprite2 = Sprite::create(mapTexture, 4, 1);
 floorSprite2->setSourceRect(0, 8, 32, 8);
-floorSprite2->setPosition(5, 0, 0);
+floorSprite2->setPosition(4.5, 0, 0);
 ```
 
 ![](img/world-building-5.png)
@@ -131,12 +131,12 @@ void Main()
     // 左の床
     Ref<Sprite> floorSprite1 = Sprite::create(mapTexture, 4, 1);
     floorSprite1->setSourceRect(0, 8, 32, 8);
-    floorSprite1->setPosition(-5, -2, 0);
+    floorSprite1->setPosition(-4.5, -2, 0);
 
     // 右の床
     Ref<Sprite> floorSprite2 = Sprite::create(mapTexture, 4, 1);
     floorSprite2->setSourceRect(0, 8, 32, 8);
-    floorSprite2->setPosition(5, 0, 0);
+    floorSprite2->setPosition(4.5, 0, 0);
 
     // メインループ
     while (Engine::update())

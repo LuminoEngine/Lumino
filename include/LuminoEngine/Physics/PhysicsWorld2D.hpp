@@ -113,6 +113,7 @@ public:
     static Ref<EdgeCollisionShape2D> create();
 
     void addPoint(const Vector2& point);
+    void addPoint(float x, float y) { addPoint(Vector2(x, y)); }
 
     /** 始点と終点を自動的に接続するかどうかを設定します。(default: true) */
     bool setLoopEnabled(bool value);
