@@ -224,8 +224,11 @@ Ref<ITexture> VulkanDeviceContext::onCreateTexture3D(uint32_t width, uint32_t he
 
 Ref<ITexture> VulkanDeviceContext::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
 {
-	LN_NOTIMPLEMENTED();
-	return nullptr;
+    auto ptr = makeRef<VulkanRenderTarget>();
+    if (!ptr->init(this, width, height, requestFormat, mipmap)) {
+        return nullptr;
+    }
+    return ptr;
 }
 
 Ref<IDepthBuffer> VulkanDeviceContext::onCreateDepthBuffer(uint32_t width, uint32_t height)
@@ -1628,6 +1631,65 @@ VulkanRenderTarget::VulkanRenderTarget()
 {
 }
 
+Result VulkanRenderTarget::init(VulkanDeviceContext* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
+{
+    LN_DCHECK(deviceContext);
+    m_deviceContext = deviceContext;
+
+    VkSemaphoreCreateInfo semaphoreInfo = {};
+    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+    LN_VK_CHECK(vkCreateSemaphore(m_deviceContext->vulkanDevice(), &semaphoreInfo, m_deviceContext->vulkanAllocator(), &m_renderFinishedSemaphore));
+
+    {
+        VkFormat nativeFormat = VulkanHelper::LNFormatToVkFormat(requestFormat);
+        VkDeviceSize imageSize = width * height * GraphicsHelper::getPixelSize(requestFormat);
+
+        m_image = std::make_unique<VulkanImage>();
+        if (!m_image->init(m_deviceContext, width, height, nativeFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT)) {
+            return false;
+        }
+
+
+        //// Color attachment
+        //VkImageCreateInfo image = vks::initializers::imageCreateInfo();
+        //image.imageType = VK_IMAGE_TYPE_2D;
+        //image.format = FB_COLOR_FORMAT;
+        //image.extent.width = offscreenPass.width;
+        //image.extent.height = offscreenPass.height;
+        //image.extent.depth = 1;
+        //image.mipLevels = 1;
+        //image.arrayLayers = 1;
+        //image.samples = VK_SAMPLE_COUNT_1_BIT;
+        //image.tiling = VK_IMAGE_TILING_OPTIMAL;
+        //// We will sample directly from the color attachment
+        //image.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+
+        //VkMemoryAllocateInfo memAlloc = vks::initializers::memoryAllocateInfo();
+        //VkMemoryRequirements memReqs;
+
+        //VK_CHECK_RESULT(vkCreateImage(device, &image, nullptr, &offscreenPass.color.image));
+        //vkGetImageMemoryRequirements(device, offscreenPass.color.image, &memReqs);
+        //memAlloc.allocationSize = memReqs.size;
+        //memAlloc.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+        //VK_CHECK_RESULT(vkAllocateMemory(device, &memAlloc, nullptr, &offscreenPass.color.mem));
+        //VK_CHECK_RESULT(vkBindImageMemory(device, offscreenPass.color.image, offscreenPass.color.mem, 0));
+
+        //VkImageViewCreateInfo colorImageView = vks::initializers::imageViewCreateInfo();
+        //colorImageView.viewType = VK_IMAGE_VIEW_TYPE_2D;
+        //colorImageView.format = FB_COLOR_FORMAT;
+        //colorImageView.subresourceRange = {};
+        //colorImageView.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        //colorImageView.subresourceRange.baseMipLevel = 0;
+        //colorImageView.subresourceRange.levelCount = 1;
+        //colorImageView.subresourceRange.baseArrayLayer = 0;
+        //colorImageView.subresourceRange.layerCount = 1;
+        //colorImageView.image = offscreenPass.color.image;
+        //VK_CHECK_RESULT(vkCreateImageView(device, &colorImageView, nullptr, &offscreenPass.color.view));
+    }
+
+    return true;
+}
+
 Result VulkanRenderTarget::init(VulkanDeviceContext* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView)
 {
 	LN_DCHECK(deviceContext);
@@ -1635,7 +1697,6 @@ Result VulkanRenderTarget::init(VulkanDeviceContext* deviceContext, uint32_t wid
 
     VkSemaphoreCreateInfo semaphoreInfo = {};
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-    //LN_VK_CHECK(vkCreateSemaphore(m_deviceContext->vulkanDevice(), &semaphoreInfo, m_deviceContext->vulkanAllocator(), &m_imageAvailableSemaphore));
     LN_VK_CHECK(vkCreateSemaphore(m_deviceContext->vulkanDevice(), &semaphoreInfo, m_deviceContext->vulkanAllocator(), &m_renderFinishedSemaphore));
 
 	return reset(width, height, format, image, imageView);
