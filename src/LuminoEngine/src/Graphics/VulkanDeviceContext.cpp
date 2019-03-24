@@ -1781,12 +1781,19 @@ void VulkanRenderTarget::readData(void* outData)
                 }
                 data += width * 4;//subResourceLayout.rowPitch;
             }
+
+            // V flip
+            for (uint32_t y = 0; y < height; y++)
+            {
+                unsigned char* sr = static_cast<unsigned char*>(rawData) + ((y)* width) * 4;
+                unsigned char* dr = static_cast<unsigned char*>(outData) + ((height - y - 1)* width * 4);
+                memcpy(dr, sr, width * 4);
+            }
         }
         else {
             LN_NOTIMPLEMENTED();
         }
 
-        memcpy(outData, rawData, static_cast<size_t>(size));
         destBuffer.unmap();
     }
 
