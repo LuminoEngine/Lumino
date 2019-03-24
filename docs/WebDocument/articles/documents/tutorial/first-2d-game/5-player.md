@@ -78,7 +78,23 @@ Input クラスは、ゲームとしての一般的なケースで必要とな�
 
 上記の例では押されている間を検出しましたが、他にも押された瞬間を検出したり、キーボードだけではなくジョイスティックなどの入力を受け取ることもできます。
 
+デフォルトでは、次のようにキーやボタンが割り当てられています。
 
+| 名前 | キーボード | マウス | ゲームパッド  | | 定数                  
+|------------------|------------|--------|---------------|------------------------|
+| left             | ← キー     | -      | POV左, 第1軸- | InputButtons::Left     |
+| right            | → キー     | -      | POV右, 第1軸+ | InputButtons::Right    |
+| up               | ↑ キー     | -      | POV上, 第2軸- | InputButtons::Up       |
+| down             | ↓ キー     | -      | POV下, 第2軸+ | InputButtons::Down     |
+| submit           | Z キー     | -      | 1 番ボタン    | InputButtons::Submit   |
+| cancel           | X キー     | -      | 2 番ボタン    | InputButtons::Cancel   |
+| menu             | X キー     | -      | 3 番ボタン    | InputButtons::Menu     |
+| shift            | Shift キー | -      | 4 番ボタン    | InputButtons::Shift    |
+| pageup           | Q キー     | -      | 5 番ボタン    | InputButtons::PageUp   |
+| pagedown         | W キー     | -      | 6 番ボタン    | InputButtons::PageDown |
+| any              | ※1        | ※1    | ※1           | InputButtons::Any      |
+
+※1: 割り当てられている全てのボタンに対応します。
 
 コード全体
 ----------

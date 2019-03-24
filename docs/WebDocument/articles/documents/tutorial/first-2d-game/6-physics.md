@@ -179,7 +179,7 @@ void Main()
     // 左の床
     Ref<Sprite> floorSprite1 = Sprite::create(mapTexture, 4, 1);
     floorSprite1->setSourceRect(0, 8, 32, 8);
-    floorSprite1->setPosition(-5, -2, 0);
+    floorSprite1->setPosition(-4.5, -2, 0);
 
     // 左の床の剛体
     Ref<RigidBody2DComponent> floorBody1 = RigidBody2DComponent::create();
@@ -189,7 +189,7 @@ void Main()
     // 右の床
     Ref<Sprite> floorSprite2 = Sprite::create(mapTexture, 4, 1);
     floorSprite2->setSourceRect(0, 8, 32, 8);
-    floorSprite2->setPosition(5, 0, 0);
+    floorSprite2->setPosition(4.5, 0, 0);
 
     // 右の床の剛体
     Ref<RigidBody2DComponent> floorBody2 = RigidBody2DComponent::create();
