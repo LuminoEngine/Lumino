@@ -17,43 +17,73 @@
 | フレーム  |  動作  |
 | ---  | --- |
 | 0  | 待機 |
-| 2, 3  | 移動 |
+| 2, 3  | 歩行 |
 | 4 | ジャンプ |
 | 5 | 下降 |
 
 
 
-移動と待機
+歩行と待機
 ----------
+
+まずはどのアニメーションを表示すればよいか、現在の状態を判断する必要があります。
+今回は、歩行中と待機中のどちらであるかは X 方向の速度によって決めることにします。
 
 ```cpp
 if (onGround) {
     if (velocity.x < 0.0) {
+        // 左へ移動中
         playerSprite->setFrameIndex(2 + std::fmod(Engine::totalTime(), 0.4) / 0.2);
         playerSprite->setFlippedX(false);
     }
     else if (velocity.x > 0.0) {
+        // 右へ移動中
         playerSprite->setFrameIndex(2 + std::fmod(Engine::totalTime(), 0.4) / 0.2);
         playerSprite->setFlippedX(true);
     }
     else {
+        // 待機中
         playerSprite->setFrameIndex(0);
     }
 }
 ```
 
+### 経過時間と FrameIndex の計算
+
+`Engine::totalTime()` は、ゲーム起動からの経過時間を秒単位の小数値で返します。これを利用して、0.2 秒間隔で FrameIndex を 2, 3 交互に切り替えて歩行アニメーションを表現します。
+
+※ std::fmod は小数の剰余算を行う、C++ 標準ライブラリの関数です。
+
+
 ### 左右反転
+
+スプライトは `setFlippedX()` によって、表示するテクスチャを左右反転することができます。
+
+今回は見た目上の反転だけで充分であるため、このメソッドを使用しています。
+
+> 左右反転は他に、setScale() というメソッドを使用して X 方向の拡大率を -1.0 にする、という方法があります。
+> 今回のチュートリアルでは触れませんが、これは例えばキャラクターと武器のスプライトが分かれていて、これらが親子関係でリンクされている場合に有効です。
 
 
 ジャンプと下降
 ----------
 
+ジャンプと下降の状態判断は、Y 方向の速度によって決めます。
+また、これらは空中にいる場合のみ適用するべきですので、先ほどの「歩行と待機」で追加した "if (onGround)" の else 側にコードを追加します。
+
 ```cpp
-if (velocity.y > 0.0) {
-    playerSprite->setFrameIndex(4);
+if (onGround) {
+    // ... 歩行と待機のアニメーション処理
 }
 else {
-    playerSprite->setFrameIndex(5);
+    if (velocity.y > 0.0) {
+        // 上昇中
+        playerSprite->setFrameIndex(4);
+    }
+    else {
+        // 下降中
+        playerSprite->setFrameIndex(5);
+    }
 }
 ```
 
@@ -162,22 +192,27 @@ void Main()
         // プレイヤーのアニメーション処理
         if (onGround) {
             if (velocity.x < 0.0) {
+                // 左へ移動中
                 playerSprite->setFrameIndex(2 + std::fmod(Engine::totalTime(), 0.4) / 0.2);
                 playerSprite->setFlippedX(false);
             }
             else if (velocity.x > 0.0) {
+                // 右へ移動中
                 playerSprite->setFrameIndex(2 + std::fmod(Engine::totalTime(), 0.4) / 0.2);
                 playerSprite->setFlippedX(true);
             }
             else {
+                // 待機中
                 playerSprite->setFrameIndex(0);
             }
         }
         else {
             if (velocity.y > 0.0) {
+                // 上昇中
                 playerSprite->setFrameIndex(4);
             }
             else {
+                // 下降中
                 playerSprite->setFrameIndex(5);
             }
         }
