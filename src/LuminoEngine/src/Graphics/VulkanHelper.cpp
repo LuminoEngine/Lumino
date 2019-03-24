@@ -1552,6 +1552,20 @@ Result VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsD
     colorBlending.blendConstants[2] = 0.0f;
     colorBlending.blendConstants[3] = 0.0f;
 
+    const VkDynamicState dynamicStates[] =
+    {
+        VK_DYNAMIC_STATE_VIEWPORT,
+        VK_DYNAMIC_STATE_SCISSOR,
+        //VK_DYNAMIC_STATE_BLEND_CONSTANTS,
+        VK_DYNAMIC_STATE_STENCIL_REFERENCE,
+    };
+    VkPipelineDynamicStateCreateInfo dynamicState;
+    dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+    dynamicState.pNext = nullptr;
+    dynamicState.flags = 0;
+    dynamicState.dynamicStateCount = LN_ARRAY_SIZE_OF(dynamicStates);
+    dynamicState.pDynamicStates = dynamicStates;
+
     //VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
     //pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     //pipelineLayoutInfo.setLayoutCount = m_shaderPass->descriptorSetLayouts().size();
@@ -1575,6 +1589,7 @@ Result VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsD
     pipelineInfo.pDepthStencilState = &depthStencil;
     pipelineInfo.pColorBlendState = &colorBlending;
     pipelineInfo.layout = m_relatedShaderPass->vulkanPipelineLayout();
+    pipelineInfo.pDynamicState = &dynamicState;
     pipelineInfo.renderPass = renderPass;
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;

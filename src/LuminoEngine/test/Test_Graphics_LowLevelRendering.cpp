@@ -648,6 +648,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture)
 	}
 }
 
+#if 0   // 一部のモバイル環境では 3D テクスチャが使えないので、直近では対応予定なし
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_LowLevelRendering, Texture3D)
 {
@@ -695,6 +696,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture3D)
 		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Texture3D-1.png"));
 	}
 }
+#endif
 
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_LowLevelRendering, SamplerState)

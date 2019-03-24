@@ -920,6 +920,25 @@ Result VulkanDeviceContext::submitStatus(const State& state)
 
     vkCmdBindPipeline(m_recodingCommandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->vulkanPipeline());//graphicsPipeline);
 
+    // TODO: modify チェック
+    {
+        VkViewport viewport;
+        viewport.x = state.regionRects.viewportRect.x;
+        viewport.y = state.regionRects.viewportRect.height + state.regionRects.viewportRect.y;
+        viewport.width = state.regionRects.viewportRect.width;
+        viewport.height = -state.regionRects.viewportRect.height;   // height マイナスで、DirectX や OpenGL と同じ座標系になる
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+        vkCmdSetViewport(m_recodingCommandBuffer->vulkanCommandBuffer(), 0, 1, &viewport);
+
+        VkRect2D scissor;
+        scissor.offset.x = state.regionRects.scissorRect.x;
+        scissor.offset.y = state.regionRects.scissorRect.y;
+        scissor.extent.width = state.regionRects.scissorRect.width;
+        scissor.extent.height = state.regionRects.scissorRect.height;
+        vkCmdSetScissor(m_recodingCommandBuffer->vulkanCommandBuffer(), 0, 1, &scissor);
+    }
+
     {
         std::array<VkBuffer, MaxVertexStreams> vertexBuffers;
         int vbCount = 0;
