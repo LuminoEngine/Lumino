@@ -133,6 +133,7 @@ void SpriteComponent::init()
     m_material = newObject<Material>();
     //m_material->setEmissive(Color(1,1,1,0.5));
     setBlendMode(BlendMode::Alpha);
+    setCullMode(CullMode::None);
 }
 
 void SpriteComponent::setTexture(Texture* texture)

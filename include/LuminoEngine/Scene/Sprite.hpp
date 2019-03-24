@@ -7,6 +7,12 @@ class Texture;
 class SpriteFrameSet;
 class SpriteComponent;
 
+/**
+ * スプライトオブジェクトを表します。
+ *
+ * デフォルトの BlendMode は Alpha です。
+ * デフォルトの CullMode は None です。（両面表示となります）
+ */
 class Sprite
 	: public VisualObject
 {
