@@ -155,6 +155,7 @@ public:
 	VkImage vulkanImage() const { return m_image; }
 	VkDeviceMemory vulkanDeviceMemory() const { return m_imageMemory; }
     VkImageView vulkanImageView() const { return m_imageView; }
+    bool IsExternalManagement() const { return m_externalManagement; }
 
     //void VulkanSwapchainRenderTargetTexture::reset(const VulkanSwapChain::SwapChainDesc& desc, std::vector<VkImage> images, std::vector<VkImageView> views);
 

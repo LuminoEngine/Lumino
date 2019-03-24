@@ -1129,21 +1129,23 @@ VkRenderPass VulkanRenderPassCache::findOrCreate(const DeviceFramebufferState& s
 
         for (int i = 0; i < MaxMultiRenderTargets; i++) {
             if (state.renderTargets[i]) {
+                VulkanRenderTarget* renderTarget = static_cast<VulkanRenderTarget*>(state.renderTargets[i]);
+
                 attachmentDescs[i].flags = 0;
-                attachmentDescs[i].format = static_cast<VulkanTexture*>(state.renderTargets[i])->image()->vulkanFormat();//VulkanHelper::LNFormatToVkFormat(state.renderTargets[i]->getTextureFormat());
+                attachmentDescs[i].format = renderTarget->image()->vulkanFormat();//VulkanHelper::LNFormatToVkFormat(state.renderTargets[i]->getTextureFormat());
                 attachmentDescs[i].samples = VK_SAMPLE_COUNT_1_BIT;
                 attachmentDescs[i].loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
                 //attachmentDescs[i].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;// サンプルでは画面全体 clear する前提なので、前回値を保持する必要はない。そのため CLEAR。というか、CLEAR 指定しないと clear しても背景真っ黒になった。
                 attachmentDescs[i].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
                 attachmentDescs[i].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;    // TODO: stencil。今は未対応
                 attachmentDescs[i].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;//VK_ATTACHMENT_STORE_OP_STORE;    // TODO: stencil。今は未対応
-                if (1) {// TODO:
+                if (renderTarget->isSwapchainBackbuffer()) {
                     // swapchain の場合
                     attachmentDescs[i].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;     // レンダリング前のレイアウト定義。UNDEFINED はレイアウトは何でもよいが、内容の保証はない。サンプルでは全体 clear するので問題ない。
                     attachmentDescs[i].finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
                 }
                 else {
-                    attachmentDescs[i].initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+                    attachmentDescs[i].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;//VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
                     attachmentDescs[i].finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
                 }
 

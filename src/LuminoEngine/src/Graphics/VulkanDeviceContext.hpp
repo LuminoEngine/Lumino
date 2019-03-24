@@ -82,6 +82,7 @@ protected:
 	virtual void onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize) override;
 	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) override;
 	virtual void onUpdateShaderPass(IShaderPass* newPass) override;
+    virtual void onSubmitStatus(const State& state, uint32_t stateDirtyFlags) override;
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
 	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) override;
 	virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount) override;
@@ -113,7 +114,7 @@ public: // TODO:
     void copyBufferToImageImmediately(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
     Result transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 
-    Result submitStatus(const State& state);
+    //Result submitStatus(const State& state);
 
 	//GLFWwindow* m_mainWindow; // TODO:
     VulkanSwapChain* m_mainSwapchain = nullptr; // TODO:
@@ -311,6 +312,7 @@ public:
 
 	virtual const VulkanImage* image() const override { return m_image.get(); }
 
+    bool isSwapchainBackbuffer() const { return m_image->IsExternalManagement(); }
     void setImageAvailableSemaphoreRef(VkSemaphore* semaphore) { m_imageAvailableSemaphoreRef = semaphore; }
     VkSemaphore imageAvailableSemaphore() const { return (m_imageAvailableSemaphoreRef) ? *m_imageAvailableSemaphoreRef : VK_NULL_HANDLE; }
     VkSemaphore renderFinishedSemaphore() const { return m_renderFinishedSemaphore; }

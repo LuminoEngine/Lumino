@@ -186,6 +186,7 @@ protected:
 	virtual void onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize) = 0;
 	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) = 0;
 	virtual void onUpdateShaderPass(IShaderPass* newPass) = 0;
+    virtual void onSubmitStatus(const State& state, uint32_t stateDirtyFlags) = 0;
 
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
 	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) = 0;

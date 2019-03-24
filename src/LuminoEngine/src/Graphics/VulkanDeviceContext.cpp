@@ -288,9 +288,151 @@ void VulkanDeviceContext::onUpdateShaderPass(IShaderPass* newPass)
 {
 }
 
+void VulkanDeviceContext::onSubmitStatus(const State& state, uint32_t stateDirtyFlags)
+{
+    //m_recodingCommandBuffer->beginRecording();
+
+    //if (!m_recodingCommandBuffer->m_lastFoundFramebuffer)
+    if (stateDirtyFlags & StateDirtyFlags_FrameBuffers)
+    {
+        // 前回開始した RenderPass があればクローズしておく
+        if (m_recodingCommandBuffer->m_lastFoundFramebuffer) {
+            vkCmdEndRenderPass(m_recodingCommandBuffer->vulkanCommandBuffer());
+            m_recodingCommandBuffer->m_lastFoundFramebuffer = nullptr;
+        }
+
+        VulkanFramebuffer* framebuffer = framebufferCache()->findOrCreate(state.framebufferState);
+        m_recodingCommandBuffer->m_lastFoundFramebuffer = framebuffer;
+        {
+            //DeviceFramebufferState framebufferState;
+            //framebufferState.renderTargets[0] = m_deviceContext->m_mainSwapchain->swapchainRenderTargets()[imageIndex];
+            //framebufferState.depthBuffer = m_depthImage;
+
+            VkRenderPassBeginInfo renderPassInfo = {};
+            renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+            renderPassInfo.renderPass = framebuffer->vulkanRenderPass();//renderPass;
+            renderPassInfo.framebuffer = framebuffer->vulkanFramebuffer();
+            renderPassInfo.renderArea.offset = { 0, 0 };
+            renderPassInfo.renderArea.extent.width = state.framebufferState.renderTargets[0]->realSize().width; //m_mainSwapchain->vulkanSwapchainExtent();
+            renderPassInfo.renderArea.extent.height = state.framebufferState.renderTargets[0]->realSize().height;
+
+            std::array<VkClearValue, 2> clearValues = {};
+            clearValues[0].color = { 0.0f, 0.0f, 1.0f, 1.0f };
+            clearValues[1].depthStencil = { 1.0f, 0 };
+
+            renderPassInfo.clearValueCount = 0;//static_cast<uint32_t>(clearValues.size());//
+            renderPassInfo.pClearValues = nullptr;//clearValues.data();// 
+
+            vkCmdBeginRenderPass(m_recodingCommandBuffer->vulkanCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+        }
+    }
+
+
+
+    //IGraphicsDeviceContext::State state;
+    //state.pipelineState.shaderPass = m_shaderPass;
+    //state.pipelineState.vertexDeclaration = m_vertexDeclaration;
+    //state.framebufferState.renderTargets[0] = m_deviceContext->m_mainSwapchain->swapchainRenderTargets()[0];
+    //state.framebufferState.depthBuffer = m_depthImage;
+    //state.viewportRect.width = m_deviceContext->m_mainSwapchain->vulkanSwapchainExtent().width;
+    //state.viewportRect.height = m_deviceContext->m_mainSwapchain->vulkanSwapchainExtent().height;
+    VulkanPipeline* graphicsPipeline = pipelineCache()->findOrCreate(state, m_recodingCommandBuffer->m_lastFoundFramebuffer->vulkanRenderPass());
+
+
+    vkCmdBindPipeline(m_recodingCommandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->vulkanPipeline());//graphicsPipeline);
+
+    // TODO: modify チェック
+    {
+        VkViewport viewport;
+        viewport.x = state.regionRects.viewportRect.x;
+        viewport.y = state.regionRects.viewportRect.height + state.regionRects.viewportRect.y;
+        viewport.width = state.regionRects.viewportRect.width;
+        viewport.height = -state.regionRects.viewportRect.height;   // height マイナスで、DirectX や OpenGL と同じ座標系になる
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+        vkCmdSetViewport(m_recodingCommandBuffer->vulkanCommandBuffer(), 0, 1, &viewport);
+
+        VkRect2D scissor;
+        scissor.offset.x = state.regionRects.scissorRect.x;
+        scissor.offset.y = state.regionRects.scissorRect.y;
+        scissor.extent.width = state.regionRects.scissorRect.width;
+        scissor.extent.height = state.regionRects.scissorRect.height;
+        vkCmdSetScissor(m_recodingCommandBuffer->vulkanCommandBuffer(), 0, 1, &scissor);
+    }
+
+    {
+        std::array<VkBuffer, MaxVertexStreams> vertexBuffers;
+        int vbCount = 0;
+        for (int i = 0; i < state.primitive.vertexBuffers.size(); i++) {
+            if (state.primitive.vertexBuffers[i]) {
+                auto* vertexBuffer = static_cast<VulkanVertexBuffer*>(state.primitive.vertexBuffers[i]);
+                VkBuffer buffer = vertexBuffer->vulkanBuffer();//[] = { vertexBuffer->vulkanBuffer() };
+                VkDeviceSize offset = 0;//[] = { 0 };
+                vkCmdBindVertexBuffers(m_recodingCommandBuffer->vulkanCommandBuffer(), i, 1, &buffer, &offset);
+            }
+            //else {
+            //    VkBuffer buffer = VK_NULL_HANDLE;
+            //    VkDeviceSize offset = 0;
+            //    vkCmdBindVertexBuffers(m_recodingCommandBuffer->vulkanCommandBuffer(), i, 0, &buffer, &offset);
+            //}
+        }
+
+        auto* indexBuffer = static_cast<VulkanIndexBuffer*>(state.primitive.indexBuffer);
+
+
+        if (indexBuffer) {
+            vkCmdBindIndexBuffer(m_recodingCommandBuffer->vulkanCommandBuffer(), indexBuffer->vulkanBuffer(), 0, indexBuffer->indexType());
+        }
+    }
+
+    {
+        auto* shaderPass = static_cast<VulkanShaderPass*>(state.shaderPass);
+
+        // UniformBuffer は copy コマンドを使って更新できる。
+        // TODO: ただし、texture や sampler は vkUpdateDescriptorSets でしか更新できないのでこれもキャッシュしたりする仕組みがほしいところ。
+        //VulkanBuffer* buffer = m_recodingCommandBuffer->cmdCopyBuffer(sizeof(ubo), &m_uniformBuffer);
+        //VulkanShaderUniformBuffer* uniformBuffer = static_cast<VulkanShaderUniformBuffer*>(shaderPass->getUniformBuffer(0));
+        //uniformBuffer->setData(&ubo, sizeof(ubo));
+
+
+        std::array<VkDescriptorSet, DescriptorType_Count> sets;
+        m_recodingCommandBuffer->allocateDescriptorSets(shaderPass, &sets);
+        vkCmdBindDescriptorSets(m_recodingCommandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, shaderPass->vulkanPipelineLayout(), 0, sets.size(), sets.data(), 0, nullptr);
+
+    }
+
+#if 0
+    //
+    // test
+    //vertices[0].pos.x = 0;
+    //vertices[0].pos.y = 0;
+    //VulkanBuffer* buffer = commandBuffer->cmdCopyBuffer(sizeof(vertices[0]) * vertices.size(), m_vertexBuffer->buffer());
+    //buffer->setData(0, vertices.data(), sizeof(vertices[0]) * vertices.size());
+
+//#if 1
+//        m_uniformBuffers[imageIndex]->setData(0, &ubo, sizeof(ubo));
+//#else
+//        // CombindSamper ではなく、個別設定のレイアウトを使っていると、実行中キューと記録中キューの間で共有できないようだ。
+//        // SubmitQueue が失敗する。
+//        VulkanBuffer* buffer = commandBuffer->cmdCopyBuffer(sizeof(ubo), m_uniformBuffers[imageIndex].get());//&m_uniformBuffer);
+//        buffer->setData(0, &ubo, sizeof(ubo));
+//#endif
+
+    vkCmdDrawIndexed(commandBuffer->vulkanCommandBuffer(), static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+
+    // test
+    //vertices[0].pos.x = 0;
+    //vertices[0].pos.y = 0;
+    //m_vertexBuffer->setSubData(0, vertices.data(), sizeof(vertices[0]) * vertices.size());
+#endif
+
+
+    //return true;
+}
+
 void VulkanDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
-    submitStatus(committedState());
+    //submitStatus(committedState());
     //return;
 
     const State& state = committedState();
@@ -354,13 +496,13 @@ void VulkanDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, f
 
 void VulkanDeviceContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount)
 {
-    submitStatus(committedState());
+    //submitStatus(committedState());
     vkCmdDraw(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startVertex, 0);
 }
 
 void VulkanDeviceContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount)
 {
-    submitStatus(committedState());
+    //submitStatus(committedState());
     vkCmdDrawIndexed(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startIndex, 0, 0);
 }
 
@@ -877,141 +1019,10 @@ Result VulkanDeviceContext::transitionImageLayout(VkImage image, VkFormat format
     return true;
 }
 
-Result VulkanDeviceContext::submitStatus(const State& state)
-{
-    //m_recodingCommandBuffer->beginRecording();
-
-    if (!m_recodingCommandBuffer->m_lastFoundFramebuffer)
-    {
-        VulkanFramebuffer* framebuffer = framebufferCache()->findOrCreate(state.framebufferState);
-        m_recodingCommandBuffer->m_lastFoundFramebuffer = framebuffer;
-        {
-            //DeviceFramebufferState framebufferState;
-            //framebufferState.renderTargets[0] = m_deviceContext->m_mainSwapchain->swapchainRenderTargets()[imageIndex];
-            //framebufferState.depthBuffer = m_depthImage;
-
-            VkRenderPassBeginInfo renderPassInfo = {};
-            renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-            renderPassInfo.renderPass = framebuffer->vulkanRenderPass();//renderPass;
-            renderPassInfo.framebuffer = framebuffer->vulkanFramebuffer();
-            renderPassInfo.renderArea.offset = { 0, 0 };
-            renderPassInfo.renderArea.extent.width = state.framebufferState.renderTargets[0]->realSize().width; //m_mainSwapchain->vulkanSwapchainExtent();
-            renderPassInfo.renderArea.extent.height = state.framebufferState.renderTargets[0]->realSize().height;
-
-            std::array<VkClearValue, 2> clearValues = {};
-            clearValues[0].color = { 0.0f, 0.0f, 1.0f, 1.0f };
-            clearValues[1].depthStencil = { 1.0f, 0 };
-
-            renderPassInfo.clearValueCount = 0;//static_cast<uint32_t>(clearValues.size());//
-            renderPassInfo.pClearValues = nullptr;//clearValues.data();// 
-
-            vkCmdBeginRenderPass(m_recodingCommandBuffer->vulkanCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-        }
-    }
-
-
-
-    //IGraphicsDeviceContext::State state;
-    //state.pipelineState.shaderPass = m_shaderPass;
-    //state.pipelineState.vertexDeclaration = m_vertexDeclaration;
-    //state.framebufferState.renderTargets[0] = m_deviceContext->m_mainSwapchain->swapchainRenderTargets()[0];
-    //state.framebufferState.depthBuffer = m_depthImage;
-    //state.viewportRect.width = m_deviceContext->m_mainSwapchain->vulkanSwapchainExtent().width;
-    //state.viewportRect.height = m_deviceContext->m_mainSwapchain->vulkanSwapchainExtent().height;
-    VulkanPipeline* graphicsPipeline = pipelineCache()->findOrCreate(state, m_recodingCommandBuffer->m_lastFoundFramebuffer->vulkanRenderPass());
-
-
-    vkCmdBindPipeline(m_recodingCommandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->vulkanPipeline());//graphicsPipeline);
-
-    // TODO: modify チェック
-    {
-        VkViewport viewport;
-        viewport.x = state.regionRects.viewportRect.x;
-        viewport.y = state.regionRects.viewportRect.height + state.regionRects.viewportRect.y;
-        viewport.width = state.regionRects.viewportRect.width;
-        viewport.height = -state.regionRects.viewportRect.height;   // height マイナスで、DirectX や OpenGL と同じ座標系になる
-        viewport.minDepth = 0.0f;
-        viewport.maxDepth = 1.0f;
-        vkCmdSetViewport(m_recodingCommandBuffer->vulkanCommandBuffer(), 0, 1, &viewport);
-
-        VkRect2D scissor;
-        scissor.offset.x = state.regionRects.scissorRect.x;
-        scissor.offset.y = state.regionRects.scissorRect.y;
-        scissor.extent.width = state.regionRects.scissorRect.width;
-        scissor.extent.height = state.regionRects.scissorRect.height;
-        vkCmdSetScissor(m_recodingCommandBuffer->vulkanCommandBuffer(), 0, 1, &scissor);
-    }
-
-    {
-        std::array<VkBuffer, MaxVertexStreams> vertexBuffers;
-        int vbCount = 0;
-        for (int i = 0; i < state.primitive.vertexBuffers.size(); i++) {
-            if (state.primitive.vertexBuffers[i]) {
-                auto* vertexBuffer = static_cast<VulkanVertexBuffer*>(state.primitive.vertexBuffers[i]);
-                VkBuffer buffer = vertexBuffer->vulkanBuffer();//[] = { vertexBuffer->vulkanBuffer() };
-                VkDeviceSize offset = 0;//[] = { 0 };
-                vkCmdBindVertexBuffers(m_recodingCommandBuffer->vulkanCommandBuffer(), i, 1, &buffer, &offset);
-            }
-            //else {
-            //    VkBuffer buffer = VK_NULL_HANDLE;
-            //    VkDeviceSize offset = 0;
-            //    vkCmdBindVertexBuffers(m_recodingCommandBuffer->vulkanCommandBuffer(), i, 0, &buffer, &offset);
-            //}
-        }
-
-        auto* indexBuffer = static_cast<VulkanIndexBuffer*>(state.primitive.indexBuffer);
-
-
-        if (indexBuffer) {
-            vkCmdBindIndexBuffer(m_recodingCommandBuffer->vulkanCommandBuffer(), indexBuffer->vulkanBuffer(), 0, indexBuffer->indexType());
-        }
-    }
-
-    {
-        auto* shaderPass = static_cast<VulkanShaderPass*>(state.shaderPass);
-
-        // UniformBuffer は copy コマンドを使って更新できる。
-        // TODO: ただし、texture や sampler は vkUpdateDescriptorSets でしか更新できないのでこれもキャッシュしたりする仕組みがほしいところ。
-        //VulkanBuffer* buffer = m_recodingCommandBuffer->cmdCopyBuffer(sizeof(ubo), &m_uniformBuffer);
-        //VulkanShaderUniformBuffer* uniformBuffer = static_cast<VulkanShaderUniformBuffer*>(shaderPass->getUniformBuffer(0));
-        //uniformBuffer->setData(&ubo, sizeof(ubo));
-
-
-        std::array<VkDescriptorSet, DescriptorType_Count> sets;
-        m_recodingCommandBuffer->allocateDescriptorSets(shaderPass, &sets);
-        vkCmdBindDescriptorSets(m_recodingCommandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, shaderPass->vulkanPipelineLayout(), 0, sets.size(), sets.data(), 0, nullptr);
-
-    }
-
-#if 0
-    //
-    // test
-    //vertices[0].pos.x = 0;
-    //vertices[0].pos.y = 0;
-    //VulkanBuffer* buffer = commandBuffer->cmdCopyBuffer(sizeof(vertices[0]) * vertices.size(), m_vertexBuffer->buffer());
-    //buffer->setData(0, vertices.data(), sizeof(vertices[0]) * vertices.size());
-
-//#if 1
-//        m_uniformBuffers[imageIndex]->setData(0, &ubo, sizeof(ubo));
-//#else
-//        // CombindSamper ではなく、個別設定のレイアウトを使っていると、実行中キューと記録中キューの間で共有できないようだ。
-//        // SubmitQueue が失敗する。
-//        VulkanBuffer* buffer = commandBuffer->cmdCopyBuffer(sizeof(ubo), m_uniformBuffers[imageIndex].get());//&m_uniformBuffer);
-//        buffer->setData(0, &ubo, sizeof(ubo));
-//#endif
-
-    vkCmdDrawIndexed(commandBuffer->vulkanCommandBuffer(), static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
-
-    // test
-    //vertices[0].pos.x = 0;
-    //vertices[0].pos.y = 0;
-    //m_vertexBuffer->setSubData(0, vertices.data(), sizeof(vertices[0]) * vertices.size());
-#endif
-
-
-    return true;
-
-}
+//Result VulkanDeviceContext::submitStatus(const State& state)
+//{
+//
+//}
 
 //==============================================================================
 // VulkanSwapChain
@@ -1635,6 +1646,9 @@ Result VulkanRenderTarget::init(VulkanDeviceContext* deviceContext, uint32_t wid
 {
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
+    m_size.width = width;
+    m_size.height = height;
+    m_format = requestFormat;
 
     VkSemaphoreCreateInfo semaphoreInfo = {};
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -1830,17 +1844,21 @@ void VulkanRenderTarget::readData(void* outData)
         void* rawData = destBuffer.map();
 
         // TODO: まだ Bitmap クラス側が BGRA の save に対応していないのでここで変換してしまう。
-        if (m_image->vulkanFormat() == VK_FORMAT_B8G8R8A8_UNORM) {
-            unsigned char* data = (unsigned char*)rawData;
-            for (uint32_t y = 0; y < height; y++)
-            {
-                unsigned char *row = data;
-                for (uint32_t x = 0; x < width; x++)
+        if (m_image->vulkanFormat() == VK_FORMAT_B8G8R8A8_UNORM ||
+            m_image->vulkanFormat() == VK_FORMAT_R8G8B8A8_UNORM) {
+
+            if (m_image->vulkanFormat() == VK_FORMAT_B8G8R8A8_UNORM) {
+                unsigned char* data = (unsigned char*)rawData;
+                for (uint32_t y = 0; y < height; y++)
                 {
-                    std::swap(row[0], row[2]);
-                    row += 4;
+                    unsigned char *row = data;
+                    for (uint32_t x = 0; x < width; x++)
+                    {
+                        std::swap(row[0], row[2]);
+                        row += 4;
+                    }
+                    data += width * 4;//subResourceLayout.rowPitch;
                 }
-                data += width * 4;//subResourceLayout.rowPitch;
             }
 
             // V flip
