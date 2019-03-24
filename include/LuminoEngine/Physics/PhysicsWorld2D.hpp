@@ -370,8 +370,8 @@ class PhysicsWorld2D
 	: public Object
 {
 public:
-    bool raycast(const Vector3& origin, const Vector3& direction, float maxDistance/* = Math::Inf*/, uint32_t layerMask /*= 0xFFFFFFFF*/, bool queryTrigger /*= false*/, RaycastResult2D* outResult = nullptr);
-    bool raycast(const Vector3& origin, const Vector3& direction, float maxDistance, uint32_t layerMask, RaycastResult2D* outResult = nullptr) { return raycast(origin, direction, maxDistance, layerMask, false, outResult); }
+    bool raycast(const Vector3& origin, const Vector2& direction, float maxDistance/* = Math::Inf*/, uint32_t layerMask /*= 0xFFFFFFFF*/, bool queryTrigger /*= false*/, RaycastResult2D* outResult = nullptr);
+    bool raycast(const Vector3& origin, const Vector2& direction, float maxDistance, uint32_t layerMask, RaycastResult2D* outResult = nullptr) { return raycast(origin, direction, maxDistance, layerMask, false, outResult); }
 
 
 	void addPhysicsObject(PhysicsObject2D* physicsObject);
@@ -397,6 +397,18 @@ private:
 	List<Ref<PhysicsObject2D>> m_objects;
 	std::vector<PhysicsObject2D*> m_removeList;
 	bool m_inStepSimulation;
+};
+
+/** 2D 物理システムのグローバル設定とヘルパー関数です。 */
+class Physics2D
+{
+public:
+    /** アクティブな物理ワールドに対してレイキャストを行います。 */
+    static bool raycast(const Vector3& origin, const Vector2& direction, float maxDistance, uint32_t layerMask, bool queryTrigger, RaycastResult2D* outResult = nullptr);
+
+    /** アクティブな物理ワールドに対してレイキャストを行います。 */
+    static bool raycast(const Vector3& origin, const Vector2& direction, float maxDistance, uint32_t layerMask, RaycastResult2D* outResult = nullptr);
+
 };
 
 } // namespace ln

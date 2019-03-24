@@ -8,6 +8,7 @@
 #include <LuminoEngine/UI/UIRenderView.hpp>
 #include <LuminoEngine/UI/UIContainerElement.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
+#include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
@@ -138,6 +139,8 @@ void EngineManager::init()
 
         m_mainPhysicsWorld = m_mainWorld->physicsWorld();
         m_mainPhysicsWorld2D = m_mainWorld->physicsWorld2D();
+
+        m_physicsManager->setActivePhysicsWorld2D(m_mainPhysicsWorld2D);
     }
 }
 

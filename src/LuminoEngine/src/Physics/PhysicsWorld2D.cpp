@@ -10,6 +10,7 @@
 #include <LuminoEngine/Scene/RigidBodyComponent.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
 #include "../Rendering/RenderingManager.hpp"
+#include "PhysicsManager.hpp"
 
 namespace ln {
 
@@ -749,7 +750,7 @@ void PhysicsWorld2D::onDispose(bool explicitDisposing)
     }
 }
 
-bool PhysicsWorld2D::raycast(const Vector3& origin, const Vector3& direction, float maxDistance, uint32_t layerMask, bool queryTrigger, RaycastResult2D* outResult)
+bool PhysicsWorld2D::raycast(const Vector3& origin, const Vector2& direction, float maxDistance, uint32_t layerMask, bool queryTrigger, RaycastResult2D* outResult)
 {
     class RayCastCallback
         : public b2RayCastCallback
@@ -792,7 +793,7 @@ bool PhysicsWorld2D::raycast(const Vector3& origin, const Vector3& direction, fl
     callback.queryTrigger = queryTrigger;
     callback.hit = false;
 
-    m_world->RayCast(&callback, LnToB2(origin.xy()), LnToB2((origin.xy() + direction.xy() * maxDistance)));
+    m_world->RayCast(&callback, LnToB2(origin.xy()), LnToB2((origin.xy() + direction * maxDistance)));
 
     return callback.hit;
 }
@@ -857,6 +858,19 @@ void PhysicsWorld2D::removeInternal(PhysicsObject2D* physicsObject)
 	if (m_objects.remove(physicsObject)) {
 		physicsObject->m_ownerWorld = nullptr;
 	}
+}
+
+//==============================================================================
+// Physics2D
+
+bool Physics2D::raycast(const Vector3& origin, const Vector2& direction, float maxDistance, uint32_t layerMask, bool queryTrigger, RaycastResult2D* outResult)
+{
+    return detail::EngineDomain::physicsManager()->activePhysicsWorld2D()->raycast(origin, direction, maxDistance, layerMask, queryTrigger, outResult);
+}
+
+bool Physics2D::raycast(const Vector3& origin, const Vector2& direction, float maxDistance, uint32_t layerMask, RaycastResult2D* outResult)
+{
+    return detail::EngineDomain::physicsManager()->activePhysicsWorld2D()->raycast(origin, direction, maxDistance, layerMask, false, outResult);
 }
 
 } // namespace ln
