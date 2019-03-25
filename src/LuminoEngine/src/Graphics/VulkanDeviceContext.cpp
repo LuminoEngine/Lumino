@@ -570,13 +570,19 @@ Result VulkanDeviceContext::createInstance()
         return false;
     }
 
+    //uint32_t apiVersion;
+    //VkResult r = vkEnumerateInstanceVersion(&apiVersion);
+
     VkApplicationInfo appInfo = {};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    appInfo.pApplicationName = "Hello Triangle";
+    appInfo.pApplicationName = "Lumino Application";
     appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-    appInfo.pEngineName = "No Engine";
+    appInfo.pEngineName = "Lumino Engine";
     appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-    appInfo.apiVersion = VK_API_VERSION_1_0;
+
+    // API バージョンは 1.1.0。負値の Viewpoer height を利用するため。
+    // https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#VkViewport
+    appInfo.apiVersion = VK_MAKE_VERSION(1, 1, 0);
 
     VkInstanceCreateInfo createInfo = {};
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -648,7 +654,12 @@ Result VulkanDeviceContext::pickPhysicalDevice()
 
     // Select device
     // TODO:
-    m_physicalDevice = m_physicalDeviceInfos[0].device;
+    const PhysicalDeviceInfo& info = m_physicalDeviceInfos[0];
+    m_physicalDevice = info.device;
+
+    //LN_LOG_VERBOSE << VK_VERSION_MAJOR(info.deviceProperty.apiVersion);
+    //LN_LOG_VERBOSE << VK_VERSION_MINOR(info.deviceProperty.apiVersion);
+    //LN_LOG_VERBOSE << VK_VERSION_PATCH(info.deviceProperty.apiVersion);
 
     return true;
 }
