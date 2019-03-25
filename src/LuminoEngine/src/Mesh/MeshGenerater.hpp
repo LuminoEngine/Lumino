@@ -161,16 +161,6 @@ public:
     int m_slices;
     int m_stacks;
 
-    //RegularSphereMeshFactory(float radius, int slices, int stacks)
-    //    : m_radius(radius)
-    //    , m_slices(slices)
-    //    , m_stacks(stacks)
-    //{
-    //    if (LN_REQUIRE(slices >= 3)) return;
-    //    if (LN_REQUIRE(stacks >= 2)) return;
-    //    makeSinCosTable();
-    //}
-
     virtual int vertexCount() const override { return (m_slices + 1) * (m_stacks + 1); }
     virtual int indexCount() const override { return m_slices * m_stacks * 6; }
     virtual PrimitiveTopology primitiveType() const override { return PrimitiveTopology::TriangleList; }
@@ -178,12 +168,6 @@ public:
     {
         void* ptr = allocator->allocate(sizeof(RegularSphereMeshFactory));
         return new (ptr)RegularSphereMeshFactory(*this);
-        //auto* ss = new (ptr)RegularSphereMeshFactory(*this);
-        //auto* ss = new (ptr)RegularSphereMeshFactory/*()*/;
-        //ss->~RegularSphereMeshFactory();
-        //return ss;
-        //ss->copyFrom(this);
-        //return (MeshGenerater*)ptr;//
     }
     void copyFrom(const RegularSphereMeshFactory* other)
     {
@@ -304,6 +288,95 @@ public:
 private:
     List<sinCos> m_sincosTable;
 };
+
+
+// 6面それぞれ独立した頂点を持つ直方体
+class RegularBoxMeshFactory
+	: public MeshGenerater
+{
+public:
+	Vector3	m_size;
+
+	virtual int vertexCount() const override { return 24; }
+	virtual int indexCount() const override { return 36; }
+	virtual PrimitiveTopology primitiveType() const override { return PrimitiveTopology::TriangleList; }
+	virtual MeshGenerater* clone(LinearAllocator* allocator) const override
+	{
+		void* ptr = allocator->allocate(sizeof(RegularBoxMeshFactory));
+		return new (ptr)RegularBoxMeshFactory(*this);
+	}
+	void copyFrom(const RegularBoxMeshFactory* other)
+	{
+		MeshGenerater::copyFrom(other);
+		m_size = other->m_size;
+	}
+
+
+	void setIndices(MeshGeneraterBuffer* buf, uint16_t index, uint16_t begin)
+	{
+		buf->setI(index + 0, begin + 0);
+		buf->setI(index + 1, begin + 1);
+		buf->setI(index + 2, begin + 2);
+		buf->setI(index + 3, begin + 2);
+		buf->setI(index + 4, begin + 1);
+		buf->setI(index + 5, begin + 3);
+	}
+
+	virtual void onGenerate(MeshGeneraterBuffer* buf) override
+	{
+		Vector3 minPos = -(m_size / 2);
+		Vector3 maxPos = (m_size / 2);
+		//Vertex* v = outVertices;
+		//uint16_t* i = outIndices;
+		uint32_t v = 0;
+		uint32_t i = 0;
+
+		// 手前 (Z-)
+		buf->setV(v, Vector3(minPos.x, maxPos.y, minPos.z), Vector2(0.0f, 0.0f), -Vector3::UnitZ); ++v;	// ┏
+		buf->setV(v, Vector3(maxPos.x, maxPos.y, minPos.z), Vector2(1.0f, 0.0f), -Vector3::UnitZ); ++v;	// ┓
+		buf->setV(v, Vector3(minPos.x, minPos.y, minPos.z), Vector2(0.0f, 1.0f), -Vector3::UnitZ); ++v;	// ┗
+		buf->setV(v, Vector3(maxPos.x, minPos.y, minPos.z), Vector2(1.0f, 1.0f), -Vector3::UnitZ); ++v;	// ┛
+		setIndices(buf, i, 0); i += 6;
+
+		// 奥 (Z+)
+		buf->setV(v, Vector3(maxPos.x, maxPos.y, maxPos.z), Vector2(0.0f, 0.0f), Vector3::UnitZ); ++v;	// ┏
+		buf->setV(v, Vector3(minPos.x, maxPos.y, maxPos.z), Vector2(1.0f, 0.0f), Vector3::UnitZ); ++v;	// ┓
+		buf->setV(v, Vector3(maxPos.x, minPos.y, maxPos.z), Vector2(0.0f, 1.0f), Vector3::UnitZ); ++v;	// ┗
+		buf->setV(v, Vector3(minPos.x, minPos.y, maxPos.z), Vector2(1.0f, 1.0f), Vector3::UnitZ); ++v;	// ┛
+		setIndices(buf, i, 4); i += 6;
+
+		// 左 (X-)
+		buf->setV(v, Vector3(minPos.x, maxPos.y, maxPos.z), Vector2(0.0f, 0.0f), -Vector3::UnitX); ++v;	// ┏
+		buf->setV(v, Vector3(minPos.x, maxPos.y, minPos.z), Vector2(1.0f, 0.0f), -Vector3::UnitX); ++v;	// ┓
+		buf->setV(v, Vector3(minPos.x, minPos.y, maxPos.z), Vector2(0.0f, 1.0f), -Vector3::UnitX); ++v;	// ┗
+		buf->setV(v, Vector3(minPos.x, minPos.y, minPos.z), Vector2(1.0f, 1.0f), -Vector3::UnitX); ++v;	// ┛
+		setIndices(buf, i, 8); i += 6;
+
+		// 右 (X+)
+		buf->setV(v, Vector3(maxPos.x, maxPos.y, minPos.z), Vector2(0.0f, 0.0f), Vector3::UnitX); ++v;	// ┏
+		buf->setV(v, Vector3(maxPos.x, maxPos.y, maxPos.z), Vector2(1.0f, 0.0f), Vector3::UnitX); ++v;	// ┓
+		buf->setV(v, Vector3(maxPos.x, minPos.y, minPos.z), Vector2(0.0f, 1.0f), Vector3::UnitX); ++v;	// ┗
+		buf->setV(v, Vector3(maxPos.x, minPos.y, maxPos.z), Vector2(1.0f, 1.0f), Vector3::UnitX); ++v;	// ┛
+		setIndices(buf, i, 12); i += 6;
+
+		// 下 (Y-)(Z- がUVの上方向)
+		buf->setV(v, Vector3(minPos.x, minPos.y, minPos.z), Vector2(0.0f, 0.0f), -Vector3::UnitY); ++v;	// ┏
+		buf->setV(v, Vector3(maxPos.x, minPos.y, minPos.z), Vector2(1.0f, 0.0f), -Vector3::UnitY); ++v;	// ┓
+		buf->setV(v, Vector3(minPos.x, minPos.y, maxPos.z), Vector2(0.0f, 1.0f), -Vector3::UnitY); ++v;	// ┗
+		buf->setV(v, Vector3(maxPos.x, minPos.y, maxPos.z), Vector2(1.0f, 1.0f), -Vector3::UnitY); ++v;	// ┛
+		setIndices(buf, i, 16); i += 6;
+
+		// 上 (Y+)(Z+ がUVの上方向)
+		buf->setV(v, Vector3(minPos.x, maxPos.y, maxPos.z), Vector2(0.0f, 0.0f), Vector3::UnitY); ++v;	// ┏
+		buf->setV(v, Vector3(maxPos.x, maxPos.y, maxPos.z), Vector2(1.0f, 0.0f), Vector3::UnitY); ++v;	// ┓
+		buf->setV(v, Vector3(minPos.x, maxPos.y, minPos.z), Vector2(0.0f, 1.0f), Vector3::UnitY); ++v;	// ┗
+		buf->setV(v, Vector3(maxPos.x, maxPos.y, minPos.z), Vector2(1.0f, 1.0f), Vector3::UnitY); ++v;	// ┛
+		setIndices(buf, i, 20);
+
+		transform(buf->vertexBuffer(), vertexCount());
+	}
+};
+
 
 } // namespace detail
 } // namespace ln
