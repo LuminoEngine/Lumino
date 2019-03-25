@@ -228,6 +228,13 @@ void RenderingContext::drawSphere(float radius, int slices, int stacks, const Co
     element->data.m_stacks = stacks;
     element->data.setColor(color);
     element->data.setTransform(element->combinedWorldMatrix() * localTransform);
+
+	// TODO: bouding box
+}
+
+void RenderingContext::drawBox(const Box& box, const Color& color, const Matrix& localTransform)
+{
+	LN_NOTIMPLEMENTED();
 }
 
 void RenderingContext::blit(RenderTargetTexture* source, RenderTargetTexture* destination)

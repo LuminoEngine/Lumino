@@ -61,5 +61,32 @@ void SphereComponent::onRender(RenderingContext* context)
     context->drawSphere(0.5, 8, 8, Color::White);
 }
 
+//=============================================================================
+// BoxComponent
+
+BoxComponent::BoxComponent()
+{
+}
+
+BoxComponent::~BoxComponent()
+{
+}
+
+void BoxComponent::init()
+{
+	VisualComponent::init();
+}
+
+void BoxComponent::setMaterial(Material* material)
+{
+	m_material = material;
+}
+
+void BoxComponent::onRender(RenderingContext* context)
+{
+	context->setMaterial(m_material);
+	context->drawSphere(0.5, 8, 8, Color::White);
+}
+
 } // namespace ln
 

@@ -108,6 +108,7 @@ public:
     void drawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor);
     void drawPlane(float width, float depth, const Color& color = Color::White);
     void drawSphere(float radius, int slices, int stacks, const Color& color, const Matrix& localTransform = Matrix());
+	void drawBox(const Box& box, const Color& color = Color::White, const Matrix& localTransform = Matrix());
 
     // これは主に Post effect の実装で使用します。
     // 実際に処理が行われるのはレンダリングパイプラインの ImageEffect フェーズです。

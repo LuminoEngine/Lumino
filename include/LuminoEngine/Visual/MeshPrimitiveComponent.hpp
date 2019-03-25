@@ -43,4 +43,22 @@ private:
     Ref<Material> m_material;
 };
 
+class BoxComponent
+	: public VisualComponent
+{
+public:
+	void setMaterial(Material* material);
+
+protected:
+	void onRender(RenderingContext* context);
+
+LN_CONSTRUCT_ACCESS:
+	BoxComponent();
+	virtual ~BoxComponent();
+	void init();
+
+private:
+	Ref<Material> m_material;
+};
+
 } // namespace ln
