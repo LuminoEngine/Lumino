@@ -1571,16 +1571,16 @@ Result VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsD
         depthStencilStateInfo.front.passOp = VulkanHelper::LNStencilOpToVkStencilOp(desc.frontFace.stencilPassOp);
         depthStencilStateInfo.front.depthFailOp = VulkanHelper::LNStencilOpToVkStencilOp(desc.frontFace.stencilDepthFailOp);
         depthStencilStateInfo.front.compareOp = VulkanHelper::LNComparisonFuncToVkCompareOp(desc.frontFace.stencilFunc);
-        depthStencilStateInfo.front.compareMask = UINT32_MAX;
-        depthStencilStateInfo.front.writeMask = UINT32_MAX;
+        depthStencilStateInfo.front.compareMask = 0xff;
+        depthStencilStateInfo.front.writeMask = 0xff;
         depthStencilStateInfo.front.reference = desc.stencilReferenceValue;
 
         depthStencilStateInfo.back.failOp = VulkanHelper::LNStencilOpToVkStencilOp(desc.backFace.stencilFailOp);
         depthStencilStateInfo.back.passOp = VulkanHelper::LNStencilOpToVkStencilOp(desc.backFace.stencilPassOp);
         depthStencilStateInfo.back.depthFailOp = VulkanHelper::LNStencilOpToVkStencilOp(desc.backFace.stencilDepthFailOp);
         depthStencilStateInfo.back.compareOp = VulkanHelper::LNComparisonFuncToVkCompareOp(desc.backFace.stencilFunc);
-        depthStencilStateInfo.back.compareMask = UINT32_MAX;
-        depthStencilStateInfo.back.writeMask = UINT32_MAX;
+        depthStencilStateInfo.back.compareMask = 0xff;
+        depthStencilStateInfo.back.writeMask = 0xff;
         depthStencilStateInfo.back.reference = desc.stencilReferenceValue;
 
         depthStencilStateInfo.minDepthBounds = 0.0f;
