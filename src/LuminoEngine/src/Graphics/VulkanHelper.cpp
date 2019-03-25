@@ -949,6 +949,7 @@ VulkanBuffer* VulkanCommandBuffer::cmdCopyBuffer(size_t size, VulkanBuffer* dest
 	VkBufferCopy copyRegion = {};
 	copyRegion.size = size;
 	vkCmdCopyBuffer(m_commandBuffer, buffer->vulkanBuffer(), destination->vulkanBuffer(), 1, &copyRegion);
+    // https://www.reddit.com/r/vulkan/comments/axq4p6/updating_constant_buffer_inside_render_pass/
 
 	// 戻り先で書いてもらう
 	return buffer;
