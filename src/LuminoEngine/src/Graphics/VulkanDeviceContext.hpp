@@ -226,8 +226,6 @@ public:
     virtual size_t getBytesSize() override { return m_buffer.size(); }
     virtual GraphicsResourceUsage usage() const override { return m_usage; }
     virtual void setSubData(size_t offset, const void* data, size_t length) override;
-    virtual void* map() override { return m_buffer.map(); }
-    virtual void unmap() override { m_buffer.unmap(); }
 
     VulkanBuffer* buffer() { return &m_buffer; }
     VkBuffer vulkanBuffer() const { return m_buffer.vulkanBuffer(); }
@@ -252,8 +250,6 @@ public:
     virtual size_t getBytesSize() override { return m_buffer.size(); }
     virtual GraphicsResourceUsage usage() const override { return m_usage; }
     virtual void setSubData(size_t offset, const void* data, size_t length) override;
-    virtual void* map() override { return m_buffer.map(); }
-    virtual void unmap() override { m_buffer.unmap(); }
 
     VulkanBuffer* buffer() { return &m_buffer; }
     VkBuffer vulkanBuffer() const { return m_buffer.vulkanBuffer(); }

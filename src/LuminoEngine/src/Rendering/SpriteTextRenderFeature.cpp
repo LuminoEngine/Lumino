@@ -42,8 +42,8 @@ void InternalSpriteTextRender::render(IGraphicsDeviceContext* context, const Gly
 {
 	m_spriteCount = 0;
 	prepareBuffers(dataCount);
-	Vertex* buffer = reinterpret_cast<Vertex*>(m_vertexBuffer->map());
 
+	Vertex* buffer = reinterpret_cast<Vertex*>(context->map(m_vertexBuffer));
 	ITexture* srcTexture = glyphsTexture;
 	Size texSizeInv(1.0f / srcTexture->realSize().width, 1.0f / srcTexture->realSize().height);
 	for (int i = 0; i < dataCount; ++i)
@@ -58,8 +58,7 @@ void InternalSpriteTextRender::render(IGraphicsDeviceContext* context, const Gly
 		Rect dstRect(data.position, (float)data.srcRect.width, (float)data.srcRect.height);
 		internalDrawRectangle(buffer + (i * 4), data.transform, dstRect, uvSrcRect, data.color);
 	}
-
-	m_vertexBuffer->unmap();
+    context->unmap(m_vertexBuffer);
 	flush(context, glyphsTexture);
 }
 

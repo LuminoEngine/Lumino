@@ -71,11 +71,12 @@ void InternalFrameRectRenderer::draw(const Rect& rect, const Matrix& worldTransf
 void InternalFrameRectRenderer::InternalFrameRectRenderer::flush(IGraphicsDeviceContext* context)
 {
     prepareBuffers(m_vertices.size() / 4);
-    Vertex* vb = reinterpret_cast<Vertex*>(m_vertexBuffer->map());
+
+    Vertex* vb = reinterpret_cast<Vertex*>(context->map(m_vertexBuffer));
     for (size_t i = 0; i < m_vertices.size(); i++) {
         vb[i] = *m_vertices[i];
     }
-    m_vertexBuffer->unmap();
+    context->unmap(m_vertexBuffer);
 
     context->setVertexDeclaration(m_vertexDeclaration);
     context->setVertexBuffer(0, m_vertexBuffer);

@@ -95,7 +95,7 @@ void* VertexBuffer::map(MapMode mode)
 
 		if (m_rhiLockedBuffer == nullptr)
 		{
-			m_rhiLockedBuffer = m_rhiObject->map();
+            m_rhiLockedBuffer = manager()->deviceContext()->map(m_rhiObject);
 		}
 
 		m_modified = true;
@@ -140,7 +140,7 @@ detail::IVertexBuffer* VertexBuffer::resolveRHIObject()
 	{
 		if (m_rhiLockedBuffer)
 		{
-			m_rhiObject->unmap();
+            manager()->deviceContext()->unmap(m_rhiObject);
 			m_rhiLockedBuffer = nullptr;
 		}
 		else

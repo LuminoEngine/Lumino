@@ -278,8 +278,9 @@ public:
 	virtual size_t getBytesSize() override { return m_size; }
 	virtual GraphicsResourceUsage usage() const override { return m_usage; }
 	virtual void setSubData(size_t offset, const void* data, size_t length) override;
-	virtual void* map() override;
-	virtual void unmap() override;
+
+	void* map();
+	void unmap();
 
 private:
 	GLuint m_glVertexBuffer;
@@ -303,8 +304,9 @@ public:
 	virtual size_t getBytesSize() override { return m_size; }
 	virtual GraphicsResourceUsage usage() const override { return m_usage; }
 	virtual void setSubData(size_t offset, const void* data, size_t length) override;
-	virtual void* map() override;
-	virtual void unmap() override;
+
+	void* map();
+	void unmap();
 
 private:
 	GLuint m_indexBufferId;

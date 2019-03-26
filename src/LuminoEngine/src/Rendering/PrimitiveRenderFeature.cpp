@@ -55,8 +55,8 @@ void InternalPrimitiveRenderer::flush(IGraphicsDeviceContext* context)
     prepareBuffers(context, vertexCount, indexCount);
 
     // Create Vertex and Index buffers
-    Vertex* vertexBuffer = (Vertex*)m_vertexBuffer->map();
-    uint16_t* indexBuffer = (uint16_t*)m_indexBuffer->map();
+    Vertex* vertexBuffer = (Vertex*)context->map(m_vertexBuffer);
+    uint16_t* indexBuffer = (uint16_t*)context->map(m_indexBuffer);
     MeshGeneraterBuffer buffer;
     size_t vertexOffset = 0;
     size_t indexOffset = 0;
@@ -67,9 +67,8 @@ void InternalPrimitiveRenderer::flush(IGraphicsDeviceContext* context)
         vertexOffset += gen->vertexCount();
         indexOffset += gen->indexCount();
     }
-    m_vertexBuffer->unmap();
-    m_indexBuffer->unmap();
-
+    context->unmap(m_vertexBuffer);
+    context->unmap(m_indexBuffer);
 
     int primitiveCount = 0;
     switch (m_primitiveType)
