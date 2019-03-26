@@ -203,19 +203,19 @@ void IGraphicsDeviceContext::setPrimitiveTopology(PrimitiveTopology value)
 
 void IGraphicsDeviceContext::clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
-	commitStatus();
+    commitStatus(SubmitSource_Clear);
 	onClearBuffers(flags, color, z, stencil);
 }
 
 void IGraphicsDeviceContext::drawPrimitive(int startVertex, int primitiveCount)
 {
-	commitStatus();
+    commitStatus(SubmitSource_Draw);
 	onDrawPrimitive(m_staging.pipelineState.topology, startVertex, primitiveCount);
 }
 
 void IGraphicsDeviceContext::drawPrimitiveIndexed(int startIndex, int primitiveCount)
 {
-	commitStatus();
+    commitStatus(SubmitSource_Draw);
 	onDrawPrimitiveIndexed(m_staging.pipelineState.topology, startIndex, primitiveCount);
 }
 
@@ -328,7 +328,7 @@ Ref<IShaderPass> IGraphicsDeviceContext::createShaderPassFromUnifiedShaderPass(c
     return pass;
 }
 
-void IGraphicsDeviceContext::commitStatus()
+void IGraphicsDeviceContext::commitStatus(SubmitSource submitSource)
 {
 	if (LN_REQUIRE(m_staging.framebufferState.renderTargets[0])) return;
     //if (LN_REQUIRE(m_staging.pipelineState.vertexDeclaration)) return;
@@ -347,7 +347,7 @@ void IGraphicsDeviceContext::commitStatus()
 
 	onUpdatePrimitiveData(m_staging.pipelineState.vertexDeclaration, m_staging.primitive.vertexBuffers.data(), m_staging.primitive.vertexBuffers.size(), m_staging.primitive.indexBuffer);
 	
-    onSubmitStatus(m_staging, m_stateDirtyFlags);
+    onSubmitStatus(m_staging, m_stateDirtyFlags, submitSource);
 
     m_committed = m_staging;
 	m_stateDirtyFlags = StateDirtyFlags_None;

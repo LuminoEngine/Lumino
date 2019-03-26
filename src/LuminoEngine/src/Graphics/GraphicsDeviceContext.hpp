@@ -92,6 +92,12 @@ class IGraphicsDeviceContext
 	: public RefObject
 {
 public:
+	enum SubmitSource
+	{
+        SubmitSource_Clear,
+        SubmitSource_Draw,
+	};
+
 	enum StateDirtyFlags
 	{
 		StateDirtyFlags_None = 0x0000,
@@ -186,7 +192,7 @@ protected:
 	virtual void onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize) = 0;
 	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) = 0;
 	virtual void onUpdateShaderPass(IShaderPass* newPass) = 0;
-    virtual void onSubmitStatus(const State& state, uint32_t stateDirtyFlags) = 0;
+    virtual void onSubmitStatus(const State& state, uint32_t stateDirtyFlags, SubmitSource submitSource) = 0;
 
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
 	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) = 0;
@@ -198,7 +204,7 @@ protected:
     const State& committedState() const { return m_committed; }
 
 private:
-	void commitStatus();
+    void commitStatus(SubmitSource submitSource);
 
 	GraphicsDeviceCaps m_caps;
 	uint32_t m_stateDirtyFlags;

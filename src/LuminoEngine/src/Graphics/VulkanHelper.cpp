@@ -1673,7 +1673,7 @@ Result VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsD
     pipelineInfo.pMultisampleState = &multisampling;
     pipelineInfo.pDepthStencilState = &depthStencilStateInfo;
     pipelineInfo.pColorBlendState = &colorBlending;
-    pipelineInfo.layout = m_relatedShaderPass->vulkanPipelineLayout();
+    pipelineInfo.layout = m_relatedShaderPass->vulkanPipelineLayout();	// 省略不可 https://www.khronos.org/registry/vulkan/specs/1.1-extensions/man/html/VkGraphicsPipelineCreateInfo.html
     pipelineInfo.pDynamicState = &dynamicState;
     pipelineInfo.renderPass = renderPass;
     pipelineInfo.subpass = 0;
@@ -1695,12 +1695,14 @@ void VulkanPipeline::dispose()
 uint64_t VulkanPipeline::computeHash(const IGraphicsDeviceContext::State& state)
 {
     auto* vertexDeclaration = static_cast<VulkanVertexDeclaration*>(state.pipelineState.vertexDeclaration);
+    uint64_t vertexDeclarationHash = (vertexDeclaration) ? vertexDeclaration->hash() : 0;
+
     MixHash hash;
     hash.add(state.pipelineState.blendState);
     hash.add(state.pipelineState.rasterizerState);
     hash.add(state.pipelineState.depthStencilState);
     hash.add(state.pipelineState.topology);
-    hash.add(vertexDeclaration->hash());
+    hash.add(vertexDeclarationHash);
     hash.add(static_cast<VulkanShaderPass*>(state.shaderPass));
     hash.add(VulkanFramebufferCache::computeHash(state.framebufferState));
     return hash.value();

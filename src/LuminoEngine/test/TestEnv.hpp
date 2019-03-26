@@ -21,6 +21,8 @@ public:
 #define LN_TEST_CLEAN_SCENE \
     Engine::mainWorld()->removeAllObjects(); \
     Engine::mainUIRoot()->removeAllChildren(); \
+	Engine::mainCamera()->setPosition(0, 0, -10); \
+	Engine::mainCamera()->lookAt(Vector3(0, 0, 0)); \
 
 #define ASSERT_SCREEN(filePath) ASSERT_TRUE(TestEnv::checkScreenShot(filePath)) 
 #define ASSERT_SCREEN_S(filePath) ASSERT_TRUE(TestEnv::checkScreenShot(filePath, 95, true)) 

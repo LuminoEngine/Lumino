@@ -176,11 +176,7 @@ TEST_F(Test_Visual_VisualComponent, CullMode)
         sprite1->setShadingModel(ShadingModel::UnLighting);
         sprite1->setPosition(-1.5, 3, 0);
 
-        // Back(default), BackFace -> Hide
-        auto sprite2 = Sprite::create(texture2, 3, 3);
-        sprite2->setShadingModel(ShadingModel::UnLighting);
-        sprite2->setPosition(1.5, 3, 0);
-        sprite2->setEulerAngles(0, Math::PI, 0);
+		// 裏面は Sprite と Mesh で異なるのでここではテストしない
 
         // Front, FrontFace -> Hide
         auto sprite3 = Sprite::create(texture1, 3, 3);

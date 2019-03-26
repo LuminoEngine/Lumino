@@ -6,7 +6,7 @@ String TestEnv::LuminoCLI;
 
 void TestEnv::setup()
 {
-	EngineFeature feature = EngineFeature::Experimental;//EngineFeature::Public;//
+    EngineFeature feature = EngineFeature::Experimental;//EngineFeature::Public; //
 
 	GlobalLogger::addStdErrAdapter();
 	EngineSettings::setMainWindowSize(160, 120);

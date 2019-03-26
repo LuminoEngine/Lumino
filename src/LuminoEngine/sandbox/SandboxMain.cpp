@@ -101,7 +101,7 @@ int main(int argc, char** argv)
 
 	GlobalLogger::addStdErrAdapter();
     EngineSettings::setEngineFeatures(EngineFeature::Experimental);
-	//EngineSettings::addAssetDirectory(u"D:/Proj/LN/Lumino/src/LuminoEngine/test/Assets");
+	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
 	detail::EngineDomain::engineManager()->settings().standaloneFpsControl = true;
 
 
@@ -109,9 +109,12 @@ int main(int argc, char** argv)
     EngineSettings::setMainWindowSize(800, 600);
     EngineSettings::setMainBackBufferSize(800, 600);
     EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
-    EngineSettings::setEngineFeatures(EngineFeature::Public); EngineFeature::Experimental;//
+    EngineSettings::setEngineFeatures(EngineFeature::Experimental);//EngineFeature::Public); 
+
 
 	Engine::initialize();
+
+    auto sprite1 = Sprite::create(Assets::loadTexture(u"Sprite1.png"), 2, 2);
 
 	{
 
@@ -119,7 +122,6 @@ int main(int argc, char** argv)
 		}
 
 	}
-	//auto sprite1 = Sprite::create(2, 2, Assets::loadTexture(u"Sprite1.png"));
 
 
 	Engine::finalize();
