@@ -6,7 +6,7 @@ float		ln_nearClip;
 float		ln_farClip;
 //float3		ln_cameraPos;
 
-Texture3D ln_clustersTexture;
+Texture2D ln_clustersTexture;
 SamplerState ln_clustersTextureSamplerState;
 
 Texture2D ln_GlobalLightInfoTexture;
@@ -165,6 +165,16 @@ float _LN_FlustumClustereDepthBias(float z)
 	return sqrt(z);
 }
 
+#define LN_CLUSTER_WIDTH (16.0)
+#define LN_CLUSTER_HEIGHT (16.0)
+#define LN_CLUSTER_DEPTH (32.0)
+#define LN_CLUSTER_WIDTH_INV (1.0 / 16.0)
+#define LN_CLUSTER_HEIGHT_INV (1.0 / 16.0)
+#define LN_CLUSTER_DEPTH_INV (1.0 / 32.0)
+
+#define LN_CLUSTER_TEXTURE_WIDTH (LN_CLUSTER_WIDTH * LN_CLUSTER_HEIGHT)
+#define LN_CLUSTER_TEXTURE_X_PITCH (1.0 / LN_CLUSTER_WIDTH)
+
 void _LN_InitLocalLightContext(out _LN_LocalLightContext context, float3 vertexPos, float4 viewPos)
 {
 	float depth = (viewPos.z - ln_nearClip) / (ln_farClip - ln_nearClip);
@@ -172,11 +182,16 @@ void _LN_InitLocalLightContext(out _LN_LocalLightContext context, float3 vertexP
 	float4 vp = mul(float4(vertexPos, 1.0f), ln_WorldViewProjection);
 	vp.xyz /= vp.w;
 	
+	// uv座標系 (0.0 ~ 1.0)
 	float cx = (vp.x + 1.0) / 2.0;
 	float cy = (vp.y + 1.0) / 2.0;
 	float cz = _LN_FlustumClustereDepthBias(depth);
 
-	float4 cluster = ln_clustersTexture.Sample(ln_clustersTextureSamplerState, float3(cx, cy, cz));
+	float vy = floor(cy * LN_CLUSTER_HEIGHT);	// 0.0~16.0
+	float tx = (vy * LN_CLUSTER_TEXTURE_X_PITCH) + (cx * LN_CLUSTER_TEXTURE_X_PITCH);
+
+	//float4 cluster = ln_clustersTexture.Sample(ln_clustersTextureSamplerState, float3(cx, cy, cz));
+	float4 cluster = ln_clustersTexture.Sample(ln_clustersTextureSamplerState, float2(tx, cz));
 	float lightIndices[4] = {cluster.r, cluster.g, cluster.b, cluster.a};
 	context.lightIndices = lightIndices;
 }

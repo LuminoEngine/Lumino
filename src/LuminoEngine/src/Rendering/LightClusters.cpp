@@ -34,7 +34,7 @@ void LightClusters::init()
 	m_lightInofs.reserve(MaxLights);
 	m_globalLightInofs.reserve(MaxLights);
 
-	m_clustersTexture = newObject<Texture3D>(ClusterWidth, ClusterHeight, ClusterDepth, TextureFormat::RGBA32, false, GraphicsResourceUsage::Dynamic);
+	m_clustersTexture = newObject<Texture2D>(ClusterWidth * ClusterHeight, ClusterDepth, TextureFormat::RGBA32, false, GraphicsResourceUsage::Dynamic);
 	m_lightInfoTexture = newObject<Texture2D>(sizeof(LightInfo) / sizeof(Vector4), MaxLights, TextureFormat::R32G32B32A32Float, false, GraphicsResourceUsage::Dynamic);
 	m_globalLightInfoTexture = newObject<Texture2D>(sizeof(GlobalLightInfo) / sizeof(Vector4), MaxLights, TextureFormat::R32G32B32A32Float, false, GraphicsResourceUsage::Dynamic);
 }
@@ -147,14 +147,16 @@ void LightClusters::endMakeClusters()
 
 	// Local lights
 	{
-		Bitmap3D* surface = m_clustersTexture->map(MapMode::Write);
+		Bitmap2D* surface = m_clustersTexture->map(MapMode::Write);
 		for (int y = 0; y < ClusterHeight; y++)
 		{
 			for (int x = 0; x < ClusterWidth; x++)
 			{
 				for (int z = 0; z < ClusterDepth; z++)
 				{
-					surface->setPixel32(x, y, z, m_clustersData[((ClusterWidth * ClusterHeight * z) + (ClusterWidth * y) + x)]);
+					int tx = (y * ClusterWidth) + x;
+					int ty = z;
+					surface->setPixel32(tx, ty, m_clustersData[((ClusterWidth * ClusterHeight * z) + (ClusterWidth * y) + x)]);
 				}
 			}
 		}

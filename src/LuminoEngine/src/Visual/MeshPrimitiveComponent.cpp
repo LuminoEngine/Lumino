@@ -9,8 +9,8 @@ namespace ln {
 // PlaneComponent
 
 PlaneComponent::PlaneComponent()
-    : m_width(10.0f)
-    , m_depth(10.0f)
+    : m_sizeX(10.0f)
+    , m_sizeY(10.0f)
 {
 }
 
@@ -31,7 +31,7 @@ void PlaneComponent::setMaterial(Material* material)
 void PlaneComponent::onRender(RenderingContext* context)
 {
     context->setMaterial(m_material);
-    context->drawPlane(m_width, m_depth, Color::White);
+    context->drawPlane(m_sizeX, m_sizeY, Color::White);
 }
 
 //=============================================================================

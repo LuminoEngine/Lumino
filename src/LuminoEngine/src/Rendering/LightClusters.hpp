@@ -5,6 +5,11 @@ class Texture2D;
 class Texture3D;
 namespace detail {
 
+/*
+	Cluster のテクスチャは 2D テクスチャで表現する。3Dテクスチャのほうがイメージしやすいのだが、一部のモバイル環境では 3D テクスチャが使えない。
+	テクスチャの X 方向にワールド上の XY 情報を格納、Y 方向に Z 情報を格納。
+	クラスタの数は 16*16*32 なので、256*32 サイズのテクスチャとなる。（もう少し大きくしてもいいかも）
+*/
 class LightClusters
 {
 public:
@@ -26,7 +31,7 @@ public:
 	void addAmbientLight(const Color& color);
 	void addHemisphereLight(const Color& skyColor, const Color& groundColor);
 
-	const Ref<Texture3D>& getClustersVolumeTexture() const { return m_clustersTexture; }
+	const Ref<Texture2D>& getClustersVolumeTexture() const { return m_clustersTexture; }
 	const Ref<Texture2D>& getLightInfoTexture() const { return m_lightInfoTexture; }
 	const Ref<Texture2D>& getGlobalLightInfoTexture() const { return m_globalLightInfoTexture; }
 
@@ -62,7 +67,7 @@ private:
 	static const int		ClusterDepth;
 	std::vector<Color32>	m_clustersData;		// TODO: Texture3D がまだ setData も getMappedData もサポートしていないので。できれば getMappedData にそのまま書き込みたい
 	std::vector<int>		m_clustersAddCount;	// あるクラスタに書かれたデータの数
-	Ref<Texture3D>		m_clustersTexture;
+	Ref<Texture2D>		m_clustersTexture;
 
 	static const int		MaxLights;
 	List<LightInfo>			m_lightInofs;		// m_lightInfoTexture に書き込む。TODO: Texture2D が float4 書き込みをちゃんとサポートしたら必要ない。
