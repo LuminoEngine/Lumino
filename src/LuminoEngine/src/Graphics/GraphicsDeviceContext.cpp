@@ -7,6 +7,38 @@ namespace ln {
 namespace detail {
 
 //=============================================================================
+// IGraphicsDeviceObject
+
+IGraphicsDeviceObject::IGraphicsDeviceObject()
+    : m_disposed(false)
+{
+}
+
+IGraphicsDeviceObject::~IGraphicsDeviceObject()
+{
+    if (!m_disposed) {
+        LN_LOG_ERROR << "object [0x" << this << "] is not disposed";
+    }
+}
+
+void IGraphicsDeviceObject::finalize()
+{
+    dispose();
+}
+
+void IGraphicsDeviceObject::dispose()
+{
+    m_disposed = true;
+}
+
+//=============================================================================
+// IGraphicsResource
+
+IGraphicsResource::~IGraphicsResource()
+{
+}
+
+//=============================================================================
 // IGraphicsDeviceContext
 
 IGraphicsDeviceContext::IGraphicsDeviceContext()
@@ -201,6 +233,16 @@ void IGraphicsDeviceContext::setPrimitiveTopology(PrimitiveTopology value)
 	m_staging.pipelineState.topology = value;
 }
 
+void* IGraphicsDeviceContext::map(IGraphicsResource* resource)
+{
+    return onMapResource(resource);
+}
+
+void IGraphicsDeviceContext::unmap(IGraphicsResource* resource)
+{
+    onUnmapResource(resource);
+}
+
 void IGraphicsDeviceContext::clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
     commitStatus(SubmitSource_Clear);
@@ -351,31 +393,6 @@ void IGraphicsDeviceContext::commitStatus(SubmitSource submitSource)
 
     m_committed = m_staging;
 	m_stateDirtyFlags = StateDirtyFlags_None;
-}
-
-//=============================================================================
-// IGraphicsDeviceObject
-
-IGraphicsDeviceObject::IGraphicsDeviceObject()
-	: m_disposed(false)
-{
-}
-
-IGraphicsDeviceObject::~IGraphicsDeviceObject()
-{
-	if (!m_disposed) {
-		LN_LOG_ERROR << "object [0x" << this << "] is not disposed";
-	}
-}
-
-void IGraphicsDeviceObject::finalize()
-{
-	dispose();
-}
-
-void IGraphicsDeviceObject::dispose()
-{
-	m_disposed = true;
 }
 
 //=============================================================================

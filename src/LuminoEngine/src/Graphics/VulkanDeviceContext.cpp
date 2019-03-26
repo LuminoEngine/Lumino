@@ -432,6 +432,44 @@ void VulkanDeviceContext::onSubmitStatus(const State& state, uint32_t stateDirty
 	}
 }
 
+void* VulkanDeviceContext::onMapResource(IGraphicsResource* resource)
+{
+    switch (resource->resourceType())
+    {
+    case DeviceResourceType::VertexBuffer:
+    {
+        VulkanVertexBuffer* vertexBuffer = static_cast<VulkanVertexBuffer*>(resource);
+        vertexBuffer->m_mappedResource = recodingCommandBuffer()->cmdCopyBuffer(vertexBuffer->buffer()->size(), vertexBuffer->buffer());
+        return vertexBuffer->m_mappedResource->map();
+    }
+    case DeviceResourceType::IndexBuffer:
+    {
+        VulkanIndexBuffer* indexBuffer = static_cast<VulkanIndexBuffer*>(resource);
+        indexBuffer->m_mappedResource = recodingCommandBuffer()->cmdCopyBuffer(indexBuffer->buffer()->size(), indexBuffer->buffer());
+        return indexBuffer->m_mappedResource->map();
+    }
+    default:
+        LN_NOTIMPLEMENTED();
+        return nullptr;
+    }
+}
+
+void VulkanDeviceContext::onUnmapResource(IGraphicsResource* resource)
+{
+    switch (resource->resourceType())
+    {
+    case DeviceResourceType::VertexBuffer:
+        static_cast<VulkanVertexBuffer*>(resource)->m_mappedResource->unmap();
+        break;
+    case DeviceResourceType::IndexBuffer:
+        static_cast<VulkanVertexBuffer*>(resource)->m_mappedResource->unmap();
+        break;
+    default:
+        LN_NOTIMPLEMENTED();
+        break;
+    }
+}
+
 void VulkanDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
     //submitStatus(committedState());

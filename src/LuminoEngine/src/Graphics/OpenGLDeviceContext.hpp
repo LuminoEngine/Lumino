@@ -144,6 +144,8 @@ protected:
 	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) override;
 	virtual void onUpdateShaderPass(IShaderPass* newPass) override;
     virtual void onSubmitStatus(const State& state, uint32_t stateDirtyFlags, SubmitSource submitSource) override {}
+    virtual void* onMapResource(IGraphicsResource* resource) override;
+    virtual void onUnmapResource(IGraphicsResource* resource) override;
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
 	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) override;
 	virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount) override;

@@ -26,6 +26,12 @@ class IShaderSamplerBuffer;
 //static const int MaxRenderTargets = 4;
 //static const int MaxVertexStreams = 4;
 
+enum class DeviceResourceType
+{
+    VertexBuffer,
+    IndexBuffer,
+};
+
 enum class DeviceTextureType
 {
 	Texture2D,
@@ -86,6 +92,31 @@ struct ShaderPassCreateInfo
     UnifiedShaderRefrectionInfo* vertexShaderRefrection;    // TODO: いらない
     UnifiedShaderRefrectionInfo* pixelShaderRefrection;     // TODO: いらない
     const DescriptorLayout* descriptorLayout;
+};
+
+class IGraphicsDeviceObject
+    : public RefObject
+{
+public:
+
+protected:
+    IGraphicsDeviceObject();
+    virtual ~IGraphicsDeviceObject();
+    virtual void finalize();
+    virtual void dispose();	// (複数回の呼び出しに備えること)
+
+private:
+    bool m_disposed;
+};
+
+class IGraphicsResource
+    : public IGraphicsDeviceObject
+{
+public:
+    virtual DeviceResourceType resourceType() const = 0;
+
+protected:
+    virtual ~IGraphicsResource();
 };
 
 class IGraphicsDeviceContext
@@ -157,6 +188,10 @@ public:
 	void setShaderPass(IShaderPass* value);
 	void setPrimitiveTopology(PrimitiveTopology value);
 
+    // write only
+    void* map(IGraphicsResource* resource);
+    void unmap(IGraphicsResource* resource);
+
 	void clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil);
 	void drawPrimitive(int startVertex, int primitiveCount);
 	void drawPrimitiveIndexed(int startIndex, int primitiveCount);
@@ -194,6 +229,9 @@ protected:
 	virtual void onUpdateShaderPass(IShaderPass* newPass) = 0;
     virtual void onSubmitStatus(const State& state, uint32_t stateDirtyFlags, SubmitSource submitSource) = 0;
 
+    virtual void* onMapResource(IGraphicsResource* resource) = 0;
+    virtual void onUnmapResource(IGraphicsResource* resource) = 0;
+
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
 	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) = 0;
 	virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount) = 0;
@@ -210,21 +248,6 @@ private:
 	uint32_t m_stateDirtyFlags;
 	State m_staging;
     State m_committed;
-};
-
-class IGraphicsDeviceObject
-	: public RefObject
-{
-public:
-
-protected:
-	IGraphicsDeviceObject();
-	virtual ~IGraphicsDeviceObject();
-	virtual void finalize();
-	virtual void dispose();	// (複数回の呼び出しに備えること)
-
-private:
-	bool m_disposed;
 };
 
 class ISwapChain
@@ -254,9 +277,10 @@ protected:
 
 
 class IVertexBuffer
-	: public IGraphicsDeviceObject
+	: public IGraphicsResource
 {
 public:
+    virtual DeviceResourceType resourceType() const { return DeviceResourceType::VertexBuffer; }
 	virtual size_t getBytesSize() = 0;
 	virtual GraphicsResourceUsage usage() const = 0;
 	virtual void setSubData(size_t offset, const void* data, size_t length) = 0;
@@ -270,9 +294,10 @@ protected:
 
 
 class IIndexBuffer
-	: public IGraphicsDeviceObject
+	: public IGraphicsResource
 {
 public:
+    virtual DeviceResourceType resourceType() const { return DeviceResourceType::VertexBuffer; }
 	virtual size_t getBytesSize() = 0;
 	virtual GraphicsResourceUsage usage() const = 0;
 	virtual void setSubData(size_t offset, const void* data, size_t length) = 0;

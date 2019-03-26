@@ -676,6 +676,36 @@ void OpenGLDeviceContext::onUpdateShaderPass(IShaderPass* newPass)
 	}
 }
 
+void* OpenGLDeviceContext::onMapResource(IGraphicsResource* resource)
+{
+    switch (resource->resourceType())
+    {
+    case DeviceResourceType::VertexBuffer:
+        return static_cast<GLVertexBuffer*>(resource)->map();
+    case DeviceResourceType::IndexBuffer:
+        return static_cast<GLIndexBuffer*>(resource)->map();
+    default:
+        LN_NOTIMPLEMENTED();
+        return nullptr;
+    }
+}
+
+void OpenGLDeviceContext::onUnmapResource(IGraphicsResource* resource)
+{
+    switch (resource->resourceType())
+    {
+    case DeviceResourceType::VertexBuffer:
+        static_cast<GLVertexBuffer*>(resource)->unmap();
+        break;
+    case DeviceResourceType::IndexBuffer:
+        static_cast<GLIndexBuffer*>(resource)->unmap();
+        break;
+    default:
+        LN_NOTIMPLEMENTED();
+        break;
+    }
+}
+
 void OpenGLDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
 	GLuint glflags = 0;

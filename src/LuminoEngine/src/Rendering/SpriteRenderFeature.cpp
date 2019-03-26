@@ -321,14 +321,14 @@ void InternalSpriteRenderer::flush(IGraphicsDeviceContext* context)
 	}
 
 	// Copy vertex data.
-	Vertex* vb = static_cast<Vertex*>(m_vertexBuffer->map());
+	Vertex* vb = static_cast<Vertex*>(context->map(m_vertexBuffer));
 	for (int iSprite = 0, iVertex = 0; iSprite < spriteCount; iSprite++)
 	{
 		int iData = m_spriteIndexList[iSprite];
 		memcpy(&vb[iVertex], m_spriteDataList[iData].vertices, sizeof(SpriteData::vertices));
 		iVertex += 4;
 	}
-	m_vertexBuffer->unmap();
+    context->unmap(m_vertexBuffer);
 
 	// Render
 	context->setVertexDeclaration(m_vertexDeclaration);
