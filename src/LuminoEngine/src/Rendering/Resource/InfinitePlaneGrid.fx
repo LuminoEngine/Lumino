@@ -1,7 +1,8 @@
 
 float4x4 ln_WorldViewProjection;
-Texture2D ln_MaterialTexture;
-SamplerState ln_MaterialTextureSamplerState;
+sampler2D ln_MaterialTexture;
+//Texture2D ln_MaterialTexture;
+//SamplerState ln_MaterialTextureSamplerState;
 
 struct VS_OUTPUT
 {
@@ -25,8 +26,10 @@ VS_OUTPUT Basic_VS(float3 Pos : POSITION)
 
 float4 Basic_PS(VS_OUTPUT input) : COLOR0
 {
-	float4 texColor = ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.Tex);
-	float4 texColor2 = ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.Tex / 10.0);
+	//float4 texColor = ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.Tex);
+	//float4 texColor2 = ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.Tex / 10.0);
+	float4 texColor = tex2D(ln_MaterialTexture, input.Tex);
+	float4 texColor2 = tex2D(ln_MaterialTexture, input.Tex / 10.0);
 	return texColor + texColor2;
 }
 

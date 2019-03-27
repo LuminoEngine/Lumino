@@ -144,7 +144,8 @@ void MyVFMain(LN_VSInput input, inout MyVFOutput output)	// ★ out 引数の型
 // Surface Shader
 void MySSMain(MySSInput input, inout LN_SurfaceOutput output)
 {
-	output.Albedo = ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.UV) * input.Color;
+	//output.Albedo = ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.UV) * input.Color;
+	output.Albedo = tex2D(ln_MaterialTexture, input.UV) * input.Color;
 	//output.Albedo = float4(1, 0, 0, 1);
 }
 
@@ -237,7 +238,8 @@ _lngs_PSOutput _lngs_PS_ClusteredForward_Geometry(_lngs_PSInput input)
 	
 
 	// TODO: SurfaceShader を入れるのはこのあたり
-	surface.Albedo = ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.UV) * input.Color;
+	//surface.Albedo = ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.UV) * input.Color;
+	surface.Albedo = tex2D(ln_MaterialTexture, input.UV) * input.Color;
 	surface.Albedo *= ln_MaterialColor;
 
 	surface.Emission = (ln_MaterialEmissive.rgb * ln_MaterialEmissive.a);
@@ -265,8 +267,8 @@ float4 _lngs_PS_UnLighting(_lngs_PSInput input) : COLOR0
 
 	//result *= (tex2D(MaterialTextureSampler, input.common.UV));
 	//result *= ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.UV);
-	float4 result = ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.UV) * input.Color;
-
+	//float4 result = ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.UV) * input.Color;
+	float4 result = tex2D(ln_MaterialTexture, input.UV) * input.Color;
 	return result;
 }
 

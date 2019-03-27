@@ -8,8 +8,9 @@ float	 MMM_modelsize = 1.0;
 float2 ln_BoneTextureReciprocalSize = float2( 1.0/4.0, 1.0/256.0 );
 
 // ボーン用頂点テクスチャサンプラー宣言
-Texture2D ln_BoneTexture;
-SamplerState ln_BoneTextureSamplerState;
+sampler2D ln_BoneTexture;
+//Texture2D ln_BoneTexture;
+//SamplerState ln_BoneTextureSamplerState;
 /*
 sampler2D ln_BoneSampler = sampler_state
 {
@@ -22,8 +23,9 @@ sampler2D ln_BoneSampler = sampler_state
 };
 */
 
-Texture2D ln_BoneLocalQuaternionTexture;
-SamplerState ln_BoneLocalQuaternionTextureSamplerState;
+sampler2D ln_BoneLocalQuaternionTexture;
+//Texture2D ln_BoneLocalQuaternionTexture;
+//SamplerState ln_BoneLocalQuaternionTextureSamplerState;
 /*
 sampler2D ln_BoneLocalQuaternionSampler = sampler_state
 {
@@ -75,10 +77,16 @@ float4x3 LN_GetBoneMatrix(int boneIndex)
 	float4 tc2 = float4( 2.5f * uv.x, (boneIndex + 0.5f) * uv.y, 0, 1 );
 	//float4 tc3 = float4( 3.5f * uv.x, (boneIndex + 0.5f) * uv.y, 0, 1 );
 	
+	//return float4x3(
+	//	ln_BoneTexture.SampleLevel(ln_BoneTextureSamplerState, tc0, 0),
+	//	ln_BoneTexture.SampleLevel(ln_BoneTextureSamplerState, tc1, 0),
+	//	ln_BoneTexture.SampleLevel(ln_BoneTextureSamplerState, tc2, 0));
+	
 	return float4x3(
-		ln_BoneTexture.SampleLevel(ln_BoneTextureSamplerState, tc0, 0),
-		ln_BoneTexture.SampleLevel(ln_BoneTextureSamplerState, tc1, 0),
-		ln_BoneTexture.SampleLevel(ln_BoneTextureSamplerState, tc2, 0));
+		tex2Dlod(ln_BoneTexture, tc0),
+		tex2Dlod(ln_BoneTexture, tc1),
+		tex2Dlod(ln_BoneTexture, tc2));
+
 	/*
 	return float4x3(
 		tex2Dlod( ln_BoneSampler, tc0 ),
@@ -102,11 +110,16 @@ float4x4 LN_GetBoneMatrix4x4(int boneIndex)
 	float4 tc3 = float4( (3.0 + offset) * uv.x, (boneIndex + offset) * uv.y, 0, 1 );
 	
 	
+	//return float4x4(
+	//	ln_BoneTexture.SampleLevel(ln_BoneTextureSamplerState, tc0, 0),
+	//	ln_BoneTexture.SampleLevel(ln_BoneTextureSamplerState, tc1, 0),
+	//	ln_BoneTexture.SampleLevel(ln_BoneTextureSamplerState, tc2, 0),
+	//	ln_BoneTexture.SampleLevel(ln_BoneTextureSamplerState, tc3, 0));
 	return float4x4(
-		ln_BoneTexture.SampleLevel(ln_BoneTextureSamplerState, tc0, 0),
-		ln_BoneTexture.SampleLevel(ln_BoneTextureSamplerState, tc1, 0),
-		ln_BoneTexture.SampleLevel(ln_BoneTextureSamplerState, tc2, 0),
-		ln_BoneTexture.SampleLevel(ln_BoneTextureSamplerState, tc3, 0));
+		tex2Dlod(ln_BoneTexture, tc0),
+		tex2Dlod(ln_BoneTexture, tc1),
+		tex2Dlod(ln_BoneTexture, tc2),
+		tex2Dlod(ln_BoneTexture, tc3));
 	/*
 	return float4x4(
 		tex2Dlod( ln_BoneSampler, tc0 ),    // rot
@@ -121,7 +134,8 @@ float4 LN_GetBoneLocalQuaternion(int boneIndex)
 	float offset = 0.25;	// DX9 の half pixel offset に備える
 	float2 uv = ln_BoneTextureReciprocalSize;
 	float4 tc0 = float4(offset, (boneIndex + offset) * uv.y, 0, 1);
-	return ln_BoneLocalQuaternionTexture.SampleLevel(ln_BoneLocalQuaternionTextureSamplerState, tc0, 0);
+	//return ln_BoneLocalQuaternionTexture.SampleLevel(ln_BoneLocalQuaternionTextureSamplerState, tc0, 0);
+	return tex2Dlod(ln_BoneLocalQuaternionTexture, tc0);
 	//return tex2Dlod(ln_BoneLocalQuaternionSampler, tc0);
 }
 

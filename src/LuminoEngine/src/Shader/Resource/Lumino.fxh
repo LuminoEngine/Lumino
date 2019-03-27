@@ -15,8 +15,8 @@ float4x4	ln_WorldViewProjection;
 float4x4	ln_WorldView;
 float4x4	ln_WorldViewIT;
 float2		ln_ViewportPixelSize;
-Texture2D		ln_MaterialTexture;
-SamplerState	ln_MaterialTextureSamplerState;
+sampler2D		ln_MaterialTexture;
+//SamplerState	ln_MaterialTextureSamplerState;
 
 // Builtin effect colors
 float4		ln_ColorScale = float4(1, 1, 1, 1);

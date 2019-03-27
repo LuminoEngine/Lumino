@@ -6,14 +6,17 @@ float		ln_nearClip;
 float		ln_farClip;
 //float3		ln_cameraPos;
 
-Texture2D ln_clustersTexture;
-SamplerState ln_clustersTextureSamplerState;
+sampler2D ln_clustersTexture;
+//Texture2D ln_clustersTexture;
+//SamplerState ln_clustersTextureSamplerState;
 
-Texture2D ln_GlobalLightInfoTexture;
-SamplerState ln_GlobalLightInfoTextureSamplerState;
+sampler2D ln_GlobalLightInfoTexture;
+//Texture2D ln_GlobalLightInfoTexture;
+//SamplerState ln_GlobalLightInfoTextureSamplerState;
 
-Texture2D ln_pointLightInfoTexture;
-SamplerState ln_pointLightInfoTextureSamplerState;
+sampler2D ln_pointLightInfoTexture;
+//Texture2D ln_pointLightInfoTexture;
+//SamplerState ln_pointLightInfoTextureSamplerState;
 
 static float2 LightInfoTextureSize = float2(4, 64);
 
@@ -91,9 +94,14 @@ GlobalLightInfo _LN_GetGlobalLightInfo(int index)
 	//info.color = tex2D(ln_GlobalLightInfoSampler, (float2(0.0, y) * s));
 	//info.groundColor = tex2D(ln_GlobalLightInfoSampler, (float2(1.5, y) * s));
 	//info.directionAndType = tex2D(ln_GlobalLightInfoSampler, (float2(2.5, y) * s));
-	info.color = ln_GlobalLightInfoTexture.Sample(ln_GlobalLightInfoTextureSamplerState, (float2(0.0, y) * s));
-	info.groundColor = ln_GlobalLightInfoTexture.Sample(ln_GlobalLightInfoTextureSamplerState, (float2(1.5, y) * s));
-	info.directionAndType = ln_GlobalLightInfoTexture.Sample(ln_GlobalLightInfoTextureSamplerState, (float2(2.5, y) * s));
+
+	//info.color = ln_GlobalLightInfoTexture.Sample(ln_GlobalLightInfoTextureSamplerState, (float2(0.0, y) * s));
+	//info.groundColor = ln_GlobalLightInfoTexture.Sample(ln_GlobalLightInfoTextureSamplerState, (float2(1.5, y) * s));
+	//info.directionAndType = ln_GlobalLightInfoTexture.Sample(ln_GlobalLightInfoTextureSamplerState, (float2(2.5, y) * s));
+	
+	info.color = tex2D(ln_GlobalLightInfoTexture, (float2(0.0, y) * s));
+	info.groundColor = tex2D(ln_GlobalLightInfoTexture, (float2(1.5, y) * s));
+	info.directionAndType = tex2D(ln_GlobalLightInfoTexture, (float2(2.5, y) * s));
 	return info;
 }
 
@@ -114,11 +122,17 @@ LightInfo _LN_GetLightInfoClusterd(int index)
 	//float4 spotDirection = tex2D(pointLightInfoSampler, (float2(1.0, y) * s));
 	//float4 spotAngle = tex2D(pointLightInfoSampler, (float2(2.0, y) * s));
 	//float4 color = tex2D(pointLightInfoSampler, (float2(3.0, y) * s));
-	float4 posAndRange = ln_pointLightInfoTexture.Sample(ln_pointLightInfoTextureSamplerState, (float2(0.0, y) * s));
-	float4 spotDirection = ln_pointLightInfoTexture.Sample(ln_pointLightInfoTextureSamplerState, (float2(1.0, y) * s));
-	float4 spotAngle = ln_pointLightInfoTexture.Sample(ln_pointLightInfoTextureSamplerState, (float2(2.0, y) * s));
-	float4 color = ln_pointLightInfoTexture.Sample(ln_pointLightInfoTextureSamplerState, (float2(3.0, y) * s));
+
+	//float4 posAndRange = ln_pointLightInfoTexture.Sample(ln_pointLightInfoTextureSamplerState, (float2(0.0, y) * s));
+	//float4 spotDirection = ln_pointLightInfoTexture.Sample(ln_pointLightInfoTextureSamplerState, (float2(1.0, y) * s));
+	//float4 spotAngle = ln_pointLightInfoTexture.Sample(ln_pointLightInfoTextureSamplerState, (float2(2.0, y) * s));
+	//float4 color = ln_pointLightInfoTexture.Sample(ln_pointLightInfoTextureSamplerState, (float2(3.0, y) * s));
 	
+	float4 posAndRange = tex2D(ln_pointLightInfoTexture, (float2(0.0, y) * s));
+	float4 spotDirection = tex2D(ln_pointLightInfoTexture, (float2(1.0, y) * s));
+	float4 spotAngle = tex2D(ln_pointLightInfoTexture, (float2(2.0, y) * s));
+	float4 color = tex2D(ln_pointLightInfoTexture, (float2(3.0, y) * s));
+
 	LightInfo light;
 	light.position = posAndRange.xyz;
 	light.range = posAndRange.w;
@@ -191,7 +205,8 @@ void _LN_InitLocalLightContext(out _LN_LocalLightContext context, float3 vertexP
 	float tx = (vy * LN_CLUSTER_TEXTURE_X_PITCH) + (cx * LN_CLUSTER_TEXTURE_X_PITCH);
 
 	//float4 cluster = ln_clustersTexture.Sample(ln_clustersTextureSamplerState, float3(cx, cy, cz));
-	float4 cluster = ln_clustersTexture.Sample(ln_clustersTextureSamplerState, float2(tx, cz));
+	//float4 cluster = ln_clustersTexture.Sample(ln_clustersTextureSamplerState, float2(tx, cz));
+	float4 cluster = tex2D(ln_clustersTexture, float2(tx, cz));
 	float lightIndices[4] = {cluster.r, cluster.g, cluster.b, cluster.a};
 	context.lightIndices = lightIndices;
 }
