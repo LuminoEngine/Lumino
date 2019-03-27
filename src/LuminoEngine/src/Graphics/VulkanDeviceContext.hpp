@@ -285,7 +285,7 @@ public:
 	virtual SizeI realSize() { return m_size; }
     virtual TextureFormat getTextureFormat() const { return m_format; }
 	virtual void readData(void* outData) { LN_UNREACHABLE(); }
-	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) { LN_NOTIMPLEMENTED(); }
+    virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) override;
 	virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) { LN_UNREACHABLE(); }
 
     virtual const VulkanImage* image() const override { return &m_image; }

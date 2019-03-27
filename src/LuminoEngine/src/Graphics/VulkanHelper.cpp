@@ -955,6 +955,30 @@ VulkanBuffer* VulkanCommandBuffer::cmdCopyBuffer(size_t size, VulkanBuffer* dest
 	return buffer;
 }
 
+VulkanBuffer* VulkanCommandBuffer::cmdCopyBufferToImage(size_t size, const VkBufferImageCopy& region, VulkanImage* destination)
+{
+    if (m_stagingBufferPoolUsed >= m_stagingBufferPool.size()) {
+        glowStagingBufferPool();
+    }
+
+    VulkanBuffer* buffer = &m_stagingBufferPool[m_stagingBufferPoolUsed];
+    m_stagingBufferPoolUsed++;
+
+    // できるだけ毎回オブジェクトを再構築するのは避けたいので、サイズが小さい時だけにしてみる
+    if (buffer->size() < size) {
+        buffer->resetBuffer(size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+    }
+
+    // LinearAllocator からメモリ確保
+    buffer->resetMemoryBuffer(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_vulkanAllocator.vulkanAllocator());
+
+    // コマンドバッファに乗せる
+    vkCmdCopyBufferToImage(m_commandBuffer, buffer->vulkanBuffer(), destination->vulkanImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+
+    // 戻り先で書いてもらう
+    return buffer;
+}
+
 void VulkanCommandBuffer::cleanInFlightResources()
 {
     for (auto& pool : m_usingDescriptorSetsPools) {
@@ -1621,10 +1645,10 @@ Result VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsD
         colorBlending.logicOp = VK_LOGIC_OP_COPY;
         colorBlending.attachmentCount = attachmentsCount;
         colorBlending.pAttachments = colorBlendAttachments;
-        colorBlending.blendConstants[0] = 0.0f;
-        colorBlending.blendConstants[1] = 0.0f;
-        colorBlending.blendConstants[2] = 0.0f;
-        colorBlending.blendConstants[3] = 0.0f;
+        colorBlending.blendConstants[0] = 1.0f;
+        colorBlending.blendConstants[1] = 1.0f;
+        colorBlending.blendConstants[2] = 1.0f;
+        colorBlending.blendConstants[3] = 1.0f;
     }
     //VkPipelineColorBlendStateCreateInfo colorBlending = {};
     //colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;

@@ -193,6 +193,7 @@ public:
 	// データを destination へ送信するためのコマンドを push する。
 	// 元データは戻り値のメモリ領域に書き込むこと。
 	VulkanBuffer* cmdCopyBuffer(size_t size, VulkanBuffer* destination);
+    VulkanBuffer* cmdCopyBufferToImage(size_t size, const VkBufferImageCopy& region, VulkanImage* destination);
 
 public:
     VulkanFramebuffer* m_lastFoundFramebuffer = nullptr;

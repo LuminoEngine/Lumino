@@ -1685,6 +1685,29 @@ void VulkanTexture2D::dispose()
     m_image.dispose();
 }
 
+void VulkanTexture2D::setSubData(int x, int y, int width, int height, const void* data, size_t dataSize)
+{
+    // TODO:
+    assert(x == 0);
+    assert(y == 0);
+
+    VkBufferImageCopy region = {};
+    region.bufferOffset = 0;
+    region.bufferRowLength = 0;
+    region.bufferImageHeight = 0;
+    region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    region.imageSubresource.mipLevel = 0;
+    region.imageSubresource.baseArrayLayer = 0;
+    region.imageSubresource.layerCount = 1;
+    region.imageOffset = { 0, 0, 0 };
+    region.imageExtent = {
+        static_cast<uint32_t>(width),
+        static_cast<uint32_t>(height),
+        1
+    };
+    VulkanBuffer* buffer = m_deviceContext->recodingCommandBuffer()->cmdCopyBufferToImage(dataSize, region, &m_image);
+    buffer->setData(0, data, dataSize);
+}
 
 //==============================================================================
 // VulkanSwapchainRenderTargetTexture
