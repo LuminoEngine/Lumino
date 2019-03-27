@@ -277,6 +277,9 @@ detail::IGraphicsDeviceContext* GraphicsContext::commitState()
 		for (int i = 0; i < m_staging.renderTargets.size(); i++)
 		{
 			auto& value = m_staging.renderTargets[i];
+            if (value) {
+                value->resetSwapchainFrameIfNeeded();
+            }
 			detail::ITexture* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
 			LN_ENQUEUE_RENDER_COMMAND_3(
 				GraphicsContext_setDepthBuffer, m_manager,

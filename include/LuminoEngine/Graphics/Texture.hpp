@@ -8,7 +8,7 @@ namespace ln {
 class SamplerState;
 class ShaderPass;
 namespace detail { class ITexture; }
-
+class SwapChain;
 class Bitmap2D;
 class Bitmap3D;
 class Font;
@@ -155,16 +155,19 @@ LN_CONSTRUCT_ACCESS:
 	RenderTargetTexture();
 	virtual ~RenderTargetTexture();
 	void init(int width, int height, TextureFormat requestFormat, bool mipmap);
-	void init(detail::ITexture* ref);
+	void init(SwapChain* owner/*, detail::ITexture* ref*/);
 
 LN_INTERNAL_ACCESS:
 	virtual detail::ITexture* resolveRHIObject() override;
 	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
 
-    void resetSwapchainFrame(detail::ITexture* ref);
+    void resetSwapchainFrameIfNeeded();
+    //void resetSwapchainFrame(detail::ITexture* ref);
 
 private:
 	Ref<detail::ITexture> m_rhiObject;
+    SwapChain* m_ownerSwapchain;
+    int m_swapchainImageIndex;
 	//SizeI m_size;
 	//TextureFormat m_requestFormat;
 	//bool m_mipmap;

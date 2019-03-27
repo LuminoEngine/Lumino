@@ -34,7 +34,8 @@ void SwapChain::init(detail::PlatformWindow* window, const SizeI& backbufferSize
 	Object::init();
 	m_rhiObject = detail::EngineDomain::graphicsManager()->deviceContext()->createSwapChain(window, backbufferSize);
     m_rhiObject->acquireNextImage(&m_imageIndex);
-	m_colorBuffer = newObject<RenderTargetTexture>(m_rhiObject->getRenderTarget(m_imageIndex));
+	m_colorBuffer = newObject<RenderTargetTexture>(this/*m_rhiObject->getRenderTarget(m_imageIndex)*/);
+    m_colorBuffer->resetSwapchainFrameIfNeeded();
 	m_depthBuffer = newObject<DepthBuffer>(backbufferSize.width, backbufferSize.height);
 }
 
@@ -69,7 +70,7 @@ detail::ISwapChain* SwapChain::resolveRHIObject() const
 void SwapChain::onPostPresent()
 {
     m_rhiObject->acquireNextImage(&m_imageIndex);
-    m_colorBuffer->resetSwapchainFrame(m_rhiObject->getRenderTarget(m_imageIndex));
+    //m_colorBuffer->resetSwapchainFrame(m_rhiObject->getRenderTarget(m_imageIndex));
 }
 
 //==============================================================================

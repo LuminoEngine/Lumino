@@ -7,6 +7,7 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/Graphics/SwapChain.hpp>
 #include <LuminoEngine/Font/Font.hpp>
 #include "../Font/TextLayoutEngine.hpp"
 
@@ -339,6 +340,8 @@ detail::ITexture* Texture3D::resolveRHIObject()
 
 RenderTargetTexture::RenderTargetTexture()
 	: m_rhiObject(nullptr)
+    , m_ownerSwapchain(nullptr)
+    , m_swapchainImageIndex(-1)
 {
 }
 
@@ -359,10 +362,11 @@ void RenderTargetTexture::init(int width, int height, TextureFormat requestForma
     setFormat(m_rhiObject->getTextureFormat());
 }
 
-void RenderTargetTexture::init(detail::ITexture* ref)
+void RenderTargetTexture::init(SwapChain* owner/*, detail::ITexture* ref*/)
 {
 	Texture::init();
-    resetSwapchainFrame(ref);
+    m_ownerSwapchain = owner;
+    resetSwapchainFrameIfNeeded();
 }
 
 void RenderTargetTexture::onDispose(bool explicitDisposing)
@@ -409,11 +413,20 @@ void RenderTargetTexture::onChangeDevice(detail::IGraphicsDeviceContext* device)
 	LN_NOTIMPLEMENTED();
 }
 
-void RenderTargetTexture::resetSwapchainFrame(detail::ITexture* ref)
+// ちょっとイメージしづらいかもしれないけど、これはレガシーAPI の Backbuffer の ReadData を正しくするための仕組み。
+// Native Swapchain は内部的に複数の RenderTarget を持っていて。これは通常 present のたびに切り替える。
+// で、そうすると present 直後に ReadData して最新の描画結果を得るには、その present 時点の ImageIndex の RenderTarget を取り出さなければならない。
+// ImageIndex を Lumino の API として公開するのはちょっとユーザー負担が増えてしまうので、この層でカバーする。
+void RenderTargetTexture::resetSwapchainFrameIfNeeded()
 {
-    m_rhiObject = ref;
-    setSize(m_rhiObject->realSize());
-    setFormat(m_rhiObject->getTextureFormat());
+    if (m_ownerSwapchain) {
+        if (m_swapchainImageIndex != m_ownerSwapchain->imageIndex()) {
+            m_swapchainImageIndex = m_ownerSwapchain->imageIndex();
+            m_rhiObject = m_ownerSwapchain->resolveRHIObject()->getRenderTarget(m_swapchainImageIndex);
+            setSize(m_rhiObject->realSize());
+            setFormat(m_rhiObject->getTextureFormat());
+        }
+    }
 }
 
 namespace detail {
