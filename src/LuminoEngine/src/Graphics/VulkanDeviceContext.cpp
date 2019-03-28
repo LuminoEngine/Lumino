@@ -210,7 +210,7 @@ Ref<IIndexBuffer> VulkanDeviceContext::onCreateIndexBuffer(GraphicsResourceUsage
 Ref<ITexture> VulkanDeviceContext::onCreateTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
     auto ptr = makeRef<VulkanTexture2D>();
-    if (!ptr->init(this, width, height, TextureFormat::RGBA32, false, initialData)) {
+    if (!ptr->init(this, width, height, requestFormat, mipmap, initialData)) {
         return nullptr;
     }
 	return ptr;

@@ -447,6 +447,14 @@ void UnifiedShader::addMergeDescriptorLayoutItem(DescriptorType registerType, co
     auto itr = std::find_if(list->begin(), list->end(), [&](const DescriptorLayoutItem& x) { return x.name == item.name; });
     if (itr != list->end()) {
         itr->stageFlags |= item.stageFlags;
+
+        // Merge members
+        for (auto& m : item.members) {
+            auto itr2 = std::find_if(itr->members.begin(), itr->members.end(), [&](const ShaderUniformInfo& x) { return x.name == m.name; });
+            if (itr2 == itr->members.end()) {
+                itr->members.push_back(m);
+            }
+        }
     }
     else {
         list->push_back(item);
