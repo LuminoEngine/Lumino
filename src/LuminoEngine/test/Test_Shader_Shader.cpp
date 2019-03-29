@@ -95,10 +95,10 @@ TEST_F(Test_Shader_Shader, UniformBuffer)
 }
 
 //------------------------------------------------------------------------------
-//## UniformBuffer
-TEST_F(Test_Shader_Shader, UniformBuffer2)
+//## MultiTechMultiTexture
+TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
 {
-    auto shader1 = Shader::create(LN_ASSETFILE("Shader/UniformBufferTest-2.fx"));
+    auto shader1 = Shader::create(LN_ASSETFILE("Shader/MultiTechMultiTexture-1.fx"));
 
     auto vertexDecl1 = newObject<VertexDeclaration>();
     vertexDecl1->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
@@ -110,16 +110,26 @@ TEST_F(Test_Shader_Shader, UniformBuffer2)
     };
     auto vb1 = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
-    shader1->findParameter("ln_MaterialColor")->setVector(Vector4(0, 1, 0, 1));
+    auto t1 = Texture2D::create(2, 2, TextureFormat::RGBA32, false, GraphicsResourceUsage::Static);
+    t1->clear(Color::Red);
+    shader1->findParameter("_Texture1")->setTexture(t1);
+
+    auto t2 = Texture2D::create(2, 2, TextureFormat::RGBA32, false, GraphicsResourceUsage::Static);
+    t2->clear(Color::Green);
+    shader1->findParameter("_Texture2")->setTexture(t2);
 
     auto ctx = Engine::graphicsContext();
     TestEnv::resetGraphicsContext(ctx);
     ctx->setVertexDeclaration(vertexDecl1);
     ctx->setVertexBuffer(0, vb1);
-    ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
     ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
     ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
-    ctx->drawPrimitive(0, 1);
 
-    ASSERT_SCREEN_S(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-UniformBuffer-2.png"));
+    ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
+    ctx->drawPrimitive(0, 1);
+    ASSERT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-MultiTechMultiTexture-1.png"));
+
+    ctx->setShaderPass(shader1->techniques()[1]->passes()[0]);
+    ctx->drawPrimitive(0, 1);
+    ASSERT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-MultiTechMultiTexture-2.png"));
 }
