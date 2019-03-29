@@ -1082,6 +1082,7 @@ Result VulkanDescriptorSetsPool::allocateDescriptorSets(VulkanCommandBuffer* com
     allocInfo.descriptorSetCount = m_owner->descriptorSetLayouts().size();
     allocInfo.pSetLayouts = m_owner->descriptorSetLayouts().data();
     LN_VK_CHECK(vkAllocateDescriptorSets(m_deviceContext->vulkanDevice(), &allocInfo, sets->data()));
+    m_activePageUsedCount++;
 
     const std::vector<VkWriteDescriptorSet>& writeInfos = m_owner->submitDescriptorWriteInfo(commandBuffer, *sets);
 

@@ -15,8 +15,8 @@ GTEST_API_ int main(int argc, char **argv)
 		"--gtest_break_on_failure",
 		//"--gtest_filter=Test_Shader_Shader.UniformBuffer",
 		//"--gtest_filter=Test_Scene_WorldObject.Transform"
+		//"--gtest_filter=Test_Shader_Shader.UniformBuffer2"
 		"--gtest_filter=Test_Rendering_ClusteredShading.*"
-		//"--gtest_filter=Test_Graphics_LowLevelRendering.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);
