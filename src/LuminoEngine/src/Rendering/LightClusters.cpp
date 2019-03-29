@@ -320,10 +320,11 @@ void LightClusters::addClusterData(int x, int y, int z, int lightId)
 
 		m_clustersAddCount[clustersAddCountIndex]++;
 	}
-	//else
-	//{
-	//	printf("%d\n", clustersAddCount);
-	//}
+	else
+	{
+        LN_LOG_WARNING << "The number of affect lights on clusters has exceeded 4.";
+		//printf("%d\n", clustersAddCount);
+	}
 }
 
 } // namespace detail
