@@ -15,7 +15,7 @@ GTEST_API_ int main(int argc, char **argv)
 		"--gtest_break_on_failure",
 		//"--gtest_filter=Test_Shader_Shader.UniformBuffer",
 		//"--gtest_filter=Test_Scene_WorldObject.Transform"
-		"--gtest_filter=Test_Shader_Shader.MultiTechMultiTexture"
+		//"--gtest_filter=Test_Shader_Shader.MultiTechMultiTexture"
 		//"--gtest_filter=Test_Rendering_ClusteredShading.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);

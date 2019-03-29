@@ -90,12 +90,10 @@ public:
     void setVertexShader(PassId pass, CodeContainerId code);
     void setPixelShader(PassId pass, CodeContainerId code);
     void setRenderState(PassId pass, ShaderRenderState* state);
-	void setAttributeSemantics(PassId pass, const std::vector<VertexInputAttribute>& semantics);
 	//void setRefrection(PassId pass, UnifiedShaderRefrectionInfo* value);
     CodeContainerId vertexShader(PassId pass) const;
     CodeContainerId pixelShader(PassId pass) const;
     ShaderRenderState* renderState(PassId pass) const;
-	const std::vector<VertexInputAttribute>& attributeSemantics(PassId pass) const;
     //UnifiedShaderRefrectionInfo* refrection(PassId pass) const;
 
     void saveCodes(const StringRef& perfix) const;
@@ -132,7 +130,6 @@ private:
         CodeContainerId vertexShader;
         CodeContainerId pixelShader;
         Ref<ShaderRenderState> renderState;
-		std::vector<VertexInputAttribute> attributeSemantics;
     };
 
     DiagnosticsManager* m_diag;

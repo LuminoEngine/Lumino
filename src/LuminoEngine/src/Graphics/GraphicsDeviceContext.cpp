@@ -305,39 +305,6 @@ Ref<IShaderPass> IGraphicsDeviceContext::createShaderPassFromUnifiedShaderPass(c
     //    pscode->refrection,
     //    diag);
 
-    // TODO: ポインタの必要なし
-    auto vertexInputAttributeTable = &unifiedShader->attributeSemantics(passId);
-
-
-    detail::ShaderVertexInputAttributeTable attributeTable;
-    if (vertexInputAttributeTable) {
-        struct AttributeUsageConvertionItem
-        {
-            detail::AttributeUsage usage1;
-            VertexElementUsage usage2;
-        };
-        static const AttributeUsageConvertionItem s_AttributeUsageConvertionTable[] = {
-            { detail::AttributeUsage_Unknown, VertexElementUsage::Unknown },
-            { detail::AttributeUsage_Position, VertexElementUsage::Position },
-            { detail::AttributeUsage_BlendIndices, VertexElementUsage::BlendIndices },
-            { detail::AttributeUsage_BlendWeight, VertexElementUsage::BlendWeight },
-            { detail::AttributeUsage_Normal, VertexElementUsage::Normal },
-            { detail::AttributeUsage_TexCoord, VertexElementUsage::TexCoord },
-            { detail::AttributeUsage_Tangent, VertexElementUsage::Unknown },	// TODO:
-            { detail::AttributeUsage_Binormal, VertexElementUsage::Unknown },	// TODO:
-            { detail::AttributeUsage_Color, VertexElementUsage::Color },
-        };
-
-        for (size_t i = 0; i < vertexInputAttributeTable->size(); i++) {
-            detail::ShaderVertexInputAttribute attr;
-            assert(i == s_AttributeUsageConvertionTable[i].usage1);
-            attr.usage = s_AttributeUsageConvertionTable[(int)vertexInputAttributeTable->at(i).usage].usage2;
-            attr.index = vertexInputAttributeTable->at(i).index;
-            attr.layoutLocation = vertexInputAttributeTable->at(i).layoutLocation;
-            attributeTable.push_back(attr);
-        }
-    }
-
     detail::ShaderPassCreateInfo createInfo =
     {
         (vscode) ? vscode->code.data() : nullptr,
@@ -346,7 +313,6 @@ Ref<IShaderPass> IGraphicsDeviceContext::createShaderPassFromUnifiedShaderPass(c
         (pscode) ? pscode->code.size() : 0,
         vsEntryPointName,
         psEntryPointName,
-        &attributeTable,
         vscode->refrection,
         pscode->refrection,
         &unifiedShader->descriptorLayout(),
