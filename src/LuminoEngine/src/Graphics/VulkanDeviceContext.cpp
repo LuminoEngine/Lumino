@@ -2071,8 +2071,8 @@ Result VulkanSamplerState::init(VulkanDeviceContext* deviceContext, const Sample
 	samplerInfo.addressModeU = address;
 	samplerInfo.addressModeV = address;
 	samplerInfo.addressModeW = address;
-	samplerInfo.anisotropyEnable = VK_TRUE;		// TODO:
-	samplerInfo.maxAnisotropy = 16;
+    samplerInfo.anisotropyEnable = VK_FALSE;//VK_TRUE;		// TODO:
+    samplerInfo.maxAnisotropy = 0;// 16;
 	samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
 	samplerInfo.unnormalizedCoordinates = VK_FALSE;
 	samplerInfo.compareEnable = VK_FALSE;
