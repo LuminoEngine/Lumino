@@ -928,22 +928,29 @@ Result VulkanCommandBuffer::allocateDescriptorSets(VulkanShaderPass* shaderPass,
     return shaderPass->recodingPool->allocateDescriptorSets(this, outSets);
 }
 
+VulkanBuffer* VulkanCommandBuffer::allocateBuffer(size_t size, VkBufferUsageFlags usage)
+{
+    if (m_stagingBufferPoolUsed >= m_stagingBufferPool.size()) {
+        glowStagingBufferPool();
+    }
+
+    VulkanBuffer* buffer = &m_stagingBufferPool[m_stagingBufferPoolUsed];
+    m_stagingBufferPoolUsed++;
+
+    // できるだけ毎回オブジェクトを再構築するのは避けたいので、サイズが小さい時だけにしてみる
+    if (buffer->size() < size) {
+        buffer->resetBuffer(size, usage);
+    }
+
+    // LinearAllocator からメモリ確保
+    buffer->resetMemoryBuffer(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_vulkanAllocator.vulkanAllocator());
+
+    return buffer;
+}
+
 VulkanBuffer* VulkanCommandBuffer::cmdCopyBuffer(size_t size, VulkanBuffer* destination)
 {
-	if (m_stagingBufferPoolUsed >= m_stagingBufferPool.size()) {
-		glowStagingBufferPool();
-	}
-
-	VulkanBuffer* buffer = &m_stagingBufferPool[m_stagingBufferPoolUsed];
-	m_stagingBufferPoolUsed++;
-
-	// できるだけ毎回オブジェクトを再構築するのは避けたいので、サイズが小さい時だけにしてみる
-	if (buffer->size() < size) {
-		buffer->resetBuffer(size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
-	}
-
-	// LinearAllocator からメモリ確保
-	buffer->resetMemoryBuffer(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_vulkanAllocator.vulkanAllocator());
+    VulkanBuffer* buffer = allocateBuffer(size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 
 	// コマンドバッファに乗せる
 	VkBufferCopy copyRegion = {};
@@ -957,20 +964,7 @@ VulkanBuffer* VulkanCommandBuffer::cmdCopyBuffer(size_t size, VulkanBuffer* dest
 
 VulkanBuffer* VulkanCommandBuffer::cmdCopyBufferToImage(size_t size, const VkBufferImageCopy& region, VulkanImage* destination)
 {
-    if (m_stagingBufferPoolUsed >= m_stagingBufferPool.size()) {
-        glowStagingBufferPool();
-    }
-
-    VulkanBuffer* buffer = &m_stagingBufferPool[m_stagingBufferPoolUsed];
-    m_stagingBufferPoolUsed++;
-
-    // できるだけ毎回オブジェクトを再構築するのは避けたいので、サイズが小さい時だけにしてみる
-    if (buffer->size() < size) {
-        buffer->resetBuffer(size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
-    }
-
-    // LinearAllocator からメモリ確保
-    buffer->resetMemoryBuffer(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_vulkanAllocator.vulkanAllocator());
+    VulkanBuffer* buffer = allocateBuffer(size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 
     // コマンドバッファに乗せる
     vkCmdCopyBufferToImage(m_commandBuffer, buffer->vulkanBuffer(), destination->vulkanImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);

@@ -2370,12 +2370,14 @@ const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWrite
     for (size_t i = 0; i < m_uniformBuffers.size(); i++) {
         auto& uniformBuffer = m_uniformBuffers[i];
 
-        // UniformBuffer の内容を CopyCommand に乗せる
-        VulkanBuffer* buffer = commandBuffer->cmdCopyBuffer(uniformBuffer->buffer()->size(), uniformBuffer->buffer());
+        // UniformBuffer の内容を CopyCommand に乗せる。
+        // Inside RenderPass では vkCmdCopyBuffer が禁止されているので、DeviceLocal に置いたメモリを使うのではなく、
+        // 毎回新しい HostVisible な Buffer を作ってそれを使う。
+        VulkanBuffer* buffer = commandBuffer->allocateBuffer(uniformBuffer->buffer()->size(), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
         buffer->setData(0, uniformBuffer->data().data(), uniformBuffer->data().size());
 
         VkDescriptorBufferInfo& info = m_bufferDescriptorBufferInfo[i];
-        info.buffer = uniformBuffer->vulkanBuffer();
+        info.buffer = info.buffer = buffer->vulkanBuffer();
 
         VkWriteDescriptorSet& writeInfo = m_descriptorWriteInfo[i];
         writeInfo.dstSet = descriptorSets[DescriptorType_UniformBuffer];
