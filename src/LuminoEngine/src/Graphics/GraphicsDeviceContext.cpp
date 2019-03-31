@@ -305,16 +305,6 @@ Ref<IShaderPass> IGraphicsDeviceContext::createShaderPassFromUnifiedShaderPass(c
         pscode = unifiedShader->findCode(pscodeId, triple);
     }
 
-    //auto rhiPass = createRHIShaderPass(
-    //    //(vscode) ? vscode->code.data() : nullptr,
-    //    //(vscode) ? vscode->code.size() : 0,
-    //    //(pscode) ? pscode->code.data() : nullptr,
-    //    //(pscode) ? pscode->code.size() : 0,
-    //    ,
-    //    vscode->refrection,
-    //    pscode->refrection,
-    //    diag);
-
     detail::ShaderPassCreateInfo createInfo =
     {
         (vscode) ? vscode->code.data() : nullptr,
@@ -323,16 +313,9 @@ Ref<IShaderPass> IGraphicsDeviceContext::createShaderPassFromUnifiedShaderPass(c
         (pscode) ? pscode->code.size() : 0,
         vsEntryPointName,
         psEntryPointName,
-        nullptr,
-        nullptr,
         &unifiedShader->descriptorLayout(),
     };
-    //if (!createInfo.vertexShaderRefrection) {
-    //    createInfo.vertexShaderRefrection = makeRef<detail::UnifiedShaderRefrectionInfo>();
-    //}
-    //if (!createInfo.pixelShaderRefrection) {
-    //    createInfo.pixelShaderRefrection = makeRef<detail::UnifiedShaderRefrectionInfo>();
-    //}
+
     ShaderCompilationDiag sdiag;
     Ref<detail::IShaderPass> pass = createShaderPass(createInfo, &sdiag);
 

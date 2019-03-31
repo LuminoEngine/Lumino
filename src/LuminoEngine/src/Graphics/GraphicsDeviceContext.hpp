@@ -89,8 +89,6 @@ struct ShaderPassCreateInfo
     const char* vsEntryPointName;
     const char* psEntryPointName;
     //const ShaderVertexInputAttributeTable* attributeTable;
-    UnifiedShaderRefrectionInfo* vertexShaderRefrection;    // TODO: いらない
-    UnifiedShaderRefrectionInfo* pixelShaderRefrection;     // TODO: いらない
     const DescriptorLayout* descriptorLayout;
 };
 
