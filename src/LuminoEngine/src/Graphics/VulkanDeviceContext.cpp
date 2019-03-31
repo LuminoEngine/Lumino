@@ -67,6 +67,8 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
 // VulkanDeviceContext
 
 VulkanDeviceContext::VulkanDeviceContext()
+    : m_instance(VK_NULL_HANDLE)
+    , m_debugMessenger(VK_NULL_HANDLE)
 {
 }
 
@@ -127,7 +129,7 @@ void VulkanDeviceContext::dispose()
 		m_device = VK_NULL_HANDLE;
 	}
 
-    if (enableValidationLayers) {
+    if (m_debugMessenger) {
         DestroyDebugUtilsMessengerEXT(vulkanInstance(), m_debugMessenger, vulkanAllocator());
     }
 
@@ -593,7 +595,7 @@ void VulkanDeviceContext::onPresent(ISwapChain* swapChain)
     static_cast<VulkanSwapChain*>(swapChain)->present();
 
     // TODO: あったほうがいい？
-    vkDeviceWaitIdle(m_device);
+    //vkDeviceWaitIdle(m_device);
 	//g_app.mainLoop();
 }
 
@@ -678,15 +680,16 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityF
 
 Result VulkanDeviceContext::setupDebugMessenger()
 {
-	if (!enableValidationLayers) return false;
+    if (enableValidationLayers)
+    {
+        VkDebugUtilsMessengerCreateInfoEXT createInfo = {};
+        createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+        createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+        createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+        createInfo.pfnUserCallback = debugCallback;
 
-	VkDebugUtilsMessengerCreateInfoEXT createInfo = {};
-	createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-	createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-	createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-	createInfo.pfnUserCallback = debugCallback;
-
-	LN_VK_CHECK(CreateDebugUtilsMessengerEXT(vulkanInstance(), &createInfo, vulkanAllocator(), &m_debugMessenger));
+        LN_VK_CHECK(CreateDebugUtilsMessengerEXT(vulkanInstance(), &createInfo, vulkanAllocator(), &m_debugMessenger));
+    }
 
 	return true;
 }
@@ -740,6 +743,7 @@ Result VulkanDeviceContext::createLogicalDevice()
     auto computeQueueIndex = UINT32_MAX;
     auto transferQueueindex = UINT32_MAX;
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+    std::vector<float> queuePriorities;
     {
         uint32_t propCount = 0;
         vkGetPhysicalDeviceQueueFamilyProperties(m_physicalDevice, &propCount, nullptr);
@@ -813,8 +817,8 @@ Result VulkanDeviceContext::createLogicalDevice()
             }
         }
 
-        std::vector<float> queuePriorities(totalQueueCount);
         uint32_t offset = 0u;
+        queuePriorities.resize(totalQueueCount);
         for (uint32_t i = 0u; i < propCount; ++i) {
             queueCreateInfos[i].pQueuePriorities = &queuePriorities[offset];
             offset += queueCreateInfos[i].queueCount;
@@ -1356,10 +1360,8 @@ void VulkanSwapChain::present()
 
     presentInfo.pImageIndices = &m_imageIndex;
 
-    printf("11\n");
     VkResult result = vkQueuePresentKHR(m_presentQueue, &presentInfo);
 
-    printf("22\n");
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
         //framebufferResized = false;
         throw std::runtime_error("failed to present swap chain image!");
@@ -1369,7 +1371,6 @@ void VulkanSwapChain::present()
         throw std::runtime_error("failed to present swap chain image!");
     }
 
-    printf("1\n");
     // Swap command buffer
     {
         auto t = m_deviceContext->recodingCommandBuffer();
@@ -1377,15 +1378,11 @@ void VulkanSwapChain::present()
         m_inFlightCommandBuffers[m_currentFrame] = t;
     }
 
-    printf("2\n");
     m_currentFrame = (m_currentFrame + 1) % maxFrameCount();
 
 
     // TODO: 必要？
-    vkDeviceWaitIdle(m_deviceContext->vulkanDevice());
-
-
-    printf("3\n");
+    //vkDeviceWaitIdle(m_deviceContext->vulkanDevice());
 }
 
 VkSurfaceFormatKHR VulkanSwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
