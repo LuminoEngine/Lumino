@@ -479,6 +479,22 @@ void VulkanDeviceContext::onUnmapResource(IGraphicsResource* resource)
     }
 }
 
+void VulkanDeviceContext::onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
+{
+    // データ転送に使う vkCmdCopyBufferToImage() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
+    m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
+
+    static_cast<VulkanTexture*>(resource)->setSubData(x, y, width, height, data, dataSize);
+}
+
+void VulkanDeviceContext::onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
+{
+    // データ転送に使う vkCmdCopyBufferToImage() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
+    m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
+
+    static_cast<VulkanTexture*>(resource)->setSubData3D(x, y, z, width, height, depth, data, dataSize);
+}
+
 void VulkanDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
     //submitStatus(committedState());
@@ -1010,7 +1026,7 @@ void VulkanDeviceContext::copyBufferToImageImmediately(VkBuffer buffer, VkImage 
     endSingleTimeCommands(commandBuffer);
 }
 
-Result VulkanDeviceContext::transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
+Result VulkanDeviceContext::transitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
 {
     VkImageMemoryBarrier barrier = {};
     barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -1065,7 +1081,6 @@ Result VulkanDeviceContext::transitionImageLayout(VkImage image, VkFormat format
         return false;
     }
 
-    VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
     vkCmdPipelineBarrier(
         commandBuffer,
@@ -1076,9 +1091,16 @@ Result VulkanDeviceContext::transitionImageLayout(VkImage image, VkFormat format
         1, &barrier
     );
 
-    endSingleTimeCommands(commandBuffer);
 
     return true;
+}
+
+Result VulkanDeviceContext::transitionImageLayoutImmediately(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
+{
+    VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+    Result result = transitionImageLayout(commandBuffer, image, format, oldLayout, newLayout);
+    endSingleTimeCommands(commandBuffer);
+    return result;
 }
 
 //Result VulkanDeviceContext::submitStatus(const State& state)
@@ -1657,7 +1679,7 @@ Result VulkanTexture2D::init(VulkanDeviceContext* deviceContext, uint32_t width,
     m_size.height = height;
     m_format = requestFormat;
 
-    VkFormat nativeFormat = VulkanHelper::LNFormatToVkFormat(requestFormat);
+    m_nativeFormat = VulkanHelper::LNFormatToVkFormat(requestFormat);
     VkDeviceSize imageSize = width * height * GraphicsHelper::getPixelSize(requestFormat);
 
     if (!initialData) {
@@ -1671,15 +1693,15 @@ Result VulkanTexture2D::init(VulkanDeviceContext* deviceContext, uint32_t width,
         stagingBuffer.setData(0, initialData, imageSize);
 
         // VK_FORMAT_R8G8B8A8_UNORM
-        m_image.init(m_deviceContext, width, height, nativeFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
+        m_image.init(m_deviceContext, width, height, m_nativeFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
 
-        if (!m_deviceContext->transitionImageLayout(m_image.vulkanImage(), VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)) {
+        if (!m_deviceContext->transitionImageLayoutImmediately(m_image.vulkanImage(), m_nativeFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)) {
             return false;
         }
 
         m_deviceContext->copyBufferToImageImmediately(stagingBuffer.vulkanBuffer(), m_image.vulkanImage(), width, height);
 
-        if (!m_deviceContext->transitionImageLayout(m_image.vulkanImage(), VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {
+        if (!m_deviceContext->transitionImageLayoutImmediately(m_image.vulkanImage(), m_nativeFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {
             return false;
         }
 
@@ -1700,6 +1722,16 @@ void VulkanTexture2D::setSubData(int x, int y, int width, int height, const void
     assert(x == 0);
     assert(y == 0);
 
+
+    // vkCmdCopyBufferToImage() の dstImageLayout は VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR の
+    // いずれかでなければならない。https://www.khronos.org/registry/vulkan/specs/1.1-extensions/man/html/vkCmdCopyBufferToImage.html
+    // 転送前にレイアウトを変更しておく。
+    if (!m_deviceContext->transitionImageLayout(m_deviceContext->recodingCommandBuffer()->vulkanCommandBuffer(),
+        m_image.vulkanImage(), m_nativeFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)) {
+        LN_ERROR();
+        return;
+    }
+
     VkBufferImageCopy region = {};
     region.bufferOffset = 0;
     region.bufferRowLength = 0;
@@ -1716,6 +1748,13 @@ void VulkanTexture2D::setSubData(int x, int y, int width, int height, const void
     };
     VulkanBuffer* buffer = m_deviceContext->recodingCommandBuffer()->cmdCopyBufferToImage(dataSize, region, &m_image);
     buffer->setData(0, data, dataSize);
+
+    // レイアウトを元に戻す
+    if (!m_deviceContext->transitionImageLayout(m_deviceContext->recodingCommandBuffer()->vulkanCommandBuffer(),
+        m_image.vulkanImage(), m_nativeFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {
+        LN_ERROR();
+        return;
+    }
 }
 
 //==============================================================================
@@ -2039,7 +2078,7 @@ Result VulkanDepthBuffer::init(VulkanDeviceContext* deviceContext, uint32_t widt
         return false;
     }
 
-    if (!m_deviceContext->transitionImageLayout(m_image.vulkanImage(), depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)) {
+    if (!m_deviceContext->transitionImageLayoutImmediately(m_image.vulkanImage(), depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)) {
         return false;
     }
 

@@ -188,20 +188,22 @@ detail::ITexture* Texture2D::resolveRHIObject()
 			detail::BitmapHelper::blitRawSimple(
 				bmpRawData.writableData(), bmpBuffer->data(), m_bitmap->width(), m_bitmap->height(), Bitmap2D::getPixelFormatByteSize(m_bitmap->format()), false);
 
+            detail::IGraphicsDeviceContext* deviceContext = manager()->deviceContext();
 			if (!m_rhiObject)
 			{
-				m_rhiObject = manager()->deviceContext()->createTexture2D(width(), height(), format(), mipmap(), m_bitmap->data());
+				m_rhiObject = deviceContext->createTexture2D(width(), height(), format(), mipmap(), m_bitmap->data());
 			}
 			else
 			{
 				detail::ITexture* rhiObject = m_rhiObject;
-				LN_ENQUEUE_RENDER_COMMAND_3(
+				LN_ENQUEUE_RENDER_COMMAND_4(
 					Texture2D_setSubData, manager(),
+                    detail::IGraphicsDeviceContext*, deviceContext,
 					detail::RenderBulkData, bmpRawData,
 					SizeI, bmpSize,
 					Ref<detail::ITexture>, rhiObject,
 					{
-						rhiObject->setSubData(0, 0, bmpSize.width, bmpSize.height, bmpRawData.data(), bmpRawData.size());
+                        deviceContext->setSubData2D(rhiObject, 0, 0, bmpSize.width, bmpSize.height, bmpRawData.data(), bmpRawData.size());
 					});
 			}
 		}
@@ -304,20 +306,22 @@ detail::ITexture* Texture3D::resolveRHIObject()
 			detail::BitmapHelper::blitRawSimple3D(
 				bmpRawData.writableData(), bmpBuffer->data(), m_bitmap->width(), m_bitmap->height(), m_bitmap->depth(), Bitmap2D::getPixelFormatByteSize(m_bitmap->format()), false);
 
+            detail::IGraphicsDeviceContext* deviceContext = manager()->deviceContext();
 			if (!m_rhiObject)
 			{
-				m_rhiObject = manager()->deviceContext()->createTexture3D(width(), height(), depth(), format(), mipmap(), m_bitmap->data());
+				m_rhiObject = deviceContext->createTexture3D(width(), height(), depth(), format(), mipmap(), m_bitmap->data());
 			}
 			else
 			{
 				detail::ITexture* rhiObject = m_rhiObject;
-				LN_ENQUEUE_RENDER_COMMAND_3(
+				LN_ENQUEUE_RENDER_COMMAND_4(
 					Texture3D_setSubData, manager(),
+                    detail::IGraphicsDeviceContext*, deviceContext,
 					detail::RenderBulkData, bmpRawData,
 					BoxSizeI, bmpSize,
 					Ref<detail::ITexture>, rhiObject,
 					{
-						rhiObject->setSubData3D(0, 0, 0, bmpSize.width, bmpSize.height, bmpSize.depth, bmpRawData.data(), bmpRawData.size());
+                        deviceContext->setSubData3D(rhiObject, 0, 0, 0, bmpSize.width, bmpSize.height, bmpSize.depth, bmpRawData.data(), bmpRawData.size());
 					});
 			}
 		}

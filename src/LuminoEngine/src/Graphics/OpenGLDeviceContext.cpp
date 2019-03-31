@@ -706,6 +706,16 @@ void OpenGLDeviceContext::onUnmapResource(IGraphicsResource* resource)
     }
 }
 
+void OpenGLDeviceContext::onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
+{
+    static_cast<GLTextureBase*>(resource)->setSubData(x, y, width, height, data, dataSize);
+}
+
+void OpenGLDeviceContext::onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
+{
+    static_cast<GLTextureBase*>(resource)->setSubData3D(x, y, z, width, height, depth, data, dataSize);
+}
+
 void OpenGLDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
 	GLuint glflags = 0;

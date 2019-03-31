@@ -243,6 +243,16 @@ void IGraphicsDeviceContext::unmap(IGraphicsResource* resource)
     onUnmapResource(resource);
 }
 
+void IGraphicsDeviceContext::setSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
+{
+    onSetSubData2D(resource, x, y, width, height, data, dataSize);
+}
+
+void IGraphicsDeviceContext::setSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
+{
+    onSetSubData3D(resource, x, y, z, width, height, depth, data, dataSize);
+}
+
 void IGraphicsDeviceContext::clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
     commitStatus(SubmitSource_Clear);

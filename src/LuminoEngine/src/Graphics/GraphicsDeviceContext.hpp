@@ -191,6 +191,8 @@ public:
     // write only
     void* map(IGraphicsResource* resource);
     void unmap(IGraphicsResource* resource);
+    void setSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize);
+    void setSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize);
 
 	void clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil);
 	void drawPrimitive(int startVertex, int primitiveCount);
@@ -231,6 +233,8 @@ protected:
 
     virtual void* onMapResource(IGraphicsResource* resource) = 0;
     virtual void onUnmapResource(IGraphicsResource* resource) = 0;
+    virtual void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
+    virtual void onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
 
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
 	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) = 0;
@@ -341,8 +345,8 @@ public:
 
 	// データ転送 (TODO:部分更新は未実装…)
 	// data に渡されるイメージデータは上下が反転している状態。
-	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
-	virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
+	//virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
+	//virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
 
 	//virtual void setSubData3D(const Box32& box, const void* data, size_t dataBytes) = 0;
 

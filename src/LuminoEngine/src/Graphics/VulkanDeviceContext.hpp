@@ -85,6 +85,8 @@ protected:
     virtual void onSubmitStatus(const State& state, uint32_t stateDirtyFlags, SubmitSource submitSource) override;
     virtual void* onMapResource(IGraphicsResource* resource) override;
     virtual void onUnmapResource(IGraphicsResource* resource) override;
+    virtual void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) override;
+    virtual void onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
 	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) override;
 	virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount) override;
@@ -114,7 +116,8 @@ public: // TODO:
     Result endSingleTimeCommands(VkCommandBuffer commandBuffer);
     void copyBufferImmediately(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
     void copyBufferToImageImmediately(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
-    Result transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+    Result transitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+    Result transitionImageLayoutImmediately(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 
     //Result submitStatus(const State& state);
 
@@ -270,6 +273,8 @@ class VulkanTexture
 {
 public:
     virtual const VulkanImage* image() const = 0;
+    virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
+    virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
 
 private:
 };
@@ -295,6 +300,7 @@ private:
     VulkanImage m_image;
 	SizeI m_size;
 	TextureFormat m_format;
+    VkFormat m_nativeFormat;
 };
 
 class VulkanRenderTarget
