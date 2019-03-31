@@ -323,8 +323,8 @@ Ref<IShaderPass> IGraphicsDeviceContext::createShaderPassFromUnifiedShaderPass(c
         (pscode) ? pscode->code.size() : 0,
         vsEntryPointName,
         psEntryPointName,
-        vscode->refrection,
-        pscode->refrection,
+        nullptr,
+        nullptr,
         &unifiedShader->descriptorLayout(),
     };
     //if (!createInfo.vertexShaderRefrection) {

@@ -42,7 +42,7 @@ public:
     {
         UnifiedShaderTriple triple;
         std::vector<byte_t> code;
-        Ref<UnifiedShaderRefrectionInfo> refrection;
+        //Ref<UnifiedShaderRefrectionInfo> refrection;
     };
 
     // 0 is invalid value.
@@ -70,7 +70,7 @@ public:
 
     bool addCodeContainer(ShaderStage2 stage, const std::string& entryPointName, CodeContainerId* outId);
     void setCode(CodeContainerId container, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code, UnifiedShaderRefrectionInfo* refrection);
-    void setCode(ShaderStage2 stage, const std::string& entryPointName, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code, UnifiedShaderRefrectionInfo* refrection);
+    //void setCode(ShaderStage2 stage, const std::string& entryPointName, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code, UnifiedShaderRefrectionInfo* refrection);
     bool hasCode(ShaderStage2 stage, const std::string& entryPointName, const UnifiedShaderTriple& triple) const;
     bool findCodeContainer(ShaderStage2 stage, const std::string& entryPointName, CodeContainerId* outId) const;
     const CodeInfo* findCode(CodeContainerId conteinreId, const UnifiedShaderTriple& triple) const;
@@ -101,7 +101,7 @@ public:
 private:
     int idToIndex(uint32_t id) const { return id - 1; }
     uint32_t indexToId(int index) const { return index + 1; }
-    int findCodeContainerInfoIndex(ShaderStage2 stage, const std::string& entryPointName) const;
+    //int findCodeContainerInfoIndex(ShaderStage2 stage, const std::string& entryPointName) const;
     int findTechniqueInfoIndex(const std::string& name) const;
     int findPassInfoIndex(TechniqueId tech, const std::string& name) const;
 
@@ -161,7 +161,9 @@ public:
 	const Ref<UnifiedShader>& unifiedShader() const { return m_unifiedShader; }
 
 private:
+    bool createTechPassCodeContainer();
 	static std::string makeKey(ShaderStage2 stage, const std::string& entryPoint);
+    static std::string makeKey2(const std::string& techName, const std::string& passName, ShaderStage2 stage, const std::string& entryPoint);
 
 	ShaderManager* m_manager;
 	Ref<UnifiedShader> m_unifiedShader;
