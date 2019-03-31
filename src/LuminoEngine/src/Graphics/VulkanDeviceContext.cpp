@@ -520,8 +520,8 @@ void VulkanDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, f
             }
         }
 
-        if (state.framebufferState.depthBuffer != nullptr &&
-            testFlag(flags, (ClearFlags)(ClearFlags::Depth | ClearFlags::Stencil)))
+        if ((testFlag(flags, ClearFlags::Depth) || testFlag(flags, ClearFlags::Stencil)) &&
+            state.framebufferState.depthBuffer != nullptr)
         {
             attachments[count].colorAttachment = count;
             attachments[count].aspectMask = 0;
