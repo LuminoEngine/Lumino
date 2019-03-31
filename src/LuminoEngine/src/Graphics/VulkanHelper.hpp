@@ -186,6 +186,7 @@ public:
 
     Result beginRecording();
     Result endRecording();
+    void endRenderPassInRecordingIfNeeded();
     Result submit(VkSemaphore waitSemaphore, VkSemaphore signalSemaphore);
 
     Result allocateDescriptorSets(VulkanShaderPass* shaderPass, std::array<VkDescriptorSet, DescriptorType_Count>* outSets);
@@ -199,6 +200,7 @@ public:
 
 public:
     VulkanFramebuffer* m_lastFoundFramebuffer = nullptr;
+    bool m_insideRendarPass = false;
 
 private:
     void cleanInFlightResources();

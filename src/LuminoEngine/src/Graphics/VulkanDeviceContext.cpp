@@ -296,11 +296,15 @@ void VulkanDeviceContext::onSubmitStatus(const State& state, uint32_t stateDirty
     if (stateDirtyFlags & StateDirtyFlags_FrameBuffers)
     {
         // 前回開始した RenderPass があればクローズしておく
-        if (m_recodingCommandBuffer->m_lastFoundFramebuffer) {
-            vkCmdEndRenderPass(m_recodingCommandBuffer->vulkanCommandBuffer());
-            m_recodingCommandBuffer->m_lastFoundFramebuffer = nullptr;
-        }
+        m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
 
+        m_recodingCommandBuffer->m_lastFoundFramebuffer = framebufferCache()->findOrCreate(state.framebufferState);
+
+    }
+
+    // ↑の Framebuffer 変更や、mapResource などで RenderPass が End されていることがあるので、その場合はここで開始
+    if (!m_recodingCommandBuffer->m_insideRendarPass)
+    {
         VulkanFramebuffer* framebuffer = framebufferCache()->findOrCreate(state.framebufferState);
         m_recodingCommandBuffer->m_lastFoundFramebuffer = framebuffer;
         {
@@ -324,10 +328,12 @@ void VulkanDeviceContext::onSubmitStatus(const State& state, uint32_t stateDirty
             renderPassInfo.pClearValues = nullptr;//clearValues.data();// 
 
             vkCmdBeginRenderPass(m_recodingCommandBuffer->vulkanCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+            m_recodingCommandBuffer->m_insideRendarPass = true;
         }
     }
 
-    // TODO: modify チェック
+    // TODO: modify チェック (以下の CmdSet や Bind は inside RenderPass である必要はない)
     {
         VkViewport viewport;
         viewport.x = state.regionRects.viewportRect.x;
@@ -434,6 +440,9 @@ void VulkanDeviceContext::onSubmitStatus(const State& state, uint32_t stateDirty
 
 void* VulkanDeviceContext::onMapResource(IGraphicsResource* resource)
 {
+    // データ転送に使う vkCmdCopyBuffer() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
+    m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
+
     switch (resource->resourceType())
     {
     case DeviceResourceType::VertexBuffer:
