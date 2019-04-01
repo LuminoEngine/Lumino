@@ -967,6 +967,34 @@ VulkanBuffer* VulkanCommandBuffer::cmdCopyBuffer(size_t size, VulkanBuffer* dest
 	vkCmdCopyBuffer(m_commandBuffer, buffer->vulkanBuffer(), destination->vulkanBuffer(), 1, &copyRegion);
     // https://www.reddit.com/r/vulkan/comments/axq4p6/updating_constant_buffer_inside_render_pass/
 
+#if 1   // TODO: test
+    VkBufferMemoryBarrier barrier = {};
+    barrier.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
+
+    //barrier.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT;
+    //barrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;  // TODO: ?
+    //barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+    //barrier.dstAccessMask = VK_ACCESS_UNIFORM_READ_BIT;  // TODO: ?
+
+    //barrier.srcQueueFamilyIndex;
+    //barrier.dstQueueFamilyIndex;
+    barrier.buffer = buffer->vulkanBuffer();
+    //barrier.offset;
+    barrier.size = size;
+
+    vkCmdPipelineBarrier(
+        m_commandBuffer,
+        VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,	// このパイプラインステージで、1セットのデータが完全に生成されたことを保証する
+        VK_PIPELINE_STAGE_TRANSFER_BIT,		// このパイプラインステージがそれを消費することを許可する
+        0,
+        0, nullptr,
+        1, &barrier,    // どのデータをブロック/ブロック解除するかを定義します。
+        0, nullptr);
+        // http://web.engr.oregonstate.edu/~mjb/vulkan/Handouts/PipelineBarriers.2pp.pdf
+        // https://stackoverflow.com/questions/48894573/how-to-synchronize-uniform-buffer-updates
+        //https://stackoverflow.com/questions/40577047/vulkan-vkcmdpipelinebarrier-for-data-coherence
+#endif
+
 	// 戻り先で書いてもらう
 	return buffer;
 }
