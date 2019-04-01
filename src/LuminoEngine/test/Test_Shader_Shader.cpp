@@ -133,3 +133,31 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
     ctx->drawPrimitive(0, 1);
     ASSERT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-MultiTechMultiTexture-2.png"));
 }
+
+//------------------------------------------------------------------------------
+//## シェーダ側とホスト側で頂点レイアウトの過不足がある場合のテスト。必要な部分さえあれば描画は可能。
+TEST_F(Test_Shader_Shader, NotProvidedVertexAttribute)
+{
+	auto shader1 = Shader::create(LN_ASSETFILE("Shader/NotProvidedVertexAttribute-1.fx"));
+
+	auto vertexDecl1 = newObject<VertexDeclaration>();
+	vertexDecl1->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
+
+	Vector3 v[] = {
+		{ 0, 0.5, 0 },
+		{ 0.5, -0.25, 0 },
+		{ -0.5, -0.25, 0 },
+	};
+	auto vb1 = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+
+	auto ctx = Engine::graphicsContext();
+	TestEnv::resetGraphicsContext(ctx);
+	ctx->setVertexDeclaration(vertexDecl1);
+	ctx->setVertexBuffer(0, vb1);
+	ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
+	ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+	ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
+	ctx->drawPrimitive(0, 1);
+
+	ASSERT_SCREEN_S(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-NotProvidedVertexAttribute-1.png"));
+}
