@@ -467,7 +467,7 @@ void VulkanDeviceContext::onUnmapResource(IGraphicsResource* resource)
         static_cast<VulkanVertexBuffer*>(resource)->m_mappedResource->unmap();
         break;
     case DeviceResourceType::IndexBuffer:
-        static_cast<VulkanVertexBuffer*>(resource)->m_mappedResource->unmap();
+        static_cast<VulkanIndexBuffer*>(resource)->m_mappedResource->unmap();
         break;
     default:
         LN_NOTIMPLEMENTED();
