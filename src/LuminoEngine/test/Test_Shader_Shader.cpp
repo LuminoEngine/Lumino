@@ -125,14 +125,17 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
     ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
     ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 
+	// _Texture1 のみ (赤)
     ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
     ctx->drawPrimitive(0, 1);
     ASSERT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-MultiTechMultiTexture-1.png"));
 
+	// _Texture2 のみ (緑)
     ctx->setShaderPass(shader1->techniques()[1]->passes()[0]);
     ctx->drawPrimitive(0, 1);
     ASSERT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-MultiTechMultiTexture-2.png"));
 
+	// _Texture1 + _Texture2 (黄)
 	ctx->setShaderPass(shader1->techniques()[2]->passes()[0]);
 	ctx->drawPrimitive(0, 1);
 	ASSERT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-MultiTechMultiTexture-3.png"));
