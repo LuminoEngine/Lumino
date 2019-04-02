@@ -147,52 +147,52 @@ bool UnifiedShader::save(const Path& filePath)
                 writeOptionalUInt8(writer, renderState->stencilPassOp);
                 writeOptionalUInt8(writer, renderState->stencilFunc);
             }
-        }
-    }
 
-    // Descriptor layout
-    {
-        writer->write("lufx.l..", 8); // Chunk signature
+			// Descriptor layout
+			{
+				DescriptorLayout* descriptorLayout = &info->descriptorLayout;
 
-        writer->writeUInt32(m_descriptorLayout.uniformBufferRegister.size());
-        for (size_t i = 0; i < m_descriptorLayout.uniformBufferRegister.size(); i++) {
-            DescriptorLayoutItem* item = &m_descriptorLayout.uniformBufferRegister[i];
-            writeString(writer, item->name);
-            writer->writeUInt8(item->stageFlags);
-            writer->writeUInt8(item->binding);
+				writer->writeUInt32(descriptorLayout->uniformBufferRegister.size());
+				for (size_t i = 0; i < descriptorLayout->uniformBufferRegister.size(); i++) {
+					DescriptorLayoutItem* item = &descriptorLayout->uniformBufferRegister[i];
+					writeString(writer, item->name);
+					writer->writeUInt8(item->stageFlags);
+					writer->writeUInt8(item->binding);
 
-            // Buffer members
-            {
-                writer->writeUInt32(item->size);
+					// Buffer members
+					{
+						writer->writeUInt32(item->size);
 
-                writer->writeUInt32(item->members.size());
-                for (size_t iMember = 0; iMember < item->members.size(); iMember++) {
-                    auto& member = item->members[iMember];
-                    writeString(writer, member.name);
-                    writer->writeUInt16(member.type);
-                    writer->writeUInt16(member.offset);
-                    writer->writeUInt16(member.vectorElements);
-                    writer->writeUInt16(member.arrayElements);
-                    writer->writeUInt16(member.matrixRows);
-                    writer->writeUInt16(member.matrixColumns);
-                }
-            }
-        }
+						writer->writeUInt32(item->members.size());
+						for (size_t iMember = 0; iMember < item->members.size(); iMember++) {
+							auto& member = item->members[iMember];
+							writeString(writer, member.name);
+							writer->writeUInt16(member.type);
+							writer->writeUInt16(member.offset);
+							writer->writeUInt16(member.vectorElements);
+							writer->writeUInt16(member.arrayElements);
+							writer->writeUInt16(member.matrixRows);
+							writer->writeUInt16(member.matrixColumns);
+						}
+					}
+				}
 
-        writer->writeUInt32(m_descriptorLayout.textureRegister.size());
-        for (size_t i = 0; i < m_descriptorLayout.textureRegister.size(); i++) {
-            DescriptorLayoutItem* item = &m_descriptorLayout.textureRegister[i];
-            writeString(writer, item->name);
-            writer->writeUInt8(item->stageFlags);
-            writer->writeUInt8(item->binding);
-        }
+				writer->writeUInt32(descriptorLayout->textureRegister.size());
+				for (size_t i = 0; i < descriptorLayout->textureRegister.size(); i++) {
+					DescriptorLayoutItem* item = &descriptorLayout->textureRegister[i];
+					writeString(writer, item->name);
+					writer->writeUInt8(item->stageFlags);
+					writer->writeUInt8(item->binding);
+				}
 
-        writer->writeUInt32(m_descriptorLayout.samplerRegister.size());
-        for (size_t i = 0; i < m_descriptorLayout.samplerRegister.size(); i++) {
-            DescriptorLayoutItem* item = &m_descriptorLayout.samplerRegister[i];
-            writeString(writer, item->name);
-            writer->writeUInt8(item->stageFlags);
-            writer->writeUInt8(item->binding);
+				writer->writeUInt32(descriptorLayout->samplerRegister.size());
+				for (size_t i = 0; i < descriptorLayout->samplerRegister.size(); i++) {
+					DescriptorLayoutItem* item = &descriptorLayout->samplerRegister[i];
+					writeString(writer, item->name);
+					writer->writeUInt8(item->stageFlags);
+					writer->writeUInt8(item->binding);
+				}
+			}
         }
     }
 
@@ -336,106 +336,68 @@ bool UnifiedShader::load(Stream* stream)
                 readOptionalUInt8(reader, &renderState->stencilFunc);
             }
 
+			// Descriptor layout
+			{
+				DescriptorLayout* descriptorLayout = &info.descriptorLayout;
+
+				{
+					size_t count = reader->readUInt32();
+					for (size_t i = 0; i < count; i++) {
+						DescriptorLayoutItem item;
+						item.name = readString(reader);
+						item.stageFlags = reader->readUInt8();
+						item.binding = reader->readUInt8();
+
+						// Buffer members
+						{
+							item.size = reader->readUInt32();
+
+							size_t count = reader->readUInt32();
+							for (size_t iMember = 0; iMember < count; iMember++) {
+								ShaderUniformInfo member;
+								member.name = readString(reader);
+								member.type = reader->readUInt16();
+								member.offset = reader->readUInt16();
+								member.vectorElements = reader->readUInt16();
+								member.arrayElements = reader->readUInt16();
+								member.matrixRows = reader->readUInt16();
+								member.matrixColumns = reader->readUInt16();
+								item.members.push_back(std::move(member));
+							}
+						}
+
+						descriptorLayout->uniformBufferRegister.push_back(item);
+					}
+				}
+
+				{
+					size_t count = reader->readUInt32();
+					for (size_t i = 0; i < count; i++) {
+						DescriptorLayoutItem item;
+						item.name = readString(reader);
+						item.stageFlags = reader->readUInt8();
+						item.binding = reader->readUInt8();
+						descriptorLayout->textureRegister.push_back(item);
+					}
+				}
+
+				{
+					size_t count = reader->readUInt32();
+					for (size_t i = 0; i < count; i++) {
+						DescriptorLayoutItem item;
+						item.name = readString(reader);
+						item.stageFlags = reader->readUInt8();
+						item.binding = reader->readUInt8();
+						descriptorLayout->samplerRegister.push_back(item);
+					}
+				}
+			}
+
             m_passes.add(std::move(info));
         }
     }
 
-    // Descriptor layout
-    {
-        if (!checkSignature(reader, "lufx.l..", 8, m_diag)) {
-            return false;
-        }
-
-        {
-            size_t count = reader->readUInt32();
-            for (size_t i = 0; i < count; i++) {
-                DescriptorLayoutItem item;
-                item.name = readString(reader);
-                item.stageFlags = reader->readUInt8();
-                item.binding = reader->readUInt8();
-
-                // Buffer members
-                {
-                    item.size = reader->readUInt32();
-
-                    size_t count = reader->readUInt32();
-                    for (size_t iMember = 0; iMember < count; iMember++) {
-                        ShaderUniformInfo member;
-                        member.name = readString(reader);
-                        member.type = reader->readUInt16();
-                        member.offset = reader->readUInt16();
-                        member.vectorElements = reader->readUInt16();
-                        member.arrayElements = reader->readUInt16();
-                        member.matrixRows = reader->readUInt16();
-                        member.matrixColumns = reader->readUInt16();
-                        item.members.push_back(std::move(member));
-                    }
-                }
-
-                m_descriptorLayout.uniformBufferRegister.push_back(item);
-            }
-        }
-
-        {
-            size_t count = reader->readUInt32();
-            for (size_t i = 0; i < count; i++) {
-                DescriptorLayoutItem item;
-                item.name = readString(reader);
-                item.stageFlags = reader->readUInt8();
-                item.binding = reader->readUInt8();
-                m_descriptorLayout.textureRegister.push_back(item);
-            }
-        }
-
-        {
-            size_t count = reader->readUInt32();
-            for (size_t i = 0; i < count; i++) {
-                DescriptorLayoutItem item;
-                item.name = readString(reader);
-                item.stageFlags = reader->readUInt8();
-                item.binding = reader->readUInt8();
-                m_descriptorLayout.samplerRegister.push_back(item);
-            }
-        }
-    }
-
     return true;
-}
-
-void UnifiedShader::addMergeDescriptorLayoutItem(DescriptorType registerType, const DescriptorLayoutItem& item)
-{
-    std::vector<DescriptorLayoutItem>* list = nullptr;
-    switch (registerType)
-    {
-    case DescriptorType_UniformBuffer:
-        list = &m_descriptorLayout.uniformBufferRegister;
-        break;
-    case DescriptorType_Texture:
-        list = &m_descriptorLayout.textureRegister;
-        break;
-    case DescriptorType_SamplerState:
-        list = &m_descriptorLayout.samplerRegister;
-        break;
-    default:
-        LN_UNREACHABLE();
-        return;
-    }
-
-    auto itr = std::find_if(list->begin(), list->end(), [&](const DescriptorLayoutItem& x) { return x.name == item.name; });
-    if (itr != list->end()) {
-        itr->stageFlags |= item.stageFlags;
-
-        // Merge members
-        for (auto& m : item.members) {
-            auto itr2 = std::find_if(itr->members.begin(), itr->members.end(), [&](const ShaderUniformInfo& x) { return x.name == m.name; });
-            if (itr2 == itr->members.end()) {
-                itr->members.push_back(m);
-            }
-        }
-    }
-    else {
-        list->push_back(item);
-    }
 }
 
 bool UnifiedShader::addCodeContainer(ShaderStage2 stage, const std::string& entryPointName, CodeContainerId* outId)
@@ -577,6 +539,57 @@ void UnifiedShader::setRenderState(PassId pass, ShaderRenderState* state)
     m_passes[idToIndex(pass)].renderState = state;
 }
 
+void UnifiedShader::addMergeDescriptorLayoutItem(PassId pass, const DescriptorLayout& layout)
+{
+	DescriptorLayout* descriptorLayout = &m_passes[idToIndex(pass)].descriptorLayout;
+
+	for (int iType = 0; iType < DescriptorType_Count; iType++) {
+
+		std::vector<DescriptorLayoutItem>* list = &descriptorLayout->getLayoutItems((DescriptorType)iType);
+		const std::vector<DescriptorLayoutItem>& srcList = layout.getLayoutItems((DescriptorType)iType);
+
+		for (auto& item : srcList)
+		{
+			auto itr = std::find_if(list->begin(), list->end(), [&](const DescriptorLayoutItem& x) { return x.name == item.name; });
+			if (itr != list->end()) {
+				itr->stageFlags |= item.stageFlags;
+
+				// Merge members
+				for (auto& m : item.members) {
+					auto itr2 = std::find_if(itr->members.begin(), itr->members.end(), [&](const ShaderUniformInfo& x) { return x.name == m.name; });
+					if (itr2 == itr->members.end()) {
+						itr->members.push_back(m);
+					}
+				}
+			}
+			else {
+				list->push_back(item);
+				list->back().binding = list->size() - 1;
+			}
+		}
+
+	}
+
+
+	//std::vector<DescriptorLayoutItem>* list = nullptr;
+	//switch (registerType)
+	//{
+	//case DescriptorType_UniformBuffer:
+	//	list = &descriptorLayout->uniformBufferRegister;
+	//	break;
+	//case DescriptorType_Texture:
+	//	list = &descriptorLayout->textureRegister;
+	//	break;
+	//case DescriptorType_SamplerState:
+	//	list = &descriptorLayout->samplerRegister;
+	//	break;
+	//default:
+	//	LN_UNREACHABLE();
+	//	return;
+	//}
+
+}
+
 //void UnifiedShader::setRefrection(PassId pass, UnifiedShaderRefrectionInfo* buffers)
 //{
 //	m_passes[idToIndex(pass)].refrection = buffers;
@@ -597,9 +610,35 @@ ShaderRenderState* UnifiedShader::renderState(PassId pass) const
     return m_passes[idToIndex(pass)].renderState;
 }
 
+const DescriptorLayout& UnifiedShader::descriptorLayout(PassId pass) const
+{
+	return m_passes[idToIndex(pass)].descriptorLayout;
+}
+
 void UnifiedShader::saveCodes(const StringRef& perfix) const
 {
-    LN_NOTIMPLEMENTED();
+	for (int iTech = 0; iTech < techniqueCount(); iTech++)
+	{
+		UnifiedShader::TechniqueId techId = techniqueId(iTech);
+
+		for (int iPass = 0; iPass < getPassCountInTechnique(techId); iPass++)
+		{
+			UnifiedShader::PassId passId = getPassIdInTechnique(techId, iPass);
+			CodeContainerId containerIds[] = { vertexShader(passId), pixelShader(passId) };
+			for (auto containerId : containerIds)
+			{
+				auto& container = m_codeContainers[idToIndex(containerId)];
+				for (auto& code : container.codes) {
+					auto file = String::format(
+						u"{0}.{1}.{2}.{3}.{4}-{5}-{6}",
+						perfix, String::fromStdString(techniqueName(techId)), String::fromStdString(passName(passId)), String::fromStdString(container.entryPointName),
+						String::fromStdString(code.triple.target), code.triple.version, String::fromStdString(code.triple.option));
+					FileSystem::writeAllBytes(file, code.code.data(), code.code.size());
+				}
+			}
+		}
+	}
+
     //for (auto& container : m_codeContainers) {
     //    for (auto& code : container.codes) {
     //        auto file = String::format(u"{0}-{1}-{2}-{3}-{4}", perfix, String::fromStdString(container.entryPointName), String::fromStdString(code.triple.target), code.triple.version, String::fromStdString(code.triple.option));
@@ -735,6 +774,8 @@ bool UnifiedShaderCompiler::compile(
                 if (m_diag->hasError()) {
                     return false;
                 }
+				m_unifiedShader->addMergeDescriptorLayoutItem(passId, transpiler->descriptorLayout);
+				transpiler->passId = passId;
                 m_transpilerMap[makeKey2(tech.name, pass.name, ShaderStage2_Vertex, pass.vertexShader)] = transpiler;
 
                 // 空の CodeContainer を作っておく (実際のコードは最後に格納する)
@@ -752,6 +793,8 @@ bool UnifiedShaderCompiler::compile(
                 if (m_diag->hasError()) {
                     return false;
                 }
+				m_unifiedShader->addMergeDescriptorLayoutItem(passId, transpiler->descriptorLayout);
+				transpiler->passId = passId;
                 m_transpilerMap[makeKey2(tech.name, pass.name, ShaderStage2_Fragment, pass.pixelShader)] = transpiler;
 
                 // 空の CodeContainer を作っておく (実際のコードは最後に格納する)
@@ -835,6 +878,8 @@ bool UnifiedShaderCompiler::compileSingleCodes(
         if (m_diag->hasError()) {
             return false;
         }
+		m_unifiedShader->addMergeDescriptorLayoutItem(passId, transpiler->descriptorLayout);
+		transpiler->passId = passId;
         m_transpilerMap[makeKey2(tech.name, pass.name, ShaderStage2_Vertex, pass.vertexShader)] = transpiler;
 
         // 空の CodeContainer を作っておく (実際のコードは最後に格納する)
@@ -852,6 +897,8 @@ bool UnifiedShaderCompiler::compileSingleCodes(
         if (m_diag->hasError()) {
             return false;
         }
+		m_unifiedShader->addMergeDescriptorLayoutItem(passId, transpiler->descriptorLayout);
+		transpiler->passId = passId;
         m_transpilerMap[makeKey2(tech.name, pass.name, ShaderStage2_Fragment, pass.pixelShader)] = transpiler;
 
         // 空の CodeContainer を作っておく (実際のコードは最後に格納する)
@@ -916,52 +963,50 @@ bool UnifiedShaderCompiler::link()
 
 
 
-
-
-	// vertex shader の最大 binding 数を求める
-	size_t maxVertexShaderBindingCounts[DescriptorType_Count] = {};
-	for (auto& pair : m_transpilerMap) {
-		if (pair.second->stage() == ShaderStage2_Vertex) {
-			maxVertexShaderBindingCounts[DescriptorType_UniformBuffer] = std::max(maxVertexShaderBindingCounts[DescriptorType_UniformBuffer], pair.second->descriptorLayout.uniformBufferRegister.size());
-			maxVertexShaderBindingCounts[DescriptorType_Texture] = std::max(maxVertexShaderBindingCounts[DescriptorType_Texture], pair.second->descriptorLayout.textureRegister.size());
-			maxVertexShaderBindingCounts[DescriptorType_SamplerState] = std::max(maxVertexShaderBindingCounts[DescriptorType_SamplerState], pair.second->descriptorLayout.samplerRegister.size());
-		}
-	}
-	// 求めた maxVertexShaderBindingCount を PixelShader の binding の開始値としてマッピングする
-	for (auto& pair : m_transpilerMap) {
-		if (pair.second->stage() == ShaderStage2_Vertex) {
-			for (size_t i = 0; i < pair.second->descriptorLayout.uniformBufferRegister.size(); i++) {
-				pair.second->descriptorLayout.uniformBufferRegister[i].binding = i;
-				m_unifiedShader->addMergeDescriptorLayoutItem(DescriptorType_UniformBuffer, pair.second->descriptorLayout.uniformBufferRegister[i]);
-			}
-			for (size_t i = 0; i < pair.second->descriptorLayout.textureRegister.size(); i++) {
-				pair.second->descriptorLayout.textureRegister[i].binding = i;
-				m_unifiedShader->addMergeDescriptorLayoutItem(DescriptorType_Texture, pair.second->descriptorLayout.textureRegister[i]);
-			}
-			for (size_t i = 0; i < pair.second->descriptorLayout.samplerRegister.size(); i++) {
-				pair.second->descriptorLayout.samplerRegister[i].binding = i;
-				m_unifiedShader->addMergeDescriptorLayoutItem(DescriptorType_SamplerState, pair.second->descriptorLayout.samplerRegister[i]);
-			}
-		}
-		if (pair.second->stage() == ShaderStage2_Fragment) {
-			for (size_t i = 0; i < pair.second->descriptorLayout.uniformBufferRegister.size(); i++) {
-				pair.second->descriptorLayout.uniformBufferRegister[i].binding = maxVertexShaderBindingCounts[DescriptorType_UniformBuffer] + i;
-				m_unifiedShader->addMergeDescriptorLayoutItem(DescriptorType_UniformBuffer, pair.second->descriptorLayout.uniformBufferRegister[i]);
-			}
-			for (size_t i = 0; i < pair.second->descriptorLayout.textureRegister.size(); i++) {
-				pair.second->descriptorLayout.textureRegister[i].binding = maxVertexShaderBindingCounts[DescriptorType_Texture] + i;
-				m_unifiedShader->addMergeDescriptorLayoutItem(DescriptorType_Texture, pair.second->descriptorLayout.textureRegister[i]);
-			}
-			for (size_t i = 0; i < pair.second->descriptorLayout.samplerRegister.size(); i++) {
-				pair.second->descriptorLayout.samplerRegister[i].binding = maxVertexShaderBindingCounts[DescriptorType_SamplerState] + i;
-				m_unifiedShader->addMergeDescriptorLayoutItem(DescriptorType_SamplerState, pair.second->descriptorLayout.samplerRegister[i]);
-			}
-		}
-	}
+	//// vertex shader の最大 binding 数を求める
+	//size_t maxVertexShaderBindingCounts[DescriptorType_Count] = {};
+	//for (auto& pair : m_transpilerMap) {
+	//	if (pair.second->stage() == ShaderStage2_Vertex) {
+	//		maxVertexShaderBindingCounts[DescriptorType_UniformBuffer] = std::max(maxVertexShaderBindingCounts[DescriptorType_UniformBuffer], pair.second->descriptorLayout.uniformBufferRegister.size());
+	//		maxVertexShaderBindingCounts[DescriptorType_Texture] = std::max(maxVertexShaderBindingCounts[DescriptorType_Texture], pair.second->descriptorLayout.textureRegister.size());
+	//		maxVertexShaderBindingCounts[DescriptorType_SamplerState] = std::max(maxVertexShaderBindingCounts[DescriptorType_SamplerState], pair.second->descriptorLayout.samplerRegister.size());
+	//	}
+	//}
+	//// 求めた maxVertexShaderBindingCount を PixelShader の binding の開始値としてマッピングする
+	//for (auto& pair : m_transpilerMap) {
+	//	if (pair.second->stage() == ShaderStage2_Vertex) {
+	//		for (size_t i = 0; i < pair.second->descriptorLayout.uniformBufferRegister.size(); i++) {
+	//			pair.second->descriptorLayout.uniformBufferRegister[i].binding = i;
+	//			m_unifiedShader->addMergeDescriptorLayoutItem(DescriptorType_UniformBuffer, pair.second->descriptorLayout.uniformBufferRegister[i]);
+	//		}
+	//		for (size_t i = 0; i < pair.second->descriptorLayout.textureRegister.size(); i++) {
+	//			pair.second->descriptorLayout.textureRegister[i].binding = i;
+	//			m_unifiedShader->addMergeDescriptorLayoutItem(DescriptorType_Texture, pair.second->descriptorLayout.textureRegister[i]);
+	//		}
+	//		for (size_t i = 0; i < pair.second->descriptorLayout.samplerRegister.size(); i++) {
+	//			pair.second->descriptorLayout.samplerRegister[i].binding = i;
+	//			m_unifiedShader->addMergeDescriptorLayoutItem(DescriptorType_SamplerState, pair.second->descriptorLayout.samplerRegister[i]);
+	//		}
+	//	}
+	//	if (pair.second->stage() == ShaderStage2_Fragment) {
+	//		for (size_t i = 0; i < pair.second->descriptorLayout.uniformBufferRegister.size(); i++) {
+	//			pair.second->descriptorLayout.uniformBufferRegister[i].binding = maxVertexShaderBindingCounts[DescriptorType_UniformBuffer] + i;
+	//			m_unifiedShader->addMergeDescriptorLayoutItem(DescriptorType_UniformBuffer, pair.second->descriptorLayout.uniformBufferRegister[i]);
+	//		}
+	//		for (size_t i = 0; i < pair.second->descriptorLayout.textureRegister.size(); i++) {
+	//			pair.second->descriptorLayout.textureRegister[i].binding = maxVertexShaderBindingCounts[DescriptorType_Texture] + i;
+	//			m_unifiedShader->addMergeDescriptorLayoutItem(DescriptorType_Texture, pair.second->descriptorLayout.textureRegister[i]);
+	//		}
+	//		for (size_t i = 0; i < pair.second->descriptorLayout.samplerRegister.size(); i++) {
+	//			pair.second->descriptorLayout.samplerRegister[i].binding = maxVertexShaderBindingCounts[DescriptorType_SamplerState] + i;
+	//			m_unifiedShader->addMergeDescriptorLayoutItem(DescriptorType_SamplerState, pair.second->descriptorLayout.samplerRegister[i]);
+	//		}
+	//	}
+	//}
 
 	for (auto& pair : m_transpilerMap) {
 		auto& tp = pair.second;
-		if (!tp->mapIOAndGenerateSpirv(m_unifiedShader->descriptorLayout())) {
+		if (!tp->mapIOAndGenerateSpirv(m_unifiedShader->descriptorLayout(tp->passId))) {
 			return false;
 		}
 

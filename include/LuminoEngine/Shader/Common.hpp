@@ -181,6 +181,7 @@ struct DescriptorLayout
     std::vector<DescriptorLayoutItem> textureRegister;
     std::vector<DescriptorLayoutItem> samplerRegister;
 
+	std::vector<DescriptorLayoutItem>& getLayoutItems(DescriptorType registerType);
     const std::vector<DescriptorLayoutItem>& getLayoutItems(DescriptorType registerType) const;
     bool isReferenceFromVertexStage(DescriptorType registerType) const;
     bool isReferenceFromPixelStage(DescriptorType registerType) const;

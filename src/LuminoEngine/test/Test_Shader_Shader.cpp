@@ -132,6 +132,10 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
     ctx->setShaderPass(shader1->techniques()[1]->passes()[0]);
     ctx->drawPrimitive(0, 1);
     ASSERT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-MultiTechMultiTexture-2.png"));
+
+	ctx->setShaderPass(shader1->techniques()[2]->passes()[0]);
+	ctx->drawPrimitive(0, 1);
+	ASSERT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-MultiTechMultiTexture-3.png"));
 }
 
 //------------------------------------------------------------------------------

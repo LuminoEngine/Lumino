@@ -989,6 +989,22 @@ void ShaderUniformBufferInfo::mergeBuffers(
 //=============================================================================
 // DescriptorLayout
 
+std::vector<DescriptorLayoutItem>& DescriptorLayout::getLayoutItems(DescriptorType registerType)
+{
+	switch (registerType)
+	{
+	case ln::detail::DescriptorType_UniformBuffer:
+		return uniformBufferRegister;
+	case ln::detail::DescriptorType_Texture:
+		return textureRegister;
+	case ln::detail::DescriptorType_SamplerState:
+		return samplerRegister;
+	default:
+		LN_UNREACHABLE();
+		return uniformBufferRegister;
+	}
+}
+
 const std::vector<DescriptorLayoutItem>& DescriptorLayout::getLayoutItems(DescriptorType registerType) const
 {
     switch (registerType)

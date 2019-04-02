@@ -33,6 +33,12 @@ float4 psMain2() : SV_TARGET
 }
 
 //------------------------------------------------------------------------------
+float4 psMain3() : SV_TARGET
+{
+    return tex2D(_Texture1, float2(0, 0)) + tex2D(_Texture2, float2(0, 0));
+}
+
+//------------------------------------------------------------------------------
 technique Tech1
 {
     pass Pass0
@@ -50,3 +56,13 @@ technique Tech2
         PixelShader = psMain2;
     }
 }
+
+technique Tech3
+{
+    pass Pass0
+    {
+        VertexShader = vsMain;
+        PixelShader = psMain3;
+    }
+}
+

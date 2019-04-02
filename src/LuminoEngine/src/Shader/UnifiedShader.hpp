@@ -65,8 +65,6 @@ public:
     bool save(const Path& filePath);
     bool load(Stream* stream);
 
-    void addMergeDescriptorLayoutItem(DescriptorType registerType, const DescriptorLayoutItem& item);
-    const DescriptorLayout& descriptorLayout() const { return m_descriptorLayout; }
 
     bool addCodeContainer(ShaderStage2 stage, const std::string& entryPointName, CodeContainerId* outId);
     void setCode(CodeContainerId container, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code, UnifiedShaderRefrectionInfo* refrection);
@@ -79,21 +77,23 @@ public:
     bool addTechnique(const std::string& name, TechniqueId* outTech);
     int techniqueCount() const { return m_techniques.size(); }
     TechniqueId techniqueId(int index) const { return indexToId(index); }
-    const std::string& techniqueName(TechniqueId techId) { return m_techniques[idToIndex(techId)].name; }
+    const std::string& techniqueName(TechniqueId techId) const { return m_techniques[idToIndex(techId)].name; }
 
     bool addPass(TechniqueId parentTech, const std::string& name, PassId* outPass);
     int getPassCountInTechnique(TechniqueId parentTech) const;
     PassId getPassIdInTechnique(TechniqueId parentTech, int index) const;
     int passCount() const { return m_passes.size(); }
     PassId passId(int index) const { return indexToId(index); }
-    const std::string& passName(PassId passId) { return m_passes[idToIndex(passId)].name; }
+    const std::string& passName(PassId passId) const { return m_passes[idToIndex(passId)].name; }
     void setVertexShader(PassId pass, CodeContainerId code);
     void setPixelShader(PassId pass, CodeContainerId code);
     void setRenderState(PassId pass, ShaderRenderState* state);
 	//void setRefrection(PassId pass, UnifiedShaderRefrectionInfo* value);
+    void addMergeDescriptorLayoutItem(PassId pass, const DescriptorLayout& layout);
     CodeContainerId vertexShader(PassId pass) const;
     CodeContainerId pixelShader(PassId pass) const;
     ShaderRenderState* renderState(PassId pass) const;
+	const DescriptorLayout& descriptorLayout(PassId pass) const;
     //UnifiedShaderRefrectionInfo* refrection(PassId pass) const;
 
     void saveCodes(const StringRef& perfix) const;
@@ -130,13 +130,13 @@ private:
         CodeContainerId vertexShader;
         CodeContainerId pixelShader;
         Ref<ShaderRenderState> renderState;
+		DescriptorLayout descriptorLayout;
     };
 
     DiagnosticsManager* m_diag;
     List<CodeContainerInfo> m_codeContainers;
     List<TechniqueInfo> m_techniques;
     List<PassInfo> m_passes;
-    DescriptorLayout m_descriptorLayout;
 };
 
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER

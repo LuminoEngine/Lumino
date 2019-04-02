@@ -25,6 +25,7 @@ class ShaderCodeTranspiler
 {
 public:
     DescriptorLayout descriptorLayout;
+	uint32_t passId;	// 作業用
 
     static void initializeGlobals();
     static void finalizeGlobals();
