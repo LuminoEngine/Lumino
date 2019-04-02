@@ -243,6 +243,11 @@ void IGraphicsDeviceContext::unmap(IGraphicsResource* resource)
     onUnmapResource(resource);
 }
 
+void IGraphicsDeviceContext::setSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length)
+{
+    onSetSubData(resource, offset, data, length);
+}
+
 void IGraphicsDeviceContext::setSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
 {
     onSetSubData2D(resource, x, y, width, height, data, dataSize);

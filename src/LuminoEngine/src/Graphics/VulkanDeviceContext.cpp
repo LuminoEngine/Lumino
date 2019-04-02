@@ -475,6 +475,22 @@ void VulkanDeviceContext::onUnmapResource(IGraphicsResource* resource)
     }
 }
 
+void VulkanDeviceContext::onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length)
+{
+    switch (resource->resourceType())
+    {
+    case DeviceResourceType::VertexBuffer:
+        static_cast<VulkanVertexBuffer*>(resource)->setSubData(offset, data, length);
+        break;
+    case DeviceResourceType::IndexBuffer:
+        static_cast<VulkanIndexBuffer*>(resource)->setSubData(offset, data, length);
+        break;
+    default:
+        LN_NOTIMPLEMENTED();
+        break;
+    }
+}
+
 void VulkanDeviceContext::onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
 {
     // データ転送に使う vkCmdCopyBufferToImage() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。

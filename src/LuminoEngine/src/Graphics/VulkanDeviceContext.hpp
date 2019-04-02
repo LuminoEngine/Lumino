@@ -85,6 +85,7 @@ protected:
     virtual void onSubmitStatus(const State& state, uint32_t stateDirtyFlags, SubmitSource submitSource) override;
     virtual void* onMapResource(IGraphicsResource* resource) override;
     virtual void onUnmapResource(IGraphicsResource* resource) override;
+    virtual void onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length) override;
     virtual void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) override;
     virtual void onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
@@ -228,11 +229,11 @@ public:
     virtual void dispose() override;
     virtual size_t getBytesSize() override { return m_buffer.size(); }
     virtual GraphicsResourceUsage usage() const override { return m_usage; }
-    virtual void setSubData(size_t offset, const void* data, size_t length) override;
 
     VulkanBuffer* buffer() { return &m_buffer; }
     VkBuffer vulkanBuffer() const { return m_buffer.vulkanBuffer(); }
     VkDeviceMemory vulkanDeviceMemory() const { return m_buffer.vulkanBufferMemory(); }
+    void setSubData(size_t offset, const void* data, size_t length);
 
     VulkanBuffer* m_mappedResource = nullptr;
 
@@ -252,12 +253,12 @@ public:
     
     virtual size_t getBytesSize() override { return m_buffer.size(); }
     virtual GraphicsResourceUsage usage() const override { return m_usage; }
-    virtual void setSubData(size_t offset, const void* data, size_t length) override;
 
     VulkanBuffer* buffer() { return &m_buffer; }
     VkBuffer vulkanBuffer() const { return m_buffer.vulkanBuffer(); }
     VkDeviceMemory vulkanDeviceMemory() const { return m_buffer.vulkanBufferMemory(); }
     VkIndexType indexType() const { return m_indexType; }
+    void setSubData(size_t offset, const void* data, size_t length);
 
     VulkanBuffer* m_mappedResource = nullptr;
 

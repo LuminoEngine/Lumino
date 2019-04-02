@@ -189,6 +189,7 @@ public:
     // write only
     void* map(IGraphicsResource* resource);
     void unmap(IGraphicsResource* resource);
+    void setSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length);
     void setSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize);
     void setSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize);
 
@@ -231,6 +232,7 @@ protected:
 
     virtual void* onMapResource(IGraphicsResource* resource) = 0;
     virtual void onUnmapResource(IGraphicsResource* resource) = 0;
+    virtual void onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length) = 0;
     virtual void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
     virtual void onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
 
@@ -285,7 +287,7 @@ public:
     virtual DeviceResourceType resourceType() const { return DeviceResourceType::VertexBuffer; }
 	virtual size_t getBytesSize() = 0;
 	virtual GraphicsResourceUsage usage() const = 0;
-	virtual void setSubData(size_t offset, const void* data, size_t length) = 0;
+	//virtual void setSubData(size_t offset, const void* data, size_t length) = 0;
 
 protected:
 	IVertexBuffer();
@@ -300,7 +302,7 @@ public:
     virtual DeviceResourceType resourceType() const { return DeviceResourceType::IndexBuffer; }
 	virtual size_t getBytesSize() = 0;
 	virtual GraphicsResourceUsage usage() const = 0;
-	virtual void setSubData(size_t offset, const void* data, size_t length) = 0;
+	//virtual void setSubData(size_t offset, const void* data, size_t length) = 0;
 
 protected:
 	IIndexBuffer();

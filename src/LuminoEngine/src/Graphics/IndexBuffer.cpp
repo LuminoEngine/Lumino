@@ -198,9 +198,10 @@ detail::IIndexBuffer* IndexBuffer::resolveRHIObject()
 {
 	if (m_modified)
 	{
+        detail::IGraphicsDeviceContext* device = manager()->deviceContext();
 		if (m_rhiLockedBuffer)
 		{
-            manager()->deviceContext()->unmap(m_rhiObject);
+            device->unmap(m_rhiObject);
 			m_rhiLockedBuffer = nullptr;
 		}
 		else
@@ -208,18 +209,19 @@ detail::IIndexBuffer* IndexBuffer::resolveRHIObject()
 			size_t requiredSize = bytesSize();
 			if (!m_rhiObject || m_rhiObject->getBytesSize() != requiredSize || m_rhiObject->usage() != m_usage)
 			{
-				m_rhiObject = manager()->deviceContext()->createIndexBuffer(m_usage, m_format, size(), m_buffer.data());
+				m_rhiObject = device->createIndexBuffer(m_usage, m_format, size(), m_buffer.data());
 			}
 			else
 			{
 				detail::RenderBulkData data(m_buffer.data(), m_buffer.size());
 				detail::IIndexBuffer* rhiObject = m_rhiObject;
-				LN_ENQUEUE_RENDER_COMMAND_2(
+				LN_ENQUEUE_RENDER_COMMAND_3(
 					IndexBuffer_setSubData, manager(),
+                    detail::IGraphicsDeviceContext*, device,
 					detail::RenderBulkData, data,
 					Ref<detail::IIndexBuffer>, rhiObject,
 					{
-						rhiObject->setSubData(0, data.data(), data.size());
+                        device->setSubData(rhiObject, 0, data.data(), data.size());
 					});
 			}
 		}

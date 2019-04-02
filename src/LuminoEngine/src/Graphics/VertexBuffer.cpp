@@ -138,9 +138,10 @@ detail::IVertexBuffer* VertexBuffer::resolveRHIObject()
 {
 	if (m_modified)
 	{
+        detail::IGraphicsDeviceContext* device = manager()->deviceContext();
 		if (m_rhiLockedBuffer)
 		{
-            manager()->deviceContext()->unmap(m_rhiObject);
+            device->unmap(m_rhiObject);
 			m_rhiLockedBuffer = nullptr;
 		}
 		else
@@ -148,18 +149,19 @@ detail::IVertexBuffer* VertexBuffer::resolveRHIObject()
 			size_t requiredSize = size();
 			if (!m_rhiObject || m_rhiObject->getBytesSize() != requiredSize || m_rhiObject->usage() != m_usage)
 			{
-				m_rhiObject = manager()->deviceContext()->createVertexBuffer(m_usage, m_buffer.size(), m_buffer.data());
+				m_rhiObject = device->createVertexBuffer(m_usage, m_buffer.size(), m_buffer.data());
 			}
 			else
 			{
 				detail::RenderBulkData data(m_buffer.data(), m_buffer.size());
 				detail::IVertexBuffer* rhiObject = m_rhiObject;
-				LN_ENQUEUE_RENDER_COMMAND_2(
+				LN_ENQUEUE_RENDER_COMMAND_3(
 					VertexBuffer_SetSubData, manager(),
+                    detail::IGraphicsDeviceContext*, device,
 					detail::RenderBulkData, data,
 					Ref<detail::IVertexBuffer>, rhiObject,
 					{
-						rhiObject->setSubData(0, data.data(), data.size());
+                        device->setSubData(rhiObject, 0, data.data(), data.size());
 					});
 			}
 		}

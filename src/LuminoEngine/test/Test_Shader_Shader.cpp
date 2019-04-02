@@ -166,5 +166,5 @@ TEST_F(Test_Shader_Shader, NotProvidedVertexAttribute)
 	ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 	ctx->drawPrimitive(0, 1);
 
-	ASSERT_SCREEN_S(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-NotProvidedVertexAttribute-1.png"));
+	ASSERT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-NotProvidedVertexAttribute-1.png"));
 }

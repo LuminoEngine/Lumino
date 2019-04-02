@@ -209,8 +209,8 @@ void InternalShapesRenderer::renderCommandList(ShapesRendererCommandList* comman
 
 
 		// 描画する
-		m_vertexBuffer->setSubData(0, m_vertexCache.getBuffer(), m_vertexCache.getBufferUsedByteCount());
-		m_indexBuffer->setSubData(0, m_indexCache.getBuffer(), m_indexCache.getBufferUsedByteCount());
+        device->setSubData(m_vertexBuffer, 0, m_vertexCache.getBuffer(), m_vertexCache.getBufferUsedByteCount());
+        device->setSubData(m_indexBuffer, 0, m_indexCache.getBuffer(), m_indexCache.getBufferUsedByteCount());
 
 		{
 			device->setVertexDeclaration(m_manager->standardVertexDeclaration()->resolveRHIObject());

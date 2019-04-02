@@ -706,6 +706,22 @@ void OpenGLDeviceContext::onUnmapResource(IGraphicsResource* resource)
     }
 }
 
+void OpenGLDeviceContext::onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length)
+{
+    switch (resource->resourceType())
+    {
+    case DeviceResourceType::VertexBuffer:
+        static_cast<GLVertexBuffer*>(resource)->setSubData(offset, data, length);
+        break;
+    case DeviceResourceType::IndexBuffer:
+        static_cast<GLIndexBuffer*>(resource)->setSubData(offset, data, length);
+        break;
+    default:
+        LN_NOTIMPLEMENTED();
+        break;
+    }
+}
+
 void OpenGLDeviceContext::onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
 {
     static_cast<GLTextureBase*>(resource)->setSubData(x, y, width, height, data, dataSize);
