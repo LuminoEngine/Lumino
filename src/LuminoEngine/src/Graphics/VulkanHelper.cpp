@@ -976,16 +976,16 @@ VulkanBuffer* VulkanCommandBuffer::cmdCopyBuffer(size_t size, VulkanBuffer* dest
     //barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
     //barrier.dstAccessMask = VK_ACCESS_UNIFORM_READ_BIT;  // TODO: ?
 
-    //barrier.srcQueueFamilyIndex;
-    //barrier.dstQueueFamilyIndex;
-    barrier.buffer = buffer->vulkanBuffer();
+    barrier.srcQueueFamilyIndex = m_deviceContext->graphicsQueueFamilyIndex();
+    barrier.dstQueueFamilyIndex = m_deviceContext->graphicsQueueFamilyIndex();
+    barrier.buffer = destination->vulkanBuffer();
     //barrier.offset;
     barrier.size = size;
 
     vkCmdPipelineBarrier(
         m_commandBuffer,
-        VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,	// このパイプラインステージで、1セットのデータが完全に生成されたことを保証する
-        VK_PIPELINE_STAGE_TRANSFER_BIT,		// このパイプラインステージがそれを消費することを許可する
+		VK_PIPELINE_STAGE_TRANSFER_BIT,	// このパイプラインステージで、1セットのデータが完全に生成されたことを保証する
+        VK_PIPELINE_STAGE_VERTEX_INPUT_BIT,		// このパイプラインステージがそれを消費することを許可する
         0,
         0, nullptr,
         1, &barrier,    // どのデータをブロック/ブロック解除するかを定義します。
