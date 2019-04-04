@@ -41,7 +41,7 @@ public:
     Win32PlatformWindow();
 
 	void init(Win32PlatformWindowManager* windowManager, const WindowCreationSettings& settings);
-	virtual void dispose() override;
+	void dispose();
  //   virtual void setWindowTitle(const String& title) override;
 	//virtual void getSize(SizeI* size) override;
 	//virtual void getFramebufferSize(int* width, int* height) override;
@@ -60,7 +60,7 @@ public:
 
     Win32PlatformWindowManager();
 
-	void init();
+    Result init();
 	virtual void dispose() override;
 	virtual Ref<PlatformWindow> createWindow(const WindowCreationSettings& settings) override;
 	virtual void destroyWindow(PlatformWindow* window) override;

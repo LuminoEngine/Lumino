@@ -23,8 +23,7 @@ public:
 	PlatformWindowManager();
 	virtual ~PlatformWindowManager() = default;
 
-	void init();
-	virtual void dispose();
+	virtual void dispose() = 0;
 	virtual Ref<PlatformWindow> createWindow(const WindowCreationSettings& settings) = 0;
 	virtual void destroyWindow(PlatformWindow* window) = 0;
 	virtual void processSystemEventQueue() = 0;

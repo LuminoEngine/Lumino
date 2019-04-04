@@ -31,16 +31,6 @@ PlatformWindowManager::PlatformWindowManager()
 {
 }
 
-void PlatformWindowManager::init()
-{
-
-}
-
-void PlatformWindowManager::dispose()
-{
-
-}
-
 } // namespace detail
 } // namespace ln
 

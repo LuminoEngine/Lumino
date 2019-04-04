@@ -12,16 +12,9 @@ EmptyPlatformWindow::EmptyPlatformWindow()
 {
 }
 
-EmptyPlatformWindow::~EmptyPlatformWindow()
+Result EmptyPlatformWindow::init(const WindowCreationSettings& settings)
 {
-}
-
-void EmptyPlatformWindow::init(const WindowCreationSettings& settings)
-{
-}
-
-void EmptyPlatformWindow::dispose()
-{
+    return true;
 }
 
 //=============================================================================
@@ -35,27 +28,26 @@ EmptyPlatformWindowManager::~EmptyPlatformWindowManager()
 {
 }
 
-void EmptyPlatformWindowManager::init()
+Result EmptyPlatformWindowManager::init()
 {
-	PlatformWindowManager::init();
+    return true;
 }
 
 void EmptyPlatformWindowManager::dispose()
 {
-	PlatformWindowManager::dispose();
 }
 
 Ref<PlatformWindow> EmptyPlatformWindowManager::createWindow(const WindowCreationSettings& settings)
 {
-	auto obj = ln::makeRef<EmptyPlatformWindow>();
-	obj->init(settings);
-	return obj;
+	auto ptr = ln::makeRef<EmptyPlatformWindow>();
+    if (!ptr->init(settings)) {
+        return nullptr;
+    }
+	return ptr;
 }
 
 void EmptyPlatformWindowManager::destroyWindow(PlatformWindow* window)
 {
-	if (LN_REQUIRE(window)) return;
-	window->dispose();
 }
 
 void EmptyPlatformWindowManager::processSystemEventQueue()

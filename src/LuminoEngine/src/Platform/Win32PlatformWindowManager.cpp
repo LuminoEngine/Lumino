@@ -434,7 +434,7 @@ Win32PlatformWindow::Win32PlatformWindow()
 {
 }
 
-void Win32PlatformWindow::init(Win32PlatformWindowManager* windowManager, const WindowCreationSettings& settings)
+Result Win32PlatformWindow::init(Win32PlatformWindowManager* windowManager, const WindowCreationSettings& settings)
 {
     // ウィンドウモードのときのウィンドウスタイルの選択
     DWORD mWindowedStyle = WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
@@ -455,7 +455,7 @@ void Win32PlatformWindow::init(Win32PlatformWindowManager* windowManager, const 
         CW_USEDEFAULT, CW_USEDEFAULT,
         CW_USEDEFAULT, CW_USEDEFAULT,
         NULL, NULL, windowManager->instanceHandle(), NULL);
-    if (LN_ENSURE_WIN32(m_hWnd, GetLastError())) return;
+    if (LN_ENSURE_WIN32(m_hWnd, GetLastError())) return false;
 
     // アクセラレータの作成 (Alt+Enter の警告音を消す)
     ACCEL accels[1] =
@@ -463,7 +463,7 @@ void Win32PlatformWindow::init(Win32PlatformWindowManager* windowManager, const 
         { FALT | FVIRTKEY, VK_RETURN, 0 }
     };
     m_accelerator = ::CreateAcceleratorTable(accels, 1);
-    if (LN_ENSURE_WIN32(m_accelerator, GetLastError())) return;
+    if (LN_ENSURE_WIN32(m_accelerator, GetLastError())) return false;
 
     AbstractWin32PlatformWindow::setWindowClientSize(m_hWnd, settings.clientSize);
     AbstractWin32PlatformWindow::abjustLocationCentering(m_hWnd);
@@ -473,13 +473,24 @@ void Win32PlatformWindow::init(Win32PlatformWindowManager* windowManager, const 
 
     // ウィンドウハンドルと Win32Window のポインタを関連付ける
     BOOL r = ::SetProp(m_hWnd, Win32PlatformWindowManager::PropWinProc, this);
-    if (LN_ENSURE_WIN32((r != FALSE), GetLastError())) return;
+    if (LN_ENSURE_WIN32((r != FALSE), GetLastError())) return false;
 
     ::ShowWindow(m_hWnd, SW_SHOW);
+
+    return true;
 }
 
 void Win32PlatformWindow::dispose()
 {
+    if (m_accelerator) {
+        ::DestroyAcceleratorTable(m_accelerator);
+        m_accelerator = NULL;
+    }
+
+    if (m_hWnd) {
+        ::DestroyWindow(m_hWnd);
+        m_hWnd = NULL;
+    }
 }
 
 //=============================================================================
@@ -493,10 +504,8 @@ Win32PlatformWindowManager::Win32PlatformWindowManager()
 {
 }
 
-void Win32PlatformWindowManager::init()
+Result Win32PlatformWindowManager::init()
 {
-	PlatformWindowManager::init();
-
     m_hInst = (HINSTANCE)::GetModuleHandle(NULL);
 
     // TODO: ウィンドウアイコン
@@ -522,36 +531,35 @@ void Win32PlatformWindowManager::init()
 
     // ウィンドウクラスの登録
     ATOM wc = ::RegisterClassEx(&wcex);
-    if (LN_ENSURE_WIN32(wc, ::GetLastError())) return;
+    if (LN_ENSURE_WIN32(wc, ::GetLastError())) return false;
+
+    return true;
 }
 
 void Win32PlatformWindowManager::dispose()
 {
     UnregisterClass(WindowClassName, m_hInst);
-
-	PlatformWindowManager::dispose();
 }
 
 Ref<PlatformWindow> Win32PlatformWindowManager::createWindow(const WindowCreationSettings& settings)
 {
-    //if (settings.userWindow) {
-    //    return LN_NEW Win32UserHostWindow(this, data.UserWindow);
-    //}
-    //else {
-    auto ptr = makeRef<Win32PlatformWindow>();
-    ptr->init(this, settings);
-    return ptr;
-
-    //    Ref<Win32NativeWindow> window(LN_NEW Win32NativeWindow(this), false);
-    //    window->Initilaize(this, data.TitleText, data.Width, data.Height, data.Fullscreen, data.Resizable);
-    //    window->setVisible(true);
-    //    window.safeAddRef();
-    //    return window;
-    //}
+    if (settings.userWindow) {
+        LN_NOTIMPLEMENTED();
+        return nullptr;
+    }
+    else {
+        auto ptr = makeRef<Win32PlatformWindow>();
+        if (!ptr->init(this, settings)) {
+            return nullptr;
+        }
+        return ptr;
+    }
 }
 
 void Win32PlatformWindowManager::destroyWindow(PlatformWindow* window)
 {
+    if (LN_REQUIRE(window)) return;
+    static_cast<Win32PlatformWindow*>(window)->dispose();
 }
 
 void Win32PlatformWindowManager::processSystemEventQueue()

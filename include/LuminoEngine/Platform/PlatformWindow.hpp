@@ -12,7 +12,7 @@ class PlatformWindow
 public:
 	PlatformWindow();
 	virtual ~PlatformWindow() = default;
-	virtual void dispose() = 0;
+	//virtual void dispose() = 0;
 
     virtual void setWindowTitle(const String& title) = 0;
 	virtual void getSize(SizeI* size) = 0;

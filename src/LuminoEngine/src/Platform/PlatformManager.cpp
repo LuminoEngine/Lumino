@@ -13,12 +13,14 @@ PlatformManager::PlatformManager()
 {
 }
 
-void PlatformManager::init(const Settings& settings)
+Result PlatformManager::init(const Settings& settings)
 {
 #ifdef LN_OS_WIN32
     if (!m_windowManager) {
         auto windowManager = ln::makeRef<Win32PlatformWindowManager>();
-        windowManager->init();
+        if (!windowManager->init()) {
+            return false;
+        }
         m_windowManager = windowManager;
     }
 #endif
@@ -27,7 +29,9 @@ void PlatformManager::init(const Settings& settings)
 #ifdef LN_GLFW
     if (!m_windowManager) {
         auto windowManager = ln::makeRef<GLFWPlatformWindowManager>();
-        windowManager->init();
+        if (!windowManager->init()) {
+            return false;
+        }
         m_windowManager = windowManager;
     }
 #endif
@@ -35,11 +39,15 @@ void PlatformManager::init(const Settings& settings)
 	if (!m_windowManager)
 	{
 		auto windowManager = ln::makeRef<EmptyPlatformWindowManager>();
-		windowManager->init();
+        if (!windowManager->init()) {
+            return false;
+        }
 		m_windowManager = windowManager;
 	}
 
 	m_mainWindow = m_windowManager->createWindow(settings.mainWindowSettings);
+
+    return true;
 }
 
 void PlatformManager::dispose()

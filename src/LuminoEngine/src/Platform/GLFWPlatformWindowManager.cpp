@@ -189,7 +189,7 @@ GLFWPlatformWindow::~GLFWPlatformWindow()
 {
 }
 
-void GLFWPlatformWindow::init(const WindowCreationSettings& settings)
+Result GLFWPlatformWindow::init(const WindowCreationSettings& settings)
 {
 	initKeyTable();
 
@@ -217,7 +217,7 @@ void GLFWPlatformWindow::init(const WindowCreationSettings& settings)
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);	// for NSGL(macOS)
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		m_glfwWindow = glfwCreateWindow(settings.clientSize.width, settings.clientSize.height, settings.title.toStdString().c_str(), NULL, NULL);
-		if (LN_ENSURE(m_glfwWindow)) return;
+		if (LN_ENSURE(m_glfwWindow)) return false;
 	}
 
 	glfwSetWindowUserPointer(m_glfwWindow, this);
@@ -247,6 +247,8 @@ void GLFWPlatformWindow::init(const WindowCreationSettings& settings)
 	//// 初回クリア (しておかないと、背景が透明なままになる)
 	//glClear(GL_COLOR_BUFFER_BIT);
 	//glfwSwapBuffers(m_glfwWindow);
+
+    return true;
 }
 
 void GLFWPlatformWindow::dispose()
@@ -447,12 +449,10 @@ GLFWPlatformWindowManager::~GLFWPlatformWindowManager()
 {
 }
 
-void GLFWPlatformWindowManager::init()
+Result GLFWPlatformWindowManager::init()
 {
-	PlatformWindowManager::init();
-
 	int result = glfwInit();
-	if (LN_ENSURE(result != 0)) return;
+	if (LN_ENSURE(result != 0)) return false;
 
 	// OpenGL Version 3.2 を選択
 	// http://marina.sys.wakayama-u.ac.jp/~tokoi/?date=20120908
@@ -461,25 +461,27 @@ void GLFWPlatformWindowManager::init()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_FALSE);
 
+    return true;
 }
 
 void GLFWPlatformWindowManager::dispose()
 {
 	glfwTerminate();
-	PlatformWindowManager::dispose();
 }
 
 Ref<PlatformWindow> GLFWPlatformWindowManager::createWindow(const WindowCreationSettings& settings)
 {
-	auto obj = ln::makeRef<GLFWPlatformWindow>();
-	obj->init(settings);
-	return obj;
+	auto ptr = ln::makeRef<GLFWPlatformWindow>();
+    if (!ptr->init(settings)) {
+        return nullptr;
+    }
+    return ptr;
 }
 
 void GLFWPlatformWindowManager::destroyWindow(PlatformWindow* window)
 {
 	if (LN_REQUIRE(window)) return;
-	window->dispose();
+	static_cast<GLFWPlatformWindow*>(window)->dispose();
 }
 
 void GLFWPlatformWindowManager::processSystemEventQueue()
