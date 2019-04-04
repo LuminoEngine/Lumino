@@ -67,6 +67,8 @@ set(LN_SOURCES_Platform
     src/Platform/PlatformWindowManager.cpp
     src/Platform/PlatformWindowManager.hpp
     src/Platform/Win32PlatformInterface.cpp
+    src/Platform/Win32PlatformWindowManager.cpp
+    src/Platform/Win32PlatformWindowManager.hpp
 )
 
 set(LN_SOURCES_Grammar

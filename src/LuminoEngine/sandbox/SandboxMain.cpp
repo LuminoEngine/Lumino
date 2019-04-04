@@ -109,12 +109,10 @@ int main(int argc, char** argv)
     EngineSettings::setMainWindowSize(800, 600);
     EngineSettings::setMainBackBufferSize(800, 600);
     EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
-    EngineSettings::setEngineFeatures(EngineFeature::Experimental);//EngineFeature::Public); 
+    EngineSettings::setEngineFeatures(EngineFeature::Public);// EngineFeature::Experimental);
 
 
 	Engine::initialize();
-
-    auto sprite1 = Sprite::create(Assets::loadTexture(u"Sprite1.png"), 2, 2);
 
 	{
 
