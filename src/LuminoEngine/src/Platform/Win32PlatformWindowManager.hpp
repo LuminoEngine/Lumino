@@ -40,11 +40,8 @@ class Win32PlatformWindow
 public:
     Win32PlatformWindow();
 
-	void init(Win32PlatformWindowManager* windowManager, const WindowCreationSettings& settings);
+	Result init(Win32PlatformWindowManager* windowManager, const WindowCreationSettings& settings);
 	void dispose();
- //   virtual void setWindowTitle(const String& title) override;
-	//virtual void getSize(SizeI* size) override;
-	//virtual void getFramebufferSize(int* width, int* height) override;
 
 private:
     HACCEL m_accelerator;  // for erase Alt+Enter alart
