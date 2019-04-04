@@ -899,8 +899,9 @@ void GLSwapChain::dispose()
 
 	if (m_backbuffer)
 	{
+		m_backbuffer->dispose();
+		m_backbuffer = nullptr;
 	}
-	m_backbuffer = nullptr;
 
 	ISwapChain::dispose();
 }
@@ -1769,6 +1770,21 @@ void GLShaderPass::init(OpenGLDeviceContext* context, const byte_t* vsCode, int 
 
 void GLShaderPass::dispose()
 {
+	for (auto& p : m_uniformBuffers) {
+		p->dispose();
+	}
+	m_uniformBuffers.clear();
+
+	for (auto& p : m_uniforms) {
+		p->dispose();
+	}
+	m_uniforms.clear();
+
+	if (m_samplerBuffer) {
+		m_samplerBuffer->dispose();
+		m_samplerBuffer = nullptr;
+	}
+
 	if (m_program)
 	{
 		GL_CHECK(glUseProgram(0));
@@ -2041,13 +2057,20 @@ GLShaderUniformBuffer::GLShaderUniformBuffer(const GLchar* blockName, GLuint blo
 
 GLShaderUniformBuffer::~GLShaderUniformBuffer()
 {
-
 	if (m_ubo)
 	{
 		GL_CHECK(glDeleteBuffers(1, &m_ubo));
 		m_ubo = 0;
 	}
+}
 
+void GLShaderUniformBuffer::dispose()
+{
+	for (auto& p : m_uniforms) {
+		p->dispose();
+	}
+
+	IShaderUniformBuffer::dispose();
 }
 
 void GLShaderUniformBuffer::bind(GLuint program)

@@ -33,7 +33,6 @@ set(LN_SOURCES
 
 include_directories(
 	${LN_INCLUDES_gtest}
-	#${LUMINO_INCLUDE_DIRECTORIES}
 )
 
 add_executable(${PROJECT_NAME} ${LN_SOURCES})
@@ -43,5 +42,4 @@ set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 #------------------------------------------------------------------------------
 # ctest
 
-# TODO: CI 環境で glfw 初期化が失敗するので、ctest からの実行は保留
-#add_test(NAME LuminoEngine-Test-all COMMAND $<TARGET_FILE:LuminoEngine-Test>)
+add_test(NAME LuminoEngine-Test-all COMMAND $<TARGET_FILE:LuminoEngine-Test>)

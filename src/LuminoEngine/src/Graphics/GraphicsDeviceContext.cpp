@@ -21,10 +21,10 @@ IGraphicsDeviceObject::~IGraphicsDeviceObject()
     }
 }
 
-void IGraphicsDeviceObject::finalize()
-{
-    dispose();
-}
+//void IGraphicsDeviceObject::finalize()
+//{
+//    dispose();
+//}
 
 void IGraphicsDeviceObject::dispose()
 {
@@ -51,6 +51,10 @@ void IGraphicsDeviceContext::init()
 
 void IGraphicsDeviceContext::dispose()
 {
+	for (auto& obj : m_aliveObjects) {
+		obj->dispose();
+	}
+	m_aliveObjects.clear();
 }
 
 void IGraphicsDeviceContext::refreshCaps()
@@ -78,47 +82,83 @@ void IGraphicsDeviceContext::leaveRenderState()
 
 Ref<ISwapChain> IGraphicsDeviceContext::createSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
 {
-	return onCreateSwapChain(window, backbufferSize);
+	Ref<ISwapChain> ptr = onCreateSwapChain(window, backbufferSize);
+	if (ptr) {
+		m_aliveObjects.push_back(ptr);
+	}
+	return ptr;
 }
 
 Ref<IVertexDeclaration> IGraphicsDeviceContext::createVertexDeclaration(const VertexElement* elements, int elementsCount)
 {
-	return onCreateVertexDeclaration(elements, elementsCount);
+	Ref<IVertexDeclaration> ptr = onCreateVertexDeclaration(elements, elementsCount);
+	if (ptr) {
+		m_aliveObjects.push_back(ptr);
+	}
+	return ptr;
 }
 
 Ref<IVertexBuffer> IGraphicsDeviceContext::createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
 {
-	return onCreateVertexBuffer(usage, bufferSize, initialData);
+	Ref<IVertexBuffer> ptr = onCreateVertexBuffer(usage, bufferSize, initialData);
+	if (ptr) {
+		m_aliveObjects.push_back(ptr);
+	}
+	return ptr;
 }
 
 Ref<IIndexBuffer> IGraphicsDeviceContext::createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
 {
-	return onCreateIndexBuffer(usage, format, indexCount, initialData);
+	Ref<IIndexBuffer> ptr = onCreateIndexBuffer(usage, format, indexCount, initialData);
+	if (ptr) {
+		m_aliveObjects.push_back(ptr);
+	}
+	return ptr;
 }
 
 Ref<ITexture> IGraphicsDeviceContext::createTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
-	return onCreateTexture2D(width, height, requestFormat, mipmap, initialData);
+	Ref<ITexture> ptr = onCreateTexture2D(width, height, requestFormat, mipmap, initialData);
+	if (ptr) {
+		m_aliveObjects.push_back(ptr);
+	}
+	return ptr;
 }
 
 Ref<ITexture> IGraphicsDeviceContext::createTexture3D(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
-	return onCreateTexture3D(width, height, depth, requestFormat, mipmap, initialData);
+	Ref<ITexture> ptr = onCreateTexture3D(width, height, depth, requestFormat, mipmap, initialData);
+	if (ptr) {
+		m_aliveObjects.push_back(ptr);
+	}
+	return ptr;
 }
 
 Ref<ITexture> IGraphicsDeviceContext::createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
 {
-	return onCreateRenderTarget(width, height, requestFormat, mipmap);
+	Ref<ITexture> ptr = onCreateRenderTarget(width, height, requestFormat, mipmap);
+	if (ptr) {
+		m_aliveObjects.push_back(ptr);
+	}
+	return ptr;
 }
 
 Ref<IDepthBuffer> IGraphicsDeviceContext::createDepthBuffer(uint32_t width, uint32_t height)
 {
-	return onCreateDepthBuffer(width, height);
+	Ref<IDepthBuffer> ptr = onCreateDepthBuffer(width, height);
+	if (ptr) {
+		m_aliveObjects.push_back(ptr);
+	}
+	return ptr;
 }
 
 Ref<ISamplerState> IGraphicsDeviceContext::createSamplerState(const SamplerStateData& desc)
 {
-	return onCreateSamplerState(desc);
+	Ref<ISamplerState> ptr = onCreateSamplerState(desc);
+	if (ptr) {
+		m_aliveObjects.push_back(ptr);
+	}
+	return ptr;
 }
 
 Ref<IShaderPass> IGraphicsDeviceContext::createShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag)
@@ -126,13 +166,16 @@ Ref<IShaderPass> IGraphicsDeviceContext::createShaderPass(const ShaderPassCreate
 	diag->level = ShaderCompilationResultLevel::Success;
 	diag->message.clear();
 
-	auto pass = onCreateShaderPass(createInfo, diag);
+	Ref<IShaderPass> ptr = onCreateShaderPass(createInfo, diag);
 
 	if (!diag->message.empty()) {
 		LN_LOG_VERBOSE << diag->message;
 	}
 
-	return pass;
+	if (ptr) {
+		m_aliveObjects.push_back(ptr);
+	}
+	return ptr;
 }
 
 void IGraphicsDeviceContext::begin()
@@ -284,6 +327,7 @@ void IGraphicsDeviceContext::flushCommandBuffer(ITexture* affectRendreTarget)
 void IGraphicsDeviceContext::present(ISwapChain* swapChain)
 {
 	onPresent(swapChain);
+	collectGarbageObjects();
 }
 
 Ref<IShaderPass> IGraphicsDeviceContext::createShaderPassFromUnifiedShaderPass(const UnifiedShader* unifiedShader, UnifiedShader::PassId passId, DiagnosticsManager* diag)
@@ -357,6 +401,17 @@ void IGraphicsDeviceContext::commitStatus(SubmitSource submitSource)
 
     m_committed = m_staging;
 	m_stateDirtyFlags = StateDirtyFlags_None;
+}
+
+void IGraphicsDeviceContext::collectGarbageObjects()
+{
+	for (int i = m_aliveObjects.size() - 1; i >= 0; i--)
+	{
+		if (RefObjectHelper::getReferenceCount(m_aliveObjects[i]) <= 1) {
+			m_aliveObjects[i]->dispose();
+			m_aliveObjects.erase(m_aliveObjects.begin() + i);
+		}
+	}
 }
 
 //=============================================================================
@@ -440,7 +495,7 @@ IShaderUniform::IShaderUniform()
 }
 
 //=============================================================================
-// IShaderUniform
+// IShaderSamplerBuffer
 
 IShaderSamplerBuffer::IShaderSamplerBuffer()
 {

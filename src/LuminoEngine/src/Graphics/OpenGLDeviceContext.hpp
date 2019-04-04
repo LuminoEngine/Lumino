@@ -532,6 +532,7 @@ class GLShaderUniformBuffer
 public:
 	GLShaderUniformBuffer(const GLchar* blockName, GLuint blockIndex, GLint blockSize, GLuint bindingPoint);
 	virtual ~GLShaderUniformBuffer();
+	virtual void dispose() override;
 	void addUniform(GLShaderUniform* uniform) { m_uniforms.add(uniform); }
 	void bind(GLuint program);
 

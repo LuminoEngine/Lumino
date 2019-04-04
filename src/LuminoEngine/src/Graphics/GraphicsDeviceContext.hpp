@@ -100,11 +100,13 @@ public:
 protected:
     IGraphicsDeviceObject();
     virtual ~IGraphicsDeviceObject();
-    virtual void finalize();
+    //virtual void finalize();
+public:
     virtual void dispose();	// (複数回の呼び出しに備えること)
 
 private:
     bool m_disposed;
+	//friend class IGraphicsDeviceContext;
 };
 
 class IGraphicsResource
@@ -247,11 +249,13 @@ protected:
 
 private:
     void commitStatus(SubmitSource submitSource);
+	void collectGarbageObjects();
 
 	GraphicsDeviceCaps m_caps;
 	uint32_t m_stateDirtyFlags;
 	State m_staging;
     State m_committed;
+	std::vector<Ref<IGraphicsDeviceObject>> m_aliveObjects;
 };
 
 class ISwapChain
