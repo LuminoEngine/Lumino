@@ -227,19 +227,19 @@ void EngineManager::initializeAllManagers()
 {
 	initializeCommon();
 	initializePlatformManager();
-	//initializeAnimationManager();
-	//initializeInputManager();
-	//initializeAudioManager();
-	//initializeShaderManager();
-	//initializeGraphicsManager();
-	//initializeFontManager();
-	//initializeMeshManager();
- //   initializePhysicsManager();
-	//initializeAssetManager();
-	//initializeRenderingManager();
- //   initializeVisualManager();
- //   initializeSceneManager();
-	//initializeUIManager();
+	initializeAnimationManager();
+	initializeInputManager();
+	initializeAudioManager();
+	initializeShaderManager();
+	initializeGraphicsManager();
+	initializeFontManager();
+	initializeMeshManager();
+    initializePhysicsManager();
+	initializeAssetManager();
+	initializeRenderingManager();
+    initializeVisualManager();
+    initializeSceneManager();
+	initializeUIManager();
 }
 
 void EngineManager::initializeCommon()

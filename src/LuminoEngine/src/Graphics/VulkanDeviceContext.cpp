@@ -3,9 +3,9 @@
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
 
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-#include "../Platform/GLFWPlatformWindowManager.hpp"
+//#define GLFW_INCLUDE_VULKAN
+//#include <GLFW/glfw3.h>
+//#include "../Platform/GLFWPlatformWindowManager.hpp"
 
 #include "VulkanDeviceContext.hpp"
 
@@ -625,21 +625,23 @@ Result VulkanDeviceContext::findMemoryType(uint32_t typeFilter, VkMemoryProperty
     return false;
 }
 
-static std::vector<const char*> getRequiredExtensions()
-{
-    uint32_t glfwExtensionCount = 0;
-    const char** glfwExtensions;
-    glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-    std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
-
-    if (enableValidationLayers) {
-        extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-    }
-
-    return extensions;
-}
-
+//static std::vector<const char*> getRequiredExtensions()
+//{
+//    return instanceExtension;
+//
+//    uint32_t glfwExtensionCount = 0;
+//    const char** glfwExtensions;
+//    glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+//
+//    std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+//
+//    if (enableValidationLayers) {
+//        extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+//    }
+//
+//    return extensions;
+//}
+//
 Result VulkanDeviceContext::createInstance()
 {
     if (enableValidationLayers && !VulkanHelper::checkValidationLayerSupport()) {
@@ -665,7 +667,19 @@ Result VulkanDeviceContext::createInstance()
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     createInfo.pApplicationInfo = &appInfo;
 
-    auto extensions = getRequiredExtensions();
+    //auto extensions = getRequiredExtensions();
+    std::vector<const char*> extensions = {
+           VK_KHR_SURFACE_EXTENSION_NAME,
+   #ifdef LN_OS_WIN32
+           VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
+   #elif LN_OS_LINUX
+           VK_KHR_XCB_SURFACE_EXTENSION_NAME,
+   #elif LN_OS_ANDROID
+           VK_KHR_ANDROID_SURFACE_EXTENSION_NAME,
+   #endif
+           VK_EXT_DEBUG_REPORT_EXTENSION_NAME,
+           VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
+    };
     createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
     createInfo.ppEnabledExtensionNames = extensions.data();
 
@@ -1432,9 +1446,6 @@ VkExtent2D VulkanSwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& cap
         return capabilities.currentExtent;
     }
     else {
-        //int width, height;
-        //glfwGetFramebufferSize(window, &width, &height);
-
         VkExtent2D actualExtent = {
             requiredWidth,
             requiredHeight

@@ -398,6 +398,19 @@ Keys AbstractWin32PlatformWindow::Win32KeyToLNKey(DWORD winVK)
     return Keys::Unknown;
 }
 
+void AbstractWin32PlatformWindow::setWindowClientSize(HWND hWnd, const SizeI& clientSize)
+{
+    RECT rw, rc;
+    ::GetWindowRect(hWnd, &rw);
+    ::GetClientRect(hWnd, &rc);
+
+    int new_width = (rw.right - rw.left) - (rc.right - rc.left) + clientSize.width;
+    int new_height = (rw.bottom - rw.top) - (rc.bottom - rc.top) + clientSize.height;
+
+    BOOL r = ::SetWindowPos(hWnd, NULL, 0, 0, new_width, new_height, SWP_NOMOVE | SWP_NOZORDER);
+    if (LN_ENSURE_WIN32(r, ::GetLastError())) return;
+}
+
 void AbstractWin32PlatformWindow::abjustLocationCentering(HWND hWnd)
 {
     RECT rcWindow;
@@ -452,6 +465,7 @@ void Win32PlatformWindow::init(Win32PlatformWindowManager* windowManager, const 
     m_accelerator = ::CreateAcceleratorTable(accels, 1);
     if (LN_ENSURE_WIN32(m_accelerator, GetLastError())) return;
 
+    AbstractWin32PlatformWindow::setWindowClientSize(m_hWnd, settings.clientSize);
     AbstractWin32PlatformWindow::abjustLocationCentering(m_hWnd);
 
     // WM_PAINTが呼ばれないようにする

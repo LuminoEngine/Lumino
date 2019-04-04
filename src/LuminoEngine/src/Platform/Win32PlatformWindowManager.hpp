@@ -27,8 +27,8 @@ public:
     LRESULT WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, bool* handled);
     static LRESULT CALLBACK StaticWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
     static Keys Win32KeyToLNKey(DWORD winVK);
+    static void setWindowClientSize(HWND hWnd, const SizeI& clientSize);
     static void abjustLocationCentering(HWND hWnd);
-
 
 protected:
     HWND m_hWnd;

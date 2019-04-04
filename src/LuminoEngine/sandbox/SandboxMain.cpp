@@ -109,7 +109,7 @@ int main(int argc, char** argv)
     EngineSettings::setMainWindowSize(800, 600);
     EngineSettings::setMainBackBufferSize(800, 600);
     EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
-    EngineSettings::setEngineFeatures(EngineFeature::Public);// EngineFeature::Experimental);
+    EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
 
 
 	Engine::initialize();
