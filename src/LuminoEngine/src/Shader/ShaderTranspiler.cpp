@@ -447,35 +447,35 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
 
 			VertexInputAttribute attr;
 			int keywordLen = 0;
-			if (strnicmp(qual.semanticName, "POSITION", 8) == 0) {
+			if (stricmp(qual.semanticName, "POSITION") == 0) {
 				attr.usage = AttributeUsage_Position;
 				keywordLen = 8;
 			}
-			else if (strnicmp(qual.semanticName, "BLENDWEIGHT", 11) == 0) {
+			else if (stricmp(qual.semanticName, "BLENDWEIGHT") == 0) {
 				attr.usage = AttributeUsage_BlendWeight;
 				keywordLen = 11;
 			}
-			else if (strnicmp(qual.semanticName, "BLENDINDICES", 12) == 0) {
+			else if (stricmp(qual.semanticName, "BLENDINDICES") == 0) {
 				attr.usage = AttributeUsage_BlendIndices;
 				keywordLen = 12;
 			}
-			else if (strnicmp(qual.semanticName, "NORMAL", 6) == 0) {
+			else if (stricmp(qual.semanticName, "NORMAL") == 0) {
 				attr.usage = AttributeUsage_Normal;
 				keywordLen = 6;
 			}
-			else if (strnicmp(qual.semanticName, "TEXCOORD", 8) == 0) {
+			else if (stricmp(qual.semanticName, "TEXCOORD") == 0) {
 				attr.usage = AttributeUsage_TexCoord;
 				keywordLen = 8;
 			}
-			else if (strnicmp(qual.semanticName, "TANGENT", 7) == 0) {
+			else if (stricmp(qual.semanticName, "TANGENT") == 0) {
 				attr.usage = AttributeUsage_Tangent;
 				keywordLen = 7;
 			}
-			else if (strnicmp(qual.semanticName, "BINORMAL", 8) == 0) {
+			else if (stricmp(qual.semanticName, "BINORMAL") == 0) {
 				attr.usage = AttributeUsage_Binormal;
 				keywordLen = 8;
 			}
-			else if (strnicmp(qual.semanticName, "COLOR", 5) == 0) {
+			else if (stricmp(qual.semanticName, "COLOR") == 0) {
 				attr.usage = AttributeUsage_Color;
 				keywordLen = 5;
 			}
