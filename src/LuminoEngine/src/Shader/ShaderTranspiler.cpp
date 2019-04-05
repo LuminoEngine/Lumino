@@ -447,35 +447,35 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
 
 			VertexInputAttribute attr;
 			int keywordLen = 0;
-			if (StringHelper::compare(qual.semanticName, "POSITION", ln::CaseSensitivity::CaseInsensitive) == 0) {
+			if (StringHelper::compare(qual.semanticName, "POSITION", 8, ln::CaseSensitivity::CaseInsensitive) == 0) {
 				attr.usage = AttributeUsage_Position;
 				keywordLen = 8;
 			}
-			else if (StringHelper::compare(qual.semanticName, "BLENDWEIGHT", ln::CaseSensitivity::CaseInsensitive) == 0) {
+			else if (StringHelper::compare(qual.semanticName, "BLENDWEIGHT", 11, ln::CaseSensitivity::CaseInsensitive) == 0) {
 				attr.usage = AttributeUsage_BlendWeight;
 				keywordLen = 11;
 			}
-			else if (StringHelper::compare(qual.semanticName, "BLENDINDICES", ln::CaseSensitivity::CaseInsensitive) == 0) {
+			else if (StringHelper::compare(qual.semanticName, "BLENDINDICES", 12, ln::CaseSensitivity::CaseInsensitive) == 0) {
 				attr.usage = AttributeUsage_BlendIndices;
 				keywordLen = 12;
 			}
-			else if (StringHelper::compare(qual.semanticName, "NORMAL", ln::CaseSensitivity::CaseInsensitive) == 0) {
+			else if (StringHelper::compare(qual.semanticName, "NORMAL", 6, ln::CaseSensitivity::CaseInsensitive) == 0) {
 				attr.usage = AttributeUsage_Normal;
 				keywordLen = 6;
 			}
-			else if (StringHelper::compare(qual.semanticName, "TEXCOORD", ln::CaseSensitivity::CaseInsensitive) == 0) {
+			else if (StringHelper::compare(qual.semanticName, "TEXCOORD", 8, ln::CaseSensitivity::CaseInsensitive) == 0) {
 				attr.usage = AttributeUsage_TexCoord;
 				keywordLen = 8;
 			}
-			else if (StringHelper::compare(qual.semanticName, "TANGENT", ln::CaseSensitivity::CaseInsensitive) == 0) {
+			else if (StringHelper::compare(qual.semanticName, "TANGENT", 7, ln::CaseSensitivity::CaseInsensitive) == 0) {
 				attr.usage = AttributeUsage_Tangent;
 				keywordLen = 7;
 			}
-			else if (StringHelper::compare(qual.semanticName, "BINORMAL", ln::CaseSensitivity::CaseInsensitive) == 0) {
+			else if (StringHelper::compare(qual.semanticName, "BINORMAL", 8, ln::CaseSensitivity::CaseInsensitive) == 0) {
 				attr.usage = AttributeUsage_Binormal;
 				keywordLen = 8;
 			}
-			else if (StringHelper::compare(qual.semanticName, "COLOR", ln::CaseSensitivity::CaseInsensitive) == 0) {
+			else if (StringHelper::compare(qual.semanticName, "COLOR", 5, ln::CaseSensitivity::CaseInsensitive) == 0) {
 				attr.usage = AttributeUsage_Color;
 				keywordLen = 5;
 			}
