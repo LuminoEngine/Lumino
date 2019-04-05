@@ -42,7 +42,8 @@ void HelloApp::onUpdate()
     ctx->setVertexBuffer(0, m_vertexBuffer);
     ctx->setShaderPass(m_shader->techniques()[0]->passes()[0]);
     ctx->clear(ln::ClearFlags::All, ln::Color::White, 1.0f, 0);
-    ctx->drawPrimitive(ln::PrimitiveType::TriangleStrip, 0, 2);
+    ctx->setPrimitiveTopology(ln::PrimitiveTopology::TriangleStrip);
+    ctx->drawPrimitive(0, 2);
 }
 
 LUMINO_APP(HelloApp);

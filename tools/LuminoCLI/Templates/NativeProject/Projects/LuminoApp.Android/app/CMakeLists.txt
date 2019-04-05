@@ -10,7 +10,7 @@ set(LN_TARGET_ARCH Android-${ANDROID_ABI})
 
 list(APPEND CMAKE_FIND_ROOT_PATH ${LUMINO_ENGINE_ROOT}/lib/Android-${ANDROID_ABI})
 
-include(${LUMINO_ENGINE_ROOT}/lib/LuminoSetup.cmake)
+include(${LUMINO_ENGINE_ROOT}/lib/cmake/LuminoSetup.cmake)
 
 file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_LIST_DIR}/../../../Sources/*.cpp)
 

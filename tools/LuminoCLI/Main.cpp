@@ -226,7 +226,7 @@ int main(int argc, char** argv)
 	return 0;
 }
 
-// .profile �t�@�C���ɒǋL����
+// .profile
 static int commnad_localInitialSetup(const char* packageDir_)
 {
 	ln::Path packageDir = packageDir_;

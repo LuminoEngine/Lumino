@@ -14,7 +14,7 @@ if (DEFINED EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX .html)
 endif()
 
-include(${LUMINO_ENGINE_ROOT}/lib/ImportExternalLibraries.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/ImportExternalLibraries.cmake)
 
 #if (DEFINED EMSCRIPTEN)
 #	find_package(LuminoCore REQUIRED PATHS ${LUMINO_ENGINE_ROOT}/lib/Emscripten/cmake)

@@ -98,8 +98,12 @@ void EngineManager::init()
 
 	// setup pathes
 	{
+#if defined(LN_EMSCRIPTEN)
+        m_persistentDataPath = u""; // TODO:
+#else
 		m_persistentDataPath = Path(Environment::specialFolderPath(SpecialFolder::ApplicationData), m_settings.bundleIdentifier);
-	}
+#endif
+    }
 	
 	m_engineContext = makeRef<EngineContext>();
 
