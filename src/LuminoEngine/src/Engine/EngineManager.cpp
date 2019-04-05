@@ -70,8 +70,10 @@ EngineManager::EngineManager()
 	, m_assetManager(nullptr)
 	, m_exitRequested(false)
     , m_showDebugFpsEnabled(false)
+#if defined(LN_OS_WIN32)
     , m_comInitialized(false)
     , m_oleInitialized(false)
+#endif
 {
 }
 

@@ -447,35 +447,35 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
 
 			VertexInputAttribute attr;
 			int keywordLen = 0;
-			if (stricmp(qual.semanticName, "POSITION") == 0) {
+			if (StringHelper::compare(qual.semanticName, "POSITION", ln::CaseSensitivity::CaseInsensitive) == 0) {
 				attr.usage = AttributeUsage_Position;
 				keywordLen = 8;
 			}
-			else if (stricmp(qual.semanticName, "BLENDWEIGHT") == 0) {
+			else if (StringHelper::compare(qual.semanticName, "BLENDWEIGHT", ln::CaseSensitivity::CaseInsensitive) == 0) {
 				attr.usage = AttributeUsage_BlendWeight;
 				keywordLen = 11;
 			}
-			else if (stricmp(qual.semanticName, "BLENDINDICES") == 0) {
+			else if (StringHelper::compare(qual.semanticName, "BLENDINDICES", ln::CaseSensitivity::CaseInsensitive) == 0) {
 				attr.usage = AttributeUsage_BlendIndices;
 				keywordLen = 12;
 			}
-			else if (stricmp(qual.semanticName, "NORMAL") == 0) {
+			else if (StringHelper::compare(qual.semanticName, "NORMAL", ln::CaseSensitivity::CaseInsensitive) == 0) {
 				attr.usage = AttributeUsage_Normal;
 				keywordLen = 6;
 			}
-			else if (stricmp(qual.semanticName, "TEXCOORD") == 0) {
+			else if (StringHelper::compare(qual.semanticName, "TEXCOORD", ln::CaseSensitivity::CaseInsensitive) == 0) {
 				attr.usage = AttributeUsage_TexCoord;
 				keywordLen = 8;
 			}
-			else if (stricmp(qual.semanticName, "TANGENT") == 0) {
+			else if (StringHelper::compare(qual.semanticName, "TANGENT", ln::CaseSensitivity::CaseInsensitive) == 0) {
 				attr.usage = AttributeUsage_Tangent;
 				keywordLen = 7;
 			}
-			else if (stricmp(qual.semanticName, "BINORMAL") == 0) {
+			else if (StringHelper::compare(qual.semanticName, "BINORMAL", ln::CaseSensitivity::CaseInsensitive) == 0) {
 				attr.usage = AttributeUsage_Binormal;
 				keywordLen = 8;
 			}
-			else if (stricmp(qual.semanticName, "COLOR") == 0) {
+			else if (StringHelper::compare(qual.semanticName, "COLOR", ln::CaseSensitivity::CaseInsensitive) == 0) {
 				attr.usage = AttributeUsage_Color;
 				keywordLen = 5;
 			}
