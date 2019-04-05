@@ -1,5 +1,7 @@
 ﻿#include "Common.hpp"
 
+#ifdef LN_UNIT_TEST_EXPERIMENTAL
+
 //==============================================================================
 //# Testing WorldObject
 class Test_Scene_WorldObject : public LuminoSceneTest {};
@@ -57,3 +59,5 @@ TEST_F(Test_Scene_WorldObject, Destroy)
 		LN_TEST_CLEAN_SCENE;
 	}
 }
+
+#endif // LN_UNIT_TEST_EXPERIMENTAL

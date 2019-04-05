@@ -1,6 +1,8 @@
 ﻿#include "Common.hpp"
 #include <LuminoEngine/Visual/MeshPrimitiveComponent.hpp>
 
+#ifdef LN_UNIT_TEST_EXPERIMENTAL
+
 //==============================================================================
 //# ClusteredShading
 class Test_Rendering_ClusteredShading : public LuminoSceneTest {};
@@ -53,3 +55,5 @@ TEST_F(Test_Rendering_ClusteredShading, Basic)
 		LN_TEST_CLEAN_SCENE;
 	}
 }
+
+#endif // LN_UNIT_TEST_EXPERIMENTAL

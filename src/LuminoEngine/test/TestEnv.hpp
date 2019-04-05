@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+//#define LN_UNIT_TEST_EXPERIMENTAL
+
 class TestEnv
 {
 public:

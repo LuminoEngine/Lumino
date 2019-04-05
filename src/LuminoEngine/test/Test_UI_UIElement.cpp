@@ -1,5 +1,7 @@
 ﻿#include "Common.hpp"
 
+#ifdef LN_UNIT_TEST_EXPERIMENTAL
+
 //==============================================================================
 //# Testing UIElement
 class Test_UI_UIElement : public LuminoSceneTest {};
@@ -67,3 +69,4 @@ TEST_F(Test_UI_UIElement, Background)
 	LN_TEST_CLEAN_SCENE;
 }
 
+#endif // LN_UNIT_TEST_EXPERIMENTAL

@@ -1,5 +1,7 @@
 ﻿#include "Common.hpp"
 
+#ifdef LN_UNIT_TEST_EXPERIMENTAL
+
 //==============================================================================
 //# Testing VisualComponent
 class Test_Visual_VisualComponent : public LuminoSceneTest {};
@@ -210,3 +212,4 @@ TEST_F(Test_Visual_VisualComponent, CullMode)
     }
 }
 
+#endif // LN_UNIT_TEST_EXPERIMENTAL

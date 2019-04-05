@@ -1,5 +1,7 @@
 ﻿#include "Common.hpp"
 
+#ifdef LN_UNIT_TEST_EXPERIMENTAL
+
 //==============================================================================
 //# Testing Test_UI_UILayout
 class Test_UI_UILayout : public LuminoSceneTest {};
@@ -217,3 +219,5 @@ TEST_F(Test_UI_UILayout, StackLayout)
 
 	LN_TEST_CLEAN_SCENE;
 }
+
+#endif // LN_UNIT_TEST_EXPERIMENTAL

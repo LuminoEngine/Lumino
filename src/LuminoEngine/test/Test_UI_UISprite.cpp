@@ -1,5 +1,7 @@
 ﻿#include "Common.hpp"
 
+#ifdef LN_UNIT_TEST_EXPERIMENTAL
+
 //==============================================================================
 //# Testing UISprite
 class Test_UI_UISprite : public LuminoSceneTest {};
@@ -37,3 +39,5 @@ TEST_F(Test_UI_UISprite, Basic)
 TEST_F(Test_UI_UISprite, BackgroundsAndBorders)
 {
 }
+
+#endif // LN_UNIT_TEST_EXPERIMENTAL
