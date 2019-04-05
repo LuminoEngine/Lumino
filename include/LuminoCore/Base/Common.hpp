@@ -176,7 +176,7 @@ enum class StringSplitOptions
 #endif
 
 #ifndef LN_CHECK
-#	define LN_CHECK(expr) if (!LN_LIKELY(expr)) { LN_CHECK_ABORT; }
+#	define LN_CHECK(expr) if (!LN_LIKELY(expr)) { printf("%s:%u: abort: %s\n", (__FILE__), (unsigned)(__LINE__), (#expr)); LN_CHECK_ABORT; }
 #endif
 
 #ifdef LN_DCHECK_ENABLED
