@@ -57,6 +57,7 @@ struct EngineSettings
 	GraphicsAPI graphicsAPI = GraphicsAPI::Default;
 	bool standaloneFpsControl = false;
 	int frameRate = 60;
+    bool autoCoInitialize = true;
 };
 
 class EngineManager
@@ -170,6 +171,12 @@ private:
 
 	bool m_exitRequested;
     bool m_showDebugFpsEnabled;
+
+
+#if defined(LN_OS_WIN32)
+    bool m_comInitialized;
+    bool m_oleInitialized;
+#endif
 };
 
 } // namespace detail

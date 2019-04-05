@@ -70,6 +70,8 @@ EngineManager::EngineManager()
 	, m_assetManager(nullptr)
 	, m_exitRequested(false)
     , m_showDebugFpsEnabled(false)
+    , m_comInitialized(false)
+    , m_oleInitialized(false)
 {
 }
 
@@ -221,6 +223,18 @@ void EngineManager::dispose()
 	if (m_inputManager) m_inputManager->dispose();
     if (m_animationManager) m_animationManager->dispose();
 	if (m_platformManager) m_platformManager->dispose();
+
+#if defined(LN_OS_WIN32)
+    if (m_oleInitialized) {
+        ::OleUninitialize();
+        m_oleInitialized = false;
+    }
+
+    if (m_comInitialized) {
+        ::CoUninitialize();
+        m_comInitialized = false;
+    }
+#endif
 }
 
 void EngineManager::initializeAllManagers()
@@ -247,6 +261,24 @@ void EngineManager::initializeCommon()
 #if defined(LN_OS_WIN32) || defined(LN_OS_MAC)
 	auto log = Path(Path(Environment::executablePath()).parent(), u"lumino.log");
 	GlobalLogger::addFileAdapter(log.str().toStdString());
+#endif
+#if defined(LN_OS_WIN32)
+
+    // CoInitializeEx は ShowWindow() ～ DestroyWindow() の外側で呼び出さなければならない。
+    // http://blog.techlab-xe.net/archives/400
+    // 例えば ウィンドウ作成→DirectInput初期化みたいにするとき、Input モジュールの中で CoInitializeEx しているとこの罠にはまる。
+    // とりあえず、Platform モジュールでは COM は使わないが、他のモジュールとの連携に備え、初期化しておく。
+
+    if (m_settings.autoCoInitialize && SUCCEEDED(::CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED)))
+    {
+        // エラーにはしない。別の設定で COM が初期化済みだったりすると失敗することがあるが、COM 自体は使えるようになっている
+        m_comInitialized = true;
+    }
+
+    // OleInitialize() するためには、CoInitializeEx() が STA(COINIT_APARTMENTTHREADED) で初期化されている必要がある
+    if (SUCCEEDED(::OleInitialize(NULL))) {
+        m_oleInitialized = true;
+    }
 #endif
 }
 
