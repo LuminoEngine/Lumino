@@ -19,7 +19,7 @@ DSoundAudioDevice::DSoundAudioDevice()
     m_chunkCount = 4;
 }
 
-void DSoundAudioDevice::init(int frameLength)
+void DSoundAudioDevice::init(int frameLength, bool* outNoDevice)
 {
 	AudioDevice::init(frameLength, 2);
 
@@ -34,8 +34,11 @@ void DSoundAudioDevice::init(int frameLength)
 	HWND hWnd = GetDesktopWindow();
 
 	HRESULT hr;
-
 	hr = DirectSoundCreate8(NULL, &m_dsound, NULL);
+    if (hr == DSERR_NODRIVER) {
+        *outNoDevice = true;
+        return;
+    }
 	if (FAILED(hr)) {
 		LN_LOG_ERROR << "DirectSoundCreate8 error. (" << hr << ")";
 		return;
@@ -175,6 +178,8 @@ void DSoundAudioDevice::init(int frameLength)
 			return;
 		}
 	}
+
+    *outNoDevice = false;
 }
 
 void DSoundAudioDevice::dispose()

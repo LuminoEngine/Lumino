@@ -43,12 +43,20 @@ void AudioContext::init()
 #elif defined(LN_OS_WIN32)
     auto device = makeRef<detail::DSoundAudioDevice>();
     //auto device = makeRef<detail::ALAudioDevice>();
-    device->init(detail::CoreAudioNode::ProcessingSizeInFrames);
-    m_audioDevice = device;
-#else
-	auto device = makeRef<detail::NullAudioDevice>();
-    m_audioDevice = device;
+    bool noDevice = false;
+    device->init(detail::CoreAudioNode::ProcessingSizeInFrames, &noDevice);
+    if (noDevice) {
+        device->dispose();
+    }
+    else {
+        m_audioDevice = device;
+    }
 #endif
+    if (!m_audioDevice) {
+        auto device = makeRef<detail::NullAudioDevice>();
+        m_audioDevice = device;
+    }
+        
 	m_coreDestinationNode = makeRef<detail::CoreAudioDestinationNode>(m_audioDevice);
 	m_coreDestinationNode->init();
 	m_audioDevice->setRenderCallback(m_coreDestinationNode);
