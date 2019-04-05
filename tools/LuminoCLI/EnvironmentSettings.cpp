@@ -58,7 +58,7 @@ void BuildEnvironment::setupPathes()
         // まだ見つからなければ環境変数を探してみる
         if (m_luminoPackageRootDir.isEmpty())
         {
-            auto path = ln::Environment::getEnvironmentVariable(u"LUMINO_ROOT");
+            auto path = ln::Environment::getEnvironmentVariable(u"LUMINO_PATH");
             if (path) {
                 m_luminoPackageRootDir = *path;
             }

@@ -38,3 +38,16 @@ npm i -g textlint textlint-rule-preset-ja-technical-writing textlint-rule-max-te
     * [azu/technical-word-rules](https://github.com/azu/technical-word-rules) の辞書で単語チェック
 * textlint-rule-no-mix-dearu-desumasu
     * 「ですます」調と「である」調の混在をチェックするルール
+
+
+
+開発中のパッケージを使う
+----------
+
+### Windows
+```
+set LUMINO_PATH=<path to LocalPackage>
+set PATH=%LUMINO_PATH%\Tools;%PATH%
+```
+
+

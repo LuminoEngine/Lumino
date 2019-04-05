@@ -13,7 +13,11 @@ namespace LuminoBuild.Rules
 
         public override void Build(Builder builder)
         {
-            builder.DoTask("BuildExternalProjects");
+            if (!builder.HasFlagArgument("disable-build-external"))
+            {
+                builder.DoTask("BuildExternalProjects");
+            }
+
             if (Utils.IsWin32)
             {
                 builder.DoTask("MakeVSProjects");

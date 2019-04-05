@@ -253,9 +253,9 @@ static int commnad_localInitialSetup(const char* packageDir_)
 			// already exists.
 
 			for (int i = beginLine; i < endLine; i++) {
-				if (lines[i].indexOf("export LUMINO_ROOT") == 0) {
-					lines[i] = ln::String::format(u"export LUMINO_ROOT={0}", packageDir);
-					CLI::info(u"LUMINO_ROOT updating.");
+				if (lines[i].indexOf("export LUMINO_PATH") == 0) {
+					lines[i] = ln::String::format(u"export LUMINO_PATH={0}", packageDir);
+					CLI::info(u"LUMINO_PATH updating.");
 				}
 				if (lines[i].indexOf("export PATH") == 0) {
 					lines[i] = ln::String::format(u"export PATH=$PATH:{0}", toolsDir);
@@ -270,7 +270,7 @@ static int commnad_localInitialSetup(const char* packageDir_)
 	if (!added) {
 		lines.add(u"");
 		lines.add(u"# [Lumino begin]");
-		lines.add(ln::String::format(u"export LUMINO_ROOT={0}", packageDir));
+		lines.add(ln::String::format(u"export LUMINO_PATH={0}", packageDir));
 		lines.add(ln::String::format(u"export PATH=$PATH:{0}", toolsDir));
 		lines.add(u"# [Lumino end]");
 	}
