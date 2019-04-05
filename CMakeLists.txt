@@ -52,7 +52,7 @@ option(LN_MSVC_USE_SDL "use SDL on MSVC" OFF)
 
 # Vulkan
 if (WIN32)
-    option(LN_USE_VULKAN "Vulkan" OFF)
+    option(LN_USE_VULKAN "Vulkan" ON)
 endif()
 
 #------------------------------------------------------------------------------

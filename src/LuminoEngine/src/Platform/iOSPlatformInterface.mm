@@ -13,7 +13,7 @@ namespace ln {
 void iOSPlatformInterface::nativeInitialize(int viewWidth, int viewHeight)
 {
 	g_app = ::LuminoCreateApplicationInstance();
-	ln::detail::ApplicationHelper::initialize(g_app);
+	ln::detail::ApplicationHelper::init(g_app);
 }
 
 void iOSPlatformInterface::nativeUpdateFrame()
