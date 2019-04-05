@@ -25,17 +25,17 @@ void AbstractWin32PlatformWindow::setWindowTitle(const String& title)
 void AbstractWin32PlatformWindow::getSize(SizeI* size)
 {
     RECT rect = { 0, 0, 0, 0 };
-    ::GetWindowRect(m_hWnd, &rect);
-    size->width = rect.right;
-    size->height = rect.bottom;
+    ::GetClientRect(m_hWnd, &rect);
+    size->width = rect.right - rect.left;
+    size->height = rect.bottom - rect.top;
 }
 
 void AbstractWin32PlatformWindow::getFramebufferSize(int* width, int* height)
 {
     RECT rect = { 0, 0, 0, 0 };
-    ::GetWindowRect(m_hWnd, &rect);
-    *width = rect.right;
-    *height = rect.bottom;
+    ::GetClientRect(m_hWnd, &rect);
+    *width = rect.right - rect.left;
+    *height = rect.bottom - rect.top;
 }
 
 PointI AbstractWin32PlatformWindow::pointFromScreen(const PointI& screenPoint)
@@ -400,15 +400,28 @@ Keys AbstractWin32PlatformWindow::Win32KeyToLNKey(DWORD winVK)
 
 void AbstractWin32PlatformWindow::setWindowClientSize(HWND hWnd, const SizeI& clientSize)
 {
-    RECT rw, rc;
-    ::GetWindowRect(hWnd, &rw);
-    ::GetClientRect(hWnd, &rc);
+    RECT clientRect, windowRect;
+    ::GetClientRect(hWnd, &clientRect);
+    ::GetWindowRect(hWnd, &windowRect);
 
-    int new_width = (rw.right - rw.left) - (rc.right - rc.left) + clientSize.width;
-    int new_height = (rw.bottom - rw.top) - (rc.bottom - rc.top) + clientSize.height;
+    clientRect.right = clientSize.width;
+    clientRect.bottom = clientSize.height;
 
-    BOOL r = ::SetWindowPos(hWnd, NULL, 0, 0, new_width, new_height, SWP_NOMOVE | SWP_NOZORDER);
-    if (LN_ENSURE_WIN32(r, ::GetLastError())) return;
+    ::AdjustWindowRect(
+        &clientRect,
+        static_cast<DWORD>(GetWindowLongPtr(hWnd, GWL_STYLE)),
+        FALSE
+    );
+
+    ::SetWindowPos(
+        hWnd,
+        0,
+        windowRect.left + clientRect.left,
+        windowRect.top + clientRect.top,
+        clientRect.right - clientRect.left,
+        clientRect.bottom - clientRect.top,
+        0
+    );
 }
 
 void AbstractWin32PlatformWindow::abjustLocationCentering(HWND hWnd)
@@ -446,6 +459,13 @@ Result Win32PlatformWindow::init(Win32PlatformWindowManager* windowManager, cons
         dwExStyle |= WS_EX_DLGMODALFRAME;	// アイコンの無いスタイル
     }
 
+    RECT clientRect;
+    clientRect.left = 0;
+    clientRect.top = 0;
+    clientRect.right = settings.clientSize.width;
+    clientRect.bottom = settings.clientSize.height;
+    ::AdjustWindowRect(&clientRect, mWindowedStyle, FALSE);
+
     // ウィンドウの作成
     m_hWnd = ::CreateWindowEx(
         dwExStyle,
@@ -453,7 +473,7 @@ Result Win32PlatformWindow::init(Win32PlatformWindowManager* windowManager, cons
         String(settings.title).toStdWString().c_str(),
         mWindowedStyle,
         CW_USEDEFAULT, CW_USEDEFAULT,
-        CW_USEDEFAULT, CW_USEDEFAULT,
+        clientRect.right - clientRect.left, clientRect.bottom - clientRect.top,
         NULL, NULL, windowManager->instanceHandle(), NULL);
     if (LN_ENSURE_WIN32(m_hWnd, GetLastError())) return false;
 
@@ -465,7 +485,7 @@ Result Win32PlatformWindow::init(Win32PlatformWindowManager* windowManager, cons
     m_accelerator = ::CreateAcceleratorTable(accels, 1);
     if (LN_ENSURE_WIN32(m_accelerator, GetLastError())) return false;
 
-    AbstractWin32PlatformWindow::setWindowClientSize(m_hWnd, settings.clientSize);
+    //AbstractWin32PlatformWindow::setWindowClientSize(m_hWnd, settings.clientSize);
     AbstractWin32PlatformWindow::abjustLocationCentering(m_hWnd);
 
     // WM_PAINTが呼ばれないようにする
