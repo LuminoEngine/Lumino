@@ -56,6 +56,8 @@ InputManager::~InputManager()
 //------------------------------------------------------------------------------
 void InputManager::init(const Settings& settings)
 {
+    LN_LOG_DEBUG << "InputManager Initialization started.";
+
 #if defined(LN_OS_WIN32)
 	auto driver = makeRef<Win32InputDriver>();
 	driver->init((HWND)PlatformSupport::getWin32WindowHandle(settings.mainWindow));
@@ -102,6 +104,8 @@ void InputManager::init(const Settings& settings)
 	pad->addBinding(InputButtons::PageDown,	GamepadGesture::create(GamepadElement::Button6));
 
 	m_mouseInputDevice = makeRef<MouseInputDevice>();
+
+    LN_LOG_DEBUG << "InputManager Initialization ended.";
 }
 
 //------------------------------------------------------------------------------

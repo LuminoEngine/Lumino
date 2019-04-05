@@ -75,6 +75,8 @@ FontManager::FontManager()
 
 void FontManager::init(const Settings& settings)
 {
+    LN_LOG_DEBUG << "FontManager Initialization started.";
+
     m_assetManager = settings.assetManager;
     m_charToUTF32Converter.setDestinationEncoding(TextEncoding::utf32Encoding());
     m_charToUTF32Converter.getSourceEncoding(TextEncoding::systemMultiByteEncoding());
@@ -116,6 +118,8 @@ void FontManager::init(const Settings& settings)
         desc.Family = u"mplus-1m-regular-ascii-subset";
         m_defaultFont = newObject<Font>(desc);
     }
+
+    LN_LOG_DEBUG << "FontManager Initialization ended.";
 }
 
 void FontManager::dispose()

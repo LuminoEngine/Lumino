@@ -85,6 +85,8 @@ MeshManager::MeshManager()
 
 void MeshManager::init(const Settings& settings)
 {
+    LN_LOG_DEBUG << "MeshManager Initialization started.";
+
 	m_graphicsManager = settings.graphicsManager;
 	m_assetManager = settings.assetManager;
 
@@ -130,6 +132,8 @@ void MeshManager::init(const Settings& settings)
     LN_CREATE_MMD_TOON_TEXTURE(8, toon09Data, toon09DataLen);
     LN_CREATE_MMD_TOON_TEXTURE(9, toon10Data, toon10DataLen);
 #undef LN_CREATE_MMD_TOON_TEXTURE
+
+    LN_LOG_DEBUG << "MeshManager Initialization ended.";
 }
 
 void MeshManager::dispose()

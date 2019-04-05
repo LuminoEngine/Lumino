@@ -81,6 +81,8 @@ EngineManager::~EngineManager()
 
 void EngineManager::init()
 {
+    LN_LOG_DEBUG << "EngineManager Initialization started.";
+
 	// check settings
 	{
 		if (m_settings.bundleIdentifier.isEmpty()) {
@@ -144,6 +146,8 @@ void EngineManager::init()
 
         m_physicsManager->setActivePhysicsWorld2D(m_mainPhysicsWorld2D);
     }
+
+    LN_LOG_DEBUG << "EngineManager Initialization ended.";
 }
 
 void EngineManager::dispose()

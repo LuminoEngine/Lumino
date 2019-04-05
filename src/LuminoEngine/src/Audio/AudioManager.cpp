@@ -26,6 +26,8 @@ AudioManager::~AudioManager()
 
 void AudioManager::init(const Settings& settings)
 {
+    LN_LOG_DEBUG << "AudioManager Initialization started.";
+
     m_assetManager = settings.assetManager;
 
 	m_decoderCache.init();
@@ -44,6 +46,8 @@ void AudioManager::init(const Settings& settings)
 #endif
 
     m_gameAudio = makeRef<GameAudioImpl>(this);
+
+    LN_LOG_DEBUG << "AudioManager Initialization ended.";
 }
 
 void AudioManager::dispose()

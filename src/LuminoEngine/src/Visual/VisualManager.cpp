@@ -22,9 +22,13 @@ VisualManager::~VisualManager()
 
 void VisualManager::init(const Settings& settings)
 {
+    LN_LOG_DEBUG << "VisualManager Initialization started.";
+
 	m_graphicsManager = settings.graphicsManager;
 
 	SpriteComponent::registerType(detail::EngineDomain::engineManager()->engineContext());
+
+    LN_LOG_DEBUG << "VisualManager Initialization ended.";
 }
 
 void VisualManager::dispose()

@@ -18,6 +18,9 @@ SceneManager::~SceneManager()
 
 void SceneManager::init()
 {
+    LN_LOG_DEBUG << "SceneManager Initialization started.";
+
+    LN_LOG_DEBUG << "SceneManager Initialization ended.";
 }
 
 void SceneManager::dispose()

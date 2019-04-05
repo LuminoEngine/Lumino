@@ -23,6 +23,9 @@ AssetManager::~AssetManager()
 
 void AssetManager::init(const Settings& settings)
 {
+    LN_LOG_DEBUG << "AssetManager Initialization started.";
+
+    LN_LOG_DEBUG << "AssetManager Initialization ended.";
 }
 
 void AssetManager::dispose()
