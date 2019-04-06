@@ -102,7 +102,8 @@ namespace LuminoBuild
             Directory.CreateDirectory(BuildToolsDir);
 
             // Install emsdk
-            if (BuildTarget.HasFlag(BuildTargetFlags.Web))
+            if (BuildTarget.HasFlag(BuildTargetFlags.Web) &&
+                Utils.IsWin32)
             {
                 if (!Directory.Exists(EmsdkDir))
                 {
@@ -127,7 +128,8 @@ namespace LuminoBuild
             }
 
             // Install Android SDK
-            if (BuildTarget.HasFlag(BuildTargetFlags.Android))
+            if (BuildTarget.HasFlag(BuildTargetFlags.Android) &&
+                Utils.IsWin32)
             {
                 var androidSdk = Path.Combine(BuildToolsDir, "android-sdk");
                 if (!Directory.Exists(androidSdk))
