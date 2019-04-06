@@ -12,13 +12,13 @@ namespace LuminoBuild.Tasks
 
         public override void Build(Builder builder)
         {
-            //BuildProject(builder, "Debug");
+            BuildProject(builder, "Debug");
             BuildProject(builder, "Release");
         }
 
         public void BuildProject(Builder builder, string config)
         {
-            string cmakeOutputDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "macOS-Release");
+            string cmakeOutputDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, $"macOS-{config}");
 
             string buildDir = Path.Combine(builder.LuminoBuildDir, $"macOS-{config}");
             Directory.CreateDirectory(buildDir);

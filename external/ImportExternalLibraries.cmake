@@ -35,7 +35,7 @@ if (LN_OS_DESKTOP)
     ln_make_external_find_path(GLFW_ROOT glfw)
 
     find_library(GLFW_LIBRARY_RELEASE NAMES glfw3 libglfw3 PATHS ${GLFW_ROOT} PATH_SUFFIXES lib)
-    find_library(GLFW_LIBRARY_DEBUG NAMES glfw3 libglfw3 PATHS ${GLFW_ROOT} PATH_SUFFIXES lib)
+    find_library(GLFW_LIBRARY_DEBUG NAMES glfw3d libglfw3d PATHS ${GLFW_ROOT} PATH_SUFFIXES lib)
 
     add_library(glfw STATIC IMPORTED)
     set_target_properties(glfw PROPERTIES IMPORTED_LOCATION_RELEASE "${GLFW_LIBRARY_RELEASE}")
@@ -251,7 +251,7 @@ list(APPEND LN_EXTERNAL_LIBS FreeType)
 ln_make_external_find_path(ogg_ROOT "ogg")
 
 find_library(ogg_LIBRARY_RELEASE NAMES ogg libogg PATHS ${ogg_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(ogg_LIBRARY_DEBUG NAMES ogg libogg PATHS ${ogg_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(ogg_LIBRARY_DEBUG NAMES oggd liboggd PATHS ${ogg_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 
 add_library(ogg STATIC IMPORTED)
 set_target_properties(ogg PROPERTIES IMPORTED_LOCATION_RELEASE "${ogg_LIBRARY_RELEASE}")
@@ -264,9 +264,9 @@ list(APPEND LN_EXTERNAL_LIBS ogg)
 ln_make_external_find_path(vorbis_ROOT "vorbis")
 
 find_library(vorbis_LIBRARY_RELEASE NAMES vorbis libvorbis PATHS ${vorbis_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(vorbis_LIBRARY_DEBUG NAMES vorbis libvorbis PATHS ${vorbis_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(vorbis_LIBRARY_DEBUG NAMES vorbisd libvorbisd PATHS ${vorbis_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 find_library(vorbisfile_LIBRARY_RELEASE NAMES vorbisfile libvorbisfile PATHS ${vorbis_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(vorbisfile_LIBRARY_DEBUG NAMES vorbisfile libvorbisfile PATHS ${vorbis_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(vorbisfile_LIBRARY_DEBUG NAMES vorbisfiled libvorbisfiled PATHS ${vorbis_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 
 add_library(vorbis STATIC IMPORTED)
 set_target_properties(vorbis PROPERTIES IMPORTED_LOCATION_RELEASE "${vorbis_LIBRARY_RELEASE}")

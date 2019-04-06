@@ -36,6 +36,7 @@ namespace LuminoBuild.Tasks
             var args = new string[]
             {
                 $"-DCMAKE_INSTALL_PREFIX={installDir}",
+                $"-DCMAKE_DEBUG_POSTFIX=d",     // cmake の find_package で Debug/Release 両対応するために、同じフォルダに lib を入れておきたい。(Qt 参考)
                 $"-DCMAKE_USER_MAKE_RULES_OVERRIDE={ov}",
                 $"{additionalOptions}",
                 $"-G \"{generator}\"",
