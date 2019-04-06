@@ -1142,5 +1142,54 @@ std::string UnifiedShaderCompiler::makeKey2(const std::string& techName, const s
 
 #endif // LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 
+//=============================================================================
+// DescriptorLayout
+
+std::vector<DescriptorLayoutItem>& DescriptorLayout::getLayoutItems(DescriptorType registerType)
+{
+    switch (registerType)
+    {
+    case ln::detail::DescriptorType_UniformBuffer:
+        return uniformBufferRegister;
+    case ln::detail::DescriptorType_Texture:
+        return textureRegister;
+    case ln::detail::DescriptorType_SamplerState:
+        return samplerRegister;
+    default:
+        LN_UNREACHABLE();
+        return uniformBufferRegister;
+    }
+}
+
+const std::vector<DescriptorLayoutItem>& DescriptorLayout::getLayoutItems(DescriptorType registerType) const
+{
+    switch (registerType)
+    {
+    case ln::detail::DescriptorType_UniformBuffer:
+        return uniformBufferRegister;
+    case ln::detail::DescriptorType_Texture:
+        return textureRegister;
+    case ln::detail::DescriptorType_SamplerState:
+        return samplerRegister;
+    default:
+        LN_UNREACHABLE();
+        return uniformBufferRegister;
+    }
+}
+
+bool DescriptorLayout::isReferenceFromVertexStage(DescriptorType registerType) const
+{
+    auto& items = getLayoutItems(registerType);
+    auto itr = std::find_if(items.begin(), items.end(), [](const DescriptorLayoutItem& x) { return (x.stageFlags & ShaderStageFlags_Vertex) != 0; });
+    return itr != items.end();
+}
+
+bool DescriptorLayout::isReferenceFromPixelStage(DescriptorType registerType) const
+{
+    auto& items = getLayoutItems(registerType);
+    auto itr = std::find_if(items.begin(), items.end(), [](const DescriptorLayoutItem& x) { return (x.stageFlags & ShaderStageFlags_Pixel) != 0; });
+    return itr != items.end();
+}
+
 } // namespace detail
 } // namespace ln
