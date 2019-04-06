@@ -8,7 +8,6 @@
 #include "OpenGLDeviceContext.hpp"
 #ifdef LN_USE_VULKAN
 #include "VulkanDeviceContext.hpp"
-#include "VulkanSampleDeviceContext.hpp"
 #endif
 #include "../Engine/LinearAllocator.hpp"
 

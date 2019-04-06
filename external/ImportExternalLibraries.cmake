@@ -359,9 +359,11 @@ if (LN_USE_VULKAN)
     find_package(Vulkan REQUIRED)
     #list(APPEND LN_EXTERNAL_LIBS Vulkan::Vulkan)
     
-    add_library(VulkanImported STATIC IMPORTED)
-    set_target_properties(VulkanImported PROPERTIES IMPORTED_LOCATION_RELEASE ${Vulkan_LIBRARIES})
-    set_target_properties(VulkanImported PROPERTIES IMPORTED_LOCATION_DEBUG ${Vulkan_LIBRARIES})
+    # IMPORTED がないと install で Target not found になる
+    add_library(VulkanImported IMPORTED INTERFACE)
+    #set_target_properties(VulkanImported PROPERTIES IMPORTED_LOCATION_RELEASE ${Vulkan_LIBRARIES})
+    #set_target_properties(VulkanImported PROPERTIES IMPORTED_LOCATION_DEBUG ${Vulkan_LIBRARIES})
+    # dynamic load としたため、include だけでよい
     set_target_properties(VulkanImported PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${Vulkan_INCLUDE_DIRS})
     list(APPEND LN_EXTERNAL_LIBS VulkanImported)
 endif()

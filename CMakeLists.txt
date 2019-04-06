@@ -51,9 +51,7 @@ option(LN_MSVC_STATIC_RUNTIME "static runtime (/MT, /MTd) or DLL runtime (/MD, /
 option(LN_MSVC_USE_SDL "use SDL on MSVC" OFF)
 
 # Vulkan
-if (WIN32)
-    option(LN_USE_VULKAN "Vulkan" ON)
-endif()
+option(LN_USE_VULKAN "Vulkan" ON)
 
 #------------------------------------------------------------------------------
 

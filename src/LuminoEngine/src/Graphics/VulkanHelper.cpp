@@ -5,6 +5,199 @@
 #include "VulkanHelper.hpp"
 #include "VulkanDeviceContext.hpp"
 
+PFN_vkCreateInstance vkCreateInstance;
+PFN_vkDestroyInstance vkDestroyInstance;
+PFN_vkEnumeratePhysicalDevices vkEnumeratePhysicalDevices;
+PFN_vkGetPhysicalDeviceFeatures vkGetPhysicalDeviceFeatures;
+PFN_vkGetPhysicalDeviceFormatProperties vkGetPhysicalDeviceFormatProperties;
+PFN_vkGetPhysicalDeviceImageFormatProperties vkGetPhysicalDeviceImageFormatProperties;
+PFN_vkGetPhysicalDeviceProperties vkGetPhysicalDeviceProperties;
+PFN_vkGetPhysicalDeviceQueueFamilyProperties vkGetPhysicalDeviceQueueFamilyProperties;
+PFN_vkGetPhysicalDeviceMemoryProperties vkGetPhysicalDeviceMemoryProperties;
+PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr;
+PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr;
+PFN_vkCreateDevice vkCreateDevice;
+PFN_vkDestroyDevice vkDestroyDevice;
+PFN_vkEnumerateInstanceExtensionProperties vkEnumerateInstanceExtensionProperties;
+PFN_vkEnumerateDeviceExtensionProperties vkEnumerateDeviceExtensionProperties;
+PFN_vkEnumerateInstanceLayerProperties vkEnumerateInstanceLayerProperties;
+PFN_vkEnumerateDeviceLayerProperties vkEnumerateDeviceLayerProperties;
+PFN_vkGetDeviceQueue vkGetDeviceQueue;
+PFN_vkQueueSubmit vkQueueSubmit;
+PFN_vkQueueWaitIdle vkQueueWaitIdle;
+PFN_vkDeviceWaitIdle vkDeviceWaitIdle;
+PFN_vkAllocateMemory vkAllocateMemory;
+PFN_vkFreeMemory vkFreeMemory;
+PFN_vkMapMemory vkMapMemory;
+PFN_vkUnmapMemory vkUnmapMemory;
+PFN_vkFlushMappedMemoryRanges vkFlushMappedMemoryRanges;
+PFN_vkInvalidateMappedMemoryRanges vkInvalidateMappedMemoryRanges;
+PFN_vkGetDeviceMemoryCommitment vkGetDeviceMemoryCommitment;
+PFN_vkBindBufferMemory vkBindBufferMemory;
+PFN_vkBindImageMemory vkBindImageMemory;
+PFN_vkGetBufferMemoryRequirements vkGetBufferMemoryRequirements;
+PFN_vkGetImageMemoryRequirements vkGetImageMemoryRequirements;
+PFN_vkGetImageSparseMemoryRequirements vkGetImageSparseMemoryRequirements;
+PFN_vkGetPhysicalDeviceSparseImageFormatProperties vkGetPhysicalDeviceSparseImageFormatProperties;
+PFN_vkQueueBindSparse vkQueueBindSparse;
+PFN_vkCreateFence vkCreateFence;
+PFN_vkDestroyFence vkDestroyFence;
+PFN_vkResetFences vkResetFences;
+PFN_vkGetFenceStatus vkGetFenceStatus;
+PFN_vkWaitForFences vkWaitForFences;
+PFN_vkCreateSemaphore vkCreateSemaphore;
+PFN_vkDestroySemaphore vkDestroySemaphore;
+PFN_vkCreateEvent vkCreateEvent;
+PFN_vkDestroyEvent vkDestroyEvent;
+PFN_vkGetEventStatus vkGetEventStatus;
+PFN_vkSetEvent vkSetEvent;
+PFN_vkResetEvent vkResetEvent;
+PFN_vkCreateQueryPool vkCreateQueryPool;
+PFN_vkDestroyQueryPool vkDestroyQueryPool;
+PFN_vkGetQueryPoolResults vkGetQueryPoolResults;
+PFN_vkCreateBuffer vkCreateBuffer;
+PFN_vkDestroyBuffer vkDestroyBuffer;
+PFN_vkCreateBufferView vkCreateBufferView;
+PFN_vkDestroyBufferView vkDestroyBufferView;
+PFN_vkCreateImage vkCreateImage;
+PFN_vkDestroyImage vkDestroyImage;
+PFN_vkGetImageSubresourceLayout vkGetImageSubresourceLayout;
+PFN_vkCreateImageView vkCreateImageView;
+PFN_vkDestroyImageView vkDestroyImageView;
+PFN_vkCreateShaderModule vkCreateShaderModule;
+PFN_vkDestroyShaderModule vkDestroyShaderModule;
+PFN_vkCreatePipelineCache vkCreatePipelineCache;
+PFN_vkDestroyPipelineCache vkDestroyPipelineCache;
+PFN_vkGetPipelineCacheData vkGetPipelineCacheData;
+PFN_vkMergePipelineCaches vkMergePipelineCaches;
+PFN_vkCreateGraphicsPipelines vkCreateGraphicsPipelines;
+PFN_vkCreateComputePipelines vkCreateComputePipelines;
+PFN_vkDestroyPipeline vkDestroyPipeline;
+PFN_vkCreatePipelineLayout vkCreatePipelineLayout;
+PFN_vkDestroyPipelineLayout vkDestroyPipelineLayout;
+PFN_vkCreateSampler vkCreateSampler;
+PFN_vkDestroySampler vkDestroySampler;
+PFN_vkCreateDescriptorSetLayout vkCreateDescriptorSetLayout;
+PFN_vkDestroyDescriptorSetLayout vkDestroyDescriptorSetLayout;
+PFN_vkCreateDescriptorPool vkCreateDescriptorPool;
+PFN_vkDestroyDescriptorPool vkDestroyDescriptorPool;
+PFN_vkResetDescriptorPool vkResetDescriptorPool;
+PFN_vkAllocateDescriptorSets vkAllocateDescriptorSets;
+PFN_vkFreeDescriptorSets vkFreeDescriptorSets;
+PFN_vkUpdateDescriptorSets vkUpdateDescriptorSets;
+PFN_vkCreateFramebuffer vkCreateFramebuffer;
+PFN_vkDestroyFramebuffer vkDestroyFramebuffer;
+PFN_vkCreateRenderPass vkCreateRenderPass;
+PFN_vkDestroyRenderPass vkDestroyRenderPass;
+PFN_vkGetRenderAreaGranularity vkGetRenderAreaGranularity;
+PFN_vkCreateCommandPool vkCreateCommandPool;
+PFN_vkDestroyCommandPool vkDestroyCommandPool;
+PFN_vkResetCommandPool vkResetCommandPool;
+PFN_vkAllocateCommandBuffers vkAllocateCommandBuffers;
+PFN_vkFreeCommandBuffers vkFreeCommandBuffers;
+PFN_vkBeginCommandBuffer vkBeginCommandBuffer;
+PFN_vkEndCommandBuffer vkEndCommandBuffer;
+PFN_vkResetCommandBuffer vkResetCommandBuffer;
+PFN_vkCmdBindPipeline vkCmdBindPipeline;
+PFN_vkCmdSetViewport vkCmdSetViewport;
+PFN_vkCmdSetScissor vkCmdSetScissor;
+PFN_vkCmdSetLineWidth vkCmdSetLineWidth;
+PFN_vkCmdSetDepthBias vkCmdSetDepthBias;
+PFN_vkCmdSetBlendConstants vkCmdSetBlendConstants;
+PFN_vkCmdSetDepthBounds vkCmdSetDepthBounds;
+PFN_vkCmdSetStencilCompareMask vkCmdSetStencilCompareMask;
+PFN_vkCmdSetStencilWriteMask vkCmdSetStencilWriteMask;
+PFN_vkCmdSetStencilReference vkCmdSetStencilReference;
+PFN_vkCmdBindDescriptorSets vkCmdBindDescriptorSets;
+PFN_vkCmdBindIndexBuffer vkCmdBindIndexBuffer;
+PFN_vkCmdBindVertexBuffers vkCmdBindVertexBuffers;
+PFN_vkCmdDraw vkCmdDraw;
+PFN_vkCmdDrawIndexed vkCmdDrawIndexed;
+PFN_vkCmdDrawIndirect vkCmdDrawIndirect;
+PFN_vkCmdDrawIndexedIndirect vkCmdDrawIndexedIndirect;
+PFN_vkCmdDispatch vkCmdDispatch;
+PFN_vkCmdDispatchIndirect vkCmdDispatchIndirect;
+PFN_vkCmdCopyBuffer vkCmdCopyBuffer;
+PFN_vkCmdCopyImage vkCmdCopyImage;
+PFN_vkCmdBlitImage vkCmdBlitImage;
+PFN_vkCmdCopyBufferToImage vkCmdCopyBufferToImage;
+PFN_vkCmdCopyImageToBuffer vkCmdCopyImageToBuffer;
+PFN_vkCmdUpdateBuffer vkCmdUpdateBuffer;
+PFN_vkCmdFillBuffer vkCmdFillBuffer;
+PFN_vkCmdClearColorImage vkCmdClearColorImage;
+PFN_vkCmdClearDepthStencilImage vkCmdClearDepthStencilImage;
+PFN_vkCmdClearAttachments vkCmdClearAttachments;
+PFN_vkCmdResolveImage vkCmdResolveImage;
+PFN_vkCmdSetEvent vkCmdSetEvent;
+PFN_vkCmdResetEvent vkCmdResetEvent;
+PFN_vkCmdWaitEvents vkCmdWaitEvents;
+PFN_vkCmdPipelineBarrier vkCmdPipelineBarrier;
+PFN_vkCmdBeginQuery vkCmdBeginQuery;
+PFN_vkCmdEndQuery vkCmdEndQuery;
+PFN_vkCmdResetQueryPool vkCmdResetQueryPool;
+PFN_vkCmdWriteTimestamp vkCmdWriteTimestamp;
+PFN_vkCmdCopyQueryPoolResults vkCmdCopyQueryPoolResults;
+PFN_vkCmdPushConstants vkCmdPushConstants;
+PFN_vkCmdBeginRenderPass vkCmdBeginRenderPass;
+PFN_vkCmdNextSubpass vkCmdNextSubpass;
+PFN_vkCmdEndRenderPass vkCmdEndRenderPass;
+PFN_vkCmdExecuteCommands vkCmdExecuteCommands;
+
+// VK_KHR_surface
+PFN_vkDestroySurfaceKHR vkDestroySurfaceKHR;
+PFN_vkGetPhysicalDeviceSurfaceSupportKHR vkGetPhysicalDeviceSurfaceSupportKHR;
+PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR vkGetPhysicalDeviceSurfaceCapabilitiesKHR;
+PFN_vkGetPhysicalDeviceSurfaceFormatsKHR vkGetPhysicalDeviceSurfaceFormatsKHR;
+PFN_vkGetPhysicalDeviceSurfacePresentModesKHR vkGetPhysicalDeviceSurfacePresentModesKHR;
+
+// VK_KHR_swapchain
+PFN_vkCreateSwapchainKHR vkCreateSwapchainKHR;
+PFN_vkDestroySwapchainKHR vkDestroySwapchainKHR;
+PFN_vkGetSwapchainImagesKHR vkGetSwapchainImagesKHR;
+PFN_vkAcquireNextImageKHR vkAcquireNextImageKHR;
+PFN_vkQueuePresentKHR vkQueuePresentKHR;
+
+// VK_KHR_display
+PFN_vkGetPhysicalDeviceDisplayPropertiesKHR vkGetPhysicalDeviceDisplayPropertiesKHR;
+PFN_vkGetPhysicalDeviceDisplayPlanePropertiesKHR vkGetPhysicalDeviceDisplayPlanePropertiesKHR;
+PFN_vkGetDisplayPlaneSupportedDisplaysKHR vkGetDisplayPlaneSupportedDisplaysKHR;
+PFN_vkGetDisplayModePropertiesKHR vkGetDisplayModePropertiesKHR;
+PFN_vkCreateDisplayModeKHR vkCreateDisplayModeKHR;
+PFN_vkGetDisplayPlaneCapabilitiesKHR vkGetDisplayPlaneCapabilitiesKHR;
+PFN_vkCreateDisplayPlaneSurfaceKHR vkCreateDisplayPlaneSurfaceKHR;
+
+// VK_KHR_display_swapchain
+PFN_vkCreateSharedSwapchainsKHR vkCreateSharedSwapchainsKHR;
+
+#ifdef VK_USE_PLATFORM_XLIB_KHR
+PFN_vkCreateXlibSurfaceKHR vkCreateXlibSurfaceKHR;
+PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR vkGetPhysicalDeviceXlibPresentationSupportKHR;
+#endif
+
+#ifdef VK_USE_PLATFORM_XCB_KHR
+PFN_vkCreateXcbSurfaceKHR vkCreateXcbSurfaceKHR;
+PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR vkGetPhysicalDeviceXcbPresentationSupportKHR;
+#endif
+
+#ifdef VK_USE_PLATFORM_WAYLAND_KHR
+PFN_vkCreateWaylandSurfaceKHR vkCreateWaylandSurfaceKHR;
+PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR vkGetPhysicalDeviceWaylandPresentationSupportKHR;
+#endif
+
+#ifdef VK_USE_PLATFORM_MIR_KHR
+PFN_vkCreateMirSurfaceKHR vkCreateMirSurfaceKHR;
+PFN_vkGetPhysicalDeviceMirPresentationSupportKHR vkGetPhysicalDeviceMirPresentationSupportKHR;
+#endif
+
+#ifdef VK_USE_PLATFORM_ANDROID_KHR
+PFN_vkCreateAndroidSurfaceKHR vkCreateAndroidSurfaceKHR;
+#endif
+
+#ifdef VK_USE_PLATFORM_WIN32_KHR
+PFN_vkCreateWin32SurfaceKHR vkCreateWin32SurfaceKHR;
+PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR vkGetPhysicalDeviceWin32PresentationSupportKHR;
+#endif
+
 namespace ln {
 namespace detail {
 
@@ -269,6 +462,214 @@ VkFormat VulkanHelper::LNVertexElementTypeToVkFormat(VertexElementType value)
 {
 	assert(s_vertexElementTypeConversionTable[(int)value].lnValue == value);
 	return s_vertexElementTypeConversionTable[(int)value].vkValue;
+}
+
+bool VulkanHelper::initVulkanFunctions()
+{
+#if defined(LN_OS_WIN32)
+    HMODULE hModule = ::LoadLibraryW(L"vulkan-1.dll");
+    if (!hModule) return false;
+#define FUNC_PTR(type, name) reinterpret_cast<type>(::GetProcAddress(hModule, name))
+#else
+    void* libvulkan = dlopen("libvulkan.so", RTLD_NOW | RTLD_LOCAL);
+    if (!libvulkan) return false;
+#define FUNC_PTR(type, name) reinterpret_cast<type>(dlsym(libvulkan, name))
+#endif
+    // core
+    vkCreateInstance = FUNC_PTR(PFN_vkCreateInstance, "vkCreateInstance");
+    vkDestroyInstance = FUNC_PTR(PFN_vkDestroyInstance, "vkDestroyInstance");
+    vkEnumeratePhysicalDevices = FUNC_PTR(PFN_vkEnumeratePhysicalDevices, "vkEnumeratePhysicalDevices");
+    vkGetPhysicalDeviceFeatures = FUNC_PTR(PFN_vkGetPhysicalDeviceFeatures, "vkGetPhysicalDeviceFeatures");
+    vkGetPhysicalDeviceFormatProperties = FUNC_PTR(PFN_vkGetPhysicalDeviceFormatProperties, "vkGetPhysicalDeviceFormatProperties");
+    vkGetPhysicalDeviceImageFormatProperties = FUNC_PTR(PFN_vkGetPhysicalDeviceImageFormatProperties, "vkGetPhysicalDeviceImageFormatProperties");
+    vkGetPhysicalDeviceProperties = FUNC_PTR(PFN_vkGetPhysicalDeviceProperties, "vkGetPhysicalDeviceProperties");
+    vkGetPhysicalDeviceQueueFamilyProperties = FUNC_PTR(PFN_vkGetPhysicalDeviceQueueFamilyProperties, "vkGetPhysicalDeviceQueueFamilyProperties");
+    vkGetPhysicalDeviceMemoryProperties = FUNC_PTR(PFN_vkGetPhysicalDeviceMemoryProperties, "vkGetPhysicalDeviceMemoryProperties");
+    vkGetInstanceProcAddr = FUNC_PTR(PFN_vkGetInstanceProcAddr, "vkGetInstanceProcAddr");
+    vkGetDeviceProcAddr = FUNC_PTR(PFN_vkGetDeviceProcAddr, "vkGetDeviceProcAddr");
+    vkCreateDevice = FUNC_PTR(PFN_vkCreateDevice, "vkCreateDevice");
+    vkDestroyDevice = FUNC_PTR(PFN_vkDestroyDevice, "vkDestroyDevice");
+    vkEnumerateInstanceExtensionProperties = FUNC_PTR(PFN_vkEnumerateInstanceExtensionProperties, "vkEnumerateInstanceExtensionProperties");
+    vkEnumerateDeviceExtensionProperties = FUNC_PTR(PFN_vkEnumerateDeviceExtensionProperties, "vkEnumerateDeviceExtensionProperties");
+    vkEnumerateInstanceLayerProperties = FUNC_PTR(PFN_vkEnumerateInstanceLayerProperties, "vkEnumerateInstanceLayerProperties");
+    vkEnumerateDeviceLayerProperties = FUNC_PTR(PFN_vkEnumerateDeviceLayerProperties, "vkEnumerateDeviceLayerProperties");
+    vkGetDeviceQueue = FUNC_PTR(PFN_vkGetDeviceQueue, "vkGetDeviceQueue");
+    vkQueueSubmit = FUNC_PTR(PFN_vkQueueSubmit, "vkQueueSubmit");
+    vkQueueWaitIdle = FUNC_PTR(PFN_vkQueueWaitIdle, "vkQueueWaitIdle");
+    vkDeviceWaitIdle = FUNC_PTR(PFN_vkDeviceWaitIdle, "vkDeviceWaitIdle");
+    vkAllocateMemory = FUNC_PTR(PFN_vkAllocateMemory, "vkAllocateMemory");
+    vkFreeMemory = FUNC_PTR(PFN_vkFreeMemory, "vkFreeMemory");
+    vkMapMemory = FUNC_PTR(PFN_vkMapMemory, "vkMapMemory");
+    vkUnmapMemory = FUNC_PTR(PFN_vkUnmapMemory, "vkUnmapMemory");
+    vkFlushMappedMemoryRanges = FUNC_PTR(PFN_vkFlushMappedMemoryRanges, "vkFlushMappedMemoryRanges");
+    vkInvalidateMappedMemoryRanges = FUNC_PTR(PFN_vkInvalidateMappedMemoryRanges, "vkInvalidateMappedMemoryRanges");
+    vkGetDeviceMemoryCommitment = FUNC_PTR(PFN_vkGetDeviceMemoryCommitment, "vkGetDeviceMemoryCommitment");
+    vkBindBufferMemory = FUNC_PTR(PFN_vkBindBufferMemory, "vkBindBufferMemory");
+    vkBindImageMemory = FUNC_PTR(PFN_vkBindImageMemory, "vkBindImageMemory");
+    vkGetBufferMemoryRequirements = FUNC_PTR(PFN_vkGetBufferMemoryRequirements, "vkGetBufferMemoryRequirements");
+    vkGetImageMemoryRequirements = FUNC_PTR(PFN_vkGetImageMemoryRequirements, "vkGetImageMemoryRequirements");
+    vkGetImageSparseMemoryRequirements = FUNC_PTR(PFN_vkGetImageSparseMemoryRequirements, "vkGetImageSparseMemoryRequirements");
+    vkGetPhysicalDeviceSparseImageFormatProperties = FUNC_PTR(PFN_vkGetPhysicalDeviceSparseImageFormatProperties, "vkGetPhysicalDeviceSparseImageFormatProperties");
+    vkQueueBindSparse = FUNC_PTR(PFN_vkQueueBindSparse, "vkQueueBindSparse");
+    vkCreateFence = FUNC_PTR(PFN_vkCreateFence, "vkCreateFence");
+    vkDestroyFence = FUNC_PTR(PFN_vkDestroyFence, "vkDestroyFence");
+    vkResetFences = FUNC_PTR(PFN_vkResetFences, "vkResetFences");
+    vkGetFenceStatus = FUNC_PTR(PFN_vkGetFenceStatus, "vkGetFenceStatus");
+    vkWaitForFences = FUNC_PTR(PFN_vkWaitForFences, "vkWaitForFences");
+    vkCreateSemaphore = FUNC_PTR(PFN_vkCreateSemaphore, "vkCreateSemaphore");
+    vkDestroySemaphore = FUNC_PTR(PFN_vkDestroySemaphore, "vkDestroySemaphore");
+    vkCreateEvent = FUNC_PTR(PFN_vkCreateEvent, "vkCreateEvent");
+    vkDestroyEvent = FUNC_PTR(PFN_vkDestroyEvent, "vkDestroyEvent");
+    vkGetEventStatus = FUNC_PTR(PFN_vkGetEventStatus, "vkGetEventStatus");
+    vkSetEvent = FUNC_PTR(PFN_vkSetEvent, "vkSetEvent");
+    vkResetEvent = FUNC_PTR(PFN_vkResetEvent, "vkResetEvent");
+    vkCreateQueryPool = FUNC_PTR(PFN_vkCreateQueryPool, "vkCreateQueryPool");
+    vkDestroyQueryPool = FUNC_PTR(PFN_vkDestroyQueryPool, "vkDestroyQueryPool");
+    vkGetQueryPoolResults = FUNC_PTR(PFN_vkGetQueryPoolResults, "vkGetQueryPoolResults");
+    vkCreateBuffer = FUNC_PTR(PFN_vkCreateBuffer, "vkCreateBuffer");
+    vkDestroyBuffer = FUNC_PTR(PFN_vkDestroyBuffer, "vkDestroyBuffer");
+    vkCreateBufferView = FUNC_PTR(PFN_vkCreateBufferView, "vkCreateBufferView");
+    vkDestroyBufferView = FUNC_PTR(PFN_vkDestroyBufferView, "vkDestroyBufferView");
+    vkCreateImage = FUNC_PTR(PFN_vkCreateImage, "vkCreateImage");
+    vkDestroyImage = FUNC_PTR(PFN_vkDestroyImage, "vkDestroyImage");
+    vkGetImageSubresourceLayout = FUNC_PTR(PFN_vkGetImageSubresourceLayout, "vkGetImageSubresourceLayout");
+    vkCreateImageView = FUNC_PTR(PFN_vkCreateImageView, "vkCreateImageView");
+    vkDestroyImageView = FUNC_PTR(PFN_vkDestroyImageView, "vkDestroyImageView");
+    vkCreateShaderModule = FUNC_PTR(PFN_vkCreateShaderModule, "vkCreateShaderModule");
+    vkDestroyShaderModule = FUNC_PTR(PFN_vkDestroyShaderModule, "vkDestroyShaderModule");
+    vkCreatePipelineCache = FUNC_PTR(PFN_vkCreatePipelineCache, "vkCreatePipelineCache");
+    vkDestroyPipelineCache = FUNC_PTR(PFN_vkDestroyPipelineCache, "vkDestroyPipelineCache");
+    vkGetPipelineCacheData = FUNC_PTR(PFN_vkGetPipelineCacheData, "vkGetPipelineCacheData");
+    vkMergePipelineCaches = FUNC_PTR(PFN_vkMergePipelineCaches, "vkMergePipelineCaches");
+    vkCreateGraphicsPipelines = FUNC_PTR(PFN_vkCreateGraphicsPipelines, "vkCreateGraphicsPipelines");
+    vkCreateComputePipelines = FUNC_PTR(PFN_vkCreateComputePipelines, "vkCreateComputePipelines");
+    vkDestroyPipeline = FUNC_PTR(PFN_vkDestroyPipeline, "vkDestroyPipeline");
+    vkCreatePipelineLayout = FUNC_PTR(PFN_vkCreatePipelineLayout, "vkCreatePipelineLayout");
+    vkDestroyPipelineLayout = FUNC_PTR(PFN_vkDestroyPipelineLayout, "vkDestroyPipelineLayout");
+    vkCreateSampler = FUNC_PTR(PFN_vkCreateSampler, "vkCreateSampler");
+    vkDestroySampler = FUNC_PTR(PFN_vkDestroySampler, "vkDestroySampler");
+    vkCreateDescriptorSetLayout = FUNC_PTR(PFN_vkCreateDescriptorSetLayout, "vkCreateDescriptorSetLayout");
+    vkDestroyDescriptorSetLayout = FUNC_PTR(PFN_vkDestroyDescriptorSetLayout, "vkDestroyDescriptorSetLayout");
+    vkCreateDescriptorPool = FUNC_PTR(PFN_vkCreateDescriptorPool, "vkCreateDescriptorPool");
+    vkDestroyDescriptorPool = FUNC_PTR(PFN_vkDestroyDescriptorPool, "vkDestroyDescriptorPool");
+    vkResetDescriptorPool = FUNC_PTR(PFN_vkResetDescriptorPool, "vkResetDescriptorPool");
+    vkAllocateDescriptorSets = FUNC_PTR(PFN_vkAllocateDescriptorSets, "vkAllocateDescriptorSets");
+    vkFreeDescriptorSets = FUNC_PTR(PFN_vkFreeDescriptorSets, "vkFreeDescriptorSets");
+    vkUpdateDescriptorSets = FUNC_PTR(PFN_vkUpdateDescriptorSets, "vkUpdateDescriptorSets");
+    vkCreateFramebuffer = FUNC_PTR(PFN_vkCreateFramebuffer, "vkCreateFramebuffer");
+    vkDestroyFramebuffer = FUNC_PTR(PFN_vkDestroyFramebuffer, "vkDestroyFramebuffer");
+    vkCreateRenderPass = FUNC_PTR(PFN_vkCreateRenderPass, "vkCreateRenderPass");
+    vkDestroyRenderPass = FUNC_PTR(PFN_vkDestroyRenderPass, "vkDestroyRenderPass");
+    vkGetRenderAreaGranularity = FUNC_PTR(PFN_vkGetRenderAreaGranularity, "vkGetRenderAreaGranularity");
+    vkCreateCommandPool = FUNC_PTR(PFN_vkCreateCommandPool, "vkCreateCommandPool");
+    vkDestroyCommandPool = FUNC_PTR(PFN_vkDestroyCommandPool, "vkDestroyCommandPool");
+    vkResetCommandPool = FUNC_PTR(PFN_vkResetCommandPool, "vkResetCommandPool");
+    vkAllocateCommandBuffers = FUNC_PTR(PFN_vkAllocateCommandBuffers, "vkAllocateCommandBuffers");
+    vkFreeCommandBuffers = FUNC_PTR(PFN_vkFreeCommandBuffers, "vkFreeCommandBuffers");
+    vkBeginCommandBuffer = FUNC_PTR(PFN_vkBeginCommandBuffer, "vkBeginCommandBuffer");
+    vkEndCommandBuffer = FUNC_PTR(PFN_vkEndCommandBuffer, "vkEndCommandBuffer");
+    vkResetCommandBuffer = FUNC_PTR(PFN_vkResetCommandBuffer, "vkResetCommandBuffer");
+    vkCmdBindPipeline = FUNC_PTR(PFN_vkCmdBindPipeline, "vkCmdBindPipeline");
+    vkCmdSetViewport = FUNC_PTR(PFN_vkCmdSetViewport, "vkCmdSetViewport");
+    vkCmdSetScissor = FUNC_PTR(PFN_vkCmdSetScissor, "vkCmdSetScissor");
+    vkCmdSetLineWidth = FUNC_PTR(PFN_vkCmdSetLineWidth, "vkCmdSetLineWidth");
+    vkCmdSetDepthBias = FUNC_PTR(PFN_vkCmdSetDepthBias, "vkCmdSetDepthBias");
+    vkCmdSetBlendConstants = FUNC_PTR(PFN_vkCmdSetBlendConstants, "vkCmdSetBlendConstants");
+    vkCmdSetDepthBounds = FUNC_PTR(PFN_vkCmdSetDepthBounds, "vkCmdSetDepthBounds");
+    vkCmdSetStencilCompareMask = FUNC_PTR(PFN_vkCmdSetStencilCompareMask, "vkCmdSetStencilCompareMask");
+    vkCmdSetStencilWriteMask = FUNC_PTR(PFN_vkCmdSetStencilWriteMask, "vkCmdSetStencilWriteMask");
+    vkCmdSetStencilReference = FUNC_PTR(PFN_vkCmdSetStencilReference, "vkCmdSetStencilReference");
+    vkCmdBindDescriptorSets = FUNC_PTR(PFN_vkCmdBindDescriptorSets, "vkCmdBindDescriptorSets");
+    vkCmdBindIndexBuffer = FUNC_PTR(PFN_vkCmdBindIndexBuffer, "vkCmdBindIndexBuffer");
+    vkCmdBindVertexBuffers = FUNC_PTR(PFN_vkCmdBindVertexBuffers, "vkCmdBindVertexBuffers");
+    vkCmdDraw = FUNC_PTR(PFN_vkCmdDraw, "vkCmdDraw");
+    vkCmdDrawIndexed = FUNC_PTR(PFN_vkCmdDrawIndexed, "vkCmdDrawIndexed");
+    vkCmdDrawIndirect = FUNC_PTR(PFN_vkCmdDrawIndirect, "vkCmdDrawIndirect");
+    vkCmdDrawIndexedIndirect = FUNC_PTR(PFN_vkCmdDrawIndexedIndirect, "vkCmdDrawIndexedIndirect");
+    vkCmdDispatch = FUNC_PTR(PFN_vkCmdDispatch, "vkCmdDispatch");
+    vkCmdDispatchIndirect = FUNC_PTR(PFN_vkCmdDispatchIndirect, "vkCmdDispatchIndirect");
+    vkCmdCopyBuffer = FUNC_PTR(PFN_vkCmdCopyBuffer, "vkCmdCopyBuffer");
+    vkCmdCopyImage = FUNC_PTR(PFN_vkCmdCopyImage, "vkCmdCopyImage");
+    vkCmdBlitImage = FUNC_PTR(PFN_vkCmdBlitImage, "vkCmdBlitImage");
+    vkCmdCopyBufferToImage = FUNC_PTR(PFN_vkCmdCopyBufferToImage, "vkCmdCopyBufferToImage");
+    vkCmdCopyImageToBuffer = FUNC_PTR(PFN_vkCmdCopyImageToBuffer, "vkCmdCopyImageToBuffer");
+    vkCmdUpdateBuffer = FUNC_PTR(PFN_vkCmdUpdateBuffer, "vkCmdUpdateBuffer");
+    vkCmdFillBuffer = FUNC_PTR(PFN_vkCmdFillBuffer, "vkCmdFillBuffer");
+    vkCmdClearColorImage = FUNC_PTR(PFN_vkCmdClearColorImage, "vkCmdClearColorImage");
+    vkCmdClearDepthStencilImage = FUNC_PTR(PFN_vkCmdClearDepthStencilImage, "vkCmdClearDepthStencilImage");
+    vkCmdClearAttachments = FUNC_PTR(PFN_vkCmdClearAttachments, "vkCmdClearAttachments");
+    vkCmdResolveImage = FUNC_PTR(PFN_vkCmdResolveImage, "vkCmdResolveImage");
+    vkCmdSetEvent = FUNC_PTR(PFN_vkCmdSetEvent, "vkCmdSetEvent");
+    vkCmdResetEvent = FUNC_PTR(PFN_vkCmdResetEvent, "vkCmdResetEvent");
+    vkCmdWaitEvents = FUNC_PTR(PFN_vkCmdWaitEvents, "vkCmdWaitEvents");
+    vkCmdPipelineBarrier = FUNC_PTR(PFN_vkCmdPipelineBarrier, "vkCmdPipelineBarrier");
+    vkCmdBeginQuery = FUNC_PTR(PFN_vkCmdBeginQuery, "vkCmdBeginQuery");
+    vkCmdEndQuery = FUNC_PTR(PFN_vkCmdEndQuery, "vkCmdEndQuery");
+    vkCmdResetQueryPool = FUNC_PTR(PFN_vkCmdResetQueryPool, "vkCmdResetQueryPool");
+    vkCmdWriteTimestamp = FUNC_PTR(PFN_vkCmdWriteTimestamp, "vkCmdWriteTimestamp");
+    vkCmdCopyQueryPoolResults = FUNC_PTR(PFN_vkCmdCopyQueryPoolResults, "vkCmdCopyQueryPoolResults");
+    vkCmdPushConstants = FUNC_PTR(PFN_vkCmdPushConstants, "vkCmdPushConstants");
+    vkCmdBeginRenderPass = FUNC_PTR(PFN_vkCmdBeginRenderPass, "vkCmdBeginRenderPass");
+    vkCmdNextSubpass = FUNC_PTR(PFN_vkCmdNextSubpass, "vkCmdNextSubpass");
+    vkCmdEndRenderPass = FUNC_PTR(PFN_vkCmdEndRenderPass, "vkCmdEndRenderPass");
+    vkCmdExecuteCommands = FUNC_PTR(PFN_vkCmdExecuteCommands, "vkCmdExecuteCommands");
+
+    // VK_KHR_surface
+    vkDestroySurfaceKHR = FUNC_PTR(PFN_vkDestroySurfaceKHR, "vkDestroySurfaceKHR");
+    vkGetPhysicalDeviceSurfaceSupportKHR = FUNC_PTR(PFN_vkGetPhysicalDeviceSurfaceSupportKHR, "vkGetPhysicalDeviceSurfaceSupportKHR");
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR = FUNC_PTR(PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR, "vkGetPhysicalDeviceSurfaceCapabilitiesKHR");
+    vkGetPhysicalDeviceSurfaceFormatsKHR = FUNC_PTR(PFN_vkGetPhysicalDeviceSurfaceFormatsKHR, "vkGetPhysicalDeviceSurfaceFormatsKHR");
+    vkGetPhysicalDeviceSurfacePresentModesKHR = FUNC_PTR(PFN_vkGetPhysicalDeviceSurfacePresentModesKHR, "vkGetPhysicalDeviceSurfacePresentModesKHR");
+
+    // VK_KHR_swapchain
+    vkCreateSwapchainKHR = FUNC_PTR(PFN_vkCreateSwapchainKHR, "vkCreateSwapchainKHR");
+    vkDestroySwapchainKHR = FUNC_PTR(PFN_vkDestroySwapchainKHR, "vkDestroySwapchainKHR");
+    vkGetSwapchainImagesKHR = FUNC_PTR(PFN_vkGetSwapchainImagesKHR, "vkGetSwapchainImagesKHR");
+    vkAcquireNextImageKHR = FUNC_PTR(PFN_vkAcquireNextImageKHR, "vkAcquireNextImageKHR");
+    vkQueuePresentKHR = FUNC_PTR(PFN_vkQueuePresentKHR, "vkQueuePresentKHR");
+
+    // VK_KHR_display
+    vkGetPhysicalDeviceDisplayPropertiesKHR = FUNC_PTR(PFN_vkGetPhysicalDeviceDisplayPropertiesKHR, "vkGetPhysicalDeviceDisplayPropertiesKHR");
+    vkGetPhysicalDeviceDisplayPlanePropertiesKHR = FUNC_PTR(PFN_vkGetPhysicalDeviceDisplayPlanePropertiesKHR, "vkGetPhysicalDeviceDisplayPlanePropertiesKHR");
+    vkGetDisplayPlaneSupportedDisplaysKHR = FUNC_PTR(PFN_vkGetDisplayPlaneSupportedDisplaysKHR, "vkGetDisplayPlaneSupportedDisplaysKHR");
+    vkGetDisplayModePropertiesKHR = FUNC_PTR(PFN_vkGetDisplayModePropertiesKHR, "vkGetDisplayModePropertiesKHR");
+    vkCreateDisplayModeKHR = FUNC_PTR(PFN_vkCreateDisplayModeKHR, "vkCreateDisplayModeKHR");
+    vkGetDisplayPlaneCapabilitiesKHR = FUNC_PTR(PFN_vkGetDisplayPlaneCapabilitiesKHR, "vkGetDisplayPlaneCapabilitiesKHR");
+    vkCreateDisplayPlaneSurfaceKHR = FUNC_PTR(PFN_vkCreateDisplayPlaneSurfaceKHR, "vkCreateDisplayPlaneSurfaceKHR");
+
+    // VK_KHR_display_swapchain
+    vkCreateSharedSwapchainsKHR = FUNC_PTR(PFN_vkCreateSharedSwapchainsKHR, "vkCreateSharedSwapchainsKHR");
+
+#ifdef VK_USE_PLATFORM_XLIB_KHR
+    vkCreateXlibSurfaceKHR = FUNC_PTR(PFN_vkCreateXlibSurfaceKHR, "vkCreateXlibSurfaceKHR");
+    vkGetPhysicalDeviceXlibPresentationSupportKHR = FUNC_PTR(PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR, "vkGetPhysicalDeviceXlibPresentationSupportKHR");
+#endif
+
+#ifdef VK_USE_PLATFORM_XCB_KHR
+    vkCreateXcbSurfaceKHR = FUNC_PTR(PFN_vkCreateXcbSurfaceKHR, "vkCreateXcbSurfaceKHR");
+    vkGetPhysicalDeviceXcbPresentationSupportKHR = FUNC_PTR(PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR, "vkGetPhysicalDeviceXcbPresentationSupportKHR");
+#endif
+
+#ifdef VK_USE_PLATFORM_WAYLAND_KHR
+    vkCreateWaylandSurfaceKHR = FUNC_PTR(PFN_vkCreateWaylandSurfaceKHR, "vkCreateWaylandSurfaceKHR");
+    vkGetPhysicalDeviceWaylandPresentationSupportKHR = FUNC_PTR(PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR, "vkGetPhysicalDeviceWaylandPresentationSupportKHR");
+#endif
+
+#ifdef VK_USE_PLATFORM_MIR_KHR
+    vkCreateMirSurfaceKHR = FUNC_PTR(PFN_vkCreateMirSurfaceKHR, "vkCreateMirSurfaceKHR");
+    vkGetPhysicalDeviceMirPresentationSupportKHR = FUNC_PTR(PFN_vkGetPhysicalDeviceMirPresentationSupportKHR, "vkGetPhysicalDeviceMirPresentationSupportKHR");
+#endif
+
+#ifdef VK_USE_PLATFORM_ANDROID_KHR
+    vkCreateAndroidSurfaceKHR = FUNC_PTR(PFN_vkCreateAndroidSurfaceKHR, "vkCreateAndroidSurfaceKHR");
+#endif
+
+#ifdef VK_USE_PLATFORM_WIN32_KHR
+    vkCreateWin32SurfaceKHR = FUNC_PTR(PFN_vkCreateWin32SurfaceKHR, "vkCreateWin32SurfaceKHR");
+    vkGetPhysicalDeviceWin32PresentationSupportKHR = FUNC_PTR(PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR, "vkGetPhysicalDeviceWin32PresentationSupportKHR");
+#endif
+
+    return true;
 }
 
 const char* VulkanHelper::getVkResultName(VkResult result)

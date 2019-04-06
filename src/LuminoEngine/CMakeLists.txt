@@ -491,16 +491,16 @@ set(LN_SOURCES_Tilemap
 )
 
 if (LN_USE_VULKAN)
-    set(LN_SOURCES_Graphics
-        ${LN_SOURCES_Graphics}
-        src/Graphics/VulkanDeviceContext.cpp
-        src/Graphics/VulkanDeviceContext.hpp
-        src/Graphics/VulkanHelper.cpp
-        src/Graphics/VulkanHelper.hpp
-        src/Graphics/VulkanSampleDeviceContext.cpp
-        src/Graphics/VulkanSampleDeviceContext.hpp
-    )
-    list(APPEND LN_PLATFORM_DEFINITIONS LN_USE_VULKAN=1)
+    if (WIN32)
+        set(LN_SOURCES_Graphics
+            ${LN_SOURCES_Graphics}
+            src/Graphics/VulkanDeviceContext.cpp
+            src/Graphics/VulkanDeviceContext.hpp
+            src/Graphics/VulkanHelper.cpp
+            src/Graphics/VulkanHelper.hpp
+        )
+        list(APPEND LN_PLATFORM_DEFINITIONS LN_USE_VULKAN=1)
+    endif()
 endif()
 
 

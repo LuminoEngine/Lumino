@@ -68,6 +68,9 @@ VulkanDeviceContext::VulkanDeviceContext()
 
 bool VulkanDeviceContext::init(const Settings& settings)
 {
+    if (!VulkanHelper::initVulkanFunctions()) {
+        return false;
+    }
     if (!createInstance()) {
         return false;
     }
