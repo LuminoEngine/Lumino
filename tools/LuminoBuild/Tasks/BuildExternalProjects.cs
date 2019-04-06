@@ -118,6 +118,7 @@ namespace LuminoBuild.Tasks
                 $"-B{cmakeBuildDir}",
                 $"-DLN_TARGET_ARCH_NAME={targetName}",
                 $"-DCMAKE_INSTALL_PREFIX={cmakeInstallDir}",
+                $"-DCMAKE_DEBUG_POSTFIX=d",
                 $"-DANDROID_ABI={abi}",
                 $"-DANDROID_PLATFORM={platform}",
                 $"-DCMAKE_BUILD_TYPE={buildType}",
