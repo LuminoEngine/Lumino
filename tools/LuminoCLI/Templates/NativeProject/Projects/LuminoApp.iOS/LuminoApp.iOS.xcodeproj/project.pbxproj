@@ -8,14 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		8C32BB002171A1D8003E4BAC /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C32BAFF2171A1D8003E4BAC /* QuartzCore.framework */; };
-		8C561D1E2170D8A5009F0306 /* libLuminoEngine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC4475A216F8B98002F20DA /* libLuminoEngine.a */; };
+		8C406F5B2259048800E28FE7 /* Config-generated.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8C406F5A2259048800E28FE7 /* Config-generated.xcconfig */; };
 		8C613DE021C66D7E005915F0 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C613DDF21C66D7E005915F0 /* OpenAL.framework */; };
-		8C613DE221C66DF8005915F0 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C613DE121C66DF7005915F0 /* libfreetype.a */; };
 		8C613DE321C66FAD005915F0 /* Assets.lca in Resources */ = {isa = PBXBuildFile; fileRef = 8C613DDE21C66D0D005915F0 /* Assets.lca */; };
-		8C82306E21EB517C0003E1F3 /* libLinearMath.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C82306A21EB517C0003E1F3 /* libLinearMath.a */; };
-		8C82306F21EB517C0003E1F3 /* libBulletSoftBody.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C82306B21EB517C0003E1F3 /* libBulletSoftBody.a */; };
-		8C82307021EB517C0003E1F3 /* libBulletCollision.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C82306C21EB517C0003E1F3 /* libBulletCollision.a */; };
-		8C82307121EB517C0003E1F3 /* libBulletDynamics.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C82306D21EB517C0003E1F3 /* libBulletDynamics.a */; };
 		8C95E8C6213BC8B100772569 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8C5213BC8B100772569 /* AppDelegate.mm */; };
 		8C95E8C9213BC8B100772569 /* Renderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8C8213BC8B100772569 /* Renderer.mm */; };
 		8C95E8CC213BC8B100772569 /* GameViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8CB213BC8B100772569 /* GameViewController.mm */; };
@@ -24,8 +19,6 @@
 		8C95E8D7213BC8B100772569 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8C95E8D5213BC8B100772569 /* LaunchScreen.storyboard */; };
 		8C95E8DA213BC8B100772569 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8D9213BC8B100772569 /* main.mm */; };
 		8C97636721760C0800839863 /* Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8C97636621760C0800839863 /* Application.cpp */; };
-		8CC4475B216F8B98002F20DA /* libpng16.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC44758216F8B98002F20DA /* libpng16.a */; };
-		8CC4475C216F8B98002F20DA /* libLuminoCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC44759216F8B98002F20DA /* libLuminoCore.a */; };
 		8CC4475F216F8BBA002F20DA /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC4475E216F8BBA002F20DA /* libz.tbd */; };
 		8CC44761216F8BF7002F20DA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC44760216F8BF7002F20DA /* UIKit.framework */; };
 		8CC44763216F8C24002F20DA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC44762216F8C24002F20DA /* Foundation.framework */; };
@@ -36,15 +29,10 @@
 
 /* Begin PBXFileReference section */
 		8C32BAFF2171A1D8003E4BAC /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		8C406F5A2259048800E28FE7 /* Config-generated.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "Config-generated.xcconfig"; sourceTree = "<group>"; };
 		8C561D1B2170D81B009F0306 /* Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
-		8C561D1C2170D86E009F0306 /* libLuminoEngined.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLuminoEngined.a; path = "../../Engine/Native/lib/iOS-SIMULATOR64-Debug/libLuminoEngined.a"; sourceTree = "<group>"; };
 		8C613DDE21C66D0D005915F0 /* Assets.lca */ = {isa = PBXFileReference; lastKnownFileType = file; path = Assets.lca; sourceTree = "<group>"; };
 		8C613DDF21C66D7E005915F0 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
-		8C613DE121C66DF7005915F0 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = "../../Engine/Native/lib/iOS-SIMULATOR64-Release/libfreetype.a"; sourceTree = "<group>"; };
-		8C82306A21EB517C0003E1F3 /* libLinearMath.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLinearMath.a; path = "../../Engine/Native/lib/iOS-SIMULATOR64-Release/libLinearMath.a"; sourceTree = "<group>"; };
-		8C82306B21EB517C0003E1F3 /* libBulletSoftBody.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libBulletSoftBody.a; path = "../../Engine/Native/lib/iOS-SIMULATOR64-Release/libBulletSoftBody.a"; sourceTree = "<group>"; };
-		8C82306C21EB517C0003E1F3 /* libBulletCollision.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libBulletCollision.a; path = "../../Engine/Native/lib/iOS-SIMULATOR64-Release/libBulletCollision.a"; sourceTree = "<group>"; };
-		8C82306D21EB517C0003E1F3 /* libBulletDynamics.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libBulletDynamics.a; path = "../../Engine/Native/lib/iOS-SIMULATOR64-Release/libBulletDynamics.a"; sourceTree = "<group>"; };
 		8C95E8C1213BC8B100772569 /* LuminoApp.iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LuminoApp.iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C95E8C4213BC8B100772569 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		8C95E8C5213BC8B100772569 /* AppDelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AppDelegate.mm; sourceTree = "<group>"; };
@@ -59,9 +47,6 @@
 		8C95E8D9213BC8B100772569 /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		8C97636521760C0800839863 /* Application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Application.h; sourceTree = "<group>"; };
 		8C97636621760C0800839863 /* Application.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Application.cpp; sourceTree = "<group>"; };
-		8CC44758216F8B98002F20DA /* libpng16.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng16.a; path = "../../Engine/Native/lib/iOS-SIMULATOR64-Release/libpng16.a"; sourceTree = "<group>"; };
-		8CC44759216F8B98002F20DA /* libLuminoCore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLuminoCore.a; path = "../../Engine/Native/lib/iOS-SIMULATOR64-Release/libLuminoCore.a"; sourceTree = "<group>"; };
-		8CC4475A216F8B98002F20DA /* libLuminoEngine.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLuminoEngine.a; path = "../../Engine/Native/lib/iOS-SIMULATOR64-Release/libLuminoEngine.a"; sourceTree = "<group>"; };
 		8CC4475E216F8BBA002F20DA /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		8CC44760216F8BF7002F20DA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		8CC44762216F8C24002F20DA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -82,15 +67,7 @@
 				8CC44765216F8C6E002F20DA /* GLKit.framework in Frameworks */,
 				8CC44763216F8C24002F20DA /* Foundation.framework in Frameworks */,
 				8CC44761216F8BF7002F20DA /* UIKit.framework in Frameworks */,
-				8C82306E21EB517C0003E1F3 /* libLinearMath.a in Frameworks */,
-				8C82306F21EB517C0003E1F3 /* libBulletSoftBody.a in Frameworks */,
-				8C82307021EB517C0003E1F3 /* libBulletCollision.a in Frameworks */,
-				8C82307121EB517C0003E1F3 /* libBulletDynamics.a in Frameworks */,
-				8C613DE221C66DF8005915F0 /* libfreetype.a in Frameworks */,
 				8CC4475F216F8BBA002F20DA /* libz.tbd in Frameworks */,
-				8CC4475B216F8B98002F20DA /* libpng16.a in Frameworks */,
-				8CC4475C216F8B98002F20DA /* libLuminoCore.a in Frameworks */,
-				8C561D1E2170D8A5009F0306 /* libLuminoEngine.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -127,6 +104,7 @@
 				8C95E8CB213BC8B100772569 /* GameViewController.mm */,
 				8C95E8D0213BC8B100772569 /* Main.storyboard */,
 				8C95E8D3213BC8B100772569 /* Assets.xcassets */,
+				8C406F5A2259048800E28FE7 /* Config-generated.xcconfig */,
 				8C95E8D5213BC8B100772569 /* LaunchScreen.storyboard */,
 				8C95E8D8213BC8B100772569 /* Info.plist */,
 				8C95E8D9213BC8B100772569 /* main.mm */,
@@ -150,22 +128,13 @@
 		8CC44757216F8B97002F20DA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				8C82306C21EB517C0003E1F3 /* libBulletCollision.a */,
-				8C82306D21EB517C0003E1F3 /* libBulletDynamics.a */,
-				8C82306B21EB517C0003E1F3 /* libBulletSoftBody.a */,
-				8C82306A21EB517C0003E1F3 /* libLinearMath.a */,
-				8C613DE121C66DF7005915F0 /* libfreetype.a */,
 				8C613DDF21C66D7E005915F0 /* OpenAL.framework */,
 				8C32BAFF2171A1D8003E4BAC /* QuartzCore.framework */,
-				8C561D1C2170D86E009F0306 /* libLuminoEngined.a */,
 				8CC44766216F8C76002F20DA /* OpenGLES.framework */,
 				8CC44764216F8C6E002F20DA /* GLKit.framework */,
 				8CC44762216F8C24002F20DA /* Foundation.framework */,
 				8CC44760216F8BF7002F20DA /* UIKit.framework */,
 				8CC4475E216F8BBA002F20DA /* libz.tbd */,
-				8CC44759216F8B98002F20DA /* libLuminoCore.a */,
-				8CC4475A216F8B98002F20DA /* libLuminoEngine.a */,
-				8CC44758216F8B98002F20DA /* libpng16.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -231,6 +200,7 @@
 				8C613DE321C66FAD005915F0 /* Assets.lca in Resources */,
 				8C95E8D7213BC8B100772569 /* LaunchScreen.storyboard in Resources */,
 				8C95E8D4213BC8B100772569 /* Assets.xcassets in Resources */,
+				8C406F5B2259048800E28FE7 /* Config-generated.xcconfig in Resources */,
 				8C95E8D2213BC8B100772569 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -275,6 +245,7 @@
 /* Begin XCBuildConfiguration section */
 		8C95E8DB213BC8B100772569 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8C406F5A2259048800E28FE7 /* Config-generated.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -332,6 +303,7 @@
 		};
 		8C95E8DC213BC8B100772569 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8C406F5A2259048800E28FE7 /* Config-generated.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -388,10 +360,28 @@
 				CODE_SIGN_STYLE = Automatic;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = LuminoApp.iOS/Prefix.pch;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Engine/Native/include";
+				HEADER_SEARCH_PATHS = "$(LUMINO_PATH)/Engine/Native/include";
 				INFOPLIST_FILE = LuminoApp.iOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../Engine/Native/lib/iOS-SIMULATOR64-Release";
+				LIBRARY_SEARCH_PATHS = "$(LUMINO_PATH)/Engine/Native/lib/iOS-SIMULATOR64-Debug";
+				OTHER_LDFLAGS = (
+					"-lBox2Dd",
+					"-lLuminoCored",
+					"-lLuminoEngined",
+					"-lBulletCollisiond",
+					"-lBulletDynamicsd",
+					"-lBulletInverseDynamicsd",
+					"-lBulletSoftBodyd",
+					"-lLinearMathd",
+					"-lfreetyped",
+					"-lpng16d",
+					"-lpcre2-16d",
+					"-lvorbisfiled",
+					"-lvorbisd",
+					"-lvorbisencd",
+					"-loggd",
+					"-ltmxlite-s-d",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "Lumino.LuminoApp-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -405,10 +395,28 @@
 				CODE_SIGN_STYLE = Automatic;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = LuminoApp.iOS/Prefix.pch;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Engine/Native/include";
+				HEADER_SEARCH_PATHS = "$(LUMINO_PATH)/Engine/Native/include";
 				INFOPLIST_FILE = LuminoApp.iOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../Engine/Native/lib/iOS-SIMULATOR64-Release";
+				LIBRARY_SEARCH_PATHS = "$(LUMINO_PATH)/Engine/Native/lib/iOS-SIMULATOR64-Release";
+				OTHER_LDFLAGS = (
+					"-lBox2D",
+					"-lLuminoCore",
+					"-lLuminoEngine",
+					"-lBulletCollision",
+					"-lBulletDynamics",
+					"-lBulletInverseDynamics",
+					"-lBulletSoftBody",
+					"-lLinearMath",
+					"-lfreetype",
+					"-lpng16",
+					"-lpcre2-16",
+					"-lvorbisfile",
+					"-lvorbis",
+					"-lvorbisenc",
+					"-logg",
+					"-ltmxlite-s",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "Lumino.LuminoApp-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
