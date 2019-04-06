@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8C02DA5722590176002501A0 /* Config-generated.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8C02DA5622590176002501A0 /* Config-generated.xcconfig */; };
 		8C11190C21C6644300D4B45B /* Assets.lca in Resources */ = {isa = PBXBuildFile; fileRef = 8C11190B21C6641100D4B45B /* Assets.lca */; };
 		8C11191021C664A300D4B45B /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C11190F21C664A300D4B45B /* OpenAL.framework */; };
 		8C83D8BD2176278B00D072BA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C83D8BC2176278B00D072BA /* Assets.xcassets */; };
@@ -21,6 +22,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8C02DA5622590176002501A0 /* Config-generated.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "Config-generated.xcconfig"; sourceTree = "<group>"; };
 		8C11190B21C6641100D4B45B /* Assets.lca */ = {isa = PBXFileReference; lastKnownFileType = file; path = Assets.lca; sourceTree = "<group>"; };
 		8C11190F21C664A300D4B45B /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
 		8C83D8AD2176278A00D072BA /* LuminoApp.macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LuminoApp.macOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -83,6 +85,7 @@
 				8C83D8C12176278B00D072BA /* Info.plist */,
 				8C83D8C22176278B00D072BA /* main.mm */,
 				8C83D8C42176278B00D072BA /* LuminoApp_macOS.entitlements */,
+				8C02DA5622590176002501A0 /* Config-generated.xcconfig */,
 				8C83D9012176296000D072BA /* Prefix.pch */,
 			);
 			path = LuminoApp.macOS;
@@ -170,6 +173,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8C11190C21C6644300D4B45B /* Assets.lca in Resources */,
+				8C02DA5722590176002501A0 /* Config-generated.xcconfig in Resources */,
 				8C83D8BD2176278B00D072BA /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -191,6 +195,7 @@
 /* Begin XCBuildConfiguration section */
 		8C83D8C52176278B00D072BA /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8C02DA5622590176002501A0 /* Config-generated.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -250,6 +255,7 @@
 		};
 		8C83D8C62176278B00D072BA /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8C02DA5622590176002501A0 /* Config-generated.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -314,13 +320,13 @@
 					"DEBUG=1",
 					"LN_XCODE_PROJECT_DIR=\\\"\"$PROJECT_DIR\"\\\"",
 				);
-				HEADER_SEARCH_PATHS = /Users/lriki/Proj/Lumino/build/LocalPackage/Engine/Native/include;
+				HEADER_SEARCH_PATHS = "$(LUMINO_PATH)/Engine/Native/include";
 				INFOPLIST_FILE = LuminoApp.macOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = "/Users/lriki/Proj/Lumino/build/LocalPackage/Engine/Native/lib/macOS-Debug";
+				LIBRARY_SEARCH_PATHS = "$(LUMINO_PATH)/Engine/Native/lib/macOS-Debug";
 				OTHER_CFLAGS = "-I${LUMINO_PATH}/Engine/Native/include";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
@@ -373,13 +379,13 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = LuminoApp.macOS/Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
-				HEADER_SEARCH_PATHS = /Users/lriki/Proj/Lumino/build/LocalPackage/Engine/Native/include;
+				HEADER_SEARCH_PATHS = "$(LUMINO_PATH)/Engine/Native/include";
 				INFOPLIST_FILE = LuminoApp.macOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = "/Users/lriki/Proj/Lumino/build/LocalPackage/Engine/Native/lib/macOS-Release";
+				LIBRARY_SEARCH_PATHS = "$(LUMINO_PATH)/Engine/Native/lib/macOS-Release";
 				OTHER_CFLAGS = "-I${LUMINO_PATH}/Engine/Native/include";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",

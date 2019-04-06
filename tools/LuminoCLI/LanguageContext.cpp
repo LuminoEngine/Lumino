@@ -98,7 +98,7 @@ Result CppLanguageContext::applyTemplates(const ln::String& templateName)
                 true, true);
 
             ln::FileSystem::writeAllText(
-                ln::Path(dstRoot, u"Projects/LuminoApp.macOS/Config-generated"),
+                ln::Path(dstRoot, u"Projects/LuminoApp.macOS/LuminoApp.macOS/Config-generated.xcconfig"),
                 ln::String::format(u"LUMINO_PATH=" + project()->workspace()->buildEnvironment()->luminoPackageRootDir().unify()));
         }
 
@@ -118,7 +118,7 @@ Result CppLanguageContext::applyTemplates(const ln::String& templateName)
                 true, true);
 
             ln::FileSystem::writeAllText(
-                ln::Path(dstRoot, u"Projects/LuminoApp.iOS/Config-generated"),
+                ln::Path(dstRoot, u"Projects/LuminoApp.iOS/LuminoApp.iOS/Config-generated.xcconfig"),
                 ln::String::format(u"LUMINO_PATH=" + project()->workspace()->buildEnvironment()->luminoPackageRootDir().unify()));
         }
 
