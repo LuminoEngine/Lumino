@@ -96,6 +96,10 @@ Result CppLanguageContext::applyTemplates(const ln::String& templateName)
                 ln::Path(srcRoot, u"Projects/LuminoApp.macOS"),
                 ln::Path(dstRoot, u"Projects/LuminoApp.macOS"),
                 true, true);
+
+            ln::FileSystem::writeAllText(
+                ln::Path(dstRoot, u"Projects/LuminoApp.macOS/Config-generated"),
+                ln::String::format(u"LUMINO_PATH=" + project()->workspace()->buildEnvironment()->luminoPackageRootDir().unify()));
         }
 
         // Web
@@ -112,6 +116,10 @@ Result CppLanguageContext::applyTemplates(const ln::String& templateName)
                 ln::Path(srcRoot, u"Projects/LuminoApp.iOS"),
                 ln::Path(dstRoot, u"Projects/LuminoApp.iOS"),
                 true, true);
+
+            ln::FileSystem::writeAllText(
+                ln::Path(dstRoot, u"Projects/LuminoApp.iOS/Config-generated"),
+                ln::String::format(u"LUMINO_PATH=" + project()->workspace()->buildEnvironment()->luminoPackageRootDir().unify()));
         }
 
         // Android
