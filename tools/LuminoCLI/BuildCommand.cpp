@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../../src/LuminoEngine/src/Asset/AssetArchive.hpp"
 #include "../../src/LuminoEngine/src/Shader/UnifiedShader.hpp"
 #include "EnvironmentSettings.hpp"
@@ -58,7 +58,7 @@ Result BuildCommand::buildWindowsTarget(Workspace* workspace)
 
 Result BuildCommand::buildWebTarget(Workspace* workspace)
 {
-	// emsdk ‚ª‚È‚¯‚ê‚ÎƒCƒ“ƒXƒg[ƒ‹‚·‚é
+	// emsdk ãŒãªã‘ã‚Œã°ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã™ã‚‹
 	workspace->buildEnvironment()->prepareEmscriptenSdk();
 
 	auto buildDir = ln::Path::combine(m_project->buildDir(), u"Web").canonicalize();
@@ -99,7 +99,7 @@ Result BuildCommand::buildAndroidTarget()
 	{
 	putenv("JAVA_HOME=\"D:\\Program Files\\Android\\Android Studio\\jre\"");
 
-	ln::Process::execute(u"gradlew.bat", { u"assemble" });	// Debug, Release —¼•ûƒrƒ‹ƒh
+	ln::Process::execute(u"gradlew.bat", { u"assemble" });	// Debug, Release ä¸¡æ–¹ãƒ“ãƒ«ãƒ‰
 
 	// https://qiita.com/tkc_tsuchiya/items/6485714615ace9e19918
 
