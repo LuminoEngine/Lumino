@@ -69,6 +69,7 @@ VulkanDeviceContext::VulkanDeviceContext()
 bool VulkanDeviceContext::init(const Settings& settings)
 {
     if (!VulkanHelper::initVulkanFunctions()) {
+        LN_LOG_WARNING << "Valid vulkan library not found.";
         return false;
     }
     if (!createInstance()) {
