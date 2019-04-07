@@ -501,18 +501,18 @@ public:
     {
         auto it = m_hashMap.find(key);
         if (it != m_hashMap.end()) {
-            this->TSubClass::onInvalidate(it->second);
+            static_cast<TSubClass*>(this)->onInvalidate(it->second);
             m_hashMap.erase(it);
         }
     }
 
     template<class TPred>
-    void removeAllIf(TPred pred)
+    void invalidateAllIf(TPred pred)
     {
         for (auto itr = m_hashMap.begin(); itr != m_hashMap.end();) {
             if (pred(itr->second)) {
+                static_cast<TSubClass*>(this)->onInvalidate(itr->second);
                 itr = m_hashMap.erase(itr);
-                // removeAllIf は dispose から呼ばれるので、ここでは参照を外すだけでよい
             }
             else {
                 ++itr;
@@ -685,7 +685,7 @@ public:
 
     void invalidateFromShaderPass(VulkanShaderPass* value)
     {
-        HashedObjectCache<Ref<VulkanPipeline>, VulkanPipelineCache>::removeAllIf([&](Ref<VulkanPipeline>& x) { return x->containsShaderPass(value); });
+        HashedObjectCache<Ref<VulkanPipeline>, VulkanPipelineCache>::invalidateAllIf([&](Ref<VulkanPipeline>& x) { return x->containsShaderPass(value); });
     }
 
     //void invalidateFromFrameBuffer(VulkanFramebuffer* value)
