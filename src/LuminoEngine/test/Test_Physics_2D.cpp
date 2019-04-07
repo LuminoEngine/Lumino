@@ -1,5 +1,7 @@
 ﻿#include "Common.hpp"
 
+#ifdef LN_UNIT_TEST_EXPERIMENTAL
+
 class Test_Physics_2D : public ::testing::Test {};
 
 //------------------------------------------------------------------------------
@@ -107,3 +109,5 @@ TEST_F(Test_Physics_2D, Collision)
 
 	// 接触すればループを抜ける
 }
+
+#endif // LN_UNIT_TEST_EXPERIMENTAL

@@ -305,18 +305,21 @@ void IGraphicsDeviceContext::clearBuffers(ClearFlags flags, const Color& color, 
 {
     commitStatus(SubmitSource_Clear);
 	onClearBuffers(flags, color, z, stencil);
+    endCommit();
 }
 
 void IGraphicsDeviceContext::drawPrimitive(int startVertex, int primitiveCount)
 {
     commitStatus(SubmitSource_Draw);
 	onDrawPrimitive(m_staging.pipelineState.topology, startVertex, primitiveCount);
+    endCommit();
 }
 
 void IGraphicsDeviceContext::drawPrimitiveIndexed(int startIndex, int primitiveCount)
 {
     commitStatus(SubmitSource_Draw);
 	onDrawPrimitiveIndexed(m_staging.pipelineState.topology, startIndex, primitiveCount);
+    endCommit();
 }
 
 void IGraphicsDeviceContext::flushCommandBuffer(ITexture* affectRendreTarget)
@@ -398,9 +401,12 @@ void IGraphicsDeviceContext::commitStatus(SubmitSource submitSource)
 	onUpdatePrimitiveData(m_staging.pipelineState.vertexDeclaration, m_staging.primitive.vertexBuffers.data(), m_staging.primitive.vertexBuffers.size(), m_staging.primitive.indexBuffer);
 	
     onSubmitStatus(m_staging, m_stateDirtyFlags, submitSource);
+}
 
+void IGraphicsDeviceContext::endCommit()
+{
     m_committed = m_staging;
-	m_stateDirtyFlags = StateDirtyFlags_None;
+    m_stateDirtyFlags = StateDirtyFlags_None;
 }
 
 void IGraphicsDeviceContext::collectGarbageObjects()

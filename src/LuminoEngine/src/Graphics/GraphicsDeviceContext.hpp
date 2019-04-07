@@ -245,10 +245,13 @@ protected:
 
 	virtual void onPresent(ISwapChain* swapChain) = 0;
 
+    uint32_t stagingStateDirtyFlags() const { return m_stateDirtyFlags; }
+    const State& stagingState() const { return m_staging; }
     const State& committedState() const { return m_committed; }
 
 private:
     void commitStatus(SubmitSource submitSource);
+    void endCommit();
 	void collectGarbageObjects();
 
 	GraphicsDeviceCaps m_caps;
