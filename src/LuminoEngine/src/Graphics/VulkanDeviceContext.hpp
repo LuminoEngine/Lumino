@@ -172,6 +172,8 @@ public:
     static SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
 
 private:
+    void cleanup();
+
     VulkanDeviceContext* m_deviceContext;
     VkSurfaceKHR m_surface;
     VkSwapchainKHR m_swapchain;
@@ -179,6 +181,7 @@ private:
     VkFormat m_swapchainImageFormat;
     VkExtent2D m_swapchainExtent;
 
+    std::vector<VkImageView> m_swapChainImageViews;
     std::vector<Ref<VulkanRenderTarget>> m_swapchainRenderTargets;
     uint32_t m_imageIndex;
 

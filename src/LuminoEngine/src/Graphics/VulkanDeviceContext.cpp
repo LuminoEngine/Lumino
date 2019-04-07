@@ -1249,12 +1249,11 @@ Result VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow*
         m_swapchainExtent = extent;
     }
 
-    std::vector<VkImageView> swapChainImageViews;
     {
-        swapChainImageViews.resize(swapChainImages.size());
+        m_swapChainImageViews.resize(swapChainImages.size());
 
         for (uint32_t i = 0; i < swapChainImages.size(); i++) {
-            if (!VulkanHelper::createImageView(m_deviceContext, swapChainImages[i], m_swapchainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, &swapChainImageViews[i])) {
+            if (!VulkanHelper::createImageView(m_deviceContext, swapChainImages[i], m_swapchainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, &m_swapChainImageViews[i])) {
                 return false;
             }
         }
@@ -1263,7 +1262,7 @@ Result VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow*
     m_swapchainRenderTargets.resize(swapChainImages.size());
     for (uint32_t i = 0; i < swapChainImages.size(); i++) {
         auto target = makeRef<VulkanRenderTarget>();
-        target->init(m_deviceContext, m_swapchainExtent.width, m_swapchainExtent.height, m_swapchainImageFormat, swapChainImages[i], swapChainImageViews[i]);
+        target->init(m_deviceContext, m_swapchainExtent.width, m_swapchainExtent.height, m_swapchainImageFormat, swapChainImages[i], m_swapChainImageViews[i]);
         m_swapchainRenderTargets[i] = target;
     }
     //m_swapchainRenderTarget = makeRef<VulkanSwapchainRenderTargetTexture>();
@@ -1312,6 +1311,8 @@ void VulkanSwapChain::dispose()
 {
     VkDevice device = m_deviceContext->vulkanDevice();
 
+    cleanup();
+
     for (auto c : m_inFlightCommandBuffers) {
         if (c) {
             c->dispose();
@@ -1345,6 +1346,14 @@ void VulkanSwapChain::dispose()
     }
 
     ISwapChain::dispose();
+}
+
+void VulkanSwapChain::cleanup()
+{
+    for (auto& iv : m_swapChainImageViews) {
+        vkDestroyImageView(m_deviceContext->vulkanDevice(), iv, m_deviceContext->vulkanAllocator());
+    }
+    m_swapChainImageViews.clear();
 }
 
 void VulkanSwapChain::acquireNextImage(int* outIndex)
@@ -1875,6 +1884,11 @@ Result VulkanRenderTarget::init(VulkanDeviceContext* deviceContext, uint32_t wid
 
 void VulkanRenderTarget::dispose()
 {
+    if (m_image) {
+        m_image->dispose();
+        m_image = nullptr;
+    }
+
     if (m_deviceContext) {
         m_deviceContext->framebufferCache()->invalidateRenderTarget(this);
 
