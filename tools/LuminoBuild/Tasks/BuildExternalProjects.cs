@@ -219,6 +219,7 @@ namespace LuminoBuild.Tasks
                 }
 
                 Utils.ExtractZipFile(zip, Path.Combine(reposDir, "SDL2-2.0.8"));
+                System.Threading.Thread.Sleep(1000);
                 Directory.Move(Path.Combine(reposDir, "SDL2-2.0.8", "SDL2-2.0.8"), Path.Combine(reposDir, "SDL2"));
             }
             if (!Directory.Exists("freetype2"))
@@ -236,7 +237,7 @@ namespace LuminoBuild.Tasks
             }
             if (!Directory.Exists("vorbis"))
             {
-                Utils.CallProcess("git", "clone --progress --depth 1 -b v1.3.6 https://github.com/xiph/vorbis.git vorbis");
+                Utils.CallProcess("git", "clone --progress --depth 1 -b v1.3.6-lumino https://github.com/lriki/vorbis.git vorbis");
             }
             if (!Directory.Exists("bullet3"))
             {

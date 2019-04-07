@@ -12,6 +12,7 @@ namespace LuminoBuild
             // default
             if (args.Length == 0)
             {
+                args = new string[] { "MakePackage" };
                 //args = new string[] { "BuildEngine_AndroidJNI" };
                 //args = new string[] { "BuildExternalProjects", "Windows" };
                 //args = new string[] { "MakeLocalPackage", "disable-build-external" };

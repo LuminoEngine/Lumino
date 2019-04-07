@@ -485,6 +485,8 @@ namespace LuminoBuild
 
         public static int TryCallProcessStdErr(string program, string args, out string outStdErr)
         {
+            Logger.WriteLine($"{program} {args}");
+
             using (Process p = new Process())
             {
                 var sb = new StringBuilder();
@@ -510,6 +512,8 @@ namespace LuminoBuild
 
         public static void CallProcessShell(string program, string args = "")
         {
+            Logger.WriteLine($"{program} {args}");
+
             using (Process p = new Process())
             {
                 p.StartInfo.FileName = program;
