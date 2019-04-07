@@ -489,6 +489,24 @@ void GLFWPlatformWindowManager::processSystemEventQueue()
 	glfwPollEvents();
 }
 
+//=============================================================================
+
+bool checkGraphicsSupport()
+{
+    if (!glfwInit()) return false;
+
+    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+    GLFWwindow* window = glfwCreateWindow(200, 200, "Version", NULL, NULL);
+    if (!window)
+    {
+        glfwTerminate();
+        return false;
+    }
+
+    glfwTerminate();
+    return true;
+}
+
 } // namespace detail
 } // namespace ln
 

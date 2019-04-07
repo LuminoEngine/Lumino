@@ -20,5 +20,6 @@ namespace detail {
 void Cocoa_getScreenMousePosition(int* x, int* y);
 void Cocoa_pointFromScreen(void* windowId, int screenPointX, int screenPointY, int* clientPointX, int* clientPointY);
 void Cocoa_pointToScreen(void* windowId, int clientPointX, int clientPointY, int* screenPointX, int* screenPointY);
+bool checkGraphicsSupport();
 } // namespace detail
 } // namespace ln
