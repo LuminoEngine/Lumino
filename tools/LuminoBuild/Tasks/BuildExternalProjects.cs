@@ -287,6 +287,10 @@ namespace LuminoBuild.Tasks
             {
                 Utils.CallProcess("git", "clone --progress --depth 1 -b v2.3.1 https://github.com/erincatto/Box2D.git Box2D");
             }
+            if (!Directory.Exists("Vulkan-Headers"))
+            {
+                Utils.CallProcess("git", "clone --progress --depth 1 -b v1.1.105 https://github.com/KhronosGroup/Vulkan-Headers.git Vulkan-Headers");
+            }
 
             const string bulletOptions = "-DBUILD_BULLET2_DEMOS=OFF -DBUILD_CLSOCKET=OFF -DBUILD_CPU_DEMOS=OFF -DBUILD_ENET=OFF -DBUILD_EXTRAS=OFF -DBUILD_OPENGL3_DEMOS=OFF -DBUILD_UNIT_TESTS=OFF -DINSTALL_LIBS=ON";
 
@@ -339,7 +343,7 @@ namespace LuminoBuild.Tasks
                         var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{target.DirName}", "ExternalInstall", "zlib"));
                         var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{target.DirName}", "ExternalInstall", "ogg"));
                         var bulletRuntime = "-DUSE_MSVC_RUNTIME_LIBRARY_DLL=" + (target.MSVCStaticRuntime == "ON" ? "OFF" : "ON");
-                        
+
                         BuildProjectMSVC(builder, "zlib", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
                         BuildProjectMSVC(builder, "libpng", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
                         BuildProjectMSVC(builder, "glslang", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
@@ -355,6 +359,7 @@ namespace LuminoBuild.Tasks
                         BuildProjectMSVC(builder, "pcre", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF");
                         BuildProjectMSVC(builder, "tmxlite/tmxlite", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DTMXLITE_STATIC_LIB=ON");
                         BuildProjectMSVC(builder, "Box2D/Box2D", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DBOX2D_BUILD_EXAMPLES=OFF -DBOX2D_INSTALL_DOC=OFF -DBOX2D_BUILD_SHARED=OFF -DBOX2D_BUILD_STATIC=ON -DBOX2D_INSTALL=ON");
+                        BuildProjectMSVC(builder, "Vulkan-Headers", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
                     }
                 }
             }
