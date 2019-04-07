@@ -1231,8 +1231,9 @@ Result VulkanCommandBuffer::init(VulkanDeviceContext* deviceContext)
 
 void VulkanCommandBuffer::dispose()
 {
-    m_usingShaderPasses.clear();
-    m_usingDescriptorSetsPools.clear();
+    //m_usingShaderPasses.clear();
+    //m_usingDescriptorSetsPools.clear();
+    cleanInFlightResources();
 
     if (m_commandBuffer) {
         vkFreeCommandBuffers(m_deviceContext->vulkanDevice(), m_deviceContext->vulkanCommandPool(), 1, &m_commandBuffer);
@@ -1278,9 +1279,9 @@ Result VulkanCommandBuffer::endRecording()
 
     LN_VK_CHECK(vkEndCommandBuffer(vulkanCommandBuffer()));
 
-    for (auto& pass : m_usingShaderPasses) {
-        pass->recodingPool = nullptr;
-    }
+    //for (auto& pass : m_usingShaderPasses) {
+    //    pass->recodingPool = nullptr;
+    //}
 
     return true;
 }

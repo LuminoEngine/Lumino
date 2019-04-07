@@ -108,12 +108,18 @@ bool VulkanDeviceContext::init(const Settings& settings)
 
 void VulkanDeviceContext::dispose()
 {
-    IGraphicsDeviceContext::dispose();
-
+    // まずは CommandBuffer の dispose() を行う。
+    // CommandBuffer は最後に Submit した時、コマンドリストが参照しているリソースを開放しないように、影響リソースの参照を持っている。
+    // CommandBuffer は次回描画開始時や、解放のタイミング (今の時点) で、これらのリソース参照をはずす。
+    // このとき、ShaderPass に対しては、VulkanDescriptorSetsPool を返却する。ShaderPass は dispose でこの VulkanDescriptorSetsPool を削除するので、
+    // ShaderPass を dispose ずる前に CommandBuffer の dispose() を行う必要がある。
     if (m_recodingCommandBuffer) {
         m_recodingCommandBuffer->dispose();
         m_recodingCommandBuffer = nullptr;
     }
+
+    IGraphicsDeviceContext::dispose();
+
 
     m_pipelineCache.dispose();
     m_framebufferCache.dispose();
