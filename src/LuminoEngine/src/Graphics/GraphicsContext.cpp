@@ -28,7 +28,7 @@ GraphicsContext::~GraphicsContext()
 {
 }
 
-void GraphicsContext::init(detail::IGraphicsDeviceContext* device)
+void GraphicsContext::init(detail::IGraphicsDevice* device)
 {
     Object::init();
 	m_manager = detail::EngineDomain::graphicsManager();
@@ -163,7 +163,7 @@ void GraphicsContext::drawPrimitive(int startVertex, int primitiveCount)
 	commitState();
 	LN_ENQUEUE_RENDER_COMMAND_3(
 		GraphicsContext_setIndexBuffer, m_manager,
-		detail::IGraphicsDeviceContext*, m_device,
+		detail::IGraphicsDevice*, m_device,
 		int, startVertex,
 		int, primitiveCount,
 		{
@@ -177,7 +177,7 @@ void GraphicsContext::drawPrimitiveIndexed(int startIndex, int primitiveCount)
 	commitState();
 	LN_ENQUEUE_RENDER_COMMAND_3(
 		GraphicsContext_setIndexBuffer, m_manager,
-		detail::IGraphicsDeviceContext*, m_device,
+		detail::IGraphicsDevice*, m_device,
 		int, startIndex,
 		int, primitiveCount,
 		{
@@ -207,7 +207,7 @@ void GraphicsContext::beginCommandRecodingIfNeeded()
     if (!m_recordingBegan) {
         LN_ENQUEUE_RENDER_COMMAND_1(
             GraphicsContext_beginCommandRecodingIfNeeded, m_manager,
-            detail::IGraphicsDeviceContext*, m_device,
+            detail::IGraphicsDevice*, m_device,
             {
                 m_device->begin();
             });
@@ -221,7 +221,7 @@ void GraphicsContext::endCommandRecodingIfNeeded()
     if (m_recordingBegan) {
         LN_ENQUEUE_RENDER_COMMAND_1(
             GraphicsContext_beginCommandRecodingIfNeeded, m_manager,
-            detail::IGraphicsDeviceContext*, m_device,
+            detail::IGraphicsDevice*, m_device,
             {
                 m_device->end();
             });
@@ -239,7 +239,7 @@ void GraphicsContext::flushCommandRecoding(RenderTargetTexture* affectRendreTarg
         detail::ITexture* rhiObject = affectRendreTarget->resolveRHIObject();
         LN_ENQUEUE_RENDER_COMMAND_2(
             GraphicsContext_beginCommandRecodingIfNeeded, m_manager,
-            detail::IGraphicsDeviceContext*, m_device,
+            detail::IGraphicsDevice*, m_device,
             detail::ITexture*, rhiObject,
             {
                 m_device->flushCommandBuffer(rhiObject);
@@ -247,7 +247,7 @@ void GraphicsContext::flushCommandRecoding(RenderTargetTexture* affectRendreTarg
     }
 }
 
-detail::IGraphicsDeviceContext* GraphicsContext::commitState()
+detail::IGraphicsDevice* GraphicsContext::commitState()
 {
 	// ポインタとしては変わっていなくても、resolve は毎回呼び出す。
 	// こうしておかないと、
@@ -262,7 +262,7 @@ detail::IGraphicsDeviceContext* GraphicsContext::commitState()
 		auto& depthStencilState = m_staging.depthStencilState;
 		LN_ENQUEUE_RENDER_COMMAND_4(
 			GraphicsContext_setPipelineState, m_manager,
-			detail::IGraphicsDeviceContext*, m_device,
+			detail::IGraphicsDevice*, m_device,
 			BlendStateDesc, blendState,
 			RasterizerStateDesc, rasterizerState,
 			DepthStencilStateDesc, depthStencilState,
@@ -283,7 +283,7 @@ detail::IGraphicsDeviceContext* GraphicsContext::commitState()
 			detail::ITexture* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
 			LN_ENQUEUE_RENDER_COMMAND_3(
 				GraphicsContext_setDepthBuffer, m_manager,
-				detail::IGraphicsDeviceContext*, m_device,
+				detail::IGraphicsDevice*, m_device,
 				int, i,
 				detail::ITexture*, rhiObject,
 				{
@@ -297,7 +297,7 @@ detail::IGraphicsDeviceContext* GraphicsContext::commitState()
 		detail::IDepthBuffer* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
 		LN_ENQUEUE_RENDER_COMMAND_2(
 			GraphicsContext_setDepthBuffer, m_manager,
-			detail::IGraphicsDeviceContext*, m_device,
+			detail::IGraphicsDevice*, m_device,
 			detail::IDepthBuffer*, rhiObject,
 			{
 				m_device->setDepthBuffer(rhiObject);
@@ -309,7 +309,7 @@ detail::IGraphicsDeviceContext* GraphicsContext::commitState()
 		RectI scissorRect = RectI::fromFloatRect(m_staging.scissorRect);
 		LN_ENQUEUE_RENDER_COMMAND_3(
 			GraphicsContext_setDepthBuffer, m_manager,
-			detail::IGraphicsDeviceContext*, m_device,
+			detail::IGraphicsDevice*, m_device,
 			RectI, viewportRect,
 			RectI, scissorRect,
 			{
@@ -323,7 +323,7 @@ detail::IGraphicsDeviceContext* GraphicsContext::commitState()
 		detail::IVertexDeclaration* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
 		LN_ENQUEUE_RENDER_COMMAND_2(
 			GraphicsContext_setVertexDeclaration, m_manager,
-			detail::IGraphicsDeviceContext*, m_device,
+			detail::IGraphicsDevice*, m_device,
 			detail::IVertexDeclaration*, rhiObject,
 			{
 				m_device->setVertexDeclaration(rhiObject);
@@ -338,7 +338,7 @@ detail::IGraphicsDeviceContext* GraphicsContext::commitState()
 			detail::IVertexBuffer* rhiObject = detail::GraphicsResourceHelper::resolveRHIObject<detail::IVertexBuffer>(value);
 			LN_ENQUEUE_RENDER_COMMAND_3(
 				GraphicsContext_setVertexBuffer, m_manager,
-				detail::IGraphicsDeviceContext*, m_device,
+				detail::IGraphicsDevice*, m_device,
 				int, i,
 				detail::IVertexBuffer*, rhiObject,
 				{
@@ -355,7 +355,7 @@ detail::IGraphicsDeviceContext* GraphicsContext::commitState()
 		detail::IIndexBuffer* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
 		LN_ENQUEUE_RENDER_COMMAND_2(
 			GraphicsContext_setIndexBuffer, m_manager,
-			detail::IGraphicsDeviceContext*, m_device,
+			detail::IGraphicsDevice*, m_device,
 			detail::IIndexBuffer*, rhiObject,
 			{
 				m_device->setIndexBuffer(rhiObject);
@@ -370,7 +370,7 @@ detail::IGraphicsDeviceContext* GraphicsContext::commitState()
 		detail::IShaderPass* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
 		LN_ENQUEUE_RENDER_COMMAND_2(
 			GraphicsContext_setShaderPass, m_manager,
-			detail::IGraphicsDeviceContext*, m_device,
+			detail::IGraphicsDevice*, m_device,
 			detail::IShaderPass*, rhiObject,
 			{
 				m_device->setShaderPass(rhiObject);
@@ -388,7 +388,7 @@ detail::IGraphicsDeviceContext* GraphicsContext::commitState()
 		auto& topology = m_staging.topology;
 		LN_ENQUEUE_RENDER_COMMAND_2(
 			GraphicsContext_setShaderPass, m_manager,
-			detail::IGraphicsDeviceContext*, m_device,
+			detail::IGraphicsDevice*, m_device,
 			PrimitiveTopology, topology,
 			{
 				m_device->setPrimitiveTopology(topology);

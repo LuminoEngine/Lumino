@@ -643,7 +643,7 @@ class VulkanPipeline
 {
 public:
     VulkanPipeline();
-    Result init(VulkanDeviceContext* deviceContext, const IGraphicsDeviceContext::State& state, VkRenderPass renderPass);
+    Result init(VulkanDeviceContext* deviceContext, const GraphicsContextState& state, VkRenderPass renderPass);
     void dispose();
 
     VkPipeline vulkanPipeline() const { return m_pipeline; }
@@ -651,7 +651,7 @@ public:
     //bool containsVertexDeclaration(VulkanVertexDeclaration* value) const { return m_relatedVertexDeclaration == value; }
     //bool containsFramebuffer(VulkanFramebuffer* value) const { return m_relatedFramebuffer == value; }
 
-    static uint64_t computeHash(const IGraphicsDeviceContext::State& state);
+    static uint64_t computeHash(const GraphicsContextState& state);
 
 private:
     VulkanDeviceContext* m_deviceContext;
@@ -670,7 +670,7 @@ public:
     void dispose();
     // renderPass : この cache は vkCmdBeginRenderPass ～ vkCmdEndRenderPass の間で呼び出し、pipeline を得ることを目的としている。
     // この renderPass は、その間の RenderPass。あらかじめわかっている値を入れることで、Pipeline 作成の中でもう一度検索の必要がないようにする。
-    VulkanPipeline* findOrCreate(const IGraphicsDeviceContext::State& key, VkRenderPass renderPass);
+    VulkanPipeline* findOrCreate(const GraphicsContextState& key, VkRenderPass renderPass);
 
     void invalidateFromShaderPass(VulkanShaderPass* value)
     {

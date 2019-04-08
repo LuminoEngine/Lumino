@@ -319,7 +319,7 @@ void Shader::onDispose(bool explicitDisposing)
     GraphicsResource::onDispose(explicitDisposing);
 }
 
-void Shader::onChangeDevice(detail::IGraphicsDeviceContext* device)
+void Shader::onChangeDevice(detail::IGraphicsDevice* device)
 {
     LN_NOTIMPLEMENTED();
 }

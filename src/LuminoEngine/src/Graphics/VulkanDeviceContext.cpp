@@ -10,19 +10,19 @@
 #include "VulkanDeviceContext.hpp"
 
 //#define STB_IMAGE_IMPLEMENTATION
-#include "../../../../build/ExternalSource/stb/stb_image.h"
+//#include "../../../../build/ExternalSource/stb/stb_image.h"
 
-#include <iostream>
-#include <fstream>
-#include <stdexcept>
-#include <algorithm>
-#include <chrono>
-#include <vector>
-#include <cstring>
-#include <cstdlib>
-#include <array>
-#include <optional>
-#include <set>
+//#include <iostream>
+//#include <fstream>
+//#include <stdexcept>
+//#include <algorithm>
+//#include <chrono>
+//#include <vector>
+//#include <cstring>
+//#include <cstdlib>
+//#include <array>
+//#include <optional>
+//#include <set>
 
 namespace ln {
 namespace detail {
@@ -118,7 +118,7 @@ void VulkanDeviceContext::dispose()
         m_recodingCommandBuffer = nullptr;
     }
 
-    IGraphicsDeviceContext::dispose();
+    IGraphicsDevice::dispose();
 
 
     m_pipelineCache.dispose();
@@ -296,7 +296,7 @@ void VulkanDeviceContext::onUpdateShaderPass(IShaderPass* newPass)
 {
 }
 
-void VulkanDeviceContext::onSubmitStatus(const State& state, uint32_t stateDirtyFlags, SubmitSource submitSource)
+void VulkanDeviceContext::onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource)
 {
 }
 
@@ -376,10 +376,10 @@ void VulkanDeviceContext::onSetSubData3D(ITexture* resource, int x, int y, int z
 void VulkanDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
     bool skipClear;
-    submitStatusInternal(SubmitSource_Clear, flags, color, z, stencil, &skipClear);
+    submitStatusInternal(GraphicsContextSubmitSource_Clear, flags, color, z, stencil, &skipClear);
     if (skipClear) return;
 
-    const State& state = stagingState();
+    const GraphicsContextState& state = stagingState();
 
     SizeI size = state.framebufferState.renderTargets[0]->realSize();
     {
@@ -440,14 +440,14 @@ void VulkanDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, f
 
 void VulkanDeviceContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount)
 {
-    submitStatusInternal(SubmitSource_Draw, ClearFlags::None, Color::White, 0, 0, nullptr);
+    submitStatusInternal(GraphicsContextSubmitSource_Draw, ClearFlags::None, Color::White, 0, 0, nullptr);
     vkCmdDraw(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startVertex, 0);
     m_recodingCommandBuffer->m_priorToAnyDrawCmds = false;
 }
 
 void VulkanDeviceContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount)
 {
-    submitStatusInternal(SubmitSource_Draw, ClearFlags::None, Color::White, 0, 0, nullptr);
+    submitStatusInternal(GraphicsContextSubmitSource_Draw, ClearFlags::None, Color::White, 0, 0, nullptr);
     vkCmdDrawIndexed(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startIndex, 0, 0);
     m_recodingCommandBuffer->m_priorToAnyDrawCmds = false;
 }
@@ -1017,9 +1017,9 @@ Result VulkanDeviceContext::transitionImageLayoutImmediately(VkImage image, VkFo
     return result;
 }
 
-Result VulkanDeviceContext::submitStatusInternal(SubmitSource submitSource, ClearFlags flags, const Color& color, float z, uint8_t stencil, bool* outSkipClear)
+Result VulkanDeviceContext::submitStatusInternal(GraphicsContextSubmitSource submitSource, ClearFlags flags, const Color& color, float z, uint8_t stencil, bool* outSkipClear)
 {
-    const State& state = stagingState();
+    const GraphicsContextState& state = stagingState();
     uint32_t stateDirtyFlags = stagingStateDirtyFlags();
 
     bool clearBuffersOnBeginRenderPass = false;//(submitSource == SubmitSource_Clear && m_recodingCommandBuffer->m_priorToAnyDrawCmds);
@@ -1028,7 +1028,7 @@ Result VulkanDeviceContext::submitStatusInternal(SubmitSource submitSource, Clea
     //m_recodingCommandBuffer->beginRecording();
 
     //if (!m_recodingCommandBuffer->m_lastFoundFramebuffer)
-    if (stateDirtyFlags & StateDirtyFlags_FrameBuffers)
+    if (stateDirtyFlags & GraphicsContextStateDirtyFlags_FrameBuffers)
     {
         // 前回開始した RenderPass があればクローズしておく
         m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
@@ -1108,9 +1108,9 @@ Result VulkanDeviceContext::submitStatusInternal(SubmitSource submitSource, Clea
         vkCmdSetScissor(m_recodingCommandBuffer->vulkanCommandBuffer(), 0, 1, &scissor);
     }
 
-    if (submitSource == SubmitSource_Draw) {
+    if (submitSource == GraphicsContextSubmitSource_Draw) {
 
-        //IGraphicsDeviceContext::State state;
+        //IGraphicsDevice::State state;
         //state.pipelineState.shaderPass = m_shaderPass;
         //state.pipelineState.vertexDeclaration = m_vertexDeclaration;
         //state.framebufferState.renderTargets[0] = m_deviceContext->m_mainSwapchain->swapchainRenderTargets()[0];

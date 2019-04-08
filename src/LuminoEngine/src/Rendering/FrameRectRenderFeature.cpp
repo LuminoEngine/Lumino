@@ -68,7 +68,7 @@ void InternalFrameRectRenderer::draw(const Rect& rect, const Matrix& worldTransf
     }
 }
 
-void InternalFrameRectRenderer::InternalFrameRectRenderer::flush(IGraphicsDeviceContext* context)
+void InternalFrameRectRenderer::InternalFrameRectRenderer::flush(IGraphicsDevice* context)
 {
     prepareBuffers(m_vertices.size() / 4);
 
@@ -91,7 +91,7 @@ void InternalFrameRectRenderer::InternalFrameRectRenderer::flush(IGraphicsDevice
 // TODO: TextRenderer と全く同じなので共通化していいかも
 void InternalFrameRectRenderer::prepareBuffers(int spriteCount)
 {
-	IGraphicsDeviceContext* context = m_manager->graphicsManager()->deviceContext();
+	IGraphicsDevice* context = m_manager->graphicsManager()->deviceContext();
 
 	if (m_buffersReservedSpriteCount < spriteCount)
 	{
@@ -400,11 +400,11 @@ void FrameRectRenderFeature::draw(const Rect& rect, const Matrix& worldTransform
 void FrameRectRenderFeature::flush(GraphicsContext* context)
 {
     GraphicsManager* manager = m_internal->manager()->graphicsManager();
-    IGraphicsDeviceContext* deviceContext = context->commitState();
+    IGraphicsDevice* deviceContext = context->commitState();
     LN_ENQUEUE_RENDER_COMMAND_2(
         FrameRectRenderFeature_flush, manager,
         InternalFrameRectRenderer*, m_internal,
-        IGraphicsDeviceContext*, deviceContext,
+        IGraphicsDevice*, deviceContext,
         {
             m_internal->flush(deviceContext);
         });

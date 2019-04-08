@@ -1964,7 +1964,7 @@ VulkanPipeline::VulkanPipeline()
 {
 }
 
-Result VulkanPipeline::init(VulkanDeviceContext* deviceContext, const IGraphicsDeviceContext::State& state, VkRenderPass renderPass)
+Result VulkanPipeline::init(VulkanDeviceContext* deviceContext, const GraphicsContextState& state, VkRenderPass renderPass)
 {
     LN_DCHECK(deviceContext);
     LN_DCHECK(renderPass);
@@ -2211,7 +2211,7 @@ void VulkanPipeline::dispose()
     }
 }
 
-uint64_t VulkanPipeline::computeHash(const IGraphicsDeviceContext::State& state)
+uint64_t VulkanPipeline::computeHash(const GraphicsContextState& state)
 {
     auto* vertexDeclaration = static_cast<VulkanVertexDeclaration*>(state.pipelineState.vertexDeclaration);
     uint64_t vertexDeclarationHash = (vertexDeclaration) ? vertexDeclaration->hash() : 0;
@@ -2246,7 +2246,7 @@ void VulkanPipelineCache::dispose()
     clear();
 }
 
-VulkanPipeline* VulkanPipelineCache::findOrCreate(const IGraphicsDeviceContext::State& state, VkRenderPass renderPass)
+VulkanPipeline* VulkanPipelineCache::findOrCreate(const GraphicsContextState& state, VkRenderPass renderPass)
 {
     uint64_t hash = VulkanPipeline::computeHash(state);
     Ref<VulkanPipeline> pipeline;

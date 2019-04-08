@@ -138,7 +138,7 @@ detail::IVertexBuffer* VertexBuffer::resolveRHIObject()
 {
 	if (m_modified)
 	{
-        detail::IGraphicsDeviceContext* device = manager()->deviceContext();
+        detail::IGraphicsDevice* device = manager()->deviceContext();
 		if (m_rhiLockedBuffer)
 		{
             device->unmap(m_rhiObject);
@@ -157,7 +157,7 @@ detail::IVertexBuffer* VertexBuffer::resolveRHIObject()
 				detail::IVertexBuffer* rhiObject = m_rhiObject;
 				LN_ENQUEUE_RENDER_COMMAND_3(
 					VertexBuffer_SetSubData, manager(),
-                    detail::IGraphicsDeviceContext*, device,
+                    detail::IGraphicsDevice*, device,
 					detail::RenderBulkData, data,
 					Ref<detail::IVertexBuffer>, rhiObject,
 					{
@@ -179,7 +179,7 @@ detail::IVertexBuffer* VertexBuffer::resolveRHIObject()
 	return m_rhiObject;
 }
 
-void VertexBuffer::onChangeDevice(detail::IGraphicsDeviceContext* device)
+void VertexBuffer::onChangeDevice(detail::IGraphicsDevice* device)
 {
 	if (device)
 	{

@@ -3,10 +3,10 @@
 #if 0
 
 //==============================================================================
-// IGraphicsDeviceContext 周りのテスト。
+// IGraphicsDevice 周りのテスト。
 // 新規 DeviceContext 実装時の最低限の動作を見る。
 // 現状内部用途なので API は決まっていないため、ここのコードはそれなりの頻度で変更する可能性がある。
-// 細かい動作を見るコードは、IGraphicsDeviceContext の上位の公開 API のテストで行う。
+// 細かい動作を見るコードは、IGraphicsDevice の上位の公開 API のテストで行う。
 class Test_Graphics_DeviceContext : public ::testing::Test {};
 
 //------------------------------------------------------------------------------

@@ -41,7 +41,7 @@ void InternalPrimitiveRenderer::drawMeshGenerater(const MeshGenerater* generator
     m_generators.add(gen);
 }
 
-void InternalPrimitiveRenderer::flush(IGraphicsDeviceContext* context)
+void InternalPrimitiveRenderer::flush(IGraphicsDevice* context)
 {
     if (m_generators.isEmpty()) return;
 
@@ -110,7 +110,7 @@ void InternalPrimitiveRenderer::flush(IGraphicsDeviceContext* context)
     m_generators.clear();
 }
 
-void InternalPrimitiveRenderer::prepareBuffers(IGraphicsDeviceContext* context, int vertexCount, int indexCount)
+void InternalPrimitiveRenderer::prepareBuffers(IGraphicsDevice* context, int vertexCount, int indexCount)
 {
     size_t vertexBufferSize = sizeof(Vertex) * vertexCount;
     if (!m_vertexBuffer || m_vertexBuffer->getBytesSize() < vertexBufferSize)
@@ -186,11 +186,11 @@ void PrimitiveRenderFeature::init(RenderingManager* manager)
 void PrimitiveRenderFeature::flush(GraphicsContext* context)
 {
     GraphicsManager* manager = m_manager->graphicsManager();
-    IGraphicsDeviceContext* deviceContext = context->commitState();
+    IGraphicsDevice* deviceContext = context->commitState();
     LN_ENQUEUE_RENDER_COMMAND_2(
         PrimitiveRenderFeature_flush, manager,
         InternalPrimitiveRenderer*, m_internal,
-        IGraphicsDeviceContext*, deviceContext,
+        IGraphicsDevice*, deviceContext,
         {
             m_internal->flush(deviceContext);
         });

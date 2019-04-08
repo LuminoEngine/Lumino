@@ -18,7 +18,7 @@ public:
 	RenderingManager* manager() const { return m_manager; }
 
     void draw(const Rect& rect, const Matrix& worldTransform, BrushImageDrawMode imageDrawMode, const Thickness& borderThickness, const Rect& srcRect, BrushWrapMode wrapMode, const SizeI& srcTextureSize);
-	void flush(IGraphicsDeviceContext* context);
+	void flush(IGraphicsDevice* context);
 
 private:
 	void prepareBuffers(int spriteCount);

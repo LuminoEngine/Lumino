@@ -49,7 +49,7 @@ public:
 
 protected:
 	virtual void onDispose(bool explicitDisposing) override;
-	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
+	virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
 
 LN_CONSTRUCT_ACCESS:
 	VertexBuffer();

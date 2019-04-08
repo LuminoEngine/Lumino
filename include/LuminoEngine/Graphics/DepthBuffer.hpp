@@ -20,7 +20,7 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~DepthBuffer();
 	void init(int width, int height);
 	virtual void onDispose(bool explicitDisposing) override;
-	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
+	virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
 
 LN_INTERNAL_ACCESS:
 	detail::IDepthBuffer* resolveRHIObject();

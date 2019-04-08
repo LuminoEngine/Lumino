@@ -26,7 +26,7 @@ LN_INTERNAL_ACCESS:
 	void setFrozen(bool value) { m_frozen = value; }
 
 protected:
-	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
+	virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
 
 private:
 	Ref<detail::ISamplerState> m_rhiObject;

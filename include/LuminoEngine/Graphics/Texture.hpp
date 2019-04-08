@@ -87,7 +87,7 @@ LN_CONSTRUCT_ACCESS:
 
 protected:
 	virtual void onDispose(bool explicitDisposing) override;
-	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
+	virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
 	virtual detail::ITexture* resolveRHIObject() override;
 
 private:
@@ -128,7 +128,7 @@ LN_CONSTRUCT_ACCESS:
 
 protected:
 	virtual void onDispose(bool explicitDisposing) override;
-	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
+	virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
 	virtual detail::ITexture* resolveRHIObject() override;
 
 private:
@@ -159,7 +159,7 @@ LN_CONSTRUCT_ACCESS:
 
 LN_INTERNAL_ACCESS:
 	virtual detail::ITexture* resolveRHIObject() override;
-	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
+	virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
 
     void resetSwapchainFrameIfNeeded();
     //void resetSwapchainFrame(detail::ITexture* ref);

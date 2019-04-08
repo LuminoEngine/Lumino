@@ -4,7 +4,7 @@
 namespace ln {
 namespace detail {
 class GraphicsManager;
-class IGraphicsDeviceContext;
+class IGraphicsDevice;
 }
 
 /**
@@ -19,7 +19,7 @@ public:
 	virtual void onDispose(bool explicitDisposing) override;
 
 protected:
-	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) = 0;
+	virtual void onChangeDevice(detail::IGraphicsDevice* device) = 0;
 
 LN_CONSTRUCT_ACCESS:
 	GraphicsResource();
@@ -28,7 +28,7 @@ LN_CONSTRUCT_ACCESS:
 
 LN_INTERNAL_ACCESS:
 	detail::GraphicsManager* manager() const { return m_manager; }
-	detail::IGraphicsDeviceContext* deviceContext() const;
+	detail::IGraphicsDevice* deviceContext() const;
 private:
 	detail::GraphicsManager* m_manager;
 };

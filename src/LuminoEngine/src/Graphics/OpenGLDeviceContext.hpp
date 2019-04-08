@@ -99,7 +99,7 @@ class GLShaderUniform;
 class GLLocalShaderSamplerBuffer;
 
 class OpenGLDeviceContext
-	: public IGraphicsDeviceContext
+	: public IGraphicsDevice
 {
 public:
 	struct Settings
@@ -143,7 +143,7 @@ protected:
 	virtual void onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize) override;
 	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) override;
 	virtual void onUpdateShaderPass(IShaderPass* newPass) override;
-    virtual void onSubmitStatus(const State& state, uint32_t stateDirtyFlags, SubmitSource submitSource) override {}
+    virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource) override {}
     virtual void* onMapResource(IGraphicsResource* resource) override;
     virtual void onUnmapResource(IGraphicsResource* resource) override;
     virtual void onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length) override;

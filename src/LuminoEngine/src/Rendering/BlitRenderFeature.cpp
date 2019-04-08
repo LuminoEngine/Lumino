@@ -38,12 +38,12 @@ void BlitRenderFeature::init(RenderingManager* manager)
 void BlitRenderFeature::blit(GraphicsContext* context)
 {
     auto* _this = this;
-	IGraphicsDeviceContext* deviceContext = context->commitState();
+	IGraphicsDevice* deviceContext = context->commitState();
 
     LN_ENQUEUE_RENDER_COMMAND_2(
         BlitRenderFeature_blit, m_manager->graphicsManager(),
         BlitRenderFeature*, _this,
-		IGraphicsDeviceContext*, deviceContext,
+		IGraphicsDevice*, deviceContext,
         {
             _this->blitImplOnRenderThread(deviceContext);
         });
@@ -53,7 +53,7 @@ void BlitRenderFeature::flush(GraphicsContext* context)
 {
 }
 
-void BlitRenderFeature::blitImplOnRenderThread(IGraphicsDeviceContext* context)
+void BlitRenderFeature::blitImplOnRenderThread(IGraphicsDevice* context)
 {
 	context->setVertexDeclaration(m_vertexDeclaration);
 	context->setVertexBuffer(0, m_vertexBuffer);

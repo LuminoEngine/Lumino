@@ -69,7 +69,7 @@ detail::ISamplerState* SamplerState::resolveRHIObject()
 	return m_rhiObject;
 }
 
-void SamplerState::onChangeDevice(detail::IGraphicsDeviceContext* device)
+void SamplerState::onChangeDevice(detail::IGraphicsDevice* device)
 {
 	if (device)
 	{

@@ -62,11 +62,11 @@ void MeshRenderFeature::drawMesh(GraphicsContext* context, MeshResource* mesh, i
 
 	if (LN_REQUIRE(data.vertexBuffers[0])) return;
 
-	IGraphicsDeviceContext* deviceContext = context->commitState();
+	IGraphicsDevice* deviceContext = context->commitState();
 	LN_ENQUEUE_RENDER_COMMAND_3(
 		MeshRenderFeature_drawMesh, m_manager->graphicsManager(),
 		MeshRenderFeature*, _this,
-		IGraphicsDeviceContext*, deviceContext,
+		IGraphicsDevice*, deviceContext,
 		DrawMeshCommandData, data,
 		{
 			_this->drawMeshImplOnRenderThread(deviceContext, data);
@@ -77,7 +77,7 @@ void MeshRenderFeature::flush(GraphicsContext* context)
 {
 }
 
-void MeshRenderFeature::drawMeshImplOnRenderThread(IGraphicsDeviceContext* context, const DrawMeshCommandData& data)
+void MeshRenderFeature::drawMeshImplOnRenderThread(IGraphicsDevice* context, const DrawMeshCommandData& data)
 {
 	context->setVertexDeclaration(data.vertexDeclaration);
 	for (int i = 0; i < data.vertexBuffersCount; ++i) {

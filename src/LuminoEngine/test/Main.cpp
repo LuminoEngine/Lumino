@@ -21,7 +21,7 @@ GTEST_API_ int main(int argc, char **argv)
 	char* testArgs[] = {
 		argv[0],
 		"--gtest_break_on_failure",
-		"--gtest_filter=Test_Graphics_LowLevelRendering.BasicTriangle",
+		//"--gtest_filter=Test_Graphics_LowLevelRendering.RenderTarget",
 		//"--gtest_filter=Test_Scene_WorldObject.Transform"
 		//"--gtest_filter=Test_Shader_Shader.MultiTechMultiTexture"
 		//"--gtest_filter=Test_Rendering_ClusteredShading.*"

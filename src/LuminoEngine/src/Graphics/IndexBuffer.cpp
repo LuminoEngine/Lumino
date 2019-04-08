@@ -198,7 +198,7 @@ detail::IIndexBuffer* IndexBuffer::resolveRHIObject()
 {
 	if (m_modified)
 	{
-        detail::IGraphicsDeviceContext* device = manager()->deviceContext();
+        detail::IGraphicsDevice* device = manager()->deviceContext();
 		if (m_rhiLockedBuffer)
 		{
             device->unmap(m_rhiObject);
@@ -217,7 +217,7 @@ detail::IIndexBuffer* IndexBuffer::resolveRHIObject()
 				detail::IIndexBuffer* rhiObject = m_rhiObject;
 				LN_ENQUEUE_RENDER_COMMAND_3(
 					IndexBuffer_setSubData, manager(),
-                    detail::IGraphicsDeviceContext*, device,
+                    detail::IGraphicsDevice*, device,
 					detail::RenderBulkData, data,
 					Ref<detail::IIndexBuffer>, rhiObject,
 					{
@@ -244,7 +244,7 @@ int IndexBuffer::getIndexStride() const
 	return getIndexStride(m_format);
 }
 
-void IndexBuffer::onChangeDevice(detail::IGraphicsDeviceContext* device)
+void IndexBuffer::onChangeDevice(detail::IGraphicsDevice* device)
 {
 	if (device)
 	{

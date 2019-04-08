@@ -46,7 +46,7 @@ public:
 	virtual void flush(GraphicsContext* context) override;
 
 private:
-	void blitImplOnRenderThread(IGraphicsDeviceContext* context);
+	void blitImplOnRenderThread(IGraphicsDevice* context);
 
 	RenderingManager* m_manager;
     Ref<IVertexBuffer> m_vertexBuffer;

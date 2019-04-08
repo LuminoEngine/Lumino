@@ -65,7 +65,7 @@ public:
 		BillboardType billboardType,
         SpriteFlipFlags flipFlags);
 
-	void flush(IGraphicsDeviceContext* context);
+	void flush(IGraphicsDevice* context);
 	void clear();
 
 private:
@@ -79,7 +79,7 @@ private:
 		float depth;	// ソートに使われる Z 値 (大きいほど遠い)
 	};
 
-	void prepareBuffers(IGraphicsDeviceContext* context, int spriteCount);
+	void prepareBuffers(IGraphicsDevice* context, int spriteCount);
 
 	State m_state;
 	Matrix m_viewInverseMatrix;
@@ -88,7 +88,7 @@ private:
 	List<SpriteData> m_spriteDataList;
 	List<int> m_spriteIndexList;
 
-	//IGraphicsDeviceContext* m_device;
+	//IGraphicsDevice* m_device;
 	Ref<IVertexDeclaration> m_vertexDeclaration;
 	Ref<IVertexBuffer> m_vertexBuffer;
 	Ref<IIndexBuffer> m_indexBuffer;

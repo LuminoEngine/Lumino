@@ -72,7 +72,7 @@ detail::IVertexDeclaration* VertexDeclaration::resolveRHIObject()
 	return m_deviceObj;
 }
 
-void VertexDeclaration::onChangeDevice(detail::IGraphicsDeviceContext* device)
+void VertexDeclaration::onChangeDevice(detail::IGraphicsDevice* device)
 {
 	if (device)
 	{

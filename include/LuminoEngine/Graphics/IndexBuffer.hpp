@@ -74,7 +74,7 @@ LN_CONSTRUCT_ACCESS:
 LN_INTERNAL_ACCESS:
 	int getIndexStride() const;
 	detail::IIndexBuffer* resolveRHIObject();
-	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
+	virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
 
 private:
 	bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }

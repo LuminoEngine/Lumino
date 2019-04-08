@@ -28,7 +28,7 @@ class VulkanShaderUniform;
 class VulkanLocalShaderSamplerBuffer;
 
 class VulkanDeviceContext
-	: public IGraphicsDeviceContext
+	: public IGraphicsDevice
 {
 public:
 	struct Settings
@@ -82,7 +82,7 @@ protected:
 	virtual void onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize) override;
 	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) override;
 	virtual void onUpdateShaderPass(IShaderPass* newPass) override;
-    virtual void onSubmitStatus(const State& state, uint32_t stateDirtyFlags, SubmitSource submitSource) override;
+    virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource) override;
     virtual void* onMapResource(IGraphicsResource* resource) override;
     virtual void onUnmapResource(IGraphicsResource* resource) override;
     virtual void onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length) override;
@@ -121,7 +121,7 @@ public: // TODO:
     Result transitionImageLayoutImmediately(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 
     //Result submitStatus(const State& state);
-    Result submitStatusInternal(SubmitSource submitSource, ClearFlags flags, const Color& color, float z, uint8_t stencil, bool* outSkipClear);
+    Result submitStatusInternal(GraphicsContextSubmitSource submitSource, ClearFlags flags, const Color& color, float z, uint8_t stencil, bool* outSkipClear);
 
 	//GLFWwindow* m_mainWindow; // TODO:
     VulkanSwapChain* m_mainSwapchain = nullptr; // TODO:
@@ -347,7 +347,7 @@ protected:
 };
 
 // ダブルバッファ・トリプルバッファを管理するため、通常の RenderTargetTexture とは別にする。
-// IGraphicsDeviceContext は DX11 相当の IF に合わせているので、ダブルバッファの実装はこちら側で隠蔽したい。
+// IGraphicsDevice は DX11 相当の IF に合わせているので、ダブルバッファの実装はこちら側で隠蔽したい。
 // 個別に公開するのは、特に readData の対象を外側で認識できるようにする必要があったりするのでちょっと大変。
 //class VulkanSwapchainRenderTargetTexture
 //    : public VulkanTexture

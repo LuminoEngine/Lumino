@@ -289,7 +289,7 @@ public:
 	}
 };
 
-void InternalSpriteRenderer::flush(IGraphicsDeviceContext* context)
+void InternalSpriteRenderer::flush(IGraphicsDevice* context)
 {
 	int spriteCount = m_spriteDataList.size();
 	if (spriteCount == 0) {
@@ -346,7 +346,7 @@ void InternalSpriteRenderer::clear()
 	m_spriteDataList.clear();
 }
 
-void InternalSpriteRenderer::prepareBuffers(IGraphicsDeviceContext* context, int spriteCount)
+void InternalSpriteRenderer::prepareBuffers(IGraphicsDevice* context, int spriteCount)
 {
 	if (m_buffersReservedSpriteCount < spriteCount)
 	{
@@ -457,10 +457,10 @@ void SpriteRenderFeature::onActiveRenderFeatureChanged(const detail::CameraInfo&
 void SpriteRenderFeature::flush(GraphicsContext* context)
 {
 	GraphicsManager* manager = m_manager->graphicsManager();
-	IGraphicsDeviceContext* deviceContext = context->commitState();
+	IGraphicsDevice* deviceContext = context->commitState();
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		SpriteRenderFeature_flush, manager,
-		IGraphicsDeviceContext*, deviceContext,
+		IGraphicsDevice*, deviceContext,
 		InternalSpriteRenderer*, m_internal,
 		{
 			m_internal->flush(deviceContext);

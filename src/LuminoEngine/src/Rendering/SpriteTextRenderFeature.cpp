@@ -38,7 +38,7 @@ void InternalSpriteTextRender::init(RenderingManager* manager)
     prepareBuffers(512);
 }
 
-void InternalSpriteTextRender::render(IGraphicsDeviceContext* context, const GlyphData* dataList, int dataCount, ITexture* glyphsTexture, const BrushData& brushData)
+void InternalSpriteTextRender::render(IGraphicsDevice* context, const GlyphData* dataList, int dataCount, ITexture* glyphsTexture, const BrushData& brushData)
 {
 	m_spriteCount = 0;
 	prepareBuffers(dataCount);
@@ -64,7 +64,7 @@ void InternalSpriteTextRender::render(IGraphicsDeviceContext* context, const Gly
 
 void InternalSpriteTextRender::prepareBuffers(int spriteCount)
 {
-	IGraphicsDeviceContext* context = m_manager->graphicsManager()->deviceContext();
+	IGraphicsDevice* context = m_manager->graphicsManager()->deviceContext();
 
 	if (m_buffersReservedSpriteCount < spriteCount)
 	{
@@ -136,7 +136,7 @@ void InternalSpriteTextRender::internalDrawRectangle(Vertex* buffer, const Matri
 	m_spriteCount++;
 }
 
-void InternalSpriteTextRender::flush(IGraphicsDeviceContext* context, ITexture* glyphsTexture)
+void InternalSpriteTextRender::flush(IGraphicsDevice* context, ITexture* glyphsTexture)
 {
 	context->setVertexDeclaration(m_vertexDeclaration);
 	context->setVertexBuffer(0, m_vertexBuffer);
@@ -229,11 +229,11 @@ void SpriteTextRenderFeature::flushInternal(GraphicsContext* context, FontGlyphT
 	//brushData.color = Color::Blue;
 
 	GraphicsManager* manager = m_internal->manager()->graphicsManager();
-	IGraphicsDeviceContext* deviceContext = context->commitState();
+	IGraphicsDevice* deviceContext = context->commitState();
 	LN_ENQUEUE_RENDER_COMMAND_6(
 		SpriteTextRenderFeature_flushInternal, manager,
 		InternalSpriteTextRender*, m_internal,
-		IGraphicsDeviceContext*, deviceContext,
+		IGraphicsDevice*, deviceContext,
 		RenderBulkData, dataListData,
 		int, dataCount,
 		Ref<ITexture>, glyphsTexture,

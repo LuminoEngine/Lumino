@@ -31,7 +31,7 @@ void DepthBuffer::onDispose(bool explicitDisposing)
 	GraphicsResource::onDispose(explicitDisposing);
 }
 
-void DepthBuffer::onChangeDevice(detail::IGraphicsDeviceContext* device)
+void DepthBuffer::onChangeDevice(detail::IGraphicsDevice* device)
 {
 	if (!device) {
 		m_rhiObject.reset();

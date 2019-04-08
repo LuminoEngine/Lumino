@@ -156,7 +156,7 @@ void Texture2D::drawText(const StringRef& text, const Rect& rect, Font* font, co
     renderer.render(bitmap, text, rect, font, color, alignment);
 }
 
-void Texture2D::onChangeDevice(detail::IGraphicsDeviceContext* device)
+void Texture2D::onChangeDevice(detail::IGraphicsDevice* device)
 {
 	if (device)
 	{
@@ -188,7 +188,7 @@ detail::ITexture* Texture2D::resolveRHIObject()
 			detail::BitmapHelper::blitRawSimple(
 				bmpRawData.writableData(), bmpBuffer->data(), m_bitmap->width(), m_bitmap->height(), Bitmap2D::getPixelFormatByteSize(m_bitmap->format()), false);
 
-            detail::IGraphicsDeviceContext* deviceContext = manager()->deviceContext();
+            detail::IGraphicsDevice* deviceContext = manager()->deviceContext();
 			if (!m_rhiObject)
 			{
 				m_rhiObject = deviceContext->createTexture2D(width(), height(), format(), mipmap(), m_bitmap->data());
@@ -198,7 +198,7 @@ detail::ITexture* Texture2D::resolveRHIObject()
 				detail::ITexture* rhiObject = m_rhiObject;
 				LN_ENQUEUE_RENDER_COMMAND_4(
 					Texture2D_setSubData, manager(),
-                    detail::IGraphicsDeviceContext*, deviceContext,
+                    detail::IGraphicsDevice*, deviceContext,
 					detail::RenderBulkData, bmpRawData,
 					SizeI, bmpSize,
 					Ref<detail::ITexture>, rhiObject,
@@ -274,7 +274,7 @@ void Texture3D::onDispose(bool explicitDisposing)
 	Texture::onDispose(explicitDisposing);
 }
 
-void Texture3D::onChangeDevice(detail::IGraphicsDeviceContext* device)
+void Texture3D::onChangeDevice(detail::IGraphicsDevice* device)
 {
 	if (device)
 	{
@@ -306,7 +306,7 @@ detail::ITexture* Texture3D::resolveRHIObject()
 			detail::BitmapHelper::blitRawSimple3D(
 				bmpRawData.writableData(), bmpBuffer->data(), m_bitmap->width(), m_bitmap->height(), m_bitmap->depth(), Bitmap2D::getPixelFormatByteSize(m_bitmap->format()), false);
 
-            detail::IGraphicsDeviceContext* deviceContext = manager()->deviceContext();
+            detail::IGraphicsDevice* deviceContext = manager()->deviceContext();
 			if (!m_rhiObject)
 			{
 				m_rhiObject = deviceContext->createTexture3D(width(), height(), depth(), format(), mipmap(), m_bitmap->data());
@@ -316,7 +316,7 @@ detail::ITexture* Texture3D::resolveRHIObject()
 				detail::ITexture* rhiObject = m_rhiObject;
 				LN_ENQUEUE_RENDER_COMMAND_4(
 					Texture3D_setSubData, manager(),
-                    detail::IGraphicsDeviceContext*, deviceContext,
+                    detail::IGraphicsDevice*, deviceContext,
 					detail::RenderBulkData, bmpRawData,
 					BoxSizeI, bmpSize,
 					Ref<detail::ITexture>, rhiObject,
@@ -412,7 +412,7 @@ detail::ITexture* RenderTargetTexture::resolveRHIObject()
 	return m_rhiObject;
 }
 
-void RenderTargetTexture::onChangeDevice(detail::IGraphicsDeviceContext* device)
+void RenderTargetTexture::onChangeDevice(detail::IGraphicsDevice* device)
 {
 	LN_NOTIMPLEMENTED();
 }

@@ -39,17 +39,17 @@ IGraphicsResource::~IGraphicsResource()
 }
 
 //=============================================================================
-// IGraphicsDeviceContext
+// IGraphicsDevice
 
-IGraphicsDeviceContext::IGraphicsDeviceContext()
+IGraphicsDevice::IGraphicsDevice()
 {
 }
 
-void IGraphicsDeviceContext::init()
+void IGraphicsDevice::init()
 {
 }
 
-void IGraphicsDeviceContext::dispose()
+void IGraphicsDevice::dispose()
 {
 	for (auto& obj : m_aliveObjects) {
 		obj->dispose();
@@ -57,30 +57,30 @@ void IGraphicsDeviceContext::dispose()
 	m_aliveObjects.clear();
 }
 
-void IGraphicsDeviceContext::refreshCaps()
+void IGraphicsDevice::refreshCaps()
 {
 	onGetCaps(&m_caps);
 }
 
-void IGraphicsDeviceContext::enterMainThread()
+void IGraphicsDevice::enterMainThread()
 {
 }
 
-void IGraphicsDeviceContext::leaveMainThread()
+void IGraphicsDevice::leaveMainThread()
 {
 }
 
-void IGraphicsDeviceContext::enterRenderState()
+void IGraphicsDevice::enterRenderState()
 {
 	onSaveExternalRenderState();
 }
 
-void IGraphicsDeviceContext::leaveRenderState()
+void IGraphicsDevice::leaveRenderState()
 {
 	onRestoreExternalRenderState();
 }
 
-Ref<ISwapChain> IGraphicsDeviceContext::createSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
+Ref<ISwapChain> IGraphicsDevice::createSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
 {
 	Ref<ISwapChain> ptr = onCreateSwapChain(window, backbufferSize);
 	if (ptr) {
@@ -89,7 +89,7 @@ Ref<ISwapChain> IGraphicsDeviceContext::createSwapChain(PlatformWindow* window, 
 	return ptr;
 }
 
-Ref<IVertexDeclaration> IGraphicsDeviceContext::createVertexDeclaration(const VertexElement* elements, int elementsCount)
+Ref<IVertexDeclaration> IGraphicsDevice::createVertexDeclaration(const VertexElement* elements, int elementsCount)
 {
 	Ref<IVertexDeclaration> ptr = onCreateVertexDeclaration(elements, elementsCount);
 	if (ptr) {
@@ -98,7 +98,7 @@ Ref<IVertexDeclaration> IGraphicsDeviceContext::createVertexDeclaration(const Ve
 	return ptr;
 }
 
-Ref<IVertexBuffer> IGraphicsDeviceContext::createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
+Ref<IVertexBuffer> IGraphicsDevice::createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
 {
 	Ref<IVertexBuffer> ptr = onCreateVertexBuffer(usage, bufferSize, initialData);
 	if (ptr) {
@@ -107,7 +107,7 @@ Ref<IVertexBuffer> IGraphicsDeviceContext::createVertexBuffer(GraphicsResourceUs
 	return ptr;
 }
 
-Ref<IIndexBuffer> IGraphicsDeviceContext::createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
+Ref<IIndexBuffer> IGraphicsDevice::createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
 {
 	Ref<IIndexBuffer> ptr = onCreateIndexBuffer(usage, format, indexCount, initialData);
 	if (ptr) {
@@ -116,7 +116,7 @@ Ref<IIndexBuffer> IGraphicsDeviceContext::createIndexBuffer(GraphicsResourceUsag
 	return ptr;
 }
 
-Ref<ITexture> IGraphicsDeviceContext::createTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
+Ref<ITexture> IGraphicsDevice::createTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
 	Ref<ITexture> ptr = onCreateTexture2D(width, height, requestFormat, mipmap, initialData);
 	if (ptr) {
@@ -125,7 +125,7 @@ Ref<ITexture> IGraphicsDeviceContext::createTexture2D(uint32_t width, uint32_t h
 	return ptr;
 }
 
-Ref<ITexture> IGraphicsDeviceContext::createTexture3D(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
+Ref<ITexture> IGraphicsDevice::createTexture3D(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
 	Ref<ITexture> ptr = onCreateTexture3D(width, height, depth, requestFormat, mipmap, initialData);
 	if (ptr) {
@@ -134,7 +134,7 @@ Ref<ITexture> IGraphicsDeviceContext::createTexture3D(uint32_t width, uint32_t h
 	return ptr;
 }
 
-Ref<ITexture> IGraphicsDeviceContext::createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
+Ref<ITexture> IGraphicsDevice::createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
 {
 	Ref<ITexture> ptr = onCreateRenderTarget(width, height, requestFormat, mipmap);
 	if (ptr) {
@@ -143,7 +143,7 @@ Ref<ITexture> IGraphicsDeviceContext::createRenderTarget(uint32_t width, uint32_
 	return ptr;
 }
 
-Ref<IDepthBuffer> IGraphicsDeviceContext::createDepthBuffer(uint32_t width, uint32_t height)
+Ref<IDepthBuffer> IGraphicsDevice::createDepthBuffer(uint32_t width, uint32_t height)
 {
 	Ref<IDepthBuffer> ptr = onCreateDepthBuffer(width, height);
 	if (ptr) {
@@ -152,7 +152,7 @@ Ref<IDepthBuffer> IGraphicsDeviceContext::createDepthBuffer(uint32_t width, uint
 	return ptr;
 }
 
-Ref<ISamplerState> IGraphicsDeviceContext::createSamplerState(const SamplerStateData& desc)
+Ref<ISamplerState> IGraphicsDevice::createSamplerState(const SamplerStateData& desc)
 {
 	Ref<ISamplerState> ptr = onCreateSamplerState(desc);
 	if (ptr) {
@@ -161,7 +161,7 @@ Ref<ISamplerState> IGraphicsDeviceContext::createSamplerState(const SamplerState
 	return ptr;
 }
 
-Ref<IShaderPass> IGraphicsDeviceContext::createShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag)
+Ref<IShaderPass> IGraphicsDevice::createShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag)
 {
 	diag->level = ShaderCompilationResultLevel::Success;
 	diag->message.clear();
@@ -178,162 +178,162 @@ Ref<IShaderPass> IGraphicsDeviceContext::createShaderPass(const ShaderPassCreate
 	return ptr;
 }
 
-void IGraphicsDeviceContext::begin()
+void IGraphicsDevice::begin()
 {
-	m_stateDirtyFlags = StateDirtyFlags_All;
+	m_stateDirtyFlags = GraphicsContextStateDirtyFlags_All;
 	onBeginCommandRecoding();
 }
 
-void IGraphicsDeviceContext::end()
+void IGraphicsDevice::end()
 {
 	onEndCommandRecoding();
 }
 
-void IGraphicsDeviceContext::setBlendState(const BlendStateDesc& value)
+void IGraphicsDevice::setBlendState(const BlendStateDesc& value)
 {
 	m_staging.pipelineState.blendState = value;
-	m_stateDirtyFlags |= StateDirtyFlags_PipelineState;
+	m_stateDirtyFlags |= GraphicsContextStateDirtyFlags_PipelineState;
 }
 
-void IGraphicsDeviceContext::setRasterizerState(const RasterizerStateDesc& value)
+void IGraphicsDevice::setRasterizerState(const RasterizerStateDesc& value)
 {
 	m_staging.pipelineState.rasterizerState = value;
-	m_stateDirtyFlags |= StateDirtyFlags_PipelineState;
+	m_stateDirtyFlags |= GraphicsContextStateDirtyFlags_PipelineState;
 }
 
-void IGraphicsDeviceContext::setDepthStencilState(const DepthStencilStateDesc& value)
+void IGraphicsDevice::setDepthStencilState(const DepthStencilStateDesc& value)
 {
 	m_staging.pipelineState.depthStencilState = value;
-	m_stateDirtyFlags |= StateDirtyFlags_PipelineState;
+	m_stateDirtyFlags |= GraphicsContextStateDirtyFlags_PipelineState;
 }
 
-void IGraphicsDeviceContext::setColorBuffer(int index, ITexture* value)
+void IGraphicsDevice::setColorBuffer(int index, ITexture* value)
 {
 	if (m_staging.framebufferState.renderTargets[index] != value) {
 		m_staging.framebufferState.renderTargets[index] = value;
-		m_stateDirtyFlags |= StateDirtyFlags_FrameBuffers;
+		m_stateDirtyFlags |= GraphicsContextStateDirtyFlags_FrameBuffers;
 	}
 }
 
-void IGraphicsDeviceContext::setDepthBuffer(IDepthBuffer* value)
+void IGraphicsDevice::setDepthBuffer(IDepthBuffer* value)
 {
 	if (m_staging.framebufferState.depthBuffer != value) {
 		m_staging.framebufferState.depthBuffer = value;
-		m_stateDirtyFlags |= StateDirtyFlags_FrameBuffers;
+		m_stateDirtyFlags |= GraphicsContextStateDirtyFlags_FrameBuffers;
 	}
 }
 
-void IGraphicsDeviceContext::setViewportRect(const RectI& value)
+void IGraphicsDevice::setViewportRect(const RectI& value)
 {
 	if (m_staging.regionRects.viewportRect != value) {
 		m_staging.regionRects.viewportRect = value;
-		m_stateDirtyFlags |= StateDirtyFlags_RegionRects;
+		m_stateDirtyFlags |= GraphicsContextStateDirtyFlags_RegionRects;
 	}
 }
 
-void IGraphicsDeviceContext::setScissorRect(const RectI& value)
+void IGraphicsDevice::setScissorRect(const RectI& value)
 {
 	if (m_staging.regionRects.scissorRect != value) {
 		m_staging.regionRects.scissorRect = value;
-		m_stateDirtyFlags |= StateDirtyFlags_RegionRects;
+		m_stateDirtyFlags |= GraphicsContextStateDirtyFlags_RegionRects;
 	}
 }
 
-void IGraphicsDeviceContext::setVertexDeclaration(IVertexDeclaration* value)
+void IGraphicsDevice::setVertexDeclaration(IVertexDeclaration* value)
 {
 	if (m_staging.pipelineState.vertexDeclaration != value) {
 		m_staging.pipelineState.vertexDeclaration = value;
-		m_stateDirtyFlags |= StateDirtyFlags_PipelineState;
+		m_stateDirtyFlags |= GraphicsContextStateDirtyFlags_PipelineState;
 	}
 }
 
-void IGraphicsDeviceContext::setVertexBuffer(int streamIndex, IVertexBuffer* value)
+void IGraphicsDevice::setVertexBuffer(int streamIndex, IVertexBuffer* value)
 {
 	if (m_staging.primitive.vertexBuffers[streamIndex] != value) {
 		m_staging.primitive.vertexBuffers[streamIndex] = value;
-		m_stateDirtyFlags |= StateDirtyFlags_Primitives;
+		m_stateDirtyFlags |= GraphicsContextStateDirtyFlags_Primitives;
 	}
 }
 
-void IGraphicsDeviceContext::setIndexBuffer(IIndexBuffer* value)
+void IGraphicsDevice::setIndexBuffer(IIndexBuffer* value)
 {
 	if (m_staging.primitive.indexBuffer != value) {
 		m_staging.primitive.indexBuffer = value;
-		m_stateDirtyFlags |= StateDirtyFlags_Primitives;
+		m_stateDirtyFlags |= GraphicsContextStateDirtyFlags_Primitives;
 	}
 }
 
-void IGraphicsDeviceContext::setShaderPass(IShaderPass* value)
+void IGraphicsDevice::setShaderPass(IShaderPass* value)
 {
 	if (m_staging.shaderPass != value) {
 		m_staging.shaderPass = value;
-		m_stateDirtyFlags |= StateDirtyFlags_ShaderPass;
+		m_stateDirtyFlags |= GraphicsContextStateDirtyFlags_ShaderPass;
 	}
 }
 
-void IGraphicsDeviceContext::setPrimitiveTopology(PrimitiveTopology value)
+void IGraphicsDevice::setPrimitiveTopology(PrimitiveTopology value)
 {
 	m_staging.pipelineState.topology = value;
 }
 
-void* IGraphicsDeviceContext::map(IGraphicsResource* resource)
+void* IGraphicsDevice::map(IGraphicsResource* resource)
 {
     return onMapResource(resource);
 }
 
-void IGraphicsDeviceContext::unmap(IGraphicsResource* resource)
+void IGraphicsDevice::unmap(IGraphicsResource* resource)
 {
     onUnmapResource(resource);
 }
 
-void IGraphicsDeviceContext::setSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length)
+void IGraphicsDevice::setSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length)
 {
     onSetSubData(resource, offset, data, length);
 }
 
-void IGraphicsDeviceContext::setSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
+void IGraphicsDevice::setSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
 {
     onSetSubData2D(resource, x, y, width, height, data, dataSize);
 }
 
-void IGraphicsDeviceContext::setSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
+void IGraphicsDevice::setSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
 {
     onSetSubData3D(resource, x, y, z, width, height, depth, data, dataSize);
 }
 
-void IGraphicsDeviceContext::clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
+void IGraphicsDevice::clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
-    commitStatus(SubmitSource_Clear);
+    commitStatus(GraphicsContextSubmitSource_Clear);
 	onClearBuffers(flags, color, z, stencil);
     endCommit();
 }
 
-void IGraphicsDeviceContext::drawPrimitive(int startVertex, int primitiveCount)
+void IGraphicsDevice::drawPrimitive(int startVertex, int primitiveCount)
 {
-    commitStatus(SubmitSource_Draw);
+    commitStatus(GraphicsContextSubmitSource_Draw);
 	onDrawPrimitive(m_staging.pipelineState.topology, startVertex, primitiveCount);
     endCommit();
 }
 
-void IGraphicsDeviceContext::drawPrimitiveIndexed(int startIndex, int primitiveCount)
+void IGraphicsDevice::drawPrimitiveIndexed(int startIndex, int primitiveCount)
 {
-    commitStatus(SubmitSource_Draw);
+    commitStatus(GraphicsContextSubmitSource_Draw);
 	onDrawPrimitiveIndexed(m_staging.pipelineState.topology, startIndex, primitiveCount);
     endCommit();
 }
 
-void IGraphicsDeviceContext::flushCommandBuffer(ITexture* affectRendreTarget)
+void IGraphicsDevice::flushCommandBuffer(ITexture* affectRendreTarget)
 {
     onFlushCommandBuffer(affectRendreTarget);
 }
 
-void IGraphicsDeviceContext::present(ISwapChain* swapChain)
+void IGraphicsDevice::present(ISwapChain* swapChain)
 {
 	onPresent(swapChain);
 	collectGarbageObjects();
 }
 
-Ref<IShaderPass> IGraphicsDeviceContext::createShaderPassFromUnifiedShaderPass(const UnifiedShader* unifiedShader, UnifiedShader::PassId passId, DiagnosticsManager* diag)
+Ref<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const UnifiedShader* unifiedShader, UnifiedShader::PassId passId, DiagnosticsManager* diag)
 {
     LN_DCHECK(unifiedShader);
     LN_DCHECK(diag);
@@ -381,7 +381,7 @@ Ref<IShaderPass> IGraphicsDeviceContext::createShaderPassFromUnifiedShaderPass(c
     return pass;
 }
 
-void IGraphicsDeviceContext::commitStatus(SubmitSource submitSource)
+void IGraphicsDevice::commitStatus(GraphicsContextSubmitSource submitSource)
 {
 	if (LN_REQUIRE(m_staging.framebufferState.renderTargets[0])) return;
     //if (LN_REQUIRE(m_staging.pipelineState.vertexDeclaration)) return;
@@ -403,13 +403,13 @@ void IGraphicsDeviceContext::commitStatus(SubmitSource submitSource)
     onSubmitStatus(m_staging, m_stateDirtyFlags, submitSource);
 }
 
-void IGraphicsDeviceContext::endCommit()
+void IGraphicsDevice::endCommit()
 {
     m_committed = m_staging;
-    m_stateDirtyFlags = StateDirtyFlags_None;
+    m_stateDirtyFlags = GraphicsContextStateDirtyFlags_None;
 }
 
-void IGraphicsDeviceContext::collectGarbageObjects()
+void IGraphicsDevice::collectGarbageObjects()
 {
 	for (int i = m_aliveObjects.size() - 1; i >= 0; i--)
 	{

@@ -33,12 +33,12 @@ public:
 	InternalSpriteTextRender();
     void init(RenderingManager* manager);
 	RenderingManager* manager() const { return m_manager; }
-	void render(IGraphicsDeviceContext* context, const GlyphData* dataList, int dataCount, ITexture* glyphsTexture, const BrushData& brushData);
+	void render(IGraphicsDevice* context, const GlyphData* dataList, int dataCount, ITexture* glyphsTexture, const BrushData& brushData);
 
 private:
 	void prepareBuffers(int spriteCount);
 	void internalDrawRectangle(Vertex* buffer, const Matrix& transform, const Rect& rect, const Rect& srcUVRect, const Color& color);
-	void flush(IGraphicsDeviceContext* context, ITexture* glyphsTexture);
+	void flush(IGraphicsDevice* context, ITexture* glyphsTexture);
 
 	RenderingManager* m_manager;
 	Ref<IVertexDeclaration> m_vertexDeclaration;

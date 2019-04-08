@@ -36,7 +36,7 @@ void GraphicsResource::onDispose(bool explicitDisposing)
 	Object::onDispose(explicitDisposing);
 }
 
-detail::IGraphicsDeviceContext* GraphicsResource::deviceContext() const
+detail::IGraphicsDevice* GraphicsResource::deviceContext() const
 {
 	return m_manager->deviceContext();
 }

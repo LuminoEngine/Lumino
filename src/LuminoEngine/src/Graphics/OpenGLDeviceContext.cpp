@@ -250,7 +250,7 @@ void OpenGLDeviceContext::dispose()
 		m_fbo = 0;
 	}
 
-    IGraphicsDeviceContext::dispose();
+    IGraphicsDevice::dispose();
 }
 
 void OpenGLDeviceContext::setActiveShaderPass(GLShaderPass* pass)

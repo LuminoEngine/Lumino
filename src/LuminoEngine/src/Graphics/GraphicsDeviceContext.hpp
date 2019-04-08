@@ -71,6 +71,32 @@ struct DevicePrimitiveState
 	IIndexBuffer* indexBuffer = nullptr;
 };
 
+struct GraphicsContextState
+{
+    DevicePipelineState pipelineState;
+    DeviceFramebufferState framebufferState;
+    DeviceRegionRectsState regionRects;
+    DevicePrimitiveState primitive;
+    IShaderPass* shaderPass = nullptr;
+};
+
+enum GraphicsContextStateDirtyFlags
+{
+    GraphicsContextStateDirtyFlags_None = 0x0000,
+    GraphicsContextStateDirtyFlags_PipelineState = 0x0001,
+    GraphicsContextStateDirtyFlags_FrameBuffers = 0x0002,
+    GraphicsContextStateDirtyFlags_RegionRects = 0x0004,
+    GraphicsContextStateDirtyFlags_Primitives = 0x0008,
+    GraphicsContextStateDirtyFlags_ShaderPass = 0x0010,
+    GraphicsContextStateDirtyFlags_All = 0xFFFF,
+};
+
+enum GraphicsContextSubmitSource
+{
+    GraphicsContextSubmitSource_Clear,
+    GraphicsContextSubmitSource_Draw,
+};
+
 struct ShaderVertexInputAttribute
 {
 	VertexElementUsage usage;
@@ -106,7 +132,7 @@ public:
 
 private:
     bool m_disposed;
-	//friend class IGraphicsDeviceContext;
+	//friend class IGraphicsDevice;
 };
 
 class IGraphicsResource
@@ -119,39 +145,14 @@ protected:
     virtual ~IGraphicsResource();
 };
 
-class IGraphicsDeviceContext
+class IGraphicsDevice
 	: public RefObject
 {
 public:
-	enum SubmitSource
-	{
-        SubmitSource_Clear,
-        SubmitSource_Draw,
-	};
-
-	enum StateDirtyFlags
-	{
-		StateDirtyFlags_None = 0x0000,
-		StateDirtyFlags_PipelineState = 0x0001,
-		StateDirtyFlags_FrameBuffers = 0x0002,
-		StateDirtyFlags_RegionRects = 0x0004,
-		StateDirtyFlags_Primitives = 0x0008,
-		StateDirtyFlags_ShaderPass = 0x0010,
-		StateDirtyFlags_All = 0xFFFF,
-	};
-
-	struct State
-	{
-		DevicePipelineState pipelineState;
-		DeviceFramebufferState framebufferState;
-		DeviceRegionRectsState regionRects;
-		DevicePrimitiveState primitive;
-		IShaderPass* shaderPass = nullptr;
-	};
 
 
-	IGraphicsDeviceContext();
-	virtual ~IGraphicsDeviceContext() = default;
+	IGraphicsDevice();
+	virtual ~IGraphicsDevice() = default;
 
 	void init();
 	virtual void dispose();
@@ -223,6 +224,7 @@ protected:
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) = 0;
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) = 0;
 
+/////////
 	virtual void onBeginCommandRecoding() = 0;
 	virtual void onEndCommandRecoding() = 0;
 	virtual void onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState) = 0;
@@ -230,7 +232,7 @@ protected:
 	virtual void onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize) = 0;
 	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) = 0;
 	virtual void onUpdateShaderPass(IShaderPass* newPass) = 0;
-    virtual void onSubmitStatus(const State& state, uint32_t stateDirtyFlags, SubmitSource submitSource) = 0;
+    virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource) = 0;
 
     virtual void* onMapResource(IGraphicsResource* resource) = 0;
     virtual void onUnmapResource(IGraphicsResource* resource) = 0;
@@ -244,21 +246,28 @@ protected:
     virtual void onFlushCommandBuffer(ITexture* affectRendreTarget) = 0;
 
 	virtual void onPresent(ISwapChain* swapChain) = 0;
-
+/////////
     uint32_t stagingStateDirtyFlags() const { return m_stateDirtyFlags; }
-    const State& stagingState() const { return m_staging; }
-    const State& committedState() const { return m_committed; }
+    const GraphicsContextState& stagingState() const { return m_staging; }
+    const GraphicsContextState& committedState() const { return m_committed; }
 
 private:
-    void commitStatus(SubmitSource submitSource);
+    void commitStatus(GraphicsContextSubmitSource submitSource);
     void endCommit();
 	void collectGarbageObjects();
 
 	GraphicsDeviceCaps m_caps;
 	uint32_t m_stateDirtyFlags;
-	State m_staging;
-    State m_committed;
+    GraphicsContextState m_staging;
+    GraphicsContextState m_committed;
 	std::vector<Ref<IGraphicsDeviceObject>> m_aliveObjects;
+};
+
+class IGraphicsContext
+    : public RefObject
+{
+protected:
+    virtual ~IGraphicsContext() = default;
 };
 
 class ISwapChain

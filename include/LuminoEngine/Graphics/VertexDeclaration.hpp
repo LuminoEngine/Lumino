@@ -27,7 +27,7 @@ LN_INTERNAL_ACCESS:
 	detail::IVertexDeclaration* resolveRHIObject();
 
 LN_PROTECTED_INTERNAL_ACCESS:
-	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
+	virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
 
 private:
 	Ref<detail::IVertexDeclaration>	m_deviceObj;
