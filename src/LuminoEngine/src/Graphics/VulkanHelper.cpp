@@ -1546,7 +1546,7 @@ Result VulkanDescriptorSetsPool::allocateDescriptorSets(VulkanCommandBuffer* com
 
 			VkDescriptorPoolCreateInfo poolInfo = {};
 			poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-			poolInfo.maxSets = MAX_DESCRIPTOR_COUNT;// static_cast<uint32_t>(poolSizes.size());//static_cast<uint32_t>(swapChainImages.size());
+			poolInfo.maxSets = MAX_DESCRIPTOR_COUNT * 3;    // 基本3セットなので3倍 // static_cast<uint32_t>(poolSizes.size());//static_cast<uint32_t>(swapChainImages.size());
 			poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
 			poolInfo.pPoolSizes = poolSizes.data();
 
@@ -1581,6 +1581,7 @@ void VulkanDescriptorSetsPool::reset()
 	}
 
 	m_activePage = VK_NULL_HANDLE;
+    m_activePageUsedCount = 0;
 }
 
 //uint32_t VulkanDescriptorSetCache::computeHash(const DescriptorLayout& layoutInfo)
