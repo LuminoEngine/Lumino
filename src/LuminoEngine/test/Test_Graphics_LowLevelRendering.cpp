@@ -31,16 +31,20 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 		};
 		auto vertexBuffer = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
-		auto ctx = Engine::graphicsContext();
-		TestEnv::resetGraphicsContext(ctx);
-		ctx->setVertexDeclaration(m_vertexDecl1);
-		ctx->setVertexBuffer(0, vertexBuffer);
-		ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
-		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
-		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-		ctx->drawPrimitive(0, 1);
+        for (int i = 0; i < 5; i++)
+        {
+            printf("-----\n");
+            auto ctx = Engine::graphicsContext();
+            TestEnv::resetGraphicsContext(ctx);
+            ctx->setVertexDeclaration(m_vertexDecl1);
+            ctx->setVertexBuffer(0, vertexBuffer);
+            ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
+            ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
+            ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+            ctx->drawPrimitive(0, 1);
 
-		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-BasicTriangle.png"));
+            ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-BasicTriangle.png"));
+        }
 	}
 }
 

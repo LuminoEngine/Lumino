@@ -329,10 +329,10 @@ class VulkanBuffer
 {
 public:
     VulkanBuffer();
-    Result init(VulkanDeviceContext* deviceContext, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
-	Result init(VulkanDeviceContext* deviceContext);
-	Result resetBuffer(VkDeviceSize size, VkBufferUsageFlags usage);
-	Result resetMemoryBuffer(VkMemoryPropertyFlags properties, const VkAllocationCallbacks* allocator);
+    Result init(VulkanDeviceContext* deviceContext, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, const VkAllocationCallbacks* allocator);
+	//Result init(VulkanDeviceContext* deviceContext);
+	//Result resetBuffer(VkDeviceSize size, VkBufferUsageFlags usage);
+	//Result resetMemoryBuffer(VkMemoryPropertyFlags properties, const VkAllocationCallbacks* allocator);
     void dispose();
     VulkanDeviceContext* deviceContext() const { return m_deviceContext; }
     VkDeviceSize size() const { return m_size; }

@@ -983,71 +983,102 @@ VulkanBuffer::VulkanBuffer()
 {
 }
 
-Result VulkanBuffer::init(VulkanDeviceContext* deviceContext, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
+Result VulkanBuffer::init(VulkanDeviceContext* deviceContext, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, const VkAllocationCallbacks* allocator)
 {
+    LN_CHECK(!m_deviceContext);
 	if (LN_REQUIRE(deviceContext)) return false;
 	m_deviceContext = deviceContext;
 
+    allocator = (allocator) ? allocator : m_deviceContext->vulkanAllocator();
+    m_allocator = allocator;
+
+
+    m_size = size;
+
+    VkBufferCreateInfo bufferInfo = {};
+    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+    bufferInfo.size = size;
+    bufferInfo.usage = usage;
+    bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+    LN_VK_CHECK(vkCreateBuffer(m_deviceContext->vulkanDevice(), &bufferInfo, m_allocator, &m_buffer));
+
+
+
+    VkMemoryRequirements memRequirements;
+    vkGetBufferMemoryRequirements(m_deviceContext->vulkanDevice(), m_buffer, &memRequirements);
+
+    VkMemoryAllocateInfo allocInfo = {};
+    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    allocInfo.allocationSize = memRequirements.size;
+    m_deviceContext->findMemoryType(memRequirements.memoryTypeBits, properties, &allocInfo.memoryTypeIndex);
+
+    LN_VK_CHECK(vkAllocateMemory(m_deviceContext->vulkanDevice(), &allocInfo, m_allocator, &m_bufferMemory));
+
+    LN_VK_CHECK(vkBindBufferMemory(m_deviceContext->vulkanDevice(), m_buffer, m_bufferMemory, 0));
+
+/*
 	if (!resetBuffer(size, usage)) {
 		return false;
 	}
 	if (!resetMemoryBuffer(properties, m_deviceContext->vulkanAllocator())) {
 		return false;
-	}
+	}*/
 
     return true;
 }
 
-Result VulkanBuffer::init(VulkanDeviceContext* deviceContext)
-{
-	if (LN_REQUIRE(deviceContext)) return false;
-	m_deviceContext = deviceContext;
-    return true;
-}
+//Result VulkanBuffer::init(VulkanDeviceContext* deviceContext)
+//{
+//	if (LN_REQUIRE(deviceContext)) return false;
+//	m_deviceContext = deviceContext;
+//    return true;
+//}
 
-Result VulkanBuffer::resetBuffer(VkDeviceSize size, VkBufferUsageFlags usage)
-{
-	if (m_buffer) {
-		vkDestroyBuffer(m_deviceContext->vulkanDevice(), m_buffer, m_deviceContext->vulkanAllocator());
-		m_buffer = VK_NULL_HANDLE;
-	}
-
-	m_size = size;
-
-	VkBufferCreateInfo bufferInfo = {};
-	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-	bufferInfo.size = size;
-	bufferInfo.usage = usage;
-	bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-	LN_VK_CHECK(vkCreateBuffer(m_deviceContext->vulkanDevice(), &bufferInfo, m_deviceContext->vulkanAllocator(), &m_buffer));
-
-	return true;
-}
-
-Result VulkanBuffer::resetMemoryBuffer(VkMemoryPropertyFlags properties, const VkAllocationCallbacks* allocator)
-{
-	if (m_bufferMemory) {
-		vkFreeMemory(m_deviceContext->vulkanDevice(), m_bufferMemory, m_allocator);
-		m_bufferMemory = VK_NULL_HANDLE;
-	}
-
-	m_allocator = allocator;
-
-	VkMemoryRequirements memRequirements;
-	vkGetBufferMemoryRequirements(m_deviceContext->vulkanDevice(), m_buffer, &memRequirements);
-
-	VkMemoryAllocateInfo allocInfo = {};
-	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-	allocInfo.allocationSize = memRequirements.size;
-	m_deviceContext->findMemoryType(memRequirements.memoryTypeBits, properties, &allocInfo.memoryTypeIndex);
-
-	LN_VK_CHECK(vkAllocateMemory(m_deviceContext->vulkanDevice(), &allocInfo, m_allocator, &m_bufferMemory));
-
-	LN_VK_CHECK(vkBindBufferMemory(m_deviceContext->vulkanDevice(), m_buffer, m_bufferMemory, 0));
-
-	return true;
-}
+//Result VulkanBuffer::resetBuffer(VkDeviceSize size, VkBufferUsageFlags usage)
+//{
+//	if (m_buffer) {
+//		vkDestroyBuffer(m_deviceContext->vulkanDevice(), m_buffer, m_deviceContext->vulkanAllocator());
+//		m_buffer = VK_NULL_HANDLE;
+//	}
+//
+//	m_size = size;
+//
+//	VkBufferCreateInfo bufferInfo = {};
+//	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+//	bufferInfo.size = size;
+//	bufferInfo.usage = usage;
+//	bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+//
+//	LN_VK_CHECK(vkCreateBuffer(m_deviceContext->vulkanDevice(), &bufferInfo, m_deviceContext->vulkanAllocator(), &m_buffer));
+//
+//	return true;
+//}
+//
+//Result VulkanBuffer::resetMemoryBuffer(VkMemoryPropertyFlags properties, const VkAllocationCallbacks* allocator)
+//{
+//	if (m_bufferMemory) {
+//		vkFreeMemory(m_deviceContext->vulkanDevice(), m_bufferMemory, m_allocator);
+//		m_bufferMemory = VK_NULL_HANDLE;
+//        printf("reaadcl\n");
+//	}
+//
+//	m_allocator = allocator;
+//
+//	VkMemoryRequirements memRequirements;
+//	vkGetBufferMemoryRequirements(m_deviceContext->vulkanDevice(), m_buffer, &memRequirements);
+//
+//	VkMemoryAllocateInfo allocInfo = {};
+//	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+//	allocInfo.allocationSize = memRequirements.size;
+//	m_deviceContext->findMemoryType(memRequirements.memoryTypeBits, properties, &allocInfo.memoryTypeIndex);
+//
+//	LN_VK_CHECK(vkAllocateMemory(m_deviceContext->vulkanDevice(), &allocInfo, m_allocator, &m_bufferMemory));
+//
+//	LN_VK_CHECK(vkBindBufferMemory(m_deviceContext->vulkanDevice(), m_buffer, m_bufferMemory, 0));
+//
+//	return true;
+//}
 
 void VulkanBuffer::dispose()
 {
@@ -1059,9 +1090,11 @@ void VulkanBuffer::dispose()
     }
 
     if (m_buffer) {
-        vkDestroyBuffer(m_deviceContext->vulkanDevice(), m_buffer, m_deviceContext->vulkanAllocator());
+        vkDestroyBuffer(m_deviceContext->vulkanDevice(), m_buffer, allocator);
         m_buffer = VK_NULL_HANDLE;
     }
+
+    m_deviceContext = nullptr;
 }
 
 void* VulkanBuffer::map()
@@ -1240,9 +1273,6 @@ void VulkanCommandBuffer::dispose()
     //m_usingDescriptorSetsPools.clear();
     cleanInFlightResources();
 
-	for (auto& buf : m_stagingBufferPool) {
-		buf.dispose();
-	}
 	m_stagingBufferPool.clear();
 	m_stagingBufferPoolUsed = 0;
 
@@ -1360,13 +1390,17 @@ VulkanBuffer* VulkanCommandBuffer::allocateBuffer(size_t size, VkBufferUsageFlag
     VulkanBuffer* buffer = &m_stagingBufferPool[m_stagingBufferPoolUsed];
     m_stagingBufferPoolUsed++;
 
-    // できるだけ毎回オブジェクトを再構築するのは避けたいので、サイズが小さい時だけにしてみる
-    if (buffer->size() < size) {
-        buffer->resetBuffer(size, usage);
+    if (!buffer->init(m_deviceContext, size, usage, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_vulkanAllocator.vulkanAllocator())) {
+        return nullptr;
     }
 
-    // LinearAllocator からメモリ確保
-    buffer->resetMemoryBuffer(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_vulkanAllocator.vulkanAllocator());
+    //// できるだけ毎回オブジェクトを再構築するのは避けたいので、サイズが小さい時だけにしてみる
+    //if (buffer->size() < size) {
+    //    buffer->resetBuffer(size, usage);
+    //}
+
+    //// LinearAllocator からメモリ確保
+    //buffer->resetMemoryBuffer(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_vulkanAllocator.vulkanAllocator());
 
     return buffer;
 }
@@ -1432,6 +1466,9 @@ void VulkanCommandBuffer::cleanInFlightResources()
     m_usingShaderPasses.clear();
     m_usingDescriptorSetsPools.clear();
 
+    for (auto& buf : m_stagingBufferPool) {
+        buf.dispose();
+    }
     m_stagingBufferPoolUsed = 0;
 }
 
@@ -1448,11 +1485,11 @@ Result VulkanCommandBuffer::glowStagingBufferPool()
 	size_t newSize = m_stagingBufferPool.empty() ? 64 : m_stagingBufferPool.size() * 2;
 
     m_stagingBufferPool.resize(newSize);
-	for (size_t i = oldSize; i < newSize; i++) {
-		if (!m_stagingBufferPool[i].init(m_deviceContext)) {
-			return false;
-		}
-	}
+	//for (size_t i = oldSize; i < newSize; i++) {
+	//	if (!m_stagingBufferPool[i].init(m_deviceContext)) {
+	//		return false;
+	//	}
+	//}
 
 	return true;
 }
