@@ -1659,7 +1659,10 @@ VkRenderPass VulkanRenderPassCache::findOrCreate(const DeviceFramebufferState& s
                 }
                 else {
                     attachmentDescs[i].initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;    // DONT_CARE と併用する場合は UNDEFINED にしておくとよい
-                    attachmentDescs[i].finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+                    // パス終了後はシェーダ入力(テクスチャ)として使用できるように VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL に遷移する。
+                    // https://qiita.com/Pctg-x8/items/a1a39678e9ca95c59d19
+                    attachmentDescs[i].finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
                 }
 
                 attachmentRefs[i].attachment = attachmentCount;
