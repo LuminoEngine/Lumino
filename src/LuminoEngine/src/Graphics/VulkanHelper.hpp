@@ -347,6 +347,7 @@ private:
     VkBuffer m_buffer;
     VkDeviceMemory m_bufferMemory;
     VkDeviceSize m_size;
+	const VkAllocationCallbacks* m_allocator;	// CommandBuffer が使用する一時メモリは Device とは Allocator が異なる
 };
 
 // テクスチャ、レンダーターゲット、デプスバッファなどに使用される Image
@@ -607,30 +608,16 @@ public:
         return hash.value();
     }
 
-    void invalidateRenderTarget(ITexture* renderTarget)
+    void invalidateRenderTarget(ITexture* value)
     {
-        for (auto itr = m_hashMap.begin(); itr != m_hashMap.end();) {
-            if (itr->second->containsRenderTarget(renderTarget)) {
-                itr = m_hashMap.erase(itr);
-                // invalidateXXXX は dispose から呼ばれるので、ここでは参照を外すだけでよい
-            }
-            else {
-                ++itr;
-            }
-        }
+		HashedObjectCache<Ref<VulkanFramebuffer>, VulkanFramebufferCache>::invalidateAllIf(
+			[&](Ref<VulkanFramebuffer>& x) { return x->containsRenderTarget(value); });
     }
 
-    void invalidateDepthBuffer(IDepthBuffer* depthBuffer)
+    void invalidateDepthBuffer(IDepthBuffer* value)
     {
-        for (auto itr = m_hashMap.begin(); itr != m_hashMap.end();) {
-            if (itr->second->containsDepthBuffer(depthBuffer)) {
-                itr = m_hashMap.erase(itr);
-                // invalidateXXXX は dispose から呼ばれるので、ここでは参照を外すだけでよい
-            }
-            else {
-                ++itr;
-            }
-        }
+		HashedObjectCache<Ref<VulkanFramebuffer>, VulkanFramebufferCache>::invalidateAllIf(
+			[&](Ref<VulkanFramebuffer>& x) { return x->containsDepthBuffer(value); });
     }
 
     void onInvalidate(const Ref<VulkanFramebuffer>& value)

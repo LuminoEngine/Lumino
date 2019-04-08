@@ -979,6 +979,7 @@ VulkanBuffer::VulkanBuffer()
     , m_buffer(VK_NULL_HANDLE)
     , m_bufferMemory(VK_NULL_HANDLE)
     , m_size(0)
+	, m_allocator(nullptr)
 {
 }
 
@@ -1027,9 +1028,11 @@ Result VulkanBuffer::resetBuffer(VkDeviceSize size, VkBufferUsageFlags usage)
 Result VulkanBuffer::resetMemoryBuffer(VkMemoryPropertyFlags properties, const VkAllocationCallbacks* allocator)
 {
 	if (m_bufferMemory) {
-		vkFreeMemory(m_deviceContext->vulkanDevice(), m_bufferMemory, allocator);
+		vkFreeMemory(m_deviceContext->vulkanDevice(), m_bufferMemory, m_allocator);
 		m_bufferMemory = VK_NULL_HANDLE;
 	}
+
+	m_allocator = allocator;
 
 	VkMemoryRequirements memRequirements;
 	vkGetBufferMemoryRequirements(m_deviceContext->vulkanDevice(), m_buffer, &memRequirements);
@@ -1039,7 +1042,7 @@ Result VulkanBuffer::resetMemoryBuffer(VkMemoryPropertyFlags properties, const V
 	allocInfo.allocationSize = memRequirements.size;
 	m_deviceContext->findMemoryType(memRequirements.memoryTypeBits, properties, &allocInfo.memoryTypeIndex);
 
-	LN_VK_CHECK(vkAllocateMemory(m_deviceContext->vulkanDevice(), &allocInfo, allocator, &m_bufferMemory));
+	LN_VK_CHECK(vkAllocateMemory(m_deviceContext->vulkanDevice(), &allocInfo, m_allocator, &m_bufferMemory));
 
 	LN_VK_CHECK(vkBindBufferMemory(m_deviceContext->vulkanDevice(), m_buffer, m_bufferMemory, 0));
 
@@ -1048,14 +1051,16 @@ Result VulkanBuffer::resetMemoryBuffer(VkMemoryPropertyFlags properties, const V
 
 void VulkanBuffer::dispose()
 {
+	const VkAllocationCallbacks* allocator = m_allocator ? m_allocator : m_deviceContext->vulkanAllocator();
+
+    if (m_bufferMemory) {
+        vkFreeMemory(m_deviceContext->vulkanDevice(), m_bufferMemory, allocator);
+        m_bufferMemory = VK_NULL_HANDLE;
+    }
+
     if (m_buffer) {
         vkDestroyBuffer(m_deviceContext->vulkanDevice(), m_buffer, m_deviceContext->vulkanAllocator());
         m_buffer = VK_NULL_HANDLE;
-    }
-
-    if (m_bufferMemory) {
-        vkFreeMemory(m_deviceContext->vulkanDevice(), m_bufferMemory, m_deviceContext->vulkanAllocator());
-        m_bufferMemory = VK_NULL_HANDLE;
     }
 }
 
@@ -1234,6 +1239,12 @@ void VulkanCommandBuffer::dispose()
     //m_usingShaderPasses.clear();
     //m_usingDescriptorSetsPools.clear();
     cleanInFlightResources();
+
+	for (auto& buf : m_stagingBufferPool) {
+		buf.dispose();
+	}
+	m_stagingBufferPool.clear();
+	m_stagingBufferPoolUsed = 0;
 
     if (m_commandBuffer) {
         vkFreeCommandBuffers(m_deviceContext->vulkanDevice(), m_deviceContext->vulkanCommandPool(), 1, &m_commandBuffer);
