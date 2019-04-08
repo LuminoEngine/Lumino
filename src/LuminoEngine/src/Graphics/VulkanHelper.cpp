@@ -1653,12 +1653,15 @@ VkRenderPass VulkanRenderPassCache::findOrCreate(const DeviceFramebufferState& s
                 attachmentDescs[i].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;//VK_ATTACHMENT_STORE_OP_STORE; //VK_ATTACHMENT_STORE_OP_DONT_CARE;//    // TODO: stencil。今は未対応
                 if (renderTarget->isSwapchainBackbuffer()) {
                     // swapchain の場合
+                    // TODO: initialLayout は、Swapchain 作成直後は VK_IMAGE_LAYOUT_UNDEFINED を指定しなければならない。
+                    // なお、Barrier に乗せて遷移させることは許可されていない。ここで何とかする必要がある。
+                    // https://stackoverflow.com/questions/37524032/how-to-deal-with-the-layouts-of-presentable-images
+                    // validation layer: Submitted command buffer expects image 0x50 (subresource: aspectMask 0x1 array layer 0, mip level 0) to be in layout VK_IMAGE_LAYOUT_PRESENT_SRC_KHR--instead, image 0x50's current layout is VK_IMAGE_LAYOUT_UNDEFINED.
                     attachmentDescs[i].initialLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;// VK_IMAGE_LAYOUT_UNDEFINED;     // レンダリング前のレイアウト定義。UNDEFINED はレイアウトは何でもよいが、内容の保証はない。サンプルでは全体 clear するので問題ない。
                     attachmentDescs[i].finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-                    // https://stackoverflow.com/questions/37524032/how-to-deal-with-the-layouts-of-presentable-images
                 }
                 else {
-                    attachmentDescs[i].initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;    // DONT_CARE と併用する場合は UNDEFINED にしておくとよい
+                    attachmentDescs[i].initialLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;    // DONT_CARE と併用する場合は UNDEFINED にしておくとよい
 
                     // パス終了後はシェーダ入力(テクスチャ)として使用できるように VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL に遷移する。
                     // https://qiita.com/Pctg-x8/items/a1a39678e9ca95c59d19
