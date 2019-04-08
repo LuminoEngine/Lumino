@@ -121,7 +121,7 @@ public: // TODO:
     Result transitionImageLayoutImmediately(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 
     //Result submitStatus(const State& state);
-    void submitStatusInternal(SubmitSource submitSource, ClearFlags flags, const Color& color, float z, uint8_t stencil);
+    Result submitStatusInternal(SubmitSource submitSource, ClearFlags flags, const Color& color, float z, uint8_t stencil, bool* outSkipClear);
 
 	//GLFWwindow* m_mainWindow; // TODO:
     VulkanSwapChain* m_mainSwapchain = nullptr; // TODO:

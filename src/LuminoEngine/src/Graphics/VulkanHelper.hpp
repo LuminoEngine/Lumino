@@ -408,6 +408,7 @@ public:
 public:
     VulkanFramebuffer* m_lastFoundFramebuffer = nullptr;
     bool m_insideRendarPass = false;
+    bool m_priorToAnyDrawCmds = true;
 
 private:
     void cleanInFlightResources();
@@ -548,10 +549,10 @@ public:
     VulkanRenderPassCache();
     void dispose();
     Result init(VulkanDeviceContext* deviceContext);
-    VkRenderPass findOrCreate(const DeviceFramebufferState& key);
+    VkRenderPass findOrCreate(const DeviceFramebufferState& key/*, bool loadOpClear*/);
 
     void onInvalidate(VkRenderPass value);
-    static uint64_t computeHash(const DeviceFramebufferState& framebuffer);
+    static uint64_t computeHash(const DeviceFramebufferState& framebuffer/*, bool loadOpClear*/);
 
 private:
     VulkanDeviceContext* m_deviceContext;
@@ -565,7 +566,7 @@ class VulkanFramebuffer
 {
 public:
     VulkanFramebuffer();
-    Result init(VulkanDeviceContext* deviceContext, const DeviceFramebufferState& state, uint64_t hash);
+    Result init(VulkanDeviceContext* deviceContext, const DeviceFramebufferState& state/*, bool loadOpClear*/, uint64_t hash);
     void dispose();
     bool containsRenderTarget(ITexture* renderTarget) const;
     bool containsDepthBuffer(IDepthBuffer* depthBuffer) const;
@@ -596,15 +597,16 @@ public:
     VulkanFramebufferCache();
     Result init(VulkanDeviceContext* deviceContext);
     void dispose();
-    VulkanFramebuffer* findOrCreate(const DeviceFramebufferState& key);
+    VulkanFramebuffer* findOrCreate(const DeviceFramebufferState& key/*, bool loadOpClear*/);
 
-    static uint64_t computeHash(const DeviceFramebufferState& state)
+    static uint64_t computeHash(const DeviceFramebufferState& state/*, bool loadOpClear*/)
     {
         MixHash hash;
         for (size_t i = 0; i < state.renderTargets.size(); i++) {
             hash.add(state.renderTargets[i]);
         }
         hash.add(state.depthBuffer);
+        //hash.add(loadOpClear);
         return hash.value();
     }
 

@@ -1276,6 +1276,7 @@ Result VulkanCommandBuffer::beginRecording()
     LN_VK_CHECK(vkBeginCommandBuffer(vulkanCommandBuffer(), &beginInfo));
 
     m_lastFoundFramebuffer = nullptr;
+    m_priorToAnyDrawCmds = true;
 
     return true;
 }
@@ -1581,9 +1582,9 @@ void VulkanRenderPassCache::dispose()
     clear();
 }
 
-VkRenderPass VulkanRenderPassCache::findOrCreate(const DeviceFramebufferState& state)
+VkRenderPass VulkanRenderPassCache::findOrCreate(const DeviceFramebufferState& state/*, bool loadOpClear*/)
 {
-    uint64_t hash = computeHash(state);
+    uint64_t hash = computeHash(state/*, loadOpClear*/);
     VkRenderPass renderPass = VK_NULL_HANDLE;
     if (find(hash, &renderPass)) {
         return renderPass;
@@ -1608,14 +1609,15 @@ VkRenderPass VulkanRenderPassCache::findOrCreate(const DeviceFramebufferState& s
                 attachmentDescs[i].format = renderTarget->image()->vulkanFormat();//VulkanHelper::LNFormatToVkFormat(state.renderTargets[i]->getTextureFormat());
                 attachmentDescs[i].samples = VK_SAMPLE_COUNT_1_BIT;
                 attachmentDescs[i].loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;//VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-                //attachmentDescs[i].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;// サンプルでは画面全体 clear する前提なので、前回値を保持する必要はない。そのため CLEAR。というか、CLEAR 指定しないと clear しても背景真っ黒になった。
+                //attachmentDescs[i].loadOp = (loadOpClear) ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_LOAD;// サンプルでは画面全体 clear する前提なので、前回値を保持する必要はない。そのため CLEAR。というか、CLEAR 指定しないと clear しても背景真っ黒になった。
                 attachmentDescs[i].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
                 attachmentDescs[i].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;// VK_ATTACHMENT_LOAD_OP_LOAD;// VK_ATTACHMENT_LOAD_OP_DONT_CARE;    // TODO: stencil。今は未対応
                 attachmentDescs[i].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;//VK_ATTACHMENT_STORE_OP_STORE; //VK_ATTACHMENT_STORE_OP_DONT_CARE;//    // TODO: stencil。今は未対応
                 if (renderTarget->isSwapchainBackbuffer()) {
                     // swapchain の場合
-                    attachmentDescs[i].initialLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;     // レンダリング前のレイアウト定義。UNDEFINED はレイアウトは何でもよいが、内容の保証はない。サンプルでは全体 clear するので問題ない。
+                    attachmentDescs[i].initialLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;// VK_IMAGE_LAYOUT_UNDEFINED;     // レンダリング前のレイアウト定義。UNDEFINED はレイアウトは何でもよいが、内容の保証はない。サンプルでは全体 clear するので問題ない。
                     attachmentDescs[i].finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+                    // https://stackoverflow.com/questions/37524032/how-to-deal-with-the-layouts-of-presentable-images
                 }
                 else {
                     attachmentDescs[i].initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;    // DONT_CARE と併用する場合は UNDEFINED にしておくとよい
@@ -1775,7 +1777,7 @@ void VulkanRenderPassCache::onInvalidate(VkRenderPass value)
     }
 }
 
-uint64_t VulkanRenderPassCache::computeHash(const DeviceFramebufferState& state)
+uint64_t VulkanRenderPassCache::computeHash(const DeviceFramebufferState& state/*, bool loadOpClear*/)
 {
     MixHash hash;
     hash.add(state.renderTargets.size());
@@ -1787,6 +1789,7 @@ uint64_t VulkanRenderPassCache::computeHash(const DeviceFramebufferState& state)
     if (state.depthBuffer) {
         hash.add(state.depthBuffer->format());
     }
+    //hash.add(loadOpClear);
     return hash.value();
 }
 
@@ -1797,7 +1800,7 @@ VulkanFramebuffer::VulkanFramebuffer()
 {
 }
 
-Result VulkanFramebuffer::init(VulkanDeviceContext* deviceContext, const DeviceFramebufferState& state, uint64_t hash)
+Result VulkanFramebuffer::init(VulkanDeviceContext* deviceContext, const DeviceFramebufferState& state/*, bool loadOpClear*/, uint64_t hash)
 {
     m_deviceContext = deviceContext;
     m_hash = hash;
@@ -1807,7 +1810,7 @@ Result VulkanFramebuffer::init(VulkanDeviceContext* deviceContext, const DeviceF
     }
     m_depthBuffer = state.depthBuffer;
 
-    m_renderPass = deviceContext->renderPassCache()->findOrCreate(state);
+    m_renderPass = deviceContext->renderPassCache()->findOrCreate(state/*, loadOpClear*/);
     if (m_renderPass == VK_NULL_HANDLE) {
         return false;
     }
@@ -1893,16 +1896,16 @@ void VulkanFramebufferCache::dispose()
     clear();
 }
 
-VulkanFramebuffer* VulkanFramebufferCache::findOrCreate(const DeviceFramebufferState& state)
+VulkanFramebuffer* VulkanFramebufferCache::findOrCreate(const DeviceFramebufferState& state/*, bool loadOpClear*/)
 {
-    uint64_t hash = computeHash(state);
+    uint64_t hash = computeHash(state/*, loadOpClear*/);
     Ref<VulkanFramebuffer> framebuffer;
     if (find(hash, &framebuffer)) {
         return framebuffer;
     }
     else {
         framebuffer = makeRef<VulkanFramebuffer>();
-        if (!framebuffer->init(m_deviceContext, state, hash)) {
+        if (!framebuffer->init(m_deviceContext, state/*, loadOpClear*/, hash)) {
             return nullptr;
         }
         add(hash, framebuffer);

@@ -375,7 +375,9 @@ void VulkanDeviceContext::onSetSubData3D(ITexture* resource, int x, int y, int z
 
 void VulkanDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
-    submitStatusInternal(SubmitSource_Clear, flags, color, z, stencil);
+    bool skipClear;
+    submitStatusInternal(SubmitSource_Clear, flags, color, z, stencil, &skipClear);
+    if (skipClear) return;
 
     const State& state = stagingState();
 
@@ -438,14 +440,16 @@ void VulkanDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, f
 
 void VulkanDeviceContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount)
 {
-    submitStatusInternal(SubmitSource_Draw, ClearFlags::None, Color::White, 0, 0);
+    submitStatusInternal(SubmitSource_Draw, ClearFlags::None, Color::White, 0, 0, nullptr);
     vkCmdDraw(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startVertex, 0);
+    m_recodingCommandBuffer->m_priorToAnyDrawCmds = false;
 }
 
 void VulkanDeviceContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount)
 {
-    submitStatusInternal(SubmitSource_Draw, ClearFlags::None, Color::White, 0, 0);
+    submitStatusInternal(SubmitSource_Draw, ClearFlags::None, Color::White, 0, 0, nullptr);
     vkCmdDrawIndexed(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startIndex, 0, 0);
+    m_recodingCommandBuffer->m_priorToAnyDrawCmds = false;
 }
 
 // TODO: もし複数 swapchain へのレンダリングを1つの CommandBuffer でやる場合、flush 時には描画するすべての swapchain の image 準備を待たなければならない。
@@ -969,6 +973,13 @@ Result VulkanDeviceContext::transitionImageLayout(VkCommandBuffer commandBuffer,
         sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
         destinationStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
     }
+    else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR) {
+        barrier.srcAccessMask = 0;
+        barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+        sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+        destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+    }
     else {
         LN_LOG_ERROR << "unsupported layout transition!";
         return false;
@@ -996,10 +1007,13 @@ Result VulkanDeviceContext::transitionImageLayoutImmediately(VkImage image, VkFo
     return result;
 }
 
-void VulkanDeviceContext::submitStatusInternal(SubmitSource submitSource, ClearFlags flags, const Color& color, float z, uint8_t stencil)
+Result VulkanDeviceContext::submitStatusInternal(SubmitSource submitSource, ClearFlags flags, const Color& color, float z, uint8_t stencil, bool* outSkipClear)
 {
     const State& state = stagingState();
     uint32_t stateDirtyFlags = stagingStateDirtyFlags();
+
+    bool clearBuffersOnBeginRenderPass = false;//(submitSource == SubmitSource_Clear && m_recodingCommandBuffer->m_priorToAnyDrawCmds);
+    if (outSkipClear) *outSkipClear = clearBuffersOnBeginRenderPass;
 
     //m_recodingCommandBuffer->beginRecording();
 
@@ -1019,10 +1033,6 @@ void VulkanDeviceContext::submitStatusInternal(SubmitSource submitSource, ClearF
         VulkanFramebuffer* framebuffer = framebufferCache()->findOrCreate(state.framebufferState);
         m_recodingCommandBuffer->m_lastFoundFramebuffer = framebuffer;
         {
-            //DeviceFramebufferState framebufferState;
-            //framebufferState.renderTargets[0] = m_deviceContext->m_mainSwapchain->swapchainRenderTargets()[imageIndex];
-            //framebufferState.depthBuffer = m_depthImage;
-
             VkRenderPassBeginInfo renderPassInfo = {};
             renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
             renderPassInfo.renderPass = framebuffer->vulkanRenderPass();//renderPass;
@@ -1031,14 +1041,39 @@ void VulkanDeviceContext::submitStatusInternal(SubmitSource submitSource, ClearF
             renderPassInfo.renderArea.extent.width = state.framebufferState.renderTargets[0]->realSize().width; //m_mainSwapchain->vulkanSwapchainExtent();
             renderPassInfo.renderArea.extent.height = state.framebufferState.renderTargets[0]->realSize().height;
 
-            std::array<VkClearValue, 2> clearValues = {};
-            clearValues[0].color = { 0.0f, 0.0f, 1.0f, 1.0f };
-            clearValues[1].depthStencil = { 1.0f, 0 };
+            if (clearBuffersOnBeginRenderPass) {
+                VkClearValue clearValues[MaxMultiRenderTargets + 1] = {};
+                uint32_t count = 0;
 
-            renderPassInfo.clearValueCount = 0;//static_cast<uint32_t>(clearValues.size());//
-            renderPassInfo.pClearValues = nullptr;//clearValues.data();// 
+                if (testFlag(flags, ClearFlags::Color))
+                {
+                    float frgba[4] = { color.r, color.g, color.b, color.a, };
 
-            vkCmdBeginRenderPass(m_recodingCommandBuffer->vulkanCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+                    for (uint32_t ii = 0; ii < state.framebufferState.renderTargets.size(); ii++) {
+                        if (state.framebufferState.renderTargets[ii]) {
+                            clearValues[count].color = { color.r, color.g, color.b, color.a };
+                            count++;
+                        }
+                    }
+                }
+
+                if ((testFlag(flags, ClearFlags::Depth) || testFlag(flags, ClearFlags::Stencil)) &&
+                    state.framebufferState.depthBuffer != nullptr) {
+                    clearValues[count].depthStencil = { z, stencil };
+                    count++;
+                }
+
+                renderPassInfo.clearValueCount = count;
+                renderPassInfo.pClearValues = clearValues;
+
+                vkCmdBeginRenderPass(m_recodingCommandBuffer->vulkanCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+            }
+            else {
+                renderPassInfo.clearValueCount = 0;
+                renderPassInfo.pClearValues = nullptr;
+
+                vkCmdBeginRenderPass(m_recodingCommandBuffer->vulkanCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+            }
 
             m_recodingCommandBuffer->m_insideRendarPass = true;
         }
@@ -1145,8 +1180,10 @@ void VulkanDeviceContext::submitStatusInternal(SubmitSource submitSource, ClearF
 #endif
 
 
-    //return true;
+    //
     }
+
+    return true;
 }
 
 //Result VulkanDeviceContext::submitStatus(const State& state)
@@ -1255,6 +1292,14 @@ Result VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow*
         m_swapchainExtent = extent;
     }
 
+    //// 初期状態ではバックバッファのレイアウトは VK_IMAGE_LAYOUT_UNDEFINED となっている。
+    //// Vulkan-Tutorial では、初回の VkAttachmentDescription::initialLayout
+    //for (uint32_t i = 0; i < swapChainImages.size(); i++) {
+    //    if (!m_deviceContext->transitionImageLayoutImmediately(swapChainImages[i], m_swapchainImageFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)) {
+    //        return false;
+    //    }
+    //}
+
     {
         m_swapChainImageViews.resize(swapChainImages.size());
 
@@ -1271,6 +1316,9 @@ Result VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow*
         target->init(m_deviceContext, m_swapchainExtent.width, m_swapchainExtent.height, m_swapchainImageFormat, swapChainImages[i], m_swapChainImageViews[i]);
         m_swapchainRenderTargets[i] = target;
     }
+
+
+
     //m_swapchainRenderTarget = makeRef<VulkanSwapchainRenderTargetTexture>();
     //m_swapchainRenderTarget->init(m_deviceContext);
     //m_swapchainRenderTarget->reset(swapChainExtent.width, swapChainExtent.height, swapChainImageFormat, swapChainImages, swapChainImageViews);
@@ -1983,7 +2031,7 @@ void VulkanRenderTarget::readData(void* outData)
             vkCmdCopyImageToBuffer(
                 commandBuffer,
                 m_image->vulkanImage(),
-                VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
                 destBuffer.vulkanBuffer(),
                 1, &region);
         }
