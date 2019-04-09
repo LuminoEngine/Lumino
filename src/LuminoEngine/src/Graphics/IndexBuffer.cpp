@@ -10,6 +10,16 @@ namespace ln {
 //==============================================================================
 // IndexBuffer
 
+Ref<IndexBuffer> IndexBuffer::create(int indexCount, IndexBufferFormat format, GraphicsResourceUsage usage)
+{
+    return newObject<IndexBuffer>(indexCount, format, usage);
+}
+
+Ref<IndexBuffer> IndexBuffer::create(int indexCount, IndexBufferFormat format, const void* initialData, GraphicsResourceUsage usage)
+{
+    return newObject<IndexBuffer>(indexCount, format, initialData, usage);
+}
+
 IndexBuffer::IndexBuffer()
 	: m_rhiObject(nullptr)
 	, m_format(IndexBufferFormat::UInt16)
@@ -17,7 +27,8 @@ IndexBuffer::IndexBuffer()
 	, m_pool(GraphicsResourcePool::Managed)
 	, m_primaryIndexCount(0)
 	, m_buffer()
-	, m_rhiLockedBuffer(nullptr)
+	, m_rhiMappedBuffer(nullptr)
+    , m_mappedBuffer(nullptr)
 	, m_initialUpdate(true)
 	, m_modified(false)
 {
@@ -75,6 +86,10 @@ void IndexBuffer::resize(int indexCount)
 
 void* IndexBuffer::map(MapMode mode)
 {
+    if (m_mappedBuffer) {
+        return m_mappedBuffer;
+    }
+
 	// if have not entried the Command List at least once, can rewrite directly with map().
 	if (m_initialUpdate && m_usage == GraphicsResourceUsage::Static && m_pool == GraphicsResourcePool::None)
 	{
@@ -82,23 +97,27 @@ void* IndexBuffer::map(MapMode mode)
 			m_rhiObject = manager()->deviceContext()->createIndexBuffer(m_usage, m_format, size(),nullptr);
 		}
 
-		if (m_rhiLockedBuffer == nullptr)
+		if (m_rhiMappedBuffer == nullptr)
 		{
-            m_rhiLockedBuffer = manager()->deviceContext()->map(m_rhiObject);
+            m_rhiMappedBuffer = manager()->deviceContext()->map(m_rhiObject);
 		}
 
 		m_modified = true;
-		return m_rhiLockedBuffer;
+        m_mappedBuffer = m_rhiMappedBuffer;
 	}
+    else
+    {
+        // prepare for GraphicsResourcePool::None
+        size_t primarySize = bytesSize();
+        if (m_buffer.size() < primarySize) {
+            m_buffer.resize(primarySize);
+        }
 
-	// prepare for GraphicsResourcePool::None
-	size_t primarySize = bytesSize();
-	if (m_buffer.size() < primarySize) {
-		m_buffer.resize(primarySize);
-	}
+        m_modified = true;
+        m_mappedBuffer = m_buffer.data();
+    }
 
-	m_modified = true;
-	return m_buffer.data();
+    return m_mappedBuffer;
 }
 
 void IndexBuffer::clear()
@@ -182,7 +201,7 @@ int IndexBuffer::index(int index)
 void IndexBuffer::setResourceUsage(GraphicsResourceUsage usage)
 {
 	// Prohibit while direct locking.
-	if (LN_REQUIRE(!m_rhiLockedBuffer)) return;
+	if (LN_REQUIRE(!m_rhiMappedBuffer)) return;
 	if (m_usage != usage) {
 		m_usage = usage;
 		m_modified = true;
@@ -196,13 +215,15 @@ void IndexBuffer::setResourcePool(GraphicsResourcePool pool)
 
 detail::IIndexBuffer* IndexBuffer::resolveRHIObject()
 {
+    m_mappedBuffer = nullptr;
+
 	if (m_modified)
 	{
         detail::IGraphicsDevice* device = manager()->deviceContext();
-		if (m_rhiLockedBuffer)
+		if (m_rhiMappedBuffer)
 		{
             device->unmap(m_rhiObject);
-			m_rhiLockedBuffer = nullptr;
+            m_rhiMappedBuffer = nullptr;
 		}
 		else
 		{

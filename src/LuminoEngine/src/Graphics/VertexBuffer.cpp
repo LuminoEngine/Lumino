@@ -28,13 +28,24 @@ namespace ln {
 //==============================================================================
 // VertexBuffer
 
+Ref<VertexBuffer> VertexBuffer::create(size_t bufferSize, GraphicsResourceUsage usage)
+{
+    return newObject<VertexBuffer>(bufferSize, usage);
+}
+
+Ref<VertexBuffer> VertexBuffer::create(size_t bufferSize, const void* initialData, GraphicsResourceUsage usage)
+{
+    return newObject<VertexBuffer>(bufferSize, initialData, usage);
+}
+
 VertexBuffer::VertexBuffer()
 	: m_rhiObject(nullptr)
 	, m_usage(GraphicsResourceUsage::Static)
 	, m_pool(GraphicsResourcePool::Managed)
 	, m_primarySize(0)
 	, m_buffer()
-	, m_rhiLockedBuffer(nullptr)
+	, m_rhiMappedBuffer(nullptr)
+    , m_mappedBuffer(nullptr)
 	, m_initialUpdate(true)
 	, m_modified(false)
 {
@@ -86,6 +97,10 @@ void VertexBuffer::resize(int size)
 
 void* VertexBuffer::map(MapMode mode)
 {
+    if (m_mappedBuffer) {
+        return m_mappedBuffer;
+    }
+
 	// if have not entried the Command List at least once, can rewrite directly with map().
 	if (m_initialUpdate && m_usage == GraphicsResourceUsage::Static &&m_pool == GraphicsResourcePool::None)
 	{
@@ -93,22 +108,26 @@ void* VertexBuffer::map(MapMode mode)
 			m_rhiObject = manager()->deviceContext()->createVertexBuffer(m_usage, size(), nullptr);
 		}
 
-		if (m_rhiLockedBuffer == nullptr)
+		if (m_rhiMappedBuffer == nullptr)
 		{
-            m_rhiLockedBuffer = manager()->deviceContext()->map(m_rhiObject);
+            m_rhiMappedBuffer = manager()->deviceContext()->map(m_rhiObject);
 		}
 
 		m_modified = true;
-		return m_rhiLockedBuffer;
+        m_mappedBuffer = m_rhiMappedBuffer;
 	}
+    else
+    {
+        // prepare for GraphicsResourcePool::None
+        if (m_buffer.size() < m_primarySize) {
+            m_buffer.resize(m_primarySize);
+        }
 
-	// prepare for GraphicsResourcePool::None
-	if (m_buffer.size() < m_primarySize) {
-		m_buffer.resize(m_primarySize);
-	}
+        m_modified = true;
+        m_mappedBuffer = m_buffer.data();
+    }
 
-	m_modified = true;
-	return m_buffer.data();
+    return m_mappedBuffer;
 }
 
 void VertexBuffer::clear()
@@ -122,7 +141,7 @@ void VertexBuffer::clear()
 void VertexBuffer::setResourceUsage(GraphicsResourceUsage usage)
 {
 	// Prohibit while direct locking.
-	if (LN_REQUIRE(!m_rhiLockedBuffer)) return;
+	if (LN_REQUIRE(!m_rhiMappedBuffer)) return;
 	if (m_usage != usage) {
 		m_usage = usage;
 		m_modified = true;
@@ -136,13 +155,15 @@ void VertexBuffer::setResourcePool(GraphicsResourcePool pool)
 
 detail::IVertexBuffer* VertexBuffer::resolveRHIObject()
 {
+    m_mappedBuffer = nullptr;
+
 	if (m_modified)
 	{
         detail::IGraphicsDevice* device = manager()->deviceContext();
-		if (m_rhiLockedBuffer)
+		if (m_rhiMappedBuffer)
 		{
             device->unmap(m_rhiObject);
-			m_rhiLockedBuffer = nullptr;
+            m_rhiMappedBuffer = nullptr;
 		}
 		else
 		{

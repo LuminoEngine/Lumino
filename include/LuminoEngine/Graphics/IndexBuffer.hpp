@@ -11,6 +11,23 @@ class IndexBuffer
 	: public GraphicsResource
 {
 public:
+    /**
+     * インデックスバッファを作成します。
+     * @param[in]	indexCount		: インデックスの数
+     * @param[in]	format			: インデックスバッファのフォーマット
+     * @param[in]	usage			: リソースの使用方法
+     */
+    static Ref<IndexBuffer> create(int indexCount, IndexBufferFormat format, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
+
+    /**
+     * インデックスバッファを作成します。
+     * @param[in]	indexCount		: インデックスの数
+     * @param[in]	format			: インデックスバッファのフォーマット
+     * @param[in]	initialData		: 初期値として設定するインデックスデータ
+     * @param[in]	usage			: リソースの使用方法
+     */
+    static Ref<IndexBuffer> create(int indexCount, IndexBufferFormat format, const void* initialData, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
+
 	/** インデックスの数を取得します。 */
 	int size() const;
 
@@ -54,21 +71,10 @@ LN_CONSTRUCT_ACCESS:
 	IndexBuffer();
 	virtual ~IndexBuffer();
 
-	/**
-	 * インデックスバッファを作成します。
-	 * @param[in]	indexCount		: インデックスの数
-	 * @param[in]	format			: インデックスバッファのフォーマット
-	 * @param[in]	usage			: リソースの使用方法
-	 */
+    /** @copydoc create(int, IndexBufferFormat, GraphicsResourceUsage) */
 	void init(int indexCount, IndexBufferFormat format, GraphicsResourceUsage usage);
 
-	/**
-	 * インデックスバッファを作成します。
-	 * @param[in]	indexCount		: インデックスの数
-	 * @param[in]	format			: インデックスバッファのフォーマット
-	 * @param[in]	initialData		: 初期値として設定するインデックスデータ
-	 * @param[in]	usage			: リソースの使用方法
-	 */
+    /** @copydoc create(int, IndexBufferFormat, const void*, GraphicsResourceUsage) */
 	void init(int indexCount, IndexBufferFormat format, const void* initialData, GraphicsResourceUsage usage);
 
 LN_INTERNAL_ACCESS:
@@ -89,7 +95,8 @@ private:
 	GraphicsResourcePool			m_pool;
 	int m_primaryIndexCount;
 	std::vector<byte_t>				m_buffer;
-	void*							m_rhiLockedBuffer;
+    void*					m_rhiMappedBuffer;
+    void*					m_mappedBuffer;
 	bool							m_initialUpdate;
 	bool							m_modified;
 };

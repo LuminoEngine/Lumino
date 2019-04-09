@@ -16,7 +16,7 @@ public:
 	 * @param[in]	bufferSize		: 頂点バッファのサイズ (バイト単位)
 	 * @param[in]	usage			: リソースの使用方法
 	 */
-	static Ref<VertexBuffer> create(size_t bufferSize, GraphicsResourceUsage usage);
+	static Ref<VertexBuffer> create(size_t bufferSize, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
 
 	/**
 	 * 頂点バッファを作成します。
@@ -24,7 +24,7 @@ public:
 	 * @param[in]	initialData		: 初期値として書き込む頂点データ
 	 * @param[in]	usage			: リソースの使用方法
 	 */
-	static Ref<VertexBuffer> create(size_t bufferSize, const void* initialData, GraphicsResourceUsage usage);
+	static Ref<VertexBuffer> create(size_t bufferSize, const void* initialData, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
 
 	/** 頂点バッファのバイトサイズを取得します。 */
 	int size() const;
@@ -65,13 +65,14 @@ private:
 	detail::IVertexBuffer* resolveRHIObject();
 	bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }
 
-	Ref<detail::IVertexBuffer>	m_rhiObject;
-	GraphicsResourceUsage			m_usage;
-	GraphicsResourcePool	m_pool;
+	Ref<detail::IVertexBuffer> m_rhiObject;
+	GraphicsResourceUsage m_usage;
+	GraphicsResourcePool m_pool;
 	size_t m_primarySize;
 
 	std::vector<byte_t>		m_buffer;
-	void*					m_rhiLockedBuffer;
+	void*					m_rhiMappedBuffer;
+    void*					m_mappedBuffer;
 	bool					m_initialUpdate;
 	bool					m_modified;
 
