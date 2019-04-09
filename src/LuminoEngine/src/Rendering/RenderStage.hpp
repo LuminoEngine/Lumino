@@ -82,8 +82,8 @@ public:
     void inherit(const BuiltinEffectData& parent)
     {
         opacity *= parent.opacity;
-        colorScale.multiplyClamp(parent.colorScale);
-        blendColor.addClamp(parent.blendColor);
+        colorScale = Color::multiplyClamp(colorScale, parent.colorScale);
+        blendColor = Color::addClamp(blendColor, parent.blendColor);
         tone.addClamp(parent.tone);
     }
 };

@@ -13,20 +13,20 @@ namespace ln {
 
 const Vector4 Vector4::Zero(0, 0, 0, 0);
 
-Vector4::Vector4(const Vector2& vec, float z_, float w_)
+constexpr Vector4::Vector4(const Vector2& vec, float z_, float w_) noexcept
+	: x(vec.x)
+	, y(vec.y)
+	, z(z_)
+	, w(w_)
 {
-    x = vec.x;
-    y = vec.y;
-    z = z_;
-    w = w_;
 }
 
-Vector4::Vector4(const Vector3& vec, float w_)
+constexpr Vector4::Vector4(const Vector3& vec, float w_) noexcept
+	: x(vec.x)
+	, y(vec.y)
+	, z(vec.z)
+	, w(w_)
 {
-    x = vec.x;
-    y = vec.y;
-    z = vec.z;
-    w = w_;
 }
 
 float Vector4::length() const

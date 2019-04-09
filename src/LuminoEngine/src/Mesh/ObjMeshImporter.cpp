@@ -188,7 +188,7 @@ Ref<StaticMeshModel> ObjMeshImporter::import(const Path& filePath, float scale, 
             tinyobj::index_t& vertexIndex = shape.mesh.indices[iVertex];
 
             Vertex vertex;
-            vertex.color = Vector4(1, 1, 1, 1);
+            vertex.color = Color(1, 1, 1, 1);
 
             int v = vertexIndex.vertex_index;
             vertex.position = Vector3(attrib.vertices[3 * v + 0], attrib.vertices[3 * v + 1], attrib.vertices[3 * v + 2]);
@@ -208,10 +208,10 @@ Ref<StaticMeshModel> ObjMeshImporter::import(const Path& filePath, float scale, 
             }
 
             if (attrib.colors.empty()) {
-                vertex.color = Vector4(1, 1, 1, 1);
+                vertex.color = Color(1, 1, 1, 1);
             }
             else {
-                vertex.color = Vector4(attrib.colors[3 * v + 0], attrib.colors[3 * v + 1], attrib.colors[3 * v + 2], 1);
+                vertex.color = Color(attrib.colors[3 * v + 0], attrib.colors[3 * v + 1], attrib.colors[3 * v + 2], 1);
             }
 
             meshResource->setVertex(iVertex, vertex);

@@ -99,40 +99,4 @@ bool Math::isInf(double value)
 #endif
 }
 
-float Math::lerp(float v1, float v2, float t)
-{
-    return v1 + ((v2 - v1) * t);
-}
-
-float Math::quadAccel(float p, float v, float a, float t)
-{
-    return p + (v * t) + (0.5f * a * t * t);
-}
-
-float Math::hermite(float v1, float a1, float v2, float a2, float t)
-{
-    float a = 2.f * (v1 - v2) + (a1 + a2);
-    float b = 3.f * (v2 - v1) - (2.f * a1) - a2;
-    float r = a;
-    r *= t;
-    r += b;
-    r *= t;
-    r += a1;
-    r *= t;
-    return r + v1;
-}
-
-float Math::catmullRom(float v1, float v2, float v3, float v4, float t)
-{
-    float d1 = (v3 - v1) * 0.5f;
-    float d2 = (v4 - v2) * 0.5f;
-    return (2.0f * v2 - 2.0f * v3 + d1 + d2) * t * t * t + (-3.0f * v2 + 3.0f * v3 - 2.0f * d1 - d2) * t * t + d1 * t + v2;
-}
-
-float Math::cubicBezier(float v1, float v2, float v3, float v4, float t)
-{
-    float tp = 1.f - t;
-    return t * t * t * v4 + 3.f * t * t * tp * v3 + 3.f * t * tp * tp * v2 + tp * tp * tp * v1;
-}
-
 } // namespace ln

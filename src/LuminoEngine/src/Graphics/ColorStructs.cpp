@@ -262,7 +262,7 @@ static bool ParseHexColor(const StringRef& str, Color32* outColor)
 }
 
 //------------------------------------------------------------------------------
-Color32 Color32::fromString(const StringRef& str)
+Color32 Color32::parse(const StringRef& str)
 {
 	Color32 c;
 	if (!ParseHexColor(str, &c))
@@ -443,42 +443,12 @@ static const float g_color255Table[256] =
 	// [256]
 };
 
-//------------------------------------------------------------------------------
-Color::Color(const Color32& color)
+Color::Color(const Color32& color) noexcept
+	: r(g_color255Table[color.r])
+	, g(g_color255Table[color.g])
+	, b(g_color255Table[color.b])
+	, a(g_color255Table[color.a])
 {
-	r = g_color255Table[color.r];
-	g = g_color255Table[color.g];
-	b = g_color255Table[color.b];
-	a = g_color255Table[color.a];
-}
-//------------------------------------------------------------------------------
-Color::Color(const Vector3& vec, float a_)
-{
-	r = vec.x; g = vec.y; b = vec.z; a = a_;
-}
-
-//------------------------------------------------------------------------------
-Color::Color(const Vector4& vec)
-{
-	r = vec.x; g = vec.y; b = vec.z; a = vec.w;
-}
-
-//------------------------------------------------------------------------------
-void Color::addClamp(const Color& color)
-{
-	r = Math::clamp(r + color.r, 0.0f, 1.0f);
-	g = Math::clamp(g + color.g, 0.0f, 1.0f);
-	b = Math::clamp(b + color.b, 0.0f, 1.0f);
-	a = Math::clamp(a + color.a, 0.0f, 1.0f);
-}
-
-//------------------------------------------------------------------------------
-void Color::multiplyClamp(const Color& color)
-{
-	r = Math::clamp(r * color.r, 0.0f, 1.0f);
-	g = Math::clamp(g * color.g, 0.0f, 1.0f);
-	b = Math::clamp(b * color.b, 0.0f, 1.0f);
-	a = Math::clamp(a * color.a, 0.0f, 1.0f);
 }
 
 //------------------------------------------------------------------------------
@@ -492,22 +462,10 @@ Color32 Color::to32BitColor() const
 }
 
 //------------------------------------------------------------------------------
-Color Color::fromString(const StringRef& str)
+Color Color::parse(const StringRef& str)
 {
-	Color32 c = Color32::fromString(str);
+	Color32 c = Color32::parse(str);
 	return Color(c);
-}
-
-//------------------------------------------------------------------------------
-// static
-//------------------------------------------------------------------------------
-Color Color::lerp(const Color& color1, const Color& color2, float t)
-{
-	return Color(
-		Math::lerp(color1.r, color2.r, t),
-		Math::lerp(color1.g, color2.g, t),
-		Math::lerp(color1.b, color2.b, t),
-		Math::lerp(color1.a, color2.a, t));
 }
 
 //==============================================================================

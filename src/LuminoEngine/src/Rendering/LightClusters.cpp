@@ -1,4 +1,4 @@
-
+﻿
 #include "Internal.hpp"
 #include <float.h>
 #include <LuminoEngine/Graphics/Bitmap.hpp>

@@ -11,6 +11,7 @@ set(LN_SOURCES
 	Test_Base_Variant.cpp
 	Test_Engine_Object.cpp
 	Test_Graphics_Bitmap.cpp
+	Test_Graphics_ColorStructs.cpp
 	Test_Graphics_DeviceContext.cpp
 	Test_Graphics_LowLevelRendering.cpp
 	Test_Graphics_Texture.cpp
