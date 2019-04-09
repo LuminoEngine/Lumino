@@ -225,7 +225,7 @@ void BitmapTextRenderer::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Si
         RectI(m_rect.x + pos.x, m_rect.y + pos.y, info.size),
         info.glyphBitmap,
         RectI(0, 0, info.size),
-        m_color.to32BitColor(), BitmapBlitOptions::AlphaBlend);
+        Color32::fromLinearColor(m_color), BitmapBlitOptions::AlphaBlend);
 }
 
 } // namespace detail

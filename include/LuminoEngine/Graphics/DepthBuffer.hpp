@@ -5,6 +5,7 @@
 namespace ln {
 namespace detail { class IDepthBuffer; }
 
+/** 深度バッファのクラスです。 */
 class DepthBuffer
 	: public GraphicsResource
 {

@@ -132,13 +132,13 @@ void Texture2D::setResourcePool(GraphicsResourcePool pool)
 void Texture2D::clear(const Color& color)
 {
     Bitmap2D* bitmap = map(MapMode::Write);
-    bitmap->clear(color.to32BitColor());
+    bitmap->clear(Color32::fromLinearColor(color));
 }
 
 void Texture2D::setPixel(int x, int y, const Color& color)
 {
     Bitmap2D* bitmap = map(MapMode::Write);
-    bitmap->setPixel32(x, y, color.to32BitColor());
+    bitmap->setPixel32(x, y, Color32::fromLinearColor(color));
 }
 
 void Texture2D::blit(int x, int y, Texture2D* srcTexture, const RectI& srcRect)
