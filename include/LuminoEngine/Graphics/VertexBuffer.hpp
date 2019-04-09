@@ -1,82 +1,84 @@
-﻿
+﻿// Copyright (c) 2019+ lriki. Distributed under the MIT license.
 #pragma once
 #include "Common.hpp"
 #include "GraphicsResource.hpp"
 
 namespace ln {
-namespace detail { class IVertexBuffer; }
+namespace detail {
+class IVertexBuffer;
+}
 
 /** 頂点バッファのクラスです。 */
 class VertexBuffer
-	: public GraphicsResource
+    : public GraphicsResource
 {
 public:
-	/**
-	 * 頂点バッファを作成します。
-	 * @param[in]	bufferSize		: 頂点バッファのサイズ (バイト単位)
-	 * @param[in]	usage			: リソースの使用方法
-	 */
-	static Ref<VertexBuffer> create(size_t bufferSize, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
+    /**
+     * 頂点バッファを作成します。
+     * @param[in]   bufferSize  : 頂点バッファのサイズ (バイト単位)
+     * @param[in]   usage       : リソースの使用方法
+     */
+    static Ref<VertexBuffer> create(size_t bufferSize, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
 
-	/**
-	 * 頂点バッファを作成します。
-	 * @param[in]	bufferSize		: 頂点バッファのサイズ (バイト単位)
-	 * @param[in]	initialData		: 初期値として書き込む頂点データ
-	 * @param[in]	usage			: リソースの使用方法
-	 */
-	static Ref<VertexBuffer> create(size_t bufferSize, const void* initialData, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
+    /**
+     * 頂点バッファを作成します。
+     * @param[in]   bufferSize  : 頂点バッファのサイズ (バイト単位)
+     * @param[in]   initialData : 初期値として書き込む頂点データ
+     * @param[in]   usage       : リソースの使用方法
+     */
+    static Ref<VertexBuffer> create(size_t bufferSize, const void* initialData, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
 
-	/** 頂点バッファのバイトサイズを取得します。 */
-	int size() const;
+    /** 頂点バッファのバイトサイズを取得します。 */
+    int size() const;
 
-	/** 頂点バッファの容量を確保します。 */
-	void reserve(int size);
+    /** 頂点バッファの容量を確保します。 */
+    void reserve(int size);
 
-	/** 頂点バッファのサイズを変更します。 */
-	void resize(int size);
+    /** 頂点バッファのサイズを変更します。 */
+    void resize(int size);
 
-	/** 頂点バッファが保持するデータにアクセスします。 */
-	void* map(MapMode mode);
+    /** 頂点バッファが保持するデータにアクセスします。このバッファが次の描画に使用されるとき、自動的に unmap されます。  */
+    void* map(MapMode mode);
 
-	/** 頂点バッファをクリアします。 */
-	void clear();
+    /** 頂点バッファをクリアします。 */
+    void clear();
 
-	/** リソースの使用方法を変更します。(default: Static) */
-	void setResourceUsage(GraphicsResourceUsage usage);
+    /** リソースの使用方法を変更します。(default: Static) */
+    void setResourceUsage(GraphicsResourceUsage usage);
 
-	/** リソースの管理方法を変更します。(default: Managed) */
-	void setResourcePool(GraphicsResourcePool pool);
+    /** リソースの管理方法を変更します。(default: Managed) */
+    void setResourcePool(GraphicsResourcePool pool);
 
 protected:
-	virtual void onDispose(bool explicitDisposing) override;
-	virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
+    virtual void onDispose(bool explicitDisposing) override;
+    virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
 
 LN_CONSTRUCT_ACCESS:
-	VertexBuffer();
-	virtual ~VertexBuffer();
+    VertexBuffer();
+    virtual ~VertexBuffer();
 
-	/** @copydoc create(size_t, GraphicsResourceUsage) */
-	void init(size_t bufferSize, GraphicsResourceUsage usage);
+    /** @copydoc create(size_t, GraphicsResourceUsage) */
+    void init(size_t bufferSize, GraphicsResourceUsage usage);
 
-	/** @copydoc create(size_t, const void*, GraphicsResourceUsage) */
-	void init(size_t bufferSize, const void* initialData, GraphicsResourceUsage usage);
+    /** @copydoc create(size_t, const void*, GraphicsResourceUsage) */
+    void init(size_t bufferSize, const void* initialData, GraphicsResourceUsage usage);
 
 private:
-	detail::IVertexBuffer* resolveRHIObject();
-	bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }
+    detail::IVertexBuffer* resolveRHIObject();
+    bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }
 
-	Ref<detail::IVertexBuffer> m_rhiObject;
-	GraphicsResourceUsage m_usage;
-	GraphicsResourcePool m_pool;
-	size_t m_primarySize;
+    Ref<detail::IVertexBuffer> m_rhiObject;
+    GraphicsResourceUsage m_usage;
+    GraphicsResourcePool m_pool;
+    size_t m_primarySize;
 
-	std::vector<byte_t>		m_buffer;
-	void*					m_rhiMappedBuffer;
-    void*					m_mappedBuffer;
-	bool					m_initialUpdate;
-	bool					m_modified;
+    std::vector<byte_t> m_buffer;
+    void* m_rhiMappedBuffer;
+    void* m_mappedBuffer;
+    bool m_initialUpdate;
+    bool m_modified;
 
-	friend class detail::GraphicsResourceHelper;
+    friend class detail::GraphicsResourceHelper;
 };
 
 } // namespace ln
