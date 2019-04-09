@@ -294,7 +294,7 @@ detail::IGraphicsDevice* GraphicsContext::commitState()
 
 	{
 		auto& value = m_staging.depthBuffer;
-		detail::IDepthBuffer* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
+		detail::IDepthBuffer* rhiObject = detail::GraphicsResourceHelper::resolveRHIObject<detail::IDepthBuffer>(value);
 		LN_ENQUEUE_RENDER_COMMAND_2(
 			GraphicsContext_setDepthBuffer, m_manager,
 			detail::IGraphicsDevice*, m_device,
