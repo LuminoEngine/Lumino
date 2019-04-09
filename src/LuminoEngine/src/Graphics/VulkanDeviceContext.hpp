@@ -28,7 +28,7 @@ class VulkanShaderUniformBuffer;
 class VulkanShaderUniform;
 class VulkanLocalShaderSamplerBuffer;
 
-class VulkanDeviceContext
+class VulkanDevice
 	: public IGraphicsDevice
 {
 public:
@@ -37,7 +37,7 @@ public:
 		PlatformWindow* mainWindow = nullptr;
 	};
 
-	VulkanDeviceContext();
+	VulkanDevice();
 	bool init(const Settings& settings, bool* outIsDriverSupported);
 	virtual void dispose() override;
 
@@ -129,7 +129,7 @@ class VulkanGraphicsContext
 {
 public:
 	VulkanGraphicsContext();
-	Result init(VulkanDeviceContext* owner);
+	Result init(VulkanDevice* owner);
 	void dispose();
 
 	const Ref<VulkanCommandBuffer>& recodingCommandBuffer() const { return m_recodingCommandBuffer; }
@@ -159,7 +159,7 @@ private:
 	//Result submitStatus(const State& state);
 	Result submitStatusInternal(GraphicsContextSubmitSource submitSource, ClearFlags flags, const Color& color, float z, uint8_t stencil, bool* outSkipClear);
 
-	VulkanDeviceContext* m_device;
+	VulkanDevice* m_device;
 	Ref<VulkanCommandBuffer> m_recodingCommandBuffer;
 };
 
@@ -168,7 +168,7 @@ class VulkanSwapChain
 {
 public:
 	VulkanSwapChain();
-	Result init(VulkanDeviceContext* deviceContext, PlatformWindow* window, const SizeI& backbufferSize);
+	Result init(VulkanDevice* deviceContext, PlatformWindow* window, const SizeI& backbufferSize);
     virtual void dispose() override;
     virtual void acquireNextImage(int* outImageIndex) override;
 	virtual ITexture* getRenderTarget(int imageIndex) const override;
@@ -193,7 +193,7 @@ public:
 private:
     void cleanup();
 
-    VulkanDeviceContext* m_deviceContext;
+    VulkanDevice* m_deviceContext;
     VkSurfaceKHR m_surface;
     VkSwapchainKHR m_swapchain;
     VkQueue m_presentQueue;
@@ -248,7 +248,7 @@ class VulkanVertexBuffer
 {
 public:
     VulkanVertexBuffer();
-    Result init(VulkanDeviceContext* deviceContext, GraphicsResourceUsage usage, size_t bufferSize, const void* initialData);
+    Result init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, size_t bufferSize, const void* initialData);
     virtual void dispose() override;
     virtual size_t getBytesSize() override { return m_buffer.size(); }
     virtual GraphicsResourceUsage usage() const override { return m_usage; }
@@ -261,7 +261,7 @@ public:
     VulkanBuffer* m_mappedResource = nullptr;
 
 private:
-    VulkanDeviceContext* m_deviceContext;
+    VulkanDevice* m_deviceContext;
     VulkanBuffer m_buffer;
     GraphicsResourceUsage m_usage;
 };
@@ -271,7 +271,7 @@ class VulkanIndexBuffer
 {
 public:
     VulkanIndexBuffer();
-    Result init(VulkanDeviceContext* deviceContext, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData);
+    Result init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData);
     virtual void dispose() override;
     
     virtual size_t getBytesSize() override { return m_buffer.size(); }
@@ -286,7 +286,7 @@ public:
     VulkanBuffer* m_mappedResource = nullptr;
 
 protected:
-    VulkanDeviceContext* m_deviceContext;
+    VulkanDevice* m_deviceContext;
     VulkanBuffer m_buffer;
     GraphicsResourceUsage m_usage;
     VkIndexType m_indexType;
@@ -308,7 +308,7 @@ class VulkanTexture2D
 {
 public:
 	VulkanTexture2D();
-	Result init(VulkanDeviceContext* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData);
+	Result init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData);
     virtual void dispose();
 	virtual DeviceTextureType type() const { return DeviceTextureType::Texture2D; }
 	virtual SizeI realSize() { return m_size; }
@@ -320,7 +320,7 @@ public:
     virtual const VulkanImage* image() const override { return &m_image; }
 
 private:
-	VulkanDeviceContext* m_deviceContext;
+	VulkanDevice* m_deviceContext;
     VulkanImage m_image;
 	SizeI m_size;
 	TextureFormat m_format;
@@ -332,8 +332,8 @@ class VulkanRenderTarget
 {
 public:
 	VulkanRenderTarget();
-    Result init(VulkanDeviceContext* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
-	Result init(VulkanDeviceContext* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView);
+    Result init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
+	Result init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView);
     virtual void dispose() override;
 	virtual DeviceTextureType type() const { return DeviceTextureType::RenderTarget; }
 	virtual SizeI realSize() { return m_size; }
@@ -352,7 +352,7 @@ public:
 	Result reset(uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView);
 
 protected:
-    VulkanDeviceContext* m_deviceContext;
+    VulkanDevice* m_deviceContext;
 	std::unique_ptr<VulkanImage> m_image;
 	SizeI m_size;
 	TextureFormat m_format;
@@ -373,7 +373,7 @@ protected:
 //{
 //public:
 //    VulkanSwapchainRenderTargetTexture();
-//    Result init(VulkanDeviceContext* deviceContext);
+//    Result init(VulkanDevice* deviceContext);
 //    virtual void dispose();
 //    virtual DeviceTextureType type() const { return DeviceTextureType::Texture2D; }
 //    virtual SizeI realSize() { return m_size; }
@@ -393,7 +393,7 @@ protected:
 //private:
 //    void clear();
 //
-//    VulkanDeviceContext* m_deviceContext;
+//    VulkanDevice* m_deviceContext;
 //    std::vector<std::shared_ptr<VulkanImage>> m_images;
 //    SizeI m_size;
 //    TextureFormat m_format;
@@ -412,12 +412,12 @@ class VulkanDepthBuffer
 {
 public:
     VulkanDepthBuffer();
-    Result init(VulkanDeviceContext* deviceContext, uint32_t width, uint32_t height);
+    Result init(VulkanDevice* deviceContext, uint32_t width, uint32_t height);
     void dispose();
     const VulkanImage* image() const { return &m_image; }
 
 private:
-    VulkanDeviceContext* m_deviceContext;
+    VulkanDevice* m_deviceContext;
     VulkanImage m_image;
 };
 
@@ -426,13 +426,13 @@ class VulkanSamplerState
 {
 public:
 	VulkanSamplerState();
-	Result init(VulkanDeviceContext* deviceContext, const SamplerStateData& desc);
+	Result init(VulkanDevice* deviceContext, const SamplerStateData& desc);
 	virtual void dispose() override;
 
     VkSampler vulkanSampler() const { return m_sampler; }
 
 private:
-	VulkanDeviceContext* m_deviceContext;
+	VulkanDevice* m_deviceContext;
 	VkSampler m_sampler;
 };
 
@@ -442,7 +442,7 @@ class VulkanShaderPass
 {
 public:
     VulkanShaderPass();
-    Result init(VulkanDeviceContext* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
+    Result init(VulkanDevice* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
     void dispose();
     virtual int getUniformBufferCount() const override { return m_uniformBuffers.size(); }
     virtual IShaderUniformBuffer* getUniformBuffer(int index) const override;
@@ -465,7 +465,7 @@ public:
     VulkanDescriptorSetsPool* recodingPool = nullptr; // CommandBuffer に対する、いわゆる UserData のイメージ
 
 private:
-    VulkanDeviceContext* m_deviceContext;
+    VulkanDevice* m_deviceContext;
     VkShaderModule m_vertShaderModule;
     VkShaderModule m_fragShaderModule;
     std::string m_vertEntryPointName;
@@ -487,7 +487,7 @@ class VulkanShaderUniformBuffer
 {
 public:
 	VulkanShaderUniformBuffer();
-	Result init(VulkanDeviceContext* deviceContext, const std::string& name, size_t size, const std::vector<ShaderUniformInfo>& members);
+	Result init(VulkanDevice* deviceContext, const std::string& name, size_t size, const std::vector<ShaderUniformInfo>& members);
 	virtual void dispose() override;
 
 	virtual const std::string& name() const override { return m_name; }

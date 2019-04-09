@@ -763,7 +763,7 @@ int VulkanHelper::getPrimitiveVertexCount(PrimitiveTopology primitive, int primi
     }
 }
 
-Result VulkanHelper::createImageView(VulkanDeviceContext* deviceContext, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, VkImageView* outView)
+Result VulkanHelper::createImageView(VulkanDevice* deviceContext, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, VkImageView* outView)
 {
     LN_DCHECK(deviceContext);
 
@@ -983,7 +983,7 @@ VulkanBuffer::VulkanBuffer()
 {
 }
 
-Result VulkanBuffer::init(VulkanDeviceContext* deviceContext, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, const VkAllocationCallbacks* allocator)
+Result VulkanBuffer::init(VulkanDevice* deviceContext, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, const VkAllocationCallbacks* allocator)
 {
     LN_CHECK(!m_deviceContext);
 	if (LN_REQUIRE(deviceContext)) return false;
@@ -1028,7 +1028,7 @@ Result VulkanBuffer::init(VulkanDeviceContext* deviceContext, VkDeviceSize size,
     return true;
 }
 
-//Result VulkanBuffer::init(VulkanDeviceContext* deviceContext)
+//Result VulkanBuffer::init(VulkanDevice* deviceContext)
 //{
 //	if (LN_REQUIRE(deviceContext)) return false;
 //	m_deviceContext = deviceContext;
@@ -1130,7 +1130,7 @@ VulkanImage::VulkanImage()
 {
 }
 
-Result VulkanImage::init(VulkanDeviceContext* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags)
+Result VulkanImage::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags)
 {
 	LN_DCHECK(deviceContext);
 	m_deviceContext = deviceContext;
@@ -1189,7 +1189,7 @@ Result VulkanImage::init(VulkanDeviceContext* deviceContext, uint32_t width, uin
 	return true;
 }
 
-Result VulkanImage::init(VulkanDeviceContext* deviceContext/*, uint32_t width, uint32_t height*/, VkFormat format, VkImage image, VkImageView imageView)
+Result VulkanImage::init(VulkanDevice* deviceContext/*, uint32_t width, uint32_t height*/, VkFormat format, VkImage image, VkImageView imageView)
 {
     LN_DCHECK(deviceContext);
     m_externalManagement = true;
@@ -1231,7 +1231,7 @@ VulkanCommandBuffer::~VulkanCommandBuffer()
 {
 }
 
-Result VulkanCommandBuffer::init(VulkanDeviceContext* deviceContext)
+Result VulkanCommandBuffer::init(VulkanDevice* deviceContext)
 {
 	if (LN_REQUIRE(deviceContext)) return false;
     m_deviceContext = deviceContext;
@@ -1502,7 +1502,7 @@ VulkanDescriptorSetsPool::VulkanDescriptorSetsPool()
 
 }
 
-Result VulkanDescriptorSetsPool::init(VulkanDeviceContext* deviceContext, VulkanShaderPass* owner)
+Result VulkanDescriptorSetsPool::init(VulkanDevice* deviceContext, VulkanShaderPass* owner)
 {
     LN_DCHECK(deviceContext);
     LN_DCHECK(owner);
@@ -1605,7 +1605,7 @@ VulkanRenderPassCache::VulkanRenderPassCache()
 {
 }
 
-Result VulkanRenderPassCache::init(VulkanDeviceContext* deviceContext)
+Result VulkanRenderPassCache::init(VulkanDevice* deviceContext)
 {
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
@@ -1844,7 +1844,7 @@ VulkanFramebuffer::VulkanFramebuffer()
 {
 }
 
-Result VulkanFramebuffer::init(VulkanDeviceContext* deviceContext, const DeviceFramebufferState& state/*, bool loadOpClear*/, uint64_t hash)
+Result VulkanFramebuffer::init(VulkanDevice* deviceContext, const DeviceFramebufferState& state/*, bool loadOpClear*/, uint64_t hash)
 {
     m_deviceContext = deviceContext;
     m_hash = hash;
@@ -1928,7 +1928,7 @@ VulkanFramebufferCache::VulkanFramebufferCache()
 {
 }
 
-Result VulkanFramebufferCache::init(VulkanDeviceContext* deviceContext)
+Result VulkanFramebufferCache::init(VulkanDevice* deviceContext)
 {
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
@@ -1964,7 +1964,7 @@ VulkanPipeline::VulkanPipeline()
 {
 }
 
-Result VulkanPipeline::init(VulkanDeviceContext* deviceContext, const GraphicsContextState& state, VkRenderPass renderPass)
+Result VulkanPipeline::init(VulkanDevice* deviceContext, const GraphicsContextState& state, VkRenderPass renderPass)
 {
     LN_DCHECK(deviceContext);
     LN_DCHECK(renderPass);
@@ -2234,7 +2234,7 @@ VulkanPipelineCache::VulkanPipelineCache()
 {
 }
 
-Result VulkanPipelineCache::init(VulkanDeviceContext* deviceContext)
+Result VulkanPipelineCache::init(VulkanDevice* deviceContext)
 {
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;

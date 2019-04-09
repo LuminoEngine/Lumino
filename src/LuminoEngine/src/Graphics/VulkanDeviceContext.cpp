@@ -58,16 +58,16 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
 
 
 //==============================================================================
-// VulkanDeviceContext
+// VulkanDevice
 
-VulkanDeviceContext::VulkanDeviceContext()
+VulkanDevice::VulkanDevice()
     : m_instance(VK_NULL_HANDLE)
     , m_debugMessenger(VK_NULL_HANDLE)
 	, m_graphicsContext(nullptr)
 {
 }
 
-bool VulkanDeviceContext::init(const Settings& settings, bool* outIsDriverSupported)
+bool VulkanDevice::init(const Settings& settings, bool* outIsDriverSupported)
 {
 	if (LN_REQUIRE(outIsDriverSupported)) return false;
 	*outIsDriverSupported = true;
@@ -112,7 +112,7 @@ bool VulkanDeviceContext::init(const Settings& settings, bool* outIsDriverSuppor
 	return true;
 }
 
-void VulkanDeviceContext::dispose()
+void VulkanDevice::dispose()
 {
     // まずは CommandBuffer の dispose() を行う。
     // CommandBuffer は最後に Submit した時、コマンドリストが参照しているリソースを開放しないように、影響リソースの参照を持っている。
@@ -151,35 +151,35 @@ void VulkanDeviceContext::dispose()
     }
 }
 
-IGraphicsContext* VulkanDeviceContext::getGraphicsContext() const
+IGraphicsContext* VulkanDevice::getGraphicsContext() const
 {
 	return m_graphicsContext;
 }
 
-void VulkanDeviceContext::onGetCaps(GraphicsDeviceCaps * outCaps)
+void VulkanDevice::onGetCaps(GraphicsDeviceCaps * outCaps)
 {
     outCaps->requestedShaderTriple.target = "spv";
     outCaps->requestedShaderTriple.version = 110;
     outCaps->requestedShaderTriple.option = "";
 }
 
-void VulkanDeviceContext::onEnterMainThread()
+void VulkanDevice::onEnterMainThread()
 {
 }
 
-void VulkanDeviceContext::onLeaveMainThread() 
+void VulkanDevice::onLeaveMainThread() 
 {
 }
 
-void VulkanDeviceContext::onSaveExternalRenderState()
+void VulkanDevice::onSaveExternalRenderState()
 {
 }
 
-void VulkanDeviceContext::onRestoreExternalRenderState()
+void VulkanDevice::onRestoreExternalRenderState()
 {
 }
 
-Ref<ISwapChain> VulkanDeviceContext::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
+Ref<ISwapChain> VulkanDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
 {
 	auto ptr = makeRef<VulkanSwapChain>();
     if (!ptr->init(this, window, backbufferSize)) {
@@ -199,7 +199,7 @@ Ref<ISwapChain> VulkanDeviceContext::onCreateSwapChain(PlatformWindow* window, c
 	return ptr;
 }
 
-Ref<IVertexDeclaration> VulkanDeviceContext::onCreateVertexDeclaration(const VertexElement* elements, int elementsCount)
+Ref<IVertexDeclaration> VulkanDevice::onCreateVertexDeclaration(const VertexElement* elements, int elementsCount)
 {
     auto ptr = makeRef<VulkanVertexDeclaration>();
     if (!ptr->init(elements, elementsCount)) {
@@ -208,7 +208,7 @@ Ref<IVertexDeclaration> VulkanDeviceContext::onCreateVertexDeclaration(const Ver
     return ptr;
 }
 
-Ref<IVertexBuffer> VulkanDeviceContext::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
+Ref<IVertexBuffer> VulkanDevice::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
 {
     auto ptr = makeRef<VulkanVertexBuffer>();
     if (!ptr->init(this, usage, bufferSize, initialData)) {
@@ -217,7 +217,7 @@ Ref<IVertexBuffer> VulkanDeviceContext::onCreateVertexBuffer(GraphicsResourceUsa
 	return ptr;
 }
 
-Ref<IIndexBuffer> VulkanDeviceContext::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
+Ref<IIndexBuffer> VulkanDevice::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
 {
     auto ptr = makeRef<VulkanIndexBuffer>();
     if (!ptr->init(this, usage, format, indexCount, initialData)) {
@@ -226,7 +226,7 @@ Ref<IIndexBuffer> VulkanDeviceContext::onCreateIndexBuffer(GraphicsResourceUsage
 	return ptr;
 }
 
-Ref<ITexture> VulkanDeviceContext::onCreateTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
+Ref<ITexture> VulkanDevice::onCreateTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
     auto ptr = makeRef<VulkanTexture2D>();
     if (!ptr->init(this, width, height, requestFormat, mipmap, initialData)) {
@@ -235,13 +235,13 @@ Ref<ITexture> VulkanDeviceContext::onCreateTexture2D(uint32_t width, uint32_t he
 	return ptr;
 }
 
-Ref<ITexture> VulkanDeviceContext::onCreateTexture3D(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
+Ref<ITexture> VulkanDevice::onCreateTexture3D(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
 	LN_NOTIMPLEMENTED();
 	return nullptr;
 }
 
-Ref<ITexture> VulkanDeviceContext::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
+Ref<ITexture> VulkanDevice::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
 {
     auto ptr = makeRef<VulkanRenderTarget>();
     if (!ptr->init(this, width, height, requestFormat, mipmap)) {
@@ -250,7 +250,7 @@ Ref<ITexture> VulkanDeviceContext::onCreateRenderTarget(uint32_t width, uint32_t
     return ptr;
 }
 
-Ref<IDepthBuffer> VulkanDeviceContext::onCreateDepthBuffer(uint32_t width, uint32_t height)
+Ref<IDepthBuffer> VulkanDevice::onCreateDepthBuffer(uint32_t width, uint32_t height)
 {
 	auto ptr = makeRef<VulkanDepthBuffer>();
     if (!ptr->init(this, width, height)) {
@@ -259,7 +259,7 @@ Ref<IDepthBuffer> VulkanDeviceContext::onCreateDepthBuffer(uint32_t width, uint3
 	return ptr;
 }
 
-Ref<ISamplerState> VulkanDeviceContext::onCreateSamplerState(const SamplerStateData& desc)
+Ref<ISamplerState> VulkanDevice::onCreateSamplerState(const SamplerStateData& desc)
 {
 	auto ptr = makeRef<VulkanSamplerState>();
 	if (!ptr->init(this, desc)) {
@@ -268,7 +268,7 @@ Ref<ISamplerState> VulkanDeviceContext::onCreateSamplerState(const SamplerStateD
 	return ptr;
 }
 
-Ref<IShaderPass> VulkanDeviceContext::onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag)
+Ref<IShaderPass> VulkanDevice::onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag)
 {
     auto ptr = makeRef<VulkanShaderPass>();
     if (!ptr->init(this, createInfo, diag)) {
@@ -277,7 +277,7 @@ Ref<IShaderPass> VulkanDeviceContext::onCreateShaderPass(const ShaderPassCreateI
     return ptr;
 }
 
-Result VulkanDeviceContext::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType)
+Result VulkanDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType)
 {
     VkPhysicalDeviceMemoryProperties memProperties;
     vkGetPhysicalDeviceMemoryProperties(m_physicalDevice, &memProperties);
@@ -310,7 +310,7 @@ Result VulkanDeviceContext::findMemoryType(uint32_t typeFilter, VkMemoryProperty
 //    return extensions;
 //}
 //
-Result VulkanDeviceContext::createInstance()
+Result VulkanDevice::createInstance()
 {
     if (enableValidationLayers && !VulkanHelper::checkValidationLayerSupport()) {
         LN_LOG_ERROR << "validation layers requested, but not available!";
@@ -370,7 +370,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityF
 	return VK_FALSE;
 }
 
-Result VulkanDeviceContext::setupDebugMessenger()
+Result VulkanDevice::setupDebugMessenger()
 {
     if (enableValidationLayers)
     {
@@ -386,7 +386,7 @@ Result VulkanDeviceContext::setupDebugMessenger()
 	return true;
 }
 
-Result VulkanDeviceContext::pickPhysicalDevice()
+Result VulkanDevice::pickPhysicalDevice()
 {
     // Get physical devices
     {
@@ -424,7 +424,7 @@ Result VulkanDeviceContext::pickPhysicalDevice()
     return true;
 }
 
-Result VulkanDeviceContext::createLogicalDevice()
+Result VulkanDevice::createLogicalDevice()
 {
 	//QueueFamilyIndices indices = findQueueFamilies(vulkanPhysicalDevice());
 
@@ -562,7 +562,7 @@ Result VulkanDeviceContext::createLogicalDevice()
 	return true;
 }
 
-Result VulkanDeviceContext::createCommandPool()
+Result VulkanDevice::createCommandPool()
 {
     //QueueFamilyIndices queueFamilyIndices = findQueueFamilies(vulkanPhysicalDevice());
 
@@ -579,7 +579,7 @@ Result VulkanDeviceContext::createCommandPool()
 }
 
 
-//QueueFamilyIndices VulkanDeviceContext::findQueueFamilies(VkPhysicalDevice device)
+//QueueFamilyIndices VulkanDevice::findQueueFamilies(VkPhysicalDevice device)
 //{
 //	QueueFamilyIndices indices;
 //
@@ -605,7 +605,7 @@ Result VulkanDeviceContext::createCommandPool()
 //	return indices;
 //}
 
-bool VulkanDeviceContext::findPresentQueueFamily(VkSurfaceKHR surface, uint32_t* outIndex)
+bool VulkanDevice::findPresentQueueFamily(VkSurfaceKHR surface, uint32_t* outIndex)
 {
     uint32_t queueFamilyCount = 0;
     vkGetPhysicalDeviceQueueFamilyProperties(m_physicalDevice, &queueFamilyCount, nullptr);
@@ -624,7 +624,7 @@ bool VulkanDeviceContext::findPresentQueueFamily(VkSurfaceKHR surface, uint32_t*
     return false;
 }
 
-VkFormat VulkanDeviceContext::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features)
+VkFormat VulkanDevice::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features)
 {
     for (VkFormat format : candidates) {
         VkFormatProperties props;
@@ -642,7 +642,7 @@ VkFormat VulkanDeviceContext::findSupportedFormat(const std::vector<VkFormat>& c
     return VK_FORMAT_UNDEFINED;
 }
 
-VkFormat VulkanDeviceContext::findDepthFormat()
+VkFormat VulkanDevice::findDepthFormat()
 {
     // Stencil 要素を含むフォーマットでないと、そもそもステンシルテスト自体が行われない (ので、Never を指定しても描画される)
 	// VK_FORMAT_D24_UNORM_S8_UINT が一般的そうだけど、Radeon Vega 8 Mobile では使えなかった。
@@ -653,7 +653,7 @@ VkFormat VulkanDeviceContext::findDepthFormat()
     );
 }
 
-VkCommandBuffer VulkanDeviceContext::beginSingleTimeCommands()
+VkCommandBuffer VulkanDevice::beginSingleTimeCommands()
 {
     VkCommandBufferAllocateInfo allocInfo = {};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -673,7 +673,7 @@ VkCommandBuffer VulkanDeviceContext::beginSingleTimeCommands()
     return commandBuffer;
 }
 
-Result VulkanDeviceContext::endSingleTimeCommands(VkCommandBuffer commandBuffer)
+Result VulkanDevice::endSingleTimeCommands(VkCommandBuffer commandBuffer)
 {
     vkEndCommandBuffer(commandBuffer);
 
@@ -690,7 +690,7 @@ Result VulkanDeviceContext::endSingleTimeCommands(VkCommandBuffer commandBuffer)
     return true;
 }
 
-void VulkanDeviceContext::copyBufferImmediately(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
+void VulkanDevice::copyBufferImmediately(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
 {
     VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
@@ -701,7 +701,7 @@ void VulkanDeviceContext::copyBufferImmediately(VkBuffer srcBuffer, VkBuffer dst
     endSingleTimeCommands(commandBuffer);
 }
 
-void VulkanDeviceContext::copyBufferToImageImmediately(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)
+void VulkanDevice::copyBufferToImageImmediately(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)
 {
     VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
@@ -725,7 +725,7 @@ void VulkanDeviceContext::copyBufferToImageImmediately(VkBuffer buffer, VkImage 
     endSingleTimeCommands(commandBuffer);
 }
 
-Result VulkanDeviceContext::transitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
+Result VulkanDevice::transitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
 {
     VkImageMemoryBarrier barrier = {};
     barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -808,7 +808,7 @@ Result VulkanDeviceContext::transitionImageLayout(VkCommandBuffer commandBuffer,
     return true;
 }
 
-Result VulkanDeviceContext::transitionImageLayoutImmediately(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
+Result VulkanDevice::transitionImageLayoutImmediately(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
 {
     VkCommandBuffer commandBuffer = beginSingleTimeCommands();
     Result result = transitionImageLayout(commandBuffer, image, format, oldLayout, newLayout);
@@ -827,7 +827,7 @@ VulkanGraphicsContext::VulkanGraphicsContext()
 {
 }
 
-Result VulkanGraphicsContext::init(VulkanDeviceContext* owner)
+Result VulkanGraphicsContext::init(VulkanDevice* owner)
 {
 	LN_CHECK(owner);
 	IGraphicsContext::init(owner);
@@ -1240,7 +1240,7 @@ Result VulkanGraphicsContext::submitStatusInternal(GraphicsContextSubmitSource s
 	return true;
 }
 
-//Result VulkanDeviceContext::submitStatus(const State& state)
+//Result VulkanDevice::submitStatus(const State& state)
 //{
 //
 //}
@@ -1252,7 +1252,7 @@ VulkanSwapChain::VulkanSwapChain()
 {
 }
 
-Result VulkanSwapChain::init(VulkanDeviceContext* deviceContext, PlatformWindow* window, const SizeI& backbufferSize)
+Result VulkanSwapChain::init(VulkanDevice* deviceContext, PlatformWindow* window, const SizeI& backbufferSize)
 {
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
@@ -1684,7 +1684,7 @@ VulkanVertexBuffer::VulkanVertexBuffer()
 {
 }
 
-Result VulkanVertexBuffer::init(VulkanDeviceContext* deviceContext, GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
+Result VulkanVertexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
 {
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
@@ -1764,7 +1764,7 @@ VulkanIndexBuffer::VulkanIndexBuffer()
 {
 }
 
-Result VulkanIndexBuffer::init(VulkanDeviceContext* deviceContext, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
+Result VulkanIndexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
 {
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
@@ -1820,7 +1820,7 @@ VulkanTexture2D::VulkanTexture2D()
 {
 }
 
-Result VulkanTexture2D::init(VulkanDeviceContext* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
+Result VulkanTexture2D::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
 	LN_DCHECK(deviceContext);
 	m_deviceContext = deviceContext;
@@ -1916,7 +1916,7 @@ VulkanRenderTarget::VulkanRenderTarget()
 {
 }
 
-Result VulkanRenderTarget::init(VulkanDeviceContext* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
+Result VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
 {
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
@@ -1981,7 +1981,7 @@ Result VulkanRenderTarget::init(VulkanDeviceContext* deviceContext, uint32_t wid
     return true;
 }
 
-Result VulkanRenderTarget::init(VulkanDeviceContext* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView)
+Result VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImage image, VkImageView imageView)
 {
 	LN_DCHECK(deviceContext);
 	m_deviceContext = deviceContext;
@@ -2169,7 +2169,7 @@ Exit:
 //{
 //}
 //
-//Result VulkanSwapchainRenderTargetTexture::init(VulkanDeviceContext* deviceContext)
+//Result VulkanSwapchainRenderTargetTexture::init(VulkanDevice* deviceContext)
 //{
 //    LN_DCHECK(deviceContext);
 //    m_deviceContext = deviceContext;
@@ -2223,7 +2223,7 @@ VulkanDepthBuffer::VulkanDepthBuffer()
 {
 }
 
-Result VulkanDepthBuffer::init(VulkanDeviceContext* deviceContext, uint32_t width, uint32_t height)
+Result VulkanDepthBuffer::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height)
 {
     LN_DCHECK(deviceContext);
     if (LN_REQUIRE(width > 0)) return false;
@@ -2263,7 +2263,7 @@ VulkanSamplerState::VulkanSamplerState()
 {
 }
 
-Result VulkanSamplerState::init(VulkanDeviceContext* deviceContext, const SamplerStateData& desc)
+Result VulkanSamplerState::init(VulkanDevice* deviceContext, const SamplerStateData& desc)
 {
 	LN_DCHECK(deviceContext);
 	m_deviceContext = deviceContext;
@@ -2309,7 +2309,7 @@ VulkanShaderPass::VulkanShaderPass()
 {
 }
 
-Result VulkanShaderPass::init(VulkanDeviceContext* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag)
+Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag)
 {
     LN_DCHECK(deviceContext);
     m_deviceContext = deviceContext;
@@ -2652,7 +2652,7 @@ VulkanShaderUniformBuffer::VulkanShaderUniformBuffer()
 {
 }
 
-Result VulkanShaderUniformBuffer::init(VulkanDeviceContext* deviceContext, const std::string& name, size_t size, const std::vector<ShaderUniformInfo>& members)
+Result VulkanShaderUniformBuffer::init(VulkanDevice* deviceContext, const std::string& name, size_t size, const std::vector<ShaderUniformInfo>& members)
 {
 	m_name = name;
 	if (m_name == "$Global") {

@@ -170,9 +170,9 @@ public:
 
 
 //=============================================================================
-// OpenGLDeviceContext
+// OpenGLDevice
 
-OpenGLDeviceContext::OpenGLDeviceContext()
+OpenGLDevice::OpenGLDevice()
 	: m_glContext(nullptr)
 	, m_uniformTempBuffer()
 	, m_uniformTempBufferWriter(&m_uniformTempBuffer)
@@ -180,7 +180,7 @@ OpenGLDeviceContext::OpenGLDeviceContext()
 {
 }
 
-void OpenGLDeviceContext::init(const Settings& settings)
+void OpenGLDevice::init(const Settings& settings)
 {
 	LN_LOG_DEBUG << "OpenGLDeviceContext::init start";
 
@@ -232,7 +232,7 @@ void OpenGLDeviceContext::init(const Settings& settings)
 	LN_LOG_DEBUG << "OpenGLDeviceContext::init end";
 }
 
-void OpenGLDeviceContext::dispose()
+void OpenGLDevice::dispose()
 {
 	if (m_graphicsContext) {
 		m_graphicsContext->dispose();
@@ -242,7 +242,7 @@ void OpenGLDeviceContext::dispose()
     IGraphicsDevice::dispose();
 }
 
-void OpenGLDeviceContext::setActiveShaderPass(GLShaderPass* pass)
+void OpenGLDevice::setActiveShaderPass(GLShaderPass* pass)
 {
 	if (m_activeShaderPass != pass) {
 		m_activeShaderPass = pass;
@@ -250,12 +250,12 @@ void OpenGLDeviceContext::setActiveShaderPass(GLShaderPass* pass)
 	}
 }
 
-IGraphicsContext* OpenGLDeviceContext::getGraphicsContext() const
+IGraphicsContext* OpenGLDevice::getGraphicsContext() const
 {
 	return m_graphicsContext;
 }
 
-void OpenGLDeviceContext::onGetCaps(GraphicsDeviceCaps* outCaps)
+void OpenGLDevice::onGetCaps(GraphicsDeviceCaps* outCaps)
 {
 #ifdef LN_GRAPHICS_OPENGLES
 	outCaps->requestedShaderTriple.target = "glsl";
@@ -268,23 +268,23 @@ void OpenGLDeviceContext::onGetCaps(GraphicsDeviceCaps* outCaps)
 #endif
 }
 
-void OpenGLDeviceContext::onEnterMainThread()
+void OpenGLDevice::onEnterMainThread()
 {
 	//m_glContext->makeCurrent();
 }
 
-void OpenGLDeviceContext::onLeaveMainThread()
+void OpenGLDevice::onLeaveMainThread()
 {
 	//m_glContext->makeCurrent();
 	setActiveShaderPass(nullptr);
 }
 
-void OpenGLDeviceContext::onSaveExternalRenderState()
+void OpenGLDevice::onSaveExternalRenderState()
 {
 	GL_CHECK(glGetBooleanv(GL_CULL_FACE, &m_savedState.state_GL_CULL_FACE));
 }
 
-void OpenGLDeviceContext::onRestoreExternalRenderState()
+void OpenGLDevice::onRestoreExternalRenderState()
 {
 	if (m_savedState.state_GL_CULL_FACE) {
 		GL_CHECK(glEnable(GL_CULL_FACE));
@@ -296,68 +296,68 @@ void OpenGLDeviceContext::onRestoreExternalRenderState()
 	GL_CHECK(glBindVertexArray(0));
 }
 
-Ref<ISwapChain> OpenGLDeviceContext::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
+Ref<ISwapChain> OpenGLDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
 {
 	return m_glContext->createSwapChain(window, backbufferSize);
 }
 
-Ref<IVertexDeclaration> OpenGLDeviceContext::onCreateVertexDeclaration(const VertexElement* elements, int elementsCount)
+Ref<IVertexDeclaration> OpenGLDevice::onCreateVertexDeclaration(const VertexElement* elements, int elementsCount)
 {
 	auto ptr = makeRef<GLVertexDeclaration>();
 	ptr->init(elements, elementsCount);
 	return ptr;
 }
 
-Ref<IVertexBuffer> OpenGLDeviceContext::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
+Ref<IVertexBuffer> OpenGLDevice::onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData)
 {
 	auto ptr = makeRef<GLVertexBuffer>();
 	ptr->init(usage, bufferSize, initialData);
 	return ptr;
 }
 
-Ref<IIndexBuffer> OpenGLDeviceContext::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
+Ref<IIndexBuffer> OpenGLDevice::onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData)
 {
 	auto ptr = makeRef<GLIndexBuffer>();
 	ptr->init(usage, format, indexCount, initialData);
 	return ptr;
 }
 
-Ref<ITexture> OpenGLDeviceContext::onCreateTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
+Ref<ITexture> OpenGLDevice::onCreateTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
 	auto ptr = makeRef<GLTexture2D>();
 	ptr->init(width, height, requestFormat, mipmap, initialData);
 	return ptr;
 }
 
-Ref<ITexture> OpenGLDeviceContext::onCreateTexture3D(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
+Ref<ITexture> OpenGLDevice::onCreateTexture3D(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
 	auto ptr = makeRef<GLTexture3D>();
 	ptr->init(width, height, depth, requestFormat, mipmap, initialData);
 	return ptr;
 }
 
-Ref<ITexture> OpenGLDeviceContext::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
+Ref<ITexture> OpenGLDevice::onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
 {
 	auto ptr = makeRef<GLRenderTargetTexture>();
 	ptr->init(width, height, requestFormat, mipmap);
 	return ptr;
 }
 
-Ref<IDepthBuffer> OpenGLDeviceContext::onCreateDepthBuffer(uint32_t width, uint32_t height)
+Ref<IDepthBuffer> OpenGLDevice::onCreateDepthBuffer(uint32_t width, uint32_t height)
 {
 	auto ptr = makeRef<GLDepthBuffer>();
 	ptr->init(width, height);
 	return ptr;
 }
 
-Ref<ISamplerState> OpenGLDeviceContext::onCreateSamplerState(const SamplerStateData& desc)
+Ref<ISamplerState> OpenGLDevice::onCreateSamplerState(const SamplerStateData& desc)
 {
 	auto ptr = makeRef<GLSamplerState>();
 	ptr->init(desc);
 	return ptr;
 }
 
-Ref<IShaderPass> OpenGLDeviceContext::onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag)
+Ref<IShaderPass> OpenGLDevice::onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag)
 {
 	auto ptr = makeRef<GLShaderPass>();
 	ptr->init(this, createInfo.vsCode, createInfo.vsCodeLen, createInfo.psCode, createInfo.psCodeLen, diag);
@@ -376,7 +376,7 @@ GLGraphicsContext::GLGraphicsContext()
 {
 }
 
-Result GLGraphicsContext::init(OpenGLDeviceContext* owner)
+Result GLGraphicsContext::init(OpenGLDevice* owner)
 {
 	LN_CHECK(owner);
 	IGraphicsContext::init(owner);
@@ -1762,7 +1762,7 @@ GLShaderPass::~GLShaderPass()
 {
 }
 
-void GLShaderPass::init(OpenGLDeviceContext* context, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCode, int fsCodeLen, ShaderCompilationDiag* diag)
+void GLShaderPass::init(OpenGLDevice* context, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCode, int fsCodeLen, ShaderCompilationDiag* diag)
 {
 	m_context = context;
 
@@ -2160,7 +2160,7 @@ void GLShaderUniform::dispose()
 	IShaderUniform::dispose();
 }
 
-void GLShaderUniform::setUniformValue(OpenGLDeviceContext* context, const void* data, size_t size)
+void GLShaderUniform::setUniformValue(OpenGLDevice* context, const void* data, size_t size)
 {
 	LN_CHECK(context);
 	LN_CHECK(data);

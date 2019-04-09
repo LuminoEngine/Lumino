@@ -19,7 +19,7 @@
  *
  * マルチスレッドについて
  * ----------
- * OpenGLDeviceContext はマルチスレッドレンダリングをサポートしない。
+ * OpenGLDevice はマルチスレッドレンダリングをサポートしない。
  * 大きな理由は、マルチスレッドでの動作がちゃんと規格化されていないから。
  * プラットフォーム間での差が激しく、カバーしきれない。
  *
@@ -99,7 +99,7 @@ class GLShaderUniformBuffer;
 class GLShaderUniform;
 class GLLocalShaderSamplerBuffer;
 
-class OpenGLDeviceContext
+class OpenGLDevice
 	: public IGraphicsDevice
 {
 public:
@@ -115,8 +115,8 @@ public:
 		GLint MAX_COLOR_ATTACHMENTS = 0;
 	};
 
-	OpenGLDeviceContext();
-	virtual ~OpenGLDeviceContext() = default;
+	OpenGLDevice();
+	virtual ~OpenGLDevice() = default;
 
 	void init(const Settings& settings);
 	virtual void dispose() override;
@@ -169,7 +169,7 @@ class GLGraphicsContext
 {
 public:
 	GLGraphicsContext();
-	Result init(OpenGLDeviceContext* owner);
+	Result init(OpenGLDevice* owner);
 	void dispose();
 
 protected:
@@ -195,7 +195,7 @@ protected:
 private:
 	static void getPrimitiveInfo(PrimitiveTopology primitive, int primitiveCount, GLenum* gl_prim, int* vertexCount);
 
-	OpenGLDeviceContext* m_device;
+	OpenGLDevice* m_device;
 	GLuint m_vao;	// https://www.khronos.org/opengl/wiki/Vertex_Specification#Index_buffers
 	GLuint m_fbo;
 	GLIndexBuffer* m_currentIndexBuffer;
@@ -520,7 +520,7 @@ class GLShaderPass
 public:
 	GLShaderPass();
     virtual ~GLShaderPass();
-	void init(OpenGLDeviceContext* context, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag);
+	void init(OpenGLDevice* context, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag);
 	virtual void dispose() override;
 
 	GLuint program() const { return m_program; }
@@ -538,7 +538,7 @@ public:
 private:
 	void buildUniforms();
 
-	OpenGLDeviceContext* m_context;
+	OpenGLDevice* m_context;
 	GLuint m_program;
 	List<Ref<GLShaderUniformBuffer>> m_uniformBuffers;
 	List<Ref<GLShaderUniform>> m_uniforms;
@@ -581,7 +581,7 @@ public:
 	virtual const ShaderUniformTypeDesc& desc() const override { return m_desc; }
 	virtual const std::string& name() const override { return m_name; }
 
-	void setUniformValue(OpenGLDeviceContext* context, const void* data, size_t size);
+	void setUniformValue(OpenGLDevice* context, const void* data, size_t size);
 
 	//GLint offsetOnBuffer() const {}
 	//GLint sizeOnBuffer() const;

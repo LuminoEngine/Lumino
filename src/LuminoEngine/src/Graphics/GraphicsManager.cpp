@@ -219,9 +219,9 @@ void GraphicsManager::removeGraphicsResource(GraphicsResource* resource)
 
 void GraphicsManager::createOpenGLContext(const Settings& settings)
 {
-	OpenGLDeviceContext::Settings openglSettings;
+	OpenGLDevice::Settings openglSettings;
 	openglSettings.mainWindow = settings.mainWindow;
-	auto ctx = makeRef<OpenGLDeviceContext>();
+	auto ctx = makeRef<OpenGLDevice>();
 	ctx->init(openglSettings);
 	m_deviceContext = ctx;
 }
@@ -236,10 +236,10 @@ void GraphicsManager::createVulkanContext(const Settings& settings)
 	ctx->init(dcSettings);
 	m_deviceContext = ctx;
 #else
-	VulkanDeviceContext::Settings dcSettings;
+	VulkanDevice::Settings dcSettings;
     dcSettings.mainWindow = settings.mainWindow;
 	//dcSettings.debugEnabled = true;
-	auto ctx = makeRef<VulkanDeviceContext>();
+	auto ctx = makeRef<VulkanDevice>();
 	bool driverSupported = false;
 	if (!ctx->init(dcSettings, &driverSupported)) {
 		if (!driverSupported) {

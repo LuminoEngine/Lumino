@@ -218,7 +218,7 @@ extern PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR vkGetPhysicalDeviceWin
 
 namespace ln {
 namespace detail {
-class VulkanDeviceContext;
+class VulkanDevice;
 class VulkanVertexDeclaration;
 class VulkanShaderPass;
 class VulkanDescriptorSetsPool;
@@ -259,7 +259,7 @@ public:
     static bool checkValidationLayerSupport();
     static int getPrimitiveVertexCount(PrimitiveTopology primitive, int primitiveCount);
 
-    static Result createImageView(VulkanDeviceContext* deviceContext, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, VkImageView* outView);
+    static Result createImageView(VulkanDevice* deviceContext, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, VkImageView* outView);
     static bool resolveStd140Layout(const ShaderUniformInfo& info, size_t* aligndElemenSize);
 };
 
@@ -329,12 +329,12 @@ class VulkanBuffer
 {
 public:
     VulkanBuffer();
-    Result init(VulkanDeviceContext* deviceContext, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, const VkAllocationCallbacks* allocator);
-	//Result init(VulkanDeviceContext* deviceContext);
+    Result init(VulkanDevice* deviceContext, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, const VkAllocationCallbacks* allocator);
+	//Result init(VulkanDevice* deviceContext);
 	//Result resetBuffer(VkDeviceSize size, VkBufferUsageFlags usage);
 	//Result resetMemoryBuffer(VkMemoryPropertyFlags properties, const VkAllocationCallbacks* allocator);
     void dispose();
-    VulkanDeviceContext* deviceContext() const { return m_deviceContext; }
+    VulkanDevice* deviceContext() const { return m_deviceContext; }
     VkDeviceSize size() const { return m_size; }
     VkBuffer vulkanBuffer() const { return m_buffer; }
     VkDeviceMemory vulkanBufferMemory() const { return m_bufferMemory; }
@@ -343,7 +343,7 @@ public:
     void setData(size_t offset, const void* data, VkDeviceSize size);
 
 private:
-    VulkanDeviceContext* m_deviceContext;
+    VulkanDevice* m_deviceContext;
     VkBuffer m_buffer;
     VkDeviceMemory m_bufferMemory;
     VkDeviceSize m_size;
@@ -355,8 +355,8 @@ class VulkanImage
 {
 public:
 	VulkanImage();
-	Result init(VulkanDeviceContext* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags);
-    Result init(VulkanDeviceContext* deviceContext/*, uint32_t width, uint32_t height*/, VkFormat format, VkImage image, VkImageView imageView);
+	Result init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags);
+    Result init(VulkanDevice* deviceContext/*, uint32_t width, uint32_t height*/, VkFormat format, VkImage image, VkImageView imageView);
     void dispose();
     VkFormat vulkanFormat() const { return m_format; }
 	VkImage vulkanImage() const { return m_image; }
@@ -367,7 +367,7 @@ public:
     //void VulkanSwapchainRenderTargetTexture::reset(const VulkanSwapChain::SwapChainDesc& desc, std::vector<VkImage> images, std::vector<VkImageView> views);
 
 private:
-	VulkanDeviceContext* m_deviceContext;
+	VulkanDevice* m_deviceContext;
     //uint32_t m_width;
     //uint32_t m_height;
     VkFormat m_format;
@@ -385,7 +385,7 @@ class VulkanCommandBuffer
 public:
 	VulkanCommandBuffer();
     ~VulkanCommandBuffer();
-	Result init(VulkanDeviceContext* deviceContext);
+	Result init(VulkanDevice* deviceContext);
 	void dispose();
 
     VkCommandBuffer vulkanCommandBuffer() const { return m_commandBuffer; }
@@ -421,7 +421,7 @@ private:
 	void resetAllocator(size_t pageSize);
 	Result glowStagingBufferPool();
 
-	VulkanDeviceContext* m_deviceContext;
+	VulkanDevice* m_deviceContext;
     VkCommandBuffer m_commandBuffer;
     VkFence m_inFlightFence;
 
@@ -461,7 +461,7 @@ class VulkanDescriptorSetsPool
 {
 public:
     VulkanDescriptorSetsPool();
-    Result init(VulkanDeviceContext* deviceContext, VulkanShaderPass* owner);
+    Result init(VulkanDevice* deviceContext, VulkanShaderPass* owner);
     void dispose();
 
     VulkanShaderPass* owner() const { return m_owner; }
@@ -470,7 +470,7 @@ public:
 
 private:
 	static const uint32_t MAX_DESCRIPTOR_COUNT = 32;
-    VulkanDeviceContext* m_deviceContext;
+    VulkanDevice* m_deviceContext;
     VulkanShaderPass* m_owner;
     //VkDescriptorPool m_descriptorPool;
 
@@ -548,14 +548,14 @@ class VulkanRenderPassCache
 public:
     VulkanRenderPassCache();
     void dispose();
-    Result init(VulkanDeviceContext* deviceContext);
+    Result init(VulkanDevice* deviceContext);
     VkRenderPass findOrCreate(const DeviceFramebufferState& key/*, bool loadOpClear*/);
 
     void onInvalidate(VkRenderPass value);
     static uint64_t computeHash(const DeviceFramebufferState& framebuffer/*, bool loadOpClear*/);
 
 private:
-    VulkanDeviceContext* m_deviceContext;
+    VulkanDevice* m_deviceContext;
 };
 
 // VkFramebuffer と、そのレイアウト定義に相当する VkRenderPass をセットで持つ。
@@ -566,7 +566,7 @@ class VulkanFramebuffer
 {
 public:
     VulkanFramebuffer();
-    Result init(VulkanDeviceContext* deviceContext, const DeviceFramebufferState& state/*, bool loadOpClear*/, uint64_t hash);
+    Result init(VulkanDevice* deviceContext, const DeviceFramebufferState& state/*, bool loadOpClear*/, uint64_t hash);
     void dispose();
     bool containsRenderTarget(ITexture* renderTarget) const;
     bool containsDepthBuffer(IDepthBuffer* depthBuffer) const;
@@ -576,7 +576,7 @@ public:
     //SizeI extent() const { return m_renderTargets[0]->realSize(); }
 
 private:
-    VulkanDeviceContext* m_deviceContext;
+    VulkanDevice* m_deviceContext;
     VkRenderPass m_renderPass;
     VkFramebuffer m_framebuffer;
     uint64_t m_hash;
@@ -595,7 +595,7 @@ class VulkanFramebufferCache
 {
 public:
     VulkanFramebufferCache();
-    Result init(VulkanDeviceContext* deviceContext);
+    Result init(VulkanDevice* deviceContext);
     void dispose();
     VulkanFramebuffer* findOrCreate(const DeviceFramebufferState& key/*, bool loadOpClear*/);
 
@@ -628,7 +628,7 @@ public:
     }
 
 private:
-    VulkanDeviceContext* m_deviceContext;
+    VulkanDevice* m_deviceContext;
 };
 
 // Dynamic としてマークしている state は次の通り。
@@ -643,7 +643,7 @@ class VulkanPipeline
 {
 public:
     VulkanPipeline();
-    Result init(VulkanDeviceContext* deviceContext, const GraphicsContextState& state, VkRenderPass renderPass);
+    Result init(VulkanDevice* deviceContext, const GraphicsContextState& state, VkRenderPass renderPass);
     void dispose();
 
     VkPipeline vulkanPipeline() const { return m_pipeline; }
@@ -654,7 +654,7 @@ public:
     static uint64_t computeHash(const GraphicsContextState& state);
 
 private:
-    VulkanDeviceContext* m_deviceContext;
+    VulkanDevice* m_deviceContext;
     VkPipeline m_pipeline;
     VulkanShaderPass* m_relatedShaderPass;                  // pipeline に関連づいている ShaderPass。これが削除されたらこの pipeline も削除する。
     //VulkanVertexDeclaration* m_relatedVertexDeclaration;    // pipeline に関連づいている VertexDeclaration。これが削除されたらこの pipeline も削除する。
@@ -666,7 +666,7 @@ class VulkanPipelineCache
 {
 public:
     VulkanPipelineCache();
-    Result init(VulkanDeviceContext* deviceContext);
+    Result init(VulkanDevice* deviceContext);
     void dispose();
     // renderPass : この cache は vkCmdBeginRenderPass ～ vkCmdEndRenderPass の間で呼び出し、pipeline を得ることを目的としている。
     // この renderPass は、その間の RenderPass。あらかじめわかっている値を入れることで、Pipeline 作成の中でもう一度検索の必要がないようにする。
@@ -688,7 +688,7 @@ public:
     }
 
 private:
-    VulkanDeviceContext* m_deviceContext;
+    VulkanDevice* m_deviceContext;
 };
 
 } // namespace detail
