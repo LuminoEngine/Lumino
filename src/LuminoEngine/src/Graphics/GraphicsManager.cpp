@@ -136,11 +136,12 @@ void GraphicsManager::init(const Settings& settings)
 
 	// Create device context
 	{
-		if (settings.graphicsAPI == GraphicsAPI::OpenGL) {
-			createOpenGLContext(settings);
-		}
-		else if (settings.graphicsAPI == GraphicsAPI::Vulkan) {
+		if (settings.graphicsAPI == GraphicsAPI::Vulkan) {
 			createVulkanContext(settings);
+		}
+
+		if (!m_deviceContext) {
+			createOpenGLContext(settings);
 		}
 
 		// Default
@@ -239,8 +240,19 @@ void GraphicsManager::createVulkanContext(const Settings& settings)
     dcSettings.mainWindow = settings.mainWindow;
 	//dcSettings.debugEnabled = true;
 	auto ctx = makeRef<VulkanDeviceContext>();
-	ctx->init(dcSettings);
-	m_deviceContext = ctx;
+	bool driverSupported = false;
+	if (!ctx->init(dcSettings, &driverSupported)) {
+		if (!driverSupported) {
+			// ドライバが Vulkan をサポートしていない。継続する。
+		}
+		else {
+			LN_ERROR("Vulkan driver initialization failed.");
+			return;
+		}
+	}
+	else {
+		m_deviceContext = ctx;
+	}
 #endif
 #endif
 }

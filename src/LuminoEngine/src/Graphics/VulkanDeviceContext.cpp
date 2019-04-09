@@ -66,13 +66,18 @@ VulkanDeviceContext::VulkanDeviceContext()
 {
 }
 
-bool VulkanDeviceContext::init(const Settings& settings)
+bool VulkanDeviceContext::init(const Settings& settings, bool* outIsDriverSupported)
 {
+	if (LN_REQUIRE(outIsDriverSupported)) return false;
+	*outIsDriverSupported = true;
+
     if (!VulkanHelper::initVulkanFunctions()) {
         LN_LOG_WARNING << "Valid vulkan library not found.";
+		*outIsDriverSupported = false;
         return false;
     }
     if (!createInstance()) {
+		*outIsDriverSupported = false;
         return false;
     }
     if (!setupDebugMessenger()) {

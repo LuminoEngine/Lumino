@@ -314,6 +314,7 @@ namespace LuminoBuild.Tasks
                         BuildProjectAndroid(builder, "pcre", reposDir, target.ABI, target.BuildType, "-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF");
                         BuildProjectAndroid(builder, "tmxlite/tmxlite", reposDir, target.ABI, target.BuildType, "-DTMXLITE_STATIC_LIB=ON");
                         BuildProjectAndroid(builder, "Box2D/Box2D", reposDir, target.ABI, target.BuildType, "-DBOX2D_BUILD_EXAMPLES=OFF -DBOX2D_INSTALL_DOC=OFF -DBOX2D_BUILD_SHARED=OFF -DBOX2D_BUILD_STATIC=ON -DBOX2D_INSTALL=ON");
+                        BuildProjectAndroid(builder, "Vulkan-Headers", reposDir, target.ABI, target.BuildType);
                     }
                 }
 
@@ -334,6 +335,7 @@ namespace LuminoBuild.Tasks
                     BuildProjectEm(builder, "pcre", reposDir, "Emscripten", "-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF");
                     BuildProjectEm(builder, "tmxlite/tmxlite", reposDir, "Emscripten", "-DTMXLITE_STATIC_LIB=ON");
                     BuildProjectEm(builder, "Box2D/Box2D", reposDir, "Emscripten", "-DBOX2D_BUILD_EXAMPLES=OFF -DBOX2D_INSTALL_DOC=OFF -DBOX2D_BUILD_SHARED=OFF -DBOX2D_BUILD_STATIC=ON -DBOX2D_INSTALL=ON");
+                    BuildProjectEm(builder, "Vulkan-Headers", reposDir, "Vulkan-Headers");
                 }
 
                 // Visual C++

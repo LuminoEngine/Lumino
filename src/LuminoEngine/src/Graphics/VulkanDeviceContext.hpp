@@ -37,7 +37,7 @@ public:
 	};
 
 	VulkanDeviceContext();
-	bool init(const Settings& settings);
+	bool init(const Settings& settings, bool* outIsDriverSupported);
 	virtual void dispose() override;
 
     VkInstance vulkanInstance() const { return m_instance; }
