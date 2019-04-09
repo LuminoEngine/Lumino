@@ -165,7 +165,9 @@ namespace LuminoBuild.Tasks
                         {
                             if (file.Contains("Debug") && libnames.Contains(Path.GetFileNameWithoutExtension(file)))
                             {
-                                File.Copy(file, Path.Combine(targetDir, Path.GetFileName(file)), true);
+                                // FIXME: CI サーバのストレージ不足対策
+                                //File.Copy(file, Path.Combine(targetDir, Path.GetFileName(file)), true);
+                                File.Move(file, Path.Combine(targetDir, Path.GetFileName(file)));
                                 Console.WriteLine(file);
                             }
                         }
