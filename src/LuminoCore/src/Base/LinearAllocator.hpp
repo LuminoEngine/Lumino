@@ -65,7 +65,7 @@ public:
 	LinearAllocator(LinearAllocatorPageManager* manager);
 	virtual ~LinearAllocator();
 
-	void* allocate(size_t size);
+	void* allocate(size_t size, size_t alignment = 64);
 	void cleanup();
 
 	size_t maxAllocatedLargePageSize() const { return m_maxAllocatedLargePageSize; }

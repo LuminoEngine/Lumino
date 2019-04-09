@@ -5,6 +5,16 @@
 namespace ln {
 namespace detail {
 
+size_t AlignUpWithMask(size_t value, size_t mask)
+{
+	return ((size_t)value + mask) & ~mask;
+}
+
+size_t AlignUp(size_t value, size_t alignment)
+{
+	return AlignUpWithMask(value, alignment - 1);
+}
+
 //=============================================================================
 // LinearAllocatorPageManager
 
@@ -92,13 +102,19 @@ LinearAllocator::~LinearAllocator()
 {
 }
 
-void* LinearAllocator::allocate(size_t size)
+void* LinearAllocator::allocate(size_t size, size_t alignment)
 {
-	if (size > m_manager->pageSize()) {
-		return allocateLarge(size);
+	const size_t alignmentMask = alignment - 1;
+	const size_t alignedSize = AlignUpWithMask(size, alignmentMask);
+
+
+	if (alignedSize > m_manager->pageSize()) {
+		return allocateLarge(alignedSize);
 	}
 
-	if (m_usedOffset + size > m_manager->pageSize())
+	m_usedOffset = AlignUp(m_usedOffset, alignment);
+
+	if (m_usedOffset + alignedSize > m_manager->pageSize())
 	{
 		assert(m_currentPage);
 		m_retiredPages.add(m_currentPage);
@@ -113,7 +129,7 @@ void* LinearAllocator::allocate(size_t size)
 
 	byte_t* ptr = static_cast<byte_t*>(m_currentPage->data()) + m_usedOffset;
 
-	m_usedOffset += size;
+	m_usedOffset += alignedSize;
 
 	return ptr;
 }
