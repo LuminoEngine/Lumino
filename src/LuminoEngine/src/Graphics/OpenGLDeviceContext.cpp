@@ -379,6 +379,7 @@ GLGraphicsContext::GLGraphicsContext()
 Result GLGraphicsContext::init(OpenGLDeviceContext* owner)
 {
 	LN_CHECK(owner);
+	IGraphicsContext::init(owner);
 	m_device = owner;
 
 	GL_CHECK(glGenVertexArrays(1, &m_vao));

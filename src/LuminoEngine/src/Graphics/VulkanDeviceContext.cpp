@@ -830,6 +830,7 @@ VulkanGraphicsContext::VulkanGraphicsContext()
 Result VulkanGraphicsContext::init(VulkanDeviceContext* owner)
 {
 	LN_CHECK(owner);
+	IGraphicsContext::init(owner);
 	m_device = owner;
 
 	m_recodingCommandBuffer = makeRef<VulkanCommandBuffer>();
