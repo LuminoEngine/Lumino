@@ -73,7 +73,7 @@ void AbstractMaterial::setTexture(const StringRef& name, Texture* value)
 void AbstractMaterial::setColor(const StringRef& name, const Color& value)
 {
 	detail::ShaderParameterValue* param = getValue(name);
-	param->setVector(value);
+	param->setVector(value.toVector4());
 }
 
 void AbstractMaterial::setBlendMode(Optional<BlendMode> mode)

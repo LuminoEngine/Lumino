@@ -331,11 +331,11 @@ void ShaderSemanticsManager::updateSubsetVariables(const SubsetInfo& info)
             case BuiltinSemantics::ColorScale: {
                 Color c = info.colorScale;
                 c.a *= info.opacity;
-                varInfo.variable->setVector(c);
+                varInfo.variable->setVector(c.toVector4());
                 break;
             }
             case BuiltinSemantics::BlendColor:
-                varInfo.variable->setVector(info.blendColor);
+                varInfo.variable->setVector(info.blendColor.toVector4());
                 break;
             case BuiltinSemantics::ToneColor:
                 varInfo.variable->setVector(info.tone);
@@ -351,7 +351,7 @@ void ShaderSemanticsManager::updateSubsetVariables_PBR(const PbrMaterialData& ma
     for (const VariableKindPair& varInfo : m_subsetVariables) {
         switch (varInfo.kind) {
             case BuiltinSemantics::MaterialColor:
-                varInfo.variable->setVector(materialData.color);
+                varInfo.variable->setVector(materialData.color.toVector4());
                 break;
             case BuiltinSemantics::MaterialRoughness:
                 varInfo.variable->setFloat(materialData.roughness);
@@ -363,7 +363,7 @@ void ShaderSemanticsManager::updateSubsetVariables_PBR(const PbrMaterialData& ma
                 //	varInfo.variable->setFloat(materialData.specular);
                 //	break;
             case BuiltinSemantics::MaterialEmissive:
-                varInfo.variable->setVector(materialData.emissive);
+                varInfo.variable->setVector(materialData.emissive.toVector4());
                 break;
         }
     }
@@ -374,16 +374,16 @@ void ShaderSemanticsManager::updateSubsetVariables_Phong(const PhongMaterialData
     for (const VariableKindPair& varInfo : m_subsetVariables) {
         switch (varInfo.kind) {
             case BuiltinSemantics::PhongMaterialDiffuse:
-                varInfo.variable->setVector(materialData.diffuse);
+                varInfo.variable->setVector(materialData.diffuse.toVector4());
                 break;
             case BuiltinSemantics::PhongMaterialAmbient:
-                varInfo.variable->setVector(materialData.ambient);
+                varInfo.variable->setVector(materialData.ambient.toVector4());
                 break;
             case BuiltinSemantics::PhongMaterialEmmisive:
-                varInfo.variable->setVector(materialData.emissive);
+                varInfo.variable->setVector(materialData.emissive.toVector4());
                 break;
             case BuiltinSemantics::PhongMaterialSpecularColor:
-                varInfo.variable->setVector(materialData.specular);
+                varInfo.variable->setVector(materialData.specular.toVector4());
                 break;
             case BuiltinSemantics::PhongMaterialSpecularPower:
                 varInfo.variable->setFloat(materialData.power);

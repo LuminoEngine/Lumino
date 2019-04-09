@@ -774,7 +774,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 	struct Vertex
 	{
 		Vector3 pos;
-		Vector4 color;
+		Color color;
 	};
 	Vertex v1[] = {	// 深度テスト用に少し奥に出しておく
 		{ { -1, 1, 0.5 }, Color::Red },

@@ -253,8 +253,7 @@ public:
 
 	Vector3 rgb() const LN_NOEXCEPT{ return Vector3(r, g, b); }
 
-	operator const Vector4&() { return *reinterpret_cast<Vector4*>(this); }
-	operator const Vector4&() const { return *reinterpret_cast<const Vector4*>(this); }
+	const Vector4& toVector4() const { return *reinterpret_cast<const Vector4*>(this); }
 
 #define LN_OP_TYPE Color
 #include <LuminoCore/Math/Vector4OpDeclareTemplate.inl>
