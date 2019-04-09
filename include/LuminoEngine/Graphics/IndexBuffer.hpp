@@ -68,6 +68,7 @@ public:
 
 protected:
     virtual void onDispose(bool explicitDisposing) override;
+    virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
 
 LN_CONSTRUCT_ACCESS:
     IndexBuffer();
@@ -79,12 +80,9 @@ LN_CONSTRUCT_ACCESS:
     /** @copydoc create(int, IndexBufferFormat, const void*, GraphicsResourceUsage) */
     void init(int indexCount, IndexBufferFormat format, const void* initialData, GraphicsResourceUsage usage);
 
-LN_INTERNAL_ACCESS:
+private:
     int getIndexStride() const;
     detail::IIndexBuffer* resolveRHIObject();
-    virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
-
-private:
     bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }
 
     static int getIndexStride(IndexBufferFormat format) { return (format == IndexBufferFormat::UInt16) ? 2 : 4; }
@@ -101,6 +99,8 @@ private:
     void* m_mappedBuffer;
     bool m_initialUpdate;
     bool m_modified;
+
+    friend class detail::GraphicsResourceHelper;
 };
 
 } // namespace ln

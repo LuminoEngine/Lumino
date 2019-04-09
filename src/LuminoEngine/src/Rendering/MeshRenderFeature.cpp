@@ -55,7 +55,7 @@ void MeshRenderFeature::drawMesh(GraphicsContext* context, MeshResource* mesh, i
 		data.vertexBuffers[i] = GraphicsResourceHelper::resolveRHIObject<IVertexBuffer>(vb[i]);
 	}
 	data.vertexBuffersCount = vbCount;
-	data.indexBuffer = (ib) ? ib->resolveRHIObject() : nullptr;
+	data.indexBuffer = detail::GraphicsResourceHelper::resolveRHIObject<detail::IIndexBuffer>(ib);
 	data.startIndex = section.startIndex;
 	data.primitiveCount = section.primitiveCount;
 	data.primitiveType = PrimitiveTopology::TriangleList;

@@ -352,7 +352,7 @@ detail::IGraphicsDevice* GraphicsContext::commitState()
     //if ((m_modifiedFlags & ModifiedFlags_IndexBuffer) != 0)
 	{
 		auto& value = m_staging.indexBuffer;
-		detail::IIndexBuffer* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
+		detail::IIndexBuffer* rhiObject = detail::GraphicsResourceHelper::resolveRHIObject<detail::IIndexBuffer>(value);
 		LN_ENQUEUE_RENDER_COMMAND_2(
 			GraphicsContext_setIndexBuffer, m_manager,
 			detail::IGraphicsDevice*, m_device,

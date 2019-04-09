@@ -18,8 +18,8 @@ GraphicsResourcePool::None + GraphicsResourceUsage::Static 以外はどうして
 */
 
 #include "Internal.hpp"
-#include "GraphicsManager.hpp"
 #include "../Engine/RenderingCommandList.hpp"
+#include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 
