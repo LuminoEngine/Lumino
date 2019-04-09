@@ -1,6 +1,6 @@
 
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/VertexDeclaration.hpp>
+#include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include "../Engine/LinearAllocator.hpp"
@@ -50,7 +50,7 @@ void RenderingManager::init(const Settings& settings)
         { 0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0 },
         { 0, VertexElementType::Float4, VertexElementUsage::Color, 0 },
     };
-    m_standardVertexDeclaration = newObject<VertexDeclaration>(elements, 4);
+    m_standardVertexDeclaration = newObject<VertexLayout>(elements, 4);
     //m_renderStageListBuilder = makeRef<DrawElementListBuilder>();
 
     m_blitRenderFeature = newObject<BlitRenderFeature>(this);

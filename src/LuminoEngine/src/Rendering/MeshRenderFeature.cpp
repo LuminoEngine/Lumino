@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/VertexDeclaration.hpp>
+#include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
@@ -42,7 +42,7 @@ void MeshRenderFeature::drawMesh(GraphicsContext* context, MeshResource* mesh, i
 	auto* _this = this;
 
 	MeshSection section;
-	VertexDeclaration* decls;
+	VertexLayout* decls;
 	VertexBuffer* vb[MaxVertexStreams] = {};
 	int vbCount;
 	IndexBuffer* ib;

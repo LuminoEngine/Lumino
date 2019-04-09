@@ -7,14 +7,14 @@ public:
 	{
 		m_shader1 = Shader::create(LN_ASSETFILE("simple.vsh"), LN_ASSETFILE("simple.psh"));
 
-		m_vertexDecl1 = newObject<VertexDeclaration>();
-		m_vertexDecl1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
+		m_vertexDecl1 = newObject<VertexLayout>();
+		m_vertexDecl1->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
 	}
 
 	virtual void TearDown() {}
 
 	Ref<Shader> m_shader1;
-	Ref<VertexDeclaration> m_vertexDecl1;
+	Ref<VertexLayout> m_vertexDecl1;
 };
 
 //------------------------------------------------------------------------------
@@ -188,11 +188,11 @@ TEST_F(Test_Graphics_LowLevelRendering, MultiStreamVertexBuffer)
 	auto vb1 = newObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
 	auto vb2 = newObject<VertexBuffer>(sizeof(uv1), uv1, GraphicsResourceUsage::Static);
 	auto vb3 = newObject<VertexBuffer>(sizeof(uv2), uv2, GraphicsResourceUsage::Static);
-	auto vd1 = newObject<VertexDeclaration>();
-	vd1->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
-	vd1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
-	vd1->addVertexElement(1, VertexElementType::Float3, VertexElementUsage::TexCoord, 0);
-	vd1->addVertexElement(2, VertexElementType::Float4, VertexElementUsage::TexCoord, 1);
+	auto vd1 = newObject<VertexLayout>();
+	vd1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
+	vd1->addElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
+	vd1->addElement(1, VertexElementType::Float3, VertexElementUsage::TexCoord, 0);
+	vd1->addElement(2, VertexElementType::Float4, VertexElementUsage::TexCoord, 1);
 
 	auto ctx = Engine::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
@@ -609,9 +609,9 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture)
 {
 	auto shader1 = Shader::create(LN_ASSETFILE("TextureTest-1.vsh"), LN_ASSETFILE("TextureTest-1.psh"));
 	
-	auto vertexDecl1 = newObject<VertexDeclaration>();
-	vertexDecl1->addVertexElement(0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
-	vertexDecl1->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
+	auto vertexDecl1 = newObject<VertexLayout>();
+	vertexDecl1->addElement(0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
+	vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 
 	struct Vertex
 	{
@@ -658,9 +658,9 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture3D)
 {
 	auto shader1 = Shader::create(LN_ASSETFILE("Texture3DTest-1.vsh"), LN_ASSETFILE("Texture3DTest-1.psh"));
 
-	auto vertexDecl1 = newObject<VertexDeclaration>();
-	vertexDecl1->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
-	vertexDecl1->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::TexCoord, 0);
+	auto vertexDecl1 = newObject<VertexLayout>();
+	vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
+	vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::TexCoord, 0);
 
 	struct Vertex
 	{
@@ -707,9 +707,9 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 {
 	auto shader1 = Shader::create(LN_ASSETFILE("TextureTest-1.vsh"), LN_ASSETFILE("TextureTest-1.psh"));
 
-	auto vertexDecl1 = newObject<VertexDeclaration>();
-	vertexDecl1->addVertexElement(0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
-	vertexDecl1->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
+	auto vertexDecl1 = newObject<VertexLayout>();
+	vertexDecl1->addElement(0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
+	vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 
 	struct Vertex
 	{
@@ -767,9 +767,9 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 {
 	auto shader1 = Shader::create(LN_ASSETFILE("SimplePosColor.vsh"), LN_ASSETFILE("SimplePosColor.psh"));
 
-	auto vertexDecl1 = newObject<VertexDeclaration>();
-	vertexDecl1->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
-	vertexDecl1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
+	auto vertexDecl1 = newObject<VertexLayout>();
+	vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
+	vertexDecl1->addElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
 
 	struct Vertex
 	{
@@ -983,9 +983,9 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
             { { 1, 1 }, { 1, -1, 0 }, },
         };
         auto vertexBuffer2 = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
-        auto vertexDecl2 = newObject<VertexDeclaration>();
-        vertexDecl2->addVertexElement(0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
-        vertexDecl2->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
+        auto vertexDecl2 = newObject<VertexLayout>();
+        vertexDecl2->addElement(0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
+        vertexDecl2->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 
 
         auto renderTarget1 = newObject<RenderTargetTexture>(160, 120, TextureFormat::RGBA32, false);

@@ -3,35 +3,35 @@
 #include "GraphicsManager.hpp"
 #include "../Engine/RenderingCommandList.hpp"
 #include "GraphicsDeviceContext.hpp"
-#include <LuminoEngine/Graphics/VertexDeclaration.hpp>
+#include <LuminoEngine/Graphics/VertexLayout.hpp>
 
 namespace ln {
 
 //==============================================================================
-// VertexDeclaration
+// VertexLayout
 
-Ref<VertexDeclaration> VertexDeclaration::create()
+Ref<VertexLayout> VertexLayout::create()
 {
-	return newObject<VertexDeclaration>();
+	return newObject<VertexLayout>();
 }
 
-VertexDeclaration::VertexDeclaration()
+VertexLayout::VertexLayout()
 	: m_deviceObj(nullptr)
 	, m_vertexElements()
 	, m_modified(true)
 {
 }
 
-VertexDeclaration::~VertexDeclaration()
+VertexLayout::~VertexLayout()
 {
 }
 
-void VertexDeclaration::init()
+void VertexLayout::init()
 {
 	GraphicsResource::init();
 }
 
-void VertexDeclaration::init(const VertexElement* elements, int count)
+void VertexLayout::init(const VertexElement* elements, int count)
 {
 	init();
 
@@ -41,14 +41,13 @@ void VertexDeclaration::init(const VertexElement* elements, int count)
 	}
 }
 
-void VertexDeclaration::onDispose(bool explicitDisposing)
+void VertexLayout::onDispose(bool explicitDisposing)
 {
 	m_deviceObj = nullptr;
-
 	GraphicsResource::onDispose(explicitDisposing);
 }
 
-void VertexDeclaration::addVertexElement(int streamIndex, VertexElementType type, VertexElementUsage usage, int usageIndex)
+void VertexLayout::addElement(int streamIndex, VertexElementType type, VertexElementUsage usage, int usageIndex)
 {
 	if (LN_REQUIRE(streamIndex >= 0)) return;
 	if (LN_REQUIRE(usageIndex >= 0)) return;
@@ -61,7 +60,7 @@ void VertexDeclaration::addVertexElement(int streamIndex, VertexElementType type
 	m_vertexElements.add(e);
 }
 
-detail::IVertexDeclaration* VertexDeclaration::resolveRHIObject()
+detail::IVertexDeclaration* VertexLayout::resolveRHIObject()
 {
 	if (m_modified)
 	{
@@ -72,7 +71,7 @@ detail::IVertexDeclaration* VertexDeclaration::resolveRHIObject()
 	return m_deviceObj;
 }
 
-void VertexDeclaration::onChangeDevice(detail::IGraphicsDevice* device)
+void VertexLayout::onChangeDevice(detail::IGraphicsDevice* device)
 {
 	if (device)
 	{

@@ -3,7 +3,7 @@
 
 namespace ln {
 class DiagnosticsManager;
-class VertexDeclaration;
+class VertexLayout;
 class Texture;
 class Texture2D;
 class StaticMeshModel;
@@ -34,7 +34,7 @@ public:
 	MeshManager();
 	void init(const Settings& settings);
 	void dispose();
-	VertexDeclaration* getPredefinedVertexLayout(PredefinedVertexLayoutFlags flags);
+	VertexLayout* getPredefinedVertexLayout(PredefinedVertexLayoutFlags flags);
 
     Ref<StaticMeshModel> createStaticMeshModel(const Path& filePath, float scale);
     Ref<SkinnedMeshModel> createSkinnedMeshModel(const Path& filePath, float scale);
@@ -43,18 +43,18 @@ public:
 	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
     const Ref<Texture2D>& getMMDDefaultToonTexture(int index) const { return  m_mmdDefaultToonTexture[index]; }
 
-	//const Ref<VertexDeclaration>& predefinedVertexLayout(PredefinedVertexLayout kind) const { return m_predefinedVertexLayouts[kind]; }
+	//const Ref<VertexLayout>& predefinedVertexLayout(PredefinedVertexLayout kind) const { return m_predefinedVertexLayouts[kind]; }
 
 private:
 	GraphicsManager* m_graphicsManager;
 	AssetManager* m_assetManager;
-	std::unordered_map<PredefinedVertexLayoutFlags, Ref<VertexDeclaration>> m_predefinedVertexLayouts;
-	//std::array<Ref<VertexDeclaration>, PredefinedVertexLayout_Count> m_predefinedVertexLayouts;
-	//Ref<VertexDeclaration> m_predefinedVertexLayout_StandardGeometry;
-	//Ref<VertexDeclaration> m_predefinedVertexLayout_StandardBlendWeights;
-	//Ref<VertexDeclaration> m_predefinedVertexLayout_AdditionalUV;
-	//Ref<VertexDeclaration> m_predefinedVertexLayout_SdefInfo;
-	//Ref<VertexDeclaration> m_predefinedVertexLayout_SdefInfo;
+	std::unordered_map<PredefinedVertexLayoutFlags, Ref<VertexLayout>> m_predefinedVertexLayouts;
+	//std::array<Ref<VertexLayout>, PredefinedVertexLayout_Count> m_predefinedVertexLayouts;
+	//Ref<VertexLayout> m_predefinedVertexLayout_StandardGeometry;
+	//Ref<VertexLayout> m_predefinedVertexLayout_StandardBlendWeights;
+	//Ref<VertexLayout> m_predefinedVertexLayout_AdditionalUV;
+	//Ref<VertexLayout> m_predefinedVertexLayout_SdefInfo;
+	//Ref<VertexLayout> m_predefinedVertexLayout_SdefInfo;
 
     std::array<Ref<Texture2D>, 10> m_mmdDefaultToonTexture;
 };

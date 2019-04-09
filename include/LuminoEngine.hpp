@@ -34,7 +34,7 @@
 
 #include "LuminoEngine/Graphics/RenderState.hpp"
 #include "LuminoEngine/Graphics/SamplerState.hpp"
-#include "LuminoEngine/Graphics/VertexDeclaration.hpp"
+#include "LuminoEngine/Graphics/VertexLayout.hpp"
 #include "LuminoEngine/Graphics/VertexBuffer.hpp"
 #include "LuminoEngine/Graphics/IndexBuffer.hpp"
 #include "LuminoEngine/Graphics/Texture.hpp"

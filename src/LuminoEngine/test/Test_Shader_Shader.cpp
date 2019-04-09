@@ -10,9 +10,9 @@ TEST_F(Test_Shader_Shader, IndependentSamplerState)
 {
     auto shader1 = Shader::create(LN_ASSETFILE("Shader/IndependentSamplerState.fx"));
 
-    auto vertexDecl1 = newObject<VertexDeclaration>();
-    vertexDecl1->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
-    vertexDecl1->addVertexElement(0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
+    auto vertexDecl1 = newObject<VertexLayout>();
+    vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
+    vertexDecl1->addElement(0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
 
     struct Vertex
     {
@@ -66,8 +66,8 @@ TEST_F(Test_Shader_Shader, UniformBuffer)
 {
     auto shader1 = Shader::create(LN_ASSETFILE("Shader/UniformBufferTest-1.fx"));
 
-    auto vertexDecl1 = newObject<VertexDeclaration>();
-    vertexDecl1->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
+    auto vertexDecl1 = newObject<VertexLayout>();
+    vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 
     Vector3 v[] = {
         { 0, 0.5, 0 },
@@ -100,8 +100,8 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
 {
     auto shader1 = Shader::create(LN_ASSETFILE("Shader/MultiTechMultiTexture-1.fx"));
 
-    auto vertexDecl1 = newObject<VertexDeclaration>();
-    vertexDecl1->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
+    auto vertexDecl1 = newObject<VertexLayout>();
+    vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 
     Vector3 v[] = {
         { 0, 0.5, 0 },
@@ -147,8 +147,8 @@ TEST_F(Test_Shader_Shader, NotProvidedVertexAttribute)
 {
 	auto shader1 = Shader::create(LN_ASSETFILE("Shader/NotProvidedVertexAttribute-1.fx"));
 
-	auto vertexDecl1 = newObject<VertexDeclaration>();
-	vertexDecl1->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
+	auto vertexDecl1 = newObject<VertexLayout>();
+	vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 
 	Vector3 v[] = {
 		{ 0, 0.5, 0 },

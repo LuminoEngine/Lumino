@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/VertexDeclaration.hpp>
+#include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
@@ -213,7 +213,7 @@ void InternalShapesRenderer::renderCommandList(ShapesRendererCommandList* comman
         device->setSubData(m_indexBuffer, 0, m_indexCache.getBuffer(), m_indexCache.getBufferUsedByteCount());
 
 		{
-			device->setVertexDeclaration(m_manager->standardVertexDeclaration()->resolveRHIObject());
+			device->setVertexDeclaration(detail::GraphicsResourceHelper::resolveRHIObject<detail::IVertexDeclaration>(m_manager->standardVertexDeclaration()));
 			device->setVertexBuffer(0, m_vertexBuffer);
 			device->setIndexBuffer(m_indexBuffer);
 			device->setPrimitiveTopology(PrimitiveTopology::TriangleList);

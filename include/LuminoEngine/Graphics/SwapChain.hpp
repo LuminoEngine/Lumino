@@ -4,7 +4,7 @@
 #include "GeometryStructs.hpp"
 
 namespace ln {
-class VertexDeclaration;
+class VertexLayout;
 class VertexBuffer;
 class IndexBuffer;
 class RenderTargetTexture;

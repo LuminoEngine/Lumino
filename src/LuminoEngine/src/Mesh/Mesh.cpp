@@ -284,12 +284,12 @@ void* MeshResource::requestIndexDataForAdditional(int additionalIndexCount, Inde
 		return ((uint32_t*)data) + begin;
 }
 
-void MeshResource::commitRenderData(int sectionIndex, MeshSection* outSection, VertexDeclaration** outDecl, VertexBuffer** outVBs, int* outVBCount, IndexBuffer** outIB)
+void MeshResource::commitRenderData(int sectionIndex, MeshSection* outSection, VertexLayout** outDecl, VertexBuffer** outVBs, int* outVBCount, IndexBuffer** outIB)
 {
 	// Section
 	*outSection = m_sections[sectionIndex];
 
-	// VertexDeclaration
+	// VertexLayout
 	{
 		uint32_t flags = 0;
 		if (m_vertexBuffers[VBG_Basic]) flags |= detail::PredefinedVertexLayoutFlags_Geometry;

@@ -6,7 +6,7 @@
 #include "RenderState.hpp"
 
 namespace ln {
-class VertexDeclaration;
+class VertexLayout;
 class VertexBuffer;
 class IndexBuffer;
 class RenderTargetTexture;
@@ -34,7 +34,7 @@ public:
     DepthBuffer* depthBuffer() const;
 	void setViewportRect(const Rect& value);
 	void setScissorRect(const Rect& value);
-	void setVertexDeclaration(VertexDeclaration* value);
+	void setVertexDeclaration(VertexLayout* value);
 	void setVertexBuffer(int streamIndex, VertexBuffer* value);
 	void setIndexBuffer(IndexBuffer* value);
 	void setShaderPass(ShaderPass* value);
@@ -86,7 +86,7 @@ private:
 		Ref<DepthBuffer> depthBuffer;
 		Rect viewportRect;
 		Rect scissorRect;
-		Ref<VertexDeclaration> vertexDeclaration;
+		Ref<VertexLayout> vertexDeclaration;
 		std::array<Ref<VertexBuffer>, 4> vertexBuffers;
 		Ref<IndexBuffer> indexBuffer;
 		Ref<Shader> shader;		// shaderPass owner, for keep reference.

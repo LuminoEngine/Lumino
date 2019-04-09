@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/Bitmap.hpp>
-#include <LuminoEngine/Graphics/VertexDeclaration.hpp>
+#include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
@@ -329,12 +329,12 @@ void RenderingContext::drawSprite(
 	//ptr->setLocalBoundingSphere(sphere);
 }
 
-void RenderingContext::drawPrimitive(VertexDeclaration* vertexDeclaration, VertexBuffer* vertexBuffer, PrimitiveTopology topology, int startVertex, int primitiveCount)
+void RenderingContext::drawPrimitive(VertexLayout* vertexDeclaration, VertexBuffer* vertexBuffer, PrimitiveTopology topology, int startVertex, int primitiveCount)
 {
 	class DrawPrimitive : public detail::RenderDrawElement
 	{
 	public:
-		Ref<VertexDeclaration> vertexDeclaration;
+		Ref<VertexLayout> vertexDeclaration;
 		Ref<VertexBuffer> vertexBuffer;
 		PrimitiveTopology topology;
 		int startVertex;

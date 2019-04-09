@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/VertexDeclaration.hpp>
+#include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
@@ -28,7 +28,7 @@ InternalFrameRectRenderer::InternalFrameRectRenderer()
 void InternalFrameRectRenderer::init(RenderingManager* manager)
 {
     m_manager = manager;
-	m_vertexDeclaration = manager->standardVertexDeclaration()->resolveRHIObject();
+    m_vertexDeclaration = detail::GraphicsResourceHelper::resolveRHIObject<detail::IVertexDeclaration>(manager->standardVertexDeclaration());
 
     m_vertexAllocator = makeRef<LinearAllocator>(m_manager->graphicsManager()->linearAllocatorPageManager());
     prepareBuffers(512);

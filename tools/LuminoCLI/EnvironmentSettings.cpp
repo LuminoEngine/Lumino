@@ -166,6 +166,8 @@ Result BuildEnvironment::prepareEmscriptenSdk()
 			}
 		}
 	}
+
+    return Result::Success;
 }
 
 Result BuildEnvironment::callProcess(const ln::String& program, const ln::List<ln::String>& arguments, const ln::Path& workingDir)

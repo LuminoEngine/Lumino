@@ -23,9 +23,9 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 	};
 	
 	auto vb1 = newObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
-	auto vd1 = newObject<VertexDeclaration>();
-	vd1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
-	vd1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
+	auto vd1 = newObject<VertexLayout>();
+	vd1->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
+	vd1->addElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
 
 	auto ctx = Engine::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
@@ -74,9 +74,9 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 	};
 
 	auto vb1 = newObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
-	auto vd1 = newObject<VertexDeclaration>();
-	vd1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
-	vd1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
+	auto vd1 = newObject<VertexLayout>();
+	vd1->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
+	vd1->addElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
 
 	auto ctx = Engine::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
@@ -176,9 +176,9 @@ TEST_F(Test_Graphics_HlslEffect, UnifiedShader)
 	};
 
 	auto vb1 = newObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
-	auto vd1 = newObject<VertexDeclaration>();
-	vd1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
-	vd1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
+	auto vd1 = newObject<VertexLayout>();
+	vd1->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
+	vd1->addElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
 
 	auto ctx = Engine::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
@@ -215,8 +215,8 @@ TEST_F(Test_Graphics_HlslEffect, Sample)
 	};
 	auto vb1 = newObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
 
-	auto vd1 = newObject<VertexDeclaration>();
-	vd1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
+	auto vd1 = newObject<VertexLayout>();
+	vd1->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
 
 	auto ctx = Engine::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);

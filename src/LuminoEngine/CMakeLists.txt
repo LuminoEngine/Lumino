@@ -199,7 +199,7 @@ set(LN_SOURCES_Graphics
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/SwapChain.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/Texture.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/VertexBuffer.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/VertexDeclaration.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/VertexLayout.hpp
     src/Graphics/Internal.hpp
     src/Graphics/Bitmap.cpp
     src/Graphics/BitmapEncoding.cpp
@@ -224,7 +224,7 @@ set(LN_SOURCES_Graphics
     src/Graphics/OpenGLDeviceContext.hpp
     src/Graphics/Texture.cpp
     src/Graphics/VertexBuffer.cpp
-    src/Graphics/VertexDeclaration.cpp
+    src/Graphics/VertexLayout.cpp
 )
 
 set(LN_SOURCES_Shader

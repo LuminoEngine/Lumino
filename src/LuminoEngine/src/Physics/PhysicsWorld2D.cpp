@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <Box2D/Box2D.h>
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
-#include <LuminoEngine/Graphics/VertexDeclaration.hpp>
+#include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>

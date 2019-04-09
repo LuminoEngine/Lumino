@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/VertexDeclaration.hpp>
+#include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
@@ -24,7 +24,7 @@ void InternalPrimitiveRenderer::init(RenderingManager* manager)
     m_manager = manager;
     m_linearAllocator = makeRef<LinearAllocator>(m_manager->graphicsManager()->linearAllocatorPageManager());
     prepareBuffers(m_manager->graphicsManager()->deviceContext(), 512, 512 * 3);
-    m_vertexDeclaration = m_manager->standardVertexDeclaration()->resolveRHIObject();
+    m_vertexDeclaration = detail::GraphicsResourceHelper::resolveRHIObject<detail::IVertexDeclaration>(m_manager->standardVertexDeclaration());
 }
 
 void InternalPrimitiveRenderer::drawMeshGenerater(const MeshGenerater* generator)

@@ -499,8 +499,8 @@ int main(int argc, char** argv)
 
 	auto vb = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
-	auto decl = newObject<VertexDeclaration>();
-	decl->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
+	auto decl = newObject<VertexLayout>();
+	decl->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
 
 	//auto renderTarget = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBX32, false);
 

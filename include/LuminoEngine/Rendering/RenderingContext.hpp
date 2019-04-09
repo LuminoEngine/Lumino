@@ -6,7 +6,7 @@
 
 namespace ln {
 class Font;
-class VertexDeclaration;
+class VertexLayout;
 class VertexBuffer;
 class Texture;
 class RenderTargetTexture;
@@ -129,7 +129,7 @@ public:
         const Flags<detail::SpriteFlipFlags>& flipFlags,
 		AbstractMaterial* material);
 
-	void drawPrimitive(VertexDeclaration* vertexDeclaration, VertexBuffer* vertexBuffer, PrimitiveTopology topology, int startVertex, int primitiveCount);
+	void drawPrimitive(VertexLayout* vertexDeclaration, VertexBuffer* vertexBuffer, PrimitiveTopology topology, int startVertex, int primitiveCount);
 
     void drawMesh(MeshResource* meshResource, int sectionIndex);
 	//void drawMesh(MeshContainer* meshContainer, int sectionIndex);

@@ -47,10 +47,10 @@ TEST_F(Test_Graphics_DeviceContext, Clear)
         { 0, VertexElementType::Float3, VertexElementUsage::Color, 0 },
         { 0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0 },
     };
-    auto vertexDeclaration = newObject<VertexDeclaration>();
-    vertexDeclaration->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
-    vertexDeclaration->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Color, 0);
-    vertexDeclaration->addVertexElement(0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
+    auto vertexDeclaration = newObject<VertexLayout>();
+    vertexDeclaration->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
+    vertexDeclaration->addElement(0, VertexElementType::Float3, VertexElementUsage::Color, 0);
+    vertexDeclaration->addElement(0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
 
 
     {
@@ -117,9 +117,9 @@ TEST_F(Test_Graphics_DeviceContext, BasicTriangle)
         { {-0.5, -0.5, 0 }, { 0, 0, 1, 1 } },
     };
 
-	auto vertexDecl1 = newObject<VertexDeclaration>();
-	vertexDecl1->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
-	vertexDecl1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
+	auto vertexDecl1 = newObject<VertexLayout>();
+	vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
+	vertexDecl1->addElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
 
     auto vertexBuffer = newObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
 
@@ -167,9 +167,9 @@ TEST_F(Test_Graphics_DeviceContext, IndexBuffer)
 	};
 	uint16_t i1[] = { 0, 1, 2, 2, 1, 3 };
 
-	auto vertexDecl1 = newObject<VertexDeclaration>();
-	vertexDecl1->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
-	vertexDecl1->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
+	auto vertexDecl1 = newObject<VertexLayout>();
+	vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
+	vertexDecl1->addElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
 
 	auto vertexBuffer = newObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
 	auto indexBuffer = newObject<IndexBuffer>(LN_ARRAY_SIZE_OF(i1), IndexBufferFormat::UInt16, i1, GraphicsResourceUsage::Static);
@@ -201,8 +201,8 @@ TEST_F(Test_Graphics_DeviceContext, ConstantBuffer)
         {-0.5, -0.5, 0 },
     };
 
-    auto vertexDecl1 = newObject<VertexDeclaration>();
-    vertexDecl1->addVertexElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
+    auto vertexDecl1 = newObject<VertexLayout>();
+    vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 
     auto vertexBuffer = newObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
 

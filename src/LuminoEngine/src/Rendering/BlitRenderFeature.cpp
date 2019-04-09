@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/VertexDeclaration.hpp>
+#include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
@@ -32,7 +32,7 @@ void BlitRenderFeature::init(RenderingManager* manager)
         { Vector3(1, -1, 0), Vector3::UnitZ, Vector2(1, 1), Color::White },
     };
     m_vertexBuffer = m_manager->graphicsManager()->deviceContext()->createVertexBuffer(GraphicsResourceUsage::Static, sizeof(vertices), vertices);
-    m_vertexDeclaration = manager->standardVertexDeclaration()->resolveRHIObject();
+    m_vertexDeclaration = detail::GraphicsResourceHelper::resolveRHIObject<detail::IVertexDeclaration>(manager->standardVertexDeclaration());
 }
 
 void BlitRenderFeature::blit(GraphicsContext* context)

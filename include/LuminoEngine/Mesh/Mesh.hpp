@@ -3,7 +3,7 @@
 #include "../Rendering/Vertex.hpp"
 
 namespace ln {
-class VertexDeclaration;
+class VertexLayout;
 class VertexBuffer;
 class IndexBuffer;
 class AbstractMaterial;
@@ -70,7 +70,7 @@ public:
     MeshContainer* ownerContainer() const { return m_ownerContainer; }
 
 	// TODO: internal
-	void commitRenderData(int sectionIndex, MeshSection* outSection, VertexDeclaration** outDecl, VertexBuffer** outVBs, int* outVBCount, IndexBuffer** outIB);
+	void commitRenderData(int sectionIndex, MeshSection* outSection, VertexLayout** outDecl, VertexBuffer** outVBs, int* outVBCount, IndexBuffer** outIB);
 	const List<MeshSection>& sections() const { return m_sections; }
     void getVertexBuffers(VertexBuffer** basic);
     void setVertexBuffers(VertexBuffer* basic);

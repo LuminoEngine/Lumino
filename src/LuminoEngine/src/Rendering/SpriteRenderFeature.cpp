@@ -21,7 +21,7 @@ void InternalSpriteRenderer::init(RenderingManager* manager)
 {
 	//m_device = manager->graphicsManager()->deviceContext();
 	m_buffersReservedSpriteCount = 0;
-	m_vertexDeclaration = manager->standardVertexDeclaration()->resolveRHIObject();
+    m_vertexDeclaration = detail::GraphicsResourceHelper::resolveRHIObject<detail::IVertexDeclaration>(manager->standardVertexDeclaration());
 	
 	// reserve buffers.
 	m_spriteDataList.reserve(2048);

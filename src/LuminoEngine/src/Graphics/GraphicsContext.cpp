@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
-#include <LuminoEngine/Graphics/VertexDeclaration.hpp>
+#include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
@@ -103,7 +103,7 @@ void GraphicsContext::setScissorRect(const Rect& value)	// 使用するのは主
 	m_staging.scissorRect = value;
 }
 
-void GraphicsContext::setVertexDeclaration(VertexDeclaration* value)
+void GraphicsContext::setVertexDeclaration(VertexLayout* value)
 {
 	m_staging.vertexDeclaration = value;
 }
@@ -320,7 +320,7 @@ detail::IGraphicsDevice* GraphicsContext::commitState()
 
 	{
 		auto& value = m_staging.vertexDeclaration;
-		detail::IVertexDeclaration* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
+		detail::IVertexDeclaration* rhiObject = detail::GraphicsResourceHelper::resolveRHIObject<detail::IVertexDeclaration>(value);
 		LN_ENQUEUE_RENDER_COMMAND_2(
 			GraphicsContext_setVertexDeclaration, m_manager,
 			detail::IGraphicsDevice*, m_device,
