@@ -89,6 +89,7 @@
 
 namespace ln {
 namespace detail {
+class GLGraphicsContext;
 class GLContext;
 class GLSwapChain;
 class GLIndexBuffer;
@@ -107,12 +108,20 @@ public:
 		PlatformWindow* mainWindow = nullptr;
         uint32_t defaultFramebuffer;
 	};
+	
+	struct Caps
+	{
+		GLint MAX_VERTEX_ATTRIBS = 0;
+		GLint MAX_COLOR_ATTACHMENTS = 0;
+	};
 
 	OpenGLDeviceContext();
 	virtual ~OpenGLDeviceContext() = default;
 
 	void init(const Settings& settings);
 	virtual void dispose() override;
+	const Ref<GLContext>& glContext() const { return m_glContext; }
+	const Caps& caps() const { return m_caps; }
 
 	// uniform set の時、Vector4[] → vec2[] に変換するための一時バッファ 
 	MemoryStream* uniformTempBuffer() { return &m_uniformTempBuffer; }
@@ -121,6 +130,7 @@ public:
 	void setActiveShaderPass(GLShaderPass* pass);
 
 protected:
+	virtual IGraphicsContext* getGraphicsContext() const;
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) override;
 	virtual void onEnterMainThread() override;
 	virtual void onLeaveMainThread() override;
@@ -136,36 +146,14 @@ protected:
 	virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
-	virtual void onBeginCommandRecoding() override {}
-	virtual void onEndCommandRecoding() override {}
-	virtual void onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState) override;
-	virtual void onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer) override;
-	virtual void onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize) override;
-	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) override;
-	virtual void onUpdateShaderPass(IShaderPass* newPass) override;
-    virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource) override {}
-    virtual void* onMapResource(IGraphicsResource* resource) override;
-    virtual void onUnmapResource(IGraphicsResource* resource) override;
-    virtual void onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length) override;
-    virtual void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) override;
-    virtual void onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
-	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
-	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) override;
-	virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount) override;
-    virtual void onFlushCommandBuffer(ITexture* affectRendreTarget) override {}
-	virtual void onPresent(ISwapChain* swapChain) override;
 
 private:
-	static void getPrimitiveInfo(PrimitiveTopology primitive, int primitiveCount, GLenum* gl_prim, int* vertexCount);
-
 	Ref<GLContext> m_glContext;
 	MemoryStream m_uniformTempBuffer;
 	BinaryWriter m_uniformTempBufferWriter;
 	GLShaderPass* m_activeShaderPass;
-	GLIndexBuffer* m_currentIndexBuffer;
-	GLuint m_vao;	// https://www.khronos.org/opengl/wiki/Vertex_Specification#Index_buffers
-	GLuint m_fbo;
 	//int m_lastUsedAttribIndex;
+	Ref<GLGraphicsContext> m_graphicsContext;
 
 	struct
 	{
@@ -173,12 +161,44 @@ private:
 
 	} m_savedState;
 
-	struct
-	{
-		GLint MAX_VERTEX_ATTRIBS = 0;
-		GLint MAX_COLOR_ATTACHMENTS = 0;
+	Caps m_caps;
+};
 
-	} m_caps;
+class GLGraphicsContext
+	: public IGraphicsContext
+{
+public:
+	GLGraphicsContext();
+	Result init(OpenGLDeviceContext* owner);
+	void dispose();
+
+protected:
+	virtual void onBeginCommandRecoding() override {}
+	virtual void onEndCommandRecoding() override {}
+	virtual void onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState) override;
+	virtual void onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer) override;
+	virtual void onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize) override;
+	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) override;
+	virtual void onUpdateShaderPass(IShaderPass* newPass) override;
+	virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource) override {}
+	virtual void* onMapResource(IGraphicsResource* resource) override;
+	virtual void onUnmapResource(IGraphicsResource* resource) override;
+	virtual void onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length) override;
+	virtual void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) override;
+	virtual void onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
+	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
+	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) override;
+	virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount) override;
+	virtual void onFlushCommandBuffer(ITexture* affectRendreTarget) override {}
+	virtual void onPresent(ISwapChain* swapChain) override;
+
+private:
+	static void getPrimitiveInfo(PrimitiveTopology primitive, int primitiveCount, GLenum* gl_prim, int* vertexCount);
+
+	OpenGLDeviceContext* m_device;
+	GLuint m_vao;	// https://www.khronos.org/opengl/wiki/Vertex_Specification#Index_buffers
+	GLuint m_fbo;
+	GLIndexBuffer* m_currentIndexBuffer;
 };
 
 class GLContext

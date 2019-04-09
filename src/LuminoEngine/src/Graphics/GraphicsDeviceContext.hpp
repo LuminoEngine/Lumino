@@ -11,6 +11,7 @@ struct Color;
 
 namespace detail {
 class PlatformWindow;
+class IGraphicsContext;
 class ISwapChain;
 class IVertexDeclaration;
 class IVertexBuffer;
@@ -174,6 +175,7 @@ public:
 	Ref<ISamplerState> createSamplerState(const SamplerStateData& desc);
 	Ref<IShaderPass> createShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
 
+/////////
 	void begin();
 	void end();
 	void setBlendState(const BlendStateDesc& value);
@@ -203,11 +205,13 @@ public:
 
 	void present(ISwapChain* swapChain);
 
+/////////
+
     // utility
     Ref<IShaderPass> createShaderPassFromUnifiedShaderPass(const UnifiedShader* unifiedShader, UnifiedShader::PassId passId, DiagnosticsManager* diag);
 
 protected:
-
+	virtual IGraphicsContext* getGraphicsContext() const = 0;
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) = 0;
 	virtual void onEnterMainThread() = 0;
 	virtual void onLeaveMainThread() = 0;
@@ -225,6 +229,52 @@ protected:
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) = 0;
 
 /////////
+	//virtual void onBeginCommandRecoding() = 0;
+	//virtual void onEndCommandRecoding() = 0;
+	//virtual void onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState) = 0;
+	//virtual void onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer) = 0;
+	//virtual void onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize) = 0;
+	//virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) = 0;
+	//virtual void onUpdateShaderPass(IShaderPass* newPass) = 0;
+ //   virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource) = 0;
+
+ //   virtual void* onMapResource(IGraphicsResource* resource) = 0;
+ //   virtual void onUnmapResource(IGraphicsResource* resource) = 0;
+ //   virtual void onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length) = 0;
+ //   virtual void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
+ //   virtual void onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
+
+	//virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
+	//virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) = 0;
+	//virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount) = 0;
+ //   virtual void onFlushCommandBuffer(ITexture* affectRendreTarget) = 0;
+
+	//virtual void onPresent(ISwapChain* swapChain) = 0;
+/////////
+
+public:	// TODO:
+    void commitStatus(GraphicsContextSubmitSource submitSource);
+    void endCommit();
+	void collectGarbageObjects();
+
+	IGraphicsContext* m_graphicsContext;
+	GraphicsDeviceCaps m_caps;
+	uint32_t m_stateDirtyFlags;
+	GraphicsContextState m_staging;
+	GraphicsContextState m_committed;
+	std::vector<Ref<IGraphicsDeviceObject>> m_aliveObjects;
+};
+
+class IGraphicsContext
+    : public RefObject
+{
+public:
+
+public:	// TODO:
+	IGraphicsContext();
+    virtual ~IGraphicsContext() = default;
+	Result init(IGraphicsDevice* owner);
+
 	virtual void onBeginCommandRecoding() = 0;
 	virtual void onEndCommandRecoding() = 0;
 	virtual void onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState) = 0;
@@ -232,42 +282,27 @@ protected:
 	virtual void onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize) = 0;
 	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) = 0;
 	virtual void onUpdateShaderPass(IShaderPass* newPass) = 0;
-    virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource) = 0;
+	virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource) = 0;
 
-    virtual void* onMapResource(IGraphicsResource* resource) = 0;
-    virtual void onUnmapResource(IGraphicsResource* resource) = 0;
-    virtual void onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length) = 0;
-    virtual void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
-    virtual void onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
+	virtual void* onMapResource(IGraphicsResource* resource) = 0;
+	virtual void onUnmapResource(IGraphicsResource* resource) = 0;
+	virtual void onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length) = 0;
+	virtual void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
+	virtual void onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
 
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
 	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) = 0;
 	virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount) = 0;
-    virtual void onFlushCommandBuffer(ITexture* affectRendreTarget) = 0;
+	virtual void onFlushCommandBuffer(ITexture* affectRendreTarget) = 0;
 
 	virtual void onPresent(ISwapChain* swapChain) = 0;
-/////////
-    uint32_t stagingStateDirtyFlags() const { return m_stateDirtyFlags; }
-    const GraphicsContextState& stagingState() const { return m_staging; }
-    const GraphicsContextState& committedState() const { return m_committed; }
+
+	uint32_t stagingStateDirtyFlags() const { return m_device->m_stateDirtyFlags; }
+	const GraphicsContextState& stagingState() const { return m_device->m_staging; }
+	const GraphicsContextState& committedState() const { return m_device->m_committed; }
 
 private:
-    void commitStatus(GraphicsContextSubmitSource submitSource);
-    void endCommit();
-	void collectGarbageObjects();
-
-	GraphicsDeviceCaps m_caps;
-	uint32_t m_stateDirtyFlags;
-    GraphicsContextState m_staging;
-    GraphicsContextState m_committed;
-	std::vector<Ref<IGraphicsDeviceObject>> m_aliveObjects;
-};
-
-class IGraphicsContext
-    : public RefObject
-{
-protected:
-    virtual ~IGraphicsContext() = default;
+	IGraphicsDevice* m_device;
 };
 
 class ISwapChain

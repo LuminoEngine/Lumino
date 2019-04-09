@@ -177,9 +177,6 @@ OpenGLDeviceContext::OpenGLDeviceContext()
 	, m_uniformTempBuffer()
 	, m_uniformTempBufferWriter(&m_uniformTempBuffer)
 	, m_activeShaderPass(nullptr)
-	, m_currentIndexBuffer(nullptr)
-	, m_vao(0)
-	, m_fbo(0)
 {
 }
 
@@ -229,25 +226,17 @@ void OpenGLDeviceContext::init(const Settings& settings)
     // ignore error.
     while (glGetError() != 0);
 
-    GL_CHECK(glGenVertexArrays(1, &m_vao));
-	GL_CHECK(glGenFramebuffers(1, &m_fbo));
+	m_graphicsContext = makeRef<GLGraphicsContext>();
+	m_graphicsContext->init(this);
 
 	LN_LOG_DEBUG << "OpenGLDeviceContext::init end";
 }
 
 void OpenGLDeviceContext::dispose()
 {
-	if (m_vao)
-	{
-		GL_CHECK(glBindVertexArray(0));
-		GL_CHECK(glDeleteVertexArrays(1, &m_vao));
-		m_vao = 0;
-	}
-	if (m_fbo != 0)
-	{
-		GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-		GL_CHECK(glDeleteFramebuffers(1, &m_fbo));
-		m_fbo = 0;
+	if (m_graphicsContext) {
+		m_graphicsContext->dispose();
+		m_graphicsContext = nullptr;
 	}
 
     IGraphicsDevice::dispose();
@@ -259,6 +248,11 @@ void OpenGLDeviceContext::setActiveShaderPass(GLShaderPass* pass)
 		m_activeShaderPass = pass;
 		::glUseProgram((m_activeShaderPass) ? m_activeShaderPass->program() : 0);
 	}
+}
+
+IGraphicsContext* OpenGLDeviceContext::getGraphicsContext() const
+{
+	return m_graphicsContext;
 }
 
 void OpenGLDeviceContext::onGetCaps(GraphicsDeviceCaps* outCaps)
@@ -370,7 +364,46 @@ Ref<IShaderPass> OpenGLDeviceContext::onCreateShaderPass(const ShaderPassCreateI
 	return ptr;
 }
 
-void OpenGLDeviceContext::onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState)
+
+//=============================================================================
+// GLGraphicsContext
+
+GLGraphicsContext::GLGraphicsContext()
+	: m_device(nullptr)
+	, m_vao(0)
+	, m_fbo(0)
+	, m_currentIndexBuffer(nullptr)
+{
+}
+
+Result GLGraphicsContext::init(OpenGLDeviceContext* owner)
+{
+	LN_CHECK(owner);
+	m_device = owner;
+
+	GL_CHECK(glGenVertexArrays(1, &m_vao));
+	GL_CHECK(glGenFramebuffers(1, &m_fbo));
+
+	return true;
+}
+
+void GLGraphicsContext::dispose()
+{
+	if (m_vao)
+	{
+		GL_CHECK(glBindVertexArray(0));
+		GL_CHECK(glDeleteVertexArrays(1, &m_vao));
+		m_vao = 0;
+	}
+	if (m_fbo != 0)
+	{
+		GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+		GL_CHECK(glDeleteFramebuffers(1, &m_fbo));
+		m_fbo = 0;
+	}
+}
+
+void GLGraphicsContext::onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState)
 {
 	// BlendState
 	{
@@ -513,13 +546,13 @@ void OpenGLDeviceContext::onUpdatePipelineState(const BlendStateDesc& blendState
 		//	GL_CHECK(glDisable(GL_DEPTH_TEST));
 		//}
 
-        if (depthStencilState.depthTestFunc == ComparisonFunc::Always) {
-            GL_CHECK(glDisable(GL_DEPTH_TEST));
-        }
-        else {
-            GL_CHECK(glEnable(GL_DEPTH_TEST));
-            GL_CHECK(glDepthFunc(cmpFuncTable[(int)depthStencilState.depthTestFunc]));
-        }
+		if (depthStencilState.depthTestFunc == ComparisonFunc::Always) {
+			GL_CHECK(glDisable(GL_DEPTH_TEST));
+		}
+		else {
+			GL_CHECK(glEnable(GL_DEPTH_TEST));
+			GL_CHECK(glDepthFunc(cmpFuncTable[(int)depthStencilState.depthTestFunc]));
+		}
 
 		// depthWriteEnabled
 		GL_CHECK(glDepthMask(depthStencilState.depthWriteEnabled ? GL_TRUE : GL_FALSE));
@@ -546,14 +579,14 @@ void OpenGLDeviceContext::onUpdatePipelineState(const BlendStateDesc& blendState
 	}
 }
 
-void OpenGLDeviceContext::onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer)
+void GLGraphicsContext::onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer)
 {
-    if (m_fbo) {
-        GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_fbo));
-    }
+	if (m_fbo) {
+		GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_fbo));
+	}
 
 	// color buffers
-	int maxCount = std::min(renderTargetsCount, m_caps.MAX_COLOR_ATTACHMENTS);
+	int maxCount = std::min(renderTargetsCount, m_device->caps().MAX_COLOR_ATTACHMENTS);
 	for (int i = 0; i < renderTargetsCount; ++i)
 	{
 		if (renderTargets[i])
@@ -585,7 +618,7 @@ void OpenGLDeviceContext::onUpdateFrameBuffers(ITexture** renderTargets, int ren
 		glCheckFramebufferStatus(GL_FRAMEBUFFER));
 }
 
-void OpenGLDeviceContext::onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize)
+void GLGraphicsContext::onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize)
 {
 	GL_CHECK(glViewport(viewportRect.x, targetSize.height - (viewportRect.y + viewportRect.height), viewportRect.width, viewportRect.height));
 	//GL_CHECK(glViewport(0, 0, 160, 60));
@@ -595,7 +628,7 @@ void OpenGLDeviceContext::onUpdateRegionRects(const RectI& viewportRect, const R
 	GL_CHECK(glScissor(scissorRect.x, targetSize.height - (scissorRect.y + scissorRect.height), scissorRect.width, scissorRect.height));
 }
 
-void OpenGLDeviceContext::onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer)
+void GLGraphicsContext::onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer)
 {
 	//if (LN_REQUIRE(decls)) return;
 	//if (LN_REQUIRE(vertexBuufers)) return;
@@ -603,19 +636,19 @@ void OpenGLDeviceContext::onUpdatePrimitiveData(IVertexDeclaration* decls, IVert
 
 	// 複数の頂点バッファを使う
 	// https://qiita.com/y_UM4/items/75941cb75afb0a46aa5e
-	
+
 	// IVertexDeclaration で指定された頂点レイアウトと、GLSL に書かれている attribute 変数の定義順序が一致していることを前提としている。
 	// ※0.4.0 以前は変数名を固定していたが、それを廃止。リフレクションっぽいことをこのモジュールの中でやりたくない。複雑になりすぎる。
 
-    if (m_vao) {
-        GL_CHECK(glBindVertexArray(m_vao));
-    }
+	if (m_vao) {
+		GL_CHECK(glBindVertexArray(m_vao));
+	}
 
 	if (decls && vertexBuufers)
 	{
 		GLVertexDeclaration* glDecl = static_cast<GLVertexDeclaration*>(decls);
-		
-		for (int iElement = 0; iElement < m_caps.MAX_VERTEX_ATTRIBS; iElement++)
+
+		for (int iElement = 0; iElement < m_device->caps().MAX_VERTEX_ATTRIBS; iElement++)
 		{
 			GLuint attrLoc = iElement;	// 本来は attribute 変数の location
 
@@ -667,7 +700,7 @@ void OpenGLDeviceContext::onUpdatePrimitiveData(IVertexDeclaration* decls, IVert
 
 }
 
-void OpenGLDeviceContext::onUpdateShaderPass(IShaderPass* newPass)
+void GLGraphicsContext::onUpdateShaderPass(IShaderPass* newPass)
 {
 	if (newPass)
 	{
@@ -676,63 +709,63 @@ void OpenGLDeviceContext::onUpdateShaderPass(IShaderPass* newPass)
 	}
 }
 
-void* OpenGLDeviceContext::onMapResource(IGraphicsResource* resource)
+void* GLGraphicsContext::onMapResource(IGraphicsResource* resource)
 {
-    switch (resource->resourceType())
-    {
-    case DeviceResourceType::VertexBuffer:
-        return static_cast<GLVertexBuffer*>(resource)->map();
-    case DeviceResourceType::IndexBuffer:
-        return static_cast<GLIndexBuffer*>(resource)->map();
-    default:
-        LN_NOTIMPLEMENTED();
-        return nullptr;
-    }
+	switch (resource->resourceType())
+	{
+	case DeviceResourceType::VertexBuffer:
+		return static_cast<GLVertexBuffer*>(resource)->map();
+	case DeviceResourceType::IndexBuffer:
+		return static_cast<GLIndexBuffer*>(resource)->map();
+	default:
+		LN_NOTIMPLEMENTED();
+		return nullptr;
+	}
 }
 
-void OpenGLDeviceContext::onUnmapResource(IGraphicsResource* resource)
+void GLGraphicsContext::onUnmapResource(IGraphicsResource* resource)
 {
-    switch (resource->resourceType())
-    {
-    case DeviceResourceType::VertexBuffer:
-        static_cast<GLVertexBuffer*>(resource)->unmap();
-        break;
-    case DeviceResourceType::IndexBuffer:
-        static_cast<GLIndexBuffer*>(resource)->unmap();
-        break;
-    default:
-        LN_NOTIMPLEMENTED();
-        break;
-    }
+	switch (resource->resourceType())
+	{
+	case DeviceResourceType::VertexBuffer:
+		static_cast<GLVertexBuffer*>(resource)->unmap();
+		break;
+	case DeviceResourceType::IndexBuffer:
+		static_cast<GLIndexBuffer*>(resource)->unmap();
+		break;
+	default:
+		LN_NOTIMPLEMENTED();
+		break;
+	}
 }
 
-void OpenGLDeviceContext::onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length)
+void GLGraphicsContext::onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length)
 {
-    switch (resource->resourceType())
-    {
-    case DeviceResourceType::VertexBuffer:
-        static_cast<GLVertexBuffer*>(resource)->setSubData(offset, data, length);
-        break;
-    case DeviceResourceType::IndexBuffer:
-        static_cast<GLIndexBuffer*>(resource)->setSubData(offset, data, length);
-        break;
-    default:
-        LN_NOTIMPLEMENTED();
-        break;
-    }
+	switch (resource->resourceType())
+	{
+	case DeviceResourceType::VertexBuffer:
+		static_cast<GLVertexBuffer*>(resource)->setSubData(offset, data, length);
+		break;
+	case DeviceResourceType::IndexBuffer:
+		static_cast<GLIndexBuffer*>(resource)->setSubData(offset, data, length);
+		break;
+	default:
+		LN_NOTIMPLEMENTED();
+		break;
+	}
 }
 
-void OpenGLDeviceContext::onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
+void GLGraphicsContext::onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
 {
-    static_cast<GLTextureBase*>(resource)->setSubData(x, y, width, height, data, dataSize);
+	static_cast<GLTextureBase*>(resource)->setSubData(x, y, width, height, data, dataSize);
 }
 
-void OpenGLDeviceContext::onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
+void GLGraphicsContext::onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
 {
-    static_cast<GLTextureBase*>(resource)->setSubData3D(x, y, z, width, height, depth, data, dataSize);
+	static_cast<GLTextureBase*>(resource)->setSubData3D(x, y, z, width, height, depth, data, dataSize);
 }
 
-void OpenGLDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
+void GLGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
 	GLuint glflags = 0;
 
@@ -755,20 +788,20 @@ void OpenGLDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, f
 		GL_CHECK(glClearStencil(stencil));
 		glflags |= GL_STENCIL_BUFFER_BIT;
 	}
-	
+
 	GL_CHECK(glClear(glflags));
 }
 
-void OpenGLDeviceContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount)
+void GLGraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount)
 {
 	GLenum gl_prim;
 	int vertexCount;
 	getPrimitiveInfo(primitive, primitiveCount, &gl_prim, &vertexCount);
-	
+
 	GL_CHECK(glDrawArrays(gl_prim, startVertex, vertexCount));
 }
 
-void OpenGLDeviceContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount)
+void GLGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount)
 {
 	GLenum gl_prim;
 	int vertexCount;
@@ -787,56 +820,56 @@ void OpenGLDeviceContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, in
 	}
 }
 
-void OpenGLDeviceContext::onPresent(ISwapChain* swapChain)
+void GLGraphicsContext::onPresent(ISwapChain* swapChain)
 {
 	auto* s = static_cast<GLSwapChain*>(swapChain);
 
 	SizeI endpointSize;
 	s->getBackendBufferSize(&endpointSize);
 
-    SizeI bufferSize = s->getRenderTarget(0)->realSize();
+	SizeI bufferSize = s->getRenderTarget(0)->realSize();
 
 
 
 	// SwapChain の Framebuffer をウィンドウのバックバッファへ転送
-    {
-        GL_CHECK(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, s->defaultFBO()));
-        GL_CHECK(glBindFramebuffer(GL_READ_FRAMEBUFFER, s->fbo()));
+	{
+		GL_CHECK(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, s->defaultFBO()));
+		GL_CHECK(glBindFramebuffer(GL_READ_FRAMEBUFFER, s->fbo()));
 
-        //LN_LOG_INFO << endpointSize.width << ", " << endpointSize.height << ":" << bufferSize.width << ", " << bufferSize.height;
+		//LN_LOG_INFO << endpointSize.width << ", " << endpointSize.height << ":" << bufferSize.width << ", " << bufferSize.height;
 
-        // FIXME:
-        // Viewport を転送元に合わせないと、転送先全体に拡大してBlitできなかった。
-        // ちょっと腑に落ちないが・・・。
-        GL_CHECK(glDisable(GL_SCISSOR_TEST));
-        GL_CHECK(glScissor(0, 0, bufferSize.width, bufferSize.height));
-        GL_CHECK(glViewport(0, 0, bufferSize.width, bufferSize.height));
+		// FIXME:
+		// Viewport を転送元に合わせないと、転送先全体に拡大してBlitできなかった。
+		// ちょっと腑に落ちないが・・・。
+		GL_CHECK(glDisable(GL_SCISSOR_TEST));
+		GL_CHECK(glScissor(0, 0, bufferSize.width, bufferSize.height));
+		GL_CHECK(glViewport(0, 0, bufferSize.width, bufferSize.height));
 
-        //// 現在のフレームバッファにアタッチされているカラーバッファのレンダーバッファ名を取得
-        //GLint colorBufferName = 0;
-        //GL_CHECK(glGetFramebufferAttachmentParameteriv(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &colorBufferName));
+		//// 現在のフレームバッファにアタッチされているカラーバッファのレンダーバッファ名を取得
+		//GLint colorBufferName = 0;
+		//GL_CHECK(glGetFramebufferAttachmentParameteriv(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &colorBufferName));
 
-        //// レンダーバッファ(カラーバッファ)をバインド
-        //GL_CHECK(glBindRenderbuffer(GL_RENDERBUFFER, colorBufferName));
+		//// レンダーバッファ(カラーバッファ)をバインド
+		//GL_CHECK(glBindRenderbuffer(GL_RENDERBUFFER, colorBufferName));
 
-        // カラーバッファの幅と高さを取得
-        //GLint endpointWidth;
-        //GLint endpointHeight;
-        //GL_CHECK(glGetRenderbufferParameteriv(GL_FRAMEBUFFER, GL_RENDERBUFFER_WIDTH, &endpointWidth));
-        //GL_CHECK(glGetRenderbufferParameteriv(GL_FRAMEBUFFER, GL_RENDERBUFFER_HEIGHT, &endpointHeight));
+		// カラーバッファの幅と高さを取得
+		//GLint endpointWidth;
+		//GLint endpointHeight;
+		//GL_CHECK(glGetRenderbufferParameteriv(GL_FRAMEBUFFER, GL_RENDERBUFFER_WIDTH, &endpointWidth));
+		//GL_CHECK(glGetRenderbufferParameteriv(GL_FRAMEBUFFER, GL_RENDERBUFFER_HEIGHT, &endpointHeight));
 
-        // Blit
-        // ※EAGL(iOS) は destination が FBO ではない場合失敗する。それ以外は RenderTarget でも成功していた。
-        // TODO: デュアルディスプレイで指しなおすと、次回起動時に失敗する。PC再起動で治る。
-        GL_CHECK(glBlitFramebuffer(0, 0, bufferSize.width, bufferSize.height, 0, 0, endpointSize.width, endpointSize.height, GL_COLOR_BUFFER_BIT, GL_NEAREST));
-       
-        GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, s->defaultFBO()));
-    }
+		// Blit
+		// ※EAGL(iOS) は destination が FBO ではない場合失敗する。それ以外は RenderTarget でも成功していた。
+		// TODO: デュアルディスプレイで指しなおすと、次回起動時に失敗する。PC再起動で治る。
+		GL_CHECK(glBlitFramebuffer(0, 0, bufferSize.width, bufferSize.height, 0, 0, endpointSize.width, endpointSize.height, GL_COLOR_BUFFER_BIT, GL_NEAREST));
 
-	m_glContext->swap(s);
+		GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, s->defaultFBO()));
+	}
+
+	m_device->glContext()->swap(s);
 }
 
-void OpenGLDeviceContext::getPrimitiveInfo(PrimitiveTopology primitive, int primitiveCount, GLenum* gl_prim, int* vertexCount)
+void GLGraphicsContext::getPrimitiveInfo(PrimitiveTopology primitive, int primitiveCount, GLenum* gl_prim, int* vertexCount)
 {
 	switch (primitive)
 	{

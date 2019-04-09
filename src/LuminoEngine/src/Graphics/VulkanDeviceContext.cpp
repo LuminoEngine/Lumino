@@ -63,6 +63,7 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
 VulkanDeviceContext::VulkanDeviceContext()
     : m_instance(VK_NULL_HANDLE)
     , m_debugMessenger(VK_NULL_HANDLE)
+	, m_graphicsContext(nullptr)
 {
 }
 
@@ -71,42 +72,42 @@ bool VulkanDeviceContext::init(const Settings& settings, bool* outIsDriverSuppor
 	if (LN_REQUIRE(outIsDriverSupported)) return false;
 	*outIsDriverSupported = true;
 
-    if (!VulkanHelper::initVulkanFunctions()) {
-        LN_LOG_WARNING << "Valid vulkan library not found.";
+	if (!VulkanHelper::initVulkanFunctions()) {
+		LN_LOG_WARNING << "Valid vulkan library not found.";
 		*outIsDriverSupported = false;
-        return false;
-    }
-    if (!createInstance()) {
+		return false;
+	}
+	if (!createInstance()) {
 		*outIsDriverSupported = false;
-        return false;
-    }
-    if (!setupDebugMessenger()) {
-        return false;
-    }
-    if (!pickPhysicalDevice()) {
-        return false;
-    }
+		return false;
+	}
+	if (!setupDebugMessenger()) {
+		return false;
+	}
+	if (!pickPhysicalDevice()) {
+		return false;
+	}
 	if (!createLogicalDevice()) {
 		return false;
 	}
-    if (!createCommandPool()) {
-        return false;
-    }
+	if (!createCommandPool()) {
+		return false;
+	}
 
-    if (!m_renderPassCache.init(this)) {
-        return false;
-    }
-    if (!m_framebufferCache.init(this)) {
-        return false;
-    }
-    if (!m_pipelineCache.init(this)) {
-        return false;
-    }
+	if (!m_renderPassCache.init(this)) {
+		return false;
+	}
+	if (!m_framebufferCache.init(this)) {
+		return false;
+	}
+	if (!m_pipelineCache.init(this)) {
+		return false;
+	}
 
-    m_recodingCommandBuffer = makeRef<VulkanCommandBuffer>();
-    if (!m_recodingCommandBuffer->init(this)) {
-        return false;
-    }
+	m_graphicsContext = makeRef<VulkanGraphicsContext>();
+	if (!m_graphicsContext->init(this)) {
+		return false;
+	}
 
 	return true;
 }
@@ -118,10 +119,10 @@ void VulkanDeviceContext::dispose()
     // CommandBuffer は次回描画開始時や、解放のタイミング (今の時点) で、これらのリソース参照をはずす。
     // このとき、ShaderPass に対しては、VulkanDescriptorSetsPool を返却する。ShaderPass は dispose でこの VulkanDescriptorSetsPool を削除するので、
     // ShaderPass を dispose ずる前に CommandBuffer の dispose() を行う必要がある。
-    if (m_recodingCommandBuffer) {
-        m_recodingCommandBuffer->dispose();
-        m_recodingCommandBuffer = nullptr;
-    }
+	if (m_graphicsContext) {
+		m_graphicsContext->dispose();
+		m_graphicsContext = nullptr;
+	}
 
     IGraphicsDevice::dispose();
 
@@ -148,6 +149,11 @@ void VulkanDeviceContext::dispose()
         vkDestroyInstance(m_instance, vulkanAllocator());
         m_instance = VK_NULL_HANDLE;
     }
+}
+
+IGraphicsContext* VulkanDeviceContext::getGraphicsContext() const
+{
+	return m_graphicsContext;
 }
 
 void VulkanDeviceContext::onGetCaps(GraphicsDeviceCaps * outCaps)
@@ -269,218 +275,6 @@ Ref<IShaderPass> VulkanDeviceContext::onCreateShaderPass(const ShaderPassCreateI
         return nullptr;
     }
     return ptr;
-}
-
-void VulkanDeviceContext::onBeginCommandRecoding()
-{
-	m_recodingCommandBuffer->beginRecording();
-}
-
-void VulkanDeviceContext::onEndCommandRecoding()
-{
-	m_recodingCommandBuffer->endRecording();
-}
-
-void VulkanDeviceContext::onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState)
-{
-}
-
-void VulkanDeviceContext::onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer)
-{
-}
-
-void VulkanDeviceContext::onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize)
-{
-}
-
-void VulkanDeviceContext::onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer)
-{
-}
-
-void VulkanDeviceContext::onUpdateShaderPass(IShaderPass* newPass)
-{
-}
-
-void VulkanDeviceContext::onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource)
-{
-}
-
-void* VulkanDeviceContext::onMapResource(IGraphicsResource* resource)
-{
-    // データ転送に使う vkCmdCopyBuffer() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
-    m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
-
-    switch (resource->resourceType())
-    {
-    case DeviceResourceType::VertexBuffer:
-    {
-        VulkanVertexBuffer* vertexBuffer = static_cast<VulkanVertexBuffer*>(resource);
-        vertexBuffer->m_mappedResource = recodingCommandBuffer()->cmdCopyBuffer(vertexBuffer->buffer()->size(), vertexBuffer->buffer());
-        return vertexBuffer->m_mappedResource->map();
-    }
-    case DeviceResourceType::IndexBuffer:
-    {
-        VulkanIndexBuffer* indexBuffer = static_cast<VulkanIndexBuffer*>(resource);
-        indexBuffer->m_mappedResource = recodingCommandBuffer()->cmdCopyBuffer(indexBuffer->buffer()->size(), indexBuffer->buffer());
-        return indexBuffer->m_mappedResource->map();
-    }
-    default:
-        LN_NOTIMPLEMENTED();
-        return nullptr;
-    }
-}
-
-void VulkanDeviceContext::onUnmapResource(IGraphicsResource* resource)
-{
-    switch (resource->resourceType())
-    {
-    case DeviceResourceType::VertexBuffer:
-        static_cast<VulkanVertexBuffer*>(resource)->m_mappedResource->unmap();
-        break;
-    case DeviceResourceType::IndexBuffer:
-        static_cast<VulkanIndexBuffer*>(resource)->m_mappedResource->unmap();
-        break;
-    default:
-        LN_NOTIMPLEMENTED();
-        break;
-    }
-}
-
-void VulkanDeviceContext::onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length)
-{
-    switch (resource->resourceType())
-    {
-    case DeviceResourceType::VertexBuffer:
-        static_cast<VulkanVertexBuffer*>(resource)->setSubData(offset, data, length);
-        break;
-    case DeviceResourceType::IndexBuffer:
-        static_cast<VulkanIndexBuffer*>(resource)->setSubData(offset, data, length);
-        break;
-    default:
-        LN_NOTIMPLEMENTED();
-        break;
-    }
-}
-
-void VulkanDeviceContext::onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
-{
-    // データ転送に使う vkCmdCopyBufferToImage() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
-    m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
-
-    static_cast<VulkanTexture*>(resource)->setSubData(x, y, width, height, data, dataSize);
-}
-
-void VulkanDeviceContext::onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
-{
-    // データ転送に使う vkCmdCopyBufferToImage() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
-    m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
-
-    static_cast<VulkanTexture*>(resource)->setSubData3D(x, y, z, width, height, depth, data, dataSize);
-}
-
-void VulkanDeviceContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
-{
-    bool skipClear;
-    submitStatusInternal(GraphicsContextSubmitSource_Clear, flags, color, z, stencil, &skipClear);
-    if (skipClear) return;
-
-    const GraphicsContextState& state = stagingState();
-
-    SizeI size = state.framebufferState.renderTargets[0]->realSize();
-    {
-        VkClearRect rect[1];
-        rect[0].rect.offset.x = 0;
-        rect[0].rect.offset.y = 0;
-        rect[0].rect.extent.width = size.width;
-        rect[0].rect.extent.height = size.height;
-        rect[0].baseArrayLayer = 0;
-        rect[0].layerCount = 1;
-
-        VkClearAttachment attachments[MaxMultiRenderTargets + 1] = {};
-
-        uint32_t count = 0;
-        //uint32_t rtCount = 1;
-
-        if (testFlag(flags, ClearFlags::Color))
-        {
-            float frgba[4] = { color.r, color.g, color.b, color.a, };
-
-            for (uint32_t ii = 0; ii < state.framebufferState.renderTargets.size(); ++ii)
-            {
-                if (state.framebufferState.renderTargets[ii])
-                {
-                    attachments[count].colorAttachment = count;
-                    attachments[count].aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-                    attachments[count].clearValue.color.float32[0] = color.r;
-                    attachments[count].clearValue.color.float32[1] = color.g;
-                    attachments[count].clearValue.color.float32[2] = color.b;
-                    attachments[count].clearValue.color.float32[3] = color.a;
-                    ++count;
-                }
-            }
-        }
-
-        if ((testFlag(flags, ClearFlags::Depth) || testFlag(flags, ClearFlags::Stencil)) &&
-            state.framebufferState.depthBuffer != nullptr)
-        {
-            attachments[count].colorAttachment = count;
-            attachments[count].aspectMask = 0;
-            attachments[count].aspectMask |= (testFlag(flags, ClearFlags::Depth)) ? VK_IMAGE_ASPECT_DEPTH_BIT : 0;
-            attachments[count].aspectMask |= (testFlag(flags, ClearFlags::Stencil)) ? VK_IMAGE_ASPECT_STENCIL_BIT : 0;
-            attachments[count].clearValue.depthStencil.stencil = stencil;
-            attachments[count].clearValue.depthStencil.depth = z;
-            ++count;
-        }
-
-        vkCmdClearAttachments(
-            m_recodingCommandBuffer->vulkanCommandBuffer()
-            , count
-            , attachments
-            , LN_ARRAY_SIZE_OF(rect)
-            , rect
-        );
-
-    }
-}
-
-void VulkanDeviceContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount)
-{
-    submitStatusInternal(GraphicsContextSubmitSource_Draw, ClearFlags::None, Color::White, 0, 0, nullptr);
-    vkCmdDraw(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startVertex, 0);
-    m_recodingCommandBuffer->m_priorToAnyDrawCmds = false;
-}
-
-void VulkanDeviceContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount)
-{
-    submitStatusInternal(GraphicsContextSubmitSource_Draw, ClearFlags::None, Color::White, 0, 0, nullptr);
-    vkCmdDrawIndexed(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startIndex, 0, 0);
-    m_recodingCommandBuffer->m_priorToAnyDrawCmds = false;
-}
-
-// TODO: もし複数 swapchain へのレンダリングを1つの CommandBuffer でやる場合、flush 時には描画するすべての swapchain の image 準備を待たなければならない。
-// CommandBuffer 単位で、setRenderTarget された SwapChain の RenderTarget をすべて覚えておく仕組みが必要だろう。
-void VulkanDeviceContext::onFlushCommandBuffer(ITexture* affectRendreTarget)
-{
-    auto* t = static_cast<VulkanRenderTarget*>(affectRendreTarget);
-    recodingCommandBuffer()->submit(
-        t->imageAvailableSemaphore(),
-        t->renderFinishedSemaphore());
-
-    // [GeForce GTX 1060] 既にシグナル状態のセマフォを vkQueueSubmit で待つように指定すると、vkQueueSubmit が VK_ERROR_DEVICE_LOST を返す。
-    // 通常は vkAcquireNextImageKHR と vkQueueSubmit が交互に実行されるので問題ないが、
-    // RenderTarget の Read で一度 CommnadBuffer を vkQueueSubmit し、続けて CommnadBuffer の記録を再開 → vkQueueSubmit したときに問題になる。
-    // vkQueueSubmit で待ちたいのは vkAcquireNextImageKHR で準備開始された RenderTarget が本当に準備終わったかどうかなので、一度待てば十分。
-    // ということで、一度でも submit したら、↓ は null をセットして、次回の submit では何も待たないようにしておく。
-    t->setImageAvailableSemaphoreRef(nullptr);
-}
-
-void VulkanDeviceContext::onPresent(ISwapChain* swapChain)
-{
-    static_cast<VulkanSwapChain*>(swapChain)->present();
-
-    // TODO: あったほうがいい？
-    //vkDeviceWaitIdle(m_device);
-	//g_app.mainLoop();
 }
 
 Result VulkanDeviceContext::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType)
@@ -1022,183 +816,427 @@ Result VulkanDeviceContext::transitionImageLayoutImmediately(VkImage image, VkFo
     return result;
 }
 
-Result VulkanDeviceContext::submitStatusInternal(GraphicsContextSubmitSource submitSource, ClearFlags flags, const Color& color, float z, uint8_t stencil, bool* outSkipClear)
+
+
+//==============================================================================
+// VulkanGraphicsContext
+
+VulkanGraphicsContext::VulkanGraphicsContext()
+	: m_device(nullptr)
+	, m_recodingCommandBuffer(nullptr)
 {
-    const GraphicsContextState& state = stagingState();
-    uint32_t stateDirtyFlags = stagingStateDirtyFlags();
+}
 
-    bool clearBuffersOnBeginRenderPass = false;//(submitSource == SubmitSource_Clear && m_recodingCommandBuffer->m_priorToAnyDrawCmds);
-    if (outSkipClear) *outSkipClear = clearBuffersOnBeginRenderPass;
+Result VulkanGraphicsContext::init(VulkanDeviceContext* owner)
+{
+	LN_CHECK(owner);
+	m_device = owner;
 
-    //m_recodingCommandBuffer->beginRecording();
+	m_recodingCommandBuffer = makeRef<VulkanCommandBuffer>();
+	if (!m_recodingCommandBuffer->init(m_device)) {
+		return false;
+	}
 
-    //if (!m_recodingCommandBuffer->m_lastFoundFramebuffer)
-    if (stateDirtyFlags & GraphicsContextStateDirtyFlags_FrameBuffers)
-    {
-        // 前回開始した RenderPass があればクローズしておく
-        m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
+	return true;
+}
 
-        m_recodingCommandBuffer->m_lastFoundFramebuffer = framebufferCache()->findOrCreate(state.framebufferState);
+void VulkanGraphicsContext::dispose()
+{
+	if (m_recodingCommandBuffer) {
+		m_recodingCommandBuffer->dispose();
+		m_recodingCommandBuffer = nullptr;
+	}
+}
 
-    }
+void VulkanGraphicsContext::onBeginCommandRecoding()
+{
+	m_recodingCommandBuffer->beginRecording();
+}
 
-    // ↑の Framebuffer 変更や、mapResource などで RenderPass が End されていることがあるので、その場合はここで開始
-    if (!m_recodingCommandBuffer->m_insideRendarPass)
-    {
-        VulkanFramebuffer* framebuffer = framebufferCache()->findOrCreate(state.framebufferState);
-        m_recodingCommandBuffer->m_lastFoundFramebuffer = framebuffer;
-        {
-            VkRenderPassBeginInfo renderPassInfo = {};
-            renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-            renderPassInfo.renderPass = framebuffer->vulkanRenderPass();//renderPass;
-            renderPassInfo.framebuffer = framebuffer->vulkanFramebuffer();
-            renderPassInfo.renderArea.offset = { 0, 0 };
-            renderPassInfo.renderArea.extent.width = state.framebufferState.renderTargets[0]->realSize().width; //m_mainSwapchain->vulkanSwapchainExtent();
-            renderPassInfo.renderArea.extent.height = state.framebufferState.renderTargets[0]->realSize().height;
+void VulkanGraphicsContext::onEndCommandRecoding()
+{
+	m_recodingCommandBuffer->endRecording();
+}
 
-            if (clearBuffersOnBeginRenderPass) {
-                VkClearValue clearValues[MaxMultiRenderTargets + 1] = {};
-                uint32_t count = 0;
+void VulkanGraphicsContext::onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState)
+{
+}
 
-                if (testFlag(flags, ClearFlags::Color))
-                {
-                    float frgba[4] = { color.r, color.g, color.b, color.a, };
+void VulkanGraphicsContext::onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer)
+{
+}
 
-                    for (uint32_t ii = 0; ii < state.framebufferState.renderTargets.size(); ii++) {
-                        if (state.framebufferState.renderTargets[ii]) {
-                            clearValues[count].color = { color.r, color.g, color.b, color.a };
-                            count++;
-                        }
-                    }
-                }
+void VulkanGraphicsContext::onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize)
+{
+}
 
-                if ((testFlag(flags, ClearFlags::Depth) || testFlag(flags, ClearFlags::Stencil)) &&
-                    state.framebufferState.depthBuffer != nullptr) {
-                    clearValues[count].depthStencil = { z, stencil };
-                    count++;
-                }
+void VulkanGraphicsContext::onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer)
+{
+}
 
-                renderPassInfo.clearValueCount = count;
-                renderPassInfo.pClearValues = clearValues;
+void VulkanGraphicsContext::onUpdateShaderPass(IShaderPass* newPass)
+{
+}
 
-                vkCmdBeginRenderPass(m_recodingCommandBuffer->vulkanCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-            }
-            else {
-                renderPassInfo.clearValueCount = 0;
-                renderPassInfo.pClearValues = nullptr;
+void VulkanGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource)
+{
+}
 
-                vkCmdBeginRenderPass(m_recodingCommandBuffer->vulkanCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-            }
+void* VulkanGraphicsContext::onMapResource(IGraphicsResource* resource)
+{
+	// データ転送に使う vkCmdCopyBuffer() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
+	m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
 
-            m_recodingCommandBuffer->m_insideRendarPass = true;
-        }
-    }
+	switch (resource->resourceType())
+	{
+	case DeviceResourceType::VertexBuffer:
+	{
+		VulkanVertexBuffer* vertexBuffer = static_cast<VulkanVertexBuffer*>(resource);
+		vertexBuffer->m_mappedResource = recodingCommandBuffer()->cmdCopyBuffer(vertexBuffer->buffer()->size(), vertexBuffer->buffer());
+		return vertexBuffer->m_mappedResource->map();
+	}
+	case DeviceResourceType::IndexBuffer:
+	{
+		VulkanIndexBuffer* indexBuffer = static_cast<VulkanIndexBuffer*>(resource);
+		indexBuffer->m_mappedResource = recodingCommandBuffer()->cmdCopyBuffer(indexBuffer->buffer()->size(), indexBuffer->buffer());
+		return indexBuffer->m_mappedResource->map();
+	}
+	default:
+		LN_NOTIMPLEMENTED();
+		return nullptr;
+	}
+}
 
-    // TODO: modify チェック (以下の CmdSet や Bind は inside RenderPass である必要はない)
-    {
-        VkViewport viewport;
-        viewport.x = state.regionRects.viewportRect.x;
-        viewport.y = state.regionRects.viewportRect.height + state.regionRects.viewportRect.y;
-        viewport.width = state.regionRects.viewportRect.width;
-        viewport.height = -state.regionRects.viewportRect.height;   // height マイナスで、DirectX や OpenGL と同じ座標系になる
-        viewport.minDepth = 0.0f;
-        viewport.maxDepth = 1.0f;
-        vkCmdSetViewport(m_recodingCommandBuffer->vulkanCommandBuffer(), 0, 1, &viewport);
+void VulkanGraphicsContext::onUnmapResource(IGraphicsResource* resource)
+{
+	switch (resource->resourceType())
+	{
+	case DeviceResourceType::VertexBuffer:
+		static_cast<VulkanVertexBuffer*>(resource)->m_mappedResource->unmap();
+		break;
+	case DeviceResourceType::IndexBuffer:
+		static_cast<VulkanIndexBuffer*>(resource)->m_mappedResource->unmap();
+		break;
+	default:
+		LN_NOTIMPLEMENTED();
+		break;
+	}
+}
 
-        VkRect2D scissor;
-        scissor.offset.x = state.regionRects.scissorRect.x;
-        scissor.offset.y = state.regionRects.scissorRect.y;
-        scissor.extent.width = state.regionRects.scissorRect.width;
-        scissor.extent.height = state.regionRects.scissorRect.height;
-        vkCmdSetScissor(m_recodingCommandBuffer->vulkanCommandBuffer(), 0, 1, &scissor);
-    }
+void VulkanGraphicsContext::onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length)
+{
+	switch (resource->resourceType())
+	{
+	case DeviceResourceType::VertexBuffer:
+		static_cast<VulkanVertexBuffer*>(resource)->setSubData(offset, data, length);
+		break;
+	case DeviceResourceType::IndexBuffer:
+		static_cast<VulkanIndexBuffer*>(resource)->setSubData(offset, data, length);
+		break;
+	default:
+		LN_NOTIMPLEMENTED();
+		break;
+	}
+}
 
-    if (submitSource == GraphicsContextSubmitSource_Draw) {
+void VulkanGraphicsContext::onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
+{
+	// データ転送に使う vkCmdCopyBufferToImage() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
+	m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
 
-        //IGraphicsDevice::State state;
-        //state.pipelineState.shaderPass = m_shaderPass;
-        //state.pipelineState.vertexDeclaration = m_vertexDeclaration;
-        //state.framebufferState.renderTargets[0] = m_deviceContext->m_mainSwapchain->swapchainRenderTargets()[0];
-        //state.framebufferState.depthBuffer = m_depthImage;
-        //state.viewportRect.width = m_deviceContext->m_mainSwapchain->vulkanSwapchainExtent().width;
-        //state.viewportRect.height = m_deviceContext->m_mainSwapchain->vulkanSwapchainExtent().height;
-        VulkanPipeline* graphicsPipeline = pipelineCache()->findOrCreate(state, m_recodingCommandBuffer->m_lastFoundFramebuffer->vulkanRenderPass());
+	static_cast<VulkanTexture*>(resource)->setSubData(x, y, width, height, data, dataSize);
+}
+
+void VulkanGraphicsContext::onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
+{
+	// データ転送に使う vkCmdCopyBufferToImage() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
+	m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
+
+	static_cast<VulkanTexture*>(resource)->setSubData3D(x, y, z, width, height, depth, data, dataSize);
+}
+
+void VulkanGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
+{
+	bool skipClear;
+	submitStatusInternal(GraphicsContextSubmitSource_Clear, flags, color, z, stencil, &skipClear);
+	if (skipClear) return;
+
+	const GraphicsContextState& state = stagingState();
+
+	SizeI size = state.framebufferState.renderTargets[0]->realSize();
+	{
+		VkClearRect rect[1];
+		rect[0].rect.offset.x = 0;
+		rect[0].rect.offset.y = 0;
+		rect[0].rect.extent.width = size.width;
+		rect[0].rect.extent.height = size.height;
+		rect[0].baseArrayLayer = 0;
+		rect[0].layerCount = 1;
+
+		VkClearAttachment attachments[MaxMultiRenderTargets + 1] = {};
+
+		uint32_t count = 0;
+		//uint32_t rtCount = 1;
+
+		if (testFlag(flags, ClearFlags::Color))
+		{
+			float frgba[4] = { color.r, color.g, color.b, color.a, };
+
+			for (uint32_t ii = 0; ii < state.framebufferState.renderTargets.size(); ++ii)
+			{
+				if (state.framebufferState.renderTargets[ii])
+				{
+					attachments[count].colorAttachment = count;
+					attachments[count].aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+					attachments[count].clearValue.color.float32[0] = color.r;
+					attachments[count].clearValue.color.float32[1] = color.g;
+					attachments[count].clearValue.color.float32[2] = color.b;
+					attachments[count].clearValue.color.float32[3] = color.a;
+					++count;
+				}
+			}
+		}
+
+		if ((testFlag(flags, ClearFlags::Depth) || testFlag(flags, ClearFlags::Stencil)) &&
+			state.framebufferState.depthBuffer != nullptr)
+		{
+			attachments[count].colorAttachment = count;
+			attachments[count].aspectMask = 0;
+			attachments[count].aspectMask |= (testFlag(flags, ClearFlags::Depth)) ? VK_IMAGE_ASPECT_DEPTH_BIT : 0;
+			attachments[count].aspectMask |= (testFlag(flags, ClearFlags::Stencil)) ? VK_IMAGE_ASPECT_STENCIL_BIT : 0;
+			attachments[count].clearValue.depthStencil.stencil = stencil;
+			attachments[count].clearValue.depthStencil.depth = z;
+			++count;
+		}
+
+		vkCmdClearAttachments(
+			m_recodingCommandBuffer->vulkanCommandBuffer()
+			, count
+			, attachments
+			, LN_ARRAY_SIZE_OF(rect)
+			, rect
+		);
+
+	}
+}
+
+void VulkanGraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount)
+{
+	submitStatusInternal(GraphicsContextSubmitSource_Draw, ClearFlags::None, Color::White, 0, 0, nullptr);
+	vkCmdDraw(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startVertex, 0);
+	m_recodingCommandBuffer->m_priorToAnyDrawCmds = false;
+}
+
+void VulkanGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount)
+{
+	submitStatusInternal(GraphicsContextSubmitSource_Draw, ClearFlags::None, Color::White, 0, 0, nullptr);
+	vkCmdDrawIndexed(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startIndex, 0, 0);
+	m_recodingCommandBuffer->m_priorToAnyDrawCmds = false;
+}
+
+// TODO: もし複数 swapchain へのレンダリングを1つの CommandBuffer でやる場合、flush 時には描画するすべての swapchain の image 準備を待たなければならない。
+// CommandBuffer 単位で、setRenderTarget された SwapChain の RenderTarget をすべて覚えておく仕組みが必要だろう。
+void VulkanGraphicsContext::onFlushCommandBuffer(ITexture* affectRendreTarget)
+{
+	auto* t = static_cast<VulkanRenderTarget*>(affectRendreTarget);
+	recodingCommandBuffer()->submit(
+		t->imageAvailableSemaphore(),
+		t->renderFinishedSemaphore());
+
+	// [GeForce GTX 1060] 既にシグナル状態のセマフォを vkQueueSubmit で待つように指定すると、vkQueueSubmit が VK_ERROR_DEVICE_LOST を返す。
+	// 通常は vkAcquireNextImageKHR と vkQueueSubmit が交互に実行されるので問題ないが、
+	// RenderTarget の Read で一度 CommnadBuffer を vkQueueSubmit し、続けて CommnadBuffer の記録を再開 → vkQueueSubmit したときに問題になる。
+	// vkQueueSubmit で待ちたいのは vkAcquireNextImageKHR で準備開始された RenderTarget が本当に準備終わったかどうかなので、一度待てば十分。
+	// ということで、一度でも submit したら、↓ は null をセットして、次回の submit では何も待たないようにしておく。
+	t->setImageAvailableSemaphoreRef(nullptr);
+}
+
+void VulkanGraphicsContext::onPresent(ISwapChain* swapChain)
+{
+	static_cast<VulkanSwapChain*>(swapChain)->present();
+
+	// TODO: あったほうがいい？
+	//vkDeviceWaitIdle(m_device);
+	//g_app.mainLoop();
+}
+
+Result VulkanGraphicsContext::submitStatusInternal(GraphicsContextSubmitSource submitSource, ClearFlags flags, const Color& color, float z, uint8_t stencil, bool* outSkipClear)
+{
+	const GraphicsContextState& state = stagingState();
+	uint32_t stateDirtyFlags = stagingStateDirtyFlags();
+
+	bool clearBuffersOnBeginRenderPass = false;//(submitSource == SubmitSource_Clear && m_recodingCommandBuffer->m_priorToAnyDrawCmds);
+	if (outSkipClear) *outSkipClear = clearBuffersOnBeginRenderPass;
+
+	//m_recodingCommandBuffer->beginRecording();
+
+	//if (!m_recodingCommandBuffer->m_lastFoundFramebuffer)
+	if (stateDirtyFlags & GraphicsContextStateDirtyFlags_FrameBuffers)
+	{
+		// 前回開始した RenderPass があればクローズしておく
+		m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
+
+		m_recodingCommandBuffer->m_lastFoundFramebuffer = m_device->framebufferCache()->findOrCreate(state.framebufferState);
+
+	}
+
+	// ↑の Framebuffer 変更や、mapResource などで RenderPass が End されていることがあるので、その場合はここで開始
+	if (!m_recodingCommandBuffer->m_insideRendarPass)
+	{
+		VulkanFramebuffer* framebuffer = m_device->framebufferCache()->findOrCreate(state.framebufferState);
+		m_recodingCommandBuffer->m_lastFoundFramebuffer = framebuffer;
+		{
+			VkRenderPassBeginInfo renderPassInfo = {};
+			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+			renderPassInfo.renderPass = framebuffer->vulkanRenderPass();//renderPass;
+			renderPassInfo.framebuffer = framebuffer->vulkanFramebuffer();
+			renderPassInfo.renderArea.offset = { 0, 0 };
+			renderPassInfo.renderArea.extent.width = state.framebufferState.renderTargets[0]->realSize().width; //m_mainSwapchain->vulkanSwapchainExtent();
+			renderPassInfo.renderArea.extent.height = state.framebufferState.renderTargets[0]->realSize().height;
+
+			if (clearBuffersOnBeginRenderPass) {
+				VkClearValue clearValues[MaxMultiRenderTargets + 1] = {};
+				uint32_t count = 0;
+
+				if (testFlag(flags, ClearFlags::Color))
+				{
+					float frgba[4] = { color.r, color.g, color.b, color.a, };
+
+					for (uint32_t ii = 0; ii < state.framebufferState.renderTargets.size(); ii++) {
+						if (state.framebufferState.renderTargets[ii]) {
+							clearValues[count].color = { color.r, color.g, color.b, color.a };
+							count++;
+						}
+					}
+				}
+
+				if ((testFlag(flags, ClearFlags::Depth) || testFlag(flags, ClearFlags::Stencil)) &&
+					state.framebufferState.depthBuffer != nullptr) {
+					clearValues[count].depthStencil = { z, stencil };
+					count++;
+				}
+
+				renderPassInfo.clearValueCount = count;
+				renderPassInfo.pClearValues = clearValues;
+
+				vkCmdBeginRenderPass(m_recodingCommandBuffer->vulkanCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+			}
+			else {
+				renderPassInfo.clearValueCount = 0;
+				renderPassInfo.pClearValues = nullptr;
+
+				vkCmdBeginRenderPass(m_recodingCommandBuffer->vulkanCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+			}
+
+			m_recodingCommandBuffer->m_insideRendarPass = true;
+		}
+	}
+
+	// TODO: modify チェック (以下の CmdSet や Bind は inside RenderPass である必要はない)
+	{
+		VkViewport viewport;
+		viewport.x = state.regionRects.viewportRect.x;
+		viewport.y = state.regionRects.viewportRect.height + state.regionRects.viewportRect.y;
+		viewport.width = state.regionRects.viewportRect.width;
+		viewport.height = -state.regionRects.viewportRect.height;   // height マイナスで、DirectX や OpenGL と同じ座標系になる
+		viewport.minDepth = 0.0f;
+		viewport.maxDepth = 1.0f;
+		vkCmdSetViewport(m_recodingCommandBuffer->vulkanCommandBuffer(), 0, 1, &viewport);
+
+		VkRect2D scissor;
+		scissor.offset.x = state.regionRects.scissorRect.x;
+		scissor.offset.y = state.regionRects.scissorRect.y;
+		scissor.extent.width = state.regionRects.scissorRect.width;
+		scissor.extent.height = state.regionRects.scissorRect.height;
+		vkCmdSetScissor(m_recodingCommandBuffer->vulkanCommandBuffer(), 0, 1, &scissor);
+	}
+
+	if (submitSource == GraphicsContextSubmitSource_Draw) {
+
+		//IGraphicsDevice::State state;
+		//state.pipelineState.shaderPass = m_shaderPass;
+		//state.pipelineState.vertexDeclaration = m_vertexDeclaration;
+		//state.framebufferState.renderTargets[0] = m_deviceContext->m_mainSwapchain->swapchainRenderTargets()[0];
+		//state.framebufferState.depthBuffer = m_depthImage;
+		//state.viewportRect.width = m_deviceContext->m_mainSwapchain->vulkanSwapchainExtent().width;
+		//state.viewportRect.height = m_deviceContext->m_mainSwapchain->vulkanSwapchainExtent().height;
+		VulkanPipeline* graphicsPipeline = m_device->pipelineCache()->findOrCreate(state, m_recodingCommandBuffer->m_lastFoundFramebuffer->vulkanRenderPass());
 
 
-        vkCmdBindPipeline(m_recodingCommandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->vulkanPipeline());//graphicsPipeline);
+		vkCmdBindPipeline(m_recodingCommandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->vulkanPipeline());//graphicsPipeline);
 
 
-        {
-            std::array<VkBuffer, MaxVertexStreams> vertexBuffers;
-            int vbCount = 0;
-            for (int i = 0; i < state.primitive.vertexBuffers.size(); i++) {
-                if (state.primitive.vertexBuffers[i]) {
-                    auto* vertexBuffer = static_cast<VulkanVertexBuffer*>(state.primitive.vertexBuffers[i]);
-                    VkBuffer buffer = vertexBuffer->vulkanBuffer();//[] = { vertexBuffer->vulkanBuffer() };
-                    VkDeviceSize offset = 0;//[] = { 0 };
-                    vkCmdBindVertexBuffers(m_recodingCommandBuffer->vulkanCommandBuffer(), i, 1, &buffer, &offset);
-                }
-                //else {
-                //    VkBuffer buffer = VK_NULL_HANDLE;
-                //    VkDeviceSize offset = 0;
-                //    vkCmdBindVertexBuffers(m_recodingCommandBuffer->vulkanCommandBuffer(), i, 0, &buffer, &offset);
-                //}
-            }
+		{
+			std::array<VkBuffer, MaxVertexStreams> vertexBuffers;
+			int vbCount = 0;
+			for (int i = 0; i < state.primitive.vertexBuffers.size(); i++) {
+				if (state.primitive.vertexBuffers[i]) {
+					auto* vertexBuffer = static_cast<VulkanVertexBuffer*>(state.primitive.vertexBuffers[i]);
+					VkBuffer buffer = vertexBuffer->vulkanBuffer();//[] = { vertexBuffer->vulkanBuffer() };
+					VkDeviceSize offset = 0;//[] = { 0 };
+					vkCmdBindVertexBuffers(m_recodingCommandBuffer->vulkanCommandBuffer(), i, 1, &buffer, &offset);
+				}
+				//else {
+				//    VkBuffer buffer = VK_NULL_HANDLE;
+				//    VkDeviceSize offset = 0;
+				//    vkCmdBindVertexBuffers(m_recodingCommandBuffer->vulkanCommandBuffer(), i, 0, &buffer, &offset);
+				//}
+			}
 
-            auto* indexBuffer = static_cast<VulkanIndexBuffer*>(state.primitive.indexBuffer);
-
-
-            if (indexBuffer) {
-                vkCmdBindIndexBuffer(m_recodingCommandBuffer->vulkanCommandBuffer(), indexBuffer->vulkanBuffer(), 0, indexBuffer->indexType());
-            }
-        }
-
-        {
-            auto* shaderPass = static_cast<VulkanShaderPass*>(state.shaderPass);
-
-            // UniformBuffer は copy コマンドを使って更新できる。
-            // TODO: ただし、texture や sampler は vkUpdateDescriptorSets でしか更新できないのでこれもキャッシュしたりする仕組みがほしいところ。
-            //VulkanBuffer* buffer = m_recodingCommandBuffer->cmdCopyBuffer(sizeof(ubo), &m_uniformBuffer);
-            //VulkanShaderUniformBuffer* uniformBuffer = static_cast<VulkanShaderUniformBuffer*>(shaderPass->getUniformBuffer(0));
-            //uniformBuffer->setData(&ubo, sizeof(ubo));
+			auto* indexBuffer = static_cast<VulkanIndexBuffer*>(state.primitive.indexBuffer);
 
 
-            std::array<VkDescriptorSet, DescriptorType_Count> sets;
-            m_recodingCommandBuffer->allocateDescriptorSets(shaderPass, &sets);
-            vkCmdBindDescriptorSets(m_recodingCommandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, shaderPass->vulkanPipelineLayout(), 0, sets.size(), sets.data(), 0, nullptr);
+			if (indexBuffer) {
+				vkCmdBindIndexBuffer(m_recodingCommandBuffer->vulkanCommandBuffer(), indexBuffer->vulkanBuffer(), 0, indexBuffer->indexType());
+			}
+		}
 
-        }
+		{
+			auto* shaderPass = static_cast<VulkanShaderPass*>(state.shaderPass);
+
+			// UniformBuffer は copy コマンドを使って更新できる。
+			// TODO: ただし、texture や sampler は vkUpdateDescriptorSets でしか更新できないのでこれもキャッシュしたりする仕組みがほしいところ。
+			//VulkanBuffer* buffer = m_recodingCommandBuffer->cmdCopyBuffer(sizeof(ubo), &m_uniformBuffer);
+			//VulkanShaderUniformBuffer* uniformBuffer = static_cast<VulkanShaderUniformBuffer*>(shaderPass->getUniformBuffer(0));
+			//uniformBuffer->setData(&ubo, sizeof(ubo));
+
+
+			std::array<VkDescriptorSet, DescriptorType_Count> sets;
+			m_recodingCommandBuffer->allocateDescriptorSets(shaderPass, &sets);
+			vkCmdBindDescriptorSets(m_recodingCommandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, shaderPass->vulkanPipelineLayout(), 0, sets.size(), sets.data(), 0, nullptr);
+
+		}
 
 #if 0
-        //
-        // test
-        //vertices[0].pos.x = 0;
-        //vertices[0].pos.y = 0;
-        //VulkanBuffer* buffer = commandBuffer->cmdCopyBuffer(sizeof(vertices[0]) * vertices.size(), m_vertexBuffer->buffer());
-        //buffer->setData(0, vertices.data(), sizeof(vertices[0]) * vertices.size());
+		//
+		// test
+		//vertices[0].pos.x = 0;
+		//vertices[0].pos.y = 0;
+		//VulkanBuffer* buffer = commandBuffer->cmdCopyBuffer(sizeof(vertices[0]) * vertices.size(), m_vertexBuffer->buffer());
+		//buffer->setData(0, vertices.data(), sizeof(vertices[0]) * vertices.size());
 
-    //#if 1
-    //        m_uniformBuffers[imageIndex]->setData(0, &ubo, sizeof(ubo));
-    //#else
-    //        // CombindSamper ではなく、個別設定のレイアウトを使っていると、実行中キューと記録中キューの間で共有できないようだ。
-    //        // SubmitQueue が失敗する。
-    //        VulkanBuffer* buffer = commandBuffer->cmdCopyBuffer(sizeof(ubo), m_uniformBuffers[imageIndex].get());//&m_uniformBuffer);
-    //        buffer->setData(0, &ubo, sizeof(ubo));
-    //#endif
+	//#if 1
+	//        m_uniformBuffers[imageIndex]->setData(0, &ubo, sizeof(ubo));
+	//#else
+	//        // CombindSamper ではなく、個別設定のレイアウトを使っていると、実行中キューと記録中キューの間で共有できないようだ。
+	//        // SubmitQueue が失敗する。
+	//        VulkanBuffer* buffer = commandBuffer->cmdCopyBuffer(sizeof(ubo), m_uniformBuffers[imageIndex].get());//&m_uniformBuffer);
+	//        buffer->setData(0, &ubo, sizeof(ubo));
+	//#endif
 
-        vkCmdDrawIndexed(commandBuffer->vulkanCommandBuffer(), static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+		vkCmdDrawIndexed(commandBuffer->vulkanCommandBuffer(), static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 
-        // test
-        //vertices[0].pos.x = 0;
-        //vertices[0].pos.y = 0;
-        //m_vertexBuffer->setSubData(0, vertices.data(), sizeof(vertices[0]) * vertices.size());
+		// test
+		//vertices[0].pos.x = 0;
+		//vertices[0].pos.y = 0;
+		//m_vertexBuffer->setSubData(0, vertices.data(), sizeof(vertices[0]) * vertices.size());
 #endif
 
 
-    //
-    }
+	//
+	}
 
-    return true;
+	return true;
 }
 
 //Result VulkanDeviceContext::submitStatus(const State& state)
@@ -1487,8 +1525,8 @@ void VulkanSwapChain::present()
 
     // Swap command buffer
     {
-        auto t = m_deviceContext->recodingCommandBuffer();
-        m_deviceContext->setRecodingCommandBuffer(m_inFlightCommandBuffers[m_currentFrame]);
+        auto t = m_deviceContext->graphicsContext()->recodingCommandBuffer();
+        m_deviceContext->graphicsContext()->setRecodingCommandBuffer(m_inFlightCommandBuffers[m_currentFrame]);
         m_inFlightCommandBuffers[m_currentFrame] = t;
     }
 
@@ -1712,7 +1750,7 @@ void VulkanVertexBuffer::dispose()
 void VulkanVertexBuffer::setSubData(size_t offset, const void* data, size_t length)
 {
     // static/dynamic にかかわらず、コマンド経由で転送しなければ整合性が取れなくなる
-    VulkanBuffer* buffer = m_deviceContext->recodingCommandBuffer()->cmdCopyBuffer(length, &m_buffer);
+    VulkanBuffer* buffer = m_deviceContext->graphicsContext()->recodingCommandBuffer()->cmdCopyBuffer(length, &m_buffer);
     buffer->setData(offset, data, length);
 }
 
@@ -1770,7 +1808,7 @@ void VulkanIndexBuffer::dispose()
 void VulkanIndexBuffer::setSubData(size_t offset, const void* data, size_t length)
 {
     // static/dynamic にかかわらず、コマンド経由で転送しなければ整合性が取れなくなる
-    VulkanBuffer* buffer = m_deviceContext->recodingCommandBuffer()->cmdCopyBuffer(length, &m_buffer);
+    VulkanBuffer* buffer = m_deviceContext->graphicsContext()->recodingCommandBuffer()->cmdCopyBuffer(length, &m_buffer);
     buffer->setData(offset, data, length);
 }
 
@@ -1837,7 +1875,7 @@ void VulkanTexture2D::setSubData(int x, int y, int width, int height, const void
     // vkCmdCopyBufferToImage() の dstImageLayout は VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR の
     // いずれかでなければならない。https://www.khronos.org/registry/vulkan/specs/1.1-extensions/man/html/vkCmdCopyBufferToImage.html
     // 転送前にレイアウトを変更しておく。
-    if (!m_deviceContext->transitionImageLayout(m_deviceContext->recodingCommandBuffer()->vulkanCommandBuffer(),
+    if (!m_deviceContext->transitionImageLayout(m_deviceContext->graphicsContext()->recodingCommandBuffer()->vulkanCommandBuffer(),
         m_image.vulkanImage(), m_nativeFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)) {
         LN_ERROR();
         return;
@@ -1857,11 +1895,11 @@ void VulkanTexture2D::setSubData(int x, int y, int width, int height, const void
         static_cast<uint32_t>(height),
         1
     };
-    VulkanBuffer* buffer = m_deviceContext->recodingCommandBuffer()->cmdCopyBufferToImage(dataSize, region, &m_image);
+    VulkanBuffer* buffer = m_deviceContext->graphicsContext()->recodingCommandBuffer()->cmdCopyBufferToImage(dataSize, region, &m_image);
     buffer->setData(0, data, dataSize);
 
     // レイアウトを元に戻す
-    if (!m_deviceContext->transitionImageLayout(m_deviceContext->recodingCommandBuffer()->vulkanCommandBuffer(),
+    if (!m_deviceContext->transitionImageLayout(m_deviceContext->graphicsContext()->recodingCommandBuffer()->vulkanCommandBuffer(),
         m_image.vulkanImage(), m_nativeFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {
         LN_ERROR();
         return;

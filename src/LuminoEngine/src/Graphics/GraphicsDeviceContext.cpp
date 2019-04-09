@@ -42,6 +42,7 @@ IGraphicsResource::~IGraphicsResource()
 // IGraphicsDevice
 
 IGraphicsDevice::IGraphicsDevice()
+	: m_graphicsContext(nullptr)
 {
 }
 
@@ -59,6 +60,7 @@ void IGraphicsDevice::dispose()
 
 void IGraphicsDevice::refreshCaps()
 {
+	m_graphicsContext = getGraphicsContext();
 	onGetCaps(&m_caps);
 }
 
@@ -181,12 +183,12 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPass(const ShaderPassCreateInfo& c
 void IGraphicsDevice::begin()
 {
 	m_stateDirtyFlags = GraphicsContextStateDirtyFlags_All;
-	onBeginCommandRecoding();
+	m_graphicsContext->onBeginCommandRecoding();
 }
 
 void IGraphicsDevice::end()
 {
-	onEndCommandRecoding();
+	m_graphicsContext->onEndCommandRecoding();
 }
 
 void IGraphicsDevice::setBlendState(const BlendStateDesc& value)
@@ -278,58 +280,58 @@ void IGraphicsDevice::setPrimitiveTopology(PrimitiveTopology value)
 
 void* IGraphicsDevice::map(IGraphicsResource* resource)
 {
-    return onMapResource(resource);
+    return m_graphicsContext->onMapResource(resource);
 }
 
 void IGraphicsDevice::unmap(IGraphicsResource* resource)
 {
-    onUnmapResource(resource);
+	m_graphicsContext->onUnmapResource(resource);
 }
 
 void IGraphicsDevice::setSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length)
 {
-    onSetSubData(resource, offset, data, length);
+	m_graphicsContext->onSetSubData(resource, offset, data, length);
 }
 
 void IGraphicsDevice::setSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
 {
-    onSetSubData2D(resource, x, y, width, height, data, dataSize);
+	m_graphicsContext->onSetSubData2D(resource, x, y, width, height, data, dataSize);
 }
 
 void IGraphicsDevice::setSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
 {
-    onSetSubData3D(resource, x, y, z, width, height, depth, data, dataSize);
+	m_graphicsContext->onSetSubData3D(resource, x, y, z, width, height, depth, data, dataSize);
 }
 
 void IGraphicsDevice::clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
     commitStatus(GraphicsContextSubmitSource_Clear);
-	onClearBuffers(flags, color, z, stencil);
+	m_graphicsContext->onClearBuffers(flags, color, z, stencil);
     endCommit();
 }
 
 void IGraphicsDevice::drawPrimitive(int startVertex, int primitiveCount)
 {
     commitStatus(GraphicsContextSubmitSource_Draw);
-	onDrawPrimitive(m_staging.pipelineState.topology, startVertex, primitiveCount);
+	m_graphicsContext->onDrawPrimitive(m_staging.pipelineState.topology, startVertex, primitiveCount);
     endCommit();
 }
 
 void IGraphicsDevice::drawPrimitiveIndexed(int startIndex, int primitiveCount)
 {
     commitStatus(GraphicsContextSubmitSource_Draw);
-	onDrawPrimitiveIndexed(m_staging.pipelineState.topology, startIndex, primitiveCount);
+	m_graphicsContext->onDrawPrimitiveIndexed(m_staging.pipelineState.topology, startIndex, primitiveCount);
     endCommit();
 }
 
 void IGraphicsDevice::flushCommandBuffer(ITexture* affectRendreTarget)
 {
-    onFlushCommandBuffer(affectRendreTarget);
+	m_graphicsContext->onFlushCommandBuffer(affectRendreTarget);
 }
 
 void IGraphicsDevice::present(ISwapChain* swapChain)
 {
-	onPresent(swapChain);
+	m_graphicsContext->onPresent(swapChain);
 	collectGarbageObjects();
 }
 
@@ -390,17 +392,17 @@ void IGraphicsDevice::commitStatus(GraphicsContextSubmitSource submitSource)
 
 	// TODO: modified check
 
-	onUpdatePipelineState(m_staging.pipelineState.blendState, m_staging.pipelineState.rasterizerState, m_staging.pipelineState.depthStencilState);
+	m_graphicsContext->onUpdatePipelineState(m_staging.pipelineState.blendState, m_staging.pipelineState.rasterizerState, m_staging.pipelineState.depthStencilState);
 
-	onUpdateShaderPass(m_staging.shaderPass);
+	m_graphicsContext->onUpdateShaderPass(m_staging.shaderPass);
 
-	onUpdateFrameBuffers(m_staging.framebufferState.renderTargets.data(), m_staging.framebufferState.renderTargets.size(), m_staging.framebufferState.depthBuffer);
+	m_graphicsContext->onUpdateFrameBuffers(m_staging.framebufferState.renderTargets.data(), m_staging.framebufferState.renderTargets.size(), m_staging.framebufferState.depthBuffer);
 
-	onUpdateRegionRects(m_staging.regionRects.viewportRect, m_staging.regionRects.scissorRect, m_staging.framebufferState.renderTargets[0]->realSize());
+	m_graphicsContext->onUpdateRegionRects(m_staging.regionRects.viewportRect, m_staging.regionRects.scissorRect, m_staging.framebufferState.renderTargets[0]->realSize());
 
-	onUpdatePrimitiveData(m_staging.pipelineState.vertexDeclaration, m_staging.primitive.vertexBuffers.data(), m_staging.primitive.vertexBuffers.size(), m_staging.primitive.indexBuffer);
+	m_graphicsContext->onUpdatePrimitiveData(m_staging.pipelineState.vertexDeclaration, m_staging.primitive.vertexBuffers.data(), m_staging.primitive.vertexBuffers.size(), m_staging.primitive.indexBuffer);
 	
-    onSubmitStatus(m_staging, m_stateDirtyFlags, submitSource);
+	m_graphicsContext->onSubmitStatus(m_staging, m_stateDirtyFlags, submitSource);
 }
 
 void IGraphicsDevice::endCommit()
@@ -419,6 +421,21 @@ void IGraphicsDevice::collectGarbageObjects()
 		}
 	}
 }
+
+//=============================================================================
+// IGraphicsContext
+
+IGraphicsContext::IGraphicsContext()
+	: m_device(nullptr)
+{
+}
+
+Result IGraphicsContext::init(IGraphicsDevice* owner)
+{
+	m_device = owner;
+	return true;
+}
+
 
 //=============================================================================
 // ISwapChain
