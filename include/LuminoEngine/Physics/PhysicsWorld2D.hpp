@@ -198,7 +198,11 @@ private:
     friend class LocalContactListener;
 };
 
-class CollisionBody2D
+/**
+ * 他の物理オブジェクトが領域に侵入したことを検出するためのオブジェクトです。
+ * TriggerBody は物理演算に影響を与えません。
+ */
+class TriggerBody2D
     : public PhysicsObject2D
 {
 public:
@@ -219,6 +223,8 @@ public:
     //EventConnection connectOnTriggerStay(Trigger2DEventHandler handler);
 
 protected:
+    virtual void onBeforeStepSimulation() override;
+    virtual void onRemoveFromPhysicsWorld() override;
 
     ///** 他の PhysicsObject2D が、この CollisionBody との接触を開始したときに呼び出されます。*/
     //virtual void onTriggerEnter(PhysicsObject2D* otherObject);
@@ -230,11 +236,13 @@ protected:
     //virtual void onTriggerStay(PhysicsObject2D* otherObject);
     
 LN_CONSTRUCT_ACCESS:
-    CollisionBody2D();
-	virtual ~CollisionBody2D() = default;
+    TriggerBody2D();
+	virtual ~TriggerBody2D() = default;
 	void init();
 
 private:
+    void removeFromBox2DWorld();
+
     enum DirtyFlags
     {
         DirtyFlags_None = 0,

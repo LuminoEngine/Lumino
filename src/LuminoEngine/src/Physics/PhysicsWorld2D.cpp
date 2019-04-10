@@ -216,50 +216,74 @@ void PhysicsObject2D::endContact(PhysicsObject2D* otherObject)
 
 
 //==============================================================================
-// CollisionBody2D
+// TriggerBody2D
 
-CollisionBody2D::CollisionBody2D()
+TriggerBody2D::TriggerBody2D()
     : m_dirtyFlags(DirtyFlags_All)
 {
 }
 
-void CollisionBody2D::init()
+void TriggerBody2D::init()
 {
     PhysicsObject2D::init();
 }
 
-void CollisionBody2D::addCollisionShape(CollisionShape2D* shape)
+void TriggerBody2D::addCollisionShape(CollisionShape2D* shape)
 {
     if (LN_REQUIRE(shape)) return;
     m_shapes.push_back(shape);
 }
 
-//EventConnection CollisionBody2D::connectOnTriggerEnter(Trigger2DEventHandler handler)
+void TriggerBody2D::onBeforeStepSimulation()
+{
+    PhysicsObject2D::onBeforeStepSimulation();
+
+    if (physicsWorld() && !m_body)
+    {
+    }
+}
+
+void TriggerBody2D::onRemoveFromPhysicsWorld()
+{
+    removeFromBox2DWorld();
+    PhysicsObject2D::onRemoveFromPhysicsWorld();
+}
+
+void TriggerBody2D::removeFromBox2DWorld()
+{
+    if (m_body) {
+        m_body->GetWorld()->DestroyBody(m_body);
+        m_body = nullptr;
+        m_fixtures.clear();
+    }
+}
+
+//EventConnection TriggerBody2D::connectOnTriggerEnter(Trigger2DEventHandler handler)
 //{
 //    return m_onTriggerEnter.connect(handler);
 //}
 //
-//EventConnection CollisionBody2D::connectOnTriggerLeave(Trigger2DEventHandler handler)
+//EventConnection TriggerBody2D::connectOnTriggerLeave(Trigger2DEventHandler handler)
 //{
 //    return m_onTriggerLeave.connect(handler);
 //}
 //
-//EventConnection CollisionBody2D::connectOnTriggerStay(Trigger2DEventHandler handler)
+//EventConnection TriggerBody2D::connectOnTriggerStay(Trigger2DEventHandler handler)
 //{
 //    return m_onTriggerStay.connect(handler);
 //}
 //
-//void CollisionBody2D::onTriggerEnter(PhysicsObject2D* otherObject)
+//void TriggerBody2D::onTriggerEnter(PhysicsObject2D* otherObject)
 //{
 //    m_onTriggerEnter.raise(otherObject);
 //}
 //
-//void CollisionBody2D::onTriggerLeave(PhysicsObject2D* otherObject)
+//void TriggerBody2D::onTriggerLeave(PhysicsObject2D* otherObject)
 //{
 //    m_onTriggerLeave.raise(otherObject);
 //}
 //
-//void CollisionBody2D::onTriggerStay(PhysicsObject2D* otherObject)
+//void TriggerBody2D::onTriggerStay(PhysicsObject2D* otherObject)
 //{
 //    m_onTriggerStay.raise(otherObject);
 //}
