@@ -43,17 +43,28 @@ bool FontDesc::operator < (const FontDesc& right)
 
 uint64_t FontDesc::calcHash() const
 {
-    uint32_t v[2];
-    v[0] = CRCHash::compute(Family.c_str());
+	uint8_t flags = (((isBold) ? 1 : 0)) |
+		(((isItalic) ? 1 : 0) << 1) |
+		(((isAntiAlias) ? 1 : 0) << 2);
 
-    uint8_t* v2 = (uint8_t*)&v[1];
-    v2[0] = Size;
-    v2[1] =
-        (((isBold) ? 1 : 0)) |
-        (((isItalic) ? 1 : 0) << 1) |
-        (((isAntiAlias) ? 1 : 0) << 2);
+	return
+		static_cast<uint64_t>(CRCHash::compute(Family.c_str())) << 32 |
+		static_cast<uint16_t>(Size) << 16 |
+		flags;
 
-    return *((uint64_t*)&v);
+
+
+    //uint32_t v[2];
+    //v[0] = CRCHash::compute(Family.c_str());
+
+    //uint8_t* v2 = (uint8_t*)&v[1];
+    //v2[0] = Size;
+    //v2[1] =
+    //    (((isBold) ? 1 : 0)) |
+    //    (((isItalic) ? 1 : 0) << 1) |
+    //    (((isAntiAlias) ? 1 : 0) << 2);
+
+    //return *((uint64_t*)&v);
 }
 
 bool FontDesc::equals(const FontDesc& other) const
@@ -240,14 +251,17 @@ void FontManager::registerFontFromStream(Stream* stream, bool defaultFamily)
     }
 }
 
-Ref<FontCore> FontManager::lookupFontCore(const FontDesc& keyDesc)
+Ref<FontCore> FontManager::lookupFontCore(const FontDesc& keyDesc, float dpiScale)
 {
+	// 検索用のキーを作る
 	FontDesc actual = keyDesc;
 	if (actual.Family.isEmpty()) {
 		actual.Family = defaultFontDesc().Family;
 	}
+	actual.Size *= dpiScale;
 
-	uint32_t key = actual.calcHash();
+	// 検索
+	uint64_t key = actual.calcHash();
 	RefObject* ptr = m_fontCoreCache.findObject(key);
 	if (ptr) {
 		return static_cast<FontCore*>(ptr);

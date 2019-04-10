@@ -114,6 +114,9 @@ int main(int argc, char** argv)
 
 	Engine::initialize();
 
+	auto text1 = UITextBlock::create();
+	text1->setText("B");
+	//text1->setFontSize(22);
 	{
 
 		while (Engine::update()) {

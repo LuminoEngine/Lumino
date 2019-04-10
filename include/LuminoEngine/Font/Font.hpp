@@ -11,8 +11,6 @@ class FontHelper;
 
 /*
  * フォントのクラスです。
- *
- * ポイントサイズの単位は 1/96 インチです。
  */
 class Font
     : public Object
@@ -65,7 +63,7 @@ public:
     Ref<Font> clone() const;
 
     /** 指定した文字列を描画する際のピクセルサイズを計算します。*/
-    Size measureRenderSize(const StringRef& text);
+    Size measureRenderSize(const StringRef& text, float dpiScale = 1.0f);
 
 LN_CONSTRUCT_ACCESS:
     Font();
@@ -76,7 +74,7 @@ LN_CONSTRUCT_ACCESS:
     //void init(detail::GraphicsManager* manager, FontCore* builtinRawFont);
 
 private:
-    detail::FontCore* resolveFontCore();
+    detail::FontCore* resolveFontCore(float dpiScale);
 
     detail::FontManager* m_manager;
     detail::FontDesc m_desc;
@@ -90,7 +88,7 @@ namespace detail {
 class FontHelper
 {
 public:
-    static detail::FontCore* resolveFontCore(Font* font) { return font->resolveFontCore(); }
+    static detail::FontCore* resolveFontCore(Font* font, float dpiScale) { return font->resolveFontCore(dpiScale); }
 	static bool equalsFontDesc(const Font* font, const FontDesc& desc) { return font->m_desc.equals(desc); }
     static const FontDesc& getFontDesc(const Font* font) { return font->m_desc; }
 };

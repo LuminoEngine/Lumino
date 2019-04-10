@@ -32,7 +32,7 @@ void UITextBlock::init()
 
 Size UITextBlock::measureOverride(const Size& constraint)
 {
-	return Size(100, 20);
+	return Size(200, 100);
 }
 
 void UITextBlock::onRender(UIRenderingContext* context)

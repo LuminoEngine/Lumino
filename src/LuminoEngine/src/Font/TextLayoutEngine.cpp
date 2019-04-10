@@ -211,7 +211,7 @@ void BitmapTextRenderer::render(Bitmap2D* bitmap, const StringRef& text, const R
     m_bitmap = bitmap;
     m_rect = rect;
     m_color = color;
-    m_font = FontHelper::resolveFontCore(font);
+    m_font = FontHelper::resolveFontCore(font, 1.0f);
     layout(m_font, text.data(), text.length(), rect, 0, alignment);
 }
 

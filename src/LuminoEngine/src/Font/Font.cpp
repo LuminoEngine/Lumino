@@ -132,18 +132,18 @@ Ref<Font> Font::clone() const
     return ptr;
 }
 
-Size Font::measureRenderSize(const StringRef& text)
+Size Font::measureRenderSize(const StringRef& text, float dpiScale)
 {
-    detail::FontCore* font = resolveFontCore();
+    detail::FontCore* font = resolveFontCore(dpiScale);
     detail::MeasureTextLayoutEngine measureLayout;
     measureLayout.layout(font, text.data(), text.length(), Rect(), 0, TextAlignment::Left);
     return measureLayout.areaSize;
 }
 
-detail::FontCore* Font::resolveFontCore()
+detail::FontCore* Font::resolveFontCore(float dpiScale)
 {
     if (!m_rawFont) {
-        m_rawFont = m_manager->lookupFontCore(m_desc);
+        m_rawFont = m_manager->lookupFontCore(m_desc, dpiScale);
     }
     return m_rawFont;
 }

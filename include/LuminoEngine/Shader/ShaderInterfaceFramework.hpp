@@ -119,6 +119,8 @@ struct CameraInfo
     float nearClip = 0;
     float farClip = 0;
 
+	float dpiScale = 1.0f;
+
     void makeUnproject(const Size& size)
     {
         viewPixelSize = size;

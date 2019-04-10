@@ -33,7 +33,7 @@ public:
 	void dispose();
 	void registerFontFromFile(const StringRef& fontFilePath, bool defaultFamily);
     void registerFontFromStream(Stream* stream, bool defaultFamily);
-	Ref<FontCore> lookupFontCore(const FontDesc& keyDesc);
+	Ref<FontCore> lookupFontCore(const FontDesc& keyDesc, float dpiScale);
 
 	FTC_Manager ftCacheManager() const { return m_ftCacheManager; }
 	FTC_CMapCache ftCacheMapCache() const { return m_ftCMapCache; }
@@ -67,7 +67,7 @@ private:
     };
 
     AssetManager* m_assetManager;
-	ObjectCache<uint32_t, RefObject> m_fontCoreCache;
+	ObjectCache<uint64_t, RefObject> m_fontCoreCache;
 	List<FontCore*> m_aliveFontCoreList;
     EncodingConverter m_charToUTF32Converter;
     EncodingConverter m_wcharToUTF32Converter;

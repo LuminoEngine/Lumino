@@ -174,9 +174,14 @@ void FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
 	m_ftImageType.height = m_desc.Size;
 	updateImageFlags();
 
-
+	//float a1 = FLValueToFloatPx(m_ftFace->bbox.yMax);
+	//float a2 = FLValueToFloatPx(m_ftFace->bbox.yMin);
+	//float a3 = FLValueToFloatPx(m_ftFace->bbox.yMax - m_ftFace->bbox.yMin);
+	//float h = a1 - a2;
 	int width = std::ceil(FLValueToFloatPx(m_ftFace->bbox.xMax) - FLValueToFloatPx(m_ftFace->bbox.xMin));
 	int height = std::ceil(FLValueToFloatPx(m_ftFace->bbox.yMax) - FLValueToFloatPx(m_ftFace->bbox.yMin));
+	width += 2;		// antialias などが入ると微妙に増える。mplus で 22 ポイントにすると発生した。
+	height += 2;
 	m_internalCacheBitmap = newObject<Bitmap2D>(width, height, PixelFormat::A8);
 
 	// グリフ格納用ビットマップ (仮確保)

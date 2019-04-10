@@ -152,6 +152,7 @@ void InternalSpriteTextRender::flush(IGraphicsDevice* context, ITexture* glyphsT
 
 SpriteTextRenderFeature::SpriteTextRenderFeature()
 	: m_internal(nullptr)
+	, m_drawingFont(nullptr)
 {
 }
 
@@ -164,9 +165,11 @@ void SpriteTextRenderFeature::init(RenderingManager* manager)
 
 void SpriteTextRenderFeature::drawText(GraphicsContext* context, const FormattedText* text, const Matrix& transform)
 {
+	// validation. 先に updateRenderParameters によってセットされているはず
+	if (LN_ENSURE(m_drawingFont)) return;
+
 	m_drawingGraphicsContext = context;
 	m_drawingFormattedText = text;
-	m_drawingFont = FontHelper::resolveFontCore(text->font);
 	m_drawingFontGlyphCache = m_drawingFont->getFontGlyphTextureCache();
     m_drawingTransform = transform;
 
@@ -183,11 +186,20 @@ void SpriteTextRenderFeature::flush(GraphicsContext* context)
 void SpriteTextRenderFeature::updateRenderParameters(detail::RenderDrawElement* element, ShaderTechnique* tech, const detail::CameraInfo& cameraInfo, const detail::ElementInfo& elementInfo, const detail::SubsetInfo& subsetInfo)
 {
     auto* e = static_cast<DrawTextElement*>(element);
-    FontCore* font = FontHelper::resolveFontCore(e->formattedText->font);
+    FontCore* fontCore = FontHelper::resolveFontCore(e->formattedText->font, cameraInfo.dpiScale);
+
+	// validation. 一連の draw ~ flush までは同じフォントが使い続けられなければならない
+	if (m_drawingFont) {
+		if (LN_ENSURE(m_drawingFont == fontCore)) {
+			return;
+		}
+	}
+
+	m_drawingFont = fontCore;
 
     // グリフのマスクテクスチャを MainTexture として使う
     detail::SubsetInfo localSubsetInfo = subsetInfo;
-    localSubsetInfo.materialTexture = font->getFontGlyphTextureCache()->glyphsFillTexture();
+    localSubsetInfo.materialTexture = fontCore->getFontGlyphTextureCache()->glyphsFillTexture();
 
     RenderFeature::updateRenderParameters(element, tech, cameraInfo, elementInfo, localSubsetInfo);
 }
