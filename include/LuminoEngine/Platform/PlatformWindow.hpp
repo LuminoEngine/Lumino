@@ -14,6 +14,8 @@ public:
 	virtual ~PlatformWindow() = default;
 	//virtual void dispose() = 0;
 
+	float dpiFactor() const { return m_dpiFactor; }
+
     virtual void setWindowTitle(const String& title) = 0;
 	virtual void getSize(SizeI* size) = 0;
 	virtual void getFramebufferSize(int* width, int* height) = 0;   // スワップチェインのサイズとするべきサイズ (retina display や dpi スケーリングを考慮)
@@ -25,8 +27,12 @@ public:
 	void detachEventListener(IPlatforEventListener* listener);
 	bool sendEventToAllListener(const PlatformEventArgs& e);	// return : isHandled
 
+protected:
+	void setDPIFactor(float value) { m_dpiFactor = value; }
+
 private:
 	List<IPlatforEventListener*> m_eventListeners;
+	float m_dpiFactor;
 };
 
 } // namespace detail

@@ -108,7 +108,7 @@ int main(int argc, char** argv)
     GlobalLogger::addStdErrAdapter();
     EngineSettings::setMainWindowSize(800, 600);
     EngineSettings::setMainBackBufferSize(800, 600);
-    EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
+    EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);//GraphicsAPI::Vulkan);//
     EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
 
 

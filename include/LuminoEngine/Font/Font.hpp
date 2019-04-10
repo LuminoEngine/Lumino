@@ -9,6 +9,11 @@ class FontCore;
 class FontHelper;
 }
 
+/*
+ * フォントのクラスです。
+ *
+ * ポイントサイズの単位は 1/96 インチです。
+ */
 class Font
     : public Object
 {

@@ -2,8 +2,10 @@
 #ifdef _WIN32
 
 #include "Internal.hpp"
+#include <shellscalingapi.h>
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
 #include "Win32PlatformWindowManager.hpp"
+#pragma comment(lib, "Shcore.lib")
 
 namespace ln {
 namespace detail {
@@ -437,6 +439,24 @@ void AbstractWin32PlatformWindow::abjustLocationCentering(HWND hWnd)
 
     // サイズ変更せず移動だけ行う
     ::SetWindowPos(hWnd, NULL, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+}
+
+float AbstractWin32PlatformWindow::getDpiFactor(HWND hWnd)
+{
+	// システム設定の [テキスト、アプリ、その他の項目のサイズを変更する] で変更できるユーザースケーリングを気にする。
+	// 物理サイズは気にしない。（WPF と同じ動作）
+
+	HMONITOR hmon = MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST);
+	MONITORINFO monInfo;
+	monInfo.cbSize = sizeof(MONITORINFO);
+	GetMonitorInfo(hmon, &monInfo);
+
+	UINT effX = 0, effY = 0;
+	GetDpiForMonitor(hmon, MDT_EFFECTIVE_DPI, &effX, &effY);
+	// 100%: raw=165, eff=96
+	// 150%: raw=165, eff=144
+
+	return static_cast<float>(effX) / 96.0f;
 }
 
 

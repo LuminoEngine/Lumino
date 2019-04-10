@@ -7,6 +7,7 @@
 #if defined(LN_OS_WIN32)
 #	define GLFW_EXPOSE_NATIVE_WIN32
 #	include <GLFW/glfw3native.h>
+#	include "Win32PlatformWindowManager.hpp"
 #elif defined(LN_OS_MAC)
 #	define GLFW_EXPOSE_NATIVE_COCOA
 #	include <GLFW/glfw3native.h>
@@ -218,6 +219,8 @@ Result GLFWPlatformWindow::init(const WindowCreationSettings& settings)
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		m_glfwWindow = glfwCreateWindow(settings.clientSize.width, settings.clientSize.height, settings.title.toStdString().c_str(), NULL, NULL);
 		if (LN_ENSURE(m_glfwWindow)) return false;
+
+		setDPIFactor(AbstractWin32PlatformWindow::getDpiFactor((HWND)getWin32Window()));
 	}
 
 	glfwSetWindowUserPointer(m_glfwWindow, this);

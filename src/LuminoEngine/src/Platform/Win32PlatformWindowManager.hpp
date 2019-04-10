@@ -29,6 +29,7 @@ public:
     static Keys Win32KeyToLNKey(DWORD winVK);
     static void setWindowClientSize(HWND hWnd, const SizeI& clientSize);
     static void abjustLocationCentering(HWND hWnd);
+	static float getDpiFactor(HWND hWnd);
 
 protected:
     HWND m_hWnd;
