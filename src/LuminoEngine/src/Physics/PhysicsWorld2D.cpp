@@ -218,35 +218,51 @@ void PhysicsObject2D::endContact(PhysicsObject2D* otherObject)
 //==============================================================================
 // CollisionBody2D
 
-EventConnection CollisionBody2D::connectOnTriggerEnter(Trigger2DEventHandler handler)
+CollisionBody2D::CollisionBody2D()
+    : m_dirtyFlags(DirtyFlags_All)
 {
-    return m_onTriggerEnter.connect(handler);
 }
 
-EventConnection CollisionBody2D::connectOnTriggerLeave(Trigger2DEventHandler handler)
+void CollisionBody2D::init()
 {
-    return m_onTriggerLeave.connect(handler);
+    PhysicsObject2D::init();
 }
 
-EventConnection CollisionBody2D::connectOnTriggerStay(Trigger2DEventHandler handler)
+void CollisionBody2D::addCollisionShape(CollisionShape2D* shape)
 {
-    return m_onTriggerStay.connect(handler);
+    if (LN_REQUIRE(shape)) return;
+    m_shapes.push_back(shape);
 }
 
-void CollisionBody2D::onTriggerEnter(PhysicsObject2D* otherObject)
-{
-    m_onTriggerEnter.raise(otherObject);
-}
-
-void CollisionBody2D::onTriggerLeave(PhysicsObject2D* otherObject)
-{
-    m_onTriggerLeave.raise(otherObject);
-}
-
-void CollisionBody2D::onTriggerStay(PhysicsObject2D* otherObject)
-{
-    m_onTriggerStay.raise(otherObject);
-}
+//EventConnection CollisionBody2D::connectOnTriggerEnter(Trigger2DEventHandler handler)
+//{
+//    return m_onTriggerEnter.connect(handler);
+//}
+//
+//EventConnection CollisionBody2D::connectOnTriggerLeave(Trigger2DEventHandler handler)
+//{
+//    return m_onTriggerLeave.connect(handler);
+//}
+//
+//EventConnection CollisionBody2D::connectOnTriggerStay(Trigger2DEventHandler handler)
+//{
+//    return m_onTriggerStay.connect(handler);
+//}
+//
+//void CollisionBody2D::onTriggerEnter(PhysicsObject2D* otherObject)
+//{
+//    m_onTriggerEnter.raise(otherObject);
+//}
+//
+//void CollisionBody2D::onTriggerLeave(PhysicsObject2D* otherObject)
+//{
+//    m_onTriggerLeave.raise(otherObject);
+//}
+//
+//void CollisionBody2D::onTriggerStay(PhysicsObject2D* otherObject)
+//{
+//    m_onTriggerStay.raise(otherObject);
+//}
 
 //==============================================================================
 // RigidBody2D

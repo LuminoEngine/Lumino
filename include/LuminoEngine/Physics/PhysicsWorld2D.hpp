@@ -202,29 +202,32 @@ class CollisionBody2D
     : public PhysicsObject2D
 {
 public:
-    
-    /** onTriggerEnter イベントの通知を受け取るコールバックを登録します。*/
-    LN_METHOD(Event)
-    EventConnection connectOnTriggerEnter(Trigger2DEventHandler handler);
 
-    /** onTriggerLeave イベントの通知を受け取るコールバックを登録します。*/
-    LN_METHOD(Event)
-    EventConnection connectOnTriggerLeave(Trigger2DEventHandler handler);
+    void addCollisionShape(CollisionShape2D* shape);
 
-    /** onTriggerStay イベントの通知を受け取るコールバックを登録します。*/
-    LN_METHOD(Event)
-    EventConnection connectOnTriggerStay(Trigger2DEventHandler handler);
+    //
+    ///** onTriggerEnter イベントの通知を受け取るコールバックを登録します。*/
+    //LN_METHOD(Event)
+    //EventConnection connectOnTriggerEnter(Trigger2DEventHandler handler);
+
+    ///** onTriggerLeave イベントの通知を受け取るコールバックを登録します。*/
+    //LN_METHOD(Event)
+    //EventConnection connectOnTriggerLeave(Trigger2DEventHandler handler);
+
+    ///** onTriggerStay イベントの通知を受け取るコールバックを登録します。*/
+    //LN_METHOD(Event)
+    //EventConnection connectOnTriggerStay(Trigger2DEventHandler handler);
 
 protected:
 
-    /** 他の PhysicsObject2D が、この CollisionBody との接触を開始したときに呼び出されます。*/
-    virtual void onTriggerEnter(PhysicsObject2D* otherObject);
+    ///** 他の PhysicsObject2D が、この CollisionBody との接触を開始したときに呼び出されます。*/
+    //virtual void onTriggerEnter(PhysicsObject2D* otherObject);
 
-    /** 他の PhysicsObject2D が、この CollisionBody との接触を終了したときに呼び出されます。*/
-    virtual void onTriggerLeave(PhysicsObject2D* otherObject);
+    ///** 他の PhysicsObject2D が、この CollisionBody との接触を終了したときに呼び出されます。*/
+    //virtual void onTriggerLeave(PhysicsObject2D* otherObject);
 
-    /** 他の PhysicsObject2D が、この Collider との接触している間呼び出されます。*/
-    virtual void onTriggerStay(PhysicsObject2D* otherObject);
+    ///** 他の PhysicsObject2D が、この Collider との接触している間呼び出されます。*/
+    //virtual void onTriggerStay(PhysicsObject2D* otherObject);
     
 LN_CONSTRUCT_ACCESS:
     CollisionBody2D();
@@ -232,9 +235,24 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 private:
-    Event<Trigger2DEventHandler> m_onTriggerEnter;
-    Event<Trigger2DEventHandler> m_onTriggerLeave;
-    Event<Trigger2DEventHandler> m_onTriggerStay;
+    enum DirtyFlags
+    {
+        DirtyFlags_None = 0,
+        DirtyFlags_Shapes = 0x0001,
+        DirtyFlags_All = 0xFFFF,
+    };
+
+    b2Body* m_body;
+    std::vector<b2Fixture*> m_fixtures;
+    std::vector<Ref<CollisionShape2D>> m_shapes;
+    uint32_t m_dirtyFlags;
+
+    //Event<Trigger2DEventHandler> m_onTriggerEnter;
+    //Event<Trigger2DEventHandler> m_onTriggerLeave;
+    //Event<Trigger2DEventHandler> m_onTriggerStay;
+
+
+
 };
 
 class RigidBody2D
