@@ -159,7 +159,7 @@ void Main()
     playerBody->addCollisionShape(BoxCollisionShape2D::create(1, 1));
     playerBody->setMass(2);
     playerBody->setFixedRotation(true);
-    playerBody->setCollisionGroup(GroundGroup);
+    playerBody->setCollisionGroup(PlayerGroup);
     playerSprite->addComponent(playerBody);
 
     // 画面外への移動を制限するための剛体

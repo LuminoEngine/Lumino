@@ -98,20 +98,6 @@ int main(int argc, char** argv)
 #ifdef _WIN32
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
-    {
-        Random ra;
-        for (int i = 0; i < 10; i++) {
-            std::cout << ra.getInt() << std::endl;
-        }
-    }
-    printf("----\n");
-    {
-        Random ra;
-        for (int i = 0; i < 10; i++) {
-            std::cout << ra.floatValue() << std::endl;
-        }
-    }
-
 	GlobalLogger::addStdErrAdapter();
     EngineSettings::setEngineFeatures(EngineFeature::Experimental);
 	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
