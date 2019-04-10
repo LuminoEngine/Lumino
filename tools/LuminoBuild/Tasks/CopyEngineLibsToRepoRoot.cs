@@ -17,7 +17,7 @@ namespace LuminoBuild.Tasks
         {
             var tempInstallDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir);
             var nativeEngineRoot = builder.LuminoRootDir;
-            MakeReleasePackage.CopyEngineLibs(builder, tempInstallDir, nativeEngineRoot);
+            MakeReleasePackage.CopyEngineLibs(builder, tempInstallDir, nativeEngineRoot, false);
         }
     }
 }
