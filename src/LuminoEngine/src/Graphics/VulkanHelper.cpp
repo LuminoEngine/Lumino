@@ -953,8 +953,8 @@ Result VulkanLinearAllocator::init()
 
 void* VulkanLinearAllocator::alloc(size_t size, size_t alignment, VkSystemAllocationScope scope) noexcept
 {
-	// TODO: alignment
-	void* ptr = m_linearAllocator->allocate(size);
+	// alignment しないと、Radeon Vega 8 で落ちることがあった
+	void* ptr = m_linearAllocator->allocate(size, alignment);
 	assert(((size_t)ptr) % alignment == 0);
 	return ptr;
 }
