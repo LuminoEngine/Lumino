@@ -13,7 +13,7 @@ namespace LuminoBuild.Rules
 
         public override void Build(Builder builder)
         {
-            builder.DoTask("MakeReleasePackage");
+            builder.DoTask(new Tasks.MakeReleasePackage() { FileMoving = true });
             builder.DoTask("CompressPackage");
             
             if (Utils.IsWin32)

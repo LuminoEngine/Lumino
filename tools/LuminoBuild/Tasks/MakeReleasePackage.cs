@@ -11,6 +11,8 @@ namespace LuminoBuild.Tasks
 
         public override string Description => "MakeReleasePackage";
 
+        public bool FileMoving = false;
+
         public override void Build(Builder builder)
         {
             var tempInstallDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir);
@@ -66,7 +68,7 @@ namespace LuminoBuild.Tasks
                 }
 
                 // lib files
-                CopyEngineLibs(builder, tempInstallDir, nativeEngineRoot);
+                CopyEngineLibs(builder, tempInstallDir, nativeEngineRoot, FileMoving);
 
                 // bin files
                 {
@@ -108,7 +110,7 @@ namespace LuminoBuild.Tasks
             }
         }
 
-        public static void CopyEngineLibs(Builder builder, string tempInstallDir, string nativeEngineRoot)
+        public static void CopyEngineLibs(Builder builder, string tempInstallDir, string nativeEngineRoot, bool fileMoving)
         {
             var externalLibs = new string[]
             {
@@ -133,11 +135,15 @@ namespace LuminoBuild.Tasks
             {
                 if (Directory.Exists(Path.Combine(tempInstallDir, arch.SourceDirName)))   // copy if directory exists.
                 {
-                    // Engine libs
                     var targetDir = Path.Combine(nativeEngineRoot, "lib", arch.DestDirName);
-                    Utils.CopyDirectory(
-                        Path.Combine(tempInstallDir, arch.SourceDirName/*, "lib"*/),
-                        targetDir);
+
+                    // Engine libs
+                    {
+                        var srcDir = Path.Combine(tempInstallDir, arch.SourceDirName/*, "lib"*/);
+                        Utils.CopyDirectory(srcDir, targetDir);
+                        if (fileMoving)
+                            Directory.Delete(srcDir, true); // FIXME: CI サーバのストレージ不足対策
+                    }
 
                     // External libs
                     var externalInstallDir = Path.Combine(builder.LuminoBuildDir, arch.SourceDirName, "ExternalInstall");
@@ -146,9 +152,9 @@ namespace LuminoBuild.Tasks
                         var srcDir = Path.Combine(externalInstallDir, lib, "lib");
                         if (Directory.Exists(srcDir))   // copy if directory exists. openal-soft etc are optional.
                         {
-                            Utils.CopyDirectory(
-                                srcDir,
-                                targetDir);
+                            Utils.CopyDirectory(srcDir, targetDir);
+                            if (fileMoving)
+                                Directory.Delete(srcDir, true); // FIXME: CI サーバのストレージ不足対策
                         }
                     }
 

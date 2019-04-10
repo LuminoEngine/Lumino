@@ -89,6 +89,20 @@ namespace LuminoBuild
                 throw new Exception($"[{name}] Task failed.");
             }
         }
+        public void DoTask(BuildTask task)
+        {
+            try
+            {
+                Execute(new List<BuildTask>() { task });
+            }
+            catch (Exception e)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(e.ToString());
+                Console.ResetColor(); // 色のリセット
+                throw new Exception($"[{task.CommandName}] Task failed.");
+            }
+        }
 
         public void DoRule(string name)
         {
@@ -129,6 +143,11 @@ namespace LuminoBuild
                 }
             }
 
+            Execute(tasks);
+        }
+
+        private void Execute(List<BuildTask> tasks)
+        {
             foreach (var task in tasks)
             {
                 task.CheckPrerequisite(this);
