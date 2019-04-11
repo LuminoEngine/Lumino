@@ -220,7 +220,9 @@ Result GLFWPlatformWindow::init(const WindowCreationSettings& settings)
 		m_glfwWindow = glfwCreateWindow(settings.clientSize.width, settings.clientSize.height, settings.title.toStdString().c_str(), NULL, NULL);
 		if (LN_ENSURE(m_glfwWindow)) return false;
 
+#if defined(LN_OS_WIN32)
 		setDPIFactor(AbstractWin32PlatformWindow::getDpiFactor((HWND)getWin32Window()));
+#endif
 	}
 
 	glfwSetWindowUserPointer(m_glfwWindow, this);
