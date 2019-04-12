@@ -49,7 +49,6 @@ public:
 	virtual void decomposeOutline(UTF32 utf32code, VectorGlyphInfo* outInfo) override;
 
 private:
-	void updateImageFlags();
 	bool getOutlineTextMetrix();
 	bool getBitmapTextMetrix();
 	void FTBitmapToBitmap2D(FT_Bitmap* ftBitmap, Bitmap2D* bitmap) const;

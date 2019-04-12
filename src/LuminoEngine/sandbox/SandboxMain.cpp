@@ -112,12 +112,14 @@ int main(int argc, char** argv)
 
 
 	Engine::initialize();
+	Font::registerFontFromFile(u"C:/Users/hldc0061/Downloads/mplus-TESTFLIGHT-063/mplus-1c-regular.ttf");
 
 
 
 	auto text1 = UITextBlock::create();
-	text1->setText("B");
-	text1->setFontSize(22);
+	text1->setText(u"ABCDEFGabcdefg");
+	text1->setFontFamily(u"M+ 1c");
+	text1->setFontSize(20);
 	{
 
 		while (Engine::update()) {

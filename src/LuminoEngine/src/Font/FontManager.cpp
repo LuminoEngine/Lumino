@@ -20,7 +20,7 @@ namespace detail {
    
 FontDesc::FontDesc()
     : Family()
-    , Size(16)
+    , Size(20)
     , isBold(false)
     , isItalic(false)
     , isAntiAlias(true)

@@ -530,11 +530,10 @@ Result FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
 	FT_Error err = FT_New_Memory_Face(manager->ftLibrary(), (const FT_Byte*)faceSource->buffer->data(), faceSource->buffer->size(), faceSource->faceIndex, &m_face);
 	if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return false;
 
-	err = FT_Set_Char_Size(m_face, m_desc.Size << 6, m_desc.Size << 6, 96, 96);
+	err = FT_Set_Char_Size(m_face, m_desc.Size << 6, m_desc.Size << 6, 72, 72);	// 72: https://docs.microsoft.com/ja-jp/windows/desktop/LearnWin32/dpi-and-device-independent-pixels
 	if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return false;
 
-	m_loadFlags = FT_LOAD_NO_BITMAP;
-
+	m_loadFlags = FT_LOAD_DEFAULT;
 
 	// lookupGlyphBitmap の結果を書き込むためのビットマップを作っておく。
 	// Antialias などが有効になると bbox のサイズでは収まらなくなることがあるため、サイズを余分に確保しておく。
@@ -551,6 +550,8 @@ void FreeTypeFont::dispose()
 		FT_Done_Face(m_face);
 		m_face = nullptr;
 	}
+
+	FontCore::dispose();
 }
 
 void FreeTypeFont::getGlobalMetrics(FontGlobalMetrics* outMetrics)
@@ -671,10 +672,6 @@ void FreeTypeFont::lookupGlyphBitmap(UTF32 utf32code, BitmapGlyphInfo* outInfo)
 void FreeTypeFont::decomposeOutline(UTF32 utf32code, VectorGlyphInfo* outInfo)
 {
 	LN_NOTIMPLEMENTED();
-}
-
-void FreeTypeFont::updateImageFlags()
-{
 }
 
 bool FreeTypeFont::getOutlineTextMetrix()
