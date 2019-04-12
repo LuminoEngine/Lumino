@@ -17,7 +17,11 @@ class Font;
 namespace detail {
 class FontCore;
 
-
+struct FontFaceSource
+{
+	Ref<ByteBuffer> buffer;
+	int faceIndex;
+};
 
 class FontManager
 	: public RefObject
@@ -35,6 +39,7 @@ public:
     void registerFontFromStream(Stream* stream, bool defaultFamily);
 	Ref<FontCore> lookupFontCore(const FontDesc& keyDesc, float dpiScale);
 
+	FT_Library ftLibrary() const { return m_ftLibrary; }
 	FTC_Manager ftCacheManager() const { return m_ftCacheManager; }
 	FTC_CMapCache ftCacheMapCache() const { return m_ftCMapCache; }
 	FTC_ImageCache ftCImageCache() const { return m_ftImageCache; }
@@ -46,6 +51,8 @@ public:
     void setDefaultFont(Font* font);
     FontDesc defaultFontDesc() const;
     Font* defaultFont() const;
+
+	const FontFaceSource* lookupFontFaceSourceFromFamilyName(const String& name);
 
 private:
     static FT_Error callbackFaceRequester(FTC_FaceID face_id, FT_Library library, FT_Pointer request_data, FT_Face* aface);
@@ -84,6 +91,8 @@ private:
 
     //FontDesc m_defaultFontDesc;
     Ref<Font> m_defaultFont;
+
+	std::unordered_map<String, FontFaceSource> m_famlyNameToFontFaceSourceMap;
 };
 
 } // namespace detail

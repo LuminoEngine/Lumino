@@ -6,11 +6,11 @@ class Bitmap2D;
 
 namespace detail {
 
-class FreeTypeFont
+class FreeTypeFontCached
 	: public FontCore
 {
 public:
-    FreeTypeFont();
+    FreeTypeFontCached();
 	void init(FontManager* manager, const FontDesc& desc);
 	virtual void dispose() override;
 
@@ -33,6 +33,33 @@ private:
 	FTC_ImageTypeRec m_ftImageType;	// キャッシュからグリフビットマップを取りだすための情報
 	Ref<Bitmap2D> m_internalCacheBitmap;
 };
+
+class FreeTypeFont
+	: public FontCore
+{
+public:
+	FreeTypeFont();
+	Result init(FontManager* manager, const FontDesc& desc);
+	virtual void dispose() override;
+
+	virtual void getGlobalMetrics(FontGlobalMetrics* outMetrics) override;
+	virtual void getGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics) override;
+	virtual Vector2 getKerning(UTF32 prev, UTF32 next) override;
+	virtual void lookupGlyphBitmap(UTF32 utf32code, BitmapGlyphInfo* outInfo) override;
+	virtual void decomposeOutline(UTF32 utf32code, VectorGlyphInfo* outInfo) override;
+
+private:
+	void updateImageFlags();
+	bool getOutlineTextMetrix();
+	bool getBitmapTextMetrix();
+	void FTBitmapToBitmap2D(FT_Bitmap* ftBitmap, Bitmap2D* bitmap) const;
+
+	FontDesc m_desc;
+	FT_Face m_face;
+	FT_Int32 m_loadFlags;
+	Ref<Bitmap2D> m_internalCacheBitmap;
+};
+
 
 } // namespace detail
 } // namespace ln

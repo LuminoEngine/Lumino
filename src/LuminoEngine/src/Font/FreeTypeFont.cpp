@@ -7,6 +7,7 @@
 #include FT_TRUETYPE_TABLES_H /* <freetype/tttables.h> */
 #include FT_SFNT_NAMES_H
 #include FT_STROKER_H
+#include FT_SYNTHESIS_H
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include "FontManager.hpp"
 #include "FreeTypeFont.hpp"
@@ -18,7 +19,7 @@ namespace ln {
 namespace detail {
 
 //==============================================================================
-// FreeTypeFont
+// FreeTypeFontCached
 /*
 	時間計測…
 	FTC_CMapCache_Lookup, FTC_ImageCache_Lookup
@@ -62,15 +63,15 @@ namespace detail {
 
 	設計方針…
 	・フォントファイルひとつ分のメモリ領域は、同名フォントで共有
-	・FreeTypeFont クラスひとつに対して FT_Face はひとつ。
+	・FreeTypeFontCached クラスひとつに対して FT_Face はひとつ。
 
 */
 
-FreeTypeFont::FreeTypeFont()
+FreeTypeFontCached::FreeTypeFontCached()
 {
 }
 
-void FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
+void FreeTypeFontCached::init(FontManager* manager, const FontDesc& desc)
 {
 	if (LN_REQUIRE(manager)) return;
 	FontCore::init(manager);
@@ -220,7 +221,7 @@ void FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
 
 }
 
-void FreeTypeFont::dispose()
+void FreeTypeFontCached::dispose()
 {
 	// 実体の寿命は FreeType の CacheManager が管理するので、ここでは参照を外すだけでOK
 	m_ftFace = nullptr;
@@ -234,7 +235,7 @@ void FreeTypeFont::dispose()
 	FontCore::dispose();
 }
 
-void FreeTypeFont::getGlobalMetrics(FontGlobalMetrics* outMetrics)
+void FreeTypeFontCached::getGlobalMetrics(FontGlobalMetrics* outMetrics)
 {
 	if (LN_REQUIRE(outMetrics)) return;
 	if (LN_REQUIRE(m_ftFace)) return;
@@ -250,7 +251,7 @@ void FreeTypeFont::getGlobalMetrics(FontGlobalMetrics* outMetrics)
 	// (FT_FaceRec_ のコメント)
 }
 
-void FreeTypeFont::getGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics)
+void FreeTypeFontCached::getGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics)
 {
 	if (LN_REQUIRE(outMetrics)) return;
 
@@ -273,7 +274,7 @@ void FreeTypeFont::getGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics
 	outMetrics->advance.y = FLValueToFloatPx(m_ftFace->glyph->advance.y);
 }
 
-Vector2 FreeTypeFont::getKerning(UTF32 prev, UTF32 next)
+Vector2 FreeTypeFontCached::getKerning(UTF32 prev, UTF32 next)
 {
 	if (FT_HAS_KERNING(m_ftFace))
 	{
@@ -299,7 +300,7 @@ Vector2 FreeTypeFont::getKerning(UTF32 prev, UTF32 next)
 	}
 }
 
-void FreeTypeFont::lookupGlyphBitmap(UTF32 utf32code, BitmapGlyphInfo* outInfo)
+void FreeTypeFontCached::lookupGlyphBitmap(UTF32 utf32code, BitmapGlyphInfo* outInfo)
 {
 	if (LN_REQUIRE(outInfo)) return;
 
@@ -379,12 +380,12 @@ void FreeTypeFont::lookupGlyphBitmap(UTF32 utf32code, BitmapGlyphInfo* outInfo)
 
 }
 
-void FreeTypeFont::decomposeOutline(UTF32 utf32code, VectorGlyphInfo* outInfo)
+void FreeTypeFontCached::decomposeOutline(UTF32 utf32code, VectorGlyphInfo* outInfo)
 {
 	LN_NOTIMPLEMENTED();
 }
 
-void FreeTypeFont::updateImageFlags()
+void FreeTypeFontCached::updateImageFlags()
 {
 	/* ビットマップまでキャッシュする場合はFT_LOAD_RENDER | FT_LOAD_TARGET_*
 	* とする。ただし途中でTARGETを変更した場合等はキャッシュが邪魔する。
@@ -417,7 +418,7 @@ void FreeTypeFont::updateImageFlags()
 	}
 }
 
-bool FreeTypeFont::getOutlineTextMetrix()
+bool FreeTypeFontCached::getOutlineTextMetrix()
 {
 	// TrueType OS/2 table
 	TT_OS2* os2 = (TT_OS2*)FT_Get_Sfnt_Table(m_ftFace, ft_sfnt_os2);
@@ -451,13 +452,13 @@ bool FreeTypeFont::getOutlineTextMetrix()
 	return true;
 }
 
-bool FreeTypeFont::getBitmapTextMetrix()
+bool FreeTypeFontCached::getBitmapTextMetrix()
 {
 	LN_NOTIMPLEMENTED();
 	return false;
 }
 
-void FreeTypeFont::FT_BitmapToBitmap2D(FT_Bitmap* ftBitmap, Bitmap2D* bitmap) const
+void FreeTypeFontCached::FT_BitmapToBitmap2D(FT_Bitmap* ftBitmap, Bitmap2D* bitmap) const
 {
 	int width = ftBitmap->width;
 	int height = ftBitmap->rows;
@@ -501,6 +502,236 @@ void FreeTypeFont::FT_BitmapToBitmap2D(FT_Bitmap* ftBitmap, Bitmap2D* bitmap) co
 		return;
 	}
 }
+
+
+
+//==============================================================================
+// FreeTypeFont
+
+FreeTypeFont::FreeTypeFont()
+	: m_desc()
+	, m_face(nullptr)
+	, m_internalCacheBitmap()
+{
+}
+
+Result FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
+{
+	if (LN_REQUIRE(manager)) return false;
+	FontCore::init(manager);
+	m_desc = desc;
+
+	auto faceSource = manager->lookupFontFaceSourceFromFamilyName(m_desc.Family);
+	if (!faceSource) {
+		LN_ERROR();
+		return false;
+	}
+
+	FT_Error err = FT_New_Memory_Face(manager->ftLibrary(), (const FT_Byte*)faceSource->buffer->data(), faceSource->buffer->size(), faceSource->faceIndex, &m_face);
+	if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return false;
+
+	err = FT_Set_Char_Size(m_face, m_desc.Size << 6, m_desc.Size << 6, 96, 96);
+	if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return false;
+
+	m_loadFlags = FT_LOAD_NO_BITMAP;
+
+
+	// lookupGlyphBitmap の結果を書き込むためのビットマップを作っておく。
+	// Antialias などが有効になると bbox のサイズでは収まらなくなることがあるため、サイズを余分に確保しておく。
+	int width = Math::nextPow2(std::ceil(FLValueToFloatPx(m_face->bbox.xMax) - FLValueToFloatPx(m_face->bbox.xMin)) + 2);
+	int height = Math::nextPow2(std::ceil(FLValueToFloatPx(m_face->bbox.yMax) - FLValueToFloatPx(m_face->bbox.yMin)) + 2);
+	m_internalCacheBitmap = newObject<Bitmap2D>(width, height, PixelFormat::A8);
+
+	return false;
+}
+
+void FreeTypeFont::dispose()
+{
+	if (m_face) {
+		FT_Done_Face(m_face);
+		m_face = nullptr;
+	}
+}
+
+void FreeTypeFont::getGlobalMetrics(FontGlobalMetrics* outMetrics)
+{
+	if (LN_REQUIRE(outMetrics)) return;
+	if (LN_REQUIRE(m_face)) return;
+	outMetrics->ascender = FLValueToFloatPx(m_face->size->metrics.ascender);
+	outMetrics->descender = FLValueToFloatPx(m_face->size->metrics.descender);
+	outMetrics->lineSpace = outMetrics->ascender - outMetrics->descender;
+	outMetrics->outlineSupported = FT_IS_SCALABLE(m_face);
+	outMetrics->boundingMinX = FLValueToFloatPx(m_face->bbox.xMin);
+	outMetrics->boundingMaxX = FLValueToFloatPx(m_face->bbox.xMax);
+	outMetrics->boundingMinY = FLValueToFloatPx(m_face->bbox.yMin);
+	outMetrics->boundingMaxY = FLValueToFloatPx(m_face->bbox.yMax);
+	// FIXME: Bitmap font の場合の bbox は FT_Bitmap_Size を使うべきらしい。
+	// (FT_FaceRec_ のコメント)
+}
+
+void FreeTypeFont::getGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics)
+{
+	if (LN_REQUIRE(outMetrics)) return;
+
+	{
+		const FT_UInt glyphIndex = ::FT_Get_Char_Index(m_face, utf32Code);
+
+		// load glyph info to GlyphSlot(m_face->glyph), for access to metrix.
+		FT_Error err = FT_Load_Glyph(m_face, glyphIndex, m_loadFlags);
+		if (LN_ENSURE(err == 0)) return;
+
+		if (m_desc.isBold) {
+			FT_GlyphSlot_Embolden(m_face->glyph);
+		}
+
+		if (m_desc.isItalic) {
+			FT_GlyphSlot_Oblique(m_face->glyph);
+		}
+	}
+
+	outMetrics->size.width = FLValueToFloatPx(m_face->glyph->metrics.width);
+	outMetrics->size.height = FLValueToFloatPx(m_face->glyph->metrics.height);
+	outMetrics->bearingX = FLValueToFloatPx(m_face->glyph->metrics.horiBearingX);
+	outMetrics->bearingY = FLValueToFloatPx(m_face->glyph->metrics.horiBearingY);
+	outMetrics->advance.x = FLValueToFloatPx(m_face->glyph->advance.x);
+	outMetrics->advance.y = FLValueToFloatPx(m_face->glyph->advance.y);
+}
+
+Vector2 FreeTypeFont::getKerning(UTF32 prev, UTF32 next)
+{
+	if (FT_HAS_KERNING(m_face))
+	{
+		const FT_UInt glyphIndex1 = ::FT_Get_Char_Index(m_face, prev);
+		const FT_UInt glyphIndex2 = ::FT_Get_Char_Index(m_face, next);
+		if (glyphIndex1 == 0 || glyphIndex2 == 0) {
+			// newline, whitespace ...
+			return Vector2::Zero;
+		}
+		else {
+			FT_Vector delta;
+			FT_Error err = FT_Get_Kerning(m_face, glyphIndex1, glyphIndex2, ft_kerning_default, &delta);
+			if (LN_ENSURE(err == 0)) return Vector2::Zero;
+			return Vector2(FLValueToFloatPx(delta.x), FLValueToFloatPx(delta.y));
+		}
+	}
+	else
+	{
+		return Vector2::Zero;
+	}
+}
+
+void FreeTypeFont::lookupGlyphBitmap(UTF32 utf32code, BitmapGlyphInfo* outInfo)
+{
+	if (LN_REQUIRE(outInfo)) return;
+	LN_CHECK(outInfo->glyphBitmap == nullptr);	// TODO: 廃止予定
+	FT_Error err = 0;
+
+	{
+		const FT_UInt glyphIndex = ::FT_Get_Char_Index(m_face, utf32code);
+
+		// load glyph info to GlyphSlot(m_face->glyph), for access to metrix.
+		err = FT_Load_Glyph(m_face, glyphIndex, m_loadFlags);
+		if (LN_ENSURE(err == 0)) return;
+
+		if (m_desc.isBold) {
+			FT_GlyphSlot_Embolden(m_face->glyph);
+		}
+
+		if (m_desc.isItalic) {
+			FT_GlyphSlot_Oblique(m_face->glyph);
+		}
+	}
+
+
+	FT_Render_Mode renderMode = (m_desc.isAntiAlias) ? FT_RENDER_MODE_NORMAL : FT_RENDER_MODE_MONO;
+	FT_GlyphSlot glyph = m_face->glyph;
+
+	if (glyph->format == FT_GLYPH_FORMAT_BITMAP) {
+		// FT_LOAD_NO_BITMAP が OFF だとここに入ってくる
+		FTBitmapToBitmap2D(&glyph->bitmap, m_internalCacheBitmap);
+		outInfo->size.width = glyph->bitmap.width;
+		outInfo->size.height = glyph->bitmap.rows;
+	}
+	else
+	{
+		err = ::FT_Render_Glyph(glyph, FT_RENDER_MODE_NORMAL);
+		if (LN_ENSURE(err == 0)) return;
+
+		//FT_Bitmap* bitmap = &((FT_BitmapGlyph)glyph)->bitmap;
+		FTBitmapToBitmap2D(&glyph->bitmap, m_internalCacheBitmap);
+		outInfo->size.width = glyph->bitmap.width;
+		outInfo->size.height = glyph->bitmap.rows;
+
+		//LN_NOTIMPLEMENTED();
+	}
+
+	outInfo->glyphBitmap = m_internalCacheBitmap;
+}
+
+void FreeTypeFont::decomposeOutline(UTF32 utf32code, VectorGlyphInfo* outInfo)
+{
+	LN_NOTIMPLEMENTED();
+}
+
+void FreeTypeFont::updateImageFlags()
+{
+}
+
+bool FreeTypeFont::getOutlineTextMetrix()
+{
+	return true;
+}
+
+bool FreeTypeFont::getBitmapTextMetrix()
+{
+	return true;
+}
+
+void FreeTypeFont::FTBitmapToBitmap2D(FT_Bitmap* ftBitmap, Bitmap2D* bitmap) const
+{
+	int width = ftBitmap->width;
+	int height = ftBitmap->rows;
+	if (LN_REQUIRE(bitmap->width() >= width && bitmap->height() >= height && bitmap->format() == PixelFormat::A8)) return;
+
+	//// サイズ
+	//bitmap->m_size.width = width;
+	//bitmap->m_size.height = height;
+	//bitmap->m_pitch = abs(ftBitmap->pitch);
+	//if (ftBitmap->pitch < 0) {
+	//	bitmap->m_upFlow = false;
+	//}
+
+	// フォーマット
+	if (ftBitmap->pixel_mode == FT_PIXEL_MODE_MONO) {
+		size_t rowStride = (width / 8) + 1;
+		for (int y = 0; y < height; y++) {
+			const byte_t* srcRow = ftBitmap->buffer + rowStride * y;
+			byte_t* dstRow = (bitmap->data() + bitmap->width() * y);	// A8 format
+			for (int x = 0; x < width; x++) {
+				size_t byte = (x) >> 3; // / 8;
+				size_t bit = (x) & 7;   // % 8;
+				if (srcRow[byte] & (0x80 >> bit)) {
+					dstRow[x] = 0xFF;
+				}
+				else {
+					dstRow[x] = 0x00;
+				}
+			}
+		}
+	}
+	else if (ftBitmap->pixel_mode == FT_PIXEL_MODE_GRAY) {
+		for (int y = 0; y < height; y++) {
+			const byte_t* srcRow = ftBitmap->buffer + width * y;
+			byte_t* dstRow = (bitmap->data() + bitmap->width() * y);	// A8 format
+			memcpy(dstRow, srcRow, width);
+		}
+	}
+	else {
+		LN_NOTIMPLEMENTED();
+		return;
+	}
+}
+
 
 } // namespace detail
 } // namespace ln

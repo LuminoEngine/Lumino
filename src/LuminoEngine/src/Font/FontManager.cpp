@@ -207,6 +207,8 @@ void FontManager::registerFontFromStream(Stream* stream, bool defaultFamily)
             //    m_defaultFontDesc.Family = familyName;
             //}
         }
+
+		m_famlyNameToFontFaceSourceMap[familyName] = { buffer, 0 };
     }
     // Fase が複数 (.ttc)
     else if (numFaces > 1)
@@ -237,6 +239,9 @@ void FontManager::registerFontFromStream(Stream* stream, bool defaultFamily)
                 //    m_defaultFontDesc.Family = familyName;
                 //}
             }
+
+			m_famlyNameToFontFaceSourceMap[familyName] = { buffer, i };
+
             FT_Done_Face(face);
         }
     }
@@ -287,6 +292,15 @@ FontDesc FontManager::defaultFontDesc() const
 Font* FontManager::defaultFont() const
 {
     return m_defaultFont;
+}
+
+const FontFaceSource* FontManager::lookupFontFaceSourceFromFamilyName(const String& name)
+{
+	auto itr = m_famlyNameToFontFaceSourceMap.find(name);
+	if (itr != m_famlyNameToFontFaceSourceMap.end())
+		return &itr->second;
+	else
+		return nullptr;
 }
 
 FT_Error FontManager::callbackFaceRequester(
