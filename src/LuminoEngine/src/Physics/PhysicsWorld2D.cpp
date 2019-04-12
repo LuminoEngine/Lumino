@@ -219,7 +219,8 @@ void PhysicsObject2D::endContact(PhysicsObject2D* otherObject)
 // TriggerBody2D
 
 TriggerBody2D::TriggerBody2D()
-    : m_dirtyFlags(DirtyFlags_All)
+    : m_groupMask(0x0000FFFF)
+	, m_dirtyFlags(DirtyFlags_All)
 {
 }
 
@@ -232,14 +233,41 @@ void TriggerBody2D::addCollisionShape(CollisionShape2D* shape)
 {
     if (LN_REQUIRE(shape)) return;
     m_shapes.push_back(shape);
+	m_dirtyFlags != DirtyFlags_Shapes;
+}
+
+void TriggerBody2D::setCollisionGroupMask(uint32_t value)
+{
+	if (m_groupMask != value) {
+		m_groupMask = value;
+		m_dirtyFlags != DirtyFlags_GroupMask;
+	}
 }
 
 void TriggerBody2D::onBeforeStepSimulation()
 {
     PhysicsObject2D::onBeforeStepSimulation();
+	if (!physicsWorld()) return;
 
-    if (physicsWorld() && !m_body)
+    if (!m_body || (m_dirtyFlags & DirtyFlags_Shapes) || (m_dirtyFlags & DirtyFlags_GroupMask))
     {
+		b2World* world = physicsWorld()->box2DWorld();
+
+		b2BodyDef bodyDef;
+		bodyDef.userData = this;
+		m_body = world->CreateBody(&bodyDef);
+
+		for (auto& collitionShape : m_shapes)
+		{
+			b2Shape* shape = collitionShape->resolveBox2DShape();
+			b2FixtureDef fixtureDef;
+			fixtureDef.shape = shape;
+			fixtureDef.isSensor = true;
+			fixtureDef.filter.categoryBits = 0;
+			fixtureDef.filter.maskBits = m_groupMask;
+			fixtureDef.filter.groupIndex = 0;
+			m_fixtures.push_back(m_body->CreateFixture(&fixtureDef));
+		}
     }
 }
 

@@ -209,6 +209,10 @@ public:
 
     void addCollisionShape(CollisionShape2D* shape);
 
+	/** 衝突グループマスクを設定します。デフォルトは 0x0000FFFF で、0～15番のグループと衝突することを示します。 */
+	void setCollisionGroupMask(uint32_t value);
+
+
     //
     ///** onTriggerEnter イベントの通知を受け取るコールバックを登録します。*/
     //LN_METHOD(Event)
@@ -246,13 +250,15 @@ private:
     enum DirtyFlags
     {
         DirtyFlags_None = 0,
-        DirtyFlags_Shapes = 0x0001,
+        DirtyFlags_Shapes = 1 << 0,
+		DirtyFlags_GroupMask = 1 << 1,
         DirtyFlags_All = 0xFFFF,
     };
 
     b2Body* m_body;
     std::vector<b2Fixture*> m_fixtures;
     std::vector<Ref<CollisionShape2D>> m_shapes;
+	uint32_t m_groupMask;
     uint32_t m_dirtyFlags;
 
     //Event<Trigger2DEventHandler> m_onTriggerEnter;
