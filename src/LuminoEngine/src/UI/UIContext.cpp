@@ -106,13 +106,13 @@ void UIContext::updateStyleTree()
 	}
 }
 
-void UIContext::updateLayoutTree()
-{
-	if (m_layoutRootElement)
-	{
-		m_layoutRootElement->updateLayout(Rect(0, 0, m_layoutRootElement->width(), m_layoutRootElement->height()));
-	}
-}
+//void UIContext::updateLayoutTree()
+//{
+//	if (m_layoutRootElement)
+//	{
+//		m_layoutRootElement->updateLayout(Rect(0, 0, m_layoutRootElement->width(), m_layoutRootElement->height()));
+//	}
+//}
 
 } // namespace ln
 

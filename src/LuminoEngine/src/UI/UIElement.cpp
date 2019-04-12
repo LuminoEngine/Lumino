@@ -301,6 +301,17 @@ void UIElement::raiseEvent(UIEventArgs* e)
     raiseEventInternal(e);
 }
 
+UIElement* UIElement::getFrameWindow()
+{
+	if (m_specialElementFlags.hasFlag(detail::UISpecialElementFlags::FrameWindow)) {
+		return this;
+	}
+	if (m_visualParent) {
+		return m_visualParent->getFrameWindow();
+	}
+	return nullptr;
+}
+
 UIElement* UIElement::lookupMouseHoverElement(const Point& globalPt)
 {
     // 後ろからループする。後のモノが上に描画されるので、この方が自然。

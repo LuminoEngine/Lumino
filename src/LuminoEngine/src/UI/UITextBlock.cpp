@@ -1,8 +1,10 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Font/Font.hpp>
+#include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
+#include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/UITextBlock.hpp>
 
 // TODO: Test
@@ -32,7 +34,12 @@ void UITextBlock::init()
 
 Size UITextBlock::measureOverride(const Size& constraint)
 {
-	return Size(200, 100);
+	float scale = 1.0f;
+	if (UIFrameWindow* w = static_cast<UIFrameWindow*>(getFrameWindow())) {
+		scale = w->platformWindow()->dpiFactor();
+	}
+
+	return finalStyle().font->measureRenderSize(m_text, scale);
 }
 
 void UITextBlock::onRender(UIRenderingContext* context)

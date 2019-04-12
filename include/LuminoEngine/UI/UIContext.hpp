@@ -21,7 +21,7 @@ public: // TODO: internal
 	// GameEngine としてなら、メインループから。IDE としてなら、メッセージループから呼び出してもらうのが自然だろう。
 	// ひとまず、UIContext の作成元となっている Manager から呼び出してもらうことにする。
 	void updateStyleTree();
-	void updateLayoutTree();
+	//void updateLayoutTree();
 
 
 LN_CONSTRUCT_ACCESS:

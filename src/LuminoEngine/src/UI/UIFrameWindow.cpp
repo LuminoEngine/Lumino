@@ -205,6 +205,8 @@ UIFrameWindow::~UIFrameWindow()
 void UIFrameWindow::init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize)
 {
 	UIElement::init();
+	specialElementFlags().set(detail::UISpecialElementFlags::FrameWindow);
+
 	m_manager = detail::EngineDomain::uiManager();
     m_platformWindow = platformMainWindow;
 	m_autoDisposePlatformWindow = false;
@@ -284,6 +286,13 @@ SwapChain* UIFrameWindow::swapChain() const
 //    m_platformWindow->getSize(&size);
 //    UIElement::updateLayoutHierarchical(size.toFloatSize());
 //}
+
+void UIFrameWindow::updateLayoutTree()
+{
+	SizeI size;
+	m_platformWindow->getSize(&size);
+	updateLayout(Rect(0, 0, size.width, size.height));
+}
 
 // 強制的にウィンドウサイズとする
 Size UIFrameWindow::measureOverride(const Size& constraint)

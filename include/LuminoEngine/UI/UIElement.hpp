@@ -8,6 +8,7 @@ class UIRenderView;
 class UIContext;
 class UIEventArgs;
 class UIStyle;
+class UIFrameWindow;
 enum class BlendMode : uint8_t;
 struct Color;
 struct ToneF;
@@ -22,6 +23,13 @@ namespace detail
 //	UIFontStyle fontStyle;
 //};
 }
+
+class UILayoutContext
+	: public Object
+{
+public:
+	float m_dpiScaleFactor;
+};
 
 class UIElement
 	: public UILayoutElement
@@ -212,6 +220,7 @@ public: // TODO: internal
     void raiseEvent(UIEventArgs* e);
     virtual UIElement* lookupMouseHoverElement(const Point& globalPt);
 	const detail::StyleData& finalStyle() const { return m_finalStyle; }
+	UIElement* getFrameWindow();
 
 public:	// TODO: internal
     virtual void onUpdateFrame(float elapsedSeconds);
@@ -266,12 +275,14 @@ public:	// TODO: internal
     virtual void render(UIRenderingContext* context);
 
 	Flags<detail::ObjectManagementFlags>& objectManagementFlags() { return m_objectManagementFlags; }
+	Flags<detail::UISpecialElementFlags>& specialElementFlags() { return m_specialElementFlags; }
 
 private:
     void raiseEventInternal(UIEventArgs* e);
 
     detail::UIManager* m_manager;
 	Flags<detail::ObjectManagementFlags> m_objectManagementFlags;
+	Flags<detail::UISpecialElementFlags> m_specialElementFlags;
     UIContext* m_context;
     UIElement* m_visualParent;
 

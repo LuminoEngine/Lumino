@@ -23,6 +23,12 @@ enum class ObjectManagementFlags
 	AutoAddToActiveScene = 1 << 1,
 };
 
+enum class UISpecialElementFlags
+{
+	None = 0,
+	FrameWindow = 1 << 1,
+};
+
 }
 
 } // namespace ln

@@ -43,7 +43,7 @@ void UIStyle::setupDefault()
 
 	textColor = Color::Black;
 	fontFamily = String::Empty;
-	fontSize = 12.0f;	// WPF default
+	fontSize = 20.0f;	// WPF default は 12 だが、それだとデスクトップアプリ向けなので少し小さい。Lumino としては 20 をデフォルトとする。
 	fontWeight = UIFontWeight::Normal;
 	fontStyle = UIFontStyle::Normal;
 

@@ -68,6 +68,8 @@ public:
 
     // TODO: inernal
     //void updateLayout();
+	void updateLayoutTree();
+	const Ref<detail::PlatformWindow>& platformWindow() const { return m_platformWindow; }
 
 protected:
 	virtual Size measureOverride(const Size& constraint) override;
