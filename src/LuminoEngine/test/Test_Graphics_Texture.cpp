@@ -65,7 +65,7 @@ TEST_F(Test_Graphics_Texture, drawText)
 		sprite->setBlendMode(BlendMode::Alpha);
 
 		TestEnv::updateFrame();
-		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_Texture-drawText-1.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_Texture-drawText-1.png"));
 		LN_TEST_CLEAN_SCENE;
 	}
 }
