@@ -219,8 +219,12 @@ void PhysicsObject2D::endContact(PhysicsObject2D* otherObject)
 // TriggerBody2D
 
 TriggerBody2D::TriggerBody2D()
-    : m_groupMask(0x0000FFFF)
+    : m_body(nullptr)
+    , m_group(0x0000FFFF)
+    , m_groupMask(0x0000FFFF)
 	, m_dirtyFlags(DirtyFlags_All)
+    , m_position()
+    , m_rotation(0.0f)
 {
 }
 
@@ -233,15 +237,39 @@ void TriggerBody2D::addCollisionShape(CollisionShape2D* shape)
 {
     if (LN_REQUIRE(shape)) return;
     m_shapes.push_back(shape);
-	m_dirtyFlags != DirtyFlags_Shapes;
+	m_dirtyFlags |= DirtyFlags_Shapes;
+}
+
+void TriggerBody2D::setCollisionGroup(uint32_t value)
+{
+    if (m_group != value) {
+        m_group = value;
+        m_dirtyFlags |= DirtyFlags_Group;
+    }
 }
 
 void TriggerBody2D::setCollisionGroupMask(uint32_t value)
 {
 	if (m_groupMask != value) {
 		m_groupMask = value;
-		m_dirtyFlags != DirtyFlags_GroupMask;
+		m_dirtyFlags |= DirtyFlags_Group;
 	}
+}
+
+void TriggerBody2D::setPosition(const Vector2& value)
+{
+    if (m_position != value) {
+        m_position = value;
+        //m_dirtyFlags |= DirtyFlags_Position;
+    }
+}
+
+void TriggerBody2D::setRotation(float value)
+{
+    if (m_rotation != value) {
+        m_rotation = value;
+        //m_dirtyFlags |= DirtyFlags_Rotation;
+    }
 }
 
 void TriggerBody2D::onBeforeStepSimulation()
@@ -249,8 +277,10 @@ void TriggerBody2D::onBeforeStepSimulation()
     PhysicsObject2D::onBeforeStepSimulation();
 	if (!physicsWorld()) return;
 
-    if (!m_body || (m_dirtyFlags & DirtyFlags_Shapes) || (m_dirtyFlags & DirtyFlags_GroupMask))
+    if (!m_body || (m_dirtyFlags & DirtyFlags_Shapes) || (m_dirtyFlags & DirtyFlags_Group))
     {
+        removeBodyFromBox2DWorld();
+
 		b2World* world = physicsWorld()->box2DWorld();
 
 		b2BodyDef bodyDef;
@@ -263,21 +293,25 @@ void TriggerBody2D::onBeforeStepSimulation()
 			b2FixtureDef fixtureDef;
 			fixtureDef.shape = shape;
 			fixtureDef.isSensor = true;
-			fixtureDef.filter.categoryBits = 0;
+			fixtureDef.filter.categoryBits = m_group;
 			fixtureDef.filter.maskBits = m_groupMask;
 			fixtureDef.filter.groupIndex = 0;
 			m_fixtures.push_back(m_body->CreateFixture(&fixtureDef));
-		}
+        }
     }
+
+    m_body->SetTransform(LnToB2(m_position), m_rotation);
+
+    m_dirtyFlags = DirtyFlags_None;
 }
 
 void TriggerBody2D::onRemoveFromPhysicsWorld()
 {
-    removeFromBox2DWorld();
+    removeBodyFromBox2DWorld();
     PhysicsObject2D::onRemoveFromPhysicsWorld();
 }
 
-void TriggerBody2D::removeFromBox2DWorld()
+void TriggerBody2D::removeBodyFromBox2DWorld()
 {
     if (m_body) {
         m_body->GetWorld()->DestroyBody(m_body);

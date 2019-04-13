@@ -209,9 +209,23 @@ public:
 
     void addCollisionShape(CollisionShape2D* shape);
 
+    /** 衝突グループを設定します。デフォルトは 0x0000FFFF で、0～15番のグループと衝突することを示します。 */
+    void setCollisionGroup(uint32_t value);
+
 	/** 衝突グループマスクを設定します。デフォルトは 0x0000FFFF で、0～15番のグループと衝突することを示します。 */
 	void setCollisionGroupMask(uint32_t value);
 
+    /** 位置を設定します。(default: 0, 0) */
+    void setPosition(const Vector2& value);
+    void setPosition(const Vector3& value) { return setPosition(value.xy()); }
+
+    const Vector2& position() const { return m_position; }
+
+    /** 回転角度を設定します。(unit: radian) */
+    void setRotation(float value);
+
+    /** 回転角度を取得します。(unit: radian) */
+    float rotation() const { return m_rotation; }
 
     //
     ///** onTriggerEnter イベントの通知を受け取るコールバックを登録します。*/
@@ -245,20 +259,25 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 private:
-    void removeFromBox2DWorld();
+    void removeBodyFromBox2DWorld();
 
     enum DirtyFlags
     {
         DirtyFlags_None = 0,
         DirtyFlags_Shapes = 1 << 0,
-		DirtyFlags_GroupMask = 1 << 1,
+		DirtyFlags_Group = 1 << 1,
+        //DirtyFlags_Position = 1 << 2,
+        //DirtyFlags_Rotation = 1 << 3,
         DirtyFlags_All = 0xFFFF,
     };
 
     b2Body* m_body;
     std::vector<b2Fixture*> m_fixtures;
     std::vector<Ref<CollisionShape2D>> m_shapes;
+    uint32_t m_group;
 	uint32_t m_groupMask;
+    Vector2 m_position;
+    float m_rotation;
     uint32_t m_dirtyFlags;
 
     //Event<Trigger2DEventHandler> m_onTriggerEnter;

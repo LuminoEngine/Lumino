@@ -101,4 +101,52 @@ private:
     Event<CollisionEventHandler> m_onCollisionStay;
 };
 
+class TriggerBody2DComponent
+    : public Component
+    , protected detail::IPhysicsObjectEventListener
+{
+public:
+    static Ref<TriggerBody2DComponent> create();
+
+    void addCollisionShape(CollisionShape2D* shape);
+
+    /** 衝突グループマスクを設定します。デフォルトは 0x0000FFFF で、0～15番のグループと衝突することを示します。 */
+    void setCollisionGroupMask(uint32_t value) { m_body->setCollisionGroupMask(value); }
+
+
+
+    /** onTriggerEnter イベントの通知を受け取るコールバックを登録します。*/
+    LN_METHOD(Event)
+    EventConnection connectOnCollisionEnter(CollisionEventHandler handler);
+
+    /** onTriggerLeave イベントの通知を受け取るコールバックを登録します。*/
+    LN_METHOD(Event)
+    EventConnection connectOnCollisionLeave(CollisionEventHandler handler);
+
+    /** onTriggerStay イベントの通知を受け取るコールバックを登録します。*/
+    LN_METHOD(Event)
+    EventConnection connectOnCollisionStay(CollisionEventHandler handler);
+
+LN_CONSTRUCT_ACCESS:
+    TriggerBody2DComponent();
+    virtual ~TriggerBody2DComponent() = default;
+    void init();
+    virtual void onDispose(bool explicitDisposing) override;
+
+protected:
+    virtual void onAttachedWorld(World* newOwner) override;
+    virtual void onDetachedWorld(World* oldOwner) override;
+    virtual void onBeforeStepSimulation() override;
+    virtual void onAfterStepSimulation() override;
+    virtual void onCollisionEnter(PhysicsObject2D* otherObject, ContactPoint2D* contact) override;
+    virtual void onCollisionLeave(PhysicsObject2D* otherObject, ContactPoint2D* contact) override;
+    virtual void onCollisionStay(PhysicsObject2D* otherObject, ContactPoint2D* contact) override;
+
+private:
+    Ref<TriggerBody2D> m_body;
+    Event<CollisionEventHandler> m_onCollisionEnter;
+    Event<CollisionEventHandler> m_onCollisionLeave;
+    Event<CollisionEventHandler> m_onCollisionStay;
+};
+
 } // namespace ln
