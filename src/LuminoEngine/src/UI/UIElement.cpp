@@ -24,6 +24,7 @@ UIElement::UIElement()
 	, m_objectManagementFlags(detail::ObjectManagementFlags::AutoAddToActiveScene)
     , m_context(nullptr)
     , m_visualParent(nullptr)
+    , m_logicalParent(nullptr)
     , m_localStyle(newObject<UIStyle>()) // TODO: ふつうは static なオブジェクトのほうが多くなるので、必要なやつだけ遅延作成でいいと思う
     , m_finalStyle(makeRef<detail::UIStyleInstance>())
     , m_renderPriority(0)
@@ -506,6 +507,13 @@ bool UIElement::onHitTest(const Point& localPoint)
     // TODO:
     return true;
     //return m_finalLocalActualRect.makeDeflate(m_renderFrameThickness).contains(localPoint);
+}
+
+void UIElement::removeFromLogicalParent()
+{
+    if (m_logicalParent) {
+        m_logicalParent->removeElement(this);
+    }
 }
 
 void UIElement::raiseEventInternal(UIEventArgs* e)

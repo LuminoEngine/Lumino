@@ -35,6 +35,11 @@ void UILayoutPanel::addLayoutOwnerLogicalChild(UIElement* element)
 	m_layoutOwnerLogicalChildren.add(element);
 }
 
+void UILayoutPanel::removeLayoutOwnerLogicalChild(UIElement* element)
+{
+    m_layoutOwnerLogicalChildren.remove(element);
+}
+
 void UILayoutPanel::clearLayoutOwnerLogicalChildren()
 {
 	m_layoutOwnerLogicalChildren.clear();

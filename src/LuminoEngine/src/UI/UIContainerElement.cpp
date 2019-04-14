@@ -28,10 +28,32 @@ void UIContainerElement::onDispose(bool explicitDisposing)
 void UIContainerElement::addElement(UIElement* element)
 {
 	if (LN_REQUIRE(element)) return;
-	m_logicalChildren.add(element);
+
+    // 通常は作成直後、デフォルトの Container に追加されている。
+    // WPF のように別の親に追加済みであれば例外するのもありだけど、いちいち removeFromParent するのは面倒。
+    if (element->logicalParent()) {
+        element->removeFromLogicalParent();
+    }
+	
+    m_logicalChildren.add(element);
+    element->setLogicalParent(this);
+
 	if (m_logicalChildrenHost) {
 		m_logicalChildrenHost->addLayoutOwnerLogicalChild(element);
 	}
+}
+
+void UIContainerElement::removeElement(UIElement* element)
+{
+    if (LN_REQUIRE(element)) return;
+    if (LN_REQUIRE(element->logicalParent() == this)) return;
+
+    if (m_logicalChildrenHost) {
+        m_logicalChildrenHost->removeLayoutOwnerLogicalChild(element);
+    }
+
+    m_logicalChildren.remove(element);
+    element->setLogicalParent(nullptr);
 }
 
 void UIContainerElement::removeAllChildren()

@@ -13,6 +13,7 @@ public:
     virtual void onDispose(bool explicitDisposing) override;
 
 	void addElement(UIElement* element);
+    void removeElement(UIElement* element);
 
 	void removeAllChildren();
 

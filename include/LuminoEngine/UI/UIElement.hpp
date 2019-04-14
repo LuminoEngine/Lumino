@@ -9,6 +9,7 @@ class UIRenderView;
 class UIContext;
 class UIEventArgs;
 class UIStyle;
+class UIContainerElement;
 class UIFrameWindow;
 enum class BlendMode : uint8_t;
 struct Color;
@@ -299,6 +300,9 @@ public:	// TODO: internal
 
 	Flags<detail::ObjectManagementFlags>& objectManagementFlags() { return m_objectManagementFlags; }
 	Flags<detail::UISpecialElementFlags>& specialElementFlags() { return m_specialElementFlags; }
+    void setLogicalParent(UIContainerElement* parent) { m_logicalParent = parent; }
+    UIContainerElement* logicalParent() const { return m_logicalParent; }
+    void removeFromLogicalParent();
 
 private:
     void raiseEventInternal(UIEventArgs* e);
@@ -308,6 +312,7 @@ private:
 	Flags<detail::UISpecialElementFlags> m_specialElementFlags;
     UIContext* m_context;
     UIElement* m_visualParent;
+    UIContainerElement* m_logicalParent;
 
     Ref<UIStyle> m_localStyle;
 	Ref<detail::UIStyleInstance> m_finalStyle;

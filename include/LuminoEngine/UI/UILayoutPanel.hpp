@@ -17,6 +17,7 @@ protected:
 
 public:	// TODO: internal
 	void addLayoutOwnerLogicalChild(UIElement* element);
+    void removeLayoutOwnerLogicalChild(UIElement* element);
 	void clearLayoutOwnerLogicalChildren();
 
 private:
