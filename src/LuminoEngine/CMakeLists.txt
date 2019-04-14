@@ -440,7 +440,6 @@ set(LN_SOURCES_Scene
 
 set(LN_SOURCES_UI
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UICard.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIContainerElement.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIContext.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIControl.hpp
@@ -455,7 +454,7 @@ set(LN_SOURCES_UI
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIStyle.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UITextBlock.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIViewport.hpp
-    src/UI/UICard.cpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIWindow.hpp
     src/UI/UIContainerElement.cpp
     src/UI/UIContext.cpp
     src/UI/UIControl.cpp
@@ -473,6 +472,7 @@ set(LN_SOURCES_UI
     src/UI/UIStyle.cpp
     src/UI/UITextBlock.cpp
     src/UI/UIViewport.cpp
+    src/UI/UIWindow.cpp
 )
 
 set(LN_SOURCES_Tilemap

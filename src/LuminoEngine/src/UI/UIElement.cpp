@@ -25,7 +25,7 @@ UIElement::UIElement()
     , m_context(nullptr)
     , m_visualParent(nullptr)
     , m_localStyle(newObject<UIStyle>()) // TODO: ふつうは static なオブジェクトのほうが多くなるので、必要なやつだけ遅延作成でいいと思う
-    , m_finalStyle()
+    , m_finalStyle(makeRef<detail::UIStyleInstance>())
     , m_renderPriority(0)
     , m_isHitTestVisible(true)
 {
@@ -37,11 +37,11 @@ UIElement::~UIElement()
 
 void UIElement::init()
 {
-	UILayoutElement::init(&m_finalStyle);
+	UILayoutElement::init(m_finalStyle);
     m_manager = detail::EngineDomain::uiManager();
 
 	// TODO: Material も、実際に描画が必要な Element に限って作成した方がいいだろう
-	m_finalStyle.backgroundMaterial = newObject<Material>();
+	m_finalStyle->backgroundMaterial = newObject<Material>();
 
 	if (m_objectManagementFlags.hasFlag(detail::ObjectManagementFlags::AutoAddToActiveScene)) {
 		UIContainerElement* primaryElement = m_manager->primaryElement();
@@ -135,6 +135,16 @@ const Vector3& UIElement::centerPoint() const
     return m_localStyle->centerPoint.getOrDefault(Vector3::Zero);
 }
 
+void UIElement::setBackgroundDrawMode(BrushImageDrawMode value)
+{
+    m_localStyle->backgroundDrawMode = value;
+}
+
+BrushImageDrawMode UIElement::backgroundDrawMode() const
+{
+    return m_localStyle->backgroundDrawMode.getOrDefault(BrushImageDrawMode::Image);
+}
+
 void UIElement::setBackgroundColor(const Color& value)
 {
 	m_localStyle->backgroundColor = value;
@@ -163,6 +173,26 @@ void UIElement::setBackgroundShader(Shader* value)
 Shader* UIElement::backgroundShader() const
 {
 	return m_localStyle->backgroundShader.getOrDefault(nullptr);
+}
+
+void UIElement::setBackgroundImageRect(const Rect& value)
+{
+    m_localStyle->backgroundImageRect = value;
+}
+
+const Rect& UIElement::backgroundImageRect() const
+{
+    return m_localStyle->backgroundImageRect.getOrDefault(Rect::Zero);
+}
+
+void UIElement::setBackgroundImageBorder(const Thickness& value)
+{
+    m_localStyle->backgroundImageBorder = value;
+}
+
+const Thickness& UIElement::backgroundImageBorder() const
+{
+    return m_localStyle->backgroundImageBorder.getOrDefault(Thickness::Zero);
 }
 
 void UIElement::setTextColor(const Color& value)
@@ -344,7 +374,7 @@ void UIElement::onUpdateFrame(float elapsedSeconds)
 {
 }
 
-void UIElement::onUpdateStyle(const detail::StyleData& finalStyle)
+void UIElement::onUpdateStyle(const detail::UIStyleInstance* finalStyle)
 {
 }
 //
@@ -376,9 +406,9 @@ void UIElement::onRender(UIRenderingContext* context)
 {
 }
 
-void UIElement::updateStyleHierarchical(const detail::StyleData& parentFinalStyle)
+void UIElement::updateStyleHierarchical(const detail::UIStyleInstance* parentFinalStyle)
 {
-	UIStyle::updateStyleDataHelper(m_localStyle, &parentFinalStyle, m_context->defaultStyle(), &m_finalStyle);
+	detail::UIStyleInstance::updateStyleDataHelper(m_localStyle, parentFinalStyle, m_context->defaultStyle(), m_finalStyle);
 
 	onUpdateStyle(m_finalStyle);
 
@@ -430,11 +460,12 @@ void UIElement::render(UIRenderingContext* context)
 		// background
 		{
 			
-			if (m_finalStyle.backgroundColor.a > 0.0f) {
+			if (m_finalStyle->backgroundColor.a > 0.0f) {
 				//auto tex = newObject<Texture2D>(u"D:/Proj/LN/HC1/Assets/Windowskin/window.png");
 				//auto mat = Material::create(tex);
-				context->setMaterial(m_finalStyle.backgroundMaterial);
-				context->drawBoxBackground(finalGlobalRect(), Thickness(16), CornerRadius(), BrushImageDrawMode::BorderFrame, Rect(64, 0, 64, 64), m_finalStyle.backgroundColor);
+				context->setMaterial(m_finalStyle->backgroundMaterial);
+                context->drawBoxBackground(finalGlobalRect(), m_finalStyle->backgroundImageBorder, CornerRadius(), m_finalStyle->backgroundDrawMode, m_finalStyle->backgroundImageRect, m_finalStyle->backgroundColor);
+				//context->drawBoxBackground(finalGlobalRect(), Thickness(16), CornerRadius(), BrushImageDrawMode::BorderFrame, Rect(64, 0, 64, 64), m_finalStyle->backgroundColor);
 			}
 		}
 

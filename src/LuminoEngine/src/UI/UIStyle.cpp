@@ -41,6 +41,10 @@ void UIStyle::setupDefault()
 	scale = Vector3::Ones;
 	centerPoint = Vector3::Zero;
 
+    backgroundDrawMode = BrushImageDrawMode::Image;
+    backgroundImageRect = Rect::Zero;
+    backgroundImageBorder = Thickness::Zero;
+
 	textColor = Color::Black;
 	fontFamily = String::Empty;
 	fontSize = 20.0f;	// WPF default は 12 だが、それだとデスクトップアプリ向けなので少し小さい。Lumino としては 20 をデフォルトとする。
@@ -56,7 +60,20 @@ void UIStyle::setupDefault()
 	tone = ToneF(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
-void UIStyle::updateStyleDataHelper(UIStyle* localStyle, const detail::StyleData* parentStyleData, const UIStyle* defaultStyle, detail::StyleData* outStyleData)
+//==============================================================================
+// UIStyleInstance
+
+namespace detail {
+
+UIStyleInstance::UIStyleInstance()
+{
+}
+
+void UIStyleInstance::init()
+{
+}
+
+void UIStyleInstance::updateStyleDataHelper(UIStyle* localStyle, const detail::UIStyleInstance* parentStyleData, const UIStyle* defaultStyle, detail::UIStyleInstance* outStyleData)
 {
 	const UIStyle* parentStyle = (parentStyleData) ? parentStyleData->sourceLocalStyle : nullptr;
 	if (parentStyle)
@@ -95,11 +112,14 @@ void UIStyle::updateStyleDataHelper(UIStyle* localStyle, const detail::StyleData
 	// background
 	{
 		assert(outStyleData->backgroundMaterial);
+        outStyleData->backgroundDrawMode = localStyle->backgroundDrawMode.getOrDefault(defaultStyle->backgroundDrawMode.get());
 		outStyleData->backgroundColor = localStyle->backgroundColor.getOrDefault(defaultStyle->backgroundColor.get());
 		outStyleData->backgroundMaterial->setMainTexture(localStyle->backgroundImage.getOrDefault(defaultStyle->backgroundImage.get()));
 		outStyleData->backgroundMaterial->setShader(localStyle->backgroundShader.getOrDefault(defaultStyle->backgroundShader.get()));
 		//outStyleData->backgroundColor = localStyle->backgroundColor.getOrDefault(defaultStyle->backgroundColor.get());
 		//outStyleData->backgroundImage = 
+        outStyleData->backgroundImageRect = localStyle->backgroundImageRect.getOrDefault(defaultStyle->backgroundImageRect.get());
+        outStyleData->backgroundImageBorder = localStyle->backgroundImageBorder.getOrDefault(defaultStyle->backgroundImageBorder.get());
 	}
 
 	// text
@@ -148,5 +168,6 @@ void UIStyle::updateStyleDataHelper(UIStyle* localStyle, const detail::StyleData
 	}
 }
 
+} // namespace detail
 } // namespace ln
 

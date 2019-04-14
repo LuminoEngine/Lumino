@@ -18,7 +18,7 @@ UILayoutElement::~UILayoutElement()
 }
 
 // actualStyle : サブクラスの m_actualStyle へのポインタ。細かい値をとるのにいちいち仮想関数を呼び出すのがパフォーマンス的に心配なのでこの形にしている。
-void UILayoutElement::init(const detail::StyleData* finalStyle)
+void UILayoutElement::init(const detail::UIStyleInstance* finalStyle)
 {
 	Object::init();
 	m_finalStyle = finalStyle;

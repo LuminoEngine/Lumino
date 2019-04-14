@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UILayoutPanel.hpp>
 
 namespace ln {
@@ -206,7 +207,7 @@ Size UIFrameLayout::staticMeasureOverride(UIElement* ownerElement, const Size& c
 
 Size UIFrameLayout::staticArrangeOverride(UIElement* ownerElement, const Size& finalSize)
 {
-	const Thickness& padding = ownerElement->finalStyle().padding;
+	const Thickness& padding = ownerElement->finalStyle()->padding;
 	Point childrenOffset(padding.left, padding.top);
 	Size childrenBoundSize(finalSize.width - padding.getWidth(), finalSize.height - padding.getHeight());
 	Rect bounds(childrenOffset, childrenBoundSize);
@@ -279,7 +280,7 @@ Size UIStackLayout::measureOverride(const Size& constraint)
 
 Size UIStackLayout::arrangeOverride(const Size& finalSize)
 {
-	const Thickness& padding = finalStyle().padding; //  static_cast<ILayoutElement*>(panel)->getLayoutPadding();
+	const Thickness& padding = finalStyle()->padding; //  static_cast<ILayoutElement*>(panel)->getLayoutPadding();
 
 
 	//ILayoutPanel* basePanel = static_cast<ILayoutPanel*>(panel);

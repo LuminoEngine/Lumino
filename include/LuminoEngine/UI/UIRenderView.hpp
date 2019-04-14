@@ -27,7 +27,7 @@ public:
     virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthbuffer) override;
 
 protected:
-	virtual void onUpdateUIStyle(const detail::StyleData& finalStyle) override;
+	virtual void onUpdateUIStyle(const detail::UIStyleInstance* finalStyle) override;
 	virtual void onUpdateUILayout(const Rect& finalGlobalRect) override;
 
 private:

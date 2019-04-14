@@ -46,6 +46,7 @@ enum class HAlignment
 
 namespace detail
 {
+class UIStyleInstance;
 //struct UIInheritStyleAttribute
 //{
 //	Color textColor;
@@ -54,54 +55,51 @@ namespace detail
 //	UIFontStyle fontStyle;
 //};
 
-// どんな Element でも持つ一般的なスタイル値。
-// スタイル更新後の最終的な値を表す。
-// メモリ消費を抑えるため、UIStyleAttribute は使わないようにしている。
-struct StyleData
-{
-	UIStyle* sourceLocalStyle;	// 以下のデータの生成元となったローカスのスタイル
-
-	// layout
-	Thickness margin;
-	Thickness padding;
-	HAlignment horizontalAlignment;
-	VAlignment verticalAlignment;
-	float minWidth;
-	float minHeight;
-	float maxWidth;
-	float maxHeight;
-
-	// layout transform
-	Vector3 position;
-	Quaternion rotation;
-	Vector3 scale;
-	Vector3 centerPoint;
-
-	// background
-	Color backgroundColor;
-	//Ref<Texture> backgroundImage;
-	//Ref<Shader> backgroundShader;
-	Ref<AbstractMaterial> backgroundMaterial;
-
-	// text
-	Color textColor;
-	Ref<Font> font;
-	//String fontFamily;
-	//float fontSize;
-	//UIFontWeight fontWeight;
-	//UIFontStyle fontStyle;
-
-	// render effects
-	bool visible;
-	BlendMode blendMode;
-
-	float opacity;
-	Color colorScale;
-	Color blendColor;
-	ToneF tone;
-
-	// TODO: 今後サブクラスごとにスタイルを追加する場合は、ここに map を設ける
-};
+//struct StyleData
+//{
+//	UIStyle* sourceLocalStyle;	// 以下のデータの生成元となったローカスのスタイル
+//
+//	// layout
+//	Thickness margin;
+//	Thickness padding;
+//	HAlignment horizontalAlignment;
+//	VAlignment verticalAlignment;
+//	float minWidth;
+//	float minHeight;
+//	float maxWidth;
+//	float maxHeight;
+//
+//	// layout transform
+//	Vector3 position;
+//	Quaternion rotation;
+//	Vector3 scale;
+//	Vector3 centerPoint;
+//
+//	// background
+//	Color backgroundColor;
+//	//Ref<Texture> backgroundImage;
+//	//Ref<Shader> backgroundShader;
+//	Ref<AbstractMaterial> backgroundMaterial;
+//
+//	// text
+//	Color textColor;
+//	Ref<Font> font;
+//	//String fontFamily;
+//	//float fontSize;
+//	//UIFontWeight fontWeight;
+//	//UIFontStyle fontStyle;
+//
+//	// render effects
+//	bool visible;
+//	BlendMode blendMode;
+//
+//	float opacity;
+//	Color colorScale;
+//	Color blendColor;
+//	ToneF tone;
+//
+//	// TODO: 今後サブクラスごとにスタイルを追加する場合は、ここに map を設ける
+//};
 }
 
 class UILayoutElement
@@ -126,7 +124,7 @@ public:	// TODO: internal
 protected:
 	UILayoutElement();
 	virtual ~UILayoutElement();
-	void init(const detail::StyleData* finalStyle);
+	void init(const detail::UIStyleInstance* finalStyle);
 
 	virtual Size measureOverride(const Size& constraint);
 	virtual Size arrangeOverride(const Size& finalSize);
@@ -156,7 +154,7 @@ public:	//TODO: internal
 	void setLayoutFinalGlobalRect(const Rect& rect) { m_finalGlobalRect = rect; }
 
 	Size m_layoutSize;
-	const detail::StyleData* m_finalStyle;
+	const detail::UIStyleInstance* m_finalStyle;
 	Size m_desiredSize;
 	Rect m_finalLocalRect;
 	Rect m_finalGlobalRect;

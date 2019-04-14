@@ -90,6 +90,17 @@ enum class RendringPhase
     _Count,
 };
 
+
+//
+//struct TextureRegion
+//{
+//public:
+//    Ref<Texture> texture;
+//    Rect rect;
+//    Thickness border;
+//};
+
+
 namespace detail {
 
 

@@ -1,23 +1,23 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/UI/UICard.hpp>
+#include <LuminoEngine/UI/UIWindow.hpp>
 
 namespace ln {
 
 //==============================================================================
-// UICard
+// UIWindow
 // https://material-ui.com/demos/cards/
 
-Ref<UICard> UICard::create()
+Ref<UIWindow> UIWindow::create()
 {
-    return newObject<UICard>();
+    return newObject<UIWindow>();
 }
 
-UICard::UICard()
+UIWindow::UIWindow()
 {
 }
 
-void UICard::init()
+void UIWindow::init()
 {
     UIContainerElement::init();
 }

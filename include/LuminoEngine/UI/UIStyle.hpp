@@ -196,10 +196,13 @@ public:
     detail::UIStyleAttribute<Vector3> centerPoint;
 
 	// background
+    detail::UIStyleAttribute<BrushImageDrawMode> backgroundDrawMode;
 	detail::UIStyleAttribute<Color> backgroundColor;
 	detail::UIStyleAttribute<Ref<Texture>> backgroundImage;
 	detail::UIStyleAttribute<Ref<Shader>> backgroundShader;
-	// ※ここは Material にはしない。そういった大きなクラスを持たせるとまた Brush の時みたいな問題が出てくる。代わりに Material の構築に必要なものを持たせる
+	// ※ここは Material にはしない。そういった大きなクラスを持たせるとまた Brush の時みたいな問題 (アニメーションや、プロパティのパス指定) が出てくる。代わりに Material の構築に必要なものを持たせる
+    detail::UIStyleAttribute<Rect> backgroundImageRect;
+    detail::UIStyleAttribute<Thickness> backgroundImageBorder;
 
 	// text
 	detail::UIStyleAttribute<Color> textColor;	// (default: Black)
@@ -219,7 +222,6 @@ public:
 
 public:	// TODO: internal
 	void setupDefault();
-	static void updateStyleDataHelper(UIStyle* localStyle, const detail::StyleData* parentStyleData, const UIStyle* defaultStyle, detail::StyleData* outStyleData);
 
 LN_CONSTRUCT_ACCESS:
     UIStyle();
@@ -229,5 +231,70 @@ LN_CONSTRUCT_ACCESS:
 private:
 };
 
+namespace detail {
+
+// どんな Element でも持つ一般的なスタイル値。
+// スタイル更新後の最終的な値を表す。
+// メモリ消費を抑えるため、UIStyleAttribute は使わないようにしている。
+class UIStyleInstance
+    : public RefObject
+{
+public:
+    UIStyle* sourceLocalStyle;	// 以下のデータの生成元となったローカスのスタイル
+
+    // layout
+    Thickness margin;
+    Thickness padding;
+    HAlignment horizontalAlignment;
+    VAlignment verticalAlignment;
+    float minWidth;
+    float minHeight;
+    float maxWidth;
+    float maxHeight;
+
+    // layout transform
+    Vector3 position;
+    Quaternion rotation;
+    Vector3 scale;
+    Vector3 centerPoint;
+
+    // background
+    BrushImageDrawMode backgroundDrawMode;
+    Color backgroundColor;
+    //Ref<Texture> backgroundImage;
+    //Ref<Shader> backgroundShader;
+    Ref<AbstractMaterial> backgroundMaterial;
+    Rect backgroundImageRect;
+    Thickness backgroundImageBorder;
+
+    // text
+    Color textColor;
+    Ref<Font> font;
+    //String fontFamily;
+    //float fontSize;
+    //UIFontWeight fontWeight;
+    //UIFontStyle fontStyle;
+
+    // render effects
+    bool visible;
+    BlendMode blendMode;
+
+    float opacity;
+    Color colorScale;
+    Color blendColor;
+    ToneF tone;
+
+    // TODO: 今後サブクラスごとにスタイルを追加する場合は、ここに map を設ける
+
+    UIStyleInstance();
+    void init();
+    static void updateStyleDataHelper(UIStyle* localStyle, const detail::UIStyleInstance* parentStyleData, const UIStyle* defaultStyle, detail::UIStyleInstance* outStyleData);
+
+LN_CONSTRUCT_ACCESS:
+
+private:
+};
+
+} // namespace detail
 } // namespace ln
 

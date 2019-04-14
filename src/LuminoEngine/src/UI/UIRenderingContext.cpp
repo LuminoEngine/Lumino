@@ -22,7 +22,7 @@ void UIRenderingContext::drawBoxBackground(const Rect& rect, const Thickness& bo
     //m_builder->setMaterial(material);
 
 
-	if (0)
+	if (1)
 	{
 		auto* element = m_builder->addNewDrawElement<detail::DrawFrameRectElement>(
 			m_manager->frameRectRenderFeature(),

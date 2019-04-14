@@ -61,7 +61,7 @@ EventConnection RenderView::connectOnUIEvent(UIEventHandler handler)
     return m_onUIEvent.connect(handler);
 }
 
-void RenderView::updateUIStyle(const detail::StyleData& parentFinalStyle)
+void RenderView::updateUIStyle(const detail::UIStyleInstance* parentFinalStyle)
 {
 	onUpdateUIStyle(parentFinalStyle);
 }
@@ -72,7 +72,7 @@ void RenderView::updateUILayout(const Rect& parentFinalGlobalRect)
 	onUpdateUILayout(Rect(parentFinalGlobalRect.x, parentFinalGlobalRect.y, m_actualPixelSize.width, m_actualPixelSize.height));
 }
 
-void RenderView::onUpdateUIStyle(const detail::StyleData& finalStyle)
+void RenderView::onUpdateUIStyle(const detail::UIStyleInstance* finalStyle)
 {
 }
 

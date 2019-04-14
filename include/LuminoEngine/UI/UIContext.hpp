@@ -33,7 +33,7 @@ private:
     Ref<UIElement> m_layoutRootElement;
     UIElement* m_mouseHoverElement;
 	Ref<UIStyle> m_defaultStyle;
-	detail::StyleData m_finalDefaultStyle;
+	Ref<detail::UIStyleInstance> m_finalDefaultStyle;
 };
 
 } // namespace ln

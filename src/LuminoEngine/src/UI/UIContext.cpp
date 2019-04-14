@@ -13,6 +13,7 @@ namespace ln {
 
 UIContext::UIContext()
     : m_mouseHoverElement(nullptr)
+    , m_finalDefaultStyle(makeRef<detail::UIStyleInstance>())
 {
 }
 
@@ -22,9 +23,9 @@ void UIContext::init()
 
 	m_defaultStyle = newObject<UIStyle>();
 	m_defaultStyle->setupDefault();
-	m_finalDefaultStyle.backgroundMaterial = newObject<Material>();
+	m_finalDefaultStyle->backgroundMaterial = newObject<Material>();
 
-	UIStyle::updateStyleDataHelper(m_defaultStyle, nullptr, m_defaultStyle, &m_finalDefaultStyle);
+    detail::UIStyleInstance::updateStyleDataHelper(m_defaultStyle, nullptr, m_defaultStyle, m_finalDefaultStyle);
 }
 
 void UIContext::setLayoutRootElement(UIElement* element)

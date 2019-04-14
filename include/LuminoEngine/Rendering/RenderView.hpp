@@ -15,7 +15,7 @@ class FrameBufferCache;
 class DrawElementList;
 class DrawElementListCollector;
 class SceneRenderer;
-struct StyleData;
+class UIStyleInstance;
 }
 
 struct FrameBuffer
@@ -57,9 +57,9 @@ public:
     EventConnection connectOnUIEvent(UIEventHandler handler);
 
 public: // TODO: protected
-	void updateUIStyle(const detail::StyleData& parentFinalStyle);
+	void updateUIStyle(const detail::UIStyleInstance* parentFinalStyle);
 	void updateUILayout(const Rect& parentFinalGlobalRect);
-	virtual void onUpdateUIStyle(const detail::StyleData& finalStyle);
+	virtual void onUpdateUIStyle(const detail::UIStyleInstance* finalStyle);
 	virtual void onUpdateUILayout(const Rect& finalGlobalRect);
     virtual void onRoutedEvent(UIEventArgs* e);
 

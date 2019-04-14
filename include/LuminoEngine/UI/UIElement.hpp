@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "../Graphics/ColorStructs.hpp"
+#include "../Rendering/Drawing.hpp"
 #include "UILayoutElement.hpp"
 
 namespace ln {
@@ -15,6 +16,7 @@ struct ToneF;
 namespace detail { class UIManager; }
 namespace detail
 {
+class UIStyleInstance;
 //struct UIInheritStyleAttribute
 //{
 //	Color textColor;
@@ -114,6 +116,13 @@ public:
 	const Vector3& centerPoint() const;
 
 
+
+    /** 背景の描画モードを設定します。*/
+    void setBackgroundDrawMode(BrushImageDrawMode value);
+
+    /** 背景の描画モードを取得します。*/
+    BrushImageDrawMode backgroundDrawMode() const;
+
 	/** 背景の色を設定します。*/
 	void setBackgroundColor(const Color& value);
 
@@ -131,6 +140,20 @@ public:
 
 	/** 背景の描画に使用するシェーダを取得します。*/
 	Shader* backgroundShader() const;
+
+    /** 背景の描画に使用する画像の転送元の範囲を示す矩形を設定します。(Unit: px) */
+    void setBackgroundImageRect(const Rect& value);
+
+    /** 背景の描画に使用する画像の転送元の範囲を示す矩形を取得します。(Unit: px) */
+    const Rect& backgroundImageRect() const;
+
+    /** 背景の描画モードが BoxFrame である場合に参照される、転送元の枠の太さを設定します。(Unit: px) */
+    void setBackgroundImageBorder(const Thickness& value);
+
+    /** 背景の描画モードが BoxFrame である場合に参照される、転送元の枠の太さを取得します。(Unit: px) */
+    const Thickness& backgroundImageBorder() const;
+
+
 
 
 
@@ -219,12 +242,12 @@ public: // TODO: internal
     void updateFrame(float elapsedSeconds);
     void raiseEvent(UIEventArgs* e);
     virtual UIElement* lookupMouseHoverElement(const Point& globalPt);
-	const detail::StyleData& finalStyle() const { return m_finalStyle; }
+	const Ref<detail::UIStyleInstance>& finalStyle() const { return m_finalStyle; }
 	UIElement* getFrameWindow();
 
 public:	// TODO: internal
     virtual void onUpdateFrame(float elapsedSeconds);
-	virtual void onUpdateStyle(const detail::StyleData& finalStyle);
+	virtual void onUpdateStyle(const detail::UIStyleInstance* finalStyle);
 
     /**
         @brief		この要素を表示するために必要なサイズを計測します。
@@ -270,7 +293,7 @@ public:	// TODO: internal
     virtual bool onHitTest(const Point& localPoint);
 
     // TODO: internal
-	void updateStyleHierarchical(const detail::StyleData& parentFinalStyle);
+	void updateStyleHierarchical(const detail::UIStyleInstance* parentFinalStyle);
     //void updateLayoutHierarchical(const Rect& parentFinalGlobalRect);
     virtual void render(UIRenderingContext* context);
 
@@ -287,7 +310,7 @@ private:
     UIElement* m_visualParent;
 
     Ref<UIStyle> m_localStyle;
-	detail::StyleData m_finalStyle;
+	Ref<detail::UIStyleInstance> m_finalStyle;
     int m_renderPriority;
     bool m_isHitTestVisible;
 

@@ -35,7 +35,7 @@ void UIRenderView::setRootElement(UIElement* element)
     m_rootElement = element;
 }
 
-void UIRenderView::onUpdateUIStyle(const detail::StyleData& finalStyle)
+void UIRenderView::onUpdateUIStyle(const detail::UIStyleInstance* finalStyle)
 {
 	m_rootElement->updateStyleHierarchical(finalStyle);
 }

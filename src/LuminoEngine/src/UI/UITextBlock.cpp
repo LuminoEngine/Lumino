@@ -39,7 +39,7 @@ Size UITextBlock::measureOverride(const Size& constraint)
 		scale = w->platformWindow()->dpiFactor();
 	}
 
-	return finalStyle().font->measureRenderSize(m_text, scale);
+	return finalStyle()->font->measureRenderSize(m_text, scale);
 }
 
 void UITextBlock::onRender(UIRenderingContext* context)
@@ -51,7 +51,7 @@ void UITextBlock::onRender(UIRenderingContext* context)
     //}
 
 
-    context->drawText(m_text, finalStyle().textColor, finalStyle().font);
+    context->drawText(m_text, finalStyle()->textColor, finalStyle()->font);
 }
 
 } // namespace ln

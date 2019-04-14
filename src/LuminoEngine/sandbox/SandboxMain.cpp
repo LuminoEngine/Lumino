@@ -112,14 +112,22 @@ int main(int argc, char** argv)
 
 
 	Engine::initialize();
-	Font::registerFontFromFile(u"C:/Users/hldc0061/Downloads/mplus-TESTFLIGHT-063/mplus-1c-regular.ttf");
+	//Font::registerFontFromFile(u"C:/Users/hldc0061/Downloads/mplus-TESTFLIGHT-063/mplus-1c-regular.ttf");
 
 
 
-	auto text1 = UITextBlock::create();
-	text1->setText(u"ABCDEFGabcdefg");
-	text1->setFontFamily(u"M+ 1c");
-	text1->setFontSize(20);
+	//auto text1 = UITextBlock::create();
+	//text1->setText(u"ABCDEFGabcdefg");
+	//text1->setFontFamily(u"M+ 1c");
+	//text1->setFontSize(20);
+    auto window1 = UIWindow::create();
+    window1->setWidth(200);
+    window1->setHeight(100);
+    window1->setBackgroundColor(Color::White);
+    window1->setBackgroundImage(Assets::loadTexture(u"D:/Documents/LuminoProjects/RinoTutorial/Assets/window.png"));
+    window1->setBackgroundImageRect(Rect(0, 0, 48, 48));
+    window1->setBackgroundDrawMode(BrushImageDrawMode::BoxFrame);
+    window1->setBackgroundImageBorder(Thickness(16));
 	{
 
 		while (Engine::update()) {
