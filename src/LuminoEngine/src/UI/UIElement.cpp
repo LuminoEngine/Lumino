@@ -419,6 +419,18 @@ void UIElement::updateStyleHierarchical(const detail::UIStyleInstance* parentFin
 	}
 }
 
+void UIElement::updateFinalLayoutHierarchical(const Rect& parentFinalGlobalRect)
+{
+    updateFinalRects(parentFinalGlobalRect);
+
+    // child elements
+    int count = getVisualChildrenCount();
+    for (int i = 0; i < count; i++) {
+        getVisualChild(i)->updateFinalLayoutHierarchical(m_finalGlobalRect);
+    }
+
+}
+
 //void UIElement::updateLayoutHierarchical(const Rect& parentFinalGlobalRect)
 //{
 //	UILayoutElement::updateLayout(parentFinalGlobalRect);

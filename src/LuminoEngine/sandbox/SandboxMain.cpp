@@ -116,10 +116,6 @@ int main(int argc, char** argv)
 
 
 
-	//auto text1 = UITextBlock::create();
-	//text1->setText(u"ABCDEFGabcdefg");
-	//text1->setFontFamily(u"M+ 1c");
-	//text1->setFontSize(20);
     auto window1 = UIWindow::create();
     window1->setWidth(200);
     window1->setHeight(100);
@@ -128,6 +124,13 @@ int main(int argc, char** argv)
     window1->setBackgroundImageRect(Rect(0, 0, 48, 48));
     window1->setBackgroundDrawMode(BrushImageDrawMode::BoxFrame);
     window1->setBackgroundImageBorder(Thickness(16));
+
+
+    auto text1 = UITextBlock::create();
+    text1->setText(u"ABCDEFGabcdefg");
+    //text1->setFontFamily(u"M+ 1c");
+    text1->setFontSize(20);
+    window1->addElement(text1);
 	{
 
 		while (Engine::update()) {

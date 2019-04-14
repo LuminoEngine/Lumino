@@ -42,7 +42,8 @@ void UIRenderView::onUpdateUIStyle(const detail::UIStyleInstance* finalStyle)
 
 void UIRenderView::onUpdateUILayout(const Rect& finalGlobalRect)
 {
-	m_rootElement->updateLayout(finalGlobalRect);
+	m_rootElement->updateLayout(Rect(0, 0, finalGlobalRect.getSize()));
+    m_rootElement->updateFinalLayoutHierarchical(finalGlobalRect);
 }
 
 void UIRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthbuffer)

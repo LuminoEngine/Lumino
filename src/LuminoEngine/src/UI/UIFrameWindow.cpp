@@ -291,7 +291,10 @@ void UIFrameWindow::updateLayoutTree()
 {
 	SizeI size;
 	m_platformWindow->getSize(&size);
-	updateLayout(Rect(0, 0, size.width, size.height));
+
+    Rect clientRect(0, 0, size.width, size.height);
+	updateLayout(clientRect);
+    updateFinalLayoutHierarchical(clientRect);
 }
 
 // 強制的にウィンドウサイズとする

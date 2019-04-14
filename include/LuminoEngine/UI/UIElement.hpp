@@ -294,7 +294,7 @@ public:	// TODO: internal
 
     // TODO: internal
 	void updateStyleHierarchical(const detail::UIStyleInstance* parentFinalStyle);
-    //void updateLayoutHierarchical(const Rect& parentFinalGlobalRect);
+    void updateFinalLayoutHierarchical(const Rect& parentFinalGlobalRect);
     virtual void render(UIRenderingContext* context);
 
 	Flags<detail::ObjectManagementFlags>& objectManagementFlags() { return m_objectManagementFlags; }

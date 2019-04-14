@@ -137,8 +137,8 @@ protected:
 
 public:	//TODO: internal
 	void measureLayout(const Size& availableSize);
-	void arrangeLayout(const Rect& finalSlotGlobalRect);
-	void updateFinalRects(const Rect& finalSlotGlobalRect);
+	void arrangeLayout(const Rect& localSlotRect);
+	void updateFinalRects(const Rect& parentFinalGlobalRect);
 
 	const Size& getLayoutSize() const { return m_layoutSize; }
 	void setLayoutDesiredSize(const Size& size) { m_desiredSize = size; }

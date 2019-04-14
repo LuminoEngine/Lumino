@@ -59,14 +59,14 @@ void UILayoutElement::measureLayout(const Size& availableSize)
 	setLayoutDesiredSize(desiredSize);
 }
 
-void UILayoutElement::arrangeLayout(const Rect& finalSlotGlobalRect)
+void UILayoutElement::arrangeLayout(const Rect& localSlotRect)
 {
 	// finalLocalRect はこの要素を配置できる領域サイズ。と、親要素内でのオフセット。
 	// 要素に直接設定されているサイズよりも大きいこともある。
 	// TODO: HorizontalAlignment 等を考慮して、最終的な座標とサイズを決定する。
 	//		 この要素のサイズが省略されていれば、Stretch ならサイズは最大に、それ以外なら最小になる。
 
-	const Size& areaSize = finalSlotGlobalRect.getSize();
+	const Size& areaSize = localSlotRect.getSize();
 
 #if 1
 	HAlignment		hAlign = getLayoutHAlignment();
@@ -126,20 +126,19 @@ void UILayoutElement::arrangeLayout(const Rect& finalSlotGlobalRect)
 	//finalContentRect.height = finalRenderRect.height - padding.getHeight();
 	setLayoutFinalLocalRect(finalLocalRect/*, finalContentRect*/);
 
-	updateFinalRects(finalSlotGlobalRect);
+	//updateFinalRects(localSlotRect);
 
-	onUpdateLayout(finalGlobalRect());
 }
 
-void UILayoutElement::updateFinalRects(const Rect& finalSlotGlobalRect)
+void UILayoutElement::updateFinalRects(const Rect& parentFinalGlobalRect)
 {
 	Rect localRenderRect = getLayoutFinalLocalRect();
 
 	Rect finalGlobalRect;
 	//if (m_parent != nullptr)
 	//{
-	finalGlobalRect.x = finalSlotGlobalRect.x + localRenderRect.x;
-	finalGlobalRect.y = finalSlotGlobalRect.y + localRenderRect.y;
+	finalGlobalRect.x = parentFinalGlobalRect.x + localRenderRect.x;
+	finalGlobalRect.y = parentFinalGlobalRect.y + localRenderRect.y;
 	//m_combinedOpacity = m_parent->m_combinedOpacity * m_opacity;	// 不透明度もココで混ぜてしまう
 //}
 //else
@@ -152,6 +151,8 @@ void UILayoutElement::updateFinalRects(const Rect& finalSlotGlobalRect)
 	finalGlobalRect.height = localRenderRect.height;
 
 	setLayoutFinalGlobalRect(finalGlobalRect);
+
+    onUpdateLayout(finalGlobalRect);
 
 	// update children
 	//Rect finalGlobalContentRect(
