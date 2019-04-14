@@ -53,18 +53,18 @@ void InternalFrameRectRenderer::draw(const Rect& rect, const Matrix& worldTransf
         dstRect.width -= borderThickness.getWidth();
         dstRect.height -= borderThickness.getHeight();
 
-        Rect srcRect = srcRect;
-        srcRect.x += borderThickness.left;
-        srcRect.y += borderThickness.top;
-        srcRect.width -= borderThickness.getWidth();
-        srcRect.height -= borderThickness.getHeight();
+        Rect innterSrcRect = srcRect;
+        innterSrcRect.x += borderThickness.left;
+        innterSrcRect.y += borderThickness.top;
+        innterSrcRect.width -= borderThickness.getWidth();
+        innterSrcRect.height -= borderThickness.getHeight();
 
         Size texSize((float)srcTextureSize.width, (float)srcTextureSize.height);
         texSize.width = 1.0f / texSize.width;
         texSize.height = 1.0f / texSize.height;
-        Rect uvSrcRect(srcRect.x * texSize.width, srcRect.y * texSize.height, srcRect.width * texSize.width, srcRect.height * texSize.height);
+        Rect uvSrcRect(innterSrcRect.x * texSize.width, innterSrcRect.y * texSize.height, innterSrcRect.width * texSize.width, innterSrcRect.height * texSize.height);
 
-        putRectangle(dstRect, srcRect, uvSrcRect, wrapMode);
+        putRectangle(dstRect, innterSrcRect, uvSrcRect, wrapMode);
     }
 }
 
