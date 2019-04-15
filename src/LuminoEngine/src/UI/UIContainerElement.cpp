@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UILayoutPanel.hpp>
 #include <LuminoEngine/UI/UIContainerElement.hpp>
 
@@ -108,7 +109,8 @@ Size UIContainerElement::measureOverride(const Size& constraint)
 Size UIContainerElement::arrangeOverride(const Size& finalSize)
 {
 	if (m_logicalChildrenHost) {
-		m_logicalChildrenHost->arrangeLayout(Rect(0, 0, finalSize));
+        Rect rect(0, 0, finalSize);
+        m_logicalChildrenHost->arrangeLayout(rect.makeDeflate(finalStyle()->padding));
 		return finalSize;
 	}
 	else {

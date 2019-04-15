@@ -126,12 +126,19 @@ int main(int argc, char** argv)
     window1->setBackgroundImageBorder(Thickness(16));
     window1->setPadding(Thickness(16));
 
+    window1->setLayoutPanel(UIStackLayout::create());
+
     auto text1 = UITextBlock::create();
     text1->setText(u"ABCDEFGabcdefg");
     //text1->setFontFamily(u"M+ 1c");
     text1->setFontSize(20);
     text1->setTextColor(Color::White);
     window1->addElement(text1);
+
+    auto text2 = UITextBlock::create();
+    text2->setText(u"sc");
+    text2->setTextColor(Color::White);
+    window1->addElement(text2);
 	{
 
 		while (Engine::update()) {
