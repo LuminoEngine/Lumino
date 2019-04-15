@@ -124,12 +124,13 @@ int main(int argc, char** argv)
     window1->setBackgroundImageRect(Rect(0, 0, 48, 48));
     window1->setBackgroundDrawMode(BrushImageDrawMode::BoxFrame);
     window1->setBackgroundImageBorder(Thickness(16));
-
+    window1->setPadding(Thickness(16));
 
     auto text1 = UITextBlock::create();
     text1->setText(u"ABCDEFGabcdefg");
     //text1->setFontFamily(u"M+ 1c");
     text1->setFontSize(20);
+    text1->setTextColor(Color::White);
     window1->addElement(text1);
 	{
 

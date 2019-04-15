@@ -459,6 +459,7 @@ void UIElement::render(UIRenderingContext* context)
             m.scale(scale());
             m.rotateQuaternion(rotation());
             m.translate(position());
+            m.translate(Vector3(m_finalGlobalRect.x, m_finalGlobalRect.y, 0));
             context->setBaseTransfrom(m);
         }
         detail::BuiltinEffectData data;

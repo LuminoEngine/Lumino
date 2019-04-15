@@ -204,6 +204,15 @@ public:
     detail::UIStyleAttribute<Rect> backgroundImageRect;
     detail::UIStyleAttribute<Thickness> backgroundImageBorder;
 
+    // border
+    detail::UIStyleAttribute<Thickness>		borderThickness;
+    detail::UIStyleAttribute<CornerRadius>		cornerRadius;
+    detail::UIStyleAttribute<Color>				leftBorderColor;
+    detail::UIStyleAttribute<Color>				topBorderColor;
+    detail::UIStyleAttribute<Color>				rightBorderColor;
+    detail::UIStyleAttribute<Color>				bottomBorderColor;
+    detail::UIStyleAttribute<BorderDirection>	borderDirection;
+
 	// text
 	detail::UIStyleAttribute<Color> textColor;	// (default: Black)
 	detail::UIStyleAttribute<String> fontFamily;

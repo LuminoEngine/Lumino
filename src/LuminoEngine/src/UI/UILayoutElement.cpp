@@ -116,8 +116,8 @@ void UILayoutElement::arrangeLayout(const Rect& localSlotRect)
 
 	Rect finalLocalRect;
 	//Rect finalContentRect;
-	finalLocalRect.x = /*finalLocalRect.x + */margin.left + arrangeRect.x;
-	finalLocalRect.y = /*finalLocalRect.y + */margin.top + arrangeRect.y;
+	finalLocalRect.x = localSlotRect.x + /*finalLocalRect.x + */margin.left + arrangeRect.x;
+	finalLocalRect.y = localSlotRect.y + /*finalLocalRect.y + */margin.top + arrangeRect.y;
 	finalLocalRect.width = finalContentAreaSize.width + padding.getWidth();
 	finalLocalRect.height = finalContentAreaSize.height + padding.getHeight();
 	//finalContentRect.x = finalRenderRect.x + padding.left;

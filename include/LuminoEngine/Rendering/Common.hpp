@@ -100,6 +100,17 @@ enum class RendringPhase
 //    Thickness border;
 //};
 
+enum class BorderDirection
+{
+    Inside,
+    Outside,
+};
+
+enum class ShadowDirection
+{
+    Inside,
+    Outside,
+};
 
 namespace detail {
 
