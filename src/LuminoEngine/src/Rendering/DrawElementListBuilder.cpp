@@ -143,6 +143,11 @@ void DrawElementListBuilder::setMaterial(AbstractMaterial* value)
 	}
 }
 
+const AbstractMaterial* DrawElementListBuilder::material() const
+{
+    return primaryGeometryStageParameters().m_material;
+}
+
 void DrawElementListBuilder::setTransfrom(const Matrix & value)
 {
     primaryState()->transform = value;

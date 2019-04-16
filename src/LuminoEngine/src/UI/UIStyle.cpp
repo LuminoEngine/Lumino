@@ -29,8 +29,11 @@ void UIStyle::setupDefault()
 {
 	margin = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
 	padding = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
+
+    // Alignment は HTML のデフォルトに合わせてみる
 	horizontalAlignment = HAlignment::Left;
 	verticalAlignment = VAlignment::Top;
+
 	minWidth = Math::NaN;
 	minHeight = Math::NaN;
 	maxWidth = Math::NaN;

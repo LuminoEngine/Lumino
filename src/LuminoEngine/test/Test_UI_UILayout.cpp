@@ -1,7 +1,5 @@
 ﻿#include "Common.hpp"
 
-#ifdef LN_UNIT_TEST_EXPERIMENTAL
-
 //==============================================================================
 //# Testing Test_UI_UILayout
 class Test_UI_UILayout : public LuminoSceneTest {};
@@ -65,22 +63,22 @@ TEST_F(Test_UI_UILayout, ParentChildRelation)
 	auto e1 = newObject<UIContainerElement>();
 	e1->setBackgroundColor(Color::Red);
 	e1->setMargin(Thickness(10, 20, 0, 0));
+    e1->setPadding(Thickness(10));
 	e1->setWidth(100);
 	e1->setHeight(80);
 	e1->setHorizontalAlignment(HAlignment::Left);
 	e1->setVerticalAlignment(VAlignment::Top);
 
-	auto e2 = newObject<UIContainerElement>();
-	e2->setBackgroundColor(Color::Green);
-	e1->setMargin(Thickness(10, 5, 0, 0));
-	e2->setWidth(80);
-	e2->setHeight(20);
-	e2->setHorizontalAlignment(HAlignment::Left);
-	e2->setVerticalAlignment(VAlignment::Top);
-	e1->addElement(e2);
+    auto e2 = newObject<UIContainerElement>();
+    e2->setBackgroundColor(Color::Green);
+    e2->setWidth(80);
+    e2->setHeight(20);
+    e2->setHorizontalAlignment(HAlignment::Left);
+    e2->setVerticalAlignment(VAlignment::Top);
+    e1->addElement(e2);
 
 	TestEnv::updateFrame();
-	ASSERT_SCREEN_S(LN_ASSETFILE("UI/Result/Test_UI_UILayout-ParentChildRelation-1.png"));
+	ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-ParentChildRelation-1.png"));
 	LN_TEST_CLEAN_SCENE;
 }
 
@@ -106,75 +104,87 @@ TEST_F(Test_UI_UILayout, RenderTransform)
 //## BorderLayout
 TEST_F(Test_UI_UILayout, BorderLayout)
 {
+    auto owner1 = Engine::mainUIRoot();
+
+    auto e11 = newObject<UIElement>();
+    e11->setBackgroundColor(Color::Red);
+    e11->setWidth(20);
+    e11->setHeight(20);
+    e11->setHorizontalAlignment(HAlignment::Left);
+    e11->setVerticalAlignment(VAlignment::Top);
+
+    auto e12 = newObject<UIElement>();
+    e12->setBackgroundColor(Color::Green);
+    e12->setWidth(20);
+    e12->setHeight(20);
+    e12->setHorizontalAlignment(HAlignment::Center);
+    e12->setVerticalAlignment(VAlignment::Top);
+
+    auto e13 = newObject<UIElement>();
+    e13->setBackgroundColor(Color::Blue);
+    e13->setWidth(20);
+    e13->setHeight(20);
+    e13->setHorizontalAlignment(HAlignment::Right);
+    e13->setVerticalAlignment(VAlignment::Top);
+
+    auto e21 = newObject<UIElement>();
+    e21->setBackgroundColor(Color::Red);
+    e21->setWidth(20);
+    e21->setHeight(20);
+    e21->setHorizontalAlignment(HAlignment::Left);
+    e21->setVerticalAlignment(VAlignment::Center);
+
+    auto e22 = newObject<UIElement>();
+    e22->setBackgroundColor(Color::Green);
+    e22->setWidth(20);
+    e22->setHeight(20);
+    e22->setHorizontalAlignment(HAlignment::Center);
+    e22->setVerticalAlignment(VAlignment::Center);
+
+    auto e23 = newObject<UIElement>();
+    e23->setBackgroundColor(Color::Blue);
+    e23->setWidth(20);
+    e23->setHeight(20);
+    e23->setHorizontalAlignment(HAlignment::Right);
+    e23->setVerticalAlignment(VAlignment::Center);
+
+    auto e31 = newObject<UIElement>();
+    e31->setBackgroundColor(Color::Red);
+    e31->setWidth(20);
+    e31->setHeight(20);
+    e31->setHorizontalAlignment(HAlignment::Left);
+    e31->setVerticalAlignment(VAlignment::Bottom);
+
+    auto e32 = newObject<UIElement>();
+    e32->setBackgroundColor(Color::Green);
+    e32->setWidth(20);
+    e32->setHeight(20);
+    e32->setHorizontalAlignment(HAlignment::Center);
+    e32->setVerticalAlignment(VAlignment::Bottom);
+
+    auto e33 = newObject<UIElement>();
+    e33->setBackgroundColor(Color::Blue);
+    e33->setWidth(20);
+    e33->setHeight(20);
+    e33->setHorizontalAlignment(HAlignment::Right);
+    e33->setVerticalAlignment(VAlignment::Bottom);
+
 	//- [ ] 8 方向境界と中央への配置
 	{
-		auto e11 = newObject<UIElement>();
-		e11->setBackgroundColor(Color::Red);
-		e11->setWidth(20);
-		e11->setHeight(20);
-		e11->setHorizontalAlignment(HAlignment::Left);
-		e11->setVerticalAlignment(VAlignment::Top);
-
-		auto e12 = newObject<UIElement>();
-		e12->setBackgroundColor(Color::Green);
-		e12->setWidth(20);
-		e12->setHeight(20);
-		e12->setHorizontalAlignment(HAlignment::Center);
-		e12->setVerticalAlignment(VAlignment::Top);
-
-		auto e13 = newObject<UIElement>();
-		e13->setBackgroundColor(Color::Blue);
-		e13->setWidth(20);
-		e13->setHeight(20);
-		e13->setHorizontalAlignment(HAlignment::Right);
-		e13->setVerticalAlignment(VAlignment::Top);
-
-		auto e21 = newObject<UIElement>();
-		e21->setBackgroundColor(Color::Red);
-		e21->setWidth(20);
-		e21->setHeight(20);
-		e21->setHorizontalAlignment(HAlignment::Left);
-		e21->setVerticalAlignment(VAlignment::Center);
-
-		auto e22 = newObject<UIElement>();
-		e22->setBackgroundColor(Color::Green);
-		e22->setWidth(20);
-		e22->setHeight(20);
-		e22->setHorizontalAlignment(HAlignment::Center);
-		e22->setVerticalAlignment(VAlignment::Center);
-
-		auto e23 = newObject<UIElement>();
-		e23->setBackgroundColor(Color::Blue);
-		e23->setWidth(20);
-		e23->setHeight(20);
-		e23->setHorizontalAlignment(HAlignment::Right);
-		e23->setVerticalAlignment(VAlignment::Center);
-
-		auto e31 = newObject<UIElement>();
-		e31->setBackgroundColor(Color::Red);
-		e31->setWidth(20);
-		e31->setHeight(20);
-		e31->setHorizontalAlignment(HAlignment::Left);
-		e31->setVerticalAlignment(VAlignment::Bottom);
-
-		auto e32 = newObject<UIElement>();
-		e32->setBackgroundColor(Color::Green);
-		e32->setWidth(20);
-		e32->setHeight(20);
-		e32->setHorizontalAlignment(HAlignment::Center);
-		e32->setVerticalAlignment(VAlignment::Bottom);
-
-		auto e33 = newObject<UIElement>();
-		e33->setBackgroundColor(Color::Blue);
-		e33->setWidth(20);
-		e33->setHeight(20);
-		e33->setHorizontalAlignment(HAlignment::Right);
-		e33->setVerticalAlignment(VAlignment::Bottom);
-
 		TestEnv::updateFrame();
 		ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-BorderLayout-1.png"));
 		LN_TEST_CLEAN_SCENE;
 	}
+
+    //- [ ] 親要素に padding をつける
+    {
+        owner1->setPadding(Thickness(10));
+
+        TestEnv::updateFrame();
+        ASSERT_SCREEN_S(LN_ASSETFILE("UI/Result/Test_UI_UILayout-BorderLayout-2.png"));
+        LN_TEST_CLEAN_SCENE;
+    }
+
 }
 
 //------------------------------------------------------------------------------
@@ -245,5 +255,3 @@ TEST_F(Test_UI_UILayout, StackLayout)
 
 	LN_TEST_CLEAN_SCENE;
 }
-
-#endif // LN_UNIT_TEST_EXPERIMENTAL

@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/DrawElementListBuilder.hpp"
@@ -21,8 +22,19 @@ void UIRenderingContext::drawBoxBackground(const Rect& rect, const Thickness& bo
 {
     //m_builder->setMaterial(material);
 
+    if (!m_builder->material()->mainTexture()) {
+        mode = BrushImageDrawMode::Image;
+    }
 
-	if (1)
+	if (mode == BrushImageDrawMode::Image)
+	{
+        auto* element = m_builder->addNewDrawElement<detail::DrawShapesElement>(
+            m_manager->shapesRenderFeature(),
+            m_builder->shapesRenderFeatureStageParameters());
+
+        element->commandList.addDrawBoxBackground(m_manager->graphicsManager()->primaryRenderingCommandList()->linearAllocator(), element->combinedWorldMatrix(), rect, cornerRadius, color);
+	}
+	else
 	{
 		auto* element = m_builder->addNewDrawElement<detail::DrawFrameRectElement>(
 			m_manager->frameRectRenderFeature(),
@@ -34,14 +46,6 @@ void UIRenderingContext::drawBoxBackground(const Rect& rect, const Thickness& bo
 		element->borderThickness = borderThickness;
 		element->srcRect = textureSourceRect;
 		element->wrapMode = BrushWrapMode::Stretch;
-	}
-	else
-	{
-		auto* element = m_builder->addNewDrawElement<detail::DrawShapesElement>(
-			m_manager->shapesRenderFeature(),
-			m_builder->shapesRenderFeatureStageParameters());
-
-		element->commandList.addDrawBoxBackground(m_manager->graphicsManager()->primaryRenderingCommandList()->linearAllocator(), element->combinedWorldMatrix(), rect, cornerRadius, color);
 	}
 
     // TODO: bounding box

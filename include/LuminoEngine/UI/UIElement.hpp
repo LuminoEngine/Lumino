@@ -124,22 +124,22 @@ public:
     /** 背景の描画モードを取得します。*/
     BrushImageDrawMode backgroundDrawMode() const;
 
-	/** 背景の色を設定します。*/
+	/** 背景の色を設定します。 */
 	void setBackgroundColor(const Color& value);
 
-	/** 背景の色を取得します。*/
+	/** 背景の色を取得します。 */
 	const Color& backgroundColor() const;
 
-	/** 背景の描画に使用する画像を設定します。*/
+	/** 背景の描画に使用する画像を設定します。 */
 	void setBackgroundImage(Texture* value);
 
-	/** 背景の描画に使用する画像を取得します。*/
+	/** 背景の描画に使用する画像を取得します。 */
 	Texture* backgroundImage() const;
 
-	/** 背景の描画に使用するシェーダを設定します。*/
+	/** 背景の描画に使用するシェーダを設定します。 */
 	void setBackgroundShader(Shader* value);
 
-	/** 背景の描画に使用するシェーダを取得します。*/
+	/** 背景の描画に使用するシェーダを取得します。 */
 	Shader* backgroundShader() const;
 
     /** 背景の描画に使用する画像の転送元の範囲を示す矩形を設定します。(Unit: px) */
