@@ -180,7 +180,7 @@ TEST_F(Test_UI_UILayout, BorderLayout)
         owner1->setPadding(Thickness(20));
 
         TestEnv::updateFrame();
-        ASSERT_SCREEN_S(LN_ASSETFILE("UI/Result/Test_UI_UILayout-BorderLayout-2.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-BorderLayout-2.png"));
     }
 
     LN_TEST_CLEAN_SCENE;

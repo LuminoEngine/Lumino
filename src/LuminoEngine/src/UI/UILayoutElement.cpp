@@ -106,11 +106,12 @@ void UILayoutElement::arrangeLayout(const Rect& localSlotRect)
 	arrangeRect.height = std::max(arrangeRect.height - marginHeight, 0.0f);
 
 	// Padding を考慮する
-	const Thickness& padding = getLayoutPadding();
+	//const Thickness& padding = getLayoutPadding();
 
-	Size contentAreaSize(
-		std::max(arrangeRect.width - padding.getWidth(), 0.0f),
-		std::max(arrangeRect.height - padding.getHeight(), 0.0f));
+    Size contentAreaSize = arrangeRect.getSize();
+	//Size contentAreaSize(
+	//	std::max(arrangeRect.width - padding.getWidth(), 0.0f),
+	//	std::max(arrangeRect.height - padding.getHeight(), 0.0f));
 	Size finalContentAreaSize = arrangeOverride(contentAreaSize);
 
 
@@ -118,8 +119,8 @@ void UILayoutElement::arrangeLayout(const Rect& localSlotRect)
 	//Rect finalContentRect;
 	finalLocalRect.x = localSlotRect.x + /*finalLocalRect.x + */margin.left + arrangeRect.x;
 	finalLocalRect.y = localSlotRect.y + /*finalLocalRect.y + */margin.top + arrangeRect.y;
-	finalLocalRect.width = finalContentAreaSize.width + padding.getWidth();
-	finalLocalRect.height = finalContentAreaSize.height + padding.getHeight();
+    finalLocalRect.width = finalContentAreaSize.width;// +padding.getWidth();
+	finalLocalRect.height = finalContentAreaSize.height;// + padding.getHeight();
 	//finalContentRect.x = finalRenderRect.x + padding.left;
 	//finalContentRect.y = finalRenderRect.y + padding.top;
 	//finalContentRect.width = finalRenderRect.width - padding.getWidth();

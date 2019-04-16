@@ -214,7 +214,8 @@ Size UIFrameLayout::staticArrangeOverride(UIElement* ownerElement, const Size& f
 {
 	const Thickness& padding = ownerElement->finalStyle()->padding;
 	Point childrenOffset(padding.left, padding.top);
-	Size childrenBoundSize(finalSize.width - padding.getWidth(), finalSize.height - padding.getHeight());
+    //Size childrenBoundSize = finalSize;//(finalSize.width - padding.right, finalSize.height - padding.bottom);
+    Size childrenBoundSize(finalSize.width - padding.getWidth(), finalSize.height - padding.getHeight());
 	Rect bounds(childrenOffset, childrenBoundSize);
 
 	int childrenCount = ownerElement->getVisualChildrenCount();
