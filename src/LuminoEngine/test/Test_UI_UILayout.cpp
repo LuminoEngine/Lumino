@@ -57,32 +57,6 @@ TEST_F(Test_UI_UILayout, Default)
 }
 
 //------------------------------------------------------------------------------
-//## ParentChildRelation
-TEST_F(Test_UI_UILayout, ParentChildRelation)
-{
-	auto e1 = newObject<UIContainerElement>();
-	e1->setBackgroundColor(Color::Red);
-	e1->setMargin(Thickness(10, 20, 0, 0));
-    e1->setPadding(Thickness(10));
-	e1->setWidth(100);
-	e1->setHeight(80);
-	e1->setHorizontalAlignment(HAlignment::Left);
-	e1->setVerticalAlignment(VAlignment::Top);
-
-    auto e2 = newObject<UIContainerElement>();
-    e2->setBackgroundColor(Color::Green);
-    e2->setWidth(80);
-    e2->setHeight(20);
-    e2->setHorizontalAlignment(HAlignment::Left);
-    e2->setVerticalAlignment(VAlignment::Top);
-    e1->addElement(e2);
-
-	TestEnv::updateFrame();
-	ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-ParentChildRelation-1.png"));
-	LN_TEST_CLEAN_SCENE;
-}
-
-//------------------------------------------------------------------------------
 //## RenderTransform
 TEST_F(Test_UI_UILayout, RenderTransform)
 {
@@ -181,6 +155,8 @@ TEST_F(Test_UI_UILayout, BorderLayout)
 
         TestEnv::updateFrame();
         ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-BorderLayout-2.png"));
+
+		owner1->setPadding(Thickness(0));
     }
 
     LN_TEST_CLEAN_SCENE;

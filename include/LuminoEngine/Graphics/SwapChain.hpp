@@ -17,6 +17,7 @@ namespace detail {
 	class ISwapChain;
 }
 
+/** スワップチェーン のクラスです。 */
 class LN_API SwapChain
 	: public Object
 {

@@ -26,7 +26,7 @@ choco install -y cmake --installargs 'ADD_CMAKE_TO_PATH=System'
 choco install -y nuget.commandline
 choco install -y docfx
 choco install -y doxygen.install
-choco install -y python3 --pre
+choco install -y python3
 choco install -y wixtoolset
 ```
 
