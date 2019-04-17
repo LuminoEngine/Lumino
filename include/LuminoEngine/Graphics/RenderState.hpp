@@ -1,4 +1,4 @@
-﻿
+﻿// Copyright (c) 2019+ lriki. Distributed under the MIT license.
 #pragma once
 #include "Common.hpp"
 
@@ -8,7 +8,7 @@ namespace ln {
 enum class BlendOp : uint8_t
 {
     /** 転送元に転送先を加算する。*/
-	Add,
+    Add,
 
     /** 転送元から転送先を減算する。*/
     Subtract,
@@ -27,13 +27,13 @@ enum class BlendOp : uint8_t
 enum class BlendFactor : uint8_t
 {
     /** ブレンディング係数は、(0, 0, 0, 0) */
-	Zero,
-    
+    Zero,
+
     /** ブレンディング係数は、(1, 1, 1, 1) */
     One,
 
     /** ブレンディング係数は、(Rs, Gs, Bs, As) */
-	SourceColor,
+    SourceColor,
 
     /** ブレンディング係数は、(1-Rs, 1-Gs, 1-Bs, 1-As) */
     InverseSourceColor,
@@ -42,19 +42,19 @@ enum class BlendFactor : uint8_t
     SourceAlpha,
 
     /** ブレンディング係数は、(1-As, 1-As, 1-As, 1-As) */
-	InverseSourceAlpha,
+    InverseSourceAlpha,
 
     /** ブレンディング係数は、(Rd, Gd, Bd, Ad) */
-	DestinationColor,
+    DestinationColor,
 
     /** ブレンディング係数は、(1-Rd, 1-Gd, 1-Bd, 1-Ad) */
-	InverseDestinationColor,
+    InverseDestinationColor,
 
     /** ブレンディング係数は、(Ad, Ad, Ad, Ad) */
-	DestinationAlpha,
+    DestinationAlpha,
 
     /** ブレンディング係数は、(1-Ad, 1-Ad, 1-Ad, 1-Ad) */
-	InverseDestinationAlpha,
+    InverseDestinationAlpha,
 };
 
 /** 塗りつぶし方法 */
@@ -70,79 +70,79 @@ enum class FillMode : uint8_t
 /** カリング方法 */
 enum class CullMode : uint8_t
 {
-	/** 両面を描画します。 */
-	None,
+    /** 両面を描画します。 */
+    None,
 
-	/** 前向きの面を描画しません。 */
-	Front,
+    /** 前向きの面を描画しません。 */
+    Front,
 
-	/** 後ろ向きの面を描画しません。 */
-	Back,
+    /** 後ろ向きの面を描画しません。 */
+    Back,
 };
 
 /** 比較関数 */
 enum class ComparisonFunc : uint8_t
 {
     /** 常に失敗します。 */
-	Never,
+    Never,
 
     /** (新しいピクセル値 < 現在のピクセル値) 新しいピクセル値が、現在のピクセル値未満の場合に、新しいピクセル値を採用します。 */
-	Less,
+    Less,
 
     /** (新しいピクセル値 <= 現在のピクセル値) 新しいピクセル値が、現在のピクセル値以下の場合に、新しいピクセル値を採用します。 */
-	LessEqual,
+    LessEqual,
 
     /** (新しいピクセル値 > 現在のピクセル値) 新しいピクセル値が、現在のピクセル値を超える場合に、新しいピクセル値を採用します。 */
-	Greater,
+    Greater,
 
     /** (新しいピクセル値 >= 現在のピクセル値) 新しいピクセル値が、現在のピクセル値以上の場合に、新しいピクセル値を採用します。 */
-	GreaterEqual,
+    GreaterEqual,
 
     /** (新しいピクセル値 == 現在のピクセル値) 新しいピクセル値が、現在のピクセル値と等しい場合に、新しいピクセル値を採用します。 */
-	Equal,
+    Equal,
 
     /** (新しいピクセル値 != 現在のピクセル値) 新しいピクセル値が、現在のピクセル値と等しくない場合に、新しいピクセル値を採用します。 */
-	NotEqual,
+    NotEqual,
 
     /** 常に成功します。 */
-	Always,
+    Always,
 };
 
 /** ステンシル処理方法 */
 enum class StencilOp : uint8_t
 {
     /** 既存のステンシル データを保持します。(何もしません) */
-	Keep,
+    Keep,
 
     /** ステンシルデータをステンシル参照値に設定します。 */
-	Replace,
+    Replace,
 };
 
 /** レンダー ターゲットのブレンディングステート */
 struct RenderTargetBlendDesc
 {
-	/** ブレンディングの有無 (default:false) */
-	bool blendEnable;
+    /** ブレンディングの有無 (default:false) */
+    bool blendEnable;
 
-	/** 入力元の RGB に対する係数 (default: One) */
-	BlendFactor sourceBlend;
+    /** 入力元の RGB に対する係数 (default: One) */
+    BlendFactor sourceBlend;
 
-	/** 出力先の RGB に対する係数 (default: Zero) */
-	BlendFactor destinationBlend;
+    /** 出力先の RGB に対する係数 (default: Zero) */
+    BlendFactor destinationBlend;
 
-	/** RGB のブレンディング操作 (default: Add) */
-	BlendOp blendOp;
+    /** RGB のブレンディング操作 (default: Add) */
+    BlendOp blendOp;
 
-	/** 入力元のアルファ値に対する係数 (default: One) */
-	BlendFactor sourceBlendAlpha;
+    /** 入力元のアルファ値に対する係数 (default: One) */
+    BlendFactor sourceBlendAlpha;
 
-	/** 出力先のアルファ値に対する係数 (default: Zero) */
-	BlendFactor destinationBlendAlpha;
+    /** 出力先のアルファ値に対する係数 (default: Zero) */
+    BlendFactor destinationBlendAlpha;
 
-	/** アルファ値のブレンディング操作 (default: Add) */
-	BlendOp blendOpAlpha;
+    /** アルファ値のブレンディング操作 (default: Add) */
+    BlendOp blendOpAlpha;
 
-	RenderTargetBlendDesc();
+    RenderTargetBlendDesc();
 };
 
 /** ブレンディングステート */
@@ -150,67 +150,67 @@ struct BlendStateDesc
 {
     static const int MaxRenderTargets = 8;
 
-	/** レンダーターゲットで独立したブレンディングを有効にするには、true に設定します。(default:false) */
-	bool independentBlendEnable;
+    /** レンダーターゲットで独立したブレンディングを有効にするには、true に設定します。(default:false) */
+    bool independentBlendEnable;
 
-	/** レンダーターゲットごとのブレンドステートの配列です。 */
-	RenderTargetBlendDesc renderTargets[8];
+    /** レンダーターゲットごとのブレンドステートの配列です。 */
+    RenderTargetBlendDesc renderTargets[8];
 
-	BlendStateDesc();
+    BlendStateDesc();
 };
 
 /** ラスタライザステート */
 struct RasterizerStateDesc
 {
-	/** 塗りつぶし方法 (default:Solid) */
-	FillMode fillMode;
+    /** 塗りつぶし方法 (default:Solid) */
+    FillMode fillMode;
 
-	/** カリング方法 (default:Back) */
-	CullMode cullMode;
+    /** カリング方法 (default:Back) */
+    CullMode cullMode;
 
-	RasterizerStateDesc();
+    RasterizerStateDesc();
 };
 
 /** ステンシル処理 */
 struct StencilOpDesc
 {
-	/** ステンシルテストに失敗した場合のステンシル処理です。(default:Keep) */
-	StencilOp stencilFailOp;
+    /** ステンシルテストに失敗した場合のステンシル処理です。(default:Keep) */
+    StencilOp stencilFailOp;
 
-	/** ステンシルテストに合格で、深度テストが不合格の場合のステンシル処理です。(default:Keep) */
-	StencilOp stencilDepthFailOp;
+    /** ステンシルテストに合格で、深度テストが不合格の場合のステンシル処理です。(default:Keep) */
+    StencilOp stencilDepthFailOp;
 
-	/** ステンシルテストと深度テストに合格した場合のステンシル処理です。(default:Keep) */
-	StencilOp stencilPassOp;
+    /** ステンシルテストと深度テストに合格した場合のステンシル処理です。(default:Keep) */
+    StencilOp stencilPassOp;
 
-	/** ステンシルテストの比較関数　(default:Always) */
-	ComparisonFunc stencilFunc;
+    /** ステンシルテストの比較関数　(default:Always) */
+    ComparisonFunc stencilFunc;
 
-	StencilOpDesc();
+    StencilOpDesc();
 };
 
 /** 深度ステンシルステート */
 struct DepthStencilStateDesc
 {
-	/** 深度テストの有効状態 (default:ComparisonFunc::LessEqual) */
+    /** 深度テストの有効状態 (default:ComparisonFunc::LessEqual) */
     ComparisonFunc depthTestFunc;
 
-	/** 深度書き込みの有効状態 (default:true) */
-	bool depthWriteEnabled;
+    /** 深度書き込みの有効状態 (default:true) */
+    bool depthWriteEnabled;
 
-	/** ステンシルテストの有効状態 (default:false) */
-	bool stencilEnabled;
+    /** ステンシルテストの有効状態 (default:false) */
+    bool stencilEnabled;
 
-	/** ステンシルテストの参照値 (default:0xFF) */
-	uint8_t stencilReferenceValue;
+    /** ステンシルテストの参照値 (default:0xFF) */
+    uint8_t stencilReferenceValue;
 
-	/** 法線がカメラの方向を向いている面のステンシル処理 */
-	StencilOpDesc frontFace;
+    /** 法線がカメラの方向を向いている面のステンシル処理 */
+    StencilOpDesc frontFace;
 
-	/** 法線がカメラと逆方向を向いている面のステンシル処理 */
-	StencilOpDesc backFace;
+    /** 法線がカメラと逆方向を向いている面のステンシル処理 */
+    StencilOpDesc backFace;
 
-	DepthStencilStateDesc();
+    DepthStencilStateDesc();
 };
 
 } // namespace ln
