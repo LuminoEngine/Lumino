@@ -628,10 +628,10 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture)
 
 	auto tex1 = newObject<Texture2D>(2, 2);
 	auto bmp1 = tex1->map(MapMode::Write);
-	bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
-	bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
-	bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
-	bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
+	bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
+	bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
+	bmp1->setPixel32(0, 1, ColorI(0, 255, 0, 255));
+	bmp1->setPixel32(1, 1, ColorI(0, 0, 255, 255));
 
 	shader1->findParameter("g_texture1")->setTexture(tex1);
 
@@ -677,10 +677,10 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture3D)
 
 	auto tex1 = newObject<Texture3D>(2, 2, 3);
 	auto bmp1 = tex1->map(MapMode::Write);
-	bmp1->setPixel32(0, 0, 1, Color32(255, 0, 0, 255));
-	bmp1->setPixel32(1, 0, 1, Color32(255, 0, 255, 255));
-	bmp1->setPixel32(0, 1, 1, Color32(0, 255, 0, 255));
-	bmp1->setPixel32(1, 1, 1, Color32(0, 0, 255, 255));
+	bmp1->setPixel32(0, 0, 1, ColorI(255, 0, 0, 255));
+	bmp1->setPixel32(1, 0, 1, ColorI(255, 0, 255, 255));
+	bmp1->setPixel32(0, 1, 1, ColorI(0, 255, 0, 255));
+	bmp1->setPixel32(1, 1, 1, ColorI(0, 0, 255, 255));
 
 	shader1->findParameter("g_texture1")->setTexture(tex1);
 
@@ -726,10 +726,10 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 
 	auto tex1 = newObject<Texture2D>(2, 2);
 	auto bmp1 = tex1->map(MapMode::Write);
-	bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
-	bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
-	bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
-	bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
+	bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
+	bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
+	bmp1->setPixel32(0, 1, ColorI(0, 255, 0, 255));
+	bmp1->setPixel32(1, 1, ColorI(0, 0, 255, 255));
 
 	shader1->findParameter("g_texture1")->setTexture(tex1);
 

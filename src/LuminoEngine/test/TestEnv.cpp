@@ -69,52 +69,52 @@ bool TestEnv::equalsScreenShot(const Char* filePath, int passRate)
 	return r;
 }
 
-static Color32 mixPixels(Bitmap2D* bmp, int x, int y)
+static ColorI mixPixels(Bitmap2D* bmp, int x, int y)
 {
-	const Color32& c = bmp->getPixel32(x, y);
+	const ColorI& c = bmp->getPixel32(x, y);
 	int r = c.r; int g = c.g; int b = c.b; int a = c.a;
 	int count = 1;
 
 	if (y > 0) {
 		if (x > 0) {
-			const Color32& c = bmp->getPixel32(x - 1, y - 1);
+			const ColorI& c = bmp->getPixel32(x - 1, y - 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 		{
-			const Color32& c = bmp->getPixel32(x, y - 1);
+			const ColorI& c = bmp->getPixel32(x, y - 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 		if (x < bmp->width() - 1) {
-			const Color32& c = bmp->getPixel32(x + 1, y - 1);
+			const ColorI& c = bmp->getPixel32(x + 1, y - 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 	}
 	{
 		if (x > 0) {
-			const Color32& c = bmp->getPixel32(x - 1, y);
+			const ColorI& c = bmp->getPixel32(x - 1, y);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 		if (x < bmp->width() - 1) {
-			const Color32& c = bmp->getPixel32(x + 1, y);
+			const ColorI& c = bmp->getPixel32(x + 1, y);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 	}
 	if (y < bmp->height() - 1) {
 		if (x > 0) {
-			const Color32& c = bmp->getPixel32(x - 1, y + 1);
+			const ColorI& c = bmp->getPixel32(x - 1, y + 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 		{
-			const Color32& c = bmp->getPixel32(x, y + 1);
+			const ColorI& c = bmp->getPixel32(x, y + 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 		if (x < bmp->width() - 1) {
-			const Color32& c = bmp->getPixel32(x + 1, y + 1);
+			const ColorI& c = bmp->getPixel32(x + 1, y + 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 	}
 
-	return Color32(r / count, g / count, b / count, a / count);
+	return ColorI(r / count, g / count, b / count, a / count);
 }
 
 bool TestEnv::equalsBitmapFile(Bitmap2D* bmp1, const Char* filePath, int passRate)
@@ -132,8 +132,8 @@ bool TestEnv::equalsBitmapFile(Bitmap2D* bmp1, const Char* filePath, int passRat
 	{
 		for (int x = 0; x < bmp1->width(); ++x)
 		{
-			Color32 c1 = mixPixels(bmp1, x, y);
-			Color32 c2 = mixPixels(bmp2, x, y);
+			ColorI c1 = mixPixels(bmp1, x, y);
+			ColorI c2 = mixPixels(bmp2, x, y);
 			if (abs(c1.r - c2.r) <= colorRange &&
 				abs(c1.g - c2.g) <= colorRange &&
 				abs(c1.b - c2.b) <= colorRange &&

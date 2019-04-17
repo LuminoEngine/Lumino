@@ -191,9 +191,9 @@ public:
 	int height() const { return m_size.height; }
 	PixelFormat format() const { return m_format; }
 
-	Color32 getPixel32(int x, int y) const;
-	void setPixel32(int x, int y, const Color32& color);
-    void clear(const Color32& color);
+	ColorI getPixel32(int x, int y) const;
+	void setPixel32(int x, int y, const ColorI& color);
+    void clear(const ColorI& color);
 
 	/** バッファの先頭へのポインタを取得します。 */
 	byte_t* data() LN_NOEXCEPT { return m_buffer->data(); }
@@ -207,9 +207,9 @@ public:
     void load(Stream* stream);   // TODO: 種類の指定
 	void save(const StringRef& filePath);
 
-	Ref<Bitmap2D> transcodeTo(PixelFormat format, const Color32& color = Color32::White) const;
+	Ref<Bitmap2D> transcodeTo(PixelFormat format, const ColorI& color = ColorI::White) const;
 
-    void blit(const RectI& destRect, const Bitmap2D* srcBitmap, const RectI& srcRect, const Color32& color, BitmapBlitOptions options);
+    void blit(const RectI& destRect, const Bitmap2D* srcBitmap, const RectI& srcRect, const ColorI& color, BitmapBlitOptions options);
 
 	static int getPixelFormatByteSize(PixelFormat format);
 	static int getBitmapByteSize(int width, int height, int depth, PixelFormat format);
@@ -242,7 +242,7 @@ public:
 	int depth() const { return m_height; }
 	PixelFormat format() const { return m_format; }
 
-	void setPixel32(int x, int y, int z, const Color32& color);
+	void setPixel32(int x, int y, int z, const ColorI& color);
 
 	/** バッファの先頭へのポインタを取得します。 */
 	byte_t* data() LN_NOEXCEPT { return m_buffer->data(); }

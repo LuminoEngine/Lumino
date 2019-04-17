@@ -65,7 +65,7 @@ private:
 	static const int		ClusterWidth;
 	static const int		ClusterHeight;
 	static const int		ClusterDepth;
-	std::vector<Color32>	m_clustersData;		// TODO: Texture3D がまだ setData も getMappedData もサポートしていないので。できれば getMappedData にそのまま書き込みたい
+	std::vector<ColorI>	m_clustersData;		// TODO: Texture3D がまだ setData も getMappedData もサポートしていないので。できれば getMappedData にそのまま書き込みたい
 	std::vector<int>		m_clustersAddCount;	// あるクラスタに書かれたデータの数
 	Ref<Texture2D>		m_clustersTexture;
 

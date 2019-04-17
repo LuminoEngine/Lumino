@@ -54,7 +54,7 @@ void LightClusters::beginMakeClusters(const Matrix& view, const Matrix& proj, co
 	//	{
 	//		for (int z = 0; z < ClusterDepth; z++)
 	//		{
-	//			m_clustersTexture->setPixel32(x, y, z, Color32(0, 0, 0, 0));
+	//			m_clustersTexture->setPixel32(x, y, z, ColorI(0, 0, 0, 0));
 	//		}
 	//	}
 	//}
@@ -298,7 +298,7 @@ void LightClusters::addClusterData(int x, int y, int z, int lightId)
 	int clustersAddCount = m_clustersAddCount[clustersAddCountIndex];
 	if (clustersAddCount < 4)
 	{
-		Color32& color = m_clustersData[clustersAddCountIndex];
+		ColorI& color = m_clustersData[clustersAddCountIndex];
 		switch (clustersAddCount)
 		{
 		case 0:

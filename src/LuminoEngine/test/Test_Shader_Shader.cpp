@@ -29,10 +29,10 @@ TEST_F(Test_Shader_Shader, IndependentSamplerState)
 
     auto tex1 = newObject<Texture2D>(2, 2, TextureFormat::RGBA32, false);
     auto bmp1 = tex1->map(MapMode::Write);
-    bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
-    bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
-    bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
-    bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
+    bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
+    bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
+    bmp1->setPixel32(0, 1, ColorI(0, 255, 0, 255));
+    bmp1->setPixel32(1, 1, ColorI(0, 0, 255, 255));
 
     // TODO: まだ SamplerState 直接指定をサポートしていないので Texture に対してセットする方法でテストケースだけ用意しておく。
     // 後でサポートするとき、shader1->findParameter("mySamplerState")->setSamplerState(samplerState); とかに書き換える。

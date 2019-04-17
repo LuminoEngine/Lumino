@@ -133,13 +133,13 @@ void Texture2D::setResourcePool(GraphicsResourcePool pool)
 void Texture2D::clear(const Color& color)
 {
     Bitmap2D* bitmap = map(MapMode::Write);
-    bitmap->clear(Color32::fromLinearColor(color));
+    bitmap->clear(ColorI::fromLinearColor(color));
 }
 
 void Texture2D::setPixel(int x, int y, const Color& color)
 {
     Bitmap2D* bitmap = map(MapMode::Write);
-    bitmap->setPixel32(x, y, Color32::fromLinearColor(color));
+    bitmap->setPixel32(x, y, ColorI::fromLinearColor(color));
 }
 
 void Texture2D::blit(int x, int y, Texture2D* srcTexture, const RectI& srcRect)
@@ -147,7 +147,7 @@ void Texture2D::blit(int x, int y, Texture2D* srcTexture, const RectI& srcRect)
     if (LN_REQUIRE(srcTexture)) return;
     Bitmap2D* dst = map(MapMode::Write);
     Bitmap2D* src = srcTexture->map(MapMode::Read);
-    dst->blit(RectI(x, y, srcRect.getSize()), src, srcRect, Color32::White, BitmapBlitOptions::AlphaBlend);
+    dst->blit(RectI(x, y, srcRect.getSize()), src, srcRect, ColorI::White, BitmapBlitOptions::AlphaBlend);
 }
 
 void Texture2D::drawText(const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment)

@@ -229,10 +229,10 @@ int main(int argc, char** argv)
     //tex->drawText(u"Hello!", Rect(0, 0, 100, 100), font, Color::White);
     //auto tex = newObject<Texture2D>(2, 2);
     //auto bmp1 = tex->map(MapMode::Write);
-    //bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
-    //bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
-    //bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
-    //bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
+    //bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
+    //bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
+    //bmp1->setPixel32(0, 1, ColorI(0, 255, 0, 255));
+    //bmp1->setPixel32(1, 1, ColorI(0, 0, 255, 255));
 
     //auto sprite = newObject<UISprite>();
     //sprite->setTexture(tex);
@@ -581,10 +581,10 @@ int main(int argc, char** argv)
 
 		auto tex1 = newObject<Texture2D>(2, 2);
 		auto bmp1 = tex1->map(MapMode::Write);
-		bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
-		bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
-		bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
-		bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
+		bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
+		bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
+		bmp1->setPixel32(0, 1, ColorI(0, 255, 0, 255));
+		bmp1->setPixel32(1, 1, ColorI(0, 0, 255, 255));
 		auto material = Material::create();
 		material->setMainTexture(tex1);
 
@@ -673,10 +673,10 @@ int main(int argc, char** argv)
 
 		auto tex1 = newObject<Texture2D>(2, 2);
 		auto bmp1 = tex1->map(MapMode::Write);
-		bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
-		bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
-		bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
-		bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
+		bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
+		bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
+		bmp1->setPixel32(0, 1, ColorI(0, 255, 0, 255));
+		bmp1->setPixel32(1, 1, ColorI(0, 0, 255, 255));
 		auto material = Material::create();
 		material->setMainTexture(tex1);
 
@@ -739,10 +739,10 @@ int main(int argc, char** argv)
 
 		auto tex1 = newObject<Texture2D>(2, 2);
 		auto bmp1 = tex1->map(MapMode::Write);
-		bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
-		bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
-		bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
-		bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
+		bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
+		bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
+		bmp1->setPixel32(0, 1, ColorI(0, 255, 0, 255));
+		bmp1->setPixel32(1, 1, ColorI(0, 0, 255, 255));
 		auto material = Material::create();
 		material->setMainTexture(tex1);
 
@@ -788,10 +788,10 @@ int main(int argc, char** argv)
 		//auto tex1 = newObject<Texture2D>(LN_LOCALFILE("Assets/Sprite1.png"));
 		auto tex1 = newObject<Texture2D>(2, 2);
 		auto bmp1 = tex1->map(MapMode::Write);
-		bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
-		bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
-		bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
-		bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
+		bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
+		bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
+		bmp1->setPixel32(0, 1, ColorI(0, 255, 0, 255));
+		bmp1->setPixel32(1, 1, ColorI(0, 0, 255, 255));
 
 		ShaderParameter* param = shader->findParameter("g_texture1");
 		param->setTexture(tex1);

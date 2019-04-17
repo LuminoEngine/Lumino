@@ -105,7 +105,7 @@ void FontGlyphTextureCache::lookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, b
 		// Fill
 		PointI pt(outInfo->srcRect.x + outInfo->outlineOffset, outInfo->srcRect.y + outInfo->outlineOffset);
 		Bitmap2D* dst = m_fillGlyphsTexture->map(MapMode::Write);
-		dst->blit(RectI(pt.x, pt.y, info.size), bitmapGlyphInfo.glyphBitmap, RectI(0, 0, info.size), Color32::White, BitmapBlitOptions::None);
+		dst->blit(RectI(pt.x, pt.y, info.size), bitmapGlyphInfo.glyphBitmap, RectI(0, 0, info.size), ColorI::White, BitmapBlitOptions::None);
     }
 
 	// 今回、cacheIndex を使うことをマーク

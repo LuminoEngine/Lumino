@@ -275,30 +275,30 @@ void Bitmap2D::init(int width, int height, PixelFormat format)
 	m_buffer->resize(getBitmapByteSize(m_size.width, m_size.height, 1, m_format));
 }
 
-Color32 Bitmap2D::getPixel32(int x, int y) const
+ColorI Bitmap2D::getPixel32(int x, int y) const
 {
 	if (m_format == PixelFormat::RGBA32)
 	{
 		const uint8_t* pixel = m_buffer->data() + ((y * m_size.width) + x) * 4;
-		return Color32(pixel[0], pixel[1], pixel[2], pixel[3]);
+		return ColorI(pixel[0], pixel[1], pixel[2], pixel[3]);
 	}
     else if (m_format == PixelFormat::RGB24)
     {
         const uint8_t* pixel = m_buffer->data() + ((y * m_size.width) + x) * 3;
-        return Color32(pixel[0], pixel[1], pixel[2], 0xFF);
+        return ColorI(pixel[0], pixel[1], pixel[2], 0xFF);
     }
 	else
 	{
 		LN_NOTIMPLEMENTED();
-		return Color32();
+		return ColorI();
 	}
 }
 
-void Bitmap2D::setPixel32(int x, int y, const Color32& color)
+void Bitmap2D::setPixel32(int x, int y, const ColorI& color)
 {
 	if (m_format == PixelFormat::RGBA32)
 	{
-		Color32* pixel = reinterpret_cast<Color32*>(m_buffer->data() + ((y * m_size.width) + x) * 4);
+		ColorI* pixel = reinterpret_cast<ColorI*>(m_buffer->data() + ((y * m_size.width) + x) * 4);
 		*pixel = color;
 	}
 	else
@@ -307,7 +307,7 @@ void Bitmap2D::setPixel32(int x, int y, const Color32& color)
 	}
 }
 
-void Bitmap2D::clear(const Color32& color)
+void Bitmap2D::clear(const ColorI& color)
 {
     // Clear the buffer if completely transparent.
     if (color.r == 0x00 && color.g == 0x00 && color.b == 0x00 && color.a == 0x00)
@@ -423,7 +423,7 @@ void Bitmap2D::save(const StringRef& filePath)
     detail::IBitmapEncoder::save(file, m_buffer->data(), m_size, m_format);
 }
 
-Ref<Bitmap2D> Bitmap2D::transcodeTo(PixelFormat format, const Color32& color) const
+Ref<Bitmap2D> Bitmap2D::transcodeTo(PixelFormat format, const ColorI& color) const
 {
 	auto dstBitmap = newObject<Bitmap2D>(m_size.width, m_size.height, format);
 
@@ -459,7 +459,7 @@ Ref<Bitmap2D> Bitmap2D::transcodeTo(PixelFormat format, const Color32& color) co
 	return dstBitmap;
 }
 
-void Bitmap2D::blit(const RectI& destRect, const Bitmap2D* srcBitmap, const RectI& srcRect, const Color32& color, BitmapBlitOptions options)
+void Bitmap2D::blit(const RectI& destRect, const Bitmap2D* srcBitmap, const RectI& srcRect, const ColorI& color, BitmapBlitOptions options)
 {
     detail::BlitHelper::bitBltInternal(this, destRect, srcBitmap, srcRect, detail::ClColor{ color.r, color.g, color.b, color.a }, testFlag(options, BitmapBlitOptions::AlphaBlend));
 }
@@ -512,12 +512,12 @@ void Bitmap3D::init(int width, int height, int depth, PixelFormat format)
 	m_buffer->resize(Bitmap2D::getBitmapByteSize(m_width, m_height, m_depth, m_format));
 }
 
-void Bitmap3D::setPixel32(int x, int y, int z, const Color32& color)
+void Bitmap3D::setPixel32(int x, int y, int z, const ColorI& color)
 {
 	if (m_format == PixelFormat::RGBA32)
 	{
 		size_t faceSize = m_width * m_height;
-		Color32* pixel = reinterpret_cast<Color32*>(m_buffer->data() + ((z * faceSize) + ((y * m_width) + x)) * 4);
+		ColorI* pixel = reinterpret_cast<ColorI*>(m_buffer->data() + ((z * faceSize) + ((y * m_width) + x)) * 4);
 		*pixel = color;
 	}
 	else

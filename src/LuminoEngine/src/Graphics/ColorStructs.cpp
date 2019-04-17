@@ -7,10 +7,10 @@
 namespace ln {
 
 //==============================================================================
-// Color32
+// ColorI
 
-const Color32 Color32::Zero = Color32(0, 0, 0, 0);
-const Color32 Color32::White = Color32(255, 255, 255, 255);
+const ColorI ColorI::Zero = ColorI(0, 0, 0, 0);
+const ColorI ColorI::White = ColorI(255, 255, 255, 255);
 
 static bool TryParseHexChar(int c, int* outValue)
 {
@@ -50,7 +50,7 @@ static int ParseHexChar(int c)
 	return 0;
 }
 
-static bool ParseHexColor(const StringRef& str, Color32* outColor)
+static bool ParseHexColor(const StringRef& str, ColorI* outColor)
 {
 	uint8_t r, g, b, a;
 	if (str.length() >= 3 && str[0] == _T('#'))
@@ -105,9 +105,9 @@ static bool ParseHexColor(const StringRef& str, Color32* outColor)
 	return false;
 }
 
-Color32 Color32::parse(const StringRef& str)
+ColorI ColorI::parse(const StringRef& str)
 {
-	Color32 c;
+	ColorI c;
 	if (!ParseHexColor(str, &c))
 	{
 		LN_REQUIRE(0);
@@ -286,7 +286,7 @@ static const float g_color255Table[256] =
 	// [256]
 };
 
-Color::Color(const Color32& color) noexcept
+Color::Color(const ColorI& color) noexcept
 	: r(g_color255Table[color.r])
 	, g(g_color255Table[color.g])
 	, b(g_color255Table[color.b])
@@ -296,7 +296,7 @@ Color::Color(const Color32& color) noexcept
 
 Color Color::parse(const StringRef& str)
 {
-	Color32 c = Color32::parse(str);
+	ColorI c = ColorI::parse(str);
 	return Color(c);
 }
 
@@ -329,12 +329,12 @@ void ToneF::addClamp(const ToneF& tone)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-Color32 HSVColor::toColor() const
+ColorI HSVColor::toColor() const
 {
 	unsigned char c1, c2, c3;
 	if (S == 0)
 	{
-		return Color32(V, V, V, a);
+		return ColorI(V, V, V, a);
 	}
 	else
 	{
@@ -344,21 +344,21 @@ Color32 HSVColor::toColor() const
 		c3 = (V*(255 - (S*(360 - t)) / 360)) / 255;
 		switch (H / 60)
 		{
-		case 0: return Color32(V, c3, c1, a);
-		case 1: return Color32(c2, V, c1, a);
-		case 2: return Color32(c1, V, c3, a);
-		case 3: return Color32(c1, c2, V, a);
-		case 4: return Color32(c3, c1, V, a);
-		case 5: return Color32(V, c1, c2, a);
+		case 0: return ColorI(V, c3, c1, a);
+		case 1: return ColorI(c2, V, c1, a);
+		case 2: return ColorI(c1, V, c3, a);
+		case 3: return ColorI(c1, c2, V, a);
+		case 4: return ColorI(c3, c1, V, a);
+		case 5: return ColorI(V, c1, c2, a);
 		}
 	}
-	return Color32(0, 0, 0, a);
+	return ColorI(0, 0, 0, a);
 }
 
 //------------------------------------------------------------------------------
 Color HSVColor::toColorF() const
 {
-	Color32 c = toColor();
+	ColorI c = toColor();
 	return Color(c);
 }
 #endif

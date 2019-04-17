@@ -5,7 +5,7 @@ namespace ln {
 struct Vector3;
 struct Vector4;
 struct Color;
-struct Color32;
+struct ColorI;
 	
 /**
  * 各要素を 0.0～1.0 の範囲で表す RGBA カラーを定義します。
@@ -196,8 +196,8 @@ public:
 	/** 指定した Vector3 とアルファ値をで初期化します。 x y z 成分がそれぞれ r g b 値となります。 */
 	constexpr explicit Color(const Vector3& vec, float a = 1.0f) noexcept;
 
-	/** Color32 を変換して初期化します。 */
-	explicit Color(const Color32& color) noexcept;
+	/** ColorI を変換して初期化します。 */
+	explicit Color(const ColorI& color) noexcept;
 
 public:
 	
@@ -292,11 +292,11 @@ constexpr Color Color::lerp(const Color& color1, const Color& color2, float t) n
 
 
 /** 各要素を 0～255 の範囲で表す RGBA カラーを定義します。 */
-struct Color32
+struct ColorI
 {
 public:
-	static const Color32 Zero; /**< (0, 0, 0, 0) */
-	static const Color32 White; /**< (255, 255, 255, 255) */
+	static const ColorI Zero; /**< (0, 0, 0, 0) */
+	static const ColorI White; /**< (255, 255, 255, 255) */
 
 	/**< 赤成分 (0～255) */
 	uint8_t		r;
@@ -311,28 +311,28 @@ public:
 	uint8_t		a;
 
 	/** すべての要素を 0 で初期化します。*/
-	Color32() : r(0), g(0), b(0), a(0) {}
+	ColorI() : r(0), g(0), b(0), a(0) {}
 
 	/** 各要素を指定して初期化します。*/
-	Color32(uint8_t r_, uint8_t g_, uint8_t b_, uint8_t a_ = 255) { r = r_; g = g_; b = b_; a = a_; }
+	ColorI(uint8_t r_, uint8_t g_, uint8_t b_, uint8_t a_ = 255) { r = r_; g = g_; b = b_; a = a_; }
 
 	/** 各要素を設定します。 */
 	void set(uint8_t r_, uint8_t g_, uint8_t b_, uint8_t a_ = 255) { r = r_; g = g_; b = b_; a = a_; }
 
-	static Color32 fromLinearColor(const Color& color)
+	static ColorI fromLinearColor(const Color& color)
 	{
-		return Color32(
+		return ColorI(
 			static_cast<uint8_t>(color.r * 255),
 			static_cast<uint8_t>(color.g * 255),
 			static_cast<uint8_t>(color.b * 255),
 			static_cast<uint8_t>(color.a * 255));
 	}
 
-	static Color32 parse(const StringRef& str);
+	static ColorI parse(const StringRef& str);
 
 public:
-	bool operator == (const Color32& color) const { return (memcmp(this, &color, sizeof(Color32)) == 0); }
-	bool operator != (const Color32& obj) const { return !operator==(obj); }
+	bool operator == (const ColorI& color) const { return (memcmp(this, &color, sizeof(ColorI)) == 0); }
+	bool operator != (const ColorI& obj) const { return !operator==(obj); }
 };
 
 /**
@@ -442,7 +442,7 @@ public:
 	/**
 		@brief	ColorF を変換して設定します。
 	*/
-	//Color32(const ColorF& colorF);
+	//ColorI(const ColorF& colorF);
 
 public:
 
@@ -452,9 +452,9 @@ public:
 	void set(uint32_t h, uint32_t s, uint32_t v, uint32_t a_) { H = h; S = s; V = v; a = a_; }
 
 	/**
-		@brief	Color32 型に変換します。
+		@brief	ColorI 型に変換します。
 	*/
-	Color32 toColor() const;
+	ColorI toColor() const;
 	
 	/**
 		@brief	ColorF 型に変換します。
@@ -462,8 +462,8 @@ public:
 	Color toColorF() const;
 
 public:
-	bool operator == (const Color32& color) const { return (memcmp(this, &color, sizeof(Color32)) == 0); }
-	bool operator != (const Color32& obj) const { return !operator==(obj); }
+	bool operator == (const ColorI& color) const { return (memcmp(this, &color, sizeof(ColorI)) == 0); }
+	bool operator != (const ColorI& obj) const { return !operator==(obj); }
 };
 #endif
 
