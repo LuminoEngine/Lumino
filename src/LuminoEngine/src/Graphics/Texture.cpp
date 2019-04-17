@@ -10,6 +10,7 @@
 #include <LuminoEngine/Graphics/SwapChain.hpp>
 #include <LuminoEngine/Font/Font.hpp>
 #include "../Font/TextLayoutEngine.hpp"
+#include "RenderTargetTextureCache.hpp"
 
 namespace ln {
 
@@ -341,6 +342,16 @@ detail::ITexture* Texture3D::resolveRHIObject()
 
 //==============================================================================
 // RenderTargetTexture
+
+Ref<RenderTargetTexture> RenderTargetTexture::getTemporary(int width, int height, TextureFormat format, bool mipmap)
+{
+	return detail::EngineDomain::graphicsManager()->frameBufferCache()->requestRenderTargetTexture2(SizeI(width, height), format, mipmap);
+}
+
+void RenderTargetTexture::releaseTemporary(RenderTargetTexture* renderTarget)
+{
+	detail::EngineDomain::graphicsManager()->frameBufferCache()->release(renderTarget);
+}
 
 RenderTargetTexture::RenderTargetTexture()
 	: m_rhiObject(nullptr)

@@ -222,6 +222,8 @@ set(LN_SOURCES_Graphics
     src/Graphics/MixHash.hpp
     src/Graphics/OpenGLDeviceContext.cpp
     src/Graphics/OpenGLDeviceContext.hpp
+    src/Graphics/RenderTargetTextureCache.cpp
+    src/Graphics/RenderTargetTextureCache.hpp
     src/Graphics/Texture.cpp
     src/Graphics/VertexBuffer.cpp
     src/Graphics/VertexLayout.cpp
@@ -323,8 +325,6 @@ set(LN_SOURCES_Rendering
     src/Rendering/RenderingPipeline.hpp
     src/Rendering/RenderStage.cpp
     src/Rendering/RenderStage.hpp
-    src/Rendering/RenderTargetTextureCache.cpp
-    src/Rendering/RenderTargetTextureCache.hpp
     src/Rendering/RenderView.cpp
     src/Rendering/ShapesRenderFeature.cpp
     src/Rendering/ShapesRenderFeature.hpp

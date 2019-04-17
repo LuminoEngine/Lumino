@@ -2,9 +2,9 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
+#include "../Graphics/RenderTargetTextureCache.hpp"
 #include "RenderingManager.hpp"
 #include "ClusteredShadingSceneRenderer.hpp"
-#include "RenderTargetTextureCache.hpp"
 #include "RenderingPipeline.hpp"
 
 namespace ln {
@@ -31,14 +31,15 @@ void DepthPrepass::init()
 
 void DepthPrepass::onBeginRender(SceneRenderer* sceneRenderer)
 {
-	m_depthMap = manager()->frameBufferCache()->requestRenderTargetTexture(sceneRenderer->renderingPipeline()->renderingFrameBufferSize(), TextureFormat::RGBA32, false);
-	m_depthBuffer = manager()->frameBufferCache()->requestDepthBuffer(sceneRenderer->renderingPipeline()->renderingFrameBufferSize());
+	auto size = sceneRenderer->renderingPipeline()->renderingFrameBufferSize();
+	m_depthMap = RenderTargetTexture::getTemporary(size.width, size.height, TextureFormat::RGBA32, false);
+	m_depthBuffer = DepthBuffer::getTemporary(size.width, size.height);
 }
 
 void DepthPrepass::onEndRender(SceneRenderer* sceneRenderer)
 {
-    manager()->frameBufferCache()->release(m_depthMap);
-    manager()->frameBufferCache()->release(m_depthBuffer);
+	RenderTargetTexture::releaseTemporary(m_depthMap);
+	DepthBuffer::releaseTemporary(m_depthBuffer);
 	m_depthMap = nullptr;
 	m_depthBuffer = nullptr;
 }

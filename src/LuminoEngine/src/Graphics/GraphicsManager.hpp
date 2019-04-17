@@ -11,6 +11,9 @@ class SamplerState;
 namespace detail {
 class PlatformWindow;
 class IGraphicsDevice;
+class RenderTargetTextureCacheManager;
+class DepthBufferCacheManager;
+class FrameBufferCache;
 
 class GraphicsManager
 	: public RefObject
@@ -41,11 +44,13 @@ public:
 	const Ref<LinearAllocatorPageManager>& linearAllocatorPageManager() const { return m_linearAllocatorPageManager; }
 	RenderingType renderingType() const { return RenderingType::Immediate; }
 	const Ref<RenderingCommandList>& primaryRenderingCommandList() const { return m_primaryRenderingCommandList; }
+	const Ref<RenderTargetTextureCacheManager>& renderTargetTextureCacheManager() const { return m_renderTargetTextureCacheManager; }
+	const Ref<DepthBufferCacheManager>& depthBufferCacheManager() const { return m_depthBufferCacheManager; }
+	const Ref<FrameBufferCache>& frameBufferCache() const { return m_frameBufferCache; }
 
     const Ref<Texture2D>& blackTexture() const { return m_blackTexture; }
     const Ref<Texture2D>& whiteTexture() const { return m_whiteTexture; }
 	const Ref<SamplerState>& defaultSamplerState() const { return m_defaultSamplerState; }
-
 
 private:
 	void createOpenGLContext(const Settings& settings);
@@ -55,6 +60,9 @@ private:
 	Ref<GraphicsContext> m_graphicsContext;
 	Ref<LinearAllocatorPageManager> m_linearAllocatorPageManager;
 	Ref<RenderingCommandList> m_primaryRenderingCommandList;
+	Ref<RenderTargetTextureCacheManager> m_renderTargetTextureCacheManager;
+	Ref<DepthBufferCacheManager> m_depthBufferCacheManager;
+	Ref<FrameBufferCache> m_frameBufferCache;
 	List<GraphicsResource*> m_graphicsResources;
 
     Ref<Texture2D> m_blackTexture;

@@ -10,6 +10,12 @@ class DepthBuffer
 	: public GraphicsResource
 {
 public:
+	/** 一時的な DepthBuffer を取得します。 */
+	static Ref<DepthBuffer> getTemporary(int width, int height);
+
+	/** getTemporary で取得した一時的な DepthBuffer を解放します。 */
+	static void releaseTemporary(DepthBuffer* depthBuffer);
+
 	/** 幅を取得します。(ピクセル単位) */
 	int width() const { return m_size.width; }
 

@@ -147,6 +147,12 @@ class RenderTargetTexture
 	: public Texture
 {
 public:
+	/** 一時的な RenderTargetTexture を取得します。 */
+	static Ref<RenderTargetTexture> getTemporary(int width, int height, TextureFormat format, bool mipmap);
+
+	/** getTemporary で取得した一時的な RenderTargetTexture を解放します。 */
+	static void releaseTemporary(RenderTargetTexture* renderTarget);
+
 	Ref<Bitmap2D> readData();
 
 	virtual void onDispose(bool explicitDisposing) override;

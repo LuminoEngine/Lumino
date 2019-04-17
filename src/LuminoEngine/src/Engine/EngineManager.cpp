@@ -13,7 +13,7 @@
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
 #include <LuminoEngine/Scene/Light.hpp>
-#include "../Rendering/RenderTargetTextureCache.hpp"
+#include "../Graphics/RenderTargetTextureCache.hpp"
 
 #include "../Platform/PlatformManager.hpp"
 #include "../Animation/AnimationManager.hpp"
@@ -558,9 +558,9 @@ void EngineManager::updateFrame()
 
 void EngineManager::renderFrame()
 {
-    if (m_renderingManager) {
-        m_renderingManager->frameBufferCache()->beginRenderSection();
-    }
+    //if (m_renderingManager) {
+    //    m_renderingManager->frameBufferCache()->beginRenderSection();
+    //}
 
 	if (m_mainWindow) {
 		m_mainWindow->renderContents();
@@ -583,9 +583,9 @@ void EngineManager::presentFrame()
 		m_mainWindow->present();
 	}
 
-    if (m_renderingManager) {
-        m_renderingManager->frameBufferCache()->endRenderSection();
-    }
+    //if (m_renderingManager) {
+    //    m_renderingManager->frameBufferCache()->endRenderSection();
+    //}
 
 
 	if (m_settings.standaloneFpsControl) {

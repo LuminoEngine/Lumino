@@ -38,8 +38,8 @@ public:
 
 public:	// TODO:
 	Ref<Shader>					m_defaultShader;
-	RenderTargetTexture*	m_depthMap;
-	DepthBuffer*	m_depthBuffer;
+	Ref<RenderTargetTexture>	m_depthMap;
+	Ref<DepthBuffer>	m_depthBuffer;
 };
 
 class ClusteredShadingGeometryRenderingPass

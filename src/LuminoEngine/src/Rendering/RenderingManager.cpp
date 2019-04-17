@@ -8,7 +8,6 @@
 #include "BlitRenderFeature.hpp"
 #include "SpriteRenderFeature.hpp"
 #include "MeshRenderFeature.hpp"
-#include "RenderTargetTextureCache.hpp"
 #include "RenderingManager.hpp"
 
 namespace ln {
@@ -38,10 +37,6 @@ void RenderingManager::init(const Settings& settings)
 
     m_graphicsManager = settings.graphicsManager;
     m_fontManager = settings.fontManager;
-
-    m_renderTargetTextureCacheManager = makeRef<RenderTargetTextureCacheManager>();
-    m_depthBufferCacheManager = makeRef<DepthBufferCacheManager>();
-    m_frameBufferCache = makeRef<detail::FrameBufferCache>(m_renderTargetTextureCacheManager, m_depthBufferCacheManager);
 
     static VertexElement elements[] =
     {
@@ -154,8 +149,6 @@ void RenderingManager::dispose()
     m_blitRenderFeature = nullptr;
 	//m_renderStageListBuilder = nullptr;
 	m_standardVertexDeclaration = nullptr;
-	m_depthBufferCacheManager = nullptr;
-	m_renderTargetTextureCacheManager = nullptr;
 }
 
 } // namespace detail

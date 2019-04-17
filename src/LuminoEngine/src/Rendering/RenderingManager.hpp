@@ -7,9 +7,6 @@ class Material;
 
 namespace detail {
 class LinearAllocatorPageManager;
-class RenderTargetTextureCacheManager;
-class FrameBufferCache;
-class DepthBufferCacheManager;
 class DrawElementListBuilder;
 class BlitRenderFeature;
 class SpriteRenderFeature;
@@ -143,9 +140,6 @@ public:
 
 	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
     FontManager* fontManager() const { return m_fontManager; }
-	const Ref<RenderTargetTextureCacheManager>& renderTargetTextureCacheManager() const { return m_renderTargetTextureCacheManager; }
-	const Ref<DepthBufferCacheManager>& depthBufferCacheManager() const { return m_depthBufferCacheManager; }
-    const Ref<FrameBufferCache>& frameBufferCache() const { return m_frameBufferCache; }
 	const Ref<VertexLayout>& standardVertexDeclaration() const { return m_standardVertexDeclaration; }
 	//const Ref<DrawElementListBuilder>& renderStageListBuilder() const { return m_renderStageListBuilder; }
     const Ref<BlitRenderFeature>& blitRenderFeature() const { return m_blitRenderFeature; }
@@ -162,9 +156,6 @@ public:
 private:
 	GraphicsManager* m_graphicsManager;
     FontManager* m_fontManager;
-	Ref<RenderTargetTextureCacheManager> m_renderTargetTextureCacheManager;
-	Ref<DepthBufferCacheManager> m_depthBufferCacheManager;
-    Ref<FrameBufferCache> m_frameBufferCache;
 	Ref<VertexLayout> m_standardVertexDeclaration;
 	//Ref<DrawElementListBuilder> m_renderStageListBuilder;
     Ref<BlitRenderFeature> m_blitRenderFeature;

@@ -3,7 +3,7 @@
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Scene/OffscreenWorldRenderView.hpp>
 #include "../Graphics/GraphicsManager.hpp"
-#include "../Rendering/RenderTargetTextureCache.hpp"
+#include "../Graphics/RenderTargetTextureCache.hpp"
 #include "../Rendering/RenderingManager.hpp"
 
 namespace ln {
@@ -39,10 +39,12 @@ RenderTargetTexture* OffscreenWorldRenderView::renderTarget() const
 
 void OffscreenWorldRenderView::render()
 {
-    auto depthBuffer = m_renderingManager->depthBufferCacheManager()->requestObject(SizeI(m_renderTarget->width(), m_renderTarget->height()));
+	auto depthBuffer = DepthBuffer::getTemporary(m_renderTarget->width(), m_renderTarget->height());
+
     WorldRenderView::render(m_renderingManager->graphicsManager()->graphicsContext(), m_renderTarget, depthBuffer);
+
     // TODO: scoped
-    m_renderingManager->depthBufferCacheManager()->releaseObject(depthBuffer);
+	DepthBuffer::releaseTemporary(depthBuffer);
 }
 
 } // namespace ln

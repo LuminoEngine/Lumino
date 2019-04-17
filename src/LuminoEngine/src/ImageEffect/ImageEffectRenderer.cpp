@@ -4,7 +4,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/ImageEffect/ImageEffect.hpp>
 #include "ImageEffectRenderer.hpp"
-#include "../Rendering/RenderTargetTextureCache.hpp"
+#include "../Graphics/RenderTargetTextureCache.hpp"
 #include "../Rendering/RenderingManager.hpp"
 
 namespace ln {
@@ -41,10 +41,8 @@ void ImageEffectRenderer::render(RenderingContext* context, RenderTargetTexture*
 {
     if (!m_imageEffects.isEmpty())
     {
-        RenderTargetTexture* primaryTarget = m_manager->frameBufferCache()->requestRenderTargetTexture(
-            SizeI(inout->width(), inout->height()), TextureFormat::RGBA32, false);
-        RenderTargetTexture* secondaryTarget = m_manager->frameBufferCache()->requestRenderTargetTexture(
-            SizeI(inout->width(), inout->height()), TextureFormat::RGBA32, false);
+		Ref<RenderTargetTexture> primaryTarget = RenderTargetTexture::getTemporary(inout->width(), inout->height(), TextureFormat::RGBA32, false);
+		Ref<RenderTargetTexture> secondaryTarget = RenderTargetTexture::getTemporary(inout->width(), inout->height(), TextureFormat::RGBA32, false);
 
         context->pushState(true);
         context->setDepthBuffer(nullptr);
@@ -66,8 +64,8 @@ void ImageEffectRenderer::render(RenderingContext* context, RenderTargetTexture*
 
         context->popState();
 
-        m_manager->frameBufferCache()->release(secondaryTarget);
-        m_manager->frameBufferCache()->release(primaryTarget);
+		RenderTargetTexture::releaseTemporary(secondaryTarget);
+		RenderTargetTexture::releaseTemporary(primaryTarget);
     }
 }
 

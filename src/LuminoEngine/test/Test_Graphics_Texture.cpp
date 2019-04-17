@@ -1,4 +1,5 @@
 ﻿#include "Common.hpp"
+#include "../src/Graphics/RenderTargetTextureCache.hpp"
 
 //==============================================================================
 class Test_Graphics_Texture : public ::testing::Test {};
@@ -131,4 +132,109 @@ TEST_F(Test_Graphics_Texture, Issues)
         ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_Texture-Issues-1.png"));
         LN_TEST_CLEAN_SCENE;
     }
+}
+
+
+//==============================================================================
+class Test_Graphics_FrameBufferCache : public ::testing::Test {};
+
+//-----------------------------------------------------------------------------
+TEST_F(Test_Graphics_FrameBufferCache, Basic)
+{
+	auto m1 = makeRef<detail::RenderTargetTextureCacheManager>();
+	auto m2 = makeRef<detail::DepthBufferCacheManager>();
+	auto cache1 = makeRef<detail::FrameBufferCache>(m1, m2);
+	auto t1 = cache1->requestRenderTargetTexture2(SizeI(32, 32), TextureFormat::RGBA32, false);
+	auto t2 = cache1->requestRenderTargetTexture2(SizeI(32, 32), TextureFormat::RGBA32, false);
+	auto t3 = cache1->requestRenderTargetTexture2(SizeI(16, 16), TextureFormat::RGBA32, false);
+	auto t4 = cache1->requestRenderTargetTexture2(SizeI(16, 16), TextureFormat::RGBA32, false);
+	auto d1 = cache1->requestDepthBuffer2(SizeI(32, 32));
+	auto d2 = cache1->requestDepthBuffer2(SizeI(32, 32));
+	auto d3 = cache1->requestDepthBuffer2(SizeI(16, 16));
+	auto d4 = cache1->requestDepthBuffer2(SizeI(16, 16));
+
+	// 同じものを間違って取り出したりしていないこと
+	ASSERT_NE(t1, t2);
+	ASSERT_NE(t3, t4);
+	ASSERT_NE(d1, d2);
+	ASSERT_NE(d3, d4);
+
+	auto t1w = WeakRefPtr<RenderTargetTexture>(t1);
+	auto t2w = WeakRefPtr<RenderTargetTexture>(t2);
+	auto t3w = WeakRefPtr<RenderTargetTexture>(t3);
+	auto t4w = WeakRefPtr<RenderTargetTexture>(t4);
+	auto d1w = WeakRefPtr<DepthBuffer>(d1);
+	auto d2w = WeakRefPtr<DepthBuffer>(d2);
+	auto d3w = WeakRefPtr<DepthBuffer>(d3);
+	auto d4w = WeakRefPtr<DepthBuffer>(d4);
+
+	// 一度 GC. 特に消えたりしない
+	{
+		cache1->gcObjects();
+		ASSERT_EQ(4, cache1->aliveRenderTargetCount());
+		ASSERT_EQ(4, cache1->aliveDepthBufferCount());
+	}
+
+	// 参照を外して GC. FrameBufferCache からは除外されるが、インスタンスはまだ生きている
+	{
+		t4 = nullptr;
+		d4 = nullptr;
+		cache1->gcObjects();
+		ASSERT_EQ(3, cache1->aliveRenderTargetCount());
+		ASSERT_EQ(3, cache1->aliveDepthBufferCount());
+		ASSERT_EQ(true, t4w.isAlive());
+		ASSERT_EQ(true, d4w.isAlive());
+	}
+
+	// 同じパラメータで取得しなおす. 前回のインスタンスが返される
+	{
+		t4 = cache1->requestRenderTargetTexture2(SizeI(16, 16), TextureFormat::RGBA32, false);
+		d4 = cache1->requestDepthBuffer2(SizeI(16, 16));
+		ASSERT_EQ(4, cache1->aliveRenderTargetCount());
+		ASSERT_EQ(4, cache1->aliveDepthBufferCount());
+		ASSERT_EQ(t4, t4w.resolve());
+		ASSERT_EQ(d4, d4w.resolve());
+	}
+
+	// 参照を外してしばらく GC すると、インスタンスが消える
+	{
+		t4 = nullptr;
+		d4 = nullptr;
+		for (int i = 0; i <= detail::TemporaryGraphicsResourceObjectCacheBase::HoldFrameCount; i++) {
+			cache1->gcObjects();
+		}
+		ASSERT_EQ(3, cache1->aliveRenderTargetCount());
+		ASSERT_EQ(3, cache1->aliveDepthBufferCount());
+		ASSERT_EQ(false, t4w.isAlive());
+		ASSERT_EQ(false, d4w.isAlive());
+	}
+
+	// 明示的に release. 直後に request すると、同じインスタンスが得られる (できるだけ無駄なく再利用)
+	{
+		cache1->release(t3);
+		cache1->release(d3);
+		auto t3_ = cache1->requestRenderTargetTexture2(SizeI(16, 16), TextureFormat::RGBA32, false);
+		auto d3_ = cache1->requestDepthBuffer2(SizeI(16, 16));
+		ASSERT_EQ(t3, t3_);
+		ASSERT_EQ(d3, d3_);
+	}
+
+	// すべて GC でクリア
+	{
+		t1 = nullptr;
+		t2 = nullptr;
+		t3 = nullptr;
+		d1 = nullptr;
+		d2 = nullptr;
+		d3 = nullptr;
+		for (int i = 0; i <= detail::TemporaryGraphicsResourceObjectCacheBase::HoldFrameCount; i++) {
+			cache1->gcObjects();
+		}
+		ASSERT_EQ(false, t1w.isAlive());
+		ASSERT_EQ(false, t2w.isAlive());
+		ASSERT_EQ(false, t3w.isAlive());
+		ASSERT_EQ(false, d1w.isAlive());
+		ASSERT_EQ(false, d2w.isAlive());
+		ASSERT_EQ(false, d3w.isAlive());
+	}
 }

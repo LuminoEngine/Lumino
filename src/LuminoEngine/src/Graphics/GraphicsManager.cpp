@@ -5,6 +5,7 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include "GraphicsManager.hpp"
+#include "RenderTargetTextureCache.hpp"
 #include "OpenGLDeviceContext.hpp"
 #ifdef LN_USE_VULKAN
 #include "VulkanDeviceContext.hpp"
@@ -164,6 +165,10 @@ void GraphicsManager::init(const Settings& settings)
 
 	m_primaryRenderingCommandList = makeRef<RenderingCommandList>(linearAllocatorPageManager());
 
+	m_renderTargetTextureCacheManager = makeRef<RenderTargetTextureCacheManager>();
+	m_depthBufferCacheManager = makeRef<DepthBufferCacheManager>();
+	m_frameBufferCache = makeRef<detail::FrameBufferCache>(m_renderTargetTextureCacheManager, m_depthBufferCacheManager);
+
 	if (renderingType() == RenderingType::Threaded) {
 		LN_NOTIMPLEMENTED();
 	}
@@ -202,6 +207,10 @@ void GraphicsManager::dispose()
 
 	m_deviceContext->leaveRenderState();
 	m_deviceContext->leaveMainThread();
+
+	m_frameBufferCache = nullptr;
+	m_depthBufferCacheManager = nullptr;
+	m_renderTargetTextureCacheManager = nullptr;
 
 	m_graphicsContext->dispose();
 	m_deviceContext->dispose();

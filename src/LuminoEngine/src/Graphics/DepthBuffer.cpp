@@ -2,12 +2,23 @@
 #include "Internal.hpp"
 #include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
+#include "RenderTargetTextureCache.hpp"
 #include <LuminoEngine/Graphics/DepthBuffer.hpp>
 
 namespace ln {
 
 //==============================================================================
 // DepthBuffer
+
+Ref<DepthBuffer> DepthBuffer::getTemporary(int width, int height)
+{
+	return detail::EngineDomain::graphicsManager()->frameBufferCache()->requestDepthBuffer2(SizeI(width, height));
+}
+
+void DepthBuffer::releaseTemporary(DepthBuffer* depthBuffer)
+{
+	detail::EngineDomain::graphicsManager()->frameBufferCache()->release(depthBuffer);
+}
 
 DepthBuffer::DepthBuffer()
 {
