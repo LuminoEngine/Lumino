@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include "GraphicsManager.hpp"
 #include "../Engine/RenderingCommandList.hpp"
+#include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
 #include <LuminoEngine/Graphics/VertexLayout.hpp>
 
@@ -12,13 +12,13 @@ namespace ln {
 
 Ref<VertexLayout> VertexLayout::create()
 {
-	return newObject<VertexLayout>();
+    return newObject<VertexLayout>();
 }
 
 VertexLayout::VertexLayout()
-	: m_deviceObj(nullptr)
-	, m_vertexElements()
-	, m_modified(true)
+    : m_deviceObj(nullptr)
+    , m_vertexElements()
+    , m_modified(true)
 {
 }
 
@@ -28,60 +28,57 @@ VertexLayout::~VertexLayout()
 
 void VertexLayout::init()
 {
-	GraphicsResource::init();
+    GraphicsResource::init();
 }
 
 void VertexLayout::init(const VertexElement* elements, int count)
 {
-	init();
+    init();
+    if (LN_REQUIRE(elements)) return;
+    if (LN_REQUIRE(count >= 1)) return;
 
-	for (int i = 0; i < count; ++i)
-	{
-		m_vertexElements.add(elements[i]);
-	}
+    for (int i = 0; i < count; ++i) {
+        m_vertexElements.add(elements[i]);
+    }
 }
 
 void VertexLayout::onDispose(bool explicitDisposing)
 {
-	m_deviceObj = nullptr;
-	GraphicsResource::onDispose(explicitDisposing);
+    m_deviceObj = nullptr;
+    GraphicsResource::onDispose(explicitDisposing);
 }
 
 void VertexLayout::addElement(int streamIndex, VertexElementType type, VertexElementUsage usage, int usageIndex)
 {
-	if (LN_REQUIRE(streamIndex >= 0)) return;
-	if (LN_REQUIRE(usageIndex >= 0)) return;
+    if (LN_REQUIRE(streamIndex >= 0)) return;
+    if (LN_REQUIRE(usageIndex >= 0)) return;
 
-	VertexElement e;
-	e.StreamIndex = streamIndex;
-	e.Type = type;
-	e.Usage = usage;
-	e.UsageIndex = usageIndex;
-	m_vertexElements.add(e);
+    VertexElement e;
+    e.StreamIndex = streamIndex;
+    e.Type = type;
+    e.Usage = usage;
+    e.UsageIndex = usageIndex;
+    m_vertexElements.add(e);
 }
 
 detail::IVertexDeclaration* VertexLayout::resolveRHIObject()
 {
-	if (m_modified)
-	{
-		m_deviceObj = manager()->deviceContext()->createVertexDeclaration(&m_vertexElements[0], m_vertexElements.size());
-		m_modified = false;
-	}
+    if (m_modified) {
+        m_deviceObj = manager()->deviceContext()->createVertexDeclaration(&m_vertexElements[0], m_vertexElements.size());
+        m_modified = false;
+    }
 
-	return m_deviceObj;
+    return m_deviceObj;
 }
 
 void VertexLayout::onChangeDevice(detail::IGraphicsDevice* device)
 {
-	if (device)
-	{
-		m_deviceObj = manager()->deviceContext()->createVertexDeclaration(&m_vertexElements[0], m_vertexElements.size());
-		m_modified = false;
-	}
-	else
-	{
-		m_deviceObj.reset();
-	}
+    if (!device) {
+        m_deviceObj = nullptr;
+    } else {
+        m_deviceObj = manager()->deviceContext()->createVertexDeclaration(&m_vertexElements[0], m_vertexElements.size());
+        m_modified = false;
+    }
 }
 
 } // namespace ln
