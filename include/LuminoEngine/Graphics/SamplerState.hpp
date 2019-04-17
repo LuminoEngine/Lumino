@@ -8,25 +8,41 @@ namespace detail { class ISamplerState; }
 
 
 
+/** サンプラーステートのクラスです。 */
 class SamplerState
 	: public GraphicsResource
 {
 public:
+    /** テクスチャフィルタモードを設定します。(default: Point) */
 	void setFilterMode(TextureFilterMode value);
+
+    /** テクスチャフィルタモードを取得します。(default: Point) */
+    TextureFilterMode filterMode() const { return m_desc.filter; }
+
+    /** テクスチャアドレッシングモードを設定します。(default: Repeat) */
 	void setAddressMode(TextureAddressMode value);
+
+    /** テクスチャアドレッシングモードを取得します。(default: Repeat) */
+    TextureAddressMode addressMode() const { return m_desc.address; }
+
+    // anisotropyEnable
+
+protected:
+	virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
 
 LN_CONSTRUCT_ACCESS:
 	SamplerState();
 	virtual ~SamplerState();
-	virtual void init();
+	void init();
+    void init(TextureFilterMode filter);
+    void init(TextureFilterMode filter, TextureAddressMode value);
+    void init(TextureFilterMode filter, TextureAddressMode value, bool anisotropyEnable);
 	virtual void onDispose(bool explicitDisposing) override;
 
 LN_INTERNAL_ACCESS:
 	detail::ISamplerState* resolveRHIObject();
 	void setFrozen(bool value) { m_frozen = value; }
 
-protected:
-	virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
 
 private:
 	Ref<detail::ISamplerState> m_rhiObject;
@@ -34,38 +50,5 @@ private:
 	bool m_modified;
 	bool m_frozen;
 };
-
-
-///// テクスチャフィルタ
-//enum TextureFilterMode
-//{
-//	TextureFilterMode_Point = 0,		///< 補間を行わない
-//	TextureFilterMode_Linear,			///< 補間を行う
-//};
-//
-///// テクスチャアドレッシング
-//enum TextureWrapMode
-//{
-//	TextureWrapMode_Repeat = 0,		///< 繰り返し
-//	TextureWrapMode_Clamp,			///< 境界のピクセルが引き延ばされる
-//};
-//
-///**
-//	@brief	テクスチャのサンプリングステートを表すクラスです。
-//*/
-//class SamplerState
-//{
-//public:
-//
-//	TextureFilterMode	FilterMode;		///< テクスチャフィルタ(default:TextureFilterMode_Point)
-//	TextureWrapMode		WrapMode;		///< テクスチャアドレッシング(default:TextureWrapMode_Repeat)
-//
-//public:
-//
-//	/**
-//		@brief	デフォルト値で初期化します。
-//	*/
-//	SamplerState();
-//};
 
 } // namespace ln
