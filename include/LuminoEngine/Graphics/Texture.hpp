@@ -167,7 +167,7 @@ LN_INTERNAL_ACCESS:
 	virtual detail::ITexture* resolveRHIObject() override;
 	virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
 
-    void resetSwapchainFrameIfNeeded();
+    void resetSwapchainFrameIfNeeded(bool force = false);
     //void resetSwapchainFrame(detail::ITexture* ref);
 
 private:

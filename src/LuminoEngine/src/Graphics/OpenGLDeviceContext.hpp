@@ -223,7 +223,9 @@ public:
 	virtual void dispose() override;
     virtual void acquireNextImage(int* outImageIndex) override { *outImageIndex = 0; }
     virtual ITexture* getRenderTarget(int imageIndex) const override;
-    virtual void getBackendBufferSize(SizeI* outSize);
+	virtual Result resizeBackbuffer(uint32_t width, uint32_t height) override;
+
+	virtual void getBackendBufferSize(SizeI* outSize);
 
 	void genBackbuffer(uint32_t width, uint32_t height);
 	GLuint fbo() const { return m_fbo; }

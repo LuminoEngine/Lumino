@@ -372,9 +372,16 @@ bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)
         if (m_inputInjector->injectTextInput(e.key.keyChar)) return true;
         break;
     case PlatformEventType::WindowSizeChanged:
-		setWidth(e.size.width);
-		setHeight(e.size.height);
-        break;
+	{
+		if (m_platformWindow && m_swapChain)
+		{
+			int w, h;
+			m_platformWindow->getFramebufferSize(&w, &h);
+			m_swapChain->resizeBackbuffer(w, h);
+		}
+		break;
+	}
+
     case PlatformEventType::DragEnter:
     {
         LN_NOTIMPLEMENTED();

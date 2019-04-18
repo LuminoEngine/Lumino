@@ -173,6 +173,5 @@ bool TestEnv::checkScreenShot(const Char* filePath, int passRate, bool save)
 
 void TestEnv::waitRendering()
 {
-	Engine::mainWindow()->swapChain()->wait();
 }
 

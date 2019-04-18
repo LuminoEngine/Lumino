@@ -1494,6 +1494,12 @@ ITexture* VulkanSwapChain::getRenderTarget(int imageIndex) const
 	return m_swapchainRenderTargets[imageIndex];
 }
 
+Result VulkanSwapChain::resizeBackbuffer(uint32_t width, uint32_t height)
+{
+	LN_NOTIMPLEMENTED();
+	return true;
+}
+
 void VulkanSwapChain::present()
 {
     VkSemaphore renderFinishedSemaphore = m_swapchainRenderTargets[m_imageIndex]->renderFinishedSemaphore();

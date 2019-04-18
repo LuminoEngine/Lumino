@@ -343,8 +343,8 @@ void GLFWPlatformWindow::window_focus_callback(GLFWwindow* glfw_window, int focu
 
 void GLFWPlatformWindow::window_framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-	// The size of a framebuffer may change independently of the size of a window, for example if the window is dragged between a regular monitor and a high-DPI one.
-	//glViewport(0, 0, width, height);
+	GLFWPlatformWindow* thisWindow = (GLFWPlatformWindow*)glfwGetWindowUserPointer(window);
+	thisWindow->sendEventToAllListener(PlatformEventArgs::makeWindowSizeChangedEvent(thisWindow, width, height));
 }
 
 void GLFWPlatformWindow::window_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)

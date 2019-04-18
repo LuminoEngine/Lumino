@@ -44,9 +44,10 @@ RenderTargetTexture* SwapChain::backbuffer() const
 	return m_backbuffer;
 }
 
-void SwapChain::wait()
+void SwapChain::resizeBackbuffer(int width, int height)
 {
-	// TODO
+	m_rhiObject->resizeBackbuffer(width, height);
+	m_backbuffer->resetSwapchainFrameIfNeeded(true);
 }
 
 detail::ISwapChain* SwapChain::resolveRHIObject() const

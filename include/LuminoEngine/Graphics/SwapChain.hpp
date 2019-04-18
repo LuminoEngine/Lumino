@@ -27,7 +27,9 @@ public:
 
 	virtual void onDispose(bool explicitDisposing) override;
 
-	void wait();
+	//void wait();
+
+	void resizeBackbuffer(int width, int height);
 
 LN_CONSTRUCT_ACCESS:
 	SwapChain();

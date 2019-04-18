@@ -432,10 +432,10 @@ void RenderTargetTexture::onChangeDevice(detail::IGraphicsDevice* device)
 // Native Swapchain は内部的に複数の RenderTarget を持っていて。これは通常 present のたびに切り替える。
 // で、そうすると present 直後に ReadData して最新の描画結果を得るには、その present 時点の ImageIndex の RenderTarget を取り出さなければならない。
 // ImageIndex を Lumino の API として公開するのはちょっとユーザー負担が増えてしまうので、この層でカバーする。
-void RenderTargetTexture::resetSwapchainFrameIfNeeded()
+void RenderTargetTexture::resetSwapchainFrameIfNeeded(bool force)
 {
     if (m_ownerSwapchain) {
-        if (m_swapchainImageIndex != m_ownerSwapchain->imageIndex()) {
+        if (m_swapchainImageIndex != m_ownerSwapchain->imageIndex() || force) {
             m_swapchainImageIndex = m_ownerSwapchain->imageIndex();
             m_rhiObject = m_ownerSwapchain->resolveRHIObject()->getRenderTarget(m_swapchainImageIndex);
             setSize(m_rhiObject->realSize());

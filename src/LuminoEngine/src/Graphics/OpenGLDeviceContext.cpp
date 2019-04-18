@@ -968,6 +968,23 @@ ITexture* GLSwapChain::getRenderTarget(int imageIndex) const
 	return m_backbuffer;
 }
 
+Result GLSwapChain::resizeBackbuffer(uint32_t width, uint32_t height)
+{
+	if (m_backbuffer) {
+		m_backbuffer->dispose();
+		m_backbuffer = nullptr;
+	}
+
+	genBackbuffer(width, height);
+
+	m_backengBufferWidth = width;
+	m_backengBufferHeight = height;
+	//m_backbuffer = makeRef<GLRenderTargetTexture>();
+	//m_backbuffer->init(m_backengBufferWidth, m_backengBufferHeight, TextureFormat::RGB24, false);
+
+	return true;
+}
+
 void GLSwapChain::setBackendBufferSize(int width, int height)
 {
     m_backengBufferWidth = width;

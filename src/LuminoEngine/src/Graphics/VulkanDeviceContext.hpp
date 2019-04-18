@@ -172,6 +172,7 @@ public:
     virtual void dispose() override;
     virtual void acquireNextImage(int* outImageIndex) override;
 	virtual ITexture* getRenderTarget(int imageIndex) const override;
+	virtual Result resizeBackbuffer(uint32_t width, uint32_t height) override;
 
     void present();
 

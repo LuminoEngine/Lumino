@@ -317,6 +317,8 @@ public:
 	virtual ITexture* getRenderTarget(int imageIndex) const = 0;
 
 
+	virtual Result resizeBackbuffer(uint32_t width, uint32_t height) = 0;
+
 protected:
 	virtual ~ISwapChain() = default;
 };
