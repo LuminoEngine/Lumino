@@ -112,11 +112,13 @@ namespace LuminoBuild.Tasks
             // FIXME: CI サーバのストレージ不足対策
             if (FileMoving)
             {
+                Directory.Delete(tempInstallDir, true);
+
                 foreach (var arch in BuildEnvironment.TargetArchs)
                 {
-                    var path = Path.Combine(tempInstallDir, arch.SourceDirName);
+                    var path = Path.Combine(builder.LuminoBuildDir, arch.SourceDirName);
                     if (Directory.Exists(path))
-                        Directory.Delete(path, true);
+                        Directory.Delete(tempInstallDir, true);
                 }
             }
         }
