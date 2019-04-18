@@ -1,18 +1,11 @@
 ﻿
 #include "Internal.hpp"
-//#include <LuminoEngine/Graphics/GraphicsContext.hpp>
-//#include <LuminoEngine/Graphics/VertexLayout.hpp>
-//#include <LuminoEngine/Graphics/VertexBuffer.hpp>
-//#include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
-#include <LuminoEngine/Graphics/DepthBuffer.hpp>
 #include <LuminoEngine/Graphics/SwapChain.hpp>
-//#include <LuminoEngine/Shader/Shader.hpp>
 #include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
 #include "OpenGLDeviceContext.hpp"
-//#include "../Engine/RenderingCommandList.hpp"
-//
+
 namespace ln {
 
 //==============================================================================
@@ -20,7 +13,8 @@ namespace ln {
 
 SwapChain::SwapChain()
 	: m_rhiObject(nullptr)
-	, m_colorBuffer(nullptr)
+	, m_backbuffer(nullptr)
+	, m_imageIndex(0)
 {
 }
 
@@ -34,28 +28,21 @@ void SwapChain::init(detail::PlatformWindow* window, const SizeI& backbufferSize
 	Object::init();
 	m_rhiObject = detail::EngineDomain::graphicsManager()->deviceContext()->createSwapChain(window, backbufferSize);
     m_rhiObject->acquireNextImage(&m_imageIndex);
-	m_colorBuffer = newObject<RenderTargetTexture>(this/*m_rhiObject->getRenderTarget(m_imageIndex)*/);
-    m_colorBuffer->resetSwapchainFrameIfNeeded();
-	//m_depthBuffer = newObject<DepthBuffer>(backbufferSize.width, backbufferSize.height);
+	m_backbuffer = newObject<RenderTargetTexture>(this/*m_rhiObject->getRenderTarget(m_imageIndex)*/);
+	m_backbuffer->resetSwapchainFrameIfNeeded();
 }
 
 void SwapChain::onDispose(bool explicitDisposing)
 {
-	m_rhiObject.reset();
-	//m_depthBuffer.reset();
-	m_colorBuffer.reset();
+	m_rhiObject = nullptr;
+	m_backbuffer = nullptr;
 	Object::onDispose(explicitDisposing);
 }
 
-RenderTargetTexture* SwapChain::colorBuffer() const
+RenderTargetTexture* SwapChain::backbuffer() const
 {
-	return m_colorBuffer;
+	return m_backbuffer;
 }
-//
-//DepthBuffer* SwapChain::depthBuffer() const
-//{
-//	return m_depthBuffer;
-//}
 
 void SwapChain::wait()
 {

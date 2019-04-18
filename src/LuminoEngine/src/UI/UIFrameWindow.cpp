@@ -254,7 +254,7 @@ void UIFrameWindow::renderContents()
 
 	GraphicsContext* ctx = m_manager->graphicsManager()->graphicsContext();
 
-	RenderTargetTexture* backbuffer = m_swapChain->colorBuffer();
+	RenderTargetTexture* backbuffer = m_swapChain->backbuffer();
 	m_depthBuffer = DepthBuffer::getTemporary(backbuffer->width(), backbuffer->height());
 
 	ctx->setColorBuffer(0, backbuffer);

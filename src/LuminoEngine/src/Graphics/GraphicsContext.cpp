@@ -189,7 +189,7 @@ void GraphicsContext::present(SwapChain* swapChain)
 {
 	if (LN_REQUIRE(swapChain)) return;
 
-    flushCommandRecoding(swapChain->colorBuffer());
+    flushCommandRecoding(swapChain->backbuffer());
 
 	// TODO: threading
 	m_device->present(swapChain->resolveRHIObject());

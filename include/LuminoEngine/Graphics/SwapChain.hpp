@@ -17,14 +17,13 @@ namespace detail {
 	class ISwapChain;
 }
 
-/** スワップチェーン のクラスです。 */
+/** スワップチェーンのクラスです。 */
 class LN_API SwapChain
 	: public Object
 {
 public:
-
-	RenderTargetTexture* colorBuffer() const;
-	//DepthBuffer* depthBuffer() const;
+	/** バックバッファを取得します。 */
+	RenderTargetTexture* backbuffer() const;
 
 	virtual void onDispose(bool explicitDisposing) override;
 
@@ -42,7 +41,7 @@ LN_INTERNAL_ACCESS:
 
 private:
 	Ref<detail::ISwapChain> m_rhiObject;
-	Ref<RenderTargetTexture> m_colorBuffer;
+	Ref<RenderTargetTexture> m_backbuffer;
 	//Ref<DepthBuffer> m_depthBuffer;
     int m_imageIndex;
 };

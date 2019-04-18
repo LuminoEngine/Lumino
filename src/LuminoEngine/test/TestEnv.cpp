@@ -30,7 +30,7 @@ void TestEnv::setup()
         //Engine::mainDirectionalLight()->lookAt(Vector3(0, 0, 0));
     }
 
-	RenderTargetTexture* backbuffer = Engine::mainWindow()->swapChain()->colorBuffer();
+	RenderTargetTexture* backbuffer = Engine::mainWindow()->swapChain()->backbuffer();
 	depthBuffer = DepthBuffer::create(backbuffer->width(), backbuffer->height());
 
 #ifdef LN_OS_WIN32
@@ -54,23 +54,23 @@ void TestEnv::updateFrame()
 
 void TestEnv::resetGraphicsContext(GraphicsContext* context)
 {
-	context->setColorBuffer(0, Engine::mainWindow()->swapChain()->colorBuffer());
+	context->setColorBuffer(0, Engine::mainWindow()->swapChain()->backbuffer());
 	context->setDepthBuffer(depthBuffer);
 }
 
 Ref<Bitmap2D> TestEnv::capture()
 {
-	return Engine::mainWindow()->swapChain()->colorBuffer()->readData();
+	return Engine::mainWindow()->swapChain()->backbuffer()->readData();
 }
 
 void TestEnv::saveScreenShot(const Char* filePath)
 {
-	Engine::mainWindow()->swapChain()->colorBuffer()->readData()->save(filePath);
+	Engine::mainWindow()->swapChain()->backbuffer()->readData()->save(filePath);
 }
 
 bool TestEnv::equalsScreenShot(const Char* filePath, int passRate)
 {
-	bool r = TestEnv::equalsBitmapFile(Engine::mainWindow()->swapChain()->colorBuffer()->readData(), filePath, passRate);
+	bool r = TestEnv::equalsBitmapFile(Engine::mainWindow()->swapChain()->backbuffer()->readData(), filePath, passRate);
 	return r;
 }
 
