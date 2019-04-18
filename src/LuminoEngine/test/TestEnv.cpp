@@ -3,6 +3,7 @@
 #include "TestEnv.hpp"
 
 String TestEnv::LuminoCLI;
+Ref<DepthBuffer> TestEnv::depthBuffer;
 
 void TestEnv::setup()
 {
@@ -29,6 +30,9 @@ void TestEnv::setup()
         //Engine::mainDirectionalLight()->lookAt(Vector3(0, 0, 0));
     }
 
+	RenderTargetTexture* backbuffer = Engine::mainWindow()->swapChain()->colorBuffer();
+	depthBuffer = DepthBuffer::create(backbuffer->width(), backbuffer->height());
+
 #ifdef LN_OS_WIN32
 	LuminoCLI = Path::combine(Path(ln::Environment::executablePath()).parent().parent().parent().parent(), u"tools", u"LuminoCLI", u"Debug", u"lumino-cli.exe");
 #else
@@ -37,6 +41,7 @@ void TestEnv::setup()
 
 void TestEnv::teardown()
 {
+	depthBuffer = nullptr;
     detail::EngineDomain::release();
 }
 
@@ -50,7 +55,7 @@ void TestEnv::updateFrame()
 void TestEnv::resetGraphicsContext(GraphicsContext* context)
 {
 	context->setColorBuffer(0, Engine::mainWindow()->swapChain()->colorBuffer());
-	context->setDepthBuffer(Engine::mainWindow()->depthBuffer());
+	context->setDepthBuffer(depthBuffer);
 }
 
 Ref<Bitmap2D> TestEnv::capture()

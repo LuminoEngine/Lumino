@@ -10,6 +10,11 @@ namespace ln {
 //==============================================================================
 // DepthBuffer
 
+Ref<DepthBuffer> DepthBuffer::create(int width, int height)
+{
+    return newObject<DepthBuffer>(width, height);
+}
+
 Ref<DepthBuffer> DepthBuffer::getTemporary(int width, int height)
 {
     return detail::EngineDomain::graphicsManager()->frameBufferCache()->requestDepthBuffer2(SizeI(width, height));
@@ -21,8 +26,8 @@ void DepthBuffer::releaseTemporary(DepthBuffer* depthBuffer)
 }
 
 DepthBuffer::DepthBuffer()
-	: m_rhiObject()
-	, m_size()
+    : m_rhiObject()
+    , m_size()
 {
 }
 
@@ -33,8 +38,8 @@ DepthBuffer::~DepthBuffer()
 void DepthBuffer::init(int width, int height)
 {
     GraphicsResource::init();
-	m_size.width = width;
-	m_size.height = height;
+    m_size.width = width;
+    m_size.height = height;
     m_rhiObject = deviceContext()->createDepthBuffer(width, height);
 }
 
@@ -47,11 +52,10 @@ void DepthBuffer::onDispose(bool explicitDisposing)
 void DepthBuffer::onChangeDevice(detail::IGraphicsDevice* device)
 {
     if (!device) {
-		m_rhiObject = nullptr;
+        m_rhiObject = nullptr;
+    } else {
+        m_rhiObject = deviceContext()->createDepthBuffer(m_size.width, m_size.height);
     }
-	else {
-		m_rhiObject = deviceContext()->createDepthBuffer(m_size.width, m_size.height);
-	}
 }
 
 detail::IDepthBuffer* DepthBuffer::resolveRHIObject()

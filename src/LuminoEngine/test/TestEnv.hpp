@@ -18,6 +18,7 @@ public:
 	static void waitRendering();
 
 	static String LuminoCLI;
+	static Ref<DepthBuffer> depthBuffer;
 };
 
 #define LN_TEST_CLEAN_SCENE \
