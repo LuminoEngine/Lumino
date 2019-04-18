@@ -595,10 +595,12 @@ void SceneRenderer::applyGeometryStatus(GraphicsContext* context, RenderStage* s
 {
 	// BlendState
 	{
+        BlendMode mode = stage->getBlendModeFinal(priorityMaterial);
 		BlendStateDesc state;
 		state.independentBlendEnable = false;
-		makeBlendMode(stage->getBlendModeFinal(priorityMaterial), &state.renderTargets[0]);
+		makeBlendMode(mode, &state.renderTargets[0]);
 		context->setBlendState(state);
+        printf("BlendMode:%d\n", mode);
 	}
 	// RasterizerState
 	{
