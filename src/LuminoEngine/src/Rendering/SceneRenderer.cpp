@@ -87,7 +87,7 @@ void SceneRenderer::render(
 	//if (clearColorBuffer)
 	{
         // TODO: 暫定。
-        graphicsContext->setColorBuffer(0, defaultFrameBuffer.renderTarget[0]);
+        graphicsContext->setRenderTarget(0, defaultFrameBuffer.renderTarget[0]);
         graphicsContext->setDepthBuffer(defaultFrameBuffer.depthBuffer);
         graphicsContext->clear(ClearFlags::Depth, Color::White);
 		// TODO: 前回の最後のステートが残っていることがある。clear したいやつの弊害だけ、とりあえず暫定処置。シザーも必要になりそう。
@@ -556,7 +556,7 @@ void SceneRenderer::applyFrameBufferStatus(GraphicsContext* context, RenderStage
 				target = defaultFrameBufferInPass.renderTarget[i];
 			}
 
-			context->setColorBuffer(i, target);
+			context->setRenderTarget(i, target);
 
 			if (i == 0) {
 				renderTarget0 = target;

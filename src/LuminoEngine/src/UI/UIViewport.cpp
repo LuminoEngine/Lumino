@@ -100,10 +100,10 @@ void UIViewport::onRender(UIRenderingContext* context)
 
     for (auto& view : m_renderViews)
     {
-        view->render(graphicsContext, graphicsContext->colorBuffer(0), graphicsContext->depthBuffer());
+        view->render(graphicsContext, graphicsContext->renderTarget(0), graphicsContext->depthBuffer());
     }
 
-    m_imageEffectRenderer->render(context, graphicsContext->colorBuffer(0));
+    m_imageEffectRenderer->render(context, graphicsContext->renderTarget(0));
 }
 
 void UIViewport::onRoutedEvent(UIEventArgs* e)

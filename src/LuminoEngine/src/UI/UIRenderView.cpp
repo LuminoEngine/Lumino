@@ -54,7 +54,7 @@ void UIRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture*
 
 
         FrameBuffer fb;
-        fb.renderTarget[0] = graphicsContext->colorBuffer(0);
+        fb.renderTarget[0] = graphicsContext->renderTarget(0);
         fb.depthBuffer = graphicsContext->depthBuffer();
 
         // TODO:

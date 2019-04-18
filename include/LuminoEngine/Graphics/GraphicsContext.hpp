@@ -29,8 +29,8 @@ public:
 	void setBlendState(const BlendStateDesc& value);
 	void setRasterizerState(const RasterizerStateDesc& value);
 	void setDepthStencilState(const DepthStencilStateDesc& value);
-	void setColorBuffer(int index, RenderTargetTexture* value);	// Viewport, Scissor はクリア TODO: やっぱり ColorBuffer は驚く
-    RenderTargetTexture* colorBuffer(int index) const;
+	void setRenderTarget(int index, RenderTargetTexture* value);	// Viewport, Scissor はクリア TODO: やっぱり ColorBuffer は驚く
+    RenderTargetTexture* renderTarget(int index) const;
 	void setDepthBuffer(DepthBuffer* value);
     DepthBuffer* depthBuffer() const;
 	void setViewportRect(const Rect& value);

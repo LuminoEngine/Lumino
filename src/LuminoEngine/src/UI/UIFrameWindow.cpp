@@ -257,7 +257,7 @@ void UIFrameWindow::renderContents()
 	RenderTargetTexture* backbuffer = m_swapChain->backbuffer();
 	m_depthBuffer = DepthBuffer::getTemporary(backbuffer->width(), backbuffer->height());
 
-	ctx->setColorBuffer(0, backbuffer);
+	ctx->setRenderTarget(0, backbuffer);
 	ctx->setDepthBuffer(m_depthBuffer);
 	//ctx->clear(ClearFlags::All, Color(0.4, 0.4, 0.4), 1.0f, 0x00);
 }
@@ -269,7 +269,7 @@ void UIFrameWindow::present()
 	if (m_renderView)
 	{
 		m_renderView->setRootElement(this);
-		m_renderView->render(ctx, ctx->colorBuffer(0), ctx->depthBuffer());
+		m_renderView->render(ctx, ctx->renderTarget(0), ctx->depthBuffer());
 	}
 
 	if (m_depthBuffer) {

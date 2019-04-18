@@ -68,7 +68,7 @@ void GraphicsContext::setDepthStencilState(const DepthStencilStateDesc& value)
 	m_staging.depthStencilState = value;
 }
 
-void GraphicsContext::setColorBuffer(int index, RenderTargetTexture* value)
+void GraphicsContext::setRenderTarget(int index, RenderTargetTexture* value)
 {
 	m_staging.renderTargets[index] = value;
 	if (index == 0 && value) {
@@ -78,7 +78,7 @@ void GraphicsContext::setColorBuffer(int index, RenderTargetTexture* value)
 	}
 }
 
-RenderTargetTexture* GraphicsContext::colorBuffer(int index) const
+RenderTargetTexture* GraphicsContext::renderTarget(int index) const
 {
     return m_staging.renderTargets[index];
 }

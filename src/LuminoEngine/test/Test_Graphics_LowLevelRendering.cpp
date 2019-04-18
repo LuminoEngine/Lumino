@@ -49,6 +49,29 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 }
 
 //------------------------------------------------------------------------------
+TEST_F(Test_Graphics_LowLevelRendering, Clear)
+{
+    auto t1 = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA32, false);
+    auto t2 = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA32, false);
+    auto t3 = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA32, false);
+    auto t4 = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA32, false);
+    auto ctx = Engine::graphicsContext();
+    TestEnv::resetGraphicsContext(ctx);
+    ctx->setRenderTarget(0, t1);
+    ctx->setRenderTarget(1, t1);
+    ctx->setRenderTarget(2, t1);
+    ctx->setRenderTarget(3, t1);
+    ctx->clear(ClearFlags::Color, Color::Red, 1.0f, 0);
+
+    t1->readData()->save(u"0.png");
+    t2->readData()->save(u"1.png");
+    t3->readData()->save(u"2.png");
+    t4->readData()->save(u"3.png");
+
+    ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-BasicTriangle.png"));
+}
+
+//------------------------------------------------------------------------------
 TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 {
 	auto buffer1 = m_shader1->findConstantBuffer("ConstBuff");
@@ -993,7 +1016,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
         auto ctx = Engine::graphicsContext();
         TestEnv::resetGraphicsContext(ctx);
 
-        RenderTargetTexture* oldRT = ctx->colorBuffer(0);
+        RenderTargetTexture* oldRT = ctx->renderTarget(0);
 
         // まず renderTarget1 へ緑色の三角形を描く
         {
@@ -1001,7 +1024,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
             ctx->setVertexDeclaration(m_vertexDecl1);
             ctx->setVertexBuffer(0, vertexBuffer1);
             ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
-            ctx->setColorBuffer(0, renderTarget1);
+            ctx->setRenderTarget(0, renderTarget1);
             ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
             ctx->drawPrimitive(0, 1);
@@ -1013,7 +1036,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
             ctx->setVertexDeclaration(vertexDecl2);
             ctx->setVertexBuffer(0, vertexBuffer2);
             ctx->setShaderPass(shader2->techniques()[0]->passes()[0]);
-            ctx->setColorBuffer(0, oldRT);
+            ctx->setRenderTarget(0, oldRT);
             ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
             ctx->drawPrimitive(0, 2);

@@ -48,7 +48,7 @@ void DepthPrepass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffe
 {
 	frameBuffer->renderTarget[0] = m_depthMap;
 	frameBuffer->depthBuffer = m_depthBuffer;
-	context->setColorBuffer(0, m_depthMap);
+	context->setRenderTarget(0, m_depthMap);
 	context->setDepthBuffer(m_depthBuffer);
 	context->clear(ClearFlags::All, Color::Transparency, 1.0f, 0);
 }
@@ -211,7 +211,7 @@ void ShadowCasterPass::onBeginPass(GraphicsContext* context, FrameBuffer* frameB
 {
 	frameBuffer->renderTarget[0] = m_shadowMap;
 	frameBuffer->depthBuffer = m_depthBuffer;
-	context->setColorBuffer(0, m_shadowMap);
+	context->setRenderTarget(0, m_shadowMap);
 	context->setDepthBuffer(m_depthBuffer);
 	context->clear(ClearFlags::All, Color::Transparency, 1.0f, 0);
 }

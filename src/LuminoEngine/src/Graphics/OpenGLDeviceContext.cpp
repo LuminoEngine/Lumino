@@ -792,6 +792,11 @@ void GLGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color, flo
 	}
 
 	GL_CHECK(glClear(glflags));
+
+    //GLint c[] = { 255, 0, 0, 255 };
+    //GL_CHECK(glClearBufferiv(GL_COLOR, GL_DRAW_BUFFER0, c));
+    //GLuint c[] = { 255, 0, 0, 255 };
+    //GL_CHECK(glClearBufferuiv(GL_COLOR, GL_DRAW_BUFFER0, c));
 }
 
 void GLGraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount)
