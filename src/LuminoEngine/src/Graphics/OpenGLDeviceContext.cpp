@@ -191,6 +191,7 @@ void OpenGLDevice::init(const Settings& settings)
 #endif
 	if (!m_glContext)
 	{
+		// Android(GLSurfaceView) や Web など、バックバッファの swap を Lumino の外側で行う場合
 		auto glfwContext = makeRef<EmptyGLContext>();
 		m_glContext = glfwContext;
 	}
@@ -925,10 +926,17 @@ GLSwapChain::GLSwapChain()
 
 void GLSwapChain::dispose()
 {
+	releaseBuffers();
+	ISwapChain::dispose();
+}
+
+void GLSwapChain::releaseBuffers()
+{
 	if (m_fbo)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glDeleteFramebuffers(1, &m_fbo);
+		m_fbo = 0;
 	}
 
 	if (m_backbuffer)
@@ -936,8 +944,6 @@ void GLSwapChain::dispose()
 		m_backbuffer->dispose();
 		m_backbuffer = nullptr;
 	}
-
-	ISwapChain::dispose();
 }
 
 void GLSwapChain::getBackendBufferSize(SizeI* outSize)
@@ -948,6 +954,8 @@ void GLSwapChain::getBackendBufferSize(SizeI* outSize)
 
 void GLSwapChain::genBackbuffer(uint32_t width, uint32_t height)
 {
+	releaseBuffers();
+
 	m_backbuffer = makeRef<GLRenderTargetTexture>();
 	m_backbuffer->init(width, height, TextureFormat::RGB24, false);
 
@@ -970,18 +978,8 @@ ITexture* GLSwapChain::getRenderTarget(int imageIndex) const
 
 Result GLSwapChain::resizeBackbuffer(uint32_t width, uint32_t height)
 {
-	if (m_backbuffer) {
-		m_backbuffer->dispose();
-		m_backbuffer = nullptr;
-	}
-
 	genBackbuffer(width, height);
-
-	m_backengBufferWidth = width;
-	m_backengBufferHeight = height;
-	//m_backbuffer = makeRef<GLRenderTargetTexture>();
-	//m_backbuffer->init(m_backengBufferWidth, m_backengBufferHeight, TextureFormat::RGB24, false);
-
+	setBackendBufferSize(width, height);
 	return true;
 }
 

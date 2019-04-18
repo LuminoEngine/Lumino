@@ -144,6 +144,11 @@ int main(int argc, char** argv)
 	text2->setText(u"Test");
 	text2->setTextColor(Color::Gray);
 
+	auto text3 = UITextBlock::create();
+	text3->setText(u"Test3");
+	text3->setTextColor(Color::Gray);
+	text3->setPosition(Vector3(0, 400, 0));
+
 	{
 
 		while (Engine::update()) {

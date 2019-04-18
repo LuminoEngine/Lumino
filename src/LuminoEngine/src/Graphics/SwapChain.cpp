@@ -46,7 +46,7 @@ RenderTargetTexture* SwapChain::backbuffer() const
 
 void SwapChain::resizeBackbuffer(int width, int height)
 {
-	m_rhiObject->resizeBackbuffer(width, height);
+	if (LN_ENSURE(m_rhiObject->resizeBackbuffer(width, height))) return;
 	m_backbuffer->resetSwapchainFrameIfNeeded(true);
 }
 

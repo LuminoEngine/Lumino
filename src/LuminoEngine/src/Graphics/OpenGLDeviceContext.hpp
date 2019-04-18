@@ -237,6 +237,8 @@ public:
     void setBackendBufferSize(int width, int height);
 
 private:
+	void releaseBuffers();
+
 	Ref<GLRenderTargetTexture> m_backbuffer;
 	GLuint m_fbo;
 
