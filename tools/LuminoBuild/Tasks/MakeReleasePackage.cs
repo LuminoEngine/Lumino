@@ -108,6 +108,17 @@ namespace LuminoBuild.Tasks
                     Path.Combine(builder.LuminoToolsDir, "LuminoCLI", "Templates", "SimpleDesktop"),
                     Path.Combine(targetRootDir, "Tools", "Templates", "SimpleDesktop"));
             }
+
+            // FIXME: CI サーバのストレージ不足対策
+            if (FileMoving)
+            {
+                foreach (var arch in BuildEnvironment.TargetArchs)
+                {
+                    var path = Path.Combine(tempInstallDir, arch.SourceDirName);
+                    if (Directory.Exists(path))
+                        Directory.Delete(path, true);
+                }
+            }
         }
 
         public static void CopyEngineLibs(Builder builder, string tempInstallDir, string nativeEngineRoot, bool fileMoving)
