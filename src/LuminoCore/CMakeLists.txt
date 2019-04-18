@@ -76,7 +76,7 @@ endif()
 
 install(TARGETS ${PROJECT_NAME}
     EXPORT LuminoCoreTargets
-    ARCHIVE     DESTINATION .#lib    # Library installation location (Copied at "INSTALL" build time)
+    ARCHIVE     DESTINATION ./lib    # Library installation location (Copied at "INSTALL" build time)
     #INCLUDES    DESTINATION ../../include        # include directory (File is not copied)
     #INCLUDES    DESTINATION include                    # include directory (File is not copied)
     FRAMEWORK DESTINATION .)

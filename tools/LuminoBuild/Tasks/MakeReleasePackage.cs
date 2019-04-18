@@ -139,7 +139,9 @@ namespace LuminoBuild.Tasks
 
                     // Engine libs
                     {
-                        var srcDir = Path.Combine(tempInstallDir, arch.SourceDirName/*, "lib"*/);
+                        var srcDir = Path.Combine(tempInstallDir, arch.SourceDirName, "lib");
+
+                        Console.WriteLine($"Copy {srcDir} to {targetDir}");
                         Utils.CopyDirectory(srcDir, targetDir);
                         if (fileMoving)
                             Directory.Delete(srcDir, true); // FIXME: CI サーバのストレージ不足対策
@@ -152,7 +154,9 @@ namespace LuminoBuild.Tasks
                         var srcDir = Path.Combine(externalInstallDir, lib, "lib");
                         if (Directory.Exists(srcDir))   // copy if directory exists. openal-soft etc are optional.
                         {
+                            Console.WriteLine($"Copy {srcDir} to {targetDir}");
                             Utils.CopyDirectory(srcDir, targetDir);
+
                             if (fileMoving)
                                 Directory.Delete(srcDir, true); // FIXME: CI サーバのストレージ不足対策
                         }
@@ -172,8 +176,10 @@ namespace LuminoBuild.Tasks
                             if (file.Contains("Debug") && libnames.Contains(Path.GetFileNameWithoutExtension(file)))
                             {
                                 // FIXME: CI サーバのストレージ不足対策
-                                //File.Copy(file, Path.Combine(targetDir, Path.GetFileName(file)), true);
-                                File.Move(file, Path.Combine(targetDir, Path.GetFileName(file)));
+                                if (fileMoving)
+                                    File.Move(file, Path.Combine(targetDir, Path.GetFileName(file)));
+                                else
+                                    File.Copy(file, Path.Combine(targetDir, Path.GetFileName(file)), true);
                                 Console.WriteLine(file);
                             }
                         }
