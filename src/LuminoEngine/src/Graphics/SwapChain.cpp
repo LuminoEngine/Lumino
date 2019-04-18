@@ -69,8 +69,11 @@ detail::ISwapChain* SwapChain::resolveRHIObject() const
 
 void SwapChain::onPostPresent()
 {
+	// この後 readData などでバックバッファのイメージをキャプチャしたりするので、
+	// ここでは次に使うべきバッファの番号だけを取り出しておく。
+	// バックバッファをラップしている RenderTarget が次に resolve されたときに、
+	// 実際にこの番号を使って、ラップするべきバッファを取り出す。
     m_rhiObject->acquireNextImage(&m_imageIndex);
-    //m_colorBuffer->resetSwapchainFrame(m_rhiObject->getRenderTarget(m_imageIndex));
 }
 
 //==============================================================================
