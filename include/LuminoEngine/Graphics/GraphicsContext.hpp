@@ -18,6 +18,7 @@ class SwapChain;
 namespace detail {
 	class GraphicsManager;
 	class IGraphicsDevice;
+    class IGraphicsContext;
 }
 
 class LN_API GraphicsContext
@@ -52,12 +53,12 @@ public:
     void flushCommandRecoding(RenderTargetTexture* affectRendreTarget);
 	// IGraphicsDevice の clear, draw 系の機能を呼び出したい場合はこの戻り値を使うこと。
 	// GraphicsContext は変更中のステートをキャッシュするが、それを確実に IGraphicsDevice へ送信した状態にする。
-	detail::IGraphicsDevice* commitState();
+	detail::IGraphicsContext* commitState();
 
 LN_CONSTRUCT_ACCESS:
 	GraphicsContext();
 	virtual ~GraphicsContext();
-	void init(detail::IGraphicsDevice* device);
+	void init(detail::IGraphicsContext* context);
 
 LN_INTERNAL_ACCESS:
 	virtual void onDispose(bool explicitDisposing) override;
@@ -65,7 +66,7 @@ LN_INTERNAL_ACCESS:
 private:
 
 	detail::GraphicsManager* m_manager;
-	detail::IGraphicsDevice* m_device;
+	detail::IGraphicsContext* m_context;
 
     // TODO: 途中
     enum ModifiedFlags

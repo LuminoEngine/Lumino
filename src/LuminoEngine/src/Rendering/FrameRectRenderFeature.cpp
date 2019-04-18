@@ -68,7 +68,7 @@ void InternalFrameRectRenderer::draw(const Rect& rect, const Matrix& worldTransf
     }
 }
 
-void InternalFrameRectRenderer::InternalFrameRectRenderer::flush(IGraphicsDevice* context)
+void InternalFrameRectRenderer::InternalFrameRectRenderer::flush(IGraphicsContext* context)
 {
     prepareBuffers(m_vertices.size() / 4);
 
@@ -400,13 +400,13 @@ void FrameRectRenderFeature::draw(const Rect& rect, const Matrix& worldTransform
 void FrameRectRenderFeature::flush(GraphicsContext* context)
 {
     GraphicsManager* manager = m_internal->manager()->graphicsManager();
-    IGraphicsDevice* deviceContext = context->commitState();
+    IGraphicsContext* c = context->commitState();
     LN_ENQUEUE_RENDER_COMMAND_2(
         FrameRectRenderFeature_flush, manager,
         InternalFrameRectRenderer*, m_internal,
-        IGraphicsDevice*, deviceContext,
+        IGraphicsContext*, c,
         {
-            m_internal->flush(deviceContext);
+            m_internal->flush(c);
         });
 }
 

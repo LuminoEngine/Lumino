@@ -65,7 +65,7 @@ public:
 		BillboardType billboardType,
         SpriteFlipFlags flipFlags);
 
-	void flush(IGraphicsDevice* context);
+	void flush(IGraphicsContext* context);
 	void clear();
 
 private:

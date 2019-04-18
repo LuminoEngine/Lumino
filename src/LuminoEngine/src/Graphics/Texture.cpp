@@ -204,7 +204,7 @@ detail::ITexture* Texture2D::resolveRHIObject()
 					SizeI, bmpSize,
 					Ref<detail::ITexture>, rhiObject,
 					{
-                        deviceContext->setSubData2D(rhiObject, 0, 0, bmpSize.width, bmpSize.height, bmpRawData.data(), bmpRawData.size());
+                        deviceContext->getGraphicsContext()->setSubData2D(rhiObject, 0, 0, bmpSize.width, bmpSize.height, bmpRawData.data(), bmpRawData.size());
 					});
 			}
 		}
@@ -322,7 +322,7 @@ detail::ITexture* Texture3D::resolveRHIObject()
 					BoxSizeI, bmpSize,
 					Ref<detail::ITexture>, rhiObject,
 					{
-                        deviceContext->setSubData3D(rhiObject, 0, 0, 0, bmpSize.width, bmpSize.height, bmpSize.depth, bmpRawData.data(), bmpRawData.size());
+                        deviceContext->getGraphicsContext()->setSubData3D(rhiObject, 0, 0, 0, bmpSize.width, bmpSize.height, bmpSize.depth, bmpRawData.data(), bmpRawData.size());
 					});
 			}
 		}

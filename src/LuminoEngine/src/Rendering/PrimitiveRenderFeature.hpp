@@ -19,10 +19,10 @@ public:
 
     void drawMeshGenerater(const MeshGenerater* generator);
 
-    void flush(IGraphicsDevice* context);
+    void flush(IGraphicsContext* context);
 
 private:
-    void prepareBuffers(IGraphicsDevice* context, int vertexCount, int indexCount);
+    void prepareBuffers(IGraphicsDevice* device, int vertexCount, int indexCount);
 
     RenderingManager* m_manager;
     Ref<LinearAllocator> m_linearAllocator;

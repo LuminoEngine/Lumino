@@ -289,7 +289,7 @@ public:
 	}
 };
 
-void InternalSpriteRenderer::flush(IGraphicsDevice* context)
+void InternalSpriteRenderer::flush(IGraphicsContext* context)
 {
 	int spriteCount = m_spriteDataList.size();
 	if (spriteCount == 0) {
@@ -297,7 +297,7 @@ void InternalSpriteRenderer::flush(IGraphicsDevice* context)
 	}
 
 	// Allocate vertex buffer and index buffer, if needed.
-	prepareBuffers(context, m_spriteDataList.size());
+	prepareBuffers(context->device(), m_spriteDataList.size());
 
 	// Initialize sprite index list.
 	for (int i = 0; i < spriteCount; ++i) {
@@ -457,13 +457,13 @@ void SpriteRenderFeature::onActiveRenderFeatureChanged(const detail::CameraInfo&
 void SpriteRenderFeature::flush(GraphicsContext* context)
 {
 	GraphicsManager* manager = m_manager->graphicsManager();
-	IGraphicsDevice* deviceContext = context->commitState();
+    IGraphicsContext* c = context->commitState();
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		SpriteRenderFeature_flush, manager,
-		IGraphicsDevice*, deviceContext,
+        IGraphicsContext*, c,
 		InternalSpriteRenderer*, m_internal,
 		{
-			m_internal->flush(deviceContext);
+			m_internal->flush(c);
 		});
 }
 

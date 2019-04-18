@@ -139,7 +139,7 @@ void InternalShapesRenderer::requestBuffers(int vertexCount, int indexCount, Ver
 }
 
 //------------------------------------------------------------------------------
-void InternalShapesRenderer::renderCommandList(ShapesRendererCommandList* commandList/*, detail::BrushRawData* fillBrush*/)
+void InternalShapesRenderer::renderCommandList(IGraphicsContext* context, ShapesRendererCommandList* commandList/*, detail::BrushRawData* fillBrush*/)
 {
 	extractBasePoints(commandList);
 	calcExtrudedDirection();
@@ -187,17 +187,21 @@ void InternalShapesRenderer::renderCommandList(ShapesRendererCommandList* comman
 		//Driver::IRenderer* renderer = m_manager->getGraphicsDevice()->getRenderer();
 
 		// サイズが足りなければ再作成
-		auto device = m_manager->graphicsManager()->deviceContext();
-		if (m_vertexBuffer == nullptr || m_vertexBuffer->getBytesSize() < m_vertexCache.getBufferUsedByteCount())
-		{
-			//LN_SAFE_RELEASE(m_vertexBuffer);
-			m_vertexBuffer = device->createVertexBuffer(GraphicsResourceUsage::Dynamic, m_vertexCache.getBufferUsedByteCount(), nullptr);
-		}
-		if (m_indexBuffer == nullptr || m_indexBuffer->getBytesSize() < m_indexCache.getBufferUsedByteCount())
-		{
-			//LN_SAFE_RELEASE(m_indexBuffer);
-			m_indexBuffer = device->createIndexBuffer(GraphicsResourceUsage::Dynamic, IndexBufferFormat::UInt16, m_indexCache.getBufferUsedByteCount(), nullptr);
-		}
+		//
+        {
+            IGraphicsDevice* device = m_manager->graphicsManager()->deviceContext();
+
+            if (m_vertexBuffer == nullptr || m_vertexBuffer->getBytesSize() < m_vertexCache.getBufferUsedByteCount())
+            {
+                //LN_SAFE_RELEASE(m_vertexBuffer);
+                m_vertexBuffer = device->createVertexBuffer(GraphicsResourceUsage::Dynamic, m_vertexCache.getBufferUsedByteCount(), nullptr);
+            }
+            if (m_indexBuffer == nullptr || m_indexBuffer->getBytesSize() < m_indexCache.getBufferUsedByteCount())
+            {
+                //LN_SAFE_RELEASE(m_indexBuffer);
+                m_indexBuffer = device->createIndexBuffer(GraphicsResourceUsage::Dynamic, IndexBufferFormat::UInt16, m_indexCache.getBufferUsedByteCount(), nullptr);
+            }
+        }
 
 
 		// 面方向を反転
@@ -209,15 +213,15 @@ void InternalShapesRenderer::renderCommandList(ShapesRendererCommandList* comman
 
 
 		// 描画する
-        device->setSubData(m_vertexBuffer, 0, m_vertexCache.getBuffer(), m_vertexCache.getBufferUsedByteCount());
-        device->setSubData(m_indexBuffer, 0, m_indexCache.getBuffer(), m_indexCache.getBufferUsedByteCount());
+        context->setSubData(m_vertexBuffer, 0, m_vertexCache.getBuffer(), m_vertexCache.getBufferUsedByteCount());
+        context->setSubData(m_indexBuffer, 0, m_indexCache.getBuffer(), m_indexCache.getBufferUsedByteCount());
 
 		{
-			device->setVertexDeclaration(detail::GraphicsResourceHelper::resolveRHIObject<detail::IVertexDeclaration>(m_manager->standardVertexDeclaration()));
-			device->setVertexBuffer(0, m_vertexBuffer);
-			device->setIndexBuffer(m_indexBuffer);
-			device->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-			device->drawPrimitiveIndexed(0, m_indexCache.getCount() / 3);
+            context->setVertexDeclaration(detail::GraphicsResourceHelper::resolveRHIObject<detail::IVertexDeclaration>(m_manager->standardVertexDeclaration()));
+            context->setVertexBuffer(0, m_vertexBuffer);
+            context->setIndexBuffer(m_indexBuffer);
+            context->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+            context->drawPrimitiveIndexed(0, m_indexCache.getCount() / 3);
 		}
 	}
 
@@ -1176,13 +1180,14 @@ void ShapesRenderFeature::renderCommandList(GraphicsContext* context, const Shap
     // commandList が持っているポインタは RenderingCommandList の LinearAllocator で確保したものなのでそのまま RenderCommand に乗せてOK
 
     GraphicsManager* manager = m_internal->manager()->graphicsManager();
-    IGraphicsDevice* deviceContext = context->commitState();
-    LN_ENQUEUE_RENDER_COMMAND_2(
+    IGraphicsContext* c = context->commitState();
+    LN_ENQUEUE_RENDER_COMMAND_3(
         ShapesRenderFeature_renderCommandList, manager,
         InternalShapesRenderer*, m_internal,
+        IGraphicsContext*, c,
         ShapesRendererCommandList, commandList,
         {
-            m_internal->renderCommandList(&commandList);
+            m_internal->renderCommandList(c, &commandList);
         });
 }
 

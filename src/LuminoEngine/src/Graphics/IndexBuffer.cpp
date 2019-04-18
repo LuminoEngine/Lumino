@@ -96,7 +96,7 @@ void* IndexBuffer::map(MapMode mode)
         }
 
         if (m_rhiMappedBuffer == nullptr) {
-            m_rhiMappedBuffer = manager()->deviceContext()->map(m_rhiObject);
+            m_rhiMappedBuffer = manager()->deviceContext()->getGraphicsContext()->map(m_rhiObject);
         }
 
         m_modified = true;
@@ -200,7 +200,7 @@ detail::IIndexBuffer* IndexBuffer::resolveRHIObject()
     if (m_modified) {
         detail::IGraphicsDevice* device = manager()->deviceContext();
         if (m_rhiMappedBuffer) {
-            device->unmap(m_rhiObject);
+            device->getGraphicsContext()->unmap(m_rhiObject);
             m_rhiMappedBuffer = nullptr;
         } else {
             size_t requiredSize = bytesSize();
@@ -211,7 +211,7 @@ detail::IIndexBuffer* IndexBuffer::resolveRHIObject()
                 detail::IIndexBuffer* rhiObject = m_rhiObject;
                 LN_ENQUEUE_RENDER_COMMAND_3(
                     IndexBuffer_setSubData, manager(), detail::IGraphicsDevice*, device, detail::RenderBulkData, data, Ref<detail::IIndexBuffer>, rhiObject, {
-                        device->setSubData(rhiObject, 0, data.data(), data.size());
+                        device->getGraphicsContext()->setSubData(rhiObject, 0, data.data(), data.size());
                     });
             }
         }

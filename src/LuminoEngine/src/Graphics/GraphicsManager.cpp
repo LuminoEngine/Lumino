@@ -159,7 +159,7 @@ void GraphicsManager::init(const Settings& settings)
     }
 
 
-	m_graphicsContext = newObject<GraphicsContext>(m_deviceContext);
+	m_graphicsContext = newObject<GraphicsContext>(m_deviceContext->getGraphicsContext());
 
 	m_linearAllocatorPageManager = makeRef<LinearAllocatorPageManager>();
 

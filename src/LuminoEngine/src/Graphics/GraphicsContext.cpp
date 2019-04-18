@@ -18,7 +18,7 @@ namespace ln {
 // GraphicsContext
 
 GraphicsContext::GraphicsContext()
-	: m_device(nullptr)
+	: m_context(nullptr)
     , m_modifiedFlags(ModifiedFlags_All)
     , m_recordingBegan(false)
 {
@@ -28,20 +28,20 @@ GraphicsContext::~GraphicsContext()
 {
 }
 
-void GraphicsContext::init(detail::IGraphicsDevice* device)
+void GraphicsContext::init(detail::IGraphicsContext* context)
 {
     Object::init();
 	m_manager = detail::EngineDomain::graphicsManager();
-	m_device = device;
+    m_context = context;
     m_lastCommit.reset();
 	resetState();
 }
 
 void GraphicsContext::onDispose(bool explicitDisposing)
 {
-	if (m_device) {
+	if (m_context) {
         endCommandRecodingIfNeeded();
-		m_device = nullptr;
+        m_context = nullptr;
 	}
     m_lastCommit.reset();
     m_staging.reset();
@@ -154,7 +154,7 @@ void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8
     beginCommandRecodingIfNeeded();
 	commitState();
 	// TODO: threading
-	m_device->clearBuffers(flags, color, z, stencil);
+    m_context->clearBuffers(flags, color, z, stencil);
 }
 
 void GraphicsContext::drawPrimitive(int startVertex, int primitiveCount)
@@ -163,11 +163,11 @@ void GraphicsContext::drawPrimitive(int startVertex, int primitiveCount)
 	commitState();
 	LN_ENQUEUE_RENDER_COMMAND_3(
 		GraphicsContext_setIndexBuffer, m_manager,
-		detail::IGraphicsDevice*, m_device,
+		detail::IGraphicsContext*, m_context,
 		int, startVertex,
 		int, primitiveCount,
 		{
-			m_device->drawPrimitive(startVertex, primitiveCount);
+			m_context->drawPrimitive(startVertex, primitiveCount);
 		});
 }
 
@@ -177,11 +177,11 @@ void GraphicsContext::drawPrimitiveIndexed(int startIndex, int primitiveCount)
 	commitState();
 	LN_ENQUEUE_RENDER_COMMAND_3(
 		GraphicsContext_setIndexBuffer, m_manager,
-		detail::IGraphicsDevice*, m_device,
+		detail::IGraphicsContext*, m_context,
 		int, startIndex,
 		int, primitiveCount,
 		{
-			m_device->drawPrimitiveIndexed(startIndex, primitiveCount);
+			m_context->drawPrimitiveIndexed(startIndex, primitiveCount);
 		});
 }
 
@@ -192,7 +192,7 @@ void GraphicsContext::present(SwapChain* swapChain)
     flushCommandRecoding(swapChain->backbuffer());
 
 	// TODO: threading
-	m_device->present(swapChain->resolveRHIObject());
+	m_context->present(swapChain->resolveRHIObject());
     m_manager->primaryRenderingCommandList()->clear();
     swapChain->onPostPresent();
 }
@@ -207,9 +207,9 @@ void GraphicsContext::beginCommandRecodingIfNeeded()
     if (!m_recordingBegan) {
         LN_ENQUEUE_RENDER_COMMAND_1(
             GraphicsContext_beginCommandRecodingIfNeeded, m_manager,
-            detail::IGraphicsDevice*, m_device,
+            detail::IGraphicsContext*, m_context,
             {
-                m_device->begin();
+                m_context->begin();
             });
 
         m_recordingBegan = true;
@@ -221,9 +221,9 @@ void GraphicsContext::endCommandRecodingIfNeeded()
     if (m_recordingBegan) {
         LN_ENQUEUE_RENDER_COMMAND_1(
             GraphicsContext_beginCommandRecodingIfNeeded, m_manager,
-            detail::IGraphicsDevice*, m_device,
+            detail::IGraphicsContext*, m_context,
             {
-                m_device->end();
+                m_context->end();
             });
         m_recordingBegan = false;
     }
@@ -239,15 +239,15 @@ void GraphicsContext::flushCommandRecoding(RenderTargetTexture* affectRendreTarg
         detail::ITexture* rhiObject = affectRendreTarget->resolveRHIObject();
         LN_ENQUEUE_RENDER_COMMAND_2(
             GraphicsContext_beginCommandRecodingIfNeeded, m_manager,
-            detail::IGraphicsDevice*, m_device,
+            detail::IGraphicsContext*, m_context,
             detail::ITexture*, rhiObject,
             {
-                m_device->flushCommandBuffer(rhiObject);
+                m_context->flushCommandBuffer(rhiObject);
             });
     }
 }
 
-detail::IGraphicsDevice* GraphicsContext::commitState()
+detail::IGraphicsContext* GraphicsContext::commitState()
 {
 	// ポインタとしては変わっていなくても、resolve は毎回呼び出す。
 	// こうしておかないと、
@@ -262,14 +262,14 @@ detail::IGraphicsDevice* GraphicsContext::commitState()
 		auto& depthStencilState = m_staging.depthStencilState;
 		LN_ENQUEUE_RENDER_COMMAND_4(
 			GraphicsContext_setPipelineState, m_manager,
-			detail::IGraphicsDevice*, m_device,
+			detail::IGraphicsContext*, m_context,
 			BlendStateDesc, blendState,
 			RasterizerStateDesc, rasterizerState,
 			DepthStencilStateDesc, depthStencilState,
 			{
-				m_device->setBlendState(blendState);
-				m_device->setRasterizerState(rasterizerState);
-				m_device->setDepthStencilState(depthStencilState);
+				m_context->setBlendState(blendState);
+				m_context->setRasterizerState(rasterizerState);
+				m_context->setDepthStencilState(depthStencilState);
 			});
 	}
 
@@ -283,11 +283,11 @@ detail::IGraphicsDevice* GraphicsContext::commitState()
 			detail::ITexture* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
 			LN_ENQUEUE_RENDER_COMMAND_3(
 				GraphicsContext_setDepthBuffer, m_manager,
-				detail::IGraphicsDevice*, m_device,
+				detail::IGraphicsContext*, m_context,
 				int, i,
 				detail::ITexture*, rhiObject,
 				{
-					m_device->setColorBuffer(i, rhiObject);
+					m_context->setColorBuffer(i, rhiObject);
 				});
 		}
 	}
@@ -297,10 +297,10 @@ detail::IGraphicsDevice* GraphicsContext::commitState()
 		detail::IDepthBuffer* rhiObject = detail::GraphicsResourceHelper::resolveRHIObject<detail::IDepthBuffer>(value);
 		LN_ENQUEUE_RENDER_COMMAND_2(
 			GraphicsContext_setDepthBuffer, m_manager,
-			detail::IGraphicsDevice*, m_device,
+			detail::IGraphicsContext*, m_context,
 			detail::IDepthBuffer*, rhiObject,
 			{
-				m_device->setDepthBuffer(rhiObject);
+				m_context->setDepthBuffer(rhiObject);
 			});
 	}
 
@@ -309,12 +309,12 @@ detail::IGraphicsDevice* GraphicsContext::commitState()
 		RectI scissorRect = RectI::fromFloatRect(m_staging.scissorRect);
 		LN_ENQUEUE_RENDER_COMMAND_3(
 			GraphicsContext_setDepthBuffer, m_manager,
-			detail::IGraphicsDevice*, m_device,
+			detail::IGraphicsContext*, m_context,
 			RectI, viewportRect,
 			RectI, scissorRect,
 			{
-				m_device->setViewportRect(viewportRect);
-				m_device->setScissorRect(scissorRect);
+				m_context->setViewportRect(viewportRect);
+				m_context->setScissorRect(scissorRect);
 			});
 	}
 
@@ -323,10 +323,10 @@ detail::IGraphicsDevice* GraphicsContext::commitState()
 		detail::IVertexDeclaration* rhiObject = detail::GraphicsResourceHelper::resolveRHIObject<detail::IVertexDeclaration>(value);
 		LN_ENQUEUE_RENDER_COMMAND_2(
 			GraphicsContext_setVertexDeclaration, m_manager,
-			detail::IGraphicsDevice*, m_device,
+			detail::IGraphicsContext*, m_context,
 			detail::IVertexDeclaration*, rhiObject,
 			{
-				m_device->setVertexDeclaration(rhiObject);
+				m_context->setVertexDeclaration(rhiObject);
 			});
 	}
 
@@ -338,11 +338,11 @@ detail::IGraphicsDevice* GraphicsContext::commitState()
 			detail::IVertexBuffer* rhiObject = detail::GraphicsResourceHelper::resolveRHIObject<detail::IVertexBuffer>(value);
 			LN_ENQUEUE_RENDER_COMMAND_3(
 				GraphicsContext_setVertexBuffer, m_manager,
-				detail::IGraphicsDevice*, m_device,
+				detail::IGraphicsContext*, m_context,
 				int, i,
 				detail::IVertexBuffer*, rhiObject,
 				{
-					m_device->setVertexBuffer(i, rhiObject);
+					m_context->setVertexBuffer(i, rhiObject);
 				});
 		}
 
@@ -355,10 +355,10 @@ detail::IGraphicsDevice* GraphicsContext::commitState()
 		detail::IIndexBuffer* rhiObject = detail::GraphicsResourceHelper::resolveRHIObject<detail::IIndexBuffer>(value);
 		LN_ENQUEUE_RENDER_COMMAND_2(
 			GraphicsContext_setIndexBuffer, m_manager,
-			detail::IGraphicsDevice*, m_device,
+			detail::IGraphicsContext*, m_context,
 			detail::IIndexBuffer*, rhiObject,
 			{
-				m_device->setIndexBuffer(rhiObject);
+				m_context->setIndexBuffer(rhiObject);
 			});
 
         m_lastCommit.indexBuffer = m_staging.indexBuffer;
@@ -370,10 +370,10 @@ detail::IGraphicsDevice* GraphicsContext::commitState()
 		detail::IShaderPass* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
 		LN_ENQUEUE_RENDER_COMMAND_2(
 			GraphicsContext_setShaderPass, m_manager,
-			detail::IGraphicsDevice*, m_device,
+			detail::IGraphicsContext*, m_context,
 			detail::IShaderPass*, rhiObject,
 			{
-				m_device->setShaderPass(rhiObject);
+				m_context->setShaderPass(rhiObject);
 			});
 
         m_lastCommit.shader = m_staging.shader;
@@ -388,16 +388,16 @@ detail::IGraphicsDevice* GraphicsContext::commitState()
 		auto& topology = m_staging.topology;
 		LN_ENQUEUE_RENDER_COMMAND_2(
 			GraphicsContext_setShaderPass, m_manager,
-			detail::IGraphicsDevice*, m_device,
+			detail::IGraphicsContext*, m_context,
 			PrimitiveTopology, topology,
 			{
-				m_device->setPrimitiveTopology(topology);
+				m_context->setPrimitiveTopology(topology);
 			});
 	}
 
     m_modifiedFlags = ModifiedFlags_None;
 
-	return m_manager->deviceContext();
+	return m_context;
 }
 
 void GraphicsContext::State::reset()
