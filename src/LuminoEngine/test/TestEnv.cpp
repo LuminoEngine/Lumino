@@ -50,7 +50,7 @@ void TestEnv::updateFrame()
 void TestEnv::resetGraphicsContext(GraphicsContext* context)
 {
 	context->setColorBuffer(0, Engine::mainWindow()->swapChain()->colorBuffer());
-	context->setDepthBuffer(Engine::mainWindow()->swapChain()->depthBuffer());
+	context->setDepthBuffer(Engine::mainWindow()->depthBuffer());
 }
 
 Ref<Bitmap2D> TestEnv::capture()

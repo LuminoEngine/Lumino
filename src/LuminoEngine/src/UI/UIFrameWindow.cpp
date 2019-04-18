@@ -250,10 +250,15 @@ void UIFrameWindow::onDispose(bool explicitDisposing)
 
 void UIFrameWindow::renderContents()
 {
+	assert(!m_depthBuffer);
+
 	GraphicsContext* ctx = m_manager->graphicsManager()->graphicsContext();
 
-	ctx->setColorBuffer(0, m_swapChain->colorBuffer());
-	ctx->setDepthBuffer(m_swapChain->depthBuffer());
+	RenderTargetTexture* backbuffer = m_swapChain->colorBuffer();
+	m_depthBuffer = DepthBuffer::getTemporary(backbuffer->width(), backbuffer->height());
+
+	ctx->setColorBuffer(0, backbuffer);
+	ctx->setDepthBuffer(m_depthBuffer);
 	//ctx->clear(ClearFlags::All, Color(0.4, 0.4, 0.4), 1.0f, 0x00);
 }
 
@@ -265,6 +270,11 @@ void UIFrameWindow::present()
 	{
 		m_renderView->setRootElement(this);
 		m_renderView->render(ctx, ctx->colorBuffer(0), ctx->depthBuffer());
+	}
+
+	if (m_depthBuffer) {
+		DepthBuffer::releaseTemporary(m_depthBuffer);
+		m_depthBuffer = nullptr;
 	}
 
 	ctx->present(m_swapChain);

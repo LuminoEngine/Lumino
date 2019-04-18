@@ -58,7 +58,6 @@ public:
 	void renderContents();
 	void present();
 
-	SwapChain* swapChain() const;
 
 
 	// TODO: UI ツリーのシステムをちゃんと作っていないが、ひとまず UIViewport を使った動きを作りたいので一時的に設けてある
@@ -67,6 +66,8 @@ public:
 	//virtual UIElement* getVisualChild(int index) const override;
 
     // TODO: inernal
+	SwapChain* swapChain() const;
+	const Ref<DepthBuffer>& depthBuffer() const { return m_depthBuffer; }
     //void updateLayout();
 	void updateLayoutTree();
 	const Ref<detail::PlatformWindow>& platformWindow() const { return m_platformWindow; }
@@ -87,6 +88,7 @@ private:
 	Ref<detail::PlatformWindow>	m_platformWindow;
     Ref<detail::UIInputInjector> m_inputInjector;
 	Ref<SwapChain>	m_swapChain;
+	Ref<DepthBuffer> m_depthBuffer;
 	Ref<UIRenderView> m_renderView;
 
 	Event<UIEventHandler> m_onClosed;

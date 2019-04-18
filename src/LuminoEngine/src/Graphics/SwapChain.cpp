@@ -36,13 +36,13 @@ void SwapChain::init(detail::PlatformWindow* window, const SizeI& backbufferSize
     m_rhiObject->acquireNextImage(&m_imageIndex);
 	m_colorBuffer = newObject<RenderTargetTexture>(this/*m_rhiObject->getRenderTarget(m_imageIndex)*/);
     m_colorBuffer->resetSwapchainFrameIfNeeded();
-	m_depthBuffer = newObject<DepthBuffer>(backbufferSize.width, backbufferSize.height);
+	//m_depthBuffer = newObject<DepthBuffer>(backbufferSize.width, backbufferSize.height);
 }
 
 void SwapChain::onDispose(bool explicitDisposing)
 {
 	m_rhiObject.reset();
-	m_depthBuffer.reset();
+	//m_depthBuffer.reset();
 	m_colorBuffer.reset();
 	Object::onDispose(explicitDisposing);
 }
@@ -51,11 +51,11 @@ RenderTargetTexture* SwapChain::colorBuffer() const
 {
 	return m_colorBuffer;
 }
-
-DepthBuffer* SwapChain::depthBuffer() const
-{
-	return m_depthBuffer;
-}
+//
+//DepthBuffer* SwapChain::depthBuffer() const
+//{
+//	return m_depthBuffer;
+//}
 
 void SwapChain::wait()
 {

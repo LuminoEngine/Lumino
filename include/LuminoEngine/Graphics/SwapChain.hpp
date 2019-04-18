@@ -24,7 +24,7 @@ class LN_API SwapChain
 public:
 
 	RenderTargetTexture* colorBuffer() const;
-	DepthBuffer* depthBuffer() const;
+	//DepthBuffer* depthBuffer() const;
 
 	virtual void onDispose(bool explicitDisposing) override;
 
@@ -43,7 +43,7 @@ LN_INTERNAL_ACCESS:
 private:
 	Ref<detail::ISwapChain> m_rhiObject;
 	Ref<RenderTargetTexture> m_colorBuffer;
-	Ref<DepthBuffer> m_depthBuffer;
+	//Ref<DepthBuffer> m_depthBuffer;
     int m_imageIndex;
 };
 
