@@ -209,17 +209,17 @@ void GraphicsContext::drawPrimitiveIndexed(int startIndex, int primitiveCount)
 		});
 }
 
-void GraphicsContext::present(SwapChain* swapChain)
-{
-	if (LN_REQUIRE(swapChain)) return;
-
-    flushCommandRecoding(swapChain->backbuffer());
-
-	// TODO: threading
-	m_context->present(swapChain->resolveRHIObject());
-    m_manager->primaryRenderingCommandList()->clear();
-    swapChain->onPostPresent();
-}
+//void GraphicsContext::present(SwapChain* swapChain)
+//{
+//	if (LN_REQUIRE(swapChain)) return;
+//
+//    flushCommandRecoding(swapChain->backbuffer());
+//
+//	// TODO: threading
+//	m_context->present(swapChain->resolveRHIObject());
+//    m_manager->primaryRenderingCommandList()->clear();
+//    swapChain->onPostPresent();
+//}
 
 void GraphicsContext::beginCommandRecodingIfNeeded()
 {

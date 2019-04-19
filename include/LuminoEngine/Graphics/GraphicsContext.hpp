@@ -122,12 +122,6 @@ public:
 	 */
 	void drawPrimitiveIndexed(int startIndex, int primitiveCount);
 
-
-
-
-
-	void present(SwapChain* swapChain);
-
 protected:
 	virtual void onDispose(bool explicitDisposing) override;
 

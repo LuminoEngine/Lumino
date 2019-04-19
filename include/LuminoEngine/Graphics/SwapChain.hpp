@@ -13,6 +13,7 @@ class Shader;
 class ShaderPass;
 
 namespace detail {
+	class GraphicsManager;
 	class PlatformWindow;
 	class ISwapChain;
 }
@@ -31,6 +32,8 @@ public:
 
 	void resizeBackbuffer(int width, int height);
 
+	void present();
+
 LN_CONSTRUCT_ACCESS:
 	SwapChain();
 	virtual ~SwapChain();
@@ -38,10 +41,10 @@ LN_CONSTRUCT_ACCESS:
 
 LN_INTERNAL_ACCESS:
 	detail::ISwapChain* resolveRHIObject() const;
-    void onPostPresent();
     int imageIndex() const { return m_imageIndex; }
 
 private:
+	detail::GraphicsManager* m_manager;
 	Ref<detail::ISwapChain> m_rhiObject;
 	Ref<RenderTargetTexture> m_backbuffer;
 	//Ref<DepthBuffer> m_depthBuffer;

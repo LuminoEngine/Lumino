@@ -277,7 +277,7 @@ void UIFrameWindow::present()
 		m_depthBuffer = nullptr;
 	}
 
-	ctx->present(m_swapChain);
+	m_swapChain->present();
 }
 
 SwapChain* UIFrameWindow::swapChain() const
