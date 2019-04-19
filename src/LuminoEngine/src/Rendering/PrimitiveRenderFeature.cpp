@@ -186,7 +186,7 @@ void PrimitiveRenderFeature::init(RenderingManager* manager)
 void PrimitiveRenderFeature::flush(GraphicsContext* context)
 {
     GraphicsManager* manager = m_manager->graphicsManager();
-    IGraphicsContext* c = context->commitState();
+    IGraphicsContext* c = GraphicsContextInternal::commitState(context);
     LN_ENQUEUE_RENDER_COMMAND_2(
         PrimitiveRenderFeature_flush, manager,
         InternalPrimitiveRenderer*, m_internal,

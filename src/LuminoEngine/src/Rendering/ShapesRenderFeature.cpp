@@ -1180,7 +1180,7 @@ void ShapesRenderFeature::renderCommandList(GraphicsContext* context, const Shap
     // commandList が持っているポインタは RenderingCommandList の LinearAllocator で確保したものなのでそのまま RenderCommand に乗せてOK
 
     GraphicsManager* manager = m_internal->manager()->graphicsManager();
-    IGraphicsContext* c = context->commitState();
+    IGraphicsContext* c = GraphicsContextInternal::commitState(context);
     LN_ENQUEUE_RENDER_COMMAND_3(
         ShapesRenderFeature_renderCommandList, manager,
         InternalShapesRenderer*, m_internal,

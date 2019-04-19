@@ -62,7 +62,7 @@ void MeshRenderFeature::drawMesh(GraphicsContext* context, MeshResource* mesh, i
 
 	if (LN_REQUIRE(data.vertexBuffers[0])) return;
 
-	IGraphicsContext* c = context->commitState();
+	IGraphicsContext* c = GraphicsContextInternal::commitState(context);
 	LN_ENQUEUE_RENDER_COMMAND_3(
 		MeshRenderFeature_drawMesh, m_manager->graphicsManager(),
 		MeshRenderFeature*, _this,

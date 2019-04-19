@@ -127,15 +127,6 @@ public:
 
 
 	void present(SwapChain* swapChain);
-    //void flush();
-
-	// TODO: internal
-    void beginCommandRecodingIfNeeded();
-    void endCommandRecodingIfNeeded();
-    void flushCommandRecoding(RenderTargetTexture* affectRendreTarget);
-	// IGraphicsDevice の clear, draw 系の機能を呼び出したい場合はこの戻り値を使うこと。
-	// GraphicsContext は変更中のステートをキャッシュするが、それを確実に IGraphicsDevice へ送信した状態にする。
-	detail::IGraphicsContext* commitState();
 
 LN_CONSTRUCT_ACCESS:
 	GraphicsContext();
@@ -146,6 +137,11 @@ LN_INTERNAL_ACCESS:
 	virtual void onDispose(bool explicitDisposing) override;
 
 private:
+	void beginCommandRecodingIfNeeded();
+	void endCommandRecodingIfNeeded();
+    void flushCommandRecoding(RenderTargetTexture* affectRendreTarget);
+	detail::IGraphicsContext* commitState();
+
 
 	detail::GraphicsManager* m_manager;
 	detail::IGraphicsContext* m_context;
@@ -183,6 +179,16 @@ private:
 	State m_lastCommit;
     uint32_t m_modifiedFlags;
     bool m_recordingBegan;
+
+	friend class detail::GraphicsContextInternal;
 };
 
+namespace detail {
+class GraphicsContextInternal
+{
+public:
+	static void flushCommandRecoding(GraphicsContext* self, RenderTargetTexture* affectRendreTarget) { self->flushCommandRecoding(affectRendreTarget); }
+	static IGraphicsContext* commitState(GraphicsContext* self) { return self->commitState(); }
+};
+}
 } // namespace ln

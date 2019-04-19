@@ -457,7 +457,7 @@ void SpriteRenderFeature::onActiveRenderFeatureChanged(const detail::CameraInfo&
 void SpriteRenderFeature::flush(GraphicsContext* context)
 {
 	GraphicsManager* manager = m_manager->graphicsManager();
-    IGraphicsContext* c = context->commitState();
+    IGraphicsContext* c = GraphicsContextInternal::commitState(context);
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		SpriteRenderFeature_flush, manager,
         IGraphicsContext*, c,

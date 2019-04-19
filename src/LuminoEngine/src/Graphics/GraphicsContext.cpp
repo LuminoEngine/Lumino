@@ -218,11 +218,6 @@ void GraphicsContext::present(SwapChain* swapChain)
     swapChain->onPostPresent();
 }
 
-//void GraphicsContext::flush()
-//{
-//    endCommandRecodingIfNeeded();
-//}
-//
 void GraphicsContext::beginCommandRecodingIfNeeded()
 {
     if (!m_recordingBegan) {
@@ -268,6 +263,8 @@ void GraphicsContext::flushCommandRecoding(RenderTargetTexture* affectRendreTarg
     }
 }
 
+// IGraphicsDevice の clear, draw 系の機能を呼び出したい場合はこの戻り値を使うこと。
+// GraphicsContext は変更中のステートをキャッシュするが、それを確実に IGraphicsDevice へ送信した状態にする。
 detail::IGraphicsContext* GraphicsContext::commitState()
 {
 	// ポインタとしては変わっていなくても、resolve は毎回呼び出す。

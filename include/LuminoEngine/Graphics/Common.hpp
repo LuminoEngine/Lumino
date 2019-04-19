@@ -294,6 +294,7 @@ struct SamplerStateData
 
 namespace detail {
 class GraphicsManager;
+class GraphicsContextInternal;
 class IGraphicsDevice;
 class IGraphicsContext;
 

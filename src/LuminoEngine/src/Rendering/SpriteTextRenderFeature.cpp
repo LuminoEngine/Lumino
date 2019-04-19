@@ -241,7 +241,7 @@ void SpriteTextRenderFeature::flushInternal(GraphicsContext* context, FontGlyphT
 	//brushData.color = Color::Blue;
 
 	GraphicsManager* manager = m_internal->manager()->graphicsManager();
-    IGraphicsContext* c = context->commitState();
+    IGraphicsContext* c = GraphicsContextInternal::commitState(context);
 	LN_ENQUEUE_RENDER_COMMAND_6(
 		SpriteTextRenderFeature_flushInternal, manager,
 		InternalSpriteTextRender*, m_internal,
