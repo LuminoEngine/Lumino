@@ -128,23 +128,19 @@ public:
 
 	void present(SwapChain* swapChain);
 
+protected:
+	virtual void onDispose(bool explicitDisposing) override;
+
 LN_CONSTRUCT_ACCESS:
 	GraphicsContext();
 	virtual ~GraphicsContext();
 	void init(detail::IGraphicsContext* context);
-
-LN_INTERNAL_ACCESS:
-	virtual void onDispose(bool explicitDisposing) override;
 
 private:
 	void beginCommandRecodingIfNeeded();
 	void endCommandRecodingIfNeeded();
     void flushCommandRecoding(RenderTargetTexture* affectRendreTarget);
 	detail::IGraphicsContext* commitState();
-
-
-	detail::GraphicsManager* m_manager;
-	detail::IGraphicsContext* m_context;
 
     // TODO: 途中
     enum ModifiedFlags
@@ -175,6 +171,8 @@ private:
 		void reset();
 	};
 
+	detail::GraphicsManager* m_manager;
+	detail::IGraphicsContext* m_context;
 	State m_staging;
 	State m_lastCommit;
     uint32_t m_modifiedFlags;

@@ -18,9 +18,12 @@ namespace ln {
 // GraphicsContext
 
 GraphicsContext::GraphicsContext()
-	: m_context(nullptr)
-    , m_modifiedFlags(ModifiedFlags_All)
-    , m_recordingBegan(false)
+	: m_manager(nullptr)
+	, m_context(nullptr)
+	, m_staging()
+	, m_lastCommit()
+	, m_modifiedFlags(ModifiedFlags_All)
+	, m_recordingBegan(false)
 {
 }
 
