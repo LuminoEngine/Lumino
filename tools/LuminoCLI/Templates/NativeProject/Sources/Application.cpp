@@ -3,15 +3,15 @@
 
 HelloApp::HelloApp()
 {
-	ln::GlobalLogger::setLevel(ln::LogLevel::Debug);
+	GlobalLogger::setLevel(LogLevel::Debug);
 }
 
 void HelloApp::onStart()
 {
 	struct PosColor
 	{
-		ln::Vector4 pos;
-		ln::Vector2 uv;
+		Vector4 pos;
+		Vector2 uv;
 	};
 	PosColor v1[] = {
 		{ { -1, 1, 0, 1 }, { 0, 0 } },
@@ -21,18 +21,18 @@ void HelloApp::onStart()
 	};
 
 
-	m_vertexBuffer = ln::newObject<ln::VertexBuffer>(sizeof(v1), v1, ln::GraphicsResourceUsage::Static);
-	m_vertexDeclaration = ln::newObject<ln::VertexDeclaration>();
-	m_vertexDeclaration->addVertexElement(0, ln::VertexElementType::Float4, ln::VertexElementUsage::Position, 0);
-	m_vertexDeclaration->addVertexElement(0, ln::VertexElementType::Float2, ln::VertexElementUsage::TexCoord, 0);
-    m_shader = ln::Assets::loadShader(u"LineWave");
+	m_vertexBuffer = newObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
+	m_vertexDeclaration = newObject<VertexLayout>();
+	m_vertexDeclaration->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
+	m_vertexDeclaration->addElement(0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
+    m_shader = Assets::loadShader(u"LineWave");
     
     m_time = 0;
 }
 
 void HelloApp::onUpdate()
 {
-	auto ctx = ln::Engine::graphicsContext();
+	auto ctx = Engine::graphicsContext();
 
     m_time += 0.0005;
 
@@ -41,8 +41,8 @@ void HelloApp::onUpdate()
     ctx->setVertexDeclaration(m_vertexDeclaration);
     ctx->setVertexBuffer(0, m_vertexBuffer);
     ctx->setShaderPass(m_shader->techniques()[0]->passes()[0]);
-    ctx->clear(ln::ClearFlags::All, ln::Color::White, 1.0f, 0);
-    ctx->setPrimitiveTopology(ln::PrimitiveTopology::TriangleStrip);
+    ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
+    ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
     ctx->drawPrimitive(0, 2);
 }
 

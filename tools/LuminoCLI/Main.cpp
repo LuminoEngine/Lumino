@@ -13,18 +13,16 @@ int main(int argc, char** argv)
 #if defined(LN_DEBUG) && defined(_WIN32)
 	if (argc == 1)
 	{
-		//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects");
-		//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\HelloLumino");
-		//::SetCurrentDirectoryW(L"D:/Documents/LuminoProjects");
-        ::SetCurrentDirectoryW(L"D:/Documents/LuminoProjects");
-        //::SetCurrentDirectoryW(L"D:/Proj");
-		//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\Test3");
+        //::SetCurrentDirectoryW(L"D:/LocalProj/LN");
+		::SetCurrentDirectoryW(L"D:/LocalProj/LN/Test");
         ln::GlobalLogger::setLevel(ln::LogLevel::Verbose);
     
 		const char* debugArgv[] = {
 			"<program>",
+			//"init", "Test",
 			//"init", "TH-10", "--engine=repo:0.10.0"
             //"init", "RinoTutorial", "-t", "SimpleDesktop",
+			"build", "-p", "Windows"
 
 			//"<program>", "dev-install-tools",
 
@@ -45,7 +43,7 @@ int main(int argc, char** argv)
             //"build", "assets",
 			//"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Graphics/SimplePosColor.fx"
             //"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Graphics/SimpleConstantBuffer.fx"
-			"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Graphics/Resource/VulkanSampleDeviceContext_26_shader_depth.fx",
+			//"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Graphics/Resource/VulkanSampleDeviceContext_26_shader_depth.fx",
 			//"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Graphics/Resource/VulkanSampleDeviceContext_26_shader_depth.fx",
 		};
 		argc = sizeof(debugArgv) / sizeof(char*);
@@ -77,6 +75,7 @@ int main(int argc, char** argv)
 		//--------------------------------------------------------------------------------
 		// build command
 		auto buildCommand = parser.addCommand(u"build", u"Build the project.");
+		auto buildCommand_packageOption = buildCommand->addFlagOption(u"p", u"package", u"Build release package.");
 		auto burildTargetArg = buildCommand->addPositionalArgument(u"target", u"Specify the target to build.", ln::CommandLinePositionalArgumentFlags::Optional);
 
 		//--------------------------------------------------------------------------------
@@ -138,6 +137,7 @@ int main(int argc, char** argv)
 				}
 
 				BuildCommand cmd;
+				cmd.package = buildCommand_packageOption->isSet();
 				cmd.target = target;
 				return cmd.execute(workspace, workspace->project());
 			}

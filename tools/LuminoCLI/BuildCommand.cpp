@@ -15,8 +15,18 @@ int BuildCommand::execute(Workspace* workspace, Project* project)
 		if (!buildAssets()) {
 			return 1;
 		}
-		if (!buildWindowsTarget(workspace)) {
-			return 1;
+		if (!package) {
+			if (!buildWindowsTarget(workspace, true)) {
+				return 1;
+			}
+		}
+		else {
+			if (!buildWindowsTarget(workspace, false)) {
+				return 1;
+			}
+			if (!buildWindowsPackage(project)) {
+				return 1;
+			}
 		}
 	}
 	else if (ln::String::compare(target, u"Web", ln::CaseSensitivity::CaseInsensitive) == 0) {
@@ -40,7 +50,7 @@ int BuildCommand::execute(Workspace* workspace, Project* project)
     return 0;
 }
 
-Result BuildCommand::buildWindowsTarget(Workspace* workspace)
+Result BuildCommand::buildWindowsTarget(Workspace* workspace, bool debug)
 {
 	auto file = ln::FileSystem::getFile(m_project->rootDirPath(), u"*.sln");
 	if (file.isEmpty()) {
@@ -48,10 +58,34 @@ Result BuildCommand::buildWindowsTarget(Workspace* workspace)
 		return Result::Fail;
 	}
 
-	if (ln::Process::execute(workspace->buildEnvironment()->msbuild(), { file.str(), u"/t:build", u"/p:Configuration=Debug;Platform=\"x86\"" }) != 0) {
-		CLI::error("Failed MSBuild.");
-		return Result::Fail;
+	if (debug) {
+		if (ln::Process::execute(workspace->buildEnvironment()->msbuild(), { file.str(), u"/t:build", u"/p:Configuration=Debug;Platform=\"x86\"" }) != 0) {
+			CLI::error("Failed MSBuild.");
+			return Result::Fail;
+		}
 	}
+	else {
+		if (ln::Process::execute(workspace->buildEnvironment()->msbuild(), { file.str(), u"/t:build", u"/p:Configuration=Release;Platform=\"x86\"" }) != 0) {
+			CLI::error("Failed MSBuild.");
+			return Result::Fail;
+		}
+	}
+
+	return Result::Success;
+}
+
+Result BuildCommand::buildWindowsPackage(Project* project)
+{
+	auto dstDir = ln::Path::combine(project->releaseDir(), u"Windows");
+	ln::FileSystem::createDirectory(dstDir);
+
+	ln::FileSystem::copyFile(
+		ln::Path::combine(project->windowsProjectDir(), u"bin", u"Release", u"LuminoApp.exe"),
+		ln::Path::combine(dstDir, u"LuminoApp.exe"));
+
+	ln::FileSystem::copyFile(
+		ln::Path::combine(project->windowsProjectDir(), u"Assets.lca"),
+		ln::Path::combine(dstDir, u"Assets.lca"));
 
 	return Result::Success;
 }

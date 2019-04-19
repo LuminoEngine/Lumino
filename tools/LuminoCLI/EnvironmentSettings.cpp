@@ -81,6 +81,19 @@ void BuildEnvironment::setupPathes()
         CLI::info(u"projectTemplatesDirPath: " + m_projectTemplatesDirPath);
     }
 
+	// LUMINO_PATH
+	{
+		auto v = ln::Environment::getEnvironmentVariable(u"LUMINO_PATH");
+		if (v.hasValue()) {
+			CLI::info(ln::String::format(u"LUMINO_PATH: {0}", v.value()));
+		}
+		else {
+			CLI::warning(ln::String::format(u"LUMINO_PATH is unset. Use local package instead."));
+			ln::Environment::setEnvironmentVariable(u"LUMINO_PATH", m_luminoPackageRootDir);
+			CLI::info(ln::String::format(u"LUMINO_PATH: {0}", m_luminoPackageRootDir));
+		}
+	}
+
     // Emscripten
     {
         m_appDataDirPath = ln::Path::combine(ln::Environment::specialFolderPath(ln::SpecialFolder::ApplicationData), u"Lumino");
