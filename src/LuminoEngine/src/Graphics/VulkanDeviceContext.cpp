@@ -983,7 +983,8 @@ void VulkanGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color,
 		{
 			float frgba[4] = { color.r, color.g, color.b, color.a, };
 
-			for (uint32_t ii = 0; ii < state.framebufferState.renderTargets.size(); ++ii)
+			//for (uint32_t ii = 0; ii < state.framebufferState.renderTargets.size(); ++ii)
+            for (uint32_t ii = 0; ii < 1; ++ii)
 			{
 				if (state.framebufferState.renderTargets[ii])
 				{
