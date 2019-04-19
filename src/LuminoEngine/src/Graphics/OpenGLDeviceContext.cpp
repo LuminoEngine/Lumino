@@ -781,7 +781,7 @@ void GLGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color, flo
 	if (testFlag(flags, ClearFlags::Depth))
 	{
 		GL_CHECK(glDepthMask(GL_TRUE));
-		GL_CHECK(glClearDepth(z););
+		GL_CHECK(glClearDepth(z));
 		glflags |= GL_DEPTH_BUFFER_BIT;
 	}
 
