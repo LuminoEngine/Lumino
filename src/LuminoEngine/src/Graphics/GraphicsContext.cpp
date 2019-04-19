@@ -428,6 +428,8 @@ void GraphicsContext::State::reset()
 	depthStencilState = DepthStencilStateDesc();
 	renderTargets = {};
 	depthBuffer = nullptr;
+	viewportRect = Rect();
+	scissorRect = Rect();
 	VertexLayout = nullptr;
 	vertexBuffers = {};
 	indexBuffer = nullptr;

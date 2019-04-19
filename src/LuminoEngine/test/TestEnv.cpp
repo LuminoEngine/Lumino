@@ -54,6 +54,7 @@ void TestEnv::updateFrame()
 
 void TestEnv::resetGraphicsContext(GraphicsContext* context)
 {
+	context->resetState();
 	context->setRenderTarget(0, Engine::mainWindow()->swapChain()->backbuffer());
 	context->setDepthBuffer(depthBuffer);
 }
