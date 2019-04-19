@@ -229,9 +229,6 @@ struct OpenGLTypeConvertionItem
 {
 	GLenum glType;
 	ShaderUniformType lnType;
-	//uint32_t vectorElements;
-	//uint32_t matrixRows;
-	//uint32_t matrixColumns;
 };
 static const OpenGLTypeConvertionItem s_openGLTypeConvertionTable[] =
 {
@@ -417,7 +414,6 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
         }
     }
 
-
     ShaderStageFlags stageFlags = ShaderStageFlags_None;
     switch (stage)
     {
@@ -433,7 +429,6 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
     }
 
     m_program->buildReflection();
-    m_program->dumpReflection();
 
 	// get input attributes
 	{
@@ -618,6 +613,12 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
 
 bool ShaderCodeTranspiler::mapIOAndGenerateSpirv(const DescriptorLayout& mergedDescriptorLayout)
 {
+	// Vulkan で必要となる uniform の set, binding は、HLSL で register を使って指定しないと常に 0 となる。
+	// そのまま使うことはできないので、自前で調整を行う。
+	//
+	// Symbol をすべて traverse して、
+	// - set 値を割り振る。
+	// - mergedDescriptorLayout に含まれる binding 値をセットする。
 
     class IntermTraverser : public glslang::TIntermTraverser
     {
@@ -626,45 +627,18 @@ bool ShaderCodeTranspiler::mapIOAndGenerateSpirv(const DescriptorLayout& mergedD
 
         virtual void visitSymbol(glslang::TIntermSymbol* symbol)
         {
-            std::cout << "[TIntermSymbol " << symbol << "]" << std::endl;
-            std::cout << symbol->getName() << std::endl;
-            std::cout << symbol->getBasicType() << std::endl;
-            //std::cout << symbol->getType().getTypeName() << std::endl;
-            //printf("");
-
-
             if (symbol->getBasicType() == glslang::EbtBlock) {
                 auto& name = symbol->getType().getTypeName();
-                //auto* tt = &symbol->getType();
-                //if (symbol->getName().empty()) {
-                //    printf("");
 
-                //}
-
-                auto itr = std::find_if(mergedDescriptorLayout->uniformBufferRegister.begin(), mergedDescriptorLayout->uniformBufferRegister.end(),
+                auto itr = std::find_if(
+					mergedDescriptorLayout->uniformBufferRegister.begin(), mergedDescriptorLayout->uniformBufferRegister.end(),
                     [&](const DescriptorLayoutItem& x) { return strcmp(x.name.c_str(), name.c_str()) == 0; });
                 if (itr != mergedDescriptorLayout->uniformBufferRegister.end()) {
-                    symbol->getWritableType().getQualifier().layoutSet = DescriptorType_UniformBuffer;//itr->binding;
+                    symbol->getWritableType().getQualifier().layoutSet = DescriptorType_UniformBuffer;
                     symbol->getWritableType().getQualifier().layoutBinding = itr->binding;
                 }
-
-				// glslang::EShSourceHlsl で program を作ると、デフォルトの MatrixLayout が row_major となる。(ElmNone を指定しても layout(row_major) が付く)
-				// ひとまずここで、GLSL デフォルトの column_major に変えておく。https://www.khronos.org/opengl/wiki/Interface_Block_(GLSL)
-				//const glslang::TTypeList* glslangMembers = symbol->getType().getStruct();
-				//for (int i = 0; i < (int)glslangMembers->size(); i++) {
-				//	glslang::TType& glslangMember = *(*glslangMembers)[i].type;
-				//	glslang::TQualifier& memberQualifier = glslangMember.getQualifier();
-				//	if (glslangMember.isMatrix()) {
-				//		glslangMember.getQualifier().layoutMatrix = glslang::ElmColumnMajor;
-				//	}
-				//}
-				// mat3x4 : 縦3, 横4
-				// https://www.khronos.org/opengl/wiki/Data_Type_(GLSL)#Matrices
-				// https://seesaawiki.jp/w/mikk_ni3_92/d/GLM%CA%D401
-
             }
             else if (symbol->getBasicType() == glslang::EbtSampler) {
-                // texture と SamplerState　EbtSampler
                 auto& name = symbol->getName();
                 auto& sampler = symbol->getType().getSampler();
                 if (sampler.type == glslang::EbtVoid && sampler.dim == glslang::EsdNone) {
@@ -672,7 +646,7 @@ bool ShaderCodeTranspiler::mapIOAndGenerateSpirv(const DescriptorLayout& mergedD
                     auto itr = std::find_if(mergedDescriptorLayout->samplerRegister.begin(), mergedDescriptorLayout->samplerRegister.end(),
                         [&](const DescriptorLayoutItem& x) { return strcmp(x.name.c_str(), name.c_str()) == 0; });
                     if (itr != mergedDescriptorLayout->samplerRegister.end()) {
-                        symbol->getWritableType().getQualifier().layoutSet = DescriptorType_SamplerState;//itr->binding;
+                        symbol->getWritableType().getQualifier().layoutSet = DescriptorType_SamplerState;
                         symbol->getWritableType().getQualifier().layoutBinding = itr->binding;
                     }
                 }
@@ -681,38 +655,14 @@ bool ShaderCodeTranspiler::mapIOAndGenerateSpirv(const DescriptorLayout& mergedD
                     auto itr = std::find_if(mergedDescriptorLayout->textureRegister.begin(), mergedDescriptorLayout->textureRegister.end(),
                         [&](const DescriptorLayoutItem& x) { return strcmp(x.name.c_str(), name.c_str()) == 0; });
                     if (itr != mergedDescriptorLayout->textureRegister.end()) {
-                        symbol->getWritableType().getQualifier().layoutSet = DescriptorType_Texture;// itr->binding;
+                        symbol->getWritableType().getQualifier().layoutSet = DescriptorType_Texture;
                         symbol->getWritableType().getQualifier().layoutBinding = itr->binding;
                     }
                 }
-                //EsdNone
             }
-
-			//{
-
-			//	auto& type = symbol->getWritableType();
-			//	if (type.isMatrix()) {
-			//		type.getQualifier().layoutMatrix = glslang::ElmColumnMajor;
-			//	}
-			//}
-			//else if (symbol->getBasicType() == glslang::EbtFloat) {
-			//	t.isMatrix
-			//	if (t.getMatrixRows() >= 1 && t.getMatrixCols() >= 1) {
-			//		t.getQualifier().layoutMatrix = glslang::ElmColumnMajor;
-			//		//printf("");
-			//	}
-			//}
-
-            //if (symbol->getName() == "g_texture1")
-            //{
-            //    symbol->getWritableType().getQualifier().layoutSet = 1;
-            //}
-            //if (symbol->getName() == "g_samplerState1")
-            //{
-            //    symbol->getWritableType().getQualifier().layoutSet = 2;
-            //}
         }
     };
+
     IntermTraverser localIntermTraverser;
     localIntermTraverser.mergedDescriptorLayout = &mergedDescriptorLayout;
 
@@ -720,9 +670,8 @@ bool ShaderCodeTranspiler::mapIOAndGenerateSpirv(const DescriptorLayout& mergedD
     TIntermNode* root = intermediate->getTreeRoot();
     root->traverse(&localIntermTraverser);
 
-
     if (!m_program->mapIO()) {
-        LN_NOTIMPLEMENTED();
+        LN_ERROR();
         return false;
     }
 
@@ -732,72 +681,63 @@ bool ShaderCodeTranspiler::mapIOAndGenerateSpirv(const DescriptorLayout& mergedD
     glslang::GlslangToSpv(*m_program->getIntermediate(LNStageToEShLanguage(m_stage)), m_spirvCode);
 
 
-    spirv_cross::CompilerGLSL glsl(m_spirvCode);
-    spirv_cross::ShaderResources resources = glsl.get_shader_resources();
+	//m_program->dumpReflection();
+    //spirv_cross::CompilerGLSL glsl(m_spirvCode);
+    //spirv_cross::ShaderResources resources = glsl.get_shader_resources();
 
-#if 0   // binding のデフォルト値調査。・・・といっても、全部 0 だった。
-    for (size_t i = 0; i < resources.uniform_buffers.size(); i++) {
-        std::cout << "  name : " << resources.uniform_buffers[i].name << std::endl;
-        std::cout << "  DecorationBinding : " << glsl.get_decoration(resources.uniform_buffers[i].id, spv::DecorationBinding) << std::endl;
-        ;
+    //{
+    //    // UniformBuffers
+    //    for (int i = 0; i < m_program->getNumLiveUniformBlocks(); i++)
+    //    {
+    //        LN_LOG_VERBOSE << "UniformBuffer[" << i << "] : ";
+    //        LN_LOG_VERBOSE << "  name : " << m_program->getUniformBlockName(i);
+    //        LN_LOG_VERBOSE << "  size : " << m_program->getUniformBlockSize(i);
+    //        LN_LOG_VERBOSE << "  bindingIndex : " << m_program->getUniformBlockBinding(i);
+    //    }
 
-        //glsl.unset_decoration(resources.uniform_buffers[i].id, spv::DecorationBinding);
-    }
-#endif
+    //    for (int i = 0; i < m_program->getNumLiveUniformVariables(); i++)
+    //    {
+    //        const glslang::TType* type = m_program->getUniformTType(i);
+    //        GLenum gltype = m_program->getUniformType(i);
+    //        uint16_t lnType;
+    //        if (!GLTypeToLNUniformType(gltype, type, &lnType)) {
+    //            return false;
+    //        }
 
-    {
-        // UniformBuffers
-        for (int i = 0; i < m_program->getNumLiveUniformBlocks(); i++)
-        {
-            LN_LOG_VERBOSE << "UniformBuffer[" << i << "] : ";
-            LN_LOG_VERBOSE << "  name : " << m_program->getUniformBlockName(i);
-            LN_LOG_VERBOSE << "  size : " << m_program->getUniformBlockSize(i);
-            LN_LOG_VERBOSE << "  bindingIndex : " << m_program->getUniformBlockBinding(i);
-        }
+    //        LN_LOG_VERBOSE << "Uniform[" << i << "] : ";
+    //        LN_LOG_VERBOSE << "  name : " << m_program->getUniformName(i);
+    //        LN_LOG_VERBOSE << "  type : " << lnType;
+    //        LN_LOG_VERBOSE << "  basicType : " << type->getBasicTypeString();
+    //        LN_LOG_VERBOSE << "  basicString : " << type->getBasicString();
+    //        LN_LOG_VERBOSE << "  offset : " << m_program->getUniformBufferOffset(i);
+    //        LN_LOG_VERBOSE << "  bindingIndex : " << m_program->getUniformBinding(i);
+    //        LN_LOG_VERBOSE << "  vectorElements : " << type->getVectorSize();
+    //        LN_LOG_VERBOSE << "  arrayElements : " << m_program->getUniformArraySize(i);
+    //        LN_LOG_VERBOSE << "  matrixRows : " << type->getMatrixRows();
+    //        LN_LOG_VERBOSE << "  matrixColumns : " << type->getMatrixCols();
 
-        for (int i = 0; i < m_program->getNumLiveUniformVariables(); i++)
-        {
-            const glslang::TType* type = m_program->getUniformTType(i);
-            GLenum gltype = m_program->getUniformType(i);
-            uint16_t lnType;
-            if (!GLTypeToLNUniformType(gltype, type, &lnType)) {
-                return false;
-            }
+    //        int ownerUiformBufferIndex = m_program->getUniformBlockIndex(i);
+    //        if (ownerUiformBufferIndex >= 0)
+    //        {
+    //            LN_LOG_VERBOSE << "  ownerUiformBufferIndex : " << ownerUiformBufferIndex << "(" << m_program->getUniformBlockName(ownerUiformBufferIndex) << ")";
+    //        }
+    //        else {
+    //            // TODO: texture など
+    //        }
+    //    }
 
-            LN_LOG_VERBOSE << "Uniform[" << i << "] : ";
-            LN_LOG_VERBOSE << "  name : " << m_program->getUniformName(i);
-            LN_LOG_VERBOSE << "  type : " << lnType;
-            LN_LOG_VERBOSE << "  basicType : " << type->getBasicTypeString();
-            LN_LOG_VERBOSE << "  basicString : " << type->getBasicString();
-            LN_LOG_VERBOSE << "  offset : " << m_program->getUniformBufferOffset(i);
-            LN_LOG_VERBOSE << "  bindingIndex : " << m_program->getUniformBinding(i);
-            LN_LOG_VERBOSE << "  vectorElements : " << type->getVectorSize();
-            LN_LOG_VERBOSE << "  arrayElements : " << m_program->getUniformArraySize(i);
-            LN_LOG_VERBOSE << "  matrixRows : " << type->getMatrixRows();
-            LN_LOG_VERBOSE << "  matrixColumns : " << type->getMatrixCols();
-
-            int ownerUiformBufferIndex = m_program->getUniformBlockIndex(i);
-            if (ownerUiformBufferIndex >= 0)
-            {
-                LN_LOG_VERBOSE << "  ownerUiformBufferIndex : " << ownerUiformBufferIndex << "(" << m_program->getUniformBlockName(ownerUiformBufferIndex) << ")";
-            }
-            else {
-                // TODO: texture など
-            }
-        }
-
-    }
+    //}
 
 
-    glsl.build_combined_image_samplers();
-    for (auto& remap : glsl.get_combined_image_samplers()) {
-        // ここで結合するキーワードにに _ を含めないこと。
-        // 識別子内に連続する _ があると、SPIRV-Cross が内部でひとつの _ に変換するため、不整合が起こることがある。
-        std::string name = (LN_CIS_PREFIX LN_TO_PREFIX) + glsl.get_name(remap.image_id) + LN_SO_PREFIX + glsl.get_name(remap.sampler_id);
-        //glsl.set_name(remap.combined_id, name);
-        //combinedImageSamplerNames.push_back(std::move(name));
-        printf("");
-    }
+    //glsl.build_combined_image_samplers();
+    //for (auto& remap : glsl.get_combined_image_samplers()) {
+    //    // ここで結合するキーワードにに _ を含めないこと。
+    //    // 識別子内に連続する _ があると、SPIRV-Cross が内部でひとつの _ に変換するため、不整合が起こることがある。
+    //    std::string name = (LN_CIS_PREFIX LN_TO_PREFIX) + glsl.get_name(remap.image_id) + LN_SO_PREFIX + glsl.get_name(remap.sampler_id);
+    //    //glsl.set_name(remap.combined_id, name);
+    //    //combinedImageSamplerNames.push_back(std::move(name));
+    //    printf("");
+    //}
 
     return true;
 }
@@ -827,7 +767,6 @@ std::vector<byte_t> ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es
     for (auto& resource : resources.sampled_images) {
         unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
         unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
-        LN_LOG_VERBOSE << "Image " << resource.name.c_str() << " as set = " << set << ", binding = " << binding;
 
         glsl.unset_decoration(resource.id, spv::DecorationDescriptorSet);
         glsl.set_decoration(resource.id, spv::DecorationBinding, set * 16 + binding);

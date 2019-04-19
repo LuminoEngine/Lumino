@@ -83,12 +83,13 @@ public:
     /** この Shader に含まれる ShaderTechnique を取得します。 */
     Ref<ReadOnlyList<Ref<ShaderTechnique>>> techniques() const;
 
-    virtual void onDispose(bool explicitDisposing) override;
 
 protected:
+    virtual void onDispose(bool explicitDisposing) override;
     virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
 
-    LN_CONSTRUCT_ACCESS : Shader();
+LN_CONSTRUCT_ACCESS:
+	Shader();
     virtual ~Shader();
     void init();
     void init(const StringRef& filePath, ShaderCompilationProperties* properties = nullptr);
@@ -100,25 +101,6 @@ private:
     ShaderTechnique* findTechniqueByClass(const detail::ShaderTechniqueClass& techniqueClass) const;
     void createFromStream(Stream* stream, DiagnosticsManager* diag);
 	void createFromUnifiedShader(detail::UnifiedShader* unifiedShader, DiagnosticsManager* diag);
-    //Ref<detail::IShaderPass> createShaderPass(
-    //    const char* vsData,
-    //    size_t vsLen,
-    //    const char* vsEntryPoint,
-    //    const char* psData,
-    //    size_t psLen,
-    //    const char* psEntryPoint,
-    //    DiagnosticsManager* diag,
-    //    ShaderCompilationProperties* properties);
-	//Ref<detail::IShaderPass> createRHIShaderPass(
-	//	const byte_t* vsData,
-	//	size_t vsLen,
-	//	const byte_t* psData,
-	//	size_t psLen,
-	//	const detail::VertexInputAttributeTable* vertexInputAttributeTable,
- //       detail::UnifiedShaderRefrectionInfo* vertexShaderRefrection,
- //       detail::UnifiedShaderRefrectionInfo* pixelShaderRefrection,
- //       DiagnosticsManager* diag);
-    //void createSinglePassShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen, DiagnosticsManager* diag, ShaderCompilationProperties* properties);
     void postInitialize();
     ShaderConstantBuffer* getOrCreateConstantBuffer(detail::IShaderUniformBuffer* buffer);
     ShaderParameter* getOrCreateTextureParameter(const String& name);
@@ -175,6 +157,7 @@ public:
     /** テクスチャを設定します。 */
     void setTexture(Texture* value);
 
+protected:
     virtual void onDispose(bool explicitDisposing) override;
 
 private:
@@ -292,6 +275,7 @@ public:
     /** パスの名前を取得します。 */
     const String& name() const { return m_name; }
 
+protected:
     virtual void onDispose(bool explicitDisposing) override;
 
 private:

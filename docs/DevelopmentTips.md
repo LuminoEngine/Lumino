@@ -45,9 +45,11 @@ npm i -g textlint textlint-rule-preset-ja-technical-writing textlint-rule-max-te
 ----------
 
 ### Windows
+
+
 ```
 set LUMINO_PATH=<path to LocalPackage>
 set PATH=%LUMINO_PATH%\Tools;%PATH%
 ```
-
+LUMINO_PATH
 
