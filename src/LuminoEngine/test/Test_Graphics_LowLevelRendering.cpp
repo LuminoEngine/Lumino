@@ -36,7 +36,7 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
             printf("-----\n");
             auto ctx = Engine::graphicsContext();
             TestEnv::resetGraphicsContext(ctx);
-            ctx->setVertexDeclaration(m_vertexDecl1);
+            ctx->setVertexLayout(m_vertexDecl1);
             ctx->setVertexBuffer(0, vertexBuffer);
             ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
             ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
@@ -48,28 +48,28 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 	}
 }
 
-//------------------------------------------------------------------------------
-TEST_F(Test_Graphics_LowLevelRendering, Clear)
-{
-    auto t1 = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA32, false);
-    auto t2 = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA32, false);
-    auto t3 = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA32, false);
-    auto t4 = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA32, false);
-    auto ctx = Engine::graphicsContext();
-    TestEnv::resetGraphicsContext(ctx);
-    ctx->setRenderTarget(0, t1);
-    ctx->setRenderTarget(1, t1);
-    ctx->setRenderTarget(2, t1);
-    ctx->setRenderTarget(3, t1);
-    ctx->clear(ClearFlags::Color, Color::Red, 1.0f, 0);
-
-    t1->readData()->save(u"0.png");
-    t2->readData()->save(u"1.png");
-    t3->readData()->save(u"2.png");
-    t4->readData()->save(u"3.png");
-
-    ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-BasicTriangle.png"));
-}
+////------------------------------------------------------------------------------
+//TEST_F(Test_Graphics_LowLevelRendering, Clear)
+//{
+//    auto t1 = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA32, false);
+//    auto t2 = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA32, false);
+//    auto t3 = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA32, false);
+//    auto t4 = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA32, false);
+//    auto ctx = Engine::graphicsContext();
+//    TestEnv::resetGraphicsContext(ctx);
+//    ctx->setRenderTarget(0, t1);
+//    ctx->setRenderTarget(1, t1);
+//    ctx->setRenderTarget(2, t1);
+//    ctx->setRenderTarget(3, t1);
+//    ctx->clear(ClearFlags::Color, Color::Red, 1.0f, 0);
+//
+//    t1->readData()->save(u"0.png");
+//    t2->readData()->save(u"1.png");
+//    t3->readData()->save(u"2.png");
+//    t4->readData()->save(u"3.png");
+//
+//    ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-BasicTriangle.png"));
+//}
 
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
@@ -103,7 +103,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 
 		auto ctx = Engine::graphicsContext();
 		TestEnv::resetGraphicsContext(ctx);
-		ctx->setVertexDeclaration(m_vertexDecl1);
+		ctx->setVertexLayout(m_vertexDecl1);
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
 
@@ -222,7 +222,7 @@ TEST_F(Test_Graphics_LowLevelRendering, MultiStreamVertexBuffer)
 	ctx->setVertexBuffer(0, vb1);
 	ctx->setVertexBuffer(1, vb2);
 	ctx->setVertexBuffer(2, vb3);
-	ctx->setVertexDeclaration(vd1);
+	ctx->setVertexLayout(vd1);
 	ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 
 	ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
@@ -270,7 +270,7 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 
 		auto ctx = Engine::graphicsContext();
 		TestEnv::resetGraphicsContext(ctx);
-		ctx->setVertexDeclaration(m_vertexDecl1);
+		ctx->setVertexLayout(m_vertexDecl1);
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setIndexBuffer(ib1);
 		ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
@@ -332,7 +332,7 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
 
 	auto ctx = Engine::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
-	ctx->setVertexDeclaration(m_vertexDecl1);
+	ctx->setVertexLayout(m_vertexDecl1);
 	ctx->setVertexBuffer(0, vertexBuffer);
 	ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
 
@@ -401,7 +401,7 @@ TEST_F(Test_Graphics_LowLevelRendering, ConstantBuffer)
 	auto vertexBuffer = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 	auto ctx = Engine::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
-	ctx->setVertexDeclaration(m_vertexDecl1);
+	ctx->setVertexLayout(m_vertexDecl1);
 	ctx->setVertexBuffer(0, vertexBuffer);
 	ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 
@@ -660,7 +660,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture)
 
 	auto ctx = Engine::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
-	ctx->setVertexDeclaration(vertexDecl1);
+	ctx->setVertexLayout(vertexDecl1);
 	ctx->setVertexBuffer(0, vb1);
 	ctx->setIndexBuffer(nullptr);
 	ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
@@ -709,7 +709,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture3D)
 
 	auto ctx = Engine::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
-	ctx->setVertexDeclaration(vertexDecl1);
+	ctx->setVertexLayout(vertexDecl1);
 	ctx->setVertexBuffer(0, vb1);
 	ctx->setIndexBuffer(nullptr);
 	ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
@@ -758,7 +758,7 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 
 	auto ctx = Engine::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
-	ctx->setVertexDeclaration(vertexDecl1);
+	ctx->setVertexLayout(vertexDecl1);
 	ctx->setVertexBuffer(0, vb1);
 	ctx->setIndexBuffer(nullptr);
 	ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
@@ -825,7 +825,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 
 	auto ctx = Engine::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
-	ctx->setVertexDeclaration(vertexDecl1);
+	ctx->setVertexLayout(vertexDecl1);
 	ctx->setIndexBuffer(nullptr);
 	ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 
@@ -1021,7 +1021,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
         // まず renderTarget1 へ緑色の三角形を描く
         {
             m_shader1->findConstantBuffer("ConstBuff")->findParameter("g_color")->setVector(Vector4(0, 1, 0, 1));
-            ctx->setVertexDeclaration(m_vertexDecl1);
+            ctx->setVertexLayout(m_vertexDecl1);
             ctx->setVertexBuffer(0, vertexBuffer1);
             ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
             ctx->setRenderTarget(0, renderTarget1);
@@ -1033,7 +1033,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
         // 次に renderTarget1 からバックバッファへ全体を描く
         {
             shader2->findParameter("g_texture1")->setTexture(renderTarget1);
-            ctx->setVertexDeclaration(vertexDecl2);
+            ctx->setVertexLayout(vertexDecl2);
             ctx->setVertexBuffer(0, vertexBuffer2);
             ctx->setShaderPass(shader2->techniques()[0]->passes()[0]);
             ctx->setRenderTarget(0, oldRT);

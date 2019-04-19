@@ -103,9 +103,9 @@ void GraphicsContext::setScissorRect(const Rect& value)	// 使用するのは主
 	m_staging.scissorRect = value;
 }
 
-void GraphicsContext::setVertexDeclaration(VertexLayout* value)
+void GraphicsContext::setVertexLayout(VertexLayout* value)
 {
-	m_staging.vertexDeclaration = value;
+	m_staging.VertexLayout = value;
 }
 
 void GraphicsContext::setVertexBuffer(int streamIndex, VertexBuffer* value)
@@ -319,7 +319,7 @@ detail::IGraphicsContext* GraphicsContext::commitState()
 	}
 
 	{
-		auto& value = m_staging.vertexDeclaration;
+		auto& value = m_staging.VertexLayout;
 		detail::IVertexDeclaration* rhiObject = detail::GraphicsResourceHelper::resolveRHIObject<detail::IVertexDeclaration>(value);
 		LN_ENQUEUE_RENDER_COMMAND_2(
 			GraphicsContext_setVertexDeclaration, m_manager,
@@ -407,7 +407,7 @@ void GraphicsContext::State::reset()
 	depthStencilState = DepthStencilStateDesc();
 	renderTargets = {};
 	depthBuffer = nullptr;
-	vertexDeclaration = nullptr;
+	VertexLayout = nullptr;
 	vertexBuffers = {};
 	indexBuffer = nullptr;
     shader = nullptr;

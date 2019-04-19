@@ -79,8 +79,8 @@ TextureFormat GraphicsHelper::translateToTextureFormat(PixelFormat format)
 	{
 	case PixelFormat::Unknown:
 		return TextureFormat::Unknown;
-	case PixelFormat::A1:
-		return TextureFormat::Unknown;
+	//case PixelFormat::A1:
+	//	return TextureFormat::Unknown;
 	case PixelFormat::A8:
 		return TextureFormat::Unknown;
 	case PixelFormat::RGBA32:

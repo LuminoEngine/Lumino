@@ -44,7 +44,7 @@ TEST_F(Test_Shader_Shader, IndependentSamplerState)
 
     auto ctx = Engine::graphicsContext();
     TestEnv::resetGraphicsContext(ctx);
-    ctx->setVertexDeclaration(vertexDecl1);
+    ctx->setVertexLayout(vertexDecl1);
     ctx->setVertexBuffer(0, vb1);
     ctx->setIndexBuffer(nullptr);
     ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
@@ -84,7 +84,7 @@ TEST_F(Test_Shader_Shader, UniformBuffer)
 
     auto ctx = Engine::graphicsContext();
     TestEnv::resetGraphicsContext(ctx);
-    ctx->setVertexDeclaration(vertexDecl1);
+    ctx->setVertexLayout(vertexDecl1);
     ctx->setVertexBuffer(0, vb1);
     ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
     ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
@@ -120,7 +120,7 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
 
     auto ctx = Engine::graphicsContext();
     TestEnv::resetGraphicsContext(ctx);
-    ctx->setVertexDeclaration(vertexDecl1);
+    ctx->setVertexLayout(vertexDecl1);
     ctx->setVertexBuffer(0, vb1);
     ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
     ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
@@ -159,7 +159,7 @@ TEST_F(Test_Shader_Shader, NotProvidedVertexAttribute)
 
 	auto ctx = Engine::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
-	ctx->setVertexDeclaration(vertexDecl1);
+	ctx->setVertexLayout(vertexDecl1);
 	ctx->setVertexBuffer(0, vb1);
 	ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 	ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);

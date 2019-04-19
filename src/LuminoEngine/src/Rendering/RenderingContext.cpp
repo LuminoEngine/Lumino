@@ -342,7 +342,7 @@ void RenderingContext::drawPrimitive(VertexLayout* vertexDeclaration, VertexBuff
 
 		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
 		{
-			context->setVertexDeclaration(vertexDeclaration);
+			context->setVertexLayout(vertexDeclaration);
 			context->setVertexBuffer(0, vertexBuffer);
 			context->setPrimitiveTopology(topology);
 			context->drawPrimitive(startVertex, primitiveCount);

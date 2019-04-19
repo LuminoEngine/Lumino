@@ -35,7 +35,7 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 		auto shader1 = newObject<Shader>(LN_ASSETFILE("Basic.fx"));
 		shader1->findConstantBuffer("ConstBuff")->findParameter("g_color")->setVector(Vector4(1, 0, 0, 1));
 
-		ctx->setVertexDeclaration(vd1);
+		ctx->setVertexLayout(vd1);
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);

@@ -318,8 +318,8 @@ void Bitmap2D::clear(const ColorI& color)
     {
         switch (m_format)
         {
-        case PixelFormat::A1:
-            return;
+        //case PixelFormat::A1:
+        //    return;
         case PixelFormat::A8:
             return;
         case PixelFormat::RGBA32:
@@ -353,7 +353,7 @@ void Bitmap2D::clear(const ColorI& color)
 void Bitmap2D::flipVerticalFlow()
 {
 	if (LN_REQUIRE(m_format != PixelFormat::Unknown)) return;
-	if (LN_REQUIRE(m_format != PixelFormat::A1)) return;
+	//if (LN_REQUIRE(m_format != PixelFormat::A1)) return;
 
 	int pixelSize = getPixelFormatByteSize(m_format);
 	if (pixelSize == 1)
@@ -469,7 +469,7 @@ int Bitmap2D::getPixelFormatByteSize(PixelFormat format)
 	const int table[] =
 	{
 		0,	// Unknown,
-		1,	// A1,
+		//1,	// A1,
 		1,	// A8,
 		4,	// RGBA32,
         3,	// RGB24,

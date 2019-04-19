@@ -3,20 +3,36 @@
 
 namespace ln {
 
+/** バックエンドグラフィックス API の種類 */
 enum class GraphicsAPI
 {
+	/** 自動選択 */
 	Default,
+
+	/** OpenGL */
 	OpenGL,
+
+	/** Vulkan */
 	Vulkan,
 };
 
+/** レンダーターゲットのクリア方法 */
 enum class ClearFlags
 {
+	/** 指定なし */
 	None	= 0x0000,
-	Color	= 0x0001,					///< カラーバッファをクリアします。
-	Depth	= 0x0002,					///< 深度バッファをクリアします。
-	Stencil = 0x0004,					///< ステンシルバッファをクリアします。
-	All		= Color | Depth | Stencil,	///< 全てのバッファをクリアします。
+
+	/** カラーバッファをクリアします。 */
+	Color	= 0x0001,
+
+	/** 深度バッファをクリアします。 */
+	Depth	= 0x0002,
+
+	/** ステンシルバッファをクリアします。 */
+	Stencil = 0x0004,
+
+	/** 全てのバッファをクリアします。 */
+	All		= Color | Depth | Stencil, 
 };
 LN_FLAGS_OPERATORS(ClearFlags);
 
@@ -84,13 +100,28 @@ enum class VertexElementType : uint8_t
 /** 頂点宣言の要素の用途 */
 enum class VertexElementUsage
 {
+	/** Unknown (指定なし) */
 	Unknown,
+
+	/** 頂点位置 */
 	Position,
+
+	/** 法線 */
 	Normal,
+
+	/** 頂点カラー */
 	Color,
+
+	/** テクスチャ座標 */
 	TexCoord,
-	PointSize,	// MME との互換性のために残している。
+
+	/** (obsolete) ポイントスプライトサイズ */
+	PointSize,
+
+	/** ブレンディング (スキニング) のインデックス */
 	BlendIndices,
+
+	/** ブレンディング (スキニング) のウェイト */
 	BlendWeight,
 };
 
@@ -122,12 +153,14 @@ enum class IndexBufferFormat
 
 /** ピクセルフォーマット */
 LN_ENUM()
-enum class PixelFormat
+enum class PixelFormat : uint8_t
 {
 	/** Unknown */
 	Unknown,
 
-	A1,
+	/** Unknown */
+	//A1,
+
 	A8,
 
 	RGBA32,
@@ -260,6 +293,10 @@ struct SamplerStateData
 };
 
 namespace detail {
+class GraphicsManager;
+class IGraphicsDevice;
+class IGraphicsContext;
+
 static const int MaxMultiRenderTargets = 4;
 static const int MaxVertexStreams = 16;
 

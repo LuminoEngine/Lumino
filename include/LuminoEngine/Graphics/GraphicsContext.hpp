@@ -15,31 +15,70 @@ class Shader;
 class ShaderPass;
 class SwapChain;
 
-namespace detail {
-	class GraphicsManager;
-	class IGraphicsDevice;
-    class IGraphicsContext;
-}
-
+/*
+ * グラフィクスデバイスへの描画呼出しを発行するためのクラスです。
+ */
 class LN_API GraphicsContext
 	: public Object
 {
 public:
-	void resetState();
+	/** 同時に設定できる RenderTarget の最大数です。 */
+	static const int MaxMultiRenderTargets = detail::MaxMultiRenderTargets;
+
+	/** 同時に設定できる 頂点ストリーム の最大数です。 */
+	static const int MaxVertexStreams = detail::MaxVertexStreams;
+
+public:
+	/** BlendState を設定します。 */
 	void setBlendState(const BlendStateDesc& value);
+
+	/** BlendState を取得します。 */
+	const BlendStateDesc& blendState() const { return m_staging.blendState; }
+
+	/** RasterizerState を設定します。 */
 	void setRasterizerState(const RasterizerStateDesc& value);
+
+	/** RasterizerState を取得します。 */
+	const RasterizerStateDesc& rasterizerState() const { return m_staging.rasterizerState; }
+
+	/** DepthStencilState を設定します。 */
 	void setDepthStencilState(const DepthStencilStateDesc& value);
-	void setRenderTarget(int index, RenderTargetTexture* value);	// Viewport, Scissor はクリア TODO: やっぱり ColorBuffer は驚く
-    RenderTargetTexture* renderTarget(int index) const;
+
+	/** DepthStencilState を取得します。 */
+	const DepthStencilStateDesc& depthStencilState() const { return m_staging.depthStencilState; }
+
+	/** RenderTarget を設定します。index 0 に設定した場合、Viewport と Scissor 領域は新しい RenderTarget のサイズに合わせて再設定されます。 */
+	void setRenderTarget(int index, RenderTargetTexture* value);
+
+	/** RenderTarget を取得します。 */
+	RenderTargetTexture* renderTarget(int index) const;
+
+	/** DepthBuffer を設定します。 */
 	void setDepthBuffer(DepthBuffer* value);
+
+	/** DepthBuffer を取得します。 */
     DepthBuffer* depthBuffer() const;
+
+	/** ビューポートの矩形を設定します。 */
 	void setViewportRect(const Rect& value);
+
+	/** ビューポートの矩形を取得します。 */
+	const Rect& viewportRect() const { return m_staging.viewportRect; }
+
+	/** シザー領域の矩形を設定します。 */
 	void setScissorRect(const Rect& value);
-	void setVertexDeclaration(VertexLayout* value);
+
+	/** ビューポートの矩形を取得します。 */
+	const Rect& scissorRect() const { return m_staging.scissorRect; }
+
+	void setVertexLayout(VertexLayout* value);
 	void setVertexBuffer(int streamIndex, VertexBuffer* value);
 	void setIndexBuffer(IndexBuffer* value);
 	void setShaderPass(ShaderPass* value);
 	void setPrimitiveTopology(PrimitiveTopology value);
+
+	/** デフォルト設定を復元します。 */
+	void resetState();
 
 	void clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00);
 	void drawPrimitive(int startVertex, int primitiveCount);
@@ -87,7 +126,7 @@ private:
 		Ref<DepthBuffer> depthBuffer;
 		Rect viewportRect;
 		Rect scissorRect;
-		Ref<VertexLayout> vertexDeclaration;
+		Ref<VertexLayout> VertexLayout;
 		std::array<Ref<VertexBuffer>, 4> vertexBuffers;
 		Ref<IndexBuffer> indexBuffer;
 		Ref<Shader> shader;		// shaderPass owner, for keep reference.
