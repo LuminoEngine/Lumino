@@ -48,28 +48,50 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 	}
 }
 
-////------------------------------------------------------------------------------
-//TEST_F(Test_Graphics_LowLevelRendering, Clear)
-//{
-//    auto t1 = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA32, false);
-//    auto t2 = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA32, false);
-//    auto t3 = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA32, false);
-//    auto t4 = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA32, false);
-//    auto ctx = Engine::graphicsContext();
-//    TestEnv::resetGraphicsContext(ctx);
-//    ctx->setRenderTarget(0, t1);
-//    ctx->setRenderTarget(1, t1);
-//    ctx->setRenderTarget(2, t1);
-//    ctx->setRenderTarget(3, t1);
-//    ctx->clear(ClearFlags::Color, Color::Red, 1.0f, 0);
-//
-//    t1->readData()->save(u"0.png");
-//    t2->readData()->save(u"1.png");
-//    t3->readData()->save(u"2.png");
-//    t4->readData()->save(u"3.png");
-//
-//    ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-BasicTriangle.png"));
-//}
+//------------------------------------------------------------------------------
+TEST_F(Test_Graphics_LowLevelRendering, Clear)
+{
+
+	{
+		auto ctx = Engine::graphicsContext();
+		TestEnv::resetGraphicsContext(ctx);
+		ctx->clear(ClearFlags::All, Color::Blue, 1.0f, 0);
+		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-1.png"));
+	}
+
+	//* [ ] Viewport や Scissor の影響を受けず、全体をクリアできること。
+	{
+		auto ctx = Engine::graphicsContext();
+		TestEnv::resetGraphicsContext(ctx);
+		ctx->setViewportRect(Rect(0, 0, 10, 10));
+		ctx->setScissorRect(Rect(0, 0, 10, 10));
+		ctx->clear(ClearFlags::All, Color::Green, 1.0f, 0);
+		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-2.png"));
+	}
+
+	//* [ ] 複数 RT 設定時は index 0 だけクリアされること。
+	{
+		auto t1 = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA32, false);
+		auto t2 = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA32, false);
+		auto ctx = Engine::graphicsContext();
+		TestEnv::resetGraphicsContext(ctx);
+
+		// 両方 Blue でクリアして、
+		ctx->setRenderTarget(0, t1);
+		ctx->clear(ClearFlags::Color, Color::Blue, 1.0f, 0);
+		ctx->setRenderTarget(0, t2);
+		ctx->clear(ClearFlags::Color, Color::Blue, 1.0f, 0);
+
+		// 2つ set して Red で clear
+		ctx->setRenderTarget(0, t1);
+		ctx->setRenderTarget(1, t2);
+		ctx->clear(ClearFlags::Color, Color::Red, 1.0f, 0);
+
+		// Red, Blue
+		ASSERT_EQ(true, TestEnv::equalsBitmapFile(t1->readData(), LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-3.png"), 100));
+		ASSERT_EQ(true, TestEnv::equalsBitmapFile(t2->readData(), LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-4.png"), 100));
+	}
+}
 
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)

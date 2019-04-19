@@ -791,6 +791,10 @@ void GLGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color, flo
 		glflags |= GL_STENCIL_BUFFER_BIT;
 	}
 
+	// Lumino の仕様としては、Viewport や Scissor の影響を受けないようにクリアしたい。
+	// しかし glClear は Scissor の影響を受けるので GL_SCISSOR_TEST を切っておく。
+	GL_CHECK(glDisable(GL_SCISSOR_TEST));
+
 	GL_CHECK(glClear(glflags));
 
     //GLint c[] = { 255, 0, 0, 255 };

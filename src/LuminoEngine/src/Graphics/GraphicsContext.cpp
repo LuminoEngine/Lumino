@@ -108,6 +108,11 @@ void GraphicsContext::setVertexLayout(VertexLayout* value)
 	m_staging.VertexLayout = value;
 }
 
+VertexLayout* GraphicsContext::vertexLayout() const
+{
+	return m_staging.VertexLayout;
+}
+
 void GraphicsContext::setVertexBuffer(int streamIndex, VertexBuffer* value)
 {
     if (m_staging.vertexBuffers[streamIndex] != value) {
@@ -116,12 +121,23 @@ void GraphicsContext::setVertexBuffer(int streamIndex, VertexBuffer* value)
     }
 }
 
+VertexBuffer* GraphicsContext::vertexBuffer(int streamIndex) const
+{
+	if (LN_REQUIRE_RANGE(streamIndex, 0, MaxVertexStreams)) return nullptr;
+	return m_staging.vertexBuffers[streamIndex];
+}
+
 void GraphicsContext::setIndexBuffer(IndexBuffer* value)
 {
     if (m_staging.indexBuffer != value) {
         m_staging.indexBuffer = value;
         m_modifiedFlags |= ModifiedFlags_IndexBuffer;
     }
+}
+
+IndexBuffer* GraphicsContext::indexBuffer() const
+{
+	return m_staging.indexBuffer;
 }
 
 void GraphicsContext::setShaderPass(ShaderPass* pass)
@@ -140,6 +156,11 @@ void GraphicsContext::setShaderPass(ShaderPass* pass)
         }
         m_modifiedFlags |= ModifiedFlags_ShaderPass;
     }
+}
+
+ShaderPass* GraphicsContext::shaderPass() const
+{
+	return m_staging.shaderPass;
 }
 
 void GraphicsContext::setPrimitiveTopology(PrimitiveTopology value)

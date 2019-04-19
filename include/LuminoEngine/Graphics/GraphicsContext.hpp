@@ -68,21 +68,64 @@ public:
 	/** シザー領域の矩形を設定します。 */
 	void setScissorRect(const Rect& value);
 
-	/** ビューポートの矩形を取得します。 */
+	/** シザー領域の矩形を取得します。 */
 	const Rect& scissorRect() const { return m_staging.scissorRect; }
 
+	/** VertexLayout を設定します。 */
 	void setVertexLayout(VertexLayout* value);
+
+	/** VertexLayout を取得します。 */
+	VertexLayout* vertexLayout() const;
+
+	/** VertexBuffer を設定します。 */
 	void setVertexBuffer(int streamIndex, VertexBuffer* value);
+
+	/** VertexBuffer を取得します。 */
+	VertexBuffer* vertexBuffer(int streamIndex) const;
+
+	/** IndexBuffer を設定します。 */
 	void setIndexBuffer(IndexBuffer* value);
+
+	/** IndexBuffer を取得します。 */
+	IndexBuffer* indexBuffer() const;
+
+	/** ShaderPass を設定します。 */
 	void setShaderPass(ShaderPass* value);
+
+	/** IndexBuffer を取得します。 */
+	ShaderPass* shaderPass() const;
+
+	/** 描画プリミティブの種類を設定します。 */
 	void setPrimitiveTopology(PrimitiveTopology value);
+
+	/** IndexBuffer を取得します。 */
+	PrimitiveTopology primitiveTopology() const { return m_staging.topology; }
 
 	/** デフォルト設定を復元します。 */
 	void resetState();
 
+	/**
+	 * レンダーターゲット、深度バッファ、ステンシルバッファをクリアします。
+	 *
+	 * 複数のレンダーターゲットが設定されている場合、先頭 (index 0) のターゲットのみクリアされます。
+	 * また、ViewportRect と ScissorRect の設定は適用されません。
+	 */
 	void clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00);
+
+	/**
+	 * プリミティブを描画します。
+	 */
 	void drawPrimitive(int startVertex, int primitiveCount);
+
+	/**
+	 * インデックス付きのプリミティブを描画します。
+	 */
 	void drawPrimitiveIndexed(int startIndex, int primitiveCount);
+
+
+
+
+
 	void present(SwapChain* swapChain);
     //void flush();
 
