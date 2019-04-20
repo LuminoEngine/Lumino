@@ -80,6 +80,7 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 
 	auto ctx = Engine::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
+	ctx->setVertexBuffer(0, vb1);
     ctx->setVertexLayout(vd1);
 
 	//* [ ] #if
