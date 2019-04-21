@@ -16,8 +16,8 @@ UIContainerElement::UIContainerElement()
 void UIContainerElement::init()
 {
     UIElement::init();
-	setHorizontalAlignment(HAlignment::Stretch);
-	setVerticalAlignment(VAlignment::Stretch);
+	//setHorizontalAlignment(HAlignment::Stretch);
+	//setVerticalAlignment(VAlignment::Stretch);
 }
 
 void UIContainerElement::onDispose(bool explicitDisposing)
@@ -98,8 +98,10 @@ UIElement* UIContainerElement::getVisualChild(int index) const
 Size UIContainerElement::measureOverride(const Size& constraint)
 {
 	if (m_logicalChildrenHost) {
-		m_logicalChildrenHost->measureLayout(constraint);
-		return m_logicalChildrenHost->desiredSize();
+        m_logicalChildrenHost->measureLayout(constraint);
+        Size layoutSize = m_logicalChildrenHost->desiredSize();
+        Size localSize = UIElement::measureOverride(constraint);
+        return Size::max(layoutSize, localSize);
 	}
 	else {
 		return UIFrameLayout::staticMeasureOverride(this, constraint);

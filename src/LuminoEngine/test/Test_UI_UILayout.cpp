@@ -6,7 +6,7 @@ class Test_UI_UILayout : public LuminoSceneTest {};
 
 //------------------------------------------------------------------------------
 //## Basic
-TEST_F(Test_UI_UILayout, Default)
+TEST_F(Test_UI_UILayout, Basic)
 {
 	//- [ ] Default
 	{
@@ -16,43 +16,32 @@ TEST_F(Test_UI_UILayout, Default)
 		e1->setHeight(60);
 
 		TestEnv::updateFrame();
-		ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-Default-1.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-Basic-1.png"));
 		LN_TEST_CLEAN_SCENE;
 	}
 
 	{
-		//auto uiRoot = GetUIRoot();
-		//auto panel = UIStackPanel::create();
-		//panel->setOrientation(Orientation::Vertical);
-		//panel->setSize(uiRoot->getSize());
-		//panel->setBackground(Brush::Blue);
-		//uiRoot->addChild(panel);
+        auto parent1 = newObject<UIContainerElement>();
+        parent1->setBackgroundColor(Color::Red);
+        parent1->setWidth(80);
+        parent1->setHeight(60);
+        parent1->setLayoutPanel(UIStackLayout::create());
+        
+        auto child1 = newObject<UIElement>();
+        child1->setWidth(32);
+        child1->setHeight(16);
+        child1->setBackgroundColor(Color::Green);
+        parent1->addElement(child1);
 
-		//auto button1 = UIButton::create();
-		//auto button2 = UIButton::create();
-		//auto button3 = UIButton::create();
-		//auto button4 = UIButton::create();
-		//auto button5 = UIButton::create();
-		//button1->setHAlignment(HAlignment::Stretch);
-		//button2->setHAlignment(HAlignment::Left);
-		//button3->setHAlignment(HAlignment::Right);
-		//button4->setHAlignment(HAlignment::Center);
-		//button5->setHAlignment(HAlignment::Stretch);
-		//button1->setHeight(16);
-		//button2->setSize(Size(32, 16));
-		//button3->setSize(Size(32, 16));
-		//button4->setSize(Size(32, 16));
-		//button5->setSize(Size(32, 16));
-		//panel->addChild(button1);
-		//panel->addChild(button2);
-		//panel->addChild(button3);
-		//panel->addChild(button4);
-		//panel->addChild(button5);
+        auto child2 = newObject<UIElement>();
+        child2->setWidth(32);
+        child2->setHeight(16);
+        child2->setBackgroundColor(Color::Blue);
+        parent1->addElement(child2);
 
-		//Engine::update();
-		//ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_FlowLayout.HorizontalAlignment1.png")));
-
-		//uiRoot->removeChild(panel);	// 後始末
+        TestEnv::updateFrame();
+        ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-Basic-2.png"));
+        LN_TEST_CLEAN_SCENE;
 	}
 }
 
@@ -69,7 +58,7 @@ TEST_F(Test_UI_UILayout, RenderTransform)
 		e1->setPosition(10, 20);
 
 		TestEnv::updateFrame();
-		ASSERT_SCREEN_S(LN_ASSETFILE("UI/Result/Test_UI_UILayout-RenderTransform-1.png"));
+		ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-RenderTransform-1.png"));
 		LN_TEST_CLEAN_SCENE;
 	}
 }
