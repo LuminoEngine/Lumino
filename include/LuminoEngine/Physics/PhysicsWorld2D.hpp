@@ -318,6 +318,13 @@ public:
 	/** 質量を設定します。0 を設定すると静的なボディとなります。(unit: kilograms(kg))(default: 0.0) */
 	void setMass(float value);
 
+    /** 摩擦係数を設定します。 */
+    void setFriction(float value);
+
+    /** 反発係数を設定します。 */
+    void setRestitution(float value);
+
+
 
     void setFixedRotation(bool value) { m_fixedRotation = value; }
 
@@ -393,6 +400,8 @@ private:
 	float m_rotation;
     Vector2 m_velocity;
 	float m_mass;
+    float m_friction;
+    float m_restitution;
     uint32_t m_group;
     uint32_t m_groupMask;
 	bool m_kinematic;

@@ -368,6 +368,8 @@ RigidBody2D::RigidBody2D()
     , m_fixtures()
 	, m_rotation(0)
     , m_mass(0.0f)
+    , m_friction(0.0f)
+    , m_restitution(0.0f)
     , m_group(0x00000001)
     , m_groupMask(0x0000FFFF)
     , m_kinematic(false)
@@ -413,6 +415,16 @@ void RigidBody2D::setVelocity(const Vector2& value)
 void RigidBody2D::setMass(float value)
 {
 	m_mass = value;
+}
+
+void RigidBody2D::setFriction(float value)
+{
+    m_friction = value;
+}
+
+void RigidBody2D::setRestitution(float value)
+{
+    m_restitution = value;
 }
 
 void RigidBody2D::setKinematic(bool value)
@@ -529,8 +541,8 @@ void RigidBody2D::onBeforeStepSimulation()
 			b2FixtureDef fixtureDef;
 			fixtureDef.shape = shape;
 			fixtureDef.userData = this;
-			fixtureDef.friction = 0.0f;			// 摩擦
-			fixtureDef.restitution = 0.0f;		// 反発
+			fixtureDef.friction = m_friction;
+			fixtureDef.restitution = m_restitution;
 			fixtureDef.density = m_mass / volume;	// 密度 = 質量 / 体積
 			fixtureDef.isSensor = false;
 			fixtureDef.filter.categoryBits = m_group;
