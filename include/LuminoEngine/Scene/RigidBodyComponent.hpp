@@ -38,6 +38,13 @@ public:
     const Vector2& velocity() const { return m_body->velocity(); }
 
     void setMass(float value);
+
+    /** 摩擦係数を設定します。 */
+    void setFriction(float value) { m_body->setFriction(value); }
+
+    /** 反発係数を設定します。 */
+    void setRestitution(float value) { m_body->setRestitution(value); }
+
     void addCollisionShape(CollisionShape2D* shape);
 
     void setFixedRotation(bool value) { m_body->setFixedRotation(value); }
