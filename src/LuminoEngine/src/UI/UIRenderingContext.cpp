@@ -41,7 +41,7 @@ void UIRenderingContext::drawBoxBackground(const Rect& rect, const Thickness& bo
 			m_builder->frameRectRenderFeatureStageParameters());
 
 		element->rect = rect;
-		element->transform = Matrix();  // TODO:
+		element->transform = element->combinedWorldMatrix();
 		element->imageDrawMode = mode;
 		element->borderThickness = borderThickness;
 		element->srcRect = textureSourceRect;

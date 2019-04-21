@@ -148,6 +148,9 @@ public:
 
     static void makeRenderSizeAndSourceRectHelper(Texture* texture, const Size& size, const Rect& sourceRect, Size* outSize, Rect* outSourceRect);
 
+    // TODO:
+    // drawElementTransformNegate
+
 LN_CONSTRUCT_ACCESS:
 	SpriteRenderFeature();
 	void init(RenderingManager* manager);
