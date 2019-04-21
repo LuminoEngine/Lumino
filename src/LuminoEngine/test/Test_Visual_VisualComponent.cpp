@@ -1,7 +1,5 @@
 ﻿#include "Common.hpp"
 
-#ifdef LN_UNIT_TEST_EXPERIMENTAL
-
 //==============================================================================
 //# Testing VisualComponent
 class Test_Visual_VisualComponent : public LuminoSceneTest {};
@@ -10,51 +8,50 @@ class Test_Visual_VisualComponent : public LuminoSceneTest {};
 //## Basic
 TEST_F(Test_Visual_VisualComponent, BuiltinEffects)
 {
-#if 0   // TODO: Builtin shader ごとに行う
+    // TODO: Builtin shader ごとに行う
 	{
         auto tex1 = Assets::loadTexture(LN_ASSETFILE("Sprite1.png"));
 
         //* [ ] Hide
-        auto sprite1 = Sprite::create(3, 3, tex1);
+        auto sprite1 = Sprite::create(tex1, 3, 3);
         //sprite1->setShadingModel(ShadingModel::UnLighting);
         sprite1->setPosition(-6, 0, 0);
         sprite1->setVisible(false);
 
         //* [ ] Normal
-        auto sprite2 = Sprite::create(3, 3, tex1);
+        auto sprite2 = Sprite::create(tex1, 3, 3);
         //sprite2->setShadingModel(ShadingModel::UnLighting);
         sprite2->setPosition(-3, 0, 0);
 
         //* [ ] Opacity
-        auto sprite3 = Sprite::create(3, 3, tex1);
+        auto sprite3 = Sprite::create(tex1, 3, 3);
         //sprite3->setShadingModel(ShadingModel::UnLighting);
         sprite3->setPosition(-6, 3, 0);
         sprite3->setBlendMode(BlendMode::Alpha);
         sprite3->setOpacity(0.5);
 
         //* [ ] ColorScale
-        auto sprite4 = Sprite::create(3, 3, tex1);
+        auto sprite4 = Sprite::create(tex1, 3, 3);
         //sprite4->setShadingModel(ShadingModel::UnLighting);
         sprite4->setPosition(-3, 3, 0);
         sprite4->setColorScale(Color(1, 0, 0, 1));
 
         //* [ ] BlendColor
-        auto sprite5 = Sprite::create(3, 3, tex1);
+        auto sprite5 = Sprite::create(tex1, 3, 3);
         //sprite5->setShadingModel(ShadingModel::UnLighting);
         sprite5->setPosition(0, 3, 0);
         sprite5->setBlendColor(Color(1, 0, 0, 1));
 
         //* [ ] Tone
-        auto sprite6 = Sprite::create(3, 3, tex1);
+        auto sprite6 = Sprite::create(tex1, 3, 3);
         //sprite6->setShadingModel(ShadingModel::UnLighting);
         sprite6->setPosition(3, 3, 0);
         sprite6->setTone(ToneF(0.5, 0.3, 0.1, 1.0));
 
         TestEnv::updateFrame();
-        ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Visual_VisualComponent-BuiltinEffects-1.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("Visual/Result/Test_Visual_VisualComponent-BuiltinEffects-1.png"));
         LN_TEST_CLEAN_SCENE;
 	}
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -64,10 +61,11 @@ TEST_F(Test_Visual_VisualComponent, BlendMode)
     {
         auto tex1 = Assets::loadTexture(LN_ASSETFILE("Sprite1.png"));
 
-        //* [ ] Normal (Default)
+        //* [ ] Normal
         auto sprite1 = Sprite::create(tex1, 3, 3);
         sprite1->setShadingModel(ShadingModel::UnLighting);
         sprite1->setPosition(-6, 0, 0);
+        sprite1->setBlendMode(BlendMode::Normal);
 
         //* [ ] Alpha
         auto sprite2 = Sprite::create(tex1, 3, 3);
@@ -94,7 +92,7 @@ TEST_F(Test_Visual_VisualComponent, BlendMode)
         sprite5->setBlendMode(BlendMode::Multiply);
 
         TestEnv::updateFrame();
-        ASSERT_SCREEN(LN_ASSETFILE("Result/Test_Visual_VisualComponent-BlendMode-1.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("Visual/Result/Test_Visual_VisualComponent-BlendMode-1.png"));
         LN_TEST_CLEAN_SCENE;
     }
 }
@@ -121,7 +119,7 @@ TEST_F(Test_Visual_VisualComponent, DepthTest)
         sprite2->setShadingModel(ShadingModel::UnLighting);
 
         TestEnv::updateFrame();
-        ASSERT_SCREEN(LN_ASSETFILE("Result/Visual/Test_Visual_VisualComponent-DepthTest-1.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("Visual/Result/Test_Visual_VisualComponent-DepthTest-1.png"));
         LN_TEST_CLEAN_SCENE;
     }
 
@@ -139,7 +137,7 @@ TEST_F(Test_Visual_VisualComponent, DepthTest)
         sprite2->setDepthTestEnabled(false);
 
         TestEnv::updateFrame();
-        ASSERT_SCREEN(LN_ASSETFILE("Result/Visual/Test_Visual_VisualComponent-DepthTest-2.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("Visual/Result/Test_Visual_VisualComponent-DepthTest-2.png"));
         LN_TEST_CLEAN_SCENE;
     }
 
@@ -157,7 +155,7 @@ TEST_F(Test_Visual_VisualComponent, DepthTest)
         sprite2->setShadingModel(ShadingModel::UnLighting);
 
         TestEnv::updateFrame();
-        ASSERT_SCREEN(LN_ASSETFILE("Result/Visual/Test_Visual_VisualComponent-DepthTest-3.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("Visual/Result/Test_Visual_VisualComponent-DepthTest-3.png"));
         LN_TEST_CLEAN_SCENE;
     }
 }
@@ -207,9 +205,7 @@ TEST_F(Test_Visual_VisualComponent, CullMode)
         sprite6->setEulerAngles(0, Math::PI, 0);
 
         TestEnv::updateFrame();
-        ASSERT_SCREEN(LN_ASSETFILE("Result/Visual/Test_Visual_VisualComponent-CullMode-1.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("Visual/Result/Test_Visual_VisualComponent-CullMode-1.png"));
         LN_TEST_CLEAN_SCENE;
     }
 }
-
-#endif // LN_UNIT_TEST_EXPERIMENTAL
