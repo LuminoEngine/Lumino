@@ -68,6 +68,7 @@ EngineManager::EngineManager()
 	//, m_modelManager(nullptr)
 	//, m_uiManager(nullptr)
 	, m_assetManager(nullptr)
+    , m_timeScale(1.0f)
 	, m_exitRequested(false)
     , m_showDebugFpsEnabled(false)
 #if defined(LN_OS_WIN32)
@@ -144,6 +145,8 @@ void EngineManager::init()
         m_mainViewport->addRenderView(m_mainUIRenderView);
 
         m_mainUIRoot = newObject<UIContainerElement>();
+        m_mainUIRoot->setHorizontalAlignment(HAlignment::Stretch);
+        m_mainUIRoot->setVerticalAlignment(VAlignment::Stretch);
         m_mainUIRenderView->setRootElement(m_mainUIRoot);
         m_uiManager->setPrimaryElement(m_mainUIRoot);
 
@@ -504,6 +507,8 @@ bool EngineManager::updateUnitily()
 
 void EngineManager::updateFrame()
 {
+    float elapsedSeconds = 0.016 * m_timeScale; // TODO: time
+
     //------------------------------------------------
     // Pre update phase
 
@@ -528,22 +533,22 @@ void EngineManager::updateFrame()
     // Main update phase
 
     if (m_mainWindow) {
-        m_mainWindow->updateFrame(0.016);	// TODO: time
+        m_mainWindow->updateFrame(elapsedSeconds);
     }
 
 	// いくつかの入力状態は onEvent 経由で Platform モジュールから Input モジュールに伝えられる。
 	// このときはまだ押されているかどうかだけを覚えておく。
 	// 次に InputManager::updateFrame で、現在時間を考慮して各種状態を更新する。
 	if (m_inputManager) {
-		m_inputManager->updateFrame(0.016);	// TODO: time
+		m_inputManager->updateFrame(elapsedSeconds);
 	}
 
 	if (m_audioManager) {
-		m_audioManager->update(0.016);
+		m_audioManager->update(elapsedSeconds);
 	}
 
     if (m_mainWorld) {
-        m_mainWorld->updateFrame(0.016);	// TODO: time
+        m_mainWorld->updateFrame(elapsedSeconds);
     }
 
     if (m_sceneManager) {

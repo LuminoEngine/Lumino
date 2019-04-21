@@ -42,6 +42,9 @@ public:
 
     /** アプリケーション開始からの経過時間を取得します。この値はタイムスケールの影響を受けます。 */
     static double totalTime();
+    
+    /** アプリケーション全体のタイムスケールを設定します。 */
+    static void setTimeScale(float value);
 
 	/** セーブデータなど、アプリケーションデータを保存するための永続的なデータディレクトリのパスを返します。 */
 	static const Path& persistentDataPath();

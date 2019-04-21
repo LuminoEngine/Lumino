@@ -114,6 +114,11 @@ double Engine::totalTime()
     return detail::EngineDomain::engineManager()->fpsController().getTotalGameTime();
 }
 
+void Engine::setTimeScale(float value)
+{
+    detail::EngineDomain::engineManager()->setTimeScale(value);
+}
+
 const Path& Engine::persistentDataPath()
 {
 	return detail::EngineDomain::engineManager()->persistentDataPath();

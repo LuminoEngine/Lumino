@@ -117,6 +117,7 @@ public:
     const FpsController& fpsController() const { return m_fpsController; }
 
 	const Path& persistentDataPath() const { return m_persistentDataPath; }
+    void setTimeScale(float value) { m_timeScale = value; }
     void setShowDebugFpsEnabled(bool value) { m_showDebugFpsEnabled = value; }
 
 	const Ref<UIFrameWindow>& mainWindow() const { return m_mainWindow; }
@@ -169,6 +170,7 @@ private:
     Ref<PhysicsWorld> m_mainPhysicsWorld;
     Ref<PhysicsWorld2D> m_mainPhysicsWorld2D;
 
+    float m_timeScale;
 	bool m_exitRequested;
     bool m_showDebugFpsEnabled;
 

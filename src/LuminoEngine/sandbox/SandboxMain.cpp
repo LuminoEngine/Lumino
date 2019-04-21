@@ -127,28 +127,28 @@ int main(int argc, char** argv)
     window1->setBackgroundImageBorder(Thickness(16));
     window1->setPadding(Thickness(16));
 
-    window1->setLayoutPanel(UIStackLayout::create());
+ //   window1->setLayoutPanel(UIStackLayout::create());
 
-    auto text1 = UITextBlock::create();
-    text1->setText(u"ABCDEFGabcdefg");
-    //text1->setFontFamily(u"M+ 1c");
-    text1->setFontSize(20);
-    //text1->setTextColor(Color::White);
-    window1->addElement(text1);
+ //   auto text1 = UITextBlock::create();
+ //   text1->setText(u"ABCDEFGabcdefg");
+ //   //text1->setFontFamily(u"M+ 1c");
+ //   text1->setFontSize(20);
+ //   //text1->setTextColor(Color::White);
+ //   window1->addElement(text1);
 
-    auto text2 = UITextBlock::create();
-    text2->setText(u"sc");
-    //text2->setTextColor(Color::White);
-    window1->addElement(text2);
+ //   auto text2 = UITextBlock::create();
+ //   text2->setText(u"sc");
+ //   //text2->setTextColor(Color::White);
+ //   window1->addElement(text2);
 
-	//auto text2 = UITextBlock::create();
-	//text2->setText(u"Test");
-	//text2->setTextColor(Color::Gray);
+	////auto text2 = UITextBlock::create();
+	////text2->setText(u"Test");
+	////text2->setTextColor(Color::Gray);
 
-	//auto text3 = UITextBlock::create();
-	//text3->setText(u"Test3");
-	//text3->setTextColor(Color::Gray);
-	//text3->setPosition(Vector3(0, 400, 0));
+	////auto text3 = UITextBlock::create();
+	////text3->setText(u"Test3");
+	////text3->setTextColor(Color::Gray);
+	////text3->setPosition(Vector3(0, 400, 0));
 
 	{
 

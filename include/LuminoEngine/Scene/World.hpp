@@ -30,6 +30,8 @@ public:
 	/** この World に含まれている全てのルートオブジェクトを取得します。 */
 	ReadOnlyList<Ref<WorldObject>>* rootObjects() const;
 
+    void setTimeScale(float value) { m_timeScale = value; }
+
 protected:
     // update sequence
     virtual void onPreUpdate(float elapsedSeconds);
@@ -59,8 +61,8 @@ public: // TODO: internal
 	Ref<PhysicsWorld2D> m_physicsWorld2D;
     Ref<List<Ref<WorldObject>>> m_rootWorldObjectList;
 	List<WorldObject*> m_destroyList;
-
     Ref<detail::WorldSceneGraphRenderingContext> m_renderingContext;
+    float m_timeScale;
 
     friend class WorldRenderView;
     friend class detail::EngineManager;

@@ -15,6 +15,7 @@ namespace ln {
 
 World::World()
 	: m_rootWorldObjectList(makeList<Ref<WorldObject>>())
+    , m_timeScale(1.0f)
 {
 }
 
@@ -91,11 +92,12 @@ void World::updateObjectsWorldMatrix()
 
 void World::updateFrame(float elapsedSeconds)
 {
-    onPreUpdate(elapsedSeconds);
-    onInternalPhysicsUpdate(elapsedSeconds);
-    onUpdate(elapsedSeconds);
-    onInternalAnimationUpdate(elapsedSeconds);
-    onPostUpdate(elapsedSeconds);
+    float t = elapsedSeconds * m_timeScale;
+    onPreUpdate(t);
+    onInternalPhysicsUpdate(t);
+    onUpdate(t);
+    onInternalAnimationUpdate(t);
+    onPostUpdate(t);
 }
 
 void World::onPreUpdate(float elapsedSeconds)
