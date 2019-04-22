@@ -697,11 +697,11 @@ install(
     EXPORT LuminoEngineTargets
     FILE LuminoEngineTargets.cmake
     EXPORT_LINK_INTERFACE_LIBRARIES
-    DESTINATION "cmake")
+    DESTINATION lib/cmake)
 
 install(
-    FILES "LuminoEngineConfig.cmake"
-    DESTINATION "cmake")
+    FILES LuminoEngineConfig.cmake
+    DESTINATION lib/cmake)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ../../../../lib/${LN_TARGET_ARCH})

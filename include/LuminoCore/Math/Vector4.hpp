@@ -2,10 +2,10 @@
 #pragma once
 
 #include "Common.hpp"
+#include "Vector2.hpp"
+#include "Vector3.hpp"
 
 namespace ln {
-struct Vector2;
-struct Vector3;
 struct Matrix;
 
 /**
@@ -200,6 +200,22 @@ inline constexpr Vector4::Vector4(float x_, float y_, float z_, float w_) noexce
 	, y(y_)
 	, z(z_)
 	, w(w_)
+{
+}
+
+inline constexpr Vector4::Vector4(const Vector2& vec, float z_, float w_) noexcept
+    : x(vec.x)
+    , y(vec.y)
+    , z(z_)
+    , w(w_)
+{
+}
+
+inline constexpr Vector4::Vector4(const Vector3& vec, float w_) noexcept
+    : x(vec.x)
+    , y(vec.y)
+    , z(vec.z)
+    , w(w_)
 {
 }
 

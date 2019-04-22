@@ -116,7 +116,7 @@ public:
 
     const FpsController& fpsController() const { return m_fpsController; }
 
-	const Path& persistentDataPath() const { return m_persistentDataPath; }
+    const Path& persistentDataPath() const;
     void setTimeScale(float value) { m_timeScale = value; }
     void setShowDebugFpsEnabled(bool value) { m_showDebugFpsEnabled = value; }
 

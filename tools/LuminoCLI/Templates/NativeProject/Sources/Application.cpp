@@ -38,7 +38,7 @@ void HelloApp::onUpdate()
 
     m_shader->findConstantBuffer("ConstBuff")->findParameter("time")->setFloat(m_time);
 
-    ctx->setVertexDeclaration(m_vertexDeclaration);
+    ctx->setVertexLayout(m_vertexDeclaration);
     ctx->setVertexBuffer(0, m_vertexBuffer);
     ctx->setShaderPass(m_shader->techniques()[0]->passes()[0]);
     ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);

@@ -10,7 +10,7 @@ Java_org_lumino_lib_luminoapp_LuminoRenderer_nativeInitialize(
     jint width,
     jint height)
 {
-    ln::AndroidPlatformInterface::initialize(width, height);
+    ln::AndroidPlatformInterface::init(width, height);
 }
 
 extern "C" JNIEXPORT void JNICALL

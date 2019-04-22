@@ -85,11 +85,11 @@ install(
     EXPORT LuminoCoreTargets
     FILE LuminoCoreTargets.cmake
     EXPORT_LINK_INTERFACE_LIBRARIES
-    DESTINATION "cmake")
+    DESTINATION lib/cmake)
 
 install(
-    FILES "LuminoCoreConfig.cmake"
-    DESTINATION "cmake")
+    FILES LuminoCoreConfig.cmake
+    DESTINATION lib/cmake)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ../../../../lib/${LN_TARGET_ARCH})

@@ -99,10 +99,10 @@ void EngineManager::init()
 
 	// setup pathes
 	{
-#if defined(LN_EMSCRIPTEN)
-        m_persistentDataPath = u""; // TODO:
+#if defined(LN_OS_WIN32)
+        m_persistentDataPath = Path(Environment::specialFolderPath(SpecialFolder::ApplicationData), m_settings.bundleIdentifier);
 #else
-		m_persistentDataPath = Path(Environment::specialFolderPath(SpecialFolder::ApplicationData), m_settings.bundleIdentifier);
+        m_persistentDataPath = u""; // TODO:
 #endif
     }
 	
@@ -613,6 +613,14 @@ void EngineManager::resetFrameDelay()
 void EngineManager::quit()
 {
 	m_exitRequested = true;
+}
+
+const Path& EngineManager::persistentDataPath() const
+{
+#if !defined(LN_OS_WIN32)
+    LN_NOTIMPLEMENTED();
+#endif
+    return m_persistentDataPath;
 }
 
 bool EngineManager::onPlatformEvent(const PlatformEventArgs& e)
