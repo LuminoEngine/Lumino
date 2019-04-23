@@ -113,6 +113,8 @@ public:
 	{
 		GLint MAX_VERTEX_ATTRIBS = 0;
 		GLint MAX_COLOR_ATTACHMENTS = 0;
+		GLfloat MAX_TEXTURE_MAX_ANISOTROPY_EXT = 0;
+		bool support_filter_anisotropic = false;
 	};
 
 	OpenGLDevice();
@@ -490,7 +492,7 @@ class GLSamplerState
 public:
 	GLSamplerState();
 	virtual ~GLSamplerState();
-	void init(const SamplerStateData& desc);
+	void init(OpenGLDevice* device, const SamplerStateData& desc);
 	virtual void dispose() override;
 
     GLuint resolveId(bool mipmap) const { return (mipmap) ? m_idMip : m_id; }

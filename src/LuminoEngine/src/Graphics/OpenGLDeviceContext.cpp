@@ -5,6 +5,16 @@
 
 #include "GLFWContext.hpp"
 
+
+#ifndef GL_TEXTURE_MAX_ANISOTROPY_EXT
+#	define GL_TEXTURE_MAX_ANISOTROPY_EXT 0x84FE
+#endif // GL_TEXTURE_MAX_ANISOTROPY_EXT
+
+#ifndef GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT
+#	define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF
+#endif // GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT
+
+
 #define LN_MACRO_BLOCK_BEGIN for(;;) {
 #define LN_MACRO_BLOCK_END break; }
 
@@ -224,8 +234,19 @@ void OpenGLDevice::init(const Settings& settings)
 	for(int i = 0; i < extensions; i++) {
 		LN_LOG_INFO << "  " << glGetStringi(GL_EXTENSIONS, i);
 	}
-    // ignore error.
-    while (glGetError() != 0);
+    while (glGetError() != 0);	// ignore error.
+
+
+	std::string extensionsString = (const char*)glGetString(GL_EXTENSIONS);
+	while (glGetError() != 0);	// ignore error.
+
+	m_caps.support_filter_anisotropic =
+		(extensionsString.find("EXT_texture_filter_anisotropic") != std::string::npos) |
+		(extensionsString.find("WEBKIT_EXT_texture_filter_anisotropic") != std::string::npos) |
+		(extensionsString.find("MOZ_EXT_texture_filter_anisotropic") != std::string::npos);
+	if (m_caps.support_filter_anisotropic) {
+		GL_CHECK(glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &m_caps.MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+	}
 
 	m_graphicsContext = makeRef<GLGraphicsContext>();
 	m_graphicsContext->init(this);
@@ -354,7 +375,7 @@ Ref<IDepthBuffer> OpenGLDevice::onCreateDepthBuffer(uint32_t width, uint32_t hei
 Ref<ISamplerState> OpenGLDevice::onCreateSamplerState(const SamplerStateData& desc)
 {
 	auto ptr = makeRef<GLSamplerState>();
-	ptr->init(desc);
+	ptr->init(this, desc);
 	return ptr;
 }
 
@@ -1654,7 +1675,7 @@ GLSamplerState::~GLSamplerState()
 {
 }
 
-void GLSamplerState::init(const SamplerStateData& desc)
+void GLSamplerState::init(OpenGLDevice* device, const SamplerStateData& desc)
 {
     m_desc = desc;
 
@@ -1680,12 +1701,19 @@ void GLSamplerState::init(const SamplerStateData& desc)
 	GL_CHECK(glSamplerParameteri(m_id, GL_TEXTURE_MIN_FILTER, minFilterTable[static_cast<int>(desc.filter)][0]));
 	GL_CHECK(glSamplerParameteri(m_id, GL_TEXTURE_WRAP_S, addressTable[static_cast<int>(desc.address)]));
 	GL_CHECK(glSamplerParameteri(m_id, GL_TEXTURE_WRAP_T, addressTable[static_cast<int>(desc.address)]));
+	if (m_desc.anisotropy && device->caps().support_filter_anisotropic) {
+		GL_CHECK(glSamplerParameterf(m_id, GL_TEXTURE_MAX_ANISOTROPY_EXT, device->caps().MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+	}
 
     GL_CHECK(glGenSamplers(1, &m_idMip));
     GL_CHECK(glSamplerParameteri(m_idMip, GL_TEXTURE_MAG_FILTER, magFilterTable[static_cast<int>(desc.filter)]));
     GL_CHECK(glSamplerParameteri(m_idMip, GL_TEXTURE_MIN_FILTER, minFilterTable[static_cast<int>(desc.filter)][1]));
     GL_CHECK(glSamplerParameteri(m_idMip, GL_TEXTURE_WRAP_S, addressTable[static_cast<int>(desc.address)]));
     GL_CHECK(glSamplerParameteri(m_idMip, GL_TEXTURE_WRAP_T, addressTable[static_cast<int>(desc.address)]));
+	if (m_desc.anisotropy && device->caps().support_filter_anisotropic) {
+		GL_CHECK(glSamplerParameterf(m_idMip, GL_TEXTURE_MAX_ANISOTROPY_EXT, device->caps().MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+	}
+
 }
 
 void GLSamplerState::dispose()

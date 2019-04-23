@@ -47,7 +47,10 @@ void RenderDrawElement::onSubsetInfoOverride(SubsetInfo* subsetInfo)
 // RenderStage
 
 RenderStage::RenderStage()
-	: renderFeature(nullptr)
+	: frameBufferStageParameters(nullptr)
+	, geometryStageParameters(nullptr)
+	, renderFeatureStageParameters(nullptr)
+	, renderFeature(nullptr)
 {
 }
 

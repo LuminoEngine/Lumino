@@ -10,10 +10,32 @@ const SamplerStateData SamplerStateData::defaultState =
 {
 	TextureFilterMode::Point,
 	TextureAddressMode::Repeat,
+	false,
 };
 
 //=============================================================================
 // SamplerState
+
+Ref<SamplerState> SamplerState::create()
+{
+	return newObject<SamplerState>();
+}
+
+Ref<SamplerState> SamplerState::create(TextureFilterMode filter)
+{
+	return newObject<SamplerState>(filter);
+}
+
+Ref<SamplerState> SamplerState::create(TextureFilterMode filter, TextureAddressMode address)
+{
+	return newObject<SamplerState>(filter, address);
+}
+
+
+ Ref<SamplerState> SamplerState::create(TextureFilterMode filter, TextureAddressMode address, bool anisotropyEnabled)
+ {
+	 return newObject<SamplerState>(filter, address, anisotropyEnabled);
+ }
 
 SamplerState::SamplerState()
 	: m_rhiObject(nullptr)
@@ -30,6 +52,27 @@ SamplerState::~SamplerState()
 void SamplerState::init()
 {
 	GraphicsResource::init();
+}
+
+void SamplerState::init(TextureFilterMode filter)
+{
+	GraphicsResource::init();
+	setFilterMode(filter);
+}
+
+void SamplerState::init(TextureFilterMode filter, TextureAddressMode address)
+{
+	GraphicsResource::init();
+	setFilterMode(filter);
+	setAddressMode(address);
+}
+
+void SamplerState::init(TextureFilterMode filter, TextureAddressMode address, bool anisotropyEnabled)
+{
+	GraphicsResource::init();
+	setFilterMode(filter);
+	setAddressMode(address);
+	setAnisotropyEnabled(anisotropyEnabled);
 }
 
 void SamplerState::onDispose(bool explicitDisposing)
@@ -54,6 +97,16 @@ void SamplerState::setAddressMode(TextureAddressMode value)
 	if (m_desc.address != value)
 	{
 		m_desc.address = value;
+		m_modified = true;
+	}
+}
+
+void SamplerState::setAnisotropyEnabled(bool value)
+{
+	if (LN_REQUIRE(!m_frozen)) return;
+	if (m_desc.anisotropy != value)
+	{
+		m_desc.anisotropy = value;
 		m_modified = true;
 	}
 }

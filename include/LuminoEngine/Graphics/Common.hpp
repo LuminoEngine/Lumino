@@ -288,6 +288,7 @@ struct SamplerStateData
 {
 	TextureFilterMode filter;
 	TextureAddressMode address;
+	bool anisotropy;
 
 	static const SamplerStateData defaultState;
 };
@@ -297,6 +298,7 @@ class GraphicsManager;
 class GraphicsContextInternal;
 class IGraphicsDevice;
 class IGraphicsContext;
+class ISamplerState;
 
 static const int MaxMultiRenderTargets = 4;
 static const int MaxVertexStreams = 16;
