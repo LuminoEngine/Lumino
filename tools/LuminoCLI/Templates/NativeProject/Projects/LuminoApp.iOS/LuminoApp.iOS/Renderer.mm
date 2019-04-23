@@ -34,8 +34,8 @@
 		ln::EngineSettings::addAssetArchive(ln::String::fromStdString(std::string([assetsPath UTF8String])));
 		
 		ln::iOSPlatformInterface::nativeInitialize(backendWidth, backendHeight);
-		ln::detail::SwapChainHelper::setBackendBufferSize(ln::Engine::mainWindow()->swapChain(), backendWidth, backendHeight);
-        ln::detail::SwapChainHelper::setOpenGLBackendFBO(ln::Engine::mainWindow()->swapChain(), backendFBO);
+		ln::detail::SwapChainInternal::setBackendBufferSize(ln::Engine::mainWindow()->swapChain(), backendWidth, backendHeight);
+        ln::detail::SwapChainInternal::setOpenGLBackendFBO(ln::Engine::mainWindow()->swapChain(), backendFBO);
 		
 		[view setNeedsDisplay];
 		[view enableSetNeedsDisplay];
