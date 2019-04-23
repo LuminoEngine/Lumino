@@ -70,8 +70,8 @@ struct Size
 {
 public:
 	static const Size	Zero;		/**< (0, 0) */
-	static const Size	MinValue;	/**< */
-	static const Size	MaxValue;	/**< */
+	static const Size	MinValue;	/**< (min float, min float) */
+	static const Size	MaxValue;	/**< (max float, max float) */
 
 public:
 
