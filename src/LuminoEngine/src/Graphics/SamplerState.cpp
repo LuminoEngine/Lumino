@@ -58,8 +58,10 @@ void SamplerState::setAddressMode(TextureAddressMode value)
 	}
 }
 
-detail::ISamplerState* SamplerState::resolveRHIObject()
+detail::ISamplerState* SamplerState::resolveRHIObject(bool* outModified)
 {
+	*outModified = m_modified;
+
 	if (m_modified)
 	{
 		m_rhiObject = deviceContext()->createSamplerState(m_desc);

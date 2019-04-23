@@ -148,8 +148,9 @@ void VertexBuffer::setResourcePool(GraphicsResourcePool pool)
     m_pool = pool;
 }
 
-detail::IVertexBuffer* VertexBuffer::resolveRHIObject()
+detail::IVertexBuffer* VertexBuffer::resolveRHIObject(bool* outModified)
 {
+	*outModified = m_modified;
     m_mappedBuffer = nullptr;
 
     if (m_modified) {

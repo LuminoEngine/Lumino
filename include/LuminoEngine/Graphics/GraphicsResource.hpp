@@ -39,9 +39,20 @@ namespace detail {
 class GraphicsResourceInternal
 {
 public:
-	template<class TReturn, class TObject>
-	static TReturn* resolveRHIObject(TObject& obj) { return (obj) ? obj->resolveRHIObject() : nullptr; }
 	static IndexBufferFormat selectIndexBufferFormat(int vertexCount) { return (vertexCount > 0xFFFF) ? IndexBufferFormat::UInt32 : IndexBufferFormat::UInt16; }
+	template<class TReturn, class TObject>
+	static TReturn* resolveRHIObject(const TObject& obj, bool* outModified)
+	{
+		bool modified = false;
+		TReturn* rhi = nullptr;
+		if (obj) {
+			rhi = obj->resolveRHIObject(&modified);
+		}
+		if (outModified) {
+			*outModified = modified;
+		}
+		return rhi;
+	}
 };
 
 } // namespace detail

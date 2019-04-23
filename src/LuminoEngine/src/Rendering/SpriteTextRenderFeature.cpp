@@ -33,7 +33,7 @@ InternalSpriteTextRender::InternalSpriteTextRender()
 void InternalSpriteTextRender::init(RenderingManager* manager)
 {
     m_manager = manager;
-	m_vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(manager->standardVertexDeclaration());
+	m_vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(manager->standardVertexDeclaration(), nullptr);
 
     prepareBuffers(512);
 }
@@ -235,7 +235,7 @@ void SpriteTextRenderFeature::flushInternal(GraphicsContext* context, FontGlyphT
 	RenderBulkData dataListData(&m_glyphLayoutDataList[0], sizeof(InternalSpriteTextRender::GlyphData) * dataCount);
 
 	// Texture::blit で転送されるものを Flush する
-	ITexture* glyphsTexture = GraphicsResourceInternal::resolveRHIObject<ITexture>(cache->glyphsFillTexture());
+	ITexture* glyphsTexture = GraphicsResourceInternal::resolveRHIObject<ITexture>(cache->glyphsFillTexture(), nullptr);
 
 	InternalSpriteTextRender::BrushData brushData;
 	//brushData.color = Color::Blue;

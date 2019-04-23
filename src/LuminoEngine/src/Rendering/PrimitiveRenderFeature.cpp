@@ -24,7 +24,7 @@ void InternalPrimitiveRenderer::init(RenderingManager* manager)
     m_manager = manager;
     m_linearAllocator = makeRef<LinearAllocator>(m_manager->graphicsManager()->linearAllocatorPageManager());
     prepareBuffers(m_manager->graphicsManager()->deviceContext(), 512, 512 * 3);
-    m_vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(m_manager->standardVertexDeclaration());
+    m_vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(m_manager->standardVertexDeclaration(), nullptr);
 }
 
 void InternalPrimitiveRenderer::drawMeshGenerater(const MeshGenerater* generator)

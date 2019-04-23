@@ -217,11 +217,21 @@ void InternalShapesRenderer::renderCommandList(IGraphicsContext* context, Shapes
         context->setSubData(m_indexBuffer, 0, m_indexCache.getBuffer(), m_indexCache.getBufferUsedByteCount());
 
 		{
-            context->setVertexDeclaration(detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(m_manager->standardVertexDeclaration()));
+			IVertexDeclaration* oldVertexDeclaration = context->vertexDeclaration();
+			IVertexBuffer* oldVertexBuffer = context->vertexBuffer(0);
+			IIndexBuffer* oldIndexBuffer = context->indexBuffer();
+			PrimitiveTopology oldPrimitiveTopology = context->primitiveTopology();
+
+            context->setVertexDeclaration(detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(m_manager->standardVertexDeclaration(), nullptr));
             context->setVertexBuffer(0, m_vertexBuffer);
             context->setIndexBuffer(m_indexBuffer);
             context->setPrimitiveTopology(PrimitiveTopology::TriangleList);
             context->drawPrimitiveIndexed(0, m_indexCache.getCount() / 3);
+
+			context->setVertexDeclaration(oldVertexDeclaration);
+			context->setVertexBuffer(0, oldVertexBuffer);
+			context->setIndexBuffer(oldIndexBuffer);
+			context->setPrimitiveTopology(oldPrimitiveTopology);
 		}
 	}
 

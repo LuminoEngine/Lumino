@@ -43,7 +43,7 @@ protected:
 	Texture();
 	virtual ~Texture();
 	void init();
-	virtual detail::ITexture* resolveRHIObject() = 0;
+	virtual detail::ITexture* resolveRHIObject(bool* outModified) = 0;
 	void setSize(const SizeI& size) { m_size = size; }
 	void setFormat(TextureFormat format) { m_format = format; }
 	void setMipmap(bool mipmap) { m_mipmap = mipmap; }
@@ -88,7 +88,7 @@ LN_CONSTRUCT_ACCESS:
 protected:
 	virtual void onDispose(bool explicitDisposing) override;
 	virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
-	virtual detail::ITexture* resolveRHIObject() override;
+	virtual detail::ITexture* resolveRHIObject(bool* outModified) override;
 
 private:
 	//void resizeInternal(int width, int height);
@@ -129,7 +129,7 @@ LN_CONSTRUCT_ACCESS:
 protected:
 	virtual void onDispose(bool explicitDisposing) override;
 	virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
-	virtual detail::ITexture* resolveRHIObject() override;
+	virtual detail::ITexture* resolveRHIObject(bool* outModified) override;
 
 private:
 	Ref<detail::ITexture> m_rhiObject;
@@ -164,7 +164,7 @@ LN_CONSTRUCT_ACCESS:
 	void init(SwapChain* owner/*, detail::ITexture* ref*/);
 
 LN_INTERNAL_ACCESS:
-	virtual detail::ITexture* resolveRHIObject() override;
+	virtual detail::ITexture* resolveRHIObject(bool* outModified) override;
 	virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
 
     void resetSwapchainFrameIfNeeded(bool force = false);

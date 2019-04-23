@@ -43,7 +43,7 @@ LN_CONSTRUCT_ACCESS:
     void init(int width, int height);
 
 private:
-    detail::IDepthBuffer* resolveRHIObject();
+    detail::IDepthBuffer* resolveRHIObject(bool* outModified);
 
     Ref<detail::IDepthBuffer> m_rhiObject;
     SizeI m_size;

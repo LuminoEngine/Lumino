@@ -173,8 +173,10 @@ void Texture2D::onChangeDevice(detail::IGraphicsDevice* device)
 	}
 }
 
-detail::ITexture* Texture2D::resolveRHIObject()
+detail::ITexture* Texture2D::resolveRHIObject(bool* outModified)
 {
+	*outModified = m_modified;
+
 	if (m_modified)
 	{
 		if (m_rhiLockedBuffer)
@@ -291,8 +293,10 @@ void Texture3D::onChangeDevice(detail::IGraphicsDevice* device)
 	}
 }
 
-detail::ITexture* Texture3D::resolveRHIObject()
+detail::ITexture* Texture3D::resolveRHIObject(bool* outModified)
 {
+	*outModified = m_modified;
+
 	if (m_modified)
 	{
 		if (m_rhiLockedBuffer)
@@ -396,7 +400,8 @@ Ref<Bitmap2D> RenderTargetTexture::readData()
 
     //manager()->deviceContext()->end();
 
-	detail::ITexture* rhiObject = resolveRHIObject();
+	bool modified = false;
+	detail::ITexture* rhiObject = resolveRHIObject(&modified);
 
 	SizeI size = rhiObject->realSize();
 	auto bitmap = newObject<Bitmap2D>(size.width, size.height, GraphicsHelper::translateToPixelFormat(rhiObject->getTextureFormat()));
@@ -417,8 +422,9 @@ Ref<Bitmap2D> RenderTargetTexture::readData()
 	return bitmap;
 }
 
-detail::ITexture* RenderTargetTexture::resolveRHIObject()
+detail::ITexture* RenderTargetTexture::resolveRHIObject(bool* outModified)
 {
+	*outModified = false;
 	return m_rhiObject;
 }
 
@@ -437,7 +443,7 @@ void RenderTargetTexture::resetSwapchainFrameIfNeeded(bool force)
 		int imageIndex = detail::SwapChainInternal::imageIndex(m_ownerSwapchain);
         if (m_swapchainImageIndex != imageIndex || force) {
             m_swapchainImageIndex = imageIndex;
-            m_rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(m_ownerSwapchain)->getRenderTarget(m_swapchainImageIndex);
+            m_rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(m_ownerSwapchain, nullptr)->getRenderTarget(m_swapchainImageIndex);
             setSize(m_rhiObject->realSize());
             setFormat(m_rhiObject->getTextureFormat());
         }

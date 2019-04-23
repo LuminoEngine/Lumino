@@ -836,8 +836,9 @@ void ShaderPass::commitContantBuffers()
 					sampler = m_owner->shader()->manager()->defaultSamplerState();
 				}
 
-				detail::ITexture* rhiTexture = (texture) ? texture->resolveRHIObject() : nullptr;
-				detail::ISamplerState* rhiSampler = (sampler) ? sampler->resolveRHIObject() : nullptr;
+				bool modified = false;
+				detail::ITexture* rhiTexture = (texture) ? texture->resolveRHIObject(&modified) : nullptr;
+				detail::ISamplerState* rhiSampler = (sampler) ? sampler->resolveRHIObject(&modified) : nullptr;
 				LN_ENQUEUE_RENDER_COMMAND_4(
 					ShaderConstantBuffer_commit_setTexture, manager, detail::IShaderSamplerBuffer*, samplerBuffer, int, i, Ref<detail::ITexture>, rhiTexture, Ref<detail::ISamplerState>, rhiSampler, {
 						samplerBuffer->setTexture(i, rhiTexture);

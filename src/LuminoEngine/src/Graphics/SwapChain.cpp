@@ -63,7 +63,8 @@ void SwapChain::present()
     detail::GraphicsContextInternal::flushCommandRecoding(context, backbuffer());
 
     // TODO: threading
-    nativeContext->present(resolveRHIObject());
+	detail::ISwapChain* rhi = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(this, nullptr);
+	nativeContext->present(rhi);
     manager()->primaryRenderingCommandList()->clear();
 
     // この後 readData などでバックバッファのイメージをキャプチャしたりするので、
@@ -73,8 +74,9 @@ void SwapChain::present()
     m_rhiObject->acquireNextImage(&m_imageIndex);
 }
 
-detail::ISwapChain* SwapChain::resolveRHIObject() const
+detail::ISwapChain* SwapChain::resolveRHIObject(bool* outModified) const
 {
+	*outModified = false;
     return m_rhiObject;
 }
 
@@ -85,7 +87,7 @@ namespace detail {
 void SwapChainInternal::setBackendBufferSize(SwapChain* swapChain, int width, int height)
 {
     LN_DCHECK(swapChain);
-    if (GLSwapChain* glswap = dynamic_cast<GLSwapChain*>(swapChain->resolveRHIObject())) {
+    if (GLSwapChain* glswap = dynamic_cast<GLSwapChain*>(detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(swapChain, nullptr))) {
         glswap->setBackendBufferSize(width, height);
     }
 }
@@ -93,7 +95,7 @@ void SwapChainInternal::setBackendBufferSize(SwapChain* swapChain, int width, in
 void SwapChainInternal::setOpenGLBackendFBO(SwapChain* swapChain, uint32_t id)
 {
     LN_DCHECK(swapChain);
-    if (GLSwapChain* glswap = dynamic_cast<GLSwapChain*>(swapChain->resolveRHIObject())) {
+    if (GLSwapChain* glswap = dynamic_cast<GLSwapChain*>(detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(swapChain, nullptr))) {
         glswap->setDefaultFBO(id);
     }
 }

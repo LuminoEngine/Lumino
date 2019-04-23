@@ -41,7 +41,7 @@ LN_CONSTRUCT_ACCESS:
 private:
     void resizeBackbuffer(int width, int height);
     void present();
-    detail::ISwapChain* resolveRHIObject() const;
+    detail::ISwapChain* resolveRHIObject(bool* outModified) const;
     int imageIndex() const { return m_imageIndex; }
 
     Ref<detail::ISwapChain> m_rhiObject;

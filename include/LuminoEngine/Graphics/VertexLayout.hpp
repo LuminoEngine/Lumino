@@ -34,7 +34,7 @@ LN_CONSTRUCT_ACCESS:
     void init(const VertexElement* elements, int count);
 
 private:
-    detail::IVertexDeclaration* resolveRHIObject();
+    detail::IVertexDeclaration* resolveRHIObject(bool* outModified);
 
     Ref<detail::IVertexDeclaration> m_deviceObj;
     List<VertexElement> m_vertexElements;

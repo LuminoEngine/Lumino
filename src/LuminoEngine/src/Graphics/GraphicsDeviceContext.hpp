@@ -251,6 +251,11 @@ public:
     void setShaderPass(IShaderPass* value);
     void setPrimitiveTopology(PrimitiveTopology value);
 
+	IVertexDeclaration* vertexDeclaration() const { return m_staging.pipelineState.vertexDeclaration; }
+	IVertexBuffer* vertexBuffer(int streamIndex) const { return m_staging.primitive.vertexBuffers[streamIndex]; }
+	IIndexBuffer* indexBuffer() const { return m_staging.primitive.indexBuffer; }
+	PrimitiveTopology primitiveTopology() const { return m_staging.pipelineState.topology; }
+
     // write only
     void* map(IGraphicsResource* resource);
     void unmap(IGraphicsResource* resource);

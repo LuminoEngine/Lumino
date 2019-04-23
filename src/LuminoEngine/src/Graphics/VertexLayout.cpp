@@ -61,8 +61,10 @@ void VertexLayout::addElement(int streamIndex, VertexElementType type, VertexEle
     m_vertexElements.add(e);
 }
 
-detail::IVertexDeclaration* VertexLayout::resolveRHIObject()
+detail::IVertexDeclaration* VertexLayout::resolveRHIObject(bool* outModified)
 {
+	*outModified = m_modified;
+
     if (m_modified) {
         m_deviceObj = manager()->deviceContext()->createVertexDeclaration(&m_vertexElements[0], m_vertexElements.size());
         m_modified = false;

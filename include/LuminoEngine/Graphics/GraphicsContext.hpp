@@ -140,7 +140,7 @@ private:
     enum ModifiedFlags
     {
         ModifiedFlags_None = 0,
-        ModifiedFlags_Buffers = 1 << 2,
+		ModifiedFlags_PrimitiveBuffers = 1 << 2,
         //ModifiedFlags_IndexBuffer = 1 << 3,
         ModifiedFlags_ShaderPass = 1 << 4,
         ModifiedFlags_All = 0xFFFFFFFF,

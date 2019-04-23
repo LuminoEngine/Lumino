@@ -40,7 +40,7 @@ LN_CONSTRUCT_ACCESS:
 	virtual void onDispose(bool explicitDisposing) override;
 
 LN_INTERNAL_ACCESS:
-	detail::ISamplerState* resolveRHIObject();
+	detail::ISamplerState* resolveRHIObject(bool* outModified);
 	void setFrozen(bool value) { m_frozen = value; }
 
 

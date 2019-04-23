@@ -193,8 +193,9 @@ void IndexBuffer::setResourcePool(GraphicsResourcePool pool)
     m_pool = pool;
 }
 
-detail::IIndexBuffer* IndexBuffer::resolveRHIObject()
+detail::IIndexBuffer* IndexBuffer::resolveRHIObject(bool* outModified)
 {
+	*outModified = m_modified;
     m_mappedBuffer = nullptr;
 
     if (m_modified) {

@@ -82,7 +82,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     int getIndexStride() const;
-    detail::IIndexBuffer* resolveRHIObject();
+    detail::IIndexBuffer* resolveRHIObject(bool* outModified);
     bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }
 
     static int getIndexStride(IndexBufferFormat format) { return (format == IndexBufferFormat::UInt16) ? 2 : 4; }
