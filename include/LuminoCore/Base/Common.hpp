@@ -223,6 +223,7 @@ enum class StringSplitOptions
 
 //------------------------------------------------------------------------------
 #include <stdint.h>
+#include <math.h>       // for macOS on AzurePipelines. TODO: https://github.com/PointCloudLibrary/pcl/issues/2601
 
 #if WCHAR_MAX <= 0xffff
 #define LN_WCHAR_16
