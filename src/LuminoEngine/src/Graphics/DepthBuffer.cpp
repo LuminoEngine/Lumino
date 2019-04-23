@@ -40,7 +40,7 @@ void DepthBuffer::init(int width, int height)
     GraphicsResource::init();
     m_size.width = width;
     m_size.height = height;
-    m_rhiObject = deviceContext()->createDepthBuffer(width, height);
+    m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createDepthBuffer(width, height);
 }
 
 void DepthBuffer::onDispose(bool explicitDisposing)
@@ -54,7 +54,7 @@ void DepthBuffer::onChangeDevice(detail::IGraphicsDevice* device)
     if (!device) {
         m_rhiObject = nullptr;
     } else {
-        m_rhiObject = deviceContext()->createDepthBuffer(m_size.width, m_size.height);
+        m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createDepthBuffer(m_size.width, m_size.height);
     }
 }
 

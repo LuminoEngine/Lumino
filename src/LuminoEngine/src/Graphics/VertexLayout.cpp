@@ -66,7 +66,7 @@ detail::IVertexDeclaration* VertexLayout::resolveRHIObject(bool* outModified)
 	*outModified = m_modified;
 
     if (m_modified) {
-        m_deviceObj = manager()->deviceContext()->createVertexDeclaration(&m_vertexElements[0], m_vertexElements.size());
+        m_deviceObj = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createVertexDeclaration(&m_vertexElements[0], m_vertexElements.size());
         m_modified = false;
     }
 
@@ -78,7 +78,7 @@ void VertexLayout::onChangeDevice(detail::IGraphicsDevice* device)
     if (!device) {
         m_deviceObj = nullptr;
     } else {
-        m_deviceObj = manager()->deviceContext()->createVertexDeclaration(&m_vertexElements[0], m_vertexElements.size());
+        m_deviceObj = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createVertexDeclaration(&m_vertexElements[0], m_vertexElements.size());
         m_modified = false;
     }
 }

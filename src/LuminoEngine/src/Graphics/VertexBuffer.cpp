@@ -67,7 +67,7 @@ void VertexBuffer::init(size_t bufferSize, const void* initialData, GraphicsReso
 {
     VertexBuffer::init(bufferSize, usage);
     if (initialData) {
-        m_rhiObject = manager()->deviceContext()->createVertexBuffer(m_usage, bufferSize, initialData);
+        m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createVertexBuffer(m_usage, bufferSize, initialData);
         m_modified = false;
     }
 }
@@ -103,11 +103,11 @@ void* VertexBuffer::map(MapMode mode)
     // if have not entried the Command List at least once, can rewrite directly with map().
     if (m_initialUpdate && m_usage == GraphicsResourceUsage::Static && m_pool == GraphicsResourcePool::None) {
         if (!m_rhiObject) {
-            m_rhiObject = manager()->deviceContext()->createVertexBuffer(m_usage, size(), nullptr);
+            m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createVertexBuffer(m_usage, size(), nullptr);
         }
 
         if (m_rhiMappedBuffer == nullptr) {
-            m_rhiMappedBuffer = manager()->deviceContext()->getGraphicsContext()->map(m_rhiObject);
+            m_rhiMappedBuffer = detail::GraphicsResourceInternal::manager(this)->deviceContext()->getGraphicsContext()->map(m_rhiObject);
         }
 
         m_modified = true;
@@ -154,7 +154,7 @@ detail::IVertexBuffer* VertexBuffer::resolveRHIObject(bool* outModified)
     m_mappedBuffer = nullptr;
 
     if (m_modified) {
-        detail::IGraphicsDevice* device = manager()->deviceContext();
+        detail::IGraphicsDevice* device = detail::GraphicsResourceInternal::manager(this)->deviceContext();
         if (m_rhiMappedBuffer) {
             device->getGraphicsContext()->unmap(m_rhiObject);
             m_rhiMappedBuffer = nullptr;
@@ -166,7 +166,7 @@ detail::IVertexBuffer* VertexBuffer::resolveRHIObject(bool* outModified)
                 detail::RenderBulkData data(m_buffer.data(), m_buffer.size());
                 detail::IVertexBuffer* rhiObject = m_rhiObject;
                 LN_ENQUEUE_RENDER_COMMAND_3(
-                    VertexBuffer_SetSubData, manager(), detail::IGraphicsDevice*, device, detail::RenderBulkData, data, Ref<detail::IVertexBuffer>, rhiObject, {
+                    VertexBuffer_SetSubData, detail::GraphicsResourceInternal::manager(this), detail::IGraphicsDevice*, device, detail::RenderBulkData, data, Ref<detail::IVertexBuffer>, rhiObject, {
                         device->getGraphicsContext()->setSubData(rhiObject, 0, data.data(), data.size());
                     });
             }

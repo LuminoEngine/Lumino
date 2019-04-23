@@ -12,12 +12,10 @@ namespace ln {
 GraphicsResource::GraphicsResource()
 	: m_manager(nullptr)
 {
-
 }
 
 GraphicsResource::~GraphicsResource()
 {
-
 }
 
 void GraphicsResource::init()
@@ -34,11 +32,6 @@ void GraphicsResource::onDispose(bool explicitDisposing)
 		m_manager = nullptr;
 	}
 	Object::onDispose(explicitDisposing);
-}
-
-detail::IGraphicsDevice* GraphicsResource::deviceContext() const
-{
-	return m_manager->deviceContext();
 }
 
 } // namespace ln

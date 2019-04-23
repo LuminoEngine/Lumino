@@ -27,7 +27,7 @@ void SwapChain::init(detail::PlatformWindow* window, const SizeI& backbufferSize
 {
     // TODO: onChangeDevice でバックバッファをアタッチ
     GraphicsResource::init();
-    m_rhiObject = manager()->deviceContext()->createSwapChain(window, backbufferSize);
+    m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createSwapChain(window, backbufferSize);
     m_rhiObject->acquireNextImage(&m_imageIndex);
     m_backbuffer = newObject<RenderTargetTexture>(this);
     m_backbuffer->resetSwapchainFrameIfNeeded();
@@ -57,15 +57,15 @@ void SwapChain::resizeBackbuffer(int width, int height)
 
 void SwapChain::present()
 {
-    GraphicsContext* context = manager()->graphicsContext();
-    detail::IGraphicsContext* nativeContext = manager()->deviceContext()->getGraphicsContext();
+    GraphicsContext* context = detail::GraphicsResourceInternal::manager(this)->graphicsContext();
+    detail::IGraphicsContext* nativeContext = detail::GraphicsResourceInternal::manager(this)->deviceContext()->getGraphicsContext();
 
     detail::GraphicsContextInternal::flushCommandRecoding(context, backbuffer());
 
     // TODO: threading
 	detail::ISwapChain* rhi = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(this, nullptr);
 	nativeContext->present(rhi);
-    manager()->primaryRenderingCommandList()->clear();
+	detail::GraphicsResourceInternal::manager(this)->primaryRenderingCommandList()->clear();
 
     // この後 readData などでバックバッファのイメージをキャプチャしたりするので、
     // ここでは次に使うべきバッファの番号だけを取り出しておく。

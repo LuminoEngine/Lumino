@@ -296,7 +296,7 @@ void Shader::createFromUnifiedShader(detail::UnifiedShader* unifiedShader, Diagn
 		for (int iPass = 0; iPass < passCount; iPass++) {
 			detail::UnifiedShader::PassId passId = unifiedShader->getPassIdInTechnique(techId, iPass);
 
-			auto rhiPass = manager()->deviceContext()->createShaderPassFromUnifiedShaderPass(unifiedShader, passId, diag);
+			auto rhiPass = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createShaderPassFromUnifiedShaderPass(unifiedShader, passId, diag);
 			if (rhiPass) {
 				auto pass = newObject<ShaderPass>(String::fromStdString(unifiedShader->passName(passId)), rhiPass);
 				pass->m_renderState = unifiedShader->renderState(passId);
@@ -708,7 +708,7 @@ ShaderParameter* ShaderConstantBuffer::findParameter(const StringRef& name) cons
 
 void ShaderConstantBuffer::commit(detail::IShaderUniformBuffer* rhiObject)
 {
-    auto* manager = owner()->manager();
+	auto* manager = detail::GraphicsResourceInternal::manager(owner());
     detail::RenderBulkData data = manager->primaryRenderingCommandList()->allocateBulkData(m_buffer.size());
     memcpy(data.writableData(), m_buffer.data(), data.size());
 
@@ -809,7 +809,6 @@ void ShaderPass::setupParameters()
 
 void ShaderPass::commit()
 {
-    auto* manager = m_owner->shader()->manager();
     commitContantBuffers();
 }
 
@@ -823,7 +822,7 @@ void ShaderPass::commitContantBuffers()
     detail::IShaderSamplerBuffer* samplerBuffer = m_rhiPass->samplerBuffer();
     if (samplerBuffer) {
 		for (int i = 0; i < samplerBuffer->registerCount(); i++) {
-			auto* manager = m_owner->shader()->manager();
+			auto* manager = detail::GraphicsResourceInternal::manager(m_owner->shader());;
 			Texture* texture = m_textureParameters[i]->texture();
 
 			if (texture) {
@@ -833,7 +832,7 @@ void ShaderPass::commitContantBuffers()
 					sampler = texture->samplerState();
 				}
 				else {
-					sampler = m_owner->shader()->manager()->defaultSamplerState();
+					sampler = manager->defaultSamplerState();
 				}
 
 				bool modified = false;

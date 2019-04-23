@@ -3,22 +3,15 @@
 
 namespace ln {
 namespace detail {
-class GraphicsManager;
-class IGraphicsDevice;
+class GraphicsResourceInternal;
 }
 
-/**
-	Graphics 機能に関係するリソースのベースクラスです。
-
-*/
+/** Graphics 機能に関係するリソースのベースクラスです。*/
 class LN_API GraphicsResource
 	: public Object
 {
-public:
-
-	virtual void onDispose(bool explicitDisposing) override;
-
 protected:
+	virtual void onDispose(bool explicitDisposing) override;
 	virtual void onChangeDevice(detail::IGraphicsDevice* device) = 0;
 
 LN_CONSTRUCT_ACCESS:
@@ -26,11 +19,10 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~GraphicsResource();
 	void init();
 
-LN_INTERNAL_ACCESS:
-	detail::GraphicsManager* manager() const { return m_manager; }
-	detail::IGraphicsDevice* deviceContext() const;
 private:
 	detail::GraphicsManager* m_manager;
+
+	friend class detail::GraphicsResourceInternal;
 };
 
 
@@ -40,6 +32,9 @@ class GraphicsResourceInternal
 {
 public:
 	static IndexBufferFormat selectIndexBufferFormat(int vertexCount) { return (vertexCount > 0xFFFF) ? IndexBufferFormat::UInt32 : IndexBufferFormat::UInt16; }
+
+	static detail::GraphicsManager* manager(GraphicsResource* obj) { return obj->m_manager; }
+
 	template<class TReturn, class TObject>
 	static TReturn* resolveRHIObject(const TObject& obj, bool* outModified)
 	{

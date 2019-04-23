@@ -51,7 +51,7 @@ void IndexBuffer::init(int indexCount, IndexBufferFormat format, const void* ini
 {
     IndexBuffer::init(indexCount, format, usage);
     if (initialData) {
-        m_rhiObject = manager()->deviceContext()->createIndexBuffer(m_usage, m_format, indexCount, initialData);
+        m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createIndexBuffer(m_usage, m_format, indexCount, initialData);
         m_modified = false;
     }
 }
@@ -92,11 +92,11 @@ void* IndexBuffer::map(MapMode mode)
     // if have not entried the Command List at least once, can rewrite directly with map().
     if (m_initialUpdate && m_usage == GraphicsResourceUsage::Static && m_pool == GraphicsResourcePool::None) {
         if (!m_rhiObject) {
-            m_rhiObject = manager()->deviceContext()->createIndexBuffer(m_usage, m_format, size(), nullptr);
+            m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createIndexBuffer(m_usage, m_format, size(), nullptr);
         }
 
         if (m_rhiMappedBuffer == nullptr) {
-            m_rhiMappedBuffer = manager()->deviceContext()->getGraphicsContext()->map(m_rhiObject);
+            m_rhiMappedBuffer = detail::GraphicsResourceInternal::manager(this)->deviceContext()->getGraphicsContext()->map(m_rhiObject);
         }
 
         m_modified = true;
@@ -199,7 +199,7 @@ detail::IIndexBuffer* IndexBuffer::resolveRHIObject(bool* outModified)
     m_mappedBuffer = nullptr;
 
     if (m_modified) {
-        detail::IGraphicsDevice* device = manager()->deviceContext();
+        detail::IGraphicsDevice* device = detail::GraphicsResourceInternal::manager(this)->deviceContext();
         if (m_rhiMappedBuffer) {
             device->getGraphicsContext()->unmap(m_rhiObject);
             m_rhiMappedBuffer = nullptr;
@@ -211,7 +211,7 @@ detail::IIndexBuffer* IndexBuffer::resolveRHIObject(bool* outModified)
                 detail::RenderBulkData data(m_buffer.data(), m_buffer.size());
                 detail::IIndexBuffer* rhiObject = m_rhiObject;
                 LN_ENQUEUE_RENDER_COMMAND_3(
-                    IndexBuffer_setSubData, manager(), detail::IGraphicsDevice*, device, detail::RenderBulkData, data, Ref<detail::IIndexBuffer>, rhiObject, {
+                    IndexBuffer_setSubData, detail::GraphicsResourceInternal::manager(this), detail::IGraphicsDevice*, device, detail::RenderBulkData, data, Ref<detail::IIndexBuffer>, rhiObject, {
                         device->getGraphicsContext()->setSubData(rhiObject, 0, data.data(), data.size());
                     });
             }
