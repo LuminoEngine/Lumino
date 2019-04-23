@@ -100,7 +100,7 @@ private:
     bool m_initialUpdate;
     bool m_modified;
 
-    friend class detail::GraphicsResourceHelper;
+    friend class detail::GraphicsResourceInternal;
 };
 
 } // namespace ln

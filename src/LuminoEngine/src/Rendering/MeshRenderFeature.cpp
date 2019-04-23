@@ -49,13 +49,13 @@ void MeshRenderFeature::drawMesh(GraphicsContext* context, MeshResource* mesh, i
 	mesh->commitRenderData(sectionIndex, &section, &decls, vb, &vbCount, &ib);
 
 	DrawMeshCommandData data;
-	data.vertexDeclaration = GraphicsResourceHelper::resolveRHIObject<IVertexDeclaration>(decls);
+	data.vertexDeclaration = GraphicsResourceInternal::resolveRHIObject<IVertexDeclaration>(decls);
 	for (int i = 0; i < vbCount; ++i)
 	{
-		data.vertexBuffers[i] = GraphicsResourceHelper::resolveRHIObject<IVertexBuffer>(vb[i]);
+		data.vertexBuffers[i] = GraphicsResourceInternal::resolveRHIObject<IVertexBuffer>(vb[i]);
 	}
 	data.vertexBuffersCount = vbCount;
-	data.indexBuffer = detail::GraphicsResourceHelper::resolveRHIObject<detail::IIndexBuffer>(ib);
+	data.indexBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IIndexBuffer>(ib);
 	data.startIndex = section.startIndex;
 	data.primitiveCount = section.primitiveCount;
 	data.primitiveType = PrimitiveTopology::TriangleList;

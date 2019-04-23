@@ -120,7 +120,7 @@ void GraphicsContext::setVertexBuffer(int streamIndex, VertexBuffer* value)
 {
     if (m_staging.vertexBuffers[streamIndex] != value) {
         m_staging.vertexBuffers[streamIndex] = value;
-        m_modifiedFlags |= ModifiedFlags_VertexBuffers;
+        m_modifiedFlags |= ModifiedFlags_Buffers;
     }
 }
 
@@ -134,7 +134,7 @@ void GraphicsContext::setIndexBuffer(IndexBuffer* value)
 {
     if (m_staging.indexBuffer != value) {
         m_staging.indexBuffer = value;
-        m_modifiedFlags |= ModifiedFlags_IndexBuffer;
+        m_modifiedFlags |= ModifiedFlags_Buffers;
     }
 }
 
@@ -170,6 +170,7 @@ void GraphicsContext::setPrimitiveTopology(PrimitiveTopology value)
 {
 	if (m_staging.topology != value) {
 		m_staging.topology = value;
+		m_modifiedFlags |= ModifiedFlags_Buffers;
 	}
 }
 
@@ -315,7 +316,7 @@ detail::IGraphicsContext* GraphicsContext::commitState()
 
 	{
 		auto& value = m_staging.depthBuffer;
-		detail::IDepthBuffer* rhiObject = detail::GraphicsResourceHelper::resolveRHIObject<detail::IDepthBuffer>(value);
+		detail::IDepthBuffer* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::IDepthBuffer>(value);
 		LN_ENQUEUE_RENDER_COMMAND_2(
 			GraphicsContext_setDepthBuffer, m_manager,
 			detail::IGraphicsContext*, m_context,
@@ -339,51 +340,75 @@ detail::IGraphicsContext* GraphicsContext::commitState()
 			});
 	}
 
-	{
-		auto& value = m_staging.VertexLayout;
-		detail::IVertexDeclaration* rhiObject = detail::GraphicsResourceHelper::resolveRHIObject<detail::IVertexDeclaration>(value);
-		LN_ENQUEUE_RENDER_COMMAND_2(
-			GraphicsContext_setVertexDeclaration, m_manager,
-			detail::IGraphicsContext*, m_context,
-			detail::IVertexDeclaration*, rhiObject,
-			{
-				m_context->setVertexDeclaration(rhiObject);
-			});
-	}
+	//{
+	//	auto& value = m_staging.VertexLayout;
+	//	detail::IVertexDeclaration* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(value);
+	//	LN_ENQUEUE_RENDER_COMMAND_2(
+	//		GraphicsContext_setVertexDeclaration, m_manager,
+	//		detail::IGraphicsContext*, m_context,
+	//		detail::IVertexDeclaration*, rhiObject,
+	//		{
+	//			m_context->setVertexDeclaration(rhiObject);
+	//		});
+	//}
 
-    //if ((m_modifiedFlags & ModifiedFlags_VertexBuffers) != 0)
+    //if ((m_modifiedFlags & ModifiedFlags_Buffers) != 0)
 	{
+
+		PrimitiveTopology topology = m_staging.topology;
+		detail::IVertexDeclaration* vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(m_staging.VertexLayout);
+
+		using VertexBufferArray = std::array<detail::IVertexBuffer*, detail::MaxVertexStreams>;
+		VertexBufferArray vertexBuffers;
 		for (int i = 0; i < m_staging.vertexBuffers.size(); i++)
 		{
 			auto& value = m_staging.vertexBuffers[i];
-			detail::IVertexBuffer* rhiObject = detail::GraphicsResourceHelper::resolveRHIObject<detail::IVertexBuffer>(value);
-			LN_ENQUEUE_RENDER_COMMAND_3(
-				GraphicsContext_setVertexBuffer, m_manager,
-				detail::IGraphicsContext*, m_context,
-				int, i,
-				detail::IVertexBuffer*, rhiObject,
-				{
-					m_context->setVertexBuffer(i, rhiObject);
-				});
+			vertexBuffers[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexBuffer>(value);
 		}
 
-        m_lastCommit.vertexBuffers = m_staging.vertexBuffers;
-	}
+		detail::IIndexBuffer* indexBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IIndexBuffer>(m_staging.indexBuffer);
+		//LN_ENQUEUE_RENDER_COMMAND_2(
+		//	GraphicsContext_setShaderPass, m_manager,
+		//	detail::IGraphicsContext*, m_context,
+		//	PrimitiveTopology, topology,
+		//	{
+		//		m_context->setPrimitiveTopology(topology);
+		//	});
 
-    //if ((m_modifiedFlags & ModifiedFlags_IndexBuffer) != 0)
-	{
-		auto& value = m_staging.indexBuffer;
-		detail::IIndexBuffer* rhiObject = detail::GraphicsResourceHelper::resolveRHIObject<detail::IIndexBuffer>(value);
-		LN_ENQUEUE_RENDER_COMMAND_2(
-			GraphicsContext_setIndexBuffer, m_manager,
+		LN_ENQUEUE_RENDER_COMMAND_5(
+			GraphicsContext_setPrimitiveBuffers, m_manager,
 			detail::IGraphicsContext*, m_context,
-			detail::IIndexBuffer*, rhiObject,
+			PrimitiveTopology, topology,
+			detail::IVertexDeclaration*, vertexDeclaration,
+			VertexBufferArray, vertexBuffers,
+			detail::IIndexBuffer*, indexBuffer,
 			{
-				m_context->setIndexBuffer(rhiObject);
+				m_context->setPrimitiveTopology(topology);
+				m_context->setVertexDeclaration(vertexDeclaration);
+				for (int i = 0; i < detail::MaxVertexStreams; i++) {
+					m_context->setVertexBuffer(i, vertexBuffers[i]);
+				}
+				m_context->setIndexBuffer(indexBuffer);
 			});
+			//});
 
+        m_lastCommit.vertexBuffers = m_staging.vertexBuffers;
         m_lastCommit.indexBuffer = m_staging.indexBuffer;
 	}
+
+ //   //if ((m_modifiedFlags & ModifiedFlags_IndexBuffer) != 0)
+	//{
+	//	auto& value = m_staging.indexBuffer;
+	//	detail::IIndexBuffer* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::IIndexBuffer>(value);
+	//	LN_ENQUEUE_RENDER_COMMAND_2(
+	//		GraphicsContext_setIndexBuffer, m_manager,
+	//		detail::IGraphicsContext*, m_context,
+	//		detail::IIndexBuffer*, rhiObject,
+	//		{
+	//			m_context->setIndexBuffer(rhiObject);
+	//		});
+
+	//}
 
     //if ((m_modifiedFlags & ModifiedFlags_ShaderPass) != 0)
 	{
@@ -405,16 +430,16 @@ detail::IGraphicsContext* GraphicsContext::commitState()
         }
 	}
 
-	{
-		auto& topology = m_staging.topology;
-		LN_ENQUEUE_RENDER_COMMAND_2(
-			GraphicsContext_setShaderPass, m_manager,
-			detail::IGraphicsContext*, m_context,
-			PrimitiveTopology, topology,
-			{
-				m_context->setPrimitiveTopology(topology);
-			});
-	}
+	//{
+	//	auto& topology = m_staging.topology;
+	//	LN_ENQUEUE_RENDER_COMMAND_2(
+	//		GraphicsContext_setShaderPass, m_manager,
+	//		detail::IGraphicsContext*, m_context,
+	//		PrimitiveTopology, topology,
+	//		{
+	//			m_context->setPrimitiveTopology(topology);
+	//		});
+	//}
 
     m_modifiedFlags = ModifiedFlags_None;
 

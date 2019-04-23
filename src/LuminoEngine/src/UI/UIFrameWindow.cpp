@@ -277,7 +277,7 @@ void UIFrameWindow::present()
 		m_depthBuffer = nullptr;
 	}
 
-	m_swapChain->present();
+	detail::SwapChainInternal::present(m_swapChain);
 }
 
 SwapChain* UIFrameWindow::swapChain() const
@@ -377,7 +377,7 @@ bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)
 		{
 			int w, h;
 			m_platformWindow->getFramebufferSize(&w, &h);
-			m_swapChain->resizeBackbuffer(w, h);
+			detail::SwapChainInternal::resizeBackbuffer(m_swapChain, w, h);
 		}
 		break;
 	}

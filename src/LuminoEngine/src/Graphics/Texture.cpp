@@ -434,9 +434,10 @@ void RenderTargetTexture::onChangeDevice(detail::IGraphicsDevice* device)
 void RenderTargetTexture::resetSwapchainFrameIfNeeded(bool force)
 {
     if (m_ownerSwapchain) {
-        if (m_swapchainImageIndex != m_ownerSwapchain->imageIndex() || force) {
-            m_swapchainImageIndex = m_ownerSwapchain->imageIndex();
-            m_rhiObject = m_ownerSwapchain->resolveRHIObject()->getRenderTarget(m_swapchainImageIndex);
+		int imageIndex = detail::SwapChainInternal::imageIndex(m_ownerSwapchain);
+        if (m_swapchainImageIndex != imageIndex || force) {
+            m_swapchainImageIndex = imageIndex;
+            m_rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(m_ownerSwapchain)->getRenderTarget(m_swapchainImageIndex);
             setSize(m_rhiObject->realSize());
             setFormat(m_rhiObject->getTextureFormat());
         }

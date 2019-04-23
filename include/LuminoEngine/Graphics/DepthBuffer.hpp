@@ -48,7 +48,7 @@ private:
     Ref<detail::IDepthBuffer> m_rhiObject;
     SizeI m_size;
 
-    friend class detail::GraphicsResourceHelper;
+    friend class detail::GraphicsResourceInternal;
 };
 
 } // namespace ln

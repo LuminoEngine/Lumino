@@ -28,7 +28,7 @@ InternalFrameRectRenderer::InternalFrameRectRenderer()
 void InternalFrameRectRenderer::init(RenderingManager* manager)
 {
     m_manager = manager;
-    m_vertexDeclaration = detail::GraphicsResourceHelper::resolveRHIObject<detail::IVertexDeclaration>(manager->standardVertexDeclaration());
+    m_vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(manager->standardVertexDeclaration());
 
     m_vertexAllocator = makeRef<LinearAllocator>(m_manager->graphicsManager()->linearAllocatorPageManager());
     prepareBuffers(512);

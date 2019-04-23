@@ -140,8 +140,8 @@ private:
     enum ModifiedFlags
     {
         ModifiedFlags_None = 0,
-        ModifiedFlags_VertexBuffers = 1 << 2,
-        ModifiedFlags_IndexBuffer = 1 << 3,
+        ModifiedFlags_Buffers = 1 << 2,
+        //ModifiedFlags_IndexBuffer = 1 << 3,
         ModifiedFlags_ShaderPass = 1 << 4,
         ModifiedFlags_All = 0xFFFFFFFF,
     };
@@ -156,7 +156,7 @@ private:
 		Rect viewportRect;
 		Rect scissorRect;
 		Ref<VertexLayout> VertexLayout;
-		std::array<Ref<VertexBuffer>, 4> vertexBuffers;
+		std::array<Ref<VertexBuffer>, detail::MaxVertexStreams> vertexBuffers;
 		Ref<IndexBuffer> indexBuffer;
 		Ref<Shader> shader;		// shaderPass owner, for keep reference.
 		ShaderPass* shaderPass;
@@ -171,6 +171,7 @@ private:
 	State m_lastCommit;
     uint32_t m_modifiedFlags;
     bool m_recordingBegan;
+
 
 	friend class detail::GraphicsContextInternal;
 };

@@ -210,7 +210,7 @@ void MeshResource::requestBuffers(VertexBufferGroup group, VertexBuffer** outVer
 	if (outIndexBuffer) {
         // prepare index buffer
         if (!m_indexBuffer) {
-            m_indexBuffer = ln::newObject<IndexBuffer>(m_indexCount, detail::GraphicsResourceHelper::selectIndexBufferFormat(m_vertexCount), m_usage);
+            m_indexBuffer = ln::newObject<IndexBuffer>(m_indexCount, detail::GraphicsResourceInternal::selectIndexBufferFormat(m_vertexCount), m_usage);
         }
         else if (realIndexCount() != m_indexCount) {
             m_indexBuffer->resize(m_indexCount);
