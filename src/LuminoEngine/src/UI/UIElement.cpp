@@ -266,7 +266,7 @@ void UIElement::setBlendMode(const Optional<BlendMode>& value)
     }
 }
 
-const BlendMode & UIElement::blendMode() const
+BlendMode UIElement::blendMode() const
 {
     return m_localStyle->blendMode.getOrDefault(BlendMode::Alpha);
 }

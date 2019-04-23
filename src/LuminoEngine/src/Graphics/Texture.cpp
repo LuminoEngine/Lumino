@@ -224,127 +224,6 @@ detail::ITexture* Texture2D::resolveRHIObject(bool* outModified)
 }
 
 //==============================================================================
-// Texture3D
-
-Texture3D::Texture3D()
-	: m_rhiObject(nullptr)
-	, m_usage(GraphicsResourceUsage::Static)
-	, m_pool(GraphicsResourcePool::Managed)
-	, m_depth(0)
-	, m_bitmap(nullptr)
-	, m_rhiLockedBuffer(nullptr)
-	, m_initialUpdate(false)
-	, m_modified(false)
-{
-}
-
-Texture3D::~Texture3D()
-{
-}
-
-void Texture3D::init(int width, int height, int depth, TextureFormat format, bool mipmap, GraphicsResourceUsage usage)
-{
-	Texture::init();
-	m_depth = depth;
-	m_bitmap = newObject<Bitmap3D>(width, height, depth, GraphicsHelper::translateToPixelFormat(format));
-	m_usage = usage;
-	m_initialUpdate = true;
-	m_modified = true;
-	setSize(SizeI(width, height));
-	setFormat(format);
-	setMipmap(mipmap);
-}
-
-Bitmap3D* Texture3D::map(MapMode mode)
-{
-	if (m_initialUpdate && m_pool == GraphicsResourcePool::None)
-	{
-		LN_NOTIMPLEMENTED();
-	}
-
-	m_modified = true;
-	return m_bitmap;
-}
-
-void Texture3D::setResourcePool(GraphicsResourcePool pool)
-{
-	m_pool = pool;
-}
-
-void Texture3D::onDispose(bool explicitDisposing)
-{
-	m_rhiObject.reset();
-	Texture::onDispose(explicitDisposing);
-}
-
-void Texture3D::onChangeDevice(detail::IGraphicsDevice* device)
-{
-	if (device)
-	{
-		if (m_pool == GraphicsResourcePool::Managed)
-		{
-			// data is transferred by the next resolveRHIObject()
-			m_modified = true;
-		}
-	}
-	else
-	{
-		m_rhiObject.reset();
-	}
-}
-
-detail::ITexture* Texture3D::resolveRHIObject(bool* outModified)
-{
-	*outModified = m_modified;
-
-	if (m_modified)
-	{
-		if (m_rhiLockedBuffer)
-		{
-			LN_NOTIMPLEMENTED();
-		}
-		else
-		{
-			ByteBuffer* bmpBuffer = m_bitmap->rawBuffer();
-			BoxSizeI bmpSize = { m_bitmap->width(), m_bitmap->height(), m_bitmap->depth() };
-			detail::RenderBulkData bmpRawData = manager()->primaryRenderingCommandList()->allocateBulkData(bmpBuffer->size());
-			detail::BitmapHelper::blitRawSimple3D(
-				bmpRawData.writableData(), bmpBuffer->data(), m_bitmap->width(), m_bitmap->height(), m_bitmap->depth(), Bitmap2D::getPixelFormatByteSize(m_bitmap->format()), false);
-
-            detail::IGraphicsDevice* deviceContext = manager()->deviceContext();
-			if (!m_rhiObject)
-			{
-				m_rhiObject = deviceContext->createTexture3D(width(), height(), depth(), format(), mipmap(), m_bitmap->data());
-			}
-			else
-			{
-				detail::ITexture* rhiObject = m_rhiObject;
-				LN_ENQUEUE_RENDER_COMMAND_4(
-					Texture3D_setSubData, manager(),
-                    detail::IGraphicsDevice*, deviceContext,
-					detail::RenderBulkData, bmpRawData,
-					BoxSizeI, bmpSize,
-					Ref<detail::ITexture>, rhiObject,
-					{
-                        deviceContext->getGraphicsContext()->setSubData3D(rhiObject, 0, 0, 0, bmpSize.width, bmpSize.height, bmpSize.depth, bmpRawData.data(), bmpRawData.size());
-					});
-			}
-		}
-	}
-
-	if (LN_ENSURE(m_rhiObject)) return nullptr;
-
-	if (m_pool == GraphicsResourcePool::None) {
-		m_bitmap.reset();
-	}
-
-	m_initialUpdate = false;
-	m_modified = false;
-	return m_rhiObject;
-}
-
-
-//==============================================================================
 // RenderTargetTexture
 
 Ref<RenderTargetTexture> RenderTargetTexture::getTemporary(int width, int height, TextureFormat format, bool mipmap)
@@ -460,6 +339,127 @@ void TextureHelper::setMappedData(Texture2D* texture, const void* data)
 {
 	Bitmap2D* surface = texture->map(MapMode::Write);
 	memcpy(surface->rawBuffer()->data(), data, surface->rawBuffer()->size());
+}
+
+
+//==============================================================================
+// Texture3D
+
+Texture3D::Texture3D()
+	: m_rhiObject(nullptr)
+	, m_usage(GraphicsResourceUsage::Static)
+	, m_pool(GraphicsResourcePool::Managed)
+	, m_depth(0)
+	, m_bitmap(nullptr)
+	, m_rhiLockedBuffer(nullptr)
+	, m_initialUpdate(false)
+	, m_modified(false)
+{
+}
+
+Texture3D::~Texture3D()
+{
+}
+
+void Texture3D::init(int width, int height, int depth, TextureFormat format, bool mipmap, GraphicsResourceUsage usage)
+{
+	Texture::init();
+	m_depth = depth;
+	m_bitmap = newObject<Bitmap3D>(width, height, depth, GraphicsHelper::translateToPixelFormat(format));
+	m_usage = usage;
+	m_initialUpdate = true;
+	m_modified = true;
+	setSize(SizeI(width, height));
+	setFormat(format);
+	setMipmap(mipmap);
+}
+
+Bitmap3D* Texture3D::map(MapMode mode)
+{
+	if (m_initialUpdate && m_pool == GraphicsResourcePool::None)
+	{
+		LN_NOTIMPLEMENTED();
+	}
+
+	m_modified = true;
+	return m_bitmap;
+}
+
+void Texture3D::setResourcePool(GraphicsResourcePool pool)
+{
+	m_pool = pool;
+}
+
+void Texture3D::onDispose(bool explicitDisposing)
+{
+	m_rhiObject.reset();
+	Texture::onDispose(explicitDisposing);
+}
+
+void Texture3D::onChangeDevice(detail::IGraphicsDevice* device)
+{
+	if (device)
+	{
+		if (m_pool == GraphicsResourcePool::Managed)
+		{
+			// data is transferred by the next resolveRHIObject()
+			m_modified = true;
+		}
+	}
+	else
+	{
+		m_rhiObject.reset();
+	}
+}
+
+detail::ITexture* Texture3D::resolveRHIObject(bool* outModified)
+{
+	*outModified = m_modified;
+
+	if (m_modified)
+	{
+		if (m_rhiLockedBuffer)
+		{
+			LN_NOTIMPLEMENTED();
+		}
+		else
+		{
+			ByteBuffer* bmpBuffer = m_bitmap->rawBuffer();
+			BoxSizeI bmpSize = { m_bitmap->width(), m_bitmap->height(), m_bitmap->depth() };
+			detail::RenderBulkData bmpRawData = manager()->primaryRenderingCommandList()->allocateBulkData(bmpBuffer->size());
+			detail::BitmapHelper::blitRawSimple3D(
+				bmpRawData.writableData(), bmpBuffer->data(), m_bitmap->width(), m_bitmap->height(), m_bitmap->depth(), Bitmap2D::getPixelFormatByteSize(m_bitmap->format()), false);
+
+			detail::IGraphicsDevice* deviceContext = manager()->deviceContext();
+			if (!m_rhiObject)
+			{
+				m_rhiObject = deviceContext->createTexture3D(width(), height(), depth(), format(), mipmap(), m_bitmap->data());
+			}
+			else
+			{
+				detail::ITexture* rhiObject = m_rhiObject;
+				LN_ENQUEUE_RENDER_COMMAND_4(
+					Texture3D_setSubData, manager(),
+					detail::IGraphicsDevice*, deviceContext,
+					detail::RenderBulkData, bmpRawData,
+					BoxSizeI, bmpSize,
+					Ref<detail::ITexture>, rhiObject,
+					{
+						deviceContext->getGraphicsContext()->setSubData3D(rhiObject, 0, 0, 0, bmpSize.width, bmpSize.height, bmpSize.depth, bmpRawData.data(), bmpRawData.size());
+					});
+			}
+		}
+	}
+
+	if (LN_ENSURE(m_rhiObject)) return nullptr;
+
+	if (m_pool == GraphicsResourcePool::None) {
+		m_bitmap.reset();
+	}
+
+	m_initialUpdate = false;
+	m_modified = false;
+	return m_rhiObject;
 }
 
 } // namespace detail

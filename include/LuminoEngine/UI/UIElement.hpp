@@ -203,7 +203,7 @@ public:
     void setBlendMode(const Optional<BlendMode>& value);
 
     /** 合成方法を取得します。*/
-    const BlendMode& blendMode() const;
+    BlendMode blendMode() const;
 
     /** 不透明度を設定します。(default: 1.0) */
     void setOpacity(float value);

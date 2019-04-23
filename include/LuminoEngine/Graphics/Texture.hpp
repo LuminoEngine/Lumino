@@ -106,42 +106,6 @@ private:
 };
 
 
-/** 3D テクスチャのクラスです。 */
-LN_CLASS()
-class Texture3D
-	: public Texture
-{
-public:
-	/** テクスチャの奥行きを取得します。 (ピクセル単位) */
-	int depth() const { return m_depth; }
-
-	/** テクスチャが保持するビットマップデータにアクセスします。 */
-	Bitmap3D* map(MapMode mode);
-
-	/** リソースの管理方法を変更します。(default: Managed) */
-	void setResourcePool(GraphicsResourcePool pool);
-
-LN_CONSTRUCT_ACCESS:
-	Texture3D();
-	virtual ~Texture3D();
-	void init(int width, int height, int depth, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
-
-protected:
-	virtual void onDispose(bool explicitDisposing) override;
-	virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
-	virtual detail::ITexture* resolveRHIObject(bool* outModified) override;
-
-private:
-	Ref<detail::ITexture> m_rhiObject;
-	GraphicsResourceUsage m_usage;
-	GraphicsResourcePool m_pool;
-
-	int m_depth;
-	Ref<Bitmap3D> m_bitmap;
-	void* m_rhiLockedBuffer;
-	bool m_initialUpdate;
-	bool m_modified;
-};
 
 class RenderTargetTexture
 	: public Texture
@@ -185,6 +149,36 @@ class TextureHelper
 {
 public:
 	static void setMappedData(Texture2D* texture, const void* data);
+};
+
+class Texture3D
+	: public Texture
+{
+public:
+	int depth() const { return m_depth; }
+	Bitmap3D* map(MapMode mode);
+	void setResourcePool(GraphicsResourcePool pool);
+
+LN_CONSTRUCT_ACCESS:
+	Texture3D();
+	virtual ~Texture3D();
+	void init(int width, int height, int depth, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
+
+protected:
+	virtual void onDispose(bool explicitDisposing) override;
+	virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
+	virtual detail::ITexture* resolveRHIObject(bool* outModified) override;
+
+private:
+	Ref<detail::ITexture> m_rhiObject;
+	GraphicsResourceUsage m_usage;
+	GraphicsResourcePool m_pool;
+
+	int m_depth;
+	Ref<Bitmap3D> m_bitmap;
+	void* m_rhiLockedBuffer;
+	bool m_initialUpdate;
+	bool m_modified;
 };
 
 } // namespace detail
