@@ -158,6 +158,10 @@ namespace LuminoBuild.Tasks
                         Utils.CopyDirectory(srcDir, targetDir);
                         if (fileMoving)
                             Directory.Delete(srcDir, true); // FIXME: CI サーバのストレージ不足対策
+
+                        // cmake
+                        var cmakeDir = Path.Combine(tempInstallDir, arch.SourceDirName, "cmake");
+                        Utils.CopyDirectory(cmakeDir, targetDir);
                     }
 
                     // External libs
