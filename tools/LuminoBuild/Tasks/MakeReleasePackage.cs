@@ -118,7 +118,7 @@ namespace LuminoBuild.Tasks
                 {
                     var path = Path.Combine(builder.LuminoBuildDir, arch.SourceDirName);
                     if (Directory.Exists(path))
-                        Directory.Delete(tempInstallDir, true);
+                        Directory.Delete(path, true);
                 }
             }
         }
