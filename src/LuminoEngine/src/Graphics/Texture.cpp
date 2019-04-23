@@ -30,10 +30,10 @@ Texture::~Texture()
 {
 }
 
-void Texture::init(const detail::TextureDesc& desc)
+void Texture::init(/*const detail::TextureDesc& desc*/)
 {
 	GraphicsResource::init();
-    m_desc = desc;
+    //m_desc = desc;
 }
 
 SamplerState* Texture::samplerState() const
@@ -71,12 +71,13 @@ Texture2D::~Texture2D()
 
 void Texture2D::init(int width, int height, TextureFormat format, bool mipmap, GraphicsResourceUsage usage)
 {
-    detail::TextureDesc desc = { width, height, format, mipmap };
-	Texture::init(desc);
+	Texture::init(/*desc*/);
 	m_bitmap = newObject<Bitmap2D>(width, height, GraphicsHelper::translateToPixelFormat(format));
 	m_usage = usage;
 	m_initialUpdate = true;
 	m_modified = true;
+    detail::TextureDesc desc = { width, height, format, mipmap };
+    detail::TextureHelper::setDesc(this, desc);
 	//setSize(SizeI(width, height));
 	//setFormat(format);
 	//setMipmap(mipmap);
@@ -99,9 +100,10 @@ void Texture2D::init(Stream* stream, TextureFormat format, bool mipmap, Graphics
 void Texture2D::init(Bitmap2D* bitmap, TextureFormat format, bool mipmap, GraphicsResourceUsage usage)
 {
     m_bitmap = bitmap;
-    detail::TextureDesc desc = { m_bitmap->width(), m_bitmap->height(), format, mipmap };
-    Texture::init(desc);
+    Texture::init(/*desc*/);
 
+    detail::TextureDesc desc = { m_bitmap->width(), m_bitmap->height(), format, mipmap };
+    detail::TextureHelper::setDesc(this, desc);
     // TODO: check and convert format
 
     m_usage = usage;
@@ -253,10 +255,11 @@ RenderTargetTexture::~RenderTargetTexture()
 
 void RenderTargetTexture::init(int width, int height, TextureFormat requestFormat, bool mipmap)
 {
-	Texture::init(detail::TextureDesc());
+	Texture::init(/*detail::TextureDesc()*/);
     m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createRenderTarget(width, height, requestFormat, mipmap);
     detail::TextureDesc desc = { width, height, m_rhiObject->getTextureFormat(), mipmap };
-    m_desc = desc;
+    //m_desc = desc;
+    detail::TextureHelper::setDesc(this, desc);
 	//m_size.width = width;
 	//m_size.height = height;
 	//m_requestFormat = requestFormat;
@@ -269,8 +272,8 @@ void RenderTargetTexture::init(int width, int height, TextureFormat requestForma
 
 void RenderTargetTexture::init(SwapChain* owner/*, detail::ITexture* ref*/)
 {
-    detail::TextureDesc desc = { 0, 0, TextureFormat::Unknown, false };
-	Texture::init(desc);
+    //detail::TextureDesc desc = { 0, 0, TextureFormat::Unknown, false };
+	Texture::init(/*desc*/);
     m_ownerSwapchain = owner;
     resetSwapchainFrameIfNeeded();
 }
@@ -333,9 +336,11 @@ void RenderTargetTexture::resetSwapchainFrameIfNeeded(bool force)
             m_rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(m_ownerSwapchain, nullptr)->getRenderTarget(m_swapchainImageIndex);
             
             auto size = m_rhiObject->realSize();
-            m_desc.width = size.width;
-            m_desc.height = size.height;
-            m_desc.format = m_rhiObject->getTextureFormat();
+            detail::TextureDesc desc = { size.width, size.height, m_rhiObject->getTextureFormat(), false };
+            //m_desc.width = size.width;
+            //m_desc.height = size.height;
+            //m_desc.format = m_rhiObject->getTextureFormat();
+            detail::TextureHelper::setDesc(this, desc);
             //setSize(m_rhiObject->realSize());
             //setFormat(m_rhiObject->getTextureFormat());
         }
@@ -377,12 +382,13 @@ Texture3D::~Texture3D()
 void Texture3D::init(int width, int height, int depth, TextureFormat format, bool mipmap, GraphicsResourceUsage usage)
 {
     detail::TextureDesc desc = { width, height, format, mipmap };
-	Texture::init(desc);
+	Texture::init(/*desc*/);
 	m_depth = depth;
 	m_bitmap = newObject<Bitmap3D>(width, height, depth, GraphicsHelper::translateToPixelFormat(format));
 	m_usage = usage;
 	m_initialUpdate = true;
 	m_modified = true;
+    detail::TextureHelper::setDesc(this, desc);
 	//setSize(SizeI());
 	//setFormat(format);
 	//setMipmap(mipmap);

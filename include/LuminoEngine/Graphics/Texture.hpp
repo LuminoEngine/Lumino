@@ -7,7 +7,10 @@
 namespace ln {
 class SamplerState;
 class ShaderPass;
-namespace detail { class ITexture; }
+namespace detail {
+class ITexture;
+class TextureHelper;
+}
 class SwapChain;
 class Bitmap2D;
 class Bitmap3D;
@@ -28,6 +31,7 @@ public:
 	/** テクスチャのピフォーマットを取得します。 */
 	TextureFormat format() const { return m_desc.format; }
 
+    /** ミップマップの有無を取得します。 */
 	bool mipmap() const { return m_desc.mipmap; }
 
 	/** このテクスチャに関連付けられている SamplerState を取得します。 */
@@ -42,12 +46,13 @@ public:
 protected:
 	Texture();
 	virtual ~Texture();
-	void init(const detail::TextureDesc& desc);
+	void init(/*const detail::TextureDesc& desc*/);
 	virtual detail::ITexture* resolveRHIObject(bool* outModified) = 0;
 	//void setSize(const SizeI& size) { m_size = size; }
 	//void setFormat(TextureFormat format) { m_format = format; }
 	//void setMipmap(bool mipmap) { m_mipmap = mipmap; }
 
+private:
     detail::TextureDesc m_desc;
 
 	//SizeI m_size;   // TODO: リアルタイムな部分で使うのは float が多い。対して、blit など lumino としてはあまりリアルタイムにしてほしくない部分は int がおおい。ので、float にしたい。
@@ -56,6 +61,7 @@ protected:
 	//bool m_mipmap;
 
 	friend class ShaderPass;
+    friend class detail::TextureHelper;
 };
 
 /** 2D テクスチャのクラスです。 */
@@ -151,6 +157,7 @@ class TextureHelper
 {
 public:
 	static void setMappedData(Texture2D* texture, const void* data);
+    static void setDesc(Texture* texture, const TextureDesc& desc) { texture->m_desc = desc; }
 };
 
 class Texture3D
