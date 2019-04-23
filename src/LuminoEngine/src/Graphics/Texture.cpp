@@ -18,20 +18,22 @@ namespace ln {
 // Texture
 
 Texture::Texture()
-	: m_size(0, 0)
-	, m_format(TextureFormat::Unknown)
-	, m_samplerState(nullptr)
-	, m_mipmap(false)
+	: m_samplerState(nullptr)
 {
+    m_desc.width = 0;
+    m_desc.height = 0;
+    m_desc.format = TextureFormat::Unknown;
+    m_desc.mipmap = false;
 }
 
 Texture::~Texture()
 {
 }
 
-void Texture::init()
+void Texture::init(const detail::TextureDesc& desc)
 {
 	GraphicsResource::init();
+    m_desc = desc;
 }
 
 SamplerState* Texture::samplerState() const
@@ -69,14 +71,15 @@ Texture2D::~Texture2D()
 
 void Texture2D::init(int width, int height, TextureFormat format, bool mipmap, GraphicsResourceUsage usage)
 {
-	Texture::init();
+    detail::TextureDesc desc = { width, height, format, mipmap };
+	Texture::init(desc);
 	m_bitmap = newObject<Bitmap2D>(width, height, GraphicsHelper::translateToPixelFormat(format));
 	m_usage = usage;
 	m_initialUpdate = true;
 	m_modified = true;
-	setSize(SizeI(width, height));
-	setFormat(format);
-	setMipmap(mipmap);
+	//setSize(SizeI(width, height));
+	//setFormat(format);
+	//setMipmap(mipmap);
 }
 
 void Texture2D::init(const StringRef& filePath, TextureFormat format, bool mipmap, GraphicsResourceUsage usage)
@@ -95,17 +98,18 @@ void Texture2D::init(Stream* stream, TextureFormat format, bool mipmap, Graphics
 
 void Texture2D::init(Bitmap2D* bitmap, TextureFormat format, bool mipmap, GraphicsResourceUsage usage)
 {
-    Texture::init();
     m_bitmap = bitmap;
+    detail::TextureDesc desc = { m_bitmap->width(), m_bitmap->height(), format, mipmap };
+    Texture::init(desc);
 
     // TODO: check and convert format
 
     m_usage = usage;
     m_initialUpdate = true;
     m_modified = true;
-    setSize(SizeI(m_bitmap->width(), m_bitmap->height()));
-    setFormat(format);
-    setMipmap(mipmap);
+    //setSize(SizeI(m_bitmap->width(), m_bitmap->height()));
+    //setFormat(format);
+    //setMipmap(mipmap);
 }
 
 void Texture2D::onDispose(bool explicitDisposing)
@@ -249,20 +253,24 @@ RenderTargetTexture::~RenderTargetTexture()
 
 void RenderTargetTexture::init(int width, int height, TextureFormat requestFormat, bool mipmap)
 {
-	Texture::init();
+	Texture::init(detail::TextureDesc());
+    m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createRenderTarget(width, height, requestFormat, mipmap);
+    detail::TextureDesc desc = { width, height, m_rhiObject->getTextureFormat(), mipmap };
+    m_desc = desc;
 	//m_size.width = width;
 	//m_size.height = height;
 	//m_requestFormat = requestFormat;
 	//m_mipmap = mipmap;
-	m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createRenderTarget(width, height, requestFormat, mipmap);
-	setSize(m_rhiObject->realSize());
-	setMipmap(mipmap);
-    setFormat(m_rhiObject->getTextureFormat());
+	//m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createRenderTarget(width, height, requestFormat, mipmap);
+	//setSize(m_rhiObject->realSize());
+	//setMipmap(mipmap);
+ //   setFormat(m_rhiObject->getTextureFormat());
 }
 
 void RenderTargetTexture::init(SwapChain* owner/*, detail::ITexture* ref*/)
 {
-	Texture::init();
+    detail::TextureDesc desc = { 0, 0, TextureFormat::Unknown, false };
+	Texture::init(desc);
     m_ownerSwapchain = owner;
     resetSwapchainFrameIfNeeded();
 }
@@ -323,8 +331,13 @@ void RenderTargetTexture::resetSwapchainFrameIfNeeded(bool force)
         if (m_swapchainImageIndex != imageIndex || force) {
             m_swapchainImageIndex = imageIndex;
             m_rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(m_ownerSwapchain, nullptr)->getRenderTarget(m_swapchainImageIndex);
-            setSize(m_rhiObject->realSize());
-            setFormat(m_rhiObject->getTextureFormat());
+            
+            auto size = m_rhiObject->realSize();
+            m_desc.width = size.width;
+            m_desc.height = size.height;
+            m_desc.format = m_rhiObject->getTextureFormat();
+            //setSize(m_rhiObject->realSize());
+            //setFormat(m_rhiObject->getTextureFormat());
         }
     }
 }
@@ -363,15 +376,16 @@ Texture3D::~Texture3D()
 
 void Texture3D::init(int width, int height, int depth, TextureFormat format, bool mipmap, GraphicsResourceUsage usage)
 {
-	Texture::init();
+    detail::TextureDesc desc = { width, height, format, mipmap };
+	Texture::init(desc);
 	m_depth = depth;
 	m_bitmap = newObject<Bitmap3D>(width, height, depth, GraphicsHelper::translateToPixelFormat(format));
 	m_usage = usage;
 	m_initialUpdate = true;
 	m_modified = true;
-	setSize(SizeI(width, height));
-	setFormat(format);
-	setMipmap(mipmap);
+	//setSize(SizeI());
+	//setFormat(format);
+	//setMipmap(mipmap);
 }
 
 Bitmap3D* Texture3D::map(MapMode mode)

@@ -319,6 +319,14 @@ using ShaderRefrectionParameterType = ShaderVariableType;
 //	Texture,
 //};
 
+struct TextureDesc
+{
+    int width = 0;
+    int height = 0;
+    TextureFormat format = TextureFormat::Unknown;
+    bool mipmap = false;
+};
+
 // rows, columns はデータレイアウトとしての領域サイズ。
 struct ShaderUniformTypeDesc
 {

@@ -237,16 +237,20 @@ void OpenGLDevice::init(const Settings& settings)
     while (glGetError() != 0);	// ignore error.
 
 
-	std::string extensionsString = (const char*)glGetString(GL_EXTENSIONS);
-	while (glGetError() != 0);	// ignore error.
+    const char* extensionsString = (const char*)glGetString(GL_EXTENSIONS);
+    while (glGetError() != 0);	// ignore error.
+    if (extensionsString) {
+        std::string str = extensionsString;
 
-	m_caps.support_filter_anisotropic =
-		(extensionsString.find("EXT_texture_filter_anisotropic") != std::string::npos) |
-		(extensionsString.find("WEBKIT_EXT_texture_filter_anisotropic") != std::string::npos) |
-		(extensionsString.find("MOZ_EXT_texture_filter_anisotropic") != std::string::npos);
-	if (m_caps.support_filter_anisotropic) {
-		GL_CHECK(glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &m_caps.MAX_TEXTURE_MAX_ANISOTROPY_EXT));
-	}
+        m_caps.support_filter_anisotropic =
+            (str.find("EXT_texture_filter_anisotropic") != std::string::npos) |
+            (str.find("WEBKIT_EXT_texture_filter_anisotropic") != std::string::npos) |
+            (str.find("MOZ_EXT_texture_filter_anisotropic") != std::string::npos);
+        if (m_caps.support_filter_anisotropic) {
+            GL_CHECK(glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &m_caps.MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+        }
+    }
+
 
 	m_graphicsContext = makeRef<GLGraphicsContext>();
 	m_graphicsContext->init(this);
