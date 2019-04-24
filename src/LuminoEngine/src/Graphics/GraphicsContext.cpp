@@ -303,25 +303,6 @@ detail::IGraphicsContext* GraphicsContext::commitState()
 	// 頂点バッファset > 描画 > 頂点バッファ更新 > 描画
 	// といったように、同じオブジェクトを set したまま内容を更新した場合に反映されなくなる。
 
-	// TODO: ぜんぶまとめて送信できる方法も用意していい気がする。
-
-	//{
-	//	auto& blendState = m_staging.blendState;
-	//	auto& rasterizerState = m_staging.rasterizerState;
-	//	auto& depthStencilState = m_staging.depthStencilState;
-	//	LN_ENQUEUE_RENDER_COMMAND_4(
-	//		GraphicsContext_setPipelineState, m_manager,
-	//		detail::IGraphicsContext*, m_context,
-	//		BlendStateDesc, blendState,
-	//		RasterizerStateDesc, rasterizerState,
-	//		DepthStencilStateDesc, depthStencilState,
-	//		{
-	//			m_context->setBlendState(blendState);
-	//			m_context->setRasterizerState(rasterizerState);
-	//			m_context->setDepthStencilState(depthStencilState);
-	//		});
-	//}
-
 	// BlendState
 	if ((m_dirtyFlags & DirtyFlags_BlendState) != 0)
 	{
@@ -366,41 +347,6 @@ detail::IGraphicsContext* GraphicsContext::commitState()
 
 		m_lastCommit.depthStencilState = m_staging.depthStencilState;
 	}
-
-
-	//{
-	//	for (int i = 0; i < m_staging.renderTargets.size(); i++)
-	//	{
-	//		auto& value = m_staging.renderTargets[i];
- //           if (value) {
- //               value->resetSwapchainFrameIfNeeded();
- //           }
-	//		detail::ITexture* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(value, nullptr);
-	//		LN_ENQUEUE_RENDER_COMMAND_3(
-	//			GraphicsContext_setDepthBuffer, m_manager,
-	//			detail::IGraphicsContext*, m_context,
-	//			int, i,
-	//			detail::ITexture*, rhiObject,
-	//			{
-	//				m_context->setColorBuffer(i, rhiObject);
-	//			});
-	//	}
-	//}
-
-	//{
-	//	auto& value = m_staging.depthBuffer;
-	//	bool modified = false;
-	//	detail::IDepthBuffer* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::IDepthBuffer>(value, &modified);
-	//	LN_ENQUEUE_RENDER_COMMAND_2(
-	//		GraphicsContext_setDepthBuffer, m_manager,
-	//		detail::IGraphicsContext*, m_context,
-	//		detail::IDepthBuffer*, rhiObject,
-	//		{
-	//			m_context->setDepthBuffer(rhiObject);
-	//		});
-	//}
-
-
 
 	// RenderTarget, DepthBuffer
 	{
@@ -484,11 +430,6 @@ detail::IGraphicsContext* GraphicsContext::commitState()
 		bool anyModified = false;
 		bool modified = false;
 
-		//PrimitiveTopology topology = m_staging.topology;
-
-		//detail::IVertexDeclaration* vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(m_staging.VertexLayout, &modified);
-		//anyModified |= modified;
-
 		using VertexBufferArray = std::array<detail::IVertexBuffer*, detail::MaxVertexStreams>;
 		VertexBufferArray vertexBuffers;
 		for (int i = 0; i < m_staging.vertexBuffers.size(); i++)
@@ -506,13 +447,9 @@ detail::IGraphicsContext* GraphicsContext::commitState()
 			LN_ENQUEUE_RENDER_COMMAND_3(
 				GraphicsContext_setPrimitiveBuffers, m_manager,
 				detail::IGraphicsContext*, m_context,
-				//PrimitiveTopology, topology,
-				//detail::IVertexDeclaration*, vertexDeclaration,
 				VertexBufferArray, vertexBuffers,
 				detail::IIndexBuffer*, indexBuffer,
 				{
-					//m_context->setPrimitiveTopology(topology);
-					//m_context->setVertexDeclaration(vertexDeclaration);
 					for (int i = 0; i < detail::MaxVertexStreams; i++) {
 						m_context->setVertexBuffer(i, vertexBuffers[i]);
 					}
@@ -524,7 +461,7 @@ detail::IGraphicsContext* GraphicsContext::commitState()
 		}
 	}
 
-    //if ((m_dirtyFlags & DirtyFlags_ShaderPass) != 0)
+	// ShaderPass
 	{
 		auto& value = m_staging.shaderPass;
 		detail::IShaderPass* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
@@ -541,12 +478,7 @@ detail::IGraphicsContext* GraphicsContext::commitState()
 
 			m_lastCommit.shader = m_staging.shader;
 			m_lastCommit.shaderPass = m_staging.shaderPass;
-
-			if (value) {
-				//value->commitContantBuffers();
-			}
 		}
-
 	}
 
     m_dirtyFlags = DirtyFlags_None;
