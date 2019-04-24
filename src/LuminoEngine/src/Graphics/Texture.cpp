@@ -269,6 +269,7 @@ RenderTargetTexture::RenderTargetTexture()
 	: m_rhiObject(nullptr)
     , m_ownerSwapchain(nullptr)
     , m_swapchainImageIndex(-1)
+    , m_modified(true)
 {
 }
 
@@ -279,8 +280,7 @@ RenderTargetTexture::~RenderTargetTexture()
 void RenderTargetTexture::init(int width, int height, TextureFormat requestFormat, bool mipmap)
 {
 	Texture::init(/*detail::TextureDesc()*/);
-    m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createRenderTarget(width, height, requestFormat, mipmap);
-    detail::TextureDesc desc = { width, height, m_rhiObject->getTextureFormat(), mipmap };
+    detail::TextureDesc desc = { width, height, requestFormat/*m_rhiObject->getTextureFormat()*/, mipmap };
     //m_desc = desc;
     detail::TextureHelper::setDesc(this, desc);
 	//m_size.width = width;
@@ -337,7 +337,14 @@ Ref<Bitmap2D> RenderTargetTexture::readData()
 
 detail::ITexture* RenderTargetTexture::resolveRHIObject(bool* outModified)
 {
-	*outModified = false;
+	*outModified = m_modified;
+
+    if (m_modified)
+    {
+        m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createRenderTarget(width(), height(), format(), mipmap());
+    }
+
+    m_modified = false;
 	return m_rhiObject;
 }
 
@@ -366,6 +373,7 @@ void RenderTargetTexture::resetSwapchainFrameIfNeeded(bool force)
             detail::TextureHelper::setDesc(this, desc);
             //setSize(m_rhiObject->realSize());
             //setFormat(m_rhiObject->getTextureFormat());
+            m_modified = false;
         }
     }
 }

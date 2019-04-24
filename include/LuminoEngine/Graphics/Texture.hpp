@@ -40,9 +40,6 @@ public:
 	/** このテクスチャに関連付ける SamplerState を設定します。 */
 	void setSamplerState(SamplerState* value);
 
-    // TODO: internal
-    //SizeI size() const { return SizeI(m_desc.width, m_desc.height); }
-
 protected:
 	Texture();
 	virtual ~Texture();
@@ -78,6 +75,7 @@ public:
 	 */
 	static Ref<Texture2D> create(int width, int height, TextureFormat format);
 
+public:
 	/** Mipmap の有無を設定します。(default: false) */
 	void setMipmapEnabled(bool value);
 
@@ -101,27 +99,29 @@ public:
 
 	void drawText(const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment = TextAlignment::Left);
 
+protected:
+    virtual void onDispose(bool explicitDisposing) override;
+    virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
+    virtual detail::ITexture* resolveRHIObject(bool* outModified) override;
+
 LN_CONSTRUCT_ACCESS:
 	Texture2D();
 	virtual ~Texture2D();
+
+    /** @copydoc create(int, int) */
 	void init(int width, int height);
+
+    /** @copydoc create(int, int, TextureFormat) */
 	void init(int width, int height, TextureFormat format);
+
 	void init(const StringRef& filePath, TextureFormat format = TextureFormat::RGBA8);
     void init(Stream* stream, TextureFormat format = TextureFormat::RGBA8);
     void init(Bitmap2D* bitmap, TextureFormat format = TextureFormat::RGBA8);
 
-protected:
-	virtual void onDispose(bool explicitDisposing) override;
-	virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
-	virtual detail::ITexture* resolveRHIObject(bool* outModified) override;
-
 private:
-	//void resizeInternal(int width, int height);
-
 	Ref<detail::ITexture> m_rhiObject;
 	GraphicsResourceUsage m_usage;
 	GraphicsResourcePool m_pool;
-
 	Ref<Bitmap2D> m_bitmap;
 	void* m_rhiLockedBuffer;
 	bool m_initialUpdate;
@@ -132,6 +132,7 @@ private:
 
 
 
+/** レンダーターゲットテクスチャのクラスです。 */
 class RenderTargetTexture
 	: public Texture
 {
@@ -142,9 +143,10 @@ public:
 	/** getTemporary で取得した一時的な RenderTargetTexture を解放します。 */
 	static void releaseTemporary(RenderTargetTexture* renderTarget);
 
-	Ref<Bitmap2D> readData();
-
+protected:
 	virtual void onDispose(bool explicitDisposing) override;
+	virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
+	virtual detail::ITexture* resolveRHIObject(bool* outModified) override;
 
 LN_CONSTRUCT_ACCESS:
 	RenderTargetTexture();
@@ -153,19 +155,23 @@ LN_CONSTRUCT_ACCESS:
 	void init(SwapChain* owner/*, detail::ITexture* ref*/);
 
 LN_INTERNAL_ACCESS:
-	virtual detail::ITexture* resolveRHIObject(bool* outModified) override;
-	virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
 
     void resetSwapchainFrameIfNeeded(bool force = false);
     //void resetSwapchainFrame(detail::ITexture* ref);
 
 private:
+    Ref<Bitmap2D> readData();
+
 	Ref<detail::ITexture> m_rhiObject;
     SwapChain* m_ownerSwapchain;
     int m_swapchainImageIndex;
 	//SizeI m_size;
 	//TextureFormat m_requestFormat;
 	//bool m_mipmap;
+    bool m_modified;
+
+    friend class detail::TextureHelper;
+    friend class detail::GraphicsResourceInternal;
 };
 
 namespace detail {
@@ -176,6 +182,7 @@ public:
 	static void setMappedData(Texture2D* texture, const void* data);
     static void setDesc(Texture* texture, const TextureDesc& desc) { texture->m_desc = desc; }
 	static void setMipmapEnabled(Texture* texture, bool value) { texture->m_desc.mipmap = value; }
+    static Ref<Bitmap2D> readData(RenderTargetTexture* renderTarget) { return renderTarget->readData(); }
 };
 
 class Texture3D

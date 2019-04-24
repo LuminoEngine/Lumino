@@ -61,17 +61,17 @@ void TestEnv::resetGraphicsContext(GraphicsContext* context)
 
 Ref<Bitmap2D> TestEnv::capture()
 {
-	return Engine::mainWindow()->swapChain()->backbuffer()->readData();
+	return detail::TextureHelper::readData(Engine::mainWindow()->swapChain()->backbuffer());
 }
 
 void TestEnv::saveScreenShot(const Char* filePath)
 {
-	Engine::mainWindow()->swapChain()->backbuffer()->readData()->save(filePath);
+    capture()->save(filePath);
 }
 
 bool TestEnv::equalsScreenShot(const Char* filePath, int passRate)
 {
-	bool r = TestEnv::equalsBitmapFile(Engine::mainWindow()->swapChain()->backbuffer()->readData(), filePath, passRate);
+	bool r = TestEnv::equalsBitmapFile(capture(), filePath, passRate);
 	return r;
 }
 
