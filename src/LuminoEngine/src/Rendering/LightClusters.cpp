@@ -145,7 +145,7 @@ void LightClusters::endMakeClusters()
 			m_globalLightInofs.add(GlobalLightInfo{});
 		}
 
-		detail::TextureHelper::setMappedData(m_globalLightInfoTexture, &m_globalLightInofs[0]);
+		detail::TextureInternal::setMappedData(m_globalLightInfoTexture, &m_globalLightInofs[0]);
 	}
 
 	// Local lights
@@ -164,7 +164,7 @@ void LightClusters::endMakeClusters()
 			}
 		}
 
-		detail::TextureHelper::setMappedData(m_lightInfoTexture, &m_lightInofs[0]);
+		detail::TextureInternal::setMappedData(m_lightInfoTexture, &m_lightInofs[0]);
 	}
 }
 

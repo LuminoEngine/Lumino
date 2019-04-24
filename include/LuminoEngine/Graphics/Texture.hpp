@@ -9,7 +9,7 @@ class SamplerState;
 class ShaderPass;
 namespace detail {
 class ITexture;
-class TextureHelper;
+class TextureInternal;
 }
 class SwapChain;
 class Bitmap2D;
@@ -51,7 +51,7 @@ private:
 	Ref<SamplerState> m_samplerState;
 
 	friend class ShaderPass;
-    friend class detail::TextureHelper;
+    friend class detail::TextureInternal;
 };
 
 /** 2D テクスチャのクラスです。 */
@@ -130,8 +130,6 @@ private:
 	friend class detail::GraphicsResourceInternal;
 };
 
-
-
 /** レンダーターゲットテクスチャのクラスです。 */
 class RenderTargetTexture
 	: public Texture
@@ -152,12 +150,13 @@ public:
      */
     static Ref<RenderTargetTexture> create(int width, int height, TextureFormat format);
 
-public:
 	/** 一時的な RenderTargetTexture を取得します。 */
 	static Ref<RenderTargetTexture> getTemporary(int width, int height, TextureFormat format, bool mipmap);
 
 	/** getTemporary で取得した一時的な RenderTargetTexture を解放します。 */
 	static void releaseTemporary(RenderTargetTexture* renderTarget);
+
+public:
 
 protected:
 	virtual void onDispose(bool explicitDisposing) override;
@@ -175,7 +174,7 @@ LN_CONSTRUCT_ACCESS:
     void init(int width, int height, TextureFormat format);
 
 	void init(int width, int height, TextureFormat format, bool mipmap);
-	void init(SwapChain* owner/*, detail::ITexture* ref*/);
+	void init(SwapChain* owner);
 
 private:
     Ref<Bitmap2D> readData();
@@ -184,18 +183,15 @@ private:
 	Ref<detail::ITexture> m_rhiObject;
     SwapChain* m_ownerSwapchain;
     int m_swapchainImageIndex;
-	//SizeI m_size;
-	//TextureFormat m_requestFormat;
-	//bool m_mipmap;
     bool m_modified;
 
-    friend class detail::TextureHelper;
+    friend class detail::TextureInternal;
     friend class detail::GraphicsResourceInternal;
 };
 
 namespace detail {
 
-class TextureHelper
+class TextureInternal
 {
 public:
 	static void setMappedData(Texture2D* texture, const void* data);
