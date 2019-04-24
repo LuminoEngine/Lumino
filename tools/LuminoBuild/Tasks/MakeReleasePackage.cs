@@ -161,7 +161,8 @@ namespace LuminoBuild.Tasks
 
                         // cmake
                         var cmakeDir = Path.Combine(tempInstallDir, arch.SourceDirName, "cmake");
-                        Utils.CopyDirectory(cmakeDir, targetDir);
+                        if (Directory.Exists(cmakeDir))
+                            Utils.CopyDirectory(cmakeDir, targetDir);
                     }
 
                     // External libs
