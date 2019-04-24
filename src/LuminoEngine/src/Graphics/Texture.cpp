@@ -49,9 +49,9 @@ void Texture::setSamplerState(SamplerState* value)
 //==============================================================================
 // Texture2D
 
-Ref<Texture2D> Texture2D::create(int width, int height, TextureFormat format, bool mipmap)
+Ref<Texture2D> Texture2D::create(int width, int height, TextureFormat format)
 {
-    return newObject<Texture2D>(width, height, format, mipmap);
+    return newObject<Texture2D>(width, height, format);
 }
 
 Texture2D::Texture2D()
@@ -69,36 +69,36 @@ Texture2D::~Texture2D()
 {
 }
 
-void Texture2D::init(int width, int height, TextureFormat format, bool mipmap)
+void Texture2D::init(int width, int height, TextureFormat format)
 {
 	Texture::init(/*desc*/);
 	m_bitmap = newObject<Bitmap2D>(width, height, GraphicsHelper::translateToPixelFormat(format));
 	m_initialUpdate = true;
 	m_modified = true;
-    detail::TextureDesc desc = { width, height, format, mipmap };
+    detail::TextureDesc desc = { width, height, format, false };
     detail::TextureHelper::setDesc(this, desc);
 }
 
-void Texture2D::init(const StringRef& filePath, TextureFormat format, bool mipmap)
+void Texture2D::init(const StringRef& filePath, TextureFormat format)
 {
 	auto bitmap = newObject<Bitmap2D>();
     bitmap->load(filePath);
-    init(bitmap, format, mipmap);
+    init(bitmap, format);
 }
 
-void Texture2D::init(Stream* stream, TextureFormat format, bool mipmap)
+void Texture2D::init(Stream* stream, TextureFormat format)
 {
     auto bitmap = newObject<Bitmap2D>();
     bitmap->load(stream);
-    init(bitmap, format, mipmap);
+    init(bitmap, format);
 }
 
-void Texture2D::init(Bitmap2D* bitmap, TextureFormat format, bool mipmap)
+void Texture2D::init(Bitmap2D* bitmap, TextureFormat format)
 {
     m_bitmap = bitmap;
     Texture::init(/*desc*/);
 
-    detail::TextureDesc desc = { m_bitmap->width(), m_bitmap->height(), format, mipmap };
+    detail::TextureDesc desc = { m_bitmap->width(), m_bitmap->height(), format, false };
     detail::TextureHelper::setDesc(this, desc);
     // TODO: check and convert format
 

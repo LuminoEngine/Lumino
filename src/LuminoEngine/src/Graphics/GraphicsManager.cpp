@@ -179,10 +179,10 @@ void GraphicsManager::init(const Settings& settings)
 
 	// default objects
 	{
-        m_blackTexture = newObject<Texture2D>(32, 32, TextureFormat::RGBA32, false);
+        m_blackTexture = newObject<Texture2D>(32, 32, TextureFormat::RGBA32);
         m_blackTexture->clear(Color::Black);
 
-        m_whiteTexture = newObject<Texture2D>(32, 32, TextureFormat::RGBA32, false);
+        m_whiteTexture = newObject<Texture2D>(32, 32, TextureFormat::RGBA32);
         m_whiteTexture->clear(Color::White);
 
 		m_defaultSamplerState = newObject<SamplerState>();

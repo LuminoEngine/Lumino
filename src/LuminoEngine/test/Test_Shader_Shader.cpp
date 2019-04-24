@@ -27,7 +27,7 @@ TEST_F(Test_Shader_Shader, IndependentSamplerState)
     };
     auto vb1 = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
-    auto tex1 = newObject<Texture2D>(2, 2, TextureFormat::RGBA32, false);
+    auto tex1 = newObject<Texture2D>(2, 2, TextureFormat::RGBA32);
     auto bmp1 = tex1->map(MapMode::Write);
     bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
     bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
@@ -110,11 +110,11 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
     };
     auto vb1 = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
-    auto t1 = Texture2D::create(2, 2, TextureFormat::RGBA32, false, GraphicsResourceUsage::Static);
+    auto t1 = Texture2D::create(2, 2, TextureFormat::RGBA32);
     t1->clear(Color::Red);
     shader1->findParameter("_Texture1")->setTexture(t1);
 
-    auto t2 = Texture2D::create(2, 2, TextureFormat::RGBA32, false, GraphicsResourceUsage::Static);
+    auto t2 = Texture2D::create(2, 2, TextureFormat::RGBA32);
     t2->clear(Color::Green);
     shader1->findParameter("_Texture2")->setTexture(t2);
 

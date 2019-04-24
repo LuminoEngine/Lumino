@@ -34,11 +34,11 @@ void LightClusters::init()
 	m_lightInofs.reserve(MaxLights);
 	m_globalLightInofs.reserve(MaxLights);
 
-	m_clustersTexture = newObject<Texture2D>(ClusterWidth * ClusterHeight, ClusterDepth, TextureFormat::RGBA32, false);
+	m_clustersTexture = newObject<Texture2D>(ClusterWidth * ClusterHeight, ClusterDepth, TextureFormat::RGBA32);
 	m_clustersTexture->setResourceUsage(GraphicsResourceUsage::Dynamic);
-	m_lightInfoTexture = newObject<Texture2D>(sizeof(LightInfo) / sizeof(Vector4), MaxLights, TextureFormat::R32G32B32A32Float, false);
+	m_lightInfoTexture = newObject<Texture2D>(sizeof(LightInfo) / sizeof(Vector4), MaxLights, TextureFormat::R32G32B32A32Float);
 	m_lightInfoTexture->setResourceUsage(GraphicsResourceUsage::Dynamic);
-	m_globalLightInfoTexture = newObject<Texture2D>(sizeof(GlobalLightInfo) / sizeof(Vector4), MaxLights, TextureFormat::R32G32B32A32Float, false);
+	m_globalLightInfoTexture = newObject<Texture2D>(sizeof(GlobalLightInfo) / sizeof(Vector4), MaxLights, TextureFormat::R32G32B32A32Float);
 	m_globalLightInfoTexture->setResourceUsage(GraphicsResourceUsage::Dynamic);
 }
 

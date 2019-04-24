@@ -63,8 +63,9 @@ class Texture2D
 	: public Texture
 {
 public:
-    static Ref<Texture2D> create(int width, int height, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false);
+    static Ref<Texture2D> create(int width, int height, TextureFormat format = TextureFormat::RGBA32);
 
+	/** Mipmap の有無を設定します。(default: false) */
 	void setMipmapEnabled(bool value);
 
 	/** テクスチャが保持するビットマップデータにアクセスします。 */
@@ -85,10 +86,10 @@ public:
 LN_CONSTRUCT_ACCESS:
 	Texture2D();
 	virtual ~Texture2D();
-	void init(int width, int height, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false);
-	void init(const StringRef& filePath, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false);
-    void init(Stream* stream, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false);
-    void init(Bitmap2D* bitmap, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false);
+	void init(int width, int height, TextureFormat format = TextureFormat::RGBA32);
+	void init(const StringRef& filePath, TextureFormat format = TextureFormat::RGBA32);
+    void init(Stream* stream, TextureFormat format = TextureFormat::RGBA32);
+    void init(Bitmap2D* bitmap, TextureFormat format = TextureFormat::RGBA32);
 
 protected:
 	virtual void onDispose(bool explicitDisposing) override;
