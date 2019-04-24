@@ -30,10 +30,9 @@ Texture::~Texture()
 {
 }
 
-void Texture::init(/*const detail::TextureDesc& desc*/)
+void Texture::init()
 {
 	GraphicsResource::init();
-    //m_desc = desc;
 }
 
 SamplerState* Texture::samplerState() const
@@ -108,18 +107,14 @@ void Texture2D::init(Stream* stream, TextureFormat format)
 void Texture2D::init(Bitmap2D* bitmap, TextureFormat format)
 {
     m_bitmap = bitmap;
-    Texture::init(/*desc*/);
+    Texture::init();
 
     detail::TextureDesc desc = { m_bitmap->width(), m_bitmap->height(), format, false };
     detail::TextureInternal::setDesc(this, desc);
     // TODO: check and convert format
 
-    //m_usage = usage;
     m_initialUpdate = true;
     m_modified = true;
-    //setSize(SizeI(m_bitmap->width(), m_bitmap->height()));
-    //setFormat(format);
-    //setMipmap(mipmap);
 }
 
 void Texture2D::onDispose(bool explicitDisposing)
@@ -303,24 +298,14 @@ void RenderTargetTexture::init(int width, int height, TextureFormat format, bool
 {
     width = std::max(1, width);
     height = std::max(1, height);
-	Texture::init(/*detail::TextureDesc()*/);
-    detail::TextureDesc desc = { width, height, format/*m_rhiObject->getTextureFormat()*/, mipmap };
-    //m_desc = desc;
+	Texture::init();
+    detail::TextureDesc desc = { width, height, format, mipmap };
     detail::TextureInternal::setDesc(this, desc);
-	//m_size.width = width;
-	//m_size.height = height;
-	//m_requestFormat = requestFormat;
-	//m_mipmap = mipmap;
-	//m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createRenderTarget(width, height, requestFormat, mipmap);
-	//setSize(m_rhiObject->realSize());
-	//setMipmap(mipmap);
- //   setFormat(m_rhiObject->getTextureFormat());
 }
 
-void RenderTargetTexture::init(SwapChain* owner/*, detail::ITexture* ref*/)
+void RenderTargetTexture::init(SwapChain* owner)
 {
-    //detail::TextureDesc desc = { 0, 0, TextureFormat::Unknown, false };
-	Texture::init(/*desc*/);
+	Texture::init();
     m_ownerSwapchain = owner;
     resetSwapchainFrameIfNeeded(false);
 }
@@ -333,17 +318,11 @@ void RenderTargetTexture::onDispose(bool explicitDisposing)
 
 Ref<Bitmap2D> RenderTargetTexture::readData()
 {
-    //manager()->graphicsContext()->flush();
-
-    //manager()->deviceContext()->end();
-
 	bool modified = false;
 	detail::ITexture* rhiObject = resolveRHIObject(&modified);
 
 	SizeI size = rhiObject->realSize();
 	auto bitmap = newObject<Bitmap2D>(size.width, size.height, GraphicsHelper::translateToPixelFormat(rhiObject->getTextureFormat()));
-
-    //manager()->deviceContext()->begin();
 
 	if (detail::GraphicsResourceInternal::manager(this)->renderingType() == RenderingType::Threaded)
 	{
@@ -391,19 +370,13 @@ void RenderTargetTexture::resetSwapchainFrameIfNeeded(bool force)
             
             auto size = m_rhiObject->realSize();
             detail::TextureDesc desc = { size.width, size.height, m_rhiObject->getTextureFormat(), false };
-            //m_desc.width = size.width;
-            //m_desc.height = size.height;
-            //m_desc.format = m_rhiObject->getTextureFormat();
             detail::TextureInternal::setDesc(this, desc);
-            //setSize(m_rhiObject->realSize());
-            //setFormat(m_rhiObject->getTextureFormat());
             m_modified = false;
         }
     }
 }
 
 namespace detail {
-
 
 //==============================================================================
 // TextureInternal
