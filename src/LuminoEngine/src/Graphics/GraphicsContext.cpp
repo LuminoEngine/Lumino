@@ -59,26 +59,39 @@ void GraphicsContext::resetState()
 
 void GraphicsContext::setBlendState(const BlendStateDesc& value)
 {
-	m_staging.blendState = value;
+	if (!BlendStateDesc::equals(m_staging.blendState, value)) {
+		m_staging.blendState = value;
+		m_modifiedFlags |= ModifiedFlags_BlendState;
+	}
 }
 
 void GraphicsContext::setRasterizerState(const RasterizerStateDesc& value)
 {
-	m_staging.rasterizerState = value;
+	if (!RasterizerStateDesc::equals(m_staging.rasterizerState, value)) {
+		m_staging.rasterizerState = value;
+		m_modifiedFlags |= ModifiedFlags_RasterizerState;
+	}
 }
 
 void GraphicsContext::setDepthStencilState(const DepthStencilStateDesc& value)
 {
-	m_staging.depthStencilState = value;
+	if (!DepthStencilStateDesc::equals(m_staging.depthStencilState, value)) {
+		m_staging.depthStencilState = value;
+		m_modifiedFlags |= ModifiedFlags_DepthStencilState;
+	}
 }
 
 void GraphicsContext::setRenderTarget(int index, RenderTargetTexture* value)
 {
-	m_staging.renderTargets[index] = value;
-	if (index == 0 && value) {
-		auto rect = Rect(0, 0, value->width(), value->height());
-		setViewportRect(rect);
-		setScissorRect(rect);
+	if (m_staging.renderTargets[index] != value)
+	{
+		m_staging.renderTargets[index] = value;
+		if (index == 0 && value) {
+			auto rect = Rect(0, 0, value->width(), value->height());
+			setViewportRect(rect);
+			setScissorRect(rect);
+		}
+		m_modifiedFlags |= ModifiedFlags_Framebuffer;
 	}
 }
 
@@ -89,7 +102,10 @@ RenderTargetTexture* GraphicsContext::renderTarget(int index) const
 
 void GraphicsContext::setDepthBuffer(DepthBuffer* value)
 {
-	m_staging.depthBuffer = value;
+	if (m_staging.depthBuffer != value) {
+		m_staging.depthBuffer = value;
+		m_modifiedFlags |= ModifiedFlags_Framebuffer;
+	}
 }
 
 DepthBuffer* GraphicsContext::depthBuffer() const
@@ -99,25 +115,39 @@ DepthBuffer* GraphicsContext::depthBuffer() const
 
 void GraphicsContext::setViewportRect(const Rect& value)
 {
-	m_staging.viewportRect = value;
+	if (m_staging.viewportRect != value) {
+		m_staging.viewportRect = value;
+		m_modifiedFlags |= ModifiedFlags_RegionRects;
+	}
 }
 
-void GraphicsContext::setScissorRect(const Rect& value)	// 使用するのは主に UI なので、ピクセル単位で指定
+void GraphicsContext::setScissorRect(const Rect& value)
 {
-	m_staging.scissorRect = value;
+	if (m_staging.scissorRect != value) {
+		m_staging.scissorRect = value;
+		m_modifiedFlags |= ModifiedFlags_RegionRects;
+	}
 }
 
 void GraphicsContext::setVertexLayout(VertexLayout* value)
 {
 	if (m_staging.VertexLayout != value) {
 		m_staging.VertexLayout = value;
-		m_modifiedFlags |= ModifiedFlags_PrimitiveBuffers;
+		m_modifiedFlags |= ModifiedFlags_PipelinePrimitiveState;
 	}
 }
 
 VertexLayout* GraphicsContext::vertexLayout() const
 {
 	return m_staging.VertexLayout;
+}
+
+void GraphicsContext::setPrimitiveTopology(PrimitiveTopology value)
+{
+	if (m_staging.topology != value) {
+		m_staging.topology = value;
+		m_modifiedFlags |= ModifiedFlags_PipelinePrimitiveState;
+	}
 }
 
 void GraphicsContext::setVertexBuffer(int streamIndex, VertexBuffer* value)
@@ -168,14 +198,6 @@ void GraphicsContext::setShaderPass(ShaderPass* pass)
 ShaderPass* GraphicsContext::shaderPass() const
 {
 	return m_staging.shaderPass;
-}
-
-void GraphicsContext::setPrimitiveTopology(PrimitiveTopology value)
-{
-	if (m_staging.topology != value) {
-		m_staging.topology = value;
-		m_modifiedFlags |= ModifiedFlags_PrimitiveBuffers;
-	}
 }
 
 void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
@@ -282,55 +304,140 @@ detail::IGraphicsContext* GraphicsContext::commitState()
 
 	// TODO: ぜんぶまとめて送信できる方法も用意していい気がする。
 
+	//{
+	//	auto& blendState = m_staging.blendState;
+	//	auto& rasterizerState = m_staging.rasterizerState;
+	//	auto& depthStencilState = m_staging.depthStencilState;
+	//	LN_ENQUEUE_RENDER_COMMAND_4(
+	//		GraphicsContext_setPipelineState, m_manager,
+	//		detail::IGraphicsContext*, m_context,
+	//		BlendStateDesc, blendState,
+	//		RasterizerStateDesc, rasterizerState,
+	//		DepthStencilStateDesc, depthStencilState,
+	//		{
+	//			m_context->setBlendState(blendState);
+	//			m_context->setRasterizerState(rasterizerState);
+	//			m_context->setDepthStencilState(depthStencilState);
+	//		});
+	//}
+
+	// BlendState
+	if ((m_modifiedFlags & ModifiedFlags_BlendState) != 0)
 	{
 		auto& blendState = m_staging.blendState;
-		auto& rasterizerState = m_staging.rasterizerState;
-		auto& depthStencilState = m_staging.depthStencilState;
-		LN_ENQUEUE_RENDER_COMMAND_4(
+		LN_ENQUEUE_RENDER_COMMAND_2(
 			GraphicsContext_setPipelineState, m_manager,
 			detail::IGraphicsContext*, m_context,
 			BlendStateDesc, blendState,
-			RasterizerStateDesc, rasterizerState,
-			DepthStencilStateDesc, depthStencilState,
 			{
 				m_context->setBlendState(blendState);
-				m_context->setRasterizerState(rasterizerState);
-				m_context->setDepthStencilState(depthStencilState);
 			});
+
+		m_lastCommit.blendState = m_staging.blendState;
 	}
 
+	// RasterizerState
+	if ((m_modifiedFlags & ModifiedFlags_RasterizerState) != 0)
 	{
-		for (int i = 0; i < m_staging.renderTargets.size(); i++)
-		{
+		auto& rasterizerState = m_staging.rasterizerState;
+		LN_ENQUEUE_RENDER_COMMAND_2(
+			GraphicsContext_setPipelineState, m_manager,
+			detail::IGraphicsContext*, m_context,
+			RasterizerStateDesc, rasterizerState,
+			{
+				m_context->setRasterizerState(rasterizerState);
+			});
+
+		m_lastCommit.rasterizerState = m_staging.rasterizerState;
+	}
+
+	// DepthStencilState
+	if ((m_modifiedFlags & ModifiedFlags_DepthStencilState) != 0)
+	{
+		auto& depthStencilState = m_staging.depthStencilState;
+		LN_ENQUEUE_RENDER_COMMAND_2(
+			GraphicsContext_setPipelineState, m_manager,
+			detail::IGraphicsContext*, m_context,
+			DepthStencilStateDesc, depthStencilState,
+			{
+				m_context->setDepthStencilState(depthStencilState);
+			});
+
+		m_lastCommit.depthStencilState = m_staging.depthStencilState;
+	}
+
+
+	//{
+	//	for (int i = 0; i < m_staging.renderTargets.size(); i++)
+	//	{
+	//		auto& value = m_staging.renderTargets[i];
+ //           if (value) {
+ //               value->resetSwapchainFrameIfNeeded();
+ //           }
+	//		detail::ITexture* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(value, nullptr);
+	//		LN_ENQUEUE_RENDER_COMMAND_3(
+	//			GraphicsContext_setDepthBuffer, m_manager,
+	//			detail::IGraphicsContext*, m_context,
+	//			int, i,
+	//			detail::ITexture*, rhiObject,
+	//			{
+	//				m_context->setColorBuffer(i, rhiObject);
+	//			});
+	//	}
+	//}
+
+	//{
+	//	auto& value = m_staging.depthBuffer;
+	//	bool modified = false;
+	//	detail::IDepthBuffer* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::IDepthBuffer>(value, &modified);
+	//	LN_ENQUEUE_RENDER_COMMAND_2(
+	//		GraphicsContext_setDepthBuffer, m_manager,
+	//		detail::IGraphicsContext*, m_context,
+	//		detail::IDepthBuffer*, rhiObject,
+	//		{
+	//			m_context->setDepthBuffer(rhiObject);
+	//		});
+	//}
+
+
+
+	// RenderTarget, DepthBuffer
+	{
+		bool anyModified = false;
+		bool modified = false;
+
+		using RenderTargetArray = std::array<detail::ITexture*, detail::MaxMultiRenderTargets>;
+		RenderTargetArray renderTargets;
+		for (int i = 0; i < detail::MaxMultiRenderTargets; i++) {
 			auto& value = m_staging.renderTargets[i];
-            if (value) {
-                value->resetSwapchainFrameIfNeeded();
-            }
-			detail::ITexture* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(value, nullptr);
+			if (value) {
+				value->resetSwapchainFrameIfNeeded();
+			}
+			renderTargets[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(value, &modified);
+			anyModified |= modified;
+		}
+
+		detail::IDepthBuffer* depthBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IDepthBuffer>(m_staging.depthBuffer, &modified);
+		anyModified |= modified;
+
+		if ((m_modifiedFlags & ModifiedFlags_Framebuffer) != 0 || anyModified)
+		{
 			LN_ENQUEUE_RENDER_COMMAND_3(
 				GraphicsContext_setDepthBuffer, m_manager,
 				detail::IGraphicsContext*, m_context,
-				int, i,
-				detail::ITexture*, rhiObject,
+				RenderTargetArray, renderTargets,
+				detail::IDepthBuffer*, depthBuffer,
 				{
-					m_context->setColorBuffer(i, rhiObject);
+					for (int i = 0; i < detail::MaxMultiRenderTargets; i++) {
+						m_context->setColorBuffer(i, renderTargets[i]);
+					}
+					m_context->setDepthBuffer(depthBuffer);
 				});
 		}
 	}
 
-	{
-		auto& value = m_staging.depthBuffer;
-		bool modified = false;
-		detail::IDepthBuffer* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::IDepthBuffer>(value, &modified);
-		LN_ENQUEUE_RENDER_COMMAND_2(
-			GraphicsContext_setDepthBuffer, m_manager,
-			detail::IGraphicsContext*, m_context,
-			detail::IDepthBuffer*, rhiObject,
-			{
-				m_context->setDepthBuffer(rhiObject);
-			});
-	}
-
+	// Viewport, Scissor
+	if ((m_modifiedFlags & ModifiedFlags_RegionRects) != 0)
 	{
 		RectI viewportRect = RectI::fromFloatRect(m_staging.viewportRect);
 		RectI scissorRect = RectI::fromFloatRect(m_staging.scissorRect);
@@ -343,17 +450,43 @@ detail::IGraphicsContext* GraphicsContext::commitState()
 				m_context->setViewportRect(viewportRect);
 				m_context->setScissorRect(scissorRect);
 			});
+
+		m_lastCommit.viewportRect = m_staging.viewportRect;
+		m_lastCommit.scissorRect = m_staging.scissorRect;
 	}
 
+	// VertexLayout, Topology
+	{
+		bool modified = false;
+		detail::IVertexDeclaration* vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(m_staging.VertexLayout, &modified);
+		PrimitiveTopology topology = m_staging.topology;
+
+		if ((m_modifiedFlags & ModifiedFlags_PipelinePrimitiveState) != 0 || modified)
+		{
+			LN_ENQUEUE_RENDER_COMMAND_3(
+				GraphicsContext_setPrimitiveBuffers, m_manager,
+				detail::IGraphicsContext*, m_context,
+				PrimitiveTopology, topology,
+				detail::IVertexDeclaration*, vertexDeclaration,
+				{
+					m_context->setPrimitiveTopology(topology);
+					m_context->setVertexDeclaration(vertexDeclaration);
+				});
+
+			m_lastCommit.VertexLayout = m_staging.VertexLayout;
+			m_lastCommit.topology = m_staging.topology;
+		}
+	}
    
+	// VertexBuffer, IndexBuffer
 	{
 		bool anyModified = false;
 		bool modified = false;
 
-		PrimitiveTopology topology = m_staging.topology;
+		//PrimitiveTopology topology = m_staging.topology;
 
-		detail::IVertexDeclaration* vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(m_staging.VertexLayout, &modified);
-		anyModified |= modified;
+		//detail::IVertexDeclaration* vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(m_staging.VertexLayout, &modified);
+		//anyModified |= modified;
 
 		using VertexBufferArray = std::array<detail::IVertexBuffer*, detail::MaxVertexStreams>;
 		VertexBufferArray vertexBuffers;
@@ -369,16 +502,16 @@ detail::IGraphicsContext* GraphicsContext::commitState()
 
 		if ((m_modifiedFlags & ModifiedFlags_PrimitiveBuffers) != 0 || anyModified)
 		{
-			LN_ENQUEUE_RENDER_COMMAND_5(
+			LN_ENQUEUE_RENDER_COMMAND_3(
 				GraphicsContext_setPrimitiveBuffers, m_manager,
 				detail::IGraphicsContext*, m_context,
-				PrimitiveTopology, topology,
-				detail::IVertexDeclaration*, vertexDeclaration,
+				//PrimitiveTopology, topology,
+				//detail::IVertexDeclaration*, vertexDeclaration,
 				VertexBufferArray, vertexBuffers,
 				detail::IIndexBuffer*, indexBuffer,
 				{
-					m_context->setPrimitiveTopology(topology);
-					m_context->setVertexDeclaration(vertexDeclaration);
+					//m_context->setPrimitiveTopology(topology);
+					//m_context->setVertexDeclaration(vertexDeclaration);
 					for (int i = 0; i < detail::MaxVertexStreams; i++) {
 						m_context->setVertexBuffer(i, vertexBuffers[i]);
 					}

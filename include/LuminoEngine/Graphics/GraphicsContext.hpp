@@ -77,6 +77,12 @@ public:
 	/** VertexLayout を取得します。 */
 	VertexLayout* vertexLayout() const;
 
+	/** 描画プリミティブの種類を設定します。 */
+	void setPrimitiveTopology(PrimitiveTopology value);
+
+	/** IndexBuffer を取得します。 */
+	PrimitiveTopology primitiveTopology() const { return m_staging.topology; }
+
 	/** VertexBuffer を設定します。 */
 	void setVertexBuffer(int streamIndex, VertexBuffer* value);
 
@@ -94,12 +100,6 @@ public:
 
 	/** IndexBuffer を取得します。 */
 	ShaderPass* shaderPass() const;
-
-	/** 描画プリミティブの種類を設定します。 */
-	void setPrimitiveTopology(PrimitiveTopology value);
-
-	/** IndexBuffer を取得します。 */
-	PrimitiveTopology primitiveTopology() const { return m_staging.topology; }
 
 	/** デフォルト設定を復元します。 */
 	void resetState();
@@ -140,9 +140,21 @@ private:
     enum ModifiedFlags
     {
         ModifiedFlags_None = 0,
+
+
+		ModifiedFlags_BlendState = 1 << 10,
+		ModifiedFlags_RasterizerState = 1 << 11,
+		ModifiedFlags_DepthStencilState = 1 << 12,
+
+
 		ModifiedFlags_PrimitiveBuffers = 1 << 2,
+		ModifiedFlags_PipelinePrimitiveState = 1 << 3,
         //ModifiedFlags_IndexBuffer = 1 << 3,
-        ModifiedFlags_ShaderPass = 1 << 4,
+
+		ModifiedFlags_RegionRects = 1 << 4,
+		ModifiedFlags_Framebuffer = 1 << 5,
+		
+        ModifiedFlags_ShaderPass = 1 << 7,
         ModifiedFlags_All = 0xFFFFFFFF,
     };
 

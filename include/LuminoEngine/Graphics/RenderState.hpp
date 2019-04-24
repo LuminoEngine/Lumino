@@ -143,6 +143,7 @@ struct RenderTargetBlendDesc
     BlendOp blendOpAlpha;
 
     RenderTargetBlendDesc();
+	static bool equals(const RenderTargetBlendDesc& lhs, const RenderTargetBlendDesc& rhs);
 };
 
 /** ブレンディングステート */
@@ -157,6 +158,7 @@ struct BlendStateDesc
     RenderTargetBlendDesc renderTargets[8];
 
     BlendStateDesc();
+	static bool equals(const BlendStateDesc& lhs, const BlendStateDesc& rhs);
 };
 
 /** ラスタライザステート */
@@ -169,6 +171,7 @@ struct RasterizerStateDesc
     CullMode cullMode;
 
     RasterizerStateDesc();
+	static bool equals(const RasterizerStateDesc& lhs, const RasterizerStateDesc& rhs);
 };
 
 /** ステンシル処理 */
@@ -187,6 +190,7 @@ struct StencilOpDesc
     ComparisonFunc stencilFunc;
 
     StencilOpDesc();
+	static bool equals(const StencilOpDesc& lhs, const StencilOpDesc& rhs);
 };
 
 /** 深度ステンシルステート */
@@ -211,6 +215,7 @@ struct DepthStencilStateDesc
     StencilOpDesc backFace;
 
     DepthStencilStateDesc();
+	static bool equals(const DepthStencilStateDesc& lhs, const DepthStencilStateDesc& rhs);
 };
 
 } // namespace ln
