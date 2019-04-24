@@ -306,13 +306,13 @@ Color Color::parse(const StringRef& str)
 
 const ToneF ToneF::Zero(0, 0, 0, 0);
 
-ToneF::ToneF(const Vector4& vec)
-{
-	r = vec.x;
-	g = vec.y;
-	b = vec.z;
-	gray = vec.w;
-}
+//ToneF::ToneF(const Vector4& vec)
+//{
+//	r = vec.x;
+//	g = vec.y;
+//	b = vec.z;
+//	gray = vec.w;
+//}
 
 void ToneF::addClamp(const ToneF& tone)
 {
