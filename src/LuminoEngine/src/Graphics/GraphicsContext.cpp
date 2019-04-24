@@ -527,20 +527,25 @@ detail::IGraphicsContext* GraphicsContext::commitState()
 	{
 		auto& value = m_staging.shaderPass;
 		detail::IShaderPass* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
-		LN_ENQUEUE_RENDER_COMMAND_2(
-			GraphicsContext_setShaderPass, m_manager,
-			detail::IGraphicsContext*, m_context,
-			detail::IShaderPass*, rhiObject,
-			{
-				m_context->setShaderPass(rhiObject);
-			});
 
-        m_lastCommit.shader = m_staging.shader;
-        m_lastCommit.shaderPass = m_staging.shaderPass;
+		if ((m_modifiedFlags & ModifiedFlags_ShaderPass) != 0)
+		{
+			LN_ENQUEUE_RENDER_COMMAND_2(
+				GraphicsContext_setShaderPass, m_manager,
+				detail::IGraphicsContext*, m_context,
+				detail::IShaderPass*, rhiObject,
+				{
+					m_context->setShaderPass(rhiObject);
+				});
 
-        if (value) {
-            //value->commitContantBuffers();
-        }
+			m_lastCommit.shader = m_staging.shader;
+			m_lastCommit.shaderPass = m_staging.shaderPass;
+
+			if (value) {
+				//value->commitContantBuffers();
+			}
+		}
+
 	}
 
     m_modifiedFlags = ModifiedFlags_None;
