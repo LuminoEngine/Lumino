@@ -32,7 +32,7 @@ void DepthPrepass::init()
 void DepthPrepass::onBeginRender(SceneRenderer* sceneRenderer)
 {
 	auto size = sceneRenderer->renderingPipeline()->renderingFrameBufferSize();
-	m_depthMap = RenderTargetTexture::getTemporary(size.width, size.height, TextureFormat::RGBA32, false);
+	m_depthMap = RenderTargetTexture::getTemporary(size.width, size.height, TextureFormat::RGBA8, false);
 	m_depthBuffer = DepthBuffer::getTemporary(size.width, size.height);
 }
 

@@ -71,8 +71,8 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
 
 	//* [ ] 複数 RT 設定時は index 0 だけクリアされること。
 	{
-		auto t1 = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA32, false);
-		auto t2 = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA32, false);
+		auto t1 = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA8, false);
+		auto t2 = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA8, false);
 		auto ctx = Engine::graphicsContext();
 		TestEnv::resetGraphicsContext(ctx);
 
@@ -1033,7 +1033,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
         vertexDecl2->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 
 
-        auto renderTarget1 = newObject<RenderTargetTexture>(160, 120, TextureFormat::RGBA32, false);
+        auto renderTarget1 = newObject<RenderTargetTexture>(160, 120, TextureFormat::RGBA8, false);
 
         auto ctx = Engine::graphicsContext();
         TestEnv::resetGraphicsContext(ctx);

@@ -41,8 +41,8 @@ void ImageEffectRenderer::render(RenderingContext* context, RenderTargetTexture*
 {
     if (!m_imageEffects.isEmpty())
     {
-		Ref<RenderTargetTexture> primaryTarget = RenderTargetTexture::getTemporary(inout->width(), inout->height(), TextureFormat::RGBA32, false);
-		Ref<RenderTargetTexture> secondaryTarget = RenderTargetTexture::getTemporary(inout->width(), inout->height(), TextureFormat::RGBA32, false);
+		Ref<RenderTargetTexture> primaryTarget = RenderTargetTexture::getTemporary(inout->width(), inout->height(), TextureFormat::RGBA8, false);
+		Ref<RenderTargetTexture> secondaryTarget = RenderTargetTexture::getTemporary(inout->width(), inout->height(), TextureFormat::RGBA8, false);
 
         context->pushState(true);
         context->setDepthBuffer(nullptr);

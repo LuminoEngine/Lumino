@@ -63,7 +63,20 @@ class Texture2D
 	: public Texture
 {
 public:
-    static Ref<Texture2D> create(int width, int height, TextureFormat format = TextureFormat::RGBA32);
+	/**
+	 * テクスチャを作成します。ピクセルフォーマットは RGBA8 です。
+	 * @param[in]   width   : 幅 (px 単位)
+	 * @param[in]   height  : 高さ (px 単位)
+	 */
+    static Ref<Texture2D> create(int width, int height);
+
+	/**
+	 * テクスチャを作成します。
+	 * @param[in]   width   : 幅 (px 単位)
+	 * @param[in]   height  : 高さ (px 単位)
+	 * @param[in]   format  : ピクセルフォーマット
+	 */
+	static Ref<Texture2D> create(int width, int height, TextureFormat format);
 
 	/** Mipmap の有無を設定します。(default: false) */
 	void setMipmapEnabled(bool value);
@@ -91,10 +104,11 @@ public:
 LN_CONSTRUCT_ACCESS:
 	Texture2D();
 	virtual ~Texture2D();
-	void init(int width, int height, TextureFormat format = TextureFormat::RGBA32);
-	void init(const StringRef& filePath, TextureFormat format = TextureFormat::RGBA32);
-    void init(Stream* stream, TextureFormat format = TextureFormat::RGBA32);
-    void init(Bitmap2D* bitmap, TextureFormat format = TextureFormat::RGBA32);
+	void init(int width, int height);
+	void init(int width, int height, TextureFormat format);
+	void init(const StringRef& filePath, TextureFormat format = TextureFormat::RGBA8);
+    void init(Stream* stream, TextureFormat format = TextureFormat::RGBA8);
+    void init(Bitmap2D* bitmap, TextureFormat format = TextureFormat::RGBA8);
 
 protected:
 	virtual void onDispose(bool explicitDisposing) override;
@@ -175,7 +189,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	Texture3D();
 	virtual ~Texture3D();
-	void init(int width, int height, int depth, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
+	void init(int width, int height, int depth, TextureFormat format = TextureFormat::RGBA8, bool mipmap = false, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
 
 protected:
 	virtual void onDispose(bool explicitDisposing) override;

@@ -340,7 +340,7 @@ public:
     virtual void dispose() override;
 	virtual DeviceTextureType type() const { return DeviceTextureType::RenderTarget; }
 	virtual SizeI realSize() { return m_size; }
-	virtual TextureFormat getTextureFormat() const {return TextureFormat::RGBA32; }
+	virtual TextureFormat getTextureFormat() const {return TextureFormat::RGBA8; }
 	virtual GraphicsResourceUsage usage() const override { return GraphicsResourceUsage::Static; }
     virtual void readData(void* outData) override;
 	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) {}

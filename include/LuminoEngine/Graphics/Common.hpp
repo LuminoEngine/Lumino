@@ -176,11 +176,11 @@ enum class TextureFormat : uint8_t
 	/** Unknown */
 	Unknown,
 
-	/** 32 ビットのアルファ付きフォーマット (GPUネイティブフォーマット。D3D_FMT_A8B8G8R8, DXGI_FORMAT_R8G8B8A8_UNORM) */
-	RGBA32,
+	/** RGBA オーダーの各要素 8bit フォーマット */
+	RGBA8,
 
-	/** 24 ビットのアルファ無しフォーマット */
-	RGB24,
+	/** RGB オーダーの各要素 8bit フォーマット */
+	RGB8,
 
 	/** 64 ビットの浮動小数点フォーマット */
 	R16G16B16A16Float,

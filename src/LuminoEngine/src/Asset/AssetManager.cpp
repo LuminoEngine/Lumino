@@ -107,7 +107,7 @@ Ref<Texture2D> AssetManager::loadTexture(const StringRef& filePath)
 	// TODO: cache
 
     // TODO: mipmap
-	auto ref = newObject<Texture2D>(stream, TextureFormat::RGBA32);
+	auto ref = newObject<Texture2D>(stream, TextureFormat::RGBA8);
 	return ref;
 }
 

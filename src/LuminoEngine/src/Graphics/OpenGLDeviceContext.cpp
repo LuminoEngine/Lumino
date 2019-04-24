@@ -991,7 +991,7 @@ void GLSwapChain::genBackbuffer(uint32_t width, uint32_t height)
 	releaseBuffers();
 
 	m_backbuffer = makeRef<GLRenderTargetTexture>();
-	m_backbuffer->init(width, height, TextureFormat::RGB24, false);
+	m_backbuffer->init(width, height, TextureFormat::RGB8, false);
 
 	GL_CHECK(glGenFramebuffers(1, &m_fbo));
 	GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_fbo));

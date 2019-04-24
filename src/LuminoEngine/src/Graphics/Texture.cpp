@@ -49,6 +49,11 @@ void Texture::setSamplerState(SamplerState* value)
 //==============================================================================
 // Texture2D
 
+Ref<Texture2D> Texture2D::create(int width, int height)
+{
+	return newObject<Texture2D>(width, height);
+}
+
 Ref<Texture2D> Texture2D::create(int width, int height, TextureFormat format)
 {
     return newObject<Texture2D>(width, height, format);
@@ -67,6 +72,11 @@ Texture2D::Texture2D()
 
 Texture2D::~Texture2D()
 {
+}
+
+void Texture2D::init(int width, int height)
+{
+	init(width, height, TextureFormat::RGBA8);
 }
 
 void Texture2D::init(int width, int height, TextureFormat format)

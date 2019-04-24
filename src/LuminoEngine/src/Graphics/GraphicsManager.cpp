@@ -54,9 +54,9 @@ PixelFormat GraphicsHelper::translateToPixelFormat(TextureFormat format)
 	{
 	case TextureFormat::Unknown:
 		return PixelFormat::Unknown;
-	case TextureFormat::RGBA32:
+	case TextureFormat::RGBA8:
 		return PixelFormat::RGBA32;
-    case TextureFormat::RGB24:
+    case TextureFormat::RGB8:
 		return PixelFormat::RGB24;
 	case TextureFormat::R16G16B16A16Float:
 		return PixelFormat::Unknown;
@@ -84,9 +84,9 @@ TextureFormat GraphicsHelper::translateToTextureFormat(PixelFormat format)
 	case PixelFormat::A8:
 		return TextureFormat::Unknown;
 	case PixelFormat::RGBA32:
-		return TextureFormat::RGBA32;
+		return TextureFormat::RGBA8;
     case PixelFormat::RGB24:
-        return TextureFormat::RGB24;
+        return TextureFormat::RGB8;
 	case PixelFormat::R32G32B32A32Float:
 		return TextureFormat::R32G32B32A32Float;
 	default:
@@ -100,9 +100,9 @@ size_t GraphicsHelper::getPixelSize(TextureFormat format)
     {
     case TextureFormat::Unknown:
         return 0;
-    case TextureFormat::RGBA32:
+    case TextureFormat::RGBA8:
         return 4;
-    case TextureFormat::RGB24:
+    case TextureFormat::RGB8:
         return 3;
     case TextureFormat::R16G16B16A16Float:
         return 8;
@@ -179,10 +179,10 @@ void GraphicsManager::init(const Settings& settings)
 
 	// default objects
 	{
-        m_blackTexture = newObject<Texture2D>(32, 32, TextureFormat::RGBA32);
+        m_blackTexture = newObject<Texture2D>(32, 32, TextureFormat::RGBA8);
         m_blackTexture->clear(Color::Black);
 
-        m_whiteTexture = newObject<Texture2D>(32, 32, TextureFormat::RGBA32);
+        m_whiteTexture = newObject<Texture2D>(32, 32, TextureFormat::RGBA8);
         m_whiteTexture->clear(Color::White);
 
 		m_defaultSamplerState = newObject<SamplerState>();

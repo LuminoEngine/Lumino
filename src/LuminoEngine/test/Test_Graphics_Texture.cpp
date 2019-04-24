@@ -144,10 +144,10 @@ TEST_F(Test_Graphics_FrameBufferCache, Basic)
 	auto m1 = makeRef<detail::RenderTargetTextureCacheManager>();
 	auto m2 = makeRef<detail::DepthBufferCacheManager>();
 	auto cache1 = makeRef<detail::FrameBufferCache>(m1, m2);
-	auto t1 = cache1->requestRenderTargetTexture2(SizeI(32, 32), TextureFormat::RGBA32, false);
-	auto t2 = cache1->requestRenderTargetTexture2(SizeI(32, 32), TextureFormat::RGBA32, false);
-	auto t3 = cache1->requestRenderTargetTexture2(SizeI(16, 16), TextureFormat::RGBA32, false);
-	auto t4 = cache1->requestRenderTargetTexture2(SizeI(16, 16), TextureFormat::RGBA32, false);
+	auto t1 = cache1->requestRenderTargetTexture2(SizeI(32, 32), TextureFormat::RGBA8, false);
+	auto t2 = cache1->requestRenderTargetTexture2(SizeI(32, 32), TextureFormat::RGBA8, false);
+	auto t3 = cache1->requestRenderTargetTexture2(SizeI(16, 16), TextureFormat::RGBA8, false);
+	auto t4 = cache1->requestRenderTargetTexture2(SizeI(16, 16), TextureFormat::RGBA8, false);
 	auto d1 = cache1->requestDepthBuffer2(SizeI(32, 32));
 	auto d2 = cache1->requestDepthBuffer2(SizeI(32, 32));
 	auto d3 = cache1->requestDepthBuffer2(SizeI(16, 16));
@@ -188,7 +188,7 @@ TEST_F(Test_Graphics_FrameBufferCache, Basic)
 
 	// 同じパラメータで取得しなおす. 前回のインスタンスが返される
 	{
-		t4 = cache1->requestRenderTargetTexture2(SizeI(16, 16), TextureFormat::RGBA32, false);
+		t4 = cache1->requestRenderTargetTexture2(SizeI(16, 16), TextureFormat::RGBA8, false);
 		d4 = cache1->requestDepthBuffer2(SizeI(16, 16));
 		ASSERT_EQ(4, cache1->aliveRenderTargetCount());
 		ASSERT_EQ(4, cache1->aliveDepthBufferCount());
@@ -213,7 +213,7 @@ TEST_F(Test_Graphics_FrameBufferCache, Basic)
 	{
 		cache1->release(t3);
 		cache1->release(d3);
-		auto t3_ = cache1->requestRenderTargetTexture2(SizeI(16, 16), TextureFormat::RGBA32, false);
+		auto t3_ = cache1->requestRenderTargetTexture2(SizeI(16, 16), TextureFormat::RGBA8, false);
 		auto d3_ = cache1->requestDepthBuffer2(SizeI(16, 16));
 		ASSERT_EQ(t3, t3_);
 		ASSERT_EQ(d3, d3_);
