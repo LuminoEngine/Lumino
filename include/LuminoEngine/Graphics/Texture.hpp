@@ -41,24 +41,17 @@ public:
 	void setSamplerState(SamplerState* value);
 
     // TODO: internal
-    SizeI size() const { return SizeI(m_desc.width, m_desc.height); }
+    //SizeI size() const { return SizeI(m_desc.width, m_desc.height); }
 
 protected:
 	Texture();
 	virtual ~Texture();
-	void init(/*const detail::TextureDesc& desc*/);
+	void init();
 	virtual detail::ITexture* resolveRHIObject(bool* outModified) = 0;
-	//void setSize(const SizeI& size) { m_size = size; }
-	//void setFormat(TextureFormat format) { m_format = format; }
-	//void setMipmap(bool mipmap) { m_mipmap = mipmap; }
 
 private:
     detail::TextureDesc m_desc;
-
-	//SizeI m_size;   // TODO: リアルタイムな部分で使うのは float が多い。対して、blit など lumino としてはあまりリアルタイムにしてほしくない部分は int がおおい。ので、float にしたい。
-	//TextureFormat m_format;
 	Ref<SamplerState> m_samplerState;
-	//bool m_mipmap;
 
 	friend class ShaderPass;
     friend class detail::TextureHelper;

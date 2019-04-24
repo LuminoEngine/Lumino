@@ -473,7 +473,10 @@ void SpriteRenderFeature::makeRenderSizeAndSourceRectHelper(Texture* texture, co
     LN_DCHECK(outSourceRect);
 
     // 転送元矩形が負値ならテクスチャ全体を転送する
-    const SizeI& texSize = (texture != nullptr) ? texture->size() : SizeI::Zero;
+    //const SizeI& texSize = (texture != nullptr) ? texture->size() : SizeI::Zero;
+	SizeI texSize(
+		(texture != nullptr) ? texture->width() : 0,
+		(texture != nullptr) ? texture->height() : 0);
     Rect renderSourceRect = sourceRect;
     if (renderSourceRect.width < 0 && renderSourceRect.height < 0)
     {

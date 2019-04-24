@@ -282,7 +282,8 @@ public:
 
     virtual void onSubsetInfoOverride(SubsetInfo* subsetInfo) override
     {
-        m_srcTextureSize = subsetInfo->materialTexture->size();
+		m_srcTextureSize.width = subsetInfo->materialTexture->width();
+		m_srcTextureSize.height = subsetInfo->materialTexture->height();
     }
 
     virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
