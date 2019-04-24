@@ -125,37 +125,29 @@ public:
 protected:
 	virtual void onDispose(bool explicitDisposing) override;
 
-LN_CONSTRUCT_ACCESS:
+private:
+	LN_INTERNAL_NEW_OBJECT;
 	GraphicsContext();
 	virtual ~GraphicsContext();
 	void init(detail::IGraphicsContext* context);
 
-private:
 	void beginCommandRecodingIfNeeded();
 	void endCommandRecodingIfNeeded();
     void flushCommandRecoding(RenderTargetTexture* affectRendreTarget);
 	detail::IGraphicsContext* commitState();
 
-    // TODO: 途中
-    enum ModifiedFlags
+    enum DirtyFlags
     {
-        ModifiedFlags_None = 0,
-
-
-		ModifiedFlags_BlendState = 1 << 10,
-		ModifiedFlags_RasterizerState = 1 << 11,
-		ModifiedFlags_DepthStencilState = 1 << 12,
-
-
-		ModifiedFlags_PrimitiveBuffers = 1 << 2,
-		ModifiedFlags_PipelinePrimitiveState = 1 << 3,
-        //ModifiedFlags_IndexBuffer = 1 << 3,
-
-		ModifiedFlags_RegionRects = 1 << 4,
-		ModifiedFlags_Framebuffer = 1 << 5,
-		
-        ModifiedFlags_ShaderPass = 1 << 7,
-        ModifiedFlags_All = 0xFFFFFFFF,
+        DirtyFlags_None = 0,
+		DirtyFlags_BlendState = 1 << 1,
+		DirtyFlags_RasterizerState = 1 << 2,
+		DirtyFlags_DepthStencilState = 1 << 3,
+		DirtyFlags_RegionRects = 1 << 4,
+		DirtyFlags_Framebuffer = 1 << 5,
+		DirtyFlags_PipelinePrimitiveState = 1 << 6,
+		DirtyFlags_PrimitiveBuffers = 1 << 7,
+        DirtyFlags_ShaderPass = 1 << 8,
+        DirtyFlags_All = 0xFFFFFFFF,
     };
 
 	struct State
@@ -181,9 +173,8 @@ private:
 	detail::IGraphicsContext* m_context;
 	State m_staging;
 	State m_lastCommit;
-    uint32_t m_modifiedFlags;
+    uint32_t m_dirtyFlags;
     bool m_recordingBegan;
-
 
 	friend class detail::GraphicsContextInternal;
 };

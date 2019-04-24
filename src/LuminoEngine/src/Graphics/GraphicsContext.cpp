@@ -22,7 +22,7 @@ GraphicsContext::GraphicsContext()
 	, m_context(nullptr)
 	, m_staging()
 	, m_lastCommit()
-	, m_modifiedFlags(ModifiedFlags_All)
+	, m_dirtyFlags(DirtyFlags_All)
 	, m_recordingBegan(false)
 {
 }
@@ -33,6 +33,7 @@ GraphicsContext::~GraphicsContext()
 
 void GraphicsContext::init(detail::IGraphicsContext* context)
 {
+	LN_DCHECK(context);
     Object::init();
 	m_manager = detail::EngineDomain::graphicsManager();
     m_context = context;
@@ -54,14 +55,14 @@ void GraphicsContext::onDispose(bool explicitDisposing)
 void GraphicsContext::resetState()
 {
 	m_staging.reset();
-	m_modifiedFlags = ModifiedFlags_All;
+	m_dirtyFlags = DirtyFlags_All;
 }
 
 void GraphicsContext::setBlendState(const BlendStateDesc& value)
 {
 	if (!BlendStateDesc::equals(m_staging.blendState, value)) {
 		m_staging.blendState = value;
-		m_modifiedFlags |= ModifiedFlags_BlendState;
+		m_dirtyFlags |= DirtyFlags_BlendState;
 	}
 }
 
@@ -69,7 +70,7 @@ void GraphicsContext::setRasterizerState(const RasterizerStateDesc& value)
 {
 	if (!RasterizerStateDesc::equals(m_staging.rasterizerState, value)) {
 		m_staging.rasterizerState = value;
-		m_modifiedFlags |= ModifiedFlags_RasterizerState;
+		m_dirtyFlags |= DirtyFlags_RasterizerState;
 	}
 }
 
@@ -77,12 +78,14 @@ void GraphicsContext::setDepthStencilState(const DepthStencilStateDesc& value)
 {
 	if (!DepthStencilStateDesc::equals(m_staging.depthStencilState, value)) {
 		m_staging.depthStencilState = value;
-		m_modifiedFlags |= ModifiedFlags_DepthStencilState;
+		m_dirtyFlags |= DirtyFlags_DepthStencilState;
 	}
 }
 
 void GraphicsContext::setRenderTarget(int index, RenderTargetTexture* value)
 {
+	if (LN_REQUIRE_RANGE(index, 0, MaxMultiRenderTargets)) return;
+
 	if (m_staging.renderTargets[index] != value)
 	{
 		m_staging.renderTargets[index] = value;
@@ -91,12 +94,13 @@ void GraphicsContext::setRenderTarget(int index, RenderTargetTexture* value)
 			setViewportRect(rect);
 			setScissorRect(rect);
 		}
-		m_modifiedFlags |= ModifiedFlags_Framebuffer;
+		m_dirtyFlags |= DirtyFlags_Framebuffer;
 	}
 }
 
 RenderTargetTexture* GraphicsContext::renderTarget(int index) const
 {
+	if (LN_REQUIRE_RANGE(index, 0, MaxMultiRenderTargets)) return nullptr;
     return m_staging.renderTargets[index];
 }
 
@@ -104,7 +108,7 @@ void GraphicsContext::setDepthBuffer(DepthBuffer* value)
 {
 	if (m_staging.depthBuffer != value) {
 		m_staging.depthBuffer = value;
-		m_modifiedFlags |= ModifiedFlags_Framebuffer;
+		m_dirtyFlags |= DirtyFlags_Framebuffer;
 	}
 }
 
@@ -117,7 +121,7 @@ void GraphicsContext::setViewportRect(const Rect& value)
 {
 	if (m_staging.viewportRect != value) {
 		m_staging.viewportRect = value;
-		m_modifiedFlags |= ModifiedFlags_RegionRects;
+		m_dirtyFlags |= DirtyFlags_RegionRects;
 	}
 }
 
@@ -125,7 +129,7 @@ void GraphicsContext::setScissorRect(const Rect& value)
 {
 	if (m_staging.scissorRect != value) {
 		m_staging.scissorRect = value;
-		m_modifiedFlags |= ModifiedFlags_RegionRects;
+		m_dirtyFlags |= DirtyFlags_RegionRects;
 	}
 }
 
@@ -133,7 +137,7 @@ void GraphicsContext::setVertexLayout(VertexLayout* value)
 {
 	if (m_staging.VertexLayout != value) {
 		m_staging.VertexLayout = value;
-		m_modifiedFlags |= ModifiedFlags_PipelinePrimitiveState;
+		m_dirtyFlags |= DirtyFlags_PipelinePrimitiveState;
 	}
 }
 
@@ -146,15 +150,16 @@ void GraphicsContext::setPrimitiveTopology(PrimitiveTopology value)
 {
 	if (m_staging.topology != value) {
 		m_staging.topology = value;
-		m_modifiedFlags |= ModifiedFlags_PipelinePrimitiveState;
+		m_dirtyFlags |= DirtyFlags_PipelinePrimitiveState;
 	}
 }
 
 void GraphicsContext::setVertexBuffer(int streamIndex, VertexBuffer* value)
 {
+	if (LN_REQUIRE_RANGE(streamIndex, 0, MaxVertexStreams)) return;
     if (m_staging.vertexBuffers[streamIndex] != value) {
         m_staging.vertexBuffers[streamIndex] = value;
-        m_modifiedFlags |= ModifiedFlags_PrimitiveBuffers;
+        m_dirtyFlags |= DirtyFlags_PrimitiveBuffers;
     }
 }
 
@@ -168,7 +173,7 @@ void GraphicsContext::setIndexBuffer(IndexBuffer* value)
 {
     if (m_staging.indexBuffer != value) {
         m_staging.indexBuffer = value;
-        m_modifiedFlags |= ModifiedFlags_PrimitiveBuffers;
+        m_dirtyFlags |= DirtyFlags_PrimitiveBuffers;
     }
 }
 
@@ -191,7 +196,7 @@ void GraphicsContext::setShaderPass(ShaderPass* pass)
             m_staging.shader = nullptr;
             m_staging.shaderPass = nullptr;
         }
-        m_modifiedFlags |= ModifiedFlags_ShaderPass;
+        m_dirtyFlags |= DirtyFlags_ShaderPass;
     }
 }
 
@@ -204,8 +209,16 @@ void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8
 {
     beginCommandRecodingIfNeeded();
 	commitState();
-	// TODO: threading
-    m_context->clearBuffers(flags, color, z, stencil);
+	LN_ENQUEUE_RENDER_COMMAND_5(
+		GraphicsContext_clear, m_manager,
+		detail::IGraphicsContext*, m_context,
+		ClearFlags, flags,
+		Color, color,
+		float, z,
+		uint8_t, stencil,
+		{
+			m_context->clearBuffers(flags, color, z, stencil);
+		});
 }
 
 void GraphicsContext::drawPrimitive(int startVertex, int primitiveCount)
@@ -235,18 +248,6 @@ void GraphicsContext::drawPrimitiveIndexed(int startIndex, int primitiveCount)
 			m_context->drawPrimitiveIndexed(startIndex, primitiveCount);
 		});
 }
-
-//void GraphicsContext::present(SwapChain* swapChain)
-//{
-//	if (LN_REQUIRE(swapChain)) return;
-//
-//    flushCommandRecoding(swapChain->backbuffer());
-//
-//	// TODO: threading
-//	m_context->present(swapChain->resolveRHIObject());
-//    m_manager->primaryRenderingCommandList()->clear();
-//    swapChain->onPostPresent();
-//}
 
 void GraphicsContext::beginCommandRecodingIfNeeded()
 {
@@ -322,7 +323,7 @@ detail::IGraphicsContext* GraphicsContext::commitState()
 	//}
 
 	// BlendState
-	if ((m_modifiedFlags & ModifiedFlags_BlendState) != 0)
+	if ((m_dirtyFlags & DirtyFlags_BlendState) != 0)
 	{
 		auto& blendState = m_staging.blendState;
 		LN_ENQUEUE_RENDER_COMMAND_2(
@@ -337,7 +338,7 @@ detail::IGraphicsContext* GraphicsContext::commitState()
 	}
 
 	// RasterizerState
-	if ((m_modifiedFlags & ModifiedFlags_RasterizerState) != 0)
+	if ((m_dirtyFlags & DirtyFlags_RasterizerState) != 0)
 	{
 		auto& rasterizerState = m_staging.rasterizerState;
 		LN_ENQUEUE_RENDER_COMMAND_2(
@@ -352,7 +353,7 @@ detail::IGraphicsContext* GraphicsContext::commitState()
 	}
 
 	// DepthStencilState
-	if ((m_modifiedFlags & ModifiedFlags_DepthStencilState) != 0)
+	if ((m_dirtyFlags & DirtyFlags_DepthStencilState) != 0)
 	{
 		auto& depthStencilState = m_staging.depthStencilState;
 		LN_ENQUEUE_RENDER_COMMAND_2(
@@ -420,7 +421,7 @@ detail::IGraphicsContext* GraphicsContext::commitState()
 		detail::IDepthBuffer* depthBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IDepthBuffer>(m_staging.depthBuffer, &modified);
 		anyModified |= modified;
 
-		if ((m_modifiedFlags & ModifiedFlags_Framebuffer) != 0 || anyModified)
+		if ((m_dirtyFlags & DirtyFlags_Framebuffer) != 0 || anyModified)
 		{
 			LN_ENQUEUE_RENDER_COMMAND_3(
 				GraphicsContext_setDepthBuffer, m_manager,
@@ -437,7 +438,7 @@ detail::IGraphicsContext* GraphicsContext::commitState()
 	}
 
 	// Viewport, Scissor
-	if ((m_modifiedFlags & ModifiedFlags_RegionRects) != 0)
+	if ((m_dirtyFlags & DirtyFlags_RegionRects) != 0)
 	{
 		RectI viewportRect = RectI::fromFloatRect(m_staging.viewportRect);
 		RectI scissorRect = RectI::fromFloatRect(m_staging.scissorRect);
@@ -461,7 +462,7 @@ detail::IGraphicsContext* GraphicsContext::commitState()
 		detail::IVertexDeclaration* vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(m_staging.VertexLayout, &modified);
 		PrimitiveTopology topology = m_staging.topology;
 
-		if ((m_modifiedFlags & ModifiedFlags_PipelinePrimitiveState) != 0 || modified)
+		if ((m_dirtyFlags & DirtyFlags_PipelinePrimitiveState) != 0 || modified)
 		{
 			LN_ENQUEUE_RENDER_COMMAND_3(
 				GraphicsContext_setPrimitiveBuffers, m_manager,
@@ -500,7 +501,7 @@ detail::IGraphicsContext* GraphicsContext::commitState()
 		detail::IIndexBuffer* indexBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IIndexBuffer>(m_staging.indexBuffer, &modified);
 		anyModified |= modified;
 
-		if ((m_modifiedFlags & ModifiedFlags_PrimitiveBuffers) != 0 || anyModified)
+		if ((m_dirtyFlags & DirtyFlags_PrimitiveBuffers) != 0 || anyModified)
 		{
 			LN_ENQUEUE_RENDER_COMMAND_3(
 				GraphicsContext_setPrimitiveBuffers, m_manager,
@@ -523,12 +524,12 @@ detail::IGraphicsContext* GraphicsContext::commitState()
 		}
 	}
 
-    //if ((m_modifiedFlags & ModifiedFlags_ShaderPass) != 0)
+    //if ((m_dirtyFlags & DirtyFlags_ShaderPass) != 0)
 	{
 		auto& value = m_staging.shaderPass;
 		detail::IShaderPass* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
 
-		if ((m_modifiedFlags & ModifiedFlags_ShaderPass) != 0)
+		if ((m_dirtyFlags & DirtyFlags_ShaderPass) != 0)
 		{
 			LN_ENQUEUE_RENDER_COMMAND_2(
 				GraphicsContext_setShaderPass, m_manager,
@@ -548,7 +549,7 @@ detail::IGraphicsContext* GraphicsContext::commitState()
 
 	}
 
-    m_modifiedFlags = ModifiedFlags_None;
+    m_dirtyFlags = DirtyFlags_None;
 
 	return m_context;
 }
