@@ -63,11 +63,15 @@ class Texture2D
 	: public Texture
 {
 public:
-    static Ref<Texture2D> create(int width, int height, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
+    static Ref<Texture2D> create(int width, int height, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false);
 
+	void setMipmapEnabled(bool value);
 
 	/** テクスチャが保持するビットマップデータにアクセスします。 */
 	Bitmap2D* map(MapMode mode);
+
+	/** リソースの使用方法を変更します。(default: Static) */
+	void setResourceUsage(GraphicsResourceUsage usage);
 
 	/** リソースの管理方法を変更します。(default: Managed) */
 	void setResourcePool(GraphicsResourcePool pool);
@@ -81,10 +85,10 @@ public:
 LN_CONSTRUCT_ACCESS:
 	Texture2D();
 	virtual ~Texture2D();
-	void init(int width, int height, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
-	void init(const StringRef& filePath, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
-    void init(Stream* stream, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
-    void init(Bitmap2D* bitmap, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
+	void init(int width, int height, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false);
+	void init(const StringRef& filePath, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false);
+    void init(Stream* stream, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false);
+    void init(Bitmap2D* bitmap, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false);
 
 protected:
 	virtual void onDispose(bool explicitDisposing) override;
@@ -151,6 +155,7 @@ class TextureHelper
 public:
 	static void setMappedData(Texture2D* texture, const void* data);
     static void setDesc(Texture* texture, const TextureDesc& desc) { texture->m_desc = desc; }
+	static void setMipmapEnabled(Texture* texture, bool value) { texture->m_desc.mipmap = value; }
 };
 
 class Texture3D

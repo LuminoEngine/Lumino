@@ -49,9 +49,9 @@ void Texture::setSamplerState(SamplerState* value)
 //==============================================================================
 // Texture2D
 
-Ref<Texture2D> Texture2D::create(int width, int height, TextureFormat format, bool mipmap, GraphicsResourceUsage usage)
+Ref<Texture2D> Texture2D::create(int width, int height, TextureFormat format, bool mipmap)
 {
-    return newObject<Texture2D>(width, height, format, mipmap, usage);
+    return newObject<Texture2D>(width, height, format, mipmap);
 }
 
 Texture2D::Texture2D()
@@ -61,7 +61,7 @@ Texture2D::Texture2D()
 	, m_bitmap(nullptr)
 	, m_rhiLockedBuffer(nullptr)
 	, m_initialUpdate(false)
-	, m_modified(false)
+	, m_modified(true)
 {
 }
 
@@ -69,35 +69,31 @@ Texture2D::~Texture2D()
 {
 }
 
-void Texture2D::init(int width, int height, TextureFormat format, bool mipmap, GraphicsResourceUsage usage)
+void Texture2D::init(int width, int height, TextureFormat format, bool mipmap)
 {
 	Texture::init(/*desc*/);
 	m_bitmap = newObject<Bitmap2D>(width, height, GraphicsHelper::translateToPixelFormat(format));
-	m_usage = usage;
 	m_initialUpdate = true;
 	m_modified = true;
     detail::TextureDesc desc = { width, height, format, mipmap };
     detail::TextureHelper::setDesc(this, desc);
-	//setSize(SizeI(width, height));
-	//setFormat(format);
-	//setMipmap(mipmap);
 }
 
-void Texture2D::init(const StringRef& filePath, TextureFormat format, bool mipmap, GraphicsResourceUsage usage)
+void Texture2D::init(const StringRef& filePath, TextureFormat format, bool mipmap)
 {
 	auto bitmap = newObject<Bitmap2D>();
     bitmap->load(filePath);
-    init(bitmap, format, mipmap, usage);
+    init(bitmap, format, mipmap);
 }
 
-void Texture2D::init(Stream* stream, TextureFormat format, bool mipmap, GraphicsResourceUsage usage)
+void Texture2D::init(Stream* stream, TextureFormat format, bool mipmap)
 {
     auto bitmap = newObject<Bitmap2D>();
     bitmap->load(stream);
-    init(bitmap, format, mipmap, usage);
+    init(bitmap, format, mipmap);
 }
 
-void Texture2D::init(Bitmap2D* bitmap, TextureFormat format, bool mipmap, GraphicsResourceUsage usage)
+void Texture2D::init(Bitmap2D* bitmap, TextureFormat format, bool mipmap)
 {
     m_bitmap = bitmap;
     Texture::init(/*desc*/);
@@ -106,7 +102,7 @@ void Texture2D::init(Bitmap2D* bitmap, TextureFormat format, bool mipmap, Graphi
     detail::TextureHelper::setDesc(this, desc);
     // TODO: check and convert format
 
-    m_usage = usage;
+    //m_usage = usage;
     m_initialUpdate = true;
     m_modified = true;
     //setSize(SizeI(m_bitmap->width(), m_bitmap->height()));
@@ -120,6 +116,14 @@ void Texture2D::onDispose(bool explicitDisposing)
     Texture::onDispose(explicitDisposing);
 }
 
+void Texture2D::setMipmapEnabled(bool value)
+{
+	if (mipmap() != value) {
+		detail::TextureHelper::setMipmapEnabled(this, value);
+		m_modified = true;
+	}
+}
+
 Bitmap2D* Texture2D::map(MapMode mode)
 {
 	if (m_initialUpdate && m_usage == GraphicsResourceUsage::Static && m_pool == GraphicsResourcePool::None)
@@ -129,6 +133,14 @@ Bitmap2D* Texture2D::map(MapMode mode)
 
 	m_modified = true;
 	return m_bitmap;
+}
+
+void Texture2D::setResourceUsage(GraphicsResourceUsage usage)
+{
+	if (m_usage != usage) {
+		m_usage = usage;
+		m_modified = true;
+	}
 }
 
 void Texture2D::setResourcePool(GraphicsResourcePool pool)
@@ -198,9 +210,9 @@ detail::ITexture* Texture2D::resolveRHIObject(bool* outModified)
 				bmpRawData.writableData(), bmpBuffer->data(), m_bitmap->width(), m_bitmap->height(), Bitmap2D::getPixelFormatByteSize(m_bitmap->format()), false);
 
             detail::IGraphicsDevice* deviceContext = detail::GraphicsResourceInternal::manager(this)->deviceContext();
-			if (!m_rhiObject)
+			if (!m_rhiObject || m_usage != m_rhiObject->usage() || mipmap() != m_rhiObject->mipmap())
 			{
-				m_rhiObject = deviceContext->createTexture2D(width(), height(), format(), mipmap(), m_bitmap->data());
+				m_rhiObject = deviceContext->createTexture2D(m_usage, width(), height(), format(), mipmap(), m_bitmap->data());
 			}
 			else
 			{
@@ -451,9 +463,9 @@ detail::ITexture* Texture3D::resolveRHIObject(bool* outModified)
 				bmpRawData.writableData(), bmpBuffer->data(), m_bitmap->width(), m_bitmap->height(), m_bitmap->depth(), Bitmap2D::getPixelFormatByteSize(m_bitmap->format()), false);
 
 			detail::IGraphicsDevice* deviceContext = detail::GraphicsResourceInternal::manager(this)->deviceContext();
-			if (!m_rhiObject)
+			if (!m_rhiObject || m_usage != m_rhiObject->usage())
 			{
-				m_rhiObject = deviceContext->createTexture3D(width(), height(), depth(), format(), mipmap(), m_bitmap->data());
+				m_rhiObject = deviceContext->createTexture3D(m_usage, width(), height(), depth(), format(), mipmap(), m_bitmap->data());
 			}
 			else
 			{

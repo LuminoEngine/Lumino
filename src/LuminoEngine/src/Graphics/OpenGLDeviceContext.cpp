@@ -348,17 +348,17 @@ Ref<IIndexBuffer> OpenGLDevice::onCreateIndexBuffer(GraphicsResourceUsage usage,
 	return ptr;
 }
 
-Ref<ITexture> OpenGLDevice::onCreateTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
+Ref<ITexture> OpenGLDevice::onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
 	auto ptr = makeRef<GLTexture2D>();
-	ptr->init(width, height, requestFormat, mipmap, initialData);
+	ptr->init(usage, width, height, requestFormat, mipmap, initialData);
 	return ptr;
 }
 
-Ref<ITexture> OpenGLDevice::onCreateTexture3D(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
+Ref<ITexture> OpenGLDevice::onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
 	auto ptr = makeRef<GLTexture3D>();
-	ptr->init(width, height, depth, requestFormat, mipmap, initialData);
+	ptr->init(usage, width, height, depth, requestFormat, mipmap, initialData);
 	return ptr;
 }
 
@@ -1326,6 +1326,7 @@ void GLIndexBuffer::unmap()
 
 GLTexture2D::GLTexture2D()
 	: m_id(0)
+	, m_usage(GraphicsResourceUsage::Static)
 	, m_size(0, 0)
 	, m_textureFormat(TextureFormat::Unknown)
 	, m_pixelFormat(0)
@@ -1338,8 +1339,9 @@ GLTexture2D::~GLTexture2D()
 {
 }
 
-void GLTexture2D::init(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
+void GLTexture2D::init(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
+	m_usage = usage;
 	m_size = SizeI(width, height);
 	m_textureFormat = requestFormat;
     m_mipmap = mipmap;
@@ -1457,6 +1459,7 @@ void GLTexture2D::setSubData3D(int x, int y, int z, int width, int height, int d
 
 GLTexture3D::GLTexture3D()
 	: m_id(0)
+	, m_usage(GraphicsResourceUsage::Static)
 	, m_width(0)
 	, m_height(0)
 	, m_depth(0)
@@ -1470,8 +1473,9 @@ GLTexture3D::~GLTexture3D()
 {
 }
 
-void GLTexture3D::init(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
+void GLTexture3D::init(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
+	m_usage = usage;
 	m_width = width;
 	m_height = height;
 	m_depth = depth;

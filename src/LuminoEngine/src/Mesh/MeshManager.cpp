@@ -119,7 +119,7 @@ void MeshManager::init(const Settings& settings)
         MemoryStream data(toonData, toonDataLen); \
         auto bmp = newObject<Bitmap2D>(); \
         bmp->load(&data); \
-        m_mmdDefaultToonTexture[index] = newObject<Texture2D>(bmp, TextureFormat::RGBA32, false, GraphicsResourceUsage::Static); \
+        m_mmdDefaultToonTexture[index] = newObject<Texture2D>(bmp, TextureFormat::RGBA32, false); \
     }
     LN_CREATE_MMD_TOON_TEXTURE(0, toon01Data, toon01DataLen);
     LN_CREATE_MMD_TOON_TEXTURE(1, toon02Data, toon02DataLen);

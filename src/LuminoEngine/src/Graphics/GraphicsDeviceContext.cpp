@@ -118,18 +118,20 @@ Ref<IIndexBuffer> IGraphicsDevice::createIndexBuffer(GraphicsResourceUsage usage
 	return ptr;
 }
 
-Ref<ITexture> IGraphicsDevice::createTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
+Ref<ITexture> IGraphicsDevice::createTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
-	Ref<ITexture> ptr = onCreateTexture2D(width, height, requestFormat, mipmap, initialData);
+	Ref<ITexture> ptr = onCreateTexture2D(usage, width, height, requestFormat, mipmap, initialData);
+	ptr->m_mipmap = mipmap;
 	if (ptr) {
 		m_aliveObjects.push_back(ptr);
 	}
 	return ptr;
 }
 
-Ref<ITexture> IGraphicsDevice::createTexture3D(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
+Ref<ITexture> IGraphicsDevice::createTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
-	Ref<ITexture> ptr = onCreateTexture3D(width, height, depth, requestFormat, mipmap, initialData);
+	Ref<ITexture> ptr = onCreateTexture3D(usage, width, height, depth, requestFormat, mipmap, initialData);
+	ptr->m_mipmap = mipmap;
 	if (ptr) {
 		m_aliveObjects.push_back(ptr);
 	}
@@ -139,6 +141,7 @@ Ref<ITexture> IGraphicsDevice::createTexture3D(uint32_t width, uint32_t height, 
 Ref<ITexture> IGraphicsDevice::createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap)
 {
 	Ref<ITexture> ptr = onCreateRenderTarget(width, height, requestFormat, mipmap);
+	ptr->m_mipmap = mipmap;
 	if (ptr) {
 		m_aliveObjects.push_back(ptr);
 	}
@@ -477,6 +480,7 @@ IIndexBuffer::IIndexBuffer()
 // ITexture
 
 ITexture::ITexture()
+	: m_mipmap(false)
 {
 	LN_LOG_VERBOSE << "ITexture [0x" << this << "] constructed.";
 }

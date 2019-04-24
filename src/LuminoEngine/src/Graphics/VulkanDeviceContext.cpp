@@ -226,16 +226,16 @@ Ref<IIndexBuffer> VulkanDevice::onCreateIndexBuffer(GraphicsResourceUsage usage,
 	return ptr;
 }
 
-Ref<ITexture> VulkanDevice::onCreateTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
+Ref<ITexture> VulkanDevice::onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
     auto ptr = makeRef<VulkanTexture2D>();
-    if (!ptr->init(this, width, height, requestFormat, mipmap, initialData)) {
+    if (!ptr->init(this, usage, width, height, requestFormat, mipmap, initialData)) {
         return nullptr;
     }
 	return ptr;
 }
 
-Ref<ITexture> VulkanDevice::onCreateTexture3D(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
+Ref<ITexture> VulkanDevice::onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
 	LN_NOTIMPLEMENTED();
 	return nullptr;
@@ -1827,10 +1827,11 @@ VulkanTexture2D::VulkanTexture2D()
 {
 }
 
-Result VulkanTexture2D::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
+Result VulkanTexture2D::init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData)
 {
 	LN_DCHECK(deviceContext);
 	m_deviceContext = deviceContext;
+	m_usage = usage;
     m_size.width = width;
     m_size.height = height;
     m_format = requestFormat;

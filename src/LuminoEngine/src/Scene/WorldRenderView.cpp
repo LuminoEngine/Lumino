@@ -179,7 +179,8 @@ void WorldRenderView::createGridPlane()
 
     // 四方の辺に黒線を引いたテクスチャを作り、マテリアルにセットしておく
     SizeI gridTexSize(512, 512);
-    auto gridTex = newObject<Texture2D>(gridTexSize.width, gridTexSize.height, TextureFormat::RGBA32, true, GraphicsResourceUsage::Dynamic);
+    auto gridTex = newObject<Texture2D>(gridTexSize.width, gridTexSize.height, TextureFormat::RGBA32, true);
+	gridTex->setResourceUsage(GraphicsResourceUsage::Dynamic);
     for (int x = 0; x < gridTexSize.width; ++x)
     {
         gridTex->setPixel(x, 0, Color(0, 0, 0, 0.5));

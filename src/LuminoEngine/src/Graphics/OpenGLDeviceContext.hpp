@@ -142,8 +142,8 @@ protected:
 	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) override;
 	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) override;
 	virtual Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) override;
-	virtual Ref<ITexture> onCreateTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
-	virtual Ref<ITexture> onCreateTexture3D(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
+	virtual Ref<ITexture> onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
+	virtual Ref<ITexture> onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
 	virtual Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) override;
 	virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
@@ -363,13 +363,14 @@ class GLTexture2D
 public:
 	GLTexture2D();
 	virtual ~GLTexture2D();
-	void init(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData);
+	void init(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData);
 	virtual void dispose() override;
 
 	virtual DeviceTextureType type() const override { return DeviceTextureType::Texture2D; }
 	virtual void readData(void* outData) override;
 	virtual SizeI realSize() override;
 	virtual TextureFormat getTextureFormat() const override;
+	virtual GraphicsResourceUsage usage() const override { return m_usage; }
 	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) override;
 	virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
 
@@ -378,6 +379,7 @@ public:
 
 private:
 	GLuint m_id;
+	GraphicsResourceUsage m_usage;
 	SizeI m_size;
 	TextureFormat m_textureFormat;
 	GLenum m_pixelFormat;
@@ -391,13 +393,14 @@ class GLTexture3D
 public:
 	GLTexture3D();
 	virtual ~GLTexture3D();
-	void init(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData);
+	void init(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData);
 	virtual void dispose() override;
 
 	virtual DeviceTextureType type() const override { return DeviceTextureType::Texture3D; }
 	virtual void readData(void* outData) override;
 	virtual SizeI realSize() override;
 	virtual TextureFormat getTextureFormat() const override;
+	virtual GraphicsResourceUsage usage() const override { return m_usage; }
 	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) override;
 	virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
 
@@ -406,6 +409,7 @@ public:
 
 private:
 	GLuint m_id;
+	GraphicsResourceUsage m_usage;
 	uint32_t m_width;
 	uint32_t m_height;
 	uint32_t m_depth;
@@ -428,6 +432,7 @@ public:
 	virtual void readData(void* outData) override;
 	virtual SizeI realSize() override;
 	virtual TextureFormat getTextureFormat() const override;
+	virtual GraphicsResourceUsage usage() const override { return GraphicsResourceUsage::Static; }
 	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) override;
 	virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
 

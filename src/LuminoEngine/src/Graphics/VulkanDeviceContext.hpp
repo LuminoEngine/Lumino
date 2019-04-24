@@ -68,8 +68,8 @@ protected:
 	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) override;
 	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) override;
 	virtual Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) override;
-	virtual Ref<ITexture> onCreateTexture2D(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
-	virtual Ref<ITexture> onCreateTexture3D(uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
+	virtual Ref<ITexture> onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
+	virtual Ref<ITexture> onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
 	virtual Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) override;
 	virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
@@ -309,11 +309,12 @@ class VulkanTexture2D
 {
 public:
 	VulkanTexture2D();
-	Result init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData);
+	Result init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData);
     virtual void dispose();
 	virtual DeviceTextureType type() const { return DeviceTextureType::Texture2D; }
 	virtual SizeI realSize() { return m_size; }
     virtual TextureFormat getTextureFormat() const { return m_format; }
+	virtual GraphicsResourceUsage usage() const override { return m_usage; }
 	virtual void readData(void* outData) { LN_UNREACHABLE(); }
     virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) override;
 	virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) { LN_UNREACHABLE(); }
@@ -323,6 +324,7 @@ public:
 private:
 	VulkanDevice* m_deviceContext;
     VulkanImage m_image;
+	GraphicsResourceUsage m_usage;
 	SizeI m_size;
 	TextureFormat m_format;
     VkFormat m_nativeFormat;
@@ -339,6 +341,7 @@ public:
 	virtual DeviceTextureType type() const { return DeviceTextureType::RenderTarget; }
 	virtual SizeI realSize() { return m_size; }
 	virtual TextureFormat getTextureFormat() const {return TextureFormat::RGBA32; }
+	virtual GraphicsResourceUsage usage() const override { return GraphicsResourceUsage::Static; }
     virtual void readData(void* outData) override;
 	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) {}
 	virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) {}
