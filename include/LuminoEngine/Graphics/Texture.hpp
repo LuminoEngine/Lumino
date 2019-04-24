@@ -77,11 +77,16 @@ public:
 	/** リソースの管理方法を変更します。(default: Managed) */
 	void setResourcePool(GraphicsResourcePool pool);
 
-    void clear(const Color& color);
-    void setPixel(int x, int y, const Color& color);
-    void blit(int x, int y, Texture2D* srcTexture, const RectI& srcRect);	// TODO: アルファブレンド有無
-    void drawText(const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment = TextAlignment::Left);
+	/** 指定した色でテクスチャ全体をクリアします。 */
+	void clear(const Color& color);
 
+	/** 指定した色でテクスチャ全体をクリアします。 */
+	void setPixel(int x, int y, const Color& color);
+
+	/** 別のテクスチャからこのテクスチャへ、ビットマップ転送を行います。 */
+	void blit(int x, int y, Texture2D* srcTexture, int sx, int sy, int sw, int sh);
+
+	void drawText(const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment = TextAlignment::Left);
 
 LN_CONSTRUCT_ACCESS:
 	Texture2D();

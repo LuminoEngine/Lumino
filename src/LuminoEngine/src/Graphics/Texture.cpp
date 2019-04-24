@@ -160,8 +160,9 @@ void Texture2D::setPixel(int x, int y, const Color& color)
     bitmap->setPixel32(x, y, ColorI::fromLinearColor(color));
 }
 
-void Texture2D::blit(int x, int y, Texture2D* srcTexture, const RectI& srcRect)
+void Texture2D::blit(int x, int y, Texture2D* srcTexture, int sx, int sy, int sw, int sh)
 {
+	RectI srcRect(sx, sy, sw, sh);
     if (LN_REQUIRE(srcTexture)) return;
     Bitmap2D* dst = map(MapMode::Write);
     Bitmap2D* src = srcTexture->map(MapMode::Read);
