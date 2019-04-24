@@ -137,6 +137,22 @@ class RenderTargetTexture
 	: public Texture
 {
 public:
+    /**
+     * レンダーターゲットテクスチャを作成します。ピクセルフォーマットは RGBA8 です。
+     * @param[in]   width   : 幅 (px 単位)
+     * @param[in]   height  : 高さ (px 単位)
+     */
+    static Ref<RenderTargetTexture> create(int width, int height);
+
+    /**
+     * レンダーターゲットテクスチャを作成します。
+     * @param[in]   width   : 幅 (px 単位)
+     * @param[in]   height  : 高さ (px 単位)
+     * @param[in]   format  : ピクセルフォーマット
+     */
+    static Ref<RenderTargetTexture> create(int width, int height, TextureFormat format);
+
+public:
 	/** 一時的な RenderTargetTexture を取得します。 */
 	static Ref<RenderTargetTexture> getTemporary(int width, int height, TextureFormat format, bool mipmap);
 
@@ -151,16 +167,19 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	RenderTargetTexture();
 	virtual ~RenderTargetTexture();
-	void init(int width, int height, TextureFormat requestFormat, bool mipmap);
+
+    /** @copydoc create(int, int) */
+    void init(int width, int height);
+
+    /** @copydoc create(int, int, TextureFormat) */
+    void init(int width, int height, TextureFormat format);
+
+	void init(int width, int height, TextureFormat format, bool mipmap);
 	void init(SwapChain* owner/*, detail::ITexture* ref*/);
-
-LN_INTERNAL_ACCESS:
-
-    void resetSwapchainFrameIfNeeded(bool force = false);
-    //void resetSwapchainFrame(detail::ITexture* ref);
 
 private:
     Ref<Bitmap2D> readData();
+    void resetSwapchainFrameIfNeeded(bool force);
 
 	Ref<detail::ITexture> m_rhiObject;
     SwapChain* m_ownerSwapchain;
@@ -183,6 +202,7 @@ public:
     static void setDesc(Texture* texture, const TextureDesc& desc) { texture->m_desc = desc; }
 	static void setMipmapEnabled(Texture* texture, bool value) { texture->m_desc.mipmap = value; }
     static Ref<Bitmap2D> readData(RenderTargetTexture* renderTarget) { return renderTarget->readData(); }
+    static void resetSwapchainFrameIfNeeded(RenderTargetTexture* renderTarget, bool force) { renderTarget->resetSwapchainFrameIfNeeded(force); }
 };
 
 class Texture3D

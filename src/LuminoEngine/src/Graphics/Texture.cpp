@@ -255,6 +255,16 @@ detail::ITexture* Texture2D::resolveRHIObject(bool* outModified)
 //==============================================================================
 // RenderTargetTexture
 
+Ref<RenderTargetTexture> RenderTargetTexture::create(int width, int height)
+{
+    return newObject<RenderTargetTexture>(width, height);
+}
+
+Ref<RenderTargetTexture> RenderTargetTexture::create(int width, int height, TextureFormat format)
+{
+    return newObject<RenderTargetTexture>(width, height, format);
+}
+
 Ref<RenderTargetTexture> RenderTargetTexture::getTemporary(int width, int height, TextureFormat format, bool mipmap)
 {
 	return detail::EngineDomain::graphicsManager()->frameBufferCache()->requestRenderTargetTexture2(SizeI(width, height), format, mipmap);
@@ -277,10 +287,20 @@ RenderTargetTexture::~RenderTargetTexture()
 {
 }
 
-void RenderTargetTexture::init(int width, int height, TextureFormat requestFormat, bool mipmap)
+void RenderTargetTexture::init(int width, int height)
+{
+    init(width, height, TextureFormat::RGBA8, false);
+}
+
+void RenderTargetTexture::init(int width, int height, TextureFormat format)
+{
+    init(width, height, format, true);
+}
+
+void RenderTargetTexture::init(int width, int height, TextureFormat format, bool mipmap)
 {
 	Texture::init(/*detail::TextureDesc()*/);
-    detail::TextureDesc desc = { width, height, requestFormat/*m_rhiObject->getTextureFormat()*/, mipmap };
+    detail::TextureDesc desc = { width, height, format/*m_rhiObject->getTextureFormat()*/, mipmap };
     //m_desc = desc;
     detail::TextureHelper::setDesc(this, desc);
 	//m_size.width = width;
@@ -298,7 +318,7 @@ void RenderTargetTexture::init(SwapChain* owner/*, detail::ITexture* ref*/)
     //detail::TextureDesc desc = { 0, 0, TextureFormat::Unknown, false };
 	Texture::init(/*desc*/);
     m_ownerSwapchain = owner;
-    resetSwapchainFrameIfNeeded();
+    resetSwapchainFrameIfNeeded(false);
 }
 
 void RenderTargetTexture::onDispose(bool explicitDisposing)

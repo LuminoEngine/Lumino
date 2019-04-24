@@ -348,7 +348,7 @@ detail::IGraphicsContext* GraphicsContext::commitState()
         for (int i = 0; i < detail::MaxMultiRenderTargets; i++) {
             auto& value = m_staging.renderTargets[i];
             if (value) {
-                value->resetSwapchainFrameIfNeeded();
+                detail::TextureHelper::resetSwapchainFrameIfNeeded(value, false);
             }
             renderTargets[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(value, &modified);
             anyModified |= modified;
