@@ -283,11 +283,11 @@ static FormatConversionItem s_formatConversionTable[] =
 	{VK_FORMAT_UNDEFINED, 0, TextureFormat::Unknown, false},
 	{VK_FORMAT_R8G8B8A8_UNORM, 32, TextureFormat::RGBA8, false},
 	{VK_FORMAT_UNDEFINED, 0, TextureFormat::RGB8, false}, // TODO: remove
-	{VK_FORMAT_R16G16B16A16_SFLOAT, 64, TextureFormat::R16G16B16A16Float, false},
-	{VK_FORMAT_R32G32B32A32_SFLOAT, 128, TextureFormat::R32G32B32A32Float, false},
-	{VK_FORMAT_R16_SFLOAT, 16, TextureFormat::R16Float, false},
-	{VK_FORMAT_R32_SFLOAT, 32, TextureFormat::R32Float, false},
-	{VK_FORMAT_R32_UINT, 32, TextureFormat::R32UInt, false},
+	{VK_FORMAT_R16G16B16A16_SFLOAT, 64, TextureFormat::RGBA16F, false},
+	{VK_FORMAT_R32G32B32A32_SFLOAT, 128, TextureFormat::RGBA32F, false},
+	{VK_FORMAT_R16_SFLOAT, 16, TextureFormat::R16F, false},
+	{VK_FORMAT_R32_SFLOAT, 32, TextureFormat::R32F, false},
+	{VK_FORMAT_R32_UINT, 32, TextureFormat::R32U, false},
 };
 
 static const BlendFactorConversionItem s_blendFactorConversionTable[] =

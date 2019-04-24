@@ -58,15 +58,15 @@ PixelFormat GraphicsHelper::translateToPixelFormat(TextureFormat format)
 		return PixelFormat::RGBA32;
     case TextureFormat::RGB8:
 		return PixelFormat::RGB24;
-	case TextureFormat::R16G16B16A16Float:
+	case TextureFormat::RGBA16F:
 		return PixelFormat::Unknown;
-	case TextureFormat::R32G32B32A32Float:
+	case TextureFormat::RGBA32F:
 		return PixelFormat::R32G32B32A32Float;
-	case TextureFormat::R16Float:
+	case TextureFormat::R16F:
 		return PixelFormat::Unknown;
-	case TextureFormat::R32Float:
+	case TextureFormat::R32F:
 		return PixelFormat::Unknown;
-	case TextureFormat::R32UInt:
+	case TextureFormat::R32U:
 		return PixelFormat::Unknown;
 	default:
 		return PixelFormat::Unknown;
@@ -88,7 +88,7 @@ TextureFormat GraphicsHelper::translateToTextureFormat(PixelFormat format)
     case PixelFormat::RGB24:
         return TextureFormat::RGB8;
 	case PixelFormat::R32G32B32A32Float:
-		return TextureFormat::R32G32B32A32Float;
+		return TextureFormat::RGBA32F;
 	default:
 		return TextureFormat::Unknown;
 	}
@@ -104,15 +104,15 @@ size_t GraphicsHelper::getPixelSize(TextureFormat format)
         return 4;
     case TextureFormat::RGB8:
         return 3;
-    case TextureFormat::R16G16B16A16Float:
+    case TextureFormat::RGBA16F:
         return 8;
-    case TextureFormat::R32G32B32A32Float:
+    case TextureFormat::RGBA32F:
         return 16;
-    case TextureFormat::R16Float:
+    case TextureFormat::R16F:
         return 2;
-    case TextureFormat::R32Float:
+    case TextureFormat::R32F:
         return 4;
-    case TextureFormat::R32UInt:
+    case TextureFormat::R32U:
         return 4;
     default:
         LN_UNREACHABLE();

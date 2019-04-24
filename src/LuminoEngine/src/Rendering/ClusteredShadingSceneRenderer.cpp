@@ -195,7 +195,7 @@ void ShadowCasterPass::init()
 
 	m_defaultShader = manager()->builtinShader(BuiltinShader::ShadowCaster);
 
-	m_shadowMap = newObject<RenderTargetTexture>(1024, 1024, TextureFormat::R32G32B32A32Float, false);
+	m_shadowMap = newObject<RenderTargetTexture>(1024, 1024, TextureFormat::RGBA32F, false);
 	m_depthBuffer = newObject<DepthBuffer>(1024, 1024);
 
 	//g_m_shadowMap = m_shadowMap;
