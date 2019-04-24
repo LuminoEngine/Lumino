@@ -338,7 +338,7 @@ void ShaderSemanticsManager::updateSubsetVariables(const SubsetInfo& info)
                 varInfo.variable->setVector(info.blendColor.toVector4());
                 break;
             case BuiltinSemantics::ToneColor:
-                varInfo.variable->setVector(info.tone);
+                varInfo.variable->setVector(info.tone.toVector4());
                 break;
             default:
                 break;

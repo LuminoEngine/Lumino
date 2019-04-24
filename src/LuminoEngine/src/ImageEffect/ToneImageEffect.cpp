@@ -34,7 +34,7 @@ void ToneImageEffect::init()
 
 void ToneImageEffect::play(const ToneF& tone, double time)
 {
-    m_toneValue.start(Vector4(tone), time);
+    m_toneValue.start(tone.toVector4(), time);
 }
 
 void ToneImageEffect::onUpdateFrame(float elapsedSeconds)
