@@ -31,7 +31,7 @@ namespace LuminoBuild.Tasks
                 $"{builder.LuminoRootDir}",
                 $"-DCMAKE_INSTALL_PREFIX={cmakeInstallDir}",
                 $"-DCMAKE_TOOLCHAIN_FILE=\"{iOSToolchainFile}\"",
-                $"-DIOS_PLATFORM={platform}",
+                $"-DPLATFORM={platform}",
                 $"-DLN_BUILD_TESTS=OFF",
                 $"-DLN_BUILD_TOOLS=OFF",
                 $"-DLN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=OFF",

@@ -228,7 +228,7 @@ namespace LuminoBuild.Tasks
                 
                 // freetype2 の CMakeList.txt は iOS ツールチェインを独自で持っているが、
                 // 2018/11/19 時点では master のサポートでもビルドを通すことができない。
-                // そのため ↑のほうにある ios-cmake を有効にするため、IOS_PLATFORM に関する設定を削除した CMakeLists.txt を使用する。
+                // そのため ↑のほうにある ios-cmake を有効にするため、PLATFORM に関する設定を削除した CMakeLists.txt を使用する。
                 Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "freetype2", "CMakeLists.txt"), "freetype2");
             }
             if (!Directory.Exists("ogg"))
@@ -373,8 +373,8 @@ namespace LuminoBuild.Tasks
                 {
                     var targetInfos = new []
                     {
-                        new { Config = "Debug", Platform = "OS" },
-                        new { Config = "Release", Platform = "OS" },
+                        new { Config = "Debug", Platform = "OS64" },
+                        new { Config = "Release", Platform = "OS64" },
                         new { Config = "Debug", Platform = "SIMULATOR64" },
                         new { Config = "Release", Platform = "SIMULATOR64" },
                     };
@@ -383,7 +383,7 @@ namespace LuminoBuild.Tasks
                     foreach (var t in targetInfos)
                     {
                         var dirName = $"iOS-{t.Platform}";
-                        var args = $"-DCMAKE_TOOLCHAIN_FILE=\"{iOSToolchainFile}\" -DIOS_PLATFORM={t.Platform}";
+                        var args = $"-DCMAKE_TOOLCHAIN_FILE=\"{iOSToolchainFile}\" -DPLATFORM={t.Platform}";
                         var generator = "Xcode";
                         
                         var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{dirName}-{t.Config}", "ExternalInstall", "ogg"));
