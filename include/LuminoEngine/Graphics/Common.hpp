@@ -87,7 +87,7 @@ enum class VertexElementType : uint8_t
 	/** uint8_t[4] */
 	Ubyte4,
 
-	/** 32ビット色コード (使用非推奨。DirectX と OpenGL ではバイトオーダが異なる。DXは0xAARRGGBB、GLは0xAABBGGRRで、GLES ではオーダーの変更ができない) */
+	/** (obsolete) 32ビット色コード (使用非推奨。DirectX と OpenGL ではバイトオーダが異なる。DXは0xAARRGGBB、GLは0xAABBGGRRで、GLES ではオーダーの変更ができない) */
 	Color4,
 
 	/** short[2] */
@@ -158,15 +158,17 @@ enum class PixelFormat : uint8_t
 	/** Unknown */
 	Unknown,
 
-	/** Unknown */
-	//A1,
-
+	/** 8bit アルファ値のみのフォーマット */
 	A8,
 
-	RGBA32,
-    RGB24,
+	/** RGBA オーダーの各要素 8bit フォーマット */
+	RGBA8,
 
-	R32G32B32A32Float,
+	/** RGB オーダーの各要素 8bit フォーマット */
+	RGB8,
+
+	/** RGBA オーダーの各要素 32bit 浮動小数点フォーマット */
+	RGBA32F,
 };
 
 /** テクスチャのピクセルフォーマット */
@@ -206,14 +208,45 @@ enum class DepthBufferFormat
 	D24S8,
 };
 
+/** テクスチャフィルタ */
+enum class TextureFilterMode
+{
+	/** 補間を行わない*/
+	Point,
+
+	/** 線形補間を行う */
+	Linear,
+};
+
+/** テクスチャアドレッシング */
+enum class TextureAddressMode
+{
+	/** 繰り返し */
+	Repeat,
+
+	/** 境界のピクセル */
+	Clamp,
+};
+
 /** 描画プリミティブの種類 */
 enum class PrimitiveTopology
 {
+	/** 独立した三角形のリスト */
 	TriangleList,
+
+	/** 連続した三角形のリスト */
 	TriangleStrip,
+
+	/** (obsolete) */
 	TriangleFan,
+
+	/** 独立した線のリスト */
 	LineList,
+
+	/** 連続する線のリスト */
 	LineStrip,
+
+	/** 点のリスト */
 	PointList,
 };
 
@@ -261,38 +294,6 @@ public:
     static size_t getPixelSize(TextureFormat format);
 };
 
-
-
-
-
-
-
-
-
-
-/// テクスチャフィルタ
-enum class TextureFilterMode
-{
-	Point = 0,		///< 補間を行わない
-	Linear,			///< 補間を行う
-};
-
-/// テクスチャアドレッシング
-enum class TextureAddressMode
-{
-	Repeat = 0,		///< 繰り返し
-	Clamp,			///< 境界のピクセルが引き延ばされる
-};
-
-struct SamplerStateData
-{
-	TextureFilterMode filter;
-	TextureAddressMode address;
-	bool anisotropy;
-
-	static const SamplerStateData defaultState;
-};
-
 namespace detail {
 class GraphicsManager;
 class GraphicsContextInternal;
@@ -302,6 +303,15 @@ class ISamplerState;
 
 static const int MaxMultiRenderTargets = 4;
 static const int MaxVertexStreams = 16;
+
+struct SamplerStateData
+{
+	TextureFilterMode filter;
+	TextureAddressMode address;
+	bool anisotropy;
+
+	static const SamplerStateData defaultState;
+};
 
 using ShaderRefrectionParameterType = ShaderVariableType;
 //enum class ShaderRefrectionParameterType
@@ -318,14 +328,6 @@ using ShaderRefrectionParameterType = ShaderVariableType;
 //	MatrixArray,
 //	Texture,
 //};
-
-struct TextureDesc
-{
-    int width = 0;
-    int height = 0;
-    TextureFormat format = TextureFormat::Unknown;
-    bool mipmap = false;
-};
 
 // rows, columns はデータレイアウトとしての領域サイズ。
 struct ShaderUniformTypeDesc

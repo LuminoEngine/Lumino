@@ -55,13 +55,13 @@ PixelFormat GraphicsHelper::translateToPixelFormat(TextureFormat format)
 	case TextureFormat::Unknown:
 		return PixelFormat::Unknown;
 	case TextureFormat::RGBA8:
-		return PixelFormat::RGBA32;
+		return PixelFormat::RGBA8;
     case TextureFormat::RGB8:
-		return PixelFormat::RGB24;
+		return PixelFormat::RGB8;
 	case TextureFormat::RGBA16F:
 		return PixelFormat::Unknown;
 	case TextureFormat::RGBA32F:
-		return PixelFormat::R32G32B32A32Float;
+		return PixelFormat::RGBA32F;
 	case TextureFormat::R16F:
 		return PixelFormat::Unknown;
 	case TextureFormat::R32F:
@@ -79,15 +79,13 @@ TextureFormat GraphicsHelper::translateToTextureFormat(PixelFormat format)
 	{
 	case PixelFormat::Unknown:
 		return TextureFormat::Unknown;
-	//case PixelFormat::A1:
-	//	return TextureFormat::Unknown;
 	case PixelFormat::A8:
 		return TextureFormat::Unknown;
-	case PixelFormat::RGBA32:
+	case PixelFormat::RGBA8:
 		return TextureFormat::RGBA8;
-    case PixelFormat::RGB24:
+    case PixelFormat::RGB8:
         return TextureFormat::RGB8;
-	case PixelFormat::R32G32B32A32Float:
+	case PixelFormat::RGBA32F:
 		return TextureFormat::RGBA32F;
 	default:
 		return TextureFormat::Unknown;
