@@ -224,9 +224,10 @@ public:
 	 */
 	static Color parse(const StringRef& str);
 
-	Vector3 rgb() const LN_NOEXCEPT{ return Vector3(r, g, b); }
-
+	/** Vector4 へ変換します。 */
 	const Vector4& toVector4() const { return *reinterpret_cast<const Vector4*>(this); }
+
+	Vector3 rgb() const LN_NOEXCEPT{ return Vector3(r, g, b); }
 
 #define LN_OP_TYPE Color
 #include <LuminoCore/Math/Vector4OpDeclareTemplate.inl>
@@ -276,8 +277,6 @@ constexpr Color Color::lerp(const Color& color1, const Color& color2, float t) n
 		Math::lerp(color1.a, color2.a, t));
 }
 
-
-
 #define LN_OP_TYPE Color
 #define LN_E0 r
 #define LN_E1 g
@@ -289,7 +288,6 @@ constexpr Color Color::lerp(const Color& color1, const Color& color2, float t) n
 #undef LN_E1
 #undef LN_E2
 #undef LN_E3
-
 
 /** 色調を定義します。 */
 struct ColorTone
@@ -310,7 +308,6 @@ public:
 
 	/** グレースケールフィルタの強さ (0.0 ～ 1.0) (saturation) */
 	float	s;
-	// TODO: gray → s 
 
 public:
 	/** すべての要素を 0.0 で初期化します。 */
@@ -329,23 +326,8 @@ public:
 	/** この色調に指定した色調を加算します。0.0～1.0 を超える場合はクランプします。 */
 	void addClamp(const ColorTone& tone);
 
+	/** Vector4 へ変換します。 */
 	const Vector4& toVector4() const { return *reinterpret_cast<const Vector4*>(this); }
-	//operator Vector4() { return *reinterpret_cast< Vector4* >(this); }
-	//operator const Vector4&() const { return *reinterpret_cast<const Vector4*>(this); }
-
-	//friend Vector3 operator - (const Vector3& v1);
-	//friend ToneF operator + (const ToneF& v1, const ToneF& v2);
-	//friend ToneF operator + (const ToneF& v1, float v2);
-	//friend ToneF operator + (float v1, const ToneF& v2);
-	//friend ToneF operator - (const ToneF& v1, const ToneF& v2);
-	//friend ToneF operator - (const ToneF& v1, float v2);
-	//friend ToneF operator - (float v1, const ToneF& v2);
-	//friend ToneF operator * (const ToneF& v1, const ToneF& v2);
-	//friend ToneF operator * (const ToneF& v1, float v2);
-	//friend ToneF operator * (float v1, const ToneF& v2);
-	//friend ToneF operator / (const ToneF& v1, const ToneF& v2);
-	//friend ToneF operator / (const ToneF& v1, float v2);
-	//friend ToneF operator / (float v1, const ToneF& v2);
 
 #define LN_OP_TYPE ColorTone
 #include <LuminoCore/Math/Vector4OpDeclareTemplate.inl>
@@ -363,21 +345,6 @@ public:
 #undef LN_E1
 #undef LN_E2
 #undef LN_E3
-////------------------------------------------------------------------------------
-//inline ToneF operator - (const ToneF& v1) { return ToneF(-v1.r, -v1.g, -v1.b, -v1.gray); }
-//inline ToneF operator + (const ToneF& v1, const ToneF& v2) { return ToneF(v1.r + v2.r, v1.g + v2.g, v1.b + v2.b, v1.gray + v2.gray); }
-//inline ToneF operator + (const ToneF& v1, float v2) { return ToneF(v1.r + v2, v1.g + v2, v1.b + v2, v1.gray + v2); }
-//inline ToneF operator + (float v1, const ToneF& v2) { return ToneF(v1 + v2.r, v1 + v2.g, v1 + v2.b, v1 + v2.gray); }
-//inline ToneF operator - (const ToneF& v1, const ToneF& v2) { return ToneF(v1.r - v2.r, v1.g - v2.g, v1.b - v2.b, v1.gray - v2.gray); }
-//inline ToneF operator - (const ToneF& v1, float v2) { return ToneF(v1.r - v2, v1.g - v2, v1.b - v2, v1.gray - v2); }
-//inline ToneF operator - (float v1, const ToneF& v2) { return ToneF(v1 - v2.r, v1 - v2.g, v1 - v2.b, v1 - v2.gray); }
-//inline ToneF operator * (const ToneF& v1, const ToneF& v2) { return ToneF(v1.r * v2.r, v1.g * v2.g, v1.b * v2.b, v1.gray * v2.gray); }
-//inline ToneF operator * (const ToneF& v1, float v2) { return ToneF(v1.r * v2, v1.g * v2, v1.b * v2, v1.gray * v2); }
-//inline ToneF operator * (float v1, const ToneF& v2) { return ToneF(v1 * v2.r, v1 * v2.g, v1 * v2.b, v1 * v2.gray); }
-//inline ToneF operator / (const ToneF& v1, const ToneF& v2) { return ToneF(v1.r / v2.r, v1.g / v2.g, v1.b / v2.b, v1.gray / v2.gray); }
-//inline ToneF operator / (const ToneF& v1, float v2) { return ToneF(v1.r / v2, v1.g / v2, v1.b / v2, v1.gray / v2); }
-//inline ToneF operator / (float v1, const ToneF& v2) { return ToneF(v1 / v2.r, v1 / v2.g, v1 / v2.b, v1 / v2.gray); }
-
 
 /** 各要素を 0～255 の範囲で表す RGBA カラーを定義します。 */
 struct ColorI
