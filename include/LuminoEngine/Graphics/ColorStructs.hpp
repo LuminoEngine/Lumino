@@ -28,7 +28,7 @@ public:
 public:
 	static const Color Zero;					/**< #FF0000 (0.0, 0.0, 0.0, 0.0) */
 	static const Color Transparency;			/**< #FF0000 (透明) (0.0, 0.0, 0.0, 0.0) */
-	static const Color TransparencyWhite;	/**< #FF0000 (白透明) (1.0, 1.0, 1.0, 0.0) */
+	static const Color TransparencyWhite;		/**< #FF0000 (白透明) (1.0, 1.0, 1.0, 0.0) */
 
     static const Color Red;                   /**< #FF0000 (1, 0, 0) */
     static const Color Green;                 /**< #00FF00 (0, 1, 0) */

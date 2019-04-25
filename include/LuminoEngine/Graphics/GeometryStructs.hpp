@@ -200,12 +200,6 @@ public:
 
 	/** 右下隅の位置を取得します。*/
 	Point getBottomRight() const { return Point(getRight(), getBottom()); }
-
-	/** 左上隅の位置を設定します。*/
-	void setLocation(const Point& pt) { x = pt.x; y = pt.y; }	// TODO: Pos?
-
-	/** 左上隅の位置を取得します。*/
-	Point setLocation() const { return Point(x, y); }
 	
 	/** 幅と高さを設定します。*/
 	LN_METHOD(Property)
@@ -233,9 +227,7 @@ public:
 		return ((x_ >= x) && (x_ - width <= x) && (y_ >= y) && (y_ - height <= y));
 	}
 	
-	/**
-		@brief	指定した矩形全体が、この矩形内部に含まれているかを判定します。
-	*/
+	/** 指定した矩形全体が、この矩形内部に含まれているかを判定します。 */
 	bool contains(const Rect& rect) const
 	{
 		if (isEmpty() || rect.isEmpty()) {
@@ -248,17 +240,13 @@ public:
 			y + height >= rect.y + rect.height);
 	}
 
-	/**
-		@brief	指定した矩形に収まるように、この矩形をクリッピングします。
-	*/
+	/** 指定した矩形に収まるように、この矩形をクリッピングします。 */
 	void clip(const Rect& rect)
 	{
 		detail::GeometryStructsHelper::clip(this, rect);
 	}
 
-	/**
-		@brief	四角形を拡大または縮小します。
-	*/
+	/** 四角形を拡大または縮小します。 */
 	void inflate(float width_, float height_)
 	{
 		x -= width_;
@@ -277,18 +265,24 @@ public:
 	bool operator != (const Rect& obj) const { return !operator==(obj); }
 };
 
-/**
-	@brief		四角形の枠の太さを表すクラスです。
-*/
+/** 四角形の枠の太さを表すクラスです。 */
 struct Thickness
 {
 public:
-	static const Thickness	Zero;	/**< Thickness(0, 0, 0, 0) */
+	/** Thickness(0, 0, 0, 0) */
+	static const Thickness	Zero;
 
-	float		left;		/**< 四角形の左辺の幅 */
-	float		top;		/**< 四角形の上辺の幅 */
-	float		right;		/**< 四角形の右辺の幅 */
-	float		bottom;		/**< 四角形の底辺の幅 */
+	/** 四角形の左辺の幅 */
+	float		left;
+
+	/** 四角形の上辺の幅 */
+	float		top;
+
+	/** 四角形の右辺の幅 */
+	float		right;
+
+	/** 四角形の底辺の幅 */
+	float		bottom;
 
 public:
 
@@ -313,8 +307,8 @@ public:
 	void toArray(float* buf) const { buf[0] = left; buf[1] = top; buf[2] = right; buf[3] = bottom; }
 	static Thickness fromArray(const float* buf) { return Thickness(buf[0], buf[1], buf[2], buf[3]); }
 
-	float getWidth() const { return left + right; }
-	float getHeight() const { return top + bottom; }
+	float width() const { return left + right; }
+	float height() const { return top + bottom; }
 
 public:
 	bool operator == (const Thickness& rhs) const { return (left == rhs.left && top == rhs.top && right == rhs.right && bottom == rhs.bottom); }
