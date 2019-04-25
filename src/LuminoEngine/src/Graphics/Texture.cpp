@@ -18,12 +18,12 @@ namespace ln {
 // Texture
 
 Texture::Texture()
-	: m_samplerState(nullptr)
+	: m_width(0)
+	, m_height(0)
+	, m_format(TextureFormat::Unknown)
+	, m_mipmap(false)
+	, m_samplerState(nullptr)
 {
-    m_desc.width = 0;
-    m_desc.height = 0;
-    m_desc.format = TextureFormat::Unknown;
-    m_desc.mipmap = false;
 }
 
 Texture::~Texture()
@@ -33,6 +33,13 @@ Texture::~Texture()
 void Texture::init()
 {
 	GraphicsResource::init();
+}
+
+void Texture::setDesc(int width, int height, TextureFormat format)
+{
+	m_width = width;
+	m_height = height;
+	m_format = format;
 }
 
 SamplerState* Texture::samplerState() const
@@ -82,12 +89,11 @@ void Texture2D::init(int width, int height, TextureFormat format)
 {
     width = std::max(1, width);
     height = std::max(1, height);
-	Texture::init(/*desc*/);
+	Texture::init();
 	m_bitmap = newObject<Bitmap2D>(width, height, GraphicsHelper::translateToPixelFormat(format));
 	m_initialUpdate = true;
 	m_modified = true;
-    detail::TextureDesc desc = { width, height, format, false };
-    detail::TextureInternal::setDesc(this, desc);
+    detail::TextureInternal::setDesc(this, width, height, format);
 }
 
 void Texture2D::init(const StringRef& filePath, TextureFormat format)
@@ -109,8 +115,7 @@ void Texture2D::init(Bitmap2D* bitmap, TextureFormat format)
     m_bitmap = bitmap;
     Texture::init();
 
-    detail::TextureDesc desc = { m_bitmap->width(), m_bitmap->height(), format, false };
-    detail::TextureInternal::setDesc(this, desc);
+    detail::TextureInternal::setDesc(this, m_bitmap->width(), m_bitmap->height(), format);
     // TODO: check and convert format
 
     m_initialUpdate = true;
@@ -299,8 +304,8 @@ void RenderTargetTexture::init(int width, int height, TextureFormat format, bool
     width = std::max(1, width);
     height = std::max(1, height);
 	Texture::init();
-    detail::TextureDesc desc = { width, height, format, mipmap };
-    detail::TextureInternal::setDesc(this, desc);
+    detail::TextureInternal::setDesc(this, width, height, format);
+	detail::TextureInternal::setMipmapEnabled(this, mipmap);
 }
 
 void RenderTargetTexture::init(SwapChain* owner)
@@ -369,8 +374,7 @@ void RenderTargetTexture::resetSwapchainFrameIfNeeded(bool force)
             m_rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(m_ownerSwapchain, nullptr)->getRenderTarget(m_swapchainImageIndex);
             
             auto size = m_rhiObject->realSize();
-            detail::TextureDesc desc = { size.width, size.height, m_rhiObject->getTextureFormat(), false };
-            detail::TextureInternal::setDesc(this, desc);
+            detail::TextureInternal::setDesc(this, size.width, size.height, m_rhiObject->getTextureFormat());
             m_modified = false;
         }
     }
@@ -409,17 +413,14 @@ Texture3D::~Texture3D()
 
 void Texture3D::init(int width, int height, int depth, TextureFormat format, bool mipmap, GraphicsResourceUsage usage)
 {
-    detail::TextureDesc desc = { width, height, format, mipmap };
-	Texture::init(/*desc*/);
+	Texture::init();
 	m_depth = depth;
 	m_bitmap = newObject<Bitmap3D>(width, height, depth, GraphicsHelper::translateToPixelFormat(format));
 	m_usage = usage;
 	m_initialUpdate = true;
 	m_modified = true;
-    detail::TextureInternal::setDesc(this, desc);
-	//setSize(SizeI());
-	//setFormat(format);
-	//setMipmap(mipmap);
+    detail::TextureInternal::setDesc(this, width, height, format);
+	detail::TextureInternal::setMipmapEnabled(this, mipmap);
 }
 
 Bitmap3D* Texture3D::map(MapMode mode)

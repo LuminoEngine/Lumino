@@ -23,16 +23,16 @@ class Texture
 {
 public:
 	/** テクスチャの幅を取得します。(ピクセル単位) */
-	int width() const { return m_desc.width; }
+	int width() const { return m_width; }
 
 	/** テクスチャの高さを取得します。 (ピクセル単位) */
-	int height() const { return m_desc.height; }
+	int height() const { return m_height; }
 
 	/** テクスチャのピフォーマットを取得します。 */
-	TextureFormat format() const { return m_desc.format; }
+	TextureFormat format() const { return m_format; }
 
     /** ミップマップの有無を取得します。 */
-	bool mipmap() const { return m_desc.mipmap; }
+	bool mipmap() const { return m_mipmap; }
 
 	/** このテクスチャに関連付けられている SamplerState を取得します。 */
 	SamplerState* samplerState() const;
@@ -47,7 +47,12 @@ protected:
 	virtual detail::ITexture* resolveRHIObject(bool* outModified) = 0;
 
 private:
-    detail::TextureDesc m_desc;
+	void setDesc(int width, int height, TextureFormat format);
+
+	int m_width;
+	int m_height;
+	TextureFormat m_format;
+	bool m_mipmap;
 	Ref<SamplerState> m_samplerState;
 
 	friend class ShaderPass;
@@ -195,8 +200,8 @@ class TextureInternal
 {
 public:
 	static void setMappedData(Texture2D* texture, const void* data);
-    static void setDesc(Texture* texture, const TextureDesc& desc) { texture->m_desc = desc; }
-	static void setMipmapEnabled(Texture* texture, bool value) { texture->m_desc.mipmap = value; }
+    static void setDesc(Texture* texture, int width, int height, TextureFormat format) { texture->setDesc(width, height, format); }
+	static void setMipmapEnabled(Texture* texture, bool value) { texture->m_mipmap = value; }
     static Ref<Bitmap2D> readData(RenderTargetTexture* renderTarget) { return renderTarget->readData(); }
     static void resetSwapchainFrameIfNeeded(RenderTargetTexture* renderTarget, bool force) { renderTarget->resetSwapchainFrameIfNeeded(force); }
 };
