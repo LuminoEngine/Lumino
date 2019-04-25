@@ -217,5 +217,6 @@ TEST_F(Test_UI_UILayout, StackLayout)
         ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-StackLayout-4.png"));
 	}
 
+    uiRoot->setLayoutPanel(nullptr);
 	LN_TEST_CLEAN_SCENE;
 }

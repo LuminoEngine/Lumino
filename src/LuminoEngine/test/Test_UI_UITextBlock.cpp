@@ -13,7 +13,7 @@ TEST_F(Test_UI_UITextBlock, Basic)
 	text1->setTextColor(Color::White);
 
 	TestEnv::updateFrame();
-	ASSERT_SCREEN_S(LN_ASSETFILE("UI/Result/Test_UI_UITextBlock-Basic-1.png"));
+	ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UITextBlock-Basic-1.png"));
 	LN_TEST_CLEAN_SCENE;
 }
 
