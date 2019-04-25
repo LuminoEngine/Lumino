@@ -145,7 +145,7 @@ namespace LuminoBuild.Tasks
 
             if (!Directory.Exists("ios-cmake"))
             {
-                Utils.CallProcess("git", "clone --progress --depth 1 -b 2.0.0 https://github.com/leetal/ios-cmake.git ios-cmake");
+                Utils.CallProcess("git", "clone --progress --depth 1 -b 3.0.1 https://github.com/leetal/ios-cmake.git ios-cmake");
             }
             if (!Directory.Exists("zlib"))
             {
