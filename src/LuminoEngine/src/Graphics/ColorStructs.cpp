@@ -14,105 +14,93 @@ const ColorI ColorI::White = ColorI(255, 255, 255, 255);
 
 static bool TryParseHexChar(int c, int* outValue)
 {
-	const int zeroChar = (int)'0';
-	const int aLower = (int)'a';
-	const int aUpper = (int)'A';
+    const int zeroChar = (int)'0';
+    const int aLower = (int)'a';
+    const int aUpper = (int)'A';
 
-	int intChar = (int)c;
+    int intChar = (int)c;
 
-	if ((intChar >= zeroChar) && (intChar <= (zeroChar + 9)))
-	{
-		*outValue = (intChar - zeroChar);
-		return true;
-	}
+    if ((intChar >= zeroChar) && (intChar <= (zeroChar + 9))) {
+        *outValue = (intChar - zeroChar);
+        return true;
+    }
 
-	if ((intChar >= aLower) && (intChar <= (aLower + 5)))
-	{
-		*outValue = (intChar - aLower + 10);
-		return true;
-	}
+    if ((intChar >= aLower) && (intChar <= (aLower + 5))) {
+        *outValue = (intChar - aLower + 10);
+        return true;
+    }
 
-	if ((intChar >= aUpper) && (intChar <= (aUpper + 5)))
-	{
-		*outValue = (intChar - aUpper + 10);
-		return true;
-	}
-	return false;
+    if ((intChar >= aUpper) && (intChar <= (aUpper + 5))) {
+        *outValue = (intChar - aUpper + 10);
+        return true;
+    }
+    return false;
 }
 static int ParseHexChar(int c)
 {
-	int value;
-	if (TryParseHexChar(c, &value))
-	{
-		return value;
-	}
-	LN_REQUIRE(0);
-	return 0;
+    int value;
+    if (TryParseHexChar(c, &value)) {
+        return value;
+    }
+    LN_REQUIRE(0);
+    return 0;
 }
 
 static bool ParseHexColor(const StringRef& str, ColorI* outColor)
 {
-	uint8_t r, g, b, a;
-	if (str.length() >= 3 && str[0] == _T('#'))
-	{
-		// #FFFFFFFF
-		if (str.length() >= 9)
-		{
-			a = ParseHexChar(str[1]) * 16 + ParseHexChar(str[2]);
-			r = ParseHexChar(str[3]) * 16 + ParseHexChar(str[4]);
-			g = ParseHexChar(str[5]) * 16 + ParseHexChar(str[6]);
-			b = ParseHexChar(str[7]) * 16 + ParseHexChar(str[8]);
-		}
-		// #FFFFFF
-		else if (str.length() >= 7)
-		{
-			a = 255;
-			r = ParseHexChar(str[1]) * 16 + ParseHexChar(str[2]);
-			g = ParseHexChar(str[3]) * 16 + ParseHexChar(str[4]);
-			b = ParseHexChar(str[5]) * 16 + ParseHexChar(str[6]);
-		}
-		// #FFFF
-		else if (str.length() >= 5)
-		{
-			a = ParseHexChar(str[1]);
-			a = a + a * 16;
-			r = ParseHexChar(str[2]);
-			r = r + r * 16;
-			g = ParseHexChar(str[3]);
-			g = g + g * 16;
-			b = ParseHexChar(str[4]);
-			b = b + b * 16;
-		}
-        // #FFF
-		else if (str.length() >= 4)
-		{
-			r = ParseHexChar(str[1]);
-			r = r + r * 16;
-			g = ParseHexChar(str[2]);
-			g = g + g * 16;
-			b = ParseHexChar(str[3]);
-			b = b + b * 16;
+    uint8_t r, g, b, a;
+    if (str.length() >= 3 && str[0] == _T('#')) {
+        // #FFFFFFFF
+        if (str.length() >= 9) {
+            a = ParseHexChar(str[1]) * 16 + ParseHexChar(str[2]);
+            r = ParseHexChar(str[3]) * 16 + ParseHexChar(str[4]);
+            g = ParseHexChar(str[5]) * 16 + ParseHexChar(str[6]);
+            b = ParseHexChar(str[7]) * 16 + ParseHexChar(str[8]);
+        }
+        // #FFFFFF
+        else if (str.length() >= 7) {
             a = 255;
-		}
-		else
-		{
-			return false;
-		}
+            r = ParseHexChar(str[1]) * 16 + ParseHexChar(str[2]);
+            g = ParseHexChar(str[3]) * 16 + ParseHexChar(str[4]);
+            b = ParseHexChar(str[5]) * 16 + ParseHexChar(str[6]);
+        }
+        // #FFFF
+        else if (str.length() >= 5) {
+            a = ParseHexChar(str[1]);
+            a = a + a * 16;
+            r = ParseHexChar(str[2]);
+            r = r + r * 16;
+            g = ParseHexChar(str[3]);
+            g = g + g * 16;
+            b = ParseHexChar(str[4]);
+            b = b + b * 16;
+        }
+        // #FFF
+        else if (str.length() >= 4) {
+            r = ParseHexChar(str[1]);
+            r = r + r * 16;
+            g = ParseHexChar(str[2]);
+            g = g + g * 16;
+            b = ParseHexChar(str[3]);
+            b = b + b * 16;
+            a = 255;
+        } else {
+            return false;
+        }
 
-		outColor->set(r, g, b, a);
-		return true;
-	}
-	return false;
+        outColor->set(r, g, b, a);
+        return true;
+    }
+    return false;
 }
 
 ColorI ColorI::parse(const StringRef& str)
 {
-	ColorI c;
-	if (!ParseHexColor(str, &c))
-	{
-		LN_REQUIRE(0);
-	}
-	return c;
+    ColorI c;
+    if (!ParseHexColor(str, &c)) {
+        LN_REQUIRE(0);
+    }
+    return c;
 }
 
 //==============================================================================
@@ -123,7 +111,6 @@ const Color Color::TransparencyWhite(1.0f, 1.0f, 1.0f, 0.0f);
 const Color Color::Red(1.0f, 0.0f, 0.0f);
 const Color Color::Green(0.0f, 1.0f, 0.0f);
 const Color Color::Blue(0.0f, 0.0f, 1.0f);
-
 const Color Color::AliceBlue(0.941176f, 0.972549f, 1.0f);
 const Color Color::AntiqueWhite(0.980392f, 0.921569f, 0.843137f);
 const Color Color::Aqua(0.0f, 1.0f, 1.0f);
@@ -263,41 +250,43 @@ const Color Color::WhiteSmoke(0.960784f, 0.960784f, 0.960784f);
 const Color Color::Yellow(1.0f, 1.0f, 0.0f);
 const Color Color::YellowGreen(0.603922f, 0.803922f, 0.196078f);
 
+// clang-format off
 static const float g_color255Table[256] =
 {
-	// [0]
-	0, 0.00392157, 0.00784314, 0.0117647, 0.0156863, 0.0196078, 0.0235294, 0.027451, 0.0313725, 0.0352941, 0.0392157, 0.0431373, 0.0470588, 0.0509804, 0.054902, 0.0588235,
-	0.0627451, 0.0666667, 0.0705882, 0.0745098, 0.0784314, 0.0823529, 0.0862745, 0.0901961, 0.0941176, 0.0980392, 0.101961, 0.105882, 0.109804, 0.113725, 0.117647, 0.121569,
-	0.12549, 0.129412, 0.133333, 0.137255, 0.141176, 0.145098, 0.14902, 0.152941, 0.156863, 0.160784, 0.164706, 0.168627, 0.172549, 0.176471, 0.180392, 0.184314,
-	0.188235, 0.192157, 0.196078, 0.2, 0.203922, 0.207843, 0.211765, 0.215686, 0.219608, 0.223529, 0.227451, 0.231373, 0.235294, 0.239216, 0.243137, 0.247059,
-	0.25098, 0.254902, 0.258824, 0.262745, 0.266667, 0.270588, 0.27451, 0.278431, 0.282353, 0.286275, 0.290196, 0.294118, 0.298039, 0.301961, 0.305882, 0.309804,
-	0.313725, 0.317647, 0.321569, 0.32549, 0.329412, 0.333333, 0.337255, 0.341176, 0.345098, 0.34902, 0.352941, 0.356863, 0.360784, 0.364706, 0.368627, 0.372549,
-	0.376471, 0.380392, 0.384314, 0.388235, 0.392157, 0.396078, 0.4, 0.403922, 0.407843, 0.411765, 0.415686, 0.419608, 0.423529, 0.427451, 0.431373, 0.435294,
-	0.439216, 0.443137, 0.447059, 0.45098, 0.454902, 0.458824, 0.462745, 0.466667, 0.470588, 0.47451, 0.478431, 0.482353, 0.486275, 0.490196, 0.494118, 0.498039,
-	// [128]
-	0.500000, 0.505882, 0.509804, 0.513725, 0.517647, 0.521569, 0.52549, 0.529412, 0.533333, 0.537255, 0.541176, 0.545098, 0.54902, 0.552941, 0.556863, 0.560784,
-	0.564706, 0.568627, 0.572549, 0.576471, 0.580392, 0.584314, 0.588235, 0.592157, 0.596078, 0.6, 0.603922, 0.607843, 0.611765, 0.615686, 0.619608, 0.623529,
-	0.627451, 0.631373, 0.635294, 0.639216, 0.643137, 0.647059, 0.65098, 0.654902, 0.658824, 0.662745, 0.666667, 0.670588, 0.67451, 0.678431, 0.682353, 0.686275,
-	0.690196, 0.694118, 0.698039, 0.701961, 0.705882, 0.709804, 0.713725, 0.717647, 0.721569, 0.72549, 0.729412, 0.733333, 0.737255, 0.741176, 0.745098, 0.74902,
-	0.752941, 0.756863, 0.760784, 0.764706, 0.768627, 0.772549, 0.776471, 0.780392, 0.784314, 0.788235, 0.792157, 0.796078, 0.8, 0.803922, 0.807843, 0.811765,
-	0.815686, 0.819608, 0.823529, 0.827451, 0.831373, 0.835294, 0.839216, 0.843137, 0.847059, 0.85098, 0.854902, 0.858824, 0.862745, 0.866667, 0.870588, 0.87451,
-	0.878431, 0.882353, 0.886275, 0.890196, 0.894118, 0.898039, 0.901961, 0.905882, 0.909804, 0.913725, 0.917647, 0.921569, 0.92549, 0.929412, 0.933333, 0.937255,
-	0.941176, 0.945098, 0.94902, 0.952941, 0.956863, 0.960784, 0.964706, 0.968627, 0.972549, 0.976471, 0.980392, 0.984314, 0.988235, 0.992157, 0.996078, 1,
-	// [256]
+    // [0]
+    0, 0.00392157, 0.00784314, 0.0117647, 0.0156863, 0.0196078, 0.0235294, 0.027451, 0.0313725, 0.0352941, 0.0392157, 0.0431373, 0.0470588, 0.0509804, 0.054902, 0.0588235,
+    0.0627451, 0.0666667, 0.0705882, 0.0745098, 0.0784314, 0.0823529, 0.0862745, 0.0901961, 0.0941176, 0.0980392, 0.101961, 0.105882, 0.109804, 0.113725, 0.117647, 0.121569,
+    0.12549, 0.129412, 0.133333, 0.137255, 0.141176, 0.145098, 0.14902, 0.152941, 0.156863, 0.160784, 0.164706, 0.168627, 0.172549, 0.176471, 0.180392, 0.184314,
+    0.188235, 0.192157, 0.196078, 0.2, 0.203922, 0.207843, 0.211765, 0.215686, 0.219608, 0.223529, 0.227451, 0.231373, 0.235294, 0.239216, 0.243137, 0.247059,
+    0.25098, 0.254902, 0.258824, 0.262745, 0.266667, 0.270588, 0.27451, 0.278431, 0.282353, 0.286275, 0.290196, 0.294118, 0.298039, 0.301961, 0.305882, 0.309804,
+    0.313725, 0.317647, 0.321569, 0.32549, 0.329412, 0.333333, 0.337255, 0.341176, 0.345098, 0.34902, 0.352941, 0.356863, 0.360784, 0.364706, 0.368627, 0.372549,
+    0.376471, 0.380392, 0.384314, 0.388235, 0.392157, 0.396078, 0.4, 0.403922, 0.407843, 0.411765, 0.415686, 0.419608, 0.423529, 0.427451, 0.431373, 0.435294,
+    0.439216, 0.443137, 0.447059, 0.45098, 0.454902, 0.458824, 0.462745, 0.466667, 0.470588, 0.47451, 0.478431, 0.482353, 0.486275, 0.490196, 0.494118, 0.498039,
+    // [128]
+    0.500000, 0.505882, 0.509804, 0.513725, 0.517647, 0.521569, 0.52549, 0.529412, 0.533333, 0.537255, 0.541176, 0.545098, 0.54902, 0.552941, 0.556863, 0.560784,
+    0.564706, 0.568627, 0.572549, 0.576471, 0.580392, 0.584314, 0.588235, 0.592157, 0.596078, 0.6, 0.603922, 0.607843, 0.611765, 0.615686, 0.619608, 0.623529,
+    0.627451, 0.631373, 0.635294, 0.639216, 0.643137, 0.647059, 0.65098, 0.654902, 0.658824, 0.662745, 0.666667, 0.670588, 0.67451, 0.678431, 0.682353, 0.686275,
+    0.690196, 0.694118, 0.698039, 0.701961, 0.705882, 0.709804, 0.713725, 0.717647, 0.721569, 0.72549, 0.729412, 0.733333, 0.737255, 0.741176, 0.745098, 0.74902,
+    0.752941, 0.756863, 0.760784, 0.764706, 0.768627, 0.772549, 0.776471, 0.780392, 0.784314, 0.788235, 0.792157, 0.796078, 0.8, 0.803922, 0.807843, 0.811765,
+    0.815686, 0.819608, 0.823529, 0.827451, 0.831373, 0.835294, 0.839216, 0.843137, 0.847059, 0.85098, 0.854902, 0.858824, 0.862745, 0.866667, 0.870588, 0.87451,
+    0.878431, 0.882353, 0.886275, 0.890196, 0.894118, 0.898039, 0.901961, 0.905882, 0.909804, 0.913725, 0.917647, 0.921569, 0.92549, 0.929412, 0.933333, 0.937255,
+    0.941176, 0.945098, 0.94902, 0.952941, 0.956863, 0.960784, 0.964706, 0.968627, 0.972549, 0.976471, 0.980392, 0.984314, 0.988235, 0.992157, 0.996078, 1,
+    // [256]
 };
+// clang-format on
 
 Color::Color(const ColorI& color) noexcept
-	: r(g_color255Table[color.r])
-	, g(g_color255Table[color.g])
-	, b(g_color255Table[color.b])
-	, a(g_color255Table[color.a])
+    : r(g_color255Table[color.r])
+    , g(g_color255Table[color.g])
+    , b(g_color255Table[color.b])
+    , a(g_color255Table[color.a])
 {
 }
 
 Color Color::parse(const StringRef& str)
 {
-	ColorI c = ColorI::parse(str);
-	return Color(c);
+    ColorI c = ColorI::parse(str);
+    return Color(c);
 }
 
 //==============================================================================
@@ -307,12 +296,11 @@ const ColorTone ColorTone::Zero(0, 0, 0, 0);
 
 void ColorTone::addClamp(const ColorTone& tone)
 {
-	r = Math::clamp(r + tone.r, 0.0f, 1.0f);
-	g = Math::clamp(g + tone.g, 0.0f, 1.0f);
-	b = Math::clamp(b + tone.b, 0.0f, 1.0f);
-	s = Math::clamp(s + tone.s, 0.0f, 1.0f);
+    r = Math::clamp(r + tone.r, 0.0f, 1.0f);
+    g = Math::clamp(g + tone.g, 0.0f, 1.0f);
+    b = Math::clamp(b + tone.b, 0.0f, 1.0f);
+    s = Math::clamp(s + tone.s, 0.0f, 1.0f);
 }
-
 
 #if 0
 //==============================================================================
@@ -322,35 +310,35 @@ void ColorTone::addClamp(const ColorTone& tone)
 //------------------------------------------------------------------------------
 ColorI HSVColor::toColor() const
 {
-	unsigned char c1, c2, c3;
-	if (S == 0)
-	{
-		return ColorI(V, V, V, a);
-	}
-	else
-	{
-		int t = (H * 6) % 360;
-		c1 = (V*(255 - S)) / 255;
-		c2 = (V*(255 - (S*t) / 360)) / 255;
-		c3 = (V*(255 - (S*(360 - t)) / 360)) / 255;
-		switch (H / 60)
-		{
-		case 0: return ColorI(V, c3, c1, a);
-		case 1: return ColorI(c2, V, c1, a);
-		case 2: return ColorI(c1, V, c3, a);
-		case 3: return ColorI(c1, c2, V, a);
-		case 4: return ColorI(c3, c1, V, a);
-		case 5: return ColorI(V, c1, c2, a);
-		}
-	}
-	return ColorI(0, 0, 0, a);
+    unsigned char c1, c2, c3;
+    if (S == 0)
+    {
+        return ColorI(V, V, V, a);
+    }
+    else
+    {
+        int t = (H * 6) % 360;
+        c1 = (V*(255 - S)) / 255;
+        c2 = (V*(255 - (S*t) / 360)) / 255;
+        c3 = (V*(255 - (S*(360 - t)) / 360)) / 255;
+        switch (H / 60)
+        {
+        case 0: return ColorI(V, c3, c1, a);
+        case 1: return ColorI(c2, V, c1, a);
+        case 2: return ColorI(c1, V, c3, a);
+        case 3: return ColorI(c1, c2, V, a);
+        case 4: return ColorI(c3, c1, V, a);
+        case 5: return ColorI(V, c1, c2, a);
+        }
+    }
+    return ColorI(0, 0, 0, a);
 }
 
 //------------------------------------------------------------------------------
 Color HSVColor::toColorF() const
 {
-	ColorI c = toColor();
-	return Color(c);
+    ColorI c = toColor();
+    return Color(c);
 }
 #endif
 
