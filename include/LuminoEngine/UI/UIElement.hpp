@@ -13,7 +13,7 @@ class UIContainerElement;
 class UIFrameWindow;
 enum class BlendMode : uint8_t;
 struct Color;
-struct ToneF;
+struct ColorTone;
 namespace detail { class UIManager; }
 namespace detail
 {
@@ -224,10 +224,10 @@ public:
     const Color& blendColor() const;
 
     /** 色調を設定します。(default: Tone(0, 0, 0, 0)) */
-    void setTone(const ToneF& value);
+    void setTone(const ColorTone& value);
 
     /** 色調を取得します。 */
-    const ToneF& tone() const;
+    const ColorTone& tone() const;
 
     // TODO: ↑の WorldObject 的なものは、派生クラスの UIVisual 的なクラスにユーティリティとして持っていく。
     // UIElement としては RenderTransform, Style 扱いにしたい。

@@ -12,7 +12,7 @@ public:
     static Ref<ToneImageEffect> create();
 
     // [experimental]
-    void play(const ToneF& tone, double time);
+    void play(const ColorTone& tone, double time);
 
 protected:
     virtual void onUpdateFrame(float elapsedSeconds) override;

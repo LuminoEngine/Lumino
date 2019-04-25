@@ -52,10 +52,10 @@ public:
 void PngBitmapEncoder::save(Stream* stream, const byte_t* data, const SizeI& size, PixelFormat format)
 {
     int colorType = 0;
-    if (format == PixelFormat::RGBA32) {
+    if (format == PixelFormat::RGBA8) {
         colorType = PNG_COLOR_TYPE_RGBA;
     }
-    else if (format == PixelFormat::RGB24) {
+    else if (format == PixelFormat::RGB8) {
         colorType = PNG_COLOR_TYPE_RGB;
     }
     else {
@@ -187,7 +187,7 @@ public:
 															// byte[4] の並びは AA RR GG BB
 		if (colorType == PNG_COLOR_TYPE_RGB_ALPHA && pixelDepth == 32)
 		{
-			m_frame.format = PixelFormat::RGBA32;
+			m_frame.format = PixelFormat::RGBA8;
 			m_frame.data = makeRef<ByteBuffer>(m_frame.size.width * m_frame.size.height * 4);
 			byte_t* bitmap = m_frame.data->data();
 
@@ -200,7 +200,7 @@ public:
 		// ABGR に拡張して読み込む
 		else if (colorType == PNG_COLOR_TYPE_RGB && pixelDepth == 24)
 		{
-			m_frame.format = PixelFormat::RGBA32;
+			m_frame.format = PixelFormat::RGBA8;
 			m_frame.data = makeRef<ByteBuffer>(m_frame.size.width * m_frame.size.height * 4);
 			byte_t* bitmap = m_frame.data->data();
 
@@ -290,7 +290,7 @@ public:
 
         m_frame.size.width = width;
         m_frame.size.height = height;
-        m_frame.format = PixelFormat::RGBA32;
+        m_frame.format = PixelFormat::RGBA8;
         m_frame.data = makeRef<ByteBuffer>(pixels, 4 * m_frame.size.width * m_frame.size.height);
 
 

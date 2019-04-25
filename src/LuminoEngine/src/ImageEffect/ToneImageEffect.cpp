@@ -32,7 +32,7 @@ void ToneImageEffect::init()
     m_material->setShader(shader);
 }
 
-void ToneImageEffect::play(const ToneF& tone, double time)
+void ToneImageEffect::play(const ColorTone& tone, double time)
 {
     m_toneValue.start(tone.toVector4(), time);
 }

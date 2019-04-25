@@ -46,7 +46,7 @@ TEST_F(Test_Visual_VisualComponent, BuiltinEffects)
         auto sprite6 = Sprite::create(tex1, 3, 3);
         //sprite6->setShadingModel(ShadingModel::UnLighting);
         sprite6->setPosition(3, 3, 0);
-        sprite6->setTone(ToneF(0.5, 0.3, 0.1, 1.0));
+        sprite6->setTone(ColorTone(0.5, 0.3, 0.1, 1.0));
 
         TestEnv::updateFrame();
         ASSERT_SCREEN(LN_ASSETFILE("Visual/Result/Test_Visual_VisualComponent-BuiltinEffects-1.png"));

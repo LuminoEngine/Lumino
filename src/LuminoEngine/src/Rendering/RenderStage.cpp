@@ -182,7 +182,7 @@ const Color& RenderStage::getBlendColorFinal(RenderDrawElement* element) const
     return element->builtinEffectData->blendColor;
 }
 
-const ToneF& RenderStage::getToneFinal(RenderDrawElement* element) const
+const ColorTone& RenderStage::getToneFinal(RenderDrawElement* element) const
 {
     return element->builtinEffectData->tone;
 }

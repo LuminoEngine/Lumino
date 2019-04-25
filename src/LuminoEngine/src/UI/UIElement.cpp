@@ -301,12 +301,12 @@ const Color & UIElement::blendColor() const
     return m_localStyle->blendColor.getOrDefault(detail::BuiltinEffectData::DefaultValue.blendColor);
 }
 
-void UIElement::setTone(const ToneF & value)
+void UIElement::setTone(const ColorTone & value)
 {
     m_localStyle->tone = value;
 }
 
-const ToneF & UIElement::tone() const
+const ColorTone & UIElement::tone() const
 {
     return m_localStyle->tone.getOrDefault(detail::BuiltinEffectData::DefaultValue.tone);
 }

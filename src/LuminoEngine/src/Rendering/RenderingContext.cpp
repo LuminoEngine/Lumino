@@ -114,7 +114,7 @@ void RenderingContext::setBlendColor(const Color& value)
     m_builder->setBlendColor(value);
 }
 
-void RenderingContext::setTone(const ToneF& value)
+void RenderingContext::setTone(const ColorTone& value)
 {
     m_builder->setTone(value);
 }

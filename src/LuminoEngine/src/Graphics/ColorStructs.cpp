@@ -301,20 +301,11 @@ Color Color::parse(const StringRef& str)
 }
 
 //==============================================================================
-// ToneF
-//==============================================================================
+// ColorTone
 
-const ToneF ToneF::Zero(0, 0, 0, 0);
+const ColorTone ColorTone::Zero(0, 0, 0, 0);
 
-//ToneF::ToneF(const Vector4& vec)
-//{
-//	r = vec.x;
-//	g = vec.y;
-//	b = vec.z;
-//	gray = vec.w;
-//}
-
-void ToneF::addClamp(const ToneF& tone)
+void ColorTone::addClamp(const ColorTone& tone)
 {
 	r = Math::clamp(r + tone.r, 0.0f, 1.0f);
 	g = Math::clamp(g + tone.g, 0.0f, 1.0f);

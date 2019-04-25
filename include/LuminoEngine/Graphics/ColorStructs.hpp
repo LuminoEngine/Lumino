@@ -294,10 +294,10 @@ constexpr Color Color::lerp(const Color& color1, const Color& color2, float t) n
 /**
 	@brief	色調を定義します。
 */
-struct ToneF	// TODO: ColorTone とかのほうがいいかな？
+struct ColorTone
 {
 public:
-	static const ToneF Zero;	///< ToneF(0, 0, 0, 0);
+	static const ColorTone Zero;	///< (0, 0, 0, 0);
 
 public:
 
@@ -312,14 +312,14 @@ public:
 	/**
 		@brief	すべての要素を 0.0 で初期化します。
 	*/
-	constexpr ToneF() noexcept : r(0.0f), g(0.0f), b(0.0f), gray(0.0f) { }
+	constexpr ColorTone() noexcept : r(0.0f), g(0.0f), b(0.0f), gray(0.0f) { }
 
 	/**
 		@brief	各要素を指定して初期化します。
 	*/
-	constexpr ToneF(float r_, float g_, float b_, float s_) noexcept : r(r_), g(g_), b(b_), gray(s_) { }
+	constexpr ColorTone(float r_, float g_, float b_, float s_) noexcept : r(r_), g(g_), b(b_), gray(s_) { }
 
-	constexpr ToneF(const Vector4& vec) noexcept : r(vec.x), g(vec.y), b(vec.z), gray(vec.w) {}
+	constexpr ColorTone(const Vector4& vec) noexcept : r(vec.x), g(vec.y), b(vec.z), gray(vec.w) {}
 
 public:
 
@@ -331,7 +331,7 @@ public:
 	/**
 		@brief	この色調に指定した色調を加算します。0.0～1.0 を超える場合はクランプします。
 	*/
-	void addClamp(const ToneF& tone);
+	void addClamp(const ColorTone& tone);
 
 
 public:
@@ -353,12 +353,12 @@ public:
 	//friend ToneF operator / (const ToneF& v1, float v2);
 	//friend ToneF operator / (float v1, const ToneF& v2);
 
-#define LN_OP_TYPE ToneF
+#define LN_OP_TYPE ColorTone
 #include <LuminoCore/Math/Vector4OpDeclareTemplate.inl>
 #undef LN_OP_TYPE
 };
 
-#define LN_OP_TYPE ToneF
+#define LN_OP_TYPE ColorTone
 #define LN_E0 r
 #define LN_E1 g
 #define LN_E2 b

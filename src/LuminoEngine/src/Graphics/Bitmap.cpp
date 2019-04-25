@@ -165,7 +165,7 @@ void BlitHelper::bitBltInternalTemplateHelper(
     case PixelFormat::A8:
         bitBltInternalTemplate<TDestConverter, PixelAccessor_A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
         break;
-    case PixelFormat::RGBA32:
+    case PixelFormat::RGBA8:
         bitBltInternalTemplate<TDestConverter, PixelAccessor_R8G8B8A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
         break;
     //case PixelFormat::R8G8B8X8:
@@ -204,7 +204,7 @@ void BlitHelper::bitBltInternal(
     case PixelFormat::A8:
         bitBltInternalTemplateHelper<PixelAccessor_A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
         break;
-    case PixelFormat::RGBA32:
+    case PixelFormat::RGBA8:
         bitBltInternalTemplateHelper<PixelAccessor_R8G8B8A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
         break;
     //case PixelFormat::R8G8B8X8:
@@ -277,12 +277,12 @@ void Bitmap2D::init(int width, int height, PixelFormat format)
 
 ColorI Bitmap2D::getPixel32(int x, int y) const
 {
-	if (m_format == PixelFormat::RGBA32)
+	if (m_format == PixelFormat::RGBA8)
 	{
 		const uint8_t* pixel = m_buffer->data() + ((y * m_size.width) + x) * 4;
 		return ColorI(pixel[0], pixel[1], pixel[2], pixel[3]);
 	}
-    else if (m_format == PixelFormat::RGB24)
+    else if (m_format == PixelFormat::RGB8)
     {
         const uint8_t* pixel = m_buffer->data() + ((y * m_size.width) + x) * 3;
         return ColorI(pixel[0], pixel[1], pixel[2], 0xFF);
@@ -296,7 +296,7 @@ ColorI Bitmap2D::getPixel32(int x, int y) const
 
 void Bitmap2D::setPixel32(int x, int y, const ColorI& color)
 {
-	if (m_format == PixelFormat::RGBA32)
+	if (m_format == PixelFormat::RGBA8)
 	{
 		ColorI* pixel = reinterpret_cast<ColorI*>(m_buffer->data() + ((y * m_size.width) + x) * 4);
 		*pixel = color;
@@ -322,7 +322,7 @@ void Bitmap2D::clear(const ColorI& color)
         //    return;
         case PixelFormat::A8:
             return;
-        case PixelFormat::RGBA32:
+        case PixelFormat::RGBA8:
         //case PixelFormat::R8G8B8X8:
         {
             byte_t c[4] = { color.r, color.g, color.b, color.a };
@@ -514,7 +514,7 @@ void Bitmap3D::init(int width, int height, int depth, PixelFormat format)
 
 void Bitmap3D::setPixel32(int x, int y, int z, const ColorI& color)
 {
-	if (m_format == PixelFormat::RGBA32)
+	if (m_format == PixelFormat::RGBA8)
 	{
 		size_t faceSize = m_width * m_height;
 		ColorI* pixel = reinterpret_cast<ColorI*>(m_buffer->data() + ((z * faceSize) + ((y * m_width) + x)) * 4);

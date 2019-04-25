@@ -124,8 +124,8 @@ public:	// TODO:
 	//void setBlendColor(const Color& v);
 	//Color getBlendColor() const;
 
-	//void setTone(const ToneF& v);
-	//ToneF getTone() const;
+	//void setTone(const ColorTone& v);
+	//ColorTone getTone() const;
 
 	//Matrix GetUVTransform() const { /*auto* v = FindShaderValueConst(_T("UVTransform")); return (v) ? v->getMatrix() : */ return Matrix::Identity; }
 

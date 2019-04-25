@@ -192,7 +192,7 @@ void DrawElementListBuilder::setBlendColor(const Color & value)
 	}
 }
 
-void DrawElementListBuilder::setTone(const ToneF & value)
+void DrawElementListBuilder::setTone(const ColorTone& value)
 {
 	if (primaryState()->builtinEffectData.tone != value) {
         primaryState()->builtinEffectData.tone = value;

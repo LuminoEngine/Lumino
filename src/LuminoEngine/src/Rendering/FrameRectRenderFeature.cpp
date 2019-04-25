@@ -50,14 +50,14 @@ void InternalFrameRectRenderer::draw(const Rect& rect, const Matrix& worldTransf
         Rect dstRect = rect;
         dstRect.x += borderThickness.left;
         dstRect.y += borderThickness.top;
-        dstRect.width -= borderThickness.getWidth();
-        dstRect.height -= borderThickness.getHeight();
+        dstRect.width -= borderThickness.width();
+        dstRect.height -= borderThickness.height();
 
         Rect innterSrcRect = srcRect;
         innterSrcRect.x += borderThickness.left;
         innterSrcRect.y += borderThickness.top;
-        innterSrcRect.width -= borderThickness.getWidth();
-        innterSrcRect.height -= borderThickness.getHeight();
+        innterSrcRect.width -= borderThickness.width();
+        innterSrcRect.height -= borderThickness.height();
 
         Size texSize((float)srcTextureSize.width, (float)srcTextureSize.height);
         texSize.width = 1.0f / texSize.width;

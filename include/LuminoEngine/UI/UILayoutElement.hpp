@@ -96,7 +96,7 @@ class UIStyleInstance;
 //	float opacity;
 //	Color colorScale;
 //	Color blendColor;
-//	ToneF tone;
+//	ColorTone tone;
 //
 //	// TODO: 今後サブクラスごとにスタイルを追加する場合は、ここに map を設ける
 //};

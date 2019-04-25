@@ -57,7 +57,7 @@ public:
 	void setOpacity(float value);
 	void setColorScale(const Color& value);
 	void setBlendColor(const Color& value);
-	void setTone(const ToneF& value);
+	void setTone(const ColorTone& value);
     void setBaseBuiltinEffectData(const Optional<BuiltinEffectData>& value);
 
     void setViewPoint(RenderViewPoint* value);

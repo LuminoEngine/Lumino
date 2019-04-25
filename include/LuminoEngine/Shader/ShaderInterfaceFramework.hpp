@@ -158,7 +158,7 @@ struct SubsetInfo
     float opacity;
     Color colorScale;
     Color blendColor;
-    ToneF tone;
+	ColorTone tone;
 };
 
 // セマンティクスが関係するシェーダ変数の管理

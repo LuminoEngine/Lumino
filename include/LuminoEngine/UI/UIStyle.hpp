@@ -174,7 +174,7 @@ public:
 	//float opacity;
 	//Color colorScale;
 	//Color blendColor;
-	//ToneF tone;
+	//ColorTone tone;
 
 
 
@@ -227,7 +227,7 @@ public:
     detail::UIStyleAttribute<float> opacity;
     detail::UIStyleAttribute<Color> colorScale;
     detail::UIStyleAttribute<Color> blendColor;
-    detail::UIStyleAttribute<ToneF> tone;
+    detail::UIStyleAttribute<ColorTone> tone;
 
 public:	// TODO: internal
 	void setupDefault();
@@ -291,7 +291,7 @@ public:
     float opacity;
     Color colorScale;
     Color blendColor;
-    ToneF tone;
+	ColorTone tone;
 
     // TODO: 今後サブクラスごとにスタイルを追加する場合は、ここに map を設ける
 

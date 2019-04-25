@@ -60,7 +60,7 @@ void UIStyle::setupDefault()
 	opacity = 1.0f;
 	colorScale = Color(1.0f, 1.0f, 1.0f, 1.0f);
 	blendColor = Color(0.0f, 0.0f, 0.0f, 0.0f);
-	tone = ToneF(0.0f, 0.0f, 0.0f, 0.0f);
+	tone = ColorTone(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 //==============================================================================

@@ -51,8 +51,8 @@ Rect Rect::makeDeflate(const Thickness& thickness) const
 	return Rect(
 		x + thickness.left,
 		y + thickness.top,
-		std::max(width - thickness.getWidth(), 0.0f),
-		std::max(height - thickness.getHeight(), 0.0f));
+		std::max(width - thickness.width(), 0.0f),
+		std::max(height - thickness.height(), 0.0f));
 }
 
 //==============================================================================

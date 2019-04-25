@@ -44,7 +44,7 @@ public:
 	float opacity;
 	Color colorScale;
 	Color blendColor;
-	ToneF tone;
+	ColorTone tone;
 
 	BuiltinEffectData()
 	{
@@ -65,7 +65,7 @@ public:
 		opacity = 1.0;
 		colorScale = Color(1.0f, 1.0f, 1.0f, 1.0f);
 		blendColor = Color(0.0f, 0.0f, 0.0f, 0.0f);
-		tone = ToneF(0.0f, 0.0f, 0.0f, 0.0f);
+		tone = ColorTone(0.0f, 0.0f, 0.0f, 0.0f);
 	}
 
 	bool equals(const BuiltinEffectData* other) const
@@ -350,7 +350,7 @@ public:
     float getOpacityFinal(RenderDrawElement* element) const;
     const Color& getColorScaleFinal(RenderDrawElement* element) const;
     const Color& getBlendColorFinal(RenderDrawElement* element) const;
-    const ToneF& getToneFinal(RenderDrawElement* element) const;
+    const ColorTone& getToneFinal(RenderDrawElement* element) const;
 
 
 private:
