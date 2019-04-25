@@ -6,7 +6,7 @@
 
 namespace ln {
 
-const SamplerStateData SamplerStateData::defaultState =
+const detail::SamplerStateData detail::SamplerStateData::defaultState =
 {
     TextureFilterMode::Point,
     TextureAddressMode::Repeat,
@@ -38,7 +38,7 @@ Ref<SamplerState> SamplerState::create(TextureFilterMode filter, TextureAddressM
 
 SamplerState::SamplerState()
     : m_rhiObject(nullptr)
-    , m_desc(SamplerStateData::defaultState)
+    , m_desc(detail::SamplerStateData::defaultState)
     , m_modified(true)
     , m_frozen(false)
 {

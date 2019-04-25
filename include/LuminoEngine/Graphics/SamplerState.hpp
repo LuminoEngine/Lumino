@@ -79,7 +79,7 @@ private:
     void setFrozen(bool value) { m_frozen = value; }
 
     Ref<detail::ISamplerState> m_rhiObject;
-    SamplerStateData m_desc;
+	detail::SamplerStateData m_desc;
     bool m_modified;
     bool m_frozen;
 
