@@ -310,7 +310,7 @@ void ColorTone::addClamp(const ColorTone& tone)
 	r = Math::clamp(r + tone.r, 0.0f, 1.0f);
 	g = Math::clamp(g + tone.g, 0.0f, 1.0f);
 	b = Math::clamp(b + tone.b, 0.0f, 1.0f);
-	gray = Math::clamp(gray + tone.gray, 0.0f, 1.0f);
+	s = Math::clamp(s + tone.s, 0.0f, 1.0f);
 }
 
 

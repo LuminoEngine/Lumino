@@ -291,50 +291,44 @@ constexpr Color Color::lerp(const Color& color1, const Color& color2, float t) n
 #undef LN_E3
 
 
-/**
-	@brief	色調を定義します。
-*/
+/** 色調を定義します。 */
 struct ColorTone
 {
 public:
-	static const ColorTone Zero;	///< (0, 0, 0, 0);
+	/** (0, 0, 0, 0) */
+	static const ColorTone Zero;
 
 public:
+	/** 赤成分のカラーバランス (-1.0～1.0) */
+	float	r;
 
-	float	r;	///< 赤成分のカラーバランス (-1.0～1.0)
-	float	g;	///< 緑成分のカラーバランス (-1.0～1.0)
-	float	b;	///< 青成分のカラーバランス (-1.0～1.0)
-	float	gray;	///< グレースケール化フィルタの強さ (0.0 ～ 1.0)
-	// TODO: gray → s (彩度:Saturation)
+	/** 緑成分のカラーバランス (-1.0～1.0) */
+	float	g;
 
-public:
+	/** 青成分のカラーバランス (-1.0～1.0) */
+	float	b;
 
-	/**
-		@brief	すべての要素を 0.0 で初期化します。
-	*/
-	constexpr ColorTone() noexcept : r(0.0f), g(0.0f), b(0.0f), gray(0.0f) { }
-
-	/**
-		@brief	各要素を指定して初期化します。
-	*/
-	constexpr ColorTone(float r_, float g_, float b_, float s_) noexcept : r(r_), g(g_), b(b_), gray(s_) { }
-
-	constexpr ColorTone(const Vector4& vec) noexcept : r(vec.x), g(vec.y), b(vec.z), gray(vec.w) {}
+	/** グレースケールフィルタの強さ (0.0 ～ 1.0) (saturation) */
+	float	s;
+	// TODO: gray → s 
 
 public:
+	/** すべての要素を 0.0 で初期化します。 */
+	constexpr ColorTone() noexcept : r(0.0f), g(0.0f), b(0.0f), s(0.0f) { }
 
-	/**
-		@brief	各要素を設定します。
-	*/
-	void set(float r_, float g_, float b_, float gs_) { r = r_; g = g_; b = b_; gray = gs_; }
+	/** 各要素を指定して初期化します。 */
+	constexpr ColorTone(float r_, float g_, float b_, float s_) noexcept : r(r_), g(g_), b(b_), s(s_) { }
 
-	/**
-		@brief	この色調に指定した色調を加算します。0.0～1.0 を超える場合はクランプします。
-	*/
+	/** 指定した Vector4 をコピーして初期化します。 */
+	constexpr ColorTone(const Vector4& vec) noexcept : r(vec.x), g(vec.y), b(vec.z), s(vec.w) {}
+
+public:
+	/** 各要素を設定します。 */
+	void set(float r_, float g_, float b_, float s_) { r = r_; g = g_; b = b_; s = s_; }
+
+	/** この色調に指定した色調を加算します。0.0～1.0 を超える場合はクランプします。 */
 	void addClamp(const ColorTone& tone);
 
-
-public:
 	const Vector4& toVector4() const { return *reinterpret_cast<const Vector4*>(this); }
 	//operator Vector4() { return *reinterpret_cast< Vector4* >(this); }
 	//operator const Vector4&() const { return *reinterpret_cast<const Vector4*>(this); }
@@ -362,7 +356,7 @@ public:
 #define LN_E0 r
 #define LN_E1 g
 #define LN_E2 b
-#define LN_E3 gray
+#define LN_E3 s
 #include <LuminoCore/Math/Vector4OpImplementTemplate.inl>
 #undef LN_OP_TYPE
 #undef LN_E0
