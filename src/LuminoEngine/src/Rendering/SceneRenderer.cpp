@@ -602,7 +602,6 @@ void SceneRenderer::applyGeometryStatus(GraphicsContext* context, RenderStage* s
 		state.independentBlendEnable = false;
 		makeBlendMode(mode, &state.renderTargets[0]);
 		context->setBlendState(state);
-        printf("BlendMode:%d\n", mode);
 	}
 	// RasterizerState
 	{
