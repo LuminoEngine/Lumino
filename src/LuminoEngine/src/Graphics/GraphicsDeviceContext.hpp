@@ -413,7 +413,7 @@ public:
 	//virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
 	//virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
 
-	//virtual void setSubData3D(const Box32& box, const void* data, size_t dataBytes) = 0;
+	//virtual void setSubData3D(const BoxI& box, const void* data, size_t dataBytes) = 0;
 
 	//// (得られるデータは上下反転)
 	//virtual void getData(const RectI& rect, void* outData) = 0;

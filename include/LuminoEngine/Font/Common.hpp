@@ -3,6 +3,7 @@
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
 
 namespace ln {
+class Font;
 
 /** テキストの配置方法 */
 enum class TextAlignment

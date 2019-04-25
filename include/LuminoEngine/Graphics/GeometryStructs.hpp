@@ -31,8 +31,10 @@ LN_STRUCT()
 struct Point
 {
 public:
-	static const Point	Zero;	/**< (0, 0) */
-	
+	/** (0, 0) */
+	static const Point	Zero;
+
+public:
 	/** X 座標 */
 	LN_FIELD()
 	float x;
@@ -42,7 +44,6 @@ public:
 	float y;
 
 public:
-
 	/** すべての要素を 0 で初期化します。*/
 	Point() : x(0), y(0) {}
 
@@ -69,9 +70,14 @@ LN_STRUCT()
 struct Size
 {
 public:
-	static const Size	Zero;		/**< (0, 0) */
-	static const Size	MinValue;	/**< (min float, min float) */
-	static const Size	MaxValue;	/**< (max float, max float) */
+	/** (0, 0) */
+	static const Size	Zero;
+
+	/** (min float, min float) */
+	static const Size	MinValue;
+
+	/** (max float, max float) */
+	static const Size	MaxValue;
 
 public:
 
@@ -100,7 +106,6 @@ public:
 	/** いずれかの要素が 0 かを判定します。*/
 	bool isAnyZero() const { return (width == 0 || height == 0); }
 
-public:
 	static Size min(const Size& size1, const Size& size2)
 	{
 		return Size(
@@ -125,8 +130,11 @@ LN_STRUCT()
 struct Rect
 {
 public:
-	static const Rect	Zero;	/**< (0, 0, 0, 0) */
-	static const Rect	Empty;	/**< (0, 0, -1, -1) */
+	/** (0, 0, 0, 0) */
+	static const Rect	Zero;
+
+	/** (0, 0, -1, -1) */
+	static const Rect	Empty;
 
 public:
 
@@ -272,6 +280,7 @@ public:
 	/** Thickness(0, 0, 0, 0) */
 	static const Thickness	Zero;
 
+public:
 	/** 四角形の左辺の幅 */
 	float		left;
 
@@ -315,13 +324,10 @@ public:
 	bool operator != (const Thickness& rhs) const { return !operator==(rhs); }
 };
 
-/**
-	@brief	四角形の角の半径を表します。
-*/
+/** 四角形の角の半径を表します。 */
 struct CornerRadius
 {
 public:
-
 	/** 左上角の半径 */
 	float topLeft;
 
@@ -349,7 +355,7 @@ public:
 };
 
 
-// 内部用
+// Int type (internal)
 struct PointI
 {
 public:
@@ -370,7 +376,7 @@ public:
 	bool operator != (const PointI& rhs) const { return !operator==(rhs); }
 };
 
-// 内部用
+// Int type (internal)
 struct SizeI
 {
 public:
@@ -393,7 +399,7 @@ public:
 	bool operator != (const SizeI& obj) const { return !operator==(obj); }
 };
 
-// 内部用
+// Int type (internal)
 struct BoxSizeI
 {
 	int		width;
@@ -401,7 +407,7 @@ struct BoxSizeI
 	int		depth;
 };
 
-// 内部用
+// Int type (internal)
 class RectI
 {
 public:
@@ -445,11 +451,11 @@ public:
 	bool operator != (const RectI& right) const { return !operator==(right); }
 };
 
-// 内部用
-class Box32
+// Int type (internal)
+class BoxI
 {
 public:
-	static const Box32 Zero;
+	static const BoxI Zero;
 
 public:
 	int		x;
@@ -460,7 +466,7 @@ public:
 	int		depth;
 
 public:
-	Box32()
+	BoxI()
 		: x(0)
 		, y(0)
 		, z(0)
@@ -470,7 +476,7 @@ public:
 	{
 	}
 
-	Box32(int x_, int y_, int z_, int width_, int height_, int depth_)
+	BoxI(int x_, int y_, int z_, int width_, int height_, int depth_)
 		: x(x_)
 		, y(y_)
 		, z(z_)
@@ -481,7 +487,7 @@ public:
 	}
 };
 
-// 内部用
+// Int type (internal)
 struct ThicknessI
 {
 public:
@@ -491,14 +497,4 @@ public:
 	int		bottom;
 };
 
-namespace detail
-{
-
-struct Sphere
-{
-	Vector3		center;
-	float		radius;
-};
-
-} // namespace detail
 } // namespace ln

@@ -5,16 +5,9 @@
 #include "GeometryStructs.hpp"
 
 namespace ln {
-class SamplerState;
-class ShaderPass;
 namespace detail {
-class ITexture;
 class TextureInternal;
 }
-class SwapChain;
-class Bitmap2D;
-class Bitmap3D;
-class Font;
 
 /** テクスチャのベースクラスです。 */
 LN_CLASS()
@@ -55,8 +48,8 @@ private:
 	bool m_mipmap;
 	Ref<SamplerState> m_samplerState;
 
-	friend class ShaderPass;
     friend class detail::TextureInternal;
+	friend class detail::GraphicsResourceInternal;
 };
 
 /** 2D テクスチャのクラスです。 */
@@ -160,8 +153,6 @@ public:
 
 	/** getTemporary で取得した一時的な RenderTargetTexture を解放します。 */
 	static void releaseTemporary(RenderTargetTexture* renderTarget);
-
-public:
 
 protected:
 	virtual void onDispose(bool explicitDisposing) override;

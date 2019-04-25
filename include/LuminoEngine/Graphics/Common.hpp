@@ -2,6 +2,10 @@
 #include "../Shader/Common.hpp"
 
 namespace ln {
+class SamplerState;
+class SwapChain;
+class Bitmap2D;
+class Bitmap3D;
 
 /** バックエンドグラフィックス API の種類 */
 enum class GraphicsAPI
@@ -299,6 +303,7 @@ class GraphicsManager;
 class GraphicsContextInternal;
 class IGraphicsDevice;
 class IGraphicsContext;
+class ITexture;
 class ISamplerState;
 
 static const int MaxMultiRenderTargets = 4;
