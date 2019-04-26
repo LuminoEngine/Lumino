@@ -85,7 +85,7 @@ if (DEFINED EMSCRIPTEN)
 elseif (LN_ANDROID)
     add_definitions(-DLN_GRAPHICS_OPENGLES)
 
-elseif (DEFINED IOS_PLATFORM)
+elseif (APPLE AND DEFINED PLATFORM) # PLATFORM is ios-cmake variable.
     set(LN_IOS ON)
     set(LN_USE_OPENAL ON)
     add_definitions(-DLN_GRAPHICS_OPENGLES)
