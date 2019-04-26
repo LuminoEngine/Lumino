@@ -386,9 +386,11 @@ namespace LuminoBuild.Tasks
                         var args = $"-DCMAKE_TOOLCHAIN_FILE=\"{iOSToolchainFile}\" -DPLATFORM={t.Platform}";
                         var generator = "Xcode";
                         
+                        var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{dirName}-{t.Config}", "ExternalInstall", "zlib"));
                         var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{dirName}-{t.Config}", "ExternalInstall", "ogg"));
 
-                        BuildProject(builder, "libpng", t.Config, reposDir, dirName, generator, args);
+                        BuildProject(builder, "zlib", t.Config, reposDir, dirName, generator, args);
+                        BuildProject(builder, "libpng", t.Config, reposDir, dirName, generator, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include " + args);
                         BuildProject(builder, "freetype2", t.Config, reposDir, dirName, generator, $"-DWITH_ZLIB=OFF -DWITH_BZip2=OFF  -DWITH_PNG=OFF -DWITH_HarfBuzz=OFF " + args);
                         BuildProject(builder, "ogg", t.Config, reposDir, dirName, generator, args);
                         BuildProject(builder, "vorbis", t.Config, reposDir, dirName, generator, $"-DOGG_ROOT={oggInstallDir} -DCMAKE_DEVELOPER_ROOT={builder.LuminoBuildDir} " + args);
