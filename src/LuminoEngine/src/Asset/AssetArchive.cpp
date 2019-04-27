@@ -1,11 +1,9 @@
 ﻿
 #include "Internal.hpp"
-#include <zlib.h>
 #include "AssetArchive.hpp"
 
 namespace ln {
 namespace detail {
-
 
 //=============================================================================
 // CryptedArchiveHelper
@@ -15,11 +13,11 @@ const char CryptedArchiveHelper::FileSignature[4] = { 'l', 'c', 'a', 'c' };
 const uint16_t CryptedArchiveHelper::FileVersion = 1;
 const char CryptedArchiveHelper::FileEntrySignature[4] = { 'l', 'c', '3', '4' };
 const char CryptedArchiveHelper::CentralDirectorySignature[4] = { 'l', 'c', '1', '2' };
-static const z_crc_t* g_crcTable = nullptr;
+extern const unsigned* g_crctab = nullptr;
 
 void CryptedArchiveHelper::initKeys(const char* password, uint32_t* keys)
 {
-	g_crcTable = get_crc_table();
+    g_crctab = CRCHashInternal::getCRCTable();
 
 	*(keys + 0) = 305419896L;
 	*(keys + 1) = 591751049L;
@@ -68,7 +66,7 @@ void CryptedArchiveHelper::shiftKey(uint32_t* keys, int c)
 
 uint32_t CryptedArchiveHelper::crc(uint32_t key, int c)
 {
-	return ((*(g_crcTable + (((int)(c) ^ (key)) & 0xff))) ^ ((c) >> 8));
+	return ((*(g_crctab + (((int)(c) ^ (key)) & 0xff))) ^ ((c) >> 8));
 }
 
 //=============================================================================

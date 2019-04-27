@@ -19,4 +19,10 @@ public:
 	static uint32_t compute(const char16_t* str, int len = -1);
 };
 
+namespace detail {
+struct CRCHashInternal
+{
+    static const unsigned* getCRCTable();
+};
+} // namespace detail
 } // namespace ln
