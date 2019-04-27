@@ -16,32 +16,28 @@
       items:
       - name: 1. イントロダクション
         href: tutorial/first-2d-game/1-introduction.md
-      - name: 2. フレームワークについて
-        href: tutorial/first-2d-game/2-app-framework.md
-      - name: 3. 画像を表示する
-        href: tutorial/first-2d-game/3-texture-and-sprite.md
-      - name: 4. ワールドの構築
-        href: tutorial/first-2d-game/4-world-building.md
-      - name: 5. プレイヤーの表示と移動操作
-        href: tutorial/first-2d-game/5-player.md
-      - name: 6. 物理演算
-        href: tutorial/first-2d-game/6-physics.md
-      - name: 7. ×
-        href: tutorial/first-2d-game/7-input.md
-      - name: 8. アイテムを拾う
+      - name: 2. 画像の表示
+        href: tutorial/first-2d-game/2-texture-and-sprite.md
+      - name: 3. ワールドの構築
+        href: tutorial/first-2d-game/3-world-building.md
+      - name: 4. プレイヤーの表示と移動操作
+        href: tutorial/first-2d-game/4-player.md
+      - name: 5. 物理演算
+        href: tutorial/first-2d-game/5-physics.md
+      - name: 6. 移動とジャンプ
+        href: tutorial/first-2d-game/6-physics-moving.md
+      - name: 7. アニメーション
+        href: tutorial/first-2d-game/7-animation.md
+      - name: 8. アイテムの収集
         href: tutorial/first-2d-game/8-collecting-items.md
-      - name: 9. ゲームオーバー
-        href: tutorial/first-2d-game/9-boms-and-gameover.md
-      - name: 10. サウンド
-        href: tutorial/first-2d-game/10-sound.md
-      - name: 11. スコアの保存
-        href: tutorial/first-2d-game/11-scoring.md
-      - name: 12. タイトル画面
-        href: tutorial/first-2d-game/12-game-scene.md
-      - name: 13. リリース
-        href: tutorial/first-2d-game/13-deploy.md
-      - name: TODO デバッグ
-        href: tutorial/first-2d-game/13-deploy.md
+      - name: 9. スコアの表示とUI
+        href: tutorial/first-2d-game/9-scoring-ui.md
+      - name: 10. ゲームオーバーとスコアの保存
+        href: tutorial/first-2d-game/10-gameover.md
+      - name: 11. サウンド
+        href: tutorial/first-2d-game/11-sound.md
+      - name: 12. リリース
+        href: tutorial/first-2d-game/12-release.md
 
         
 

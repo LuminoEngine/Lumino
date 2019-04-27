@@ -1,18 +1,17 @@
 ﻿// Copyright (c) 2018+ lriki. Distributed under the MIT license...
 
 #pragma once
+#include <type_traits>
+#include <stack>
+#include <unordered_map>
 #include "../Base/String.hpp"
 #include "../Json/JsonDocument.hpp"
 #include "Common.hpp"
 #include "ArchiveStore.hpp"
-#include <math.h>
-#include <type_traits>
-#include <stack>
-#include <unordered_map>
 
 namespace ln {
 
-	// non‐intrusive
+// non‐intrusive
 #define LN_SERIALIZE_CLASS_VERSION_NI(type, version) \
 	namespace ln { namespace detail { \
 		template<> struct SerializeClassVersionInfo<type> \

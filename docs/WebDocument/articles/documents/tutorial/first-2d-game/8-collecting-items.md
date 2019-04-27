@@ -1,4 +1,4 @@
-アイテムを集める
+アイテムの収集
 ==========
 
 操作しているキャラクターが別のオブジェクトと接触したら何らかのイベントを発生させるようなインタラクションは、アクションゲームの基本的なシステムのひとつです。
@@ -8,6 +8,7 @@
 
 アイテムを生成する
 ----------
+TODO:
 
 ```
 Ref<Texture> itemTexture = Assets::loadTexture(u"item");
@@ -28,6 +29,7 @@ for (int i = 0; i < 5; i++) {
 
 衝突検知のための準備をする
 ----------
+TODO:
 
 ```
 static const uint32_t ItemGroup = 0x04;     // アイテムの衝突グループ
@@ -65,6 +67,7 @@ Engine::mainRenderView()->setPhysicsDebugDrawEnabled(true);
 
 プレイヤーと接触したアイテムを削除する
 ----------
+TODO:
 
 ```diff
   Ref<TriggerBody2DComponent> triggerBody = TriggerBody2DComponent::create();
@@ -79,6 +82,7 @@ Engine::mainRenderView()->setPhysicsDebugDrawEnabled(true);
 
 
 ![](img/collecting-items-3.gif)
+
 
 
 
