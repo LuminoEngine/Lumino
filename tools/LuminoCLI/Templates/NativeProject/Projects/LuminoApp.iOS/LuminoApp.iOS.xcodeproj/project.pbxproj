@@ -19,7 +19,6 @@
 		8C95E8D7213BC8B100772569 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8C95E8D5213BC8B100772569 /* LaunchScreen.storyboard */; };
 		8C95E8DA213BC8B100772569 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8D9213BC8B100772569 /* main.mm */; };
 		8C97636721760C0800839863 /* Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8C97636621760C0800839863 /* Application.cpp */; };
-		8CC4475F216F8BBA002F20DA /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC4475E216F8BBA002F20DA /* libz.tbd */; };
 		8CC44761216F8BF7002F20DA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC44760216F8BF7002F20DA /* UIKit.framework */; };
 		8CC44763216F8C24002F20DA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC44762216F8C24002F20DA /* Foundation.framework */; };
 		8CC44765216F8C6E002F20DA /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC44764216F8C6E002F20DA /* GLKit.framework */; };
@@ -67,7 +66,6 @@
 				8CC44765216F8C6E002F20DA /* GLKit.framework in Frameworks */,
 				8CC44763216F8C24002F20DA /* Foundation.framework in Frameworks */,
 				8CC44761216F8BF7002F20DA /* UIKit.framework in Frameworks */,
-				8CC4475F216F8BBA002F20DA /* libz.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -381,6 +379,7 @@
 					"-lvorbisencd",
 					"-loggd",
 					"-ltmxlite-s-d",
+					"-lzlibd",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "Lumino.LuminoApp-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -416,6 +415,7 @@
 					"-lvorbisenc",
 					"-logg",
 					"-ltmxlite-s",
+					"-lzlib",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "Lumino.LuminoApp-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
