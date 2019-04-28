@@ -202,41 +202,51 @@ Result BuildCommand::buildAssets()
 
 	// Android
 	{
-		auto dst = ln::Path::combine(m_project->androidProjectDir(), u"app", u"src", u"main", u"assets", u"Assets.lca");
-		ln::FileSystem::createDirectory(dst.parent());
-		ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
-		CLI::info(u"Copy to " + dst);
+        if (ln::FileSystem::existsDirectory(m_project->androidProjectDir())) {
+            auto dst = ln::Path::combine(m_project->androidProjectDir(), u"app", u"src", u"main", u"assets", u"Assets.lca");
+            ln::FileSystem::createDirectory(dst.parent());
+            ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
+            CLI::info(u"Copy to " + dst);
+        }
 	}
 
 	// macOS
 	{
-		auto dst = ln::Path::combine(m_project->macOSProjectDir(), u"LuminoApp.macOS", u"Assets.lca");
-		ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
-		CLI::info(u"Copy to " + dst);
+        if (ln::FileSystem::existsDirectory(m_project->macOSProjectDir())) {
+            auto dst = ln::Path::combine(m_project->macOSProjectDir(), u"LuminoApp.macOS", u"Assets.lca");
+            ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
+            CLI::info(u"Copy to " + dst);
+        }
 	}
 
 	// iOS
 	{
-		auto dst = ln::Path::combine(m_project->iOSProjectDir(), u"LuminoApp.iOS", u"Assets.lca");
-		ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
-		CLI::info(u"Copy to " + dst);
+        if (ln::FileSystem::existsDirectory(m_project->iOSProjectDir())) {
+            auto dst = ln::Path::combine(m_project->iOSProjectDir(), u"LuminoApp.iOS", u"Assets.lca");
+            ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
+            CLI::info(u"Copy to " + dst);
+        }
 	}
 
 	// Windows
 	{
-		auto dst = ln::Path::combine(m_project->windowsProjectDir(), u"Assets.lca");
-		ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
-		CLI::info(u"Copy to " + dst);
+        if (ln::FileSystem::existsDirectory(m_project->windowsProjectDir())) {
+            auto dst = ln::Path::combine(m_project->windowsProjectDir(), u"Assets.lca");
+            ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
+            CLI::info(u"Copy to " + dst);
+        }
 	}
 
 	// Web
 	{
-		auto dstDir = ln::Path::combine(m_project->buildDir(), u"Web");
-		ln::FileSystem::createDirectory(dstDir);
+        if (ln::FileSystem::existsDirectory(m_project->buildDir())) {
+            auto dstDir = ln::Path::combine(m_project->buildDir(), u"Web");
+            ln::FileSystem::createDirectory(dstDir);
 
-		auto dst = ln::Path::combine(dstDir, u"Assets.lca");
-		ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
-		CLI::info(u"Copy to " + dst);
+            auto dst = ln::Path::combine(dstDir, u"Assets.lca");
+            ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
+            CLI::info(u"Copy to " + dst);
+        }
 	}
 
 	CLI::info(u"Compilation succeeded.");
