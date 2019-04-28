@@ -87,6 +87,9 @@ void AbstractTilemapLayer::render(TilemapModel* model, RenderingContext* context
         //{
         //    LN_UNREACHABLE();
         //}
+
+        r += 1;
+        b -= 1;
     }
 
     int width = getWidth();
