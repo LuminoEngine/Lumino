@@ -21,7 +21,7 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 private:
-    Ref<TilemapModel> m_tilemap;
+    Ref<TilemapModel> m_tilemapModel;
 };
 
 } // namespace ln

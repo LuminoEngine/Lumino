@@ -30,46 +30,49 @@ void TilemapModel::init()
 {
     Object::init();
 
-    tmx::Map map;
-    if (map.load("D:/Proj/TH-10/Assets/untitled.tmx"))
+    if (0) // TODO: test
     {
-        const auto& layers = map.getLayers();
-        int width = map.getTileCount().x;
-        int height = map.getTileCount().y;
-
-        for (const auto& layer : layers)
+        tmx::Map map;
+        if (map.load("D:/Proj/TH-10/Assets/untitled.tmx"))
         {
-            if (layer->getType() == tmx::Layer::Type::Object)
+            const auto& layers = map.getLayers();
+            int width = map.getTileCount().x;
+            int height = map.getTileCount().y;
+
+            for (const auto& layer : layers)
             {
-                //const auto& objectLayer = layer->getLayerAs<tmx::ObjectGroup>();
-                //const auto& objects = objectLayer.getObjects();
-                //for (const auto& object : objects)
-                //{
-                //    //do stuff with object properties
-                //}
+                if (layer->getType() == tmx::Layer::Type::Object)
+                {
+                    //const auto& objectLayer = layer->getLayerAs<tmx::ObjectGroup>();
+                    //const auto& objects = objectLayer.getObjects();
+                    //for (const auto& object : objects)
+                    //{
+                    //    //do stuff with object properties
+                    //}
+                }
+                else if (layer->getType() == tmx::Layer::Type::Tile)
+                {
+                    const auto& tileLayer = layer->getLayerAs<tmx::TileLayer>();
+                    //read out tile layer properties etc...
+                    int x = 2;
+                    int y = 1;
+                    int index = y * width + x;
+                    const auto tiles = tileLayer.getTiles();
+
+                    int gid = tiles[index].ID;
+
+                    printf("");
+
+                }
             }
-            else if (layer->getType() == tmx::Layer::Type::Tile)
+
+            const auto& tilesets = map.getTilesets();
+            for (const auto& tileset : tilesets)
             {
-                const auto& tileLayer = layer->getLayerAs<tmx::TileLayer>();
-                //read out tile layer properties etc...
-                int x = 2;
-                int y = 1;
-                int index = y * width + x;
-                const auto tiles = tileLayer.getTiles();
+                //read out tile set properties, load textures etc...
 
-                int gid = tiles[index].ID;
-
-                printf("");
-
+                tileset.getImagePath();
             }
-        }
-
-        const auto& tilesets = map.getTilesets();
-        for (const auto& tileset : tilesets)
-        {
-            //read out tile set properties, load textures etc...
-
-            tileset.getImagePath();
         }
     }
 }
@@ -79,7 +82,7 @@ void TilemapModel::addTileset(Tileset* tileset)
     m_tilesets.add({ tileset, m_tilesetIdSpan * m_tilesets.size() });
 }
 
-void TilemapModel::addLayer(TilemapLayer* layer)
+void TilemapModel::addLayer(AbstractTilemapLayer* layer)
 {
     m_layers.add(layer);
 }

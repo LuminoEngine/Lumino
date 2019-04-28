@@ -1,12 +1,16 @@
 ﻿
 #pragma once
 #include "Common.hpp"
+#include "../Graphics/GeometryStructs.hpp"
 
 namespace ln {
 struct Size;
 class Material;
 class RenderingContext;
 
+
+// 単純にテクスチャの転送元領域を管理するのではなく、
+// タイル ID を受け取って「どのように描くか？」を担当する。
 class Tileset
 	: public Object
 {
@@ -29,8 +33,12 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 private:
+    void resetInfo();
+
     int m_tilePixelWidth;
     int m_tilePixelHeight;
+    int m_horizontalTileCount;
+    Size m_tileUVSize;
     Ref<Material> m_material;
 };
 

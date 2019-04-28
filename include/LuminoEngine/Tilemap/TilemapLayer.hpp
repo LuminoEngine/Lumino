@@ -13,16 +13,17 @@ enum class TilemapOrientation
     DownFlow,
 };
 
-class TilemapLayer
+class AbstractTilemapLayer
 	: public Object
 {
 public:
-    static Ref<TilemapLayer> create();
 
-    void resize(int width, int height);
+    //void resize(int width, int height);
 
-    void setTileId(int x, int y, int id);
-    int tileId(int x, int y) const;
+    //void setTileId(int x, int y, int id);
+    virtual int getWidth() const = 0;
+    virtual int getHeight() const = 0;
+    virtual int getTileId(int x, int y) const = 0;
 
     void setTileSize(const Size& size);
 
@@ -32,16 +33,42 @@ public: // TODO: internal
     void render(TilemapModel* model, RenderingContext* context, const Matrix& transform, const detail::TilemapBounds& bounds);
 
 LN_CONSTRUCT_ACCESS:
-    TilemapLayer();
-	virtual ~TilemapLayer();
+    AbstractTilemapLayer();
+	virtual ~AbstractTilemapLayer();
 	void init();
+    //void init(int width, int height);
+
+private:
+    //List<int> m_data;
+    //SizeI m_size;
+    Size m_tileSize;
+    TilemapOrientation m_orientation;
+};
+
+// タイルデータを内部に持つ AbstractTilemapLayer の実装
+class TilemapLayer
+    : public AbstractTilemapLayer
+{
+public:
+    static Ref<TilemapLayer> create();
+
+    void resize(int width, int height);
+
+    void setTileId(int x, int y, int id);
+
+    virtual int getWidth() const override { return m_size.width; }
+    virtual int getHeight() const override { return m_size.height; }
+    virtual int getTileId(int x, int y) const override;
+
+LN_CONSTRUCT_ACCESS:
+    TilemapLayer();
+    virtual ~TilemapLayer();
+    void init();
     void init(int width, int height);
 
 private:
     List<int> m_data;
     SizeI m_size;
-    Size m_tileSize;
-    TilemapOrientation m_orientation;
 };
 
 } // namespace ln

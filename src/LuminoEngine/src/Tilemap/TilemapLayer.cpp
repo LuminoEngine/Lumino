@@ -7,56 +7,51 @@
 namespace ln {
 
 //==============================================================================
-// TilemapLayer
+// AbstractTilemapLayer
 
-Ref<TilemapLayer> TilemapLayer::create()
-{
-    return newObject<TilemapLayer>();
-}
-
-TilemapLayer::TilemapLayer()
+AbstractTilemapLayer::AbstractTilemapLayer()
     : m_tileSize(1, 1)
     , m_orientation(TilemapOrientation::UpFlow)
 {
 }
 
-TilemapLayer::~TilemapLayer()
+AbstractTilemapLayer::~AbstractTilemapLayer()
 {
 }
 
-void TilemapLayer::init()
+void AbstractTilemapLayer::init()
 {
     Object::init();
 }
 
-void TilemapLayer::resize(int width, int height)
-{
-    m_size.set(width, height);
-    m_data.resize(width * height);
-}
+//void AbstractTilemapLayer::resize(int width, int height)
+//{
+//    m_size.set(width, height);
+//    m_data.resize(width * height);
+//}
+//
+//void AbstractTilemapLayer::setTileId(int x, int y, int id)
+//{
+//    m_data[y * m_size.width + x] = id;
+//}
+//
+//int AbstractTilemapLayer::getTileId(int x, int y) const
+//{
+//    // TODO: round
+//    // clamp
+//    if (x < 0 || m_size.width <= x) return 0;
+//    if (y < 0 || m_size.height <= y) return 0;
+//
+//    return m_data[y * m_size.width + x];
+//}
 
-void TilemapLayer::setTileId(int x, int y, int id)
-{
-    m_data[y * m_size.width + x] = id;
-}
-
-int TilemapLayer::tileId(int x, int y) const
-{
-    // TODO: round
-    // clamp
-    if (x < 0 || m_size.width <= x) return 0;
-    if (y < 0 || m_size.height <= y) return 0;
-
-    return m_data[y * m_size.width + x];
-}
-
-void TilemapLayer::setTileSize(const Size& size)
+void AbstractTilemapLayer::setTileSize(const Size& size)
 {
     m_tileSize = size;
 }
 
 // bounds: Y+ を上方向とした、ローカル空間上の描画範囲
-void TilemapLayer::render(TilemapModel* model, RenderingContext* context, const Matrix& transform, const detail::TilemapBounds& bounds)
+void AbstractTilemapLayer::render(TilemapModel* model, RenderingContext* context, const Matrix& transform, const detail::TilemapBounds& bounds)
 {
     
     //int l, t, r, b;         // 2D array としてどの範囲を描画するか
@@ -94,6 +89,8 @@ void TilemapLayer::render(TilemapModel* model, RenderingContext* context, const 
         //}
     }
 
+    int width = getWidth();
+    int height = getHeight();
 
     //float tw = m_tileSize.width;
     //float th = m_tileSize.height;
@@ -106,26 +103,29 @@ void TilemapLayer::render(TilemapModel* model, RenderingContext* context, const 
         {
             // clamp
             //if (x < 0 || m_size.width <= x) continue;
+            int tileId = 0;
 
             if (m_orientation == TilemapOrientation::UpFlow)
             {
-                int id = tileId(x, m_size.height - y - 1);
-                if (id > 0)
-                {
-                    Vector3 pos(x * m_tileSize.width, y * m_tileSize.height, 0);
-
-                    Tileset* tileset;
-                    int localId;
-                    if (model->fetchTileset(id, &tileset, &localId)) {
-                        tileset->drawTile(context, localId, pos, m_tileSize);
-                    }
-                }
+                tileId = getTileId(x, height - y - 1);
             }
             else if (m_orientation == TilemapOrientation::DownFlow) {
-                LN_NOTIMPLEMENTED();
+                tileId = getTileId(x, -y);
             }
             else {
                 LN_UNREACHABLE();
+            }
+
+
+
+            if (tileId > 0)
+            {
+                Vector3 pos(x * m_tileSize.width, y * m_tileSize.height, 0);
+                Tileset* tileset;
+                int localId;
+                if (model->fetchTileset(tileId, &tileset, &localId)) {
+                    tileset->drawTile(context, localId, pos, m_tileSize);
+                }
             }
         }
     }
@@ -139,6 +139,49 @@ void TilemapLayer::render(TilemapModel* model, RenderingContext* context, const 
     //    }
     //}
 
+}
+
+
+//==============================================================================
+// TilemapLayer
+
+Ref<TilemapLayer> TilemapLayer::create()
+{
+    return newObject<TilemapLayer>();
+}
+
+TilemapLayer::TilemapLayer()
+{
+}
+
+TilemapLayer::~TilemapLayer()
+{
+}
+
+void TilemapLayer::init()
+{
+    AbstractTilemapLayer::init();
+}
+
+void TilemapLayer::resize(int width, int height)
+{
+    m_size.set(width, height);
+    m_data.resize(width * height);
+}
+
+void TilemapLayer::setTileId(int x, int y, int id)
+{
+    m_data[y * m_size.width + x] = id;
+}
+
+int TilemapLayer::getTileId(int x, int y) const
+{
+    // TODO: round
+    // clamp
+    if (x < 0 || m_size.width <= x) return 0;
+    if (y < 0 || m_size.height <= y) return 0;
+
+    return m_data[y * m_size.width + x];
 }
 
 } // namespace ln
