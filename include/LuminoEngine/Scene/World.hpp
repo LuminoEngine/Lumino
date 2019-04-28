@@ -10,6 +10,7 @@ class WorldObject;
 class Component;
 class PhysicsWorld;
 class PhysicsWorld2D;
+class EffectContext;
 namespace detail {
 struct CameraInfo;
 class EngineManager;
@@ -50,6 +51,7 @@ public: // TODO: internal
     const Ref<AnimationContext>& animationContext() const { return m_animationContext; }
     const Ref<PhysicsWorld>& physicsWorld() const { return m_physicsWorld; }
 	const Ref<PhysicsWorld2D>& physicsWorld2D() const { return m_physicsWorld2D; }
+    const Ref<EffectContext>& effectContext() const { return m_effectContext; }
 	void removeRootObject(WorldObject* obj);
     void updateObjectsWorldMatrix();
     void updateFrame(float elapsedSeconds);
@@ -59,6 +61,8 @@ public: // TODO: internal
     Ref<AnimationContext> m_animationContext;
     Ref<PhysicsWorld> m_physicsWorld;
 	Ref<PhysicsWorld2D> m_physicsWorld2D;
+    Ref<EffectContext> m_effectContext;
+
     Ref<List<Ref<WorldObject>>> m_rootWorldObjectList;
 	List<WorldObject*> m_destroyList;
     Ref<detail::WorldSceneGraphRenderingContext> m_renderingContext;
