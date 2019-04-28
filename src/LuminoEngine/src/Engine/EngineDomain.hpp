@@ -23,6 +23,7 @@ class GraphicsManager;
 class FontManager;
 class MeshManager;
 class RenderingManager;
+class EffectManager;
 class PhysicsManager;
 class AssetManager;
 class VisualManager;
@@ -43,6 +44,7 @@ public:
 	static FontManager* fontManager();
 	static MeshManager* meshManager();
 	static RenderingManager* renderingManager();
+    static EffectManager* effectManager();
     static PhysicsManager* physicsManager();
     static AssetManager* assetManager();
     static VisualManager* visualManager();

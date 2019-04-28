@@ -24,6 +24,7 @@
 #include "../Font/FontManager.hpp"
 #include "../Mesh/MeshManager.hpp"
 #include "../Rendering/RenderingManager.hpp"
+#include "../Effect/EffectManager.hpp"
 #include "../Physics/PhysicsManager.hpp"
 #include "../Asset/AssetManager.hpp"
 #include "../Visual/VisualManager.hpp"
@@ -227,6 +228,7 @@ void EngineManager::dispose()
     if (m_visualManager) m_visualManager->dispose();
 	if (m_assetManager) m_assetManager->dispose();
     if (m_physicsManager) m_physicsManager->dispose();
+    if (m_effectManager) m_effectManager->dispose();
 	if (m_renderingManager) m_renderingManager->dispose();
 	if (m_meshManager) m_meshManager->dispose();
 	if (m_fontManager) m_fontManager->dispose();
@@ -264,6 +266,7 @@ void EngineManager::initializeAllManagers()
     initializePhysicsManager();
 	initializeAssetManager();
 	initializeRenderingManager();
+    initializeEffectManager();
     initializeVisualManager();
     initializeSceneManager();
 	initializeUIManager();
@@ -425,6 +428,17 @@ void EngineManager::initializeRenderingManager()
 		m_renderingManager = ln::makeRef<RenderingManager>();
 		m_renderingManager->init(settings);
 	}
+}
+
+void EngineManager::initializeEffectManager()
+{
+    if (!m_effectManager && m_settings.features.hasFlag(EngineFeature::Rendering))
+    {
+        EffectManager::Settings settings;
+
+        m_effectManager = ln::makeRef<EffectManager>();
+        m_effectManager->init(settings);
+    }
 }
 
 void EngineManager::initializePhysicsManager()
@@ -711,6 +725,11 @@ MeshManager* EngineDomain::meshManager()
 RenderingManager* EngineDomain::renderingManager()
 {
 	return engineManager()->renderingManager();
+}
+
+EffectManager* EngineDomain::effectManager()
+{
+    return engineManager()->effectManager();
 }
 
 PhysicsManager* EngineDomain::physicsManager()

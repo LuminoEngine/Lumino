@@ -349,6 +349,17 @@ set(LN_SOURCES_ImageEffect
     src/ImageEffect/ToneImageEffect.cpp
 )
 
+set(LN_SOURCES_Effect
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Effect/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Effect/EffectModel.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Effect/EffectContext.hpp
+    src/Effect/Internal.hpp
+    src/Effect/EffectManager.cpp
+    src/Effect/EffectManager.hpp
+    src/Effect/EffectModel.cpp
+    src/Effect/EffectContext.cpp
+)
+
 set(LN_SOURCES_Physics
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/CollisionShape.hpp
@@ -531,13 +542,13 @@ source_group("Font"      FILES ${LN_SOURCES_Font})
 source_group("Mesh"      FILES ${LN_SOURCES_Mesh})
 source_group("Rendering" FILES ${LN_SOURCES_Rendering})
 source_group("ImageEffect" FILES ${LN_SOURCES_ImageEffect})
+source_group("Effect"    FILES ${LN_SOURCES_Effect})
 source_group("Physics"	 FILES ${LN_SOURCES_Physics})
 source_group("Asset"	 FILES ${LN_SOURCES_Asset})
 source_group("Visual"    FILES ${LN_SOURCES_Visual})
 source_group("Scene"     FILES ${LN_SOURCES_Scene})
 source_group("UI"        FILES ${LN_SOURCES_UI})
 source_group("Tilemap"   FILES ${LN_SOURCES_Tilemap})
-
 
 set(LN_SOURCES
     src/LuminoEngine.PCH.cpp
@@ -559,13 +570,13 @@ set(LN_SOURCES
     ${LN_SOURCES_Mesh}
     ${LN_SOURCES_Rendering}
     ${LN_SOURCES_ImageEffect}
+    ${LN_SOURCES_Effect}
     ${LN_SOURCES_Physics}
     ${LN_SOURCES_Asset}
     ${LN_SOURCES_Visual}
     ${LN_SOURCES_Scene}
     ${LN_SOURCES_UI}
     ${LN_SOURCES_Tilemap}
-    #${LN_SOURCES_LuminoCore}
 )
 
 set(LN_SOURCES_SharedLib

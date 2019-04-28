@@ -82,7 +82,7 @@ public:
 	void initializeFontManager();
 	void initializeMeshManager();
 	void initializeRenderingManager();
-	//void initializeEffectManager();
+	void initializeEffectManager();
     void initializePhysicsManager();
 	void initializeAssetManager();
     void initializeVisualManager();
@@ -108,6 +108,7 @@ public:
 	const Ref<FontManager>& fontManager() const { return m_fontManager; }
 	const Ref<MeshManager>& meshManager() const { return m_meshManager; }
 	const Ref<RenderingManager>& renderingManager() const { return m_renderingManager; }
+    const Ref<EffectManager>& effectManager() const { return m_effectManager; }
     const Ref<PhysicsManager>& physicsManager() const { return m_physicsManager; }
     const Ref<AssetManager>& assetManager() const { return m_assetManager; }
     const Ref<VisualManager>& visualManager() const { return m_visualManager; }
@@ -146,8 +147,7 @@ private:
 	Ref<FontManager> m_fontManager;
 	Ref<MeshManager>				m_meshManager;
 	Ref<RenderingManager>			m_renderingManager;
-	//Ref<EffectManager>				m_effectManager;
-	//Ref<ModelManager>				m_modelManager;
+	Ref<EffectManager>				m_effectManager;
 	Ref<PhysicsManager>		m_physicsManager;
 	Ref<AssetManager>						m_assetManager;
     Ref<VisualManager>					m_visualManager;
