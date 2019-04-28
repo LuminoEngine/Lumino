@@ -38,7 +38,7 @@ private:
 	//Ref<Texture> m_texture;	// TODO
 };
 
-
+// TODO: Effect でも使う。Material はこっちに持たせた方がいいかも
 class SpriteFrameSet
 	: public Object
 {

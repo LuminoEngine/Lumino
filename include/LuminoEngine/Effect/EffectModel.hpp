@@ -4,7 +4,7 @@
 namespace ln {
 class RenderingContext;
 
-class EffectModel
+class EffectResource
     : public Object
 {
 public:
@@ -13,28 +13,12 @@ protected:
     virtual void onDraw(RenderingContext* context);
 
 LN_CONSTRUCT_ACCESS:
-    EffectModel();
-    virtual ~EffectModel();
+    EffectResource();
+    virtual ~EffectResource();
     void init();
 
 private:
 };
 
-class SpriteFrameEffectModel
-    : public EffectModel
-{
-public:
-    
-
-protected:
-    virtual void onDraw(RenderingContext* context) override;
-
-LN_CONSTRUCT_ACCESS:
-    SpriteFrameEffectModel();
-    virtual ~SpriteFrameEffectModel();
-    void init();
-
-private:
-};
 
 } // namespace ln

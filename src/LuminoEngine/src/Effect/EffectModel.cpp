@@ -5,42 +5,22 @@
 namespace ln {
 
 //==============================================================================
-// EffectModel
+// EffectResource
 
-EffectModel::EffectModel()
+EffectResource::EffectResource()
 {
 }
 
-EffectModel::~EffectModel()
+EffectResource::~EffectResource()
 {
 }
 
-void EffectModel::init()
+void EffectResource::init()
 {
     Object::init();
 }
 
-void EffectModel::onDraw(RenderingContext* context)
-{
-}
-
-//==============================================================================
-// SpriteFrameEffectModel
-
-SpriteFrameEffectModel::SpriteFrameEffectModel()
-{
-}
-
-SpriteFrameEffectModel::~SpriteFrameEffectModel()
-{
-}
-
-void SpriteFrameEffectModel::init()
-{
-    EffectModel::init();
-}
-
-void SpriteFrameEffectModel::onDraw(RenderingContext* context)
+void EffectResource::onDraw(RenderingContext* context)
 {
 }
 

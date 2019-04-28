@@ -176,7 +176,9 @@ void World::renderObjects()
         }
     }
 
+    m_renderingContext->pushState(true);
     m_effectContext->render(m_renderingContext);
+    m_renderingContext->popState();
 }
 
 //==============================================================================

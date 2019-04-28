@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 namespace ln {
-class EffectModel;
+class EffectResource;
 namespace detail {
 class EffectManager;
 } // namespace detail

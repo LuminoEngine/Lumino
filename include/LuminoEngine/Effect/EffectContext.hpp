@@ -1,27 +1,40 @@
 ﻿
 #pragma once
+#include "../Graphics/GeometryStructs.hpp"
 #include "Common.hpp"
+#include "EffectModel.hpp"
 
 namespace ln {
 class RenderingContext;
+class SpriteFrameSet;   // TODO:
+class Material;   // TODO:
 
-// EffectModel に対するインスタンス
+// EffectResource に対するインスタンス
 class EffectEmitter
     : public Object
 {
 public:
+    void setPosition(const Vector3& value) { m_position = value; }
+    const Vector3& position() const { return m_position; }
 
 public: // TODO: internal
-    virtual void update(float elapsedSeconds);
-    virtual void render(RenderingContext* renderingContext);
+    bool update(float elapsedSeconds);
+    void render(RenderingContext* renderingContext);
 
-LN_INTERNAL_NEW_OBJECT:
+protected:
+    virtual bool onUpdate(float localTime);
+    virtual void onRender(RenderingContext* renderingContext);
+
+
+public: // TODO:
     EffectEmitter();
     virtual ~EffectEmitter();
-    void init(EffectModel* model);
+    void init(EffectResource* model);
 
 private:
-    EffectModel* m_model;
+    EffectResource* m_model;
+    Vector3 m_position;
+    float m_localTime;
 };
 
 class Effect
@@ -29,7 +42,7 @@ class Effect
 public:
     // mainWorld の指定位置にエフェクトを発生させる。
     // 戻り値はコントロールしたい場合に保持すればよい。自動解放される。
-    static EffectEmitter* emit(EffectModel* effect, const Vector3& position);
+    static EffectEmitter* emit(EffectResource* effect, const Vector3& position);
 };
 
 class EffectContext
@@ -40,7 +53,7 @@ public:
 protected:
 
 public: // TODO: internal
-    EffectEmitter* createEmitter(EffectModel* model);
+    EffectEmitter* createEmitter(EffectResource* model);
     void update(float elapsedSeconds);
     void render(RenderingContext* renderingContext);
 
@@ -52,6 +65,51 @@ LN_CONSTRUCT_ACCESS:
 private:
     detail::EffectManager* m_manager;
     List<Ref<EffectEmitter>> m_emitters;
+};
+
+
+
+
+
+
+
+class SpriteFrameEffectResource
+    : public EffectResource
+{
+public:
+
+public: // TODO: internal
+
+LN_CONSTRUCT_ACCESS:
+    SpriteFrameEffectResource();
+    virtual ~SpriteFrameEffectResource();
+    void init(const Size& spriteSize, SpriteFrameSet* spriteFrameSet, int startNumber, int lastNumber, float frameTime);
+
+public: // TODO: private
+    Size m_spriteSize;
+    Ref<SpriteFrameSet> m_spriteFrameSet;
+    int m_startNumber;
+    int m_lastNumber;
+    float m_frameTime;
+    Ref<Material> m_material;
+};
+
+class SpriteFrameEffectEmitter
+    : public EffectEmitter
+{
+protected:
+    virtual bool onUpdate(float localTime) override;
+    virtual void onRender(RenderingContext* renderingContext) override;
+
+LN_CONSTRUCT_ACCESS:
+    SpriteFrameEffectEmitter();
+    virtual ~SpriteFrameEffectEmitter();
+    void init(SpriteFrameEffectResource* data);
+
+private:
+    Ref<SpriteFrameEffectResource> m_data;
+    int m_frameNumber;
+    //bool m_finished;
 };
 
 } // namespace ln
