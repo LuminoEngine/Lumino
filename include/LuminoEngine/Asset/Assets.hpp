@@ -4,6 +4,7 @@
 
 namespace ln {
 class Shader;
+class Texture2D;
 
 class Assets
 {

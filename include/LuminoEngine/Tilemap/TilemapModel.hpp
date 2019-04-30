@@ -24,6 +24,7 @@ LN_CONSTRUCT_ACCESS:
     TilemapModel();
 	virtual ~TilemapModel();
 	void init();
+    void init(const StringRef& filePath);
 
 private:
     struct TilesetSlot

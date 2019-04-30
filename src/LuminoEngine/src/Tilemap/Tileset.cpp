@@ -4,6 +4,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Tilemap/Tileset.hpp>
+#include "../Rendering/SpriteRenderFeature.hpp"
 
 namespace ln {
 
@@ -16,8 +17,9 @@ Ref<Tileset> Tileset::create()
 }
 
 Tileset::Tileset()
-    : m_tilePixelWidth(32)
-    , m_tilePixelHeight(32)
+    //: m_tilePixelWidth(32)
+    //, m_tilePixelHeight(32)
+    //: m_tileScale(1.0f)
 {
 }
 
@@ -33,11 +35,23 @@ void Tileset::init()
     m_material->setMainTexture(newObject<Texture2D>(u"D:/tmp/110220c_as019.png"));
 }
 
+void Tileset::resize(int tileCount)
+{
+    m_tiles.resize(tileCount);
+}
+
 void Tileset::setTilePixelSize(int width, int height)
 {
-    m_tilePixelWidth = width;
-    m_tilePixelHeight = height;
-    resetInfo();
+    //m_tilePixelWidth = width;
+    //m_tilePixelHeight = height;
+    //resetInfo();
+    m_tileScale.x = 1.0f / width;
+    m_tileScale.y = 1.0f / width;
+}
+
+void Tileset::setTileImageRect(int tileId, int x, int y, int width, int height)
+{
+    m_tiles[tileId].sourceRect.set(x, y, width, height);
 }
 
 void Tileset::setMaterial(Material* material)
@@ -49,29 +63,38 @@ void Tileset::setMaterial(Material* material)
 void Tileset::drawTile(RenderingContext* context, int tileId, const Vector3& pos, const Size& tileSize)
 {
     if (!m_material) return;
+    if (tileId <= 0 || m_tiles.size() <= tileId) return;
 
     Texture* texture = m_material->mainTexture();
     if (!texture) return;
 
-    float sx = m_tileUVSize.width * (tileId % m_horizontalTileCount);
-    float sy = m_tileUVSize.height * (tileId / m_horizontalTileCount);
+    //float sx = m_tileUVSize.width * (tileId % m_horizontalTileCount);
+    //float sy = m_tileUVSize.height * (tileId / m_horizontalTileCount);
+    
+    const auto& tile = m_tiles[tileId];
+
+    //Size worldSize(tile.sourceRect.width * m_tileScale.x, tile.sourceRect.height * m_tileScale.y);
+    Size renderSize;
+    Rect renderSourceRect;
+    detail::SpriteRenderFeature::makeRenderSizeAndSourceRectHelper(
+        texture, tileSize, tile.sourceRect, &renderSize, &renderSourceRect);
 
     context->drawSprite(
         Matrix::makeTranslation(pos), tileSize, Vector2::Zero,
-        Rect(sx, sy, m_tileUVSize), Color::White,
+        renderSourceRect, Color::White,
         SpriteBaseDirection::ZMinus, BillboardType::None, detail::SpriteFlipFlags::None,
         m_material);
 }
 
 void Tileset::resetInfo()
 {
-    if (!m_material) return;
-    if (!m_material->mainTexture()) return;
+    //if (!m_material) return;
+    //if (!m_material->mainTexture()) return;
 
-    int m_horizontalTileCount = m_material->mainTexture()->width() / m_tilePixelWidth;
+    //int m_horizontalTileCount = m_material->mainTexture()->width() / m_tilePixelWidth;
 
-    m_tileUVSize.width = static_cast<float>(m_tilePixelWidth) / m_material->mainTexture()->width();
-    m_tileUVSize.height = static_cast<float>(m_tilePixelHeight) / m_material->mainTexture()->height();
+    //m_tileUVSize.width = static_cast<float>(m_tilePixelWidth) / m_material->mainTexture()->width();
+    //m_tileUVSize.height = static_cast<float>(m_tilePixelHeight) / m_material->mainTexture()->height();
 }
 
 } // namespace ln

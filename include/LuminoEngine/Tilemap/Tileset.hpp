@@ -16,11 +16,13 @@ class Tileset
 {
 public:
     static Ref<Tileset> create();
+    void resize(int tileCount);
 
     void setTilePixelSize(int width, int height);
+    void setTileImageRect(int tileId, int x, int y, int width, int height);
 
-    int tilePixelWidth() const { return m_tilePixelWidth; }
-    int tilePixelHeight() const { return m_tilePixelHeight; }
+    //int tilePixelWidth() const { return m_tilePixelWidth; }
+    //int tilePixelHeight() const { return m_tilePixelHeight; }
 
     void setMaterial(Material* material);
 
@@ -33,12 +35,19 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 private:
+    struct Tile
+    {
+        Rect sourceRect;    // unit: px
+    };
+
     void resetInfo();
 
-    int m_tilePixelWidth;
-    int m_tilePixelHeight;
-    int m_horizontalTileCount;
-    Size m_tileUVSize;
+    //int m_tilePixelWidth;
+    //int m_tilePixelHeight;
+    //int m_horizontalTileCount;
+    //Size m_tileUVSize;
+    std::vector<Tile> m_tiles;
+    Vector2 m_tileScale;
     Ref<Material> m_material;
 };
 

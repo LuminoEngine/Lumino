@@ -131,8 +131,8 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
             //renderingContext->popState();
 
 
-            //adjustGridPlane(m_viewPoint->viewFrustum, this);
-            //renderGridPlane(renderingContext, this);
+            adjustGridPlane(m_viewPoint->viewFrustum, this);
+            renderGridPlane(renderingContext, this);
 
         }
 
