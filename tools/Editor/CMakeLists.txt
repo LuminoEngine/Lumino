@@ -24,6 +24,8 @@ qt5_add_resources(qml_QRC src/qml.qrc)
 set(SOURCE 
 	${SOURCE}
 	src/main.cpp
+	src/Squircle.cpp
+	src/Squircle.h
 )
 
 # Tell CMake to create the helloworld executable

@@ -1,6 +1,10 @@
+
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QtQuick/QQuickView>
+
+#include "Squircle.h"
 
 class ViewModel : public QObject
 {
@@ -20,16 +24,24 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    QCoreApplication::addLibraryPath("./");
+    qmlRegisterType<Squircle>("OpenGLUnderQML", 1, 0, "Squircle");
 
-    QQmlApplicationEngine engine;
-    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+    //QCoreApplication::addLibraryPath("./");
 
-    QObject* obj = engine.rootObjects().front();
+    //QQmlApplicationEngine engine;
+    //engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
-    ViewModel vm;
-    engine.rootContext()->setContextProperty("vm", &vm);
+    ////QObject* obj = engine.rootObjects().front();
+    //
+    //view.setResizeMode(QQuickView::SizeRootObjectToView);
+    //ViewModel vm;
+    //engine.rootContext()->setContextProperty("vm", &vm);
 
+
+    QQuickView view;
+    view.setResizeMode(QQuickView::SizeRootObjectToView);
+    view.setSource(QUrl("qrc:/main.qml"));
+    view.show();
 
 	    
     return app.exec();
