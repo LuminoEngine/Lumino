@@ -167,6 +167,8 @@ void Squircle::sync()
 #include <QtQuick/QQuickWindow>
 #include <qsgsimpletexturenode.h>
 
+QSize g_sizeA;
+
 class LogoInFboRenderer : public QQuickFramebufferObject::Renderer
 {
 public:
@@ -184,6 +186,7 @@ public:
         QOpenGLFramebufferObjectFormat format;
         format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
         format.setSamples(4);
+        g_sizeA = size;
         return new QOpenGLFramebufferObject(size, format);
     }
 
@@ -276,6 +279,8 @@ void LogoRenderer::initialize()
 
 void LogoRenderer::render()
 {
+    glViewport(0, 0, g_sizeA.width(), g_sizeA.height());
+
     glDepthMask(true);
 
     glClearColor(0.5f, 0.5f, 0.7f, 1.0f);
