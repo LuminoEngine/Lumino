@@ -2,6 +2,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QApplication>
+#include <QSurfaceFormat>
 
 int main(int argc, char *argv[])
 {
@@ -9,7 +10,7 @@ int main(int argc, char *argv[])
 
     // apply theme
     {
-        QFile f(":qdarkstyle/style.qss");
+        QFile f(":/light.qss");
         if (!f.exists())
         {
             printf("Unable to set stylesheet, file not found\n");
@@ -24,6 +25,14 @@ int main(int argc, char *argv[])
         QFont font("Meiryo UI");
         a.setFont(font);
     }
+
+
+    //QSurfaceFormat format;
+    //format.setSamples(16);
+    //format.setDepthBufferSize(24);
+    //format.setVersion(3, 0);
+    //format.setProfile(QSurfaceFormat::CoreProfile);
+    //QSurfaceFormat::setDefaultFormat(format);
 
 
     MainWindow w;
