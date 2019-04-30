@@ -2,13 +2,14 @@ import QtQuick 2.3
 import QtQuick.Controls 1.4
 import OpenGLUnderQML 1.0
 import QtQuick.Layouts 1.1
+import SceneGraphRendering 1.0
 
 // main window
 ApplicationWindow {
     id: root
     visible: true
-    width: 640
-    height: 480
+    width: 800
+    height: 600
 
     menuBar: MenuBar {
         Menu {
@@ -71,15 +72,53 @@ ApplicationWindow {
                             //}
                         }
 
-                        Rectangle {
-                            color: "#565656"
+                        TabView {
+                            id: tabView
                             Layout.fillHeight: true
                             Layout.fillWidth: true
-                            Layout.minimumWidth: 500
-                            Layout.preferredHeight: 300
-                            //MyLabel {
-                            ///    text: "Scene view"
-                            //}
+                            //onCurrentIndexChanged: tabChangeSound.play()
+
+                            Tab{
+                                title: "Tab1"
+
+                                Item{
+                                    width: 320
+                                    height: 480
+                                    anchors.centerIn: parent
+
+                                    Renderer {
+                                        id: renderer
+                                        anchors.fill: parent
+                                        anchors.margins: 10
+
+                                        // The transform is just to show something interesting..
+                                        transform: [
+                                            Rotation { id: rotation; axis.x: 0; axis.z: 0; axis.y: 1; angle: 0; origin.x: renderer.width / 2; origin.y: renderer.height / 2; },
+                                            Translate { id: txOut; x: -renderer.width / 2; y: -renderer.height / 2 },
+                                            Scale { id: scale; },
+                                            Translate { id: txIn; x: renderer.width / 2; y: renderer.height / 2 }
+                                        ]
+                                    }
+/*
+                                    Squircle {
+                                        SequentialAnimation on t {
+                                            NumberAnimation { to: 1; duration: 2500; easing.type: Easing.InQuad }
+                                            NumberAnimation { to: 0; duration: 2500; easing.type: Easing.OutQuad }
+                                            loops: Animation.Infinite
+                                            running: true
+                                        }
+                                    }
+                                    */
+                                }
+                            }
+
+                            Tab {
+                                title: "Tab2"
+
+                                Text {
+                                    text: "text2"
+                                }
+                            }
                         }
                     }
 

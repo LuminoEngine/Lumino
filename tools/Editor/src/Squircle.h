@@ -1,35 +1,18 @@
+
 #ifndef SQUIRCLE_H
 #define SQUIRCLE_H
 
 #include <QtQuick/QQuickItem>
 #include <QtGui/QOpenGLShaderProgram>
-#include <QtGui/QOpenGLFunctions>
 
-class SquircleRenderer : public QObject, protected QOpenGLFunctions
-{
-    Q_OBJECT
-public:
-    SquircleRenderer() : m_t(0), m_program(0) { }
-    ~SquircleRenderer();
+#pragma comment(lib, "Opengl32.lib")
 
-    void setT(qreal t) { m_t = t; }
-    void setViewportSize(const QSize &size) { m_viewportSize = size; }
-    void setWindow(QQuickWindow *window) { m_window = window; }
-
-public slots:
-    void paint();
-
-private:
-    QSize m_viewportSize;
-    qreal m_t;
-    QOpenGLShaderProgram *m_program;
-    QQuickWindow *m_window;
-};
-
+//! [1]
 class Squircle : public QQuickItem
 {
     Q_OBJECT
-    Q_PROPERTY(qreal t READ t WRITE setT NOTIFY tChanged)
+
+        Q_PROPERTY(qreal t READ t WRITE setT NOTIFY tChanged)
 
 public:
     Squircle();
@@ -41,15 +24,79 @@ signals:
     void tChanged();
 
 public slots:
-    void sync();
+    void paint();
     void cleanup();
+    void sync();
 
 private slots:
     void handleWindowChanged(QQuickWindow *win);
 
 private:
+    QOpenGLShaderProgram *m_program;
+
     qreal m_t;
-    SquircleRenderer *m_renderer;
+    qreal m_thread_t;
+
+    QSize m_viewportSize;
 };
+//! [1]
+
+
+
+
+
+#include <QtQuick/QQuickFramebufferObject>
+
+class LogoRenderer;
+
+class FboInSGRenderer : public QQuickFramebufferObject
+{
+    Q_OBJECT
+public:
+    Renderer *createRenderer() const;
+};
+
+
+
+
+
+#include <QtGui/qvector3d.h>
+#include <QtGui/qmatrix4x4.h>
+#include <QtGui/qopenglshaderprogram.h>
+#include <QtGui/qopenglfunctions.h>
+#include <QOpenGLFunctions>
+
+#include <QTime>
+#include <QVector>
+
+class LogoRenderer : protected QOpenGLFunctions
+{
+public:
+    LogoRenderer();
+    ~LogoRenderer();
+
+    void render();
+    void initialize();
+
+private:
+
+    qreal   m_fAngle;
+    qreal   m_fScale;
+
+    void paintQtLogo();
+    void createGeometry();
+    void quad(qreal x1, qreal y1, qreal x2, qreal y2, qreal x3, qreal y3, qreal x4, qreal y4);
+    void extrude(qreal x1, qreal y1, qreal x2, qreal y2);
+
+    QVector<QVector3D> vertices;
+    QVector<QVector3D> normals;
+    QOpenGLShaderProgram program1;
+    int vertexAttr1;
+    int normalAttr1;
+    int matrixUniform1;
+};
+
+
+
 
 #endif // SQUIRCLE_H
