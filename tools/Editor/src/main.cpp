@@ -26,23 +26,26 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<Squircle>("OpenGLUnderQML", 1, 0, "Squircle");
 
-    //QCoreApplication::addLibraryPath("./");
+    QCoreApplication::addLibraryPath("./");
 
-    //QQmlApplicationEngine engine;
-    //engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+    QQmlApplicationEngine engine;
+    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
-    ////QObject* obj = engine.rootObjects().front();
-    //
+    QObject* obj = engine.rootObjects().front();
+    auto* window = dynamic_cast<QQuickWindow*>(obj);
+    //window->setresize
+    
     //view.setResizeMode(QQuickView::SizeRootObjectToView);
-    //ViewModel vm;
-    //engine.rootContext()->setContextProperty("vm", &vm);
+    ViewModel vm;
+    engine.rootContext()->setContextProperty("vm", &vm);
 
 
-    QQuickView view;
-    view.setResizeMode(QQuickView::SizeRootObjectToView);
-    view.setSource(QUrl("qrc:/main.qml"));
-    view.show();
+    //QQuickView view;
+    //view.setResizeMode(QQuickView::SizeRootObjectToView);
+    //view.setSource(QUrl("qrc:/main.qml"));
+    //view.show();
 
+    
 	    
     return app.exec();
 }
