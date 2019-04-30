@@ -21,16 +21,18 @@ public:
 
     UIViewport();
     virtual ~UIViewport();
-	void initialize();
-    virtual void dispose() override;
+	void init();
+    virtual void onDispose(bool explicitDisposing) override;
 
     // TODO: internal
     const Size& actualViewboxSize() const { return m_actualViewboxSize; }
 
 protected:
+	virtual void onUpdateFrame(float elapsedSeconds) override;
+	virtual void onUpdateStyle(const detail::UIStyleInstance* finalStyle) override;
+	virtual void onUpdateLayout(const Rect& finalGlobalRect) override;
     virtual Size arrangeOverride(const Size& finalSize) override;
     //virtual void render(UIRenderingContext* context);
-    virtual void onUpdateFrame(float elapsedSeconds) override;
 	virtual void onRender(UIRenderingContext* context) override;
     virtual void onRoutedEvent(UIEventArgs* e) override;
 

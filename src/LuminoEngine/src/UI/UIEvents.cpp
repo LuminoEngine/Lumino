@@ -60,9 +60,9 @@ UIEventArgs::~UIEventArgs()
 {
 }
 
-void UIEventArgs::initialize(UIElement* sender, UIEventType type)
+void UIEventArgs::init(UIElement* sender, UIEventType type)
 {
-    Object::initialize();
+    Object::init();
     m_sender = sender;
     m_type = type;
 }
@@ -102,9 +102,9 @@ UIMouseEventArgs::~UIMouseEventArgs()
 }
 
 //------------------------------------------------------------------------------
-void UIMouseEventArgs::initialize(UIElement* sender, UIEventType type, MouseButtons button, float x, float y, int clickCount)
+void UIMouseEventArgs::init(UIElement* sender, UIEventType type, MouseButtons button, float x, float y, int clickCount)
 {
-    UIEventArgs::initialize(sender, type);
+    UIEventArgs::init(sender, type);
     m_button = button;
     m_position.x = x;
     m_position.y = y;
@@ -153,9 +153,9 @@ UIKeyEventArgs::~UIKeyEventArgs()
 }
 
 //------------------------------------------------------------------------------
-void UIKeyEventArgs::initialize(UIElement* sender, UIEventType type, Keys keyCode, ModifierKeys modifierKeys, Char charCode)
+void UIKeyEventArgs::init(UIElement* sender, UIEventType type, Keys keyCode, ModifierKeys modifierKeys, Char charCode)
 {
-    UIEventArgs::initialize(sender, type);
+    UIEventArgs::init(sender, type);
     m_keyCode = keyCode;
     m_modifierKeys = modifierKeys;
     m_charCode = charCode;
@@ -194,9 +194,9 @@ UIMouseWheelEventArgs::~UIMouseWheelEventArgs()
 }
 
 //------------------------------------------------------------------------------
-void UIMouseWheelEventArgs::initialize(UIElement* sender, UIEventType type, int delta)
+void UIMouseWheelEventArgs::init(UIElement* sender, UIEventType type, int delta)
 {
-    UIEventArgs::initialize(sender, type);
+    UIEventArgs::init(sender, type);
     m_delta = delta;
 }
 
@@ -230,9 +230,9 @@ UIDragDropEventArgs::~UIDragDropEventArgs()
 {
 }
 
-void UIDragDropEventArgs::initialize(UIElement* sender, UIEventType type, DataObject* data, DragDropEffects effect)
+void UIDragDropEventArgs::init(UIElement* sender, UIEventType type, DataObject* data, DragDropEffects effect)
 {
-    UIEventArgs::initialize(sender, type);
+    UIEventArgs::init(sender, type);
     if (LN_REQUIRE(data)) return;
     m_data = data;
     m_effect = effect;

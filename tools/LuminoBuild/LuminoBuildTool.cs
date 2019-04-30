@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
 using System.Text;
+using System.Linq;
 using System.ComponentModel;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
@@ -17,7 +18,7 @@ namespace LuminoBuild
         public string InstallerProductGUID_MSVC2017 = "FF69C51F-DB0F-411A-A552-3F1B4783B538";
         
         public int MajorVersion = 0;
-        public int MinorVersion = 7;
+        public int MinorVersion = 8;
         public int RevisionVersion = 0;
         public int BuildVersion = 0;
         public string VersionString => string.Format("{0}.{1}.{2}", MajorVersion, MinorVersion, RevisionVersion);
@@ -88,6 +89,20 @@ namespace LuminoBuild
                 throw new Exception($"[{name}] Task failed.");
             }
         }
+        public void DoTask(BuildTask task)
+        {
+            try
+            {
+                Execute(new List<BuildTask>() { task });
+            }
+            catch (Exception e)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(e.ToString());
+                Console.ResetColor(); // 色のリセット
+                throw new Exception($"[{task.CommandName}] Task failed.");
+            }
+        }
 
         public void DoRule(string name)
         {
@@ -128,6 +143,11 @@ namespace LuminoBuild
                 }
             }
 
+            Execute(tasks);
+        }
+
+        private void Execute(List<BuildTask> tasks)
+        {
             foreach (var task in tasks)
             {
                 task.CheckPrerequisite(this);
@@ -171,6 +191,11 @@ namespace LuminoBuild
         //        }
         //    }
         //}
+
+        public bool HasFlagArgument(string name)
+        {
+            return Args.Contains(name);
+        }
     }
 
 
@@ -479,6 +504,8 @@ namespace LuminoBuild
 
         public static int TryCallProcessStdErr(string program, string args, out string outStdErr)
         {
+            Logger.WriteLine($"{program} {args}");
+
             using (Process p = new Process())
             {
                 var sb = new StringBuilder();
@@ -504,6 +531,8 @@ namespace LuminoBuild
 
         public static void CallProcessShell(string program, string args = "")
         {
+            Logger.WriteLine($"{program} {args}");
+
             using (Process p = new Process())
             {
                 p.StartInfo.FileName = program;

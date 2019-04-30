@@ -1,71 +1,90 @@
-﻿
+﻿// Copyright (c) 2019+ lriki. Distributed under the MIT license.
 #pragma once
+#include "Common.hpp"
 #include "GraphicsResource.hpp"
 
 namespace ln {
-namespace detail { class ISamplerState; }
 
-
-
-
+/** サンプラーステートのクラスです。 */
 class SamplerState
-	: public GraphicsResource
+    : public GraphicsResource
 {
 public:
-	void setFilterMode(TextureFilterMode value);
-	void setAddressMode(TextureAddressMode value);
+    /**
+     * デフォルトの設定で SamplerState を作成します。
+     */
+    static Ref<SamplerState> create();
 
-LN_CONSTRUCT_ACCESS:
-	SamplerState();
-	virtual ~SamplerState();
-	virtual void initialize();
-	virtual void dispose() override;
+    /**
+     * SamplerState を作成します。
+     * @param[in]  filter            : テクスチャフィルタモード
+     */
+    static Ref<SamplerState> create(TextureFilterMode filter);
 
-LN_INTERNAL_ACCESS:
-	detail::ISamplerState* resolveRHIObject();
-	void setFrozen(bool value) { m_frozen = value; }
+    /**
+     * SamplerState を作成します。
+     * @param[in]  filter            : テクスチャフィルタモード
+     * @param[in]  address           :  テクスチャアドレッシングモード
+     */
+    static Ref<SamplerState> create(TextureFilterMode filter, TextureAddressMode address);
+
+    /**
+     * SamplerState を作成します。
+     * @param[in]  filter            : テクスチャフィルタモード
+     * @param[in]  address           :  テクスチャアドレッシングモード
+     * @param[in]  anisotropyEnabled : 異方性フィルタリングの有無
+     */
+    static Ref<SamplerState> create(TextureFilterMode filter, TextureAddressMode address, bool anisotropyEnabled);
+
+    /** テクスチャフィルタモードを設定します。(default: Point) */
+    void setFilterMode(TextureFilterMode value);
+
+    /** テクスチャフィルタモードを取得します。(default: Point) */
+    TextureFilterMode filterMode() const { return m_desc.filter; }
+
+    /** テクスチャアドレッシングモードを設定します。(default: Repeat) */
+    void setAddressMode(TextureAddressMode value);
+
+    /** テクスチャアドレッシングモードを取得します。(default: Repeat) */
+    TextureAddressMode addressMode() const { return m_desc.address; }
+
+    /** 異方性フィルタリングの有効状態を設定します。(default: false) */
+    void setAnisotropyEnabled(bool value);
+
+    /** 異方性フィルタリングの有効状態を取得します。(default: false) */
+    bool anisotropyEnabled() const { return m_desc.anisotropy; }
 
 protected:
-	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
+    virtual void onDispose(bool explicitDisposing) override;
+    virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
+
+LN_CONSTRUCT_ACCESS:
+    SamplerState();
+    virtual ~SamplerState();
+
+    /** @copydoc create() */
+    void init();
+
+    /** @copydoc create(TextureFilterMode) */
+    void init(TextureFilterMode filter);
+
+    /** @copydoc create(TextureFilterMode, TextureAddressMode) */
+    void init(TextureFilterMode filter, TextureAddressMode address);
+
+    /** @copydoc create(TextureFilterMode, TextureAddressMode, bool) */
+    void init(TextureFilterMode filter, TextureAddressMode address, bool anisotropyEnabled);
 
 private:
-	Ref<detail::ISamplerState> m_rhiObject;
-	SamplerStateData m_desc;
-	bool m_modified;
-	bool m_frozen;
+    detail::ISamplerState* resolveRHIObject(bool* outModified);
+    void setFrozen(bool value) { m_frozen = value; }
+
+    Ref<detail::ISamplerState> m_rhiObject;
+	detail::SamplerStateData m_desc;
+    bool m_modified;
+    bool m_frozen;
+
+    friend class detail::GraphicsResourceInternal;
+    friend class detail::GraphicsManager;
 };
-
-
-///// テクスチャフィルタ
-//enum TextureFilterMode
-//{
-//	TextureFilterMode_Point = 0,		///< 補間を行わない
-//	TextureFilterMode_Linear,			///< 補間を行う
-//};
-//
-///// テクスチャアドレッシング
-//enum TextureWrapMode
-//{
-//	TextureWrapMode_Repeat = 0,		///< 繰り返し
-//	TextureWrapMode_Clamp,			///< 境界のピクセルが引き延ばされる
-//};
-//
-///**
-//	@brief	テクスチャのサンプリングステートを表すクラスです。
-//*/
-//class SamplerState
-//{
-//public:
-//
-//	TextureFilterMode	FilterMode;		///< テクスチャフィルタ(default:TextureFilterMode_Point)
-//	TextureWrapMode		WrapMode;		///< テクスチャアドレッシング(default:TextureWrapMode_Repeat)
-//
-//public:
-//
-//	/**
-//		@brief	デフォルト値で初期化します。
-//	*/
-//	SamplerState();
-//};
 
 } // namespace ln

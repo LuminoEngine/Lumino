@@ -168,9 +168,9 @@ void printError(const Exception& e)
 	}
 }
 
-void Exception_setSourceLocationInfo(Exception& e, const char* filePath, int fileLine, const char* assertionMessage)
+void Exception_setSourceLocationInfo(Exception& e, ExceptionLevel level, const char* filePath, int fileLine, const char* assertionMessage)
 {
-	e.setSourceLocationInfo(filePath, fileLine, assertionMessage);
+	e.setSourceLocationInfo(level, filePath, fileLine, assertionMessage);
 }
 
 } // namespace detail
@@ -231,7 +231,8 @@ Exception::Exception(const Char* message)
 }
 
 Exception::Exception()
-	: m_sourceFilePath{}
+	: m_level(ExceptionLevel::Fatal)
+	, m_sourceFilePath{}
 	, m_sourceFileLine(0)
 	, m_assertionMessage{}
 	, m_stackBuffer{}
@@ -327,8 +328,9 @@ void Exception::appendMessage(const Char* message, size_t len)
 	m_message.append(message, len);
 }
 
-void Exception::setSourceLocationInfo(const char* filePath, int fileLine, const char* assertionMessage)
+void Exception::setSourceLocationInfo(ExceptionLevel level, const char* filePath, int fileLine, const char* assertionMessage)
 {
+	m_level = level;
 	StringHelper::strcpy(m_sourceFilePath, MaxPathSize - 1, filePath);
 	m_sourceFileLine = fileLine;
 	if (assertionMessage) {

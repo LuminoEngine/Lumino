@@ -198,9 +198,9 @@ enum WaveFormatCode
 //==============================================================================
 // WaveDecoder
 
-void WaveDecoder::initialize(Stream* stream, DiagnosticsManager* diag)
+bool WaveDecoder::init(Stream* stream, DiagnosticsManager* diag)
 {
-	if (LN_REQUIRE(stream)) return;
+	if (LN_REQUIRE(stream)) return false;
 
 	m_stream = stream;
 	BinaryReader reader(stream);
@@ -217,19 +217,19 @@ void WaveDecoder::initialize(Stream* stream, DiagnosticsManager* diag)
 		if (memcmp(&rh.riff, "RIFX", 4) == 0 || memcmp(&rh.riff, "FFIR", 4) != 0)
 		{
 			diag->reportError("big endian file is not supported.");
-			return;
+			return false;
 		}
 		else
 		{
 			diag->reportError("bad RIFF header.");
-			return;
+			return false;
 		}
 	}
 
 	if (memcmp(&rh.waveHeader, "WAVE", 4) != 0)
 	{
 		diag->reportError("bad WAVE header.");
-		return;
+		return false;
 	}
 
 	//--------------------
@@ -245,7 +245,7 @@ void WaveDecoder::initialize(Stream* stream, DiagnosticsManager* diag)
 			}
 			else {
 				diag->reportError("Invalid fmt chunk.");
-				return;
+				return false;
 			}
 
 			FmtChunkHeader fmtChunk;
@@ -271,7 +271,7 @@ void WaveDecoder::initialize(Stream* stream, DiagnosticsManager* diag)
 			}
 			else {
 				diag->reportError("Invalid format.");
-				return;
+				return false;
 			}
 			
 			// skip extention area
@@ -298,6 +298,8 @@ void WaveDecoder::initialize(Stream* stream, DiagnosticsManager* diag)
 
 	m_workBuffer.resize(m_info.sampleRate * m_info.channelCount);
     m_pcmDataPos = 0;
+
+    return true;
 }
 
 const AudioDataInfo& WaveDecoder::audioDataInfo() const

@@ -5,6 +5,7 @@
 namespace ln {
 class AudioContext;
 namespace detail {
+class AudioDecoder;
 class CoreAudioNode;
 class CoreAudioSourceNode;
 class CoreAudioPannerNode;
@@ -24,15 +25,15 @@ public:
 	/** このノードをの全ての接続を解除します。 */
 	void disconnect();
 
-    virtual void dispose() override;
+    virtual void onDispose(bool explicitDisposing) override;
 protected:
 	AudioNode();
 	virtual ~AudioNode() = default;
-	void initialize();
-    // initialize の中で context に addAudioNode() するが、その時点で初期化処理は完全に終わっていなければならない。
+	void init();
+    // init の中で context に addAudioNode() するが、その時点で初期化処理は完全に終わっていなければならない。
     // そうしないと、addAudioNode() に入った瞬間 AudioThread で commit が走ったときに、未初期化の変数にアクセスしてしまう。
     // onInitialize() はそういった事情を考慮して、セーフティなタイミングで初期化を行うためのコールバック。
-    // 逆に言うと、AudioNode のサブクラスは他のモジュールのように initialize() は一切実装してはならない。
+    // 逆に言うと、AudioNode のサブクラスは他のモジュールのように init() は一切実装してはならない。
     //virtual void onInitialize() = 0;
 	virtual detail::CoreAudioNode* coreNode() = 0;
 	virtual void commit();	// ロック済みの状態で呼ばれる
@@ -82,7 +83,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	AudioSourceNode();
 	virtual ~AudioSourceNode() = default;
-	void initialize(const StringRef& filePath);
+	void init(detail::AudioDecoder* decoder);
 	virtual detail::CoreAudioNode* coreNode() override;
 	virtual void commit() override;
 
@@ -108,7 +109,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	AudioPannerNode();
 	virtual ~AudioPannerNode() = default;
-	void initialize();
+	void init();
 	virtual detail::CoreAudioNode* coreNode() override;
 
 private:
@@ -121,7 +122,7 @@ class AudioDestinationNode
 LN_CONSTRUCT_ACCESS:
 	AudioDestinationNode();
 	virtual ~AudioDestinationNode() = default;
-	void initialize(detail::CoreAudioDestinationNode* core);
+	void init(detail::CoreAudioDestinationNode* core);
 	virtual detail::CoreAudioNode* coreNode() override;
 
 private:

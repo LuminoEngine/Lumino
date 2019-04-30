@@ -19,9 +19,10 @@ public:
     void setTargetWorld(World* world);
 	void setCamera(Camera* camera);
 
+    void setPhysicsDebugDrawEnabled(bool value) { m_physicsDebugDrawEnabled = value; }
 
     // TODO: internal
-    virtual void render(GraphicsContext* graphicsContext) override;
+    virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthbuffer) override;
 
 protected:
     //virtual void onRoutedEvent(UIEventArgs* e) override;
@@ -29,7 +30,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
     WorldRenderView();
 	virtual ~WorldRenderView();
-	void initialize();
+	void init();
 
 private:
     void createGridPlane();
@@ -44,6 +45,7 @@ private:
 
     Ref<StaticMeshModel> m_gridPlane;
     bool m_visibleGridPlane;
+    bool m_physicsDebugDrawEnabled;
 };
 
 } // namespace ln

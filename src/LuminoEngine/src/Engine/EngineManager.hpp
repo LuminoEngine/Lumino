@@ -1,17 +1,20 @@
 ﻿#pragma once
 #include <LuminoEngine/Engine/Common.hpp>
 #include <LuminoEngine/Asset/Common.hpp>
+#include <LuminoEngine/Graphics/Common.hpp>
 #include <LuminoEngine/Graphics/GeometryStructs.hpp>
 #include <LuminoEngine/Platform/PlatformEvent.hpp>
 #include "FpsController.hpp"
 
 namespace ln {
+class EngineContext;
 class UIContext;
 class UIFrameWindow;
 class UIViewport;
 class UIRenderView;
 class UIContainerElement;
 class PhysicsWorld;
+class PhysicsWorld2D;
 class World;
 class WorldRenderView;
 class Camera;
@@ -44,14 +47,17 @@ struct EngineSettingsAssetArchiveEntry
 struct EngineSettings
 {
     Flags<EngineFeature> features = EngineFeature::Public;
+	String bundleIdentifier = u"lumino";
 	SizeI mainWindowSize = SizeI(640, 480);
 	SizeI mainBackBufferSize = SizeI(640, 480);
-	String mainWindowTitle = _T("Lumino");
+	String mainWindowTitle = u"Lumino";
 	AssetStorageAccessPriority assetStorageAccessPriority = AssetStorageAccessPriority::DirectoryFirst;
     List<EngineSettingsAssetArchiveEntry> assetArchives;
 	List<Path> assetDirectories;
+	GraphicsAPI graphicsAPI = GraphicsAPI::Default;
 	bool standaloneFpsControl = false;
 	int frameRate = 60;
+    bool autoCoInitialize = true;
 };
 
 class EngineManager
@@ -62,7 +68,7 @@ public:
 	EngineManager();
 	virtual ~EngineManager();
 
-	void initialize();
+	void init();
 	void dispose();
 
 	void initializeAllManagers();
@@ -92,6 +98,7 @@ public:
 	void quit();
 
 	EngineSettings& settings() { return m_settings; }
+	const Ref<EngineContext>& engineContext() const { return m_engineContext; }
 	const Ref<PlatformManager>& platformManager() const { return m_platformManager; }
     const Ref<AnimationManager>& animationManager() const { return m_animationManager; }
 	const Ref<InputManager>& inputManager() const { return m_inputManager; }
@@ -107,6 +114,12 @@ public:
 	const Ref<SceneManager>& sceneManager() const { return m_sceneManager; }
     const Ref<UIManager>& uiManager() const { return m_uiManager; }
 
+    const FpsController& fpsController() const { return m_fpsController; }
+
+    const Path& persistentDataPath() const;
+    void setTimeScale(float value) { m_timeScale = value; }
+    void setShowDebugFpsEnabled(bool value) { m_showDebugFpsEnabled = value; }
+
 	const Ref<UIFrameWindow>& mainWindow() const { return m_mainWindow; }
     const Ref<UIViewport>& mainViewport() const { return m_mainViewport; }
 	const Ref<UIContainerElement>& mainUIRoot() const { return m_mainUIRoot; }
@@ -114,13 +127,16 @@ public:
     const Ref<Camera>& mainCamera() const { return m_mainCamera; }
     const Ref<AmbientLight>& mainAmbientLight() const { return m_mainAmbientLight; }
     const Ref<DirectionalLight>& mainDirectionalLight() const { return m_mainDirectionalLight; }
+    const Ref<WorldRenderView>& mainRenderView() const { return m_mainWorldRenderView; }
     const Ref<PhysicsWorld>& mainPhysicsWorld() const { return m_mainPhysicsWorld; }
+    const Ref<PhysicsWorld2D>& mainPhysicsWorld2D() const { return m_mainPhysicsWorld2D; }
 
 private:
 	virtual bool onPlatformEvent(const PlatformEventArgs& e) override;
 
 	EngineSettings m_settings;
 
+	Ref<EngineContext> m_engineContext;
 	Ref<PlatformManager>				m_platformManager;
 	Ref<AnimationManager>			m_animationManager;
 	Ref<InputManager>				m_inputManager;
@@ -139,6 +155,8 @@ private:
 	Ref<UIManager>					m_uiManager;
 	FpsController m_fpsController;
 
+	Path m_persistentDataPath;
+
     Ref<UIContext> m_mainUIContext;
 	Ref<UIFrameWindow> m_mainWindow;
 	Ref<UIViewport> m_mainViewport;
@@ -148,11 +166,19 @@ private:
     Ref<Camera> m_mainCamera;
     Ref<AmbientLight> m_mainAmbientLight;
     Ref<DirectionalLight> m_mainDirectionalLight;
-
     Ref<WorldRenderView> m_mainWorldRenderView;
     Ref<PhysicsWorld> m_mainPhysicsWorld;
+    Ref<PhysicsWorld2D> m_mainPhysicsWorld2D;
 
+    float m_timeScale;
 	bool m_exitRequested;
+    bool m_showDebugFpsEnabled;
+
+
+#if defined(LN_OS_WIN32)
+    bool m_comInitialized;
+    bool m_oleInitialized;
+#endif
 };
 
 } // namespace detail

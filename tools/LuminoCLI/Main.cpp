@@ -13,16 +13,16 @@ int main(int argc, char** argv)
 #if defined(LN_DEBUG) && defined(_WIN32)
 	if (argc == 1)
 	{
-		//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects");
-		//::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\HelloLumino");
-		//::SetCurrentDirectoryW(L"D:/Documents/LuminoProjects");
-        //::SetCurrentDirectoryW(L"D:/Documents/LuminoProjects/HelloLumino");
-        //::SetCurrentDirectoryW(L"D:/Proj");
-		::SetCurrentDirectoryW(L"C:\\LocalProj\\LuminoProjects\\Test3");
+        //::SetCurrentDirectoryW(L"D:/LocalProj/LN");
+		::SetCurrentDirectoryW(L"D:/LocalProj/LN/Test");
+        ln::GlobalLogger::setLevel(ln::LogLevel::Verbose);
     
 		const char* debugArgv[] = {
 			"<program>",
+			//"init", "Test",
 			//"init", "TH-10", "--engine=repo:0.10.0"
+            //"init", "RinoTutorial", "-t", "SimpleDesktop",
+			"build", "-p", "Windows"
 
 			//"<program>", "dev-install-tools",
 
@@ -40,10 +40,15 @@ int main(int argc, char** argv)
             //"fxc", "C:/Proj/GitHub/Lumino/src/LuminoEngine/test/Assets/Shader/FxcTest1.fx",
             //"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.hlsl",
 
-            "build", "assets",
+            //"build", "assets",
+			//"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Graphics/SimplePosColor.fx"
+            //"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Graphics/SimpleConstantBuffer.fx"
+			//"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Graphics/Resource/VulkanSampleDeviceContext_26_shader_depth.fx",
+			//"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Graphics/Resource/VulkanSampleDeviceContext_26_shader_depth.fx",
 		};
 		argc = sizeof(debugArgv) / sizeof(char*);
 		argv = (char**)debugArgv;
+
 	}
 #endif
 	try
@@ -63,12 +68,14 @@ int main(int argc, char** argv)
 		//--------------------------------------------------------------------------------
 		// init command
 		auto initCommand = parser.addCommand(u"init", u"Create a Lumino project in the current directory.");
-		auto initCommand_projectNameArg = initCommand->addPositionalArgument(u"project-name", u"project name.");
-        auto initCommand_engineArg = initCommand->addValueOption(u"e", u"engine", u"engine source.");
+		auto initCommand_projectNameArg = initCommand->addPositionalArgument(u"project-name", u"Project name.");
+        auto initCommand_templateArg = initCommand->addValueOption(u"t", u"template", u"Project template.");
+        auto initCommand_engineArg = initCommand->addValueOption(u"e", u"engine", u"Engine source.");
 
 		//--------------------------------------------------------------------------------
 		// build command
 		auto buildCommand = parser.addCommand(u"build", u"Build the project.");
+		auto buildCommand_packageOption = buildCommand->addFlagOption(u"p", u"package", u"Build release package.");
 		auto burildTargetArg = buildCommand->addPositionalArgument(u"target", u"Specify the target to build.", ln::CommandLinePositionalArgumentFlags::Optional);
 
 		//--------------------------------------------------------------------------------
@@ -111,6 +118,9 @@ int main(int argc, char** argv)
                 if (initCommand_engineArg->hasValue()) {
                     cmd.engineSource = initCommand_engineArg->value();
                 }
+                if (initCommand_templateArg->hasValue()) {
+                    cmd.templateName = initCommand_templateArg->value();
+                }
                 return cmd.execute(workspace, initCommand_projectNameArg->value());
 			}
 			//--------------------------------------------------------------------------------
@@ -127,6 +137,7 @@ int main(int argc, char** argv)
 				}
 
 				BuildCommand cmd;
+				cmd.package = buildCommand_packageOption->isSet();
 				cmd.target = target;
 				return cmd.execute(workspace, workspace->project());
 			}
@@ -215,7 +226,7 @@ int main(int argc, char** argv)
 	return 0;
 }
 
-// .profile ファイルに追記する
+// .profile
 static int commnad_localInitialSetup(const char* packageDir_)
 {
 	ln::Path packageDir = packageDir_;
@@ -242,9 +253,9 @@ static int commnad_localInitialSetup(const char* packageDir_)
 			// already exists.
 
 			for (int i = beginLine; i < endLine; i++) {
-				if (lines[i].indexOf("export LUMINO_ROOT") == 0) {
-					lines[i] = ln::String::format(u"export LUMINO_ROOT={0}", packageDir);
-					CLI::info(u"LUMINO_ROOT updating.");
+				if (lines[i].indexOf("export LUMINO_PATH") == 0) {
+					lines[i] = ln::String::format(u"export LUMINO_PATH={0}", packageDir);
+					CLI::info(u"LUMINO_PATH updating.");
 				}
 				if (lines[i].indexOf("export PATH") == 0) {
 					lines[i] = ln::String::format(u"export PATH=$PATH:{0}", toolsDir);
@@ -259,7 +270,7 @@ static int commnad_localInitialSetup(const char* packageDir_)
 	if (!added) {
 		lines.add(u"");
 		lines.add(u"# [Lumino begin]");
-		lines.add(ln::String::format(u"export LUMINO_ROOT={0}", packageDir));
+		lines.add(ln::String::format(u"export LUMINO_PATH={0}", packageDir));
 		lines.add(ln::String::format(u"export PATH=$PATH:{0}", toolsDir));
 		lines.add(u"# [Lumino end]");
 	}

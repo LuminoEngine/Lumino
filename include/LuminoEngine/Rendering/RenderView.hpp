@@ -15,6 +15,7 @@ class FrameBufferCache;
 class DrawElementList;
 class DrawElementListCollector;
 class SceneRenderer;
+class UIStyleInstance;
 }
 
 struct FrameBuffer
@@ -25,19 +26,20 @@ struct FrameBuffer
 
 // RenderView は別の RenderingContext の描画コマンド構築中に、レンダリングターゲットを生成する目的で render を実行することがある。
 // そのため render の実装は RenderingContext や GraphicsContext の状態に依存しないようにしなければならない。
+// TODO: onUpdateUILayout() など、少し UI に依存してきている。UI モジュールにもっていくのが正しい？
 class RenderView
 	: public Object
 {
 public:
 	RenderView();
 	virtual ~RenderView();
-	void initialize();
+	void init();
 
 	// World の描画などでは RenderView のインスタンスを持ち回り、描画してほしい人が Manager を ここに add していく。
 	void clearDrawElementListManagers();
 	void addDrawElementListManager(detail::DrawElementListCollector* elementListManager);
 
-    virtual void render(GraphicsContext* graphicsContext) = 0;
+    virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthbuffer) = 0;
 
 	// TODO: internal
 	//detail::CameraInfo mainCameraInfo;
@@ -55,6 +57,10 @@ public:
     EventConnection connectOnUIEvent(UIEventHandler handler);
 
 public: // TODO: protected
+	void updateUIStyle(const detail::UIStyleInstance* parentFinalStyle);
+	void updateUILayout(const Rect& parentFinalGlobalRect);
+	virtual void onUpdateUIStyle(const detail::UIStyleInstance* finalStyle);
+	virtual void onUpdateUILayout(const Rect& finalGlobalRect);
     virtual void onRoutedEvent(UIEventArgs* e);
 
 LN_INTERNAL_ACCESS:

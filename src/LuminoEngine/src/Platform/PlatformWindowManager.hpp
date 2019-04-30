@@ -11,7 +11,9 @@ struct WindowCreationSettings
 	SizeI		clientSize = SizeI(640, 480);	// クライアント領域のピクセルサイズ
 	bool		fullscreen = false;				// フルスクリーンモードで作成するかどうか
 	bool		resizable = true;				// 可変ウィンドウとして作成するかどうか
-	intptr_t	userWindow = 0;
+
+    intptr_t	userWindow = 0;
+    uint32_t    win32IconResourceId = 0;
 };
 
 class PlatformWindowManager
@@ -21,8 +23,7 @@ public:
 	PlatformWindowManager();
 	virtual ~PlatformWindowManager() = default;
 
-	void initialize();
-	virtual void dispose();
+	virtual void dispose() = 0;
 	virtual Ref<PlatformWindow> createWindow(const WindowCreationSettings& settings) = 0;
 	virtual void destroyWindow(PlatformWindow* window) = 0;
 	virtual void processSystemEventQueue() = 0;

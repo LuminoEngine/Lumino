@@ -3,6 +3,7 @@
 #include "VisualComponent.hpp"
 
 namespace ln {
+class WorldRenderView;
     
 /** カメラの投影方法 */
 enum class ProjectionMode
@@ -59,15 +60,18 @@ public:
 	void setProjectionMode(ProjectionMode value) { m_projectionMode = value; }
     ProjectionMode projectionMode() const { return m_projectionMode; }
 	
-	void setOrthographicSize(float value) { m_orthographicSize = value; }
+	void setOrthographicSize(const Size& value) { m_orthographicSize = value; }
+    const Size& orthographicSize() const { return m_orthographicSize; }
 
 	void setAspect(float value) { m_aspect = value; }
 
 
 public:	// internal
+    void setOwnerRenderView(WorldRenderView* view) { m_ownerRenderView = view;; }
+    WorldRenderView* ownerRenderView() const { return m_ownerRenderView; }
 
 	/// 各行列を更新する (SceneNode::updateFrameHierarchy() の後で呼び出すこと)
-	void updateMatrices(const Size& viewSize);
+	void updateMatrices();
 
 	// 向きの取得 (シェーダ設定用。updateMatrices() の後で呼び出すこと)
 	const Vector4& getDirectionInternal() const { return m_direction; }
@@ -89,8 +93,8 @@ protected:
 LN_INTERNAL_ACCESS:
 	CameraComponent();
 	virtual ~CameraComponent();
-    void initialize();
-	//void initialize(CameraWorld proj);
+    void init();
+	//void init(CameraWorld proj);
 	//void setCameraDirection(CameraDirection mode) { m_directionMode = mode; }
 	//CameraWorld getCameraWorld() const { return m_cameraWorld; }
 
@@ -109,7 +113,7 @@ private:
 	float				m_aspect;
 	float				m_nearClip;
 	float				m_farClip;
-	float				m_orthographicSize;	// 縦方向のサイズ。横はアスペクト比から求める
+    Size				m_orthographicSize;
 	//ZSortDistanceBase	m_zSortDistanceBase;
 	//CameraBehavior*		m_cameraBehavior;
 
@@ -122,6 +126,7 @@ private:
 	Matrix				m_viewProjMatrixI;
 
 	//Plane				m_reflectionPlane;
+    WorldRenderView* m_ownerRenderView;
 };
 
 } // namespace ln

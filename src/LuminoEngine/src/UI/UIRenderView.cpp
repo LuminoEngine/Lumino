@@ -17,12 +17,12 @@ UIRenderView::UIRenderView()
 {
 }
 
-void UIRenderView::initialize()
+void UIRenderView::init()
 {
-	RenderView::initialize();
+	RenderView::init();
 	m_renderingContext = makeRef<UIRenderingContext>();
 	m_sceneRenderingPipeline = makeRef<detail::FlatRenderingPipeline>();
-	m_sceneRenderingPipeline->initialize();
+	m_sceneRenderingPipeline->init();
 	m_drawElementListCollector = makeRef<detail::DrawElementListCollector>();
     m_viewPoint = newObject<RenderViewPoint>();
 
@@ -35,7 +35,18 @@ void UIRenderView::setRootElement(UIElement* element)
     m_rootElement = element;
 }
 
-void UIRenderView::render(GraphicsContext* graphicsContext)
+void UIRenderView::onUpdateUIStyle(const detail::UIStyleInstance* finalStyle)
+{
+	m_rootElement->updateStyleHierarchical(finalStyle);
+}
+
+void UIRenderView::onUpdateUILayout(const Rect& finalGlobalRect)
+{
+	m_rootElement->updateLayout(Rect(0, 0, finalGlobalRect.getSize()));
+    m_rootElement->updateFinalLayoutHierarchical(finalGlobalRect);
+}
+
+void UIRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthbuffer)
 {
     if (m_rootElement)
     {
@@ -43,7 +54,7 @@ void UIRenderView::render(GraphicsContext* graphicsContext)
 
 
         FrameBuffer fb;
-        fb.renderTarget[0] = graphicsContext->colorBuffer(0);
+        fb.renderTarget[0] = graphicsContext->renderTarget(0);
         fb.depthBuffer = graphicsContext->depthBuffer();
 
         // TODO:

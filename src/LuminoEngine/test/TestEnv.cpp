@@ -3,32 +3,45 @@
 #include "TestEnv.hpp"
 
 String TestEnv::LuminoCLI;
+Ref<DepthBuffer> TestEnv::depthBuffer;
 
 void TestEnv::setup()
 {
+    EngineFeature feature = EngineFeature::Experimental;//EngineFeature::Public; //
+
 	GlobalLogger::addStdErrAdapter();
 	EngineSettings::setMainWindowSize(160, 120);
 	EngineSettings::setMainBackBufferSize(160, 120);
-    EngineSettings::setEngineFeatures(EngineFeature::Experimental);
-    detail::EngineDomain::engineManager()->initialize();
+	EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);//GraphicsAPI::Vulkan);//
+    EngineSettings::setEngineFeatures(feature);
+	EngineSettings::addAssetDirectory(LN_LOCALFILE(u"Assets"));
+    detail::EngineDomain::engineManager()->init();
 
-	Font::registerFontFile(LN_LOCALFILE("../../../tools/VLGothic/VL-Gothic-Regular.ttf"));
-	Engine::mainCamera()->setBackgroundColor(Color(0.5, 0.5, 0.5, 1.0));
+    if (feature == EngineFeature::Experimental)  // Experimental
+    {
+        Font::registerFontFromFile(LN_LOCALFILE("../../../tools/VLGothic/VL-Gothic-Regular.ttf"));
+        Engine::mainCamera()->setBackgroundColor(Color(0.5, 0.5, 0.5, 1.0));
+
+        //Engine::mainAmbientLight()->setColor(Color::White);
+        //Engine::mainAmbientLight()->setIntensity(0.5);
+        //Engine::mainDirectionalLight()->setColor(Color::White);
+        //Engine::mainDirectionalLight()->setIntensity(0.5);
+        //Engine::mainDirectionalLight()->setPosition(10, 10, -10);
+        //Engine::mainDirectionalLight()->lookAt(Vector3(0, 0, 0));
+    }
+
+	RenderTargetTexture* backbuffer = Engine::mainWindow()->swapChain()->backbuffer();
+	depthBuffer = DepthBuffer::create(backbuffer->width(), backbuffer->height());
+
 #ifdef LN_OS_WIN32
 	LuminoCLI = Path::combine(Path(ln::Environment::executablePath()).parent().parent().parent().parent(), u"tools", u"LuminoCLI", u"Debug", u"lumino-cli.exe");
 #else
 #endif
-
-    Engine::mainAmbientLight()->setColor(Color::White);
-    Engine::mainAmbientLight()->setIntensity(0.5);
-    Engine::mainDirectionalLight()->setColor(Color::White);
-    Engine::mainDirectionalLight()->setIntensity(0.5);
-    Engine::mainDirectionalLight()->setPosition(10, 10, -10);
-    Engine::mainDirectionalLight()->lookAt(Vector3(0, 0, 0));
 }
 
 void TestEnv::teardown()
 {
+	depthBuffer = nullptr;
     detail::EngineDomain::release();
 }
 
@@ -41,72 +54,73 @@ void TestEnv::updateFrame()
 
 void TestEnv::resetGraphicsContext(GraphicsContext* context)
 {
-	context->setColorBuffer(0, Engine::mainWindow()->swapChain()->colorBuffer());
-	context->setDepthBuffer(Engine::mainWindow()->swapChain()->depthBuffer());
+	context->resetState();
+	context->setRenderTarget(0, Engine::mainWindow()->swapChain()->backbuffer());
+	context->setDepthBuffer(depthBuffer);
 }
 
 Ref<Bitmap2D> TestEnv::capture()
 {
-	return Engine::mainWindow()->swapChain()->colorBuffer()->readData();
+	return detail::TextureInternal::readData(Engine::mainWindow()->swapChain()->backbuffer());
 }
 
 void TestEnv::saveScreenShot(const Char* filePath)
 {
-	Engine::mainWindow()->swapChain()->colorBuffer()->readData()->save(filePath);
+    capture()->save(filePath);
 }
 
 bool TestEnv::equalsScreenShot(const Char* filePath, int passRate)
 {
-	bool r = TestEnv::equalsBitmapFile(Engine::mainWindow()->swapChain()->colorBuffer()->readData(), filePath, passRate);
+	bool r = TestEnv::equalsBitmapFile(capture(), filePath, passRate);
 	return r;
 }
 
-static Color32 mixPixels(Bitmap2D* bmp, int x, int y)
+static ColorI mixPixels(Bitmap2D* bmp, int x, int y)
 {
-	const Color32& c = bmp->getPixel32(x, y);
+	const ColorI& c = bmp->getPixel32(x, y);
 	int r = c.r; int g = c.g; int b = c.b; int a = c.a;
 	int count = 1;
 
 	if (y > 0) {
 		if (x > 0) {
-			const Color32& c = bmp->getPixel32(x - 1, y - 1);
+			const ColorI& c = bmp->getPixel32(x - 1, y - 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 		{
-			const Color32& c = bmp->getPixel32(x, y - 1);
+			const ColorI& c = bmp->getPixel32(x, y - 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 		if (x < bmp->width() - 1) {
-			const Color32& c = bmp->getPixel32(x + 1, y - 1);
+			const ColorI& c = bmp->getPixel32(x + 1, y - 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 	}
 	{
 		if (x > 0) {
-			const Color32& c = bmp->getPixel32(x - 1, y);
+			const ColorI& c = bmp->getPixel32(x - 1, y);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 		if (x < bmp->width() - 1) {
-			const Color32& c = bmp->getPixel32(x + 1, y);
+			const ColorI& c = bmp->getPixel32(x + 1, y);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 	}
 	if (y < bmp->height() - 1) {
 		if (x > 0) {
-			const Color32& c = bmp->getPixel32(x - 1, y + 1);
+			const ColorI& c = bmp->getPixel32(x - 1, y + 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 		{
-			const Color32& c = bmp->getPixel32(x, y + 1);
+			const ColorI& c = bmp->getPixel32(x, y + 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 		if (x < bmp->width() - 1) {
-			const Color32& c = bmp->getPixel32(x + 1, y + 1);
+			const ColorI& c = bmp->getPixel32(x + 1, y + 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 	}
 
-	return Color32(r / count, g / count, b / count, a / count);
+	return ColorI(r / count, g / count, b / count, a / count);
 }
 
 bool TestEnv::equalsBitmapFile(Bitmap2D* bmp1, const Char* filePath, int passRate)
@@ -124,8 +138,8 @@ bool TestEnv::equalsBitmapFile(Bitmap2D* bmp1, const Char* filePath, int passRat
 	{
 		for (int x = 0; x < bmp1->width(); ++x)
 		{
-			Color32 c1 = mixPixels(bmp1, x, y);
-			Color32 c2 = mixPixels(bmp2, x, y);
+			ColorI c1 = mixPixels(bmp1, x, y);
+			ColorI c2 = mixPixels(bmp2, x, y);
 			if (abs(c1.r - c2.r) <= colorRange &&
 				abs(c1.g - c2.g) <= colorRange &&
 				abs(c1.b - c2.b) <= colorRange &&
@@ -160,6 +174,5 @@ bool TestEnv::checkScreenShot(const Char* filePath, int passRate, bool save)
 
 void TestEnv::waitRendering()
 {
-	Engine::mainWindow()->swapChain()->wait();
 }
 

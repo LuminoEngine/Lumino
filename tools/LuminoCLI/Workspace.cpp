@@ -1,4 +1,4 @@
-
+﻿
 #include "EnvironmentSettings.hpp"
 #include "Project.hpp"
 #include "Workspace.hpp"

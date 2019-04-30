@@ -28,7 +28,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
     ScreenBlurImageEffect();
 	virtual ~ScreenBlurImageEffect();
-	void initialize();
+	void init();
 
 private:
     Ref<Material> m_material;

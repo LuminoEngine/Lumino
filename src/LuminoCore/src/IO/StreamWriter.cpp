@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2018 lriki. Distributed under the MIT license.
+﻿// Copyright (c) 2018+ lriki. Distributed under the MIT license.
 #include "Internal.hpp"
 #include <LuminoCore/IO/Path.hpp>
 #include <LuminoCore/IO/FileStream.hpp>

@@ -2,7 +2,7 @@
 #include <LuminoCore/Base/EnumFlags.hpp>
 #include <LuminoEngine/Graphics/GeometryStructs.hpp>
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
-#include <LuminoEngine/Graphics/VertexDeclaration.hpp>
+#include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include "../Graphics/GraphicsDeviceContext.hpp"
@@ -51,7 +51,7 @@ public:
 	};
 
 	InternalSpriteRenderer();
-	void initialize(RenderingManager* manager);
+	void init(RenderingManager* manager);
 
 	void setState(const State& state);
 
@@ -62,9 +62,10 @@ public:
 		const Rect& srcRect,
 		const Color& color,
 		SpriteBaseDirection baseDir,
-		BillboardType billboardType);
+		BillboardType billboardType,
+        SpriteFlipFlags flipFlags);
 
-	void flush(IGraphicsDeviceContext* context);
+	void flush(IGraphicsContext* context);
 	void clear();
 
 private:
@@ -78,7 +79,7 @@ private:
 		float depth;	// ソートに使われる Z 値 (大きいほど遠い)
 	};
 
-	void prepareBuffers(IGraphicsDeviceContext* context, int spriteCount);
+	void prepareBuffers(IGraphicsDevice* context, int spriteCount);
 
 	State m_state;
 	Matrix m_viewInverseMatrix;
@@ -87,7 +88,7 @@ private:
 	List<SpriteData> m_spriteDataList;
 	List<int> m_spriteIndexList;
 
-	//IGraphicsDeviceContext* m_device;
+	//IGraphicsDevice* m_device;
 	Ref<IVertexDeclaration> m_vertexDeclaration;
 	Ref<IVertexBuffer> m_vertexBuffer;
 	Ref<IIndexBuffer> m_indexBuffer;
@@ -139,16 +140,20 @@ public:
 		const Rect& srcRect,
 		const Color& color,
 		SpriteBaseDirection baseDirection,
-		BillboardType billboardType);
+		BillboardType billboardType,
+        SpriteFlipFlags flipFlags);
 
     virtual void onActiveRenderFeatureChanged(const detail::CameraInfo& mainCameraInfo) override;
 	virtual void flush(GraphicsContext* context) override;
 
     static void makeRenderSizeAndSourceRectHelper(Texture* texture, const Size& size, const Rect& sourceRect, Size* outSize, Rect* outSourceRect);
 
+    // TODO:
+    // drawElementTransformNegate
+
 LN_CONSTRUCT_ACCESS:
 	SpriteRenderFeature();
-	void initialize(RenderingManager* manager);
+	void init(RenderingManager* manager);
 
 private:
 	RenderingManager* m_manager;

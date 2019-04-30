@@ -1,6 +1,8 @@
 ﻿
 #pragma once
 #include <LuminoEngine/Engine/Diagnostics.hpp>
+#include "HLSLMetadataParser.hpp"
+#include "ShaderTranspiler.hpp"
 
 namespace ln {
 namespace detail {
@@ -36,12 +38,25 @@ class UnifiedShader
     : public RefObject
 {
 public:
+    struct CodeInfo
+    {
+        UnifiedShaderTriple triple;
+        std::vector<byte_t> code;
+        //Ref<UnifiedShaderRefrectionInfo> refrection;
+    };
+
     // 0 is invalid value.
     using CodeContainerId = uint32_t;
     using TechniqueId = uint32_t;
     using PassId = uint32_t;
 
-    static const int FileVersion = 1;
+    //static const int FileVersion = 1;
+	enum FileVersion {
+		FileVersion_1 = 1,  // 0.7.0
+        FileVersion_2,      // 0.8.0
+		FileVersion_Last,
+		FileVersion_Current = FileVersion_Last - 1,
+	};
     static const String FileExt;
 
     UnifiedShader(DiagnosticsManager* diag);
@@ -50,50 +65,55 @@ public:
     bool save(const Path& filePath);
     bool load(Stream* stream);
 
-    bool addCodeContainer(const std::string& entryPointName, CodeContainerId* outId);
-    void setCode(CodeContainerId container, const UnifiedShaderTriple& triple, const std::string& code);
-    void setCode(const std::string& entryPointName, const UnifiedShaderTriple& triple, const std::string& code);
-    bool hasCode(const std::string& entryPointName, const UnifiedShaderTriple& triple) const;
-    bool findCodeContainer(const std::string& entryPointName, CodeContainerId* outId) const;
-    const std::string* findCode(CodeContainerId conteinreId, const UnifiedShaderTriple& triple) const;
+
+    bool addCodeContainer(ShaderStage2 stage, const std::string& entryPointName, CodeContainerId* outId);
+    void setCode(CodeContainerId container, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code, UnifiedShaderRefrectionInfo* refrection);
+    //void setCode(ShaderStage2 stage, const std::string& entryPointName, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code, UnifiedShaderRefrectionInfo* refrection);
+    bool hasCode(ShaderStage2 stage, const std::string& entryPointName, const UnifiedShaderTriple& triple) const;
+    bool findCodeContainer(ShaderStage2 stage, const std::string& entryPointName, CodeContainerId* outId) const;
+    const CodeInfo* findCode(CodeContainerId conteinreId, const UnifiedShaderTriple& triple) const;
+    const std::string& entryPointName(CodeContainerId conteinreId) const;
 
     bool addTechnique(const std::string& name, TechniqueId* outTech);
     int techniqueCount() const { return m_techniques.size(); }
     TechniqueId techniqueId(int index) const { return indexToId(index); }
-    const std::string& techniqueName(TechniqueId techId) { return m_techniques[idToIndex(techId)].name; }
+    const std::string& techniqueName(TechniqueId techId) const { return m_techniques[idToIndex(techId)].name; }
 
     bool addPass(TechniqueId parentTech, const std::string& name, PassId* outPass);
     int getPassCountInTechnique(TechniqueId parentTech) const;
     PassId getPassIdInTechnique(TechniqueId parentTech, int index) const;
     int passCount() const { return m_passes.size(); }
     PassId passId(int index) const { return indexToId(index); }
-    const std::string& passName(PassId passId) { return m_passes[idToIndex(passId)].name; }
+    const std::string& passName(PassId passId) const { return m_passes[idToIndex(passId)].name; }
     void setVertexShader(PassId pass, CodeContainerId code);
     void setPixelShader(PassId pass, CodeContainerId code);
     void setRenderState(PassId pass, ShaderRenderState* state);
+	//void setRefrection(PassId pass, UnifiedShaderRefrectionInfo* value);
+    void addMergeDescriptorLayoutItem(PassId pass, const DescriptorLayout& layout);
     CodeContainerId vertexShader(PassId pass) const;
     CodeContainerId pixelShader(PassId pass) const;
     ShaderRenderState* renderState(PassId pass) const;
+	const DescriptorLayout& descriptorLayout(PassId pass) const;
+    //UnifiedShaderRefrectionInfo* refrection(PassId pass) const;
+
+    void saveCodes(const StringRef& perfix) const;
 
 private:
     int idToIndex(uint32_t id) const { return id - 1; }
     uint32_t indexToId(int index) const { return index + 1; }
-    int findCodeContainerInfoIndex(const std::string& entryPointName) const;
+    //int findCodeContainerInfoIndex(ShaderStage2 stage, const std::string& entryPointName) const;
     int findTechniqueInfoIndex(const std::string& name) const;
     int findPassInfoIndex(TechniqueId tech, const std::string& name) const;
 
     static void writeString(BinaryWriter* w, const std::string& str);
+	static void writeByteArray(BinaryWriter* w, const std::vector<byte_t>& data);
     static std::string readString(BinaryReader* r);
+	static std::vector<byte_t> readByteArray(BinaryReader* r);
     static bool checkSignature(BinaryReader* r, const char* sig, size_t len, DiagnosticsManager* diag);
-
-    struct CodeInfo
-    {
-        UnifiedShaderTriple triple;
-        std::string code;
-    };
 
     struct CodeContainerInfo
     {
+		ShaderStage2 stage;
         std::string entryPointName;
         std::vector<CodeInfo> codes;
     };
@@ -110,6 +130,7 @@ private:
         CodeContainerId vertexShader;
         CodeContainerId pixelShader;
         Ref<ShaderRenderState> renderState;
+		DescriptorLayout descriptorLayout;
     };
 
     DiagnosticsManager* m_diag;
@@ -117,6 +138,42 @@ private:
     List<TechniqueInfo> m_techniques;
     List<PassInfo> m_passes;
 };
+
+#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
+
+class UnifiedShaderCompiler
+{
+public:
+	UnifiedShaderCompiler(ShaderManager* manager, DiagnosticsManager* diag);
+
+	// ※ inputCode は非 const。中身が書き換わる。
+	bool compile(
+		char* inputCode, size_t inputCodeLength,
+		const List<Path>& includeDirectories, const List<String>& definitions);
+
+	bool compileSingleCodes(
+		const char* vsData, size_t vsLen, const std::string& vsEntryPoint,
+		const char* psData, size_t psLen, const std::string& psEntryPoint,
+		const List<Path>& includeDirectories, const List<String>& definitions);
+
+	bool link();
+
+	const Ref<UnifiedShader>& unifiedShader() const { return m_unifiedShader; }
+
+private:
+    bool createTechPassCodeContainer();
+	static std::string makeKey(ShaderStage2 stage, const std::string& entryPoint);
+    static std::string makeKey2(const std::string& techName, const std::string& passName, ShaderStage2 stage, const std::string& entryPoint);
+
+	ShaderManager* m_manager;
+	Ref<UnifiedShader> m_unifiedShader;
+	DiagnosticsManager* m_diag;
+	HLSLMetadataParser m_metadataParser;
+	std::unordered_map<std::string, std::shared_ptr<ShaderCodeTranspiler>> m_transpilerMap;	// kei is "stage:entryPoint"
+	// TODO: ↑ unordered_map やめたい。順序付けされなくなるので。今は makeKey() で 1 とか 2 とか prefix つけることで対策している。
+};
+
+#endif // LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 
 } // namespace detail
 } // namespace ln

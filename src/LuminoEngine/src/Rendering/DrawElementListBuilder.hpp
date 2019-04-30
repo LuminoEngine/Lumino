@@ -4,6 +4,9 @@
 #include "SpriteRenderFeature.hpp"
 #include "MeshRenderFeature.hpp"
 #include "PrimitiveRenderFeature.hpp"
+#include "SpriteTextRenderFeature.hpp"
+#include "FrameRectRenderFeature.hpp"
+#include "ShapesRenderFeature.hpp"
 
 namespace ln {
 class RenderViewPoint;
@@ -29,7 +32,7 @@ public:
 	void setTargetList(DrawElementList* targetList);
     void resetForBeginRendering();  // 描画開始時のリセット。スタックもクリアする
 	void reset2();   // スタックに積んである分はリセットしないしスタックも消さない
-    void advanceFence();
+    void advanceFence();	// zソートなどの境界。特に、clear や blit など、深度が関係ないものとの境界
 
 	void setRenderTarget(int index, RenderTargetTexture* value);
     RenderTargetTexture* renderTarget(int index) const;
@@ -44,6 +47,7 @@ public:
 
 	void setShadingModel(const Optional<ShadingModel>& value);
 	void setMaterial(AbstractMaterial* value);  // 一度 set したマテリアルは描画完了まで変更してはならない。TODO: Freezed みたいな状態にしたい
+    const AbstractMaterial* material() const;
 	void setTransfrom(const Matrix& value);
     void setBaseTransfrom(const Optional<Matrix>& value);
     void setRenderPriority(int value);
@@ -53,7 +57,7 @@ public:
 	void setOpacity(float value);
 	void setColorScale(const Color& value);
 	void setBlendColor(const Color& value);
-	void setTone(const ToneF& value);
+	void setTone(const ColorTone& value);
     void setBaseBuiltinEffectData(const Optional<BuiltinEffectData>& value);
 
     void setViewPoint(RenderViewPoint* value);
@@ -66,6 +70,9 @@ public:
 	SpriteRenderFeatureStageParameters* spriteRenderFeatureStageParameters() { return &m_spriteRenderFeatureStageParameters; }
 	MeshRenderFeatureStageParameters* meshRenderFeatureStageParameters() { return &m_meshRenderFeatureStageParameters; }
     PrimitiveRenderFeatureStageParameters* primitiveRenderFeatureStageParameters() { return &m_primitiveRenderFeatureStageParameters; }
+	SpriteTextRenderFeatureStageParameters* spriteTextRenderFeatureStageParameters() { return &m_spriteTextRenderFeatureStageParameters; }
+	FrameRectRenderFeatureStageParameters* frameRectRenderFeatureStageParameters() { return &m_frameRectRenderFeatureStageParameters; }
+	ShapesRenderFeatureStageParameters* shapesRenderFeatureStageParameters() { return &m_shapesRenderFeatureStageParameters; }
 
 	template<class TElement>
 	TElement* addNewDrawElement(
@@ -134,6 +141,9 @@ private:
 	SpriteRenderFeatureStageParameters m_spriteRenderFeatureStageParameters;
 	MeshRenderFeatureStageParameters m_meshRenderFeatureStageParameters;
     PrimitiveRenderFeatureStageParameters m_primitiveRenderFeatureStageParameters;
+	SpriteTextRenderFeatureStageParameters m_spriteTextRenderFeatureStageParameters;
+	FrameRectRenderFeatureStageParameters m_frameRectRenderFeatureStageParameters;
+	ShapesRenderFeatureStageParameters m_shapesRenderFeatureStageParameters;
 
     Ref<AbstractMaterial> m_defaultMaterial;
     Flags<DirtyFlags> m_dirtyFlags;

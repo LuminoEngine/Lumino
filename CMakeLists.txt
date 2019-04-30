@@ -35,6 +35,9 @@ option(LN_BUILD_TOOLS "build tool projects." ON)
 # build language bindings projects
 option(LN_BUILD_BINDINGS "build language bindings." OFF)
 
+# build editor projects
+option(LN_BUILD_EDITOR "build editor projects." OFF)
+
 # build only LuminoCore.
 option(LN_BUILD_CORE_ONLY "build only LuminoCore." OFF)
 
@@ -47,16 +50,27 @@ option(LN_MSVC_STATIC_RUNTIME "static runtime (/MT, /MTd) or DLL runtime (/MD, /
 # use SDL on MSVC
 option(LN_MSVC_USE_SDL "use SDL on MSVC" OFF)
 
+# Vulkan
+option(LN_USE_VULKAN "Vulkan" ON)
+
+#------------------------------------------------------------------------------
+
+message("LN_TARGET_ARCH:${LN_TARGET_ARCH}")
+
 #------------------------------------------------------------------------------
 
 set(CMAKE_DEBUG_POSTFIX "d")
 
-include(src/LuminoCommon.cmake)
+include(src/LuminoBuildCommon.cmake)
 
 set(LUMINO_ROOT_PATH "${CMAKE_CURRENT_LIST_DIR}")
 set(LUMINO_INCLUDE_DIRECTORIES
     "${LUMINO_ROOT_PATH}/src/LuminoCore/include"
     "${LUMINO_ROOT_PATH}/src/LuminoEngine/include")
+
+
+
+
 
 if (DEFINED EMSCRIPTEN)
     include_directories("${EMSCRIPTEN_ROOT_PATH}/system/lib/libcxxabi/include")
@@ -71,7 +85,7 @@ if (DEFINED EMSCRIPTEN)
 elseif (LN_ANDROID)
     add_definitions(-DLN_GRAPHICS_OPENGLES)
 
-elseif (DEFINED IOS_PLATFORM)
+elseif (APPLE AND DEFINED PLATFORM) # PLATFORM is ios-cmake variable.
     set(LN_IOS ON)
     set(LN_USE_OPENAL ON)
     add_definitions(-DLN_GRAPHICS_OPENGLES)
@@ -90,6 +104,10 @@ if (MSVC AND LN_MSVC_USE_SDL)
     set(LN_USE_SDL ON)
 else()
     set(LN_USE_SDL OFF)
+endif()
+
+if (MSVC)
+    add_definitions("/MP")
 endif()
 
 #------------------------------------------------------------------------------
@@ -117,5 +135,8 @@ else()
     endif()
     if (LN_BUILD_BINDINGS)
         add_subdirectory(tools/lumino-wg)
+    endif()
+    if (LN_BUILD_EDITOR)
+        add_subdirectory(tools/LuminoStudio)
     endif()
 endif()

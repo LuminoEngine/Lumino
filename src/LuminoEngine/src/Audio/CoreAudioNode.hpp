@@ -23,7 +23,7 @@ namespace blink {
 //{
 //public:
 //	AudioContextCore();
-//	void initialize();
+//	void init();
 //	void dispose();
 //	const Ref<AudioDevice>& device() const { return m_device; }
 //	const AudioListenerParams& listener() const { return m_listener; }
@@ -117,7 +117,7 @@ public:
 
 	CoreAudioNode(AudioDevice* context);
 	virtual ~CoreAudioNode() = default;
-	void initialize();
+	void init();
 
 	AudioDevice* context() const { return m_context; }
 
@@ -170,7 +170,7 @@ public:
 
 	CoreAudioSourceNode(AudioDevice* context);
 	virtual ~CoreAudioSourceNode() = default;
-	void initialize(const Ref<AudioDecoder>& decoder);
+	void init(const Ref<AudioDecoder>& decoder);
 
 	void setPlaybackRate(float rate);
 
@@ -224,7 +224,7 @@ protected:
 public:
 	CoreAudioPannerNode(AudioDevice* context);
 	virtual ~CoreAudioPannerNode() = default;
-	void initialize();
+	void init();
 
 private:
 	void azimuthElevation(double* outAzimuth, double* outElevation);
@@ -244,7 +244,7 @@ class CoreAudioDestinationNode
 public:
 	CoreAudioDestinationNode(AudioDevice* context);
 	virtual ~CoreAudioDestinationNode() = default;
-	void initialize();
+	void init();
 
 protected:
 	virtual void render(float* outputBuffer, int length) override;

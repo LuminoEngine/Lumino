@@ -12,7 +12,7 @@ public:
     static Ref<ToneImageEffect> create();
 
     // [experimental]
-    void play(const ToneF& tone, double time);
+    void play(const ColorTone& tone, double time);
 
 protected:
     virtual void onUpdateFrame(float elapsedSeconds) override;
@@ -21,7 +21,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
     ToneImageEffect();
 	virtual ~ToneImageEffect();
-	void initialize();
+	void init();
 
 private:
     Ref<Material> m_material;

@@ -119,6 +119,8 @@ struct CameraInfo
     float nearClip = 0;
     float farClip = 0;
 
+	float dpiScale = 1.0f;
+
     void makeUnproject(const Size& size)
     {
         viewPixelSize = size;
@@ -156,7 +158,7 @@ struct SubsetInfo
     float opacity;
     Color colorScale;
     Color blendColor;
-    ToneF tone;
+	ColorTone tone;
 };
 
 // セマンティクスが関係するシェーダ変数の管理
@@ -224,6 +226,7 @@ enum class ShaderTechniqueClass_ShadingModel : uint8_t
 // Rendering モジュールで、Pass が ShaderTechnique を検索するときに使うデータ
 struct ShaderTechniqueClass
 {
+    bool defaultTechnique;  // "Default" とだけ書かれた tech は　SceneRederer のデフォルトよりも優先。主に DebugGrid など、ライトがないことなどでシェーディングモデルが切り替わっても同じ tech を使いたいケース用。
     ShaderTechniqueClass_Ligiting ligiting;
     ShaderTechniqueClass_Phase phase;
     ShaderTechniqueClass_MeshProcess meshProcess;

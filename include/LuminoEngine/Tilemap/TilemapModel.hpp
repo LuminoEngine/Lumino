@@ -23,7 +23,7 @@ public: // TODO: internal
 LN_CONSTRUCT_ACCESS:
     TilemapModel();
 	virtual ~TilemapModel();
-	void initialize();
+	void init();
 
 private:
     struct TilesetSlot

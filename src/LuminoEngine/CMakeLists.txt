@@ -12,8 +12,13 @@ set(LN_ENGINE_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/../../include)
 set(LN_SOURCES_Base
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/Regex.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/Task.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/Variant.hpp
     src/Base/Internal.hpp
+    src/Base/RefObjectCache.hpp
     src/Base/Regex.cpp
+    src/Base/Task.cpp
+    src/Base/Variant.cpp
 )
 
 set(LN_SOURCES_Engine
@@ -62,6 +67,8 @@ set(LN_SOURCES_Platform
     src/Platform/PlatformWindowManager.cpp
     src/Platform/PlatformWindowManager.hpp
     src/Platform/Win32PlatformInterface.cpp
+    src/Platform/Win32PlatformWindowManager.cpp
+    src/Platform/Win32PlatformWindowManager.hpp
 )
 
 set(LN_SOURCES_Grammar
@@ -75,20 +82,28 @@ set(LN_SOURCES_Grammar
 
 set(LN_SOURCES_Animation
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/Animation.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/AnimationClip.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/AnimationClock.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/AnimationContext.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/AnimationController.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/AnimationCurve.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/AnimationTrack.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/Animator.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/EasingFunctions.hpp
     src/Animation/Internal.hpp
+    src/Animation/Animation.cpp
     src/Animation/AnimationClip.cpp
     src/Animation/AnimationClock.cpp
+    src/Animation/AnimationController.cpp
     src/Animation/AnimationCurve.cpp
     src/Animation/AnimationContext.cpp
     src/Animation/AnimationManager.cpp
     src/Animation/AnimationManager.hpp
     src/Animation/AnimationTrack.cpp
+    src/Animation/Animator.cpp
+    src/Animation/VmdLoader.cpp
+    src/Animation/VmdLoader.hpp
 )
 
 set(LN_SOURCES_Input
@@ -126,12 +141,8 @@ set(LN_SOURCES_Audio
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/InternalSharedMutex.inc
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/Sound.hpp
     src/Audio/Internal.hpp
-    src/Audio/ALAudioDevice.cpp
-    src/Audio/ALAudioDevice.hpp
     src/Audio/AudioBus.cpp
     src/Audio/AudioContext.cpp
-    src/Audio/AudioDecoder.cpp
-    src/Audio/AudioDecoder.hpp
     src/Audio/AudioDevice.cpp
     src/Audio/AudioDevice.hpp
     src/Audio/AudioGainNode.cpp
@@ -148,20 +159,30 @@ set(LN_SOURCES_Audio
     src/Audio/ChromiumWebCore.hpp
     src/Audio/CoreAudioNode.cpp
     src/Audio/CoreAudioNode.hpp
-    src/Audio/DSoundAudioDevice.cpp
-    src/Audio/DSoundAudioDevice.hpp
     src/Audio/GameAudio.cpp
     src/Audio/GameAudioImpl.cpp
     src/Audio/GameAudioImpl.hpp
+    src/Audio/Sound.cpp
+    src/Audio/blink/VectorMath.cpp
+    src/Audio/blink/VectorMath.h
+)
+
+set(LN_SOURCES_Audio_Decoder
+    src/Audio/AudioDecoder.cpp
+    src/Audio/AudioDecoder.hpp
     src/Audio/Mp3AudioDecoder.cpp
     src/Audio/Mp3AudioDecoder.hpp
     src/Audio/OggAudioDecoder.cpp
     src/Audio/OggAudioDecoder.hpp
+)
+
+set(LN_SOURCES_Audio_Device
+    src/Audio/ALAudioDevice.cpp
+    src/Audio/ALAudioDevice.hpp
+    src/Audio/DSoundAudioDevice.cpp
+    src/Audio/DSoundAudioDevice.hpp
     src/Audio/SDLAudioDevice.cpp
     src/Audio/SDLAudioDevice.hpp
-    src/Audio/Sound.cpp
-    src/Audio/blink/VectorMath.cpp
-    src/Audio/blink/VectorMath.h
 )
 
 set(LN_SOURCES_Graphics
@@ -178,9 +199,11 @@ set(LN_SOURCES_Graphics
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/SwapChain.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/Texture.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/VertexBuffer.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/VertexDeclaration.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/VertexLayout.hpp
     src/Graphics/Internal.hpp
     src/Graphics/Bitmap.cpp
+    src/Graphics/BitmapEncoding.cpp
+    src/Graphics/BitmapEncoding.hpp
     src/Graphics/ColorStructs.cpp
     src/Graphics/DepthBuffer.cpp
     src/Graphics/GeometryStructs.cpp
@@ -196,11 +219,14 @@ set(LN_SOURCES_Graphics
     src/Graphics/RenderState.cpp
     src/Graphics/SamplerState.cpp
     src/Graphics/SwapChain.cpp
+    src/Graphics/MixHash.hpp
     src/Graphics/OpenGLDeviceContext.cpp
     src/Graphics/OpenGLDeviceContext.hpp
+    src/Graphics/RenderTargetTextureCache.cpp
+    src/Graphics/RenderTargetTextureCache.hpp
     src/Graphics/Texture.cpp
     src/Graphics/VertexBuffer.cpp
-    src/Graphics/VertexDeclaration.cpp
+    src/Graphics/VertexLayout.cpp
 )
 
 set(LN_SOURCES_Shader
@@ -229,6 +255,8 @@ set(LN_SOURCES_Font
     src/Font/Font.cpp
     src/Font/FontCore.cpp
     src/Font/FontCore.hpp
+    src/Font/FontGlyphCache.cpp
+    src/Font/FontGlyphCache.hpp
     src/Font/FontManager.cpp
     src/Font/FontManager.hpp
     src/Font/FreeTypeFont.cpp
@@ -240,7 +268,10 @@ set(LN_SOURCES_Font
 set(LN_SOURCES_Mesh
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/Mesh.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/SkinnedMeshModel.hpp
     src/Mesh/Internal.hpp
+    src/Mesh/CCDIKSolver.cpp
+    src/Mesh/CCDIKSolver.hpp
     src/Mesh/GMesh.cpp
     src/Mesh/GMesh.hpp
     src/Mesh/Mesh.cpp
@@ -254,11 +285,15 @@ set(LN_SOURCES_Mesh
     src/Mesh/MqoImporter.hpp
     src/Mesh/ObjMeshImporter.cpp
     src/Mesh/ObjMeshImporter.hpp
+    src/Mesh/PmxImporter.cpp
+    src/Mesh/PmxImporter.hpp
+    src/Mesh/SkinnedMeshModel.cpp
 )
 
 set(LN_SOURCES_Rendering
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/CommandBuffer.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/Drawing.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/Material.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/RenderFeature.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/RenderingContext.hpp
@@ -272,6 +307,9 @@ set(LN_SOURCES_Rendering
     src/Rendering/CommandBuffer.cpp
     src/Rendering/DrawElementListBuilder.cpp
     src/Rendering/DrawElementListBuilder.hpp
+    src/Rendering/Drawing.cpp
+    src/Rendering/FrameRectRenderFeature.cpp
+    src/Rendering/FrameRectRenderFeature.hpp
     src/Rendering/LightClusters.cpp
     src/Rendering/LightClusters.hpp
     src/Rendering/Material.cpp
@@ -287,13 +325,15 @@ set(LN_SOURCES_Rendering
     src/Rendering/RenderingPipeline.hpp
     src/Rendering/RenderStage.cpp
     src/Rendering/RenderStage.hpp
-    src/Rendering/RenderTargetTextureCache.cpp
-    src/Rendering/RenderTargetTextureCache.hpp
     src/Rendering/RenderView.cpp
+    src/Rendering/ShapesRenderFeature.cpp
+    src/Rendering/ShapesRenderFeature.hpp
     src/Rendering/SceneRenderer.cpp
     src/Rendering/SceneRenderer.hpp
     src/Rendering/SpriteRenderFeature.cpp
     src/Rendering/SpriteRenderFeature.hpp
+    src/Rendering/SpriteTextRenderFeature.cpp
+    src/Rendering/SpriteTextRenderFeature.hpp
     src/Rendering/UnLigitingSceneRenderer.cpp
     src/Rendering/UnLigitingSceneRenderer.hpp
 )
@@ -313,6 +353,7 @@ set(LN_SOURCES_Physics
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/CollisionShape.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/PhysicsWorld.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/PhysicsWorld2D.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/PhysicsObject.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/RigidBody.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/SoftBody.hpp
@@ -323,6 +364,7 @@ set(LN_SOURCES_Physics
     src/Physics/PhysicsManager.hpp
     src/Physics/PhysicsObject.cpp
     src/Physics/PhysicsWorld.cpp
+    src/Physics/PhysicsWorld2D.cpp
     src/Physics/RigidBody.cpp
     src/Physics/SoftBody.cpp
 )
@@ -343,6 +385,7 @@ set(LN_SOURCES_Visual
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/CameraComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/LightComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/MeshPrimitiveComponent.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/SkinnedMeshComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/SpriteComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/StaticMeshComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/VisualComponent.hpp
@@ -350,6 +393,7 @@ set(LN_SOURCES_Visual
     src/Visual/CameraComponent.cpp
     src/Visual/LightComponent.cpp
     src/Visual/MeshPrimitiveComponent.cpp
+    src/Visual/SkinnedMeshComponent.cpp
     src/Visual/SpriteComponent.cpp
     src/Visual/StaticMeshComponent.cpp
     src/Visual/VisualComponent.cpp
@@ -363,8 +407,11 @@ set(LN_SOURCES_Scene
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/CameraOrbitControlComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Component.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Light.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/OffscreenWorldRenderView.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/RigidBodyComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Scene.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/SceneConductor.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/SkinnedMesh.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Sprite.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/StaticMesh.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/VisualObject.hpp
@@ -376,10 +423,13 @@ set(LN_SOURCES_Scene
     src/Scene/CameraOrbitControlComponent.cpp
     src/Scene/Component.cpp
     src/Scene/Light.cpp
+    src/Scene/OffscreenWorldRenderView.cpp
+    src/Scene/RigidBodyComponent.cpp
     src/Scene/Scene.cpp
     src/Scene/SceneConductor.cpp
     src/Scene/SceneManager.cpp
     src/Scene/SceneManager.hpp
+    src/Scene/SkinnedMesh.cpp
     src/Scene/Sprite.cpp
     src/Scene/StaticMesh.cpp
     src/Scene/VisualObject.cpp
@@ -402,7 +452,9 @@ set(LN_SOURCES_UI
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIRenderView.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UISprite.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIStyle.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UITextBlock.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIViewport.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIWindow.hpp
     src/UI/UIContainerElement.cpp
     src/UI/UIContext.cpp
     src/UI/UIControl.cpp
@@ -418,7 +470,9 @@ set(LN_SOURCES_UI
     src/UI/UIRenderView.cpp
     src/UI/UISprite.cpp
     src/UI/UIStyle.cpp
+    src/UI/UITextBlock.cpp
     src/UI/UIViewport.cpp
+    src/UI/UIWindow.cpp
 )
 
 set(LN_SOURCES_Tilemap
@@ -436,7 +490,23 @@ set(LN_SOURCES_Tilemap
     src/Tilemap/Tileset.cpp
 )
 
-if (APPLE)
+if (LN_USE_VULKAN)
+    if (WIN32)
+        set(LN_SOURCES_Graphics
+            ${LN_SOURCES_Graphics}
+            src/Graphics/VulkanDeviceContext.cpp
+            src/Graphics/VulkanDeviceContext.hpp
+            src/Graphics/VulkanHelper.cpp
+            src/Graphics/VulkanHelper.hpp
+        )
+        list(APPEND LN_PLATFORM_DEFINITIONS LN_USE_VULKAN=1)
+    endif()
+endif()
+
+
+if (WIN32)
+
+elseif (APPLE)
     set(LN_SOURCES_Platform
         ${LN_SOURCES_Platform}
         src/Platform/iOSPlatformInterface.mm
@@ -453,6 +523,8 @@ source_group("Input"     FILES ${LN_SOURCES_Input})
 source_group("Grammar"   FILES ${LN_SOURCES_Grammar})
 source_group("Animation" FILES ${LN_SOURCES_Animation})
 source_group("Audio"     FILES ${LN_SOURCES_Audio})
+source_group("Audio\\Decoder" FILES ${LN_SOURCES_Audio_Decoder})
+source_group("Audio\\Device" FILES ${LN_SOURCES_Audio_Device})
 source_group("Graphics"  FILES ${LN_SOURCES_Graphics})
 source_group("Shader"    FILES ${LN_SOURCES_Shader})
 source_group("Font"      FILES ${LN_SOURCES_Font})
@@ -466,10 +538,12 @@ source_group("Scene"     FILES ${LN_SOURCES_Scene})
 source_group("UI"        FILES ${LN_SOURCES_UI})
 source_group("Tilemap"   FILES ${LN_SOURCES_Tilemap})
 
+
 set(LN_SOURCES
     src/LuminoEngine.PCH.cpp
     src/LuminoEngine.PCH.h
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/Lumino.hpp
     ${LN_SOURCES_Base}
     ${LN_SOURCES_Engine}
     ${LN_SOURCES_Platform}
@@ -477,6 +551,8 @@ set(LN_SOURCES
     ${LN_SOURCES_Animation}
     ${LN_SOURCES_Input}
 	${LN_SOURCES_Audio}
+	${LN_SOURCES_Audio_Decoder}
+	${LN_SOURCES_Audio_Device}
     ${LN_SOURCES_Graphics}
     ${LN_SOURCES_Shader}
     ${LN_SOURCES_Font}
@@ -512,6 +588,10 @@ elseif (WIN32)
     #list(APPEND LN_PLATFORM_LIBS user32 gdi32 winmm imm32 ole32 oleaut32 version uuid)
     list(APPEND LN_PLATFORM_LIBS winmm imm32 version)
     list(APPEND LN_PLATFORM_LIBS OpenAL)
+    
+    #if (LN_USE_VULKAN)
+    #    list(APPEND LN_PLATFORM_LIBS VulkanImported)
+    #endif()
 
 elseif (APPLE)
     list(APPEND LN_PLATFORM_LIBS glfw GLAD)
@@ -570,7 +650,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE ${LN_PLATFORM_DEFINITIONS})
 #target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive ${PROJECT_NAME}-static -Wl,--no-whole-archive)
 #target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-static)
 target_link_libraries(${PROJECT_NAME} INTERFACE LuminoCore ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore pcre ZLIB PNG FreeType vorbisfile vorbis ogg BulletSoftBody BulletDynamics BulletCollision LinearMath ${LN_PLATFORM_LIBS})
+target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore pcre PNG ZLIB FreeType vorbisfile vorbis ogg Box2D BulletSoftBody BulletDynamics BulletCollision LinearMath tmxlite VulkanHeaders ${LN_PLATFORM_LIBS})
 #target_link_libraries(${PROJECT_NAME} PRIVATE glslang)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
@@ -607,7 +687,7 @@ endif()
 
 install(TARGETS ${PROJECT_NAME}
     EXPORT LuminoEngineTargets
-    ARCHIVE     DESTINATION .#lib            # Library installation location (Copied at "INSTALL" build time)
+    ARCHIVE     DESTINATION lib            # Library installation location (Copied at "INSTALL" build time)
     #INCLUDES    DESTINATION ../../include        # include directory (File is not copied)
     FRAMEWORK DESTINATION .)
     
@@ -617,11 +697,11 @@ install(
     EXPORT LuminoEngineTargets
     FILE LuminoEngineTargets.cmake
     EXPORT_LINK_INTERFACE_LIBRARIES
-    DESTINATION "cmake")
+    DESTINATION lib/cmake)
 
 install(
-    FILES "LuminoEngineConfig.cmake"
-    DESTINATION "cmake")
+    FILES LuminoEngineConfig.cmake
+    DESTINATION lib/cmake)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ../../../../lib/${LN_TARGET_ARCH}-${CMAKE_BUILD_TYPE})
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ../../../../lib/${LN_TARGET_ARCH})

@@ -19,9 +19,9 @@ Component::~Component()
 {
 }
 
-void Component::initialize()
+void Component::init()
 {
-    Object::initialize();
+    Object::init();
 }
 
 detail::WorldObjectTransform* Component::transrom() const
@@ -39,6 +39,14 @@ void Component::onAttached(WorldObject* owner)
 }
 
 void Component::onDetaching(WorldObject* owner)
+{
+}
+
+void Component::onAttachedWorld(World* newOwner)
+{
+}
+
+void Component::onDetachedWorld(World* oldOwner)
 {
 }
 

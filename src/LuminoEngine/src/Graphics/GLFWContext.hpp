@@ -28,7 +28,7 @@ class GLFWContext
 public:
 	GLFWContext() = default;
 	virtual ~GLFWContext() = default;
-	void initialize(PlatformWindow* window);
+	void init(PlatformWindow* window);
 
 	virtual Ref<GLSwapChain> createSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
 	virtual void makeCurrent(GLSwapChain* swapChain) override;

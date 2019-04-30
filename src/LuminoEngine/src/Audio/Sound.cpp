@@ -4,6 +4,7 @@
 #include <LuminoEngine/Audio/AudioNode.hpp>
 #include <LuminoEngine/Audio/AudioGainNode.hpp>
 #include <LuminoEngine/Audio/Sound.hpp>
+#include "AudioDecoder.hpp"
 #include "AudioManager.hpp"
 
 namespace ln {
@@ -23,13 +24,14 @@ Sound::~Sound()
 {
 }
 
-void Sound::initialize(const StringRef& filePath)
+void Sound::init(const StringRef& filePath)
 {
-    Object::initialize();
+    Object::init();
 
     detail::AudioManager* manager = detail::EngineDomain::audioManager();
 
-    m_sourceNode = newObject<AudioSourceNode>(filePath);
+    Ref<detail::AudioDecoder> decoder = detail::EngineDomain::audioManager()->createAudioDecoder(filePath);
+    m_sourceNode = newObject<AudioSourceNode>(decoder);
     m_gainNode = newObject<AudioGainNode>();
 
 
@@ -44,7 +46,7 @@ void Sound::initialize(const StringRef& filePath)
     //source->start();
 }
 
-void Sound::dispose()
+void Sound::onDispose(bool explicitDisposing)
 {
     if (m_gainNode) {
         m_gainNode->dispose();
@@ -54,7 +56,7 @@ void Sound::dispose()
         m_sourceNode->dispose();
         m_sourceNode = nullptr;
     }
-    Object::dispose();
+    Object::onDispose(explicitDisposing);
 }
 
 void Sound::setVolume(float volume)

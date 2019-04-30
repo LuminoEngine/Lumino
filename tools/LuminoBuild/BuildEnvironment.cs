@@ -11,6 +11,18 @@ namespace LuminoBuild
         public bool PdbCopy { get; set; } = false;
     }
 
+    [Flags]
+    public enum BuildTargetFlags
+    {
+        None = 0x0000,
+        Windows = 0x0001,
+        Android = 0x0002,
+        macOS = 0x0004,
+        iOS = 0x0008,
+        Web = 0x0010,
+        All = 0xFFFF,
+    }
+
     public class BuildEnvironment
     {
         public const string VSWhereUrl = @"https://github.com/Microsoft/vswhere/releases/download/2.5.2/vswhere.exe";
@@ -21,6 +33,7 @@ namespace LuminoBuild
 
         public static string BuildToolsDir { get; set; }
 
+        public static bool EmscriptenFound { get; set; }
         public static string EmsdkDir { get; set; }
         public static string EmscriptenDir { get; set; }
         public static string emcmake { get; set; }
@@ -34,12 +47,14 @@ namespace LuminoBuild
         public static string AndroidNdkRootDir { get; set; }
         public static string AndroidCMakeToolchain { get; set; }
 
-
+        public static BuildTargetFlags BuildTarget { get; set; }
 
         public static TargetArch[] TargetArchs = new TargetArch[]
         {
-            new TargetArch(){ SourceDirName = "MSVC2017-x86-MT-Debug", DestDirName = "MSVC2017-x86-MT-Debug", PdbCopy = true },
-            new TargetArch(){ SourceDirName = "MSVC2017-x86-MT-Release", DestDirName = "MSVC2017-x86-MT-Release", PdbCopy = true },
+            new TargetArch(){ SourceDirName = "MSVC2017-x86-MD", DestDirName = "MSVC2017-x86-MD", PdbCopy = true },
+            new TargetArch(){ SourceDirName = "MSVC2017-x86-MT", DestDirName = "MSVC2017-x86-MT", PdbCopy = true },
+            //new TargetArch(){ SourceDirName = "MSVC2017-x64-MD", DestDirName = "MSVC2017-x64-MD", PdbCopy = true },
+            //new TargetArch(){ SourceDirName = "MSVC2017-x64-MT", DestDirName = "MSVC2017-x64-MT", PdbCopy = true },
             new TargetArch(){ SourceDirName = "Emscripten", DestDirName = "Emscripten-Release" },
             new TargetArch(){ SourceDirName = "Android-arm64-v8a-Debug", DestDirName = "Android-arm64-v8a-Debug" },
             new TargetArch(){ SourceDirName = "Android-arm64-v8a-Release", DestDirName = "Android-arm64-v8a-Release" },
@@ -66,7 +81,6 @@ namespace LuminoBuild
             emcmake = Path.Combine(EmscriptenDir, Utils.IsWin32 ? "emcmake.bat" : "emcmake");
 
 
-
             if (Utils.IsWin32)
             {
                 //string localAppDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
@@ -78,14 +92,7 @@ namespace LuminoBuild
 
                 AndroidNdkRootDir = Path.Combine(AndroidSdkRootDir, "ndk-bundle");
                 AndroidCMakeToolchain = Path.Combine(AndroidNdkRootDir, @"build\cmake\android.toolchain.cmake");
-
-                AndroidStudioFound = true;
             }
-            else
-            {
-                AndroidStudioFound = false;
-            }
-
 
             InstallTools(repoRootDir);
         }
@@ -95,6 +102,8 @@ namespace LuminoBuild
             Directory.CreateDirectory(BuildToolsDir);
 
             // Install emsdk
+            if (BuildTarget.HasFlag(BuildTargetFlags.Web) &&
+                Utils.IsWin32)
             {
                 if (!Directory.Exists(EmsdkDir))
                 {
@@ -114,9 +123,13 @@ namespace LuminoBuild
                         Path.Combine(repoRootDir, "external", "emscripten", "Emscripten.cmake"),
                         Path.Combine(EmscriptenDir, "cmake", "Modules", "Platform"));
                 }
+
+                EmscriptenFound = true;
             }
 
             // Install Android SDK
+            if (BuildTarget.HasFlag(BuildTargetFlags.Android) &&
+                Utils.IsWin32)
             {
                 var androidSdk = Path.Combine(BuildToolsDir, "android-sdk");
                 if (!Directory.Exists(androidSdk))
@@ -164,6 +177,8 @@ namespace LuminoBuild
                     Utils.ExtractZipFile(zip, tmpDir);
                     Directory.Move(Path.Combine(tmpDir, "android-ndk-r18b"), ndkDir);
                 }
+
+                AndroidStudioFound = true;
             }
         }
     }

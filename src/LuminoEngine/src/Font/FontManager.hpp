@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <list>
 #include <LuminoEngine/Font/Common.hpp>
+#include "../Base/RefObjectCache.hpp"
 
 typedef int FT_Error;
 typedef void*  FT_Pointer;
@@ -12,105 +13,15 @@ typedef struct FTC_ImageCacheRec_* FTC_ImageCache;
 typedef struct FT_FaceRec_*  FT_Face;
 
 namespace ln {
+class Font;
 namespace detail {
 class FontCore;
 
-// RefObject のキャッシュ管理。
-// RefObject を作りたいときは、まず先に findObject を呼び出してキャッシュ探す。なければ呼び出し側で作って registerObject()。
-// RefObject は普通に makeRef で作ってよい。また、作った直後は registerObject() で登録しておく。
-// RefObject を release するとき、その直前で releaseObject() に渡しておく。
-template<class TKey>
-class ObjectCache
+struct FontFaceSource
 {
-public:
-    ObjectCache()
-        : m_maxCacheObjectCount(64)
-        , m_aliveList()
-        , m_freeList()
-    {}
-
-    void dispose()
-    {
-        m_aliveList.clear();
-        m_freeList.clear();
-        m_maxCacheObjectCount = 0;
-    }
-
-    RefObject* findObject(const TKey& key)
-    {
-        if (LN_REQUIRE(!isDisposed())) return nullptr;
-
-        for (auto itr = m_aliveList.begin(); itr != m_aliveList.end(); ++itr) {
-            if (itr->key == key) {
-                return itr->obj;
-            }
-        }
-
-        for (auto itr = m_freeList.begin(); itr != m_freeList.end(); ++itr) {
-            if (itr->key == key) {
-                m_aliveList.splice(m_aliveList.end(), std::move(m_freeList), itr);
-                return m_aliveList.back().obj;
-            }
-        }
-
-        return nullptr;
-    }
-
-    void registerObject(const TKey& key, RefObject* obj)
-    {
-        if (LN_REQUIRE(!isDisposed())) return;
-
-        if (obj) {
-            m_aliveList.push_back({ key, obj });
-        }
-    }
-
-    void releaseObject(RefObject* obj)
-    {
-        if (LN_REQUIRE(!isDisposed())) return;
-
-        if (obj) {
-            auto itr = m_aliveList.begin();
-            for (; itr != m_aliveList.end(); ++itr) {
-                if (itr->obj == obj) {
-                    break;
-                }
-            }
-            if (LN_REQUIRE(itr != m_aliveList.end())) return;   // not contained m_aliveList
-
-            m_freeList.splice(m_freeList.end(), std::move(m_aliveList), itr);
-            collectOldObject();
-        }
-    }
-
-private:
-    bool isDisposed() const
-    {
-        return m_maxCacheObjectCount <= 0;
-    }
-
-    void collectOldObject()
-    {
-        int count = m_freeList.size() - m_maxCacheObjectCount;
-        if (count > 0) {
-            for (int i = 0; i < count; i++) {
-                m_freeList.pop_front();
-            }
-        }
-    }
-
-    struct Entry
-    {
-        TKey key;
-        Ref<RefObject> obj;
-    };
-
-    int m_maxCacheObjectCount;
-    std::list<Entry> m_aliveList;
-    std::list<Entry> m_freeList;    // front:oldest, back:newest
+	Ref<ByteBuffer> buffer;
+	int faceIndex;
 };
-
-
 
 class FontManager
 	: public RefObject
@@ -122,11 +33,13 @@ public:
 	};
 
     FontManager();
-	void initialize(const Settings& settings);
+	void init(const Settings& settings);
 	void dispose();
-	void registerFontFile(const StringRef& fontFilePath);
-	Ref<FontCore> lookupFontCore(const FontDesc& keyDesc);
+	void registerFontFromFile(const StringRef& fontFilePath, bool defaultFamily);
+    void registerFontFromStream(Stream* stream, bool defaultFamily);
+	Ref<FontCore> lookupFontCore(const FontDesc& keyDesc, float dpiScale);
 
+	FT_Library ftLibrary() const { return m_ftLibrary; }
 	FTC_Manager ftCacheManager() const { return m_ftCacheManager; }
 	FTC_CMapCache ftCacheMapCache() const { return m_ftCMapCache; }
 	FTC_ImageCache ftCImageCache() const { return m_ftImageCache; }
@@ -134,8 +47,12 @@ public:
 	void addAliveFontCore(FontCore* font) { m_aliveFontCoreList.add(font); }
 	void removeAliveFontCore(FontCore* font) { m_aliveFontCoreList.remove(font); }
 
-    void setDefaultFontDesc(const FontDesc& desc) { m_defaultFontDesc = desc; }
-    FontDesc defaultFontDesc() const { return m_defaultFontDesc; }
+    //void setDefaultFontDesc(const FontDesc& desc) { m_defaultFontDesc = desc; }
+    void setDefaultFont(Font* font);
+    FontDesc defaultFontDesc() const;
+    Font* defaultFont() const;
+
+	const FontFaceSource* lookupFontFaceSourceFromFamilyName(const String& name);
 
 private:
     static FT_Error callbackFaceRequester(FTC_FaceID face_id, FT_Library library, FT_Pointer request_data, FT_Face* aface);
@@ -157,7 +74,7 @@ private:
     };
 
     AssetManager* m_assetManager;
-	ObjectCache<uint32_t> m_fontCoreCache;
+	ObjectCache<uint64_t, RefObject> m_fontCoreCache;
 	List<FontCore*> m_aliveFontCoreList;
     EncodingConverter m_charToUTF32Converter;
     EncodingConverter m_wcharToUTF32Converter;
@@ -172,7 +89,10 @@ private:
     typedef std::unordered_map<intptr_t, TTFDataEntry> TTFDataEntryMap;
     TTFDataEntryMap m_ttfDataEntryMap;
 
-    FontDesc m_defaultFontDesc;
+    //FontDesc m_defaultFontDesc;
+    Ref<Font> m_defaultFont;
+
+	std::unordered_map<String, FontFaceSource> m_famlyNameToFontFaceSourceMap;
 };
 
 } // namespace detail

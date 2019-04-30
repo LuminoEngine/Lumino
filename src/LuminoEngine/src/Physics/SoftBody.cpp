@@ -39,9 +39,9 @@ SoftBody::~SoftBody()
 {
 }
 
-void SoftBody::initialize()
+void SoftBody::init()
 {
-    PhysicsObject::initialize();
+    PhysicsObject::init();
 }
 
 void SoftBody::setTransform(const Matrix& transform)

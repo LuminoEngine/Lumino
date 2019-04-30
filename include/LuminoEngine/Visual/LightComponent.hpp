@@ -82,7 +82,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	LightComponent();
 	virtual ~LightComponent();
-	void initialize(LightType type);
+	void init(LightType type);
 
 private:
 	friend class VisualComponent;
@@ -153,7 +153,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	AmbientLightComponent();
 	virtual ~AmbientLightComponent();
-	void initialize();
+	void init();
 
 private:
 	Color m_color;
@@ -198,7 +198,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	HemisphereLightComponent();
 	virtual ~HemisphereLightComponent();
-	void initialize();
+	void init();
 
 private:
 	Color m_skyColor;
@@ -244,7 +244,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	DirectionalLightComponent();
 	virtual ~DirectionalLightComponent();
-	void initialize();
+	void init();
 
 private:
 	Color m_color;
@@ -295,7 +295,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	PointLightComponent();
 	virtual ~PointLightComponent();
-	void initialize();
+	void init();
 
 private:
 	Color m_color;
@@ -360,7 +360,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	SpotLightComponent();
 	virtual ~SpotLightComponent();
-	void initialize();
+	void init();
 
 private:
 	Color m_color;

@@ -16,7 +16,7 @@ public:
 
     ShaderManager();
     virtual ~ShaderManager();
-    void initialize(const Settings& settings);
+    void init(const Settings& settings);
     void dispose();
 
     GraphicsManager* graphicsManager() const { return m_graphicsManager; }

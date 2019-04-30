@@ -26,7 +26,7 @@ void GLFWSwapChain::getBackendBufferSize(SizeI* outSize)
 //=============================================================================
 // GLFWContext
 
-void GLFWContext::initialize(PlatformWindow* window)
+void GLFWContext::init(PlatformWindow* window)
 {
 	auto* glfwWindow = dynamic_cast<GLFWPlatformWindow*>(window);
 	LN_CHECK(glfwWindow);

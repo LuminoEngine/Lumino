@@ -1,4 +1,4 @@
-/*
+﻿/*
     # Note: "String base" vs "Entity name array"
     Path クラスとしては String をラップするだけにしたい。Lumino の用途としては読み取り操作が多い。
     エンティティ分割は Uri クラスで。

@@ -6,7 +6,9 @@ class GraphicsContext;
 class UIFrameWindow;
 class UIViewport;
 class UIContainerElement;
+class WorldRenderView;
 class PhysicsWorld;
+class PhysicsWorld2D;
 class World;
 class Camera;
 class AmbientLight;
@@ -38,6 +40,18 @@ public:
 
     static void resetFrameDelay();
 
+    /** アプリケーション開始からの経過時間を取得します。この値はタイムスケールの影響を受けます。 */
+    static double totalTime();
+    
+    /** アプリケーション全体のタイムスケールを設定します。 */
+    static void setTimeScale(float value);
+
+	/** セーブデータなど、アプリケーションデータを保存するための永続的なデータディレクトリのパスを返します。 */
+	static const Path& persistentDataPath();
+
+    /** メインウィンドウのタイトルバーに、秒間の平均 FPS を表示します。簡易的なパフォーマンス測定に利用できます。(default: false) */
+    static void setShowDebugFpsEnabled(bool enabled);
+
 	static GraphicsContext* graphicsContext();
 	static UIFrameWindow* mainWindow();
     static UIViewport* mainViewport();
@@ -47,7 +61,9 @@ public:
     static Camera* mainCamera();
     static AmbientLight* mainAmbientLight();
     static DirectionalLight* mainDirectionalLight();
+    static WorldRenderView* mainRenderView();
     static PhysicsWorld* mainPhysicsWorld();
+    static PhysicsWorld2D* mainPhysicsWorld2D();
 
 };
 

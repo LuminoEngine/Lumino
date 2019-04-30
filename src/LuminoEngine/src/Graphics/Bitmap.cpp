@@ -1,297 +1,11 @@
 ﻿
 #include "Internal.hpp"
-#include <png.h>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Graphics/Bitmap.hpp>
+#include "BitmapEncoding.hpp"
 
 namespace ln {
 namespace detail {
-
-template<class TFunc>
-class ScopedCall
-{
-public:
-	ScopedCall(TFunc finalizer)
-		: m_finalizer(finalizer)
-	{}
-
-	~ScopedCall()
-	{
-		m_finalizer();
-	}
-
-private:
-	TFunc m_finalizer;
-};
-
-template<class TFunc>
-ScopedCall<TFunc> makeScopedCall(TFunc finalizer)
-{
-	return ScopedCall<TFunc>(finalizer);
-}
-
-class BitmapFrame
-{
-public:
-	Ref<ByteBuffer> data;
-	SizeI size;
-	PixelFormat format;
-};
-
-class IBitmapEncoder
-{
-public:
-	virtual ~IBitmapEncoder() = default;
-};
-
-class PngBitmapEncoder
-	: public IBitmapEncoder
-{
-public:
-	PngBitmapEncoder() {}
-	virtual ~PngBitmapEncoder() = default;
-
-	static void pngWriteCallback(png_structp  png_ptr, png_bytep data, png_size_t length) {
-		Stream* stream = reinterpret_cast<Stream*>(png_get_io_ptr(png_ptr));
-		stream->write(data, length);
-	}
-
-	// データは Bitmap クラスから直接渡されることを想定し、downflow で渡すこと。
-	// フォーマットは RGBA
-	void save(Stream* stream, const byte_t* data, const SizeI& size, PixelFormat format);
-};
-
-void PngBitmapEncoder::save(Stream* stream, const byte_t* data, const SizeI& size, PixelFormat format)
-{
-    int colorType = 0;
-    if (format == PixelFormat::RGBA32) {
-        colorType = PNG_COLOR_TYPE_RGBA;
-    }
-    else if (format == PixelFormat::RGB24) {
-        colorType = PNG_COLOR_TYPE_RGB;
-    }
-    else {
-        LN_ERROR();
-        return;
-    }
-
-	png_struct* png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-	if (LN_ENSURE(png, "png_create_write_struct() failed")) return;
-
-	png_infop info_ptr = png_create_info_struct(png);
-	auto se = makeScopedCall([&]() {png_destroy_write_struct(&png, &info_ptr); }); // finalizer
-	if (LN_ENSURE(info_ptr, "png_create_info_struct() failed")) return;
-
-
-
-	png_set_IHDR(
-		png, info_ptr,
-		size.width, size.height,
-		8,						// 各色 8 bit
-        colorType,	// RGBA フォーマット
-		PNG_INTERLACE_NONE,
-		PNG_COMPRESSION_TYPE_DEFAULT,
-		PNG_FILTER_TYPE_DEFAULT);
-	//png_set_compression_level(png, 1);
-	png_set_write_fn(png, stream, pngWriteCallback, NULL);
-
-	std::vector<png_byte*> rows(size.height);
-	int rowBytes = png_get_rowbytes(png, info_ptr);
-	for (size_t y = 0; y < size.height; ++y)
-		rows[y] = (png_byte*)data + (rowBytes * y);
-
-	// write PNG information to file
-	//png_write_info(png, info_ptr);
-
-	png_set_rows(png, info_ptr, rows.data());
-	png_write_png(png, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
-
-	//png_write_end(png, info_ptr);
-}
-
-
-
-class IBitmapDecoder
-{
-public:
-	virtual ~IBitmapDecoder() = default;
-
-	virtual BitmapFrame* getBitmapFrame() = 0;
-};
-
-class PngBitmapDecoder
-	: public IBitmapDecoder
-{
-public:
-	PngBitmapDecoder() {}
-	virtual ~PngBitmapDecoder() = default;
-
-	static const int PNG_BYTES_TO_CHECK = 4;	// png 識別用の、ファイルの先頭バイト数
-	png_struct* m_png;
-	png_info* m_info;
-
-	bool load(Stream* stream, DiagnosticsManager* diag)
-	{
-		const bool swapHeight = false;
-		png_byte	sig[PNG_BYTES_TO_CHECK];
-		int			res;
-
-		size_t dataSize = (size_t)stream->length();
-
-		// サイズチェック
-		if (dataSize < PNG_BYTES_TO_CHECK) {
-			diag->reportError("invalid data size.");
-			return false;
-		}
-
-		// データが png かどうか調べる
-		stream->read(sig, 4);
-		stream->seek(0, SeekOrigin::Begin);
-		res = png_check_sig(sig, PNG_BYTES_TO_CHECK);
-		if (!res) {
-			diag->reportError("invalid png signature.");
-			return false;
-		}
-
-		// png_struct構造体を確保・初期化する
-		m_png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-		if (LN_ENSURE(m_png)) return false;
-
-		// finalizer
-		auto se = makeScopedCall([&]() {png_destroy_read_struct(&m_png, &m_info, NULL); });
-
-		// png_info構造体を確保・初期化する
-		m_info = png_create_info_struct(m_png);
-		if (LN_ENSURE(m_info)) return false;
-
-		if (setjmp(png_jmpbuf(m_png))) return false;
-
-		// png データ、読み込みコールバック設定
-		png_set_read_fn(m_png, (void*)stream, pngReadCallback);
-
-		// シグネチャの確認で読み飛ばしたバイト数を知らせる
-		//png_set_sig_bytes( m_png, PNG_BYTES_TO_CHECK );
-
-		// PNGファイルのヘッダ情報を読み込む
-		png_read_png(m_png, m_info, PNG_TRANSFORM_EXPAND, NULL);
-
-		// IHDRチャンク情報を取得する
-		png_uint_32 width, height;
-		int bitDepth, colorType, interlaceType;
-		png_get_IHDR(
-			m_png, m_info, &width, &height,
-			&bitDepth, &colorType, &interlaceType, NULL, NULL);
-		m_frame.size.width = width;
-		m_frame.size.height = height;
-
-		int pixelDepth = png_get_bit_depth(m_png, m_info) * png_get_channels(m_png, m_info);
-
-		// 必ず1色 8 ビットで
-		if (bitDepth != 8) return false;
-
-		// パレットモードは非対応
-		if (colorType & PNG_COLOR_MASK_PALETTE) return false;
-
-		//-----------------------------------------------------
-		// ビットマップ格納
-
-		unsigned int	row_bytes = png_get_rowbytes(m_png, m_info);	// 横幅のバイト数 (例えば ABGR の時は 横幅 * 4)
-		png_bytepp		row_pointers = png_get_rows(m_png, m_info);	// ビットマップデータ
-
-		int sign = (swapHeight) ? -1 : 1;			// 反転するか？
-		int unit = (swapHeight) ? m_frame.size.height - 1 : 0;	// イテレート開始行 (一番上か、一番下か)
-
-															// ABGR
-															// (R155, G128, B0, A78) のとき、U32(Little) で 4e0080ff となる。
-															// byte[4] の並びは AA RR GG BB
-		if (colorType == PNG_COLOR_TYPE_RGB_ALPHA && pixelDepth == 32)
-		{
-			m_frame.format = PixelFormat::RGBA32;
-			m_frame.data = makeRef<ByteBuffer>(m_frame.size.width * m_frame.size.height * 4);
-			byte_t* bitmap = m_frame.data->data();
-
-			// 1行ずつコピー
-			for (int h = 0; h < m_frame.size.height; ++h) {
-				memcpy(&bitmap[row_bytes * (unit + (sign * h))], row_pointers[h], row_bytes);
-			}
-		}
-		// BGR
-		// ABGR に拡張して読み込む
-		else if (colorType == PNG_COLOR_TYPE_RGB && pixelDepth == 24)
-		{
-			m_frame.format = PixelFormat::RGBA32;
-			m_frame.data = makeRef<ByteBuffer>(m_frame.size.width * m_frame.size.height * 4);
-			byte_t* bitmap = m_frame.data->data();
-
-			byte_t* row;
-			for (int y = 0; y < m_frame.size.height; ++y)
-			{
-				row = row_pointers[unit + (sign * y)];
-				for (int x = 0; x < m_frame.size.width; ++x)
-				{
-					byte_t* src = &row[x * 3];
-					byte_t* dest = &bitmap[(x + m_frame.size.width * y) * 4];
-					dest[0] = src[0];	// R
-					dest[1] = src[1];	// G
-					dest[2] = src[2];	// B
-					dest[3] = 0xFF;		// A
-				}
-			}
-		}
-		// Gray
-		else if (colorType == PNG_COLOR_TYPE_GRAY && pixelDepth == 8)
-		{
-			m_frame.format = PixelFormat::A8;
-			m_frame.data = makeRef<ByteBuffer>(m_frame.size.width * m_frame.size.height * 1);
-			byte_t* bitmap = m_frame.data->data();
-
-			for (int h = 0; h < m_frame.size.height; ++h) {
-				memcpy(&bitmap[row_bytes * (unit + (sign * h))], row_pointers[h], row_bytes);
-			}
-		}
-		else {
-			return false;
-		}
-
-		//PNG_COLOR_TYPE_GRAY// (ビット深度 1, 2, 4, 8, 16)
-		//PNG_COLOR_TYPE_GRAY_ALPHA// (ビット深度 8, 16)
-		//PNG_COLOR_TYPE_PALETTE// (ビット深度 1, 2, 4, 8)
-		//PNG_COLOR_TYPE_RGB// (ビット深度 8, 16)
-		//PNG_COLOR_TYPE_RGB_ALPHA// (ビット深度 8, 16)
-
-		//PNG_COLOR_MASK_PALETTE
-		//PNG_COLOR_MASK_COLOR
-		//PNG_COLOR_MASK_ALPHA
-
-		//if(png_get_valid(pPng, pInfo, PNG_INFO_tRNS))
-		//	png_set_expand(pPng);
-		//if(ColorType == PNG_COLOR_TYPE_PALETTE)
-		//	png_set_expand(pPng);
-		//if(ColorType == PNG_COLOR_TYPE_GRAY && bpp < 8)
-		//	png_set_expand(pPng);
-		//if(bpp > 8)
-		//	png_set_strip_16(pPng);
-		//if(ColorType == PNG_COLOR_TYPE_GRAY)
-		//	png_set_gray_to_rgb(pPng);
-		return true;
-	}
-
-	static void pngReadCallback(png_structp png_ptr, png_bytep data, png_size_t length)
-	{
-		Stream* stream = (Stream*)png_get_io_ptr(png_ptr);
-		int validSize = stream->read(data, length);
-		if (validSize != length) {
-			png_error(png_ptr, "_readPngData failed");
-		}
-	}
-
-	virtual BitmapFrame* getBitmapFrame() override { return &m_frame; }
-
-private:
-
-	BitmapFrame m_frame;
-};
-
 
 
 
@@ -427,6 +141,7 @@ void BlitHelper::bitBltInternalTemplate(
             srcBuf.setLine(y);
             for (int x = 0; x < srcRect.width; ++x)
             {
+                // TODO: 結果が 1減る
                 ClColor src = srcBuf.getPixel(x);
                 ClColor c = {
                     static_cast<uint8_t>((mulColorRGBA.r * src.r) >> 8),
@@ -450,7 +165,7 @@ void BlitHelper::bitBltInternalTemplateHelper(
     case PixelFormat::A8:
         bitBltInternalTemplate<TDestConverter, PixelAccessor_A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
         break;
-    case PixelFormat::RGBA32:
+    case PixelFormat::RGBA8:
         bitBltInternalTemplate<TDestConverter, PixelAccessor_R8G8B8A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
         break;
     //case PixelFormat::R8G8B8X8:
@@ -489,7 +204,7 @@ void BlitHelper::bitBltInternal(
     case PixelFormat::A8:
         bitBltInternalTemplateHelper<PixelAccessor_A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
         break;
-    case PixelFormat::RGBA32:
+    case PixelFormat::RGBA8:
         bitBltInternalTemplateHelper<PixelAccessor_R8G8B8A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
         break;
     //case PixelFormat::R8G8B8X8:
@@ -545,14 +260,14 @@ Bitmap2D::~Bitmap2D()
 {
 }
 
-void Bitmap2D::initialize()
+void Bitmap2D::init()
 {
 	m_size.width = 0;
 	m_size.height = 0;
 	m_format = PixelFormat::Unknown;
 }
 
-void Bitmap2D::initialize(int width, int height, PixelFormat format)
+void Bitmap2D::init(int width, int height, PixelFormat format)
 {
 	m_size.width = width;
 	m_size.height = height;
@@ -560,30 +275,30 @@ void Bitmap2D::initialize(int width, int height, PixelFormat format)
 	m_buffer->resize(getBitmapByteSize(m_size.width, m_size.height, 1, m_format));
 }
 
-Color32 Bitmap2D::getPixel32(int x, int y) const
+ColorI Bitmap2D::getPixel32(int x, int y) const
 {
-	if (m_format == PixelFormat::RGBA32)
+	if (m_format == PixelFormat::RGBA8)
 	{
 		const uint8_t* pixel = m_buffer->data() + ((y * m_size.width) + x) * 4;
-		return Color32(pixel[0], pixel[1], pixel[2], pixel[3]);
+		return ColorI(pixel[0], pixel[1], pixel[2], pixel[3]);
 	}
-    else if (m_format == PixelFormat::RGB24)
+    else if (m_format == PixelFormat::RGB8)
     {
         const uint8_t* pixel = m_buffer->data() + ((y * m_size.width) + x) * 3;
-        return Color32(pixel[0], pixel[1], pixel[2], 0xFF);
+        return ColorI(pixel[0], pixel[1], pixel[2], 0xFF);
     }
 	else
 	{
 		LN_NOTIMPLEMENTED();
-		return Color32();
+		return ColorI();
 	}
 }
 
-void Bitmap2D::setPixel32(int x, int y, const Color32& color)
+void Bitmap2D::setPixel32(int x, int y, const ColorI& color)
 {
-	if (m_format == PixelFormat::RGBA32)
+	if (m_format == PixelFormat::RGBA8)
 	{
-		Color32* pixel = reinterpret_cast<Color32*>(m_buffer->data() + ((y * m_size.width) + x) * 4);
+		ColorI* pixel = reinterpret_cast<ColorI*>(m_buffer->data() + ((y * m_size.width) + x) * 4);
 		*pixel = color;
 	}
 	else
@@ -592,7 +307,7 @@ void Bitmap2D::setPixel32(int x, int y, const Color32& color)
 	}
 }
 
-void Bitmap2D::clear(const Color32& color)
+void Bitmap2D::clear(const ColorI& color)
 {
     // Clear the buffer if completely transparent.
     if (color.r == 0x00 && color.g == 0x00 && color.b == 0x00 && color.a == 0x00)
@@ -603,11 +318,11 @@ void Bitmap2D::clear(const Color32& color)
     {
         switch (m_format)
         {
-        case PixelFormat::A1:
-            return;
+        //case PixelFormat::A1:
+        //    return;
         case PixelFormat::A8:
             return;
-        case PixelFormat::RGBA32:
+        case PixelFormat::RGBA8:
         //case PixelFormat::R8G8B8X8:
         {
             byte_t c[4] = { color.r, color.g, color.b, color.a };
@@ -638,7 +353,7 @@ void Bitmap2D::clear(const Color32& color)
 void Bitmap2D::flipVerticalFlow()
 {
 	if (LN_REQUIRE(m_format != PixelFormat::Unknown)) return;
-	if (LN_REQUIRE(m_format != PixelFormat::A1)) return;
+	//if (LN_REQUIRE(m_format != PixelFormat::A1)) return;
 
 	int pixelSize = getPixelFormatByteSize(m_format);
 	if (pixelSize == 1)
@@ -683,28 +398,32 @@ void Bitmap2D::flipVerticalFlow()
 void Bitmap2D::load(const StringRef& filePath)
 {
 	auto file = FileStream::create(filePath);
-	detail::PngBitmapDecoder decoder;
+    load(file);
+}
 
-	auto diag = newObject<DiagnosticsManager>();
-	decoder.load(file, diag);
-	diag->dumpToLog();
-	if (diag->succeeded())
-	{
-		detail::BitmapFrame* frame = decoder.getBitmapFrame();
-		m_buffer = frame->data;
-		m_size = frame->size;
-		m_format = frame->format;
-	}
+void Bitmap2D::load(Stream* stream)
+{
+    auto diag = newObject<DiagnosticsManager>();
+
+    auto decoder = detail::IBitmapDecoder::load(stream, diag);
+
+    diag->dumpToLog();
+    if (diag->succeeded())
+    {
+        detail::BitmapFrame* frame = decoder->getBitmapFrame();
+        m_buffer = frame->data;
+        m_size = frame->size;
+        m_format = frame->format;
+    }
 }
 
 void Bitmap2D::save(const StringRef& filePath)
 {
 	auto file = FileStream::create(filePath, FileOpenMode::Write | FileOpenMode::Truncate);
-	detail::PngBitmapEncoder encoder;
-	encoder.save(file, m_buffer->data(), m_size, m_format);
+    detail::IBitmapEncoder::save(file, m_buffer->data(), m_size, m_format);
 }
 
-Ref<Bitmap2D> Bitmap2D::transcodeTo(PixelFormat format, const Color32& color) const
+Ref<Bitmap2D> Bitmap2D::transcodeTo(PixelFormat format, const ColorI& color) const
 {
 	auto dstBitmap = newObject<Bitmap2D>(m_size.width, m_size.height, format);
 
@@ -740,7 +459,7 @@ Ref<Bitmap2D> Bitmap2D::transcodeTo(PixelFormat format, const Color32& color) co
 	return dstBitmap;
 }
 
-void Bitmap2D::blit(const RectI& destRect, const Bitmap2D* srcBitmap, const RectI& srcRect, const Color32& color, BitmapBlitOptions options)
+void Bitmap2D::blit(const RectI& destRect, const Bitmap2D* srcBitmap, const RectI& srcRect, const ColorI& color, BitmapBlitOptions options)
 {
     detail::BlitHelper::bitBltInternal(this, destRect, srcBitmap, srcRect, detail::ClColor{ color.r, color.g, color.b, color.a }, testFlag(options, BitmapBlitOptions::AlphaBlend));
 }
@@ -750,7 +469,7 @@ int Bitmap2D::getPixelFormatByteSize(PixelFormat format)
 	const int table[] =
 	{
 		0,	// Unknown,
-		1,	// A1,
+		//1,	// A1,
 		1,	// A8,
 		4,	// RGBA32,
         3,	// RGB24,
@@ -780,12 +499,12 @@ Bitmap3D::~Bitmap3D()
 {
 }
 
-void Bitmap3D::initialize(int width, int height, int depth, PixelFormat format)
+void Bitmap3D::init(int width, int height, int depth, PixelFormat format)
 {
 	if (LN_REQUIRE(width > 0)) return;
 	if (LN_REQUIRE(height > 0)) return;
 	if (LN_REQUIRE(depth > 0)) return;
-	Object::initialize();
+	Object::init();
 	m_width = width;
 	m_height = height;
 	m_depth = depth;
@@ -793,12 +512,12 @@ void Bitmap3D::initialize(int width, int height, int depth, PixelFormat format)
 	m_buffer->resize(Bitmap2D::getBitmapByteSize(m_width, m_height, m_depth, m_format));
 }
 
-void Bitmap3D::setPixel32(int x, int y, int z, const Color32& color)
+void Bitmap3D::setPixel32(int x, int y, int z, const ColorI& color)
 {
-	if (m_format == PixelFormat::RGBA32)
+	if (m_format == PixelFormat::RGBA8)
 	{
 		size_t faceSize = m_width * m_height;
-		Color32* pixel = reinterpret_cast<Color32*>(m_buffer->data() + ((z * faceSize) + ((y * m_width) + x)) * 4);
+		ColorI* pixel = reinterpret_cast<ColorI*>(m_buffer->data() + ((z * faceSize) + ((y * m_width) + x)) * 4);
 		*pixel = color;
 	}
 	else

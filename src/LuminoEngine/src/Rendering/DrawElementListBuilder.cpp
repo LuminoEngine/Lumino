@@ -143,6 +143,11 @@ void DrawElementListBuilder::setMaterial(AbstractMaterial* value)
 	}
 }
 
+const AbstractMaterial* DrawElementListBuilder::material() const
+{
+    return primaryGeometryStageParameters().m_material;
+}
+
 void DrawElementListBuilder::setTransfrom(const Matrix & value)
 {
     primaryState()->transform = value;
@@ -187,7 +192,7 @@ void DrawElementListBuilder::setBlendColor(const Color & value)
 	}
 }
 
-void DrawElementListBuilder::setTone(const ToneF & value)
+void DrawElementListBuilder::setTone(const ColorTone& value)
 {
 	if (primaryState()->builtinEffectData.tone != value) {
         primaryState()->builtinEffectData.tone = value;

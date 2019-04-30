@@ -17,11 +17,11 @@ InternalSpriteRenderer::InternalSpriteRenderer()
 {
 }
 
-void InternalSpriteRenderer::initialize(RenderingManager* manager)
+void InternalSpriteRenderer::init(RenderingManager* manager)
 {
 	//m_device = manager->graphicsManager()->deviceContext();
 	m_buffersReservedSpriteCount = 0;
-	m_vertexDeclaration = manager->standardVertexDeclaration()->resolveRHIObject();
+    m_vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(manager->standardVertexDeclaration(), nullptr);
 	
 	// reserve buffers.
 	m_spriteDataList.reserve(2048);
@@ -43,7 +43,8 @@ void InternalSpriteRenderer::drawRequest(
 	const Rect& srcRect,
 	const Color& color,
 	SpriteBaseDirection baseDir,
-	BillboardType billboardType)
+	BillboardType billboardType,
+    SpriteFlipFlags flipFlags)
 {
 	SpriteData sprite;
 
@@ -54,17 +55,30 @@ void InternalSpriteRenderer::drawRequest(
 	if (baseDir != SpriteBaseDirection::Basic2D)
 	{
 		//Vector3 origin(-center);
+        float l, t, r, b;
+#if 1   // 原点左下、povot.y+ が↑
+        r = size.x;
+        b = 0;
+        l = 0;
+        t = size.y;
+
+        l -= center.x;
+        r -= center.x;
+        t -= center.y;
+        b -= center.y;
+#else
+        // 原点中央 povot.y+ が↓
 		Vector2 harf_size(size * 0.5f);
-		float l, t, r, b;
 		r = harf_size.x;
 		b = -harf_size.y;
 		l = -r;
 		t = -b;
 
-		l -= center.x;
-		r -= center.x;
-		t -= center.y;
-		b -= center.y;
+        l -= center.x;
+        r -= center.x;
+        t -= center.y;
+        b -= center.y;
+#endif
 
 #define LN_WRITE_V3( x_, y_, z_ ) x_, y_, z_
 
@@ -208,6 +222,14 @@ void InternalSpriteRenderer::drawRequest(
         float t = srcRect.y;
         float r = (srcRect.x + srcRect.width);
         float b = (srcRect.y + srcRect.height);
+
+        if (testFlag(flipFlags, SpriteFlipFlags::FlipX)) {
+            std::swap(l, r);
+        }
+        if (testFlag(flipFlags, SpriteFlipFlags::FlipY)) {
+            std::swap(t, b);
+        }
+
         sprite.vertices[0].uv.x = l;
         sprite.vertices[0].uv.y = t;
         sprite.vertices[1].uv.x = r;
@@ -267,7 +289,7 @@ public:
 	}
 };
 
-void InternalSpriteRenderer::flush(IGraphicsDeviceContext* context)
+void InternalSpriteRenderer::flush(IGraphicsContext* context)
 {
 	int spriteCount = m_spriteDataList.size();
 	if (spriteCount == 0) {
@@ -275,7 +297,7 @@ void InternalSpriteRenderer::flush(IGraphicsDeviceContext* context)
 	}
 
 	// Allocate vertex buffer and index buffer, if needed.
-	prepareBuffers(context, m_spriteDataList.size());
+	prepareBuffers(context->device(), m_spriteDataList.size());
 
 	// Initialize sprite index list.
 	for (int i = 0; i < spriteCount; ++i) {
@@ -299,20 +321,21 @@ void InternalSpriteRenderer::flush(IGraphicsDeviceContext* context)
 	}
 
 	// Copy vertex data.
-	Vertex* vb = static_cast<Vertex*>(m_vertexBuffer->map());
+	Vertex* vb = static_cast<Vertex*>(context->map(m_vertexBuffer));
 	for (int iSprite = 0, iVertex = 0; iSprite < spriteCount; iSprite++)
 	{
 		int iData = m_spriteIndexList[iSprite];
 		memcpy(&vb[iVertex], m_spriteDataList[iData].vertices, sizeof(SpriteData::vertices));
 		iVertex += 4;
 	}
-	m_vertexBuffer->unmap();
+    context->unmap(m_vertexBuffer);
 
 	// Render
 	context->setVertexDeclaration(m_vertexDeclaration);
 	context->setVertexBuffer(0, m_vertexBuffer);
 	context->setIndexBuffer(m_indexBuffer);
-	context->drawPrimitiveIndexed(PrimitiveType::TriangleList, 0, spriteCount * 2);
+	context->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+	context->drawPrimitiveIndexed(0, spriteCount * 2);
 
 	// Cleanup
 	clear();
@@ -323,7 +346,7 @@ void InternalSpriteRenderer::clear()
 	m_spriteDataList.clear();
 }
 
-void InternalSpriteRenderer::prepareBuffers(IGraphicsDeviceContext* context, int spriteCount)
+void InternalSpriteRenderer::prepareBuffers(IGraphicsDevice* context, int spriteCount)
 {
 	if (m_buffersReservedSpriteCount < spriteCount)
 	{
@@ -371,12 +394,12 @@ SpriteRenderFeature::SpriteRenderFeature()
 {
 }
 
-void SpriteRenderFeature::initialize(RenderingManager* manager)
+void SpriteRenderFeature::init(RenderingManager* manager)
 {
-	RenderFeature::initialize();
+	RenderFeature::init();
 	m_manager = manager;
 	m_internal = makeRef<InternalSpriteRenderer>();
-	m_internal->initialize(manager);
+	m_internal->init(manager);
 }
 
 void SpriteRenderFeature::setSortInfo(
@@ -394,21 +417,23 @@ void SpriteRenderFeature::drawRequest(
 	const Rect& srcRect,
 	const Color& color,
 	SpriteBaseDirection baseDirection,
-	BillboardType billboardType)
+	BillboardType billboardType,
+    SpriteFlipFlags flipFlags)
 {
 	GraphicsManager* manager = m_manager->graphicsManager();
+    Vector4 sizeAndAnchor(size.x, size.y, anchorRatio.x, anchorRatio.y);
 	LN_ENQUEUE_RENDER_COMMAND_8(
 		SpriteRenderFeature_drawRequest, manager,
 		InternalSpriteRenderer*, m_internal,
 		Matrix, transform,
-        Vector2, size,
-		Vector2, anchorRatio,
+        Vector4, sizeAndAnchor,
 		Rect, srcRect,
 		Color, color,
 		SpriteBaseDirection, baseDirection,
 		BillboardType, billboardType,
+        SpriteFlipFlags, flipFlags,
 		{
-			m_internal->drawRequest(transform, size, anchorRatio, srcRect, color, baseDirection, billboardType);
+			m_internal->drawRequest(transform, Vector2(sizeAndAnchor.x, sizeAndAnchor.y), Vector2(sizeAndAnchor.z, sizeAndAnchor.w), srcRect, color, baseDirection, billboardType, flipFlags);
 		});
 }
 
@@ -432,13 +457,13 @@ void SpriteRenderFeature::onActiveRenderFeatureChanged(const detail::CameraInfo&
 void SpriteRenderFeature::flush(GraphicsContext* context)
 {
 	GraphicsManager* manager = m_manager->graphicsManager();
-	IGraphicsDeviceContext* deviceContext = context->commitState();
+    IGraphicsContext* c = GraphicsContextInternal::commitState(context);
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		SpriteRenderFeature_flush, manager,
-		IGraphicsDeviceContext*, deviceContext,
+        IGraphicsContext*, c,
 		InternalSpriteRenderer*, m_internal,
 		{
-			m_internal->flush(deviceContext);
+			m_internal->flush(c);
 		});
 }
 
@@ -448,7 +473,10 @@ void SpriteRenderFeature::makeRenderSizeAndSourceRectHelper(Texture* texture, co
     LN_DCHECK(outSourceRect);
 
     // 転送元矩形が負値ならテクスチャ全体を転送する
-    const SizeI& texSize = (texture != nullptr) ? texture->size() : SizeI::Zero;
+    //const SizeI& texSize = (texture != nullptr) ? texture->size() : SizeI::Zero;
+	SizeI texSize(
+		(texture != nullptr) ? texture->width() : 0,
+		(texture != nullptr) ? texture->height() : 0);
     Rect renderSourceRect = sourceRect;
     if (renderSourceRect.width < 0 && renderSourceRect.height < 0)
     {

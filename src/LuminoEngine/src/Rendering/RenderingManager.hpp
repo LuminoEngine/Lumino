@@ -1,20 +1,20 @@
 ﻿#pragma once
 
 namespace ln {
-class VertexDeclaration;
+class VertexLayout;
 class Shader;
 class Material;
 
 namespace detail {
 class LinearAllocatorPageManager;
-class RenderTargetTextureCacheManager;
-class FrameBufferCache;
-class DepthBufferCacheManager;
 class DrawElementListBuilder;
 class BlitRenderFeature;
 class SpriteRenderFeature;
 class MeshRenderFeature;
 class PrimitiveRenderFeature;
+class SpriteTextRenderFeature;
+class FrameRectRenderFeature;
+class ShapesRenderFeature;
 
 enum class BuiltinShader
 {
@@ -131,37 +131,40 @@ public:
 	struct Settings
 	{
 		GraphicsManager* graphicsManager;
+        FontManager* fontManager;
 	};
 
 	RenderingManager();
-	void initialize(const Settings& settings);
+	void init(const Settings& settings);
 	void dispose();
 
 	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
-	const Ref<RenderTargetTextureCacheManager>& renderTargetTextureCacheManager() const { return m_renderTargetTextureCacheManager; }
-	const Ref<DepthBufferCacheManager>& depthBufferCacheManager() const { return m_depthBufferCacheManager; }
-    const Ref<FrameBufferCache>& frameBufferCache() const { return m_frameBufferCache; }
-	const Ref<VertexDeclaration>& standardVertexDeclaration() const { return m_standardVertexDeclaration; }
+    FontManager* fontManager() const { return m_fontManager; }
+	const Ref<VertexLayout>& standardVertexDeclaration() const { return m_standardVertexDeclaration; }
 	//const Ref<DrawElementListBuilder>& renderStageListBuilder() const { return m_renderStageListBuilder; }
     const Ref<BlitRenderFeature>& blitRenderFeature() const { return m_blitRenderFeature; }
 	const Ref<SpriteRenderFeature>& spriteRenderFeature() const { return m_spriteRenderFeature; }
 	const Ref<MeshRenderFeature>& meshRenderFeature() const { return m_meshRenderFeature; }
     const Ref<PrimitiveRenderFeature>& primitiveRenderFeature() const { return m_primitiveRenderFeature; }
+    const Ref<SpriteTextRenderFeature>& spriteTextRenderFeature() const { return m_spriteTextRenderFeature; }
+	const Ref<FrameRectRenderFeature>& frameRectRenderFeature() const { return m_frameRectRenderFeature; }
+	const Ref<ShapesRenderFeature>& shapesRenderFeature() const { return m_shapesRenderFeature; }
 	const Ref<LinearAllocatorPageManager>& stageDataPageManager() const { return m_stageDataPageManager; }
 	const Ref<Shader>& builtinShader(BuiltinShader shader) const { return m_builtinShaders[(int)shader]; }
     const Ref<Material>& builtinMaterials(BuiltinMaterial material) const { return m_builtinMaterials[(int)material]; }
 
 private:
 	GraphicsManager* m_graphicsManager;
-	Ref<RenderTargetTextureCacheManager> m_renderTargetTextureCacheManager;
-	Ref<DepthBufferCacheManager> m_depthBufferCacheManager;
-    Ref<FrameBufferCache> m_frameBufferCache;
-	Ref<VertexDeclaration> m_standardVertexDeclaration;
+    FontManager* m_fontManager;
+	Ref<VertexLayout> m_standardVertexDeclaration;
 	//Ref<DrawElementListBuilder> m_renderStageListBuilder;
     Ref<BlitRenderFeature> m_blitRenderFeature;
 	Ref<SpriteRenderFeature> m_spriteRenderFeature;
 	Ref<MeshRenderFeature> m_meshRenderFeature;
     Ref<PrimitiveRenderFeature> m_primitiveRenderFeature;
+    Ref<SpriteTextRenderFeature> m_spriteTextRenderFeature;
+	Ref<FrameRectRenderFeature> m_frameRectRenderFeature;
+	Ref<ShapesRenderFeature> m_shapesRenderFeature;
 
 	// RenderStage 関係のデータ (ステートやコマンド) 用の LinearAllocatorPageManager
 	Ref<LinearAllocatorPageManager> m_stageDataPageManager;

@@ -10,7 +10,7 @@ class UnLigitingSceneRendererPass
 public:
 	UnLigitingSceneRendererPass();
 
-	void initialize(RenderingManager* manager);
+	void init(RenderingManager* manager);
 
 	virtual ShaderTechnique* selectShaderTechnique(
 		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
@@ -25,7 +25,7 @@ class UnLigitingSceneRenderer
 	: public SceneRenderer
 {
 public:
-	void initialize(RenderingManager* manager);
+	void init(RenderingManager* manager);
 
 private:
 };

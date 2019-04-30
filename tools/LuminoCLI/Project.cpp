@@ -17,7 +17,7 @@ Project::~Project()
 {
 }
 
-Result Project::newProject(const ln::Path& projectDir, const ln::String& projectName, const ln::String& engineSource)
+Result Project::newProject(const ln::Path& projectDir, const ln::String& projectName, const ln::String& engineSource, const ln::String& templateName)
 {
 	m_rootDir = projectDir.canonicalize();
 	m_projectName = projectName;
@@ -37,6 +37,10 @@ Result Project::newProject(const ln::Path& projectDir, const ln::String& project
 
 	m_properties->language = u"cpp";
     m_properties->engine = engineSource;
+    if (m_properties->engine.isEmpty()) {
+        m_properties->engine = u"system";
+    }
+
 	ln::FileSystem::createDirectory(m_engineDir);
 	ln::FileSystem::createDirectory(m_sourcesDir);
 	ln::FileSystem::createDirectory(m_assetsDir);
@@ -45,7 +49,7 @@ Result Project::newProject(const ln::Path& projectDir, const ln::String& project
 	ln::FileSystem::setAttribute(m_buildDir, ln::FileAttribute::Hidden);
 
 	m_context = ln::makeRef<CppLanguageContext>(this);
-	if (!m_context->applyTemplates()) {
+	if (!m_context->applyTemplates(templateName)) {
 		return Result::Fail;
 	}
     if (!m_context->applyEngine()) {
@@ -138,6 +142,8 @@ void Project::setupPathes()
 	m_sourcesDir = ln::Path(m_rootDir, u"Sources");
 	m_assetsDir = ln::Path(m_rootDir, u"Assets");
 	m_buildDir = ln::Path(m_rootDir, u".ln");
+	m_releaseDir = ln::Path(m_rootDir, u"Release");
+	
 	m_intermediateAssetsDir = ln::Path(m_buildDir, u"Assets");
 
 	auto files = ln::FileSystem::getFiles(m_rootDir, u"*" + ProjectFileExt);

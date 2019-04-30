@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include "EmptyPlatformWindowManager.hpp"
 #include "GLFWPlatformWindowManager.hpp"
+#include "Win32PlatformWindowManager.hpp"
 #include "PlatformManager.hpp"
 
 namespace ln {
@@ -12,22 +13,40 @@ PlatformManager::PlatformManager()
 {
 }
 
-void PlatformManager::initialize(const Settings& settings)
+Result PlatformManager::init(const Settings& settings)
 {
+//#ifdef LN_OS_WIN32
+//    if (!m_windowManager) {
+//        auto windowManager = ln::makeRef<Win32PlatformWindowManager>();
+//        if (!windowManager->init()) {
+//            return false;
+//        }
+//        m_windowManager = windowManager;
+//    }
+//#endif
+
 #ifdef LN_GLFW
-	auto windowManager = ln::makeRef<GLFWPlatformWindowManager>();
-	windowManager->initialize();
-	m_windowManager = windowManager;
+    if (!m_windowManager) {
+        auto windowManager = ln::makeRef<GLFWPlatformWindowManager>();
+        if (!windowManager->init()) {
+            return false;
+        }
+        m_windowManager = windowManager;
+    }
 #endif
 
 	if (!m_windowManager)
 	{
 		auto windowManager = ln::makeRef<EmptyPlatformWindowManager>();
-		windowManager->initialize();
+        if (!windowManager->init()) {
+            return false;
+        }
 		m_windowManager = windowManager;
 	}
 
 	m_mainWindow = m_windowManager->createWindow(settings.mainWindowSettings);
+
+    return true;
 }
 
 void PlatformManager::dispose()

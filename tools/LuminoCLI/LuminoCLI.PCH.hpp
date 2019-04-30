@@ -10,7 +10,8 @@
 #endif
 
 #include "CLI.hpp"
-#include "Result.hpp"
+#include <LuminoCore/Base/Result.hpp>
+using Result = ln::Result;
 
 //enum class Result
 //{

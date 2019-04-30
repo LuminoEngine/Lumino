@@ -5,6 +5,9 @@
 #include "../Graphics/RenderState.hpp"
 
 namespace ln {
+class Font;
+class VertexLayout;
+class VertexBuffer;
 class Texture;
 class RenderTargetTexture;
 class DepthBuffer;
@@ -90,7 +93,7 @@ public:
     void setOpacity(float value);
     void setColorScale(const Color& value);
     void setBlendColor(const Color& value);
-    void setTone(const ToneF& value);
+    void setTone(const ColorTone& value);
 
     void resetState();
     void pushState(bool reset = true);  // TODO: enum, scoped_guard
@@ -103,7 +106,9 @@ public:
 	void clear(Flags<ClearFlags> flags, const Color& color, float z, uint8_t stencil);
 
     void drawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor);
+    void drawPlane(float width, float depth, const Color& color = Color::White);
     void drawSphere(float radius, int slices, int stacks, const Color& color, const Matrix& localTransform = Matrix());
+	void drawBox(const Box& box, const Color& color = Color::White, const Matrix& localTransform = Matrix());
 
     // これは主に Post effect の実装で使用します。
     // 実際に処理が行われるのはレンダリングパイプラインの ImageEffect フェーズです。
@@ -121,13 +126,16 @@ public:
 		const Color& color,
 		SpriteBaseDirection baseDirection,
 		BillboardType billboardType,
+        const Flags<detail::SpriteFlipFlags>& flipFlags,
 		AbstractMaterial* material);
+
+	void drawPrimitive(VertexLayout* vertexDeclaration, VertexBuffer* vertexBuffer, PrimitiveTopology topology, int startVertex, int primitiveCount);
 
     void drawMesh(MeshResource* meshResource, int sectionIndex);
 	//void drawMesh(MeshContainer* meshContainer, int sectionIndex);
 
-
-
+    // font が nullptr の場合は defaultFont
+    void drawText(const StringRef& text, const Color& color, Font* font = nullptr);
 
 	/** @} */
 
@@ -163,7 +171,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	void setDrawElementList(detail::DrawElementList* list);
 	void resetForBeginRendering();
 
-private:
+protected:  // TODO:
 	detail::RenderingManager* m_manager;
 	Ref<detail::DrawElementListBuilder> m_builder;
 };

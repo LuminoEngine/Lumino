@@ -17,14 +17,18 @@ class UIRenderView	// TODO: detail かも
 {
 public:
     UIRenderView();
-	void initialize();
+	void init();
 
     void setRootElement(UIElement* element);
 
 	// TODO: internal
 	// 描画コマンド構築と実行まですべて行う
 	//void renderTree(GraphicsContext* graphicsContext, UIElement* element);
-    virtual void render(GraphicsContext* graphicsContext) override;
+    virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthbuffer) override;
+
+protected:
+	virtual void onUpdateUIStyle(const detail::UIStyleInstance* finalStyle) override;
+	virtual void onUpdateUILayout(const Rect& finalGlobalRect) override;
 
 private:
 	Ref<UIRenderingContext> m_renderingContext;

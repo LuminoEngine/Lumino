@@ -10,7 +10,7 @@ class TestObjectA
 public:
     LN_PROPERTY_DECLARE(int, Prop1);
 
-    void initialize();
+    void init();
 
     void setProp1(int value) { m_prop1 = value; }
     int prop1() const { return m_prop1; }
@@ -26,9 +26,9 @@ private:
 LN_OBJECT_IMPLEMENT(TestObjectA, Object);
 LN_PROPERTY_IMPLEMENT(TestObjectA, Prop1, m_prop1, PropertyMetadata(TestObjectA::onProp1Changed));
 
-void TestObjectA::initialize()
+void TestObjectA::init()
 {
-    Object::initialize();
+    Object::init();
 }
 
 void TestObjectA::onProp1Changed(Object* obj)
@@ -156,12 +156,12 @@ TEST_F(Test_Engine_Object, Property)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Engine_Object, PropertyRef)
+TEST_F(Test_Engine_Object, PropertyRef_old)
 {
     auto obj = newObject<TestObjectC>();
 
     //* [ ] set, get
-    PropertyRef ref = PropertyInfo::getPropertyRef(obj, TestObjectC::V1PropertyId);
+    PropertyRef_old ref = PropertyInfo::getPropertyRef_old(obj, TestObjectC::V1PropertyId);
     auto pair = ref.resolve();
     if (pair.first) {
         pair.second->setValue(7);
@@ -419,3 +419,45 @@ TEST_F(Test_Base_WeakRefPtr, Basic3)
         weak = &t1;
     }
 }
+
+
+//==============================================================================
+class Test_Engine_PropertySystem : public ::testing::Test {};
+
+class PropTestObjectA : public Object
+{
+public:
+	int m_int = 0;
+	float m_float = 0;
+
+	int getInt() const { return m_int; }
+	void setInt(int v) { m_int = v; }
+	float getFloat() const { return m_float; }
+	void setFloat(float v) { m_float = v; }
+
+	static void registerType(EngineContext* context);
+};
+
+
+void PropTestObjectA::registerType(EngineContext* context)
+{
+	context->registerType<PropTestObjectA>({
+		makeRef<PropertyInfo>("Int", LN_MAKE_GET_SET_PROPERTY_ACCESSOR(PropTestObjectA, int, getInt, setInt)),
+		makeRef<PropertyInfo>("Float", LN_MAKE_GET_SET_PROPERTY_ACCESSOR(PropTestObjectA, float, getFloat, setFloat)),
+		});
+}
+
+// - 型のプロパティ一覧を取得できること
+// - プロパティ名指定で Accessor を取得できること
+// - Accessor を使って値を get set できること
+// - ベースクラスのプロパティや TypeInfo をとれること
+// - 型名指定でオブジェクトを作成できること
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Engine_PropertySystem, Basic)
+{
+	PropTestObjectA::registerType(EngineContext::current());
+	
+
+}
+

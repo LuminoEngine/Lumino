@@ -32,7 +32,7 @@ Win32InputDriver::~Win32InputDriver()
 
 
 //------------------------------------------------------------------------------
-void Win32InputDriver::initialize(HWND hWnd)
+void Win32InputDriver::init(HWND hWnd)
 {
 	LN_LOG_DEBUG << "Win32InputDriver";
 
@@ -128,7 +128,7 @@ void Win32InputDriver::CreateJoysticksDevice(const DIDEVICEINSTANCE* instance)
 		LN_COM_SAFE_RELEASE(device);
 
 		auto joystick = makeRef<Win32JoystickDriver>();
-		joystick->initialize(NULL, m_hWnd, m_XInputDeviceCount, true);
+		joystick->init(NULL, m_hWnd, m_XInputDeviceCount, true);
 		m_joystickList.add(joystick);
 		++m_XInputDeviceCount;
 	}
@@ -147,7 +147,7 @@ void Win32InputDriver::CreateJoysticksDevice(const DIDEVICEINSTANCE* instance)
 				//DXST_ERRORLOGFMT_ADDA(( "デバイスの登録名:%s" , State.tszInstanceName )) ;
 				//DXST_ERRORLOGFMT_ADDA(( "デバイスの製品登録名:%s" , State.tszProductName )) ;
 				auto joystick = makeRef<Win32JoystickDriver>();
-				joystick->initialize(device, m_hWnd, -1, (caps.dwFlags & DIDC_FORCEFEEDBACK) != 0);
+				joystick->init(device, m_hWnd, -1, (caps.dwFlags & DIDC_FORCEFEEDBACK) != 0);
 				m_joystickList.add(joystick);
 			}
 		}
@@ -166,7 +166,7 @@ void Win32InputDriver::CreateJoysticksDevice(const DIDEVICEINSTANCE* instance)
 	{
 	// ジョイスティックの管理クラスを作成する
 	mJoypads[ mJoypadNum ] = NEW JoypadDevice();
-	mJoypads[ mJoypadNum ]->initialize( device, mWindowHandle );
+	mJoypads[ mJoypadNum ]->init( device, mWindowHandle );
 	++mJoypadNum;
 	}
 	}

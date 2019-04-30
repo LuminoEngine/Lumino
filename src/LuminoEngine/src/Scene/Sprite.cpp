@@ -8,9 +8,14 @@ namespace ln {
 //==============================================================================
 // Sprite
 
-Ref<Sprite> Sprite::create(float width, float height, Texture* texture)
+Ref<Sprite> Sprite::create(Texture* texture, float width, float height)
 {
-    return newObject<Sprite>(width, height, texture);
+    return newObject<Sprite>(texture, width, height);
+}
+
+Ref<Sprite> Sprite::create(SpriteFrameSet* frameSet)
+{
+	return newObject<Sprite>(frameSet);
 }
 
 Sprite::Sprite()
@@ -21,19 +26,25 @@ Sprite::~Sprite()
 {
 }
 
-void Sprite::initialize()
+void Sprite::init()
 {
-    VisualObject::initialize();
+    VisualObject::init();
     m_component = newObject<SpriteComponent>();
     addComponent(m_component);
     setMainVisualComponent(m_component);
 }
 
-void Sprite::initialize(float width, float height, Texture* texture)
+void Sprite::init(Texture* texture, float width, float height)
 {
-    initialize();
+    init();
     setSize(Size(width, height));
     setTexture(texture);
+}
+
+void Sprite::init(SpriteFrameSet* frameSet)
+{
+	init();
+	setFrameSet(frameSet);
 }
 
 void Sprite::setTexture(Texture* texture)
@@ -56,9 +67,49 @@ void Sprite::setSourceRect(float x, float y, float width, float height)
     setSourceRect(Rect(x, y, width, height));
 }
 
+void Sprite::setFrameSet(SpriteFrameSet* value)
+{
+	m_component->setFrameSet(value);
+}
+
+void Sprite::setFrameIndex(int index)
+{
+	m_component->setFrameIndex(index);
+}
+
 const Rect& Sprite::sourceRect() const
 {
     return m_component->sourceRect();
+}
+
+void Sprite::setAnchorPoint(const Vector2& value)
+{
+    m_component->setAnchorPoint(value);
+}
+
+const Vector2& Sprite::anchorPoint() const
+{
+    return m_component->anchorPoint();
+}
+
+void Sprite::setFlippedX(bool value)
+{
+    m_component->setFlippedX(value);
+}
+
+bool Sprite::isFlippedX() const
+{
+    return m_component->isFlippedX();
+}
+
+void Sprite::setFlippedY(bool value)
+{
+    m_component->setFlippedY(value);
+}
+
+bool Sprite::isFlippedY() const
+{
+    return m_component->isFlippedY();
 }
 
 } // namespace ln

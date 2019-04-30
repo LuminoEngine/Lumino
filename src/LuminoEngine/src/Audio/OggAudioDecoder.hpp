@@ -12,7 +12,7 @@ class OggAudioDecoder
 public:
     OggAudioDecoder();
 	virtual ~OggAudioDecoder() = default;
-	void initialize(Stream* stream, DiagnosticsManager* diag);
+	void init(Stream* stream, DiagnosticsManager* diag);
 	virtual const AudioDataInfo& audioDataInfo() const override;
 	//virtual void seekToSample(uint32_t sampleNumber) override;
     virtual void seekToFrame(size_t frameNumber) override;

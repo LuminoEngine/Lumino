@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include "../Graphics/GraphicsManager.hpp"
@@ -24,7 +25,7 @@ SceneRendererPass::~SceneRendererPass()
 {
 }
 
-void SceneRendererPass::initialize()
+void SceneRendererPass::init()
 {
 }
 
@@ -50,14 +51,21 @@ SceneRenderer::SceneRenderer()
 {
 }
 
-void SceneRenderer::initialize()
+void SceneRenderer::init()
 {
-	m_skinningMatricesTexture = newObject<Texture2D>(4, 1024, TextureFormat::R32G32B32A32Float, false, GraphicsResourceUsage::Dynamic);
-	m_skinningLocalQuaternionsTexture = newObject<Texture2D>(1, 1024, TextureFormat::R32G32B32A32Float, false, GraphicsResourceUsage::Dynamic);
+	m_skinningMatricesTexture = newObject<Texture2D>(4, 1024, TextureFormat::RGBA32F);
+	m_skinningMatricesTexture->setResourceUsage(GraphicsResourceUsage::Dynamic);
+	m_skinningLocalQuaternionsTexture = newObject<Texture2D>(1, 1024, TextureFormat::RGBA32F);
+	m_skinningLocalQuaternionsTexture->setResourceUsage(GraphicsResourceUsage::Dynamic);
 	
 	// skinning texture は毎フレーム更新されるものなので、デバイスリセット時に復元する必要はない
 	m_skinningMatricesTexture->setResourcePool(GraphicsResourcePool::None);
 	m_skinningLocalQuaternionsTexture->setResourcePool(GraphicsResourcePool::None);
+
+    auto samperState = newObject<SamplerState>();
+    samperState->setFilterMode(TextureFilterMode::Point);
+    m_skinningMatricesTexture->setSamplerState(samperState);
+    m_skinningLocalQuaternionsTexture->setSamplerState(samperState);
 }
 
 void SceneRenderer::render(
@@ -79,13 +87,15 @@ void SceneRenderer::render(
 
 
 	//if (clearColorBuffer)
-	//{
-	//	coreRenderer->setRenderTarget(0, defaultRenderTarget);
-	//	coreRenderer->setDepthBuffer(defaultDepthBuffer);
-	//	// TODO: 前回の最後のステートが残っていることがある。clear したいやつの弊害だけ、とりあえず暫定処置。シザーも必要になりそう。
-	//	coreRenderer->setViewport(RectI(0, 0, defaultRenderTarget->getSize()));
-	//	coreRenderer->clear(ClearFlags::All, clearColor);
-	//}
+	{
+        // TODO: 暫定。
+        graphicsContext->setRenderTarget(0, defaultFrameBuffer.renderTarget[0]);
+        graphicsContext->setDepthBuffer(defaultFrameBuffer.depthBuffer);
+        graphicsContext->clear(ClearFlags::Depth, Color::White);
+		// TODO: 前回の最後のステートが残っていることがある。clear したいやつの弊害だけ、とりあえず暫定処置。シザーも必要になりそう。
+		//coreRenderer->setViewport(RectI(0, 0, defaultRenderTarget->getSize()));
+		//coreRenderer->clear(ClearFlags::All, clearColor);
+	}
 
 
 
@@ -212,12 +222,15 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
                     mainTexture = m_manager->graphicsManager()->whiteTexture();
                 }
 
+                ShaderTechniqueClass_MeshProcess meshProcess = ShaderTechniqueClass_MeshProcess::StaticMesh;
+
 				ElementInfo elementInfo;
 				elementInfo.viewProjMatrix = &cameraInfo.viewProjMatrix;
-				elementInfo.WorldMatrix = (currentStage->renderFeature && !currentStage->renderFeature->drawElementTransformNegate()) ? element->combinedWorldMatrix() : Matrix();
+				elementInfo.WorldMatrix = (currentStage->renderFeature && !currentStage->renderFeature->drawElementTransformNegate()) ? element->combinedWorldMatrix() : Matrix::Identity;
 				elementInfo.WorldViewProjectionMatrix = elementInfo.WorldMatrix * (*elementInfo.viewProjMatrix);
 				elementInfo.boneTexture = m_skinningMatricesTexture;
 				elementInfo.boneLocalQuaternionTexture = m_skinningLocalQuaternionsTexture;
+                element->onElementInfoOverride(&elementInfo, &meshProcess);
 
 				SubsetInfo subsetInfo;
 				subsetInfo.materialTexture = mainTexture;
@@ -228,14 +241,20 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 				element->onSubsetInfoOverride(&subsetInfo);
 
 				ShaderTechnique* tech = pass->selectShaderTechnique(
-					ShaderTechniqueClass_MeshProcess::StaticMesh,
+                    meshProcess,
 					finalMaterial->shader(),
 					currentStage->getShadingModelFinal(finalMaterial));
 
                 detail::ShaderSemanticsManager* semanticsManager = ShaderHelper::semanticsManager(tech->shader());
-				semanticsManager->updateCameraVariables(cameraInfo);
-				semanticsManager->updateElementVariables(cameraInfo, elementInfo);
-				semanticsManager->updateSubsetVariables(subsetInfo);
+				//semanticsManager->updateCameraVariables(cameraInfo);
+				//semanticsManager->updateElementVariables(cameraInfo, elementInfo);
+				//semanticsManager->updateSubsetVariables(subsetInfo);
+                if (currentStage->renderFeature) {
+                    currentStage->renderFeature->updateRenderParameters(element, tech, cameraInfo, elementInfo, subsetInfo);
+                }
+                else {
+                    RenderFeature::updateRenderParametersDefault(tech, cameraInfo, elementInfo, subsetInfo);
+                }
 
 				if (finalMaterial) {
 					PbrMaterialData pbrMaterialData;
@@ -539,7 +558,7 @@ void SceneRenderer::applyFrameBufferStatus(GraphicsContext* context, RenderStage
 				target = defaultFrameBufferInPass.renderTarget[i];
 			}
 
-			context->setColorBuffer(i, target);
+			context->setRenderTarget(i, target);
 
 			if (i == 0) {
 				renderTarget0 = target;
@@ -578,9 +597,10 @@ void SceneRenderer::applyGeometryStatus(GraphicsContext* context, RenderStage* s
 {
 	// BlendState
 	{
+        BlendMode mode = stage->getBlendModeFinal(priorityMaterial);
 		BlendStateDesc state;
 		state.independentBlendEnable = false;
-		makeBlendMode(stage->getBlendModeFinal(priorityMaterial), &state.renderTargets[0]);
+		makeBlendMode(mode, &state.renderTargets[0]);
 		context->setBlendState(state);
 	}
 	// RasterizerState

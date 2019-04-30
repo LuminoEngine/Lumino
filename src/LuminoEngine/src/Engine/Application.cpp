@@ -38,7 +38,7 @@ void Application::onDestroy()
 
 void Application::initInternal()
 {
-	detail::EngineDomain::engineManager()->initialize();
+	detail::EngineDomain::engineManager()->init();
 	onCreate();
 	onStart();
 }
@@ -76,7 +76,7 @@ void Application::run()
 
 namespace detail {
 
-void ApplicationHelper::initialize(Application* app)
+void ApplicationHelper::init(Application* app)
 {
 	app->initInternal();
 }

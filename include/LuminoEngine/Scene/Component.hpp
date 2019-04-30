@@ -14,16 +14,21 @@ class Component
 	: public Object
 {
     LN_OBJECT;
+public:
+
+    WorldObject* worldObject() const { return m_object; }
+
 protected:
     // アタッチされた WorldObject の transform へのポインタ
     detail::WorldObjectTransform* transrom() const;
 
-    WorldObject* worldObject() const { return m_object; }
 
 
     // 以下、すべて空実装
     virtual void onAttached(WorldObject* owner);
     virtual void onDetaching(WorldObject* owner);
+	virtual void onAttachedWorld(World* newOwner);
+	virtual void onDetachedWorld(World* oldOwner);
     virtual void onUpdate(float elapsedSeconds);
     virtual void onPrepareRender(RenderingContext* context);
     virtual void onRender(RenderingContext* context);
@@ -31,7 +36,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	Component();
 	virtual ~Component();
-	void initialize();
+	void init();
 
 public:
     WorldObject* m_object;

@@ -13,7 +13,7 @@ public:
 	Win32InputDriver();
 	virtual ~Win32InputDriver();
 
-	void initialize(HWND hWnd);
+	void init(HWND hWnd);
 	virtual void dispose() override;
 
 	virtual int getJoystickCount() override;

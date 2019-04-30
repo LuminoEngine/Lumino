@@ -23,7 +23,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
     AnimationClock();
 	virtual ~AnimationClock();
-    void initialize(AnimationClockAffiliation affiliation);
+    void init(AnimationClockAffiliation affiliation);
 
 private:
 };
@@ -37,7 +37,7 @@ public:
 LN_CONSTRUCT_ACCESS:
     SingleAnimationClock();
     virtual ~SingleAnimationClock();
-    void initialize();
+    void init();
 
 private:
     Ref<AnimationTrack> m_track;

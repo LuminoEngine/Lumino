@@ -15,19 +15,19 @@ class InternalPrimitiveRenderer
 public:
     InternalPrimitiveRenderer();
     virtual ~InternalPrimitiveRenderer();
-    void initialize(RenderingManager* manager);
+    void init(RenderingManager* manager);
 
     void drawMeshGenerater(const MeshGenerater* generator);
 
-    void flush(IGraphicsDeviceContext* context);
+    void flush(IGraphicsContext* context);
 
 private:
-    void prepareBuffers(IGraphicsDeviceContext* context, int vertexCount, int indexCount);
+    void prepareBuffers(IGraphicsDevice* device, int vertexCount, int indexCount);
 
     RenderingManager* m_manager;
     Ref<LinearAllocator> m_linearAllocator;
     List<MeshGenerater*> m_generators;
-    PrimitiveType m_primitiveType;
+    PrimitiveTopology m_primitiveType;
     Ref<IVertexDeclaration> m_vertexDeclaration;
     Ref<IVertexBuffer> m_vertexBuffer;
     Ref<IIndexBuffer> m_indexBuffer;
@@ -78,7 +78,7 @@ class PrimitiveRenderFeature
 public:
     PrimitiveRenderFeature();
 	~PrimitiveRenderFeature();
-	void initialize(RenderingManager* manager);
+	void init(RenderingManager* manager);
 
 
 
@@ -110,7 +110,7 @@ public:
     virtual bool drawElementTransformNegate() const override { return true; }
 
 private:
-    Optional<PrimitiveType> m_lastPrimitiveType;
+    Optional<PrimitiveTopology> m_lastPrimitiveType;
 	RenderingManager* m_manager;
     Ref<InternalPrimitiveRenderer> m_internal;
 };

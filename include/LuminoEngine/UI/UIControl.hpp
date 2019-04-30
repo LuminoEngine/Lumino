@@ -8,7 +8,7 @@ class UIControl
 {
 public:
     UIControl();
-	void initialize();
+	void init();
 
 private:
 };

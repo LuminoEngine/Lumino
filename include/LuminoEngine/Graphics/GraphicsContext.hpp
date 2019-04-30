@@ -1,12 +1,12 @@
-﻿#pragma once
-
+﻿// Copyright (c) 2019+ lriki. Distributed under the MIT license.
+#pragma once
 #include "Common.hpp"
 #include "GeometryStructs.hpp"
 #include "ColorStructs.hpp"
 #include "RenderState.hpp"
 
 namespace ln {
-class VertexDeclaration;
+class VertexLayout;
 class VertexBuffer;
 class IndexBuffer;
 class RenderTargetTexture;
@@ -15,84 +15,176 @@ class Shader;
 class ShaderPass;
 class SwapChain;
 
-namespace detail {
-	class GraphicsManager;
-	class IGraphicsDeviceContext;
-}
-
+/*
+ * グラフィクスデバイスへの描画呼出しを発行するためのクラスです。
+ */
 class LN_API GraphicsContext
-	: public Object
+    : public Object
 {
 public:
-	void resetState();
-	void setBlendState(const BlendStateDesc& value);
-	void setRasterizerState(const RasterizerStateDesc& value);
-	void setDepthStencilState(const DepthStencilStateDesc& value);
-	void setColorBuffer(int index, RenderTargetTexture* value);	// Viewport, Scissor はクリア TODO: やっぱり ColorBuffer は驚く
-    RenderTargetTexture* colorBuffer(int index) const;
-	void setDepthBuffer(DepthBuffer* value);
+    /** 同時に設定できる RenderTarget の最大数です。 */
+    static const int MaxMultiRenderTargets = detail::MaxMultiRenderTargets;
+
+    /** 同時に設定できる 頂点ストリーム の最大数です。 */
+    static const int MaxVertexStreams = detail::MaxVertexStreams;
+
+public:
+    /** BlendState を設定します。 */
+    void setBlendState(const BlendStateDesc& value);
+
+    /** BlendState を取得します。 */
+    const BlendStateDesc& blendState() const { return m_staging.blendState; }
+
+    /** RasterizerState を設定します。 */
+    void setRasterizerState(const RasterizerStateDesc& value);
+
+    /** RasterizerState を取得します。 */
+    const RasterizerStateDesc& rasterizerState() const { return m_staging.rasterizerState; }
+
+    /** DepthStencilState を設定します。 */
+    void setDepthStencilState(const DepthStencilStateDesc& value);
+
+    /** DepthStencilState を取得します。 */
+    const DepthStencilStateDesc& depthStencilState() const { return m_staging.depthStencilState; }
+
+    /** RenderTarget を設定します。index 0 に設定した場合、Viewport と Scissor 領域は新しい RenderTarget のサイズに合わせて再設定されます。 */
+    void setRenderTarget(int index, RenderTargetTexture* value);
+
+    /** RenderTarget を取得します。 */
+    RenderTargetTexture* renderTarget(int index) const;
+
+    /** DepthBuffer を設定します。 */
+    void setDepthBuffer(DepthBuffer* value);
+
+    /** DepthBuffer を取得します。 */
     DepthBuffer* depthBuffer() const;
-	void setViewportRect(const Rect& value);
-	void setScissorRect(const Rect& value);
-	void setVertexDeclaration(VertexDeclaration* value);
-	void setVertexBuffer(int streamIndex, VertexBuffer* value);
-	void setIndexBuffer(IndexBuffer* value);
-	void setShaderPass(ShaderPass* value);
 
-	void clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00);
-	void drawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount);
-	void drawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount);
-	void present(SwapChain* swapChain);
+    /** ビューポートの矩形を設定します。 */
+    void setViewportRect(const Rect& value);
 
-	// TODO: internal
-	// IGraphicsDeviceContext の clear, draw 系の機能を呼び出したい場合はこの戻り値を使うこと。
-	// GraphicsContext は変更中のステートをキャッシュするが、それを確実に IGraphicsDeviceContext へ送信した状態にする。
-	detail::IGraphicsDeviceContext* commitState();
+    /** ビューポートの矩形を取得します。 */
+    const Rect& viewportRect() const { return m_staging.viewportRect; }
 
-LN_CONSTRUCT_ACCESS:
-	GraphicsContext();
-	virtual ~GraphicsContext();
-	void initialize(detail::IGraphicsDeviceContext* device);
+    /** シザー領域の矩形を設定します。 */
+    void setScissorRect(const Rect& value);
 
-LN_INTERNAL_ACCESS:
-	virtual void dispose() override;
+    /** シザー領域の矩形を取得します。 */
+    const Rect& scissorRect() const { return m_staging.scissorRect; }
+
+    /** VertexLayout を設定します。 */
+    void setVertexLayout(VertexLayout* value);
+
+    /** VertexLayout を取得します。 */
+    VertexLayout* vertexLayout() const;
+
+    /** 描画プリミティブの種類を設定します。 */
+    void setPrimitiveTopology(PrimitiveTopology value);
+
+    /** IndexBuffer を取得します。 */
+    PrimitiveTopology primitiveTopology() const { return m_staging.topology; }
+
+    /** VertexBuffer を設定します。 */
+    void setVertexBuffer(int streamIndex, VertexBuffer* value);
+
+    /** VertexBuffer を取得します。 */
+    VertexBuffer* vertexBuffer(int streamIndex) const;
+
+    /** IndexBuffer を設定します。 */
+    void setIndexBuffer(IndexBuffer* value);
+
+    /** IndexBuffer を取得します。 */
+    IndexBuffer* indexBuffer() const;
+
+    /** ShaderPass を設定します。 */
+    void setShaderPass(ShaderPass* value);
+
+    /** IndexBuffer を取得します。 */
+    ShaderPass* shaderPass() const;
+
+    /** デフォルト設定を復元します。 */
+    void resetState();
+
+    /**
+     * レンダーターゲット、深度バッファ、ステンシルバッファをクリアします。
+     *
+     * 複数のレンダーターゲットが設定されている場合、先頭 (index 0) のターゲットのみクリアされます。
+     * また、ViewportRect と ScissorRect の設定は適用されません。
+     */
+    void clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00);
+
+    /**
+     * プリミティブを描画します。
+     */
+    void drawPrimitive(int startVertex, int primitiveCount);
+
+    /**
+     * インデックス付きのプリミティブを描画します。
+     */
+    void drawPrimitiveIndexed(int startIndex, int primitiveCount);
+
+protected:
+    virtual void onDispose(bool explicitDisposing) override;
 
 private:
+    LN_INTERNAL_NEW_OBJECT;
+    GraphicsContext();
+    virtual ~GraphicsContext();
+    void init(detail::IGraphicsContext* context);
 
-	detail::GraphicsManager* m_manager;
-	detail::IGraphicsDeviceContext* m_device;
+    void beginCommandRecodingIfNeeded();
+    void endCommandRecodingIfNeeded();
+    void flushCommandRecoding(RenderTargetTexture* affectRendreTarget);
+    detail::IGraphicsContext* commitState();
 
-    // TODO: 途中
-    enum ModifiedFlags
+    enum DirtyFlags
     {
-        ModifiedFlags_None = 0,
-        ModifiedFlags_VertexBuffers = 1 << 2,
-        ModifiedFlags_IndexBuffer = 1 << 3,
-        ModifiedFlags_ShaderPass = 1 << 4,
-        ModifiedFlags_All = 0xFFFFFFFF,
+        DirtyFlags_None = 0,
+        DirtyFlags_BlendState = 1 << 1,
+        DirtyFlags_RasterizerState = 1 << 2,
+        DirtyFlags_DepthStencilState = 1 << 3,
+        DirtyFlags_RegionRects = 1 << 4,
+        DirtyFlags_Framebuffer = 1 << 5,
+        DirtyFlags_PipelinePrimitiveState = 1 << 6,
+        DirtyFlags_PrimitiveBuffers = 1 << 7,
+        DirtyFlags_ShaderPass = 1 << 8,
+        DirtyFlags_All = 0xFFFFFFFF,
     };
 
-	struct State
-	{
-		BlendStateDesc blendState;
-		RasterizerStateDesc rasterizerState;
-		DepthStencilStateDesc depthStencilState;
-		std::array<Ref<RenderTargetTexture>, 4> renderTargets;
-		Ref<DepthBuffer> depthBuffer;
-		Rect viewportRect;
-		Rect scissorRect;
-		Ref<VertexDeclaration> vertexDeclaration;
-		std::array<Ref<VertexBuffer>, 4> vertexBuffers;
-		Ref<IndexBuffer> indexBuffer;
-		Ref<Shader> shader;		// shaderPass owner, for keep reference.
-		ShaderPass* shaderPass;
+    struct State
+    {
+        BlendStateDesc blendState;
+        RasterizerStateDesc rasterizerState;
+        DepthStencilStateDesc depthStencilState;
+        std::array<Ref<RenderTargetTexture>, 4> renderTargets;
+        Ref<DepthBuffer> depthBuffer;
+        Rect viewportRect;
+        Rect scissorRect;
+        Ref<VertexLayout> VertexLayout;
+        std::array<Ref<VertexBuffer>, detail::MaxVertexStreams> vertexBuffers;
+        Ref<IndexBuffer> indexBuffer;
+        Ref<Shader> shader; // shaderPass owner, for keep reference.
+        ShaderPass* shaderPass;
+        PrimitiveTopology topology;
 
-		void reset();
-	};
+        void reset();
+    };
 
-	State m_staging;
-	State m_lastCommit;
-    uint32_t m_modifiedFlags;
+    detail::GraphicsManager* m_manager;
+    detail::IGraphicsContext* m_context;
+    State m_staging;
+    State m_lastCommit;
+    uint32_t m_dirtyFlags;
+    bool m_recordingBegan;
+
+    friend class detail::GraphicsContextInternal;
 };
 
+namespace detail {
+class GraphicsContextInternal
+{
+public:
+    static void flushCommandRecoding(GraphicsContext* self, RenderTargetTexture* affectRendreTarget) { self->flushCommandRecoding(affectRendreTarget); }
+    static IGraphicsContext* commitState(GraphicsContext* self) { return self->commitState(); }
+};
+}
 } // namespace ln

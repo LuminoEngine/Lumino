@@ -4,6 +4,7 @@
 
 namespace ln {
 namespace detail {
+class ClusteredShadingSceneRenderer;
 
 #if 1
 
@@ -19,7 +20,7 @@ class DepthPrepass
 public:
 	DepthPrepass();
 	virtual ~DepthPrepass();
-	void initialize();
+	void init();
 
 
 	virtual void onBeginRender(SceneRenderer* sceneRenderer) override;
@@ -37,8 +38,8 @@ public:
 
 public:	// TODO:
 	Ref<Shader>					m_defaultShader;
-	RenderTargetTexture*	m_depthMap;
-	DepthBuffer*	m_depthBuffer;
+	Ref<RenderTargetTexture>	m_depthMap;
+	Ref<DepthBuffer>	m_depthBuffer;
 };
 
 class ClusteredShadingGeometryRenderingPass
@@ -47,7 +48,7 @@ class ClusteredShadingGeometryRenderingPass
 public:
 	ClusteredShadingGeometryRenderingPass();
 	virtual ~ClusteredShadingGeometryRenderingPass();
-	void initialize();
+	void init(ClusteredShadingSceneRenderer* ownerRenderer);
 
 	virtual ShaderTechnique* selectShaderTechnique(
 		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
@@ -60,8 +61,9 @@ public:
 	//virtual void onBeginPass(DefaultStatus* defaultStatus, RenderView* renderView) override;
 
 private:
-	Ref<Shader>					m_defaultShader;
-	ShaderTechnique*			m_defaultShaderTechnique;
+	ClusteredShadingSceneRenderer* m_ownerRenderer;
+	Ref<Shader> m_defaultShader;
+	ShaderTechnique* m_defaultShaderTechnique;
 	//Ref<Shader>					m_unLightingShader;
 	//ShaderTechnique*			m_unLightingShaderTechnique;
 };
@@ -74,7 +76,7 @@ public:
 
 	ShadowCasterPass();
 	virtual ~ShadowCasterPass();
-	void initialize();
+	void init();
 
 	//virtual Shader* getDefaultShader() const override;
 
@@ -103,10 +105,11 @@ class ClusteredShadingSceneRenderer
 public:
 	ClusteredShadingSceneRenderer();
 	virtual ~ClusteredShadingSceneRenderer();
-	void initialize(RenderingManager* manager);
+	void init(RenderingManager* manager);
 	//void setSceneGlobalRenderSettings(const SceneGlobalRenderSettings& settings) { m_renderSettings = settings; }
 	void setFogParams(const FogParams& params) { m_fogParams = params; }
 	DepthPrepass* getDepthPrepass() const { return m_depthPrepass; }
+	const LightClusters& lightClusters() const { return m_lightClusters; }
 
 protected:
 	//virtual void onBeginRender() override;

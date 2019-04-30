@@ -20,7 +20,7 @@ AnimationManager::~AnimationManager()
 {
 }
 
-void AnimationManager::initialize(const Settings& settings)
+void AnimationManager::init(const Settings& settings)
 {
 }
 

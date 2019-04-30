@@ -13,17 +13,25 @@ namespace LuminoBuild.Rules
 
         public override void Build(Builder builder)
         {
-            builder.DoTask("BuildExternalProjects");
+            if (!builder.HasFlagArgument("disable-build-external"))
+            {
+                builder.DoTask("BuildExternalProjects");
+            }
+
             if (Utils.IsWin32)
             {
                 builder.DoTask("MakeVSProjects");
                 builder.DoTask("BuildEngine_MSVC");
-                builder.DoTask("BuildEngine_Emscripten");
             }
             if (Utils.IsMac)
             {
                 builder.DoTask("BuildEngine_macOS");
                 builder.DoTask("BuildEngine_iOS");
+            }
+
+            if (BuildEnvironment.EmscriptenFound)
+            {
+                builder.DoTask("BuildEngine_Emscripten");
             }
 
             if (BuildEnvironment.AndroidStudioFound)
@@ -34,6 +42,7 @@ namespace LuminoBuild.Rules
             builder.DoTask("BuildDocuments");
 
             builder.DoTask("MakeReleasePackage");
+            builder.DoTask("CopyEngineLibsToRepoRoot");
         }
     }
 }

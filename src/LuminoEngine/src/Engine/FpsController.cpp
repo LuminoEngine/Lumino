@@ -22,7 +22,7 @@ FpsController::FpsController()
     , m_elapsedGameTime(0.0)
     , m_lastRealTime(0.0)
     , m_elapsedRealTime(0.0)
-    , m_startTime(Environment::getTickCount())
+    , m_startTime(0.001 * static_cast<double>(Environment::getTickCount()))
     , m_totalGameTime(0)
     , m_totalRealTime(0)
     , m_capacityFps(0.0)
@@ -207,7 +207,13 @@ void FpsController::process()
 
 void FpsController::processForMeasure()
 {
-    m_currentTime = 0.001f * (Environment::getTickCount() - m_startTime);
+    uint64_t tick = Environment::getTickCount();
+    if (tick < m_startTime) {
+        LN_NOTIMPLEMENTED();
+        return;
+    }
+
+    m_currentTime = (0.001 * static_cast<double>(tick)) - m_startTime;
 
     m_elapsedGameTime = m_currentTime - m_lastTime;
     m_elapsedRealTime = m_currentTime - m_lastRealTime;

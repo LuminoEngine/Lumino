@@ -14,10 +14,12 @@ class DSoundAudioDevice
 public:
 	DSoundAudioDevice();
 	virtual ~DSoundAudioDevice() = default;
-	void initialize(int frameLength);
+	void init(int frameLength, bool* outNoDevice);
 	virtual void dispose() override;
 	virtual int deviceSamplingRate() override;
 	virtual void updateProcess() override;
+
+    //static bool existsAvailableDriver();
 
 private:
 	IDirectSound8 * m_dsound;

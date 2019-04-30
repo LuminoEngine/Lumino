@@ -8,6 +8,8 @@
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
+#include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
+#include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
 #include <LuminoEngine/Scene/Light.hpp>
@@ -49,6 +51,16 @@ void EngineSettings::setAssetStorageAccessPriority(AssetStorageAccessPriority va
 	detail::EngineDomain::engineManager()->settings().assetStorageAccessPriority = value;
 }
 
+void EngineSettings::setGraphicsAPI(GraphicsAPI value)
+{
+	detail::EngineDomain::engineManager()->settings().graphicsAPI = value;
+}
+
+void EngineSettings::setStandaloneFpsControl(bool enabled)
+{
+    detail::EngineDomain::engineManager()->settings().standaloneFpsControl = enabled;
+}
+
 void EngineSettings::setEngineFeatures(Flags<EngineFeature> features)
 {
     detail::EngineDomain::engineManager()->settings().features = features;
@@ -70,7 +82,7 @@ static void endFrame()
 
 void Engine::initialize()
 {
-	detail::EngineDomain::engineManager()->initialize();
+	detail::EngineDomain::engineManager()->init();
 	beginFrame();
 }
 
@@ -95,6 +107,26 @@ void Engine::quit()
 void Engine::resetFrameDelay()
 {
     detail::EngineDomain::engineManager()->resetFrameDelay();
+}
+
+double Engine::totalTime()
+{
+    return detail::EngineDomain::engineManager()->fpsController().getTotalGameTime();
+}
+
+void Engine::setTimeScale(float value)
+{
+    detail::EngineDomain::engineManager()->setTimeScale(value);
+}
+
+const Path& Engine::persistentDataPath()
+{
+	return detail::EngineDomain::engineManager()->persistentDataPath();
+}
+
+void Engine::setShowDebugFpsEnabled(bool enabled)
+{
+    return detail::EngineDomain::engineManager()->setShowDebugFpsEnabled(enabled);
 }
 
 GraphicsContext* Engine::graphicsContext()
@@ -142,10 +174,21 @@ DirectionalLight* Engine::mainDirectionalLight()
     return detail::EngineDomain::engineManager()->mainDirectionalLight();
 }
 
+WorldRenderView* Engine::mainRenderView()
+{
+    return detail::EngineDomain::engineManager()->mainRenderView();
+}
+
 PhysicsWorld* Engine::mainPhysicsWorld()
 {
     return detail::EngineDomain::engineManager()->mainPhysicsWorld();
 }
+
+PhysicsWorld2D* Engine::mainPhysicsWorld2D()
+{
+    return detail::EngineDomain::engineManager()->mainPhysicsWorld2D();
+}
+
 
 // TODO: time
 //Engine::elapsedSeconds()

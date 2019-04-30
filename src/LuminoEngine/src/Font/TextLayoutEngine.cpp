@@ -34,6 +34,7 @@ void TextLayoutEngine::layout(FontCore* font, const Char* text, size_t length, c
     m_targetArea = targetArea;
 	m_strokeSize = strokeSize;
     m_alignment = alignment;
+    m_layoutLines.clear();
     m_font->getGlobalMetrics(&m_globalMetrics);
 
 	resetStream();
@@ -210,7 +211,7 @@ void BitmapTextRenderer::render(Bitmap2D* bitmap, const StringRef& text, const R
     m_bitmap = bitmap;
     m_rect = rect;
     m_color = color;
-    m_font = FontHelper::resolveFontCore(font);
+    m_font = FontHelper::resolveFontCore(font, 1.0f);
     layout(m_font, text.data(), text.length(), rect, 0, alignment);
 }
 
@@ -224,7 +225,7 @@ void BitmapTextRenderer::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Si
         RectI(m_rect.x + pos.x, m_rect.y + pos.y, info.size),
         info.glyphBitmap,
         RectI(0, 0, info.size),
-        m_color.to32BitColor(), BitmapBlitOptions::AlphaBlend);
+        ColorI::fromLinearColor(m_color), BitmapBlitOptions::AlphaBlend);
 }
 
 } // namespace detail

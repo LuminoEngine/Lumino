@@ -1,130 +1,30 @@
-﻿cmake_minimum_required (VERSION 3.1.0)
-
-# - グローバルな各フラグを書き換える。このファイルの include 後に作られるプロジェクトのビルド設定が変わる。
-#	* CMAKE_C_FLAGS, CMAKE_C_FLAGS_DEBUG, CMAKE_C_FLAGS_RELEASE
-
-#------------------------------------------------------------------------------
-# options
-#------------------------------------------------------------------------------
 
 
+if (DEFINED EMSCRIPTEN)
+    set(LN_EMSCRIPTEN ON)
+    set(LN_USE_SDL ON)
 
-#add_definitions("-std=c++14")
-set(CMAKE_CXX_FLAGS "-std=c++14")
+elseif (LN_ANDROID)
 
-#------------------------------------------------------------------------------
-# make lib dir
-#------------------------------------------------------------------------------
-set(LN_LIB_OUTPUT_LOCAL_DIR "lib/")
+elseif (DEFINED IOS_PLATFORM)
+    set(LN_IOS ON)
+    set(LN_USE_OPENAL ON)
 
-if (WIN32)
-	# MSVC version
-	if (MSVC_VERSION GREATER_EQUAL 1910)
-		set(LN_TARGET_ENV "MSVC150")
-	elseif (MSVC_VERSION GREATER_EQUAL 1900)
-		set(LN_TARGET_ENV "MSVC140")
-	elseif (MSVC_VERSION GREATER_EQUAL 1800)
-		set(LN_TARGET_ENV "MSVC120")
-	elseif (MSVC_VERSION GREATER_EQUAL 1700)
-		set(LN_TARGET_ENV "MSVC110")
-	elseif (MSVC_VERSION GREATER_EQUAL 1600)
-		set(LN_TARGET_ENV "MSVC100")
-	elseif (MSVC_VERSION GREATER_EQUAL 1500)
-		set(LN_TARGET_ENV "MSVC90")
-	elseif (MSVC_VERSION GREATER_EQUAL 1400)
-		set(LN_TARGET_ENV "MSVC80")
-	endif()
-	set(LN_LIB_OUTPUT_LOCAL_DIR "${LN_LIB_OUTPUT_LOCAL_DIR}${LN_TARGET_ENV}")
-
-	# Architecture.
-	# http://stackoverflow.com/questions/5334095/cmake-multiarchitecture-compilation
-	if (${CMAKE_EXE_LINKER_FLAGS} MATCHES "/machine:x64")	# /machine:x64
-		set(LN_ARCH "x64")
-	else()
-		set(LN_ARCH "x86")
-	endif()
-	set(LN_LIB_OUTPUT_LOCAL_DIR "${LN_LIB_OUTPUT_LOCAL_DIR}/${LN_ARCH}")
-
-	# Runtime library
-	if (LN_MSVC_STATIC_RUNTIME)
-		foreach (flag CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE)
-			if (${flag} MATCHES "/MD")
-				string(REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}")
-			endif()
-			if (${flag} MATCHES "/MDd")
-				string(REGEX REPLACE "/MDd" "/MTd" ${flag} "${${flag}}")
-			endif()
-		endforeach()
-	endif()
-	if (LN_MSVC_STATIC_RUNTIME)
-		set(LN_LIB_OUTPUT_LOCAL_DIR "${LN_LIB_OUTPUT_LOCAL_DIR}_MT/")
-	else()
-		set(LN_LIB_OUTPUT_LOCAL_DIR "${LN_LIB_OUTPUT_LOCAL_DIR}_MD/")
-	endif()
-
-elseif(APPLE)
-	set(LN_LIB_OUTPUT_LOCAL_DIR "${LN_LIB_OUTPUT_LOCAL_DIR}OSX")
+elseif(WIN32 OR APPLE OR UNIX)
+    set(LN_OS_DESKTOP ON)
+    set(LN_USE_OPENAL ON)
 
 endif()
 
-# make fullpath
-set(LN_LIB_DEBUG_OUTPUT_ROOT_DIR "${CMAKE_SOURCE_DIR}/${LN_LIB_OUTPUT_LOCAL_DIR}Debug/")
-set(LN_LIB_RELEASE_OUTPUT_ROOT_DIR "${CMAKE_SOURCE_DIR}/${LN_LIB_OUTPUT_LOCAL_DIR}Release/")
-
-#------------------------------------------------------------------------------
-# Options
-#------------------------------------------------------------------------------
-# Unicode char set.
-add_definitions(-DUNICODE)
-add_definitions(-D_UNICODE)
-
-if (WIN32)
-	add_definitions("/EHsc")	# VS2015, cmake
-
-	# ランタイムライブラリ
-	if (LN_MSVC_STATIC_RUNTIME)
-		foreach (flag CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE)
-			if (${flag} MATCHES "/MD")
-				string(REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}")
-			endif()
-			if (${flag} MATCHES "/MDd")
-				string(REGEX REPLACE "/MDd" "/MTd" ${flag} "${${flag}}")
-			endif()
-		endforeach()
-	endif()
-	
-	# Architecture.
-	# http://stackoverflow.com/questions/5334095/cmake-multiarchitecture-compilation
-	if (${CMAKE_EXE_LINKER_FLAGS} MATCHES "/machine:x64")	# /machine:x64
-		set(LN_ARCH "x64")
-	else()
-		set(LN_ARCH "x86")
-	endif()
-	
-	# MSVC version
-	if (MSVC_VERSION GREATER_EQUAL 1910)
-		set(LN_TARGET_ENV "MSVC150")
-	elseif (MSVC_VERSION GREATER_EQUAL 1900)
-		set(LN_TARGET_ENV "MSVC140")
-	elseif (MSVC_VERSION GREATER_EQUAL 1800)
-		set(LN_TARGET_ENV "MSVC120")
-	elseif (MSVC_VERSION GREATER_EQUAL 1700)
-		set(LN_TARGET_ENV "MSVC110")
-	elseif (MSVC_VERSION GREATER_EQUAL 1600)
-		set(LN_TARGET_ENV "MSVC100")
-	elseif (MSVC_VERSION GREATER_EQUAL 1500)
-		set(LN_TARGET_ENV "MSVC90")
-	elseif (MSVC_VERSION GREATER_EQUAL 1400)
-		set(LN_TARGET_ENV "MSVC80")
-	endif()
+if (MSVC AND LN_MSVC_USE_SDL)
+    set(LN_USE_SDL ON)
+else()
+    set(LN_USE_SDL OFF)
 endif()
 
 #------------------------------------------------------------------------------
-# functions
-#------------------------------------------------------------------------------
 
-#------------------------------------------------------------------------------
-# e.g.) ln_add_pch(LuminoCore ${LN_SOURCES} "src/LuminoCore.PCH.h" "src/LuminoCore.PCH.cpp")
+
 function(ln_add_pch project_name header_file_path source_file_path)
 
 	get_filename_component(header_file_name ${header_file_path} NAME)
@@ -141,8 +41,8 @@ function(ln_add_pch project_name header_file_path source_file_path)
 
 		# force include header
 		set(ln_compile_flags "-include \"${result}\"")
-		endif()
-
+	
+	endif()
 
 	# get source files from project (referred LLVM)
 	get_property(source_files TARGET ${project_name} PROPERTY SOURCES)

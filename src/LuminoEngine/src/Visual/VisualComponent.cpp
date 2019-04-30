@@ -23,9 +23,9 @@ VisualComponent::~VisualComponent()
 {
 }
 
-void VisualComponent::initialize()
+void VisualComponent::init()
 {
-    Component::initialize();
+    Component::init();
 }
 
 void VisualComponent::setBlendMode(const Optional<BlendMode>& mode)
@@ -108,12 +108,12 @@ const Color& VisualComponent::blendColor() const
     return m_builtinEffectData->blendColor;
 }
 
-void VisualComponent::setTone(const ToneF& value)
+void VisualComponent::setTone(const ColorTone& value)
 {
     m_builtinEffectData->tone = value;
 }
 
-const ToneF& VisualComponent::tone() const
+const ColorTone& VisualComponent::tone() const
 {
     return m_builtinEffectData->tone;
 }

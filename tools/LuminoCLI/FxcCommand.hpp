@@ -11,6 +11,7 @@ class FxcCommand
 {
 public:
 	ln::Path outputFile;
+    bool saveCodes = false;
 
     int execute(const ln::Path& inputFile);
 

@@ -47,7 +47,8 @@ LN_VSOutput_Common VS_ClusteredForward_Geometry(LN_VSInput input)
 
 float4 PS_Main(LN_PSInput_Common input) : SV_TARGET
 {
-    return ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.UV) * _BlurColor;
+    return tex2D(ln_MaterialTexture, input.UV) * _BlurColor;
+    //ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.UV) * _BlurColor;
 }
 
 technique Forward_Geometry_UnLighting

@@ -3,6 +3,7 @@
 #include <LuminoEngine/Graphics/RenderState.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/DepthBuffer.hpp>
+#include <LuminoEngine/Shader/ShaderInterfaceFramework.hpp>
 #include <LuminoEngine/Rendering/Common.hpp>
 #include "../Engine/LinearAllocator.hpp"
 
@@ -15,6 +16,7 @@ namespace detail {
 class RenderStage;
 class DrawElementList;
 class DrawElementListBuilder;
+struct ElementInfo;
 struct SubsetInfo;
 
 // DrawElementList::newFrameData() で確保するデータのインターフェイス。
@@ -42,7 +44,7 @@ public:
 	float opacity;
 	Color colorScale;
 	Color blendColor;
-	ToneF tone;
+	ColorTone tone;
 
 	BuiltinEffectData()
 	{
@@ -63,7 +65,7 @@ public:
 		opacity = 1.0;
 		colorScale = Color(1.0f, 1.0f, 1.0f, 1.0f);
 		blendColor = Color(0.0f, 0.0f, 0.0f, 0.0f);
-		tone = ToneF(0.0f, 0.0f, 0.0f, 0.0f);
+		tone = ColorTone(0.0f, 0.0f, 0.0f, 0.0f);
 	}
 
 	bool equals(const BuiltinEffectData* other) const
@@ -80,8 +82,8 @@ public:
     void inherit(const BuiltinEffectData& parent)
     {
         opacity *= parent.opacity;
-        colorScale.multiplyClamp(parent.colorScale);
-        blendColor.addClamp(parent.blendColor);
+        colorScale = Color::multiplyClamp(colorScale, parent.colorScale);
+        blendColor = Color::addClamp(blendColor, parent.blendColor);
         tone.addClamp(parent.tone);
     }
 };
@@ -170,7 +172,7 @@ public:
 	bool equals(const GeometryStageParameters* other) const
 	{
         return
-            m_material == other->m_material &&
+            m_material == other->m_material &&  // TODO: Material が一致することはまずない。ちゃんと中身かhashを見ること。
             m_blendMode == other->m_blendMode &&
             m_cullingMode == other->m_cullingMode &&
             m_depthTestEnabled == other->m_depthTestEnabled &&
@@ -223,6 +225,10 @@ class RenderDrawElement
 public:
 	RenderDrawElement();
 	virtual ~RenderDrawElement();
+
+    // SkinnedMesh の BoneMatrix を書き込むために用意してある。
+    // それ以外の要素の変更は想定していない。
+    virtual void onElementInfoOverride(ElementInfo* elementInfo, ShaderTechniqueClass_MeshProcess* meshProcess);
 
     // 必要に応じて SubsetInfo の調整を行う。
     // 特に不透明度の操作など、Phase との整合性に注意すること。
@@ -344,7 +350,7 @@ public:
     float getOpacityFinal(RenderDrawElement* element) const;
     const Color& getColorScaleFinal(RenderDrawElement* element) const;
     const Color& getBlendColorFinal(RenderDrawElement* element) const;
-    const ToneF& getToneFinal(RenderDrawElement* element) const;
+    const ColorTone& getToneFinal(RenderDrawElement* element) const;
 
 
 private:
@@ -364,6 +370,8 @@ public:
 
 	bool isEmpty() const { return m_renderStageList.isEmpty(); }
 	RenderStage* last() const { return m_renderStageList.back(); }
+
+	const Ref<LinearAllocator>& dataAllocator() const { return m_dataAllocator; }
 
 	void clear();
 

@@ -1,9 +1,15 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/Graphics/Bitmap.hpp>
+#include <LuminoEngine/Graphics/VertexLayout.hpp>
+#include <LuminoEngine/Graphics/VertexBuffer.hpp>
+#include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Mesh/Mesh.hpp>
+#include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
+#include "../Font/FontManager.hpp"
 #include "../Mesh/MeshGenerater.hpp"
 #include "RenderingManager.hpp"
 #include "DrawElementListBuilder.hpp"
@@ -108,7 +114,7 @@ void RenderingContext::setBlendColor(const Color& value)
     m_builder->setBlendColor(value);
 }
 
-void RenderingContext::setTone(const ToneF& value)
+void RenderingContext::setTone(const ColorTone& value)
 {
     m_builder->setTone(value);
 }
@@ -180,6 +186,27 @@ void RenderingContext::drawLine(const Vector3& from, const Color& fromColor, con
     //ptr->makeBoundingSphere(Vector3::min(position1, position2), Vector3::max(position1, position2));
 }
 
+void RenderingContext::drawPlane(float width, float depth, const Color& color)
+{
+    class DrawPlane : public detail::RenderDrawElement
+    {
+    public:
+        detail::PlaneMeshGenerater data;
+
+        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+        {
+            static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::PlaneMeshGenerater>(data);
+        }
+    };
+
+    auto* element = m_builder->addNewDrawElement<DrawPlane>(
+        m_manager->primitiveRenderFeature(),
+        m_builder->primitiveRenderFeatureStageParameters());
+    element->data.size.set(width, depth);
+    element->data.setColor(color);
+    element->data.setTransform(element->combinedWorldMatrix());
+}
+
 void RenderingContext::drawSphere(float radius, int slices, int stacks, const Color& color, const Matrix& localTransform)
 {
     class DrawSphere : public detail::RenderDrawElement
@@ -201,6 +228,13 @@ void RenderingContext::drawSphere(float radius, int slices, int stacks, const Co
     element->data.m_stacks = stacks;
     element->data.setColor(color);
     element->data.setTransform(element->combinedWorldMatrix() * localTransform);
+
+	// TODO: bouding box
+}
+
+void RenderingContext::drawBox(const Box& box, const Color& color, const Matrix& localTransform)
+{
+	LN_NOTIMPLEMENTED();
 }
 
 void RenderingContext::blit(RenderTargetTexture* source, RenderTargetTexture* destination)
@@ -255,6 +289,7 @@ void RenderingContext::drawSprite(
 	const Color& color,
 	SpriteBaseDirection baseDirection,
 	BillboardType billboardType,
+    const Flags<detail::SpriteFlipFlags>& flipFlags,
 	AbstractMaterial* material)
 {
 	class DrawSprite : public detail::RenderDrawElement
@@ -267,11 +302,12 @@ void RenderingContext::drawSprite(
 		Color color;
 		SpriteBaseDirection baseDirection;
 		BillboardType billboardType;
+        detail::SpriteFlipFlags flipFlags;
 
 		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
 		{
 			static_cast<detail::SpriteRenderFeature*>(renderFeatures)->drawRequest(
-				transform, size, anchorRatio, srcRect, color, baseDirection, billboardType);
+				transform, size, anchorRatio, srcRect, color, baseDirection, billboardType, flipFlags);
 		}
 	};
 
@@ -286,10 +322,39 @@ void RenderingContext::drawSprite(
 	element->color = color;
 	element->baseDirection = baseDirection;
 	element->billboardType = billboardType;
+    element->flipFlags = flipFlags;
 	// TODO
 	//detail::Sphere sphere;
 	//detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &sphere);
 	//ptr->setLocalBoundingSphere(sphere);
+}
+
+void RenderingContext::drawPrimitive(VertexLayout* vertexDeclaration, VertexBuffer* vertexBuffer, PrimitiveTopology topology, int startVertex, int primitiveCount)
+{
+	class DrawPrimitive : public detail::RenderDrawElement
+	{
+	public:
+		Ref<VertexLayout> vertexDeclaration;
+		Ref<VertexBuffer> vertexBuffer;
+		PrimitiveTopology topology;
+		int startVertex;
+		int primitiveCount;
+
+		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+		{
+			context->setVertexLayout(vertexDeclaration);
+			context->setVertexBuffer(0, vertexBuffer);
+			context->setPrimitiveTopology(topology);
+			context->drawPrimitive(startVertex, primitiveCount);
+		}
+	};
+
+	auto* element = m_builder->addNewDrawElement<DrawPrimitive>(nullptr, nullptr);
+	element->vertexDeclaration = vertexDeclaration;
+	element->vertexBuffer = vertexBuffer;
+	element->topology = topology;
+	element->startVertex = startVertex;
+	element->primitiveCount = primitiveCount;
 }
 
 // LOD なし。というか直接描画
@@ -300,6 +365,26 @@ void RenderingContext::drawMesh(MeshResource* meshResource, int sectionIndex)
     public:
         Ref<MeshResource> meshResource;
         int sectionIndex;
+
+        virtual void onElementInfoOverride(detail::ElementInfo* elementInfo, detail::ShaderTechniqueClass_MeshProcess* meshProcess) override
+        {
+            if (elementInfo->boneTexture && elementInfo->boneLocalQuaternionTexture) {
+                if (MeshContainer* container = meshResource->ownerContainer()) {
+                    if (StaticMeshModel* model = container->meshModel()) {
+                        if (model->meshModelType() == detail::InternalMeshModelType::SkinnedMesh) {
+                            //elementInfo->boneTexture->map()
+                            printf("skinned\n");
+                            *meshProcess = detail::ShaderTechniqueClass_MeshProcess::SkinnedMesh;
+                            Bitmap2D* bmp1 = elementInfo->boneTexture->map(MapMode::Write);
+                            Bitmap2D* bmp2 = elementInfo->boneLocalQuaternionTexture->map(MapMode::Write);
+                            static_cast<SkinnedMeshModel*>(model)->writeSkinningMatrices(
+                                reinterpret_cast<Matrix*>(bmp1->data()),
+                                reinterpret_cast<Quaternion*>(bmp2->data()));
+                        }
+                    }
+                }
+            }
+        }
 
         virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
         {
@@ -352,6 +437,30 @@ void RenderingContext::drawMesh(MeshResource* meshResource, int sectionIndex)
 //	//detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &sphere);
 //	//ptr->setLocalBoundingSphere(sphere);
 //}
+
+void RenderingContext::drawText(const StringRef& text, const Color& color, Font* font)
+{
+
+    // TODO: cache
+    auto formattedText = makeRef<detail::FormattedText>();
+    formattedText->text = text;
+    formattedText->font = font;
+	formattedText->color = color;
+
+    if (!formattedText->font) {
+        formattedText->font = m_manager->fontManager()->defaultFont();
+    }
+
+    auto* element = m_builder->addNewDrawElement<detail::DrawTextElement>(
+        m_manager->spriteTextRenderFeature(),
+        m_builder->spriteTextRenderFeatureStageParameters());
+    element->formattedText = formattedText;
+
+    // TODO
+    //detail::Sphere sphere;
+    //detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &sphere);
+    //ptr->setLocalBoundingSphere(sphere);
+}
 
 void RenderingContext::addAmbientLight(const Color& color, float intensity)
 {

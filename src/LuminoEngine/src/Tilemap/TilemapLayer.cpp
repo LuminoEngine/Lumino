@@ -24,9 +24,9 @@ TilemapLayer::~TilemapLayer()
 {
 }
 
-void TilemapLayer::initialize()
+void TilemapLayer::init()
 {
-    Object::initialize();
+    Object::init();
 }
 
 void TilemapLayer::resize(int width, int height)

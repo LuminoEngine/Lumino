@@ -27,9 +27,9 @@ class ObjectA : public Object {
 
 LN_PROPERTY_IMPLEMENT(ObjectA, m_prop1, metadata);
 
-ObjectA::initialize()
+ObjectA::init()
 {
-    Object::initialize();   // 必須
+    Object::init();   // 必須
 }
 
 void ObjectA::onProp1Changed()
@@ -41,8 +41,11 @@ void ObjectA::onProp1Changed()
 
 */
 
-namespace ln {
+#include <unordered_set>
+#include "../Base/Variant.hpp"
 
+namespace ln {
+class PropertyAccessor;
 class PropertyInfo;
 class PropertyBase;
 template<typename T> class Property;
@@ -73,10 +76,10 @@ enum class PropertySetSource
 
 
 
-class PropertyRef
+class PropertyRef_old
 {
 public:
-    PropertyRef(Object* propOwner, PropertyBase* prop)
+    PropertyRef_old(Object* propOwner, PropertyBase* prop)
         : m_propOwner(propOwner)
         , m_prop(prop)
     {
@@ -137,6 +140,42 @@ private:
 
 
 
+class PropertyRef
+{
+public:
+	PropertyRef()
+		: m_propOwner()
+		, m_accessor(nullptr)
+	{}
+
+	PropertyRef(Object* propOwner, PropertyAccessor* accessor)
+		: m_propOwner(propOwner)
+		, m_accessor(accessor)
+	{}
+
+	bool isNull() const
+	{
+		return m_accessor == nullptr;
+	}
+
+	std::pair<Ref<Object>, PropertyAccessor*> resolve() const
+	{
+		auto ptr = m_propOwner.resolve();
+		if (ptr != nullptr) {
+			return { ptr, m_accessor };
+		}
+		else {
+			return { nullptr, nullptr };
+		}
+	}
+
+private:
+	WeakRefPtr<Object>	m_propOwner;
+	PropertyAccessor* m_accessor;
+};
+
+
+
 
 
 class PropertyMetadata
@@ -171,6 +210,18 @@ public:
         ownerClassType->registerProperty(this);
     }
 
+	PropertyInfo(const char* name, const Ref<PropertyAccessor>& accessor)
+		: m_name(String::fromCString(name))
+		, m_accessor(accessor)
+		, m_registerd(false)
+	{
+		m_getPropertyCallback = nullptr;
+		m_staticPropertyChangedCallback = nullptr;
+	}
+
+	const String& name() const { return m_name; }
+	const Ref<PropertyAccessor>& accessor() const { return m_accessor; }
+
     template<typename TValue>
     static void setTypedValue(Object* obj, PropertyInfo* propertyInfo, TValue&& value)
     {
@@ -178,7 +229,9 @@ public:
         static_cast<Property<TValue>*>(prop)->set(std::forward(value));
     }
     
-    static PropertyRef getPropertyRef(Object* obj, PropertyInfo* propertyInfo);
+    static PropertyRef_old getPropertyRef_old(Object* obj, PropertyInfo* propertyInfo);
+
+	static PropertyRef getPropertyRef(Object* obj, PropertyInfo* propertyInfo);
 
     // TODO: Helper でいい
     static void notifyPropertyChanged(Object* ownerObject, PropertyBase* target, const PropertyInfo* prop, PropertySetSource source);
@@ -187,6 +240,11 @@ private:
     GetPropertyCallback m_getPropertyCallback;
     StaticPropertyChangedCallback m_staticPropertyChangedCallback;
     bool m_registerd;
+
+	// new model
+	String m_name;
+	Ref<PropertyAccessor> m_accessor;
+
     friend class TypeInfo;
 };
 
@@ -310,6 +368,7 @@ LN_INTERNAL_ACCESS:
         return false;
     }
 
+
 LN_INTERNAL_ACCESS:
     void setValueSource(PropertySetSource source)
     {
@@ -358,8 +417,130 @@ inline bool operator != (const TValue& lhs, const Property<TValue>& rhs)
     return lhs != rhs.get();
 }
 
+//------------------------------------------------------------------------------
+
+class PropertyAccessor : public RefObject
+{
+public:
+	virtual void getValue(const Object* obj, Variant* value) const = 0;
+	virtual void setValue(Object* obj, const Variant& value) = 0;
+};
+
+// 呼び出し側が型を知っている場合、PropertyAccessor からキャストすることで Variant を介すことなく直接値を操作できるようにするための中間クラス
+template<class TValue>
+class TypedPropertyAccessor : public PropertyAccessor
+{
+public:
+	virtual void getValueDirect(const Object* obj, TValue* value) const = 0;
+	virtual void setValueDirect(Object* obj, const TValue& value) = 0;
+};
+
+template<class TClassType, class TValue, class TGetFunction, class TSetFunction>
+class PropertyAccessorImpl : public TypedPropertyAccessor<TValue>
+{
+public:
+	PropertyAccessorImpl(TGetFunction getFunction, TSetFunction setFunction)
+		: m_getFunction(getFunction)
+		, m_setFunction(setFunction)
+	{ }
+
+	void getValue(const Object* obj, Variant* value) const override
+	{
+		LN_DCHECK(obj);
+		LN_DCHECK(value);
+		const auto classPtr = static_cast<const TClassType*>(obj);
+		TValue t;
+		m_getFunction(classPtr, &t);
+		*value = t;
+	}
+
+	void setValue(Object* obj, const Variant& value) override
+	{
+		LN_DCHECK(obj);
+		auto classPtr = static_cast<TClassType*>(obj);
+		m_setFunction(classPtr, value.get<TValue>());
+	}
+
+	virtual void getValueDirect(const Object* obj, TValue* value) const override
+	{
+		LN_CHECK(obj);
+		const auto classPtr = static_cast<const TClassType*>(obj);
+		m_getFunction(classPtr, value);
+	}
+
+	virtual void setValueDirect(Object* obj, const TValue& value) override
+	{
+		LN_DCHECK(obj);
+		auto classPtr = static_cast<TClassType*>(obj);
+		m_setFunction(classPtr, value);
+	}
+
+private:
+	TGetFunction m_getFunction;
+	TSetFunction m_setFunction;
+};
+
+template<class TClassType, class TValue, class TGetFunction, class TSetFunction>
+Ref<PropertyAccessor> makePropertyAccessor(TGetFunction getFunction, TSetFunction setFunction)
+{
+	return Ref<PropertyAccessor>(LN_NEW PropertyAccessorImpl<TClassType, TValue, TGetFunction, TSetFunction>(getFunction, setFunction), false);
+}
 
 
+class EngineContext : public RefObject
+{
+public:
+	static EngineContext* current();
+
+	template<class TClassType>
+	void registerType(std::initializer_list<Ref<PropertyInfo>> propInfos)//(std::initializer_list<Ref<PropertyAccessor>> accessors)
+	{
+		TypeInfo* typeInfo = TypeInfo::getTypeInfo<TClassType>();
+
+		if (m_typeInfoSet.find(typeInfo) == m_typeInfoSet.end())
+		{
+			m_typeInfoSet.insert(typeInfo);
+
+			for (auto& p : propInfos) {
+				typeInfo->registerProperty(p);
+				//typeInfo->registerProperty(makeRef<PropertyInfo>(a));
+			}
+		}
+	}
+
+private:
+	std::unordered_set<TypeInfo*> m_typeInfoSet;
+	//List<TypeInfo*> m_typeInfos;
+};
+
+
+class PropertyPath
+	: public RefObject
+{
+public:
+	static PropertyRef findProperty(Object* root, const PropertyPath* path);
+
+
+	std::vector<String> m_objectNames;
+
+	String m_propertyName;
+
+	// ローカル部 (リフレクション管理外の、構造体メンバなどを示す。Transform なら "position.x" -> ["position", "x"] など)
+	std::vector<String> m_local;
+};
+
+
+class ReflectionObjectVisitor
+{
+public:
+	//bool visitObject(Object* obj);
+	virtual bool visitProperty(Object* obj, PropertyInfo* prop);
+};
+
+#define LN_MAKE_GET_SET_PROPERTY_ACCESSOR(className, typeName, getFunction, setFunction) \
+	makePropertyAccessor<className, typeName>( \
+		[](const className* self, typeName* value) { *value = self->getFunction(); }, \
+		[](className* self, const typeName& value) { self->setFunction(value); }) \
 
 } // namespace ln
 

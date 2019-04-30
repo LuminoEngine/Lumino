@@ -25,9 +25,9 @@ TilemapComponent::~TilemapComponent()
 {
 }
 
-void TilemapComponent::initialize()
+void TilemapComponent::init()
 {
-    VisualComponent::initialize();
+    VisualComponent::init();
 
     auto tileset = newObject<Tileset>();
     auto layer = newObject<TilemapLayer>();

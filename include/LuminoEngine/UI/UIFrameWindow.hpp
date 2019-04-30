@@ -53,12 +53,11 @@ class LN_API UIFrameWindow
 {
 public:
 
-	virtual void dispose() override;
+	virtual void onDispose(bool explicitDisposing) override;
 
 	void renderContents();
 	void present();
 
-	SwapChain* swapChain() const;
 
 
 	// TODO: UI ツリーのシステムをちゃんと作っていないが、ひとまず UIViewport を使った動きを作りたいので一時的に設けてある
@@ -67,12 +66,20 @@ public:
 	//virtual UIElement* getVisualChild(int index) const override;
 
     // TODO: inernal
-    void updateLayout();
+	SwapChain* swapChain() const;
+	const Ref<DepthBuffer>& depthBuffer() const { return m_depthBuffer; }
+    //void updateLayout();
+	void updateLayoutTree();
+	const Ref<detail::PlatformWindow>& platformWindow() const { return m_platformWindow; }
+
+protected:
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
 
 LN_CONSTRUCT_ACCESS:
 	UIFrameWindow();
 	virtual ~UIFrameWindow();
-	void initialize(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
+	void init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
 
 private:
 	virtual bool onPlatformEvent(const detail::PlatformEventArgs& e) override;
@@ -81,6 +88,7 @@ private:
 	Ref<detail::PlatformWindow>	m_platformWindow;
     Ref<detail::UIInputInjector> m_inputInjector;
 	Ref<SwapChain>	m_swapChain;
+	Ref<DepthBuffer> m_depthBuffer;
 	Ref<UIRenderView> m_renderView;
 
 	Event<UIEventHandler> m_onClosed;
@@ -96,7 +104,7 @@ private:
 //LN_CONSTRUCT_ACCESS :
 //	UIMainWindow();
 //	virtual ~UIMainWindow();
-//	void initialize(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
+//	void init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
 //
 //private:
 //};

@@ -5,7 +5,11 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include "GraphicsManager.hpp"
+#include "RenderTargetTextureCache.hpp"
 #include "OpenGLDeviceContext.hpp"
+#ifdef LN_USE_VULKAN
+#include "VulkanDeviceContext.hpp"
+#endif
 #include "../Engine/LinearAllocator.hpp"
 
 namespace ln {
@@ -13,25 +17,56 @@ namespace ln {
 //==============================================================================
 // GraphicsHelper
 
+size_t GraphicsHelper::getVertexSize(const VertexElement* vertexElements, int elementsCount, int streamIndex)
+{
+    int size = 0;
+    for (int i = 0; i < elementsCount; ++i)
+    {
+        if (vertexElements[i].StreamIndex == streamIndex) {
+            size += getVertexElementTypeSize(vertexElements[i].Type);
+        }
+    }
+    return size;
+}
+
+size_t GraphicsHelper::getVertexElementTypeSize(VertexElementType type)
+{
+    switch (type)
+    {
+    case VertexElementType::Float1:	return sizeof(float);
+    case VertexElementType::Float2:	return sizeof(float) * 2;
+    case VertexElementType::Float3:	return sizeof(float) * 3;
+    case VertexElementType::Float4:	return sizeof(float) * 4;
+    case VertexElementType::Ubyte4:	return sizeof(unsigned char) * 4;
+    case VertexElementType::Color4:	return sizeof(unsigned char) * 4;
+    case VertexElementType::Short2:	return sizeof(short) * 2;
+    case VertexElementType::Short4:	return sizeof(short) * 4;
+    default:
+        LN_UNREACHABLE();
+        break;
+    }
+    return 0;
+}
+
 PixelFormat GraphicsHelper::translateToPixelFormat(TextureFormat format)
 {
 	switch (format)
 	{
 	case TextureFormat::Unknown:
 		return PixelFormat::Unknown;
-	case TextureFormat::RGBA32:
-		return PixelFormat::RGBA32;
-    case TextureFormat::RGB24:
-		return PixelFormat::RGB24;
-	case TextureFormat::R16G16B16A16Float:
+	case TextureFormat::RGBA8:
+		return PixelFormat::RGBA8;
+    case TextureFormat::RGB8:
+		return PixelFormat::RGB8;
+	case TextureFormat::RGBA16F:
 		return PixelFormat::Unknown;
-	case TextureFormat::R32G32B32A32Float:
-		return PixelFormat::R32G32B32A32Float;
-	case TextureFormat::R16Float:
+	case TextureFormat::RGBA32F:
+		return PixelFormat::RGBA32F;
+	case TextureFormat::R16F:
 		return PixelFormat::Unknown;
-	case TextureFormat::R32Float:
+	case TextureFormat::R32F:
 		return PixelFormat::Unknown;
-	case TextureFormat::R32UInt:
+	case TextureFormat::R32U:
 		return PixelFormat::Unknown;
 	default:
 		return PixelFormat::Unknown;
@@ -44,21 +79,44 @@ TextureFormat GraphicsHelper::translateToTextureFormat(PixelFormat format)
 	{
 	case PixelFormat::Unknown:
 		return TextureFormat::Unknown;
-	case PixelFormat::A1:
-		return TextureFormat::Unknown;
 	case PixelFormat::A8:
 		return TextureFormat::Unknown;
-	case PixelFormat::RGBA32:
-		return TextureFormat::RGBA32;
-    case PixelFormat::RGB24:
-        return TextureFormat::RGB24;
-	case PixelFormat::R32G32B32A32Float:
-		return TextureFormat::R32G32B32A32Float;
+	case PixelFormat::RGBA8:
+		return TextureFormat::RGBA8;
+    case PixelFormat::RGB8:
+        return TextureFormat::RGB8;
+	case PixelFormat::RGBA32F:
+		return TextureFormat::RGBA32F;
 	default:
 		return TextureFormat::Unknown;
 	}
 }
 
+size_t GraphicsHelper::getPixelSize(TextureFormat format)
+{
+    switch (format)
+    {
+    case TextureFormat::Unknown:
+        return 0;
+    case TextureFormat::RGBA8:
+        return 4;
+    case TextureFormat::RGB8:
+        return 3;
+    case TextureFormat::RGBA16F:
+        return 8;
+    case TextureFormat::RGBA32F:
+        return 16;
+    case TextureFormat::R16F:
+        return 2;
+    case TextureFormat::R32F:
+        return 4;
+    case TextureFormat::R32U:
+        return 4;
+    default:
+        LN_UNREACHABLE();
+        return 0;
+    }
+}
 
 
 namespace detail {
@@ -71,16 +129,27 @@ GraphicsManager::GraphicsManager()
 {
 }
 
-void GraphicsManager::initialize(const Settings& settings)
+void GraphicsManager::init(const Settings& settings)
 {
     LN_LOG_DEBUG << "GraphicsManager Initialization started.";
 
-	OpenGLDeviceContext::Settings openglSettings;
-	openglSettings.mainWindow = settings.mainWindow;
-	auto ctx = makeRef<OpenGLDeviceContext>();
-	ctx->initialize(openglSettings);
-	ctx->refreshCaps();
-	m_deviceContext = ctx;
+	// Create device context
+	{
+		if (settings.graphicsAPI == GraphicsAPI::Vulkan) {
+			createVulkanContext(settings);
+		}
+
+		if (!m_deviceContext) {
+			createOpenGLContext(settings);
+		}
+
+		// Default
+		if (!m_deviceContext) {
+			createOpenGLContext(settings);
+		}
+	}
+
+    m_deviceContext->refreshCaps();
 
     {
         auto& triple = m_deviceContext->caps().requestedShaderTriple;
@@ -88,11 +157,15 @@ void GraphicsManager::initialize(const Settings& settings)
     }
 
 
-	m_graphicsContext = newObject<GraphicsContext>(m_deviceContext);
+	m_graphicsContext = newObject<GraphicsContext>(m_deviceContext->getGraphicsContext());
 
 	m_linearAllocatorPageManager = makeRef<LinearAllocatorPageManager>();
 
 	m_primaryRenderingCommandList = makeRef<RenderingCommandList>(linearAllocatorPageManager());
+
+	m_renderTargetTextureCacheManager = makeRef<RenderTargetTextureCacheManager>();
+	m_depthBufferCacheManager = makeRef<DepthBufferCacheManager>();
+	m_frameBufferCache = makeRef<detail::FrameBufferCache>(m_renderTargetTextureCacheManager, m_depthBufferCacheManager);
 
 	if (renderingType() == RenderingType::Threaded) {
 		LN_NOTIMPLEMENTED();
@@ -104,10 +177,10 @@ void GraphicsManager::initialize(const Settings& settings)
 
 	// default objects
 	{
-        m_blackTexture = newObject<Texture2D>(32, 32, TextureFormat::RGBA32, false, GraphicsResourceUsage::Static);
+        m_blackTexture = newObject<Texture2D>(32, 32, TextureFormat::RGBA8);
         m_blackTexture->clear(Color::Black);
 
-        m_whiteTexture = newObject<Texture2D>(32, 32, TextureFormat::RGBA32, false, GraphicsResourceUsage::Static);
+        m_whiteTexture = newObject<Texture2D>(32, 32, TextureFormat::RGBA8);
         m_whiteTexture->clear(Color::White);
 
 		m_defaultSamplerState = newObject<SamplerState>();
@@ -133,6 +206,10 @@ void GraphicsManager::dispose()
 	m_deviceContext->leaveRenderState();
 	m_deviceContext->leaveMainThread();
 
+	m_frameBufferCache = nullptr;
+	m_depthBufferCacheManager = nullptr;
+	m_renderTargetTextureCacheManager = nullptr;
+
 	m_graphicsContext->dispose();
 	m_deviceContext->dispose();
 }
@@ -145,6 +222,46 @@ void GraphicsManager::addGraphicsResource(GraphicsResource* resource)
 void GraphicsManager::removeGraphicsResource(GraphicsResource* resource)
 {
 	m_graphicsResources.remove(resource);
+}
+
+void GraphicsManager::createOpenGLContext(const Settings& settings)
+{
+	OpenGLDevice::Settings openglSettings;
+	openglSettings.mainWindow = settings.mainWindow;
+	auto ctx = makeRef<OpenGLDevice>();
+	ctx->init(openglSettings);
+	m_deviceContext = ctx;
+}
+
+void GraphicsManager::createVulkanContext(const Settings& settings)
+{
+#ifdef LN_USE_VULKAN
+#if 0
+	VulkanSampleDeviceContext::Settings dcSettings;
+	dcSettings.mainWindow = settings.mainWindow;
+	auto ctx = makeRef<VulkanSampleDeviceContext>();
+	ctx->init(dcSettings);
+	m_deviceContext = ctx;
+#else
+	VulkanDevice::Settings dcSettings;
+    dcSettings.mainWindow = settings.mainWindow;
+	//dcSettings.debugEnabled = true;
+	auto ctx = makeRef<VulkanDevice>();
+	bool driverSupported = false;
+	if (!ctx->init(dcSettings, &driverSupported)) {
+		if (!driverSupported) {
+			// ドライバが Vulkan をサポートしていない。継続する。
+		}
+		else {
+			LN_ERROR("Vulkan driver initialization failed.");
+			return;
+		}
+	}
+	else {
+		m_deviceContext = ctx;
+	}
+#endif
+#endif
 }
 
 } // namespace detail

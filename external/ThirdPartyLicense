@@ -4,3 +4,7 @@
 - glfw
 - freetype
 
+- tmxlite
+- pugixml
+- miniz
+

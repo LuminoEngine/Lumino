@@ -3,6 +3,7 @@
 #include "../Rendering/RenderStage.hpp"
 #include <LuminoEngine/Animation/AnimationContext.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
+#include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
 #include <LuminoEngine/Scene/Component.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
 #include <LuminoEngine/Scene/World.hpp>
@@ -13,6 +14,8 @@ namespace ln {
 // World
 
 World::World()
+	: m_rootWorldObjectList(makeList<Ref<WorldObject>>())
+    , m_timeScale(1.0f)
 {
 }
 
@@ -20,43 +23,63 @@ World::~World()
 {
 }
 
-void World::initialize()
+void World::init()
 {
-    Object::initialize();
+    Object::init();
     m_animationContext = newObject<AnimationContext>();
     m_physicsWorld = newObject<PhysicsWorld>();
+	m_physicsWorld2D = newObject<PhysicsWorld2D>();
     m_renderingContext = makeRef<detail::WorldSceneGraphRenderingContext>();
 }
 
-void World::dispose()
+void World::onDispose(bool explicitDisposing)
 {
     removeAllObjects();
     m_renderingContext.reset();
     m_physicsWorld.reset();
+	m_physicsWorld2D.reset();
     m_animationContext.reset();
-    Object::dispose();
+    Object::onDispose(explicitDisposing);
 }
 
 void World::addObject(WorldObject* obj)
 {
     if (LN_REQUIRE(obj)) return;
     if (LN_REQUIRE(!obj->m_world)) return;
-    m_rootWorldObjectList.add(obj);
-    obj->m_world = this;
-    // TODO: 
-    //obj->onAttachedWorld(this);
+    m_rootWorldObjectList->add(obj);
+	obj->attachWorld(this);
 }
 
 void World::removeAllObjects()
 {
-    for (int i = m_rootWorldObjectList.size() - 1; i >= 0; i--)
+    for (int i = m_rootWorldObjectList->size() - 1; i >= 0; i--)
     {
-        if (!m_rootWorldObjectList[i]->isSpecialObject())
+		auto& obj = m_rootWorldObjectList[i];
+        if (!obj->isSpecialObject())
         {
-            m_rootWorldObjectList[i]->m_world = nullptr;
-            m_rootWorldObjectList.removeAt(i);
+			if (obj->destroyed()) {
+				m_destroyList.remove(obj);
+			}
+
+			obj->detachWorld();
+            m_rootWorldObjectList->removeAt(i);
         }
     }
+}
+
+ReadOnlyList<Ref<WorldObject>>* World::rootObjects() const
+{
+	return m_rootWorldObjectList;
+}
+
+void World::removeRootObject(WorldObject* obj)
+{
+	if (m_rootWorldObjectList->remove(obj)) {
+		if (obj->destroyed()) {
+			m_destroyList.remove(obj);
+		}
+		obj->detachWorld();
+	}
 }
 
 void World::updateObjectsWorldMatrix()
@@ -69,11 +92,12 @@ void World::updateObjectsWorldMatrix()
 
 void World::updateFrame(float elapsedSeconds)
 {
-    onPreUpdate(elapsedSeconds);
-    onInternalPhysicsUpdate(elapsedSeconds);
-    onUpdate(elapsedSeconds);
-    onInternalAnimationUpdate(elapsedSeconds);
-    onPostUpdate(elapsedSeconds);
+    float t = elapsedSeconds * m_timeScale;
+    onPreUpdate(t);
+    onInternalPhysicsUpdate(t);
+    onUpdate(t);
+    onInternalAnimationUpdate(t);
+    onPostUpdate(t);
 }
 
 void World::onPreUpdate(float elapsedSeconds)
@@ -90,10 +114,12 @@ void World::onInternalPhysicsUpdate(float elapsedSeconds)
     // ここで WorldMatrix を更新しておく。
     updateObjectsWorldMatrix();
 
-    if (m_physicsWorld != nullptr)
-    {
+    if (m_physicsWorld) {
         m_physicsWorld->stepSimulation(elapsedSeconds);
     }
+	if (m_physicsWorld2D) {
+		m_physicsWorld2D->stepSimulation(elapsedSeconds);
+	}
 }
 
 void World::onUpdate(float elapsedSeconds)
@@ -110,6 +136,13 @@ void World::onInternalAnimationUpdate(float elapsedSeconds)
 
 void World::onPostUpdate(float elapsedSeconds)
 {
+	for (WorldObject* obj : m_destroyList) {
+		//obj->removeFromWorld();
+
+		obj->detachWorld();
+		m_rootWorldObjectList->remove(obj);
+	}
+	m_destroyList.clear();
 }
 
 detail::WorldSceneGraphRenderingContext* World::prepareRender(RenderViewPoint* viewPoint)

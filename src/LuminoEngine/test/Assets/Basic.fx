@@ -2,7 +2,7 @@
 struct VS_INPUT
 {
     float4 Pos : POSITION;
-    float4 Color : COLOR;
+    float4 Color : COLOR0;
 };
  
 struct VS_OUTPUT

@@ -224,4 +224,10 @@ void BinaryReader::seek(int offset)
 	m_stream->seek(offset, SeekOrigin::Current);
 }
 
+bool BinaryReader::isEof() const
+{
+	if (LN_REQUIRE(m_stream)) return true;
+	return (m_stream->position() >= m_stream->length());
+}
+
 } // namespace ln

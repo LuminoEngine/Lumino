@@ -3,7 +3,7 @@
 #include "../Rendering/Vertex.hpp"
 
 namespace ln {
-class VertexDeclaration;
+class VertexLayout;
 class VertexBuffer;
 class IndexBuffer;
 class AbstractMaterial;
@@ -67,19 +67,29 @@ public:
     /** セクションの情報を追加します。 */
     void addSection(int startIndex, int primitiveCount, int materialIndex);
 
+    MeshContainer* ownerContainer() const { return m_ownerContainer; }
+
 	// TODO: internal
-	void commitRenderData(int sectionIndex, MeshSection* outSection, VertexDeclaration** outDecl, VertexBuffer** outVBs, int* outVBCount, IndexBuffer** outIB);
+	void commitRenderData(int sectionIndex, MeshSection* outSection, VertexLayout** outDecl, VertexBuffer** outVBs, int* outVBCount, IndexBuffer** outIB);
 	const List<MeshSection>& sections() const { return m_sections; }
     void getVertexBuffers(VertexBuffer** basic);
     void setVertexBuffers(VertexBuffer* basic);
     bool isInitialEmpty() const;
+
+    // TODO: MMD
+    void setBlendWeights(int index, float v0, float v1, float v2, float v3);
+    void setBlendIndices(int index, float v0, float v1, float v2, float v3);	// TODO: int
+    const VertexBlendWeight& vertexBlendWeight(int index);
+    void setSdefInfo(int index, const Vector4& sdefC, const Vector3& sdefR0, const Vector3& sdefR1);
+    void setMmdExtra(int index, float edgeWeight, float vertexIndex);
+
 
 LN_CONSTRUCT_ACCESS:
 	MeshResource();
 	virtual ~MeshResource();
 
 	/** MeshResource を作成します。 */
-	void initialize();
+	void init();
 
 private:
 	enum VertexBufferGroup
@@ -103,6 +113,7 @@ private:
 	static const std::array<size_t, VBG_Count> VertexStrideTable;
 
 	detail::MeshManager* m_manager;
+    MeshContainer* m_ownerContainer;
 	int m_vertexCount;
 	int m_indexCount;
 	GraphicsResourceUsage m_usage;
@@ -150,7 +161,7 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~MeshContainer();
 
 	/** MeshContainer を作成します。 */
-	void initialize();
+	void init();
 
 private:
 	StaticMeshModel* m_meshModel;
@@ -160,6 +171,14 @@ private:
 
 	friend class StaticMeshModel;
 };
+
+namespace detail {
+enum class InternalMeshModelType
+{
+    StaticMesh,
+    SkinnedMesh,
+};
+}
 
 class StaticMeshModel
 	: public Object
@@ -172,8 +191,15 @@ public:
 	const List<Ref<MeshContainer>>& meshContainers() const { return m_meshContainers; }
 	const List<Ref<AbstractMaterial>>& materials() const { return m_materials; }
 
+    // TODO: internal
+    detail::InternalMeshModelType meshModelType() const { return m_type; }
+
+LN_CONSTRUCT_ACCESS:
+    StaticMeshModel();
+    StaticMeshModel(detail::InternalMeshModelType type);
 
 private:
+    detail::InternalMeshModelType m_type;
 	List<Ref<MeshContainer>> m_meshContainers;
 	List<Ref<AbstractMaterial>> m_materials;
 };

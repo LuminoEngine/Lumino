@@ -22,12 +22,13 @@ Ref<Font> Font::create(const String& family, float size)
 void Font::setDefaultFont(Font* font)
 {
     if (LN_REQUIRE(font)) return;
-    detail::EngineDomain::fontManager()->setDefaultFontDesc(font->m_desc);
+    //detail::EngineDomain::fontManager()->setDefaultFontDesc(font->m_desc);
+    detail::EngineDomain::fontManager()->setDefaultFont(font);
 }
 
-void Font::registerFontFile(const StringRef& fontFilePath)
+void Font::registerFontFromFile(const StringRef& fontFilePath, bool defaultFamily)
 {
-	detail::EngineDomain::fontManager()->registerFontFile(fontFilePath);
+	detail::EngineDomain::fontManager()->registerFontFromFile(fontFilePath, defaultFamily);
 }
 
 Font::Font()
@@ -42,16 +43,23 @@ Font::~Font()
 {
 }
 
-void Font::initialize()
+void Font::init()
 {
+	Object::init();
     m_desc = m_manager->defaultFontDesc();
 }
 
-void Font::initialize(const String& family, float size)
+void Font::init(const String& family, float size)
 {
-    initialize();
+    init();
     setFamily(family);
     setSize(size);
+}
+
+void Font::init(const detail::FontDesc& desc)
+{
+	Object::init();
+	m_desc = desc;
 }
 
 void Font::setFamily(const String& familyName)
@@ -124,18 +132,18 @@ Ref<Font> Font::clone() const
     return ptr;
 }
 
-Size Font::measureRenderSize(const StringRef& text)
+Size Font::measureRenderSize(const StringRef& text, float dpiScale)
 {
-    detail::FontCore* font = resolveFontCore();
+    detail::FontCore* font = resolveFontCore(dpiScale);
     detail::MeasureTextLayoutEngine measureLayout;
     measureLayout.layout(font, text.data(), text.length(), Rect(), 0, TextAlignment::Left);
     return measureLayout.areaSize;
 }
 
-detail::FontCore* Font::resolveFontCore()
+detail::FontCore* Font::resolveFontCore(float dpiScale)
 {
     if (!m_rawFont) {
-        m_rawFont = m_manager->lookupFontCore(m_desc);
+        m_rawFont = m_manager->lookupFontCore(m_desc, dpiScale);
     }
     return m_rawFont;
 }

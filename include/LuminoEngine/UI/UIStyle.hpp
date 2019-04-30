@@ -1,8 +1,9 @@
 ﻿#pragma once
-#include "../Graphics/ColorStructs.hpp"
 #include "UIElement.hpp"
 
 namespace ln {
+class Shader;
+class Texture;
 namespace detail {
 
 enum class UIStyleAttributeValueSource
@@ -73,7 +74,7 @@ public:
         // Local 値を持っているので継承する必要はない
         if (m_source == UIStyleAttributeValueSource::ByUserLocal) return false;
 
-        bool inherit = ((int)m_source < ((int)parent.m_source - 1));
+        //bool inherit = ((int)m_source < ((int)parent.m_source - 1));
         //bool inherit = false;
         //if (m_source == UIStyleAttributeValueSource::Default)
         //{
@@ -115,7 +116,7 @@ public:
         //}
 
         bool changed = false;
-        if (inherit)
+        //if (inherit)
         {
             //if (sourceType == UIStyleAttributeInheritSourceType::ParentElement)
             //	m_source = UIStyleAttributeValueSource::InheritParent;
@@ -142,29 +143,167 @@ class UIStyle
     : public Object
 {
 public:
+
+	//// layout
+	//Thickness margin;
+	//Thickness padding;
+	//HAlignment horizontalAlignment;
+	//VAlignment verticalAlignment;
+	//float minWidth;
+	//float minHeight;
+	//float maxWidth;
+	//float maxHeight;
+
+	//// layout transform
+	//Vector3 position;
+	//Quaternion rotation;
+	//Vector3 scale;
+	//Vector3 centerPoint;
+
+	//// text
+	//Color textColor;
+	//String fontFamily;
+	//float fontSize;
+	//UIFontWeight fontWeight;
+	//UIFontStyle fontStyle;
+
+	//// render effects
+	//bool visible;
+	//BlendMode blendMode;
+
+	//float opacity;
+	//Color colorScale;
+	//Color blendColor;
+	//ColorTone tone;
+
+
+
+
+	// layout
     detail::UIStyleAttribute<Thickness> margin;
     detail::UIStyleAttribute<Thickness> padding;
+	detail::UIStyleAttribute<HAlignment> horizontalAlignment;
+	detail::UIStyleAttribute<VAlignment> verticalAlignment;
+	detail::UIStyleAttribute<float> minWidth;
+	detail::UIStyleAttribute<float> minHeight;
+	detail::UIStyleAttribute<float> maxWidth;
+	detail::UIStyleAttribute<float> maxHeight;
 
+	// layout transform
     detail::UIStyleAttribute<Vector3> position;
     detail::UIStyleAttribute<Quaternion> rotation;
     detail::UIStyleAttribute<Vector3> scale;
     detail::UIStyleAttribute<Vector3> centerPoint;
 
-    detail::UIStyleAttribute<float> visible;
+	// background
+    detail::UIStyleAttribute<BrushImageDrawMode> backgroundDrawMode;
+	detail::UIStyleAttribute<Color> backgroundColor;
+	detail::UIStyleAttribute<Ref<Texture>> backgroundImage;
+	detail::UIStyleAttribute<Ref<Shader>> backgroundShader;
+	// ※ここは Material にはしない。そういった大きなクラスを持たせるとまた Brush の時みたいな問題 (アニメーションや、プロパティのパス指定) が出てくる。代わりに Material の構築に必要なものを持たせる
+    detail::UIStyleAttribute<Rect> backgroundImageRect;
+    detail::UIStyleAttribute<Thickness> backgroundImageBorder;
+
+    // border
+    detail::UIStyleAttribute<Thickness>		borderThickness;
+    detail::UIStyleAttribute<CornerRadius>		cornerRadius;
+    detail::UIStyleAttribute<Color>				leftBorderColor;
+    detail::UIStyleAttribute<Color>				topBorderColor;
+    detail::UIStyleAttribute<Color>				rightBorderColor;
+    detail::UIStyleAttribute<Color>				bottomBorderColor;
+    detail::UIStyleAttribute<BorderDirection>	borderDirection;
+
+	// text
+	detail::UIStyleAttribute<Color> textColor;	// (default: Black)
+	detail::UIStyleAttribute<String> fontFamily;
+	detail::UIStyleAttribute<float> fontSize;
+	detail::UIStyleAttribute<UIFontWeight> fontWeight;
+	detail::UIStyleAttribute<UIFontStyle> fontStyle;
+
+	// render effects
+    detail::UIStyleAttribute<bool> visible;
     detail::UIStyleAttribute<BlendMode> blendMode;
 
     detail::UIStyleAttribute<float> opacity;
     detail::UIStyleAttribute<Color> colorScale;
     detail::UIStyleAttribute<Color> blendColor;
-    detail::UIStyleAttribute<ToneF> tone;
+    detail::UIStyleAttribute<ColorTone> tone;
+
+public:	// TODO: internal
+	void setupDefault();
 
 LN_CONSTRUCT_ACCESS:
     UIStyle();
     virtual ~UIStyle();
-	void initialize();
+	void init();
 
 private:
 };
 
+namespace detail {
+
+// どんな Element でも持つ一般的なスタイル値。
+// スタイル更新後の最終的な値を表す。
+// メモリ消費を抑えるため、UIStyleAttribute は使わないようにしている。
+class UIStyleInstance
+    : public RefObject
+{
+public:
+    UIStyle* sourceLocalStyle;	// 以下のデータの生成元となったローカスのスタイル
+
+    // layout
+    Thickness margin;
+    Thickness padding;
+    HAlignment horizontalAlignment;
+    VAlignment verticalAlignment;
+    float minWidth;
+    float minHeight;
+    float maxWidth;
+    float maxHeight;
+
+    // layout transform
+    Vector3 position;
+    Quaternion rotation;
+    Vector3 scale;
+    Vector3 centerPoint;
+
+    // background
+    BrushImageDrawMode backgroundDrawMode;
+    Color backgroundColor;
+    //Ref<Texture> backgroundImage;
+    //Ref<Shader> backgroundShader;
+    Ref<AbstractMaterial> backgroundMaterial;
+    Rect backgroundImageRect;
+    Thickness backgroundImageBorder;
+
+    // text
+    Color textColor;
+    Ref<Font> font;
+    //String fontFamily;
+    //float fontSize;
+    //UIFontWeight fontWeight;
+    //UIFontStyle fontStyle;
+
+    // render effects
+    bool visible;
+    BlendMode blendMode;
+
+    float opacity;
+    Color colorScale;
+    Color blendColor;
+	ColorTone tone;
+
+    // TODO: 今後サブクラスごとにスタイルを追加する場合は、ここに map を設ける
+
+    UIStyleInstance();
+    void init();
+    static void updateStyleDataHelper(UIStyle* localStyle, const detail::UIStyleInstance* parentStyleData, const UIStyle* defaultStyle, detail::UIStyleInstance* outStyleData);
+
+LN_CONSTRUCT_ACCESS:
+
+private:
+};
+
+} // namespace detail
 } // namespace ln
 

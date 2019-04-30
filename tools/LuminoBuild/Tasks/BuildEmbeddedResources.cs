@@ -19,17 +19,17 @@ namespace LuminoBuild.Tasks
 
             foreach (var searchDir in searchDirs)
             {
-                BuildFX(builder, searchDir);
+                BuildFXH(builder, searchDir);
             }
             foreach (var searchDir in searchDirs)
             {
-                BuildFXH(builder, searchDir);
+                BuildFX(builder, searchDir);
             }
         }
 
         private void BuildFX(Builder builder, string searchDir)
         {
-            var compiler = Path.Combine(builder.LuminoRootDir, "build/MSVC2017-x86-MT-Debug/tools/LuminoCLI/Debug/lumino-cli.exe");
+            var compiler = Path.Combine(builder.LuminoRootDir, "build/MSVC2017-x86-MT/tools/LuminoCLI/Debug/lumino-cli.exe");
 
             foreach (var file in Directory.EnumerateFiles(searchDir, "*.fx", SearchOption.AllDirectories))
             {

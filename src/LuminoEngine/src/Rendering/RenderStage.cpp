@@ -35,6 +35,10 @@ RenderDrawElement::~RenderDrawElement()
 {
 }
 
+void RenderDrawElement::onElementInfoOverride(ElementInfo* elementInfo, ShaderTechniqueClass_MeshProcess* meshProcess)
+{
+}
+
 void RenderDrawElement::onSubsetInfoOverride(SubsetInfo* subsetInfo)
 {
 }
@@ -43,7 +47,10 @@ void RenderDrawElement::onSubsetInfoOverride(SubsetInfo* subsetInfo)
 // RenderStage
 
 RenderStage::RenderStage()
-	: renderFeature(nullptr)
+	: frameBufferStageParameters(nullptr)
+	, geometryStageParameters(nullptr)
+	, renderFeatureStageParameters(nullptr)
+	, renderFeature(nullptr)
 {
 }
 
@@ -175,7 +182,7 @@ const Color& RenderStage::getBlendColorFinal(RenderDrawElement* element) const
     return element->builtinEffectData->blendColor;
 }
 
-const ToneF& RenderStage::getToneFinal(RenderDrawElement* element) const
+const ColorTone& RenderStage::getToneFinal(RenderDrawElement* element) const
 {
     return element->builtinEffectData->tone;
 }

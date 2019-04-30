@@ -17,9 +17,9 @@ AnimationClock::~AnimationClock()
 {
 }
 
-void AnimationClock::initialize(AnimationClockAffiliation affiliation)
+void AnimationClock::init(AnimationClockAffiliation affiliation)
 {
-    Object::initialize();
+    Object::init();
     detail::EngineDomain::animationManager()->addClockToAffiliation(this, affiliation);
 }
 
@@ -50,9 +50,9 @@ SingleAnimationClock::~SingleAnimationClock()
 {
 }
 
-void SingleAnimationClock::initialize()
+void SingleAnimationClock::init()
 {
-    AnimationClock::initialize(AnimationClockAffiliation::ActiveWorld);
+    AnimationClock::init(AnimationClockAffiliation::ActiveWorld);
 }
 
 void SingleAnimationClock::setTrack(AnimationTrack* track)

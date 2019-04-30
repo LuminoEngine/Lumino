@@ -21,9 +21,9 @@ Tilemap::~Tilemap()
 {
 }
 
-void Tilemap::initialize()
+void Tilemap::init()
 {
-    VisualObject::initialize();
+    VisualObject::init();
     m_component = newObject<TilemapComponent>();
     addComponent(m_component);
     setMainVisualComponent(m_component);

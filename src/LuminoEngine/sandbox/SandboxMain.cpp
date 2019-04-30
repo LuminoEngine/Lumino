@@ -11,13 +11,20 @@
 #include "../src/Rendering/DrawElementListBuilder.hpp"
 #include "../src/Rendering/UnLigitingSceneRenderer.hpp"
 #include "../src/Rendering/ClusteredShadingSceneRenderer.hpp"
+#include <LuminoEngine/Engine/Property.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Visual/MeshPrimitiveComponent.hpp>
+#include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
+#include <LuminoEngine/Visual/SkinnedMeshComponent.hpp>
+#include <LuminoEngine/Scene/SkinnedMesh.hpp>
+#include <LuminoEngine/Scene/OffscreenWorldRenderView.hpp>
+#include <LuminoEngine/Animation/Animator.hpp>
 #include "../src/Mesh/MqoImporter.hpp"
 #include "../src/Font/FontManager.hpp"
 #include "../src/Font/FontCore.hpp"
 #include "../src/Asset/AssetArchive.hpp"
+#include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
 using namespace ln;
 
 class TestProcessorNode : public AudioProcessorNode
@@ -27,9 +34,9 @@ public:
     float frequency = 440;
     int counter = 0;
 
-    void initialize()
+    void init()
     {
-        AudioProcessorNode::initialize(0, 2);
+        AudioProcessorNode::init(0, 2);
     }
 
     virtual void onAudioProcess(AudioBus* input, AudioBus* output) override
@@ -61,9 +68,9 @@ public:
     std::vector<float> data;
     std::atomic<bool> end;
 
-    void initialize()
+    void init()
     {
-        AudioProcessorNode::initialize(2, 2);
+        AudioProcessorNode::init(2, 2);
 		end = false;
     }
 
@@ -91,15 +98,98 @@ int main(int argc, char** argv)
 #ifdef _WIN32
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
-
 	GlobalLogger::addStdErrAdapter();
     EngineSettings::setEngineFeatures(EngineFeature::Experimental);
+	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
 	detail::EngineDomain::engineManager()->settings().standaloneFpsControl = true;
+
+
+    GlobalLogger::addStdErrAdapter();
+    EngineSettings::setMainWindowSize(800, 600);
+    EngineSettings::setMainBackBufferSize(800, 600);
+    EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);//GraphicsAPI::Vulkan);//
+    EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
+
+
 	Engine::initialize();
+	//Font::registerFontFromFile(u"C:/Users/hldc0061/Downloads/mplus-TESTFLIGHT-063/mplus-1c-regular.ttf");
+
+
+
+    auto window1 = UIWindow::create();
+    window1->setPosition(Vector3(8, 8, 0));
+    window1->setWidth(200);
+    window1->setHeight(100);
+    window1->setBackgroundColor(Color::White);
+    window1->setBackgroundImage(Assets::loadTexture(u"D:/Documents/LuminoProjects/RinoTutorial/Assets/window.png"));
+    window1->setBackgroundImageRect(Rect(0, 0, 48, 48));
+    window1->setBackgroundDrawMode(BrushImageDrawMode::BoxFrame);
+    window1->setBackgroundImageBorder(Thickness(16));
+    window1->setPadding(Thickness(16));
+
+ //   window1->setLayoutPanel(UIStackLayout::create());
+
+ //   auto text1 = UITextBlock::create();
+ //   text1->setText(u"ABCDEFGabcdefg");
+ //   //text1->setFontFamily(u"M+ 1c");
+ //   text1->setFontSize(20);
+ //   //text1->setTextColor(Color::White);
+ //   window1->addElement(text1);
+
+ //   auto text2 = UITextBlock::create();
+ //   text2->setText(u"sc");
+ //   //text2->setTextColor(Color::White);
+ //   window1->addElement(text2);
+
+	////auto text2 = UITextBlock::create();
+	////text2->setText(u"Test");
+	////text2->setTextColor(Color::Gray);
+
+	////auto text3 = UITextBlock::create();
+	////text3->setText(u"Test3");
+	////text3->setTextColor(Color::Gray);
+	////text3->setPosition(Vector3(0, 400, 0));
+
+	{
+
+		while (Engine::update()) {
+		}
+
+	}
+
+
+	Engine::finalize();
+	return 0;
+
+
+	//{
+
+	//	auto p2world = newObject<PhysicsWorld2D>();
+    auto p2world = Engine::mainWorld()->physicsWorld2D();
+	auto shape1 = newObject<BoxCollisionShape2D>(Size(10, 2));
+	auto body1 = newObject<RigidBody2D>();
+	body1->addCollisionShape(shape1);
+	p2world->addPhysicsObject(body1);
+
+	auto shape2 = newObject<BoxCollisionShape2D>(Size(1, 1));
+	auto body2 = newObject<RigidBody2D>();
+	body2->addCollisionShape(shape2);
+	body2->setPosition(Vector2(0, 15));
+	body2->setMass(1);
+	p2world->addPhysicsObject(body2);
+
+	//	for (int i = 0; i < 60; i++) {
+	//		p2world->stepSimulation(1.0 / 60);
+
+	//		printf("%4.2f %4.2f\n", body2->position().x, body2->position().y);
+	//	}
+	//}
+
 
     auto ctl = newObject<CameraOrbitControlComponent>();
     Engine::mainCamera()->addComponent(ctl);
-    //Engine::mainCamera()->setBackgroundColor(Color::Gray);
+    Engine::mainCamera()->setPosition(0, 5, -10);
+    Engine::mainCamera()->setBackgroundColor(Color::Gray);
 
 
     struct PosColor
@@ -115,7 +205,8 @@ int main(int argc, char** argv)
     };
     auto m_vertexBuffer = ln::newObject<ln::VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
     
-	detail::EngineDomain::fontManager()->registerFontFile(LN_LOCALFILE("../../../tools/VLGothic/VL-PGothic-Regular.ttf"));
+	//detail::EngineDomain::fontManager()->registerFontFromFile();
+    Font::registerFontFromFile(LN_LOCALFILE("../../../tools/VLGothic/VL-PGothic-Regular.ttf"));
 
 	//detail::FontDesc desc;
 	//desc.Family = "VL PGothic";
@@ -149,10 +240,10 @@ int main(int argc, char** argv)
     //tex->drawText(u"Hello!", Rect(0, 0, 100, 100), font, Color::White);
     //auto tex = newObject<Texture2D>(2, 2);
     //auto bmp1 = tex->map(MapMode::Write);
-    //bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
-    //bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
-    //bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
-    //bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
+    //bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
+    //bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
+    //bmp1->setPixel32(0, 1, ColorI(0, 255, 0, 255));
+    //bmp1->setPixel32(1, 1, ColorI(0, 0, 255, 255));
 
     //auto sprite = newObject<UISprite>();
     //sprite->setTexture(tex);
@@ -197,8 +288,39 @@ int main(int argc, char** argv)
 
     //auto mesh3 = newObject<StaticMesh>(u"D:/Proj/TH-10/Assets/Graphics/test/sphere4.obj", 2);
     //mesh3->setVisible(false);
+
+    //auto clip1 = VmdAnimationClip::create(u"D:/MMD/Materials/モーション/Love&Joy/love&joyお面無しver.vmd");
+
+    //auto smesh1 = SkinnedMesh::create(u"D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku.pmx");
+    ////smesh1->setBlendMode(BlendMode::Alpha);
+    ////smesh1->setEulerAngles(0, Math::PI, 0);
+    ////smesh1->setShadingModel(ShadingModel::UnLighting);
+
+    //smesh1->skinnedMeshComponent()->model()->animationController()->addClip(u"anim1", clip1);
+    //smesh1->skinnedMeshComponent()->model()->animationController()->play(u"anim1");
+
+
+    //auto sprite = UISprite::create(Assets::loadTexture(u"D:/MMD/Materials/モデル/Appearance Miku/A4.bmp"));
+
+    //Engine::update();
+    //Engine::update();
+    //{
+    //    auto camera = newObject<Camera>();
+    //    camera->setPosition(0, 0, -20);
+    //    auto ofs = newObject<OffscreenWorldRenderView>();
+    //    auto rt1 = newObject<RenderTargetTexture>(640, 480, TextureFormat::RGBA32, false);
+    //    ofs->setRenderTarget(rt1);
+    //    ofs->setTargetWorld(Engine::mainWorld());
+    //    ofs->setCamera(camera);
+    //    ofs->render();
+    //    auto bitmap = rt1->readData();
+    //    bitmap->save(u"test1.png");
+    //}
+
+
 #endif
 
+#if 0
     //auto shape1 = BoxCollisionShape::create(5, 1, 5);
     //auto body1 = newObject<RigidBody>();
     //body1->addCollisionShape(shape1);
@@ -217,22 +339,39 @@ int main(int argc, char** argv)
     //auto body3 = newObject<SoftBody>();
     //body3->createFromMesh(mesh3->staticMeshComponent()->model()->meshContainers().front()->meshResource(), Engine::mainPhysicsWorld());
 
+    auto tex2 = Assets::loadTexture(u"D:/Documents/Modeling/grid_uv_2.png");
     List<Ref<WorldObject>> spheres;
-    for (int y = 0; y < 1; y++)
+    for (int y = 0; y < 5; y++)
     {
-        for (int i = 0; i < 1; i++)
+        for (int i = 0; i < 5; i++)
         {
             auto obj2 = newObject<WorldObject>();
             auto cmp2 = newObject<SphereComponent>();
             auto mat2 = Material::create();
             mat2->setMetallic(static_cast<float>(i) / 5);
             mat2->setRoughness(std::max(static_cast<float>(y) / 5, 0.001f));
+            //mat2->setMainTexture(tex2);
             obj2->addComponent(cmp2);
             obj2->setPosition(i, -y, 0);
             cmp2->setMaterial(mat2);
             spheres.add(obj2);
         }
     }
+
+    auto plane1 = newObject<WorldObject>();
+    auto planecmp2 = newObject<PlaneComponent>();
+    auto planemat2 = Material::create();
+    //planemat2->setMetallic(0.1);
+    //planemat2->setRoughness(0.1);
+    plane1->addComponent(planecmp2);
+    planecmp2->setMaterial(planemat2);
+
+    auto light1 = PointLight::create();
+    light1->setPosition(-3, 0.1, -2);
+
+    auto light2 = SpotLight::create();
+    light2->setPosition(3, 0.1, -2);
+#endif
 
 #if 0
     auto meshMaterial = Material::create();
@@ -292,6 +431,7 @@ int main(int argc, char** argv)
 
     //auto filedata = d.readAllSamples();
 #endif
+    //GameAudio::playBGM(u"D:/Music/momentum/02 - momentum.wav");
 
 
 
@@ -313,14 +453,21 @@ int main(int argc, char** argv)
     //Engine::terminate();
     //return 0;
 
-
-
+    auto uitext = UITextBlock::create();
+    uitext->setText(u"text");
 
 
     float time = 0;
     int frameCount = 0;
     while (Engine::update())
     {
+        if (Input::isTriggered(InputButtons::Submit)) {
+            GameAudio::playSE(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Audio/coin04_16bit_mono.wav");
+            //GameAudio::playSE(u"D:/Proj/Volkoff/Assets/Data/Sound/SE/coin04.wav");
+            //GameAudio::playSE(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Audio/sin_440_3s_48000_2ch.wav");
+            //GameAudio::playSE(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Audio/coin04.wav");
+        }
+
         //BlurLayer->play(0.7f, Vector2(0, 0.0), 1.05);
 
         //sprite->setPosition(0, track1->evaluate(time));
@@ -388,8 +535,8 @@ int main(int argc, char** argv)
 
 	auto vb = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
-	auto decl = newObject<VertexDeclaration>();
-	decl->addVertexElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
+	auto decl = newObject<VertexLayout>();
+	decl->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
 
 	//auto renderTarget = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBX32, false);
 
@@ -445,10 +592,10 @@ int main(int argc, char** argv)
 
 		auto tex1 = newObject<Texture2D>(2, 2);
 		auto bmp1 = tex1->map(MapMode::Write);
-		bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
-		bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
-		bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
-		bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
+		bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
+		bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
+		bmp1->setPixel32(0, 1, ColorI(0, 255, 0, 255));
+		bmp1->setPixel32(1, 1, ColorI(0, 0, 255, 255));
 		auto material = Material::create();
 		material->setMainTexture(tex1);
 
@@ -537,10 +684,10 @@ int main(int argc, char** argv)
 
 		auto tex1 = newObject<Texture2D>(2, 2);
 		auto bmp1 = tex1->map(MapMode::Write);
-		bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
-		bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
-		bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
-		bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
+		bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
+		bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
+		bmp1->setPixel32(0, 1, ColorI(0, 255, 0, 255));
+		bmp1->setPixel32(1, 1, ColorI(0, 0, 255, 255));
 		auto material = Material::create();
 		material->setMainTexture(tex1);
 
@@ -603,10 +750,10 @@ int main(int argc, char** argv)
 
 		auto tex1 = newObject<Texture2D>(2, 2);
 		auto bmp1 = tex1->map(MapMode::Write);
-		bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
-		bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
-		bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
-		bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
+		bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
+		bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
+		bmp1->setPixel32(0, 1, ColorI(0, 255, 0, 255));
+		bmp1->setPixel32(1, 1, ColorI(0, 0, 255, 255));
 		auto material = Material::create();
 		material->setMainTexture(tex1);
 
@@ -652,10 +799,10 @@ int main(int argc, char** argv)
 		//auto tex1 = newObject<Texture2D>(LN_LOCALFILE("Assets/Sprite1.png"));
 		auto tex1 = newObject<Texture2D>(2, 2);
 		auto bmp1 = tex1->map(MapMode::Write);
-		bmp1->setPixel32(0, 0, Color32(255, 0, 0, 255));
-		bmp1->setPixel32(1, 0, Color32(255, 0, 255, 255));
-		bmp1->setPixel32(0, 1, Color32(0, 255, 0, 255));
-		bmp1->setPixel32(1, 1, Color32(0, 0, 255, 255));
+		bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
+		bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
+		bmp1->setPixel32(0, 1, ColorI(0, 255, 0, 255));
+		bmp1->setPixel32(1, 1, ColorI(0, 0, 255, 255));
 
 		ShaderParameter* param = shader->findParameter("g_texture1");
 		param->setTexture(tex1);

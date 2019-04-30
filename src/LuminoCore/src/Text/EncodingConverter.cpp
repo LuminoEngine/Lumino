@@ -1,4 +1,4 @@
-
+﻿
 #include "Internal.hpp"
 #include <algorithm>
 #include <LuminoCore/Text/EncodingConverter.hpp>

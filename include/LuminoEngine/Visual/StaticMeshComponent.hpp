@@ -18,7 +18,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
     StaticMeshComponent();
 	virtual ~StaticMeshComponent();
-	void initialize();
+	void init();
 
 private:
     Ref<StaticMeshModel> m_model;

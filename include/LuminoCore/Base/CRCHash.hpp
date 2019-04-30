@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2018 lriki. Distributed under the MIT license.
+﻿// Copyright (c) 2018+ lriki. Distributed under the MIT license.
 
 #pragma once
 
@@ -19,4 +19,10 @@ public:
 	static uint32_t compute(const char16_t* str, int len = -1);
 };
 
+namespace detail {
+struct CRCHashInternal
+{
+    static const unsigned* getCRCTable();
+};
+} // namespace detail
 } // namespace ln

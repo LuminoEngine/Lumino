@@ -10,6 +10,7 @@ namespace detail {
 
 PlatformWindow::PlatformWindow()
 	: m_eventListeners()
+	, m_dpiFactor(1.0f)
 {
 }
 

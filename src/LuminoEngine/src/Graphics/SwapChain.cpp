@@ -1,26 +1,21 @@
 ﻿
 #include "Internal.hpp"
-//#include <LuminoEngine/Graphics/GraphicsContext.hpp>
-//#include <LuminoEngine/Graphics/VertexDeclaration.hpp>
-//#include <LuminoEngine/Graphics/VertexBuffer.hpp>
-//#include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
-#include <LuminoEngine/Graphics/DepthBuffer.hpp>
 #include <LuminoEngine/Graphics/SwapChain.hpp>
-//#include <LuminoEngine/Shader/Shader.hpp>
+#include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
 #include "OpenGLDeviceContext.hpp"
-//#include "../Engine/RenderingCommandList.hpp"
-//
+
 namespace ln {
 
 //==============================================================================
 // SwapChain
 
 SwapChain::SwapChain()
-	: m_rhiObject(nullptr)
-	, m_colorBuffer(nullptr)
+    : m_rhiObject(nullptr)
+    , m_backbuffer(nullptr)
+    , m_imageIndex(0)
 {
 }
 
@@ -28,63 +23,82 @@ SwapChain::~SwapChain()
 {
 }
 
-void SwapChain::initialize(detail::PlatformWindow* window, const SizeI& backbufferSize)
+void SwapChain::init(detail::PlatformWindow* window, const SizeI& backbufferSize)
 {
-	// TODO: GraphicsResource にして、onChangeDevice でバックバッファをアタッチ
-	Object::initialize();
-	m_rhiObject = detail::EngineDomain::graphicsManager()->deviceContext()->createSwapChain(window, backbufferSize);
-	m_colorBuffer = newObject<RenderTargetTexture>(m_rhiObject->getColorBuffer());
-	m_depthBuffer = newObject<DepthBuffer>(m_colorBuffer->width(), m_colorBuffer->height());
+    // TODO: onChangeDevice でバックバッファをアタッチ
+    GraphicsResource::init();
+    m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createSwapChain(window, backbufferSize);
+    m_rhiObject->acquireNextImage(&m_imageIndex);
+    m_backbuffer = newObject<RenderTargetTexture>(this);
+    detail::TextureInternal::resetSwapchainFrameIfNeeded(m_backbuffer, false);
 }
 
-void SwapChain::dispose()
+void SwapChain::onDispose(bool explicitDisposing)
 {
-	m_rhiObject.reset();
-	m_depthBuffer.reset();
-	m_colorBuffer.reset();
-	Object::dispose();
+    m_rhiObject = nullptr;
+    m_backbuffer = nullptr;
+	GraphicsResource::onDispose(explicitDisposing);
 }
 
-RenderTargetTexture* SwapChain::colorBuffer() const
+void SwapChain::onChangeDevice(detail::IGraphicsDevice* device)
 {
-	return m_colorBuffer;
 }
 
-DepthBuffer* SwapChain::depthBuffer() const
+RenderTargetTexture* SwapChain::backbuffer() const
 {
-	return m_depthBuffer;
+    return m_backbuffer;
 }
 
-void SwapChain::wait()
+void SwapChain::resizeBackbuffer(int width, int height)
 {
-	// TODO
+    if (LN_ENSURE(m_rhiObject->resizeBackbuffer(width, height))) return;
+    detail::TextureInternal::resetSwapchainFrameIfNeeded(m_backbuffer, true);
 }
 
-detail::ISwapChain* SwapChain::resolveRHIObject() const
+void SwapChain::present()
 {
-	return m_rhiObject;
+    GraphicsContext* context = detail::GraphicsResourceInternal::manager(this)->graphicsContext();
+    detail::IGraphicsContext* nativeContext = detail::GraphicsResourceInternal::manager(this)->deviceContext()->getGraphicsContext();
+
+    detail::GraphicsContextInternal::flushCommandRecoding(context, backbuffer());
+
+    // TODO: threading
+	detail::ISwapChain* rhi = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(this, nullptr);
+	nativeContext->present(rhi);
+	detail::GraphicsResourceInternal::manager(this)->primaryRenderingCommandList()->clear();
+
+    // この後 readData などでバックバッファのイメージをキャプチャしたりするので、
+    // ここでは次に使うべきバッファの番号だけを取り出しておく。
+    // バックバッファをラップしている RenderTarget が次に resolve されたときに、
+    // 実際にこの番号を使って、ラップするべきバッファを取り出す。
+    m_rhiObject->acquireNextImage(&m_imageIndex);
+}
+
+detail::ISwapChain* SwapChain::resolveRHIObject(bool* outModified) const
+{
+	*outModified = false;
+    return m_rhiObject;
 }
 
 //==============================================================================
 // GraphicsContext
 namespace detail {
 
-void SwapChainHelper::setBackendBufferSize(SwapChain* swapChain, int width, int height)
+void SwapChainInternal::setBackendBufferSize(SwapChain* swapChain, int width, int height)
 {
     LN_DCHECK(swapChain);
-    if (GLSwapChain* glswap = dynamic_cast<GLSwapChain*>(swapChain->resolveRHIObject())) {
+    if (GLSwapChain* glswap = dynamic_cast<GLSwapChain*>(detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(swapChain, nullptr))) {
         glswap->setBackendBufferSize(width, height);
     }
 }
 
-void SwapChainHelper::setOpenGLBackendFBO(SwapChain* swapChain, uint32_t id)
+void SwapChainInternal::setOpenGLBackendFBO(SwapChain* swapChain, uint32_t id)
 {
     LN_DCHECK(swapChain);
-    if (GLSwapChain* glswap = dynamic_cast<GLSwapChain*>(swapChain->resolveRHIObject())) {
+    if (GLSwapChain* glswap = dynamic_cast<GLSwapChain*>(detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(swapChain, nullptr))) {
         glswap->setDefaultFBO(id);
     }
 }
 
 } // namespace detail
 } // namespace ln
-

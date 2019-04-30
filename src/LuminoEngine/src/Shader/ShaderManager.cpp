@@ -19,8 +19,10 @@ ShaderManager::~ShaderManager()
 {
 }
 
-void ShaderManager::initialize(const Settings& settings)
+void ShaderManager::init(const Settings& settings)
 {
+    LN_LOG_DEBUG << "ShaderManager Initialization started.";
+
     m_graphicsManager = settings.graphicsManager;
 
     // Lumino.fxh.h
@@ -76,6 +78,8 @@ void ShaderManager::initialize(const Settings& settings)
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
     ShaderCodeTranspiler::initializeGlobals();
 #endif
+
+    LN_LOG_DEBUG << "ShaderManager Initialization ended.";
 }
 
 void ShaderManager::dispose()

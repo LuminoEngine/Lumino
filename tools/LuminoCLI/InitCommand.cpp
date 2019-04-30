@@ -1,4 +1,4 @@
-
+﻿
 #include "Project.hpp"
 #include "InitCommand.hpp"
 
@@ -10,7 +10,7 @@ int InitCommand::execute(Workspace* workspace, const ln::String& projectName)
     }
     else {
         auto m_project = ln::makeRef<Project>(workspace);
-        if (!m_project->newProject(ln::Path(ln::Environment::currentDirectory(), projectName), projectName, engineSource)) {
+        if (!m_project->newProject(ln::Path(ln::Environment::currentDirectory(), projectName), projectName, engineSource, templateName)) {
             return 1;
         }
     }

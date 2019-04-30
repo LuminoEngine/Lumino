@@ -2,7 +2,7 @@
 //#include <LuminoCore/Base/EnumFlags.hpp>
 //#include <LuminoEngine/Graphics/GeometryStructs.hpp>
 //#include <LuminoEngine/Graphics/ColorStructs.hpp>
-//#include <LuminoEngine/Graphics/VertexDeclaration.hpp>
+//#include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include "../Graphics/GraphicsDeviceContext.hpp"
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 //#include <LuminoEngine/Rendering/Vertex.hpp>
@@ -46,7 +46,7 @@ class MeshRenderFeature
 public:
 	MeshRenderFeature();
 	~MeshRenderFeature();
-	void initialize(RenderingManager* manager);
+	void init(RenderingManager* manager);
 
 	void drawMesh(GraphicsContext* context, MeshResource* mesh, int sectionIndex);
 	//void drawMesh(MeshResource* mesh, int startIndex, int primitiveCount, PrimitiveType primitiveType);
@@ -62,10 +62,10 @@ private:
 		Ref<IIndexBuffer>		indexBuffer;
 		int									startIndex;
 		int									primitiveCount;
-		PrimitiveType						primitiveType;
+		PrimitiveTopology						primitiveType;
 	};
 
-	void drawMeshImplOnRenderThread(IGraphicsDeviceContext* context, const DrawMeshCommandData& data);
+	void drawMeshImplOnRenderThread(IGraphicsContext* context, const DrawMeshCommandData& data);
 
 	RenderingManager* m_manager;
 

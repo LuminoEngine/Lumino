@@ -1,4 +1,7 @@
-
+/*
+ Note:
+   計算は View 空間上で行われる。
+ */
 
 #ifndef LUMINO_PBR_INCLUDED
 #define LUMINO_PBR_INCLUDED
@@ -45,7 +48,7 @@ struct LN_ReflectedLight
 // PBR 用 形状情報
 struct LN_PBRGeometry
 {
-	float3 position;
+	float3 position;	// in view space
 	float3 normal;
 	float3 viewDir;
 };
@@ -79,7 +82,7 @@ struct LN_DirectionalLight
 // ポイントライトの情報
 struct LN_PointLight
 {
-	float3 position;
+	float3 position;	// View 空間上の、ライトの中心点
 	float3 color;
 	float distance;
 	float decay;
@@ -106,9 +109,8 @@ bool LN_TestLightInRange(const in float lightDistance, const in float cutoffDist
 // 光源からの減衰率
 float LN_PunctualLightIntensityToIrradianceFactor(const in float lightDistance, const in float cutoffDistance, const in float decayExponent)
 {
-	if (decayExponent > 0.0)
-	{
-		return pow(saturate(-lightDistance / cutoffDistance + 1.0), decayExponent);
+	if( cutoffDistance > 0.0 && decayExponent > 0.0 ) {
+		return pow( saturate( -lightDistance / cutoffDistance + 1.0 ), decayExponent );
 	}
 	return 1.0;
 }
@@ -118,7 +120,9 @@ float3 LN_GetAmbientLightIrradiance(const in float3 color)
 {
 	float3 irradiance = color;
 
-	irradiance *= LN_PI;	// PHYSICALLY_CORRECT_LIGHTS
+#ifndef PHYSICALLY_CORRECT_LIGHTS
+	irradiance *= LN_PI;
+#endif
 
 	return irradiance;
 }
@@ -129,11 +133,11 @@ float3 LN_GetHemisphereLightIrradiance(const in LN_HemisphereLight hemiLight, co
 	float dotNL = dot(geometry.normal, hemiLight.upDirection);
 	float hemiDiffuseWeight = 0.5 * dotNL + 0.5;
 
-	float3 skyColor = hemiLight.skyColor;
-	float3 groundColor = hemiLight.groundColor;
-	float3 irradiance = lerp(groundColor, skyColor, hemiDiffuseWeight);
+	float3 irradiance = lerp(hemiLight.groundColor, hemiLight.skyColor, hemiDiffuseWeight);
 
+#ifndef PHYSICALLY_CORRECT_LIGHTS
 	irradiance *= LN_PI;	// PHYSICALLY_CORRECT_LIGHTS
+#endif
 
 	return irradiance;
 }
@@ -149,6 +153,15 @@ void LN_GetDirectionalDirectLightIrradiance(const LN_DirectionalLight directiona
 // ポイントライトの放射輝度の計算
 void LN_GetPointDirectLightIrradiance(const in LN_PointLight pointLight, const in LN_PBRGeometry geometry, out LN_IncidentLight directLight)
 {
+	float3 lVector = pointLight.position - geometry.position;
+	directLight.direction = normalize(lVector);
+
+	float lightDistance = length( lVector );
+
+	directLight.color = pointLight.color;
+	directLight.color *= LN_PunctualLightIntensityToIrradianceFactor( lightDistance, pointLight.distance, pointLight.decay );
+	directLight.visible = ( directLight.color != float3(0.0, 0.0, 0.0) );
+	/*
 	float3 L = pointLight.position - geometry.position;
 	directLight.direction = normalize(L);
 
@@ -164,6 +177,7 @@ void LN_GetPointDirectLightIrradiance(const in LN_PointLight pointLight, const i
 		directLight.color = float3(0,0,0);
 		directLight.visible = false;
 	}
+	*/
 }
 
 // ポイントライトの放射輝度の計算
@@ -241,7 +255,7 @@ float3 LN_SpecularBRDF(const LN_IncidentLight directLight, const LN_PBRGeometry 
 }
 
 // RenderEquations(RE)
-void LN_RE_Direct(const in LN_IncidentLight directLight, const LN_PBRGeometry geometry, const LN_PBRMaterial material, inout LN_ReflectedLight reflectedLight)
+void LN_RE_Direct_BlinnPhong(const in LN_IncidentLight directLight, const LN_PBRGeometry geometry, const LN_PBRMaterial material, inout LN_ReflectedLight reflectedLight)
 {
 	// コサイン項
 	float dotNL = saturate(dot(geometry.normal, directLight.direction));
@@ -258,15 +272,134 @@ void LN_RE_Direct(const in LN_IncidentLight directLight, const LN_PBRGeometry ge
 	// 鏡面反射成分
 	reflectedLight.directSpecular += irradiance * LN_SpecularBRDF(directLight, geometry, material.specularColor, material.specularRoughness);
 }
+// RE_Direct_BlinnPhong
+// RE_Direct_Physical
 
 float3 BRDF_Diffuse_Lambert(const float3 diffuseColor)
 {
 	return LN_RECIPROCAL_PI * diffuseColor;
 }
 
-void RE_IndirectDiffuse_BlinnPhong(const float3 irradiance, const LN_PBRGeometry geometry, const LN_PBRMaterial material, inout LN_ReflectedLight reflectedLight)
+void LN_RE_IndirectDiffuse_BlinnPhong(const float3 irradiance, const LN_PBRGeometry geometry, const LN_PBRMaterial material, inout LN_ReflectedLight reflectedLight)
 {
 	reflectedLight.indirectDiffuse += irradiance * BRDF_Diffuse_Lambert( material.diffuseColor );
 }
+
+#define LN_RE_Direct				LN_RE_Direct_BlinnPhong
+#define LN_RE_IndirectDiffuse		LN_RE_IndirectDiffuse_BlinnPhong
+
+
+// lights_fragment_begin.glsl.js
+float3 _LN_ComputePBRLocalLights(_LN_LocalLightContext localLightContext, const LN_PBRGeometry geometry, LN_PBRMaterial material)
+{
+	LN_ReflectedLight reflectedLight = {float3(0,0,0),float3(0,0,0),float3(0,0,0),float3(0,0,0)};
+	LN_IncidentLight directLight;
+	
+	for (int i = 0; i < 4; i++)
+	{
+		LightInfo light;
+		if (_LN_GetLocalLightInfo(localLightContext, i, light))
+		{
+			if (light.spotAngles.x > 0.0)
+			{
+				// Spot light
+				LN_SpotLight spotLight;
+				spotLight.position = light.position;
+				spotLight.direction = light.direction;
+				spotLight.color = light.color;
+				spotLight.distance = light.range;
+				spotLight.decay = light.attenuation;
+				spotLight.coneCos = light.spotAngles.x;
+				spotLight.penumbraCos = light.spotAngles.y;
+				LN_GetSpotDirectLightIrradiance(spotLight, geometry, directLight);
+		
+				// TODO: Three.js ではここで Shadow の処理を行っていた
+				//#ifdef USE_SHADOWMAP
+				//directLight.color *= all( bvec2( spotLight.shadow, directLight.visible ) ) ? getShadow( spotShadowMap[ i ], spotLight.shadowMapSize, spotLight.shadowBias, spotLight.shadowRadius, vSpotShadowCoord[ i ] ) : 1.0;
+				//#endif
+
+				LN_RE_Direct(directLight, geometry, material, reflectedLight);
+			}
+			else
+			{
+				// Point light
+				LN_PointLight pointLight;
+				pointLight.position = light.position;
+				pointLight.color = light.color;
+				pointLight.distance = light.range;
+				pointLight.decay = light.attenuation;
+				LN_GetPointDirectLightIrradiance(pointLight, geometry, directLight);
+
+				// TODO: Three.js ではここで Shadow の処理を行っていた
+				//#ifdef USE_SHADOWMAP
+				//directLight.color *= all( bvec2( pointLight.shadow, directLight.visible ) ) ? getPointShadow( pointShadowMap[ i ], pointLight.shadowMapSize, pointLight.shadowBias, pointLight.shadowRadius, vPointShadowCoord[ i ], pointLight.shadowCameraNear, pointLight.shadowCameraFar ) : 1.0;
+				//#endif
+
+				LN_RE_Direct(directLight, geometry, material, reflectedLight);
+			}
+		}
+	}
+	
+	float3 irradiance = float3(0, 0, 0);
+	{
+		float count = LN_EPSILON;
+	    for (int i = 0; i < LN_MAX_GLOBAL_LIGHTS; i++)
+		{
+			GlobalLightInfo light = _LN_GetGlobalLightInfo(i);
+
+			// HemisphereLight
+			if (light.directionAndType.w >= 3.0)
+			{
+				LN_HemisphereLight tl;
+				tl.upDirection = float3(0, 1, 0);
+				tl.skyColor = light.color;
+				tl.groundColor = light.groundColor;
+				irradiance += LN_GetHemisphereLightIrradiance(tl, geometry);
+			}
+			// AmbientLight
+			else if (light.directionAndType.w >= 2.0)
+			{
+				irradiance += LN_GetAmbientLightIrradiance(light.color.rgb);
+			}
+			// DirectionalLight
+			else if (light.directionAndType.w >= 1.0)
+			{
+				LN_DirectionalLight tl;
+				tl.direction = light.directionAndType.xyz;//mul(float4(light.directionAndType.xyz, 1.0), ln_View).xyz;//light.directionAndType.xyz;
+				tl.color = light.color;
+				LN_GetDirectionalDirectLightIrradiance(tl, geometry, directLight);
+				
+				// TODO: Three.js ではここで Shadow の処理を行っていた
+				#ifdef USE_SHADOWMAP
+				directLight.color *= all( bvec2( directionalLight.shadow, directLight.visible ) ) ? getShadow( directionalShadowMap[ i ], directionalLight.shadowMapSize, directionalLight.shadowBias, directionalLight.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;
+				#endif
+
+				LN_RE_Direct(directLight, geometry, material, reflectedLight);
+	        }
+			else
+			{
+				break;
+			}
+	    }
+	}
+
+	// TODO: ライトマップを使う場合はここで irradiance に適用する
+	// see lights_fragment_maps.glsl.js
+
+	// TODO: ひとまず
+	//reflectedLight.directDiffuse += irradiance * material.diffuseColor;
+
+	// see lights_fragment_end.glsl.js
+	LN_RE_IndirectDiffuse( irradiance, geometry, material, reflectedLight );
+
+	float3 outgoingLight =
+		reflectedLight.directDiffuse +
+		reflectedLight.directSpecular +
+		reflectedLight.indirectDiffuse +
+		reflectedLight.indirectSpecular;
+
+	return outgoingLight;
+}
+
 
 #endif // LUMINO_PBR_INCLUDED

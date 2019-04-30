@@ -1,4 +1,4 @@
-
+﻿
 #include "../../src/LuminoEngine/src/Shader/ShaderManager.hpp"
 #include "../../src/LuminoEngine/src/Shader/ShaderTranspiler.hpp"
 #include "../../src/LuminoEngine/src/Shader/HLSLMetadataParser.hpp"
@@ -26,7 +26,7 @@ int FxcCommand::execute(const ln::Path& inputFile)
 {
 	ln::detail::ShaderManager::Settings settings;
     m_manager = ln::makeRef<ln::detail::ShaderManager>();
-    m_manager->initialize(settings);
+    m_manager->init(settings);
 
 	m_diag = ln::newObject<ln::DiagnosticsManager>();
 
@@ -54,112 +54,23 @@ bool FxcCommand::generate(const ln::Path& inputFile)
     char* inputCode = (char*)inputCodeBuffer.data();
     size_t inputCodeLength = inputCodeBuffer.size();
 
-	auto unifiedShader = ln::makeRef<ln::detail::UnifiedShader>(m_diag);
 
-    ln::detail::HLSLMetadataParser metadataParser;
-    metadataParser.parse(inputCode, inputCodeLength, m_diag);
-    if (m_diag->hasError()) {
-        return false;
-    }
-
-    // glslang は hlsl の technique ブロックを理解できないので、空白で潰しておく
-    for (auto& tech : metadataParser.techniques) {
-        memset(inputCode + tech.blockBegin, ' ', tech.blockEnd - tech.blockBegin);
-    }
-
-	// まずは Code を作る
-    for (auto& tech : metadataParser.techniques)
-	{
-        for (auto& pass : tech.passes)
-		{
-            // Vertex shader
-            {
-                if (!unifiedShader->hasCode(pass.vertexShader, { "glsl", 400, "" }))
-				{
-					ln::detail::ShaderCodeTranspiler transpiler(m_manager);
-					transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, &definitions, m_diag);
-					if (m_diag->hasError()) {
-						return false;
-					}
-
-					unifiedShader->setCode(pass.vertexShader, { "glsl", 400, "" }, transpiler.generateGlsl(400, false));
-				}
-
-				if (!unifiedShader->hasCode(pass.vertexShader, { "glsl", 300, "es" }))
-				{
-					ln::detail::ShaderCodeTranspiler transpiler(m_manager);
-					transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, &definitions, m_diag);
-					if (m_diag->hasError()) {
-						return false;
-					}
-
-					unifiedShader->setCode(pass.vertexShader, { "glsl", 300, "es" }, transpiler.generateGlsl(300, true));
-				}
-            }
-
-            // Pixel shader
-            {
-				if (!unifiedShader->hasCode(pass.pixelShader, { "glsl", 400, "" }))
-				{
-					ln::detail::ShaderCodeTranspiler transpiler(m_manager);
-					transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, &definitions, m_diag);
-					if (m_diag->hasError()) {
-						return false;
-					}
-
-					unifiedShader->setCode(pass.pixelShader, { "glsl", 400, "" }, transpiler.generateGlsl(400, false));
-				}
-
-				if (!unifiedShader->hasCode(pass.pixelShader, { "glsl", 300, "es" }))
-				{
-					ln::detail::ShaderCodeTranspiler transpiler(m_manager);
-					transpiler.parseAndGenerateSpirv(ln::detail::ShaderCodeStage::Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, &definitions, m_diag);
-					if (m_diag->hasError()) {
-						return false;
-					}
-
-					unifiedShader->setCode(pass.pixelShader, { "glsl", 300, "es" }, transpiler.generateGlsl(300, true));
-				}
-            }
-        }
-    }
-
-	// Tech と Pass を作る
-	for (auto& tech : metadataParser.techniques)
-	{
-		ln::detail::UnifiedShader::TechniqueId techId;
-		if (!unifiedShader->addTechnique(tech.name, &techId)) {
-			return false;
-		}
-
-		for (auto& pass : tech.passes)
-		{
-			ln::detail::UnifiedShader::CodeContainerId codeId;
-			ln::detail::UnifiedShader::PassId passId;
-			if (!unifiedShader->addPass(techId, pass.name, &passId)) {
-				return false;
-			}
-
-			// VertexShader
-			if (!unifiedShader->findCodeContainer(pass.vertexShader, &codeId)) {
-				return false;
-			}
-			unifiedShader->setVertexShader(passId, codeId);
-
-			// PixelShader
-			if (!unifiedShader->findCodeContainer(pass.pixelShader, &codeId)) {
-				return false;
-			}
-			unifiedShader->setPixelShader(passId, codeId);
-
-			// ShaderRenderState
-			unifiedShader->setRenderState(passId, pass.renderState);
-		}
-	}
-
-	if (!unifiedShader->save(outputFilePath)) {
+	ln::detail::UnifiedShaderCompiler compiler(m_manager, m_diag);
+	if (!compiler.compile(inputCode, inputCodeLength, includeDirectories, definitions)) {
 		return false;
 	}
+	if (!compiler.link()) {
+		return false;
+	}
+
+
+	if (!compiler.unifiedShader()->save(outputFilePath)) {
+		return false;
+	}
+
+    if (saveCodes) {
+		compiler.unifiedShader()->saveCodes(outputFilePath);
+    }
 
     CLI::info(u"");
 	CLI::info(u"Compilation succeeded; see " + outputFilePath);

@@ -17,7 +17,7 @@ public:
 	PlatformManager();
 	virtual ~PlatformManager() = default;
 
-	void initialize(const Settings& settings);
+	Result init(const Settings& settings);
 	void dispose();
 
 	const Ref<PlatformWindowManager>& windowManager() const { return m_windowManager; }

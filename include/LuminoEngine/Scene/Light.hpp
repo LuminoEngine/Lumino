@@ -51,10 +51,10 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~AmbientLight();
 
 	/** 既定の設定でアンビエントライトを作成します。 */
-	void initialize();
+	void init();
 
 	/** 色を指定してアンビエントライトを作成します。 */
-	void initialize(const Color& color);
+	void init(const Color& color);
 
 private:
 	Ref<AmbientLightComponent>	m_component;
@@ -107,10 +107,10 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~HemisphereLight();
 
 	/** 既定の設定で半球ライトを作成します。 */
-	void initialize();
+	void init();
 
 	/** 色を指定して半球ライトを作成します。 */
-	void initialize(const Color& skyColor, const Color& groundColor);
+	void init(const Color& skyColor, const Color& groundColor);
 
 private:
 	Ref<HemisphereLightComponent>	m_component;
@@ -157,10 +157,10 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~DirectionalLight();
 
 	/** 既定の設定でディレクショナルライトを作成します。 */
-	void initialize();
+	void init();
 
 	/** 色を指定してディレクショナルライトを作成します。 */
-	void initialize(const Color& color);
+	void init(const Color& color);
 
 private:
 	Ref<DirectionalLightComponent>	m_component;
@@ -219,10 +219,10 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~PointLight();
 
 	/** 既定の設定でポイントライトを作成します。 */
-	void initialize();
+	void init();
 
 	/** 色と範囲を指定してポイントライトを作成します。 */
-	void initialize(const Color& color, float range);
+	void init(const Color& color, float range);
 
 private:
 	Ref<PointLightComponent>	m_component;
@@ -293,10 +293,10 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~SpotLight();
 
 	/** 既定の設定でスポットライトを作成します。 */
-	void initialize();
+	void init();
 
 	/** 色と範囲を指定してスポットライトを作成します。 */
-	void initialize(const Color& color, float range, float angle);
+	void init(const Color& color, float range, float angle);
 
 private:
 	Ref<SpotLightComponent>	m_component;

@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/VertexDeclaration.hpp>
+#include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
@@ -19,7 +19,7 @@ BlitRenderFeature::BlitRenderFeature()
 {
 }
 
-void BlitRenderFeature::initialize(RenderingManager* manager)
+void BlitRenderFeature::init(RenderingManager* manager)
 {
 	if (LN_REQUIRE(manager != nullptr)) return;
 	m_manager = manager;
@@ -32,20 +32,19 @@ void BlitRenderFeature::initialize(RenderingManager* manager)
         { Vector3(1, -1, 0), Vector3::UnitZ, Vector2(1, 1), Color::White },
     };
     m_vertexBuffer = m_manager->graphicsManager()->deviceContext()->createVertexBuffer(GraphicsResourceUsage::Static, sizeof(vertices), vertices);
-    m_vertexDeclaration = manager->standardVertexDeclaration()->resolveRHIObject();
+    m_vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(manager->standardVertexDeclaration(), nullptr);
 }
 
 void BlitRenderFeature::blit(GraphicsContext* context)
 {
     auto* _this = this;
-	IGraphicsDeviceContext* deviceContext = context->commitState();
-
+	IGraphicsContext* c = GraphicsContextInternal::commitState(context);
     LN_ENQUEUE_RENDER_COMMAND_2(
         BlitRenderFeature_blit, m_manager->graphicsManager(),
         BlitRenderFeature*, _this,
-		IGraphicsDeviceContext*, deviceContext,
+        IGraphicsContext*, c,
         {
-            _this->blitImplOnRenderThread(deviceContext);
+            _this->blitImplOnRenderThread(c);
         });
 }
 
@@ -53,11 +52,12 @@ void BlitRenderFeature::flush(GraphicsContext* context)
 {
 }
 
-void BlitRenderFeature::blitImplOnRenderThread(IGraphicsDeviceContext* context)
+void BlitRenderFeature::blitImplOnRenderThread(IGraphicsContext* context)
 {
 	context->setVertexDeclaration(m_vertexDeclaration);
 	context->setVertexBuffer(0, m_vertexBuffer);
-	context->drawPrimitive(PrimitiveType::TriangleStrip, 0, 2);
+	context->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+	context->drawPrimitive(0, 2);
 }
 
 } // namespace detail

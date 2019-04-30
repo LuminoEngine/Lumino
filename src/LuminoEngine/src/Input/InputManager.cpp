@@ -1,4 +1,4 @@
-/*
+﻿/*
 	[2015/12/5]
 		ポーリングの入力判定はいままでどおりにする。
 		1フレームの間にON/OFFが同時に来たときには ON にするようにもできるけど、
@@ -23,6 +23,7 @@
 #endif
 #include "GLFWInputDriver.hpp"
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
+#include <LuminoEngine/Platform/Win32PlatformInterface.hpp>
 #include <LuminoEngine/Input/Input.hpp>
 #include <LuminoEngine/Input/InputBinding.hpp>
 #include <LuminoEngine/Input/InputController.hpp>
@@ -53,15 +54,17 @@ InputManager::~InputManager()
 }
 
 //------------------------------------------------------------------------------
-void InputManager::initialize(const Settings& settings)
+void InputManager::init(const Settings& settings)
 {
+    LN_LOG_DEBUG << "InputManager Initialization started.";
+
 #if defined(LN_OS_WIN32)
 	auto driver = makeRef<Win32InputDriver>();
-	driver->initialize((HWND)PlatformSupport::getWin32WindowHandle(settings.mainWindow));
+	driver->init((HWND)PlatformSupport::getWin32WindowHandle(settings.mainWindow));
 	m_inputDriver = driver;
 #elif defined(LN_EMSCRIPTEN) || defined(LN_OS_MAC)
 	auto driver = makeRef<GLFWInputDriver>();
-	driver->initialize();
+	driver->init();
 	m_inputDriver = driver;
 #else
 	auto driver = makeRef<InputDriver>();
@@ -101,6 +104,8 @@ void InputManager::initialize(const Settings& settings)
 	pad->addBinding(InputButtons::PageDown,	GamepadGesture::create(GamepadElement::Button6));
 
 	m_mouseInputDevice = makeRef<MouseInputDevice>();
+
+    LN_LOG_DEBUG << "InputManager Initialization ended.";
 }
 
 //------------------------------------------------------------------------------

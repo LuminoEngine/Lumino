@@ -18,9 +18,9 @@ VisualObject::~VisualObject()
 {
 }
 
-void VisualObject::initialize()
+void VisualObject::init()
 {
-    WorldObject::initialize();
+    WorldObject::init();
 }
 
 void VisualObject::setVisible(bool value)
@@ -113,12 +113,12 @@ const Color& VisualObject::blendColor() const
     return mainVisualComponent()->blendColor();
 }
 
-void VisualObject::setTone(const ToneF& value)
+void VisualObject::setTone(const ColorTone& value)
 {
     mainVisualComponent()->setTone(value);
 }
 
-const ToneF& VisualObject::tone() const
+const ColorTone& VisualObject::tone() const
 {
     return mainVisualComponent()->tone();
 }

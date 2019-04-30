@@ -6,20 +6,41 @@
 
 namespace ln {
 
-const SamplerStateData SamplerStateData::defaultState =
+const detail::SamplerStateData detail::SamplerStateData::defaultState =
 {
-	TextureFilterMode::Point,
-	TextureAddressMode::Repeat,
+    TextureFilterMode::Point,
+    TextureAddressMode::Repeat,
+    false,
 };
 
 //=============================================================================
 // SamplerState
 
+Ref<SamplerState> SamplerState::create()
+{
+    return newObject<SamplerState>();
+}
+
+Ref<SamplerState> SamplerState::create(TextureFilterMode filter)
+{
+    return newObject<SamplerState>(filter);
+}
+
+Ref<SamplerState> SamplerState::create(TextureFilterMode filter, TextureAddressMode address)
+{
+    return newObject<SamplerState>(filter, address);
+}
+
+Ref<SamplerState> SamplerState::create(TextureFilterMode filter, TextureAddressMode address, bool anisotropyEnabled)
+{
+    return newObject<SamplerState>(filter, address, anisotropyEnabled);
+}
+
 SamplerState::SamplerState()
-	: m_rhiObject(nullptr)
-	, m_desc(SamplerStateData::defaultState)
-	, m_modified(true)
-	, m_frozen(false)
+    : m_rhiObject(nullptr)
+    , m_desc(detail::SamplerStateData::defaultState)
+    , m_modified(true)
+    , m_frozen(false)
 {
 }
 
@@ -27,58 +48,84 @@ SamplerState::~SamplerState()
 {
 }
 
-void SamplerState::initialize()
+void SamplerState::init()
 {
-	GraphicsResource::initialize();
+    GraphicsResource::init();
 }
 
-void SamplerState::dispose()
+void SamplerState::init(TextureFilterMode filter)
 {
-	m_rhiObject.reset();
-	GraphicsResource::dispose();
+    GraphicsResource::init();
+    setFilterMode(filter);
+}
+
+void SamplerState::init(TextureFilterMode filter, TextureAddressMode address)
+{
+    GraphicsResource::init();
+    setFilterMode(filter);
+    setAddressMode(address);
+}
+
+void SamplerState::init(TextureFilterMode filter, TextureAddressMode address, bool anisotropyEnabled)
+{
+    GraphicsResource::init();
+    setFilterMode(filter);
+    setAddressMode(address);
+    setAnisotropyEnabled(anisotropyEnabled);
+}
+
+void SamplerState::onDispose(bool explicitDisposing)
+{
+    m_rhiObject.reset();
+    GraphicsResource::onDispose(explicitDisposing);
 }
 
 void SamplerState::setFilterMode(TextureFilterMode value)
 {
-	if (LN_REQUIRE(!m_frozen)) return;
-	if (m_desc.filter != value)
-	{
-		m_desc.filter = value;
-		m_modified = true;
-	}
+    if (LN_REQUIRE(!m_frozen)) return;
+    if (m_desc.filter != value) {
+        m_desc.filter = value;
+        m_modified = true;
+    }
 }
 
 void SamplerState::setAddressMode(TextureAddressMode value)
 {
-	if (LN_REQUIRE(!m_frozen)) return;
-	if (m_desc.address != value)
-	{
-		m_desc.address = value;
-		m_modified = true;
-	}
+    if (LN_REQUIRE(!m_frozen)) return;
+    if (m_desc.address != value) {
+        m_desc.address = value;
+        m_modified = true;
+    }
 }
 
-detail::ISamplerState* SamplerState::resolveRHIObject()
+void SamplerState::setAnisotropyEnabled(bool value)
 {
-	if (m_modified)
-	{
-		m_rhiObject = deviceContext()->createSamplerState(m_desc);
-		m_modified = false;
-	}
-
-	return m_rhiObject;
+    if (LN_REQUIRE(!m_frozen)) return;
+    if (m_desc.anisotropy != value) {
+        m_desc.anisotropy = value;
+        m_modified = true;
+    }
 }
 
-void SamplerState::onChangeDevice(detail::IGraphicsDeviceContext* device)
+detail::ISamplerState* SamplerState::resolveRHIObject(bool* outModified)
 {
-	if (device)
-	{
-		m_modified = true;
-	}
-	else
-	{
-		m_rhiObject.reset();
-	}
+    *outModified = m_modified;
+
+    if (m_modified) {
+        m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createSamplerState(m_desc);
+        m_modified = false;
+    }
+
+    return m_rhiObject;
+}
+
+void SamplerState::onChangeDevice(detail::IGraphicsDevice* device)
+{
+    if (device) {
+        m_modified = true;
+    } else {
+        m_rhiObject.reset();
+    }
 }
 
 } // namespace ln

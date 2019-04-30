@@ -17,6 +17,7 @@ class GraphicsContext;
 namespace detail {
 class ShaderHelper;
 class ShaderManager;
+class UnifiedShader;
 class IShaderPass;
 class IShaderUniformBuffer;
 }
@@ -82,38 +83,24 @@ public:
     /** この Shader に含まれる ShaderTechnique を取得します。 */
     Ref<ReadOnlyList<Ref<ShaderTechnique>>> techniques() const;
 
-    virtual void dispose() override;
 
 protected:
-    virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
+    virtual void onDispose(bool explicitDisposing) override;
+    virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
 
-    LN_CONSTRUCT_ACCESS : Shader();
+LN_CONSTRUCT_ACCESS:
+	Shader();
     virtual ~Shader();
-    void initialize();
-    void initialize(const StringRef& filePath, ShaderCompilationProperties* properties = nullptr);
-    void initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCompilationProperties* properties = nullptr);
-    void initialize(const String& name, Stream* stream);
+    void init();
+    void init(const StringRef& filePath, ShaderCompilationProperties* properties = nullptr);
+    void init(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCompilationProperties* properties = nullptr);
+    void init(const String& name, Stream* stream);
 
 private:
     detail::ShaderSemanticsManager* semanticsManager() { return &m_semanticsManager; }
     ShaderTechnique* findTechniqueByClass(const detail::ShaderTechniqueClass& techniqueClass) const;
-    void createFromUnifiedShader(Stream* stream, DiagnosticsManager* diag);
-    Ref<detail::IShaderPass> createShaderPass(
-        const char* vsData,
-        size_t vsLen,
-        const char* vsEntryPoint,
-        const char* psData,
-        size_t psLen,
-        const char* psEntryPoint,
-        DiagnosticsManager* diag,
-        ShaderCompilationProperties* properties);
-    Ref<detail::IShaderPass> createRHIShaderPass(
-        const char* vsData,
-        size_t vsLen,
-        const char* psData,
-        size_t psLen,
-        DiagnosticsManager* diag);
-    void createSinglePassShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen, DiagnosticsManager* diag, ShaderCompilationProperties* properties);
+    void createFromStream(Stream* stream, DiagnosticsManager* diag);
+	void createFromUnifiedShader(detail::UnifiedShader* unifiedShader, DiagnosticsManager* diag);
     void postInitialize();
     ShaderConstantBuffer* getOrCreateConstantBuffer(detail::IShaderUniformBuffer* buffer);
     ShaderParameter* getOrCreateTextureParameter(const String& name);
@@ -170,14 +157,15 @@ public:
     /** テクスチャを設定します。 */
     void setTexture(Texture* value);
 
-    virtual void dispose() override;
+protected:
+    virtual void onDispose(bool explicitDisposing) override;
 
 private:
     LN_INTERNAL_NEW_OBJECT;
     ShaderParameter();
     virtual ~ShaderParameter() = default;
-    void initialize(ShaderConstantBuffer* owner, const detail::ShaderUniformTypeDesc& desc, const String& name);
-    void initialize(ShaderParameterClass parameterClass, const String& name);
+    void init(ShaderConstantBuffer* owner, const detail::ShaderUniformTypeDesc& desc, const String& name);
+    void init(ShaderParameterClass parameterClass, const String& name);
 
     const detail::ShaderUniformTypeDesc& desc() const { return m_desc; }
     const Ref<Texture>& texture() const { return m_textureValue; }
@@ -221,7 +209,7 @@ private:
     LN_INTERNAL_NEW_OBJECT;
     ShaderConstantBuffer();
     virtual ~ShaderConstantBuffer() = default;
-    void initialize(Shader* owner, detail::IShaderUniformBuffer* rhiObject);
+    void init(Shader* owner, detail::IShaderUniformBuffer* rhiObject);
 
     Shader* owner() const { return m_owner; }
     const std::string& asciiName() const { return m_asciiName; }
@@ -259,7 +247,7 @@ private:
     LN_INTERNAL_NEW_OBJECT;
     ShaderTechnique();
     virtual ~ShaderTechnique();
-    void initialize(const String& name);
+    void init(const String& name);
 
     void setOwner(Shader* owner) { m_owner = owner; }
     void addShaderPass(ShaderPass* pass);
@@ -287,13 +275,14 @@ public:
     /** パスの名前を取得します。 */
     const String& name() const { return m_name; }
 
-    virtual void dispose() override;
+protected:
+    virtual void onDispose(bool explicitDisposing) override;
 
 private:
     LN_INTERNAL_NEW_OBJECT;
     ShaderPass();
     virtual ~ShaderPass();
-    void initialize(const String& name, detail::IShaderPass* rhiPass, detail::ShaderRenderState* renderState = nullptr);
+    void init(const String& name, detail::IShaderPass* rhiPass, detail::ShaderRenderState* renderState = nullptr);
 
     struct ConstantBufferEntry
     {
@@ -331,7 +320,7 @@ public:
 
     LN_CONSTRUCT_ACCESS : ShaderCompilationProperties();
     virtual ~ShaderCompilationProperties();
-    void initialize();
+    void init();
 
 private:
     List<String> m_includeDirectories;

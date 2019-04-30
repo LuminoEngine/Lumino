@@ -25,10 +25,12 @@ class LinearAllocatorPageManager
 	: public RefObject
 {
 public:
-	static const size_t PageSize = 0x200000;	// 2MB
+	static const size_t DefaultPageSize = 0x200000;	// 2MB
 
-	LinearAllocatorPageManager();
+	LinearAllocatorPageManager(size_t pageSize = 0);
 	virtual ~LinearAllocatorPageManager();
+
+	size_t pageSize() const { return m_pageSize; }
 
 	LinearAllocatorPage* requestPage();
 	void discardPage(LinearAllocatorPage* page);
@@ -38,6 +40,7 @@ public:
 private:
 	void clear();
 
+	size_t m_pageSize;
 	std::mutex m_mutex;
 	List<Ref<LinearAllocatorPage>> m_pagePool;		// page instances
 	std::deque<LinearAllocatorPage*> m_freePages;	// page references
@@ -62,8 +65,10 @@ public:
 	LinearAllocator(LinearAllocatorPageManager* manager);
 	virtual ~LinearAllocator();
 
-	void* allocate(size_t size);
+	void* allocate(size_t size, size_t alignment = 64);
 	void cleanup();
+
+	size_t maxAllocatedLargePageSize() const { return m_maxAllocatedLargePageSize; }
 
 private:
 	void* allocateLarge(size_t size);
@@ -74,6 +79,7 @@ private:
 
 	List<LinearAllocatorPage*> m_retiredPages;
 	List<Ref<LinearAllocatorPage>> m_largePages;
+	size_t m_maxAllocatedLargePageSize;
 };
 
 } // namespace detail

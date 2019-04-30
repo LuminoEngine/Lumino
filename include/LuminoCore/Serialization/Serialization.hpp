@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2018 lriki. Distributed under the MIT license.
+﻿// Copyright (c) 2018+ lriki. Distributed under the MIT license...
 
 #pragma once
 #include <type_traits>
@@ -11,7 +11,7 @@
 
 namespace ln {
 
-	// non‐intrusive
+// non‐intrusive
 #define LN_SERIALIZE_CLASS_VERSION_NI(type, version) \
 	namespace ln { namespace detail { \
 		template<> struct SerializeClassVersionInfo<type> \

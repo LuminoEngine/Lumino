@@ -139,6 +139,20 @@ public:
 
     void addComponent(Component* component);
 
+    void addTag(const StringRef& tag) { m_tags->add(tag); }
+    void removeTag(const StringRef& tag) { m_tags->remove(tag); }
+    bool hasTag(const StringRef& tag) const { return m_tags->contains(tag); }
+
+
+	/** このオブジェクトを破棄します。実際の削除は、現在のフレームのアップデート処理後に行われます。 */
+	void destroy();
+
+	/** destroy() が呼び出され、オブジェクトが破棄されようとしているか、または破棄されたかを確認します。実際の削除は、現在のフレームのアップデート処理後に行われます。 */
+	bool destroyed() const { return m_destroyed; }
+
+	/** このオブジェクトを直ちに World から除外します。このメソッドは World のアップデートシーケンス中に呼び出してはなりません。 */
+	void removeFromWorld();
+
     const Matrix& worldMatrix();
 
 protected:
@@ -150,10 +164,14 @@ protected:
 
     virtual void onRender();
 
+
+	virtual bool traverseRefrection(ReflectionObjectVisitor* visitor);
+
 LN_CONSTRUCT_ACCESS:
 	WorldObject();
 	virtual ~WorldObject();
-	void initialize();
+	void init();
+	virtual void onDispose(bool explicitDisposing) override;
 
 public: // TODO:
     enum class DirtyFlags
@@ -164,6 +182,8 @@ public: // TODO:
     void setSpecialObject(bool enalbed) { m_isSpecialObject = true; }
     bool isSpecialObject() const { return m_isSpecialObject; }
     detail::WorldObjectTransform* transform() const { return m_transform; }
+	void attachWorld(World* world);
+	void detachWorld();
     void preUpdateFrame();
     void updateFrame(float elapsedSeconds);
     void render();
@@ -174,11 +194,13 @@ public: // TODO:
     World* m_world;
     WorldObject* m_parent;
     Ref<detail::WorldObjectTransform> m_transform;
+    Ref<List<String>> m_tags;
     Ref<List<Ref<Component>>> m_components;
     Ref<List<Ref<WorldObject>>> m_children;
     Flags<DirtyFlags> m_dirtyFlags;
     Matrix m_worldMatrix;
     bool m_isSpecialObject;
+	bool m_destroyed;
 
     friend class World;
 };

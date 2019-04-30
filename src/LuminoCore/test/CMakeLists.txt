@@ -8,6 +8,7 @@ set(LN_SOURCES
 	Test_Base_ByteBuffer.cpp
 	Test_Base_EnumFlags.cpp
 	Test_Base_Environment.cpp
+	Test_Base_ErrorHandling.cpp
 	Test_Base_Event.cpp
 	Test_Base_Formatter.cpp
 	Test_Base_List.cpp
@@ -16,7 +17,6 @@ set(LN_SOURCES
 	Test_Base_RefObject.cpp
 	Test_Base_String.cpp
 	Test_Base_StringRef.cpp
-	Test_Base_Variant.cpp
 	Test_IO_BinaryReader.cpp
 	Test_IO_CommandLineParser.cpp
 	Test_IO_FileStream.cpp

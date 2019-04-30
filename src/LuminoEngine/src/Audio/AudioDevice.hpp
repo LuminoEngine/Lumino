@@ -16,7 +16,7 @@ class AudioDevice
 public:
 	AudioDevice();
 	virtual ~AudioDevice() = default;
-	void initialize(int frames, int channels);
+	void init(int frames, int channels);
 	virtual void dispose();
 
 	const AudioListenerParams& listener() const { return m_listener; }

@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../../src/LuminoEngine/src/Asset/AssetArchive.hpp"
 #include "../../src/LuminoEngine/src/Shader/UnifiedShader.hpp"
 #include "EnvironmentSettings.hpp"
@@ -15,8 +15,18 @@ int BuildCommand::execute(Workspace* workspace, Project* project)
 		if (!buildAssets()) {
 			return 1;
 		}
-		if (!buildWindowsTarget(workspace)) {
-			return 1;
+		if (!package) {
+			if (!buildWindowsTarget(workspace, true)) {
+				return 1;
+			}
+		}
+		else {
+			if (!buildWindowsTarget(workspace, false)) {
+				return 1;
+			}
+			if (!buildWindowsPackage(project)) {
+				return 1;
+			}
 		}
 	}
 	else if (ln::String::compare(target, u"Web", ln::CaseSensitivity::CaseInsensitive) == 0) {
@@ -40,7 +50,7 @@ int BuildCommand::execute(Workspace* workspace, Project* project)
     return 0;
 }
 
-Result BuildCommand::buildWindowsTarget(Workspace* workspace)
+Result BuildCommand::buildWindowsTarget(Workspace* workspace, bool debug)
 {
 	auto file = ln::FileSystem::getFile(m_project->rootDirPath(), u"*.sln");
 	if (file.isEmpty()) {
@@ -48,17 +58,41 @@ Result BuildCommand::buildWindowsTarget(Workspace* workspace)
 		return Result::Fail;
 	}
 
-	if (ln::Process::execute(workspace->buildEnvironment()->msbuild(), { file.str(), u"/t:build", u"/p:Configuration=Debug;Platform=\"x86\"" }) != 0) {
-		CLI::error("Failed MSBuild.");
-		return Result::Fail;
+	if (debug) {
+		if (ln::Process::execute(workspace->buildEnvironment()->msbuild(), { file.str(), u"/t:build", u"/p:Configuration=Debug;Platform=\"x86\"" }) != 0) {
+			CLI::error("Failed MSBuild.");
+			return Result::Fail;
+		}
 	}
+	else {
+		if (ln::Process::execute(workspace->buildEnvironment()->msbuild(), { file.str(), u"/t:build", u"/p:Configuration=Release;Platform=\"x86\"" }) != 0) {
+			CLI::error("Failed MSBuild.");
+			return Result::Fail;
+		}
+	}
+
+	return Result::Success;
+}
+
+Result BuildCommand::buildWindowsPackage(Project* project)
+{
+	auto dstDir = ln::Path::combine(project->releaseDir(), u"Windows");
+	ln::FileSystem::createDirectory(dstDir);
+
+	ln::FileSystem::copyFile(
+		ln::Path::combine(project->windowsProjectDir(), u"bin", u"Release", u"LuminoApp.exe"),
+		ln::Path::combine(dstDir, u"LuminoApp.exe"));
+
+	ln::FileSystem::copyFile(
+		ln::Path::combine(project->windowsProjectDir(), u"Assets.lca"),
+		ln::Path::combine(dstDir, u"Assets.lca"));
 
 	return Result::Success;
 }
 
 Result BuildCommand::buildWebTarget(Workspace* workspace)
 {
-	// emsdk ‚ª‚È‚¯‚ê‚ÎƒCƒ“ƒXƒg[ƒ‹‚·‚é
+	// emsdk ãŒãªã‘ã‚Œã°ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã™ã‚‹
 	workspace->buildEnvironment()->prepareEmscriptenSdk();
 
 	auto buildDir = ln::Path::combine(m_project->buildDir(), u"Web").canonicalize();
@@ -99,7 +133,7 @@ Result BuildCommand::buildAndroidTarget()
 	{
 	putenv("JAVA_HOME=\"D:\\Program Files\\Android\\Android Studio\\jre\"");
 
-	ln::Process::execute(u"gradlew.bat", { u"assemble" });	// Debug, Release —¼•ûƒrƒ‹ƒh
+	ln::Process::execute(u"gradlew.bat", { u"assemble" });	// Debug, Release ä¸¡æ–¹ãƒ“ãƒ«ãƒ‰
 
 	// https://qiita.com/tkc_tsuchiya/items/6485714615ace9e19918
 
@@ -168,41 +202,51 @@ Result BuildCommand::buildAssets()
 
 	// Android
 	{
-		auto dst = ln::Path::combine(m_project->androidProjectDir(), u"app", u"src", u"main", u"assets", u"Assets.lca");
-		ln::FileSystem::createDirectory(dst.parent());
-		ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
-		CLI::info(u"Copy to " + dst);
+        if (ln::FileSystem::existsDirectory(m_project->androidProjectDir())) {
+            auto dst = ln::Path::combine(m_project->androidProjectDir(), u"app", u"src", u"main", u"assets", u"Assets.lca");
+            ln::FileSystem::createDirectory(dst.parent());
+            ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
+            CLI::info(u"Copy to " + dst);
+        }
 	}
 
 	// macOS
 	{
-		auto dst = ln::Path::combine(m_project->macOSProjectDir(), u"LuminoApp.macOS", u"Assets.lca");
-		ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
-		CLI::info(u"Copy to " + dst);
+        if (ln::FileSystem::existsDirectory(m_project->macOSProjectDir())) {
+            auto dst = ln::Path::combine(m_project->macOSProjectDir(), u"LuminoApp.macOS", u"Assets.lca");
+            ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
+            CLI::info(u"Copy to " + dst);
+        }
 	}
 
 	// iOS
 	{
-		auto dst = ln::Path::combine(m_project->iOSProjectDir(), u"LuminoApp.iOS", u"Assets.lca");
-		ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
-		CLI::info(u"Copy to " + dst);
+        if (ln::FileSystem::existsDirectory(m_project->iOSProjectDir())) {
+            auto dst = ln::Path::combine(m_project->iOSProjectDir(), u"LuminoApp.iOS", u"Assets.lca");
+            ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
+            CLI::info(u"Copy to " + dst);
+        }
 	}
 
 	// Windows
 	{
-		auto dst = ln::Path::combine(m_project->windowsProjectDir(), u"Assets.lca");
-		ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
-		CLI::info(u"Copy to " + dst);
+        if (ln::FileSystem::existsDirectory(m_project->windowsProjectDir())) {
+            auto dst = ln::Path::combine(m_project->windowsProjectDir(), u"Assets.lca");
+            ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
+            CLI::info(u"Copy to " + dst);
+        }
 	}
 
 	// Web
 	{
-		auto dstDir = ln::Path::combine(m_project->buildDir(), u"Web");
-		ln::FileSystem::createDirectory(dstDir);
+        if (ln::FileSystem::existsDirectory(m_project->buildDir())) {
+            auto dstDir = ln::Path::combine(m_project->buildDir(), u"Web");
+            ln::FileSystem::createDirectory(dstDir);
 
-		auto dst = ln::Path::combine(dstDir, u"Assets.lca");
-		ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
-		CLI::info(u"Copy to " + dst);
+            auto dst = ln::Path::combine(dstDir, u"Assets.lca");
+            ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
+            CLI::info(u"Copy to " + dst);
+        }
 	}
 
 	CLI::info(u"Compilation succeeded.");

@@ -17,8 +17,9 @@ public:
 	GLFWPlatformWindow();
 	virtual ~GLFWPlatformWindow();
 
-	void initialize(const WindowCreationSettings& settings);
-	virtual void dispose() override;
+    Result init(const WindowCreationSettings& settings);
+	void dispose();
+    virtual void setWindowTitle(const String& title) override;
 	virtual void getSize(SizeI* size) override;
 	virtual void getFramebufferSize(int* width, int* height) override;
 	virtual PointI pointFromScreen(const PointI& screenPoint) override;
@@ -49,7 +50,7 @@ public:
 	GLFWPlatformWindowManager();
 	virtual ~GLFWPlatformWindowManager();
 
-	void initialize();
+    Result init();
 	virtual void dispose() override;
 	virtual Ref<PlatformWindow> createWindow(const WindowCreationSettings& settings) override;
 	virtual void destroyWindow(PlatformWindow* window) override;

@@ -10,23 +10,22 @@ namespace ln {
 
 void SceneConductor::gotoScene(Scene* scene)
 {
-    LN_NOTIMPLEMENTED();
+    detail::EngineDomain::sceneManager()->gotoScene(scene);
 }
 
 void SceneConductor::callScene(Scene* scene)
 {
-    LN_NOTIMPLEMENTED();
+    detail::EngineDomain::sceneManager()->callScene(scene);
 }
 
 void SceneConductor::returnScene()
 {
-    LN_NOTIMPLEMENTED();
+    detail::EngineDomain::sceneManager()->returnScene();
 }
 
 Scene* SceneConductor::activeScene()
 {
-    LN_NOTIMPLEMENTED();
-    return nullptr;
+    return detail::EngineDomain::sceneManager()->activeScene();
 }
 
 } // namespace ln

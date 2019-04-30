@@ -1,6 +1,6 @@
 
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/VertexDeclaration.hpp>
+#include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include "../Engine/LinearAllocator.hpp"
@@ -8,12 +8,12 @@
 #include "BlitRenderFeature.hpp"
 #include "SpriteRenderFeature.hpp"
 #include "MeshRenderFeature.hpp"
-#include "RenderTargetTextureCache.hpp"
 #include "RenderingManager.hpp"
 
 namespace ln {
 
 const Vertex Vertex::Default;
+const VertexBlendWeight VertexBlendWeight::Default{ {0, 0, 0, 0}, {0, 0, 0, 0} };
 
 namespace detail {
 
@@ -22,7 +22,8 @@ namespace detail {
 	
 RenderingManager::RenderingManager()
 	: m_graphicsManager(nullptr)
-	, m_standardVertexDeclaration(nullptr)
+	, m_fontManager(nullptr)
+    , m_standardVertexDeclaration(nullptr)
 	, m_spriteRenderFeature(nullptr)
 	, m_meshRenderFeature(nullptr)
     , m_primitiveRenderFeature(nullptr)
@@ -30,15 +31,12 @@ RenderingManager::RenderingManager()
 {
 }
 
-void RenderingManager::initialize(const Settings& settings)
+void RenderingManager::init(const Settings& settings)
 {
     LN_LOG_DEBUG << "RenderingManager Initialization started.";
 
     m_graphicsManager = settings.graphicsManager;
-
-    m_renderTargetTextureCacheManager = makeRef<RenderTargetTextureCacheManager>();
-    m_depthBufferCacheManager = makeRef<DepthBufferCacheManager>();
-    m_frameBufferCache = makeRef<detail::FrameBufferCache>(m_renderTargetTextureCacheManager, m_depthBufferCacheManager);
+    m_fontManager = settings.fontManager;
 
     static VertexElement elements[] =
     {
@@ -47,13 +45,16 @@ void RenderingManager::initialize(const Settings& settings)
         { 0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0 },
         { 0, VertexElementType::Float4, VertexElementUsage::Color, 0 },
     };
-    m_standardVertexDeclaration = newObject<VertexDeclaration>(elements, 4);
+    m_standardVertexDeclaration = newObject<VertexLayout>(elements, 4);
     //m_renderStageListBuilder = makeRef<DrawElementListBuilder>();
 
     m_blitRenderFeature = newObject<BlitRenderFeature>(this);
     m_spriteRenderFeature = newObject<SpriteRenderFeature>(this);
     m_meshRenderFeature = newObject<MeshRenderFeature>(this);
     m_primitiveRenderFeature = newObject<PrimitiveRenderFeature>(this);
+    m_spriteTextRenderFeature = newObject<SpriteTextRenderFeature>(this);
+	m_frameRectRenderFeature = newObject<FrameRectRenderFeature>(this);
+	m_shapesRenderFeature = newObject<ShapesRenderFeature>(this);
 
     m_stageDataPageManager = makeRef<LinearAllocatorPageManager>();
 
@@ -139,14 +140,15 @@ void RenderingManager::dispose()
 		m_builtinShaders[i] = nullptr;
 	}
 	m_stageDataPageManager = nullptr;
+	m_shapesRenderFeature = nullptr;
+	m_frameRectRenderFeature = nullptr;
+    m_spriteTextRenderFeature = nullptr;
     m_primitiveRenderFeature = nullptr;
 	m_meshRenderFeature = nullptr;
 	m_spriteRenderFeature = nullptr;
     m_blitRenderFeature = nullptr;
 	//m_renderStageListBuilder = nullptr;
 	m_standardVertexDeclaration = nullptr;
-	m_depthBufferCacheManager = nullptr;
-	m_renderTargetTextureCacheManager = nullptr;
 }
 
 } // namespace detail

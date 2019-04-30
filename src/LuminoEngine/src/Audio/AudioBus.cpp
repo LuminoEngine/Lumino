@@ -17,7 +17,7 @@ AudioChannel::AudioChannel(size_t length)
 
 void AudioChannel::setSilentAndZero()
 {
-		memset(mutableData(), 0, sizeof(float) * length());
+    memset(mutableData(), 0, sizeof(float) * length());
 	if (!m_isSilent)
 	{
 		m_isSilent = true;
@@ -28,7 +28,7 @@ void AudioChannel::copyTo(float* buffer, size_t bufferLength, size_t stride) con
 {
 	const float* src = constData();
 	if (stride == 1) {
-		memcpy(buffer, src, length());
+		memcpy(buffer, src, sizeof(float) * length());
 	}
 	else {
 		size_t n = length();
@@ -44,7 +44,7 @@ void AudioChannel::copyFrom(const float * buffer, size_t bufferLength, size_t st
 {
 	float* dst = mutableData();
 	if (stride == 1) {
-		memcpy(dst, buffer, length());
+		memcpy(dst, buffer, sizeof(float) * length());
 	}
 	else {
 		size_t n = length();
@@ -241,28 +241,36 @@ void AudioBus::mergeToChannelBuffers(float* buffer, size_t length)
 
 void AudioBus::separateFrom(const float * buffer, size_t length, int channelCount)
 {
-	assert(m_channels.size() == 2);
-	assert(m_channels[0]->length() * 2 >= length);	// length が少ない分にはOK。多いのはあふれるのでNG
+	//assert(m_channels.size() == 2);
+	//assert(m_channels[0]->length() * 2 >= length);	// length が少ない分にはOK。多いのはあふれるのでNG
 
 	for (int i = 0; i < m_channels.size(); i++)
 	{
-		m_channels[i]->copyFrom(buffer + i, length - i, m_channels.size());
+		m_channels[i]->copyFrom(buffer + i, length - i, channelCount);
 	}
 }
 
-void AudioBus::sumFrom(const AudioBus* bus)
+void AudioBus::sumFrom(const AudioBus* sourceBus)
 {
-	int thisChannelCount = channelCount();
-	if (thisChannelCount == bus->channelCount())
+    if (sourceBus == this) {
+        return;
+    }
+
+	int dstChannels = channelCount();
+    int srcChannels = sourceBus->channelCount();
+	if (dstChannels == sourceBus->channelCount())
 	{
-		for (int i = 0; i < thisChannelCount; i++)
+		for (int i = 0; i < dstChannels; i++)
 		{
-			channel(i)->sumFrom(bus->channel(i));
+			channel(i)->sumFrom(sourceBus->channel(i));
 		}
 	}
 	else
 	{
-		LN_NOTIMPLEMENTED();
+        if (srcChannels < dstChannels)
+            sumFromByUpMixing(sourceBus);
+        else
+            sumFromByDownMixing(sourceBus);
 	}
 }
 
@@ -423,6 +431,225 @@ bool AudioBus::topologyMatches(const AudioBus& bus) const
 		return false;  // frame-size mismatch
 
 	return true;
+}
+
+// チャンネル数の多い bus から少ない bus への合成。
+// 例) dst=1ch, src=2ch
+// https://github.com/chromium/chromium/blob/ff00deceb553460d047c7544d2494ffe8ab31d91/third_party/blink/renderer/platform/audio/audio_bus.cc#L292
+void AudioBus::sumFromByUpMixing(const AudioBus* sourceBus)
+{
+    unsigned number_of_source_channels = sourceBus->NumberOfChannels();
+    unsigned number_of_destination_channels = NumberOfChannels();
+
+    if ((number_of_source_channels == 1 && number_of_destination_channels == 2) ||
+        (number_of_source_channels == 1 && number_of_destination_channels == 4)) {
+        // Up-mixing: 1 -> 2, 1 -> 4
+        //   output.L = input
+        //   output.R = input
+        //   output.SL = 0 (in the case of 1 -> 4)
+        //   output.SR = 0 (in the case of 1 -> 4)
+        const AudioChannel* source_l = sourceBus->channelByType(kChannelLeft);
+        channelByType(kChannelLeft)->sumFrom(source_l);
+        channelByType(kChannelRight)->sumFrom(source_l);
+    }
+    else if (number_of_source_channels == 1 &&
+        number_of_destination_channels == 6) {
+        // Up-mixing: 1 -> 5.1
+        //   output.L = 0
+        //   output.R = 0
+        //   output.C = input (put in center channel)
+        //   output.LFE = 0
+        //   output.SL = 0
+        //   output.SR = 0
+        channelByType(kChannelCenter)->sumFrom(sourceBus->channelByType(kChannelLeft));
+    }
+    else if ((number_of_source_channels == 2 &&
+        number_of_destination_channels == 4) ||
+        (number_of_source_channels == 2 &&
+            number_of_destination_channels == 6)) {
+        // Up-mixing: 2 -> 4, 2 -> 5.1
+        //   output.L = input.L
+        //   output.R = input.R
+        //   output.C = 0 (in the case of 2 -> 5.1)
+        //   output.LFE = 0 (in the case of 2 -> 5.1)
+        //   output.SL = 0
+        //   output.SR = 0
+        channelByType(kChannelLeft)->sumFrom(sourceBus->channelByType(kChannelLeft));
+        channelByType(kChannelRight)->sumFrom(sourceBus->channelByType(kChannelRight));
+    }
+    else if (number_of_source_channels == 4 &&
+        number_of_destination_channels == 6) {
+        // Up-mixing: 4 -> 5.1
+        //   output.L = input.L
+        //   output.R = input.R
+        //   output.C = 0
+        //   output.LFE = 0
+        //   output.SL = input.SL
+        //   output.SR = input.SR
+        channelByType(kChannelLeft)->sumFrom(sourceBus->channelByType(kChannelLeft));
+        channelByType(kChannelRight)->sumFrom(sourceBus->channelByType(kChannelRight));
+        channelByType(kChannelSurroundLeft)->sumFrom(sourceBus->channelByType(kChannelSurroundLeft));
+        channelByType(kChannelSurroundRight)->sumFrom(sourceBus->channelByType(kChannelSurroundRight));
+    }
+    else {
+        // All other cases, fall back to the discrete sum. This will silence the
+        // excessive channels.
+        discreteSumFrom(sourceBus);
+    }
+}
+
+// チャンネル数の少ない bus から多い bus への合成。
+// 例) dst=2ch, src=1ch
+void AudioBus::sumFromByDownMixing(const AudioBus* sourceBus)
+{
+    unsigned number_of_source_channels = sourceBus->NumberOfChannels();
+    unsigned number_of_destination_channels = NumberOfChannels();
+
+    if (number_of_source_channels == 2 && number_of_destination_channels == 1) {
+        // Down-mixing: 2 -> 1
+        //   output = 0.5 * (input.L + input.R)
+        const float* source_l = sourceBus->channelByType(kChannelLeft)->Data();
+        const float* source_r = sourceBus->channelByType(kChannelRight)->Data();
+
+        float* destination = channelByType(kChannelLeft)->MutableData();
+        float scale = 0.5;
+
+        blink::VectorMath::vsma(source_l, 1, &scale, destination, 1, length());
+        blink::VectorMath::vsma(source_r, 1, &scale, destination, 1, length());
+    }
+    else if (number_of_source_channels == 4 &&
+        number_of_destination_channels == 1) {
+        // Down-mixing: 4 -> 1
+        //   output = 0.25 * (input.L + input.R + input.SL + input.SR)
+        const float* source_l = sourceBus->channelByType(kChannelLeft)->Data();
+        const float* source_r = sourceBus->channelByType(kChannelRight)->Data();
+        const float* source_sl =
+            sourceBus->channelByType(kChannelSurroundLeft)->Data();
+        const float* source_sr =
+            sourceBus->channelByType(kChannelSurroundRight)->Data();
+
+        float* destination = channelByType(kChannelLeft)->MutableData();
+        float scale = 0.25;
+
+        blink::VectorMath::vsma(source_l, 1, &scale, destination, 1, length());
+        blink::VectorMath::vsma(source_r, 1, &scale, destination, 1, length());
+        blink::VectorMath::vsma(source_sl, 1, &scale, destination, 1, length());
+        blink::VectorMath::vsma(source_sr, 1, &scale, destination, 1, length());
+    }
+    else if (number_of_source_channels == 6 &&
+        number_of_destination_channels == 1) {
+        // Down-mixing: 5.1 -> 1
+        //   output = sqrt(1/2) * (input.L + input.R) + input.C
+        //            + 0.5 * (input.SL + input.SR)
+        const float* source_l = sourceBus->channelByType(kChannelLeft)->Data();
+        const float* source_r = sourceBus->channelByType(kChannelRight)->Data();
+        const float* source_c = sourceBus->channelByType(kChannelCenter)->Data();
+        const float* source_sl =
+            sourceBus->channelByType(kChannelSurroundLeft)->Data();
+        const float* source_sr =
+            sourceBus->channelByType(kChannelSurroundRight)->Data();
+
+        float* destination = channelByType(kChannelLeft)->MutableData();
+        float scale_sqrt_half = sqrtf(0.5);
+        float scale_half = 0.5;
+
+        blink::VectorMath::vsma(source_l, 1, &scale_sqrt_half, destination, 1, length());
+        blink::VectorMath::vsma(source_r, 1, &scale_sqrt_half, destination, 1, length());
+        blink::VectorMath::vadd(source_c, 1, destination, 1, destination, 1, length());
+        blink::VectorMath::vsma(source_sl, 1, &scale_half, destination, 1, length());
+        blink::VectorMath::vsma(source_sr, 1, &scale_half, destination, 1, length());
+    }
+    else if (number_of_source_channels == 4 &&
+        number_of_destination_channels == 2) {
+        // Down-mixing: 4 -> 2
+        //   output.L = 0.5 * (input.L + input.SL)
+        //   output.R = 0.5 * (input.R + input.SR)
+        const float* source_l = sourceBus->channelByType(kChannelLeft)->Data();
+        const float* source_r = sourceBus->channelByType(kChannelRight)->Data();
+        const float* source_sl =
+            sourceBus->channelByType(kChannelSurroundLeft)->Data();
+        const float* source_sr =
+            sourceBus->channelByType(kChannelSurroundRight)->Data();
+
+        float* destination_l = channelByType(kChannelLeft)->MutableData();
+        float* destination_r = channelByType(kChannelRight)->MutableData();
+        float scale_half = 0.5;
+
+        blink::VectorMath::vsma(source_l, 1, &scale_half, destination_l, 1, length());
+        blink::VectorMath::vsma(source_sl, 1, &scale_half, destination_l, 1, length());
+        blink::VectorMath::vsma(source_r, 1, &scale_half, destination_r, 1, length());
+        blink::VectorMath::vsma(source_sr, 1, &scale_half, destination_r, 1, length());
+    }
+    else if (number_of_source_channels == 6 &&
+        number_of_destination_channels == 2) {
+        // Down-mixing: 5.1 -> 2
+        //   output.L = input.L + sqrt(1/2) * (input.C + input.SL)
+        //   output.R = input.R + sqrt(1/2) * (input.C + input.SR)
+        const float* source_l = sourceBus->channelByType(kChannelLeft)->Data();
+        const float* source_r = sourceBus->channelByType(kChannelRight)->Data();
+        const float* source_c = sourceBus->channelByType(kChannelCenter)->Data();
+        const float* source_sl =
+            sourceBus->channelByType(kChannelSurroundLeft)->Data();
+        const float* source_sr =
+            sourceBus->channelByType(kChannelSurroundRight)->Data();
+
+        float* destination_l = channelByType(kChannelLeft)->MutableData();
+        float* destination_r = channelByType(kChannelRight)->MutableData();
+        float scale_sqrt_half = sqrtf(0.5);
+
+        blink::VectorMath::vadd(source_l, 1, destination_l, 1, destination_l, 1, length());
+        blink::VectorMath::vsma(source_c, 1, &scale_sqrt_half, destination_l, 1, length());
+        blink::VectorMath::vsma(source_sl, 1, &scale_sqrt_half, destination_l, 1, length());
+        blink::VectorMath::vadd(source_r, 1, destination_r, 1, destination_r, 1, length());
+        blink::VectorMath::vsma(source_c, 1, &scale_sqrt_half, destination_r, 1, length());
+        blink::VectorMath::vsma(source_sr, 1, &scale_sqrt_half, destination_r, 1, length());
+    }
+    else if (number_of_source_channels == 6 &&
+        number_of_destination_channels == 4) {
+        // Down-mixing: 5.1 -> 4
+        //   output.L = input.L + sqrt(1/2) * input.C
+        //   output.R = input.R + sqrt(1/2) * input.C
+        //   output.SL = input.SL
+        //   output.SR = input.SR
+        const float* source_l = sourceBus->channelByType(kChannelLeft)->Data();
+        const float* source_r = sourceBus->channelByType(kChannelRight)->Data();
+        const float* source_c = sourceBus->channelByType(kChannelCenter)->Data();
+
+        float* destination_l = channelByType(kChannelLeft)->MutableData();
+        float* destination_r = channelByType(kChannelRight)->MutableData();
+        float scale_sqrt_half = sqrtf(0.5);
+
+        blink::VectorMath::vadd(source_l, 1, destination_l, 1, destination_l, 1, length());
+        blink::VectorMath::vsma(source_c, 1, &scale_sqrt_half, destination_l, 1, length());
+        blink::VectorMath::vadd(source_r, 1, destination_r, 1, destination_r, 1, length());
+        blink::VectorMath::vsma(source_c, 1, &scale_sqrt_half, destination_r, 1, length());
+        channel(2)->sumFrom(sourceBus->channel(4));
+        channel(3)->sumFrom(sourceBus->channel(5));
+    }
+    else {
+        // All other cases, fall back to the discrete sum. This will perform
+        // channel-wise sum until the destination channels run out.
+        discreteSumFrom(sourceBus);
+    }
+}
+
+// チャンネル数の差による特別な合成などは行わず、単純に詰めるようにコピーする。
+// 主に、合成処理のフォールバック用に使う。
+void AudioBus::discreteSumFrom(const AudioBus* sourceBus)
+{
+    unsigned number_of_source_channels = sourceBus->NumberOfChannels();
+    unsigned number_of_destination_channels = NumberOfChannels();
+
+    if (number_of_destination_channels < number_of_source_channels) {
+        // Down-mix by summing channels and dropping the remaining.
+        for (unsigned i = 0; i < number_of_destination_channels; ++i)
+            channel(i)->sumFrom(sourceBus->Channel(i));
+    }
+    else if (number_of_destination_channels > number_of_source_channels) {
+        // Up-mix by summing as many channels as we have.
+        for (unsigned i = 0; i < number_of_source_channels; ++i)
+            channel(i)->sumFrom(sourceBus->Channel(i));
+    }
 }
 
 } // namespace ln

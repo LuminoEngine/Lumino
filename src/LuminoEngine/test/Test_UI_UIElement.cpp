@@ -46,10 +46,24 @@ TEST_F(Test_UI_UIElement, RenderEffects)
         auto sprite6 = newObject<UISprite>();
         sprite6->setTexture(tex1);
         sprite6->setPosition(32, 32, 0);
-        sprite6->setTone(ToneF(0.5, 0.3, 0.1, 1.0));
+        sprite6->setTone(ColorTone(0.5, 0.3, 0.1, 1.0));
 
         TestEnv::updateFrame();
         ASSERT_SCREEN(LN_ASSETFILE("Result/Test_UI_UIElement-RenderEffects-1.png"));
         LN_TEST_CLEAN_SCENE;
 	}
 }
+
+//------------------------------------------------------------------------------
+//## Background
+TEST_F(Test_UI_UIElement, Background)
+{
+	//auto e1 = newObject<UIElement>();
+
+	//e1->setBackgroundColor(Color::Red);
+
+	//TestEnv::updateFrame();
+	//ASSERT_SCREEN_S(LN_ASSETFILE("Result/Test_UI_UIElement-Background-1.png"));
+	//LN_TEST_CLEAN_SCENE;
+}
+

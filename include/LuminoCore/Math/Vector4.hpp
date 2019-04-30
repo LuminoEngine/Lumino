@@ -1,11 +1,11 @@
-﻿// Copyright (c) 2018 lriki. Distributed under the MIT license.
+﻿// Copyright (c) 2018+ lriki. Distributed under the MIT license...
 #pragma once
 
 #include "Common.hpp"
+#include "Vector2.hpp"
+#include "Vector3.hpp"
 
 namespace ln {
-struct Vector2;
-struct Vector3;
 struct Matrix;
 
 /**
@@ -33,22 +33,22 @@ public:
     /**
      * すべての要素を 0.0 に設定してインスタンスを初期化します。
      */
-    Vector4();
+	constexpr Vector4() noexcept;
 
     /**
      * 指定した値を使用してインスタンスを初期化します。
      */
-    Vector4(float x, float y, float z, float w);
+	constexpr Vector4(float x, float y, float z, float w) noexcept;
 
     /**
      * Vector2 と z, w 値を指定してインスタンスを初期化します。
      */
-    Vector4(const Vector2& vec, float z, float w);
+	constexpr Vector4(const Vector2& vec, float z, float w) noexcept;
 
     /**
      * Vector3 と w 値を指定してインスタンスを初期化します。
      */
-    Vector4(const Vector3& vec, float w);
+	constexpr Vector4(const Vector3& vec, float w) noexcept;
 
 public:
     /**
@@ -98,6 +98,13 @@ public:
      * 要素のいずれかが NaN または Inf かを判別します。
      */
     bool isNaNOrInf() const;
+
+	//constexpr float& operator[](size_t i) noexcept {
+	//	assert(i >= 0 && i < 4); return *(data() + i);
+	//}
+	//constexpr const float& operator[](size_t i) const noexcept {
+	//	assert(i >= 0 && i < 4); return *(data() + i);
+	//}
 
 public:
     /**
@@ -175,46 +182,41 @@ public:
 
     static bool nearEqual(const Vector4& value1, const Vector4& value2);
 
-public:
-    Vector4& operator+=(const Vector4& v);
-    Vector4& operator+=(float v);
-    Vector4& operator-=(const Vector4& v);
-    Vector4& operator-=(float v);
-    Vector4& operator*=(const Vector4& v);
-    Vector4& operator*=(float v);
-    Vector4& operator/=(const Vector4& v);
-    Vector4& operator/=(float v);
-
-    friend Vector4 operator+(const Vector4& v1, const Vector4& v2);
-    friend Vector4 operator+(const Vector4& v1, float v2);
-    friend Vector4 operator+(float v1, const Vector4& v2);
-    friend Vector4 operator-(const Vector4& v1, const Vector4& v2);
-    friend Vector4 operator-(const Vector4& v1, float v2);
-    friend Vector4 operator-(float v1, const Vector4& v2);
-    friend Vector4 operator*(const Vector4& v1, const Vector4& v2);
-    friend Vector4 operator*(const Vector4& v1, float v2);
-    friend Vector4 operator*(float v1, const Vector4& v2);
-    friend Vector4 operator/(const Vector4& v1, const Vector4& v2);
-    friend Vector4 operator/(const Vector4& v1, float v2);
-    friend Vector4 operator/(float v1, const Vector4& v2);
-
-    friend Vector4 operator-(const Vector4& v1);
-
-    bool operator==(const Vector4& v) const;
-    bool operator!=(const Vector4& v) const;
+#define LN_OP_TYPE Vector4
+#include "Vector4OpDeclareTemplate.inl"
+#undef LN_OP_TYPE
 };
 
-inline Vector4::Vector4()
+inline constexpr Vector4::Vector4() noexcept
+	: x(0.0f)
+	, y(0.0f)
+	, z(0.0f)
+	, w(0.0f)
 {
-    x = y = z = w = 0.0f;
 }
 
-inline Vector4::Vector4(float x_, float y_, float z_, float w_)
+inline constexpr Vector4::Vector4(float x_, float y_, float z_, float w_) noexcept
+	: x(x_)
+	, y(y_)
+	, z(z_)
+	, w(w_)
 {
-    x = x_;
-    y = y_;
-    z = z_;
-    w = w_;
+}
+
+inline constexpr Vector4::Vector4(const Vector2& vec, float z_, float w_) noexcept
+    : x(vec.x)
+    , y(vec.y)
+    , z(z_)
+    , w(w_)
+{
+}
+
+inline constexpr Vector4::Vector4(const Vector3& vec, float w_) noexcept
+    : x(vec.x)
+    , y(vec.y)
+    , z(vec.z)
+    , w(w_)
+{
 }
 
 inline void Vector4::set(float x_, float y_, float z_, float w_)
@@ -235,211 +237,22 @@ inline const Vector3& Vector4::xyz() const
     return *reinterpret_cast<const Vector3*>(this);
 }
 
-inline Vector4& Vector4::operator+=(const Vector4& v)
-{
-    x += v.x;
-    y += v.y;
-    z += v.z;
-    w += v.w;
-    return (*this);
-}
-
-inline Vector4& Vector4::operator+=(float v)
-{
-    x += v;
-    y += v;
-    z += v;
-    w += v;
-    return (*this);
-}
-
-inline Vector4& Vector4::operator-=(const Vector4& v)
-{
-    x -= v.x;
-    y -= v.y;
-    z -= v.z;
-    w -= v.w;
-    return (*this);
-}
-
-inline Vector4& Vector4::operator-=(float v)
-{
-    x -= v;
-    y -= v;
-    z -= v;
-    w -= v;
-    return (*this);
-}
-
-inline Vector4& Vector4::operator*=(const Vector4& v)
-{
-    x *= v.x;
-    y *= v.y;
-    z *= v.z;
-    w *= v.w;
-    return (*this);
-}
-
-inline Vector4& Vector4::operator*=(float v)
-{
-    x *= v;
-    y *= v;
-    z *= v;
-    w *= v;
-    return (*this);
-}
-
-inline Vector4& Vector4::operator/=(const Vector4& v)
-{
-    x /= v.x;
-    y /= v.y;
-    z /= v.z;
-    w /= v.w;
-    return (*this);
-}
-
-inline Vector4& Vector4::operator/=(float v)
-{
-    v = 1.0f / v;
-    x *= v;
-    y *= v;
-    z *= v;
-    w *= v;
-    return (*this);
-}
-
-inline Vector4 operator+(const Vector4& v1, const Vector4& v2)
-{
-    return Vector4(
-        v1.x + v2.x,
-        v1.y + v2.y,
-        v1.z + v2.z,
-        v1.w + v2.w);
-}
-
-inline Vector4 operator+(const Vector4& v1, float v2)
-{
-    return Vector4(
-        v1.x + v2,
-        v1.y + v2,
-        v1.z + v2,
-        v1.w + v2);
-}
-
-inline Vector4 operator+(float v1, const Vector4& v2)
-{
-    return Vector4(
-        v1 + v2.x,
-        v1 + v2.y,
-        v1 + v2.z,
-        v1 + v2.w);
-}
-
-inline Vector4 operator-(const Vector4& v1, const Vector4& v2)
-{
-    return Vector4(
-        v1.x - v2.x,
-        v1.y - v2.y,
-        v1.z - v2.z,
-        v1.w - v2.w);
-}
-
-inline Vector4 operator-(const Vector4& v1, float v2)
-{
-    return Vector4(
-        v1.x - v2,
-        v1.y - v2,
-        v1.z - v2,
-        v1.w - v2);
-}
-
-inline Vector4 operator-(float v1, const Vector4& v2)
-{
-    return Vector4(
-        v1 - v2.x,
-        v1 - v2.y,
-        v1 - v2.z,
-        v1 - v2.w);
-}
-
-inline Vector4 operator*(const Vector4& v1, const Vector4& v2)
-{
-    return Vector4(
-        v1.x * v2.x,
-        v1.y * v2.y,
-        v1.z * v2.z,
-        v1.w * v2.w);
-}
-
-inline Vector4 operator*(const Vector4& v1, float v2)
-{
-    return Vector4(
-        v1.x * v2,
-        v1.y * v2,
-        v1.z * v2,
-        v1.w * v2);
-}
-
-inline Vector4 operator*(float v1, const Vector4& v2)
-{
-    return Vector4(
-        v1 * v2.x,
-        v1 * v2.y,
-        v1 * v2.z,
-        v1 * v2.w);
-}
-
-inline Vector4 operator/(const Vector4& v1, const Vector4& v2)
-{
-    return Vector4(
-        v1.x / v2.x,
-        v1.y / v2.y,
-        v1.z / v2.z,
-        v1.w / v2.w);
-}
-
-inline Vector4 operator/(const Vector4& v1, float v2)
-{
-    v2 = 1.0f / v2;
-    return Vector4(
-        v1.x * v2,
-        v1.y * v2,
-        v1.z * v2,
-        v1.w * v2);
-}
-
-inline Vector4 operator/(float v1, const Vector4& v2)
-{
-    return Vector4(
-        v1 / v2.x,
-        v1 / v2.y,
-        v1 / v2.z,
-        v1 / v2.w);
-}
-
-inline Vector4 operator-(const Vector4& v1)
-{
-    return Vector4(
-        -v1.x,
-        -v1.y,
-        -v1.z,
-        -v1.w);
-}
-
-inline bool Vector4::operator==(const Vector4& v) const
-{
-    return (x == v.x && y == v.y && z == v.z && w == v.w);
-}
-
-inline bool Vector4::operator!=(const Vector4& v) const
-{
-    return (x != v.x || y != v.y || z != v.z || w != v.w);
-}
-
 inline std::ostream& operator<<(std::ostream& s, const Vector4& v)
 {
 	s << v.x << ' ' << v.y << ' ' << v.z << ' ' << v.w;
 	return s;
 }
+
+#define LN_OP_TYPE Vector4
+#define LN_E0 x
+#define LN_E1 y
+#define LN_E2 z
+#define LN_E3 w
+#include "Vector4OpImplementTemplate.inl"
+#undef LN_OP_TYPE
+#undef LN_E0
+#undef LN_E1
+#undef LN_E2
+#undef LN_E3
 
 } // namespace ln

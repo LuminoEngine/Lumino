@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2018 lriki. Distributed under the MIT license.
+﻿// Copyright (c) 2018+ lriki. Distributed under the MIT license...
 #pragma once
 
 #include <stdio.h>
@@ -31,6 +31,9 @@ public:
 
     /** Vector2(1, 1) */
     static const Vector2 Ones;
+
+	/** Vector2(nan, nan) */
+	static const Vector2 NaN;
 
 public:
     /**

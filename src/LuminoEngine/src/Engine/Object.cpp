@@ -26,18 +26,34 @@ Object::~Object()
     }
 }
 
-void Object::initialize()
+void Object::init()
 {
     TypeInfo::initializeObjectProperties(this);
 }
 
 void Object::finalize()
 {
-	dispose();
+	onDispose(false);
 }
 
 void Object::dispose()
 {
+	onDispose(true);
+}
+
+void Object::onDispose(bool explicitDisposing)
+{
+}
+
+bool Object::traverseRefrection(ReflectionObjectVisitor* visitor)
+{
+	const List<Ref<PropertyInfo>>& props = TypeInfo::getTypeInfo(this)->properties();
+	for (auto& prop : props) {
+		if (visitor->visitProperty(this, prop)) {
+			return true;
+		}
+	}
+	return false;
 }
 
 detail::WeakRefInfo* Object::requestWeakRefInfo()

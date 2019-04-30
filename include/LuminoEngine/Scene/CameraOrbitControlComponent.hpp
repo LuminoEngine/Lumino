@@ -30,7 +30,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	CameraOrbitControlComponent();
 	virtual ~CameraOrbitControlComponent() = default;
-	void initialize();
+	void init();
 
 private:
     enum class State

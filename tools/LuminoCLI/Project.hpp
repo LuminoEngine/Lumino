@@ -14,7 +14,7 @@ public:
 	Project(Workspace* owner);
 	virtual ~Project();
 
-	Result newProject(const ln::Path& projectDir, const ln::String& projectName, const ln::String& engineSource = ln::String::Empty);
+	Result newProject(const ln::Path& projectDir, const ln::String& projectName, const ln::String& engineSource, const ln::String& templateName);
 	Result openProject(const ln::Path& dir);
 	Result saveProject();
 	Result loadProject();
@@ -27,6 +27,7 @@ public:
 	const ln::Path& rootDirPath() const { return m_rootDir; }
     const ln::Path& assetsDir() const { return m_assetsDir; }
 	const ln::Path& buildDir() const { return m_buildDir; }
+	const ln::Path& releaseDir() const { return m_releaseDir; }
 	const ln::Path& intermediateAssetsDir() const { return m_intermediateAssetsDir; }
 
 	ln::Path projectsDir() const { return ln::Path(rootDirPath(), u"Projects"); }
@@ -53,6 +54,7 @@ private:
 	ln::Path m_sourcesDir;
 	ln::Path m_assetsDir;
 	ln::Path m_buildDir;
+	ln::Path m_releaseDir;
 	ln::Path m_intermediateAssetsDir;
 };
 

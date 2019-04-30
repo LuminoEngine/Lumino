@@ -24,11 +24,17 @@ AudioManager::~AudioManager()
 {
 }
 
-void AudioManager::initialize(const Settings& settings)
+void AudioManager::init(const Settings& settings)
 {
+    LN_LOG_DEBUG << "AudioManager Initialization started.";
+
     m_assetManager = settings.assetManager;
+
+	m_decoderCache.init();
+    m_dispatcher = makeRef<Dispatcher>();
+
 	m_primaryContext = makeRef<AudioContext>();
-	m_primaryContext->initialize();
+	m_primaryContext->init();
 
 	//m_linearAllocatorPageManager = makeRef<LinearAllocatorPageManager>();
 	//m_primaryRenderingCommandList = makeRef<RenderingCommandList>(m_linearAllocatorPageManager);
@@ -36,9 +42,12 @@ void AudioManager::initialize(const Settings& settings)
 #ifdef LN_AUDIO_THREAD_ENABLED
 	m_endRequested = false;
 	m_audioThread = std::make_unique<std::thread>(std::bind(&AudioManager::processThread, this));
+    m_dispatheThread = std::make_unique<std::thread>(std::bind(&AudioManager::dispatheThread, this));
 #endif
 
     m_gameAudio = makeRef<GameAudioImpl>(this);
+
+    LN_LOG_DEBUG << "AudioManager Initialization ended.";
 }
 
 void AudioManager::dispose()
@@ -50,7 +59,9 @@ void AudioManager::dispose()
 
 #ifdef LN_AUDIO_THREAD_ENABLED
 	m_endRequested = true;
-
+	if (m_dispatheThread) {
+        m_dispatheThread->join();
+	}
 	if (m_audioThread) {
 		m_audioThread->join();
 	}
@@ -58,6 +69,11 @@ void AudioManager::dispose()
 		throw *m_audioThreadException;
 	}
 #endif
+    if (m_dispatcher) {
+        m_dispatcher->executeTasks();   // 残っているものを実行してしまう
+        m_dispatcher = nullptr;
+    }
+
 	if (m_primaryContext) {
 		m_primaryContext->dispose();
 		m_primaryContext = nullptr;
@@ -71,21 +87,71 @@ void AudioManager::update(float elapsedSeconds)
 		if (m_primaryContext) {
 			m_primaryContext->process(elapsedSeconds);
 		}
+        m_dispatcher->executeTasks(1);
 	}
 }
 
-Ref<AudioDecoder> AudioManager::createAudioDecoder(const StringRef & filePath)
+Ref<AudioDecoder> AudioManager::createAudioDecoder(const StringRef& filePath)
 {
 	// TODO: diag
 	auto diag = newObject<DiagnosticsManager>();
 
-    auto stream = m_assetManager->openFileStream(filePath);
+	auto path = Path(filePath).unify();
+	Ref<AudioDecoder> decoder;
+	{
+		ScopedReadLock lock(m_cacheMutex);
+		decoder = m_decoderCache.findObject(path);
+	}
 
-	// TODO: cache
-	auto decoder = makeRef<WaveDecoder>();
-    //auto decoder = makeRef<OggAudioDecoder>();
-	decoder->initialize(stream, diag);
-	return decoder;
+	if (decoder)
+	{
+		return decoder;
+	}
+	else
+	{
+		auto stream = m_assetManager->openFileStream(path);
+
+		if (filePath.endsWith(u".wav", CaseSensitivity::CaseInsensitive)) {
+			auto d = makeRef<WaveDecoder>();
+			d->init(stream, diag);
+			decoder = d;
+		}
+		else if (filePath.endsWith(u".ogg", CaseSensitivity::CaseInsensitive)) {
+			auto d = makeRef<OggAudioDecoder>();
+			d->init(stream, diag);
+			decoder = d;
+		}
+		else {
+			LN_ERROR("Invalid file extentsion.");
+			return nullptr;
+		}
+
+		m_decoderCache.registerObject(path, decoder);
+
+		return decoder;
+	}
+}
+
+void AudioManager::createAudioDecoderAsync(const StringRef& filePath, const std::function<void(AudioDecoder* decoder)>& postAction)
+{
+    auto task = Task::create([this, filePath, postAction]() {
+        auto decoder = createAudioDecoder(filePath);
+        m_dispatcher->post([postAction, decoder]() {
+            postAction(decoder);
+        });
+    });
+    //task->awaitThen([]() {
+    //    postAction
+    //});
+}
+
+void AudioManager::releaseAudioDecoder(AudioDecoder* decoder)
+{
+	ScopedWriteLock lock(m_cacheMutex);
+
+	//if ()
+
+	m_decoderCache.releaseObject(decoder);
 }
 
 void AudioManager::processThread()
@@ -105,6 +171,23 @@ void AudioManager::processThread()
 	{
 		m_audioThreadException.reset(e.copy());
         LN_LOG_ERROR << m_audioThreadException->getMessage();
+	}
+}
+
+void AudioManager::dispatheThread()
+{
+	try
+	{
+		while (!m_endRequested)
+		{
+            m_dispatcher->executeTasks(1);
+			Thread::sleep(5);
+		}
+	}
+	catch (Exception& e)
+	{
+		m_audioThreadException.reset(e.copy());
+		LN_LOG_ERROR << m_audioThreadException->getMessage();
 	}
 }
 

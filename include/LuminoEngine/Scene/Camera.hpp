@@ -37,6 +37,26 @@ public:
     float getFarClip() const { return m_component->getFarClip(); }
 
 
+    /** カメラの投影モードを設定します。(default: Perspective) */
+    void setProjectionMode(ProjectionMode value) { m_component->setProjectionMode(value); }
+
+    /** カメラの投影モードを取得します。 */
+    ProjectionMode projectionMode() const { return m_component->projectionMode(); }
+
+    /** 平行投影モード時の、ビューサイズに対するワールド空間内の距離を設定します。(default: (16.0, 12.0)) */
+    void setOrthographicSize(const Size& size) { m_component->setOrthographicSize(size); }
+
+    /** 平行投影モード時の、ビューサイズに対するワールド空間内の距離を設定します。(default: (16.0, 12.0)) */
+    void setOrthographicSize(float width, float height) { setOrthographicSize(Size(width, height)); }
+
+    /** 平行投影モード時の、ビューの縦幅に対するワールド空間内の距離を設定します。(default: (16.0, 12.0)) */
+    void setOrthographicSize(float height) { setOrthographicSize(Size(0.0f, height)); }
+    
+    /** 平行投影モード時の、ビューサイズに対するワールド空間内の距離を取得します。 */
+    const Size& orthographicSize() const { return m_component->orthographicSize(); }
+
+
+
     /** ビュー行列を取得します。カメラの姿勢に同期するように別のオブジェクトの更新を行う場合、onPostUpdate() でこの行列を取得します。onUpdate() 時点では最新の行列が返るとは限りません。 */
     const Matrix& viewMatrix() const;
 
@@ -60,7 +80,7 @@ public:
 
 	CameraComponent* cameraComponent() const;
 
-    WorldRenderView* renderView() const { return m_ownerRenderView; }
+    WorldRenderView* renderView() const;
 
 protected:
     // WorldObject interface
@@ -69,16 +89,16 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	Camera();
 	virtual ~Camera();
-	void initialize(/*CameraWorld proj, bool defcmp*/);
+	void init(/*CameraWorld proj, bool defcmp*/);
 
 //LN_INTERNAL_ACCESS:
 //	void setCameraComponent(CameraComponent* component);
 
 private:
 	Ref<CameraComponent> m_component;
-    WorldRenderView* m_ownerRenderView;
+    //WorldRenderView* m_ownerRenderView;
 
-    friend class WorldRenderView;
+    //friend class WorldRenderView;
 };
 
 } // namespace ln

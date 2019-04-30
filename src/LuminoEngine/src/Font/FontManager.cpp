@@ -6,6 +6,7 @@
 #include FT_TRUETYPE_TAGS_H /* <freetype/tttags.h> */
 #include FT_TRUETYPE_TABLES_H /* <freetype/tttables.h> */
 #include FT_SFNT_NAMES_H
+#include <LuminoEngine/Font/Font.hpp>
 #include "../Asset/AssetManager.hpp"
 #include "FontCore.hpp"
 #include "FreeTypeFont.hpp"
@@ -19,7 +20,7 @@ namespace detail {
    
 FontDesc::FontDesc()
     : Family()
-    , Size(16)
+    , Size(20)
     , isBold(false)
     , isItalic(false)
     , isAntiAlias(true)
@@ -42,17 +43,38 @@ bool FontDesc::operator < (const FontDesc& right)
 
 uint64_t FontDesc::calcHash() const
 {
-    uint32_t v[2];
-    v[0] = CRCHash::compute(Family.c_str());
+	uint8_t flags = (((isBold) ? 1 : 0)) |
+		(((isItalic) ? 1 : 0) << 1) |
+		(((isAntiAlias) ? 1 : 0) << 2);
 
-    uint8_t* v2 = (uint8_t*)&v[1];
-    v2[0] = Size;
-    v2[1] =
-        (((isBold) ? 1 : 0)) |
-        (((isItalic) ? 1 : 0) << 1) |
-        (((isAntiAlias) ? 1 : 0) << 2);
+	return
+		static_cast<uint64_t>(CRCHash::compute(Family.c_str())) << 32 |
+		static_cast<uint16_t>(Size) << 16 |
+		flags;
 
-    return *((uint64_t*)&v);
+
+
+    //uint32_t v[2];
+    //v[0] = CRCHash::compute(Family.c_str());
+
+    //uint8_t* v2 = (uint8_t*)&v[1];
+    //v2[0] = Size;
+    //v2[1] =
+    //    (((isBold) ? 1 : 0)) |
+    //    (((isItalic) ? 1 : 0) << 1) |
+    //    (((isAntiAlias) ? 1 : 0) << 2);
+
+    //return *((uint64_t*)&v);
+}
+
+bool FontDesc::equals(const FontDesc& other) const
+{
+	return
+		(Family == other.Family) &&
+		(Size == other.Size) &&
+		(isBold == other.isBold) &&
+		(isItalic == other.isItalic) &&
+		(isAntiAlias == other.isAntiAlias);
 }
 
 //==============================================================================
@@ -62,8 +84,10 @@ FontManager::FontManager()
 {
 }
 
-void FontManager::initialize(const Settings& settings)
+void FontManager::init(const Settings& settings)
 {
+    LN_LOG_DEBUG << "FontManager Initialization started.";
+
     m_assetManager = settings.assetManager;
     m_charToUTF32Converter.setDestinationEncoding(TextEncoding::utf32Encoding());
     m_charToUTF32Converter.getSourceEncoding(TextEncoding::systemMultiByteEncoding());
@@ -74,20 +98,39 @@ void FontManager::initialize(const Settings& settings)
     m_UTF32ToTCharConverter.setDestinationEncoding(TextEncoding::tcharEncoding());
     m_UTF32ToTCharConverter.getSourceEncoding(TextEncoding::utf32Encoding());
 
+    m_fontCoreCache.init();
+
     // FreeType
     {
         FT_Error err = FT_Init_FreeType(&m_ftLibrary);
-        if (LN_ENSURE(err == 0, "failed initialize font library : %d\n", err)) return;
+        if (LN_ENSURE(err == 0, "failed init font library : %d\n", err)) return;
 
         err = FTC_Manager_New(m_ftLibrary, 0, 0, 0, callbackFaceRequester, this, &m_ftCacheManager);
-        if (LN_ENSURE(err == 0, "failed initialize font cache manager : %d\n", err)) return;
+        if (LN_ENSURE(err == 0, "failed init font cache manager : %d\n", err)) return;
 
         err = FTC_CMapCache_New(m_ftCacheManager, &m_ftCMapCache);
-        if (LN_ENSURE(err == 0, "failed initialize font cache map : %d\n", err)) return;
+        if (LN_ENSURE(err == 0, "failed init font cache map : %d\n", err)) return;
 
         err = FTC_ImageCache_New(m_ftCacheManager, &m_ftImageCache);
-        if (LN_ENSURE(err == 0, "failed initialize font image cache : %d\n", err)) return;
+        if (LN_ENSURE(err == 0, "failed init font image cache : %d\n", err)) return;
     }
+
+    // Default font
+    {
+        static const unsigned char data[] =
+        {
+#include "Resource/mplus-1m-regular-ascii-subset.ttf.inl"
+        };
+        static const size_t size = LN_ARRAY_SIZE_OF(data);
+        MemoryStream stream(data, size);
+        registerFontFromStream(&stream, false);
+
+        FontDesc desc;
+        desc.Family = u"mplus-1m-regular-ascii-subset";
+        m_defaultFont = newObject<Font>(desc);
+    }
+
+    LN_LOG_DEBUG << "FontManager Initialization ended.";
 }
 
 void FontManager::dispose()
@@ -117,100 +160,147 @@ void FontManager::dispose()
 	m_ttfDataEntryMap.clear();
 }
 
-void FontManager::registerFontFile(const StringRef& fontFilePath)
+void FontManager::registerFontFromFile(const StringRef& fontFilePath, bool defaultFamily)
 {
-	// ファイルから全てのデータを読み込む
 	auto file = m_assetManager->openFileStream(fontFilePath);
-	auto buffer = makeRef<ByteBuffer>(file->length());
-	file->read(buffer->data(), buffer->size());
-
-	FT_Error err = 0;
-	int numFaces = 0;
-	String familyName;
-
-	// Face 作成 (ファミリ名・Face 数を調べるため。すぐ削除する)
-	{
-		FT_Face face;
-		err = FT_New_Memory_Face(
-			m_ftLibrary,
-			(const FT_Byte*)buffer->data(),
-			buffer->size(),
-			0,
-			&face);
-		if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return;
-		numFaces = face->num_faces;
-		familyName = String::fromCString(face->family_name);
-		FT_Done_Face(face);
-	}
-
-	// Fase ひとつだけ (.ttf)
-	if (numFaces == 1)
-	{
-		uint32_t key = CRCHash::compute(familyName.c_str());
-		if (m_ttfDataEntryMap.find(key) == m_ttfDataEntryMap.end())
-		{
-			TTFDataEntry e;
-			e.dataBuffer = buffer;
-			e.collectionIndex = 0;
-			m_ttfDataEntryMap.insert({ key, e });
-			LN_LOG_INFO << "Registered font file." << familyName;
-
-			// set default name, if first
-			if (m_defaultFontDesc.Family.isEmpty()) {
-				m_defaultFontDesc.Family = familyName;
-			}
-		}
-	}
-	// Fase が複数 (.ttc)
-	else if (numFaces > 1)
-	{
-		for (int i = 0; i < numFaces; i++)
-		{
-			FT_Face face;
-			err = FT_New_Memory_Face(
-				m_ftLibrary,
-				(const FT_Byte*)buffer->data(),
-				buffer->size(),
-				i,
-				&face);
-			if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return;
-
-			familyName = String::fromCString(face->family_name);
-			uint32_t key = CRCHash::compute(familyName.c_str());
-			if (m_ttfDataEntryMap.find(key) == m_ttfDataEntryMap.end())
-			{
-				TTFDataEntry e;
-				e.dataBuffer = buffer;
-				e.collectionIndex = 0;
-				m_ttfDataEntryMap.insert({ key, e });
-				LN_LOG_INFO << "Registered font file." << familyName;
-
-				// set default name, if first
-				if (m_defaultFontDesc.Family.isEmpty()) {
-					m_defaultFontDesc.Family = familyName;
-				}
-			}
-			FT_Done_Face(face);
-		}
-	}
-	else {
-		LN_UNREACHABLE();
-	}
+    registerFontFromStream(file, defaultFamily);
 }
 
-Ref<FontCore> FontManager::lookupFontCore(const FontDesc& keyDesc)
+void FontManager::registerFontFromStream(Stream* stream, bool defaultFamily)
 {
-	uint32_t key = keyDesc.calcHash();
+    auto buffer = makeRef<ByteBuffer>(stream->length());
+    stream->read(buffer->data(), buffer->size());
+
+    FT_Error err = 0;
+    int numFaces = 0;
+    String familyName;
+
+    // Face 作成 (ファミリ名・Face 数を調べるため。すぐ削除する)
+    {
+        FT_Face face;
+        err = FT_New_Memory_Face(
+            m_ftLibrary,
+            (const FT_Byte*)buffer->data(),
+            buffer->size(),
+            0,
+            &face);
+        if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return;
+        numFaces = face->num_faces;
+        familyName = String::fromCString(face->family_name);
+        FT_Done_Face(face);
+    }
+
+    // Fase ひとつだけ (.ttf)
+    if (numFaces == 1)
+    {
+        uint32_t key = CRCHash::compute(familyName.c_str());
+        if (m_ttfDataEntryMap.find(key) == m_ttfDataEntryMap.end())
+        {
+            TTFDataEntry e;
+            e.dataBuffer = buffer;
+            e.collectionIndex = 0;
+            m_ttfDataEntryMap.insert({ key, e });
+            LN_LOG_INFO << "Registered font file." << familyName;
+
+            //// set default name
+            //if (defaultFamily) {
+            //    m_defaultFontDesc.Family = familyName;
+            //}
+        }
+
+		m_famlyNameToFontFaceSourceMap[familyName] = { buffer, 0 };
+    }
+    // Fase が複数 (.ttc)
+    else if (numFaces > 1)
+    {
+        for (int i = 0; i < numFaces; i++)
+        {
+            FT_Face face;
+            err = FT_New_Memory_Face(
+                m_ftLibrary,
+                (const FT_Byte*)buffer->data(),
+                buffer->size(),
+                i,
+                &face);
+            if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return;
+
+            familyName = String::fromCString(face->family_name);
+            uint32_t key = CRCHash::compute(familyName.c_str());
+            if (m_ttfDataEntryMap.find(key) == m_ttfDataEntryMap.end())
+            {
+                TTFDataEntry e;
+                e.dataBuffer = buffer;
+                e.collectionIndex = 0;
+                m_ttfDataEntryMap.insert({ key, e });
+                LN_LOG_INFO << "Registered font file." << familyName;
+
+                //// set default name
+                //if (defaultFamily) {
+                //    m_defaultFontDesc.Family = familyName;
+                //}
+            }
+
+			m_famlyNameToFontFaceSourceMap[familyName] = { buffer, i };
+
+            FT_Done_Face(face);
+        }
+    }
+    else {
+        LN_UNREACHABLE();
+    }
+
+    if (defaultFamily) {
+        LN_CHECK(m_defaultFont);
+        m_defaultFont = m_defaultFont->clone();
+        m_defaultFont->setFamily(familyName);
+    }
+}
+
+Ref<FontCore> FontManager::lookupFontCore(const FontDesc& keyDesc, float dpiScale)
+{
+	// 検索用のキーを作る
+	FontDesc actual = keyDesc;
+	if (actual.Family.isEmpty()) {
+		actual.Family = defaultFontDesc().Family;
+	}
+	actual.Size *= dpiScale;
+
+	// 検索
+	uint64_t key = actual.calcHash();
 	RefObject* ptr = m_fontCoreCache.findObject(key);
 	if (ptr) {
 		return static_cast<FontCore*>(ptr);
 	}
 	else {
 		auto font = makeRef<FreeTypeFont>();
-		font->initialize(this, keyDesc);
+		font->init(this, actual);
 		m_fontCoreCache.registerObject(key, font);
 		return font;
 	}
+}
+
+void FontManager::setDefaultFont(Font* font)
+{
+    m_defaultFont = font;
+}
+
+FontDesc FontManager::defaultFontDesc() const
+{
+    return FontHelper::getFontDesc(m_defaultFont);
+}
+
+Font* FontManager::defaultFont() const
+{
+    return m_defaultFont;
+}
+
+const FontFaceSource* FontManager::lookupFontFaceSourceFromFamilyName(const String& name)
+{
+	auto itr = m_famlyNameToFontFaceSourceMap.find(name);
+	if (itr != m_famlyNameToFontFaceSourceMap.end())
+		return &itr->second;
+	else
+		return nullptr;
 }
 
 FT_Error FontManager::callbackFaceRequester(

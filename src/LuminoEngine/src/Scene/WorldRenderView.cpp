@@ -2,10 +2,12 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
+#include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
 #include <LuminoEngine/Mesh/Mesh.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
+#include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
@@ -19,6 +21,7 @@ namespace ln {
 
 WorldRenderView::WorldRenderView()
     : m_visibleGridPlane(false)
+    , m_physicsDebugDrawEnabled(false)
 {
 }
 
@@ -26,11 +29,11 @@ WorldRenderView::~WorldRenderView()
 {
 }
 
-void WorldRenderView::initialize()
+void WorldRenderView::init()
 {
-    RenderView::initialize();
+    RenderView::init();
     m_sceneRenderingPipeline = makeRef<detail::SceneRenderingPipeline>();
-    m_sceneRenderingPipeline->initialize();
+    m_sceneRenderingPipeline->init();
     m_drawElementListCollector = makeRef<detail::DrawElementListCollector>();
     m_viewPoint = newObject<RenderViewPoint>();
 
@@ -49,33 +52,34 @@ void WorldRenderView::setTargetWorld(World* world)
 void WorldRenderView::setCamera(Camera* camera)
 {
     if (camera) {
-        if (LN_REQUIRE(!camera->m_ownerRenderView)) return;
+        if (LN_REQUIRE(camera->cameraComponent())) return;
+        if (LN_REQUIRE(!camera->cameraComponent()->ownerRenderView())) return;
     }
 
     if (m_camera) {
-        m_camera->m_ownerRenderView = nullptr;
+        m_camera->cameraComponent()->setOwnerRenderView(nullptr);
     }
 
 	m_camera = camera;
 
     if (m_camera) {
-        m_camera->m_ownerRenderView = this;
+        m_camera->cameraComponent()->setOwnerRenderView(this);
     }
 }
 
-void WorldRenderView::render(GraphicsContext* graphicsContext)
+void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthbuffer)
 {
 	if (m_camera)
 	{
-
         FrameBuffer fb;
-        fb.renderTarget[0] = graphicsContext->colorBuffer(0);
-        fb.depthBuffer = graphicsContext->depthBuffer();
+        fb.renderTarget[0] = renderTarget;
+        fb.depthBuffer = depthbuffer;
 
         // TODO:
         detail::CameraInfo camera;
         {
             CameraComponent* cc = m_camera->cameraComponent();
+            cc->updateMatrices();
             
             m_viewPoint->worldMatrix = m_camera->worldMatrix();
             m_viewPoint->viewPixelSize = camera.viewPixelSize = Size(fb.renderTarget[0]->width(), fb.renderTarget[0]->height());	// TODO: 必要？
@@ -102,21 +106,35 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
         if (m_targetWorld) {
 			detail::WorldSceneGraphRenderingContext* renderingContext = m_targetWorld->prepareRender(m_viewPoint);
 
+
+
+
 			if (clearMode() == RenderViewClearMode::ColorAndDepth) {
 				renderingContext->clear(ClearFlags::All, backgroundColor(), 1.0f, 0x00);
 			}
 
             m_targetWorld->renderObjects();
 
-            PhysicsWorld* physicsWorld = m_targetWorld->physicsWorld();
-            if (physicsWorld) {
-                physicsWorld->renderDebug(renderingContext);
+            if (m_physicsDebugDrawEnabled) {
+                if (m_targetWorld->physicsWorld()) {
+                    m_targetWorld->physicsWorld()->renderDebug(renderingContext);
+                }
+                if (m_targetWorld->physicsWorld2D()) {
+                    m_targetWorld->physicsWorld2D()->renderDebug(renderingContext);
+                }
             }
 
-            adjustGridPlane(m_viewPoint->viewFrustum, this);
-            renderGridPlane(renderingContext, this);
-        }
+            // test
+            //renderingContext->pushState();
+            //renderingContext->setBlendMode(BlendMode::Alpha);
+            //renderingContext->drawText(u"Lumino", Font::create(), Color::Blue);
+            //renderingContext->popState();
 
+
+            //adjustGridPlane(m_viewPoint->viewFrustum, this);
+            //renderGridPlane(renderingContext, this);
+
+        }
 
 
 
@@ -161,7 +179,9 @@ void WorldRenderView::createGridPlane()
 
     // 四方の辺に黒線を引いたテクスチャを作り、マテリアルにセットしておく
     SizeI gridTexSize(512, 512);
-    auto gridTex = newObject<Texture2D>(gridTexSize.width, gridTexSize.height, TextureFormat::RGBA32, true, GraphicsResourceUsage::Dynamic);
+    auto gridTex = newObject<Texture2D>(gridTexSize.width, gridTexSize.height, TextureFormat::RGBA8);
+	gridTex->setMipmapEnabled(true);
+	gridTex->setResourceUsage(GraphicsResourceUsage::Dynamic);
     for (int x = 0; x < gridTexSize.width; ++x)
     {
         gridTex->setPixel(x, 0, Color(0, 0, 0, 0.5));

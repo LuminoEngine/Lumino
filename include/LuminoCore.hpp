@@ -1,4 +1,4 @@
-// Copyright (c) 2018 lriki. Distributed under the MIT license.
+// Copyright (c) 2018+ lriki. Distributed under the MIT license.
 #pragma once
 
 #include "LuminoCore/Base/Common.hpp"
@@ -20,7 +20,7 @@
 #include "LuminoCore/Base/String.hpp"
 #include "LuminoCore/Base/StringHelper.hpp"
 #include "LuminoCore/Base/Uuid.hpp"
-#include "LuminoCore/Base/Variant.hpp"
+#include "LuminoCore/Base/Result.hpp"
 
 #include "LuminoCore/IO/Common.hpp"
 #include "LuminoCore/IO/BinaryReader.hpp"
@@ -38,6 +38,7 @@
 #include "LuminoCore/IO/StringWriter.hpp"
 #include "LuminoCore/IO/TextReader.hpp"
 #include "LuminoCore/IO/TextWriter.hpp"
+#include "LuminoCore/IO/Console.hpp"
 
 #include "LuminoCore/Math/Common.hpp"
 #include "LuminoCore/Math/AttitudeTransform.hpp"

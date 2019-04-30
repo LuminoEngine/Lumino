@@ -5,7 +5,7 @@
 cmake_minimum_required (VERSION 3.0.0)
 project (LuminoCore)
 
-include(${PROJECT_SOURCE_DIR}/../LuminoCommon.cmake NO_POLICY_SCOPE)
+#include(${PROJECT_SOURCE_DIR}/../LuminoCommon.cmake NO_POLICY_SCOPE)
 
 #------------------------------------------------------------------------------
 # Files
@@ -76,7 +76,7 @@ endif()
 
 install(TARGETS ${PROJECT_NAME}
     EXPORT LuminoCoreTargets
-    ARCHIVE     DESTINATION .#lib    # Library installation location (Copied at "INSTALL" build time)
+    ARCHIVE     DESTINATION ./lib    # Library installation location (Copied at "INSTALL" build time)
     #INCLUDES    DESTINATION ../../include        # include directory (File is not copied)
     #INCLUDES    DESTINATION include                    # include directory (File is not copied)
     FRAMEWORK DESTINATION .)
@@ -85,11 +85,11 @@ install(
     EXPORT LuminoCoreTargets
     FILE LuminoCoreTargets.cmake
     EXPORT_LINK_INTERFACE_LIBRARIES
-    DESTINATION "cmake")
+    DESTINATION lib/cmake)
 
 install(
-    FILES "LuminoCoreConfig.cmake"
-    DESTINATION "cmake")
+    FILES LuminoCoreConfig.cmake
+    DESTINATION lib/cmake)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ../../../../lib/${LN_TARGET_ARCH}-${CMAKE_BUILD_TYPE})
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ../../../../lib/${LN_TARGET_ARCH})

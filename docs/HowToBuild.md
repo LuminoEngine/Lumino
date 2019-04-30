@@ -9,6 +9,11 @@
 #### Visual Studio
 Visual Studio 2017 をインストールしてください。
 
+また、Visual Studio Installer では次のワークロードをインストールしてください。
+* C++ によるデスクトップ開発
+* .NET Core クロスプラットフォームの開発
+
+
 #### Chocolatey
 Chocolatey をインストールしてください。
 ― [Chocolatey installation](https://chocolatey.org/docs/installation)
@@ -17,13 +22,18 @@ Chocolatey をインストールしてください。
 - [Win + X] > [Windows PowerShell(管理者)]
 
 ```
-choco install cmake
-choco install nuget.commandline
-choco install docfx
-choco install doxygen.portable
-choco install python3 --pre
-choco install wixtoolset
+choco install -y cmake --installargs 'ADD_CMAKE_TO_PATH=System'
+choco install -y nuget.commandline
+choco install -y docfx
+choco install -y doxygen.install
+choco install -y python3
+choco install -y wixtoolset
 ```
+
+
+#### Vulkan SDK
+[LunarG website](https://vulkan.lunarg.com/) から Vulkan SDK のインストーラをダウンロードし、インストールしてください。
+
 
 ### macOS
 [dotnet](https://docs.microsoft.com/ja-jp/dotnet/core/macos-prerequisites?tabs=netcore2x) をインストールしてください。

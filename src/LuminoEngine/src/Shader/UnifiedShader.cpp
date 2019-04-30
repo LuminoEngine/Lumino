@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Shader/ShaderHelper.hpp>
+#include "ShaderTranspiler.hpp"
 #include "UnifiedShader.hpp"
 
 namespace ln {
@@ -64,12 +65,12 @@ UnifiedShader::~UnifiedShader()
 bool UnifiedShader::save(const Path& filePath)
 {
     auto file = FileStream::create(filePath, FileOpenMode::Write | FileOpenMode::Truncate);
-    auto writer = makeRef<ln::BinaryWriter>(file);
+    auto writer = makeRef<BinaryWriter>(file);
 
     // File header
     {
         writer->write("lufx", 4); // magic number
-        writer->writeUInt32(FileVersion);
+        writer->writeUInt32(FileVersion_Current);
     }
 
     // Code container
@@ -83,10 +84,12 @@ bool UnifiedShader::save(const Path& filePath)
 
             writer->writeUInt8(info->codes.size());
             for (int iCode = 0; iCode < info->codes.size(); iCode++) {
-                writeString(writer, info->codes[iCode].triple.target);
-                writer->writeUInt32(info->codes[iCode].triple.version);
-                writeString(writer, info->codes[iCode].triple.option);
-                writeString(writer, info->codes[iCode].code);
+				CodeInfo* codeInfo = &info->codes[iCode];
+                writeString(writer, codeInfo->triple.target);
+                writer->writeUInt32(codeInfo->triple.version);
+                writeString(writer, codeInfo->triple.option);
+				writeByteArray(writer, codeInfo->code);
+
             }
         }
     }
@@ -144,6 +147,52 @@ bool UnifiedShader::save(const Path& filePath)
                 writeOptionalUInt8(writer, renderState->stencilPassOp);
                 writeOptionalUInt8(writer, renderState->stencilFunc);
             }
+
+			// Descriptor layout
+			{
+				DescriptorLayout* descriptorLayout = &info->descriptorLayout;
+
+				writer->writeUInt32(descriptorLayout->uniformBufferRegister.size());
+				for (size_t i = 0; i < descriptorLayout->uniformBufferRegister.size(); i++) {
+					DescriptorLayoutItem* item = &descriptorLayout->uniformBufferRegister[i];
+					writeString(writer, item->name);
+					writer->writeUInt8(item->stageFlags);
+					writer->writeUInt8(item->binding);
+
+					// Buffer members
+					{
+						writer->writeUInt32(item->size);
+
+						writer->writeUInt32(item->members.size());
+						for (size_t iMember = 0; iMember < item->members.size(); iMember++) {
+							auto& member = item->members[iMember];
+							writeString(writer, member.name);
+							writer->writeUInt16(member.type);
+							writer->writeUInt16(member.offset);
+							writer->writeUInt16(member.vectorElements);
+							writer->writeUInt16(member.arrayElements);
+							writer->writeUInt16(member.matrixRows);
+							writer->writeUInt16(member.matrixColumns);
+						}
+					}
+				}
+
+				writer->writeUInt32(descriptorLayout->textureRegister.size());
+				for (size_t i = 0; i < descriptorLayout->textureRegister.size(); i++) {
+					DescriptorLayoutItem* item = &descriptorLayout->textureRegister[i];
+					writeString(writer, item->name);
+					writer->writeUInt8(item->stageFlags);
+					writer->writeUInt8(item->binding);
+				}
+
+				writer->writeUInt32(descriptorLayout->samplerRegister.size());
+				for (size_t i = 0; i < descriptorLayout->samplerRegister.size(); i++) {
+					DescriptorLayoutItem* item = &descriptorLayout->samplerRegister[i];
+					writeString(writer, item->name);
+					writer->writeUInt8(item->stageFlags);
+					writer->writeUInt8(item->binding);
+				}
+			}
         }
     }
 
@@ -152,7 +201,7 @@ bool UnifiedShader::save(const Path& filePath)
 
 bool UnifiedShader::load(Stream* stream)
 {
-    auto reader = ln::makeRef<BinaryReader>(stream);
+    auto reader = makeRef<BinaryReader>(stream);
 
     int fileVersion = 0;
 
@@ -182,8 +231,35 @@ bool UnifiedShader::load(Stream* stream)
                 code.triple.target = readString(reader);
                 code.triple.version = reader->readUInt32();
                 code.triple.option = readString(reader);
-                code.code = readString(reader);
-                info.codes.push_back(std::move(code));
+                code.code = readByteArray(reader);
+                //code.refrection = makeRef<UnifiedShaderRefrectionInfo>();
+
+				//// Uniform buffers
+				//{
+				//	size_t count = reader->readUInt32();
+				//	for (size_t i = 0; i < count; i++) {
+				//		ShaderUniformBufferInfo buffer;
+				//		buffer.name = readString(reader);
+				//		buffer.size = reader->readUInt32();
+
+				//		size_t memberCount = reader->readUInt32();
+				//		for (size_t iMember = 0; iMember < memberCount; iMember++) {
+				//			ShaderUniformInfo member;
+				//			member.name = readString(reader);
+				//			member.type = reader->readUInt16();
+				//			member.offset = reader->readUInt16();
+				//			member.vectorElements = reader->readUInt16();
+				//			member.arrayElements = reader->readUInt16();
+				//			member.matrixRows = reader->readUInt16();
+				//			member.matrixColumns = reader->readUInt16();
+				//			buffer.members.push_back(std::move(member));
+				//		}
+
+    //                    code.refrection->buffers.push_back(std::move(buffer));
+				//	}
+				//}
+
+				info.codes.push_back(std::move(code));
             }
 
             // GLSL
@@ -260,59 +336,117 @@ bool UnifiedShader::load(Stream* stream)
                 readOptionalUInt8(reader, &renderState->stencilFunc);
             }
 
-            m_passes.add(info);
+			// Descriptor layout
+			{
+				DescriptorLayout* descriptorLayout = &info.descriptorLayout;
+
+				{
+					size_t count = reader->readUInt32();
+					for (size_t i = 0; i < count; i++) {
+						DescriptorLayoutItem item;
+						item.name = readString(reader);
+						item.stageFlags = reader->readUInt8();
+						item.binding = reader->readUInt8();
+
+						// Buffer members
+						{
+							item.size = reader->readUInt32();
+
+							size_t count = reader->readUInt32();
+							for (size_t iMember = 0; iMember < count; iMember++) {
+								ShaderUniformInfo member;
+								member.name = readString(reader);
+								member.type = reader->readUInt16();
+								member.offset = reader->readUInt16();
+								member.vectorElements = reader->readUInt16();
+								member.arrayElements = reader->readUInt16();
+								member.matrixRows = reader->readUInt16();
+								member.matrixColumns = reader->readUInt16();
+								item.members.push_back(std::move(member));
+							}
+						}
+
+						descriptorLayout->uniformBufferRegister.push_back(item);
+					}
+				}
+
+				{
+					size_t count = reader->readUInt32();
+					for (size_t i = 0; i < count; i++) {
+						DescriptorLayoutItem item;
+						item.name = readString(reader);
+						item.stageFlags = reader->readUInt8();
+						item.binding = reader->readUInt8();
+						descriptorLayout->textureRegister.push_back(item);
+					}
+				}
+
+				{
+					size_t count = reader->readUInt32();
+					for (size_t i = 0; i < count; i++) {
+						DescriptorLayoutItem item;
+						item.name = readString(reader);
+						item.stageFlags = reader->readUInt8();
+						item.binding = reader->readUInt8();
+						descriptorLayout->samplerRegister.push_back(item);
+					}
+				}
+			}
+
+            m_passes.add(std::move(info));
         }
     }
 
     return true;
 }
 
-bool UnifiedShader::addCodeContainer(const std::string& entryPointName, CodeContainerId* outId)
+bool UnifiedShader::addCodeContainer(ShaderStage2 stage, const std::string& entryPointName, CodeContainerId* outId)
 {
-    if (findCodeContainerInfoIndex(entryPointName) >= 0) {
-        m_diag->reportError(String::fromStdString("Code entory point '" + entryPointName + "' is already exists."));
-        return false;
-    }
+    //if (findCodeContainerInfoIndex(stage, entryPointName) >= 0) {
+    //    m_diag->reportError(String::fromStdString("Code entory point '" + entryPointName + "' is already exists."));
+    //    return false;
+    //}
 
-    m_codeContainers.add({entryPointName});
+    m_codeContainers.add({ stage, entryPointName});
     *outId = indexToId(m_codeContainers.size() - 1);
     return true;
 }
 
-void UnifiedShader::setCode(CodeContainerId container, const UnifiedShaderTriple& triple, const std::string& code)
+void UnifiedShader::setCode(CodeContainerId container, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code, UnifiedShaderRefrectionInfo* refrection)
 {
-    m_codeContainers[idToIndex(container)].codes.push_back({triple, code});
+    //if (LN_REQUIRE(refrection)) return;
+	m_codeContainers[idToIndex(container)].codes.push_back({triple, code/*, refrection*/ });
 }
 
-void UnifiedShader::setCode(const std::string& entryPointName, const UnifiedShaderTriple& triple, const std::string& code)
-{
-    int index = findCodeContainerInfoIndex(entryPointName);
-    if (index < 0) {
-        CodeContainerId newId;
-        addCodeContainer(entryPointName, &newId);
-        index = idToIndex(newId);
-    }
+//void UnifiedShader::setCode(ShaderStage2 stage, const std::string& entryPointName, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code, UnifiedShaderRefrectionInfo* refrection)
+//{
+//    int index = findCodeContainerInfoIndex(stage, entryPointName);
+//    if (index < 0) {
+//        CodeContainerId newId;
+//        addCodeContainer(stage, entryPointName, &newId);
+//        index = idToIndex(newId);
+//    }
+//
+//    setCode(indexToId(index), triple, code, refrection);
+//}
 
-    setCode(indexToId(index), triple, code);
-}
+//bool UnifiedShader::hasCode(ShaderStage2 stage, const std::string& entryPointName, const UnifiedShaderTriple& triple) const
+//{
+//    int index = findCodeContainerInfoIndex(stage, entryPointName);
+//    if (index >= 0) {
+//        return findCode(indexToId(index), triple) != nullptr;
+//    } else {
+//        return false;
+//    }
+//}
+//
+//bool UnifiedShader::findCodeContainer(ShaderStage2 stage, const std::string& entryPointName, CodeContainerId* outId) const
+//{
+//    *outId = indexToId(findCodeContainerInfoIndex(stage, entryPointName));
+//    return (*outId) >= 0;
+//}
 
-bool UnifiedShader::hasCode(const std::string& entryPointName, const UnifiedShaderTriple& triple) const
-{
-    int index = findCodeContainerInfoIndex(entryPointName);
-    if (index >= 0) {
-        return findCode(indexToId(index), triple) != nullptr;
-    } else {
-        return false;
-    }
-}
-
-bool UnifiedShader::findCodeContainer(const std::string& entryPointName, CodeContainerId* outId) const
-{
-    *outId = indexToId(findCodeContainerInfoIndex(entryPointName));
-    return (*outId) >= 0;
-}
-
-const std::string* UnifiedShader::findCode(CodeContainerId conteinreId, const UnifiedShaderTriple& triple) const
+const UnifiedShader::CodeInfo* UnifiedShader::findCode(CodeContainerId conteinreId, const UnifiedShaderTriple& triple) const
 {
     if (LN_REQUIRE(!triple.target.empty())) {
         return nullptr;
@@ -339,10 +473,15 @@ const std::string* UnifiedShader::findCode(CodeContainerId conteinreId, const Un
     }
 
     if (candidate >= 0) {
-        return &codes[candidate].code;
+        return &codes[candidate];
     } else {
         return nullptr;
     }
+}
+
+const std::string& UnifiedShader::entryPointName(CodeContainerId conteinreId) const
+{
+    return m_codeContainers[idToIndex(conteinreId)].entryPointName;
 }
 
 bool UnifiedShader::addTechnique(const std::string& name, TechniqueId* outTech)
@@ -364,7 +503,11 @@ bool UnifiedShader::addPass(TechniqueId parentTech, const std::string& name, Pas
         return false;
     }
 
-    m_passes.add({name});
+    PassInfo info;
+    info.name = name;
+    //info.refrection = makeRef<UnifiedShaderRefrectionInfo>();
+
+    m_passes.add(std::move(info));
     int index = m_passes.size() - 1;
     m_techniques[idToIndex(parentTech)].passes.add(indexToId(index));
     *outPass = indexToId(index);
@@ -396,6 +539,62 @@ void UnifiedShader::setRenderState(PassId pass, ShaderRenderState* state)
     m_passes[idToIndex(pass)].renderState = state;
 }
 
+void UnifiedShader::addMergeDescriptorLayoutItem(PassId pass, const DescriptorLayout& layout)
+{
+	DescriptorLayout* descriptorLayout = &m_passes[idToIndex(pass)].descriptorLayout;
+
+	for (int iType = 0; iType < DescriptorType_Count; iType++) {
+
+		std::vector<DescriptorLayoutItem>* list = &descriptorLayout->getLayoutItems((DescriptorType)iType);
+		const std::vector<DescriptorLayoutItem>& srcList = layout.getLayoutItems((DescriptorType)iType);
+
+		for (auto& item : srcList)
+		{
+			auto itr = std::find_if(list->begin(), list->end(), [&](const DescriptorLayoutItem& x) { return x.name == item.name; });
+			if (itr != list->end()) {
+				itr->stageFlags |= item.stageFlags;
+
+				// Merge members
+				for (auto& m : item.members) {
+					auto itr2 = std::find_if(itr->members.begin(), itr->members.end(), [&](const ShaderUniformInfo& x) { return x.name == m.name; });
+					if (itr2 == itr->members.end()) {
+						itr->members.push_back(m);
+					}
+				}
+			}
+			else {
+				list->push_back(item);
+				list->back().binding = list->size() - 1;
+			}
+		}
+
+	}
+
+
+	//std::vector<DescriptorLayoutItem>* list = nullptr;
+	//switch (registerType)
+	//{
+	//case DescriptorType_UniformBuffer:
+	//	list = &descriptorLayout->uniformBufferRegister;
+	//	break;
+	//case DescriptorType_Texture:
+	//	list = &descriptorLayout->textureRegister;
+	//	break;
+	//case DescriptorType_SamplerState:
+	//	list = &descriptorLayout->samplerRegister;
+	//	break;
+	//default:
+	//	LN_UNREACHABLE();
+	//	return;
+	//}
+
+}
+
+//void UnifiedShader::setRefrection(PassId pass, UnifiedShaderRefrectionInfo* buffers)
+//{
+//	m_passes[idToIndex(pass)].refrection = buffers;
+//}
+
 UnifiedShader::CodeContainerId UnifiedShader::vertexShader(PassId pass) const
 {
     return m_passes[idToIndex(pass)].vertexShader;
@@ -411,10 +610,52 @@ ShaderRenderState* UnifiedShader::renderState(PassId pass) const
     return m_passes[idToIndex(pass)].renderState;
 }
 
-int UnifiedShader::findCodeContainerInfoIndex(const std::string& entryPointName) const
+const DescriptorLayout& UnifiedShader::descriptorLayout(PassId pass) const
 {
-    return m_codeContainers.indexOfIf([&](const CodeContainerInfo& info) { return info.entryPointName == entryPointName; });
+	return m_passes[idToIndex(pass)].descriptorLayout;
 }
+
+void UnifiedShader::saveCodes(const StringRef& perfix) const
+{
+	for (int iTech = 0; iTech < techniqueCount(); iTech++)
+	{
+		UnifiedShader::TechniqueId techId = techniqueId(iTech);
+
+		for (int iPass = 0; iPass < getPassCountInTechnique(techId); iPass++)
+		{
+			UnifiedShader::PassId passId = getPassIdInTechnique(techId, iPass);
+			CodeContainerId containerIds[] = { vertexShader(passId), pixelShader(passId) };
+			for (auto containerId : containerIds)
+			{
+				auto& container = m_codeContainers[idToIndex(containerId)];
+				for (auto& code : container.codes) {
+					auto file = String::format(
+						u"{0}.{1}.{2}.{3}.{4}-{5}-{6}",
+						perfix, String::fromStdString(techniqueName(techId)), String::fromStdString(passName(passId)), String::fromStdString(container.entryPointName),
+						String::fromStdString(code.triple.target), code.triple.version, String::fromStdString(code.triple.option));
+					FileSystem::writeAllBytes(file, code.code.data(), code.code.size());
+				}
+			}
+		}
+	}
+
+    //for (auto& container : m_codeContainers) {
+    //    for (auto& code : container.codes) {
+    //        auto file = String::format(u"{0}-{1}-{2}-{3}-{4}", perfix, String::fromStdString(container.entryPointName), String::fromStdString(code.triple.target), code.triple.version, String::fromStdString(code.triple.option));
+    //        FileSystem::writeAllBytes(file, code.code.data(), code.code.size());
+    //    }
+    //}
+}
+
+//UnifiedShaderRefrectionInfo* UnifiedShader::refrection(PassId pass) const
+//{
+//    return m_passes[idToIndex(pass)].refrection;
+//}
+
+//int UnifiedShader::findCodeContainerInfoIndex(ShaderStage2 stage, const std::string& entryPointName) const
+//{
+//    return m_codeContainers.indexOfIf([&](const CodeContainerInfo& info) { return info.stage == stage && info.entryPointName == entryPointName; });
+//}
 
 int UnifiedShader::findTechniqueInfoIndex(const std::string& name) const
 {
@@ -439,6 +680,12 @@ void UnifiedShader::writeString(BinaryWriter* w, const std::string& str)
     w->write(str.data(), str.length());
 }
 
+void UnifiedShader::writeByteArray(BinaryWriter* w, const std::vector<byte_t>& data)
+{
+	w->writeUInt32(data.size());
+	w->write(data.data(), data.size());
+}
+
 std::string UnifiedShader::readString(BinaryReader* r)
 {
     uint32_t len = r->readUInt32();
@@ -456,6 +703,15 @@ std::string UnifiedShader::readString(BinaryReader* r)
     }
 }
 
+std::vector<byte_t> UnifiedShader::readByteArray(BinaryReader* r)
+{
+	uint32_t len = r->readUInt32();
+	std::vector<byte_t> buf;
+	buf.resize(len);
+	r->read(buf.data(), len);
+	return buf;
+}
+
 bool UnifiedShader::checkSignature(BinaryReader* r, const char* sig, size_t len, DiagnosticsManager* diag)
 {
     char buf[8];
@@ -465,6 +721,474 @@ bool UnifiedShader::checkSignature(BinaryReader* r, const char* sig, size_t len,
         return false;
     }
     return true;
+}
+
+
+#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
+
+//=============================================================================
+// UnifiedShaderCompiler
+
+UnifiedShaderCompiler::UnifiedShaderCompiler(ShaderManager* manager, DiagnosticsManager* diag)
+	: m_manager(manager)
+	, m_diag(diag)
+{
+    m_unifiedShader = makeRef<UnifiedShader>(m_diag);
+}
+
+bool UnifiedShaderCompiler::compile(
+	char* inputCode, size_t inputCodeLength,
+	const List<Path>& includeDirectories, const List<String>& definitions)
+{
+	m_metadataParser.parse(inputCode, inputCodeLength, m_diag);
+	if (m_diag->hasError()) {
+		return false;
+	}
+
+	// glslang は hlsl の technique ブロックを理解できないので、空白で潰しておく
+	for (auto& tech : m_metadataParser.techniques) {
+		memset((inputCode + tech.blockBegin), ' ', tech.blockEnd - tech.blockBegin);
+	}
+
+#if 1
+
+    // Tech と Pass を作り、各 Pass のシェーダを Compile
+    for (auto& tech : m_metadataParser.techniques)
+    {
+        UnifiedShader::TechniqueId techId;
+        if (!m_unifiedShader->addTechnique(tech.name, &techId)) {
+            return false;
+        }
+
+        for (auto& pass : tech.passes)
+        {
+            UnifiedShader::PassId passId;
+            if (!m_unifiedShader->addPass(techId, pass.name, &passId)) {
+                return false;
+            }
+
+            // Vertex shader
+            {
+                auto transpiler = std::make_shared<ShaderCodeTranspiler>(m_manager);
+                transpiler->compileAndLinkFromHlsl(ShaderStage2_Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, &definitions, m_diag);
+                if (m_diag->hasError()) {
+                    return false;
+                }
+				m_unifiedShader->addMergeDescriptorLayoutItem(passId, transpiler->descriptorLayout);
+				transpiler->passId = passId;
+                m_transpilerMap[makeKey2(tech.name, pass.name, ShaderStage2_Vertex, pass.vertexShader)] = transpiler;
+
+                // 空の CodeContainer を作っておく (実際のコードは最後に格納する)
+                UnifiedShader::CodeContainerId containerId;
+                if (!m_unifiedShader->addCodeContainer(ShaderStage2_Vertex, pass.vertexShader, &containerId)) {
+                    return false;
+                }
+                m_unifiedShader->setVertexShader(passId, containerId);
+            }
+
+            // Pixel shader
+            {
+                auto transpiler = std::make_shared<ShaderCodeTranspiler>(m_manager);
+                transpiler->compileAndLinkFromHlsl(ShaderStage2_Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, &definitions, m_diag);
+                if (m_diag->hasError()) {
+                    return false;
+                }
+				m_unifiedShader->addMergeDescriptorLayoutItem(passId, transpiler->descriptorLayout);
+				transpiler->passId = passId;
+                m_transpilerMap[makeKey2(tech.name, pass.name, ShaderStage2_Fragment, pass.pixelShader)] = transpiler;
+
+                // 空の CodeContainer を作っておく (実際のコードは最後に格納する)
+                UnifiedShader::CodeContainerId containerId;
+                if (!m_unifiedShader->addCodeContainer(ShaderStage2_Fragment, pass.pixelShader, &containerId)) {
+                    return false;
+                }
+                m_unifiedShader->setPixelShader(passId, containerId);
+            }
+
+            // ShaderRenderState
+            m_unifiedShader->setRenderState(passId, pass.renderState);
+        }
+    }
+
+
+#else
+
+	// まずは compile と link を行う
+	for (auto& tech : m_metadataParser.techniques)
+	{
+		for (auto& pass : tech.passes)
+		{
+			// Vertex shader
+			{
+				auto transpiler = std::make_shared<ShaderCodeTranspiler>(m_manager);
+				transpiler->compileAndLinkFromHlsl(ShaderStage2_Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, &definitions, m_diag);
+				if (m_diag->hasError()) {
+					return false;
+				}
+				m_transpilerMap[makeKey(ShaderStage2_Vertex, pass.vertexShader)] = transpiler;
+			}
+
+			// Pixel shader
+			{
+				auto transpiler = std::make_shared<ShaderCodeTranspiler>(m_manager);
+				transpiler->compileAndLinkFromHlsl(ShaderStage2_Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, &definitions, m_diag);
+				if (m_diag->hasError()) {
+					return false;
+				}
+				m_transpilerMap[makeKey(ShaderStage2_Fragment, pass.pixelShader)] = transpiler;
+			}
+		}
+	}
+#endif
+
+	return true;
+}
+
+
+bool UnifiedShaderCompiler::compileSingleCodes(
+	const char* vsData, size_t vsLen, const std::string& vsEntryPoint,
+	const char* psData, size_t psLen, const std::string& psEntryPoint,
+	const List<Path>& includeDirectories, const List<String>& definitions)
+{
+	HLSLTechnique tech;
+	tech.name = "MainTech";
+
+	HLSLPass pass;
+	pass.name = "Pass1";
+    pass.vertexShader = vsEntryPoint;
+    pass.pixelShader = psEntryPoint;
+	pass.renderState = makeRef<ShaderRenderState>();
+
+#if 1
+
+    UnifiedShader::TechniqueId techId;
+    if (!m_unifiedShader->addTechnique(tech.name, &techId)) {
+        return false;
+    }
+
+    UnifiedShader::PassId passId;
+    if (!m_unifiedShader->addPass(techId, pass.name, &passId)) {
+        return false;
+    }
+
+    // Vertex shader
+    {
+        auto transpiler = std::make_shared<ShaderCodeTranspiler>(m_manager);
+        transpiler->compileAndLinkFromHlsl(ShaderStage2_Vertex, vsData, vsLen, pass.vertexShader, includeDirectories, &definitions, m_diag);
+        if (m_diag->hasError()) {
+            return false;
+        }
+		m_unifiedShader->addMergeDescriptorLayoutItem(passId, transpiler->descriptorLayout);
+		transpiler->passId = passId;
+        m_transpilerMap[makeKey2(tech.name, pass.name, ShaderStage2_Vertex, pass.vertexShader)] = transpiler;
+
+        // 空の CodeContainer を作っておく (実際のコードは最後に格納する)
+        UnifiedShader::CodeContainerId containerId;
+        if (!m_unifiedShader->addCodeContainer(ShaderStage2_Vertex, pass.vertexShader, &containerId)) {
+            return false;
+        }
+        m_unifiedShader->setVertexShader(passId, containerId);
+    }
+
+    // Pixel shader
+    {
+        auto transpiler = std::make_shared<ShaderCodeTranspiler>(m_manager);
+        transpiler->compileAndLinkFromHlsl(ShaderStage2_Fragment, psData, psLen, pass.pixelShader, includeDirectories, &definitions, m_diag);
+        if (m_diag->hasError()) {
+            return false;
+        }
+		m_unifiedShader->addMergeDescriptorLayoutItem(passId, transpiler->descriptorLayout);
+		transpiler->passId = passId;
+        m_transpilerMap[makeKey2(tech.name, pass.name, ShaderStage2_Fragment, pass.pixelShader)] = transpiler;
+
+        // 空の CodeContainer を作っておく (実際のコードは最後に格納する)
+        UnifiedShader::CodeContainerId containerId;
+        if (!m_unifiedShader->addCodeContainer(ShaderStage2_Fragment, pass.pixelShader, &containerId)) {
+            return false;
+        }
+        m_unifiedShader->setPixelShader(passId, containerId);
+    }
+
+    // ShaderRenderState
+    m_unifiedShader->setRenderState(passId, pass.renderState);
+#else
+	// Vertex shader
+	{
+		auto transpiler = std::make_shared<ShaderCodeTranspiler>(m_manager);
+		transpiler->compileAndLinkFromHlsl(ShaderStage2_Vertex, vsData, vsLen, vsEntryPoint, includeDirectories, &definitions, m_diag);
+		if (m_diag->hasError()) {
+			return false;
+		}
+		m_transpilerMap[makeKey(ShaderStage2_Vertex, vsEntryPoint)] = transpiler;
+
+		pass.vertexShader = vsEntryPoint;
+	}
+
+	// Pixel shader
+	{
+		auto transpiler = std::make_shared<ShaderCodeTranspiler>(m_manager);
+		transpiler->compileAndLinkFromHlsl(ShaderStage2_Fragment, psData, psLen, psEntryPoint, includeDirectories, &definitions, m_diag);
+		if (m_diag->hasError()) {
+			return false;
+		}
+		m_transpilerMap[makeKey(ShaderStage2_Fragment, psEntryPoint)] = transpiler;
+
+		pass.pixelShader = psEntryPoint;
+	}
+#endif
+
+    tech.passes.push_back(std::move(pass));
+    m_metadataParser.techniques.push_back(std::move(tech));
+
+
+	return true;
+}
+
+//bool createTechPassCodeContainer()
+//{
+//}
+
+bool UnifiedShaderCompiler::link()
+{
+
+
+
+
+
+
+
+
+
+
+
+
+
+	//// vertex shader の最大 binding 数を求める
+	//size_t maxVertexShaderBindingCounts[DescriptorType_Count] = {};
+	//for (auto& pair : m_transpilerMap) {
+	//	if (pair.second->stage() == ShaderStage2_Vertex) {
+	//		maxVertexShaderBindingCounts[DescriptorType_UniformBuffer] = std::max(maxVertexShaderBindingCounts[DescriptorType_UniformBuffer], pair.second->descriptorLayout.uniformBufferRegister.size());
+	//		maxVertexShaderBindingCounts[DescriptorType_Texture] = std::max(maxVertexShaderBindingCounts[DescriptorType_Texture], pair.second->descriptorLayout.textureRegister.size());
+	//		maxVertexShaderBindingCounts[DescriptorType_SamplerState] = std::max(maxVertexShaderBindingCounts[DescriptorType_SamplerState], pair.second->descriptorLayout.samplerRegister.size());
+	//	}
+	//}
+	//// 求めた maxVertexShaderBindingCount を PixelShader の binding の開始値としてマッピングする
+	//for (auto& pair : m_transpilerMap) {
+	//	if (pair.second->stage() == ShaderStage2_Vertex) {
+	//		for (size_t i = 0; i < pair.second->descriptorLayout.uniformBufferRegister.size(); i++) {
+	//			pair.second->descriptorLayout.uniformBufferRegister[i].binding = i;
+	//			m_unifiedShader->addMergeDescriptorLayoutItem(DescriptorType_UniformBuffer, pair.second->descriptorLayout.uniformBufferRegister[i]);
+	//		}
+	//		for (size_t i = 0; i < pair.second->descriptorLayout.textureRegister.size(); i++) {
+	//			pair.second->descriptorLayout.textureRegister[i].binding = i;
+	//			m_unifiedShader->addMergeDescriptorLayoutItem(DescriptorType_Texture, pair.second->descriptorLayout.textureRegister[i]);
+	//		}
+	//		for (size_t i = 0; i < pair.second->descriptorLayout.samplerRegister.size(); i++) {
+	//			pair.second->descriptorLayout.samplerRegister[i].binding = i;
+	//			m_unifiedShader->addMergeDescriptorLayoutItem(DescriptorType_SamplerState, pair.second->descriptorLayout.samplerRegister[i]);
+	//		}
+	//	}
+	//	if (pair.second->stage() == ShaderStage2_Fragment) {
+	//		for (size_t i = 0; i < pair.second->descriptorLayout.uniformBufferRegister.size(); i++) {
+	//			pair.second->descriptorLayout.uniformBufferRegister[i].binding = maxVertexShaderBindingCounts[DescriptorType_UniformBuffer] + i;
+	//			m_unifiedShader->addMergeDescriptorLayoutItem(DescriptorType_UniformBuffer, pair.second->descriptorLayout.uniformBufferRegister[i]);
+	//		}
+	//		for (size_t i = 0; i < pair.second->descriptorLayout.textureRegister.size(); i++) {
+	//			pair.second->descriptorLayout.textureRegister[i].binding = maxVertexShaderBindingCounts[DescriptorType_Texture] + i;
+	//			m_unifiedShader->addMergeDescriptorLayoutItem(DescriptorType_Texture, pair.second->descriptorLayout.textureRegister[i]);
+	//		}
+	//		for (size_t i = 0; i < pair.second->descriptorLayout.samplerRegister.size(); i++) {
+	//			pair.second->descriptorLayout.samplerRegister[i].binding = maxVertexShaderBindingCounts[DescriptorType_SamplerState] + i;
+	//			m_unifiedShader->addMergeDescriptorLayoutItem(DescriptorType_SamplerState, pair.second->descriptorLayout.samplerRegister[i]);
+	//		}
+	//	}
+	//}
+
+	for (auto& pair : m_transpilerMap) {
+		auto& tp = pair.second;
+		if (!tp->mapIOAndGenerateSpirv(m_unifiedShader->descriptorLayout(tp->passId))) {
+			return false;
+		}
+
+		//{
+		//	UnifiedShaderTriple triple = { "spv", 110, "" };
+		//	if (!m_unifiedShader->hasCode(tp->stage(), tp->entryPoint(), triple)) {
+		//		m_unifiedShader->setCode(tp->stage(), tp->entryPoint(), triple, tp->spirvCode(), tp->refrection());
+		//	}
+		//}
+
+		//{
+		//	UnifiedShaderTriple triple = { "glsl", 400, "" };
+		//	if (!m_unifiedShader->hasCode(tp->stage(), tp->entryPoint(), triple)) {
+		//		m_unifiedShader->setCode(tp->stage(), tp->entryPoint(), triple, tp->generateGlsl(400, false), makeRef<UnifiedShaderRefrectionInfo>());
+		//	}
+		//}
+
+		//{
+		//	UnifiedShaderTriple triple = { "glsl", 300, "es" };
+		//	if (!m_unifiedShader->hasCode(tp->stage(), tp->entryPoint(), triple)) {
+		//		m_unifiedShader->setCode(tp->stage(), tp->entryPoint(), triple, tp->generateGlsl(300, true), makeRef<UnifiedShaderRefrectionInfo>());
+		//	}
+		//}
+	}
+
+    for (int iTech = 0; iTech < m_unifiedShader->techniqueCount(); iTech++)
+    {
+        UnifiedShader::TechniqueId techId = m_unifiedShader->techniqueId(iTech);
+        
+        for (int iPass = 0; iPass < m_unifiedShader->getPassCountInTechnique(techId); iPass++)
+        {
+            UnifiedShader::PassId passId = m_unifiedShader->getPassIdInTechnique(techId, iPass);
+
+            // VertexShader
+            {
+                UnifiedShader::CodeContainerId containerId = m_unifiedShader->vertexShader(passId);
+
+                auto& tp = m_transpilerMap[makeKey2(m_unifiedShader->techniqueName(techId), m_unifiedShader->passName(passId), ShaderStage2_Vertex, m_unifiedShader->entryPointName(containerId))];
+                
+                UnifiedShaderTriple triple1 = { "spv", 110, "" };
+                m_unifiedShader->setCode(containerId, triple1, tp->spirvCode(), nullptr);
+                UnifiedShaderTriple triple2 = { "glsl", 400, "" };
+                m_unifiedShader->setCode(containerId, triple2, tp->generateGlsl(400, false), nullptr);
+                UnifiedShaderTriple triple3 = { "glsl", 300, "es" };
+                m_unifiedShader->setCode(containerId, triple3, tp->generateGlsl(300, true), nullptr);
+            }
+
+            // PixelShader
+            {
+                UnifiedShader::CodeContainerId containerId = m_unifiedShader->pixelShader(passId);
+
+                auto& tp = m_transpilerMap[makeKey2(m_unifiedShader->techniqueName(techId), m_unifiedShader->passName(passId), ShaderStage2_Fragment, m_unifiedShader->entryPointName(containerId))];
+
+                UnifiedShaderTriple triple1 = { "spv", 110, "" };
+                m_unifiedShader->setCode(containerId, triple1, tp->spirvCode(), nullptr);
+                UnifiedShaderTriple triple2 = { "glsl", 400, "" };
+                m_unifiedShader->setCode(containerId, triple2, tp->generateGlsl(400, false), nullptr);
+                UnifiedShaderTriple triple3 = { "glsl", 300, "es" };
+                m_unifiedShader->setCode(containerId, triple3, tp->generateGlsl(300, true), nullptr);
+            }
+        }
+    }
+
+
+	//// Tech と Pass を作る
+	//for (auto& tech : m_metadataParser.techniques)
+	//{
+	//	UnifiedShader::TechniqueId techId;
+	//	if (!m_unifiedShader->addTechnique(tech.name, &techId)) {
+	//		return false;
+	//	}
+
+	//	for (auto& pass : tech.passes)
+	//	{
+	//		UnifiedShader::CodeContainerId codeId;
+	//		UnifiedShader::PassId passId;
+	//		if (!m_unifiedShader->addPass(techId, pass.name, &passId)) {
+	//			return false;
+	//		}
+
+	//		// VertexShader
+	//		if (!m_unifiedShader->findCodeContainer(ShaderStage2_Vertex, pass.vertexShader, &codeId)) {
+	//			return false;
+	//		}
+	//		m_unifiedShader->setVertexShader(passId, codeId);
+
+	//		// PixelShader
+	//		if (!m_unifiedShader->findCodeContainer(ShaderStage2_Fragment, pass.pixelShader, &codeId)) {
+	//			return false;
+	//		}
+	//		m_unifiedShader->setPixelShader(passId, codeId);
+
+	//		// ShaderRenderState
+	//		m_unifiedShader->setRenderState(passId, pass.renderState);
+	//	}
+	//}
+
+	return true;
+}
+
+std::string UnifiedShaderCompiler::makeKey(ShaderStage2 stage, const std::string& entryPoint)
+{
+	switch (stage)
+	{
+	case ShaderStage2_Vertex:
+		return "1v:" + entryPoint;
+	case ShaderStage2_Fragment:
+		return "2p:" + entryPoint;
+	default:
+		LN_UNREACHABLE();
+		return std::string();
+	}
+}
+
+std::string UnifiedShaderCompiler::makeKey2(const std::string& techName, const std::string& passName, ShaderStage2 stage, const std::string& entryPoint)
+{
+    const char* stageName = nullptr;
+    switch (stage)
+    {
+    case ShaderStage2_Vertex:
+        stageName = "VS";
+        break;
+    case ShaderStage2_Fragment:
+        stageName = "PS";
+        break;
+    default:
+        LN_UNREACHABLE();
+        return std::string();
+    }
+
+    return techName + passName + stageName + entryPoint;
+}
+
+#endif // LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
+
+//=============================================================================
+// DescriptorLayout
+
+std::vector<DescriptorLayoutItem>& DescriptorLayout::getLayoutItems(DescriptorType registerType)
+{
+    switch (registerType)
+    {
+    case ln::detail::DescriptorType_UniformBuffer:
+        return uniformBufferRegister;
+    case ln::detail::DescriptorType_Texture:
+        return textureRegister;
+    case ln::detail::DescriptorType_SamplerState:
+        return samplerRegister;
+    default:
+        LN_UNREACHABLE();
+        return uniformBufferRegister;
+    }
+}
+
+const std::vector<DescriptorLayoutItem>& DescriptorLayout::getLayoutItems(DescriptorType registerType) const
+{
+    switch (registerType)
+    {
+    case ln::detail::DescriptorType_UniformBuffer:
+        return uniformBufferRegister;
+    case ln::detail::DescriptorType_Texture:
+        return textureRegister;
+    case ln::detail::DescriptorType_SamplerState:
+        return samplerRegister;
+    default:
+        LN_UNREACHABLE();
+        return uniformBufferRegister;
+    }
+}
+
+bool DescriptorLayout::isReferenceFromVertexStage(DescriptorType registerType) const
+{
+    auto& items = getLayoutItems(registerType);
+    auto itr = std::find_if(items.begin(), items.end(), [](const DescriptorLayoutItem& x) { return (x.stageFlags & ShaderStageFlags_Vertex) != 0; });
+    return itr != items.end();
+}
+
+bool DescriptorLayout::isReferenceFromPixelStage(DescriptorType registerType) const
+{
+    auto& items = getLayoutItems(registerType);
+    auto itr = std::find_if(items.begin(), items.end(), [](const DescriptorLayoutItem& x) { return (x.stageFlags & ShaderStageFlags_Pixel) != 0; });
+    return itr != items.end();
 }
 
 } // namespace detail

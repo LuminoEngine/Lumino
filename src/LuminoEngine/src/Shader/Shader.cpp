@@ -100,7 +100,7 @@ ShaderCompilationProperties::~ShaderCompilationProperties()
 {
 }
 
-void ShaderCompilationProperties::initialize()
+void ShaderCompilationProperties::init()
 {
 }
 
@@ -147,51 +147,43 @@ Shader::~Shader()
 {
 }
 
-void Shader::initialize()
+void Shader::init()
 {
-    GraphicsResource::initialize();
+    GraphicsResource::init();
 }
 
-void Shader::initialize(const StringRef& filePath, ShaderCompilationProperties* properties)
+void Shader::init(const StringRef& filePath, ShaderCompilationProperties* properties)
 {
-    Shader::initialize();
+    Shader::init();
     Ref<DiagnosticsManager> localDiag = nullptr;
     if (properties) localDiag = properties->m_diag;
     if (!localDiag) localDiag = newObject<DiagnosticsManager>();
 
     if (Path(filePath).hasExtension(detail::UnifiedShader::FileExt)) {
         auto file = FileStream::create(filePath, FileOpenMode::Read);
-        createFromUnifiedShader(file, localDiag);
+        createFromStream(file, localDiag);
     } else {
 #ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
+		ByteBuffer buffer = FileSystem::readAllBytes(filePath);
 
-        auto data = FileSystem::readAllBytes(filePath);
-        auto code = reinterpret_cast<char*>(data.data());
-        auto codeLen = data.size();
+		List<Path> includeDirs;
+		List<String> definitions;
+		if (properties) {
+			for (auto& path : properties->m_includeDirectories) includeDirs.add(path);
+			for (auto& def : properties->m_definitions) definitions.add(def);
+		}
 
-        detail::HLSLMetadataParser parser;
-        parser.parse(code, codeLen, localDiag);
+		detail::UnifiedShaderCompiler compiler(m_manager, localDiag);
+		if (!compiler.compile(reinterpret_cast<char*>(buffer.data()), buffer.size(), includeDirs, definitions)) {
+			LN_ERROR();
+			return;
+		}
+		if (!compiler.link()) {
+			LN_ERROR();
+			return;
+		}
 
-        // glslang は hlsl の technique ブロックを理解できないので、空白で潰しておく
-        for (auto& hlslTech : parser.techniques) {
-            memset(code + hlslTech.blockBegin, ' ', hlslTech.blockEnd - hlslTech.blockBegin);
-        }
-
-        for (auto& hlslTech : parser.techniques) {
-            auto tech = newObject<ShaderTechnique>(String::fromStdString(hlslTech.name));
-            tech->setOwner(this);
-            m_techniques->add(tech);
-
-            for (auto& hlslPass : hlslTech.passes) {
-                auto rhiPass = createShaderPass(
-                    code, codeLen, hlslPass.vertexShader.c_str(), code, codeLen, hlslPass.pixelShader.c_str(), localDiag, properties);
-                if (rhiPass) {
-                    auto pass = newObject<ShaderPass>(String::fromStdString(hlslPass.name), rhiPass, hlslPass.renderState);
-                    tech->addShaderPass(pass);
-                    pass->setupParameters();
-                }
-            }
-        }
+		createFromUnifiedShader(compiler.unifiedShader(), localDiag);
 #else
         LN_NOTIMPLEMENTED();
 #endif
@@ -210,9 +202,9 @@ void Shader::initialize(const StringRef& filePath, ShaderCompilationProperties* 
     }
 }
 
-void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCompilationProperties* properties)
+void Shader::init(const StringRef& vertexShaderFilePath, const StringRef& pixelShaderFilePath, ShaderCompilationProperties* properties)
 {
-    Shader::initialize();
+    Shader::init();
     Ref<DiagnosticsManager> localDiag = nullptr;
     if (properties) localDiag = properties->m_diag;
     if (!localDiag) localDiag = newObject<DiagnosticsManager>();
@@ -220,8 +212,35 @@ void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& 
     auto vsData = FileSystem::readAllBytes(vertexShaderFilePath);
     auto psData = FileSystem::readAllBytes(pixelShaderFilePath);
 
-    createSinglePassShader(
-        reinterpret_cast<const char*>(vsData.data()), vsData.size(), reinterpret_cast<const char*>(psData.data()), psData.size(), localDiag, properties);
+	{
+#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
+		List<Path> includeDirs;
+		if (properties) {
+			for (auto& path : properties->m_includeDirectories)
+				includeDirs.add(path);
+		}
+
+		detail::UnifiedShaderCompiler compiler(m_manager, localDiag);
+		if (!compiler.compileSingleCodes(
+			reinterpret_cast<const char*>(vsData.data()), vsData.size(), "main",
+			reinterpret_cast<const char*>(psData.data()), psData.size(), "main",
+			includeDirs, {})) {
+			LN_ERROR();
+			return;
+		}
+		if (!compiler.link()) {
+			LN_ERROR();
+			return;
+		}
+
+		createFromUnifiedShader(compiler.unifiedShader(), localDiag);
+#else
+        LN_NOTIMPLEMENTED();
+        return;
+#endif
+	}
+    //createSinglePassShader(
+    //    reinterpret_cast<const char*>(vsData.data()), vsData.size(), reinterpret_cast<const char*>(psData.data()), psData.size(), localDiag, properties);
 
     postInitialize();
     m_name = Path(vertexShaderFilePath).fileNameWithoutExtension();
@@ -238,12 +257,12 @@ void Shader::initialize(const StringRef& vertexShaderFilePath, const StringRef& 
     }
 }
 
-void Shader::initialize(const String& name, Stream* stream)
+void Shader::init(const String& name, Stream* stream)
 {
-    Shader::initialize();
+    Shader::init();
     Ref<DiagnosticsManager> localDiag = newObject<DiagnosticsManager>();
 
-    createFromUnifiedShader(stream, localDiag);
+    createFromStream(stream, localDiag);
 
     postInitialize();
     m_name = name;
@@ -257,46 +276,38 @@ void Shader::initialize(const String& name, Stream* stream)
     }
 }
 
-void Shader::createFromUnifiedShader(Stream* stream, DiagnosticsManager* diag)
+void Shader::createFromStream(Stream* stream, DiagnosticsManager* diag)
 {
     detail::UnifiedShader unifiedShader(diag);
     if (unifiedShader.load(stream)) {
-        auto& triple = manager()->deviceContext()->caps().requestedShaderTriple;
-        for (int iTech = 0; iTech < unifiedShader.techniqueCount(); iTech++) {
-            detail::UnifiedShader::TechniqueId techId = unifiedShader.techniqueId(iTech);
-            auto tech = newObject<ShaderTechnique>(String::fromStdString(unifiedShader.techniqueName(techId)));
-            tech->setOwner(this);
-            m_techniques->add(tech);
-
-            int passCount = unifiedShader.getPassCountInTechnique(techId);
-            for (int iPass = 0; iPass < passCount; iPass++) {
-                detail::UnifiedShader::PassId passId = unifiedShader.getPassIdInTechnique(techId, iPass);
-                detail::UnifiedShader::CodeContainerId vscodeId = unifiedShader.vertexShader(passId);
-                detail::UnifiedShader::CodeContainerId pscodeId = unifiedShader.pixelShader(passId);
-
-                const std::string* vscode = nullptr;
-                const std::string* pscode = nullptr;
-                if (vscodeId) {
-                    vscode = unifiedShader.findCode(vscodeId, triple);
-                }
-                if (pscodeId) {
-                    pscode = unifiedShader.findCode(pscodeId, triple);
-                }
-
-                auto rhiPass = createRHIShaderPass(
-                    (vscode) ? vscode->c_str() : nullptr, (vscode) ? vscode->length() : 0, (pscode) ? pscode->c_str() : nullptr, (pscode) ? pscode->length() : 0, diag);
-                if (rhiPass) {
-                    auto pass = newObject<ShaderPass>(String::fromStdString(unifiedShader.passName(passId)), rhiPass);
-                    pass->m_renderState = unifiedShader.renderState(passId);
-                    tech->addShaderPass(pass);
-                    pass->setupParameters();
-                }
-            }
-        }
+		createFromUnifiedShader(&unifiedShader, diag);
     }
 }
 
-void Shader::dispose()
+void Shader::createFromUnifiedShader(detail::UnifiedShader* unifiedShader, DiagnosticsManager* diag)
+{
+	for (int iTech = 0; iTech < unifiedShader->techniqueCount(); iTech++) {
+		detail::UnifiedShader::TechniqueId techId = unifiedShader->techniqueId(iTech);
+		auto tech = newObject<ShaderTechnique>(String::fromStdString(unifiedShader->techniqueName(techId)));
+		tech->setOwner(this);
+		m_techniques->add(tech);
+
+		int passCount = unifiedShader->getPassCountInTechnique(techId);
+		for (int iPass = 0; iPass < passCount; iPass++) {
+			detail::UnifiedShader::PassId passId = unifiedShader->getPassIdInTechnique(techId, iPass);
+
+			auto rhiPass = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createShaderPassFromUnifiedShaderPass(unifiedShader, passId, diag);
+			if (rhiPass) {
+				auto pass = newObject<ShaderPass>(String::fromStdString(unifiedShader->passName(passId)), rhiPass);
+				pass->m_renderState = unifiedShader->renderState(passId);
+				tech->addShaderPass(pass);
+				pass->setupParameters();
+			}
+		}
+	}
+}
+
+void Shader::onDispose(bool explicitDisposing)
 {
     for (auto& tech : m_techniques) {
         for (auto& pass : tech->passes()) {
@@ -305,86 +316,77 @@ void Shader::dispose()
     }
     m_techniques->clear();
 
-    GraphicsResource::dispose();
+    GraphicsResource::onDispose(explicitDisposing);
 }
 
-void Shader::onChangeDevice(detail::IGraphicsDeviceContext* device)
+void Shader::onChangeDevice(detail::IGraphicsDevice* device)
 {
     LN_NOTIMPLEMENTED();
 }
 
-Ref<detail::IShaderPass> Shader::createShaderPass(
-    const char* vsData,
-    size_t vsLen,
-    const char* vsEntryPoint,
-    const char* psData,
-    size_t psLen,
-    const char* psEntryPoint,
-    DiagnosticsManager* diag,
-    ShaderCompilationProperties* properties)
-{
-#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-    List<Path> includeDirs;
-    if (properties) {
-        for (auto& path : properties->m_includeDirectories)
-            includeDirs.add(path);
-    }
+//Ref<detail::IShaderPass> Shader::createShaderPass(
+//    const char* vsData,
+//    size_t vsLen,
+//    const char* vsEntryPoint,
+//    const char* psData,
+//    size_t psLen,
+//    const char* psEntryPoint,
+//    DiagnosticsManager* diag,
+//    ShaderCompilationProperties* properties)
+//{
+//#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
+//	List<Path> includeDirs;
+//	if (properties) {
+//		for (auto& path : properties->m_includeDirectories)
+//			includeDirs.add(path);
+//	}
+//
+//	detail::UnifiedShaderCompiler compiler(m_manager, diag);
+//	if (!compiler.compileSingleCodes(
+//		vsData, vsLen, vsEntryPoint,
+//		psData, psLen, psEntryPoint,
+//		includeDirs, {})) {
+//		LN_ERROR();
+//		return nullptr;
+//	}
+//	if (!compiler.link()) {
+//		LN_ERROR();
+//		return nullptr;
+//	}
+//
+//	createFromUnifiedShader(compiler.unifiedShader(), diag);
+//#else
+//    LN_NOTIMPLEMENTED();
+//    return nullptr;
+//#endif
+//}
 
-    detail::ShaderCodeTranspiler vsCodeGen(m_manager);
-    if (!vsCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Vertex, vsData, vsLen, vsEntryPoint, includeDirs, (properties) ? &properties->m_definitions : nullptr, diag)) {
-        return nullptr;
-    }
-
-    detail::ShaderCodeTranspiler psCodeGen(m_manager);
-    if (!psCodeGen.parseAndGenerateSpirv(detail::ShaderCodeStage::Fragment, psData, psLen, psEntryPoint, includeDirs, (properties) ? &properties->m_definitions : nullptr, diag)) {
-        return nullptr;
-    }
-
-    std::string vsCode = vsCodeGen.generateGlsl(400, false);
-    std::string psCode = psCodeGen.generateGlsl(400, false);
-
-    Ref<detail::IShaderPass> pass = createRHIShaderPass(
-        vsCode.c_str(), vsCode.length(), psCode.c_str(), psCode.length(), diag);
-
-    return pass;
-#else
-    LN_NOTIMPLEMENTED();
-    return nullptr;
-#endif
-}
-
-Ref<detail::IShaderPass> Shader::createRHIShaderPass(
-    const char* vsData,
-    size_t vsLen,
-    const char* psData,
-    size_t psLen,
-    DiagnosticsManager* diag)
-{
-    ShaderCompilationDiag sdiag;
-    Ref<detail::IShaderPass> pass = deviceContext()->createShaderPass(
-        reinterpret_cast<const byte_t*>(vsData), vsLen, reinterpret_cast<const byte_t*>(psData), psLen, &sdiag);
-
-    if (sdiag.level == ShaderCompilationResultLevel::Error) {
-        diag->reportError(String::fromStdString(sdiag.message));
-    } else if (sdiag.level == ShaderCompilationResultLevel::Warning) {
-        diag->reportWarning(String::fromStdString(sdiag.message));
-    }
-
-    return pass;
-}
-
-void Shader::createSinglePassShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen, DiagnosticsManager* diag, ShaderCompilationProperties* properties)
-{
-    auto rhiPass = createShaderPass(vsData, vsLen, "main", psData, psLen, "main", diag, properties);
-
-    auto tech = newObject<ShaderTechnique>(u"Main"); // TODO: 名前指定できた方がいいかも
-    tech->setOwner(this);
-    m_techniques->add(tech);
-
-    auto pass = newObject<ShaderPass>(u"Main", rhiPass);
-    tech->addShaderPass(pass);
-    pass->setupParameters();
-}
+//Ref<detail::IShaderPass> Shader::createRHIShaderPass(
+//    const byte_t* vsData,
+//    size_t vsLen,
+//    const byte_t* psData,
+//    size_t psLen,
+//	const detail::VertexInputAttributeTable* vertexInputAttributeTable,
+//    detail::UnifiedShaderRefrectionInfo* vertexShaderRefrection,
+//    detail::UnifiedShaderRefrectionInfo* pixelShaderRefrection,
+//    DiagnosticsManager* diag)
+//{
+//    LN_NOTIMPLEMENTED();
+//    return nullptr;
+//}
+//
+//void Shader::createSinglePassShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen, DiagnosticsManager* diag, ShaderCompilationProperties* properties)
+//{
+//    auto rhiPass = createShaderPass(vsData, vsLen, "main", psData, psLen, "main", diag, properties);
+//
+//    auto tech = newObject<ShaderTechnique>(u"Main"); // TODO: 名前指定できた方がいいかも
+//    tech->setOwner(this);
+//    m_techniques->add(tech);
+//
+//    auto pass = newObject<ShaderPass>(u"Main", rhiPass);
+//    tech->addShaderPass(pass);
+//    pass->setupParameters();
+//}
 
 void Shader::postInitialize()
 {
@@ -525,11 +527,20 @@ Ref<ReadOnlyList<Ref<ShaderTechnique>>> Shader::techniques() const
 // TODO: 名前の指定方法をもう少しいい感じにしたい。ImageEffect を Forward_Geometry_UnLighting と書かなければならないなど、煩雑。
 ShaderTechnique* Shader::findTechniqueByClass(const detail::ShaderTechniqueClass& techniqueClass) const
 {
+    ShaderTechnique* defaultTech = nullptr;
     for (auto& tech : m_techniques) {
         if (detail::ShaderTechniqueClass::equals(detail::ShaderHelper::techniqueClass(tech), techniqueClass)) {
             return tech;
         }
+        if (detail::ShaderHelper::techniqueClass(tech).defaultTechnique) {
+            defaultTech = tech;
+        }
     }
+
+    if (defaultTech) {
+        return defaultTech;
+    }
+
     return nullptr;
 }
 
@@ -571,24 +582,24 @@ ShaderParameter::ShaderParameter()
 {
 }
 
-void ShaderParameter::initialize(ShaderConstantBuffer* owner, const detail::ShaderUniformTypeDesc& desc, const String& name)
+void ShaderParameter::init(ShaderConstantBuffer* owner, const detail::ShaderUniformTypeDesc& desc, const String& name)
 {
-    Object::initialize();
+    Object::init();
     m_owner = owner;
     m_desc = desc;
     m_name = name;
 }
 
-void ShaderParameter::initialize(ShaderParameterClass parameterClass, const String& name)
+void ShaderParameter::init(ShaderParameterClass parameterClass, const String& name)
 {
-    Object::initialize();
+    Object::init();
     m_class = parameterClass;
     m_name = name;
 }
 
-void ShaderParameter::dispose()
+void ShaderParameter::onDispose(bool explicitDisposing)
 {
-    Object::dispose();
+    Object::onDispose(explicitDisposing);
 }
 
 void ShaderParameter::setInt(int value)
@@ -670,9 +681,9 @@ ShaderConstantBuffer::ShaderConstantBuffer()
 {
 }
 
-void ShaderConstantBuffer::initialize(Shader* owner, detail::IShaderUniformBuffer* rhiObject)
+void ShaderConstantBuffer::init(Shader* owner, detail::IShaderUniformBuffer* rhiObject)
 {
-    Object::initialize();
+    Object::init();
     m_owner = owner;
     m_name = String::fromStdString(rhiObject->name());
     m_asciiName = rhiObject->name();
@@ -697,7 +708,7 @@ ShaderParameter* ShaderConstantBuffer::findParameter(const StringRef& name) cons
 
 void ShaderConstantBuffer::commit(detail::IShaderUniformBuffer* rhiObject)
 {
-    auto* manager = owner()->manager();
+	auto* manager = detail::GraphicsResourceInternal::manager(owner());
     detail::RenderBulkData data = manager->primaryRenderingCommandList()->allocateBulkData(m_buffer.size());
     memcpy(data.writableData(), m_buffer.data(), data.size());
 
@@ -719,9 +730,9 @@ ShaderTechnique::~ShaderTechnique()
 {
 }
 
-void ShaderTechnique::initialize(const String& name)
+void ShaderTechnique::init(const String& name)
 {
-    Object::initialize();
+    Object::init();
     m_name = name;
     detail::ShaderTechniqueClass::parseTechniqueClassString(m_name, &m_techniqueClass);
 }
@@ -754,21 +765,21 @@ ShaderPass::~ShaderPass()
 {
 }
 
-void ShaderPass::initialize(const String& name, detail::IShaderPass* rhiPass, detail::ShaderRenderState* renderState)
+void ShaderPass::init(const String& name, detail::IShaderPass* rhiPass, detail::ShaderRenderState* renderState)
 {
     if (LN_REQUIRE(rhiPass)) return;
-    Object::initialize();
+    Object::init();
 
     m_name = name;
     m_rhiPass = rhiPass;
     m_renderState = renderState;
 }
 
-void ShaderPass::dispose()
+void ShaderPass::onDispose(bool explicitDisposing)
 {
     m_rhiPass = nullptr;
 
-    Object::dispose();
+    Object::onDispose(explicitDisposing);
 }
 
 Shader* ShaderPass::shader() const
@@ -798,7 +809,6 @@ void ShaderPass::setupParameters()
 
 void ShaderPass::commit()
 {
-    auto* manager = m_owner->shader()->manager();
     commitContantBuffers();
 }
 
@@ -811,24 +821,51 @@ void ShaderPass::commitContantBuffers()
     // TODO: 1つのバッファにまとめるとか、一括で送りたい。
     detail::IShaderSamplerBuffer* samplerBuffer = m_rhiPass->samplerBuffer();
     if (samplerBuffer) {
-        for (int i = 0; i < samplerBuffer->registerCount(); i++) {
-            auto* manager = m_owner->shader()->manager();
-            Texture* texture = m_textureParameters[i]->texture();
+		for (int i = 0; i < samplerBuffer->registerCount(); i++) {
+			auto* manager = detail::GraphicsResourceInternal::manager(m_owner->shader());;
+			Texture* texture = m_textureParameters[i]->texture();
 
-            SamplerState* sampler;
-            if (texture && texture->samplerState()) {
-                sampler = texture->samplerState();
-            } else {
-                sampler = m_owner->shader()->manager()->defaultSamplerState();
-            }
+			if (texture) {
+#if 1
+				SamplerState* sampler = nullptr;
+				if (texture && texture->samplerState()) {
+					sampler = texture->samplerState();
+				}
+				else {
+					sampler = manager->defaultSamplerState();
+				}
 
-            detail::ITexture* rhiTexture = (texture) ? texture->resolveRHIObject() : nullptr;
-            detail::ISamplerState* rhiSampler = (sampler) ? sampler->resolveRHIObject() : nullptr;
-            LN_ENQUEUE_RENDER_COMMAND_4(
-                ShaderConstantBuffer_commit_setTexture, manager, detail::IShaderSamplerBuffer*, samplerBuffer, int, i, Ref<detail::ITexture>, rhiTexture, Ref<detail::ISamplerState>, rhiSampler, {
-                    samplerBuffer->setTexture(i, rhiTexture);
-                    samplerBuffer->setSamplerState(i, rhiSampler);
-                });
+				bool modified = false;
+				detail::ITexture* rhiTexture = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(texture, nullptr);
+				detail::ISamplerState* rhiSampler = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISamplerState>(sampler, nullptr);
+				LN_ENQUEUE_RENDER_COMMAND_4(
+					ShaderConstantBuffer_commit_setTexture, manager, detail::IShaderSamplerBuffer*, samplerBuffer, int, i, Ref<detail::ITexture>, rhiTexture, Ref<detail::ISamplerState>, rhiSampler, {
+						samplerBuffer->setTexture(i, rhiTexture);
+						samplerBuffer->setSamplerState(i, rhiSampler);
+				});
+#else
+				if (texture && texture->samplerState()) {
+					SamplerState* sampler = texture->samplerState();
+					detail::ITexture* rhiTexture = (texture) ? texture->resolveRHIObject() : nullptr;
+					detail::ISamplerState* rhiSampler = (sampler) ? sampler->resolveRHIObject() : nullptr;
+					LN_ENQUEUE_RENDER_COMMAND_4(
+						ShaderConstantBuffer_commit_setTexture, manager, detail::IShaderSamplerBuffer*, samplerBuffer, int, i, Ref<detail::ITexture>, rhiTexture, Ref<detail::ISamplerState>, rhiSampler, {
+							samplerBuffer->setTexture(i, rhiTexture);
+							samplerBuffer->setSamplerState(i, rhiSampler);
+						});
+				}
+				else {
+					detail::ITexture* rhiTexture = (texture) ? texture->resolveRHIObject() : nullptr;
+					LN_ENQUEUE_RENDER_COMMAND_3(
+						ShaderConstantBuffer_commit_setTexture, manager, detail::IShaderSamplerBuffer*, samplerBuffer, int, i, Ref<detail::ITexture>, rhiTexture, {
+							samplerBuffer->setTexture(i, rhiTexture);
+						});
+				}
+#endif
+			}
+			else {
+				// TODO: SamplerState のみの設定
+			}
         }
     }
 }

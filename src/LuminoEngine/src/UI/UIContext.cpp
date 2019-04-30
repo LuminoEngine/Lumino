@@ -1,5 +1,7 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIEvents.hpp>
@@ -11,12 +13,19 @@ namespace ln {
 
 UIContext::UIContext()
     : m_mouseHoverElement(nullptr)
+    , m_finalDefaultStyle(makeRef<detail::UIStyleInstance>())
 {
 }
 
-void UIContext::initialize()
+void UIContext::init()
 {
-    Object::initialize();
+    Object::init();
+
+	m_defaultStyle = newObject<UIStyle>();
+	m_defaultStyle->setupDefault();
+	m_finalDefaultStyle->backgroundMaterial = newObject<Material>();
+
+    detail::UIStyleInstance::updateStyleDataHelper(m_defaultStyle, nullptr, m_defaultStyle, m_finalDefaultStyle);
 }
 
 void UIContext::setLayoutRootElement(UIElement* element)
@@ -89,6 +98,22 @@ EXIT:
 
     return false;
 }
+
+void UIContext::updateStyleTree()
+{
+	if (m_layoutRootElement)
+	{
+		m_layoutRootElement->updateStyleHierarchical(m_finalDefaultStyle);
+	}
+}
+
+//void UIContext::updateLayoutTree()
+//{
+//	if (m_layoutRootElement)
+//	{
+//		m_layoutRootElement->updateLayout(Rect(0, 0, m_layoutRootElement->width(), m_layoutRootElement->height()));
+//	}
+//}
 
 } // namespace ln
 

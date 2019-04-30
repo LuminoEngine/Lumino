@@ -24,18 +24,18 @@ UISprite::UISprite()
 {
 }
 
-void UISprite::initialize()
+void UISprite::init()
 {
-    UIElement::initialize();
+    UIElement::init();
     m_material = newObject<Material>();
     m_size = Size(-1, -1);
     m_sourceRect = Rect(0, 0, -1, -1);
     setBlendMode(BlendMode::Alpha);
 }
 
-void UISprite::initialize(Texture* texture)
+void UISprite::init(Texture* texture)
 {
-    initialize();
+    init();
     setTexture(texture);
 }
 
@@ -68,7 +68,7 @@ void UISprite::onRender(UIRenderingContext* context)
 
     context->drawSprite(
         Matrix(), renderSize, Vector2(0, 0), renderSourceRect, Color::White,
-        SpriteBaseDirection::Basic2D, BillboardType::None, m_material);
+        SpriteBaseDirection::Basic2D, BillboardType::None, detail::SpriteFlipFlags::None, m_material);
 }
 
 } // namespace ln

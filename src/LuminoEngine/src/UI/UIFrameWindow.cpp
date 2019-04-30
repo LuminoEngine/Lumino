@@ -202,9 +202,11 @@ UIFrameWindow::~UIFrameWindow()
 {
 }
 
-void UIFrameWindow::initialize(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize)
+void UIFrameWindow::init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize)
 {
-	UIElement::initialize();
+	UIElement::init();
+	specialElementFlags().set(detail::UISpecialElementFlags::FrameWindow);
+
 	m_manager = detail::EngineDomain::uiManager();
     m_platformWindow = platformMainWindow;
 	m_autoDisposePlatformWindow = false;
@@ -217,9 +219,14 @@ void UIFrameWindow::initialize(detail::PlatformWindow* platformMainWindow, const
     m_inputInjector = makeRef<detail::UIInputInjector>(this);
 
     m_platformWindow->attachEventListener(this);
+
+	SizeI size;
+	m_platformWindow->getSize(&size);
+	setWidth(size.width);
+	setHeight(size.height);
 }
 
-void UIFrameWindow::dispose()
+void UIFrameWindow::onDispose(bool explicitDisposing)
 {
     if (m_renderView) {
         m_renderView->dispose();
@@ -237,14 +244,21 @@ void UIFrameWindow::dispose()
 		}
         m_platformWindow = nullptr;
 	}
+
+	UIContainerElement::onDispose(explicitDisposing);
 }
 
 void UIFrameWindow::renderContents()
 {
+	assert(!m_depthBuffer);
+
 	GraphicsContext* ctx = m_manager->graphicsManager()->graphicsContext();
 
-	ctx->setColorBuffer(0, m_swapChain->colorBuffer());
-	ctx->setDepthBuffer(m_swapChain->depthBuffer());
+	RenderTargetTexture* backbuffer = m_swapChain->backbuffer();
+	m_depthBuffer = DepthBuffer::getTemporary(backbuffer->width(), backbuffer->height());
+
+	ctx->setRenderTarget(0, backbuffer);
+	ctx->setDepthBuffer(m_depthBuffer);
 	//ctx->clear(ClearFlags::All, Color(0.4, 0.4, 0.4), 1.0f, 0x00);
 }
 
@@ -255,10 +269,15 @@ void UIFrameWindow::present()
 	if (m_renderView)
 	{
 		m_renderView->setRootElement(this);
-		m_renderView->render(ctx);
+		m_renderView->render(ctx, ctx->renderTarget(0), ctx->depthBuffer());
 	}
 
-	ctx->present(m_swapChain);
+	if (m_depthBuffer) {
+		DepthBuffer::releaseTemporary(m_depthBuffer);
+		m_depthBuffer = nullptr;
+	}
+
+	detail::SwapChainInternal::present(m_swapChain);
 }
 
 SwapChain* UIFrameWindow::swapChain() const
@@ -271,11 +290,50 @@ SwapChain* UIFrameWindow::swapChain() const
 //	return m_viewport;
 //}
 
-void UIFrameWindow::updateLayout()
+//void UIFrameWindow::updateLayout()
+//{
+//    SizeI size;
+//    m_platformWindow->getSize(&size);
+//    UIElement::updateLayoutHierarchical(size.toFloatSize());
+//}
+
+void UIFrameWindow::updateLayoutTree()
 {
-    SizeI size;
-    m_platformWindow->getSize(&size);
-    UIElement::updateLayout(size.toFloatSize());
+	SizeI size;
+	m_platformWindow->getSize(&size);
+
+    Rect clientRect(0, 0, size.width, size.height);
+	updateLayout(clientRect);
+    updateFinalLayoutHierarchical(clientRect);
+}
+
+// 強制的にウィンドウサイズとする
+Size UIFrameWindow::measureOverride(const Size& constraint)
+{
+	int childCount = getVisualChildrenCount();
+	for (int i = 0; i < childCount; i++)
+	{
+		UIElement* child = getVisualChild(i);
+		child->measureLayout(constraint);
+	}
+
+	SizeI size;
+	m_platformWindow->getSize(&size);
+	// TODO: DPI チェック
+	return size.toFloatSize();
+}
+
+// 強制的にウィンドウサイズとする
+Size UIFrameWindow::arrangeOverride(const Size& finalSize)
+{
+	int childCount = getVisualChildrenCount();
+	for (int i = 0; i < childCount; i++)
+	{
+		UIElement* child = getVisualChild(i);
+		child->arrangeLayout(Rect(0, 0, finalSize));	// TODO: padding
+	}
+
+	return UIElement::arrangeOverride(desiredSize());
 }
 
 bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)
@@ -314,7 +372,16 @@ bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)
         if (m_inputInjector->injectTextInput(e.key.keyChar)) return true;
         break;
     case PlatformEventType::WindowSizeChanged:
-        break;
+	{
+		if (m_platformWindow && m_swapChain)
+		{
+			int w, h;
+			m_platformWindow->getFramebufferSize(&w, &h);
+			detail::SwapChainInternal::resizeBackbuffer(m_swapChain, w, h);
+		}
+		break;
+	}
+
     case PlatformEventType::DragEnter:
     {
         LN_NOTIMPLEMENTED();

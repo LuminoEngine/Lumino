@@ -17,7 +17,7 @@ AudioDevice::AudioDevice()
 {
 }
 
-void AudioDevice::initialize(int frames, int channels)
+void AudioDevice::init(int frames, int channels)
 {
 	//CoreAudioNode::ProcessingSizeInFrames
 	m_masterChannels = channels;

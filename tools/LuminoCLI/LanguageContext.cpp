@@ -27,88 +27,150 @@ CppLanguageContext::~CppLanguageContext()
 {
 }
 
-Result CppLanguageContext::applyTemplates()
+Result CppLanguageContext::applyTemplates(const ln::String& templateName)
 {
-	CLI::info("Copying NativeProject template...");
-
-	auto projectTemplatesDir = project()->workspace()->buildEnvironment()->projectTemplatesDirPath();
-	auto srcRoot = ln::Path(projectTemplatesDir, u"NativeProject");
+    auto projectTemplatesDir = project()->workspace()->buildEnvironment()->projectTemplatesDirPath();
 	auto dstRoot = project()->rootDirPath();
 
-	// Common
-	{
-		ln::String files[] = {
-			u".gitignore",
-			u"Sources/Application.cpp",
-			u"Sources/Application.h",
-		};
+    ln::Path srcRoot;
+    if (!templateName.isEmpty()) {
+        srcRoot = ln::Path(projectTemplatesDir, templateName);
+    }
+    else {
+        srcRoot = ln::Path(projectTemplatesDir, u"NativeProject");
+    }
 
-		for (auto& file : files)
-		{
-			auto filePath = ln::Path(dstRoot, file);
-			auto dirPath = filePath.parent();
-			if (!ln::FileSystem::existsDirectory(dirPath)) {
-				ln::FileSystem::createDirectory(dirPath);
-			}
+    if (!ln::FileSystem::existsDirectory(srcRoot)) {
+        // TODO: 事前検証
+        CLI::error(u"Invalid project template.");
+        return Result::Fail;
+    }
 
-			ln::FileSystem::copyFile(ln::Path(srcRoot, file), filePath, ln::FileCopyOption::Overwrite);
-		}
+	CLI::info(u"Copying template...");
 
-		// Assets
-		ln::FileSystem::copyDirectory(ln::Path(srcRoot, u"Assets"), ln::Path(dstRoot, u"Assets"), true, true);
-	}
+    if (templateName.isEmpty())
+    {
+        CLI::info(u"Template: Default");
+        
 
-	// Windows
-	{
-		ln::FileSystem::copyFile(
-			ln::Path(srcRoot, u"LuminoApp.sln"),
-			ln::Path(dstRoot, u"LuminoApp.sln"), ln::FileCopyOption::Overwrite);
+        // TODO: v0.7.0 時点の動作。else 側に統一したい
 
-		ln::FileSystem::copyDirectory(
-			ln::Path(srcRoot, u"Projects/LuminoApp.Windows"),
-			ln::Path(dstRoot, u"Projects/LuminoApp.Windows"),
-			true, true);
-	}
+        // Common
+        {
+            ln::String files[] = {
+                u".gitignore",
+                u"Sources/Application.cpp",
+                u"Sources/Application.h",
+            };
 
-	// macOS
-	{
-		ln::FileSystem::copyDirectory(
-			ln::Path(srcRoot, u"Projects/LuminoApp.macOS"),
-			ln::Path(dstRoot, u"Projects/LuminoApp.macOS"),
-			true, true);
-	}
+            for (auto& file : files)
+            {
+                auto filePath = ln::Path(dstRoot, file);
+                auto dirPath = filePath.parent();
+                if (!ln::FileSystem::existsDirectory(dirPath)) {
+                    ln::FileSystem::createDirectory(dirPath);
+                }
 
-	// Web
-	{
-		ln::FileSystem::copyDirectory(
-			ln::Path(srcRoot, u"Projects/LuminoApp.Web"),
-			ln::Path(dstRoot, u"Projects/LuminoApp.Web"),
-			true, true);
-	}
+                ln::FileSystem::copyFile(ln::Path(srcRoot, file), filePath, ln::FileCopyOption::Overwrite);
+            }
 
-	// iOS
-	{
-		ln::FileSystem::copyDirectory(
-			ln::Path(srcRoot, u"Projects/LuminoApp.iOS"),
-			ln::Path(dstRoot, u"Projects/LuminoApp.iOS"),
-			true, true);
-	}
+            // Assets
+            ln::FileSystem::copyDirectory(ln::Path(srcRoot, u"Assets"), ln::Path(dstRoot, u"Assets"), true, true);
+        }
 
-	// Android
-	{
-		ln::FileSystem::copyDirectory(
-			ln::Path(srcRoot, u"Projects/LuminoApp.Android"),
-			ln::Path(dstRoot, u"Projects/LuminoApp.Android"),
-			true, true);
-	}
+        // Windows
+        {
+            ln::FileSystem::copyFile(
+                ln::Path(srcRoot, u"LuminoApp.sln"),
+                ln::Path(dstRoot, u"LuminoApp.sln"), ln::FileCopyOption::Overwrite);
 
-	CLI::info("Copied NativeProject template.");
+            ln::FileSystem::copyDirectory(
+                ln::Path(srcRoot, u"Projects/LuminoApp.Windows"),
+                ln::Path(dstRoot, u"Projects/LuminoApp.Windows"),
+                true, true);
+        }
+
+        // macOS
+        {
+            ln::FileSystem::copyDirectory(
+                ln::Path(srcRoot, u"Projects/LuminoApp.macOS"),
+                ln::Path(dstRoot, u"Projects/LuminoApp.macOS"),
+                true, true);
+
+            ln::FileSystem::writeAllText(
+                ln::Path(dstRoot, u"Projects/LuminoApp.macOS/LuminoApp.macOS/Config-generated.xcconfig"),
+                ln::String::format(u"LUMINO_PATH=" + project()->workspace()->buildEnvironment()->luminoPackageRootDir().unify()));
+        }
+
+        // Web
+        {
+            ln::FileSystem::copyDirectory(
+                ln::Path(srcRoot, u"Projects/LuminoApp.Web"),
+                ln::Path(dstRoot, u"Projects/LuminoApp.Web"),
+                true, true);
+        }
+
+        // iOS
+        {
+            ln::FileSystem::copyDirectory(
+                ln::Path(srcRoot, u"Projects/LuminoApp.iOS"),
+                ln::Path(dstRoot, u"Projects/LuminoApp.iOS"),
+                true, true);
+
+            ln::FileSystem::writeAllText(
+                ln::Path(dstRoot, u"Projects/LuminoApp.iOS/LuminoApp.iOS/Config-generated.xcconfig"),
+                ln::String::format(u"LUMINO_PATH=" + project()->workspace()->buildEnvironment()->luminoPackageRootDir().unify()));
+        }
+
+        // Android
+        {
+            ln::FileSystem::copyDirectory(
+                ln::Path(srcRoot, u"Projects/LuminoApp.Android"),
+                ln::Path(dstRoot, u"Projects/LuminoApp.Android"),
+                true, true);
+        }
+    }
+    else
+    {
+        CLI::info(u"Template: " + templateName);
+
+        // 先にフォルダを作っておく
+        for (auto dir : ln::FileSystem::getDirectories(srcRoot, ln::StringRef(), ln::SearchOption::Recursive)) {
+            auto rel = srcRoot.makeRelative(dir);
+            ln::FileSystem::createDirectory(ln::Path(dstRoot, rel));
+        }
+
+        // ファイルをコピー
+        for (auto file : ln::FileSystem::getFiles(srcRoot, ln::StringRef(), ln::SearchOption::Recursive)) {
+            auto rel = srcRoot.makeRelative(file);
+            ln::FileSystem::copyFile(file, ln::Path(dstRoot, rel));
+        }
+    }
+
+	CLI::info("Copied template.");
 	return Result::Success;
 }
 
 Result CppLanguageContext::applyEngine()
 {
-    if (project()->properties()->engine.indexOf(u"repo:") == 0)
+    if (project()->properties()->engine.indexOf(u"local") == 0)
+    {
+        if (!ln::FileSystem::getFile(project()->engineDirPath()).isEmpty()) {
+            CLI::warning(u"File exists in the engine folder.");
+        }
+        else {
+            CLI::info("Copying Engine...");
+
+            ln::FileSystem::copyDirectory(
+                ln::Path::combine(project()->workspace()->buildEnvironment()->luminoPackageRootDir(), u"Engine", u"Native"),
+                ln::Path::combine(project()->engineDirPath(), u"Native"),
+                true, true);
+
+            CLI::info("Copied Engine.");
+        }
+    }
+    // リポジトリ clone
+    else if (project()->properties()->engine.indexOf(u"repo:") == 0)
     {
         auto engineRoot = ln::Path::combine(project()->engineDirPath(), u"Native");
         auto branch = project()->properties()->engine.substr(5);
@@ -142,22 +204,11 @@ Result CppLanguageContext::applyEngine()
             return Result::Fail;
         }
     }
-    else
+    else // system
     {
-        if (!ln::FileSystem::getFile(project()->engineDirPath()).isEmpty()) {
-            CLI::warning(u"File exists in the engine folder.");
-        }
-        else {
-            CLI::info("Copying Engine...");
-
-            ln::FileSystem::copyDirectory(
-                ln::Path::combine(project()->workspace()->buildEnvironment()->luminoPackageRootDir(), u"Engine", u"Native"),
-                ln::Path::combine(project()->engineDirPath(), u"Native"),
-                true, true);
-
-            CLI::info("Copied Engine.");
-        }
+        // 各プロジェクトが環境変数でインストール済みパッケージを参照する
     }
+
     return Result::Success;
 }
 

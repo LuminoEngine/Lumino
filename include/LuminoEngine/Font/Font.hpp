@@ -9,6 +9,9 @@ class FontCore;
 class FontHelper;
 }
 
+/*
+ * フォントのクラスです。
+ */
 class Font
     : public Object
 {
@@ -23,10 +26,10 @@ public:
     static void setDefaultFont(Font* font);
 
 	/** フォントを登録します。以降、ファミリ名でフォントを使用できるようになります。 */
-	static void registerFontFile(const StringRef& fontFilePath);
+	static void registerFontFromFile(const StringRef& fontFilePath, bool defaultFamily = true);
 
 public:
-    /** フォントファミリ名の設定 */
+    /** フォントファミリ名の設定。空文字列はデフォルトのフォントファミリを示します。 */
     void setFamily(const String& familyName);
 
     /** フォントファミリ名の取得 */
@@ -60,17 +63,18 @@ public:
     Ref<Font> clone() const;
 
     /** 指定した文字列を描画する際のピクセルサイズを計算します。*/
-    Size measureRenderSize(const StringRef& text);
+    Size measureRenderSize(const StringRef& text, float dpiScale = 1.0f);
 
 LN_CONSTRUCT_ACCESS:
     Font();
     virtual ~Font();
-    void initialize();
-    void initialize(const String& family, float size);
-    //void initialize(detail::GraphicsManager* manager, FontCore* builtinRawFont);
+    void init();
+    void init(const String& family, float size);
+	void init(const detail::FontDesc& desc);
+    //void init(detail::GraphicsManager* manager, FontCore* builtinRawFont);
 
 private:
-    detail::FontCore* resolveFontCore();
+    detail::FontCore* resolveFontCore(float dpiScale);
 
     detail::FontManager* m_manager;
     detail::FontDesc m_desc;
@@ -84,7 +88,9 @@ namespace detail {
 class FontHelper
 {
 public:
-    static detail::FontCore* resolveFontCore(Font* font) { return font->resolveFontCore(); }
+    static detail::FontCore* resolveFontCore(Font* font, float dpiScale) { return font->resolveFontCore(dpiScale); }
+	static bool equalsFontDesc(const Font* font, const FontDesc& desc) { return font->m_desc.equals(desc); }
+    static const FontDesc& getFontDesc(const Font* font) { return font->m_desc; }
 };
 } // namespace detail
 } // namespace ln

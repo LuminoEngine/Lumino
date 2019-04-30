@@ -82,10 +82,10 @@ public:
     const Color& blendColor() const;
 
     /** 色調を設定します。(default: Tone(0, 0, 0, 0)) */
-    void setTone(const ToneF& value);
+    void setTone(const ColorTone& value);
 
     /** 色調を取得します。 */
-    const ToneF& tone() const;
+    const ColorTone& tone() const;
 
     /** @} */
 
@@ -97,7 +97,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
     VisualComponent();
 	virtual ~VisualComponent();
-	void initialize();
+	void init();
 
 private:
     virtual void render(RenderingContext* context) override;

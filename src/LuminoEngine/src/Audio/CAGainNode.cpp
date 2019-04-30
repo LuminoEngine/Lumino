@@ -14,9 +14,9 @@ CAGainNode::CAGainNode(AudioDevice* context)
 {
 }
 
-void CAGainNode::initialize()
+void CAGainNode::init()
 {
-    CoreAudioNode::initialize();
+    CoreAudioNode::init();
 
     int numChannels = 2;
     addOutputPin(numChannels);

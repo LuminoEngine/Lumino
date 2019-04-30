@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Engine/Property.hpp>
 #include <LuminoEngine/Scene/Component.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
@@ -114,9 +115,11 @@ WorldObject::WorldObject()
     : m_world(nullptr)
     , m_parent(nullptr)
     , m_transform(makeRef<detail::WorldObjectTransform>(this))
-    , m_components(makeRef<List<Ref<Component>>>())
-    , m_children(makeRef<List<Ref<WorldObject>>>())
+    , m_tags(makeList<String>())
+    , m_components(makeList<Ref<Component>>())
+    , m_children(makeList<Ref<WorldObject>>())
     , m_isSpecialObject(false)
+	, m_destroyed(false)
 {
 }
 
@@ -124,14 +127,23 @@ WorldObject::~WorldObject()
 {
 }
 
-void WorldObject::initialize()
+void WorldObject::init()
 {
-    Object::initialize();
+    Object::init();
 
 	World* activeWorld = detail::EngineDomain::sceneManager()->activeWorld();
 	if (activeWorld) {
 		activeWorld->addObject(this);
 	}
+}
+
+void WorldObject::onDispose(bool explicitDisposing)
+{
+	m_destroyed = true;
+	if (m_components) {
+		m_components->clear();
+	}
+	Object::onDispose(explicitDisposing);
 }
 
 void WorldObject::lookAt(const Vector3& target, const Vector3& up)
@@ -147,6 +159,26 @@ void WorldObject::addComponent(Component* component)
     component->m_object = this;
     m_components->add(component);
     component->onAttached(this);
+}
+
+void WorldObject::destroy()
+{
+	m_destroyed = true;
+	if (m_world) {
+		m_world->m_destroyList.add(this);
+	}
+}
+
+void WorldObject::removeFromWorld()
+{
+	if (m_world) {
+		if (m_parent) {
+			LN_NOTIMPLEMENTED();
+		}
+		else {
+			m_world->removeRootObject(this);
+		}
+	}
 }
 
 const Matrix& WorldObject::worldMatrix()
@@ -169,9 +201,63 @@ void WorldObject::onRender()
 
 }
 
+bool WorldObject::traverseRefrection(ReflectionObjectVisitor* visitor)
+{
+	// 子 Component のプロパティをこのオブジェクトのものとして通知
+	// TODO: ほんとは "Sprite.FrameIndex" みたいにオブジェクト名も入れた方がいいかも。
+    // Unity だと、後からツリーを変更したときに、AnimationClip の path を修正するのがちょっと大変。
+    // https://qiita.com/nekobako/items/b647a701b6070d1ca872
+    // http://tsubakit1.hateblo.jp/entry/2018/02/08/203747
+    // また、VMD や FBX から読み込んだアニメーションデータのトラックがボーン名しか持っていないときにも対応できるようにしておきたい。
+    //
+    // そうすると、
+    // "FrameIndex" -> FrameIndex という名前のプロパティをすべて探して、最初に見つかったものを採用する。
+    // "SpriteComponent.FrameIndex" -> Sprite の部分は型名またはオブジェクト名。この中のプロパティを探す。
+    // ※ちなみに、SpriteComponent を直接使うことって少なくて、なのに "SpriteComponent" を明示的に指定しなければならないという仕様はちょっとイケてないと思う。
+    //
+    // あと、WPF でいうところの Logical, Visual ツリーの仕組みが必要かもしれない。
+    // まぁ、Unity は持っているし。(ある 3DModel のボーンを示す子ノードの寿命は、親Nodeに完全に依存する)
+    // このプロパティの検索は、ある Logical ノードの管理下にある Visual ツリーをたどることになる。
+	for (auto& c : m_components) {
+		if (TypeInfo* typeInfo = TypeInfo::getTypeInfo(c)) {
+			for (auto& prop : typeInfo->properties()) {
+				if (visitor->visitProperty(c, prop)) {
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
+void WorldObject::attachWorld(World* world)
+{
+	if (LN_REQUIRE(world)) return;
+	if (LN_REQUIRE(!m_world)) return;
+	m_world = world;
+	for (auto& c : m_components) {
+		c->onAttachedWorld(world);
+	}
+}
+
+void WorldObject::detachWorld()
+{
+	if (m_world) {
+		World* old = m_world;
+		m_world = nullptr;
+
+		for (auto& c : m_components) {
+			c->onDetachedWorld(old);
+		}
+	}
+}
+
 void WorldObject::updateFrame(float elapsedSeconds)
 {
     onUpdate(elapsedSeconds);
+    for (auto& c : m_components) {
+        c->onUpdate(elapsedSeconds);
+    }
 }
 
 void WorldObject::render()

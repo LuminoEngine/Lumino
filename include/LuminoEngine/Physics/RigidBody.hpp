@@ -36,8 +36,8 @@ public:
 
     RigidBody();
     ~RigidBody();
-    void initialize();
-    void initialize(CollisionShape* shape);
+    void init();
+    void init(CollisionShape* shape);
 
 
     /** 質量を設定します。0 を設定すると静的なボディとなります。 */
@@ -74,10 +74,10 @@ public:
     /** キネマティックモードを設定します。 キネマティックモードでは、剛体に力はかかりません。 */
     void setKinematic(bool enabled);
 
-    /** 衝突グループを設定します。 */
+    /** 衝突グループを設定します。デフォルトは 0x00000001 で、0番のグループに属することを示します。 */
     void setCollisionGroup(uint32_t group);
 
-    /** 衝突グループマスクを設定します。 */
+    /** 衝突グループマスクを設定します。デフォルトは 0x0000FFFF で、0～15番のグループと衝突することを示します。 */
     void setCollisionGroupMask(uint32_t groupMask);
 
     void setTransform(const Matrix& transform);
@@ -117,12 +117,14 @@ public:
     void setCcdMotionThreshold(float threshold);
     void setTrigger(bool enable);
 
+	// TODO: internal
+    btRigidBody* body() const { return m_btRigidBody; }
+
 protected:
     virtual void onBeforeStepSimulation() override;
     virtual void onAfterStepSimulation() override;
 
 private:
-    btRigidBody* body() const { return m_btRigidBody; }
     void activate();
     void createBtRigidBody();
     void setTransformFromMotionState(const btTransform& transform);

@@ -23,16 +23,19 @@ UIViewport::~UIViewport()
 {
 }
 
-void UIViewport::initialize()
+void UIViewport::init()
 {
-	UIContainerElement::initialize();
+	UIContainerElement::init();
+	setHorizontalAlignment(HAlignment::Stretch);
+	setVerticalAlignment(VAlignment::Stretch);
+
     m_imageEffectRenderer = makeRef<detail::ImageEffectRenderer>();
 }
 
-void UIViewport::dispose()
+void UIViewport::onDispose(bool explicitDisposing)
 {
-    UIContainerElement::dispose();
     m_renderViews.clear();
+	UIContainerElement::onDispose(explicitDisposing);
 }
 
 void UIViewport::addRenderView(RenderView* view)
@@ -55,6 +58,25 @@ void UIViewport::removeImageEffect(ImageEffect* effect)
     m_imageEffectRenderer->removeImageEffect(effect);
 }
 
+void UIViewport::onUpdateFrame(float elapsedTimer)
+{
+    m_imageEffectRenderer->updateFrame(elapsedTimer);
+}
+
+void UIViewport::onUpdateStyle(const detail::UIStyleInstance* finalStyle)
+{
+	for (auto& view : m_renderViews) {
+		view->updateUIStyle(finalStyle);
+	}
+}
+
+void UIViewport::onUpdateLayout(const Rect& finalGlobalRect)
+{
+	for (auto& view : m_renderViews) {
+		view->updateUILayout(finalGlobalRect);
+	}
+}
+
 Size UIViewport::arrangeOverride(const Size& finalSize)
 {
     // TODO: tmp
@@ -69,11 +91,6 @@ Size UIViewport::arrangeOverride(const Size& finalSize)
 //{
 //}
 
-void UIViewport::onUpdateFrame(float elapsedTimer)
-{
-    m_imageEffectRenderer->updateFrame(elapsedTimer);
-}
-
 void UIViewport::onRender(UIRenderingContext* context)
 {
     // TODO: ViewBoxTransform
@@ -83,10 +100,10 @@ void UIViewport::onRender(UIRenderingContext* context)
 
     for (auto& view : m_renderViews)
     {
-        view->render(graphicsContext);
+        view->render(graphicsContext, graphicsContext->renderTarget(0), graphicsContext->depthBuffer());
     }
 
-    m_imageEffectRenderer->render(context, graphicsContext->colorBuffer(0));
+    m_imageEffectRenderer->render(context, graphicsContext->renderTarget(0));
 }
 
 void UIViewport::onRoutedEvent(UIEventArgs* e)

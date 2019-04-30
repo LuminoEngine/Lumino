@@ -17,12 +17,12 @@ RefObject::RefObject()
 
 RefObject::~RefObject()
 {
-    LN_FATAL(m_referenceCount <= 1, "Object is still referenced.");
+	LN_CHECK(m_referenceCount <= 1);
 }
 
 void RefObject::finalize()
 {
-    LN_FATAL(m_referenceCount <= 1, "Object is still referenced.");
+	LN_CHECK(m_referenceCount <= 1);
 }
 
 int32_t RefObject::getReferenceCount() const

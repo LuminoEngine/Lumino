@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/VertexDeclaration.hpp>
+#include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
@@ -24,7 +24,7 @@ MeshRenderFeature::~MeshRenderFeature()
 {
 }
 
-void MeshRenderFeature::initialize(RenderingManager* manager)
+void MeshRenderFeature::init(RenderingManager* manager)
 {
 	if (LN_REQUIRE(manager != nullptr)) return;
 	m_manager = manager;
@@ -42,34 +42,34 @@ void MeshRenderFeature::drawMesh(GraphicsContext* context, MeshResource* mesh, i
 	auto* _this = this;
 
 	MeshSection section;
-	VertexDeclaration* decls;
+	VertexLayout* decls;
 	VertexBuffer* vb[MaxVertexStreams] = {};
 	int vbCount;
 	IndexBuffer* ib;
 	mesh->commitRenderData(sectionIndex, &section, &decls, vb, &vbCount, &ib);
 
 	DrawMeshCommandData data;
-	data.vertexDeclaration = GraphicsResourceHelper::resolveRHIObject<IVertexDeclaration>(decls);
+	data.vertexDeclaration = GraphicsResourceInternal::resolveRHIObject<IVertexDeclaration>(decls, nullptr);
 	for (int i = 0; i < vbCount; ++i)
 	{
-		data.vertexBuffers[i] = GraphicsResourceHelper::resolveRHIObject<IVertexBuffer>(vb[i]);
+		data.vertexBuffers[i] = GraphicsResourceInternal::resolveRHIObject<IVertexBuffer>(vb[i], nullptr);
 	}
 	data.vertexBuffersCount = vbCount;
-	data.indexBuffer = (ib) ? ib->resolveRHIObject() : nullptr;
+	data.indexBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IIndexBuffer>(ib, nullptr);
 	data.startIndex = section.startIndex;
 	data.primitiveCount = section.primitiveCount;
-	data.primitiveType = PrimitiveType::TriangleList;
+	data.primitiveType = PrimitiveTopology::TriangleList;
 
 	if (LN_REQUIRE(data.vertexBuffers[0])) return;
 
-	IGraphicsDeviceContext* deviceContext = context->commitState();
+	IGraphicsContext* c = GraphicsContextInternal::commitState(context);
 	LN_ENQUEUE_RENDER_COMMAND_3(
 		MeshRenderFeature_drawMesh, m_manager->graphicsManager(),
 		MeshRenderFeature*, _this,
-		IGraphicsDeviceContext*, deviceContext,
+        IGraphicsContext*, c,
 		DrawMeshCommandData, data,
 		{
-			_this->drawMeshImplOnRenderThread(deviceContext, data);
+			_this->drawMeshImplOnRenderThread(c, data);
 		});
 }
 
@@ -77,18 +77,19 @@ void MeshRenderFeature::flush(GraphicsContext* context)
 {
 }
 
-void MeshRenderFeature::drawMeshImplOnRenderThread(IGraphicsDeviceContext* context, const DrawMeshCommandData& data)
+void MeshRenderFeature::drawMeshImplOnRenderThread(IGraphicsContext* context, const DrawMeshCommandData& data)
 {
 	context->setVertexDeclaration(data.vertexDeclaration);
 	for (int i = 0; i < data.vertexBuffersCount; ++i) {
 		context->setVertexBuffer(i, data.vertexBuffers[i]);
 	}
+	context->setPrimitiveTopology(data.primitiveType);
     if (data.indexBuffer) {
         context->setIndexBuffer(data.indexBuffer);
-        context->drawPrimitiveIndexed(data.primitiveType, data.startIndex, data.primitiveCount);
+        context->drawPrimitiveIndexed(data.startIndex, data.primitiveCount);
     }
     else {
-        context->drawPrimitive(data.primitiveType, data.startIndex, data.primitiveCount);
+        context->drawPrimitive(data.startIndex, data.primitiveCount);
     }
 }
 

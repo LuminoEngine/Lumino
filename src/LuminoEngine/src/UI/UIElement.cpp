@@ -1,6 +1,10 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Shader/Shader.hpp>
 #include <LuminoEngine/Graphics/RenderState.hpp>
+#include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoEngine/Font/Font.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIEvents.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
@@ -17,10 +21,12 @@ namespace ln {
 
 UIElement::UIElement()
     : m_manager(nullptr)
+	, m_objectManagementFlags(detail::ObjectManagementFlags::AutoAddToActiveScene)
     , m_context(nullptr)
     , m_visualParent(nullptr)
+    , m_logicalParent(nullptr)
     , m_localStyle(newObject<UIStyle>()) // TODO: ふつうは static なオブジェクトのほうが多くなるので、必要なやつだけ遅延作成でいいと思う
-    , m_actualStyle(nullptr)
+    , m_finalStyle(makeRef<detail::UIStyleInstance>())
     , m_renderPriority(0)
     , m_isHitTestVisible(true)
 {
@@ -30,15 +36,20 @@ UIElement::~UIElement()
 {
 }
 
-void UIElement::initialize()
+void UIElement::init()
 {
-    Object::initialize();
+	UILayoutElement::init(m_finalStyle);
     m_manager = detail::EngineDomain::uiManager();
 
-    UIContainerElement* primaryElement = m_manager->primaryElement();
-    if (primaryElement) {
-        primaryElement->addElement(this);
-    }
+	// TODO: Material も、実際に描画が必要な Element に限って作成した方がいいだろう
+	m_finalStyle->backgroundMaterial = newObject<Material>();
+
+	if (m_objectManagementFlags.hasFlag(detail::ObjectManagementFlags::AutoAddToActiveScene)) {
+		UIContainerElement* primaryElement = m_manager->primaryElement();
+		if (primaryElement) {
+			primaryElement->addElement(this);
+		}
+	}
 
     if (m_manager->mainContext()) {
         m_manager->mainContext()->addElement(this);
@@ -63,6 +74,26 @@ void UIElement::setPadding(const Thickness& padding)
 const Thickness& UIElement::padding() const
 {
     return m_localStyle->padding;
+}
+
+void UIElement::setHorizontalAlignment(HAlignment value)
+{
+	m_localStyle->horizontalAlignment = value;
+}
+
+HAlignment UIElement::horizontalAlignment() const
+{
+	return m_localStyle->horizontalAlignment;
+}
+
+void UIElement::setVerticalAlignment(VAlignment value)
+{
+	m_localStyle->verticalAlignment = value;
+}
+
+VAlignment UIElement::verticalAlignment() const
+{
+	return m_localStyle->verticalAlignment;
 }
 
 void UIElement::setPosition(const Vector3 & pos)
@@ -100,9 +131,119 @@ void UIElement::setCenterPoint(const Vector3 & value)
     m_localStyle->centerPoint = value;
 }
 
-const Vector3 & UIElement::centerPoint() const
+const Vector3& UIElement::centerPoint() const
 {
     return m_localStyle->centerPoint.getOrDefault(Vector3::Zero);
+}
+
+void UIElement::setBackgroundDrawMode(BrushImageDrawMode value)
+{
+    m_localStyle->backgroundDrawMode = value;
+}
+
+BrushImageDrawMode UIElement::backgroundDrawMode() const
+{
+    return m_localStyle->backgroundDrawMode.getOrDefault(BrushImageDrawMode::Image);
+}
+
+void UIElement::setBackgroundColor(const Color& value)
+{
+	m_localStyle->backgroundColor = value;
+}
+
+const Color& UIElement::backgroundColor() const
+{
+	return m_localStyle->backgroundColor;
+}
+
+void UIElement::setBackgroundImage(Texture* value)
+{
+	m_localStyle->backgroundImage = value;
+}
+
+Texture* UIElement::backgroundImage() const
+{
+	return m_localStyle->backgroundImage.getOrDefault(nullptr);
+}
+
+void UIElement::setBackgroundShader(Shader* value)
+{
+	m_localStyle->backgroundShader = value;
+}
+
+Shader* UIElement::backgroundShader() const
+{
+	return m_localStyle->backgroundShader.getOrDefault(nullptr);
+}
+
+void UIElement::setBackgroundImageRect(const Rect& value)
+{
+    m_localStyle->backgroundImageRect = value;
+}
+
+const Rect& UIElement::backgroundImageRect() const
+{
+    return m_localStyle->backgroundImageRect.getOrDefault(Rect::Zero);
+}
+
+void UIElement::setBackgroundImageBorder(const Thickness& value)
+{
+    m_localStyle->backgroundImageBorder = value;
+}
+
+const Thickness& UIElement::backgroundImageBorder() const
+{
+    return m_localStyle->backgroundImageBorder.getOrDefault(Thickness::Zero);
+}
+
+void UIElement::setTextColor(const Color& value)
+{
+	m_localStyle->textColor = value;
+}
+
+const Color& UIElement::textColor() const
+{
+	return m_localStyle->textColor;
+}
+
+void UIElement::setFontFamily(const String& value)
+{
+	m_localStyle->fontFamily = value;
+}
+
+const String& UIElement::fontFamily() const
+{
+	return m_localStyle->fontFamily.getOrDefault(String::Empty);
+}
+
+void UIElement::setFontSize(float value)
+{
+	m_localStyle->fontSize = value;
+}
+
+float UIElement::fontSize() const
+{
+	return m_localStyle->fontSize.getOrDefault(0);
+}
+
+void UIElement::setFontWeight(UIFontWeight value)
+{
+	m_localStyle->fontWeight = value;
+}
+
+UIFontWeight UIElement::fontWeight() const
+{
+	return m_localStyle->fontWeight.getOrDefault(UIFontWeight::Normal);
+}
+
+void UIElement::setFontStyle(UIFontStyle value)
+{
+	m_localStyle->fontStyle = value;
+}
+
+UIFontStyle UIElement::fontStyle() const
+{
+	return m_localStyle->fontStyle.getOrDefault(UIFontStyle::Normal);
 }
 
 void UIElement::setVisible(bool value)
@@ -125,7 +266,7 @@ void UIElement::setBlendMode(const Optional<BlendMode>& value)
     }
 }
 
-const BlendMode & UIElement::blendMode() const
+BlendMode UIElement::blendMode() const
 {
     return m_localStyle->blendMode.getOrDefault(BlendMode::Alpha);
 }
@@ -160,12 +301,12 @@ const Color & UIElement::blendColor() const
     return m_localStyle->blendColor.getOrDefault(detail::BuiltinEffectData::DefaultValue.blendColor);
 }
 
-void UIElement::setTone(const ToneF & value)
+void UIElement::setTone(const ColorTone & value)
 {
     m_localStyle->tone = value;
 }
 
-const ToneF & UIElement::tone() const
+const ColorTone & UIElement::tone() const
 {
     return m_localStyle->tone.getOrDefault(detail::BuiltinEffectData::DefaultValue.tone);
 }
@@ -191,6 +332,17 @@ void UIElement::raiseEvent(UIEventArgs* e)
     raiseEventInternal(e);
 }
 
+UIElement* UIElement::getFrameWindow()
+{
+	if (m_specialElementFlags.hasFlag(detail::UISpecialElementFlags::FrameWindow)) {
+		return this;
+	}
+	if (m_visualParent) {
+		return m_visualParent->getFrameWindow();
+	}
+	return nullptr;
+}
+
 UIElement* UIElement::lookupMouseHoverElement(const Point& globalPt)
 {
     // 後ろからループする。後のモノが上に描画されるので、この方が自然。
@@ -207,8 +359,8 @@ UIElement* UIElement::lookupMouseHoverElement(const Point& globalPt)
         Point localPoint = globalPt;
         if (m_visualParent != nullptr)
         {
-            localPoint.x -= m_visualParent->m_finalGlobalRect.x;
-            localPoint.y -= m_visualParent->m_finalGlobalRect.y;
+            localPoint.x -= m_visualParent->finalGlobalRect().x;
+            localPoint.y -= m_visualParent->finalGlobalRect().y;
         }
 
         if (onHitTest(localPoint)) {
@@ -223,16 +375,22 @@ void UIElement::onUpdateFrame(float elapsedSeconds)
 {
 }
 
+void UIElement::onUpdateStyle(const detail::UIStyleInstance* finalStyle)
+{
+}
+//
+//void UIElement::onUpdateLayout(const Rect& finalGlobalRect)
+//{
+//}
+
 Size UIElement::measureOverride(const Size& constraint)
 {
-    // TODO: tmp
-    return constraint;
+	return UILayoutElement::measureOverride(constraint);
 }
 
 Size UIElement::arrangeOverride(const Size& finalSize)
 {
-    // TODO: tmp
-    return finalSize;
+	return UILayoutElement::arrangeOverride(finalSize);
 }
 
 int UIElement::getVisualChildrenCount() const
@@ -249,19 +407,43 @@ void UIElement::onRender(UIRenderingContext* context)
 {
 }
 
-void UIElement::updateLayout(const Size& size)
+void UIElement::updateStyleHierarchical(const detail::UIStyleInstance* parentFinalStyle)
 {
-    // TODO: tmp
-    arrangeOverride(size);
+	detail::UIStyleInstance::updateStyleDataHelper(m_localStyle, parentFinalStyle, m_context->defaultStyle(), m_finalStyle);
 
-    // TODO: Layoutelement に実装を持っていく
+	onUpdateStyle(m_finalStyle);
+
+	// child elements
+	int count = getVisualChildrenCount();
+	for (int i = 0; i < count; i++) {
+		getVisualChild(i)->updateStyleHierarchical(m_finalStyle);
+	}
+}
+
+void UIElement::updateFinalLayoutHierarchical(const Rect& parentFinalGlobalRect)
+{
+    updateFinalRects(parentFinalGlobalRect);
 
     // child elements
     int count = getVisualChildrenCount();
     for (int i = 0; i < count; i++) {
-        getVisualChild(i)->updateLayout(size);
+        getVisualChild(i)->updateFinalLayoutHierarchical(m_finalGlobalRect);
     }
+
 }
+
+//void UIElement::updateLayoutHierarchical(const Rect& parentFinalGlobalRect)
+//{
+//	UILayoutElement::updateLayout(parentFinalGlobalRect);
+//
+//	//onUpdateLayout(finalGlobalRect());
+//
+// //   // child elements
+// //   int count = getVisualChildrenCount();
+// //   for (int i = 0; i < count; i++) {
+// //       getVisualChild(i)->updateLayoutHierarchical(finalGlobalRect());
+// //   }
+//}
 
 void UIElement::render(UIRenderingContext* context)
 {
@@ -277,6 +459,7 @@ void UIElement::render(UIRenderingContext* context)
             m.scale(scale());
             m.rotateQuaternion(rotation());
             m.translate(position());
+            m.translate(Vector3(m_finalGlobalRect.x, m_finalGlobalRect.y, 0));
             context->setBaseTransfrom(m);
         }
         detail::BuiltinEffectData data;
@@ -287,6 +470,20 @@ void UIElement::render(UIRenderingContext* context)
         context->setBaseBuiltinEffectData(data);
         context->setBlendMode(blendMode());
         context->setRenderPriority(m_renderPriority);
+
+		// background
+		{
+			
+			if (m_finalStyle->backgroundColor.a > 0.0f) {
+				//auto tex = newObject<Texture2D>(u"D:/Proj/LN/HC1/Assets/Windowskin/window.png");
+				//auto mat = Material::create(tex);
+				context->setMaterial(m_finalStyle->backgroundMaterial);
+                context->drawBoxBackground(Rect(0, 0, m_finalGlobalRect.getSize()), m_finalStyle->backgroundImageBorder, CornerRadius(), m_finalStyle->backgroundDrawMode, m_finalStyle->backgroundImageRect, m_finalStyle->backgroundColor);
+				//context->drawBoxBackground(finalGlobalRect(), Thickness(16), CornerRadius(), BrushImageDrawMode::BorderFrame, Rect(64, 0, 64, 64), m_finalStyle->backgroundColor);
+			}
+		}
+
+
         // TODO: setMaterial
         onRender(context);
 
@@ -311,6 +508,13 @@ bool UIElement::onHitTest(const Point& localPoint)
     // TODO:
     return true;
     //return m_finalLocalActualRect.makeDeflate(m_renderFrameThickness).contains(localPoint);
+}
+
+void UIElement::removeFromLogicalParent()
+{
+    if (m_logicalParent) {
+        m_logicalParent->removeElement(this);
+    }
 }
 
 void UIElement::raiseEventInternal(UIEventArgs* e)

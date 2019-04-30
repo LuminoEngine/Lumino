@@ -13,7 +13,7 @@ class SDLAudioDevice
 public:
 	SDLAudioDevice();
 	virtual ~SDLAudioDevice() = default;
-	void initialize();
+	void init();
 	virtual void dispose() override;
 	virtual int deviceSamplingRate() override;
 	virtual void updateProcess() override;

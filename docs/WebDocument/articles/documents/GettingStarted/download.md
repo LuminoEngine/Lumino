@@ -12,6 +12,21 @@ macOS パッケージには次のターゲットをビルドするためのフ�
 - macOS
 - iOS
 
+0.8.0
+--------
+
+<a href="http://nnmy.sakura.ne.jp/archive/lumino/v0.8.0/Lumino-0.8.0-Windows.msi" class="button">
+  <i class="glyphicon glyphicon-download"></i>Windows (Installer)
+</a>
+
+<a href="http://nnmy.sakura.ne.jp/archive/lumino/v0.8.0/Lumino-0.8.0-Windows.zip" class="button">
+  <i class="glyphicon glyphicon-download"></i>Windows (ZIP archive)
+</a>
+
+<a href="http://nnmy.sakura.ne.jp/archive/lumino/v0.8.0/Lumino-0.8.0-macOS.zip" class="button">
+  <i class="glyphicon glyphicon-download"></i>macOS (ZIP archive)
+</a>
+
 v0.7.0
 --------
 

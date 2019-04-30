@@ -10,7 +10,10 @@ class SamplerState;
 
 namespace detail {
 class PlatformWindow;
-class IGraphicsDeviceContext;
+class IGraphicsDevice;
+class RenderTargetTextureCacheManager;
+class DepthBufferCacheManager;
+class FrameBufferCache;
 
 class GraphicsManager
 	: public RefObject
@@ -19,38 +22,47 @@ public:
 	struct Settings
 	{
 		PlatformWindow* mainWindow = nullptr;
+		GraphicsAPI graphicsAPI;
 	};
 
 	GraphicsManager();
 	virtual ~GraphicsManager() = default;
 
-	void initialize(const Settings& settings);
+	void init(const Settings& settings);
 	void dispose();
 
 	void addGraphicsResource(GraphicsResource* resource);
 	void removeGraphicsResource(GraphicsResource* resource);
 
-	// deviceContext() は、リソースの CRUD のみを目的として IGraphicsDeviceContext にアクセスしたいときに使うこと。
+	// deviceContext() は、リソースの CRUD のみを目的として IGraphicsDevice にアクセスしたいときに使うこと。
 	// 描画を目的としたステートの変更や、clear、draw 系は GraphicsContext::commitState() の戻り値を使うこと。
-	// またこれらの予防として、IGraphicsDeviceContext のポインタは持ち出してメンバに保持したりせず、
+	// またこれらの予防として、IGraphicsDevice のポインタは持ち出してメンバに保持したりせず、
 	// 必要な時に GraphicsManager または GraphicsContext から取得すること。
-	// TODO: こういう事情がでてきたので、以前のバージョンのように IGraphicsDeviceContext をリソース関係と描画関係で分離するのもアリかもしれない。
-	const Ref<IGraphicsDeviceContext>& deviceContext() const { return m_deviceContext; }
+	// TODO: こういう事情がでてきたので、以前のバージョンのように IGraphicsDevice をリソース関係と描画関係で分離するのもアリかもしれない。
+	const Ref<IGraphicsDevice>& deviceContext() const { return m_deviceContext; }
 	const Ref<GraphicsContext>& graphicsContext() const { return m_graphicsContext; }
 	const Ref<LinearAllocatorPageManager>& linearAllocatorPageManager() const { return m_linearAllocatorPageManager; }
 	RenderingType renderingType() const { return RenderingType::Immediate; }
 	const Ref<RenderingCommandList>& primaryRenderingCommandList() const { return m_primaryRenderingCommandList; }
+	const Ref<RenderTargetTextureCacheManager>& renderTargetTextureCacheManager() const { return m_renderTargetTextureCacheManager; }
+	const Ref<DepthBufferCacheManager>& depthBufferCacheManager() const { return m_depthBufferCacheManager; }
+	const Ref<FrameBufferCache>& frameBufferCache() const { return m_frameBufferCache; }
 
     const Ref<Texture2D>& blackTexture() const { return m_blackTexture; }
     const Ref<Texture2D>& whiteTexture() const { return m_whiteTexture; }
 	const Ref<SamplerState>& defaultSamplerState() const { return m_defaultSamplerState; }
 
-
 private:
-	Ref<IGraphicsDeviceContext> m_deviceContext;
+	void createOpenGLContext(const Settings& settings);
+	void createVulkanContext(const Settings& settings);
+
+	Ref<IGraphicsDevice> m_deviceContext;
 	Ref<GraphicsContext> m_graphicsContext;
 	Ref<LinearAllocatorPageManager> m_linearAllocatorPageManager;
 	Ref<RenderingCommandList> m_primaryRenderingCommandList;
+	Ref<RenderTargetTextureCacheManager> m_renderTargetTextureCacheManager;
+	Ref<DepthBufferCacheManager> m_depthBufferCacheManager;
+	Ref<FrameBufferCache> m_frameBufferCache;
 	List<GraphicsResource*> m_graphicsResources;
 
     Ref<Texture2D> m_blackTexture;

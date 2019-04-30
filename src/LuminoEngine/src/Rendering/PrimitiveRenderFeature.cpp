@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Graphics/VertexDeclaration.hpp>
+#include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
@@ -19,12 +19,12 @@ InternalPrimitiveRenderer::~InternalPrimitiveRenderer()
 {
 }
 
-void InternalPrimitiveRenderer::initialize(RenderingManager* manager)
+void InternalPrimitiveRenderer::init(RenderingManager* manager)
 {
     m_manager = manager;
     m_linearAllocator = makeRef<LinearAllocator>(m_manager->graphicsManager()->linearAllocatorPageManager());
     prepareBuffers(m_manager->graphicsManager()->deviceContext(), 512, 512 * 3);
-    m_vertexDeclaration = m_manager->standardVertexDeclaration()->resolveRHIObject();
+    m_vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(m_manager->standardVertexDeclaration(), nullptr);
 }
 
 void InternalPrimitiveRenderer::drawMeshGenerater(const MeshGenerater* generator)
@@ -41,7 +41,7 @@ void InternalPrimitiveRenderer::drawMeshGenerater(const MeshGenerater* generator
     m_generators.add(gen);
 }
 
-void InternalPrimitiveRenderer::flush(IGraphicsDeviceContext* context)
+void InternalPrimitiveRenderer::flush(IGraphicsContext* context)
 {
     if (m_generators.isEmpty()) return;
 
@@ -52,43 +52,43 @@ void InternalPrimitiveRenderer::flush(IGraphicsDeviceContext* context)
         vertexCount += gen->vertexCount();
         indexCount += gen->indexCount();
     }
-    prepareBuffers(context, vertexCount, indexCount);
+    prepareBuffers(m_manager->graphicsManager()->deviceContext(), vertexCount, indexCount);
 
     // Create Vertex and Index buffers
-    Vertex* vertexBuffer = (Vertex*)m_vertexBuffer->map();
-    uint16_t* indexBuffer = (uint16_t*)m_indexBuffer->map();
+    Vertex* vertexBuffer = (Vertex*)context->map(m_vertexBuffer);
+    uint16_t* indexBuffer = (uint16_t*)context->map(m_indexBuffer);
     MeshGeneraterBuffer buffer;
     size_t vertexOffset = 0;
     size_t indexOffset = 0;
     for (MeshGenerater* gen : m_generators) {
         buffer.setBuffer(vertexBuffer + vertexOffset, indexBuffer + indexOffset, IndexBufferFormat::UInt16, vertexOffset);
-        gen->generate(&buffer);
+        buffer.generate(gen);
+        //gen->generate(&buffer);
         vertexOffset += gen->vertexCount();
         indexOffset += gen->indexCount();
     }
-    m_vertexBuffer->unmap();
-    m_indexBuffer->unmap();
-
+    context->unmap(m_vertexBuffer);
+    context->unmap(m_indexBuffer);
 
     int primitiveCount = 0;
     switch (m_primitiveType)
     {
-    case ln::PrimitiveType::TriangleList:
+    case ln::PrimitiveTopology::TriangleList:
         primitiveCount = indexCount / 3;
         break;
-    case ln::PrimitiveType::TriangleStrip:
+    case ln::PrimitiveTopology::TriangleStrip:
         LN_NOTIMPLEMENTED();
         break;
-    case ln::PrimitiveType::TriangleFan:
+    case ln::PrimitiveTopology::TriangleFan:
         LN_NOTIMPLEMENTED();
         break;
-    case ln::PrimitiveType::LineList:
+    case ln::PrimitiveTopology::LineList:
         primitiveCount = indexCount / 2;
         break;
-    case ln::PrimitiveType::LineStrip:
+    case ln::PrimitiveTopology::LineStrip:
         LN_NOTIMPLEMENTED();
         break;
-    case ln::PrimitiveType::PointList:
+    case ln::PrimitiveTopology::PointList:
         LN_NOTIMPLEMENTED();
         break;
     default:
@@ -99,7 +99,8 @@ void InternalPrimitiveRenderer::flush(IGraphicsDeviceContext* context)
     context->setVertexDeclaration(m_vertexDeclaration);
     context->setVertexBuffer(0, m_vertexBuffer);
     context->setIndexBuffer(m_indexBuffer);
-    context->drawPrimitiveIndexed(m_primitiveType, 0, primitiveCount);
+	context->setPrimitiveTopology(m_primitiveType);
+    context->drawPrimitiveIndexed(0, primitiveCount);
 
     for (MeshGenerater* gen : m_generators) {
         gen->~MeshGenerater();
@@ -109,7 +110,7 @@ void InternalPrimitiveRenderer::flush(IGraphicsDeviceContext* context)
     m_generators.clear();
 }
 
-void InternalPrimitiveRenderer::prepareBuffers(IGraphicsDeviceContext* context, int vertexCount, int indexCount)
+void InternalPrimitiveRenderer::prepareBuffers(IGraphicsDevice* context, int vertexCount, int indexCount)
 {
     size_t vertexBufferSize = sizeof(Vertex) * vertexCount;
     if (!m_vertexBuffer || m_vertexBuffer->getBytesSize() < vertexBufferSize)
@@ -136,12 +137,12 @@ PrimitiveRenderFeature::~PrimitiveRenderFeature()
 {
 }
 
-void PrimitiveRenderFeature::initialize(RenderingManager* manager)
+void PrimitiveRenderFeature::init(RenderingManager* manager)
 {
 	if (LN_REQUIRE(manager != nullptr)) return;
 	m_manager = manager;
     m_internal = makeRef<InternalPrimitiveRenderer>();
-    m_internal->initialize(manager);
+    m_internal->init(manager);
 }
 
 //void PrimitiveRenderFeature::drawMeshGenerater(const MeshGenerater* generator)
@@ -185,13 +186,13 @@ void PrimitiveRenderFeature::initialize(RenderingManager* manager)
 void PrimitiveRenderFeature::flush(GraphicsContext* context)
 {
     GraphicsManager* manager = m_manager->graphicsManager();
-    IGraphicsDeviceContext* deviceContext = context->commitState();
+    IGraphicsContext* c = GraphicsContextInternal::commitState(context);
     LN_ENQUEUE_RENDER_COMMAND_2(
         PrimitiveRenderFeature_flush, manager,
         InternalPrimitiveRenderer*, m_internal,
-        IGraphicsDeviceContext*, deviceContext,
+        IGraphicsContext*, c,
         {
-            m_internal->flush(deviceContext);
+            m_internal->flush(c);
         });
 
     m_lastPrimitiveType = nullptr;

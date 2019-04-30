@@ -1,4 +1,4 @@
-
+﻿
 #include "Internal.hpp"
 #include <float.h>
 #include <LuminoEngine/Graphics/Bitmap.hpp>
@@ -34,9 +34,12 @@ void LightClusters::init()
 	m_lightInofs.reserve(MaxLights);
 	m_globalLightInofs.reserve(MaxLights);
 
-	m_clustersTexture = newObject<Texture3D>(ClusterWidth, ClusterHeight, ClusterDepth, TextureFormat::RGBA32, false, GraphicsResourceUsage::Dynamic);
-	m_lightInfoTexture = newObject<Texture2D>(sizeof(LightInfo) / sizeof(Vector4), MaxLights, TextureFormat::R32G32B32A32Float, false, GraphicsResourceUsage::Dynamic);
-	m_globalLightInfoTexture = newObject<Texture2D>(sizeof(GlobalLightInfo) / sizeof(Vector4), MaxLights, TextureFormat::R32G32B32A32Float, false, GraphicsResourceUsage::Dynamic);
+	m_clustersTexture = newObject<Texture2D>(ClusterWidth * ClusterHeight, ClusterDepth, TextureFormat::RGBA8);
+	m_clustersTexture->setResourceUsage(GraphicsResourceUsage::Dynamic);
+	m_lightInfoTexture = newObject<Texture2D>(sizeof(LightInfo) / sizeof(Vector4), MaxLights, TextureFormat::RGBA32F);
+	m_lightInfoTexture->setResourceUsage(GraphicsResourceUsage::Dynamic);
+	m_globalLightInfoTexture = newObject<Texture2D>(sizeof(GlobalLightInfo) / sizeof(Vector4), MaxLights, TextureFormat::RGBA32F);
+	m_globalLightInfoTexture->setResourceUsage(GraphicsResourceUsage::Dynamic);
 }
 
 void LightClusters::beginMakeClusters(const Matrix& view, const Matrix& proj, const Vector3& cameraPos, float nearClip, float farClip)
@@ -54,7 +57,7 @@ void LightClusters::beginMakeClusters(const Matrix& view, const Matrix& proj, co
 	//	{
 	//		for (int z = 0; z < ClusterDepth; z++)
 	//		{
-	//			m_clustersTexture->setPixel32(x, y, z, Color32(0, 0, 0, 0));
+	//			m_clustersTexture->setPixel32(x, y, z, ColorI(0, 0, 0, 0));
 	//		}
 	//	}
 	//}
@@ -142,24 +145,26 @@ void LightClusters::endMakeClusters()
 			m_globalLightInofs.add(GlobalLightInfo{});
 		}
 
-		detail::TextureHelper::setMappedData(m_globalLightInfoTexture, &m_globalLightInofs[0]);
+		detail::TextureInternal::setMappedData(m_globalLightInfoTexture, &m_globalLightInofs[0]);
 	}
 
 	// Local lights
 	{
-		Bitmap3D* surface = m_clustersTexture->map(MapMode::Write);
+		Bitmap2D* surface = m_clustersTexture->map(MapMode::Write);
 		for (int y = 0; y < ClusterHeight; y++)
 		{
 			for (int x = 0; x < ClusterWidth; x++)
 			{
 				for (int z = 0; z < ClusterDepth; z++)
 				{
-					surface->setPixel32(x, y, z, m_clustersData[((ClusterWidth * ClusterHeight * z) + (ClusterWidth * y) + x)]);
+					int tx = (y * ClusterWidth) + x;
+					int ty = z;
+					surface->setPixel32(tx, ty, m_clustersData[((ClusterWidth * ClusterHeight * z) + (ClusterWidth * y) + x)]);
 				}
 			}
 		}
 
-		detail::TextureHelper::setMappedData(m_lightInfoTexture, &m_lightInofs[0]);
+		detail::TextureInternal::setMappedData(m_lightInfoTexture, &m_lightInofs[0]);
 	}
 }
 
@@ -296,7 +301,7 @@ void LightClusters::addClusterData(int x, int y, int z, int lightId)
 	int clustersAddCount = m_clustersAddCount[clustersAddCountIndex];
 	if (clustersAddCount < 4)
 	{
-		Color32& color = m_clustersData[clustersAddCountIndex];
+		ColorI& color = m_clustersData[clustersAddCountIndex];
 		switch (clustersAddCount)
 		{
 		case 0:
@@ -318,10 +323,11 @@ void LightClusters::addClusterData(int x, int y, int z, int lightId)
 
 		m_clustersAddCount[clustersAddCountIndex]++;
 	}
-	//else
-	//{
-	//	printf("%d\n", clustersAddCount);
-	//}
+	else
+	{
+        LN_LOG_WARNING << "The number of affect lights on clusters has exceeded 4.";
+		//printf("%d\n", clustersAddCount);
+	}
 }
 
 } // namespace detail

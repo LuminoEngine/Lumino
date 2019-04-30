@@ -39,14 +39,14 @@ class BlitRenderFeature
 {
 public:
     BlitRenderFeature();
-	void initialize(RenderingManager* manager);
+	void init(RenderingManager* manager);
 
 	void blit(GraphicsContext* context);
 
 	virtual void flush(GraphicsContext* context) override;
 
 private:
-	void blitImplOnRenderThread(IGraphicsDeviceContext* context);
+	void blitImplOnRenderThread(IGraphicsContext* context);
 
 	RenderingManager* m_manager;
     Ref<IVertexBuffer> m_vertexBuffer;

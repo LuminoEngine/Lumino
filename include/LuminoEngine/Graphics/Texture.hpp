@@ -5,171 +5,226 @@
 #include "GeometryStructs.hpp"
 
 namespace ln {
-class SamplerState;
-class ShaderPass;
-namespace detail { class ITexture; }
-
-class Bitmap2D;
-class Bitmap3D;
-class Font;
+namespace detail {
+class TextureInternal;
+}
 
 /** テクスチャのベースクラスです。 */
 LN_CLASS()
 class Texture
-	: public GraphicsResource
+    : public GraphicsResource
 {
 public:
-	/** テクスチャの幅を取得します。(ピクセル単位) */
-	int width() const { return m_size.width; }
+    /** テクスチャの幅を取得します。(ピクセル単位) */
+    int width() const { return m_width; }
 
-	/** テクスチャの高さを取得します。 (ピクセル単位) */
-	int height() const { return m_size.height; }
+    /** テクスチャの高さを取得します。 (ピクセル単位) */
+    int height() const { return m_height; }
 
-	/** テクスチャのピフォーマットを取得します。 */
-	TextureFormat format() const { return m_format; }
+    /** テクスチャのピフォーマットを取得します。 */
+    TextureFormat format() const { return m_format; }
 
-	bool mipmap() const { return m_mipmap; }
+    /** ミップマップの有無を取得します。 */
+    bool mipmap() const { return m_mipmap; }
 
-	/** このテクスチャに関連付けられている SamplerState を取得します。 */
-	SamplerState* samplerState() const;
+    /** このテクスチャに関連付けられている SamplerState を取得します。 */
+    SamplerState* samplerState() const;
 
-	/** このテクスチャに関連付ける SamplerState を設定します。 */
-	void setSamplerState(SamplerState* value);
-
-    // TODO: internal
-    const SizeI& size() const { return m_size; }
+    /** このテクスチャに関連付ける SamplerState を設定します。 */
+    void setSamplerState(SamplerState* value);
 
 protected:
-	Texture();
-	virtual ~Texture();
-	void initialize();
-	virtual detail::ITexture* resolveRHIObject() = 0;
-	void setSize(const SizeI& size) { m_size = size; }
-	void setFormat(TextureFormat format) { m_format = format; }
-	void setMipmap(bool mipmap) { m_mipmap = mipmap; }
+    Texture();
+    virtual ~Texture();
+    void init();
+    virtual detail::ITexture* resolveRHIObject(bool* outModified) = 0;
 
-	SizeI m_size;   // TODO: リアルタイムな部分で使うのは float が多い。対して、blit など lumino としてはあまりリアルタイムにしてほしくない部分は int がおおい。ので、float にしたい。
-	TextureFormat m_format;
-	Ref<SamplerState> m_samplerState;
-	bool m_mipmap;
+private:
+    void setDesc(int width, int height, TextureFormat format);
 
-	friend class ShaderPass;
+    int m_width;
+    int m_height;
+    TextureFormat m_format;
+    bool m_mipmap;
+    Ref<SamplerState> m_samplerState;
+
+    friend class detail::TextureInternal;
+    friend class detail::GraphicsResourceInternal;
 };
 
 /** 2D テクスチャのクラスです。 */
 LN_CLASS()
 class Texture2D
-	: public Texture
+    : public Texture
 {
 public:
-    static Ref<Texture2D> create(int width, int height, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
+    /**
+     * テクスチャを作成します。ピクセルフォーマットは RGBA8 です。
+     * @param[in]   width   : 幅 (px 単位)
+     * @param[in]   height  : 高さ (px 単位)
+     */
+    static Ref<Texture2D> create(int width, int height);
 
+    /**
+     * テクスチャを作成します。
+     * @param[in]   width   : 幅 (px 単位)
+     * @param[in]   height  : 高さ (px 単位)
+     * @param[in]   format  : ピクセルフォーマット
+     */
+    static Ref<Texture2D> create(int width, int height, TextureFormat format);
 
-	/** テクスチャが保持するビットマップデータにアクセスします。 */
-	Bitmap2D* map(MapMode mode);
+public:
+    /** Mipmap の有無を設定します。(default: false) */
+    void setMipmapEnabled(bool value);
 
-	/** リソースの管理方法を変更します。(default: Managed) */
-	void setResourcePool(GraphicsResourcePool pool);
+    /** テクスチャが保持するビットマップデータにアクセスします。 */
+    Bitmap2D* map(MapMode mode);
 
+    /** リソースの使用方法を変更します。(default: Static) */
+    void setResourceUsage(GraphicsResourceUsage usage);
+
+    /** リソースの管理方法を変更します。(default: Managed) */
+    void setResourcePool(GraphicsResourcePool pool);
+
+    /** 指定した色でテクスチャ全体をクリアします。 */
     void clear(const Color& color);
+
+    /** 指定した色でテクスチャ全体をクリアします。 */
     void setPixel(int x, int y, const Color& color);
-    void blit(int x, int y, Texture2D* srcTexture, const RectI& srcRect);	// TODO: アルファブレンド有無
+
+    /** 別のテクスチャからこのテクスチャへ、ビットマップ転送を行います。 */
+    void blit(int x, int y, Texture2D* srcTexture, int sx, int sy, int sw, int sh);
+
     void drawText(const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment = TextAlignment::Left);
 
+protected:
+    virtual void onDispose(bool explicitDisposing) override;
+    virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
+    virtual detail::ITexture* resolveRHIObject(bool* outModified) override;
 
 LN_CONSTRUCT_ACCESS:
-	Texture2D();
-	virtual ~Texture2D();
-	void initialize(int width, int height, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
-	void initialize(const StringRef& filePath, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
+    Texture2D();
+    virtual ~Texture2D();
 
-protected:
-	virtual void dispose() override;
-	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
-	virtual detail::ITexture* resolveRHIObject() override;
+    /** @copydoc create(int, int) */
+    void init(int width, int height);
 
-private:
-	//void resizeInternal(int width, int height);
+    /** @copydoc create(int, int, TextureFormat) */
+    void init(int width, int height, TextureFormat format);
 
-	Ref<detail::ITexture> m_rhiObject;
-	GraphicsResourceUsage m_usage;
-	GraphicsResourcePool m_pool;
-
-	Ref<Bitmap2D> m_bitmap;
-	void* m_rhiLockedBuffer;
-	bool m_initialUpdate;
-	bool m_modified;
-};
-
-
-/** 3D テクスチャのクラスです。 */
-LN_CLASS()
-class Texture3D
-	: public Texture
-{
-public:
-	/** テクスチャの奥行きを取得します。 (ピクセル単位) */
-	int depth() const { return m_depth; }
-
-	/** テクスチャが保持するビットマップデータにアクセスします。 */
-	Bitmap3D* map(MapMode mode);
-
-	/** リソースの管理方法を変更します。(default: Managed) */
-	void setResourcePool(GraphicsResourcePool pool);
-
-LN_CONSTRUCT_ACCESS:
-	Texture3D();
-	virtual ~Texture3D();
-	void initialize(int width, int height, int depth, TextureFormat format = TextureFormat::RGBA32, bool mipmap = false, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
-
-protected:
-	virtual void dispose() override;
-	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
-	virtual detail::ITexture* resolveRHIObject() override;
+    void init(const StringRef& filePath, TextureFormat format = TextureFormat::RGBA8);
+    void init(Stream* stream, TextureFormat format = TextureFormat::RGBA8);
+    void init(Bitmap2D* bitmap, TextureFormat format = TextureFormat::RGBA8);
 
 private:
-	Ref<detail::ITexture> m_rhiObject;
-	GraphicsResourceUsage m_usage;
-	GraphicsResourcePool m_pool;
+    Ref<detail::ITexture> m_rhiObject;
+    GraphicsResourceUsage m_usage;
+    GraphicsResourcePool m_pool;
+    Ref<Bitmap2D> m_bitmap;
+    void* m_rhiLockedBuffer;
+    bool m_initialUpdate;
+    bool m_modified;
 
-	int m_depth;
-	Ref<Bitmap3D> m_bitmap;
-	void* m_rhiLockedBuffer;
-	bool m_initialUpdate;
-	bool m_modified;
+    friend class detail::GraphicsResourceInternal;
 };
 
+/** レンダーターゲットテクスチャのクラスです。 */
 class RenderTargetTexture
-	: public Texture
+    : public Texture
 {
 public:
-	Ref<Bitmap2D> readData();
+    /**
+     * レンダーターゲットテクスチャを作成します。ピクセルフォーマットは RGBA8 です。
+     * @param[in]   width   : 幅 (px 単位)
+     * @param[in]   height  : 高さ (px 単位)
+     */
+    static Ref<RenderTargetTexture> create(int width, int height);
 
-	virtual void dispose() override;
+    /**
+     * レンダーターゲットテクスチャを作成します。
+     * @param[in]   width   : 幅 (px 単位)
+     * @param[in]   height  : 高さ (px 単位)
+     * @param[in]   format  : ピクセルフォーマット
+     */
+    static Ref<RenderTargetTexture> create(int width, int height, TextureFormat format);
+
+    /** 一時的な RenderTargetTexture を取得します。 */
+    static Ref<RenderTargetTexture> getTemporary(int width, int height, TextureFormat format, bool mipmap);
+
+    /** getTemporary で取得した一時的な RenderTargetTexture を解放します。 */
+    static void releaseTemporary(RenderTargetTexture* renderTarget);
+
+protected:
+    virtual void onDispose(bool explicitDisposing) override;
+    virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
+    virtual detail::ITexture* resolveRHIObject(bool* outModified) override;
 
 LN_CONSTRUCT_ACCESS:
-	RenderTargetTexture();
-	virtual ~RenderTargetTexture();
-	void initialize(int width, int height, TextureFormat requestFormat, bool mipmap);
-	void initialize(detail::ITexture* ref);
+    RenderTargetTexture();
+    virtual ~RenderTargetTexture();
 
-LN_INTERNAL_ACCESS:
-	virtual detail::ITexture* resolveRHIObject() override;
-	virtual void onChangeDevice(detail::IGraphicsDeviceContext* device) override;
+    /** @copydoc create(int, int) */
+    void init(int width, int height);
+
+    /** @copydoc create(int, int, TextureFormat) */
+    void init(int width, int height, TextureFormat format);
+
+    void init(int width, int height, TextureFormat format, bool mipmap);
+    void init(SwapChain* owner);
 
 private:
-	Ref<detail::ITexture> m_rhiObject;
-	//SizeI m_size;
-	//TextureFormat m_requestFormat;
-	//bool m_mipmap;
+    Ref<Bitmap2D> readData();
+    void resetSwapchainFrameIfNeeded(bool force);
+
+    Ref<detail::ITexture> m_rhiObject;
+    SwapChain* m_ownerSwapchain;
+    int m_swapchainImageIndex;
+    bool m_modified;
+
+    friend class detail::TextureInternal;
+    friend class detail::GraphicsResourceInternal;
 };
 
 namespace detail {
 
-class TextureHelper
+class TextureInternal
 {
 public:
-	static void setMappedData(Texture2D* texture, const void* data);
+    static void setMappedData(Texture2D* texture, const void* data);
+    static void setDesc(Texture* texture, int width, int height, TextureFormat format) { texture->setDesc(width, height, format); }
+    static void setMipmapEnabled(Texture* texture, bool value) { texture->m_mipmap = value; }
+    static Ref<Bitmap2D> readData(RenderTargetTexture* renderTarget) { return renderTarget->readData(); }
+    static void resetSwapchainFrameIfNeeded(RenderTargetTexture* renderTarget, bool force) { renderTarget->resetSwapchainFrameIfNeeded(force); }
+};
+
+class Texture3D
+    : public Texture
+{
+public:
+    int depth() const { return m_depth; }
+    Bitmap3D* map(MapMode mode);
+    void setResourcePool(GraphicsResourcePool pool);
+
+LN_CONSTRUCT_ACCESS:
+    Texture3D();
+    virtual ~Texture3D();
+    void init(int width, int height, int depth, TextureFormat format = TextureFormat::RGBA8, bool mipmap = false, GraphicsResourceUsage usage = GraphicsResourceUsage::Static);
+
+protected:
+    virtual void onDispose(bool explicitDisposing) override;
+    virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
+    virtual detail::ITexture* resolveRHIObject(bool* outModified) override;
+
+private:
+    Ref<detail::ITexture> m_rhiObject;
+    GraphicsResourceUsage m_usage;
+    GraphicsResourcePool m_pool;
+
+    int m_depth;
+    Ref<Bitmap3D> m_bitmap;
+    void* m_rhiLockedBuffer;
+    bool m_initialUpdate;
+    bool m_modified;
 };
 
 } // namespace detail

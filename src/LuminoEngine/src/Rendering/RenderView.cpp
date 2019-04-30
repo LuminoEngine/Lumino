@@ -10,6 +10,26 @@ namespace ln {
 //==============================================================================
 // RenderView
 
+/*
+ * 必要性について
+ * ----------
+ * Camera = RenderView じゃないの？
+ *
+ * そうなっているのは Unity くらいかも。 Urho3D や Xenko では分かれている。(Camera,View や CameraComponent,RenderView)
+ * UE4 は SceneCapture2D がこれに相当するが、WorldPointToScreenPoint などはある程度自分で書く必要があるようだ
+ * https://usagi.hatenablog.jp/entry/2018/03/01/131939
+ * http://miyahuji111.hatenablog.com/entry/2016/10/17/193434
+ *
+ * デバッグ用のビューを実装するときは Camera と RenderView は分かれていると便利。
+ * だけど、実際にゲームをつくというときに、ユーザーが RenderView の機能をフルに使うかは微妙。
+ *
+ * 後はユーザーに公開するべきかってところだけど、ほかのエンジンたちは
+ * - Unity: Screen.Width
+ * - UE4: GEngine->GameViewport->GetViewportSize(Result);
+ * みたいに、Camera ではないインターフェイスからビューサイズをとったりする。
+ * ひとまずはこの一点だけの利用になりそうだけど、分ける方向で考えてみよう。
+ */
+
 RenderView::RenderView()
 	: m_clearMode(RenderViewClearMode::ColorAndDepth)
 	, m_backgroundColor(Color::White)
@@ -20,9 +40,9 @@ RenderView::~RenderView()
 {
 }
 
-void RenderView::initialize()
+void RenderView::init()
 {
-	Object::initialize();
+	Object::init();
 	m_manager = detail::EngineDomain::renderingManager();
 }
 
@@ -39,6 +59,25 @@ void RenderView::addDrawElementListManager(detail::DrawElementListCollector* ele
 EventConnection RenderView::connectOnUIEvent(UIEventHandler handler)
 {
     return m_onUIEvent.connect(handler);
+}
+
+void RenderView::updateUIStyle(const detail::UIStyleInstance* parentFinalStyle)
+{
+	onUpdateUIStyle(parentFinalStyle);
+}
+
+void RenderView::updateUILayout(const Rect& parentFinalGlobalRect)
+{
+	// TODO: こんなのでいいのか要チェック
+	onUpdateUILayout(Rect(parentFinalGlobalRect.x, parentFinalGlobalRect.y, m_actualPixelSize.width, m_actualPixelSize.height));
+}
+
+void RenderView::onUpdateUIStyle(const detail::UIStyleInstance* finalStyle)
+{
+}
+
+void RenderView::onUpdateUILayout(const Rect& finalGlobalRect)
+{
 }
 
 void RenderView::onRoutedEvent(UIEventArgs* e)

@@ -28,6 +28,7 @@ const std::array<size_t, MeshResource::VBG_Count> MeshResource::VertexStrideTabl
 
 MeshResource::MeshResource()
 	: m_manager()
+    , m_ownerContainer(nullptr)
 	, m_vertexCount(0)
 	, m_indexCount(0)
 	, m_usage(GraphicsResourceUsage::Static)
@@ -41,9 +42,9 @@ MeshResource::~MeshResource()
 {
 }
 
-void MeshResource::initialize()
+void MeshResource::init()
 {
-	Object::initialize();
+	Object::init();
 	m_manager = detail::EngineDomain::meshManager();
 }
 
@@ -91,6 +92,49 @@ const Vertex& MeshResource::vertex(int index)
 
     Vertex* v = (Vertex*)requestVertexData(VBG_Basic);
     return *(v + index);
+}
+
+void MeshResource::setBlendWeights(int index, float v0, float v1, float v2, float v3)
+{
+    if (LN_REQUIRE_RANGE(index, 0, vertexCount())) return;
+    VertexBlendWeight* v = ((VertexBlendWeight*)requestVertexData(VBG_BlendWeights) + index);
+    v->weights[0] = v0;
+    v->weights[1] = v1;
+    v->weights[2] = v2;
+    v->weights[3] = v3;
+}
+
+void MeshResource::setBlendIndices(int index, float v0, float v1, float v2, float v3)
+{
+    if (LN_REQUIRE_RANGE(index, 0, vertexCount())) return;
+    VertexBlendWeight* v = ((VertexBlendWeight*)requestVertexData(VBG_BlendWeights) + index);
+    v->indices[0] = v0;
+    v->indices[1] = v1;
+    v->indices[2] = v2;
+    v->indices[3] = v3;
+}
+
+const VertexBlendWeight& MeshResource::vertexBlendWeight(int index)
+{
+    if (LN_REQUIRE_RANGE(index, 0, vertexCount())) return VertexBlendWeight::Default;
+    return *((VertexBlendWeight*)requestVertexData(VBG_BlendWeights) + index);
+}
+
+void MeshResource::setSdefInfo(int index, const Vector4& sdefC, const Vector3& sdefR0, const Vector3& sdefR1)
+{
+    if (LN_REQUIRE_RANGE(index, 0, vertexCount())) return;
+    VertexSdefInfo* v = ((VertexSdefInfo*)requestVertexData(VBG_SdefInfo) + index);
+    v->sdefC = sdefC;
+    v->sdefR0 = sdefR0;
+    v->sdefR1 = sdefR1;
+}
+
+void MeshResource::setMmdExtra(int index, float edgeWeight, float vertexIndex)
+{
+    if (LN_REQUIRE_RANGE(index, 0, vertexCount())) return;
+    VertexMmdExtra* v = ((VertexMmdExtra*)requestVertexData(VBG_MmdExtra) + index);
+    v->edgeWeight = edgeWeight;
+    v->index = vertexIndex;
 }
 
 void MeshResource::setIndex(int index, int value)
@@ -166,7 +210,7 @@ void MeshResource::requestBuffers(VertexBufferGroup group, VertexBuffer** outVer
 	if (outIndexBuffer) {
         // prepare index buffer
         if (!m_indexBuffer) {
-            m_indexBuffer = ln::newObject<IndexBuffer>(m_indexCount, detail::GraphicsResourceHelper::selectIndexBufferFormat(m_vertexCount), m_usage);
+            m_indexBuffer = ln::newObject<IndexBuffer>(m_indexCount, detail::GraphicsResourceInternal::selectIndexBufferFormat(m_vertexCount), m_usage);
         }
         else if (realIndexCount() != m_indexCount) {
             m_indexBuffer->resize(m_indexCount);
@@ -240,12 +284,12 @@ void* MeshResource::requestIndexDataForAdditional(int additionalIndexCount, Inde
 		return ((uint32_t*)data) + begin;
 }
 
-void MeshResource::commitRenderData(int sectionIndex, MeshSection* outSection, VertexDeclaration** outDecl, VertexBuffer** outVBs, int* outVBCount, IndexBuffer** outIB)
+void MeshResource::commitRenderData(int sectionIndex, MeshSection* outSection, VertexLayout** outDecl, VertexBuffer** outVBs, int* outVBCount, IndexBuffer** outIB)
 {
 	// Section
 	*outSection = m_sections[sectionIndex];
 
-	// VertexDeclaration
+	// VertexLayout
 	{
 		uint32_t flags = 0;
 		if (m_vertexBuffers[VBG_Basic]) flags |= detail::PredefinedVertexLayoutFlags_Geometry;
@@ -297,15 +341,17 @@ MeshContainer::~MeshContainer()
 {
 }
 
-void MeshContainer::initialize()
+void MeshContainer::init()
 {
-	Object::initialize();
+	Object::init();
 	m_lodResources.resize(1);
 }
 
 void MeshContainer::setMeshResource(MeshResource* mesh)
 {
-	m_lodResources[0] = mesh;
+    if (LN_REQUIRE(!mesh->m_ownerContainer)) return;
+    m_lodResources[0] = mesh;
+    mesh->m_ownerContainer = this;
 }
 
 MeshResource* MeshContainer::meshResource() const
@@ -369,6 +415,16 @@ void MeshContainer::calculateBounds()
 
 //==============================================================================
 // StaticMeshModel
+
+StaticMeshModel::StaticMeshModel()
+    : m_type(detail::InternalMeshModelType::StaticMesh)
+{
+}
+
+StaticMeshModel::StaticMeshModel(detail::InternalMeshModelType type)
+    : m_type(type)
+{
+}
 
 void StaticMeshModel::addMeshContainer(MeshContainer* meshContainer)
 {

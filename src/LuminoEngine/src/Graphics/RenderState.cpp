@@ -8,162 +8,105 @@ namespace ln {
 // RenderTargetBlendDesc
 
 RenderTargetBlendDesc::RenderTargetBlendDesc()
-	: blendEnable(false)
-	, sourceBlend(BlendFactor::One)
-	, destinationBlend(BlendFactor::Zero)
-	, blendOp(BlendOp::Add)
-	, sourceBlendAlpha(BlendFactor::One)
-	, destinationBlendAlpha(BlendFactor::Zero)
-	, blendOpAlpha(BlendOp::Add)
+    : blendEnable(false)
+    , sourceBlend(BlendFactor::One)
+    , destinationBlend(BlendFactor::Zero)
+    , blendOp(BlendOp::Add)
+    , sourceBlendAlpha(BlendFactor::One)
+    , destinationBlendAlpha(BlendFactor::Zero)
+    , blendOpAlpha(BlendOp::Add)
 {
+}
+
+bool RenderTargetBlendDesc::equals(const RenderTargetBlendDesc& lhs, const RenderTargetBlendDesc& rhs)
+{
+	return
+		lhs.blendEnable == rhs.blendEnable &&
+		lhs.sourceBlend == rhs.sourceBlend &&
+		lhs.destinationBlend == rhs.destinationBlend &&
+		lhs.blendOp == rhs.blendOp &&
+		lhs.sourceBlendAlpha == rhs.sourceBlendAlpha &&
+		lhs.destinationBlendAlpha == rhs.destinationBlendAlpha &&
+		lhs.blendOpAlpha == rhs.blendOpAlpha;
 }
 
 //==============================================================================
 // BlendStateDesc
 
 BlendStateDesc::BlendStateDesc()
-	: independentBlendEnable(false)
-	, renderTargets{}
+    : independentBlendEnable(false)
+    , renderTargets{}
 {
+}
+
+bool BlendStateDesc::equals(const BlendStateDesc& lhs, const BlendStateDesc& rhs)
+{
+	for (int i = 0; i < LN_ARRAY_SIZE_OF(renderTargets); i++) {
+		if (!RenderTargetBlendDesc::equals(lhs.renderTargets[i], rhs.renderTargets[i])) {
+			return false;
+		}
+	}
+	return lhs.independentBlendEnable == rhs.independentBlendEnable;
 }
 
 //==============================================================================
 // RasterizerStateDesc
 
 RasterizerStateDesc::RasterizerStateDesc()
-	: fillMode(FillMode::Solid)
-	, cullMode(CullMode::Back)
+    : fillMode(FillMode::Solid)
+    , cullMode(CullMode::Back)
 {
+}
+
+bool RasterizerStateDesc::equals(const RasterizerStateDesc& lhs, const RasterizerStateDesc& rhs)
+{
+	return
+		lhs.fillMode == rhs.fillMode &&
+		lhs.cullMode == rhs.cullMode;
 }
 
 //==============================================================================
 // StencilOpDesc
 
 StencilOpDesc::StencilOpDesc()
-	: stencilFailOp(StencilOp::Keep)
-	, stencilDepthFailOp(StencilOp::Keep)
-	, stencilPassOp(StencilOp::Keep)
-	, stencilFunc(ComparisonFunc::Always)
+    : stencilFailOp(StencilOp::Keep)
+    , stencilDepthFailOp(StencilOp::Keep)
+    , stencilPassOp(StencilOp::Keep)
+    , stencilFunc(ComparisonFunc::Always)
 {
+}
+
+bool StencilOpDesc::equals(const StencilOpDesc& lhs, const StencilOpDesc& rhs)
+{
+	return
+		lhs.stencilFailOp == rhs.stencilFailOp &&
+		lhs.stencilDepthFailOp == rhs.stencilDepthFailOp &&
+		lhs.stencilPassOp == rhs.stencilPassOp &&
+		lhs.stencilFunc == rhs.stencilFunc;
 }
 
 //==============================================================================
 // DepthStencilStateDesc
 
 DepthStencilStateDesc::DepthStencilStateDesc()
-	: depthTestFunc(ComparisonFunc::LessEqual)  //　Note: DX=LessEqual, GL=Less
-	, depthWriteEnabled(true)
-	, stencilEnabled(false)
-	, stencilReferenceValue(0xFF)
-	, frontFace()
-	, backFace()
+    : depthTestFunc(ComparisonFunc::LessEqual)
+    , depthWriteEnabled(true)
+    , stencilEnabled(false)
+    , stencilReferenceValue(0xFF)
+    , frontFace()
+    , backFace()
 {
-} 
+}
 
-////==============================================================================
-//// RenderStateDesc
-//
-//RenderStateDesc::RenderStateDesc()
-//	: alphaBlendEnabled(false)
-//	, blendOp(BlendOp::Add)
-//	, sourceBlend(BlendFactor::One)
-//	, destinationBlend(BlendFactor::Zero)
-//	, cullingMode(CullMode::Back)
-//	, fillMode(FillMode::Solid)
-//{
-//}
-
-#if 0
-//==============================================================================
-// RenderState
-//==============================================================================
-const RenderState RenderState::Default;
-
-//------------------------------------------------------------------------------
-RenderState::RenderState()
-	: alphaBlendEnabled(false)
-	, blendOp(BlendOp::Add)
-	, sourceBlend(BlendFactor::One)
-	, destinationBlend(BlendFactor::Zero)
-	, Blend(BlendMode::Normal)
-	, Culling(CullMode::Back)
-	, Fill(FillMode_Solid)
-	, AlphaTest(true)
-{}
-
-//------------------------------------------------------------------------------
-uint32_t RenderState::getHashCode() const
+bool DepthStencilStateDesc::equals(const DepthStencilStateDesc& lhs, const DepthStencilStateDesc& rhs)
 {
 	return
-		((uint32_t)Blend) * 1000000 +
-		((uint32_t)Culling) * 100000 +
-		((uint32_t)Fill) * 10000 +
-		((uint32_t)AlphaTest) * 1000 +
-		((uint32_t)blendOp) * 100 +
-		((uint32_t)sourceBlend) * 10 +
-		((uint32_t)destinationBlend);
+		lhs.depthTestFunc == rhs.depthTestFunc &&
+		lhs.depthWriteEnabled == rhs.depthWriteEnabled &&
+		lhs.stencilEnabled == rhs.stencilEnabled &&
+		lhs.stencilReferenceValue == rhs.stencilReferenceValue &&
+		StencilOpDesc::equals(lhs.frontFace, rhs.frontFace) &&
+		StencilOpDesc::equals(lhs.backFace, rhs.backFace);
 }
-
-//------------------------------------------------------------------------------
-bool RenderState::equals(const RenderState& state) const
-{
-	return
-		Blend == state.Blend &&
-		Culling == state.Culling &&
-		Fill == state.Fill &&
-		AlphaTest == state.AlphaTest &&
-		blendOp == state.blendOp &&
-		sourceBlend == state.sourceBlend &&
-		destinationBlend == state.destinationBlend;
-}
-
-//------------------------------------------------------------------------------
-bool RenderState::operator == (const RenderState& obj) const
-{
-	return
-		Blend == obj.Blend &&
-		Culling == obj.Culling &&
-		Fill == obj.Fill &&
-		AlphaTest == obj.AlphaTest &&
-		blendOp == obj.blendOp &&
-		sourceBlend == obj.sourceBlend &&
-		destinationBlend == obj.destinationBlend;
-}
-
-
-//==============================================================================
-// DepthStencilState
-//==============================================================================
-const DepthStencilState DepthStencilState::Default;
-
-//------------------------------------------------------------------------------
-DepthStencilState::DepthStencilState()
-	: DepthTestEnabled(true)
-	, DepthWriteEnabled(true)
-	, DepthTestFunc(CompareFunc::LessEqual)
-	, StencilEnabled(false)
-	, StencilFunc(CompareFunc::Always)
-	, StencilReferenceValue(0)
-	, StencilFailOp(StencilOp::Keep)
-	, StencilDepthFailOp(StencilOp::Keep)
-	, StencilPassOp(StencilOp::Keep)
-{
-}
-
-//------------------------------------------------------------------------------
-bool DepthStencilState::equals(const DepthStencilState& state) const
-{
-	return
-		DepthTestEnabled == state.DepthTestEnabled &&
-		DepthWriteEnabled == state.DepthWriteEnabled &&
-		DepthTestFunc == state.DepthTestFunc &&
-		StencilEnabled == state.StencilEnabled &&
-		StencilFunc == state.StencilFunc &&
-		StencilReferenceValue == state.StencilReferenceValue &&
-		StencilFailOp == state.StencilFailOp &&
-		StencilDepthFailOp == state.StencilDepthFailOp &&
-		StencilPassOp == state.StencilPassOp;
-}
-#endif
 
 } // namespace ln

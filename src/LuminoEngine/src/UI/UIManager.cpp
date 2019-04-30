@@ -20,7 +20,7 @@ UIManager::UIManager()
 {
 }
 
-void UIManager::initialize(const Settings& settings)
+void UIManager::init(const Settings& settings)
 {
     LN_LOG_DEBUG << "UIManager Initialization started.";
 

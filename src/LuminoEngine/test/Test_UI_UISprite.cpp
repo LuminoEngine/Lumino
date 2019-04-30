@@ -1,5 +1,7 @@
 ﻿#include "Common.hpp"
 
+#ifdef LN_UNIT_TEST_EXPERIMENTAL
+
 //==============================================================================
 //# Testing UISprite
 class Test_UI_UISprite : public LuminoSceneTest {};
@@ -33,6 +35,9 @@ TEST_F(Test_UI_UISprite, Basic)
 
 //------------------------------------------------------------------------------
 //## BlendMode
-TEST_F(Test_UI_UISprite, BlendMode)
+// https://developer.mozilla.org/ja/docs/Web/CSS/CSS_Backgrounds_and_Borders
+TEST_F(Test_UI_UISprite, BackgroundsAndBorders)
 {
 }
+
+#endif // LN_UNIT_TEST_EXPERIMENTAL

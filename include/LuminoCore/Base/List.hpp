@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2018 lriki. Distributed under the MIT license.
+﻿// Copyright (c) 2018+ lriki. Distributed under the MIT license..
 #pragma once
 
 #include <vector>
@@ -22,6 +22,12 @@ public:
     typedef typename std::vector<TItem>::const_iterator const_iterator;
     typedef typename std::vector<TItem>::reference reference;
     typedef typename std::vector<TItem>::const_reference const_reference;
+
+	/** 配列が空であるかを確認します。*/
+	bool isEmpty() const LN_NOEXCEPT { return size_internal() == 0; }
+
+	/** 格納されている要素の数を取得します。*/
+	int size() const LN_NOEXCEPT { return size_internal(); }
 
     /** 先頭要素の参照を返します。*/
     reference front() { return at_internal(0); }
@@ -314,14 +320,14 @@ List<T>& List<T>::operator=(List&& other)
 template<typename T>
 T& List<T>::operator[](int index)
 {
-    LN_FATAL(!isOutOfRange(index));
+	LN_CHECK(!isOutOfRange(index));
     return m_data[index];
 }
 
 template<typename T>
 const T& List<T>::operator[](int index) const
 {
-    LN_FATAL(!isOutOfRange(index));
+	LN_CHECK(!isOutOfRange(index));
     return m_data[index];
 }
 
@@ -346,42 +352,42 @@ int List<T>::capacity() const LN_NOEXCEPT
 template<typename T>
 typename List<T>::reference List<T>::at(int index)
 {
-    LN_FATAL(!isOutOfRange(index));
+	LN_CHECK(!isOutOfRange(index));
     return m_data.at(index);
 }
 
 template<typename T>
 typename List<T>::const_reference List<T>::at(int index) const
 {
-    LN_FATAL(!isOutOfRange(index));
+	LN_CHECK(!isOutOfRange(index));
     return m_data.at(index);
 }
 
 template<typename T>
 typename List<T>::reference List<T>::front()
 {
-    LN_FATAL(!isEmpty());
+	LN_CHECK(!isEmpty());
     return m_data.front();
 }
 
 template<typename T>
 typename List<T>::const_reference List<T>::front() const
 {
-    LN_FATAL(!isEmpty());
+	LN_CHECK(!isEmpty());
     return m_data.front();
 }
 
 template<typename T>
 typename List<T>::reference List<T>::back()
 {
-    LN_FATAL(!isEmpty());
+	LN_CHECK(!isEmpty());
     return m_data.back();
 }
 
 template<typename T>
 typename List<T>::const_reference List<T>::back() const
 {
-    LN_FATAL(!isEmpty());
+	LN_CHECK(!isEmpty());
     return m_data.back();
 }
 

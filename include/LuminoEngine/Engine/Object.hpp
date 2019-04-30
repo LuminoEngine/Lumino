@@ -2,8 +2,10 @@
 #include <mutex>
 
 namespace ln {
+class EngineContext;
 class TypeInfo;
 class PropertyInfo;
+class ReflectionObjectVisitor;
 namespace detail {
 class WeakRefInfo; 
 class ObjectHelper;
@@ -37,7 +39,7 @@ template<class T, typename... TArgs>
 Ref<T> newObject(TArgs&&... args)
 {
 	auto ptr = Ref<T>(new T(), false);
-	ptr->initialize(std::forward<TArgs>(args)...);
+	ptr->init(std::forward<TArgs>(args)...);
 	return ptr;
 }
 
@@ -45,7 +47,7 @@ template<class T, typename... TArgs>
 void placementNewObject(void* ptr, TArgs&&... args)
 {
 	new (ptr)T();
-	static_cast<T*>(ptr)->initialize(std::forward<TArgs>(args)...);
+	static_cast<T*>(ptr)->init(std::forward<TArgs>(args)...);
 }
 
 class LN_API Object
@@ -53,22 +55,29 @@ class LN_API Object
 {
 LN_CONSTRUCT_ACCESS:
 	Object();
-	void initialize();
+	void init();
 
 protected:
 	virtual ~Object();
 	virtual void finalize() override;
+	virtual void onDispose(bool explicitDisposing);
+
 
 public:
 	/**
 	 * このオブジェクトが保持しているリソースを開放します。
 	 *
-	 * このメソッドはフレームワークから呼び出されます。通常、明示的に呼び出す必要はありません。
-	 * 派生クラスで何らかのリソースを開放する必要がある場合は finalize ではなく dispose を実装して開放してください。
+	 * このメソッドは通常、明示的に呼び出す必要はありません。オブジェクトが保持しているリソースの開放の処理は、
+	 * オブジェクトの参照が無くなった時点でフレームワークにより呼び出されます。
+	 *
+	 * 派生クラスで何らかのリソースを開放する必要がある場合は onDispose を実装して開放してください。(デストラクタや finalize、dispose ではな)
 	 *
 	 * @attention このメソッドは virtual です。RAII の実装を目的としてデストラクタで呼び出すことはできません。代わりに finalize() からコールされます。
 	 */
 	virtual void dispose();
+
+	// TODO: internal
+	virtual bool traverseRefrection(ReflectionObjectVisitor* visitor);
 
 private:
     detail::WeakRefInfo* requestWeakRefInfo();
@@ -241,7 +250,7 @@ public:
     TypeInfo* baseType() const { return m_baseType; }
 
     void registerProperty(PropertyInfo* prop);
-    const List<PropertyInfo*>& properties() const { return m_properties; }
+    const List<Ref<PropertyInfo>>& properties() const { return m_properties; }
 
     /** 型引数に指定したクラス型の型情報を取得します。 */
     template<class T>
@@ -260,7 +269,7 @@ public:
 private:
     String m_name;
     TypeInfo* m_baseType;
-    List<PropertyInfo*> m_properties;
+    List<Ref<PropertyInfo>> m_properties;
 };
 
 } // namespace ln

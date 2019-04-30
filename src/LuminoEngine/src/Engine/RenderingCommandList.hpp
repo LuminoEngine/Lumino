@@ -69,6 +69,8 @@ public:
 	}
 
 	RenderBulkData allocateBulkData(size_t size);
+    const Ref<LinearAllocator>& linearAllocator() const { return m_linearAllocator; }
+
 
 	void clear();
 

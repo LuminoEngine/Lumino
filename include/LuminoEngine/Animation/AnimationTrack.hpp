@@ -63,12 +63,16 @@ public:
 	/** このトラックのアニメーション値の型を取得します。 */
 	AnimationValueType type() const { return m_type; }
 
+    void setTargetName(const StringRef& name) { m_targetName = name; }
+
+    virtual float lastFrameTime() const { return 0; }
+
 protected:
 	AnimationTrack(AnimationValueType type);
 	virtual ~AnimationTrack();
-    void initialize();
+    void init();
 	virtual void evaluate(float time, AnimationValue* outResult) = 0;
-	void setTargetName(const String& name) { m_targetName = name; }
+	//void setTargetName(const String& name) { m_targetName = name; }
 
 private:
 	String m_targetName;
@@ -88,7 +92,7 @@ public:
 
 
     /** アニメーションの終端の時間を取得します。 */
-    float lastFrameTime() const;
+    virtual float lastFrameTime() const override;
 
     float evaluate(float time);
 
@@ -98,7 +102,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
     ScalarAnimationTrack();
     virtual ~ScalarAnimationTrack();
-    void initialize();
+    void init();
 
 private:
     Ref<AnimationCurve> m_curve;

@@ -1,10 +1,12 @@
-﻿#pragma once
+﻿// Copyright (c) 2019+ lriki. Distributed under the MIT license.
+#pragma once
 
 #include "Common.hpp"
 #include "GeometryStructs.hpp"
+#include "GraphicsResource.hpp"
 
 namespace ln {
-class VertexDeclaration;
+class VertexLayout;
 class VertexBuffer;
 class IndexBuffer;
 class RenderTargetTexture;
@@ -13,43 +15,53 @@ class Shader;
 class ShaderPass;
 
 namespace detail {
-	class PlatformWindow;
-	class ISwapChain;
+class GraphicsManager;
+class PlatformWindow;
+class ISwapChain;
+class SwapChainInternal;
 }
 
+/** スワップチェーンのクラスです。 */
 class LN_API SwapChain
-	: public Object
+    : public GraphicsResource
 {
 public:
+    /** バックバッファを取得します。 */
+    RenderTargetTexture* backbuffer() const;
 
-	RenderTargetTexture* colorBuffer() const;
-	DepthBuffer* depthBuffer() const;
-
-	virtual void dispose() override;
-
-	void wait();
+protected:
+    virtual void onDispose(bool explicitDisposing) override;
+    virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
 
 LN_CONSTRUCT_ACCESS:
-	SwapChain();
-	virtual ~SwapChain();
-	void initialize(detail::PlatformWindow* window, const SizeI& backbufferSize);
-
-LN_INTERNAL_ACCESS:
-	detail::ISwapChain* resolveRHIObject() const;
+    SwapChain();
+    virtual ~SwapChain();
+    void init(detail::PlatformWindow* window, const SizeI& backbufferSize);
 
 private:
-	Ref<detail::ISwapChain> m_rhiObject;
-	Ref<RenderTargetTexture> m_colorBuffer;
-	Ref<DepthBuffer> m_depthBuffer;
+    void resizeBackbuffer(int width, int height);
+    void present();
+    detail::ISwapChain* resolveRHIObject(bool* outModified) const;
+    int imageIndex() const { return m_imageIndex; }
+
+    Ref<detail::ISwapChain> m_rhiObject;
+    Ref<RenderTargetTexture> m_backbuffer;
+    int m_imageIndex;
+
+    friend class detail::GraphicsResourceInternal;
+    friend class detail::SwapChainInternal;
 };
 
 namespace detail {
 
-class SwapChainHelper
+class SwapChainInternal
 {
 public:
     static void setBackendBufferSize(SwapChain* swapChain, int width, int height);
     static void setOpenGLBackendFBO(SwapChain* swapChain, uint32_t id);
+    static void resizeBackbuffer(SwapChain* swapChain, int width, int height) { swapChain->resizeBackbuffer(width, height); }
+    static void present(SwapChain* swapChain) { swapChain->present(); }
+    static int imageIndex(SwapChain* swapChain) { return swapChain->imageIndex(); }
 };
 
 } // namespace detail

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2018 lriki. Distributed under the MIT license.
+﻿// Copyright (c) 2018+ lriki. Distributed under the MIT license.
 #pragma once
 
 #include "Common.hpp"
@@ -44,6 +44,18 @@ public:
     Flags<EnumType>& set(EnumType value)
     {
         m_bits |= static_cast<BitsType>(value);
+        return *this;
+    }
+
+    /** 指定されたビット値を 0 または 1 に設定します。 */
+    Flags<EnumType>& set(EnumType value, bool bit)
+    {
+        if (bit) {
+            set(value);
+        }
+        else {
+            unset(value);
+        }
         return *this;
     }
 

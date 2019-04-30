@@ -19,10 +19,7 @@ namespace LuminoBuild.Tasks
             {
                 foreach (var t in MakeVSProjects.Targets)
                 {
-                    if (t.MSVCStaticRuntime == "ON")
-                    {
-                        BuildTarget(builder, t);
-                    }
+                    BuildTarget(builder, t);
                 }
             }
             else
@@ -35,15 +32,18 @@ namespace LuminoBuild.Tasks
 
         public static void BuildTarget(Builder builder, CMakeTargetInfo target)
         {
-            var targetName = target.DirName + "-" + target.BuildType;
+            var targetName = target.DirName;
 
             Directory.SetCurrentDirectory(Path.Combine(builder.LuminoBuildDir, targetName));
 
-            Utils.CallProcess("cmake", $"--build . --config {target.BuildType} --target INSTALL");
-            Utils.CallProcess("ctest", $"-C {target.BuildType} --output-on-failure");
 
-            //Utils.CallProcess("cmake", "--build . --config Release --target INSTALL");
-            //Utils.CallProcess("ctest", "-C Release --output-on-failure");
+            Utils.CallProcess("cmake", $"--build . --config Debug");
+            Utils.CallProcess("ctest", $"-C Debug --output-on-failure");
+            Utils.CallProcess("cmake", $"--build . --config Debug --target INSTALL");
+
+            Utils.CallProcess("cmake", $"--build . --config Release");
+            Utils.CallProcess("ctest", $"-C Release --output-on-failure");
+            Utils.CallProcess("cmake", $"--build . --config Release --target INSTALL");
         }
     }
 }

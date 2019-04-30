@@ -5,6 +5,16 @@
 namespace ln {
 namespace detail {
 
+size_t AlignUpWithMask(size_t value, size_t mask)
+{
+	return ((size_t)value + mask) & ~mask;
+}
+
+size_t AlignUp(size_t value, size_t alignment)
+{
+	return AlignUpWithMask(value, alignment - 1);
+}
+
 //=============================================================================
 // LinearAllocatorPageManager
 
@@ -22,7 +32,11 @@ LinearAllocatorPage::~LinearAllocatorPage()
 //=============================================================================
 // LinearAllocatorPageManager
 
-LinearAllocatorPageManager::LinearAllocatorPageManager()
+LinearAllocatorPageManager::LinearAllocatorPageManager(size_t pageSize)
+	: m_pageSize((pageSize == 0) ? DefaultPageSize : pageSize)
+	, m_mutex()
+	, m_pagePool()
+	, m_freePages()
 {
 }
 
@@ -49,7 +63,7 @@ LinearAllocatorPage* LinearAllocatorPageManager::requestPage()
 	}
 
 	if (!resultPage) {
-		auto page = createNewPage(PageSize);
+		auto page = createNewPage(pageSize());
 		m_pagePool.add(page);
 		resultPage = page;
 	}
@@ -80,6 +94,7 @@ LinearAllocator::LinearAllocator(LinearAllocatorPageManager* manager)
 	: m_manager(manager)
 	, m_usedOffset(0)
 	, m_currentPage(nullptr)
+	, m_maxAllocatedLargePageSize(0)
 {
 }
 
@@ -87,13 +102,19 @@ LinearAllocator::~LinearAllocator()
 {
 }
 
-void* LinearAllocator::allocate(size_t size)
+void* LinearAllocator::allocate(size_t size, size_t alignment)
 {
-	if (size > LinearAllocatorPageManager::PageSize) {
-		return allocateLarge(size);
+	const size_t alignmentMask = alignment - 1;
+	const size_t alignedSize = AlignUpWithMask(size, alignmentMask);
+
+
+	if (alignedSize > m_manager->pageSize()) {
+		return allocateLarge(alignedSize);
 	}
 
-	if (m_usedOffset + size > LinearAllocatorPageManager::PageSize)
+	m_usedOffset = AlignUp(m_usedOffset, alignment);
+
+	if (m_usedOffset + alignedSize > m_manager->pageSize())
 	{
 		assert(m_currentPage);
 		m_retiredPages.add(m_currentPage);
@@ -108,7 +129,7 @@ void* LinearAllocator::allocate(size_t size)
 
 	byte_t* ptr = static_cast<byte_t*>(m_currentPage->data()) + m_usedOffset;
 
-	m_usedOffset += size;
+	m_usedOffset += alignedSize;
 
 	return ptr;
 }
@@ -128,10 +149,12 @@ void LinearAllocator::cleanup()
 	m_largePages.clear();
 
     m_usedOffset = 0;
+	m_maxAllocatedLargePageSize = 0;
 }
 
 void* LinearAllocator::allocateLarge(size_t size)
 {
+	m_maxAllocatedLargePageSize = std::max(m_maxAllocatedLargePageSize, size);
 	auto page = LinearAllocatorPageManager::createNewPage(size);
 	m_largePages.add(page);
 	return page->data();

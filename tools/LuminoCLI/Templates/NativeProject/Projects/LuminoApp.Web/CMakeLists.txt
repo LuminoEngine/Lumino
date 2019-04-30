@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.4.1)
 project(LuminoApp)
 
-include(${LUMINO_ENGINE_ROOT}/lib/LuminoSetup.cmake)
+set(LUMINO_ENGINE_ROOT $ENV{LUMINO_PATH}/Engine/Native)
+include(${LUMINO_ENGINE_ROOT}/lib/cmake/LuminoSetup.cmake)
 
 file(GLOB APP_SOURCES "../../Sources/*.h" "../../Sources/*.cpp")
 

@@ -2,9 +2,9 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
+#include "../Graphics/RenderTargetTextureCache.hpp"
 #include "RenderingManager.hpp"
 #include "ClusteredShadingSceneRenderer.hpp"
-#include "RenderTargetTextureCache.hpp"
 #include "RenderingPipeline.hpp"
 
 namespace ln {
@@ -23,22 +23,23 @@ DepthPrepass::~DepthPrepass()
 {
 }
 
-void DepthPrepass::initialize()
+void DepthPrepass::init()
 {
-	SceneRendererPass::initialize();
+	SceneRendererPass::init();
 	m_defaultShader = manager()->builtinShader(BuiltinShader::DepthPrepass);
 }
 
 void DepthPrepass::onBeginRender(SceneRenderer* sceneRenderer)
 {
-	m_depthMap = manager()->frameBufferCache()->requestRenderTargetTexture(sceneRenderer->renderingPipeline()->renderingFrameBufferSize(), TextureFormat::RGBA32, false);
-	m_depthBuffer = manager()->frameBufferCache()->requestDepthBuffer(sceneRenderer->renderingPipeline()->renderingFrameBufferSize());
+	auto size = sceneRenderer->renderingPipeline()->renderingFrameBufferSize();
+	m_depthMap = RenderTargetTexture::getTemporary(size.width, size.height, TextureFormat::RGBA8, false);
+	m_depthBuffer = DepthBuffer::getTemporary(size.width, size.height);
 }
 
 void DepthPrepass::onEndRender(SceneRenderer* sceneRenderer)
 {
-    manager()->frameBufferCache()->release(m_depthMap);
-    manager()->frameBufferCache()->release(m_depthBuffer);
+	RenderTargetTexture::releaseTemporary(m_depthMap);
+	DepthBuffer::releaseTemporary(m_depthBuffer);
 	m_depthMap = nullptr;
 	m_depthBuffer = nullptr;
 }
@@ -47,7 +48,7 @@ void DepthPrepass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffe
 {
 	frameBuffer->renderTarget[0] = m_depthMap;
 	frameBuffer->depthBuffer = m_depthBuffer;
-	context->setColorBuffer(0, m_depthMap);
+	context->setRenderTarget(0, m_depthMap);
 	context->setDepthBuffer(m_depthBuffer);
 	context->clear(ClearFlags::All, Color::Transparency, 1.0f, 0);
 }
@@ -75,9 +76,10 @@ ClusteredShadingGeometryRenderingPass::~ClusteredShadingGeometryRenderingPass()
 {
 }
 
-void ClusteredShadingGeometryRenderingPass::initialize()
+void ClusteredShadingGeometryRenderingPass::init(ClusteredShadingSceneRenderer* ownerRenderer)
 {
-	SceneRendererPass::initialize();
+	SceneRendererPass::init();
+	m_ownerRenderer = ownerRenderer;
 
 	{
 		m_defaultShader = manager()->builtinShader(BuiltinShader::ClusteredShadingDefault);
@@ -105,7 +107,13 @@ ShaderTechnique* ClusteredShadingGeometryRenderingPass::selectShaderTechnique(
 	Shader* shader = requestedShader;
 	if (!shader) shader = m_defaultShader;
 
+	// ライトがひとつもない場合はライティングなしを選択
+	if (!m_ownerRenderer->lightClusters().hasLight()) {
+		requestedShadingModel = ShadingModel::UnLighting;
+	}
+
 	ShaderTechniqueClass classSet;
+    classSet.defaultTechnique = false;
 	classSet.ligiting = ShaderTechniqueClass_Ligiting::Forward;
 	classSet.phase = ShaderTechniqueClass_Phase::Geometry;
 	classSet.meshProcess = requestedMeshProcess;
@@ -181,13 +189,13 @@ ShadowCasterPass::~ShadowCasterPass()
 }
 
 //RenderTargetTexture* g_m_shadowMap  = nullptr;
-void ShadowCasterPass::initialize()
+void ShadowCasterPass::init()
 {
-	SceneRendererPass::initialize();
+	SceneRendererPass::init();
 
 	m_defaultShader = manager()->builtinShader(BuiltinShader::ShadowCaster);
 
-	m_shadowMap = newObject<RenderTargetTexture>(1024, 1024, TextureFormat::R32G32B32A32Float, false);
+	m_shadowMap = newObject<RenderTargetTexture>(1024, 1024, TextureFormat::RGBA32F, false);
 	m_depthBuffer = newObject<DepthBuffer>(1024, 1024);
 
 	//g_m_shadowMap = m_shadowMap;
@@ -203,7 +211,7 @@ void ShadowCasterPass::onBeginPass(GraphicsContext* context, FrameBuffer* frameB
 {
 	frameBuffer->renderTarget[0] = m_shadowMap;
 	frameBuffer->depthBuffer = m_depthBuffer;
-	context->setColorBuffer(0, m_shadowMap);
+	context->setRenderTarget(0, m_shadowMap);
 	context->setDepthBuffer(m_depthBuffer);
 	context->clear(ClearFlags::All, Color::Transparency, 1.0f, 0);
 }
@@ -239,15 +247,15 @@ ClusteredShadingSceneRenderer::~ClusteredShadingSceneRenderer()
 {
 }
 
-void ClusteredShadingSceneRenderer::initialize(RenderingManager* manager)
+void ClusteredShadingSceneRenderer::init(RenderingManager* manager)
 {
-	SceneRenderer::initialize();
+	SceneRenderer::init();
 
 	m_depthPrepass = newObject<DepthPrepass>();
 	//addPass(m_depthPrepass);
 
 	// pass "Geometry"
-    auto geometryPass = newObject<ClusteredShadingGeometryRenderingPass>();
+    auto geometryPass = newObject<ClusteredShadingGeometryRenderingPass>(this);
 	addPass(geometryPass);
 
 	m_lightClusters.init();

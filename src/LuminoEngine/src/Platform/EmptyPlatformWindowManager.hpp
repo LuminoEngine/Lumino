@@ -10,9 +10,8 @@ class EmptyPlatformWindow
 {
 public:
 	EmptyPlatformWindow();
-	virtual ~EmptyPlatformWindow();
-	void initialize(const WindowCreationSettings& settings);
-	virtual void dispose() override;
+    Result init(const WindowCreationSettings& settings);
+    virtual void setWindowTitle(const String& title) override {}
 	virtual void getSize(SizeI* size) override { *size = SizeI(); }
 	virtual void getFramebufferSize(int* width, int* height) override { *width = 0; *height = 0; }
 	virtual PointI pointFromScreen(const PointI& screenPoint) override { return screenPoint; }
@@ -28,7 +27,7 @@ public:
 	EmptyPlatformWindowManager();
 	virtual ~EmptyPlatformWindowManager();
 
-	void initialize();
+    Result init();
 	virtual void dispose() override;
 	virtual Ref<PlatformWindow> createWindow(const WindowCreationSettings& settings) override;
 	virtual void destroyWindow(PlatformWindow* window) override;

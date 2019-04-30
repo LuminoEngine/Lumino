@@ -5,6 +5,7 @@
 #include <LuminoEngine/Engine/Application.hpp>
 #include <LuminoEngine/Platform/Win32PlatformInterface.hpp>
 #include "../Engine/EngineManager.hpp"
+#include "GLFWPlatformWindowManager.hpp"
 
 extern "C" ::ln::Application* LuminoCreateApplicationInstance();
 
@@ -12,17 +13,20 @@ namespace ln {
 
 static ln::Application* g_app = nullptr;
 
-void Win32PlatformInterface::initialize()
+void Win32PlatformInterface::init()
 {
+    detail::EngineSettings& settings = detail::EngineDomain::engineManager()->settings();
+    settings.standaloneFpsControl = true;
+
     g_app = ::LuminoCreateApplicationInstance();
-    ln::detail::ApplicationHelper::initialize(g_app);
+    detail::ApplicationHelper::init(g_app);
 }
 
 int Win32PlatformInterface::WinMain()
 {
-	ln::detail::ApplicationHelper::run(g_app);
-	ln::detail::ApplicationHelper::finalize(g_app);
-	ln::RefObjectHelper::release(g_app);
+	detail::ApplicationHelper::run(g_app);
+	detail::ApplicationHelper::finalize(g_app);
+	RefObjectHelper::release(g_app);
 	g_app = nullptr;
 
 	return 0;

@@ -90,9 +90,39 @@ enum class RendringPhase
     _Count,
 };
 
+
+//
+//struct TextureRegion
+//{
+//public:
+//    Ref<Texture> texture;
+//    Rect rect;
+//    Thickness border;
+//};
+
+enum class BorderDirection
+{
+    Inside,
+    Outside,
+};
+
+enum class ShadowDirection
+{
+    Inside,
+    Outside,
+};
+
 namespace detail {
 
 
+
+enum class SpriteFlipFlags : uint8_t
+{
+    None = 0,
+    FlipX = 1 << 1,
+    FlipY = 1 << 2,
+};
+LN_FLAGS_OPERATORS(SpriteFlipFlags);
 
 struct DynamicLightInfo
 {

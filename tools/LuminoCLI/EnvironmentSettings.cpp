@@ -1,4 +1,4 @@
-
+﻿
 #include "EnvironmentSettings.hpp"
 
 //==============================================================================
@@ -58,7 +58,7 @@ void BuildEnvironment::setupPathes()
         // まだ見つからなければ環境変数を探してみる
         if (m_luminoPackageRootDir.isEmpty())
         {
-            auto path = ln::Environment::getEnvironmentVariable(u"LUMINO_ROOT");
+            auto path = ln::Environment::getEnvironmentVariable(u"LUMINO_PATH");
             if (path) {
                 m_luminoPackageRootDir = *path;
             }
@@ -80,6 +80,19 @@ void BuildEnvironment::setupPathes()
         CLI::info(u"luminoPackageToolsDir: " + m_luminoPackageToolsDir);
         CLI::info(u"projectTemplatesDirPath: " + m_projectTemplatesDirPath);
     }
+
+	// LUMINO_PATH
+	{
+		auto v = ln::Environment::getEnvironmentVariable(u"LUMINO_PATH");
+		if (v.hasValue()) {
+			CLI::info(ln::String::format(u"LUMINO_PATH: {0}", v.value()));
+		}
+		else {
+			CLI::warning(ln::String::format(u"LUMINO_PATH is unset. Use local package instead."));
+			ln::Environment::setEnvironmentVariable(u"LUMINO_PATH", m_luminoPackageRootDir);
+			CLI::info(ln::String::format(u"LUMINO_PATH: {0}", m_luminoPackageRootDir));
+		}
+	}
 
     // Emscripten
     {
@@ -166,6 +179,8 @@ Result BuildEnvironment::prepareEmscriptenSdk()
 			}
 		}
 	}
+
+    return Result::Success;
 }
 
 Result BuildEnvironment::callProcess(const ln::String& program, const ln::List<ln::String>& arguments, const ln::Path& workingDir)

@@ -102,13 +102,13 @@ private:
 
 inline byte_t ByteBuffer::operator[](int index)
 {
-    LN_FATAL(0 <= index && index < size());
+    LN_CHECK(0 <= index && index < size());
     return data()[index];
 }
 
 inline const byte_t& ByteBuffer::operator[](int index) const LN_NOEXCEPT
 {
-    LN_FATAL(0 <= index && index < size());
+	LN_CHECK(0 <= index && index < size());
     return data()[index];
 }
 

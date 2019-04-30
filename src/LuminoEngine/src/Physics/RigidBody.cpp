@@ -54,8 +54,8 @@ RigidBody::RigidBody()
     , m_transform()
     , m_mass(0.0f)
     , m_scale(1.0f)
-    , m_group(1)
-    , m_groupMask(0xffffffff)
+    , m_group(0x00000001)
+    , m_groupMask(0x0000FFFF)   // Spring とかでダミー用の衝突しない Body が必要になったときのために、後半を衝突しないものとして開けておく。（後で気づいてそれまで作ったオブジェクト全部直すのが面倒だった）
     , m_kinematicObject(false)
     , m_additionalDamping(false)
     , m_linearLimits(RigidBodyLimitFlags::None)
@@ -84,14 +84,14 @@ RigidBody::~RigidBody()
     }
 }
 
-void RigidBody::initialize()
+void RigidBody::init()
 {
-    Object::initialize();
+    Object::init();
 }
 
-void RigidBody::initialize(CollisionShape* shape)
+void RigidBody::init(CollisionShape* shape)
 {
-    initialize();
+    init();
     addCollisionShape(shape);
 }
 
@@ -267,7 +267,7 @@ void RigidBody::onBeforeStepSimulation()
     }
 
     // setWorldTransform 要求
-    if ((m_modifiedFlags & Modified_WorldTransform) != 0)
+    if ((m_modifiedFlags & Modified_WorldTransform) != 0 | m_kinematicObject)
     {
         /*
             stepSimulation() の中でこれらが関係する処理は以下のとおり。
@@ -484,7 +484,7 @@ void RigidBody::createBtRigidBody()
 
     m_modifiedFlags |= Modified_Activate;
 
-    //BodyBase::initialize(m_btRigidBody);
+    //BodyBase::init(m_btRigidBody);
     m_btRigidBody->setUserPointer(this);
 
     addToWorld();

@@ -15,7 +15,7 @@ public:
 
     AnimationManager();
 	virtual ~AnimationManager();
-	void initialize(const Settings& settings);
+	void init(const Settings& settings);
 	void dispose();
     void setSceneManager(SceneManager* sceneManager) { m_sceneManager = sceneManager; }
         

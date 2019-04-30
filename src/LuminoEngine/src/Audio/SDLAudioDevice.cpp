@@ -18,7 +18,7 @@ SDLAudioDevice::SDLAudioDevice()
 
 SDL_AudioDeviceID m_deviceId;
 
-void SDLAudioDevice::initialize()
+void SDLAudioDevice::init()
 {
 	m_masterSampleRate = deviceSamplingRate();//44100;	// TODO
 

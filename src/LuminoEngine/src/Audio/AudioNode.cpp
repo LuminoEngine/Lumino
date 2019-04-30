@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Audio/AudioContext.hpp>
 #include <LuminoEngine/Audio/AudioNode.hpp>
+#include "AudioDecoder.hpp"
 #include "AudioManager.hpp"
 #include "CoreAudioNode.hpp"
 #include "../Engine/RenderingCommandList.hpp"
@@ -17,17 +18,15 @@ AudioNode::AudioNode()
 {
 }
 
-void AudioNode::initialize()
+void AudioNode::init()
 {
-	Object::initialize();
+	Object::init();
 	m_context =	detail::EngineDomain::audioManager()->primaryContext();
 	m_context->addAudioNode(this);
 }
 
-void AudioNode::dispose()
+void AudioNode::onDispose(bool explicitDisposing)
 {
-	Object::dispose();
-
     // TODO: dispose は finalize からも呼ばれる。この時は this の参照カウントが 0 で、
     // dispose 終了後にデストラクタが呼ばれる。そのため、↓のようにして別の Ref に参照を持たせても
     // オブジェクトはデストラクトされてしまう。
@@ -36,6 +35,8 @@ void AudioNode::dispose()
         LN_CHECK(RefObjectHelper::getReferenceCount(this) > 0);
 		m_context->disposeNodeOnGenericThread(this);
 	}
+
+	Object::onDispose(explicitDisposing);
 }
 
 void AudioNode::commit()
@@ -197,13 +198,12 @@ void AudioSourceNode::resume()
 	LN_NOTIMPLEMENTED();
 }
 
-void AudioSourceNode::initialize(const StringRef & filePath)
+void AudioSourceNode::init(detail::AudioDecoder* decoder)
 {
-    Ref<detail::AudioDecoder> decoder = detail::EngineDomain::audioManager()->createAudioDecoder(filePath);
 	m_coreObject = makeRef<detail::CoreAudioSourceNode>(detail::EngineDomain::audioManager()->primaryContext()->coreObject());
-	m_coreObject->initialize(decoder);
+	m_coreObject->init(decoder);
 
-    AudioNode::initialize();
+    AudioNode::init();
 }
 
 detail::CoreAudioNode * AudioSourceNode::coreNode()
@@ -268,11 +268,11 @@ AudioPannerNode::AudioPannerNode()
 {
 }
 
-void AudioPannerNode::initialize()
+void AudioPannerNode::init()
 {
-	AudioNode::initialize();
+	AudioNode::init();
 	m_coreObject = makeRef<detail::CoreAudioPannerNode>(context()->coreObject());
-	m_coreObject->initialize();
+	m_coreObject->init();
 }
 
 detail::CoreAudioNode* AudioPannerNode::coreNode()
@@ -287,9 +287,9 @@ AudioDestinationNode::AudioDestinationNode()
 {
 }
 
-void AudioDestinationNode::initialize(detail::CoreAudioDestinationNode* core)
+void AudioDestinationNode::init(detail::CoreAudioDestinationNode* core)
 {
-	AudioNode::initialize();
+	AudioNode::init();
 	m_coreObject = core;
 }
 

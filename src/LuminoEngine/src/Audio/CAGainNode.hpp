@@ -9,7 +9,7 @@ class CAGainNode
 {
 public:
     CAGainNode(AudioDevice* context);
-    void initialize();
+    void init();
     void setGain(float value) { m_gain = value; }
     float gain() const { return m_gain; }
 

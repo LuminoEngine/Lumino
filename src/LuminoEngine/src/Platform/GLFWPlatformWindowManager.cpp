@@ -7,6 +7,7 @@
 #if defined(LN_OS_WIN32)
 #	define GLFW_EXPOSE_NATIVE_WIN32
 #	include <GLFW/glfw3native.h>
+#	include "Win32PlatformWindowManager.hpp"
 #elif defined(LN_OS_MAC)
 #	define GLFW_EXPOSE_NATIVE_COCOA
 #	include <GLFW/glfw3native.h>
@@ -189,7 +190,7 @@ GLFWPlatformWindow::~GLFWPlatformWindow()
 {
 }
 
-void GLFWPlatformWindow::initialize(const WindowCreationSettings& settings)
+Result GLFWPlatformWindow::init(const WindowCreationSettings& settings)
 {
 	initKeyTable();
 
@@ -217,7 +218,11 @@ void GLFWPlatformWindow::initialize(const WindowCreationSettings& settings)
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);	// for NSGL(macOS)
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		m_glfwWindow = glfwCreateWindow(settings.clientSize.width, settings.clientSize.height, settings.title.toStdString().c_str(), NULL, NULL);
-		if (LN_ENSURE(m_glfwWindow)) return;
+		if (LN_ENSURE(m_glfwWindow)) return false;
+
+#if defined(LN_OS_WIN32)
+		setDPIFactor(AbstractWin32PlatformWindow::getDpiFactor((HWND)getWin32Window()));
+#endif
 	}
 
 	glfwSetWindowUserPointer(m_glfwWindow, this);
@@ -247,11 +252,18 @@ void GLFWPlatformWindow::initialize(const WindowCreationSettings& settings)
 	//// 初回クリア (しておかないと、背景が透明なままになる)
 	//glClear(GL_COLOR_BUFFER_BIT);
 	//glfwSwapBuffers(m_glfwWindow);
+
+    return true;
 }
 
 void GLFWPlatformWindow::dispose()
 {
 	glfwDestroyWindow(m_glfwWindow);
+}
+
+void GLFWPlatformWindow::setWindowTitle(const String& title)
+{
+    glfwSetWindowTitle(m_glfwWindow, title.toStdString().c_str());
 }
 
 void GLFWPlatformWindow::getSize(SizeI* size)
@@ -331,8 +343,8 @@ void GLFWPlatformWindow::window_focus_callback(GLFWwindow* glfw_window, int focu
 
 void GLFWPlatformWindow::window_framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-	// The size of a framebuffer may change independently of the size of a window, for example if the window is dragged between a regular monitor and a high-DPI one.
-	//glViewport(0, 0, width, height);
+	GLFWPlatformWindow* thisWindow = (GLFWPlatformWindow*)glfwGetWindowUserPointer(window);
+	thisWindow->sendEventToAllListener(PlatformEventArgs::makeWindowSizeChangedEvent(thisWindow, width, height));
 }
 
 void GLFWPlatformWindow::window_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -442,12 +454,10 @@ GLFWPlatformWindowManager::~GLFWPlatformWindowManager()
 {
 }
 
-void GLFWPlatformWindowManager::initialize()
+Result GLFWPlatformWindowManager::init()
 {
-	PlatformWindowManager::initialize();
-
 	int result = glfwInit();
-	if (LN_ENSURE(result != 0)) return;
+	if (LN_ENSURE(result != 0)) return false;
 
 	// OpenGL Version 3.2 を選択
 	// http://marina.sys.wakayama-u.ac.jp/~tokoi/?date=20120908
@@ -455,30 +465,51 @@ void GLFWPlatformWindowManager::initialize()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_FALSE);
+
+    return true;
 }
 
 void GLFWPlatformWindowManager::dispose()
 {
 	glfwTerminate();
-	PlatformWindowManager::dispose();
 }
 
 Ref<PlatformWindow> GLFWPlatformWindowManager::createWindow(const WindowCreationSettings& settings)
 {
-	auto obj = ln::makeRef<GLFWPlatformWindow>();
-	obj->initialize(settings);
-	return obj;
+	auto ptr = ln::makeRef<GLFWPlatformWindow>();
+    if (!ptr->init(settings)) {
+        return nullptr;
+    }
+    return ptr;
 }
 
 void GLFWPlatformWindowManager::destroyWindow(PlatformWindow* window)
 {
 	if (LN_REQUIRE(window)) return;
-	window->dispose();
+	static_cast<GLFWPlatformWindow*>(window)->dispose();
 }
 
 void GLFWPlatformWindowManager::processSystemEventQueue()
 {
 	glfwPollEvents();
+}
+
+//=============================================================================
+
+bool checkGraphicsSupport()
+{
+    if (!glfwInit()) return false;
+
+    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+    GLFWwindow* window = glfwCreateWindow(200, 200, "Version", NULL, NULL);
+    if (!window)
+    {
+        glfwTerminate();
+        return false;
+    }
+
+    glfwTerminate();
+    return true;
 }
 
 } // namespace detail

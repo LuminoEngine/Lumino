@@ -1,10 +1,18 @@
-
+﻿
 #include <stdio.h>
 #include "Common.hpp"
 #include "TestEnv.hpp"
+#include <LuminoEngine/Platform/PlatformSupport.hpp>
 
 GTEST_API_ int main(int argc, char **argv)
 {
+    // CI 環境でテストをスキップする
+    if (!ln::detail::checkGraphicsSupport()) {
+        printf("Info: The driver does not appear to support Graphics. Skip LuminoEngine unit tests.\n");
+        return 0;
+    }
+
+
 #ifdef _WIN32
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
@@ -13,7 +21,10 @@ GTEST_API_ int main(int argc, char **argv)
 	char* testArgs[] = {
 		argv[0],
 		"--gtest_break_on_failure",
-		//"--gtest_filter=Test_Base_Regex.*"
+		//"--gtest_filter=Test_UI_UILayout.BorderLayout",
+		//"--gtest_filter=Test_Graphics_LowLevelRendering.Clear"
+		//"--gtest_filter=Test_Shader_Shader.MultiTechMultiTexture"
+		//"--gtest_filter=Test_Rendering_ClusteredShading.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);

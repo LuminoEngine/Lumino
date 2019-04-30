@@ -17,7 +17,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         ln::EngineSettings::addAssetArchive(archive);
     }
 
-    ln::Win32PlatformInterface::initialize();
+    ln::Win32PlatformInterface::init();
     return ln::Win32PlatformInterface::WinMain();
 }
 

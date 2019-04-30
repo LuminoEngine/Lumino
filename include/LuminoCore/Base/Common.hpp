@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2018 lriki. Distributed under the MIT license.
+﻿// Copyright (c) 2018+ lriki. Distributed under the MIT license.
 
 #pragma once
 
@@ -176,7 +176,7 @@ enum class StringSplitOptions
 #endif
 
 #ifndef LN_CHECK
-#	define LN_CHECK(expr) if (!LN_LIKELY(expr)) { LN_CHECK_ABORT; }
+#	define LN_CHECK(expr) if (!LN_LIKELY(expr)) { printf("%s:%u: abort: %s\n", (__FILE__), (unsigned)(__LINE__), (#expr)); LN_CHECK_ABORT; }
 #endif
 
 #ifdef LN_DCHECK_ENABLED
@@ -223,6 +223,7 @@ enum class StringSplitOptions
 
 //------------------------------------------------------------------------------
 #include <stdint.h>
+#include <math.h>       // for macOS on AzurePipelines. TODO: https://github.com/PointCloudLibrary/pcl/issues/2601
 
 #if WCHAR_MAX <= 0xffff
 #define LN_WCHAR_16

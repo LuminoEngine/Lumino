@@ -3,12 +3,14 @@
 class BuildCommand
 {
 public:
+	bool package = false;
 	ln::String target;
 
     int execute(Workspace* workspace, Project* project);
 
 private:
-	Result buildWindowsTarget(Workspace* workspace);
+	Result buildWindowsTarget(Workspace* workspace, bool debug);
+	Result buildWindowsPackage(Project* project);
 	Result buildWebTarget(Workspace* workspace);
 	Result buildAndroidTarget();
 	Result buildAssets();

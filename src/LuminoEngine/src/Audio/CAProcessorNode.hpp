@@ -10,7 +10,7 @@ class CAProcessorNode
 {
 public:
     CAProcessorNode(AudioDevice* context, AudioProcessorNode* ownerNode);
-    void initialize(int numberOfInputChannels, int numberOfOutputChannels);
+    void init(int numberOfInputChannels, int numberOfOutputChannels);
 
 protected:
 	virtual void process() override;
