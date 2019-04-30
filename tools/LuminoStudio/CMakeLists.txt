@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1.0)
 
-set(LN_QT_ROOT "C:/Qt/5.7/msvc2015")
+set(LN_QT_ROOT "D:/Qt/5.12.3/msvc2017")
 set(CMAKE_PREFIX_PATH ${LN_QT_ROOT})
 
 project(LuminoStudio)
@@ -16,17 +16,28 @@ set(CMAKE_AUTOUIC ON)
 find_package(Qt5Widgets CONFIG REQUIRED)
 
 # Populate a CMake variable with the sources
-#set(LuminoStudio_SOURCES
-#    MainWindow.ui
-#    MainWindow.cpp
-#    Main.cpp
-#)
-
-file(GLOB LuminoStudio_SOURCES "*.h" "*.cpp" "*.ui")
+set(LuminoStudio_SOURCES
+    PCH.cpp
+    PCH.h
+    MainWindow.ui
+    DocumentManager.cpp
+    DocumentManager.h
+    SceneListDock.cpp
+    SceneListDock.h
+    SceneListDock.ui
+    MainWindow.cpp
+    Main.cpp
+)
+#file(GLOB LuminoStudio_SOURCES "*.h" "*.cpp" "*.ui")
 source_group("Sources" FILES ${LuminoStudio_SOURCES})
 
+qt5_add_resources(LN_QT_RESOURCES
+    Resources/style.qrc
+    Resources/qdarkstyle/style.qrc
+)
+
 # Tell CMake to create the ${PROJECT_NAME} executable
-add_executable(${PROJECT_NAME} WIN32 ${LuminoStudio_SOURCES})
+add_executable(${PROJECT_NAME} WIN32 ${LuminoStudio_SOURCES} ${LN_QT_RESOURCES})
 # Use the Widgets module from Qt 5
 target_link_libraries(${PROJECT_NAME} LuminoEngine Qt5::Widgets)
 ln_add_pch(${PROJECT_NAME} "PCH.h" "PCH.cpp")

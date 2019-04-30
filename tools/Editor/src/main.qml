@@ -11,6 +11,7 @@ ApplicationWindow {
     width: 800
     height: 600
 
+
     menuBar: MenuBar {
         Menu {
             title: "File"
@@ -79,6 +80,7 @@ ApplicationWindow {
                             //onCurrentIndexChanged: tabChangeSound.play()
 
                             Tab{
+                                Component.onCompleted:  { vm.onCompleted(); }
                                 title: "Tab1"
 
                                 Item{

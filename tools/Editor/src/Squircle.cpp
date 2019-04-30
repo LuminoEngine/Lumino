@@ -171,9 +171,11 @@ QSize g_sizeA;
 
 class LogoInFboRenderer : public QQuickFramebufferObject::Renderer
 {
+    //Q_OBJECT
 public:
     LogoInFboRenderer()
     {
+        //connect(this, SIGNAL(windowChanged(QQuickWindow*)), this, SLOT(handleWindowChanged(QQuickWindow*)));
         logo.initialize();
     }
 
@@ -191,6 +193,7 @@ public:
     }
 
     LogoRenderer logo;
+
 };
 
 QQuickFramebufferObject::Renderer *FboInSGRenderer::createRenderer() const
@@ -426,3 +429,4 @@ void LogoRenderer::extrude(qreal x1, qreal y1, qreal x2, qreal y2)
     normals << n;
 }
 
+//#include "Squircle.moc"

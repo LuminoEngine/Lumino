@@ -1,4 +1,4 @@
-#ifndef SCENELISTDOCKWIDGET_H
+﻿#ifndef SCENELISTDOCKWIDGET_H
 #define SCENELISTDOCKWIDGET_H
 
 #include <QDockWidget>

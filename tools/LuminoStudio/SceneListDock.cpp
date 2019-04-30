@@ -1,4 +1,4 @@
-#include "SceneListDock.h"
+﻿#include "SceneListDock.h"
 #include "ui_SceneListDock.h"
 
 SceneListDock::SceneListDock(QWidget *parent) :

@@ -53,7 +53,14 @@ class FboInSGRenderer : public QQuickFramebufferObject
 {
     Q_OBJECT
 public:
+    //FboInSGRenderer()
+    //{
+    //    connect(this, SIGNAL(sceneGraphInitialized()), this, SLOT(onSceneGraphInitialized()), Qt::DirectConnection);
+    //}
+
     Renderer *createRenderer() const;
+
+
 };
 
 
