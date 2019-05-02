@@ -18,4 +18,5 @@ protected:
 
 private:
     ln::Ref<ln::UINativeFrameWindow> m_frameWindow;
+    ln::Ref<ln::RenderTargetTexture> m_nativeRenderTarget;
 };

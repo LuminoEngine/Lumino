@@ -14,8 +14,14 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    static MainWindow* instance();
+    static void initializeLumino();
+
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+protected:
+    void closeEvent(QCloseEvent* event) override;
 
 private:
     Ui::MainWindow *ui;

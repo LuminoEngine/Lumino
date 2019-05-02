@@ -171,6 +171,7 @@ LN_CONSTRUCT_ACCESS:
 
     void init(int width, int height, TextureFormat format, bool mipmap);
     void init(SwapChain* owner);
+    void init(intptr_t nativeObject, int width, int height);
 
 private:
     Ref<Bitmap2D> readData();
@@ -179,7 +180,9 @@ private:
     Ref<detail::ITexture> m_rhiObject;
     SwapChain* m_ownerSwapchain;
     int m_swapchainImageIndex;
+    intptr_t m_nativeObject;
     bool m_modified;
+    bool m_hasNativeObject;
 
     friend class detail::TextureInternal;
     friend class detail::GraphicsResourceInternal;

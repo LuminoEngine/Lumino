@@ -71,6 +71,7 @@ public:
     //void updateLayout();
 	void updateLayoutTree();
 	const Ref<detail::PlatformWindow>& platformWindow() const { return m_platformWindow; }
+    const Ref<UIRenderView>& renderView() const { return m_renderView; }
 
 protected:
 	virtual Size measureOverride(const Size& constraint) override;
@@ -85,7 +86,7 @@ LN_CONSTRUCT_ACCESS:
     void init();    // Swapchain 無し。外部制御用
 	void init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
 
-private:
+protected:  // TODO: internal
 	virtual bool onPlatformEvent(const detail::PlatformEventArgs& e) override;
 
 	detail::UIManager* m_manager;
@@ -108,11 +109,17 @@ class LN_API UINativeFrameWindow
 public:
     void setClientSize(const Size& value) { UIFrameWindow::resetSize(value); }
 
+    void beginRendering(RenderTargetTexture* renderTarget);
+    void renderContents();
+    void endRendering();
+
 LN_CONSTRUCT_ACCESS:
     UINativeFrameWindow();
     void init();
 
 private:
+    Ref<RenderTargetTexture> m_renderingRenderTarget;
+    Ref<DepthBuffer> m_renderingDepthBuffer;;
 };
 
 

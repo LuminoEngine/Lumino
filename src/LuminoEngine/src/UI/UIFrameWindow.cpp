@@ -423,6 +423,41 @@ UINativeFrameWindow::UINativeFrameWindow()
 void UINativeFrameWindow::init()
 {
     UIFrameWindow::init();
+    m_renderView = newObject<UIRenderView>();
+}
+
+void UINativeFrameWindow::beginRendering(RenderTargetTexture* renderTarget)
+{
+    m_renderingRenderTarget = renderTarget;
+    m_depthBuffer = DepthBuffer::getTemporary(renderTarget->width(), renderTarget->height());
+
+    m_manager->graphicsManager()->enterRendering();
+
+    GraphicsContext* ctx = m_manager->graphicsManager()->graphicsContext();
+    ctx->setRenderTarget(0, renderTarget);
+    ctx->setDepthBuffer(m_depthBuffer);
+}
+
+void UINativeFrameWindow::renderContents()
+{
+    GraphicsContext* ctx = m_manager->graphicsManager()->graphicsContext();
+
+    if (m_renderView)
+    {
+        m_renderView->setRootElement(this);
+        m_renderView->render(ctx, ctx->renderTarget(0), ctx->depthBuffer());
+    }
+}
+
+void UINativeFrameWindow::endRendering()
+{
+    if (m_depthBuffer) {
+        DepthBuffer::releaseTemporary(m_depthBuffer);
+        m_depthBuffer = nullptr;
+    }
+    m_renderingRenderTarget = nullptr;
+
+    m_manager->graphicsManager()->leaveRendering();
 }
 
 } // namespace ln

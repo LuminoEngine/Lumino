@@ -148,6 +148,15 @@ Ref<ITexture> IGraphicsDevice::createRenderTarget(uint32_t width, uint32_t heigh
 	return ptr;
 }
 
+Ref<ITexture> IGraphicsDevice::createWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight)
+{
+    Ref<ITexture> ptr = onCreateWrappedRenderTarget(nativeObject, hintWidth, hintHeight);
+    if (ptr) {
+        m_aliveObjects.push_back(ptr);
+    }
+    return ptr;
+}
+
 Ref<IDepthBuffer> IGraphicsDevice::createDepthBuffer(uint32_t width, uint32_t height)
 {
 	Ref<IDepthBuffer> ptr = onCreateDepthBuffer(width, height);

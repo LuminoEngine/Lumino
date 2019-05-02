@@ -79,6 +79,7 @@
 #include "LuminoEngine/Scene/Scene.hpp"
 #include "LuminoEngine/Scene/SceneConductor.hpp"
 
+#include "LuminoEngine/UI/UIRenderView.hpp"
 #include "LuminoEngine/UI/UIFrameWindow.hpp"
 #include "LuminoEngine/UI/UIViewport.hpp"
 #include "LuminoEngine/UI/UISprite.hpp"

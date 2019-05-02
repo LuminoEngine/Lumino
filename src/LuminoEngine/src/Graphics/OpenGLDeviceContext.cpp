@@ -373,6 +373,13 @@ Ref<ITexture> OpenGLDevice::onCreateRenderTarget(uint32_t width, uint32_t height
 	return ptr;
 }
 
+Ref<ITexture> OpenGLDevice::onCreateWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight)
+{
+    auto ptr = makeRef<GLRenderTargetTexture>();
+    ptr->init(nativeObject, hintWidth, hintHeight);
+    return ptr;
+}
+
 Ref<IDepthBuffer> OpenGLDevice::onCreateDepthBuffer(uint32_t width, uint32_t height)
 {
 	auto ptr = makeRef<GLDepthBuffer>();
@@ -1603,6 +1610,13 @@ void GLRenderTargetTexture::init(uint32_t width, uint32_t height, TextureFormat 
 	//GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 
 	GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+}
+
+void GLRenderTargetTexture::init(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight)
+{
+    m_id = nativeObject;
+    m_size = SizeI(hintWidth, hintHeight);
+    m_textureFormat = TextureFormat::Unknown;
 }
 
 void GLRenderTargetTexture::dispose()

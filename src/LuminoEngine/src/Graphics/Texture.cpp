@@ -269,7 +269,9 @@ RenderTargetTexture::RenderTargetTexture()
     : m_rhiObject(nullptr)
     , m_ownerSwapchain(nullptr)
     , m_swapchainImageIndex(-1)
+    , m_nativeObject(0)
     , m_modified(true)
+    , m_hasNativeObject(false)
 {
 }
 
@@ -303,6 +305,16 @@ void RenderTargetTexture::init(SwapChain* owner)
     resetSwapchainFrameIfNeeded(false);
 }
 
+void RenderTargetTexture::init(intptr_t nativeObject, int width, int height)
+{
+    Texture::init();
+    width = std::max(1, width);
+    height = std::max(1, height);
+    detail::TextureInternal::setDesc(this, width, height, TextureFormat::Unknown);
+    m_nativeObject = nativeObject;
+    m_hasNativeObject = true;
+}
+
 void RenderTargetTexture::onDispose(bool explicitDisposing)
 {
     m_rhiObject.reset();
@@ -333,7 +345,12 @@ detail::ITexture* RenderTargetTexture::resolveRHIObject(bool* outModified)
     *outModified = m_modified;
 
     if (m_modified) {
-        m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createRenderTarget(width(), height(), format(), mipmap());
+        if (m_hasNativeObject) {
+            m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createWrappedRenderTarget(m_nativeObject, width(), height());
+        }
+        else {
+            m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createRenderTarget(width(), height(), format(), mipmap());
+        }
     }
 
     m_modified = false;

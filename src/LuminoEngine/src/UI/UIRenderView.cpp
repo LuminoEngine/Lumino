@@ -76,6 +76,9 @@ void UIRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture*
         {
             m_renderingContext->resetForBeginRendering();
             m_renderingContext->setViewPoint(m_viewPoint);
+            if (clearMode() == RenderViewClearMode::ColorAndDepth) {
+                m_renderingContext->clear(ClearFlags::All, backgroundColor(), 1.0f, 0x00);
+            }
             m_rootElement->render(m_renderingContext);
         }
 

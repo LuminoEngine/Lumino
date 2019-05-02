@@ -42,6 +42,5 @@ int main(int argc, char *argv[])
     mainWindow.show();
     int exitCode = a.exec();
 
-    ln::Engine::finalize();
-    return a.exec();
+    return exitCode;
 }
