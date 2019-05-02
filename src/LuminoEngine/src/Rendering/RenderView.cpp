@@ -31,7 +31,7 @@ namespace ln {
  */
 
 RenderView::RenderView()
-	: m_clearMode(RenderViewClearMode::ColorAndDepth)
+	: m_clearMode(RenderViewClearMode::None)
 	, m_backgroundColor(Color::White)
 {
 }

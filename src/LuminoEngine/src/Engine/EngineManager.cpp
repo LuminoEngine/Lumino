@@ -144,6 +144,7 @@ void EngineManager::init()
             m_mainWorldRenderView = newObject<WorldRenderView>();
             m_mainWorldRenderView->setTargetWorld(m_mainWorld);
             m_mainWorldRenderView->setCamera(m_mainCamera);
+            m_mainWorldRenderView->setClearMode(RenderViewClearMode::ColorAndDepth);
             m_mainViewport->addRenderView(m_mainWorldRenderView);
 
 
