@@ -176,7 +176,48 @@ int main(int argc, char** argv)
     obj1->addComponent(cmp1);
 #endif
 
-#if 1	// 雨
+#if 1
+    auto material = PhongMaterial::create();
+    material->setMainTexture(Assets::loadTexture("D:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1.png"));
+
+    auto m1 = SpriteParticleModel::create();
+    m1->setMaterial(material);
+    m1->m_maxParticles = 30;
+    m1->setSpawnRate(6);
+    m1->setLifeTime(3.0);
+    m1->setAutoFadeTime(0.3, 0.1);
+    m1->m_loop = false;
+
+    m1->setSize(1, 1);
+
+    //m1->m_trailType = ParticlTrailType::Point;
+    //m1->m_trailTime = 0.1;
+
+    m1->m_movementType = ParticleMovementType::Radial;
+    m1->m_axis.minValue.set(0, 0, 1);
+    m1->m_axis.maxValue.set(0, 0, 1);
+    m1->m_angle.minValue = 0;
+    m1->m_angle.maxValue = Math::PI * 2;
+    m1->m_forwardVelocity.minValue = 0.25 * 60;
+    m1->m_forwardVelocity.maxValue = 0.025 * 60;
+    //m1->m_forwardPosition.minValue = 5;
+    //m1->m_forwardPosition.maxValue = 10;
+
+    m1->m_sizeRandomSource = ParticleRandomSource::ByBaseValue;	// サイズが小さいものほど、
+    m1->m_forwardVelocity.randomSource = ParticleRandomSource::ByBaseValueInverse;	// 速度が大きい
+
+    Effect::emit(m1, Vector3::Zero);
+
+    //auto cmp1 = newObject<ParticleEmitterComponent>(m1);
+    //cmp1->setCullMode(CullMode::None);
+    //cmp1->setBlendMode(BlendMode::Add);
+
+    //auto obj1 = newObject<WorldObject>();
+    //obj1->addComponent(cmp1);
+    //obj1->setPosition(5, 0, 0);
+
+#endif
+#if 0	// 雨
     //Camera::GetMain3DCamera()->SetFarClip(10000);
     auto m1 = SpriteParticleModel::create();
     m1->m_maxParticles = 10000;
@@ -232,6 +273,7 @@ int main(int argc, char** argv)
 	{
 
 		while (Engine::update()) {
+            //obj1->setPosition(cos(Engine::totalTime()), 0, sin(Engine::totalTime()));
 		}
 
 	}

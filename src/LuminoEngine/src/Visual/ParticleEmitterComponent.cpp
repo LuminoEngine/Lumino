@@ -48,7 +48,7 @@ void ParticleEmitterComponent::onRender(RenderingContext* renderer)
 	m_model->render(
 		renderer,
 		m_instance,
-        worldObject()->worldMatrix(),
+        //worldObject()->worldMatrix(),
 		renderer->viewPoint()->viewPosition,
 		dir,
 		Matrix::makeInverse(renderer->viewPoint()->viewMatrix),

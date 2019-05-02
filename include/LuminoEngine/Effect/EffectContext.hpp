@@ -9,34 +9,6 @@ class RenderingContext;
 class SpriteFrameSet;   // TODO:
 class Material;   // TODO:
 
-// EffectResource に対するインスタンス
-class EffectEmitter
-    : public Object
-{
-public:
-    void setPosition(const Vector3& value) { m_position = value; }
-    const Vector3& position() const { return m_position; }
-
-public: // TODO: internal
-    bool update(float elapsedSeconds);
-    void render(RenderingContext* renderingContext);
-
-protected:
-    virtual bool onUpdate(float localTime);
-    virtual void onRender(RenderingContext* renderingContext);
-
-
-public: // TODO:
-    EffectEmitter();
-    virtual ~EffectEmitter();
-    void init(EffectResource* model);
-
-private:
-    EffectResource* m_model;
-    Vector3 m_position;
-    float m_localTime;
-};
-
 class Effect
 {
 public:
@@ -98,7 +70,7 @@ class SpriteFrameEffectEmitter
     : public EffectEmitter
 {
 protected:
-    virtual bool onUpdate(float localTime) override;
+    virtual bool onUpdate(float localTime, float elapsedSeconds) override;
     virtual void onRender(RenderingContext* renderingContext) override;
 
 LN_CONSTRUCT_ACCESS:

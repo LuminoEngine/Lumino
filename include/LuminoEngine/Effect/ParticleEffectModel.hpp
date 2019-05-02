@@ -1,6 +1,7 @@
 ﻿#pragma once
-#include "Common.hpp"
 #include "../Graphics/ColorStructs.hpp"
+#include "Common.hpp"
+#include "EffectModel.hpp"
 
 namespace ln {
 class MeshResource;
@@ -74,6 +75,7 @@ struct SpriteParticleModelInstance
 
 	int							m_inactiveFindIndex;
 	int							m_mayActiveCount;
+    int m_sleepCount = 0; // active かつ sleep になった Particle の数。非 loop の時の終了判定に使う
 
 	//virtual void drawSubset(InternalContext* context) override;
 
@@ -83,6 +85,8 @@ struct SpriteParticleModelInstance
 	detail::ParticleData* getNextFreeParticleData();
 
 	void spawnTrailPoint(detail::ParticleData* sourceData);
+
+    bool isFinished() const;
 };
 
 } // namespace detail
@@ -144,7 +148,7 @@ struct RadomRangeValue
 	@brief
 */
 class SpriteParticleModel
-	: public Object
+	: public EffectResource
 {
 	//LN_OBJECT;
 public:
@@ -189,11 +193,11 @@ LN_CONSTRUCT_ACCESS:
 public: // TODO
 	void commit();
 	Ref<detail::SpriteParticleModelInstance> createInstane();
-	void updateInstance(detail::SpriteParticleModelInstance* instance, float deltaTime, const Matrix& emitterTransform);
+	bool updateInstance(detail::SpriteParticleModelInstance* instance, float deltaTime, const Matrix& emitterTransform);    // ret:false, 非 loop で再生終わった
 	//detail::ParticleData* getNextFreeParticleData(float emitterTime);
 	void spawnParticle(const Matrix& emitterTransform, detail::ParticleData* data, float spawnTime);
 	void simulateOneParticle(detail::ParticleData* data, double time, const Vector3& viewPosition, const Vector3& viewDirection, detail::SpriteParticleModelInstance* instance);
-	void render(RenderingContext* context, detail::SpriteParticleModelInstance* instance, const Matrix& emitterTransform, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, AbstractMaterial* material);
+	void render(RenderingContext* context, detail::SpriteParticleModelInstance* instance, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, AbstractMaterial* material);
 
 public: // TODO
 	float makeRandom(detail::ParticleData* data, float minValue, float maxValue, ParticleRandomSource source);
@@ -321,4 +325,23 @@ public: // TODO
 
 };
 
+namespace detail {
+
+class ParticleEffectEmitter
+    : public EffectEmitter
+{
+protected:
+    virtual bool onUpdate(float localTime, float elapsedSeconds) override;
+    virtual void onRender(RenderingContext* renderingContext) override;
+
+LN_CONSTRUCT_ACCESS:
+    ParticleEffectEmitter();
+    void init(SpriteParticleModel* data);
+
+private:
+    Ref<SpriteParticleModel> m_model;
+    Ref<detail::SpriteParticleModelInstance> m_instance;
+};
+
+} // namespace detail
 } // namespace ln

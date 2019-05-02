@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Mesh/Mesh.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Effect/ParticleEffectModel.hpp>
 
@@ -109,6 +110,16 @@ void SpriteParticleModelInstance::spawnTrailPoint(detail::ParticleData* sourceDa
 	}
 }
 
+bool SpriteParticleModelInstance::isFinished() const
+{
+    if (!m_owner->m_loop && m_sleepCount == m_particles.size()) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 
 } // namespace detail
 
@@ -172,6 +183,7 @@ SpriteParticleModel::~SpriteParticleModel()
 //------------------------------------------------------------------------------
 void SpriteParticleModel::init()
 {
+    EffectResource::init();
     m_manager = detail::EngineDomain::graphicsManager();    // TODO: ひつよう？
 }
 
@@ -234,9 +246,10 @@ Ref<detail::SpriteParticleModelInstance> SpriteParticleModel::createInstane()
 }
 
 //------------------------------------------------------------------------------
-void SpriteParticleModel::updateInstance(detail::SpriteParticleModelInstance* instance, float deltaTime, const Matrix& emitterTransform)
+bool SpriteParticleModel::updateInstance(detail::SpriteParticleModelInstance* instance, float deltaTime, const Matrix& emitterTransform)
 {
-	if (LN_REQUIRE(m_oneSpawnDeltaTime > 0.0f)) return;
+
+	if (LN_REQUIRE(m_oneSpawnDeltaTime > 0.0f)) return true;
 
 	instance->beginUpdate(deltaTime);
 
@@ -273,6 +286,8 @@ void SpriteParticleModel::updateInstance(detail::SpriteParticleModelInstance* in
 			instance->m_lastSpawnTime += m_oneSpawnDeltaTime;
 		}
 	}
+
+    return !instance->isFinished();
 }
 
 //------------------------------------------------------------------------------
@@ -383,6 +398,8 @@ void SpriteParticleModel::spawnParticle(const Matrix& emitterTransform, detail::
 //------------------------------------------------------------------------------
 void SpriteParticleModel::simulateOneParticle(detail::ParticleData* data, double time, const Vector3& viewPosition, const Vector3& viewDirection, detail::SpriteParticleModelInstance* instance)
 {
+    if (data->IsSleep()) return;    // m_sleepCount を増やしすぎないように
+
 	float localTime = time - data->spawnTime;
 	float deltaTime = time - data->lastTime;
 
@@ -466,6 +483,7 @@ void SpriteParticleModel::simulateOneParticle(detail::ParticleData* data, double
 				else
 				{
 					// ループ再生しない場合は、非アクティブにしないことで次の Spawn を行わないようにする。
+                    instance->m_sleepCount++;
 				}
 			}
 
@@ -524,7 +542,7 @@ float SpriteParticleModel::makeRandom(detail::ParticleData* data, float minValue
 }
 
 //------------------------------------------------------------------------------
-void SpriteParticleModel::render(RenderingContext* context, detail::SpriteParticleModelInstance* instance, const Matrix& emitterTransform, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, AbstractMaterial* material)
+void SpriteParticleModel::render(RenderingContext* context, detail::SpriteParticleModelInstance* instance, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, AbstractMaterial* material)
 {
 
 	// 更新処理
@@ -680,8 +698,8 @@ void SpriteParticleModel::render(RenderingContext* context, detail::SpritePartic
 				detail::ParticleData& data = instance->m_particles[idx];
 				if (data.spawnTime < 0.0f) break;	// 非アクティブが見つかったら終了
 
-				Matrix mat = Matrix::makeTranslation(data.position);
-				m_childModel->render(context, data.m_childInstance, mat, viewPosition, viewDirection, viewInv, m_childModel->getMaterial());
+				//Matrix mat = Matrix::makeTranslation(data.position);
+				m_childModel->render(context, data.m_childInstance/*, mat*/, viewPosition, viewDirection, viewInv, m_childModel->getMaterial());
 				
 			}
 			instance->m_activeCount = iData;
@@ -693,5 +711,42 @@ void SpriteParticleModel::render(RenderingContext* context, detail::SpritePartic
 
 }
 
+
+//==============================================================================
+// ParticleEffectEmitter
+
+namespace detail {
+
+ParticleEffectEmitter::ParticleEffectEmitter()
+{
+}
+
+void ParticleEffectEmitter::init(SpriteParticleModel* data)
+{
+    EffectEmitter::init(data);
+    m_model = data;
+    m_model->commit();
+    m_instance = m_model->createInstane();
+}
+
+bool ParticleEffectEmitter::onUpdate(float localTime, float elapsedSeconds)
+{
+    // TODO: dynamic position
+    return m_model->updateInstance(m_instance, elapsedSeconds, Matrix());
+}
+
+void ParticleEffectEmitter::onRender(RenderingContext* renderingContext)
+{
+    Vector3 dir = renderingContext->viewPoint()->viewDirection;
+    m_model->render(
+        renderingContext,
+        m_instance,
+        renderingContext->viewPoint()->viewPosition,
+        dir,
+        Matrix::makeInverse(renderingContext->viewPoint()->viewMatrix),
+        m_model->getMaterial());
+}
+
+} // namespace detail
 
 } // namespace ln

@@ -6,47 +6,10 @@
 #include "../Rendering/SpriteRenderFeature.hpp"  // TODO:
 #include "../Engine/EngineManager.hpp"  // TODO:
 #include <LuminoEngine/Scene/World.hpp>  // TODO:
+#include <LuminoEngine/Effect/ParticleEffectModel.hpp>  // TODO:
 
 namespace ln {
 
-//==============================================================================
-// EffectEmitter
-
-EffectEmitter::EffectEmitter()
-    : m_model(nullptr)
-    , m_localTime(0.0f)
-{
-}
-
-EffectEmitter::~EffectEmitter()
-{
-}
-
-void EffectEmitter::init(EffectResource* model)
-{
-    Object::init();
-    m_model = model;
-}
-
-bool EffectEmitter::update(float elapsedSeconds)
-{
-    m_localTime += elapsedSeconds;
-    return onUpdate(m_localTime);
-}
-
-void EffectEmitter::render(RenderingContext* renderingContext)
-{
-    onRender(renderingContext);
-}
-
-bool EffectEmitter::onUpdate(float localTime)
-{
-    return false;
-}
-
-void EffectEmitter::onRender(RenderingContext* renderingContext)
-{
-}
 
 //==============================================================================
 // Effect
@@ -79,10 +42,16 @@ EffectEmitter* EffectContext::createEmitter(EffectResource* model)
 {
     // TODO: Pool
 
-    // TODO: TypeEnum
+    // TODO: ポリモーフィズムで作成
     if (auto* sr = dynamic_cast<SpriteFrameEffectResource*>(model))
     {
         auto emitter = newObject<SpriteFrameEffectEmitter>(sr);
+        m_emitters.add(emitter);
+        return emitter;
+    }
+    else if (auto* sr = dynamic_cast<SpriteParticleModel*>(model))
+    {
+        auto emitter = newObject<detail::ParticleEffectEmitter>(sr);
         m_emitters.add(emitter);
         return emitter;
     }
@@ -154,7 +123,7 @@ void SpriteFrameEffectEmitter::init(SpriteFrameEffectResource* data)
     m_frameNumber = 0;
 }
 
-bool SpriteFrameEffectEmitter::onUpdate(float localTime)
+bool SpriteFrameEffectEmitter::onUpdate(float localTime, float elapsedSeconds)
 {
     int totalFrameCount = m_data->m_lastNumber - m_data->m_startNumber + 1;
 

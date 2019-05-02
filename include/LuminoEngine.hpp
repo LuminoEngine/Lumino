@@ -94,6 +94,9 @@
 #include "LuminoEngine/Tilemap/TilemapModel.hpp"
 #include "LuminoEngine/Tilemap/Tilemap.hpp"
 
+#include "LuminoEngine/Effect/EffectContext.hpp"
+
+
 
 #ifdef _DEBUG
 #define LN_MSVC_AUTO_LINK_POSTFIX    "d"
