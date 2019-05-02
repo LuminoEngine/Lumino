@@ -464,6 +464,7 @@ float AbstractWin32PlatformWindow::getDpiFactor(HWND hWnd)
 // Win32PlatformWindow
 
 Win32PlatformWindow::Win32PlatformWindow()
+    : m_accelerator(NULL)
 {
 }
 
@@ -615,7 +616,7 @@ Ref<PlatformWindow> Win32PlatformWindowManager::createWindow(const WindowCreatio
 void Win32PlatformWindowManager::destroyWindow(PlatformWindow* window)
 {
     if (LN_REQUIRE(window)) return;
-    static_cast<Win32PlatformWindow*>(window)->dispose();
+    static_cast<AbstractWin32PlatformWindow*>(window)->dispose();
 }
 
 void Win32PlatformWindowManager::processSystemEventQueue()

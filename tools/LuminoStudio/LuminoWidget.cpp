@@ -32,6 +32,7 @@ void LuminoWidget::resizeGL(int width, int height)
 
 void LuminoWidget::paintGL()
 {
+    m_frameWindow->renderView()->setClearMode(ln::RenderViewClearMode::ColorAndDepth);
     m_frameWindow->renderView()->setBackgroundColor(ln::Color::Blue);
     m_frameWindow->beginRendering(m_nativeRenderTarget);
     m_frameWindow->renderContents();
