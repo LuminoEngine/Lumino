@@ -179,13 +179,6 @@ private:
     friend class detail::GraphicsContextInternal;
 };
 
-class GraphicsIntegration
-{
-public:
-    //static void beginRendering();
-    //static void beginRendering();
-};
-
 namespace detail {
 class GraphicsContextInternal
 {

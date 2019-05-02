@@ -55,8 +55,13 @@ struct EngineSettings
     List<EngineSettingsAssetArchiveEntry> assetArchives;
 	List<Path> assetDirectories;
 	GraphicsAPI graphicsAPI = GraphicsAPI::Default;
+    intptr_t userMainWindow = 0;
 	bool standaloneFpsControl = false;
 	int frameRate = 60;
+    bool defaultObjectsCreation = true;
+    bool useGLFWWindowSystem = true;
+    bool graphicsContextManagement = true;
+    bool externalMainLoop = true;
     bool autoCoInitialize = true;
 };
 

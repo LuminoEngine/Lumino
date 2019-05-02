@@ -202,12 +202,17 @@ UIFrameWindow::~UIFrameWindow()
 {
 }
 
+void UIFrameWindow::init()
+{
+    UIElement::init();
+    m_manager = detail::EngineDomain::uiManager();
+    specialElementFlags().set(detail::UISpecialElementFlags::FrameWindow);
+}
+
 void UIFrameWindow::init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize)
 {
-	UIElement::init();
-	specialElementFlags().set(detail::UISpecialElementFlags::FrameWindow);
+    init();
 
-	m_manager = detail::EngineDomain::uiManager();
     m_platformWindow = platformMainWindow;
 	m_autoDisposePlatformWindow = false;
 	m_swapChain = newObject<SwapChain>(platformMainWindow, backbufferSize);
@@ -220,10 +225,16 @@ void UIFrameWindow::init(detail::PlatformWindow* platformMainWindow, const SizeI
 
     m_platformWindow->attachEventListener(this);
 
-	SizeI size;
-	m_platformWindow->getSize(&size);
-	setWidth(size.width);
-	setHeight(size.height);
+    SizeI size;
+    m_platformWindow->getSize(&size);
+    resetSize(size.toFloatSize());
+}
+
+void UIFrameWindow::resetSize(const Size& size)
+{
+    setWidth(size.width);
+    setHeight(size.height);
+    m_clientSize = size;
 }
 
 void UIFrameWindow::onDispose(bool explicitDisposing)
@@ -299,10 +310,7 @@ SwapChain* UIFrameWindow::swapChain() const
 
 void UIFrameWindow::updateLayoutTree()
 {
-	SizeI size;
-	m_platformWindow->getSize(&size);
-
-    Rect clientRect(0, 0, size.width, size.height);
+    Rect clientRect(0, 0, m_clientSize);
 	updateLayout(clientRect);
     updateFinalLayoutHierarchical(clientRect);
 }
@@ -317,10 +325,8 @@ Size UIFrameWindow::measureOverride(const Size& constraint)
 		child->measureLayout(constraint);
 	}
 
-	SizeI size;
-	m_platformWindow->getSize(&size);
 	// TODO: DPI チェック
-	return size.toFloatSize();
+	return m_clientSize;
 }
 
 // 強制的にウィンドウサイズとする
@@ -379,6 +385,10 @@ bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)
 			m_platformWindow->getFramebufferSize(&w, &h);
 			detail::SwapChainInternal::resizeBackbuffer(m_swapChain, w, h);
 		}
+
+        SizeI size;
+        m_platformWindow->getSize(&size);
+        resetSize(size.toFloatSize());
 		break;
 	}
 
@@ -401,6 +411,18 @@ bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)
 		break;
 	}
 	return false;
+}
+
+//==============================================================================
+// UINativeFrameWindow
+
+UINativeFrameWindow::UINativeFrameWindow()
+{
+}
+
+void UINativeFrameWindow::init()
+{
+    UIFrameWindow::init();
 }
 
 } // namespace ln

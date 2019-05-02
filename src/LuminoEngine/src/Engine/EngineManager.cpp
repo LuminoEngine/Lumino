@@ -115,47 +115,50 @@ void EngineManager::init()
 	m_fpsController.setFrameRate(m_settings.frameRate);
 	m_fpsController.setEnableFpsTest(true);
 
-
-    if (m_uiManager) {
-        m_mainUIContext = newObject<UIContext>();
-        m_uiManager->setMainContext(m_mainUIContext);
-
-        m_mainWindow = newObject<UIFrameWindow>(m_platformManager->mainWindow(), m_settings.mainBackBufferSize);
-        m_mainViewport = newObject<UIViewport>();
-        m_mainWindow->addElement(m_mainViewport);
-
-        m_mainUIContext->setLayoutRootElement(m_mainWindow);
-    }
-
-    if (m_sceneManager)
+    if (m_settings.defaultObjectsCreation)
     {
-        m_mainWorld = newObject<World>();
-        m_sceneManager->setActiveWorld(m_mainWorld);
+        if (m_uiManager) {
+            m_mainUIContext = newObject<UIContext>();
+            m_uiManager->setMainContext(m_mainUIContext);
 
-        //m_mainAmbientLight = newObject<AmbientLight>();
-        //m_mainDirectionalLight = newObject<DirectionalLight>();
+            m_mainWindow = newObject<UIFrameWindow>(m_platformManager->mainWindow(), m_settings.mainBackBufferSize);
+            m_mainViewport = newObject<UIViewport>();
+            m_mainWindow->addElement(m_mainViewport);
 
-        m_mainCamera = newObject<Camera>();
-        m_mainWorldRenderView = newObject<WorldRenderView>();
-        m_mainWorldRenderView->setTargetWorld(m_mainWorld);
-        m_mainWorldRenderView->setCamera(m_mainCamera);
-        m_mainViewport->addRenderView(m_mainWorldRenderView);
+            m_mainUIContext->setLayoutRootElement(m_mainWindow);
+        }
+
+        if (m_sceneManager)
+        {
+            m_mainWorld = newObject<World>();
+            m_sceneManager->setActiveWorld(m_mainWorld);
+
+            //m_mainAmbientLight = newObject<AmbientLight>();
+            //m_mainDirectionalLight = newObject<DirectionalLight>();
+
+            m_mainCamera = newObject<Camera>();
+            m_mainWorldRenderView = newObject<WorldRenderView>();
+            m_mainWorldRenderView->setTargetWorld(m_mainWorld);
+            m_mainWorldRenderView->setCamera(m_mainCamera);
+            m_mainViewport->addRenderView(m_mainWorldRenderView);
 
 
-        m_mainUIRenderView = newObject<UIRenderView>();
-        m_mainViewport->addRenderView(m_mainUIRenderView);
+            m_mainUIRenderView = newObject<UIRenderView>();
+            m_mainViewport->addRenderView(m_mainUIRenderView);
 
-        m_mainUIRoot = newObject<UIContainerElement>();
-        m_mainUIRoot->setHorizontalAlignment(HAlignment::Stretch);
-        m_mainUIRoot->setVerticalAlignment(VAlignment::Stretch);
-        m_mainUIRenderView->setRootElement(m_mainUIRoot);
-        m_uiManager->setPrimaryElement(m_mainUIRoot);
+            m_mainUIRoot = newObject<UIContainerElement>();
+            m_mainUIRoot->setHorizontalAlignment(HAlignment::Stretch);
+            m_mainUIRoot->setVerticalAlignment(VAlignment::Stretch);
+            m_mainUIRenderView->setRootElement(m_mainUIRoot);
+            m_uiManager->setPrimaryElement(m_mainUIRoot);
 
-        m_mainPhysicsWorld = m_mainWorld->physicsWorld();
-        m_mainPhysicsWorld2D = m_mainWorld->physicsWorld2D();
+            m_mainPhysicsWorld = m_mainWorld->physicsWorld();
+            m_mainPhysicsWorld2D = m_mainWorld->physicsWorld2D();
 
-        m_physicsManager->setActivePhysicsWorld2D(m_mainPhysicsWorld2D);
+            m_physicsManager->setActivePhysicsWorld2D(m_mainPhysicsWorld2D);
+        }
     }
+
 
     LN_LOG_DEBUG << "EngineManager Initialization ended.";
 }
@@ -305,11 +308,12 @@ void EngineManager::initializePlatformManager()
 		initializeCommon();
 
 		PlatformManager::Settings settings;
+        settings.useGLFWWindowSystem = m_settings.useGLFWWindowSystem;
 		settings.mainWindowSettings.title = m_settings.mainWindowTitle;
 		settings.mainWindowSettings.clientSize = m_settings.mainWindowSize;
 		settings.mainWindowSettings.fullscreen = false;
 		settings.mainWindowSettings.resizable = true;
-		//settings.mainWindowSettings.userWindow = m_settings.userMainWindow;
+		settings.mainWindowSettings.userWindow = m_settings.userMainWindow;
 
 		m_platformManager = ln::makeRef<PlatformManager>();
 		m_platformManager->init(settings);
@@ -377,7 +381,7 @@ void EngineManager::initializeGraphicsManager()
 		initializePlatformManager();
 
 		GraphicsManager::Settings settings;
-		settings.mainWindow = m_platformManager->mainWindow();
+		settings.mainWindow = (m_settings.graphicsContextManagement) ? m_platformManager->mainWindow() : nullptr;
 		settings.graphicsAPI = m_settings.graphicsAPI;
 
 		m_graphicsManager = ln::makeRef<GraphicsManager>();

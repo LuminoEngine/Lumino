@@ -105,7 +105,7 @@ class OpenGLDevice
 public:
 	struct Settings
 	{
-		PlatformWindow* mainWindow = nullptr;
+		PlatformWindow* mainWindow = nullptr;   // nullptr の場合、OpenGL Context の生成・管理を内部で行わない
         uint32_t defaultFramebuffer;
 	};
 	

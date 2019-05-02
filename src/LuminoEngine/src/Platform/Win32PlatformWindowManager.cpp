@@ -534,6 +534,19 @@ void Win32PlatformWindow::dispose()
 }
 
 //=============================================================================
+// WrappedWin32PlatformWindow
+
+WrappedWin32PlatformWindow::WrappedWin32PlatformWindow()
+{
+}
+
+Result WrappedWin32PlatformWindow::init(Win32PlatformWindowManager* windowManager, intptr_t	windowHandle)
+{
+    m_hWnd = (HWND)windowHandle;
+    return true;
+}
+
+//=============================================================================
 // Win32PlatformWindowManager
 
 const wchar_t*	Win32PlatformWindowManager::WindowClassName = L"LuminoWindow";
@@ -584,8 +597,11 @@ void Win32PlatformWindowManager::dispose()
 Ref<PlatformWindow> Win32PlatformWindowManager::createWindow(const WindowCreationSettings& settings)
 {
     if (settings.userWindow) {
-        LN_NOTIMPLEMENTED();
-        return nullptr;
+        auto ptr = makeRef<WrappedWin32PlatformWindow>();
+        if (!ptr->init(this, settings.userWindow)) {
+            return nullptr;
+        }
+        return ptr;
     }
     else {
         auto ptr = makeRef<Win32PlatformWindow>();

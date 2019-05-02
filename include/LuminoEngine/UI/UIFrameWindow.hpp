@@ -76,9 +76,13 @@ protected:
 	virtual Size measureOverride(const Size& constraint) override;
 	virtual Size arrangeOverride(const Size& finalSize) override;
 
+    // TODO: internal
+    void resetSize(const Size& size);
+
 LN_CONSTRUCT_ACCESS:
 	UIFrameWindow();
 	virtual ~UIFrameWindow();
+    void init();    // Swapchain 無し。外部制御用
 	void init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
 
 private:
@@ -90,9 +94,25 @@ private:
 	Ref<SwapChain>	m_swapChain;
 	Ref<DepthBuffer> m_depthBuffer;
 	Ref<UIRenderView> m_renderView;
+    Size m_clientSize;
 
 	Event<UIEventHandler> m_onClosed;
 	bool m_autoDisposePlatformWindow;
+};
+
+
+
+class LN_API UINativeFrameWindow
+    : public UIFrameWindow
+{
+public:
+    void setClientSize(const Size& value) { UIFrameWindow::resetSize(value); }
+
+LN_CONSTRUCT_ACCESS:
+    UINativeFrameWindow();
+    void init();
+
+private:
 };
 
 

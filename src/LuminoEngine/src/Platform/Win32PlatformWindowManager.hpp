@@ -48,6 +48,16 @@ private:
     HACCEL m_accelerator;  // for erase Alt+Enter alart
 };
 
+class WrappedWin32PlatformWindow
+    : public AbstractWin32PlatformWindow
+{
+public:
+    WrappedWin32PlatformWindow();
+    Result init(Win32PlatformWindowManager* windowManager, intptr_t	windowHandle);
+
+private:
+};
+
 class Win32PlatformWindowManager
 	: public PlatformWindowManager
 {

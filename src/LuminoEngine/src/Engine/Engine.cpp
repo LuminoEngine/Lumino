@@ -56,6 +56,11 @@ void EngineSettings::setGraphicsAPI(GraphicsAPI value)
 	detail::EngineDomain::engineManager()->settings().graphicsAPI = value;
 }
 
+void EngineSettings::setUserMainWindow(intptr_t value)
+{
+    detail::EngineDomain::engineManager()->settings().userMainWindow = value;
+}
+
 void EngineSettings::setStandaloneFpsControl(bool enabled)
 {
     detail::EngineDomain::engineManager()->settings().standaloneFpsControl = enabled;
@@ -64,6 +69,26 @@ void EngineSettings::setStandaloneFpsControl(bool enabled)
 void EngineSettings::setEngineFeatures(Flags<EngineFeature> features)
 {
     detail::EngineDomain::engineManager()->settings().features = features;
+}
+
+void EngineSettings::setDefaultObjectsCreation(bool value)
+{
+    detail::EngineDomain::engineManager()->settings().defaultObjectsCreation = value;
+}
+
+void EngineSettings::setUseGLFWWindowSystem(bool value)
+{
+    detail::EngineDomain::engineManager()->settings().useGLFWWindowSystem = value;
+}
+
+void EngineSettings::setGraphicsContextManagement(bool value)
+{
+    detail::EngineDomain::engineManager()->settings().graphicsContextManagement = value;
+}
+
+void EngineSettings::setExternalMainLoop(bool value)
+{
+    detail::EngineDomain::engineManager()->settings().externalMainLoop = value;
 }
 
 //==============================================================================
@@ -82,21 +107,34 @@ static void endFrame()
 
 void Engine::initialize()
 {
-	detail::EngineDomain::engineManager()->init();
-	beginFrame();
+    detail::EngineManager* manager = detail::EngineDomain::engineManager();
+    manager->init();
+    if (manager->settings().externalMainLoop) {
+        beginFrame();
+    }
 }
 
 void Engine::finalize()
 {
-	endFrame();
+    detail::EngineManager* manager = detail::EngineDomain::engineManager();
+    if (manager->settings().externalMainLoop) {
+        endFrame();
+    }
 	detail::EngineDomain::release();
 }
 
 bool Engine::update()
 {
-	endFrame();
-	beginFrame();
-	return !detail::EngineDomain::engineManager()->isExitRequested();
+    detail::EngineManager* manager = detail::EngineDomain::engineManager();
+    if (manager->settings().externalMainLoop) {
+        endFrame();
+        beginFrame();
+    }
+    else {
+        beginFrame();
+        endFrame();
+    }
+	return !manager->isExitRequested();
 }
 
 void Engine::quit()

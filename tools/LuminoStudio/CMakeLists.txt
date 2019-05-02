@@ -17,19 +17,7 @@ find_package(Qt5Widgets CONFIG REQUIRED)
 find_package(Qt5OpenGL CONFIG REQUIRED)
 
 # Populate a CMake variable with the sources
-set(LuminoStudio_SOURCES
-    PCH.cpp
-    PCH.h
-    MainWindow.ui
-    DocumentManager.cpp
-    DocumentManager.h
-    SceneListDock.cpp
-    SceneListDock.h
-    SceneListDock.ui
-    MainWindow.cpp
-    Main.cpp
-)
-#file(GLOB LuminoStudio_SOURCES "*.h" "*.cpp" "*.ui")
+file(GLOB LuminoStudio_SOURCES "*.h" "*.cpp" "*.ui")
 source_group("Sources" FILES ${LuminoStudio_SOURCES})
 
 qt5_add_resources(LN_QT_RESOURCES

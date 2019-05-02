@@ -35,8 +35,13 @@ int main(int argc, char *argv[])
     //QSurfaceFormat::setDefaultFormat(format);
 
 
-    MainWindow w;
-    w.show();
+    MainWindow mainWindow;
 
+
+
+    mainWindow.show();
+    int exitCode = a.exec();
+
+    ln::Engine::finalize();
     return a.exec();
 }

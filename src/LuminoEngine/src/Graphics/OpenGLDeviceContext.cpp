@@ -194,17 +194,21 @@ void OpenGLDevice::init(const Settings& settings)
 {
 	LN_LOG_DEBUG << "OpenGLDeviceContext::init start";
 
+    if (settings.mainWindow)
+    {
 #ifdef LN_GLFW
-	auto glfwContext = makeRef<GLFWContext>();
-	glfwContext->init(settings.mainWindow);
-	m_glContext = glfwContext;
+	    auto glfwContext = makeRef<GLFWContext>();
+	    glfwContext->init(settings.mainWindow);
+	    m_glContext = glfwContext;
 #endif
-	if (!m_glContext)
-	{
-		// Android(GLSurfaceView) や Web など、バックバッファの swap を Lumino の外側で行う場合
-		auto glfwContext = makeRef<EmptyGLContext>();
-		m_glContext = glfwContext;
-	}
+    }
+
+    if (!m_glContext)
+    {
+        // Android(GLSurfaceView) や Web など、バックバッファの swap を Lumino の外側で行う場合のダミー
+        auto glfwContext = makeRef<EmptyGLContext>();
+        m_glContext = glfwContext;
+    }
 
 #if defined(LN_GRAPHICS_OPENGLES)
 	LN_LOG_INFO << "OpenGL ES enabled.";
