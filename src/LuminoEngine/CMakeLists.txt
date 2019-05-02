@@ -351,13 +351,15 @@ set(LN_SOURCES_ImageEffect
 
 set(LN_SOURCES_Effect
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Effect/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Effect/EffectModel.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Effect/EffectContext.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Effect/EffectModel.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Effect/ParticleEffectModel.hpp
     src/Effect/Internal.hpp
+    src/Effect/EffectContext.cpp
     src/Effect/EffectManager.cpp
     src/Effect/EffectManager.hpp
     src/Effect/EffectModel.cpp
-    src/Effect/EffectContext.cpp
+    src/Effect/ParticleEffectModel.cpp
 )
 
 set(LN_SOURCES_Physics
@@ -396,6 +398,7 @@ set(LN_SOURCES_Visual
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/CameraComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/LightComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/MeshPrimitiveComponent.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/ParticleEmitterComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/SkinnedMeshComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/SpriteComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/StaticMeshComponent.hpp
@@ -404,6 +407,7 @@ set(LN_SOURCES_Visual
     src/Visual/CameraComponent.cpp
     src/Visual/LightComponent.cpp
     src/Visual/MeshPrimitiveComponent.cpp
+    src/Visual/ParticleEmitterComponent.cpp
     src/Visual/SkinnedMeshComponent.cpp
     src/Visual/SpriteComponent.cpp
     src/Visual/StaticMeshComponent.cpp

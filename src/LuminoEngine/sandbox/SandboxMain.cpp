@@ -25,6 +25,7 @@
 #include "../src/Font/FontCore.hpp"
 #include "../src/Asset/AssetArchive.hpp"
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
+#include <LuminoEngine/Visual/ParticleEmitterComponent.hpp>
 using namespace ln;
 
 class TestProcessorNode : public AudioProcessorNode
@@ -115,6 +116,7 @@ int main(int argc, char** argv)
 	//Font::registerFontFromFile(u"C:/Users/hldc0061/Downloads/mplus-TESTFLIGHT-063/mplus-1c-regular.ttf");
 
 
+    Engine::mainCamera()->addComponent(newObject<CameraOrbitControlComponent>());
 
     auto window1 = UIWindow::create();
     window1->setPosition(Vector3(8, 8, 0));
@@ -149,6 +151,25 @@ int main(int argc, char** argv)
 	////text3->setText(u"Test3");
 	////text3->setTextColor(Color::Gray);
 	////text3->setPosition(Vector3(0, 400, 0));
+
+
+    auto material = PhongMaterial::create();
+    material->setMainTexture(Assets::loadTexture(u"D:/Proj/Lumino-0.4.0/Source/LuminoEngine/Test/UnitTest/Scene/TestData/Sprite1.png"));
+
+    auto m1 = SpriteParticleModel::create();
+    m1->setMaterial(material);
+    m1->setSpawnRate(1);
+    m1->setLifeTime(2.0f);
+    m1->m_maxParticles = 1;
+    m1->m_shapeType = ParticleEmitterShapeType::Cone;
+    m1->m_shapeParam.x = Math::PI * 0.1;
+    m1->m_shapeParam.y = 2;
+    auto cmp1 = newObject<ParticleEmitterComponent>(m1);
+    cmp1->setCullMode(CullMode::None);
+    cmp1->setBlendMode(BlendMode::Alpha);
+
+    auto obj1 = newObject<WorldObject>();
+    obj1->addComponent(cmp1);
 
 	{
 
