@@ -1,8 +1,23 @@
 ﻿
 #include <QTabWidget>
-#include <QOpenGLContext>
+#include <QOpenGLWidget>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+
+class QOpenGLWidget2 : public QOpenGLWidget
+{
+public:
+    explicit QOpenGLWidget2(QWidget* parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags())
+        : QOpenGLWidget(parent, f)
+    {
+
+    }
+
+    void initializeGL() override
+    {
+
+    }
+};
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
@@ -10,6 +25,8 @@ MainWindow::MainWindow(QWidget* parent)
     , m_documentManager(nullptr)
 {
     ui->setupUi(this);
+
+    //new QOpenGLWidget2(this);
 
     //QOpenGLContext* co = new QOpenGLContext(this);
     //co->setFormat(requestedFormat());

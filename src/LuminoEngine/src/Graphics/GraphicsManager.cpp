@@ -167,14 +167,6 @@ void GraphicsManager::init(const Settings& settings)
 	m_depthBufferCacheManager = makeRef<DepthBufferCacheManager>();
 	m_frameBufferCache = makeRef<detail::FrameBufferCache>(m_renderTargetTextureCacheManager, m_depthBufferCacheManager);
 
-	if (renderingType() == RenderingType::Threaded) {
-		LN_NOTIMPLEMENTED();
-	}
-	else {
-		m_deviceContext->enterMainThread();
-		m_deviceContext->enterRenderState();
-	}
-
 	// default objects
 	{
         m_blackTexture = newObject<Texture2D>(32, 32, TextureFormat::RGBA8);
@@ -203,15 +195,38 @@ void GraphicsManager::dispose()
 		resource->dispose();
 	}
 
-	m_deviceContext->leaveRenderState();
-	m_deviceContext->leaveMainThread();
-
 	m_frameBufferCache = nullptr;
 	m_depthBufferCacheManager = nullptr;
 	m_renderTargetTextureCacheManager = nullptr;
 
 	m_graphicsContext->dispose();
 	m_deviceContext->dispose();
+}
+
+void GraphicsManager::enterRendering()
+{
+    if (m_deviceContext) {
+        if (renderingType() == RenderingType::Threaded) {
+            LN_NOTIMPLEMENTED();
+        }
+        else {
+            m_deviceContext->enterMainThread();
+            m_deviceContext->enterRenderState();
+        }
+    }
+}
+
+void GraphicsManager::leaveRendering()
+{
+    if (m_deviceContext) {
+        if (renderingType() == RenderingType::Threaded) {
+            LN_NOTIMPLEMENTED();
+        }
+        else {
+            m_deviceContext->leaveRenderState();
+            m_deviceContext->leaveMainThread();
+        }
+    }
 }
 
 void GraphicsManager::addGraphicsResource(GraphicsResource* resource)

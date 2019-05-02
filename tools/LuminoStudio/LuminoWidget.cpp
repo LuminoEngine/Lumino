@@ -24,6 +24,7 @@ void LuminoWidget::initializeGL()
     ln::EngineSettings::setUseGLFWWindowSystem(false);
     ln::EngineSettings::setGraphicsContextManagement(false);
     ln::EngineSettings::setExternalMainLoop(false);
+    ln::EngineSettings::setExternalRenderingManagement(true);
     ln::EngineSettings::setEngineFeatures(ln::EngineFeature::Public);
     ln::Engine::initialize();
 

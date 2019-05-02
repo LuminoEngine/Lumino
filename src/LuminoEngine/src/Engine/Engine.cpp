@@ -91,6 +91,11 @@ void EngineSettings::setExternalMainLoop(bool value)
     detail::EngineDomain::engineManager()->settings().externalMainLoop = value;
 }
 
+void EngineSettings::setExternalRenderingManagement(bool value)
+{
+    detail::EngineDomain::engineManager()->settings().externalRenderingManagement = value;
+}
+
 //==============================================================================
 // Engine
 

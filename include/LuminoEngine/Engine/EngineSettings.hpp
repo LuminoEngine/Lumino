@@ -70,6 +70,7 @@ public:
     static void setUseGLFWWindowSystem(bool value);
     static void setGraphicsContextManagement(bool value);
     static void setExternalMainLoop(bool value);
+    static void setExternalRenderingManagement(bool value);
 };
 
 } // namespace ln

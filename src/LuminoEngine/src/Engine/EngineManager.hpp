@@ -62,6 +62,7 @@ struct EngineSettings
     bool useGLFWWindowSystem = true;
     bool graphicsContextManagement = true;
     bool externalMainLoop = true;
+    bool externalRenderingManagement = false;
     bool autoCoInitialize = true;
 };
 

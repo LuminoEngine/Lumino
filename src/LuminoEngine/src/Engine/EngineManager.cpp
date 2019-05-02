@@ -112,6 +112,10 @@ void EngineManager::init()
 
 	initializeAllManagers();
 
+    if (!m_settings.externalRenderingManagement) {
+        m_graphicsManager->enterRendering();
+    }
+
 	m_fpsController.setFrameRate(m_settings.frameRate);
 	m_fpsController.setEnableFpsTest(true);
 
@@ -224,6 +228,10 @@ void EngineManager::dispose()
             m_mainUIContext->dispose();
             m_mainUIContext = nullptr;
         }
+    }
+
+    if (!m_settings.externalRenderingManagement) {
+        m_graphicsManager->leaveRendering();
     }
 
     if (m_uiManager) m_uiManager->dispose();
