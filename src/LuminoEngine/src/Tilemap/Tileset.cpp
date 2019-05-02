@@ -31,8 +31,22 @@ void Tileset::init()
 {
     Object::init();
 
-    m_material = Material::create();
-    m_material->setMainTexture(newObject<Texture2D>(u"D:/tmp/110220c_as019.png"));
+    //m_material = Material::create();
+    //m_material->setMainTexture(newObject<Texture2D>(u"D:/tmp/110220c_as019.png"));
+}
+
+void Tileset::reset(Material* material, int tilePixelWidth, int tilePixelHeight)
+{
+    setMaterial(material);
+    setTilePixelSize(tilePixelWidth, tilePixelHeight);
+    int hc = material->mainTexture()->width() / tilePixelWidth;
+    int vc = material->mainTexture()->height() / tilePixelHeight;
+    resize(hc * vc);
+    for (int v = 0; v < vc; v++) {
+        for (int h = 0; h < hc; h++) {
+            setTileImageRect(v * hc + h, h * tilePixelWidth, v * tilePixelHeight, tilePixelWidth, tilePixelHeight);
+        }
+    }
 }
 
 void Tileset::resize(int tileCount)
@@ -46,7 +60,7 @@ void Tileset::setTilePixelSize(int width, int height)
     //m_tilePixelHeight = height;
     //resetInfo();
     m_tileScale.x = 1.0f / width;
-    m_tileScale.y = 1.0f / width;
+    m_tileScale.y = 1.0f / height;
 }
 
 void Tileset::setTileImageRect(int tileId, int x, int y, int width, int height)

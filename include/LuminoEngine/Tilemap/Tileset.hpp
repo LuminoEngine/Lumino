@@ -16,8 +16,11 @@ class Tileset
 {
 public:
     static Ref<Tileset> create();
-    void resize(int tileCount);
 
+    // util
+    void reset(Material* material, int tilePixelWidth, int tilePixelHeight);
+
+    void resize(int tileCount);
     void setTilePixelSize(int width, int height);
     void setTileImageRect(int tileId, int x, int y, int width, int height);
 
