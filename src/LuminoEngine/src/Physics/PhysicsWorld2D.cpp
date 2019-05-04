@@ -857,6 +857,9 @@ void PhysicsWorld2D::init()
 
 void PhysicsWorld2D::onDispose(bool explicitDisposing)
 {
+    for (int i = m_objects.size() - 1; i >= 0; i--) {
+        removePhysicsObject(m_objects[i]);
+    }
     m_objects.clear();
 
     if (m_world) {
@@ -932,6 +935,8 @@ void PhysicsWorld2D::removePhysicsObject(PhysicsObject2D* physicsObject)
 	else {
 		removeInternal(physicsObject);
 	}
+
+    physicsObject->m_ownerWorld = nullptr;
 }
 
 void PhysicsWorld2D::stepSimulation(float elapsedSeconds)
