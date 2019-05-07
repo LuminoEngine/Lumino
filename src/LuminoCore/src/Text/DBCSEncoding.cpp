@@ -4,6 +4,11 @@
 #include "UnicodeUtils.hpp"
 #include "DBCSEncoding.hpp"
 
+// SJIS
+extern "C" const unsigned char g_SJISLeadBytePairs[];
+extern "C" const unsigned short g_SJISToUTF16Table[];
+extern "C" const unsigned short g_UTF16ToSJISTable[];
+
 namespace ln {
 
 struct TableInfo
@@ -17,10 +22,6 @@ struct TableInfo
 //==============================================================================
 // DBCSEncoding
 
-// SJIS
-extern "C" const unsigned char g_SJISLeadBytePairs[];
-extern "C" const unsigned short g_SJISToUTF16Table[];
-extern "C" const unsigned short g_UTF16ToSJISTable[];
 
 const TableInfo* DBCSEncoding::getTableInfo(EncodingType type)
 {
