@@ -162,6 +162,7 @@ public:
 	ln::String getRawTypeFullName(const QualType& type)
 	{
 		// type.getAsString() だと完全週修飾名になる。"struct ln::Vector3" など。
+		// そこから各修飾を取り除いて、:: で区切られた型名を求める。
 		auto name = ln::String::fromStdString(type.getAsString());
 		name = name.replace(_T("struct"), "");
 		name = name.replace(_T("class"), "");
