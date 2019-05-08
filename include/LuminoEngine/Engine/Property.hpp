@@ -76,68 +76,6 @@ enum class PropertySetSource
 
 
 
-class PropertyRef_old
-{
-public:
-    PropertyRef_old(Object* propOwner, PropertyBase* prop)
-        : m_propOwner(propOwner)
-        , m_prop(prop)
-    {
-    }
-
-    std::pair<Ref<Object>, PropertyBase*> resolve()
-    {
-        auto ptr = m_propOwner.resolve();
-        if (ptr != nullptr) {
-            return { ptr, m_prop };
-        }
-        else {
-            return std::pair<Ref<Object>, PropertyBase*>();
-        }
-    }
-
-    template<typename TValue>
-    void setTypedValue(const TValue& value)
-    {
-        auto ptr = m_propOwner.resolve();
-        if (ptr != nullptr) {
-            static_cast<Property<TValue>*>(m_prop)->set(value);
-        }
-    }
-
-    template<typename TValue>
-    const TValue& getTypedValue() const
-    {
-        auto ptr = m_propOwner.resolve();
-        if (ptr != nullptr) {
-            return static_cast<Property<TValue>*>(m_prop)->get();
-        }
-        LN_ERROR();
-        return TValue();
-    }
-
-    void clearValue();
-
-    Ref<Object> owenr();
-
-    //const PropertyInfo* propertyInfo() const
-    //{
-    //    return m_prop.getPropertyInfo();
-    //}
-
-    template<typename TValue>
-    Property<TValue>* getTypedProperty()
-    {
-        return static_cast<Property<TValue>*>(m_prop);
-    }
-
-private:
-    WeakRefPtr<Object>	m_propOwner;
-    PropertyBase* m_prop;
-};
-
-
-
 
 
 class PropertyRef
@@ -229,8 +167,6 @@ public:
         static_cast<Property<TValue>*>(prop)->set(std::forward(value));
     }
     
-    static PropertyRef_old getPropertyRef_old(Object* obj, PropertyInfo* propertyInfo);
-
 	static PropertyRef getPropertyRef(Object* obj, PropertyInfo* propertyInfo);
 
     // TODO: Helper でいい

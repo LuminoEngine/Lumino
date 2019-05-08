@@ -6,22 +6,6 @@
 namespace ln {
 
 //==============================================================================
-// PropertyRef
-
-void PropertyRef_old::clearValue()
-{
-    auto ptr = m_propOwner.resolve();
-    if (ptr != nullptr) {
-        return m_prop->clearValue();
-    }
-}
-
-Ref<Object> PropertyRef_old::owenr()
-{
-    return m_propOwner.resolve();
-}
-
-//==============================================================================
 // TypeInfo
 
 void TypeInfo::registerProperty(PropertyInfo* prop)
@@ -52,11 +36,6 @@ void TypeInfo::initializeObjectProperties(Object* obj)
 
 //==============================================================================
 // PropertyInfo
-
-PropertyRef_old PropertyInfo::getPropertyRef_old(Object* obj, PropertyInfo* propertyInfo)
-{
-    return PropertyRef_old(obj, propertyInfo->m_getPropertyCallback(obj));
-}
 
 PropertyRef PropertyInfo::getPropertyRef(Object* obj, PropertyInfo* propertyInfo)
 {

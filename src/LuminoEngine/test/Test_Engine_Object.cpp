@@ -156,28 +156,6 @@ TEST_F(Test_Engine_Object, Property)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Engine_Object, PropertyRef_old)
-{
-    auto obj = newObject<TestObjectC>();
-
-    //* [ ] set, get
-    PropertyRef_old ref = PropertyInfo::getPropertyRef_old(obj, TestObjectC::V1PropertyId);
-    auto pair = ref.resolve();
-    if (pair.first) {
-        pair.second->setValue(7);
-        Variant v = pair.second->getValue();
-        ASSERT_EQ(7, v.get<int>());
-    }
-
-    ref.setTypedValue<int>(5);
-    ASSERT_EQ(5, ref.getTypedValue<int>());
-
-    //* [ ] clearValue
-    ref.clearValue();
-    ASSERT_EQ(1, ref.getTypedValue<int>());
-}
-
-//------------------------------------------------------------------------------
 TEST_F(Test_Engine_Object, Notification)
 {
     auto obj = newObject<TestObjectC>();
