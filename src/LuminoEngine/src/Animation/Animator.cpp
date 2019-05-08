@@ -58,7 +58,7 @@ void Animator::onUpdateTargetElement(const detail::AnimationTargetElementBlendLi
 {
     if (!link->propertyRef.isNull()) {
         auto pair = link->propertyRef.resolve();
-        pair.second->setValue(pair.first, std::round(link->rootValue.getFloat()));
+        pair.second->setValue(pair.first, makeVariant(std::round(link->rootValue.getFloat())));	// TODO: Variant Pool
     }
 }
 

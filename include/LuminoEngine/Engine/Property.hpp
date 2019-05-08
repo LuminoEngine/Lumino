@@ -199,8 +199,8 @@ private:
 class PropertyBase
 {
 public:
-    virtual void setValue(const Variant& value) = 0;
-    virtual Variant getValue() const = 0;
+    virtual void setValue(const Ref<Variant>& value) = 0;
+    virtual Ref<Variant> getValue() const = 0;
     virtual void clearValue() = 0;
 
 protected:
@@ -245,14 +245,14 @@ public:
     ~Property()
     {}
 
-    virtual void setValue(const Variant& value) override
+    virtual void setValue(const Ref<Variant>& value) override
     {
-        set(value.get<TValue>());
+        set(value->get<TValue>());
     }
 
-    virtual Variant getValue() const override
+    virtual Ref<Variant> getValue() const override
     {
-        return Variant(get());
+        return makeVariant(get());	// TODO: Variant Pool
     }
 
     /** プロパティのローカル値を設定します。*/
@@ -358,8 +358,8 @@ inline bool operator != (const TValue& lhs, const Property<TValue>& rhs)
 class PropertyAccessor : public RefObject
 {
 public:
-	virtual void getValue(const Object* obj, Variant* value) const = 0;
-	virtual void setValue(Object* obj, const Variant& value) = 0;
+	virtual void getValue(const Object* obj, Ref<Variant>* value) const = 0;
+	virtual void setValue(Object* obj, const Ref<Variant>& value) = 0;
 };
 
 // 呼び出し側が型を知っている場合、PropertyAccessor からキャストすることで Variant を介すことなく直接値を操作できるようにするための中間クラス
@@ -380,21 +380,21 @@ public:
 		, m_setFunction(setFunction)
 	{ }
 
-	void getValue(const Object* obj, Variant* value) const override
+	void getValue(const Object* obj, Ref<Variant>* value) const override
 	{
 		LN_DCHECK(obj);
 		LN_DCHECK(value);
 		const auto classPtr = static_cast<const TClassType*>(obj);
 		TValue t;
 		m_getFunction(classPtr, &t);
-		*value = t;
+		*value = makeVariant(t);	// DOTO: Variant Pool
 	}
 
-	void setValue(Object* obj, const Variant& value) override
+	void setValue(Object* obj, const Ref<Variant>& value) override
 	{
 		LN_DCHECK(obj);
 		auto classPtr = static_cast<TClassType*>(obj);
-		m_setFunction(classPtr, value.get<TValue>());
+		m_setFunction(classPtr, value->get<TValue>());
 	}
 
 	virtual void getValueDirect(const Object* obj, TValue* value) const override

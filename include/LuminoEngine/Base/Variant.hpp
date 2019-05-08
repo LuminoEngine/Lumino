@@ -4,6 +4,7 @@
 #include <typeinfo>
 #include <type_traits>
 #include "Common.hpp"
+#include "../Engine/Object.hpp"
 
 namespace ln {
 namespace detail { class VariantHelper; }
@@ -40,11 +41,22 @@ enum class VariantType
 	Int32 = Int,
 };
 
-class Variant
+template<typename... TArgs>
+Ref<Variant> makeVariant(TArgs&&... args)
+{
+	auto ptr = Ref<Variant>(new Variant(std::forward<TArgs>(args)...), false);
+	ptr->init();
+	return ptr;
+}
+
+void serialize(Archive& ar, Variant& value);
+
+class Variant : public Object
 {
 public:
 	static const Variant Empty;
 
+private:
 	Variant();
 	Variant(std::nullptr_t);
 	Variant(const Variant& value);
@@ -68,19 +80,20 @@ public:
     Variant(RefObject* value) : Variant() { assign(value); }
     template<class TValue>
     Variant(const Ref<TValue>& value) : Variant() { assign(value.get()); }
-	Variant(List<Variant>* value) : Variant() { assign(value); }
-	Variant(const List<Variant>& value);
-	Variant(const Ref<List<Variant>>& value) : Variant() { assign(value); }
-	~Variant();
+	Variant(List<Ref<Variant>>* value) : Variant() { assign(value); }
+	Variant(const List<Ref<Variant>>& value);
+	Variant(const Ref<List<Ref<Variant>>>& value) : Variant() { assign(value); }
+	virtual ~Variant();
 
 	template<class T>
 	Variant(const List<T>& list)
-		: Variant(makeRef<List<Variant>>())
+		: Variant(makeRef<List<Ref<Variant>>>())
 	{
 		auto& tl = Variant::list();
-		for (auto& item : list) tl.add(item);
+		for (auto& item : list) tl.add(makeVariant(item));
 	}
 
+public:
 	void clear() LN_NOEXCEPT;
 
 	bool hasValue() const { return m_type != VariantType::Null; }
@@ -100,8 +113,8 @@ public:
     }
 
 	/** utility *get<Ref<List<Variantl>>>() */
-	List<Variant>& list();
-	const List<Variant>& list() const;
+	List<Ref<Variant>>& list();
+	const List<Ref<Variant>>& list() const;
 
 	Variant& operator=(const Variant& rhs);
 
@@ -124,7 +137,7 @@ private:
 	void assign(const AttitudeTransform& value);
     void assign(const Ref<RefObject>& value);
 	void assign(RefObject* value) { assign(Ref<RefObject>(value)); }
-	void assign(const Ref<List<Variant>>& value);
+	void assign(const Ref<List<Ref<Variant>>>& value);
 	void changeType(VariantType newType);
 	void copy(const Variant& value);
 
@@ -149,10 +162,13 @@ private:
 		Quaternion v_Quaternion;
 		AttitudeTransform* v_Transform;
         Ref<RefObject> v_RefObject;
-		Ref<List<Variant>> v_List;
+		Ref<List<Ref<Variant>>> v_List;
 	};
 
 	friend class detail::VariantHelper;
+	friend void serialize(Archive& ar, Variant& value);
+	template<class T, class... TArgs> friend Ref<T> makeRef(TArgs&&... args);
+	template<typename... TArgs> friend Ref<Variant> makeVariant(TArgs&&... args);
 };
 
 namespace detail
@@ -427,7 +443,7 @@ inline void serialize(Archive& ar, Variant& value)
 		}
 		case VariantType::List:
 		{
-			List<Variant>& v = value.list();
+			List<Ref<Variant>>& v = value.list();
 			ar.process(v);
 			break;
 		}
@@ -480,7 +496,7 @@ inline void serialize(Archive& ar, Variant& value)
 		}
 		case ln::ArchiveNodeType::Array:
 		{
-			auto v = makeRef<List<Variant>>();
+			auto v = makeRef<List<Ref<Variant>>>();
 			ar.process(v);
 			value = v;
 			break;

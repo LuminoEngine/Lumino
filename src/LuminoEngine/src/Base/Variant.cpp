@@ -23,8 +23,8 @@ Variant::Variant(const Variant& value)
 	copy(value);
 }
 
-Variant::Variant(const List<Variant>& value)
-	: Variant(Ref<List<Variant>>(LN_NEW List<Variant>(value), false))
+Variant::Variant(const List<Ref<Variant>>& value)
+	: Variant(Ref<List<Ref<Variant>>>(LN_NEW List<Ref<Variant>>(value), false))
 {
 }
 
@@ -85,13 +85,13 @@ Variant& Variant::operator=(const Variant& rhs)
 	return *this;
 }
 
-List<Variant>& Variant::list()
+List<Ref<Variant>>& Variant::list()
 {
 	assert(m_type == VariantType::List);
 	return *v_List;
 }
 
-const List<Variant>& Variant::list() const
+const List<Ref<Variant>>& Variant::list() const
 {
 	assert(m_type == VariantType::List);
 	return *v_List;
@@ -199,10 +199,10 @@ void Variant::assign(const Ref<RefObject>& value)
     new(&v_RefObject) Ref<RefObject>(value);
 }
 
-void Variant::assign(const Ref<List<Variant>>& value)
+void Variant::assign(const Ref<List<Ref<Variant>>>& value)
 {
 	changeType(VariantType::List);
-	new(&v_List) Ref<List<Variant>>(value);
+	new(&v_List) Ref<List<Ref<Variant>>>(value);
 }
 
 void Variant::changeType(VariantType newType)
