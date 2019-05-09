@@ -5,11 +5,11 @@ using System.Linq;
 
 namespace LuminoBuild.Tasks
 {
-    class MakeReleasePackage : BuildTask
+    class MakeReleasePackage2 : BuildTask
     {
-        public override string CommandName => "MakeReleasePackage";
+        public override string CommandName => "MakeReleasePackage2";
 
-        public override string Description => "MakeReleasePackage";
+        public override string Description => "MakeReleasePackage2";
 
         public bool FileMoving = false;
 
@@ -17,13 +17,13 @@ namespace LuminoBuild.Tasks
         {
             var tempInstallDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir);
 
-            string targetRootDir = Path.Combine(builder.LuminoBuildDir, builder.LocalPackageName);
+            string targetRootDir = Path.Combine(builder.LuminoBuildDir, builder.LocalPackageName + "2");
             Directory.CreateDirectory(targetRootDir);
 
             string nativeEngineRoot = Path.Combine(targetRootDir, "Engine", "Native");
-            string nativeEngineLib = Path.Combine(nativeEngineRoot, "lib");
+            //string nativeEngineLib = Path.Combine(nativeEngineRoot, "lib");
             Directory.CreateDirectory(nativeEngineRoot);
-            Directory.CreateDirectory(nativeEngineLib);
+            //Directory.CreateDirectory(nativeEngineLib);
 
             // docs
             {
@@ -35,37 +35,38 @@ namespace LuminoBuild.Tasks
             }
 
             // C++ Engine (common)
-            {
-                string nativeEngineCMakeDir = Path.Combine(nativeEngineRoot, "lib", "cmake");
-                Directory.CreateDirectory(nativeEngineCMakeDir);
+            //{
+            //    string nativeEngineCMakeDir = Path.Combine(nativeEngineRoot, "lib", "cmake");
+            //    Directory.CreateDirectory(nativeEngineCMakeDir);
 
-                File.Copy(
-                    Path.Combine(builder.LuminoSourceDir, "LuminoSetup.cmake"),
-                    Path.Combine(nativeEngineCMakeDir, "LuminoSetup.cmake"), true);
-                File.Copy(
-                    Path.Combine(builder.LuminoSourceDir, "LuminoCommon.cmake"),
-                    Path.Combine(nativeEngineCMakeDir, "LuminoCommon.cmake"), true);
-                File.Copy(
-                    Path.Combine(builder.LuminoSourceDir, "LuminoConfig.cmake"),
-                    Path.Combine(nativeEngineCMakeDir, "LuminoConfig.cmake"), true);
+            //    File.Copy(
+            //        Path.Combine(builder.LuminoSourceDir, "LuminoSetup.cmake"),
+            //        Path.Combine(nativeEngineCMakeDir, "LuminoSetup.cmake"), true);
+            //    File.Copy(
+            //        Path.Combine(builder.LuminoSourceDir, "LuminoCommon.cmake"),
+            //        Path.Combine(nativeEngineCMakeDir, "LuminoCommon.cmake"), true);
+            //    File.Copy(
+            //        Path.Combine(builder.LuminoSourceDir, "LuminoConfig.cmake"),
+            //        Path.Combine(nativeEngineCMakeDir, "LuminoConfig.cmake"), true);
 
-                File.Copy(
-                    Path.Combine(builder.LuminoExternalDir, "ImportExternalLibraries.cmake"),
-                    Path.Combine(nativeEngineCMakeDir, "ImportExternalLibraries.cmake"), true);
+            //    File.Copy(
+            //        Path.Combine(builder.LuminoExternalDir, "ImportExternalLibraries.cmake"),
+            //        Path.Combine(nativeEngineCMakeDir, "ImportExternalLibraries.cmake"), true);
 
-                File.WriteAllText(
-                    Path.Combine(nativeEngineRoot, ".gitignore"),
-                    "include/\nlib/\n");
-            }
+            //    File.WriteAllText(
+            //        Path.Combine(nativeEngineRoot, ".gitignore"),
+            //        "include/\nlib/\n");
+            //}
 
             // C++ Engine
             {
-                // include files
-                {
-                    Utils.CopyDirectory(
-                        Path.Combine(builder.LuminoRootDir, "include"),
-                        Path.Combine(nativeEngineRoot, "include"));
-                }
+                //// include files
+                //{
+                //    Utils.CopyDirectory(
+                //        Path.Combine(builder.LuminoRootDir, "include"),
+                //        Path.Combine(nativeEngineRoot, "include"));
+                //}
+                
 
                 // lib files
                 CopyEngineLibs(builder, tempInstallDir, nativeEngineRoot, FileMoving);
@@ -149,35 +150,35 @@ namespace LuminoBuild.Tasks
             {
                 if (Directory.Exists(Path.Combine(tempInstallDir, arch.SourceDirName)))   // copy if directory exists.
                 {
-                    var targetDir = Path.Combine(nativeEngineRoot, "lib", arch.DestDirName);
+                    var targetDir = Path.Combine(nativeEngineRoot, arch.DestDirName);
+                    var targetLibDir = Path.Combine(targetDir, "lib");
 
-                    // Engine libs
+                    // Engine paclage
                     {
-                        var srcDir = Path.Combine(tempInstallDir, arch.SourceDirName, "lib");
+                        var srcDir = Path.Combine(tempInstallDir, arch.SourceDirName);
 
                         Console.WriteLine($"Copy {srcDir} to {targetDir}");
                         Utils.CopyDirectory(srcDir, targetDir);
                         if (fileMoving)
                             Directory.Delete(srcDir, true); // FIXME: CI サーバのストレージ不足対策
 
-                        // cmake
-                        var cmakeDir = Path.Combine(tempInstallDir, arch.SourceDirName, "cmake");
-                        if (Directory.Exists(cmakeDir))
-                            Utils.CopyDirectory(cmakeDir, targetDir);
+                        File.Copy(
+                            Path.Combine(builder.LuminoExternalDir, "ImportExternalLibraries.cmake"),
+                            Path.Combine(targetDir, "ImportExternalLibraries.cmake"), true);
                     }
 
                     // External libs
                     var externalInstallDir = Path.Combine(builder.LuminoBuildDir, arch.SourceDirName, "ExternalInstall");
                     foreach (var lib in externalLibs)
                     {
-                        var srcDir = Path.Combine(externalInstallDir, lib, "lib");
-                        if (Directory.Exists(srcDir))   // copy if directory exists. openal-soft etc are optional.
+                        var srcLibDir = Path.Combine(externalInstallDir, lib, "lib");
+                        if (Directory.Exists(srcLibDir))   // copy if directory exists. openal-soft etc are optional.
                         {
-                            Console.WriteLine($"Copy {srcDir} to {targetDir}");
-                            Utils.CopyDirectory(srcDir, targetDir);
+                            Console.WriteLine($"Copy {srcLibDir} to {targetLibDir}");
+                            Utils.CopyDirectory(srcLibDir, targetLibDir);
 
                             if (fileMoving)
-                                Directory.Delete(srcDir, true); // FIXME: CI サーバのストレージ不足対策
+                                Directory.Delete(srcLibDir, true); // FIXME: CI サーバのストレージ不足対策
                         }
                     }
 
@@ -187,7 +188,7 @@ namespace LuminoBuild.Tasks
                     // 以下、パスに "Debug" を含む者のうち、lib と同じ名前の pdb ファイルをコピーする。
                     if (arch.PdbCopy)
                     {
-                        var libfiles = Directory.GetFiles(targetDir, "*.lib", SearchOption.TopDirectoryOnly);
+                        var libfiles = Directory.GetFiles(targetLibDir, "*.lib", SearchOption.TopDirectoryOnly);
                         var libnames = new HashSet<string>(libfiles.Select(x => Path.GetFileNameWithoutExtension(x)));
                         var files1 = Directory.GetFiles(Path.Combine(builder.LuminoBuildDir, arch.SourceDirName), "*.pdb", SearchOption.AllDirectories);
                         foreach (var file in files1)
@@ -196,9 +197,9 @@ namespace LuminoBuild.Tasks
                             {
                                 // FIXME: CI サーバのストレージ不足対策
                                 if (fileMoving)
-                                    File.Move(file, Path.Combine(targetDir, Path.GetFileName(file)));
+                                    File.Move(file, Path.Combine(targetLibDir, Path.GetFileName(file)));
                                 else
-                                    File.Copy(file, Path.Combine(targetDir, Path.GetFileName(file)), true);
+                                    File.Copy(file, Path.Combine(targetLibDir, Path.GetFileName(file)), true);
                                 Console.WriteLine(file);
                             }
                         }
