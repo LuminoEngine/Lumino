@@ -657,7 +657,6 @@ endif()
 add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC  
     $<BUILD_INTERFACE:${LN_ENGINE_INCLUDE_DIR}>
-    $<INSTALL_INTERFACE:../../include>  # <prefix>/include
 )
 target_include_directories(${PROJECT_NAME} PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS})
 #target_compile_definitions(${PROJECT_NAME} PUBLIC LUMINO_BUILD_DLL=1)
@@ -702,21 +701,23 @@ endif()
 
 install(TARGETS ${PROJECT_NAME}
     EXPORT LuminoEngineTargets
-    ARCHIVE     DESTINATION lib            # Library installation location (Copied at "INSTALL" build time)
-    #INCLUDES    DESTINATION ../../include        # include directory (File is not copied)
-    FRAMEWORK DESTINATION .)
+    ARCHIVE     DESTINATION lib         # Library installation location (Copied at "INSTALL" build time)
+    INCLUDES    DESTINATION ./include   # Include directory (File is not copied)
+    FRAMEWORK   DESTINATION .)
     
-#install(DIRECTORY ${PROJECT_SOURCE_DIR}/include DESTINATION .)
+install(DIRECTORY ../../include/LuminoEngine DESTINATION ./include)
+install(FILES ../../include/Lumino.hpp DESTINATION include)
+install(FILES ../../include/LuminoEngine.hpp DESTINATION include)
 
 install(
     EXPORT LuminoEngineTargets
     FILE LuminoEngineTargets.cmake
-    EXPORT_LINK_INTERFACE_LIBRARIES
-    DESTINATION lib/cmake)
+    DESTINATION lib/cmake/LuminoEngine
+    EXPORT_LINK_INTERFACE_LIBRARIES)
 
 install(
     FILES LuminoEngineConfig.cmake
-    DESTINATION lib/cmake)
+    DESTINATION lib/cmake/LuminoEngine)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ../../../../lib/${LN_TARGET_ARCH})
