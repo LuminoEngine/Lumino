@@ -424,6 +424,16 @@ void UINativeFrameWindow::init()
 {
     UIFrameWindow::init();
     m_renderView = newObject<UIRenderView>();
+	m_graphicsContext = newObject<GraphicsContext>();
+}
+
+void UINativeFrameWindow::onDispose(bool explicitDisposing)
+{
+	UIFrameWindow::onDispose(explicitDisposing);
+	if (m_graphicsContext) {
+		m_graphicsContext->dispose();
+		m_graphicsContext = nullptr;
+	}
 }
 
 void UINativeFrameWindow::beginRendering(RenderTargetTexture* renderTarget)
@@ -433,19 +443,17 @@ void UINativeFrameWindow::beginRendering(RenderTargetTexture* renderTarget)
 
     m_manager->graphicsManager()->enterRendering();
 
-    GraphicsContext* ctx = m_manager->graphicsManager()->graphicsContext();
-    ctx->setRenderTarget(0, renderTarget);
-    ctx->setDepthBuffer(m_depthBuffer);
+	m_graphicsContext->resetState();
+	m_graphicsContext->setRenderTarget(0, renderTarget);
+	m_graphicsContext->setDepthBuffer(m_depthBuffer);
 }
 
 void UINativeFrameWindow::renderContents()
 {
-    GraphicsContext* ctx = m_manager->graphicsManager()->graphicsContext();
-
     if (m_renderView)
     {
         m_renderView->setRootElement(this);
-        m_renderView->render(ctx, ctx->renderTarget(0), ctx->depthBuffer());
+        m_renderView->render(m_graphicsContext, m_graphicsContext->renderTarget(0), m_graphicsContext->depthBuffer());
     }
 }
 

@@ -401,6 +401,15 @@ Ref<IShaderPass> OpenGLDevice::onCreateShaderPass(const ShaderPassCreateInfo& cr
 	return ptr;
 }
 
+Ref<IGraphicsContext> OpenGLDevice::onCreateGraphicsContext()
+{
+	auto ptr = makeRef<GLGraphicsContext>();
+	if (!ptr->init(this)) {
+		return nullptr;
+	}
+	return ptr;
+}
+
 
 //=============================================================================
 // GLGraphicsContext

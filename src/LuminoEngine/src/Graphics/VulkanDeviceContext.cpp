@@ -277,6 +277,12 @@ Ref<IShaderPass> VulkanDevice::onCreateShaderPass(const ShaderPassCreateInfo& cr
     return ptr;
 }
 
+Ref<IGraphicsContext> VulkanDevice::onCreateGraphicsContext()
+{
+	LN_NOTIMPLEMENTED();
+	return nullptr;
+}
+
 Result VulkanDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType)
 {
     VkPhysicalDeviceMemoryProperties memProperties;

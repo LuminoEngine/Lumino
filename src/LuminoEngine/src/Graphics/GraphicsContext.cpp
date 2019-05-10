@@ -31,6 +31,15 @@ GraphicsContext::~GraphicsContext()
 {
 }
 
+void GraphicsContext::init()
+{
+	Object::init();
+	m_manager = detail::EngineDomain::graphicsManager();
+	m_context = m_manager->deviceContext()->createGraphicsContext();
+	m_lastCommit.reset();
+	resetState();
+}
+
 void GraphicsContext::init(detail::IGraphicsContext* context)
 {
     LN_DCHECK(context);

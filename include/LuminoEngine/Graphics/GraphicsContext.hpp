@@ -129,6 +129,7 @@ private:
     LN_INTERNAL_NEW_OBJECT;
     GraphicsContext();
     virtual ~GraphicsContext();
+    void init();
     void init(detail::IGraphicsContext* context);
 
     void beginCommandRecodingIfNeeded();
@@ -170,7 +171,7 @@ private:
     };
 
     detail::GraphicsManager* m_manager;
-    detail::IGraphicsContext* m_context;
+    Ref<detail::IGraphicsContext> m_context;
     State m_staging;
     State m_lastCommit;
     uint32_t m_dirtyFlags;

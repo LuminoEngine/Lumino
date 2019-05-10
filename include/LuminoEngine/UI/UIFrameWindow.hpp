@@ -8,6 +8,7 @@
 
 namespace ln {
 namespace detail { class PlatformWindow; class UIManager; }
+class GraphicsContext;
 class SwapChain;
 class UIRenderView;
 class UIViewport;
@@ -113,13 +114,17 @@ public:
     void renderContents();
     void endRendering();
 
+protected:
+	virtual void onDispose(bool explicitDisposing) override;
+
 LN_CONSTRUCT_ACCESS:
     UINativeFrameWindow();
     void init();
 
 private:
+	Ref<GraphicsContext> m_graphicsContext;
     Ref<RenderTargetTexture> m_renderingRenderTarget;
-    Ref<DepthBuffer> m_renderingDepthBuffer;;
+    Ref<DepthBuffer> m_renderingDepthBuffer;
 };
 
 

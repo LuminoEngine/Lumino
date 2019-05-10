@@ -192,6 +192,11 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPass(const ShaderPassCreateInfo& c
 	return ptr;
 }
 
+Ref<IGraphicsContext> IGraphicsDevice::createGraphicsContext()
+{
+	return onCreateGraphicsContext();
+}
+
 Ref<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const UnifiedShader* unifiedShader, UnifiedShader::PassId passId, DiagnosticsManager* diag)
 {
     LN_DCHECK(unifiedShader);

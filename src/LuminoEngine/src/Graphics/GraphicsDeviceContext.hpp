@@ -175,9 +175,9 @@ public:
 	Ref<IDepthBuffer> createDepthBuffer(uint32_t width, uint32_t height);
 	Ref<ISamplerState> createSamplerState(const SamplerStateData& desc);
 	Ref<IShaderPass> createShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
+	Ref<IGraphicsContext> createGraphicsContext();
 
-    virtual IGraphicsContext* getGraphicsContext() const = 0;
-
+	virtual IGraphicsContext* getGraphicsContext() const = 0;
 
     // utility
     Ref<IShaderPass> createShaderPassFromUnifiedShaderPass(const UnifiedShader* unifiedShader, UnifiedShader::PassId passId, DiagnosticsManager* diag);
@@ -199,6 +199,7 @@ protected:
 	virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) = 0;
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) = 0;
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) = 0;
+	virtual Ref<IGraphicsContext> onCreateGraphicsContext() = 0;
 
 /////////
 	//virtual void onBeginCommandRecoding() = 0;
