@@ -134,9 +134,11 @@ void World::onInternalPhysicsUpdate(float elapsedSeconds)
 
 void World::onUpdate(float elapsedSeconds)
 {
-    for (auto& obj : m_rootWorldObjectList)
-    {
-        obj->updateFrame(elapsedSeconds);
+    // onUpdate 内で新しい WorldObject が作成され、m_rootWorldObjectList に add される場合に備えて
+    // イテレータによる列挙は行わない。新しく追加されたものは、このループで
+    // 今のフレーム中の最初の onUpdate が呼ばれる。
+    for (int i = 0; i < m_rootWorldObjectList->size(); i++) {
+        m_rootWorldObjectList[i]->updateFrame(elapsedSeconds);
     }
 }
 
