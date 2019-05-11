@@ -76,8 +76,11 @@ b2Shape* BoxCollisionShape2D::resolveBox2DShape()
 {
 	if (!m_shape || isDirty())
 	{
+        // Box2D はシェイプの境界にわずかなマージンを持たせる。
+        // このため、2Dワールドを拡大してみると、キャラクターと地面の間に1px分の隙間が見えてしまうようなことがある。
+        // 対策として、マージンを打ち消す (b2_linearSlop * 2) ようにしてみる。
 		m_shape = std::make_unique<b2PolygonShape>();
-		m_shape->SetAsBox(m_size.width * 0.5f, m_size.height * 0.5f, LnToB2(position()), rotation());
+		m_shape->SetAsBox(m_size.width * 0.5f - (b2_linearSlop * 2), m_size.height * 0.5f - (b2_linearSlop * 2), LnToB2(position()), rotation());
 		clearDirty();
 	}
 	return m_shape.get();
