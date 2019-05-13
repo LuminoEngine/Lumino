@@ -64,6 +64,8 @@ void UITextBlock::onRender(UIRenderingContext* context)
 // UIElement サイズの計算に使ったりするので、FlexText だけだとちょっとつらい。
 // かといって FlexText だけだと、Renderer に渡すデータ量が多くなってしまう。
 // ※FlexText は描画必要な最低限のデータを持たせたい。キャッシュも行って使ったりする。
+// ※FlexText の中身、つまり Glyph と Run は struct にして、コピーしやすくしたい。
+//   一方こちら側は TextArea の変更に対応したり、ユーザーに公開してカスタマイズしやすくしたりと、Object である方が都合がいい。
 
 class RTDocument;
 class RTInline;
@@ -174,7 +176,7 @@ public:
 	void addInline(RTInline* inl);
 	void clearInlines();
 
-	void updateGlyphs(RTDocument* document, const Size& areaSize, const Vector2& offset);
+	void updateVisualData(RTDocument* document, const Size& areaSize, const Vector2& offset);
 
 	virtual void updateFontDescHierarchical(const RTTextElement* parent, const detail::FontDesc& defaultFont, float dpiScale) override;
 
@@ -209,7 +211,7 @@ public:
 	virtual ~RTInline() = default;
 	void init() {}
 
-	virtual void updateGlyphs(RTDocument* document, const Size& areaSize, const Vector2& offset) {}
+	virtual void updateVisualData(RTDocument* document, const Size& areaSize, const Vector2& offset) {}
 
 private:
 };
@@ -219,7 +221,7 @@ class RTRun
 	, public detail::MeasureTextLayoutEngine
 {
 public:
-	RTRun() {}
+	RTRun();
 	void init() { RTInline::init(); }
 
 	void setText(const StringRef& text) { m_text = text; }
@@ -230,7 +232,7 @@ public:
 		m_rawFont = detail::EngineDomain::fontManager()->lookupFontCore(finalFontDesc(), dpiScale);
 	}
 
-	virtual void updateGlyphs(RTDocument* document, const Size& areaSize, const Vector2& offset) override;
+	virtual void updateVisualData(RTDocument* document, const Size& areaSize, const Vector2& offset) override;
 
 	void addGlyph(uint32_t codePoint, const Vector3& pos, float timeOffset);
 
@@ -252,7 +254,9 @@ private:
 	Ref<detail::FontCore> m_rawFont;
 	//List<RTGlyph> m_glyphs;
 	std::vector<detail::FlexGlyph> m_glyphs;
+	//Ref<detail::FlexGlyphRun> m_flexGlyphRun;
 	RTDocument* m_layoutingDocument;
+	bool m_dirty;
 };
 
 // 装飾範囲
@@ -341,10 +345,10 @@ void RTBlock::clearInlines()
 	m_inlines.clear();
 }
 
-void RTBlock::updateGlyphs(RTDocument* document, const Size& areaSize, const Vector2& offset)
+void RTBlock::updateVisualData(RTDocument* document, const Size& areaSize, const Vector2& offset)
 {
 	for (auto& inl : m_inlines) {
-		inl->updateGlyphs(document, areaSize, offset);
+		inl->updateVisualData(document, areaSize, offset);
 	}
 }
 
@@ -359,7 +363,13 @@ void RTBlock::updateFontDescHierarchical(const RTTextElement* parent, const deta
 //==============================================================================
 // RTRun
 
-void RTRun::updateGlyphs(RTDocument* document, const Size& areaSize, const Vector2& offset)
+RTRun::RTRun()
+	: m_dirty(true)
+	//: m_flexGlyphRun(makeRef<detail::FlexGlyphRun>())
+{
+}
+
+void RTRun::updateVisualData(RTDocument* document, const Size& areaSize, const Vector2& offset)
 {
 #if 0
 	m_glyphs.clear();
@@ -373,6 +383,11 @@ void RTRun::updateGlyphs(RTDocument* document, const Size& areaSize, const Vecto
 	// layout;
 
 #endif
+
+	if (m_dirty) {
+		document->flexText()->addGlyphRun(m_glyphs.data(), m_glyphs.size(), m_rawFont, Color::White);
+		m_dirty = false;
+	}
 }
 
 void RTRun::addGlyph(uint32_t codePoint, const Vector3& pos, float timeOffset)
@@ -383,6 +398,7 @@ void RTRun::addGlyph(uint32_t codePoint, const Vector3& pos, float timeOffset)
 	g.timeOffset = timeOffset;
 	m_glyphs.push_back(g);
 	//m_layoutingDocument->flexText()->addGlyphRun(g, );
+	m_dirty = true;
 }
 
 void RTRun::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size)
@@ -443,7 +459,7 @@ Size RTDocument::arrangeLayout(const Size& areaSize)
 	//m_glyphs.clear();
 	m_flexText->clear();
 	for (auto& block : m_blockList) {
-		block->updateGlyphs(this, areaSize, Vector2::Zero);
+		block->updateVisualData(this, areaSize, Vector2::Zero);
 	}
 
 	return areaSize;
@@ -456,6 +472,7 @@ Size RTDocument::arrangeLayout(const Size& areaSize)
 
 void RTDocument::render(UIRenderingContext* context)
 {
+	//context->setBlendMode(BlendMode::Normal);
 	for (auto& run : m_flexText->glyphRuns()) {
 		context->drawFlexGlyphRun(&run);
 	}
@@ -547,9 +564,6 @@ Size UITypographyArea::measureOverride(const Size& constraint)
 		dpiScale = w->platformWindow()->dpiFactor();
 	}
 
-	// TODO: 構築後、最初の１回だけでよい
-	m_document->updateFontDesc(detail::FontHelper::getFontDesc(finalStyle()->font), dpiScale);
-
 
 	static bool init = false;
 	if (!init) {
@@ -557,6 +571,11 @@ Size UITypographyArea::measureOverride(const Size& constraint)
 		builder.parse(finalStyle()->font, dpiScale, u"Hello Text!", constraint);
 		init = true;
 	}
+
+	// TODO: 構築後、最初の１回だけでよい
+	m_document->updateFontDesc(detail::FontHelper::getFontDesc(finalStyle()->font), dpiScale);
+
+
 
 
 	return Size::min(m_document->measureLayout(constraint), UIElement::measureOverride(constraint));
