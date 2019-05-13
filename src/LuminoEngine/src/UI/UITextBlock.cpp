@@ -171,7 +171,8 @@ public:
 	void clearInlines();
 
 	void updateGlyphs(RTDocument* document, const Size& areaSize, const Vector2& offset);
-	void render(UIRenderingContext* context);
+
+	virtual void updateFontDescHierarchical(const RTTextElement* parent, const detail::FontDesc& defaultFont, float dpiScale) override;
 
 protected:
 
@@ -207,7 +208,6 @@ public:
 	void init() {}
 
 	virtual void updateGlyphs(RTDocument* document, const Size& areaSize, const Vector2& offset) {}
-	virtual void render(UIRenderingContext* context) {}
 
 private:
 };
@@ -236,11 +236,6 @@ public:
 		m_layoutingDocument = nullptr;
 		//void layout(FontCore* font, const Char* text, size_t length, const Rect& targetArea, float strokeSize, TextAlignment alignment);
 		// layout;
-	}
-
-	virtual void render(UIRenderingContext* context) override
-	{
-		context->drawText(m_text, Color::White);
 	}
 
 protected:
@@ -348,10 +343,11 @@ void RTBlock::updateGlyphs(RTDocument* document, const Size& areaSize, const Vec
 	}
 }
 
-void RTBlock::render(UIRenderingContext* context)
+void RTBlock::updateFontDescHierarchical(const RTTextElement* parent, const detail::FontDesc& defaultFont, float dpiScale)
 {
+	RTTextElement::updateFontDescHierarchical(parent, defaultFont, dpiScale);
 	for (auto& inl : m_inlines) {
-		inl->render(context);
+		inl->updateFontDescHierarchical(this, defaultFont, dpiScale);
 	}
 }
 
@@ -405,8 +401,10 @@ Size RTDocument::arrangeLayout(const Size& areaSize)
 
 void RTDocument::render(UIRenderingContext* context)
 {
-	for (auto& block : m_blockList) {
-		block->render(context);
+	for (auto& glyph : m_glyphs) {
+		Char ch = glyph.codePoint;
+		context->setBaseTransfrom(Matrix::makeTranslation(Vector3(glyph.pos, 0)));
+		context->drawText(StringRef(&ch, 1), Color::White);
 	}
 }
 
