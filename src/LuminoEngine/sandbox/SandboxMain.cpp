@@ -106,8 +106,8 @@ int main(int argc, char** argv)
 
 
     GlobalLogger::addStdErrAdapter();
-    EngineSettings::setMainWindowSize(800, 600);
-    EngineSettings::setMainBackBufferSize(800, 600);
+    EngineSettings::setMainWindowSize(640, 480);
+    EngineSettings::setMainBackBufferSize(640, 480);
     EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);//GraphicsAPI::Vulkan);//
     EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
 
@@ -119,17 +119,20 @@ int main(int argc, char** argv)
     Engine::mainCamera()->addComponent(newObject<CameraOrbitControlComponent>());
     Engine::mainCamera()->setBackgroundColor(Color::Gray);
 
-#if 0
+#if 1
     auto window1 = UIWindow::create();
     window1->setPosition(Vector3(8, 8, 0));
     window1->setWidth(200);
     window1->setHeight(100);
     window1->setBackgroundColor(Color::White);
-    window1->setBackgroundImage(Assets::loadTexture(u"D:/Documents/LuminoProjects/RinoTutorial/Assets/window.png"));
+    window1->setBackgroundImage(Assets::loadTexture(u"window"));
     window1->setBackgroundImageRect(Rect(0, 0, 48, 48));
     window1->setBackgroundDrawMode(BrushImageDrawMode::BoxFrame);
     window1->setBackgroundImageBorder(Thickness(16));
     window1->setPadding(Thickness(16));
+
+	auto tp1 = UITypographyArea::create();
+	window1->addElement(tp1);
 #endif
 
  //   window1->setLayoutPanel(UIStackLayout::create());
@@ -176,7 +179,7 @@ int main(int argc, char** argv)
     obj1->addComponent(cmp1);
 #endif
 
-#if 1
+#if 0
     auto material = PhongMaterial::create();
     material->setMainTexture(Assets::loadTexture("D:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1.png"));
 

@@ -3,6 +3,7 @@
 
 namespace ln {
 class Material;
+class RTDocument;
 
 class UITextBlock
     : public UIElement
@@ -22,6 +23,28 @@ protected:
 
 private:
     String m_text;
+};
+
+
+class UITypographyArea
+	: public UIElement
+{
+public:
+	static Ref<UITypographyArea> create();
+
+	//void setText(const StringRef& value) { m_text = value; }
+
+LN_CONSTRUCT_ACCESS:
+	UITypographyArea();
+	void init();
+
+protected:
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
+	virtual void onRender(UIRenderingContext* context) override;
+
+private:
+	Ref<RTDocument> m_document;
 };
 
 } // namespace ln
