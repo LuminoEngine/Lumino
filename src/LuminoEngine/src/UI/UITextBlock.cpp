@@ -59,16 +59,21 @@ void UITextBlock::onRender(UIRenderingContext* context)
 
 //==============================================================================
 // 表示用 (編集非対応) の Document
+// このあたりのデータ構造は、FlexText を作成するために使う。
+// 直接 FlexText を作ってしまってもいいのだが、テキストをレイアウトした情報は取っておいて
+// UIElement サイズの計算に使ったりするので、FlexText だけだとちょっとつらい。
+// かといって FlexText だけだと、Renderer に渡すデータ量が多くなってしまう。
+// ※FlexText は描画必要な最低限のデータを持たせたい。キャッシュも行って使ったりする。
 
 class RTDocument;
 class RTInline;
 
 // 単一文字。最小単位。
-struct RTGlyph
-{
-	Vector2 pos;
-	uint32_t codePoint;
-};
+//struct RTGlyph
+//{
+//	Vector2 pos;
+//	uint32_t codePoint;
+//};
 //class RTGlyph
 //	: public Object
 //{
@@ -158,7 +163,6 @@ private:
 
 
 
-/** コンテンツをグループ化して段落にするために使用される。 */
 class RTBlock
 	: public RTTextElement
 {
@@ -184,9 +188,7 @@ private:
 	List<Ref<RTInline>> m_inlines;
 };
 
-/**
-	@brief	コンテンツをグループ化して段落にするために使用される。
-*/
+/** コンテンツをグループ化して段落にするために使用される。 */
 class RTParagraph
 	: public RTBlock
 {
@@ -228,15 +230,9 @@ public:
 		m_rawFont = detail::EngineDomain::fontManager()->lookupFontCore(finalFontDesc(), dpiScale);
 	}
 
-	virtual void updateGlyphs(RTDocument* document, const Size& areaSize, const Vector2& offset) override
-	{
-		//m_glyphs.clear();
-		m_layoutingDocument = document;
-		layout(m_rawFont, m_text.c_str(), m_text.length(), Rect(0, 0, areaSize), 0, TextAlignment::Left);
-		m_layoutingDocument = nullptr;
-		//void layout(FontCore* font, const Char* text, size_t length, const Rect& targetArea, float strokeSize, TextAlignment alignment);
-		// layout;
-	}
+	virtual void updateGlyphs(RTDocument* document, const Size& areaSize, const Vector2& offset) override;
+
+	void addGlyph(uint32_t codePoint, const Vector3& pos, float timeOffset);
 
 protected:
 	virtual void onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size) override;
@@ -255,6 +251,7 @@ private:
 	String m_text;
 	Ref<detail::FontCore> m_rawFont;
 	//List<RTGlyph> m_glyphs;
+	std::vector<detail::FlexGlyph> m_glyphs;
 	RTDocument* m_layoutingDocument;
 };
 
@@ -289,19 +286,27 @@ class RTDocument
 	: public Object
 {
 public:
+	RTDocument();
+	void clear();
 	void addBlock(RTBlock* block);
 	void updateFontDesc(const detail::FontDesc& defaultFont, float dpiScale);
+	void updateFrame(float elapsedSeconds);
 	Size measureLayout(const Size& constraint);
 	Size arrangeLayout(const Size& areaSize);
 	//void updateGlyphs();
 	void render(UIRenderingContext* context);
 
-	void addGlyph(const RTGlyph& value) { m_glyphs.add(value); }
+	//void addGlyph(const RTGlyph& value) { m_glyphs.add(value); }
+	const Ref<detail::FlexText>& flexText() const { return m_flexText; }
 
 private:
 	List<Ref<RTBlock>> m_blockList;
-	List<RTGlyph> m_glyphs;
+	//List<RTGlyph> m_glyphs;
+	Ref<detail::FlexText> m_flexText;
+	float m_localTime;
 };
+
+
 
 //==============================================================================
 // RTTextElement
@@ -352,18 +357,62 @@ void RTBlock::updateFontDescHierarchical(const RTTextElement* parent, const deta
 }
 
 //==============================================================================
-// 
+// RTRun
+
+void RTRun::updateGlyphs(RTDocument* document, const Size& areaSize, const Vector2& offset)
+{
+#if 0
+	m_glyphs.clear();
+	m_layoutingDocument = document;
+
+	layout(m_rawFont, m_text.c_str(), m_text.length(), Rect(0, 0, areaSize), 0, TextAlignment::Left);
+	m_layoutingDocument->flexText()->addGlyphRun(m_glyphs.data(), m_glyphs.size(), m_rawFont, Color::White);
+
+	m_layoutingDocument = nullptr;
+	//void layout(FontCore* font, const Char* text, size_t length, const Rect& targetArea, float strokeSize, TextAlignment alignment);
+	// layout;
+
+#endif
+}
+
+void RTRun::addGlyph(uint32_t codePoint, const Vector3& pos, float timeOffset)
+{
+	detail::FlexGlyph g;
+	g.codePoint = codePoint;
+	g.pos = pos;
+	g.timeOffset = timeOffset;
+	m_glyphs.push_back(g);
+	//m_layoutingDocument->flexText()->addGlyphRun(g, );
+}
 
 void RTRun::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size)
 {
-	RTGlyph g;
-	g.pos = pos;
+	//RTGlyph g;
+	//g.pos = pos;
+	//g.codePoint = ch;
+	//m_layoutingDocument->addGlyph(g);
+	detail::FlexGlyph g;
 	g.codePoint = ch;
-	m_layoutingDocument->addGlyph(g);
+	g.pos = Vector3(pos, 0);
+	g.timeOffset = 0;
+	m_glyphs.push_back(g);
+	//m_layoutingDocument->flexText()->addGlyphRun(g,)
 }
 
 //==============================================================================
-// 
+//
+
+RTDocument::RTDocument()
+	: m_flexText(makeRef<detail::FlexText>())
+	, m_localTime(0.0f)
+{
+}
+
+void RTDocument::clear()
+{
+	m_blockList.clear();
+	m_flexText->clear();
+}
 
 void RTDocument::addBlock(RTBlock* block)
 {
@@ -378,6 +427,11 @@ void RTDocument::updateFontDesc(const detail::FontDesc& defaultFont, float dpiSc
 	}
 }
 
+void RTDocument::updateFrame(float elapsedSeconds)
+{
+	m_localTime += elapsedSeconds;
+}
+
 // TODO: 折り返しする場合は constraint の幅で折り返し、下方向に改行した分で全体サイズを返す。
 Size RTDocument::measureLayout(const Size& constraint)
 {
@@ -386,7 +440,8 @@ Size RTDocument::measureLayout(const Size& constraint)
 
 Size RTDocument::arrangeLayout(const Size& areaSize)
 {
-	m_glyphs.clear();
+	//m_glyphs.clear();
+	m_flexText->clear();
 	for (auto& block : m_blockList) {
 		block->updateGlyphs(this, areaSize, Vector2::Zero);
 	}
@@ -401,12 +456,63 @@ Size RTDocument::arrangeLayout(const Size& areaSize)
 
 void RTDocument::render(UIRenderingContext* context)
 {
-	for (auto& glyph : m_glyphs) {
-		Char ch = glyph.codePoint;
-		context->setBaseTransfrom(Matrix::makeTranslation(Vector3(glyph.pos, 0)));
-		context->drawText(StringRef(&ch, 1), Color::White);
+	for (auto& run : m_flexText->glyphRuns()) {
+		context->drawFlexGlyphRun(&run);
 	}
+	//for (auto& glyph : m_glyphs) {
+	//	Char ch = glyph.codePoint;
+	//	context->setBaseTransfrom(Matrix::makeTranslation(Vector3(glyph.pos, 0)));
+	//	context->drawText(StringRef(&ch, 1), Color::White);
+	//}
 }
+
+
+//==============================================================================
+// RTDocumentBuilder
+
+class RTDocumentBuilder
+	: public detail::TextLayoutEngine
+{
+public:
+	RTDocumentBuilder(RTDocument* doc);
+	void parse(Font* font, float dpiScale, const ln::String& text, const Size& areaSize);
+
+private:
+	virtual void onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size) override;
+
+	RTDocument* m_document;
+	RTRun* m_currentRun;
+	float m_timeOffset;
+};
+
+
+RTDocumentBuilder::RTDocumentBuilder(RTDocument* doc)
+	: m_document(doc)
+	, m_currentRun(nullptr)
+{
+}
+
+void RTDocumentBuilder::parse(Font* font, float dpiScale, const ln::String& text, const Size& areaSize)
+{
+	m_document->clear();
+	m_timeOffset = 0.0f;
+
+	auto p = newObject<RTParagraph>();
+	m_document->addBlock(p);
+	auto r = newObject<RTRun>();
+	p->addInline(r);
+	m_currentRun = r;
+
+	detail::FontCore* fontCore = detail::FontHelper::resolveFontCore(font, dpiScale);
+	layout(fontCore, text.c_str(), text.length(), Rect(0, 0, areaSize), 0, TextAlignment::Left);
+}
+
+void RTDocumentBuilder::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size)
+{
+	m_currentRun->addGlyph(ch, Vector3(pos, 0), m_timeOffset);
+	m_timeOffset += 1.0f;
+}
+
 
 //==============================================================================
 // UITypographyArea
@@ -425,12 +531,13 @@ void UITypographyArea::init()
 	UIElement::init();
 	m_document = newObject<RTDocument>();
 
-	auto p = newObject<RTParagraph>();
-	m_document->addBlock(p);
 
-	auto r = newObject<RTRun>();
-	r->setText(u"Run Test");
-	p->addInline(r);
+	//auto p = newObject<RTParagraph>();
+	//m_document->addBlock(p);
+
+	//auto r = newObject<RTRun>();
+	//r->setText(u"Run Test");
+	//p->addInline(r);
 }
 
 Size UITypographyArea::measureOverride(const Size& constraint)
@@ -443,12 +550,23 @@ Size UITypographyArea::measureOverride(const Size& constraint)
 	// TODO: 構築後、最初の１回だけでよい
 	m_document->updateFontDesc(detail::FontHelper::getFontDesc(finalStyle()->font), dpiScale);
 
+
+	static bool init = false;
+	if (!init) {
+		RTDocumentBuilder builder(m_document);
+		builder.parse(finalStyle()->font, dpiScale, u"Hello Text!", constraint);
+		init = true;
+	}
+
+
 	return Size::min(m_document->measureLayout(constraint), UIElement::measureOverride(constraint));
+	//return UIElement::measureOverride(constraint);
 }
 
 Size UITypographyArea::arrangeOverride(const Size& finalSize)
 {
 	return Size::min(m_document->arrangeLayout(finalSize), UIElement::arrangeOverride(finalSize));
+	//return UIElement::arrangeOverride(finalSize);
 }
 
 void UITypographyArea::onRender(UIRenderingContext* context)

@@ -16,6 +16,7 @@ class MeshResource;
 class MeshContainer;
 class RenderViewPoint;
 namespace detail {
+class FlexGlyphRun;
 class RenderingManager;
 class DrawElementList;
 class DrawElementListBuilder;
@@ -136,6 +137,8 @@ public:
 
     // font が nullptr の場合は defaultFont
     void drawText(const StringRef& text, const Color& color, Font* font = nullptr);
+
+	void drawFlexGlyphRun(detail::FlexGlyphRun* glyphRun);
 
 	/** @} */
 

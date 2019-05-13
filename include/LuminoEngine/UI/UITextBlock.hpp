@@ -4,6 +4,9 @@
 namespace ln {
 class Material;
 class RTDocument;
+//namespace detail {
+//class FlexText;
+//}
 
 class UITextBlock
     : public UIElement
@@ -45,6 +48,7 @@ protected:
 
 private:
 	Ref<RTDocument> m_document;
+	//Ref<detail::FlexText> m_flexText;
 };
 
 } // namespace ln

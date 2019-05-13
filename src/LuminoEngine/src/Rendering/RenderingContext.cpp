@@ -462,6 +462,21 @@ void RenderingContext::drawText(const StringRef& text, const Color& color, Font*
     //ptr->setLocalBoundingSphere(sphere);
 }
 
+void RenderingContext::drawFlexGlyphRun(detail::FlexGlyphRun* glyphRun)
+{
+	auto* element = m_builder->addNewDrawElement<detail::DrawTextElement>(
+		m_manager->spriteTextRenderFeature(),
+		m_builder->spriteTextRenderFeatureStageParameters());
+	element->glyphRun = glyphRun;
+	//element->flexText = makeRef<detail::FlexText>();	// TODO: cache
+	//element->flexText->copyFrom(text);
+
+	// TODO
+	//detail::Sphere sphere;
+	//detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &sphere);
+	//ptr->setLocalBoundingSphere(sphere);
+}
+
 void RenderingContext::addAmbientLight(const Color& color, float intensity)
 {
 	m_builder->targetList()->addDynamicLightInfo(detail::DynamicLightInfo::makeAmbientLightInfo(color, intensity));
