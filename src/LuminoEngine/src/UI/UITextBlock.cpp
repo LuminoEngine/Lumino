@@ -384,10 +384,10 @@ void RTRun::updateVisualData(RTDocument* document, const Size& areaSize, const V
 
 #endif
 
-	if (m_dirty) {
+	//if (m_dirty) {
 		document->flexText()->addGlyphRun(m_glyphs.data(), m_glyphs.size(), m_rawFont, Color::White);
-		m_dirty = false;
-	}
+	//	m_dirty = false;
+	//}
 }
 
 void RTRun::addGlyph(uint32_t codePoint, const Vector3& pos, float timeOffset)
