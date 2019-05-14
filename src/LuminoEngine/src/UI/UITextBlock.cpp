@@ -428,6 +428,7 @@ void RTDocument::clear()
 {
 	m_blockList.clear();
 	m_flexText->clear();
+	m_localTime = 0.0f;
 }
 
 void RTDocument::addBlock(RTBlock* block)
@@ -446,6 +447,7 @@ void RTDocument::updateFontDesc(const detail::FontDesc& defaultFont, float dpiSc
 void RTDocument::updateFrame(float elapsedSeconds)
 {
 	m_localTime += elapsedSeconds;
+	m_flexText->setTime(m_localTime);
 }
 
 // TODO: 折り返しする場合は constraint の幅で折り返し、下方向に改行した分で全体サイズを返す。
@@ -577,8 +579,8 @@ Size UITypographyArea::measureOverride(const Size& constraint)
 
 
 
-
-	return Size::min(m_document->measureLayout(constraint), UIElement::measureOverride(constraint));
+	return m_document->measureLayout(constraint);
+	//return Size::min(m_document->measureLayout(constraint), UIElement::measureOverride(constraint));
 	//return UIElement::measureOverride(constraint);
 }
 
@@ -586,6 +588,11 @@ Size UITypographyArea::arrangeOverride(const Size& finalSize)
 {
 	return Size::min(m_document->arrangeLayout(finalSize), UIElement::arrangeOverride(finalSize));
 	//return UIElement::arrangeOverride(finalSize);
+}
+
+void UITypographyArea::onUpdateFrame(float elapsedSeconds)
+{
+	m_document->updateFrame(elapsedSeconds);
 }
 
 void UITypographyArea::onRender(UIRenderingContext* context)

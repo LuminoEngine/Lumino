@@ -80,9 +80,13 @@ public:
 	const std::vector<FlexGlyph>& glyphs() const { return m_glyphs; }
 	std::vector<FlexGlyphRun>& glyphRuns() { return m_glyphRuns; }
 
+	void setTime(float value) { m_time = value; }
+	float time() const { return m_time; }
+
 private:
 	std::vector<FlexGlyph> m_glyphs;	// 配置は TextLayoutEngine でやっておくこと。
 	std::vector<FlexGlyphRun> m_glyphRuns;
+	float m_time;
 	//Ref<Font> m_font;
 	// TODO: effectFunction
 };

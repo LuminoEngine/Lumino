@@ -60,6 +60,10 @@ void UIViewport::removeImageEffect(ImageEffect* effect)
 
 void UIViewport::onUpdateFrame(float elapsedTimer)
 {
+	for (auto& view : m_renderViews) {
+		view->updateFrame(elapsedTimer);
+	}
+
     m_imageEffectRenderer->updateFrame(elapsedTimer);
 }
 

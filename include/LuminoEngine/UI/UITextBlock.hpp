@@ -44,6 +44,7 @@ LN_CONSTRUCT_ACCESS:
 protected:
 	virtual Size measureOverride(const Size& constraint) override;
 	virtual Size arrangeOverride(const Size& finalSize) override;
+	virtual void onUpdateFrame(float elapsedSeconds) override;
 	virtual void onRender(UIRenderingContext* context) override;
 
 private:

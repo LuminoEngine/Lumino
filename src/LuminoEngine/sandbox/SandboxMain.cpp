@@ -132,6 +132,7 @@ int main(int argc, char** argv)
     window1->setPadding(Thickness(16));
 
 	auto tp1 = UITypographyArea::create();
+	tp1->setBackgroundColor(Color::Red);
 	window1->addElement(tp1);
 #endif
 

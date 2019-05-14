@@ -61,6 +61,11 @@ EventConnection RenderView::connectOnUIEvent(UIEventHandler handler)
     return m_onUIEvent.connect(handler);
 }
 
+void RenderView::updateFrame(float elapsedSeconds)
+{
+	onUpdateFrame(elapsedSeconds);
+}
+
 void RenderView::updateUIStyle(const detail::UIStyleInstance* parentFinalStyle)
 {
 	onUpdateUIStyle(parentFinalStyle);
@@ -70,6 +75,10 @@ void RenderView::updateUILayout(const Rect& parentFinalGlobalRect)
 {
 	// TODO: こんなのでいいのか要チェック
 	onUpdateUILayout(Rect(parentFinalGlobalRect.x, parentFinalGlobalRect.y, m_actualPixelSize.width, m_actualPixelSize.height));
+}
+
+void RenderView::onUpdateFrame(float elapsedSeconds)
+{
 }
 
 void RenderView::onUpdateUIStyle(const detail::UIStyleInstance* finalStyle)

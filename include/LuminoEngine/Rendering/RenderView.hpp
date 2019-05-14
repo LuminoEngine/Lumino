@@ -57,8 +57,10 @@ public:
     EventConnection connectOnUIEvent(UIEventHandler handler);
 
 public: // TODO: protected
+	void updateFrame(float elapsedSeconds);
 	void updateUIStyle(const detail::UIStyleInstance* parentFinalStyle);
 	void updateUILayout(const Rect& parentFinalGlobalRect);
+	virtual void onUpdateFrame(float elapsedSeconds);
 	virtual void onUpdateUIStyle(const detail::UIStyleInstance* finalStyle);
 	virtual void onUpdateUILayout(const Rect& finalGlobalRect);
     virtual void onRoutedEvent(UIEventArgs* e);

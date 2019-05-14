@@ -184,7 +184,7 @@ void SpriteTextRenderFeature::drawFlexGlyphRun(GraphicsContext* context, const F
 		auto& glyph = glyphRun->owner->glyphs()[glyphRun->startIndex + i];
 		Color color = glyphRun->color;
 		color.a *= glyph.opacity;
-		if (color.a > 0.0f) {
+		if (glyph.timeOffset <= glyphRun->owner->time() && color.a > 0.0f) {
 
 			CacheGlyphInfo info;
 			bool flush;

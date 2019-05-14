@@ -35,6 +35,11 @@ void UIRenderView::setRootElement(UIElement* element)
     m_rootElement = element;
 }
 
+void UIRenderView::onUpdateFrame(float elapsedSeconds)
+{
+	m_rootElement->updateFrame(elapsedSeconds);
+}
+
 void UIRenderView::onUpdateUIStyle(const detail::UIStyleInstance* finalStyle)
 {
 	m_rootElement->updateStyleHierarchical(finalStyle);
