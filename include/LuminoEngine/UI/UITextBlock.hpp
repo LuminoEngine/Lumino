@@ -37,6 +37,8 @@ public:
 
 	//void setText(const StringRef& value) { m_text = value; }
 
+	void setTypingSpeed(float value) { m_typingSpeed = value; }
+
 LN_CONSTRUCT_ACCESS:
 	UITypographyArea();
 	void init();
@@ -50,6 +52,7 @@ protected:
 private:
 	Ref<RTDocument> m_document;
 	//Ref<detail::FlexText> m_flexText;
+	float m_typingSpeed;
 };
 
 } // namespace ln

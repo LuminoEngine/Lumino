@@ -129,6 +129,10 @@ public:
 	virtual void updateFontDescHierarchical(const RTTextElement* parent, const detail::FontDesc& defaultFont, float dpiScale);
 	const detail::FontDesc& finalFontDesc() const { return m_finalFontDesc; }
 
+
+	virtual Size measureLayout(const Size& constraint) {}
+	virtual Size arrangeLayout(const Size& areaSize) {}
+
 LN_CONSTRUCT_ACCESS:
 	RTTextElement() {}
 	virtual ~RTTextElement() {}
@@ -235,6 +239,9 @@ public:
 	virtual void updateVisualData(RTDocument* document, const Size& areaSize, const Vector2& offset) override;
 
 	void addGlyph(uint32_t codePoint, const Vector3& pos, float timeOffset);
+
+	virtual Size measureLayout(const Size& constraint) override;
+	virtual Size arrangeLayout(const Size& areaSize) override;
 
 protected:
 	virtual void onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size) override;
@@ -415,6 +422,16 @@ void RTRun::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size)
 	//m_layoutingDocument->flexText()->addGlyphRun(g,)
 }
 
+Size RTRun::measureLayout(const Size& constraint)
+{
+	return constraint;
+}
+
+Size RTRun::arrangeLayout(const Size& areaSize)
+{
+	return areaSize;
+}
+
 //==============================================================================
 //
 
@@ -542,6 +559,7 @@ Ref<UITypographyArea> UITypographyArea::create()
 }
 
 UITypographyArea::UITypographyArea()
+	: m_typingSpeed(0.05f)
 {
 }
 
@@ -578,9 +596,11 @@ Size UITypographyArea::measureOverride(const Size& constraint)
 	m_document->updateFontDesc(detail::FontHelper::getFontDesc(finalStyle()->font), dpiScale);
 
 
+	Size baseArea = Size::max(constraint, UIElement::measureOverride(constraint));
 
-	return m_document->measureLayout(constraint);
-	//return Size::min(m_document->measureLayout(constraint), UIElement::measureOverride(constraint));
+
+	//return m_document->measureLayout(constraint);
+	return Size::min(m_document->measureLayout(constraint), baseArea);
 	//return UIElement::measureOverride(constraint);
 }
 
@@ -592,7 +612,7 @@ Size UITypographyArea::arrangeOverride(const Size& finalSize)
 
 void UITypographyArea::onUpdateFrame(float elapsedSeconds)
 {
-	m_document->updateFrame(elapsedSeconds);
+	m_document->updateFrame(elapsedSeconds * (1.0f / m_typingSpeed));
 }
 
 void UITypographyArea::onRender(UIRenderingContext* context)
