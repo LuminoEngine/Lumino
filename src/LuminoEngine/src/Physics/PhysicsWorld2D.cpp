@@ -413,6 +413,7 @@ void RigidBody2D::setVelocity(const Vector2& value)
 {
     m_velocity = value;
     m_applyCommands.push_back({ ApplyType::SetVelocity, value, Vector2::Zero });
+    m_modifyVelocityInSim = true;
 }
 
 void RigidBody2D::setMass(float value)
@@ -582,6 +583,7 @@ void RigidBody2D::onBeforeStepSimulation()
         }
     }
     m_applyCommands.clear();
+    m_modifyVelocityInSim = false;
 
     m_body->SetAwake(true);
 }
@@ -591,7 +593,9 @@ void RigidBody2D::onAfterStepSimulation()
 	if (!m_kinematic) {
 		m_position = B2ToLn(m_body->GetPosition());
 		m_rotation = m_body->GetAngle();
-        m_velocity = B2ToLn(m_body->GetLinearVelocity());
+        if (!m_modifyVelocityInSim) {
+            m_velocity = B2ToLn(m_body->GetLinearVelocity());
+        }
 	}
 
     PhysicsObject2D::onAfterStepSimulation();

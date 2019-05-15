@@ -407,6 +407,8 @@ private:
 	bool m_kinematic;
     bool m_fixedRotation;
     std::vector<ApplyCommand> m_applyCommands;  // TODO: linerallocator にしたい
+
+    bool m_modifyVelocityInSim = false; // TODO: test
 };
 
 struct RaycastResult2D
