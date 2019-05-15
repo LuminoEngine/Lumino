@@ -12,7 +12,7 @@ namespace ln {
 
 Ref<VertexLayout> VertexLayout::create()
 {
-    return newObject<VertexLayout>();
+    return makeObject<VertexLayout>();
 }
 
 VertexLayout::VertexLayout()

@@ -35,7 +35,7 @@ void WorldRenderView::init()
     m_sceneRenderingPipeline = makeRef<detail::SceneRenderingPipeline>();
     m_sceneRenderingPipeline->init();
     m_drawElementListCollector = makeRef<detail::DrawElementListCollector>();
-    m_viewPoint = newObject<RenderViewPoint>();
+    m_viewPoint = makeObject<RenderViewPoint>();
 
     createGridPlane();
 }
@@ -145,7 +145,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 void WorldRenderView::createGridPlane()
 {
     // 適当な四角形メッシュ
-    auto meshResource = newObject<MeshResource>();
+    auto meshResource = makeObject<MeshResource>();
     meshResource->resizeVertexBuffer(4);
     meshResource->resizeIndexBuffer(6);
     meshResource->setIndex(0, 0);
@@ -156,10 +156,10 @@ void WorldRenderView::createGridPlane()
     meshResource->setIndex(5, 3);
     meshResource->addSection(0, 2, 0);
 
-    auto meshContainer = newObject<MeshContainer>();
+    auto meshContainer = makeObject<MeshContainer>();
     meshContainer->setMeshResource(meshResource);
 
-    m_gridPlane = newObject<StaticMeshModel>();
+    m_gridPlane = makeObject<StaticMeshModel>();
     m_gridPlane->addMeshContainer(meshContainer);
 
 #if 1
@@ -169,17 +169,17 @@ void WorldRenderView::createGridPlane()
 	};
 	static const size_t size = LN_ARRAY_SIZE_OF(data);
 	MemoryStream stream(data, size);
-	auto shader = newObject<Shader>(u"InfinitePlaneGrid", &stream);
+	auto shader = makeObject<Shader>(u"InfinitePlaneGrid", &stream);
 #else
     auto shader = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/InfinitePlaneGrid.fx");
 #endif
-    auto material = newObject<Material>();
+    auto material = makeObject<Material>();
     material->setShader(shader);
     m_gridPlane->addMaterial(material);
 
     // 四方の辺に黒線を引いたテクスチャを作り、マテリアルにセットしておく
     SizeI gridTexSize(512, 512);
-    auto gridTex = newObject<Texture2D>(gridTexSize.width, gridTexSize.height, TextureFormat::RGBA8);
+    auto gridTex = makeObject<Texture2D>(gridTexSize.width, gridTexSize.height, TextureFormat::RGBA8);
 	gridTex->setMipmapEnabled(true);
 	gridTex->setResourceUsage(GraphicsResourceUsage::Dynamic);
     for (int x = 0; x < gridTexSize.width; ++x)
@@ -197,7 +197,7 @@ void WorldRenderView::createGridPlane()
     material->setBlendMode(BlendMode::Alpha);
     material->setDepthWriteEnabled(false);
 
-    auto samplerState = newObject<SamplerState>();
+    auto samplerState = makeObject<SamplerState>();
     samplerState->setFilterMode(TextureFilterMode::Linear);
     gridTex->setSamplerState(samplerState);
 

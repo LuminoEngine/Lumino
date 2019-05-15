@@ -14,12 +14,12 @@ LN_OBJECT_IMPLEMENT(AmbientLight, WorldObject);
 
 Ref<AmbientLight> AmbientLight::create()
 {
-	return newObject<AmbientLight>();
+	return makeObject<AmbientLight>();
 }
 
 Ref<AmbientLight> AmbientLight::create(const Color& color)
 {
-	return newObject<AmbientLight>(color);
+	return makeObject<AmbientLight>(color);
 }
 
 AmbientLight::AmbientLight()
@@ -35,7 +35,7 @@ AmbientLight::~AmbientLight()
 void AmbientLight::init()
 {
 	WorldObject::init();
-	m_component = newObject<AmbientLightComponent>();
+	m_component = makeObject<AmbientLightComponent>();
 	addComponent(m_component);
 }
 
@@ -57,12 +57,12 @@ LN_OBJECT_IMPLEMENT(HemisphereLight, WorldObject);
 
 Ref<HemisphereLight> HemisphereLight::create()
 {
-	return newObject<HemisphereLight>();
+	return makeObject<HemisphereLight>();
 }
 
 Ref<HemisphereLight> HemisphereLight::create(const Color& skyColor, const Color& groundColor)
 {
-	return newObject<HemisphereLight>(skyColor, groundColor);
+	return makeObject<HemisphereLight>(skyColor, groundColor);
 }
 
 HemisphereLight::HemisphereLight()
@@ -78,7 +78,7 @@ HemisphereLight::~HemisphereLight()
 void HemisphereLight::init()
 {
 	WorldObject::init();
-	m_component = newObject<HemisphereLightComponent>();
+	m_component = makeObject<HemisphereLightComponent>();
 	addComponent(m_component);
 }
 
@@ -101,12 +101,12 @@ LN_OBJECT_IMPLEMENT(DirectionalLight, WorldObject);
 
 Ref<DirectionalLight> DirectionalLight::create()
 {
-	return newObject<DirectionalLight>();
+	return makeObject<DirectionalLight>();
 }
 
 Ref<DirectionalLight> DirectionalLight::create(const Color& color)
 {
-	return newObject<DirectionalLight>(color);
+	return makeObject<DirectionalLight>(color);
 }
 
 DirectionalLight::DirectionalLight()
@@ -122,7 +122,7 @@ DirectionalLight::~DirectionalLight()
 void DirectionalLight::init()
 {
 	WorldObject::init();
-	m_component = newObject<DirectionalLightComponent>();
+	m_component = makeObject<DirectionalLightComponent>();
 	addComponent(m_component);
     setPosition(10, 10, -10);
     lookAt(Vector3(0, 0, 0));
@@ -146,12 +146,12 @@ LN_OBJECT_IMPLEMENT(PointLight, WorldObject);
 
 Ref<PointLight> PointLight::create()
 {
-	return newObject<PointLight>();
+	return makeObject<PointLight>();
 }
 
 Ref<PointLight> PointLight::create(const Color& color, float range)
 {
-	return newObject<PointLight>(color, range);
+	return makeObject<PointLight>(color, range);
 }
 
 PointLight::PointLight()
@@ -167,7 +167,7 @@ PointLight::~PointLight()
 void PointLight::init()
 {
 	WorldObject::init();
-	m_component = newObject<PointLightComponent>();
+	m_component = makeObject<PointLightComponent>();
 	addComponent(m_component);
 }
 
@@ -190,12 +190,12 @@ LN_OBJECT_IMPLEMENT(SpotLight, WorldObject);
 
 Ref<SpotLight> SpotLight::create()
 {
-	return newObject<SpotLight>();
+	return makeObject<SpotLight>();
 }
 
 Ref<SpotLight> SpotLight::create(const Color& color, float range, float angle)
 {
-	return newObject<SpotLight>(color, range, angle);
+	return makeObject<SpotLight>(color, range, angle);
 }
 
 SpotLight::SpotLight()
@@ -211,7 +211,7 @@ SpotLight::~SpotLight()
 void SpotLight::init()
 {
 	WorldObject::init();
-	m_component = newObject<SpotLightComponent>();
+	m_component = makeObject<SpotLightComponent>();
 	addComponent(m_component);
 }
 

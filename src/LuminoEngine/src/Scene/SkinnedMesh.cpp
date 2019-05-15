@@ -12,12 +12,12 @@ namespace ln {
 
 Ref<SkinnedMesh> SkinnedMesh::create()
 {
-    return newObject<SkinnedMesh>();
+    return makeObject<SkinnedMesh>();
 }
 
 Ref<SkinnedMesh> SkinnedMesh::create(const StringRef& filePath, float scale)
 {
-    return newObject<SkinnedMesh>(filePath, scale);
+    return makeObject<SkinnedMesh>(filePath, scale);
 }
 
 SkinnedMesh::SkinnedMesh()
@@ -31,7 +31,7 @@ SkinnedMesh::~SkinnedMesh()
 void SkinnedMesh::init()
 {
     VisualObject::init();
-    m_component = newObject<SkinnedMeshComponent>();
+    m_component = makeObject<SkinnedMeshComponent>();
     addComponent(m_component);
     setMainVisualComponent(m_component);
 }

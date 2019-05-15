@@ -21,7 +21,7 @@ namespace detail {
 
 Ref<AbstractMaterial> PmxMaterialResource::MakeCommonMaterial() const
 {
-    auto m = newObject<Material>();
+    auto m = makeObject<Material>();
     m->setMainTexture(Texture);
     m->setColor(Diffuse);
     m->setEmissive(Emissive);
@@ -166,9 +166,9 @@ void PmxSkinnedMeshResource::refreshInitialValues()
 
 Ref<SkinnedMeshModel> PmxSkinnedMeshResource::createSkinnedMeshModel()
 {
-    auto model = newObject<SkinnedMeshModel>();
+    auto model = makeObject<SkinnedMeshModel>();
 
-    auto meshContainer = newObject<MeshContainer>();
+    auto meshContainer = makeObject<MeshContainer>();
     meshContainer->setMeshResource(this);
     model->addMeshContainer(meshContainer);
 
@@ -221,7 +221,7 @@ Ref<SkinnedMeshModel> PmxSkinnedMeshResource::createSkinnedMeshModel()
         }
 
         // animation
-		model->m_animationController = newObject<AnimationController>(model);
+		model->m_animationController = makeObject<AnimationController>(model);
     }
 
     // 後の計算回数を減らすため、IKボーンを BoneIndex の昇順、深さの昇順で並べ替える。
@@ -258,7 +258,7 @@ Ref<SkinnedMeshModel> PmxSkinnedMeshResource::createSkinnedMeshModel()
 
 Ref<SkinnedMeshBone> PmxSkinnedMeshResource::createBoneModel(PmxBoneResource* boneData)
 {
-    auto bone = newObject<SkinnedMeshBone>();
+    auto bone = makeObject<SkinnedMeshBone>();
     bone->m_data = boneData;
     return bone;
 }
@@ -310,7 +310,7 @@ Ref<PmxSkinnedMeshResource> PmxLoader::load(detail::MeshManager* manager, Stream
 	BinaryReader reader(stream);
 	//m_modelCore = Ref<PmxSkinnedMeshResource>::makeRef();
 	//m_modelCore->initialize(manager->getGraphicsManager(), MeshCreationFlags::DynamicBuffers);
-    m_modelCore = newObject<PmxSkinnedMeshResource>();
+    m_modelCore = makeObject<PmxSkinnedMeshResource>();
 	m_modelCore->Format = ModelFormat_PMX;
 	
 	//-----------------------------------------------------
@@ -569,7 +569,7 @@ void PmxLoader::loadTextureTable(BinaryReader* reader, const Path& baseDir)
 
 		// 作成
 		Path filePath(baseDir, name);
-        m_textureTable.add(newObject<Texture2D>(filePath));
+        m_textureTable.add(makeObject<Texture2D>(filePath));
         //m_textureTable.add(Assets::loadTexture(filePath));
 		//m_textureTable.add(m_manager->createTexture(baseDir, filePath, m_flags));
 	}

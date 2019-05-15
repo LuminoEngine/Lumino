@@ -344,7 +344,7 @@ void PhysicsWorld::removeObjectInternal(PhysicsObject* obj)
 
 Ref<SpringJoint> SpringJoint::create()
 {
-    return newObject<SpringJoint>();
+    return makeObject<SpringJoint>();
 }
 
 SpringJoint::SpringJoint()

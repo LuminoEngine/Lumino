@@ -64,7 +64,7 @@ LN_OBJECT_IMPLEMENT(PlaneCollisionShape, CollisionShape);
 //------------------------------------------------------------------------------
 Ref<PlaneCollisionShape> PlaneCollisionShape::create(const Vector3& direction)
 {
-    return newObject<PlaneCollisionShape>(direction);
+    return makeObject<PlaneCollisionShape>(direction);
 }
 
 //------------------------------------------------------------------------------
@@ -91,7 +91,7 @@ LN_OBJECT_IMPLEMENT(BoxCollisionShape, CollisionShape);
 //------------------------------------------------------------------------------
 Ref<BoxCollisionShape> BoxCollisionShape::create(const Vector3& size)
 {
-    return newObject<BoxCollisionShape>(size);
+    return makeObject<BoxCollisionShape>(size);
 }
 
 //------------------------------------------------------------------------------
@@ -125,7 +125,7 @@ LN_OBJECT_IMPLEMENT(SphereCollisionShape, CollisionShape);
 //------------------------------------------------------------------------------
 Ref<SphereCollisionShape> SphereCollisionShape::create(float radius)
 {
-    return newObject<SphereCollisionShape>(radius);
+    return makeObject<SphereCollisionShape>(radius);
 }
 	
 //------------------------------------------------------------------------------
@@ -152,7 +152,7 @@ LN_OBJECT_IMPLEMENT(CapsuleCollisionShape, CollisionShape);
 //------------------------------------------------------------------------------
 Ref<CapsuleCollisionShape> CapsuleCollisionShape::create(float radius, float height)
 {
-    return newObject<CapsuleCollisionShape>(radius, height);
+    return makeObject<CapsuleCollisionShape>(radius, height);
 }
 
 //------------------------------------------------------------------------------
@@ -179,7 +179,7 @@ LN_OBJECT_IMPLEMENT(MeshCollisionShape, CollisionShape);
 //------------------------------------------------------------------------------
 Ref<MeshCollisionShape> MeshCollisionShape::create(MeshResource* mesh)
 {
-    return newObject<MeshCollisionShape>(mesh);
+    return makeObject<MeshCollisionShape>(mesh);
 }
 
 //------------------------------------------------------------------------------

@@ -29,7 +29,7 @@ void SwapChain::init(detail::PlatformWindow* window, const SizeI& backbufferSize
     GraphicsResource::init();
     m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createSwapChain(window, backbufferSize);
     m_rhiObject->acquireNextImage(&m_imageIndex);
-    m_backbuffer = newObject<RenderTargetTexture>(this);
+    m_backbuffer = makeObject<RenderTargetTexture>(this);
     detail::TextureInternal::resetSwapchainFrameIfNeeded(m_backbuffer, false);
 }
 

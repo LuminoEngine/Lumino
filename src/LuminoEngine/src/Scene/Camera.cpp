@@ -10,7 +10,7 @@ namespace ln {
 
 Ref<Camera> Camera::create()
 {
-    return newObject<Camera>();
+    return makeObject<Camera>();
 }
 
 Camera::Camera()
@@ -27,7 +27,7 @@ Camera::~Camera()
 void Camera::init()
 {
 	WorldObject::init();
-    m_component = newObject<CameraComponent>();
+    m_component = makeObject<CameraComponent>();
     addComponent(m_component);
     setPosition(0, 0, -10.0f);
 }

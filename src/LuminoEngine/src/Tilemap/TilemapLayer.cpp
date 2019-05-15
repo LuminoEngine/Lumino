@@ -150,7 +150,7 @@ void AbstractTilemapLayer::render(TilemapModel* model, RenderingContext* context
 
 Ref<TilemapLayer> TilemapLayer::create()
 {
-    return newObject<TilemapLayer>();
+    return makeObject<TilemapLayer>();
 }
 
 TilemapLayer::TilemapLayer()

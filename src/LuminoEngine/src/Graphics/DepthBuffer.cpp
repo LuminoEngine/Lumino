@@ -12,7 +12,7 @@ namespace ln {
 
 Ref<DepthBuffer> DepthBuffer::create(int width, int height)
 {
-    return newObject<DepthBuffer>(width, height);
+    return makeObject<DepthBuffer>(width, height);
 }
 
 Ref<DepthBuffer> DepthBuffer::getTemporary(int width, int height)

@@ -25,7 +25,7 @@ UIElement::UIElement()
     , m_context(nullptr)
     , m_visualParent(nullptr)
     , m_logicalParent(nullptr)
-    , m_localStyle(newObject<UIStyle>()) // TODO: ふつうは static なオブジェクトのほうが多くなるので、必要なやつだけ遅延作成でいいと思う
+    , m_localStyle(makeObject<UIStyle>()) // TODO: ふつうは static なオブジェクトのほうが多くなるので、必要なやつだけ遅延作成でいいと思う
     , m_finalStyle(makeRef<detail::UIStyleInstance>())
     , m_renderPriority(0)
     , m_isHitTestVisible(true)
@@ -42,7 +42,7 @@ void UIElement::init()
     m_manager = detail::EngineDomain::uiManager();
 
 	// TODO: Material も、実際に描画が必要な Element に限って作成した方がいいだろう
-	m_finalStyle->backgroundMaterial = newObject<Material>();
+	m_finalStyle->backgroundMaterial = makeObject<Material>();
 
 	if (m_objectManagementFlags.hasFlag(detail::ObjectManagementFlags::AutoAddToActiveScene)) {
 		UIContainerElement* primaryElement = m_manager->primaryElement();
@@ -475,7 +475,7 @@ void UIElement::render(UIRenderingContext* context)
 		{
 			
 			if (m_finalStyle->backgroundColor.a > 0.0f) {
-				//auto tex = newObject<Texture2D>(u"D:/Proj/LN/HC1/Assets/Windowskin/window.png");
+				//auto tex = makeObject<Texture2D>(u"D:/Proj/LN/HC1/Assets/Windowskin/window.png");
 				//auto mat = Material::create(tex);
 				context->setMaterial(m_finalStyle->backgroundMaterial);
                 context->drawBoxBackground(Rect(0, 0, m_finalGlobalRect.getSize()), m_finalStyle->backgroundImageBorder, CornerRadius(), m_finalStyle->backgroundDrawMode, m_finalStyle->backgroundImageRect, m_finalStyle->backgroundColor);

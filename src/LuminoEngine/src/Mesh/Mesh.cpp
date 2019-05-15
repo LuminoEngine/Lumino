@@ -192,7 +192,7 @@ void MeshResource::requestBuffers(VertexBufferGroup group, VertexBuffer** outVer
 {
 	// prepare vertex buffers
 	if (!m_vertexBuffers[group]) {
-		m_vertexBuffers[group] = ln::newObject<VertexBuffer>(m_vertexCount * VertexStrideTable[group], m_usage);
+		m_vertexBuffers[group] = ln::makeObject<VertexBuffer>(m_vertexCount * VertexStrideTable[group], m_usage);
 	}
 
 	// sync vertex buffers size
@@ -210,7 +210,7 @@ void MeshResource::requestBuffers(VertexBufferGroup group, VertexBuffer** outVer
 	if (outIndexBuffer) {
         // prepare index buffer
         if (!m_indexBuffer) {
-            m_indexBuffer = ln::newObject<IndexBuffer>(m_indexCount, detail::GraphicsResourceInternal::selectIndexBufferFormat(m_vertexCount), m_usage);
+            m_indexBuffer = ln::makeObject<IndexBuffer>(m_indexCount, detail::GraphicsResourceInternal::selectIndexBufferFormat(m_vertexCount), m_usage);
         }
         else if (realIndexCount() != m_indexCount) {
             m_indexBuffer->resize(m_indexCount);

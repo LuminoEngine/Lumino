@@ -26,7 +26,7 @@ void UIManager::init(const Settings& settings)
 
 	m_graphicsManager = settings.graphicsManager;
     m_eventArgsPool = makeRef<EventArgsPool>();
-    //m_mainContext = newObject<UIContext>();
+    //m_mainContext = makeObject<UIContext>();
 
     LN_LOG_DEBUG << "UIManager Initialization ended.";
 }

@@ -10,7 +10,7 @@ namespace ln {
 
 Ref<Tilemap> Tilemap::create()
 {
-    return newObject<Tilemap>();
+    return makeObject<Tilemap>();
 }
 
 Tilemap::Tilemap()
@@ -24,7 +24,7 @@ Tilemap::~Tilemap()
 void Tilemap::init()
 {
     VisualObject::init();
-    m_component = newObject<TilemapComponent>();
+    m_component = makeObject<TilemapComponent>();
     addComponent(m_component);
     setMainVisualComponent(m_component);
 }

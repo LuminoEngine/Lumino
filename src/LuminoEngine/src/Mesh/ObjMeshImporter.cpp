@@ -156,7 +156,7 @@ Ref<StaticMeshModel> ObjMeshImporter::import(const Path& filePath, float scale, 
     }
 
     std::unordered_map<int, Vector3> smoothVertexNormals;
-    auto meshModel = newObject<StaticMeshModel>();
+    auto meshModel = makeObject<StaticMeshModel>();
 
     for (tinyobj::shape_t& shape : shapes)
     {
@@ -172,14 +172,14 @@ Ref<StaticMeshModel> ObjMeshImporter::import(const Path& filePath, float scale, 
             computeSmoothingNormals(attrib, shape, smoothVertexNormals);
         }
 
-        auto meshContainer = newObject<MeshContainer>();
+        auto meshContainer = makeObject<MeshContainer>();
         meshContainer->setName(String::fromStdString(shape.name));
 
         // TODO: 以下の実装では vertex index が index buffer の内容と同じなのでメモリ効率が悪い。
         // 全く同じ要素の頂点を共有するようにすれば効率よくなる。
         // その場合は index_t が一致するものを検索することになる。
 
-        auto meshResource = newObject<MeshResource>();
+        auto meshResource = makeObject<MeshResource>();
         meshResource->resizeVertexBuffer(shape.mesh.indices.size());
         meshResource->resizeIndexBuffer(shape.mesh.indices.size());
 
@@ -263,10 +263,10 @@ Ref<StaticMeshModel> ObjMeshImporter::import(const Path& filePath, float scale, 
         materialData.emissive.a = 1.0f;
         materialData.power = material.shininess;
 
-        Ref<Texture2D> texture = nullptr;//newObject<Texture2D>(u"D:/tmp/110220c_as019.png");
+        Ref<Texture2D> texture = nullptr;//makeObject<Texture2D>(u"D:/tmp/110220c_as019.png");
         if (!material.diffuse_texname.empty())
             texture = Assets::loadTexture(String::fromStdString(material.diffuse_texname));
-        auto m = newObject<Material>(texture, materialData);
+        auto m = makeObject<Material>(texture, materialData);
         meshModel->addMaterial(m);
     }
 

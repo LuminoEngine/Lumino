@@ -116,7 +116,7 @@ int main(int argc, char** argv)
 	//Font::registerFontFromFile(u"C:/Users/hldc0061/Downloads/mplus-TESTFLIGHT-063/mplus-1c-regular.ttf");
 
 
-    Engine::mainCamera()->addComponent(newObject<CameraOrbitControlComponent>());
+    Engine::mainCamera()->addComponent(makeObject<CameraOrbitControlComponent>());
     Engine::mainCamera()->setBackgroundColor(Color::Gray);
 
 #if 1
@@ -172,11 +172,11 @@ int main(int argc, char** argv)
     m1->m_shapeType = ParticleEmitterShapeType::Cone;
     m1->m_shapeParam.x = Math::PI * 0.1;
     m1->m_shapeParam.y = 2;
-    auto cmp1 = newObject<ParticleEmitterComponent>(m1);
+    auto cmp1 = makeObject<ParticleEmitterComponent>(m1);
     cmp1->setCullMode(CullMode::None);
     cmp1->setBlendMode(BlendMode::Alpha);
 
-    auto obj1 = newObject<WorldObject>();
+    auto obj1 = makeObject<WorldObject>();
     obj1->addComponent(cmp1);
 #endif
 
@@ -212,11 +212,11 @@ int main(int argc, char** argv)
 
     Effect::emit(m1, Vector3::Zero);
 
-    //auto cmp1 = newObject<ParticleEmitterComponent>(m1);
+    //auto cmp1 = makeObject<ParticleEmitterComponent>(m1);
     //cmp1->setCullMode(CullMode::None);
     //cmp1->setBlendMode(BlendMode::Add);
 
-    //auto obj1 = newObject<WorldObject>();
+    //auto obj1 = makeObject<WorldObject>();
     //obj1->addComponent(cmp1);
     //obj1->setPosition(5, 0, 0);
 
@@ -243,9 +243,9 @@ int main(int argc, char** argv)
     material->setMainTexture(Assets::loadTexture("D:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1.png"));
     m1->setMaterial(material);
 
-    auto particle1 = newObject<ParticleEmitterComponent>(m1);
+    auto particle1 = makeObject<ParticleEmitterComponent>(m1);
     particle1->setBlendMode(BlendMode::Add);
-    auto obj1 = newObject<WorldObject>();
+    auto obj1 = makeObject<WorldObject>();
     obj1->addComponent(particle1);
     obj1->setPosition(0, 5, 0);
     //particle1->setAngles(Math::PI, 0, 0);
@@ -267,9 +267,9 @@ int main(int argc, char** argv)
 
     //auto particle2 = ParticleEmitter3D::create(m2);
     //particle2->SetBlendMode(BlendMode::Add);
-    auto particle2 = newObject<ParticleEmitterComponent>(m2);
+    auto particle2 = makeObject<ParticleEmitterComponent>(m2);
     particle2->setBlendMode(BlendMode::Add);
-    auto obj2 = newObject<WorldObject>();
+    auto obj2 = makeObject<WorldObject>();
     obj2->addComponent(particle2);
     //obj2->setPosition(0, 12, 0);
 #endif
@@ -289,15 +289,15 @@ int main(int argc, char** argv)
 
 	//{
 
-	//	auto p2world = newObject<PhysicsWorld2D>();
+	//	auto p2world = makeObject<PhysicsWorld2D>();
     auto p2world = Engine::mainWorld()->physicsWorld2D();
-	auto shape1 = newObject<BoxCollisionShape2D>(Size(10, 2));
-	auto body1 = newObject<RigidBody2D>();
+	auto shape1 = makeObject<BoxCollisionShape2D>(Size(10, 2));
+	auto body1 = makeObject<RigidBody2D>();
 	body1->addCollisionShape(shape1);
 	p2world->addPhysicsObject(body1);
 
-	auto shape2 = newObject<BoxCollisionShape2D>(Size(1, 1));
-	auto body2 = newObject<RigidBody2D>();
+	auto shape2 = makeObject<BoxCollisionShape2D>(Size(1, 1));
+	auto body2 = makeObject<RigidBody2D>();
 	body2->addCollisionShape(shape2);
 	body2->setPosition(Vector2(0, 15));
 	body2->setMass(1);
@@ -311,7 +311,7 @@ int main(int argc, char** argv)
 	//}
 
 
-    auto ctl = newObject<CameraOrbitControlComponent>();
+    auto ctl = makeObject<CameraOrbitControlComponent>();
     Engine::mainCamera()->addComponent(ctl);
     Engine::mainCamera()->setPosition(0, 5, -10);
     Engine::mainCamera()->setBackgroundColor(Color::Gray);
@@ -328,7 +328,7 @@ int main(int argc, char** argv)
         { { -1, -1, 0, 1 }, { 1, 0 } },
         { { 1, -1, 0, 1 }, { 1, 1 } },
     };
-    auto m_vertexBuffer = ln::newObject<ln::VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
+    auto m_vertexBuffer = ln::makeObject<ln::VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
     
 	//detail::EngineDomain::fontManager()->registerFontFromFile();
     Font::registerFontFromFile(LN_LOCALFILE("../../../tools/VLGothic/VL-PGothic-Regular.ttf"));
@@ -343,7 +343,7 @@ int main(int argc, char** argv)
 	//font2->getGlobalMetrics(&gm);
 
 	//detail::BitmapGlyphInfo bmpInfo;
-	////auto bmp = newObject<Bitmap2D>();
+	////auto bmp = makeObject<Bitmap2D>();
 	////bmpInfo.glyphBitmap = bmp;
 	//bmpInfo.glyphBitmap = nullptr;
 	//font2->lookupGlyphBitmap('A', &bmpInfo);
@@ -360,27 +360,27 @@ int main(int argc, char** argv)
 	//auto light1 = AmbientLight::create();
  //   auto light2 = DirectionalLight::create();
 
-    auto tex = newObject<Texture2D>(u"D:/tmp/110220c_as019.png");
+    auto tex = makeObject<Texture2D>(u"D:/tmp/110220c_as019.png");
     //auto tex = Assets::loadTexture(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Sprite1.png");
     //tex->drawText(u"Hello!", Rect(0, 0, 100, 100), font, Color::White);
-    //auto tex = newObject<Texture2D>(2, 2);
+    //auto tex = makeObject<Texture2D>(2, 2);
     //auto bmp1 = tex->map(MapMode::Write);
     //bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
     //bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
     //bmp1->setPixel32(0, 1, ColorI(0, 255, 0, 255));
     //bmp1->setPixel32(1, 1, ColorI(0, 0, 255, 255));
 
-    //auto sprite = newObject<UISprite>();
+    //auto sprite = makeObject<UISprite>();
     //sprite->setTexture(tex);
     //sprite->setPosition(20, 10);
-    //auto imageEffect = newObject<ScreenBlurImageEffect>();
+    //auto imageEffect = makeObject<ScreenBlurImageEffect>();
     //imageEffect->setAmount(0.7);
     //imageEffect->setRadialScale(1.05);
     //Engine::mainViewport()->addImageEffect(imageEffect);
 
     //auto sprite = Sprite::create(3, 3, tex);
 
-    //auto tilemap = newObject<Tilemap>();
+    //auto tilemap = makeObject<Tilemap>();
     //tilemap->setShadingModel(ShadingModel::UnLighting);
 
 
@@ -402,16 +402,16 @@ int main(int argc, char** argv)
     ////sprite2->setPosition(200, 100);
     //sprite2->setCenterPoint(50, 50);
 
-    //auto mesh1 = newObject<StaticMesh>(u"D:/tmp/cube.obj");
-    //auto mesh1 = newObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
-    //auto mesh1 = newObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/usemtl-issue-68.obj");
+    //auto mesh1 = makeObject<StaticMesh>(u"D:/tmp/cube.obj");
+    //auto mesh1 = makeObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
+    //auto mesh1 = makeObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/usemtl-issue-68.obj");
     //mesh1->setPosition(0, -1, 0);
     //
 
-    //auto mesh2 = newObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
+    //auto mesh2 = makeObject<StaticMesh>(u"D:/Proj/Volkoff/Engine/Lumino/build/ExternalSource/tinyobjloader/models/cornell_box.obj");
     //mesh2->setPosition(2, 0, 0);
 
-    //auto mesh3 = newObject<StaticMesh>(u"D:/Proj/TH-10/Assets/Graphics/test/sphere4.obj", 2);
+    //auto mesh3 = makeObject<StaticMesh>(u"D:/Proj/TH-10/Assets/Graphics/test/sphere4.obj", 2);
     //mesh3->setVisible(false);
 
     //auto clip1 = VmdAnimationClip::create(u"D:/MMD/Materials/モーション/Love&Joy/love&joyお面無しver.vmd");
@@ -430,10 +430,10 @@ int main(int argc, char** argv)
     //Engine::update();
     //Engine::update();
     //{
-    //    auto camera = newObject<Camera>();
+    //    auto camera = makeObject<Camera>();
     //    camera->setPosition(0, 0, -20);
-    //    auto ofs = newObject<OffscreenWorldRenderView>();
-    //    auto rt1 = newObject<RenderTargetTexture>(640, 480, TextureFormat::RGBA32, false);
+    //    auto ofs = makeObject<OffscreenWorldRenderView>();
+    //    auto rt1 = makeObject<RenderTargetTexture>(640, 480, TextureFormat::RGBA32, false);
     //    ofs->setRenderTarget(rt1);
     //    ofs->setTargetWorld(Engine::mainWorld());
     //    ofs->setCamera(camera);
@@ -447,21 +447,21 @@ int main(int argc, char** argv)
 
 #if 0
     //auto shape1 = BoxCollisionShape::create(5, 1, 5);
-    //auto body1 = newObject<RigidBody>();
+    //auto body1 = makeObject<RigidBody>();
     //body1->addCollisionShape(shape1);
     //body1->setTransform(Matrix::makeTranslation(0, -3, 0));
     //Engine::mainPhysicsWorld()->addPhysicsObject(body1);
 
 
     //auto shape2 = CapsuleCollisionShape::create(0.5, 3);
-    //auto body2 = newObject<RigidBody>();
+    //auto body2 = makeObject<RigidBody>();
     //body2->addCollisionShape(shape2);
     //body2->setTransform(Matrix::makeTranslation(0, -2, 0));
     //body2->setMass(1.0f);
     //body2->setKinematic(true);
     //Engine::mainPhysicsWorld()->addPhysicsObject(body2);
 
-    //auto body3 = newObject<SoftBody>();
+    //auto body3 = makeObject<SoftBody>();
     //body3->createFromMesh(mesh3->staticMeshComponent()->model()->meshContainers().front()->meshResource(), Engine::mainPhysicsWorld());
 
     auto tex2 = Assets::loadTexture(u"D:/Documents/Modeling/grid_uv_2.png");
@@ -470,8 +470,8 @@ int main(int argc, char** argv)
     {
         for (int i = 0; i < 5; i++)
         {
-            auto obj2 = newObject<WorldObject>();
-            auto cmp2 = newObject<SphereComponent>();
+            auto obj2 = makeObject<WorldObject>();
+            auto cmp2 = makeObject<SphereComponent>();
             auto mat2 = Material::create();
             mat2->setMetallic(static_cast<float>(i) / 5);
             mat2->setRoughness(std::max(static_cast<float>(y) / 5, 0.001f));
@@ -483,8 +483,8 @@ int main(int argc, char** argv)
         }
     }
 
-    auto plane1 = newObject<WorldObject>();
-    auto planecmp2 = newObject<PlaneComponent>();
+    auto plane1 = makeObject<WorldObject>();
+    auto planecmp2 = makeObject<PlaneComponent>();
     auto planemat2 = Material::create();
     //planemat2->setMetallic(0.1);
     //planemat2->setRoughness(0.1);
@@ -502,7 +502,7 @@ int main(int argc, char** argv)
     auto meshMaterial = Material::create();
     meshMaterial->setMainTexture(tex);
 
-    auto meshRes = newObject<MeshResource>();
+    auto meshRes = makeObject<MeshResource>();
     meshRes->resizeVertexBuffer(4);
     meshRes->resizeIndexBuffer(6);
     meshRes->resizeSections(1);
@@ -518,37 +518,37 @@ int main(int argc, char** argv)
     meshRes->setIndex(5, 3);
     meshRes->setSection(0, 0, 2, 0);
 
-    auto meshContainer = newObject<MeshContainer>();
+    auto meshContainer = makeObject<MeshContainer>();
     meshContainer->setMeshResource(meshRes);
 
-    auto meshModel = newObject<StaticMeshModel>();
+    auto meshModel = makeObject<StaticMeshModel>();
     meshModel->addMeshContainer(meshContainer);
     meshModel->addMaterial(meshMaterial);
 
-    auto mesh1 = newObject<StaticMesh>();
+    auto mesh1 = makeObject<StaticMesh>();
     mesh1->staticMeshComponent()->setModel(meshModel);
 #endif
 
 #if 0
-    //auto sound = newObject<Sound>(u"D:\\tmp\\4_Battle_win.wav");
-    auto sound = newObject<Sound>(u"D:/Music/momentum/02 - momentum.wav");
-    //auto sound = newObject<Sound>(u"D:/Proj/Volkoff/Assets/Data/Sound/BGM/monochrome.ogg");
+    //auto sound = makeObject<Sound>(u"D:\\tmp\\4_Battle_win.wav");
+    auto sound = makeObject<Sound>(u"D:/Music/momentum/02 - momentum.wav");
+    //auto sound = makeObject<Sound>(u"D:/Proj/Volkoff/Assets/Data/Sound/BGM/monochrome.ogg");
     sound->play();
     //sound->setPitch(1.2);
 
     //GameAudio::playBGM(u"D:/Proj/Volkoff/Assets/Data/Sound/BGM/monochrome.ogg");
 #endif
 #if 0
-    //auto source = newObject<AudioSourceNode>(u"D:/Tech/Audio/WebAudioTest1/2018-11-29T13_00_15.686Z.wav");
-    auto source = newObject<AudioSourceNode>(u"D:/Music/momentum/02 - momentum.wav");
-    //auto source = newObject<TestProcessorNode>();
+    //auto source = makeObject<AudioSourceNode>(u"D:/Tech/Audio/WebAudioTest1/2018-11-29T13_00_15.686Z.wav");
+    auto source = makeObject<AudioSourceNode>(u"D:/Music/momentum/02 - momentum.wav");
+    //auto source = makeObject<TestProcessorNode>();
     //AudioNode::connect(source, AudioContext::primary()->destination());
     
-    //auto recoder = newObject<TestRecoderNode>();
+    //auto recoder = makeObject<TestRecoderNode>();
     //AudioNode::connect(source, recoder);
     //AudioNode::connect(recoder, AudioContext::primary()->destination());
 
-    auto gain = newObject<AudioGainNode>();
+    auto gain = makeObject<AudioGainNode>();
     AudioNode::connect(source, gain);
     AudioNode::connect(gain, AudioContext::primary()->destination());
 
@@ -621,21 +621,21 @@ int main(int argc, char** argv)
 	{
 		auto ss = FileStream::create(u"D:\\tmp\\light_song_instrumental_0.mp3");
 		detail::Mp3AudioDecoder dec;
-		auto diag = newObject<DiagnosticsManager>();
+		auto diag = makeObject<DiagnosticsManager>();
 		dec.initialize(ss, diag);
 	}
 
 	
 #if 0
-	auto source = newObject<AudioSourceNode>(u"D:\\tmp\\8_MapBGM2.wav");
-	auto panner = newObject<AudioPannerNode>();
+	auto source = makeObject<AudioSourceNode>(u"D:\\tmp\\8_MapBGM2.wav");
+	auto panner = makeObject<AudioPannerNode>();
 	AudioNode::connect(source, panner);
 	AudioNode::connect(panner, AudioContext::primary()->destination());
 	source->setPlaybackRate(1.2);
 	source->start();
 #else
-	auto source = newObject<AudioSourceNode>(u"D:\\tmp\\3_EventScene_variation2.wav");
-	//auto source = newObject<AudioSourceNode>(u"D:\\tmp\\8_MapBGM2.wav");
+	auto source = makeObject<AudioSourceNode>(u"D:\\tmp\\3_EventScene_variation2.wav");
+	//auto source = makeObject<AudioSourceNode>(u"D:\\tmp\\8_MapBGM2.wav");
 	AudioNode::connect(source, AudioContext::primary()->destination());
 	//source->setPlaybackRate(1.2);
 	source->start();
@@ -658,12 +658,12 @@ int main(int argc, char** argv)
 		Vector4(0, -1, 0, 1),
 	};
 
-	auto vb = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+	auto vb = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
-	auto decl = newObject<VertexLayout>();
+	auto decl = makeObject<VertexLayout>();
 	decl->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
 
-	//auto renderTarget = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBX32, false);
+	//auto renderTarget = makeObject<RenderTargetTexture>(32, 32, TextureFormat::RGBX32, false);
 
 
 
@@ -713,9 +713,9 @@ int main(int argc, char** argv)
 			}
 		};
 
-		auto renderView = newObject<TestRenderView>();
+		auto renderView = makeObject<TestRenderView>();
 
-		auto tex1 = newObject<Texture2D>(2, 2);
+		auto tex1 = makeObject<Texture2D>(2, 2);
 		auto bmp1 = tex1->map(MapMode::Write);
 		bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
 		bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
@@ -725,7 +725,7 @@ int main(int argc, char** argv)
 		material->setMainTexture(tex1);
 
 #if 1
-		auto diag = newObject<DiagnosticsManager>();
+		auto diag = makeObject<DiagnosticsManager>();
 		detail::MqoImporter importer;
 		auto meshModel = importer.import(detail::EngineDomain::meshManager(),
 			u"D:\\Documents\\LuminoProjects\\TestModels\\grass-1.mqo", diag);
@@ -734,7 +734,7 @@ int main(int argc, char** argv)
 		//meshModel->materials()[0]->setMainTexture(tex1);
 
 #else
-		auto meshRes = newObject<MeshResource>();
+		auto meshRes = makeObject<MeshResource>();
 		meshRes->resizeVertexBuffer(4);
 		meshRes->resizeIndexBuffer(6);
 		meshRes->resizeSections(1);
@@ -750,10 +750,10 @@ int main(int argc, char** argv)
 		meshRes->setIndex(5, 3);
 		meshRes->setSection(0, 0, 2, 0);
 
-		auto meshContainer = newObject<MeshContainer>();
+		auto meshContainer = makeObject<MeshContainer>();
 		meshContainer->setMeshResource(meshRes);
 
-		auto meshModel = newObject<StaticMeshModel>();
+		auto meshModel = makeObject<StaticMeshModel>();
 		meshModel->addMeshContainer(meshContainer);
 		meshModel->addMaterial(material);
 #endif
@@ -805,9 +805,9 @@ int main(int argc, char** argv)
 			}
 		};
 
-		auto renderView = newObject<TestRenderView>();
+		auto renderView = makeObject<TestRenderView>();
 
-		auto tex1 = newObject<Texture2D>(2, 2);
+		auto tex1 = makeObject<Texture2D>(2, 2);
 		auto bmp1 = tex1->map(MapMode::Write);
 		bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
 		bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
@@ -864,7 +864,7 @@ int main(int argc, char** argv)
 			}
 		};
 
-		auto renderView = newObject<TestRenderView>();
+		auto renderView = makeObject<TestRenderView>();
 
 		auto builder = detail::EngineDomain::renderingManager()->renderStageListBuilder();
 		builder->setTargetList(renderView->m_elementList);
@@ -873,7 +873,7 @@ int main(int argc, char** argv)
 
 
 
-		auto tex1 = newObject<Texture2D>(2, 2);
+		auto tex1 = makeObject<Texture2D>(2, 2);
 		auto bmp1 = tex1->map(MapMode::Write);
 		bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
 		bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
@@ -921,8 +921,8 @@ int main(int argc, char** argv)
 
 		//Engine::graphicsContext()->setShaderPass(shader->techniques()[0]->passes()[0]);
 
-		//auto tex1 = newObject<Texture2D>(LN_LOCALFILE("Assets/Sprite1.png"));
-		auto tex1 = newObject<Texture2D>(2, 2);
+		//auto tex1 = makeObject<Texture2D>(LN_LOCALFILE("Assets/Sprite1.png"));
+		auto tex1 = makeObject<Texture2D>(2, 2);
 		auto bmp1 = tex1->map(MapMode::Write);
 		bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
 		bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));

@@ -183,7 +183,7 @@ void FreeTypeFontCached::init(FontManager* manager, const FontDesc& desc)
 	int height = std::ceil(FLValueToFloatPx(m_ftFace->bbox.yMax) - FLValueToFloatPx(m_ftFace->bbox.yMin));
 	width += 2;		// antialias などが入ると微妙に増える。mplus で 22 ポイントにすると発生した。
 	height += 2;
-	m_internalCacheBitmap = newObject<Bitmap2D>(width, height, PixelFormat::A8);
+	m_internalCacheBitmap = makeObject<Bitmap2D>(width, height, PixelFormat::A8);
 
 	// グリフ格納用ビットマップ (仮確保)
 	//m_glyphBitmap.attach(LN_NEW RawBitmap(SizeI(m_desc.Size, m_desc.Size), PixelFormat::A8));
@@ -539,7 +539,7 @@ Result FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
 	// Antialias などが有効になると bbox のサイズでは収まらなくなることがあるため、サイズを余分に確保しておく。
 	int width = Math::nextPow2(std::ceil(FLValueToFloatPx(m_face->bbox.xMax) - FLValueToFloatPx(m_face->bbox.xMin)) + 2);
 	int height = Math::nextPow2(std::ceil(FLValueToFloatPx(m_face->bbox.yMax) - FLValueToFloatPx(m_face->bbox.yMin)) + 2);
-	m_internalCacheBitmap = newObject<Bitmap2D>(width, height, PixelFormat::A8);
+	m_internalCacheBitmap = makeObject<Bitmap2D>(width, height, PixelFormat::A8);
 
 	return false;
 }

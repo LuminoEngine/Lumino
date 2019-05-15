@@ -25,18 +25,18 @@ class ObjectHelper;
     ::ln::TypeInfo* classType::_lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); }
 
 #define LN_INTERNAL_NEW_OBJECT \
-    template<class T, typename... TArgs> friend ln::Ref<T> ln::newObject(TArgs&&... args); \
+    template<class T, typename... TArgs> friend ln::Ref<T> ln::makeObject(TArgs&&... args); \
     template<class T, typename... TArgs> friend void ln::placementNewObject(void* ptr, TArgs&&... args); 
 
 #ifndef LN_CONSTRUCT_ACCESS
 #define LN_CONSTRUCT_ACCESS \
-		template<class T, typename... TArgs> friend ln::Ref<T> ln::newObject(TArgs&&... args); \
+		template<class T, typename... TArgs> friend ln::Ref<T> ln::makeObject(TArgs&&... args); \
 		template<class T, typename... TArgs> friend void ln::placementNewObject(void* ptr, TArgs&&... args); \
 		protected
 #endif
 
 template<class T, typename... TArgs>
-Ref<T> newObject(TArgs&&... args)
+Ref<T> makeObject(TArgs&&... args)
 {
 	auto ptr = Ref<T>(new T(), false);
 	ptr->init(std::forward<TArgs>(args)...);
@@ -286,7 +286,7 @@ public:
 	template<class T>
 	static Ref<T> deserialize(const StringRef& jsonText)
 	{
-		Ref<T> value = newObject<T>();
+		Ref<T> value = makeObject<T>();
 		JsonTextInputArchive ar(jsonText);
 		ar.load(*value);
 		return value;

@@ -195,8 +195,8 @@ void ShadowCasterPass::init()
 
 	m_defaultShader = manager()->builtinShader(BuiltinShader::ShadowCaster);
 
-	m_shadowMap = newObject<RenderTargetTexture>(1024, 1024, TextureFormat::RGBA32F, false);
-	m_depthBuffer = newObject<DepthBuffer>(1024, 1024);
+	m_shadowMap = makeObject<RenderTargetTexture>(1024, 1024, TextureFormat::RGBA32F, false);
+	m_depthBuffer = makeObject<DepthBuffer>(1024, 1024);
 
 	//g_m_shadowMap = m_shadowMap;
 }
@@ -251,11 +251,11 @@ void ClusteredShadingSceneRenderer::init(RenderingManager* manager)
 {
 	SceneRenderer::init();
 
-	m_depthPrepass = newObject<DepthPrepass>();
+	m_depthPrepass = makeObject<DepthPrepass>();
 	//addPass(m_depthPrepass);
 
 	// pass "Geometry"
-    auto geometryPass = newObject<ClusteredShadingGeometryRenderingPass>(this);
+    auto geometryPass = makeObject<ClusteredShadingGeometryRenderingPass>(this);
 	addPass(geometryPass);
 
 	m_lightClusters.init();

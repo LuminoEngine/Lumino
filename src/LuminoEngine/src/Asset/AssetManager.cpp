@@ -107,7 +107,7 @@ Ref<Texture2D> AssetManager::loadTexture(const StringRef& filePath)
 	// TODO: cache
 
     // TODO: mipmap
-	auto ref = newObject<Texture2D>(stream, TextureFormat::RGBA8);
+	auto ref = makeObject<Texture2D>(stream, TextureFormat::RGBA8);
 	return ref;
 }
 
@@ -123,7 +123,7 @@ Ref<Shader> AssetManager::loadShader(const StringRef& filePath)
 
     // TODO: cache
 
-    auto ref = newObject<Shader>(Path(filePath).fileNameWithoutExtension(), stream);
+    auto ref = makeObject<Shader>(Path(filePath).fileNameWithoutExtension(), stream);
     return ref;
 }
 

@@ -38,7 +38,7 @@ void SpriteFrame::init()
 
 Ref<SpriteFrameSet> SpriteFrameSet::create(Texture* texture, int frameWidth, int frameHeight, const Vector2& anchorPoint)
 {
-	return newObject<SpriteFrameSet>(texture, frameWidth, frameHeight, anchorPoint);
+	return makeObject<SpriteFrameSet>(texture, frameWidth, frameHeight, anchorPoint);
 }
 
 SpriteFrameSet::SpriteFrameSet()
@@ -68,7 +68,7 @@ void SpriteFrameSet::init(Texture* texture, int frameWidth, int frameHeight, con
 		for (int x = 0; x < cols; x++)
 		{
 			// TODO: モノによっては大量の小オブジェクトができるので、できればまとめて alloc したりキャッシュしたい
-			auto frame = newObject<SpriteFrame>();
+			auto frame = makeObject<SpriteFrame>();
 			frame->setSourceRect(Rect(x * frameWidth, y * frameHeight, frameWidth, frameHeight));
 			frame->setAnchorPoint(anchorPoint);
             m_frames->add(frame);
@@ -130,7 +130,7 @@ void SpriteComponent::init()
     m_sourceRect.set(0, 0, -1, -1);
     setSize(Size(1, 1));
 
-    m_material = newObject<Material>();
+    m_material = makeObject<Material>();
     //m_material->setEmissive(Color(1,1,1,0.5));
     setBlendMode(BlendMode::Alpha);
     setCullMode(CullMode::None);

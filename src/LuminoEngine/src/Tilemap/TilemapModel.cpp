@@ -18,7 +18,7 @@ namespace ln {
 
 Ref<TilemapModel> TilemapModel::create()
 {
-    return newObject<TilemapModel>();
+    return makeObject<TilemapModel>();
 }
 
 TilemapModel::TilemapModel()
@@ -85,7 +85,7 @@ void TilemapModel::init(const StringRef& filePath)
             auto material = ln::Material::create();
             material->setMainTexture(ln::Assets::loadTexture(ln::String::fromStdString(tmxTileset.getImagePath())));
 
-            auto tileset = ln::newObject<ln::Tileset>();
+            auto tileset = ln::makeObject<ln::Tileset>();
             tileset->setMaterial(material);
             tileset->setTilePixelSize(tmxTileset.getTileSize().x, tmxTileset.getTileSize().y);
             addTileset(tileset);
@@ -103,7 +103,7 @@ void TilemapModel::init(const StringRef& filePath)
         // Layers
         for (const auto& tmxLayer : tmxMap.getLayers())
         {
-            auto layer = ln::newObject<ln::TilemapLayer>();
+            auto layer = ln::makeObject<ln::TilemapLayer>();
             layer->resize(width, height);
             layer->setOrientation(ln::TilemapOrientation::DownFlow);
             addLayer(layer);

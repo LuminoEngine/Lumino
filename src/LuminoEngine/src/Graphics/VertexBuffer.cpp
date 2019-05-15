@@ -30,12 +30,12 @@ namespace ln {
 
 Ref<VertexBuffer> VertexBuffer::create(size_t bufferSize, GraphicsResourceUsage usage)
 {
-    return newObject<VertexBuffer>(bufferSize, usage);
+    return makeObject<VertexBuffer>(bufferSize, usage);
 }
 
 Ref<VertexBuffer> VertexBuffer::create(size_t bufferSize, const void* initialData, GraphicsResourceUsage usage)
 {
-    return newObject<VertexBuffer>(bufferSize, initialData, usage);
+    return makeObject<VertexBuffer>(bufferSize, initialData, usage);
 }
 
 VertexBuffer::VertexBuffer()

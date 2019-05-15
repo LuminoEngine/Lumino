@@ -13,7 +13,7 @@ namespace ln {
 
 Ref<Tileset> Tileset::create()
 {
-    return newObject<Tileset>();
+    return makeObject<Tileset>();
 }
 
 Tileset::Tileset()
@@ -32,7 +32,7 @@ void Tileset::init()
     Object::init();
 
     //m_material = Material::create();
-    //m_material->setMainTexture(newObject<Texture2D>(u"D:/tmp/110220c_as019.png"));
+    //m_material->setMainTexture(makeObject<Texture2D>(u"D:/tmp/110220c_as019.png"));
 }
 
 void Tileset::reset(Material* material, int tilePixelWidth, int tilePixelHeight)

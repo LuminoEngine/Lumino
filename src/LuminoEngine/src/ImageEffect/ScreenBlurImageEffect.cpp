@@ -13,7 +13,7 @@ namespace ln {
 
 Ref<ScreenBlurImageEffect> ScreenBlurImageEffect::create()
 {
-    return newObject<ScreenBlurImageEffect>();
+    return makeObject<ScreenBlurImageEffect>();
 }
 
 ScreenBlurImageEffect::ScreenBlurImageEffect()
@@ -32,10 +32,10 @@ ScreenBlurImageEffect::~ScreenBlurImageEffect()
 void ScreenBlurImageEffect::init()
 {
     ImageEffect::init();
-    m_material = newObject<Material>();
+    m_material = makeObject<Material>();
     //m_material->setShader(detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::ScreenBlurImageEffect));
     //m_material->setBlendMode(BlendMode::Alpha);
-    auto shader = newObject<Shader>(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ScreenBlurImageEffect.fx");
+    auto shader = makeObject<Shader>(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ScreenBlurImageEffect.fx");
     m_material->setShader(shader);
 }
 
@@ -68,7 +68,7 @@ void ScreenBlurImageEffect::onRender(RenderingContext* context, RenderTargetText
         // m_accumTexture と source のサイズが異なる場合は作り直す
         if (m_accumTexture == nullptr || (m_accumTexture->width() != source->width() || m_accumTexture->height() != source->height()))
         {
-            m_accumTexture = newObject<RenderTargetTexture>(source->width(), source->height(), source->format(), false);
+            m_accumTexture = makeObject<RenderTargetTexture>(source->width(), source->height(), source->format(), false);
             context->blit(source, m_accumTexture);
         }
 

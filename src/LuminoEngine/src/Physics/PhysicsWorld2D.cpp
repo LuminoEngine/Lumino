@@ -37,17 +37,17 @@ void CollisionShape2D::init()
 
 Ref<BoxCollisionShape2D> BoxCollisionShape2D::create()
 {
-	return newObject<BoxCollisionShape2D>();
+	return makeObject<BoxCollisionShape2D>();
 }
 
 Ref<BoxCollisionShape2D> BoxCollisionShape2D::create(const Size& size)
 {
-    return newObject<BoxCollisionShape2D>(size);
+    return makeObject<BoxCollisionShape2D>(size);
 }
 
 Ref<BoxCollisionShape2D> BoxCollisionShape2D::create(float width, float height)
 {
-    return newObject<BoxCollisionShape2D>(width, height);
+    return makeObject<BoxCollisionShape2D>(width, height);
 }
 
 BoxCollisionShape2D::BoxCollisionShape2D()
@@ -92,7 +92,7 @@ b2Shape* BoxCollisionShape2D::resolveBox2DShape()
 
 Ref<EdgeCollisionShape2D> EdgeCollisionShape2D::create()
 {
-    return newObject<EdgeCollisionShape2D>();
+    return makeObject<EdgeCollisionShape2D>();
 }
 
 EdgeCollisionShape2D::EdgeCollisionShape2D()
@@ -358,12 +358,12 @@ void TriggerBody2D::removeBodyFromBox2DWorld()
 
 Ref<RigidBody2D> RigidBody2D::create()
 {
-	return newObject<RigidBody2D>();
+	return makeObject<RigidBody2D>();
 }
 
 Ref<RigidBody2D> RigidBody2D::create(CollisionShape2D* shape)
 {
-    return newObject<RigidBody2D>(shape);
+    return makeObject<RigidBody2D>(shape);
 }
 
 RigidBody2D::RigidBody2D()
@@ -615,8 +615,8 @@ public:
 
 	void init()
 	{
-		m_linesBuffer = newObject<VertexBuffer>(sizeof(Vertex) * MaxVertexCount, GraphicsResourceUsage::Dynamic);
-		m_trianglesBuffer = newObject<VertexBuffer>(sizeof(Vertex) * MaxVertexCount, GraphicsResourceUsage::Dynamic);
+		m_linesBuffer = makeObject<VertexBuffer>(sizeof(Vertex) * MaxVertexCount, GraphicsResourceUsage::Dynamic);
+		m_trianglesBuffer = makeObject<VertexBuffer>(sizeof(Vertex) * MaxVertexCount, GraphicsResourceUsage::Dynamic);
 		m_linesVertexCount = 0;
 		m_trianglesVertexCount = 0;
 	}

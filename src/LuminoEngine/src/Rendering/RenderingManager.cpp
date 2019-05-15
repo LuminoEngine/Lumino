@@ -45,16 +45,16 @@ void RenderingManager::init(const Settings& settings)
         { 0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0 },
         { 0, VertexElementType::Float4, VertexElementUsage::Color, 0 },
     };
-    m_standardVertexDeclaration = newObject<VertexLayout>(elements, 4);
+    m_standardVertexDeclaration = makeObject<VertexLayout>(elements, 4);
     //m_renderStageListBuilder = makeRef<DrawElementListBuilder>();
 
-    m_blitRenderFeature = newObject<BlitRenderFeature>(this);
-    m_spriteRenderFeature = newObject<SpriteRenderFeature>(this);
-    m_meshRenderFeature = newObject<MeshRenderFeature>(this);
-    m_primitiveRenderFeature = newObject<PrimitiveRenderFeature>(this);
-    m_spriteTextRenderFeature = newObject<SpriteTextRenderFeature>(this);
-	m_frameRectRenderFeature = newObject<FrameRectRenderFeature>(this);
-	m_shapesRenderFeature = newObject<ShapesRenderFeature>(this);
+    m_blitRenderFeature = makeObject<BlitRenderFeature>(this);
+    m_spriteRenderFeature = makeObject<SpriteRenderFeature>(this);
+    m_meshRenderFeature = makeObject<MeshRenderFeature>(this);
+    m_primitiveRenderFeature = makeObject<PrimitiveRenderFeature>(this);
+    m_spriteTextRenderFeature = makeObject<SpriteTextRenderFeature>(this);
+	m_frameRectRenderFeature = makeObject<FrameRectRenderFeature>(this);
+	m_shapesRenderFeature = makeObject<ShapesRenderFeature>(this);
 
     m_stageDataPageManager = makeRef<LinearAllocatorPageManager>();
 
@@ -67,7 +67,7 @@ void RenderingManager::init(const Settings& settings)
         };
         static const size_t size = LN_ARRAY_SIZE_OF(data);
         MemoryStream stream(data, size);
-        m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = newObject<Shader>(u"ClusteredShadingDefault", &stream);
+        m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = makeObject<Shader>(u"ClusteredShadingDefault", &stream);
     }
     // DepthPrepass.lcfx.h
     {
@@ -77,7 +77,7 @@ void RenderingManager::init(const Settings& settings)
         };
         static const size_t size = LN_ARRAY_SIZE_OF(data);
         MemoryStream stream(data, size);
-        m_builtinShaders[(int)BuiltinShader::DepthPrepass] = newObject<Shader>(u"DepthPrepass", &stream);
+        m_builtinShaders[(int)BuiltinShader::DepthPrepass] = makeObject<Shader>(u"DepthPrepass", &stream);
     }
     // Sprite.lcfx.h
     {
@@ -87,7 +87,7 @@ void RenderingManager::init(const Settings& settings)
         };
         static const size_t size = LN_ARRAY_SIZE_OF(data);
         MemoryStream stream(data, size);
-        m_builtinShaders[(int)BuiltinShader::Sprite] = newObject<Shader>(u"Sprite", &stream);
+        m_builtinShaders[(int)BuiltinShader::Sprite] = makeObject<Shader>(u"Sprite", &stream);
     }
 #endif
 

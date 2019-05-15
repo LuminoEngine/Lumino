@@ -57,12 +57,12 @@ void Texture::setSamplerState(SamplerState* value)
 
 Ref<Texture2D> Texture2D::create(int width, int height)
 {
-    return newObject<Texture2D>(width, height);
+    return makeObject<Texture2D>(width, height);
 }
 
 Ref<Texture2D> Texture2D::create(int width, int height, TextureFormat format)
 {
-    return newObject<Texture2D>(width, height, format);
+    return makeObject<Texture2D>(width, height, format);
 }
 
 Texture2D::Texture2D()
@@ -90,7 +90,7 @@ void Texture2D::init(int width, int height, TextureFormat format)
     width = std::max(1, width);
     height = std::max(1, height);
     Texture::init();
-    m_bitmap = newObject<Bitmap2D>(width, height, GraphicsHelper::translateToPixelFormat(format));
+    m_bitmap = makeObject<Bitmap2D>(width, height, GraphicsHelper::translateToPixelFormat(format));
     m_initialUpdate = true;
     m_modified = true;
     detail::TextureInternal::setDesc(this, width, height, format);
@@ -98,14 +98,14 @@ void Texture2D::init(int width, int height, TextureFormat format)
 
 void Texture2D::init(const StringRef& filePath, TextureFormat format)
 {
-    auto bitmap = newObject<Bitmap2D>();
+    auto bitmap = makeObject<Bitmap2D>();
     bitmap->load(filePath);
     init(bitmap, format);
 }
 
 void Texture2D::init(Stream* stream, TextureFormat format)
 {
-    auto bitmap = newObject<Bitmap2D>();
+    auto bitmap = makeObject<Bitmap2D>();
     bitmap->load(stream);
     init(bitmap, format);
 }
@@ -247,12 +247,12 @@ detail::ITexture* Texture2D::resolveRHIObject(bool* outModified)
 
 Ref<RenderTargetTexture> RenderTargetTexture::create(int width, int height)
 {
-    return newObject<RenderTargetTexture>(width, height);
+    return makeObject<RenderTargetTexture>(width, height);
 }
 
 Ref<RenderTargetTexture> RenderTargetTexture::create(int width, int height, TextureFormat format)
 {
-    return newObject<RenderTargetTexture>(width, height, format);
+    return makeObject<RenderTargetTexture>(width, height, format);
 }
 
 Ref<RenderTargetTexture> RenderTargetTexture::getTemporary(int width, int height, TextureFormat format, bool mipmap)
@@ -327,7 +327,7 @@ Ref<Bitmap2D> RenderTargetTexture::readData()
     detail::ITexture* rhiObject = resolveRHIObject(&modified);
 
     SizeI size = rhiObject->realSize();
-    auto bitmap = newObject<Bitmap2D>(size.width, size.height, GraphicsHelper::translateToPixelFormat(rhiObject->getTextureFormat()));
+    auto bitmap = makeObject<Bitmap2D>(size.width, size.height, GraphicsHelper::translateToPixelFormat(rhiObject->getTextureFormat()));
 
     if (detail::GraphicsResourceInternal::manager(this)->renderingType() == RenderingType::Threaded) {
         LN_NOTIMPLEMENTED();
@@ -415,7 +415,7 @@ void Texture3D::init(int width, int height, int depth, TextureFormat format, boo
 {
     Texture::init();
     m_depth = depth;
-    m_bitmap = newObject<Bitmap3D>(width, height, depth, GraphicsHelper::translateToPixelFormat(format));
+    m_bitmap = makeObject<Bitmap3D>(width, height, depth, GraphicsHelper::translateToPixelFormat(format));
     m_usage = usage;
     m_initialUpdate = true;
     m_modified = true;

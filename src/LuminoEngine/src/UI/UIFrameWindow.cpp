@@ -215,10 +215,10 @@ void UIFrameWindow::init(detail::PlatformWindow* platformMainWindow, const SizeI
 
     m_platformWindow = platformMainWindow;
 	m_autoDisposePlatformWindow = false;
-	m_swapChain = newObject<SwapChain>(platformMainWindow, backbufferSize);
+	m_swapChain = makeObject<SwapChain>(platformMainWindow, backbufferSize);
 
     if (detail::EngineDomain::renderingManager()) {
-        m_renderView = newObject<UIRenderView>();
+        m_renderView = makeObject<UIRenderView>();
     }
 
     m_inputInjector = makeRef<detail::UIInputInjector>(this);
@@ -423,8 +423,8 @@ UINativeFrameWindow::UINativeFrameWindow()
 void UINativeFrameWindow::init()
 {
     UIFrameWindow::init();
-    m_renderView = newObject<UIRenderView>();
-	m_graphicsContext = newObject<GraphicsContext>();
+    m_renderView = makeObject<UIRenderView>();
+	m_graphicsContext = makeObject<GraphicsContext>();
 }
 
 void UINativeFrameWindow::onDispose(bool explicitDisposing)

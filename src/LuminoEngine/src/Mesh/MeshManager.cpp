@@ -98,7 +98,7 @@ void MeshManager::init(const Settings& settings)
 	//		{ 0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0 },
 	//		{ 0, VertexElementType::Float4, VertexElementUsage::Color, 0 },
 	//	};
-	//	m_predefinedVertexLayouts[PredefinedVertexLayout_Standard] = newObject<VertexLayout>(elements, 4);
+	//	m_predefinedVertexLayouts[PredefinedVertexLayout_Standard] = makeObject<VertexLayout>(elements, 4);
 	//}
 
 	//{
@@ -111,15 +111,15 @@ void MeshManager::init(const Settings& settings)
 	//		{ 1, VertexElementType::Float4, VertexElementUsage::BlendWeight, 0 },
 	//		{ 1, VertexElementType::Float4, VertexElementUsage::BlendIndices, 0 },
 	//	};
-	//	m_predefinedVertexLayouts[PredefinedVertexLayout_Standard_BlendWeight] = newObject<VertexLayout>(elements, 4);
+	//	m_predefinedVertexLayouts[PredefinedVertexLayout_Standard_BlendWeight] = makeObject<VertexLayout>(elements, 4);
 	//}
 
 #define LN_CREATE_MMD_TOON_TEXTURE(index, toonData, toonDataLen) \
     { \
         MemoryStream data(toonData, toonDataLen); \
-        auto bmp = newObject<Bitmap2D>(); \
+        auto bmp = makeObject<Bitmap2D>(); \
         bmp->load(&data); \
-        m_mmdDefaultToonTexture[index] = newObject<Texture2D>(bmp, TextureFormat::RGBA8); \
+        m_mmdDefaultToonTexture[index] = makeObject<Texture2D>(bmp, TextureFormat::RGBA8); \
     }
     LN_CREATE_MMD_TOON_TEXTURE(0, toon01Data, toon01DataLen);
     LN_CREATE_MMD_TOON_TEXTURE(1, toon02Data, toon02DataLen);
@@ -153,7 +153,7 @@ VertexLayout* MeshManager::getPredefinedVertexLayout(PredefinedVertexLayoutFlags
 		return itr->second;
 	}
 	else {
-		auto vertexLayout = newObject<VertexLayout>();
+		auto vertexLayout = makeObject<VertexLayout>();
 		int stream = 0;
 
 		// BasicVertices
@@ -212,7 +212,7 @@ Ref<StaticMeshModel> MeshManager::createStaticMeshModel(const Path& filePath, fl
     Ref<StaticMeshModel> mesh;
 
     {
-        auto diag = newObject<DiagnosticsManager>();
+        auto diag = makeObject<DiagnosticsManager>();
 
         ObjMeshImporter importer;
         mesh = importer.import(filePath, scale, diag);

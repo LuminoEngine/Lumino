@@ -125,7 +125,7 @@ static ColorI mixPixels(Bitmap2D* bmp, int x, int y)
 
 bool TestEnv::equalsBitmapFile(Bitmap2D* bmp1, const Char* filePath, int passRate)
 {
-	auto bmp2 = newObject<Bitmap2D>();
+	auto bmp2 = makeObject<Bitmap2D>();
 	bmp2->load(filePath);
 
 	bool ignoreAlpha = true;

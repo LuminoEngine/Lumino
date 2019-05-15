@@ -155,7 +155,7 @@ void UIStyleInstance::updateStyleDataHelper(UIStyle* localStyle, const detail::U
 		}
 
 		if (modified) {
-			outStyleData->font = newObject<Font>(desc);
+			outStyleData->font = makeObject<Font>(desc);
 		}
 	}
 

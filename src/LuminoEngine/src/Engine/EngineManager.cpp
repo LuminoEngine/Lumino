@@ -122,11 +122,11 @@ void EngineManager::init()
     if (m_settings.defaultObjectsCreation)
     {
         if (m_uiManager) {
-            m_mainUIContext = newObject<UIContext>();
+            m_mainUIContext = makeObject<UIContext>();
             m_uiManager->setMainContext(m_mainUIContext);
 
-            m_mainWindow = newObject<UIFrameWindow>(m_platformManager->mainWindow(), m_settings.mainBackBufferSize);
-            m_mainViewport = newObject<UIViewport>();
+            m_mainWindow = makeObject<UIFrameWindow>(m_platformManager->mainWindow(), m_settings.mainBackBufferSize);
+            m_mainViewport = makeObject<UIViewport>();
             m_mainWindow->addElement(m_mainViewport);
 
             m_mainUIContext->setLayoutRootElement(m_mainWindow);
@@ -134,24 +134,24 @@ void EngineManager::init()
 
         if (m_sceneManager)
         {
-            m_mainWorld = newObject<World>();
+            m_mainWorld = makeObject<World>();
             m_sceneManager->setActiveWorld(m_mainWorld);
 
-            //m_mainAmbientLight = newObject<AmbientLight>();
-            //m_mainDirectionalLight = newObject<DirectionalLight>();
+            //m_mainAmbientLight = makeObject<AmbientLight>();
+            //m_mainDirectionalLight = makeObject<DirectionalLight>();
 
-            m_mainCamera = newObject<Camera>();
-            m_mainWorldRenderView = newObject<WorldRenderView>();
+            m_mainCamera = makeObject<Camera>();
+            m_mainWorldRenderView = makeObject<WorldRenderView>();
             m_mainWorldRenderView->setTargetWorld(m_mainWorld);
             m_mainWorldRenderView->setCamera(m_mainCamera);
             m_mainWorldRenderView->setClearMode(RenderViewClearMode::ColorAndDepth);
             m_mainViewport->addRenderView(m_mainWorldRenderView);
 
 
-            m_mainUIRenderView = newObject<UIRenderView>();
+            m_mainUIRenderView = makeObject<UIRenderView>();
             m_mainViewport->addRenderView(m_mainUIRenderView);
 
-            m_mainUIRoot = newObject<UIContainerElement>();
+            m_mainUIRoot = makeObject<UIContainerElement>();
             m_mainUIRoot->setHorizontalAlignment(HAlignment::Stretch);
             m_mainUIRoot->setVerticalAlignment(VAlignment::Stretch);
             m_mainUIRenderView->setRootElement(m_mainUIRoot);

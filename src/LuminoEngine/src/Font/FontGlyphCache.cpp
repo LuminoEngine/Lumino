@@ -45,7 +45,7 @@ bool FontGlyphTextureCache::init(FontCore* font)
     int w = std::max(mw, mh);
     m_glyphMaxBitmapSize = SizeI(w, w);
     SizeI textureSize(m_glyphWidthCount * w, m_glyphWidthCount * w);
-	m_fillGlyphsTexture = newObject<Texture2D>(textureSize.width, textureSize.height, TextureFormat::RGBA8);
+	m_fillGlyphsTexture = makeObject<Texture2D>(textureSize.width, textureSize.height, TextureFormat::RGBA8);
 	m_fillGlyphsTexture->setResourceUsage(GraphicsResourceUsage::Dynamic);
 	// TODO: 最大 DeviceSize チェック
 

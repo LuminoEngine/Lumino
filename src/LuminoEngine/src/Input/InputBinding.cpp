@@ -153,7 +153,7 @@ static String getModifierKeysName(ModifierKeys modifierKeyss)
 Ref<KeyGesture> KeyGesture::create(Keys key, ModifierKeys modifierKeys)
 {
 	auto ptr = makeRef<KeyGesture>(key, modifierKeys);
-	// TODO: newObject
+	// TODO: makeObject
 	return ptr;
 }
 

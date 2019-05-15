@@ -15,8 +15,8 @@ TEST_F(Test_Rendering_ClusteredShading, Basic)
 		Engine::mainCamera()->setPosition(0, 5, -5);
 		Engine::mainCamera()->lookAt(Vector3(0, 0, 0));
 
-		auto obj1 = newObject<WorldObject>();
-		auto cmp1 = newObject<PlaneComponent>();
+		auto obj1 = makeObject<WorldObject>();
+		auto cmp1 = makeObject<PlaneComponent>();
 		cmp1->setSize(10, 10);
 		auto mat1 = Material::create();
 		obj1->addComponent(cmp1);

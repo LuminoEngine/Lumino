@@ -90,8 +90,8 @@ LN_PROPERTY_IMPLEMENT(TestObjectC, V4, m_V4, PropertyMetadata(onV4Changed));
 //------------------------------------------------------------------------------
 TEST_F(Test_Engine_Object, TypeInfo)
 {
-    auto obj1 = newObject<TestObjectA>();
-    auto obj2 = newObject<TestObjectB>();
+    auto obj1 = makeObject<TestObjectA>();
+    auto obj2 = makeObject<TestObjectB>();
 
     //* [ ] can get by object pointer
     TypeInfo* type1 = TypeInfo::getTypeInfo(obj1);
@@ -120,7 +120,7 @@ TEST_F(Test_Engine_Object, TypeInfo)
 //------------------------------------------------------------------------------
 TEST_F(Test_Engine_Object, Property)
 {
-    auto objA = newObject<TestObjectA>();
+    auto objA = makeObject<TestObjectA>();
     objA->setProp1(5);
     ASSERT_EQ(5, objA->prop1());
 
@@ -131,7 +131,7 @@ TEST_F(Test_Engine_Object, Property)
     ASSERT_EQ(true, TestObjectA::Prop1PropertyId != nullptr);
 
 
-    auto objC = newObject<TestObjectC>();
+    auto objC = makeObject<TestObjectC>();
 
     //* [ ] int type
     ASSERT_EQ(1, objC->m_V1);
@@ -158,7 +158,7 @@ TEST_F(Test_Engine_Object, Property)
 //------------------------------------------------------------------------------
 TEST_F(Test_Engine_Object, Notification)
 {
-    auto obj = newObject<TestObjectC>();
+    auto obj = makeObject<TestObjectC>();
 
     //* [ ] OwnerObject の確認
     {
@@ -321,7 +321,7 @@ TEST_F(Test_Engine_Object, GetSetHelper)
 //------------------------------------------------------------------------------
 TEST_F(Test_Engine_Object, NonMetadataProperty)
 {
-    auto obj = newObject<TestObjectC>();
+    auto obj = makeObject<TestObjectC>();
 
     // get set
     ASSERT_EQ(5, obj->m_V5);
@@ -360,7 +360,7 @@ TEST_F(Test_Base_WeakRefPtr, Basic)
 {
     WeakRefPtr<WeakRefTest1> weak;
     {
-        auto ptr = newObject<WeakRefTest1>();
+        auto ptr = makeObject<WeakRefTest1>();
         weak = WeakRefPtr<WeakRefTest1>(ptr);
         ASSERT_EQ(true, weak.isAlive());
         ASSERT_EQ(100, weak.resolve()->m);

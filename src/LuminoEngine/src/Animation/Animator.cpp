@@ -12,16 +12,16 @@ namespace ln {
 
 Ref<Animator> Animator::create()
 {
-    return newObject<Animator>();
+    return makeObject<Animator>();
 }
 
 void Animator::init()
 {
 	Component::init();
-	m_core = newObject<AnimationControllerCore>(this);
+	m_core = makeObject<AnimationControllerCore>(this);
 
 	// TODO: とりあえずの 1 こ
-	m_core->addLayer(newObject<AnimationLayer>(m_core));
+	m_core->addLayer(makeObject<AnimationLayer>(m_core));
 }
 
 AnimationState* Animator::addClip(const StringRef& stateName, AnimationClip* animationClip)

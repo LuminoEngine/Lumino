@@ -53,16 +53,16 @@ SceneRenderer::SceneRenderer()
 
 void SceneRenderer::init()
 {
-	m_skinningMatricesTexture = newObject<Texture2D>(4, 1024, TextureFormat::RGBA32F);
+	m_skinningMatricesTexture = makeObject<Texture2D>(4, 1024, TextureFormat::RGBA32F);
 	m_skinningMatricesTexture->setResourceUsage(GraphicsResourceUsage::Dynamic);
-	m_skinningLocalQuaternionsTexture = newObject<Texture2D>(1, 1024, TextureFormat::RGBA32F);
+	m_skinningLocalQuaternionsTexture = makeObject<Texture2D>(1, 1024, TextureFormat::RGBA32F);
 	m_skinningLocalQuaternionsTexture->setResourceUsage(GraphicsResourceUsage::Dynamic);
 	
 	// skinning texture は毎フレーム更新されるものなので、デバイスリセット時に復元する必要はない
 	m_skinningMatricesTexture->setResourcePool(GraphicsResourcePool::None);
 	m_skinningLocalQuaternionsTexture->setResourcePool(GraphicsResourcePool::None);
 
-    auto samperState = newObject<SamplerState>();
+    auto samperState = makeObject<SamplerState>();
     samperState->setFilterMode(TextureFilterMode::Point);
     m_skinningMatricesTexture->setSamplerState(samperState);
     m_skinningLocalQuaternionsTexture->setSamplerState(samperState);

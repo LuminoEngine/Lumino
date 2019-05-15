@@ -10,7 +10,7 @@ namespace ln {
 
 Ref<UIWindow> UIWindow::create()
 {
-    return newObject<UIWindow>();
+    return makeObject<UIWindow>();
 }
 
 UIWindow::UIWindow()

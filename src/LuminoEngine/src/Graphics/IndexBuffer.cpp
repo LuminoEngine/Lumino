@@ -12,12 +12,12 @@ namespace ln {
 
 Ref<IndexBuffer> IndexBuffer::create(int indexCount, IndexBufferFormat format, GraphicsResourceUsage usage)
 {
-    return newObject<IndexBuffer>(indexCount, format, usage);
+    return makeObject<IndexBuffer>(indexCount, format, usage);
 }
 
 Ref<IndexBuffer> IndexBuffer::create(int indexCount, IndexBufferFormat format, const void* initialData, GraphicsResourceUsage usage)
 {
-    return newObject<IndexBuffer>(indexCount, format, initialData, usage);
+    return makeObject<IndexBuffer>(indexCount, format, initialData, usage);
 }
 
 IndexBuffer::IndexBuffer()

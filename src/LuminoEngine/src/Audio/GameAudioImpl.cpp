@@ -498,7 +498,7 @@ void GameAudioImpl::pushReleaseAtPlayEndList(Sound* sound)
 
 Ref<Sound> GameAudioImpl::createSound(const StringRef& filePath)
 {
-    return newObject<Sound>(filePath);
+    return makeObject<Sound>(filePath);
 }
 
 } // namespace detail

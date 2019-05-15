@@ -174,7 +174,7 @@ void DirectionalLightComponent::setShadowCast(bool enabled)
     LN_NOTIMPLEMENTED();
 	//if (enabled)
 	//{
-	//	m_shadowCasterPass = newObject<detail::ShadowCasterPass>();
+	//	m_shadowCasterPass = makeObject<detail::ShadowCasterPass>();
 	//}
 	//else
 	//{

@@ -22,7 +22,7 @@ namespace ln {
 
 Ref<UITextBlock> UITextBlock::create()
 {
-    return newObject<UITextBlock>();
+    return makeObject<UITextBlock>();
 }
 
 UITextBlock::UITextBlock()
@@ -48,7 +48,7 @@ Size UITextBlock::measureOverride(const Size& constraint)
 void UITextBlock::onRender(UIRenderingContext* context)
 {
     //{
-    //    auto tex = newObject<Texture2D>(u"D:/Proj/LN/HC1/Assets/Windowskin/window.png");
+    //    auto tex = makeObject<Texture2D>(u"D:/Proj/LN/HC1/Assets/Windowskin/window.png");
     //    auto mat = Material::create(tex);
     //    context->drawBoxBackground(Rect(10, 20, 100, 200), Thickness(16), CornerRadius(), BrushImageDrawMode::BorderFrame, mat, Rect(64, 0, 64, 64));
     //}
@@ -130,8 +130,8 @@ public:
 	const detail::FontDesc& finalFontDesc() const { return m_finalFontDesc; }
 
 
-	virtual Size measureLayout(const Size& constraint) {}
-	virtual Size arrangeLayout(const Size& areaSize) {}
+	virtual Size measureLayout(const Size& constraint) { return Size::Zero; }
+	virtual Size arrangeLayout(const Size& areaSize) { return Size::Zero; }
 
 LN_CONSTRUCT_ACCESS:
 	RTTextElement() {}
@@ -533,9 +533,9 @@ void RTDocumentBuilder::parse(Font* font, float dpiScale, const ln::String& text
 	m_document->clear();
 	m_timeOffset = 0.0f;
 
-	auto p = newObject<RTParagraph>();
+	auto p = makeObject<RTParagraph>();
 	m_document->addBlock(p);
-	auto r = newObject<RTRun>();
+	auto r = makeObject<RTRun>();
 	p->addInline(r);
 	m_currentRun = r;
 
@@ -555,7 +555,7 @@ void RTDocumentBuilder::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Siz
 
 Ref<UITypographyArea> UITypographyArea::create()
 {
-	return newObject<UITypographyArea>();
+	return makeObject<UITypographyArea>();
 }
 
 UITypographyArea::UITypographyArea()
@@ -566,13 +566,13 @@ UITypographyArea::UITypographyArea()
 void UITypographyArea::init()
 {
 	UIElement::init();
-	m_document = newObject<RTDocument>();
+	m_document = makeObject<RTDocument>();
 
 
-	//auto p = newObject<RTParagraph>();
+	//auto p = makeObject<RTParagraph>();
 	//m_document->addBlock(p);
 
-	//auto r = newObject<RTRun>();
+	//auto r = makeObject<RTRun>();
 	//r->setText(u"Run Test");
 	//p->addInline(r);
 }

@@ -12,7 +12,7 @@ namespace ln {
 
 Ref<ToneImageEffect> ToneImageEffect::create()
 {
-    return newObject<ToneImageEffect>();
+    return makeObject<ToneImageEffect>();
 }
 
 ToneImageEffect::ToneImageEffect()
@@ -26,9 +26,9 @@ ToneImageEffect::~ToneImageEffect()
 void ToneImageEffect::init()
 {
     ImageEffect::init();
-    auto shader = newObject<Shader>(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ToneImageEffect.fx");
+    auto shader = makeObject<Shader>(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ToneImageEffect.fx");
 
-    m_material = newObject<Material>();
+    m_material = makeObject<Material>();
     m_material->setShader(shader);
 }
 

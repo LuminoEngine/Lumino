@@ -10,7 +10,7 @@ TEST_F(Test_Shader_Shader, IndependentSamplerState)
 {
     auto shader1 = Shader::create(LN_ASSETFILE("Shader/IndependentSamplerState.fx"));
 
-    auto vertexDecl1 = newObject<VertexLayout>();
+    auto vertexDecl1 = makeObject<VertexLayout>();
     vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
     vertexDecl1->addElement(0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
 
@@ -25,9 +25,9 @@ TEST_F(Test_Shader_Shader, IndependentSamplerState)
         { { -1, 0, 0 }, { 0, 1 }, },
         { { 0, 0, 0 }, { 1, 1 }, },
     };
-    auto vb1 = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+    auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
-    auto tex1 = newObject<Texture2D>(2, 2, TextureFormat::RGBA8);
+    auto tex1 = makeObject<Texture2D>(2, 2, TextureFormat::RGBA8);
     auto bmp1 = tex1->map(MapMode::Write);
     bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
     bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
@@ -36,7 +36,7 @@ TEST_F(Test_Shader_Shader, IndependentSamplerState)
 
     // TODO: まだ SamplerState 直接指定をサポートしていないので Texture に対してセットする方法でテストケースだけ用意しておく。
     // 後でサポートするとき、shader1->findParameter("mySamplerState")->setSamplerState(samplerState); とかに書き換える。
-    auto samplerState = newObject<SamplerState>();
+    auto samplerState = makeObject<SamplerState>();
     samplerState->setFilterMode(TextureFilterMode::Linear);
     tex1->setSamplerState(samplerState);
 
@@ -66,7 +66,7 @@ TEST_F(Test_Shader_Shader, UniformBuffer)
 {
     auto shader1 = Shader::create(LN_ASSETFILE("Shader/UniformBufferTest-1.fx"));
 
-    auto vertexDecl1 = newObject<VertexLayout>();
+    auto vertexDecl1 = makeObject<VertexLayout>();
     vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 
     Vector3 v[] = {
@@ -74,7 +74,7 @@ TEST_F(Test_Shader_Shader, UniformBuffer)
         { 0.5, -0.25, 0 },
         { -0.5, -0.25, 0 },
     };
-    auto vb1 = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+    auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
     // VertexShader からのみ参照されるパラメータ
     shader1->findParameter("_Color1")->setVector(Vector4(1, 0, 0, 1));
@@ -100,7 +100,7 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
 {
     auto shader1 = Shader::create(LN_ASSETFILE("Shader/MultiTechMultiTexture-1.fx"));
 
-    auto vertexDecl1 = newObject<VertexLayout>();
+    auto vertexDecl1 = makeObject<VertexLayout>();
     vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 
     Vector3 v[] = {
@@ -108,7 +108,7 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
         { 0.5, -0.25, 0 },
         { -0.5, -0.25, 0 },
     };
-    auto vb1 = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+    auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
     auto t1 = Texture2D::create(2, 2, TextureFormat::RGBA8);
     t1->clear(Color::Red);
@@ -147,7 +147,7 @@ TEST_F(Test_Shader_Shader, NotProvidedVertexAttribute)
 {
 	auto shader1 = Shader::create(LN_ASSETFILE("Shader/NotProvidedVertexAttribute-1.fx"));
 
-	auto vertexDecl1 = newObject<VertexLayout>();
+	auto vertexDecl1 = makeObject<VertexLayout>();
 	vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 
 	Vector3 v[] = {
@@ -155,7 +155,7 @@ TEST_F(Test_Shader_Shader, NotProvidedVertexAttribute)
 		{ 0.5, -0.25, 0 },
 		{ -0.5, -0.25, 0 },
 	};
-	auto vb1 = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+	auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
 	auto ctx = Engine::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);

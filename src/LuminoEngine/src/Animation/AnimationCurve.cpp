@@ -59,7 +59,7 @@ float AnimationCurve::lastFrameTime() const
 
 Ref<KeyFrameAnimationCurve> KeyFrameAnimationCurve::create()
 {
-	return newObject<KeyFrameAnimationCurve>();
+	return makeObject<KeyFrameAnimationCurve>();
 }
 
 KeyFrameAnimationCurve::KeyFrameAnimationCurve()

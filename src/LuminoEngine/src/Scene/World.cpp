@@ -27,10 +27,10 @@ World::~World()
 void World::init()
 {
     Object::init();
-    m_animationContext = newObject<AnimationContext>();
-    m_physicsWorld = newObject<PhysicsWorld>();
-	m_physicsWorld2D = newObject<PhysicsWorld2D>();
-    m_effectContext = newObject<EffectContext>();
+    m_animationContext = makeObject<AnimationContext>();
+    m_physicsWorld = makeObject<PhysicsWorld>();
+	m_physicsWorld2D = makeObject<PhysicsWorld2D>();
+    m_effectContext = makeObject<EffectContext>();
     m_renderingContext = makeRef<detail::WorldSceneGraphRenderingContext>();
 }
 

@@ -180,17 +180,17 @@ static const Color Material_DefaultEmmisive = Color(0, 0, 0, 0);
 
 Ref<Material> Material::create()
 {
-	return newObject<Material>();
+	return makeObject<Material>();
 }
 
 Ref<Material> Material::create(Texture* mainTexture)
 {
-    return newObject<Material>(mainTexture);
+    return makeObject<Material>(mainTexture);
 }
 
 Ref<Material> Material::create(Texture* mainTexture, ShadingModel shadingModel)
 {
-    return newObject<Material>(mainTexture, shadingModel);
+    return makeObject<Material>(mainTexture, shadingModel);
 }
 
 Material::Material()
@@ -287,7 +287,7 @@ const float PhongMaterial::DefaultPower = 50.0f;
 
 Ref<PhongMaterial> PhongMaterial::create()
 {
-	return newObject<PhongMaterial>();
+	return makeObject<PhongMaterial>();
 }
 
 PhongMaterial::PhongMaterial()

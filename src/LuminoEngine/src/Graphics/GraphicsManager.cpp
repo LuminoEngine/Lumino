@@ -157,7 +157,7 @@ void GraphicsManager::init(const Settings& settings)
     }
 
 
-	m_graphicsContext = newObject<GraphicsContext>(m_deviceContext->getGraphicsContext());
+	m_graphicsContext = makeObject<GraphicsContext>(m_deviceContext->getGraphicsContext());
 
 	m_linearAllocatorPageManager = makeRef<LinearAllocatorPageManager>();
 
@@ -169,13 +169,13 @@ void GraphicsManager::init(const Settings& settings)
 
 	// default objects
 	{
-        m_blackTexture = newObject<Texture2D>(32, 32, TextureFormat::RGBA8);
+        m_blackTexture = makeObject<Texture2D>(32, 32, TextureFormat::RGBA8);
         m_blackTexture->clear(Color::Black);
 
-        m_whiteTexture = newObject<Texture2D>(32, 32, TextureFormat::RGBA8);
+        m_whiteTexture = makeObject<Texture2D>(32, 32, TextureFormat::RGBA8);
         m_whiteTexture->clear(Color::White);
 
-		m_defaultSamplerState = newObject<SamplerState>();
+		m_defaultSamplerState = makeObject<SamplerState>();
 		m_defaultSamplerState->setFrozen(true);
 	}
 

@@ -131,7 +131,7 @@ bool SpriteParticleModelInstance::isFinished() const
 //------------------------------------------------------------------------------
 Ref<SpriteParticleModel> SpriteParticleModel::create()
 {
-    return newObject<SpriteParticleModel>();
+    return makeObject<SpriteParticleModel>();
 }
 
 //------------------------------------------------------------------------------
@@ -224,7 +224,7 @@ void SpriteParticleModel::commit()
 	// 瞬間最大パーティクル数
 	//m_maxParticleCount = (int)ceil(m_maxLifeTime * (float)m_spawnRate);
 
-    m_mesh = newObject<MeshResource>();
+    m_mesh = makeObject<MeshResource>();
     m_mesh->setGraphicsResourceUsage(GraphicsResourceUsage::Dynamic);
 	m_mesh->resizeVertexBuffer(m_maxParticles * 4);
 	m_mesh->resizeIndexBuffer(m_maxParticles * 6);

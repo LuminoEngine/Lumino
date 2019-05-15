@@ -238,15 +238,15 @@ TEST_F(Test_Base_Variant, UseCase1)
 
 	//- [ ]  Save
 	{
-		auto script1 = newObject<Script>();
+		auto script1 = makeObject<Script>();
 		script1->name = u"script1";
 		script1->commandList = makeList<Ref<Command>>();
 
-		auto c1 = newObject<Command>();
+		auto c1 = makeObject<Command>();
 		c1->code = u"c1";
 		c1->params = makeList<Ref<Variant>>({ makeVariant(1), makeVariant(u"test1") });
 		script1->commandList->add(c1);
-		auto c2 = newObject<Command>();
+		auto c2 = makeObject<Command>();
 		c2->code = u"c2";
 		c2->params = makeList<Ref<Variant>>({ makeVariant(2), makeVariant(u"test2") });
 		script1->commandList->add(c2);
@@ -258,7 +258,7 @@ TEST_F(Test_Base_Variant, UseCase1)
 
 	//- [ ] Load
 	{
-		auto script2 = newObject<Script>();
+		auto script2 = makeObject<Script>();
 
 		JsonTextInputArchive ar(json);
 		ar.process(*script2);
