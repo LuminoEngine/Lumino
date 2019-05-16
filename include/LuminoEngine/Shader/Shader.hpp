@@ -214,7 +214,7 @@ private:
     Shader* owner() const { return m_owner; }
     const std::string& asciiName() const { return m_asciiName; }
     ByteBuffer& buffer() { return m_buffer; }
-    void commit(detail::IShaderUniformBuffer* rhiObject);
+    void commit(GraphicsContext* graphicsContext, detail::IShaderUniformBuffer* rhiObject);
 
     Shader* m_owner;
     String m_name;

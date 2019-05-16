@@ -400,6 +400,7 @@ void SpriteRenderFeature::init(RenderingManager* manager)
 	m_manager = manager;
 	m_internal = makeRef<InternalSpriteRenderer>();
 	m_internal->init(manager);
+    m_stateChanged = true;
 }
 
 void SpriteRenderFeature::setSortInfo(
@@ -421,6 +422,19 @@ void SpriteRenderFeature::drawRequest(
 	BillboardType billboardType,
     SpriteFlipFlags flipFlags)
 {
+    // onActiveRenderFeatureChanged では GraphicsContext に触れないので、state はここで送る。
+    // （onActiveRenderFeatureChanged の呼び出し元で渡すようにしてもいいが、ひとまずこれで）
+    if (m_stateChanged) {
+        LN_ENQUEUE_RENDER_COMMAND_2(
+            SpriteRenderFeature_setState, context,
+            InternalSpriteRenderer*, m_internal,
+            InternalSpriteRenderer::State, m_state,
+            {
+                m_internal->setState(m_state);
+            });
+        m_stateChanged = false;
+    }
+
     Vector4 sizeAndAnchor(size.x, size.y, anchorRatio.x, anchorRatio.y);
 	LN_ENQUEUE_RENDER_COMMAND_8(
 		SpriteRenderFeature_drawRequest, context,
@@ -443,15 +457,8 @@ void SpriteRenderFeature::onActiveRenderFeatureChanged(const detail::CameraInfo&
 
     m_state.viewMatrix = mainCameraInfo.viewMatrix;
     m_state.projMatrix = mainCameraInfo.projMatrix;
+    m_stateChanged = true;
 
-    GraphicsManager* manager = m_manager->graphicsManager();
-    LN_ENQUEUE_RENDER_COMMAND_2(
-        SpriteRenderFeature_setState, manager->graphicsContext(),
-        InternalSpriteRenderer*, m_internal,
-        InternalSpriteRenderer::State, m_state,
-        {
-            m_internal->setState(m_state);
-        });
 }
 
 void SpriteRenderFeature::flush(GraphicsContext* context)

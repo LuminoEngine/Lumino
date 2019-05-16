@@ -80,6 +80,8 @@ void UIRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture*
         // build draw elements
         {
             m_renderingContext->resetForBeginRendering();
+            m_renderingContext->setRenderTarget(0, fb.renderTarget[0]);
+            m_renderingContext->setDepthBuffer(fb.depthBuffer);
             m_renderingContext->setViewPoint(m_viewPoint);
             if (clearMode() == RenderViewClearMode::ColorAndDepth) {
                 m_renderingContext->clear(ClearFlags::All, backgroundColor(), 1.0f, 0x00);

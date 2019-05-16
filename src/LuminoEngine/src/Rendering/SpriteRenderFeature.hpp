@@ -160,6 +160,7 @@ private:
 	RenderingManager* m_manager;
 	InternalSpriteRenderer::State m_state;
 	Ref<InternalSpriteRenderer> m_internal;
+    bool m_stateChanged;
 };
 
 } // namespace detail

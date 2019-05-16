@@ -379,11 +379,10 @@ void FrameRectRenderFeature::init(RenderingManager* manager)
     m_internal->init(manager);
 }
 
-void FrameRectRenderFeature::draw(const Rect& rect, const Matrix& worldTransform, BrushImageDrawMode imageDrawMode, const Thickness& borderThickness, const Rect& srcRect, BrushWrapMode wrapMode, const SizeI& srcTextureSize)
+void FrameRectRenderFeature::draw(GraphicsContext* context, const Rect& rect, const Matrix& worldTransform, BrushImageDrawMode imageDrawMode, const Thickness& borderThickness, const Rect& srcRect, BrushWrapMode wrapMode, const SizeI& srcTextureSize)
 {
-    GraphicsManager* manager = m_internal->manager()->graphicsManager();
     LN_ENQUEUE_RENDER_COMMAND_8(
-        rameRectRenderFeature_draw, manager->graphicsContext(),
+        rameRectRenderFeature_draw, context,
         InternalFrameRectRenderer*, m_internal,
         Rect, rect,
         Matrix, worldTransform,

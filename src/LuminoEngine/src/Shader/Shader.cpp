@@ -707,14 +707,13 @@ ShaderParameter* ShaderConstantBuffer::findParameter(const StringRef& name) cons
     return (result) ? *result : nullptr;
 }
 
-void ShaderConstantBuffer::commit(detail::IShaderUniformBuffer* rhiObject)
+void ShaderConstantBuffer::commit(GraphicsContext* graphicsContext, detail::IShaderUniformBuffer* rhiObject)
 {
-	auto* manager = detail::GraphicsResourceInternal::manager(owner());
-    detail::RenderBulkData data = detail::GraphicsContextInternal::getRenderingCommandList(manager->graphicsContext())->allocateBulkData(m_buffer.size());
+    detail::RenderBulkData data = detail::GraphicsContextInternal::getRenderingCommandList(graphicsContext)->allocateBulkData(m_buffer.size());
     memcpy(data.writableData(), m_buffer.data(), data.size());
 
     LN_ENQUEUE_RENDER_COMMAND_2(
-        ShaderConstantBuffer_commit, manager->graphicsContext(), detail::RenderBulkData, data, Ref<detail::IShaderUniformBuffer>, rhiObject, {
+        ShaderConstantBuffer_commit, graphicsContext, detail::RenderBulkData, data, Ref<detail::IShaderUniformBuffer>, rhiObject, {
             rhiObject->setData(data.data(), data.size());
         });
 }
@@ -816,7 +815,7 @@ void ShaderPass::commit(GraphicsContext* graphicsContext)
 void ShaderPass::commitContantBuffers(GraphicsContext* graphicsContext)
 {
     for (auto& e : m_bufferEntries) {
-        e.buffer->commit(e.rhiObject);
+        e.buffer->commit(graphicsContext, e.rhiObject);
     }
 
     // TODO: 1つのバッファにまとめるとか、一括で送りたい。
@@ -840,7 +839,7 @@ void ShaderPass::commitContantBuffers(GraphicsContext* graphicsContext)
 				detail::ITexture* rhiTexture = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(graphicsContext, texture, nullptr);
 				detail::ISamplerState* rhiSampler = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISamplerState>(graphicsContext, sampler, nullptr);
 				LN_ENQUEUE_RENDER_COMMAND_4(
-					ShaderConstantBuffer_commit_setTexture, manager->graphicsContext(), detail::IShaderSamplerBuffer*, samplerBuffer, int, i, Ref<detail::ITexture>, rhiTexture, Ref<detail::ISamplerState>, rhiSampler, {
+					ShaderConstantBuffer_commit_setTexture, graphicsContext, detail::IShaderSamplerBuffer*, samplerBuffer, int, i, Ref<detail::ITexture>, rhiTexture, Ref<detail::ISamplerState>, rhiSampler, {
 						samplerBuffer->setTexture(i, rhiTexture);
 						samplerBuffer->setSamplerState(i, rhiSampler);
 				});

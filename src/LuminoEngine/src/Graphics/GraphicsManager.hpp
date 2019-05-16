@@ -44,6 +44,7 @@ public:
 	// TODO: こういう事情がでてきたので、以前のバージョンのように IGraphicsDevice をリソース関係と描画関係で分離するのもアリかもしれない。
 	const Ref<IGraphicsDevice>& deviceContext() const { return m_deviceContext; }
 	const Ref<GraphicsContext>& graphicsContext() const { return m_graphicsContext; }
+    const Ref<GraphicsContext>& mainWindowGraphicsContext() const { return m_graphicsContext; }
 	const Ref<LinearAllocatorPageManager>& linearAllocatorPageManager() const { return m_linearAllocatorPageManager; }
 	RenderingType renderingType() const { return RenderingType::Immediate; }
 	//const Ref<RenderingCommandList>& primaryRenderingCommandList2() const { return m_primaryRenderingCommandList; }
