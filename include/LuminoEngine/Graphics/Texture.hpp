@@ -37,7 +37,7 @@ protected:
     Texture();
     virtual ~Texture();
     void init();
-    virtual detail::ITexture* resolveRHIObject(bool* outModified) = 0;
+    virtual detail::ITexture* resolveRHIObject(GraphicsContext* context, bool* outModified) = 0;
 
 private:
     void setDesc(int width, int height, TextureFormat format);
@@ -100,7 +100,7 @@ public:
 protected:
     virtual void onDispose(bool explicitDisposing) override;
     virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
-    virtual detail::ITexture* resolveRHIObject(bool* outModified) override;
+    virtual detail::ITexture* resolveRHIObject(GraphicsContext* context, bool* outModified) override;
 
 LN_CONSTRUCT_ACCESS:
     Texture2D();
@@ -157,7 +157,7 @@ public:
 protected:
     virtual void onDispose(bool explicitDisposing) override;
     virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
-    virtual detail::ITexture* resolveRHIObject(bool* outModified) override;
+    virtual detail::ITexture* resolveRHIObject(GraphicsContext* context, bool* outModified) override;
 
 LN_CONSTRUCT_ACCESS:
     RenderTargetTexture();
@@ -216,7 +216,7 @@ LN_CONSTRUCT_ACCESS:
 protected:
     virtual void onDispose(bool explicitDisposing) override;
     virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
-    virtual detail::ITexture* resolveRHIObject(bool* outModified) override;
+    virtual detail::ITexture* resolveRHIObject(GraphicsContext* context, bool* outModified) override;
 
 private:
     Ref<detail::ITexture> m_rhiObject;

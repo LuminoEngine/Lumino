@@ -194,7 +194,7 @@ void IndexBuffer::setResourcePool(GraphicsResourcePool pool)
     m_pool = pool;
 }
 
-detail::IIndexBuffer* IndexBuffer::resolveRHIObject(bool* outModified)
+detail::IIndexBuffer* IndexBuffer::resolveRHIObject(GraphicsContext* context, bool* outModified)
 {
 	*outModified = m_modified;
     m_mappedBuffer = nullptr;
@@ -212,7 +212,7 @@ detail::IIndexBuffer* IndexBuffer::resolveRHIObject(bool* outModified)
                 detail::RenderBulkData data(m_buffer.data(), m_buffer.size());
                 detail::IIndexBuffer* rhiObject = m_rhiObject;
                 LN_ENQUEUE_RENDER_COMMAND_3(
-                    IndexBuffer_setSubData, detail::GraphicsResourceInternal::manager(this)->graphicsContext(), detail::IGraphicsDevice*, device, detail::RenderBulkData, data, Ref<detail::IIndexBuffer>, rhiObject, {
+                    IndexBuffer_setSubData, context, detail::IGraphicsDevice*, device, detail::RenderBulkData, data, Ref<detail::IIndexBuffer>, rhiObject, {
                         device->getGraphicsContext()->setSubData(rhiObject, 0, data.data(), data.size());
                     });
             }

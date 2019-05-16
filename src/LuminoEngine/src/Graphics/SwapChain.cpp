@@ -82,7 +82,7 @@ void SwapChain::present()
     m_rhiObject->acquireNextImage(&m_imageIndex);
 }
 
-detail::ISwapChain* SwapChain::resolveRHIObject(bool* outModified) const
+detail::ISwapChain* SwapChain::resolveRHIObject(GraphicsContext* context, bool* outModified) const
 {
 	*outModified = false;
     return m_rhiObject;

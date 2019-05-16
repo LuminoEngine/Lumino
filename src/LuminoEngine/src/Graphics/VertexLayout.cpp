@@ -61,7 +61,7 @@ void VertexLayout::addElement(int streamIndex, VertexElementType type, VertexEle
     m_vertexElements.add(e);
 }
 
-detail::IVertexDeclaration* VertexLayout::resolveRHIObject(bool* outModified)
+detail::IVertexDeclaration* VertexLayout::resolveRHIObject(GraphicsContext* context, bool* outModified)
 {
 	*outModified = m_modified;
 

@@ -41,7 +41,7 @@ public:
         bool modified = false;
         TReturn* rhi = nullptr;
         if (obj) {
-            rhi = obj->resolveRHIObject(&modified);
+            rhi = obj->resolveRHIObject(context, &modified);
         }
         if (outModified) {
             *outModified = modified;

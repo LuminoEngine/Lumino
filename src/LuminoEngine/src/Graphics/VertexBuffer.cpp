@@ -149,9 +149,8 @@ void VertexBuffer::setResourcePool(GraphicsResourcePool pool)
     m_pool = pool;
 }
 
-detail::IVertexBuffer* VertexBuffer::resolveRHIObject(bool* outModified)
+detail::IVertexBuffer* VertexBuffer::resolveRHIObject(GraphicsContext* context, bool* outModified)
 {
-	GraphicsContext* context = detail::GraphicsResourceInternal::manager(this)->graphicsContext();
 	*outModified = m_modified;
     m_mappedBuffer = nullptr;
 

@@ -199,9 +199,8 @@ void Texture2D::onChangeDevice(detail::IGraphicsDevice* device)
     }
 }
 
-detail::ITexture* Texture2D::resolveRHIObject(bool* outModified)
+detail::ITexture* Texture2D::resolveRHIObject(GraphicsContext* context, bool* outModified)
 {
-	GraphicsContext* context = detail::GraphicsResourceInternal::manager(this)->graphicsContext();
     *outModified = m_modified;
 
     if (m_modified) {
@@ -325,7 +324,7 @@ void RenderTargetTexture::onDispose(bool explicitDisposing)
 Ref<Bitmap2D> RenderTargetTexture::readData()
 {
     bool modified = false;
-    detail::ITexture* rhiObject = resolveRHIObject(&modified);
+    detail::ITexture* rhiObject = resolveRHIObject(nullptr, &modified);
 
     SizeI size = rhiObject->realSize();
     auto bitmap = makeObject<Bitmap2D>(size.width, size.height, GraphicsHelper::translateToPixelFormat(rhiObject->getTextureFormat()));
@@ -341,7 +340,7 @@ Ref<Bitmap2D> RenderTargetTexture::readData()
     return bitmap;
 }
 
-detail::ITexture* RenderTargetTexture::resolveRHIObject(bool* outModified)
+detail::ITexture* RenderTargetTexture::resolveRHIObject(GraphicsContext* context, bool* outModified)
 {
     *outModified = m_modified;
 
@@ -457,9 +456,8 @@ void Texture3D::onChangeDevice(detail::IGraphicsDevice* device)
     }
 }
 
-detail::ITexture* Texture3D::resolveRHIObject(bool* outModified)
+detail::ITexture* Texture3D::resolveRHIObject(GraphicsContext* context, bool* outModified)
 {
-	GraphicsContext* context = detail::GraphicsResourceInternal::manager(this)->graphicsContext();
     *outModified = m_modified;
 
     if (m_modified) {

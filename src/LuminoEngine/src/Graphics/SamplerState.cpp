@@ -107,7 +107,7 @@ void SamplerState::setAnisotropyEnabled(bool value)
     }
 }
 
-detail::ISamplerState* SamplerState::resolveRHIObject(bool* outModified)
+detail::ISamplerState* SamplerState::resolveRHIObject(GraphicsContext* context, bool* outModified)
 {
     *outModified = m_modified;
 
