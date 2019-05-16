@@ -263,24 +263,20 @@ void UIFrameWindow::renderContents()
 {
 	assert(!m_depthBuffer);
 
-	GraphicsContext* ctx = m_manager->graphicsManager()->graphicsContext();
-
 	RenderTargetTexture* backbuffer = m_swapChain->backbuffer();
 	m_depthBuffer = DepthBuffer::getTemporary(backbuffer->width(), backbuffer->height());
 
-	ctx->setRenderTarget(0, backbuffer);
-	ctx->setDepthBuffer(m_depthBuffer);
+	m_graphicsContext->setRenderTarget(0, backbuffer);
+    m_graphicsContext->setDepthBuffer(m_depthBuffer);
 	//ctx->clear(ClearFlags::All, Color(0.4, 0.4, 0.4), 1.0f, 0x00);
 }
 
 void UIFrameWindow::present()
 {
-	GraphicsContext* ctx = m_manager->graphicsManager()->graphicsContext();
-
 	if (m_renderView)
 	{
 		m_renderView->setRootElement(this);
-		m_renderView->render(ctx);
+		m_renderView->render(m_graphicsContext);
 	}
 
 	if (m_depthBuffer) {
@@ -411,6 +407,23 @@ bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)
 		break;
 	}
 	return false;
+}
+
+//==============================================================================
+// UIMainWindow
+
+UIMainWindow::UIMainWindow()
+{
+}
+
+UIMainWindow::~UIMainWindow()
+{
+}
+
+void UIMainWindow::init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize)
+{
+    UIFrameWindow::init(platformMainWindow, backbufferSize);
+    m_graphicsContext = m_manager->graphicsManager()->graphicsContext();
 }
 
 //==============================================================================

@@ -9,7 +9,7 @@
 namespace ln {
 class EngineContext;
 class UIContext;
-class UIFrameWindow;
+class UIMainWindow;
 class UIViewport;
 class UIRenderView;
 class UIContainerElement;
@@ -127,7 +127,7 @@ public:
     void setTimeScale(float value) { m_timeScale = value; }
     void setShowDebugFpsEnabled(bool value) { m_showDebugFpsEnabled = value; }
 
-	const Ref<UIFrameWindow>& mainWindow() const { return m_mainWindow; }
+	const Ref<UIMainWindow>& mainWindow() const { return m_mainWindow; }
     const Ref<UIViewport>& mainViewport() const { return m_mainViewport; }
 	const Ref<UIContainerElement>& mainUIRoot() const { return m_mainUIRoot; }
     const Ref<World>& mainWorld() const { return m_mainWorld; }
@@ -164,7 +164,7 @@ private:
 	Path m_persistentDataPath;
 
     Ref<UIContext> m_mainUIContext;
-	Ref<UIFrameWindow> m_mainWindow;
+	Ref<UIMainWindow> m_mainWindow;
 	Ref<UIViewport> m_mainViewport;
     Ref<UIRenderView> m_mainUIRenderView;   // m_mainViewport の ViewBox 内部に配置する
     Ref<UIContainerElement> m_mainUIRoot;   // m_mainUIRenderView の RootElement

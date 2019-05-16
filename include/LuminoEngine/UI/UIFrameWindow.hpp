@@ -93,6 +93,7 @@ protected:  // TODO: internal
 	detail::UIManager* m_manager;
 	Ref<detail::PlatformWindow>	m_platformWindow;
     Ref<detail::UIInputInjector> m_inputInjector;
+    Ref<GraphicsContext> m_graphicsContext;
 	Ref<SwapChain>	m_swapChain;
 	Ref<DepthBuffer> m_depthBuffer;
 	Ref<UIRenderView> m_renderView;
@@ -102,6 +103,18 @@ protected:  // TODO: internal
 	bool m_autoDisposePlatformWindow;
 };
 
+class LN_API UIMainWindow
+	: public UIFrameWindow
+{
+public:
+
+LN_CONSTRUCT_ACCESS:
+	UIMainWindow();
+	virtual ~UIMainWindow();
+	void init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
+
+private:
+};
 
 
 class LN_API UINativeFrameWindow
@@ -122,24 +135,11 @@ LN_CONSTRUCT_ACCESS:
     void init();
 
 private:
-	Ref<GraphicsContext> m_graphicsContext;
     Ref<RenderTargetTexture> m_renderingRenderTarget;
     Ref<DepthBuffer> m_renderingDepthBuffer;
 };
 
 
-//class LN_API UIMainWindow
-//	: public UIFrameWindow
-//{
-//public:
-//
-//LN_CONSTRUCT_ACCESS :
-//	UIMainWindow();
-//	virtual ~UIMainWindow();
-//	void init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
-//
-//private:
-//};
 
 } // namespace ln
 

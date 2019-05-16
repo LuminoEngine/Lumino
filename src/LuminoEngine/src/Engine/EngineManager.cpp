@@ -125,7 +125,7 @@ void EngineManager::init()
             m_mainUIContext = makeObject<UIContext>();
             m_uiManager->setMainContext(m_mainUIContext);
 
-            m_mainWindow = makeObject<UIFrameWindow>(m_platformManager->mainWindow(), m_settings.mainBackBufferSize);
+            m_mainWindow = makeObject<UIMainWindow>(m_platformManager->mainWindow(), m_settings.mainBackBufferSize);
             m_mainViewport = makeObject<UIViewport>();
             m_mainWindow->addElement(m_mainViewport);
 
