@@ -24,7 +24,7 @@ public:
 	// TODO: internal
 	// 描画コマンド構築と実行まですべて行う
 	//void renderTree(GraphicsContext* graphicsContext, UIElement* element);
-    virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthbuffer) override;
+    virtual void render(GraphicsContext* graphicsContext) override;
 
 protected:
 	virtual void onUpdateFrame(float elapsedSeconds) override;

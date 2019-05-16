@@ -41,7 +41,10 @@ void OffscreenWorldRenderView::render()
 {
 	auto depthBuffer = DepthBuffer::getTemporary(m_renderTarget->width(), m_renderTarget->height());
 
-    WorldRenderView::render(m_renderingManager->graphicsManager()->graphicsContext(), m_renderTarget, depthBuffer);
+    GraphicsContext* context = m_renderingManager->graphicsManager()->graphicsContext();
+    context->setRenderTarget(0, m_renderTarget);
+    context->setDepthBuffer(depthBuffer);
+    WorldRenderView::render(context);
 
     // TODO: scoped
 	DepthBuffer::releaseTemporary(depthBuffer);

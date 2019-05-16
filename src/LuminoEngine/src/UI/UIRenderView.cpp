@@ -51,7 +51,7 @@ void UIRenderView::onUpdateUILayout(const Rect& finalGlobalRect)
     m_rootElement->updateFinalLayoutHierarchical(finalGlobalRect);
 }
 
-void UIRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthbuffer)
+void UIRenderView::render(GraphicsContext* graphicsContext)
 {
     if (m_rootElement)
     {

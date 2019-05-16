@@ -67,13 +67,13 @@ void WorldRenderView::setCamera(Camera* camera)
     }
 }
 
-void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthbuffer)
+void WorldRenderView::render(GraphicsContext* graphicsContext)
 {
 	if (m_camera)
 	{
         FrameBuffer fb;
-        fb.renderTarget[0] = renderTarget;
-        fb.depthBuffer = depthbuffer;
+        fb.renderTarget[0] = graphicsContext->renderTarget(0);
+        fb.depthBuffer = graphicsContext->depthBuffer();
 
         // TODO:
         detail::CameraInfo camera;

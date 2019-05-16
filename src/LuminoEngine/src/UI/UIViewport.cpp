@@ -104,7 +104,7 @@ void UIViewport::onRender(UIRenderingContext* context)
 
     for (auto& view : m_renderViews)
     {
-        view->render(graphicsContext, graphicsContext->renderTarget(0), graphicsContext->depthBuffer());
+        view->render(graphicsContext);
     }
 
     m_imageEffectRenderer->render(context, graphicsContext->renderTarget(0));

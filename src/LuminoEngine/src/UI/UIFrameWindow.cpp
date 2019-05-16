@@ -280,7 +280,7 @@ void UIFrameWindow::present()
 	if (m_renderView)
 	{
 		m_renderView->setRootElement(this);
-		m_renderView->render(ctx, ctx->renderTarget(0), ctx->depthBuffer());
+		m_renderView->render(ctx);
 	}
 
 	if (m_depthBuffer) {
@@ -453,7 +453,7 @@ void UINativeFrameWindow::renderContents()
     if (m_renderView)
     {
         m_renderView->setRootElement(this);
-        m_renderView->render(m_graphicsContext, m_graphicsContext->renderTarget(0), m_graphicsContext->depthBuffer());
+        m_renderView->render(m_graphicsContext);
     }
 }
 
