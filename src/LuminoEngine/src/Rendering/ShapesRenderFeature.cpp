@@ -222,7 +222,7 @@ void InternalShapesRenderer::renderCommandList(IGraphicsContext* context, Shapes
 			IIndexBuffer* oldIndexBuffer = context->indexBuffer();
 			PrimitiveTopology oldPrimitiveTopology = context->primitiveTopology();
 
-            context->setVertexDeclaration(detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(m_manager->standardVertexDeclaration(), nullptr));
+            context->setVertexDeclaration(m_manager->standardVertexDeclarationRHI());
             context->setVertexBuffer(0, m_vertexBuffer);
             context->setIndexBuffer(m_indexBuffer);
             context->setPrimitiveTopology(PrimitiveTopology::TriangleList);

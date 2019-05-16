@@ -33,7 +33,7 @@ InternalSpriteTextRender::InternalSpriteTextRender()
 void InternalSpriteTextRender::init(RenderingManager* manager)
 {
     m_manager = manager;
-	m_vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(manager->standardVertexDeclaration(), nullptr);
+	m_vertexDeclaration = m_manager->standardVertexDeclarationRHI();
 
     prepareBuffers(512);
 }
