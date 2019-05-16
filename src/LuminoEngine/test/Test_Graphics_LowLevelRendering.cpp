@@ -88,8 +88,8 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
 		ctx->clear(ClearFlags::Color, Color::Red, 1.0f, 0);
 
 		// Red, Blue
-		ASSERT_EQ(true, TestEnv::equalsBitmapFile(detail::TextureInternal::readData(t1), LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-3.png"), 100));
-		ASSERT_EQ(true, TestEnv::equalsBitmapFile(detail::TextureInternal::readData(t2), LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-4.png"), 100));
+		ASSERT_EQ(true, TestEnv::equalsBitmapFile(detail::TextureInternal::readData(t1, Engine::graphicsContext()), LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-3.png"), 100));
+		ASSERT_EQ(true, TestEnv::equalsBitmapFile(detail::TextureInternal::readData(t2, Engine::graphicsContext()), LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-4.png"), 100));
 	}
 }
 

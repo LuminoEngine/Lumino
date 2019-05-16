@@ -321,7 +321,7 @@ void RenderTargetTexture::onDispose(bool explicitDisposing)
     Texture::onDispose(explicitDisposing);
 }
 
-Ref<Bitmap2D> RenderTargetTexture::readData()
+Ref<Bitmap2D> RenderTargetTexture::readData(GraphicsContext* context)
 {
     bool modified = false;
     detail::ITexture* rhiObject = resolveRHIObject(nullptr, &modified);
@@ -332,7 +332,7 @@ Ref<Bitmap2D> RenderTargetTexture::readData()
     if (detail::GraphicsResourceInternal::manager(this)->renderingType() == RenderingType::Threaded) {
         LN_NOTIMPLEMENTED();
     } else {
-        detail::GraphicsContextInternal::flushCommandRecoding(detail::GraphicsResourceInternal::manager(this)->graphicsContext2(), this);
+        detail::GraphicsContextInternal::flushCommandRecoding(context, this);
         rhiObject->readData(bitmap->data());
     }
 

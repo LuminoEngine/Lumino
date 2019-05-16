@@ -61,7 +61,7 @@ void TestEnv::resetGraphicsContext(GraphicsContext* context)
 
 Ref<Bitmap2D> TestEnv::capture()
 {
-	return detail::TextureInternal::readData(Engine::mainWindow()->swapChain()->backbuffer());
+	return detail::TextureInternal::readData(Engine::mainWindow()->swapChain()->backbuffer(), Engine::graphicsContext());
 }
 
 void TestEnv::saveScreenShot(const Char* filePath)
