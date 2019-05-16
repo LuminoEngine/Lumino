@@ -3,6 +3,7 @@
 #include "../Engine/RenderingCommandList.hpp"
 #include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
+#include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 
 namespace ln {
@@ -211,7 +212,7 @@ detail::IIndexBuffer* IndexBuffer::resolveRHIObject(bool* outModified)
                 detail::RenderBulkData data(m_buffer.data(), m_buffer.size());
                 detail::IIndexBuffer* rhiObject = m_rhiObject;
                 LN_ENQUEUE_RENDER_COMMAND_3(
-                    IndexBuffer_setSubData, detail::GraphicsResourceInternal::manager(this), detail::IGraphicsDevice*, device, detail::RenderBulkData, data, Ref<detail::IIndexBuffer>, rhiObject, {
+                    IndexBuffer_setSubData, detail::GraphicsResourceInternal::manager(this)->graphicsContext(), detail::IGraphicsDevice*, device, detail::RenderBulkData, data, Ref<detail::IIndexBuffer>, rhiObject, {
                         device->getGraphicsContext()->setSubData(rhiObject, 0, data.data(), data.size());
                     });
             }

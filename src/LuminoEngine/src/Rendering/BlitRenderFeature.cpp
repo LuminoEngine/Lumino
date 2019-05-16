@@ -40,7 +40,7 @@ void BlitRenderFeature::blit(GraphicsContext* context)
     auto* _this = this;
 	IGraphicsContext* c = GraphicsContextInternal::commitState(context);
     LN_ENQUEUE_RENDER_COMMAND_2(
-        BlitRenderFeature_blit, m_manager->graphicsManager(),
+        BlitRenderFeature_blit, context,
         BlitRenderFeature*, _this,
         IGraphicsContext*, c,
         {

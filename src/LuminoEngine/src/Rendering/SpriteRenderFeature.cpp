@@ -423,7 +423,7 @@ void SpriteRenderFeature::drawRequest(
 	GraphicsManager* manager = m_manager->graphicsManager();
     Vector4 sizeAndAnchor(size.x, size.y, anchorRatio.x, anchorRatio.y);
 	LN_ENQUEUE_RENDER_COMMAND_8(
-		SpriteRenderFeature_drawRequest, manager,
+		SpriteRenderFeature_drawRequest, manager->graphicsContext(),
 		InternalSpriteRenderer*, m_internal,
 		Matrix, transform,
         Vector4, sizeAndAnchor,
@@ -446,7 +446,7 @@ void SpriteRenderFeature::onActiveRenderFeatureChanged(const detail::CameraInfo&
 
     GraphicsManager* manager = m_manager->graphicsManager();
     LN_ENQUEUE_RENDER_COMMAND_2(
-        SpriteRenderFeature_setState, manager,
+        SpriteRenderFeature_setState, manager->graphicsContext(),
         InternalSpriteRenderer*, m_internal,
         InternalSpriteRenderer::State, m_state,
         {
@@ -459,7 +459,7 @@ void SpriteRenderFeature::flush(GraphicsContext* context)
 	GraphicsManager* manager = m_manager->graphicsManager();
     IGraphicsContext* c = GraphicsContextInternal::commitState(context);
 	LN_ENQUEUE_RENDER_COMMAND_2(
-		SpriteRenderFeature_flush, manager,
+		SpriteRenderFeature_flush, context,
         IGraphicsContext*, c,
 		InternalSpriteRenderer*, m_internal,
 		{

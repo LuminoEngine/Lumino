@@ -64,8 +64,16 @@ void SwapChain::present()
 
     // TODO: threading
 	detail::ISwapChain* rhi = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(this, nullptr);
-	nativeContext->present(rhi);
-	detail::GraphicsResourceInternal::manager(this)->primaryRenderingCommandList()->clear();
+
+	LN_ENQUEUE_RENDER_COMMAND_2(
+		SwapChain_present, context,
+		detail::IGraphicsContext*, nativeContext,
+		detail::ISwapChain*, rhi,
+		{
+			nativeContext->present(rhi);
+		});
+	
+	detail::GraphicsResourceInternal::manager(this)->submitCommandList(detail::GraphicsContextInternal::getRenderingCommandList(context));
 
     // この後 readData などでバックバッファのイメージをキャプチャしたりするので、
     // ここでは次に使うべきバッファの番号だけを取り出しておく。

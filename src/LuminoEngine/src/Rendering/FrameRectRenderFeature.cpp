@@ -383,7 +383,7 @@ void FrameRectRenderFeature::draw(const Rect& rect, const Matrix& worldTransform
 {
     GraphicsManager* manager = m_internal->manager()->graphicsManager();
     LN_ENQUEUE_RENDER_COMMAND_8(
-        rameRectRenderFeature_draw, manager,
+        rameRectRenderFeature_draw, manager->graphicsContext(),
         InternalFrameRectRenderer*, m_internal,
         Rect, rect,
         Matrix, worldTransform,
@@ -402,7 +402,7 @@ void FrameRectRenderFeature::flush(GraphicsContext* context)
     GraphicsManager* manager = m_internal->manager()->graphicsManager();
     IGraphicsContext* c = GraphicsContextInternal::commitState(context);
     LN_ENQUEUE_RENDER_COMMAND_2(
-        FrameRectRenderFeature_flush, manager,
+        FrameRectRenderFeature_flush, context,
         InternalFrameRectRenderer*, m_internal,
         IGraphicsContext*, c,
         {

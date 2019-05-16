@@ -8,6 +8,16 @@ class SwapChain;
 class Bitmap2D;
 class Bitmap3D;
 
+/** 描画方式 */
+enum class RenderingType
+{
+	/** 即時描画 */
+	Immediate,
+
+	/** 遅延描画 */
+	Threaded,
+};
+
 /** バックエンドグラフィックス API の種類 */
 enum class GraphicsAPI
 {
@@ -300,6 +310,7 @@ public:
 };
 
 namespace detail {
+class RenderingCommandList;
 class GraphicsManager;
 class GraphicsContextInternal;
 class IGraphicsDevice;

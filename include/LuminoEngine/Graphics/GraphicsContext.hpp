@@ -132,6 +132,8 @@ private:
     void init();
     void init(detail::IGraphicsContext* context);
 
+	RenderingType renderingType() const { return RenderingType::Immediate; }
+	detail::RenderingCommandList* renderingCommandList();
     void beginCommandRecodingIfNeeded();
     void endCommandRecodingIfNeeded();
     void flushCommandRecoding(RenderTargetTexture* affectRendreTarget);
@@ -172,6 +174,7 @@ private:
 
     detail::GraphicsManager* m_manager;
     Ref<detail::IGraphicsContext> m_context;
+	Ref<detail::RenderingCommandList> m_recordingCommandList;
     State m_staging;
     State m_lastCommit;
     uint32_t m_dirtyFlags;
@@ -184,6 +187,8 @@ namespace detail {
 class GraphicsContextInternal
 {
 public:
+	static RenderingType getRenderingType(GraphicsContext* self) { return self->renderingType(); }
+	static detail::RenderingCommandList* getRenderingCommandList(GraphicsContext* self) { return self->renderingCommandList(); }
     static void flushCommandRecoding(GraphicsContext* self, RenderTargetTexture* affectRendreTarget) { self->flushCommandRecoding(affectRendreTarget); }
     static IGraphicsContext* commitState(GraphicsContext* self) { return self->commitState(); }
 };

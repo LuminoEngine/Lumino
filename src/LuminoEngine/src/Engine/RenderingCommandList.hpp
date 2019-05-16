@@ -2,16 +2,6 @@
 
 namespace ln {
 
-/** 描画方式 */
-enum class RenderingType
-{
-	/** 即時描画 */
-	Immediate,
-
-	/** 遅延描画 */
-	Threaded,
-};
-
 namespace detail {
 class LinearAllocatorPageManager;
 class LinearAllocator;
@@ -95,16 +85,16 @@ private:
 
 #define LN_ENQUEUE_RENDER_COMMAND_PARAM(type, param) type param
 
-#define LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, commandName, ...) \
-	if (manager->renderingType() == RenderingType::Threaded) { \
-		manager->primaryRenderingCommandList()->enqueueCommand<commandName>(__VA_ARGS__); \
+#define LN_ENQUEUE_RENDER_COMMAND_CREATE(context, commandName, ...) \
+	if (detail::GraphicsContextInternal::getRenderingType(context) == RenderingType::Threaded) { \
+		detail::GraphicsContextInternal::getRenderingCommandList(context)->enqueueCommand<commandName>(__VA_ARGS__); \
 	} \
 	else { \
 		commandName cmd(__VA_ARGS__); \
 		cmd.execute(); \
 	}
 
-#define LN_ENQUEUE_RENDER_COMMAND_1(name, manager, type1, param1, code) \
+#define LN_ENQUEUE_RENDER_COMMAND_1(name, context, type1, param1, code) \
 	class RenderCommand_##name : public ln::detail::RenderingCommand \
 	{ \
 	public: \
@@ -122,9 +112,9 @@ private:
 			code; \
 		} \
 	}; \
-	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1);
+	LN_ENQUEUE_RENDER_COMMAND_CREATE(context, RenderCommand_##name, param1);
 
-#define LN_ENQUEUE_RENDER_COMMAND_2(name, manager, type1, param1, type2, param2, code) \
+#define LN_ENQUEUE_RENDER_COMMAND_2(name, context, type1, param1, type2, param2, code) \
 	class RenderCommand_##name : public ln::detail::RenderingCommand \
 	{ \
 	public: \
@@ -146,9 +136,9 @@ private:
 			code; \
 		} \
 	}; \
-	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2);
+	LN_ENQUEUE_RENDER_COMMAND_CREATE(context, RenderCommand_##name, param1, param2);
 
-#define LN_ENQUEUE_RENDER_COMMAND_3(name, manager, type1, param1, type2, param2, type3, param3, code) \
+#define LN_ENQUEUE_RENDER_COMMAND_3(name, context, type1, param1, type2, param2, type3, param3, code) \
 	class RenderCommand_##name : public ln::detail::RenderingCommand \
 	{ \
 	public: \
@@ -174,9 +164,9 @@ private:
 			code; \
 		} \
 	}; \
-	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2, param3);
+	LN_ENQUEUE_RENDER_COMMAND_CREATE(context, RenderCommand_##name, param1, param2, param3);
 
-#define LN_ENQUEUE_RENDER_COMMAND_4(name, manager, type1, param1, type2, param2, type3, param3, type4, param4, code) \
+#define LN_ENQUEUE_RENDER_COMMAND_4(name, context, type1, param1, type2, param2, type3, param3, type4, param4, code) \
 	class RenderCommand_##name : public ln::detail::RenderingCommand \
 	{ \
 	public: \
@@ -206,9 +196,9 @@ private:
 			code; \
 		} \
 	}; \
-	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2, param3, param4);
+	LN_ENQUEUE_RENDER_COMMAND_CREATE(context, RenderCommand_##name, param1, param2, param3, param4);
 
-#define LN_ENQUEUE_RENDER_COMMAND_5(name, manager, type1, param1, type2, param2, type3, param3, type4, param4, type5, param5, code) \
+#define LN_ENQUEUE_RENDER_COMMAND_5(name, context, type1, param1, type2, param2, type3, param3, type4, param4, type5, param5, code) \
 	class RenderCommand_##name : public ln::detail::RenderingCommand \
 	{ \
 	public: \
@@ -242,9 +232,9 @@ private:
 			code; \
 		} \
 	}; \
-	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2, param3, param4, param5);
+	LN_ENQUEUE_RENDER_COMMAND_CREATE(context, RenderCommand_##name, param1, param2, param3, param4, param5);
 
-#define LN_ENQUEUE_RENDER_COMMAND_6(name, manager, type1, param1, type2, param2, type3, param3, type4, param4, type5, param5, type6, param6, code) \
+#define LN_ENQUEUE_RENDER_COMMAND_6(name, context, type1, param1, type2, param2, type3, param3, type4, param4, type5, param5, type6, param6, code) \
 	class RenderCommand_##name : public ln::detail::RenderingCommand \
 	{ \
 	public: \
@@ -282,9 +272,9 @@ private:
 			code; \
 		} \
 	}; \
-	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2, param3, param4, param5, param6);
+	LN_ENQUEUE_RENDER_COMMAND_CREATE(context, RenderCommand_##name, param1, param2, param3, param4, param5, param6);
 
-#define LN_ENQUEUE_RENDER_COMMAND_7(name, manager, type1, param1, type2, param2, type3, param3, type4, param4, type5, param5, type6, param6, type7, param7, code) \
+#define LN_ENQUEUE_RENDER_COMMAND_7(name, context, type1, param1, type2, param2, type3, param3, type4, param4, type5, param5, type6, param6, type7, param7, code) \
 	class RenderCommand_##name : public ln::detail::RenderingCommand \
 	{ \
 	public: \
@@ -326,9 +316,9 @@ private:
 			code; \
 		} \
 	}; \
-	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2, param3, param4, param5, param6, param7);
+	LN_ENQUEUE_RENDER_COMMAND_CREATE(context, RenderCommand_##name, param1, param2, param3, param4, param5, param6, param7);
 
-#define LN_ENQUEUE_RENDER_COMMAND_8(name, manager, type1, param1, type2, param2, type3, param3, type4, param4, type5, param5, type6, param6, type7, param7, type8, param8, code) \
+#define LN_ENQUEUE_RENDER_COMMAND_8(name, context, type1, param1, type2, param2, type3, param3, type4, param4, type5, param5, type6, param6, type7, param7, type8, param8, code) \
 	class RenderCommand_##name : public ln::detail::RenderingCommand \
 	{ \
 	public: \
@@ -374,7 +364,7 @@ private:
 			code; \
 		} \
 	}; \
-	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2, param3, param4, param5, param6, param7, param8);
+	LN_ENQUEUE_RENDER_COMMAND_CREATE(context, RenderCommand_##name, param1, param2, param3, param4, param5, param6, param7, param8);
 
 } // namespace detail
 } // namespace ln

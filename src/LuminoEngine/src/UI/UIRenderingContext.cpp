@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include "../Rendering/RenderStage.hpp"
@@ -31,8 +32,8 @@ void UIRenderingContext::drawBoxBackground(const Rect& rect, const Thickness& bo
         auto* element = m_builder->addNewDrawElement<detail::DrawShapesElement>(
             m_manager->shapesRenderFeature(),
             m_builder->shapesRenderFeatureStageParameters());
-
-        element->commandList.addDrawBoxBackground(m_manager->graphicsManager()->primaryRenderingCommandList()->linearAllocator(), element->combinedWorldMatrix(), rect, cornerRadius, color);
+		
+        element->commandList.addDrawBoxBackground(detail::GraphicsContextInternal::getRenderingCommandList(m_manager->graphicsManager()->graphicsContext())->linearAllocator(), element->combinedWorldMatrix(), rect, cornerRadius, color);
 	}
 	else
 	{

@@ -1192,7 +1192,7 @@ void ShapesRenderFeature::renderCommandList(GraphicsContext* context, const Shap
     GraphicsManager* manager = m_internal->manager()->graphicsManager();
     IGraphicsContext* c = GraphicsContextInternal::commitState(context);
     LN_ENQUEUE_RENDER_COMMAND_3(
-        ShapesRenderFeature_renderCommandList, manager,
+        ShapesRenderFeature_renderCommandList, context,
         InternalShapesRenderer*, m_internal,
         IGraphicsContext*, c,
         ShapesRendererCommandList, commandList,

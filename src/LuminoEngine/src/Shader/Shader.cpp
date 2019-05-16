@@ -3,6 +3,7 @@
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
+#include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
 #include "../Graphics/GraphicsDeviceContext.hpp"
 #include "../Graphics/GraphicsManager.hpp"
@@ -709,11 +710,11 @@ ShaderParameter* ShaderConstantBuffer::findParameter(const StringRef& name) cons
 void ShaderConstantBuffer::commit(detail::IShaderUniformBuffer* rhiObject)
 {
 	auto* manager = detail::GraphicsResourceInternal::manager(owner());
-    detail::RenderBulkData data = manager->primaryRenderingCommandList()->allocateBulkData(m_buffer.size());
+    detail::RenderBulkData data = detail::GraphicsContextInternal::getRenderingCommandList(manager->graphicsContext())->allocateBulkData(m_buffer.size());
     memcpy(data.writableData(), m_buffer.data(), data.size());
 
     LN_ENQUEUE_RENDER_COMMAND_2(
-        ShaderConstantBuffer_commit, manager, detail::RenderBulkData, data, Ref<detail::IShaderUniformBuffer>, rhiObject, {
+        ShaderConstantBuffer_commit, manager->graphicsContext(), detail::RenderBulkData, data, Ref<detail::IShaderUniformBuffer>, rhiObject, {
             rhiObject->setData(data.data(), data.size());
         });
 }
@@ -839,7 +840,7 @@ void ShaderPass::commitContantBuffers()
 				detail::ITexture* rhiTexture = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(texture, nullptr);
 				detail::ISamplerState* rhiSampler = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISamplerState>(sampler, nullptr);
 				LN_ENQUEUE_RENDER_COMMAND_4(
-					ShaderConstantBuffer_commit_setTexture, manager, detail::IShaderSamplerBuffer*, samplerBuffer, int, i, Ref<detail::ITexture>, rhiTexture, Ref<detail::ISamplerState>, rhiSampler, {
+					ShaderConstantBuffer_commit_setTexture, manager->graphicsContext(), detail::IShaderSamplerBuffer*, samplerBuffer, int, i, Ref<detail::ITexture>, rhiTexture, Ref<detail::ISamplerState>, rhiSampler, {
 						samplerBuffer->setTexture(i, rhiTexture);
 						samplerBuffer->setSamplerState(i, rhiSampler);
 				});

@@ -156,12 +156,12 @@ void GraphicsManager::init(const Settings& settings)
         LN_LOG_INFO << "requestedShaderTriple:" << triple.target << "-" << triple.version << "-" << triple.option;
     }
 
+	m_linearAllocatorPageManager = makeRef<LinearAllocatorPageManager>();
 
 	m_graphicsContext = makeObject<GraphicsContext>(m_deviceContext->getGraphicsContext());
 
-	m_linearAllocatorPageManager = makeRef<LinearAllocatorPageManager>();
 
-	m_primaryRenderingCommandList = makeRef<RenderingCommandList>(linearAllocatorPageManager());
+	m_inFlightRenderingCommandList = makeRef<RenderingCommandList>(linearAllocatorPageManager());
 
 	m_renderTargetTextureCacheManager = makeRef<RenderTargetTextureCacheManager>();
 	m_depthBufferCacheManager = makeRef<DepthBufferCacheManager>();
@@ -277,6 +277,13 @@ void GraphicsManager::createVulkanContext(const Settings& settings)
 	}
 #endif
 #endif
+}
+
+Ref<RenderingCommandList> GraphicsManager::submitCommandList(RenderingCommandList* commandList)
+{
+	if (LN_REQUIRE(commandList)) return nullptr;
+	commandList->clear();
+	return m_inFlightRenderingCommandList;
 }
 
 } // namespace detail

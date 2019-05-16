@@ -64,7 +64,7 @@ void MeshRenderFeature::drawMesh(GraphicsContext* context, MeshResource* mesh, i
 
 	IGraphicsContext* c = GraphicsContextInternal::commitState(context);
 	LN_ENQUEUE_RENDER_COMMAND_3(
-		MeshRenderFeature_drawMesh, m_manager->graphicsManager(),
+		MeshRenderFeature_drawMesh, context,
 		MeshRenderFeature*, _this,
         IGraphicsContext*, c,
 		DrawMeshCommandData, data,

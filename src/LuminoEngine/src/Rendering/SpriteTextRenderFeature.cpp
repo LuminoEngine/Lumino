@@ -275,7 +275,7 @@ void SpriteTextRenderFeature::flushInternal(GraphicsContext* context, FontGlyphT
 	GraphicsManager* manager = m_internal->manager()->graphicsManager();
     IGraphicsContext* c = GraphicsContextInternal::commitState(context);
 	LN_ENQUEUE_RENDER_COMMAND_6(
-		SpriteTextRenderFeature_flushInternal, manager,
+		SpriteTextRenderFeature_flushInternal, context,
 		InternalSpriteTextRender*, m_internal,
         IGraphicsContext*, c,
 		RenderBulkData, dataListData,

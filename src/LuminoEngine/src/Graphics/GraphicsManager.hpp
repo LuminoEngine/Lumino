@@ -46,7 +46,7 @@ public:
 	const Ref<GraphicsContext>& graphicsContext() const { return m_graphicsContext; }
 	const Ref<LinearAllocatorPageManager>& linearAllocatorPageManager() const { return m_linearAllocatorPageManager; }
 	RenderingType renderingType() const { return RenderingType::Immediate; }
-	const Ref<RenderingCommandList>& primaryRenderingCommandList() const { return m_primaryRenderingCommandList; }
+	//const Ref<RenderingCommandList>& primaryRenderingCommandList2() const { return m_primaryRenderingCommandList; }
 	const Ref<RenderTargetTextureCacheManager>& renderTargetTextureCacheManager() const { return m_renderTargetTextureCacheManager; }
 	const Ref<DepthBufferCacheManager>& depthBufferCacheManager() const { return m_depthBufferCacheManager; }
 	const Ref<FrameBufferCache>& frameBufferCache() const { return m_frameBufferCache; }
@@ -55,6 +55,8 @@ public:
     const Ref<Texture2D>& whiteTexture() const { return m_whiteTexture; }
 	const Ref<SamplerState>& defaultSamplerState() const { return m_defaultSamplerState; }
 
+	Ref<RenderingCommandList> submitCommandList(RenderingCommandList* commandList);
+
 private:
 	void createOpenGLContext(const Settings& settings);
 	void createVulkanContext(const Settings& settings);
@@ -62,7 +64,7 @@ private:
 	Ref<IGraphicsDevice> m_deviceContext;
 	Ref<GraphicsContext> m_graphicsContext;
 	Ref<LinearAllocatorPageManager> m_linearAllocatorPageManager;
-	Ref<RenderingCommandList> m_primaryRenderingCommandList;
+	Ref<RenderingCommandList> m_inFlightRenderingCommandList;
 	Ref<RenderTargetTextureCacheManager> m_renderTargetTextureCacheManager;
 	Ref<DepthBufferCacheManager> m_depthBufferCacheManager;
 	Ref<FrameBufferCache> m_frameBufferCache;

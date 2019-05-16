@@ -93,7 +93,7 @@ public:
 
         GraphicsManager* manager = m_manager->graphicsManager();
         LN_ENQUEUE_RENDER_COMMAND_2(
-            PrimitiveRenderFeature_drawMeshGenerater, manager,
+            PrimitiveRenderFeature_drawMeshGenerater, manager->graphicsContext(),
             InternalPrimitiveRenderer*, m_internal,
             TFactory, generator,
             {
