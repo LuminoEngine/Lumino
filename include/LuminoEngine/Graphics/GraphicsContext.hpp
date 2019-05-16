@@ -132,7 +132,7 @@ private:
     void init();
     void init(detail::IGraphicsContext* context);
 
-	RenderingType renderingType() const { return RenderingType::Immediate; }
+	RenderingType renderingType() const { return m_renderingType; }
 	detail::RenderingCommandList* renderingCommandList();
     void beginCommandRecodingIfNeeded();
     void endCommandRecodingIfNeeded();
@@ -176,6 +176,7 @@ private:
     detail::GraphicsManager* m_manager;
     Ref<detail::IGraphicsContext> m_context;
 	Ref<detail::RenderingCommandList> m_recordingCommandList;
+    RenderingType m_renderingType;
     State m_staging;
     State m_lastCommit;
     uint32_t m_dirtyFlags;

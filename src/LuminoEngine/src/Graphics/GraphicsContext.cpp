@@ -21,6 +21,7 @@ namespace ln {
 GraphicsContext::GraphicsContext()
     : m_manager(nullptr)
     , m_context(nullptr)
+    , m_renderingType(RenderingType::Immediate)
     , m_staging()
     , m_lastCommit()
     , m_dirtyFlags(DirtyFlags_All)

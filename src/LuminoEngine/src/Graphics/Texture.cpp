@@ -333,6 +333,7 @@ Ref<Bitmap2D> RenderTargetTexture::readData(GraphicsContext* context)
         LN_NOTIMPLEMENTED();
     } else {
         detail::GraphicsContextInternal::flushCommandRecoding(context, this);
+        detail::GraphicsContextInternal::submitCommandList(context);
         rhiObject->readData(bitmap->data());
     }
 

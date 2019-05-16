@@ -31,6 +31,14 @@ RenderBulkData& RenderBulkData::operator=(const RenderBulkData& other)
 	return *this;
 }
 
+void RenderBulkData::commitAllocation(RenderingCommandList* commandList)
+{
+    if (!m_copyedData) {
+        m_copyedData = commandList->linearAllocator()->allocate(m_size);
+        memcpy(m_copyedData, m_srcData, m_size);
+    }
+}
+
 //=============================================================================
 // RenderingCommandList
 
@@ -53,7 +61,18 @@ RenderBulkData RenderingCommandList::allocateBulkData(size_t size)
 
 void RenderingCommandList::clear()
 {
+    for (RenderingCommand* cmd : m_commandList) {
+        cmd->~RenderingCommand();
+    }
+    m_commandList.clear();
 	m_linearAllocator->cleanup();
+}
+
+void RenderingCommandList::execute()
+{
+    for (RenderingCommand* cmd : m_commandList) {
+        cmd->execute();
+    }
 }
 
 //=============================================================================

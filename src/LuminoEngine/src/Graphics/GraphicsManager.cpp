@@ -282,6 +282,7 @@ void GraphicsManager::createVulkanContext(const Settings& settings)
 Ref<RenderingCommandList> GraphicsManager::submitCommandList(RenderingCommandList* commandList)
 {
 	if (LN_REQUIRE(commandList)) return nullptr;
+    commandList->execute(); // TODO: test
 	commandList->clear();
 	return m_inFlightRenderingCommandList;
 }

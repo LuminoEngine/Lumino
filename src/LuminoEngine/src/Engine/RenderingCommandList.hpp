@@ -1,12 +1,13 @@
 ﻿#pragma once
+#include "LinearAllocator.hpp"
 
 namespace ln {
 
 namespace detail {
 class LinearAllocatorPageManager;
 class LinearAllocator;
-
-
+class RenderingCommandList;
+class RenderingCommand;
 
 /*
 	データバッファをレンダリングスレッドに転送するためのデータ構造。
@@ -30,6 +31,8 @@ public:
 	size_t size() const { return m_size; }
 
 	void* writableData() const { return m_copyedData; }
+
+    void commitAllocation(RenderingCommandList* commandList);
 
 private:
 	const void* m_srcData;
@@ -55,7 +58,12 @@ public:
 	template<typename T, typename... TArgs>
 	void enqueueCommand(TArgs... args)
 	{
-		LN_NOTIMPLEMENTED();
+        void* buf = m_linearAllocator->allocate(sizeof(T));
+        T* command = new (buf)T(args...);
+        //command->m_commandList = this;
+        command->onEnqueued(this);
+        //LN_RC_TRACE("RenderingCommandList::EnqueueCommand 0() s %p\n", this);
+        m_commandList.add(command);
 	}
 
 	RenderBulkData allocateBulkData(size_t size);
@@ -64,8 +72,13 @@ public:
 
 	void clear();
 
+    // すべてのコマンドを実行する (描画スレッドから呼ばれる)
+    void execute();
+
+
 private:
 	Ref<LinearAllocator> m_linearAllocator;
+    List<RenderingCommand*> m_commandList;
 };
 
 struct RenderingCommand
@@ -77,11 +90,23 @@ public:
 	virtual void execute() = 0;
 
 	template<typename T>
-	inline void commitBulkData(RenderingCommandList* commandList, T& value) {}	// TODO:
+    inline void commitBulkData(RenderingCommandList* commandList, T& value);
 
 private:
 	LN_DISALLOW_COPY_AND_ASSIGN(RenderingCommand);
 };
+
+
+template<typename T>
+inline void RenderingCommand::commitBulkData(RenderingCommandList* commandList, T& value)
+{
+}
+template<>
+inline void RenderingCommand::commitBulkData<RenderBulkData>(RenderingCommandList* commandList, RenderBulkData& value)
+{
+    value.commitAllocation(commandList);
+}
+
 
 #define LN_ENQUEUE_RENDER_COMMAND_PARAM(type, param) type param
 
