@@ -86,6 +86,91 @@ RenderingCommand::~RenderingCommand()
 {
 }
 
+//=============================================================================
+// RenderingQueue
+
+RenderingQueue::RenderingQueue()
+{
+}
+
+void RenderingQueue::dispose()
+{
+
+}
+
+// TODO: submit をここに。
+void RenderingQueue::pushRenderingCommand(RenderingCommandList* commandList)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+
+    m_commandListQueue.push_back(commandList);
+    //commandList->m_running.setTrue();
+    //commandList->m_idling.setFalse();
+    //commandList->m_publisher = publisher;
+    //commandList->addRef();
+    //m_running.setTrue();
+}
+
+void RenderingQueue::execute()
+{
+    while (true)
+    {
+        // キューからコマンドリストを1つ取り出してみる
+        Ref<RenderingCommandList> commandList;
+        {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            if (!m_commandListQueue.empty()) {
+                commandList = m_commandListQueue.front();
+                m_commandListQueue.pop_front();
+            }
+            else {
+                // 終了
+                break;
+            }
+        }
+
+        // コマンドリストのキューをチェックした後、キューが空で、かつ終了要求が来ている場合は終了する
+        //if (m_running.isFalse() && m_endRequested.isTrue())
+        //{
+        //    break;
+        //}
+
+        if (commandList)
+        {
+            commandList->execute();
+            //// 基本的に描画スレッドでの例外は、復帰不能なエラーと考える。(か、assert 的な、そもそも API の使い方が間違っている)
+            //// エラーはここで保持し、一度でも例外したら Failed 状態にする。
+            ////  Failed 状態の間はコマンドを実行しない。
+            //if (m_exception == nullptr)
+            //{
+            //    try
+            //    {
+            //        //ScopedProfilerSection sec(Profiler::Group_RenderThread, Profiler::Section_RenderThread_CommandExecute);
+
+            //        ScopedProfilingSection2 section2(ProfilingKeys::Rendering_PresentDevice);
+
+
+            //        // コマンドリスト実行
+            //        commandList->execute(m_device);
+            //    }
+            //    catch (Exception& e)
+            //    {
+            //        m_exception = e.copy();
+            //    }
+            //}
+            ////commandList->postExecute();
+            ////commandList->m_running.setFalse();
+            //commandList->m_idling.setTrue();
+            //commandList->release();
+        }
+        else
+        {
+            // 処理するコマンドがない。true になるまで待機する
+            //m_running.wait();
+        }
+    }
+}
+
 } // namespace detail
 } // namespace ln
 

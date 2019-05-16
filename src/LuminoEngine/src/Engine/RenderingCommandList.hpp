@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <mutex>
 #include "LinearAllocator.hpp"
 
 namespace ln {
@@ -106,6 +107,24 @@ inline void RenderingCommand::commitBulkData<RenderBulkData>(RenderingCommandLis
 {
     value.commitAllocation(commandList);
 }
+
+
+class RenderingQueue
+    : public RefObject
+{
+public:
+    RenderingQueue();
+    void dispose();
+
+    void pushRenderingCommand(RenderingCommandList* commandList);
+
+    // 溜まっている list をすべて実行
+    void execute();
+
+private:
+    std::deque<Ref<RenderingCommandList>> m_commandListQueue;
+    std::mutex m_mutex;
+};
 
 
 #define LN_ENQUEUE_RENDER_COMMAND_PARAM(type, param) type param
