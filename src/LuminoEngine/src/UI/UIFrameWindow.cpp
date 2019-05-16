@@ -423,7 +423,7 @@ UIMainWindow::~UIMainWindow()
 void UIMainWindow::init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize)
 {
     UIFrameWindow::init(platformMainWindow, backbufferSize);
-    m_graphicsContext = m_manager->graphicsManager()->graphicsContext();
+    m_graphicsContext = m_manager->graphicsManager()->mainWindowGraphicsContext();
 }
 
 //==============================================================================

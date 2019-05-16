@@ -167,6 +167,7 @@ public:
     void setBaseBuiltinEffectData(const Optional<detail::BuiltinEffectData>& value);
     void setRenderPriority(int value);
     void setViewPoint(RenderViewPoint* value);
+    GraphicsContext* m_frameWindowRenderingGraphicsContext = nullptr;
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	RenderingContext();

@@ -99,7 +99,7 @@ void UIViewport::onRender(UIRenderingContext* context)
 {
     // TODO: ViewBoxTransform
 
-    GraphicsContext* graphicsContext = m_manager->graphicsManager()->graphicsContext();
+    GraphicsContext* graphicsContext = context->m_frameWindowRenderingGraphicsContext;
 
 
     for (auto& view : m_renderViews)
