@@ -808,12 +808,12 @@ void ShaderPass::setupParameters()
     }
 }
 
-void ShaderPass::commit()
+void ShaderPass::commit(GraphicsContext* graphicsContext)
 {
-    commitContantBuffers();
+    commitContantBuffers(graphicsContext);
 }
 
-void ShaderPass::commitContantBuffers()
+void ShaderPass::commitContantBuffers(GraphicsContext* graphicsContext)
 {
     for (auto& e : m_bufferEntries) {
         e.buffer->commit(e.rhiObject);
@@ -837,8 +837,8 @@ void ShaderPass::commitContantBuffers()
 				}
 
 				bool modified = false;
-				detail::ITexture* rhiTexture = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(texture, nullptr);
-				detail::ISamplerState* rhiSampler = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISamplerState>(sampler, nullptr);
+				detail::ITexture* rhiTexture = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(graphicsContext, texture, nullptr);
+				detail::ISamplerState* rhiSampler = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISamplerState>(graphicsContext, sampler, nullptr);
 				LN_ENQUEUE_RENDER_COMMAND_4(
 					ShaderConstantBuffer_commit_setTexture, manager->graphicsContext(), detail::IShaderSamplerBuffer*, samplerBuffer, int, i, Ref<detail::ITexture>, rhiTexture, Ref<detail::ISamplerState>, rhiSampler, {
 						samplerBuffer->setTexture(i, rhiTexture);
@@ -871,9 +871,9 @@ void ShaderPass::commitContantBuffers()
     }
 }
 
-detail::IShaderPass* ShaderPass::resolveRHIObject()
+detail::IShaderPass* ShaderPass::resolveRHIObject(GraphicsContext* graphicsContext)
 {
-    commit();
+    commit(graphicsContext);
     return m_rhiPass;
 }
 

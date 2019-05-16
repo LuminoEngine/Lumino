@@ -63,7 +63,7 @@ void SwapChain::present()
     detail::GraphicsContextInternal::flushCommandRecoding(context, backbuffer());
 
     // TODO: threading
-	detail::ISwapChain* rhi = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(this, nullptr);
+	detail::ISwapChain* rhi = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(nullptr, this, nullptr);
 
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		SwapChain_present, context,
@@ -95,7 +95,7 @@ namespace detail {
 void SwapChainInternal::setBackendBufferSize(SwapChain* swapChain, int width, int height)
 {
     LN_DCHECK(swapChain);
-    if (GLSwapChain* glswap = dynamic_cast<GLSwapChain*>(detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(swapChain, nullptr))) {
+    if (GLSwapChain* glswap = dynamic_cast<GLSwapChain*>(detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(nullptr, swapChain, nullptr))) {
         glswap->setBackendBufferSize(width, height);
     }
 }
@@ -103,7 +103,7 @@ void SwapChainInternal::setBackendBufferSize(SwapChain* swapChain, int width, in
 void SwapChainInternal::setOpenGLBackendFBO(SwapChain* swapChain, uint32_t id)
 {
     LN_DCHECK(swapChain);
-    if (GLSwapChain* glswap = dynamic_cast<GLSwapChain*>(detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(swapChain, nullptr))) {
+    if (GLSwapChain* glswap = dynamic_cast<GLSwapChain*>(detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(nullptr, swapChain, nullptr))) {
         glswap->setDefaultFBO(id);
     }
 }

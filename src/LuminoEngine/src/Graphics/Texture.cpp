@@ -373,7 +373,7 @@ void RenderTargetTexture::resetSwapchainFrameIfNeeded(bool force)
         int imageIndex = detail::SwapChainInternal::imageIndex(m_ownerSwapchain);
         if (m_swapchainImageIndex != imageIndex || force) {
             m_swapchainImageIndex = imageIndex;
-            m_rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(m_ownerSwapchain, nullptr)->getRenderTarget(m_swapchainImageIndex);
+            m_rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(nullptr, m_ownerSwapchain, nullptr)->getRenderTarget(m_swapchainImageIndex);
 
             auto size = m_rhiObject->realSize();
             detail::TextureInternal::setDesc(this, size.width, size.height, m_rhiObject->getTextureFormat());

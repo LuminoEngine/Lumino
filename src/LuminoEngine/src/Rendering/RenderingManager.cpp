@@ -46,7 +46,7 @@ void RenderingManager::init(const Settings& settings)
         { 0, VertexElementType::Float4, VertexElementUsage::Color, 0 },
     };
     m_standardVertexDeclaration = makeObject<VertexLayout>(elements, 4);
-    m_standardVertexDeclarationRHI = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(m_standardVertexDeclaration, nullptr);
+    m_standardVertexDeclarationRHI = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(nullptr, m_standardVertexDeclaration, nullptr);
     //m_renderStageListBuilder = makeRef<DrawElementListBuilder>();
 
     m_blitRenderFeature = makeObject<BlitRenderFeature>(this);

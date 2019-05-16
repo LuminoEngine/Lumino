@@ -293,7 +293,7 @@ void GraphicsContext::flushCommandRecoding(RenderTargetTexture* affectRendreTarg
     if (m_recordingBegan) {
         endCommandRecodingIfNeeded();
 
-        detail::ITexture* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(affectRendreTarget, nullptr);
+        detail::ITexture* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(this, affectRendreTarget, nullptr);
         LN_ENQUEUE_RENDER_COMMAND_2(
             GraphicsContext_beginCommandRecodingIfNeeded, this,
             detail::IGraphicsContext*, m_context,
@@ -367,11 +367,11 @@ detail::IGraphicsContext* GraphicsContext::commitState()
             if (value) {
                 detail::TextureInternal::resetSwapchainFrameIfNeeded(value, false);
             }
-            renderTargets[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(value, &modified);
+            renderTargets[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(this, value, &modified);
             anyModified |= modified;
         }
 
-        detail::IDepthBuffer* depthBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IDepthBuffer>(m_staging.depthBuffer, &modified);
+        detail::IDepthBuffer* depthBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IDepthBuffer>(this, m_staging.depthBuffer, &modified);
         anyModified |= modified;
 
         if ((m_dirtyFlags & DirtyFlags_Framebuffer) != 0 || anyModified) {
@@ -410,7 +410,7 @@ detail::IGraphicsContext* GraphicsContext::commitState()
     // VertexLayout, Topology
     {
         bool modified = false;
-        detail::IVertexDeclaration* vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(m_staging.VertexLayout, &modified);
+        detail::IVertexDeclaration* vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(this, m_staging.VertexLayout, &modified);
         PrimitiveTopology topology = m_staging.topology;
 
         if ((m_dirtyFlags & DirtyFlags_PipelinePrimitiveState) != 0 || modified) {
@@ -438,11 +438,11 @@ detail::IGraphicsContext* GraphicsContext::commitState()
         VertexBufferArray vertexBuffers;
         for (int i = 0; i < m_staging.vertexBuffers.size(); i++) {
             auto& value = m_staging.vertexBuffers[i];
-            vertexBuffers[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexBuffer>(value, &modified);
+            vertexBuffers[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexBuffer>(this, value, &modified);
             anyModified |= modified;
         }
 
-        detail::IIndexBuffer* indexBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IIndexBuffer>(m_staging.indexBuffer, &modified);
+        detail::IIndexBuffer* indexBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IIndexBuffer>(this, m_staging.indexBuffer, &modified);
         anyModified |= modified;
 
         if ((m_dirtyFlags & DirtyFlags_PrimitiveBuffers) != 0 || anyModified) {
@@ -466,7 +466,7 @@ detail::IGraphicsContext* GraphicsContext::commitState()
     // ShaderPass
     {
         auto& value = m_staging.shaderPass;
-        detail::IShaderPass* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
+        detail::IShaderPass* rhiObject = (value) ? value->resolveRHIObject(this) : nullptr;
 
         if ((m_dirtyFlags & DirtyFlags_ShaderPass) != 0) {
             LN_ENQUEUE_RENDER_COMMAND_2(

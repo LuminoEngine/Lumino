@@ -267,7 +267,7 @@ void SpriteTextRenderFeature::flushInternal(GraphicsContext* context, FontGlyphT
 	RenderBulkData dataListData(&m_glyphLayoutDataList[0], sizeof(InternalSpriteTextRender::GlyphData) * dataCount);
 
 	// Texture::blit で転送されるものを Flush する
-	ITexture* glyphsTexture = GraphicsResourceInternal::resolveRHIObject<ITexture>(cache->glyphsFillTexture(), nullptr);
+	ITexture* glyphsTexture = GraphicsResourceInternal::resolveRHIObject<ITexture>(context, cache->glyphsFillTexture(), nullptr);
 
 	InternalSpriteTextRender::BrushData brushData;
 	//brushData.color = Color::Blue;
