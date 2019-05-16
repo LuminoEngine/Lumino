@@ -84,16 +84,15 @@ public:
 
     //void drawMeshGenerater(const MeshGenerater* generator);
     template<class TFactory>
-    void drawMeshGenerater(const TFactory& generator)
+    void drawMeshGenerater(GraphicsContext* context, const TFactory& generator)
     {
         if (m_lastPrimitiveType.hasValue() && m_lastPrimitiveType != generator.primitiveType()) {
-            flush(m_manager->graphicsManager()->graphicsContext());
+            flush(context);
         }
         m_lastPrimitiveType = generator.primitiveType();
 
-        GraphicsManager* manager = m_manager->graphicsManager();
         LN_ENQUEUE_RENDER_COMMAND_2(
-            PrimitiveRenderFeature_drawMeshGenerater, manager->graphicsContext(),
+            PrimitiveRenderFeature_drawMeshGenerater, context,
             InternalPrimitiveRenderer*, m_internal,
             TFactory, generator,
             {

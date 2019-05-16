@@ -171,7 +171,7 @@ void RenderingContext::drawLine(const Vector3& from, const Color& fromColor, con
 
         virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
         {
-            static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::SingleLineGenerater>(data);
+            static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::SingleLineGenerater>(context, data);
         }
     };
 
@@ -195,7 +195,7 @@ void RenderingContext::drawPlane(float width, float depth, const Color& color)
 
         virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
         {
-            static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::PlaneMeshGenerater>(data);
+            static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::PlaneMeshGenerater>(context, data);
         }
     };
 
@@ -216,7 +216,7 @@ void RenderingContext::drawSphere(float radius, int slices, int stacks, const Co
 
         virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
         {
-            static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::RegularSphereMeshFactory>(data);
+            static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::RegularSphereMeshFactory>(context, data);
         }
     };
 
@@ -307,7 +307,7 @@ void RenderingContext::drawSprite(
 		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
 		{
 			static_cast<detail::SpriteRenderFeature*>(renderFeatures)->drawRequest(
-				transform, size, anchorRatio, srcRect, color, baseDirection, billboardType, flipFlags);
+				context, transform, size, anchorRatio, srcRect, color, baseDirection, billboardType, flipFlags);
 		}
 	};
 

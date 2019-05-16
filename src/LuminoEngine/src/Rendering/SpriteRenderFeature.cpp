@@ -411,6 +411,7 @@ void SpriteRenderFeature::setSortInfo(
 }
 
 void SpriteRenderFeature::drawRequest(
+	GraphicsContext* context,
 	const Matrix& transform,
 	const Vector2& size,
 	const Vector2& anchorRatio,
@@ -420,10 +421,9 @@ void SpriteRenderFeature::drawRequest(
 	BillboardType billboardType,
     SpriteFlipFlags flipFlags)
 {
-	GraphicsManager* manager = m_manager->graphicsManager();
     Vector4 sizeAndAnchor(size.x, size.y, anchorRatio.x, anchorRatio.y);
 	LN_ENQUEUE_RENDER_COMMAND_8(
-		SpriteRenderFeature_drawRequest, manager->graphicsContext(),
+		SpriteRenderFeature_drawRequest, context,
 		InternalSpriteRenderer*, m_internal,
 		Matrix, transform,
         Vector4, sizeAndAnchor,

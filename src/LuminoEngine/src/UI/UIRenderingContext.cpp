@@ -33,7 +33,7 @@ void UIRenderingContext::drawBoxBackground(const Rect& rect, const Thickness& bo
             m_manager->shapesRenderFeature(),
             m_builder->shapesRenderFeatureStageParameters());
 		
-        element->commandList.addDrawBoxBackground(detail::GraphicsContextInternal::getRenderingCommandList(m_manager->graphicsManager()->graphicsContext())->linearAllocator(), element->combinedWorldMatrix(), rect, cornerRadius, color);
+        element->commandList.addDrawBoxBackground(m_builder->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, cornerRadius, color);
 	}
 	else
 	{
