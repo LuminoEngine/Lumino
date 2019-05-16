@@ -55,10 +55,11 @@ void SwapChain::resizeBackbuffer(int width, int height)
     detail::TextureInternal::resetSwapchainFrameIfNeeded(m_backbuffer, true);
 }
 
-void SwapChain::present()
+void SwapChain::present(GraphicsContext* context)
 {
-    GraphicsContext* context = detail::GraphicsResourceInternal::manager(this)->graphicsContext();
-    detail::IGraphicsContext* nativeContext = detail::GraphicsResourceInternal::manager(this)->deviceContext()->getGraphicsContext();
+    //GraphicsContext* context = detail::GraphicsResourceInternal::manager(this)->graphicsContext();
+    //detail::IGraphicsContext* nativeContext = detail::GraphicsResourceInternal::manager(this)->deviceContext()->getGraphicsContext();
+    detail::IGraphicsContext* nativeContext = detail::GraphicsContextInternal::commitState(context);
 
     detail::GraphicsContextInternal::flushCommandRecoding(context, backbuffer());
 
@@ -73,7 +74,6 @@ void SwapChain::present()
 			nativeContext->present(rhi);
 		});
 	
-	detail::GraphicsResourceInternal::manager(this)->submitCommandList(detail::GraphicsContextInternal::getRenderingCommandList(context));
 
     // この後 readData などでバックバッファのイメージをキャプチャしたりするので、
     // ここでは次に使うべきバッファの番号だけを取り出しておく。

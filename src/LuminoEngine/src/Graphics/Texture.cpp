@@ -332,7 +332,7 @@ Ref<Bitmap2D> RenderTargetTexture::readData()
     if (detail::GraphicsResourceInternal::manager(this)->renderingType() == RenderingType::Threaded) {
         LN_NOTIMPLEMENTED();
     } else {
-        detail::GraphicsContextInternal::flushCommandRecoding(detail::GraphicsResourceInternal::manager(this)->graphicsContext(), this);
+        detail::GraphicsContextInternal::flushCommandRecoding(detail::GraphicsResourceInternal::manager(this)->graphicsContext2(), this);
         rhiObject->readData(bitmap->data());
     }
 

@@ -138,6 +138,7 @@ private:
     void endCommandRecodingIfNeeded();
     void flushCommandRecoding(RenderTargetTexture* affectRendreTarget);
     detail::IGraphicsContext* commitState();
+    void submitCommandList();
 
     enum DirtyFlags
     {
@@ -191,6 +192,7 @@ public:
 	static detail::RenderingCommandList* getRenderingCommandList(GraphicsContext* self) { return self->renderingCommandList(); }
     static void flushCommandRecoding(GraphicsContext* self, RenderTargetTexture* affectRendreTarget) { self->flushCommandRecoding(affectRendreTarget); }
     static IGraphicsContext* commitState(GraphicsContext* self) { return self->commitState(); }
+    static void submitCommandList(GraphicsContext* self) { self->submitCommandList(); }
 };
 }
 } // namespace ln

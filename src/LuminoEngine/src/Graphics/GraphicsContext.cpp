@@ -487,6 +487,11 @@ detail::IGraphicsContext* GraphicsContext::commitState()
     return m_context;
 }
 
+void GraphicsContext::submitCommandList()
+{
+    m_manager->submitCommandList(m_recordingCommandList);
+}
+
 void GraphicsContext::State::reset()
 {
     blendState = BlendStateDesc();

@@ -284,7 +284,8 @@ void UIFrameWindow::present()
 		m_depthBuffer = nullptr;
 	}
 
-	detail::SwapChainInternal::present(m_swapChain);
+	detail::SwapChainInternal::present(m_swapChain, m_graphicsContext);
+    detail::GraphicsContextInternal::submitCommandList(m_graphicsContext);
 }
 
 SwapChain* UIFrameWindow::swapChain() const
