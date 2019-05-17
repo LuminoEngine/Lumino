@@ -160,8 +160,7 @@ void GraphicsManager::init(const Settings& settings)
 
 	m_graphicsContext = makeObject<GraphicsContext>(m_deviceContext->getGraphicsContext());
 
-
-	m_inFlightRenderingCommandList = makeRef<RenderingCommandList>(linearAllocatorPageManager());
+	m_renderingQueue = makeRef<RenderingQueue>();
 
 	m_renderTargetTextureCacheManager = makeRef<RenderTargetTextureCacheManager>();
 	m_depthBufferCacheManager = makeRef<DepthBufferCacheManager>();
@@ -184,6 +183,11 @@ void GraphicsManager::init(const Settings& settings)
 
 void GraphicsManager::dispose()
 {
+	if (m_renderingQueue) {
+		m_renderingQueue->dispose();
+		m_renderingQueue = nullptr;
+	}
+
 	// default objects
 	{
 		m_defaultSamplerState.reset();
@@ -279,13 +283,13 @@ void GraphicsManager::createVulkanContext(const Settings& settings)
 #endif
 }
 
-Ref<RenderingCommandList> GraphicsManager::submitCommandList(RenderingCommandList* commandList)
-{
-	if (LN_REQUIRE(commandList)) return nullptr;
-    commandList->execute(); // TODO: test
-	commandList->clear();
-	return m_inFlightRenderingCommandList;
-}
+//Ref<RenderingCommandList> GraphicsManager::submitCommandList(RenderingCommandList* commandList)
+//{
+//	if (LN_REQUIRE(commandList)) return nullptr;
+//    commandList->execute(); // TODO: test
+//	commandList->clear();
+//	return m_inFlightRenderingCommandList;
+//}
 
 } // namespace detail
 } // namespace ln

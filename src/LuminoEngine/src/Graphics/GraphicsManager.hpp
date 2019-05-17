@@ -14,6 +14,7 @@ class IGraphicsDevice;
 class RenderTargetTextureCacheManager;
 class DepthBufferCacheManager;
 class FrameBufferCache;
+class RenderingQueue;
 
 class GraphicsManager
 	: public RefObject
@@ -46,6 +47,7 @@ public:
 	const Ref<GraphicsContext>& graphicsContext2() const { return m_graphicsContext; }
     const Ref<GraphicsContext>& mainWindowGraphicsContext() const { return m_graphicsContext; }
 	const Ref<LinearAllocatorPageManager>& linearAllocatorPageManager() const { return m_linearAllocatorPageManager; }
+	const Ref<RenderingQueue>& renderingQueue() const { return m_renderingQueue; }
 	RenderingType renderingType() const { return RenderingType::Immediate; }
 	//const Ref<RenderingCommandList>& primaryRenderingCommandList2() const { return m_primaryRenderingCommandList; }
 	const Ref<RenderTargetTextureCacheManager>& renderTargetTextureCacheManager() const { return m_renderTargetTextureCacheManager; }
@@ -56,7 +58,6 @@ public:
     const Ref<Texture2D>& whiteTexture() const { return m_whiteTexture; }
 	const Ref<SamplerState>& defaultSamplerState() const { return m_defaultSamplerState; }
 
-	Ref<RenderingCommandList> submitCommandList(RenderingCommandList* commandList);
 
 private:
 	void createOpenGLContext(const Settings& settings);
@@ -65,7 +66,7 @@ private:
 	Ref<IGraphicsDevice> m_deviceContext;
 	Ref<GraphicsContext> m_graphicsContext;
 	Ref<LinearAllocatorPageManager> m_linearAllocatorPageManager;
-	Ref<RenderingCommandList> m_inFlightRenderingCommandList;
+	Ref<RenderingQueue> m_renderingQueue;
 	Ref<RenderTargetTextureCacheManager> m_renderTargetTextureCacheManager;
 	Ref<DepthBufferCacheManager> m_depthBufferCacheManager;
 	Ref<FrameBufferCache> m_frameBufferCache;

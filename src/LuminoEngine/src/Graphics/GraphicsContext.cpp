@@ -39,6 +39,7 @@ void GraphicsContext::init()
 	m_manager = detail::EngineDomain::graphicsManager();
 	m_context = m_manager->deviceContext()->createGraphicsContext();
 	m_recordingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
+	m_executingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
 	m_lastCommit.reset();
 	resetState();
 }
@@ -50,6 +51,7 @@ void GraphicsContext::init(detail::IGraphicsContext* context)
     m_manager = detail::EngineDomain::graphicsManager();
     m_context = context;
 	m_recordingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
+	m_executingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
     m_lastCommit.reset();
     resetState();
 }
@@ -488,10 +490,10 @@ detail::IGraphicsContext* GraphicsContext::commitState()
     return m_context;
 }
 
-void GraphicsContext::submitCommandList()
-{
-    m_manager->submitCommandList(m_recordingCommandList);
-}
+//void GraphicsContext::submitCommandList()
+//{
+//    m_manager->submitCommandList(m_recordingCommandList);
+//}
 
 void GraphicsContext::State::reset()
 {

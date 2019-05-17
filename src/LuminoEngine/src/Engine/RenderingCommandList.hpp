@@ -3,12 +3,14 @@
 #include "LinearAllocator.hpp"
 
 namespace ln {
+class GraphicsContext;
 
 namespace detail {
 class LinearAllocatorPageManager;
 class LinearAllocator;
 class RenderingCommandList;
 class RenderingCommand;
+class RenderingQueue;
 
 /*
 	データバッファをレンダリングスレッドに転送するためのデータ構造。
@@ -73,13 +75,18 @@ public:
 
 	void clear();
 
+
+	void waitForExecutionEnd() { m_running.wait(); }
+
+private:
     // すべてのコマンドを実行する (描画スレッドから呼ばれる)
     void execute();
 
-
-private:
 	Ref<LinearAllocator> m_linearAllocator;
     List<RenderingCommand*> m_commandList;
+	ConditionEvent m_running;
+
+	friend class RenderingQueue;
 };
 
 struct RenderingCommand
@@ -116,12 +123,18 @@ public:
     RenderingQueue();
     void dispose();
 
-    void pushRenderingCommand(RenderingCommandList* commandList);
+    //void pushRenderingCommand(RenderingCommandList* commandList);
+
+	void submit(GraphicsContext* context);
 
     // 溜まっている list をすべて実行
     void execute();
 
 private:
+	Ref<RenderingCommandList> submitCommandList(RenderingCommandList* commandList);
+
+	//Ref<RenderingCommandList> m_inFlightRenderingCommandList;
+	//std::deque<Ref<RenderingCommandList>> m_freeCommandLists;
     std::deque<Ref<RenderingCommandList>> m_commandListQueue;
     std::mutex m_mutex;
 };

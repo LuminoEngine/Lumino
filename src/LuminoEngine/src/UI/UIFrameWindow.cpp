@@ -285,7 +285,7 @@ void UIFrameWindow::present()
 	}
 
 	detail::SwapChainInternal::present(m_swapChain, m_graphicsContext);
-    detail::GraphicsContextInternal::submitCommandList(m_graphicsContext);
+	m_manager->graphicsManager()->renderingQueue()->submit(m_graphicsContext);
 }
 
 SwapChain* UIFrameWindow::swapChain() const

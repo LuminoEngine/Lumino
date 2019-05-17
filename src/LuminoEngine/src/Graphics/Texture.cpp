@@ -329,11 +329,11 @@ Ref<Bitmap2D> RenderTargetTexture::readData(GraphicsContext* context)
     SizeI size = rhiObject->realSize();
     auto bitmap = makeObject<Bitmap2D>(size.width, size.height, GraphicsHelper::translateToPixelFormat(rhiObject->getTextureFormat()));
 
-    if (detail::GraphicsResourceInternal::manager(this)->renderingType() == RenderingType::Threaded) {
+    if (detail::GraphicsContextInternal::getRenderingType(context) == RenderingType::Threaded) {
         LN_NOTIMPLEMENTED();
     } else {
         detail::GraphicsContextInternal::flushCommandRecoding(context, this);
-        detail::GraphicsContextInternal::submitCommandList(context);
+		detail::GraphicsResourceInternal::manager(this)->renderingQueue()->submit(context);
         rhiObject->readData(bitmap->data());
     }
 

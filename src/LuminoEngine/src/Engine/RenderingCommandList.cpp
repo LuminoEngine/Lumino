@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include "RenderingCommandList.hpp"
 #include "../Engine/LinearAllocator.hpp"
+#include <LuminoEngine/Graphics/GraphicsContext.hpp>
 
 namespace ln {
 namespace detail {
@@ -98,17 +99,42 @@ void RenderingQueue::dispose()
 
 }
 
-// TODO: submit をここに。
-void RenderingQueue::pushRenderingCommand(RenderingCommandList* commandList)
-{
-    std::lock_guard<std::mutex> lock(m_mutex);
+//// TODO: submit をここに。
+//void RenderingQueue::pushRenderingCommand(RenderingCommandList* commandList)
+//{
+//    std::lock_guard<std::mutex> lock(m_mutex);
+//
+//    m_commandListQueue.push_back(commandList);
+//    //commandList->m_running.setTrue();
+//    //commandList->m_idling.setFalse();
+//    //commandList->m_publisher = publisher;
+//    //commandList->addRef();
+//    //m_running.setTrue();
+//}
+//
+//Ref<RenderingCommandList> RenderingQueue::submitCommandList(RenderingCommandList* commandList)
+//{
+//	std::lock_guard<std::mutex> lock(m_mutex);
+//	m_commandListQueue.push_back(commandList);
+//}
 
-    m_commandListQueue.push_back(commandList);
-    //commandList->m_running.setTrue();
-    //commandList->m_idling.setFalse();
-    //commandList->m_publisher = publisher;
-    //commandList->addRef();
-    //m_running.setTrue();
+void RenderingQueue::submit(GraphicsContext* context)
+{
+	if (LN_REQUIRE(context)) return;
+
+	// もし前回発行した CommandList がまだ実行中であればここで待つ
+	context->m_executingCommandList->waitForExecutionEnd();
+
+	// m_executingCommandList は次に m_recordingCommandList となるので、ここで clear
+	context->m_executingCommandList->clear();
+
+	{
+		std::lock_guard<std::mutex> lock(m_mutex);
+		m_commandListQueue.push_back(context->m_recordingCommandList);
+		std::swap(context->m_recordingCommandList, context->m_executingCommandList);
+	}
+
+	execute(); // TODO: test
 }
 
 void RenderingQueue::execute()
@@ -122,6 +148,7 @@ void RenderingQueue::execute()
             if (!m_commandListQueue.empty()) {
                 commandList = m_commandListQueue.front();
                 m_commandListQueue.pop_front();
+				commandList->m_running.lock();	// ここで実行開始にする。(submit() から抜けたら必ず実行中になっているようにする)
             }
             else {
                 // 終了
@@ -138,6 +165,7 @@ void RenderingQueue::execute()
         if (commandList)
         {
             commandList->execute();
+			commandList->m_running.unlock();
             //// 基本的に描画スレッドでの例外は、復帰不能なエラーと考える。(か、assert 的な、そもそも API の使い方が間違っている)
             //// エラーはここで保持し、一度でも例外したら Failed 状態にする。
             ////  Failed 状態の間はコマンドを実行しない。
