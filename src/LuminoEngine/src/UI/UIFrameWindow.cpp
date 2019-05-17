@@ -438,7 +438,20 @@ void UINativeFrameWindow::init()
 {
     UIFrameWindow::init();
     m_renderView = makeObject<UIRenderView>();
-	m_graphicsContext = makeObject<GraphicsContext>();
+}
+
+void UINativeFrameWindow::attachRenderingThread()
+{
+    if (LN_REQUIRE(!m_graphicsContext)) return;
+    m_graphicsContext = makeObject<GraphicsContext>();
+}
+
+void UINativeFrameWindow::detachRenderingThread()
+{
+    if (m_graphicsContext) {
+        m_graphicsContext->dispose();
+        m_graphicsContext = nullptr;
+    }
 }
 
 void UINativeFrameWindow::onDispose(bool explicitDisposing)
