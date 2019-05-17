@@ -45,6 +45,7 @@ public:
 	void writeArray() { onWriteArray(); m_nextName.clear(); /*m_nodeStack.push(NodeInfo{ ArchiveNodeType::Array });*/ }
 	void writeObjectEnd() { onWriteObjectEnd(); m_nextName.clear(); /*m_nodeStack.pop();*/ }
 	void writeArrayEnd() { onWriteArrayEnd(); m_nextName.clear(); /*m_nodeStack.pop();*/ }
+	void writeValueNull() { onWriteValueNull(); m_nextName.clear(); }
 	void writeValue(bool value) { onWriteValueBool(value); m_nextName.clear(); }
 	void writeValue(int64_t value) { onWriteValueInt64(value); m_nextName.clear(); }
 	void writeValue(double value) { onWriteValueDouble(value); m_nextName.clear(); }
@@ -81,6 +82,7 @@ protected:
 	virtual void onWriteArray() = 0;
 	virtual void onWriteObjectEnd() = 0;
 	virtual void onWriteArrayEnd() = 0;
+	virtual void onWriteValueNull() = 0;
 	virtual void onWriteValueBool(bool value) = 0;
 	virtual void onWriteValueInt64(int64_t value) = 0;
 	virtual void onWriteValueDouble(double value) = 0;
@@ -196,6 +198,13 @@ protected:
 	virtual void onWriteArrayEnd() override
 	{
 		m_nodeStack.pop();
+	}
+
+	virtual void onWriteValueNull() override
+	{
+		if (checkTopType(JsonElementType::Object)) {
+			static_cast<JsonObject*>(m_nodeStack.top())->addNullValue(getNextName());
+		}
 	}
 
 #define ON_WRITE_VALUE_FUNC(type, name) \

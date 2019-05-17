@@ -496,6 +496,57 @@ TEST_F(Test_Serialization2, PrimitiveValues)
 
 
 //------------------------------------------------------------------------------
+//## Optional 型のテスト
+TEST_F(Test_Serialization2, Optional)
+{
+	struct Test
+	{
+		ln::Optional<ln::List<ln::String>> includePaths;
+		ln::Optional<ln::List<ln::String>> defines;
+		ln::Optional<ln::String> precompiledHeaderFile;
+		ln::Optional<ln::String> mscFullVer;
+
+		void serialize(Archive& ar)
+		{
+			ar & LN_NVP(includePaths);
+			ar & LN_NVP(defines);
+			ar & LN_NVP(precompiledHeaderFile);
+			ar & LN_NVP(mscFullVer);
+		}
+	};
+
+	Test t1;
+	Test t2;
+	ln::String json;
+
+	t1.includePaths = ln::List<ln::String>({ u"dir1", u"dir2" });
+	t1.defines = nullptr;
+	t1.precompiledHeaderFile = ln::String(u"pch.h");
+	t1.mscFullVer = nullptr;
+
+	// Save
+	{
+		JsonTextOutputArchive ar;
+		ar.process(t1);
+		json = ar.toString(JsonFormatting::None);
+		ASSERT_EQ(u"{\"includePaths\":[\"dir1\",\"dir2\"],\"defines\":null,\"precompiledHeaderFile\":\"pch.h\",\"mscFullVer\":null}", json);
+	}
+
+	// Load
+	Test obj2;
+	{
+		JsonTextInputArchive ar(json);
+		ar.process(t2);
+		ASSERT_EQ(2, t2.includePaths.value().size());
+		ASSERT_EQ(u"dir1", t2.includePaths.value().at(0));
+		ASSERT_EQ(u"dir2", t2.includePaths.value().at(1));
+		ASSERT_EQ(false, t2.defines.hasValue());
+		ASSERT_EQ(u"pch.h", t2.precompiledHeaderFile.value());
+		ASSERT_EQ(false, t2.mscFullVer.hasValue());
+	}
+}
+
+//------------------------------------------------------------------------------
 //## クラスバージョンを付けたい
 //## Save と Load で異なる処理をしたい
 

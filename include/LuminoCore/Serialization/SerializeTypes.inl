@@ -2,6 +2,7 @@
 #pragma once
 #include "../IO/Path.hpp"
 #include "../Base/Uuid.hpp"
+#include "../Base/Optional.hpp"
 
 namespace ln {
 
@@ -73,6 +74,26 @@ inline void serialize(Archive& ar, Uuid& value)
 		String str;
 		ar.makeStringTag(&str);
 		value = Uuid(str);
+	}
+}
+
+template<typename TValue>
+void serialize(Archive& ar, Optional<TValue>& value)
+{
+	bool hasValue = value.hasValue();
+	ar.makeOptionalTag(&hasValue);
+
+	if (ar.isSaving()) {
+		if (hasValue) {
+			ar.process(value.value());
+		}
+	}
+	else {
+		if (hasValue) {
+			TValue v;
+			ar.process(v);
+			value = v;
+		}
 	}
 }
 

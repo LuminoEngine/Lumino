@@ -150,6 +150,20 @@ public:
 		moveState(NodeHeadState::Value);
 	}
 
+	void makeOptionalTag(bool* outHasValue)
+	{
+		if (isSaving()) {
+			moveState(NodeHeadState::Value);
+			if (!(*outHasValue)) {
+				processNull();
+			}
+		}
+		else if (isLoading()) {
+			moveState(NodeHeadState::Value);
+			*outHasValue = m_store->getReadingValueType() != ArchiveNodeType::Null;
+		}
+	}
+
 	// type: in,out
 	void makeVariantTag(ArchiveNodeType* type)
 	{
@@ -164,6 +178,7 @@ public:
 		}
 
 	}
+
 
 protected:
 
@@ -230,6 +245,13 @@ private:
 		moveState((detail::ArchiveValueTraits<TValue>::isPrimitiveType()) ? NodeHeadState::RequestPrimitiveValue : NodeHeadState::UserObject);
 		preWriteValue();
 		writeValue(value);
+	}
+
+	void processNull()
+	{
+		moveState(NodeHeadState::Value);
+		preWriteValue();
+		writeValueNull();
 	}
 
 	void preWriteValue()
@@ -313,6 +335,7 @@ private:
 		return ln::detail::SerializeClassVersionInfo<TValue>::value;
 	}
 
+	void writeValueNull() { m_store->writeValueNull(); }
 	void writeValue(bool value) { m_store->writeValue(value); }
 	void writeValue(int8_t value) { m_store->writeValue(static_cast<int64_t>(value)); }
 	void writeValue(int16_t value) { m_store->writeValue(static_cast<int64_t>(value)); }
