@@ -1,7 +1,6 @@
 ﻿
 #include "Internal.hpp"
 #include "GraphicsManager.hpp"
-#include "../Engine/RenderingCommandList.hpp"
 #include "GraphicsDeviceContext.hpp"
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>

@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <mutex>
-#include "LinearAllocator.hpp"
+//#include "LinearAllocator.hpp"
 
 namespace ln {
 class GraphicsContext;
@@ -61,7 +61,7 @@ public:
 	template<typename T, typename... TArgs>
 	void enqueueCommand(TArgs... args)
 	{
-        void* buf = m_linearAllocator->allocate(sizeof(T));
+		void* buf = allocateBuffer(sizeof(T));
         T* command = new (buf)T(args...);
         //command->m_commandList = this;
         command->onEnqueued(this);
@@ -79,6 +79,8 @@ public:
 	void waitForExecutionEnd() { m_running.wait(); }
 
 private:
+	void* allocateBuffer(size_t size);
+
     // すべてのコマンドを実行する (描画スレッドから呼ばれる)
     void execute();
 

@@ -18,7 +18,6 @@ GraphicsResourcePool::None + GraphicsResourceUsage::Static 以外はどうして
 */
 
 #include "Internal.hpp"
-#include "../Engine/RenderingCommandList.hpp"
 #include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>

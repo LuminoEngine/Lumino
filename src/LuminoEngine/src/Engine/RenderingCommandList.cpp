@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include "RenderingCommandList.hpp"
 #include "../Engine/LinearAllocator.hpp"
+#include <LuminoEngine/Engine/RenderingCommandList.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 
 namespace ln {
@@ -67,6 +67,11 @@ void RenderingCommandList::clear()
     }
     m_commandList.clear();
 	m_linearAllocator->cleanup();
+}
+
+void* RenderingCommandList::allocateBuffer(size_t size)
+{
+	return m_linearAllocator->allocate(size);
 }
 
 void RenderingCommandList::execute()

@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <LuminoEngine/Graphics/Common.hpp>
-#include "../Engine/RenderingCommandList.hpp"
+#include <LuminoEngine/Engine/RenderingCommandList.hpp>
 
 namespace ln {
 class GraphicsContext; 

@@ -11,7 +11,6 @@
 #include <LuminoEngine/Shader/Shader.hpp>
 #include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
-#include "../Engine/RenderingCommandList.hpp"
 
 namespace ln {
 

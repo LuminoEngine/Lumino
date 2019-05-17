@@ -7,7 +7,6 @@
 #include <LuminoEngine/Shader/Shader.hpp>
 #include "../Graphics/GraphicsDeviceContext.hpp"
 #include "../Graphics/GraphicsManager.hpp"
-#include "../Engine/RenderingCommandList.hpp"
 #include "UnifiedShader.hpp"
 #include "ShaderManager.hpp"
 #include "ShaderTranspiler.hpp"

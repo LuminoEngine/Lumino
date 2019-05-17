@@ -10,7 +10,6 @@
 #include "../Font/FontCore.hpp"
 #include "../Graphics/GraphicsDeviceContext.hpp"
 #include "../Graphics/GraphicsManager.hpp"
-#include "../Engine/RenderingCommandList.hpp"
 #include "../Rendering/RenderingManager.hpp"
 #include "SpriteTextRenderFeature.hpp"
 

@@ -29,6 +29,7 @@ set(LN_SOURCES_Engine
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/EngineSettings.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Object.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Property.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/RenderingCommandList.hpp
     src/Engine/Internal.hpp
     src/Engine/Application.cpp
     src/Engine/Diagnostics.cpp
@@ -40,7 +41,6 @@ set(LN_SOURCES_Engine
     src/Engine/FpsController.hpp
     src/Engine/LinearAllocator.hpp
     src/Engine/RenderingCommandList.cpp
-    src/Engine/RenderingCommandList.hpp
     src/Engine/Object.cpp
     src/Engine/Property.cpp
 )
