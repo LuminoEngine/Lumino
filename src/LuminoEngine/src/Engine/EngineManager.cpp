@@ -112,9 +112,9 @@ void EngineManager::init()
 
 	initializeAllManagers();
 
-    if (!m_settings.externalRenderingManagement) {
-        m_graphicsManager->enterRendering();
-    }
+    //if (!m_settings.externalRenderingManagement) {
+    //    m_graphicsManager->enterRendering();
+    //}
 
 	m_fpsController.setFrameRate(m_settings.frameRate);
 	m_fpsController.setEnableFpsTest(true);
@@ -231,11 +231,11 @@ void EngineManager::dispose()
         }
     }
 
-    if (!m_settings.externalRenderingManagement) {
-        if (m_graphicsManager) {
-            m_graphicsManager->leaveRendering();
-        }
-    }
+    //if (!m_settings.externalRenderingManagement) {
+    //    if (m_graphicsManager) {
+    //        m_graphicsManager->leaveRendering();
+    //    }
+    //}
 
     if (m_uiManager) m_uiManager->dispose();
     if (m_sceneManager) m_sceneManager->dispose();

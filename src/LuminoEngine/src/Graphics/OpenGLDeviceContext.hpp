@@ -129,15 +129,10 @@ public:
 	MemoryStream* uniformTempBuffer() { return &m_uniformTempBuffer; }
 	BinaryWriter* uniformTempBufferWriter() { return &m_uniformTempBufferWriter; }
 
-	void setActiveShaderPass(GLShaderPass* pass);
 
 protected:
 	virtual IGraphicsContext* getGraphicsContext() const;
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) override;
-	virtual void onEnterMainThread() override;
-	virtual void onLeaveMainThread() override;
-	virtual void onSaveExternalRenderState() override;
-	virtual void onRestoreExternalRenderState() override;
 	virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
 	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) override;
 	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) override;
@@ -155,16 +150,8 @@ private:
 	Ref<GLContext> m_glContext;
 	MemoryStream m_uniformTempBuffer;
 	BinaryWriter m_uniformTempBufferWriter;
-	GLShaderPass* m_activeShaderPass;
 	//int m_lastUsedAttribIndex;
 	Ref<GLGraphicsContext> m_graphicsContext;
-
-	struct
-	{
-		GLboolean state_GL_CULL_FACE;
-
-	} m_savedState;
-
 	Caps m_caps;
 };
 
@@ -175,8 +162,11 @@ public:
 	GLGraphicsContext();
 	Result init(OpenGLDevice* owner);
 	void dispose();
+	void setActiveShaderPass(GLShaderPass* pass);
 
 protected:
+	virtual void onSaveExternalRenderState() override;
+	virtual void onRestoreExternalRenderState() override;
 	virtual void onBeginCommandRecoding() override {}
 	virtual void onEndCommandRecoding() override {}
 	virtual void onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState) override;
@@ -203,6 +193,13 @@ private:
 	GLuint m_vao;	// https://www.khronos.org/opengl/wiki/Vertex_Specification#Index_buffers
 	GLuint m_fbo;
 	GLIndexBuffer* m_currentIndexBuffer;
+	GLShaderPass* m_activeShaderPass;
+
+	struct
+	{
+		GLboolean state_GL_CULL_FACE;
+
+	} m_savedState;
 };
 
 class GLContext

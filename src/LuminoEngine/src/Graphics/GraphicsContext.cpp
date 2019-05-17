@@ -35,13 +35,13 @@ GraphicsContext::~GraphicsContext()
 
 void GraphicsContext::init()
 {
-	Object::init();
-	m_manager = detail::EngineDomain::graphicsManager();
-	m_context = m_manager->deviceContext()->createGraphicsContext();
-	m_recordingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
-	m_executingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
-	m_lastCommit.reset();
-	resetState();
+    Object::init();
+    m_manager = detail::EngineDomain::graphicsManager();
+    m_context = m_manager->deviceContext()->createGraphicsContext();
+    m_recordingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
+    m_executingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
+    m_lastCommit.reset();
+    resetState();
 }
 
 void GraphicsContext::init(detail::IGraphicsContext* context)
@@ -50,15 +50,35 @@ void GraphicsContext::init(detail::IGraphicsContext* context)
     Object::init();
     m_manager = detail::EngineDomain::graphicsManager();
     m_context = context;
-	m_recordingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
-	m_executingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
+    m_recordingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
+    m_executingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
     m_lastCommit.reset();
     resetState();
 }
 
+void GraphicsContext::enterRenderState()
+{
+    LN_ENQUEUE_RENDER_COMMAND_1(
+        GraphicsContext_clear, this,
+        detail::IGraphicsContext*, m_context,
+        {
+            m_context->enterRenderState();
+        });
+}
+
+void GraphicsContext::leaveRenderState()
+{
+    LN_ENQUEUE_RENDER_COMMAND_1(
+        GraphicsContext_clear, this,
+        detail::IGraphicsContext*, m_context,
+        {
+            m_context->leaveRenderState();
+        });
+}
+
 detail::RenderingCommandList* GraphicsContext::renderingCommandList()
 {
-	return m_recordingCommandList;
+    return m_recordingCommandList;
 }
 
 void GraphicsContext::onDispose(bool explicitDisposing)

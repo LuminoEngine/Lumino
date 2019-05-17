@@ -163,22 +163,6 @@ void VulkanDevice::onGetCaps(GraphicsDeviceCaps * outCaps)
     outCaps->requestedShaderTriple.option = "";
 }
 
-void VulkanDevice::onEnterMainThread()
-{
-}
-
-void VulkanDevice::onLeaveMainThread() 
-{
-}
-
-void VulkanDevice::onSaveExternalRenderState()
-{
-}
-
-void VulkanDevice::onRestoreExternalRenderState()
-{
-}
-
 Ref<ISwapChain> VulkanDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
 {
 	auto ptr = makeRef<VulkanSwapChain>();

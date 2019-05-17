@@ -207,31 +207,29 @@ void GraphicsManager::dispose()
 	m_deviceContext->dispose();
 }
 
-void GraphicsManager::enterRendering()
-{
-    if (m_deviceContext) {
-        if (renderingType() == RenderingType::Threaded) {
-            LN_NOTIMPLEMENTED();
-        }
-        else {
-            m_deviceContext->enterMainThread();
-            m_deviceContext->enterRenderState();
-        }
-    }
-}
-
-void GraphicsManager::leaveRendering()
-{
-    if (m_deviceContext) {
-        if (renderingType() == RenderingType::Threaded) {
-            LN_NOTIMPLEMENTED();
-        }
-        else {
-            m_deviceContext->leaveRenderState();
-            m_deviceContext->leaveMainThread();
-        }
-    }
-}
+//void GraphicsManager::enterRendering()
+//{
+//    if (m_deviceContext) {
+//        if (renderingType() == RenderingType::Threaded) {
+//            LN_NOTIMPLEMENTED();
+//        }
+//        else {
+//            m_deviceContext->enterRenderState();
+//        }
+//    }
+//}
+//
+//void GraphicsManager::leaveRendering()
+//{
+//    if (m_deviceContext) {
+//        if (renderingType() == RenderingType::Threaded) {
+//            LN_NOTIMPLEMENTED();
+//        }
+//        else {
+//            m_deviceContext->leaveRenderState();
+//        }
+//    }
+//}
 
 void GraphicsManager::addGraphicsResource(GraphicsResource* resource)
 {

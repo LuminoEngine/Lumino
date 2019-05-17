@@ -32,8 +32,8 @@ public:
 	void init(const Settings& settings);
 	void dispose();
 
-    void enterRendering();
-    void leaveRendering();
+    //void enterRendering();
+    //void leaveRendering();
 
 	void addGraphicsResource(GraphicsResource* resource);
 	void removeGraphicsResource(GraphicsResource* resource);

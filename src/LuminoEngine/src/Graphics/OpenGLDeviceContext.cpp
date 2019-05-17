@@ -186,7 +186,6 @@ OpenGLDevice::OpenGLDevice()
 	: m_glContext(nullptr)
 	, m_uniformTempBuffer()
 	, m_uniformTempBufferWriter(&m_uniformTempBuffer)
-	, m_activeShaderPass(nullptr)
 {
 }
 
@@ -272,14 +271,6 @@ void OpenGLDevice::dispose()
     IGraphicsDevice::dispose();
 }
 
-void OpenGLDevice::setActiveShaderPass(GLShaderPass* pass)
-{
-	if (m_activeShaderPass != pass) {
-		m_activeShaderPass = pass;
-		::glUseProgram((m_activeShaderPass) ? m_activeShaderPass->program() : 0);
-	}
-}
-
 IGraphicsContext* OpenGLDevice::getGraphicsContext() const
 {
 	return m_graphicsContext;
@@ -296,34 +287,6 @@ void OpenGLDevice::onGetCaps(GraphicsDeviceCaps* outCaps)
 	outCaps->requestedShaderTriple.version = 400;
 	outCaps->requestedShaderTriple.option = "";
 #endif
-}
-
-void OpenGLDevice::onEnterMainThread()
-{
-	//m_glContext->makeCurrent();
-}
-
-void OpenGLDevice::onLeaveMainThread()
-{
-	//m_glContext->makeCurrent();
-	setActiveShaderPass(nullptr);
-}
-
-void OpenGLDevice::onSaveExternalRenderState()
-{
-	GL_CHECK(glGetBooleanv(GL_CULL_FACE, &m_savedState.state_GL_CULL_FACE));
-}
-
-void OpenGLDevice::onRestoreExternalRenderState()
-{
-	if (m_savedState.state_GL_CULL_FACE) {
-		GL_CHECK(glEnable(GL_CULL_FACE));
-	}
-	else {
-		GL_CHECK(glDisable(GL_CULL_FACE));
-	}
-
-	GL_CHECK(glBindVertexArray(0));
 }
 
 Ref<ISwapChain> OpenGLDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
@@ -419,6 +382,7 @@ GLGraphicsContext::GLGraphicsContext()
 	, m_vao(0)
 	, m_fbo(0)
 	, m_currentIndexBuffer(nullptr)
+	, m_activeShaderPass(nullptr)
 {
 }
 
@@ -448,6 +412,33 @@ void GLGraphicsContext::dispose()
 		GL_CHECK(glDeleteFramebuffers(1, &m_fbo));
 		m_fbo = 0;
 	}
+}
+
+void GLGraphicsContext::setActiveShaderPass(GLShaderPass* pass)
+{
+	if (m_activeShaderPass != pass) {
+		m_activeShaderPass = pass;
+		::glUseProgram((m_activeShaderPass) ? m_activeShaderPass->program() : 0);
+	}
+}
+
+void GLGraphicsContext::onSaveExternalRenderState()
+{
+	GL_CHECK(glGetBooleanv(GL_CULL_FACE, &m_savedState.state_GL_CULL_FACE));
+}
+
+void GLGraphicsContext::onRestoreExternalRenderState()
+{
+	if (m_savedState.state_GL_CULL_FACE) {
+		GL_CHECK(glEnable(GL_CULL_FACE));
+	}
+	else {
+		GL_CHECK(glDisable(GL_CULL_FACE));
+	}
+
+	GL_CHECK(glBindVertexArray(0));
+
+	setActiveShaderPass(nullptr);
 }
 
 void GLGraphicsContext::onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState)

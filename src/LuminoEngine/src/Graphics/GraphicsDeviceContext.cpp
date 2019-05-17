@@ -64,24 +64,6 @@ void IGraphicsDevice::refreshCaps()
 	onGetCaps(&m_caps);
 }
 
-void IGraphicsDevice::enterMainThread()
-{
-}
-
-void IGraphicsDevice::leaveMainThread()
-{
-}
-
-void IGraphicsDevice::enterRenderState()
-{
-	onSaveExternalRenderState();
-}
-
-void IGraphicsDevice::leaveRenderState()
-{
-	onRestoreExternalRenderState();
-}
-
 Ref<ISwapChain> IGraphicsDevice::createSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
 {
 	Ref<ISwapChain> ptr = onCreateSwapChain(window, backbufferSize);
@@ -271,6 +253,16 @@ Result IGraphicsContext::init(IGraphicsDevice* owner)
 {
 	m_device = owner;
 	return true;
+}
+
+void IGraphicsContext::enterRenderState()
+{
+	onSaveExternalRenderState();
+}
+
+void IGraphicsContext::leaveRenderState()
+{
+	onRestoreExternalRenderState();
 }
 
 void IGraphicsContext::begin()

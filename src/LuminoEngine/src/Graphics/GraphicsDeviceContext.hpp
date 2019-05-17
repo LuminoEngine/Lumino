@@ -159,10 +159,6 @@ public:
 	virtual void dispose();
 	const GraphicsDeviceCaps& caps() { return m_caps; }
 	void refreshCaps();
-	void enterMainThread();
-	void leaveMainThread();
-	void enterRenderState();
-	void leaveRenderState();
 
 	Ref<ISwapChain> createSwapChain(PlatformWindow* window, const SizeI& backbufferSize);
 	Ref<IVertexDeclaration> createVertexDeclaration(const VertexElement* elements, int elementsCount);
@@ -184,10 +180,6 @@ public:
 
 protected:
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) = 0;
-	virtual void onEnterMainThread() = 0;
-	virtual void onLeaveMainThread() = 0;
-	virtual void onSaveExternalRenderState() = 0;
-	virtual void onRestoreExternalRenderState() = 0;
 	virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) = 0;
 	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) = 0;
 	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) = 0;
@@ -237,6 +229,8 @@ class IGraphicsContext
     : public RefObject
 {
 public:
+	void enterRenderState();
+	void leaveRenderState();
 
     /////////
     void begin();
@@ -282,6 +276,8 @@ public:	// TODO:
     virtual ~IGraphicsContext() = default;
 	Result init(IGraphicsDevice* owner);
 
+	virtual void onSaveExternalRenderState() = 0;
+	virtual void onRestoreExternalRenderState() = 0;
 	virtual void onBeginCommandRecoding() = 0;
 	virtual void onEndCommandRecoding() = 0;
 	virtual void onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState) = 0;

@@ -455,7 +455,7 @@ void UINativeFrameWindow::beginRendering(RenderTargetTexture* renderTarget)
     m_renderingRenderTarget = renderTarget;
     m_depthBuffer = DepthBuffer::getTemporary(renderTarget->width(), renderTarget->height());
 
-    m_manager->graphicsManager()->enterRendering();
+	detail::GraphicsContextInternal::enterRenderState(m_graphicsContext);
 
 	m_graphicsContext->resetState();
 	m_graphicsContext->setRenderTarget(0, renderTarget);
@@ -479,7 +479,7 @@ void UINativeFrameWindow::endRendering()
     }
     m_renderingRenderTarget = nullptr;
 
-    m_manager->graphicsManager()->leaveRendering();
+	detail::GraphicsContextInternal::leaveRenderState(m_graphicsContext);
 }
 
 } // namespace ln

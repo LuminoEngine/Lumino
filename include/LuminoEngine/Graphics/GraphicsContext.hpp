@@ -133,8 +133,10 @@ private:
     void init();
     void init(detail::IGraphicsContext* context);
 
-	RenderingType renderingType() const { return m_renderingType; }
-	detail::RenderingCommandList* renderingCommandList();
+    void enterRenderState();
+    void leaveRenderState();
+    RenderingType renderingType() const { return m_renderingType; }
+    detail::RenderingCommandList* renderingCommandList();
     void beginCommandRecodingIfNeeded();
     void endCommandRecodingIfNeeded();
     void flushCommandRecoding(RenderTargetTexture* affectRendreTarget);
@@ -176,8 +178,8 @@ private:
 
     detail::GraphicsManager* m_manager;
     Ref<detail::IGraphicsContext> m_context;
-	Ref<detail::RenderingCommandList> m_recordingCommandList;
-	Ref<detail::RenderingCommandList> m_executingCommandList;
+    Ref<detail::RenderingCommandList> m_recordingCommandList;
+    Ref<detail::RenderingCommandList> m_executingCommandList;
     RenderingType m_renderingType;
     State m_staging;
     State m_lastCommit;
@@ -185,18 +187,19 @@ private:
     bool m_recordingBegan;
 
     friend class detail::GraphicsContextInternal;
-	friend class detail::RenderingQueue;
+    friend class detail::RenderingQueue;
 };
 
 namespace detail {
 class GraphicsContextInternal
 {
 public:
-	static RenderingType getRenderingType(GraphicsContext* self) { return self->renderingType(); }
-	static detail::RenderingCommandList* getRenderingCommandList(GraphicsContext* self) { return self->renderingCommandList(); }
+    static RenderingType getRenderingType(GraphicsContext* self) { return self->renderingType(); }
+    static detail::RenderingCommandList* getRenderingCommandList(GraphicsContext* self) { return self->renderingCommandList(); }
     static void flushCommandRecoding(GraphicsContext* self, RenderTargetTexture* affectRendreTarget) { self->flushCommandRecoding(affectRendreTarget); }
     static IGraphicsContext* commitState(GraphicsContext* self) { return self->commitState(); }
-    //static void submitCommandList(GraphicsContext* self) { self->submitCommandList(); }
+    static void enterRenderState(GraphicsContext* self) { self->enterRenderState(); }
+    static void leaveRenderState(GraphicsContext* self) { self->leaveRenderState(); }
 };
 }
 } // namespace ln
