@@ -8,11 +8,11 @@ namespace ln {
 class LN_API ConditionEvent
 {
 public:
-	/** デフォルトコンストラクタ (初期値は false) */
+	/** デフォルトコンストラクタ (初期値は locked:false) */
 	ConditionEvent();
 
 	/** コンストラクタ (初期値を指定する) */
-	explicit ConditionEvent(bool initFlag);
+	explicit ConditionEvent(bool locked);
 
 	/** デストラクタ */
 	~ConditionEvent();

@@ -14,6 +14,7 @@ class DepthBuffer;
 class Shader;
 class ShaderPass;
 class SwapChain;
+namespace detail { class RenderingQueue; }
 
 /*
  * グラフィクスデバイスへの描画呼出しを発行するためのクラスです。
@@ -138,7 +139,7 @@ private:
     void endCommandRecodingIfNeeded();
     void flushCommandRecoding(RenderTargetTexture* affectRendreTarget);
     detail::IGraphicsContext* commitState();
-    void submitCommandList();
+    //void submitCommandList();
 
     enum DirtyFlags
     {
@@ -176,6 +177,7 @@ private:
     detail::GraphicsManager* m_manager;
     Ref<detail::IGraphicsContext> m_context;
 	Ref<detail::RenderingCommandList> m_recordingCommandList;
+	Ref<detail::RenderingCommandList> m_executingCommandList;
     RenderingType m_renderingType;
     State m_staging;
     State m_lastCommit;
@@ -183,6 +185,7 @@ private:
     bool m_recordingBegan;
 
     friend class detail::GraphicsContextInternal;
+	friend class detail::RenderingQueue;
 };
 
 namespace detail {
@@ -193,7 +196,7 @@ public:
 	static detail::RenderingCommandList* getRenderingCommandList(GraphicsContext* self) { return self->renderingCommandList(); }
     static void flushCommandRecoding(GraphicsContext* self, RenderTargetTexture* affectRendreTarget) { self->flushCommandRecoding(affectRendreTarget); }
     static IGraphicsContext* commitState(GraphicsContext* self) { return self->commitState(); }
-    static void submitCommandList(GraphicsContext* self) { self->submitCommandList(); }
+    //static void submitCommandList(GraphicsContext* self) { self->submitCommandList(); }
 };
 }
 } // namespace ln
