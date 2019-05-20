@@ -171,8 +171,9 @@ LN_CONSTRUCT_ACCESS:
 
     void init(int width, int height, TextureFormat format, bool mipmap);
     void init(SwapChain* owner);
-    void init(intptr_t nativeObject, int width, int height);
-    void resetNative(intptr_t nativeObject, int width, int height);
+    void init(intptr_t nativeObject, TextureFormat format);
+    void resetNativeObject(intptr_t nativeObject);
+    void resetSize(int width, int height);
 
 private:
     Ref<Bitmap2D> readData(GraphicsContext* context);
@@ -199,6 +200,8 @@ public:
     static void setMipmapEnabled(Texture* texture, bool value) { texture->m_mipmap = value; }
     static Ref<Bitmap2D> readData(RenderTargetTexture* renderTarget, GraphicsContext* context) { return renderTarget->readData(context); }
     static void resetSwapchainFrameIfNeeded(RenderTargetTexture* renderTarget, bool force) { renderTarget->resetSwapchainFrameIfNeeded(force); }
+    static void resetNativeObject(RenderTargetTexture* renderTarget, intptr_t value) { renderTarget->resetNativeObject(value); }
+    static void resetSize(RenderTargetTexture* renderTarget, int width, int height) { renderTarget->resetSize(width, height); }
 };
 
 class Texture3D

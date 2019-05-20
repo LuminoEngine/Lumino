@@ -304,19 +304,24 @@ void RenderTargetTexture::init(SwapChain* owner)
     resetSwapchainFrameIfNeeded(false);
 }
 
-void RenderTargetTexture::init(intptr_t nativeObject, int width, int height)
+void RenderTargetTexture::init(intptr_t nativeObject, TextureFormat format)
 {
     Texture::init();
-    resetNative(nativeObject, width, height);
+    detail::TextureInternal::setDesc(this, 1, 1, format);
+    resetNativeObject(nativeObject);
 }
 
-void RenderTargetTexture::resetNative(intptr_t nativeObject, int width, int height)
+void RenderTargetTexture::resetNativeObject(intptr_t nativeObject)
+{
+    m_nativeObject = nativeObject;
+    m_hasNativeObject = true;
+}
+
+void RenderTargetTexture::resetSize(int width, int height)
 {
     width = std::max(1, width);
     height = std::max(1, height);
-    detail::TextureInternal::setDesc(this, width, height, TextureFormat::Unknown);
-    m_nativeObject = nativeObject;
-    m_hasNativeObject = true;
+    detail::TextureInternal::setDesc(this, width, height, format());
 }
 
 void RenderTargetTexture::onDispose(bool explicitDisposing)
