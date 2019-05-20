@@ -13,6 +13,10 @@ namespace ln {
 
 namespace detail
 {
+void notifyAbort(const char* file, int line, const char* message)
+{
+    ln::detail::notifyException<::ln::Exception>(ExceptionLevel::Fatal, file, line, message);
+}
 
 void convertCharToWChar(const char* inStr, size_t inStrLen, wchar_t* outStr, size_t outStrLen)
 {
