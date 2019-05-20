@@ -32,9 +32,10 @@ GraphicsContext::~GraphicsContext()
 {
 }
 
-void GraphicsContext::init()
+void GraphicsContext::init(RenderingType renderingType)
 {
     Object::init();
+    m_renderingType = renderingType;
     m_manager = detail::EngineDomain::graphicsManager();
     m_context = m_manager->deviceContext()->createGraphicsContext();
     m_recordingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());

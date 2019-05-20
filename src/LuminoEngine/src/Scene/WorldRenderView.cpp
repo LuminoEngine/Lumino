@@ -201,7 +201,7 @@ void WorldRenderView::createGridPlane()
     samplerState->setFilterMode(TextureFilterMode::Linear);
     gridTex->setSamplerState(samplerState);
 
-    m_visibleGridPlane = true;  // TODO: test
+    //m_visibleGridPlane = true;  // TODO: test
 }
 
 void WorldRenderView::renderGridPlane(RenderingContext* renderingContext, RenderView* renderView)

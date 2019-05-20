@@ -440,10 +440,10 @@ void UINativeFrameWindow::init()
     m_renderView = makeObject<UIRenderView>();
 }
 
-void UINativeFrameWindow::attachRenderingThread()
+void UINativeFrameWindow::attachRenderingThread(RenderingType renderingType)
 {
     if (LN_REQUIRE(!m_graphicsContext)) return;
-    m_graphicsContext = makeObject<GraphicsContext>();
+    m_graphicsContext = makeObject<GraphicsContext>(renderingType);
 }
 
 void UINativeFrameWindow::detachRenderingThread()

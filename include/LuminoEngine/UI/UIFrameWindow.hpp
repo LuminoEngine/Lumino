@@ -73,6 +73,7 @@ public:
 	void updateLayoutTree();
 	const Ref<detail::PlatformWindow>& platformWindow() const { return m_platformWindow; }
     const Ref<UIRenderView>& renderView() const { return m_renderView; }
+    const Ref<GraphicsContext>& graphicsContext() const { return m_graphicsContext; }
 
 protected:
 	virtual Size measureOverride(const Size& constraint) override;
@@ -123,7 +124,7 @@ class LN_API UINativeFrameWindow
 public:
     void setClientSize(const Size& value) { UIFrameWindow::resetSize(value); }
 
-    void attachRenderingThread();
+    void attachRenderingThread(RenderingType renderingType);
     void detachRenderingThread();
 
     void beginRendering(RenderTargetTexture* renderTarget);

@@ -126,6 +126,7 @@ void RenderingQueue::dispose()
 void RenderingQueue::submit(GraphicsContext* context)
 {
 	if (LN_REQUIRE(context)) return;
+    if (context->renderingType() == RenderingType::Immediate) return;
 
 	// もし前回発行した CommandList がまだ実行中であればここで待つ
 	context->m_executingCommandList->waitForExecutionEnd();
@@ -139,7 +140,7 @@ void RenderingQueue::submit(GraphicsContext* context)
 		std::swap(context->m_recordingCommandList, context->m_executingCommandList);
 	}
 
-	execute(); // TODO: test
+	//execute(); // TODO: test
 }
 
 void RenderingQueue::execute()

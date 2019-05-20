@@ -130,7 +130,7 @@ private:
     LN_INTERNAL_NEW_OBJECT;
     GraphicsContext();
     virtual ~GraphicsContext();
-    void init();
+    void init(RenderingType renderingType);
     void init(detail::IGraphicsContext* context);
 
     void enterRenderState();
