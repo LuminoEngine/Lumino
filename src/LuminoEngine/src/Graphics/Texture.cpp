@@ -307,6 +307,11 @@ void RenderTargetTexture::init(SwapChain* owner)
 void RenderTargetTexture::init(intptr_t nativeObject, int width, int height)
 {
     Texture::init();
+    resetNative(nativeObject, width, height);
+}
+
+void RenderTargetTexture::resetNative(intptr_t nativeObject, int width, int height)
+{
     width = std::max(1, width);
     height = std::max(1, height);
     detail::TextureInternal::setDesc(this, width, height, TextureFormat::Unknown);
