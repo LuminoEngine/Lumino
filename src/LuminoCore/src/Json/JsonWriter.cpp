@@ -286,11 +286,14 @@ void JsonWriter::onString(const Char* str, int length)
                 m_textWriter->write(StringRef(s, 2));
                 break;
             }
+#if 0   // ファイル出力の時は / エスケープしなくてもいい。外部編集可能な設定を書き出すときにエスケープされていると少し混乱するので、今はスキップしておく。
+        // ちなみに rapidjson も同様にエスケープされない。
             case '/': {
                 Char s[] = {'\\', '/'};
                 m_textWriter->write(StringRef(s, 2));
                 break;
             }
+#endif
             case '\b': {
                 Char s[] = {'\\', 'b'};
                 m_textWriter->write(StringRef(s, 2));

@@ -79,12 +79,12 @@ TEST_F(Test_Json_JsonWriter, Issues_Escape)
 
 	writer.writeStartObject();
 	writer.writePropertyName(_T("prop"));
-	writer.writeString(_T("\" \\ / \b \f \n \r \t"));
+	writer.writeString(_T("\" \\ \b \f \n \r \t"));
 	writer.writeEndObject();
 
 	auto ss = s.toString();
 
-	auto actual = _T(R"({"prop":"\" \\ \/ \b \f \n \r \t"})");
+	auto actual = _T(R"({"prop":"\" \\ \b \f \n \r \t"})");
 	ASSERT_EQ(actual, s.toString());
 
 	//{
