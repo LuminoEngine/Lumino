@@ -91,7 +91,7 @@ private:
 	friend class RenderingQueue;
 };
 
-struct RenderingCommand
+class RenderingCommand
 {
 public:
 	RenderingCommand();
