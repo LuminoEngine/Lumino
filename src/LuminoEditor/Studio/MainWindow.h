@@ -3,6 +3,7 @@
 #include "ContentsViewManager.h"
 
 class QtAwesome;
+class DocumentManager;
 
 class MainWindow : public QMainWindow
 {
@@ -25,4 +26,5 @@ private:
     QOffscreenSurface* m_offscreenSurface;
     QtAwesome* m_awesome;
     ContentsViewManager* m_contentsViewManager;
+    DocumentManager* m_documentManager;
 };

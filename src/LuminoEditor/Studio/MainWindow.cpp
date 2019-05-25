@@ -1,5 +1,6 @@
 ﻿
 #include "External/QtAwesome/QtAwesome.h"
+#include "DocumentManager.h"
 #include "AudioContentsView.h"
 #include "MainWindow.h"
 
@@ -62,7 +63,7 @@ MainWindow::MainWindow(QWidget* parent)
     m_awesome->initFontAwesome();
 
     m_contentsViewManager = new ContentsViewManager();
-
+    m_documentManager = new DocumentManager();
 
 
 
@@ -79,12 +80,12 @@ MainWindow::MainWindow(QWidget* parent)
     hbox1->addWidget(m_contentsViewManager->sidebar());
     rootFrame->setLayout(hbox1);
 
-    QSplitter* split1 = new QSplitter(Qt::Horizontal, this);
+    QSplitter* split1 = new QSplitter(Qt::Horizontal);
     split1->setStyleSheet("background-color: yellow;");
     split1->setContentsMargins(0, 0, 0, 0);
-    hbox1->addWidget(m_contentsViewManager->viewContainer());
-
-
+    split1->addWidget(m_contentsViewManager->viewContainer());
+    split1->addWidget(m_documentManager->rootWidget());
+    hbox1->addWidget(split1);
 
 
 
@@ -93,7 +94,7 @@ MainWindow::MainWindow(QWidget* parent)
 
 MainWindow::~MainWindow()
 {
-    //delete m_documentManager;
+    delete m_documentManager;
     delete m_contentsViewManager;
     delete m_offscreenSurface;
     delete m_resourceContext;
