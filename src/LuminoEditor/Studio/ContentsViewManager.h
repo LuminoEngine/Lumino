@@ -8,8 +8,9 @@ class ContentsViewManager : public QObject
 public:
     ContentsViewManager();
     QFrame* sidebar() { return m_sidear; }
+    QStackedWidget* viewContainer() { return m_viewContainer; }
 
-    void addContentsViewProvider(ContentsViewProvider* value);
+    void addContentsViewProvider(ContentsViewProvider* provider);
 
     
 
@@ -17,6 +18,8 @@ protected:
 
 private:
     QFrame* m_sidear;
+    QVBoxLayout* m_buttonContainer;
+    QStackedWidget* m_viewContainer;
     ln::List<ln::Ref<ContentsViewProvider>> m_providers;
 };
 
@@ -24,23 +27,11 @@ private:
 class ContentsViewProvider : public ln::Object
 {
 public:
-    virtual ln::String iconResource() const = 0;
+    virtual ln::String icon() const = 0;
+    virtual QWidget* createView() = 0;
 
 LN_CONSTRUCT_ACCESS:
     ContentsViewProvider();
 
 private:
 };
-
-
-
-class AudioContentsViewProvider : public ContentsViewProvider
-{
-public:
-
-LN_CONSTRUCT_ACCESS:
-    AudioContentsViewProvider();
-
-private:
-};
-

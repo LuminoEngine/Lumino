@@ -16,13 +16,17 @@ find_package(Qt5OpenGL CONFIG REQUIRED)
 file(GLOB LuminoStudio_SOURCES "*.h" "*.cpp" "*.ui")
 source_group("Sources" FILES ${LuminoStudio_SOURCES})
 
-#qt5_add_resources(LN_QT_RESOURCES
-#    Resources/breeze.qrc
-#    QtAwesome.qrc
-#)
+file(GLOB LN_SOURCES_External_QtAwesome "External/QtAwesome/*.h" "External/QtAwesome/*.cpp")
+source_group("External/QtAwesome" FILES ${LN_SOURCES_External_QtAwesome})
+
+
+qt5_add_resources(
+	LN_QT_RESOURCES
+	External/QtAwesome/QtAwesome.qrc
+)
 
 # Tell CMake to create the ${PROJECT_NAME} executable
-add_executable(${PROJECT_NAME} ${LuminoStudio_SOURCES} ${LN_QT_RESOURCES})
+add_executable(${PROJECT_NAME} ${LuminoStudio_SOURCES} ${LN_QT_RESOURCES} ${LN_SOURCES_External_QtAwesome})
 target_link_libraries(${PROJECT_NAME} LuminoEngine EditorCore Qt5::Widgets Qt5::OpenGL)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Editor")
 ln_add_pch(${PROJECT_NAME} "PCH.h" "PCH.cpp")

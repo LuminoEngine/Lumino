@@ -1,4 +1,6 @@
 ﻿
+#include "External/QtAwesome/QtAwesome.h"
+#include "AudioContentsView.h"
 #include "MainWindow.h"
 
 static MainWindow* s_mainWindow = nullptr;
@@ -46,7 +48,6 @@ MainWindow::MainWindow(QWidget* parent)
             qCritical() << "m_resourceContext->create()";
             return;
         }
-        //m_resourceContext->moveToThread(m_uiThread);
 
         m_offscreenSurface = new QOffscreenSurface();
         m_offscreenSurface->setFormat(m_resourceContext->format());
@@ -57,15 +58,37 @@ MainWindow::MainWindow(QWidget* parent)
         m_resourceContext->doneCurrent();
     }
 
+    m_awesome = new QtAwesome(this);
+    m_awesome->initFontAwesome();
+
     m_contentsViewManager = new ContentsViewManager();
 
+
+
+
+
+    {
+        m_contentsViewManager->addContentsViewProvider(ln::makeObject<AudioContentsViewProvider>());
+    }
+
+    auto* rootFrame = new QFrame();
+
+    auto* hbox1 = new QHBoxLayout();
+    hbox1->setAlignment(Qt::AlignLeft);
+    hbox1->setMargin(0);
+    hbox1->addWidget(m_contentsViewManager->sidebar());
+    rootFrame->setLayout(hbox1);
 
     QSplitter* split1 = new QSplitter(Qt::Horizontal, this);
     split1->setStyleSheet("background-color: yellow;");
     split1->setContentsMargins(0, 0, 0, 0);
-    split1->addWidget(m_contentsViewManager->sidebar());
+    hbox1->addWidget(m_contentsViewManager->viewContainer());
 
-    setCentralWidget(split1);
+
+
+
+
+    setCentralWidget(rootFrame);
 }
 
 MainWindow::~MainWindow()
