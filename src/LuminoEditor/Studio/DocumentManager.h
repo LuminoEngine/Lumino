@@ -26,5 +26,5 @@ private:
     QWidget* m_rootWidget;
 	QStackedLayout* m_rootLayout;
 	QList<Document*> m_documents;
-    //QTabWidget* m_tabWidget;
+    QTabWidget* m_tabWidget;
 };
