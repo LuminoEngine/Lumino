@@ -1,6 +1,8 @@
 ﻿
 #include "External/QtAwesome/QtAwesome.h"
 #include "DocumentManager.h"
+#include "InspectorViewPane.h"
+#include "ToolViewPane.h"
 #include "AudioContentsView.h"
 #include "MainWindow.h"
 
@@ -83,8 +85,26 @@ MainWindow::MainWindow(QWidget* parent)
     QSplitter* split1 = new QSplitter(Qt::Horizontal);
     split1->setStyleSheet("background-color: yellow;");
     split1->setContentsMargins(0, 0, 0, 0);
-    split1->addWidget(m_contentsViewManager->viewContainer());
-    split1->addWidget(m_documentManager->rootWidget());
+    {
+        split1->addWidget(m_contentsViewManager->viewContainer());
+
+        {
+            QSplitter* split2 = new QSplitter(Qt::Vertical);
+            split2->setStyleSheet("background-color: blue;");
+            split2->setContentsMargins(0, 0, 0, 0);
+            {
+                split2->addWidget(m_documentManager->rootWidget());
+
+                m_toolViewPane = new ToolViewPane();
+                split2->addWidget(m_toolViewPane);
+            }
+            split1->addWidget(split2);
+        }
+
+
+        m_inspectorViewPane = new InspectorViewPane();
+        split1->addWidget(m_inspectorViewPane);
+    };
     hbox1->addWidget(split1);
 
 
