@@ -17,6 +17,8 @@ public:
 protected:
 
 private:
+    void onContainerButtonCheckChanged(bool checked);
+
     QFrame* m_sidear;
     QVBoxLayout* m_buttonContainer;
     QStackedWidget* m_viewContainer;

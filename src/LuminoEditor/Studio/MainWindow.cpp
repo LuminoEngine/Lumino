@@ -4,6 +4,7 @@
 #include "InspectorViewPane.h"
 #include "ToolViewPane.h"
 #include "AudioContentsView.h"
+#include "SceneContentsView.h"
 #include "MainWindow.h"
 
 static MainWindow* s_mainWindow = nullptr;
@@ -71,6 +72,7 @@ MainWindow::MainWindow(QWidget* parent)
 
 
     {
+        m_contentsViewManager->addContentsViewProvider(ln::makeObject<SceneContentsViewProvider>());
         m_contentsViewManager->addContentsViewProvider(ln::makeObject<AudioContentsViewProvider>());
     }
 
