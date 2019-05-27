@@ -384,8 +384,10 @@ set(LN_SOURCES_Physics
 
 set(LN_SOURCES_Asset
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Asset/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Asset/AssetObject.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Asset/Assets.hpp
     src/Asset/Internal.hpp
+    src/Asset/AssetObject.cpp
     src/Asset/Assets.cpp
     src/Asset/AssetManager.cpp
     src/Asset/AssetManager.hpp

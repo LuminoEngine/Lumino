@@ -1,6 +1,7 @@
 ﻿//#include "EnvironmentSettings.hpp"
 //#include "Workspace.hpp"
 //#include "LanguageContext.hpp"
+#include "AssetDatabase.hpp"
 #include "Project.hpp"
 
 //==============================================================================
@@ -86,4 +87,6 @@ void Project::setupPathes()
 	if (!files.isEmpty()) {
 		m_projectFilePath = *files.begin();
 	}
+
+    m_assetDatabase = ln::makeObject<AssetDatabase>();
 }

@@ -1,9 +1,11 @@
 ﻿
 #pragma once
 #include "Common.hpp"
+#include "../Asset/AssetObject.hpp"
 
 namespace ln {
 class WorldObject;
+namespace ed { class SceneAsset; }
 namespace detail { class SceneManager; }
 
 /**
@@ -63,7 +65,21 @@ private:
 	// TODO: Editor integration
 	ln::Path m_filePath;
 
+    friend class ed::SceneAsset;
 	friend class detail::SceneManager;
 };
 
+namespace ed {
+
+class SceneAsset
+    : public AssetObject
+{
+public:
+
+LN_CONSTRUCT_ACCESS:
+    SceneAsset();
+    void init();
+};
+
+} // namespace ed
 } // namespace ln

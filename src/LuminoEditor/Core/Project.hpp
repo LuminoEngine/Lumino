@@ -4,6 +4,7 @@
 //class Project;
 class ProjectProperties;
 //class Workspace;
+class AssetDatabase;
 
 class Project
 	: public ln::RefObject
@@ -31,6 +32,8 @@ public:
 	ln::Path iOSProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.iOS");  }
 	ln::Path windowsProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.Windows"); }
 
+    const ln::Ref<AssetDatabase>& assetDatabase() const { return m_assetDatabase; }
+
 	/** 指定フォルダにプロジェクトファイルが含まれているかを確認する */
 	static bool existsProjectFile(const ln::Path& dir);
 
@@ -55,6 +58,7 @@ private:
 	ln::Path m_buildDir;
 	ln::Path m_releaseDir;
 	ln::Path m_intermediateAssetsDir;
+    ln::Ref<AssetDatabase> m_assetDatabase;
 };
 
 // プロジェクトファイルに保存する情報

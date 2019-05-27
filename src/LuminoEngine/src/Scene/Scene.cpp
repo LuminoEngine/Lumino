@@ -13,6 +13,7 @@
     2 については、バトル画面のサブとしてメニュー画面を出したりする仕組み。
 */
 #include "Internal.hpp"
+#include <LuminoEngine/Scene/WorldObject.hpp>
 #include <LuminoEngine/Scene/Scene.hpp>
 #include "SceneManager.hpp"
 
@@ -100,5 +101,23 @@ void Scene::serialize(Archive& ar)
 {
 }
 
+
+
+
+//==============================================================================
+// SceneAsset
+
+namespace ed {
+
+SceneAsset::SceneAsset()
+{
+}
+
+void SceneAsset::init()
+{
+    AssetObject::init();
+}
+
+} // namespace ed
 } // namespace ln
 
