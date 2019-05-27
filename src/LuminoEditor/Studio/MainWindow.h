@@ -4,8 +4,10 @@
 
 class QtAwesome;
 class DocumentManager;
-class InspectorViewPane;
-class ToolViewPane;
+class InspectorPaneContainer;
+class ToolPaneContainer;
+class ProblemsPane;
+class OutputPane;
 
 class MainWindow : public QMainWindow
 {
@@ -29,6 +31,8 @@ private:
     QtAwesome* m_awesome;
     ContentsViewManager* m_contentsViewManager;
     DocumentManager* m_documentManager;
-    InspectorViewPane* m_inspectorViewPane;
-    ToolViewPane* m_toolViewPane;
+	InspectorPaneContainer* m_inspectorPaneContainer;
+	ToolPaneContainer* m_toolPaneContainer;
+	ProblemsPane* m_problemsPane;
+	OutputPane* m_outputPane;
 };

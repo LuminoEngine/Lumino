@@ -6,6 +6,10 @@
 
 int main(int argc, char *argv[])
 {
+#ifdef _WIN32
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+
     // QOpenGLContext::globalShareContext() Ç™égÇ¶ÇÈÇÊÇ§Ç…Ç»ÇÈÅB
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 

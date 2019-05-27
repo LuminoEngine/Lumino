@@ -1,10 +1,10 @@
 ﻿
-#include "ToolViewPane.h"
+#include "OutputPane.h"
 
 //==============================================================================
-// ToolViewPane
+// OutputPane
 
-ToolViewPane::ToolViewPane(QWidget* parent)
+OutputPane::OutputPane(QWidget* parent)
     : QFrame(parent)
 {
 }

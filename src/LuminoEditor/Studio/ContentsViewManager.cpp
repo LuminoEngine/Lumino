@@ -5,9 +5,9 @@
 
 ContentsViewManager::ContentsViewManager()
 {
-    m_sidear = new QFrame();
-    m_sidear->setFixedWidth(50);
-    m_sidear->setStyleSheet("background-color:gray;");
+	m_sidebar = new QFrame();
+	m_sidebar->setFixedWidth(50);
+	m_sidebar->setStyleSheet("background-color:gray;");
 
     {
         m_buttonContainer = new QVBoxLayout();
@@ -23,7 +23,7 @@ ContentsViewManager::ContentsViewManager()
         //vbox->addWidget(button1);
         //vbox->addWidget(new QPushButton("test2"));
         //vbox->addWidget(new QPushButton("test3"));
-        m_sidear->setLayout(m_buttonContainer);
+		m_sidebar->setLayout(m_buttonContainer);
     }
 
     m_viewContainer = new QStackedWidget();

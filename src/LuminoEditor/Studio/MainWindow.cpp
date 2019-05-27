@@ -1,10 +1,13 @@
 ﻿
 #include "External/QtAwesome/QtAwesome.h"
 #include "DocumentManager.h"
-#include "InspectorViewPane.h"
-#include "ToolViewPane.h"
+#include "InspectorPaneContainer.h"
+#include "ToolPaneContainer.h"
 #include "AudioContentsView.h"
 #include "SceneContentsView.h"
+#include "ProblemsPane.h"
+#include "OutputPane.h"
+#include "PropertyPane.h"
 #include "MainWindow.h"
 
 static MainWindow* s_mainWindow = nullptr;
@@ -36,10 +39,15 @@ void MainWindow::initializeLumino()
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
+	, m_resourceContext(nullptr)
+	, m_offscreenSurface(nullptr)
+	, m_contentsViewManager(nullptr)
+	, m_documentManager(nullptr)
 {
     s_mainWindow = this;
 
     setGeometry(0, 0, 1200, 800);
+
 
     // init OpenGL
     {
@@ -68,15 +76,24 @@ MainWindow::MainWindow(QWidget* parent)
     m_contentsViewManager = new ContentsViewManager();
     m_documentManager = new DocumentManager();
 
-
-
-
-    {
+	auto* rootFrame = new QFrame();
+    
+	{
         m_contentsViewManager->addContentsViewProvider(ln::makeObject<SceneContentsViewProvider>());
         m_contentsViewManager->addContentsViewProvider(ln::makeObject<AudioContentsViewProvider>());
     }
 
-    auto* rootFrame = new QFrame();
+#if 0
+
+	auto* hbox1 = new QHBoxLayout();
+	hbox1->addWidget(m_contentsViewManager->sidebar());
+	hbox1->addWidget(m_contentsViewManager->viewContainer());
+	hbox1->addWidget(m_documentManager->rootWidget());
+	rootFrame->setLayout(hbox1);
+
+#else
+
+
 
     auto* hbox1 = new QHBoxLayout();
     hbox1->setAlignment(Qt::AlignLeft);
@@ -85,31 +102,38 @@ MainWindow::MainWindow(QWidget* parent)
     rootFrame->setLayout(hbox1);
 
     QSplitter* split1 = new QSplitter(Qt::Horizontal);
-    split1->setStyleSheet("background-color: yellow;");
+    //split1->setStyleSheet("background-color: yellow;");
     split1->setContentsMargins(0, 0, 0, 0);
     {
         split1->addWidget(m_contentsViewManager->viewContainer());
 
         {
             QSplitter* split2 = new QSplitter(Qt::Vertical);
-            split2->setStyleSheet("background-color: blue;");
+            //split2->setStyleSheet("background-color: blue;");
             split2->setContentsMargins(0, 0, 0, 0);
             {
                 split2->addWidget(m_documentManager->rootWidget());
 
-                m_toolViewPane = new ToolViewPane();
-                split2->addWidget(m_toolViewPane);
+				m_toolPaneContainer = new ToolPaneContainer();
+
+				m_outputPane = new OutputPane();
+				m_toolPaneContainer->addStandalonePane(m_outputPane);
+
+				m_problemsPane = new ProblemsPane();
+				m_toolPaneContainer->addStandalonePane(m_problemsPane);
+
+                split2->addWidget(m_toolPaneContainer);
             }
             split1->addWidget(split2);
         }
 
 
-        m_inspectorViewPane = new InspectorViewPane();
-        split1->addWidget(m_inspectorViewPane);
+		m_inspectorPaneContainer = new InspectorPaneContainer();
+        split1->addWidget(m_inspectorPaneContainer);
     };
     hbox1->addWidget(split1);
 
-
+#endif
 
     setCentralWidget(rootFrame);
 }
@@ -124,8 +148,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-    // MainWindow close 前に終了しないと、OpenGL コンテキストが先に開放されてしまうのでエラーとなる
-    m_resourceContext->makeCurrent(m_offscreenSurface);
-    ln::Engine::finalize();
-    m_resourceContext->doneCurrent();
+	if (m_resourceContext) {
+		// MainWindow close 前に終了しないと、OpenGL コンテキストが先に開放されてしまうのでエラーとなる
+		m_resourceContext->makeCurrent(m_offscreenSurface);
+		ln::Engine::finalize();
+		m_resourceContext->doneCurrent();
+	}
 }

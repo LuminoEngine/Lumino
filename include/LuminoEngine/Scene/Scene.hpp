@@ -3,10 +3,11 @@
 #include "Common.hpp"
 
 namespace ln {
+class WorldObject;
 namespace detail { class SceneManager; }
 
 /**
- * シーンのベースクラスです。シーンはタイトル画面などの画面遷移の単位です。
+ * シーンのベースクラスです。
  */
 LN_CLASS()
 class Scene
@@ -34,6 +35,18 @@ protected:
 	LN_METHOD()
 	virtual void onUpdate();
 
+public:	// TODO: Editor integration
+	void setup(const ln::Path& filePath);
+	void clear();
+	void save();
+	void load();
+	void addObject(WorldObject* obj);
+	void removeObject(WorldObject* obj);
+protected:
+	LN_SERIALIZE_CLASS_VERSION(1);
+	void serialize(Archive& ar);
+
+
 LN_CONSTRUCT_ACCESS:
 	Scene();
 	virtual ~Scene();
@@ -44,6 +57,11 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	void update();
+
+	List<Ref<WorldObject>> m_rootWorldObjects;
+
+	// TODO: Editor integration
+	ln::Path m_filePath;
 
 	friend class detail::SceneManager;
 };

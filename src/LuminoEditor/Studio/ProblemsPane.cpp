@@ -1,10 +1,10 @@
 ﻿
-#include "InspectorViewPane.h"
+#include "ProblemsPane.h"
 
 //==============================================================================
-// InspectorViewPane
+// ProblemsPane
 
-InspectorViewPane::InspectorViewPane(QWidget* parent)
+ProblemsPane::ProblemsPane(QWidget* parent)
     : QFrame(parent)
 {
 }

@@ -65,5 +65,40 @@ void Scene::update()
 	onUpdate();
 }
 
+
+void Scene::setup(const ln::Path& filePath)
+{
+	m_filePath = filePath;
+}
+
+void Scene::save()
+{
+}
+
+void Scene::load()
+{
+}
+
+void Scene::clear()
+{
+	m_rootWorldObjects.clear();
+}
+
+void Scene::addObject(WorldObject* obj)
+{
+	if (LN_REQUIRE(obj)) return;
+	if (LN_REQUIRE(m_rootWorldObjects.contains(obj))) return;
+	m_rootWorldObjects.add(obj);
+}
+
+void Scene::removeObject(WorldObject* obj)
+{
+	m_rootWorldObjects.remove(obj);
+}
+
+void Scene::serialize(Archive& ar)
+{
+}
+
 } // namespace ln
 
