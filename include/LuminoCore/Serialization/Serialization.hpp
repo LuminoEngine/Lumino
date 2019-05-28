@@ -289,9 +289,9 @@ private:
 		return true;
 	}
 
+    // Ref<> or Optional<> 専用。state は遷移済み。
 	void processNull()
 	{
-		moveState(NodeHeadState::PrimitiveValue);
 		preWriteValue();
 		writeValueNull();
 	}
