@@ -6,7 +6,10 @@
 
 namespace ln {
 
-template<typename TValue>
+//template<typename TValue>
+template<
+	typename TValue,
+	typename std::enable_if<!detail::is_lumino_engine_object<TValue>::value, std::nullptr_t>::type = nullptr>
 void serialize(Archive& ar, Ref<TValue>& value)
 {
 	ar.makeSmartPtrTag();

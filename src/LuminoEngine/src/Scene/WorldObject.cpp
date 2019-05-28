@@ -301,5 +301,30 @@ void WorldObject::updateWorldMatrixHierarchical()
     }
 }
 
+
+//==============================================================================
+// WorldObjectAsset
+
+namespace ed {
+
+LN_OBJECT_IMPLEMENT(WorldObjectAsset, AssetObject);
+
+WorldObjectAsset::WorldObjectAsset()
+{
+}
+
+void WorldObjectAsset::init()
+{
+    AssetObject::init();
+}
+
+void WorldObjectAsset::serialize(Archive& ar)
+{
+	//ar & makeNVP(u"position", m_position);
+	//ar & makeNVP(u"angles", m_angles);
+	//ar & makeNVP(u"scale", m_scale);
+}
+
+} // namespace ed
 } // namespace ln
 

@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include "Common.hpp"
+#include "../Asset/AssetObject.hpp"
 
 namespace ln {
 class World;
@@ -205,4 +206,27 @@ public: // TODO:
     friend class World;
 };
 
+namespace ed {
+
+class WorldObjectAsset
+	: public AssetObject
+{
+	LN_OBJECT;
+public:
+
+protected:
+	LN_SERIALIZE_CLASS_VERSION(1);
+	void serialize(Archive& ar);
+
+LN_CONSTRUCT_ACCESS:
+	WorldObjectAsset();
+	void init();
+
+private:
+	Vector3 m_position;
+	Vector3 m_angles;
+	Vector3 m_scale;
+};
+
+} // namespace ed
 } // namespace ln

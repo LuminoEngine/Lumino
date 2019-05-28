@@ -56,7 +56,7 @@ class Variant : public Object
 public:
 	static const Variant Empty;
 
-private:
+LN_CONSTRUCT_ACCESS:
 	Variant();
 	Variant(std::nullptr_t);
 	Variant(const Variant& value);

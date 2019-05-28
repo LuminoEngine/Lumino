@@ -293,5 +293,35 @@ public:
 	}
 };
 
+
+template<
+	typename TValue,
+	typename std::enable_if<detail::is_lumino_engine_object<TValue>::value, std::nullptr_t>::type = nullptr>
+	void serialize(Archive& ar, Ref<TValue>& value)
+{
+	ar.makeSmartPtrTag();
+
+	ln::String type = u"TypeTest";
+	ar.makeTypeInfo(&type);
+
+	if (ar.isLoading())
+	{
+		if (!value)
+		{
+			value = makeObject<TValue>();
+		}
+		ar.process(*value.get());
+		//value->serialize(ar);
+	}
+	else
+	{
+		if (value)
+		{
+			//value->serialize(ar);
+			ar.process(*value.get());
+		}
+	}
+}
+
 } // namespace ln
 

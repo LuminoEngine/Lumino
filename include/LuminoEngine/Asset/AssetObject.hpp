@@ -14,6 +14,7 @@ namespace ln {
 class AssetObject
     : public Object
 {
+	LN_OBJECT;
 public:
 
 

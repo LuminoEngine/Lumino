@@ -8,6 +8,8 @@ namespace ln {
 //=============================================================================
 // AssetObject
 
+LN_OBJECT_IMPLEMENT(AssetObject, Object);
+
 AssetObject::AssetObject()
 {
 }

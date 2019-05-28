@@ -13,11 +13,119 @@ protected:
 };
 
 //------------------------------------------------------------------------------
+//## Minimal
+TEST_F(Test_Serialization2, Minimal)
+{
+	//TODO: ルート Value は未対応
+	////* [ ] Root primitive value
+	//{
+	//	int v1 = 100;
+	//	int v2 = 0;
+	//	String json = JsonSerializer::serialize(v1);
+	//	JsonSerializer::deserialize(json, v2);
+	//	ASSERT_EQ(100, v2);
+	//}
+
+	//* [ ] EmptyObject
+	{
+		struct MyData
+		{
+			int callCount = 0;
+			void serialize(Archive& ar) { callCount++; }
+		};
+
+		MyData data1;
+		String json = JsonSerializer::serialize(data1, JsonFormatting::None);
+		ASSERT_EQ(json, u"{}");
+
+		JsonSerializer::deserialize(json, data1);
+
+		ASSERT_EQ(2, data1.callCount);
+	}
+}
+
+//------------------------------------------------------------------------------
+//## List<> test
+TEST_F(Test_Serialization2, List)
+{
+	List<int> list1 = { 1, 2, 3 };
+	String json = JsonSerializer::serialize(list1, JsonFormatting::None);
+	ASSERT_EQ(json, u"[1,2,3]");
+
+	List<int> list2;
+	JsonSerializer::deserialize(json, list2);
+	ASSERT_EQ(3, list2.size());
+	ASSERT_EQ(1, list2[0]);
+	ASSERT_EQ(2, list2[1]);
+	ASSERT_EQ(3, list2[2]);
+}
+
+//------------------------------------------------------------------------------
+//## ValueObject test
+TEST_F(Test_Serialization2, ValueObject)
+{
+	struct MyData
+	{
+		int value;
+
+		void serialize(Archive& ar)
+		{
+			ar & LN_NVP(value);
+		}
+	};
+
+	MyData data1;
+	data1.value = 100;
+	String json = JsonSerializer::serialize(data1, JsonFormatting::None);
+	ASSERT_EQ(json, u"{\"value\":100}");
+
+	MyData data2;
+	JsonSerializer::deserialize(json, data2);
+	ASSERT_EQ(100, data2.value);
+}
+
+//------------------------------------------------------------------------------
+//## Ref<> test
+TEST_F(Test_Serialization2, RefObject)
+{
+	struct Class1 : public ln::RefObject
+	{
+		int value;
+
+		void serialize(Archive& ar)
+		{
+			ar & LN_NVP(value);
+		}
+	};
+
+	struct MyData
+	{
+		Ref<Class1> ref;
+
+		void serialize(Archive& ar)
+		{
+			ar & LN_NVP(ref);
+		}
+	};
+
+	MyData data1;
+	data1.ref = makeRef<Class1>();
+	data1.ref->value = 100;
+	String json = JsonSerializer::serialize(data1, JsonFormatting::None);
+	ASSERT_EQ(json, u"{\"value\":100}");
+
+	MyData data2;
+	JsonSerializer::deserialize(json, data2);
+	ASSERT_EQ(100, data2.ref->value);
+}
+
+//------------------------------------------------------------------------------
 //## Examples
 TEST_F(Test_Serialization2, Examples)
 {
 	//* [ ] Example 1
 	{
+		
 		struct MyData
 		{
 			String name;

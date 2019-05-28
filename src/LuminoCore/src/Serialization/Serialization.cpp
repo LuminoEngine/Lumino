@@ -20,6 +20,26 @@ namespace ln {
 
 */
 
+
+
+/*
+	- in object, out object に関わらず、serialize() が呼ばれたとき、そのオブジェクト用の Node は作られている。
+		- Write : Node の state は Ready になっている。まだ Object か Array かはわからない。→ 最初の serialize で nextName が呼ばれるかどうかで決まる。
+		- Read  : Node の state は Object または Array になっている。
+
+	- State
+		- Value  : リーフノードを示す。state 変更に続いて、"1度だけ"、"プリミティブな Value" のみシリアライズできる。
+		- Array  : makeArrayTag によって Node の状態を確定する。その後は任意の回数 serialize できるが、NVP を serialize することはできない。
+		- Object : makeXXXXTag が呼ばれずに、子の serialize が行われた場合は Object となる。
+		           NVP 以外の値を１度だけ serialize することができる。この場合、子は親 Node の一部として serialize される。(子の serialize 開始時は Ready (親Nodeのまま) となる。スマートポインタ・Variant用)
+
+	- BaseClass
+		- 考え方は NVP と同じ。NVP の name の部分が "_base_class" とかになった状態で別 Object としてシリアライズする。
+
+	- makeStringTag
+		- Write : 
+*/
+
 //==============================================================================
 // Archive
 

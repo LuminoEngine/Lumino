@@ -94,6 +94,86 @@ public:
     }
 };
 
+
+//template<
+//	class T,
+//	typename std::enable_if<std::is_base_of<ln::Object, T>::value && std::is_base_of<ln::RefObject, T>::value, std::nullptr_t>::type = nullptr>
+//void staticFactory() {
+//	std::cout << "ln::Object" << std::endl;
+//}
+//
+//template<
+//	class T,
+//	typename std::enable_if<!std::is_base_of<ln::Object, T>::value && std::is_base_of<ln::RefObject, T>::value, std::nullptr_t>::type = nullptr>
+//void staticFactory() {
+//	std::cout << "ln::RefObject" << std::endl;
+//}
+//
+//template <class T>
+//auto staticFactory2() -> decltype(ln::makeRef<T>(), void())
+//{
+//	std::cout << "ln::RefObject" << std::endl;
+//}
+//
+//template <class T>
+//auto staticFactory2() -> decltype(T::_lnref_getThisTypeInfo(), void())
+//{
+//	std::cout << "ln::Object" << std::endl;
+//}
+//
+
+//template<
+//	class T,
+//	typename std::enable_if<decltype(T::_lnref_getThisTypeInfo(), true), std::nullptr_t>::type = nullptr>
+//Ref<T> staticFactory3()
+//{
+//	std::cout << "ln::RefObject" << std::endl;
+//	return Ref<T>();
+//}
+//
+//template<
+//	class T>
+//Ref<T> staticFactory3()
+//{
+//	std::cout << "ln::Object" << std::endl;
+//	return Ref<T>();
+//}
+//
+
+
+
+// TypeInfo* _lnref_getTypeInfo(); をメンバ関数として持っているか
+template<typename T>
+class has_lnref_getTypeInfo_function2
+{
+private:
+	template<typename U>
+	static auto check(U&& v) -> decltype(v.dispose(), std::true_type());
+	static auto check(...) -> decltype(std::false_type());
+
+public:
+	typedef decltype(check(std::declval<T>())) type;
+	static bool const value = type::value;
+};
+
+
+template<
+	typename TValue,
+	typename std::enable_if<!has_lnref_getTypeInfo_function2<TValue>::value, std::nullptr_t>::type = nullptr>
+void staticFactory3()
+{
+	std::cout << "ln::RefObject" << std::endl;
+}
+
+template<
+	typename TValue,
+	typename std::enable_if<has_lnref_getTypeInfo_function2<TValue>::value, std::nullptr_t>::type = nullptr>
+	void staticFactory3()
+{
+	std::cout << "ln::Object" << std::endl;
+}
+
+
 int main(int argc, char** argv)
 {
 #ifdef _WIN32
@@ -103,6 +183,10 @@ int main(int argc, char** argv)
     EngineSettings::setEngineFeatures(EngineFeature::Experimental);
 	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
 	detail::EngineDomain::engineManager()->settings().standaloneFpsControl = true;
+
+	//static_assert(std::is_base_of<ln::Object, ed::SceneAsset>::value, "error");
+	staticFactory3<ed::SceneAsset>();
+	staticFactory3<ln::Stream>();
 
 
     GlobalLogger::addStdErrAdapter();
@@ -114,6 +198,14 @@ int main(int argc, char** argv)
 
 	Engine::initialize();
 	//Font::registerFontFromFile(u"C:/Users/hldc0061/Downloads/mplus-TESTFLIGHT-063/mplus-1c-regular.ttf");
+
+
+	{
+		auto ss = makeObject<ed::SceneAsset>();
+		ss->setup("SceneTest1.json");
+		ss->addNewWorldObject();
+		ss->save();
+	}
 
 
     Engine::mainCamera()->addComponent(makeObject<CameraOrbitControlComponent>());

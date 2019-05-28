@@ -173,7 +173,12 @@ protected:
 
 	virtual void onWriteArray() override
 	{
-		if (checkTopType(JsonElementType::Object))
+		if (m_nodeStack.empty())
+		{
+			m_localDoc->setRootArray();
+			m_nodeStack.push(m_localDoc->rootElement());
+		}
+		else if (checkTopType(JsonElementType::Object))
 		{
 			if (LN_REQUIRE(hasNextName())) return;
 			JsonArray* v = static_cast<JsonObject*>(m_nodeStack.top())->addArray(getNextName());

@@ -109,6 +109,8 @@ void Scene::serialize(Archive& ar)
 
 namespace ed {
 
+LN_OBJECT_IMPLEMENT(SceneAsset, AssetObject);
+
 SceneAsset::SceneAsset()
 {
 }
@@ -116,6 +118,36 @@ SceneAsset::SceneAsset()
 void SceneAsset::init()
 {
     AssetObject::init();
+}
+
+void SceneAsset::setup(const ln::Path& filePath)
+{
+	m_filePath = filePath;
+}
+
+void SceneAsset::clear()
+{
+}
+
+void SceneAsset::save()
+{
+	auto json = ln::JsonSerializer::serialize(*this);
+	ln::FileSystem::writeAllText(m_filePath, json);
+}
+
+void SceneAsset::load()
+{
+}
+
+void SceneAsset::serialize(Archive& ar)
+{
+	ar & makeNVP(u"objects", m_rootWorldObjects);
+}
+
+void SceneAsset::addNewWorldObject()
+{
+	auto obj = makeObject<WorldObjectAsset>();
+	m_rootWorldObjects.add(obj);
 }
 
 } // namespace ed
