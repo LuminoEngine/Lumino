@@ -12,25 +12,23 @@ template<
 	typename std::enable_if<!detail::is_lumino_engine_object<TValue>::value, std::nullptr_t>::type = nullptr>
 void serialize(Archive& ar, Ref<TValue>& value)
 {
-	ar.makeSmartPtrTag();
+    bool isNull = (value == nullptr);
+	ar.makeSmartPtrTag(&isNull);
 
-	if (ar.isLoading())
-	{
-		if (!value)
-		{
-			value = makeRef<TValue>();
-		}
-		ar.process(*value.get());
-		//value->serialize(ar);
-	}
-	else
-	{
-		if (value)
-		{
-			//value->serialize(ar);
-			ar.process(*value.get());
-		}
-	}
+    if (ar.isSaving()) {
+        if (!isNull) {
+            ar.process(*value.get());
+        }
+    }
+    else {
+        if (!isNull) {
+            value = makeRef<TValue>();
+            ar.process(*value.get());
+        }
+        else {
+            value = nullptr;
+        }
+    }
 }
 
 template<typename TValue>
@@ -97,6 +95,9 @@ void serialize(Archive& ar, Optional<TValue>& value)
 			ar.process(v);
 			value = v;
 		}
+        else {
+            value.reset();
+        }
 	}
 }
 

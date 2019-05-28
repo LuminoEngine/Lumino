@@ -45,6 +45,30 @@ TEST_F(Test_Serialization2, Minimal)
 }
 
 //------------------------------------------------------------------------------
+//## String test
+TEST_F(Test_Serialization2, String)
+{
+    struct MyData
+    {
+        String value;
+
+        void serialize(Archive& ar)
+        {
+            ar & LN_NVP(value);
+        }
+    };
+
+    MyData data1;
+    data1.value = u"test";
+    String json = JsonSerializer::serialize(data1, JsonFormatting::None);
+    ASSERT_EQ(json, u"{\"value\":\"test\"}");
+
+    MyData data2;
+    JsonSerializer::deserialize(json, data2);
+    ASSERT_EQ(u"test", data2.value);
+}
+
+//------------------------------------------------------------------------------
 //## List<> test
 TEST_F(Test_Serialization2, List)
 {
@@ -58,6 +82,15 @@ TEST_F(Test_Serialization2, List)
 	ASSERT_EQ(1, list2[0]);
 	ASSERT_EQ(2, list2[1]);
 	ASSERT_EQ(3, list2[2]);
+
+    // empty list
+    List<int> list3;
+    json = JsonSerializer::serialize(list3, JsonFormatting::None);
+    ASSERT_EQ(json, u"[]");
+
+    JsonSerializer::deserialize(json, list2);
+    ASSERT_EQ(0, list2.size());
+
 }
 
 //------------------------------------------------------------------------------
@@ -108,16 +141,312 @@ TEST_F(Test_Serialization2, RefObject)
 		}
 	};
 
-	MyData data1;
-	data1.ref = makeRef<Class1>();
-	data1.ref->value = 100;
-	String json = JsonSerializer::serialize(data1, JsonFormatting::None);
-	ASSERT_EQ(json, u"{\"value\":100}");
+    //* [ ] has value
+    {
+        MyData data1;
+        data1.ref = makeRef<Class1>();
+        data1.ref->value = 100;
+        String json = JsonSerializer::serialize(data1, JsonFormatting::None);
+        ASSERT_EQ(json, u"{\"ref\":{\"value\":100}}");
 
-	MyData data2;
-	JsonSerializer::deserialize(json, data2);
-	ASSERT_EQ(100, data2.ref->value);
+        MyData data2;
+        JsonSerializer::deserialize(json, data2);
+        ASSERT_EQ(100, data2.ref->value);
+    }
+
+    //* [ ] null
+    {
+        MyData data1;
+        data1.ref = nullptr;
+        String json = JsonSerializer::serialize(data1, JsonFormatting::None);
+        ASSERT_EQ(json, u"{\"ref\":null}");
+
+        MyData data2;
+        data2.ref = makeRef<Class1>();
+        JsonSerializer::deserialize(json, data2);
+        ASSERT_EQ(nullptr, data2.ref);
+    }
+
+    //* [ ] Ref<> nest and after other value
+    {
+        struct Data1 : public ln::RefObject
+        {
+            Ref<Data1> child;
+            int value;
+
+            void serialize(Archive& ar)
+            {
+                ar & LN_NVP(child);
+                ar & LN_NVP(value);
+            }
+        };
+
+        // save
+        Data1 data1;
+        data1.value = 1;
+        data1.child = makeRef<Data1>();
+        data1.child->value = 2;
+        String json = JsonSerializer::serialize(data1);
+
+        // load
+        Data1 data2;
+        JsonSerializer::deserialize(json, data2);
+        ASSERT_EQ(1, data2.value);
+        ASSERT_EQ(2, data2.child->value);
+    }
 }
+
+//------------------------------------------------------------------------------
+//## PrimitiveValues test
+TEST_F(Test_Serialization2, PrimitiveValues)
+{
+    //- [ ] 各値を save/load できること
+
+    struct Test
+    {
+        int8_t v_s8l = 0;
+        int16_t v_s16l = 0;
+        int32_t v_s32l = 0;
+        int64_t v_s64l = 0;
+
+        int8_t v_s8u = 0;
+        int16_t v_s16u = 0;
+        int32_t v_s32u = 0;
+        int64_t v_s64u = 0;
+
+        float v_floatl = 0;
+        double v_doublel = 0;
+
+        float v_floatu = 0;
+        double v_doubleu = 0;
+
+        float v_floatm = 0;
+        double v_doublem = 0;
+
+        String v_str;
+
+        void serialize(Archive& ar)
+        {
+            ar & LN_NVP(v_s8l);
+            ar & LN_NVP(v_s16l);
+            ar & LN_NVP(v_s32l);
+            ar & LN_NVP(v_s64l);
+
+            ar & LN_NVP(v_s8u);
+            ar & LN_NVP(v_s16u);
+            ar & LN_NVP(v_s32u);
+            ar & LN_NVP(v_s64u);
+
+            ar & LN_NVP(v_floatl);
+            ar & LN_NVP(v_doublel);
+
+            ar & LN_NVP(v_floatu);
+            ar & LN_NVP(v_doubleu);
+
+            ar & LN_NVP(v_floatm);
+            ar & LN_NVP(v_doublem);
+
+            ar & LN_NVP(v_str);
+        }
+    };
+
+    String json;
+
+    Test obj1;
+    obj1.v_s8l = INT8_MIN;
+    obj1.v_s16l = INT16_MIN;
+    obj1.v_s32l = INT32_MIN;
+    obj1.v_s64l = INT64_MIN;
+    obj1.v_s8u = INT8_MAX;
+    obj1.v_s16u = INT16_MAX;
+    obj1.v_s32u = INT32_MAX;
+    obj1.v_s64u = INT64_MAX;
+    obj1.v_floatl = -FLT_MAX;	// https://stackoverflow.com/questions/2528039/why-is-flt-min-equal-to-zero
+    obj1.v_doublel = -DBL_MAX;	// Json にするとものすごくたくさん桁がでるけどそれでよい
+    obj1.v_floatu = FLT_MAX;
+    obj1.v_doubleu = DBL_MAX;
+    obj1.v_floatm = 1.0f;
+    obj1.v_doublem = 1.0f;
+    obj1.v_str = _LT("text");
+
+    // Save
+    {
+        JsonTextOutputArchive ar;
+        ar.process(obj1);
+        json = ar.toString(JsonFormatting::None);
+    }
+
+    // Load
+    Test obj2;
+    {
+        JsonTextInputArchive ar(json);
+        ar.process(obj2);
+    }
+
+    ASSERT_EQ(obj1.v_s8l, obj2.v_s8l);
+    ASSERT_EQ(obj1.v_s16l, obj2.v_s16l);
+    ASSERT_EQ(obj1.v_s32l, obj2.v_s32l);
+    ASSERT_EQ(obj1.v_s64l, obj2.v_s64l);
+    ASSERT_EQ(obj1.v_s8u, obj2.v_s8u);
+    ASSERT_EQ(obj1.v_s16u, obj2.v_s16u);
+    ASSERT_EQ(obj1.v_s32u, obj2.v_s32u);
+    ASSERT_EQ(obj1.v_s64u, obj2.v_s64u);
+    ASSERT_FLOAT_EQ(obj1.v_floatl, obj2.v_floatl);
+    ASSERT_DOUBLE_EQ(obj1.v_doublel, obj2.v_doublel);
+    ASSERT_FLOAT_EQ(obj1.v_floatu, obj2.v_floatu);
+    ASSERT_DOUBLE_EQ(obj1.v_doubleu, obj2.v_doubleu);
+    ASSERT_FLOAT_EQ(obj1.v_floatm, obj2.v_floatm);
+    ASSERT_DOUBLE_EQ(obj1.v_doublem, obj2.v_doublem);
+    ASSERT_EQ(obj1.v_str, obj2.v_str);
+}
+
+//------------------------------------------------------------------------------
+//## Optional 型のテスト
+TEST_F(Test_Serialization2, Optional)
+{
+    struct Test
+    {
+        ln::Optional<ln::List<ln::String>> includePaths;
+        ln::Optional<ln::List<ln::String>> defines;
+        ln::Optional<ln::String> precompiledHeaderFile;
+        ln::Optional<ln::String> mscFullVer;
+
+        void serialize(Archive& ar)
+        {
+            ar & LN_NVP(includePaths);
+            ar & LN_NVP(defines);
+            ar & LN_NVP(precompiledHeaderFile);
+            ar & LN_NVP(mscFullVer);
+        }
+    };
+
+    Test t1;
+    Test t2;
+    ln::String json;
+
+    t1.includePaths = ln::List<ln::String>({ u"dir1", u"dir2" });
+    t1.defines = nullptr;
+    t1.precompiledHeaderFile = ln::String(u"pch.h");
+    t1.mscFullVer = nullptr;
+
+    // Save
+    {
+        JsonTextOutputArchive ar;
+        ar.process(t1);
+        json = ar.toString(JsonFormatting::None);
+        ASSERT_EQ(u"{\"includePaths\":[\"dir1\",\"dir2\"],\"defines\":null,\"precompiledHeaderFile\":\"pch.h\",\"mscFullVer\":null}", json);
+    }
+
+    // Load
+    t2.mscFullVer = ln::String(u"123");
+    {
+        JsonTextInputArchive ar(json);
+        ar.process(t2);
+        ASSERT_EQ(2, t2.includePaths.value().size());
+        ASSERT_EQ(u"dir1", t2.includePaths.value().at(0));
+        ASSERT_EQ(u"dir2", t2.includePaths.value().at(1));
+        ASSERT_EQ(false, t2.defines.hasValue());
+        ASSERT_EQ(u"pch.h", t2.precompiledHeaderFile.value());
+        ASSERT_EQ(false, t2.mscFullVer.hasValue());
+    }
+
+
+    //* [ ] データ構造バージョンアップ
+    {
+        struct TestV2
+        {
+            ln::Optional<ln::List<ln::String>> includePaths;
+            ln::Optional<ln::String> compilerVer;
+
+            void serialize(Archive& ar)
+            {
+                ar & LN_NVP(includePaths);
+                ar & LN_NVP(compilerVer);
+            }
+        };
+
+        TestV2 tv2;
+        tv2.compilerVer = ln::String(u"567");
+
+        JsonTextInputArchive ar(json);
+        ar.process(tv2);
+        ASSERT_EQ(2, tv2.includePaths.value().size());
+        ASSERT_EQ(u"dir1", tv2.includePaths.value().at(0)); // 同じ名前は引き継ぐ
+        ASSERT_EQ(u"dir2", tv2.includePaths.value().at(1));
+        ASSERT_EQ(u"567", tv2.compilerVer.value());      // 新しい名前は serialize からは設定されない
+    }
+}
+
+//------------------------------------------------------------------------------
+//## List<> types test
+TEST_F(Test_Serialization2, ListTypes)
+{
+    //* [ ] List<> in, int, string, object
+    {
+        struct MyData0 : public RefObject
+        {
+            int a;
+
+            MyData0() : a(0) {}
+            MyData0(int v) : a(v) {}
+
+            void serialize(Archive& ar)
+            {
+                ar & LN_NVP(a);
+            }
+        };
+        struct MyData1
+        {
+            int a;
+
+            void serialize(Archive& ar)
+            {
+                ar & LN_NVP(a);
+            }
+        };
+        struct MyData2
+        {
+            List<int> list1;
+            List<String> list2;
+            List<MyData1> list3;
+            List<Ref<MyData0>> list4;
+
+            void serialize(Archive& ar)
+            {
+                ar & LN_NVP(list1);
+                ar & LN_NVP(list2);
+                ar & LN_NVP(list3);
+                ar & LN_NVP(list4);
+            }
+        };
+
+        MyData2 data1;
+        data1.list1 = { 1, 2, 3 };
+        data1.list2 = { _T("a"), _T("b"), _T("c") };
+        data1.list3 = { MyData1{1}, MyData1{2}, MyData1{3} };
+        data1.list4 = { makeRef<MyData0>(4), makeRef<MyData0>(5), makeRef<MyData0>(6) };
+        String json = JsonSerializer::serialize(data1);
+
+        MyData2 data2;
+        JsonSerializer::deserialize(json, data2);
+        ASSERT_EQ(3, data2.list1.size());
+        ASSERT_EQ(3, data2.list2.size());
+        ASSERT_EQ(3, data2.list3.size());
+        ASSERT_EQ(1, data2.list1[0]);
+        ASSERT_EQ(2, data2.list1[1]);
+        ASSERT_EQ(3, data2.list1[2]);
+        ASSERT_EQ(_T("a"), data2.list2[0]);
+        ASSERT_EQ(_T("b"), data2.list2[1]);
+        ASSERT_EQ(_T("c"), data2.list2[2]);
+        ASSERT_EQ(1, data2.list3[0].a);
+        ASSERT_EQ(2, data2.list3[1].a);
+        ASSERT_EQ(3, data2.list3[2].a);
+        ASSERT_EQ(4, data2.list4[0]->a);
+        ASSERT_EQ(5, data2.list4[1]->a);
+        ASSERT_EQ(6, data2.list4[2]->a);
+    }
+}
+
 
 //------------------------------------------------------------------------------
 //## Examples
@@ -183,193 +512,23 @@ TEST_F(Test_Serialization2, Examples)
 }
 
 //------------------------------------------------------------------------------
-//## Extra types
-TEST_F(Test_Serialization2, ExtraTypes)
-{
-	//* [ ] List<> in, int, string, object
-	{
-		struct MyData1
-		{
-			int a;
-
-			void serialize(Archive& ar)
-			{
-				ar & LN_NVP(a);
-			}
-		};
-		struct MyData2
-		{
-			List<int> list1;
-			List<String> list2;
-			List<MyData1> list3;
-
-			void serialize(Archive& ar)
-			{
-				ar & LN_NVP(list1);
-				ar & LN_NVP(list2);
-				ar & LN_NVP(list3);
-			}
-		};
-
-		MyData2 data1;
-		data1.list1 = {1, 2, 3};
-		data1.list2 = { _T("a"), _T("b"), _T("c") };
-		data1.list3 = { MyData1{1}, MyData1{2}, MyData1{3} };
-		String json = JsonSerializer::serialize(data1);
-
-		MyData2 data2;
-		JsonSerializer::deserialize(json, data2);
-		ASSERT_EQ(3, data2.list1.size());
-		ASSERT_EQ(3, data2.list2.size());
-		ASSERT_EQ(3, data2.list3.size());
-		ASSERT_EQ(1, data2.list1[0]);
-		ASSERT_EQ(2, data2.list1[1]);
-		ASSERT_EQ(3, data2.list1[2]);
-		ASSERT_EQ(_T("a"), data2.list2[0]);
-		ASSERT_EQ(_T("b"), data2.list2[1]);
-		ASSERT_EQ(_T("c"), data2.list2[2]);
-		ASSERT_EQ(1, data2.list3[0].a);
-		ASSERT_EQ(2, data2.list3[1].a);
-		ASSERT_EQ(3, data2.list3[2].a);
-	}
-
-	//* [ ] Ref<>
-	{
-		struct Data1 : public ln::RefObject
-		{
-			Ref<Data1> child;
-			int value;
-
-			void serialize(Archive& ar)
-			{
-				ar & LN_NVP(child);
-				ar & LN_NVP(value);
-			}
-		};
-
-		// save
-		Data1 data1;
-		data1.value = 1;
-		data1.child = makeRef<Data1>();
-		data1.child->value = 2;
-		String json = JsonSerializer::serialize(data1);
-
-		// load
-		Data1 data2;
-		JsonSerializer::deserialize(json, data2);
-		ASSERT_EQ(1, data2.value);
-		ASSERT_EQ(2, data2.child->value);
-	}
-}
-
-//------------------------------------------------------------------------------
-//## Basic
-TEST_F(Test_Serialization2, SimpleSave)
-{
-	class Test1
-	{
-		int x = 100;
-	};
-	class Test2
-	{
-	public:
-		int x = 200;
-		void serialize(Archive& ar)
-		{
-			ar & LN_NVP(x);
-		}
-	};
-
-	class EmptyTest1
-	{
-	public:
-		void serialize(Archive& ar)
-		{
-		}
-	};
-
-	//- [ ] Save
-	JsonDocument doc;
-	JsonArchiveStore s(&doc);
-	Archive ar(&s, ArchiveMode::Save);
-
-	Test1 t1;
-	Test2 t2;
-	//ar.process(LN_NVP(t1));
-	ar.process(LN_NVP(t2));
-
-	auto json = doc.toString();
-
-	//- [ ] Load
-	{
-		t2.x = 1;
-
-		JsonDocument doc;
-		doc.parse(json);
-		JsonArchiveStore s(&doc);
-		Archive ar(&s, ArchiveMode::Load);
-
-
-		ar.process(t2);
-	}
-
-	//- [ ] 空オブジェクトの Save
-	{
-		JsonDocument doc;
-		JsonArchiveStore s(&doc);
-		Archive ar(&s, ArchiveMode::Save);
-
-		EmptyTest1 t1;
-		ar.process(t1);
-
-		json = doc.toString(JsonFormatting::None);
-		ASSERT_EQ(_T("{}"), json);
-	}
-
-	//- [ ] 空オブジェクトの Load
-	{
-		JsonDocument doc;
-		doc.parse(json);
-		JsonArchiveStore s(&doc);
-		Archive ar(&s, ArchiveMode::Load);
-
-		EmptyTest1 t1;
-		ar.process(t1);
-
-		json = doc.toString(JsonFormatting::None);
-	}
-}
-
-
-/*
-- [ ] List<Ref<MyObject>>
-- [ ] Variant (イベントコマンド引数)
-*/
-
-
-//------------------------------------------------------------------------------
 //## Basic
 TEST_F(Test_Serialization2, EmptyContainer)
 {
-	class Test2
+	struct Test2
 	{
-	public:
 		int x = 200;
 		void serialize(Archive& ar)
 		{
 			ar & LN_NVP(x);
 		}
 	};
-	class EmptyTest1
+    struct EmptyTest1
 	{
-	public:
-		void serialize(Archive& ar)
-		{
-		}
+		void serialize(Archive& ar) { }
 	};
-	class EmptyTest2
+    struct EmptyTest2
 	{
-	public:
 		EmptyTest1 t1;
 		List<int> t2;
 		Test2 t3;
@@ -498,161 +657,7 @@ TEST_F(Test_Serialization2, RootNode_Json)
 #endif
 }
 
-//------------------------------------------------------------------------------
-//## プリミティブ型のテスト
-TEST_F(Test_Serialization2, PrimitiveValues)
-{
-	//- [ ] 各値を save/load できること
 
-	struct Test
-	{
-		int8_t v_s8l = 0;
-		int16_t v_s16l = 0;
-		int32_t v_s32l = 0;
-		int64_t v_s64l = 0;
-
-		int8_t v_s8u = 0;
-		int16_t v_s16u = 0;
-		int32_t v_s32u = 0;
-		int64_t v_s64u = 0;
-
-		float v_floatl = 0;
-		double v_doublel = 0;
-
-		float v_floatu = 0;
-		double v_doubleu = 0;
-
-		float v_floatm = 0;
-		double v_doublem = 0;
-
-		String v_str;
-
-		void serialize(Archive& ar)
-		{
-			ar & LN_NVP(v_s8l);
-			ar & LN_NVP(v_s16l);
-			ar & LN_NVP(v_s32l);
-			ar & LN_NVP(v_s64l);
-
-			ar & LN_NVP(v_s8u);
-			ar & LN_NVP(v_s16u);
-			ar & LN_NVP(v_s32u);
-			ar & LN_NVP(v_s64u);
-
-			ar & LN_NVP(v_floatl);
-			ar & LN_NVP(v_doublel);
-
-			ar & LN_NVP(v_floatu);
-			ar & LN_NVP(v_doubleu);
-
-			ar & LN_NVP(v_floatm);
-			ar & LN_NVP(v_doublem);
-
-			ar & LN_NVP(v_str);
-		}
-	};
-
-	String json;
-
-	Test obj1;
-	obj1.v_s8l = INT8_MIN;
-	obj1.v_s16l = INT16_MIN;
-	obj1.v_s32l = INT32_MIN;
-	obj1.v_s64l = INT64_MIN;
-	obj1.v_s8u = INT8_MAX;
-	obj1.v_s16u = INT16_MAX;
-	obj1.v_s32u = INT32_MAX;
-	obj1.v_s64u = INT64_MAX;
-	obj1.v_floatl = -FLT_MAX;	// https://stackoverflow.com/questions/2528039/why-is-flt-min-equal-to-zero
-	obj1.v_doublel = -DBL_MAX;	// Json にするとものすごくたくさん桁がでるけどそれでよい
-	obj1.v_floatu = FLT_MAX;
-	obj1.v_doubleu = DBL_MAX;
-	obj1.v_floatm = 1.0f;
-	obj1.v_doublem = 1.0f;
-	obj1.v_str = _LT("text");
-
-	// Save
-	{
-		JsonTextOutputArchive ar;
-		ar.process(obj1);
-		json = ar.toString(JsonFormatting::None);
-	}
-
-	// Load
-	Test obj2;
-	{
-		JsonTextInputArchive ar(json);
-		ar.process(obj2);
-	}
-
-	ASSERT_EQ(obj1.v_s8l, obj2.v_s8l);
-	ASSERT_EQ(obj1.v_s16l, obj2.v_s16l);
-	ASSERT_EQ(obj1.v_s32l, obj2.v_s32l);
-	ASSERT_EQ(obj1.v_s64l, obj2.v_s64l);
-	ASSERT_EQ(obj1.v_s8u, obj2.v_s8u);
-	ASSERT_EQ(obj1.v_s16u, obj2.v_s16u);
-	ASSERT_EQ(obj1.v_s32u, obj2.v_s32u);
-	ASSERT_EQ(obj1.v_s64u, obj2.v_s64u);
-	ASSERT_FLOAT_EQ(obj1.v_floatl, obj2.v_floatl);
-	ASSERT_DOUBLE_EQ(obj1.v_doublel, obj2.v_doublel);
-	ASSERT_FLOAT_EQ(obj1.v_floatu, obj2.v_floatu);
-	ASSERT_DOUBLE_EQ(obj1.v_doubleu, obj2.v_doubleu);
-	ASSERT_FLOAT_EQ(obj1.v_floatm, obj2.v_floatm);
-	ASSERT_DOUBLE_EQ(obj1.v_doublem, obj2.v_doublem);
-	ASSERT_EQ(obj1.v_str, obj2.v_str);
-}
-
-
-//------------------------------------------------------------------------------
-//## Optional 型のテスト
-TEST_F(Test_Serialization2, Optional)
-{
-	struct Test
-	{
-		ln::Optional<ln::List<ln::String>> includePaths;
-		ln::Optional<ln::List<ln::String>> defines;
-		ln::Optional<ln::String> precompiledHeaderFile;
-		ln::Optional<ln::String> mscFullVer;
-
-		void serialize(Archive& ar)
-		{
-			ar & LN_NVP(includePaths);
-			ar & LN_NVP(defines);
-			ar & LN_NVP(precompiledHeaderFile);
-			ar & LN_NVP(mscFullVer);
-		}
-	};
-
-	Test t1;
-	Test t2;
-	ln::String json;
-
-	t1.includePaths = ln::List<ln::String>({ u"dir1", u"dir2" });
-	t1.defines = nullptr;
-	t1.precompiledHeaderFile = ln::String(u"pch.h");
-	t1.mscFullVer = nullptr;
-
-	// Save
-	{
-		JsonTextOutputArchive ar;
-		ar.process(t1);
-		json = ar.toString(JsonFormatting::None);
-		ASSERT_EQ(u"{\"includePaths\":[\"dir1\",\"dir2\"],\"defines\":null,\"precompiledHeaderFile\":\"pch.h\",\"mscFullVer\":null}", json);
-	}
-
-	// Load
-	Test obj2;
-	{
-		JsonTextInputArchive ar(json);
-		ar.process(t2);
-		ASSERT_EQ(2, t2.includePaths.value().size());
-		ASSERT_EQ(u"dir1", t2.includePaths.value().at(0));
-		ASSERT_EQ(u"dir2", t2.includePaths.value().at(1));
-		ASSERT_EQ(false, t2.defines.hasValue());
-		ASSERT_EQ(u"pch.h", t2.precompiledHeaderFile.value());
-		ASSERT_EQ(false, t2.mscFullVer.hasValue());
-	}
-}
 
 //------------------------------------------------------------------------------
 //## クラスバージョンを付けたい

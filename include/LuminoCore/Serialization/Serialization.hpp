@@ -156,21 +156,33 @@ public:
 		process(*str);
 	}
 
-	void makeSmartPtrTag()
+    // 呼出し後、 save, load 共に、null の場合は process してはならない
+	void makeSmartPtrTag(bool* outIsNull)
 	{
-		moveState(NodeHeadState::Object);
+        if (isSaving()) {
+            moveState(NodeHeadState::WrapperNode);
+            if ((*outIsNull)) {
+                processNull();
+            }
+        }
+        else if (isLoading()) {
+            moveState(NodeHeadState::WrapperNode);
+            preReadValue();
+            *outIsNull = m_store->getReadingValueType() == ArchiveNodeType::Null;
+        }
 	}
 
 	void makeOptionalTag(bool* outHasValue)
 	{
 		if (isSaving()) {
-			moveState(NodeHeadState::PrimitiveValue);
+			moveState(NodeHeadState::WrapperNode);
 			if (!(*outHasValue)) {
 				processNull();
 			}
 		}
 		else if (isLoading()) {
-			moveState(NodeHeadState::PrimitiveValue);
+			moveState(NodeHeadState::WrapperNode);
+            preReadValue();
 			*outHasValue = m_store->getReadingValueType() != ArchiveNodeType::Null;
 		}
 	}
@@ -224,7 +236,7 @@ private:
 		Object,			// Object confirmed
 		Array,			// Array confirmed
 		PrimitiveValue,			// Value confirmed (int, bool, null, string など、{} や [] ではないもの)
-		//WrapperValue,	// Ref<>, Optional<> ...
+		WrapperNode,	// Ref<>, Optional<> ...
 		//ContainerOpend,	// Object または Array を開始した (Value の場合はこの状態にはならない)
 	};
 
@@ -324,6 +336,11 @@ private:
 
 		case NodeHeadState::PrimitiveValue:
 			return true;
+
+        case NodeHeadState::WrapperNode:
+            // makeSmartPtrTag() などの直後の process().
+            // コンテナ書き込みを開始したりはせず、子値を親オブジェクトの一部として書き込む。
+            return true;
 
 		default:
 			LN_UNREACHABLE();
@@ -437,25 +454,31 @@ private:
 		}
 
 		// serialize が空実装ではないが、makeArrayTag など Tag 設定だけして子値の process を行わなかった場合はコンテナ開始タグが書き込まれていないため、ここで書き込む。
-		if (!m_nodeInfoStack.top().containerOpend) {
-			preWriteValue();
-		}
+        if (m_nodeInfoStack.top().headState == NodeHeadState::Object ||
+            m_nodeInfoStack.top().headState == NodeHeadState::Array) {
+            if (!m_nodeInfoStack.top().containerOpend) {
+                preWriteValue();
+            }
+        }
 
-		bool taggedValueObject = (m_nodeInfoStack.top().headState == NodeHeadState::PrimitiveValue);
+		//bool taggedValueObject = (m_nodeInfoStack.top().headState == NodeHeadState::PrimitiveValue);
+        bool containerOpend = m_nodeInfoStack.top().containerOpend;
+        NodeHeadState nodeType = m_nodeInfoStack.top().headState;
 
 		m_nodeInfoStack.pop();
 
 		// Close containers
+        if (containerOpend)
 		{
-			if (taggedValueObject) {
-				// since it was written as a value(e.g:String), it's not needs close container.
-			}
-			else if (m_store->getContainerType() == ArchiveContainerType::Object) {
+			if (nodeType == NodeHeadState::Object) {
 				m_store->writeObjectEnd();
 			}
-			else if (m_store->getContainerType() == ArchiveContainerType::Array) {
+			else if (nodeType == NodeHeadState::Array) {
 				m_store->writeArrayEnd();
 			}
+            else {
+                LN_UNREACHABLE();
+            }
 		}
 
 		if (!m_nodeInfoStack.empty()) {
@@ -504,8 +527,8 @@ private:
 	template<typename TValue>
 	void processLoad(BaseClass<TValue>& base)
 	{
-		preReadValue();
 		moveState(NodeHeadState::Object);
+		preReadValue();
 		m_nodeInfoStack.top().nextBaseCall = true;
 		m_store->setNextName(ClassBaseKey);
 		readValue(*base.basePtr);
@@ -530,31 +553,44 @@ private:
 
 		// この時点で stack.top は今回読もうとしているオブジェクトの1つ上のコンテナを指している
 
-		if (m_nodeInfoStack.top().headState == NodeHeadState::Object ||
-			m_nodeInfoStack.top().headState == NodeHeadState::Array) {
-			if (!m_nodeInfoStack.top().containerOpend) {
+        switch (m_nodeInfoStack.top().headState)
+        {
+        case NodeHeadState::Ready:
+            break;
+        case NodeHeadState::Object:
+            if (!m_nodeInfoStack.top().containerOpend) {
+                // setTagXXXX に備えて、コンテナか値かはまだ確定していないことがある。
+                // 確定していないにも関わらず読み取ろうとした場合はコンテナ確定。
+                m_store->readContainer();
 
-				// setTagXXXX に備えて、コンテナか値かはまだ確定していないことがある。
-				// 確定していないにも関わらず読み取ろうとした場合はコンテナ確定。
-				m_store->readContainer();
+                // verify
+                if (LN_ENSURE(m_store->getContainerType() == ArchiveContainerType::Object)) return false;
 
-				// verify
-				if (m_store->getContainerType() == ArchiveContainerType::Object) {
-					if (LN_ENSURE(m_store->getContainerType() == ArchiveContainerType::Object)) return false;
-				}
-				else if (m_store->getContainerType() == ArchiveContainerType::Array) {
-					if (LN_ENSURE(m_store->getContainerType() == ArchiveContainerType::Array)) return false;
-				}
-				else {
-					LN_UNREACHABLE();
-					return false;
-				}
+                m_nodeInfoStack.top().containerOpend = true;
+                readTypeInfo();
+            }
+            break;
+        case NodeHeadState::Array:
+            if (!m_nodeInfoStack.top().containerOpend) {
+                // setTagXXXX に備えて、コンテナか値かはまだ確定していないことがある。
+                // 確定していないにも関わらず読み取ろうとした場合はコンテナ確定。
+                m_store->readContainer();
+
+                // verify
+                if (LN_ENSURE(m_store->getContainerType() == ArchiveContainerType::Array)) return false;
 
 				m_nodeInfoStack.top().containerOpend = true;
-				readTypeInfo();
-			}
-		}
-
+            }
+            break;
+        case NodeHeadState::PrimitiveValue:
+            break;
+        case NodeHeadState::WrapperNode:
+            // Ref<> や Optional<> は、次の子値の最初の process でコンテナノードを読み取る
+            break;
+        default:
+            LN_UNREACHABLE();
+            return false;
+        }
 
 		return true;
 	}
@@ -658,9 +694,9 @@ private:
 		}
 
 
-		bool taggedValueObject = (m_nodeInfoStack.top().headState == NodeHeadState::PrimitiveValue);
+		//bool taggedValueObject = (m_nodeInfoStack.top().headState == NodeHeadState::PrimitiveValue);
 
-		if (!taggedValueObject) {
+		if (m_nodeInfoStack.top().containerOpend) {
 			m_store->readContainerEnd();
 		}
 		m_nodeInfoStack.pop();
