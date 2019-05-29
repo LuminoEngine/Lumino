@@ -301,9 +301,114 @@ TEST_F(Test_Serialization2, PrimitiveValues)
 }
 
 //------------------------------------------------------------------------------
+//## List<> types test
+TEST_F(Test_Serialization2, ListTypes)
+{
+	//* [ ] List<> in, int, string, object
+	{
+		struct MyData0 : public RefObject
+		{
+			int a;
+
+			MyData0() : a(0) {}
+			MyData0(int v) : a(v) {}
+
+			void serialize(Archive& ar)
+			{
+				ar & LN_NVP(a);
+			}
+		};
+		struct MyData1
+		{
+			int a;
+
+			void serialize(Archive& ar)
+			{
+				ar & LN_NVP(a);
+			}
+		};
+		struct MyData2
+		{
+			List<int> list1;
+			List<String> list2;
+			List<MyData1> list3;
+			List<Ref<MyData0>> list4;
+
+			void serialize(Archive& ar)
+			{
+				ar & LN_NVP(list1);
+				ar & LN_NVP(list2);
+				ar & LN_NVP(list3);
+				ar & LN_NVP(list4);
+			}
+		};
+
+		MyData2 data1;
+		data1.list1 = { 1, 2, 3 };
+		data1.list2 = { _T("a"), _T("b"), _T("c") };
+		data1.list3 = { MyData1{1}, MyData1{2}, MyData1{3} };
+		data1.list4 = { makeRef<MyData0>(4), makeRef<MyData0>(5), makeRef<MyData0>(6) };
+		String json = JsonSerializer::serialize(data1);
+
+		MyData2 data2;
+		JsonSerializer::deserialize(json, data2);
+		ASSERT_EQ(3, data2.list1.size());
+		ASSERT_EQ(3, data2.list2.size());
+		ASSERT_EQ(3, data2.list3.size());
+		ASSERT_EQ(1, data2.list1[0]);
+		ASSERT_EQ(2, data2.list1[1]);
+		ASSERT_EQ(3, data2.list1[2]);
+		ASSERT_EQ(_T("a"), data2.list2[0]);
+		ASSERT_EQ(_T("b"), data2.list2[1]);
+		ASSERT_EQ(_T("c"), data2.list2[2]);
+		ASSERT_EQ(1, data2.list3[0].a);
+		ASSERT_EQ(2, data2.list3[1].a);
+		ASSERT_EQ(3, data2.list3[2].a);
+		ASSERT_EQ(4, data2.list4[0]->a);
+		ASSERT_EQ(5, data2.list4[1]->a);
+		ASSERT_EQ(6, data2.list4[2]->a);
+	}
+}
+
+//------------------------------------------------------------------------------
 //## Optional 型のテスト
 TEST_F(Test_Serialization2, Optional)
 {
+	struct MyData
+	{
+		Optional<int> value1;
+
+		void serialize(Archive& ar)
+		{
+			ar & LN_NVP(value1);
+		}
+	};
+
+	//* [ ] has value
+	{
+		MyData data1;
+		data1.value1 = 10;
+		String json = JsonSerializer::serialize(data1, JsonFormatting::None);
+		ASSERT_EQ(u"{\"value1\":10}", json);
+
+		MyData data2;
+		JsonSerializer::deserialize(json, data2);
+		ASSERT_EQ(10, data2.value1.value());
+	}
+
+	//* [ ] not has
+	{
+		MyData data1;
+		data1.value1 = nullptr;
+		String json = JsonSerializer::serialize(data1, JsonFormatting::None);
+		ASSERT_EQ(u"{\"value1\":null}", json);
+
+		MyData data2;
+		JsonSerializer::deserialize(json, data2);
+		ASSERT_EQ(false, data2.value1.hasValue());
+	}
+
+
     struct Test
     {
         ln::Optional<ln::List<ln::String>> includePaths;
@@ -377,75 +482,6 @@ TEST_F(Test_Serialization2, Optional)
     }
 }
 
-//------------------------------------------------------------------------------
-//## List<> types test
-TEST_F(Test_Serialization2, ListTypes)
-{
-    //* [ ] List<> in, int, string, object
-    {
-        struct MyData0 : public RefObject
-        {
-            int a;
-
-            MyData0() : a(0) {}
-            MyData0(int v) : a(v) {}
-
-            void serialize(Archive& ar)
-            {
-                ar & LN_NVP(a);
-            }
-        };
-        struct MyData1
-        {
-            int a;
-
-            void serialize(Archive& ar)
-            {
-                ar & LN_NVP(a);
-            }
-        };
-        struct MyData2
-        {
-            List<int> list1;
-            List<String> list2;
-            List<MyData1> list3;
-            List<Ref<MyData0>> list4;
-
-            void serialize(Archive& ar)
-            {
-                ar & LN_NVP(list1);
-                ar & LN_NVP(list2);
-                ar & LN_NVP(list3);
-                ar & LN_NVP(list4);
-            }
-        };
-
-        MyData2 data1;
-        data1.list1 = { 1, 2, 3 };
-        data1.list2 = { _T("a"), _T("b"), _T("c") };
-        data1.list3 = { MyData1{1}, MyData1{2}, MyData1{3} };
-        data1.list4 = { makeRef<MyData0>(4), makeRef<MyData0>(5), makeRef<MyData0>(6) };
-        String json = JsonSerializer::serialize(data1);
-
-        MyData2 data2;
-        JsonSerializer::deserialize(json, data2);
-        ASSERT_EQ(3, data2.list1.size());
-        ASSERT_EQ(3, data2.list2.size());
-        ASSERT_EQ(3, data2.list3.size());
-        ASSERT_EQ(1, data2.list1[0]);
-        ASSERT_EQ(2, data2.list1[1]);
-        ASSERT_EQ(3, data2.list1[2]);
-        ASSERT_EQ(_T("a"), data2.list2[0]);
-        ASSERT_EQ(_T("b"), data2.list2[1]);
-        ASSERT_EQ(_T("c"), data2.list2[2]);
-        ASSERT_EQ(1, data2.list3[0].a);
-        ASSERT_EQ(2, data2.list3[1].a);
-        ASSERT_EQ(3, data2.list3[2].a);
-        ASSERT_EQ(4, data2.list4[0]->a);
-        ASSERT_EQ(5, data2.list4[1]->a);
-        ASSERT_EQ(6, data2.list4[2]->a);
-    }
-}
 
 
 //------------------------------------------------------------------------------
