@@ -161,7 +161,6 @@ public:
 	{
         if (isSaving()) {
             if ((*outIsNull)) {
-				moveState(NodeHeadState::PrimitiveValue);
                 processNull();
             }
 			else {
@@ -183,7 +182,6 @@ public:
 	{
 		if (isSaving()) {
 			if (!(*outHasValue)) {
-				moveState(NodeHeadState::PrimitiveValue);
 				processNull();
 			}
 			else {
@@ -214,11 +212,26 @@ public:
 
 	}
 
+	// 事前に makeSmartPtrTag 必須
 	void makeTypeInfo(String* value)
 	{
-		moveState(NodeHeadState::Object);	// TypeInfo を読みたいなら Object confirmed.
+		if (isSaving()) {
+			// この時点では Ref<> の serialize、つまり WrapperObject の serialize 中。
+			// ここではまだ m_store に書き出すことはできない (コンテナの書き出しがまだ) ので、メタデータを Node に覚えておく。
+			m_nodeInfoStack.back().typeInfo = *value;
+		}
+		else {
+			//moveState(NodeHeadState::Object);
+			if (LN_REQUIRE(m_nodeInfoStack.back().headState == NodeHeadState::WrapperObject)) return;	// 事前に makeSmartPtrTag 必須
+			preReadValue();
+			*value = readTypeInfo();
+			//process(NameValuePair<String>(u"_type", value));
+		}
 
-		process(NameValuePair<String>(u"_type", value));
+		//moveState(NodeHeadState::Object);	// TypeInfo を読みたいなら Object confirmed.
+
+
+		
 		//if (isSaving()) {
 		//}
 		//else {
@@ -252,6 +265,7 @@ private:
 		Array,			// Array confirmed
 		PrimitiveValue,			// Value confirmed (int, bool, null, string など、{} や [] ではないもの)
 		WrapperObject,	// Ref<>, Optional<> など。実際にコンテナを open するかは innter type による。なので、PrimitiveValue　へ遷移可能。
+						// save 時はダミーノードとして振る舞う。（出力される JSON は Ref<Class1> でひとつのノードだが、内部的には2つの Node で管理する。そうしないと Node 自体が「深さ」を管理する必要があり複雑になる）
 		//InnerObject,	// Ref<>, Optional<> などの
 		//ContainerOpend,	// Object または Array を開始した (Value の場合はこの状態にはならない)
 	};
@@ -301,9 +315,9 @@ private:
 	template<typename TValue>
 	bool processSave(TValue& value)
 	{
-		if (detail::ArchiveValueTraits<TValue>::isPrimitiveType()) {
-			moveState(NodeHeadState::PrimitiveValue);
-		}
+		//if (detail::ArchiveValueTraits<TValue>::isPrimitiveType()) {
+		//	moveState(NodeHeadState::PrimitiveValue);
+		//}
 		//moveState((detail::ArchiveValueTraits<TValue>::isPrimitiveType()) ? NodeHeadState::PrimitiveValue : NodeHeadState::Object);
 		preWriteValue();
 		writeValue(value);
@@ -313,6 +327,7 @@ private:
     // Ref<> or Optional<> 専用。state は遷移済み。
 	void processNull()
 	{
+		moveState(NodeHeadState::PrimitiveValue);
 		preWriteValue();
 		writeValueNull();
 	}
@@ -341,15 +356,15 @@ private:
 
 		case NodeHeadState::Object:
 			if (!m_nodeInfoStack.back().containerOpend) {
-				if (m_nodeInfoStack.size() >= 2 && m_nodeInfoStack[m_nodeInfoStack.size() - 2].headState == NodeHeadState::WrapperObject) {
-					// 親が WrapperObject ならコンテナを共有するので何もしない
-				}
-				else {
+				//if (m_nodeInfoStack.size() >= 2 && m_nodeInfoStack[m_nodeInfoStack.size() - 2].headState == NodeHeadState::WrapperObject) {
+				//	// 親が WrapperObject ならコンテナを共有するので何もしない
+				//}
+				//else {
 					m_store->writeObject();
 					m_nodeInfoStack.back().containerOpend = true;
 					writeClassVersion();
 					writeTypeInfo();
-				}
+				//}
 			}
 			return true;
 
@@ -364,12 +379,16 @@ private:
 			return true;
 
 		case NodeHeadState::WrapperObject:
-			if (!m_nodeInfoStack.back().containerOpend) {
-				m_store->writeObject();
-				m_nodeInfoStack.back().containerOpend = true;
-				writeClassVersion();
-				writeTypeInfo();
-			}
+			// ここではまだコンテナを開けることはできない。
+			// Optional<List<>> の時、コンテナが List であるかは List の serialize に入らなければわからない。
+			// read ではこの時点で open しないと TypeInfo などのメタ情報が読み取れないので、write と read でちょっとタイミングが違う点に注意。
+
+			//if (!m_nodeInfoStack.back().containerOpend) {
+			//	m_store->writeObject();
+			//	m_nodeInfoStack.back().containerOpend = true;
+			//	writeClassVersion();
+			//	writeTypeInfo();
+			//}
             return true;
 
 		default:
@@ -551,10 +570,11 @@ private:
 
 	void writeTypeInfo()
 	{
-		if (!m_nodeInfoStack.back().typeInfo.isEmpty())
+		NodeInfo* parentNode = (m_nodeInfoStack.size() >= 2) ? &m_nodeInfoStack[m_nodeInfoStack.size() - 2] : nullptr;
+		if (parentNode && !parentNode->typeInfo.isEmpty())
 		{
 			m_store->setNextName(u"_type");
-			writeValue(m_nodeInfoStack.back().typeInfo);
+			writeValue(parentNode->typeInfo);
 		}
 	}
 
@@ -592,9 +612,9 @@ private:
 	template<typename TValue>
 	void processLoad(TValue& value)
 	{
-		if (detail::ArchiveValueTraits<TValue>::isPrimitiveType()) {
-			moveState(NodeHeadState::PrimitiveValue);
-		}
+		//if (detail::ArchiveValueTraits<TValue>::isPrimitiveType()) {
+		//	moveState(NodeHeadState::PrimitiveValue);
+		//}
 		preReadValue();
 		readValue(value);
 		postReadValue();
@@ -634,24 +654,32 @@ private:
             break;
         case NodeHeadState::Array:
             if (!m_nodeInfoStack.back().containerOpend) {
-                // setTagXXXX に備えて、コンテナか値かはまだ確定していないことがある。
-                // 確定していないにも関わらず読み取ろうとした場合はコンテナ確定。
-                m_store->readContainer();
+				if (m_nodeInfoStack.size() >= 2 && m_nodeInfoStack[m_nodeInfoStack.size() - 2].headState == NodeHeadState::WrapperObject) {
+					// 親が WrapperObject ならコンテナを共有するので何もしない
+				}
+				else {
+					// setTagXXXX に備えて、コンテナか値かはまだ確定していないことがある。
+					// 確定していないにも関わらず読み取ろうとした場合はコンテナ確定。
+					m_store->readContainer();
 
-                // verify
-                if (LN_ENSURE(m_store->getContainerType() == ArchiveContainerType::Array)) return false;
+					// verify
+					if (LN_ENSURE(m_store->getContainerType() == ArchiveContainerType::Array)) return false;
 
-				m_nodeInfoStack.back().containerOpend = true;
+					m_nodeInfoStack.back().containerOpend = true;
+				}
             }
             break;
         case NodeHeadState::PrimitiveValue:
             break;
 		case NodeHeadState::WrapperObject:
-			if (!m_nodeInfoStack.back().containerOpend) {
-				m_store->readContainer();
-				if (LN_ENSURE(m_store->getContainerType() == ArchiveContainerType::Object)) return false;
-				m_nodeInfoStack.back().containerOpend = true;
-				readTypeInfo();
+			if (m_store->getReadingValueType() == ArchiveNodeType::Array || m_store->getReadingValueType() == ArchiveNodeType::Object) {
+
+				if (!m_nodeInfoStack.back().containerOpend) {
+					m_store->readContainer();
+					if (LN_ENSURE(m_store->getContainerType() == ArchiveContainerType::Object || m_store->getContainerType() == ArchiveContainerType::Array)) return false;
+					m_nodeInfoStack.back().containerOpend = true;
+					readTypeInfo();
+				}
 			}
             break;
         default:
@@ -756,8 +784,11 @@ private:
 		}
 
 		// serialize が空実装ではないが、makeArrayTag など Tag 設定だけして子値の process を行わなかった場合はコンテナ開始タグが読み込まれていないため、ここで読み込む。
-		if (!m_nodeInfoStack.back().containerOpend) {
-			preReadValue();
+		if (m_nodeInfoStack.back().headState == NodeHeadState::Object ||
+			m_nodeInfoStack.back().headState == NodeHeadState::Array) {
+			if (!m_nodeInfoStack.back().containerOpend) {
+				preReadValue();
+			}
 		}
 
 
@@ -782,13 +813,14 @@ private:
 		}
 	}
 
-	void readTypeInfo()
+	const String& readTypeInfo()
 	{
 		m_store->setNextName(u"_type");
 		ln::String type;
 		if (m_store->readValue(&type)) {
 			m_nodeInfoStack.back().typeInfo = type;
 		}
+		return m_nodeInfoStack.back().typeInfo;
 	}
 
 	void onError(const char* message = nullptr)

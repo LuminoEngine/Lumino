@@ -38,6 +38,13 @@ namespace ln {
 
 	- makeStringTag
 		- Write : 
+
+	
+	Load の基本方針
+	- Save が遅延評価で Store に Node を書き込むのに対して、Load は子の serialize を呼ぶ前に、Store から ContainerNode を読み込む。
+		- Save の serialize 開始時は Container は Open していない。
+		- Load の serialize 開始時は Container は Open している。
+		- これは、TypeInfo などのメタデータを Ref<> の serialize で読み取るために必須。
 */
 
 //==============================================================================

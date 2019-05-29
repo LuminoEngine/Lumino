@@ -490,7 +490,6 @@ TEST_F(Test_Serialization2, Examples)
 {
 	//* [ ] Example 1
 	{
-		
 		struct MyData
 		{
 			String name;
@@ -934,3 +933,4 @@ TEST_F(Test_Serialization2, ManyData)
 	String json = JsonSerializer::serialize(t1, JsonFormatting::None);
 	ASSERT_EQ(true, json.contains(u"\"x\":99"));	// 最後の値が出ていればOKとする
 }
+

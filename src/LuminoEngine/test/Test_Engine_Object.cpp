@@ -118,6 +118,55 @@ TEST_F(Test_Engine_Object, TypeInfo)
 }
 
 //------------------------------------------------------------------------------
+
+class CreateFromTypeInfo_ClassA
+	: public Object
+{
+	LN_OBJECT;
+public:
+	int value1;
+	
+	virtual void serialize(Archive& ar) override
+	{
+		ar & LN_NVP(value1);
+	}
+};
+
+LN_OBJECT_IMPLEMENT(CreateFromTypeInfo_ClassA, Object);
+
+TEST_F(Test_Engine_Object, CreateFromTypeInfo)
+{
+	struct Test1
+	{
+		Ref<Object> obj;
+
+		void serialize(Archive& ar)
+		{
+			ar & LN_NVP(obj);
+		}
+	};
+
+	auto obj1 = makeObject<CreateFromTypeInfo_ClassA>();
+	obj1->value1 = 100;
+
+	Test1 t1;
+	t1.obj = obj1;
+	String json = JsonSerializer::serialize(t1, JsonFormatting::None);
+
+	EngineContext::current()->registerType<CreateFromTypeInfo_ClassA>({});
+
+
+	Test1 t2;
+	JsonSerializer::deserialize(json, t2);
+
+	auto obj2 = dynamic_pointer_cast<CreateFromTypeInfo_ClassA>(t2.obj);
+	ASSERT_EQ(true, obj1 != obj2);					// インスタンスは別物
+	ASSERT_EQ(true, obj1->value1 == obj2->value1);	// 値は同じ
+	ASSERT_EQ(100, obj2->value1);
+
+}
+
+//------------------------------------------------------------------------------
 TEST_F(Test_Engine_Object, Property)
 {
     auto objA = makeObject<TestObjectA>();

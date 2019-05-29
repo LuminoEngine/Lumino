@@ -433,9 +433,11 @@ public:
 	{
 		TypeInfo* typeInfo = TypeInfo::getTypeInfo<TClassType>();
 
-		if (m_typeInfoSet.find(typeInfo) == m_typeInfoSet.end())
+		if (m_typeInfoSet.find(typeInfo->name()) == m_typeInfoSet.end())
 		{
-			m_typeInfoSet.insert(typeInfo);
+			typeInfo->m_factory = []() { return makeObject<TClassType>(); };
+
+			m_typeInfoSet.insert({ typeInfo->name(), typeInfo });
 
 			for (auto& p : propInfos) {
 				typeInfo->registerProperty(p);
@@ -444,8 +446,20 @@ public:
 		}
 	}
 
+	TypeInfo* findTypeInfo(const StringRef& name) const
+	{
+		auto itr = m_typeInfoSet.find(name);
+		if (itr != m_typeInfoSet.end()) {
+			return itr->second;
+		}
+		else {
+			return nullptr;
+		}
+	}
+
 private:
-	std::unordered_set<TypeInfo*> m_typeInfoSet;
+	//std::unordered_set<TypeInfo*> m_typeInfoSet;
+	std::unordered_map<String, TypeInfo*> m_typeInfoSet;
 	//List<TypeInfo*> m_typeInfos;
 };
 

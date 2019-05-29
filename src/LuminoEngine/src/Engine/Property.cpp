@@ -15,6 +15,21 @@ void TypeInfo::registerProperty(PropertyInfo* prop)
     prop->m_registerd = true;
 }
 
+Ref<Object> TypeInfo::createInstance() const
+{
+	return m_factory();
+}
+
+Ref<Object> TypeInfo::createInstance(const String& typeName)
+{
+	if (TypeInfo* info = EngineContext::current()->findTypeInfo(typeName)) {
+		return info->createInstance();
+	}
+	else {
+		return nullptr;
+	}
+}
+
 void TypeInfo::initializeObjectProperties(Object* obj)
 {
     // TODO: ベースクラス

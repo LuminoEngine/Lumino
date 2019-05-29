@@ -62,6 +62,8 @@ protected:
 	virtual void finalize() override;
 	virtual void onDispose(bool explicitDisposing);
 
+	LN_SERIALIZE_CLASS_VERSION(1);
+	virtual void serialize(Archive& ar) {}
 
 public:
 	/**
@@ -252,6 +254,10 @@ public:
     void registerProperty(PropertyInfo* prop);
     const List<Ref<PropertyInfo>>& properties() const { return m_properties; }
 
+	Ref<Object> createInstance() const;
+	static Ref<Object> createInstance(const String& typeName);	// TODO: EngineContext へ
+
+
     /** 型引数に指定したクラス型の型情報を取得します。 */
     template<class T>
     static TypeInfo* getTypeInfo()
@@ -265,6 +271,9 @@ public:
     }
 
     static void initializeObjectProperties(Object* obj);
+
+	// TODO: internal
+	std::function<Ref<Object>()> m_factory;
 
 private:
     String m_name;
@@ -299,28 +308,60 @@ template<
 	typename std::enable_if<detail::is_lumino_engine_object<TValue>::value, std::nullptr_t>::type = nullptr>
 	void serialize(Archive& ar, Ref<TValue>& value)
 {
-	ar.makeSmartPtrTag();
+	bool isNull = (value == nullptr);
+	ar.makeSmartPtrTag(&isNull);
 
-	ln::String type = u"TypeTest";
-	ar.makeTypeInfo(&type);
-
-	if (ar.isLoading())
-	{
-		if (!value)
-		{
-			value = makeObject<TValue>();
-		}
-		ar.process(*value.get());
-		//value->serialize(ar);
+	ln::String typeName;
+	if (ar.isSaving()) {
+		typeName = TypeInfo::getTypeInfo(value)->name();
 	}
-	else
-	{
-		if (value)
-		{
-			//value->serialize(ar);
+	ar.makeTypeInfo(&typeName);
+
+	if (ar.isSaving()) {
+		if (!isNull) {
 			ar.process(*value.get());
 		}
 	}
+	else {
+		if (!isNull) {
+			if (!typeName.isEmpty()) {
+				auto obj = TypeInfo::createInstance(typeName);
+				value = dynamic_pointer_cast<TValue>(obj);
+			}
+
+			//if (!value) {
+			//	value = makeObject<TValue>();
+			//}
+
+			ar.process(*value.get());
+		}
+		else {
+			value = nullptr;
+		}
+	}
+
+	//ar.makeSmartPtrTag();
+
+	//ln::String type = u"TypeTest";
+	//ar.makeTypeInfo(&type);
+
+	//if (ar.isLoading())
+	//{
+	//	if (!value)
+	//	{
+	//		value = makeObject<TValue>();
+	//	}
+	//	ar.process(*value.get());
+	//	//value->serialize(ar);
+	//}
+	//else
+	//{
+	//	if (value)
+	//	{
+	//		//value->serialize(ar);
+	//		ar.process(*value.get());
+	//	}
+	//}
 }
 
 } // namespace ln
