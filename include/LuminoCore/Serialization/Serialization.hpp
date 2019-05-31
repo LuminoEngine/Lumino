@@ -202,7 +202,6 @@ public:
 	// type: in,out
 	void makeVariantTag(ArchiveNodeType* type)
 	{
-		moveState(NodeHeadState::PrimitiveValue);
 
 		if (isSaving()) {
 		}
@@ -210,6 +209,12 @@ public:
 			*type = m_store->getReadingValueType();
 		}
 
+		if (*type == ArchiveNodeType::Object || *type == ArchiveNodeType::Array) {
+			moveState(NodeHeadState::WrapperObject);
+		}
+		else {
+			moveState(NodeHeadState::PrimitiveValue);
+		}
 	}
 
 	// 事前に makeSmartPtrTag 必須
@@ -648,7 +653,6 @@ private:
 					if (LN_ENSURE(m_store->getContainerType() == ArchiveContainerType::Object)) return false;
 
 					m_nodeInfoStack.back().containerOpend = true;
-					readTypeInfo();
 				}
             }
             break;
@@ -678,7 +682,6 @@ private:
 					m_store->readContainer();
 					if (LN_ENSURE(m_store->getContainerType() == ArchiveContainerType::Object || m_store->getContainerType() == ArchiveContainerType::Array)) return false;
 					m_nodeInfoStack.back().containerOpend = true;
-					readTypeInfo();
 				}
 			}
             break;
