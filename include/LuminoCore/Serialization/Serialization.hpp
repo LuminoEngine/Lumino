@@ -155,9 +155,21 @@ public:
 	*/
 	void makeStringTag(String* str)
 	{
-		moveState(NodeHeadState::PrimitiveValue);
-		process(*str);
-	}
+        if (isSaving()) {
+            moveState(NodeHeadState::PrimitiveValue);
+            process(*str);
+        }
+        else {
+
+            //  process は、いま open しているコンテナに対して行いたい。
+            // ここで閉じて、次に使えるようにする。current は閉じたコンテナになる。
+            m_store->closeContainer();
+            m_nodeInfoStack.back().containerOpend = false;
+
+            moveState(NodeHeadState::PrimitiveValue);
+            process(*str);
+        }
+    }
 
     // 呼出し後、 save, load 共に、null の場合は process してはならない
 	void makeSmartPtrTag(bool* outIsNull)
@@ -171,13 +183,14 @@ public:
 			}
         }
         else if (isLoading()) {
-            *outIsNull = m_store->getReadingValueType() == ArchiveNodeType::Null;
-			if ((*outIsNull)) {
-				moveState(NodeHeadState::PrimitiveValue);
-			}
-			else {
-				moveState(NodeHeadState::WrapperObject);
-			}
+            *outIsNull = m_store->getOpendContainerType() == ArchiveContainerType::Null;
+            moveState(NodeHeadState::WrapperObject);
+			//if ((*outIsNull)) {
+			//	moveState(NodeHeadState::PrimitiveValue);
+			//}
+			//else {
+			//	moveState(NodeHeadState::WrapperObject);
+			//}
         }
 	}
 
@@ -192,13 +205,22 @@ public:
 			}
 		}
 		else if (isLoading()) {
-			*outHasValue = m_store->getReadingValueType() != ArchiveNodeType::Null;
-			if (!(*outHasValue)) {
-				moveState(NodeHeadState::PrimitiveValue);
-			}
-			else {
-				moveState(NodeHeadState::WrapperObject);
-			}
+            *outHasValue = m_store->getOpendContainerType() != ArchiveContainerType::Null;
+
+            // makeOptionalTag を抜けた後の process は、いま open しているコンテナに対して行いたい。
+            // ここで閉じて、次に使えるようにする。current は閉じたコンテナになる。
+            m_store->closeContainer();
+            m_nodeInfoStack.back().containerOpend = false;
+
+            moveState(NodeHeadState::Object);
+
+			//*outHasValue = m_store->getReadingValueType() != ArchiveNodeType::Null;
+			//if (!(*outHasValue)) {
+			//	moveState(NodeHeadState::PrimitiveValue);
+			//}
+			//else {
+			//	moveState(NodeHeadState::WrapperObject);
+			//}
 		}
 	}
 
@@ -298,7 +320,7 @@ private:
 		//bool innterType = false;
 
         // load 時に使う。
-        ArchiveNodeType readingType = ArchiveNodeType::Null;
+        ArchiveContainerType readingContainerType = ArchiveContainerType::Null;
 	};
 
 	//-----------------------------------------------------------------------------
@@ -640,7 +662,8 @@ private:
 
 	bool preReadValue()
 	{
-        if (m_store->getOpendContainerType() == ArchiveContainerType::Array)
+        if (m_store->getOpendContainerType() == ArchiveContainerType::Array &&
+            m_nodeInfoStack.back().headState == NodeHeadState::Array)
         {
             m_store->moveToIndexedMember(m_nodeInfoStack.back().arrayIndex);
         }
@@ -735,16 +758,23 @@ private:
 
 	bool preReadContainer()
 	{
+        NodeHeadState parentState = NodeHeadState::Ready;
+        if (!m_nodeInfoStack.empty()) {
+            parentState = m_nodeInfoStack.back().headState;
+        }
 
-        ArchiveNodeType type = m_store->getReadingValueType();
+        ArchiveContainerType type = m_store->getOpendContainerType();
 
         NodeInfo node;
-        node.readingType = type;
+        node.readingContainerType = type;
         m_nodeInfoStack.push_back(node);
 
 
         //if (type == ArchiveNodeType::Array || type == ArchiveNodeType::Object) {
-
+        if (parentState == NodeHeadState::WrapperObject) {
+            // ひとつ前の process 直前で open された状態を維持する。
+        }
+        else {
             if (!m_nodeInfoStack.back().containerOpend) {
                 if (!m_store->openContainer()) {
                     return false;
@@ -752,7 +782,7 @@ private:
                 //if (LN_ENSURE(m_store->getContainerType() == ArchiveContainerType::Object || m_store->getContainerType() == ArchiveContainerType::Array)) return false;
                 m_nodeInfoStack.back().containerOpend = true;
             }
-        //}
+        }
 
 
 

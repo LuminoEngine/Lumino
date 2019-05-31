@@ -141,19 +141,6 @@ TEST_F(Test_Serialization2, RefObject)
 		}
 	};
 
-    //* [ ] has value
-    {
-        MyData data1;
-        data1.ref = makeRef<Class1>();
-        data1.ref->value = 100;
-        String json = JsonSerializer::serialize(data1, JsonFormatting::None);
-        ASSERT_EQ(json, u"{\"ref\":{\"value\":100}}");
-
-        MyData data2;
-        JsonSerializer::deserialize(json, data2);
-        ASSERT_EQ(100, data2.ref->value);
-    }
-
     //* [ ] null
     {
         MyData data1;
@@ -165,6 +152,19 @@ TEST_F(Test_Serialization2, RefObject)
         data2.ref = makeRef<Class1>();
         JsonSerializer::deserialize(json, data2);
         ASSERT_EQ(nullptr, data2.ref);
+    }
+
+    //* [ ] has value
+    {
+        MyData data1;
+        data1.ref = makeRef<Class1>();
+        data1.ref->value = 100;
+        String json = JsonSerializer::serialize(data1, JsonFormatting::None);
+        ASSERT_EQ(json, u"{\"ref\":{\"value\":100}}");
+
+        MyData data2;
+        JsonSerializer::deserialize(json, data2);
+        ASSERT_EQ(100, data2.ref->value);
     }
 
     //* [ ] Ref<> nest and after other value
@@ -193,6 +193,7 @@ TEST_F(Test_Serialization2, RefObject)
         JsonSerializer::deserialize(json, data2);
         ASSERT_EQ(1, data2.value);
         ASSERT_EQ(2, data2.child->value);
+        ASSERT_EQ(nullptr, data2.child->child);
     }
 }
 
@@ -408,6 +409,28 @@ TEST_F(Test_Serialization2, Optional)
 		ASSERT_EQ(false, data2.value1.hasValue());
 	}
 
+    //* [ ] innter struct
+    {
+        struct DataB
+        {
+            int value1;
+            void serialize(Archive& ar) { ar & LN_NVP(value1); }
+        };
+        struct DataA
+        {
+            Optional<DataB> value2;
+            void serialize(Archive& ar) { ar & LN_NVP(value2); }
+        };
+
+        DataA data1;
+        data1.value2 = DataB{100};
+        String json = JsonSerializer::serialize(data1, JsonFormatting::None);
+        ASSERT_EQ(u"{\"value2\":{\"value1\":100}}", json);
+
+        DataA data2;
+        JsonSerializer::deserialize(json, data2);
+        ASSERT_EQ(100, data2.value2.value().value1);
+    }
 
     struct Test
     {
@@ -517,7 +540,7 @@ TEST_F(Test_Serialization2, Examples)
 	{
 		struct Documents
 		{
-			String caption;
+            Path caption;
 			List<Path> fileList;
 
 			void serialize(Archive& ar)
@@ -528,21 +551,21 @@ TEST_F(Test_Serialization2, Examples)
 		};
 
 		Documents docs1;
-		docs1.caption = "note";
-		docs1.fileList.add("file1.md");
-		docs1.fileList.add("file2.md");
+		docs1.caption = u"note";
+		docs1.fileList.add(u"file1.md");
+		docs1.fileList.add(u"file2.md");
 
 		String json = JsonSerializer::serialize(docs1, JsonFormatting::None);
-		ASSERT_EQ(_T("{\"caption\":\"note\",\"fileList\":[\"file1.md\",\"file2.md\"]}"), json);
+		ASSERT_EQ(u"{\"caption\":\"note\",\"fileList\":[\"file1.md\",\"file2.md\"]}", json);
 
 
 		//------ check
 		Documents data2;
 		JsonSerializer::deserialize(json, data2);
-		ASSERT_EQ(_T("note"), data2.caption);
+		ASSERT_EQ(u"note", data2.caption.str());
 		ASSERT_EQ(2, data2.fileList.size());
-		ASSERT_EQ(_T("file1.md"), data2.fileList[0].str());
-		ASSERT_EQ(_T("file2.md"), data2.fileList[1].str());
+		ASSERT_EQ(u"file1.md", data2.fileList[0].str());
+		ASSERT_EQ(u"file2.md", data2.fileList[1].str());
 	}
 }
 
@@ -853,7 +876,7 @@ TEST_F(Test_Serialization2, BaseClass)
 //## デフォルト値を指定して Load する
 // ユーザーオブジェクトのデフォルト値は対応しない。というか、RefObject のサブクラスでそれやろうとすると
 // コピー禁止 (コピーコンストラクタ delete) が邪魔する。
-
+#if 0
 TEST_F(Test_Serialization2, DefaultValue)
 {
 	class DefaultTest1
@@ -900,6 +923,7 @@ TEST_F(Test_Serialization2, DefaultValue)
 		ASSERT_EQ(55, t.z);
 	}
 }
+#endif
 
 //------------------------------------------------------------------------------
 //## [Issue] 初期状態 reserve で確保されるメモリを超えると serialize 中に落ちる問題

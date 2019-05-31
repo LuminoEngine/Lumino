@@ -11,6 +11,8 @@ class Archive;
 enum class ArchiveContainerType
 {
     None,   // 最初の状態。ルートノードを open していない。
+    Null,   // 便宜上、あらゆる型を表す null はコンテナとしても扱う
+    Value,  // null と同じく、optional でも必要だった
 	Object,
 	Array,
 };
@@ -156,6 +158,18 @@ protected:
         else {
             if (m_nodeStack.empty()) return ArchiveContainerType::None;
             currentNode = m_nodeStack.top();
+            if (currentNode->type() == JsonElementType::Null) {
+                return ArchiveContainerType::Null;
+            }
+            else if (currentNode->type() == JsonElementType::Object) {
+                return ArchiveContainerType::Object;
+            }
+            else if (currentNode->type() == JsonElementType::Array) {
+                return ArchiveContainerType::Array;
+            }
+            else {
+                return ArchiveContainerType::Value;
+            }
         }
 
 		if (currentNode->type() == JsonElementType::Object)
