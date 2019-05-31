@@ -113,9 +113,12 @@ public:
 		{
 			moveState(NodeHeadState::Array);
 			// ArrayContainer としてデシリアライズしている場合、この時点で size を返したいので、store を ArrayContainer まで移動して size を得る必要がある
-			preReadValue();
+			//preReadValue();
 			if (outSize) *outSize = m_store->getContainerElementCount();
-		}
+
+            // makeArrayTag() を抜けた次の process は 0 インデックスを使う
+            //m_store->moveToIndexedMember(0);
+        }
 	}
 
 	// 普通の nvp ではなく、キー名も自分で制御したいときに使う
@@ -209,6 +212,8 @@ public:
 			*type = m_store->getReadingValueType();
 		}
 
+        //m_store->getContainerType()
+
 		if (*type == ArchiveNodeType::Object || *type == ArchiveNodeType::Array) {
 			moveState(NodeHeadState::WrapperObject);
 		}
@@ -258,6 +263,10 @@ protected:
 	{
 		m_store = store;
 		m_mode = mode;
+
+        if (m_mode == ArchiveMode::Load) {
+            m_store->setupLoad();
+        }
 	}
 
 private:
@@ -287,6 +296,9 @@ private:
 		bool nextBaseCall = false;
 		//bool wrapper = false;
 		//bool innterType = false;
+
+        // load 時に使う。
+        ArchiveNodeType readingType = ArchiveNodeType::Null;
 	};
 
 	//-----------------------------------------------------------------------------
@@ -589,6 +601,7 @@ private:
 	template<typename TValue>
 	void processLoad(NameValuePair<TValue>& nvp)
 	{
+
 		moveState(NodeHeadState::Object);	// Current node は Object confirmed.
 		preReadValue();
 
@@ -596,7 +609,7 @@ private:
 		{
 			moveState(NodeHeadState::Object);	// BaseClass は Object のシリアライズの一部なので、親ノードは必ず Object
 
-			m_store->setNextName(nvp.name);
+			m_store->moveToNamedMember(nvp.name);
 			m_nextReadValueDefault = &nvp;
 			readValue(*nvp.value);
 			postReadValue();
@@ -609,7 +622,7 @@ private:
 		moveState(NodeHeadState::Object);
 		preReadValue();
 		m_nodeInfoStack.back().nextBaseCall = true;
-		m_store->setNextName(ClassBaseKey);
+		m_store->moveToNamedMember(ClassBaseKey);
 		readValue(*base.basePtr);
 		postReadValue();
 	}
@@ -627,6 +640,12 @@ private:
 
 	bool preReadValue()
 	{
+        if (m_store->getOpendContainerType() == ArchiveContainerType::Array)
+        {
+            m_store->moveToIndexedMember(m_nodeInfoStack.back().arrayIndex);
+        }
+
+#if 0
 		if (m_nodeInfoStack.empty()) {
 			// write と同じく、ルートノードは Ready 状態以外になりようがない。
 			return true;
@@ -689,6 +708,7 @@ private:
             LN_UNREACHABLE();
             return false;
         }
+#endif
 
 		return true;
 	}
@@ -696,19 +716,47 @@ private:
 	// after pop value node. stack top refers to parent container.
 	void postReadValue()
 	{
-		if (!m_nodeInfoStack.empty())
-		{
-			m_nodeInfoStack.back().arrayIndex++;
+        if (m_store->getOpendContainerType() == ArchiveContainerType::Array)
+        {
+            m_nodeInfoStack.back().arrayIndex++;
+        }
 
-			if (m_store->getContainerType() == ArchiveContainerType::Array)
-			{
-				m_store->setNextIndex(m_nodeInfoStack.back().arrayIndex);
-			}
-		}
+
+		//if (!m_nodeInfoStack.empty())
+		//{
+		//	m_nodeInfoStack.back().arrayIndex++;
+
+		//	if (m_store->getContainerType() == ArchiveContainerType::Array)
+		//	{
+		//		m_store->setNextIndex(m_nodeInfoStack.back().arrayIndex);
+		//	}
+		//}
 	}
 
-	void preReadContainer()
+	bool preReadContainer()
 	{
+
+        ArchiveNodeType type = m_store->getReadingValueType();
+
+        NodeInfo node;
+        node.readingType = type;
+        m_nodeInfoStack.push_back(node);
+
+
+        //if (type == ArchiveNodeType::Array || type == ArchiveNodeType::Object) {
+
+            if (!m_nodeInfoStack.back().containerOpend) {
+                if (!m_store->openContainer()) {
+                    return false;
+                }
+                //if (LN_ENSURE(m_store->getContainerType() == ArchiveContainerType::Object || m_store->getContainerType() == ArchiveContainerType::Array)) return false;
+                m_nodeInfoStack.back().containerOpend = true;
+            }
+        //}
+
+
+
+        return true;
 	}
 
 	template<typename TValue>
@@ -743,10 +791,9 @@ private:
 		typename std::enable_if<detail::has_member_serialize_function<TValue>::value, std::nullptr_t>::type = nullptr>
 	void readValue(TValue& outValue)
 	{
+		bool baseCall = (m_nodeInfoStack.empty()) ? false : m_nodeInfoStack.back().nextBaseCall;
 		preReadContainer();
 
-		bool baseCall = (m_nodeInfoStack.empty()) ? false : m_nodeInfoStack.back().nextBaseCall;
-		m_nodeInfoStack.push_back(NodeInfo{});
 
 		if (baseCall)
 			outValue.TValue::serialize(*this);
@@ -764,7 +811,6 @@ private:
 	{
 		preReadContainer();
 
-		m_nodeInfoStack.push_back(NodeInfo{});
 
 		serialize(*this, outValue);
 
@@ -787,18 +833,18 @@ private:
 		}
 
 		// serialize が空実装ではないが、makeArrayTag など Tag 設定だけして子値の process を行わなかった場合はコンテナ開始タグが読み込まれていないため、ここで読み込む。
-		if (m_nodeInfoStack.back().headState == NodeHeadState::Object ||
-			m_nodeInfoStack.back().headState == NodeHeadState::Array) {
-			if (!m_nodeInfoStack.back().containerOpend) {
-				preReadValue();
-			}
-		}
+		//if (m_nodeInfoStack.back().headState == NodeHeadState::Object ||
+		//	m_nodeInfoStack.back().headState == NodeHeadState::Array) {
+		//	if (!m_nodeInfoStack.back().containerOpend) {
+		//		preReadValue();
+		//	}
+		//}
 
 
 		//bool taggedValueObject = (m_nodeInfoStack.top().headState == NodeHeadState::PrimitiveValue);
 
 		if (m_nodeInfoStack.back().containerOpend) {
-			m_store->readContainerEnd();
+			m_store->closeContainer();
 		}
 		m_nodeInfoStack.pop_back();
 

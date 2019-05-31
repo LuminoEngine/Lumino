@@ -47,6 +47,28 @@ namespace ln {
 		- これは、TypeInfo などのメタデータを Ref<> の serialize で読み取るために必須。
 */
 
+/*
+    Load は大方針として、makeXXX 時点で NodeType を確定して値の型を取得したり、
+    Ref<Object> では "_type" : の値を読み取るためにコンテナを Open する必要がある。
+
+    serialize 時点で対応コンテナを必ず Open ということにすると、
+    Variant の serialize のために PrimitiveValue も Open 状態にできるようにする必要がある。
+    ※ただ、この open 状態は m_store ではなく Node の状態として持っておいた方がいいだろう。
+        ・・・と思ったけど、m_store 側も「現在操作中のノード（カレントノード）」を持った方が考えやすい。特にルートノードを コンテナ・値両方対応するとき。
+    簡単に言うと、readValue で Node を push した後、子の serialze を呼び出す前に Node に現在の「型」を持たせてしまう。
+
+
+    Load Store の使い方
+    
+    moveByName() or moveByIndex で「メンバ」に移動。current() が移動先の値を返すようになる。
+    初期状態はルートノードが current() になっている状態。
+
+    openContainer() で、Object または Array の中に入る。
+    stack のトップに Object または Array の JsonElement が積まれる。（さっきまで currnet() だったもの）
+    open 直後は current() は null を返す。moveXXXX で移動しなければならない。
+
+*/
+
 //==============================================================================
 // Archive
 
