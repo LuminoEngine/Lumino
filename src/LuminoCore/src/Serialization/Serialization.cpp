@@ -67,6 +67,12 @@ namespace ln {
     stack のトップに Object または Array の JsonElement が積まれる。（さっきまで currnet() だったもの）
     open 直後は current() は null を返す。moveXXXX で移動しなければならない。
 
+
+    「serialize 時点で対応コンテナを必ず Open」はナシ。
+    いくつかの makeTag で、Open したコンテナを一度 close して、makeTag の次の serialize でまた開けて値を読む、という手順が必要になる。
+    この時点で本当に close していいかどうかも、WrapperObject をいくつもスタックしていると親まで辿るのが大変というか不自然。
+    なので、save と同じく遅延で open する。（次の process で　Object として open、makeSmartPtrTag ならこの時点で Object として Open など）
+
 */
 
 //==============================================================================
@@ -89,8 +95,8 @@ void Archive::makeVariantTag(ArchiveNodeType* type)
     }
     else if (isLoading()) {
 
-        m_store->closeContainer();
-        m_nodeInfoStack.back().containerOpend = false;
+        //m_store->closeContainer();
+        //m_nodeInfoStack.back().containerOpend = false;
 
         *type = m_store->getReadingValueType();
 

@@ -114,6 +114,7 @@ public:
 			moveState(NodeHeadState::Array);
 			// ArrayContainer としてデシリアライズしている場合、この時点で size を返したいので、store を ArrayContainer まで移動して size を得る必要がある
 			//preReadValue();
+            tryOpenContainer();
 			if (outSize) *outSize = m_store->getContainerElementCount();
 
             // makeArrayTag() を抜けた次の process は 0 インデックスを使う
@@ -163,9 +164,10 @@ public:
 
             //  process は、いま open しているコンテナに対して行いたい。
             // ここで閉じて、次に使えるようにする。current は閉じたコンテナになる。
-            m_store->closeContainer();
-            m_nodeInfoStack.back().containerOpend = false;
+            //m_store->closeContainer();
+            //m_nodeInfoStack.back().containerOpend = false;
 
+            // Value 確定。次の process で open container しない。
             moveState(NodeHeadState::PrimitiveValue);
             process(*str);
         }
@@ -183,6 +185,9 @@ public:
 			}
         }
         else if (isLoading()) {
+
+            //moveState(NodeHeadState::Object);
+            tryOpenContainer();
             *outIsNull = m_store->getOpendContainerType() == ArchiveContainerType::Null;
             moveState(NodeHeadState::WrapperObject);
 			//if ((*outIsNull)) {
@@ -205,14 +210,18 @@ public:
 			}
 		}
 		else if (isLoading()) {
-            *outHasValue = m_store->getOpendContainerType() != ArchiveContainerType::Null;
+            *outHasValue = m_store->getReadingValueType() != ArchiveNodeType::Null;
+
+
+            //tryOpenContainer();
+            //*outHasValue = m_store->getOpendContainerType() != ArchiveContainerType::Null;
 
             // makeOptionalTag を抜けた後の process は、いま open しているコンテナに対して行いたい。
             // ここで閉じて、次に使えるようにする。current は閉じたコンテナになる。
-            m_store->closeContainer();
-            m_nodeInfoStack.back().containerOpend = false;
+            //m_store->closeContainer();
+            //m_nodeInfoStack.back().containerOpend = false;
 
-            moveState(NodeHeadState::Object);
+            moveState(NodeHeadState::WrapperObject);
 
 			//*outHasValue = m_store->getReadingValueType() != ArchiveNodeType::Null;
 			//if (!(*outHasValue)) {
@@ -271,6 +280,10 @@ protected:
 
         if (m_mode == ArchiveMode::Load) {
             m_store->setupLoad();
+
+            // ルートノードも、内部的には serialize が呼ばれた直後の状態で process を開始したいので、1 push
+            //m_nodeInfoStack.push_back(NodeInfo{});
+            m_current = NodeInfo{};
         }
 	}
 
@@ -290,7 +303,11 @@ private:
 	};
 
 	// stack の要素。Container Node (Object or Array) の時に作られる。
-	struct NodeInfo
+    // ×(Load では) serialize を呼ぶ前に、コンテナであろうと値であろうと必ず作る ()
+    // ×(Load では) store の container を open したときに push する。Value も push してしまうと、makeSmartPtrTag で開いていいのかどうかを判断するのに上へ検索掛ける必要がある
+	//      makeSmartPtr -> process(NVP) したとき、両方で open しようとするが、常に同期して作り続けると「makeSmartPtr でもう open したので NVP では必要ない」みたいな状態管理ができなくなる。
+    // 現在のノードの「ひとつうえのコンテナ」を表す。readValue 時に必ず push するが、これは次に serialize する値を表すのではない。
+    struct NodeInfo
 	{
 		NodeHeadState headState = NodeHeadState::Ready;
 		int arrayIndex = 0;
@@ -299,8 +316,9 @@ private:
 		bool root = false;
 		bool containerOpend = false;	// m_store に、コンテナ開始タグの書き込み通知を行ったかどうか
 		bool nextBaseCall = false;
-		//bool wrapper = false;
+		bool parentIsOpendWrapper = false;
 		//bool innterType = false;
+
 
         // load 時に使う。
         ArchiveContainerType readingContainerType = ArchiveContainerType::Null;
@@ -419,6 +437,7 @@ private:
 		}
 	}
 
+    // TORO: require
 	bool moveState(NodeHeadState req)
 	{
 		if (LN_REQUIRE(!m_nodeInfoStack.empty())) return false;	// not root node opend.
@@ -441,11 +460,19 @@ private:
 			return false;
 
 		case NodeHeadState::WrapperObject:
+            if (m_nodeInfoStack.back().headState == req) {
+                // not transition
+                return true;
+            }
 			if (req == NodeHeadState::PrimitiveValue) {
 				// Optional<int> など、inner type が primitive な場合
 				m_nodeInfoStack.back().headState = req;
 				return true;
 			}
+            if (req == NodeHeadState::Object) {
+                // WrapperObject の中で MVP serialize したときに Object に遷移しようとするが、Wrapper のままとする
+                return true;
+            }
 			// transition is prohibited.
 			onError();
 			return false;
@@ -607,7 +634,9 @@ private:
 	void processLoad(NameValuePair<TValue>& nvp)
 	{
 
-		moveState(NodeHeadState::Object);	// Current node は Object confirmed.
+        moveState(NodeHeadState::Object);   // Current node は Object confirmed.
+        tryOpenContainer();
+
 		preReadValue();
 
 		if (m_store->hasKey(nvp.name) || nvp.hasDefaultValue())	// preReadValue() で Store の状態がコンテナ内に入るので、そのあとで存在確認
@@ -624,8 +653,15 @@ private:
 	template<typename TValue>
 	void processLoad(BaseClass<TValue>& base)
 	{
-		moveState(NodeHeadState::Object);
+		//moveState(NodeHeadState::Object);
+        //confirmObjectContainerAndOpen();
+
+
+        moveState(NodeHeadState::Object);   // Current node は Object confirmed.
+        tryOpenContainer();
 		preReadValue();
+
+
 		m_nodeInfoStack.back().nextBaseCall = true;
 		m_store->moveToNamedMember(ClassBaseKey);
 		readValue(*base.basePtr);
@@ -638,6 +674,10 @@ private:
 		//if (detail::ArchiveValueTraits<TValue>::isPrimitiveType()) {
 		//	moveState(NodeHeadState::PrimitiveValue);
 		//}
+        //confirmObjectContainerAndOpen();
+
+        // ここでの try open は不要。object か array を確定づけるものは NVP か makeArrayTag
+
 		preReadValue();
 		readValue(value);
 		postReadValue();
@@ -645,8 +685,10 @@ private:
 
 	bool preReadValue()
 	{
-        if (m_store->getOpendContainerType() == ArchiveContainerType::Array &&
-            m_nodeInfoStack.back().headState == NodeHeadState::Array)
+
+        //if (m_store->getOpendContainerType() == ArchiveContainerType::Array/* &&
+        //    m_nodeInfoStack.back().headState == NodeHeadState::Array*/)
+        if (!m_nodeInfoStack.empty() && m_nodeInfoStack.back().headState == NodeHeadState::Array)
         {
             m_store->moveToIndexedMember(m_nodeInfoStack.back().arrayIndex);
         }
@@ -722,7 +764,8 @@ private:
 	// after pop value node. stack top refers to parent container.
 	void postReadValue()
 	{
-        if (m_store->getOpendContainerType() == ArchiveContainerType::Array)
+        //if (m_store->getOpendContainerType() == ArchiveContainerType::Array)
+        if (!m_nodeInfoStack.empty() && m_nodeInfoStack.back().headState == NodeHeadState::Array)
         {
             m_nodeInfoStack.back().arrayIndex++;
         }
@@ -739,38 +782,6 @@ private:
 		//}
 	}
 
-	bool preReadContainer()
-	{
-        NodeHeadState parentState = NodeHeadState::Ready;
-        if (!m_nodeInfoStack.empty()) {
-            parentState = m_nodeInfoStack.back().headState;
-        }
-
-        ArchiveContainerType type = m_store->getOpendContainerType();
-
-        NodeInfo node;
-        node.readingContainerType = type;
-        m_nodeInfoStack.push_back(node);
-
-
-        //if (type == ArchiveNodeType::Array || type == ArchiveNodeType::Object) {
-        if (parentState == NodeHeadState::WrapperObject) {
-            // ひとつ前の process 直前で open された状態を維持する。
-        }
-        else {
-            if (!m_nodeInfoStack.back().containerOpend) {
-                if (!m_store->openContainer()) {
-                    return false;
-                }
-                //if (LN_ENSURE(m_store->getContainerType() == ArchiveContainerType::Object || m_store->getContainerType() == ArchiveContainerType::Array)) return false;
-                m_nodeInfoStack.back().containerOpend = true;
-            }
-        }
-
-
-
-        return true;
-	}
 
 	template<typename TValue>
 	bool setDefaultValueHelper(TValue& outValue)
@@ -805,15 +816,21 @@ private:
 	void readValue(TValue& outValue)
 	{
 		bool baseCall = (m_nodeInfoStack.empty()) ? false : m_nodeInfoStack.back().nextBaseCall;
-		preReadContainer();
+		preLoadSerialize();
 
+        // TValue が ValueType であっても、serialize の階層を測りたいので、serialize を呼ぶ前に必ず push
+        if (!m_nodeInfoStack.empty() && m_nodeInfoStack.back().headState == NodeHeadState::WrapperObject && m_nodeInfoStack.back().containerOpend) {
+            m_current.parentIsOpendWrapper = true;
+        }
+        m_nodeInfoStack.push_back(m_current);
+        m_current = NodeInfo{}; // Ready で始める
 
 		if (baseCall)
 			outValue.TValue::serialize(*this);
 		else
 			outValue.serialize(*this);
 
-		postContainerRead();
+		postLoadSerialize();
 	}
 
 	// メンバ関数として serialize を持たない型の readValue()
@@ -822,15 +839,55 @@ private:
 		typename std::enable_if<detail::non_member_serialize_function<TValue>::value, std::nullptr_t>::type = nullptr>
 	void readValue(TValue& outValue)
 	{
-		preReadContainer();
+		preLoadSerialize();
 
+        // TValue が ValueType であっても、serialize の階層を測りたいので、serialize を呼ぶ前に必ず push
+        if (!m_nodeInfoStack.empty() && m_nodeInfoStack.back().headState == NodeHeadState::WrapperObject && m_nodeInfoStack.back().containerOpend) {
+            m_current.parentIsOpendWrapper = true;
+        }
+        m_nodeInfoStack.push_back(m_current);
+        m_current = NodeInfo{};
 
 		serialize(*this, outValue);
 
-		postContainerRead();
+		postLoadSerialize();
 	}
 
-	void postContainerRead()
+
+    bool preLoadSerialize()
+    {
+        //NodeHeadState parentState = NodeHeadState::Ready;
+        //if (!m_nodeInfoStack.empty()) {
+        //    parentState = m_nodeInfoStack.back().headState;
+        //}
+/*
+        ArchiveContainerType type = m_store->getOpendContainerType();
+
+        NodeInfo node;
+        node.readingContainerType = type;
+        m_nodeInfoStack.push_back(node);*/
+
+
+        ////if (type == ArchiveNodeType::Array || type == ArchiveNodeType::Object) {
+        //if (parentState == NodeHeadState::WrapperObject) {
+        //    // ひとつ前の process 直前で open された状態を維持する。
+        //}
+        //else {
+        //    if (!m_nodeInfoStack.back().containerOpend) {
+        //        if (!m_store->openContainer()) {
+        //            return false;
+        //        }
+        //        //if (LN_ENSURE(m_store->getContainerType() == ArchiveContainerType::Object || m_store->getContainerType() == ArchiveContainerType::Array)) return false;
+        //        m_nodeInfoStack.back().containerOpend = true;
+        //    }
+        //}
+
+
+
+        return true;
+    }
+
+	void postLoadSerialize()
 	{
 		//if (m_nodeInfoStack.top().headState == NodeHeadState::Ready)
 		//{
@@ -859,12 +916,76 @@ private:
 		if (m_nodeInfoStack.back().containerOpend) {
 			m_store->closeContainer();
 		}
+
+        // top は捨てる。捨てないと今の状態 (例えば、State::Array とか が m_current になってしまう。それはいらない。)
+        m_current = NodeInfo{};// m_nodeInfoStack.back();
 		m_nodeInfoStack.pop_back();
 
 		if (!m_nodeInfoStack.empty()) {
 			m_nodeInfoStack.back().nextBaseCall = false;
 		}
 	}
+
+    //bool confirmObjectContainerAndOpen()
+    //{
+    //    moveState(NodeHeadState::Object);
+
+    //    NodeHeadState parentState = NodeHeadState::Ready;
+    //    if (m_nodeInfoStack.size() >= 2) {
+    //        parentState = m_nodeInfoStack.back().headState;
+    //    }
+
+    //    //if (type == ArchiveNodeType::Array || type == ArchiveNodeType::Object) {
+    //    if (parentState == NodeHeadState::WrapperObject) {
+    //        // ひとつ前の process 直前で open された状態を維持する。
+    //    }
+    //    else if (m_nodeInfoStack.back().headState == NodeHeadState::PrimitiveValue) {
+    //    }
+    //    else {
+    //        if (!m_nodeInfoStack.back().containerOpend) {
+    //            if (!m_store->openContainer()) {
+    //                return false;
+    //            }
+    //            //if (LN_ENSURE(m_store->getContainerType() == ArchiveContainerType::Object || m_store->getContainerType() == ArchiveContainerType::Array)) return false;
+    //            m_nodeInfoStack.back().containerOpend = true;
+    //        }
+    //    }
+
+    //    return true;
+    //}
+
+    bool tryOpenContainer()
+    {
+        //NodeHeadState parentState = NodeHeadState::Ready;
+        ////if (m_nodeInfoStack.size() >= 2) {
+        //if (m_nodeInfoStack.empty()) {
+        //    parentState = m_nodeInfoStack.back().headState;
+        //}
+
+        //if (type == ArchiveNodeType::Array || type == ArchiveNodeType::Object) {
+        //if (parentState == NodeHeadState::WrapperObject) {
+        //    // ひとつ前の process 直前で open された状態を維持する。
+        //}
+        //else 
+        if (m_nodeInfoStack.back().headState == NodeHeadState::PrimitiveValue ||
+            m_nodeInfoStack.back().headState == NodeHeadState::WrapperObject ||
+            m_nodeInfoStack.back().parentIsOpendWrapper) {
+        }
+        else {
+            //m_nodeInfoStack.push_back(NodeInfo{});
+
+
+            if (!m_nodeInfoStack.back().containerOpend) {
+                if (!m_store->openContainer()) {
+                    return false;
+                }
+                //if (LN_ENSURE(m_store->getContainerType() == ArchiveContainerType::Object || m_store->getContainerType() == ArchiveContainerType::Array)) return false;
+                m_nodeInfoStack.back().containerOpend = true;
+            }
+        }
+
+        return true;
+    }
 
 	void readClassVersion()
 	{
@@ -892,7 +1013,8 @@ private:
 
 	ArchiveStore* m_store;
 	ArchiveMode m_mode;
-	std::vector<NodeInfo>	m_nodeInfoStack;
+	std::vector<NodeInfo>	m_nodeInfoStack;    // (Load) m_store ではなく serialize の呼び出し階層に対応する。
+    NodeInfo m_current; // (Load) Value も含む。serialize の直前、current は m_nodeInfoStack に積まれ、新しい Node を current とする。
 	int64_t	m_archiveVersion;
 	detail::NameValuePairBase*	m_nextReadValueDefault = nullptr;
 };
