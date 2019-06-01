@@ -102,7 +102,7 @@ void Archive::makeVariantTag(ArchiveNodeType* type)
 
         //*outIsNull = m_store->getOpendContainerType() == ArchiveContainerType::Null;
         //moveState(NodeHeadState::WrapperObject);
-        moveState(NodeHeadState::Ready);
+        moveState(NodeHeadState::WrapperObject);
 
         // makeVariantTag の次は何らかの値の process をする。
         // いまのところその process 
@@ -114,6 +114,44 @@ void Archive::makeVariantTag(ArchiveNodeType* type)
     //m_store->getContainerType()
 
 }
+
+void Archive::makeTypeInfo(String* value)
+{
+    if (isSaving()) {
+        // この時点では Ref<> の serialize、つまり WrapperObject の serialize 中。
+        // ここではまだ m_store に書き出すことはできない (コンテナの書き出しがまだ) ので、メタデータを Node に覚えておく。
+        m_nodeInfoStack.back().typeInfo = *value;
+    }
+    else {
+        //moveState(NodeHeadState::Object);
+        if (LN_REQUIRE(m_nodeInfoStack.back().headState == NodeHeadState::WrapperObject)) return;	// 事前に makeSmartPtrTag 必須
+        preReadValue();
+        *value = readTypeInfo();
+        //process(NameValuePair<String>(u"_type", value));
+    }
+
+    //moveState(NodeHeadState::Object);	// TypeInfo を読みたいなら Object confirmed.
+
+
+
+    //if (isSaving()) {
+    //}
+    //else {
+    //	preReadValue();
+    //	*value = m_nodeInfoStack.top().typeInfo;
+    //}
+}
+
+const String& Archive::readTypeInfo()
+{
+    m_store->moveToNamedMember(u"_type");
+    ln::String type;
+    if (m_store->readValue(&type)) {
+        m_nodeInfoStack.back().typeInfo = type;
+    }
+    return m_nodeInfoStack.back().typeInfo;
+}
+
 
 //==============================================================================
 // JsonTextOutputArchive

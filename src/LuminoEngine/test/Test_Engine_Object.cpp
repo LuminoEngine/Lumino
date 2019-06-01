@@ -152,6 +152,7 @@ TEST_F(Test_Engine_Object, CreateFromTypeInfo)
 	Test1 t1;
 	t1.obj = obj1;
 	String json = JsonSerializer::serialize(t1, JsonFormatting::None);
+    ASSERT_EQ(u"{\"obj\":{\"_type\":\"CreateFromTypeInfo_ClassA\",\"value1\":100}}", json);
 
 	EngineContext::current()->registerType<CreateFromTypeInfo_ClassA>({});
 

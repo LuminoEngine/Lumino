@@ -315,7 +315,7 @@ template<
 	if (ar.isSaving()) {
 		typeName = TypeInfo::getTypeInfo(value)->name();
 	}
-	//ar.makeTypeInfo(&typeName);
+	ar.makeTypeInfo(&typeName);
 	//TODO: ここで makeTypeInfo すると、その中では setNextName しているため、現在の nextName をうわがいてしまう
 
 	if (ar.isSaving()) {
@@ -331,9 +331,9 @@ template<
 			}
 
 			// TODO: いまのところ Variant 用
-			if (!value) {
-				value = makeObject<TValue>();
-			}
+			//if (!value) {
+			//	value = makeObject<TValue>();
+			//}
 
 			ar.process(*value.get());
 		}

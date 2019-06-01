@@ -237,32 +237,7 @@ public:
     void makeVariantTag(ArchiveNodeType* type);
 
 	// 事前に makeSmartPtrTag 必須
-	void makeTypeInfo(String* value)
-	{
-		if (isSaving()) {
-			// この時点では Ref<> の serialize、つまり WrapperObject の serialize 中。
-			// ここではまだ m_store に書き出すことはできない (コンテナの書き出しがまだ) ので、メタデータを Node に覚えておく。
-			m_nodeInfoStack.back().typeInfo = *value;
-		}
-		else {
-			//moveState(NodeHeadState::Object);
-			if (LN_REQUIRE(m_nodeInfoStack.back().headState == NodeHeadState::WrapperObject)) return;	// 事前に makeSmartPtrTag 必須
-			preReadValue();
-			*value = readTypeInfo();
-			//process(NameValuePair<String>(u"_type", value));
-		}
-
-		//moveState(NodeHeadState::Object);	// TypeInfo を読みたいなら Object confirmed.
-
-
-		
-		//if (isSaving()) {
-		//}
-		//else {
-		//	preReadValue();
-		//	*value = m_nodeInfoStack.top().typeInfo;
-		//}
-	}
+    void makeTypeInfo(String* value);
 
 protected:
 
@@ -996,15 +971,7 @@ private:
 		}
 	}
 
-	const String& readTypeInfo()
-	{
-		m_store->setNextName(u"_type");
-		ln::String type;
-		if (m_store->readValue(&type)) {
-			m_nodeInfoStack.back().typeInfo = type;
-		}
-		return m_nodeInfoStack.back().typeInfo;
-	}
+    const String& readTypeInfo();
 
 	void onError(const char* message = nullptr)
 	{
