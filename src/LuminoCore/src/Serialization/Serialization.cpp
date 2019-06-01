@@ -76,6 +76,38 @@ const String Archive::ClassNameKey = _TT("lumino_class_name");
 const String Archive::ClassVersionKey = _TT("lumino_class_version");
 const String Archive::ClassBaseKey = _TT("lumino_base_class");
 
+void Archive::makeVariantTag(ArchiveNodeType* type)
+{
+
+    if (isSaving()) {
+        if (*type == ArchiveNodeType::Object || *type == ArchiveNodeType::Array) {
+            moveState(NodeHeadState::WrapperObject);
+        }
+        else {
+            moveState(NodeHeadState::PrimitiveValue);
+        }
+    }
+    else if (isLoading()) {
+
+        m_store->closeContainer();
+        m_nodeInfoStack.back().containerOpend = false;
+
+        *type = m_store->getReadingValueType();
+
+        //*outIsNull = m_store->getOpendContainerType() == ArchiveContainerType::Null;
+        moveState(NodeHeadState::WrapperObject);
+
+        // makeVariantTag の次は何らかの値の process をする。
+        // いまのところその process 
+        //moveState(NodeHeadState::Ready);
+
+        //*type = m_store->getReadingValueType();
+    }
+
+    //m_store->getContainerType()
+
+}
+
 //==============================================================================
 // JsonTextOutputArchive
 

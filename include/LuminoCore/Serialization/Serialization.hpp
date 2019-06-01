@@ -225,24 +225,7 @@ public:
 	}
 
 	// type: in,out
-	void makeVariantTag(ArchiveNodeType* type)
-	{
-
-		if (isSaving()) {
-		}
-		else if (isLoading()) {
-			*type = m_store->getReadingValueType();
-		}
-
-        //m_store->getContainerType()
-
-		if (*type == ArchiveNodeType::Object || *type == ArchiveNodeType::Array) {
-			moveState(NodeHeadState::WrapperObject);
-		}
-		else {
-			moveState(NodeHeadState::PrimitiveValue);
-		}
-	}
+    void makeVariantTag(ArchiveNodeType* type);
 
 	// 事前に makeSmartPtrTag 必須
 	void makeTypeInfo(String* value)
