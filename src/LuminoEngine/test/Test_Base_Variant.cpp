@@ -118,7 +118,33 @@ TEST_F(Test_Base_Variant, SetAndGet)
     }
 }
 
+namespace ln {
 
+template<>
+inline void serialize(Archive& ar, Ref<Variant>& value)
+{
+    ArchiveNodeType type;
+    ar.makeVariantTag(&type);
+
+    if (ar.isSaving()) {
+        value->serializeInternal(ar, type);
+    }
+    else {
+        if (type != ArchiveNodeType::Null) {
+
+            // TODO: いまのところ Variant 用
+            if (!value) {
+                value = makeObject<Variant>();
+            }
+            value->serializeInternal(ar, type);
+        }
+        else {
+            value = nullptr;
+        }
+    }
+}
+
+}
 //------------------------------------------------------------------------------
 //## Variant serialization
 TEST_F(Test_Base_Variant, Serialization)

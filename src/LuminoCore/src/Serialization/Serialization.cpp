@@ -95,7 +95,8 @@ void Archive::makeVariantTag(ArchiveNodeType* type)
         *type = m_store->getReadingValueType();
 
         //*outIsNull = m_store->getOpendContainerType() == ArchiveContainerType::Null;
-        moveState(NodeHeadState::WrapperObject);
+        //moveState(NodeHeadState::WrapperObject);
+        moveState(NodeHeadState::Ready);
 
         // makeVariantTag の次は何らかの値の process をする。
         // いまのところその process 
