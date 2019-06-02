@@ -330,10 +330,10 @@ template<
 				value = dynamic_pointer_cast<TValue>(obj);
 			}
 
-			// TODO: いまのところ Variant 用
-			//if (!value) {
-			//	value = makeObject<TValue>();
-			//}
+			// TODO: TypeName が登録されていない場合はベースのを作るか、エラーにするかオプションで決められるようにしたい。
+			if (!value) {
+				value = makeObject<TValue>();
+			}
 
 			ar.process(*value.get());
 		}
