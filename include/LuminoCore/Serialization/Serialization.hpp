@@ -137,18 +137,18 @@ public:
 			if (outSize) *outSize = m_store->getContainerElementCount();
 		}
 	}
-	template<class TKey, class TValue>
-	void makeObjectMember(TKey& key, TValue& value)
-	{
-		if (isSaving())
-		{
-		}
-		else
-		{
-			key = m_store->memberKey(m_nodeInfoStack.top().arrayIndex);
-			processLoad(makeNVP(key, value));
-		}
-	}
+	//template<class TKey, class TValue>
+	//void makeObjectMember(TKey& key, TValue& value)
+	//{
+	//	if (isSaving())
+	//	{
+	//	}
+	//	else
+	//	{
+	//		key = m_store->memberKey(m_nodeInfoStack.top().arrayIndex);
+	//		processLoad(makeNVP(key, value));
+	//	}
+	//}
 
 	/*
 	Note: オブジェクトを単純な文字列としてシリアライズする場合に使用します。
