@@ -65,7 +65,7 @@ void convertChar16ToLocalChar(const char16_t* inStr, size_t inStrLen, char* outS
 	mbstate_t state;
 	memset(&state, 0, sizeof state);
     size_t len = std::min(outStrLen, inStrLen);
-	wcsrtombs_s(&ret, outStr, len, (const wchar_t**)&inStr, len - 1, &state);
+	wcsrtombs_s(&ret, outStr, outStrLen, (const wchar_t**)&inStr, len, &state);
 #else
 	size_t len = (inStrLen < outStrLen) ? inStrLen : outStrLen;
 	size_t i = 0;
