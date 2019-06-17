@@ -22,7 +22,7 @@ class Scene
 protected:
 	/** 開始処理 */
 	LN_METHOD()
-	virtual void onCreated();
+	virtual void onCreated(); // TODO: onStart かな。
 
 	/** 終了処理 */
 	LN_METHOD()
