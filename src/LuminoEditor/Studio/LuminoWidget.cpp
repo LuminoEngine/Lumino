@@ -6,6 +6,9 @@
 #include "MainWindow.h"
 #include "LuminoWidget.h"
 
+//==============================================================================
+// LuminoWidget
+
 LuminoWidget::LuminoWidget(QWidget *parent)
     : QOpenGLWidget(parent)
 {

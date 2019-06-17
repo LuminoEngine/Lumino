@@ -102,13 +102,13 @@ MainWindow::MainWindow(QWidget* parent)
     rootFrame->setLayout(hbox1);
 
     QSplitter* split1 = new QSplitter(Qt::Horizontal);
+    QSplitter* split2 = new QSplitter(Qt::Vertical);
     //split1->setStyleSheet("background-color: yellow;");
     split1->setContentsMargins(0, 0, 0, 0);
     {
         split1->addWidget(m_contentsViewManager->viewContainer());
 
         {
-            QSplitter* split2 = new QSplitter(Qt::Vertical);
             //split2->setStyleSheet("background-color: blue;");
             split2->setContentsMargins(0, 0, 0, 0);
             {
@@ -130,12 +130,26 @@ MainWindow::MainWindow(QWidget* parent)
 
 		m_inspectorPaneContainer = new InspectorPaneContainer();
         split1->addWidget(m_inspectorPaneContainer);
-    };
+    }
+
+
+
     hbox1->addWidget(split1);
 
 #endif
 
     setCentralWidget(rootFrame);
+
+    // Initial layout
+    {
+        QList<int> sizes1;
+        sizes1 << 200 << 600 << 200;
+        split1->setSizes(sizes1);
+
+        QList<int> sizes2;
+        sizes2 << 600 << 200;
+        split2->setSizes(sizes2);
+    }
 }
 
 MainWindow::~MainWindow()

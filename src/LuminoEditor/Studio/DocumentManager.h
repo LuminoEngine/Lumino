@@ -1,14 +1,6 @@
 ﻿#pragma once
 #include <QMainWindow>
-//#include "SceneListDock.h"
-
-class Document : public QObject
-{
-	Q_OBJECT
-public:
-	Document(QObject* parent = nullptr);
-};
-
+#include "Document.h"
 
 
 class DocumentManager : public QObject

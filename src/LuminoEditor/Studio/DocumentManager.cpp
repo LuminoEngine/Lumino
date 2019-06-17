@@ -1,13 +1,7 @@
 ﻿
 #include "DocumentManager.h"
 #include "LuminoWidget.h"
-//#include "WorldEditorView.h"
-
-Document::Document(QObject* parent)
-	: QObject(parent)
-{
-}
-
+#include "SceneEditorDocumentView.h"
 
 DocumentManager::DocumentManager(QWidget* parent)
     : QObject(parent)
@@ -59,11 +53,11 @@ DocumentManager::DocumentManager(QWidget* parent)
     //vertical->setSpacing(0);
 
 
-    //QTextEdit* editor1 = new QTextEdit(tr("1つめのタブ"), m_tabWidget);
-    QTextEdit* editor2 = new QTextEdit(tr("2つめのタブ"), m_tabWidget);
-	//m_tabWidget->addTab(new TilemapLandscapeWorldEditorView(m_tabWidget), tr("TAB0"));
-    m_tabWidget->addTab(new LuminoWidget(m_tabWidget), tr("TAB1"));
-    m_tabWidget->addTab(editor2, tr("TAB2"));
+ //   //QTextEdit* editor1 = new QTextEdit(tr("1つめのタブ"), m_tabWidget);
+ //   QTextEdit* editor2 = new QTextEdit(tr("2つめのタブ"), m_tabWidget);
+	////m_tabWidget->addTab(new TilemapLandscapeWorldEditorView(m_tabWidget), tr("TAB0"));
+ //   m_tabWidget->addTab(new LuminoWidget(m_tabWidget), tr("TAB1"));
+ //   m_tabWidget->addTab(editor2, tr("TAB2"));
     m_tabWidget->setTabsClosable(true);
 #endif
 
@@ -76,7 +70,13 @@ DocumentManager::~DocumentManager()
 
 void DocumentManager::addDocument(Document* doc)
 {
-
+    if (auto ddoc = dynamic_cast<SceneEditorDocument*>(doc)) {
+        auto view = new SceneEditorView();
+        m_tabWidget->addTab(view, tr("tab"));
+        m_documents.append(ddoc);
+        ddoc->setParent(this);
+    }
+    else {
+        LN_UNREACHABLE();
+    }
 }
-
-//#include "DocumentManager.moc"

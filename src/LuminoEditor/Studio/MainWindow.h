@@ -21,6 +21,7 @@ public:
     ~MainWindow();
 
     QtAwesome* awesome() const { return m_awesome; }
+    DocumentManager* documentManager() const { return m_documentManager; }
 
 protected:
     void closeEvent(QCloseEvent* event) override;

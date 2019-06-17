@@ -1,5 +1,7 @@
 ﻿
 #include "MainWindow.h"
+#include "DocumentManager.h"
+#include "SceneEditorDocumentView.h"
 #include "SceneContentsView.h"
 
 //==============================================================================
@@ -31,6 +33,11 @@ SceneAssetTreeView::SceneAssetTreeView(QWidget* parent)
 
 void SceneAssetTreeView::onDoubleClicked(const QModelIndex &index)
 {
+    QString filePath = m_model->fileInfo(index).absoluteFilePath();
+
+    // TODO: ここで addDocument ではなく、MainWindow に openFile を設けて、フォーマットもそっちで判断して Dcument 作ってもらう。Tiledもそんな感じ。
+    MainWindow::instance()->documentManager()->addDocument(new SceneEditorDocument());
+    
 }
 
 //==============================================================================
