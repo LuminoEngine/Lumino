@@ -127,6 +127,7 @@ public:
     void setTimeScale(float value) { m_timeScale = value; }
     void setShowDebugFpsEnabled(bool value) { m_showDebugFpsEnabled = value; }
 
+    const Ref<UIContext>& mainUIContext() const { return m_mainUIContext; }
 	const Ref<UIMainWindow>& mainWindow() const { return m_mainWindow; }
     const Ref<UIViewport>& mainViewport() const { return m_mainViewport; }
 	const Ref<UIContainerElement>& mainUIRoot() const { return m_mainUIRoot; }

@@ -211,7 +211,7 @@ int main(int argc, char** argv)
     Engine::mainCamera()->addComponent(makeObject<CameraOrbitControlComponent>());
     Engine::mainCamera()->setBackgroundColor(Color::Gray);
 
-#if 1
+#if 0
     auto window1 = UIWindow::create();
     window1->setPosition(Vector3(8, 8, 0));
     window1->setWidth(200);

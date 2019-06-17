@@ -20,7 +20,7 @@ namespace ln {
 // WorldRenderView
 
 WorldRenderView::WorldRenderView()
-    : m_visibleGridPlane(false)
+    : m_visibleGridPlane(true)
     , m_physicsDebugDrawEnabled(false)
 {
 }
@@ -171,7 +171,7 @@ void WorldRenderView::createGridPlane()
 	MemoryStream stream(data, size);
 	auto shader = makeObject<Shader>(u"InfinitePlaneGrid", &stream);
 #else
-    auto shader = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/InfinitePlaneGrid.fx");
+    auto shader = Shader::create(u"D:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/InfinitePlaneGrid.fx");
 #endif
     auto material = makeObject<Material>();
     material->setShader(shader);
@@ -299,6 +299,11 @@ void WorldRenderView::adjustGridPlane(const ViewFrustum& viewFrustum, RenderView
         mesh->setVertex(1, Vertex{ Vector3(maxPos.x, 0, maxPos.z), Vector3::UnitY, Vector2(1.0f, 1.0f), Color::White });
         mesh->setVertex(2, Vertex{ Vector3(minPos.x, 0, minPos.z), Vector3::UnitY, Vector2(-1.0f, -1.0f), Color::White });
         mesh->setVertex(3, Vertex{ Vector3(maxPos.x, 0, minPos.z), Vector3::UnitY, Vector2(1.0f, -1.0f), Color::White });
+
+        //mesh->setVertex(0, Vertex{ Vector3(-1, 1, 1), Vector3::UnitY, Vector2(-1.0f, 1.0f), Color::White });
+        //mesh->setVertex(1, Vertex{ Vector3(1, 1, 1), Vector3::UnitY, Vector2(1.0f, 1.0f), Color::White });
+        //mesh->setVertex(2, Vertex{ Vector3(-1, -1, 1), Vector3::UnitY, Vector2(-1.0f, -1.0f), Color::White });
+        //mesh->setVertex(3, Vertex{ Vector3(1, -1, 1), Vector3::UnitY, Vector2(1.0f, -1.0f), Color::White });
     }
 }
 

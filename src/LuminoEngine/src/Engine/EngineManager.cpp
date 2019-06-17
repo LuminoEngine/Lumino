@@ -122,8 +122,6 @@ void EngineManager::init()
     if (m_settings.defaultObjectsCreation)
     {
         if (m_uiManager) {
-            m_mainUIContext = makeObject<UIContext>();
-            m_uiManager->setMainContext(m_mainUIContext);
 
             m_mainWindow = makeObject<UIMainWindow>(m_platformManager->mainWindow(), m_settings.mainBackBufferSize);
             m_mainViewport = makeObject<UIViewport>();
@@ -523,6 +521,9 @@ void EngineManager::initializeUIManager()
 		
 		m_uiManager = makeRef<UIManager>();
 		m_uiManager->init(settings);
+
+        m_mainUIContext = makeObject<UIContext>();
+        m_uiManager->setMainContext(m_mainUIContext);
 	}
 }
 

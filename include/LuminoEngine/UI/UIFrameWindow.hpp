@@ -10,8 +10,11 @@ namespace ln {
 namespace detail { class PlatformWindow; class UIManager; }
 class GraphicsContext;
 class SwapChain;
+class RenderTargetTexture;
+class DepthBuffer;
 class UIRenderView;
 class UIViewport;
+class UIFrameWindow;
 
 namespace detail {
    
@@ -19,7 +22,7 @@ class UIInputInjector
     : public RefObject
 {
 public:
-    UIInputInjector(UIElement* owner);
+    UIInputInjector(UIFrameWindow* owner);
     bool injectMouseMove(float clientX, float clientY);
     bool injectMouseButtonDown(MouseButtons button);
     bool injectMouseButtonUp(MouseButtons button);
@@ -41,7 +44,7 @@ private:
         UIElement* hoverElement = nullptr;
     };
 
-    UIElement* m_owner;
+    UIFrameWindow* m_owner;
     Point m_mousePosition;
     MouseClickTracker m_mouseClickTrackers[8];
 };
@@ -74,6 +77,7 @@ public:
 	const Ref<detail::PlatformWindow>& platformWindow() const { return m_platformWindow; }
     const Ref<UIRenderView>& renderView() const { return m_renderView; }
     const Ref<GraphicsContext>& graphicsContext() const { return m_graphicsContext; }
+    const Ref<detail::UIInputInjector>& inputInjector() const{ return m_inputInjector; }
 
 protected:
 	virtual Size measureOverride(const Size& constraint) override;

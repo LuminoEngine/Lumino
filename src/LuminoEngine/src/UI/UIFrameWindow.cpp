@@ -17,7 +17,7 @@ namespace detail {
 //==============================================================================
 // UIInputInjector
 
-UIInputInjector::UIInputInjector(UIElement* owner)
+UIInputInjector::UIInputInjector(UIFrameWindow* owner)
     : m_owner(owner)
 {
 }
@@ -168,7 +168,7 @@ bool UIInputInjector::injectTextInput(Char ch)
 
 void UIInputInjector::updateMouseHover(float clientX, float clientY)
 {
-    m_owner->context()->updateMouseHover(Point(clientX, clientY));
+    m_owner->context()->updateMouseHover(m_owner, Point(clientX, clientY));
 }
 
 UIElement* UIInputInjector::capturedElement()
@@ -207,6 +207,7 @@ void UIFrameWindow::init()
     UIElement::init();
     m_manager = detail::EngineDomain::uiManager();
     specialElementFlags().set(detail::UISpecialElementFlags::FrameWindow);
+    m_inputInjector = makeRef<detail::UIInputInjector>(this);
 }
 
 void UIFrameWindow::init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize)
@@ -221,7 +222,6 @@ void UIFrameWindow::init(detail::PlatformWindow* platformMainWindow, const SizeI
         m_renderView = makeObject<UIRenderView>();
     }
 
-    m_inputInjector = makeRef<detail::UIInputInjector>(this);
 
     m_platformWindow->attachEventListener(this);
 

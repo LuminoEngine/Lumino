@@ -5,6 +5,7 @@
 #include <LuminoEngine/Engine/Engine.hpp>
 #include <LuminoEngine/Engine/EngineSettings.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
@@ -175,6 +176,11 @@ void Engine::setShowDebugFpsEnabled(bool enabled)
 GraphicsContext* Engine::graphicsContext()
 {
 	return detail::EngineDomain::graphicsManager()->mainWindowGraphicsContext();
+}
+
+UIContext* Engine::mainUIContext()
+{
+    return detail::EngineDomain::engineManager()->mainUIContext();
 }
 
 UIFrameWindow* Engine::mainWindow()

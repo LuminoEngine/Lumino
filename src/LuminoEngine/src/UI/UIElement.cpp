@@ -40,6 +40,7 @@ void UIElement::init()
 {
 	UILayoutElement::init(m_finalStyle);
     m_manager = detail::EngineDomain::uiManager();
+    if (LN_REQUIRE(m_manager->mainContext())) return;
 
 	// TODO: Material も、実際に描画が必要な Element に限って作成した方がいいだろう
 	m_finalStyle->backgroundMaterial = makeObject<Material>();
@@ -51,9 +52,10 @@ void UIElement::init()
 		}
 	}
 
-    if (m_manager->mainContext()) {
+
+    //if (m_manager->mainContext()) {
         m_manager->mainContext()->addElement(this);
-    }
+    //}
 }
 
 void UIElement::setMargin(const Thickness& margin)

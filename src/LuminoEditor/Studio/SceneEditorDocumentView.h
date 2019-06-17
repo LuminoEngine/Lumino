@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include "Document.h"
 
+class LuminoWidget;
+
 class SceneEditorDocument : public Document
 {
 	Q_OBJECT
@@ -17,4 +19,6 @@ public:
     SceneEditorView(QWidget* parent = nullptr);
 
 private:
+    QVBoxLayout* m_layout1;
+    LuminoWidget* m_luminoWidget;
 };
