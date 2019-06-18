@@ -1,4 +1,5 @@
 ﻿
+#include <Workspace.hpp>
 #include "External/QtAwesome/QtAwesome.h"
 #include "ActionManager.h"
 #include "DocumentManager.h"
@@ -41,6 +42,7 @@ void MainWindow::initializeLumino()
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
+    , m_workspace(ln::makeObject<lna::Workspace>())
 	, m_actionManager(new ActionManager(this))
 	, m_resourceContext(nullptr)
 	, m_offscreenSurface(nullptr)
@@ -60,8 +62,6 @@ MainWindow::MainWindow(QWidget* parent)
 		action = new QAction(tr("&Open project"), this);
 		ActionManager::instance()->registerAction("OpenProject", action);
 		connect(action, &QAction::triggered, this, &MainWindow::onOpenProject);
-
-
 	}
 
 
@@ -99,7 +99,7 @@ MainWindow::MainWindow(QWidget* parent)
 	auto* rootFrame = new QFrame();
     
 	{
-        m_contentsViewManager->addContentsViewProvider(ln::makeObject<SceneContentsViewProvider>());
+        //m_contentsViewManager->addContentsViewProvider(ln::makeObject<SceneContentsViewProvider>());
         m_contentsViewManager->addContentsViewProvider(ln::makeObject<AudioContentsViewProvider>());
     }
 
@@ -199,21 +199,22 @@ void MainWindow::onNewProject()
 	else {
 		printf("");
 	}
-
 }
 
 void MainWindow::onOpenProject()
 {
-	QString selFilter = tr("テキスト(*.txt)");
-	QString fileName = QFileDialog::getOpenFileName(
+	QString filePath = QFileDialog::getOpenFileName(
 		this,
-		tr("ファイルを開く"),
-		"C:/Qt/Qt5.3.2",
-		tr("すべて(*.*);;テキスト(*.txt);;ソース(*.h *.cpp)"),
-		&selFilter,
-		QFileDialog::DontUseCustomDirectoryIcons
-	);
-	if (fileName.isEmpty()) {
-		// キャンセル
+		tr("Open project"),
+        QString(),
+        tr("Lumino project(*.lnproj)"));
+	if (!filePath.isEmpty()) {
+        closeProject();
+
+        m_workspace->openProject2(QtToLn(filePath));
 	}
+}
+
+void MainWindow::closeProject()
+{
 }

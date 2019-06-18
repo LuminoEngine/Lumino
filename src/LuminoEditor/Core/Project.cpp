@@ -88,9 +88,10 @@ ln::Result Project::newProject(const ln::Path& projectDir, const ln::String& pro
 	*/
 }
 
-ln::Result Project::openProject(const ln::Path& dir)
+ln::Result Project::openProject2(const ln::Path& projectFile)
 {
-	m_rootDir = dir.canonicalize();
+    m_projectFilePath = projectFile.canonicalize();
+	m_rootDir = m_projectFilePath.parent();
 	m_properties = ln::makeRef<ProjectProperties>();
 
 	setupPathes();
@@ -148,10 +149,10 @@ void Project::setupPathes()
 	
 	m_intermediateAssetsDir = ln::Path(m_buildDir, u"Assets");
 
-	auto files = ln::FileSystem::getFiles(m_rootDir, u"*" + ProjectFileExt);
-	if (!files.isEmpty()) {
-		m_projectFilePath = *files.begin();
-	}
+	//auto files = ln::FileSystem::getFiles(m_rootDir, u"*" + ProjectFileExt);
+	//if (!files.isEmpty()) {
+	//	m_projectFilePath = *files.begin();
+	//}
 }
 
 

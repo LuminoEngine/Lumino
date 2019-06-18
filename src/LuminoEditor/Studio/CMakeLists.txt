@@ -27,7 +27,8 @@ qt5_add_resources(
 
 # Tell CMake to create the ${PROJECT_NAME} executable
 add_executable(${PROJECT_NAME} ${LuminoStudio_SOURCES} ${LN_QT_RESOURCES} ${LN_SOURCES_External_QtAwesome})
-target_link_libraries(${PROJECT_NAME} LuminoEngine EditorCore Qt5::Widgets Qt5::OpenGL)
+target_include_directories(${PROJECT_NAME} PRIVATE ${LUMINO_INCLUDE_DIRECTORIES})
+target_link_libraries(${PROJECT_NAME} LuminoEngine EditorCore EditorCore Qt5::Widgets Qt5::OpenGL)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Editor")
 ln_add_pch(${PROJECT_NAME} "PCH.h" "PCH.cpp")
 

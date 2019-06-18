@@ -2,6 +2,7 @@
 #include <QMainWindow>
 #include "ContentsViewManager.h"
 
+namespace lna { class Workspace; }
 class QtAwesome;
 class ActionManager;
 class DocumentManager;
@@ -31,6 +32,10 @@ protected:
 	void onOpenProject();
 
 private:
+    void closeProject();
+
+    ln::Ref<lna::Workspace> m_workspace;
+
     QOpenGLContext* m_resourceContext;
     QOffscreenSurface* m_offscreenSurface;
     QtAwesome* m_awesome;

@@ -5,20 +5,47 @@
 
 namespace lna {
 
+static Workspace* s_instance = nullptr;
+
+Workspace* Workspace::instance()
+{
+    assert(s_instance);
+    return s_instance;
+}
+
+//ln::Result Workspace::init()
+//{
+//    assert(!s_instance);
+//    s_instance = new Workspace();
+//    return true;
+//}
+//
+//void Workspace::finalize()
+//{
+//    if (s_instance) {
+//        delete s_instance;
+//        s_instance = nullptr;
+//    }
+//}
+
 Workspace::Workspace()
 	: m_devTools(ln::makeRef<BuildEnvironment>())
 {
+    assert(!s_instance);
+    s_instance = this;
+
 	m_devTools->setupPathes();
 }
 
 Workspace::~Workspace()
 {
+    s_instance = nullptr;
 }
 
-ln::Result Workspace::openProject(const ln::Path& dir)
+ln::Result Workspace::openProject2(const ln::Path& filePath)
 {
 	m_project = ln::makeRef<Project>(this);
-	return m_project->openProject(dir);
+	return m_project->openProject2(filePath);
 }
 
 ln::Result Workspace::runProject(const ln::String& target)
@@ -129,6 +156,17 @@ void Workspace::dev_openIde(const ln::String& target) const
 #else
 	LN_NOTIMPLEMENTED();	// TODO: putenv は書き込み可能なポインタを渡さないとならないみたい？
 #endif
+}
+
+ln::Path Workspace::findProejctFile(const ln::Path& dir)
+{
+    auto files = ln::FileSystem::getFiles(dir, u"*" + Project::ProjectFileExt);
+    if (!files.isEmpty()) {
+    	return *files.begin();
+    }
+    else {
+        return ln::Path();
+    }
 }
 
 } // namespace lna

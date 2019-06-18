@@ -18,7 +18,7 @@ public:
 	virtual ~Project();
 
 	ln::Result newProject(const ln::Path& projectDir, const ln::String& projectName, const ln::String& engineSource, const ln::String& templateName);
-    ln::Result openProject(const ln::Path& dir);
+    ln::Result openProject2(const ln::Path& projectFile);
     ln::Result saveProject();
     ln::Result loadProject();
 	void restore();
