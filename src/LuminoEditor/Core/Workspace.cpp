@@ -13,13 +13,13 @@ Workspace::~Workspace()
 {
 }
 
-Result Workspace::openProject(const ln::Path& dir)
+ln::Result Workspace::openProject(const ln::Path& dir)
 {
 	m_project = ln::makeRef<Project>(this);
 	return m_project->openProject(dir);
 }
 
-Result Workspace::runProject(const ln::String& target)
+ln::Result Workspace::runProject(const ln::String& target)
 {
 	// Windows
 	if (ln::String::compare(target, u"Windows", ln::CaseSensitivity::CaseInsensitive) == 0)
@@ -43,7 +43,7 @@ Result Workspace::runProject(const ln::String& target)
 			auto files = ln::FileSystem::getFiles(buildDir, u"*.html");
 			if (files.isEmpty()) {
 				CLI::error("Not found *.html file.");
-				return Result::Fail;
+				return false;
 			}
 
 			ln::Process proc2;
@@ -57,25 +57,25 @@ Result Workspace::runProject(const ln::String& target)
 	else
 	{
 		CLI::error(ln::String::format(u"{0} is invalid target.", target));
-		return Result::Fail;
+		return false;
 	}
 
-	return Result::Success;
+	return true;
 }
 
-Result Workspace::restoreProject()
+ln::Result Workspace::restoreProject()
 {
 	m_project->restore();
-	return Result::Success;
+    return true;
 }
 
-Result Workspace::dev_installTools() const
+ln::Result Workspace::dev_installTools() const
 {
 	m_devTools->prepareEmscriptenSdk();
 
 
-	
-	return Result::Success;
+
+    return true;
 }
 
 void Workspace::dev_openIde(const ln::String& target) const

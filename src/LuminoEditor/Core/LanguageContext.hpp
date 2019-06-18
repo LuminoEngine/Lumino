@@ -12,8 +12,8 @@ public:
 
 	Project* project() const { return m_project; }
 
-	virtual Result applyTemplates(const ln::String& templateName) = 0;
-    virtual Result applyEngine() = 0;
+	virtual ln::Result applyTemplates(const ln::String& templateName) = 0;
+    virtual ln::Result applyEngine() = 0;
 	virtual void restore() = 0;
 
 private:
@@ -27,8 +27,8 @@ public:
 	CppLanguageContext(Project* project);
 	virtual ~CppLanguageContext();
 
-	virtual Result applyTemplates(const ln::String& templateName) override;
-    virtual Result applyEngine() override;
+	virtual ln::Result applyTemplates(const ln::String& templateName) override;
+    virtual ln::Result applyEngine() override;
 	virtual void restore() override;
 
 private:

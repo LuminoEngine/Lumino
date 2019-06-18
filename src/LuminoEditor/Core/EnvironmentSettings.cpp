@@ -148,7 +148,7 @@ void BuildEnvironment::setupPathes()
 	}
 }
 
-Result BuildEnvironment::prepareEmscriptenSdk()
+ln::Result BuildEnvironment::prepareEmscriptenSdk()
 {
 	ln::FileSystem::createDirectory(m_toolsDir);
 
@@ -157,7 +157,7 @@ Result BuildEnvironment::prepareEmscriptenSdk()
 		if (!ln::FileSystem::existsDirectory(m_emsdkRootDir))
 		{
 			if (!callProcess(u"git", { u"clone", u"https://github.com/juj/emsdk.git" }, m_toolsDir)) {
-				return Result::Fail;
+				return false;
 			}
 		}
 
@@ -169,21 +169,21 @@ Result BuildEnvironment::prepareEmscriptenSdk()
 			auto emsdk = u"emsdk";
 #endif
 			if (!callProcess(u"git", { u"pull" }, m_emsdkRootDir)) {
-				return Result::Fail;
+				return false;
 			}
 			if (!callProcess(emsdk, { u"update-tags" }, m_emsdkRootDir)) {
-				return Result::Fail;
+				return false;
 			}
 			if (!callProcess(emsdk, { u"install", m_emsdkName }, m_emsdkRootDir)) {
-				return Result::Fail;
+				return false;
 			}
 		}
 	}
 
-    return Result::Success;
+    return true;
 }
 
-Result BuildEnvironment::callProcess(const ln::String& program, const ln::List<ln::String>& arguments, const ln::Path& workingDir)
+ln::Result BuildEnvironment::callProcess(const ln::String& program, const ln::List<ln::String>& arguments, const ln::Path& workingDir)
 {
 	ln::Process proc1;
 	proc1.setUseShellExecute(false);
@@ -193,10 +193,10 @@ Result BuildEnvironment::callProcess(const ln::String& program, const ln::List<l
 	proc1.start();
 	proc1.wait();
 	if (proc1.exitCode() == 0) {
-		return Result::Success;
+		return true;
 	}
 	else {
-		return Result::Fail;
+		return false;
 	}
 }
 

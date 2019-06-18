@@ -27,7 +27,7 @@ CppLanguageContext::~CppLanguageContext()
 {
 }
 
-Result CppLanguageContext::applyTemplates(const ln::String& templateName)
+ln::Result CppLanguageContext::applyTemplates(const ln::String& templateName)
 {
     auto projectTemplatesDir = project()->workspace()->buildEnvironment()->projectTemplatesDirPath();
 	auto dstRoot = project()->rootDirPath();
@@ -43,7 +43,7 @@ Result CppLanguageContext::applyTemplates(const ln::String& templateName)
     if (!ln::FileSystem::existsDirectory(srcRoot)) {
         // TODO: 事前検証
         CLI::error(u"Invalid project template.");
-        return Result::Fail;
+        return false;
     }
 
 	CLI::info(u"Copying template...");
@@ -148,10 +148,10 @@ Result CppLanguageContext::applyTemplates(const ln::String& templateName)
     }
 
 	CLI::info("Copied template.");
-	return Result::Success;
+	return true;
 }
 
-Result CppLanguageContext::applyEngine()
+ln::Result CppLanguageContext::applyEngine()
 {
     if (project()->properties()->engine.indexOf(u"local") == 0)
     {
@@ -186,22 +186,22 @@ Result CppLanguageContext::applyEngine()
                 engineRoot,
             });
         if (result != 0) {
-            return Result::Fail;
+            return false;
         }
 
         result = ln::Process::execute(u"dotnet", { u"run", u"--project", ln::Path(engineRoot, u"build.csproj"), u"--", u"BuildForCI_1" });
         if (result != 0) {
-            return Result::Fail;
+            return false;
         }
 
         result = ln::Process::execute(u"dotnet", { u"run", u"--project", ln::Path(engineRoot, u"build.csproj"), u"--", u"BuildForCI_2" });
         if (result != 0) {
-            return Result::Fail;
+            return false;
         }
 
         result = ln::Process::execute(u"dotnet", { u"run", u"--project", ln::Path(engineRoot, u"build.csproj"), u"--", u"CopyEngineLibsToRepoRoot" });
         if (result != 0) {
-            return Result::Fail;
+            return false;
         }
     }
     else // system
@@ -209,7 +209,7 @@ Result CppLanguageContext::applyEngine()
         // 各プロジェクトが環境変数でインストール済みパッケージを参照する
     }
 
-    return Result::Success;
+    return true;
 }
 
 void CppLanguageContext::restore()

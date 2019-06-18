@@ -66,7 +66,8 @@ include(src/LuminoBuildCommon.cmake)
 set(LUMINO_ROOT_PATH "${CMAKE_CURRENT_LIST_DIR}")
 set(LUMINO_INCLUDE_DIRECTORIES
     "${LUMINO_ROOT_PATH}/src/LuminoCore/include"
-    "${LUMINO_ROOT_PATH}/src/LuminoEngine/include")
+    "${LUMINO_ROOT_PATH}/src/LuminoEngine/include"
+    "${LUMINO_ROOT_PATH}/src/LuminoEditor/Core")
 
 
 

@@ -50,31 +50,31 @@ int BuildCommand::execute(Workspace* workspace, Project* project)
     return 0;
 }
 
-Result BuildCommand::buildWindowsTarget(Workspace* workspace, bool debug)
+ln::Result BuildCommand::buildWindowsTarget(Workspace* workspace, bool debug)
 {
 	auto file = ln::FileSystem::getFile(m_project->rootDirPath(), u"*.sln");
 	if (file.isEmpty()) {
 		CLI::error(".sln file not found.");
-		return Result::Fail;
+		return false;
 	}
 
 	if (debug) {
 		if (ln::Process::execute(workspace->buildEnvironment()->msbuild(), { file.str(), u"/t:build", u"/p:Configuration=Debug;Platform=\"x86\"" }) != 0) {
 			CLI::error("Failed MSBuild.");
-			return Result::Fail;
+			return false;
 		}
 	}
 	else {
 		if (ln::Process::execute(workspace->buildEnvironment()->msbuild(), { file.str(), u"/t:build", u"/p:Configuration=Release;Platform=\"x86\"" }) != 0) {
 			CLI::error("Failed MSBuild.");
-			return Result::Fail;
+			return false;
 		}
 	}
 
-	return Result::Success;
+	return true;
 }
 
-Result BuildCommand::buildWindowsPackage(Project* project)
+ln::Result BuildCommand::buildWindowsPackage(Project* project)
 {
 	auto dstDir = ln::Path::combine(project->releaseDir(), u"Windows");
 	ln::FileSystem::createDirectory(dstDir);
@@ -87,10 +87,10 @@ Result BuildCommand::buildWindowsPackage(Project* project)
 		ln::Path::combine(project->windowsProjectDir(), u"Assets.lca"),
 		ln::Path::combine(dstDir, u"Assets.lca"));
 
-	return Result::Success;
+	return true;
 }
 
-Result BuildCommand::buildWebTarget(Workspace* workspace)
+ln::Result BuildCommand::buildWebTarget(Workspace* workspace)
 {
 	// emsdk がなければインストールする
 	workspace->buildEnvironment()->prepareEmscriptenSdk();
@@ -122,10 +122,10 @@ Result BuildCommand::buildWebTarget(Workspace* workspace)
 	}
 
 	ln::Process::execute(script);
-	return Result::Success;
+	return true;
 }
 
-Result BuildCommand::buildAndroidTarget()
+ln::Result BuildCommand::buildAndroidTarget()
 {
 #if 0
 	// Android
@@ -172,10 +172,10 @@ Result BuildCommand::buildAndroidTarget()
 #endif
 	}
 #endif
-	return Result::Success;
+	return true;
 }
 
-Result BuildCommand::buildAssets()
+ln::Result BuildCommand::buildAssets()
 {
 	ln::detail::CryptedAssetArchiveWriter writer;
 	auto outputFilePath = ln::Path(m_project->buildDir(), u"Assets.lca");
@@ -186,7 +186,7 @@ Result BuildCommand::buildAssets()
 
 			ln::Path outputFile;
 			if (!buildAsset_Shader(file, &outputFile)) {
-				return Result::Fail;
+				return false;
 			}
 
 			writer.addFile(outputFile, m_project->assetsDir().makeRelative(file).replaceExtension(ln::detail::UnifiedShader::FileExt));
@@ -251,10 +251,10 @@ Result BuildCommand::buildAssets()
 
 	CLI::info(u"Compilation succeeded.");
 
-	return Result::Success;
+	return true;
 }
 
-Result BuildCommand::buildAsset_Shader(const ln::Path& inputFile, ln::Path* outputFile)
+ln::Result BuildCommand::buildAsset_Shader(const ln::Path& inputFile, ln::Path* outputFile)
 {
 	auto rel = m_project->assetsDir().makeRelative(inputFile);
 	auto workFile = ln::Path::combine(m_project->intermediateAssetsDir(), rel.parent(), inputFile.fileName().replaceExtension(ln::detail::UnifiedShader::FileExt));
@@ -263,9 +263,9 @@ Result BuildCommand::buildAsset_Shader(const ln::Path& inputFile, ln::Path* outp
 	FxcCommand cmd;
 	cmd.outputFile = workFile;
 	if (cmd.execute(inputFile) != 0) {
-		return Result::Fail;
+		return false;
 	}
 
 	*outputFile = workFile;
-	return Result::Success;
+	return true;
 }

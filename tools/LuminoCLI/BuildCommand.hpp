@@ -9,13 +9,13 @@ public:
     int execute(Workspace* workspace, Project* project);
 
 private:
-	Result buildWindowsTarget(Workspace* workspace, bool debug);
-	Result buildWindowsPackage(Project* project);
-	Result buildWebTarget(Workspace* workspace);
-	Result buildAndroidTarget();
-	Result buildAssets();
+    ln::Result buildWindowsTarget(Workspace* workspace, bool debug);
+    ln::Result buildWindowsPackage(Project* project);
+    ln::Result buildWebTarget(Workspace* workspace);
+    ln::Result buildAndroidTarget();
+    ln::Result buildAssets();
 
-	Result buildAsset_Shader(const ln::Path& inputFile, ln::Path* outputFile);
+    ln::Result buildAsset_Shader(const ln::Path& inputFile, ln::Path* outputFile);
 
 	Project* m_project;
 };
