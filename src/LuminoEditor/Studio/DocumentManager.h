@@ -2,6 +2,7 @@
 #include <QMainWindow>
 #include "Document.h"
 
+class StartupView;
 
 class DocumentManager : public QObject
 {
@@ -18,5 +19,7 @@ private:
     QWidget* m_rootWidget;
 	QStackedLayout* m_rootLayout;
 	QList<Document*> m_documents;
-    QTabWidget* m_tabWidget;
+    //QTabWidget* m_tabWidget;
+	QStackedLayout* m_viewStack;
+	StartupView* m_startupView;
 };

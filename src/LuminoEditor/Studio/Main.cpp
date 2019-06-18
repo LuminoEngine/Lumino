@@ -32,10 +32,15 @@ int main(int argc, char *argv[])
             qApp->setStyleSheet(ts.readAll());
         }
 
-        QFont font("Meiryo UI");
-        a.setFont(font);
     }
 #endif
+
+	// Global font
+	{
+		QFont font("Meiryo UI");
+		font.setPointSize(10);
+		a.setFont(font);
+	}
 
     MainWindow mainWindow;
     mainWindow.show();

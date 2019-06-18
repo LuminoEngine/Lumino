@@ -1,6 +1,7 @@
 ﻿
 #include "DocumentManager.h"
 #include "LuminoWidget.h"
+#include "StartupView.h"
 #include "SceneEditorDocumentView.h"
 
 DocumentManager::DocumentManager(QWidget* parent)
@@ -8,6 +9,7 @@ DocumentManager::DocumentManager(QWidget* parent)
     , m_rootWidget(new QWidget(parent))
 	//, m_rootLayout(new QStackedLayout(m_rootWidget))
     //, m_tabWidget(new QTabWidget(m_rootWidget))
+	, m_startupView(new StartupView(m_rootWidget))
 {
 
 	//auto* b = new QPushButton("test", m_rootWidget);
@@ -43,8 +45,10 @@ DocumentManager::DocumentManager(QWidget* parent)
 	//m_rootWidget->setLayout(m_rootLayout);
 
 
-    m_tabWidget = new QTabWidget();
-    layout->addWidget(m_tabWidget);
+    //m_tabWidget = new QTabWidget();
+	m_viewStack = new QStackedLayout();
+	m_viewStack->addWidget(m_startupView);
+    layout->addLayout(m_viewStack);
 
 #if 1
     //QVBoxLayout* vertical = new QVBoxLayout(m_rootWidget);
@@ -58,7 +62,7 @@ DocumentManager::DocumentManager(QWidget* parent)
 	////m_tabWidget->addTab(new TilemapLandscapeWorldEditorView(m_tabWidget), tr("TAB0"));
  //   m_tabWidget->addTab(new LuminoWidget(m_tabWidget), tr("TAB1"));
  //   m_tabWidget->addTab(editor2, tr("TAB2"));
-    m_tabWidget->setTabsClosable(true);
+    //m_tabWidget->setTabsClosable(true);
 #endif
 
 }
@@ -72,7 +76,8 @@ void DocumentManager::addDocument(Document* doc)
 {
     if (auto ddoc = dynamic_cast<SceneEditorDocument*>(doc)) {
         auto view = new SceneEditorView();
-        m_tabWidget->addTab(view, tr("tab"));
+		m_viewStack->addWidget(view);
+        //m_tabWidget->addTab(view, tr("tab"));
         m_documents.append(ddoc);
         ddoc->setParent(this);
     }

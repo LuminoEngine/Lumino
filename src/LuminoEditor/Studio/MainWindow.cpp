@@ -1,5 +1,6 @@
 ﻿
 #include "External/QtAwesome/QtAwesome.h"
+#include "ActionManager.h"
 #include "DocumentManager.h"
 #include "InspectorPaneContainer.h"
 #include "ToolPaneContainer.h"
@@ -8,6 +9,7 @@
 #include "ProblemsPane.h"
 #include "OutputPane.h"
 #include "PropertyPane.h"
+#include "NewProjectDialog.h"
 #include "MainWindow.h"
 
 static MainWindow* s_mainWindow = nullptr;
@@ -39,12 +41,30 @@ void MainWindow::initializeLumino()
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
+	, m_actionManager(new ActionManager(this))
 	, m_resourceContext(nullptr)
 	, m_offscreenSurface(nullptr)
 	, m_contentsViewManager(nullptr)
 	, m_documentManager(nullptr)
 {
     s_mainWindow = this;
+
+
+	{
+		QAction* action;
+
+		action = new QAction(tr("&New project"), this);
+		ActionManager::instance()->registerAction("NewProject", action);
+		connect(action, &QAction::triggered, this, &MainWindow::onNewProject);
+
+		action = new QAction(tr("&Open project"), this);
+		ActionManager::instance()->registerAction("OpenProject", action);
+		connect(action, &QAction::triggered, this, &MainWindow::onOpenProject);
+
+
+	}
+
+
 
     setGeometry(0, 0, 1200, 800);
 
@@ -167,5 +187,33 @@ void MainWindow::closeEvent(QCloseEvent* event)
 		m_resourceContext->makeCurrent(m_offscreenSurface);
 		ln::Engine::finalize();
 		m_resourceContext->doneCurrent();
+	}
+}
+
+void MainWindow::onNewProject()
+{
+	NewProjectDialog dlg(this);
+	if (dlg.exec() == QDialog::Accepted) {
+		printf("");
+	}
+	else {
+		printf("");
+	}
+
+}
+
+void MainWindow::onOpenProject()
+{
+	QString selFilter = tr("テキスト(*.txt)");
+	QString fileName = QFileDialog::getOpenFileName(
+		this,
+		tr("ファイルを開く"),
+		"C:/Qt/Qt5.3.2",
+		tr("すべて(*.*);;テキスト(*.txt);;ソース(*.h *.cpp)"),
+		&selFilter,
+		QFileDialog::DontUseCustomDirectoryIcons
+	);
+	if (fileName.isEmpty()) {
+		// キャンセル
 	}
 }

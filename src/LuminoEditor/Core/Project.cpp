@@ -1,4 +1,6 @@
-﻿//#include "EnvironmentSettings.hpp"
+﻿
+#if 0
+//#include "EnvironmentSettings.hpp"
 //#include "Workspace.hpp"
 //#include "LanguageContext.hpp"
 #include "AssetDatabase.hpp"
@@ -90,3 +92,5 @@ void Project::setupPathes()
 
     m_assetDatabase = ln::makeObject<AssetDatabase>();
 }
+
+#endif

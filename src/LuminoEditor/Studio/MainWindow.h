@@ -3,6 +3,7 @@
 #include "ContentsViewManager.h"
 
 class QtAwesome;
+class ActionManager;
 class DocumentManager;
 class InspectorPaneContainer;
 class ToolPaneContainer;
@@ -26,11 +27,15 @@ public:
 protected:
     void closeEvent(QCloseEvent* event) override;
 
+	void onNewProject();
+	void onOpenProject();
+
 private:
     QOpenGLContext* m_resourceContext;
     QOffscreenSurface* m_offscreenSurface;
     QtAwesome* m_awesome;
     ContentsViewManager* m_contentsViewManager;
+	ActionManager* m_actionManager;
     DocumentManager* m_documentManager;
 	InspectorPaneContainer* m_inspectorPaneContainer;
 	ToolPaneContainer* m_toolPaneContainer;

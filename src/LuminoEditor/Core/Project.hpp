@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#if 0
+
 //class LanguageContext;
 //class Project;
 class ProjectProperties;
@@ -76,3 +78,5 @@ public:
 		ar & LN_NVP(engine);
 	}
 };
+
+#endif
