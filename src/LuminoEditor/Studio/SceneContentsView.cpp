@@ -11,7 +11,7 @@ SceneAssetTreeView::SceneAssetTreeView(QWidget* parent)
     : QTreeView(parent)
 {
     m_model = new SceneAssetTreeModel(this);
-    QModelIndex rootModelIndex = m_model->setRootPath("D:/Proj/LN/PrivateProjects/HC0/Assets");
+	QModelIndex rootModelIndex = m_model->setRootPath(".");//"D:/Proj/LN/PrivateProjects/HC0/Assets");
 
     //setHeaderHidden(true);
     //setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);

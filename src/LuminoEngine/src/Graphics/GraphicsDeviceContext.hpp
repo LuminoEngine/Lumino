@@ -177,6 +177,7 @@ public:
 
     // utility
     Ref<IShaderPass> createShaderPassFromUnifiedShaderPass(const UnifiedShader* unifiedShader, UnifiedShader::PassId passId, DiagnosticsManager* diag);
+	static Result getOpenGLCurrentFramebufferTextureId(int* id);
 
 protected:
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) = 0;

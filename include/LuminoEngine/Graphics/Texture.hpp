@@ -202,6 +202,7 @@ public:
     static void resetSwapchainFrameIfNeeded(RenderTargetTexture* renderTarget, bool force) { renderTarget->resetSwapchainFrameIfNeeded(force); }
     static void resetNativeObject(RenderTargetTexture* renderTarget, intptr_t value) { renderTarget->resetNativeObject(value); }
     static void resetSize(RenderTargetTexture* renderTarget, int width, int height) { renderTarget->resetSize(width, height); }
+	static void resetOpenGLTextureIdFromCurrentFramebuffer(RenderTargetTexture* renderTarget);
 };
 
 class Texture3D

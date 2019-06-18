@@ -178,6 +178,18 @@ public:
 	}
 };
 
+// 外部の OpenGL Context に統合するときに使う
+Result IGraphicsDevice::getOpenGLCurrentFramebufferTextureId(int* id)
+{
+	GLint type;
+	GL_CHECK(glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, &type));
+	if (LN_ENSURE(type == GL_TEXTURE)) return false;
+
+	GLint texture;
+	GL_CHECK(glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &texture));
+	*id = texture;
+	return true;
+}
 
 //=============================================================================
 // OpenGLDevice

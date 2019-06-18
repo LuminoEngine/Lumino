@@ -69,6 +69,11 @@ void LuminoWidget::resizeGL(int width, int height)
 void LuminoWidget::paintGL()
 {
 	if (m_frameWindow) {
+
+		//glGetFramebufferAttachmentParameter with GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE
+
+
+
 		auto gl = QOpenGLContext::globalShareContext();
 		//qDebug() << "MapExplorer" << QOpenGLContext::areSharing(this->context(), context()) << (QOpenGLContext::currentContext() == this->context());
 		//qDebug() << "global?" << QOpenGLContext::areSharing(context(), gl);
@@ -77,6 +82,9 @@ void LuminoWidget::paintGL()
 
 		//glClearColor(0.0, 1.0, 1.0, 1.0);
 		//glClear(GL_COLOR_BUFFER_BIT);
+
+		// Current framebuffer にアタッチされているテクスチャId を取り出しておく
+		ln::detail::TextureInternal::resetOpenGLTextureIdFromCurrentFramebuffer(m_nativeRenderTarget);
 
 		// TODO: １回レンダリングするとメモリリークする・・・
 		//m_frameWindow->renderView()->setClearMode(ln::RenderViewClearMode::ColorAndDepth);
