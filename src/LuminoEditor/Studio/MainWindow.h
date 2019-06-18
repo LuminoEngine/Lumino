@@ -6,6 +6,7 @@ namespace lna { class Workspace; }
 class QtAwesome;
 class ActionManager;
 class DocumentManager;
+class SpritesetContentsViewProvider;
 class AudioContentsViewProvider;
 class InspectorPaneContainer;
 class ToolPaneContainer;
@@ -44,6 +45,7 @@ private:
 	ActionManager* m_actionManager;
     DocumentManager* m_documentManager;
 
+    SpritesetContentsViewProvider* m_spritesetContentsViewProvider;
     AudioContentsViewProvider* m_audioContentsViewProvider;
 
 	InspectorPaneContainer* m_inspectorPaneContainer;

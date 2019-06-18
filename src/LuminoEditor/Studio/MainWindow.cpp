@@ -6,6 +6,7 @@
 #include "DocumentManager.h"
 #include "InspectorPaneContainer.h"
 #include "ToolPaneContainer.h"
+#include "SpritesetContentsView.h"
 #include "AudioContentsView.h"
 #include "SceneContentsView.h"
 #include "ProblemsPane.h"
@@ -101,6 +102,11 @@ MainWindow::MainWindow(QWidget* parent)
     
 	{
         //m_contentsViewManager->addContentsViewProvider(ln::makeObject<SceneContentsViewProvider>());
+        
+
+        m_spritesetContentsViewProvider = new SpritesetContentsViewProvider(this);
+        m_contentsViewManager->addContentsViewProvider(m_spritesetContentsViewProvider);
+
         m_audioContentsViewProvider = new AudioContentsViewProvider(this);
         m_contentsViewManager->addContentsViewProvider(m_audioContentsViewProvider);
     }
@@ -214,6 +220,9 @@ void MainWindow::onOpenProject()
         closeProject();
 
         m_workspace->openProject2(QtToLn(filePath));
+
+        m_spritesetContentsViewProvider->view()->setRootDir(
+            LnToQt(ln::Path(m_workspace->project()->assetsDir(), u"Spriteset")));
 
         m_audioContentsViewProvider->view()->setRootDir(
             LnToQt(ln::Path(m_workspace->project()->assetsDir(), u"Audio")));

@@ -11,6 +11,8 @@ namespace ln {
 LN_OBJECT_IMPLEMENT(AssetObject, Object);
 
 AssetObject::AssetObject()
+    : m_parent(nullptr)
+    , m_children()
 {
 }
 
