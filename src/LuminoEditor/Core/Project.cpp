@@ -3,6 +3,8 @@
 #include "LanguageContext.hpp"
 #include "Project.hpp"
 
+namespace lna {
+
 //==============================================================================
 // Project
 
@@ -248,3 +250,6 @@ void Project::setupPathes()
 }
 
 #endif
+
+} // namespace lna
+

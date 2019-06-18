@@ -108,7 +108,7 @@ int main(int argc, char** argv)
 
 		if (parser.process(argc, argv))
 		{
-			auto workspace = ln::makeRef<Workspace>();
+			auto workspace = ln::makeRef<lna::Workspace>();
 
 			//--------------------------------------------------------------------------------
 			// init command

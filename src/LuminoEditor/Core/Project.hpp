@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+namespace lna {
+
+
 class LanguageContext;
 class Project;
 class ProjectProperties;
@@ -155,3 +158,5 @@ public:
 };
 
 #endif
+
+} // namespace lna

@@ -7,7 +7,7 @@
 #include "BuildCommand.hpp"
 #include "FxcCommand.hpp"
 
-int BuildCommand::execute(Workspace* workspace, Project* project)
+int BuildCommand::execute(lna::Workspace* workspace, lna::Project* project)
 {
 	m_project = project;
 
@@ -50,7 +50,7 @@ int BuildCommand::execute(Workspace* workspace, Project* project)
     return 0;
 }
 
-ln::Result BuildCommand::buildWindowsTarget(Workspace* workspace, bool debug)
+ln::Result BuildCommand::buildWindowsTarget(lna::Workspace* workspace, bool debug)
 {
 	auto file = ln::FileSystem::getFile(m_project->rootDirPath(), u"*.sln");
 	if (file.isEmpty()) {
@@ -74,7 +74,7 @@ ln::Result BuildCommand::buildWindowsTarget(Workspace* workspace, bool debug)
 	return true;
 }
 
-ln::Result BuildCommand::buildWindowsPackage(Project* project)
+ln::Result BuildCommand::buildWindowsPackage(lna::Project* project)
 {
 	auto dstDir = ln::Path::combine(project->releaseDir(), u"Windows");
 	ln::FileSystem::createDirectory(dstDir);
@@ -90,7 +90,7 @@ ln::Result BuildCommand::buildWindowsPackage(Project* project)
 	return true;
 }
 
-ln::Result BuildCommand::buildWebTarget(Workspace* workspace)
+ln::Result BuildCommand::buildWebTarget(lna::Workspace* workspace)
 {
 	// emsdk がなければインストールする
 	workspace->buildEnvironment()->prepareEmscriptenSdk();

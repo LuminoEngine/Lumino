@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+namespace lna {
+
+
 class BuildEnvironment
 	: public ln::RefObject
 {
@@ -59,3 +62,5 @@ private:
 	ln::Path m_androidNdkRootDir;
 	ln::Path m_androidCMakeToolchain;
 };
+
+} // namespace lna

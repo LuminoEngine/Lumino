@@ -6,7 +6,7 @@ public:
     ln::String engineSource;
     ln::String templateName;
 
-    int execute(Workspace* workspace, const ln::String& projectName);
+    int execute(lna::Workspace* workspace, const ln::String& projectName);
 
 private:
 

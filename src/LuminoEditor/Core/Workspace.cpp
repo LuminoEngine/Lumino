@@ -3,6 +3,8 @@
 #include "Project.hpp"
 #include "Workspace.hpp"
 
+namespace lna {
+
 Workspace::Workspace()
 	: m_devTools(ln::makeRef<BuildEnvironment>())
 {
@@ -128,3 +130,5 @@ void Workspace::dev_openIde(const ln::String& target) const
 	LN_NOTIMPLEMENTED();	// TODO: putenv は書き込み可能なポインタを渡さないとならないみたい？
 #endif
 }
+
+} // namespace lna

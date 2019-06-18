@@ -1,6 +1,9 @@
 ﻿
 #include "EnvironmentSettings.hpp"
 
+namespace lna {
+
+
 //==============================================================================
 // BuildEnvironment
 
@@ -200,3 +203,5 @@ ln::Result BuildEnvironment::callProcess(const ln::String& program, const ln::Li
 	}
 }
 
+
+} // namespace lna

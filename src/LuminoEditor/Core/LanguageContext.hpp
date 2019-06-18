@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+namespace lna {
 class Workspace;
 class Project;
 
@@ -33,3 +34,8 @@ public:
 
 private:
 };
+
+} // namespace lna
+
+
+

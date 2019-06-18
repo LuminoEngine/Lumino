@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+namespace lna {
+
+
 class AssetDatabase
 	: public ln::Object
 {
@@ -10,3 +13,5 @@ private:
     AssetDatabase();
     void init();
 };
+
+} // namespace lna

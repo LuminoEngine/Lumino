@@ -3,6 +3,9 @@
 #include "Project.hpp"
 #include "LanguageContext.hpp"
 
+namespace lna {
+
+
 //==============================================================================
 // LanguageContext
 
@@ -216,3 +219,5 @@ void CppLanguageContext::restore()
 {
     applyEngine();
 }
+
+} // namespace lna

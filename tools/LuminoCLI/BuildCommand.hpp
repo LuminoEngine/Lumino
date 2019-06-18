@@ -6,16 +6,16 @@ public:
 	bool package = false;
 	ln::String target;
 
-    int execute(Workspace* workspace, Project* project);
+    int execute(lna::Workspace* workspace, lna::Project* project);
 
 private:
-    ln::Result buildWindowsTarget(Workspace* workspace, bool debug);
-    ln::Result buildWindowsPackage(Project* project);
-    ln::Result buildWebTarget(Workspace* workspace);
+    ln::Result buildWindowsTarget(lna::Workspace* workspace, bool debug);
+    ln::Result buildWindowsPackage(lna::Project* project);
+    ln::Result buildWebTarget(lna::Workspace* workspace);
     ln::Result buildAndroidTarget();
     ln::Result buildAssets();
 
     ln::Result buildAsset_Shader(const ln::Path& inputFile, ln::Path* outputFile);
 
-	Project* m_project;
+    lna::Project* m_project;
 };

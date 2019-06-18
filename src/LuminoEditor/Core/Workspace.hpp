@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+namespace lna {
+
 class BuildEnvironment;
 class Project;
 
@@ -24,3 +26,5 @@ private:
 	ln::Ref<BuildEnvironment> m_devTools;
 	ln::Ref<Project> m_project;
 };
+
+} // namespace lna
