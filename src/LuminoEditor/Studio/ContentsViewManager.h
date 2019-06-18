@@ -22,18 +22,19 @@ private:
     QFrame* m_sidebar;
     QVBoxLayout* m_buttonContainer;
     QStackedWidget* m_viewContainer;
-    ln::List<ln::Ref<ContentsViewProvider>> m_providers;
+    QList<ContentsViewProvider*> m_providers;
 };
 
 
-class ContentsViewProvider : public ln::Object
+class ContentsViewProvider : public QObject
 {
+    Q_OBJECT
 public:
-    virtual ln::String icon() const = 0;
+    virtual QString icon() const = 0;
     virtual QWidget* createView() = 0;
 
-LN_CONSTRUCT_ACCESS:
-    ContentsViewProvider();
+protected:
+    ContentsViewProvider(QObject* parent);
 
 private:
 };

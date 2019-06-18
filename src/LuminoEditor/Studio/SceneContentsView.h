@@ -28,11 +28,9 @@ private:
 class SceneContentsViewProvider : public ContentsViewProvider
 {
 public:
-    virtual ln::String icon() const override { return u"windowrestore"; }
+    SceneContentsViewProvider(QObject* parent);
+    virtual QString icon() const override { return "windowrestore"; }
     virtual QWidget* createView() override;
-
-LN_CONSTRUCT_ACCESS:
-    SceneContentsViewProvider();
 
 private:
     QWidget* m_rootWidget;

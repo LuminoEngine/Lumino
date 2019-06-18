@@ -17,6 +17,8 @@ class AudioAssetTreeView : public QTreeView
 public:
     explicit AudioAssetTreeView(QWidget* parent = nullptr);
 
+    void setRootDir(QString dir);
+
 public slots:
     void onDoubleClicked(const QModelIndex &index);
 
@@ -29,11 +31,11 @@ private:
 class AudioContentsViewProvider : public ContentsViewProvider
 {
 public:
-    virtual ln::String icon() const override { return u"music"; }
+    AudioContentsViewProvider(QObject* parent);
+    virtual QString icon() const override { return "music"; }
     virtual QWidget* createView() override;
 
-LN_CONSTRUCT_ACCESS:
-    AudioContentsViewProvider();
+    AudioAssetTreeView* view() const { return m_treeView; }
 
 private:
     AudioAssetTreeView* m_treeView;

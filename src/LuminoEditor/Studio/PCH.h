@@ -5,5 +5,6 @@
 #include <QtGui>
 #include <QtWidgets>
 
-inline QString LnToQt(const ln::String& str) { return QString((QChar*)str.c_str()); }
-inline ln::String QtToLn(const QString& str) { return ln::String((ln::Char*)str.constData()); }
+inline QString LnToQt(const ln::String& value) { return QString((QChar*)value.c_str()); }
+inline QString LnToQt(const ln::Path& value) { return QString((QChar*)value.str().c_str()); }
+inline ln::String QtToLn(const QString& value) { return ln::String((ln::Char*)value.constData()); }

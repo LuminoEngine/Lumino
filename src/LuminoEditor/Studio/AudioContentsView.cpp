@@ -9,14 +9,14 @@ AudioAssetTreeView::AudioAssetTreeView(QWidget* parent)
     : QTreeView(parent)
 {
     m_model = new AudioAssetTreeModel(this);
-    QModelIndex rootModelIndex = m_model->setRootPath("D:/Proj/LN/PrivateProjects/HC0/Assets/Audio");
+    //QModelIndex rootModelIndex = m_model->setRootPath("D:/Proj/LN/PrivateProjects/HC0/Assets/Audio");
 
     //setHeaderHidden(true);
     //setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     //setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     //setTextElideMode(Qt::ElideNone);
     setModel(m_model);
-    setRootIndex(rootModelIndex);
+    //setRootIndex(rootModelIndex);
     //setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     //setFixedHeight(500);
     //setColumnWidth(0, INT_MAX);
@@ -27,6 +27,12 @@ AudioAssetTreeView::AudioAssetTreeView(QWidget* parent)
     connect(this, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(onDoubleClicked(const QModelIndex &)));
 
     //connect(this, SIGNAL(doubleclicked(QModelIndex)), this, SLOT(OnDoubleclicked(QModelIndex)));
+}
+
+void AudioAssetTreeView::setRootDir(QString dir)
+{
+    QModelIndex rootModelIndex = m_model->setRootPath(dir);
+    setRootIndex(rootModelIndex);
 }
 
 void AudioAssetTreeView::onDoubleClicked(const QModelIndex &index)
@@ -40,10 +46,10 @@ void AudioAssetTreeView::onDoubleClicked(const QModelIndex &index)
 //==============================================================================
 // AudioContentsViewProvider
 
-AudioContentsViewProvider::AudioContentsViewProvider()
-    : m_treeView(nullptr)
+AudioContentsViewProvider::AudioContentsViewProvider(QObject* parent)
+    : ContentsViewProvider(parent)
+    , m_treeView(nullptr)
 {
-
 }
 
 QWidget* AudioContentsViewProvider::createView()

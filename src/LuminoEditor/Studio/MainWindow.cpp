@@ -1,5 +1,6 @@
 ﻿
 #include <Workspace.hpp>
+#include <Project.hpp>
 #include "External/QtAwesome/QtAwesome.h"
 #include "ActionManager.h"
 #include "DocumentManager.h"
@@ -100,7 +101,8 @@ MainWindow::MainWindow(QWidget* parent)
     
 	{
         //m_contentsViewManager->addContentsViewProvider(ln::makeObject<SceneContentsViewProvider>());
-        m_contentsViewManager->addContentsViewProvider(ln::makeObject<AudioContentsViewProvider>());
+        m_audioContentsViewProvider = new AudioContentsViewProvider(this);
+        m_contentsViewManager->addContentsViewProvider(m_audioContentsViewProvider);
     }
 
 #if 0
@@ -212,6 +214,9 @@ void MainWindow::onOpenProject()
         closeProject();
 
         m_workspace->openProject2(QtToLn(filePath));
+
+        m_audioContentsViewProvider->view()->setRootDir(
+            LnToQt(ln::Path(m_workspace->project()->assetsDir(), u"Audio")));
 	}
 }
 

@@ -43,7 +43,7 @@ void ContentsViewManager::addContentsViewProvider(ContentsViewProvider* provider
     auto* button1 = new QPushButton();
     button1->setFlat(true);
     button1->setCheckable(true);
-    button1->setIcon(MainWindow::instance()->awesome()->icon(LnToQt(provider->icon()), iconOptions));
+    button1->setIcon(MainWindow::instance()->awesome()->icon(provider->icon(), iconOptions));
     button1->setFixedSize(50, 50);
     button1->setStyleSheet("padding: 3px; font-size: 24px;");
     button1->setContentsMargins(0, 0, 0, 0);
@@ -55,7 +55,7 @@ void ContentsViewManager::addContentsViewProvider(ContentsViewProvider* provider
     QWidget* view = provider->createView();
     m_viewContainer->addWidget(view);
 
-    m_providers.add(provider);
+    m_providers.append(provider);
 }
 
 void ContentsViewManager::onContainerButtonCheckChanged(bool checked)
@@ -70,9 +70,9 @@ void ContentsViewManager::onContainerButtonCheckChanged(bool checked)
 //==============================================================================
 // ContentsViewProvider
 
-ContentsViewProvider::ContentsViewProvider()
+ContentsViewProvider::ContentsViewProvider(QObject* parent = nullptr)
+    : QObject(parent)
 {
-
 }
 
 

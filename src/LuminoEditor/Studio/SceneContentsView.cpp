@@ -43,10 +43,10 @@ void SceneAssetTreeView::onDoubleClicked(const QModelIndex &index)
 //==============================================================================
 // SceneContentsViewProvider
 
-SceneContentsViewProvider::SceneContentsViewProvider()
-    : m_rootWidget(nullptr)
+SceneContentsViewProvider::SceneContentsViewProvider(QObject* parent)
+    : ContentsViewProvider(parent)
+    , m_rootWidget(nullptr)
 {
-
 }
 
 QWidget* SceneContentsViewProvider::createView()
