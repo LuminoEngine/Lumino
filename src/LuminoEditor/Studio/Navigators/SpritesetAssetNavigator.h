@@ -31,14 +31,14 @@ private:
 class SpritesetContentsViewProvider : public ContentsViewProvider
 {
 public:
-    SpritesetContentsViewProvider(QObject* parent);
+    SpritesetContentsViewProvider(QWidget* parent);
     virtual QString icon() const override { return "fileimageo"; }
-    virtual QWidget* createView() override;
 	virtual void onChangeCurrentProjet(lna::Project* project) override {}
 
     SpritesetAssetTreeView* view() const { return m_treeView; }
 
 private:
+	QVBoxLayout* m_rootLayout;
     SpritesetAssetTreeView* m_treeView;
 	QPushButton* m_newFileButton;
 	QPushButton* m_newFolderButton;

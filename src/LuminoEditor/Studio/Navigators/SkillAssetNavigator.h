@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "../ContentsViewManager.h"
+#include "../Widgets/Expander.h"
 
 
 class SkillAssetTreeModel : public QFileSystemModel
@@ -31,14 +32,15 @@ private:
 class SkillContentsViewProvider : public ContentsViewProvider
 {
 public:
-    SkillContentsViewProvider(QObject* parent);
+    SkillContentsViewProvider(QWidget* parent);
     virtual QString icon() const override { return "fileimageo"; }
-    virtual QWidget* createView() override;
 	virtual void onChangeCurrentProjet(lna::Project* project) override {}
 
     SkillAssetTreeView* view() const { return m_treeView; }
 
 private:
+	QVBoxLayout* m_rootLayout;
+	Expander* m_expander;
     SkillAssetTreeView* m_treeView;
 };
 

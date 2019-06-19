@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "ContentsViewManager.h"
+#include "Widgets/Expander.h"
 
 
 class SceneAssetTreeModel : public QFileSystemModel
@@ -28,11 +29,9 @@ private:
 class SceneContentsViewProvider : public ContentsViewProvider
 {
 public:
-    SceneContentsViewProvider(QObject* parent);
+    SceneContentsViewProvider(QWidget* parent);
     virtual QString icon() const override { return "windowrestore"; }
-    virtual QWidget* createView() override;
 
 private:
-    QWidget* m_rootWidget;
 };
 

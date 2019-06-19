@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "../ContentsViewManager.h"
+#include "../Widgets/Expander.h"
 
 
 class MotionAssetTreeModel : public QFileSystemModel
@@ -31,14 +32,15 @@ private:
 class MotionContentsViewProvider : public ContentsViewProvider
 {
 public:
-    MotionContentsViewProvider(QObject* parent);
+    MotionContentsViewProvider(QWidget* parent);
     virtual QString icon() const override { return "fileimageo"; }
-    virtual QWidget* createView() override;
 	virtual void onChangeCurrentProjet(lna::Project* project) override {}
 
     MotionAssetTreeView* view() const { return m_treeView; }
 
 private:
+	QVBoxLayout* m_rootLayout;
+	Expander* m_expander;
     MotionAssetTreeView* m_treeView;
 };
 

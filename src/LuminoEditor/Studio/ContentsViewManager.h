@@ -36,16 +36,15 @@ private:
 };
 
 
-class ContentsViewProvider : public QObject
+class ContentsViewProvider : public QFrame
 {
     Q_OBJECT
 public:
     virtual QString icon() const = 0;
-    virtual QWidget* createView() = 0;
 	virtual void onChangeCurrentProjet(lna::Project* project) = 0;
 
 protected:
-    ContentsViewProvider(QObject* parent);
+    ContentsViewProvider(QWidget* parent);
 
 private:
 };

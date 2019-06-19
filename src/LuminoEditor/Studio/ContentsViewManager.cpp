@@ -62,8 +62,7 @@ void ContentsViewManager::addContentsViewProvider(ContentsViewProvider* provider
     m_buttonContainer->addWidget(button1);
     button1->setProperty("_index", m_providers.size());
 
-    QWidget* view = provider->createView();
-    m_viewContainer->addWidget(view);
+    m_viewContainer->addWidget(provider);
 
 	ProviderInfo info;
 	info.provider = provider;
@@ -90,8 +89,8 @@ void ContentsViewManager::onContainerButtonCheckChanged(bool checked)
 //==============================================================================
 // ContentsViewProvider
 
-ContentsViewProvider::ContentsViewProvider(QObject* parent = nullptr)
-    : QObject(parent)
+ContentsViewProvider::ContentsViewProvider(QWidget* parent = nullptr)
+    : QFrame(parent)
 {
 }
 

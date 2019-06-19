@@ -45,15 +45,16 @@ void AudioAssetTreeView::onDoubleClicked(const QModelIndex &index)
 //==============================================================================
 // AudioContentsViewProvider
 
-AudioContentsViewProvider::AudioContentsViewProvider(QObject* parent)
+AudioContentsViewProvider::AudioContentsViewProvider(QWidget* parent)
     : ContentsViewProvider(parent)
     , m_treeView(nullptr)
 {
-}
+	m_rootLayout = new QVBoxLayout(this);
+	m_expander = new Expander("Test", this);
+	m_treeView = new AudioAssetTreeView(this);
 
-QWidget* AudioContentsViewProvider::createView()
-{
-    LN_CHECK(!m_treeView);
-    m_treeView = new AudioAssetTreeView();
-    return m_treeView;
+	m_expander->setContent(m_treeView);
+
+	m_rootLayout->addWidget(m_expander);
+	setLayout(m_rootLayout);
 }

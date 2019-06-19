@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "../ContentsViewManager.h"
+#include "../Widgets/Expander.h"
 
 
 class MapAssetTreeModel : public QFileSystemModel
@@ -31,14 +32,15 @@ private:
 class MapContentsViewProvider : public ContentsViewProvider
 {
 public:
-    MapContentsViewProvider(QObject* parent);
+    MapContentsViewProvider(QWidget* parent);
     virtual QString icon() const override { return "fileimageo"; }
-    virtual QWidget* createView() override;
 	virtual void onChangeCurrentProjet(lna::Project* project) override {}
 
     MapAssetTreeView* view() const { return m_treeView; }
 
 private:
+	QVBoxLayout* m_rootLayout;
+	Expander* m_expander;
     MapAssetTreeView* m_treeView;
 };
 

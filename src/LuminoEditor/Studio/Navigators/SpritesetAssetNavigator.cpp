@@ -48,27 +48,20 @@ void SpritesetAssetTreeView::onDoubleClicked(const QModelIndex &index)
 //==============================================================================
 // SpritesetContentsViewProvider
 
-SpritesetContentsViewProvider::SpritesetContentsViewProvider(QObject* parent)
+SpritesetContentsViewProvider::SpritesetContentsViewProvider(QWidget* parent)
     : ContentsViewProvider(parent)
     , m_treeView(nullptr)
 {
-}
-
-QWidget* SpritesetContentsViewProvider::createView()
-{
-    LN_CHECK(!m_treeView);
-    m_treeView = new SpritesetAssetTreeView();
-
-	m_expander = new Expander("Title");
-
-	auto* anyLayout = new QVBoxLayout();
-	m_expander->setContent(m_treeView);
-
-
+	m_rootLayout = new QVBoxLayout(this);
+	m_expander = new Expander("Test", this);
+	m_treeView = new SpritesetAssetTreeView(this);
 	m_newFileButton = new QPushButton("A");
 	m_newFolderButton = new QPushButton("B");
+
+	m_expander->setContent(m_treeView);
 	m_expander->addToolWidget(m_newFileButton);
 	m_expander->addToolWidget(m_newFolderButton);
 
-    return m_expander;
+	m_rootLayout->addWidget(m_expander);
+	setLayout(m_rootLayout);
 }

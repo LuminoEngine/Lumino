@@ -43,32 +43,21 @@ void SceneAssetTreeView::onDoubleClicked(const QModelIndex &index)
 //==============================================================================
 // SceneContentsViewProvider
 
-SceneContentsViewProvider::SceneContentsViewProvider(QObject* parent)
+SceneContentsViewProvider::SceneContentsViewProvider(QWidget* parent)
     : ContentsViewProvider(parent)
-    , m_rootWidget(nullptr)
 {
-}
-
-QWidget* SceneContentsViewProvider::createView()
-{
-    LN_CHECK(!m_rootWidget);
-
-    auto* vbox1 = new QVBoxLayout();
-    {
-        auto* hbox1 = new QHBoxLayout();
-        auto* addButton = new QPushButton("Add");
-        hbox1->addWidget(addButton);
-        auto* removeButton = new QPushButton("Remove");
-        hbox1->addWidget(removeButton);
-        vbox1->addLayout(hbox1);
-    }
-    {
-        auto* treeView = new SceneAssetTreeView();
-        vbox1->addWidget(treeView);
-    }
-
-    m_rootWidget = new QFrame();
-    m_rootWidget->setLayout(vbox1);
-
-    return m_rootWidget;
+	auto* vbox1 = new QVBoxLayout(this);
+	{
+		auto* hbox1 = new QHBoxLayout(this);
+		auto* addButton = new QPushButton("Add", this);
+		hbox1->addWidget(addButton);
+		auto* removeButton = new QPushButton("Remove", this);
+		hbox1->addWidget(removeButton);
+		vbox1->addLayout(hbox1);
+	}
+	{
+		auto* treeView = new SceneAssetTreeView(this);
+		vbox1->addWidget(treeView);
+	}
+	setLayout(vbox1);
 }

@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "../ContentsViewManager.h"
+#include "../Widgets/Expander.h"
 
 
 class PrefabAssetTreeModel : public QFileSystemModel
@@ -31,14 +32,15 @@ private:
 class PrefabContentsViewProvider : public ContentsViewProvider
 {
 public:
-    PrefabContentsViewProvider(QObject* parent);
+    PrefabContentsViewProvider(QWidget* parent);
     virtual QString icon() const override { return "fileimageo"; }
-    virtual QWidget* createView() override;
 	virtual void onChangeCurrentProjet(lna::Project* project) override {}
 
     PrefabAssetTreeView* view() const { return m_treeView; }
 
 private:
+	QVBoxLayout* m_rootLayout;
+	Expander* m_expander;
     PrefabAssetTreeView* m_treeView;
 };
 
