@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include "ContentsViewManager.h"
-
+#include "../ContentsViewManager.h"
+#include "../Widgets/Expander.h"
 
 class SpritesetAssetTreeModel : public QFileSystemModel
 {
@@ -34,10 +34,14 @@ public:
     SpritesetContentsViewProvider(QObject* parent);
     virtual QString icon() const override { return "fileimageo"; }
     virtual QWidget* createView() override;
+	virtual void onChangeCurrentProjet(lna::Project* project) override {}
 
     SpritesetAssetTreeView* view() const { return m_treeView; }
 
 private:
     SpritesetAssetTreeView* m_treeView;
+	QPushButton* m_newFileButton;
+	QPushButton* m_newFolderButton;
+	Expander* m_expander;
 };
 

@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "ContentsViewManager.h"
+#include "../ContentsViewManager.h"
 
 
 class AudioAssetTreeModel : public QFileSystemModel
@@ -34,6 +34,7 @@ public:
     AudioContentsViewProvider(QObject* parent);
     virtual QString icon() const override { return "music"; }
     virtual QWidget* createView() override;
+	virtual void onChangeCurrentProjet(lna::Project* project) override {}
 
     AudioAssetTreeView* view() const { return m_treeView; }
 

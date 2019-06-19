@@ -1,15 +1,14 @@
 ﻿
-#include "MainWindow.h"
-#include "SpritesetContentsView.h"
+#include "AudioAssetNavigator.h"
 
 //==============================================================================
-// SpritesetAssetTreeView
+// AudioAssetTreeView
 
-SpritesetAssetTreeView::SpritesetAssetTreeView(QWidget* parent)
+AudioAssetTreeView::AudioAssetTreeView(QWidget* parent)
     : QTreeView(parent)
 {
-    m_model = new SpritesetAssetTreeModel(this);
-    //QModelIndex rootModelIndex = m_model->setRootPath("D:/Proj/LN/PrivateProjects/HC0/Assets/Spriteset");
+    m_model = new AudioAssetTreeModel(this);
+    //QModelIndex rootModelIndex = m_model->setRootPath("D:/Proj/LN/PrivateProjects/HC0/Assets/Audio");
 
     //setHeaderHidden(true);
     //setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -29,29 +28,32 @@ SpritesetAssetTreeView::SpritesetAssetTreeView(QWidget* parent)
     //connect(this, SIGNAL(doubleclicked(QModelIndex)), this, SLOT(OnDoubleclicked(QModelIndex)));
 }
 
-void SpritesetAssetTreeView::setRootDir(QString dir)
+void AudioAssetTreeView::setRootDir(QString dir)
 {
     QModelIndex rootModelIndex = m_model->setRootPath(dir);
     setRootIndex(rootModelIndex);
 }
 
-void SpritesetAssetTreeView::onDoubleClicked(const QModelIndex &index)
+void AudioAssetTreeView::onDoubleClicked(const QModelIndex &index)
 {
     QString filePath = m_model->fileInfo(index).absoluteFilePath();
+
+    ;
+    ln::GameAudio::playBGM(ln::String((char16_t*)filePath.data()));
 }
 
 //==============================================================================
-// SpritesetContentsViewProvider
+// AudioContentsViewProvider
 
-SpritesetContentsViewProvider::SpritesetContentsViewProvider(QObject* parent)
+AudioContentsViewProvider::AudioContentsViewProvider(QObject* parent)
     : ContentsViewProvider(parent)
     , m_treeView(nullptr)
 {
 }
 
-QWidget* SpritesetContentsViewProvider::createView()
+QWidget* AudioContentsViewProvider::createView()
 {
     LN_CHECK(!m_treeView);
-    m_treeView = new SpritesetAssetTreeView();
+    m_treeView = new AudioAssetTreeView();
     return m_treeView;
 }

@@ -29,6 +29,16 @@ ContentsViewManager::ContentsViewManager()
     m_viewContainer = new QStackedWidget();
 }
 
+void ContentsViewManager::setup(QString toolsetName)
+{
+	if (toolsetName == "ARPG-HC0") {
+
+	}
+	else {
+		LN_NOTIMPLEMENTED();
+	}
+}
+
 void ContentsViewManager::addContentsViewProvider(ContentsViewProvider* provider)
 {
     LN_CHECK(provider);
@@ -55,7 +65,10 @@ void ContentsViewManager::addContentsViewProvider(ContentsViewProvider* provider
     QWidget* view = provider->createView();
     m_viewContainer->addWidget(view);
 
-    m_providers.append(provider);
+	ProviderInfo info;
+	info.provider = provider;
+	info.iconButton = button1;
+    m_providers.append(info);
 }
 
 void ContentsViewManager::onContainerButtonCheckChanged(bool checked)
@@ -64,6 +77,13 @@ void ContentsViewManager::onContainerButtonCheckChanged(bool checked)
         auto* button = static_cast<QPushButton*>(sender());
         int index = button->property("_index").toInt();
         m_viewContainer->setCurrentIndex(index);
+
+		// radio implement
+		for (auto& info : m_providers) {
+			if (info.iconButton != button) {
+				info.iconButton->setChecked(false);
+			}
+		}
     }
 }
 

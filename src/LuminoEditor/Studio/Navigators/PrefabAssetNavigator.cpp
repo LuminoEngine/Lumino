@@ -1,15 +1,14 @@
 ﻿
-#include "MainWindow.h"
-#include "AudioContentsView.h"
+#include "PrefabAssetNavigator.h"
 
 //==============================================================================
-// AudioAssetTreeView
+// PrefabAssetTreeView
 
-AudioAssetTreeView::AudioAssetTreeView(QWidget* parent)
+PrefabAssetTreeView::PrefabAssetTreeView(QWidget* parent)
     : QTreeView(parent)
 {
-    m_model = new AudioAssetTreeModel(this);
-    //QModelIndex rootModelIndex = m_model->setRootPath("D:/Proj/LN/PrivateProjects/HC0/Assets/Audio");
+    m_model = new PrefabAssetTreeModel(this);
+    //QModelIndex rootModelIndex = m_model->setRootPath("D:/Proj/LN/PrivateProjects/HC0/Assets/Prefab");
 
     //setHeaderHidden(true);
     //setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -29,32 +28,29 @@ AudioAssetTreeView::AudioAssetTreeView(QWidget* parent)
     //connect(this, SIGNAL(doubleclicked(QModelIndex)), this, SLOT(OnDoubleclicked(QModelIndex)));
 }
 
-void AudioAssetTreeView::setRootDir(QString dir)
+void PrefabAssetTreeView::setRootDir(QString dir)
 {
     QModelIndex rootModelIndex = m_model->setRootPath(dir);
     setRootIndex(rootModelIndex);
 }
 
-void AudioAssetTreeView::onDoubleClicked(const QModelIndex &index)
+void PrefabAssetTreeView::onDoubleClicked(const QModelIndex &index)
 {
     QString filePath = m_model->fileInfo(index).absoluteFilePath();
-
-    ;
-    ln::GameAudio::playBGM(ln::String((char16_t*)filePath.data()));
 }
 
 //==============================================================================
-// AudioContentsViewProvider
+// PrefabContentsViewProvider
 
-AudioContentsViewProvider::AudioContentsViewProvider(QObject* parent)
+PrefabContentsViewProvider::PrefabContentsViewProvider(QObject* parent)
     : ContentsViewProvider(parent)
     , m_treeView(nullptr)
 {
 }
 
-QWidget* AudioContentsViewProvider::createView()
+QWidget* PrefabContentsViewProvider::createView()
 {
     LN_CHECK(!m_treeView);
-    m_treeView = new AudioAssetTreeView();
+    m_treeView = new PrefabAssetTreeView();
     return m_treeView;
 }

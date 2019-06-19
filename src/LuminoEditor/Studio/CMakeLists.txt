@@ -16,6 +16,12 @@ find_package(Qt5OpenGL CONFIG REQUIRED)
 file(GLOB LuminoStudio_SOURCES "*.h" "*.cpp" "*.ui")
 source_group("Sources" FILES ${LuminoStudio_SOURCES})
 
+file(GLOB LOCAL_SOURCES_Navigators "Navigators/*.h" "Navigators/*.cpp")
+source_group("Navigators" FILES ${LOCAL_SOURCES_Navigators})
+
+file(GLOB LOCAL_SOURCES_Widgets "Widgets/*.h" "Widgets/*.cpp")
+source_group("Widgets" FILES ${LOCAL_SOURCES_Widgets})
+
 file(GLOB LN_SOURCES_External_QtAwesome "External/QtAwesome/*.h" "External/QtAwesome/*.cpp")
 source_group("External/QtAwesome" FILES ${LN_SOURCES_External_QtAwesome})
 
@@ -26,7 +32,7 @@ qt5_add_resources(
 )
 
 # Tell CMake to create the ${PROJECT_NAME} executable
-add_executable(${PROJECT_NAME} ${LuminoStudio_SOURCES} ${LN_QT_RESOURCES} ${LN_SOURCES_External_QtAwesome})
+add_executable(${PROJECT_NAME} ${LuminoStudio_SOURCES} ${LN_QT_RESOURCES} ${LOCAL_SOURCES_Navigators} ${LOCAL_SOURCES_Widgets} ${LN_SOURCES_External_QtAwesome})
 target_include_directories(${PROJECT_NAME} PRIVATE ${LUMINO_INCLUDE_DIRECTORIES})
 target_link_libraries(${PROJECT_NAME} LuminoEngine EditorCore EditorCore Qt5::Widgets Qt5::OpenGL)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Editor")

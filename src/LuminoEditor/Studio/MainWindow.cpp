@@ -6,8 +6,8 @@
 #include "DocumentManager.h"
 #include "InspectorPaneContainer.h"
 #include "ToolPaneContainer.h"
-#include "SpritesetContentsView.h"
-#include "AudioContentsView.h"
+#include "Navigators/SpritesetAssetNavigator.h"
+#include "Navigators/AudioAssetNavigator.h"
 #include "SceneContentsView.h"
 #include "ProblemsPane.h"
 #include "OutputPane.h"
@@ -220,6 +220,8 @@ void MainWindow::onOpenProject()
         closeProject();
 
         m_workspace->openProject2(QtToLn(filePath));
+
+		m_contentsViewManager->setup("ARPG-HC0");
 
         m_spritesetContentsViewProvider->view()->setRootDir(
             LnToQt(ln::Path(m_workspace->project()->assetsDir(), u"Spriteset")));
