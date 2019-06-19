@@ -9,12 +9,15 @@ class ReflectionObjectVisitor;
 namespace detail {
 class WeakRefInfo; 
 class ObjectHelper;
+class EngineDomain;
 }
 
 #define LN_OBJECT \
     friend class ::ln::TypeInfo; \
+    friend class ::ln::detail::EngineDomain; \
     static TypeInfo* _lnref_getTypeInfo(); \
-    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override;
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override; \
+	static void _lnref_registerTypeInfo(EngineContext* context);
 
 #define LN_OBJECT_IMPLEMENT(classType, baseclassType) \
     TypeInfo* classType::_lnref_getTypeInfo() \
@@ -22,7 +25,8 @@ class ObjectHelper;
         static TypeInfo typeInfo(#classType, ::ln::TypeInfo::getTypeInfo<baseclassType>()); \
         return &typeInfo; \
     } \
-    ::ln::TypeInfo* classType::_lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); }
+    ::ln::TypeInfo* classType::_lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); } \
+	void classType::_lnref_registerTypeInfo(EngineContext* context)
 
 #define LN_INTERNAL_NEW_OBJECT \
     template<class T, typename... TArgs> friend ln::Ref<T> ln::makeObject(TArgs&&... args); \

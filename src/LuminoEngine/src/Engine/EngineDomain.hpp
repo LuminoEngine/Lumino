@@ -50,6 +50,11 @@ public:
     static VisualManager* visualManager();
     static SceneManager* sceneManager();
 	static UIManager* uiManager();
+	
+	template<class T>
+	static void registerType() {
+		T::_lnref_registerTypeInfo(engineManager()->engineContext());
+	}
 };
 
 } // namespace detail

@@ -23,7 +23,7 @@ private:
     Property<int> m_prop1;
 };
 
-LN_OBJECT_IMPLEMENT(TestObjectA, Object);
+LN_OBJECT_IMPLEMENT(TestObjectA, Object) {}
 LN_PROPERTY_IMPLEMENT(TestObjectA, Prop1, m_prop1, PropertyMetadata(TestObjectA::onProp1Changed));
 
 void TestObjectA::init()
@@ -44,7 +44,7 @@ class TestObjectB
 public:
 };
 
-LN_OBJECT_IMPLEMENT(TestObjectB, Object);
+LN_OBJECT_IMPLEMENT(TestObjectB, Object) {}
 
 class TestObjectC
     : public Object
@@ -81,7 +81,7 @@ public:
     static void onV4Changed(Object* obj) { static_cast<TestObjectC*>(obj)->m_lastChangedProp = V4PropertyId; }
 };
 
-LN_OBJECT_IMPLEMENT(TestObjectC, Object);
+LN_OBJECT_IMPLEMENT(TestObjectC, Object) {}
 LN_PROPERTY_IMPLEMENT(TestObjectC, V1, m_V1, PropertyMetadata(onV1Changed));
 LN_PROPERTY_IMPLEMENT(TestObjectC, V2, m_V2, PropertyMetadata(onV2Changed));
 //LN_PROPERTY_IMPLEMENT(TestObjectC, V3, m_V3, PropertyMetadata(onV3Changed));
@@ -132,7 +132,7 @@ public:
 	}
 };
 
-LN_OBJECT_IMPLEMENT(CreateFromTypeInfo_ClassA, Object);
+LN_OBJECT_IMPLEMENT(CreateFromTypeInfo_ClassA, Object) {}
 
 TEST_F(Test_Engine_Object, CreateFromTypeInfo)
 {

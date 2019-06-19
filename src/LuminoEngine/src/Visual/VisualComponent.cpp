@@ -9,7 +9,7 @@ namespace ln {
 //=============================================================================
 // VisualComponent
 
-LN_OBJECT_IMPLEMENT(VisualComponent, Component);
+LN_OBJECT_IMPLEMENT(VisualComponent, Component) {}
 
 VisualComponent::VisualComponent()
     : m_geometryStageParameters(std::make_unique<detail::GeometryStageParameters>())    // TODO: ふつうは static なオブジェクトのほうが多くなるので、必要なやつだけ遅延作成でいいと思う

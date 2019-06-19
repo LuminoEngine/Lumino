@@ -5,6 +5,7 @@
 #include <type_traits>
 #include "Common.hpp"
 #include "../Engine/Object.hpp"
+#include "../Graphics/GeometryStructs.hpp"
 
 namespace ln {
 namespace detail { class VariantHelper; }
@@ -23,9 +24,11 @@ enum class VariantType
 	String,
 
 	// struct
+	Vector2,
 	Vector3,
 	Quaternion,
 	Transform,
+	Rect,
 
 	// object
     RefObject,
@@ -58,6 +61,8 @@ public:
 
 LN_CONSTRUCT_ACCESS:
 	Variant();
+
+	// primitive
 	Variant(std::nullptr_t);
 	Variant(const Variant& value);
 	Variant(bool value) : Variant() { assign(value); }
@@ -74,9 +79,15 @@ LN_CONSTRUCT_ACCESS:
 	Variant(double value) : Variant() { assign(value); }
 	Variant(const Char* value) : Variant(String(value)) { }
 	Variant(const String& value) : Variant() { assign(value); }
+
+	// struct
+	Variant(const Vector2& value) : Variant() { assign(value); }
 	Variant(const Vector3& value) : Variant() { assign(value); }
 	Variant(const Quaternion& value) : Variant() { assign(value); }
 	Variant(const AttitudeTransform& value) : Variant() { assign(value); }
+	Variant(const Rect& value) : Variant() { assign(value); }
+
+	// object
     Variant(RefObject* value) : Variant() { assign(value); }
     template<class TValue>
     Variant(const Ref<TValue>& value) : Variant() { assign(value.get()); }
@@ -295,9 +306,11 @@ private:
 	void assign(float value);
 	void assign(double value);
 	void assign(const String& value);
+	void assign(const Vector2& value);
 	void assign(const Vector3& value);
 	void assign(const Quaternion& value);
 	void assign(const AttitudeTransform& value);
+	void assign(const Rect& value);
     void assign(const Ref<RefObject>& value);
 	void assign(RefObject* value) { assign(Ref<RefObject>(value)); }
 	void assign(const Ref<List<Ref<Variant>>>& value);
@@ -321,9 +334,11 @@ private:
 		float v_Float;
 		double v_Double;
 		String v_String;
+		Vector2 v_Vector2;
 		Vector3 v_Vector3;
 		Quaternion v_Quaternion;
 		AttitudeTransform* v_Transform;
+		Rect v_Rect;
         Ref<RefObject> v_RefObject;
 		Ref<List<Ref<Variant>>> v_List;
 	};

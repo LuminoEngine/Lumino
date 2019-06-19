@@ -175,6 +175,12 @@ void Variant::assign(const String& value)
 	new(&v_String) String(value);
 }
 
+void Variant::assign(const Vector2& value)
+{
+	changeType(VariantType::Vector2);
+	v_Vector2 = value;
+}
+
 void Variant::assign(const Vector3& value)
 {
 	changeType(VariantType::Vector3);
@@ -191,6 +197,12 @@ void Variant::assign(const AttitudeTransform& value)
 {
 	changeType(VariantType::Transform);
 	v_Transform = LN_NEW AttitudeTransform(value);
+}
+
+void Variant::assign(const Rect& value)
+{
+	changeType(VariantType::Rect);
+	v_Rect = value;
 }
 
 void Variant::assign(const Ref<RefObject>& value)

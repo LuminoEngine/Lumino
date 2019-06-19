@@ -89,7 +89,7 @@ PropertyRef PropertyPath::findProperty(Object* root, const PropertyPath* path)
 				ref = PropertyRef(obj, prop->accessor());
 				return true;
 			}
-			return true;
+			return false;
 		}
 	};
 

@@ -11,6 +11,14 @@ namespace ln {
 //=============================================================================
 // SpriteFrame
 
+LN_OBJECT_IMPLEMENT(SpriteFrame, Object)
+{
+	context->registerType<SpriteFrame>({
+		makeRef<PropertyInfo>("SourceRect", LN_MAKE_GET_SET_PROPERTY_ACCESSOR(SpriteComponent, Rect, sourceRect, setSourceRect)),
+		makeRef<PropertyInfo>("AnchorPoint", LN_MAKE_GET_SET_PROPERTY_ACCESSOR(SpriteComponent, Vector2, anchorPoint, setAnchorPoint)),
+	});
+}
+
 SpriteFrame::SpriteFrame()
 	: m_sourceRect()
 	, m_anchorPoint()
@@ -35,6 +43,7 @@ void SpriteFrame::init()
   - ピクセル指定は row を増やすことでのパターン追加に強い。
   SpriteFrameSet を使うのはドット絵がほとんど。どっちがよくある話かっていうと後者の方が圧倒的に多いだろう。
 */
+LN_OBJECT_IMPLEMENT(SpriteFrameSet, Object) {}
 
 Ref<SpriteFrameSet> SpriteFrameSet::create(Texture* texture, int frameWidth, int frameHeight, const Vector2& anchorPoint)
 {
@@ -102,7 +111,7 @@ SpriteFrame* SpriteFrameSet::frame(int index) const
  *   それってマップオブジェクトを表現するための Mesh としたほうがいいよね。
  */
 
-LN_OBJECT_IMPLEMENT(SpriteComponent, VisualComponent);
+LN_OBJECT_IMPLEMENT(SpriteComponent, VisualComponent) {}
 
 void SpriteComponent::registerType(EngineContext* context)
 {

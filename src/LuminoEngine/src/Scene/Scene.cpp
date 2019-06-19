@@ -22,7 +22,7 @@ namespace ln {
 //==============================================================================
 // Scene
 
-LN_OBJECT_IMPLEMENT(Scene, Object);
+LN_OBJECT_IMPLEMENT(Scene, Object) {}
 
 Scene::Scene()
 {
@@ -109,7 +109,7 @@ void Scene::serialize(Archive& ar)
 
 namespace ed {
 
-LN_OBJECT_IMPLEMENT(SceneAsset, AssetObject);
+LN_OBJECT_IMPLEMENT(SceneAsset, AssetObject) {}
 
 SceneAsset::SceneAsset()
 {

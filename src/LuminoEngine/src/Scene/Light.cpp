@@ -10,7 +10,7 @@ namespace ln {
 //==============================================================================
 // AmbientLight
 
-LN_OBJECT_IMPLEMENT(AmbientLight, WorldObject);
+LN_OBJECT_IMPLEMENT(AmbientLight, WorldObject) {}
 
 Ref<AmbientLight> AmbientLight::create()
 {
@@ -53,7 +53,7 @@ AmbientLightComponent* AmbientLight::getAmbientLightComponent() const
 //==============================================================================
 // HemisphereLight
 
-LN_OBJECT_IMPLEMENT(HemisphereLight, WorldObject);
+LN_OBJECT_IMPLEMENT(HemisphereLight, WorldObject) {}
 
 Ref<HemisphereLight> HemisphereLight::create()
 {
@@ -97,7 +97,7 @@ HemisphereLightComponent* HemisphereLight::getHemisphereLightComponent() const
 //==============================================================================
 // DirectionalLight
 
-LN_OBJECT_IMPLEMENT(DirectionalLight, WorldObject);
+LN_OBJECT_IMPLEMENT(DirectionalLight, WorldObject) {}
 
 Ref<DirectionalLight> DirectionalLight::create()
 {
@@ -142,7 +142,7 @@ DirectionalLightComponent* DirectionalLight::getDirectionalLightComponent() cons
 //==============================================================================
 // PointLight
 
-LN_OBJECT_IMPLEMENT(PointLight, WorldObject);
+LN_OBJECT_IMPLEMENT(PointLight, WorldObject) {}
 
 Ref<PointLight> PointLight::create()
 {
@@ -186,7 +186,7 @@ PointLightComponent* PointLight::getPointLightComponent() const
 //==============================================================================
 // SpotLight
 
-LN_OBJECT_IMPLEMENT(SpotLight, WorldObject);
+LN_OBJECT_IMPLEMENT(SpotLight, WorldObject) {}
 
 Ref<SpotLight> SpotLight::create()
 {

@@ -22,7 +22,7 @@ namespace ln {
 //   参考：
 //   https://github.com/lriki/Lumino/issues/32
 //==============================================================================
-LN_OBJECT_IMPLEMENT(CollisionShape, Object);
+LN_OBJECT_IMPLEMENT(CollisionShape, Object) {}
 
 //------------------------------------------------------------------------------
 CollisionShape::CollisionShape()
@@ -59,7 +59,7 @@ bool CollisionShape::isTrigger() const
 //==============================================================================
 // PlaneCollisionShape
 //==============================================================================
-LN_OBJECT_IMPLEMENT(PlaneCollisionShape, CollisionShape);
+LN_OBJECT_IMPLEMENT(PlaneCollisionShape, CollisionShape) {}
 	
 //------------------------------------------------------------------------------
 Ref<PlaneCollisionShape> PlaneCollisionShape::create(const Vector3& direction)
@@ -86,7 +86,7 @@ void PlaneCollisionShape::init(const Vector3& direction)
 //==============================================================================
 // BoxCollisionShape
 //==============================================================================
-LN_OBJECT_IMPLEMENT(BoxCollisionShape, CollisionShape);
+LN_OBJECT_IMPLEMENT(BoxCollisionShape, CollisionShape) {}
 	
 //------------------------------------------------------------------------------
 Ref<BoxCollisionShape> BoxCollisionShape::create(const Vector3& size)
@@ -120,7 +120,7 @@ void BoxCollisionShape::init(const Vector3& size)
 //==============================================================================
 // SphereCollisionShape
 //==============================================================================
-LN_OBJECT_IMPLEMENT(SphereCollisionShape, CollisionShape);
+LN_OBJECT_IMPLEMENT(SphereCollisionShape, CollisionShape) {}
 	
 //------------------------------------------------------------------------------
 Ref<SphereCollisionShape> SphereCollisionShape::create(float radius)
@@ -147,7 +147,7 @@ void SphereCollisionShape::init(float radius)
 //==============================================================================
 // CapsuleCollisionShape
 //==============================================================================
-LN_OBJECT_IMPLEMENT(CapsuleCollisionShape, CollisionShape);
+LN_OBJECT_IMPLEMENT(CapsuleCollisionShape, CollisionShape) {}
 
 //------------------------------------------------------------------------------
 Ref<CapsuleCollisionShape> CapsuleCollisionShape::create(float radius, float height)
@@ -174,7 +174,7 @@ void CapsuleCollisionShape::init(float radius, float height)
 //==============================================================================
 // MeshCollisionShape
 //==============================================================================
-LN_OBJECT_IMPLEMENT(MeshCollisionShape, CollisionShape);
+LN_OBJECT_IMPLEMENT(MeshCollisionShape, CollisionShape) {}
 
 //------------------------------------------------------------------------------
 Ref<MeshCollisionShape> MeshCollisionShape::create(MeshResource* mesh)

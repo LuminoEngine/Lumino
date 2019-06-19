@@ -1,8 +1,10 @@
 ﻿
 #pragma once
+#include "../Engine/Property.hpp"
 #include "Common.hpp"
 
 namespace ln {
+class AssetProperty;
 
 // - WorldObject と AssetObject は 1:1
 // - View と AssetObject は n:1 (View はインスペクタやプレビューなど様々なところから参照できる)
@@ -25,15 +27,35 @@ class AssetObject
 {
 	LN_OBJECT;
 public:
+	static Ref<AssetObject> create(Object* target);
 
+	static Ref<AssetObject> load(const ln::Path& filePath);
+	static void save(Object* target, const ln::Path& filePath);
+
+	Ref<AssetProperty> findProperty(const String& path);
 
 LN_CONSTRUCT_ACCESS:
     AssetObject();
     void init();
+	void init(Object* target);
 
 private:
+	Ref<Object> m_target;
     Ref<AssetObject> m_parent;
     List<Ref<AssetObject>> m_children;
+};
+
+class AssetProperty
+	: public Object
+{
+public:
+
+LN_CONSTRUCT_ACCESS:
+	AssetProperty();
+	void init(const PropertyRef& prop);
+
+private:
+	PropertyRef m_property;
 };
 
 } // namespace ln

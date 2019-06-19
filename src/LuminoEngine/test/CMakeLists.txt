@@ -6,6 +6,7 @@ set(LN_SOURCES
 	Common.hpp
 	Main.cpp
 	Test_Asset_AssetArchive.cpp
+	Test_Asset_AssetObject.cpp
 	Test_Base_ObjectCache.cpp
 	Test_Base_Regex.cpp
 	Test_Base_Variant.cpp

@@ -8,7 +8,7 @@ namespace ln {
 //==============================================================================
 // VisualObject
 
-LN_OBJECT_IMPLEMENT(VisualObject, WorldObject);
+LN_OBJECT_IMPLEMENT(VisualObject, WorldObject) {}
 
 VisualObject::VisualObject()
 {

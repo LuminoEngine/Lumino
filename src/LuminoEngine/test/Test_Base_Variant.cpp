@@ -301,3 +301,15 @@ TEST_F(Test_Base_Variant, UseCase1)
 		ASSERT_EQ(u"test2", script2->commandList[1]->params[1]->get<String>());
 	}
 }
+
+
+TEST_F(Test_Base_Variant, Value_Rect)
+{
+	struct S { Ref<Variant> v; void serialize(Archive& ar) { ar & LN_NVP(v); } };
+	S s1 = { makeVariant(Rect(1, 2, 3, 4)) };
+	S s2;
+
+	// Note: struct は型情報を保存しないので、Rect の復元はできない。
+	//auto json = JsonSerializer::serialize(s1, JsonFormatting::None);
+	//JsonSerializer::deserialize(json, s2);
+}

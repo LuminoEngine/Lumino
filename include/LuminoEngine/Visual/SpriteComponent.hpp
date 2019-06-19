@@ -11,6 +11,7 @@ class Component;
 class SpriteFrame
 	: public Object
 {
+	LN_OBJECT;
 public:
 	/** テクスチャのどの部分を表示するかを示す転送矩形を設定します。(ピクセル単位) */
 	void setSourceRect(const Rect& value) { m_sourceRect = value; }
@@ -45,6 +46,7 @@ class SpriteFrameSet
 	// テクスチャの優先順位は SpriteComponent > SpriteFrameSet > SpriteFrame
 	// 例えば SpriteFrameSet はメモリ削減のため共有しつつ、テクスチャだけ変えたい場合、
 	// 複数の SpriteComponent には同じ SpriteFrameSet をセットし、SpriteComponent::setTexture で異なるテクスチャをセットする。
+	LN_OBJECT;
 public:
 	// frames, animation
 
