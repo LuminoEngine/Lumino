@@ -49,6 +49,28 @@ class AssetProperty
 	: public Object
 {
 public:
+    template<class TValue>
+    void setValue(const TValue& value)
+    {
+        auto pair = m_property.resolve();
+        if (pair.second) {
+            static_cast<TypedPropertyAccessor<TValue>*>(pair.second)->setValueDirect(pair.first, value);
+        }
+    }
+
+    template<class TValue>
+    TValue getValue()
+    {
+        TValue value;
+        auto pair = m_property.resolve();
+        if (pair.second) {
+            static_cast<TypedPropertyAccessor<TValue>*>(pair.second)->getValueDirect(pair.first, &value);
+        }
+        else {
+            LN_FATAL();
+        }
+        return value;
+    }
 
 LN_CONSTRUCT_ACCESS:
 	AssetProperty();
