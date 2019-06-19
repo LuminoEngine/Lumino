@@ -104,8 +104,6 @@ MainWindow::MainWindow(QWidget* parent)
         //m_contentsViewManager->addContentsViewProvider(ln::makeObject<SceneContentsViewProvider>());
         
 
-        m_spritesetContentsViewProvider = new SpritesetContentsViewProvider(this);
-        m_contentsViewManager->addContentsViewProvider(m_spritesetContentsViewProvider);
 
         m_audioContentsViewProvider = new AudioContentsViewProvider(this);
         m_contentsViewManager->addContentsViewProvider(m_audioContentsViewProvider);
@@ -223,8 +221,8 @@ void MainWindow::onOpenProject()
 
 		m_contentsViewManager->setup("ARPG-HC0");
 
-        m_spritesetContentsViewProvider->view()->setRootDir(
-            LnToQt(ln::Path(m_workspace->project()->assetsDir(), u"Spriteset")));
+		m_spritesetContentsViewProvider = new SpritesetContentsViewProvider(m_workspace->project(), this);
+		m_contentsViewManager->addContentsViewProvider(m_spritesetContentsViewProvider);
 
         m_audioContentsViewProvider->view()->setRootDir(
             LnToQt(ln::Path(m_workspace->project()->assetsDir(), u"Audio")));

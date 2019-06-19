@@ -1,4 +1,5 @@
 ﻿
+#include <Project.hpp>
 #include "SpritesetAssetNavigator.h"
 
 //==============================================================================
@@ -48,7 +49,7 @@ void SpritesetAssetTreeView::onDoubleClicked(const QModelIndex &index)
 //==============================================================================
 // SpritesetContentsViewProvider
 
-SpritesetContentsViewProvider::SpritesetContentsViewProvider(QWidget* parent)
+SpritesetContentsViewProvider::SpritesetContentsViewProvider(lna::Project* project, QWidget* parent)
     : ContentsViewProvider(parent)
     , m_treeView(nullptr)
 {
@@ -64,4 +65,9 @@ SpritesetContentsViewProvider::SpritesetContentsViewProvider(QWidget* parent)
 
 	m_rootLayout->addWidget(m_expander);
 	setLayout(m_rootLayout);
+
+
+	auto assetDir = ln::Path(project->assetsDir(), u"Spriteset");
+	ln::FileSystem::createDirectory(assetDir);
+	m_treeView->setRootDir(LnToQt(assetDir));
 }

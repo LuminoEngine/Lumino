@@ -31,7 +31,7 @@ private:
 class SpritesetContentsViewProvider : public ContentsViewProvider
 {
 public:
-    SpritesetContentsViewProvider(QWidget* parent);
+    SpritesetContentsViewProvider(lna::Project* project, QWidget* parent);
     virtual QString icon() const override { return "fileimageo"; }
 	virtual void onChangeCurrentProjet(lna::Project* project) override {}
 
