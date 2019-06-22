@@ -76,7 +76,7 @@ namespace ed {
 class WorldObjectAsset;
 
 class SceneAsset
-    : public AssetObject
+    : public AssetModel
 {
 	LN_OBJECT;
 public:

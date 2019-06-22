@@ -209,7 +209,7 @@ public: // TODO:
 namespace ed {
 
 class WorldObjectAsset
-	: public AssetObject
+	: public AssetModel
 {
 	LN_OBJECT;
 public:

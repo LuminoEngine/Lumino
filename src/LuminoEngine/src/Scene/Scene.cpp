@@ -109,7 +109,7 @@ void Scene::serialize(Archive& ar)
 
 namespace ed {
 
-LN_OBJECT_IMPLEMENT(SceneAsset, AssetObject) {}
+LN_OBJECT_IMPLEMENT(SceneAsset, AssetModel) {}
 
 SceneAsset::SceneAsset()
 {
@@ -117,7 +117,7 @@ SceneAsset::SceneAsset()
 
 void SceneAsset::init()
 {
-    AssetObject::init();
+    AssetModel::init();
 }
 
 void SceneAsset::setup(const ln::Path& filePath)

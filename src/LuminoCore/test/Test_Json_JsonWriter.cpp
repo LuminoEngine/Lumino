@@ -1,4 +1,5 @@
 ﻿#include "Common.hpp"
+#include <LuminoCore/Math/Math.hpp>
 #include <LuminoCore/IO/StringWriter.hpp>
 #include <LuminoCore/Json/JsonWriter.hpp>
 
@@ -69,6 +70,25 @@ TEST_F(Test_Json_JsonWriter, Formatting)
 			_LT("{\n  \"hello\": \"world\"\n}"),
 			s.toString());
 	}
+}
+
+TEST_F(Test_Json_JsonWriter, NaN_Inf)
+{
+    // TODO: いまは Sprite のシリアライズとかで使いたいので、nan として保存したりしている。
+    // 本来は Json としては nan, inf はサポートしていないのでエラーにするべき。
+    // ただ Lumino としては使いたいので、オプションとする設定をどこかに入れておきたい。
+
+    StringWriter s;
+    JsonWriter writer(&s);
+    writer.setFormatting(JsonFormatting::None);
+    writer.writeStartObject();
+    writer.writePropertyName(u"v1");
+    writer.writeFloat(Math::NaN);
+    writer.writePropertyName(u"v2");
+    writer.writeFloat(Math::Inf);
+    writer.writeEndObject();
+    auto json = s.toString();
+    ASSERT_EQ(0, String::compare(_LT("{\"v1\":\"NaN\",\"v2\":\"Inf\"}"), json, CaseSensitivity::CaseInsensitive));
 }
 
 //## generate escape sequence test

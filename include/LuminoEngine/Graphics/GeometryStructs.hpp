@@ -290,6 +290,8 @@ public:
     /** 指定した厚さだけ、この矩形から縮小した矩形を作成します。 */
     Rect makeDeflate(const Thickness& thickness) const;
 
+    void serialize(Archive& ar);
+
 public:
     bool operator==(const Rect& obj) const { return (x == obj.x && y == obj.y && width == obj.width && height == obj.height); }
     bool operator!=(const Rect& obj) const { return !operator==(obj); }

@@ -307,7 +307,7 @@ void WorldObject::updateWorldMatrixHierarchical()
 
 namespace ed {
 
-LN_OBJECT_IMPLEMENT(WorldObjectAsset, AssetObject) {}
+LN_OBJECT_IMPLEMENT(WorldObjectAsset, AssetModel) {}
 
 WorldObjectAsset::WorldObjectAsset()
 {
@@ -315,7 +315,7 @@ WorldObjectAsset::WorldObjectAsset()
 
 void WorldObjectAsset::init()
 {
-    AssetObject::init();
+    AssetModel::init();
 }
 
 void WorldObjectAsset::serialize(Archive& ar)

@@ -958,3 +958,31 @@ TEST_F(Test_Serialization2, ManyData)
 	ASSERT_EQ(true, json.contains(u"\"x\":99"));	// 最後の値が出ていればOKとする
 }
 
+
+//------------------------------------------------------------------------------
+//## NaN and Inf
+TEST_F(Test_Serialization2, NaN_Inf)
+{
+    struct Test
+    {
+        float x, y;
+
+        void serialize(Archive& ar)
+        {
+            ar & LN_NVP(x);
+            ar & LN_NVP(y);
+        }
+    };
+
+    Test t1;
+    t1.x = Math::NaN;
+    t1.y = Math::Inf;
+
+    String json = JsonSerializer::serialize(t1, JsonFormatting::None);
+
+    Test t2;
+    JsonSerializer::deserialize(json, t2);
+
+    ASSERT_EQ(true, Math::isNaN(t2.x));
+    ASSERT_EQ(true, Math::isInf(t2.y));
+}

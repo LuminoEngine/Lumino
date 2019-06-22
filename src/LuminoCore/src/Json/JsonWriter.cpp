@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoCore/Math/Math.hpp>
 #include <LuminoCore/Base/String.hpp>
 #include <LuminoCore/Json/JsonWriter.hpp>
 
@@ -124,6 +125,15 @@ void JsonWriter::writeInt64(int64_t value)
 
 void JsonWriter::writeFloat(float value)
 {
+    if (Math::isNaN(value)) {
+        writeString(u"NaN");    // like Json.NET
+        return;
+    }
+    if (Math::isInf(value)) {
+        writeString(u"Inf");    // like Json.NET
+        return;
+    }
+
     if (LN_REQUIRE(m_levelStack.size() >= 1))
         return;
     autoComplete(JsonNode::Float);
@@ -133,6 +143,15 @@ void JsonWriter::writeFloat(float value)
 
 void JsonWriter::writeDouble(double value)
 {
+    if (Math::isNaN(value)) {
+        writeString(u"NaN");    // like Json.NET
+        return;
+    }
+    if (Math::isInf(value)) {
+        writeString(u"Inf");    // like Json.NET
+        return;
+    }
+
     if (LN_REQUIRE(m_levelStack.size() >= 1))
         return;
 

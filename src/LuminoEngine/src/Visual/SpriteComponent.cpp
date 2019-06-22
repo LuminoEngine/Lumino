@@ -14,8 +14,8 @@ namespace ln {
 LN_OBJECT_IMPLEMENT(SpriteFrame, Object)
 {
 	context->registerType<SpriteFrame>({
-		makeRef<PropertyInfo>("SourceRect", LN_MAKE_GET_SET_PROPERTY_ACCESSOR(SpriteComponent, Rect, sourceRect, setSourceRect)),
-		makeRef<PropertyInfo>("AnchorPoint", LN_MAKE_GET_SET_PROPERTY_ACCESSOR(SpriteComponent, Vector2, anchorPoint, setAnchorPoint)),
+		makeRef<PropertyInfo>("SourceRect", LN_MAKE_GET_SET_PROPERTY_ACCESSOR(SpriteFrame, Rect, sourceRect, setSourceRect)),
+		makeRef<PropertyInfo>("AnchorPoint", LN_MAKE_GET_SET_PROPERTY_ACCESSOR(SpriteFrame, Vector2, anchorPoint, setAnchorPoint)),
 	});
 }
 

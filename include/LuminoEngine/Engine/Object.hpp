@@ -67,7 +67,7 @@ protected:
 	virtual void onDispose(bool explicitDisposing);
 
 	LN_SERIALIZE_CLASS_VERSION(1);
-	virtual void serialize(Archive& ar) {}
+    virtual void serialize(Archive& ar);
 
 public:
 	/**

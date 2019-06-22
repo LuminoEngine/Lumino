@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include <stack>
+#include "../Math/Math.hpp"
 #include "../Base/String.hpp"
 #include "../Json/JsonDocument.hpp"
 #include "Common.hpp"
@@ -482,6 +483,17 @@ protected:
 			*outValue = v->floatValue();
 		else if (v->type() == JsonElementType::Double)
 			*outValue = v->doubleValue();
+        else if (v->type() == JsonElementType::String)
+            if (String::compare(v->stringValue(), u"NaN", CaseSensitivity::CaseInsensitive) == 0) {
+                *outValue = Math::NaN;
+            }
+            else if (String::compare(v->stringValue(), u"Inf", CaseSensitivity::CaseInsensitive) == 0) {
+                *outValue = Math::Inf;
+            }
+            else {
+                // TODO: Error
+                LN_NOTIMPLEMENTED();
+            }
 		else
 			LN_UNREACHABLE();
 

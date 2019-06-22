@@ -172,6 +172,12 @@ public:
     // TODO: Helper でいい
     static void notifyPropertyChanged(Object* ownerObject, PropertyBase* target, const PropertyInfo* prop, PropertySetSource source);
 
+    //template<class TClass>
+    //bool verifyTypeInfo() const
+    //{
+    //    auto ptr = dynamic_cast<PropertyAccessorImpl<TClass>>
+    //}
+
 private:
     GetPropertyCallback m_getPropertyCallback;
     StaticPropertyChangedCallback m_staticPropertyChangedCallback;
@@ -360,6 +366,7 @@ class PropertyAccessor : public RefObject
 public:
 	virtual void getValue(const Object* obj, Ref<Variant>* value) const = 0;
 	virtual void setValue(Object* obj, const Ref<Variant>& value) = 0;
+    virtual void serializeMember(Object* obj, Archive& ar, const ln::String& name) = 0;
 };
 
 // 呼び出し側が型を知っている場合、PropertyAccessor からキャストすることで Variant を介すことなく直接値を操作できるようにするための中間クラス
@@ -407,9 +414,29 @@ public:
 	virtual void setValueDirect(Object* obj, const TValue& value) override
 	{
 		LN_DCHECK(obj);
-		auto classPtr = static_cast<TClassType*>(obj);
-		m_setFunction(classPtr, value);
+        if (auto classPtr = dynamic_cast<TClassType*>(obj)) {
+            m_setFunction(classPtr, value);
+        }
+		//auto classPtr = static_cast<TClassType*>(obj);
+		//m_setFunction(classPtr, value);
 	}
+
+    virtual void serializeMember(Object* obj, Archive& ar, const ln::String& name)
+    {
+        LN_CHECK(obj);
+        if (ar.isSaving()) {
+            TValue value;
+            const auto classPtr = static_cast<const TClassType*>(obj);
+            m_getFunction(classPtr, &value);
+            ar & ln::makeNVP(name, value);
+        }
+        else {
+            TValue value;
+            auto classPtr = static_cast<TClassType*>(obj);
+            ar & ln::makeNVP(name, value);
+            m_setFunction(classPtr, value);
+        }
+    }
 
 private:
 	TGetFunction m_getFunction;
@@ -491,6 +518,7 @@ public:
 	makePropertyAccessor<className, typeName>( \
 		[](const className* self, typeName* value) { *value = self->getFunction(); }, \
 		[](className* self, const typeName& value) { self->setFunction(value); }) \
+// TOO: typeName と、OwnerClass を間違えてしまったときの対策。(setValueDirect とかで stack 破壊する)
 
 } // namespace ln
 
