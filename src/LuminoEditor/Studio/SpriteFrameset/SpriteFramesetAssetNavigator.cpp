@@ -1,6 +1,6 @@
 ﻿
 #include <Project.hpp>
-#include "SpritesetAssetNavigator.h"
+#include "SpriteFramesetAssetNavigator.h"
 
 //==============================================================================
 // SpritesetAssetTreeView

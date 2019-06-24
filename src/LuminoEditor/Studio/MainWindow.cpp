@@ -6,7 +6,7 @@
 #include "DocumentManager.h"
 #include "InspectorPaneContainer.h"
 #include "ToolPaneContainer.h"
-#include "Navigators/SpritesetAssetNavigator.h"
+#include "SpriteFrameset/SpriteFramesetAssetNavigator.h"
 #include "Navigators/AudioAssetNavigator.h"
 #include "SceneContentsView.h"
 #include "ProblemsPane.h"
