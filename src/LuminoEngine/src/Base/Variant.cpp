@@ -54,12 +54,16 @@ void Variant::clear() LN_NOEXCEPT
 	case VariantType::String:
 		v_String.~String();
 		break;
+	case VariantType::Vector2:
+		break;
 	case VariantType::Vector3:
 		break;
 	case VariantType::Quaternion:
 		break;
 	case VariantType::Transform:
 		LN_SAFE_DELETE(v_Transform);
+		break;
+	case VariantType::Rect:
 		break;
     case VariantType::RefObject:
         v_RefObject.~Ref();
