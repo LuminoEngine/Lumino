@@ -56,7 +56,7 @@ void MethodSymbol::LinkParameters(SymbolDatabase* db)
 
 	for (auto& paramInfo : parameters)
 	{
-		paramInfo->type = db->findTypeInfo(paramInfo->src.typeRawName);
+		paramInfo->type = db->findSymbol(paramInfo->src.typeRawName);
 
 		// 今のところ、Class 型の 出力変数は許可しない
 		if (paramInfo->isOut && paramInfo->type->IsClass())
@@ -93,7 +93,7 @@ void MethodSymbol::ExpandCAPIParameters(SymbolDatabase* db)
 			{
 				auto info = ln::makeRef<ParameterSymbol>();
 				info->name = owner->shortName().toLower();
-				info->type = db->findTypeInfo(owner->fullName());
+				info->type = db->findSymbol(owner->fullName());
 				info->isThis = true;
 				capiParameters.add(info);
 			}
@@ -113,7 +113,7 @@ void MethodSymbol::ExpandCAPIParameters(SymbolDatabase* db)
 			{
 				auto info = ln::makeRef<ParameterSymbol>();
 				info->name = owner->shortName().toLower();
-				info->type = db->findTypeInfo(owner->fullName());
+				info->type = db->findSymbol(owner->fullName());
 				info->isThis = true;
 				capiParameters.add(info);
 			}
@@ -153,7 +153,7 @@ void MethodSymbol::ExpandCAPIParameters(SymbolDatabase* db)
 		{
 			auto info = ln::makeRef<ParameterSymbol>();
 			info->name = ln::String::format(_T("out{0}"), owner->shortName());
-			info->type = db->findTypeInfo(owner->fullName());
+			info->type = db->findSymbol(owner->fullName());
 			info->isReturn = true;
 			capiParameters.add(info);
 		}
@@ -241,7 +241,7 @@ void TypeSymbol::Link(SymbolDatabase* db)
 	// find base class
 	if (!src.baseClassRawName.isEmpty())
 	{
-		baseClass = db->findTypeInfo(src.baseClassRawName);
+		baseClass = db->findSymbol(src.baseClassRawName);
 	}
 
 	for (auto methodInfo : declaredMethods)
@@ -448,11 +448,11 @@ void SymbolDatabase::Link()
 	{
 		for (auto fieldInfo : structInfo->declaredFields)
 		{
-			fieldInfo->type = findTypeInfo(fieldInfo->typeRawName);
+			fieldInfo->type = findSymbol(fieldInfo->typeRawName);
 		}
 		for (auto methodInfo : structInfo->declaredMethods)
 		{
-			methodInfo->returnType = findTypeInfo(methodInfo->returnTypeRawName);
+			methodInfo->returnType = findSymbol(methodInfo->returnTypeRawName);
 
 			methodInfo->LinkParameters(this);
 		}
@@ -465,7 +465,7 @@ void SymbolDatabase::Link()
 	{
 		for (auto methodInfo : classInfo->declaredMethods)
 		{
-			methodInfo->returnType = findTypeInfo(methodInfo->returnTypeRawName);
+			methodInfo->returnType = findSymbol(methodInfo->returnTypeRawName);
 
 			methodInfo->LinkParameters(this);
 		}
@@ -492,7 +492,7 @@ void SymbolDatabase::Link()
 	{
 		for (auto methodInfo : classInfo->declaredMethods)
 		{
-			methodInfo->returnType = findTypeInfo(methodInfo->returnTypeRawName);
+			methodInfo->returnType = findSymbol(methodInfo->returnTypeRawName);
 
 			methodInfo->LinkParameters(this);
 		}
@@ -613,7 +613,7 @@ void SymbolDatabase::InitializePredefineds()
 }
 
 // typeFullName : const や &, * は除かれていること
-ln::Ref<TypeSymbol> SymbolDatabase::findTypeInfo(ln::StringRef typeFullName)
+ln::Ref<TypeSymbol> SymbolDatabase::findSymbol(ln::StringRef typeFullName)
 {
 	ln::Optional<ln::Ref<TypeSymbol>> type;
 	

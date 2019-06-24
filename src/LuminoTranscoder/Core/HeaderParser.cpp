@@ -4,7 +4,7 @@
 #include <memory>
 #include <LuminoEngine/Base/Regex.hpp>
 #include "SymbolDatabase.hpp"
-#include "Parser.hpp"
+#include "HeaderParser.hpp"
 
 #ifdef _MSC_VER     // start of disabling MSVC warnings
 #pragma warning(push)

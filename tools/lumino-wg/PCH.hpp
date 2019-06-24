@@ -2,3 +2,5 @@
 #define LN_MSVC_DISABLE_LIBRARY_LINK
 #include <LuminoEngine.hpp>
 #include "../../build/ExternalSource/Streams/source/Stream.h"
+
+template<class T> using Ref = ln::Ref<T>;

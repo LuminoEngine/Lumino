@@ -215,7 +215,7 @@ public:
 	static ln::Ref<TypeSymbol>	EventConnectionType;
 };
 
-class SymbolDatabase
+class SymbolDatabase : public ln::RefObject
 {
 public:
 	ln::List<ln::Ref<TypeSymbol>>	predefineds;
@@ -239,7 +239,8 @@ public:
 
 public:
 	void InitializePredefineds();
-	ln::Ref<TypeSymbol> findTypeInfo(ln::StringRef typeFullName);
+	ln::Ref<TypeSymbol> findSymbol(ln::StringRef typeFullName);
+
 
 private:
 	ln::DiagnosticsManager* m_diag;
