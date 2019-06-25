@@ -41,7 +41,7 @@ void SpritesetAssetTreeView::setRootDir(QString dir)
     setRootIndex(rootModelIndex);
 }
 
-void SpritesetAssetTreeView::onDoubleClicked(const QModelIndex &index)
+void SpritesetAssetTreeView::onDoubleClicked(const QModelIndex& index)
 {
     QString filePath = m_model->fileInfo(index).absoluteFilePath();
 }

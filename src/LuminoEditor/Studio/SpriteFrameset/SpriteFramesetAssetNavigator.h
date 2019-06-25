@@ -20,7 +20,7 @@ public:
     void setRootDir(QString dir);
 
 public slots:
-    void onDoubleClicked(const QModelIndex &index);
+    void onDoubleClicked(const QModelIndex& index);
 
 private:
     SpritesetAssetTreeModel* m_model;
