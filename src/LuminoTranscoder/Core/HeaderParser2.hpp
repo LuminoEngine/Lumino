@@ -1,9 +1,9 @@
 ﻿
 #pragma once
 #include <unordered_map>
-#include "SymbolDatabase.hpp"
+#include "ParserIntermediates.hpp"
 
-class HeaderParser
+class HeaderParser2
 {
 public:
 	struct AttrMacro
@@ -21,21 +21,21 @@ public:
 	void addForceIncludeFile(const ln::Path& path) { m_forceIncludeFiles.add(path); }
 
 
-	int parse(const ln::Path& filePath, ::SymbolDatabase* db, ln::DiagnosticsManager* diag);
+	int parse(const ln::Path& filePath, PIDatabase* db, ln::DiagnosticsManager* diag);
 	AttrMacro* findUnlinkedAttrMacro(unsigned offset);
 
-	::SymbolDatabase* getDB() const { return m_db; }
+	PIDatabase* getDB() const { return m_db; }
 	ln::DiagnosticsManager* diag() const { return m_diag; }
 
 
 
-	static ln::Ref<DocumentSymbol> parseDocument(const std::string& comment);
-	static ln::Ref<MetadataSymbol> parseMetadata(std::string name, const std::string& args);
+	static ln::Ref<PIDocument> parseDocument(const std::string& comment);
+	static ln::Ref<PIMetadata> parseMetadata(std::string name, const std::string& args);
 
 private:
-	::SymbolDatabase*	m_db;
-	ln::List<ln::Path>	m_includePathes;
-	ln::List<ln::Path>	m_forceIncludeFiles;
+	PIDatabase* m_db;
+	ln::List<ln::Path> m_includePathes;
+	ln::List<ln::Path> m_forceIncludeFiles;
 	ln::DiagnosticsManager* m_diag;
 };
 

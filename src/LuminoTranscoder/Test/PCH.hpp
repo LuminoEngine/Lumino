@@ -3,9 +3,7 @@
 #include <LuminoCore/Testing/TestHelper.hpp>
 #include <LuminoEngine.hpp>
 #include "gtest/gtest.h"
-
-#include "../Core/SymbolDatabase.hpp"
-#include "../Core/HeaderParser.hpp"
+#include "../../../build/ExternalSource/Streams/source/Stream.h"
 
 template<class T>
 using Ref = ln::Ref<T>;

@@ -7,10 +7,13 @@ set(LLVM_DIR ${LWIG_LLVM_PACKAGE_DIR}/lib/cmake/llvm)
 find_package(CLANG REQUIRED CONFIG)
 find_package(LLVM REQUIRED CONFIG)
 
-file(GLOB_RECURSE LOCAL_SOURCES "*.hpp" "*.cpp")
+file(GLOB LOCAL_SOURCES "*.hpp" "*.cpp")
 source_group("Sources" FILES ${LOCAL_SOURCES})
 
-add_library(${PROJECT_NAME} STATIC ${LOCAL_SOURCES})
+file(GLOB LOCAL_SOURCES_Generators "Generators/*.hpp" "Generators/*.cpp")
+source_group("Generators" FILES ${LOCAL_SOURCES_Generators})
+
+add_library(${PROJECT_NAME} STATIC ${LOCAL_SOURCES} ${LOCAL_SOURCES_Generators})
 target_include_directories(${PROJECT_NAME} PRIVATE . ${LN_ENGINE_INCLUDE_DIR} ${LUMINO_INCLUDE_DIRECTORIES} ${LWIG_LLVM_PACKAGE_DIR}/include)
 target_link_libraries(${PROJECT_NAME} LuminoEngine)
 target_link_libraries(${PROJECT_NAME} clangToolingCore clangAnalysis clangARCMigrate clangAST clangASTMatchers clangBasic clangCodeGen clangDriver clangDynamicASTMatchers clangEdit clangFormat clangFrontend clangFrontendTool clangIndex clangLex clangParse clangRewrite clangRewriteFrontend clangSema clangSerialization clangTooling LLVMSupport LLVMCore LLVMOption LLVMProfileData LLVMBitReader LLVMMC LLVMMCParser LLVMBinaryFormat Version)

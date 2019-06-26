@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include "Common.hpp"
+#include "ParserIntermediates.hpp"
 
 class SymbolDatabase;
 class TypeSymbol;
@@ -11,26 +12,34 @@ class ConstantSymbol;
 class DocumentSymbol;
 class PropertySymbol;
 
-enum class AccessLevel
-{
-	Public,
-	Protected,
-	Private,
-};
-
-class ParameterDocumentSymbol : public ln::RefObject
+class Symbol : public ln::RefObject
 {
 public:
-	ln::String name;
-	ln::String io;
-	ln::String description;
+	SymbolDatabase* db() const { return m_db; }
+
+protected:
+	Symbol(SymbolDatabase* db);
+
+private:
+	SymbolDatabase* m_db;
 };
 
+//
+//class ParameterDocumentSymbol : public ln::RefObject
+//{
+//public:
+//	ln::String name;
+//	ln::String io;
+//	ln::String description;
+//};
+//
+
+// param 1つも対象。
 class DocumentSymbol : public ln::RefObject
 {
 public:
 	ln::String summary;
-	ln::List<ln::Ref<ParameterDocumentSymbol>> params;
+	//ln::List<ln::Ref<ParameterDocumentSymbol>> params;
 	ln::String returns;
 	ln::String details;
 	ln::String copydocMethodName;
@@ -72,18 +81,48 @@ public:
 	ln::Ref<ConstantSymbol> defaultValue;
 };
 
-class FieldSymbol : public ln::RefObject
+class FieldSymbol : public Symbol
 {
 public:
-	ln::Ref<DocumentSymbol> document;
-	ln::Ref<TypeSymbol> type;
-	ln::String name;
+	//ln::Ref<DocumentSymbol> document;
+	//ln::String name;
 
-	// parsing data (link source)
-	ln::String	typeRawName;
+	//// parsing data (link source)
+	//ln::String	typeRawName;
+
+	TypeSymbol* type() const { return m_type; }
+	const ln::String& name() const { return m_pi->name; }
+
+public:
+	FieldSymbol(SymbolDatabase* db);
+	ln::Result init(PIField* pi);
+	ln::Result link();
+
+private:
+	PIField* m_pi = nullptr;
+	TypeSymbol* m_type = nullptr;
 };
 
-class MethodSymbol : public ln::RefObject
+class ConstantSymbol : public Symbol
+{
+public:
+	//ln::Ref<DocumentSymbol>		document;
+	//ln::String				name;
+	//ln::Ref<TypeSymbol>			type;
+	//ln::Ref<ln::Variant>			value;
+
+	//ln::String				typeRawName;
+
+public:
+	ConstantSymbol(SymbolDatabase* db);
+	ln::Result init(PIConstant* pi);
+	ln::Result link();
+
+private:
+	PIConstant* m_pi = nullptr;
+};
+
+class MethodSymbol : public Symbol
 {
 public:
 	// 
@@ -92,7 +131,6 @@ public:
 	ln::Ref<DocumentSymbol> document;
 	AccessLevel accessLevel = AccessLevel::Public;
 	ln::String name;
-	ln::Ref<TypeSymbol> returnType;
 	//IsConstructor
 	//IsStatic
 	//IsVirtual
@@ -123,10 +161,17 @@ public:
 
 	static ln::String GetAccessLevelName(AccessLevel accessLevel);
 
-	void link(SymbolDatabase* db);
+public:
+	MethodSymbol(SymbolDatabase* db);
+	ln::Result init(PIMethod* pi);
+	ln::Result link();
 
 private:
 	void ExpandCAPIParameters(SymbolDatabase* db);
+
+private:
+	PIMethod* m_pi = nullptr;
+	TypeSymbol* m_returnType = nullptr;
 };
 
 class PropertySymbol : public ln::RefObject
@@ -143,61 +188,73 @@ public:
 	void MakeDocument();
 };
 
-class ConstantSymbol : public ln::RefObject
+class TypeSymbol : public Symbol
 {
 public:
-	ln::Ref<DocumentSymbol>		document;
-	ln::String				name;
-	ln::Ref<TypeSymbol>			type;
-	ln::Ref<ln::Variant>			value;
+	TypeSymbol(SymbolDatabase* db);
+	ln::Result init(PITypeInfo* piType);
+	ln::Result init(const ln::String& primitveRawFullName);
+	ln::Result link();
 
-	ln::String				typeRawName;
-};
-
-class TypeSymbol : public ln::RefObject
-{
-public:
-	struct SoueceData
-	{
-		ln::String baseClassRawName;
-		ln::String rawFullName;
-	} src;
-
-	ln::Ref<MetadataSymbol>			metadata;
-	ln::Ref<DocumentSymbol>			document;
-	bool	isStruct = false;
-	bool			isVoid = false;
-	bool				isPrimitive = false;
-	bool					isEnum = false;
-	bool					isDelegate = false;
-	ln::List<ln::Ref<FieldSymbol>>		declaredFields;
-	ln::List<ln::Ref<MethodSymbol>>		declaredMethods;
-	ln::List<ln::Ref<PropertySymbol>>	declaredProperties;
-	ln::List<ln::Ref<ConstantSymbol>>	declaredConstants;		// enum メンバ
-	ln::List<ln::Ref<MethodSymbol>>		declaredMethodsForDocument;	// LN_METHOD(Docuent)
-	ln::Ref<TypeSymbol>				baseClass;
-
-
-	TypeSymbol() {}
-	TypeSymbol(ln::StringRef rawFullName_) { setRawFullName(rawFullName_); }
-
-	const ln::String& fullName() const { return src.rawFullName; }
+	TypeKind kind() const { return (m_piType) ? m_piType->kind : TypeKind::Primitive; };
+	const ln::String& fullName() const { return m_fullName; }
 	const ln::String& shortName() const { return m_shortName; }
+	const ln::List<Ref<FieldSymbol>>& fields() const { return m_fields; }
+	const ln::List<Ref<ConstantSymbol>>& constants() const { return m_constants; }
+	const ln::List<Ref<MethodSymbol>>& methods() const { return m_methods; }
 
-	bool isValueType() const { return isStruct || isPrimitive || isEnum; }
-	bool isStatic() const { return metadata->HasKey(_T("Static")); }
-	bool IsClass() const { return !isValueType() && !isVoid; }
-
-	void Link(SymbolDatabase* db);
-
-	void setRawFullName(const ln::String& value);
 
 private:
-	void MakeProperties();
-	void LinkOverload(SymbolDatabase* db);
-	void ResolveCopyDoc();
+	void setFullName(const ln::String& value);
 
+	Ref<PITypeInfo> m_piType;
+	ln::String m_fullName;
 	ln::String m_shortName;
+	ln::List<Ref<FieldSymbol>> m_fields;
+	ln::List<Ref<ConstantSymbol>> m_constants;
+	ln::List<Ref<MethodSymbol>> m_methods;
+
+//	struct SoueceData
+//	{
+//		ln::String baseClassRawName;
+//		ln::String rawFullName;
+//	} src;
+//
+//	ln::Ref<MetadataSymbol>			metadata;
+//	ln::Ref<DocumentSymbol>			document;
+//	bool	isStruct = false;
+//	bool			isVoid = false;
+//	bool				isPrimitive = false;
+//	bool					isEnum = false;
+//	bool					isDelegate = false;
+//	ln::List<ln::Ref<FieldSymbol>>		declaredFields;
+//	ln::List<ln::Ref<MethodSymbol>>		declaredMethods;
+//	ln::List<ln::Ref<PropertySymbol>>	declaredProperties;
+//	ln::List<ln::Ref<ConstantSymbol>>	declaredConstants;		// enum メンバ
+//	ln::List<ln::Ref<MethodSymbol>>		declaredMethodsForDocument;	// LN_METHOD(Docuent)
+//	ln::Ref<TypeSymbol>				baseClass;
+//
+//
+//	TypeSymbol() {}
+//	TypeSymbol(ln::StringRef rawFullName_) { setRawFullName(rawFullName_); }
+//
+//	const ln::String& fullName() const { return src.rawFullName; }
+//	const ln::String& shortName() const { return m_shortName; }
+//
+//	bool isValueType() const { return isStruct || isPrimitive || isEnum; }
+//	bool isStatic() const { return metadata->HasKey(_T("Static")); }
+//	bool IsClass() const { return !isValueType() && !isVoid; }
+//
+//	void Link(SymbolDatabase* db);
+//
+//	void setRawFullName(const ln::String& value);
+//
+//private:
+//	void MakeProperties();
+//	void LinkOverload(SymbolDatabase* db);
+//	void ResolveCopyDoc();
+//
+//	ln::String m_shortName;
 };
 
 class PredefinedTypes
@@ -218,31 +275,38 @@ public:
 class SymbolDatabase : public ln::RefObject
 {
 public:
-	ln::List<ln::Ref<TypeSymbol>>	predefineds;
-	ln::List<ln::Ref<TypeSymbol>>	structs;
-	ln::List<ln::Ref<TypeSymbol>>	classes;
-	ln::List<ln::Ref<TypeSymbol>>	enums;
-	ln::List<ln::Ref<TypeSymbol>>	delegates;
+	//ln::List<ln::Ref<TypeSymbol>>	structs;
+	//ln::List<ln::Ref<TypeSymbol>>	classes;
+	//ln::List<ln::Ref<TypeSymbol>>	enums;
+	//ln::List<ln::Ref<TypeSymbol>>	delegates;
 
 	SymbolDatabase(ln::DiagnosticsManager* diag);
 	ln::DiagnosticsManager* diag() const { return m_diag; }
-
-
-	void Link();
+	ln::Result initTypes(PIDatabase* pidb);
+	ln::Result linkTypes();
 
 	//tr::Enumerator<ln::Ref<MethodSymbol>> GetAllMethods();
 
-	void FindEnumTypeAndValue(const ln::String& typeFullName, const ln::String& memberName, ln::Ref<TypeSymbol>* outEnum, ln::Ref<ConstantSymbol>* outMember);
-	ln::Ref<ConstantSymbol> CreateConstantFromLiteralString(const ln::String& valueStr);
+	//void FindEnumTypeAndValue(const ln::String& typeFullName, const ln::String& memberName, ln::Ref<TypeSymbol>* outEnum, ln::Ref<ConstantSymbol>* outMember);
+	static Ref<ConstantSymbol> createConstantFromLiteralString(const ln::String& valueStr);
 
-	void verify(ln::DiagnosticsManager* diag);
+	//void verify(ln::DiagnosticsManager* diag);
+
+
+
+	stream::Stream<Ref<TypeSymbol>> structs() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->kind() == TypeKind::Struct; }); }
 
 public:
-	void InitializePredefineds();
-	ln::Ref<TypeSymbol> findSymbol(ln::StringRef typeFullName);
+	void initPredefineds();
+	TypeSymbol* findTypeSymbol(const ln::String& typeFullName);
+
+	// 型検索。見つからない場合はエラーをレポートして nullptr を返す。
+	TypeSymbol* getTypeSymbol(const ln::String& typeFullName);
 
 
 private:
+	Ref<PIDatabase> m_pidb;
+	ln::List<Ref<TypeSymbol>> m_allTypes;
 	ln::DiagnosticsManager* m_diag;
 };
 

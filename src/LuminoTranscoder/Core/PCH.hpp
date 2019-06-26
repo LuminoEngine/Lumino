@@ -3,6 +3,3 @@
 #include <LuminoEngine.hpp>
 #include <LuminoCore/Base/Result.hpp>
 #include "../../../build/ExternalSource/Streams/source/Stream.h"
-
-template<class T>
-using Ref = ln::Ref<T>;

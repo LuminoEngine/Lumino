@@ -3,8 +3,7 @@
 */
 #include <memory>
 #include <LuminoEngine/Base/Regex.hpp>
-#include "SymbolDatabase.hpp"
-#include "HeaderParser.hpp"
+#include "HeaderParser2.hpp"
 
 #ifdef _MSC_VER     // start of disabling MSVC warnings
 #pragma warning(push)
@@ -59,12 +58,12 @@ class LWIGVisitor : public DeclVisitor<LWIGVisitor, bool>
 private:
 	CompilerInstance * m_ci;
 	const SourceManager& m_sm;
-	::HeaderParser* m_parser;
-	//ln::Ref<DocumentSymbol> m_lastDocument;
-	::TypeSymbol* m_currentRecord;
+	::HeaderParser2* m_parser;
+	//Ref<DocumentSymbol> m_lastDocument;
+	PITypeInfo* m_currentRecord;
 
 public:
-	LWIGVisitor(CompilerInstance* CI, ::HeaderParser* parser)
+	LWIGVisitor(CompilerInstance* CI, ::HeaderParser2* parser)
 		: m_ci(CI)
 		, m_sm(CI->getASTContext().getSourceManager())
 		, m_parser(parser)
@@ -119,11 +118,11 @@ public:
 		return getLocString(decl->getLocation());
 	}
 
-	ln::Ref<DocumentSymbol> parseDocument(Decl* decl)
+	Ref<PIDocument> parseDocument(Decl* decl)
 	{
 		if (const FullComment *Comment = decl->getASTContext().getLocalCommentForDeclUncached(decl))
-			return HeaderParser::parseDocument(getSourceText(Comment->getSourceRange()));
-		return ln::makeRef<DocumentSymbol>();
+			return HeaderParser2::parseDocument(getSourceText(Comment->getSourceRange()));
+		return ln::makeRef<PIDocument>();
 	}
 
 	::AccessLevel tlanslateAccessLevel(AccessSpecifier ac)
@@ -227,34 +226,30 @@ public:
 			{
 				attr->linked = true;
 
-				auto info = ln::makeRef<::TypeSymbol>();
-				info->setRawFullName(getRawTypeFullName(QualType(decl->getTypeForDecl(), 0)));
+				auto info = ln::makeRef<PITypeInfo>();
+				info->rawFullName = getRawTypeFullName(QualType(decl->getTypeForDecl(), 0));
 
 				// documentation
 				info->document = parseDocument(decl);
 
 				// metadata
-				info->metadata = HeaderParser::parseMetadata(attr->name, attr->args);
+				info->metadata = HeaderParser2::parseMetadata(attr->name, attr->args);
 
 				// base classes
 				auto bases = decl->getDefinition()->bases();
 				for (auto& base : bases)
 				{
-					info->src.baseClassRawName = getRawTypeFullName(base.getType());
+					info->baseClassRawName = getRawTypeFullName(base.getType());
 					break;	// first only
 				}
 
-				if (decl->getDefinition()->isStruct())
-				{
-					info->isStruct = true;
-					m_parser->getDB()->structs.add(info);
+				if (decl->getDefinition()->isStruct()) {
+					info->kind = TypeKind::Struct;
 				}
-				else
-				{
-					m_parser->getDB()->classes.add(info);
+				else {
+					info->kind = TypeKind::Class;
 				}
-
-
+				m_parser->getDB()->types.add(info);
 
 				m_currentRecord = info;
 				EnumerateDecl(decl);
@@ -275,7 +270,7 @@ public:
 			{
 				attr->linked = true;
 
-				auto info = ln::makeRef<MethodSymbol>();
+				auto info = ln::makeRef<PIMethod>();
 				info->owner = m_currentRecord;
 				info->name = ln::String::fromStdString(decl->getNameAsString());
 				info->accessLevel = tlanslateAccessLevel(decl->getAccess());
@@ -284,7 +279,7 @@ public:
 				info->document = parseDocument(decl);
 
 				// metadata
-				info->metadata = HeaderParser::parseMetadata(attr->name, attr->args);
+				info->metadata = HeaderParser2::parseMetadata(attr->name, attr->args);
 
 				// return type
 				info->returnTypeRawName = getRawTypeFullName(decl->getReturnType());
@@ -302,7 +297,7 @@ public:
 					m_parser->diag()->reportError(ln::String::format(u"Invalid declaration {0}", ln::String::fromStdString(getSourceText(decl->getSourceRange()))));
 				}
 
-				info->owner->declaredMethods.add(info);
+				info->owner->methods.add(info);
 
 				for (unsigned int iParam = 0; iParam < decl->getNumParams(); iParam++)
 				{
@@ -311,20 +306,17 @@ public:
 
 					bool hasConst = type.getQualifiers().hasConst();
 					SplitQualType sp = type.split();
-					//PointerType
-					
-					
-					auto paramInfo = ln::makeRef<ParameterSymbol>();
-					paramInfo->name = ln::String::fromStdString(paramDecl->getNameAsString());
-					paramInfo->src.typeRawName = getRawTypeFullName(type);
 
-					if (sp.Ty->isPointerType())
-					{
+					
+					auto paramInfo = ln::makeRef<PIMethodParameter>();
+					paramInfo->name = ln::String::fromStdString(paramDecl->getNameAsString());
+					paramInfo->typeRawName = getRawTypeFullName(type);
+
+					if (sp.Ty->isPointerType()) {
 						paramInfo->isIn = hasConst;
 						paramInfo->isOut = !hasConst;
 					}
-					else
-					{
+					else {
 						paramInfo->isIn = true;
 						paramInfo->isOut = false;
 					}
@@ -332,8 +324,7 @@ public:
 					info->parameters.add(paramInfo);
 
 					// check sema error
-					if (paramDecl->isInvalidDecl())
-					{
+					if (paramDecl->isInvalidDecl()) {
 						// TODO: add location
 						//m_parser->diag()->reportError(ln::String::format(_T("Invalid declaration {0}"), ln::String::fromStdString(getSourceText(paramDecl->getSourceRange()))), getLocString(paramDecl));
 						m_parser->diag()->reportError(ln::String::format(u"Invalid declaration {0}", ln::String::fromStdString(getSourceText(paramDecl->getSourceRange()))));
@@ -354,11 +345,11 @@ public:
 			{
 				attr->linked = true;
 
-				auto info = ln::makeRef<FieldSymbol>();
+				auto info = ln::makeRef<PIField>();
 				info->name = ln::String::fromStdString(decl->getNameAsString());
 				info->document = parseDocument(decl);
 				info->typeRawName = getRawTypeFullName(decl->getType());
-				m_currentRecord->declaredFields.add(info);
+				m_currentRecord->fields.add(info);
 			}
 		}
 
@@ -373,16 +364,17 @@ public:
 			{
 				attr->linked = true;
 
-				auto symbol = ln::makeRef<TypeSymbol>();
-				symbol->setRawFullName(ln::String::fromStdString(decl->getQualifiedNameAsString()));
+				auto symbol = ln::makeRef<PITypeInfo>();
+				symbol->rawFullName = ln::String::fromStdString(decl->getQualifiedNameAsString());
+				symbol->kind = TypeKind::Enum;
 
 				// documentation
 				symbol->document = parseDocument(decl);
 
 				// metadata
-				symbol->metadata = HeaderParser::parseMetadata(attr->name, attr->args);
+				symbol->metadata = HeaderParser2::parseMetadata(attr->name, attr->args);
 
-				m_parser->getDB()->enums.add(symbol);
+				m_parser->getDB()->types.add(symbol);
 
 				m_currentRecord = symbol;
 				EnumerateDecl(decl);
@@ -396,12 +388,12 @@ public:
 	{
 		if (m_currentRecord)
 		{
-			auto symbol = ln::makeRef<ConstantSymbol>();
+			auto symbol = ln::makeRef<PIConstant>();
 			symbol->document = parseDocument(decl);
 			symbol->name = ln::String::fromStdString(decl->getNameAsString());
 			symbol->value = ln::makeVariant(decl->getInitVal().getSExtValue());
-			symbol->type = m_currentRecord;
-			m_currentRecord->declaredConstants.add(symbol);
+			//symbol->type = m_currentRecord;
+			m_currentRecord->constants.add(symbol);
 		}
 
 		return true;
@@ -435,7 +427,7 @@ public:
 class LocalPPCallbacks : public PPCallbacks
 {
 public:
-	LocalPPCallbacks(Preprocessor& pp, CompilerInstance* ci, ::HeaderParser* parser)
+	LocalPPCallbacks(Preprocessor& pp, CompilerInstance* ci, ::HeaderParser2* parser)
 		: m_pp(pp)
 		, m_ci(ci)
 		, m_parser(parser)
@@ -463,7 +455,7 @@ public:
 				name == "LN_METHOD" ||
 				name == "LN_ENUM")
 			{
-				::HeaderParser::AttrMacro attrMacro;
+				::HeaderParser2::AttrMacro attrMacro;
 				attrMacro.name = name;
 
 				std::string args = Lexer::getSourceText(CharSourceRange::getTokenRange(range), sm, opts).str();
@@ -514,7 +506,7 @@ public:
 private:
 	Preprocessor & m_pp;
 	CompilerInstance* m_ci;
-	::HeaderParser* m_parser;
+	::HeaderParser2* m_parser;
 };
 
 //------------------------------------------------------------------------------
@@ -531,7 +523,7 @@ private:
 	std::unique_ptr<LWIGVisitor> m_visitor;
 
 public:
-	explicit LocalASTConsumer(CompilerInstance* CI, ::HeaderParser* parser)
+	explicit LocalASTConsumer(CompilerInstance* CI, ::HeaderParser2* parser)
 		: m_visitor(std::make_unique<LWIGVisitor>(CI, parser))
 	{
 		//auto fe = CI->getSourceManager().getFileManager().getFile(, false);
@@ -555,9 +547,9 @@ public:
 class LocalFrontendAction : public ASTFrontendAction
 {
 public:
-	::HeaderParser* m_parser;
+	::HeaderParser2* m_parser;
 
-	LocalFrontendAction(::HeaderParser* parser)
+	LocalFrontendAction(::HeaderParser2* parser)
 		: m_parser(parser)
 	{
 	}
@@ -570,14 +562,14 @@ public:
 
 
 // SilClangAnalyzer のポインタを ↑のクラスたちにわたすためのファクトリ
-std::unique_ptr<FrontendActionFactory> NewLocalFrontendActionFactory(::HeaderParser* parser)
+std::unique_ptr<FrontendActionFactory> NewLocalFrontendActionFactory(::HeaderParser2* parser)
 {
 	class SimpleFrontendActionFactory : public FrontendActionFactory
 	{
 	public:
-		::HeaderParser* m_parser;
+		::HeaderParser2* m_parser;
 
-		SimpleFrontendActionFactory(::HeaderParser* parser)
+		SimpleFrontendActionFactory(::HeaderParser2* parser)
 			: m_parser(parser)
 		{}
 
@@ -591,7 +583,7 @@ std::unique_ptr<FrontendActionFactory> NewLocalFrontendActionFactory(::HeaderPar
 
 //------------------------------------------------------------------------------
 
-int HeaderParser::parse(const ln::Path& filePath, ::SymbolDatabase* db, ln::DiagnosticsManager* diag)
+int HeaderParser2::parse(const ln::Path& filePath, PIDatabase* db, ln::DiagnosticsManager* diag)
 {
 	LN_CHECK(db);
 	m_db = db;
@@ -677,7 +669,7 @@ int HeaderParser::parse(const ln::Path& filePath, ::SymbolDatabase* db, ln::Diag
 	return result;
 }
 
-HeaderParser::AttrMacro* HeaderParser::findUnlinkedAttrMacro(unsigned offset)
+HeaderParser2::AttrMacro* HeaderParser2::findUnlinkedAttrMacro(unsigned offset)
 {
 	for (size_t i = 0; i < lnAttrMacros.size(); i++)
 	{
@@ -694,9 +686,9 @@ HeaderParser::AttrMacro* HeaderParser::findUnlinkedAttrMacro(unsigned offset)
 	return nullptr;
 }
 
-ln::Ref<DocumentSymbol> HeaderParser::parseDocument(const std::string& comment)
+Ref<PIDocument> HeaderParser2::parseDocument(const std::string& comment)
 {
-	auto info = ln::makeRef<DocumentSymbol>();
+	auto info = ln::makeRef<PIDocument>();
 
 
 	ln::String doc = ln::String::fromStdString(comment, ln::TextEncoding::utf8Encoding());
@@ -729,7 +721,7 @@ ln::Ref<DocumentSymbol> HeaderParser::parseDocument(const std::string& comment)
 				ln::String con = line.substr(result.length());
 				if (ln::Regex::search(con, _T(R"(\[(\w+)\]\s+(\w+)\s*\:\s*)"), &result))
 				{
-					auto paramInfo = ln::makeRef<ParameterDocumentSymbol>();
+					auto paramInfo = ln::makeRef<PIParamDocument>();
 					info->params.add(paramInfo);
 					paramInfo->io = result.groupValue(1);
 					paramInfo->name = result.groupValue(2);
@@ -767,9 +759,9 @@ ln::Ref<DocumentSymbol> HeaderParser::parseDocument(const std::string& comment)
 	return info;
 }
 
-ln::Ref<MetadataSymbol> HeaderParser::parseMetadata(std::string name, const std::string& args)
+Ref<PIMetadata> HeaderParser2::parseMetadata(std::string name, const std::string& args)
 {
-	auto metadata = ln::makeRef<MetadataSymbol>();
+	auto metadata = ln::makeRef<PIMetadata>();
 	metadata->name = ln::String::fromStdString(name);
 	auto argEntries = ln::String::fromStdString(args).split(_T(","), ln::StringSplitOptions::RemoveEmptyEntries);
 	for (auto& arg : argEntries)
@@ -783,7 +775,7 @@ ln::Ref<MetadataSymbol> HeaderParser::parseMetadata(std::string name, const std:
 				.replace(_T("'"), _T(""))
 				.replace(_T("\""), _T(""));
 		}
-		metadata->AddValue(ln::String(key), ln::String(value));
+		metadata->values.insert({ ln::String(key), ln::String(value) });
 	}
 	return metadata;
 }

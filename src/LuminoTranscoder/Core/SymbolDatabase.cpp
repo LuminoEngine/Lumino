@@ -13,6 +13,14 @@ ln::Ref<TypeSymbol>	PredefinedTypes::objectType;
 ln::Ref<TypeSymbol>	PredefinedTypes::EventConnectionType;
 
 //==============================================================================
+// Symbol
+
+Symbol::Symbol(SymbolDatabase* db)
+	: m_db(db)
+{
+}
+
+//==============================================================================
 // MetadataSymbol
 //==============================================================================
 const ln::String MetadataSymbol::OverloadPostfixAttr = _T("OverloadPostfix");
@@ -45,8 +53,72 @@ bool MetadataSymbol::HasKey(const ln::StringRef& key)
 }
 
 //==============================================================================
-// MethodSymbol
+// FieldSymbol
+
+FieldSymbol::FieldSymbol(SymbolDatabase* db)
+	: Symbol(db)
+{
+}
+
+ln::Result FieldSymbol::init(PIField* pi)
+{
+	LN_CHECK(pi);
+	m_pi = pi;
+	return true;
+}
+
+ln::Result FieldSymbol::link()
+{
+	m_type = db()->getTypeSymbol(m_pi->typeRawName);
+	if (!m_type) return false;
+
+	return true;
+}
+
 //==============================================================================
+// ConstantSymbol
+
+ConstantSymbol::ConstantSymbol(SymbolDatabase* db)
+	: Symbol(db)
+{
+}
+
+ln::Result ConstantSymbol::init(PIConstant* pi)
+{
+	LN_CHECK(pi);
+	m_pi = pi;
+	return true;
+}
+
+ln::Result ConstantSymbol::link()
+{
+	return true;
+}
+
+//==============================================================================
+// MethodSymbol
+
+MethodSymbol::MethodSymbol(SymbolDatabase* db)
+	: Symbol(db)
+{
+}
+
+ln::Result MethodSymbol::init(PIMethod* pi)
+{
+	LN_CHECK(pi);
+	m_pi = pi;
+	return true;
+}
+
+ln::Result MethodSymbol::link()
+{
+	m_returnType = db()->getTypeSymbol(m_pi->returnTypeRawName);
+	if (!m_returnType) return false;
+
+	return true;
+}
+
+#if 0
 void MethodSymbol::LinkParameters(SymbolDatabase* db)
 {
 	if (metadata->HasKey(_T("Event")))
@@ -72,11 +144,11 @@ void MethodSymbol::LinkParameters(SymbolDatabase* db)
 			{
 				auto tokens = text.split(_T("::"));
 				ln::Ref<TypeSymbol> dummy;
-				db->FindEnumTypeAndValue(tokens[0], tokens[1], &dummy, &paramInfo->defaultValue);
+				db->findEnumTypeAndValue(tokens[0], tokens[1], &dummy, &paramInfo->defaultValue);
 			}
 			else
 			{
-				paramInfo->defaultValue = db->CreateConstantFromLiteralString(text);
+				paramInfo->defaultValue = db->createConstantFromLiteralString(text);
 			}
 		}
 	}
@@ -232,10 +304,87 @@ void MethodSymbol::link(SymbolDatabase* db)
 
 	ExpandCAPIParameters(db);
 }
+#endif
 
 //==============================================================================
 // TypeSymbol
-//==============================================================================
+
+TypeSymbol::TypeSymbol(SymbolDatabase* db)
+	: Symbol(db)
+{
+}
+
+ln::Result TypeSymbol::init(PITypeInfo* piType)
+{
+	LN_CHECK(piType);
+	m_piType = piType;
+	setFullName(m_piType->rawFullName);
+
+	for (auto& i : m_piType->fields) {
+		auto s = ln::makeRef<FieldSymbol>(db());
+		if (!s->init(i)) {
+			return false;
+		}
+		m_fields.add(s);
+	}
+
+	for (auto& i : m_piType->constants) {
+		auto s = ln::makeRef<ConstantSymbol>(db());
+		if (!s->init(i)) {
+			return false;
+		}
+		m_constants.add(s);
+	}
+
+	for (auto& i : m_piType->methods) {
+		auto s = ln::makeRef<MethodSymbol>(db());
+		if (!s->init(i)) {
+			return false;
+		}
+		m_methods.add(s);
+	}
+
+	return true;
+}
+
+ln::Result TypeSymbol::init(const ln::String& primitveRawFullName)
+{
+	setFullName(primitveRawFullName);
+	return true;
+}
+
+ln::Result TypeSymbol::link()
+{
+	for (auto& i : m_fields) {
+		if (!i->link()) {
+			return false;
+		}
+	}
+	for (auto& i : m_constants) {
+		if (!i->link()) {
+			return false;
+		}
+	}
+	for (auto& i : m_methods) {
+		if (!i->link()) {
+			return false;
+		}
+	}
+	return true;
+}
+
+void TypeSymbol::setFullName(const ln::String& value)
+{
+	m_fullName = value;
+
+	int c = value.lastIndexOf(':');
+	if (c >= 0)
+		m_shortName = value.substr(c + 1);
+	else
+		m_shortName = value;
+}
+
+#if 0
 void TypeSymbol::Link(SymbolDatabase* db)
 {
 	// find base class
@@ -255,16 +404,6 @@ void TypeSymbol::Link(SymbolDatabase* db)
 
 }
 
-void TypeSymbol::setRawFullName(const ln::String& value)
-{
-	src.rawFullName = value;
-
-	int c = value.lastIndexOf(':');
-	if (c >= 0)
-		m_shortName = value.substr(c + 1);
-	else
-		m_shortName = value;
-}
 
 void TypeSymbol::MakeProperties()
 {
@@ -408,10 +547,10 @@ void TypeSymbol::ResolveCopyDoc()
 		}
 	}
 }
+#endif
 
 //==============================================================================
 // PropertySymbol
-//==============================================================================
 void PropertySymbol::MakeDocument()
 {
 	document = ln::makeRef<DocumentSymbol>();
@@ -433,16 +572,36 @@ void PropertySymbol::MakeDocument()
 
 //==============================================================================
 // SymbolDatabase
-//==============================================================================
 SymbolDatabase::SymbolDatabase(ln::DiagnosticsManager* diag)
 	: m_diag(diag)
 {
 }
 
-void SymbolDatabase::Link()
+ln::Result SymbolDatabase::initTypes(PIDatabase* pidb)
 {
-	InitializePredefineds();
+	LN_CHECK(pidb);
+	m_pidb = pidb;
+	initPredefineds();
 
+	for (auto& t : m_pidb->types) {
+		auto type = ln::makeRef<TypeSymbol>(this);
+		if (!type->init(t)) {
+			return false;
+		}
+		m_allTypes.add(type);
+	}
+
+	return true;
+}
+
+ln::Result SymbolDatabase::linkTypes()
+{
+	for (auto& t : m_allTypes) {
+		if (!t->link()) return false;
+	}
+
+	return true;
+#if 0
 	// structs
 	for (auto structInfo : structs)
 	{
@@ -499,6 +658,7 @@ void SymbolDatabase::Link()
 
 		classInfo->Link(this);
 	}
+#endif
 }
 
 //tr::Enumerator<ln::Ref<MethodSymbol>> SymbolDatabase::GetAllMethods()
@@ -518,129 +678,136 @@ void SymbolDatabase::Link()
 //	return e;
 //}
 
-void SymbolDatabase::FindEnumTypeAndValue(const ln::String& typeFullName, const ln::String& memberName, ln::Ref<TypeSymbol>* outEnum, ln::Ref<ConstantSymbol>* outMember)
-{
-	for (auto& enumInfo : enums)
-	{
-		if (enumInfo->fullName() == typeFullName)
-		{
-			for (auto& constantInfo : enumInfo->declaredConstants)
-			{
-				if (constantInfo->name == memberName)
-				{
-					*outEnum = enumInfo;
-					*outMember = constantInfo;
-					return;
-				}
-			}
-		}
-	}
+//void SymbolDatabase::FindEnumTypeAndValue(const ln::String& typeFullName, const ln::String& memberName, ln::Ref<TypeSymbol>* outEnum, ln::Ref<ConstantSymbol>* outMember)
+//{
+//	for (auto& enumInfo : enums)
+//	{
+//		if (enumInfo->fullName() == typeFullName)
+//		{
+//			for (auto& constantInfo : enumInfo->declaredConstants)
+//			{
+//				if (constantInfo->name == memberName)
+//				{
+//					*outEnum = enumInfo;
+//					*outMember = constantInfo;
+//					return;
+//				}
+//			}
+//		}
+//	}
+//
+//	LN_ENSURE(0, "Undefined enum: %s::%s", typeFullName.c_str(), memberName.c_str());
+//}
 
-	LN_ENSURE(0, "Undefined enum: %s::%s", typeFullName.c_str(), memberName.c_str());
+//ln::Ref<ConstantSymbol> SymbolDatabase::createConstantFromLiteralString(const ln::String& valueStr)
+//{
+//	auto info = ln::makeRef<ConstantSymbol>();
+//	if (valueStr == "true")
+//	{
+//		info->type = PredefinedTypes::boolType;
+//		info->value = ln::makeVariant(true);
+//	}
+//	else if (valueStr == "false")
+//	{
+//		info->type = PredefinedTypes::boolType;
+//		info->value = ln::makeVariant(false);
+//	}
+//	else if (valueStr == "nullptr")
+//	{
+//		info->type = PredefinedTypes::nullptrType;
+//		info->value = ln::makeVariant(nullptr);
+//	}
+//	else if (valueStr.contains('.'))
+//	{
+//		info->type = PredefinedTypes::floatType;
+//		info->value = ln::makeVariant(ln::StringHelper::toFloat(valueStr.c_str()));
+//	}
+//	else
+//	{
+//		info->type = PredefinedTypes::intType;
+//		info->value = ln::makeVariant(ln::StringHelper::toInt32(valueStr.c_str()));
+//	}
+//
+//	return info;
+//}
+
+void SymbolDatabase::initPredefineds()
+{
+	auto addPredefined = [this](const ln::String& name) {
+		auto t = ln::makeRef<TypeSymbol>(this);
+		t->init(name);
+		m_allTypes.add(t);
+		return t;
+	};
+		
+	PredefinedTypes::voidType = addPredefined(u"void");
+	
+	PredefinedTypes::nullptrType = addPredefined(u"nullptr_t");
+
+	PredefinedTypes::boolType = addPredefined(u"bool");
+
+	PredefinedTypes::intType = addPredefined(u"int");
+
+	PredefinedTypes::int16Type = addPredefined(u"int16_t");
+
+	PredefinedTypes::uint32Type = addPredefined(u"uint32_t");
+
+	PredefinedTypes::floatType = addPredefined(u"float");
+
+	PredefinedTypes::stringType = addPredefined(u"ln::String");
+
+	PredefinedTypes::objectType = addPredefined(u"ln::Object");
+
+	//m_allTypes.add(ln::makeRef<TypeSymbol>(_T("ln::EventConnection")));
+	//PredefinedTypes::EventConnectionType = m_allTypes.back();
 }
 
-ln::Ref<ConstantSymbol> SymbolDatabase::CreateConstantFromLiteralString(const ln::String& valueStr)
+TypeSymbol* SymbolDatabase::findTypeSymbol(const ln::String& typeFullName)
 {
-	auto info = ln::makeRef<ConstantSymbol>();
-	if (valueStr == "true")
-	{
-		info->type = PredefinedTypes::boolType;
-		info->value = ln::makeVariant(true);
-	}
-	else if (valueStr == "false")
-	{
-		info->type = PredefinedTypes::boolType;
-		info->value = ln::makeVariant(false);
-	}
-	else if (valueStr == "nullptr")
-	{
-		info->type = PredefinedTypes::nullptrType;
-		info->value = ln::makeVariant(nullptr);
-	}
-	else if (valueStr.contains('.'))
-	{
-		info->type = PredefinedTypes::floatType;
-		info->value = ln::makeVariant(ln::StringHelper::toFloat(valueStr.c_str()));
-	}
+	auto type = m_allTypes.findIf([typeFullName](ln::Ref<TypeSymbol> type) { return type->fullName() == typeFullName; });
+	if (type)
+		return *type;
 	else
-	{
-		info->type = PredefinedTypes::intType;
-		info->value = ln::makeVariant(ln::StringHelper::toInt32(valueStr.c_str()));
-	}
-
-	return info;
+		return nullptr;
 }
 
-void SymbolDatabase::InitializePredefineds()
+TypeSymbol* SymbolDatabase::getTypeSymbol(const ln::String& typeFullName)
 {
-	predefineds.add(ln::makeRef<TypeSymbol>(_T("void")));
-	predefineds.back()->isVoid = true;
-	PredefinedTypes::voidType = predefineds.back();
-
-	predefineds.add(ln::makeRef<TypeSymbol>(_T("nullptr")));
-	predefineds.back()->isVoid = true;
-	PredefinedTypes::nullptrType = predefineds.back();
-
-	predefineds.add(ln::makeRef<TypeSymbol>(_T("bool")));
-	predefineds.back()->isPrimitive = true;
-	PredefinedTypes::boolType = predefineds.back();
-
-	predefineds.add(ln::makeRef<TypeSymbol>(_T("int")));
-	predefineds.back()->isPrimitive = true;
-	PredefinedTypes::intType = predefineds.back();
-
-	predefineds.add(ln::makeRef<TypeSymbol>(_T("int16_t")));
-	predefineds.back()->isPrimitive = true;
-	PredefinedTypes::int16Type = predefineds.back();
-
-	predefineds.add(ln::makeRef<TypeSymbol>(_T("uint32_t")));
-	predefineds.back()->isPrimitive = true;
-	PredefinedTypes::uint32Type = predefineds.back();
-
-	predefineds.add(ln::makeRef<TypeSymbol>(_T("float")));
-	predefineds.back()->isPrimitive = true;
-	PredefinedTypes::floatType = predefineds.back();
-
-	predefineds.add(ln::makeRef<TypeSymbol>(_T("ln::String")));
-	predefineds.back()->isPrimitive = true;
-	PredefinedTypes::stringType = predefineds.back();
-
-	predefineds.add(ln::makeRef<TypeSymbol>(_T("ln::Object")));
-	PredefinedTypes::objectType = predefineds.back();
-
-	predefineds.add(ln::makeRef<TypeSymbol>(_T("ln::EventConnection")));
-	PredefinedTypes::EventConnectionType = predefineds.back();
+	auto type = findTypeSymbol(typeFullName);
+	if (!type)
+		m_diag->reportError(u"Undefined type : " + typeFullName);
+	return type;
 }
 
 // typeFullName : const や &, * は除かれていること
-ln::Ref<TypeSymbol> SymbolDatabase::findSymbol(ln::StringRef typeFullName)
-{
-	ln::Optional<ln::Ref<TypeSymbol>> type;
-	
-	type = predefineds.findIf([typeFullName](ln::Ref<TypeSymbol> type) { return type->fullName() == typeFullName; });
-	if (type != nullptr) return *type;
-
-	type = structs.findIf([typeFullName](ln::Ref<TypeSymbol> type) { return type->fullName() == typeFullName; });
-	if (type != nullptr) return *type;
-
-	type = classes.findIf([typeFullName](ln::Ref<TypeSymbol> type) { return type->fullName() == typeFullName; });
-	if (type != nullptr) return *type;
-
-	type = enums.findIf([typeFullName](ln::Ref<TypeSymbol> type) { return type->fullName() == typeFullName; });
-	if (type != nullptr) return *type;
-
-	type = delegates.findIf([typeFullName](ln::Ref<TypeSymbol> type) { return type->fullName() == typeFullName; });
-	if (type)
-		return *type;
-
-	// aliases
-	if (typeFullName == _T("short")) return PredefinedTypes::int16Type;
-	if (typeFullName == _T("ln::ln::StringRef")) return PredefinedTypes::stringType;
-	if (typeFullName == _T("ln::EventConnection")) return PredefinedTypes::EventConnectionType;
-
-	LN_ENSURE(0, "Undefined type: %s", ln::String(typeFullName).c_str());
-	return nullptr;
-}
+//ln::Ref<TypeSymbol> SymbolDatabase::findSymbol(ln::StringRef typeFullName)
+//{
+//	ln::Optional<ln::Ref<TypeSymbol>> type;
+//	
+//	type = predefineds.findIf([typeFullName](ln::Ref<TypeSymbol> type) { return type->fullName() == typeFullName; });
+//	if (type != nullptr) return *type;
+//
+//	type = structs.findIf([typeFullName](ln::Ref<TypeSymbol> type) { return type->fullName() == typeFullName; });
+//	if (type != nullptr) return *type;
+//
+//	type = classes.findIf([typeFullName](ln::Ref<TypeSymbol> type) { return type->fullName() == typeFullName; });
+//	if (type != nullptr) return *type;
+//
+//	type = enums.findIf([typeFullName](ln::Ref<TypeSymbol> type) { return type->fullName() == typeFullName; });
+//	if (type != nullptr) return *type;
+//
+//	type = delegates.findIf([typeFullName](ln::Ref<TypeSymbol> type) { return type->fullName() == typeFullName; });
+//	if (type)
+//		return *type;
+//
+//	// aliases
+//	if (typeFullName == _T("short")) return PredefinedTypes::int16Type;
+//	if (typeFullName == _T("ln::ln::StringRef")) return PredefinedTypes::stringType;
+//	if (typeFullName == _T("ln::EventConnection")) return PredefinedTypes::EventConnectionType;
+//
+//	LN_ENSURE(0, "Undefined type: %s", ln::String(typeFullName).c_str());
+//	return nullptr;
+//}
 
 //void SymbolDatabase::verify(DiagManager* diag)
 //{
