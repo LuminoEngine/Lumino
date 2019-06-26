@@ -9,19 +9,79 @@
 class SymbolDatabase;
 class TypeSymbol;
 class ConstantSymbol;
-class DocumentSymbol;
+//class DocumentSymbol;
 class PropertySymbol;
+
+
+class ParameterDocumentInfo : public ln::RefObject
+{
+public:
+	ln::Result init(PIParamDocument* pi);
+
+	const ln::String& name() const { return m_pi->name; }
+	const ln::String& io() const { return m_pi->io; }
+	const ln::String& description() const { return m_pi->description; }
+
+private:
+	PIParamDocument* m_pi;
+};
+
+class DocumentInfo : public ln::RefObject
+{
+public:
+	ln::Result init(PIDocument* pi);
+
+	const ln::String& summary() const { return m_pi->summary; }
+	const ln::String& returns() const { return m_pi->returns; }
+	const ln::String& details() const { return m_pi->details; }
+	const ln::List<Ref<ParameterDocumentInfo>>& params() const { return m_params; }
+
+	//ln::String copydocMethodName;
+	//ln::String copydocSignature;
+
+	//bool IsCopyDoc() const { return !copydocMethodName.isEmpty(); }
+
+private:
+	PIDocument* m_pi = nullptr;
+	ln::List<Ref<ParameterDocumentInfo>> m_params;
+};
+
+// 属性マクロの ( ) 内に記述されたパラメータ
+class MetadataInfo : public ln::RefObject
+{
+public:
+	static const ln::String OverloadPostfixAttr;
+
+	ln::String name;
+	std::unordered_map<ln::String, ln::String> values;
+
+	//void AddValue(const ln::String& key, const ln::String& value);
+	//ln::String* FindValue(const ln::StringRef& key);
+	//ln::String getValue(const ln::StringRef& key, const ln::String& defaultValue = ln::String());
+	//bool HasKey(const ln::StringRef& key);
+
+
+	ln::Result init(PIMetadata* pi);
+
+private:
+	PIMetadata* m_pi = nullptr;
+};
 
 class Symbol : public ln::RefObject
 {
 public:
 	SymbolDatabase* db() const { return m_db; }
+	const Ref<DocumentInfo>& document() const { return m_document; }
+	const Ref<MetadataInfo>& metadata() const { return m_metadata; }
 
 protected:
 	Symbol(SymbolDatabase* db);
+	ln::Result init(PIDocument* document, PIMetadata* metadata);
 
 private:
 	SymbolDatabase* m_db;
+	Ref<DocumentInfo> m_document;
+	Ref<MetadataInfo> m_metadata;
 };
 
 //
@@ -34,34 +94,6 @@ private:
 //};
 //
 
-// param 1つも対象。
-class DocumentSymbol : public ln::RefObject
-{
-public:
-	ln::String summary;
-	//ln::List<ln::Ref<ParameterDocumentSymbol>> params;
-	ln::String returns;
-	ln::String details;
-	ln::String copydocMethodName;
-	ln::String copydocSignature;
-
-	bool IsCopyDoc() const { return !copydocMethodName.isEmpty(); }
-};
-
-// 属性マクロの ( ) 内に記述されたパラメータ
-class MetadataSymbol : public ln::RefObject
-{
-public:
-	static const ln::String OverloadPostfixAttr;
-
-	ln::String name;
-	std::unordered_map<ln::String, ln::String> values;
-
-	void AddValue(const ln::String& key, const ln::String& value);
-	ln::String* FindValue(const ln::StringRef& key);
-	ln::String getValue(const ln::StringRef& key, const ln::String& defaultValue = ln::String());
-	bool HasKey(const ln::StringRef& key);
-};
 
 class ParameterSymbol : public ln::RefObject
 {
@@ -127,8 +159,8 @@ class MethodSymbol : public Symbol
 public:
 	// 
 	ln::Ref<TypeSymbol> owner;
-	ln::Ref<MetadataSymbol> metadata;
-	ln::Ref<DocumentSymbol> document;
+	//ln::Ref<MetadataSymbol> metadata;
+	//ln::Ref<DocumentSymbol> document;
 	AccessLevel accessLevel = AccessLevel::Public;
 	ln::String name;
 	//IsConstructor
@@ -150,9 +182,9 @@ public:
 	ln::String	returnTypeRawName;
 	ln::String	paramsRawSignature;		// 型名と引数名を抽出したもの (デフォルト引数は除く) e.g) "constVector3&minVec,constVector3&maxVec"
 
-	bool IsOverloadChild() const { return overloadParent != nullptr; }
-	bool IsRuntimeInitializer() const { return metadata->HasKey(_T("RuntimeInitializer")); }
-	bool IsEventSetter() const { return metadata->HasKey(_T("Event")); }
+	//bool IsOverloadChild() const { return overloadParent != nullptr; }
+	//bool IsRuntimeInitializer() const { return metadata->HasKey(_T("RuntimeInitializer")); }
+	//bool IsEventSetter() const { return metadata->HasKey(_T("Event")); }
 
 	void LinkParameters(SymbolDatabase* db);
 	ln::String GetCAPIFuncName();
@@ -178,7 +210,7 @@ class PropertySymbol : public ln::RefObject
 {
 public:
 	ln::Ref<TypeSymbol>			owner;
-	ln::Ref<DocumentSymbol>		document;
+	//ln::Ref<DocumentSymbol>		document;
 	ln::String				name;
 	ln::String				namePrefix;	// Is
 	ln::Ref<TypeSymbol>			type;

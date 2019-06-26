@@ -13,6 +13,42 @@ ln::Ref<TypeSymbol>	PredefinedTypes::objectType;
 ln::Ref<TypeSymbol>	PredefinedTypes::EventConnectionType;
 
 //==============================================================================
+// DocumentInfo
+
+ln::Result ParameterDocumentInfo::init(PIParamDocument* pi)
+{
+	LN_CHECK(pi);
+	m_pi = pi;
+	return true;
+}
+
+//==============================================================================
+// DocumentInfo
+
+ln::Result DocumentInfo::init(PIDocument* pi)
+{
+	LN_CHECK(pi);
+	m_pi = pi;
+
+	for (auto& i : m_pi->params) {
+		auto& s = ln::makeRef<ParameterDocumentInfo>();
+		if (!s->init(i)) return false;
+		m_params.add(s);
+	}
+
+	return true;
+}
+
+//==============================================================================
+// MetadataInfo
+
+ln::Result MetadataInfo::init(PIMetadata* pi)
+{
+	m_pi = pi;
+	return true;
+}
+
+//==============================================================================
 // Symbol
 
 Symbol::Symbol(SymbolDatabase* db)
@@ -20,37 +56,48 @@ Symbol::Symbol(SymbolDatabase* db)
 {
 }
 
+ln::Result Symbol::init(PIDocument* document, PIMetadata* metadata)
+{
+	m_document = ln::makeRef<DocumentInfo>();
+	if (!m_document->init(document)) return false;
+
+	m_metadata = ln::makeRef<MetadataInfo>();
+	if (!m_metadata->init(metadata)) return false;
+
+	return true;
+}
+
 //==============================================================================
 // MetadataSymbol
 //==============================================================================
-const ln::String MetadataSymbol::OverloadPostfixAttr = _T("OverloadPostfix");
-
-void MetadataSymbol::AddValue(const ln::String& key, const ln::String& value)
-{
-	values[key] = value;
-}
-
-ln::String* MetadataSymbol::FindValue(const ln::StringRef& key)
-{
-	auto itr = values.find(key);
-	if (itr != values.end()) return &(itr->second);
-	return nullptr;
-}
-
-ln::String MetadataSymbol::getValue(const ln::StringRef& key, const ln::String& defaultValue)
-{
-	auto* s = FindValue(key);
-	if (s)
-		return *s;
-	else
-		return defaultValue;
-}
-
-bool MetadataSymbol::HasKey(const ln::StringRef& key)
-{
-	auto itr = values.find(key);
-	return (itr != values.end());
-}
+//const ln::String MetadataSymbol::OverloadPostfixAttr = _T("OverloadPostfix");
+//
+//void MetadataSymbol::AddValue(const ln::String& key, const ln::String& value)
+//{
+//	values[key] = value;
+//}
+//
+//ln::String* MetadataSymbol::FindValue(const ln::StringRef& key)
+//{
+//	auto itr = values.find(key);
+//	if (itr != values.end()) return &(itr->second);
+//	return nullptr;
+//}
+//
+//ln::String MetadataSymbol::getValue(const ln::StringRef& key, const ln::String& defaultValue)
+//{
+//	auto* s = FindValue(key);
+//	if (s)
+//		return *s;
+//	else
+//		return defaultValue;
+//}
+//
+//bool MetadataSymbol::HasKey(const ln::StringRef& key)
+//{
+//	auto itr = values.find(key);
+//	return (itr != values.end());
+//}
 
 //==============================================================================
 // FieldSymbol
@@ -62,6 +109,7 @@ FieldSymbol::FieldSymbol(SymbolDatabase* db)
 
 ln::Result FieldSymbol::init(PIField* pi)
 {
+	if (!Symbol::init(pi->document, pi->metadata)) return false;
 	LN_CHECK(pi);
 	m_pi = pi;
 	return true;
@@ -85,6 +133,7 @@ ConstantSymbol::ConstantSymbol(SymbolDatabase* db)
 
 ln::Result ConstantSymbol::init(PIConstant* pi)
 {
+	if (!Symbol::init(pi->document, pi->metadata)) return false;
 	LN_CHECK(pi);
 	m_pi = pi;
 	return true;
@@ -105,6 +154,7 @@ MethodSymbol::MethodSymbol(SymbolDatabase* db)
 
 ln::Result MethodSymbol::init(PIMethod* pi)
 {
+	if (!Symbol::init(pi->document, pi->metadata)) return false;
 	LN_CHECK(pi);
 	m_pi = pi;
 	return true;
@@ -316,6 +366,8 @@ TypeSymbol::TypeSymbol(SymbolDatabase* db)
 
 ln::Result TypeSymbol::init(PITypeInfo* piType)
 {
+	if (!Symbol::init(piType->document, piType->metadata)) return false;
+
 	LN_CHECK(piType);
 	m_piType = piType;
 	setFullName(m_piType->rawFullName);
@@ -551,27 +603,28 @@ void TypeSymbol::ResolveCopyDoc()
 
 //==============================================================================
 // PropertySymbol
-void PropertySymbol::MakeDocument()
-{
-	document = ln::makeRef<DocumentSymbol>();
-
-	if (getter != nullptr)
-	{
-		document->summary += getter->document->summary;
-		document->details += getter->document->details;
-	}
-	if (setter != nullptr)
-	{
-		if (!document->summary.isEmpty()) document->summary += _T("\n");
-		if (!document->details.isEmpty()) document->details += _T("\n\n");
-
-		document->summary += setter->document->summary;
-		document->details += setter->document->details;
-	}
-}
+//void PropertySymbol::MakeDocument()
+//{
+//	document = ln::makeRef<DocumentSymbol>();
+//
+//	if (getter != nullptr)
+//	{
+//		document->summary += getter->document->summary;
+//		document->details += getter->document->details;
+//	}
+//	if (setter != nullptr)
+//	{
+//		if (!document->summary.isEmpty()) document->summary += _T("\n");
+//		if (!document->details.isEmpty()) document->details += _T("\n\n");
+//
+//		document->summary += setter->document->summary;
+//		document->details += setter->document->details;
+//	}
+//}
 
 //==============================================================================
 // SymbolDatabase
+
 SymbolDatabase::SymbolDatabase(ln::DiagnosticsManager* diag)
 	: m_diag(diag)
 {

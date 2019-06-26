@@ -1,8 +1,109 @@
 ﻿
 #include "FlatCGenerator.hpp"
 
+
+//==============================================================================
+// FlatCCommon
+
+ln::String FlatCCommon::makeFlatCDeclTypeName(GeneratorConfiguration* config, TypeSymbol* typeInfo)
+{
+	return config->flatCOutputModuleName + typeInfo->shortName();
+}
+
+#if 0
+ln::String FlatCCommon::makeCppQualTypeName(TypeSymbol* typeInfo)
+{
+	if (typeInfo->IsClass())
+	{
+		return typeInfo->shortName() + _T("*");
+	}
+
+	return typeInfo->shortName();
+}
+
+ln::String FlatCCommon::makeFlatCQualTypeName(TypeSymbol* typeInfo)
+{
+	if (typeInfo->IsClass())
+	{
+		return typeInfo->shortName() + _T("*");
+	}
+	return typeInfo->shortName();
+}
+
+ln::String FlatCCommon::makeFlatCParamQualTypeName(ln::Ref<MethodSymbol> methodInfo, ln::Ref<ParameterSymbol> paramInfo)
+{
+	auto typeInfo = paramInfo->type;
+
+	if (typeInfo->isStruct)
+	{
+		ln::String modifer;
+		if (paramInfo->isThis && methodInfo->isConst)
+			modifer = "const ";
+		if (!paramInfo->isThis && !paramInfo->isOut)
+			modifer = "const ";
+		return ln::String::format("{0}LN{1}*", modifer, typeInfo->shortName());
+	}
+
+	if (typeInfo->isEnum)
+	{
+		return _T("LN") + typeInfo->shortName();
+	}
+
+	if (typeInfo == PredefinedTypes::stringType)
+	{
+		if (paramInfo->isOut || paramInfo->isReturn)
+			return "const LNChar**";
+		else
+			return "const LNChar*";
+	}
+
+	ln::String name;
+	if (typeInfo == PredefinedTypes::boolType)
+		name = _T("LNBool");
+	else if (typeInfo->IsClass())
+		name = "LNHandle";
+	else
+		name = typeInfo->shortName();
+
+	if (paramInfo->isOut || paramInfo->isReturn)
+		name += "*";
+
+	//if (typeInfo->isStruct && paramInfo->isThis)
+	//{
+	//	if (methodInfo->isConst)
+	//		name = "const " + name;
+	//	name += "*";
+	//}
+
+	return name;
+	//	ln::String name;
+	//
+	//	if (isOut)
+	//	{
+	//		name = typeInfo->name;
+	//		name += "*";
+	//	}
+	//	else
+	//	{
+	//		if (typeInfo == PredefinedTypes::stringType)
+	//			name = "const LNChar*";
+	//		else if (typeInfo->IsClass())
+	//			name = "LNHandle";
+	//		else
+	//			name = typeInfo->name;
+	//	}
+	//	return name;
+}
+
+#endif
+
+
+//==============================================================================
+// FlatCHeaderGenerator
+
+
 static const ln::String funcHeaderTemplate =
-"LN_API LNResultCode %%FuncName%%(%%ParamList%%)";
+	"LN_API LNResultCode %%FuncName%%(%%ParamList%%)";
 
 static const ln::String funcBodyTemplate =
 	"{\n"
@@ -19,7 +120,8 @@ void FlatCHeaderGenerator::generate()
 	OutputBuffer structMemberFuncImplsText;
 	for (auto& structInfo : db()->structs())
 	{
-		structsText.AppendLine("struct LN{0}", structInfo->shortName());
+		structsText.AppendLines(makeDocumentComment(structInfo->document()));
+		structsText.AppendLine("struct {0}", FlatCCommon::makeFlatCDeclTypeName(config(), structInfo));
 		structsText.AppendLine("{");
 		structsText.IncreaseIndent();
 		for (auto& fieldInfo : structInfo->fields())
@@ -135,7 +237,7 @@ void FlatCHeaderGenerator::generate()
 		//src = src.replace("%%StructMemberFuncDecls%%", structMemberFuncDeclsText.toString());
 		//src = src.replace("%%ClassMemberFuncDecls%%", classMemberFuncDeclsText.toString());
 
-		ln::String fileName = ln::String::format("{0}.FlatC.generated.h", moduleFullName());
+		ln::String fileName = ln::String::format("{0}.FlatC.generated.h", config()->moduleName);
 		ln::FileSystem::writeAllText(makeOutputFilePath(fileName).c_str(), src, ln::TextEncoding::utf8Encoding());
 	}
 	// save C API Source
@@ -144,9 +246,38 @@ void FlatCHeaderGenerator::generate()
 		src = src.replace("%%StructMemberFuncImpls%%", structMemberFuncImplsText.toString());
 		//src = src.replace("%%ClassMemberFuncImpls%%", classMemberFuncImplsText.toString());
 
-		ln::String fileName = ln::String::format("{0}.FlatC.generated.cpp", moduleFullName());
+		ln::String fileName = ln::String::format("{0}.FlatC.generated.cpp", config()->moduleName);
 		ln::FileSystem::writeAllText(makeOutputFilePath(fileName).c_str(), src);
 	}
+}
+
+ln::String FlatCHeaderGenerator::makeDocumentComment(DocumentInfo* doc)
+{
+	OutputBuffer text;
+	text.AppendLine("/**");
+	text.IncreaseIndent();
+
+	// @brief
+	text.AppendLine("@brief {0}", doc->summary());
+
+	// @param
+	for (auto& param : doc->params())
+	{
+		text.AppendLine("@param[{0}] {1} : {2}", param->io(), param->name(), param->description());
+	}
+
+	// @return
+	if (!doc->returns().isEmpty())
+		text.AppendLine("@return {0}", doc->returns());
+
+	// @details
+	if (!doc->details().isEmpty())
+		text.AppendLine("@details {0}", doc->details());
+
+	text.DecreaseIndent();
+	text.AppendLine("*/");
+
+	return text.toString();
 }
 
 #if 0
@@ -364,33 +495,5 @@ ln::String WrapperIFGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Re
 }
 
 
-ln::String WrapperIFGenerator::MakeDocumentComment(ln::Ref<DocumentSymbol> doc)
-{
-	OutputBuffer text;
-	text.AppendLine("/**");
-	text.IncreaseIndent();
-
-	// @brief
-	text.AppendLine("@brief {0}", doc->summary);
-
-	// @param
-	for (auto& param : doc->params)
-	{
-		text.AppendLine("@param[{0}] {1} : {2}", param->io, param->name, param->description);
-	}
-
-	// @return
-	if (!doc->returns.isEmpty())
-		text.AppendLine("@return {0}", doc->returns);
-
-	// @details
-	if (!doc->details.isEmpty())
-		text.AppendLine("@details {0}", doc->details);
-
-	text.DecreaseIndent();
-	text.AppendLine("*/");
-
-	return text.toString();
-}
 
 #endif

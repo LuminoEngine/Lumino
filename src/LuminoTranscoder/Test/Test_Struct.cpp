@@ -31,7 +31,14 @@ TEST_F(Test_Struct, Basic)
  //   ASSERT_EQ(u"float", struct1->declaredFields[1]->type->fullName());
  //   ASSERT_EQ(u"y", struct1->declaredFields[1]->name);
 
+	auto config = ln::makeRef<GeneratorConfiguration>();
+	config->moduleName = u"Lumino";
+	config->outputDir = LN_LOCALFILE("");
+	config->templateDir = LN_LOCALFILE("../Core/Generators/Templates");
+	config->targetNamespace = u"ln";
+	config->flatCOutputModuleName = u"Ln";
+
 	FlatCHeaderGenerator g1;
-	g1.setup(db, LN_LOCALFILE("../Core/Generators/Templates"), LN_LOCALFILE(""), u"LN", "LN");
+	g1.setup(db, config);
 	g1.generate();
 }
