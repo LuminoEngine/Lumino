@@ -145,6 +145,44 @@ ln::Result ConstantSymbol::link()
 }
 
 //==============================================================================
+// MethodParameterSymbol
+
+MethodParameterSymbol::MethodParameterSymbol(SymbolDatabase* db)
+	: Symbol(db)
+{
+}
+
+ln::Result MethodParameterSymbol::init(PIMethodParameter* pi)
+{
+	LN_CHECK(pi);
+	m_pi = pi;
+	m_name = m_pi->name;
+	return true;
+}
+
+ln::Result MethodParameterSymbol::init(TypeSymbol* type, const ln::String& name)
+{
+	LN_CHECK(type);
+	LN_CHECK(!name.isEmpty());
+	m_type = type;
+	m_name = name;
+	return true;
+}
+
+ln::Result MethodParameterSymbol::link()
+{
+	if (m_pi) {
+		m_type = db()->getTypeSymbol(m_pi->typeRawName);
+		if (!m_type) return false;
+	}
+	else {
+		// 内部的に作成された Param は、あらかじめ型をセットしておく必要がある
+		if (LN_REQUIRE(m_type)) return false;
+	}
+	return true;
+}
+
+//==============================================================================
 // MethodSymbol
 
 MethodSymbol::MethodSymbol(SymbolDatabase* db)
@@ -152,11 +190,21 @@ MethodSymbol::MethodSymbol(SymbolDatabase* db)
 {
 }
 
-ln::Result MethodSymbol::init(PIMethod* pi)
+ln::Result MethodSymbol::init(PIMethod* pi, TypeSymbol* ownerType)
 {
 	if (!Symbol::init(pi->document, pi->metadata)) return false;
 	LN_CHECK(pi);
+	LN_CHECK(ownerType);
 	m_pi = pi;
+	m_ownerType = ownerType;
+	m_name = m_pi->name;
+
+	for (auto& i : m_pi->parameters) {
+		auto s = ln::makeRef<MethodParameterSymbol>(db());
+		if (!s->init(i)) return false;
+		m_parameters.add(s);
+	}
+
 	return true;
 }
 
@@ -165,82 +213,76 @@ ln::Result MethodSymbol::link()
 	m_returnType = db()->getTypeSymbol(m_pi->returnTypeRawName);
 	if (!m_returnType) return false;
 
+	if (!makeFlatParameters()) return false;
+
+	for (auto& p : m_parameters) {
+		if (!p->link()) return false;
+	}
+
 	return true;
 }
 
+ln::Result MethodSymbol::makeFlatParameters()
+{
+	// static でなければ、第1引数は this などになる
+	if (!isStatic())
+	{
+		if (m_ownerType->kind() == TypeKind::Struct)
+		{
+			auto s = ln::makeRef<MethodParameterSymbol>(db());
+			if (!s->init(m_ownerType, m_ownerType->shortName().toLower())) return false;
+			s->isIn = true;
+			s->isThis = true;
+			m_flatParameters.add(s);
+		}
+		//else if (isConstructor)
+		//{
+		//	// none
+		//}
+		//else if (owner->isDelegate)
+		//{
+		//	auto info = ln::makeRef<ParameterSymbol>();
+		//	info->name = _T("sender");
+		//	info->type = PredefinedTypes::objectType;
+		//	info->isThis = true;
+		//	capiParameters.add(info);
+		//}
+		else if (m_ownerType->kind() == TypeKind::Class)
+		{
+			auto s = ln::makeRef<MethodParameterSymbol>(db());
+			if (!s->init(m_ownerType, m_ownerType->shortName().toLower())) return false;
+			s->isIn = true;
+			s->isThis = true;
+			m_flatParameters.add(s);
+		}
+		else {
+			LN_UNREACHABLE();
+			return false;
+		}
+	}
+
+	// params
+	for (auto& paramInfo : m_parameters) {
+		m_flatParameters.add(paramInfo);
+	}
+
+	// return value
+	if (m_returnType == PredefinedTypes::voidType || m_returnType == PredefinedTypes::EventConnectionType)
+	{
+		// "void", "EventConnection" は戻り値扱いしない
+	}
+	else
+	{
+		auto s = ln::makeRef<MethodParameterSymbol>(db());
+		if (!s->init(m_returnType, u"outReturn")) return false;
+		s->isIn = false;
+		s->isOut = true;
+		s->isReturn = true;
+		m_flatParameters.add(s);
+	}
+
+	return true;
 #if 0
-void MethodSymbol::LinkParameters(SymbolDatabase* db)
-{
-	if (metadata->HasKey(_T("Event")))
-	{
-		printf("is event");	// TODO
-	}
-
-	for (auto& paramInfo : parameters)
-	{
-		paramInfo->type = db->findSymbol(paramInfo->src.typeRawName);
-
-		// 今のところ、Class 型の 出力変数は許可しない
-		if (paramInfo->isOut && paramInfo->type->IsClass())
-		{
-			paramInfo->isIn = true;
-			paramInfo->isOut = false;
-		}
-
-		if (paramInfo->src.rawDefaultValue != nullptr)
-		{
-			ln::String text = paramInfo->src.rawDefaultValue.value();
-			if (text.contains(_T("::")))
-			{
-				auto tokens = text.split(_T("::"));
-				ln::Ref<TypeSymbol> dummy;
-				db->findEnumTypeAndValue(tokens[0], tokens[1], &dummy, &paramInfo->defaultValue);
-			}
-			else
-			{
-				paramInfo->defaultValue = db->createConstantFromLiteralString(text);
-			}
-		}
-	}
-}
-
-// capiParameters を構築する
-void MethodSymbol::ExpandCAPIParameters(SymbolDatabase* db)
-{
-	// 第1引数 (種類によって this など)
-	{
-		if (!isStatic)
-		{
-			if (owner->isStruct)
-			{
-				auto info = ln::makeRef<ParameterSymbol>();
-				info->name = owner->shortName().toLower();
-				info->type = db->findSymbol(owner->fullName());
-				info->isThis = true;
-				capiParameters.add(info);
-			}
-			else if (isConstructor)
-			{
-				// none
-			}
-			else if (owner->isDelegate)
-			{
-				auto info = ln::makeRef<ParameterSymbol>();
-				info->name = _T("sender");
-				info->type = PredefinedTypes::objectType;
-				info->isThis = true;
-				capiParameters.add(info);
-			}
-			else
-			{
-				auto info = ln::makeRef<ParameterSymbol>();
-				info->name = owner->shortName().toLower();
-				info->type = db->findSymbol(owner->fullName());
-				info->isThis = true;
-				capiParameters.add(info);
-			}
-		}
-	}
 
 	// params
 	for (auto& paramInfo : parameters)
@@ -280,34 +322,45 @@ void MethodSymbol::ExpandCAPIParameters(SymbolDatabase* db)
 			capiParameters.add(info);
 		}
 	}
+#endif
 }
 
-ln::String MethodSymbol::GetCAPIFuncName()
+#if 0
+void MethodSymbol::LinkParameters(SymbolDatabase* db)
 {
-	ln::String funcName;
-	if (isConstructor)
+	if (metadata->HasKey(_T("Event")))
 	{
-		if (owner->isStruct)
-		{
-			if (isConstructor && parameters.isEmpty())
-				funcName = _T("Clear");
-			else
-				funcName = _T("Set");
-		}
-		else
-			funcName = _T("Create");
-	}
-	else
-	{
-		funcName = name;
-		funcName[0] = ln::StringHelper::toUpper<ln::Char>(funcName[0]);	// 先頭大文字
+		printf("is event");	// TODO
 	}
 
-	ln::String n = ln::String::format(_T("LN{0}_{1}"), owner->shortName(), funcName);
-	if (IsOverloadChild())
-		n += metadata->getValue(MetadataSymbol::OverloadPostfixAttr);
-	return n;
+	for (auto& paramInfo : parameters)
+	{
+		paramInfo->type = db->findSymbol(paramInfo->src.typeRawName);
+
+		// 今のところ、Class 型の 出力変数は許可しない
+		if (paramInfo->isOut && paramInfo->type->IsClass())
+		{
+			paramInfo->isIn = true;
+			paramInfo->isOut = false;
+		}
+
+		if (paramInfo->src.rawDefaultValue != nullptr)
+		{
+			ln::String text = paramInfo->src.rawDefaultValue.value();
+			if (text.contains(_T("::")))
+			{
+				auto tokens = text.split(_T("::"));
+				ln::Ref<TypeSymbol> dummy;
+				db->findEnumTypeAndValue(tokens[0], tokens[1], &dummy, &paramInfo->defaultValue);
+			}
+			else
+			{
+				paramInfo->defaultValue = db->createConstantFromLiteralString(text);
+			}
+		}
+	}
 }
+
 
 ln::String MethodSymbol::GetCApiSetOverrideCallbackFuncName()
 {
@@ -390,7 +443,7 @@ ln::Result TypeSymbol::init(PITypeInfo* piType)
 
 	for (auto& i : m_piType->methods) {
 		auto s = ln::makeRef<MethodSymbol>(db());
-		if (!s->init(i)) {
+		if (!s->init(i, this)) {
 			return false;
 		}
 		m_methods.add(s);

@@ -95,23 +95,6 @@ private:
 //
 
 
-class ParameterSymbol : public ln::RefObject
-{
-public:
-	struct SoueceData
-	{
-		ln::String typeRawName;
-		ln::Optional<ln::String> rawDefaultValue;
-	} src;
-
-	ln::String name;
-	ln::Ref<TypeSymbol> type;
-	bool isIn = false;
-	bool isOut = false;
-	bool isThis = false;
-	bool isReturn = false;
-	ln::Ref<ConstantSymbol> defaultValue;
-};
 
 class FieldSymbol : public Symbol
 {
@@ -154,29 +137,54 @@ private:
 	PIConstant* m_pi = nullptr;
 };
 
+class MethodParameterSymbol : public Symbol
+{
+public:
+	struct SoueceData
+	{
+		ln::String typeRawName;
+		ln::Optional<ln::String> rawDefaultValue;
+	} src;
+
+	bool isIn = false;
+	bool isOut = false;
+	bool isThis = false;
+	bool isReturn = false;
+	ln::Ref<ConstantSymbol> defaultValue;
+
+public:
+	MethodParameterSymbol(SymbolDatabase* db);
+	ln::Result init(PIMethodParameter* pi);
+	ln::Result init(TypeSymbol* type, const ln::String& name);
+	ln::Result link();
+
+	TypeSymbol* type() const { return m_type; }
+	const ln::String& name() const { return m_name; }
+
+private:
+	PIMethodParameter* m_pi = nullptr;
+	TypeSymbol* m_type = nullptr;
+	ln::String m_name;
+};
+
 class MethodSymbol : public Symbol
 {
 public:
 	// 
-	ln::Ref<TypeSymbol> owner;
 	//ln::Ref<MetadataSymbol> metadata;
 	//ln::Ref<DocumentSymbol> document;
 	AccessLevel accessLevel = AccessLevel::Public;
-	ln::String name;
+	//ln::String name;
 	//IsConstructor
 	//IsStatic
 	//IsVirtual
-	bool isConst = false;		// [set from Parser] const メンバ関数であるか
-	bool isStatic = false;		// [set from Parser]
-	bool isVirtual = false;		// [set from Parser]
-	bool isConstructor = false;
+	//bool isConstructor = false;
 	ln::Ref<PropertySymbol> ownerProperty;		// このメソッドがプロパティに含まれていればそのプロパティを指す
-	ln::List<ln::Ref<ParameterSymbol>> parameters;
 
 	ln::Ref<MethodSymbol> overloadParent;			// このメソッドはどのメソッドをオーバーロードするか (基本的に一番最初に見つかった定義)
 	ln::List<ln::Ref<MethodSymbol>> overloadChildren;	// このメソッドはどのメソッドにオーバーロードされるか
 	// 
-	ln::List<ln::Ref<ParameterSymbol>> capiParameters;
+	//ln::List<ln::Ref<MethodParameterSymbol>> capiParameters;
 
 	// parsing data
 	ln::String	returnTypeRawName;
@@ -186,24 +194,38 @@ public:
 	//bool IsRuntimeInitializer() const { return metadata->HasKey(_T("RuntimeInitializer")); }
 	//bool IsEventSetter() const { return metadata->HasKey(_T("Event")); }
 
-	void LinkParameters(SymbolDatabase* db);
-	ln::String GetCAPIFuncName();
-	ln::String GetCApiSetOverrideCallbackFuncName();
-	ln::String GetCApiSetOverrideCallbackTypeName();
+	//void LinkParameters(SymbolDatabase* db);
+	//ln::String GetCAPIFuncName();
+	//ln::String GetCApiSetOverrideCallbackFuncName();
+	//ln::String GetCApiSetOverrideCallbackTypeName();
 
-	static ln::String GetAccessLevelName(AccessLevel accessLevel);
+	//static ln::String GetAccessLevelName(AccessLevel accessLevel);
 
 public:
 	MethodSymbol(SymbolDatabase* db);
-	ln::Result init(PIMethod* pi);
+	ln::Result init(PIMethod* pi, TypeSymbol* ownerType);
 	ln::Result link();
 
-private:
-	void ExpandCAPIParameters(SymbolDatabase* db);
+	TypeSymbol* ownerType() const { return m_ownerType; }
+	TypeSymbol* returnType() const { return m_returnType; }
+	const ln::String& name() const { return m_name; }
+	const ln::List<Ref<MethodParameterSymbol>>& parameters() const { return m_parameters; }
+	const ln::List<Ref<MethodParameterSymbol>>& flatParameters() const { return m_flatParameters; }
+
+	bool isConst() const { return m_pi->isConst; }
+	bool isStatic() const { return m_pi->isStatic; }
+	bool isVirtual() const { return m_pi->isVirtual; }
+	bool isConstructor() const { return m_pi->isConstructor; }
 
 private:
+	ln::Result makeFlatParameters();
+
 	PIMethod* m_pi = nullptr;
+	TypeSymbol* m_ownerType = nullptr;
 	TypeSymbol* m_returnType = nullptr;
+	ln::String m_name;
+	ln::List<Ref<MethodParameterSymbol>> m_parameters;
+	ln::List<Ref<MethodParameterSymbol>> m_flatParameters;	// FlatC-API としてのパラメータリスト。先頭が this だったり、末尾が return だったりする。
 };
 
 class PropertySymbol : public ln::RefObject
@@ -235,6 +257,9 @@ public:
 	const ln::List<Ref<ConstantSymbol>>& constants() const { return m_constants; }
 	const ln::List<Ref<MethodSymbol>>& methods() const { return m_methods; }
 
+	bool isClass() const { return kind() == TypeKind::Class; }
+	bool isStruct() const { return kind() == TypeKind::Struct; }
+	bool isEnum() const { return kind() == TypeKind::Enum; }
 
 private:
 	void setFullName(const ln::String& value);

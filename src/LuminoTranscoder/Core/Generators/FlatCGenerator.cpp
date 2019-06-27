@@ -2,49 +2,59 @@
 #include "FlatCGenerator.hpp"
 
 
+static const ln::String funcHeaderTemplate =
+"LN_API LnResult %%FuncName%%(%%ParamList%%)";
+
+
+
 //==============================================================================
 // FlatCCommon
+
+ln::String FlatCCommon::makeFuncName(GeneratorConfiguration* config, MethodSymbol* method)
+{
+	ln::String funcName;
+	if (method->isConstructor()) {
+		funcName = u"Init";
+	}
+	else {
+		funcName = method->name().toTitleCase();
+	}
+
+	auto name = ln::String::format(_T("{0}{1}_{2}"), config->flatCOutputModuleName, method->ownerType()->shortName(), funcName);
+
+	return name;
+
+	//ln::String n = ln::String::format(_T("LN{0}_{1}"), owner->shortName(), funcName);
+	//if (IsOverloadChild())
+	//	n += metadata->getValue(MetadataSymbol::OverloadPostfixAttr);
+	//return n;
+}
 
 ln::String FlatCCommon::makeFlatCDeclTypeName(GeneratorConfiguration* config, TypeSymbol* typeInfo)
 {
 	return config->flatCOutputModuleName + typeInfo->shortName();
 }
 
-#if 0
-ln::String FlatCCommon::makeCppQualTypeName(TypeSymbol* typeInfo)
+//ln::String FlatCCommon::makeFunkParamList(MethodSymbol* method)
+//{
+//	return
+//}
+//
+ln::String FlatCCommon::makeFlatCParamQualTypeName(GeneratorConfiguration* config, ln::Ref<MethodSymbol> methodInfo, ln::Ref<MethodParameterSymbol> paramInfo)
 {
-	if (typeInfo->IsClass())
-	{
-		return typeInfo->shortName() + _T("*");
-	}
+	auto typeInfo = paramInfo->type();
 
-	return typeInfo->shortName();
-}
-
-ln::String FlatCCommon::makeFlatCQualTypeName(TypeSymbol* typeInfo)
-{
-	if (typeInfo->IsClass())
-	{
-		return typeInfo->shortName() + _T("*");
-	}
-	return typeInfo->shortName();
-}
-
-ln::String FlatCCommon::makeFlatCParamQualTypeName(ln::Ref<MethodSymbol> methodInfo, ln::Ref<ParameterSymbol> paramInfo)
-{
-	auto typeInfo = paramInfo->type;
-
-	if (typeInfo->isStruct)
+	if (typeInfo->kind() == TypeKind::Struct)
 	{
 		ln::String modifer;
-		if (paramInfo->isThis && methodInfo->isConst)
+		if (paramInfo->isThis && methodInfo->isConst())
 			modifer = "const ";
 		if (!paramInfo->isThis && !paramInfo->isOut)
 			modifer = "const ";
-		return ln::String::format("{0}LN{1}*", modifer, typeInfo->shortName());
+		return ln::String::format("{0}{1}{2}*", modifer, config->flatCOutputModuleName, typeInfo->shortName());
 	}
 
-	if (typeInfo->isEnum)
+	if (typeInfo->kind() == TypeKind::Enum)
 	{
 		return _T("LN") + typeInfo->shortName();
 	}
@@ -60,7 +70,7 @@ ln::String FlatCCommon::makeFlatCParamQualTypeName(ln::Ref<MethodSymbol> methodI
 	ln::String name;
 	if (typeInfo == PredefinedTypes::boolType)
 		name = _T("LNBool");
-	else if (typeInfo->IsClass())
+	else if (typeInfo->kind() == TypeKind::Class)
 		name = "LNHandle";
 	else
 		name = typeInfo->shortName();
@@ -95,22 +105,50 @@ ln::String FlatCCommon::makeFlatCParamQualTypeName(ln::Ref<MethodSymbol> methodI
 	//	return name;
 }
 
+// 宣言文の作成。ドキュメンテーションコメントは含まない。
+ln::String FlatCCommon::makeFuncHeader(GeneratorConfiguration* config, MethodSymbol* methodInfo)
+{
+	// make params
+	OutputBuffer params;
+	for (auto& paramInfo : methodInfo->flatParameters())
+	{
+		params.AppendCommad("{0} {1}", FlatCCommon::makeFlatCParamQualTypeName(config, methodInfo, paramInfo), paramInfo->name());
+	}
+
+	//ln::String suffix = (methodInfo->isVirtual) ? "_CallVirtualBase" : "";
+
+	return funcHeaderTemplate
+		.replace("%%FuncName%%", FlatCCommon::makeFuncName(config, methodInfo))// + suffix)
+		.replace("%%ParamList%%", params.toString());
+}
+
+
+#if 0
+ln::String FlatCCommon::makeCppQualTypeName(TypeSymbol* typeInfo)
+{
+	if (typeInfo->IsClass())
+	{
+		return typeInfo->shortName() + _T("*");
+	}
+
+	return typeInfo->shortName();
+}
+
+ln::String FlatCCommon::makeFlatCQualTypeName(TypeSymbol* typeInfo)
+{
+	if (typeInfo->IsClass())
+	{
+		return typeInfo->shortName() + _T("*");
+	}
+	return typeInfo->shortName();
+}
+
+
 #endif
 
 
 //==============================================================================
 // FlatCHeaderGenerator
-
-
-static const ln::String funcHeaderTemplate =
-	"LN_API LNResultCode %%FuncName%%(%%ParamList%%)";
-
-static const ln::String funcBodyTemplate =
-	"{\n"
-	"    LWIG_FUNC_TRY_BEGIN;\n"
-	"    %%FuncBody%%\n"
-	"    LWIG_FUNC_TRY_END_RETURN;\n"
-	"}\n";
 
 void FlatCHeaderGenerator::generate()
 {
@@ -131,15 +169,15 @@ void FlatCHeaderGenerator::generate()
 		structsText.DecreaseIndent();
 		structsText.AppendLine("};");
 
-		//// function decls
-		//for (auto& methodInfo : structInfo->declaredMethods)
-		//{
-		//	// comment
-		//	structMemberFuncDeclsText.AppendLines(MakeDocumentComment(methodInfo->document));
+		// function decls
+		for (auto& methodInfo : structInfo->methods())
+		{
+			// comment
+			structMemberFuncDeclsText.AppendLines(makeDocumentComment(methodInfo->document()));
 
-		//	// decl
-		//	structMemberFuncDeclsText.AppendLines(makeFuncHeader(methodInfo)).append(";").NewLine(2);
-		//}
+			// decl
+			structMemberFuncDeclsText.AppendLines(FlatCCommon::makeFuncHeader(config(), methodInfo)).append(";").NewLine(2);
+		}
 
 		//// function impls
 		//for (auto& methodInfo : structInfo->declaredMethods)
@@ -234,7 +272,7 @@ void FlatCHeaderGenerator::generate()
 		src = src.replace("%%Structs%%", structsText.toString());
 		//src = src.replace("%%Enums%%", enumsText.toString());
 		//src = src.replace("%%Delegates%%", delegatesText.toString());
-		//src = src.replace("%%StructMemberFuncDecls%%", structMemberFuncDeclsText.toString());
+		src = src.replace("%%StructMemberFuncDecls%%", structMemberFuncDeclsText.toString());
 		//src = src.replace("%%ClassMemberFuncDecls%%", classMemberFuncDeclsText.toString());
 
 		ln::String fileName = ln::String::format("{0}.FlatC.generated.h", config()->moduleName);
@@ -280,6 +318,7 @@ ln::String FlatCHeaderGenerator::makeDocumentComment(DocumentInfo* doc)
 	return text.toString();
 }
 
+
 #if 0
 ln::String WrapperIFGenerator::MakeInstanceParamName(ln::Ref<TypeSymbol> info)
 {
@@ -303,7 +342,7 @@ ln::String WrapperIFGenerator::MakeInstanceParamName(ln::Ref<TypeSymbol> info)
 //				.replace("%ClassName%", typeInfo->shortName())
 //				.replace("%FuncName%", methodInfo->GetCAPIFuncName())
 //				.replace("%ParamList%", ln::String::format("LNHandle self, LN{0} callback", delegateClass->shortName()))
-//				.replace("%FuncBody%", ln::String::format("LWIG_TO_OBJECT(LN{0}, self)->{1}.Connect(callback);", typeInfo->shortName(), MakeEventWrapperMemberVariableName(methodInfo))));
+//				.replace("%FuncBody%", ln::String::format("LNI_TO_OBJECT(LN{0}, self)->{1}.Connect(callback);", typeInfo->shortName(), MakeEventWrapperMemberVariableName(methodInfo))));
 //		}
 //		else
 //		{
@@ -328,28 +367,42 @@ ln::String WrapperIFGenerator::MakeInstanceParamName(ln::Ref<TypeSymbol> info)
 //	return buffer.toString();
 //}
 
-// 宣言文の作成。ドキュメンテーションコメントは含まない。
-ln::String WrapperIFGenerator::makeFuncHeader(ln::Ref<MethodSymbol> methodInfo)
+
+
+#endif
+
+//==============================================================================
+// FlatCSourceGenerator
+
+void FlatCSourceGenerator::generate()
 {
-	// make params
-	OutputBuffer params;
-	for (auto& paramInfo : methodInfo->capiParameters)
+	// structs
+	OutputBuffer structsText;
+	OutputBuffer structMemberFuncImplsText;
+	for (auto& structInfo : db()->structs())
 	{
-		params.AppendCommad("{0} {1}", FlatCCommon::makeFlatCParamTypeName(methodInfo, paramInfo), paramInfo->name);
+		// Function implementation
+		for (auto& methodInfo : structInfo->methods())
+		{
+			structMemberFuncImplsText.AppendLines(makeFuncBody(structInfo, methodInfo)).NewLine();
+		}
 	}
 
-	ln::String suffix = (methodInfo->isVirtual) ? "_CallVirtualBase" : "";
+	// save C API Source
+	{
+		ln::String src = ln::FileSystem::readAllText(makeTemplateFilePath(_T("Source.cpp.template")));
+		src = src.replace("%%StructMemberFuncImpls%%", structMemberFuncImplsText.toString());
+		//src = src.replace("%%ClassMemberFuncImpls%%", classMemberFuncImplsText.toString());
 
-	return funcHeaderTemplate
-		.replace("%%ClassName%%", methodInfo->owner->shortName())
-		.replace("%%FuncName%%", methodInfo->GetCAPIFuncName() + suffix)
-		.replace("%%ParamList%%", params.toString());
+		ln::String fileName = ln::String::format("{0}.FlatC.generated.cpp", config()->moduleName);
+		ln::FileSystem::writeAllText(makeOutputFilePath(fileName).c_str(), src);
+	}
 }
 
-ln::String WrapperIFGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo)
+ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo)
 {
 	// function header
-	ln::String funcHeader = makeFuncHeader(methodInfo);
+	ln::String funcHeader = FlatCCommon::makeFuncHeader(config(), methodInfo);
 
 	//{
 	//	// 第1引数
@@ -391,109 +444,114 @@ ln::String WrapperIFGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Re
 
 	// make func body
 	OutputBuffer body;
-	if (methodInfo->IsRuntimeInitializer())
-	{
-		body.AppendLine("LFManager::preInitialize();");
-	}
+	//if (methodInfo->IsRuntimeInitializer())
+	//{
+	//	body.AppendLine("LFManager::preInitialize();");
+	//}
 
 	{
 		// make call args
 		OutputBuffer args;
-		for (auto& paramInfo : methodInfo->parameters)
+		for (auto& paramInfo : methodInfo->parameters())
 		{
-			if (paramInfo->type->IsClass())
+			auto* type = paramInfo->type();
+			if (type->isClass())
 			{
-				args.AppendCommad("LWIG_TO_OBJECT({0}, {1})", paramInfo->type->shortName(), paramInfo->name);
+				args.AppendCommad("LNI_TO_OBJECT({0}, {1})", type->shortName(), paramInfo->name());
 			}
-			else if (paramInfo->type->isStruct)
+			else if (type->isStruct())
 			{
-				ln::String castTo = paramInfo->type->shortName();
+				ln::String castTo = type->shortName();
 				if (paramInfo->isIn) castTo = "const " + castTo;
-				args.AppendCommad("*reinterpret_cast<{0}*>({1})", castTo, paramInfo->name);
+				args.AppendCommad("*reinterpret_cast<{0}*>({1})", castTo, paramInfo->name());
 			}
-			else if (paramInfo->type->isEnum)
+			else if (type->isEnum())
 			{
-				args.AppendCommad("static_cast<{0}>({1})", paramInfo->type->shortName(), paramInfo->name);
+				args.AppendCommad("static_cast<{0}>({1})", type->shortName(), paramInfo->name());
 			}
-			else if (paramInfo->type == PredefinedTypes::boolType)
+			else if (type == PredefinedTypes::boolType)
 			{
-				args.AppendCommad("LWIG_TO_BOOL({0})", paramInfo->name);
+				args.AppendCommad("LNI_TO_BOOL({0})", paramInfo->name());
 			}
 			else
 			{
-				args.AppendCommad(paramInfo->name);
+				args.AppendCommad(paramInfo->name());
 			}
 		}
 
 		// return output
-		if (!methodInfo->returnType->isVoid)
+		if (!methodInfo->returnType() == PredefinedTypes::voidType)
 		{
-			if (methodInfo->returnType->isStruct)
-				body.append("*outReturn = reinterpret_cast<const LN{0}&>", methodInfo->returnType->shortName());
-			else if (methodInfo->returnType->IsClass())
-				body.append("*outReturn = LWIG_TO_HANDLE");
-			else if (methodInfo->returnType == PredefinedTypes::boolType)
-				body.append("*outReturn = LWIG_TO_LNBOOL");
-			else if (methodInfo->returnType == PredefinedTypes::stringType)
-				body.append("*outReturn = LWIG_STRING_TO_STRPTR");
+			if (methodInfo->returnType()->isStruct())
+				body.append("*outReturn = reinterpret_cast<const LN{0}&>", methodInfo->returnType()->shortName());
+			else if (methodInfo->returnType()->isClass())
+				body.append("*outReturn = LNI_TO_HANDLE");
+			else if (methodInfo->returnType() == PredefinedTypes::boolType)
+				body.append("*outReturn = LNI_TO_LNBOOL");
+			else if (methodInfo->returnType() == PredefinedTypes::stringType)
+				body.append("*outReturn = LNI_STRING_TO_STRPTR");
 			else
 				body.append("*outReturn = ");
 		}
 
 		// call expression
 		ln::String callExp;
-		if (typeInfo->isStruct)
+		if (typeInfo->isStruct())
 		{
-			if (methodInfo->isConstructor)
-				callExp = ln::String::format("new (reinterpret_cast<{0}*>({1})) {2}({3});", typeInfo->shortName(), MakeInstanceParamName(typeInfo), methodInfo->name, args.toString());
-			else if (methodInfo->isStatic)
-				body.append("({0}::{1}({2}));", typeInfo->shortName(), methodInfo->name, args.toString());
-			else
-			{
-				ln::String castTo = typeInfo->shortName();
-				if (methodInfo->isConst) castTo = "const " + castTo;
-				callExp = ln::String::format("(reinterpret_cast<{0}*>({1})->{2}({3}));", castTo, MakeInstanceParamName(typeInfo), methodInfo->name, args.toString());
+			if (methodInfo->isConstructor()) {
+				callExp = ln::String::format("new (reinterpret_cast<{0}*>({1})) {2}({3});", typeInfo->fullName(), typeInfo->shortName().toLower(), methodInfo->name(), args.toString());
+			}
+			else if (methodInfo->isStatic()) {
+				body.append("({0}::{1}({2}));", typeInfo->fullName(), methodInfo->name(), args.toString());
+			}
+			else {
+				ln::String castTo = typeInfo->fullName();
+				if (methodInfo->isConst()) castTo = "const " + castTo;
+				callExp = ln::String::format("(reinterpret_cast<{0}*>({1})->{2}({3}));", castTo, typeInfo->shortName().toLower(), methodInfo->name(), args.toString());
 			}
 		}
 		else
 		{
-			// static 関数
-			if (methodInfo->isStatic)
-			{
-				body.append("({0}::{1}({2}));", typeInfo->shortName(), methodInfo->name, args.toString());
-			}
-			// コンストラクタ 関数
-			else if (methodInfo->isConstructor)
-			{
-				OutputBuffer macroArgs;
-				macroArgs.AppendCommad("out" + typeInfo->shortName());	// 格納する変数名
-				macroArgs.AppendCommad("LN" + typeInfo->shortName());	// クラス名
-				macroArgs.AppendCommad(methodInfo->name);		// 初期化関数名
-				macroArgs.AppendCommad(args.toString());		// 引数
-				callExp = ln::String::format("LWIG_CREATE_OBJECT({0});", macroArgs.toString());
-			}
-			// 普通のインスタンス 関数
-			else
-			{
-				ln::String name = methodInfo->name;
-				if (methodInfo->isVirtual)
-					name = ("LN" + typeInfo->shortName() + "::" + name + "_CallBase");
-				callExp = ln::String::format("(LWIG_TO_OBJECT(LN{0}, {1})->{2}({3}));", typeInfo->shortName(), MakeInstanceParamName(typeInfo), name, args.toString());
-			}
+			LN_NOTIMPLEMENTED();
+		//	// static 関数
+		//	if (methodInfo->isStatic)
+		//	{
+		//		body.append("({0}::{1}({2}));", typeInfo->shortName(), methodInfo->name, args.toString());
+		//	}
+		//	// コンストラクタ 関数
+		//	else if (methodInfo->isConstructor)
+		//	{
+		//		OutputBuffer macroArgs;
+		//		macroArgs.AppendCommad("out" + typeInfo->shortName());	// 格納する変数名
+		//		macroArgs.AppendCommad("LN" + typeInfo->shortName());	// クラス名
+		//		macroArgs.AppendCommad(methodInfo->name);		// 初期化関数名
+		//		macroArgs.AppendCommad(args.toString());		// 引数
+		//		callExp = ln::String::format("LNI_CREATE_OBJECT({0});", macroArgs.toString());
+		//	}
+		//	// 普通のインスタンス 関数
+		//	else
+		//	{
+		//		ln::String name = methodInfo->name;
+		//		if (methodInfo->isVirtual)
+		//			name = ("LN" + typeInfo->shortName() + "::" + name + "_CallBase");
+		//		callExp = ln::String::format("(LNI_TO_OBJECT(LN{0}, {1})->{2}({3}));", typeInfo->shortName(), MakeInstanceParamName(typeInfo), name, args.toString());
+		//	}
 		}
 
-		body.AppendLine(callExp);
+		body.append(callExp);
 	}
 
-	if (methodInfo->IsRuntimeInitializer())
-	{
-		body.AppendLine("LFManager::postInitialize();");
-	}
 
-	return funcHeader + NewLine + funcBodyTemplate
-		.replace("%%FuncBody%%", body.toString());
+
+	OutputBuffer funcImpl;
+	funcImpl.AppendLine(funcHeader);
+	funcImpl.AppendLine(u"{");
+	funcImpl.IncreaseIndent();
+	funcImpl.AppendLine(u"LNI_FUNC_TRY_BEGIN;");
+	funcImpl.AppendLine(body.toString());
+	funcImpl.AppendLine(u"LNI_FUNC_TRY_END_RETURN;");
+	funcImpl.DecreaseIndent();
+	funcImpl.AppendLine(u"}");
+	return funcImpl.toString();
 }
 
-
-
-#endif

@@ -78,6 +78,7 @@ public:
 	bool isConst = false;
 	bool isStatic = false;
 	bool isVirtual = false;
+	bool isConstructor = false;
 	ln::String returnTypeRawName;
 	ln::List<Ref<PIMethodParameter>> parameters;
 };

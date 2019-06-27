@@ -41,4 +41,8 @@ TEST_F(Test_Struct, Basic)
 	FlatCHeaderGenerator g1;
 	g1.setup(db, config);
 	g1.generate();
+
+	FlatCSourceGenerator g2;
+	g2.setup(db, config);
+	g2.generate();
 }

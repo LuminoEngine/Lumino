@@ -284,10 +284,12 @@ public:
 				// return type
 				info->returnTypeRawName = getRawTypeFullName(decl->getReturnType());
 
+
 				// qualifiers
 				info->isVirtual = decl->isVirtual();
 				info->isStatic = decl->isStatic();
 				info->isConst = decl->isConst();
+				info->isConstructor = (decl->getDeclKind() == Decl::CXXConstructor);
 
 				// check sema error (未定義の型など)
 				if (decl->isInvalidDecl())
@@ -706,6 +708,11 @@ Ref<PIDocument> HeaderParser2::parseDocument(const std::string& comment)
 	for (ln::String line : lines)
 	{
 		line = line.trim();
+
+		// 行頭が * であれば取り除く
+		if (line.indexOf(u"*") == 0) {
+			line = line.substr(1);
+		}
 
 		ln::MatchResult result;
 		if (ln::Regex::search(line, _T("@(\\w+)"), &result))
