@@ -5,7 +5,12 @@
 
 #include <Effekseer.h>
 #include <EffekseerRendererGL.h>
+#include <EffekseerRenderer/EffekseerRendererDX12.Renderer.h>
+#include <EffekseerRendererLLGI.Renderer.h>
 //#include <EffekseerSoundAL.h>
+#include <LLGI.Platform.h>
+#pragma comment(lib, "d3dcompiler.lib")
+#pragma comment(lib, "C:/VulkanSDK/1.1.101.0/Lib32/vulkan-1.lib")
 
 namespace ln {
 namespace detail {
@@ -18,6 +23,8 @@ static ::EffekseerRenderer::Renderer*	g_renderer = NULL;
 static ::Effekseer::Effect*				g_effect = NULL;
 static ::Effekseer::Handle				g_handle = -1;
 static ::Effekseer::Vector3D			g_position;
+static LLGI::Platform* g_platform = nullptr;
+static LLGI::Graphics* g_graphics = nullptr;
 
 //==============================================================================
 // EffectManager
@@ -28,13 +35,18 @@ EffectManager::EffectManager()
 
 void EffectManager::init(const Settings& settings)
 {
-    return;
     LN_LOG_DEBUG << "EffectManager Initialization started.";
 
+    g_platform = LLGI::CreatePlatform(LLGI::DeviceType::Vulkan);
+    g_graphics = g_platform->CreateGraphics();
+
+
+    ::EffekseerRendererLLGI::FixedShader fixedShaders;
 
 
     // 描画用インスタンスの生成
-    g_renderer = ::EffekseerRendererGL::Renderer::Create(2000);
+    //g_renderer = ::EffekseerRendererGL::Renderer::Create(2000);
+    g_renderer = ::EffekseerRendererLLGI::Renderer::Create(g_graphics, &fixedShaders, false, 1000);
 
     // エフェクト管理用インスタンスの生成
     g_manager = ::Effekseer::Manager::Create(2000);
@@ -84,7 +96,6 @@ void EffectManager::init(const Settings& settings)
 
 void EffectManager::dispose()
 {
-    return;
     // エフェクトの停止
     g_manager->StopEffect(g_handle);
 
@@ -103,7 +114,16 @@ void EffectManager::dispose()
 
 void EffectManager::testDraw()
 {
-    return;
+    if (1) {
+
+        if (!g_platform->NewFrame())
+            return;
+
+        g_graphics->NewFrame();
+
+    }
+
+
     // エフェクトの移動処理を行う
     g_manager->AddLocation(g_handle, ::Effekseer::Vector3D(0.2f, 0.0f, 0.0f));
 
@@ -120,6 +140,11 @@ void EffectManager::testDraw()
 
     // エフェクトの描画終了処理を行う。
     g_renderer->EndRendering();
+
+
+    if (1) {
+        g_platform->Present();
+    }
 
 }
 

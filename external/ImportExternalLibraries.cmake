@@ -426,3 +426,14 @@ set_target_properties(EffekseerRendererGL PROPERTIES IMPORTED_LOCATION_RELEASE "
 set_target_properties(EffekseerRendererGL PROPERTIES IMPORTED_LOCATION_DEBUG "D:/Proj/Effekseer/Dev/Cpp/lib/x86/EffekseerRendererGL.Debug.lib")
 set_target_properties(EffekseerRendererGL PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "D:/Proj/Effekseer/Dev/Cpp/EffekseerRendererGL")
 
+
+add_library(EffekseerRendererDX12 STATIC IMPORTED)
+set_target_properties(EffekseerRendererDX12 PROPERTIES IMPORTED_LOCATION_RELEASE "D:/Proj/Effekseer/Dev/Cpp/lib/x86/EffekseerRendererDX12.Debug.lib")
+set_target_properties(EffekseerRendererDX12 PROPERTIES IMPORTED_LOCATION_DEBUG "D:/Proj/Effekseer/Dev/Cpp/lib/x86/EffekseerRendererDX12.Debug.lib")
+set_target_properties(EffekseerRendererDX12 PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "D:/Proj/Effekseer/Dev/Cpp/EffekseerRendererDX12;D:/Proj/Effekseer/Dev/Cpp/EffekseerRendererLLGI")
+
+add_library(LLGI STATIC IMPORTED)
+set_target_properties(LLGI PROPERTIES IMPORTED_LOCATION_RELEASE "D:/Proj/Effekseer/Dev/Cpp/Debug/LLGI.lib")
+set_target_properties(LLGI PROPERTIES IMPORTED_LOCATION_DEBUG "D:/Proj/Effekseer/Dev/Cpp/Debug/LLGI.lib")
+set_target_properties(LLGI PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "D:/Proj/Effekseer/Dev/Cpp/3rdParty/LLGI/src")
+
