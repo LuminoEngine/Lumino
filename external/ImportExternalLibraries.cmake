@@ -410,3 +410,19 @@ list(APPEND LN_EXTERNAL_LIBS VulkanHeaders)
 #list(APPEND LN_EXTERNAL_LIBS VulkanImported)
 #    endif()
 #endif()
+
+
+
+#--------------------------------------
+# Effekseer
+
+add_library(Effekseer STATIC IMPORTED)
+set_target_properties(Effekseer PROPERTIES IMPORTED_LOCATION_RELEASE "D:/Proj/Effekseer/Dev/Cpp/lib/x86/Effekseer.Debug.lib")
+set_target_properties(Effekseer PROPERTIES IMPORTED_LOCATION_DEBUG "D:/Proj/Effekseer/Dev/Cpp/lib/x86/Effekseer.Debug.lib")
+set_target_properties(Effekseer PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "D:/Proj/Effekseer/Dev/Cpp/Effekseer")
+
+add_library(EffekseerRendererGL STATIC IMPORTED)
+set_target_properties(EffekseerRendererGL PROPERTIES IMPORTED_LOCATION_RELEASE "D:/Proj/Effekseer/Dev/Cpp/lib/x86/EffekseerRendererGL.Debug.lib")
+set_target_properties(EffekseerRendererGL PROPERTIES IMPORTED_LOCATION_DEBUG "D:/Proj/Effekseer/Dev/Cpp/lib/x86/EffekseerRendererGL.Debug.lib")
+set_target_properties(EffekseerRendererGL PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "D:/Proj/Effekseer/Dev/Cpp/EffekseerRendererGL")
+

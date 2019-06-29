@@ -614,6 +614,8 @@ void EngineManager::renderFrame()
 
 void EngineManager::presentFrame()
 {
+    //m_effectManager->testDraw();
+
 	if (m_mainWindow) {
 		m_mainWindow->present();
 	}

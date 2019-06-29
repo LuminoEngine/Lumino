@@ -200,16 +200,20 @@ int main(int argc, char** argv)
 	//Font::registerFontFromFile(u"C:/Users/hldc0061/Downloads/mplus-TESTFLIGHT-063/mplus-1c-regular.ttf");
 
 
-	{
-		auto ss = makeObject<ed::SceneAsset>();
-		ss->setup("SceneTest1.json");
-		ss->addNewWorldObject();
-		ss->save();
-	}
+	//{
+	//	auto ss = makeObject<ed::SceneAsset>();
+	//	ss->setup("SceneTest1.json");
+	//	ss->addNewWorldObject();
+	//	ss->save();
+	//}
 
 
     Engine::mainCamera()->addComponent(makeObject<CameraOrbitControlComponent>());
     Engine::mainCamera()->setBackgroundColor(Color::Gray);
+
+
+    auto texture1 = makeObject<Texture2D>(u"D:/tmp/110220c_as019.png");
+    auto sprite1 = Sprite::create(texture1, 3, 3);
 
 #if 0
     auto window1 = UIWindow::create();

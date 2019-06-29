@@ -18,6 +18,7 @@ public:
 	void init(const Settings& settings);
 	void dispose();
 
+    void testDraw();
 
 private:
 };
