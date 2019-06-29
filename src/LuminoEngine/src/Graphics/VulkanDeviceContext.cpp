@@ -916,6 +916,9 @@ void VulkanGraphicsContext::onUnmapResource(IGraphicsResource* resource)
 
 void VulkanGraphicsContext::onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length)
 {
+    // データ転送に使う vkCmdCopyBuffer() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
+    m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
+
 	switch (resource->resourceType())
 	{
 	case DeviceResourceType::VertexBuffer:
