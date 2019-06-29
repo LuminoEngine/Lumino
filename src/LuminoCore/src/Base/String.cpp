@@ -1124,9 +1124,10 @@ int UStringConvert::convertNativeString(const wchar_t* src, int srcLen, wchar_t*
 {
     if (!dst || dstSize <= 0) return 0;
     if (src && srcLen >= 0) {
-        memcpy_s(dst, dstSize * sizeof(wchar_t), src, srcLen * sizeof(wchar_t));
-        dst[dstSize - 1] = '\0';
-        return dstSize - 1;
+        int len = LN_MIN(srcLen, dstSize - 1);
+        memcpy_s(dst, dstSize * sizeof(wchar_t), src, len * sizeof(wchar_t));
+        dst[len] = '\0';
+        return len;
     } else {
         dst[0] = '\0';
         return 0;

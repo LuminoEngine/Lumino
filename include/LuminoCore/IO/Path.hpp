@@ -84,6 +84,9 @@ public:
     /** このパスがルートパスであるかを確認します。 */
     bool isRoot() const;
 
+    /** セパレータがすべて '/' であるかを確認します。 */
+    bool isUnified() const;
+
     /** このパスが指定された拡張子を持っているかを確認します。 (ext の . の有無は問わない) */
     bool hasExtension(const StringRef& ext = StringRef()) const;
 

@@ -54,6 +54,19 @@ Rect Rect::makeDeflate(const Thickness& thickness) const
         std::max(height - thickness.height(), 0.0f));
 }
 
+void Rect::serialize(Archive& ar)
+{
+    int size = 0;
+    ar.makeArrayTag(&size);
+    if (ar.isLoading()) {
+        assert(size == 4);	// TODO: error handling
+    }
+    ar.process(x);
+    ar.process(y);
+    ar.process(width);
+    ar.process(height);
+}
+
 //==============================================================================
 // BoxI
 

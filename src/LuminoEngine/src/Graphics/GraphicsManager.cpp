@@ -156,34 +156,25 @@ void GraphicsManager::init(const Settings& settings)
         LN_LOG_INFO << "requestedShaderTriple:" << triple.target << "-" << triple.version << "-" << triple.option;
     }
 
-
-	m_graphicsContext = newObject<GraphicsContext>(m_deviceContext->getGraphicsContext());
-
 	m_linearAllocatorPageManager = makeRef<LinearAllocatorPageManager>();
 
-	m_primaryRenderingCommandList = makeRef<RenderingCommandList>(linearAllocatorPageManager());
+	m_graphicsContext = makeObject<GraphicsContext>(m_deviceContext->getGraphicsContext());
+
+	m_renderingQueue = makeRef<RenderingQueue>();
 
 	m_renderTargetTextureCacheManager = makeRef<RenderTargetTextureCacheManager>();
 	m_depthBufferCacheManager = makeRef<DepthBufferCacheManager>();
 	m_frameBufferCache = makeRef<detail::FrameBufferCache>(m_renderTargetTextureCacheManager, m_depthBufferCacheManager);
 
-	if (renderingType() == RenderingType::Threaded) {
-		LN_NOTIMPLEMENTED();
-	}
-	else {
-		m_deviceContext->enterMainThread();
-		m_deviceContext->enterRenderState();
-	}
-
 	// default objects
 	{
-        m_blackTexture = newObject<Texture2D>(32, 32, TextureFormat::RGBA8);
+        m_blackTexture = makeObject<Texture2D>(32, 32, TextureFormat::RGBA8);
         m_blackTexture->clear(Color::Black);
 
-        m_whiteTexture = newObject<Texture2D>(32, 32, TextureFormat::RGBA8);
+        m_whiteTexture = makeObject<Texture2D>(32, 32, TextureFormat::RGBA8);
         m_whiteTexture->clear(Color::White);
 
-		m_defaultSamplerState = newObject<SamplerState>();
+		m_defaultSamplerState = makeObject<SamplerState>();
 		m_defaultSamplerState->setFrozen(true);
 	}
 
@@ -192,6 +183,11 @@ void GraphicsManager::init(const Settings& settings)
 
 void GraphicsManager::dispose()
 {
+	if (m_renderingQueue) {
+		m_renderingQueue->dispose();
+		m_renderingQueue = nullptr;
+	}
+
 	// default objects
 	{
 		m_defaultSamplerState.reset();
@@ -203,9 +199,6 @@ void GraphicsManager::dispose()
 		resource->dispose();
 	}
 
-	m_deviceContext->leaveRenderState();
-	m_deviceContext->leaveMainThread();
-
 	m_frameBufferCache = nullptr;
 	m_depthBufferCacheManager = nullptr;
 	m_renderTargetTextureCacheManager = nullptr;
@@ -213,6 +206,30 @@ void GraphicsManager::dispose()
 	m_graphicsContext->dispose();
 	m_deviceContext->dispose();
 }
+
+//void GraphicsManager::enterRendering()
+//{
+//    if (m_deviceContext) {
+//        if (renderingType() == RenderingType::Threaded) {
+//            LN_NOTIMPLEMENTED();
+//        }
+//        else {
+//            m_deviceContext->enterRenderState();
+//        }
+//    }
+//}
+//
+//void GraphicsManager::leaveRendering()
+//{
+//    if (m_deviceContext) {
+//        if (renderingType() == RenderingType::Threaded) {
+//            LN_NOTIMPLEMENTED();
+//        }
+//        else {
+//            m_deviceContext->leaveRenderState();
+//        }
+//    }
+//}
 
 void GraphicsManager::addGraphicsResource(GraphicsResource* resource)
 {
@@ -263,6 +280,14 @@ void GraphicsManager::createVulkanContext(const Settings& settings)
 #endif
 #endif
 }
+
+//Ref<RenderingCommandList> GraphicsManager::submitCommandList(RenderingCommandList* commandList)
+//{
+//	if (LN_REQUIRE(commandList)) return nullptr;
+//    commandList->execute(); // TODO: test
+//	commandList->clear();
+//	return m_inFlightRenderingCommandList;
+//}
 
 } // namespace detail
 } // namespace ln

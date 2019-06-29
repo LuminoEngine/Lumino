@@ -178,6 +178,18 @@ public:
 	}
 };
 
+// 外部の OpenGL Context に統合するときに使う
+Result IGraphicsDevice::getOpenGLCurrentFramebufferTextureId(int* id)
+{
+	GLint type;
+	GL_CHECK(glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, &type));
+	if (LN_ENSURE(type == GL_TEXTURE)) return false;
+
+	GLint texture;
+	GL_CHECK(glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &texture));
+	*id = texture;
+	return true;
+}
 
 //=============================================================================
 // OpenGLDevice
@@ -186,7 +198,6 @@ OpenGLDevice::OpenGLDevice()
 	: m_glContext(nullptr)
 	, m_uniformTempBuffer()
 	, m_uniformTempBufferWriter(&m_uniformTempBuffer)
-	, m_activeShaderPass(nullptr)
 {
 }
 
@@ -194,17 +205,21 @@ void OpenGLDevice::init(const Settings& settings)
 {
 	LN_LOG_DEBUG << "OpenGLDeviceContext::init start";
 
+    if (settings.mainWindow)
+    {
 #ifdef LN_GLFW
-	auto glfwContext = makeRef<GLFWContext>();
-	glfwContext->init(settings.mainWindow);
-	m_glContext = glfwContext;
+	    auto glfwContext = makeRef<GLFWContext>();
+	    glfwContext->init(settings.mainWindow);
+	    m_glContext = glfwContext;
 #endif
-	if (!m_glContext)
-	{
-		// Android(GLSurfaceView) や Web など、バックバッファの swap を Lumino の外側で行う場合
-		auto glfwContext = makeRef<EmptyGLContext>();
-		m_glContext = glfwContext;
-	}
+    }
+
+    if (!m_glContext)
+    {
+        // Android(GLSurfaceView) や Web など、バックバッファの swap を Lumino の外側で行う場合のダミー
+        auto glfwContext = makeRef<EmptyGLContext>();
+        m_glContext = glfwContext;
+    }
 
 #if defined(LN_GRAPHICS_OPENGLES)
 	LN_LOG_INFO << "OpenGL ES enabled.";
@@ -268,14 +283,6 @@ void OpenGLDevice::dispose()
     IGraphicsDevice::dispose();
 }
 
-void OpenGLDevice::setActiveShaderPass(GLShaderPass* pass)
-{
-	if (m_activeShaderPass != pass) {
-		m_activeShaderPass = pass;
-		::glUseProgram((m_activeShaderPass) ? m_activeShaderPass->program() : 0);
-	}
-}
-
 IGraphicsContext* OpenGLDevice::getGraphicsContext() const
 {
 	return m_graphicsContext;
@@ -292,34 +299,6 @@ void OpenGLDevice::onGetCaps(GraphicsDeviceCaps* outCaps)
 	outCaps->requestedShaderTriple.version = 400;
 	outCaps->requestedShaderTriple.option = "";
 #endif
-}
-
-void OpenGLDevice::onEnterMainThread()
-{
-	//m_glContext->makeCurrent();
-}
-
-void OpenGLDevice::onLeaveMainThread()
-{
-	//m_glContext->makeCurrent();
-	setActiveShaderPass(nullptr);
-}
-
-void OpenGLDevice::onSaveExternalRenderState()
-{
-	GL_CHECK(glGetBooleanv(GL_CULL_FACE, &m_savedState.state_GL_CULL_FACE));
-}
-
-void OpenGLDevice::onRestoreExternalRenderState()
-{
-	if (m_savedState.state_GL_CULL_FACE) {
-		GL_CHECK(glEnable(GL_CULL_FACE));
-	}
-	else {
-		GL_CHECK(glDisable(GL_CULL_FACE));
-	}
-
-	GL_CHECK(glBindVertexArray(0));
 }
 
 Ref<ISwapChain> OpenGLDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
@@ -369,6 +348,13 @@ Ref<ITexture> OpenGLDevice::onCreateRenderTarget(uint32_t width, uint32_t height
 	return ptr;
 }
 
+Ref<ITexture> OpenGLDevice::onCreateWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight)
+{
+    auto ptr = makeRef<GLRenderTargetTexture>();
+    ptr->init(nativeObject, hintWidth, hintHeight);
+    return ptr;
+}
+
 Ref<IDepthBuffer> OpenGLDevice::onCreateDepthBuffer(uint32_t width, uint32_t height)
 {
 	auto ptr = makeRef<GLDepthBuffer>();
@@ -390,6 +376,15 @@ Ref<IShaderPass> OpenGLDevice::onCreateShaderPass(const ShaderPassCreateInfo& cr
 	return ptr;
 }
 
+Ref<IGraphicsContext> OpenGLDevice::onCreateGraphicsContext()
+{
+	auto ptr = makeRef<GLGraphicsContext>();
+	if (!ptr->init(this)) {
+		return nullptr;
+	}
+	return ptr;
+}
+
 
 //=============================================================================
 // GLGraphicsContext
@@ -399,6 +394,7 @@ GLGraphicsContext::GLGraphicsContext()
 	, m_vao(0)
 	, m_fbo(0)
 	, m_currentIndexBuffer(nullptr)
+	, m_activeShaderPass(nullptr)
 {
 }
 
@@ -428,6 +424,33 @@ void GLGraphicsContext::dispose()
 		GL_CHECK(glDeleteFramebuffers(1, &m_fbo));
 		m_fbo = 0;
 	}
+}
+
+void GLGraphicsContext::setActiveShaderPass(GLShaderPass* pass)
+{
+	if (m_activeShaderPass != pass) {
+		m_activeShaderPass = pass;
+		::glUseProgram((m_activeShaderPass) ? m_activeShaderPass->program() : 0);
+	}
+}
+
+void GLGraphicsContext::onSaveExternalRenderState()
+{
+	GL_CHECK(glGetBooleanv(GL_CULL_FACE, &m_savedState.state_GL_CULL_FACE));
+}
+
+void GLGraphicsContext::onRestoreExternalRenderState()
+{
+	if (m_savedState.state_GL_CULL_FACE) {
+		GL_CHECK(glEnable(GL_CULL_FACE));
+	}
+	else {
+		GL_CHECK(glDisable(GL_CULL_FACE));
+	}
+
+	GL_CHECK(glBindVertexArray(0));
+
+	setActiveShaderPass(nullptr);
 }
 
 void GLGraphicsContext::onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState)
@@ -1599,6 +1622,13 @@ void GLRenderTargetTexture::init(uint32_t width, uint32_t height, TextureFormat 
 	//GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 
 	GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+}
+
+void GLRenderTargetTexture::init(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight)
+{
+    m_id = nativeObject;
+    m_size = SizeI(hintWidth, hintHeight);
+    m_textureFormat = TextureFormat::Unknown;
 }
 
 void GLRenderTargetTexture::dispose()

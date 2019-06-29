@@ -49,13 +49,13 @@ void MeshRenderFeature::drawMesh(GraphicsContext* context, MeshResource* mesh, i
 	mesh->commitRenderData(sectionIndex, &section, &decls, vb, &vbCount, &ib);
 
 	DrawMeshCommandData data;
-	data.vertexDeclaration = GraphicsResourceInternal::resolveRHIObject<IVertexDeclaration>(decls, nullptr);
+	data.vertexDeclaration = GraphicsResourceInternal::resolveRHIObject<IVertexDeclaration>(context, decls, nullptr);
 	for (int i = 0; i < vbCount; ++i)
 	{
-		data.vertexBuffers[i] = GraphicsResourceInternal::resolveRHIObject<IVertexBuffer>(vb[i], nullptr);
+		data.vertexBuffers[i] = GraphicsResourceInternal::resolveRHIObject<IVertexBuffer>(context, vb[i], nullptr);
 	}
 	data.vertexBuffersCount = vbCount;
-	data.indexBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IIndexBuffer>(ib, nullptr);
+	data.indexBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IIndexBuffer>(context, ib, nullptr);
 	data.startIndex = section.startIndex;
 	data.primitiveCount = section.primitiveCount;
 	data.primitiveType = PrimitiveTopology::TriangleList;
@@ -64,7 +64,7 @@ void MeshRenderFeature::drawMesh(GraphicsContext* context, MeshResource* mesh, i
 
 	IGraphicsContext* c = GraphicsContextInternal::commitState(context);
 	LN_ENQUEUE_RENDER_COMMAND_3(
-		MeshRenderFeature_drawMesh, m_manager->graphicsManager(),
+		MeshRenderFeature_drawMesh, context,
 		MeshRenderFeature*, _this,
         IGraphicsContext*, c,
 		DrawMeshCommandData, data,

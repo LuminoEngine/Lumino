@@ -6,7 +6,6 @@
 #include "../Engine/Property.hpp"
 
 namespace ln {
-class Variant;
 namespace detail { class AnimationTargetElementBlendLink; }
 class AnimationValue;
 class AnimationTrack;

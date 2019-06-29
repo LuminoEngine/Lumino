@@ -3,6 +3,7 @@
 
 namespace ln {
 class GraphicsContext;
+class UIContext;
 class UIFrameWindow;
 class UIViewport;
 class UIContainerElement;
@@ -53,6 +54,7 @@ public:
     static void setShowDebugFpsEnabled(bool enabled);
 
 	static GraphicsContext* graphicsContext();
+    static UIContext* mainUIContext();
 	static UIFrameWindow* mainWindow();
     static UIViewport* mainViewport();
 	static UIContainerElement* mainUIRoot();

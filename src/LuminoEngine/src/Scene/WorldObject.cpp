@@ -109,7 +109,7 @@ Matrix WorldObjectTransform::getLocalMatrix() const
 //  Component にしてしまうと、m_components リストを操作するときに混ざりこんでしまって危険かもしれない。
 //  特に必要性が出てくるまではこのスタイルにしておく。
 
-LN_OBJECT_IMPLEMENT(WorldObject, Object);
+LN_OBJECT_IMPLEMENT(WorldObject, Object) {}
 
 WorldObject::WorldObject()
     : m_world(nullptr)
@@ -301,5 +301,30 @@ void WorldObject::updateWorldMatrixHierarchical()
     }
 }
 
+
+//==============================================================================
+// WorldObjectAsset
+
+namespace ed {
+
+LN_OBJECT_IMPLEMENT(WorldObjectAsset, AssetModel) {}
+
+WorldObjectAsset::WorldObjectAsset()
+{
+}
+
+void WorldObjectAsset::init()
+{
+    AssetModel::init();
+}
+
+void WorldObjectAsset::serialize(Archive& ar)
+{
+	//ar & makeNVP(u"position", m_position);
+	//ar & makeNVP(u"angles", m_angles);
+	//ar & makeNVP(u"scale", m_scale);
+}
+
+} // namespace ed
 } // namespace ln
 

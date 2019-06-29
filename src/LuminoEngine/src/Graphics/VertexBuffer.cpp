@@ -18,9 +18,9 @@ GraphicsResourcePool::None + GraphicsResourceUsage::Static 以外はどうして
 */
 
 #include "Internal.hpp"
-#include "../Engine/RenderingCommandList.hpp"
 #include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
+#include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 
 namespace ln {
@@ -30,12 +30,12 @@ namespace ln {
 
 Ref<VertexBuffer> VertexBuffer::create(size_t bufferSize, GraphicsResourceUsage usage)
 {
-    return newObject<VertexBuffer>(bufferSize, usage);
+    return makeObject<VertexBuffer>(bufferSize, usage);
 }
 
 Ref<VertexBuffer> VertexBuffer::create(size_t bufferSize, const void* initialData, GraphicsResourceUsage usage)
 {
-    return newObject<VertexBuffer>(bufferSize, initialData, usage);
+    return makeObject<VertexBuffer>(bufferSize, initialData, usage);
 }
 
 VertexBuffer::VertexBuffer()
@@ -148,7 +148,7 @@ void VertexBuffer::setResourcePool(GraphicsResourcePool pool)
     m_pool = pool;
 }
 
-detail::IVertexBuffer* VertexBuffer::resolveRHIObject(bool* outModified)
+detail::IVertexBuffer* VertexBuffer::resolveRHIObject(GraphicsContext* context, bool* outModified)
 {
 	*outModified = m_modified;
     m_mappedBuffer = nullptr;
@@ -166,7 +166,7 @@ detail::IVertexBuffer* VertexBuffer::resolveRHIObject(bool* outModified)
                 detail::RenderBulkData data(m_buffer.data(), m_buffer.size());
                 detail::IVertexBuffer* rhiObject = m_rhiObject;
                 LN_ENQUEUE_RENDER_COMMAND_3(
-                    VertexBuffer_SetSubData, detail::GraphicsResourceInternal::manager(this), detail::IGraphicsDevice*, device, detail::RenderBulkData, data, Ref<detail::IVertexBuffer>, rhiObject, {
+                    VertexBuffer_SetSubData, context, detail::IGraphicsDevice*, device, detail::RenderBulkData, data, Ref<detail::IVertexBuffer>, rhiObject, {
                         device->getGraphicsContext()->setSubData(rhiObject, 0, data.data(), data.size());
                     });
             }

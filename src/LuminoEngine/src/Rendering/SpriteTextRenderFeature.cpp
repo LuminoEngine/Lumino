@@ -10,7 +10,6 @@
 #include "../Font/FontCore.hpp"
 #include "../Graphics/GraphicsDeviceContext.hpp"
 #include "../Graphics/GraphicsManager.hpp"
-#include "../Engine/RenderingCommandList.hpp"
 #include "../Rendering/RenderingManager.hpp"
 #include "SpriteTextRenderFeature.hpp"
 
@@ -33,7 +32,7 @@ InternalSpriteTextRender::InternalSpriteTextRender()
 void InternalSpriteTextRender::init(RenderingManager* manager)
 {
     m_manager = manager;
-	m_vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(manager->standardVertexDeclaration(), nullptr);
+	m_vertexDeclaration = m_manager->standardVertexDeclarationRHI();
 
     prepareBuffers(512);
 }
@@ -170,7 +169,7 @@ void SpriteTextRenderFeature::drawText(GraphicsContext* context, const Formatted
 
 	m_drawingGraphicsContext = context;
 	m_drawingFormattedText = text;
-	m_drawingFontGlyphCache = m_drawingFont->getFontGlyphTextureCache();
+	//m_drawingFontGlyphCache = m_drawingFont->getFontGlyphTextureCache();
     m_drawingTransform = transform;
 
 	TextLayoutEngine::layout(m_drawingFont, text->text.c_str(), text->text.length(), Rect(0, 0, text->area), 0, text->textAlignment);
@@ -178,15 +177,47 @@ void SpriteTextRenderFeature::drawText(GraphicsContext* context, const Formatted
 	m_drawingFormattedText = nullptr;
 }
 
+void SpriteTextRenderFeature::drawFlexGlyphRun(GraphicsContext* context, const FlexGlyphRun* glyphRun, const Matrix& transform)
+{
+	for (int i = 0; i < glyphRun->glyphCount; i++) {
+		auto& glyph = glyphRun->owner->glyphs()[glyphRun->startIndex + i];
+		Color color = glyphRun->color;
+		color.a *= glyph.opacity;
+		if (glyph.timeOffset <= glyphRun->owner->time() && color.a > 0.0f) {
+
+			CacheGlyphInfo info;
+			bool flush;
+			glyphRun->font->getFontGlyphTextureCache()->lookupGlyphInfo(glyph.codePoint, &info, &flush);
+			if (flush) {
+				flushInternal(m_drawingGraphicsContext, m_drawingFont->getFontGlyphTextureCache());
+			}
+
+			InternalSpriteTextRender::GlyphData data;
+			data.transform = m_drawingTransform;
+			data.position = glyph.pos.xy();
+			data.color = color;
+			data.srcRect = info.srcRect;
+			data.outlineOffset = info.outlineOffset;
+			m_glyphLayoutDataList.push_back(data);
+		}
+	}
+}
+
 void SpriteTextRenderFeature::flush(GraphicsContext* context)
 {
-	flushInternal(context, m_drawingFontGlyphCache);
+	flushInternal(context, m_drawingFont->getFontGlyphTextureCache());
 }
 
 void SpriteTextRenderFeature::updateRenderParameters(detail::RenderDrawElement* element, ShaderTechnique* tech, const detail::CameraInfo& cameraInfo, const detail::ElementInfo& elementInfo, const detail::SubsetInfo& subsetInfo)
 {
     auto* e = static_cast<DrawTextElement*>(element);
-    FontCore* fontCore = FontHelper::resolveFontCore(e->formattedText->font, cameraInfo.dpiScale);
+	FontCore* fontCore = nullptr;
+	if (e->glyphRun) {
+		fontCore = e->glyphRun->font;
+	}
+	else {
+		fontCore = FontHelper::resolveFontCore(e->formattedText->font, cameraInfo.dpiScale);
+	}
 
 	// validation. 一連の draw ~ flush までは同じフォントが使い続けられなければならない
 	if (m_drawingFont) {
@@ -209,9 +240,9 @@ void SpriteTextRenderFeature::onPlacementGlyph(UTF32 ch, const Vector2& pos, con
 	// 必要なグリフを探す。lookupGlyphInfo() の中で、テクスチャにグリフビットマップが blt される。
 	CacheGlyphInfo info;
 	bool flush;
-	m_drawingFontGlyphCache->lookupGlyphInfo(ch, &info, &flush);
+	m_drawingFont->getFontGlyphTextureCache()->lookupGlyphInfo(ch, &info, &flush);
 	if (flush) {
-		flushInternal(m_drawingGraphicsContext, m_drawingFontGlyphCache);
+		flushInternal(m_drawingGraphicsContext, m_drawingFont->getFontGlyphTextureCache());
 	}
 
 	// TODO: Outline
@@ -235,7 +266,7 @@ void SpriteTextRenderFeature::flushInternal(GraphicsContext* context, FontGlyphT
 	RenderBulkData dataListData(&m_glyphLayoutDataList[0], sizeof(InternalSpriteTextRender::GlyphData) * dataCount);
 
 	// Texture::blit で転送されるものを Flush する
-	ITexture* glyphsTexture = GraphicsResourceInternal::resolveRHIObject<ITexture>(cache->glyphsFillTexture(), nullptr);
+	ITexture* glyphsTexture = GraphicsResourceInternal::resolveRHIObject<ITexture>(context, cache->glyphsFillTexture(), nullptr);
 
 	InternalSpriteTextRender::BrushData brushData;
 	//brushData.color = Color::Blue;
@@ -243,7 +274,7 @@ void SpriteTextRenderFeature::flushInternal(GraphicsContext* context, FontGlyphT
 	GraphicsManager* manager = m_internal->manager()->graphicsManager();
     IGraphicsContext* c = GraphicsContextInternal::commitState(context);
 	LN_ENQUEUE_RENDER_COMMAND_6(
-		SpriteTextRenderFeature_flushInternal, manager,
+		SpriteTextRenderFeature_flushInternal, context,
 		InternalSpriteTextRender*, m_internal,
         IGraphicsContext*, c,
 		RenderBulkData, dataListData,
@@ -259,10 +290,9 @@ void SpriteTextRenderFeature::flushInternal(GraphicsContext* context, FontGlyphT
 				brushData);
 		});
 
-    m_drawingFontGlyphCache->onFlush();
+	m_drawingFont->getFontGlyphTextureCache()->onFlush();
 	m_glyphLayoutDataList.clear();
 	m_drawingFont = nullptr;
-	m_drawingFontGlyphCache = nullptr;
 }
 
 } // namespace detail

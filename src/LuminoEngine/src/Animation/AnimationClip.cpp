@@ -12,7 +12,7 @@ namespace ln {
 
 Ref<AnimationClip> AnimationClip::create(/*const StringRef& name, */const StringRef& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes)
 {
-	return newObject<AnimationClip>(/*name, */targetPath, keyframes);
+	return makeObject<AnimationClip>(/*name, */targetPath, keyframes);
 }
 
 AnimationClip::AnimationClip()
@@ -38,7 +38,7 @@ void AnimationClip::init(/*const StringRef& name, */const StringRef& targetPath,
 
 	//m_name = name;
 
-	auto curve = newObject<KeyFrameAnimationCurve>();
+	auto curve = makeObject<KeyFrameAnimationCurve>();
 	for (auto& key : keyframes) {
 		curve->addKeyFrame(key);
 	}
@@ -150,7 +150,7 @@ void VMDBezierTransformAnimationTrack::evaluate(float time, AnimationValue* outR
 
 Ref<VmdAnimationClip> VmdAnimationClip::create(const Path& filePath)
 {
-	return newObject<VmdAnimationClip>(filePath);
+	return makeObject<VmdAnimationClip>(filePath);
 }
 
 VmdAnimationClip::VmdAnimationClip()
@@ -171,7 +171,7 @@ void VmdAnimationClip::init(const Path& filePath)
 	{
 		for (auto& track : vmdData->MotionData)
 		{
-			m_tracks.add(newObject<VMDBezierTransformAnimationTrack>(track));
+			m_tracks.add(makeObject<VMDBezierTransformAnimationTrack>(track));
 		}
 
 		m_lastFrameTime = vmdData->lastFrameTime;

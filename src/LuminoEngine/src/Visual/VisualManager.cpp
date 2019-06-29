@@ -27,6 +27,7 @@ void VisualManager::init(const Settings& settings)
 	m_graphicsManager = settings.graphicsManager;
 
 	SpriteComponent::registerType(detail::EngineDomain::engineManager()->engineContext());
+	EngineDomain::registerType<SpriteFrame>();
 
     LN_LOG_DEBUG << "VisualManager Initialization ended.";
 }

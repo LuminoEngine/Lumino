@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
-#include "../Engine/RenderingCommandList.hpp"
 #include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
+#include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 
 namespace ln {
@@ -12,12 +12,12 @@ namespace ln {
 
 Ref<IndexBuffer> IndexBuffer::create(int indexCount, IndexBufferFormat format, GraphicsResourceUsage usage)
 {
-    return newObject<IndexBuffer>(indexCount, format, usage);
+    return makeObject<IndexBuffer>(indexCount, format, usage);
 }
 
 Ref<IndexBuffer> IndexBuffer::create(int indexCount, IndexBufferFormat format, const void* initialData, GraphicsResourceUsage usage)
 {
-    return newObject<IndexBuffer>(indexCount, format, initialData, usage);
+    return makeObject<IndexBuffer>(indexCount, format, initialData, usage);
 }
 
 IndexBuffer::IndexBuffer()
@@ -193,7 +193,7 @@ void IndexBuffer::setResourcePool(GraphicsResourcePool pool)
     m_pool = pool;
 }
 
-detail::IIndexBuffer* IndexBuffer::resolveRHIObject(bool* outModified)
+detail::IIndexBuffer* IndexBuffer::resolveRHIObject(GraphicsContext* context, bool* outModified)
 {
 	*outModified = m_modified;
     m_mappedBuffer = nullptr;
@@ -211,7 +211,7 @@ detail::IIndexBuffer* IndexBuffer::resolveRHIObject(bool* outModified)
                 detail::RenderBulkData data(m_buffer.data(), m_buffer.size());
                 detail::IIndexBuffer* rhiObject = m_rhiObject;
                 LN_ENQUEUE_RENDER_COMMAND_3(
-                    IndexBuffer_setSubData, detail::GraphicsResourceInternal::manager(this), detail::IGraphicsDevice*, device, detail::RenderBulkData, data, Ref<detail::IIndexBuffer>, rhiObject, {
+                    IndexBuffer_setSubData, context, detail::IGraphicsDevice*, device, detail::RenderBulkData, data, Ref<detail::IIndexBuffer>, rhiObject, {
                         device->getGraphicsContext()->setSubData(rhiObject, 0, data.data(), data.size());
                     });
             }

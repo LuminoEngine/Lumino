@@ -12,12 +12,12 @@ namespace ln {
 
 Ref<UISprite> UISprite::create()
 {
-    return newObject<UISprite>();
+    return makeObject<UISprite>();
 }
 
 Ref<UISprite> UISprite::create(Texture* texture)
 {
-    return newObject<UISprite>(texture);
+    return makeObject<UISprite>(texture);
 }
 
 UISprite::UISprite()
@@ -27,7 +27,7 @@ UISprite::UISprite()
 void UISprite::init()
 {
     UIElement::init();
-    m_material = newObject<Material>();
+    m_material = makeObject<Material>();
     m_size = Size(-1, -1);
     m_sourceRect = Rect(0, 0, -1, -1);
     setBlendMode(BlendMode::Alpha);

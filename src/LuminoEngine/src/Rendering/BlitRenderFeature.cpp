@@ -32,7 +32,7 @@ void BlitRenderFeature::init(RenderingManager* manager)
         { Vector3(1, -1, 0), Vector3::UnitZ, Vector2(1, 1), Color::White },
     };
     m_vertexBuffer = m_manager->graphicsManager()->deviceContext()->createVertexBuffer(GraphicsResourceUsage::Static, sizeof(vertices), vertices);
-    m_vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(manager->standardVertexDeclaration(), nullptr);
+    m_vertexDeclaration = m_manager->standardVertexDeclarationRHI();
 }
 
 void BlitRenderFeature::blit(GraphicsContext* context)
@@ -40,7 +40,7 @@ void BlitRenderFeature::blit(GraphicsContext* context)
     auto* _this = this;
 	IGraphicsContext* c = GraphicsContextInternal::commitState(context);
     LN_ENQUEUE_RENDER_COMMAND_2(
-        BlitRenderFeature_blit, m_manager->graphicsManager(),
+        BlitRenderFeature_blit, context,
         BlitRenderFeature*, _this,
         IGraphicsContext*, c,
         {

@@ -1,14 +1,19 @@
 ﻿
 #pragma once
 #include <stack>
+#include "../Math/Math.hpp"
 #include "../Base/String.hpp"
 #include "../Json/JsonDocument.hpp"
+#include "Common.hpp"
 
 namespace ln {
 class Archive;
 
 enum class ArchiveContainerType
 {
+    None,   // 最初の状態。ルートノードを open していない。
+    Null,   // 便宜上、あらゆる型を表す null はコンテナとしても扱う
+    Value,  // null と同じく、optional でも必要だった
 	Object,
 	Array,
 };
@@ -45,6 +50,7 @@ public:
 	void writeArray() { onWriteArray(); m_nextName.clear(); /*m_nodeStack.push(NodeInfo{ ArchiveNodeType::Array });*/ }
 	void writeObjectEnd() { onWriteObjectEnd(); m_nextName.clear(); /*m_nodeStack.pop();*/ }
 	void writeArrayEnd() { onWriteArrayEnd(); m_nextName.clear(); /*m_nodeStack.pop();*/ }
+	void writeValueNull() { onWriteValueNull(); m_nextName.clear(); }
 	void writeValue(bool value) { onWriteValueBool(value); m_nextName.clear(); }
 	void writeValue(int64_t value) { onWriteValueInt64(value); m_nextName.clear(); }
 	void writeValue(double value) { onWriteValueDouble(value); m_nextName.clear(); }
@@ -52,22 +58,25 @@ public:
 
 	//-----------------------------------------------------------------------------
 	// Load
-	ArchiveContainerType getContainerType() const { return onGetContainerType(); }// { return m_nodeStack.top().m_readingNodeType; }
+    virtual void setupLoad() {}
+	ArchiveContainerType getOpendContainerType() const { return onGetContainerType(); }// { return m_nodeStack.top().m_readingNodeType; }
 	int getContainerElementCount() const { return onReadContainerElementCount(); }
-	void setNextIndex(int index) { m_nextIndex = index; }	// setNextName() と同じように使う Array 版
-	int getNextIndex() const { return m_nextIndex; }
-	virtual bool hasKey(const String& name) const = 0;
+	//void setNextIndex(int index) { m_nextIndex = index; }	// setNextName() と同じように使う Array 版
+	//int getNextIndex() const { return m_nextIndex; }
+    virtual bool moveToNamedMember(const StringRef& name) = 0;
+    virtual bool moveToIndexedMember(int index) = 0;
+	virtual bool hasKey(const StringRef& name) const = 0;
 	virtual const String& memberKey(int index) const = 0;
-	bool readContainer()
+	bool openContainer()
 	{
-		int dummy;
-		bool r = onReadContainer(&dummy);//&m_readingArrayElementCount);
+		//int dummy;
+		bool r = onOpenContainer(/*&dummy*/);//&m_readingArrayElementCount);
 		//m_nodeStack.push(NodeInfo{});
 		//m_nodeStack.top().m_readingNodeType = (m_readingArrayElementCount >= 0) ? ArchiveNodeType::Array : ArchiveNodeType::Object;
 		postRead();
 		return r;
 	}		// Object Container をカレントにする
-	void readContainerEnd() { onReadContainerEnd(); /*m_nodeStack.pop();*/ }
+	void closeContainer() { onCloseContainer(); /*m_nodeStack.pop();*/ }
 	bool readValue(bool* outValue) { bool r = onReadValueBool(outValue); postRead(); return r; }
 	bool readValue(int64_t* outValue) { bool r = onReadValueInt64(outValue); postRead(); return r; }
 	bool readValue(double* outValue) { bool r = onReadValueDouble(outValue); postRead(); return r; }
@@ -81,13 +90,14 @@ protected:
 	virtual void onWriteArray() = 0;
 	virtual void onWriteObjectEnd() = 0;
 	virtual void onWriteArrayEnd() = 0;
+	virtual void onWriteValueNull() = 0;
 	virtual void onWriteValueBool(bool value) = 0;
 	virtual void onWriteValueInt64(int64_t value) = 0;
 	virtual void onWriteValueDouble(double value) = 0;
 	virtual void onWriteValueString(const String& value) = 0;
 
-	virtual bool onReadContainer(int* outElementCount) = 0;
-	virtual void onReadContainerEnd() = 0;
+	virtual bool onOpenContainer(/*int* outElementCount*/) = 0;
+	virtual bool onCloseContainer() = 0;
 	virtual int onReadContainerElementCount() const = 0;
 	virtual bool onReadValueBool(bool* outValue) = 0;
 	virtual bool onReadValueInt64(int64_t* outValue) = 0;
@@ -122,11 +132,17 @@ public:
 	//	
 	//}
 
-	JsonArchiveStore(JsonDocument* doc)
+	JsonArchiveStore(JsonDocument* doc/*, ArchiveMode mode*/)
 		: m_localDoc(doc)
+        , m_current(nullptr)
+        , m_mode(ArchiveMode::Save)
 	{
 		// TODO: 今 JsonDocument はルート Array に対応していないのでこんな感じ。
 		//m_nodeStack.push(doc);
+
+        //if (mode == ArchiveMode::Load) {
+        //    m_current = doc->rootElement();
+        //}
 	}
 
 	~JsonArchiveStore()
@@ -136,9 +152,30 @@ public:
 protected:
 	virtual ArchiveContainerType onGetContainerType() const override
 	{
-		if (m_nodeStack.top()->type() == JsonElementType::Object)
+        JsonElement* currentNode = nullptr;
+        if (m_mode == ArchiveMode::Save) {
+            currentNode = m_nodeStack.top();
+        }
+        else {
+            if (m_nodeStack.empty()) return ArchiveContainerType::None;
+            currentNode = m_nodeStack.top();
+            if (currentNode->type() == JsonElementType::Null) {
+                return ArchiveContainerType::Null;
+            }
+            else if (currentNode->type() == JsonElementType::Object) {
+                return ArchiveContainerType::Object;
+            }
+            else if (currentNode->type() == JsonElementType::Array) {
+                return ArchiveContainerType::Array;
+            }
+            else {
+                return ArchiveContainerType::Value;
+            }
+        }
+
+		if (currentNode->type() == JsonElementType::Object)
 			return ArchiveContainerType::Object;
-		else if (m_nodeStack.top()->type() == JsonElementType::Array)
+		else if (currentNode->type() == JsonElementType::Array)
 			return ArchiveContainerType::Array;
 		else
 			LN_UNREACHABLE();
@@ -171,13 +208,18 @@ protected:
 
 	virtual void onWriteArray() override
 	{
-		if (checkTopType(JsonElementType::Object))
+		if (m_nodeStack.empty())
+		{
+			m_localDoc->setRootArray();
+			m_nodeStack.push(m_localDoc->rootElement());
+		}
+		else if (checkTopTypeForWrite(JsonElementType::Object))
 		{
 			if (LN_REQUIRE(hasNextName())) return;
 			JsonArray* v = static_cast<JsonObject*>(m_nodeStack.top())->addArray(getNextName());
 			m_nodeStack.push(v);
 		}
-		else if (checkTopType(JsonElementType::Array))
+		else if (checkTopTypeForWrite(JsonElementType::Array))
 		{
 			JsonArray* v = static_cast<JsonArray*>(m_nodeStack.top())->addArray();
 			m_nodeStack.push(v);
@@ -198,15 +240,22 @@ protected:
 		m_nodeStack.pop();
 	}
 
+	virtual void onWriteValueNull() override
+	{
+		if (checkTopTypeForWrite(JsonElementType::Object)) {
+			static_cast<JsonObject*>(m_nodeStack.top())->addNullValue(getNextName());
+		}
+	}
+
 #define ON_WRITE_VALUE_FUNC(type, name) \
 	virtual void onWriteValue##name(type value) override \
 	{ \
-		if (checkTopType(JsonElementType::Object)) \
+		if (checkTopTypeForWrite(JsonElementType::Object)) \
 		{ \
 			if (LN_REQUIRE(hasNextName())) return; \
 			static_cast<JsonObject*>(m_nodeStack.top())->add##name##Value(getNextName(), value); \
 		} \
-		else if (checkTopType(JsonElementType::Array)) \
+		else if (checkTopTypeForWrite(JsonElementType::Array)) \
 		{ \
 			static_cast<JsonArray*>(m_nodeStack.top())->add##name##Value(value); \
 		} \
@@ -223,24 +272,63 @@ protected:
 
 #undef ON_WRITE_VALUE_FUNC
 
-	virtual bool hasKey(const String& name) const override
+    //-------------------------------------------------------------------------------
+    // load
+
+    virtual void setupLoad()
+    {
+        m_current = m_localDoc->rootElement();
+        m_mode = ArchiveMode::Load;
+    }
+
+    virtual bool moveToNamedMember(const StringRef& name) override
+    {
+        if (LN_REQUIRE(!m_nodeStack.empty())) return false;
+        if (LN_REQUIRE(m_nodeStack.top()->type() == JsonElementType::Object)) return false;
+
+        auto* newCurrent = static_cast<JsonObject*>(m_nodeStack.top())->find(name);
+        if (LN_REQUIRE(newCurrent)) return false;
+
+        m_current = newCurrent;
+        return true;
+    }
+
+    virtual bool moveToIndexedMember(int index) override
+    {
+        if (LN_REQUIRE(!m_nodeStack.empty())) return false;
+        if (LN_REQUIRE(m_nodeStack.top()->type() == JsonElementType::Array)) return false;
+
+        auto* newCurrent = static_cast<JsonArray*>(m_nodeStack.top())->element(index);
+        if (LN_REQUIRE(newCurrent)) return false;
+
+        m_current = newCurrent;
+        return true;
+    }
+
+	virtual bool hasKey(const StringRef& name) const override
 	{
-		if (checkTopType(JsonElementType::Object))
-		{
-			return static_cast<JsonObject*>(m_nodeStack.top())->find(name) != nullptr;
-		}
-		else
-		{
-			LN_NOTIMPLEMENTED();
-			return false;
-		}
+        if (LN_REQUIRE(!m_nodeStack.empty())) return false;
+        if (LN_REQUIRE(m_nodeStack.top()->type() == JsonElementType::Object)) return false;
+
+        return static_cast<JsonObject*>(m_nodeStack.top())->find(name) != nullptr;
+
+
+		//if (checkTopType(JsonElementType::Object))
+		//{
+		//	return static_cast<JsonObject*>(current())->find(name) != nullptr;
+		//}
+		//else
+		//{
+		//	LN_NOTIMPLEMENTED();
+		//	return false;
+		//}
 	}
 
 	virtual const String& memberKey(int index) const override
 	{
 		if (checkTopType(JsonElementType::Object))
 		{
-			return static_cast<JsonObject*>(m_nodeStack.top())->memberKey(index);
+			return static_cast<JsonObject*>(current())->memberKey(index);
 		}
 		else
 		{
@@ -250,86 +338,112 @@ protected:
 		}
 	}
 
-	virtual bool onReadContainer(int* outElementCount) override
+	virtual bool onOpenContainer(/*int* outElementCount*/) override
 	{
-		JsonElement* element = nullptr;
-		if (m_nodeStack.empty())
-		{
-			element = m_localDoc->rootElement();
-			if (!element) return false;
-			m_nodeStack.push(element);
-		}
-		else if (checkTopType(JsonElementType::Object))
-		{
-			if (LN_REQUIRE(hasNextName())) return false;
-			element = static_cast<JsonObject*>(m_nodeStack.top())->find(getNextName());
-			if (!element) return false;
-			m_nodeStack.push(element);
-		}
-		else if (checkTopType(JsonElementType::Array))
-		{
-			element = static_cast<JsonArray*>(m_nodeStack.top())->element(getNextIndex());
-			m_nodeStack.push(element);
-		}
-		else
-		{
-			LN_NOTIMPLEMENTED();
-		}
+		//JsonElement* element = nullptr;
+		//if (m_nodeStack.empty())
+		//{
+		//	element = m_localDoc->rootElement();
+		//	if (!element) return false;
+		//	m_nodeStack.push(element);
+		//}
+		//else if (checkTopType(JsonElementType::Object))
+		//{
+		//	if (LN_REQUIRE(hasNextName())) return false;
+		//	element = static_cast<JsonObject*>(current())->find(getNextName());
+		//	if (!element) return false;
+		//	m_nodeStack.push(element);
+		//}
+		//else if (checkTopType(JsonElementType::Array))
+		//{
+		//	element = static_cast<JsonArray*>(current())->element(getNextIndex());
+		//	m_nodeStack.push(element);
+		//}
+		//else
+		//{
+		//	LN_NOTIMPLEMENTED();
+		//}
 
-		if (element->type() == JsonElementType::Object)
-		{
-			*outElementCount = -1;
-		}
-		else if (element->type() == JsonElementType::Array)
-		{
-			*outElementCount = static_cast<JsonArray*>(element)->elementCount();
-		}
-		else
-		{
-			LN_NOTIMPLEMENTED();
-		}
+        //JsonElement* newCurrent = nullptr;
+        //if (checkTopType(JsonElementType::Object)) {
+        //    if (LN_REQUIRE(hasNextName())) return false;
+        //    newCurrent = static_cast<JsonObject*>(current())->find(getNextName());
+        //    if (!newCurrent) return false;
+        //}
+        //else if (checkTopType(JsonElementType::Array)) {
+        //    newCurrent = static_cast<JsonArray*>(current())->element(getNextIndex());
+        //}
+        //else {
+
+        //}
+
+        if (LN_REQUIRE(m_current)) return false;
+
+        m_nodeStack.push(m_current);
+        m_current = nullptr;
+
+		//if (m_current->type() == JsonElementType::Object)
+		//{
+		//	*outElementCount = -1;
+		//}
+		//else if (m_current->type() == JsonElementType::Array)
+		//{
+		//	*outElementCount = static_cast<JsonArray*>(m_current)->elementCount();
+		//}
+		//else
+		//{
+		//	LN_NOTIMPLEMENTED();
+		//}
 
 		return true;
 	}
 
-	virtual void onReadContainerEnd() override
+	virtual bool onCloseContainer() override
 	{
+        if (LN_REQUIRE(!m_nodeStack.empty())) return false;
+        m_current = m_nodeStack.top();
 		m_nodeStack.pop();
+        return true;
 	}
 
 	virtual int onReadContainerElementCount() const override
 	{
+        if (LN_REQUIRE(!m_nodeStack.empty())) return false;
 		if (m_nodeStack.top()->type() == JsonElementType::Object)
 			return static_cast<JsonObject*>(m_nodeStack.top())->memberCount();
 		else if (m_nodeStack.top()->type() == JsonElementType::Array)
 			return static_cast<JsonArray*>(m_nodeStack.top())->elementCount();
 		else
 			LN_UNREACHABLE();
-		return -1;
+		return 0;
 	}
 
 	JsonValue* readValueHelper()
 	{
-		if (checkTopType(JsonElementType::Object))
-		{
-			if (LN_REQUIRE(hasNextName())) return nullptr;
-			JsonElement* v = static_cast<JsonObject*>(m_nodeStack.top())->find(getNextName());
-			return static_cast<JsonValue*>(v);
-			//if (LN_ENSURE(v->type() == JsonElementType::internalName)) return;
-			//*outValue = static_cast<type>(static_cast<JsonValue*>(v)->get##internalName());
-		}
-		else if (checkTopType(JsonElementType::Array))
-		{
-			JsonElement* v = static_cast<JsonArray*>(m_nodeStack.top())->element(getNextIndex());
-			//if (LN_ENSURE(v->type() == JsonElementType::internalName)) return;
-			return static_cast<JsonValue*>(v);
-			//*outValue = static_cast<type>(static_cast<JsonValue*>(v)->get##internalName());
-		}
-		else
-		{
-			LN_NOTIMPLEMENTED();
-			return nullptr;
-		}
+        if (LN_REQUIRE(current()->type() != JsonElementType::Object)) return nullptr;
+        if (LN_REQUIRE(current()->type() != JsonElementType::Array)) return nullptr;
+        return static_cast<JsonValue*>(current());
+		//if (checkTopType(JsonElementType::Object))
+		//{
+		//	if (LN_REQUIRE(hasNextName())) return nullptr;
+		//	JsonElement* v = static_cast<JsonObject*>(current())->find(getNextName());
+		//	return static_cast<JsonValue*>(v);
+		//	//if (LN_ENSURE(v->type() == JsonElementType::internalName)) return;
+		//	//*outValue = static_cast<type>(static_cast<JsonValue*>(v)->get##internalName());
+		//}
+		//else if (checkTopType(JsonElementType::Array))
+		//{
+		//	JsonElement* v = static_cast<JsonArray*>(current())->element(getNextIndex());
+		//	//if (LN_ENSURE(v->type() == JsonElementType::internalName)) return;
+		//	return static_cast<JsonValue*>(v);
+		//	//*outValue = static_cast<type>(static_cast<JsonValue*>(v)->get##internalName());
+		//}
+		//else
+		//{
+		//	LN_NOTIMPLEMENTED();
+		//	return nullptr;
+		//}
+
 	}
 
 	virtual bool onReadValueBool(bool* outValue) override
@@ -369,6 +483,17 @@ protected:
 			*outValue = v->floatValue();
 		else if (v->type() == JsonElementType::Double)
 			*outValue = v->doubleValue();
+        else if (v->type() == JsonElementType::String)
+            if (String::compare(v->stringValue(), u"NaN", CaseSensitivity::CaseInsensitive) == 0) {
+                *outValue = Math::NaN;
+            }
+            else if (String::compare(v->stringValue(), u"Inf", CaseSensitivity::CaseInsensitive) == 0) {
+                *outValue = Math::Inf;
+            }
+            else {
+                // TODO: Error
+                LN_NOTIMPLEMENTED();
+            }
 		else
 			LN_UNREACHABLE();
 
@@ -390,10 +515,10 @@ protected:
 
 	virtual ArchiveNodeType getReadingValueType() override
 	{
-		JsonValue* v = readValueHelper();
-		if (!v) return ArchiveNodeType::Null;
+		//JsonValue* v = readValueHelper();
+		//if (!v) return ArchiveNodeType::Null;
 
-		switch (v->type())
+		switch (current()->type())
 		{
 		case JsonElementType::Null: return ArchiveNodeType::Null;
 		case JsonElementType::Bool: return ArchiveNodeType::Bool;
@@ -409,10 +534,14 @@ protected:
 	}
 
 private:
-	bool checkTopType(JsonElementType t) const { return m_nodeStack.top()->type() == t; }
+    JsonElement* current() const { return m_current; }
+    bool checkTopTypeForWrite(JsonElementType t) const { return m_nodeStack .top()->type() == t; }
+	bool checkTopType(JsonElementType t) const { return current()->type() == t; }
 
 	std::stack<JsonElement*>	m_nodeStack;	// Value 型は積まれない。コンテナのみ。
+    JsonElement* m_current;
 	Ref<JsonDocument>			m_localDoc;
+    ArchiveMode m_mode;
 };
 
 } // namespace ln

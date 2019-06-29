@@ -64,24 +64,6 @@ void IGraphicsDevice::refreshCaps()
 	onGetCaps(&m_caps);
 }
 
-void IGraphicsDevice::enterMainThread()
-{
-}
-
-void IGraphicsDevice::leaveMainThread()
-{
-}
-
-void IGraphicsDevice::enterRenderState()
-{
-	onSaveExternalRenderState();
-}
-
-void IGraphicsDevice::leaveRenderState()
-{
-	onRestoreExternalRenderState();
-}
-
 Ref<ISwapChain> IGraphicsDevice::createSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
 {
 	Ref<ISwapChain> ptr = onCreateSwapChain(window, backbufferSize);
@@ -148,6 +130,15 @@ Ref<ITexture> IGraphicsDevice::createRenderTarget(uint32_t width, uint32_t heigh
 	return ptr;
 }
 
+Ref<ITexture> IGraphicsDevice::createWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight)
+{
+    Ref<ITexture> ptr = onCreateWrappedRenderTarget(nativeObject, hintWidth, hintHeight);
+    if (ptr) {
+        m_aliveObjects.push_back(ptr);
+    }
+    return ptr;
+}
+
 Ref<IDepthBuffer> IGraphicsDevice::createDepthBuffer(uint32_t width, uint32_t height)
 {
 	Ref<IDepthBuffer> ptr = onCreateDepthBuffer(width, height);
@@ -181,6 +172,11 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPass(const ShaderPassCreateInfo& c
 		m_aliveObjects.push_back(ptr);
 	}
 	return ptr;
+}
+
+Ref<IGraphicsContext> IGraphicsDevice::createGraphicsContext()
+{
+	return onCreateGraphicsContext();
 }
 
 Ref<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const UnifiedShader* unifiedShader, UnifiedShader::PassId passId, DiagnosticsManager* diag)
@@ -257,6 +253,16 @@ Result IGraphicsContext::init(IGraphicsDevice* owner)
 {
 	m_device = owner;
 	return true;
+}
+
+void IGraphicsContext::enterRenderState()
+{
+	onSaveExternalRenderState();
+}
+
+void IGraphicsContext::leaveRenderState()
+{
+	onRestoreExternalRenderState();
 }
 
 void IGraphicsContext::begin()

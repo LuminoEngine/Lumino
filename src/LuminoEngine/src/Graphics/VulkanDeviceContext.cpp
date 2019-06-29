@@ -163,22 +163,6 @@ void VulkanDevice::onGetCaps(GraphicsDeviceCaps * outCaps)
     outCaps->requestedShaderTriple.option = "";
 }
 
-void VulkanDevice::onEnterMainThread()
-{
-}
-
-void VulkanDevice::onLeaveMainThread() 
-{
-}
-
-void VulkanDevice::onSaveExternalRenderState()
-{
-}
-
-void VulkanDevice::onRestoreExternalRenderState()
-{
-}
-
 Ref<ISwapChain> VulkanDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
 {
 	auto ptr = makeRef<VulkanSwapChain>();
@@ -275,6 +259,12 @@ Ref<IShaderPass> VulkanDevice::onCreateShaderPass(const ShaderPassCreateInfo& cr
         return nullptr;
     }
     return ptr;
+}
+
+Ref<IGraphicsContext> VulkanDevice::onCreateGraphicsContext()
+{
+	LN_NOTIMPLEMENTED();
+	return nullptr;
 }
 
 Result VulkanDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType)

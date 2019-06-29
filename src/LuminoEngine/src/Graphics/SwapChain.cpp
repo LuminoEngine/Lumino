@@ -29,7 +29,7 @@ void SwapChain::init(detail::PlatformWindow* window, const SizeI& backbufferSize
     GraphicsResource::init();
     m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createSwapChain(window, backbufferSize);
     m_rhiObject->acquireNextImage(&m_imageIndex);
-    m_backbuffer = newObject<RenderTargetTexture>(this);
+    m_backbuffer = makeObject<RenderTargetTexture>(this);
     detail::TextureInternal::resetSwapchainFrameIfNeeded(m_backbuffer, false);
 }
 
@@ -55,17 +55,25 @@ void SwapChain::resizeBackbuffer(int width, int height)
     detail::TextureInternal::resetSwapchainFrameIfNeeded(m_backbuffer, true);
 }
 
-void SwapChain::present()
+void SwapChain::present(GraphicsContext* context)
 {
-    GraphicsContext* context = detail::GraphicsResourceInternal::manager(this)->graphicsContext();
-    detail::IGraphicsContext* nativeContext = detail::GraphicsResourceInternal::manager(this)->deviceContext()->getGraphicsContext();
+    //GraphicsContext* context = detail::GraphicsResourceInternal::manager(this)->graphicsContext();
+    //detail::IGraphicsContext* nativeContext = detail::GraphicsResourceInternal::manager(this)->deviceContext()->getGraphicsContext();
+    detail::IGraphicsContext* nativeContext = detail::GraphicsContextInternal::commitState(context);
 
     detail::GraphicsContextInternal::flushCommandRecoding(context, backbuffer());
 
     // TODO: threading
-	detail::ISwapChain* rhi = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(this, nullptr);
-	nativeContext->present(rhi);
-	detail::GraphicsResourceInternal::manager(this)->primaryRenderingCommandList()->clear();
+	detail::ISwapChain* rhi = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(nullptr, this, nullptr);
+
+	LN_ENQUEUE_RENDER_COMMAND_2(
+		SwapChain_present, context,
+		detail::IGraphicsContext*, nativeContext,
+		detail::ISwapChain*, rhi,
+		{
+			nativeContext->present(rhi);
+		});
+	
 
     // この後 readData などでバックバッファのイメージをキャプチャしたりするので、
     // ここでは次に使うべきバッファの番号だけを取り出しておく。
@@ -74,7 +82,7 @@ void SwapChain::present()
     m_rhiObject->acquireNextImage(&m_imageIndex);
 }
 
-detail::ISwapChain* SwapChain::resolveRHIObject(bool* outModified) const
+detail::ISwapChain* SwapChain::resolveRHIObject(GraphicsContext* context, bool* outModified) const
 {
 	*outModified = false;
     return m_rhiObject;
@@ -87,7 +95,7 @@ namespace detail {
 void SwapChainInternal::setBackendBufferSize(SwapChain* swapChain, int width, int height)
 {
     LN_DCHECK(swapChain);
-    if (GLSwapChain* glswap = dynamic_cast<GLSwapChain*>(detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(swapChain, nullptr))) {
+    if (GLSwapChain* glswap = dynamic_cast<GLSwapChain*>(detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(nullptr, swapChain, nullptr))) {
         glswap->setBackendBufferSize(width, height);
     }
 }
@@ -95,7 +103,7 @@ void SwapChainInternal::setBackendBufferSize(SwapChain* swapChain, int width, in
 void SwapChainInternal::setOpenGLBackendFBO(SwapChain* swapChain, uint32_t id)
 {
     LN_DCHECK(swapChain);
-    if (GLSwapChain* glswap = dynamic_cast<GLSwapChain*>(detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(swapChain, nullptr))) {
+    if (GLSwapChain* glswap = dynamic_cast<GLSwapChain*>(detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(nullptr, swapChain, nullptr))) {
         glswap->setDefaultFBO(id);
     }
 }

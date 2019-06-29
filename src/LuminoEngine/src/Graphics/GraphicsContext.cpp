@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include "../Engine/LinearAllocator.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
@@ -10,7 +11,6 @@
 #include <LuminoEngine/Shader/Shader.hpp>
 #include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
-#include "../Engine/RenderingCommandList.hpp"
 
 namespace ln {
 
@@ -20,6 +20,7 @@ namespace ln {
 GraphicsContext::GraphicsContext()
     : m_manager(nullptr)
     , m_context(nullptr)
+    , m_renderingType(RenderingType::Immediate)
     , m_staging()
     , m_lastCommit()
     , m_dirtyFlags(DirtyFlags_All)
@@ -31,14 +32,53 @@ GraphicsContext::~GraphicsContext()
 {
 }
 
+void GraphicsContext::init(RenderingType renderingType)
+{
+    Object::init();
+    m_renderingType = renderingType;
+    m_manager = detail::EngineDomain::graphicsManager();
+    m_context = m_manager->deviceContext()->createGraphicsContext();
+    m_recordingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
+    m_executingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
+    m_lastCommit.reset();
+    resetState();
+}
+
 void GraphicsContext::init(detail::IGraphicsContext* context)
 {
     LN_DCHECK(context);
     Object::init();
     m_manager = detail::EngineDomain::graphicsManager();
     m_context = context;
+    m_recordingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
+    m_executingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
     m_lastCommit.reset();
     resetState();
+}
+
+void GraphicsContext::enterRenderState()
+{
+    LN_ENQUEUE_RENDER_COMMAND_1(
+        GraphicsContext_clear, this,
+        detail::IGraphicsContext*, m_context,
+        {
+            m_context->enterRenderState();
+        });
+}
+
+void GraphicsContext::leaveRenderState()
+{
+    LN_ENQUEUE_RENDER_COMMAND_1(
+        GraphicsContext_clear, this,
+        detail::IGraphicsContext*, m_context,
+        {
+            m_context->leaveRenderState();
+        });
+}
+
+detail::RenderingCommandList* GraphicsContext::renderingCommandList()
+{
+    return m_recordingCommandList;
 }
 
 void GraphicsContext::onDispose(bool explicitDisposing)
@@ -205,7 +245,7 @@ void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8
     beginCommandRecodingIfNeeded();
     commitState();
     LN_ENQUEUE_RENDER_COMMAND_5(
-        GraphicsContext_clear, m_manager,
+        GraphicsContext_clear, this,
         detail::IGraphicsContext*, m_context,
         ClearFlags, flags,
         Color, color,
@@ -220,7 +260,7 @@ void GraphicsContext::drawPrimitive(int startVertex, int primitiveCount)
     beginCommandRecodingIfNeeded();
     commitState();
     LN_ENQUEUE_RENDER_COMMAND_3(
-        GraphicsContext_setIndexBuffer, m_manager,
+        GraphicsContext_setIndexBuffer, this,
         detail::IGraphicsContext*, m_context,
         int, startVertex,
         int, primitiveCount,
@@ -234,7 +274,7 @@ void GraphicsContext::drawPrimitiveIndexed(int startIndex, int primitiveCount)
     beginCommandRecodingIfNeeded();
     commitState();
     LN_ENQUEUE_RENDER_COMMAND_3(
-        GraphicsContext_setIndexBuffer, m_manager,
+        GraphicsContext_setIndexBuffer, this,
         detail::IGraphicsContext*, m_context,
         int, startIndex,
         int, primitiveCount,
@@ -247,7 +287,7 @@ void GraphicsContext::beginCommandRecodingIfNeeded()
 {
     if (!m_recordingBegan) {
         LN_ENQUEUE_RENDER_COMMAND_1(
-            GraphicsContext_beginCommandRecodingIfNeeded, m_manager,
+            GraphicsContext_beginCommandRecodingIfNeeded, this,
             detail::IGraphicsContext*, m_context,
             {
                 m_context->begin();
@@ -261,7 +301,7 @@ void GraphicsContext::endCommandRecodingIfNeeded()
 {
     if (m_recordingBegan) {
         LN_ENQUEUE_RENDER_COMMAND_1(
-            GraphicsContext_beginCommandRecodingIfNeeded, m_manager,
+            GraphicsContext_beginCommandRecodingIfNeeded, this,
             detail::IGraphicsContext*, m_context,
             {
                 m_context->end();
@@ -276,9 +316,9 @@ void GraphicsContext::flushCommandRecoding(RenderTargetTexture* affectRendreTarg
     if (m_recordingBegan) {
         endCommandRecodingIfNeeded();
 
-        detail::ITexture* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(affectRendreTarget, nullptr);
+        detail::ITexture* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(this, affectRendreTarget, nullptr);
         LN_ENQUEUE_RENDER_COMMAND_2(
-            GraphicsContext_beginCommandRecodingIfNeeded, m_manager,
+            GraphicsContext_beginCommandRecodingIfNeeded, this,
             detail::IGraphicsContext*, m_context,
             detail::ITexture*, rhiObject,
             {
@@ -300,7 +340,7 @@ detail::IGraphicsContext* GraphicsContext::commitState()
     if ((m_dirtyFlags & DirtyFlags_BlendState) != 0) {
         auto& blendState = m_staging.blendState;
         LN_ENQUEUE_RENDER_COMMAND_2(
-            GraphicsContext_setPipelineState, m_manager,
+            GraphicsContext_setPipelineState, this,
             detail::IGraphicsContext*, m_context,
             BlendStateDesc, blendState,
             {
@@ -314,7 +354,7 @@ detail::IGraphicsContext* GraphicsContext::commitState()
     if ((m_dirtyFlags & DirtyFlags_RasterizerState) != 0) {
         auto& rasterizerState = m_staging.rasterizerState;
         LN_ENQUEUE_RENDER_COMMAND_2(
-            GraphicsContext_setPipelineState, m_manager,
+            GraphicsContext_setPipelineState, this,
             detail::IGraphicsContext*, m_context,
             RasterizerStateDesc, rasterizerState,
             {
@@ -328,7 +368,7 @@ detail::IGraphicsContext* GraphicsContext::commitState()
     if ((m_dirtyFlags & DirtyFlags_DepthStencilState) != 0) {
         auto& depthStencilState = m_staging.depthStencilState;
         LN_ENQUEUE_RENDER_COMMAND_2(
-            GraphicsContext_setPipelineState, m_manager,
+            GraphicsContext_setPipelineState, this,
             detail::IGraphicsContext*, m_context,
             DepthStencilStateDesc, depthStencilState,
             {
@@ -350,16 +390,16 @@ detail::IGraphicsContext* GraphicsContext::commitState()
             if (value) {
                 detail::TextureInternal::resetSwapchainFrameIfNeeded(value, false);
             }
-            renderTargets[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(value, &modified);
+            renderTargets[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(this, value, &modified);
             anyModified |= modified;
         }
 
-        detail::IDepthBuffer* depthBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IDepthBuffer>(m_staging.depthBuffer, &modified);
+        detail::IDepthBuffer* depthBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IDepthBuffer>(this, m_staging.depthBuffer, &modified);
         anyModified |= modified;
 
         if ((m_dirtyFlags & DirtyFlags_Framebuffer) != 0 || anyModified) {
             LN_ENQUEUE_RENDER_COMMAND_3(
-                GraphicsContext_setDepthBuffer, m_manager,
+                GraphicsContext_setDepthBuffer, this,
                 detail::IGraphicsContext*, m_context,
                 RenderTargetArray, renderTargets,
                 detail::IDepthBuffer*, depthBuffer,
@@ -377,7 +417,7 @@ detail::IGraphicsContext* GraphicsContext::commitState()
         RectI viewportRect = RectI::fromFloatRect(m_staging.viewportRect);
         RectI scissorRect = RectI::fromFloatRect(m_staging.scissorRect);
         LN_ENQUEUE_RENDER_COMMAND_3(
-            GraphicsContext_setDepthBuffer, m_manager,
+            GraphicsContext_setDepthBuffer, this,
             detail::IGraphicsContext*, m_context,
             RectI, viewportRect,
             RectI, scissorRect,
@@ -393,12 +433,12 @@ detail::IGraphicsContext* GraphicsContext::commitState()
     // VertexLayout, Topology
     {
         bool modified = false;
-        detail::IVertexDeclaration* vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(m_staging.VertexLayout, &modified);
+        detail::IVertexDeclaration* vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(this, m_staging.VertexLayout, &modified);
         PrimitiveTopology topology = m_staging.topology;
 
         if ((m_dirtyFlags & DirtyFlags_PipelinePrimitiveState) != 0 || modified) {
             LN_ENQUEUE_RENDER_COMMAND_3(
-                GraphicsContext_setPrimitiveBuffers, m_manager,
+                GraphicsContext_setPrimitiveBuffers, this,
                 detail::IGraphicsContext*, m_context,
                 PrimitiveTopology, topology,
                 detail::IVertexDeclaration*, vertexDeclaration,
@@ -421,16 +461,16 @@ detail::IGraphicsContext* GraphicsContext::commitState()
         VertexBufferArray vertexBuffers;
         for (int i = 0; i < m_staging.vertexBuffers.size(); i++) {
             auto& value = m_staging.vertexBuffers[i];
-            vertexBuffers[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexBuffer>(value, &modified);
+            vertexBuffers[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexBuffer>(this, value, &modified);
             anyModified |= modified;
         }
 
-        detail::IIndexBuffer* indexBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IIndexBuffer>(m_staging.indexBuffer, &modified);
+        detail::IIndexBuffer* indexBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IIndexBuffer>(this, m_staging.indexBuffer, &modified);
         anyModified |= modified;
 
         if ((m_dirtyFlags & DirtyFlags_PrimitiveBuffers) != 0 || anyModified) {
             LN_ENQUEUE_RENDER_COMMAND_3(
-                GraphicsContext_setPrimitiveBuffers, m_manager,
+                GraphicsContext_setPrimitiveBuffers, this,
                 detail::IGraphicsContext*, m_context,
                 VertexBufferArray, vertexBuffers,
                 detail::IIndexBuffer*, indexBuffer,
@@ -449,11 +489,11 @@ detail::IGraphicsContext* GraphicsContext::commitState()
     // ShaderPass
     {
         auto& value = m_staging.shaderPass;
-        detail::IShaderPass* rhiObject = (value) ? value->resolveRHIObject() : nullptr;
+        detail::IShaderPass* rhiObject = (value) ? value->resolveRHIObject(this) : nullptr;
 
         if ((m_dirtyFlags & DirtyFlags_ShaderPass) != 0) {
             LN_ENQUEUE_RENDER_COMMAND_2(
-                GraphicsContext_setShaderPass, m_manager,
+                GraphicsContext_setShaderPass, this,
                 detail::IGraphicsContext*, m_context,
                 detail::IShaderPass*, rhiObject,
                 {
@@ -469,6 +509,11 @@ detail::IGraphicsContext* GraphicsContext::commitState()
 
     return m_context;
 }
+
+//void GraphicsContext::submitCommandList()
+//{
+//    m_manager->submitCommandList(m_recordingCommandList);
+//}
 
 void GraphicsContext::State::reset()
 {

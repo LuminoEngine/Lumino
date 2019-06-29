@@ -36,12 +36,12 @@ public:
     static detail::GraphicsManager* manager(GraphicsResource* obj) { return obj->m_manager; }
 
     template<class TReturn, class TObject>
-    static TReturn* resolveRHIObject(const TObject& obj, bool* outModified)
+    static TReturn* resolveRHIObject(GraphicsContext* context, const TObject& obj, bool* outModified)
     {
         bool modified = false;
         TReturn* rhi = nullptr;
         if (obj) {
-            rhi = obj->resolveRHIObject(&modified);
+            rhi = obj->resolveRHIObject(context, &modified);
         }
         if (outModified) {
             *outModified = modified;

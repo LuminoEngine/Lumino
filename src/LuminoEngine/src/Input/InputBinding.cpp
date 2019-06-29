@@ -7,7 +7,7 @@ namespace ln {
 //==============================================================================
 // InputGesture
 //==============================================================================
-LN_OBJECT_IMPLEMENT(InputGesture, Object);
+LN_OBJECT_IMPLEMENT(InputGesture, Object) {}
 
 //------------------------------------------------------------------------------
 InputGesture::InputGesture()
@@ -23,7 +23,7 @@ InputGesture::~InputGesture()
 //==============================================================================
 // KeyGesture
 //==============================================================================
-LN_OBJECT_IMPLEMENT(KeyGesture, InputGesture);
+LN_OBJECT_IMPLEMENT(KeyGesture, InputGesture) {}
 
 static const String& getKeyName(Keys key)
 {
@@ -153,7 +153,7 @@ static String getModifierKeysName(ModifierKeys modifierKeyss)
 Ref<KeyGesture> KeyGesture::create(Keys key, ModifierKeys modifierKeys)
 {
 	auto ptr = makeRef<KeyGesture>(key, modifierKeys);
-	// TODO: newObject
+	// TODO: makeObject
 	return ptr;
 }
 
@@ -191,7 +191,7 @@ detail::InputBindingType KeyGesture::getType() const
 //==============================================================================
 // MouseGesture
 //==============================================================================
-LN_OBJECT_IMPLEMENT(MouseGesture, InputGesture);
+LN_OBJECT_IMPLEMENT(MouseGesture, InputGesture) {}
 
 static const String& getMouseActionName(MouseAction mouseAction)
 {
@@ -263,7 +263,7 @@ detail::InputBindingType MouseGesture::getType() const
 //==============================================================================
 // GamepadGesture
 //==============================================================================
-LN_OBJECT_IMPLEMENT(GamepadGesture, InputGesture);
+LN_OBJECT_IMPLEMENT(GamepadGesture, InputGesture) {}
 
 static const String& getGamepadElementName(GamepadElement element)
 {

@@ -9,7 +9,7 @@
 namespace ln {
 class EngineContext;
 class UIContext;
-class UIFrameWindow;
+class UIMainWindow;
 class UIViewport;
 class UIRenderView;
 class UIContainerElement;
@@ -55,8 +55,14 @@ struct EngineSettings
     List<EngineSettingsAssetArchiveEntry> assetArchives;
 	List<Path> assetDirectories;
 	GraphicsAPI graphicsAPI = GraphicsAPI::Default;
+    intptr_t userMainWindow = 0;
 	bool standaloneFpsControl = false;
 	int frameRate = 60;
+    bool defaultObjectsCreation = true;
+    bool useGLFWWindowSystem = true;
+    bool graphicsContextManagement = true;
+    bool externalMainLoop = true;
+    bool externalRenderingManagement = false;
     bool autoCoInitialize = true;
 };
 
@@ -82,7 +88,7 @@ public:
 	void initializeFontManager();
 	void initializeMeshManager();
 	void initializeRenderingManager();
-	//void initializeEffectManager();
+	void initializeEffectManager();
     void initializePhysicsManager();
 	void initializeAssetManager();
     void initializeVisualManager();
@@ -108,6 +114,7 @@ public:
 	const Ref<FontManager>& fontManager() const { return m_fontManager; }
 	const Ref<MeshManager>& meshManager() const { return m_meshManager; }
 	const Ref<RenderingManager>& renderingManager() const { return m_renderingManager; }
+    const Ref<EffectManager>& effectManager() const { return m_effectManager; }
     const Ref<PhysicsManager>& physicsManager() const { return m_physicsManager; }
     const Ref<AssetManager>& assetManager() const { return m_assetManager; }
     const Ref<VisualManager>& visualManager() const { return m_visualManager; }
@@ -120,7 +127,8 @@ public:
     void setTimeScale(float value) { m_timeScale = value; }
     void setShowDebugFpsEnabled(bool value) { m_showDebugFpsEnabled = value; }
 
-	const Ref<UIFrameWindow>& mainWindow() const { return m_mainWindow; }
+    const Ref<UIContext>& mainUIContext() const { return m_mainUIContext; }
+	const Ref<UIMainWindow>& mainWindow() const { return m_mainWindow; }
     const Ref<UIViewport>& mainViewport() const { return m_mainViewport; }
 	const Ref<UIContainerElement>& mainUIRoot() const { return m_mainUIRoot; }
     const Ref<World>& mainWorld() const { return m_mainWorld; }
@@ -146,8 +154,7 @@ private:
 	Ref<FontManager> m_fontManager;
 	Ref<MeshManager>				m_meshManager;
 	Ref<RenderingManager>			m_renderingManager;
-	//Ref<EffectManager>				m_effectManager;
-	//Ref<ModelManager>				m_modelManager;
+	Ref<EffectManager>				m_effectManager;
 	Ref<PhysicsManager>		m_physicsManager;
 	Ref<AssetManager>						m_assetManager;
     Ref<VisualManager>					m_visualManager;
@@ -158,7 +165,7 @@ private:
 	Path m_persistentDataPath;
 
     Ref<UIContext> m_mainUIContext;
-	Ref<UIFrameWindow> m_mainWindow;
+	Ref<UIMainWindow> m_mainWindow;
 	Ref<UIViewport> m_mainViewport;
     Ref<UIRenderView> m_mainUIRenderView;   // m_mainViewport の ViewBox 内部に配置する
     Ref<UIContainerElement> m_mainUIRoot;   // m_mainUIRenderView の RootElement

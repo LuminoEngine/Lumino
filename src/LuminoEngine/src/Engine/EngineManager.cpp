@@ -24,6 +24,7 @@
 #include "../Font/FontManager.hpp"
 #include "../Mesh/MeshManager.hpp"
 #include "../Rendering/RenderingManager.hpp"
+#include "../Effect/EffectManager.hpp"
 #include "../Physics/PhysicsManager.hpp"
 #include "../Asset/AssetManager.hpp"
 #include "../Visual/VisualManager.hpp"
@@ -111,50 +112,56 @@ void EngineManager::init()
 
 	initializeAllManagers();
 
+    //if (!m_settings.externalRenderingManagement) {
+    //    m_graphicsManager->enterRendering();
+    //}
+
 	m_fpsController.setFrameRate(m_settings.frameRate);
 	m_fpsController.setEnableFpsTest(true);
 
-
-    if (m_uiManager) {
-        m_mainUIContext = newObject<UIContext>();
-        m_uiManager->setMainContext(m_mainUIContext);
-
-        m_mainWindow = newObject<UIFrameWindow>(m_platformManager->mainWindow(), m_settings.mainBackBufferSize);
-        m_mainViewport = newObject<UIViewport>();
-        m_mainWindow->addElement(m_mainViewport);
-
-        m_mainUIContext->setLayoutRootElement(m_mainWindow);
-    }
-
-    if (m_sceneManager)
+    if (m_settings.defaultObjectsCreation)
     {
-        m_mainWorld = newObject<World>();
-        m_sceneManager->setActiveWorld(m_mainWorld);
+        if (m_uiManager) {
 
-        //m_mainAmbientLight = newObject<AmbientLight>();
-        //m_mainDirectionalLight = newObject<DirectionalLight>();
+            m_mainWindow = makeObject<UIMainWindow>(m_platformManager->mainWindow(), m_settings.mainBackBufferSize);
+            m_mainViewport = makeObject<UIViewport>();
+            m_mainWindow->addElement(m_mainViewport);
 
-        m_mainCamera = newObject<Camera>();
-        m_mainWorldRenderView = newObject<WorldRenderView>();
-        m_mainWorldRenderView->setTargetWorld(m_mainWorld);
-        m_mainWorldRenderView->setCamera(m_mainCamera);
-        m_mainViewport->addRenderView(m_mainWorldRenderView);
+            m_mainUIContext->setLayoutRootElement(m_mainWindow);
+        }
+
+        if (m_sceneManager)
+        {
+            m_mainWorld = makeObject<World>();
+            m_sceneManager->setActiveWorld(m_mainWorld);
+
+            //m_mainAmbientLight = makeObject<AmbientLight>();
+            //m_mainDirectionalLight = makeObject<DirectionalLight>();
+
+            m_mainCamera = makeObject<Camera>();
+            m_mainWorldRenderView = makeObject<WorldRenderView>();
+            m_mainWorldRenderView->setTargetWorld(m_mainWorld);
+            m_mainWorldRenderView->setCamera(m_mainCamera);
+            m_mainWorldRenderView->setClearMode(RenderViewClearMode::ColorAndDepth);
+            m_mainViewport->addRenderView(m_mainWorldRenderView);
 
 
-        m_mainUIRenderView = newObject<UIRenderView>();
-        m_mainViewport->addRenderView(m_mainUIRenderView);
+            m_mainUIRenderView = makeObject<UIRenderView>();
+            m_mainViewport->addRenderView(m_mainUIRenderView);
 
-        m_mainUIRoot = newObject<UIContainerElement>();
-        m_mainUIRoot->setHorizontalAlignment(HAlignment::Stretch);
-        m_mainUIRoot->setVerticalAlignment(VAlignment::Stretch);
-        m_mainUIRenderView->setRootElement(m_mainUIRoot);
-        m_uiManager->setPrimaryElement(m_mainUIRoot);
+            m_mainUIRoot = makeObject<UIContainerElement>();
+            m_mainUIRoot->setHorizontalAlignment(HAlignment::Stretch);
+            m_mainUIRoot->setVerticalAlignment(VAlignment::Stretch);
+            m_mainUIRenderView->setRootElement(m_mainUIRoot);
+            m_uiManager->setPrimaryElement(m_mainUIRoot);
 
-        m_mainPhysicsWorld = m_mainWorld->physicsWorld();
-        m_mainPhysicsWorld2D = m_mainWorld->physicsWorld2D();
+            m_mainPhysicsWorld = m_mainWorld->physicsWorld();
+            m_mainPhysicsWorld2D = m_mainWorld->physicsWorld2D();
 
-        m_physicsManager->setActivePhysicsWorld2D(m_mainPhysicsWorld2D);
+            m_physicsManager->setActivePhysicsWorld2D(m_mainPhysicsWorld2D);
+        }
     }
+
 
     LN_LOG_DEBUG << "EngineManager Initialization ended.";
 }
@@ -222,11 +229,18 @@ void EngineManager::dispose()
         }
     }
 
+    //if (!m_settings.externalRenderingManagement) {
+    //    if (m_graphicsManager) {
+    //        m_graphicsManager->leaveRendering();
+    //    }
+    //}
+
     if (m_uiManager) m_uiManager->dispose();
     if (m_sceneManager) m_sceneManager->dispose();
     if (m_visualManager) m_visualManager->dispose();
 	if (m_assetManager) m_assetManager->dispose();
     if (m_physicsManager) m_physicsManager->dispose();
+    if (m_effectManager) m_effectManager->dispose();
 	if (m_renderingManager) m_renderingManager->dispose();
 	if (m_meshManager) m_meshManager->dispose();
 	if (m_fontManager) m_fontManager->dispose();
@@ -264,6 +278,7 @@ void EngineManager::initializeAllManagers()
     initializePhysicsManager();
 	initializeAssetManager();
 	initializeRenderingManager();
+    initializeEffectManager();
     initializeVisualManager();
     initializeSceneManager();
 	initializeUIManager();
@@ -302,11 +317,12 @@ void EngineManager::initializePlatformManager()
 		initializeCommon();
 
 		PlatformManager::Settings settings;
+        settings.useGLFWWindowSystem = m_settings.useGLFWWindowSystem;
 		settings.mainWindowSettings.title = m_settings.mainWindowTitle;
 		settings.mainWindowSettings.clientSize = m_settings.mainWindowSize;
 		settings.mainWindowSettings.fullscreen = false;
 		settings.mainWindowSettings.resizable = true;
-		//settings.mainWindowSettings.userWindow = m_settings.userMainWindow;
+		settings.mainWindowSettings.userWindow = m_settings.userMainWindow;
 
 		m_platformManager = ln::makeRef<PlatformManager>();
 		m_platformManager->init(settings);
@@ -374,7 +390,7 @@ void EngineManager::initializeGraphicsManager()
 		initializePlatformManager();
 
 		GraphicsManager::Settings settings;
-		settings.mainWindow = m_platformManager->mainWindow();
+		settings.mainWindow = (m_settings.graphicsContextManagement) ? m_platformManager->mainWindow() : nullptr;
 		settings.graphicsAPI = m_settings.graphicsAPI;
 
 		m_graphicsManager = ln::makeRef<GraphicsManager>();
@@ -425,6 +441,17 @@ void EngineManager::initializeRenderingManager()
 		m_renderingManager = ln::makeRef<RenderingManager>();
 		m_renderingManager->init(settings);
 	}
+}
+
+void EngineManager::initializeEffectManager()
+{
+    if (!m_effectManager && m_settings.features.hasFlag(EngineFeature::Rendering))
+    {
+        EffectManager::Settings settings;
+
+        m_effectManager = ln::makeRef<EffectManager>();
+        m_effectManager->init(settings);
+    }
 }
 
 void EngineManager::initializePhysicsManager()
@@ -494,6 +521,9 @@ void EngineManager::initializeUIManager()
 		
 		m_uiManager = makeRef<UIManager>();
 		m_uiManager->init(settings);
+
+        m_mainUIContext = makeObject<UIContext>();
+        m_uiManager->setMainContext(m_mainUIContext);
 	}
 }
 
@@ -711,6 +741,11 @@ MeshManager* EngineDomain::meshManager()
 RenderingManager* EngineDomain::renderingManager()
 {
 	return engineManager()->renderingManager();
+}
+
+EffectManager* EngineDomain::effectManager()
+{
+    return engineManager()->effectManager();
 }
 
 PhysicsManager* EngineDomain::physicsManager()

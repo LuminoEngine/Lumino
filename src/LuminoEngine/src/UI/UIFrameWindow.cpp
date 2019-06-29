@@ -17,7 +17,7 @@ namespace detail {
 //==============================================================================
 // UIInputInjector
 
-UIInputInjector::UIInputInjector(UIElement* owner)
+UIInputInjector::UIInputInjector(UIFrameWindow* owner)
     : m_owner(owner)
 {
 }
@@ -168,7 +168,7 @@ bool UIInputInjector::injectTextInput(Char ch)
 
 void UIInputInjector::updateMouseHover(float clientX, float clientY)
 {
-    m_owner->context()->updateMouseHover(Point(clientX, clientY));
+    m_owner->context()->updateMouseHover(m_owner, Point(clientX, clientY));
 }
 
 UIElement* UIInputInjector::capturedElement()
@@ -202,28 +202,39 @@ UIFrameWindow::~UIFrameWindow()
 {
 }
 
+void UIFrameWindow::init()
+{
+    UIElement::init();
+    m_manager = detail::EngineDomain::uiManager();
+    specialElementFlags().set(detail::UISpecialElementFlags::FrameWindow);
+    m_inputInjector = makeRef<detail::UIInputInjector>(this);
+}
+
 void UIFrameWindow::init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize)
 {
-	UIElement::init();
-	specialElementFlags().set(detail::UISpecialElementFlags::FrameWindow);
+    init();
 
-	m_manager = detail::EngineDomain::uiManager();
     m_platformWindow = platformMainWindow;
 	m_autoDisposePlatformWindow = false;
-	m_swapChain = newObject<SwapChain>(platformMainWindow, backbufferSize);
+	m_swapChain = makeObject<SwapChain>(platformMainWindow, backbufferSize);
 
     if (detail::EngineDomain::renderingManager()) {
-        m_renderView = newObject<UIRenderView>();
+        m_renderView = makeObject<UIRenderView>();
     }
 
-    m_inputInjector = makeRef<detail::UIInputInjector>(this);
 
     m_platformWindow->attachEventListener(this);
 
-	SizeI size;
-	m_platformWindow->getSize(&size);
-	setWidth(size.width);
-	setHeight(size.height);
+    SizeI size;
+    m_platformWindow->getSize(&size);
+    resetSize(size.toFloatSize());
+}
+
+void UIFrameWindow::resetSize(const Size& size)
+{
+    setWidth(size.width);
+    setHeight(size.height);
+    m_clientSize = size;
 }
 
 void UIFrameWindow::onDispose(bool explicitDisposing)
@@ -252,24 +263,20 @@ void UIFrameWindow::renderContents()
 {
 	assert(!m_depthBuffer);
 
-	GraphicsContext* ctx = m_manager->graphicsManager()->graphicsContext();
-
 	RenderTargetTexture* backbuffer = m_swapChain->backbuffer();
 	m_depthBuffer = DepthBuffer::getTemporary(backbuffer->width(), backbuffer->height());
 
-	ctx->setRenderTarget(0, backbuffer);
-	ctx->setDepthBuffer(m_depthBuffer);
+	m_graphicsContext->setRenderTarget(0, backbuffer);
+    m_graphicsContext->setDepthBuffer(m_depthBuffer);
 	//ctx->clear(ClearFlags::All, Color(0.4, 0.4, 0.4), 1.0f, 0x00);
 }
 
 void UIFrameWindow::present()
 {
-	GraphicsContext* ctx = m_manager->graphicsManager()->graphicsContext();
-
 	if (m_renderView)
 	{
 		m_renderView->setRootElement(this);
-		m_renderView->render(ctx, ctx->renderTarget(0), ctx->depthBuffer());
+		m_renderView->render(m_graphicsContext);
 	}
 
 	if (m_depthBuffer) {
@@ -277,7 +284,8 @@ void UIFrameWindow::present()
 		m_depthBuffer = nullptr;
 	}
 
-	detail::SwapChainInternal::present(m_swapChain);
+	detail::SwapChainInternal::present(m_swapChain, m_graphicsContext);
+	m_manager->graphicsManager()->renderingQueue()->submit(m_graphicsContext);
 }
 
 SwapChain* UIFrameWindow::swapChain() const
@@ -299,10 +307,7 @@ SwapChain* UIFrameWindow::swapChain() const
 
 void UIFrameWindow::updateLayoutTree()
 {
-	SizeI size;
-	m_platformWindow->getSize(&size);
-
-    Rect clientRect(0, 0, size.width, size.height);
+    Rect clientRect(0, 0, m_clientSize);
 	updateLayout(clientRect);
     updateFinalLayoutHierarchical(clientRect);
 }
@@ -317,10 +322,8 @@ Size UIFrameWindow::measureOverride(const Size& constraint)
 		child->measureLayout(constraint);
 	}
 
-	SizeI size;
-	m_platformWindow->getSize(&size);
 	// TODO: DPI チェック
-	return size.toFloatSize();
+	return m_clientSize;
 }
 
 // 強制的にウィンドウサイズとする
@@ -379,6 +382,10 @@ bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)
 			m_platformWindow->getFramebufferSize(&w, &h);
 			detail::SwapChainInternal::resizeBackbuffer(m_swapChain, w, h);
 		}
+
+        SizeI size;
+        m_platformWindow->getSize(&size);
+        resetSize(size.toFloatSize());
 		break;
 	}
 
@@ -401,6 +408,91 @@ bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)
 		break;
 	}
 	return false;
+}
+
+//==============================================================================
+// UIMainWindow
+
+UIMainWindow::UIMainWindow()
+{
+}
+
+UIMainWindow::~UIMainWindow()
+{
+}
+
+void UIMainWindow::init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize)
+{
+    UIFrameWindow::init(platformMainWindow, backbufferSize);
+    m_graphicsContext = m_manager->graphicsManager()->mainWindowGraphicsContext();
+}
+
+//==============================================================================
+// UINativeFrameWindow
+
+UINativeFrameWindow::UINativeFrameWindow()
+{
+}
+
+void UINativeFrameWindow::init()
+{
+    UIFrameWindow::init();
+    m_renderView = makeObject<UIRenderView>();
+}
+
+void UINativeFrameWindow::attachRenderingThread(RenderingType renderingType)
+{
+    if (LN_REQUIRE(!m_graphicsContext)) return;
+    m_graphicsContext = makeObject<GraphicsContext>(renderingType);
+}
+
+void UINativeFrameWindow::detachRenderingThread()
+{
+    if (m_graphicsContext) {
+        m_graphicsContext->dispose();
+        m_graphicsContext = nullptr;
+    }
+}
+
+void UINativeFrameWindow::onDispose(bool explicitDisposing)
+{
+	UIFrameWindow::onDispose(explicitDisposing);
+	if (m_graphicsContext) {
+		m_graphicsContext->dispose();
+		m_graphicsContext = nullptr;
+	}
+}
+
+void UINativeFrameWindow::beginRendering(RenderTargetTexture* renderTarget)
+{
+    m_renderingRenderTarget = renderTarget;
+    m_depthBuffer = DepthBuffer::getTemporary(renderTarget->width(), renderTarget->height());
+
+	detail::GraphicsContextInternal::enterRenderState(m_graphicsContext);
+
+	m_graphicsContext->resetState();
+	m_graphicsContext->setRenderTarget(0, renderTarget);
+	m_graphicsContext->setDepthBuffer(m_depthBuffer);
+}
+
+void UINativeFrameWindow::renderContents()
+{
+    if (m_renderView)
+    {
+        m_renderView->setRootElement(this);
+        m_renderView->render(m_graphicsContext);
+    }
+}
+
+void UINativeFrameWindow::endRendering()
+{
+    if (m_depthBuffer) {
+        DepthBuffer::releaseTemporary(m_depthBuffer);
+        m_depthBuffer = nullptr;
+    }
+    m_renderingRenderTarget = nullptr;
+
+	detail::GraphicsContextInternal::leaveRenderState(m_graphicsContext);
 }
 
 } // namespace ln

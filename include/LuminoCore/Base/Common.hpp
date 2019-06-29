@@ -153,6 +153,9 @@ enum class StringSplitOptions
 	RemoveEmptyEntries,
 };
 
+namespace detail {
+void notifyAbort(const char* file, int line, const char* message);
+} // namespace detail
 } // namespace ln
 
 //------------------------------------------------------------------------------
@@ -170,9 +173,9 @@ enum class StringSplitOptions
 #	define LN_UNLIKELY(expr) (0 == !!(expr))
 #endif
 
-#ifndef LN_CHECK_ABORT_FUNCTION
+#ifndef LN_CHECK_ABORT
 #	include <stdlib.h>
-#	define LN_CHECK_ABORT exit(EXIT_FAILURE);
+#	define LN_CHECK_ABORT ::ln::detail::notifyAbort(__FILE__, __LINE__, "abort.");
 #endif
 
 #ifndef LN_CHECK

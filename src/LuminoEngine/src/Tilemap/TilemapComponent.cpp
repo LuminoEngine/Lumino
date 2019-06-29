@@ -29,8 +29,8 @@ void TilemapComponent::init()
 {
     VisualComponent::init();
 
-    auto tileset = newObject<Tileset>();
-    auto layer = newObject<TilemapLayer>();
+    auto tileset = makeObject<Tileset>();
+    auto layer = makeObject<TilemapLayer>();
     layer->resize(5, 5);
     layer->setTileSize(Size(1, 1));
     layer->setOrientation(TilemapOrientation::UpFlow);
@@ -41,14 +41,14 @@ void TilemapComponent::init()
     layer->setTileId(2, 4, 1);
     layer->setTileId(3, 4, 1);
     layer->setTileId(4, 4, 1);
-    m_tilemap = newObject<TilemapModel>();
-    m_tilemap->addTileset(tileset);
-    m_tilemap->addLayer(layer);
+    m_tilemapModel = makeObject<TilemapModel>();
+    m_tilemapModel->addTileset(tileset);
+    m_tilemapModel->addLayer(layer);
 }
 
 void TilemapComponent::setTilemapModel(TilemapModel* tilemapModel)
 {
-    m_tilemap = tilemapModel;
+    m_tilemapModel = tilemapModel;
 }
 
 void TilemapComponent::onRender(RenderingContext* context)
@@ -99,9 +99,7 @@ void TilemapComponent::onRender(RenderingContext* context)
     }
 
     
-    m_tilemap->render(context, worldObject()->worldMatrix(), bounds);
-
-    //context->drawSprite(Matrix::Identity, Size(5, 5), Vector2::Zero, Rect(0, 0, 1, 1), Color::White, SpriteBaseDirection::ZMinus, BillboardType::None, m_material);
+    m_tilemapModel->render(context, worldObject()->worldMatrix(), bounds);
 }
 
 } // namespace ln

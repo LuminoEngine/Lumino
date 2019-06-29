@@ -4,6 +4,7 @@
 #include <LuminoEngine/Animation/AnimationContext.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
+#include <LuminoEngine/Effect/EffectContext.hpp>
 #include <LuminoEngine/Scene/Component.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
 #include <LuminoEngine/Scene/World.hpp>
@@ -26,15 +27,22 @@ World::~World()
 void World::init()
 {
     Object::init();
-    m_animationContext = newObject<AnimationContext>();
-    m_physicsWorld = newObject<PhysicsWorld>();
-	m_physicsWorld2D = newObject<PhysicsWorld2D>();
+    m_animationContext = makeObject<AnimationContext>();
+    m_physicsWorld = makeObject<PhysicsWorld>();
+	m_physicsWorld2D = makeObject<PhysicsWorld2D>();
+    m_effectContext = makeObject<EffectContext>();
     m_renderingContext = makeRef<detail::WorldSceneGraphRenderingContext>();
 }
 
 void World::onDispose(bool explicitDisposing)
 {
     removeAllObjects();
+    
+    if (m_effectContext) {
+        m_effectContext->dispose();
+        m_effectContext = nullptr;
+    }
+
     m_renderingContext.reset();
     m_physicsWorld.reset();
 	m_physicsWorld2D.reset();
@@ -102,6 +110,8 @@ void World::updateFrame(float elapsedSeconds)
 
 void World::onPreUpdate(float elapsedSeconds)
 {
+    m_effectContext->update(elapsedSeconds);
+
     for (auto& obj : m_rootWorldObjectList)
     {
         obj->onPreUpdate();
@@ -124,9 +134,11 @@ void World::onInternalPhysicsUpdate(float elapsedSeconds)
 
 void World::onUpdate(float elapsedSeconds)
 {
-    for (auto& obj : m_rootWorldObjectList)
-    {
-        obj->updateFrame(elapsedSeconds);
+    // onUpdate 内で新しい WorldObject が作成され、m_rootWorldObjectList に add される場合に備えて
+    // イテレータによる列挙は行わない。新しく追加されたものは、このループで
+    // 今のフレーム中の最初の onUpdate が呼ばれる。
+    for (int i = 0; i < m_rootWorldObjectList->size(); i++) {
+        m_rootWorldObjectList[i]->updateFrame(elapsedSeconds);
     }
 }
 
@@ -136,6 +148,7 @@ void World::onInternalAnimationUpdate(float elapsedSeconds)
 
 void World::onPostUpdate(float elapsedSeconds)
 {
+
 	for (WorldObject* obj : m_destroyList) {
 		//obj->removeFromWorld();
 
@@ -160,11 +173,14 @@ void World::renderObjects()
 
         for (auto& c : obj->m_components)
         {
-
             c->onPrepareRender(m_renderingContext); // TODO: 全体の前にした方がいいかも
             c->render(m_renderingContext);
         }
     }
+
+    m_renderingContext->pushState(true);
+    m_effectContext->render(m_renderingContext);
+    m_renderingContext->popState();
 }
 
 //==============================================================================

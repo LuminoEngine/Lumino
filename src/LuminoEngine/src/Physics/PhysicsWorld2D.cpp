@@ -37,17 +37,17 @@ void CollisionShape2D::init()
 
 Ref<BoxCollisionShape2D> BoxCollisionShape2D::create()
 {
-	return newObject<BoxCollisionShape2D>();
+	return makeObject<BoxCollisionShape2D>();
 }
 
 Ref<BoxCollisionShape2D> BoxCollisionShape2D::create(const Size& size)
 {
-    return newObject<BoxCollisionShape2D>(size);
+    return makeObject<BoxCollisionShape2D>(size);
 }
 
 Ref<BoxCollisionShape2D> BoxCollisionShape2D::create(float width, float height)
 {
-    return newObject<BoxCollisionShape2D>(width, height);
+    return makeObject<BoxCollisionShape2D>(width, height);
 }
 
 BoxCollisionShape2D::BoxCollisionShape2D()
@@ -76,8 +76,11 @@ b2Shape* BoxCollisionShape2D::resolveBox2DShape()
 {
 	if (!m_shape || isDirty())
 	{
+        // Box2D はシェイプの境界にわずかなマージンを持たせる。
+        // このため、2Dワールドを拡大してみると、キャラクターと地面の間に1px分の隙間が見えてしまうようなことがある。
+        // 対策として、マージンを打ち消す (b2_linearSlop * 2) ようにしてみる。
 		m_shape = std::make_unique<b2PolygonShape>();
-		m_shape->SetAsBox(m_size.width * 0.5f, m_size.height * 0.5f, LnToB2(position()), rotation());
+		m_shape->SetAsBox(m_size.width * 0.5f - (b2_linearSlop * 2), m_size.height * 0.5f - (b2_linearSlop * 2), LnToB2(position()), rotation());
 		clearDirty();
 	}
 	return m_shape.get();
@@ -89,7 +92,7 @@ b2Shape* BoxCollisionShape2D::resolveBox2DShape()
 
 Ref<EdgeCollisionShape2D> EdgeCollisionShape2D::create()
 {
-    return newObject<EdgeCollisionShape2D>();
+    return makeObject<EdgeCollisionShape2D>();
 }
 
 EdgeCollisionShape2D::EdgeCollisionShape2D()
@@ -355,12 +358,12 @@ void TriggerBody2D::removeBodyFromBox2DWorld()
 
 Ref<RigidBody2D> RigidBody2D::create()
 {
-	return newObject<RigidBody2D>();
+	return makeObject<RigidBody2D>();
 }
 
 Ref<RigidBody2D> RigidBody2D::create(CollisionShape2D* shape)
 {
-    return newObject<RigidBody2D>(shape);
+    return makeObject<RigidBody2D>(shape);
 }
 
 RigidBody2D::RigidBody2D()
@@ -410,6 +413,7 @@ void RigidBody2D::setVelocity(const Vector2& value)
 {
     m_velocity = value;
     m_applyCommands.push_back({ ApplyType::SetVelocity, value, Vector2::Zero });
+    m_modifyVelocityInSim = true;
 }
 
 void RigidBody2D::setMass(float value)
@@ -579,6 +583,7 @@ void RigidBody2D::onBeforeStepSimulation()
         }
     }
     m_applyCommands.clear();
+    m_modifyVelocityInSim = false;
 
     m_body->SetAwake(true);
 }
@@ -588,7 +593,9 @@ void RigidBody2D::onAfterStepSimulation()
 	if (!m_kinematic) {
 		m_position = B2ToLn(m_body->GetPosition());
 		m_rotation = m_body->GetAngle();
-        m_velocity = B2ToLn(m_body->GetLinearVelocity());
+        if (!m_modifyVelocityInSim) {
+            m_velocity = B2ToLn(m_body->GetLinearVelocity());
+        }
 	}
 
     PhysicsObject2D::onAfterStepSimulation();
@@ -612,8 +619,8 @@ public:
 
 	void init()
 	{
-		m_linesBuffer = newObject<VertexBuffer>(sizeof(Vertex) * MaxVertexCount, GraphicsResourceUsage::Dynamic);
-		m_trianglesBuffer = newObject<VertexBuffer>(sizeof(Vertex) * MaxVertexCount, GraphicsResourceUsage::Dynamic);
+		m_linesBuffer = makeObject<VertexBuffer>(sizeof(Vertex) * MaxVertexCount, GraphicsResourceUsage::Dynamic);
+		m_trianglesBuffer = makeObject<VertexBuffer>(sizeof(Vertex) * MaxVertexCount, GraphicsResourceUsage::Dynamic);
 		m_linesVertexCount = 0;
 		m_trianglesVertexCount = 0;
 	}
@@ -857,6 +864,9 @@ void PhysicsWorld2D::init()
 
 void PhysicsWorld2D::onDispose(bool explicitDisposing)
 {
+    for (int i = m_objects.size() - 1; i >= 0; i--) {
+        removePhysicsObject(m_objects[i]);
+    }
     m_objects.clear();
 
     if (m_world) {
@@ -932,6 +942,8 @@ void PhysicsWorld2D::removePhysicsObject(PhysicsObject2D* physicsObject)
 	else {
 		removeInternal(physicsObject);
 	}
+
+    physicsObject->m_ownerWorld = nullptr;
 }
 
 void PhysicsWorld2D::stepSimulation(float elapsedSeconds)

@@ -4,6 +4,7 @@
 namespace ln {
 class UIElement;
 class UIStyle;
+class UIFrameWindow;
 
 class UIContext
 	: public Object
@@ -13,7 +14,7 @@ public:
 public: // TODO: internal
     void setLayoutRootElement(UIElement* element);	// 通常は MainWindow。もし１つのウィンドウ内に複数の Context を含める場合は
     void addElement(UIElement* element);
-    bool updateMouseHover(const Point& mousePos);
+    bool updateMouseHover(UIFrameWindow* mouseEventSource, const Point& mousePos);
     UIElement* mouseHoverElement() const { return m_mouseHoverElement; }
 	const Ref<UIStyle>& defaultStyle() const { return m_defaultStyle; }
 

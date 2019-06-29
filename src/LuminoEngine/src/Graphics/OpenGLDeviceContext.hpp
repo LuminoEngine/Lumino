@@ -105,7 +105,7 @@ class OpenGLDevice
 public:
 	struct Settings
 	{
-		PlatformWindow* mainWindow = nullptr;
+		PlatformWindow* mainWindow = nullptr;   // nullptr の場合、OpenGL Context の生成・管理を内部で行わない
         uint32_t defaultFramebuffer;
 	};
 	
@@ -129,15 +129,10 @@ public:
 	MemoryStream* uniformTempBuffer() { return &m_uniformTempBuffer; }
 	BinaryWriter* uniformTempBufferWriter() { return &m_uniformTempBufferWriter; }
 
-	void setActiveShaderPass(GLShaderPass* pass);
 
 protected:
 	virtual IGraphicsContext* getGraphicsContext() const;
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) override;
-	virtual void onEnterMainThread() override;
-	virtual void onLeaveMainThread() override;
-	virtual void onSaveExternalRenderState() override;
-	virtual void onRestoreExternalRenderState() override;
 	virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
 	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) override;
 	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) override;
@@ -145,24 +140,18 @@ protected:
 	virtual Ref<ITexture> onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
 	virtual Ref<ITexture> onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
 	virtual Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) override;
-	virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
+    virtual Ref<ITexture> onCreateWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) override;
+    virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
+	virtual Ref<IGraphicsContext> onCreateGraphicsContext() override;
 
 private:
 	Ref<GLContext> m_glContext;
 	MemoryStream m_uniformTempBuffer;
 	BinaryWriter m_uniformTempBufferWriter;
-	GLShaderPass* m_activeShaderPass;
 	//int m_lastUsedAttribIndex;
 	Ref<GLGraphicsContext> m_graphicsContext;
-
-	struct
-	{
-		GLboolean state_GL_CULL_FACE;
-
-	} m_savedState;
-
 	Caps m_caps;
 };
 
@@ -173,8 +162,11 @@ public:
 	GLGraphicsContext();
 	Result init(OpenGLDevice* owner);
 	void dispose();
+	void setActiveShaderPass(GLShaderPass* pass);
 
 protected:
+	virtual void onSaveExternalRenderState() override;
+	virtual void onRestoreExternalRenderState() override;
 	virtual void onBeginCommandRecoding() override {}
 	virtual void onEndCommandRecoding() override {}
 	virtual void onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState) override;
@@ -201,6 +193,13 @@ private:
 	GLuint m_vao;	// https://www.khronos.org/opengl/wiki/Vertex_Specification#Index_buffers
 	GLuint m_fbo;
 	GLIndexBuffer* m_currentIndexBuffer;
+	GLShaderPass* m_activeShaderPass;
+
+	struct
+	{
+		GLboolean state_GL_CULL_FACE;
+
+	} m_savedState;
 };
 
 class GLContext
@@ -425,6 +424,7 @@ public:
 	GLRenderTargetTexture();
 	virtual ~GLRenderTargetTexture();
 	void init(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
+    void init(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight);
 	virtual void dispose() override;
 
 

@@ -107,6 +107,11 @@ bool Path::isRoot() const
     return detail::PathTraits::isRootPath(m_path.c_str(), m_path.length());
 }
 
+bool Path::isUnified() const
+{
+    return !m_path.contains(u'\\');
+}
+
 bool Path::hasExtension(const StringRef& ext) const
 {
     const Char* begin = m_path.c_str();

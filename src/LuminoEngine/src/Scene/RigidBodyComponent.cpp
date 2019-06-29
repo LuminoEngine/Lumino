@@ -25,7 +25,7 @@ void Collision::init(WorldObject* worldObject/*, RigidBody2DComponent* component
 
 Ref<RigidBody2DComponent> RigidBody2DComponent::create()
 {
-	return newObject<RigidBody2DComponent>();
+	return makeObject<RigidBody2DComponent>();
 }
 
 RigidBody2DComponent::RigidBody2DComponent()
@@ -35,7 +35,7 @@ RigidBody2DComponent::RigidBody2DComponent()
 void RigidBody2DComponent::init()
 {
 	Component::init();
-	m_body = newObject<RigidBody2D>();
+	m_body = makeObject<RigidBody2D>();
     m_body->setEventListener(this);
     m_body->setOwnerData(this);
     detail::EngineDomain::engineManager()->mainPhysicsWorld2D()->addPhysicsObject(m_body);
@@ -103,7 +103,7 @@ void RigidBody2DComponent::onCollisionEnter(PhysicsObject2D* otherObject, Contac
     auto* ownerComponent = reinterpret_cast<RigidBody2DComponent*>(otherObject->ownerData());
 	if (ownerComponent) {
 		// TODO: Cache
-		auto c = newObject<Collision>(ownerComponent->worldObject());
+		auto c = makeObject<Collision>(ownerComponent->worldObject());
 		m_onCollisionEnter.raise(c);
 	}
 }
@@ -113,7 +113,7 @@ void RigidBody2DComponent::onCollisionLeave(PhysicsObject2D* otherObject, Contac
     auto* ownerComponent = reinterpret_cast<RigidBody2DComponent*>(otherObject->ownerData());
 	if (ownerComponent) {
 		// TODO: Cache
-		auto c = newObject<Collision>(ownerComponent->worldObject());
+		auto c = makeObject<Collision>(ownerComponent->worldObject());
 		m_onCollisionLeave.raise(c);
 	}
 }
@@ -123,7 +123,7 @@ void RigidBody2DComponent::onCollisionStay(PhysicsObject2D* otherObject, Contact
     auto* ownerComponent = reinterpret_cast<RigidBody2DComponent*>(otherObject->ownerData());
 	if (ownerComponent) {
 		// TODO: Cache
-		auto c = newObject<Collision>(ownerComponent->worldObject());
+		auto c = makeObject<Collision>(ownerComponent->worldObject());
 		m_onCollisionStay.raise(c);
 	}
 }
@@ -136,7 +136,7 @@ void RigidBody2DComponent::onCollisionStay(PhysicsObject2D* otherObject, Contact
 
 Ref<TriggerBody2DComponent> TriggerBody2DComponent::create()
 {
-    return newObject<TriggerBody2DComponent>();
+    return makeObject<TriggerBody2DComponent>();
 }
 
 TriggerBody2DComponent::TriggerBody2DComponent()
@@ -146,7 +146,7 @@ TriggerBody2DComponent::TriggerBody2DComponent()
 void TriggerBody2DComponent::init()
 {
     Component::init();
-    m_body = newObject<TriggerBody2D>();
+    m_body = makeObject<TriggerBody2D>();
     m_body->setEventListener(this);
     m_body->setOwnerData(this);
     detail::EngineDomain::engineManager()->mainPhysicsWorld2D()->addPhysicsObject(m_body);
@@ -205,7 +205,7 @@ void TriggerBody2DComponent::onCollisionEnter(PhysicsObject2D* otherObject, Cont
     auto* ownerComponent = reinterpret_cast<TriggerBody2DComponent*>(otherObject->ownerData());
     if (ownerComponent) {
         // TODO: Cache
-        auto c = newObject<Collision>(ownerComponent->worldObject());
+        auto c = makeObject<Collision>(ownerComponent->worldObject());
         m_onCollisionEnter.raise(c);
     }
 }
@@ -215,7 +215,7 @@ void TriggerBody2DComponent::onCollisionLeave(PhysicsObject2D* otherObject, Cont
     auto* ownerComponent = reinterpret_cast<TriggerBody2DComponent*>(otherObject->ownerData());
     if (ownerComponent) {
         // TODO: Cache
-        auto c = newObject<Collision>(ownerComponent->worldObject());
+        auto c = makeObject<Collision>(ownerComponent->worldObject());
         m_onCollisionLeave.raise(c);
     }
 }
@@ -225,7 +225,7 @@ void TriggerBody2DComponent::onCollisionStay(PhysicsObject2D* otherObject, Conta
     auto* ownerComponent = reinterpret_cast<TriggerBody2DComponent*>(otherObject->ownerData());
     if (ownerComponent) {
         // TODO: Cache
-        auto c = newObject<Collision>(ownerComponent->worldObject());
+        auto c = makeObject<Collision>(ownerComponent->worldObject());
         m_onCollisionStay.raise(c);
     }
 }

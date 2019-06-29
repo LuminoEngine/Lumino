@@ -103,7 +103,7 @@ void WrapperIFGenerator::generate()
 
 				// member
 				ln::String name = (enumInfo->shortName() + "_" + constantInfo->name).toUpper();
-				enumsText.AppendLine("LN_{0} = {1},", name, constantInfo->value.get<int>()).NewLine();
+				enumsText.AppendLine("LN_{0} = {1},", name, constantInfo->value->get<int>()).NewLine();
 			}
 			enumsText.DecreaseIndent();
 			enumsText.AppendLine("}} LN{0};", enumInfo->shortName());

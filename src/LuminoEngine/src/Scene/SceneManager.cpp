@@ -9,6 +9,7 @@ namespace detail {
 // SceneManager
 
 SceneManager::SceneManager()
+    : m_activeWorld(nullptr)
 {
 }
 

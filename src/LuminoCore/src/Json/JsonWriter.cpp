@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoCore/Math/Math.hpp>
 #include <LuminoCore/Base/String.hpp>
 #include <LuminoCore/Json/JsonWriter.hpp>
 
@@ -124,6 +125,15 @@ void JsonWriter::writeInt64(int64_t value)
 
 void JsonWriter::writeFloat(float value)
 {
+    if (Math::isNaN(value)) {
+        writeString(u"NaN");    // like Json.NET
+        return;
+    }
+    if (Math::isInf(value)) {
+        writeString(u"Inf");    // like Json.NET
+        return;
+    }
+
     if (LN_REQUIRE(m_levelStack.size() >= 1))
         return;
     autoComplete(JsonNode::Float);
@@ -133,6 +143,15 @@ void JsonWriter::writeFloat(float value)
 
 void JsonWriter::writeDouble(double value)
 {
+    if (Math::isNaN(value)) {
+        writeString(u"NaN");    // like Json.NET
+        return;
+    }
+    if (Math::isInf(value)) {
+        writeString(u"Inf");    // like Json.NET
+        return;
+    }
+
     if (LN_REQUIRE(m_levelStack.size() >= 1))
         return;
 
@@ -286,11 +305,14 @@ void JsonWriter::onString(const Char* str, int length)
                 m_textWriter->write(StringRef(s, 2));
                 break;
             }
+#if 0   // ファイル出力の時は / エスケープしなくてもいい。外部編集可能な設定を書き出すときにエスケープされていると少し混乱するので、今はスキップしておく。
+        // ちなみに rapidjson も同様にエスケープされない。
             case '/': {
                 Char s[] = {'\\', '/'};
                 m_textWriter->write(StringRef(s, 2));
                 break;
             }
+#endif
             case '\b': {
                 Char s[] = {'\\', 'b'};
                 m_textWriter->write(StringRef(s, 2));

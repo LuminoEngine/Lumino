@@ -24,7 +24,7 @@ void UIRenderView::init()
 	m_sceneRenderingPipeline = makeRef<detail::FlatRenderingPipeline>();
 	m_sceneRenderingPipeline->init();
 	m_drawElementListCollector = makeRef<detail::DrawElementListCollector>();
-    m_viewPoint = newObject<RenderViewPoint>();
+    m_viewPoint = makeObject<RenderViewPoint>();
 
 	m_drawElementListCollector->addDrawElementList(/*RendringPhase::Default, */m_renderingContext->m_elementList);
 	addDrawElementListManager(m_drawElementListCollector);
@@ -33,6 +33,11 @@ void UIRenderView::init()
 void UIRenderView::setRootElement(UIElement* element)
 {
     m_rootElement = element;
+}
+
+void UIRenderView::onUpdateFrame(float elapsedSeconds)
+{
+	m_rootElement->updateFrame(elapsedSeconds);
 }
 
 void UIRenderView::onUpdateUIStyle(const detail::UIStyleInstance* finalStyle)
@@ -46,7 +51,7 @@ void UIRenderView::onUpdateUILayout(const Rect& finalGlobalRect)
     m_rootElement->updateFinalLayoutHierarchical(finalGlobalRect);
 }
 
-void UIRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthbuffer)
+void UIRenderView::render(GraphicsContext* graphicsContext)
 {
     if (m_rootElement)
     {
@@ -75,8 +80,15 @@ void UIRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture*
         // build draw elements
         {
             m_renderingContext->resetForBeginRendering();
+            m_renderingContext->setRenderTarget(0, fb.renderTarget[0]);
+            m_renderingContext->setDepthBuffer(fb.depthBuffer);
             m_renderingContext->setViewPoint(m_viewPoint);
+            m_renderingContext->m_frameWindowRenderingGraphicsContext = graphicsContext;
+            if (clearMode() == RenderViewClearMode::ColorAndDepth) {
+                m_renderingContext->clear(ClearFlags::All, backgroundColor(), 1.0f, 0x00);
+            }
             m_rootElement->render(m_renderingContext);
+            m_renderingContext->m_frameWindowRenderingGraphicsContext = nullptr;
         }
 
 

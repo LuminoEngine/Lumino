@@ -127,7 +127,7 @@ void FontManager::init(const Settings& settings)
 
         FontDesc desc;
         desc.Family = u"mplus-1m-regular-ascii-subset";
-        m_defaultFont = newObject<Font>(desc);
+        m_defaultFont = makeObject<Font>(desc);
     }
 
     LN_LOG_DEBUG << "FontManager Initialization ended.";

@@ -2,31 +2,33 @@
 #pragma once
 #include "../IO/Path.hpp"
 #include "../Base/Uuid.hpp"
+#include "../Base/Optional.hpp"
 
 namespace ln {
 
-template<typename TValue>
+//template<typename TValue>
+template<
+	typename TValue,
+	typename std::enable_if<!detail::is_lumino_engine_object<TValue>::value, std::nullptr_t>::type = nullptr>
 void serialize(Archive& ar, Ref<TValue>& value)
 {
-	ar.makeSmartPtrTag();
+    bool isNull = (value == nullptr);
+	ar.makeSmartPtrTag(&isNull);
 
-	if (ar.isLoading())
-	{
-		if (!value)
-		{
-			value = makeRef<TValue>();
-		}
-		ar.process(*value.get());
-		//value->serialize(ar);
-	}
-	else
-	{
-		if (value)
-		{
-			//value->serialize(ar);
-			ar.process(*value.get());
-		}
-	}
+    if (ar.isSaving()) {
+        if (!isNull) {
+            ar.process(*value.get());
+        }
+    }
+    else {
+        if (!isNull) {
+            value = makeRef<TValue>();
+            ar.process(*value.get());
+        }
+        else {
+            value = nullptr;
+        }
+    }
 }
 
 template<typename TValue>
@@ -73,6 +75,29 @@ inline void serialize(Archive& ar, Uuid& value)
 		String str;
 		ar.makeStringTag(&str);
 		value = Uuid(str);
+	}
+}
+
+template<typename TValue>
+void serialize(Archive& ar, Optional<TValue>& value)
+{
+	bool hasValue = value.hasValue();
+	ar.makeOptionalTag(&hasValue);
+
+	if (ar.isSaving()) {
+		if (hasValue) {
+			ar.process(value.value());
+		}
+	}
+	else {
+		if (hasValue) {
+			TValue v;
+			ar.process(v);
+			value = v;
+		}
+        else {
+            value.reset();
+        }
 	}
 }
 

@@ -25,7 +25,7 @@ void DiagnosticsManager::init()
 
 void DiagnosticsManager::reportError(StringRef message)
 {
-	auto item = newObject<DiagnosticsItem>();
+	auto item = makeObject<DiagnosticsItem>();
 	item->setMessage(message);
 	item->setLevel(DiagnosticsLevel::Error);
 	m_items.add(item);
@@ -34,7 +34,7 @@ void DiagnosticsManager::reportError(StringRef message)
 
 void DiagnosticsManager::reportWarning(StringRef message)
 {
-	auto item = newObject<DiagnosticsItem>();
+	auto item = makeObject<DiagnosticsItem>();
 	item->setMessage(message);
 	item->setLevel(DiagnosticsLevel::Warning);
 	m_items.add(item);
@@ -43,7 +43,7 @@ void DiagnosticsManager::reportWarning(StringRef message)
 
 void DiagnosticsManager::reportInfo(StringRef message)
 {
-	auto item = newObject<DiagnosticsItem>();
+	auto item = makeObject<DiagnosticsItem>();
 	item->setMessage(message);
 	item->setLevel(DiagnosticsLevel::Info);
 	m_items.add(item);

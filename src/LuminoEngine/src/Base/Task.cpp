@@ -48,6 +48,7 @@ Task::~Task()
 
 void Task::start()
 {
+	assert(0);	// TODO: ConditionEvent::lock の意味を逆にした。動作チェック
 	LN_SAFE_DELETE(m_exception);
 	m_waiting.lock();
 	TaskScheduler::getDefault()->queueTask(this);

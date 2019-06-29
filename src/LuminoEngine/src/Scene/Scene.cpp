@@ -13,6 +13,7 @@
     2 については、バトル画面のサブとしてメニュー画面を出したりする仕組み。
 */
 #include "Internal.hpp"
+#include <LuminoEngine/Scene/WorldObject.hpp>
 #include <LuminoEngine/Scene/Scene.hpp>
 #include "SceneManager.hpp"
 
@@ -21,7 +22,7 @@ namespace ln {
 //==============================================================================
 // Scene
 
-LN_OBJECT_IMPLEMENT(Scene, Object);
+LN_OBJECT_IMPLEMENT(Scene, Object) {}
 
 Scene::Scene()
 {
@@ -65,5 +66,90 @@ void Scene::update()
 	onUpdate();
 }
 
+
+void Scene::setup(const ln::Path& filePath)
+{
+	m_filePath = filePath;
+}
+
+void Scene::save()
+{
+}
+
+void Scene::load()
+{
+}
+
+void Scene::clear()
+{
+	m_rootWorldObjects.clear();
+}
+
+void Scene::addObject(WorldObject* obj)
+{
+	if (LN_REQUIRE(obj)) return;
+	if (LN_REQUIRE(m_rootWorldObjects.contains(obj))) return;
+	m_rootWorldObjects.add(obj);
+}
+
+void Scene::removeObject(WorldObject* obj)
+{
+	m_rootWorldObjects.remove(obj);
+}
+
+void Scene::serialize(Archive& ar)
+{
+}
+
+
+
+
+//==============================================================================
+// SceneAsset
+
+namespace ed {
+
+LN_OBJECT_IMPLEMENT(SceneAsset, AssetModel) {}
+
+SceneAsset::SceneAsset()
+{
+}
+
+void SceneAsset::init()
+{
+    AssetModel::init();
+}
+
+void SceneAsset::setup(const ln::Path& filePath)
+{
+	m_filePath = filePath;
+}
+
+void SceneAsset::clear()
+{
+}
+
+void SceneAsset::save()
+{
+	auto json = ln::JsonSerializer::serialize(*this);
+	ln::FileSystem::writeAllText(m_filePath, json);
+}
+
+void SceneAsset::load()
+{
+}
+
+void SceneAsset::serialize(Archive& ar)
+{
+	ar & makeNVP(u"objects", m_rootWorldObjects);
+}
+
+void SceneAsset::addNewWorldObject()
+{
+	auto obj = makeObject<WorldObjectAsset>();
+	m_rootWorldObjects.add(obj);
+}
+
+} // namespace ed
 } // namespace ln
 

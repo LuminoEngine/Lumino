@@ -69,6 +69,9 @@ public:
 
     MeshContainer* ownerContainer() const { return m_ownerContainer; }
 
+    // TODO: タイミング
+    void setGraphicsResourceUsage(GraphicsResourceUsage value) { m_usage = value; }
+
 	// TODO: internal
 	void commitRenderData(int sectionIndex, MeshSection* outSection, VertexLayout** outDecl, VertexBuffer** outVBs, int* outVBCount, IndexBuffer** outIB);
 	const List<MeshSection>& sections() const { return m_sections; }
@@ -91,7 +94,7 @@ LN_CONSTRUCT_ACCESS:
 	/** MeshResource を作成します。 */
 	void init();
 
-private:
+public: // TODO: 
 	enum VertexBufferGroup
 	{
 		VBG_Basic = 0,

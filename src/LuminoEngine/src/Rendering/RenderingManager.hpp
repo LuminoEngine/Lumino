@@ -6,6 +6,7 @@ class Shader;
 class Material;
 
 namespace detail {
+class IVertexDeclaration;
 class LinearAllocatorPageManager;
 class DrawElementListBuilder;
 class BlitRenderFeature;
@@ -141,6 +142,7 @@ public:
 	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
     FontManager* fontManager() const { return m_fontManager; }
 	const Ref<VertexLayout>& standardVertexDeclaration() const { return m_standardVertexDeclaration; }
+    const Ref<detail::IVertexDeclaration>& standardVertexDeclarationRHI() const { return m_standardVertexDeclarationRHI; }
 	//const Ref<DrawElementListBuilder>& renderStageListBuilder() const { return m_renderStageListBuilder; }
     const Ref<BlitRenderFeature>& blitRenderFeature() const { return m_blitRenderFeature; }
 	const Ref<SpriteRenderFeature>& spriteRenderFeature() const { return m_spriteRenderFeature; }
@@ -157,6 +159,7 @@ private:
 	GraphicsManager* m_graphicsManager;
     FontManager* m_fontManager;
 	Ref<VertexLayout> m_standardVertexDeclaration;
+    Ref<detail::IVertexDeclaration> m_standardVertexDeclarationRHI;
 	//Ref<DrawElementListBuilder> m_renderStageListBuilder;
     Ref<BlitRenderFeature> m_blitRenderFeature;
 	Ref<SpriteRenderFeature> m_spriteRenderFeature;

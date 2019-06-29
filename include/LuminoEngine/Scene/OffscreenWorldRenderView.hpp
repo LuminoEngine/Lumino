@@ -11,7 +11,7 @@ class OffscreenWorldRenderView
 public:
 	void setRenderTarget(RenderTargetTexture* renderTarget);
 	RenderTargetTexture* renderTarget() const;
-    void render();
+    //void render();
 
 LN_CONSTRUCT_ACCESS:
     OffscreenWorldRenderView();

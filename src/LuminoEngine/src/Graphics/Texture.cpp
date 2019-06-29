@@ -1,7 +1,6 @@
 ﻿
 #include "Internal.hpp"
 #include "GraphicsManager.hpp"
-#include "../Engine/RenderingCommandList.hpp"
 #include "GraphicsDeviceContext.hpp"
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
@@ -57,12 +56,12 @@ void Texture::setSamplerState(SamplerState* value)
 
 Ref<Texture2D> Texture2D::create(int width, int height)
 {
-    return newObject<Texture2D>(width, height);
+    return makeObject<Texture2D>(width, height);
 }
 
 Ref<Texture2D> Texture2D::create(int width, int height, TextureFormat format)
 {
-    return newObject<Texture2D>(width, height, format);
+    return makeObject<Texture2D>(width, height, format);
 }
 
 Texture2D::Texture2D()
@@ -90,7 +89,7 @@ void Texture2D::init(int width, int height, TextureFormat format)
     width = std::max(1, width);
     height = std::max(1, height);
     Texture::init();
-    m_bitmap = newObject<Bitmap2D>(width, height, GraphicsHelper::translateToPixelFormat(format));
+    m_bitmap = makeObject<Bitmap2D>(width, height, GraphicsHelper::translateToPixelFormat(format));
     m_initialUpdate = true;
     m_modified = true;
     detail::TextureInternal::setDesc(this, width, height, format);
@@ -98,14 +97,14 @@ void Texture2D::init(int width, int height, TextureFormat format)
 
 void Texture2D::init(const StringRef& filePath, TextureFormat format)
 {
-    auto bitmap = newObject<Bitmap2D>();
+    auto bitmap = makeObject<Bitmap2D>();
     bitmap->load(filePath);
     init(bitmap, format);
 }
 
 void Texture2D::init(Stream* stream, TextureFormat format)
 {
-    auto bitmap = newObject<Bitmap2D>();
+    auto bitmap = makeObject<Bitmap2D>();
     bitmap->load(stream);
     init(bitmap, format);
 }
@@ -199,7 +198,7 @@ void Texture2D::onChangeDevice(detail::IGraphicsDevice* device)
     }
 }
 
-detail::ITexture* Texture2D::resolveRHIObject(bool* outModified)
+detail::ITexture* Texture2D::resolveRHIObject(GraphicsContext* context, bool* outModified)
 {
     *outModified = m_modified;
 
@@ -209,7 +208,7 @@ detail::ITexture* Texture2D::resolveRHIObject(bool* outModified)
         } else {
             ByteBuffer* bmpBuffer = m_bitmap->rawBuffer();
             SizeI bmpSize(m_bitmap->width(), m_bitmap->height());
-            detail::RenderBulkData bmpRawData = detail::GraphicsResourceInternal::manager(this)->primaryRenderingCommandList()->allocateBulkData(bmpBuffer->size());
+            detail::RenderBulkData bmpRawData = detail::GraphicsContextInternal::getRenderingCommandList(context)->allocateBulkData(bmpBuffer->size());
             detail::BitmapHelper::blitRawSimple(
                 bmpRawData.writableData(), bmpBuffer->data(), m_bitmap->width(), m_bitmap->height(), Bitmap2D::getPixelFormatByteSize(m_bitmap->format()), false);
 
@@ -219,7 +218,7 @@ detail::ITexture* Texture2D::resolveRHIObject(bool* outModified)
             } else {
                 detail::ITexture* rhiObject = m_rhiObject;
                 LN_ENQUEUE_RENDER_COMMAND_4(
-                    Texture2D_setSubData, detail::GraphicsResourceInternal::manager(this),
+                    Texture2D_setSubData, context,
                     detail::IGraphicsDevice*, deviceContext,
                     detail::RenderBulkData, bmpRawData,
                     SizeI, bmpSize,
@@ -247,12 +246,12 @@ detail::ITexture* Texture2D::resolveRHIObject(bool* outModified)
 
 Ref<RenderTargetTexture> RenderTargetTexture::create(int width, int height)
 {
-    return newObject<RenderTargetTexture>(width, height);
+    return makeObject<RenderTargetTexture>(width, height);
 }
 
 Ref<RenderTargetTexture> RenderTargetTexture::create(int width, int height, TextureFormat format)
 {
-    return newObject<RenderTargetTexture>(width, height, format);
+    return makeObject<RenderTargetTexture>(width, height, format);
 }
 
 Ref<RenderTargetTexture> RenderTargetTexture::getTemporary(int width, int height, TextureFormat format, bool mipmap)
@@ -269,7 +268,9 @@ RenderTargetTexture::RenderTargetTexture()
     : m_rhiObject(nullptr)
     , m_ownerSwapchain(nullptr)
     , m_swapchainImageIndex(-1)
+    , m_nativeObject(0)
     , m_modified(true)
+    , m_hasNativeObject(false)
 {
 }
 
@@ -303,24 +304,45 @@ void RenderTargetTexture::init(SwapChain* owner)
     resetSwapchainFrameIfNeeded(false);
 }
 
+void RenderTargetTexture::init(intptr_t nativeObject, TextureFormat format)
+{
+    Texture::init();
+    detail::TextureInternal::setDesc(this, 1, 1, format);
+    resetNativeObject(nativeObject);
+}
+
+void RenderTargetTexture::resetNativeObject(intptr_t nativeObject)
+{
+    m_nativeObject = nativeObject;
+    m_hasNativeObject = true;
+}
+
+void RenderTargetTexture::resetSize(int width, int height)
+{
+    width = std::max(1, width);
+    height = std::max(1, height);
+    detail::TextureInternal::setDesc(this, width, height, format());
+}
+
 void RenderTargetTexture::onDispose(bool explicitDisposing)
 {
     m_rhiObject.reset();
     Texture::onDispose(explicitDisposing);
 }
 
-Ref<Bitmap2D> RenderTargetTexture::readData()
+Ref<Bitmap2D> RenderTargetTexture::readData(GraphicsContext* context)
 {
     bool modified = false;
-    detail::ITexture* rhiObject = resolveRHIObject(&modified);
+    detail::ITexture* rhiObject = resolveRHIObject(nullptr, &modified);
 
     SizeI size = rhiObject->realSize();
-    auto bitmap = newObject<Bitmap2D>(size.width, size.height, GraphicsHelper::translateToPixelFormat(rhiObject->getTextureFormat()));
+    auto bitmap = makeObject<Bitmap2D>(size.width, size.height, GraphicsHelper::translateToPixelFormat(rhiObject->getTextureFormat()));
 
-    if (detail::GraphicsResourceInternal::manager(this)->renderingType() == RenderingType::Threaded) {
+    if (detail::GraphicsContextInternal::getRenderingType(context) == RenderingType::Threaded) {
         LN_NOTIMPLEMENTED();
     } else {
-        detail::GraphicsContextInternal::flushCommandRecoding(detail::GraphicsResourceInternal::manager(this)->graphicsContext(), this);
+        detail::GraphicsContextInternal::flushCommandRecoding(context, this);
+		detail::GraphicsResourceInternal::manager(this)->renderingQueue()->submit(context);
         rhiObject->readData(bitmap->data());
     }
 
@@ -328,12 +350,17 @@ Ref<Bitmap2D> RenderTargetTexture::readData()
     return bitmap;
 }
 
-detail::ITexture* RenderTargetTexture::resolveRHIObject(bool* outModified)
+detail::ITexture* RenderTargetTexture::resolveRHIObject(GraphicsContext* context, bool* outModified)
 {
     *outModified = m_modified;
 
     if (m_modified) {
-        m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createRenderTarget(width(), height(), format(), mipmap());
+        if (m_hasNativeObject) {
+            m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createWrappedRenderTarget(m_nativeObject, width(), height());
+        }
+        else {
+            m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createRenderTarget(width(), height(), format(), mipmap());
+        }
     }
 
     m_modified = false;
@@ -355,7 +382,7 @@ void RenderTargetTexture::resetSwapchainFrameIfNeeded(bool force)
         int imageIndex = detail::SwapChainInternal::imageIndex(m_ownerSwapchain);
         if (m_swapchainImageIndex != imageIndex || force) {
             m_swapchainImageIndex = imageIndex;
-            m_rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(m_ownerSwapchain, nullptr)->getRenderTarget(m_swapchainImageIndex);
+            m_rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(nullptr, m_ownerSwapchain, nullptr)->getRenderTarget(m_swapchainImageIndex);
 
             auto size = m_rhiObject->realSize();
             detail::TextureInternal::setDesc(this, size.width, size.height, m_rhiObject->getTextureFormat());
@@ -373,6 +400,14 @@ void TextureInternal::setMappedData(Texture2D* texture, const void* data)
 {
     Bitmap2D* surface = texture->map(MapMode::Write);
     memcpy(surface->rawBuffer()->data(), data, surface->rawBuffer()->size());
+}
+
+void TextureInternal::resetOpenGLTextureIdFromCurrentFramebuffer(RenderTargetTexture* renderTarget)
+{
+	int id;
+	if (IGraphicsDevice::getOpenGLCurrentFramebufferTextureId(&id)) {
+		renderTarget->resetNativeObject(id);
+	}
 }
 
 //==============================================================================
@@ -398,7 +433,7 @@ void Texture3D::init(int width, int height, int depth, TextureFormat format, boo
 {
     Texture::init();
     m_depth = depth;
-    m_bitmap = newObject<Bitmap3D>(width, height, depth, GraphicsHelper::translateToPixelFormat(format));
+    m_bitmap = makeObject<Bitmap3D>(width, height, depth, GraphicsHelper::translateToPixelFormat(format));
     m_usage = usage;
     m_initialUpdate = true;
     m_modified = true;
@@ -439,7 +474,7 @@ void Texture3D::onChangeDevice(detail::IGraphicsDevice* device)
     }
 }
 
-detail::ITexture* Texture3D::resolveRHIObject(bool* outModified)
+detail::ITexture* Texture3D::resolveRHIObject(GraphicsContext* context, bool* outModified)
 {
     *outModified = m_modified;
 
@@ -449,7 +484,7 @@ detail::ITexture* Texture3D::resolveRHIObject(bool* outModified)
         } else {
             ByteBuffer* bmpBuffer = m_bitmap->rawBuffer();
             BoxSizeI bmpSize = {m_bitmap->width(), m_bitmap->height(), m_bitmap->depth()};
-            detail::RenderBulkData bmpRawData = detail::GraphicsResourceInternal::manager(this)->primaryRenderingCommandList()->allocateBulkData(bmpBuffer->size());
+            detail::RenderBulkData bmpRawData = detail::GraphicsContextInternal::getRenderingCommandList(context)->allocateBulkData(bmpBuffer->size());
             detail::BitmapHelper::blitRawSimple3D(
                 bmpRawData.writableData(), bmpBuffer->data(), m_bitmap->width(), m_bitmap->height(), m_bitmap->depth(), Bitmap2D::getPixelFormatByteSize(m_bitmap->format()), false);
 
@@ -459,7 +494,7 @@ detail::ITexture* Texture3D::resolveRHIObject(bool* outModified)
             } else {
                 detail::ITexture* rhiObject = m_rhiObject;
                 LN_ENQUEUE_RENDER_COMMAND_4(
-                    Texture3D_setSubData, detail::GraphicsResourceInternal::manager(this),
+                    Texture3D_setSubData, context,
                     detail::IGraphicsDevice*, deviceContext,
                     detail::RenderBulkData, bmpRawData,
                     BoxSizeI, bmpSize,

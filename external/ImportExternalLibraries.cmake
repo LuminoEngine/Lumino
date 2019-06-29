@@ -8,6 +8,27 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 message("LN_TARGET_ARCH: ${LN_TARGET_ARCH}")
 message("CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
+
+
+
+
+
+
+
+if (DEFINED EMSCRIPTEN)
+
+elseif (LN_ANDROID)
+
+elseif (APPLE AND DEFINED PLATFORM) # PLATFORM is ios-cmake variable.
+
+elseif(WIN32 OR APPLE OR UNIX)
+    set(LN_OS_DESKTOP ON)
+
+endif()
+
+
+
+
 #-------------------------------------------------------------------------------
 # Visual Studio ソリューションフォルダを作るようにする
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -21,6 +42,8 @@ macro(ln_make_external_find_path varName projectDirName)
     if(DEFINED LN_EXTERNAL_FIND_PATH_MODE)
         if (${LN_EXTERNAL_FIND_PATH_MODE} STREQUAL "build")
             set(${varName} ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/${projectDirName})
+        elseif (${LN_EXTERNAL_FIND_PATH_MODE} STREQUAL "config")
+            set(${varName} ${CMAKE_CURRENT_LIST_DIR}/lib})
         endif()
     elseif(DEFINED CMAKE_BUILD_TYPE)
         set(${varName} ${LUMINO_ENGINE_ROOT}/lib/${LN_TARGET_ARCH}-${CMAKE_BUILD_TYPE})
@@ -70,10 +93,22 @@ if (ANDROID_ABI)
     set_target_properties(ZLIB PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ZLIB_INCLUDE_DIRS})
     list(APPEND LN_EXTERNAL_LIBS ZLIB)
     
-elseif (LN_OS_DESKTOP OR DEFINED EMSCRIPTEN OR LN_IOS)
+elseif (DEFINED EMSCRIPTEN OR LN_IOS)
     ln_make_external_find_path(ZLIB_ROOT zlib)
     find_library(ZLIB_LIBRARY_RELEASE NAMES zlib PATHS ${ZLIB_ROOT} PATH_SUFFIXES lib NO_DEFAULT_PATH)
     find_library(ZLIB_LIBRARY_DEBUG NAMES zlibd PATHS ${ZLIB_ROOT} PATH_SUFFIXES lib NO_DEFAULT_PATH)
+
+    set(LIB_NAME ZLIB)
+    add_library(${LIB_NAME} STATIC IMPORTED)
+    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
+    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
+    set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ZLIB_ROOT}/include)
+    list(APPEND LN_EXTERNAL_LIBS ZLIB)
+    
+elseif (LN_OS_DESKTOP)
+    ln_make_external_find_path(ZLIB_ROOT zlib)
+    find_library(ZLIB_LIBRARY_RELEASE NAMES zlib PATHS ${ZLIB_ROOT} PATH_SUFFIXES lib)
+    find_library(ZLIB_LIBRARY_DEBUG NAMES zlibd PATHS ${ZLIB_ROOT} PATH_SUFFIXES lib)
 
     set(LIB_NAME ZLIB)
     add_library(${LIB_NAME} STATIC IMPORTED)

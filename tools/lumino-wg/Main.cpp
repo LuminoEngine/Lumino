@@ -22,7 +22,7 @@ int main(int argc, char** argv)
 	};
 
 
-	auto diag = ln::newObject<ln::DiagnosticsManager>();
+	auto diag = ln::makeObject<ln::DiagnosticsManager>();
 	SymbolDatabase db(diag);
 
 	HeaderParser parser;

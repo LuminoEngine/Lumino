@@ -37,7 +37,7 @@ protected:
     Texture();
     virtual ~Texture();
     void init();
-    virtual detail::ITexture* resolveRHIObject(bool* outModified) = 0;
+    virtual detail::ITexture* resolveRHIObject(GraphicsContext* context, bool* outModified) = 0;
 
 private:
     void setDesc(int width, int height, TextureFormat format);
@@ -100,7 +100,7 @@ public:
 protected:
     virtual void onDispose(bool explicitDisposing) override;
     virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
-    virtual detail::ITexture* resolveRHIObject(bool* outModified) override;
+    virtual detail::ITexture* resolveRHIObject(GraphicsContext* context, bool* outModified) override;
 
 LN_CONSTRUCT_ACCESS:
     Texture2D();
@@ -157,7 +157,7 @@ public:
 protected:
     virtual void onDispose(bool explicitDisposing) override;
     virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
-    virtual detail::ITexture* resolveRHIObject(bool* outModified) override;
+    virtual detail::ITexture* resolveRHIObject(GraphicsContext* context, bool* outModified) override;
 
 LN_CONSTRUCT_ACCESS:
     RenderTargetTexture();
@@ -171,15 +171,20 @@ LN_CONSTRUCT_ACCESS:
 
     void init(int width, int height, TextureFormat format, bool mipmap);
     void init(SwapChain* owner);
+    void init(intptr_t nativeObject, TextureFormat format);
+    void resetNativeObject(intptr_t nativeObject);
+    void resetSize(int width, int height);
 
 private:
-    Ref<Bitmap2D> readData();
+    Ref<Bitmap2D> readData(GraphicsContext* context);
     void resetSwapchainFrameIfNeeded(bool force);
 
     Ref<detail::ITexture> m_rhiObject;
     SwapChain* m_ownerSwapchain;
     int m_swapchainImageIndex;
+    intptr_t m_nativeObject;
     bool m_modified;
+    bool m_hasNativeObject;
 
     friend class detail::TextureInternal;
     friend class detail::GraphicsResourceInternal;
@@ -193,8 +198,11 @@ public:
     static void setMappedData(Texture2D* texture, const void* data);
     static void setDesc(Texture* texture, int width, int height, TextureFormat format) { texture->setDesc(width, height, format); }
     static void setMipmapEnabled(Texture* texture, bool value) { texture->m_mipmap = value; }
-    static Ref<Bitmap2D> readData(RenderTargetTexture* renderTarget) { return renderTarget->readData(); }
+    static Ref<Bitmap2D> readData(RenderTargetTexture* renderTarget, GraphicsContext* context) { return renderTarget->readData(context); }
     static void resetSwapchainFrameIfNeeded(RenderTargetTexture* renderTarget, bool force) { renderTarget->resetSwapchainFrameIfNeeded(force); }
+    static void resetNativeObject(RenderTargetTexture* renderTarget, intptr_t value) { renderTarget->resetNativeObject(value); }
+    static void resetSize(RenderTargetTexture* renderTarget, int width, int height) { renderTarget->resetSize(width, height); }
+	static void resetOpenGLTextureIdFromCurrentFramebuffer(RenderTargetTexture* renderTarget);
 };
 
 class Texture3D
@@ -213,7 +221,7 @@ LN_CONSTRUCT_ACCESS:
 protected:
     virtual void onDispose(bool explicitDisposing) override;
     virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
-    virtual detail::ITexture* resolveRHIObject(bool* outModified) override;
+    virtual detail::ITexture* resolveRHIObject(GraphicsContext* context, bool* outModified) override;
 
 private:
     Ref<detail::ITexture> m_rhiObject;

@@ -60,10 +60,6 @@ public:
 protected:
 	virtual IGraphicsContext* getGraphicsContext() const;
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) override;
-	virtual void onEnterMainThread() override;
-	virtual void onLeaveMainThread() override;
-	virtual void onSaveExternalRenderState() override;
-	virtual void onRestoreExternalRenderState() override;
 	virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
 	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) override;
 	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) override;
@@ -71,9 +67,11 @@ protected:
 	virtual Ref<ITexture> onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
 	virtual Ref<ITexture> onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
 	virtual Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) override;
-	virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
+    virtual Ref<ITexture> onCreateWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) override { LN_NOTIMPLEMENTED(); return nullptr; }
+    virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
+	virtual Ref<IGraphicsContext> onCreateGraphicsContext() override;
 
 public: // TODO:
     struct PhysicalDeviceInfo
@@ -136,6 +134,8 @@ public:
 	void setRecodingCommandBuffer(const Ref<VulkanCommandBuffer>& value) { m_recodingCommandBuffer = value; }
 
 protected:
+	virtual void onSaveExternalRenderState() override {}
+	virtual void onRestoreExternalRenderState() override {}
 	virtual void onBeginCommandRecoding() override;
 	virtual void onEndCommandRecoding() override;
 	virtual void onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState) override;

@@ -146,7 +146,7 @@ void MqoParser::loadMaterials(StreamReader* reader)
 		Color c;
 		c.a = color.a;
 
-		auto material = newObject<PhongMaterial>();
+		auto material = makeObject<PhongMaterial>();
 
 		c.r = diffuse * color.r;
 		c.g = diffuse * color.g;
@@ -337,7 +337,7 @@ MqoImporter::MqoImporter()
 
 Ref<StaticMeshModel> MqoImporter::import(MeshManager* manager, const Path& filePath, DiagnosticsManager* diag)
 {
-	m_model = newObject<StaticMeshModel>();
+	m_model = makeObject<StaticMeshModel>();
 	parse(manager, filePath, diag);
 
 	// TODO: on end ほしい
@@ -359,8 +359,8 @@ void MqoImporter::visitMaterial(AbstractMaterial* material)
 
 void MqoImporter::visitObjectChunk(const StringRef& name)
 {
-	//auto mesh = newObject<MeshResource>();
-	auto container = newObject<MeshContainer>();
+	//auto mesh = makeObject<MeshResource>();
+	auto container = makeObject<MeshContainer>();
 	container->setName(name);
 	m_model->addMeshContainer(container);
 	m_meshContainer = container;

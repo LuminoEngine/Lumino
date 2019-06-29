@@ -134,6 +134,7 @@ public:
     // 以前は 2D メインな Sprite なのでピクセル単位で指定していたが、
     // 考え方として他の RenderFeature と同様に「最終的な描画に使うメッシュを作る」方針で統一したい。
 	void drawRequest(
+		GraphicsContext* context,
 		const Matrix& transform,
 		const Vector2& size,
 		const Vector2& anchorRatio,
@@ -159,6 +160,7 @@ private:
 	RenderingManager* m_manager;
 	InternalSpriteRenderer::State m_state;
 	Ref<InternalSpriteRenderer> m_internal;
+    bool m_stateChanged;
 };
 
 } // namespace detail

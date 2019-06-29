@@ -4,10 +4,10 @@ namespace ln {
 class ConditionEvent::Impl
 {
 public:
-	Impl(bool initFlag)
+	Impl(bool locked)
 		: m_handle(NULL)
 	{
-		BOOL t = (initFlag) ? TRUE : FALSE;
+		BOOL t = (locked) ? FALSE : TRUE;	// TRUE:signaled, FALSE:un signaled
 		m_handle = CreateEvent(NULL, TRUE, t, NULL);
 	}
 
@@ -24,7 +24,7 @@ public:
 	{
 		if (m_handle)
 		{
-			::SetEvent(m_handle);
+			::ResetEvent(m_handle);
 		}
 	}
 
@@ -32,7 +32,7 @@ public:
 	{
 		if (m_handle)
 		{
-			::ResetEvent(m_handle);
+			::SetEvent(m_handle);
 		}
 	}
 
@@ -49,6 +49,7 @@ public:
 	{
 		if (m_handle)
 		{
+			// Returns control when "signaled".
 			::WaitForSingleObject(m_handle, INFINITE);
 		}
 	}

@@ -37,15 +37,18 @@ RenderTargetTexture* OffscreenWorldRenderView::renderTarget() const
     return m_renderTarget;
 }
 
-void OffscreenWorldRenderView::render()
-{
-	auto depthBuffer = DepthBuffer::getTemporary(m_renderTarget->width(), m_renderTarget->height());
-
-    WorldRenderView::render(m_renderingManager->graphicsManager()->graphicsContext(), m_renderTarget, depthBuffer);
-
-    // TODO: scoped
-	DepthBuffer::releaseTemporary(depthBuffer);
-}
-
+//void OffscreenWorldRenderView::render()
+//{
+//	auto depthBuffer = DepthBuffer::getTemporary(m_renderTarget->width(), m_renderTarget->height());
+//
+//    GraphicsContext* context = m_renderingManager->graphicsManager()->graphicsContext();
+//    context->setRenderTarget(0, m_renderTarget);
+//    context->setDepthBuffer(depthBuffer);
+//    WorldRenderView::render(context);
+//
+//    // TODO: scoped
+//	DepthBuffer::releaseTemporary(depthBuffer);
+//}
+//
 } // namespace ln
 

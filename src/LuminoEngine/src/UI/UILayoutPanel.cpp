@@ -233,7 +233,7 @@ Size UIFrameLayout::staticArrangeOverride(UIElement* ownerElement, const Size& f
 
 Ref<UIStackLayout> UIStackLayout::create()
 {
-	return newObject<UIStackLayout>();
+	return makeObject<UIStackLayout>();
 }
 
 UIStackLayout::UIStackLayout()

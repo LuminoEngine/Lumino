@@ -7,7 +7,7 @@ public:
 	{
 		m_shader1 = Shader::create(LN_ASSETFILE("simple.vsh"), LN_ASSETFILE("simple.psh"));
 
-		m_vertexDecl1 = newObject<VertexLayout>();
+		m_vertexDecl1 = makeObject<VertexLayout>();
 		m_vertexDecl1->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
 	}
 
@@ -29,7 +29,7 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 			Vector4(0.5, -0.25, 0, 1),
 			Vector4(-0.5, -0.25, 0, 1),
 		};
-		auto vertexBuffer = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+		auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
         for (int i = 0; i < 5; i++)
         {
@@ -71,8 +71,8 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
 
 	//* [ ] 複数 RT 設定時は index 0 だけクリアされること。
 	{
-		auto t1 = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA8, false);
-		auto t2 = newObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA8, false);
+		auto t1 = makeObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA8, false);
+		auto t2 = makeObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA8, false);
 		auto ctx = Engine::graphicsContext();
 		TestEnv::resetGraphicsContext(ctx);
 
@@ -88,8 +88,8 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
 		ctx->clear(ClearFlags::Color, Color::Red, 1.0f, 0);
 
 		// Red, Blue
-		ASSERT_EQ(true, TestEnv::equalsBitmapFile(detail::TextureInternal::readData(t1), LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-3.png"), 100));
-		ASSERT_EQ(true, TestEnv::equalsBitmapFile(detail::TextureInternal::readData(t2), LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-4.png"), 100));
+		ASSERT_EQ(true, TestEnv::equalsBitmapFile(detail::TextureInternal::readData(t1, Engine::graphicsContext()), LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-3.png"), 100));
+		ASSERT_EQ(true, TestEnv::equalsBitmapFile(detail::TextureInternal::readData(t2, Engine::graphicsContext()), LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-4.png"), 100));
 	}
 }
 
@@ -118,8 +118,8 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 		auto usage = params[i].usage;
 		auto pool = params[i].pool;
 
-		auto vb1 = newObject<VertexBuffer>(sizeof(Vector4) * 3, usage);
-		auto vb2 = newObject<VertexBuffer>(sizeof(Vector4) * 3, usage);
+		auto vb1 = makeObject<VertexBuffer>(sizeof(Vector4) * 3, usage);
+		auto vb2 = makeObject<VertexBuffer>(sizeof(Vector4) * 3, usage);
 		vb1->setResourcePool(pool);
 		vb2->setResourcePool(pool);
 
@@ -230,10 +230,10 @@ TEST_F(Test_Graphics_LowLevelRendering, MultiStreamVertexBuffer)
 	Vector3 uv1[3] = { { 0.5, 0, 0 },{ 0, -0.5, 0 }, { 0, 0, 0.5 } };
 	Vector4 uv2[3] = { { 0, 0, 0, 1 },{ 0, 0, 0, 1 },{ 0, 0, 0, 1 } };
 
-	auto vb1 = newObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
-	auto vb2 = newObject<VertexBuffer>(sizeof(uv1), uv1, GraphicsResourceUsage::Static);
-	auto vb3 = newObject<VertexBuffer>(sizeof(uv2), uv2, GraphicsResourceUsage::Static);
-	auto vd1 = newObject<VertexLayout>();
+	auto vb1 = makeObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
+	auto vb2 = makeObject<VertexBuffer>(sizeof(uv1), uv1, GraphicsResourceUsage::Static);
+	auto vb3 = makeObject<VertexBuffer>(sizeof(uv2), uv2, GraphicsResourceUsage::Static);
+	auto vd1 = makeObject<VertexLayout>();
 	vd1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 	vd1->addElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
 	vd1->addElement(1, VertexElementType::Float3, VertexElementUsage::TexCoord, 0);
@@ -286,8 +286,8 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 			Vector4(0, 0, 0, 1),
 			Vector4(-0.5, -0.25, 0, 1),
 		};
-		auto vb1 = newObject<VertexBuffer>(sizeof(Vector4) * 5, vertices, usage);
-		auto ib1 = newObject<IndexBuffer>(3, IndexBufferFormat::UInt16, usage);
+		auto vb1 = makeObject<VertexBuffer>(sizeof(Vector4) * 5, vertices, usage);
+		auto ib1 = makeObject<IndexBuffer>(3, IndexBufferFormat::UInt16, usage);
 		ib1->setResourcePool(pool);
 
 		auto ctx = Engine::graphicsContext();
@@ -350,7 +350,7 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
 		Vector4(0.5, -0.25, 0, 1),
 		Vector4(-0.5, -0.25, 0, 1),
 	};
-	auto vertexBuffer = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+	auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
 	auto ctx = Engine::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
@@ -420,7 +420,7 @@ TEST_F(Test_Graphics_LowLevelRendering, ConstantBuffer)
 		Vector4(0, 1, 0, 1),
 		Vector4(-1, 0, 0, 1),
 	};
-	auto vertexBuffer = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+	auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 	auto ctx = Engine::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
 	ctx->setVertexLayout(m_vertexDecl1);
@@ -654,7 +654,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture)
 {
 	auto shader1 = Shader::create(LN_ASSETFILE("TextureTest-1.vsh"), LN_ASSETFILE("TextureTest-1.psh"));
 	
-	auto vertexDecl1 = newObject<VertexLayout>();
+	auto vertexDecl1 = makeObject<VertexLayout>();
 	vertexDecl1->addElement(0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
 	vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 
@@ -669,9 +669,9 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture)
 		{ { 0, 1 }, { -1, 0, 0 }, },
 		{ { 1, 1 }, { 0, 0, 0 }, },
 	};
-	auto vb1 = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+	auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
-	auto tex1 = newObject<Texture2D>(2, 2);
+	auto tex1 = makeObject<Texture2D>(2, 2);
 	auto bmp1 = tex1->map(MapMode::Write);
 	bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
 	bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
@@ -703,7 +703,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture3D)
 {
 	auto shader1 = Shader::create(LN_ASSETFILE("Texture3DTest-1.vsh"), LN_ASSETFILE("Texture3DTest-1.psh"));
 
-	auto vertexDecl1 = newObject<VertexLayout>();
+	auto vertexDecl1 = makeObject<VertexLayout>();
 	vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 	vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::TexCoord, 0);
 
@@ -718,9 +718,9 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture3D)
 		{ { -1, 0, 0 }, { 0, 1, 0.5 }, },
 		{ { 0, 0, 0 }, { 1, 1, 0.5 }, },
 	};
-	auto vb1 = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+	auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
-	auto tex1 = newObject<Texture3D>(2, 2, 3);
+	auto tex1 = makeObject<Texture3D>(2, 2, 3);
 	auto bmp1 = tex1->map(MapMode::Write);
 	bmp1->setPixel32(0, 0, 1, ColorI(255, 0, 0, 255));
 	bmp1->setPixel32(1, 0, 1, ColorI(255, 0, 255, 255));
@@ -752,7 +752,7 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 {
 	auto shader1 = Shader::create(LN_ASSETFILE("TextureTest-1.vsh"), LN_ASSETFILE("TextureTest-1.psh"));
 
-	auto vertexDecl1 = newObject<VertexLayout>();
+	auto vertexDecl1 = makeObject<VertexLayout>();
 	vertexDecl1->addElement(0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
 	vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 
@@ -767,9 +767,9 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 		{ { 0, 2 },{ -1, 0, 0 }, },
 		{ { 2, 2 },{ 0, 0, 0 }, },
 	};
-	auto vb1 = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+	auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
-	auto tex1 = newObject<Texture2D>(2, 2);
+	auto tex1 = makeObject<Texture2D>(2, 2);
 	auto bmp1 = tex1->map(MapMode::Write);
 	bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
 	bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
@@ -795,7 +795,7 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 
 	// * [ ] Linear, Clamp
 	{
-		auto sampler = newObject<SamplerState>();
+		auto sampler = makeObject<SamplerState>();
 		sampler->setFilterMode(TextureFilterMode::Linear);
 		sampler->setAddressMode(TextureAddressMode::Clamp);
 		tex1->setSamplerState(sampler);
@@ -812,7 +812,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 {
 	auto shader1 = Shader::create(LN_ASSETFILE("SimplePosColor.vsh"), LN_ASSETFILE("SimplePosColor.psh"));
 
-	auto vertexDecl1 = newObject<VertexLayout>();
+	auto vertexDecl1 = makeObject<VertexLayout>();
 	vertexDecl1->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 	vertexDecl1->addElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
 
@@ -827,7 +827,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		{ { -1, 0, 0.5 }, Color::Red },
 		{ { 0, 0, 0.5 }, Color::Red },
 	};
-	auto vb1 = newObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
+	auto vb1 = makeObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
 
 	Vertex v2[] = {
 		{ { -0.5, 0.5, 0 }, Color::Blue },
@@ -835,7 +835,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		{ { -0.5, -0.5, 0 }, Color::Blue },
 		{ { 0.5, -0.5, 0 }, Color::Blue },
 	};
-	auto vb2 = newObject<VertexBuffer>(sizeof(v2), v2, GraphicsResourceUsage::Static);
+	auto vb2 = makeObject<VertexBuffer>(sizeof(v2), v2, GraphicsResourceUsage::Static);
 
 	Vertex v3[] = {	// 裏面テスト用
 		{ { 0, 0, 0 }, Color::Green },
@@ -843,7 +843,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		{ { 1, 0, 0 }, Color::Green },
 		{ { 1, -1, 0 }, Color::Green },
 	};
-	auto vb3 = newObject<VertexBuffer>(sizeof(v3), v3, GraphicsResourceUsage::Static);
+	auto vb3 = makeObject<VertexBuffer>(sizeof(v3), v3, GraphicsResourceUsage::Static);
 
 	auto ctx = Engine::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
@@ -1014,7 +1014,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
             Vector4(0.5, -0.25, 0, 1),
             Vector4(-0.5, -0.25, 0, 1),
         };
-        auto vertexBuffer1 = newObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
+        auto vertexBuffer1 = makeObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
 
         struct Vertex
         {
@@ -1027,13 +1027,13 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
             { { 0, 1 }, { -1, -1, 0 }, },
             { { 1, 1 }, { 1, -1, 0 }, },
         };
-        auto vertexBuffer2 = newObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
-        auto vertexDecl2 = newObject<VertexLayout>();
+        auto vertexBuffer2 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+        auto vertexDecl2 = makeObject<VertexLayout>();
         vertexDecl2->addElement(0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
         vertexDecl2->addElement(0, VertexElementType::Float3, VertexElementUsage::Position, 0);
 
 
-        auto renderTarget1 = newObject<RenderTargetTexture>(160, 120, TextureFormat::RGBA8, false);
+        auto renderTarget1 = makeObject<RenderTargetTexture>(160, 120, TextureFormat::RGBA8, false);
 
         auto ctx = Engine::graphicsContext();
         TestEnv::resetGraphicsContext(ctx);

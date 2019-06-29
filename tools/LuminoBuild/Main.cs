@@ -67,6 +67,7 @@ namespace LuminoBuild
             builder.Tasks.Add(new Tasks.BuildEngine_AndroidJNI());
             builder.Tasks.Add(new Tasks.BuildEngine_Emscripten());
             builder.Tasks.Add(new Tasks.MakeReleasePackage());
+            builder.Tasks.Add(new Tasks.MakeReleasePackage2());
             builder.Tasks.Add(new Tasks.MakeInstaller_Win32());
             builder.Rules.Add(new Rules.MakePackage());
             builder.Rules.Add(new Rules.MakeLocalPackage());

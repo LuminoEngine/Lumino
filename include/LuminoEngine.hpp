@@ -79,6 +79,7 @@
 #include "LuminoEngine/Scene/Scene.hpp"
 #include "LuminoEngine/Scene/SceneConductor.hpp"
 
+#include "LuminoEngine/UI/UIRenderView.hpp"
 #include "LuminoEngine/UI/UIFrameWindow.hpp"
 #include "LuminoEngine/UI/UIViewport.hpp"
 #include "LuminoEngine/UI/UISprite.hpp"
@@ -92,6 +93,9 @@
 #include "LuminoEngine/Tilemap/TilemapLayer.hpp"
 #include "LuminoEngine/Tilemap/TilemapModel.hpp"
 #include "LuminoEngine/Tilemap/Tilemap.hpp"
+
+#include "LuminoEngine/Effect/EffectContext.hpp"
+
 
 
 #ifdef _DEBUG
@@ -127,10 +131,10 @@
 #pragma comment(lib, "BulletDynamics" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "BulletSoftBody" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "Box2D" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
-#endif
 
 #ifdef _DEBUG
 #pragma comment(lib, "tmxlite-s-d.lib")
 #else
 #pragma comment(lib, "tmxlite-s.lib")
+#endif
 #endif

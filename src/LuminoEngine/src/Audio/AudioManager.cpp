@@ -94,7 +94,7 @@ void AudioManager::update(float elapsedSeconds)
 Ref<AudioDecoder> AudioManager::createAudioDecoder(const StringRef& filePath)
 {
 	// TODO: diag
-	auto diag = newObject<DiagnosticsManager>();
+	auto diag = makeObject<DiagnosticsManager>();
 
 	auto path = Path(filePath).unify();
 	Ref<AudioDecoder> decoder;

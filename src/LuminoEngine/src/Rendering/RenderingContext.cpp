@@ -171,7 +171,7 @@ void RenderingContext::drawLine(const Vector3& from, const Color& fromColor, con
 
         virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
         {
-            static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::SingleLineGenerater>(data);
+            static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::SingleLineGenerater>(context, data);
         }
     };
 
@@ -195,7 +195,7 @@ void RenderingContext::drawPlane(float width, float depth, const Color& color)
 
         virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
         {
-            static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::PlaneMeshGenerater>(data);
+            static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::PlaneMeshGenerater>(context, data);
         }
     };
 
@@ -216,7 +216,7 @@ void RenderingContext::drawSphere(float radius, int slices, int stacks, const Co
 
         virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
         {
-            static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::RegularSphereMeshFactory>(data);
+            static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::RegularSphereMeshFactory>(context, data);
         }
     };
 
@@ -307,7 +307,7 @@ void RenderingContext::drawSprite(
 		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
 		{
 			static_cast<detail::SpriteRenderFeature*>(renderFeatures)->drawRequest(
-				transform, size, anchorRatio, srcRect, color, baseDirection, billboardType, flipFlags);
+				context, transform, size, anchorRatio, srcRect, color, baseDirection, billboardType, flipFlags);
 		}
 	};
 
@@ -460,6 +460,21 @@ void RenderingContext::drawText(const StringRef& text, const Color& color, Font*
     //detail::Sphere sphere;
     //detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &sphere);
     //ptr->setLocalBoundingSphere(sphere);
+}
+
+void RenderingContext::drawFlexGlyphRun(detail::FlexGlyphRun* glyphRun)
+{
+	auto* element = m_builder->addNewDrawElement<detail::DrawTextElement>(
+		m_manager->spriteTextRenderFeature(),
+		m_builder->spriteTextRenderFeatureStageParameters());
+	element->glyphRun = glyphRun;
+	//element->flexText = makeRef<detail::FlexText>();	// TODO: cache
+	//element->flexText->copyFrom(text);
+
+	// TODO
+	//detail::Sphere sphere;
+	//detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &sphere);
+	//ptr->setLocalBoundingSphere(sphere);
 }
 
 void RenderingContext::addAmbientLight(const Color& color, float intensity)

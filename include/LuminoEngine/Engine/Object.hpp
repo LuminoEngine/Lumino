@@ -9,12 +9,15 @@ class ReflectionObjectVisitor;
 namespace detail {
 class WeakRefInfo; 
 class ObjectHelper;
+class EngineDomain;
 }
 
 #define LN_OBJECT \
     friend class ::ln::TypeInfo; \
+    friend class ::ln::detail::EngineDomain; \
     static TypeInfo* _lnref_getTypeInfo(); \
-    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override;
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override; \
+	static void _lnref_registerTypeInfo(EngineContext* context);
 
 #define LN_OBJECT_IMPLEMENT(classType, baseclassType) \
     TypeInfo* classType::_lnref_getTypeInfo() \
@@ -22,21 +25,22 @@ class ObjectHelper;
         static TypeInfo typeInfo(#classType, ::ln::TypeInfo::getTypeInfo<baseclassType>()); \
         return &typeInfo; \
     } \
-    ::ln::TypeInfo* classType::_lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); }
+    ::ln::TypeInfo* classType::_lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); } \
+	void classType::_lnref_registerTypeInfo(EngineContext* context)
 
 #define LN_INTERNAL_NEW_OBJECT \
-    template<class T, typename... TArgs> friend ln::Ref<T> ln::newObject(TArgs&&... args); \
+    template<class T, typename... TArgs> friend ln::Ref<T> ln::makeObject(TArgs&&... args); \
     template<class T, typename... TArgs> friend void ln::placementNewObject(void* ptr, TArgs&&... args); 
 
 #ifndef LN_CONSTRUCT_ACCESS
 #define LN_CONSTRUCT_ACCESS \
-		template<class T, typename... TArgs> friend ln::Ref<T> ln::newObject(TArgs&&... args); \
+		template<class T, typename... TArgs> friend ln::Ref<T> ln::makeObject(TArgs&&... args); \
 		template<class T, typename... TArgs> friend void ln::placementNewObject(void* ptr, TArgs&&... args); \
 		protected
 #endif
 
 template<class T, typename... TArgs>
-Ref<T> newObject(TArgs&&... args)
+Ref<T> makeObject(TArgs&&... args)
 {
 	auto ptr = Ref<T>(new T(), false);
 	ptr->init(std::forward<TArgs>(args)...);
@@ -62,6 +66,8 @@ protected:
 	virtual void finalize() override;
 	virtual void onDispose(bool explicitDisposing);
 
+	LN_SERIALIZE_CLASS_VERSION(1);
+    virtual void serialize(Archive& ar);
 
 public:
 	/**
@@ -252,6 +258,10 @@ public:
     void registerProperty(PropertyInfo* prop);
     const List<Ref<PropertyInfo>>& properties() const { return m_properties; }
 
+	Ref<Object> createInstance() const;
+	static Ref<Object> createInstance(const String& typeName);	// TODO: EngineContext へ
+
+
     /** 型引数に指定したクラス型の型情報を取得します。 */
     template<class T>
     static TypeInfo* getTypeInfo()
@@ -266,11 +276,99 @@ public:
 
     static void initializeObjectProperties(Object* obj);
 
+	// TODO: internal
+	std::function<Ref<Object>()> m_factory;
+
 private:
     String m_name;
     TypeInfo* m_baseType;
     List<Ref<PropertyInfo>> m_properties;
 };
+
+class Serializer
+{
+public:
+	template<class T>
+	static String serialize(const Ref<T>&& value)
+	{
+		JsonTextOutputArchive ar;
+		ar.save(*value);
+		return ar.toString(JsonFormatting::None);
+	}
+
+	template<class T>
+	static Ref<T> deserialize(const StringRef& jsonText)
+	{
+		Ref<T> value = makeObject<T>();
+		JsonTextInputArchive ar(jsonText);
+		ar.load(*value);
+		return value;
+	}
+};
+
+
+template<
+	typename TValue,
+	typename std::enable_if<detail::is_lumino_engine_object<TValue>::value, std::nullptr_t>::type = nullptr>
+	void serialize(Archive& ar, Ref<TValue>& value)
+{
+	bool isNull = (value == nullptr);
+	ar.makeSmartPtrTag(&isNull);
+
+	ln::String typeName;
+	if (ar.isSaving()) {
+		typeName = TypeInfo::getTypeInfo(value)->name();
+	}
+	ar.makeTypeInfo(&typeName);
+	//TODO: ここで makeTypeInfo すると、その中では setNextName しているため、現在の nextName をうわがいてしまう
+
+	if (ar.isSaving()) {
+		if (!isNull) {
+			ar.process(*value.get());
+		}
+	}
+	else {
+		if (!isNull) {
+			if (!typeName.isEmpty()) {
+				auto obj = TypeInfo::createInstance(typeName);
+				value = dynamic_pointer_cast<TValue>(obj);
+			}
+
+			// TODO: TypeName が登録されていない場合はベースのを作るか、エラーにするかオプションで決められるようにしたい。
+			if (!value) {
+				value = makeObject<TValue>();
+			}
+
+			ar.process(*value.get());
+		}
+		else {
+			value = nullptr;
+		}
+	}
+
+	//ar.makeSmartPtrTag();
+
+	//ln::String type = u"TypeTest";
+	//ar.makeTypeInfo(&type);
+
+	//if (ar.isLoading())
+	//{
+	//	if (!value)
+	//	{
+	//		value = makeObject<TValue>();
+	//	}
+	//	ar.process(*value.get());
+	//	//value->serialize(ar);
+	//}
+	//else
+	//{
+	//	if (value)
+	//	{
+	//		//value->serialize(ar);
+	//		ar.process(*value.get());
+	//	}
+	//}
+}
 
 } // namespace ln
 

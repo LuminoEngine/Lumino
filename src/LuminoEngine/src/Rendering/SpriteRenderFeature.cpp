@@ -21,7 +21,7 @@ void InternalSpriteRenderer::init(RenderingManager* manager)
 {
 	//m_device = manager->graphicsManager()->deviceContext();
 	m_buffersReservedSpriteCount = 0;
-    m_vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(manager->standardVertexDeclaration(), nullptr);
+    m_vertexDeclaration = manager->standardVertexDeclarationRHI();
 	
 	// reserve buffers.
 	m_spriteDataList.reserve(2048);
@@ -400,6 +400,7 @@ void SpriteRenderFeature::init(RenderingManager* manager)
 	m_manager = manager;
 	m_internal = makeRef<InternalSpriteRenderer>();
 	m_internal->init(manager);
+    m_stateChanged = true;
 }
 
 void SpriteRenderFeature::setSortInfo(
@@ -411,6 +412,7 @@ void SpriteRenderFeature::setSortInfo(
 }
 
 void SpriteRenderFeature::drawRequest(
+	GraphicsContext* context,
 	const Matrix& transform,
 	const Vector2& size,
 	const Vector2& anchorRatio,
@@ -420,10 +422,22 @@ void SpriteRenderFeature::drawRequest(
 	BillboardType billboardType,
     SpriteFlipFlags flipFlags)
 {
-	GraphicsManager* manager = m_manager->graphicsManager();
+    // onActiveRenderFeatureChanged では GraphicsContext に触れないので、state はここで送る。
+    // （onActiveRenderFeatureChanged の呼び出し元で渡すようにしてもいいが、ひとまずこれで）
+    if (m_stateChanged) {
+        LN_ENQUEUE_RENDER_COMMAND_2(
+            SpriteRenderFeature_setState, context,
+            InternalSpriteRenderer*, m_internal,
+            InternalSpriteRenderer::State, m_state,
+            {
+                m_internal->setState(m_state);
+            });
+        m_stateChanged = false;
+    }
+
     Vector4 sizeAndAnchor(size.x, size.y, anchorRatio.x, anchorRatio.y);
 	LN_ENQUEUE_RENDER_COMMAND_8(
-		SpriteRenderFeature_drawRequest, manager,
+		SpriteRenderFeature_drawRequest, context,
 		InternalSpriteRenderer*, m_internal,
 		Matrix, transform,
         Vector4, sizeAndAnchor,
@@ -443,15 +457,8 @@ void SpriteRenderFeature::onActiveRenderFeatureChanged(const detail::CameraInfo&
 
     m_state.viewMatrix = mainCameraInfo.viewMatrix;
     m_state.projMatrix = mainCameraInfo.projMatrix;
+    m_stateChanged = true;
 
-    GraphicsManager* manager = m_manager->graphicsManager();
-    LN_ENQUEUE_RENDER_COMMAND_2(
-        SpriteRenderFeature_setState, manager,
-        InternalSpriteRenderer*, m_internal,
-        InternalSpriteRenderer::State, m_state,
-        {
-            m_internal->setState(m_state);
-        });
 }
 
 void SpriteRenderFeature::flush(GraphicsContext* context)
@@ -459,7 +466,7 @@ void SpriteRenderFeature::flush(GraphicsContext* context)
 	GraphicsManager* manager = m_manager->graphicsManager();
     IGraphicsContext* c = GraphicsContextInternal::commitState(context);
 	LN_ENQUEUE_RENDER_COMMAND_2(
-		SpriteRenderFeature_flush, manager,
+		SpriteRenderFeature_flush, context,
         IGraphicsContext*, c,
 		InternalSpriteRenderer*, m_internal,
 		{

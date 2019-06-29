@@ -12,12 +12,12 @@ namespace ln {
 
 Ref<StaticMesh> StaticMesh::create()
 {
-    return newObject<StaticMesh>();
+    return makeObject<StaticMesh>();
 }
 
 Ref<StaticMesh> StaticMesh::create(const StringRef& filePath, float scale)
 {
-    return newObject<StaticMesh>(filePath, scale);
+    return makeObject<StaticMesh>(filePath, scale);
 }
 
 StaticMesh::StaticMesh()
@@ -31,7 +31,7 @@ StaticMesh::~StaticMesh()
 void StaticMesh::init()
 {
     VisualObject::init();
-    m_component = newObject<StaticMeshComponent>();
+    m_component = makeObject<StaticMeshComponent>();
     addComponent(m_component);
     setMainVisualComponent(m_component);
 }

@@ -400,7 +400,7 @@ public:
 			auto symbol = ln::makeRef<ConstantSymbol>();
 			symbol->document = parseDocument(decl);
 			symbol->name = ln::String::fromStdString(decl->getNameAsString());
-			symbol->value = decl->getInitVal().getSExtValue();
+			symbol->value = ln::makeVariant(decl->getInitVal().getSExtValue());
 			symbol->type = m_currentRecord;
 			m_currentRecord->declaredConstants.add(symbol);
 		}

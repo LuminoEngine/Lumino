@@ -28,7 +28,7 @@ InternalFrameRectRenderer::InternalFrameRectRenderer()
 void InternalFrameRectRenderer::init(RenderingManager* manager)
 {
     m_manager = manager;
-    m_vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(manager->standardVertexDeclaration(), nullptr);
+    m_vertexDeclaration = m_manager->standardVertexDeclarationRHI();
 
     m_vertexAllocator = makeRef<LinearAllocator>(m_manager->graphicsManager()->linearAllocatorPageManager());
     prepareBuffers(512);
@@ -379,11 +379,10 @@ void FrameRectRenderFeature::init(RenderingManager* manager)
     m_internal->init(manager);
 }
 
-void FrameRectRenderFeature::draw(const Rect& rect, const Matrix& worldTransform, BrushImageDrawMode imageDrawMode, const Thickness& borderThickness, const Rect& srcRect, BrushWrapMode wrapMode, const SizeI& srcTextureSize)
+void FrameRectRenderFeature::draw(GraphicsContext* context, const Rect& rect, const Matrix& worldTransform, BrushImageDrawMode imageDrawMode, const Thickness& borderThickness, const Rect& srcRect, BrushWrapMode wrapMode, const SizeI& srcTextureSize)
 {
-    GraphicsManager* manager = m_internal->manager()->graphicsManager();
     LN_ENQUEUE_RENDER_COMMAND_8(
-        rameRectRenderFeature_draw, manager,
+        rameRectRenderFeature_draw, context,
         InternalFrameRectRenderer*, m_internal,
         Rect, rect,
         Matrix, worldTransform,
@@ -402,7 +401,7 @@ void FrameRectRenderFeature::flush(GraphicsContext* context)
     GraphicsManager* manager = m_internal->manager()->graphicsManager();
     IGraphicsContext* c = GraphicsContextInternal::commitState(context);
     LN_ENQUEUE_RENDER_COMMAND_2(
-        FrameRectRenderFeature_flush, manager,
+        FrameRectRenderFeature_flush, context,
         InternalFrameRectRenderer*, m_internal,
         IGraphicsContext*, c,
         {

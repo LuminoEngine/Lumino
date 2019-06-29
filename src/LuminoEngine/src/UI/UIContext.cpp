@@ -5,6 +5,7 @@
 #include <LuminoEngine/UI/UIElement.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIEvents.hpp>
+#include <LuminoEngine/UI/UIFrameWindow.hpp>
 
 namespace ln {
 
@@ -21,9 +22,9 @@ void UIContext::init()
 {
     Object::init();
 
-	m_defaultStyle = newObject<UIStyle>();
+	m_defaultStyle = makeObject<UIStyle>();
 	m_defaultStyle->setupDefault();
-	m_finalDefaultStyle->backgroundMaterial = newObject<Material>();
+	m_finalDefaultStyle->backgroundMaterial = makeObject<Material>();
 
     detail::UIStyleInstance::updateStyleDataHelper(m_defaultStyle, nullptr, m_defaultStyle, m_finalDefaultStyle);
 }
@@ -39,8 +40,10 @@ void UIContext::addElement(UIElement* element)
     element->m_context = this;
 }
 
-bool UIContext::updateMouseHover(const Point& mousePos)
+bool UIContext::updateMouseHover(UIFrameWindow* mouseEventSource, const Point& mousePos)
 {
+    if (LN_REQUIRE(mouseEventSource)) return false;
+
     UIElement* old = m_mouseHoverElement;
 
     // TODO:IME側のイベントを処理する
@@ -71,7 +74,7 @@ bool UIContext::updateMouseHover(const Point& mousePos)
     // 通常のウィンドウのイベントを処理する
     //if (m_rootElement != NULL)
     {
-        m_mouseHoverElement = m_layoutRootElement->lookupMouseHoverElement(mousePos);
+        m_mouseHoverElement = mouseEventSource->lookupMouseHoverElement(mousePos);
         if (m_mouseHoverElement != nullptr) {
             goto EXIT;
         }

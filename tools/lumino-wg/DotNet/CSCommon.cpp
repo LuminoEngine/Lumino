@@ -77,7 +77,7 @@ ln::String CSCommon::MakeLiteral(ln::Ref<ConstantSymbol> constantInfo)
 {
 	if (constantInfo->type == PredefinedTypes::boolType)
 	{
-		if (constantInfo->value.get<bool>())
+		if (constantInfo->value->get<bool>())
 			return "true";
 		else
 			return "false";
@@ -92,11 +92,11 @@ ln::String CSCommon::MakeLiteral(ln::Ref<ConstantSymbol> constantInfo)
 	}
 	if (constantInfo->type == PredefinedTypes::intType)
 	{
-		return ln::String::format("{0}", constantInfo->value.get<int>());
+		return ln::String::format("{0}", constantInfo->value->get<int>());
 	}
 	if (constantInfo->type == PredefinedTypes::floatType)
 	{
-		return ln::String::format("{0}f", constantInfo->value.get<float>());
+		return ln::String::format("{0}f", constantInfo->value->get<float>());
 	}
 	return "";
 }

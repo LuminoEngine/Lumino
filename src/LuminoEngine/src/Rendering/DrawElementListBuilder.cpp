@@ -12,7 +12,7 @@ namespace detail {
 DrawElementListBuilder::DrawElementListBuilder()
     : m_currentCommandFence(0)
 {
-    m_defaultMaterial = newObject<Material>();
+    m_defaultMaterial = makeObject<Material>();
 }
 
 DrawElementListBuilder::~DrawElementListBuilder()

@@ -70,6 +70,8 @@ void CameraComponent::updateMatrices()
 
     if (m_ownerRenderView) {
         const Size& viewSize = m_ownerRenderView->actualPixelSize();
+        if (LN_REQUIRE(!Math::isNaN(viewSize.width) && !Math::isNaN(viewSize.height))) return;
+        if (LN_REQUIRE(viewSize.width > 0 && viewSize.height > 0)) return;
 
         const Matrix& worldMatrix = worldObject()->worldMatrix();
 

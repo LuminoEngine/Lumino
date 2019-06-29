@@ -222,7 +222,7 @@ void InternalShapesRenderer::renderCommandList(IGraphicsContext* context, Shapes
 			IIndexBuffer* oldIndexBuffer = context->indexBuffer();
 			PrimitiveTopology oldPrimitiveTopology = context->primitiveTopology();
 
-            context->setVertexDeclaration(detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(m_manager->standardVertexDeclaration(), nullptr));
+            context->setVertexDeclaration(m_manager->standardVertexDeclarationRHI());
             context->setVertexBuffer(0, m_vertexBuffer);
             context->setIndexBuffer(m_indexBuffer);
             context->setPrimitiveTopology(PrimitiveTopology::TriangleList);
@@ -1192,7 +1192,7 @@ void ShapesRenderFeature::renderCommandList(GraphicsContext* context, const Shap
     GraphicsManager* manager = m_internal->manager()->graphicsManager();
     IGraphicsContext* c = GraphicsContextInternal::commitState(context);
     LN_ENQUEUE_RENDER_COMMAND_3(
-        ShapesRenderFeature_renderCommandList, manager,
+        ShapesRenderFeature_renderCommandList, context,
         InternalShapesRenderer*, m_internal,
         IGraphicsContext*, c,
         ShapesRendererCommandList, commandList,

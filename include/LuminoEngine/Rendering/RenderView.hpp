@@ -39,7 +39,8 @@ public:
 	void clearDrawElementListManagers();
 	void addDrawElementListManager(detail::DrawElementListCollector* elementListManager);
 
-    virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthbuffer) = 0;
+    // index:0 にセットされている RT と depthBuffer へ描画
+    virtual void render(GraphicsContext* graphicsContext) = 0;
 
 	// TODO: internal
 	//detail::CameraInfo mainCameraInfo;
@@ -57,8 +58,10 @@ public:
     EventConnection connectOnUIEvent(UIEventHandler handler);
 
 public: // TODO: protected
+	void updateFrame(float elapsedSeconds);
 	void updateUIStyle(const detail::UIStyleInstance* parentFinalStyle);
 	void updateUILayout(const Rect& parentFinalGlobalRect);
+	virtual void onUpdateFrame(float elapsedSeconds);
 	virtual void onUpdateUIStyle(const detail::UIStyleInstance* finalStyle);
 	virtual void onUpdateUILayout(const Rect& finalGlobalRect);
     virtual void onRoutedEvent(UIEventArgs* e);

@@ -165,7 +165,7 @@ AnimationState* AnimationLayer::addClipAndCreateState(AnimationClip* animationCl
 {
 	if (LN_REQUIRE(animationClip != nullptr)) return nullptr;
 
-	auto state = newObject<AnimationState>(animationClip);
+	auto state = makeObject<AnimationState>(animationClip);
 	m_animationStatus.add(state);
 	state->attachToTarget(m_owner);
 	return state;
@@ -408,8 +408,8 @@ void AnimationController::init(IAnimationTargetObject* targetObject)
 
 	m_targetObject = targetObject;
 
-	m_core = newObject<AnimationControllerCore>(this);
-	m_core->addLayer(newObject<AnimationLayer>(m_core));
+	m_core = makeObject<AnimationControllerCore>(this);
+	m_core->addLayer(makeObject<AnimationLayer>(m_core));
 
 	int count = m_targetObject->getAnimationTargetElementCount();
 	for (int i = 0; i < count; i++)

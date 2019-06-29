@@ -87,6 +87,20 @@ public:
 	static bool const value = type::value;
 };
 
+// ln::Object であるか
+template<typename T>
+class is_lumino_engine_object
+{
+private:
+	template<typename U>
+	static auto check(U&& v) -> decltype(v.dispose(), std::true_type());
+	static auto check(...) -> decltype(std::false_type());
+
+public:
+	typedef decltype(check(std::declval<T>())) type;
+	static bool const value = type::value;
+};
+
 template <class T> struct SerializeClassVersionInfo
 {
 	static const int value = 0;

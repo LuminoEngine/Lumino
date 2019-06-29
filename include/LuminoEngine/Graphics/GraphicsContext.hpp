@@ -14,6 +14,7 @@ class DepthBuffer;
 class Shader;
 class ShaderPass;
 class SwapChain;
+namespace detail { class RenderingQueue; }
 
 /*
  * グラフィクスデバイスへの描画呼出しを発行するためのクラスです。
@@ -129,12 +130,18 @@ private:
     LN_INTERNAL_NEW_OBJECT;
     GraphicsContext();
     virtual ~GraphicsContext();
+    void init(RenderingType renderingType);
     void init(detail::IGraphicsContext* context);
 
+    void enterRenderState();
+    void leaveRenderState();
+    RenderingType renderingType() const { return m_renderingType; }
+    detail::RenderingCommandList* renderingCommandList();
     void beginCommandRecodingIfNeeded();
     void endCommandRecodingIfNeeded();
     void flushCommandRecoding(RenderTargetTexture* affectRendreTarget);
     detail::IGraphicsContext* commitState();
+    //void submitCommandList();
 
     enum DirtyFlags
     {
@@ -170,21 +177,29 @@ private:
     };
 
     detail::GraphicsManager* m_manager;
-    detail::IGraphicsContext* m_context;
+    Ref<detail::IGraphicsContext> m_context;
+    Ref<detail::RenderingCommandList> m_recordingCommandList;
+    Ref<detail::RenderingCommandList> m_executingCommandList;
+    RenderingType m_renderingType;
     State m_staging;
     State m_lastCommit;
     uint32_t m_dirtyFlags;
     bool m_recordingBegan;
 
     friend class detail::GraphicsContextInternal;
+    friend class detail::RenderingQueue;
 };
 
 namespace detail {
 class GraphicsContextInternal
 {
 public:
+    static RenderingType getRenderingType(GraphicsContext* self) { return self->renderingType(); }
+    static detail::RenderingCommandList* getRenderingCommandList(GraphicsContext* self) { return self->renderingCommandList(); }
     static void flushCommandRecoding(GraphicsContext* self, RenderTargetTexture* affectRendreTarget) { self->flushCommandRecoding(affectRendreTarget); }
     static IGraphicsContext* commitState(GraphicsContext* self) { return self->commitState(); }
+    static void enterRenderState(GraphicsContext* self) { self->enterRenderState(); }
+    static void leaveRenderState(GraphicsContext* self) { self->leaveRenderState(); }
 };
 }
 } // namespace ln

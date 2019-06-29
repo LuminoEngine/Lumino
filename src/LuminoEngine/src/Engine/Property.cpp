@@ -6,22 +6,6 @@
 namespace ln {
 
 //==============================================================================
-// PropertyRef
-
-void PropertyRef_old::clearValue()
-{
-    auto ptr = m_propOwner.resolve();
-    if (ptr != nullptr) {
-        return m_prop->clearValue();
-    }
-}
-
-Ref<Object> PropertyRef_old::owenr()
-{
-    return m_propOwner.resolve();
-}
-
-//==============================================================================
 // TypeInfo
 
 void TypeInfo::registerProperty(PropertyInfo* prop)
@@ -29,6 +13,21 @@ void TypeInfo::registerProperty(PropertyInfo* prop)
     if (LN_REQUIRE(!prop->m_registerd)) return;
     m_properties.add(prop);
     prop->m_registerd = true;
+}
+
+Ref<Object> TypeInfo::createInstance() const
+{
+	return m_factory();
+}
+
+Ref<Object> TypeInfo::createInstance(const String& typeName)
+{
+	if (TypeInfo* info = EngineContext::current()->findTypeInfo(typeName)) {
+		return info->createInstance();
+	}
+	else {
+		return nullptr;
+	}
 }
 
 void TypeInfo::initializeObjectProperties(Object* obj)
@@ -52,11 +51,6 @@ void TypeInfo::initializeObjectProperties(Object* obj)
 
 //==============================================================================
 // PropertyInfo
-
-PropertyRef_old PropertyInfo::getPropertyRef_old(Object* obj, PropertyInfo* propertyInfo)
-{
-    return PropertyRef_old(obj, propertyInfo->m_getPropertyCallback(obj));
-}
 
 PropertyRef PropertyInfo::getPropertyRef(Object* obj, PropertyInfo* propertyInfo)
 {
@@ -95,7 +89,7 @@ PropertyRef PropertyPath::findProperty(Object* root, const PropertyPath* path)
 				ref = PropertyRef(obj, prop->accessor());
 				return true;
 			}
-			return true;
+			return false;
 		}
 	};
 

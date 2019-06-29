@@ -464,6 +464,7 @@ float AbstractWin32PlatformWindow::getDpiFactor(HWND hWnd)
 // Win32PlatformWindow
 
 Win32PlatformWindow::Win32PlatformWindow()
+    : m_accelerator(NULL)
 {
 }
 
@@ -534,6 +535,19 @@ void Win32PlatformWindow::dispose()
 }
 
 //=============================================================================
+// WrappedWin32PlatformWindow
+
+WrappedWin32PlatformWindow::WrappedWin32PlatformWindow()
+{
+}
+
+Result WrappedWin32PlatformWindow::init(Win32PlatformWindowManager* windowManager, intptr_t	windowHandle)
+{
+    m_hWnd = (HWND)windowHandle;
+    return true;
+}
+
+//=============================================================================
 // Win32PlatformWindowManager
 
 const wchar_t*	Win32PlatformWindowManager::WindowClassName = L"LuminoWindow";
@@ -584,8 +598,11 @@ void Win32PlatformWindowManager::dispose()
 Ref<PlatformWindow> Win32PlatformWindowManager::createWindow(const WindowCreationSettings& settings)
 {
     if (settings.userWindow) {
-        LN_NOTIMPLEMENTED();
-        return nullptr;
+        auto ptr = makeRef<WrappedWin32PlatformWindow>();
+        if (!ptr->init(this, settings.userWindow)) {
+            return nullptr;
+        }
+        return ptr;
     }
     else {
         auto ptr = makeRef<Win32PlatformWindow>();
@@ -599,7 +616,7 @@ Ref<PlatformWindow> Win32PlatformWindowManager::createWindow(const WindowCreatio
 void Win32PlatformWindowManager::destroyWindow(PlatformWindow* window)
 {
     if (LN_REQUIRE(window)) return;
-    static_cast<Win32PlatformWindow*>(window)->dispose();
+    static_cast<AbstractWin32PlatformWindow*>(window)->dispose();
 }
 
 void Win32PlatformWindowManager::processSystemEventQueue()

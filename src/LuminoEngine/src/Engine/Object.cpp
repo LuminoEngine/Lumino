@@ -45,6 +45,14 @@ void Object::onDispose(bool explicitDisposing)
 {
 }
 
+void Object::serialize(Archive& ar)
+{
+    const List<Ref<PropertyInfo>>& props = TypeInfo::getTypeInfo(this)->properties();
+    for (auto& prop : props) {
+        prop->accessor()->serializeMember(this, ar, prop->name());
+    }
+}
+
 bool Object::traverseRefrection(ReflectionObjectVisitor* visitor)
 {
 	const List<Ref<PropertyInfo>>& props = TypeInfo::getTypeInfo(this)->properties();

@@ -5,7 +5,7 @@
 namespace ln {
 class RenderingContext;
 class Tileset;
-class TilemapLayer;
+class AbstractTilemapLayer;
 
 class TilemapModel
 	: public Object
@@ -14,7 +14,7 @@ public:
     static Ref<TilemapModel> create();
 
     void addTileset(Tileset* tileset);
-    void addLayer(TilemapLayer* layer);
+    void addLayer(AbstractTilemapLayer* layer);
 
 public: // TODO: internal
     void render(RenderingContext* context, const Matrix& transform, const detail::TilemapBounds& bounds);
@@ -24,6 +24,7 @@ LN_CONSTRUCT_ACCESS:
     TilemapModel();
 	virtual ~TilemapModel();
 	void init();
+    void init(const StringRef& filePath);
 
 private:
     struct TilesetSlot
@@ -33,7 +34,7 @@ private:
     };
 
     List<TilesetSlot> m_tilesets;
-    List<Ref<TilemapLayer>> m_layers;
+    List<Ref<AbstractTilemapLayer>> m_layers;
     int m_tilesetIdSpan;
 };
 

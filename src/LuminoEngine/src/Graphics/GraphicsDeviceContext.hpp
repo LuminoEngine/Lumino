@@ -159,10 +159,6 @@ public:
 	virtual void dispose();
 	const GraphicsDeviceCaps& caps() { return m_caps; }
 	void refreshCaps();
-	void enterMainThread();
-	void leaveMainThread();
-	void enterRenderState();
-	void leaveRenderState();
 
 	Ref<ISwapChain> createSwapChain(PlatformWindow* window, const SizeI& backbufferSize);
 	Ref<IVertexDeclaration> createVertexDeclaration(const VertexElement* elements, int elementsCount);
@@ -171,22 +167,20 @@ public:
 	Ref<ITexture> createTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData = nullptr);
 	Ref<ITexture> createTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData = nullptr);
 	Ref<ITexture> createRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
+    Ref<ITexture> createWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight);
 	Ref<IDepthBuffer> createDepthBuffer(uint32_t width, uint32_t height);
 	Ref<ISamplerState> createSamplerState(const SamplerStateData& desc);
 	Ref<IShaderPass> createShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
+	Ref<IGraphicsContext> createGraphicsContext();
 
-    virtual IGraphicsContext* getGraphicsContext() const = 0;
-
+	virtual IGraphicsContext* getGraphicsContext() const = 0;
 
     // utility
     Ref<IShaderPass> createShaderPassFromUnifiedShaderPass(const UnifiedShader* unifiedShader, UnifiedShader::PassId passId, DiagnosticsManager* diag);
+	static Result getOpenGLCurrentFramebufferTextureId(int* id);
 
 protected:
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) = 0;
-	virtual void onEnterMainThread() = 0;
-	virtual void onLeaveMainThread() = 0;
-	virtual void onSaveExternalRenderState() = 0;
-	virtual void onRestoreExternalRenderState() = 0;
 	virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) = 0;
 	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) = 0;
 	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) = 0;
@@ -194,9 +188,11 @@ protected:
 	virtual Ref<ITexture> onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) = 0;
 	virtual Ref<ITexture> onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) = 0;
 	virtual Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) = 0;
+    virtual Ref<ITexture> onCreateWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) = 0;
 	virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) = 0;
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) = 0;
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) = 0;
+	virtual Ref<IGraphicsContext> onCreateGraphicsContext() = 0;
 
 /////////
 	//virtual void onBeginCommandRecoding() = 0;
@@ -234,6 +230,8 @@ class IGraphicsContext
     : public RefObject
 {
 public:
+	void enterRenderState();
+	void leaveRenderState();
 
     /////////
     void begin();
@@ -279,6 +277,8 @@ public:	// TODO:
     virtual ~IGraphicsContext() = default;
 	Result init(IGraphicsDevice* owner);
 
+	virtual void onSaveExternalRenderState() = 0;
+	virtual void onRestoreExternalRenderState() = 0;
 	virtual void onBeginCommandRecoding() = 0;
 	virtual void onEndCommandRecoding() = 0;
 	virtual void onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState) = 0;

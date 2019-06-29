@@ -83,6 +83,7 @@ public:
 	void init(RenderingManager* manager);
 
 	void drawText(GraphicsContext* context, const FormattedText* text, const Matrix& transform);
+	void drawFlexGlyphRun(GraphicsContext* context, const FlexGlyphRun* glyphRun, const Matrix& transform);
 
 protected:
 	virtual void flush(GraphicsContext* context) override;
@@ -98,7 +99,7 @@ private:
 	const FormattedText* m_drawingFormattedText;
     Matrix m_drawingTransform;
 	FontCore* m_drawingFont;
-	FontGlyphTextureCache* m_drawingFontGlyphCache;
+	//FontGlyphTextureCache* m_drawingFontGlyphCache;
 	std::vector<InternalSpriteTextRender::GlyphData> m_glyphLayoutDataList;
 };
 
@@ -106,12 +107,28 @@ class DrawTextElement : public RenderDrawElement
 {
 public:
     Ref<detail::FormattedText> formattedText;
+	detail::FlexGlyphRun* glyphRun = nullptr;	// TODO: RefObj
 
     virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
     {
-        static_cast<detail::SpriteTextRenderFeature*>(renderFeatures)->drawText(context, formattedText, combinedWorldMatrix());
+		if (glyphRun) {
+			static_cast<detail::SpriteTextRenderFeature*>(renderFeatures)->drawFlexGlyphRun(context, glyphRun, combinedWorldMatrix());
+		}
+		else {
+			static_cast<detail::SpriteTextRenderFeature*>(renderFeatures)->drawText(context, formattedText, combinedWorldMatrix());
+		}
     }
 };
+
+//class DrawFlexGlyphRunElement : public RenderDrawElement
+//{
+//public:
+//	//Ref<detail::FlexText> flexText;
+//
+//	virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+//	{
+//	}
+//};
 
 } // namespace detail
 } // namespace ln

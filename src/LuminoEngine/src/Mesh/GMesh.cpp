@@ -213,7 +213,7 @@ void GMeshOperations::calculateNormals(GMesh* mesh, float smoothRadius)
 
 Ref<MeshResource> GMeshOperations::generateMeshResource(GMesh* mesh)
 {
-	auto meshResource = newObject<MeshResource>();
+	auto meshResource = makeObject<MeshResource>();
 	meshResource->resizeVertexBuffer(mesh->m_loops.size());
 	// TODO: 仮
 	meshResource->resizeIndexBuffer(6);

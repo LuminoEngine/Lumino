@@ -72,7 +72,7 @@ public:
 	FrameRectRenderFeature();
 	void init(RenderingManager* manager);
 
-    void draw(const Rect& rect, const Matrix& worldTransform, BrushImageDrawMode imageDrawMode, const Thickness& borderThickness, const Rect& srcRect, BrushWrapMode wrapMode, const SizeI& srcTextureSize);
+    void draw(GraphicsContext* context, const Rect& rect, const Matrix& worldTransform, BrushImageDrawMode imageDrawMode, const Thickness& borderThickness, const Rect& srcRect, BrushWrapMode wrapMode, const SizeI& srcTextureSize);
 
 protected:
 	virtual void flush(GraphicsContext* context) override;
@@ -101,7 +101,7 @@ public:
     virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
     {
 		static_cast<detail::FrameRectRenderFeature*>(renderFeatures)->draw(
-            rect, transform, imageDrawMode, borderThickness, srcRect, wrapMode, m_srcTextureSize);
+            context, rect, transform, imageDrawMode, borderThickness, srcRect, wrapMode, m_srcTextureSize);
     }
 
 private:

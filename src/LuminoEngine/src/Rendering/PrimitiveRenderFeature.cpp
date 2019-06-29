@@ -24,7 +24,7 @@ void InternalPrimitiveRenderer::init(RenderingManager* manager)
     m_manager = manager;
     m_linearAllocator = makeRef<LinearAllocator>(m_manager->graphicsManager()->linearAllocatorPageManager());
     prepareBuffers(m_manager->graphicsManager()->deviceContext(), 512, 512 * 3);
-    m_vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(m_manager->standardVertexDeclaration(), nullptr);
+    m_vertexDeclaration = m_manager->standardVertexDeclarationRHI();
 }
 
 void InternalPrimitiveRenderer::drawMeshGenerater(const MeshGenerater* generator)
@@ -188,7 +188,7 @@ void PrimitiveRenderFeature::flush(GraphicsContext* context)
     GraphicsManager* manager = m_manager->graphicsManager();
     IGraphicsContext* c = GraphicsContextInternal::commitState(context);
     LN_ENQUEUE_RENDER_COMMAND_2(
-        PrimitiveRenderFeature_flush, manager,
+        PrimitiveRenderFeature_flush, context,
         InternalPrimitiveRenderer*, m_internal,
         IGraphicsContext*, c,
         {

@@ -34,7 +34,7 @@ const UIEventType	UIEvents::DragDropEvent = 20;
 //==============================================================================
 // UIEventArgs
 
-LN_OBJECT_IMPLEMENT(UIEventArgs, Object);
+LN_OBJECT_IMPLEMENT(UIEventArgs, Object) {}
 
 Ref<UIEventArgs> UIEventArgs::create(UIElement* sender, UIEventType type, bool caching)
 {
@@ -70,7 +70,7 @@ void UIEventArgs::init(UIElement* sender, UIEventType type)
 //==============================================================================
 // UIMouseEventArgs
 
-LN_OBJECT_IMPLEMENT(UIMouseEventArgs, UIEventArgs);
+LN_OBJECT_IMPLEMENT(UIMouseEventArgs, UIEventArgs) {}
 
 //------------------------------------------------------------------------------
 Ref<UIMouseEventArgs> UIMouseEventArgs::create(UIElement* sender, UIEventType type, MouseButtons button, float x, float y, int clickCount, bool caching)
@@ -121,7 +121,7 @@ Point UIMouseEventArgs::getPosition(UIElement* relativeTo) const
 //==============================================================================
 // UIKeyEventArgs
 
-LN_OBJECT_IMPLEMENT(UIKeyEventArgs, UIEventArgs);
+LN_OBJECT_IMPLEMENT(UIKeyEventArgs, UIEventArgs) {}
 
 //------------------------------------------------------------------------------
 Ref<UIKeyEventArgs> UIKeyEventArgs::create(UIElement* sender, UIEventType type, Keys keyCode, ModifierKeys modifierKeys, Char charCode, bool caching)
@@ -164,7 +164,7 @@ void UIKeyEventArgs::init(UIElement* sender, UIEventType type, Keys keyCode, Mod
 //==============================================================================
 // UIMouseWheelEventArgs
 
-LN_OBJECT_IMPLEMENT(UIMouseWheelEventArgs, UIEventArgs);
+LN_OBJECT_IMPLEMENT(UIMouseWheelEventArgs, UIEventArgs) {}
 
 //------------------------------------------------------------------------------
 Ref<UIMouseWheelEventArgs> UIMouseWheelEventArgs::create(UIElement* sender, UIEventType type, int delta, bool caching)
@@ -203,7 +203,7 @@ void UIMouseWheelEventArgs::init(UIElement* sender, UIEventType type, int delta)
 //==============================================================================
 // UIDragDropEventArgs
 
-LN_OBJECT_IMPLEMENT(UIDragDropEventArgs, UIEventArgs);
+LN_OBJECT_IMPLEMENT(UIDragDropEventArgs, UIEventArgs) {}
 
 Ref<UIDragDropEventArgs> UIDragDropEventArgs::create(UIElement* sender, UIEventType type, DataObject* data, DragDropEffects effect, bool caching)
 {

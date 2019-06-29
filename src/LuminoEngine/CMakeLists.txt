@@ -29,6 +29,7 @@ set(LN_SOURCES_Engine
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/EngineSettings.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Object.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Property.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/RenderingCommandList.hpp
     src/Engine/Internal.hpp
     src/Engine/Application.cpp
     src/Engine/Diagnostics.cpp
@@ -40,7 +41,6 @@ set(LN_SOURCES_Engine
     src/Engine/FpsController.hpp
     src/Engine/LinearAllocator.hpp
     src/Engine/RenderingCommandList.cpp
-    src/Engine/RenderingCommandList.hpp
     src/Engine/Object.cpp
     src/Engine/Property.cpp
 )
@@ -349,6 +349,19 @@ set(LN_SOURCES_ImageEffect
     src/ImageEffect/ToneImageEffect.cpp
 )
 
+set(LN_SOURCES_Effect
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Effect/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Effect/EffectContext.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Effect/EffectModel.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Effect/ParticleEffectModel.hpp
+    src/Effect/Internal.hpp
+    src/Effect/EffectContext.cpp
+    src/Effect/EffectManager.cpp
+    src/Effect/EffectManager.hpp
+    src/Effect/EffectModel.cpp
+    src/Effect/ParticleEffectModel.cpp
+)
+
 set(LN_SOURCES_Physics
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/CollisionShape.hpp
@@ -371,8 +384,10 @@ set(LN_SOURCES_Physics
 
 set(LN_SOURCES_Asset
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Asset/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Asset/AssetObject.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Asset/Assets.hpp
     src/Asset/Internal.hpp
+    src/Asset/AssetObject.cpp
     src/Asset/Assets.cpp
     src/Asset/AssetManager.cpp
     src/Asset/AssetManager.hpp
@@ -385,6 +400,7 @@ set(LN_SOURCES_Visual
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/CameraComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/LightComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/MeshPrimitiveComponent.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/ParticleEmitterComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/SkinnedMeshComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/SpriteComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/StaticMeshComponent.hpp
@@ -393,6 +409,7 @@ set(LN_SOURCES_Visual
     src/Visual/CameraComponent.cpp
     src/Visual/LightComponent.cpp
     src/Visual/MeshPrimitiveComponent.cpp
+    src/Visual/ParticleEmitterComponent.cpp
     src/Visual/SkinnedMeshComponent.cpp
     src/Visual/SpriteComponent.cpp
     src/Visual/StaticMeshComponent.cpp
@@ -531,13 +548,13 @@ source_group("Font"      FILES ${LN_SOURCES_Font})
 source_group("Mesh"      FILES ${LN_SOURCES_Mesh})
 source_group("Rendering" FILES ${LN_SOURCES_Rendering})
 source_group("ImageEffect" FILES ${LN_SOURCES_ImageEffect})
+source_group("Effect"    FILES ${LN_SOURCES_Effect})
 source_group("Physics"	 FILES ${LN_SOURCES_Physics})
 source_group("Asset"	 FILES ${LN_SOURCES_Asset})
 source_group("Visual"    FILES ${LN_SOURCES_Visual})
 source_group("Scene"     FILES ${LN_SOURCES_Scene})
 source_group("UI"        FILES ${LN_SOURCES_UI})
 source_group("Tilemap"   FILES ${LN_SOURCES_Tilemap})
-
 
 set(LN_SOURCES
     src/LuminoEngine.PCH.cpp
@@ -559,13 +576,13 @@ set(LN_SOURCES
     ${LN_SOURCES_Mesh}
     ${LN_SOURCES_Rendering}
     ${LN_SOURCES_ImageEffect}
+    ${LN_SOURCES_Effect}
     ${LN_SOURCES_Physics}
     ${LN_SOURCES_Asset}
     ${LN_SOURCES_Visual}
     ${LN_SOURCES_Scene}
     ${LN_SOURCES_UI}
     ${LN_SOURCES_Tilemap}
-    #${LN_SOURCES_LuminoCore}
 )
 
 set(LN_SOURCES_SharedLib
@@ -642,7 +659,6 @@ endif()
 add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC  
     $<BUILD_INTERFACE:${LN_ENGINE_INCLUDE_DIR}>
-    $<INSTALL_INTERFACE:../../include>  # <prefix>/include
 )
 target_include_directories(${PROJECT_NAME} PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS})
 #target_compile_definitions(${PROJECT_NAME} PUBLIC LUMINO_BUILD_DLL=1)
@@ -687,21 +703,23 @@ endif()
 
 install(TARGETS ${PROJECT_NAME}
     EXPORT LuminoEngineTargets
-    ARCHIVE     DESTINATION lib            # Library installation location (Copied at "INSTALL" build time)
-    #INCLUDES    DESTINATION ../../include        # include directory (File is not copied)
-    FRAMEWORK DESTINATION .)
+    ARCHIVE     DESTINATION lib         # Library installation location (Copied at "INSTALL" build time)
+    INCLUDES    DESTINATION ./include   # Include directory (File is not copied)
+    FRAMEWORK   DESTINATION .)
     
-#install(DIRECTORY ${PROJECT_SOURCE_DIR}/include DESTINATION .)
+install(DIRECTORY ../../include/LuminoEngine DESTINATION ./include)
+install(FILES ../../include/Lumino.hpp DESTINATION include)
+install(FILES ../../include/LuminoEngine.hpp DESTINATION include)
 
 install(
     EXPORT LuminoEngineTargets
     FILE LuminoEngineTargets.cmake
-    EXPORT_LINK_INTERFACE_LIBRARIES
-    DESTINATION lib/cmake)
+    DESTINATION lib/cmake/LuminoEngine
+    EXPORT_LINK_INTERFACE_LIBRARIES)
 
 install(
     FILES LuminoEngineConfig.cmake
-    DESTINATION lib/cmake)
+    DESTINATION lib/cmake/LuminoEngine)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ../../../../lib/${LN_TARGET_ARCH})

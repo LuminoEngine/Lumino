@@ -403,7 +403,7 @@ void Bitmap2D::load(const StringRef& filePath)
 
 void Bitmap2D::load(Stream* stream)
 {
-    auto diag = newObject<DiagnosticsManager>();
+    auto diag = makeObject<DiagnosticsManager>();
 
     auto decoder = detail::IBitmapDecoder::load(stream, diag);
 
@@ -425,7 +425,7 @@ void Bitmap2D::save(const StringRef& filePath)
 
 Ref<Bitmap2D> Bitmap2D::transcodeTo(PixelFormat format, const ColorI& color) const
 {
-	auto dstBitmap = newObject<Bitmap2D>(m_size.width, m_size.height, format);
+	auto dstBitmap = makeObject<Bitmap2D>(m_size.width, m_size.height, format);
 
 	RectI rect(0, 0, m_size.width, m_size.height);
     detail::ClColor c{ color.r, color.g, color.b, color.a };
