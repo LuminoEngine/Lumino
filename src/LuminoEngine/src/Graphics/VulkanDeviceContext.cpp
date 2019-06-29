@@ -1016,14 +1016,12 @@ void VulkanGraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int sta
 {
 	submitStatusInternal(GraphicsContextSubmitSource_Draw, ClearFlags::None, Color::White, 0, 0, nullptr);
 	vkCmdDraw(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startVertex, 0);
-	m_recodingCommandBuffer->m_priorToAnyDrawCmds = false;
 }
 
 void VulkanGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount)
 {
 	submitStatusInternal(GraphicsContextSubmitSource_Draw, ClearFlags::None, Color::White, 0, 0, nullptr);
 	vkCmdDrawIndexed(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startIndex, 0, 0);
-	m_recodingCommandBuffer->m_priorToAnyDrawCmds = false;
 }
 
 // TODO: もし複数 swapchain へのレンダリングを1つの CommandBuffer でやる場合、flush 時には描画するすべての swapchain の image 準備を待たなければならない。
@@ -1048,7 +1046,7 @@ void VulkanGraphicsContext::onPresent(ISwapChain* swapChain)
 	static_cast<VulkanSwapChain*>(swapChain)->present();
 
 	// TODO: あったほうがいい？
-	//vkDeviceWaitIdle(m_device);
+	//vkDeviceWaitIdle(m_device->vulkanDevice());
 	//g_app.mainLoop();
 }
 
@@ -1057,7 +1055,9 @@ Result VulkanGraphicsContext::submitStatusInternal(GraphicsContextSubmitSource s
 	const GraphicsContextState& state = stagingState();
 	uint32_t stateDirtyFlags = stagingStateDirtyFlags();
 
-	bool clearBuffersOnBeginRenderPass = false;//(submitSource == SubmitSource_Clear && m_recodingCommandBuffer->m_priorToAnyDrawCmds);
+    // RenderPass 開始と同時にクリアを行ったかどうか。
+    // true の場合、submitStatusInternal() の呼び出し元が clear の場合、そちら側でクリアする必要はない。
+	bool clearBuffersOnBeginRenderPass = (submitSource == GraphicsContextSubmitSource_Clear && m_recodingCommandBuffer->m_priorToAnyDrawCmds);
 	if (outSkipClear) *outSkipClear = clearBuffersOnBeginRenderPass;
 
 	//m_recodingCommandBuffer->beginRecording();
@@ -1068,7 +1068,7 @@ Result VulkanGraphicsContext::submitStatusInternal(GraphicsContextSubmitSource s
 		// 前回開始した RenderPass があればクローズしておく
 		m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
 
-		m_recodingCommandBuffer->m_lastFoundFramebuffer = m_device->framebufferCache()->findOrCreate(state.framebufferState);
+		m_recodingCommandBuffer->m_lastFoundFramebuffer = m_device->framebufferCache()->findOrCreate(state.framebufferState/*, clearBuffersOnBeginRenderPass*/);
 
 	}
 
@@ -1080,7 +1080,7 @@ Result VulkanGraphicsContext::submitStatusInternal(GraphicsContextSubmitSource s
 		{
 			VkRenderPassBeginInfo renderPassInfo = {};
 			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-			renderPassInfo.renderPass = framebuffer->vulkanRenderPass();//renderPass;
+			renderPassInfo.renderPass = framebuffer->ownerRenderPass()->nativeRenderPass();
 			renderPassInfo.framebuffer = framebuffer->vulkanFramebuffer();
 			renderPassInfo.renderArea.offset = { 0, 0 };
 			renderPassInfo.renderArea.extent.width = state.framebufferState.renderTargets[0]->realSize().width; //m_mainSwapchain->vulkanSwapchainExtent();
@@ -1152,7 +1152,7 @@ Result VulkanGraphicsContext::submitStatusInternal(GraphicsContextSubmitSource s
 		//state.framebufferState.depthBuffer = m_depthImage;
 		//state.viewportRect.width = m_deviceContext->m_mainSwapchain->vulkanSwapchainExtent().width;
 		//state.viewportRect.height = m_deviceContext->m_mainSwapchain->vulkanSwapchainExtent().height;
-		VulkanPipeline* graphicsPipeline = m_device->pipelineCache()->findOrCreate(state, m_recodingCommandBuffer->m_lastFoundFramebuffer->vulkanRenderPass());
+		VulkanPipeline* graphicsPipeline = m_device->pipelineCache()->findOrCreate(state, m_recodingCommandBuffer->m_lastFoundFramebuffer->ownerRenderPass()->nativeRenderPass());
 
 
 		vkCmdBindPipeline(m_recodingCommandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->vulkanPipeline());//graphicsPipeline);
@@ -1227,6 +1227,8 @@ Result VulkanGraphicsContext::submitStatusInternal(GraphicsContextSubmitSource s
 
 	//
 	}
+
+    m_recodingCommandBuffer->m_priorToAnyDrawCmds = false;
 
 	return true;
 }

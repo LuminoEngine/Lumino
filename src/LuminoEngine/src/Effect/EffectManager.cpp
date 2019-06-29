@@ -28,6 +28,7 @@ EffectManager::EffectManager()
 
 void EffectManager::init(const Settings& settings)
 {
+    return;
     LN_LOG_DEBUG << "EffectManager Initialization started.";
 
 
@@ -83,6 +84,7 @@ void EffectManager::init(const Settings& settings)
 
 void EffectManager::dispose()
 {
+    return;
     // エフェクトの停止
     g_manager->StopEffect(g_handle);
 
@@ -101,6 +103,7 @@ void EffectManager::dispose()
 
 void EffectManager::testDraw()
 {
+    return;
     // エフェクトの移動処理を行う
     g_manager->AddLocation(g_handle, ::Effekseer::Vector3D(0.2f, 0.0f, 0.0f));
 
