@@ -1313,10 +1313,11 @@ Result VulkanCommandBuffer::beginRecording()
 
 Result VulkanCommandBuffer::endRecording()
 {
-    if (m_insideRendarPass) {
+    if (m_currentRenderPass) {
         vkCmdEndRenderPass(vulkanCommandBuffer());
+        m_currentRenderPass = nullptr;
     }
-    m_insideRendarPass = false;
+
     m_lastFoundFramebuffer = nullptr;
 
     LN_VK_CHECK(vkEndCommandBuffer(vulkanCommandBuffer()));
@@ -1330,9 +1331,9 @@ Result VulkanCommandBuffer::endRecording()
 
 void VulkanCommandBuffer::endRenderPassInRecordingIfNeeded()
 {
-    if (m_insideRendarPass) {
+    if (m_currentRenderPass) {
         vkCmdEndRenderPass(vulkanCommandBuffer());
-        m_insideRendarPass = false;
+        m_currentRenderPass = false;
     }
 }
 
@@ -1870,9 +1871,12 @@ VulkanFramebuffer::VulkanFramebuffer()
 {
 }
 
-Result VulkanFramebuffer::init(VulkanDevice* deviceContext, const DeviceFramebufferState& state/*, bool loadOpClear*/, uint64_t hash)
+Result VulkanFramebuffer::init(VulkanDevice* deviceContext, VulkanRenderPass* ownerRenderPass, const DeviceFramebufferState& state/*, bool loadOpClear*/, uint64_t hash)
 {
+    LN_CHECK(deviceContext);
+    LN_CHECK(ownerRenderPass);
     m_deviceContext = deviceContext;
+    m_ownerRenderPass = ownerRenderPass;
     m_hash = hash;
     //m_renderTargetCount = state.renderTargets.size();
     for (size_t i = 0; i < state.renderTargets.size(); i++) {
@@ -1880,42 +1884,35 @@ Result VulkanFramebuffer::init(VulkanDevice* deviceContext, const DeviceFramebuf
     }
     m_depthBuffer = state.depthBuffer;
 
-    m_ownerRenderPass = deviceContext->renderPassCache()->findOrCreate({ state, false });    // TODO:
-    if (!m_ownerRenderPass) {
-        return false;
-    }
-    else
-    {
-        VkImageView attachments[MaxMultiRenderTargets + 1] = {};
-        int attachmentsCount = 0;
-        for (size_t i = 0; i < m_renderTargets.size(); i++) {
-            if (m_renderTargets[i]) {
-                attachments[attachmentsCount] = static_cast<VulkanTexture*>(m_renderTargets[i])->image()->vulkanImageView();
-                attachmentsCount++;
-            }
-        }
-        if (m_depthBuffer) {
-            attachments[attachmentsCount] = static_cast<VulkanDepthBuffer*>(m_depthBuffer)->image()->vulkanImageView();
+    VkImageView attachments[MaxMultiRenderTargets + 1] = {};
+    int attachmentsCount = 0;
+    for (size_t i = 0; i < m_renderTargets.size(); i++) {
+        if (m_renderTargets[i]) {
+            attachments[attachmentsCount] = static_cast<VulkanTexture*>(m_renderTargets[i])->image()->vulkanImageView();
             attachmentsCount++;
         }
-
-        SizeI size = m_renderTargets[0]->realSize();
-
-        VkFramebufferCreateInfo framebufferInfo = {};
-        framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-        framebufferInfo.pNext = nullptr;
-        framebufferInfo.flags = 0;
-        framebufferInfo.renderPass = m_ownerRenderPass->nativeRenderPass();
-        framebufferInfo.attachmentCount = attachmentsCount;
-        framebufferInfo.pAttachments = attachments;
-        framebufferInfo.width = size.width;
-        framebufferInfo.height = size.height;
-        framebufferInfo.layers = 1;
-
-        LN_VK_CHECK(vkCreateFramebuffer(m_deviceContext->vulkanDevice(), &framebufferInfo, m_deviceContext->vulkanAllocator(), &m_framebuffer));
-
-        return true;
     }
+    if (m_depthBuffer) {
+        attachments[attachmentsCount] = static_cast<VulkanDepthBuffer*>(m_depthBuffer)->image()->vulkanImageView();
+        attachmentsCount++;
+    }
+
+    SizeI size = m_renderTargets[0]->realSize();
+
+    VkFramebufferCreateInfo framebufferInfo = {};
+    framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+    framebufferInfo.pNext = nullptr;
+    framebufferInfo.flags = 0;
+    framebufferInfo.renderPass = m_ownerRenderPass->nativeRenderPass();
+    framebufferInfo.attachmentCount = attachmentsCount;
+    framebufferInfo.pAttachments = attachments;
+    framebufferInfo.width = size.width;
+    framebufferInfo.height = size.height;
+    framebufferInfo.layers = 1;
+
+    LN_VK_CHECK(vkCreateFramebuffer(m_deviceContext->vulkanDevice(), &framebufferInfo, m_deviceContext->vulkanAllocator(), &m_framebuffer));
+
+    return true;
 }
 
 void VulkanFramebuffer::dispose()
@@ -1966,16 +1963,16 @@ void VulkanFramebufferCache::dispose()
     clear();
 }
 
-VulkanFramebuffer* VulkanFramebufferCache::findOrCreate(const DeviceFramebufferState& state/*, bool loadOpClear*/)
+VulkanFramebuffer* VulkanFramebufferCache::findOrCreate(const FetchKey& key)
 {
-    uint64_t hash = computeHash(state/*, loadOpClear*/);
+    uint64_t hash = computeHash(key);
     Ref<VulkanFramebuffer> framebuffer;
     if (find(hash, &framebuffer)) {
         return framebuffer;
     }
     else {
         framebuffer = makeRef<VulkanFramebuffer>();
-        if (!framebuffer->init(m_deviceContext, state/*, loadOpClear*/, hash)) {
+        if (!framebuffer->init(m_deviceContext, key.renderPass, key.state, hash)) {
             return nullptr;
         }
         add(hash, framebuffer);
@@ -1990,11 +1987,12 @@ VulkanPipeline::VulkanPipeline()
 {
 }
 
-Result VulkanPipeline::init(VulkanDevice* deviceContext, const GraphicsContextState& state, VkRenderPass renderPass)
+Result VulkanPipeline::init(VulkanDevice* deviceContext, VulkanRenderPass* ownerRenderPass, const GraphicsContextState& state)
 {
     LN_DCHECK(deviceContext);
-    LN_DCHECK(renderPass);
+    LN_DCHECK(ownerRenderPass);
     m_deviceContext = deviceContext;
+    m_ownerRenderPass = ownerRenderPass;
 
     auto* vertexDeclaration = static_cast<VulkanVertexDeclaration*>(state.pipelineState.vertexDeclaration);
     m_relatedShaderPass = static_cast<VulkanShaderPass*>(state.shaderPass);
@@ -2220,7 +2218,7 @@ Result VulkanPipeline::init(VulkanDevice* deviceContext, const GraphicsContextSt
     pipelineInfo.pColorBlendState = &colorBlending;
     pipelineInfo.layout = m_relatedShaderPass->vulkanPipelineLayout();	// 省略不可 https://www.khronos.org/registry/vulkan/specs/1.1-extensions/man/html/VkGraphicsPipelineCreateInfo.html
     pipelineInfo.pDynamicState = &dynamicState;
-    pipelineInfo.renderPass = renderPass;
+    pipelineInfo.renderPass = m_ownerRenderPass->nativeRenderPass();
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
@@ -2235,22 +2233,6 @@ void VulkanPipeline::dispose()
         vkDestroyPipeline(m_deviceContext->vulkanDevice(), m_pipeline, m_deviceContext->vulkanAllocator());
         m_pipeline = 0;
     }
-}
-
-uint64_t VulkanPipeline::computeHash(const GraphicsContextState& state)
-{
-    auto* vertexDeclaration = static_cast<VulkanVertexDeclaration*>(state.pipelineState.vertexDeclaration);
-    uint64_t vertexDeclarationHash = (vertexDeclaration) ? vertexDeclaration->hash() : 0;
-
-    MixHash hash;
-    hash.add(state.pipelineState.blendState);
-    hash.add(state.pipelineState.rasterizerState);
-    hash.add(state.pipelineState.depthStencilState);
-    hash.add(state.pipelineState.topology);
-    hash.add(vertexDeclarationHash);
-    hash.add(static_cast<VulkanShaderPass*>(state.shaderPass));
-    hash.add(VulkanFramebufferCache::computeHash(state.framebufferState));
-    return hash.value();
 }
 
 //==============================================================================
@@ -2272,21 +2254,37 @@ void VulkanPipelineCache::dispose()
     clear();
 }
 
-VulkanPipeline* VulkanPipelineCache::findOrCreate(const GraphicsContextState& state, VkRenderPass renderPass)
+VulkanPipeline* VulkanPipelineCache::findOrCreate(const FetchKey& key)
 {
-    uint64_t hash = VulkanPipeline::computeHash(state);
+    uint64_t hash = computeHash(key);
     Ref<VulkanPipeline> pipeline;
     if (find(hash, &pipeline)) {
         return pipeline;
     }
     else {
         pipeline = makeRef<VulkanPipeline>();
-        if (!pipeline->init(m_deviceContext, state, renderPass)) {
+        if (!pipeline->init(m_deviceContext, key.renderPass, key.state)) {
             return nullptr;
         }
         add(hash, pipeline);
         return pipeline;
     }
+}
+
+uint64_t VulkanPipelineCache::computeHash(const FetchKey& key)
+{
+    auto* vertexDeclaration = static_cast<VulkanVertexDeclaration*>(key.state.pipelineState.vertexDeclaration);
+    uint64_t vertexDeclarationHash = (vertexDeclaration) ? vertexDeclaration->hash() : 0;
+
+    MixHash hash;
+    hash.add(key.state.pipelineState.blendState);
+    hash.add(key.state.pipelineState.rasterizerState);
+    hash.add(key.state.pipelineState.depthStencilState);
+    hash.add(key.state.pipelineState.topology);
+    hash.add(vertexDeclarationHash);
+    hash.add(static_cast<VulkanShaderPass*>(key.state.shaderPass));
+    hash.add(key.renderPass);
+    return hash.value();
 }
 
 } // namespace detail

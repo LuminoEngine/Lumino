@@ -1068,19 +1068,20 @@ Result VulkanGraphicsContext::submitStatusInternal(GraphicsContextSubmitSource s
 		// 前回開始した RenderPass があればクローズしておく
 		m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
 
-		m_recodingCommandBuffer->m_lastFoundFramebuffer = m_device->framebufferCache()->findOrCreate(state.framebufferState/*, clearBuffersOnBeginRenderPass*/);
+		//m_recodingCommandBuffer->m_lastFoundFramebuffer = m_device->framebufferCache()->findOrCreate(state.framebufferState/*, clearBuffersOnBeginRenderPass*/);
 
 	}
 
 	// ↑の Framebuffer 変更や、mapResource などで RenderPass が End されていることがあるので、その場合はここで開始
-	if (!m_recodingCommandBuffer->m_insideRendarPass)
+	if (!m_recodingCommandBuffer->m_currentRenderPass)
 	{
-		VulkanFramebuffer* framebuffer = m_device->framebufferCache()->findOrCreate(state.framebufferState);
+        m_recodingCommandBuffer->m_currentRenderPass = m_device->renderPassCache()->findOrCreate({ state.framebufferState, false});
+        VulkanFramebuffer* framebuffer = m_device->framebufferCache()->findOrCreate({ state.framebufferState, m_recodingCommandBuffer->m_currentRenderPass });
 		m_recodingCommandBuffer->m_lastFoundFramebuffer = framebuffer;
 		{
 			VkRenderPassBeginInfo renderPassInfo = {};
 			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-			renderPassInfo.renderPass = framebuffer->ownerRenderPass()->nativeRenderPass();
+			renderPassInfo.renderPass = m_recodingCommandBuffer->m_currentRenderPass->nativeRenderPass();
 			renderPassInfo.framebuffer = framebuffer->vulkanFramebuffer();
 			renderPassInfo.renderArea.offset = { 0, 0 };
 			renderPassInfo.renderArea.extent.width = state.framebufferState.renderTargets[0]->realSize().width; //m_mainSwapchain->vulkanSwapchainExtent();
@@ -1119,8 +1120,6 @@ Result VulkanGraphicsContext::submitStatusInternal(GraphicsContextSubmitSource s
 
 				vkCmdBeginRenderPass(m_recodingCommandBuffer->vulkanCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 			}
-
-			m_recodingCommandBuffer->m_insideRendarPass = true;
 		}
 	}
 
@@ -1152,7 +1151,7 @@ Result VulkanGraphicsContext::submitStatusInternal(GraphicsContextSubmitSource s
 		//state.framebufferState.depthBuffer = m_depthImage;
 		//state.viewportRect.width = m_deviceContext->m_mainSwapchain->vulkanSwapchainExtent().width;
 		//state.viewportRect.height = m_deviceContext->m_mainSwapchain->vulkanSwapchainExtent().height;
-		VulkanPipeline* graphicsPipeline = m_device->pipelineCache()->findOrCreate(state, m_recodingCommandBuffer->m_lastFoundFramebuffer->ownerRenderPass()->nativeRenderPass());
+        VulkanPipeline* graphicsPipeline = m_device->pipelineCache()->findOrCreate({ state, m_recodingCommandBuffer->m_lastFoundFramebuffer->ownerRenderPass() });
 
 
 		vkCmdBindPipeline(m_recodingCommandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->vulkanPipeline());//graphicsPipeline);
