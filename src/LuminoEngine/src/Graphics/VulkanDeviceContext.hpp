@@ -466,7 +466,7 @@ public:
     // CommandBuffer に対するインターフェイス
     Ref<VulkanDescriptorSetsPool> getDescriptorSetsPool();
     void releaseDescriptorSetsPool(VulkanDescriptorSetsPool* pool);
-    VulkanDescriptorSetsPool* recodingPool = nullptr; // CommandBuffer に対する、いわゆる UserData のイメージ
+    //VulkanDescriptorSetsPool* recodingPool = nullptr; // CommandBuffer に対する、いわゆる UserData のイメージ
 
 private:
     VulkanDevice* m_deviceContext;

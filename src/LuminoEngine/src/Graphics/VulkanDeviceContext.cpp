@@ -1075,7 +1075,12 @@ Result VulkanGraphicsContext::submitStatusInternal(GraphicsContextSubmitSource s
 	// ↑の Framebuffer 変更や、mapResource などで RenderPass が End されていることがあるので、その場合はここで開始
 	if (!m_recodingCommandBuffer->m_currentRenderPass)
 	{
-        m_recodingCommandBuffer->m_currentRenderPass = m_device->renderPassCache()->findOrCreate({ state.framebufferState, clearBuffersOnBeginRenderPass });
+        /*
+            TODO: clearBuffersOnBeginRenderPass にするだけだと
+            validation layer: In vkCmdBeginRenderPass() the VkRenderPassBeginInfo struct has a clearValueCount of 1 but there must be at least 2 entries in pClearValues array to account for the highest index attachment in renderPass 0x6a that uses VK_ATTACHMENT_LOAD_OP_CLEAR is 2. Note that the pClearValues array is indexed by attachment number so even if some pClearValues entries between 0 and 1 correspond to attachments that aren't cleared they will be ignored. The Vulkan spec states: clearValueCount must be greater than the largest attachment index in renderPass that specifies a loadOp (or stencilLoadOp, if the attachment has a depth/stencil format) of VK_ATTACHMENT_LOAD_OP_CLEAR (https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#VUID-VkRenderPassBeginInfo-clearValueCount-00902)
+        */
+        m_recodingCommandBuffer->m_currentRenderPass = m_device->renderPassCache()->findOrCreate({ state.framebufferState, false/*clearBuffersOnBeginRenderPass*/ });
+
         VulkanFramebuffer* framebuffer = m_device->framebufferCache()->findOrCreate({ state.framebufferState, m_recodingCommandBuffer->m_currentRenderPass });
 		m_recodingCommandBuffer->m_lastFoundFramebuffer = framebuffer;
 		{

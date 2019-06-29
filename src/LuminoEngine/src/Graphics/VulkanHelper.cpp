@@ -1370,16 +1370,26 @@ Result VulkanCommandBuffer::submit(VkSemaphore waitSemaphore, VkSemaphore signal
 Result VulkanCommandBuffer::allocateDescriptorSets(VulkanShaderPass* shaderPass, std::array<VkDescriptorSet, DescriptorType_Count>* outSets)
 {
     LN_DCHECK(shaderPass);
+
+    // このコマンド実行中に新たな ShaderPass が使われるたびに、新しく VulkanShaderPass から Pool を確保しようとする。
+    // ただし、毎回やると重いので簡単なキャッシュを設ける。
+    // 線形探索だけど、ShaderPass が1フレームに 100 も 200 も使われることはそうないだろう。
+
+    int usingShaderPass = -1;
+    for (int i = 0; i < m_usingShaderPasses.size(); i++) {
+        if (m_usingShaderPasses[i] == shaderPass) {
+            usingShaderPass = i;
+        }
+    }
     
-    if (!shaderPass->recodingPool) {
-        // null の場合は begin からここまでではじめて CommandBuffer で使われた、ということで新しく作る
+    if (usingShaderPass == -1) {
         auto pool = shaderPass->getDescriptorSetsPool();
         m_usingDescriptorSetsPools.push_back(pool);
-        shaderPass->recodingPool = pool;
         m_usingShaderPasses.push_back(shaderPass);
+        usingShaderPass = m_usingDescriptorSetsPools.size() - 1;
     }
 
-    return shaderPass->recodingPool->allocateDescriptorSets(this, outSets);
+    return m_usingDescriptorSetsPools[usingShaderPass]->allocateDescriptorSets(this, outSets);
 }
 
 VulkanBuffer* VulkanCommandBuffer::allocateBuffer(size_t size, VkBufferUsageFlags usage)

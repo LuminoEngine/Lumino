@@ -373,6 +373,7 @@ int main(int argc, char** argv)
 	{
 
 		while (Engine::update()) {
+            printf("--------------------------\n");
             //obj1->setPosition(cos(Engine::totalTime()), 0, sin(Engine::totalTime()));
 		}
 
