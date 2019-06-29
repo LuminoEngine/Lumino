@@ -1075,7 +1075,7 @@ Result VulkanGraphicsContext::submitStatusInternal(GraphicsContextSubmitSource s
 	// ↑の Framebuffer 変更や、mapResource などで RenderPass が End されていることがあるので、その場合はここで開始
 	if (!m_recodingCommandBuffer->m_currentRenderPass)
 	{
-        m_recodingCommandBuffer->m_currentRenderPass = m_device->renderPassCache()->findOrCreate({ state.framebufferState, false});
+        m_recodingCommandBuffer->m_currentRenderPass = m_device->renderPassCache()->findOrCreate({ state.framebufferState, clearBuffersOnBeginRenderPass });
         VulkanFramebuffer* framebuffer = m_device->framebufferCache()->findOrCreate({ state.framebufferState, m_recodingCommandBuffer->m_currentRenderPass });
 		m_recodingCommandBuffer->m_lastFoundFramebuffer = framebuffer;
 		{
