@@ -199,6 +199,7 @@ void WorldRenderView::createGridPlane()
 
     auto samplerState = makeObject<SamplerState>();
     samplerState->setFilterMode(TextureFilterMode::Linear);
+	samplerState->setAnisotropyEnabled(true);
     gridTex->setSamplerState(samplerState);
 
     //m_visibleGridPlane = true;  // TODO: test
