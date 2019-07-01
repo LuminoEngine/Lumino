@@ -924,11 +924,9 @@ void VulkanGraphicsContext::onSetSubData(IGraphicsResource* resource, size_t off
 	{
 	case DeviceResourceType::VertexBuffer:
 		buffer = static_cast<VulkanVertexBuffer*>(resource)->buffer();
-		//->setSubData(offset, data, length);
 		break;
 	case DeviceResourceType::IndexBuffer:
 		buffer = static_cast<VulkanIndexBuffer*>(resource)->buffer();
-		//static_cast<VulkanIndexBuffer*>(resource)->setSubData(offset, data, length);
 		break;
 	default:
 		LN_NOTIMPLEMENTED();
@@ -1759,14 +1757,6 @@ void VulkanVertexBuffer::dispose()
     IVertexBuffer::dispose();
 }
 
-// TODO: これは廃止して、CommandList 側に持って行った方がいいと思う。
-//void VulkanVertexBuffer::setSubData(size_t offset, const void* data, size_t length)
-//{
-//    // static/dynamic にかかわらず、コマンド経由で転送しなければ整合性が取れなくなる
-//    VulkanBuffer* buffer = m_deviceContext->graphicsContext()->recodingCommandBuffer()->cmdCopyBuffer(length, &m_buffer);
-//    buffer->setData(offset, data, length);
-//}
-
 //==============================================================================
 // VulkanIndexBuffer
 
@@ -1816,14 +1806,6 @@ void VulkanIndexBuffer::dispose()
     m_buffer.dispose();
     IIndexBuffer::dispose();
 }
-
-// TODO: これは廃止して、CommandList 側に持って行った方がいいと思う。
-//void VulkanIndexBuffer::setSubData(size_t offset, const void* data, size_t length)
-//{
-//    // static/dynamic にかかわらず、コマンド経由で転送しなければ整合性が取れなくなる
-//    VulkanBuffer* buffer = m_deviceContext->graphicsContext()->recodingCommandBuffer()->cmdCopyBuffer(length, &m_buffer);
-//    buffer->setData(offset, data, length);
-//}
 
 //==============================================================================
 // VulkanTexture2D
