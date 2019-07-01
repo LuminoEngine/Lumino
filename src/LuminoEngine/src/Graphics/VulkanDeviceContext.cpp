@@ -919,18 +919,24 @@ void VulkanGraphicsContext::onSetSubData(IGraphicsResource* resource, size_t off
     // データ転送に使う vkCmdCopyBuffer() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
     m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
 
+	VulkanBuffer* buffer = nullptr;
 	switch (resource->resourceType())
 	{
 	case DeviceResourceType::VertexBuffer:
-		static_cast<VulkanVertexBuffer*>(resource)->setSubData(offset, data, length);
+		buffer = static_cast<VulkanVertexBuffer*>(resource)->buffer();
+		//->setSubData(offset, data, length);
 		break;
 	case DeviceResourceType::IndexBuffer:
-		static_cast<VulkanIndexBuffer*>(resource)->setSubData(offset, data, length);
+		buffer = static_cast<VulkanIndexBuffer*>(resource)->buffer();
+		//static_cast<VulkanIndexBuffer*>(resource)->setSubData(offset, data, length);
 		break;
 	default:
 		LN_NOTIMPLEMENTED();
 		break;
 	}
+
+	VulkanBuffer* stagingBuffer = recodingCommandBuffer()->cmdCopyBuffer(length, buffer);
+	stagingBuffer->setData(offset, data, length);
 }
 
 void VulkanGraphicsContext::onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
@@ -1754,12 +1760,12 @@ void VulkanVertexBuffer::dispose()
 }
 
 // TODO: これは廃止して、CommandList 側に持って行った方がいいと思う。
-void VulkanVertexBuffer::setSubData(size_t offset, const void* data, size_t length)
-{
-    // static/dynamic にかかわらず、コマンド経由で転送しなければ整合性が取れなくなる
-    VulkanBuffer* buffer = m_deviceContext->graphicsContext()->recodingCommandBuffer()->cmdCopyBuffer(length, &m_buffer);
-    buffer->setData(offset, data, length);
-}
+//void VulkanVertexBuffer::setSubData(size_t offset, const void* data, size_t length)
+//{
+//    // static/dynamic にかかわらず、コマンド経由で転送しなければ整合性が取れなくなる
+//    VulkanBuffer* buffer = m_deviceContext->graphicsContext()->recodingCommandBuffer()->cmdCopyBuffer(length, &m_buffer);
+//    buffer->setData(offset, data, length);
+//}
 
 //==============================================================================
 // VulkanIndexBuffer
@@ -1812,12 +1818,12 @@ void VulkanIndexBuffer::dispose()
 }
 
 // TODO: これは廃止して、CommandList 側に持って行った方がいいと思う。
-void VulkanIndexBuffer::setSubData(size_t offset, const void* data, size_t length)
-{
-    // static/dynamic にかかわらず、コマンド経由で転送しなければ整合性が取れなくなる
-    VulkanBuffer* buffer = m_deviceContext->graphicsContext()->recodingCommandBuffer()->cmdCopyBuffer(length, &m_buffer);
-    buffer->setData(offset, data, length);
-}
+//void VulkanIndexBuffer::setSubData(size_t offset, const void* data, size_t length)
+//{
+//    // static/dynamic にかかわらず、コマンド経由で転送しなければ整合性が取れなくなる
+//    VulkanBuffer* buffer = m_deviceContext->graphicsContext()->recodingCommandBuffer()->cmdCopyBuffer(length, &m_buffer);
+//    buffer->setData(offset, data, length);
+//}
 
 //==============================================================================
 // VulkanTexture2D
@@ -1946,7 +1952,7 @@ Result VulkanTexture2D::generateMipmaps(VkImage image, VkFormat imageFormat, int
 
 	if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT)) {
 		LN_ERROR("texture image format does not support linear blitting!");
-		return;
+		return false;
 	}
 
 	VkCommandBuffer commandBuffer = m_deviceContext->beginSingleTimeCommands();

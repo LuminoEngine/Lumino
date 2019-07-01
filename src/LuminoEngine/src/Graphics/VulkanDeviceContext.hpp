@@ -257,7 +257,7 @@ public:
     VulkanBuffer* buffer() { return &m_buffer; }
     VkBuffer vulkanBuffer() const { return m_buffer.vulkanBuffer(); }
     VkDeviceMemory vulkanDeviceMemory() const { return m_buffer.vulkanBufferMemory(); }
-    void setSubData(size_t offset, const void* data, size_t length);
+    //void setSubData(size_t offset, const void* data, size_t length);
 
     VulkanBuffer* m_mappedResource = nullptr;
 
@@ -282,7 +282,7 @@ public:
     VkBuffer vulkanBuffer() const { return m_buffer.vulkanBuffer(); }
     VkDeviceMemory vulkanDeviceMemory() const { return m_buffer.vulkanBufferMemory(); }
     VkIndexType indexType() const { return m_indexType; }
-    void setSubData(size_t offset, const void* data, size_t length);
+    //void setSubData(size_t offset, const void* data, size_t length);
 
     VulkanBuffer* m_mappedResource = nullptr;
 
