@@ -1,5 +1,5 @@
-#include "Internal.h"
-#include "Lumino.Wrapper.generated.h"
+#include "RuntimeManager.hpp"
+#include "%%HeaderName%%"
 
 extern "C"
 {

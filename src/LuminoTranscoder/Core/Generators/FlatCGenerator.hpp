@@ -6,7 +6,9 @@ class SymbolDatabase;
 class FlatCCommon
 {
 public:
+	// e.g.) LnEngine_Init
 	static ln::String makeFuncName(GeneratorConfiguration* config, MethodSymbol* method);
+
 	static ln::String makeFlatCDeclTypeName(GeneratorConfiguration* config, TypeSymbol* typeInfo);
 	static ln::String makeFunkParamList(MethodSymbol* method);
 	static ln::String makeFuncHeader(GeneratorConfiguration* config, MethodSymbol* methodInfo);
@@ -14,6 +16,7 @@ public:
 	static ln::String makeCppQualTypeName(TypeSymbol* typeInfo);
 	static ln::String makeFlatCQualTypeName(TypeSymbol* typeInfo);
 	static ln::String makeFlatCParamQualTypeName(GeneratorConfiguration* config, ln::Ref<MethodSymbol> methodInfo, ln::Ref<MethodParameterSymbol> paramInfo);
+	static ln::String makeInstanceParamName(TypeSymbol* type);	// this にあたる引数名
 };
 
 // .h

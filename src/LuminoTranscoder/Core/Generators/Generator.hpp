@@ -43,7 +43,7 @@ public:
 
 	SymbolDatabase* db() const { return m_database; }
 	GeneratorConfiguration* config() const { return m_config; }
-	ln::Path makeOutputFilePath(const ln::Path& localPath) const { return ln::Path(m_config->outputDir, localPath); }
+	ln::Path makeOutputFilePath(const ln::String& lang, const ln::Path& localPath) const { return ln::Path::combine(m_config->outputDir, lang, localPath); }
 	ln::Path makeTemplateFilePath(const ln::Path& localPath) const { return ln::Path(m_config->templateDir, localPath); }
 	//const ln::String& moduleFullName() const { return m_moduleFullName; }
 	//const ln::String& moduleShortName() const { return m_moduleShortName; }

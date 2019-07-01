@@ -42,11 +42,42 @@ ln::Result DocumentInfo::init(PIDocument* pi)
 //==============================================================================
 // MetadataInfo
 
+const ln::String MetadataInfo::OverloadPostfixAttr = u"OverloadPostfix";
+
 ln::Result MetadataInfo::init(PIMetadata* pi)
 {
 	m_pi = pi;
+	if (m_pi) {
+		m_name = m_pi->name;
+		m_values = m_pi->values;
+	}
 	return true;
 }
+
+bool MetadataInfo::hasKey(const ln::StringRef& key) const
+{
+	auto itr = m_values.find(key);
+	return (itr != m_values.end());
+}
+
+const ln::String* MetadataInfo::findValue(const ln::StringRef& key) const
+{
+	auto itr = m_values.find(key);
+	if (itr != m_values.end())
+		return &(itr->second);
+	else
+		return nullptr;
+}
+
+ln::String MetadataInfo::getValue(const ln::StringRef& key, const ln::String& defaultValue) const
+{
+	auto* s = findValue(key);
+	if (s)
+		return *s;
+	else
+		return defaultValue;
+}
+
 
 //==============================================================================
 // Symbol
@@ -68,35 +99,12 @@ ln::Result Symbol::init(PIDocument* document, PIMetadata* metadata)
 }
 
 //==============================================================================
-// MetadataSymbol
+// MetadataInfo
 //==============================================================================
-//const ln::String MetadataSymbol::OverloadPostfixAttr = _T("OverloadPostfix");
 //
 //void MetadataSymbol::AddValue(const ln::String& key, const ln::String& value)
 //{
 //	values[key] = value;
-//}
-//
-//ln::String* MetadataSymbol::FindValue(const ln::StringRef& key)
-//{
-//	auto itr = values.find(key);
-//	if (itr != values.end()) return &(itr->second);
-//	return nullptr;
-//}
-//
-//ln::String MetadataSymbol::getValue(const ln::StringRef& key, const ln::String& defaultValue)
-//{
-//	auto* s = FindValue(key);
-//	if (s)
-//		return *s;
-//	else
-//		return defaultValue;
-//}
-//
-//bool MetadataSymbol::HasKey(const ln::StringRef& key)
-//{
-//	auto itr = values.find(key);
-//	return (itr != values.end());
 //}
 
 //==============================================================================
@@ -197,7 +205,8 @@ ln::Result MethodSymbol::init(PIMethod* pi, TypeSymbol* ownerType)
 	LN_CHECK(ownerType);
 	m_pi = pi;
 	m_ownerType = ownerType;
-	m_name = m_pi->name;
+	m_shortName = m_pi->name;
+	m_fullName = m_ownerType->fullName() + u"::" + m_shortName;
 
 	for (auto& i : m_pi->parameters) {
 		auto s = ln::makeRef<MethodParameterSymbol>(db());
@@ -475,6 +484,17 @@ ln::Result TypeSymbol::link()
 			return false;
 		}
 	}
+
+	if (isClass() && !isStatic()) {
+		m_baseClass = db()->getTypeSymbol(m_piType->baseClassRawName);
+		if (!m_baseClass) {
+			LN_NOTIMPLEMENTED();
+			return false;
+		}
+	}
+
+	if (!linkOverload()) return false;
+
 	return true;
 }
 
@@ -487,6 +507,82 @@ void TypeSymbol::setFullName(const ln::String& value)
 		m_shortName = value.substr(c + 1);
 	else
 		m_shortName = value;
+}
+
+ln::Result TypeSymbol::linkOverload()
+{
+	for (auto& method1 : m_methods)
+	{
+		auto info = m_overloads.findIf([&method1](auto& x) { return x->representative()->shortName() == method1->shortName(); });
+		if (info) {
+			(*info)->m_methods.add(method1);
+			method1->m_overloadInfo = (*info);
+
+			// verify: representative 以外は OverloadPostfix を持っていなければならない
+			if (!method1->metadata()->hasKey(MetadataInfo::OverloadPostfixAttr))
+			{
+				LN_NOTIMPLEMENTED();
+				return false;
+			}
+		}
+		else {
+			auto newInfo = ln::makeRef<MethodOverloadInfo>();
+			newInfo->m_methods.add(method1);
+			m_overloads.add(newInfo);
+			method1->m_overloadInfo = newInfo;
+		}
+	}
+
+
+#if 0
+	for (auto& method1 : m_methods)
+	{
+		if (!method1->m_overloadChildren.isEmpty() || method1->m_overloadParent)
+			continue;	// processed (method1 is child)
+
+		// find same names
+		ln::List<MethodSymbol*> sameNames;
+		for (auto& method2 : m_methods)
+		{
+			//if (isStruct() && method2->isConstructor() && method2->parameters().isEmpty())
+			//{
+			//	// 構造体の引数無しコンストラクタは Clear という別名にしたい。
+			//	continue;
+			//}
+
+			if (method1->name() == method2->name())
+			{
+				sameNames.add(method2);
+			}
+		}
+
+		// select parent
+		auto f = sameNames.findIf([](MethodSymbol* m) { return !m->metadata()->hasKey(MetadataInfo::OverloadPostfixAttr); });
+		if (!f) {
+			LN_NOTIMPLEMENTED();
+			return false;
+		}
+		MethodSymbol* parent = *f;
+
+		// link
+		for (auto& method2 : sameNames)
+		{
+			if (method2 == parent) continue;
+
+			if (!method2->metadata()->hasKey(MetadataInfo::OverloadPostfixAttr))
+			{
+				//db->diag();
+				LN_NOTIMPLEMENTED();
+				return false;
+			}
+
+			parent->m_overloadChildren.add(method2);
+			method2->m_overloadParent = parent;
+		}
+	}
+#endif
+
+	return true;
 }
 
 #if 0
@@ -584,53 +680,7 @@ void TypeSymbol::MakeProperties()
 	}
 }
 
-void TypeSymbol::LinkOverload(SymbolDatabase* db)
-{
-	for (auto& methodInfo1 : declaredMethods)
-	{
-		if (!methodInfo1->overloadChildren.isEmpty() || methodInfo1->overloadParent)
-			continue;	// processed
 
-		// find same names
-		ln::List<MethodSymbol*> sameNames;
-		for (auto& methodInfo2 : declaredMethods)
-		{
-			if (isStruct && methodInfo2->isConstructor && methodInfo2->parameters.isEmpty())
-			{
-				// 構造体の引数無しコンストラクタは Clear という別名にしたい。
-				continue;
-			}
-
-			if (methodInfo1->name == methodInfo2->name)
-			{
-				sameNames.add(methodInfo2);
-			}
-		}
-
-		// select parent
-		auto f = sameNames.findIf([](MethodSymbol* m) { return !m->metadata->HasKey(MetadataSymbol::OverloadPostfixAttr); });
-		if (!f)
-		{
-			LN_NOTIMPLEMENTED();
-		}
-		MethodSymbol* parent = *f;
-
-		// link
-		for (auto& method2 : sameNames)
-		{
-			if (method2 == parent) continue;
-			
-			if (!method2->metadata->HasKey(MetadataSymbol::OverloadPostfixAttr))
-			{
-				//db->diag();
-				LN_NOTIMPLEMENTED();
-			}
-
-			parent->overloadChildren.add(method2);
-			method2->overloadParent = parent;
-		}
-	}
-}
 
 void TypeSymbol::ResolveCopyDoc()
 {

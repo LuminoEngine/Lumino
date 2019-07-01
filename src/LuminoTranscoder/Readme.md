@@ -14,4 +14,29 @@ LuminoTranscoder
 
 
 
+クラス
+----------
+
+### Static
+
+
+
+メソッド
+----------
+
+
+### メソッドのオーバーロード
+
+属性オプションとして、`OverloadPostfix` の指定が必須となります。
+
+```
+/** ... */
+LN_METHOD()
+void setPosition(const Vector3& pos);
+
+/** ... */
+LN_METHOD(OverloadPostfix = "XYZ")
+void setPosition(float x, float y, float z);
+```
+
 

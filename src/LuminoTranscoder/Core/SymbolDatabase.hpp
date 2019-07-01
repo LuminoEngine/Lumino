@@ -10,6 +10,7 @@ class SymbolDatabase;
 class TypeSymbol;
 class ConstantSymbol;
 //class DocumentSymbol;
+class MethodSymbol;
 class PropertySymbol;
 
 
@@ -52,19 +53,29 @@ class MetadataInfo : public ln::RefObject
 public:
 	static const ln::String OverloadPostfixAttr;
 
-	ln::String name;
-	std::unordered_map<ln::String, ln::String> values;
-
-	//void AddValue(const ln::String& key, const ln::String& value);
-	//ln::String* FindValue(const ln::StringRef& key);
-	//ln::String getValue(const ln::StringRef& key, const ln::String& defaultValue = ln::String());
-	//bool HasKey(const ln::StringRef& key);
-
-
 	ln::Result init(PIMetadata* pi);
+
+	bool hasKey(const ln::StringRef& key) const;
+	const ln::String* findValue(const ln::StringRef& key) const;
+	ln::String getValue(const ln::StringRef& key, const ln::String& defaultValue = ln::String()) const;
 
 private:
 	PIMetadata* m_pi = nullptr;
+	ln::String m_name;
+	std::unordered_map<ln::String, ln::String> m_values;
+};
+
+// オーバーロードメソッドをまとめたもの
+class MethodOverloadInfo : public ln::RefObject
+{
+public:
+	MethodSymbol* representative() const { return m_methods[0]; }
+	const ln::List<MethodSymbol*>& methods() const { return m_methods; }
+
+private:
+	ln::List<MethodSymbol*> m_methods;
+
+	friend class TypeSymbol;
 };
 
 class Symbol : public ln::RefObject
@@ -181,8 +192,6 @@ public:
 	//bool isConstructor = false;
 	ln::Ref<PropertySymbol> ownerProperty;		// このメソッドがプロパティに含まれていればそのプロパティを指す
 
-	ln::Ref<MethodSymbol> overloadParent;			// このメソッドはどのメソッドをオーバーロードするか (基本的に一番最初に見つかった定義)
-	ln::List<ln::Ref<MethodSymbol>> overloadChildren;	// このメソッドはどのメソッドにオーバーロードされるか
 	// 
 	//ln::List<ln::Ref<MethodParameterSymbol>> capiParameters;
 
@@ -208,9 +217,13 @@ public:
 
 	TypeSymbol* ownerType() const { return m_ownerType; }
 	TypeSymbol* returnType() const { return m_returnType; }
-	const ln::String& name() const { return m_name; }
+	const ln::String& shortName() const { return m_shortName; }
+	const ln::String& fullName() const { return m_fullName; }
 	const ln::List<Ref<MethodParameterSymbol>>& parameters() const { return m_parameters; }
 	const ln::List<Ref<MethodParameterSymbol>>& flatParameters() const { return m_flatParameters; }
+	MethodOverloadInfo* overloadInfo() const { return m_overloadInfo; }
+	//MethodSymbol* overloadParent() const { return m_overloadParent; }
+	//const ln::List<MethodSymbol*>& overloadChildren() const { return m_overloadChildren; }
 
 	bool isConst() const { return m_pi->isConst; }
 	bool isStatic() const { return m_pi->isStatic; }
@@ -223,9 +236,15 @@ private:
 	PIMethod* m_pi = nullptr;
 	TypeSymbol* m_ownerType = nullptr;
 	TypeSymbol* m_returnType = nullptr;
-	ln::String m_name;
+	ln::String m_shortName;
+	ln::String m_fullName;
 	ln::List<Ref<MethodParameterSymbol>> m_parameters;
 	ln::List<Ref<MethodParameterSymbol>> m_flatParameters;	// FlatC-API としてのパラメータリスト。先頭が this だったり、末尾が return だったりする。
+	MethodOverloadInfo* m_overloadInfo = nullptr;		// このメソッドが属するオーバーロードグループ
+	//MethodSymbol* m_overloadParent;			// このメソッドはどのメソッドをオーバーロードするか (基本的に一番最初に見つかった定義)
+	//ln::List<MethodSymbol*> m_overloadChildren;	// このメソッドはどのメソッドにオーバーロードされるか
+
+	friend class TypeSymbol;
 };
 
 class PropertySymbol : public ln::RefObject
@@ -256,13 +275,17 @@ public:
 	const ln::List<Ref<FieldSymbol>>& fields() const { return m_fields; }
 	const ln::List<Ref<ConstantSymbol>>& constants() const { return m_constants; }
 	const ln::List<Ref<MethodSymbol>>& methods() const { return m_methods; }
+	const ln::List<Ref<MethodOverloadInfo>>& overloads() const { return m_overloads; }
+	TypeSymbol* baseClass() const { return m_baseClass; }
 
 	bool isClass() const { return kind() == TypeKind::Class; }
 	bool isStruct() const { return kind() == TypeKind::Struct; }
 	bool isEnum() const { return kind() == TypeKind::Enum; }
+	bool isStatic() const { return metadata()->hasKey(u"Static"); }	// static-class ?
 
 private:
 	void setFullName(const ln::String& value);
+	ln::Result linkOverload();
 
 	Ref<PITypeInfo> m_piType;
 	ln::String m_fullName;
@@ -270,6 +293,8 @@ private:
 	ln::List<Ref<FieldSymbol>> m_fields;
 	ln::List<Ref<ConstantSymbol>> m_constants;
 	ln::List<Ref<MethodSymbol>> m_methods;
+	ln::List<Ref<MethodOverloadInfo>> m_overloads;
+	TypeSymbol* m_baseClass = nullptr;
 
 //	struct SoueceData
 //	{
@@ -352,6 +377,7 @@ public:
 
 
 	stream::Stream<Ref<TypeSymbol>> structs() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->kind() == TypeKind::Struct; }); }
+	stream::Stream<Ref<TypeSymbol>> classes() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->kind() == TypeKind::Class; }); }
 
 public:
 	void initPredefineds();

@@ -5,20 +5,17 @@ project(LuminoRuntime)
 #------------------------------------------------------------------------------
 # Files
 
-set(LN_SOURCES
-    src/Entry.cpp
-	src/LuminoRuntime.PCH.cpp
-	src/LuminoRuntime.PCH.h
-)
+file(GLOB LOCAL_SOURCES "src/*.h" "src/*.hpp" "src/*.cpp")
+source_group("Sources" FILES ${LOCAL_SOURCES})
 
 #------------------------------------------------------------------------------
 # Targets
 
-add_library(${PROJECT_NAME} SHARED ${LN_SOURCES})
+add_library(${PROJECT_NAME} SHARED ${LOCAL_SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE "${LUMINO_INCLUDE_DIRECTORIES}" "src")
 target_link_libraries(${PROJECT_NAME} LuminoEngine)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
-ln_add_pch(${PROJECT_NAME} "src/LuminoRuntime.PCH.h" "src/LuminoRuntime.PCH.cpp")
+ln_add_pch(${PROJECT_NAME} "src/PCH.hpp" "src/PCH.cpp")
 
 #------------------------------------------------------------------------------
 # Install

@@ -24,6 +24,9 @@ public:
 	OutputBuffer& append(const ln::StringRef& str) { AppendInternal(str); return *this; }
 
 	/** 文字列を追加する */
+	OutputBuffer& append(const OutputBuffer& buf) { AppendInternal(buf.toString()); return *this; }
+
+	/** 文字列を追加する */
 	template<typename... TArgs>
 	OutputBuffer& append(const ln::StringRef& format, const TArgs&... args) { AppendInternal(ln::String::format(format, args...)); return *this; }
 

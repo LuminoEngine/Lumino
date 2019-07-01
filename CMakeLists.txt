@@ -122,8 +122,8 @@ set(LN_INCLUDES_gtest
 set(LN_SOURCES_gtest
     "${CMAKE_CURRENT_LIST_DIR}/external/gtest/src/gtest-all.cc")
 
-#set (gtest_force_shared_crt True)
-#add_subdirectory(build/ExternalSource/googletest)
+set (gtest_force_shared_crt True)
+add_subdirectory(build/ExternalSource/googletest)
 
 #------------------------------------------------------------------------------
 
@@ -135,6 +135,7 @@ else()
     add_subdirectory(src/LuminoCore)
     add_subdirectory(src/LuminoEngine)
     if (LN_BUILD_BINDINGS)
+        add_subdirectory(src/LuminoRuntime)
         add_subdirectory(src/LuminoTranscoder)
         #add_subdirectory(tools/lumino-wg)
     endif()
