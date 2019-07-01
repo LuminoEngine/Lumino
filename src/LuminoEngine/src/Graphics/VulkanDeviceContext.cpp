@@ -1870,7 +1870,9 @@ Result VulkanTexture2D::init(VulkanDevice* deviceContext, GraphicsResourceUsage 
 
 
 		if (mipmap) {
-			generateMipmaps(m_image.vulkanImage(), m_nativeFormat, width, height, m_mipLevels);
+			if (!generateMipmaps(m_image.vulkanImage(), m_nativeFormat, width, height, m_mipLevels)) {
+				return false;
+			}
 			// transitioned to VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL while generating mipmaps
 		}
 		else {
@@ -1934,7 +1936,7 @@ void VulkanTexture2D::setSubData(int x, int y, int width, int height, const void
     }
 }
 
-void VulkanTexture2D::generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels)
+Result VulkanTexture2D::generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels)
 {
 	VkPhysicalDevice physicalDevice = m_deviceContext->m_physicalDevice;
 
@@ -1943,7 +1945,8 @@ void VulkanTexture2D::generateMipmaps(VkImage image, VkFormat imageFormat, int32
 	vkGetPhysicalDeviceFormatProperties(physicalDevice, imageFormat, &formatProperties);
 
 	if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT)) {
-		throw std::runtime_error("texture image format does not support linear blitting!");
+		LN_ERROR("texture image format does not support linear blitting!");
+		return;
 	}
 
 	VkCommandBuffer commandBuffer = m_deviceContext->beginSingleTimeCommands();
@@ -2022,6 +2025,8 @@ void VulkanTexture2D::generateMipmaps(VkImage image, VkFormat imageFormat, int32
 		1, &barrier);
 
 	m_deviceContext->endSingleTimeCommands(commandBuffer);
+
+	return true;
 }
 
 //==============================================================================

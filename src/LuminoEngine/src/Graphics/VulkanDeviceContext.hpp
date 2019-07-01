@@ -322,7 +322,7 @@ public:
     virtual const VulkanImage* image() const override { return &m_image; }
 
 private:
-	void generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
+	Result generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
 
 	VulkanDevice* m_deviceContext;
     VulkanImage m_image;
