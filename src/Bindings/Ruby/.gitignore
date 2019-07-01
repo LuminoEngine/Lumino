@@ -1,0 +1,5 @@
+*.def
+*.log
+*.o
+*.so
+Makefile

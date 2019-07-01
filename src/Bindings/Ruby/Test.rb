@@ -1,0 +1,2 @@
+require './Lumino'
+Lumino.hello
