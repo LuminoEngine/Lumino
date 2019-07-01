@@ -260,7 +260,7 @@ public:
     static bool checkValidationLayerSupport();
     static int getPrimitiveVertexCount(PrimitiveTopology primitive, int primitiveCount);
 
-    static Result createImageView(VulkanDevice* deviceContext, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, VkImageView* outView);
+    static Result createImageView(VulkanDevice* deviceContext, VkImage image, VkFormat format, uint32_t mipLevel, VkImageAspectFlags aspectFlags, VkImageView* outView);
     static bool resolveStd140Layout(const ShaderUniformInfo& info, size_t* aligndElemenSize);
 };
 
@@ -356,7 +356,7 @@ class VulkanImage
 {
 public:
 	VulkanImage();
-	Result init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags);
+	Result init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, uint32_t mipLevel, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags);
     Result init(VulkanDevice* deviceContext/*, uint32_t width, uint32_t height*/, VkFormat format, VkImage image, VkImageView imageView);
     void dispose();
     VkFormat vulkanFormat() const { return m_format; }

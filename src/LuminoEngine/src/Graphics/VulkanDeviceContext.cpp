@@ -715,7 +715,7 @@ void VulkanDevice::copyBufferToImageImmediately(VkBuffer buffer, VkImage image, 
     endSingleTimeCommands(commandBuffer);
 }
 
-Result VulkanDevice::transitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
+Result VulkanDevice::transitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, uint32_t mipLevel, VkImageLayout oldLayout, VkImageLayout newLayout)
 {
     VkImageMemoryBarrier barrier = {};
     barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -737,7 +737,7 @@ Result VulkanDevice::transitionImageLayout(VkCommandBuffer commandBuffer, VkImag
     }
 
     barrier.subresourceRange.baseMipLevel = 0;
-    barrier.subresourceRange.levelCount = 1;
+    barrier.subresourceRange.levelCount = mipLevel;
     barrier.subresourceRange.baseArrayLayer = 0;
     barrier.subresourceRange.layerCount = 1;
 
@@ -798,10 +798,10 @@ Result VulkanDevice::transitionImageLayout(VkCommandBuffer commandBuffer, VkImag
     return true;
 }
 
-Result VulkanDevice::transitionImageLayoutImmediately(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
+Result VulkanDevice::transitionImageLayoutImmediately(VkImage image, VkFormat format, uint32_t mipLevel, VkImageLayout oldLayout, VkImageLayout newLayout)
 {
     VkCommandBuffer commandBuffer = beginSingleTimeCommands();
-    Result result = transitionImageLayout(commandBuffer, image, format, oldLayout, newLayout);
+    Result result = transitionImageLayout(commandBuffer, image, format, mipLevel, oldLayout, newLayout);
     endSingleTimeCommands(commandBuffer);
     return result;
 }
@@ -1358,7 +1358,7 @@ Result VulkanSwapChain::init(VulkanDevice* deviceContext, PlatformWindow* window
         m_swapChainImageViews.resize(swapChainImages.size());
 
         for (uint32_t i = 0; i < swapChainImages.size(); i++) {
-            if (!VulkanHelper::createImageView(m_deviceContext, swapChainImages[i], m_swapchainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, &m_swapChainImageViews[i])) {
+            if (!VulkanHelper::createImageView(m_deviceContext, swapChainImages[i], m_swapchainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1, &m_swapChainImageViews[i])) {
                 return false;
             }
         }
@@ -1849,15 +1849,15 @@ Result VulkanTexture2D::init(VulkanDevice* deviceContext, GraphicsResourceUsage 
         stagingBuffer.setData(0, initialData, imageSize);
 
         // VK_FORMAT_R8G8B8A8_UNORM
-        m_image.init(m_deviceContext, width, height, m_nativeFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
+        m_image.init(m_deviceContext, width, height, m_nativeFormat, 1, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
 
-        if (!m_deviceContext->transitionImageLayoutImmediately(m_image.vulkanImage(), m_nativeFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)) {
+        if (!m_deviceContext->transitionImageLayoutImmediately(m_image.vulkanImage(), m_nativeFormat, 1, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)) {
             return false;
         }
 
         m_deviceContext->copyBufferToImageImmediately(stagingBuffer.vulkanBuffer(), m_image.vulkanImage(), width, height);
 
-        if (!m_deviceContext->transitionImageLayoutImmediately(m_image.vulkanImage(), m_nativeFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {
+        if (!m_deviceContext->transitionImageLayoutImmediately(m_image.vulkanImage(), m_nativeFormat, 1, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {
             return false;
         }
 
@@ -1884,7 +1884,7 @@ void VulkanTexture2D::setSubData(int x, int y, int width, int height, const void
     // いずれかでなければならない。https://www.khronos.org/registry/vulkan/specs/1.1-extensions/man/html/vkCmdCopyBufferToImage.html
     // 転送前にレイアウトを変更しておく。
     if (!m_deviceContext->transitionImageLayout(m_deviceContext->graphicsContext()->recodingCommandBuffer()->vulkanCommandBuffer(),
-        m_image.vulkanImage(), m_nativeFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)) {
+        m_image.vulkanImage(), m_nativeFormat, 1, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)) {
         LN_ERROR();
         return;
     }
@@ -1908,7 +1908,7 @@ void VulkanTexture2D::setSubData(int x, int y, int width, int height, const void
 
     // レイアウトを元に戻す
     if (!m_deviceContext->transitionImageLayout(m_deviceContext->graphicsContext()->recodingCommandBuffer()->vulkanCommandBuffer(),
-        m_image.vulkanImage(), m_nativeFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {
+        m_image.vulkanImage(), m_nativeFormat, 1, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {
         LN_ERROR();
         return;
     }
@@ -1940,11 +1940,11 @@ Result VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, uin
         VkDeviceSize imageSize = width * height * GraphicsHelper::getPixelSize(requestFormat);
 
         m_image = std::make_unique<VulkanImage>();
-        if (!m_image->init(m_deviceContext, width, height, nativeFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT)) {
+        if (!m_image->init(m_deviceContext, width, height, nativeFormat, 1, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT)) {
             return false;
         }
 
-        if (!m_deviceContext->transitionImageLayoutImmediately(m_image->vulkanImage(), nativeFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {
+        if (!m_deviceContext->transitionImageLayoutImmediately(m_image->vulkanImage(), nativeFormat, 1, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {
             return false;
         }
 
@@ -2239,11 +2239,11 @@ Result VulkanDepthBuffer::init(VulkanDevice* deviceContext, uint32_t width, uint
 
     VkFormat depthFormat = m_deviceContext->findDepthFormat();
 
-    if (!m_image.init(m_deviceContext, width, height, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_DEPTH_BIT)) {
+    if (!m_image.init(m_deviceContext, width, height, depthFormat, 1, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_DEPTH_BIT)) {
         return false;
     }
 
-    if (!m_deviceContext->transitionImageLayoutImmediately(m_image.vulkanImage(), depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)) {
+    if (!m_deviceContext->transitionImageLayoutImmediately(m_image.vulkanImage(), depthFormat, 1, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)) {
         return false;
     }
 
@@ -2292,6 +2292,8 @@ Result VulkanSamplerState::init(VulkanDevice* deviceContext, const SamplerStateD
 	samplerInfo.compareEnable = VK_FALSE;
 	samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
 	samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
+
+	samplerInfo.maxLod = 8;
 
 	LN_VK_CHECK(vkCreateSampler(m_deviceContext->vulkanDevice(), &samplerInfo, m_deviceContext->vulkanAllocator(), &m_sampler));
 
@@ -2593,7 +2595,7 @@ const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWrite
         buffer->setData(0, uniformBuffer->data().data(), uniformBuffer->data().size());
 
         VkDescriptorBufferInfo& info = m_bufferDescriptorBufferInfo[i];
-        info.buffer = info.buffer = buffer->vulkanBuffer();
+        info.buffer = buffer->vulkanBuffer();
 
         VkWriteDescriptorSet& writeInfo = m_descriptorWriteInfo[i];
         writeInfo.dstSet = descriptorSets[DescriptorType_UniformBuffer];

@@ -35,6 +35,7 @@ EffectManager::EffectManager()
 
 void EffectManager::init(const Settings& settings)
 {
+	return;
     LN_LOG_DEBUG << "EffectManager Initialization started.";
 
     g_platform = LLGI::CreatePlatform(LLGI::DeviceType::Vulkan);
@@ -96,6 +97,7 @@ void EffectManager::init(const Settings& settings)
 
 void EffectManager::dispose()
 {
+	return;
     // エフェクトの停止
     g_manager->StopEffect(g_handle);
 
@@ -114,6 +116,8 @@ void EffectManager::dispose()
 
 void EffectManager::testDraw()
 {
+	return;
+
     if (1) {
 
         if (!g_platform->NewFrame())

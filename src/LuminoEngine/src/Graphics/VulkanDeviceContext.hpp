@@ -96,8 +96,8 @@ public: // TODO:
     Result endSingleTimeCommands(VkCommandBuffer commandBuffer);
     void copyBufferImmediately(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
     void copyBufferToImageImmediately(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
-    Result transitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
-    Result transitionImageLayoutImmediately(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+    Result transitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, uint32_t mipLevel, VkImageLayout oldLayout, VkImageLayout newLayout);
+    Result transitionImageLayoutImmediately(VkImage image, VkFormat format, uint32_t mipLevel, VkImageLayout oldLayout, VkImageLayout newLayout);
 
 
 	//GLFWwindow* m_mainWindow; // TODO:

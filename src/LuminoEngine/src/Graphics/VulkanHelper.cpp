@@ -763,9 +763,10 @@ int VulkanHelper::getPrimitiveVertexCount(PrimitiveTopology primitive, int primi
     }
 }
 
-Result VulkanHelper::createImageView(VulkanDevice* deviceContext, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, VkImageView* outView)
+Result VulkanHelper::createImageView(VulkanDevice* deviceContext, VkImage image, VkFormat format, uint32_t mipLevel, VkImageAspectFlags aspectFlags, VkImageView* outView)
 {
-    LN_DCHECK(deviceContext);
+    LN_CHECK(deviceContext);
+	LN_CHECK(mipLevel >= 1);
 
     VkImageViewCreateInfo viewInfo = {};
     viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -774,7 +775,7 @@ Result VulkanHelper::createImageView(VulkanDevice* deviceContext, VkImage image,
     viewInfo.format = format;
     viewInfo.subresourceRange.aspectMask = aspectFlags;
     viewInfo.subresourceRange.baseMipLevel = 0;
-    viewInfo.subresourceRange.levelCount = 1;
+    viewInfo.subresourceRange.levelCount = mipLevel;
     viewInfo.subresourceRange.baseArrayLayer = 0;
     viewInfo.subresourceRange.layerCount = 1;
 
@@ -1130,9 +1131,10 @@ VulkanImage::VulkanImage()
 {
 }
 
-Result VulkanImage::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags)
+Result VulkanImage::init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, uint32_t mipLevel, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags)
 {
 	LN_DCHECK(deviceContext);
+	LN_CHECK(mipLevel >= 1);
 	m_deviceContext = deviceContext;
     m_externalManagement = false;
     //m_width = width;
@@ -1147,7 +1149,7 @@ Result VulkanImage::init(VulkanDevice* deviceContext, uint32_t width, uint32_t h
 	imageInfo.extent.width = width;
 	imageInfo.extent.height = height;
 	imageInfo.extent.depth = 1;
-	imageInfo.mipLevels = 1;
+	imageInfo.mipLevels = mipLevel;
 	imageInfo.arrayLayers = 1;
 	imageInfo.format = format;
 	imageInfo.tiling = tiling;
@@ -1169,22 +1171,11 @@ Result VulkanImage::init(VulkanDevice* deviceContext, uint32_t width, uint32_t h
 
 	LN_VK_CHECK(vkAllocateMemory(device, &allocInfo, m_deviceContext->vulkanAllocator(), &m_imageMemory));
 
-    {
-        vkBindImageMemory(device, m_image, m_imageMemory, 0);
+    vkBindImageMemory(device, m_image, m_imageMemory, 0);
 
-        VkImageViewCreateInfo viewInfo = {};
-        viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-        viewInfo.image = m_image;
-        viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-        viewInfo.format = format;
-        viewInfo.subresourceRange.aspectMask = aspectFlags;
-        viewInfo.subresourceRange.baseMipLevel = 0;
-        viewInfo.subresourceRange.levelCount = 1;
-        viewInfo.subresourceRange.baseArrayLayer = 0;
-        viewInfo.subresourceRange.layerCount = 1;
-
-        LN_VK_CHECK(vkCreateImageView(device, &viewInfo, m_deviceContext->vulkanAllocator(), &m_imageView));
-    }
+	if (!VulkanHelper::createImageView(m_deviceContext, m_image, format, mipLevel, aspectFlags, &m_imageView)) {
+		return false;
+	}
 
 	return true;
 }
