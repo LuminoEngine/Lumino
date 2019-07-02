@@ -240,8 +240,8 @@ ln::Result MethodSymbol::makeFlatParameters()
 		{
 			auto s = ln::makeRef<MethodParameterSymbol>(db());
 			if (!s->init(m_ownerType, m_ownerType->shortName().toLower())) return false;
-			s->isIn = true;
-			s->isThis = true;
+			s->m_isIn = true;
+			s->m_isThis = true;
 			m_flatParameters.add(s);
 		}
 		//else if (isConstructor)
@@ -260,8 +260,8 @@ ln::Result MethodSymbol::makeFlatParameters()
 		{
 			auto s = ln::makeRef<MethodParameterSymbol>(db());
 			if (!s->init(m_ownerType, m_ownerType->shortName().toLower())) return false;
-			s->isIn = true;
-			s->isThis = true;
+			s->m_isIn = true;
+			s->m_isThis = true;
 			m_flatParameters.add(s);
 		}
 		else {
@@ -284,9 +284,9 @@ ln::Result MethodSymbol::makeFlatParameters()
 	{
 		auto s = ln::makeRef<MethodParameterSymbol>(db());
 		if (!s->init(m_returnType, u"outReturn")) return false;
-		s->isIn = false;
-		s->isOut = true;
-		s->isReturn = true;
+		s->m_isIn = false;
+		s->m_isOut = true;
+		s->m_isReturn = true;
 		m_flatParameters.add(s);
 	}
 

@@ -41,6 +41,7 @@ int main(int argc, char** argv)
 	config->templateDir = LN_LOCALFILE("../Core/Generators/Templates");
 	config->targetNamespace = u"ln";
 	config->flatCOutputModuleName = u"Ln";
+	config->flatCCommonHeader = LN_LOCALFILE("../../../include/LuminoRuntime/Common.hpp");
 
 	//FlatCHeaderGenerator g1;
 	//g1.setup(db, config);

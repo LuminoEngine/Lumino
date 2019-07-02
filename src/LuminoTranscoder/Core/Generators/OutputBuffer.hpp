@@ -38,6 +38,9 @@ public:
 	OutputBuffer& AppendLine(const ln::StringRef& format, const TArgs&... args) { AppendLineInternal(ln::String::format(format, args...)); return *this; }
 
 	/** 文字列を追加する (各行の先頭をインデント) */
+	OutputBuffer& AppendLine(const OutputBuffer& buf) { AppendLineInternal(buf.toString()); return *this; }
+
+	/** 文字列を追加する (各行の先頭をインデント) */
 	OutputBuffer& AppendLines(const ln::StringRef& str) { AppendLinesInternal(str, ln::String::Empty); return *this; }
 
 	/** 文字列を追加する (各行の先頭をインデント) */

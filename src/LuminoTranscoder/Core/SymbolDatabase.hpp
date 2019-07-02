@@ -157,10 +157,6 @@ public:
 		ln::Optional<ln::String> rawDefaultValue;
 	} src;
 
-	bool isIn = false;
-	bool isOut = false;
-	bool isThis = false;
-	bool isReturn = false;
 	ln::Ref<ConstantSymbol> defaultValue;
 
 public:
@@ -172,10 +168,22 @@ public:
 	TypeSymbol* type() const { return m_type; }
 	const ln::String& name() const { return m_name; }
 
+	bool isIn() const { return m_isIn; }
+	bool isOut() const { return m_isOut; }
+	bool isThis() const { return m_isThis; }		// for flat parameters
+	bool isReturn() const { return m_isReturn; }	// for flat parameters
+
 private:
 	PIMethodParameter* m_pi = nullptr;
 	TypeSymbol* m_type = nullptr;
 	ln::String m_name;
+
+	bool m_isIn = false;
+	bool m_isOut = false;
+	bool m_isThis = false;
+	bool m_isReturn = false;
+
+	friend class MethodSymbol;
 };
 
 class MethodSymbol : public Symbol
@@ -278,6 +286,7 @@ public:
 	const ln::List<Ref<MethodOverloadInfo>>& overloads() const { return m_overloads; }
 	TypeSymbol* baseClass() const { return m_baseClass; }
 
+	bool isPrimitive() const { return kind() == TypeKind::Primitive; }
 	bool isClass() const { return kind() == TypeKind::Class; }
 	bool isStruct() const { return kind() == TypeKind::Struct; }
 	bool isEnum() const { return kind() == TypeKind::Enum; }

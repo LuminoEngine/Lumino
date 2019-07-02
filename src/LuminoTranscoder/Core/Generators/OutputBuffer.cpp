@@ -72,8 +72,9 @@ void OutputBuffer::AppendInternal(const ln::StringRef& str)
 
 void OutputBuffer::AppendLineInternal(const ln::StringRef& str)
 {
-	indent();
-	m_buffer.append(str);
+	//indent();
+	//m_buffer.append(str);
+	AppendLinesInternal(str, ln::String::Empty);
 	NewLine();
 }
 

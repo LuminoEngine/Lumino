@@ -30,9 +30,15 @@ ln::String FlatCCommon::makeFuncName(GeneratorConfiguration* config, MethodSymbo
 	//return n;
 }
 
-ln::String FlatCCommon::makeFlatCDeclTypeName(GeneratorConfiguration* config, TypeSymbol* typeInfo)
+ln::String FlatCCommon::makeTypeName(GeneratorConfiguration* config, TypeSymbol* type)
 {
-	return config->flatCOutputModuleName + typeInfo->shortName();
+	if (type->isPrimitive()) {
+		if (type == PredefinedTypes::boolType) return u"LnBool";
+		return type->shortName();
+	}
+	else {
+		return config->flatCOutputModuleName + type->shortName();
+	}
 }
 
 //ln::String FlatCCommon::makeFunkParamList(MethodSymbol* method)
@@ -47,9 +53,9 @@ ln::String FlatCCommon::makeFlatCParamQualTypeName(GeneratorConfiguration* confi
 	if (typeInfo->kind() == TypeKind::Struct)
 	{
 		ln::String modifer;
-		if (paramInfo->isThis && methodInfo->isConst())
+		if (paramInfo->isThis() && methodInfo->isConst())
 			modifer = "const ";
-		if (!paramInfo->isThis && !paramInfo->isOut)
+		if (!paramInfo->isThis() && !paramInfo->isOut())
 			modifer = "const ";
 		return ln::String::format("{0}{1}{2}*", modifer, config->flatCOutputModuleName, typeInfo->shortName());
 	}
@@ -61,7 +67,7 @@ ln::String FlatCCommon::makeFlatCParamQualTypeName(GeneratorConfiguration* confi
 
 	if (typeInfo == PredefinedTypes::stringType)
 	{
-		if (paramInfo->isOut || paramInfo->isReturn)
+		if (paramInfo->isOut() || paramInfo->isReturn())
 			return "const LnChar**";
 		else
 			return "const LnChar*";
@@ -75,7 +81,7 @@ ln::String FlatCCommon::makeFlatCParamQualTypeName(GeneratorConfiguration* confi
 	else
 		name = typeInfo->shortName();
 
-	if (paramInfo->isOut || paramInfo->isReturn)
+	if (paramInfo->isOut() || paramInfo->isReturn())
 		name += "*";
 
 	//if (typeInfo->isStruct && paramInfo->isThis)
@@ -163,7 +169,7 @@ void FlatCHeaderGenerator::generate()
 	for (auto& structInfo : db()->structs())
 	{
 		structsText.AppendLines(makeDocumentComment(structInfo->document()));
-		structsText.AppendLine("struct {0}", FlatCCommon::makeFlatCDeclTypeName(config(), structInfo));
+		structsText.AppendLine("struct {0}", FlatCCommon::makeTypeName(config(), structInfo));
 		structsText.AppendLine("{");
 		structsText.IncreaseIndent();
 		for (auto& fieldInfo : structInfo->fields())
@@ -472,7 +478,7 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
 			else if (type->isStruct())
 			{
 				ln::String castTo = type->shortName();
-				if (paramInfo->isIn) castTo = "const " + castTo;
+				if (paramInfo->isIn()) castTo = "const " + castTo;
 				args.AppendCommad("*reinterpret_cast<{0}*>({1})", castTo, paramInfo->name());
 			}
 			else if (type->isEnum())

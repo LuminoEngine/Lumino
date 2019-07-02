@@ -9,7 +9,9 @@ public:
 	// e.g.) LnEngine_Init
 	static ln::String makeFuncName(GeneratorConfiguration* config, MethodSymbol* method);
 
-	static ln::String makeFlatCDeclTypeName(GeneratorConfiguration* config, TypeSymbol* typeInfo);
+	// 修飾無しの型名
+	static ln::String makeTypeName(GeneratorConfiguration* config, TypeSymbol* type);
+
 	static ln::String makeFunkParamList(MethodSymbol* method);
 	static ln::String makeFuncHeader(GeneratorConfiguration* config, MethodSymbol* methodInfo);
 

@@ -56,7 +56,7 @@ C# で new Texture() とだけした時、内部的には
 class Actor {
     Texture _texture = new Texture("test.png");
     Sprite _sprite;
-    Acrot() {
+    Actor() {
         _sprite = new Sprite(_texture);
     }
     void ChangeImage() {
@@ -72,5 +72,5 @@ class Actor {
 これを解決するには、C# 側で「Manage-object-list からだけ参照されているか？」という判断が必要になるが、WeakReference 無しでそれは不可能。
 あるいは C# なのにスマートポインタのような仕組みを作る必要があるが、現実的ではない。
 
-そもそもやっぱり C# 側ではスコープを外れたら GC で解放されるようにしたいし、強参照な(ユーザーからは見えない)Listで持っていると Dispose の明示的な呼び出しが必須になるし、``使いやすさ的な意味でも Manage-object-list を強参照リストにするべきではないのかもしれない。`
+そもそもやっぱり C# 側ではスコープを外れたら GC で解放されるようにしたいし、強参照な(ユーザーからは見えない)Listで持っていると Dispose の明示的な呼び出しが必須になるし、`使いやすさ的な意味でも Manage-object-list を強参照リストにするべきではないのかもしれない。`
 

@@ -44,13 +44,15 @@ typedef enum tagLnResult
 /** 真偽値 */
 typedef enum tagLnBool
 {
-    /**< 偽 */
+    /** 偽 */
     LN_FALSE = 0,
 
-    /**< 真 */
+    /** 真 */
     LN_TRUE = 1,
 
 } LnBool;
+
+inline const char* LnRuntime_GetLastErrorMessage() { return ""; }  // TODO
 
 #ifdef __cplusplus
 } // extern "C"

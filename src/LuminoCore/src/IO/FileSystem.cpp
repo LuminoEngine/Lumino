@@ -227,7 +227,7 @@ static String readAllTextHelper(const ByteBuffer& buffer, TextEncoding* encoding
 {
     if (encoding == nullptr) {
         TextEncoding* e = TextEncoding::getEncoding(EncodingType::UTF8);
-        if (buffer.size() >= 3 && (buffer.data(), e->preamble(), 3) == 0)
+        if (buffer.size() >= 3 && memcmp(buffer.data(), e->preamble(), 3) == 0)
             encoding = e;
         else
             encoding = TextEncoding::utf8Encoding();

@@ -1,2 +1,3 @@
 require './Lumino'
-Lumino.hello
+
+Lumino::Engine.initialize

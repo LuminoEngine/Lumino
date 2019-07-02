@@ -1,5 +1,27 @@
 ﻿
+#include <ruby.h>
+
+%%Common%%
+
+#define LN_TO_RUBY_FUNC(f) reinterpret_cast<VALUE(__cdecl *)(...)>(f)
+
+inline VALUE LNI_TO_RUBY_VALUE(const char* v)   { return rb_str_new2(v); }
+inline VALUE LNI_TO_RUBY_VALUE(LnBool v)        { return (v != LN_FALSE) ? Qtrue : Qfalse; }
+inline VALUE LNI_TO_RUBY_VALUE(uint8_t v)       { return INT2FIX(v); }
+inline VALUE LNI_TO_RUBY_VALUE(int v)           { return INT2NUM(v); }
+inline VALUE LNI_TO_RUBY_VALUE(uint32_t v)      { return INT2NUM(v); }
+inline VALUE LNI_TO_RUBY_VALUE(int64_t v)       { return INT2NUM(v); }
+inline VALUE LNI_TO_RUBY_VALUE(uint64_t v)      { return INT2NUM(v); }
+inline VALUE LNI_TO_RUBY_VALUE(float v)         { return DBL2NUM(v); }
+inline VALUE LNI_TO_RUBY_VALUE(double v)        { return DBL2NUM(v); }
+
+%%FlatCDecls%%
+
+%%TypeVALUEDecls%%
+
 %%Code%%
+
+%%ModuleInitializer%%
 
 #if 0
 #include "LuminoRuby.h"

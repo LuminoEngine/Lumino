@@ -8,6 +8,7 @@ class GeneratorConfiguration : public ln::RefObject
 {
 public:
 	// 出力ファイル名などに使用される、モジュールの正式名称
+	// e.g.) "Lumino"
 	ln::String moduleName;
 
 	// 出力フォルダ
@@ -16,7 +17,7 @@ public:
 	// テンプレートフォルダ
 	ln::Path templateDir;
 
-	// 出力するモジュール (名前空間) の名前。
+	// 出力する C++ 名前空間の名前。
 	// e.g.) "ln", "ln::local" 
 	ln::String targetNamespace;
 
@@ -24,6 +25,9 @@ public:
 	// 関数名、型名などの Prefix となる。定数 Prefix となる場合は大文字化される。
 	// e.g.) "Ln"
 	ln::String flatCOutputModuleName;
+
+	// LnResult などが定義された C 用の共通ヘッダ
+	ln::Path flatCCommonHeader;
 };
 
 class Generator
