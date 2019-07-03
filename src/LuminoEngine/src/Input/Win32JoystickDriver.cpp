@@ -1,6 +1,6 @@
 ﻿
 #if _WIN32
-#include "../Internal.hpp"
+#include "Internal.hpp"
 #include <algorithm>
 #include <LuminoCore/Base/Platform.hpp>
 #include "Win32JoystickDriver.hpp"
@@ -120,7 +120,7 @@ void Win32JoystickDriver::init( IDirectInputDevice8* device, HWND hwnd, int xinp
 	{
 		// ジョイスティックとしてデータフォーマットを設定
 		hr = mDevice->SetDataFormat(&c_dfDIJoystick);
-		if (LN_ENSURE_HRESULT(hr)) {
+		if (LN_ENSURE(SUCCEEDED(hr))) {
 			return;
 		}
 		//hr = mDevice->SetDataFormat( &c_dfDIJoystick2 );	// もっといろんな情報がほしいとき
@@ -131,7 +131,7 @@ void Win32JoystickDriver::init( IDirectInputDevice8* device, HWND hwnd, int xinp
 
 		// コールバック関数を使って各軸のモードを設定
 		hr = mDevice->EnumObjects(EnumAxesCallback, this, DIDFT_AXIS);
-		if (LN_ENSURE_HRESULT(hr)) {
+		if (LN_ENSURE(SUCCEEDED(hr))) {
 			return;
 		}
 
@@ -178,7 +178,7 @@ void Win32JoystickDriver::init( IDirectInputDevice8* device, HWND hwnd, int xinp
 
 			// エフェクト生成
 			hr = mDevice->CreateEffect(GUID_SINE, &mDIEffect, &mDeviceEffect, NULL);
-			if (LN_ENSURE_HRESULT(hr)) {
+			if (LN_ENSURE(SUCCEEDED(hr))) {
 				return;
 			}
 		}

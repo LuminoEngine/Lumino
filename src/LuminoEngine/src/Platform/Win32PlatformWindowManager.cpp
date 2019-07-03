@@ -496,7 +496,7 @@ Result Win32PlatformWindow::init(Win32PlatformWindowManager* windowManager, cons
         CW_USEDEFAULT, CW_USEDEFAULT,
         clientRect.right - clientRect.left, clientRect.bottom - clientRect.top,
         NULL, NULL, windowManager->instanceHandle(), NULL);
-    if (LN_ENSURE_WIN32(m_hWnd, GetLastError())) return false;
+    if (LN_ENSURE(m_hWnd, "ErrorCode: %d", GetLastError())) return false;
 
     // アクセラレータの作成 (Alt+Enter の警告音を消す)
     ACCEL accels[1] =
@@ -504,7 +504,7 @@ Result Win32PlatformWindow::init(Win32PlatformWindowManager* windowManager, cons
         { FALT | FVIRTKEY, VK_RETURN, 0 }
     };
     m_accelerator = ::CreateAcceleratorTable(accels, 1);
-    if (LN_ENSURE_WIN32(m_accelerator, GetLastError())) return false;
+    if (LN_ENSURE(m_accelerator, "ErrorCode: %d", GetLastError())) return false;
 
     //AbstractWin32PlatformWindow::setWindowClientSize(m_hWnd, settings.clientSize);
     AbstractWin32PlatformWindow::abjustLocationCentering(m_hWnd);
@@ -514,7 +514,7 @@ Result Win32PlatformWindow::init(Win32PlatformWindowManager* windowManager, cons
 
     // ウィンドウハンドルと Win32Window のポインタを関連付ける
     BOOL r = ::SetProp(m_hWnd, Win32PlatformWindowManager::PropWinProc, this);
-    if (LN_ENSURE_WIN32((r != FALSE), GetLastError())) return false;
+    if (LN_ENSURE((r != FALSE), "ErrorCode: %d", GetLastError())) return false;
 
     ::ShowWindow(m_hWnd, SW_SHOW);
 
@@ -585,7 +585,7 @@ Result Win32PlatformWindowManager::init()
 
     // ウィンドウクラスの登録
     ATOM wc = ::RegisterClassEx(&wcex);
-    if (LN_ENSURE_WIN32(wc, ::GetLastError())) return false;
+    if (LN_ENSURE(wc, "ErrorCode: %d", ::GetLastError())) return false;
 
     return true;
 }

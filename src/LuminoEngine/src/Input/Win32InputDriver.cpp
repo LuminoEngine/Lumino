@@ -1,6 +1,6 @@
 ﻿
 #if _WIN32
-#include "../Internal.hpp"
+#include "Internal.hpp"
 #include <wbemidl.h>
 #include <oleauto.h>
 #include <LuminoCore/Base/Platform.hpp>
@@ -39,10 +39,12 @@ void Win32InputDriver::init(HWND hWnd)
 	HRESULT hr;
 	m_hWnd = hWnd;
 
-	if (LN_ENSURE_HRESULT2(CoCreateInstance(CLSID_DirectInput8, NULL, CLSCTX_ALL, IID_IDirectInput8, (void**)&m_directInput))) {
+	hr = CoCreateInstance(CLSID_DirectInput8, NULL, CLSCTX_ALL, IID_IDirectInput8, (void**)&m_directInput);
+	if (LN_ENSURE(SUCCEEDED(hr))) {
 		return;
 	}
-	if (LN_ENSURE_HRESULT2(m_directInput->Initialize(::GetModuleHandle(NULL), DIRECTINPUT_VERSION))) {
+	hr = m_directInput->Initialize(::GetModuleHandle(NULL), DIRECTINPUT_VERSION);
+	if (LN_ENSURE(SUCCEEDED(hr))) {
 		return;
 	}
 
@@ -83,15 +85,14 @@ void Win32InputDriver::stopVibration(int joystickNumber)
 //------------------------------------------------------------------------------
 void Win32InputDriver::refreshDevice()
 {
-	HRESULT hr;
-
 	releaseDevice();
 
 	// 接続済みのゲームコントローラーデバイスを列挙する
 	m_XInputDeviceCount = 0;
 	// DI8DEVCLASS_GAMECTRL : XBox 認識するっぽい
 	// DI8DEVTYPE_JOYSTICK : 他の認識するっぽい
-	if (LN_ENSURE_HRESULT2(m_directInput->EnumDevices(DI8DEVCLASS_GAMECTRL, EnumJoysticksCallback, this , DIEDFL_ATTACHEDONLY))) {
+	HRESULT hr = m_directInput->EnumDevices(DI8DEVCLASS_GAMECTRL, EnumJoysticksCallback, this, DIEDFL_ATTACHEDONLY);
+	if (LN_ENSURE(SUCCEEDED(hr))) {
 		return;
 	}
 }
