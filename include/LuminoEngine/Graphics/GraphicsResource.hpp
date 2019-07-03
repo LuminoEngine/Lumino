@@ -8,9 +8,11 @@ class GraphicsResourceInternal;
 }
 
 /** Graphics 機能に関係するリソースのベースクラスです。*/
+LN_CLASS()
 class LN_API GraphicsResource
     : public Object
 {
+    LN_OBJECT;
 protected:
     virtual void onDispose(bool explicitDisposing) override;
     virtual void onChangeDevice(detail::IGraphicsDevice* device) = 0;

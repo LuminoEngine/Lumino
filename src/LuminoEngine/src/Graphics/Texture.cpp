@@ -16,6 +16,8 @@ namespace ln {
 //==============================================================================
 // Texture
 
+LN_OBJECT_IMPLEMENT(Texture, GraphicsResource) {}
+
 Texture::Texture()
     : m_width(0)
     , m_height(0)
@@ -53,6 +55,8 @@ void Texture::setSamplerState(SamplerState* value)
 
 //==============================================================================
 // Texture2D
+
+LN_OBJECT_IMPLEMENT(Texture2D, Texture) {}
 
 Ref<Texture2D> Texture2D::create(int width, int height)
 {

@@ -14,6 +14,7 @@ LN_CLASS()
 class Texture
     : public GraphicsResource
 {
+    LN_OBJECT;
 public:
     /** テクスチャの幅を取得します。(ピクセル単位) */
     int width() const { return m_width; }
@@ -57,11 +58,16 @@ LN_CLASS()
 class Texture2D
     : public Texture
 {
+    LN_OBJECT;
 public:
     /**
      * テクスチャを作成します。ピクセルフォーマットは RGBA8 です。
+     *
      * @param[in]   width   : 幅 (px 単位)
      * @param[in]   height  : 高さ (px 単位)
+     * @return 作成されたテクスチャ
+     *
+     * 説明文
      */
     static Ref<Texture2D> create(int width, int height);
 
@@ -107,9 +113,11 @@ LN_CONSTRUCT_ACCESS:
     virtual ~Texture2D();
 
     /** @copydoc create(int, int) */
+    LN_METHOD()
     void init(int width, int height);
 
     /** @copydoc create(int, int, TextureFormat) */
+    LN_METHOD(OverloadPostfix = "WithFormat")
     void init(int width, int height, TextureFormat format);
 
     void init(const StringRef& filePath, TextureFormat format = TextureFormat::RGBA8);
@@ -202,7 +210,7 @@ public:
     static void resetSwapchainFrameIfNeeded(RenderTargetTexture* renderTarget, bool force) { renderTarget->resetSwapchainFrameIfNeeded(force); }
     static void resetNativeObject(RenderTargetTexture* renderTarget, intptr_t value) { renderTarget->resetNativeObject(value); }
     static void resetSize(RenderTargetTexture* renderTarget, int width, int height) { renderTarget->resetSize(width, height); }
-	static void resetOpenGLTextureIdFromCurrentFramebuffer(RenderTargetTexture* renderTarget);
+    static void resetOpenGLTextureIdFromCurrentFramebuffer(RenderTargetTexture* renderTarget);
 };
 
 class Texture3D
