@@ -25,7 +25,7 @@ ln::Result ParameterDocumentInfo::init(PIParamDocument* pi)
 //==============================================================================
 // DocumentInfo
 
-ln::Result DocumentInfo::init(PIDocument* pi)
+ln::Result DocumentInfo::init(const PIDocument* pi)
 {
 	LN_CHECK(pi);
 	m_pi = pi;
@@ -87,7 +87,7 @@ Symbol::Symbol(SymbolDatabase* db)
 {
 }
 
-ln::Result Symbol::init(PIDocument* document, PIMetadata* metadata)
+ln::Result Symbol::init(const PIDocument* document, PIMetadata* metadata)
 {
 	m_document = ln::makeRef<DocumentInfo>();
 	if (!m_document->init(document)) return false;
@@ -200,7 +200,7 @@ MethodSymbol::MethodSymbol(SymbolDatabase* db)
 
 ln::Result MethodSymbol::init(PIMethod* pi, TypeSymbol* ownerType)
 {
-	if (!Symbol::init(pi->document, pi->metadata)) return false;
+	if (!Symbol::init(db()->resolveCopyDoc(pi->document), pi->metadata)) return false;
 	LN_CHECK(pi);
 	LN_CHECK(ownerType);
 	m_pi = pi;
@@ -886,6 +886,14 @@ ln::Result SymbolDatabase::linkTypes()
 //
 //	return info;
 //}
+
+const PIDocument* SymbolDatabase::resolveCopyDoc(const PIDocument* pi) const
+{
+	if (pi->copydocLocalSignature.isEmpty())
+		return pi;
+	else
+		return m_pidb->findRelativeDocument(pi->copydocLocalSignature);
+}
 
 void SymbolDatabase::initPredefineds()
 {

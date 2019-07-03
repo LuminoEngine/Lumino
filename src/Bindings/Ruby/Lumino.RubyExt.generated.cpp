@@ -1,4 +1,4 @@
-﻿
+
 #include <ruby.h>
 
 #pragma once
@@ -79,10 +79,19 @@ inline VALUE LNI_TO_RUBY_VALUE(double v)        { return DBL2NUM(v); }
 extern "C" LN_API LnResult LnEngine_Initialize();
 extern "C" LN_API LnResult LnEngine_Finalize();
 extern "C" LN_API LnResult LnEngine_Update(LnBool* outReturn);
+extern "C" LN_API LnResult LnTexture2D_Init(LnHandle texture2d, int width, int height);
+extern "C" LN_API LnResult LnTexture2D_Init(LnHandle texture2d, int width, int height, LNTextureFormat format);
 
+
+VALUE g_enum_PixelFormat;
+VALUE g_enum_TextureFormat;
+VALUE g_enum_DepthBufferFormat;
 
 VALUE g_rootModule;
 VALUE g_class_Engine;
+VALUE g_class_GraphicsResource;
+VALUE g_class_Texture;
+VALUE g_class_Texture2D;
 
 
 //==============================================================================
@@ -101,7 +110,7 @@ static VALUE Wrap_LnEngine_Initialize(int argc, VALUE* argv, VALUE self)
 
             LnResult errorCode = LnEngine_Initialize();
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
-
+            return Qnil;
         }
     }
     rb_raise(rb_eArgError, "ln::Engine::initialize - wrong argument type.");
@@ -115,7 +124,7 @@ static VALUE Wrap_LnEngine_Finalize(int argc, VALUE* argv, VALUE self)
 
             LnResult errorCode = LnEngine_Finalize();
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
-
+            return Qnil;
         }
     }
     rb_raise(rb_eArgError, "ln::Engine::finalize - wrong argument type.");
@@ -136,16 +145,106 @@ static VALUE Wrap_LnEngine_Update(int argc, VALUE* argv, VALUE self)
     return Qnil;
 }
 
+//==============================================================================
+// ln::GraphicsResource
+
+struct Wrap_GraphicsResource
+    : public Wrap_GraphicsResource
+{
+    Wrap_GraphicsResource()
+    {}
+};
+
+//==============================================================================
+// ln::Texture
+
+struct Wrap_Texture
+    : public Wrap_Texture
+{
+    Wrap_Texture()
+    {}
+};
+
+//==============================================================================
+// ln::Texture2D
+
+struct Wrap_Texture2D
+    : public Wrap_Texture2D
+{
+    Wrap_Texture2D()
+    {}
+};
+
+static VALUE Wrap_LnTexture2D_Init(int argc, VALUE* argv, VALUE self)
+{
+    if (3 <= argc && argc <= 3) {
+        VALUE texture2d;
+        VALUE width;
+        VALUE height;
+
+        &texture2d, &width, &height
+        {
+
+            LnResult errorCode = LnTexture2D_Init();
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    if (4 <= argc && argc <= 4) {
+        VALUE texture2d;
+        VALUE width;
+        VALUE height;
+        VALUE format;
+
+        &texture2d, &width, &height, &format
+        {
+
+            LnResult errorCode = LnTexture2D_Init();
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Texture2D::init - wrong argument type.");
+    return Qnil;
+}
+
 
 
 extern "C" void Init_Lumino()
 {
     g_rootModule = rb_define_module("Lumino");
 
+    g_enum_PixelFormat = rb_define_module_under(g_rootModule, "PixelFormat");
+    rb_define_const(g_enum_PixelFormat, "Unknown", INT2FIX(0)); 
+    rb_define_const(g_enum_PixelFormat, "A8", INT2FIX(1)); 
+    rb_define_const(g_enum_PixelFormat, "RGBA8", INT2FIX(2)); 
+    rb_define_const(g_enum_PixelFormat, "RGB8", INT2FIX(3)); 
+    rb_define_const(g_enum_PixelFormat, "RGBA32F", INT2FIX(4)); 
+
+    g_enum_TextureFormat = rb_define_module_under(g_rootModule, "TextureFormat");
+    rb_define_const(g_enum_TextureFormat, "Unknown", INT2FIX(0)); 
+    rb_define_const(g_enum_TextureFormat, "RGBA8", INT2FIX(1)); 
+    rb_define_const(g_enum_TextureFormat, "RGB8", INT2FIX(2)); 
+    rb_define_const(g_enum_TextureFormat, "RGBA16F", INT2FIX(3)); 
+    rb_define_const(g_enum_TextureFormat, "RGBA32F", INT2FIX(4)); 
+    rb_define_const(g_enum_TextureFormat, "R16F", INT2FIX(5)); 
+    rb_define_const(g_enum_TextureFormat, "R32F", INT2FIX(6)); 
+    rb_define_const(g_enum_TextureFormat, "R32U", INT2FIX(7)); 
+
+    g_enum_DepthBufferFormat = rb_define_module_under(g_rootModule, "DepthBufferFormat");
+    rb_define_const(g_enum_DepthBufferFormat, "D24S8", INT2FIX(0));
+
     g_class_Engine = rb_define_class_under(g_rootModule, "Engine", rb_cObject);
     rb_define_singleton_method(g_class_Engine, "initialize", LN_TO_RUBY_FUNC(Wrap_LnEngine_Initialize), -1);
     rb_define_singleton_method(g_class_Engine, "finalize", LN_TO_RUBY_FUNC(Wrap_LnEngine_Finalize), -1);
     rb_define_singleton_method(g_class_Engine, "update", LN_TO_RUBY_FUNC(Wrap_LnEngine_Update), -1);
+
+    g_class_GraphicsResource = rb_define_class_under(g_rootModule, "GraphicsResource", rb_cObject);
+
+    g_class_Texture = rb_define_class_under(g_rootModule, "Texture", rb_cObject);
+
+    g_class_Texture2D = rb_define_class_under(g_rootModule, "Texture2D", rb_cObject);
+    rb_define_singleton_method(g_class_Texture2D, "init", LN_TO_RUBY_FUNC(Wrap_LnTexture2D_Init), -1);
 
 }
 

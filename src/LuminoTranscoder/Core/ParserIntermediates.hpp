@@ -21,8 +21,9 @@ public:
     ln::List<Ref<PIParamDocument>> params;
     ln::String returns;
     ln::String details;
-    ln::String copydocMethodName;
-    ln::String copydocSignature;
+	ln::List<ln::String> copydocLocalSignature;
+
+	static ln::String formatComment(const ln::String& comment);
 };
 
 // LN_METHOD() などの属性マクロの ( ) 内に記述されたパラメータ
@@ -81,6 +82,7 @@ public:
 	bool isConstructor = false;
 	ln::String returnTypeRawName;
 	ln::List<Ref<PIMethodParameter>> parameters;
+	//ln::List<ln::String> localSignature;
 };
 
 // 型情報 (struct, class, enum)
@@ -97,9 +99,22 @@ public:
 	ln::List<Ref<PIMethod>> methods;
 };
 
+//class PIRelativeDocument : public ln::RefObject
+//{
+//public:
+//	Ref<PIDocument> document;
+//	ln::List<ln::String> localSigneture;
+//};
+
 // 型情報データベース
 class PIDatabase : public ln::RefObject
 {
 public:
 	ln::List<Ref<PITypeInfo>> types;
+	ln::List<Ref<PIDocument>> relativeDocuments;	// マクロ修飾されていないが、Doxygen comment を持っている関数の情報。copydoc で使う。
+	//ln::List<Ref<PIRelativeDocument>> releativeDocuments;	// マクロ修飾されていないが、Doxygen comment を持っている関数の情報。copydoc で使う。
+
+	PIDocument* findRelativeDocument(const ln::List<ln::String>& localSignature);
+
+	static ln::List<ln::String> parseLocalSigneture(const ln::String& signeture, const ln::String& methodName = ln::String::Empty);
 };

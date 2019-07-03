@@ -41,3 +41,9 @@ mingw32.exe
 
 
 
+ridk install
+ridk enable
+
+set PATH=%CD%;%PATH%
+
+

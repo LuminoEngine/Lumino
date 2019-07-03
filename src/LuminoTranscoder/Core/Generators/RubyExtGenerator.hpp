@@ -22,6 +22,9 @@ public:
 
 private:
 	ln::String makeSnakeStyleName(const ln::String& name) const;
+	ln::String makeUpperSnakeName(const ln::String& name) const;
+
+
 	ln::String makeRubyClassInfoVariableName(TypeSymbol* type) const { return u"g_class_" + type->shortName(); }
 	ln::String makeRubyMethodName(MethodSymbol* method) const;
 	ln::String makeWrapStructName(TypeSymbol* type) const { return u"Wrap_" + type->shortName(); }
@@ -29,4 +32,9 @@ private:
 	ln::String makeWrapFuncImplement(MethodOverloadInfo* overloadInfo) const;
 	ln::String makeWrapFuncCallBlock(MethodSymbol* method) const;
 	ln::String makeVALUEReturnExpr(TypeSymbol* type, const ln::String& varName) const;
+
+
+	ln::String makeEnumTypeVALUEName(TypeSymbol* type) const { return u"g_enum_" + type->shortName(); }
+	ln::String makeEnumTypeVALUEVariableDecls() const;
+	ln::String makeEnumTypeRegisterCode() const;
 };

@@ -30,7 +30,7 @@ private:
 class DocumentInfo : public ln::RefObject
 {
 public:
-	ln::Result init(PIDocument* pi);
+	ln::Result init(const PIDocument* pi);
 
 	const ln::String& summary() const { return m_pi->summary; }
 	const ln::String& returns() const { return m_pi->returns; }
@@ -43,7 +43,7 @@ public:
 	//bool IsCopyDoc() const { return !copydocMethodName.isEmpty(); }
 
 private:
-	PIDocument* m_pi = nullptr;
+	const PIDocument* m_pi = nullptr;
 	ln::List<Ref<ParameterDocumentInfo>> m_params;
 };
 
@@ -87,7 +87,7 @@ public:
 
 protected:
 	Symbol(SymbolDatabase* db);
-	ln::Result init(PIDocument* document, PIMetadata* metadata);
+	ln::Result init(const PIDocument* document, PIMetadata* metadata);
 
 private:
 	SymbolDatabase* m_db;
@@ -133,7 +133,9 @@ class ConstantSymbol : public Symbol
 {
 public:
 	//ln::Ref<DocumentSymbol>		document;
-	//ln::String				name;
+	const ln::String& name() const { return m_pi->name; }
+	const ln::Variant* value() const { return m_pi->value; }
+
 	//ln::Ref<TypeSymbol>			type;
 	//ln::Ref<ln::Variant>			value;
 
@@ -384,9 +386,12 @@ public:
 	//void verify(ln::DiagnosticsManager* diag);
 
 
-
+	stream::Stream<Ref<TypeSymbol>> enums() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->kind() == TypeKind::Enum; }); }
 	stream::Stream<Ref<TypeSymbol>> structs() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->kind() == TypeKind::Struct; }); }
 	stream::Stream<Ref<TypeSymbol>> classes() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->kind() == TypeKind::Class; }); }
+
+	const Ref<PIDatabase>& pidb() const { return m_pidb; }
+	const PIDocument* resolveCopyDoc(const PIDocument* pi) const;
 
 public:
 	void initPredefineds();

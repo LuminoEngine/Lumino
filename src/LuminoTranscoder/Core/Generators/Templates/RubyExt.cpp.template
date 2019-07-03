@@ -17,6 +17,8 @@ inline VALUE LNI_TO_RUBY_VALUE(double v)        { return DBL2NUM(v); }
 
 %%FlatCDecls%%
 
+%%EnumTypeVALUEDecls%%
+
 %%TypeVALUEDecls%%
 
 %%Code%%

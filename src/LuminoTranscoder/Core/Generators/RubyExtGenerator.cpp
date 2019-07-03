@@ -80,6 +80,11 @@ void RubyExtGenerator::generate()
 		// Root module (define)
 		moduleInitializer.AppendLine(u"g_rootModule = rb_define_module(\"{0}\");", config()->moduleName);
 		moduleInitializer.NewLine();
+
+		// Enums
+		moduleInitializer.AppendLine(makeEnumTypeRegisterCode());
+		moduleInitializer.NewLine();
+
 		
 		for (auto& classSymbol : db()->classes()) {
 			auto classInfoVar = makeRubyClassInfoVariableName(classSymbol);
@@ -121,6 +126,7 @@ void RubyExtGenerator::generate()
 		ln::String src = ln::FileSystem::readAllText(makeTemplateFilePath(_T("RubyExt.cpp.template")))
 			.replace("%%Common%%", ln::FileSystem::readAllText(config()->flatCCommonHeader))
 			.replace("%%FlatCDecls%%", allFlatCApiDecls.toString())
+			.replace("%%EnumTypeVALUEDecls%%", makeEnumTypeVALUEVariableDecls())
 			.replace("%%TypeVALUEDecls%%", typeVALUEDecls.toString())
 			.replace("%%Code%%", code.toString())
 			.replace("%%ModuleInitializer%%", moduleInitializer.toString());
@@ -192,6 +198,33 @@ ln::String RubyExtGenerator::makeSnakeStyleName(const ln::String& name) const
 			if (output.length() != 0) output = "_" + output;
 			output = ln::String(name.substr(0, lastIndex)).toLower() + output;
 		}
+	}
+
+	return output;
+}
+
+ln::String RubyExtGenerator::makeUpperSnakeName(const ln::String& name) const
+{
+	// まず大文字境界で分割
+	ln::List<ln::String> tokens;
+	for (int i = 0; i < name.length(); i++) {
+		if (isupper(name[i])) {
+			tokens.add(u"");
+		}
+		tokens.back() += name[i];
+	}
+	// RGBA8 -> [A,G,B,A8]
+
+
+	ln::String output = tokens[0];
+	for (int i = 1; i < tokens.size(); i++) {
+		auto last = tokens[i - 1][tokens[i - 1].length() - 1];
+		if (isupper(last) || isdigit(last)) {
+		}
+		else {
+			output += u"_";
+		}
+		output += tokens[i];
 	}
 
 	return output;
@@ -358,9 +391,9 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(MethodSymbol* method) const
 			{
 				auto localVarName = u"_" + param->name();
 				// decl
-				callerArgDecls.AppendLine("{0} {1};", FlatCCommon::makeTypeName(config(), param->type()), localVarName);
+				callerArgDecls.AppendLine(u"{0} {1};", FlatCCommon::makeTypeName(config(), param->type()), localVarName);
 				// arg
-				callerArgList.AppendCommad("&" + localVarName);
+				callerArgList.AppendCommad(u"&" + localVarName);
 				// return
 				callerReturnStmt.AppendLine(makeVALUEReturnExpr(param->type(), localVarName));
 			}
@@ -373,9 +406,9 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(MethodSymbol* method) const
 					requiredArgsCount++;
 
 				// rb_scan_args の格納先 VALUE 宣言
-				rb_scan_args_Decls.AppendLine("VALUE {0};", param->name());
+				rb_scan_args_Decls.AppendLine(u"VALUE {0};", param->name());
 				// rb_scan_args の引数
-				rb_scan_args_Args.AppendCommad("&{0}", param->name());
+				rb_scan_args_Args.AppendCommad(u"&{0}", param->name());
 
 				// FlatC call args
 			}
@@ -386,20 +419,20 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(MethodSymbol* method) const
 
 
 	OutputBuffer code;
-	code.append("if ({0} <= argc && argc <= {1}) {{", requiredArgsCount, requiredArgsCount + optionalArgsCount).NewLine();
+	code.append(u"if ({0} <= argc && argc <= {1}) {{", requiredArgsCount, requiredArgsCount + optionalArgsCount).NewLine();
 	code.IncreaseIndent();
 
 	if (!rb_scan_args_Decls.isEmpty()) code.AppendLine(rb_scan_args_Decls);
 	if (!rb_scan_args_Args.isEmpty()) code.AppendLine(rb_scan_args_Args);
 
-	code.AppendLine("{");
+	code.AppendLine(u"{");
 	code.IncreaseIndent();
 	code.AppendLine(callerArgDecls.toString().trim());
 	code.AppendLine(u"LnResult errorCode = {0}({1});", FlatCCommon::makeFuncName(config(), method), callerArgList.toString());
 	code.AppendLine(u"if (errorCode < 0) rb_raise(rb_eRuntimeError, \"Lumino runtime error. (%d)\\n%s\", errorCode, LnRuntime_GetLastErrorMessage());");
-	code.AppendLine(callerReturnStmt.toString().trim());
+	code.AppendLine((callerReturnStmt.isEmpty()) ? u"return Qnil;" : callerReturnStmt.toString().trim());
 	code.DecreaseIndent();
-	code.AppendLine("}");
+	code.AppendLine(u"}");
 
 
 	code.DecreaseIndent();
@@ -626,4 +659,36 @@ ln::String RubyExtGenerator::makeVALUEReturnExpr(TypeSymbol* type, const ln::Str
 
 	LN_UNREACHABLE();
 	return ln::String::Empty;
+}
+
+ln::String RubyExtGenerator::makeEnumTypeVALUEVariableDecls() const
+{
+	OutputBuffer code;
+
+	// VALUE global variables
+	for (auto& symbol : db()->enums()) {
+		code.AppendLine(u"VALUE {0};", makeEnumTypeVALUEName(symbol));
+	}
+
+	return code.toString().trim();
+}
+
+ln::String RubyExtGenerator::makeEnumTypeRegisterCode() const
+{
+	OutputBuffer code;
+
+	for (auto& symbol : db()->enums()) {
+		auto varName = makeEnumTypeVALUEName(symbol);
+
+		// enum module
+		code.AppendLine(u"{0} = rb_define_module_under(g_rootModule, \"{1}\");", varName, symbol->shortName());
+
+		// enum member
+		for (auto& member : symbol->constants()) {
+			code.AppendLine(u"rb_define_const({0}, \"{1}\", INT2FIX({2})); ", varName, makeUpperSnakeName(member->name()), member->value()->get<int>());
+		}
+		code.NewLine();
+	}
+
+	return code.toString().trim();
 }

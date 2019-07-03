@@ -16,7 +16,9 @@ int main(int argc, char** argv)
         //TEST_ROOT "include/LuminoCore/Math/Quaternion.hpp",
         //TEST_ROOT "include/LuminoCore/Math/Matrix.hpp",
         TEST_ROOT "include/LuminoEngine/Engine/Engine.hpp",
-        //u"C:/Proj/GitHub/Lumino/src/LuminoEngine/include/Lumino/Graphics/Texture.hpp",
+		TEST_ROOT "include/LuminoEngine/Graphics/Common.hpp",
+		TEST_ROOT "include/LuminoEngine/Graphics/GraphicsResource.hpp",
+		TEST_ROOT "include/LuminoEngine/Graphics/Texture.hpp",
     };
 
 	
@@ -27,7 +29,8 @@ int main(int argc, char** argv)
 		HeaderParser2 parser;
 		parser.addIncludePath(TEST_ROOT "include");
 		parser.addIncludePath(TEST_ROOT "include");
-		parser.addForceIncludeFile(TEST_ROOT "include/LuminoCore/Base/Common.hpp");
+		//parser.addForceIncludeFile(TEST_ROOT "include/LuminoCore/Base/Common.hpp");
+		parser.addForceIncludeFile(TEST_ROOT "src/LuminoEngine/src/LuminoEngine.PCH.h");
 		parser.parse(file, pidb, diag);
 	}
 

@@ -121,7 +121,8 @@ public:
 	Ref<PIDocument> parseDocument(Decl* decl)
 	{
 		if (const FullComment *Comment = decl->getASTContext().getLocalCommentForDeclUncached(decl))
-			return HeaderParser2::parseDocument(getSourceText(Comment->getSourceRange()));
+			return parseDocument2(Comment);
+			//return HeaderParser2::parseDocument(getSourceText(Comment->getSourceRange()));
 		return ln::makeRef<PIDocument>();
 	}
 
@@ -263,8 +264,20 @@ public:
 	// メンバ関数
 	bool VisitCXXMethodDecl(CXXMethodDecl* decl)
 	{
-		if (unsigned offset = getOffsetOnRootFile(m_sm, decl->getLocation()))
+		if (unsigned offset = getOffsetOnRootFile(m_sm, decl->getLocation()))	// 入力ファイルの内側で定義されているか？
 		{
+			//ln::String localSigneture;
+			//{
+			//	for (unsigned int iParam = 0; iParam < decl->getNumParams(); iParam++) {
+			//		ParmVarDecl* paramDecl = decl->getParamDecl(iParam);
+			//		QualType& type = paramDecl->getType();
+			//		auto typeString = ln::String::fromStdString(type.getAsString());
+			//		if (!localSigneture.isEmpty()) localSigneture += u",";
+			//		localSigneture += typeString;
+			//	}
+			//	localSigneture = ln::String::fromStdString(decl->getNameAsString()) + u"(" + localSigneture + u")";
+			//}
+
 			auto* attr = m_parser->findUnlinkedAttrMacro(offset);
 			if (attr)
 			{
@@ -275,6 +288,13 @@ public:
 				info->name = ln::String::fromStdString(decl->getNameAsString());
 				info->accessLevel = tlanslateAccessLevel(decl->getAccess());
 
+				//auto declText3 = getSourceText(SourceRange(decl->getInnerLocStart(), decl->getSourceRange().getEnd()));
+				//auto declText2 = getSourceText(SourceRange(decl->getQualifierLoc().getBeginLoc(), decl->getSourceRange().getEnd()));
+				//auto declText1 = getSourceText(SourceRange(decl->getSourceRange().getBegin(), decl->getSourceRange().getEnd()));
+				//auto declText4 = getSourceText(SourceRange(, decl->getSourceRange().getEnd()));
+				//auto declText = getSourceText(SourceRange(decl->getReturnTypeSourceRange().getEnd(), decl->getSourceRange().getEnd()));
+				//info->localSignature = PIDatabase::parseLocalSigneture(ln::String::fromStdString(declText), info->name);
+
 				// documentation
 				info->document = parseDocument(decl);
 
@@ -283,7 +303,6 @@ public:
 
 				// return type
 				info->returnTypeRawName = getRawTypeFullName(decl->getReturnType());
-
 
 				// qualifiers
 				info->isVirtual = decl->isVirtual();
@@ -331,6 +350,17 @@ public:
 						//m_parser->diag()->reportError(ln::String::format(_T("Invalid declaration {0}"), ln::String::fromStdString(getSourceText(paramDecl->getSourceRange()))), getLocString(paramDecl));
 						m_parser->diag()->reportError(ln::String::format(u"Invalid declaration {0}", ln::String::fromStdString(getSourceText(paramDecl->getSourceRange()))));
 					}
+				}
+			}
+			else
+			{
+				auto name = ln::String::fromStdString(decl->getNameAsString());
+				auto document = parseDocument(decl);
+				if (!document->summary.isEmpty()) {
+					auto declText = getSourceText(decl->getSourceRange());
+					document->copydocLocalSignature = PIDatabase::parseLocalSigneture(ln::String::fromStdString(declText), name);
+
+					m_parser->getDB()->relativeDocuments.add(document);
 				}
 			}
 		}
@@ -418,6 +448,72 @@ public:
 	bool VisitUsingDirectiveDecl(UsingDirectiveDecl *aUsingDirectiveDecl)
 	{
 		return true;
+	}
+
+	Ref<PIDocument> parseDocument2(const FullComment* fullComment)
+	{
+		auto doc = ln::makeRef<PIDocument>();
+
+		for (auto& block : fullComment->getBlocks()) {
+			
+			switch (block->getCommentKind())
+			{
+			case Comment::ParagraphCommentKind:
+			{
+				auto text = ln::String::fromStdString(getSourceText(block->getSourceRange()), ln::TextEncoding::utf8Encoding());
+				if (int index = text.indexOf(u"@copydoc") >= 0) {
+					doc->copydocLocalSignature = PIDatabase::parseLocalSigneture(ln::String(text.substr(index + 8)).trim());
+				}
+				else
+				{
+					auto fc = PIDocument::formatComment(text);
+					if (!fc.isEmpty()) {
+						if (doc->summary.isEmpty()) {
+							doc->summary = PIDocument::formatComment(text);
+						}
+						else {
+							if (!doc->details.isEmpty()) doc->details += u"\n";
+							doc->details += fc;
+						}
+					}
+				}
+				break;
+			}
+			case Comment::ParamCommandCommentKind:	// @param
+			{
+				auto pcc = static_cast<ParamCommandComment*>(block);
+				auto param = ln::makeRef<PIParamDocument>();
+				param->name = ln::String::fromStdString(pcc->getArgText(0).str()).trim();
+
+				param->io = ln::String::fromStdString(pcc->getDirectionAsString(pcc->getDirection())).remove(u"[").remove(u"]");
+
+				param->description = PIDocument::formatComment(ln::String::fromStdString(getSourceText(pcc->getParagraph()->getSourceRange()), ln::TextEncoding::utf8Encoding()));
+
+				// ↓全体を解析したいときはこれを使う
+				//ln::String::fromStdString(getSourceText(block->getSourceRange()), ln::TextEncoding::utf8Encoding());
+
+				doc->params.add(param);
+
+				break;
+			}
+			case Comment::BlockCommandCommentKind:	// @return, etc
+			{
+				auto bcc = static_cast<BlockCommandComment*>(block);
+				if (bcc->getCommandID() == CommandTraits::KCI_return) {
+					doc->returns = PIDocument::formatComment(ln::String::fromStdString(getSourceText(bcc->getParagraph()->getSourceRange()), ln::TextEncoding::utf8Encoding()));
+				}
+				else if (bcc->getCommandID() == CommandTraits::KCI_brief) {
+				}
+				else if (bcc->getCommandID() == CommandTraits::KCI_details) {
+				}
+				break;
+			}
+			default:
+				break;
+			}
+		}
+
+		return doc;
 	}
 };
 
@@ -751,9 +847,12 @@ Ref<PIDocument> HeaderParser2::parseDocument(const std::string& comment)
 				ln::String con = line.substr(result.length());
 				if (ln::Regex::search(con, _T(R"((\w+)(.*))"), &result))
 				{
-					info->copydocMethodName = result.groupValue(1);
-					info->copydocSignature = result.groupValue(2);
-					info->copydocSignature = info->copydocSignature.remove('(').remove(')').remove(' ').remove('\t');
+					////info->copydocMethodName = result.groupValue(1);
+					////info->copydocSignature = result.groupValue(2);
+					//info->localSignature = result.groupValue(1);
+					//info->localSignature += ln::String(result.groupValue(2));
+					//info->localSignature = info->localSignature.remove(' ').remove('\t');
+					info->copydocLocalSignature = PIDatabase::parseLocalSigneture(con);
 					target = &info->details;
 					line.clear();
 				}
