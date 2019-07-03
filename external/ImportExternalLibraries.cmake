@@ -433,7 +433,7 @@ set_target_properties(EffekseerRendererDX12 PROPERTIES IMPORTED_LOCATION_DEBUG "
 set_target_properties(EffekseerRendererDX12 PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "D:/Proj/Effekseer/Dev/Cpp/EffekseerRendererDX12;D:/Proj/Effekseer/Dev/Cpp/EffekseerRendererLLGI")
 
 add_library(LLGI STATIC IMPORTED)
-set_target_properties(LLGI PROPERTIES IMPORTED_LOCATION_RELEASE "D:/Proj/Effekseer/Dev/Cpp/Debug/LLGI.lib")
-set_target_properties(LLGI PROPERTIES IMPORTED_LOCATION_DEBUG "D:/Proj/Effekseer/Dev/Cpp/Debug/LLGI.lib")
+set_target_properties(LLGI PROPERTIES IMPORTED_LOCATION_RELEASE "D:/Proj/LLGI/_build/src/Debug/LLGI.lib")
+set_target_properties(LLGI PROPERTIES IMPORTED_LOCATION_DEBUG "D:/Proj/LLGI/_build/src/Debug/LLGI.lib")
 set_target_properties(LLGI PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "D:/Proj/Effekseer/Dev/Cpp/3rdParty/LLGI/src")
 
