@@ -62,7 +62,7 @@ ln::String FlatCCommon::makeFlatCParamQualTypeName(GeneratorConfiguration* confi
 
 	if (typeInfo->kind() == TypeKind::Enum)
 	{
-		return _T("LN") + typeInfo->shortName();
+		return makeTypeName(config, typeInfo);
 	}
 
 	if (typeInfo == PredefinedTypes::stringType)
@@ -168,7 +168,7 @@ void FlatCHeaderGenerator::generate()
 	OutputBuffer structMemberFuncImplsText;
 	for (auto& structInfo : db()->structs())
 	{
-		structsText.AppendLines(makeDocumentComment(structInfo->document()));
+		structsText.AppendLine(makeDocumentComment(structInfo->document()));
 		structsText.AppendLine("struct {0}", FlatCCommon::makeTypeName(config(), structInfo));
 		structsText.AppendLine("{");
 		structsText.IncreaseIndent();
@@ -183,10 +183,10 @@ void FlatCHeaderGenerator::generate()
 		for (auto& methodInfo : structInfo->methods())
 		{
 			// comment
-			structMemberFuncDeclsText.AppendLines(makeDocumentComment(methodInfo->document()));
+			structMemberFuncDeclsText.AppendLine(makeDocumentComment(methodInfo->document()));
 
 			// decl
-			structMemberFuncDeclsText.AppendLines(FlatCCommon::makeFuncHeader(config(), methodInfo)).append(";").NewLine(2);
+			structMemberFuncDeclsText.AppendLine(FlatCCommon::makeFuncHeader(config(), methodInfo) + u";").NewLine(2);
 		}
 
 		//// function impls
@@ -209,10 +209,10 @@ void FlatCHeaderGenerator::generate()
 		for (auto& methodInfo : classInfo->methods())
 		{
 			// comment
-			classMemberFuncDeclsText.AppendLines(makeDocumentComment(methodInfo->document()));
+			classMemberFuncDeclsText.AppendLine(makeDocumentComment(methodInfo->document()));
 
 			// decl
-			classMemberFuncDeclsText.AppendLines(FlatCCommon::makeFuncHeader(config(), methodInfo)).append(";").NewLine(2);
+			classMemberFuncDeclsText.AppendLine(FlatCCommon::makeFuncHeader(config(), methodInfo)).append(";").NewLine(2);
 		}
 
 		//// function impls
@@ -231,31 +231,6 @@ void FlatCHeaderGenerator::generate()
 		//	classMemberFuncImplsText.AppendLines(setBindingTypeInfo.replace("%ClassName%", classInfo->shortName()));
 		//}
 	}
-
-	// enums
-	OutputBuffer enumsText;
-#if 0
-	{
-		for (auto& enumInfo : db()->enums)
-		{
-			enumsText.AppendLines(MakeDocumentComment(enumInfo->document));
-			enumsText.AppendLine("typedef enum tagLN{0}", enumInfo->shortName());
-			enumsText.AppendLine("{");
-			enumsText.IncreaseIndent();
-			for (auto& constantInfo : enumInfo->declaredConstants)
-			{
-				// comment
-				enumsText.AppendLines(MakeDocumentComment(constantInfo->document));
-
-				// member
-				ln::String name = (enumInfo->shortName() + "_" + constantInfo->name).toUpper();
-				enumsText.AppendLine("LN_{0} = {1},", name, constantInfo->value->get<int>()).NewLine();
-			}
-			enumsText.DecreaseIndent();
-			enumsText.AppendLine("}} LN{0};", enumInfo->shortName());
-		}
-	}
-#endif
 
 	// delegates
 	OutputBuffer delegatesText;
@@ -282,7 +257,7 @@ void FlatCHeaderGenerator::generate()
 	{
 		ln::String src = ln::FileSystem::readAllText(makeTemplateFilePath(_T("LuminoC.h.template")));
 		src = src.replace("%%Structs%%", structsText.toString());
-		src = src.replace("%%Enums%%", enumsText.toString());
+		src = src.replace("%%Enums%%", makeEnumDecls());
 		src = src.replace("%%Delegates%%", delegatesText.toString());
 		src = src.replace("%%StructMemberFuncDecls%%", structMemberFuncDeclsText.toString());
 		src = src.replace("%%ClassMemberFuncDecls%%", classMemberFuncDeclsText.toString());
@@ -301,7 +276,7 @@ void FlatCHeaderGenerator::generate()
 	//}
 }
 
-ln::String FlatCHeaderGenerator::makeDocumentComment(DocumentInfo* doc)
+ln::String FlatCHeaderGenerator::makeDocumentComment(DocumentInfo* doc) const
 {
 	OutputBuffer text;
 	text.AppendLine("/**");
@@ -327,9 +302,34 @@ ln::String FlatCHeaderGenerator::makeDocumentComment(DocumentInfo* doc)
 	text.DecreaseIndent();
 	text.AppendLine("*/");
 
-	return text.toString();
+	return text.toString().trim();
 }
 
+ln::String FlatCHeaderGenerator::makeEnumDecls() const
+{
+	OutputBuffer code;
+
+	for (auto& symbol : db()->enums()) {
+		auto typeName = FlatCCommon::makeTypeName(config(), symbol);
+
+		code.AppendLine(makeDocumentComment(symbol->document()));
+		code.AppendLine(u"typedef enum tag" + typeName);
+		code.AppendLine(u"{");
+		code.IncreaseIndent();
+
+		for (auto& member : symbol->constants()) {
+			code.AppendLine(makeDocumentComment(member->document()));
+			code.AppendLine(u"{0} = {1},", makeUpperSnakeName(member->name()), member->value()->get<int>());
+			code.NewLine();
+		}
+
+		code.DecreaseIndent();
+		code.AppendLine(u"} " + typeName + u";");
+		code.NewLine();
+	}
+
+	return code.toString().trim();
+}
 
 #if 0
 
@@ -408,11 +408,30 @@ void FlatCSourceGenerator::generate()
 
 		ln::String src = ln::FileSystem::readAllText(makeTemplateFilePath(_T("Source.cpp.template")))
 			.replace("%%HeaderName%%", headerName)
+			.replace("%%HeaderString%%", config()->flatCHeaderString)
+			.replace("%%WrapSubclassDecls%%", makeWrapSubclassDecls())
 			.replace("%%StructMemberFuncImpls%%", structMemberFuncImplsText.toString())
 			.replace("%%ClassMemberFuncImpls%%", classMemberFuncImplsText.toString());
 
 		ln::FileSystem::writeAllText(makeOutputFilePath("FlatC", fileName), src);
 	}
+}
+
+ln::String FlatCSourceGenerator::makeWrapSubclassDecls() const
+{
+	OutputBuffer code;
+	for (auto& classSymbol : db()->classes()) {
+		code.AppendLine(u"class {0} : public {1}", makeWrapSubclassName(classSymbol), classSymbol->fullName());
+		code.AppendLine(u"{");
+		code.IncreaseIndent();
+
+		// TODO:
+
+		code.DecreaseIndent();
+		code.AppendLine(u"};");
+		code.NewLine();
+	}
+	return code.toString();
 }
 
 ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo)

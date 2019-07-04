@@ -1,6 +1,9 @@
 ﻿
 #include "ParserIntermediates.hpp"
 
+//==============================================================================
+// PIDocument
+
 ln::String PIDocument::formatComment(const ln::String& comment)
 {
 	ln::String output = comment.trim();
@@ -27,6 +30,45 @@ ln::String PIDocument::formatComment(const ln::String& comment)
 
 	return output;
 }
+
+
+//==============================================================================
+// PIMethod
+
+AccessLevel PIMethod::accessLevelAsEnum() const
+{
+	if (ln::String::compare(accessLevel, u"Private", ln::CaseSensitivity::CaseInsensitive) == 0)
+		return AccessLevel::Private;
+	if (ln::String::compare(accessLevel, u"EProtectednum", ln::CaseSensitivity::CaseInsensitive) == 0)
+		return AccessLevel::Protected;
+	if (ln::String::compare(accessLevel, u"Public", ln::CaseSensitivity::CaseInsensitive) == 0)
+		return AccessLevel::Public;
+
+	LN_UNREACHABLE();
+	return AccessLevel::Private;
+}
+
+//==============================================================================
+// PITypeInfo
+
+TypeKind PITypeInfo::kindAsEnum() const
+{
+	if (ln::String::compare(kind, u"Primitive", ln::CaseSensitivity::CaseInsensitive) == 0)
+		return TypeKind::Primitive;
+	if (ln::String::compare(kind, u"Enum", ln::CaseSensitivity::CaseInsensitive) == 0)
+		return TypeKind::Enum;
+	if (ln::String::compare(kind, u"Struct", ln::CaseSensitivity::CaseInsensitive) == 0)
+		return TypeKind::Struct;
+	if (ln::String::compare(kind, u"Class", ln::CaseSensitivity::CaseInsensitive) == 0)
+		return TypeKind::Class;
+
+	LN_UNREACHABLE();
+	return TypeKind::Primitive;
+}
+
+
+//==============================================================================
+// PIDatabase
 
 ln::List<ln::String> PIDatabase::parseLocalSigneture(const ln::String& signeture, const ln::String& methodName)
 {
@@ -85,4 +127,22 @@ PIDocument* PIDatabase::findRelativeDocument(const ln::List<ln::String>& localSi
 	}
 
 	return nullptr;
+}
+
+void PIDatabase::clear()
+{
+	types.clear();
+	relativeDocuments.clear();
+}
+
+void PIDatabase::save(const ln::Path& filePath)
+{
+	auto json = ln::JsonSerializer::serialize(*this);
+	ln::FileSystem::writeAllText(filePath, json);
+}
+
+void PIDatabase::load(const ln::Path& filePath)
+{
+	auto json = ln::FileSystem::readAllText(filePath);
+	ln::JsonSerializer::deserialize(json, *this);
 }

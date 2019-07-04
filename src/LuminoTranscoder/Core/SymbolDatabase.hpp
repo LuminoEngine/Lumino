@@ -279,7 +279,7 @@ public:
 	ln::Result init(const ln::String& primitveRawFullName);
 	ln::Result link();
 
-	TypeKind kind() const { return (m_piType) ? m_piType->kind : TypeKind::Primitive; };
+	TypeKind kind() const { return (m_piType) ? m_piType->kindAsEnum() : TypeKind::Primitive; };
 	const ln::String& fullName() const { return m_fullName; }
 	const ln::String& shortName() const { return m_shortName; }
 	const ln::List<Ref<FieldSymbol>>& fields() const { return m_fields; }

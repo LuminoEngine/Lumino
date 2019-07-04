@@ -22,7 +22,6 @@ public:
 
 private:
 	ln::String makeSnakeStyleName(const ln::String& name) const;
-	ln::String makeUpperSnakeName(const ln::String& name) const;
 
 
 	ln::String makeRubyClassInfoVariableName(TypeSymbol* type) const { return u"g_class_" + type->shortName(); }

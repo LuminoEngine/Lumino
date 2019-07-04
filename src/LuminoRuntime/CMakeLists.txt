@@ -8,10 +8,13 @@ project(LuminoRuntime)
 file(GLOB LOCAL_SOURCES "src/*.h" "src/*.hpp" "src/*.cpp")
 source_group("Sources" FILES ${LOCAL_SOURCES})
 
+file(GLOB LOCAL_FLATC_SOURCES "../Bindings/FlatC/*.h" "../Bindings/FlatC/*.cpp")
+source_group("FlatC" FILES ${LOCAL_FLATC_SOURCES})
+
 #------------------------------------------------------------------------------
 # Targets
 
-add_library(${PROJECT_NAME} SHARED ${LOCAL_SOURCES})
+add_library(${PROJECT_NAME} SHARED ${LOCAL_SOURCES} ${LOCAL_FLATC_SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE "${LUMINO_INCLUDE_DIRECTORIES}" "src")
 target_link_libraries(${PROJECT_NAME} LuminoEngine)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")

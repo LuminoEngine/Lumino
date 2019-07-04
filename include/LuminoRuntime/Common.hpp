@@ -30,6 +30,11 @@
 extern "C" {
 #endif // __cplusplus
 
+//------------------------------------------------------------------------------
+#include <stdint.h>
+typedef intptr_t LnHandle;
+typedef void*    LnUserData;
+
 /** 結果・エラーコード */
 typedef enum tagLnResult
 {

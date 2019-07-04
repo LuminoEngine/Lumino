@@ -11,6 +11,15 @@ public:
     ln::String name;
     ln::String io;
     ln::String description;
+
+protected:
+	LN_SERIALIZE_CLASS_VERSION(1);
+	void serialize(ln::Archive& ar)
+	{
+		ar & LN_NVP(name);
+		ar & LN_NVP(io);
+		ar & LN_NVP(description);
+	}
 };
 
 // Doxygen コメント
@@ -24,6 +33,17 @@ public:
 	ln::List<ln::String> copydocLocalSignature;
 
 	static ln::String formatComment(const ln::String& comment);
+
+protected:
+	LN_SERIALIZE_CLASS_VERSION(1);
+	void serialize(ln::Archive& ar)
+	{
+		ar & LN_NVP(summary);
+		ar & LN_NVP(params);
+		ar & LN_NVP(returns);
+		ar & LN_NVP(details);
+		ar & LN_NVP(copydocLocalSignature);
+	}
 };
 
 // LN_METHOD() などの属性マクロの ( ) 内に記述されたパラメータ
@@ -32,6 +52,14 @@ class PIMetadata : public ln::RefObject
 public:
 	ln::String name;
 	std::unordered_map<ln::String, ln::String> values;
+
+protected:
+	LN_SERIALIZE_CLASS_VERSION(1);
+	void serialize(ln::Archive& ar)
+	{
+		ar & LN_NVP(name);
+		ar & LN_NVP(values);
+	}
 };
 
 // フィールド変数
@@ -42,6 +70,16 @@ public:
 	Ref<PIMetadata> metadata;
 	ln::String typeRawName;
 	ln::String name;
+
+protected:
+	LN_SERIALIZE_CLASS_VERSION(1);
+	void serialize(ln::Archive& ar)
+	{
+		ar & LN_NVP(document);
+		ar & LN_NVP(metadata);
+		ar & LN_NVP(typeRawName);
+		ar & LN_NVP(name);
+	}
 };
 
 // 定数 (enum メンバやデフォルト引数)
@@ -53,6 +91,17 @@ public:
 	ln::String typeRawName;
 	ln::String name;
 	ln::Ref<ln::Variant> value;
+
+protected:
+	LN_SERIALIZE_CLASS_VERSION(1);
+	void serialize(ln::Archive& ar)
+	{
+		ar & LN_NVP(document);
+		ar & LN_NVP(metadata);
+		ar & LN_NVP(typeRawName);
+		ar & LN_NVP(name);
+		ar & LN_NVP(value);
+	}
 };
 
 // メソッドの引数情報
@@ -65,16 +114,28 @@ public:
 	bool isOut = false;
 	bool isThis = false;
 	bool isReturn = false;
+
+protected:
+	LN_SERIALIZE_CLASS_VERSION(1);
+	void serialize(ln::Archive& ar)
+	{
+		ar & LN_NVP(typeRawName);
+		ar & LN_NVP(name);
+		ar & LN_NVP(isIn);
+		ar & LN_NVP(isOut);
+		ar & LN_NVP(isThis);
+		ar & LN_NVP(isReturn);
+	}
 };
 
 // メソッド情報
 class PIMethod : public ln::RefObject
 {
 public:
-	PITypeInfo* owner;
+	//PITypeInfo* owner;
 	Ref<PIDocument> document;
 	Ref<PIMetadata> metadata;
-	AccessLevel accessLevel = AccessLevel::Private;
+	ln::String accessLevel;	// "public", "protected", "private"
 	ln::String name;
 	bool isConst = false;
 	bool isStatic = false;
@@ -82,14 +143,32 @@ public:
 	bool isConstructor = false;
 	ln::String returnTypeRawName;
 	ln::List<Ref<PIMethodParameter>> parameters;
-	//ln::List<ln::String> localSignature;
+
+	AccessLevel accessLevelAsEnum() const;
+
+protected:
+	LN_SERIALIZE_CLASS_VERSION(1);
+	void serialize(ln::Archive& ar)
+	{
+		ar & LN_NVP(document);
+		ar & LN_NVP(metadata);
+		ar & LN_NVP(accessLevel);
+		ar & LN_NVP(name);
+		ar & LN_NVP(isConst);
+		ar & LN_NVP(isStatic);
+		ar & LN_NVP(isVirtual);
+		ar & LN_NVP(isConstructor);
+		ar & LN_NVP(returnTypeRawName);
+		ar & LN_NVP(parameters);
+	}
 };
 
 // 型情報 (struct, class, enum)
 class PITypeInfo : public ln::RefObject
 {
 public:
-	TypeKind kind;
+	//TypeKind kind;
+	ln::String kind;
     ln::String rawFullName;
 	ln::String baseClassRawName;
     Ref<PIDocument> document;
@@ -97,6 +176,22 @@ public:
 	ln::List<Ref<PIField>> fields;
 	ln::List<Ref<PIConstant>> constants;
 	ln::List<Ref<PIMethod>> methods;
+
+	TypeKind kindAsEnum() const;
+
+protected:
+	LN_SERIALIZE_CLASS_VERSION(1);
+	void serialize(ln::Archive& ar)
+	{
+		ar & LN_NVP(kind);
+		ar & LN_NVP(rawFullName);
+		ar & LN_NVP(baseClassRawName);
+		ar & LN_NVP(document);
+		ar & LN_NVP(metadata);
+		ar & LN_NVP(fields);
+		ar & LN_NVP(constants);
+		ar & LN_NVP(methods);
+	}
 };
 
 //class PIRelativeDocument : public ln::RefObject
@@ -116,5 +211,17 @@ public:
 
 	PIDocument* findRelativeDocument(const ln::List<ln::String>& localSignature);
 
+	void clear();
+	void save(const ln::Path& filePath);
+	void load(const ln::Path& filePath);
+
 	static ln::List<ln::String> parseLocalSigneture(const ln::String& signeture, const ln::String& methodName = ln::String::Empty);
+
+protected:
+	LN_SERIALIZE_CLASS_VERSION(1);
+	void serialize(ln::Archive& ar)
+	{
+		ar & LN_NVP(types);
+		ar & LN_NVP(relativeDocuments);
+	}
 };

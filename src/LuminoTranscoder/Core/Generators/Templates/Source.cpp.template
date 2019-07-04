@@ -1,6 +1,10 @@
 #include "RuntimeManager.hpp"
 #include "%%HeaderName%%"
 
+%%HeaderString%%
+
+%%WrapSubclassDecls%%
+
 extern "C"
 {
 

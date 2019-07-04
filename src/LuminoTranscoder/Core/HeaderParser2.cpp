@@ -126,19 +126,19 @@ public:
 		return ln::makeRef<PIDocument>();
 	}
 
-	::AccessLevel tlanslateAccessLevel(AccessSpecifier ac)
+	ln::String tlanslateAccessLevel(AccessSpecifier ac)
 	{
 		switch (ac)
 		{
 		case clang::AS_public:
-			return ::AccessLevel::Public;
+			return u"Public";
 		case clang::AS_protected:
-			return ::AccessLevel::Protected;
+			return u"Protected";
 		case clang::AS_private:
-			return ::AccessLevel::Private;
+			return u"Private";
 		default:
 			LN_UNREACHABLE();
-			return ::AccessLevel::Private;
+			return u"Private";
 		}
 	}
 
@@ -245,10 +245,10 @@ public:
 				}
 
 				if (decl->getDefinition()->isStruct()) {
-					info->kind = TypeKind::Struct;
+					info->kind = u"Struct";
 				}
 				else {
-					info->kind = TypeKind::Class;
+					info->kind = u"Class";
 				}
 				m_parser->getDB()->types.add(info);
 
@@ -284,7 +284,7 @@ public:
 				attr->linked = true;
 
 				auto info = ln::makeRef<PIMethod>();
-				info->owner = m_currentRecord;
+				//info->owner = m_currentRecord;
 				info->name = ln::String::fromStdString(decl->getNameAsString());
 				info->accessLevel = tlanslateAccessLevel(decl->getAccess());
 
@@ -318,7 +318,7 @@ public:
 					m_parser->diag()->reportError(ln::String::format(u"Invalid declaration {0}", ln::String::fromStdString(getSourceText(decl->getSourceRange()))));
 				}
 
-				info->owner->methods.add(info);
+				m_currentRecord->methods.add(info);
 
 				for (unsigned int iParam = 0; iParam < decl->getNumParams(); iParam++)
 				{
@@ -398,7 +398,7 @@ public:
 
 				auto symbol = ln::makeRef<PITypeInfo>();
 				symbol->rawFullName = ln::String::fromStdString(decl->getQualifiedNameAsString());
-				symbol->kind = TypeKind::Enum;
+				symbol->kind = u"Enum";
 
 				// documentation
 				symbol->document = parseDocument(decl);
