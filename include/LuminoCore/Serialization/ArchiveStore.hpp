@@ -66,7 +66,7 @@ public:
     virtual bool moveToNamedMember(const StringRef& name) = 0;
     virtual bool moveToIndexedMember(int index) = 0;
 	virtual bool hasKey(const StringRef& name) const = 0;
-	virtual const String& memberKey(int index) const = 0;
+	virtual const String& memberKey(int index) const = 0;	// open済みmapコンテナのキーを探す
 	bool openContainer()
 	{
 		//int dummy;
@@ -326,9 +326,9 @@ protected:
 
 	virtual const String& memberKey(int index) const override
 	{
-		if (checkTopType(JsonElementType::Object))
+		if (checkCurrentContainerType(JsonElementType::Object))
 		{
-			return static_cast<JsonObject*>(current())->memberKey(index);
+			return static_cast<JsonObject*>(currentContainer())->memberKey(index);
 		}
 		else
 		{
@@ -534,8 +534,10 @@ protected:
 	}
 
 private:
+	JsonElement* currentContainer() const { return m_nodeStack.top(); }
     JsonElement* current() const { return m_current; }
-    bool checkTopTypeForWrite(JsonElementType t) const { return m_nodeStack .top()->type() == t; }
+    bool checkTopTypeForWrite(JsonElementType t) const { return m_nodeStack.top()->type() == t; }
+	bool checkCurrentContainerType(JsonElementType t) const { return m_nodeStack.top()->type() == t; }
 	bool checkTopType(JsonElementType t) const { return current()->type() == t; }
 
 	std::stack<JsonElement*>	m_nodeStack;	// Value 型は積まれない。コンテナのみ。

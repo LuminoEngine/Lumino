@@ -686,4 +686,35 @@ TValue Variant::get() const
 //	}
 //}
 
+
+template<>
+inline void serialize(Archive& ar, Ref<Variant>& value)
+{
+	ArchiveNodeType type;
+	ar.makeVariantTag(&type);
+
+	if (ar.isSaving()) {
+		if (!value) {
+			ar.processNull();
+		}
+		else {
+			value->serializeInternal(ar, type);
+		}
+	}
+	else {
+		if (type != ArchiveNodeType::Null) {
+
+			// TODO: いまのところ Variant 用
+			if (!value) {
+				value = makeObject<Variant>();
+			}
+			value->serializeInternal(ar, type);
+		}
+		else {
+			value = nullptr;
+		}
+	}
+}
+
+
 } // namespace ln

@@ -82,6 +82,40 @@ const String Archive::ClassNameKey = _TT("lumino_class_name");
 const String Archive::ClassVersionKey = _TT("lumino_class_version");
 const String Archive::ClassBaseKey = _TT("lumino_base_class");
 
+void Archive::makeArrayTag(int* outSize)
+{
+	//
+	if (isSaving())
+	{
+		moveState(NodeHeadState::Array);
+	}
+	else if (isLoading())
+	{
+		moveState(NodeHeadState::Array);
+		// ArrayContainer としてデシリアライズしている場合、この時点で size を返したいので、store を ArrayContainer まで移動して size を得る必要がある
+		//preReadValue();
+		tryOpenContainer();
+		if (outSize) *outSize = m_store->getContainerElementCount();
+
+		// makeArrayTag() を抜けた次の process は 0 インデックスを使う
+		//m_store->moveToIndexedMember(0);
+	}
+}
+
+void Archive::makeMapTag(int* outSize)
+{
+	if (isSaving())
+	{
+		moveState(NodeHeadState::Object);
+	}
+	else if (isLoading())
+	{
+		moveState(NodeHeadState::Object);
+		tryOpenContainer();
+		if (outSize) *outSize = m_store->getContainerElementCount();
+	}
+}
+
 void Archive::makeVariantTag(ArchiveNodeType* type)
 {
 

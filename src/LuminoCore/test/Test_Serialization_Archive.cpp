@@ -505,7 +505,35 @@ TEST_F(Test_Serialization2, Optional)
     }
 }
 
+//------------------------------------------------------------------------------
+//## unordered_map
+TEST_F(Test_Serialization2, unordered_map)
+{
+	struct Test
+	{
+		ln::String name;
+		std::unordered_map<ln::String, ln::String> values;
 
+		void serialize(Archive& ar)
+		{
+			ar & LN_NVP(name);
+			ar & LN_NVP(values);
+		}
+	};
+
+	Test t1;
+	t1.name = u"test";
+	t1.values = { {u"f1", u"s1"}, {u"f2", u"s2"} };
+	String json = JsonSerializer::serialize(t1, JsonFormatting::None);
+	ASSERT_EQ(u"{\"name\":\"test\",\"values\":{\"f1\":\"s1\",\"f2\":\"s2\"}}", json);
+
+	Test t2;
+	JsonSerializer::deserialize(json, t2);
+	ASSERT_EQ(u"test", t2.name);
+	ASSERT_EQ(2, t2.values.size());
+	ASSERT_EQ(u"s1", t2.values[u"f1"]);
+	ASSERT_EQ(u"s2", t2.values[u"f2"]);
+}
 
 //------------------------------------------------------------------------------
 //## Examples

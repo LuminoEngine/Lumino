@@ -102,24 +102,29 @@ public:
 		}
 	}
 
-	void makeArrayTag(int* outSize)
-	{
-		//
-		if (isSaving())
-		{
-			moveState(NodeHeadState::Array);
-		}
-		else if (isLoading())
-		{
-			moveState(NodeHeadState::Array);
-			// ArrayContainer としてデシリアライズしている場合、この時点で size を返したいので、store を ArrayContainer まで移動して size を得る必要がある
-			//preReadValue();
-            tryOpenContainer();
-			if (outSize) *outSize = m_store->getContainerElementCount();
+	void makeArrayTag(int* outSize);
+	void makeMapTag(int* outSize);
 
-            // makeArrayTag() を抜けた次の process は 0 インデックスを使う
-            //m_store->moveToIndexedMember(0);
-        }
+	template<typename TKey, typename TValue>
+	void makeMapItem(const TKey& key, TValue& value)
+	{
+		if (isSaving()) {
+			process(makeNVP(key, value));
+		}
+		else {
+		}
+	}
+
+	template<typename TKey, typename TValue>
+	void makeMapItem(TKey& key, TValue& value)
+	{
+		if (isSaving()) {
+		}
+		else {
+			key = m_store->memberKey(m_nodeInfoStack.back().arrayIndex);
+			processLoad(makeNVP(key, value));
+			m_nodeInfoStack.back().arrayIndex++;	// container が Array ではないので、processLoad() 内ではインクリメントされない。ここでインクリメントする。
+		}
 	}
 
 	// 普通の nvp ではなく、キー名も自分で制御したいときに使う
@@ -239,6 +244,14 @@ public:
 	// 事前に makeSmartPtrTag 必須
     void makeTypeInfo(String* value);
 
+	// Ref<> or Optional<> 専用。state は遷移済み。
+	void processNull()
+	{
+		moveState(NodeHeadState::PrimitiveValue);
+		preWriteValue();
+		writeValueNull();
+	}
+
 protected:
 
 	Archive()
@@ -337,14 +350,6 @@ private:
 		preWriteValue();
 		writeValue(value);
 		return true;
-	}
-
-    // Ref<> or Optional<> 専用。state は遷移済み。
-	void processNull()
-	{
-		moveState(NodeHeadState::PrimitiveValue);
-		preWriteValue();
-		writeValueNull();
 	}
 
 	bool preWriteValue()

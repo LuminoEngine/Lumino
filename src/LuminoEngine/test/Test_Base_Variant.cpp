@@ -118,33 +118,6 @@ TEST_F(Test_Base_Variant, SetAndGet)
     }
 }
 
-namespace ln {
-
-template<>
-inline void serialize(Archive& ar, Ref<Variant>& value)
-{
-    ArchiveNodeType type;
-    ar.makeVariantTag(&type);
-
-    if (ar.isSaving()) {
-        value->serializeInternal(ar, type);
-    }
-    else {
-        if (type != ArchiveNodeType::Null) {
-
-            // TODO: いまのところ Variant 用
-            if (!value) {
-                value = makeObject<Variant>();
-            }
-            value->serializeInternal(ar, type);
-        }
-        else {
-            value = nullptr;
-        }
-    }
-}
-
-}
 //------------------------------------------------------------------------------
 //## Variant serialization
 TEST_F(Test_Base_Variant, Serialization)
@@ -153,6 +126,7 @@ TEST_F(Test_Base_Variant, Serialization)
 
 	struct Data
 	{
+		Ref<Variant> v_VarNull;
 		//Ref<Variant> v_Null;	// TODO:
 		Ref<Variant> v_Bool;
 		//Ref<Variant> v_Char,	// TODO:
@@ -171,6 +145,7 @@ TEST_F(Test_Base_Variant, Serialization)
 
 		void serialize(Archive& ar)
 		{
+			ar & LN_NVP(v_VarNull);
 			ar & LN_NVP(v_Bool);
 			ar & LN_NVP(v_Int8);
 			ar & LN_NVP(v_Int16);
@@ -191,6 +166,7 @@ TEST_F(Test_Base_Variant, Serialization)
 	{
 		JsonTextOutputArchive ar;
 		Data data;
+		data.v_VarNull = nullptr;
 		data.v_Bool = makeVariant(true);
 		data.v_Int8 = makeVariant(1);
 		data.v_Int16 = makeVariant(2);
@@ -213,6 +189,7 @@ TEST_F(Test_Base_Variant, Serialization)
 		JsonTextInputArchive ar(json);
 		Data data;
 		ar.process(data);
+		ASSERT_EQ(data.v_VarNull, nullptr);
 		ASSERT_EQ(true, data.v_Bool->get<bool>());
 		ASSERT_EQ(1, data.v_Int8->get<int8_t>());
 		ASSERT_EQ(2, data.v_Int16->get<int16_t>());

@@ -101,4 +101,26 @@ void serialize(Archive& ar, Optional<TValue>& value)
 	}
 }
 
+template<typename TKey, typename TValue>
+void serialize(Archive& ar, std::unordered_map<TKey, TValue>& value)
+{
+	int size = value.size();
+	ar.makeMapTag(&size);
+	if (ar.isSaving()) {
+		for (auto& p : value) {
+			ar.makeMapItem(p.first, p.second);
+		}
+	}
+	else {
+		value.clear();
+		auto hint = value.begin();
+		for (int i = 0; i < size; i++) {
+			TKey k;
+			TValue v;
+			ar.makeMapItem(k, v);
+			hint = value.emplace_hint(hint, std::move(k), std::move(v));
+		}
+	}
+}
+
 } // namespace ln
