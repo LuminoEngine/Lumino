@@ -15,6 +15,9 @@ public:
 	static ln::String makeFunkParamList(MethodSymbol* method);
 	static ln::String makeFuncHeader(GeneratorConfiguration* config, MethodSymbol* methodInfo);
 
+	static ln::String makeEnumMemberName(GeneratorConfiguration* config, TypeSymbol* enumType, ConstantSymbol* member);
+
+
 	static ln::String makeCppQualTypeName(TypeSymbol* typeInfo);
 	static ln::String makeFlatCQualTypeName(TypeSymbol* typeInfo);
 	static ln::String makeFlatCParamQualTypeName(GeneratorConfiguration* config, ln::Ref<MethodSymbol> methodInfo, ln::Ref<MethodParameterSymbol> paramInfo);

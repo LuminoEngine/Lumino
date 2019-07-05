@@ -14,20 +14,13 @@ ln::String FlatCCommon::makeFuncName(GeneratorConfiguration* config, MethodSymbo
 {
 	ln::String funcName;
 	if (method->isConstructor()) {
-		funcName = u"Init";
+		funcName = u"Create";
 	}
 	else {
 		funcName = method->shortName().toTitleCase();
 	}
 
-	auto name = ln::String::format(_T("{0}{1}_{2}"), config->flatCOutputModuleName, method->ownerType()->shortName(), funcName);
-
-	return name;
-
-	//ln::String n = ln::String::format(_T("LN{0}_{1}"), owner->shortName(), funcName);
-	//if (IsOverloadChild())
-	//	n += metadata->getValue(MetadataSymbol::OverloadPostfixAttr);
-	//return n;
+	return ln::String::format(_T("{0}{1}_{2}{3}"), config->flatCOutputModuleName, method->ownerType()->shortName(), funcName, method->overloadPostfix());
 }
 
 ln::String FlatCCommon::makeTypeName(GeneratorConfiguration* config, TypeSymbol* type)
@@ -116,16 +109,22 @@ ln::String FlatCCommon::makeFuncHeader(GeneratorConfiguration* config, MethodSym
 {
 	// make params
 	OutputBuffer params;
-	for (auto& paramInfo : methodInfo->flatParameters())
-	{
+	for (auto& paramInfo : methodInfo->flatParameters()) {
 		params.AppendCommad("{0} {1}", FlatCCommon::makeFlatCParamQualTypeName(config, methodInfo, paramInfo), paramInfo->name());
 	}
+
+
 
 	//ln::String suffix = (methodInfo->isVirtual) ? "_CallVirtualBase" : "";
 
 	return funcHeaderTemplate
 		.replace("%%FuncName%%", FlatCCommon::makeFuncName(config, methodInfo))// + suffix)
 		.replace("%%ParamList%%", params.toString());
+}
+
+ln::String FlatCCommon::makeEnumMemberName(GeneratorConfiguration* config, TypeSymbol* enumType, ConstantSymbol* member)
+{
+	return config->flatCOutputModuleName.toUpper() + u"_" + Generator::makeUpperSnakeName(enumType->shortName()) + u"_" + Generator::makeUpperSnakeName(member->name());
 }
 
 
@@ -212,7 +211,7 @@ void FlatCHeaderGenerator::generate()
 			classMemberFuncDeclsText.AppendLine(makeDocumentComment(methodInfo->document()));
 
 			// decl
-			classMemberFuncDeclsText.AppendLine(FlatCCommon::makeFuncHeader(config(), methodInfo)).append(";").NewLine(2);
+			classMemberFuncDeclsText.AppendLine(FlatCCommon::makeFuncHeader(config(), methodInfo) + u";").NewLine(2);
 		}
 
 		//// function impls
@@ -319,7 +318,7 @@ ln::String FlatCHeaderGenerator::makeEnumDecls() const
 
 		for (auto& member : symbol->constants()) {
 			code.AppendLine(makeDocumentComment(member->document()));
-			code.AppendLine(u"{0} = {1},", makeUpperSnakeName(member->name()), member->value()->get<int>());
+			code.AppendLine(u"{0} = {1},", FlatCCommon::makeEnumMemberName(config(), symbol, member), member->value()->get<int>());
 			code.NewLine();
 		}
 
@@ -502,7 +501,7 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
 			}
 			else if (type->isEnum())
 			{
-				args.AppendCommad("static_cast<{0}>({1})", type->shortName(), paramInfo->name());
+				args.AppendCommad("static_cast<{0}>({1})", type->fullName(), paramInfo->name());
 			}
 			else if (type == PredefinedTypes::boolType)
 			{
@@ -557,7 +556,7 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
 			{
 				OutputBuffer macroArgs;
 				macroArgs.AppendCommad("out" + typeInfo->shortName());	// 格納する変数名
-				macroArgs.AppendCommad("LN" + typeInfo->shortName());	// クラス名
+				macroArgs.AppendCommad(makeWrapSubclassName(typeInfo));	// クラス名
 				macroArgs.AppendCommad(methodInfo->shortName());		// 初期化関数名
 				macroArgs.AppendCommad(args.toString());		// 引数
 				callExp = ln::String::format("LNI_CREATE_OBJECT({0});", macroArgs.toString());

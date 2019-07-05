@@ -1,6 +1,6 @@
 
 #pragma once
-#include <LuminoRuntime/Common.hpp>
+#include <LuminoEngine/Runtime/FlatCommon.h>
 
 extern "C"
 {
@@ -15,27 +15,27 @@ typedef enum tagLnPixelFormat
     /**
         @brief Unknown
     */
-    Unknown = 0,
+    LN_PIXEL_FORMAT_UNKNOWN = 0,
 
     /**
         @brief 8bit アルファ値のみのフォーマット
     */
-    A8 = 1,
+    LN_PIXEL_FORMAT_A8 = 1,
 
     /**
         @brief RGBA オーダーの各要素 8bit フォーマット
     */
-    RGBA8 = 2,
+    LN_PIXEL_FORMAT_RGBA8 = 2,
 
     /**
         @brief RGB オーダーの各要素 8bit フォーマット
     */
-    RGB8 = 3,
+    LN_PIXEL_FORMAT_RGB8 = 3,
 
     /**
         @brief RGBA オーダーの各要素 32bit 浮動小数点フォーマット
     */
-    RGBA32F = 4,
+    LN_PIXEL_FORMAT_RGBA32F = 4,
 
 } LnPixelFormat;
 
@@ -47,42 +47,42 @@ typedef enum tagLnTextureFormat
     /**
         @brief Unknown
     */
-    Unknown = 0,
+    LN_TEXTURE_FORMAT_UNKNOWN = 0,
 
     /**
         @brief RGBA オーダーの各要素 8bit フォーマット
     */
-    RGBA8 = 1,
+    LN_TEXTURE_FORMAT_RGBA8 = 1,
 
     /**
         @brief RGB オーダーの各要素 8bit フォーマット
     */
-    RGB8 = 2,
+    LN_TEXTURE_FORMAT_RGB8 = 2,
 
     /**
         @brief RGBA オーダーの各要素 16bit 浮動小数点フォーマット
     */
-    RGBA16F = 3,
+    LN_TEXTURE_FORMAT_RGBA16F = 3,
 
     /**
         @brief RGBA オーダーの各要素 32bit 浮動小数点フォーマット
     */
-    RGBA32F = 4,
+    LN_TEXTURE_FORMAT_RGBA32F = 4,
 
     /**
         @brief 16bit 浮動小数点フォーマット
     */
-    R16F = 5,
+    LN_TEXTURE_FORMAT_R16F = 5,
 
     /**
         @brief 32bit 浮動小数点フォーマット
     */
-    R32F = 6,
+    LN_TEXTURE_FORMAT_R32F = 6,
 
     /**
         @brief 32bit の符号なし整数フォーマット
     */
-    R32U = 7,
+    LN_TEXTURE_FORMAT_R32U = 7,
 
 } LnTextureFormat;
 
@@ -94,7 +94,7 @@ typedef enum tagLnDepthBufferFormat
     /**
         @brief S8 32 ビット
     */
-    D24S8 = 0,
+    LN_DEPTH_BUFFER_FORMAT_D24S8 = 0,
 
 } LnDepthBufferFormat;
 
@@ -108,21 +108,21 @@ typedef enum tagLnDepthBufferFormat
 /**
     @brief エンジンの初期化処理を行います。
 */
-LN_API LnResult LnEngine_Initialize()
-;
+LN_API LnResult LnEngine_Initialize();
+
 
 /**
     @brief エンジンの終了処理を行います。
 */
-LN_API LnResult LnEngine_Finalize()
-;
+LN_API LnResult LnEngine_Finalize();
+
 
 /**
     @brief 
     @return アプリケーションの終了が要求されている場合は false を返します。
 */
-LN_API LnResult LnEngine_Update(LnBool* outReturn)
-;
+LN_API LnResult LnEngine_Update(LnBool* outReturn);
+
 
 //==============================================================================
 // ln::GraphicsResource
@@ -140,8 +140,8 @@ LN_API LnResult LnEngine_Update(LnBool* outReturn)
     @return 作成されたテクスチャ
     @details 説明文
 */
-LN_API LnResult LnTexture2D_Init(LnHandle texture2d, int width, int height)
-;
+LN_API LnResult LnTexture2D_Create(LnHandle texture2d, int width, int height, LnHandle* outTexture2D);
+
 
 /**
     @brief テクスチャを作成します。
@@ -149,8 +149,8 @@ LN_API LnResult LnTexture2D_Init(LnHandle texture2d, int width, int height)
     @param[in] height : 高さ (px 単位)
     @param[in] format : ピクセルフォーマット
 */
-LN_API LnResult LnTexture2D_Init(LnHandle texture2d, int width, int height, LnTextureFormat format)
-;
+LN_API LnResult LnTexture2D_CreateWithFormat(LnHandle texture2d, int width, int height, LnTextureFormat format, LnHandle* outTexture2D);
+
 
 
 

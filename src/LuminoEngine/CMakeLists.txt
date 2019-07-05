@@ -507,6 +507,13 @@ set(LN_SOURCES_Tilemap
     src/Tilemap/Tileset.cpp
 )
 
+file(GLOB LN_SOURCES_Runtime
+	${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Runtime/*.h
+	${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Runtime/*.hpp
+	src/Runtime/*.cpp
+	src/Runtime/*.hpp
+)
+
 if (LN_USE_VULKAN)
     if (WIN32)
         set(LN_SOURCES_Graphics
@@ -555,6 +562,7 @@ source_group("Visual"    FILES ${LN_SOURCES_Visual})
 source_group("Scene"     FILES ${LN_SOURCES_Scene})
 source_group("UI"        FILES ${LN_SOURCES_UI})
 source_group("Tilemap"   FILES ${LN_SOURCES_Tilemap})
+source_group("Runtime"   FILES ${LN_SOURCES_Runtime})
 
 set(LN_SOURCES
     src/LuminoEngine.PCH.cpp
@@ -583,6 +591,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Scene}
     ${LN_SOURCES_UI}
     ${LN_SOURCES_Tilemap}
+    ${LN_SOURCES_Runtime}
 )
 
 set(LN_SOURCES_SharedLib

@@ -29,6 +29,7 @@ class AssetManager;
 class VisualManager;
 class SceneManager;
 class UIManager;
+class RuntimeManager;
 
 class EngineDomain
 {
@@ -50,6 +51,7 @@ public:
     static VisualManager* visualManager();
     static SceneManager* sceneManager();
 	static UIManager* uiManager();
+	static RuntimeManager* runtimeManager();
 	
 	template<class T>
 	static void registerType() {

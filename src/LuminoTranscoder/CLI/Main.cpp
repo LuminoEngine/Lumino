@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 	config->templateDir = LN_LOCALFILE("../Core/Generators/Templates");
 	config->targetNamespace = u"ln";
 	config->flatCOutputModuleName = u"Ln";
-	config->flatCCommonHeader = LN_LOCALFILE("../../../include/LuminoRuntime/Common.hpp");
+	config->flatCCommonHeader = LN_LOCALFILE("../../../include/LuminoRuntime/FlatCommon.h");
 	config->flatCHeaderString = u"#include <LuminoEngine.hpp>";
 
 	{

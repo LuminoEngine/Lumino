@@ -37,6 +37,7 @@ class AssetManager;
 class VisualManager;
 class SceneManager;
 class UIManager;
+class RuntimeManager;
 
 struct EngineSettingsAssetArchiveEntry
 {
@@ -94,6 +95,7 @@ public:
     void initializeVisualManager();
     void initializeSceneManager();
 	void initializeUIManager();
+	void initializeRuntimeManager();
 
 	bool updateUnitily();
 	void updateFrame();
@@ -120,6 +122,7 @@ public:
     const Ref<VisualManager>& visualManager() const { return m_visualManager; }
 	const Ref<SceneManager>& sceneManager() const { return m_sceneManager; }
     const Ref<UIManager>& uiManager() const { return m_uiManager; }
+	const Ref<RuntimeManager>& runtimeManager() const { return m_runtimeManager; }
 
     const FpsController& fpsController() const { return m_fpsController; }
 
@@ -160,6 +163,7 @@ private:
     Ref<VisualManager>					m_visualManager;
     Ref<SceneManager>					m_sceneManager;
 	Ref<UIManager>					m_uiManager;
+	Ref<RuntimeManager> m_runtimeManager;
 	FpsController m_fpsController;
 
 	Path m_persistentDataPath;

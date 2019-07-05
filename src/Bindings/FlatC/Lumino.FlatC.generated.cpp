@@ -1,4 +1,4 @@
-#include "RuntimeManager.hpp"
+#include <LuminoEngine/Runtime/Runtime.hpp>
 #include "Lumino.FlatC.generated.h"
 
 #include <LuminoEngine.hpp>
@@ -47,17 +47,17 @@ LN_API LnResult LnEngine_Update(LnBool* outReturn)
     LNI_FUNC_TRY_END_RETURN;
 }
 
-LN_API LnResult LnTexture2D_Init(LnHandle texture2d, int width, int height)
+LN_API LnResult LnTexture2D_Create(LnHandle texture2d, int width, int height, LnHandle* outTexture2D)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_TO_OBJECT(LNTexture2D, texture2d)->init(width, height));
+    LNI_CREATE_OBJECT(outTexture2D, LNWS_ln_Texture2D, init, width, height);
     LNI_FUNC_TRY_END_RETURN;
 }
 
-LN_API LnResult LnTexture2D_Init(LnHandle texture2d, int width, int height, LnTextureFormat format)
+LN_API LnResult LnTexture2D_CreateWithFormat(LnHandle texture2d, int width, int height, LnTextureFormat format, LnHandle* outTexture2D)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_TO_OBJECT(LNTexture2D, texture2d)->init(width, height, static_cast<TextureFormat>(format)));
+    LNI_CREATE_OBJECT(outTexture2D, LNWS_ln_Texture2D, init, width, height, static_cast<ln::TextureFormat>(format));
     LNI_FUNC_TRY_END_RETURN;
 }
 

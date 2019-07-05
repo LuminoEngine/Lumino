@@ -3,7 +3,7 @@
 
 const ln::String Generator::NewLine = _T("\n");
 
-ln::String Generator::makeUpperSnakeName(const ln::String& name) const
+ln::String Generator::makeUpperSnakeName(const ln::String& name)
 {
 	// まず大文字境界で分割
 	ln::List<ln::String> tokens;
@@ -27,5 +27,5 @@ ln::String Generator::makeUpperSnakeName(const ln::String& name) const
 		output += tokens[i];
 	}
 
-	return output;
+	return output.toUpper();
 }

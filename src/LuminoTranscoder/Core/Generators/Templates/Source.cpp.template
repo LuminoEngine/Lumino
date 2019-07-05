@@ -1,4 +1,4 @@
-#include "RuntimeManager.hpp"
+#include <LuminoEngine/Runtime/Runtime.hpp>
 #include "%%HeaderName%%"
 
 %%HeaderString%%

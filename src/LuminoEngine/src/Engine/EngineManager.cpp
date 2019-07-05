@@ -30,6 +30,7 @@
 #include "../Visual/VisualManager.hpp"
 #include "../Scene/SceneManager.hpp"
 #include "../UI/UIManager.hpp"
+#include "../Runtime/RuntimeManager.hpp"
 #include "EngineManager.hpp"
 #include "EngineDomain.hpp"
 
@@ -235,6 +236,7 @@ void EngineManager::dispose()
     //    }
     //}
 
+	if (m_runtimeManager) m_runtimeManager->dispose();
     if (m_uiManager) m_uiManager->dispose();
     if (m_sceneManager) m_sceneManager->dispose();
     if (m_visualManager) m_visualManager->dispose();
@@ -282,6 +284,7 @@ void EngineManager::initializeAllManagers()
     initializeVisualManager();
     initializeSceneManager();
 	initializeUIManager();
+	initializeRuntimeManager();
 }
 
 void EngineManager::initializeCommon()
@@ -524,6 +527,17 @@ void EngineManager::initializeUIManager()
 
         m_mainUIContext = makeObject<UIContext>();
         m_uiManager->setMainContext(m_mainUIContext);
+	}
+}
+
+void EngineManager::initializeRuntimeManager()
+{
+	if (!m_runtimeManager)
+	{
+		RuntimeManager::Settings settings;
+
+		m_runtimeManager = makeRef<RuntimeManager>();
+		m_runtimeManager->init(settings);
 	}
 }
 
@@ -771,6 +785,11 @@ SceneManager* EngineDomain::sceneManager()
 UIManager* EngineDomain::uiManager()
 {
 	return engineManager()->uiManager();
+}
+
+RuntimeManager* EngineDomain::runtimeManager()
+{
+	return engineManager()->runtimeManager();
 }
 
 } // namespace detail

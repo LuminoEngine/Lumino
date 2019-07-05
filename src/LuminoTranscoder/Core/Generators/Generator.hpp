@@ -56,7 +56,7 @@ public:
 	//const ln::String& moduleShortName() const { return m_moduleShortName; }
 
 	// Utilities
-	ln::String makeUpperSnakeName(const ln::String& name) const;
+	static ln::String makeUpperSnakeName(const ln::String& name);	// PixelFormatA8 -> PIXEL_FORMAT_A8
 
 private:
 	SymbolDatabase* m_database;

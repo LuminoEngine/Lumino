@@ -232,13 +232,14 @@ public:
 	const ln::List<Ref<MethodParameterSymbol>>& parameters() const { return m_parameters; }
 	const ln::List<Ref<MethodParameterSymbol>>& flatParameters() const { return m_flatParameters; }
 	MethodOverloadInfo* overloadInfo() const { return m_overloadInfo; }
+	ln::String overloadPostfix() const { return metadata()->getValue(MetadataInfo::OverloadPostfixAttr, ln::String::Empty); }
 	//MethodSymbol* overloadParent() const { return m_overloadParent; }
 	//const ln::List<MethodSymbol*>& overloadChildren() const { return m_overloadChildren; }
 
 	bool isConst() const { return m_pi->isConst; }
 	bool isStatic() const { return m_pi->isStatic; }
 	bool isVirtual() const { return m_pi->isVirtual; }
-	bool isConstructor() const { return m_pi->isConstructor; }
+	bool isConstructor() const { return m_isConstructor; }	// 名前が init であるインスタンスメソッド
 
 private:
 	ln::Result makeFlatParameters();
@@ -253,6 +254,7 @@ private:
 	MethodOverloadInfo* m_overloadInfo = nullptr;		// このメソッドが属するオーバーロードグループ
 	//MethodSymbol* m_overloadParent;			// このメソッドはどのメソッドをオーバーロードするか (基本的に一番最初に見つかった定義)
 	//ln::List<MethodSymbol*> m_overloadChildren;	// このメソッドはどのメソッドにオーバーロードされるか
+	bool m_isConstructor = false;
 
 	friend class TypeSymbol;
 };

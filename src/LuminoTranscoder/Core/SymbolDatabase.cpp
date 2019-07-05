@@ -214,6 +214,10 @@ ln::Result MethodSymbol::init(PIMethod* pi, TypeSymbol* ownerType)
 		m_parameters.add(s);
 	}
 
+	if (!pi->isStatic && m_shortName == u"init") {
+		m_isConstructor = true;
+	}
+
 	return true;
 }
 
@@ -290,48 +294,19 @@ ln::Result MethodSymbol::makeFlatParameters()
 		m_flatParameters.add(s);
 	}
 
-	return true;
-#if 0
-
-	// params
-	for (auto& paramInfo : parameters)
-	{
-		capiParameters.add(paramInfo);
-		//overloadSuffix += ln::StringHelper::toUpper((Char)paramInfo->name[0]);
-	}
-
-	// return value
-	if (returnType->isVoid || returnType == PredefinedTypes::EventConnectionType)
-	{
-		// "void", "EventConnection" は戻り値扱いしない
-	}
-	else
-	{
-		auto info = ln::makeRef<ParameterSymbol>();
-		info->name = "outReturn";
-		info->type = returnType;
-		info->isIn = false;
-		info->isOut = true;
-		info->isReturn = true;
-		capiParameters.add(info);
-	}
-
 	// constructor
-	if (isConstructor)
-	{
-		if (owner->isStruct)
-		{
+	if (isConstructor()) {
+		if (m_ownerType->isStruct()) {
 		}
-		else
-		{
-			auto info = ln::makeRef<ParameterSymbol>();
-			info->name = ln::String::format(_T("out{0}"), owner->shortName());
-			info->type = db->findSymbol(owner->fullName());
-			info->isReturn = true;
-			capiParameters.add(info);
+		else {
+			auto s = ln::makeRef<MethodParameterSymbol>(db());
+			if (!s->init(m_ownerType, ln::String::format(_T("out{0}"), m_ownerType->shortName()))) return false;
+			s->m_isReturn = true;
+			m_flatParameters.add(s);
 		}
 	}
-#endif
+
+	return true;
 }
 
 #if 0
