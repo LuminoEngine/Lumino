@@ -3,18 +3,23 @@
 #include <LuminoEngine/Effect/EffectContext.hpp>
 #include "EffectManager.hpp"
 
+//#define EFK_TEST
+
+#ifdef EFK_TEST
 #include <Effekseer.h>
-#include <EffekseerRendererGL.h>
+//#include <EffekseerRendererGL.h>
 #include <EffekseerRenderer/EffekseerRendererDX12.Renderer.h>
 #include <EffekseerRendererLLGI.Renderer.h>
 //#include <EffekseerSoundAL.h>
 #include <LLGI.Platform.h>
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "C:/VulkanSDK/1.1.101.0/Lib32/vulkan-1.lib")
+#endif
 
 namespace ln {
 namespace detail {
 
+#ifdef EFK_TEST
 static int g_window_width = 800;
 static int g_window_height = 600;
 static ::Effekseer::Manager*			g_manager = NULL;
@@ -25,6 +30,7 @@ static ::Effekseer::Handle				g_handle = -1;
 static ::Effekseer::Vector3D			g_position;
 static LLGI::Platform* g_platform = nullptr;
 static LLGI::Graphics* g_graphics = nullptr;
+#endif
 
 //==============================================================================
 // EffectManager
@@ -35,9 +41,10 @@ EffectManager::EffectManager()
 
 void EffectManager::init(const Settings& settings)
 {
-	//return;
     LN_LOG_DEBUG << "EffectManager Initialization started.";
 
+#ifdef EFK_TEST
+	//return;
     g_platform = LLGI::CreatePlatform(LLGI::DeviceType::Vulkan);
     g_graphics = g_platform->CreateGraphics();
 
@@ -89,7 +96,7 @@ void EffectManager::init(const Settings& settings)
 
     // エフェクトの再生
     g_handle = g_manager->Play(g_effect, 0, 0, 0);
-
+#endif
 
 
     LN_LOG_DEBUG << "EffectManager Initialization ended.";
@@ -97,6 +104,7 @@ void EffectManager::init(const Settings& settings)
 
 void EffectManager::dispose()
 {
+#ifdef EFK_TEST
 	//return;
     // エフェクトの停止
     g_manager->StopEffect(g_handle);
@@ -112,10 +120,12 @@ void EffectManager::dispose()
 
     // 次に描画用インスタンスを破棄
     g_renderer->Destroy();
+#endif
 }
 
 void EffectManager::testDraw()
 {
+#ifdef EFK_TEST
 	//return;
 
     if (1) {
@@ -149,7 +159,7 @@ void EffectManager::testDraw()
     if (1) {
         g_platform->Present();
     }
-
+#endif
 }
 
 } // namespace detail
