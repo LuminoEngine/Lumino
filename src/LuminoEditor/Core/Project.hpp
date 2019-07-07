@@ -22,6 +22,7 @@ public:
     ln::Result saveProject();
     ln::Result loadProject();
 	void restore();
+    void reloadPlugins();
 
 	const ln::Ref<ProjectProperties>& properties() const { return m_properties; }
 
@@ -32,6 +33,7 @@ public:
 	const ln::Path& buildDir() const { return m_buildDir; }
 	const ln::Path& releaseDir() const { return m_releaseDir; }
 	const ln::Path& intermediateAssetsDir() const { return m_intermediateAssetsDir; }
+    const ln::Path& localPluginDir() const { return m_localPluginDir; } // プロジェクト固有のプラグインと、プロジェクトごとのエディタ拡張の保存場所
 
 	ln::Path projectsDir() const { return ln::Path(rootDirPath(), u"Projects"); }
 	ln::Path emscriptenProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.Web"); }
@@ -59,6 +61,7 @@ private:
 	ln::Path m_buildDir;
 	ln::Path m_releaseDir;
 	ln::Path m_intermediateAssetsDir;
+    ln::Path m_localPluginDir;
 };
 
 // プロジェクトファイルに保存する情報

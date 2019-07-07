@@ -141,7 +141,8 @@ Ref<StaticMeshModel> ObjMeshImporter::import(const Path& filePath, float scale, 
     std::vector<tinyobj::material_t> materials;
     std::string err;
     std::string warn;
-    LocalMaterialFileReader materialReader(filePath.parent().str().toStdString() + "/");
+	Path parentDirPath = filePath.parent();
+    LocalMaterialFileReader materialReader(parentDirPath.str().toStdString() + "/");
 
 
     std::ifstream ifs(filePath.str().toStdString());
@@ -205,6 +206,7 @@ Ref<StaticMeshModel> ObjMeshImporter::import(const Path& filePath, float scale, 
             int t = vertexIndex.texcoord_index;
             if (t >= 0) {
                 vertex.uv = Vector2(attrib.texcoords[2 * t + 0], attrib.texcoords[2 * t + 1]);
+				vertex.uv.y = 1.0 - vertex.uv.y;	// OpenGL Coord -> DX Coord
             }
 
             if (attrib.colors.empty()) {
@@ -265,7 +267,7 @@ Ref<StaticMeshModel> ObjMeshImporter::import(const Path& filePath, float scale, 
 
         Ref<Texture2D> texture = nullptr;//makeObject<Texture2D>(u"D:/tmp/110220c_as019.png");
         if (!material.diffuse_texname.empty())
-            texture = Assets::loadTexture(String::fromStdString(material.diffuse_texname));
+            texture = Assets::loadTexture(Path(parentDirPath, String::fromStdString(material.diffuse_texname)));
         auto m = makeObject<Material>(texture, materialData);
         meshModel->addMaterial(m);
     }

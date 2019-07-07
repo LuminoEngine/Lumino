@@ -133,6 +133,11 @@ void Project::restore()
 	m_context->restore();
 }
 
+void Project::reloadPlugins()
+{
+
+}
+
 bool Project::existsProjectFile(const ln::Path& dir)
 {
 	auto files = ln::FileSystem::getFiles(dir, u"*" + ProjectFileExt);
@@ -148,6 +153,7 @@ void Project::setupPathes()
 	m_releaseDir = ln::Path(m_rootDir, u"Release");
 	
 	m_intermediateAssetsDir = ln::Path(m_buildDir, u"Assets");
+    m_localPluginDir = ln::Path(m_buildDir, u"Plugins");
 
 	//auto files = ln::FileSystem::getFiles(m_rootDir, u"*" + ProjectFileExt);
 	//if (!files.isEmpty()) {
