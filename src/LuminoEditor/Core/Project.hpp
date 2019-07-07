@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <LuminoCore/IO/DllLoader.hpp>
 
 namespace lna {
 
@@ -62,6 +63,8 @@ private:
 	ln::Path m_releaseDir;
 	ln::Path m_intermediateAssetsDir;
     ln::Path m_localPluginDir;
+
+    ln::List<Ref<ln::detail::DllLoader>> m_pluginLibs;
 };
 
 // プロジェクトファイルに保存する情報
@@ -143,6 +146,7 @@ private:
 	ln::Path m_intermediateAssetsDir;
     ln::Ref<AssetDatabase> m_assetDatabase;
 };
+
 
 // プロジェクトファイルに保存する情報
 class ProjectProperties

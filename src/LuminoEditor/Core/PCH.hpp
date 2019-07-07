@@ -11,3 +11,7 @@
 #include <LuminoCore/Base/Result.hpp>
 
 #include "CLI.hpp"
+
+template<class T>
+using Ref = ln::Ref<T>;
+

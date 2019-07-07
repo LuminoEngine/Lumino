@@ -427,7 +427,7 @@ find_library(LLGI_LIBRARY_DEBUG NAMES LLGI.Debug PATHS ${Effekseer_ROOT} PATH_SU
 add_library(Effekseer STATIC IMPORTED)
 set_target_properties(Effekseer PROPERTIES IMPORTED_LOCATION_RELEASE ${Effekseer_LIBRARY_RELEASE})
 set_target_properties(Effekseer PROPERTIES IMPORTED_LOCATION_DEBUG ${Effekseer_LIBRARY_DEBUG})
-set_target_properties(Effekseer PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${Effekseer_ROOT}/include)
+set_target_properties(Effekseer PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${Effekseer_ROOT}/include;D:/Proj/LN/Lumino/build/ExternalSource/Effekseer/Dev/Cpp/Effekseer;D:/Proj/LN/Lumino/build/ExternalSource/Effekseer/Dev/Cpp/EffekseerRendererDX12;D:/Proj/LN/Lumino/build/ExternalSource/Effekseer/Dev/Cpp/EffekseerRendererLLGI;D:/Proj/LN/Lumino/build/MSVC2017-x86-MD/ExternalInstall/Effekseer/include/LLGI")
 
 add_library(EffekseerRendererDX12 STATIC IMPORTED)
 set_target_properties(EffekseerRendererDX12 PROPERTIES IMPORTED_LOCATION_RELEASE ${EffekseerRendererDX12_LIBRARY_RELEASE})

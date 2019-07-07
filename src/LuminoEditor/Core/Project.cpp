@@ -111,6 +111,8 @@ ln::Result Project::openProject2(const ln::Path& projectFile)
 		LN_NOTIMPLEMENTED();
 	}
 
+    reloadPlugins();
+
 	return true;
 }
 
@@ -135,7 +137,15 @@ void Project::restore()
 
 void Project::reloadPlugins()
 {
+    for (auto& file : m_pluginLibs) {
+        file->unload();
+    }
+    m_pluginLibs.clear();
 
+    auto files = ln::FileSystem::getFiles(m_localPluginDir, u"*.dll");
+    for (auto& file : files) {
+        m_pluginLibs.add(ln::detail::DllLoader::load(file));
+    }
 }
 
 bool Project::existsProjectFile(const ln::Path& dir)
