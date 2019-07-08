@@ -92,7 +92,7 @@ void RuntimeManager::releaseObject(LnHandle handle)
 {
 	if (!m_systemAliving) return;
 
-	int index = reinterpret_cast<int>(handle);
+	int index = static_cast<int>(handle);
 	ObjectEntry& e = m_objectEntryList[index];
 
 	if (e.object)

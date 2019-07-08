@@ -16,7 +16,7 @@
 #define LNI_FUNC_TRY_BEGIN    try {
 #define LNI_FUNC_TRY_END_RETURN    } \
     catch (ln::Exception& e) { \
-        return ln::detail::RuntimeManager::procException(&e); \
+        return ln::Runtime::processException(&e); \
     } \
     catch (...) { \
         return LN_ERROR_UNKNOWN; \
@@ -26,6 +26,8 @@
 #define LNI_BOOL_TO_LNBOOL(x)    (x) ? LN_TRUE : LN_FALSE
 #define LNI_LNBOOL_TO_BOOL(x)    (x != LN_FALSE)
 
+#define LNI_CREATE_OBJECT(out, type, initFunc, ...) { auto ptr = ::ln::makeObject<type>(__VA_ARGS__); *out = ::ln::Runtime::makeObjectWrap(ptr); }
+
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
@@ -33,7 +35,10 @@ extern "C" {
 //------------------------------------------------------------------------------
 #include <stdint.h>
 typedef intptr_t LnHandle;
-typedef void*    LnUserData;
+typedef void* LnUserData;
+typedef char16_t LnChar;
+
+#define LN_NULL_HANDLE 0
 
 /** 結果・エラーコード */
 typedef enum tagLnResult
@@ -58,6 +63,21 @@ typedef enum tagLnBool
 } LnBool;
 
 inline const char* LnRuntime_GetLastErrorMessage() { return ""; }  // TODO
+
+
+//==============================================================================
+
+/**
+	@brief	全てのオブジェクトのベースクラスです。
+*/
+
+/**
+	@brief		オブジェクトを解放します。
+	@param[in]	obj	: オブジェクトハンドル
+	@details	指定されたオブジェクトの参照を解放します。
+*/
+LnResult LnObject_Release(LnHandle obj);
+
 
 #ifdef __cplusplus
 } // extern "C"

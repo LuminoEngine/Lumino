@@ -92,6 +92,7 @@ private:
 
     detail::WeakRefInfo* m_weakRefInfo;
     std::mutex m_weakRefInfoMutex;
+	intptr_t m_runtimeData;
 
     friend class TypeInfo;
     friend class detail::ObjectHelper;
@@ -113,15 +114,10 @@ class ObjectHelper
 {
 public:
     template<class T>
-    inline static detail::WeakRefInfo* requestWeakRefInfo(T* obj)
-    {
-        return obj->requestWeakRefInfo();
-    }
-
-    inline static void destructObject(Object* obj)
-    {
-        obj->~Object();
-    }
+    static detail::WeakRefInfo* requestWeakRefInfo(T* obj) { return obj->requestWeakRefInfo(); }
+    static void destructObject(Object* obj) { obj->~Object(); }
+	static void setRuntimeData(Object* obj, intptr_t data) { obj->m_runtimeData = data; }
+	static intptr_t getRuntimeData(Object* obj) { return obj->m_runtimeData; }
 };
 
 class WeakRefInfo final
