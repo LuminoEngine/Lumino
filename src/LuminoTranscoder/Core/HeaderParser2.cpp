@@ -325,7 +325,6 @@ public:
 					ParmVarDecl* paramDecl = decl->getParamDecl(iParam);
 					QualType& type = paramDecl->getType();
 
-					bool hasConst = type.getQualifiers().hasConst();
 					SplitQualType sp = type.split();
 
 					
@@ -333,13 +332,19 @@ public:
 					paramInfo->name = ln::String::fromStdString(paramDecl->getNameAsString());
 					paramInfo->typeRawName = getRawTypeFullName(type);
 
+					bool hasConst = type.getQualifiers().hasConst();
+					if (hasConst) {
+						paramInfo->isConst = true;
+					}
+
 					if (sp.Ty->isPointerType()) {
-						paramInfo->isIn = hasConst;
-						paramInfo->isOut = !hasConst;
+						paramInfo->isPointer = true;
+						//paramInfo->isIn = hasConst;
+						//paramInfo->isOut = !hasConst;
 					}
 					else {
-						paramInfo->isIn = true;
-						paramInfo->isOut = false;
+						//paramInfo->isIn = true;
+						//paramInfo->isOut = false;
 					}
 
 					info->parameters.add(paramInfo);

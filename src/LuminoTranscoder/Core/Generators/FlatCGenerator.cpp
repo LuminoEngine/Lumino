@@ -3,7 +3,7 @@
 
 
 static const ln::String funcHeaderTemplate =
-"LN_API LnResult %%FuncName%%(%%ParamList%%)";
+"LN_FLAT_API LnResult %%FuncName%%(%%ParamList%%)";
 
 
 
@@ -52,56 +52,56 @@ ln::String FlatCCommon::makeFlatCParamQualTypeName(GeneratorConfiguration* confi
 			modifer = "const ";
 		return ln::String::format("{0}{1}{2}*", modifer, config->flatCOutputModuleName, typeInfo->shortName());
 	}
-
-	if (typeInfo->kind() == TypeKind::Enum)
+	else if (typeInfo->kind() == TypeKind::Enum)
 	{
 		return makeTypeName(config, typeInfo);
 	}
-
-	if (typeInfo == PredefinedTypes::stringType)
+	else if (typeInfo->isString())
 	{
 		if (paramInfo->isOut() || paramInfo->isReturn())
 			return "const LnChar**";
 		else
 			return "const LnChar*";
 	}
-
-	ln::String name;
-	if (typeInfo == PredefinedTypes::boolType)
-		name = _T("LnBool");
-	else if (typeInfo->kind() == TypeKind::Class)
-		name = "LnHandle";
 	else
-		name = typeInfo->shortName();
+	{
+		ln::String name;
+		if (typeInfo == PredefinedTypes::boolType)
+			name = _T("LnBool");
+		else if (typeInfo->kind() == TypeKind::Class)
+			name = "LnHandle";
+		else
+			name = typeInfo->shortName();
 
-	if (paramInfo->isOut() || paramInfo->isReturn())
-		name += "*";
+		if (paramInfo->isOut() || paramInfo->isReturn())
+			name += "*";
 
-	//if (typeInfo->isStruct && paramInfo->isThis)
-	//{
-	//	if (methodInfo->isConst)
-	//		name = "const " + name;
-	//	name += "*";
-	//}
+		//if (typeInfo->isStruct && paramInfo->isThis)
+		//{
+		//	if (methodInfo->isConst)
+		//		name = "const " + name;
+		//	name += "*";
+		//}
 
-	return name;
-	//	ln::String name;
-	//
-	//	if (isOut)
-	//	{
-	//		name = typeInfo->name;
-	//		name += "*";
-	//	}
-	//	else
-	//	{
-	//		if (typeInfo == PredefinedTypes::stringType)
-	//			name = "const LNChar*";
-	//		else if (typeInfo->IsClass())
-	//			name = "LNHandle";
-	//		else
-	//			name = typeInfo->name;
-	//	}
-	//	return name;
+		return name;
+		//	ln::String name;
+		//
+		//	if (isOut)
+		//	{
+		//		name = typeInfo->name;
+		//		name += "*";
+		//	}
+		//	else
+		//	{
+		//		if (typeInfo == PredefinedTypes::stringType)
+		//			name = "const LNChar*";
+		//		else if (typeInfo->IsClass())
+		//			name = "LNHandle";
+		//		else
+		//			name = typeInfo->name;
+		//	}
+		//	return name;
+	}
 }
 
 // 宣言文の作成。ドキュメンテーションコメントは含まない。
@@ -262,7 +262,7 @@ void FlatCHeaderGenerator::generate()
 		src = src.replace("%%ClassMemberFuncDecls%%", classMemberFuncDeclsText.toString());
 
 		ln::String fileName = ln::String::format("{0}.FlatC.generated.h", config()->moduleName);
-		ln::FileSystem::writeAllText(makeOutputFilePath("FlatC", fileName), src, ln::TextEncoding::utf8Encoding());
+		ln::FileSystem::writeAllText(makeOutputFilePath("FlatC/include", fileName), src, ln::TextEncoding::utf8Encoding());
 	}
 	//// save C API Source
 	//{
@@ -412,7 +412,7 @@ void FlatCSourceGenerator::generate()
 			.replace("%%StructMemberFuncImpls%%", structMemberFuncImplsText.toString())
 			.replace("%%ClassMemberFuncImpls%%", classMemberFuncImplsText.toString());
 
-		ln::FileSystem::writeAllText(makeOutputFilePath("FlatC", fileName), src);
+		ln::FileSystem::writeAllText(makeOutputFilePath("FlatC/src", fileName), src);
 	}
 }
 
@@ -491,11 +491,11 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
 			auto* type = paramInfo->type();
 			if (type->isClass())
 			{
-				args.AppendCommad("LNI_TO_OBJECT({0}, {1})", type->shortName(), paramInfo->name());
+				args.AppendCommad("LNI_HANDLE_TO_OBJECT({0}, {1})", type->fullName(), paramInfo->name());
 			}
 			else if (type->isStruct())
 			{
-				ln::String castTo = type->shortName();
+				ln::String castTo = type->fullName();
 				if (paramInfo->isIn()) castTo = "const " + castTo;
 				args.AppendCommad("*reinterpret_cast<{0}*>({1})", castTo, paramInfo->name());
 			}
@@ -505,7 +505,7 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
 			}
 			else if (type == PredefinedTypes::boolType)
 			{
-				args.AppendCommad("LNI_TO_BOOL({0})", paramInfo->name());
+				args.AppendCommad("LNI_LNBOOL_TO_BOOL({0})", paramInfo->name());
 			}
 			else
 			{
@@ -517,12 +517,12 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
 		if (methodInfo->returnType() != PredefinedTypes::voidType)
 		{
 			if (methodInfo->returnType()->isStruct())
-				body.append("*outReturn = reinterpret_cast<const LN{0}&>", methodInfo->returnType()->shortName());
+				body.append("*outReturn = reinterpret_cast<const {0}&>", FlatCCommon::makeTypeName(config(), methodInfo->returnType()));
 			else if (methodInfo->returnType()->isClass())
 				body.append("*outReturn = LNI_TO_HANDLE");
 			else if (methodInfo->returnType() == PredefinedTypes::boolType)
 				body.append("*outReturn = LNI_BOOL_TO_LNBOOL");
-			else if (methodInfo->returnType() == PredefinedTypes::stringType)
+			else if (methodInfo->returnType()->isString())
 				body.append("*outReturn = LNI_STRING_TO_STRPTR");
 			else
 				body.append("*outReturn = ");
@@ -567,7 +567,7 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
 				auto name = methodInfo->shortName();
 				if (methodInfo->isVirtual())
 					name = ("LN" + typeInfo->shortName() + "::" + name + "_CallBase");
-				callExp = ln::String::format("(LNI_TO_OBJECT(LN{0}, {1})->{2}({3}));", typeInfo->shortName(), FlatCCommon::makeInstanceParamName(typeInfo), name, args.toString());
+				callExp = ln::String::format("(LNI_HANDLE_TO_OBJECT({0}, {1})->{2}({3}));", typeInfo->fullName(), FlatCCommon::makeInstanceParamName(typeInfo), name, args.toString());
 			}
 		}
 

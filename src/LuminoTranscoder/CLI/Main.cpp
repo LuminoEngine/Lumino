@@ -8,29 +8,42 @@
 
 int main(int argc, char** argv)
 {
+	ln::GlobalLogger::addStdErrAdapter();
 	auto diag = ln::makeObject<ln::DiagnosticsManager>();
 	auto pidb = ln::makeRef<PIDatabase>();
 
 	if (0)
 	{
-		ln::List<ln::Path> files =
+		ln::List<ln::Path> files_LuminoCore =
 		{
 			//TEST_ROOT "include/LuminoCore/Math/Vector2.hpp",
-			//TEST_ROOT "include/LuminoCore/Math/Vector3.hpp",
+			TEST_ROOT "include/LuminoCore/Math/Vector3.hpp",
 			//TEST_ROOT "include/LuminoCore/Math/Vector4.hpp",
-			//TEST_ROOT "include/LuminoCore/Math/Quaternion.hpp",
+			TEST_ROOT "include/LuminoCore/Math/Quaternion.hpp",
 			//TEST_ROOT "include/LuminoCore/Math/Matrix.hpp",
+		};
+
+		for (auto& file : files_LuminoCore) {
+			HeaderParser2 parser;
+			parser.addIncludePath(TEST_ROOT "include");
+			parser.addForceIncludeFile(TEST_ROOT "src/LuminoCore/src/LuminoCore.PCH.h");
+			parser.parse(file, pidb, diag);
+		}
+
+		ln::List<ln::Path> files_LuminoEngine =
+		{
 			TEST_ROOT "include/LuminoEngine/Engine/Engine.hpp",
 			TEST_ROOT "include/LuminoEngine/Graphics/Common.hpp",
 			TEST_ROOT "include/LuminoEngine/Graphics/GraphicsResource.hpp",
 			TEST_ROOT "include/LuminoEngine/Graphics/Texture.hpp",
+			TEST_ROOT "include/LuminoEngine/Scene/WorldObject.hpp",
+			TEST_ROOT "include/LuminoEngine/Scene/VisualObject.hpp",
+			TEST_ROOT "include/LuminoEngine/Scene/Sprite.hpp",
 		};
 
-		for (auto& file : files) {
+		for (auto& file : files_LuminoEngine) {
 			HeaderParser2 parser;
 			parser.addIncludePath(TEST_ROOT "include");
-			parser.addIncludePath(TEST_ROOT "include");
-			//parser.addForceIncludeFile(TEST_ROOT "include/LuminoCore/Base/Common.hpp");
 			parser.addForceIncludeFile(TEST_ROOT "src/LuminoEngine/src/LuminoEngine.PCH.h");
 			parser.parse(file, pidb, diag);
 		}
@@ -45,6 +58,11 @@ int main(int argc, char** argv)
 	auto db = ln::makeRef<SymbolDatabase>(diag);
 	db->initTypes(pidb);
 	db->linkTypes();
+
+	diag->dumpToLog();
+	if (diag->hasError()) {
+		return 1;
+	}
 
 	auto config = ln::makeRef<GeneratorConfiguration>();
 	config->moduleName = u"Lumino";

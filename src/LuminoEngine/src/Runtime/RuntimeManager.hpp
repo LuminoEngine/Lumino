@@ -8,6 +8,7 @@ namespace detail {
 struct ObjecRuntimeData
 {
 	int index = -1;	// inded of RuntimeManager::m_objectEntryList (LnHandle)
+	int64_t managedObjectId = -1;
 };
 
 struct ObjectEntry
@@ -36,7 +37,15 @@ public:
 	LnHandle makeObjectWrap(Object* obj);
 
 	void releaseObject(LnHandle handle);
+
+	ObjectEntry* getObjectEntry(LnHandle handle);
+
+	void setManagedObjectId(LnHandle handle, int64_t id);
+	int64_t getManagedObjectId(LnHandle handle);
+
 	LnResult processException(Exception* e);
+
+
 
 private:
 	List<ObjectEntry> m_objectEntryList;

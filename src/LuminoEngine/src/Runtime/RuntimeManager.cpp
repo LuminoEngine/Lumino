@@ -106,6 +106,23 @@ void RuntimeManager::releaseObject(LnHandle handle)
 	}
 }
 
+ObjectEntry* RuntimeManager::getObjectEntry(LnHandle handle)
+{
+	return &m_objectEntryList[static_cast<int>(handle)];
+}
+
+void RuntimeManager::setManagedObjectId(LnHandle handle, int64_t id)
+{
+	auto runtimeData = reinterpret_cast<ObjecRuntimeData*>(detail::ObjectHelper::getRuntimeData(m_objectEntryList[static_cast<int>(handle)].object));
+	runtimeData->managedObjectId = id;
+}
+
+int64_t RuntimeManager::getManagedObjectId(LnHandle handle)
+{
+	auto runtimeData = reinterpret_cast<ObjecRuntimeData*>(detail::ObjectHelper::getRuntimeData(m_objectEntryList[static_cast<int>(handle)].object));
+	return runtimeData->managedObjectId;
+}
+
 LnResult RuntimeManager::processException(Exception* e)
 {
 	return LN_ERROR_UNKNOWN;

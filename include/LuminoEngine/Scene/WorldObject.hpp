@@ -79,6 +79,9 @@ private:
 
 }
 
+
+/** World 内の全エンティティのベースクラスです。 */
+LN_CLASS()
 class WorldObject
 	: public Object
 {

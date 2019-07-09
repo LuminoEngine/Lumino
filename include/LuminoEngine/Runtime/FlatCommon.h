@@ -2,13 +2,13 @@
 
 #if !defined(LN_API)
     #if defined(_WIN32)
-        #define LN_API __declspec(dllexport)
+        #define LN_FLAT_API __declspec(dllexport)
     #elif defined(_WIN32) && defined(LUMINO_DLL)
-        #define LN_API __declspec(dllimport)
+        #define LN_FLAT_API __declspec(dllimport)
     #elif defined(__GNUC__) && defined(LUMINO_BUILD_DLL)
-        #define LN_API __attribute__((visibility("default")))
+        #define LN_FLAT_API __attribute__((visibility("default")))
     #else
-        #define LN_API
+        #define LN_FLAT_API
     #endif
 #endif
 
@@ -27,6 +27,8 @@
 #define LNI_LNBOOL_TO_BOOL(x)    (x != LN_FALSE)
 
 #define LNI_CREATE_OBJECT(out, type, initFunc, ...) { auto ptr = ::ln::makeObject<type>(__VA_ARGS__); *out = ::ln::Runtime::makeObjectWrap(ptr); }
+#define LNI_HANDLE_TO_OBJECT(type, h)               static_cast<type*>((h) ? ::ln::Runtime::getObject(h) : nullptr)
+#define LNI_OBJECT_TO_HANDLE(obj)					::ln::Runtime::makeObjectWrap(obj)
 
 #ifdef __cplusplus
 extern "C" {
@@ -63,7 +65,8 @@ typedef enum tagLnBool
 } LnBool;
 
 inline const char* LnRuntime_GetLastErrorMessage() { return ""; }  // TODO
-
+extern void LnRuntime_SetManagedObjectId(LnHandle handle, int64_t id);
+extern int64_t LnRuntime_GetManagedObjectId(LnHandle handle);
 
 //==============================================================================
 

@@ -9,6 +9,7 @@ ln::Ref<TypeSymbol>	PredefinedTypes::int16Type;
 ln::Ref<TypeSymbol>	PredefinedTypes::uint32Type;
 ln::Ref<TypeSymbol>	PredefinedTypes::floatType;
 ln::Ref<TypeSymbol>	PredefinedTypes::stringType;
+ln::Ref<TypeSymbol>	PredefinedTypes::stringRefType;
 ln::Ref<TypeSymbol>	PredefinedTypes::objectType;
 ln::Ref<TypeSymbol>	PredefinedTypes::EventConnectionType;
 
@@ -182,6 +183,19 @@ ln::Result MethodParameterSymbol::link()
 	if (m_pi) {
 		m_type = db()->getTypeSymbol(m_pi->typeRawName);
 		if (!m_type) return false;
+
+		if (m_type->isClass()) {
+			m_isIn = true;
+		}
+		else {
+			// primitive, struct, enum ...
+			if (!m_pi->isConst && m_pi->isPointer) {
+				m_isOut = true;
+			}
+			else {
+				m_isIn = true;
+			}
+		}
 	}
 	else {
 		// 内部的に作成された Param は、あらかじめ型をセットしておく必要がある
@@ -248,10 +262,10 @@ ln::Result MethodSymbol::makeFlatParameters()
 			s->m_isThis = true;
 			m_flatParameters.add(s);
 		}
-		//else if (isConstructor)
-		//{
-		//	// none
-		//}
+		else if (isConstructor())
+		{
+			// none
+		}
 		//else if (owner->isDelegate)
 		//{
 		//	auto info = ln::makeRef<ParameterSymbol>();
@@ -488,23 +502,44 @@ ln::Result TypeSymbol::linkOverload()
 {
 	for (auto& method1 : m_methods)
 	{
-		auto info = m_overloads.findIf([&method1](auto& x) { return x->representative()->shortName() == method1->shortName(); });
+		auto info = m_overloads.findIf([&method1](auto& x) { return x->m_methods[0]->shortName() == method1->shortName(); });
 		if (info) {
 			(*info)->m_methods.add(method1);
 			method1->m_overloadInfo = (*info);
 
-			// verify: representative 以外は OverloadPostfix を持っていなければならない
-			if (!method1->metadata()->hasKey(MetadataInfo::OverloadPostfixAttr))
-			{
-				LN_NOTIMPLEMENTED();
-				return false;
-			}
+			//// verify: representative 以外は OverloadPostfix を持っていなければならない
+			//if (!method1->metadata()->hasKey(MetadataInfo::OverloadPostfixAttr))
+			//{
+			//	LN_NOTIMPLEMENTED();
+			//	return false;
+			//}
 		}
 		else {
 			auto newInfo = ln::makeRef<MethodOverloadInfo>();
 			newInfo->m_methods.add(method1);
 			m_overloads.add(newInfo);
 			method1->m_overloadInfo = newInfo;
+		}
+	}
+
+	for (auto& overload : m_overloads) {
+		for (int i = 0; i < overload->m_methods.size(); i++) {
+			// OverloadPostfix を持っていないものを代表として採用する
+			if (!overload->m_methods[i]->metadata()->hasKey(MetadataInfo::OverloadPostfixAttr)) {
+				if (overload->m_representativeIndex >= 0) {
+					// 複数の代表が見つかってしまった
+					// verify: representative 以外は OverloadPostfix を持っていなければならない
+					LN_NOTIMPLEMENTED();
+					return false;
+				}
+				else {
+					overload->m_representativeIndex = i;
+				}
+			}
+		}
+		if (overload->m_representativeIndex < 0) {
+			// 代表が見つからなかったら 0 番を採用
+			overload->m_representativeIndex = 0;
 		}
 	}
 
@@ -894,6 +929,8 @@ void SymbolDatabase::initPredefineds()
 	PredefinedTypes::floatType = addPredefined(u"float");
 
 	PredefinedTypes::stringType = addPredefined(u"ln::String");
+
+	PredefinedTypes::stringType = addPredefined(u"ln::StringRef");
 
 	PredefinedTypes::objectType = addPredefined(u"ln::Object");
 

@@ -68,6 +68,11 @@ Ref<Texture2D> Texture2D::create(int width, int height, TextureFormat format)
     return makeObject<Texture2D>(width, height, format);
 }
 
+Ref<Texture2D> Texture2D::create(const StringRef& filePath, TextureFormat format)
+{
+	return makeObject<Texture2D>(filePath, format);
+}
+
 Texture2D::Texture2D()
     : m_rhiObject(nullptr)
     , m_usage(GraphicsResourceUsage::Static)

@@ -8,6 +8,8 @@ namespace ln {
 //==============================================================================
 // Sprite
 
+LN_OBJECT_IMPLEMENT(Sprite, VisualObject) {}
+
 Ref<Sprite> Sprite::create(Texture* texture, float width, float height)
 {
     return makeObject<Sprite>(texture, width, height);

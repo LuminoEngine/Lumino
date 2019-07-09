@@ -110,10 +110,12 @@ class PIMethodParameter : public ln::RefObject
 public:
 	ln::String typeRawName;
 	ln::String name;
-	bool isIn = false;
-	bool isOut = false;
-	bool isThis = false;
-	bool isReturn = false;
+	bool isConst = false;
+	bool isPointer = false;
+	//bool isIn = false;
+	//bool isOut = false;
+	//bool isThis = false;
+	//bool isReturn = false;
 
 protected:
 	LN_SERIALIZE_CLASS_VERSION(1);
@@ -121,10 +123,10 @@ protected:
 	{
 		ar & LN_NVP(typeRawName);
 		ar & LN_NVP(name);
-		ar & LN_NVP(isIn);
-		ar & LN_NVP(isOut);
-		ar & LN_NVP(isThis);
-		ar & LN_NVP(isReturn);
+		//ar & LN_NVP(isIn);
+		//ar & LN_NVP(isOut);
+		//ar & LN_NVP(isThis);
+		//ar & LN_NVP(isReturn);
 	}
 };
 

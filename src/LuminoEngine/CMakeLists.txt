@@ -382,18 +382,7 @@ set(LN_SOURCES_Physics
     src/Physics/SoftBody.cpp
 )
 
-set(LN_SOURCES_Asset
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Asset/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Asset/AssetObject.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Asset/Assets.hpp
-    src/Asset/Internal.hpp
-    src/Asset/AssetObject.cpp
-    src/Asset/Assets.cpp
-    src/Asset/AssetManager.cpp
-    src/Asset/AssetManager.hpp
-    src/Asset/AssetArchive.cpp
-    src/Asset/AssetArchive.hpp
-)
+file(GLOB LN_SOURCES_Asset ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Asset/*.hpp src/Asset/*.cpp)
 
 set(LN_SOURCES_Visual
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/Common.hpp

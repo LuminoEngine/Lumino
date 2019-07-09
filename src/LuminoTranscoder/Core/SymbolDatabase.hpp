@@ -47,6 +47,22 @@ private:
 	ln::List<Ref<ParameterDocumentInfo>> m_params;
 };
 
+class PredefinedTypes
+{
+public:
+	static ln::Ref<TypeSymbol>	voidType;
+	static ln::Ref<TypeSymbol>	nullptrType;
+	static ln::Ref<TypeSymbol>	boolType;
+	static ln::Ref<TypeSymbol>	intType;
+	static ln::Ref<TypeSymbol>	int16Type;
+	static ln::Ref<TypeSymbol>	uint32Type;
+	static ln::Ref<TypeSymbol>	floatType;
+	static ln::Ref<TypeSymbol>	stringType;
+	static ln::Ref<TypeSymbol>	stringRefType;
+	static ln::Ref<TypeSymbol>	objectType;
+	static ln::Ref<TypeSymbol>	EventConnectionType;
+};
+
 // 属性マクロの ( ) 内に記述されたパラメータ
 class MetadataInfo : public ln::RefObject
 {
@@ -69,10 +85,11 @@ private:
 class MethodOverloadInfo : public ln::RefObject
 {
 public:
-	MethodSymbol* representative() const { return m_methods[0]; }
+	MethodSymbol* representative() const { return m_methods[m_representativeIndex]; }
 	const ln::List<MethodSymbol*>& methods() const { return m_methods; }
 
 private:
+	int m_representativeIndex = -1;
 	ln::List<MethodSymbol*> m_methods;
 
 	friend class TypeSymbol;
@@ -295,6 +312,7 @@ public:
 	bool isStruct() const { return kind() == TypeKind::Struct; }
 	bool isEnum() const { return kind() == TypeKind::Enum; }
 	bool isStatic() const { return metadata()->hasKey(u"Static"); }	// static-class ?
+	bool isString() const { return this == PredefinedTypes::stringType || this == PredefinedTypes::stringRefType; }
 
 private:
 	void setFullName(const ln::String& value);
@@ -352,20 +370,6 @@ private:
 //	ln::String m_shortName;
 };
 
-class PredefinedTypes
-{
-public:
-	static ln::Ref<TypeSymbol>	voidType;
-	static ln::Ref<TypeSymbol>	nullptrType;
-	static ln::Ref<TypeSymbol>	boolType;
-	static ln::Ref<TypeSymbol>	intType;
-	static ln::Ref<TypeSymbol>	int16Type;
-	static ln::Ref<TypeSymbol>	uint32Type;
-	static ln::Ref<TypeSymbol>	floatType;
-	static ln::Ref<TypeSymbol>	stringType;
-	static ln::Ref<TypeSymbol>	objectType;
-	static ln::Ref<TypeSymbol>	EventConnectionType;
-};
 
 class SymbolDatabase : public ln::RefObject
 {

@@ -6,6 +6,7 @@ namespace ln {
 class VisualComponent;
 
 /** VisualComponent がアタッチされた WorldObject のプレハブクラスです。 */
+LN_CLASS()
 class VisualObject
 	: public WorldObject
 {

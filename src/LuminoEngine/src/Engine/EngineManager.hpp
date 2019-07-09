@@ -47,7 +47,7 @@ struct EngineSettingsAssetArchiveEntry
 
 struct EngineSettings
 {
-    Flags<EngineFeature> features = EngineFeature::Public;
+    Flags<EngineFeature> features = EngineFeature::Experimental;
 	String bundleIdentifier = u"lumino";
 	SizeI mainWindowSize = SizeI(640, 480);
 	SizeI mainBackBufferSize = SizeI(640, 480);

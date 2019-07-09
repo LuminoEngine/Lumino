@@ -63,21 +63,29 @@ public:
     /**
      * テクスチャを作成します。ピクセルフォーマットは RGBA8 です。
      *
-     * @param[in]   width   : 幅 (px 単位)
-     * @param[in]   height  : 高さ (px 単位)
+     * @param[in] width   : 幅 (px 単位)
+     * @param[in] height  : 高さ (px 単位)
      * @return 作成されたテクスチャ
-     *
-     * 説明文
      */
     static Ref<Texture2D> create(int width, int height);
 
     /**
      * テクスチャを作成します。
-     * @param[in]   width   : 幅 (px 単位)
-     * @param[in]   height  : 高さ (px 単位)
-     * @param[in]   format  : ピクセルフォーマット
+     * @param[in] width   : 幅 (px 単位)
+     * @param[in] height  : 高さ (px 単位)
+     * @param[in] format  : ピクセルフォーマット
      */
     static Ref<Texture2D> create(int width, int height, TextureFormat format);
+
+    /**
+     * ローカルのファイルを読み込み、テクスチャを作成します。
+	 *
+     * @param[in] filePath : 読み込むファイルのパス
+     * @param[in] format   : ピクセルフォーマット
+	 *
+	 * このメソッドは TextureImporter のユーティリティです。
+     */
+    static Ref<Texture2D> create(const StringRef& filePath, TextureFormat format = TextureFormat::RGBA8);
 
 public:
     /** Mipmap の有無を設定します。(default: false) */
@@ -120,7 +128,10 @@ LN_CONSTRUCT_ACCESS:
     LN_METHOD(OverloadPostfix = "WithFormat")
     void init(int width, int height, TextureFormat format);
 
+	/** @copydoc create(const StringRef&, TextureFormat) */
+	LN_METHOD(OverloadPostfix = "FromFile")
     void init(const StringRef& filePath, TextureFormat format = TextureFormat::RGBA8);
+
     void init(Stream* stream, TextureFormat format = TextureFormat::RGBA8);
     void init(Bitmap2D* bitmap, TextureFormat format = TextureFormat::RGBA8);
 
