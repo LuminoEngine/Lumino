@@ -6,6 +6,7 @@
 #include "DocumentManager.h"
 #include "InspectorPaneContainer.h"
 #include "ToolPaneContainer.h"
+#include "AssetBrowser/AssetBrowserNavigator.h"
 #include "SpriteFrameset/SpriteFramesetAssetNavigator.h"
 #include "Navigators/AudioAssetNavigator.h"
 #include "SceneContentsView.h"
@@ -219,10 +220,13 @@ void MainWindow::onOpenProject()
 
         m_workspace->openProject2(QtToLn(filePath));
 
-		m_contentsViewManager->setup("ARPG-HC0");
+		m_contentsViewManager->setup(m_workspace->project(), "ARPG-HC0");
 
-		m_spritesetContentsViewProvider = new SpritesetContentsViewProvider(m_workspace->project(), this);
-		m_contentsViewManager->addContentsViewProvider(m_spritesetContentsViewProvider);
+        m_assetBrowserContentsViewProvider = new AssetBrowserContentsViewProvider(m_workspace->project(), this);
+        m_contentsViewManager->addContentsViewProvider(m_assetBrowserContentsViewProvider);
+
+		//m_spritesetContentsViewProvider = new SpritesetContentsViewProvider(m_workspace->project(), this);
+		//m_contentsViewManager->addContentsViewProvider(m_spritesetContentsViewProvider);
 
         m_audioContentsViewProvider->view()->setRootDir(
             LnToQt(ln::Path(m_workspace->project()->assetsDir(), u"Audio")));

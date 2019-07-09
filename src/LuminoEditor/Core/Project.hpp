@@ -8,6 +8,7 @@ class LanguageContext;
 class Project;
 class ProjectProperties;
 class Workspace;
+class PluginManager;
 
 class Project
 	: public ln::RefObject
@@ -23,7 +24,6 @@ public:
     ln::Result saveProject();
     ln::Result loadProject();
 	void restore();
-    void reloadPlugins();
 
 	const ln::Ref<ProjectProperties>& properties() const { return m_properties; }
 
@@ -48,10 +48,12 @@ public:
 
 private:
 	void setupPathes();
+    ln::Result postInitialize();
 
 	Workspace* m_workspace;
 	ln::Ref<ProjectProperties> m_properties;
 	ln::Ref<LanguageContext> m_context;
+    ln::Ref<PluginManager> m_pluginManager;
 
 	ln::String m_projectName;
 	ln::Path m_projectFilePath;
@@ -64,7 +66,6 @@ private:
 	ln::Path m_intermediateAssetsDir;
     ln::Path m_localPluginDir;
 
-    ln::List<Ref<ln::detail::DllLoader>> m_pluginLibs;
 };
 
 // プロジェクトファイルに保存する情報
