@@ -11,8 +11,9 @@ AssetDatabase::AssetDatabase()
 {
 }
 
-void AssetDatabase::init()
+ln::Result AssetDatabase::init(Project* owner)
 {
+    return true;
 }
 
 } // namespace lna

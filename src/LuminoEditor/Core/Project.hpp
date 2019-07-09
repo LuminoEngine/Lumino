@@ -9,6 +9,7 @@ class Project;
 class ProjectProperties;
 class Workspace;
 class PluginManager;
+class AssetDatabase;
 
 class Project
 	: public ln::RefObject
@@ -26,6 +27,8 @@ public:
 	void restore();
 
 	const ln::Ref<ProjectProperties>& properties() const { return m_properties; }
+    const ln::Ref<PluginManager>& pluginManager() const { return m_pluginManager; }
+    const ln::Ref<AssetDatabase>& assetDatabase() const { return m_assetDatabase; }
 
 	Workspace* workspace() const { return m_workspace; }
 	const ln::Path& engineDirPath() const { return m_engineDir; }
@@ -54,6 +57,7 @@ private:
 	ln::Ref<ProjectProperties> m_properties;
 	ln::Ref<LanguageContext> m_context;
     ln::Ref<PluginManager> m_pluginManager;
+    ln::Ref<AssetDatabase> m_assetDatabase;
 
 	ln::String m_projectName;
 	ln::Path m_projectFilePath;

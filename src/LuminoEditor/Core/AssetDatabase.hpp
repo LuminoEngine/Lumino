@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 namespace lna {
+class Project;
 
 
 class AssetDatabase
@@ -8,10 +9,12 @@ class AssetDatabase
 {
 public:
 
-private:
-    LN_INTERNAL_NEW_OBJECT;
+public:// TODO:
+   // LN_INTERNAL_NEW_OBJECT;
     AssetDatabase();
-    void init();
+    ln::Result init(Project* owner);
+
+    Project* m_ownerProject;
 };
 
 } // namespace lna

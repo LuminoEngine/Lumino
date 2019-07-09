@@ -1,6 +1,7 @@
 ﻿
 #include <Workspace.hpp>
 #include <Project.hpp>
+#include <PluginManager.hpp>
 #include "External/QtAwesome/QtAwesome.h"
 #include "ActionManager.h"
 #include "DocumentManager.h"
@@ -185,6 +186,21 @@ MainWindow::~MainWindow()
     delete m_contentsViewManager;
     delete m_offscreenSurface;
     delete m_resourceContext;
+}
+
+void MainWindow::importFile(QString filePath)
+{
+    if (m_workspace->project())
+    {
+        auto sourceFile = ln::Path(QtToLn(filePath));
+        auto importers = m_workspace->project()->pluginManager()->getAssetImporterExtensions(sourceFile);
+        if (importers.size() != 1) {
+            LN_NOTIMPLEMENTED();
+            return;
+        }
+
+        importers[0].second->import(sourceFile);
+    }
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)

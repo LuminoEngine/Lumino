@@ -1,11 +1,15 @@
 ﻿#pragma once
 
 namespace ln {
+class AssetImporter;
 class IEditorExtension;
 
 enum class EditorExtensionType
 {
-    /** ある種類のファイル 1 つを編集するためのプラグイン */
+    /** アセットをインポートするための拡張機能 */
+    AssetImporter,
+
+    /** ある種類のファイル 1 つを編集するための拡張機能 */
     DocumentEditor,
 };
 
@@ -25,8 +29,19 @@ public:
 class IEditorExtension
 {
 public:
+    virtual const Char* id() const = 0;
+    virtual const Char* displayName() const = 0;
     virtual EditorExtensionType getExtensionType() const = 0;
 };
+
+class IAssetImporterEditorExtension : public IEditorExtension
+{
+public:
+    virtual EditorExtensionType getExtensionType() const { return EditorExtensionType::AssetImporter; }
+    virtual Ref<AssetImporter> createImporter(const Char* assetSourceFilePath) = 0;
+};
+
+
 
 class IDocumentEditorExtension : public IEditorExtension
 {

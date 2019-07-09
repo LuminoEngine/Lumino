@@ -27,14 +27,25 @@ class AssetModel
 {
 	LN_OBJECT;
 public:
+    static const String AssetFileExtension; // ".lnasset"
+
+    // TODO: テスト用の一時機能。Asset の作成は AssetDatabase を使わなけばならない
 	static Ref<AssetModel> create(Object* target);
 
-	static Ref<AssetModel> load(const ln::Path& filePath);
-	static void save(Object* target, const ln::Path& filePath);
+	//static Ref<AssetModel> load(const ln::Path& filePath);
+	//static void save(Object* target, const ln::Path& filePath);
 
     Object* target() const;
 
 	Ref<AssetProperty> findProperty(const String& path);
+
+    
+
+    // TODO: internal
+    ln::Result loadInternal(const ln::Path& filePath);
+    ln::Result saveInternal(const ln::Path& filePath);
+    LN_SERIALIZE_CLASS_VERSION(1);
+    void serialize(Archive& ar);
 
 LN_CONSTRUCT_ACCESS:
     AssetModel();
@@ -42,6 +53,7 @@ LN_CONSTRUCT_ACCESS:
 	void init(Object* target);
 
 private:
+    String m_assetType;
 	Ref<Object> m_target;
     Ref<AssetModel> m_parent;
     List<Ref<AssetModel>> m_children;
@@ -95,13 +107,13 @@ private:
 //    AssetSerializer();
 //    void processAsset(AssetModel* asset);
 //
-//    //struct Ploxy
-//    //{
-//    //    AssetModel* asset;
+//    struct Ploxy
+//    {
+//        AssetModel* asset;
 //
-//    //    LN_SERIALIZE_CLASS_VERSION(1);
-//    //    void serialize(Archive& ar);
-//    //};
+//        LN_SERIALIZE_CLASS_VERSION(1);
+//        void serialize(Archive& ar);
+//    };
 //};
-
+//
 } // namespace ln

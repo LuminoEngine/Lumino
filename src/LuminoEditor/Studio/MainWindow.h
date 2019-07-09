@@ -28,6 +28,8 @@ public:
     QtAwesome* awesome() const { return m_awesome; }
     DocumentManager* documentManager() const { return m_documentManager; }
 
+    void importFile(QString filePath);
+
 protected:
     void closeEvent(QCloseEvent* event) override;
 

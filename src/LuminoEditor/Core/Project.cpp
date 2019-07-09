@@ -2,6 +2,7 @@
 #include "Workspace.hpp"
 #include "LanguageContext.hpp"
 #include "Project.hpp"
+#include "AssetDatabase.hpp"
 #include "PluginManager.hpp"
 
 namespace lna {
@@ -168,6 +169,11 @@ void Project::setupPathes()
 
 ln::Result Project::postInitialize()
 {
+    m_assetDatabase = ln::makeRef<AssetDatabase>();
+    if (!m_assetDatabase->init(this)) {
+        return false;
+    }
+
     m_pluginManager = ln::makeRef<PluginManager>();
     if (!m_pluginManager->init(this)) {
         return false;
