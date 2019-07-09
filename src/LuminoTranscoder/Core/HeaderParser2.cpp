@@ -70,13 +70,25 @@ public:
 	{
 	}
 
+	// OK:
+	// class [[deprecated("please use new_func() function"]] Engine
+	// NG: (そもそも取れない)
+	// class [[ln_loca_attr(a=10, b="")]] Engine
 	std::vector<std::string> getAnnotation(Decl* decl)
 	{
 		std::vector<std::string> attrs;
-		if (decl->hasAttrs())
+		//if (decl->hasAttrs())
 		{
-			for (auto& attr : decl->getAttrs())
+			//AttributeDeclKind::
+			//AnnotateAttr::getKind
+			//clang::attr::Kind::
+			//decl->attrs
+			for (auto& attr : decl->attrs())
 			{
+				auto kind = attr->getKind();
+
+				auto str = getSourceText(attr->getRange());
+
 				auto* anno = dyn_cast<AnnotateAttr>(attr);
 				if (anno != nullptr)
 				{
@@ -235,6 +247,8 @@ public:
 
 				// metadata
 				info->metadata = HeaderParser2::parseMetadata(attr->name, attr->args);
+
+				getAnnotation(decl);
 
 				// base classes
 				auto bases = decl->getDefinition()->bases();

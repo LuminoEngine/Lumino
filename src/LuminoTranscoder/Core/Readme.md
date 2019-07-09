@@ -3,6 +3,30 @@
 
 `Draft`
 
+
+なぜ C++11 の属性構文を使わないのか？
+----------
+
+未知の属性は clang を使って取得できない。
+
+
+次のように、言語規格で定義されたものであれば Decl::attrs() で取得できる。
+
+```
+class [[deprecated("please use new_func() function"]] Engine
+```
+
+しかし次のように、未知 (ユーザー定義) の属性を使うためには、clang 本体に手を入れる必要があるかもしれない。（未調査）
+
+```
+class [[ln_loca_attr(a=10, b="")]] Engine
+```
+
+clang を拡張して使うとしたら、clang::attr::Kind の enum を新しく登録したりする必要がありそう。
+
+
+
+
 参照の管理
 ----------
 
