@@ -99,6 +99,36 @@ class Actor {
 そもそもやっぱり C# 側ではスコープを外れたら GC で解放されるようにしたいし、強参照な(ユーザーからは見えない)Listで持っていると Dispose の明示的な呼び出しが必須になるし、`使いやすさ的な意味でも Manage-object-list を強参照リストにするべきではないのかもしれない。`
 
 
+### キャッシュされるオブジェクトの参照問題
+
+EventArgs など。
+
+キャッシュから取り出されたとき、できれば古い Manage-object も再利用したいが、Manage-object-list が弱参照だとそれができない。
+
+Ruby であれば mark 駆使で何とかできそうだが、できれば言語特有の GC 機能を利用する方法は避けたい。
+
+WeakReference もやや言語ごとに使い勝手違うとかあるし・・・。
+
+
+### 対策案2
+
+- 第2参照カウント を導入する
+- Mangae-object-list は強参照にする
+- `定期的に Mangae-object-list の GC を実行する` (Reference が 0 で、InternalReference が 1 なら消す)
+
+`Native-object が生きている間、一度作成された対応する Managed-object は絶対に消えない。`
+
+これが安定してできると、以前やっていた次のようなものが不要になり、シンプルに実装できる。
+- 参照保持のためのフィールドを Managed-object に持たせる
+- テンプレートコレクションについて、Native 側と Managed 側の同期
+
+また、ファンク他を受け取るようなメソッドを作るときに、Managed 側の関数オブジェクトをラップするオブジェクトが必要になるが、
+そういった寿命の短いオブジェクトを簡単に作れるようになる。
+※特に Task のように、登録したメソッドを後で呼び出す仕組みの時に、Managed-object の寿命を気にする必要が無い。
+
+
+
+
 型情報
 ----------
 Object 型は、Manage 側でいくつかのグローバルな情報を持っておく必要がある。
@@ -108,4 +138,47 @@ Object 型は、Manage 側でいくつかのグローバルな情報を持って
 - イベントハンドラ実装のための関数群
 
 Native 側は TypeInfo にこれらの情報の Id を持たせておく。
+
+
+非同期処理
+----------
+多くのスクリプト言語はスレッドサポートが無いので、非同期処理自体は C++ 側で行い、それの終了をディスパッチするような仕組みを作っておきたい。
+
+C# のタスクの仕組み↓
+- https://ufcpp.net/study/csharp/misc_task.html
+- https://qiita.com/takutoy/items/d45aa736ced25a8158b3
+
+Unity の非同期読み込みは Task ではなく ResourceRequest というクラスを使う仕組み。
+- http://kan-kikuchi.hatenablog.com/entry/Resources_LoadAsync
+https://docs.unity3d.com/jp/460/ScriptReference/ResourceRequest.html
+
+C#とかは、スレッドサポートがあるけど、Lumino としては C++ 側処理の待ち受け機能のみの提供としておく、で十分だと思う。
+C#標準の方がリッチな機能持ってるし、Lumino 側で似たような機能公開する必要もない。
+
+```.cs
+Promise promise = Asset.LoadMeshAsync("...");
+promise.Then((mesh) => { textbox.Text = "Done."; });    // メインスレッドでコールされる (Javascript 参考)
+.Catch((e) => { /* error */ });
+```
+
+```.c
+lnHandle promise1, promise2;
+lnAsset_LoadMeshAsync(u"...", &promise1);
+lnPromise_SetThen(primise1, [](lnHandle mesh) { ... }, &promise2);
+lnPromise_SetCache(primise2, [](lnHandle e) { ... }, nullptr);
+```
+
+Javascript のように、then() で２つのハンドラを受け取るようにはしない。
+そうすることで、setter として考えられるようになり、ハンドラを Manage 側のメンバに持たせることが容易となる。
+（言語ごとに特殊クラスを独自定義しなくても、自動生成に任せられる。ただ、set戻り値対応が必要だが…）
+
+
+
+テンプレートコレクション
+----------
+
+「対策案2」が実装されれば、従来やっていた ObjectList<T> のようなラッパーが必要なくなる。
+
+Ref<ln::Collection<Ref<Sprite>>> は SpriteCollection というクラスに自動展開できそう。
+
 
