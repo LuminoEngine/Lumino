@@ -12,6 +12,25 @@ public:
     {}
 
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    virtual Qt::ItemFlags flags(const QModelIndex &index) const override;
+};
+
+class AssetBrowserTreeModelProxy : public QSortFilterProxyModel
+{
+public:
+    explicit AssetBrowserTreeModelProxy(QObject *parent = nullptr)
+        : QSortFilterProxyModel(parent)
+    {}
+
+    virtual bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override
+    {
+        auto index = sourceModel()->index(source_row, 0, source_parent);
+        auto name = index.data().toString();
+        if (name.endsWith("lnasset")) {
+            return false;
+        }
+        return true;
+    }
 };
 
 class AssetBrowserTreeView : public QTreeView
@@ -28,6 +47,7 @@ public slots:
 private:
     lna::Project* m_project;
     AssetBrowserTreeModel* m_model;
+    AssetBrowserTreeModelProxy* m_modelProxy;
 };
 
 

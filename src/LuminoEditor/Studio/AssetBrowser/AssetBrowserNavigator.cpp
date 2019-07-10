@@ -18,7 +18,32 @@ QVariant AssetBrowserTreeModel::data(const QModelIndex &index, int role) const
             return MainWindow::instance()->awesome()->icon("folder");
         }
     }
+    if (role == Qt::BackgroundColorRole) {
+
+        QFileInfo info = QFileSystemModel::fileInfo(index);
+        if (QFileInfo::exists(info.filePath() + QString((const QChar*)ln::AssetModel::AssetFileExtension.c_str()))) {
+
+        }
+        else {
+            return QColor(Qt::gray);
+        }
+    }
     return QFileSystemModel::data(index, role);
+}
+
+Qt::ItemFlags AssetBrowserTreeModel::flags(const QModelIndex &index) const
+{
+    auto flags = QFileSystemModel::flags(index);
+
+    //QFileInfo info = QFileSystemModel::fileInfo(index);
+    //auto s = info.suffix();
+    //if (info.suffix() == "lnasset") {
+    //    flags &= ~Qt::ItemIsEnabled;
+    //    // ### TODO you shouldn't be able to set this as the current item, task 119433
+    //    return flags;
+    //}
+
+    return flags;
 }
 
 //==============================================================================
@@ -29,17 +54,29 @@ AssetBrowserTreeView::AssetBrowserTreeView(lna::Project* project, QWidget* paren
     , m_project(project)
 {
     m_model = new AssetBrowserTreeModel(this);
-    QModelIndex rootModelIndex = m_model->setRootPath(LnToQt(m_project->assetsDir()));//"D:/Proj/TH-10/Assets");//
+
+    m_modelProxy = new AssetBrowserTreeModelProxy(this);
+    m_modelProxy->setSourceModel(m_model);
+
 
     //setHeaderHidden(true);
     //setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     //setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     //setTextElideMode(Qt::ElideNone);
-    setModel(m_model);
-    setRootIndex(rootModelIndex);
+    setModel(m_modelProxy);
+
+
+    QModelIndex rootModelIndex = m_model->setRootPath(LnToQt(m_project->assetsDir()));//"D:/Proj/TH-10/Assets");//
+    setRootIndex(m_modelProxy->mapFromSource(rootModelIndex));
     //setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     //setFixedHeight(500);
     //setColumnWidth(0, INT_MAX);
+
+
+    //QStringList sDriveFilters;
+    //sDriveFilters << "*.lnasset";
+    //m_model->setNameFilters(sDriveFilters);
+    //m_model->setNameFilterDisables(true);
 
     // Hide other than name
     for (int i = 1; i < m_model->columnCount(); ++i) {
