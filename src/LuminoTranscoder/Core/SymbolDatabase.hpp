@@ -257,6 +257,9 @@ public:
 	bool isStatic() const { return m_pi->isStatic; }
 	bool isVirtual() const { return m_pi->isVirtual; }
 	bool isConstructor() const { return m_isConstructor; }	// 名前が init であるインスタンスメソッド
+	bool isInstance() const { return !isStatic(); }			// instance method
+
+	bool hasStringDecl() const { return m_hasStringDecl; }	// いずれかの引数、戻り値に文字列型が含まれているか
 
 private:
 	ln::Result makeFlatParameters();
@@ -272,6 +275,7 @@ private:
 	//MethodSymbol* m_overloadParent;			// このメソッドはどのメソッドをオーバーロードするか (基本的に一番最初に見つかった定義)
 	//ln::List<MethodSymbol*> m_overloadChildren;	// このメソッドはどのメソッドにオーバーロードされるか
 	bool m_isConstructor = false;
+	bool m_hasStringDecl = false;
 
 	friend class TypeSymbol;
 };

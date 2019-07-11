@@ -5,7 +5,8 @@ OutputBuffer::OutputBuffer()
 	: m_buffer()
 	, m_indentLevel(0)
 	, m_indent()
-	, m_newLineCode(_T("\n"))
+	, m_newLineCode("\n")
+	, m_commandSeparator(u", ")
 	, m_state(State::LineHead)
 {
 }

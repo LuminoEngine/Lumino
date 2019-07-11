@@ -42,6 +42,7 @@ public:
 
 	void setManagedObjectId(LnHandle handle, int64_t id);
 	int64_t getManagedObjectId(LnHandle handle);
+	int64_t getManagedTypeInfoId(LnHandle handle);
 
 	LnResult processException(Exception* e);
 

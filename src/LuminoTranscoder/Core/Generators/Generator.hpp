@@ -57,6 +57,9 @@ public:
 
 	// Utilities
 	static ln::String makeUpperSnakeName(const ln::String& name);	// PixelFormatA8 -> PIXEL_FORMAT_A8
+	ln::String makeFlatTypeName(const TypeSymbol* type) const;						// e.g) -> "LnTexture2D"
+	ln::String makeFlatAPIName_SetManagedTypeInfoId(const TypeSymbol* type) const;	// e.g) -> "LnTexture2D_SetManagedTypeInfoId"
+	ln::String makeFlatAPIDecl_SetManagedTypeInfoId(const TypeSymbol* type) const;	// e.g) -> "LN_FLAT_API void LnTexture2D_SetManagedTypeInfoId(int64_t id)"
 
 private:
 	SymbolDatabase* m_database;

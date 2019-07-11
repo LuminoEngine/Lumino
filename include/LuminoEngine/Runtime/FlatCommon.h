@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#if !defined(LN_API)
+#if !defined(LN_FLAT_API)
     #if defined(_WIN32)
         #define LN_FLAT_API __declspec(dllexport)
     #elif defined(_WIN32) && defined(LUMINO_DLL)
@@ -65,8 +65,9 @@ typedef enum tagLnBool
 } LnBool;
 
 inline const char* LnRuntime_GetLastErrorMessage() { return ""; }  // TODO
-extern void LnRuntime_SetManagedObjectId(LnHandle handle, int64_t id);
-extern int64_t LnRuntime_GetManagedObjectId(LnHandle handle);
+extern LN_FLAT_API void LnRuntime_SetManagedObjectId(LnHandle handle, int64_t id);
+extern LN_FLAT_API int64_t LnRuntime_GetManagedObjectId(LnHandle handle);
+extern LN_FLAT_API int64_t LnRuntime_GetManagedTypeInfoId(LnHandle handle);
 
 //==============================================================================
 
@@ -79,7 +80,7 @@ extern int64_t LnRuntime_GetManagedObjectId(LnHandle handle);
 	@param[in]	obj	: オブジェクトハンドル
 	@details	指定されたオブジェクトの参照を解放します。
 */
-LnResult LnObject_Release(LnHandle obj);
+LN_FLAT_API LnResult LnObject_Release(LnHandle obj);
 
 
 #ifdef __cplusplus

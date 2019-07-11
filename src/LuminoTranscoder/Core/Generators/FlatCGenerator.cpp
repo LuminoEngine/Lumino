@@ -10,7 +10,15 @@ static const ln::String funcHeaderTemplate =
 //==============================================================================
 // FlatCCommon
 
-ln::String FlatCCommon::makeFuncName(GeneratorConfiguration* config, MethodSymbol* method)
+ln::String FlatCCommon::makeCharTypeName(FlatCharset charset)
+{
+	if (charset == FlatCharset::Unicode)
+		return u"LnChar";
+	else
+		return u"char";
+}
+
+ln::String FlatCCommon::makeFuncName(GeneratorConfiguration* config, MethodSymbol* method, FlatCharset charset)
 {
 	ln::String funcName;
 	if (method->isConstructor()) {
@@ -20,7 +28,15 @@ ln::String FlatCCommon::makeFuncName(GeneratorConfiguration* config, MethodSymbo
 		funcName = method->shortName().toTitleCase();
 	}
 
-	return ln::String::format(_T("{0}{1}_{2}{3}"), config->flatCOutputModuleName, method->ownerType()->shortName(), funcName, method->overloadPostfix());
+	funcName += method->overloadPostfix();
+
+	if (method->hasStringDecl()) {
+		if (charset == FlatCharset::Ascii) {
+			funcName += u"A";
+		}
+	}
+
+	return ln::String::format(_T("{0}{1}_{2}"), config->flatCOutputModuleName, method->ownerType()->shortName(), funcName);
 }
 
 ln::String FlatCCommon::makeTypeName(GeneratorConfiguration* config, TypeSymbol* type)
@@ -28,6 +44,9 @@ ln::String FlatCCommon::makeTypeName(GeneratorConfiguration* config, TypeSymbol*
 	if (type->isPrimitive()) {
 		if (type == PredefinedTypes::boolType) return u"LnBool";
 		return type->shortName();
+	}
+	else if (type->isClass()) {
+		return u"LnHandle";
 	}
 	else {
 		return config->flatCOutputModuleName + type->shortName();
@@ -39,7 +58,7 @@ ln::String FlatCCommon::makeTypeName(GeneratorConfiguration* config, TypeSymbol*
 //	return
 //}
 //
-ln::String FlatCCommon::makeFlatCParamQualTypeName(GeneratorConfiguration* config, ln::Ref<MethodSymbol> methodInfo, ln::Ref<MethodParameterSymbol> paramInfo)
+ln::String FlatCCommon::makeFlatCParamQualTypeName(GeneratorConfiguration* config, ln::Ref<MethodSymbol> methodInfo, ln::Ref<MethodParameterSymbol> paramInfo, FlatCharset charset)
 {
 	auto typeInfo = paramInfo->type();
 
@@ -59,9 +78,9 @@ ln::String FlatCCommon::makeFlatCParamQualTypeName(GeneratorConfiguration* confi
 	else if (typeInfo->isString())
 	{
 		if (paramInfo->isOut() || paramInfo->isReturn())
-			return "const LnChar**";
+			return ln::String::format(u"const {0}**", makeCharTypeName(charset));
 		else
-			return "const LnChar*";
+			return ln::String::format(u"const {0}*", makeCharTypeName(charset));
 	}
 	else
 	{
@@ -105,12 +124,12 @@ ln::String FlatCCommon::makeFlatCParamQualTypeName(GeneratorConfiguration* confi
 }
 
 // 宣言文の作成。ドキュメンテーションコメントは含まない。
-ln::String FlatCCommon::makeFuncHeader(GeneratorConfiguration* config, MethodSymbol* methodInfo)
+ln::String FlatCCommon::makeFuncHeader(GeneratorConfiguration* config, MethodSymbol* methodInfo, FlatCharset charset)
 {
 	// make params
 	OutputBuffer params;
 	for (auto& paramInfo : methodInfo->flatParameters()) {
-		params.AppendCommad("{0} {1}", FlatCCommon::makeFlatCParamQualTypeName(config, methodInfo, paramInfo), paramInfo->name());
+		params.AppendCommad("{0} {1}", FlatCCommon::makeFlatCParamQualTypeName(config, methodInfo, paramInfo, charset), paramInfo->name());
 	}
 
 
@@ -118,7 +137,7 @@ ln::String FlatCCommon::makeFuncHeader(GeneratorConfiguration* config, MethodSym
 	//ln::String suffix = (methodInfo->isVirtual) ? "_CallVirtualBase" : "";
 
 	return funcHeaderTemplate
-		.replace("%%FuncName%%", FlatCCommon::makeFuncName(config, methodInfo))// + suffix)
+		.replace("%%FuncName%%", FlatCCommon::makeFuncName(config, methodInfo, charset))// + suffix)
 		.replace("%%ParamList%%", params.toString());
 }
 
@@ -185,7 +204,7 @@ void FlatCHeaderGenerator::generate()
 			structMemberFuncDeclsText.AppendLine(makeDocumentComment(methodInfo->document()));
 
 			// decl
-			structMemberFuncDeclsText.AppendLine(FlatCCommon::makeFuncHeader(config(), methodInfo) + u";").NewLine(2);
+			structMemberFuncDeclsText.AppendLine(FlatCCommon::makeFuncHeader(config(), methodInfo, FlatCharset::Unicode) + u";").NewLine(2);
 		}
 
 		//// function impls
@@ -211,23 +230,19 @@ void FlatCHeaderGenerator::generate()
 			classMemberFuncDeclsText.AppendLine(makeDocumentComment(methodInfo->document()));
 
 			// decl
-			classMemberFuncDeclsText.AppendLine(FlatCCommon::makeFuncHeader(config(), methodInfo) + u";").NewLine(2);
+			classMemberFuncDeclsText.AppendLine(FlatCCommon::makeFuncHeader(config(), methodInfo, FlatCharset::Unicode) + u";");
+
+			if (methodInfo->hasStringDecl()) {
+				classMemberFuncDeclsText.AppendLine(FlatCCommon::makeFuncHeader(config(), methodInfo, FlatCharset::Ascii) + u";");
+			}
+
+			classMemberFuncDeclsText.NewLine(2);
 		}
 
 		//// function impls
 		//for (auto& methodInfo : classInfo->declaredMethods)
 		//{
 		//	classMemberFuncImplsText.AppendLines(makeFuncBody(classInfo, methodInfo)).NewLine();
-		//}
-
-		//if (!classInfo->isStatic())
-		//{
-		//	static const ln::String setBindingTypeInfo =
-		//		"LN_API void LN%ClassName%_SetBindingTypeInfo(void* data)\n"
-		//		"{\n"
-		//		"    tr::TypeInfo::getTypeInfo<%ClassName%>()->setBindingTypeInfo(data);\n"
-		//		"}\n";
-		//	classMemberFuncImplsText.AppendLines(setBindingTypeInfo.replace("%ClassName%", classInfo->shortName()));
 		//}
 	}
 
@@ -394,10 +409,25 @@ void FlatCSourceGenerator::generate()
 
 	// classes
 	OutputBuffer classMemberFuncImplsText;
-	for (auto& structInfo : db()->classes()) {
-		for (auto& methodInfo : structInfo->methods()) {
-			classMemberFuncImplsText.AppendLines(makeFuncBody(structInfo, methodInfo)).NewLine();
+	for (auto& classInfo : db()->classes()) {
+		for (auto& methodInfo : classInfo->methods()) {
+			classMemberFuncImplsText.AppendLines(makeFuncBody(classInfo, methodInfo)).NewLine();
+			if (methodInfo->hasStringDecl()) {
+				classMemberFuncImplsText.AppendLines(makeCharsetWrapperFuncBody(classInfo, methodInfo, FlatCharset::Ascii)).NewLine();
+			}
 		}
+
+		// TypeInfo id setter
+		if (!classInfo->isStatic()) {
+			classMemberFuncImplsText.AppendLine(makeFlatAPIDecl_SetManagedTypeInfoId(classInfo));
+			classMemberFuncImplsText.AppendLine(u"{");
+			classMemberFuncImplsText.IncreaseIndent();
+			classMemberFuncImplsText.AppendLine(u"::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<{0}>(), id);", classInfo->fullName());
+			classMemberFuncImplsText.DecreaseIndent();
+			classMemberFuncImplsText.AppendLine(u"}");
+			classMemberFuncImplsText.NewLine();
+		}
+
 	}
 
 	// save C API Source
@@ -436,7 +466,7 @@ ln::String FlatCSourceGenerator::makeWrapSubclassDecls() const
 ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo)
 {
 	// function header
-	ln::String funcHeader = FlatCCommon::makeFuncHeader(config(), methodInfo);
+	ln::String funcHeader = FlatCCommon::makeFuncHeader(config(), methodInfo, FlatCharset::Unicode);
 
 	//{
 	//	// 第1引数
@@ -588,3 +618,27 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
 	return funcImpl.toString();
 }
 
+ln::String FlatCSourceGenerator::makeCharsetWrapperFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo, FlatCharset charset)
+{
+	OutputBuffer args;
+	for (auto& param : methodInfo->flatParameters()) {
+		if (param->type()->isString()) {
+			args.AppendCommad(u"ln::String::fromCString({0}, -1, ln::TextEncoding::utf8Encoding()).c_str()", param->name());
+		}
+		else {
+			args.AppendCommad(param->name());
+		}
+	}
+
+	auto callExpr = ln::String::format(u"LnResult result = {0}({1});", FlatCCommon::makeFuncName(config(), methodInfo, FlatCharset::Unicode), args.toString());
+
+	OutputBuffer code;
+	code.AppendLine(FlatCCommon::makeFuncHeader(config(), methodInfo, charset));
+	code.AppendLine(u"{");
+	code.IncreaseIndent();
+	code.AppendLine(callExpr);
+	code.AppendLine(u"return result;");
+	code.DecreaseIndent();
+	code.AppendLine(u"}");
+	return code.toString();
+}

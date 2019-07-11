@@ -29,19 +29,8 @@ class LNWS_ln_VisualObject : public ln::VisualObject
 
 class LNWS_ln_Sprite : public ln::Sprite
 {
-public:
-	//using ManagedCallerFunc_onUpdate = std::function<void(LnHandle, float)>;
-
-	static LnSprite_SetCaller_OnUpdate_FuncPtr m_ManagedCaller_onUpdate;
-
-	virtual void onUpdate(float elapsedSeconds)
-	{
-		m_ManagedCaller_onUpdate(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
-	}
-	void onUpdate_CallBase(float elapsedSeconds) { ln::Sprite::onUpdate(elapsedSeconds); }
 };
 
-LnSprite_SetCaller_OnUpdate_FuncPtr LNWS_ln_Sprite::m_ManagedCaller_onUpdate;
 
 
 extern "C"
@@ -98,6 +87,16 @@ LN_FLAT_API LnResult LnEngine_Update(LnBool* outReturn)
     LNI_FUNC_TRY_END_RETURN;
 }
 
+LN_FLAT_API void LnGraphicsResource_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::GraphicsResource>(), id);
+}
+
+LN_FLAT_API void LnTexture_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Texture>(), id);
+}
+
 LN_FLAT_API LnResult LnTexture2D_Create(int width, int height, LnHandle* outTexture2D)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -117,6 +116,17 @@ LN_FLAT_API LnResult LnTexture2D_CreateFromFile(const LnChar* filePath, LnTextur
     LNI_FUNC_TRY_BEGIN;
     LNI_CREATE_OBJECT(outTexture2D, LNWS_ln_Texture2D, init, filePath, static_cast<ln::TextureFormat>(format));
     LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API LnResult LnTexture2D_CreateFromFileA(const char* filePath, LnTextureFormat format, LnHandle* outTexture2D)
+{
+    LnResult result = LnTexture2D_CreateFromFile(ln::String::fromCString(filePath, -1, ln::TextEncoding::utf8Encoding()).c_str(), format, outTexture2D);
+    return result;
+}
+
+LN_FLAT_API void LnTexture2D_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Texture2D>(), id);
 }
 
 LN_FLAT_API LnResult LnWorldObject_Setposition(LnHandle worldobject, const LnVector3* pos)
@@ -210,6 +220,11 @@ LN_FLAT_API LnResult LnWorldObject_Centerpoint(LnHandle worldobject, LnVector3* 
     LNI_FUNC_TRY_END_RETURN;
 }
 
+LN_FLAT_API void LnWorldObject_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::WorldObject>(), id);
+}
+
 LN_FLAT_API LnResult LnVisualObject_Setvisible(LnHandle visualobject, LnBool value)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -222,6 +237,11 @@ LN_FLAT_API LnResult LnVisualObject_Isvisible(LnHandle visualobject, LnBool* out
     LNI_FUNC_TRY_BEGIN;
     *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(ln::VisualObject, visualobject)->isVisible());
     LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API void LnVisualObject_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::VisualObject>(), id);
 }
 
 LN_FLAT_API LnResult LnSprite_Settexture(LnHandle sprite, LnHandle texture)
@@ -245,18 +265,11 @@ LN_FLAT_API LnResult LnSprite_Create(LnHandle texture, float width, float height
     LNI_FUNC_TRY_END_RETURN;
 }
 
-
-LN_FLAT_API LnResult LnSprite_CallBase_OnUpdate(LnHandle sprite, float elapsedSeconds)
+LN_FLAT_API void LnSprite_SetManagedTypeInfoId(int64_t id)
 {
-	LNI_FUNC_TRY_BEGIN;
-	(LNI_HANDLE_TO_OBJECT(LNWS_ln_Sprite, sprite)->onUpdate_CallBase(elapsedSeconds));
-	LNI_FUNC_TRY_END_RETURN;
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Sprite>(), id);
 }
 
-LN_FLAT_API LnResult LnSprite_SetCaller_OnUpdate(LnSprite_SetCaller_OnUpdate_FuncPtr func)
-{
-	LNWS_ln_Sprite::m_ManagedCaller_onUpdate = func;
-	return LN_SUCCESS;
-}
 
+	
 } // extern "C"

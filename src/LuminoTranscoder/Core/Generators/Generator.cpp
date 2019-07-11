@@ -29,3 +29,20 @@ ln::String Generator::makeUpperSnakeName(const ln::String& name)
 
 	return output.toUpper();
 }
+
+ln::String Generator::makeFlatTypeName(const TypeSymbol* type) const
+{
+	return config()->flatCOutputModuleName + type->shortName();
+}
+
+ln::String Generator::makeFlatAPIName_SetManagedTypeInfoId(const TypeSymbol* type) const
+{
+	return makeFlatTypeName(type) + u"_SetManagedTypeInfoId";
+}
+
+ln::String Generator::makeFlatAPIDecl_SetManagedTypeInfoId(const TypeSymbol* type) const
+{
+	return ln::String::format(u"LN_FLAT_API void {0}(int64_t id)", makeFlatAPIName_SetManagedTypeInfoId(type));
+}
+
+

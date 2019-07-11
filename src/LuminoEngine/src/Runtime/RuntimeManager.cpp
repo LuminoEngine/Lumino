@@ -123,6 +123,13 @@ int64_t RuntimeManager::getManagedObjectId(LnHandle handle)
 	return runtimeData->managedObjectId;
 }
 
+int64_t RuntimeManager::getManagedTypeInfoId(LnHandle handle)
+{
+	auto obj = m_objectEntryList[static_cast<int>(handle)].object;
+	auto typeInfo = TypeInfo::getTypeInfo(obj);
+	return detail::TypeInfoInternal::getManagedTypeInfoId(typeInfo);
+}
+
 LnResult RuntimeManager::processException(Exception* e)
 {
 	return LN_ERROR_UNKNOWN;

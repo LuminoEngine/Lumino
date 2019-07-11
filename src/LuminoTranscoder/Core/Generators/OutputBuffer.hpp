@@ -54,7 +54,7 @@ public:
 	template<typename... TArgs>
 	OutputBuffer& AppendCommad(const ln::StringRef& format, const TArgs&... args)
 	{
-		if (!isEmpty()) AppendInternal(", ");
+		if (!isEmpty()) AppendInternal(m_commandSeparator);
 		AppendInternal(ln::String::format(format, args...));
 		return *this;
 	}
@@ -67,6 +67,9 @@ public:
 	
 	/** ln::String 取得 */
 	ln::String toString() const;
+
+	void setCommandSeparator(const ln::String& value) { m_commandSeparator = value; }
+
 	
 private:
 	void AppendInternal(const ln::StringRef& str);
@@ -83,6 +86,7 @@ private:
 	int m_indentLevel;
 	ln::String m_indent;
 	ln::String m_newLineCode;
+	ln::String m_commandSeparator;
 	State m_state;
 };
 

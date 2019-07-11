@@ -240,11 +240,11 @@ ln::Result MethodSymbol::link()
 	m_returnType = db()->getTypeSymbol(m_pi->returnTypeRawName);
 	if (!m_returnType) return false;
 
-	if (!makeFlatParameters()) return false;
-
 	for (auto& p : m_parameters) {
 		if (!p->link()) return false;
 	}
+
+	if (!makeFlatParameters()) return false;
 
 	return true;
 }
@@ -318,6 +318,11 @@ ln::Result MethodSymbol::makeFlatParameters()
 			s->m_isReturn = true;
 			m_flatParameters.add(s);
 		}
+	}
+
+	// check string decl
+	{
+		m_hasStringDecl = m_flatParameters.containsIf([](auto& x) { return x->type()->isString(); });
 	}
 
 	return true;

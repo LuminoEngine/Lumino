@@ -1,4 +1,4 @@
-
+ï»¿
 #include <stdio.h>
 #include <Lumino.FlatC.generated.h>
 
@@ -18,7 +18,7 @@ private:
 MyObject* g_MyObjectList[10];
 
 
-// ©“®¶¬
+// è‡ªå‹•ç”Ÿæˆ
 class MySprite : public MyObject
 {
 public:
@@ -27,7 +27,7 @@ public:
 	virtual void onUpdate(float elapsedSeconds)
 	{
 		printf("base s\n");
-		LnSprite_CallBase_OnUpdate(handle, elapsedSeconds);
+		//LnSprite_CallBase_OnUpdate(handle, elapsedSeconds);
 		printf("base e\n");
 	}
 
@@ -42,7 +42,7 @@ private:
 
 };
 
-// ƒ†[ƒU[‚ªŠg’£
+// ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒæ‹¡å¼µ
 class MySpriteEx : public MySprite
 {
 public:
@@ -69,6 +69,24 @@ int main()
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
+	LnEngine_Initialize();
+
+
+	LnHandle texture1;
+	LnTexture2D_CreateFromFile(u"D:/tmp/lnpoi.png", LN_TEXTURE_FORMAT_RGBA8, &texture1);
+
+	LnHandle sprite1;
+	LnSprite_Create(texture1, 2, 2, &sprite1);
+
+	LnBool endRequested;
+	while (true)
+	{
+		LnEngine_Update(&endRequested);
+		if (!endRequested) break;
+	}
+
+	LnEngine_Finalize();
+#if 0
 	LnEngine_Initialize();
 
 
@@ -101,6 +119,7 @@ int main()
 	LnObject_Release(texture1);
 
 	LnEngine_Finalize();
+#endif
 
 	return 0;
 }

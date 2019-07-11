@@ -14,21 +14,21 @@ int main(int argc, char** argv)
 
 	if (0)
 	{
-		ln::List<ln::Path> files_LuminoCore =
-		{
-			//TEST_ROOT "include/LuminoCore/Math/Vector2.hpp",
-			TEST_ROOT "include/LuminoCore/Math/Vector3.hpp",
-			//TEST_ROOT "include/LuminoCore/Math/Vector4.hpp",
-			TEST_ROOT "include/LuminoCore/Math/Quaternion.hpp",
-			//TEST_ROOT "include/LuminoCore/Math/Matrix.hpp",
-		};
+		//ln::List<ln::Path> files_LuminoCore =
+		//{
+		//	//TEST_ROOT "include/LuminoCore/Math/Vector2.hpp",
+		//	TEST_ROOT "include/LuminoCore/Math/Vector3.hpp",
+		//	//TEST_ROOT "include/LuminoCore/Math/Vector4.hpp",
+		//	TEST_ROOT "include/LuminoCore/Math/Quaternion.hpp",
+		//	//TEST_ROOT "include/LuminoCore/Math/Matrix.hpp",
+		//};
 
-		for (auto& file : files_LuminoCore) {
-			HeaderParser2 parser;
-			parser.addIncludePath(TEST_ROOT "include");
-			parser.addForceIncludeFile(TEST_ROOT "src/LuminoCore/src/LuminoCore.PCH.h");
-			parser.parse(file, pidb, diag);
-		}
+		//for (auto& file : files_LuminoCore) {
+		//	HeaderParser2 parser;
+		//	parser.addIncludePath(TEST_ROOT "include");
+		//	parser.addForceIncludeFile(TEST_ROOT "src/LuminoCore/src/LuminoCore.PCH.h");
+		//	parser.parse(file, pidb, diag);
+		//}
 
 		ln::List<ln::Path> files_LuminoEngine =
 		{
@@ -70,7 +70,7 @@ int main(int argc, char** argv)
 	config->templateDir = LN_LOCALFILE("../Core/Generators/Templates");
 	config->targetNamespace = u"ln";
 	config->flatCOutputModuleName = u"Ln";
-	config->flatCCommonHeader = LN_LOCALFILE("../../../include/LuminoRuntime/FlatCommon.h");
+	config->flatCCommonHeader = LN_LOCALFILE("../../../include/LuminoEngine/Runtime/FlatCommon.h");
 	config->flatCHeaderString = u"#include <LuminoEngine.hpp>";
 
 	{
@@ -85,11 +85,11 @@ int main(int argc, char** argv)
 	}
 
 
-	//{
-	//	RubyExtGenerator g;
-	//	g.setup(db, config);
-	//	g.generate();
-	//}
+	{
+		RubyExtGenerator g;
+		g.setup(db, config);
+		g.generate();
+	}
 
 
 	return 0;

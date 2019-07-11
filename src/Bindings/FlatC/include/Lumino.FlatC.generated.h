@@ -209,6 +209,7 @@ LN_FLAT_API LnResult LnTexture2D_CreateWithFormat(int width, int height, LnTextu
     @details このメソッドは TextureImporter のユーティリティです。
 */
 LN_FLAT_API LnResult LnTexture2D_CreateFromFile(const LnChar* filePath, LnTextureFormat format, LnHandle* outTexture2D);
+LN_FLAT_API LnResult LnTexture2D_CreateFromFileA(const char* filePath, LnTextureFormat format, LnHandle* outTexture2D);
 
 
 //==============================================================================
@@ -327,10 +328,7 @@ LN_FLAT_API LnResult LnSprite_SetsourcerectXYWH(LnHandle sprite, float x, float 
 */
 LN_FLAT_API LnResult LnSprite_Create(LnHandle texture, float width, float height, LnHandle* outSprite);
 
-//using LnSprite_SetCaller_OnUpdate_FuncPtr = void(*)(LnHandle self, float elapsedSeconds);
-typedef void(*LnSprite_SetCaller_OnUpdate_FuncPtr)(LnHandle self, float elapsedSeconds);
-LN_FLAT_API LnResult LnSprite_CallBase_OnUpdate(LnHandle sprite, float elapsedSeconds);
-LN_FLAT_API LnResult LnSprite_SetCaller_OnUpdate(LnSprite_SetCaller_OnUpdate_FuncPtr func);
+
 
 
 } // extern "C"

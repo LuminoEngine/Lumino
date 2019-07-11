@@ -235,6 +235,7 @@ private:
 
     detail::WeakRefInfo*	m_weakRefInfo;
 };
+namespace detail { struct TypeInfoInternal; }
 
 class TypeInfo
     : public RefObject
@@ -243,6 +244,7 @@ public:
     TypeInfo(const char* className, TypeInfo* baseType)
         : m_name(className)
         , m_baseType(baseType)
+		, m_managedTypeInfoId(-1)
     {}
 
     /** クラス名を取得します。 */
@@ -279,7 +281,18 @@ private:
     String m_name;
     TypeInfo* m_baseType;
     List<Ref<PropertyInfo>> m_properties;
+	int64_t m_managedTypeInfoId;
+
+	friend class detail::TypeInfoInternal;
 };
+
+namespace detail {
+struct TypeInfoInternal
+{
+	static void setManagedTypeInfoId(TypeInfo* typeInfo, int64_t id) { typeInfo->m_managedTypeInfoId = id; }
+	static int64_t getManagedTypeInfoId(const TypeInfo* typeInfo) { return typeInfo->m_managedTypeInfoId; }
+};
+} // namespace detail
 
 class Serializer
 {

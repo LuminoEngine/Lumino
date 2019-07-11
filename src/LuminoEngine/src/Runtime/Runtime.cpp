@@ -43,6 +43,16 @@ int64_t LnRuntime_GetManagedObjectId(LnHandle handle)
 	return ln::detail::EngineDomain::runtimeManager()->getManagedObjectId(handle);
 }
 
+int64_t LnRuntime_GetManagedTypeInfoId(LnHandle handle)
+{
+	return ln::detail::EngineDomain::runtimeManager()->getManagedTypeInfoId(handle);
+}
+
+//void LnRuntime_UTF8ToNativeString(const char* src, std::u16string* dst)
+//{
+//	*dst = ln::String::fromCString(src, -1, ln::TextEncoding::utf8Encoding()).c_str();
+//}
+//
 LnResult LnObject_Release(LnHandle obj)
 {
 	if (obj) {
