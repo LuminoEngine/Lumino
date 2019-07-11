@@ -51,6 +51,20 @@
     }
     ```
 
+    RenderElement.
+    描画のみ担当する簡易的な UIElement の代用品。 
+    ```
+    UIButton {
+        "RenderElements" : [
+            {
+                "Type" : "Image",
+                "Image" : "icon.png",
+                "HAlignment" : "Left"
+            }
+        ]
+    }
+    ```
+
     #(ID) や .(class) は未サポート。直近では予定なし。
 
 
