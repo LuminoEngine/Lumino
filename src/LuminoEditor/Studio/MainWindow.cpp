@@ -216,8 +216,8 @@ void MainWindow::openFile(QString filePath)
             return;
         }
 
-
-        MainWindow::instance()->documentManager()->addDocument(new EditorDocument());
+        auto editor = exts[0].second;
+        MainWindow::instance()->documentManager()->addDocument(new AssetEditorDocument(asset, editor));
 
 
     }

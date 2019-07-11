@@ -20,6 +20,7 @@ private:
 	QStackedLayout* m_rootLayout;
 	QList<EditorDocument*> m_documents;
     //QTabWidget* m_tabWidget;
+    QTabBar* m_tabbar;
 	QStackedLayout* m_viewStack;
 	StartupView* m_startupView;
 };

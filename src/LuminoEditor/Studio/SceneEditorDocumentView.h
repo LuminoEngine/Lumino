@@ -12,7 +12,7 @@ public:
 
 
 
-class SceneEditorView : public QWidget
+class SceneEditorView : public EditorView
 {
     Q_OBJECT
 public:

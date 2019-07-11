@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 namespace ln {
+class UIFrame;
 class AssetImporter;
 class AssetEditorViewModel;
 class IEditorExtension;
@@ -56,12 +57,19 @@ public:
 };
 
 
+enum class AssetEditorViewType
+{
+    Scene,
+};
+
 class AssetEditorViewModel
     : public Object
 {
 public:
+    AssetEditorViewType viewType() const { return AssetEditorViewType::Scene; }
 
-
+    virtual void onOpened(AssetModel* asset, UIContainerElement* frame) {}
+    virtual void onClosed() {}
 };
 
 using GetModuleClassFunc = ::ln::IPluginModule*();

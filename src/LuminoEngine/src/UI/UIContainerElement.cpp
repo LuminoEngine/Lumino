@@ -154,5 +154,18 @@ void UIContainerElement::setLogicalChildrenHost(UILayoutPanel* panel)
 	}
 }
 
+
+//==============================================================================
+// UIFrame
+
+UIFrame::UIFrame()
+{
+}
+
+void UIFrame::init()
+{
+    UIContainerElement::init();
+}
+
 } // namespace ln
 
