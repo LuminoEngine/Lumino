@@ -72,11 +72,18 @@ DocumentManager::~DocumentManager()
     //delete m_tabWidget;
 }
 
-void DocumentManager::addDocument(Document* doc)
+void DocumentManager::addDocument(EditorDocument* doc)
 {
     if (auto ddoc = dynamic_cast<SceneEditorDocument*>(doc)) {
         auto view = new SceneEditorView();
 		m_viewStack->addWidget(view);
+        //m_tabWidget->addTab(view, tr("tab"));
+        m_documents.append(ddoc);
+        ddoc->setParent(this);
+    }
+    else if (auto ddoc = dynamic_cast<EditorDocument*>(doc)) {
+        auto view = new EditorView();
+        m_viewStack->addWidget(view);
         //m_tabWidget->addTab(view, tr("tab"));
         m_documents.append(ddoc);
         ddoc->setParent(this);

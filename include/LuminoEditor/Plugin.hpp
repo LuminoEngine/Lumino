@@ -2,6 +2,7 @@
 
 namespace ln {
 class AssetImporter;
+class AssetEditorViewModel;
 class IEditorExtension;
 
 enum class EditorExtensionType
@@ -50,8 +51,20 @@ public:
 
     /** この DocumentEditor が編集対象とするオブジェクトの種別。asset ファイルに埋め込まれる種類。 */
     virtual const Char* typeKeyword() const = 0;
+
+    virtual Ref<AssetEditorViewModel> createEditor() = 0;
 };
 
+
+class AssetEditorViewModel
+    : public Object
+{
+public:
+
+
+};
+
+using GetModuleClassFunc = ::ln::IPluginModule*();
 
 } // namespace ln
 

@@ -8,6 +8,7 @@ class AssetDatabase
 	: public ln::Object
 {
 public:
+    Ref<ln::AssetModel> openAsset(const ln::Path& filePath);
 
 public:// TODO:
    // LN_INTERNAL_NEW_OBJECT;

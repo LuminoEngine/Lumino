@@ -39,6 +39,7 @@ public:
     void reloadPlugins();
 
     ln::List<std::pair<ln::IAssetImporterEditorExtension*, Ref<ln::AssetImporter>>> getAssetImporterExtensions(const ln::Path& assetSourceFilePath) const;
+    ln::List<std::pair<ln::IDocumentEditorExtension*, Ref<ln::AssetEditorViewModel>>> geAssetEditorExtensions(const ln::String& assetType) const;
 
 private:
     Project* m_ownerProject;

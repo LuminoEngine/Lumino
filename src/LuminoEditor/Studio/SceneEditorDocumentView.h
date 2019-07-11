@@ -3,7 +3,7 @@
 
 class LuminoWidget;
 
-class SceneEditorDocument : public Document
+class SceneEditorDocument : public EditorDocument
 {
 	Q_OBJECT
 public:

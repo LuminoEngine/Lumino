@@ -57,11 +57,17 @@ void PluginManager::reloadPlugins()
     // Load modules
     auto files = ln::FileSystem::getFiles(m_ownerProject->localPluginDir(), u"*.dll");
     for (auto& file : files) {
-        m_pluginLibs.add(ln::detail::DllLoader::load(file));
+        auto lib = ln::detail::DllLoader::load(file);
+        auto func = reinterpret_cast<ln::GetModuleClassFunc*>(lib->getProcAddress("ModuleClass"));
+        if (func) {
+            m_pluginModules.add(func());
+            m_pluginLibs.add(lib);
+        }
     }
 
 
     m_pluginModules.add(m_standartPluginModule);
+    
 }
 
 ln::List<std::pair<ln::IAssetImporterEditorExtension*, Ref<ln::AssetImporter>>> PluginManager::getAssetImporterExtensions(const ln::Path& assetSourceFilePath) const
@@ -81,6 +87,26 @@ ln::List<std::pair<ln::IAssetImporterEditorExtension*, Ref<ln::AssetImporter>>> 
     }
     return result;
 } 
+
+ln::List<std::pair<ln::IDocumentEditorExtension*, Ref<ln::AssetEditorViewModel>>> PluginManager::geAssetEditorExtensions(const ln::String& assetType) const
+{
+    ln::List<std::pair<ln::IDocumentEditorExtension*, Ref<ln::AssetEditorViewModel>>> result;
+    for (auto& module : m_pluginModules) {
+        int count = module->getEditorExtensionCount();
+        for (int i = 0; i < count; i++) {
+            auto ext = module->getEditorExtension(i);
+            if (ext && ext->getExtensionType() == ln::EditorExtensionType::DocumentEditor) {
+                auto editorExt = static_cast<ln::IDocumentEditorExtension*>(ext);
+                if (assetType == editorExt->typeKeyword()) {
+                    if (auto editor = editorExt->createEditor()) {
+                        result.add({ editorExt, editor });
+                    }
+                }
+            }
+        }
+    }
+    return result;
+}
 
 } // namespace lna
 

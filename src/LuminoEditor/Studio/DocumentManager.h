@@ -11,14 +11,14 @@ public:
     DocumentManager(QWidget* parent = nullptr);
     ~DocumentManager();
 
-	void addDocument(Document* doc);
+	void addDocument(EditorDocument* doc);
 
     QWidget* rootWidget() const { return m_rootWidget; }
 
 private:
     QWidget* m_rootWidget;
 	QStackedLayout* m_rootLayout;
-	QList<Document*> m_documents;
+	QList<EditorDocument*> m_documents;
     //QTabWidget* m_tabWidget;
 	QStackedLayout* m_viewStack;
 	StartupView* m_startupView;

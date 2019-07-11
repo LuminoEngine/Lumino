@@ -2,6 +2,7 @@
 #include <Workspace.hpp>
 #include <Project.hpp>
 #include <PluginManager.hpp>
+#include <AssetDatabase.hpp>
 #include "External/QtAwesome/QtAwesome.h"
 #include "ActionManager.h"
 #include "DocumentManager.h"
@@ -193,13 +194,32 @@ void MainWindow::importFile(QString filePath)
     if (m_workspace->project())
     {
         auto sourceFile = ln::Path(QtToLn(filePath));
-        auto importers = m_workspace->project()->pluginManager()->getAssetImporterExtensions(sourceFile);
-        if (importers.size() != 1) {
+        auto exts = m_workspace->project()->pluginManager()->getAssetImporterExtensions(sourceFile);
+        if (exts.size() != 1) {
             LN_NOTIMPLEMENTED();
             return;
         }
 
-        importers[0].second->import(sourceFile);
+        exts[0].second->import(sourceFile);
+    }
+}
+
+void MainWindow::openFile(QString filePath)
+{
+    if (m_workspace->project())
+    {
+        auto assetFile = ln::Path(QtToLn(filePath));
+        auto asset = m_workspace->project()->assetDatabase()->openAsset(assetFile);
+        auto exts = m_workspace->project()->pluginManager()->geAssetEditorExtensions(asset->assetType());
+        if (exts.size() != 1) {
+            LN_NOTIMPLEMENTED();
+            return;
+        }
+
+
+        MainWindow::instance()->documentManager()->addDocument(new EditorDocument());
+
+
     }
 }
 

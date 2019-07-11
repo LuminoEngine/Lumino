@@ -35,6 +35,8 @@ public:
 	//static Ref<AssetModel> load(const ln::Path& filePath);
 	//static void save(Object* target, const ln::Path& filePath);
 
+    const ln::String& assetType() const { return m_assetType; }
+
     Object* target() const;
 
 	Ref<AssetProperty> findProperty(const String& path);

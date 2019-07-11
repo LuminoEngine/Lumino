@@ -6,7 +6,7 @@
 // SceneEditorDocument
 
 SceneEditorDocument::SceneEditorDocument(QObject* parent)
-    : Document(parent)
+    : EditorDocument(parent)
 {
 
 

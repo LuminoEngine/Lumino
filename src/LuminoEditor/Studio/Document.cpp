@@ -1,7 +1,18 @@
 ﻿
 #include "Document.h"
 
-Document::Document(QObject* parent)
+//==============================================================================
+// EditorDocument
+
+EditorDocument::EditorDocument(QObject* parent)
 	: QObject(parent)
+{
+}
+
+//==============================================================================
+// EditorView
+
+EditorView::EditorView(QWidget* parent)
+    : QFrame(parent)
 {
 }

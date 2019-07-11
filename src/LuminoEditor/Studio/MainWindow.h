@@ -29,6 +29,7 @@ public:
     DocumentManager* documentManager() const { return m_documentManager; }
 
     void importFile(QString filePath);
+    void openFile(QString filePath);
 
 protected:
     void closeEvent(QCloseEvent* event) override;

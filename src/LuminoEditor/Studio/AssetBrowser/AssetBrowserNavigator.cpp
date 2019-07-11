@@ -99,10 +99,11 @@ void AssetBrowserTreeView::setRootDir(QString dir)
 
 void AssetBrowserTreeView::onDoubleClicked(const QModelIndex &index)
 {
-    QString filePath = m_model->fileInfo(index).absoluteFilePath();
-    MainWindow::instance()->importFile(filePath);
-
-    ;
+    auto sourceIndex = m_modelProxy->mapToSource(index);
+    QString filePath = m_model->fileInfo(sourceIndex).absoluteFilePath();
+    //MainWindow::instance()->importFile(filePath);
+    MainWindow::instance()->openFile(filePath);
+    //;
     //ln::GameAudio::playBGM(ln::String((char16_t*)filePath.data()));
 }
 

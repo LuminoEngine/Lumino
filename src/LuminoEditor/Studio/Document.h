@@ -1,9 +1,15 @@
 ﻿#pragma once
 
-class Document : public QObject
+class EditorDocument : public QObject
 {
 	Q_OBJECT
 public:
-	Document(QObject* parent = nullptr);
+    EditorDocument(QObject* parent = nullptr);
 };
 
+class EditorView : public QFrame
+{
+    Q_OBJECT
+public:
+    EditorView(QWidget* parent = nullptr);
+};
