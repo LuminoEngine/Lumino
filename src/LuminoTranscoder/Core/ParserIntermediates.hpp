@@ -82,7 +82,7 @@ protected:
 	}
 };
 
-// 定数 (enum メンバやデフォルト引数)
+// 定数 (enum メンバ)
 class PIConstant : public ln::RefObject
 {
 public:
@@ -112,6 +112,7 @@ public:
 	ln::String name;
 	bool isConst = false;
 	bool isPointer = false;
+	Ref<ln::Variant> defaultValue;
 	//bool isIn = false;
 	//bool isOut = false;
 	//bool isThis = false;
@@ -123,6 +124,9 @@ protected:
 	{
 		ar & LN_NVP(typeRawName);
 		ar & LN_NVP(name);
+		ar & LN_NVP(isConst);
+		ar & LN_NVP(isPointer);
+		ar & LN_NVP(defaultValue);
 		//ar & LN_NVP(isIn);
 		//ar & LN_NVP(isOut);
 		//ar & LN_NVP(isThis);

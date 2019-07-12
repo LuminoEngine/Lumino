@@ -398,7 +398,7 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(MethodSymbol* method) const
 			else
 			{
 
-				if (param->defaultValue)
+				if (param->defaultValue())
 					optionalArgsCount++;
 				else
 					requiredArgsCount++;
@@ -713,6 +713,7 @@ ln::String RubyExtGenerator::makeTypeCheckExpr(const TypeSymbol* type, const ln:
 	}
 }
 
+// Flat API コールに渡す引数用変数の宣言文を作成する。(VALUE を C の型に変換する)
 ln::String RubyExtGenerator::makeVALUEToNativeCastDecl(const MethodParameterSymbol* param) const
 {
 	auto type = param->type();
@@ -735,7 +736,6 @@ ln::String RubyExtGenerator::makeVALUEToNativeCastDecl(const MethodParameterSymb
 		castExpr = ln::String::format(u"({0})FIX2INT({1})", makeFlatTypeName(type), param->name());
 	}
 	else {
-
 		if (type == PredefinedTypes::boolType) {
 			declExpr = u"LnBool " + varName;
 			castExpr = ln::String::format(u"LNRB_VALUE_TO_BOOL({0})", param->name());
@@ -768,13 +768,24 @@ ln::String RubyExtGenerator::makeVALUEToNativeCastDecl(const MethodParameterSymb
 	}
 
 	// デフォルト引数があれば、省略されている場合に格納する
-	if (param->defaultValue) {
-		LN_NOTIMPLEMENTED();
-		return ln::String::Empty;
-		//return ln::String::format(u"{0} = ({1} != Qnil) ? {2} : {3};", declExpr, param->name(), castExpr, param->defaultValue->value());
+	if (param->defaultValue()) {
+		return ln::String::format(u"{0} = ({1} != Qnil) ? {2} : {3};", declExpr, param->name(), castExpr, makeConstandValue(param->defaultValue()));
 	}
 	else {
 		return ln::String::format(u"{0} = {1};", declExpr, castExpr);
+	}
+}
+
+ln::String RubyExtGenerator::makeConstandValue(const ConstantSymbol* constant) const
+{
+	if (constant->type()->isEnum()) {
+		return ln::String::fromNumber(constant->value()->get<int>());
+	}
+	else if (constant->type() == PredefinedTypes::floatType) {
+		return ln::String::fromNumber(constant->value()->get<float>());
+	}
+	else {
+		return ln::String::fromNumber(constant->value()->get<int>());
 	}
 }
 

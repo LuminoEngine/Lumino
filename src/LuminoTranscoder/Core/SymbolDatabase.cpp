@@ -140,11 +140,20 @@ ConstantSymbol::ConstantSymbol(SymbolDatabase* db)
 {
 }
 
-ln::Result ConstantSymbol::init(PIConstant* pi)
+ln::Result ConstantSymbol::init(TypeSymbol* type, PIConstant* pi)
 {
 	if (!Symbol::init(pi->document, pi->metadata)) return false;
 	LN_CHECK(pi);
 	m_pi = pi;
+	m_type = type;
+	m_value = m_pi->value;
+	return true;
+}
+
+ln::Result ConstantSymbol::init(TypeSymbol* type, ln::Variant* value)
+{
+	m_type = type;
+	m_value = value;
 	return true;
 }
 
@@ -184,6 +193,7 @@ ln::Result MethodParameterSymbol::link()
 		m_type = db()->getTypeSymbol(m_pi->typeRawName);
 		if (!m_type) return false;
 
+		// io direction
 		if (m_type->isClass()) {
 			m_isIn = true;
 		}
@@ -194,6 +204,29 @@ ln::Result MethodParameterSymbol::link()
 			}
 			else {
 				m_isIn = true;
+			}
+		}
+
+		// defaut value
+		if (m_pi->defaultValue) {
+			if (m_pi->defaultValue->isNumeric()) {
+				if (m_type->isEnum()) {
+					m_defaultValue = ln::makeRef<ConstantSymbol>(db());
+					if (!m_defaultValue->init(m_type, m_pi->defaultValue)) return false;
+				}
+				else if (m_pi->defaultValue->type() == ln::VariantType::Float ||
+					m_pi->defaultValue->type() == ln::VariantType::Double) {
+					m_defaultValue = ln::makeRef<ConstantSymbol>(db());
+					if (!m_defaultValue->init(PredefinedTypes::floatType, m_pi->defaultValue)) return false;
+				}
+				else {
+					m_defaultValue = ln::makeRef<ConstantSymbol>(db());
+					if (!m_defaultValue->init(PredefinedTypes::intType, m_pi->defaultValue)) return false;
+				}
+			}
+			else {
+				LN_NOTIMPLEMENTED();
+				return false;
 			}
 		}
 	}
@@ -438,7 +471,7 @@ ln::Result TypeSymbol::init(PITypeInfo* piType)
 
 	for (auto& i : m_piType->constants) {
 		auto s = ln::makeRef<ConstantSymbol>(db());
-		if (!s->init(i)) {
+		if (!s->init(this, i)) {
 			return false;
 		}
 		m_constants.add(s);

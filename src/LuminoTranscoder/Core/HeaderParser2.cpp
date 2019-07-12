@@ -340,7 +340,6 @@ public:
 					QualType& type = paramDecl->getType();
 
 					SplitQualType sp = type.split();
-
 					
 					auto paramInfo = ln::makeRef<PIMethodParameter>();
 					paramInfo->name = ln::String::fromStdString(paramDecl->getNameAsString());
@@ -368,6 +367,31 @@ public:
 						// TODO: add location
 						//m_parser->diag()->reportError(ln::String::format(_T("Invalid declaration {0}"), ln::String::fromStdString(getSourceText(paramDecl->getSourceRange()))), getLocString(paramDecl));
 						m_parser->diag()->reportError(ln::String::format(u"Invalid declaration {0}", ln::String::fromStdString(getSourceText(paramDecl->getSourceRange()))));
+					}
+
+					if (paramDecl->getDefaultArg()) {
+						auto expr = paramDecl->getDefaultArg();
+						if (expr->getStmtClass() == Stmt::StmtClass::DeclRefExprClass) {
+							auto declRef = static_cast<DeclRefExpr*>(expr);
+							auto decl = declRef->getDecl();
+							if (decl->getKind() == Decl::Kind::EnumConstant) {
+								auto enumConstant = static_cast<EnumConstantDecl*>(decl);
+								paramInfo->defaultValue = ln::makeVariant(enumConstant->getInitVal().getSExtValue());
+							}
+							else {
+								std::cout << decl->getDeclKindName();
+								LN_NOTIMPLEMENTED();
+							}
+						}
+						else if (expr->getStmtClass() == Stmt::StmtClass::FloatingLiteralClass) {
+							auto literal = static_cast<FloatingLiteral*>(expr);
+							auto value = literal->getValue();
+							paramInfo->defaultValue = ln::makeVariant(value.convertToFloat());
+						}
+						else {
+							std::cout << expr->getStmtClassName();
+							LN_NOTIMPLEMENTED();
+						}
 					}
 				}
 			}

@@ -33,6 +33,7 @@ private:
 	ln::String makeVALUEReturnExpr(TypeSymbol* type, const ln::String& varName) const;
 	ln::String makeTypeCheckExpr(const TypeSymbol* type, const ln::String& varName) const;
 	ln::String makeVALUEToNativeCastDecl(const MethodParameterSymbol* param) const;
+	ln::String makeConstandValue(const ConstantSymbol* constant) const;
 
 	ln::String makeTypeInfoRegisters() const;
 

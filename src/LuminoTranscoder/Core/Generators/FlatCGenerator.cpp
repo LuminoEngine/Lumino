@@ -53,11 +53,6 @@ ln::String FlatCCommon::makeTypeName(GeneratorConfiguration* config, TypeSymbol*
 	}
 }
 
-//ln::String FlatCCommon::makeFunkParamList(MethodSymbol* method)
-//{
-//	return
-//}
-//
 ln::String FlatCCommon::makeFlatCParamQualTypeName(GeneratorConfiguration* config, ln::Ref<MethodSymbol> methodInfo, ln::Ref<MethodParameterSymbol> paramInfo, FlatCharset charset)
 {
 	auto typeInfo = paramInfo->type();

@@ -150,8 +150,10 @@ class ConstantSymbol : public Symbol
 {
 public:
 	//ln::Ref<DocumentSymbol>		document;
+
+	const ln::Ref<TypeSymbol>& type() const { return m_type; }
 	const ln::String& name() const { return m_pi->name; }
-	const ln::Variant* value() const { return m_pi->value; }
+	const Ref<ln::Variant>& value() const { return m_value; }
 
 	//ln::Ref<TypeSymbol>			type;
 	//ln::Ref<ln::Variant>			value;
@@ -160,24 +162,26 @@ public:
 
 public:
 	ConstantSymbol(SymbolDatabase* db);
-	ln::Result init(PIConstant* pi);
+	ln::Result init(TypeSymbol* type, PIConstant* pi);
+	ln::Result init(TypeSymbol* type, ln::Variant* value);
 	ln::Result link();
 
 private:
 	PIConstant* m_pi = nullptr;
+	TypeSymbol* m_type = nullptr;
+	Ref<ln::Variant> m_value;
 };
 
 class MethodParameterSymbol : public Symbol
 {
-public:
-	struct SoueceData
-	{
-		ln::String typeRawName;
-		ln::Optional<ln::String> rawDefaultValue;
-	} src;
-
-	ln::Ref<ConstantSymbol> defaultValue;
-
+//public:
+//	struct SoueceData
+//	{
+//		ln::String typeRawName;
+//		ln::Optional<ln::String> rawDefaultValue;
+//	} src;
+//
+//
 public:
 	MethodParameterSymbol(SymbolDatabase* db);
 	ln::Result init(PIMethodParameter* pi);
@@ -186,6 +190,7 @@ public:
 
 	TypeSymbol* type() const { return m_type; }
 	const ln::String& name() const { return m_name; }
+	const ln::Ref<ConstantSymbol>& defaultValue() const { return m_defaultValue; }
 
 	bool isIn() const { return m_isIn; }
 	bool isOut() const { return m_isOut; }
@@ -196,6 +201,7 @@ private:
 	PIMethodParameter* m_pi = nullptr;
 	TypeSymbol* m_type = nullptr;
 	ln::String m_name;
+	ln::Ref<ConstantSymbol> m_defaultValue;
 
 	bool m_isIn = false;
 	bool m_isOut = false;
