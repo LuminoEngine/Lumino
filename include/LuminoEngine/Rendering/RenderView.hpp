@@ -9,6 +9,7 @@
 namespace ln {
 class GraphicsContext;
 class UIEventArgs;
+class UIStyleContext;
 namespace detail {
 class RenderingManager;
 class FrameBufferCache;
@@ -59,10 +60,10 @@ public:
 
 public: // TODO: protected
 	void updateFrame(float elapsedSeconds);
-	void updateUIStyle(const detail::UIStyleInstance* parentFinalStyle);
+	void updateUIStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* parentFinalStyle);
 	void updateUILayout(const Rect& parentFinalGlobalRect);
 	virtual void onUpdateFrame(float elapsedSeconds);
-	virtual void onUpdateUIStyle(const detail::UIStyleInstance* finalStyle);
+	virtual void onUpdateUIStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle);
 	virtual void onUpdateUILayout(const Rect& finalGlobalRect);
     virtual void onRoutedEvent(UIEventArgs* e);
 

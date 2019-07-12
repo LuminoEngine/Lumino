@@ -29,7 +29,7 @@ public:
 
 protected:
 	virtual void onUpdateFrame(float elapsedSeconds) override;
-	virtual void onUpdateStyle(const detail::UIStyleInstance* finalStyle) override;
+	virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
 	virtual void onUpdateLayout(const Rect& finalGlobalRect) override;
     virtual Size arrangeOverride(const Size& finalSize) override;
     //virtual void render(UIRenderingContext* context);

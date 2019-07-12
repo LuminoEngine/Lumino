@@ -9,6 +9,7 @@ class UIRenderView;
 class UIContext;
 class UIEventArgs;
 class UIStyle;
+class UIStyleContext;
 class UIContainerElement;
 class UIFrameWindow;
 enum class BlendMode : uint8_t;
@@ -249,7 +250,7 @@ public: // TODO: internal
 public:	// TODO: internal
     virtual const String& className() const { return String::Empty; }
     virtual void onUpdateFrame(float elapsedSeconds);
-	virtual void onUpdateStyle(const detail::UIStyleInstance* finalStyle);
+	virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle);
 
     /**
         @brief		この要素を表示するために必要なサイズを計測します。
@@ -295,7 +296,7 @@ public:	// TODO: internal
     virtual bool onHitTest(const Point& localPoint);
 
     // TODO: internal
-	void updateStyleHierarchical(const detail::UIStyleInstance* parentFinalStyle);
+	void updateStyleHierarchical(const UIStyleContext* styleContext, const detail::UIStyleInstance* parentFinalStyle);
     void updateFinalLayoutHierarchical(const Rect& parentFinalGlobalRect);
     virtual void render(UIRenderingContext* context);
 

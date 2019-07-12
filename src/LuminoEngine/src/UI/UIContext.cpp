@@ -108,7 +108,7 @@ void UIContext::updateStyleTree()
 {
 	if (m_layoutRootElement)
 	{
-		m_layoutRootElement->updateStyleHierarchical(m_finalDefaultStyle);
+		m_layoutRootElement->updateStyleHierarchical(m_styleContext, m_finalDefaultStyle);
 	}
 }
 

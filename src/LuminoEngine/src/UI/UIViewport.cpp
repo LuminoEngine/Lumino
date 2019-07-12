@@ -67,10 +67,10 @@ void UIViewport::onUpdateFrame(float elapsedTimer)
     m_imageEffectRenderer->updateFrame(elapsedTimer);
 }
 
-void UIViewport::onUpdateStyle(const detail::UIStyleInstance* finalStyle)
+void UIViewport::onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)
 {
 	for (auto& view : m_renderViews) {
-		view->updateUIStyle(finalStyle);
+		view->updateUIStyle(styleContext, finalStyle);
 	}
 }
 

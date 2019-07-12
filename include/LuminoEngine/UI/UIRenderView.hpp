@@ -28,7 +28,7 @@ public:
 
 protected:
 	virtual void onUpdateFrame(float elapsedSeconds) override;
-	virtual void onUpdateUIStyle(const detail::UIStyleInstance* finalStyle) override;
+	virtual void onUpdateUIStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
 	virtual void onUpdateUILayout(const Rect& finalGlobalRect) override;
 
 private:

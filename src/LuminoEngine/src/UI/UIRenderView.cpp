@@ -40,9 +40,9 @@ void UIRenderView::onUpdateFrame(float elapsedSeconds)
 	m_rootElement->updateFrame(elapsedSeconds);
 }
 
-void UIRenderView::onUpdateUIStyle(const detail::UIStyleInstance* finalStyle)
+void UIRenderView::onUpdateUIStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)
 {
-	m_rootElement->updateStyleHierarchical(finalStyle);
+	m_rootElement->updateStyleHierarchical(styleContext, finalStyle);
 }
 
 void UIRenderView::onUpdateUILayout(const Rect& finalGlobalRect)

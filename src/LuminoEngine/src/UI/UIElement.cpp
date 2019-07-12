@@ -377,7 +377,7 @@ void UIElement::onUpdateFrame(float elapsedSeconds)
 {
 }
 
-void UIElement::onUpdateStyle(const detail::UIStyleInstance* finalStyle)
+void UIElement::onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)
 {
 }
 //
@@ -409,16 +409,16 @@ void UIElement::onRender(UIRenderingContext* context)
 {
 }
 
-void UIElement::updateStyleHierarchical(const detail::UIStyleInstance* parentFinalStyle)
+void UIElement::updateStyleHierarchical(const UIStyleContext* styleContext, const detail::UIStyleInstance* parentFinalStyle)
 {
 	detail::UIStyleInstance::updateStyleDataHelper(m_localStyle, parentFinalStyle, m_context->defaultStyle(), m_finalStyle);
 
-	onUpdateStyle(m_finalStyle);
+	onUpdateStyle(styleContext, m_finalStyle);
 
 	// child elements
 	int count = getVisualChildrenCount();
 	for (int i = 0; i < count; i++) {
-		getVisualChild(i)->updateStyleHierarchical(m_finalStyle);
+		getVisualChild(i)->updateStyleHierarchical(styleContext, m_finalStyle);
 	}
 }
 
