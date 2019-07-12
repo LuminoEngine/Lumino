@@ -39,7 +39,7 @@ AccessLevel PIMethod::accessLevelAsEnum() const
 {
 	if (ln::String::compare(accessLevel, u"Private", ln::CaseSensitivity::CaseInsensitive) == 0)
 		return AccessLevel::Private;
-	if (ln::String::compare(accessLevel, u"EProtectednum", ln::CaseSensitivity::CaseInsensitive) == 0)
+	if (ln::String::compare(accessLevel, u"Protected", ln::CaseSensitivity::CaseInsensitive) == 0)
 		return AccessLevel::Protected;
 	if (ln::String::compare(accessLevel, u"Public", ln::CaseSensitivity::CaseInsensitive) == 0)
 		return AccessLevel::Public;

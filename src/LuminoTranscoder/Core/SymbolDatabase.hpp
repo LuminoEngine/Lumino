@@ -151,7 +151,7 @@ class ConstantSymbol : public Symbol
 public:
 	//ln::Ref<DocumentSymbol>		document;
 
-	const ln::Ref<TypeSymbol>& type() const { return m_type; }
+	TypeSymbol* type() const { return m_type; }
 	const ln::String& name() const { return m_pi->name; }
 	const Ref<ln::Variant>& value() const { return m_value; }
 
@@ -217,7 +217,6 @@ public:
 	// 
 	//ln::Ref<MetadataSymbol> metadata;
 	//ln::Ref<DocumentSymbol> document;
-	AccessLevel accessLevel = AccessLevel::Public;
 	//ln::String name;
 	//IsConstructor
 	//IsStatic
@@ -248,6 +247,7 @@ public:
 	ln::Result init(PIMethod* pi, TypeSymbol* ownerType);
 	ln::Result link();
 
+	AccessLevel accessLevel() const { return m_accessLevel; }
 	TypeSymbol* ownerType() const { return m_ownerType; }
 	TypeSymbol* returnType() const { return m_returnType; }
 	const ln::String& shortName() const { return m_shortName; }
@@ -271,6 +271,7 @@ private:
 	ln::Result makeFlatParameters();
 
 	PIMethod* m_pi = nullptr;
+	AccessLevel m_accessLevel = AccessLevel::Public;
 	TypeSymbol* m_ownerType = nullptr;
 	TypeSymbol* m_returnType = nullptr;
 	ln::String m_shortName;
@@ -278,8 +279,6 @@ private:
 	ln::List<Ref<MethodParameterSymbol>> m_parameters;
 	ln::List<Ref<MethodParameterSymbol>> m_flatParameters;	// FlatC-API としてのパラメータリスト。先頭が this だったり、末尾が return だったりする。
 	MethodOverloadInfo* m_overloadInfo = nullptr;		// このメソッドが属するオーバーロードグループ
-	//MethodSymbol* m_overloadParent;			// このメソッドはどのメソッドをオーバーロードするか (基本的に一番最初に見つかった定義)
-	//ln::List<MethodSymbol*> m_overloadChildren;	// このメソッドはどのメソッドにオーバーロードされるか
 	bool m_isConstructor = false;
 	bool m_hasStringDecl = false;
 
@@ -313,8 +312,9 @@ public:
 	const ln::String& shortName() const { return m_shortName; }
 	const ln::List<Ref<FieldSymbol>>& fields() const { return m_fields; }
 	const ln::List<Ref<ConstantSymbol>>& constants() const { return m_constants; }
-	const ln::List<Ref<MethodSymbol>>& methods() const { return m_methods; }
+	const ln::List<Ref<MethodSymbol>>& publicMethods() const { return m_publicMethods; }	// クラス外から普通にコールできる public メソッド。virutal は含むが、protected virtual は含まない。
 	const ln::List<Ref<MethodOverloadInfo>>& overloads() const { return m_overloads; }
+	const ln::List<Ref<MethodSymbol>>& virtualMethods() const { return m_virtualMethods; }	// ベースクラスも含めた、すべての末端レベル virtual method
 	TypeSymbol* baseClass() const { return m_baseClass; }
 
 	bool isPrimitive() const { return kind() == TypeKind::Primitive; }
@@ -327,14 +327,17 @@ public:
 private:
 	void setFullName(const ln::String& value);
 	ln::Result linkOverload();
+	void collectVirtualMethods(ln::List<Ref<MethodSymbol>>* virtualMethods);
 
 	Ref<PITypeInfo> m_piType;
 	ln::String m_fullName;
 	ln::String m_shortName;
 	ln::List<Ref<FieldSymbol>> m_fields;
 	ln::List<Ref<ConstantSymbol>> m_constants;
-	ln::List<Ref<MethodSymbol>> m_methods;
+	ln::List<Ref<MethodSymbol>> m_publicMethods;
+	ln::List<Ref<MethodSymbol>> m_declaredMethods;	// このクラス内で宣言されたすべてメソッド。ベースクラスは含まない。
 	ln::List<Ref<MethodOverloadInfo>> m_overloads;
+	ln::List<Ref<MethodSymbol>> m_virtualMethods;
 	TypeSymbol* m_baseClass = nullptr;
 
 //	struct SoueceData

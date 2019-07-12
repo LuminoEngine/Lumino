@@ -130,7 +130,7 @@ LN_FLAT_API LnResult LnVector3_Length(const LnVector3* vector3, float* outReturn
 /**
     @brief ベクトルの長さの 2 乗を返します。
 */
-LN_FLAT_API LnResult LnVector3_Lengthsquared(const LnVector3* vector3, float* outReturn);
+LN_FLAT_API LnResult LnVector3_LengthSquared(const LnVector3* vector3, float* outReturn);
 
 
 /**
@@ -218,13 +218,13 @@ LN_FLAT_API LnResult LnTexture2D_CreateFromFileA(const char* filePath, LnTexture
 /**
     @brief このオブジェクトの位置を設定します。
 */
-LN_FLAT_API LnResult LnWorldObject_Setposition(LnHandle worldobject, const LnVector3* pos);
+LN_FLAT_API LnResult LnWorldObject_SetPosition(LnHandle worldobject, const LnVector3* pos);
 
 
 /**
     @brief このオブジェクトの位置を設定します。
 */
-LN_FLAT_API LnResult LnWorldObject_SetpositionXYZ(LnHandle worldobject, float x, float y, float z);
+LN_FLAT_API LnResult LnWorldObject_SetPositionXYZ(LnHandle worldobject, float x, float y, float z);
 
 
 /**
@@ -236,13 +236,13 @@ LN_FLAT_API LnResult LnWorldObject_Position(LnHandle worldobject, LnVector3* out
 /**
     @brief このオブジェクトの回転を設定します。
 */
-LN_FLAT_API LnResult LnWorldObject_Setrotation(LnHandle worldobject, const LnQuaternion* rot);
+LN_FLAT_API LnResult LnWorldObject_SetRotation(LnHandle worldobject, const LnQuaternion* rot);
 
 
 /**
     @brief このオブジェクトの回転をオイラー角から設定します。(radian)
 */
-LN_FLAT_API LnResult LnWorldObject_Seteulerangles(LnHandle worldobject, float x, float y, float z);
+LN_FLAT_API LnResult LnWorldObject_SetEulerAngles(LnHandle worldobject, float x, float y, float z);
 
 
 /**
@@ -254,19 +254,19 @@ LN_FLAT_API LnResult LnWorldObject_Rotation(LnHandle worldobject, LnQuaternion* 
 /**
     @brief このオブジェクトの拡大率を設定します。
 */
-LN_FLAT_API LnResult LnWorldObject_Setscale(LnHandle worldobject, const LnVector3* scale);
+LN_FLAT_API LnResult LnWorldObject_SetScale(LnHandle worldobject, const LnVector3* scale);
 
 
 /**
     @brief このオブジェクトの拡大率を設定します。
 */
-LN_FLAT_API LnResult LnWorldObject_SetscaleS(LnHandle worldobject, float xyz);
+LN_FLAT_API LnResult LnWorldObject_SetScaleS(LnHandle worldobject, float xyz);
 
 
 /**
     @brief このオブジェクトの拡大率を設定します。
 */
-LN_FLAT_API LnResult LnWorldObject_SetscaleXYZ(LnHandle worldobject, float x, float y, float z);
+LN_FLAT_API LnResult LnWorldObject_SetScaleXYZ(LnHandle worldobject, float x, float y, float z);
 
 
 /**
@@ -278,20 +278,24 @@ LN_FLAT_API LnResult LnWorldObject_Scale(LnHandle worldobject, LnVector3* outRet
 /**
     @brief このオブジェクトのローカルの中心位置を設定します。
 */
-LN_FLAT_API LnResult LnWorldObject_Setcenterpoint(LnHandle worldobject, const LnVector3* value);
+LN_FLAT_API LnResult LnWorldObject_SetCenterPoint(LnHandle worldobject, const LnVector3* value);
 
 
 /**
     @brief このオブジェクトのローカルの中心位置を設定します。
 */
-LN_FLAT_API LnResult LnWorldObject_SetcenterpointXYZ(LnHandle worldobject, float x, float y, float z);
+LN_FLAT_API LnResult LnWorldObject_SetCenterPointXYZ(LnHandle worldobject, float x, float y, float z);
 
 
 /**
     @brief このオブジェクトのローカルの中心位置を取得します。
 */
-LN_FLAT_API LnResult LnWorldObject_Centerpoint(LnHandle worldobject, LnVector3* outReturn);
+LN_FLAT_API LnResult LnWorldObject_CenterPoint(LnHandle worldobject, LnVector3* outReturn);
 
+
+typedef LnResult(*LnWorldObject_OnUpdate_OverrideCallback)(LnHandle worldobject, float elapsedSeconds);
+LN_FLAT_API LnResult LnWorldObject_OnUpdate_SetOverrideCallback(LnWorldObject_OnUpdate_OverrideCallback callback);
+LN_FLAT_API LnResult LnWorldObject_OnUpdate_CallOverrideBase(LnHandle worldobject, float elapsedSeconds);
 
 //==============================================================================
 // ln::VisualObject
@@ -299,14 +303,18 @@ LN_FLAT_API LnResult LnWorldObject_Centerpoint(LnHandle worldobject, LnVector3* 
 /**
     @brief 可視状態を設定します。false の場合、コンポーネントの描画は行われません。(default: true)
 */
-LN_FLAT_API LnResult LnVisualObject_Setvisible(LnHandle visualobject, LnBool value);
+LN_FLAT_API LnResult LnVisualObject_SetVisible(LnHandle visualobject, LnBool value);
 
 
 /**
     @brief 可視状態を取得します。
 */
-LN_FLAT_API LnResult LnVisualObject_Isvisible(LnHandle visualobject, LnBool* outReturn);
+LN_FLAT_API LnResult LnVisualObject_IsVisible(LnHandle visualobject, LnBool* outReturn);
 
+
+typedef LnResult(*LnVisualObject_OnUpdate_OverrideCallback)(LnHandle worldobject, float elapsedSeconds);
+LN_FLAT_API LnResult LnVisualObject_OnUpdate_SetOverrideCallback(LnVisualObject_OnUpdate_OverrideCallback callback);
+LN_FLAT_API LnResult LnVisualObject_OnUpdate_CallOverrideBase(LnHandle worldobject, float elapsedSeconds);
 
 //==============================================================================
 // ln::Sprite
@@ -314,13 +322,13 @@ LN_FLAT_API LnResult LnVisualObject_Isvisible(LnHandle visualobject, LnBool* out
 /**
     @brief スプライトが表示するテクスチャを設定します。
 */
-LN_FLAT_API LnResult LnSprite_Settexture(LnHandle sprite, LnHandle texture);
+LN_FLAT_API LnResult LnSprite_SetTexture(LnHandle sprite, LnHandle texture);
 
 
 /**
     @brief 
 */
-LN_FLAT_API LnResult LnSprite_SetsourcerectXYWH(LnHandle sprite, float x, float y, float width, float height);
+LN_FLAT_API LnResult LnSprite_SetSourceRectXYWH(LnHandle sprite, float x, float y, float width, float height);
 
 
 /**
@@ -328,6 +336,10 @@ LN_FLAT_API LnResult LnSprite_SetsourcerectXYWH(LnHandle sprite, float x, float 
 */
 LN_FLAT_API LnResult LnSprite_Create(LnHandle texture, float width, float height, LnHandle* outSprite);
 
+
+typedef LnResult(*LnSprite_OnUpdate_OverrideCallback)(LnHandle worldobject, float elapsedSeconds);
+LN_FLAT_API LnResult LnSprite_OnUpdate_SetOverrideCallback(LnSprite_OnUpdate_OverrideCallback callback);
+LN_FLAT_API LnResult LnSprite_OnUpdate_CallOverrideBase(LnHandle worldobject, float elapsedSeconds);
 
 
 

@@ -251,6 +251,7 @@ ln::Result MethodSymbol::init(PIMethod* pi, TypeSymbol* ownerType)
 	LN_CHECK(pi);
 	LN_CHECK(ownerType);
 	m_pi = pi;
+	m_accessLevel = m_pi->accessLevelAsEnum();
 	m_ownerType = ownerType;
 	m_shortName = m_pi->name;
 	m_fullName = m_ownerType->fullName() + u"::" + m_shortName;
@@ -263,6 +264,7 @@ ln::Result MethodSymbol::init(PIMethod* pi, TypeSymbol* ownerType)
 
 	if (!pi->isStatic && m_shortName == u"init") {
 		m_isConstructor = true;
+		m_accessLevel = AccessLevel::Public;
 	}
 
 	return true;
@@ -360,6 +362,7 @@ ln::Result MethodSymbol::makeFlatParameters()
 
 	return true;
 }
+
 
 #if 0
 void MethodSymbol::LinkParameters(SymbolDatabase* db)
@@ -482,7 +485,7 @@ ln::Result TypeSymbol::init(PITypeInfo* piType)
 		if (!s->init(i, this)) {
 			return false;
 		}
-		m_methods.add(s);
+		m_declaredMethods.add(s);
 	}
 
 	return true;
@@ -506,9 +509,12 @@ ln::Result TypeSymbol::link()
 			return false;
 		}
 	}
-	for (auto& i : m_methods) {
+	for (auto& i : m_declaredMethods) {
 		if (!i->link()) {
 			return false;
+		}
+		if (i->accessLevel() == AccessLevel::Public) {
+			m_publicMethods.add(i);
 		}
 	}
 
@@ -521,6 +527,8 @@ ln::Result TypeSymbol::link()
 	}
 
 	if (!linkOverload()) return false;
+
+	collectVirtualMethods(&m_virtualMethods);
 
 	return true;
 }
@@ -538,7 +546,7 @@ void TypeSymbol::setFullName(const ln::String& value)
 
 ln::Result TypeSymbol::linkOverload()
 {
-	for (auto& method1 : m_methods)
+	for (auto& method1 : m_declaredMethods)
 	{
 		auto info = m_overloads.findIf([&method1](auto& x) { return x->m_methods[0]->shortName() == method1->shortName(); });
 		if (info) {
@@ -631,6 +639,25 @@ ln::Result TypeSymbol::linkOverload()
 #endif
 
 	return true;
+}
+
+void TypeSymbol::collectVirtualMethods(ln::List<Ref<MethodSymbol>>* virtualMethods)
+{
+	if (m_baseClass) {
+		m_baseClass->collectVirtualMethods(virtualMethods);
+	}
+
+	for (auto& method : m_declaredMethods) {
+		if (method->isVirtual()) {
+			int index = virtualMethods->indexOfIf([&](auto& x) { return x->shortName() == method->shortName(); });
+			if (index >= 0) {
+				virtualMethods->at(index) = method;	// override
+			}
+			else {
+				virtualMethods->add(method);
+			}
+		}
+	}
 }
 
 #if 0

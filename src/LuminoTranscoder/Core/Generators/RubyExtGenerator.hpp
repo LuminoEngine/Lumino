@@ -27,7 +27,7 @@ private:
 	ln::String makeRubyClassInfoVariableName(TypeSymbol* type) const { return u"g_class_" + type->shortName(); }
 	ln::String makeRubyMethodName(MethodSymbol* method) const;
 	ln::String makeWrapStructName(TypeSymbol* type) const { return u"Wrap_" + type->shortName(); }
-	ln::String makeWrapFuncName(MethodSymbol* method) const { return u"Wrap_" + FlatCCommon::makeFuncName(config(), method, FlatCharset::Unicode); }
+	ln::String makeWrapFuncName(MethodSymbol* method) const { return u"Wrap_" + makeFuncName(method, FlatCharset::Unicode); }
 	ln::String makeWrapFuncImplement(MethodOverloadInfo* overloadInfo) const;
 	ln::String makeWrapFuncCallBlock(MethodSymbol* method) const;
 	ln::String makeVALUEReturnExpr(TypeSymbol* type, const ln::String& varName) const;

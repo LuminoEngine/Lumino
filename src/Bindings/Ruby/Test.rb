@@ -11,7 +11,7 @@ include Lumino
 
 Engine.initialize
 
-texture1 = Texture2D.new("D:/tmp/lnpoi.png", TextureFormat::RGBA8)
+texture1 = Texture2D.new("D:/tmp/lnpoi.png")
 sprite1 = Sprite.new(texture1, 2, 2)
 
 while Engine.update do

@@ -163,7 +163,8 @@ protected:
     // 物理演算・衝突判定の前
     virtual void onPreUpdate();
 
-    // フレーム更新
+	/** フレーム更新 */
+	LN_METHOD()
     virtual void onUpdate(float elapsedSeconds);
 
     virtual void onRender();

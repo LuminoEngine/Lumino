@@ -2,139 +2,14 @@
 #include "FlatCGenerator.hpp"
 
 
-static const ln::String funcHeaderTemplate =
-"LN_FLAT_API LnResult %%FuncName%%(%%ParamList%%)";
 
 
 
 //==============================================================================
 // FlatCCommon
 
-ln::String FlatCCommon::makeCharTypeName(FlatCharset charset)
-{
-	if (charset == FlatCharset::Unicode)
-		return u"LnChar";
-	else
-		return u"char";
-}
-
-ln::String FlatCCommon::makeFuncName(GeneratorConfiguration* config, MethodSymbol* method, FlatCharset charset)
-{
-	ln::String funcName;
-	if (method->isConstructor()) {
-		funcName = u"Create";
-	}
-	else {
-		funcName = method->shortName().toTitleCase();
-	}
-
-	funcName += method->overloadPostfix();
-
-	if (method->hasStringDecl()) {
-		if (charset == FlatCharset::Ascii) {
-			funcName += u"A";
-		}
-	}
-
-	return ln::String::format(_T("{0}{1}_{2}"), config->flatCOutputModuleName, method->ownerType()->shortName(), funcName);
-}
-
-ln::String FlatCCommon::makeTypeName(GeneratorConfiguration* config, TypeSymbol* type)
-{
-	if (type->isPrimitive()) {
-		if (type == PredefinedTypes::boolType) return u"LnBool";
-		return type->shortName();
-	}
-	else if (type->isClass()) {
-		return u"LnHandle";
-	}
-	else {
-		return config->flatCOutputModuleName + type->shortName();
-	}
-}
-
-ln::String FlatCCommon::makeFlatCParamQualTypeName(GeneratorConfiguration* config, ln::Ref<MethodSymbol> methodInfo, ln::Ref<MethodParameterSymbol> paramInfo, FlatCharset charset)
-{
-	auto typeInfo = paramInfo->type();
-
-	if (typeInfo->kind() == TypeKind::Struct)
-	{
-		ln::String modifer;
-		if (paramInfo->isThis() && methodInfo->isConst())
-			modifer = "const ";
-		if (!paramInfo->isThis() && !paramInfo->isOut())
-			modifer = "const ";
-		return ln::String::format("{0}{1}{2}*", modifer, config->flatCOutputModuleName, typeInfo->shortName());
-	}
-	else if (typeInfo->kind() == TypeKind::Enum)
-	{
-		return makeTypeName(config, typeInfo);
-	}
-	else if (typeInfo->isString())
-	{
-		if (paramInfo->isOut() || paramInfo->isReturn())
-			return ln::String::format(u"const {0}**", makeCharTypeName(charset));
-		else
-			return ln::String::format(u"const {0}*", makeCharTypeName(charset));
-	}
-	else
-	{
-		ln::String name;
-		if (typeInfo == PredefinedTypes::boolType)
-			name = _T("LnBool");
-		else if (typeInfo->kind() == TypeKind::Class)
-			name = "LnHandle";
-		else
-			name = typeInfo->shortName();
-
-		if (paramInfo->isOut() || paramInfo->isReturn())
-			name += "*";
-
-		//if (typeInfo->isStruct && paramInfo->isThis)
-		//{
-		//	if (methodInfo->isConst)
-		//		name = "const " + name;
-		//	name += "*";
-		//}
-
-		return name;
-		//	ln::String name;
-		//
-		//	if (isOut)
-		//	{
-		//		name = typeInfo->name;
-		//		name += "*";
-		//	}
-		//	else
-		//	{
-		//		if (typeInfo == PredefinedTypes::stringType)
-		//			name = "const LNChar*";
-		//		else if (typeInfo->IsClass())
-		//			name = "LNHandle";
-		//		else
-		//			name = typeInfo->name;
-		//	}
-		//	return name;
-	}
-}
-
-// 宣言文の作成。ドキュメンテーションコメントは含まない。
-ln::String FlatCCommon::makeFuncHeader(GeneratorConfiguration* config, MethodSymbol* methodInfo, FlatCharset charset)
-{
-	// make params
-	OutputBuffer params;
-	for (auto& paramInfo : methodInfo->flatParameters()) {
-		params.AppendCommad("{0} {1}", FlatCCommon::makeFlatCParamQualTypeName(config, methodInfo, paramInfo, charset), paramInfo->name());
-	}
 
 
-
-	//ln::String suffix = (methodInfo->isVirtual) ? "_CallVirtualBase" : "";
-
-	return funcHeaderTemplate
-		.replace("%%FuncName%%", FlatCCommon::makeFuncName(config, methodInfo, charset))// + suffix)
-		.replace("%%ParamList%%", params.toString());
-}
 
 ln::String FlatCCommon::makeEnumMemberName(GeneratorConfiguration* config, TypeSymbol* enumType, ConstantSymbol* member)
 {
@@ -182,7 +57,7 @@ void FlatCHeaderGenerator::generate()
 	for (auto& structInfo : db()->structs())
 	{
 		structsText.AppendLine(makeDocumentComment(structInfo->document()));
-		structsText.AppendLine("struct {0}", FlatCCommon::makeTypeName(config(), structInfo));
+		structsText.AppendLine("struct {0}", makeFlatClassName(structInfo));
 		structsText.AppendLine("{");
 		structsText.IncreaseIndent();
 		for (auto& fieldInfo : structInfo->fields())
@@ -193,13 +68,13 @@ void FlatCHeaderGenerator::generate()
 		structsText.AppendLine("};");
 
 		// function decls
-		for (auto& methodInfo : structInfo->methods())
+		for (auto& methodInfo : structInfo->publicMethods())
 		{
 			// comment
 			structMemberFuncDeclsText.AppendLine(makeDocumentComment(methodInfo->document()));
 
 			// decl
-			structMemberFuncDeclsText.AppendLine(FlatCCommon::makeFuncHeader(config(), methodInfo, FlatCharset::Unicode) + u";").NewLine(2);
+			structMemberFuncDeclsText.AppendLine(makeFuncHeader(methodInfo, FlatCharset::Unicode) + u";").NewLine(2);
 		}
 
 		//// function impls
@@ -219,19 +94,34 @@ void FlatCHeaderGenerator::generate()
 		classMemberFuncDeclsText.NewLine();
 
 		// function decls
-		for (auto& methodInfo : classInfo->methods())
+		for (auto& method : classInfo->publicMethods())
 		{
 			// comment
-			classMemberFuncDeclsText.AppendLine(makeDocumentComment(methodInfo->document()));
+			classMemberFuncDeclsText.AppendLine(makeDocumentComment(method->document()));
 
 			// decl
-			classMemberFuncDeclsText.AppendLine(FlatCCommon::makeFuncHeader(config(), methodInfo, FlatCharset::Unicode) + u";");
+			classMemberFuncDeclsText.AppendLine(makeFuncHeader(method, FlatCharset::Unicode) + u";");
 
-			if (methodInfo->hasStringDecl()) {
-				classMemberFuncDeclsText.AppendLine(FlatCCommon::makeFuncHeader(config(), methodInfo, FlatCharset::Ascii) + u";");
+			if (method->hasStringDecl()) {
+				classMemberFuncDeclsText.AppendLine(makeFuncHeader(method, FlatCharset::Ascii) + u";");
 			}
 
 			classMemberFuncDeclsText.NewLine(2);
+		}
+
+		// virtual callback
+		if (!classInfo->virtualMethods().isEmpty()) {
+			for (auto& method : classInfo->virtualMethods()) {
+				// make params
+				OutputBuffer params;
+				for (auto& param : method->flatParameters()) {
+					params.AppendCommad("{0} {1}", makeFlatCParamQualTypeName(method, param, FlatCharset::Unicode), param->name());
+				}
+				classMemberFuncDeclsText.AppendLine(u"typedef LnResult(*{0})({1});", makeFlatVirutalCallbackFuncPtrName(classInfo, method, FlatCharset::Unicode), params.toString());
+				classMemberFuncDeclsText.AppendLine(makeFlatAPIDecl_SetOverrideCallback(classInfo, method, FlatCharset::Unicode) + u";");
+				classMemberFuncDeclsText.AppendLine(makeFlatAPIDecl_CallOverrideBase(classInfo, method, FlatCharset::Unicode) + u";");
+			}
+			classMemberFuncDeclsText.NewLine();
 		}
 
 		//// function impls
@@ -274,15 +164,6 @@ void FlatCHeaderGenerator::generate()
 		ln::String fileName = ln::String::format("{0}.FlatC.generated.h", config()->moduleName);
 		ln::FileSystem::writeAllText(makeOutputFilePath("FlatC/include", fileName), src, ln::TextEncoding::utf8Encoding());
 	}
-	//// save C API Source
-	//{
-	//	ln::String src = ln::FileSystem::readAllText(makeTemplateFilePath(_T("Source.cpp.template")));
-	//	src = src.replace("%%StructMemberFuncImpls%%", structMemberFuncImplsText.toString());
-	//	//src = src.replace("%%ClassMemberFuncImpls%%", classMemberFuncImplsText.toString());
-
-	//	ln::String fileName = ln::String::format("{0}.FlatC.generated.cpp", config()->moduleName);
-	//	ln::FileSystem::writeAllText(makeOutputFilePath(fileName).c_str(), src);
-	//}
 }
 
 ln::String FlatCHeaderGenerator::makeDocumentComment(DocumentInfo* doc) const
@@ -319,7 +200,7 @@ ln::String FlatCHeaderGenerator::makeEnumDecls() const
 	OutputBuffer code;
 
 	for (auto& symbol : db()->enums()) {
-		auto typeName = FlatCCommon::makeTypeName(config(), symbol);
+		auto typeName = makeFlatClassName(symbol);
 
 		code.AppendLine(makeDocumentComment(symbol->document()));
 		code.AppendLine(u"typedef enum tag" + typeName);
@@ -397,7 +278,7 @@ void FlatCSourceGenerator::generate()
 	OutputBuffer structsText;
 	OutputBuffer structMemberFuncImplsText;
 	for (auto& structInfo : db()->structs()) {
-		for (auto& methodInfo : structInfo->methods()) {
+		for (auto& methodInfo : structInfo->publicMethods()) {
 			structMemberFuncImplsText.AppendLines(makeFuncBody(structInfo, methodInfo)).NewLine();
 		}
 	}
@@ -405,7 +286,7 @@ void FlatCSourceGenerator::generate()
 	// classes
 	OutputBuffer classMemberFuncImplsText;
 	for (auto& classInfo : db()->classes()) {
-		for (auto& methodInfo : classInfo->methods()) {
+		for (auto& methodInfo : classInfo->publicMethods()) {
 			classMemberFuncImplsText.AppendLines(makeFuncBody(classInfo, methodInfo)).NewLine();
 			if (methodInfo->hasStringDecl()) {
 				classMemberFuncImplsText.AppendLines(makeCharsetWrapperFuncBody(classInfo, methodInfo, FlatCharset::Ascii)).NewLine();
@@ -423,6 +304,34 @@ void FlatCSourceGenerator::generate()
 			classMemberFuncImplsText.NewLine();
 		}
 
+		for (auto& method : classInfo->virtualMethods()) {
+
+			OutputBuffer args;
+			for (auto& param : method->parameters()) {
+				args.AppendCommad(param->name());
+			}
+
+			OutputBuffer funcImpl;
+
+			funcImpl.AppendLine(makeFlatAPIDecl_CallOverrideBase(classInfo, method, FlatCharset::Unicode));
+			funcImpl.AppendLine(u"{");
+			funcImpl.IncreaseIndent();
+			funcImpl.AppendLine(u"LNI_FUNC_TRY_BEGIN;");
+			funcImpl.AppendLine(u"(LNI_HANDLE_TO_OBJECT({0}, {1})->{2}_CallBase({3}));", makeWrapSubclassName(classInfo), method->flatParameters()[0]->name(), method->shortName(), args.toString());
+			funcImpl.AppendLine(u"LNI_FUNC_TRY_END_RETURN;");
+			funcImpl.DecreaseIndent();
+			funcImpl.AppendLine(u"}");
+
+			funcImpl.AppendLine(makeFlatAPIDecl_SetOverrideCallback(classInfo, method, FlatCharset::Unicode));
+			funcImpl.AppendLine(u"{");
+			funcImpl.IncreaseIndent();
+			funcImpl.AppendLine(u"{0}::s_{1} = callback;", makeWrapSubclassName(classInfo), makeFlatVirutalCallbackFuncPtrName(classInfo, method, FlatCharset::Unicode));
+			funcImpl.AppendLine(u"return LN_SUCCESS;");
+			funcImpl.DecreaseIndent();
+			funcImpl.AppendLine(u"}");
+
+			classMemberFuncImplsText.AppendLine(funcImpl.toString());
+		}
 	}
 
 	// save C API Source
@@ -445,14 +354,62 @@ ln::String FlatCSourceGenerator::makeWrapSubclassDecls() const
 {
 	OutputBuffer code;
 	for (auto& classSymbol : db()->classes()) {
+
+		OutputBuffer overrideCallbackDecl;
+		OutputBuffer overrideCallbackImpl;
+		OutputBuffer overrideMethod;
+		for (auto& method : classSymbol->virtualMethods()) {
+			// field decl
+			overrideCallbackDecl.AppendLine(u"static {0} s_{0};", makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode));
+			// field impl
+			overrideCallbackImpl.AppendLine(u"{0} {1}::s_{0} = nullptr;", makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode), makeWrapSubclassName(classSymbol));
+
+
+			OutputBuffer paramList;
+			for (auto& param : method->parameters()) {
+				paramList.AppendCommad(u"{0} {1}", param->type()->fullName(), param->name());
+			}
+
+			// override
+			{
+				overrideMethod.AppendLine(u"virtual {0} {1}({2}) override", method->returnType()->fullName(), method->shortName(), paramList.toString());
+				overrideMethod.AppendLine(u"{");
+				overrideMethod.IncreaseIndent();
+				OutputBuffer argList;
+				argList.AppendCommad(u"LNI_OBJECT_TO_HANDLE(this)");
+				for (auto& param : method->parameters()) {
+					argList.AppendCommad(param->name());
+				}
+				overrideMethod.AppendLine(u"if (s_{0}) s_{0}({1});", makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode), argList.toString());
+				overrideMethod.DecreaseIndent();
+				overrideMethod.AppendLine(u"}");
+				overrideMethod.NewLine();
+			}
+
+			// base caller
+			{
+				overrideMethod.AppendLine(u"{0} {1}_CallBase({2})", method->returnType()->fullName(), method->shortName(), paramList.toString());
+				overrideMethod.AppendLine(u"{");
+				overrideMethod.IncreaseIndent();
+				OutputBuffer argList;
+				for (auto& param : method->parameters()) {
+					argList.AppendCommad(param->name());
+				}
+				overrideMethod.AppendLine(u"{0}::{1}({2});", classSymbol->fullName(), method->shortName(), argList.toString());
+				overrideMethod.DecreaseIndent();
+				overrideMethod.AppendLine(u"}");
+			}
+		}
+
 		code.AppendLine(u"class {0} : public {1}", makeWrapSubclassName(classSymbol), classSymbol->fullName());
 		code.AppendLine(u"{");
+		code.AppendLine(u"public:");
 		code.IncreaseIndent();
-
-		// TODO:
-
+		code.AppendLine(overrideCallbackDecl.toString());
+		code.AppendLine(overrideMethod.toString());
 		code.DecreaseIndent();
 		code.AppendLine(u"};");
+		code.AppendLine(overrideCallbackImpl.toString());
 		code.NewLine();
 	}
 	return code.toString();
@@ -461,7 +418,7 @@ ln::String FlatCSourceGenerator::makeWrapSubclassDecls() const
 ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo)
 {
 	// function header
-	ln::String funcHeader = FlatCCommon::makeFuncHeader(config(), methodInfo, FlatCharset::Unicode);
+	ln::String funcHeader = makeFuncHeader(methodInfo, FlatCharset::Unicode);
 
 	//{
 	//	// 第1引数
@@ -542,7 +499,7 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
 		if (methodInfo->returnType() != PredefinedTypes::voidType)
 		{
 			if (methodInfo->returnType()->isStruct())
-				body.append("*outReturn = reinterpret_cast<const {0}&>", FlatCCommon::makeTypeName(config(), methodInfo->returnType()));
+				body.append("*outReturn = reinterpret_cast<const {0}&>", makeFlatClassName(methodInfo->returnType()));
 			else if (methodInfo->returnType()->isClass())
 				body.append("*outReturn = LNI_TO_HANDLE");
 			else if (methodInfo->returnType() == PredefinedTypes::boolType)
@@ -625,10 +582,10 @@ ln::String FlatCSourceGenerator::makeCharsetWrapperFuncBody(ln::Ref<TypeSymbol> 
 		}
 	}
 
-	auto callExpr = ln::String::format(u"LnResult result = {0}({1});", FlatCCommon::makeFuncName(config(), methodInfo, FlatCharset::Unicode), args.toString());
+	auto callExpr = ln::String::format(u"LnResult result = {0}({1});", makeFuncName(methodInfo, FlatCharset::Unicode), args.toString());
 
 	OutputBuffer code;
-	code.AppendLine(FlatCCommon::makeFuncHeader(config(), methodInfo, charset));
+	code.AppendLine(makeFuncHeader(methodInfo, charset));
 	code.AppendLine(u"{");
 	code.IncreaseIndent();
 	code.AppendLine(callExpr);
