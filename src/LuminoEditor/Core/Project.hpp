@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <LuminoCore/IO/DllLoader.hpp>
 
 namespace lna {
 
@@ -7,6 +8,8 @@ class LanguageContext;
 class Project;
 class ProjectProperties;
 class Workspace;
+class PluginManager;
+class AssetDatabase;
 
 class Project
 	: public ln::RefObject
@@ -24,6 +27,8 @@ public:
 	void restore();
 
 	const ln::Ref<ProjectProperties>& properties() const { return m_properties; }
+    const ln::Ref<PluginManager>& pluginManager() const { return m_pluginManager; }
+    const ln::Ref<AssetDatabase>& assetDatabase() const { return m_assetDatabase; }
 
 	Workspace* workspace() const { return m_workspace; }
 	const ln::Path& engineDirPath() const { return m_engineDir; }
@@ -32,6 +37,7 @@ public:
 	const ln::Path& buildDir() const { return m_buildDir; }
 	const ln::Path& releaseDir() const { return m_releaseDir; }
 	const ln::Path& intermediateAssetsDir() const { return m_intermediateAssetsDir; }
+    const ln::Path& localPluginDir() const { return m_localPluginDir; } // プロジェクト固有のプラグインと、プロジェクトごとのエディタ拡張の保存場所
 
 	ln::Path projectsDir() const { return ln::Path(rootDirPath(), u"Projects"); }
 	ln::Path emscriptenProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.Web"); }
@@ -45,10 +51,13 @@ public:
 
 private:
 	void setupPathes();
+    ln::Result postInitialize();
 
 	Workspace* m_workspace;
 	ln::Ref<ProjectProperties> m_properties;
 	ln::Ref<LanguageContext> m_context;
+    ln::Ref<PluginManager> m_pluginManager;
+    ln::Ref<AssetDatabase> m_assetDatabase;
 
 	ln::String m_projectName;
 	ln::Path m_projectFilePath;
@@ -59,6 +68,8 @@ private:
 	ln::Path m_buildDir;
 	ln::Path m_releaseDir;
 	ln::Path m_intermediateAssetsDir;
+    ln::Path m_localPluginDir;
+
 };
 
 // プロジェクトファイルに保存する情報
@@ -140,6 +151,7 @@ private:
 	ln::Path m_intermediateAssetsDir;
     ln::Ref<AssetDatabase> m_assetDatabase;
 };
+
 
 // プロジェクトファイルに保存する情報
 class ProjectProperties

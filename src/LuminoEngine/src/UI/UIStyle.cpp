@@ -1,4 +1,75 @@
-﻿
+﻿/*
+    2019/7/11 時点では、グローバルな単一の Style しか用意していない。
+    Style システムを構築するにあたって方針を記しておく。
+
+    記法
+    ----------
+    最も基本的な記法は次の通り。
+    ```
+    "UIButton" : {
+        "Background" : "red"
+    }
+    ```
+    これは VisualState (Pressed など) に関わらずベースとなる設定。
+
+    VisualState ごとに変えたい場合は次のようにする。
+    ```
+    "UIButton" : {
+        "Background" : "red"
+    }
+    "UIButton:Pressed" : {
+        "Background" : "green"
+    }
+    "UIButton:Hover" : {
+        "Background" : "blue"
+    }
+    ```
+
+    継承したい場合は次のようにする。
+    ```
+    "UIToggleButton < UITButton" : {
+    }
+    "UIToggleButton::Hover < UITButton::Pressed" : {    // VisualState 単位でも可能
+    }
+    // TODO: less に似た記法でもいいか？
+    "UIToggleButton" : {
+        "@extend" : "UITButton"
+    }
+    ```
+
+    サブコントロール。Slider の Up/Down button など。コード上で明示的に指定した特殊なコントロール。（Qt 参考 https://doc.qt.io/archives/qt-4.8/stylesheet-reference.htmls）
+    ```
+    "UITrack::DecreaseButton" : {
+    }
+    "UITrack::DecreaseButton:Pressed" : {
+    }
+    ```
+
+    グローバル設定
+    ```
+    * {
+    }
+    ```
+
+    RenderElement.
+    描画のみ担当する簡易的な UIElement の代用品。 
+    ```
+    UIButton {
+        "RenderElements" : [
+            {
+                "Type" : "Image",
+                "Image" : "icon.png",
+                "HAlignment" : "Left"
+            }
+        ]
+    }
+    ```
+
+    #(ID) や .(class) は未サポート。直近では予定なし。
+
+
+    
+*/
 #include "Internal.hpp"
 #include <LuminoEngine/Shader/Shader.hpp>
 #include <LuminoEngine/Font/Font.hpp>

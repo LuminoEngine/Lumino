@@ -96,8 +96,8 @@ public: // TODO:
     Result endSingleTimeCommands(VkCommandBuffer commandBuffer);
     void copyBufferImmediately(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
     void copyBufferToImageImmediately(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
-    Result transitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
-    Result transitionImageLayoutImmediately(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+    Result transitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, uint32_t mipLevel, VkImageLayout oldLayout, VkImageLayout newLayout);
+    Result transitionImageLayoutImmediately(VkImage image, VkFormat format, uint32_t mipLevel, VkImageLayout oldLayout, VkImageLayout newLayout);
 
 
 	//GLFWwindow* m_mainWindow; // TODO:
@@ -257,7 +257,6 @@ public:
     VulkanBuffer* buffer() { return &m_buffer; }
     VkBuffer vulkanBuffer() const { return m_buffer.vulkanBuffer(); }
     VkDeviceMemory vulkanDeviceMemory() const { return m_buffer.vulkanBufferMemory(); }
-    void setSubData(size_t offset, const void* data, size_t length);
 
     VulkanBuffer* m_mappedResource = nullptr;
 
@@ -282,7 +281,6 @@ public:
     VkBuffer vulkanBuffer() const { return m_buffer.vulkanBuffer(); }
     VkDeviceMemory vulkanDeviceMemory() const { return m_buffer.vulkanBufferMemory(); }
     VkIndexType indexType() const { return m_indexType; }
-    void setSubData(size_t offset, const void* data, size_t length);
 
     VulkanBuffer* m_mappedResource = nullptr;
 
@@ -322,11 +320,14 @@ public:
     virtual const VulkanImage* image() const override { return &m_image; }
 
 private:
+	Result generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
+
 	VulkanDevice* m_deviceContext;
     VulkanImage m_image;
 	GraphicsResourceUsage m_usage;
 	SizeI m_size;
 	TextureFormat m_format;
+	uint32_t m_mipLevels;
     VkFormat m_nativeFormat;
 };
 
@@ -466,7 +467,7 @@ public:
     // CommandBuffer に対するインターフェイス
     Ref<VulkanDescriptorSetsPool> getDescriptorSetsPool();
     void releaseDescriptorSetsPool(VulkanDescriptorSetsPool* pool);
-    VulkanDescriptorSetsPool* recodingPool = nullptr; // CommandBuffer に対する、いわゆる UserData のイメージ
+    //VulkanDescriptorSetsPool* recodingPool = nullptr; // CommandBuffer に対する、いわゆる UserData のイメージ
 
 private:
     VulkanDevice* m_deviceContext;

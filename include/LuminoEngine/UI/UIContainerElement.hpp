@@ -46,5 +46,16 @@ private:
 
 };
 
+
+class UIFrame
+    : public UIContainerElement
+{
+public:
+    UIFrame();
+    void init();
+
+private:
+};
+
 } // namespace ln
 

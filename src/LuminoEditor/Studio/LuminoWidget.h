@@ -10,6 +10,7 @@ class LuminoWidget
 public:
     explicit LuminoWidget(QWidget* parent = nullptr);
     ~LuminoWidget();
+    const ln::Ref<ln::UINativeFrameWindow>& frameWindow() const { return m_frameWindow; }
 
 protected:
     void initializeGL() override;

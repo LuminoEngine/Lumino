@@ -1,11 +1,14 @@
 ﻿
 #include <Workspace.hpp>
 #include <Project.hpp>
+#include <PluginManager.hpp>
+#include <AssetDatabase.hpp>
 #include "External/QtAwesome/QtAwesome.h"
 #include "ActionManager.h"
 #include "DocumentManager.h"
 #include "InspectorPaneContainer.h"
 #include "ToolPaneContainer.h"
+#include "AssetBrowser/AssetBrowserNavigator.h"
 #include "SpriteFrameset/SpriteFramesetAssetNavigator.h"
 #include "Navigators/AudioAssetNavigator.h"
 #include "SceneContentsView.h"
@@ -186,6 +189,40 @@ MainWindow::~MainWindow()
     delete m_resourceContext;
 }
 
+void MainWindow::importFile(QString filePath)
+{
+    if (m_workspace->project())
+    {
+        auto sourceFile = ln::Path(QtToLn(filePath));
+        auto exts = m_workspace->project()->pluginManager()->getAssetImporterExtensions(sourceFile);
+        if (exts.size() != 1) {
+            LN_NOTIMPLEMENTED();
+            return;
+        }
+
+        exts[0].second->import(sourceFile);
+    }
+}
+
+void MainWindow::openFile(QString filePath)
+{
+    if (m_workspace->project())
+    {
+        auto assetFile = ln::Path(QtToLn(filePath));
+        auto asset = m_workspace->project()->assetDatabase()->openAsset(assetFile);
+        auto exts = m_workspace->project()->pluginManager()->geAssetEditorExtensions(asset->assetType());
+        if (exts.size() != 1) {
+            LN_NOTIMPLEMENTED();
+            return;
+        }
+
+        auto editor = exts[0].second;
+        MainWindow::instance()->documentManager()->addDocument(new AssetEditorDocument(asset, editor));
+
+
+    }
+}
+
 void MainWindow::closeEvent(QCloseEvent* event)
 {
 	if (m_resourceContext) {
@@ -219,10 +256,13 @@ void MainWindow::onOpenProject()
 
         m_workspace->openProject2(QtToLn(filePath));
 
-		m_contentsViewManager->setup("ARPG-HC0");
+		m_contentsViewManager->setup(m_workspace->project(), "ARPG-HC0");
 
-		m_spritesetContentsViewProvider = new SpritesetContentsViewProvider(m_workspace->project(), this);
-		m_contentsViewManager->addContentsViewProvider(m_spritesetContentsViewProvider);
+        m_assetBrowserContentsViewProvider = new AssetBrowserContentsViewProvider(m_workspace->project(), this);
+        m_contentsViewManager->addContentsViewProvider(m_assetBrowserContentsViewProvider);
+
+		//m_spritesetContentsViewProvider = new SpritesetContentsViewProvider(m_workspace->project(), this);
+		//m_contentsViewManager->addContentsViewProvider(m_spritesetContentsViewProvider);
 
         m_audioContentsViewProvider->view()->setRootDir(
             LnToQt(ln::Path(m_workspace->project()->assetsDir(), u"Audio")));

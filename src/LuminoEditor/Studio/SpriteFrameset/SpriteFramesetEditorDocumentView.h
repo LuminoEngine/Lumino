@@ -3,7 +3,7 @@
 
 class LuminoWidget;
 
-class SpriteFramesetEditorDocument : public Document
+class SpriteFramesetEditorDocument : public EditorDocument
 {
 	Q_OBJECT
 public:

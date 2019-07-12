@@ -9,6 +9,7 @@ DocumentManager::DocumentManager(QWidget* parent)
     , m_rootWidget(new QWidget(parent))
 	//, m_rootLayout(new QStackedLayout(m_rootWidget))
     //, m_tabWidget(new QTabWidget(m_rootWidget))
+    , m_tabbar(new QTabBar(m_rootWidget))
 	, m_startupView(new StartupView(m_rootWidget))
 {
 
@@ -44,6 +45,7 @@ DocumentManager::DocumentManager(QWidget* parent)
 	//m_rootLayout->addWidget(new TilemapLandscapeWorldEditorView(m_rootWidget));
 	//m_rootWidget->setLayout(m_rootLayout);
 
+    layout->addWidget(m_tabbar);
 
     //m_tabWidget = new QTabWidget();
 	m_viewStack = new QStackedLayout();
@@ -72,11 +74,23 @@ DocumentManager::~DocumentManager()
     //delete m_tabWidget;
 }
 
-void DocumentManager::addDocument(Document* doc)
+void DocumentManager::addDocument(EditorDocument* doc)
 {
+    QWidget* view = nullptr;
     if (auto ddoc = dynamic_cast<SceneEditorDocument*>(doc)) {
-        auto view = new SceneEditorView();
-		m_viewStack->addWidget(view);
+        view = new SceneEditorView();
+        //m_tabWidget->addTab(view, tr("tab"));
+        m_documents.append(ddoc);
+        ddoc->setParent(this);
+    }
+    else if (auto ddoc = dynamic_cast<AssetEditorDocument*>(doc)) {
+        view = new AssetEditorView(ddoc);
+        //m_tabWidget->addTab(view, tr("tab"));
+        m_documents.append(ddoc);
+        ddoc->setParent(this);
+    }
+    else if (auto ddoc = dynamic_cast<EditorDocument*>(doc)) {
+        view = new EditorView();
         //m_tabWidget->addTab(view, tr("tab"));
         m_documents.append(ddoc);
         ddoc->setParent(this);
@@ -84,4 +98,13 @@ void DocumentManager::addDocument(Document* doc)
     else {
         LN_UNREACHABLE();
     }
+
+    //int i = m_viewStack->count();
+    if (m_tabbar->count() == 0) {
+        m_viewStack->removeWidget(m_startupView);
+    }
+
+    m_viewStack->addWidget(view);
+    int index = m_tabbar->addTab("Tab");
+    m_viewStack->setCurrentIndex(index);
 }

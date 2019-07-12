@@ -6,20 +6,18 @@
 // SceneEditorDocument
 
 SceneEditorDocument::SceneEditorDocument(QObject* parent)
-    : Document(parent)
+    : EditorDocument(parent)
 {
 
 
 }
 
 
-
-
 //==============================================================================
 // SceneEditorView
 
 SceneEditorView::SceneEditorView(QWidget* parent)
-    : QWidget(parent)
+    : EditorView(parent)
 {
     m_layout1 = new QVBoxLayout();
     m_luminoWidget = new LuminoWidget();

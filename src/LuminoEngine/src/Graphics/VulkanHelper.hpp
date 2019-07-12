@@ -222,6 +222,7 @@ class VulkanDevice;
 class VulkanVertexDeclaration;
 class VulkanShaderPass;
 class VulkanDescriptorSetsPool;
+class VulkanRenderPass;
 class VulkanFramebuffer;
 
 #define LN_VK_CHECK(f) \
@@ -259,7 +260,7 @@ public:
     static bool checkValidationLayerSupport();
     static int getPrimitiveVertexCount(PrimitiveTopology primitive, int primitiveCount);
 
-    static Result createImageView(VulkanDevice* deviceContext, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, VkImageView* outView);
+    static Result createImageView(VulkanDevice* deviceContext, VkImage image, VkFormat format, uint32_t mipLevel, VkImageAspectFlags aspectFlags, VkImageView* outView);
     static bool resolveStd140Layout(const ShaderUniformInfo& info, size_t* aligndElemenSize);
 };
 
@@ -355,7 +356,7 @@ class VulkanImage
 {
 public:
 	VulkanImage();
-	Result init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags);
+	Result init(VulkanDevice* deviceContext, uint32_t width, uint32_t height, VkFormat format, uint32_t mipLevel, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags);
     Result init(VulkanDevice* deviceContext/*, uint32_t width, uint32_t height*/, VkFormat format, VkImage image, VkImageView imageView);
     void dispose();
     VkFormat vulkanFormat() const { return m_format; }
@@ -406,8 +407,9 @@ public:
     VulkanBuffer* cmdCopyBufferToImage(size_t size, const VkBufferImageCopy& region, VulkanImage* destination);
 
 public:
+    VulkanRenderPass* m_currentRenderPass = nullptr;
     VulkanFramebuffer* m_lastFoundFramebuffer = nullptr;
-    bool m_insideRendarPass = false;
+    //bool m_insideRendarPass = false;
     bool m_priorToAnyDrawCmds = true;
 
 private:
@@ -540,44 +542,69 @@ protected:
     std::unordered_map<uint64_t, T> m_hashMap;
 };
 
+// VkRenderPass
+class VulkanRenderPass
+    : public RefObject
+{
+public:
+    VulkanRenderPass();
+    Result init(VulkanDevice* deviceContext, const DeviceFramebufferState& state, bool loadOpClear);
+    void dispose();
+
+    VkRenderPass nativeRenderPass() const { return m_nativeRenderPass; }
+
+private:
+    VulkanDevice* m_deviceContext;
+    VkRenderPass m_nativeRenderPass;
+    bool m_loadOpClear;
+};
+
 // ColorBuffer と DepthBuffer の「種類」によって決まるので、FrameBuffer に比べてトータル数は少ない。
 // 基本的にこのクラスは直接使わず、VulkanFramebuffer が持っている RenderPass を使うこと。
 class VulkanRenderPassCache
-    : public HashedObjectCache<VkRenderPass, VulkanRenderPassCache>
+    : public HashedObjectCache<Ref<VulkanRenderPass>, VulkanRenderPassCache>
 {
 public:
-    VulkanRenderPassCache();
-    void dispose();
-    Result init(VulkanDevice* deviceContext);
-    VkRenderPass findOrCreate(const DeviceFramebufferState& key/*, bool loadOpClear*/);
+    struct FetchKey
+    {
+        const DeviceFramebufferState& state;
+        bool loadOpClear = false;
+    };
 
-    void onInvalidate(VkRenderPass value);
-    static uint64_t computeHash(const DeviceFramebufferState& framebuffer/*, bool loadOpClear*/);
+    VulkanRenderPassCache();
+    Result init(VulkanDevice* deviceContext);
+    void dispose();
+    VulkanRenderPass* findOrCreate(const FetchKey& key);
+
+    void onInvalidate(const Ref<VulkanRenderPass>& value) { value->dispose(); }
+    static uint64_t computeHash(const FetchKey& key);
 
 private:
     VulkanDevice* m_deviceContext;
 };
 
+// Framebuffer は RenderPass の子オブジェクトな位置づけとなる。
 // VkFramebuffer と、そのレイアウト定義に相当する VkRenderPass をセットで持つ。
-// ※VkRenderPass は VulkanRenderPassCache から取り出すので、m_framebuffer と m_renderPass は 1:1 ではない。
+// ※ Vulkan のデータ構造上は Framebuffer と RenderPass は 1:1 であるが、
+//    VkRenderPass は VulkanRenderPassCache から取り出すので、m_framebuffer と m_renderPass は 1:1 ではない。
 //   フォーマットが共通なら VkRenderPass は共有される。
 class VulkanFramebuffer
     : public RefObject
 {
 public:
     VulkanFramebuffer();
-    Result init(VulkanDevice* deviceContext, const DeviceFramebufferState& state/*, bool loadOpClear*/, uint64_t hash);
+    Result init(VulkanDevice* deviceContext, VulkanRenderPass* ownerRenderPass, const DeviceFramebufferState& state/*, bool loadOpClear*/, uint64_t hash);
     void dispose();
     bool containsRenderTarget(ITexture* renderTarget) const;
     bool containsDepthBuffer(IDepthBuffer* depthBuffer) const;
     uint64_t hash() const { return m_hash; }
-    VkRenderPass vulkanRenderPass() const { return m_renderPass; }
+    VulkanRenderPass* ownerRenderPass() const { return m_ownerRenderPass; }
     VkFramebuffer vulkanFramebuffer() const { return m_framebuffer; }
     //SizeI extent() const { return m_renderTargets[0]->realSize(); }
 
 private:
     VulkanDevice* m_deviceContext;
-    VkRenderPass m_renderPass;
+    VulkanRenderPass* m_ownerRenderPass;
     VkFramebuffer m_framebuffer;
     uint64_t m_hash;
     //size_t m_renderTargetCount;
@@ -594,19 +621,25 @@ class VulkanFramebufferCache
     : public HashedObjectCache<Ref<VulkanFramebuffer>, VulkanFramebufferCache>
 {
 public:
+    struct FetchKey
+    {
+        const DeviceFramebufferState& state;
+        VulkanRenderPass* renderPass;
+    };
+
     VulkanFramebufferCache();
     Result init(VulkanDevice* deviceContext);
     void dispose();
-    VulkanFramebuffer* findOrCreate(const DeviceFramebufferState& key/*, bool loadOpClear*/);
+    VulkanFramebuffer* findOrCreate(const FetchKey& key);
 
-    static uint64_t computeHash(const DeviceFramebufferState& state/*, bool loadOpClear*/)
+    static uint64_t computeHash(const FetchKey& key)
     {
         MixHash hash;
-        for (size_t i = 0; i < state.renderTargets.size(); i++) {
-            hash.add(state.renderTargets[i]);
+        for (size_t i = 0; i < key.state.renderTargets.size(); i++) {
+            hash.add(key.state.renderTargets[i]);
         }
-        hash.add(state.depthBuffer);
-        //hash.add(loadOpClear);
+        hash.add(key.state.depthBuffer);
+        hash.add(key.renderPass);
         return hash.value();
     }
 
@@ -631,6 +664,7 @@ private:
     VulkanDevice* m_deviceContext;
 };
 
+// Framebuffer は RenderPass の子オブジェクトな位置づけとなる。
 // Dynamic としてマークしている state は次の通り。
 // - VK_DYNAMIC_STATE_VIEWPORT,
 // - VK_DYNAMIC_STATE_SCISSOR,
@@ -643,7 +677,7 @@ class VulkanPipeline
 {
 public:
     VulkanPipeline();
-    Result init(VulkanDevice* deviceContext, const GraphicsContextState& state, VkRenderPass renderPass);
+    Result init(VulkanDevice* deviceContext, VulkanRenderPass* ownerRenderPass, const GraphicsContextState& state);
     void dispose();
 
     VkPipeline vulkanPipeline() const { return m_pipeline; }
@@ -651,10 +685,10 @@ public:
     //bool containsVertexDeclaration(VulkanVertexDeclaration* value) const { return m_relatedVertexDeclaration == value; }
     //bool containsFramebuffer(VulkanFramebuffer* value) const { return m_relatedFramebuffer == value; }
 
-    static uint64_t computeHash(const GraphicsContextState& state);
 
 private:
     VulkanDevice* m_deviceContext;
+    VulkanRenderPass* m_ownerRenderPass;
     VkPipeline m_pipeline;
     VulkanShaderPass* m_relatedShaderPass;                  // pipeline に関連づいている ShaderPass。これが削除されたらこの pipeline も削除する。
     //VulkanVertexDeclaration* m_relatedVertexDeclaration;    // pipeline に関連づいている VertexDeclaration。これが削除されたらこの pipeline も削除する。
@@ -665,13 +699,21 @@ class VulkanPipelineCache
     : public HashedObjectCache<Ref<VulkanPipeline>, VulkanPipelineCache>
 {
 public:
+    struct FetchKey
+    {
+        const GraphicsContextState& state;
+        VulkanRenderPass* renderPass;
+    };
+
     VulkanPipelineCache();
     Result init(VulkanDevice* deviceContext);
     void dispose();
     // renderPass : この cache は vkCmdBeginRenderPass ～ vkCmdEndRenderPass の間で呼び出し、pipeline を得ることを目的としている。
     // この renderPass は、その間の RenderPass。あらかじめわかっている値を入れることで、Pipeline 作成の中でもう一度検索の必要がないようにする。
-    VulkanPipeline* findOrCreate(const GraphicsContextState& key, VkRenderPass renderPass);
+    VulkanPipeline* findOrCreate(const FetchKey& key);
 
+    static uint64_t computeHash(const FetchKey& key);
+    
     void invalidateFromShaderPass(VulkanShaderPass* value)
     {
         HashedObjectCache<Ref<VulkanPipeline>, VulkanPipelineCache>::invalidateAllIf([&](Ref<VulkanPipeline>& x) { return x->containsShaderPass(value); });

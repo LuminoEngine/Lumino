@@ -29,8 +29,10 @@ ContentsViewManager::ContentsViewManager()
     m_viewContainer = new QStackedWidget();
 }
 
-void ContentsViewManager::setup(QString toolsetName)
+void ContentsViewManager::setup(lna::Project* project, QString toolsetName)
 {
+    m_project = project;
+
 	if (toolsetName == "ARPG-HC0") {
 
 	}
@@ -42,7 +44,7 @@ void ContentsViewManager::setup(QString toolsetName)
 void ContentsViewManager::addContentsViewProvider(ContentsViewProvider* provider)
 {
     LN_CHECK(provider);
-
+    provider->m_manager = this;
 
     QVariantMap iconOptions;
     iconOptions.insert("color", QColor(255, 255, 255));

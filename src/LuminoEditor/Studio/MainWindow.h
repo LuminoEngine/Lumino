@@ -6,6 +6,7 @@ namespace lna { class Workspace; }
 class QtAwesome;
 class ActionManager;
 class DocumentManager;
+class AssetBrowserContentsViewProvider;
 class SpritesetContentsViewProvider;
 class AudioContentsViewProvider;
 class InspectorPaneContainer;
@@ -27,6 +28,9 @@ public:
     QtAwesome* awesome() const { return m_awesome; }
     DocumentManager* documentManager() const { return m_documentManager; }
 
+    void importFile(QString filePath);
+    void openFile(QString filePath);
+
 protected:
     void closeEvent(QCloseEvent* event) override;
 
@@ -45,6 +49,7 @@ private:
 	ActionManager* m_actionManager;
     DocumentManager* m_documentManager;
 
+    AssetBrowserContentsViewProvider* m_assetBrowserContentsViewProvider;
     SpritesetContentsViewProvider* m_spritesetContentsViewProvider;
     AudioContentsViewProvider* m_audioContentsViewProvider;
 

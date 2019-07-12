@@ -715,7 +715,7 @@ void VulkanDevice::copyBufferToImageImmediately(VkBuffer buffer, VkImage image, 
     endSingleTimeCommands(commandBuffer);
 }
 
-Result VulkanDevice::transitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
+Result VulkanDevice::transitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, uint32_t mipLevel, VkImageLayout oldLayout, VkImageLayout newLayout)
 {
     VkImageMemoryBarrier barrier = {};
     barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -737,7 +737,7 @@ Result VulkanDevice::transitionImageLayout(VkCommandBuffer commandBuffer, VkImag
     }
 
     barrier.subresourceRange.baseMipLevel = 0;
-    barrier.subresourceRange.levelCount = 1;
+    barrier.subresourceRange.levelCount = mipLevel;
     barrier.subresourceRange.baseArrayLayer = 0;
     barrier.subresourceRange.layerCount = 1;
 
@@ -798,10 +798,10 @@ Result VulkanDevice::transitionImageLayout(VkCommandBuffer commandBuffer, VkImag
     return true;
 }
 
-Result VulkanDevice::transitionImageLayoutImmediately(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
+Result VulkanDevice::transitionImageLayoutImmediately(VkImage image, VkFormat format, uint32_t mipLevel, VkImageLayout oldLayout, VkImageLayout newLayout)
 {
     VkCommandBuffer commandBuffer = beginSingleTimeCommands();
-    Result result = transitionImageLayout(commandBuffer, image, format, oldLayout, newLayout);
+    Result result = transitionImageLayout(commandBuffer, image, format, mipLevel, oldLayout, newLayout);
     endSingleTimeCommands(commandBuffer);
     return result;
 }
@@ -916,18 +916,25 @@ void VulkanGraphicsContext::onUnmapResource(IGraphicsResource* resource)
 
 void VulkanGraphicsContext::onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length)
 {
+    // データ転送に使う vkCmdCopyBuffer() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
+    m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
+
+	VulkanBuffer* buffer = nullptr;
 	switch (resource->resourceType())
 	{
 	case DeviceResourceType::VertexBuffer:
-		static_cast<VulkanVertexBuffer*>(resource)->setSubData(offset, data, length);
+		buffer = static_cast<VulkanVertexBuffer*>(resource)->buffer();
 		break;
 	case DeviceResourceType::IndexBuffer:
-		static_cast<VulkanIndexBuffer*>(resource)->setSubData(offset, data, length);
+		buffer = static_cast<VulkanIndexBuffer*>(resource)->buffer();
 		break;
 	default:
 		LN_NOTIMPLEMENTED();
 		break;
 	}
+
+	VulkanBuffer* stagingBuffer = recodingCommandBuffer()->cmdCopyBuffer(length, buffer);
+	stagingBuffer->setData(offset, data, length);
 }
 
 void VulkanGraphicsContext::onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
@@ -1016,14 +1023,12 @@ void VulkanGraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int sta
 {
 	submitStatusInternal(GraphicsContextSubmitSource_Draw, ClearFlags::None, Color::White, 0, 0, nullptr);
 	vkCmdDraw(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startVertex, 0);
-	m_recodingCommandBuffer->m_priorToAnyDrawCmds = false;
 }
 
 void VulkanGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount)
 {
 	submitStatusInternal(GraphicsContextSubmitSource_Draw, ClearFlags::None, Color::White, 0, 0, nullptr);
 	vkCmdDrawIndexed(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startIndex, 0, 0);
-	m_recodingCommandBuffer->m_priorToAnyDrawCmds = false;
 }
 
 // TODO: もし複数 swapchain へのレンダリングを1つの CommandBuffer でやる場合、flush 時には描画するすべての swapchain の image 準備を待たなければならない。
@@ -1048,7 +1053,7 @@ void VulkanGraphicsContext::onPresent(ISwapChain* swapChain)
 	static_cast<VulkanSwapChain*>(swapChain)->present();
 
 	// TODO: あったほうがいい？
-	//vkDeviceWaitIdle(m_device);
+	//vkDeviceWaitIdle(m_device->vulkanDevice());
 	//g_app.mainLoop();
 }
 
@@ -1057,7 +1062,9 @@ Result VulkanGraphicsContext::submitStatusInternal(GraphicsContextSubmitSource s
 	const GraphicsContextState& state = stagingState();
 	uint32_t stateDirtyFlags = stagingStateDirtyFlags();
 
-	bool clearBuffersOnBeginRenderPass = false;//(submitSource == SubmitSource_Clear && m_recodingCommandBuffer->m_priorToAnyDrawCmds);
+    // RenderPass 開始と同時にクリアを行ったかどうか。
+    // true の場合、submitStatusInternal() の呼び出し元が clear の場合、そちら側でクリアする必要はない。
+	bool clearBuffersOnBeginRenderPass = (submitSource == GraphicsContextSubmitSource_Clear && m_recodingCommandBuffer->m_priorToAnyDrawCmds);
 	if (outSkipClear) *outSkipClear = clearBuffersOnBeginRenderPass;
 
 	//m_recodingCommandBuffer->beginRecording();
@@ -1068,19 +1075,25 @@ Result VulkanGraphicsContext::submitStatusInternal(GraphicsContextSubmitSource s
 		// 前回開始した RenderPass があればクローズしておく
 		m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
 
-		m_recodingCommandBuffer->m_lastFoundFramebuffer = m_device->framebufferCache()->findOrCreate(state.framebufferState);
+		//m_recodingCommandBuffer->m_lastFoundFramebuffer = m_device->framebufferCache()->findOrCreate(state.framebufferState/*, clearBuffersOnBeginRenderPass*/);
 
 	}
 
 	// ↑の Framebuffer 変更や、mapResource などで RenderPass が End されていることがあるので、その場合はここで開始
-	if (!m_recodingCommandBuffer->m_insideRendarPass)
+	if (!m_recodingCommandBuffer->m_currentRenderPass)
 	{
-		VulkanFramebuffer* framebuffer = m_device->framebufferCache()->findOrCreate(state.framebufferState);
+        /*
+            TODO: clearBuffersOnBeginRenderPass にするだけだと
+            validation layer: In vkCmdBeginRenderPass() the VkRenderPassBeginInfo struct has a clearValueCount of 1 but there must be at least 2 entries in pClearValues array to account for the highest index attachment in renderPass 0x6a that uses VK_ATTACHMENT_LOAD_OP_CLEAR is 2. Note that the pClearValues array is indexed by attachment number so even if some pClearValues entries between 0 and 1 correspond to attachments that aren't cleared they will be ignored. The Vulkan spec states: clearValueCount must be greater than the largest attachment index in renderPass that specifies a loadOp (or stencilLoadOp, if the attachment has a depth/stencil format) of VK_ATTACHMENT_LOAD_OP_CLEAR (https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#VUID-VkRenderPassBeginInfo-clearValueCount-00902)
+        */
+        m_recodingCommandBuffer->m_currentRenderPass = m_device->renderPassCache()->findOrCreate({ state.framebufferState, false/*clearBuffersOnBeginRenderPass*/ });
+
+        VulkanFramebuffer* framebuffer = m_device->framebufferCache()->findOrCreate({ state.framebufferState, m_recodingCommandBuffer->m_currentRenderPass });
 		m_recodingCommandBuffer->m_lastFoundFramebuffer = framebuffer;
 		{
 			VkRenderPassBeginInfo renderPassInfo = {};
 			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-			renderPassInfo.renderPass = framebuffer->vulkanRenderPass();//renderPass;
+			renderPassInfo.renderPass = m_recodingCommandBuffer->m_currentRenderPass->nativeRenderPass();
 			renderPassInfo.framebuffer = framebuffer->vulkanFramebuffer();
 			renderPassInfo.renderArea.offset = { 0, 0 };
 			renderPassInfo.renderArea.extent.width = state.framebufferState.renderTargets[0]->realSize().width; //m_mainSwapchain->vulkanSwapchainExtent();
@@ -1119,8 +1132,6 @@ Result VulkanGraphicsContext::submitStatusInternal(GraphicsContextSubmitSource s
 
 				vkCmdBeginRenderPass(m_recodingCommandBuffer->vulkanCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 			}
-
-			m_recodingCommandBuffer->m_insideRendarPass = true;
 		}
 	}
 
@@ -1152,7 +1163,7 @@ Result VulkanGraphicsContext::submitStatusInternal(GraphicsContextSubmitSource s
 		//state.framebufferState.depthBuffer = m_depthImage;
 		//state.viewportRect.width = m_deviceContext->m_mainSwapchain->vulkanSwapchainExtent().width;
 		//state.viewportRect.height = m_deviceContext->m_mainSwapchain->vulkanSwapchainExtent().height;
-		VulkanPipeline* graphicsPipeline = m_device->pipelineCache()->findOrCreate(state, m_recodingCommandBuffer->m_lastFoundFramebuffer->vulkanRenderPass());
+        VulkanPipeline* graphicsPipeline = m_device->pipelineCache()->findOrCreate({ state, m_recodingCommandBuffer->m_lastFoundFramebuffer->ownerRenderPass() });
 
 
 		vkCmdBindPipeline(m_recodingCommandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->vulkanPipeline());//graphicsPipeline);
@@ -1227,6 +1238,8 @@ Result VulkanGraphicsContext::submitStatusInternal(GraphicsContextSubmitSource s
 
 	//
 	}
+
+    m_recodingCommandBuffer->m_priorToAnyDrawCmds = false;
 
 	return true;
 }
@@ -1349,7 +1362,7 @@ Result VulkanSwapChain::init(VulkanDevice* deviceContext, PlatformWindow* window
         m_swapChainImageViews.resize(swapChainImages.size());
 
         for (uint32_t i = 0; i < swapChainImages.size(); i++) {
-            if (!VulkanHelper::createImageView(m_deviceContext, swapChainImages[i], m_swapchainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, &m_swapChainImageViews[i])) {
+            if (!VulkanHelper::createImageView(m_deviceContext, swapChainImages[i], m_swapchainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1, &m_swapChainImageViews[i])) {
                 return false;
             }
         }
@@ -1744,14 +1757,6 @@ void VulkanVertexBuffer::dispose()
     IVertexBuffer::dispose();
 }
 
-// TODO: これは廃止して、CommandList 側に持って行った方がいいと思う。
-void VulkanVertexBuffer::setSubData(size_t offset, const void* data, size_t length)
-{
-    // static/dynamic にかかわらず、コマンド経由で転送しなければ整合性が取れなくなる
-    VulkanBuffer* buffer = m_deviceContext->graphicsContext()->recodingCommandBuffer()->cmdCopyBuffer(length, &m_buffer);
-    buffer->setData(offset, data, length);
-}
-
 //==============================================================================
 // VulkanIndexBuffer
 
@@ -1802,18 +1807,11 @@ void VulkanIndexBuffer::dispose()
     IIndexBuffer::dispose();
 }
 
-// TODO: これは廃止して、CommandList 側に持って行った方がいいと思う。
-void VulkanIndexBuffer::setSubData(size_t offset, const void* data, size_t length)
-{
-    // static/dynamic にかかわらず、コマンド経由で転送しなければ整合性が取れなくなる
-    VulkanBuffer* buffer = m_deviceContext->graphicsContext()->recodingCommandBuffer()->cmdCopyBuffer(length, &m_buffer);
-    buffer->setData(offset, data, length);
-}
-
 //==============================================================================
 // VulkanTexture2D
 
 VulkanTexture2D::VulkanTexture2D()
+	: m_mipLevels(1)
 {
 }
 
@@ -1829,28 +1827,47 @@ Result VulkanTexture2D::init(VulkanDevice* deviceContext, GraphicsResourceUsage 
     m_nativeFormat = VulkanHelper::LNFormatToVkFormat(requestFormat);
     VkDeviceSize imageSize = width * height * GraphicsHelper::getPixelSize(requestFormat);
 
+	m_mipLevels = 1;
+	if (mipmap) {
+		m_mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(width, height)))) + 1;
+	}
+
     if (!initialData) {
         LN_NOTIMPLEMENTED();
     }
     else {
+		VkBufferUsageFlags usageFlags = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+		if (mipmap) {
+			// レベル 0 以外を生成するために、レベル 0 を転送元として扱う必要がある
+			usageFlags |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+		}
+
         VulkanBuffer stagingBuffer;
         if (!stagingBuffer.init(m_deviceContext, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, nullptr)) {
             return false;
         }
         stagingBuffer.setData(0, initialData, imageSize);
 
-        // VK_FORMAT_R8G8B8A8_UNORM
-        m_image.init(m_deviceContext, width, height, m_nativeFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
+        m_image.init(m_deviceContext, width, height, m_nativeFormat, m_mipLevels, VK_IMAGE_TILING_OPTIMAL, usageFlags, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
 
-        if (!m_deviceContext->transitionImageLayoutImmediately(m_image.vulkanImage(), m_nativeFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)) {
+        if (!m_deviceContext->transitionImageLayoutImmediately(m_image.vulkanImage(), m_nativeFormat, m_mipLevels, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)) {
             return false;
         }
 
         m_deviceContext->copyBufferToImageImmediately(stagingBuffer.vulkanBuffer(), m_image.vulkanImage(), width, height);
 
-        if (!m_deviceContext->transitionImageLayoutImmediately(m_image.vulkanImage(), m_nativeFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {
-            return false;
-        }
+
+		if (mipmap) {
+			if (!generateMipmaps(m_image.vulkanImage(), m_nativeFormat, width, height, m_mipLevels)) {
+				return false;
+			}
+			// transitioned to VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL while generating mipmaps
+		}
+		else {
+			if (!m_deviceContext->transitionImageLayoutImmediately(m_image.vulkanImage(), m_nativeFormat, m_mipLevels, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {
+				return false;
+			}
+		}
 
         stagingBuffer.dispose();
     }
@@ -1870,12 +1887,14 @@ void VulkanTexture2D::setSubData(int x, int y, int width, int height, const void
     assert(x == 0);
     assert(y == 0);
 
+	assert(m_mipLevels == 1);	// TODO:
+
 
     // vkCmdCopyBufferToImage() の dstImageLayout は VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR の
     // いずれかでなければならない。https://www.khronos.org/registry/vulkan/specs/1.1-extensions/man/html/vkCmdCopyBufferToImage.html
     // 転送前にレイアウトを変更しておく。
     if (!m_deviceContext->transitionImageLayout(m_deviceContext->graphicsContext()->recodingCommandBuffer()->vulkanCommandBuffer(),
-        m_image.vulkanImage(), m_nativeFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)) {
+        m_image.vulkanImage(), m_nativeFormat, 1, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)) {
         LN_ERROR();
         return;
     }
@@ -1899,10 +1918,103 @@ void VulkanTexture2D::setSubData(int x, int y, int width, int height, const void
 
     // レイアウトを元に戻す
     if (!m_deviceContext->transitionImageLayout(m_deviceContext->graphicsContext()->recodingCommandBuffer()->vulkanCommandBuffer(),
-        m_image.vulkanImage(), m_nativeFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {
+        m_image.vulkanImage(), m_nativeFormat, 1, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {
         LN_ERROR();
         return;
     }
+}
+
+Result VulkanTexture2D::generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels)
+{
+	VkPhysicalDevice physicalDevice = m_deviceContext->m_physicalDevice;
+
+	// Check if image format supports linear blitting
+	VkFormatProperties formatProperties;
+	vkGetPhysicalDeviceFormatProperties(physicalDevice, imageFormat, &formatProperties);
+
+	if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT)) {
+		LN_ERROR("texture image format does not support linear blitting!");
+		return false;
+	}
+
+	VkCommandBuffer commandBuffer = m_deviceContext->beginSingleTimeCommands();
+
+	VkImageMemoryBarrier barrier = {};
+	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+	barrier.image = image;
+	barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	barrier.subresourceRange.baseArrayLayer = 0;
+	barrier.subresourceRange.layerCount = 1;
+	barrier.subresourceRange.levelCount = 1;
+
+	int32_t mipWidth = texWidth;
+	int32_t mipHeight = texHeight;
+
+	for (uint32_t i = 1; i < mipLevels; i++) {
+		barrier.subresourceRange.baseMipLevel = i - 1;
+		barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+		barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+		barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+		barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+
+		vkCmdPipelineBarrier(commandBuffer,
+			VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0,
+			0, nullptr,
+			0, nullptr,
+			1, &barrier);
+
+		VkImageBlit blit = {};
+		blit.srcOffsets[0] = { 0, 0, 0 };
+		blit.srcOffsets[1] = { mipWidth, mipHeight, 1 };
+		blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		blit.srcSubresource.mipLevel = i - 1;
+		blit.srcSubresource.baseArrayLayer = 0;
+		blit.srcSubresource.layerCount = 1;
+		blit.dstOffsets[0] = { 0, 0, 0 };
+		blit.dstOffsets[1] = { mipWidth > 1 ? mipWidth / 2 : 1, mipHeight > 1 ? mipHeight / 2 : 1, 1 };
+		blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		blit.dstSubresource.mipLevel = i;
+		blit.dstSubresource.baseArrayLayer = 0;
+		blit.dstSubresource.layerCount = 1;
+
+		vkCmdBlitImage(commandBuffer,
+			image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+			image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+			1, &blit,
+			VK_FILTER_LINEAR);
+
+		barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+		barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+		barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+		vkCmdPipelineBarrier(commandBuffer,
+			VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
+			0, nullptr,
+			0, nullptr,
+			1, &barrier);
+
+		if (mipWidth > 1) mipWidth /= 2;
+		if (mipHeight > 1) mipHeight /= 2;
+	}
+
+	barrier.subresourceRange.baseMipLevel = mipLevels - 1;
+	barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+	barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+	barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+	barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+	vkCmdPipelineBarrier(commandBuffer,
+		VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
+		0, nullptr,
+		0, nullptr,
+		1, &barrier);
+
+	m_deviceContext->endSingleTimeCommands(commandBuffer);
+
+	return true;
 }
 
 //==============================================================================
@@ -1931,11 +2043,11 @@ Result VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, uin
         VkDeviceSize imageSize = width * height * GraphicsHelper::getPixelSize(requestFormat);
 
         m_image = std::make_unique<VulkanImage>();
-        if (!m_image->init(m_deviceContext, width, height, nativeFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT)) {
+        if (!m_image->init(m_deviceContext, width, height, nativeFormat, 1, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT)) {
             return false;
         }
 
-        if (!m_deviceContext->transitionImageLayoutImmediately(m_image->vulkanImage(), nativeFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {
+        if (!m_deviceContext->transitionImageLayoutImmediately(m_image->vulkanImage(), nativeFormat, 1, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {
             return false;
         }
 
@@ -2230,11 +2342,11 @@ Result VulkanDepthBuffer::init(VulkanDevice* deviceContext, uint32_t width, uint
 
     VkFormat depthFormat = m_deviceContext->findDepthFormat();
 
-    if (!m_image.init(m_deviceContext, width, height, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_DEPTH_BIT)) {
+    if (!m_image.init(m_deviceContext, width, height, depthFormat, 1, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_DEPTH_BIT)) {
         return false;
     }
 
-    if (!m_deviceContext->transitionImageLayoutImmediately(m_image.vulkanImage(), depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)) {
+    if (!m_deviceContext->transitionImageLayoutImmediately(m_image.vulkanImage(), depthFormat, 1, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)) {
         return false;
     }
 
@@ -2276,13 +2388,20 @@ Result VulkanSamplerState::init(VulkanDevice* deviceContext, const SamplerStateD
 	samplerInfo.addressModeU = address;
 	samplerInfo.addressModeV = address;
 	samplerInfo.addressModeW = address;
-    samplerInfo.anisotropyEnable = VK_FALSE;//VK_TRUE;		// TODO:
-    samplerInfo.maxAnisotropy = 0;// 16;
+	samplerInfo.anisotropyEnable = VK_FALSE;
+    samplerInfo.maxAnisotropy = 0;
 	samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
 	samplerInfo.unnormalizedCoordinates = VK_FALSE;
 	samplerInfo.compareEnable = VK_FALSE;
 	samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
 	samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
+
+	samplerInfo.maxLod = 8;
+
+	if (desc.anisotropy) {
+		samplerInfo.anisotropyEnable = VK_TRUE;
+		samplerInfo.maxAnisotropy = 16;
+	}
 
 	LN_VK_CHECK(vkCreateSampler(m_deviceContext->vulkanDevice(), &samplerInfo, m_deviceContext->vulkanAllocator(), &m_sampler));
 
@@ -2584,7 +2703,7 @@ const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWrite
         buffer->setData(0, uniformBuffer->data().data(), uniformBuffer->data().size());
 
         VkDescriptorBufferInfo& info = m_bufferDescriptorBufferInfo[i];
-        info.buffer = info.buffer = buffer->vulkanBuffer();
+        info.buffer = buffer->vulkanBuffer();
 
         VkWriteDescriptorSet& writeInfo = m_descriptorWriteInfo[i];
         writeInfo.dstSet = descriptorSets[DescriptorType_UniformBuffer];

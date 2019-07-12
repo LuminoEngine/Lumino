@@ -6,8 +6,8 @@ class Test_Asset_AssetObject : public ::testing::Test {};
 //------------------------------------------------------------------------------
 TEST_F(Test_Asset_AssetObject, Basic)
 {
-	auto model = AssetModel::create(makeObject<SpriteFrame>());
-	auto prop = model->findProperty(u"SourceRect");
+	auto model1 = AssetModel::create(makeObject<SpriteFrame>());
+	auto prop = model1->findProperty(u"SourceRect");
 
     Rect v1(1, 2, 3, 4);
     prop->setValue<Rect>(v1);
@@ -15,10 +15,17 @@ TEST_F(Test_Asset_AssetObject, Basic)
     Rect v2 = prop->getValue<Rect>();
     ASSERT_EQ(v1, v2);
 
+    model1->saveInternal(LN_TEMPFILE("SpriteFrame.lnasset"));
 
-    String json = JsonSerializer::serialize(*model->target(), JsonFormatting::None);
-    auto str = Serializer::serialize<SpriteFrame>(Ref<SpriteFrame>(static_cast<SpriteFrame*>(model->target())));
+    auto model2 = makeObject<AssetModel>();
+    model2->loadInternal(LN_TEMPFILE("SpriteFrame.lnasset"));
 
-    auto obj2 = Serializer::deserialize<SpriteFrame>(str);
-    ASSERT_EQ(v1, obj2->sourceRect());
+    ASSERT_EQ(true, dynamic_cast<SpriteFrame*>(model2->target()) != nullptr);
+    ASSERT_EQ(v1, static_cast<SpriteFrame*>(model2->target())->sourceRect());
+
+    //String json = JsonSerializer::serialize(*model->target(), JsonFormatting::None);
+    //auto str = Serializer::serialize<SpriteFrame>(Ref<SpriteFrame>(static_cast<SpriteFrame*>(model->target())));
+
+    //auto obj2 = Serializer::deserialize<SpriteFrame>(str);
+    //ASSERT_EQ(v1, obj2->sourceRect());
 }

@@ -9,8 +9,9 @@ class ContentsViewManager : public QObject
 public:
     ContentsViewManager();
 
-	void setup(QString toolsetName);
+	void setup(lna::Project* project, QString toolsetName);
 
+    lna::Project* project() const { return m_project; }
     QFrame* sidebar() { return m_sidebar; }
     QStackedWidget* viewContainer() { return m_viewContainer; }
 
@@ -29,6 +30,7 @@ private:
 		QPushButton* iconButton;
 	};
 
+    lna::Project* m_project;
     QFrame* m_sidebar;
     QVBoxLayout* m_buttonContainer;
     QStackedWidget* m_viewContainer;
@@ -45,6 +47,10 @@ public:
 
 protected:
     ContentsViewProvider(QWidget* parent);
+    ContentsViewManager* manager() const { return m_manager; }
 
 private:
+    ContentsViewManager* m_manager;
+
+    friend class ContentsViewManager;
 };

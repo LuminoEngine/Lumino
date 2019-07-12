@@ -128,12 +128,26 @@ void GraphicsContext::setRenderTarget(int index, RenderTargetTexture* value)
 
     if (m_staging.renderTargets[index] != value) {
         m_staging.renderTargets[index] = value;
-        if (index == 0 && value) {
-            auto rect = Rect(0, 0, value->width(), value->height());
-            setViewportRect(rect);
-            setScissorRect(rect);
-        }
         m_dirtyFlags |= DirtyFlags_Framebuffer;
+    }
+    else if (m_staging.renderTargets[index] != nullptr && value != nullptr) {
+        // RenderTargetTexture のインスタンスは同じであるが、Swapchain の ImageIndex が代わっている場合は変更扱いにする
+        if (m_staging.swapchainImageIndex[index] != detail::TextureInternal::getSwapchainImageIndex(value)) {
+            m_dirtyFlags |= DirtyFlags_Framebuffer;
+        }
+    }
+
+    if (index == 0 && value) {
+        auto rect = Rect(0, 0, value->width(), value->height());
+        setViewportRect(rect);
+        setScissorRect(rect);
+    }
+
+    if (value) {
+        m_staging.swapchainImageIndex[index] = detail::TextureInternal::getSwapchainImageIndex(value);
+    }
+    else {
+        m_staging.swapchainImageIndex[index] = -1;
     }
 }
 

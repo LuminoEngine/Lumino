@@ -10,6 +10,8 @@
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Platform/PlatformManager.hpp"
 
+#include "../Effect/EffectManager.hpp"  // TODO: tests
+
 namespace ln {
 
 namespace detail {
@@ -283,6 +285,10 @@ void UIFrameWindow::present()
 		DepthBuffer::releaseTemporary(m_depthBuffer);
 		m_depthBuffer = nullptr;
 	}
+
+
+    detail::EngineDomain::effectManager()->testDraw();
+
 
 	detail::SwapChainInternal::present(m_swapChain, m_graphicsContext);
 	m_manager->graphicsManager()->renderingQueue()->submit(m_graphicsContext);

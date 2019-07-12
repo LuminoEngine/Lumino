@@ -6,7 +6,7 @@
 // SpriteFramesetEditorDocument
 
 SpriteFramesetEditorDocument::SpriteFramesetEditorDocument(QObject* parent)
-    : Document(parent)
+    : EditorDocument(parent)
 {
 
 
