@@ -220,7 +220,7 @@ int main(int argc, char** argv)
     auto button1 = makeObject<UIButton>();
     button1->setWidth(200);
     button1->setHeight(100);
-    button1->setBackgroundColor(Color::Green);
+    //button1->setBackgroundColor(Color::Green);
 
 
 #if 0

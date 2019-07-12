@@ -411,7 +411,11 @@ void UIElement::onRender(UIRenderingContext* context)
 
 void UIElement::updateStyleHierarchical(const UIStyleContext* styleContext, const detail::UIStyleInstance* parentFinalStyle)
 {
-	detail::UIStyleInstance::updateStyleDataHelper(m_localStyle, parentFinalStyle, m_context->defaultStyle(), m_finalStyle);
+    // TODO:
+    auto sc = styleContext->findStyleClass(className());
+    auto s = sc->findStateStyle(u"");
+
+	detail::UIStyleInstance::updateStyleDataHelper(m_localStyle, parentFinalStyle, s, m_finalStyle);
 
 	onUpdateStyle(styleContext, m_finalStyle);
 

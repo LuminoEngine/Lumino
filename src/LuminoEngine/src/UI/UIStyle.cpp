@@ -257,14 +257,16 @@ void UIStyleContext::build()
     // second, merge other styles
     for (auto& sheet : m_styleSheets) {
         for (auto& pair : sheet->m_classes) {
-            auto styleClass = findStyleClass(pair.first);
-            if (!styleClass) {
+            auto itr = m_classes.find(pair.first);
+            if (itr == m_classes.end()) {
                 auto instance = makeRef<detail::UIStyleClassInstance>();
                 instance->m_style->copyFrom(m_globalStyle->m_style);
                 m_classes.insert({ pair.first, instance });
-                styleClass = instance;
+                instance->mergeFrom(pair.second);
             }
-            styleClass->mergeFrom(pair.second);
+            else {
+                itr->second->mergeFrom(pair.second);
+            }
         }
     }
 }
@@ -289,10 +291,45 @@ UIStyleInstance::UIStyleInstance()
 
 void UIStyleInstance::setupDefault()
 {
-    auto tmp = makeObject<UIStyle>();
-    tmp->setupDefault();
-	backgroundMaterial = makeObject<Material>();
-    mergeFrom(tmp);
+    margin = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
+    padding = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
+
+    // Alignment は HTML のデフォルトに合わせてみる
+    horizontalAlignment = HAlignment::Left;
+    verticalAlignment = VAlignment::Top;
+
+    minWidth = Math::NaN;
+    minHeight = Math::NaN;
+    maxWidth = Math::NaN;
+    maxHeight = Math::NaN;
+
+    position = Vector3::Zero;
+    rotation = Quaternion::Identity;
+    scale = Vector3::Ones;
+    centerPoint = Vector3::Zero;
+
+    backgroundDrawMode = BrushImageDrawMode::Image;
+    backgroundImageRect = Rect::Zero;
+    backgroundImageBorder = Thickness::Zero;
+
+    textColor = Color::Black;
+    fontFamily = String::Empty;
+    fontSize = 20.0f;	// WPF default は 12 だが、それだとデスクトップアプリ向けなので少し小さい。Lumino としては 20 をデフォルトとする。
+    fontWeight = UIFontWeight::Normal;
+    fontStyle = UIFontStyle::Normal;
+
+    visible = true;
+    blendMode = BlendMode::Alpha;
+
+    opacity = 1.0f;
+    colorScale = Color(1.0f, 1.0f, 1.0f, 1.0f);
+    blendColor = Color(0.0f, 0.0f, 0.0f, 0.0f);
+    tone = ColorTone(0.0f, 0.0f, 0.0f, 0.0f);
+
+ //   auto tmp = makeObject<UIStyle>();
+ //   tmp->setupDefault();
+	//backgroundMaterial = makeObject<Material>();
+ //   mergeFrom(tmp);
 }
 
 void UIStyleInstance::mergeFrom(const UIStyle* other)
@@ -383,7 +420,7 @@ void UIStyleInstance::copyFrom(const UIStyleInstance* other)
     tone = other->tone;
 }
 
-void UIStyleInstance::updateStyleDataHelper(UIStyle* localStyle, const detail::UIStyleInstance* parentStyleData, const UIStyle* defaultStyle, detail::UIStyleInstance* outStyleData)
+void UIStyleInstance::updateStyleDataHelper(UIStyle* localStyle, const detail::UIStyleInstance* parentStyleData, const detail::UIStyleInstance* defaultStyle, detail::UIStyleInstance* outStyleData)
 {
 	const UIStyle* parentStyle = (parentStyleData) ? parentStyleData->sourceLocalStyle : nullptr;
 	if (parentStyle)
@@ -401,40 +438,40 @@ void UIStyleInstance::updateStyleDataHelper(UIStyle* localStyle, const detail::U
 
 	// layout
 	{
-		outStyleData->margin = localStyle->margin.getOrDefault(defaultStyle->margin.get());
-		outStyleData->padding = localStyle->padding.getOrDefault(defaultStyle->padding.get());
-		outStyleData->horizontalAlignment = localStyle->horizontalAlignment.getOrDefault(defaultStyle->horizontalAlignment.get());
-		outStyleData->verticalAlignment = localStyle->verticalAlignment.getOrDefault(defaultStyle->verticalAlignment.get());
-		outStyleData->minWidth = localStyle->minWidth.getOrDefault(defaultStyle->minWidth.get());//.getOrDefault(Math::NaN));
-		outStyleData->minHeight = localStyle->minHeight.getOrDefault(defaultStyle->minHeight.get());//.getOrDefault(Math::NaN));
-		outStyleData->maxWidth = localStyle->maxWidth.getOrDefault(defaultStyle->maxWidth.get());//.getOrDefault(Math::NaN));
-		outStyleData->maxHeight = localStyle->maxHeight.getOrDefault(defaultStyle->maxHeight.get());//.getOrDefault(Math::NaN));
+		outStyleData->margin = localStyle->margin.getOrDefault(defaultStyle->margin);
+		outStyleData->padding = localStyle->padding.getOrDefault(defaultStyle->padding);
+		outStyleData->horizontalAlignment = localStyle->horizontalAlignment.getOrDefault(defaultStyle->horizontalAlignment);
+		outStyleData->verticalAlignment = localStyle->verticalAlignment.getOrDefault(defaultStyle->verticalAlignment);
+		outStyleData->minWidth = localStyle->minWidth.getOrDefault(defaultStyle->minWidth);//.getOrDefault(Math::NaN));
+		outStyleData->minHeight = localStyle->minHeight.getOrDefault(defaultStyle->minHeight);//.getOrDefault(Math::NaN));
+		outStyleData->maxWidth = localStyle->maxWidth.getOrDefault(defaultStyle->maxWidth);//.getOrDefault(Math::NaN));
+		outStyleData->maxHeight = localStyle->maxHeight.getOrDefault(defaultStyle->maxHeight);//.getOrDefault(Math::NaN));
 	}
 
 	// layout transform
 	{
-		outStyleData->position = localStyle->position.getOrDefault(defaultStyle->position.get());
-		outStyleData->rotation = localStyle->rotation.getOrDefault(defaultStyle->rotation.get());
-		outStyleData->scale = localStyle->scale.getOrDefault(defaultStyle->scale.get());
-		outStyleData->centerPoint = localStyle->centerPoint.getOrDefault(defaultStyle->centerPoint.get());
+		outStyleData->position = localStyle->position.getOrDefault(defaultStyle->position);
+		outStyleData->rotation = localStyle->rotation.getOrDefault(defaultStyle->rotation);
+		outStyleData->scale = localStyle->scale.getOrDefault(defaultStyle->scale);
+		outStyleData->centerPoint = localStyle->centerPoint.getOrDefault(defaultStyle->centerPoint);
 	}
 
 	// background
 	{
 		assert(outStyleData->backgroundMaterial);
-        outStyleData->backgroundDrawMode = localStyle->backgroundDrawMode.getOrDefault(defaultStyle->backgroundDrawMode.get());
-		outStyleData->backgroundColor = localStyle->backgroundColor.getOrDefault(defaultStyle->backgroundColor.get());
-		outStyleData->backgroundMaterial->setMainTexture(localStyle->backgroundImage.getOrDefault(defaultStyle->backgroundImage.get()));
-		outStyleData->backgroundMaterial->setShader(localStyle->backgroundShader.getOrDefault(defaultStyle->backgroundShader.get()));
+        outStyleData->backgroundDrawMode = localStyle->backgroundDrawMode.getOrDefault(defaultStyle->backgroundDrawMode);
+		outStyleData->backgroundColor = localStyle->backgroundColor.getOrDefault(defaultStyle->backgroundColor);
+		outStyleData->backgroundMaterial->setMainTexture(localStyle->backgroundImage.getOrDefault(defaultStyle->backgroundImage));
+		outStyleData->backgroundMaterial->setShader(localStyle->backgroundShader.getOrDefault(defaultStyle->backgroundShader));
 		//outStyleData->backgroundColor = localStyle->backgroundColor.getOrDefault(defaultStyle->backgroundColor.get());
 		//outStyleData->backgroundImage = 
-        outStyleData->backgroundImageRect = localStyle->backgroundImageRect.getOrDefault(defaultStyle->backgroundImageRect.get());
-        outStyleData->backgroundImageBorder = localStyle->backgroundImageBorder.getOrDefault(defaultStyle->backgroundImageBorder.get());
+        outStyleData->backgroundImageRect = localStyle->backgroundImageRect.getOrDefault(defaultStyle->backgroundImageRect);
+        outStyleData->backgroundImageBorder = localStyle->backgroundImageBorder.getOrDefault(defaultStyle->backgroundImageBorder);
 	}
 
 	// text
 	{
-		outStyleData->textColor = localStyle->textColor.getOrDefault(defaultStyle->textColor.get());
+		outStyleData->textColor = localStyle->textColor.getOrDefault(defaultStyle->textColor);
 
 		if (outStyleData->font) {
 			// 前回の update で選択した font があるのでそのままにする
@@ -468,13 +505,13 @@ void UIStyleInstance::updateStyleDataHelper(UIStyle* localStyle, const detail::U
 
 	// render effects
 	{
-		outStyleData->visible = localStyle->visible.getOrDefault(defaultStyle->visible.get());
-		outStyleData->blendMode = localStyle->blendMode.getOrDefault(defaultStyle->blendMode.get());
+		outStyleData->visible = localStyle->visible.getOrDefault(defaultStyle->visible);
+		outStyleData->blendMode = localStyle->blendMode.getOrDefault(defaultStyle->blendMode);
 
-		outStyleData->opacity = localStyle->opacity.getOrDefault(defaultStyle->opacity.get());
-		outStyleData->colorScale = localStyle->colorScale.getOrDefault(defaultStyle->colorScale.get());
-		outStyleData->blendColor = localStyle->blendColor.getOrDefault(defaultStyle->blendColor.get());
-		outStyleData->tone = localStyle->tone.getOrDefault(defaultStyle->tone.get());
+		outStyleData->opacity = localStyle->opacity.getOrDefault(defaultStyle->opacity);
+		outStyleData->colorScale = localStyle->colorScale.getOrDefault(defaultStyle->colorScale);
+		outStyleData->blendColor = localStyle->blendColor.getOrDefault(defaultStyle->blendColor);
+		outStyleData->tone = localStyle->tone.getOrDefault(defaultStyle->tone);
 	}
 }
 
@@ -492,7 +529,7 @@ UIStyleInstance* UIStyleClassInstance::findStateStyle(const StringRef& stateName
     if (style)
         return style->style;
     else
-        return nullptr;
+        return m_style;
 }
 
 UIStyleInstance* UIStyleClassInstance::findSubElementStyle(const StringRef& elementName) const

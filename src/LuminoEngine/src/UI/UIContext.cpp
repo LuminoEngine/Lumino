@@ -24,8 +24,9 @@ void UIContext::init()
 
 	m_defaultStyle = makeObject<UIStyle>();
 	m_defaultStyle->setupDefault();
+    m_finalDefaultStyle->setupDefault();
 	m_finalDefaultStyle->backgroundMaterial = makeObject<Material>();
-    detail::UIStyleInstance::updateStyleDataHelper(m_defaultStyle, nullptr, m_defaultStyle, m_finalDefaultStyle);
+    //detail::UIStyleInstance::updateStyleDataHelper(m_defaultStyle, nullptr, m_defaultStyle, m_finalDefaultStyle);
 
     m_styleContext = makeObject<UIStyleContext>();
     setupDefaultStyle();

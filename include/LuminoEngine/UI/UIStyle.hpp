@@ -335,7 +335,7 @@ class UIStyleInstance
     : public RefObject
 {
 public:
-    UIStyle* sourceLocalStyle;	// 以下のデータの生成元となったローカスのスタイル
+    UIStyle* sourceLocalStyle = nullptr;	// 以下のデータの生成元となったローカスのスタイル
 
     // layout
     Thickness margin;
@@ -390,7 +390,7 @@ public:
     void mergeFrom(const UIStyle* other);
     void copyFrom(const UIStyleInstance* other);
 
-    static void updateStyleDataHelper(UIStyle* localStyle, const detail::UIStyleInstance* parentStyleData, const UIStyle* defaultStyle, detail::UIStyleInstance* outStyleData);
+    static void updateStyleDataHelper(UIStyle* localStyle, const detail::UIStyleInstance* parentStyleData, const detail::UIStyleInstance* defaultStyle, detail::UIStyleInstance* outStyleData);
 
 LN_CONSTRUCT_ACCESS:
 
