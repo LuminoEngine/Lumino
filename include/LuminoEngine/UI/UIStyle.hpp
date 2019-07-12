@@ -4,7 +4,10 @@
 namespace ln {
 class Shader;
 class Texture;
+class UIStyleContext;
 namespace detail {
+class UIStyleInstance;
+class UIStyleClassInstance;
 
 enum class UIStyleAttributeValueSource
 {
@@ -200,7 +203,7 @@ public:
 	detail::UIStyleAttribute<Color> backgroundColor;
 	detail::UIStyleAttribute<Ref<Texture>> backgroundImage;
 	detail::UIStyleAttribute<Ref<Shader>> backgroundShader;
-	// ※ここは Material にはしない。そういった大きなクラスを持たせるとまた Brush の時みたいな問題 (アニメーションや、プロパティのパス指定) が出てくる。代わりに Material の構築に必要なものを持たせる
+	// ※↑ここは Material にはしない。そういった大きなクラスを持たせるとまた Brush の時みたいな問題 (アニメーションや、プロパティのパス指定) が出てくる。代わりに Material の構築に必要なものを持たせる
     detail::UIStyleAttribute<Rect> backgroundImageRect;
     detail::UIStyleAttribute<Thickness> backgroundImageBorder;
 
@@ -240,10 +243,92 @@ LN_CONSTRUCT_ACCESS:
 private:
 };
 
+class UIStyleClass
+    : public Object
+{
+public:
+    const String& className() const { return m_className; }
+    void setClassName(const StringRef& value) { m_className = value; }
+
+    UIStyle* style() const { return m_style; }
+    void setStyle(UIStyle* value) { m_style = value; }
+
+    void addStateStyle(const StringRef& stateName, UIStyle* style);
+    UIStyle* findStateStyle(const StringRef& stateName) const;
+
+    void addSubElementStyle(const StringRef& elementName, UIStyle* style);
+    UIStyle* findSubElementStyle(const StringRef& elementName) const;
+
+LN_CONSTRUCT_ACCESS:
+    UIStyleClass();
+    virtual ~UIStyleClass();
+    void init();
+
+private:
+    struct VisualStateSlot
+    {
+        String name;
+        Ref<UIStyle> style;
+    };
+
+    struct SubElementSlot
+    {
+        String name;
+        Ref<UIStyle> style;
+    };
+
+    String m_className;
+    Ref<UIStyle> m_style;
+    List<VisualStateSlot> m_visualStateStyles;
+    List<SubElementSlot> m_subElements;
+
+    friend class detail::UIStyleClassInstance;
+};
+
+class UIStyleSheet
+    : public Object
+{
+public:
+    void addStyleClass(const StringRef& className, UIStyleClass* styleClass);
+    UIStyleClass* findStyleClass(const StringRef& className) const;
+    
+LN_CONSTRUCT_ACCESS:
+    UIStyleSheet();
+    virtual ~UIStyleSheet();
+    void init();
+
+private:
+    std::unordered_map<String, Ref<UIStyleClass>> m_classes;
+
+    friend class UIStyleContext;
+};
+
+class UIStyleContext
+    : public Object
+{
+public:
+    void addStyleClass(UIStyleSheet* sheet);
+
+
+    // TODO: internal
+    void build();
+    detail::UIStyleClassInstance* findStyleClass(const StringRef& className) const;
+
+LN_CONSTRUCT_ACCESS:
+    UIStyleContext();
+    virtual ~UIStyleContext();
+    void init();
+
+private:
+    List<Ref<UIStyleSheet>> m_styleSheets;
+    Ref<detail::UIStyleClassInstance> m_globalStyle;
+    std::unordered_map<String, Ref<detail::UIStyleClassInstance>> m_classes;
+};
+
 namespace detail {
 
 // どんな Element でも持つ一般的なスタイル値。
-// スタイル更新後の最終的な値を表す。
+// UIStyle の optional 等を解決したもの。
 // メモリ消費を抑えるため、UIStyleAttribute は使わないようにしている。
 class UIStyleInstance
     : public RefObject
@@ -270,19 +355,17 @@ public:
     // background
     BrushImageDrawMode backgroundDrawMode;
     Color backgroundColor;
-    //Ref<Texture> backgroundImage;
-    //Ref<Shader> backgroundShader;
-    Ref<AbstractMaterial> backgroundMaterial;
+    Ref<Texture> backgroundImage;
+    Ref<Shader> backgroundShader;
     Rect backgroundImageRect;
     Thickness backgroundImageBorder;
 
     // text
     Color textColor;
-    Ref<Font> font;
-    //String fontFamily;
-    //float fontSize;
-    //UIFontWeight fontWeight;
-    //UIFontStyle fontStyle;
+    String fontFamily;
+    float fontSize;
+    UIFontWeight fontWeight;
+    UIFontStyle fontStyle;
 
     // render effects
     bool visible;
@@ -293,15 +376,53 @@ public:
     Color blendColor;
 	ColorTone tone;
 
+
+
+    // commited cache
+    Ref<Font> font;
+    Ref<AbstractMaterial> backgroundMaterial;
+
     // TODO: 今後サブクラスごとにスタイルを追加する場合は、ここに map を設ける
 
     UIStyleInstance();
-    void init();
+    void setupDefault();
+    void mergeFrom(const UIStyle* other);
+
     static void updateStyleDataHelper(UIStyle* localStyle, const detail::UIStyleInstance* parentStyleData, const UIStyle* defaultStyle, detail::UIStyleInstance* outStyleData);
 
 LN_CONSTRUCT_ACCESS:
 
 private:
+
+};
+
+class UIStyleClassInstance
+    : public RefObject
+{
+public:
+    UIStyleClassInstance();
+    UIStyleInstance* findStateStyle(const StringRef& stateName) const;
+    UIStyleInstance* findSubElementStyle(const StringRef& elementName) const;
+    void mergeFrom(const UIStyleClass* other);
+
+private:
+    struct VisualStateSlot
+    {
+        String name;
+        Ref<UIStyleInstance> style;
+    };
+
+    struct SubElementSlot
+    {
+        String name;
+        Ref<UIStyleInstance> style;
+    };
+
+    Ref<UIStyleInstance> m_style;
+    List<VisualStateSlot> m_visualStateStyles;
+    List<SubElementSlot> m_subElements;
+
+    friend class UIStyleContext;
 };
 
 } // namespace detail
