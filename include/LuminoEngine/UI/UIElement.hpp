@@ -247,6 +247,7 @@ public: // TODO: internal
 	UIElement* getFrameWindow();
 
 public:	// TODO: internal
+    virtual const String& className() const { return String::Empty; }
     virtual void onUpdateFrame(float elapsedSeconds);
 	virtual void onUpdateStyle(const detail::UIStyleInstance* finalStyle);
 

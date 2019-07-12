@@ -27,7 +27,8 @@ void UIContext::init()
 	m_finalDefaultStyle->backgroundMaterial = makeObject<Material>();
     detail::UIStyleInstance::updateStyleDataHelper(m_defaultStyle, nullptr, m_defaultStyle, m_finalDefaultStyle);
 
-    //m_styleContext
+    m_styleContext = makeObject<UIStyleContext>();
+    setupDefaultStyle();
 }
 
 void UIContext::setLayoutRootElement(UIElement* element)
@@ -118,6 +119,23 @@ void UIContext::updateStyleTree()
 //		m_layoutRootElement->updateLayout(Rect(0, 0, m_layoutRootElement->width(), m_layoutRootElement->height()));
 //	}
 //}
+
+void UIContext::setupDefaultStyle()
+{
+    auto sheet = makeObject<UIStyleSheet>();
+
+    {
+        auto c = sheet->addStyleClass(u"UIButton");
+        // UIButton
+        {
+            auto s = c->style();
+            s->backgroundColor = Color::Red;
+        }
+    }
+
+    m_styleContext->addStyleSheet(sheet);
+    m_styleContext->build();
+}
 
 } // namespace ln
 

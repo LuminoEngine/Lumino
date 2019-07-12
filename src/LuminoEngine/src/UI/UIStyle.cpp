@@ -149,6 +149,7 @@ UIStyleClass::~UIStyleClass()
 void UIStyleClass::init()
 {
     Object::init();
+    m_style = makeObject<UIStyle>();
 }
 
 void UIStyleClass::addStateStyle(const StringRef& stateName, UIStyle* style)
@@ -203,6 +204,13 @@ void UIStyleSheet::addStyleClass(const StringRef& className, UIStyleClass* style
     m_classes.insert({ className, styleClass });
 }
 
+Ref<UIStyleClass> UIStyleSheet::addStyleClass(const StringRef& className)
+{
+    auto cls = makeObject<UIStyleClass>();
+    addStyleClass(className, cls);
+    return cls;
+}
+
 UIStyleClass* UIStyleSheet::findStyleClass(const StringRef& className) const
 {
     auto itr = m_classes.find(className);
@@ -228,7 +236,7 @@ void UIStyleContext::init()
     Object::init();
 }
 
-void UIStyleContext::addStyleClass(UIStyleSheet* sheet)
+void UIStyleContext::addStyleSheet(UIStyleSheet* sheet)
 {
     if (LN_REQUIRE(sheet)) return;
     m_styleSheets.add(sheet);
@@ -252,6 +260,7 @@ void UIStyleContext::build()
             auto styleClass = findStyleClass(pair.first);
             if (!styleClass) {
                 auto instance = makeRef<detail::UIStyleClassInstance>();
+                instance->m_style->copyFrom(m_globalStyle->m_style);
                 m_classes.insert({ pair.first, instance });
                 styleClass = instance;
             }
@@ -266,7 +275,7 @@ detail::UIStyleClassInstance* UIStyleContext::findStyleClass(const StringRef& cl
     if (itr != m_classes.end())
         return itr->second;
     else
-        return nullptr;
+        return m_globalStyle;
 }
 
 //==============================================================================
@@ -328,6 +337,50 @@ void UIStyleInstance::mergeFrom(const UIStyle* other)
     if (other->colorScale.hasValue()) colorScale = other->colorScale.get();
     if (other->blendColor.hasValue()) blendColor = other->blendColor.get();
     if (other->tone.hasValue()) tone = other->tone.get();
+}
+
+void UIStyleInstance::copyFrom(const UIStyleInstance* other)
+{
+    if (LN_REQUIRE(other)) return;
+
+    // layout
+    margin = other->margin;
+    padding = other->padding;
+    horizontalAlignment = other->horizontalAlignment;
+    verticalAlignment = other->verticalAlignment;
+    minWidth = other->minWidth;
+    minHeight = other->minHeight;
+    maxWidth = other->maxWidth;
+    maxHeight = other->maxHeight;
+
+    // layout transform
+    position = other->position;
+    rotation = other->rotation;
+    scale = other->scale;
+    centerPoint = other->centerPoint;
+
+    // background
+    backgroundDrawMode = other->backgroundDrawMode;
+    backgroundColor = other->backgroundColor;
+    backgroundImage = other->backgroundImage;
+    backgroundShader = other->backgroundShader;
+    backgroundImageRect = other->backgroundImageRect;
+    backgroundImageBorder = other->backgroundImageBorder;
+
+    // text
+    textColor = other->textColor;
+    fontFamily = other->fontFamily;
+    fontSize = other->fontSize;
+    fontWeight = other->fontWeight;
+    fontStyle = other->fontStyle;
+
+    // render effects
+    visible = other->visible;
+    blendMode = other->blendMode;
+    opacity = other->opacity;
+    colorScale = other->colorScale;
+    blendColor = other->blendColor;
+    tone = other->tone;
 }
 
 void UIStyleInstance::updateStyleDataHelper(UIStyle* localStyle, const detail::UIStyleInstance* parentStyleData, const UIStyle* defaultStyle, detail::UIStyleInstance* outStyleData)

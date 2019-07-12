@@ -33,6 +33,8 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 private:
+    void setupDefaultStyle();
+
     Ref<UIElement> m_layoutRootElement;
     UIElement* m_mouseHoverElement;
 	Ref<UIStyle> m_defaultStyle;

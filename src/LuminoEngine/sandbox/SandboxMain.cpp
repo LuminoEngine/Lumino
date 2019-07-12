@@ -26,6 +26,7 @@
 #include "../src/Asset/AssetArchive.hpp"
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
 #include <LuminoEngine/Visual/ParticleEmitterComponent.hpp>
+#include <LuminoEngine/UI/UIButton.hpp>
 using namespace ln;
 
 class TestProcessorNode : public AudioProcessorNode
@@ -192,7 +193,7 @@ int main(int argc, char** argv)
     GlobalLogger::addStdErrAdapter();
     EngineSettings::setMainWindowSize(640, 480);
     EngineSettings::setMainBackBufferSize(640, 480);
-    EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
+    EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);//GraphicsAPI::Vulkan);//
     EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
 
 
@@ -214,6 +215,13 @@ int main(int argc, char** argv)
 
     auto texture1 = makeObject<Texture2D>(u"D:/tmp/110220c_as019.png");
     auto sprite1 = Sprite::create(texture1, 3, 3);
+
+
+    auto button1 = makeObject<UIButton>();
+    button1->setWidth(200);
+    button1->setHeight(100);
+    button1->setBackgroundColor(Color::Green);
+
 
 #if 0
     auto window1 = UIWindow::create();

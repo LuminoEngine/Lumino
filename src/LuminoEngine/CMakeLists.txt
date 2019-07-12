@@ -444,42 +444,7 @@ set(LN_SOURCES_Scene
     src/Scene/WorldRenderView.cpp
 )
 
-set(LN_SOURCES_UI
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIContainerElement.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIContext.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIControl.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIElement.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIEvents.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIFrameWindow.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UILayoutElement.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UILayoutPanel.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIRenderingContext.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIRenderView.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UISprite.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIStyle.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UITextBlock.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIViewport.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIWindow.hpp
-    src/UI/UIContainerElement.cpp
-    src/UI/UIContext.cpp
-    src/UI/UIControl.cpp
-    src/UI/UIElement.cpp
-    src/UI/UIEventArgsPool.hpp
-    src/UI/UIEvents.cpp
-    src/UI/UIFrameWindow.cpp
-    src/UI/UILayoutElement.cpp
-    src/UI/UILayoutPanel.cpp
-    src/UI/UIManager.cpp
-    src/UI/UIManager.hpp
-    src/UI/UIRenderingContext.cpp
-    src/UI/UIRenderView.cpp
-    src/UI/UISprite.cpp
-    src/UI/UIStyle.cpp
-    src/UI/UITextBlock.cpp
-    src/UI/UIViewport.cpp
-    src/UI/UIWindow.cpp
-)
+file(GLOB LN_SOURCES_UI ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/*.hpp src/UI/*.cpp)
 
 set(LN_SOURCES_Tilemap
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/Common.hpp

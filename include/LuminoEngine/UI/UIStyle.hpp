@@ -247,8 +247,8 @@ class UIStyleClass
     : public Object
 {
 public:
-    const String& className() const { return m_className; }
-    void setClassName(const StringRef& value) { m_className = value; }
+    //const String& className() const { return m_className; }
+    //void setClassName(const StringRef& value) { m_className = value; }
 
     UIStyle* style() const { return m_style; }
     void setStyle(UIStyle* value) { m_style = value; }
@@ -277,7 +277,7 @@ private:
         Ref<UIStyle> style;
     };
 
-    String m_className;
+    //String m_className;
     Ref<UIStyle> m_style;
     List<VisualStateSlot> m_visualStateStyles;
     List<SubElementSlot> m_subElements;
@@ -290,6 +290,7 @@ class UIStyleSheet
 {
 public:
     void addStyleClass(const StringRef& className, UIStyleClass* styleClass);
+    Ref<UIStyleClass> addStyleClass(const StringRef& className);
     UIStyleClass* findStyleClass(const StringRef& className) const;
     
 LN_CONSTRUCT_ACCESS:
@@ -307,12 +308,12 @@ class UIStyleContext
     : public Object
 {
 public:
-    void addStyleClass(UIStyleSheet* sheet);
+    void addStyleSheet(UIStyleSheet* sheet);
 
 
     // TODO: internal
     void build();
-    detail::UIStyleClassInstance* findStyleClass(const StringRef& className) const;
+    detail::UIStyleClassInstance* findStyleClass(const StringRef& className) const; // 無い場合は global
 
 LN_CONSTRUCT_ACCESS:
     UIStyleContext();
@@ -387,6 +388,7 @@ public:
     UIStyleInstance();
     void setupDefault();
     void mergeFrom(const UIStyle* other);
+    void copyFrom(const UIStyleInstance* other);
 
     static void updateStyleDataHelper(UIStyle* localStyle, const detail::UIStyleInstance* parentStyleData, const UIStyle* defaultStyle, detail::UIStyleInstance* outStyleData);
 
@@ -401,8 +403,8 @@ class UIStyleClassInstance
 {
 public:
     UIStyleClassInstance();
-    UIStyleInstance* findStateStyle(const StringRef& stateName) const;
-    UIStyleInstance* findSubElementStyle(const StringRef& elementName) const;
+    UIStyleInstance* findStateStyle(const StringRef& stateName) const;  // 無い場合は main
+    UIStyleInstance* findSubElementStyle(const StringRef& elementName) const;   // 無い場合は nullptr
     void mergeFrom(const UIStyleClass* other);
 
 private:
