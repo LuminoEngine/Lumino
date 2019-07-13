@@ -234,6 +234,8 @@ public:
 
 public:	// TODO: internal
 	void setupDefault();
+    void mergeFrom(const UIStyle* other);
+    void copyFrom(const UIStyle* other);
 
 LN_CONSTRUCT_ACCESS:
     UIStyle();
@@ -259,6 +261,9 @@ public:
     void addSubElementStyle(const StringRef& elementName, UIStyle* style);
     UIStyle* findSubElementStyle(const StringRef& elementName) const;
 
+    // TODO: internal
+    void mergeFrom(const UIStyleClass* other);
+
 LN_CONSTRUCT_ACCESS:
     UIStyleClass();
     virtual ~UIStyleClass();
@@ -283,6 +288,7 @@ private:
     List<SubElementSlot> m_subElements;
 
     friend class detail::UIStyleClassInstance;
+    friend class UIStyleContext;
 };
 
 class UIStyleSheet
@@ -313,7 +319,8 @@ public:
 
     // TODO: internal
     void build();
-    detail::UIStyleClassInstance* findStyleClass(const StringRef& className) const; // 無い場合は global
+    UIStyleClass* findStyleClass(const StringRef& className) const; // 無い場合は global
+    detail::UIStyleClassInstance* findResolvedStyleClass(const StringRef& className) const; // 無い場合は global
 
 LN_CONSTRUCT_ACCESS:
     UIStyleContext();
@@ -322,8 +329,10 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     List<Ref<UIStyleSheet>> m_styleSheets;
-    Ref<detail::UIStyleClassInstance> m_globalStyle;
-    std::unordered_map<String, Ref<detail::UIStyleClassInstance>> m_classes;
+    Ref<UIStyleClass> m_globalStyle;
+    std::unordered_map<String, Ref<UIStyleClass>> m_classes;
+    Ref<detail::UIStyleClassInstance> m_resolvedGlobalStyle;                            // for unused VisualStateManager
+    std::unordered_map<String, Ref<detail::UIStyleClassInstance>> m_resolvedClasses;    // for unused VisualStateManager
 };
 
 namespace detail {
@@ -403,7 +412,8 @@ class UIStyleClassInstance
 {
 public:
     UIStyleClassInstance();
-    UIStyleInstance* findStateStyle(const StringRef& stateName) const;  // 無い場合は main
+    const Ref<UIStyleInstance>& style() const { return m_style; }
+    UIStyleInstance* findStateStyle(const StringRef& stateName) const;  // 無い場合は nullptr
     UIStyleInstance* findSubElementStyle(const StringRef& elementName) const;   // 無い場合は nullptr
     void mergeFrom(const UIStyleClass* other);
 
@@ -428,5 +438,63 @@ private:
 };
 
 } // namespace detail
+
+
+
+class UIVisualStateManager
+    : public Object
+{
+public:
+    struct Group
+    {
+        String name;
+        List<String> stateNames;
+        int activeStateIndex;   // -1: no-state
+    };
+
+    void registerState(const StringRef& groupName, const StringRef& stateName)
+    {
+        auto group = m_groups.findIf([&](const Group& g) { return g.name == groupName; });
+        if (group) {
+            group->stateNames.add(stateName);
+        }
+        else {
+            m_groups.add(Group{ groupName, { stateName }, -1 });
+        }
+    }
+
+    void gotoState(const StringRef& stateName)
+    {
+        for (auto& g : m_groups) {
+            for (int i = 0; i < g.stateNames.size(); i++) {
+                if (g.stateNames[i] == stateName) {
+                    if (g.activeStateIndex != i) {
+                        g.activeStateIndex = i;
+                        m_dirty = true;
+                    }
+                }
+            }
+        }
+    }
+
+    detail::UIStyleInstance* resolveStyle(const UIStyleContext* styleContext, const ln::String& className);
+
+LN_CONSTRUCT_ACCESS:
+    UIVisualStateManager();
+    void init();
+
+private:
+    bool isDirty() const { return m_dirty; }
+    void clearDirty() { m_dirty = false; }
+
+    List<Group> m_groups;
+    Ref<detail::UIStyleInstance> m_resolvedStyle;
+    bool m_dirty;
+
+    //friend class UIElement;
+};
+
+
+
 } // namespace ln
 

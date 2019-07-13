@@ -411,11 +411,16 @@ void UIElement::onRender(UIRenderingContext* context)
 
 void UIElement::updateStyleHierarchical(const UIStyleContext* styleContext, const detail::UIStyleInstance* parentFinalStyle)
 {
-    // TODO:
-    auto sc = styleContext->findStyleClass(className());
-    auto s = sc->findStateStyle(u"");
+    detail::UIStyleInstance* resolvedStyle;
+    if (m_visualStateManager) {
+        resolvedStyle = m_visualStateManager->resolveStyle(styleContext, className());
+    }
+    else {
+        auto sc = styleContext->findResolvedStyleClass(className());
+        resolvedStyle = sc->style();
+    }
 
-	detail::UIStyleInstance::updateStyleDataHelper(m_localStyle, parentFinalStyle, s, m_finalStyle);
+	detail::UIStyleInstance::updateStyleDataHelper(m_localStyle, parentFinalStyle, resolvedStyle, m_finalStyle);
 
 	onUpdateStyle(styleContext, m_finalStyle);
 
@@ -536,6 +541,14 @@ void UIElement::raiseEventInternal(UIEventArgs* e)
     //{
     //    m_visualParent->raiseEventInternal(e);
     //}
+}
+
+UIVisualStateManager* UIElement::getVisualStateManager()
+{
+    if (!m_visualStateManager) {
+        m_visualStateManager = makeObject<UIVisualStateManager>();
+    }
+    return m_visualStateManager;
 }
 
 } // namespace ln

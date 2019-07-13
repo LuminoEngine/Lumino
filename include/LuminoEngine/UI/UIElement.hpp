@@ -10,6 +10,7 @@ class UIContext;
 class UIEventArgs;
 class UIStyle;
 class UIStyleContext;
+class UIVisualStateManager;
 class UIContainerElement;
 class UIFrameWindow;
 enum class BlendMode : uint8_t;
@@ -306,6 +307,9 @@ public:	// TODO: internal
     UIContainerElement* logicalParent() const { return m_logicalParent; }
     void removeFromLogicalParent();
 
+
+    UIVisualStateManager* getVisualStateManager();
+
 private:
     void raiseEventInternal(UIEventArgs* e);
 
@@ -316,6 +320,7 @@ private:
     UIElement* m_visualParent;
     UIContainerElement* m_logicalParent;
 
+    Ref<UIVisualStateManager> m_visualStateManager;
     Ref<UIStyle> m_localStyle;
 	Ref<detail::UIStyleInstance> m_finalStyle;
     int m_renderPriority;

@@ -132,6 +132,12 @@ void UIContext::setupDefaultStyle()
             auto s = c->style();
             s->backgroundColor = Color::Red;
         }
+        // UIButton:Pressed
+        {
+            auto s = makeObject<UIStyle>();
+            s->backgroundColor = Color::Blue;
+            c->addStateStyle(u"Pressed", s);
+        }
     }
 
     m_styleContext->addStyleSheet(sheet);
