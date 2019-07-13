@@ -684,24 +684,40 @@ void UIStyleClassInstance::mergeFrom(const UIStyleClass* other)
     m_style->mergeFrom(other->m_style);
 
     // Merge visual-state style
-    for (auto& slot : other->m_visualStateStyles) {
-        auto style = findStateStyle(slot.name);
-        if (!style) {
-            m_visualStateStyles.add({ slot.name, makeRef<UIStyleInstance>() });
-            style = m_visualStateStyles.back().style;
+    for (auto& otherSlot : other->m_visualStateStyles) {
+        auto slot = m_visualStateStyles.findIf([&](auto& x) { return String::compare(x.name, otherSlot.name, CaseSensitivity::CaseInsensitive); });
+        if (slot) {
+            slot->style->mergeFrom(otherSlot.style);
         }
-        style->mergeFrom(slot.style);
+        else {
+            auto ptr = makeRef<UIStyleInstance>();
+            m_visualStateStyles.add({ otherSlot.name, ptr });
+            ptr->mergeFrom(otherSlot.style);
+        }
     }
 
     // Merge sub-element style
-    for (auto& slot : other->m_subElements) {
-        auto style = findSubElementStyle(slot.name);
-        if (!style) {
-            m_subElements.add({ slot.name, makeRef<UIStyleInstance>() });
-            style = m_subElements.back().style;
+    for (auto& otherSlot : other->m_subElements) {
+        auto slot = m_visualStateStyles.findIf([&](auto& x) { return String::compare(x.name, otherSlot.name, CaseSensitivity::CaseInsensitive); });
+        if (slot) {
+            slot->style->mergeFrom(otherSlot.style);
         }
-        style->mergeFrom(slot.style);
+        else {
+            auto ptr = makeRef<UIStyleInstance>();
+            m_subElements.add({ otherSlot.name, ptr });
+            ptr->mergeFrom(otherSlot.style);
+        }
     }
+
+
+    //for (auto& slot : other->m_subElements) {
+    //    auto style = findSubElementStyle(slot.name);
+    //    if (!style) {
+    //        m_subElements.add({ slot.name, makeRef<UIStyleInstance>() });
+    //        style = m_subElements.back().style;
+    //    }
+    //    style->mergeFrom(slot.style);
+    //}
 }
 
 } // namespace detail
