@@ -88,11 +88,39 @@ void ShapesRendererCommandList::addDrawBoxBackground(LinearAllocator* allocator,
 		tail->next = cmd;
 	}
 	tail = cmd;
-
 	cmd->transform = transform;
+
 	cmd->rect = rect;
 	cmd->cornerRadius = cornerRadius;
 	cmd->color = color;
+}
+
+void ShapesRendererCommandList::addDrawBoxBorder(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const Thickness& thickness, const CornerRadius& cornerRadius, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const Color& shadowColor, float shadowBlur, float shadowWidth, bool shadowInset, bool borderInset)
+{
+    auto* cmd = reinterpret_cast<DrawBoxBorderCommand*>(allocator->allocate(sizeof(DrawBoxBorderCommand)));
+    cmd->type = Cmd_DrawBoxBorder;
+    cmd->next = nullptr;
+    if (!head) {
+        head = cmd;
+    }
+    if (tail) {
+        tail->next = cmd;
+    }
+    tail = cmd;
+    cmd->transform = transform;
+
+    cmd->rect = rect;
+    cmd->thickness = thickness;
+    cmd->cornerRadius = cornerRadius;
+    cmd->leftColor = leftColor;
+    cmd->topColor = topColor;
+    cmd->rightColor = rightColor;
+    cmd->bottomColor = bottomColor;
+    cmd->shadowColor = shadowColor;
+    cmd->shadowBlur = shadowBlur;
+    cmd->shadowWidth = shadowWidth;
+    cmd->shadowInset = shadowInset;
+    cmd->borderInset = borderInset;
 }
 
 //==============================================================================
@@ -309,7 +337,7 @@ void InternalShapesRenderer::extractBasePoints(ShapesRendererCommandList::ListNo
 		//------------------------------------------------------------------
 		case ShapesRendererCommandList::Cmd_DrawBoxBorderLine:
 		{
-			auto* cmd = reinterpret_cast<ShapesRendererCommandList::DrawBoxBorderCommand*> (command);
+			auto* cmd = reinterpret_cast<ShapesRendererCommandList::DrawBoxBorderLineCommand*> (command);
 
 			BorderComponent components[4];
 			makeBasePointsAndBorderComponent(

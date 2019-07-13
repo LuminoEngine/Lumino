@@ -52,6 +52,10 @@ void UILayoutElement::measureLayout(const Size& availableSize)
 
 	Size desiredSize = measureOverride(localAvailableSize);
 
+    // apply border size
+    desiredSize.width += m_finalStyle->borderThickness.width();
+    desiredSize.height += m_finalStyle->borderThickness.height();
+
 	// Margin を考慮する
 	desiredSize.width += spaceWidth;
 	desiredSize.height += spaceHeight;
@@ -105,6 +109,10 @@ void UILayoutElement::arrangeLayout(const Rect& localSlotRect)
 	arrangeRect.width = std::max(arrangeRect.width - marginWidth, 0.0f);
 	arrangeRect.height = std::max(arrangeRect.height - marginHeight, 0.0f);
 
+    // apply border size
+    arrangeRect.width -= m_finalStyle->borderThickness.width();
+    arrangeRect.height -= m_finalStyle->borderThickness.height();
+
 	// Padding を考慮する
 	//const Thickness& padding = getLayoutPadding();
 
@@ -114,11 +122,12 @@ void UILayoutElement::arrangeLayout(const Rect& localSlotRect)
 	//	std::max(arrangeRect.height - padding.getHeight(), 0.0f));
 	Size finalContentAreaSize = arrangeOverride(contentAreaSize);
 
+    
 
 	Rect finalLocalRect;
 	//Rect finalContentRect;
-	finalLocalRect.x = localSlotRect.x + /*finalLocalRect.x + */margin.left + arrangeRect.x;
-	finalLocalRect.y = localSlotRect.y + /*finalLocalRect.y + */margin.top + arrangeRect.y;
+	finalLocalRect.x = localSlotRect.x + /*finalLocalRect.x + */margin.left + arrangeRect.x + m_finalStyle->borderThickness.left;
+	finalLocalRect.y = localSlotRect.y + /*finalLocalRect.y + */margin.top + arrangeRect.y + m_finalStyle->borderThickness.top;
     finalLocalRect.width = finalContentAreaSize.width;// +padding.getWidth();
 	finalLocalRect.height = finalContentAreaSize.height;// + padding.getHeight();
 	//finalContentRect.x = finalRenderRect.x + padding.left;

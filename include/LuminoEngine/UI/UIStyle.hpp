@@ -378,6 +378,15 @@ public:
     Rect backgroundImageRect;
     Thickness backgroundImageBorder;
 
+    // border
+    Thickness borderThickness = Thickness::Zero;
+    CornerRadius cornerRadius = CornerRadius(0, 0, 0, 0);
+    Color 		leftBorderColor = Color::Gray;
+    Color 		topBorderColor = Color::Gray;
+    Color 		rightBorderColor = Color::Gray;
+    Color 		bottomBorderColor = Color::Gray;
+    BorderDirection borderDirection = BorderDirection::Outside;
+
     // text
     Color textColor;
     String fontFamily;

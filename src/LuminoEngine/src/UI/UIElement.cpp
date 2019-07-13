@@ -387,7 +387,10 @@ void UIElement::onUpdateStyle(const UIStyleContext* styleContext, const detail::
 
 Size UIElement::measureOverride(const Size& constraint)
 {
-	return UILayoutElement::measureOverride(constraint);
+	auto size = UILayoutElement::measureOverride(constraint);
+    //size.width += m_finalStyle->borderThickness.width();
+    //size.height += m_finalStyle->borderThickness.height();
+    return size;
 }
 
 Size UIElement::arrangeOverride(const Size& finalSize)
@@ -489,7 +492,7 @@ void UIElement::render(UIRenderingContext* context)
 				//auto tex = makeObject<Texture2D>(u"D:/Proj/LN/HC1/Assets/Windowskin/window.png");
 				//auto mat = Material::create(tex);
 				context->setMaterial(m_finalStyle->backgroundMaterial);
-                context->drawBoxBackground(Rect(0, 0, m_finalGlobalRect.getSize()), m_finalStyle->backgroundImageBorder, CornerRadius(), m_finalStyle->backgroundDrawMode, m_finalStyle->backgroundImageRect, m_finalStyle->backgroundColor);
+                context->drawBoxBackground(Rect(0, 0, m_finalGlobalRect.getSize()), m_finalStyle->borderThickness, CornerRadius(), m_finalStyle->backgroundDrawMode, m_finalStyle->backgroundImageRect, m_finalStyle->backgroundColor);
 				//context->drawBoxBackground(finalGlobalRect(), Thickness(16), CornerRadius(), BrushImageDrawMode::BorderFrame, Rect(64, 0, 64, 64), m_finalStyle->backgroundColor);
 			}
 		}

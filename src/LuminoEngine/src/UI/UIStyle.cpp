@@ -162,6 +162,15 @@ void UIStyle::mergeFrom(const UIStyle* other)
     if (other->backgroundImageRect.hasValue()) backgroundImageRect = other->backgroundImageRect.get();
     if (other->backgroundImageBorder.hasValue()) backgroundImageBorder = other->backgroundImageBorder.get();
 
+    // border
+    if (other->borderThickness.hasValue()) borderThickness = other->borderThickness.get();
+    if (other->cornerRadius.hasValue()) cornerRadius = other->cornerRadius.get();
+    if (other->leftBorderColor.hasValue()) leftBorderColor = other->leftBorderColor.get();
+    if (other->topBorderColor.hasValue()) topBorderColor = other->topBorderColor.get();
+    if (other->rightBorderColor.hasValue()) rightBorderColor = other->rightBorderColor.get();
+    if (other->bottomBorderColor.hasValue()) bottomBorderColor = other->bottomBorderColor.get();
+    if (other->borderDirection.hasValue()) borderDirection = other->borderDirection.get();
+
     // text
     if (other->textColor.hasValue()) textColor = other->textColor.get();
     if (other->fontFamily.hasValue()) fontFamily = other->fontFamily.get();
@@ -205,6 +214,15 @@ void UIStyle::copyFrom(const UIStyle* other)
     backgroundShader = other->backgroundShader;
     backgroundImageRect = other->backgroundImageRect;
     backgroundImageBorder = other->backgroundImageBorder;
+
+    // border
+    borderThickness = borderThickness;
+    cornerRadius = cornerRadius;
+    leftBorderColor = leftBorderColor;
+    topBorderColor = topBorderColor;
+    rightBorderColor = rightBorderColor;
+    bottomBorderColor = bottomBorderColor;
+    borderDirection = borderDirection;
 
     // text
     textColor = other->textColor;
@@ -495,6 +513,15 @@ void UIStyleInstance::mergeFrom(const UIStyle* other)
     if (other->backgroundImageRect.hasValue()) backgroundImageRect = other->backgroundImageRect.get();
     if (other->backgroundImageBorder.hasValue()) backgroundImageBorder = other->backgroundImageBorder.get();
 
+    // border
+    if (other->borderThickness.hasValue()) borderThickness = other->borderThickness.get();
+    if (other->cornerRadius.hasValue()) cornerRadius = other->cornerRadius.get();
+    if (other->leftBorderColor.hasValue()) leftBorderColor = other->leftBorderColor.get();
+    if (other->topBorderColor.hasValue()) topBorderColor = other->topBorderColor.get();
+    if (other->rightBorderColor.hasValue()) rightBorderColor = other->rightBorderColor.get();
+    if (other->bottomBorderColor.hasValue()) bottomBorderColor = other->bottomBorderColor.get();
+    if (other->borderDirection.hasValue()) borderDirection = other->borderDirection.get();
+
     // text
     if (other->textColor.hasValue()) textColor = other->textColor.get();
     if (other->fontFamily.hasValue()) fontFamily = other->fontFamily.get();
@@ -538,6 +565,15 @@ void UIStyleInstance::copyFrom(const UIStyleInstance* other)
     backgroundShader = other->backgroundShader;
     backgroundImageRect = other->backgroundImageRect;
     backgroundImageBorder = other->backgroundImageBorder;
+
+    // border
+    borderThickness = borderThickness;
+    cornerRadius = cornerRadius;
+    leftBorderColor = leftBorderColor;
+    topBorderColor = topBorderColor;
+    rightBorderColor = rightBorderColor;
+    bottomBorderColor = bottomBorderColor;
+    borderDirection = borderDirection;
 
     // text
     textColor = other->textColor;
@@ -603,6 +639,18 @@ void UIStyleInstance::updateStyleDataHelper(UIStyle* localStyle, const detail::U
         outStyleData->backgroundImageRect = localStyle->backgroundImageRect.getOrDefault(defaultStyle->backgroundImageRect);
         outStyleData->backgroundImageBorder = localStyle->backgroundImageBorder.getOrDefault(defaultStyle->backgroundImageBorder);
 	}
+
+
+    // border
+    {
+        outStyleData->borderThickness = localStyle->borderThickness.getOrDefault(defaultStyle->borderThickness);
+        outStyleData->cornerRadius = localStyle->cornerRadius.getOrDefault(defaultStyle->cornerRadius);
+        outStyleData->leftBorderColor = localStyle->leftBorderColor.getOrDefault(defaultStyle->leftBorderColor);
+        outStyleData->topBorderColor = localStyle->topBorderColor.getOrDefault(defaultStyle->topBorderColor);
+        outStyleData->rightBorderColor = localStyle->rightBorderColor.getOrDefault(defaultStyle->rightBorderColor);
+        outStyleData->bottomBorderColor = localStyle->bottomBorderColor.getOrDefault(defaultStyle->bottomBorderColor);
+        outStyleData->borderDirection = localStyle->borderDirection.getOrDefault(defaultStyle->borderDirection);
+    }
 
 	// text
 	{
