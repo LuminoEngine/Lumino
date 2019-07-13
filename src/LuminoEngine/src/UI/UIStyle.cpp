@@ -383,6 +383,7 @@ void UIStyleContext::build()
 
                 {
                     auto ptr2 = makeRef<detail::UIStyleClassInstance>();
+                    ptr2->m_style->setupDefault();
                     ptr2->mergeFrom(pair.second);
                     m_resolvedClasses.insert({ pair.first, ptr2 });
                 }
