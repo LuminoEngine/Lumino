@@ -30,6 +30,7 @@ protected:
 	virtual void onUpdateFrame(float elapsedSeconds) override;
 	virtual void onUpdateUIStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
 	virtual void onUpdateUILayout(const Rect& finalGlobalRect) override;
+    virtual UIElement* onLookupMouseHoverElement(const Point& framewindowClientPoint) override;
 
 private:
 	Ref<UIRenderingContext> m_renderingContext;

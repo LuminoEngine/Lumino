@@ -51,6 +51,11 @@ void UIRenderView::onUpdateUILayout(const Rect& finalGlobalRect)
     m_rootElement->updateFinalLayoutHierarchical(finalGlobalRect);
 }
 
+UIElement* UIRenderView::onLookupMouseHoverElement(const Point& framewindowClientPoint)
+{
+    return m_rootElement->lookupMouseHoverElement(framewindowClientPoint);
+}
+
 void UIRenderView::render(GraphicsContext* graphicsContext)
 {
     if (m_rootElement)

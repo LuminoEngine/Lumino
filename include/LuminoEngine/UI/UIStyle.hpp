@@ -232,6 +232,14 @@ public:
     detail::UIStyleAttribute<Color> blendColor;
     detail::UIStyleAttribute<ColorTone> tone;
 
+    void setBorderColor(const Color& color)
+    {
+        leftBorderColor = color;
+        topBorderColor = color;
+        rightBorderColor = color;
+        bottomBorderColor = color;
+    }
+
 public:	// TODO: internal
 	void setupDefault();
     void mergeFrom(const UIStyle* other);
@@ -466,13 +474,20 @@ public:
     void gotoState(const StringRef& stateName)
     {
         for (auto& g : m_groups) {
+            bool stateFound = false;
             for (int i = 0; i < g.stateNames.size(); i++) {
                 if (g.stateNames[i] == stateName) {
                     if (g.activeStateIndex != i) {
                         g.activeStateIndex = i;
                         m_dirty = true;
+                        stateFound = true;
                     }
                 }
+            }
+            if (!stateFound) {
+                // use default
+                g.activeStateIndex = -1;
+                m_dirty = true;
             }
         }
     }

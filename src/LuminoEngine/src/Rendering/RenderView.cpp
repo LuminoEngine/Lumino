@@ -89,6 +89,11 @@ void RenderView::onUpdateUILayout(const Rect& finalGlobalRect)
 {
 }
 
+UIElement* RenderView::onLookupMouseHoverElement(const Point& framewindowClientPoint)
+{
+    return nullptr;
+}
+
 void RenderView::onRoutedEvent(UIEventArgs* e)
 {
     m_onUIEvent.raise(e);

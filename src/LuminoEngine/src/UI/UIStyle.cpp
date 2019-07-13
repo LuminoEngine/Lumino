@@ -708,16 +708,6 @@ void UIStyleClassInstance::mergeFrom(const UIStyleClass* other)
             ptr->mergeFrom(otherSlot.style);
         }
     }
-
-
-    //for (auto& slot : other->m_subElements) {
-    //    auto style = findSubElementStyle(slot.name);
-    //    if (!style) {
-    //        m_subElements.add({ slot.name, makeRef<UIStyleInstance>() });
-    //        style = m_subElements.back().style;
-    //    }
-    //    style->mergeFrom(slot.style);
-    //}
 }
 
 } // namespace detail

@@ -18,6 +18,7 @@ class UIFrameWindow;
 
 namespace detail {
    
+// マウスキャプチャは inject する側でとっておくこと。UI モジュール内ではキャプチャの管理は行わない。
 class UIInputInjector
     : public RefObject
 {

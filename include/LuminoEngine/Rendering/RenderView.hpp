@@ -65,6 +65,7 @@ public: // TODO: protected
 	virtual void onUpdateFrame(float elapsedSeconds);
 	virtual void onUpdateUIStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle);
 	virtual void onUpdateUILayout(const Rect& finalGlobalRect);
+    virtual UIElement* onLookupMouseHoverElement(const Point& framewindowClientPoint);
     virtual void onRoutedEvent(UIEventArgs* e);
 
 LN_INTERNAL_ACCESS:

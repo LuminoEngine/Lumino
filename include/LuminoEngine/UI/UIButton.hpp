@@ -11,9 +11,11 @@ public:
 	void init();
 
 protected:
-    virtual const String& className() const { static String name = u"UIButton"; return name; }
+    virtual const String& className() const  override { static String name = u"UIButton"; return name; }
+    virtual void onRoutedEvent(UIEventArgs* e) override;
 
 private:
+    bool m_isPressed;
 };
 
 } // namespace ln

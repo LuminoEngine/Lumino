@@ -210,7 +210,7 @@ int main(int argc, char** argv)
 
 
     Engine::mainCamera()->addComponent(makeObject<CameraOrbitControlComponent>());
-    Engine::mainCamera()->setBackgroundColor(Color::Gray);
+    Engine::mainCamera()->setBackgroundColor(Color::White);
 
 
     auto texture1 = makeObject<Texture2D>(u"D:/tmp/110220c_as019.png");
