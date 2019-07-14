@@ -77,7 +77,7 @@ public:
 	enum CommandType
 	{
 		Cmd_DrawBoxBackground,
-		Cmd_DrawBoxBorder,
+		//Cmd_DrawBoxBorder,
 		Cmd_DrawBoxBorderLine,
 		Cmd_DrawBoxShadow,
 	};
@@ -96,21 +96,21 @@ public:
 		Color color;
 	};
 
-	struct DrawBoxBorderCommand : public ListNode
-	{
-		Rect rect;
-		Thickness thickness;
-		CornerRadius cornerRadius;
-		Color leftColor;
-		Color topColor;
-		Color rightColor;
-		Color bottomColor;
-		Color shadowColor;
-		float shadowBlur;
-		float shadowWidth;
-		bool shadowInset;
-		bool borderInset;
-	};
+	//struct DrawBoxBorderCommand : public ListNode
+	//{
+	//	Rect rect;
+	//	Thickness thickness;
+	//	CornerRadius cornerRadius;
+	//	Color leftColor;
+	//	Color topColor;
+	//	Color rightColor;
+	//	Color bottomColor;
+	//	Color shadowColor;
+	//	float shadowBlur;
+	//	float shadowWidth;
+	//	bool shadowInset;
+	//	bool borderInset;
+	//};
 	
 	struct DrawBoxBorderLineCommand : public ListNode
 	{
@@ -135,8 +135,8 @@ public:
 	};
 
 	void addDrawBoxBackground(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const CornerRadius& cornerRadius, const Color& color);
-	void addDrawBoxBorder(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const Thickness& thickness, const CornerRadius& cornerRadius, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const Color& shadowColor, float shadowBlur, float shadowWidth, bool shadowInset, bool borderInset);
-	//void drawBoxBorderLine(LinearAllocator* allocator, const Rect& rect, const Thickness& thickness, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const CornerRadius& cornerRadius, bool borderInset);
+	//void addDrawBoxBorder(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const Thickness& thickness, const CornerRadius& cornerRadius, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const Color& shadowColor, float shadowBlur, float shadowWidth, bool shadowInset, bool borderInset);
+	void drawBoxBorderLine(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const Thickness& thickness, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const CornerRadius& cornerRadius, bool borderInset);
 	//void addDrawBoxShadow(LinearAllocator* allocator, const Rect& rect, const CornerRadius& cornerRadius, const Color& color, float blur, float width, bool inset);
 
 	ListNode* head = nullptr;

@@ -23,7 +23,7 @@ void UIRenderingContext::drawBoxBackground(const Rect& rect, const Thickness& bo
 {
     //m_builder->setMaterial(material);
 
-    if (!m_builder->material()->mainTexture()) {
+    if (m_builder->material() && !m_builder->material()->mainTexture()) {
         mode = BrushImageDrawMode::Image;
     }
 
@@ -37,7 +37,7 @@ void UIRenderingContext::drawBoxBackground(const Rect& rect, const Thickness& bo
             element->commandList.addDrawBoxBackground(m_builder->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, cornerRadius, color);
         }
         else {
-            element->commandList.addDrawBoxBorder(m_builder->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, borderThickness, cornerRadius, Color::Gray, Color::Gray, Color::Gray, Color::Gray, Color::Gray, 0, 0, false, false);
+            //element->commandList.addDrawBoxBorder(m_builder->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, borderThickness, cornerRadius, Color::Gray, Color::Gray, Color::Gray, Color::Gray, Color::Gray, 0, 0, false, false);
         }
 	}
 	else
@@ -53,6 +53,18 @@ void UIRenderingContext::drawBoxBackground(const Rect& rect, const Thickness& bo
 		element->srcRect = textureSourceRect;
 		element->wrapMode = BrushWrapMode::Stretch;
 	}
+
+    // TODO: bounding box
+}
+
+void UIRenderingContext::drawBoxBorderLine(const Rect& rect, const Thickness& thickness, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const CornerRadius& cornerRadius, bool borderInset)
+{
+    auto* element = m_builder->addNewDrawElement<detail::DrawShapesElement>(
+        m_manager->shapesRenderFeature(),
+        m_builder->shapesRenderFeatureStageParameters());
+
+    element->commandList.drawBoxBorderLine(m_builder->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, thickness, leftColor, topColor, rightColor, bottomColor, cornerRadius, borderInset);
+
 
     // TODO: bounding box
 }

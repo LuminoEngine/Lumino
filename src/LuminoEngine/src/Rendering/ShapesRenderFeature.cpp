@@ -17,7 +17,7 @@
 1. ベースポイント (m_basePoints) を作る
 2. ベースポイントを元に、アウトラインポイント (m_outlinePoints) と Path を作る
 3. アウトラインポイントと Path を元に、頂点バッファ (m_vertexCache) とインデックスバッファ (m_indexCache) を作る
-構築された書くバッファは Flush で描画された後クリアされる。
+構築された各バッファは Flush で描画された後クリアされる。
 Flush までの間にたくさんシェイプを書くときは、書くバッファにどんどんたまっていく。
 
 なお、(歴史的な理由で) 上記フローではシェイプを反時計回りをベースに構築する。
@@ -95,10 +95,38 @@ void ShapesRendererCommandList::addDrawBoxBackground(LinearAllocator* allocator,
 	cmd->color = color;
 }
 
-void ShapesRendererCommandList::addDrawBoxBorder(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const Thickness& thickness, const CornerRadius& cornerRadius, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const Color& shadowColor, float shadowBlur, float shadowWidth, bool shadowInset, bool borderInset)
+//void ShapesRendererCommandList::addDrawBoxBorder(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const Thickness& thickness, const CornerRadius& cornerRadius, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const Color& shadowColor, float shadowBlur, float shadowWidth, bool shadowInset, bool borderInset)
+//{
+//    auto* cmd = reinterpret_cast<DrawBoxBorderCommand*>(allocator->allocate(sizeof(DrawBoxBorderCommand)));
+//    cmd->type = Cmd_DrawBoxBorder;
+//    cmd->next = nullptr;
+//    if (!head) {
+//        head = cmd;
+//    }
+//    if (tail) {
+//        tail->next = cmd;
+//    }
+//    tail = cmd;
+//    cmd->transform = transform;
+//
+//    cmd->rect = rect;
+//    cmd->thickness = thickness;
+//    cmd->cornerRadius = cornerRadius;
+//    cmd->leftColor = leftColor;
+//    cmd->topColor = topColor;
+//    cmd->rightColor = rightColor;
+//    cmd->bottomColor = bottomColor;
+//    cmd->shadowColor = shadowColor;
+//    cmd->shadowBlur = shadowBlur;
+//    cmd->shadowWidth = shadowWidth;
+//    cmd->shadowInset = shadowInset;
+//    cmd->borderInset = borderInset;
+//}
+
+void ShapesRendererCommandList::drawBoxBorderLine(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const Thickness& thickness, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const CornerRadius& cornerRadius, bool borderInset)
 {
-    auto* cmd = reinterpret_cast<DrawBoxBorderCommand*>(allocator->allocate(sizeof(DrawBoxBorderCommand)));
-    cmd->type = Cmd_DrawBoxBorder;
+    auto* cmd = reinterpret_cast<DrawBoxBorderLineCommand*>(allocator->allocate(sizeof(DrawBoxBorderLineCommand)));
+    cmd->type = Cmd_DrawBoxBorderLine;
     cmd->next = nullptr;
     if (!head) {
         head = cmd;
@@ -116,10 +144,6 @@ void ShapesRendererCommandList::addDrawBoxBorder(LinearAllocator* allocator, con
     cmd->topColor = topColor;
     cmd->rightColor = rightColor;
     cmd->bottomColor = bottomColor;
-    cmd->shadowColor = shadowColor;
-    cmd->shadowBlur = shadowBlur;
-    cmd->shadowWidth = shadowWidth;
-    cmd->shadowInset = shadowInset;
     cmd->borderInset = borderInset;
 }
 
@@ -522,6 +546,7 @@ void InternalShapesRenderer::extractBasePoints(ShapesRendererCommandList::ListNo
 			break;
 		}
 
+#if 0
 		case ShapesRendererCommandList::Cmd_DrawBoxBorder:
 		{
 			auto* cmd = reinterpret_cast<ShapesRendererCommandList::DrawBoxBorderCommand*>(command);
@@ -828,6 +853,7 @@ void InternalShapesRenderer::extractBasePoints(ShapesRendererCommandList::ListNo
 			}
 			break;
 		}
+#endif
 		default:
 			LN_UNREACHABLE();
 			break;
