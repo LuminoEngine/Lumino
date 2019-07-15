@@ -217,10 +217,15 @@ int main(int argc, char** argv)
     auto sprite1 = Sprite::create(texture1, 3, 3);
 
 
-    auto button1 = makeObject<UIButton>();
-    button1->setWidth(200);
-    button1->setHeight(100);
+    //auto button1 = makeObject<UIButton>();
+    //button1->setWidth(200);
+    //button1->setHeight(100);
     //button1->setBackgroundColor(Color::Green);
+
+
+    auto text1 = UITextBlock::create();
+    text1->setText(u"ABCHIJabchij");
+    text1->setTextColor(Color::Black);
 
 
 #if 0

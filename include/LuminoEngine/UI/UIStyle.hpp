@@ -53,6 +53,7 @@ public:
     }
     const T& get() const
     {
+        assert(hasValue());
         return m_value;
     }
     const T& getOrDefault(const T& defaultValue) const
@@ -226,7 +227,6 @@ public:
 	// render effects
     detail::UIStyleAttribute<bool> visible;
     detail::UIStyleAttribute<BlendMode> blendMode;
-
     detail::UIStyleAttribute<float> opacity;
     detail::UIStyleAttribute<Color> colorScale;
     detail::UIStyleAttribute<Color> blendColor;
@@ -352,7 +352,7 @@ class UIStyleInstance
     : public RefObject
 {
 public:
-    UIStyle* sourceLocalStyle = nullptr;	// 以下のデータの生成元となったローカスのスタイル
+    //UIStyle* sourceLocalStyle = nullptr;	// 以下のデータの生成元となったローカスのスタイル
 
     // layout
     Thickness margin;
@@ -416,7 +416,9 @@ public:
     void mergeFrom(const UIStyle* other);
     void copyFrom(const UIStyleInstance* other);
 
-    static void updateStyleDataHelper(UIStyle* localStyle, const detail::UIStyleInstance* parentStyleData, const detail::UIStyleInstance* defaultStyle, detail::UIStyleInstance* outStyleData);
+    void makeRenderObjects();
+
+    static void updateStyleDataHelper(UIStyle* localStyle, const detail::UIStyleInstance* parentStyleData, const UIStyle* combinedStyle, detail::UIStyleInstance* outStyleData);
 
 LN_CONSTRUCT_ACCESS:
 
@@ -501,6 +503,7 @@ public:
         }
     }
 
+    UIStyle* combineStyle(const UIStyleContext* styleContext, const ln::String& className);
     detail::UIStyleInstance* resolveStyle(const UIStyleContext* styleContext, const ln::String& className);
 
 LN_CONSTRUCT_ACCESS:
@@ -512,6 +515,7 @@ private:
     void clearDirty() { m_dirty = false; }
 
     List<Group> m_groups;
+    Ref<UIStyle> m_combinedStyle;
     Ref<detail::UIStyleInstance> m_resolvedStyle;
     bool m_dirty;
 

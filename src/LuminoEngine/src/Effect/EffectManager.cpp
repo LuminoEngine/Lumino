@@ -98,7 +98,6 @@ void EffectManager::init(const Settings& settings)
     g_handle = g_manager->Play(g_effect, 0, 0, 0);
 #endif
 
-
     LN_LOG_DEBUG << "EffectManager Initialization ended.";
 }
 

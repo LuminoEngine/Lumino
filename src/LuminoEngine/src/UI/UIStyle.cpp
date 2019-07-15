@@ -98,36 +98,49 @@ void UIStyle::init()
 
 void UIStyle::setupDefault()
 {
+    // layout
 	margin = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
 	padding = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
-
-    // Alignment は HTML のデフォルトに合わせてみる
-	horizontalAlignment = HAlignment::Left;
+	horizontalAlignment = HAlignment::Left;  // Alignment は HTML のデフォルトに合わせてみる
 	verticalAlignment = VAlignment::Top;
-
 	minWidth = Math::NaN;
 	minHeight = Math::NaN;
 	maxWidth = Math::NaN;
 	maxHeight = Math::NaN;
 
+    // layout transform
 	position = Vector3::Zero;
 	rotation = Quaternion::Identity;
 	scale = Vector3::Ones;
 	centerPoint = Vector3::Zero;
 
+    // background
     backgroundDrawMode = BrushImageDrawMode::Image;
+    backgroundColor = Color::Transparency;
+    backgroundImage = nullptr;
+    backgroundShader = nullptr;
     backgroundImageRect = Rect::Zero;
     backgroundImageBorder = Thickness::Zero;
 
+    // border
+    borderThickness = Thickness::Zero;
+    cornerRadius = CornerRadius(0, 0, 0, 0);
+    leftBorderColor = Color::Black;
+    topBorderColor = Color::Black;
+    rightBorderColor = Color::Black;
+    bottomBorderColor = Color::Black;
+    borderDirection = BorderDirection::Outside;
+
+    // text
 	textColor = Color::Black;
 	fontFamily = String::Empty;
 	fontSize = 20.0f;	// WPF default は 12 だが、それだとデスクトップアプリ向けなので少し小さい。Lumino としては 20 をデフォルトとする。
 	fontWeight = UIFontWeight::Normal;
 	fontStyle = UIFontStyle::Normal;
 
+    // render effects
 	visible = true;
 	blendMode = BlendMode::Alpha;
-
 	opacity = 1.0f;
 	colorScale = Color(1.0f, 1.0f, 1.0f, 1.0f);
 	blendColor = Color(0.0f, 0.0f, 0.0f, 0.0f);
@@ -591,70 +604,97 @@ void UIStyleInstance::copyFrom(const UIStyleInstance* other)
     tone = other->tone;
 }
 
-void UIStyleInstance::updateStyleDataHelper(UIStyle* localStyle, const detail::UIStyleInstance* parentStyleData, const detail::UIStyleInstance* defaultStyle, detail::UIStyleInstance* outStyleData)
+void UIStyleInstance::makeRenderObjects()
 {
-	const UIStyle* parentStyle = (parentStyleData) ? parentStyleData->sourceLocalStyle : nullptr;
-	if (parentStyle)
-	{
-		// text 関係は継承する
-		localStyle->textColor.inherit(parentStyle->textColor);
-		localStyle->fontFamily.inherit(parentStyle->fontFamily);
-		localStyle->fontSize.inherit(parentStyle->fontSize);
-		localStyle->fontWeight.inherit(parentStyle->fontWeight);
-		localStyle->fontStyle.inherit(parentStyle->fontStyle);
-	}
 
-	outStyleData->sourceLocalStyle = localStyle;
+}
+
+void UIStyleInstance::updateStyleDataHelper(UIStyle* localStyle, const detail::UIStyleInstance* parentStyleData, const UIStyle* combinedStyle, detail::UIStyleInstance* outStyleData)
+{
+	//const UIStyle* parentStyle = (parentStyleData) ? parentStyleData->sourceLocalStyle : nullptr;
+	//if (parentStyle)
+	//{
+	//	// text 関係は継承する
+	//	localStyle->textColor.inherit(parentStyle->textColor);
+	//	localStyle->fontFamily.inherit(parentStyle->fontFamily);
+	//	localStyle->fontSize.inherit(parentStyle->fontSize);
+	//	localStyle->fontWeight.inherit(parentStyle->fontWeight);
+	//	localStyle->fontStyle.inherit(parentStyle->fontStyle);
+	//}
+
+    // inheritance
+    {
+        if (parentStyleData) {
+            // 1. Local style
+            // 2. Style sheet
+            // 3. Parent
+            outStyleData->textColor = localStyle->textColor.getOrDefault(combinedStyle->textColor.getOrDefault(parentStyleData->textColor));
+            outStyleData->fontFamily = localStyle->fontFamily.getOrDefault(combinedStyle->fontFamily.getOrDefault(parentStyleData->fontFamily));
+            outStyleData->fontSize = localStyle->fontSize.getOrDefault(combinedStyle->fontSize.getOrDefault(parentStyleData->fontSize));
+            outStyleData->fontWeight = localStyle->fontWeight.getOrDefault(combinedStyle->fontWeight.getOrDefault(parentStyleData->fontWeight));
+            outStyleData->fontStyle = localStyle->fontStyle.getOrDefault(combinedStyle->fontStyle.getOrDefault(parentStyleData->fontStyle));
+        }
+        else {
+            // for root default style
+            outStyleData->textColor = localStyle->textColor.getOrDefault(combinedStyle->textColor.get());
+            outStyleData->fontFamily = localStyle->fontFamily.getOrDefault(combinedStyle->fontFamily.get());
+            outStyleData->fontSize = localStyle->fontSize.getOrDefault(combinedStyle->fontSize.get());
+            outStyleData->fontWeight = localStyle->fontWeight.getOrDefault(combinedStyle->fontWeight.get());
+            outStyleData->fontStyle = localStyle->fontStyle.getOrDefault(combinedStyle->fontStyle.get());
+        }
+    }
+
+	//outStyleData->sourceLocalStyle = localStyle;
 
 
 	// layout
 	{
-		outStyleData->margin = localStyle->margin.getOrDefault(defaultStyle->margin);
-		outStyleData->padding = localStyle->padding.getOrDefault(defaultStyle->padding);
-		outStyleData->horizontalAlignment = localStyle->horizontalAlignment.getOrDefault(defaultStyle->horizontalAlignment);
-		outStyleData->verticalAlignment = localStyle->verticalAlignment.getOrDefault(defaultStyle->verticalAlignment);
-		outStyleData->minWidth = localStyle->minWidth.getOrDefault(defaultStyle->minWidth);//.getOrDefault(Math::NaN));
-		outStyleData->minHeight = localStyle->minHeight.getOrDefault(defaultStyle->minHeight);//.getOrDefault(Math::NaN));
-		outStyleData->maxWidth = localStyle->maxWidth.getOrDefault(defaultStyle->maxWidth);//.getOrDefault(Math::NaN));
-		outStyleData->maxHeight = localStyle->maxHeight.getOrDefault(defaultStyle->maxHeight);//.getOrDefault(Math::NaN));
+		outStyleData->margin = localStyle->margin.getOrDefault(combinedStyle->margin.get());
+		outStyleData->padding = localStyle->padding.getOrDefault(combinedStyle->padding.get());
+		outStyleData->horizontalAlignment = localStyle->horizontalAlignment.getOrDefault(combinedStyle->horizontalAlignment.get());
+		outStyleData->verticalAlignment = localStyle->verticalAlignment.getOrDefault(combinedStyle->verticalAlignment.get());
+		outStyleData->minWidth = localStyle->minWidth.getOrDefault(combinedStyle->minWidth.get());//.getOrDefault(Math::NaN));
+		outStyleData->minHeight = localStyle->minHeight.getOrDefault(combinedStyle->minHeight.get());//.getOrDefault(Math::NaN));
+		outStyleData->maxWidth = localStyle->maxWidth.getOrDefault(combinedStyle->maxWidth.get());//.getOrDefault(Math::NaN));
+		outStyleData->maxHeight = localStyle->maxHeight.getOrDefault(combinedStyle->maxHeight.get());//.getOrDefault(Math::NaN));
 	}
 
 	// layout transform
 	{
-		outStyleData->position = localStyle->position.getOrDefault(defaultStyle->position);
-		outStyleData->rotation = localStyle->rotation.getOrDefault(defaultStyle->rotation);
-		outStyleData->scale = localStyle->scale.getOrDefault(defaultStyle->scale);
-		outStyleData->centerPoint = localStyle->centerPoint.getOrDefault(defaultStyle->centerPoint);
+		outStyleData->position = localStyle->position.getOrDefault(combinedStyle->position.get());
+		outStyleData->rotation = localStyle->rotation.getOrDefault(combinedStyle->rotation.get());
+		outStyleData->scale = localStyle->scale.getOrDefault(combinedStyle->scale.get());
+		outStyleData->centerPoint = localStyle->centerPoint.getOrDefault(combinedStyle->centerPoint.get());
 	}
 
 	// background
 	{
 		assert(outStyleData->backgroundMaterial);
-        outStyleData->backgroundDrawMode = localStyle->backgroundDrawMode.getOrDefault(defaultStyle->backgroundDrawMode);
-		outStyleData->backgroundColor = localStyle->backgroundColor.getOrDefault(defaultStyle->backgroundColor);
-		outStyleData->backgroundMaterial->setMainTexture(localStyle->backgroundImage.getOrDefault(defaultStyle->backgroundImage));
-		outStyleData->backgroundMaterial->setShader(localStyle->backgroundShader.getOrDefault(defaultStyle->backgroundShader));
-		//outStyleData->backgroundColor = localStyle->backgroundColor.getOrDefault(defaultStyle->backgroundColor.get());
+        outStyleData->backgroundDrawMode = localStyle->backgroundDrawMode.getOrDefault(combinedStyle->backgroundDrawMode.get());
+		outStyleData->backgroundColor = localStyle->backgroundColor.getOrDefault(combinedStyle->backgroundColor.get());
+		outStyleData->backgroundMaterial->setMainTexture(localStyle->backgroundImage.getOrDefault(combinedStyle->backgroundImage.get()));
+		outStyleData->backgroundMaterial->setShader(localStyle->backgroundShader.getOrDefault(combinedStyle->backgroundShader.get()));
+		//outStyleData->backgroundColor = localStyle->backgroundColor.getOrDefault(combinedStyle->backgroundColor.get());
 		//outStyleData->backgroundImage = 
-        outStyleData->backgroundImageRect = localStyle->backgroundImageRect.getOrDefault(defaultStyle->backgroundImageRect);
-        outStyleData->backgroundImageBorder = localStyle->backgroundImageBorder.getOrDefault(defaultStyle->backgroundImageBorder);
+        outStyleData->backgroundImageRect = localStyle->backgroundImageRect.getOrDefault(combinedStyle->backgroundImageRect.get());
+        outStyleData->backgroundImageBorder = localStyle->backgroundImageBorder.getOrDefault(combinedStyle->backgroundImageBorder.get());
 	}
 
 
     // border
     {
-        outStyleData->borderThickness = localStyle->borderThickness.getOrDefault(defaultStyle->borderThickness);
-        outStyleData->cornerRadius = localStyle->cornerRadius.getOrDefault(defaultStyle->cornerRadius);
-        outStyleData->leftBorderColor = localStyle->leftBorderColor.getOrDefault(defaultStyle->leftBorderColor);
-        outStyleData->topBorderColor = localStyle->topBorderColor.getOrDefault(defaultStyle->topBorderColor);
-        outStyleData->rightBorderColor = localStyle->rightBorderColor.getOrDefault(defaultStyle->rightBorderColor);
-        outStyleData->bottomBorderColor = localStyle->bottomBorderColor.getOrDefault(defaultStyle->bottomBorderColor);
-        outStyleData->borderDirection = localStyle->borderDirection.getOrDefault(defaultStyle->borderDirection);
+        outStyleData->borderThickness = localStyle->borderThickness.getOrDefault(combinedStyle->borderThickness.get());
+        outStyleData->cornerRadius = localStyle->cornerRadius.getOrDefault(combinedStyle->cornerRadius.get());
+        outStyleData->leftBorderColor = localStyle->leftBorderColor.getOrDefault(combinedStyle->leftBorderColor.get());
+        outStyleData->topBorderColor = localStyle->topBorderColor.getOrDefault(combinedStyle->topBorderColor.get());
+        outStyleData->rightBorderColor = localStyle->rightBorderColor.getOrDefault(combinedStyle->rightBorderColor.get());
+        outStyleData->bottomBorderColor = localStyle->bottomBorderColor.getOrDefault(combinedStyle->bottomBorderColor.get());
+        outStyleData->borderDirection = localStyle->borderDirection.getOrDefault(combinedStyle->borderDirection.get());
     }
 
 	// text
 	{
-		outStyleData->textColor = localStyle->textColor.getOrDefault(defaultStyle->textColor);
+		//outStyleData->textColor = localStyle->textColor.getOrDefault(combinedStyle->textColor.get());
 
 		if (outStyleData->font) {
 			// 前回の update で選択した font があるのでそのままにする
@@ -665,10 +705,10 @@ void UIStyleInstance::updateStyleDataHelper(UIStyle* localStyle, const detail::U
 		}
 
 		detail::FontDesc desc;
-		desc.Family = localStyle->fontFamily.get();
-		desc.Size = localStyle->fontSize.get();
-		desc.isBold = (localStyle->fontWeight.get() == UIFontWeight::Bold);
-		desc.isItalic = (localStyle->fontStyle.get() == UIFontStyle::Italic);
+		desc.Family = outStyleData->fontFamily;
+		desc.Size = outStyleData->fontSize;
+		desc.isBold = (outStyleData->fontWeight == UIFontWeight::Bold);
+		desc.isItalic = (outStyleData->fontStyle == UIFontStyle::Italic);
 		desc.isAntiAlias = true;
 
 		bool modified = true;
@@ -688,13 +728,13 @@ void UIStyleInstance::updateStyleDataHelper(UIStyle* localStyle, const detail::U
 
 	// render effects
 	{
-		outStyleData->visible = localStyle->visible.getOrDefault(defaultStyle->visible);
-		outStyleData->blendMode = localStyle->blendMode.getOrDefault(defaultStyle->blendMode);
+		outStyleData->visible = localStyle->visible.getOrDefault(combinedStyle->visible.get());
+		outStyleData->blendMode = localStyle->blendMode.getOrDefault(combinedStyle->blendMode.get());
 
-		outStyleData->opacity = localStyle->opacity.getOrDefault(defaultStyle->opacity);
-		outStyleData->colorScale = localStyle->colorScale.getOrDefault(defaultStyle->colorScale);
-		outStyleData->blendColor = localStyle->blendColor.getOrDefault(defaultStyle->blendColor);
-		outStyleData->tone = localStyle->tone.getOrDefault(defaultStyle->tone);
+		outStyleData->opacity = localStyle->opacity.getOrDefault(combinedStyle->opacity);
+		outStyleData->colorScale = localStyle->colorScale.getOrDefault(combinedStyle->colorScale.get());
+		outStyleData->blendColor = localStyle->blendColor.getOrDefault(combinedStyle->blendColor.get());
+		outStyleData->tone = localStyle->tone.getOrDefault(combinedStyle->tone.get());
 	}
 }
 
@@ -765,6 +805,7 @@ void UIStyleClassInstance::mergeFrom(const UIStyleClass* other)
 
 UIVisualStateManager::UIVisualStateManager()
     : m_groups()
+    , m_combinedStyle(makeObject<UIStyle>())
     , m_resolvedStyle(makeRef<detail::UIStyleInstance>())
     , m_dirty(true)
 {
@@ -772,6 +813,26 @@ UIVisualStateManager::UIVisualStateManager()
 
 void UIVisualStateManager::init()
 {
+}
+
+UIStyle* UIVisualStateManager::combineStyle(const UIStyleContext* styleContext, const ln::String& className)
+{
+    if (isDirty()) {
+        m_combinedStyle->setupDefault();
+        auto styleClass = styleContext->findStyleClass(className);
+
+        // main style
+        m_combinedStyle->mergeFrom(styleClass->style());
+
+        for (auto& group : m_groups) {
+            if (group.activeStateIndex >= 0) {
+                m_combinedStyle->mergeFrom(styleClass->findStateStyle(group.stateNames[group.activeStateIndex]));
+            }
+        }
+
+        clearDirty();
+    }
+    return m_combinedStyle;
 }
 
 detail::UIStyleInstance* UIVisualStateManager::resolveStyle(const UIStyleContext* styleContext, const ln::String& className)

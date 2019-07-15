@@ -414,16 +414,19 @@ void UIElement::onRender(UIRenderingContext* context)
 
 void UIElement::updateStyleHierarchical(const UIStyleContext* styleContext, const detail::UIStyleInstance* parentFinalStyle)
 {
-    detail::UIStyleInstance* resolvedStyle;
+    UIStyle* combinedStyle;
     if (m_visualStateManager) {
-        resolvedStyle = m_visualStateManager->resolveStyle(styleContext, className());
+        combinedStyle = m_visualStateManager->combineStyle(styleContext, className());
     }
     else {
-        auto sc = styleContext->findResolvedStyleClass(className());
-        resolvedStyle = sc->style();
+        auto sc = styleContext->findStyleClass(className());
+        combinedStyle = sc->style();
+        
+        //auto sc = styleContext->findResolvedStyleClass();
+        //resolvedStyle = sc->style();
     }
 
-	detail::UIStyleInstance::updateStyleDataHelper(m_localStyle, parentFinalStyle, resolvedStyle, m_finalStyle);
+	detail::UIStyleInstance::updateStyleDataHelper(m_localStyle, parentFinalStyle, combinedStyle, m_finalStyle);
 
 	onUpdateStyle(styleContext, m_finalStyle);
 
