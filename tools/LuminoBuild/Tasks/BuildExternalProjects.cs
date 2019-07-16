@@ -299,6 +299,9 @@ namespace LuminoBuild.Tasks
             if (!Directory.Exists("Effekseer"))
             {
                 Utils.CallProcess("git", "clone --progress https://github.com/effekseer/Effekseer Effekseer");
+                Directory.SetCurrentDirectory("Effekseer");
+                Utils.CallProcess("git", "submodule update --init");
+                Directory.SetCurrentDirectory(reposDir);
             }
             if (!Directory.Exists("tinygltf"))
             {
@@ -306,6 +309,7 @@ namespace LuminoBuild.Tasks
             }
 
             const string bulletOptions = "-DBUILD_BULLET2_DEMOS=OFF -DBUILD_CLSOCKET=OFF -DBUILD_CPU_DEMOS=OFF -DBUILD_ENET=OFF -DBUILD_EXTRAS=OFF -DBUILD_OPENGL3_DEMOS=OFF -DBUILD_UNIT_TESTS=OFF -DINSTALL_LIBS=ON";
+
 
             if (Utils.IsWin32)
             {
