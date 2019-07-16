@@ -473,9 +473,9 @@ public:
 
     void registerState(const StringRef& groupName, const StringRef& stateName)
     {
-        auto group = m_groups.findIf([&](const Group& g) { return g.name == groupName; });
-        if (group) {
-            group->stateNames.add(stateName);
+        int groupIndex = m_groups.indexOfIf([&](const Group& g) { return g.name == groupName; });
+        if (groupIndex >= 0) {
+           m_groups[groupIndex].stateNames.add(stateName);
         }
         else {
             m_groups.add(Group{ groupName, { stateName }, -1 });
@@ -491,6 +491,7 @@ public:
                     if (g.activeStateIndex != i) {
                         g.activeStateIndex = i;
                         m_dirty = true;
+                        std::cout << g.stateNames[i] << std::endl;
                     }
                     stateFound = true;
                 }

@@ -312,6 +312,8 @@ public:	// TODO: internal
 
     virtual bool onHitTest(const Point& frameClientPosition);
 
+    bool isMouseHover() const;
+
     // TODO: internal
 	void updateStyleHierarchical(const UIStyleContext* styleContext, const detail::UIStyleInstance* parentFinalStyle);
     void updateFinalLayoutHierarchical(const Rect& parentFinalGlobalRect);

@@ -562,6 +562,11 @@ bool UIElement::onHitTest(const Point& frameClientPosition)
     }
 }
 
+bool UIElement::isMouseHover() const
+{
+    return m_manager->mouseHoverElement() == this;
+}
+
 void UIElement::removeFromLogicalParent()
 {
     if (m_logicalParent) {

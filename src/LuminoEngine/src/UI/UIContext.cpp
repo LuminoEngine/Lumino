@@ -5,6 +5,7 @@
 #include <LuminoEngine/UI/UIElement.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIEvents.hpp>
+#include <LuminoEngine/UI/UIFrameWindow.hpp>
 
 namespace ln {
 
@@ -38,7 +39,7 @@ void UIContext::setLayoutRootElement(UIElement* element)
 void UIContext::addElement(UIElement* element)
 {
     if (LN_REQUIRE(element)) return;
-    element->m_context = this;
+    //element->m_context = this;
 }
 
 void UIContext::updateStyleTree()

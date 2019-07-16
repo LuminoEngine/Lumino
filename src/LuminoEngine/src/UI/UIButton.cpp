@@ -41,6 +41,7 @@ void UIButton::onRoutedEvent(UIEventArgs* e)
             getVisualStateManager()->gotoState(u"MouseOver");
             //onClick(e);
             e->handled = true;
+            printf("MouseOver\n");
         }
 
         return;
