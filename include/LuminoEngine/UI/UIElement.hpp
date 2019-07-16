@@ -310,7 +310,7 @@ public:	// TODO: internal
 
     virtual void onRoutedEvent(UIEventArgs* e);
 
-    virtual bool onHitTest(const Point& localPoint);
+    virtual bool onHitTest(const Point& frameClientPosition);
 
     // TODO: internal
 	void updateStyleHierarchical(const UIStyleContext* styleContext, const detail::UIStyleInstance* parentFinalStyle);

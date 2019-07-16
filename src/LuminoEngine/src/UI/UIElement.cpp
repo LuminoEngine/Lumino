@@ -378,14 +378,14 @@ UIElement* UIElement::lookupMouseHoverElement(const Point& frameClientPosition)
 
     if (m_isHitTestVisible)
     {
-        Point localPoint = frameClientPosition;
-        if (m_visualParent != nullptr)
-        {
-            localPoint.x -= m_visualParent->finalGlobalRect().x;
-            localPoint.y -= m_visualParent->finalGlobalRect().y;
-        }
+        //Point localPoint = frameClientPosition;
+        //if (m_visualParent != nullptr)
+        //{
+        //    localPoint.x -= m_visualParent->finalGlobalRect().x;
+        //    localPoint.y -= m_visualParent->finalGlobalRect().y;
+        //}
 
-        if (onHitTest(localPoint)) {
+        if (onHitTest(frameClientPosition)) {
             return this;
         }
     }
@@ -548,11 +548,18 @@ void UIElement::onRoutedEvent(UIEventArgs* e)
 {
 }
 
-bool UIElement::onHitTest(const Point& localPoint)
+bool UIElement::onHitTest(const Point& frameClientPosition)
 {
-    // TODO:
-    return true;
-    //return m_finalLocalActualRect.makeDeflate(m_renderFrameThickness).contains(localPoint);
+    auto inv = Matrix::makeInverse(m_combinedFinalTransform);
+    auto pos = Vector3::transformCoord(Vector3(frameClientPosition.x, frameClientPosition.y, .0f), inv);
+
+    if (m_localPosition.x <= pos.x && pos.x < m_localPosition.x + m_actualSize.width &&
+        m_localPosition.y <= pos.y && pos.y < m_localPosition.y + m_actualSize.height) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 void UIElement::removeFromLogicalParent()
