@@ -43,7 +43,7 @@ void UIContext::addElement(UIElement* element)
     element->m_context = this;
 }
 
-bool UIContext::updateMouseHover(UIFrameWindow* mouseEventSource, const Point& mousePos)
+bool UIContext::updateMouseHover(UIFrameWindow* mouseEventSource, const Point& frameClientPosition)
 {
     if (LN_REQUIRE(mouseEventSource)) return false;
 
@@ -77,7 +77,7 @@ bool UIContext::updateMouseHover(UIFrameWindow* mouseEventSource, const Point& m
     // 通常のウィンドウのイベントを処理する
     //if (m_rootElement != NULL)
     {
-        m_mouseHoverElement = mouseEventSource->lookupMouseHoverElement(mousePos);
+        m_mouseHoverElement = mouseEventSource->lookupMouseHoverElement(frameClientPosition);
         if (m_mouseHoverElement != nullptr) {
             goto EXIT;
         }
@@ -91,13 +91,13 @@ EXIT:
     {
         if (old)
         {
-            auto args = UIMouseEventArgs::create(old, UIEvents::MouseLeaveEvent, MouseButtons::None, mousePos.x, mousePos.y, 0, true);
+            auto args = UIMouseEventArgs::create(old, UIEvents::MouseLeaveEvent, MouseButtons::None, frameClientPosition.x, frameClientPosition.y, 0, true);
             old->raiseEvent(args);
         }
 
         if (m_mouseHoverElement)
         {
-            auto args = UIMouseEventArgs::create(old, UIEvents::MouseEnterEvent, MouseButtons::None, mousePos.x, mousePos.y, 0, true);
+            auto args = UIMouseEventArgs::create(old, UIEvents::MouseEnterEvent, MouseButtons::None, frameClientPosition.x, frameClientPosition.y, 0, true);
             m_mouseHoverElement->raiseEvent(args);
         }
     }

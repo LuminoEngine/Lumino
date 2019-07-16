@@ -124,17 +124,17 @@ void UILayoutElement::arrangeLayout(const Rect& localSlotRect)
 
     
 
-	Rect finalLocalRect;
+	//Rect finalLocalRect;
 	//Rect finalContentRect;
-	finalLocalRect.x = localSlotRect.x + /*finalLocalRect.x + */margin.left + arrangeRect.x + m_finalStyle->borderThickness.left;
-	finalLocalRect.y = localSlotRect.y + /*finalLocalRect.y + */margin.top + arrangeRect.y + m_finalStyle->borderThickness.top;
-    finalLocalRect.width = finalContentAreaSize.width;// +padding.getWidth();
-	finalLocalRect.height = finalContentAreaSize.height;// + padding.getHeight();
+    m_localPosition.x = localSlotRect.x + /*finalLocalRect.x + */margin.left + arrangeRect.x + m_finalStyle->borderThickness.left;
+    m_localPosition.y = localSlotRect.y + /*finalLocalRect.y + */margin.top + arrangeRect.y + m_finalStyle->borderThickness.top;
+    m_actualSize.width = finalContentAreaSize.width;// +padding.getWidth();
+    m_actualSize.height = finalContentAreaSize.height;// + padding.getHeight();
 	//finalContentRect.x = finalRenderRect.x + padding.left;
 	//finalContentRect.y = finalRenderRect.y + padding.top;
 	//finalContentRect.width = finalRenderRect.width - padding.getWidth();
 	//finalContentRect.height = finalRenderRect.height - padding.getHeight();
-	setLayoutFinalLocalRect(finalLocalRect/*, finalContentRect*/);
+	//setLayoutFinalLocalRect(finalLocalRect/*, finalContentRect*/);
 
 	//updateFinalRects(localSlotRect);
 
@@ -142,13 +142,13 @@ void UILayoutElement::arrangeLayout(const Rect& localSlotRect)
 
 void UILayoutElement::updateFinalRects(const Rect& parentFinalGlobalRect)
 {
-	Rect localRenderRect = getLayoutFinalLocalRect();
+	//Rect localRenderRect = getLayoutFinalLocalRect();
 
 	Rect finalGlobalRect;
 	//if (m_parent != nullptr)
 	//{
-	finalGlobalRect.x = parentFinalGlobalRect.x + localRenderRect.x;
-	finalGlobalRect.y = parentFinalGlobalRect.y + localRenderRect.y;
+	finalGlobalRect.x = parentFinalGlobalRect.x + m_localPosition.x;
+	finalGlobalRect.y = parentFinalGlobalRect.y + m_localPosition.y;
 	//m_combinedOpacity = m_parent->m_combinedOpacity * m_opacity;	// 不透明度もココで混ぜてしまう
 //}
 //else
@@ -157,10 +157,15 @@ void UILayoutElement::updateFinalRects(const Rect& parentFinalGlobalRect)
 //	m_finalGlobalRect.y = m_finalLocalRect.y;
 //	m_combinedOpacity = m_opacity;
 //}
-	finalGlobalRect.width = localRenderRect.width;
-	finalGlobalRect.height = localRenderRect.height;
+	finalGlobalRect.width = m_actualSize.width;
+	finalGlobalRect.height = m_actualSize.height;
 
 	setLayoutFinalGlobalRect(finalGlobalRect);
+
+    m_combinedFinalTransform = Matrix::makeTranslation(
+        parentFinalGlobalRect.x + m_localPosition.x,
+        parentFinalGlobalRect.y + m_localPosition.y,
+        0.0f);
 
     onUpdateLayout(finalGlobalRect);
 

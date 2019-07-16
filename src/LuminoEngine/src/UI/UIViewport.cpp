@@ -58,13 +58,13 @@ void UIViewport::removeImageEffect(ImageEffect* effect)
     m_imageEffectRenderer->removeImageEffect(effect);
 }
 
-UIElement* UIViewport::lookupMouseHoverElement(const Point& globalPt)
+UIElement* UIViewport::lookupMouseHoverElement(const Point& frameClientPosition)
 {
     for (auto& view : m_renderViews) {
-        UIElement* e = view->onLookupMouseHoverElement(globalPt);
+        UIElement* e = view->onLookupMouseHoverElement(frameClientPosition);
         if (e) return e;
     }
-    return UIContainerElement::lookupMouseHoverElement(globalPt);
+    return UIContainerElement::lookupMouseHoverElement(frameClientPosition);
 }
 
 void UIViewport::onUpdateFrame(float elapsedTimer)

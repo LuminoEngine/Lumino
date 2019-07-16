@@ -149,15 +149,22 @@ public:	//TODO: internal
 	VAlignment getLayoutVAlignment() const;
 	void getLayoutMinMaxInfo(Size* outMin, Size* outMax) const;
 
-	void setLayoutFinalLocalRect(const Rect& rect) { m_finalLocalRect = rect; }
-	const Rect& getLayoutFinalLocalRect() const { return m_finalLocalRect; }
+	//void setLayoutFinalLocalRect(const Rect& rect) { m_finalLocalRect = rect; }
+	//const Rect& getLayoutFinalLocalRect() const { return m_finalLocalRect; }
 	void setLayoutFinalGlobalRect(const Rect& rect) { m_finalGlobalRect = rect; }
 
 	Size m_layoutSize;
 	const detail::UIStyleInstance* m_finalStyle;
 	Size m_desiredSize;
-	Rect m_finalLocalRect;
-	Rect m_finalGlobalRect;
+
+    Point m_localPosition;  // 親コンテナ内の相対座標
+    Size m_actualSize;
+
+	//Rect m_finalLocalRect;
+	Rect m_finalGlobalRect; // TODO: obsolete
+
+    Matrix m_combinedFinalTransform;
+
 
 	friend class detail::LayoutHelper;
 };

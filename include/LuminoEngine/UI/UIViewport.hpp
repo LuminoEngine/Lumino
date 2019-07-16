@@ -28,7 +28,7 @@ public:
     const Size& actualViewboxSize() const { return m_actualViewboxSize; }
 
 protected:
-    virtual UIElement* lookupMouseHoverElement(const Point& globalPt) override;
+    virtual UIElement* lookupMouseHoverElement(const Point& frameClientPosition) override;
 	virtual void onUpdateFrame(float elapsedSeconds) override;
 	virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
 	virtual void onUpdateLayout(const Rect& finalGlobalRect) override;

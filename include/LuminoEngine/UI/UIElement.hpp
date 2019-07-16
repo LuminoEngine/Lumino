@@ -256,7 +256,7 @@ public: // TODO: internal
     void setRenderPriority(int value);
     void updateFrame(float elapsedSeconds);
     void raiseEvent(UIEventArgs* e);
-    virtual UIElement* lookupMouseHoverElement(const Point& globalPt);
+    virtual UIElement* lookupMouseHoverElement(const Point& frameClientPosition);
 	const Ref<detail::UIStyleInstance>& finalStyle() const { return m_finalStyle; }
 	UIElement* getFrameWindow();
 
