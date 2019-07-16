@@ -68,9 +68,8 @@ void UIContext::setupDefaultStyle()
         {
             auto s = c->style();
             s->backgroundColor = UIColors::get(UIColorHues::Grey, 3);
-
-            //s->borderThickness = 1;
-            //s->setBorderColor(Color::Gray);
+            s->horizontalContentAlignment = HAlignment::Center;
+            s->verticalContentAlignment = VAlignment::Center;
         }
         // UIButton:MouseOver
         {

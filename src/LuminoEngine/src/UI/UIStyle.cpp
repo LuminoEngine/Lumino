@@ -103,6 +103,8 @@ void UIStyle::setupDefault()
 	padding = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
 	horizontalAlignment = HAlignment::Left;  // Alignment は HTML のデフォルトに合わせてみる
 	verticalAlignment = VAlignment::Top;
+    horizontalContentAlignment = HAlignment::Stretch;
+    verticalContentAlignment = VAlignment::Stretch;
 	minWidth = Math::NaN;
 	minHeight = Math::NaN;
 	maxWidth = Math::NaN;
@@ -156,6 +158,8 @@ void UIStyle::mergeFrom(const UIStyle* other)
     if (other->padding.hasValue()) padding = other->padding.get();
     if (other->horizontalAlignment.hasValue()) horizontalAlignment = other->horizontalAlignment.get();
     if (other->verticalAlignment.hasValue()) verticalAlignment = other->verticalAlignment.get();
+    if (other->horizontalContentAlignment.hasValue()) horizontalContentAlignment = other->horizontalContentAlignment.get();
+    if (other->verticalContentAlignment.hasValue()) verticalContentAlignment = other->verticalContentAlignment.get();
     if (other->minWidth.hasValue()) minWidth = other->minWidth.get();
     if (other->minHeight.hasValue()) minHeight = other->minHeight.get();
     if (other->maxWidth.hasValue()) maxWidth = other->maxWidth.get();
@@ -209,6 +213,8 @@ void UIStyle::copyFrom(const UIStyle* other)
     padding = other->padding;
     horizontalAlignment = other->horizontalAlignment;
     verticalAlignment = other->verticalAlignment;
+    horizontalContentAlignment = other->horizontalContentAlignment;
+    verticalContentAlignment = other->verticalContentAlignment;
     minWidth = other->minWidth;
     minHeight = other->minHeight;
     maxWidth = other->maxWidth;
@@ -464,6 +470,9 @@ void UIStyleInstance::setupDefault()
     horizontalAlignment = HAlignment::Left;
     verticalAlignment = VAlignment::Top;
 
+    horizontalContentAlignment = HAlignment::Stretch;
+    verticalContentAlignment = VAlignment::Stretch;
+
     minWidth = Math::NaN;
     minHeight = Math::NaN;
     maxWidth = Math::NaN;
@@ -507,6 +516,8 @@ void UIStyleInstance::mergeFrom(const UIStyle* other)
     if (other->padding.hasValue()) padding = other->padding.get();
     if (other->horizontalAlignment.hasValue()) horizontalAlignment = other->horizontalAlignment.get();
     if (other->verticalAlignment.hasValue()) verticalAlignment = other->verticalAlignment.get();
+    if (other->horizontalContentAlignment.hasValue()) horizontalContentAlignment = other->horizontalContentAlignment.get();
+    if (other->verticalContentAlignment.hasValue()) verticalContentAlignment = other->verticalContentAlignment.get();
     if (other->minWidth.hasValue()) minWidth = other->minWidth.get();
     if (other->minHeight.hasValue()) minHeight = other->minHeight.get();
     if (other->maxWidth.hasValue()) maxWidth = other->maxWidth.get();
@@ -560,6 +571,8 @@ void UIStyleInstance::copyFrom(const UIStyleInstance* other)
     padding = other->padding;
     horizontalAlignment = other->horizontalAlignment;
     verticalAlignment = other->verticalAlignment;
+    horizontalContentAlignment = other->horizontalContentAlignment;
+    verticalContentAlignment = other->verticalContentAlignment;
     minWidth = other->minWidth;
     minHeight = other->minHeight;
     maxWidth = other->maxWidth;
@@ -653,6 +666,8 @@ void UIStyleInstance::updateStyleDataHelper(UIStyle* localStyle, const detail::U
 		outStyleData->padding = localStyle->padding.getOrDefault(combinedStyle->padding.get());
 		outStyleData->horizontalAlignment = localStyle->horizontalAlignment.getOrDefault(combinedStyle->horizontalAlignment.get());
 		outStyleData->verticalAlignment = localStyle->verticalAlignment.getOrDefault(combinedStyle->verticalAlignment.get());
+        outStyleData->horizontalContentAlignment = localStyle->horizontalContentAlignment.getOrDefault(combinedStyle->horizontalContentAlignment.get());
+        outStyleData->verticalContentAlignment = localStyle->verticalContentAlignment.getOrDefault(combinedStyle->verticalContentAlignment.get());
 		outStyleData->minWidth = localStyle->minWidth.getOrDefault(combinedStyle->minWidth.get());//.getOrDefault(Math::NaN));
 		outStyleData->minHeight = localStyle->minHeight.getOrDefault(combinedStyle->minHeight.get());//.getOrDefault(Math::NaN));
 		outStyleData->maxWidth = localStyle->maxWidth.getOrDefault(combinedStyle->maxWidth.get());//.getOrDefault(Math::NaN));

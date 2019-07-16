@@ -120,7 +120,7 @@ Size UIContainerElement::measureOverride(const Size& constraint)
 Size UIContainerElement::arrangeOverride(const Size& finalSize)
 {
     Rect contentSlotRect(0, 0, finalSize);
-    detail::LayoutHelper::adjustAlignment(finalSize, m_layout->desiredSize(), HAlignment::Center, VAlignment::Center, &contentSlotRect);
+    detail::LayoutHelper::adjustAlignment(finalSize, m_layout->desiredSize(), m_finalStyle->horizontalContentAlignment, m_finalStyle->verticalContentAlignment, &contentSlotRect);
 
     m_layout->arrangeLayout(m_logicalChildren, contentSlotRect);
     return finalSize;
