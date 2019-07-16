@@ -523,6 +523,38 @@ private:
 };
 
 
+enum class UIColorHues
+{
+    Red,
+    Pink,
+    Purple,
+    DeepPurple,
+    Indigo,
+    Blue,
+    LightBlue,
+    Cyan,
+    Teal,
+    Green,
+    LightGreen,
+    Lime,
+    Yellow,
+    Amber,
+    Orange,
+    DeepOrange,
+    Brown,
+    Grey,
+    Black,
+    White,
+};
+
+class UIColors
+{
+public:
+    static const int MaxShades = 10;
+
+    /** 色を取得します。*/
+    static const Color& get(UIColorHues hue, int shades = 5);
+};
 
 } // namespace ln
 

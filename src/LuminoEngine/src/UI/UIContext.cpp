@@ -130,14 +130,20 @@ void UIContext::setupDefaultStyle()
         // UIButton
         {
             auto s = c->style();
-            s->backgroundColor = Color::LightGray;
+            s->backgroundColor = UIColors::get(UIColorHues::Grey, 3);
             //s->borderThickness = 1;
             //s->setBorderColor(Color::Gray);
+        }
+        // UIButton:MouseOver
+        {
+            auto s = makeObject<UIStyle>();
+            s->backgroundColor = UIColors::get(UIColorHues::Red, 4);
+            c->addStateStyle(u"MouseOver", s);
         }
         // UIButton:Pressed
         {
             auto s = makeObject<UIStyle>();
-            s->backgroundColor = Color::Gray;
+            s->backgroundColor = UIColors::get(UIColorHues::Green, 5);
             c->addStateStyle(u"Pressed", s);
         }
     }

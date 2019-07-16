@@ -18,6 +18,7 @@ void UIButton::init()
 {
     UIControl::init();
     auto vsm = getVisualStateManager();
+    vsm->registerState(u"Common", u"MouseOver");
     vsm->registerState(u"Common", u"Pressed");
 }
 
@@ -43,6 +44,16 @@ void UIButton::onRoutedEvent(UIEventArgs* e)
         }
 
         return;
+    }
+    else if (e->type() == UIEvents::MouseEnterEvent) {
+        if (!m_isPressed) {
+            getVisualStateManager()->gotoState(u"MouseOver");
+        }
+    }
+    else if (e->type() == UIEvents::MouseLeaveEvent) {
+        if (!m_isPressed) {
+            getVisualStateManager()->gotoState(u"Normal");
+        }
     }
 
     UIControl::onRoutedEvent(e);
