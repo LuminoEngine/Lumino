@@ -359,8 +359,11 @@ bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)
         if (m_inputInjector->injectMouseButtonUp(e.mouse.button)) return true;
         break;
     case PlatformEventType::MouseMove:
-        if (m_inputInjector->injectMouseMove(e.mouseMove.screenX, e.mouseMove.screenY)) return true;
+    {
+        auto pt = m_platformWindow->pointFromScreen(PointI(e.mouseMove.screenX, e.mouseMove.screenY));
+        if (m_inputInjector->injectMouseMove(pt.x, pt.y)) return true;
         break;
+    }
     case PlatformEventType::MouseWheel:
         if (m_inputInjector->injectMouseWheel(e.wheel.delta)) return true;
         break;
