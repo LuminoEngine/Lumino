@@ -24,9 +24,9 @@ public:
 		この UILayoutPanel はこの要素のビジュアルツリーに組み込まれ、子要素の直接のビジュアル親要素となります。
 		デフォルトは nullptr です。
 	*/
-	void setLayoutPanel(UILayoutPanel* panel);
+	void setLayoutPanel(UILayoutPanel2* panel);
 
-	UILayoutPanel* layoutPanel() const;
+	UILayoutPanel2* layoutPanel() const;
 
 
 protected:

@@ -68,15 +68,17 @@ void UIContainerElement::removeAllChildren()
 	//}
 }
 
-void UIContainerElement::setLayoutPanel(UILayoutPanel* panel)
+void UIContainerElement::setLayoutPanel(UILayoutPanel2* panel)
 {
-	setLogicalChildrenHost(panel);
+    m_layout = panel;
+	//setLogicalChildrenHost(panel);
 }
 
-UILayoutPanel* UIContainerElement::layoutPanel() const
+UILayoutPanel2* UIContainerElement::layoutPanel() const
 {
-    LN_UNREACHABLE();
-    return nullptr;//m_logicalChildrenHost;
+    return m_layout;
+    //LN_UNREACHABLE();
+    //return nullptr;//m_logicalChildrenHost;
 }
 
 int UIContainerElement::getVisualChildrenCount() const
@@ -119,8 +121,12 @@ Size UIContainerElement::measureOverride(const Size& constraint)
 
 Size UIContainerElement::arrangeOverride(const Size& finalSize)
 {
-    Rect contentSlotRect(0, 0, finalSize);
+    Rect contentSlotRect;
     detail::LayoutHelper::adjustAlignment(finalSize, m_layout->desiredSize(), m_finalStyle->horizontalContentAlignment, m_finalStyle->verticalContentAlignment, &contentSlotRect);
+
+    contentSlotRect = contentSlotRect.makeDeflate(m_finalStyle->padding);
+    
+
 
     m_layout->arrangeLayout(m_logicalChildren, contentSlotRect);
     return finalSize;

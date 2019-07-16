@@ -111,6 +111,7 @@ class UIFrameLayout2	// TODO: BorderLayout の方がいいかも https://doc.qt.
     : public UILayoutPanel2
 {
 public:
+    static Ref<UIFrameLayout2> create();
 
 LN_CONSTRUCT_ACCESS:
     UIFrameLayout2();
@@ -121,6 +122,27 @@ LN_CONSTRUCT_ACCESS:
     virtual void arrangeOverride(const List<Ref<UIElement>>& childElements, const Rect& finalSlotRect) override;
 
 private:
+};
+
+class UIStackLayout2
+    : public UILayoutPanel2
+{
+public:
+    static Ref<UIStackLayout2> create();
+
+    void setOrientation(Orientation orientation) { m_orientation = orientation; }
+    Orientation getOrientation() const { return m_orientation; }
+
+LN_CONSTRUCT_ACCESS:
+    UIStackLayout2();
+    virtual ~UIStackLayout2();
+    void init();
+
+    virtual Size measureOverride(const List<Ref<UIElement>>& childElements, const Size& constraint) override;
+    virtual void arrangeOverride(const List<Ref<UIElement>>& childElements, const Rect& finalSlotRect) override;
+
+private:
+    Orientation m_orientation;
 };
 
 } // namespace ln
