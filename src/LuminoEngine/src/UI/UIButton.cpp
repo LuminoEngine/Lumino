@@ -37,7 +37,7 @@ void UIButton::onRoutedEvent(UIEventArgs* e)
         if (m_isPressed)
         {
             m_isPressed = false;
-            //getVisualStateManager()->gotoState(u"MouseOver");
+            getVisualStateManager()->gotoState(u"MouseOver");
             //onClick(e);
             e->handled = true;
         }

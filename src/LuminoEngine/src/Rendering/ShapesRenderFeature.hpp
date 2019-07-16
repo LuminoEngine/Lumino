@@ -126,9 +126,9 @@ public:
 
 	struct DrawBoxShadowCommand : public ListNode
 	{
-		const Rect& rect;
-		const CornerRadius& cornerRadius;
-		const Color& color;
+		Rect rect;
+		CornerRadius cornerRadius;
+		Color color;
 		float blur;
 		float width;
 		bool inset;
@@ -137,10 +137,13 @@ public:
 	void addDrawBoxBackground(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const CornerRadius& cornerRadius, const Color& color);
 	//void addDrawBoxBorder(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const Thickness& thickness, const CornerRadius& cornerRadius, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const Color& shadowColor, float shadowBlur, float shadowWidth, bool shadowInset, bool borderInset);
 	void drawBoxBorderLine(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const Thickness& thickness, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const CornerRadius& cornerRadius, bool borderInset);
-	//void addDrawBoxShadow(LinearAllocator* allocator, const Rect& rect, const CornerRadius& cornerRadius, const Color& color, float blur, float width, bool inset);
+	void addDrawBoxShadow(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const CornerRadius& cornerRadius, const Color& color, float blur, float width, bool inset);
 
 	ListNode* head = nullptr;
 	ListNode* tail = nullptr;
+
+private:
+	void addCommandNode(ListNode* cmd, CommandType type, const Matrix& transform);
 };
 
 class InternalShapesRenderer

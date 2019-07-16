@@ -835,25 +835,25 @@ UIStyle* UIVisualStateManager::combineStyle(const UIStyleContext* styleContext, 
     return m_combinedStyle;
 }
 
-detail::UIStyleInstance* UIVisualStateManager::resolveStyle(const UIStyleContext* styleContext, const ln::String& className)
-{
-    if (isDirty()) {
-        m_resolvedStyle->setupDefault();
-        auto styleClass = styleContext->findStyleClass(className);
-
-        // main style
-        m_resolvedStyle->mergeFrom(styleClass->style());
-
-        for (auto& group : m_groups) {
-            if (group.activeStateIndex >= 0) {
-                m_resolvedStyle->mergeFrom(styleClass->findStateStyle(group.stateNames[group.activeStateIndex]));
-            }
-        }
-
-        clearDirty();
-    }
-    return m_resolvedStyle;
-}
+//detail::UIStyleInstance* UIVisualStateManager::resolveStyle(const UIStyleContext* styleContext, const ln::String& className)
+//{
+//    if (isDirty()) {
+//        m_resolvedStyle->setupDefault();
+//        auto styleClass = styleContext->findStyleClass(className);
+//
+//        // main style
+//        m_resolvedStyle->mergeFrom(styleClass->style());
+//
+//        for (auto& group : m_groups) {
+//            if (group.activeStateIndex >= 0) {
+//                m_resolvedStyle->mergeFrom(styleClass->findStateStyle(group.stateNames[group.activeStateIndex]));
+//            }
+//        }
+//
+//        clearDirty();
+//    }
+//    return m_resolvedStyle;
+//}
 
 } // namespace ln
 

@@ -19,7 +19,7 @@ UIRenderingContext::UIRenderingContext()
 	setDrawElementList(m_elementList);
 }
 
-void UIRenderingContext::drawBoxBackground(const Rect& rect, const Thickness& borderThickness, const CornerRadius& cornerRadius, BrushImageDrawMode mode/*, AbstractMaterial* material*/, const Rect& textureSourceRect, const Color& color)
+void UIRenderingContext::drawBoxBackground(const Rect& rect, const CornerRadius& cornerRadius, BrushImageDrawMode mode/*, AbstractMaterial* material*/, const Rect& textureSourceRect, const Color& color)
 {
     //m_builder->setMaterial(material);
 
@@ -33,12 +33,7 @@ void UIRenderingContext::drawBoxBackground(const Rect& rect, const Thickness& bo
             m_manager->shapesRenderFeature(),
             m_builder->shapesRenderFeatureStageParameters());
 		
-        if (borderThickness.isZero()) {
-            element->commandList.addDrawBoxBackground(m_builder->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, cornerRadius, color);
-        }
-        else {
-            //element->commandList.addDrawBoxBorder(m_builder->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, borderThickness, cornerRadius, Color::Gray, Color::Gray, Color::Gray, Color::Gray, Color::Gray, 0, 0, false, false);
-        }
+        element->commandList.addDrawBoxBackground(m_builder->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, cornerRadius, color);
 	}
 	else
 	{
@@ -49,7 +44,7 @@ void UIRenderingContext::drawBoxBackground(const Rect& rect, const Thickness& bo
 		element->rect = rect;
 		element->transform = element->combinedWorldMatrix();
 		element->imageDrawMode = mode;
-		element->borderThickness = borderThickness;
+		element->borderThickness = Thickness();	// TODO: //borderThickness;
 		element->srcRect = textureSourceRect;
 		element->wrapMode = BrushWrapMode::Stretch;
 	}
@@ -67,6 +62,19 @@ void UIRenderingContext::drawBoxBorderLine(const Rect& rect, const Thickness& th
 
 
     // TODO: bounding box
+}
+
+void UIRenderingContext::drawBoxShadow(const Rect& rect, const CornerRadius& cornerRadius, const Color& color, float blur, float width, bool inset)
+{
+	auto* element = m_builder->addNewDrawElement<detail::DrawShapesElement>(
+		m_manager->shapesRenderFeature(),
+		m_builder->shapesRenderFeatureStageParameters());
+
+	element->commandList.addDrawBoxShadow(m_builder->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, cornerRadius, color, blur, width, inset);
+
+
+	// TODO: bounding box
+
 }
 
 void UIRenderingContext::resetForBeginRendering()

@@ -174,6 +174,7 @@ template<
 	std::cout << "ln::Object" << std::endl;
 }
 
+int UISandboxMain();
 
 int main(int argc, char** argv)
 {
@@ -184,6 +185,12 @@ int main(int argc, char** argv)
     EngineSettings::setEngineFeatures(EngineFeature::Experimental);
 	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
 	detail::EngineDomain::engineManager()->settings().standaloneFpsControl = true;
+
+
+	return UISandboxMain();
+
+
+
 
 	//static_assert(std::is_base_of<ln::Object, ed::SceneAsset>::value, "error");
 	staticFactory3<ed::SceneAsset>();

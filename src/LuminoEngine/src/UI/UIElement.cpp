@@ -510,16 +510,20 @@ void UIElement::render(UIRenderingContext* context)
 
 		// background
 		{
+			context->setMaterial(m_finalStyle->backgroundMaterial);
+
+			{
+				//context->drawBoxShadow(Rect(0, 0, m_finalGlobalRect.getSize()), CornerRadius(), Color::Black, 10, 10, false);
+
+			}
 			
 			if (m_finalStyle->backgroundColor.a > 0.0f) {
 				//auto tex = makeObject<Texture2D>(u"D:/Proj/LN/HC1/Assets/Windowskin/window.png");
 				//auto mat = Material::create(tex);
-				context->setMaterial(m_finalStyle->backgroundMaterial);
-                context->drawBoxBackground(Rect(0, 0, m_finalGlobalRect.getSize()), m_finalStyle->borderThickness, CornerRadius(), m_finalStyle->backgroundDrawMode, m_finalStyle->backgroundImageRect, m_finalStyle->backgroundColor);
+                context->drawBoxBackground(Rect(0, 0, m_finalGlobalRect.getSize()), CornerRadius(), m_finalStyle->backgroundDrawMode, m_finalStyle->backgroundImageRect, m_finalStyle->backgroundColor);
 				//context->drawBoxBackground(finalGlobalRect(), Thickness(16), CornerRadius(), BrushImageDrawMode::BorderFrame, Rect(64, 0, 64, 64), m_finalStyle->backgroundColor);
 			}
 			if (!m_finalStyle->borderThickness.isZero()) {
-				context->setMaterial(m_finalStyle->backgroundMaterial);
 				context->drawBoxBorderLine(Rect(0, 0, m_finalGlobalRect.getSize()), m_finalStyle->borderThickness, m_finalStyle->leftBorderColor, m_finalStyle->topBorderColor, m_finalStyle->rightBorderColor, m_finalStyle->bottomBorderColor, CornerRadius(), false);
 			}
 		}

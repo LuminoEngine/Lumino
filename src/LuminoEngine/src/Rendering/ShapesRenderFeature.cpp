@@ -76,10 +76,9 @@ namespace detail {
 //==============================================================================
 // ShapesRendererCommandList
 
-void ShapesRendererCommandList::addDrawBoxBackground(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const CornerRadius& cornerRadius, const Color& color)
+void ShapesRendererCommandList::addCommandNode(ListNode* cmd, CommandType type, const Matrix& transform)
 {
-	auto* cmd = reinterpret_cast<DrawBoxBackgroundCommand*>(allocator->allocate(sizeof(DrawBoxBackgroundCommand)));
-	cmd->type = Cmd_DrawBoxBackground;
+	cmd->type = type;
 	cmd->next = nullptr;
 	if (!head) {
 		head = cmd;
@@ -89,7 +88,12 @@ void ShapesRendererCommandList::addDrawBoxBackground(LinearAllocator* allocator,
 	}
 	tail = cmd;
 	cmd->transform = transform;
+}
 
+void ShapesRendererCommandList::addDrawBoxBackground(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const CornerRadius& cornerRadius, const Color& color)
+{
+	auto* cmd = reinterpret_cast<DrawBoxBackgroundCommand*>(allocator->allocate(sizeof(DrawBoxBackgroundCommand)));
+	addCommandNode(cmd, Cmd_DrawBoxBackground, transform);
 	cmd->rect = rect;
 	cmd->cornerRadius = cornerRadius;
 	cmd->color = color;
@@ -126,17 +130,7 @@ void ShapesRendererCommandList::addDrawBoxBackground(LinearAllocator* allocator,
 void ShapesRendererCommandList::drawBoxBorderLine(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const Thickness& thickness, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const CornerRadius& cornerRadius, bool borderInset)
 {
     auto* cmd = reinterpret_cast<DrawBoxBorderLineCommand*>(allocator->allocate(sizeof(DrawBoxBorderLineCommand)));
-    cmd->type = Cmd_DrawBoxBorderLine;
-    cmd->next = nullptr;
-    if (!head) {
-        head = cmd;
-    }
-    if (tail) {
-        tail->next = cmd;
-    }
-    tail = cmd;
-    cmd->transform = transform;
-
+	addCommandNode(cmd, Cmd_DrawBoxBorderLine, transform);
     cmd->rect = rect;
     cmd->thickness = thickness;
     cmd->cornerRadius = cornerRadius;
@@ -145,6 +139,18 @@ void ShapesRendererCommandList::drawBoxBorderLine(LinearAllocator* allocator, co
     cmd->rightColor = rightColor;
     cmd->bottomColor = bottomColor;
     cmd->borderInset = borderInset;
+}
+
+void ShapesRendererCommandList::addDrawBoxShadow(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const CornerRadius& cornerRadius, const Color& color, float blur, float width, bool inset)
+{
+	auto* cmd = reinterpret_cast<DrawBoxShadowCommand*>(allocator->allocate(sizeof(DrawBoxShadowCommand)));
+	addCommandNode(cmd, Cmd_DrawBoxShadow, transform);
+	cmd->rect = rect;
+	cmd->cornerRadius = cornerRadius;
+	cmd->color = color;
+	cmd->blur = blur;
+	cmd->width = width;
+	cmd->inset = inset;
 }
 
 //==============================================================================

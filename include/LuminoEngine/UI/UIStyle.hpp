@@ -504,7 +504,7 @@ public:
     }
 
     UIStyle* combineStyle(const UIStyleContext* styleContext, const ln::String& className);
-    detail::UIStyleInstance* resolveStyle(const UIStyleContext* styleContext, const ln::String& className);
+    //detail::UIStyleInstance* resolveStyle(const UIStyleContext* styleContext, const ln::String& className);
 
 LN_CONSTRUCT_ACCESS:
     UIVisualStateManager();
