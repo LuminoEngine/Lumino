@@ -1,10 +1,10 @@
 ﻿#pragma once
-#include "UIElement.hpp"
+#include "UIContainerElement.hpp"
 
 namespace ln {
 
 class UIControl
-	: public UIElement
+	: public UIContainerElement
 {
 public:
     UIControl();

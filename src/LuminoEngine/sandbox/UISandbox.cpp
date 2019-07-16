@@ -12,6 +12,7 @@ public:
         m_button1 = makeObject<UIButton>();
         m_button1->setWidth(200);
         m_button1->setHeight(100);
+        m_button1->setText(u"Lumino");
     }
 
 private:

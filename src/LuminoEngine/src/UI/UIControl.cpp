@@ -13,7 +13,7 @@ UIControl::UIControl()
 
 void UIControl::init()
 {
-    UIElement::init();
+    UIContainerElement::init();
 }
 
 } // namespace ln

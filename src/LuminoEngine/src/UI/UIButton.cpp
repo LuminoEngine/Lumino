@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/UI/UIEvents.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
+#include <LuminoEngine/UI/UITextBlock.hpp>
 #include <LuminoEngine/UI/UIButton.hpp>
 
 namespace ln {
@@ -20,6 +21,15 @@ void UIButton::init()
     auto vsm = getVisualStateManager();
     vsm->registerState(u"Common", u"MouseOver");
     vsm->registerState(u"Common", u"Pressed");
+}
+
+void UIButton::setText(const StringRef& text)
+{
+    if (!m_textContent) {
+        m_textContent = makeObject<UITextBlock>();
+        addElement(m_textContent);
+    }
+    m_textContent->setText(text);
 }
 
 void UIButton::onRoutedEvent(UIEventArgs* e)
