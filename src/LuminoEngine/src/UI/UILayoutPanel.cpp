@@ -341,5 +341,75 @@ Size UIStackLayout::arrangeOverride(const Size& finalSize)
 	return finalSize;
 }
 
+
+
+
+
+//==============================================================================
+// UILayoutPanel2
+
+UILayoutPanel2::UILayoutPanel2()
+{
+}
+
+void UILayoutPanel2::init()
+{
+    Object::init();
+}
+
+void UILayoutPanel2::measureLayout(const List<Ref<UIElement>>& childElements, const Size& availableSize)
+{
+    m_desiredSize = measureOverride(childElements, availableSize);
+}
+
+void UILayoutPanel2::arrangeLayout(const List<Ref<UIElement>>& childElements, const Rect& finalSlotRect)
+{
+    arrangeOverride(childElements, finalSlotRect);
+}
+
+//==============================================================================
+// UIFrameLayout2
+
+UIFrameLayout2::UIFrameLayout2()
+{
+}
+
+UIFrameLayout2::~UIFrameLayout2()
+{
+}
+
+void UIFrameLayout2::init()
+{
+    UILayoutPanel2::init();
+}
+
+Size UIFrameLayout2::measureOverride(const List<Ref<UIElement>>& childElements, const Size& constraint)
+{
+    int childrenCount = childElements.size();
+    Size childMaxSize(0, 0);
+    for (int i = 0; i < childrenCount; i++)
+    {
+        UIElement* child = childElements[i];
+        child->measureLayout(constraint);
+        const Size& desiredSize = child->desiredSize();
+        childMaxSize.width = std::max(childMaxSize.width, desiredSize.width);
+        childMaxSize.height = std::max(childMaxSize.height, desiredSize.height);
+    }
+    return childMaxSize;
+}
+
+void UIFrameLayout2::arrangeOverride(const List<Ref<UIElement>>& childElements, const Rect& finalSlotRect)
+{
+    Rect bounds(finalSlotRect);
+
+    int childrenCount = childElements.size();
+    for (int i = 0; i < childrenCount; i++)
+    {
+        UIElement* child = childElements[i];
+        child->arrangeLayout(bounds);
+    }
+}
+
+
 } // namespace ln
 

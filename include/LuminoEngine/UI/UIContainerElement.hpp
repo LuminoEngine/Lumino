@@ -3,6 +3,7 @@
 
 namespace ln {
 class UILayoutPanel;
+class UILayoutPanel2;
 
 class UIContainerElement
 	: public UIElement
@@ -42,8 +43,8 @@ private:
 	void setLogicalChildrenHost(UILayoutPanel* panel);
 
 	List<Ref<UIElement>> m_logicalChildren;
-	Ref<UILayoutPanel> m_logicalChildrenHost;
-
+	//Ref<UILayoutPanel> m_logicalChildrenHost;
+    Ref<UILayoutPanel2> m_layout;
 };
 
 
