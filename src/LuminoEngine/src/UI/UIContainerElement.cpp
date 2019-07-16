@@ -110,13 +110,15 @@ Size UIContainerElement::measureOverride(const Size& constraint)
 
 Size UIContainerElement::arrangeOverride(const Size& finalSize)
 {
+    Rect contentSlotRect(0, 0, finalSize);
+    //detail::LayoutHelper::adjustAlignment(finalSize, desiredSize(), HAlignment::Center, VAlignment::Center, &contentSlotRect);
+
 	if (m_logicalChildrenHost) {
-        Rect rect(0, 0, finalSize);
-        m_logicalChildrenHost->arrangeLayout(rect.makeDeflate(finalStyle()->padding));
+        m_logicalChildrenHost->arrangeLayout(contentSlotRect.makeDeflate(finalStyle()->padding));
 		return finalSize;
 	}
 	else {
-		return UIFrameLayout::staticArrangeOverride(this, finalSize);
+		return UIFrameLayout::staticArrangeOverride(this, contentSlotRect);
 	}
 }
 

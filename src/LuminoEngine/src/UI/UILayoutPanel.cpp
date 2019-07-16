@@ -210,12 +210,12 @@ Size UIFrameLayout::staticMeasureOverride(UIElement* ownerElement, const Size& c
 	return Size::min(constraint, Size::max(size, childMaxSize));
 }
 
-Size UIFrameLayout::staticArrangeOverride(UIElement* ownerElement, const Size& finalSize)
+Size UIFrameLayout::staticArrangeOverride(UIElement* ownerElement, const Rect& finalSlotRect)
 {
 	const Thickness& padding = ownerElement->finalStyle()->padding;
-	Point childrenOffset(padding.left, padding.top);
+	Point childrenOffset(finalSlotRect.x + padding.left, finalSlotRect.y + padding.top);
     //Size childrenBoundSize = finalSize;//(finalSize.width - padding.right, finalSize.height - padding.bottom);
-    Size childrenBoundSize(finalSize.width - padding.width(), finalSize.height - padding.height());
+    Size childrenBoundSize(finalSlotRect.width - padding.width(), finalSlotRect.height - padding.height());
 	Rect bounds(childrenOffset, childrenBoundSize);
 
 	int childrenCount = ownerElement->getVisualChildrenCount();
@@ -225,7 +225,7 @@ Size UIFrameLayout::staticArrangeOverride(UIElement* ownerElement, const Size& f
 		child->arrangeLayout(bounds);
 	}
 
-	return finalSize;
+	return finalSlotRect.getSize();
 }
 
 //==============================================================================

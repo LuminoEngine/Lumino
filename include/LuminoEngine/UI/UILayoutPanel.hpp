@@ -35,7 +35,7 @@ public:
 
 	// TODO: internal
 	static Size staticMeasureOverride(UIElement* ownerElement, const Size& constraint);
-	static Size staticArrangeOverride(UIElement* ownerElement, const Size& finalSize);
+	static Size staticArrangeOverride(UIElement* ownerElement, const Rect& finalSlotRect);
 
 LN_PROTECTED_INTERNAL_ACCESS:
     UIFrameLayout();

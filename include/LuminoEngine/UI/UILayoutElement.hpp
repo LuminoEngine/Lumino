@@ -261,6 +261,61 @@ public:
 			break;
 		}
 	}
+
+    static void adjustAlignment(const Size& areaSize, const Size& desiredSize, HAlignment halign, VAlignment valign, Rect* outRect)
+    {
+        assert(!Math::isNaNOrInf(areaSize.width));
+        assert(!Math::isNaNOrInf(areaSize.height));
+        assert(!Math::isNaNOrInf(desiredSize.width));
+        assert(!Math::isNaNOrInf(desiredSize.height));
+        assert(outRect);
+
+        switch (halign)
+        {
+        case HAlignment::Left:
+            outRect->x = 0;
+            outRect->width = desiredSize.width;
+            break;
+        case HAlignment::Center:
+            outRect->x = (areaSize.width - desiredSize.width) / 2;
+            outRect->width = desiredSize.width;
+            break;
+        case HAlignment::Right:
+            outRect->x = areaSize.width - desiredSize.width;
+            outRect->width = desiredSize.width;
+            break;
+        case HAlignment::Stretch:
+            outRect->x = 0;
+            outRect->width = areaSize.width;
+            break;
+        default:
+            LN_UNREACHABLE();
+            break;
+        }
+
+        switch (valign)
+        {
+        case VAlignment::Top:
+            outRect->y = 0;
+            outRect->height = desiredSize.height;
+            break;
+        case VAlignment::Center:
+            outRect->y = (areaSize.height - desiredSize.height) / 2;
+            outRect->height = desiredSize.height;
+            break;
+        case VAlignment::Bottom:
+            outRect->y = areaSize.height - desiredSize.height;
+            outRect->height = desiredSize.height;
+            break;
+        case VAlignment::Stretch:
+            outRect->y = 0;
+            outRect->height = areaSize.height;
+            break;
+        default:
+            LN_UNREACHABLE();
+            break;
+        }
+    }
 };
 
 } // namespace detail
