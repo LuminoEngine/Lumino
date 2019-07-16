@@ -35,12 +35,16 @@ public:
     void setMainContext(UIContext* context);
     const Ref<UIContext>& mainContext() const { return m_mainContext; }
 
+    bool updateMouseHover(UIFrameWindow* mouseEventSource, const Point& frameClientPosition);
+    UIElement* mouseHoverElement() const { return m_mouseHoverElement; }
+
 private:
 	GraphicsManager* m_graphicsManager;
 	//PlatformManager* platformManager;
     Ref<UIContainerElement> m_primaryElement;
     Ref<EventArgsPool> m_eventArgsPool;
     Ref<UIContext> m_mainContext;
+    UIElement* m_mouseHoverElement;
 };
 
 } // namespace detail

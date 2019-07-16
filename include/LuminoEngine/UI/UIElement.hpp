@@ -246,7 +246,7 @@ public:
     // TODO: ↑の WorldObject 的なものは、派生クラスの UIVisual 的なクラスにユーティリティとして持っていく。
     // UIElement としては RenderTransform, Style 扱いにしたい。
 
-    UIContext* context() const { return m_context; }
+    //UIContext* context() const { return m_context; }
 
     UIElement();
     virtual ~UIElement();
@@ -326,13 +326,13 @@ public:	// TODO: internal
 
     UIVisualStateManager* getVisualStateManager();
 
-private:
+public: // TODO: internal
     void raiseEventInternal(UIEventArgs* e);
 
     detail::UIManager* m_manager;
 	Flags<detail::ObjectManagementFlags> m_objectManagementFlags;
 	Flags<detail::UISpecialElementFlags> m_specialElementFlags;
-    UIContext* m_context;
+    //UIContext* m_context;
     UIElement* m_visualParent;
     UIContainerElement* m_logicalParent;
 

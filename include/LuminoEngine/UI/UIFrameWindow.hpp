@@ -1,10 +1,10 @@
 ﻿#pragma once
-
+#include "../Platform/PlatformEvent.hpp"
+#include "../Graphics/Common.hpp"
+#include "../Graphics/GeometryStructs.hpp"
 #include "Common.hpp"
 #include "UIEvents.hpp"
 #include "UIContainerElement.hpp"
-#include "../Platform/PlatformEvent.hpp"
-#include "../Graphics/GeometryStructs.hpp"
 
 namespace ln {
 namespace detail { class PlatformWindow; class UIManager; }
@@ -96,7 +96,7 @@ LN_CONSTRUCT_ACCESS:
 protected:  // TODO: internal
 	virtual bool onPlatformEvent(const detail::PlatformEventArgs& e) override;
 
-	detail::UIManager* m_manager;
+	//detail::UIManager* m_manager;
 	Ref<detail::PlatformWindow>	m_platformWindow;
     Ref<detail::UIInputInjector> m_inputInjector;
     Ref<GraphicsContext> m_graphicsContext;

@@ -382,7 +382,7 @@ set(LN_SOURCES_Physics
     src/Physics/SoftBody.cpp
 )
 
-file(GLOB LN_SOURCES_Asset ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Asset/*.hpp src/Asset/*.cpp)
+file(GLOB LN_SOURCES_Asset ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Asset/*.hpp src/Asset/*.cpp src/Asset/*.hpp)
 
 set(LN_SOURCES_Visual
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/Common.hpp
@@ -444,7 +444,7 @@ set(LN_SOURCES_Scene
     src/Scene/WorldRenderView.cpp
 )
 
-file(GLOB LN_SOURCES_UI ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/*.hpp src/UI/*.cpp)
+file(GLOB LN_SOURCES_UI ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/*.hpp src/UI/*.cpp src/UI/*.hpp)
 
 set(LN_SOURCES_Tilemap
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/Common.hpp

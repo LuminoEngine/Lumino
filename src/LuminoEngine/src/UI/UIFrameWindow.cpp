@@ -170,7 +170,7 @@ bool UIInputInjector::injectTextInput(Char ch)
 
 void UIInputInjector::updateMouseHover(float clientX, float clientY)
 {
-    m_owner->context()->updateMouseHover(m_owner, Point(clientX, clientY));
+    m_owner->m_manager->updateMouseHover(m_owner, Point(clientX, clientY));
 }
 
 UIElement* UIInputInjector::capturedElement()
@@ -187,7 +187,7 @@ UIElement* UIInputInjector::forcusedElement()
 
 UIElement* UIInputInjector::mouseHoveredElement()
 {
-    return m_owner->context()->mouseHoverElement();
+    return m_owner->m_manager->mouseHoverElement();
 }
 
 } //  namespace detail

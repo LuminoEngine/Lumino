@@ -15,8 +15,6 @@ public:
 public: // TODO: internal
     void setLayoutRootElement(UIElement* element);	// 通常は MainWindow。もし１つのウィンドウ内に複数の Context を含める場合は
     void addElement(UIElement* element);
-    bool updateMouseHover(UIFrameWindow* mouseEventSource, const Point& frameClientPosition);
-    UIElement* mouseHoverElement() const { return m_mouseHoverElement; }
 	const Ref<UIStyle>& defaultStyle() const { return m_defaultStyle; }
     const Ref<UIStyleContext>& styleContext() const { return m_styleContext; }
 
@@ -36,7 +34,6 @@ private:
     void setupDefaultStyle();
 
     Ref<UIElement> m_layoutRootElement;
-    UIElement* m_mouseHoverElement;
 	Ref<UIStyle> m_defaultStyle;
     Ref<UIStyleContext> m_styleContext;
 	Ref<detail::UIStyleInstance> m_finalDefaultStyle;

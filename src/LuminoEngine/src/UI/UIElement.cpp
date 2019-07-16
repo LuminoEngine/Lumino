@@ -22,7 +22,7 @@ namespace ln {
 UIElement::UIElement()
     : m_manager(nullptr)
 	, m_objectManagementFlags(detail::ObjectManagementFlags::AutoAddToActiveScene)
-    , m_context(nullptr)
+    //, m_context(nullptr)
     , m_visualParent(nullptr)
     , m_logicalParent(nullptr)
     , m_localStyle(makeObject<UIStyle>()) // TODO: ふつうは static なオブジェクトのほうが多くなるので、必要なやつだけ遅延作成でいいと思う
