@@ -158,6 +158,18 @@ public:
 
 
 
+	/** 枠線の太さを設定します。 */
+	void setBorderThickness(const Thickness& value);
+
+	/** 枠線の太さを取得します。 */
+	const Thickness& borderThickness() const;
+
+	/** 枠線の色を設定します。 */
+	void setBorderColor(const Color& value);
+
+	/** 枠線の色を取得します。 */
+	const Color& borderColor() const;
+
 
 
 	/** テキストの色を設定します。*/

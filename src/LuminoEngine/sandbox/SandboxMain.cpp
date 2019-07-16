@@ -213,19 +213,19 @@ int main(int argc, char** argv)
     Engine::mainCamera()->setBackgroundColor(Color::White);
 
 
-    auto texture1 = makeObject<Texture2D>(u"D:/tmp/110220c_as019.png");
-    auto sprite1 = Sprite::create(texture1, 3, 3);
+    //auto texture1 = makeObject<Texture2D>(u"D:/tmp/110220c_as019.png");
+    //auto sprite1 = Sprite::create(texture1, 3, 3);
 
 
-    //auto button1 = makeObject<UIButton>();
-    //button1->setWidth(200);
-    //button1->setHeight(100);
+    auto button1 = makeObject<UIButton>();
+    button1->setWidth(200);
+    button1->setHeight(100);
     //button1->setBackgroundColor(Color::Green);
 
 
-    auto text1 = UITextBlock::create();
-    text1->setText(u"ABCHIJabchij");
-    text1->setTextColor(Color::Black);
+    //auto text1 = UITextBlock::create();
+    //text1->setText(u"ABCHIJabchij");
+    //text1->setTextColor(Color::Black);
 
 
 #if 0

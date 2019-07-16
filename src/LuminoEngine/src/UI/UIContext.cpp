@@ -131,8 +131,8 @@ void UIContext::setupDefaultStyle()
         {
             auto s = c->style();
             s->backgroundColor = Color::White;
-            s->borderThickness = 1;
-            s->setBorderColor(Color::Gray);
+            //s->borderThickness = 1;
+            //s->setBorderColor(Color::Gray);
         }
         // UIButton:Pressed
         {

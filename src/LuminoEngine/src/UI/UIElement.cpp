@@ -198,6 +198,26 @@ const Thickness& UIElement::backgroundImageBorder() const
     return m_localStyle->backgroundImageBorder.getOrDefault(Thickness::Zero);
 }
 
+void UIElement::setBorderThickness(const Thickness& value)
+{
+	m_localStyle->borderThickness = value;
+}
+
+const Thickness& UIElement::borderThickness() const
+{
+	return m_localStyle->borderThickness.getOrDefault(Thickness::Zero);
+}
+
+void UIElement::setBorderColor(const Color& value)
+{
+	m_localStyle->setBorderColor(value);
+}
+
+const Color& UIElement::borderColor() const
+{
+	return m_localStyle->backgroundColor;
+}
+
 void UIElement::setTextColor(const Color& value)
 {
 	m_localStyle->textColor = value;
@@ -497,6 +517,10 @@ void UIElement::render(UIRenderingContext* context)
 				context->setMaterial(m_finalStyle->backgroundMaterial);
                 context->drawBoxBackground(Rect(0, 0, m_finalGlobalRect.getSize()), m_finalStyle->borderThickness, CornerRadius(), m_finalStyle->backgroundDrawMode, m_finalStyle->backgroundImageRect, m_finalStyle->backgroundColor);
 				//context->drawBoxBackground(finalGlobalRect(), Thickness(16), CornerRadius(), BrushImageDrawMode::BorderFrame, Rect(64, 0, 64, 64), m_finalStyle->backgroundColor);
+			}
+			if (!m_finalStyle->borderThickness.isZero()) {
+				context->setMaterial(m_finalStyle->backgroundMaterial);
+				context->drawBoxBorderLine(Rect(0, 0, m_finalGlobalRect.getSize()), m_finalStyle->borderThickness, m_finalStyle->leftBorderColor, m_finalStyle->topBorderColor, m_finalStyle->rightBorderColor, m_finalStyle->bottomBorderColor, CornerRadius(), false);
 			}
 		}
 

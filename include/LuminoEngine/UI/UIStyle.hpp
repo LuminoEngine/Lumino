@@ -491,8 +491,8 @@ public:
                     if (g.activeStateIndex != i) {
                         g.activeStateIndex = i;
                         m_dirty = true;
-                        stateFound = true;
                     }
+                    stateFound = true;
                 }
             }
             if (!stateFound) {
