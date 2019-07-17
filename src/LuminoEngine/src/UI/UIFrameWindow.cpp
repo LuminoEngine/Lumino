@@ -175,8 +175,7 @@ void UIInputInjector::updateMouseHover(float clientX, float clientY)
 
 UIElement* UIInputInjector::capturedElement()
 {
-    // TODO:
-    return nullptr;
+	return m_owner->m_manager->capturedElement();
 }
 
 UIElement* UIInputInjector::forcusedElement()

@@ -141,12 +141,13 @@ void ShapesRendererCommandList::drawBoxBorderLine(LinearAllocator* allocator, co
     cmd->borderInset = borderInset;
 }
 
-void ShapesRendererCommandList::addDrawBoxShadow(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const CornerRadius& cornerRadius, const Color& color, float blur, float width, bool inset)
+void ShapesRendererCommandList::addDrawBoxShadow(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const CornerRadius& cornerRadius, const Vector2& offset, const Color& color, float blur, float width, bool inset)
 {
 	auto* cmd = reinterpret_cast<DrawBoxShadowCommand*>(allocator->allocate(sizeof(DrawBoxShadowCommand)));
 	addCommandNode(cmd, Cmd_DrawBoxShadow, transform);
 	cmd->rect = rect;
 	cmd->cornerRadius = cornerRadius;
+	cmd->offset = offset;
 	cmd->color = color;
 	cmd->blur = blur;
 	cmd->width = width;
@@ -436,37 +437,29 @@ void InternalShapesRenderer::extractBasePoints(ShapesRendererCommandList::ListNo
 		{
 			auto* cmd = reinterpret_cast<ShapesRendererCommandList::DrawBoxShadowCommand*>(command);
 
-			float ltRad = cmd->cornerRadius.topLeft;//cmd[5];
-			float rtRad = cmd->cornerRadius.topRight;//cmd[6];
-			float lbRad = cmd->cornerRadius.bottomRight;//cmd[7];
-			float rbRad = cmd->cornerRadius.bottomLeft;//cmd[8];
+			float ltRad = cmd->cornerRadius.topLeft;
+			float rtRad = cmd->cornerRadius.topRight;
+			float lbRad = cmd->cornerRadius.bottomRight;
+			float rbRad = cmd->cornerRadius.bottomLeft;
 
-			Color shadowColor = cmd->color;//(cmd[9], cmd[10], cmd[11], cmd[12]);
-			float shadowBlur = cmd->blur;//cmd[13];
-			float shadowWidth = cmd->width;//cmd[14];
-			bool shadowInset = cmd->inset;//(cmd[15] != 0.0f);
+			Color shadowColor = cmd->color;
+			float shadowBlur = cmd->blur;
+			float shadowWidth = cmd->width;
+			bool shadowInset = cmd->inset;
 
-			float shadowFill = shadowBlur * 2/*(shadowWidth - shadowBlur)*/;
+			float shadowFill = shadowBlur * 2;
 			float shadowBlurWidth = (shadowWidth - shadowBlur) + shadowBlur * 2;	// base からシャドウのもっとも外側まで
 
 			BorderComponent components[4];
-			//// [1]
-			//rect.x, rect.y, rect.width, rect.height,
-			//// [5]
-			//cornerRadius.topLeft, cornerRadius.topRight, cornerRadius.bottomLeft, cornerRadius.bottomRight,
-			//// [9]
-			//color.r, color.g, color.b, color.a,
-			//// [13]
-			//blur, width, (inset) ? 1.0f : 0.0f
 			Vector2 lt[4];
 			Vector2 rt[4];
 			Vector2 lb[4];
 			Vector2 rb[4];
 			// basis
-			lt[1] = Vector2(cmd->rect.x, cmd->rect.y);//cmd[1], cmd[2]);
-			rt[1] = Vector2(cmd->rect.x + cmd->rect.width, cmd->rect.y);//cmd[1] + cmd[3], cmd[2]);
-			lb[1] = Vector2(cmd->rect.x, cmd->rect.y + cmd->rect.height);//cmd[1], cmd[2] + cmd[4]);
-			rb[1] = Vector2(cmd->rect.x + cmd->rect.width, cmd->rect.y + cmd->rect.height);//cmd[1] + cmd[3], cmd[2] + cmd[4]);
+			lt[1] = Vector2(cmd->rect.x, cmd->rect.y);
+			rt[1] = Vector2(cmd->rect.x + cmd->rect.width, cmd->rect.y);
+			lb[1] = Vector2(cmd->rect.x, cmd->rect.y + cmd->rect.height);
+			rb[1] = Vector2(cmd->rect.x + cmd->rect.width, cmd->rect.y + cmd->rect.height);
 			// inner
 			lt[2] = Vector2(lt[1].x + ltRad, lt[1].y + ltRad);
 			rt[2] = Vector2(rt[1].x - rtRad, rt[1].y + rtRad);
@@ -511,6 +504,7 @@ void InternalShapesRenderer::extractBasePoints(ShapesRendererCommandList::ListNo
 			components[3].lastPoint = m_basePoints.getCount() - 1;
 
 
+			auto& offset = cmd->offset;
 
 			if (shadowInset)
 			{
@@ -520,9 +514,9 @@ void InternalShapesRenderer::extractBasePoints(ShapesRendererCommandList::ListNo
 					for (int i = components[iComp].firstPoint; i <= components[iComp].lastPoint; i++)
 					{
 						BasePoint& pt = m_basePoints.getAt(i);
-						m_outlinePoints.add({ pt.pos - pt.exDir * shadowBlurWidth - pt.exDir * shadowBlurWidth, getAAExtDir(pt), 0.0f });
-						m_outlinePoints.add({ pt.pos - pt.exDir * shadowBlurWidth - pt.exDir * (shadowBlurWidth - shadowFill), getAAExtDir(pt), 1.0f });
-						m_outlinePoints.add({ pt.pos - pt.exDir * shadowBlurWidth, getAAExtDir(pt), 1.0f });
+						m_outlinePoints.add({ pt.pos - pt.exDir * shadowBlurWidth - pt.exDir * shadowBlurWidth + offset, getAAExtDir(pt), 0.0f });		// alpha=0
+						m_outlinePoints.add({ pt.pos - pt.exDir * shadowBlurWidth - pt.exDir * (shadowBlurWidth - shadowFill) + offset, getAAExtDir(pt), 1.0f }); // alpha=1
+						m_outlinePoints.add({ pt.pos - pt.exDir * shadowBlurWidth, getAAExtDir(pt), 1.0f });	// alpha=1
 
 					}
 					endPath(path);
@@ -540,9 +534,9 @@ void InternalShapesRenderer::extractBasePoints(ShapesRendererCommandList::ListNo
 						// left-dir
 						m_outlinePoints.add({ pt.pos - pt.exDir * shadowBlurWidth, getAAExtDir(pt), 1.0f });
 						// right-dir
-						m_outlinePoints.add({ pt.pos - pt.exDir * shadowFill, getAAExtDir(pt), 1.0f });
+						m_outlinePoints.add({ pt.pos - pt.exDir * shadowFill + offset, getAAExtDir(pt), 1.0f });
 						// right-dir
-						m_outlinePoints.add({ pt.pos, getAAExtDir(pt), 0.0f });
+						m_outlinePoints.add({ pt.pos + offset, getAAExtDir(pt), 0.0f });
 
 					}
 					endPath(path);
@@ -552,314 +546,6 @@ void InternalShapesRenderer::extractBasePoints(ShapesRendererCommandList::ListNo
 			break;
 		}
 
-#if 0
-		case ShapesRendererCommandList::Cmd_DrawBoxBorder:
-		{
-			auto* cmd = reinterpret_cast<ShapesRendererCommandList::DrawBoxBorderCommand*>(command);
-
-			const float root2 = 1.414213562373095f;
-
-			// Component の始点と終点は、前後の Component のそれと重なっている
-			struct BaseComponent
-			{
-				int	firstPoint;
-				int lastPoint;
-			};
-			BaseComponent baseComponents[4];
-			BaseComponent shadowComponents[4];
-
-
-			//float ltRad = cmd[25];
-			//float rtRad = cmd[26];
-			//float lbRad = cmd[27];
-			//float rbRad = cmd[28];
-			float ltRad = cmd->cornerRadius.topLeft;//cmd[5];
-			float rtRad = cmd->cornerRadius.topRight;//cmd[6];
-			float lbRad = cmd->cornerRadius.bottomRight;//cmd[7];
-			float rbRad = cmd->cornerRadius.bottomLeft;//cmd[8];
-
-			Color shadowColor = cmd->shadowColor;//(cmd[29], cmd[30], cmd[31], cmd[32]);
-			float shadowBlur = cmd->shadowBlur;//cmd[33];
-			float shadowWidth = cmd->shadowWidth;//cmd[34];
-			bool shadowInset = cmd->shadowInset;//(cmd[35] != 0.0f);
-			bool borderInset = cmd->borderInset;//(cmd[36] != 0.0f);
-
-			float borderExtSign = 1.0f;
-			PathWinding borderWinding = PathWinding::CCW;
-			if (borderInset)
-			{
-				borderExtSign = -1.0f;
-				borderWinding = PathWinding::CW;
-			}
-
-			float shadowFill = shadowBlur * 2/*(shadowWidth - shadowBlur)*/;
-			float shadowBlurWidth = (shadowWidth - shadowBlur) + shadowBlur * 2;	// base からシャドウのもっとも外側まで
-
-			Vector2 lt[4];
-			Vector2 rt[4];
-			Vector2 lb[4];
-			Vector2 rb[4];
-			// basis
-			//lt[1] = Vector2(cmd[1], cmd[2]);
-			//rt[1] = Vector2(cmd[1] + cmd[3], cmd[2]);
-			//lb[1] = Vector2(cmd[1], cmd[2] + cmd[4]);
-			//rb[1] = Vector2(cmd[1] + cmd[3], cmd[2] + cmd[4]);
-			lt[1] = Vector2(cmd->rect.x, cmd->rect.y);//cmd[1], cmd[2]);
-			rt[1] = Vector2(cmd->rect.x + cmd->rect.width, cmd->rect.y);//cmd[1] + cmd[3], cmd[2]);
-			lb[1] = Vector2(cmd->rect.x, cmd->rect.y + cmd->rect.height);//cmd[1], cmd[2] + cmd[4]);
-			rb[1] = Vector2(cmd->rect.x + cmd->rect.width, cmd->rect.y + cmd->rect.height);//cmd[1] + cmd[3], cmd[2] + cmd[4]);
-			// outer
-			//lt[0] = Vector2(lt[1].x - cmd[5], lt[1].y - cmd[6]);
-			//rt[0] = Vector2(rt[1].x + cmd[7], rt[1].y - cmd[6]);
-			//lb[0] = Vector2(lb[1].x - cmd[5], lb[1].y + cmd[8]);
-			//rb[0] = Vector2(rb[1].x + cmd[7], rb[1].y + cmd[8]);
-			lt[0] = Vector2(lt[1].x - cmd->thickness.left, lt[1].y - cmd->thickness.top);
-			rt[0] = Vector2(rt[1].x + cmd->thickness.right, rt[1].y - cmd->thickness.top);
-			lb[0] = Vector2(lb[1].x - cmd->thickness.left, lb[1].y + cmd->thickness.bottom);
-			rb[0] = Vector2(rb[1].x + cmd->thickness.right, rb[1].y + cmd->thickness.bottom);
-			// inner
-			lt[2] = Vector2(lt[1].x + ltRad, lt[1].y + ltRad);
-			rt[2] = Vector2(rt[1].x - rtRad, rt[1].y + rtRad);
-			lb[2] = Vector2(lb[1].x + lbRad, lb[1].y - lbRad);
-			rb[2] = Vector2(rb[1].x - rbRad, rb[1].y - rbRad);
-			// shadow outer
-			lt[3] = Vector2(lt[1].x - shadowBlurWidth, lt[1].y - shadowBlurWidth);
-			rt[3] = Vector2(rt[1].x + shadowBlurWidth, rt[1].y - shadowBlurWidth);
-			lb[3] = Vector2(lb[1].x - shadowBlurWidth, lb[1].y + shadowBlurWidth);
-			rb[3] = Vector2(rb[1].x + shadowBlurWidth, rb[1].y + shadowBlurWidth);
-
-
-			// left-side component
-			baseComponents[0].firstPoint = m_basePoints.getCount();
-			// left-top
-			if (ltRad == 0.0f)
-				m_basePoints.add({ lt[1], lt[0] - lt[1], false, true });
-			else
-				plotCornerBasePointsBezier(Vector2(lt[2].x, lt[1].y), Vector2(-1, 0), Vector2(lt[1].x, lt[2].y), Vector2(0, -1), 0.5, 1.0, lt[2]);
-			// left-bottom
-			if (lbRad == 0.0f)
-				m_basePoints.add({ lb[1], lb[0] - lb[1], false, true });
-			else
-				plotCornerBasePointsBezier(Vector2(lb[1].x, lb[2].y), Vector2(0, 1), Vector2(lb[2].x, lb[1].y), Vector2(-1, 0), 0.0, 0.5, lb[2]);
-			baseComponents[0].lastPoint = m_basePoints.getCount() - 1;
-
-			// bottom-side component
-			baseComponents[1].firstPoint = m_basePoints.getCount();
-			// left-bottom
-			if (lbRad == 0.0f)
-				m_basePoints.add({ lb[1], lb[0] - lb[1], false, true });
-			else
-				plotCornerBasePointsBezier(Vector2(lb[1].x, lb[2].y), Vector2(0, 1), Vector2(lb[2].x, lb[1].y), Vector2(-1, 0), 0.5, 1.0, lb[2]);
-			// right-bottom
-			if (rbRad == 0.0f)
-				m_basePoints.add({ rb[1], rb[0] - rb[1], false, true });
-			else
-				plotCornerBasePointsBezier(Vector2(rb[2].x, rb[1].y), Vector2(1, 0), Vector2(rb[1].x, rb[2].y), Vector2(0, 1), 0.0, 0.5, rb[2]);
-			baseComponents[1].lastPoint = m_basePoints.getCount() - 1;
-
-			// right-side component
-			baseComponents[2].firstPoint = m_basePoints.getCount();
-			// right-bottom
-			if (rbRad == 0.0f)
-				m_basePoints.add({ rb[1], rb[0] - rb[1], false, true });
-			else
-				plotCornerBasePointsBezier(Vector2(rb[2].x, rb[1].y), Vector2(1, 0), Vector2(rb[1].x, rb[2].y), Vector2(0, 1), 0.5, 1.0, rb[2]);
-			// right-top
-			if (rtRad == 0.0f)
-				m_basePoints.add({ rt[1], rt[0] - rt[1], false, true });
-			else
-				plotCornerBasePointsBezier(Vector2(rt[1].x, rt[2].y), Vector2(0, -1), Vector2(rt[2].x, rt[1].y), Vector2(1, 0), 0.0, 0.5, rt[2]);
-			baseComponents[2].lastPoint = m_basePoints.getCount() - 1;
-
-			// top-side component
-			baseComponents[3].firstPoint = m_basePoints.getCount();
-			// right-top
-			if (rtRad == 0.0f)
-				m_basePoints.add({ rt[1], rt[0] - rt[1], false, true });
-			else
-				plotCornerBasePointsBezier(Vector2(rt[1].x, rt[2].y), Vector2(0, -1), Vector2(rt[2].x, rt[1].y), Vector2(1, 0), 0.5, 1.0, rt[2]);
-			// left-top
-			if (ltRad == 0.0f)
-				m_basePoints.add({ lt[1], lt[0] - lt[1], false, true });
-			else
-				plotCornerBasePointsBezier(Vector2(lt[2].x, lt[1].y), Vector2(-1, 0), Vector2(lt[1].x, lt[2].y), Vector2(0, -1), 0.0, 0.5, lt[2]);
-			baseComponents[3].lastPoint = m_basePoints.getCount() - 1;
-
-
-			// left-side component
-			shadowComponents[0].firstPoint = m_basePoints.getCount();
-			// left-top
-			plotCornerBasePointsBezier(Vector2(lt[2].x, lt[3].y), Vector2(-1, 0), Vector2(lt[3].x, lt[2].y), Vector2(0, -1), 0.5, 1.0, lt[2]);
-			// left-bottom
-			plotCornerBasePointsBezier(Vector2(lb[3].x, lb[2].y), Vector2(0, 1), Vector2(lb[2].x, lb[3].y), Vector2(-1, 0), 0.0, 0.5, lb[2]);
-			shadowComponents[0].lastPoint = m_basePoints.getCount() - 1;
-
-			// bottom-side component
-			shadowComponents[1].firstPoint = m_basePoints.getCount();
-			// left-bottom
-			plotCornerBasePointsBezier(Vector2(lb[3].x, lb[2].y), Vector2(0, 1), Vector2(lb[2].x, lb[3].y), Vector2(-1, 0), 0.5, 1.0, lb[2]);
-			// right-bottom
-			plotCornerBasePointsBezier(Vector2(rb[2].x, rb[3].y), Vector2(1, 0), Vector2(rb[3].x, rb[2].y), Vector2(0, 1), 0.0, 0.5, rb[2]);
-			shadowComponents[1].lastPoint = m_basePoints.getCount() - 1;
-
-			// right-side component
-			shadowComponents[2].firstPoint = m_basePoints.getCount();
-			// right-bottom
-			plotCornerBasePointsBezier(Vector2(rb[2].x, rb[3].y), Vector2(1, 0), Vector2(rb[3].x, rb[2].y), Vector2(0, 1), 0.5, 1.0, rb[2]);
-			// right-top
-			plotCornerBasePointsBezier(Vector2(rt[3].x, rt[2].y), Vector2(0, -1), Vector2(rt[2].x, rt[3].y), Vector2(1, 0), 0.0, 0.5, rt[2]);
-			shadowComponents[2].lastPoint = m_basePoints.getCount() - 1;
-
-			// top-side component
-			shadowComponents[3].firstPoint = m_basePoints.getCount();
-			// right-top
-			plotCornerBasePointsBezier(Vector2(rt[3].x, rt[2].y), Vector2(0, -1), Vector2(rt[2].x, rt[3].y), Vector2(1, 0), 0.5, 1.0, rt[2]);
-			// left-top
-			plotCornerBasePointsBezier(Vector2(lt[2].x, lt[3].y), Vector2(-1, 0), Vector2(lt[3].x, lt[2].y), Vector2(0, -1), 0.0, 0.5, lt[2]);
-			shadowComponents[3].lastPoint = m_basePoints.getCount() - 1;
-
-
-
-			// ↑ m_basePoints 作成ここまで
-			//---------------------------------------------------------------
-			// ↓ m_outlinePoints 作成ここから
-
-
-			// shadows
-			if (!shadowInset)
-			{
-				for (int iComp = 0; iComp < 4; iComp++)
-				{
-					auto* path = addPath(PathType::Strip3Point, &cmd->transform, shadowColor);
-					for (int i = shadowComponents[iComp].firstPoint; i <= shadowComponents[iComp].lastPoint; i++)
-					{
-						BasePoint& pt = m_basePoints.getAt(i);
-
-						// left-dir
-						m_outlinePoints.add({ pt.pos - pt.exDir * shadowBlurWidth, getAAExtDir(pt), 1.0f });
-						// right-dir
-						m_outlinePoints.add({ pt.pos - pt.exDir * shadowFill, getAAExtDir(pt), 1.0f });
-						// right-dir
-						m_outlinePoints.add({ pt.pos, getAAExtDir(pt), 0.0f });
-
-					}
-					endPath(path);
-				}
-			}
-
-			// center box
-			{
-				auto* path = addPath(PathType::Convex, &cmd->transform, Color::White);
-				for (int iComp = 0; iComp < 4; iComp++)
-				{
-					for (int i = baseComponents[iComp].firstPoint; i < baseComponents[iComp].lastPoint; i++)	// 終点は次の Componet の開始点と一致するので必要ない
-					{
-						BasePoint& pt = m_basePoints.getAt(i);
-						m_outlinePoints.add({ pt.pos, getAAExtDir(pt), 1.0f });
-					}
-				}
-				endPath(path);
-			}
-
-			// ※右下のコーナーが小さいとか、ちょっとゆがんで見えるのは DX9 シェーダで 0.5px オフセットが考慮されていないことが原因。
-
-
-
-
-
-			if (shadowInset)
-			{
-				// shadows
-				for (int iComp = 0; iComp < 4; iComp++)
-				{
-					auto* path = addPath(PathType::Strip3Point, &cmd->transform, shadowColor);
-					for (int i = shadowComponents[iComp].firstPoint; i <= shadowComponents[iComp].lastPoint; i++)
-					{
-						BasePoint& pt = m_basePoints.getAt(i);
-						m_outlinePoints.add({ pt.pos - pt.exDir * shadowBlurWidth - pt.exDir * shadowBlurWidth, getAAExtDir(pt), 0.0f });
-						m_outlinePoints.add({ pt.pos - pt.exDir * shadowBlurWidth - pt.exDir * (shadowBlurWidth - shadowFill), getAAExtDir(pt), 1.0f });
-						m_outlinePoints.add({ pt.pos - pt.exDir * shadowBlurWidth, getAAExtDir(pt), 1.0f });
-
-					}
-					endPath(path);
-				}
-			}
-
-
-			// ↓ AntiAlias
-
-			// left border
-			{
-				auto* path = addPath(PathType::Convex, &cmd->transform, cmd->leftColor/*Color(cmd[9], cmd[10], cmd[11], cmd[12])*/, borderWinding);
-
-				for (int i = baseComponents[0].firstPoint; i <= baseComponents[0].lastPoint; i++)
-				{
-					BasePoint& pt = m_basePoints.getAt(i);
-					// right-dir
-					m_outlinePoints.add({ getExtPos(pt, borderExtSign, cmd->thickness.left/*cmd[5]*/), borderExtSign * getAAExtDir(pt), 1.0f });
-				}
-				for (int i = baseComponents[0].lastPoint; i >= baseComponents[0].firstPoint; i--)
-				{
-					BasePoint& pt = m_basePoints.getAt(i);
-					// left-dir
-					m_outlinePoints.add({ pt.pos, borderExtSign * -getAAExtDir(pt), 1.0f });
-				}
-				endPath(path);
-			}
-			// bottom border
-			{
-				auto* path = addPath(PathType::Convex, &cmd->transform, cmd->bottomColor/*Color(cmd[21], cmd[22], cmd[23], cmd[24])*/, borderWinding);
-				for (int i = baseComponents[1].firstPoint; i <= baseComponents[1].lastPoint; i++)
-				{
-					BasePoint& pt = m_basePoints.getAt(i);
-					// right-dir
-					m_outlinePoints.add({ getExtPos(pt, borderExtSign, cmd->thickness.bottom/*cmd[8]*/), borderExtSign * getAAExtDir(pt), 1.0f });
-				}
-				for (int i = baseComponents[1].lastPoint; i >= baseComponents[1].firstPoint; i--)
-				{
-					BasePoint& pt = m_basePoints.getAt(i);
-					// left-dir
-					m_outlinePoints.add({ pt.pos, borderExtSign * -getAAExtDir(pt), 1.0f });
-				}
-				endPath(path);
-			}
-			// right border
-			{
-				auto* path = addPath(PathType::Convex, &cmd->transform, cmd->rightColor/*Color(cmd[17], cmd[18], cmd[19], cmd[20])*/, borderWinding);
-				for (int i = baseComponents[2].firstPoint; i <= baseComponents[2].lastPoint; i++)
-				{
-					BasePoint& pt = m_basePoints.getAt(i);
-					// right-dir
-					m_outlinePoints.add({ getExtPos(pt, borderExtSign, cmd->thickness.right/*cmd[7]*/), borderExtSign * getAAExtDir(pt), 1.0f });
-				}
-				for (int i = baseComponents[2].lastPoint; i >= baseComponents[2].firstPoint; i--)
-				{
-					BasePoint& pt = m_basePoints.getAt(i);
-					// left-dir
-					m_outlinePoints.add({ pt.pos, borderExtSign * -getAAExtDir(pt), 1.0f });
-				}
-				endPath(path);
-			}
-			// top border
-			{
-				auto* path = addPath(PathType::Convex, &cmd->transform, cmd->topColor/*Color(cmd[13], cmd[14], cmd[15], cmd[16])*/, borderWinding);
-				for (int i = baseComponents[3].firstPoint; i <= baseComponents[3].lastPoint; i++)
-				{
-					BasePoint& pt = m_basePoints.getAt(i);
-					// right-dir
-					m_outlinePoints.add({ getExtPos(pt, borderExtSign, cmd->thickness.top/*cmd[6]*/), borderExtSign * getAAExtDir(pt), 1.0f });
-				}
-				for (int i = baseComponents[3].lastPoint; i >= baseComponents[3].firstPoint; i--)
-				{
-					BasePoint& pt = m_basePoints.getAt(i);
-					// left-dir
-					m_outlinePoints.add({ pt.pos, borderExtSign * -getAAExtDir(pt), 1.0f });
-				}
-				endPath(path);
-			}
-			break;
-		}
-#endif
 		default:
 			LN_UNREACHABLE();
 			break;

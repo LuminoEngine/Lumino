@@ -3,6 +3,8 @@
 
 namespace ln {
 
+// - フォーカスを持つことができる。
+// - フォーカスの移動単位となる。
 class UIControl
 	: public UIContainerElement
 {

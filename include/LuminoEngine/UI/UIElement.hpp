@@ -248,6 +248,8 @@ public:
 
     //UIContext* context() const { return m_context; }
 
+
+
     UIElement();
     virtual ~UIElement();
 	void init();
@@ -260,7 +262,11 @@ public: // TODO: internal
 	const Ref<detail::UIStyleInstance>& finalStyle() const { return m_finalStyle; }
 	UIElement* getFrameWindow();
 
-public:	// TODO: internal
+public:	// TODO: internal protected
+
+	void retainCapture();
+	void releaseCapture();
+
     virtual const String& className() const { return String::Empty; }
     virtual void onUpdateFrame(float elapsedSeconds);
 	virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle);

@@ -1,6 +1,8 @@
 ﻿#include "Common.hpp"
 #include "../src/Audio/AudioDecoder.hpp"
 
+#ifdef LN_UNIT_TEST_EXPERIMENTAL
+
 //==============================================================================
 //# AudioDecorder のテスト
 class Test_Audio_Decorder : public LuminoSceneTest {};
@@ -133,3 +135,4 @@ TEST_F(Test_Audio_Decorder, WaveDecoder)
     }
 }
 
+#endif

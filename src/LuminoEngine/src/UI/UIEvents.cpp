@@ -201,6 +201,41 @@ void UIMouseWheelEventArgs::init(UIElement* sender, UIEventType type, int delta)
 }
 
 //==============================================================================
+// UIDragDeltaEventArgs
+
+LN_OBJECT_IMPLEMENT(UIDragDeltaEventArgs, UIEventArgs) {}
+
+Ref<UIDragDeltaEventArgs> create(UIElement* sender, UIEventType type, float offsetX, float offsetY, bool caching)
+{
+	if (caching)
+	{
+		auto& pool = detail::EngineDomain::uiManager()->eventArgsPool();
+		Ref<UIDragDeltaEventArgs> ptr(pool->create<UIDragDeltaEventArgs>(sender, type, offsetX, offsetY), false);
+		return ptr;
+	}
+	else
+	{
+		LN_NOTIMPLEMENTED();
+		return nullptr;
+	}
+}
+
+UIDragDeltaEventArgs::UIDragDeltaEventArgs()
+{
+}
+
+UIDragDeltaEventArgs::~UIDragDeltaEventArgs()
+{
+}
+
+void UIDragDeltaEventArgs::init(UIElement* sender, UIEventType type, float offsetX, float offsetY)
+{
+	UIEventArgs::init(sender, type);
+	m_offsetX = offsetX;
+	m_offsetY = offsetY;
+}
+
+//==============================================================================
 // UIDragDropEventArgs
 
 LN_OBJECT_IMPLEMENT(UIDragDropEventArgs, UIEventArgs) {}

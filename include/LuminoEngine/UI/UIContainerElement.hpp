@@ -21,7 +21,7 @@ public:
 
 	/**
 		子要素をレイアウトするための UILayoutPanel を設定します。
-		この UILayoutPanel はこの要素のビジュアルツリーに組み込まれ、子要素の直接のビジュアル親要素となります。
+
 		デフォルトは nullptr です。
 	*/
 	void setLayoutPanel(UILayoutPanel2* panel);
@@ -45,6 +45,7 @@ private:
 	List<Ref<UIElement>> m_logicalChildren;
 	//Ref<UILayoutPanel> m_logicalChildrenHost;
     Ref<UILayoutPanel2> m_layout;
+	Size m_layoutDesiredSize;	// Layout is state-less
 };
 
 

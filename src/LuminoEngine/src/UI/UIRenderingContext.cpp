@@ -64,13 +64,13 @@ void UIRenderingContext::drawBoxBorderLine(const Rect& rect, const Thickness& th
     // TODO: bounding box
 }
 
-void UIRenderingContext::drawBoxShadow(const Rect& rect, const CornerRadius& cornerRadius, const Color& color, float blur, float width, bool inset)
+void UIRenderingContext::drawBoxShadow(const Rect& rect, const CornerRadius& cornerRadius, const Vector2& offset, const Color& color, float blur, float width, bool inset)
 {
 	auto* element = m_builder->addNewDrawElement<detail::DrawShapesElement>(
 		m_manager->shapesRenderFeature(),
 		m_builder->shapesRenderFeatureStageParameters());
 
-	element->commandList.addDrawBoxShadow(m_builder->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, cornerRadius, color, blur, width, inset);
+	element->commandList.addDrawBoxShadow(m_builder->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, cornerRadius, offset, color, blur, width, inset);
 
 
 	// TODO: bounding box

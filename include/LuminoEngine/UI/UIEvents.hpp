@@ -199,6 +199,30 @@ public:
 	int		m_delta;
 };
 
+/** ドラッグが関係するイベント引数です。 */
+class UIDragDeltaEventArgs
+	: public UIEventArgs
+{
+	LN_OBJECT;
+public:
+	static Ref<UIDragDeltaEventArgs> create(UIElement* sender, UIEventType type, float offsetX, float offsetY, bool caching = true);
+
+	/** ドラッグ開始点からの水平距離 */
+	float offsetX() const { return m_offsetX; }
+
+	/** ドラッグ開始点からの垂直距離 */
+	float offsetY() const { return m_offsetY; }
+
+LN_CONSTRUCT_ACCESS:
+	UIDragDeltaEventArgs();
+	virtual ~UIDragDeltaEventArgs();
+	void init(UIElement* sender, UIEventType type, float offsetX, float offsetY);
+
+public:
+	float m_offsetX;
+	float m_offsetY;
+};
+
 /** ドラッグアンドドロップイベントの引数です。 */
 class UIDragDropEventArgs
 	: public UIEventArgs

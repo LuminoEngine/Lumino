@@ -128,16 +128,17 @@ public:
 	{
 		Rect rect;
 		CornerRadius cornerRadius;
+		Vector2 offset;
 		Color color;
-		float blur;
-		float width;
+		float blur;		// ↓の次に、太らせた外周から、外側と内側へこの値の分だけぼかしをかける
+		float width;	// まずはこの値まで Shape を太らせる
 		bool inset;
 	};
 
 	void addDrawBoxBackground(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const CornerRadius& cornerRadius, const Color& color);
 	//void addDrawBoxBorder(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const Thickness& thickness, const CornerRadius& cornerRadius, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const Color& shadowColor, float shadowBlur, float shadowWidth, bool shadowInset, bool borderInset);
 	void drawBoxBorderLine(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const Thickness& thickness, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const CornerRadius& cornerRadius, bool borderInset);
-	void addDrawBoxShadow(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const CornerRadius& cornerRadius, const Color& color, float blur, float width, bool inset);
+	void addDrawBoxShadow(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const CornerRadius& cornerRadius, const Vector2& offset, const Color& color, float blur, float width, bool inset);
 
 	ListNode* head = nullptr;
 	ListNode* tail = nullptr;
@@ -187,6 +188,9 @@ private:
 		const Matrix*	transform;	// 実行中のコマンド構造体に乗っている transform への参照
 	};
 
+
+	// ベースラインの上下左右、計4つセットの基本要素。
+	// Border は上下左右で個別に Color を設定できるが、その単位となる。
 	struct BorderComponent
 	{
 		int	firstPoint;

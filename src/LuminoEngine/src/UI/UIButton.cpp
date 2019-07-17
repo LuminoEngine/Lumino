@@ -38,10 +38,10 @@ void UIButton::onRoutedEvent(UIEventArgs* e)
 
         m_isPressed = true;
         //focus();
+		retainCapture();
         getVisualStateManager()->gotoState(u"Pressed");
         e->handled = true;
 
-        // TODO: capture. マウスキャプチャは PlatformWindow で行うが、UIElement を覚えておくのは UIManager で行う必要がある。
         return;
     }
     else if (e->type() == UIEvents::MouseUpEvent) {
@@ -50,6 +50,7 @@ void UIButton::onRoutedEvent(UIEventArgs* e)
         if (m_isPressed)
         {
             m_isPressed = false;
+			releaseCapture();
             getVisualStateManager()->gotoState(u"MouseOver");
             //onClick(e);
             e->handled = true;

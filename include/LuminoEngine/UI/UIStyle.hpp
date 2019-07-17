@@ -219,6 +219,14 @@ public:
     detail::UIStyleAttribute<Color>				bottomBorderColor;
     detail::UIStyleAttribute<BorderDirection>	borderDirection;
 
+	// shadow
+	detail::UIStyleAttribute<float> shadowOffsetX;
+	detail::UIStyleAttribute<float> shadowOffsetY;
+	detail::UIStyleAttribute<float> shadowBlurRadius;
+	detail::UIStyleAttribute<float> shadowSpreadRadius;
+	detail::UIStyleAttribute<Color> shadowColor;
+	detail::UIStyleAttribute<bool> shadowInset;
+
 	// text
 	detail::UIStyleAttribute<Color> textColor;	// (default: Black)
 	detail::UIStyleAttribute<String> fontFamily;
@@ -384,12 +392,20 @@ public:
 
     // border
     Thickness borderThickness = Thickness::Zero;
-    CornerRadius cornerRadius = CornerRadius(0, 0, 0, 0);
+    CornerRadius cornerRadius = CornerRadius(0, 0, 0, 0);	// TODO: borderRadius
     Color 		leftBorderColor = Color::Gray;
     Color 		topBorderColor = Color::Gray;
     Color 		rightBorderColor = Color::Gray;
     Color 		bottomBorderColor = Color::Gray;
     BorderDirection borderDirection = BorderDirection::Outside;
+
+	// shadow
+	float shadowOffsetX;
+	float shadowOffsetY;
+	float shadowBlurRadius;
+	float shadowSpreadRadius;
+	Color shadowColor;
+	bool shadowInset;
 
     // text
     Color textColor;

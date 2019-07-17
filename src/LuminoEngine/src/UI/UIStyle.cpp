@@ -133,6 +133,14 @@ void UIStyle::setupDefault()
     bottomBorderColor = Color::Black;
     borderDirection = BorderDirection::Outside;
 
+	// shadow
+	shadowOffsetX = 0.0f;
+	shadowOffsetY = 0.0f;
+	shadowBlurRadius = 0.0f;
+	shadowSpreadRadius = 0.0f;
+	shadowColor = Color(0, 0, 0, 0.25);
+	shadowInset = false;
+
     // text
 	textColor = Color::Black;
 	fontFamily = String::Empty;
@@ -187,6 +195,14 @@ void UIStyle::mergeFrom(const UIStyle* other)
     if (other->rightBorderColor.hasValue()) rightBorderColor = other->rightBorderColor.get();
     if (other->bottomBorderColor.hasValue()) bottomBorderColor = other->bottomBorderColor.get();
     if (other->borderDirection.hasValue()) borderDirection = other->borderDirection.get();
+	
+	// shadow
+	if (other->shadowOffsetX.hasValue()) shadowOffsetX = other->shadowOffsetX.get();
+	if (other->shadowOffsetY.hasValue()) shadowOffsetY = other->shadowOffsetY.get();
+	if (other->shadowBlurRadius.hasValue()) shadowBlurRadius = other->shadowBlurRadius.get();
+	if (other->shadowSpreadRadius.hasValue()) shadowSpreadRadius = other->shadowSpreadRadius.get();
+	if (other->shadowColor.hasValue()) shadowColor = other->shadowColor.get();
+	if (other->shadowInset.hasValue()) shadowInset = other->shadowInset.get();
 
     // text
     if (other->textColor.hasValue()) textColor = other->textColor.get();
@@ -235,13 +251,21 @@ void UIStyle::copyFrom(const UIStyle* other)
     backgroundImageBorder = other->backgroundImageBorder;
 
     // border
-    borderThickness = borderThickness;
-    cornerRadius = cornerRadius;
-    leftBorderColor = leftBorderColor;
-    topBorderColor = topBorderColor;
-    rightBorderColor = rightBorderColor;
-    bottomBorderColor = bottomBorderColor;
-    borderDirection = borderDirection;
+    borderThickness = other->borderThickness;
+    cornerRadius = other->cornerRadius;
+    leftBorderColor = other->leftBorderColor;
+    topBorderColor = other->topBorderColor;
+    rightBorderColor = other->rightBorderColor;
+    bottomBorderColor = other->bottomBorderColor;
+    borderDirection = other->borderDirection;
+
+	// border
+	shadowOffsetX = other->shadowOffsetX;
+	shadowOffsetY = other->shadowOffsetY;
+	shadowBlurRadius = other->shadowBlurRadius;
+	shadowSpreadRadius = other->shadowSpreadRadius;
+	shadowColor = other->shadowColor;
+	shadowInset = other->shadowInset;
 
     // text
     textColor = other->textColor;
@@ -546,6 +570,14 @@ void UIStyleInstance::mergeFrom(const UIStyle* other)
     if (other->bottomBorderColor.hasValue()) bottomBorderColor = other->bottomBorderColor.get();
     if (other->borderDirection.hasValue()) borderDirection = other->borderDirection.get();
 
+	// shadow
+	if (other->shadowOffsetX.hasValue()) shadowOffsetX = other->shadowOffsetX.get();
+	if (other->shadowOffsetY.hasValue()) shadowOffsetY = other->shadowOffsetY.get();
+	if (other->shadowBlurRadius.hasValue()) shadowBlurRadius = other->shadowBlurRadius.get();
+	if (other->shadowSpreadRadius.hasValue()) shadowSpreadRadius = other->shadowSpreadRadius.get();
+	if (other->shadowColor.hasValue()) shadowColor = other->shadowColor.get();
+	if (other->shadowInset.hasValue()) shadowInset = other->shadowInset.get();
+
     // text
     if (other->textColor.hasValue()) textColor = other->textColor.get();
     if (other->fontFamily.hasValue()) fontFamily = other->fontFamily.get();
@@ -593,13 +625,21 @@ void UIStyleInstance::copyFrom(const UIStyleInstance* other)
     backgroundImageBorder = other->backgroundImageBorder;
 
     // border
-    borderThickness = borderThickness;
-    cornerRadius = cornerRadius;
-    leftBorderColor = leftBorderColor;
-    topBorderColor = topBorderColor;
-    rightBorderColor = rightBorderColor;
-    bottomBorderColor = bottomBorderColor;
-    borderDirection = borderDirection;
+    borderThickness = other->borderThickness;
+    cornerRadius = other->cornerRadius;
+    leftBorderColor = other->leftBorderColor;
+    topBorderColor = other->topBorderColor;
+    rightBorderColor = other->rightBorderColor;
+    bottomBorderColor = other->bottomBorderColor;
+    borderDirection = other->borderDirection;
+
+	// shadow
+	shadowOffsetX = other->shadowOffsetX;
+	shadowOffsetY = other->shadowOffsetY;
+	shadowBlurRadius = other->shadowBlurRadius;
+	shadowSpreadRadius = other->shadowSpreadRadius;
+	shadowColor = other->shadowColor;
+	shadowInset = other->shadowInset;
 
     // text
     textColor = other->textColor;
@@ -706,6 +746,16 @@ void UIStyleInstance::updateStyleDataHelper(UIStyle* localStyle, const detail::U
         outStyleData->bottomBorderColor = localStyle->bottomBorderColor.getOrDefault(combinedStyle->bottomBorderColor.get());
         outStyleData->borderDirection = localStyle->borderDirection.getOrDefault(combinedStyle->borderDirection.get());
     }
+
+	// shadow
+	{
+		outStyleData->shadowOffsetX = localStyle->shadowOffsetX.getOrDefault(combinedStyle->shadowOffsetX.get());
+		outStyleData->shadowOffsetY = localStyle->shadowOffsetY.getOrDefault(combinedStyle->shadowOffsetY.get());
+		outStyleData->shadowBlurRadius = localStyle->shadowBlurRadius.getOrDefault(combinedStyle->shadowBlurRadius.get());
+		outStyleData->shadowSpreadRadius = localStyle->shadowSpreadRadius.getOrDefault(combinedStyle->shadowSpreadRadius.get());
+		outStyleData->shadowColor = localStyle->shadowColor.getOrDefault(combinedStyle->shadowColor.get());
+		outStyleData->shadowInset = localStyle->shadowInset.getOrDefault(combinedStyle->shadowInset.get());
+	}
 
 	// text
 	{

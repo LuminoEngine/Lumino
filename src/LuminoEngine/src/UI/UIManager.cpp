@@ -3,6 +3,7 @@
 #include <LuminoEngine/UI/UIContainerElement.hpp>
 #include <LuminoEngine/UI/UIEvents.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
+#include <LuminoEngine/UI/UILayoutPanel.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include "UIEventArgsPool.hpp"
 #include "UIManager.hpp"
@@ -19,6 +20,7 @@ UIManager::UIManager()
 	: m_graphicsManager(nullptr)
     , m_primaryElement(nullptr)
     , m_mouseHoverElement(nullptr)
+	, m_capturedElement(nullptr)
 {
 }
 
@@ -29,6 +31,8 @@ void UIManager::init(const Settings& settings)
 	m_graphicsManager = settings.graphicsManager;
     m_eventArgsPool = makeRef<EventArgsPool>();
     //m_mainContext = makeObject<UIContext>();
+
+	m_defaultLayout = makeObject<UIFrameLayout2>();
 
     LN_LOG_DEBUG << "UIManager Initialization ended.";
 }
@@ -114,6 +118,18 @@ EXIT:
     }
 
     return false;
+}
+
+void UIManager::retainCapture(UIElement* element)
+{
+	m_capturedElement = element;
+}
+
+void UIManager::releaseCapture(UIElement* element)
+{
+	if (m_capturedElement == element) {
+		m_capturedElement = nullptr;
+	}
 }
 
 } // namespace detail

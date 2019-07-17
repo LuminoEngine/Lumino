@@ -67,9 +67,12 @@ void UIContext::setupDefaultStyle()
         // UIButton
         {
             auto s = c->style();
+			s->horizontalContentAlignment = HAlignment::Center;
+			s->verticalContentAlignment = VAlignment::Center;
             s->backgroundColor = UIColors::get(UIColorHues::Grey, 3);
-            s->horizontalContentAlignment = HAlignment::Center;
-            s->verticalContentAlignment = VAlignment::Center;
+			s->cornerRadius = CornerRadius(4);
+			s->shadowBlurRadius = 2;
+			s->shadowOffsetY = 2;
         }
         // UIButton:MouseOver
         {

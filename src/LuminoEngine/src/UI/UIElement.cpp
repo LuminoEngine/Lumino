@@ -393,6 +393,16 @@ UIElement* UIElement::lookupMouseHoverElement(const Point& frameClientPosition)
     return nullptr;
 }
 
+void UIElement::retainCapture()
+{
+	m_manager->retainCapture(this);
+}
+
+void UIElement::releaseCapture()
+{
+	m_manager->releaseCapture(this);
+}
+
 void UIElement::onUpdateFrame(float elapsedSeconds)
 {
 }
@@ -512,19 +522,20 @@ void UIElement::render(UIRenderingContext* context)
 		{
 			context->setMaterial(m_finalStyle->backgroundMaterial);
 
+			if (m_finalStyle->shadowBlurRadius > 0.0f)
 			{
-				//context->drawBoxShadow(Rect(0, 0, m_finalGlobalRect.getSize()), CornerRadius(), Color::Black, 10, 10, false);
+				context->drawBoxShadow(Rect(0, 0, m_finalGlobalRect.getSize()), m_finalStyle->cornerRadius, Vector2(m_finalStyle->shadowOffsetX, m_finalStyle->shadowOffsetY), m_finalStyle->shadowColor, m_finalStyle->shadowBlurRadius, m_finalStyle->shadowSpreadRadius, m_finalStyle->shadowInset);
 
 			}
 			
 			if (m_finalStyle->backgroundColor.a > 0.0f) {
 				//auto tex = makeObject<Texture2D>(u"D:/Proj/LN/HC1/Assets/Windowskin/window.png");
 				//auto mat = Material::create(tex);
-                context->drawBoxBackground(Rect(0, 0, m_finalGlobalRect.getSize()), CornerRadius(), m_finalStyle->backgroundDrawMode, m_finalStyle->backgroundImageRect, m_finalStyle->backgroundColor);
+                context->drawBoxBackground(Rect(0, 0, m_finalGlobalRect.getSize()), m_finalStyle->cornerRadius, m_finalStyle->backgroundDrawMode, m_finalStyle->backgroundImageRect, m_finalStyle->backgroundColor);
 				//context->drawBoxBackground(finalGlobalRect(), Thickness(16), CornerRadius(), BrushImageDrawMode::BorderFrame, Rect(64, 0, 64, 64), m_finalStyle->backgroundColor);
 			}
 			if (!m_finalStyle->borderThickness.isZero()) {
-				context->drawBoxBorderLine(Rect(0, 0, m_finalGlobalRect.getSize()), m_finalStyle->borderThickness, m_finalStyle->leftBorderColor, m_finalStyle->topBorderColor, m_finalStyle->rightBorderColor, m_finalStyle->bottomBorderColor, CornerRadius(), false);
+				context->drawBoxBorderLine(Rect(0, 0, m_finalGlobalRect.getSize()), m_finalStyle->borderThickness, m_finalStyle->leftBorderColor, m_finalStyle->topBorderColor, m_finalStyle->rightBorderColor, m_finalStyle->bottomBorderColor, m_finalStyle->cornerRadius, false);
 			}
 		}
 

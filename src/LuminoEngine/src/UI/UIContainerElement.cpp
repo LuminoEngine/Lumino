@@ -3,6 +3,7 @@
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UILayoutPanel.hpp>
 #include <LuminoEngine/UI/UIContainerElement.hpp>
+#include "UIManager.hpp"
 
 namespace ln {
 
@@ -19,8 +20,6 @@ void UIContainerElement::init()
 	//setHorizontalAlignment(HAlignment::Stretch);
 	//setVerticalAlignment(VAlignment::Stretch);
 
-    // TODO:
-    m_layout = makeObject<UIFrameLayout2>();
 }
 
 void UIContainerElement::onDispose(bool explicitDisposing)
@@ -76,10 +75,18 @@ void UIContainerElement::setLayoutPanel(UILayoutPanel2* panel)
 
 UILayoutPanel2* UIContainerElement::layoutPanel() const
 {
-    return m_layout;
-    //LN_UNREACHABLE();
-    //return nullptr;//m_logicalChildrenHost;
+	if (m_layout)
+		return m_layout;
+	else
+		return m_manager->defaultLayout();
 }
+//
+//UILayoutPanel2* UIContainerElement::layoutPanel() const
+//{
+//    return m_layout;
+//    //LN_UNREACHABLE();
+//    //return nullptr;//m_logicalChildrenHost;
+//}
 
 int UIContainerElement::getVisualChildrenCount() const
 {
@@ -103,10 +110,11 @@ UIElement* UIContainerElement::getVisualChild(int index) const
 
 Size UIContainerElement::measureOverride(const Size& constraint)
 {
-    m_layout->measureLayout(m_logicalChildren, constraint);
-    Size layoutSize = m_layout->desiredSize();
+	UILayoutPanel2* layout = layoutPanel();
+	layout->measureLayout(m_logicalChildren, constraint);
+	m_layoutDesiredSize = layout->desiredSize();
     Size localSize = UIElement::measureOverride(constraint);
-    return Size::max(layoutSize, localSize);
+    return Size::max(m_layoutDesiredSize, localSize);
 
 	//if (m_logicalChildrenHost) {
  //       m_logicalChildrenHost->measureLayout(constraint);
@@ -121,14 +129,16 @@ Size UIContainerElement::measureOverride(const Size& constraint)
 
 Size UIContainerElement::arrangeOverride(const Size& finalSize)
 {
+	UILayoutPanel2* layout = layoutPanel();
+
     Rect contentSlotRect;
-    detail::LayoutHelper::adjustAlignment(finalSize, m_layout->desiredSize(), m_finalStyle->horizontalContentAlignment, m_finalStyle->verticalContentAlignment, &contentSlotRect);
+    detail::LayoutHelper::adjustAlignment(finalSize, m_layoutDesiredSize, m_finalStyle->horizontalContentAlignment, m_finalStyle->verticalContentAlignment, &contentSlotRect);
 
     contentSlotRect = contentSlotRect.makeDeflate(m_finalStyle->padding);
     
 
 
-    m_layout->arrangeLayout(m_logicalChildren, contentSlotRect);
+	layout->arrangeLayout(m_logicalChildren, contentSlotRect);
     return finalSize;
 
  //   Rect contentSlotRect(0, 0, finalSize);
