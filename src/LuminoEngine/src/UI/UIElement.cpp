@@ -45,12 +45,12 @@ void UIElement::init()
 	// TODO: Material も、実際に描画が必要な Element に限って作成した方がいいだろう
 	m_finalStyle->backgroundMaterial = makeObject<Material>();
 
-	if (m_objectManagementFlags.hasFlag(detail::ObjectManagementFlags::AutoAddToActiveScene)) {
-		UIContainerElement* primaryElement = m_manager->primaryElement();
-		if (primaryElement) {
-			primaryElement->addElement(this);
-		}
-	}
+	//if (m_objectManagementFlags.hasFlag(detail::ObjectManagementFlags::AutoAddToActiveScene)) {
+	//	UIContainerElement* primaryElement = m_manager->primaryElement();
+	//	if (primaryElement) {
+	//		primaryElement->addElement(this);
+	//	}
+	//}
 
 
     //if (m_manager->mainContext()) {
@@ -403,6 +403,56 @@ void UIElement::releaseCapture()
 	m_manager->releaseCapture(this);
 }
 
+// Note: 結局 WPF のように getVisualChildCount() と getVisualChild() をオーバーライドする方式はやめた。
+// 全ての Element は parent を持つ必要があるし、それの主な理由は Event の Bubble 実装のため。
+// なので、この parent は visual-parent でなければならない。
+// そうするとあらゆる set, add 子要素なところで setParent() する必要があるし、↑の2つを実装しなければならない。
+// また、フォーカス変化などの全面表示(ZOrder) と タブオーダーは区別する必要があり、ひとつのリストだけでは非常に大変。
+// - m_visualChildren -> ZOrder (フレームワーク内部で順序を変えることがある)
+// - m_logicalChildren -> タブオーダー (フレームワーク内部で順序を変えることはない)
+// みたいにしておくといろいろやりやすい。
+// ダブルでリスト持つメモリ消費量はあるけど、その最適化はアーキテクチャ固めてからかな・・・。
+	// マウスのヒットテスト (Hierarchical)
+	// スタイル更新 (Hierarchical)
+	// フレーム更新 (Hierarchical)
+	// 描画 (Hierarchical)
+	// ※レイアウトは対象外
+void UIElement::addVisualChild(UIElement* element)
+{
+	if (LN_REQUIRE(element != nullptr)) return;
+	if (LN_REQUIRE(element->m_visualParent == nullptr)) return;
+
+	// リストが作成されていなければ、ここで始めて作る (メモリ消費量対策)
+	if (!m_visualChildren) {
+		m_visualChildren = makeList<Ref<UIElement>>();
+	}
+
+	m_visualChildren->add(element);
+	element->m_visualParent = this;
+
+	// TODO: ZOrder
+	//std::stable_sort(
+	//	m_visualChildren->begin(), m_visualChildren->end(),
+	//	[](const Ref<UIElement>& lhs, const Ref<UIElement>& rhs)
+	//	{
+	//		// TODO: ZOrder 指定
+	//		int li = lhs->readCoreFlag(detail::UICoreFlags_AdornerLayer) ? 1 : 0;
+	//		int ri = rhs->readCoreFlag(detail::UICoreFlags_AdornerLayer) ? 1 : 0;
+	//		return li < ri;
+	//	});
+}
+
+void UIElement::removeVisualChild(UIElement* element)
+{
+	//LN_FAIL_CHECK_ARG(element != nullptr) return;
+	if (element == nullptr) return;
+	if (m_visualChildren == nullptr) return;
+
+	m_visualChildren->remove(element);
+	element->m_visualParent = nullptr;
+}
+
+
 void UIElement::onUpdateFrame(float elapsedSeconds)
 {
 }
@@ -428,15 +478,15 @@ Size UIElement::arrangeOverride(const Size& finalSize)
 	return UILayoutElement::arrangeOverride(finalSize);
 }
 
-int UIElement::getVisualChildrenCount() const
-{
-	return 0;
-}
-
-UIElement* UIElement::getVisualChild(int index) const
-{
-	return nullptr;
-}
+//int UIElement::getVisualChildrenCount() const
+//{
+//	return 0;
+//}
+//
+//UIElement* UIElement::getVisualChild(int index) const
+//{
+//	return nullptr;
+//}
 
 void UIElement::onRender(UIRenderingContext* context)
 {
@@ -446,10 +496,10 @@ void UIElement::updateStyleHierarchical(const UIStyleContext* styleContext, cons
 {
     UIStyle* combinedStyle;
     if (m_visualStateManager) {
-        combinedStyle = m_visualStateManager->combineStyle(styleContext, className());
+        combinedStyle = m_visualStateManager->combineStyle(styleContext, elementName());
     }
     else {
-        auto sc = styleContext->findStyleClass(className());
+        auto sc = styleContext->findStyleClass(elementName());
         combinedStyle = sc->style();
         
         //auto sc = styleContext->findResolvedStyleClass();

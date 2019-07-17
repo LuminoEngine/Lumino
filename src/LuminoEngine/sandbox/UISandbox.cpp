@@ -15,9 +15,18 @@ public:
         //m_button1->setHeight(100);
         //m_button1->setText(u"Lumino");
 
-		auto thumb1 = makeObject<UIThumb>();
-		thumb1->setWidth(20);
-		thumb1->setHeight(20);
+		//auto thumb1 = makeObject<UIThumb>();
+		//thumb1->setWidth(20);
+		//thumb1->setHeight(20);
+		
+		auto track = makeObject<UITrack>();
+		track->setOrientation(Orientation::Vertical);
+		track->setWidth(20);
+		track->setHeight(100);
+		track->setMaximum(50);
+		track->setViewportSize(10);
+
+		Engine::mainUIRoot()->addElement(track);
     }
 
 private:

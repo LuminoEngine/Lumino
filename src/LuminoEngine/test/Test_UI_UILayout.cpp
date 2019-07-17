@@ -14,6 +14,7 @@ TEST_F(Test_UI_UILayout, Basic)
 		e1->setBackgroundColor(Color::Red);
 		e1->setWidth(80);
 		e1->setHeight(60);
+		Engine::mainUIRoot()->addElement(e1);
 
 		TestEnv::updateFrame();
 		ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-Basic-1.png"));
@@ -26,17 +27,20 @@ TEST_F(Test_UI_UILayout, Basic)
         parent1->setWidth(80);
         parent1->setHeight(60);
         parent1->setLayoutPanel(UIStackLayout2::create());
+		Engine::mainUIRoot()->addElement(parent1);
         
         auto child1 = makeObject<UIElement>();
         child1->setWidth(32);
         child1->setHeight(16);
         child1->setBackgroundColor(Color::Green);
+		Engine::mainUIRoot()->addElement(child1);
         parent1->addElement(child1);
 
         auto child2 = makeObject<UIElement>();
         child2->setWidth(32);
         child2->setHeight(16);
         child2->setBackgroundColor(Color::Blue);
+		Engine::mainUIRoot()->addElement(child2);
         parent1->addElement(child2);
 
         TestEnv::updateFrame();
@@ -56,6 +60,7 @@ TEST_F(Test_UI_UILayout, RenderTransform)
 		e1->setWidth(80);
 		e1->setHeight(60);
 		e1->setPosition(10, 20);
+		Engine::mainUIRoot()->addElement(e1);
 
 		TestEnv::updateFrame();
 		ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-RenderTransform-1.png"));
@@ -75,6 +80,7 @@ TEST_F(Test_UI_UILayout, BorderLayout)
     e11->setHeight(20);
     e11->setHorizontalAlignment(HAlignment::Left);
     e11->setVerticalAlignment(VAlignment::Top);
+	Engine::mainUIRoot()->addElement(e11);
 
     auto e12 = makeObject<UIElement>();
     e12->setBackgroundColor(Color::Green);
@@ -82,6 +88,7 @@ TEST_F(Test_UI_UILayout, BorderLayout)
     e12->setHeight(20);
     e12->setHorizontalAlignment(HAlignment::Center);
     e12->setVerticalAlignment(VAlignment::Top);
+	Engine::mainUIRoot()->addElement(e12);
 
     auto e13 = makeObject<UIElement>();
     e13->setBackgroundColor(Color::Blue);
@@ -89,6 +96,7 @@ TEST_F(Test_UI_UILayout, BorderLayout)
     e13->setHeight(20);
     e13->setHorizontalAlignment(HAlignment::Right);
     e13->setVerticalAlignment(VAlignment::Top);
+	Engine::mainUIRoot()->addElement(e13);
 
     auto e21 = makeObject<UIElement>();
     e21->setBackgroundColor(Color::Red);
@@ -96,6 +104,7 @@ TEST_F(Test_UI_UILayout, BorderLayout)
     e21->setHeight(20);
     e21->setHorizontalAlignment(HAlignment::Left);
     e21->setVerticalAlignment(VAlignment::Center);
+	Engine::mainUIRoot()->addElement(e21);
 
     auto e22 = makeObject<UIElement>();
     e22->setBackgroundColor(Color::Green);
@@ -103,6 +112,7 @@ TEST_F(Test_UI_UILayout, BorderLayout)
     e22->setHeight(20);
     e22->setHorizontalAlignment(HAlignment::Center);
     e22->setVerticalAlignment(VAlignment::Center);
+	Engine::mainUIRoot()->addElement(e22);
 
     auto e23 = makeObject<UIElement>();
     e23->setBackgroundColor(Color::Blue);
@@ -110,6 +120,7 @@ TEST_F(Test_UI_UILayout, BorderLayout)
     e23->setHeight(20);
     e23->setHorizontalAlignment(HAlignment::Right);
     e23->setVerticalAlignment(VAlignment::Center);
+	Engine::mainUIRoot()->addElement(e23);
 
     auto e31 = makeObject<UIElement>();
     e31->setBackgroundColor(Color::Red);
@@ -117,6 +128,7 @@ TEST_F(Test_UI_UILayout, BorderLayout)
     e31->setHeight(20);
     e31->setHorizontalAlignment(HAlignment::Left);
     e31->setVerticalAlignment(VAlignment::Bottom);
+	Engine::mainUIRoot()->addElement(e31);
 
     auto e32 = makeObject<UIElement>();
     e32->setBackgroundColor(Color::Green);
@@ -124,6 +136,7 @@ TEST_F(Test_UI_UILayout, BorderLayout)
     e32->setHeight(20);
     e32->setHorizontalAlignment(HAlignment::Center);
     e32->setVerticalAlignment(VAlignment::Bottom);
+	Engine::mainUIRoot()->addElement(e32);
 
     auto e33 = makeObject<UIElement>();
     e33->setBackgroundColor(Color::Blue);
@@ -131,6 +144,7 @@ TEST_F(Test_UI_UILayout, BorderLayout)
     e33->setHeight(20);
     e33->setHorizontalAlignment(HAlignment::Right);
     e33->setVerticalAlignment(VAlignment::Bottom);
+	Engine::mainUIRoot()->addElement(e33);
 
 	//- [ ] 8 方向境界と中央への配置
 	{
@@ -166,6 +180,7 @@ TEST_F(Test_UI_UILayout, StackLayout)
 	e1->setHeight(20);
 	e1->setHorizontalAlignment(HAlignment::Left);
 	e1->setVerticalAlignment(VAlignment::Top);
+	Engine::mainUIRoot()->addElement(e1);
 
 	auto e2 = makeObject<UIElement>();
 	e2->setBackgroundColor(Color::Green);
@@ -173,6 +188,7 @@ TEST_F(Test_UI_UILayout, StackLayout)
 	e2->setHeight(20);
 	e2->setHorizontalAlignment(HAlignment::Center);
 	e2->setVerticalAlignment(VAlignment::Center);
+	Engine::mainUIRoot()->addElement(e2);
 
 	auto e3 = makeObject<UIElement>();
 	e3->setBackgroundColor(Color::Blue);
@@ -180,6 +196,7 @@ TEST_F(Test_UI_UILayout, StackLayout)
 	e3->setHeight(20);
 	e3->setHorizontalAlignment(HAlignment::Right);
 	e3->setVerticalAlignment(VAlignment::Bottom);
+	Engine::mainUIRoot()->addElement(e3);
 
 	//- [ ] default (Vertical)
 	{

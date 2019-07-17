@@ -266,8 +266,10 @@ public:	// TODO: internal protected
 
 	void retainCapture();
 	void releaseCapture();
+	void addVisualChild(UIElement* element);
+	void removeVisualChild(UIElement* element);
 
-    virtual const String& className() const { return String::Empty; }
+    virtual const String& elementName() const { return String::Empty; }
     virtual void onUpdateFrame(float elapsedSeconds);
 	virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle);
 
@@ -302,15 +304,19 @@ public:	// TODO: internal protected
 
 
 	/** この要素内の子ビジュアル要素の数を取得します。 */
-	virtual int getVisualChildrenCount() const;
+	//virtual int getVisualChildrenCount() const;
+	// マウスのヒットテスト (Hierarchical)
+	// スタイル更新 (Hierarchical)
+	// フレーム更新 (Hierarchical)
+	// 描画 (Hierarchical)
+	// ※レイアウトは対象外
 
 	/**
 	 * 子ビジュアル要素を取得します。
 	 *
-	 * このメソッドが返した UIElement はレイアウトの対象となります。
 	 * 装側は、奥にある要素が先、手前にある要素が後になるようにZオーダーやアクティブ状態を考慮する必要があります。
 	 */
-	virtual UIElement* getVisualChild(int index) const;
+	//virtual UIElement* getVisualChild(int index) const;
 
 	virtual void onRender(UIRenderingContext* context);
 
@@ -343,6 +349,7 @@ public: // TODO: internal
     //UIContext* m_context;
     UIElement* m_visualParent;
     UIContainerElement* m_logicalParent;
+	Ref<List<Ref<UIElement>>> m_visualChildren;
 
     Ref<UIVisualStateManager> m_visualStateManager;
     Ref<UIStyle> m_localStyle;
@@ -352,6 +359,10 @@ public: // TODO: internal
 
     friend class UIContext;
     friend class UIRenderView;
+
+private:
+	int getVisualChildrenCount() const { return (m_visualChildren) ? m_visualChildren->size() : 0; }
+	UIElement* getVisualChild(int index) const { return (m_visualChildren) ? m_visualChildren->at(index) : nullptr; }
 };
 
 } // namespace ln

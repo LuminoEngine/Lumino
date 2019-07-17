@@ -524,7 +524,7 @@ public:
         }
     }
 
-    UIStyle* combineStyle(const UIStyleContext* styleContext, const ln::String& className);
+    UIStyle* combineStyle(const UIStyleContext* styleContext, const ln::String& elementName);
     //detail::UIStyleInstance* resolveStyle(const UIStyleContext* styleContext, const ln::String& className);
 
 LN_CONSTRUCT_ACCESS:

@@ -100,6 +100,15 @@ void UIContext::setupDefaultStyle()
 				s->cornerRadius = CornerRadius(4);
 			}
 		}
+		//--------------------------------
+		// UITrack
+		{
+			auto c = sheet->addStyleClass(u"UITrack");
+			{
+				auto s = c->style();
+				s->backgroundColor = UIColors::get(UIColorHues::Amber, 8);
+			}
+		}
     }
 
     m_styleContext->addStyleSheet(sheet);

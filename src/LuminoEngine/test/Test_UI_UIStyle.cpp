@@ -11,7 +11,7 @@ class Test_UI_UIStyle_Element : public UIElement
 public:
 
 protected:
-	virtual const String& className() const  override { static String name = u"TestElement"; return name; }
+	virtual const String& elementName() const  override { static String name = u"TestElement"; return name; }
 };
 
 //------------------------------------------------------------------------------
@@ -23,6 +23,7 @@ TEST_F(Test_UI_UIStyle, Background)
 	element1->setVerticalAlignment(VAlignment::Center);
 	element1->setWidth(80);
 	element1->setHeight(60);
+	Engine::mainUIRoot()->addElement(element1);
 
 	element1->setBackgroundColor(Color::Red);
 
@@ -40,6 +41,7 @@ TEST_F(Test_UI_UIStyle, Border)
 	element1->setVerticalAlignment(VAlignment::Center);
 	element1->setWidth(80);
 	element1->setHeight(60);
+	Engine::mainUIRoot()->addElement(element1);
 
 	//* [ ] Basic border
 	{
@@ -77,17 +79,28 @@ TEST_F(Test_UI_UIStyle, Border)
 //## BoxShadow
 TEST_F(Test_UI_UIStyle, BoxShadow)
 {
-	auto element1 = makeObject<Test_UI_UIStyle_Element>();
-	element1->setHorizontalAlignment(HAlignment::Center);
-	element1->setVerticalAlignment(VAlignment::Center);
-	element1->setWidth(80);
-	element1->setHeight(60);
+	struct Test
+	{
+		int a;
+		Test() {}
+		Test(std::initializer_list<int> list) {}
+	};
 
-	element1->setBackgroundColor(Color::Red);
+	Test t;
+	t = { 10 };
 
-	TestEnv::updateFrame();
-	ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UIStyle/BoxShadow-1.png"));
-	LN_TEST_CLEAN_SCENE;
+	//auto element1 = makeObject<Test_UI_UIStyle_Element>();
+	//element1->setHorizontalAlignment(HAlignment::Center);
+	//element1->setVerticalAlignment(VAlignment::Center);
+	//element1->setWidth(80);
+	//element1->setHeight(60);
+	//Engine::mainUIRoot()->addElement(element1);
+
+	//element1->setBackgroundColor(Color::Red);
+
+	//TestEnv::updateFrame();
+	//ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UIStyle/BoxShadow-1.png"));
+	//LN_TEST_CLEAN_SCENE;
 }
 
 //#endif // LN_UNIT_TEST_EXPERIMENTAL

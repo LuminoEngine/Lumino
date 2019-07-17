@@ -320,10 +320,10 @@ void UIFrameWindow::updateLayoutTree()
 // 強制的にウィンドウサイズとする
 Size UIFrameWindow::measureOverride(const Size& constraint)
 {
-	int childCount = getVisualChildrenCount();
+	int childCount = logicalChildren().size();
 	for (int i = 0; i < childCount; i++)
 	{
-		UIElement* child = getVisualChild(i);
+		UIElement* child = logicalChildren().at(i);
 		child->measureLayout(constraint);
 	}
 
@@ -334,10 +334,10 @@ Size UIFrameWindow::measureOverride(const Size& constraint)
 // 強制的にウィンドウサイズとする
 Size UIFrameWindow::arrangeOverride(const Size& finalSize)
 {
-	int childCount = getVisualChildrenCount();
+	int childCount = logicalChildren().size();
 	for (int i = 0; i < childCount; i++)
 	{
-		UIElement* child = getVisualChild(i);
+		UIElement* child = logicalChildren().at(i);
 		child->arrangeLayout(Rect(0, 0, finalSize));	// TODO: padding
 	}
 

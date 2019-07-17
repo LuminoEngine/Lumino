@@ -40,6 +40,7 @@ void UIContainerElement::addElement(UIElement* element)
 	
     m_logicalChildren.add(element);
     element->setLogicalParent(this);
+	addVisualChild(element);
 
 	//if (m_logicalChildrenHost) {
 	//	m_logicalChildrenHost->addLayoutOwnerLogicalChild(element);
@@ -57,10 +58,15 @@ void UIContainerElement::removeElement(UIElement* element)
 
     m_logicalChildren.remove(element);
     element->setLogicalParent(nullptr);
+	removeVisualChild(element);
 }
 
 void UIContainerElement::removeAllChildren()
 {
+	for (auto& e : m_logicalChildren) {
+		removeVisualChild(e);
+	}
+
 	m_logicalChildren.clear();
 	//if (m_logicalChildrenHost) {
 	//	m_logicalChildrenHost->clearLayoutOwnerLogicalChildren();
@@ -88,26 +94,26 @@ UILayoutPanel2* UIContainerElement::layoutPanel() const
 //    //return nullptr;//m_logicalChildrenHost;
 //}
 
-int UIContainerElement::getVisualChildrenCount() const
-{
-	//if (m_logicalChildrenHost) {
-	//	return 1;
-	//}
-	//else {
-		return m_logicalChildren.size();
-	//}
-}
-
-UIElement* UIContainerElement::getVisualChild(int index) const
-{
-	//if (m_logicalChildrenHost) {
-	//	return m_logicalChildrenHost;
-	//}
-	//else {
-		return m_logicalChildren[index];
-	//}
-}
-
+//int UIContainerElement::getVisualChildrenCount() const
+//{
+//	//if (m_logicalChildrenHost) {
+//	//	return 1;
+//	//}
+//	//else {
+//		return m_logicalChildren.size();
+//	//}
+//}
+//
+//UIElement* UIContainerElement::getVisualChild(int index) const
+//{
+//	//if (m_logicalChildrenHost) {
+//	//	return m_logicalChildrenHost;
+//	//}
+//	//else {
+//		return m_logicalChildren[index];
+//	//}
+//}
+//
 Size UIContainerElement::measureOverride(const Size& constraint)
 {
 	UILayoutPanel2* layout = layoutPanel();
@@ -153,40 +159,6 @@ Size UIContainerElement::arrangeOverride(const Size& finalSize)
 	//}
 }
 
-void UIContainerElement::setLogicalChildrenHost(UILayoutPanel* panel)
-{
-    LN_UNREACHABLE();
-	//if (panel != m_logicalChildrenHost)
-	//{
-	//	// 既に持っていれば取り除いておく
-	//	if (m_logicalChildrenHost)
-	//	{
-	//		m_logicalChildrenHost->clearLayoutOwnerLogicalChildren();
-	//		//removeVisualChild(m_logicalChildrenPresenter);
-	//		m_logicalChildrenHost = nullptr;
-	//	}
-
-	//	// 新しく保持する
-	//	if (panel)
-	//	{
-	//		//if (readCoreFlag(detail::UICoreFlags_LogicalChildrenPresenterAutoManagement))
-	//		//{
-	//		//	addVisualChild(presenter);
-	//		//}
-
-	//		m_logicalChildrenHost = panel;
-
-	//		for (auto& element : m_logicalChildren) {
-	//			m_logicalChildrenHost->addLayoutOwnerLogicalChild(element);
-	//		}
-	//	}
-
-	//	// 変更通知
-	//	//onLogicalChildrenPresenterChanged(m_logicalChildrenPresenter);
-
-	//	//m_invalidateItemsHostPanel = true;
-	//}
-}
 
 
 //==============================================================================

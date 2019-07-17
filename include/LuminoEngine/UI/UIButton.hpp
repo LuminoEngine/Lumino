@@ -14,7 +14,7 @@ public:
     void setText(const StringRef& text);
 
 protected:
-    virtual const String& className() const  override { static String name = u"UIButton"; return name; }
+    virtual const String& elementName() const  override { static String name = u"UIButton"; return name; }
     virtual void onRoutedEvent(UIEventArgs* e) override;
 
 private:

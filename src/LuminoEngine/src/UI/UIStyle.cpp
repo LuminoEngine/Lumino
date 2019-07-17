@@ -880,11 +880,11 @@ void UIVisualStateManager::init()
 {
 }
 
-UIStyle* UIVisualStateManager::combineStyle(const UIStyleContext* styleContext, const ln::String& className)
+UIStyle* UIVisualStateManager::combineStyle(const UIStyleContext* styleContext, const ln::String& elementName)
 {
     if (isDirty()) {
         m_combinedStyle->setupDefault();
-        auto styleClass = styleContext->findStyleClass(className);
+        auto styleClass = styleContext->findStyleClass(elementName);
 
         // main style
         m_combinedStyle->mergeFrom(styleClass->style());
