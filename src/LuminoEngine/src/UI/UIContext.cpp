@@ -63,29 +63,43 @@ void UIContext::setupDefaultStyle()
     auto sheet = makeObject<UIStyleSheet>();
 
     {
-        auto c = sheet->addStyleClass(u"UIButton");
+		//--------------------------------
         // UIButton
-        {
-            auto s = c->style();
-			s->horizontalContentAlignment = HAlignment::Center;
-			s->verticalContentAlignment = VAlignment::Center;
-            s->backgroundColor = UIColors::get(UIColorHues::Grey, 3);
-			s->cornerRadius = CornerRadius(4);
-			s->shadowBlurRadius = 2;
-			s->shadowOffsetY = 2;
-        }
-        // UIButton:MouseOver
-        {
-            auto s = makeObject<UIStyle>();
-            s->backgroundColor = UIColors::get(UIColorHues::Red, 4);
-            c->addStateStyle(u"MouseOver", s);
-        }
-        // UIButton:Pressed
-        {
-            auto s = makeObject<UIStyle>();
-            s->backgroundColor = UIColors::get(UIColorHues::Green, 5);
-            c->addStateStyle(u"Pressed", s);
-        }
+		{
+			auto c = sheet->addStyleClass(u"UIButton");
+			{
+				auto s = c->style();
+				s->horizontalContentAlignment = HAlignment::Center;
+				s->verticalContentAlignment = VAlignment::Center;
+				s->backgroundColor = UIColors::get(UIColorHues::Grey, 3);
+				s->cornerRadius = CornerRadius(4);
+				s->shadowBlurRadius = 2;
+				s->shadowOffsetY = 2;
+			}
+			// UIButton:MouseOver
+			{
+				auto s = makeObject<UIStyle>();
+				s->backgroundColor = UIColors::get(UIColorHues::Red, 4);
+				c->addStateStyle(u"MouseOver", s);
+			}
+			// UIButton:Pressed
+			{
+				auto s = makeObject<UIStyle>();
+				s->backgroundColor = UIColors::get(UIColorHues::Green, 5);
+				c->addStateStyle(u"Pressed", s);
+			}
+		}
+
+		//--------------------------------
+		// UIThumb
+		{
+			auto c = sheet->addStyleClass(u"UIThumb");
+			{
+				auto s = c->style();
+				s->backgroundColor = UIColors::get(UIColorHues::Grey, 8);
+				s->cornerRadius = CornerRadius(4);
+			}
+		}
     }
 
     m_styleContext->addStyleSheet(sheet);

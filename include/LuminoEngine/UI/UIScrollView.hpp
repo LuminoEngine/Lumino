@@ -28,11 +28,13 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 protected:
+	virtual const String& className() const  override { static String name = u"UIThumb"; return name; }
 	virtual void onRoutedEvent(UIEventArgs* e) override;
-	virtual void onDragStarted(UIDragDeltaEventArgs* e) { if (!e->handled) { raiseEvent(UIEvents::ScrollDragStartedEvent, this, e); } }
-	virtual void onDragDelta(UIDragDeltaEventArgs* e) { if (!e->handled) { raiseEvent(UIEvents::ScrollDragDeltaEvent, this, e); } }
-	virtual void onDragCompleted(UIDragDeltaEventArgs* e) { if (!e->handled) { raiseEvent(UIEvents::ScrollDragCompletedEvent, this, e); } }
-	virtual void onDragCanceled(UIDragDeltaEventArgs* e) { if (!e->handled) { raiseEvent(UIEvents::ScrollDragCanceledEvent, this, e); } }
+
+	virtual void onDragStarted(UIDragDeltaEventArgs* e);
+	virtual void onDragDelta(UIDragDeltaEventArgs* e);
+	virtual void onDragCompleted(UIDragDeltaEventArgs* e);
+	virtual void onDragCanceled(UIDragDeltaEventArgs* e);
 
 private:
 	Point	m_lastScreenPosition;

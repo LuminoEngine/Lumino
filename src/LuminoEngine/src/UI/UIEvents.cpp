@@ -205,7 +205,7 @@ void UIMouseWheelEventArgs::init(UIElement* sender, UIEventType type, int delta)
 
 LN_OBJECT_IMPLEMENT(UIDragDeltaEventArgs, UIEventArgs) {}
 
-Ref<UIDragDeltaEventArgs> create(UIElement* sender, UIEventType type, float offsetX, float offsetY, bool caching)
+Ref<UIDragDeltaEventArgs> UIDragDeltaEventArgs::create(UIElement* sender, UIEventType type, float offsetX, float offsetY, bool caching)
 {
 	if (caching)
 	{

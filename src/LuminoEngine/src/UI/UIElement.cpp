@@ -593,11 +593,10 @@ void UIElement::raiseEventInternal(UIEventArgs* e)
     onRoutedEvent(e);
     if (e->handled) return;
 
-    // TODO: bubble
-    //if (m_visualParent != nullptr)
-    //{
-    //    m_visualParent->raiseEventInternal(e);
-    //}
+    // bubble
+    if (m_visualParent) {
+        m_visualParent->raiseEventInternal(e);
+    }
 }
 
 UIVisualStateManager* UIElement::getVisualStateManager()

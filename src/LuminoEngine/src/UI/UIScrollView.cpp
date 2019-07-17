@@ -92,18 +92,22 @@ void UIThumb::onRoutedEvent(UIEventArgs* e)
 
 void UIThumb::onDragStarted(UIDragDeltaEventArgs* e)
 {
+	raiseEvent(e);
 }
 
 void UIThumb::onDragDelta(UIDragDeltaEventArgs* e)
 {
+	raiseEvent(e);
 }
 
 void UIThumb::onDragCompleted(UIDragDeltaEventArgs* e)
 {
+	raiseEvent(e);
 }
 
 void UIThumb::onDragCanceled(UIDragDeltaEventArgs* e)
 {
+	raiseEvent(e);
 }
 
 } // namespace ln
