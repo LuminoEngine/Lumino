@@ -235,6 +235,42 @@ void UIDragDeltaEventArgs::init(UIElement* sender, UIEventType type, float offse
 	m_offsetY = offsetY;
 }
 
+
+//==============================================================================
+// UIScrollEventArgs
+
+LN_OBJECT_IMPLEMENT(UIScrollEventArgs, UIEventArgs) {}
+
+Ref<UIScrollEventArgs> UIScrollEventArgs::create(UIElement* sender, UIEventType type, float newValue, ScrollEventType scrollType, bool caching)
+{
+    if (caching)
+    {
+        auto& pool = detail::EngineDomain::uiManager()->eventArgsPool();
+        Ref<UIScrollEventArgs> ptr(pool->create<UIScrollEventArgs>(sender, type, newValue, scrollType), false);
+        return ptr;
+    }
+    else
+    {
+        LN_NOTIMPLEMENTED();
+        return nullptr;
+    }
+}
+
+UIScrollEventArgs::UIScrollEventArgs()
+{
+}
+
+UIScrollEventArgs::~UIScrollEventArgs()
+{
+}
+
+void UIScrollEventArgs::init(UIElement* sender, UIEventType type, float newValue, ScrollEventType scrollType)
+{
+    UIEventArgs::init(sender, type);
+    m_newValue = newValue;
+    m_scrollType = scrollType;
+}
+
 //==============================================================================
 // UIDragDropEventArgs
 

@@ -188,5 +188,74 @@ private:
 };
 
 
+/**
+    @brief
+*/
+class UIScrollBar
+    : public UIElement
+{
+public:
+
+    // TODO: 別途、UIScrollBarStyle 見たいなクラスに分けたほうがいいかも
+    static const String OrientationStates;
+    static const String HorizontalState;
+    static const String VerticalState;
+
+
+
+
+    // TODO:↓後で RangeBase に移すかも
+
+
+    /** ScrollBar の方向を指定します。*/
+    void setOrientation(Orientation orientation);
+
+    /** ScrollBar の方向を取得します。規定値は Orientation::Horizontal です。*/
+    Orientation getOrientation() const;
+
+    /** スクロール位置に対する値を設定します。*/
+    void setValue(float value);
+
+    /** スクロール位置に対する値を取得します。規定値は 0 です。*/
+    float getValue() const;
+
+    /** 指定可能な最小値を設定します。*/
+    void setMinimum(float value);
+
+    /** 指定可能な最小値を取得します。規定値は 0 です。*/
+    float getMinimum() const;
+
+    /** 指定可能な最大値を設定します。*/
+    void setMaximum(float value);
+
+    /** 指定可能な最大値を取得します。規定値は 1 です。*/
+    float getMaximum() const;
+
+    /** スクロール可能なコンテンツの中で表示される部分のサイズを設定します。*/
+    void setViewportSize(float value);
+
+    /** スクロール可能なコンテンツの中で表示される部分のサイズを取得します。*/
+    float getViewportSize() const;
+
+LN_CONSTRUCT_ACCESS:
+    UIScrollBar();
+    virtual ~UIScrollBar();
+    void init();
+
+protected:
+    // UIElement interface
+    virtual void onRoutedEvent(UIEventArgs* e) override;
+    virtual Size measureOverride(const Size& constraint) override;
+    virtual Size arrangeOverride(const Size& finalSize) override;
+
+private:
+    void updateValue(float horizontalDragDelta, float verticalDragDelta);
+
+    Ref<UITrack> m_track;
+    Ref<UIButton> m_lineUpButton;
+    Ref<UIButton> m_lineDownButton;
+    float m_dragStartValue;
+};
+
 } // namespace ln
 

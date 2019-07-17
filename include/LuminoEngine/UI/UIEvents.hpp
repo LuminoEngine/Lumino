@@ -7,6 +7,18 @@ namespace ln {
 class UIElement;
 class UIEventArgs;
 
+
+/** Scroll イベントの原因となった動作を表します。*/
+enum class ScrollEventType
+{
+    ThumbTrack,			/** つまみがドラッグされている */
+    EndScroll,			/** つまみのドラッグが終了した */
+    SmallDecrement,		/** スクロールバーのデクリメントボタンがクリックされた */
+    SmallIncrement,		/** スクロールバーのインクリメントボタンがクリックされた */
+    LargeDecrement,		/** スクロールバーの PageUp 領域がクリックされた */
+    LargeIncrement,		/** スクロールバーの PageDown 領域がクリックされた */
+};
+
 /**
 	@brief		特定のイベントデータを持たない、UIイベントを処理するハンドラです。
 	@param[in]	e		: イベントのデータ
@@ -221,6 +233,30 @@ LN_CONSTRUCT_ACCESS:
 public:
 	float m_offsetX;
 	float m_offsetY;
+};
+
+/**  ScrollBar のスクロールイベントの引数です。 */
+class UIScrollEventArgs
+    : public UIEventArgs
+{
+    LN_OBJECT;
+public:
+    static Ref<UIScrollEventArgs> create(UIElement* sender, UIEventType type, float newValue, ScrollEventType scrollType, bool caching = true);
+
+    /** スクロール後の新しい値 */
+    float newValue() const { return m_newValue; }
+
+    /** スクロールイベントの原因 */
+    ScrollEventType scrollType() const { return m_scrollType; }
+
+LN_CONSTRUCT_ACCESS:
+    UIScrollEventArgs();
+    virtual ~UIScrollEventArgs();
+    void init(UIElement* sender, UIEventType type, float newValue, ScrollEventType scrollType);
+
+public:
+    float m_newValue;	
+    ScrollEventType	m_scrollType;
 };
 
 /** ドラッグアンドドロップイベントの引数です。 */

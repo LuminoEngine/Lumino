@@ -477,6 +477,225 @@ void UITrack::calcScrollBarComponentsSize(
 	m_density = range / remainingTrackLength;
 }
 
+//==============================================================================
+// UIScrollBar
+
+const String UIScrollBar::OrientationStates = _LT("OrientationStates");
+const String UIScrollBar::HorizontalState = _LT("Horizontal");
+const String UIScrollBar::VerticalState = _LT("Vertical");
+
+UIScrollBar::UIScrollBar()
+    : m_track(nullptr)
+    , m_dragStartValue(0)
+    , m_lineUpButton(nullptr)
+    , m_lineDownButton(nullptr)
+{
+}
+
+UIScrollBar::~UIScrollBar()
+{
+}
+
+void UIScrollBar::init()
+{
+    UIElement::init();
+
+    // register VisualState
+    auto* vsm = getVisualStateManager();
+    vsm->registerState(OrientationStates, HorizontalState);
+    vsm->registerState(OrientationStates, VerticalState);
+
+    m_track = makeObject<UITrack>();
+    //m_lineUpButton = makeObject<UIButton>();
+    //m_lineDownButton = makeObject<UIButton>();
+    addVisualChild(m_track);
+    //addVisualChild(m_lineUpButton);
+    //addVisualChild(m_lineDownButton);
+
+    //m_lineUpButton->setStyleSubControlName(tr::TypeInfo::getTypeInfo<UIScrollBar>()->getName(), _LT("LineUpButton"));
+    //m_lineDownButton->setStyleSubControlName(tr::TypeInfo::getTypeInfo<UIScrollBar>()->getName(), _LT("LineDownButton"));
+	// TODO: styleseet
+    m_track->setHorizontalAlignment(HAlignment::Stretch);
+    m_track->setVerticalAlignment(VAlignment::Stretch);
+    //m_lineUpButton->setHorizontalAlignment(HAlignment::Stretch);
+    //m_lineUpButton->setVerticalAlignment(VAlignment::Stretch);
+    //m_lineDownButton->setHorizontalAlignment(HAlignment::Stretch);
+    //m_lineDownButton->setVerticalAlignment(VAlignment::Stretch);
+
+    //// TODO:
+    //m_lineUpButton->setSize(Size(16, 16));
+    //m_lineDownButton->setSize(Size(16, 16));
+
+    setOrientation(Orientation::Horizontal);
+}
+
+void UIScrollBar::setOrientation(Orientation orientation)
+{
+    m_track->setOrientation(orientation);
+
+    switch (orientation)
+    {
+    case Orientation::Horizontal:
+        getVisualStateManager()->gotoState(HorizontalState);
+        break;
+    case Orientation::Vertical:
+        getVisualStateManager()->gotoState(VerticalState);
+        break;
+    default:
+        LN_NOTIMPLEMENTED();
+        break;
+    }
+}
+
+Orientation UIScrollBar::getOrientation() const
+{
+    return m_track->getOrientation();
+}
+
+void UIScrollBar::setValue(float value)
+{
+    m_track->setValue(value);
+}
+
+float UIScrollBar::getValue() const
+{
+    return m_track->getValue();
+}
+
+void UIScrollBar::setMinimum(float value)
+{
+    m_track->setMinimum(value);
+}
+
+float UIScrollBar::getMinimum() const
+{
+    return m_track->getMinimum();
+}
+
+void UIScrollBar::setMaximum(float value)
+{
+    m_track->setMaximum(value);
+}
+
+float UIScrollBar::getMaximum() const
+{
+    return m_track->getMaximum();
+}
+
+void UIScrollBar::setViewportSize(float value)
+{
+    m_track->setViewportSize(value);
+}
+
+float UIScrollBar::getViewportSize() const
+{
+    return m_track->getViewportSize();
+}
+
+void UIScrollBar::onRoutedEvent(UIEventArgs* e)
+{
+    if (e->type() == UIEvents::ScrollDragStartedEvent)
+    {
+        m_dragStartValue = m_track->getValue();
+    }
+    else if (e->type() == UIEvents::ScrollDragDeltaEvent)
+    {
+        auto* e2 = static_cast<UIDragDeltaEventArgs*>(e);
+        updateValue(e2->offsetX(), e2->offsetY());
+
+        auto args = UIScrollEventArgs::create(this, UIEvents::ScrollEvent, m_track->getValue(), ScrollEventType::ThumbTrack);
+        raiseEvent(args);
+
+        //switch (m_track->getOrientation())
+        //{
+        //case Orientation::Horizontal:
+
+        //	break;
+        //case Orientation::Vertical:
+        //	break;
+        //case Orientation::ReverseHorizontal:
+        //case Orientation::ReverseVertical:
+        //default:
+        //	LN_NOTIMPLEMENTED();
+        //	break;
+        //}
+    }
+    else if (e->type() == UIEvents::ScrollDragCompletedEvent)
+    {
+        auto args = UIScrollEventArgs::create(this, UIEvents::ScrollEvent, m_track->getValue(), ScrollEventType::EndScroll);
+        raiseEvent(args);
+    }
+    UIElement::onRoutedEvent(e);
+}
+
+Size UIScrollBar::measureOverride(const Size& constraint)
+{
+    if (m_track) {
+        m_track->measureLayout(constraint);
+    }
+
+    if (m_lineUpButton) {
+        m_lineUpButton->measureLayout(constraint);
+    }
+
+    if (m_lineDownButton) {
+        m_lineDownButton->measureLayout(constraint);
+    }
+
+    return UIElement::measureOverride(constraint);
+}
+
+Size UIScrollBar::arrangeOverride(const Size& finalSize)
+{
+    Size upSize;
+    Size downSize;
+    Orientation orientation = getOrientation();
+
+    switch (orientation)
+    {
+    case Orientation::Horizontal:
+        if (m_lineUpButton) {
+            upSize = m_lineUpButton->desiredSize();
+            downSize = m_lineUpButton->desiredSize();
+            m_lineUpButton->arrangeLayout(Rect(0, 0, upSize.width, finalSize.height));
+        }
+        if (m_lineDownButton) {
+            m_lineDownButton->arrangeLayout(Rect(finalSize.width - downSize.width, 0, downSize.width, finalSize.height));
+        }
+        if (m_track) {
+            m_track->arrangeLayout(Rect(upSize.width, 0, finalSize.width - upSize.width - downSize.width, finalSize.height));
+        }
+        break;
+    case Orientation::Vertical:
+        if (m_track) {
+            m_track->arrangeLayout(Rect(0, 0, finalSize));
+        }
+        if (m_lineUpButton) {
+            m_lineUpButton->arrangeLayout(Rect(0, 0, finalSize.width, m_lineUpButton->desiredSize().height));
+        }
+        if (m_lineDownButton) {
+            m_lineDownButton->arrangeLayout(Rect(0, finalSize.height - m_lineDownButton->desiredSize().height, finalSize.width, m_lineDownButton->desiredSize().height));
+        }
+        break;
+    default:
+        LN_NOTIMPLEMENTED();
+        break;
+    }
+
+    return UIElement::arrangeOverride(finalSize);
+}
+
+void UIScrollBar::updateValue(float horizontalDragDelta, float verticalDragDelta)
+{
+    float valueDelta = m_track->valueFromDistance(horizontalDragDelta, verticalDragDelta);
+
+    float newValue = m_dragStartValue + valueDelta;
+    m_track->setValue(newValue);
+
+    // TODO:
+    //Ref<ScrollEventArgs> args(m_manager->getEventArgsPool()->Create<ScrollEventArgs>(newValue, ScrollEventType::ThumbTrack), false);
+    //raiseEvent(ScrollEvent, this, args);
+}
 
 } // namespace ln
 

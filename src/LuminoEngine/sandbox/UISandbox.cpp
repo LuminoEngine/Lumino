@@ -19,14 +19,21 @@ public:
 		//thumb1->setWidth(20);
 		//thumb1->setHeight(20);
 		
-		auto track = makeObject<UITrack>();
-		track->setOrientation(Orientation::Vertical);
-		track->setWidth(20);
-		track->setHeight(100);
-		track->setMaximum(50);
-		track->setViewportSize(10);
+		//auto track = makeObject<UITrack>();
+		//track->setOrientation(Orientation::Vertical);
+		//track->setWidth(20);
+		//track->setHeight(100);
+		//track->setMaximum(50);
+		//track->setViewportSize(10);
+		//Engine::mainUIRoot()->addElement(track);
 
-		Engine::mainUIRoot()->addElement(track);
+        auto scrollbar = makeObject<UIScrollBar>();
+        scrollbar->setOrientation(Orientation::Vertical);
+        scrollbar->setWidth(20);
+        scrollbar->setHeight(100);
+        scrollbar->setMaximum(50);
+        scrollbar->setViewportSize(10);
+        Engine::mainUIRoot()->addElement(scrollbar);
     }
 
 private:
