@@ -32,7 +32,7 @@ void UIManager::init(const Settings& settings)
     m_eventArgsPool = makeRef<EventArgsPool>();
     //m_mainContext = makeObject<UIContext>();
 
-	m_defaultLayout = makeObject<UIFrameLayout2>();
+	//m_defaultLayout = makeObject<UIFrameLayout2>();
 
     LN_LOG_DEBUG << "UIManager Initialization ended.";
 }

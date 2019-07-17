@@ -44,7 +44,7 @@ public:
 	UIElement* capturedElement() const { return m_capturedElement; }
 
 
-	const Ref<UIFrameLayout2>& defaultLayout() const { return m_defaultLayout; }
+	//const Ref<UIFrameLayout2>& defaultLayout() const { return m_defaultLayout; }
 
 private:
 	GraphicsManager* m_graphicsManager;
@@ -54,7 +54,7 @@ private:
     Ref<UIContext> m_mainContext;
     UIElement* m_mouseHoverElement;
 	UIElement* m_capturedElement;
-	Ref<UIFrameLayout2> m_defaultLayout;
+	//Ref<UIFrameLayout2> m_defaultLayout;
 };
 
 } // namespace detail

@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/UI/UIStyle.hpp>
+#include <LuminoEngine/UI/UILayoutPanel.hpp>
 #include <LuminoEngine/UI/UIButton.hpp>
 #include <LuminoEngine/UI/UIScrollView.hpp>
 
@@ -696,6 +697,128 @@ void UIScrollBar::updateValue(float horizontalDragDelta, float verticalDragDelta
     //Ref<ScrollEventArgs> args(m_manager->getEventArgsPool()->Create<ScrollEventArgs>(newValue, ScrollEventType::ThumbTrack), false);
     //raiseEvent(ScrollEvent, this, args);
 }
+
+
+//==============================================================================
+// UIScrollViewer
+
+UIScrollViewer::UIScrollViewer()
+    : m_horizontalScrollBar(nullptr)
+    , m_verticalScrollBar(nullptr)
+    , m_scrollTarget(nullptr)
+{
+}
+
+UIScrollViewer::~UIScrollViewer()
+{
+}
+
+void UIScrollViewer::init()
+{
+    UIContainerElement::init();
+
+    m_horizontalScrollBar = makeObject<UIScrollBar>();
+    m_horizontalScrollBar->setOrientation(Orientation::Horizontal);
+    m_verticalScrollBar = makeObject<UIScrollBar>();
+    m_verticalScrollBar->setOrientation(Orientation::Vertical);
+    addVisualChild(m_horizontalScrollBar);
+    addVisualChild(m_verticalScrollBar);
+
+    m_horizontalScrollBar->setWidth(16);
+    //m_verticalScrollBar->setHeight(16);
+    m_verticalScrollBar->setWidth(16);
+    m_verticalScrollBar->setVerticalAlignment(VAlignment::Stretch);
+}
+
+Size UIScrollViewer::measureOverride(const Size& constraint)
+{
+    Size desiredSize = UIContainerElement::measureOverride(constraint);
+
+    if (m_verticalScrollBar) {
+        m_verticalScrollBar->measureLayout(constraint);
+        desiredSize.width += m_verticalScrollBar->desiredSize().width;
+    }
+    if (m_horizontalScrollBar) {
+        m_horizontalScrollBar->measureLayout(constraint);
+        desiredSize.height += m_horizontalScrollBar->desiredSize().height;
+    }
+
+    return desiredSize;
+}
+
+Size UIScrollViewer::arrangeOverride(const Size& finalSize)
+{
+    float barWidth = 16;// m_verticalScrollBar->width();
+    float barHeight = 16;//m_horizontalScrollBar->height();
+
+
+    Size childArea(finalSize.width - barWidth, finalSize.height - barHeight);
+    Size actualSize = UIContainerElement::arrangeOverride(childArea);
+
+
+    Rect rc;
+
+    rc.width = barWidth;
+    rc.height = finalSize.height - barHeight;
+    rc.x = finalSize.width - barWidth;
+    rc.y = 0;
+    m_verticalScrollBar->arrangeLayout(rc);
+
+    rc.width = finalSize.width - barWidth;
+    rc.height = barHeight;
+    rc.x = 0;
+    rc.y = finalSize.height - barHeight;
+    m_horizontalScrollBar->arrangeLayout(rc);
+
+    if (m_scrollTarget != nullptr)
+    {
+        m_horizontalScrollBar->setMinimum(0.0f);
+        m_horizontalScrollBar->setMaximum(m_scrollTarget->getExtentWidth());
+        m_horizontalScrollBar->setViewportSize(m_scrollTarget->getViewportWidth());
+        m_verticalScrollBar->setMinimum(0.0f);
+        m_verticalScrollBar->setMaximum(m_scrollTarget->getExtentHeight());
+        m_verticalScrollBar->setViewportSize(m_scrollTarget->getViewportHeight());
+    }
+    else
+    {
+        m_horizontalScrollBar->setMinimum(0.0f);
+        m_horizontalScrollBar->setMaximum(0.0f);
+        m_horizontalScrollBar->setViewportSize(0.0f);
+        m_verticalScrollBar->setMinimum(0.0f);
+        m_verticalScrollBar->setMaximum(0.0f);
+        m_verticalScrollBar->setViewportSize(0.0f);
+    }
+
+    return actualSize;
+}
+
+void UIScrollViewer::onRoutedEvent(UIEventArgs* e)
+{
+    UIContainerElement::onRoutedEvent(e);
+
+    if (e->type() == UIEvents::ScrollEvent)
+    {
+        auto* e2 = static_cast<UIScrollEventArgs*>(e);
+
+        if (m_scrollTarget != nullptr)
+        {
+            if (e->sender() == m_horizontalScrollBar)
+            {
+                m_scrollTarget->setHorizontalOffset(e2->newValue());
+            }
+            else if (e->sender() == m_verticalScrollBar)
+            {
+                m_scrollTarget->setVerticalOffset(e2->newValue());
+            }
+        }
+    }
+}
+
+void UIScrollViewer::onLayoutPanelChanged(UILayoutPanel2* newPanel)
+{
+    m_scrollTarget = newPanel;
+}
+
 
 } // namespace ln
 

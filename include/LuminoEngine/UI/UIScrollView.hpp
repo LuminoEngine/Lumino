@@ -4,6 +4,7 @@
 
 namespace ln {
 class UIButton;
+class IScrollInfo;
 
 class UIScrollView
 	: public UIControl
@@ -256,6 +257,39 @@ private:
     Ref<UIButton> m_lineDownButton;
     float m_dragStartValue;
 };
+
+/**
+    @brief
+*/
+class UIScrollViewer
+    : public UIContainerElement
+{
+public:
+
+    //static Ref<UIScrollViewer> create();
+
+LN_CONSTRUCT_ACCESS:
+    UIScrollViewer();
+    virtual ~UIScrollViewer();
+    void init();
+
+protected:
+    // UIElement interface
+    virtual Size measureOverride(const Size& constraint) override;
+    virtual Size arrangeOverride(const Size& finalSize) override;
+    virtual void onRoutedEvent(UIEventArgs* e) override;
+
+    // UIControl interface
+    //virtual void onLogicalChildrenPresenterChanged(UILayoutPanel* newPanel) override;
+
+    virtual void onLayoutPanelChanged(UILayoutPanel2* newPanel) override;
+
+private:
+    Ref<UIScrollBar>			m_horizontalScrollBar;
+    Ref<UIScrollBar>			m_verticalScrollBar;
+    IScrollInfo*				m_scrollTarget;
+};
+
 
 } // namespace ln
 

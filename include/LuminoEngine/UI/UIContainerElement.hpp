@@ -39,11 +39,13 @@ protected:
 	virtual Size measureOverride(const Size& constraint) override;
 	virtual Size arrangeOverride(const Size& finalSize) override;
 
+    virtual void onLayoutPanelChanged(UILayoutPanel2* newPanel);
+
 private:
 
 	List<Ref<UIElement>> m_logicalChildren;
     Ref<UILayoutPanel2> m_layout;
-	Size m_layoutDesiredSize;	// Layout is state-less
+	//Size m_layoutDesiredSize;	// Layout is state-less
 };
 
 

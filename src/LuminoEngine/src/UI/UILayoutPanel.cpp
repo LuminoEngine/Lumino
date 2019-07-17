@@ -24,8 +24,20 @@ void UILayoutPanel2::measureLayout(const List<Ref<UIElement>>& childElements, co
 
 void UILayoutPanel2::arrangeLayout(const List<Ref<UIElement>>& childElements, const Rect& finalSlotRect)
 {
-    arrangeOverride(childElements, finalSlotRect);
+    Rect rect = finalSlotRect;
+    rect.x += m_scrollOffset.x;
+    rect.y += m_scrollOffset.y;
+    m_actualSize = arrangeOverride(childElements, rect);
 }
+
+float UILayoutPanel2::getExtentWidth() const { return m_desiredSize.width; }
+float UILayoutPanel2::getExtentHeight() const { return m_desiredSize.height; }
+float UILayoutPanel2::getViewportWidth() const { return m_actualSize.width; }
+float UILayoutPanel2::getViewportHeight() const { return m_actualSize.height; }
+void UILayoutPanel2::setHorizontalOffset(float offset) { m_scrollOffset.x = offset; }
+float UILayoutPanel2::getHorizontalOffset() const { return m_scrollOffset.x; }
+void UILayoutPanel2::setVerticalOffset(float offset) { m_scrollOffset.y = offset; }
+float UILayoutPanel2::getVerticalOffset() const { return m_scrollOffset.y; }
 
 //==============================================================================
 // UIFrameLayout2
@@ -63,7 +75,7 @@ Size UIFrameLayout2::measureOverride(const List<Ref<UIElement>>& childElements, 
     return childMaxSize;
 }
 
-void UIFrameLayout2::arrangeOverride(const List<Ref<UIElement>>& childElements, const Rect& finalSlotRect)
+Size UIFrameLayout2::arrangeOverride(const List<Ref<UIElement>>& childElements, const Rect& finalSlotRect)
 {
     Rect bounds(finalSlotRect);
 
@@ -73,6 +85,8 @@ void UIFrameLayout2::arrangeOverride(const List<Ref<UIElement>>& childElements, 
         UIElement* child = childElements[i];
         child->arrangeLayout(bounds);
     }
+
+    return finalSlotRect.getSize();
 }
 
 
@@ -132,7 +146,7 @@ Size UIStackLayout2::measureOverride(const List<Ref<UIElement>>& childElements, 
     return desiredSize;
 }
 
-void UIStackLayout2::arrangeOverride(const List<Ref<UIElement>>& childElements, const Rect& finalSlotRect)
+Size UIStackLayout2::arrangeOverride(const List<Ref<UIElement>>& childElements, const Rect& finalSlotRect)
 {
     Size childrenBoundSize(finalSlotRect.width, finalSlotRect.height);
 
@@ -180,6 +194,8 @@ void UIStackLayout2::arrangeOverride(const List<Ref<UIElement>>& childElements, 
 
         child->arrangeLayout(childRect);
     }
+
+    return finalSlotRect.getSize();
 }
 
 

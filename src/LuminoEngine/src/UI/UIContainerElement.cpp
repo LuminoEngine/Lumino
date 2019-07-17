@@ -20,6 +20,7 @@ void UIContainerElement::init()
 	//setHorizontalAlignment(HAlignment::Stretch);
 	//setVerticalAlignment(VAlignment::Stretch);
 
+    setLayoutPanel(makeObject<UIFrameLayout2>());
 }
 
 void UIContainerElement::onDispose(bool explicitDisposing)
@@ -76,15 +77,16 @@ void UIContainerElement::removeAllChildren()
 void UIContainerElement::setLayoutPanel(UILayoutPanel2* panel)
 {
     m_layout = panel;
+    onLayoutPanelChanged(m_layout);
 	//setLogicalChildrenHost(panel);
 }
 
 UILayoutPanel2* UIContainerElement::layoutPanel() const
 {
-	if (m_layout)
+	//if (m_layout)
 		return m_layout;
-	else
-		return m_manager->defaultLayout();
+	//else
+	//	return m_manager->defaultLayout();
 }
 //
 //UILayoutPanel2* UIContainerElement::layoutPanel() const
@@ -118,9 +120,9 @@ Size UIContainerElement::measureOverride(const Size& constraint)
 {
 	UILayoutPanel2* layout = layoutPanel();
 	layout->measureLayout(m_logicalChildren, constraint);
-	m_layoutDesiredSize = layout->desiredSize();
+    Size desiredSize = layout->desiredSize();
     Size localSize = UIElement::measureOverride(constraint);
-    return Size::max(m_layoutDesiredSize, localSize);
+    return Size::max(desiredSize, localSize);
 
 	//if (m_logicalChildrenHost) {
  //       m_logicalChildrenHost->measureLayout(constraint);
@@ -138,7 +140,7 @@ Size UIContainerElement::arrangeOverride(const Size& finalSize)
 	UILayoutPanel2* layout = layoutPanel();
 
     Rect contentSlotRect;
-    detail::LayoutHelper::adjustAlignment(finalSize, m_layoutDesiredSize, m_finalStyle->horizontalContentAlignment, m_finalStyle->verticalContentAlignment, &contentSlotRect);
+    detail::LayoutHelper::adjustAlignment(finalSize, layout->desiredSize(), m_finalStyle->horizontalContentAlignment, m_finalStyle->verticalContentAlignment, &contentSlotRect);
 
     contentSlotRect = contentSlotRect.makeDeflate(m_finalStyle->padding);
     
@@ -159,6 +161,9 @@ Size UIContainerElement::arrangeOverride(const Size& finalSize)
 	//}
 }
 
+void UIContainerElement::onLayoutPanelChanged(UILayoutPanel2* newPanel)
+{
+}
 
 
 //==============================================================================

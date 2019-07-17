@@ -27,13 +27,25 @@ public:
 		//track->setViewportSize(10);
 		//Engine::mainUIRoot()->addElement(track);
 
-        auto scrollbar = makeObject<UIScrollBar>();
-        scrollbar->setOrientation(Orientation::Vertical);
-        scrollbar->setWidth(20);
-        scrollbar->setHeight(100);
-        scrollbar->setMaximum(50);
-        scrollbar->setViewportSize(10);
-        Engine::mainUIRoot()->addElement(scrollbar);
+        //auto scrollbar = makeObject<UIScrollBar>();
+        //scrollbar->setOrientation(Orientation::Vertical);
+        //scrollbar->setWidth(20);
+        //scrollbar->setHeight(100);
+        //scrollbar->setMaximum(50);
+        //scrollbar->setViewportSize(10);
+        //Engine::mainUIRoot()->addElement(scrollbar);
+
+        auto scrollview = makeObject<UIScrollViewer>();
+        scrollview->setWidth(200);
+        scrollview->setHeight(300);
+        Engine::mainUIRoot()->addElement(scrollview);
+
+
+        m_button1 = makeObject<UIButton>();
+        m_button1->setWidth(100);
+        m_button1->setHeight(50);
+        m_button1->setText(u"Lumino");
+        scrollview->addElement(m_button1);
     }
 
 private:
