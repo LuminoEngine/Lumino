@@ -333,6 +333,14 @@ const ColorTone & UIElement::tone() const
     return m_localStyle->tone.getOrDefault(detail::BuiltinEffectData::DefaultValue.tone);
 }
 
+void UIElement::addClass(const StringRef& className)
+{
+    if (!m_classList) {
+        m_classList = makeList<String>();
+    }
+    m_classList->add(className);
+}
+
 void UIElement::setRenderPriority(int value)
 {
     m_renderPriority = value;

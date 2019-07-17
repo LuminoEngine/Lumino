@@ -248,7 +248,7 @@ public:
 
     //UIContext* context() const { return m_context; }
 
-
+    void addClass(const StringRef& className);
 
     UIElement();
     virtual ~UIElement();
@@ -350,6 +350,7 @@ public: // TODO: internal
     UIElement* m_visualParent;
     UIContainerElement* m_logicalParent;
 	Ref<List<Ref<UIElement>>> m_visualChildren;
+    Ref<List<String>> m_classList;
 
     Ref<UIVisualStateManager> m_visualStateManager;
     Ref<UIStyle> m_localStyle;

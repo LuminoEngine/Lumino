@@ -374,22 +374,22 @@ void UIStyleSheet::init()
     Object::init();
 }
 
-void UIStyleSheet::addStyleClass(const StringRef& className, UIStyleClass* styleClass)
+void UIStyleSheet::addStyleClass(const StringRef& elementName, UIStyleClass* styleClass)
 {
     if (LN_REQUIRE(styleClass)) return;
-    m_classes.insert({ className, styleClass });
+    m_classes.insert({ elementName, styleClass });
 }
 
-Ref<UIStyleClass> UIStyleSheet::addStyleClass(const StringRef& className)
+Ref<UIStyleClass> UIStyleSheet::addStyleClass(const StringRef& elementName)
 {
     auto cls = makeObject<UIStyleClass>();
-    addStyleClass(className, cls);
+    addStyleClass(elementName, cls);
     return cls;
 }
 
-UIStyleClass* UIStyleSheet::findStyleClass(const StringRef& className) const
+UIStyleClass* UIStyleSheet::findStyleClass(const StringRef& elementName) const
 {
-    auto itr = m_classes.find(className);
+    auto itr = m_classes.find(elementName);
     if (itr != m_classes.end())
         return itr->second;
     else

@@ -313,9 +313,9 @@ class UIStyleSheet
     : public Object
 {
 public:
-    void addStyleClass(const StringRef& className, UIStyleClass* styleClass);
-    Ref<UIStyleClass> addStyleClass(const StringRef& className);
-    UIStyleClass* findStyleClass(const StringRef& className) const;
+    void addStyleClass(const StringRef& elementName, UIStyleClass* styleClass);
+    Ref<UIStyleClass> addStyleClass(const StringRef& elementName);
+    UIStyleClass* findStyleClass(const StringRef& elementName) const;
     
 LN_CONSTRUCT_ACCESS:
     UIStyleSheet();
