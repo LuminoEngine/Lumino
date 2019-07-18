@@ -55,16 +55,17 @@ void PluginManager::reloadPlugins()
     m_pluginLibs.clear();
 
     // Load modules
-    auto files = ln::FileSystem::getFiles(m_ownerProject->localPluginDir(), u"*.dll");
-    for (auto& file : files) {
-        auto lib = ln::detail::DllLoader::load(file);
-        auto func = reinterpret_cast<ln::GetModuleClassFunc*>(lib->getProcAddress("ModuleClass"));
-        if (func) {
-            m_pluginModules.add(func());
-            m_pluginLibs.add(lib);
+    if (ln::FileSystem::existsDirectory(m_ownerProject->localPluginDir())) {
+        auto files = ln::FileSystem::getFiles(m_ownerProject->localPluginDir(), u"*.dll");
+        for (auto& file : files) {
+            auto lib = ln::detail::DllLoader::load(file);
+            auto func = reinterpret_cast<ln::GetModuleClassFunc*>(lib->getProcAddress("ModuleClass"));
+            if (func) {
+                m_pluginModules.add(func());
+                m_pluginLibs.add(lib);
+            }
         }
     }
-
 
     m_pluginModules.add(m_standartPluginModule);
     
