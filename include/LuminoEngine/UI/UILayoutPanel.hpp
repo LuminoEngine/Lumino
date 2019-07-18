@@ -13,6 +13,7 @@ namespace ln {
 /**
     @brief        ScrollViewer コントロール内のメインのスクロール可能領域を表します。
 */
+// offset はスクロールバー基準。縦スクロールバーなら、Thumb が下に行くほど、VerticalOffset には + 方向の大きい値がセットされる。
 class IScrollInfo
 {
 public:

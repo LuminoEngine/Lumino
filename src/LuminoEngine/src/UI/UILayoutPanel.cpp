@@ -25,8 +25,8 @@ void UILayoutPanel2::measureLayout(const List<Ref<UIElement>>& childElements, co
 void UILayoutPanel2::arrangeLayout(const List<Ref<UIElement>>& childElements, const Rect& finalSlotRect)
 {
     Rect rect = finalSlotRect;
-    rect.x += m_scrollOffset.x;
-    rect.y += m_scrollOffset.y;
+    rect.x -= m_scrollOffset.x;
+    rect.y -= m_scrollOffset.y;
     m_actualSize = arrangeOverride(childElements, rect);
 }
 
