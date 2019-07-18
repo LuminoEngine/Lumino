@@ -5,6 +5,7 @@ namespace ln {
 class Shader;
 class Texture;
 class UIStyleContext;
+class UIStyleClass;
 namespace detail {
 class UIStyleInstance;
 class UIStyleClassInstance;
@@ -195,11 +196,28 @@ public:
 	detail::UIStyleAttribute<float> maxWidth;
 	detail::UIStyleAttribute<float> maxHeight;
 
-	// layout transform
+	static const Thickness DefaultMargin;
+	static const Thickness DefaultPadding;
+	static const HAlignment DefaultHorizontalAlignment;
+	static const VAlignment DefaultVerticalAlignment;
+	static const HAlignment DefaultHorizontalContentAlignment;
+	static const VAlignment DefaultVerticalContentAlignment;
+	static const float DefaultMinWidth;
+	static const float DefaultMinHeight;
+	static const float DefaultMaxWidth;
+	static const float DefaultMaxHeight;
+	//static const float Default;
+
+	// transform
     detail::UIStyleAttribute<Vector3> position;
     detail::UIStyleAttribute<Quaternion> rotation;
     detail::UIStyleAttribute<Vector3> scale;
     detail::UIStyleAttribute<Vector3> centerPoint;
+
+	static const Vector3 DefaultPosition;
+	static const Quaternion DefaultRotation;
+	static const Vector3 DefaultScale;
+	static const Vector3 DefaultCenterPoint;
 
 	// background
     detail::UIStyleAttribute<BrushImageDrawMode> backgroundDrawMode;
@@ -210,14 +228,29 @@ public:
     detail::UIStyleAttribute<Rect> backgroundImageRect;
     detail::UIStyleAttribute<Thickness> backgroundImageBorder;
 
+	static const BrushImageDrawMode DefaultBackgroundDrawMode;
+	static const Color DefaultBackgroundColor;
+	static const Ref<Texture> DefaultBackgroundImage;
+	static const Ref<Shader> DefaultBackgroundShader;
+	static const Rect DefaultBackgroundImageRect;
+	static const Thickness DefaultBackgroundImageBorder;
+
     // border
     detail::UIStyleAttribute<Thickness>		borderThickness;
     detail::UIStyleAttribute<CornerRadius>		cornerRadius;
-    detail::UIStyleAttribute<Color>				leftBorderColor;
+    detail::UIStyleAttribute<Color>				leftBorderColor;	// TODO: borderLeftColor
     detail::UIStyleAttribute<Color>				topBorderColor;
     detail::UIStyleAttribute<Color>				rightBorderColor;
     detail::UIStyleAttribute<Color>				bottomBorderColor;
     detail::UIStyleAttribute<BorderDirection>	borderDirection;
+
+	static const Thickness DefaultBorderThickness;
+	static const CornerRadius DefaultCornerRadius;
+	static const Color DefaultLeftBorderColor;
+	static const Color DefaultTopBorderColor;
+	static const Color DefaultRightBorderColor;
+	static const Color DefaultBottomBorderColor;
+	static const BorderDirection DefaultBorderDirection;
 
 	// shadow
 	detail::UIStyleAttribute<float> shadowOffsetX;
@@ -227,6 +260,13 @@ public:
 	detail::UIStyleAttribute<Color> shadowColor;
 	detail::UIStyleAttribute<bool> shadowInset;
 
+	static const float DefaultShadowOffsetX;
+	static const float DefaultShadowOffsetY;
+	static const float DefaultShadowBlurRadius;
+	static const float DefaultShadowSpreadRadius;
+	static const Color DefaultShadowColor;
+	static const bool DefaultShadowInset;
+
 	// text
 	detail::UIStyleAttribute<Color> textColor;	// (default: Black)
 	detail::UIStyleAttribute<String> fontFamily;
@@ -234,13 +274,26 @@ public:
 	detail::UIStyleAttribute<UIFontWeight> fontWeight;
 	detail::UIStyleAttribute<UIFontStyle> fontStyle;
 
-	// render effects
+	static const Color DefaultTextColor;
+	static const String DefaultFontFamily;
+	static const float DefaultFontSize;
+	static const UIFontWeight DefaultFontWeight;
+	static const UIFontStyle DefaultFontStyle;
+
+	// effects
     detail::UIStyleAttribute<bool> visible;
     detail::UIStyleAttribute<BlendMode> blendMode;
     detail::UIStyleAttribute<float> opacity;
     detail::UIStyleAttribute<Color> colorScale;
     detail::UIStyleAttribute<Color> blendColor;
     detail::UIStyleAttribute<ColorTone> tone;
+
+	static const bool DefaultVisible;
+	static const BlendMode DefaultBlendMode;
+	static const float DefaultOpacity;
+	static const Color DefaultColorScale;
+	static const Color DefaultBlendColor;
+	static const ColorTone DefaultTone;
 
     void setBorderColor(const Color& color)
     {
@@ -264,59 +317,82 @@ LN_CONSTRUCT_ACCESS:
 private:
 };
 
-// 要素ひとつに対応。複数の class と VisualState を管理する
+// 要素ひとつに対応。複数の class を管理する
 class UIStyleSet
     : public Object
 {
 public:
-    //const String& className() const { return m_className; }
+    const String& elementName() const { return m_elementName; }
     //void setClassName(const StringRef& value) { m_className = value; }
 
-    UIStyle* style() const { return m_style; }
-    void setStyle(UIStyle* value) { m_style = value; }
+	UIStyleClass* mainStyleClass() const { return m_mainStyleClass; }
+    void setMainStyleClass(UIStyleClass* value) { m_mainStyleClass = value; }
 
-    void addStateStyle(const StringRef& stateName, UIStyle* style);
-    UIStyle* findStateStyle(const StringRef& stateName) const;
-
-    void addClassStyle(const StringRef& className, UIStyle* style);
-    UIStyle* findClassStyle(const StringRef& className) const;
+    void addStyleClass(UIStyleClass* styleClass);
+	UIStyleClass* findStyleClass(const StringRef& className) const;
 
     // TODO: internal
+	void copyFrom(const UIStyleSet* other);
     void mergeFrom(const UIStyleSet* other);
 
 LN_CONSTRUCT_ACCESS:
 	UIStyleSet();
     virtual ~UIStyleSet();
-    void init();
+    void init(const StringRef& elementName);
 
 private:
-    struct VisualStateSlot
-    {
-        String name;
-        Ref<UIStyle> style;
-    };
-
-    struct ClassSlot
-    {
-        String name;
-        Ref<UIStyle> style;
-    };
-
-    Ref<UIStyle> m_style;
-    List<VisualStateSlot> m_visualStateStyles;
-    List<ClassSlot> m_classSlots;
+	String m_elementName;
+	Ref<UIStyleClass> m_mainStyleClass;
+	List<Ref<UIStyleClass>> m_styleClasses;
 
     friend class detail::UIStyleClassInstance;
     friend class UIStyleContext;
+};
+
+// 要素ひとつ、class ひとつに対応。VisualState を管理する
+class UIStyleClass
+	: public Object
+{
+public:
+	const String& name() const { return m_name; }
+
+	UIStyle* mainStyle() const { return m_mainStyle; }
+	void setMainStyle(UIStyle* value) { m_mainStyle = value; }
+
+	void addStateStyle(const StringRef& stateName, UIStyle* style);
+	UIStyle* findStateStyle(const StringRef& stateName) const;
+
+	// TODO: internal
+	void copyFrom(const UIStyleClass* other);
+	void mergeFrom(const UIStyleClass* other);
+
+LN_CONSTRUCT_ACCESS:
+	UIStyleClass();
+	virtual ~UIStyleClass();
+	void init(const StringRef& name);
+
+private:
+	struct VisualStateSlot
+	{
+		String name;
+		Ref<UIStyle> style;
+	};
+
+	String m_name;
+	Ref<UIStyle> m_mainStyle;
+	List<VisualStateSlot> m_visualStateStyles;
+
+	friend class detail::UIStyleClassInstance;
+	friend class UIStyleContext;
 };
 
 class UIStyleSheet
     : public Object
 {
 public:
-    void addStyleClass(const StringRef& elementName, UIStyleSet* styleClass);
-    Ref<UIStyleSet> addStyleClass(const StringRef& elementName);
-    UIStyleSet* findStyleClass(const StringRef& elementName) const;
+    void addStyleSet(const StringRef& elementName, UIStyleSet* styleClass);
+    Ref<UIStyleSet> addStyleSet(const StringRef& elementName);
+    UIStyleSet* findStyleSet(const StringRef& elementName) const;
     
 LN_CONSTRUCT_ACCESS:
     UIStyleSheet();
@@ -337,9 +413,11 @@ public:
 
 
     // TODO: internal
+	// find を高速にするため、事前に確定できる継承関係を解決する。
     void build();
-    UIStyleSet* findStyleClass(const StringRef& elementName) const; // 無い場合は global
-    detail::UIStyleClassInstance* findResolvedStyleClass(const StringRef& elementName) const; // 無い場合は global
+    UIStyleSet* findStyleSet(const StringRef& elementName) const; // 無い場合は global
+    //detail::UIStyleClassInstance* findResolvedStyleClass(const StringRef& elementName) const; // 無い場合は global
+	// VisualState 以外を結合 (mainStyle のみ結合)
 	void combineStyle(UIStyle* style, const StringRef& elementName, const List<String>* classList) const;
 
 LN_CONSTRUCT_ACCESS:
@@ -350,9 +428,11 @@ LN_CONSTRUCT_ACCESS:
 private:
     List<Ref<UIStyleSheet>> m_styleSheets;
     Ref<UIStyleSet> m_globalStyle;
-    std::unordered_map<String, Ref<UIStyleSet>> m_classes;
-    Ref<detail::UIStyleClassInstance> m_resolvedGlobalStyle;                            // for unused VisualStateManager
-    std::unordered_map<String, Ref<detail::UIStyleClassInstance>> m_resolvedClasses;    // for unused VisualStateManager
+    std::unordered_map<String, Ref<UIStyleSet>> m_elementStyles;
+
+	// TODO: つかわないかも
+    //Ref<detail::UIStyleClassInstance> m_resolvedGlobalStyle;                            // for unused VisualStateManager
+    //std::unordered_map<String, Ref<detail::UIStyleClassInstance>> m_resolvedClasses;    // for unused VisualStateManager
 };
 
 namespace detail {
@@ -526,8 +606,8 @@ public:
         }
     }
 
-    UIStyle* combineStyle(const UIStyleContext* styleContext, const ln::String& elementName);
-	void combineStyle(UIStyle* style, const UIStyleContext* styleContext, const ln::String& elementName);
+    //UIStyle* combineStyle(const UIStyleContext* styleContext, const ln::String& elementName);
+	void combineStyle(UIStyle* style, const UIStyleContext* styleContext, const ln::String& elementName, const List<String>* classList);
     //detail::UIStyleInstance* resolveStyle(const UIStyleContext* styleContext, const ln::String& className);
 
 LN_CONSTRUCT_ACCESS:

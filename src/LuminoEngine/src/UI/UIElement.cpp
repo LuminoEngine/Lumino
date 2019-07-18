@@ -509,7 +509,7 @@ void UIElement::updateStyleHierarchical(const UIStyleContext* styleContext, cons
 	m_combinedStyle->reset();
 	styleContext->combineStyle(m_combinedStyle, elementName(), m_classList);
 	if (m_visualStateManager) {
-		m_visualStateManager->combineStyle(m_combinedStyle, styleContext, elementName());
+		m_visualStateManager->combineStyle(m_combinedStyle, styleContext, elementName(), m_classList);
 	}
 
     //UIStyle* combinedStyle;

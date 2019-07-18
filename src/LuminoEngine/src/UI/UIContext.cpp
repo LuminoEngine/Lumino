@@ -66,9 +66,9 @@ void UIContext::setupDefaultStyle()
 		//--------------------------------
         // UIButton
 		{
-			auto c = sheet->addStyleClass(u"UIButton");
+			auto e = sheet->addStyleSet(u"UIButton");
 			{
-				auto s = c->style();
+				auto s = e->mainStyleClass()->mainStyle();
 				s->horizontalContentAlignment = HAlignment::Center;
 				s->verticalContentAlignment = VAlignment::Center;
 				s->backgroundColor = UIColors::get(UIColorHues::Grey, 3);
@@ -86,23 +86,23 @@ void UIContext::setupDefaultStyle()
 			{
 				auto s = makeObject<UIStyle>();
 				s->backgroundColor = UIColors::get(UIColorHues::Red, 4);
-				c->addStateStyle(u"MouseOver", s);
+				e->mainStyleClass()->addStateStyle(u"MouseOver", s);
 			}
 			// UIButton:Pressed
 			{
 				auto s = makeObject<UIStyle>();
 				s->backgroundColor = UIColors::get(UIColorHues::Green, 5);
-				c->addStateStyle(u"Pressed", s);
+				e->mainStyleClass()->addStateStyle(u"Pressed", s);
 			}
 		}
 
 		//--------------------------------
 		// UIThumb
 		{
-			auto c = sheet->addStyleClass(u"UIThumb");
+			auto e = sheet->addStyleSet(u"UIThumb");
 			// UIThumb
 			{
-				auto s = c->style();
+				auto s = e->mainStyleClass()->mainStyle();
 				s->backgroundColor = UIColors::get(UIColorHues::Grey, 8);
 				s->cornerRadius = CornerRadius(4);
 			}
@@ -110,15 +110,15 @@ void UIContext::setupDefaultStyle()
 			{
 				auto s = makeObject<UIStyle>();
 				s->backgroundColor = UIColors::get(UIColorHues::Blue, 4);
-				c->addClassStyle(u"UITrack-Thumb", s);
+				e->mainStyleClass()->addStateStyle(u"UITrack-Thumb", s);
 			}
 		}
 		//--------------------------------
 		// UITrack
 		{
-			auto c = sheet->addStyleClass(u"UITrack");
+			auto e = sheet->addStyleSet(u"UITrack");
 			{
-				auto s = c->style();
+				auto s = e->mainStyleClass()->mainStyle();
 				s->backgroundColor = UIColors::get(UIColorHues::Amber, 8);
 			}
 		}
