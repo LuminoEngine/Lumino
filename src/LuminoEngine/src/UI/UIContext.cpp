@@ -94,6 +94,27 @@ void UIContext::setupDefaultStyle()
 				s->backgroundColor = UIColors::get(UIColorHues::Green, 5);
 				e->mainStyleClass()->addStateStyle(u"Pressed", s);
 			}
+			// UIButton.UITrack-DecreaseButton
+			{
+				auto c = e->addStyleClass(u"UITrack-DecreaseButton");
+				auto s = c->mainStyle();
+				s->backgroundColor = Color(1, 1, 1, 0);
+				s->cornerRadius = CornerRadius(0);
+				s->shadowBlurRadius = 0;
+				s->shadowOffsetY = 0;
+
+				// UIButton.UITrack-DecreaseButton:MouseOver
+				{
+					auto s = c->addStateStyle(u"MouseOver");
+					s->backgroundColor = Color::Transparency;
+				}
+				// UIButton.UITrack-DecreaseButton:Pressed
+				{
+					auto s = c->addStateStyle(u"Pressed");
+					s->backgroundColor = Color::Transparency;
+				}
+				// ベース要素である UIButton の VisualState を全て上書きする必要がある。CSS と同じ動作。
+			}
 		}
 
 		//--------------------------------
@@ -103,7 +124,8 @@ void UIContext::setupDefaultStyle()
 			// UIThumb
 			{
 				auto s = e->mainStyleClass()->mainStyle();
-				s->backgroundColor = UIColors::get(UIColorHues::Grey, 8);
+				s->margin = Thickness(2);
+				s->backgroundColor = UIColors::get(UIColorHues::Grey, 4);
 				s->cornerRadius = CornerRadius(4);
 			}
 			// UIThumb.UITrack-Thumb
@@ -116,10 +138,20 @@ void UIContext::setupDefaultStyle()
 		//--------------------------------
 		// UITrack
 		{
-			auto e = sheet->addStyleSet(u"UITrack");
-			{
-				auto s = e->mainStyleClass()->mainStyle();
-				s->backgroundColor = UIColors::get(UIColorHues::Amber, 8);
+			if (auto s = sheet->obtainStyle(u"UITrack")) {
+				s->backgroundColor = UIColors::get(UIColorHues::Grey, 2);
+			}
+			if (auto s = sheet->obtainStyle(u"UIButton.UITrack-IncreaseButton")) {
+				s->backgroundColor = Color(1, 1, 1, 0);
+				s->cornerRadius = CornerRadius(0);
+				s->shadowBlurRadius = 0;
+				s->shadowOffsetY = 0;
+			}
+			if (auto s = sheet->obtainStyle(u"UIButton.UITrack-IncreaseButton:MouseOver")) {
+				s->backgroundColor = Color::Transparency;
+			}
+			if (auto s = sheet->obtainStyle(u"UIButton.UITrack-IncreaseButton:Pressed")) {
+				s->backgroundColor = Color::Transparency;
 			}
 		}
     }

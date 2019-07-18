@@ -427,6 +427,13 @@ void UIStyleSet::addStyleClass(UIStyleClass* styleClass)
 	m_styleClasses.add(styleClass);
 }
 
+UIStyleClass* UIStyleSet::addStyleClass(const StringRef& className)
+{
+	auto ptr = makeObject<UIStyleClass>(className);
+	addStyleClass(ptr);
+	return ptr;
+}
+
 UIStyleClass* UIStyleSet::findStyleClass(const StringRef& className) const
 {
     auto style = m_styleClasses.findIf([&](auto& x) { return String::compare(x->name(), className, CaseSensitivity::CaseInsensitive) == 0; });
@@ -492,6 +499,13 @@ void UIStyleClass::addStateStyle(const StringRef& stateName, UIStyle* style)
 {
 	if (LN_REQUIRE(style)) return;
 	m_visualStateStyles.add({ stateName, style });
+}
+
+UIStyle* UIStyleClass::addStateStyle(const StringRef& stateName)
+{
+	auto ptr = makeObject<UIStyle>();
+	addStateStyle(stateName, ptr);
+	return ptr;
 }
 
 UIStyle* UIStyleClass::findStateStyle(const StringRef& stateName) const
@@ -571,6 +585,70 @@ UIStyleSet* UIStyleSheet::findStyleSet(const StringRef& elementName) const
         return itr->second;
     else
         return nullptr;
+}
+
+UIStyle* UIStyleSheet::obtainStyle(const StringRef& selector)
+{
+	String actualSelector = selector;
+	int classBegin = actualSelector.lastIndexOf(u".");
+	int stateBegin = actualSelector.lastIndexOf(u":");
+
+	int elementEnd = (classBegin > 0) ? classBegin : ((stateBegin > 0) ? stateBegin : actualSelector.length());
+	int classEnd = (stateBegin > 0) ? stateBegin : actualSelector.length();
+	int stateEnd = actualSelector.length();
+
+	StringRef elementName;
+	StringRef className;
+	StringRef stateName;
+	if (classBegin == 0 || stateBegin == 0) {
+		// omitted
+	}
+	else {
+		elementName = actualSelector.substr(0, elementEnd);
+	}
+	if (classBegin >= 0) {
+		className = actualSelector.substr(classBegin + 1, classEnd - classBegin - 1);
+	}
+	if (stateBegin >= 0) {
+		stateName = actualSelector.substr(stateBegin + 1, stateEnd - stateBegin - 1);
+	}
+
+	UIStyleSet* styleSet;
+	if (elementName.isEmpty()) {
+		LN_NOTIMPLEMENTED();	// TODO: global
+		return nullptr;
+	}
+	else {
+		styleSet = findStyleSet(elementName);
+		if (!styleSet) {
+			styleSet = addStyleSet(elementName);
+		}
+	}
+
+	UIStyleClass* styleClass;
+	if (className.isEmpty()) {
+		styleClass = styleSet->mainStyleClass();
+	}
+	else {
+		styleClass = styleSet->findStyleClass(className);
+		if (!styleClass) {
+			styleClass = styleSet->addStyleClass(className);
+		}
+	}
+
+	UIStyle* style;
+	if (stateName.isEmpty()) {
+		style = styleClass->mainStyle();
+	}
+	else {
+		style = styleClass->findStateStyle(stateName);
+		if (!style) {
+			style = styleClass->addStateStyle(stateName);
+		}
+	}
+
+	assert(style);
+	return style;
 }
 
 //==============================================================================

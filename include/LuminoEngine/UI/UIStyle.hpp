@@ -329,6 +329,7 @@ public:
     void setMainStyleClass(UIStyleClass* value) { m_mainStyleClass = value; }
 
     void addStyleClass(UIStyleClass* styleClass);
+	UIStyleClass* addStyleClass(const StringRef& className);
 	UIStyleClass* findStyleClass(const StringRef& className) const;
 
     // TODO: internal
@@ -360,6 +361,7 @@ public:
 	void setMainStyle(UIStyle* value) { m_mainStyle = value; }
 
 	void addStateStyle(const StringRef& stateName, UIStyle* style);
+	UIStyle* addStateStyle(const StringRef& stateName);
 	UIStyle* findStateStyle(const StringRef& stateName) const;
 
 	// TODO: internal
@@ -393,6 +395,8 @@ public:
     void addStyleSet(const StringRef& elementName, UIStyleSet* styleClass);
     Ref<UIStyleSet> addStyleSet(const StringRef& elementName);
     UIStyleSet* findStyleSet(const StringRef& elementName) const;
+
+	UIStyle* obtainStyle(const StringRef& selector);
     
 LN_CONSTRUCT_ACCESS:
     UIStyleSheet();
