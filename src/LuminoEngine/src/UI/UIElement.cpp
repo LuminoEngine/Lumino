@@ -502,19 +502,29 @@ void UIElement::onRender(UIRenderingContext* context)
 
 void UIElement::updateStyleHierarchical(const UIStyleContext* styleContext, const detail::UIStyleInstance* parentFinalStyle)
 {
-    UIStyle* combinedStyle;
-    if (m_visualStateManager) {
-        combinedStyle = m_visualStateManager->combineStyle(styleContext, elementName());
-    }
-    else {
-        auto sc = styleContext->findStyleClass(elementName());
-        combinedStyle = sc->style();
-        
-        //auto sc = styleContext->findResolvedStyleClass();
-        //resolvedStyle = sc->style();
-    }
+	if (!m_combinedStyle) {
+		m_combinedStyle = makeObject<UIStyle>();
+	}
 
-	detail::UIStyleInstance::updateStyleDataHelper(m_localStyle, parentFinalStyle, combinedStyle, m_finalStyle);
+	m_combinedStyle->reset();
+	styleContext->combineStyle(m_combinedStyle, elementName(), m_classList);
+	if (m_visualStateManager) {
+		m_visualStateManager->combineStyle(m_combinedStyle, styleContext, elementName());
+	}
+
+    //UIStyle* combinedStyle;
+    //if (m_visualStateManager) {
+    //    combinedStyle = m_visualStateManager->combineStyle(styleContext, elementName());
+    //}
+    //else {
+    //    auto sc = styleContext->findStyleClass(elementName());
+    //    combinedStyle = sc->style();
+    //    
+    //    //auto sc = styleContext->findResolvedStyleClass();
+    //    //resolvedStyle = sc->style();
+    //}
+
+	detail::UIStyleInstance::updateStyleDataHelper(m_localStyle, parentFinalStyle, m_combinedStyle, m_finalStyle);
 
 	onUpdateStyle(styleContext, m_finalStyle);
 
@@ -622,8 +632,8 @@ bool UIElement::onHitTest(const Point& frameClientPosition)
     auto inv = Matrix::makeInverse(m_combinedFinalTransform);
     auto pos = Vector3::transformCoord(Vector3(frameClientPosition.x, frameClientPosition.y, .0f), inv);
 
-    if (m_localPosition.x <= pos.x && pos.x < m_localPosition.x + m_actualSize.width &&
-        m_localPosition.y <= pos.y && pos.y < m_localPosition.y + m_actualSize.height) {
+    if (0 <= pos.x && pos.x < m_actualSize.width &&
+        0 <= pos.y && pos.y < m_actualSize.height) {
         return true;
     }
     else {

@@ -252,6 +252,7 @@ public:
 
 public:	// TODO: internal
 	void setupDefault();
+	void reset();
     void mergeFrom(const UIStyle* other);
     void copyFrom(const UIStyle* other);
 
@@ -263,7 +264,8 @@ LN_CONSTRUCT_ACCESS:
 private:
 };
 
-class UIStyleClass
+// 要素ひとつに対応。複数の class と VisualState を管理する
+class UIStyleSet
     : public Object
 {
 public:
@@ -276,15 +278,15 @@ public:
     void addStateStyle(const StringRef& stateName, UIStyle* style);
     UIStyle* findStateStyle(const StringRef& stateName) const;
 
-    void addSubElementStyle(const StringRef& elementName, UIStyle* style);
-    UIStyle* findSubElementStyle(const StringRef& elementName) const;
+    void addClassStyle(const StringRef& className, UIStyle* style);
+    UIStyle* findClassStyle(const StringRef& className) const;
 
     // TODO: internal
-    void mergeFrom(const UIStyleClass* other);
+    void mergeFrom(const UIStyleSet* other);
 
 LN_CONSTRUCT_ACCESS:
-    UIStyleClass();
-    virtual ~UIStyleClass();
+	UIStyleSet();
+    virtual ~UIStyleSet();
     void init();
 
 private:
@@ -294,16 +296,15 @@ private:
         Ref<UIStyle> style;
     };
 
-    struct SubElementSlot
+    struct ClassSlot
     {
         String name;
         Ref<UIStyle> style;
     };
 
-    //String m_className;
     Ref<UIStyle> m_style;
     List<VisualStateSlot> m_visualStateStyles;
-    List<SubElementSlot> m_subElements;
+    List<ClassSlot> m_classSlots;
 
     friend class detail::UIStyleClassInstance;
     friend class UIStyleContext;
@@ -313,9 +314,9 @@ class UIStyleSheet
     : public Object
 {
 public:
-    void addStyleClass(const StringRef& elementName, UIStyleClass* styleClass);
-    Ref<UIStyleClass> addStyleClass(const StringRef& elementName);
-    UIStyleClass* findStyleClass(const StringRef& elementName) const;
+    void addStyleClass(const StringRef& elementName, UIStyleSet* styleClass);
+    Ref<UIStyleSet> addStyleClass(const StringRef& elementName);
+    UIStyleSet* findStyleClass(const StringRef& elementName) const;
     
 LN_CONSTRUCT_ACCESS:
     UIStyleSheet();
@@ -323,7 +324,7 @@ LN_CONSTRUCT_ACCESS:
     void init();
 
 private:
-    std::unordered_map<String, Ref<UIStyleClass>> m_classes;
+    std::unordered_map<String, Ref<UIStyleSet>> m_classes;
 
     friend class UIStyleContext;
 };
@@ -337,8 +338,9 @@ public:
 
     // TODO: internal
     void build();
-    UIStyleClass* findStyleClass(const StringRef& className) const; // 無い場合は global
-    detail::UIStyleClassInstance* findResolvedStyleClass(const StringRef& className) const; // 無い場合は global
+    UIStyleSet* findStyleClass(const StringRef& elementName) const; // 無い場合は global
+    detail::UIStyleClassInstance* findResolvedStyleClass(const StringRef& elementName) const; // 無い場合は global
+	void combineStyle(UIStyle* style, const StringRef& elementName, const List<String>* classList) const;
 
 LN_CONSTRUCT_ACCESS:
     UIStyleContext();
@@ -347,8 +349,8 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     List<Ref<UIStyleSheet>> m_styleSheets;
-    Ref<UIStyleClass> m_globalStyle;
-    std::unordered_map<String, Ref<UIStyleClass>> m_classes;
+    Ref<UIStyleSet> m_globalStyle;
+    std::unordered_map<String, Ref<UIStyleSet>> m_classes;
     Ref<detail::UIStyleClassInstance> m_resolvedGlobalStyle;                            // for unused VisualStateManager
     std::unordered_map<String, Ref<detail::UIStyleClassInstance>> m_resolvedClasses;    // for unused VisualStateManager
 };
@@ -454,7 +456,7 @@ public:
     const Ref<UIStyleInstance>& style() const { return m_style; }
     UIStyleInstance* findStateStyle(const StringRef& stateName) const;  // 無い場合は nullptr
     UIStyleInstance* findSubElementStyle(const StringRef& elementName) const;   // 無い場合は nullptr
-    void mergeFrom(const UIStyleClass* other);
+    void mergeFrom(const UIStyleSet* other);
 
 private:
     struct VisualStateSlot
@@ -525,6 +527,7 @@ public:
     }
 
     UIStyle* combineStyle(const UIStyleContext* styleContext, const ln::String& elementName);
+	void combineStyle(UIStyle* style, const UIStyleContext* styleContext, const ln::String& elementName);
     //detail::UIStyleInstance* resolveStyle(const UIStyleContext* styleContext, const ln::String& className);
 
 LN_CONSTRUCT_ACCESS:

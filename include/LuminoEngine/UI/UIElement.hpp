@@ -354,6 +354,7 @@ public: // TODO: internal
 
     Ref<UIVisualStateManager> m_visualStateManager;
     Ref<UIStyle> m_localStyle;
+	Ref<UIStyle> m_combinedStyle;
 	Ref<detail::UIStyleInstance> m_finalStyle;
     int m_renderPriority;
     bool m_isHitTestVisible;

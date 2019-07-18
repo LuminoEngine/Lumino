@@ -76,9 +76,14 @@ void UIContainerElement::removeAllChildren()
 
 void UIContainerElement::setLayoutPanel(UILayoutPanel2* panel)
 {
-    m_layout = panel;
-    onLayoutPanelChanged(m_layout);
-	//setLogicalChildrenHost(panel);
+	if (m_layout != panel) {
+		m_layout = panel;
+		if (!m_layout) {
+			m_layout = makeObject<UIFrameLayout2>();
+		}
+		onLayoutPanelChanged(m_layout);
+		//setLogicalChildrenHost(panel);
+	}
 }
 
 UILayoutPanel2* UIContainerElement::layoutPanel() const

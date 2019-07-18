@@ -76,6 +76,12 @@ void UIContext::setupDefaultStyle()
 				s->shadowBlurRadius = 2;
 				s->shadowOffsetY = 2;
 			}
+			//// UIButton.test
+			//{
+			//	auto s = makeObject<UIStyle>();
+			//	s->backgroundColor = UIColors::get(UIColorHues::Blue, 4);
+			//	c->addClassStyle(u"test", s);
+			//}
 			// UIButton:MouseOver
 			{
 				auto s = makeObject<UIStyle>();
@@ -94,10 +100,17 @@ void UIContext::setupDefaultStyle()
 		// UIThumb
 		{
 			auto c = sheet->addStyleClass(u"UIThumb");
+			// UIThumb
 			{
 				auto s = c->style();
 				s->backgroundColor = UIColors::get(UIColorHues::Grey, 8);
 				s->cornerRadius = CornerRadius(4);
+			}
+			// UIThumb.UITrack-Thumb
+			{
+				auto s = makeObject<UIStyle>();
+				s->backgroundColor = UIColors::get(UIColorHues::Blue, 4);
+				c->addClassStyle(u"UITrack-Thumb", s);
 			}
 		}
 		//--------------------------------

@@ -157,6 +157,67 @@ void UIStyle::setupDefault()
 	tone = ColorTone(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
+void UIStyle::reset()
+{
+	// layout
+	margin.reset();
+	padding.reset();
+	horizontalAlignment.reset();
+	verticalAlignment.reset();
+	horizontalContentAlignment.reset();
+	verticalContentAlignment.reset();
+	minWidth.reset();
+	minHeight.reset();
+	maxWidth.reset();
+	maxHeight.reset();
+
+	// layout transform
+	position.reset();
+	rotation.reset();
+	scale.reset();
+	centerPoint.reset();
+
+	// background
+	backgroundDrawMode.reset();
+	backgroundColor.reset();
+	backgroundImage.reset();
+	backgroundShader.reset();
+	backgroundImageRect.reset();
+	backgroundImageBorder.reset();
+
+	// border
+	borderThickness.reset();
+	cornerRadius.reset();
+	leftBorderColor.reset();
+	topBorderColor.reset();
+	rightBorderColor.reset();
+	bottomBorderColor.reset();
+	borderDirection.reset();
+
+	// shadow
+	shadowOffsetX.reset();
+	shadowOffsetY.reset();
+	shadowBlurRadius.reset();
+	shadowSpreadRadius.reset();
+	shadowColor.reset();
+	shadowInset.reset();
+
+	// text
+	textColor.reset();
+	fontFamily.reset();
+	fontSize.reset();
+	fontWeight.reset();
+	fontStyle.reset();
+
+	// render effects
+	visible.reset();
+	blendMode.reset();
+	opacity.reset();
+	colorScale.reset();
+	blendColor.reset();
+	tone.reset();
+}
+
 void UIStyle::mergeFrom(const UIStyle* other)
 {
     if (LN_REQUIRE(other)) return;
@@ -284,29 +345,29 @@ void UIStyle::copyFrom(const UIStyle* other)
 }
 
 //==============================================================================
-// UIStyleClass
+// UIStyleSet
 
-UIStyleClass::UIStyleClass()
+UIStyleSet::UIStyleSet()
 {
 }
 
-UIStyleClass::~UIStyleClass()
+UIStyleSet::~UIStyleSet()
 {
 }
 
-void UIStyleClass::init()
+void UIStyleSet::init()
 {
     Object::init();
     m_style = makeObject<UIStyle>();
 }
 
-void UIStyleClass::addStateStyle(const StringRef& stateName, UIStyle* style)
+void UIStyleSet::addStateStyle(const StringRef& stateName, UIStyle* style)
 {
     if (LN_REQUIRE(style)) return;
     m_visualStateStyles.add({ stateName, style });
 }
 
-UIStyle* UIStyleClass::findStateStyle(const StringRef& stateName) const
+UIStyle* UIStyleSet::findStateStyle(const StringRef& stateName) const
 {
     auto style = m_visualStateStyles.findIf([&](auto& x) { return String::compare(x.name, stateName, CaseSensitivity::CaseInsensitive) == 0; });
     if (style)
@@ -315,22 +376,22 @@ UIStyle* UIStyleClass::findStateStyle(const StringRef& stateName) const
         return nullptr;
 }
 
-void UIStyleClass::addSubElementStyle(const StringRef& elementName, UIStyle* style)
+void UIStyleSet::addClassStyle(const StringRef& className, UIStyle* style)
 {
     if (LN_REQUIRE(style)) return;
-    m_subElements.add({ elementName, style });
+	m_classSlots.add({ className, style });
 }
 
-UIStyle* UIStyleClass::findSubElementStyle(const StringRef& elementName) const
+UIStyle* UIStyleSet::findClassStyle(const StringRef& className) const
 {
-    auto style = m_subElements.findIf([&](auto& x) { return String::compare(x.name, elementName, CaseSensitivity::CaseInsensitive) == 0; });
+    auto style = m_classSlots.findIf([&](auto& x) { return String::compare(x.name, className, CaseSensitivity::CaseInsensitive) == 0; });
     if (style)
         return style->style;
     else
         return nullptr;
 }
 
-void UIStyleClass::mergeFrom(const UIStyleClass* other)
+void UIStyleSet::mergeFrom(const UIStyleSet* other)
 {
     if (LN_REQUIRE(other)) return;
 
@@ -348,11 +409,11 @@ void UIStyleClass::mergeFrom(const UIStyleClass* other)
     }
 
     // Merge sub-element style
-    for (auto& slot : other->m_subElements) {
-        auto style = findSubElementStyle(slot.name);
+    for (auto& slot : other->m_classSlots) {
+        auto style = findClassStyle(slot.name);
         if (!style) {
-            m_subElements.add({ slot.name, makeObject<UIStyle>() });
-            style = m_subElements.back().style;
+			m_classSlots.add({ slot.name, makeObject<UIStyle>() });
+            style = m_classSlots.back().style;
         }
         style->mergeFrom(slot.style);
     }
@@ -374,20 +435,20 @@ void UIStyleSheet::init()
     Object::init();
 }
 
-void UIStyleSheet::addStyleClass(const StringRef& elementName, UIStyleClass* styleClass)
+void UIStyleSheet::addStyleClass(const StringRef& elementName, UIStyleSet* styleClass)
 {
     if (LN_REQUIRE(styleClass)) return;
     m_classes.insert({ elementName, styleClass });
 }
 
-Ref<UIStyleClass> UIStyleSheet::addStyleClass(const StringRef& elementName)
+Ref<UIStyleSet> UIStyleSheet::addStyleClass(const StringRef& elementName)
 {
-    auto cls = makeObject<UIStyleClass>();
+    auto cls = makeObject<UIStyleSet>();
     addStyleClass(elementName, cls);
     return cls;
 }
 
-UIStyleClass* UIStyleSheet::findStyleClass(const StringRef& elementName) const
+UIStyleSet* UIStyleSheet::findStyleClass(const StringRef& elementName) const
 {
     auto itr = m_classes.find(elementName);
     if (itr != m_classes.end())
@@ -421,7 +482,7 @@ void UIStyleContext::addStyleSheet(UIStyleSheet* sheet)
 void UIStyleContext::build()
 {
     // first, merge globals
-    m_globalStyle = makeObject<UIStyleClass>();
+    m_globalStyle = makeObject<UIStyleSet>();
     m_globalStyle->m_style->setupDefault();
     for (auto& sheet : m_styleSheets) {
         auto globalStyle = sheet->findStyleClass(u"*");
@@ -437,7 +498,7 @@ void UIStyleContext::build()
         for (auto& pair : sheet->m_classes) {
             auto itr = m_classes.find(pair.first);
             if (itr == m_classes.end()) {
-                auto instance = makeObject<UIStyleClass>();
+                auto instance = makeObject<UIStyleSet>();
                 instance->m_style->copyFrom(m_globalStyle->m_style);
                 m_classes.insert({ pair.first, instance });
                 instance->mergeFrom(pair.second);
@@ -458,22 +519,36 @@ void UIStyleContext::build()
     }
 }
 
-UIStyleClass* UIStyleContext::findStyleClass(const StringRef& className) const
+UIStyleSet* UIStyleContext::findStyleClass(const StringRef& elementName) const
 {
-    auto itr = m_classes.find(className);
+    auto itr = m_classes.find(elementName);
     if (itr != m_classes.end())
         return itr->second;
     else
         return m_globalStyle;
 }
 
-detail::UIStyleClassInstance* UIStyleContext::findResolvedStyleClass(const StringRef& className) const
+detail::UIStyleClassInstance* UIStyleContext::findResolvedStyleClass(const StringRef& elementName) const
 {
-    auto itr = m_resolvedClasses.find(className);
+    auto itr = m_resolvedClasses.find(elementName);
     if (itr != m_resolvedClasses.end())
         return itr->second;
     else
         return m_resolvedGlobalStyle;
+}
+
+void UIStyleContext::combineStyle(UIStyle* style, const StringRef& elementName, const List<String>* classList) const
+{
+	auto s = findStyleClass(elementName);
+
+	style->mergeFrom(s->style());
+
+	if (classList) {
+		for (auto& name : *classList) {
+			auto cs = s->findClassStyle(name);
+			style->mergeFrom(cs);
+		}
+	}
 }
 
 //==============================================================================
@@ -829,7 +904,7 @@ UIStyleInstance* UIStyleClassInstance::findSubElementStyle(const StringRef& elem
         return nullptr;
 }
 
-void UIStyleClassInstance::mergeFrom(const UIStyleClass* other)
+void UIStyleClassInstance::mergeFrom(const UIStyleSet* other)
 {
     if (LN_REQUIRE(other)) return;
 
@@ -850,7 +925,7 @@ void UIStyleClassInstance::mergeFrom(const UIStyleClass* other)
     }
 
     // Merge sub-element style
-    for (auto& otherSlot : other->m_subElements) {
+    for (auto& otherSlot : other->m_classSlots) {
         auto slot = m_visualStateStyles.findIf([&](auto& x) { return String::compare(x.name, otherSlot.name, CaseSensitivity::CaseInsensitive); });
         if (slot) {
             slot->style->mergeFrom(otherSlot.style);
@@ -898,6 +973,18 @@ UIStyle* UIVisualStateManager::combineStyle(const UIStyleContext* styleContext, 
         clearDirty();
     }
     return m_combinedStyle;
+}
+
+void UIVisualStateManager::combineStyle(UIStyle* style, const UIStyleContext* styleContext, const ln::String& elementName)
+{
+	// TODO: これキャッシュできると思う
+	auto styleClass = styleContext->findStyleClass(elementName);
+
+	for (auto& group : m_groups) {
+		if (group.activeStateIndex >= 0) {
+			style->mergeFrom(styleClass->findStateStyle(group.stateNames[group.activeStateIndex]));
+		}
+	}
 }
 
 //detail::UIStyleInstance* UIVisualStateManager::resolveStyle(const UIStyleContext* styleContext, const ln::String& className)

@@ -10,10 +10,13 @@ class UISandboxApp : public Application
 public:
     virtual void onCreate()
     {
-        //m_button1 = makeObject<UIButton>();
-        //m_button1->setWidth(200);
-        //m_button1->setHeight(100);
-        //m_button1->setText(u"Lumino");
+  //      m_button1 = makeObject<UIButton>();
+  //      m_button1->setWidth(200);
+  //      m_button1->setHeight(100);
+  //      m_button1->setText(u"Lumino");
+		//m_button1->setVerticalAlignment(VAlignment::Center);
+		//m_button1->addClass(u"test");
+		//Engine::mainUIRoot()->addElement(m_button1);
 
 		//auto thumb1 = makeObject<UIThumb>();
 		//thumb1->setWidth(20);
@@ -42,8 +45,8 @@ public:
 
 
         m_button1 = makeObject<UIButton>();
-        m_button1->setWidth(100);
-        m_button1->setHeight(50);
+        m_button1->setWidth(300);
+        m_button1->setHeight(400);
         m_button1->setText(u"Lumino");
         scrollview->addElement(m_button1);
     }

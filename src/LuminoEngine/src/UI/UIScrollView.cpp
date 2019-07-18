@@ -235,6 +235,11 @@ void UITrack::init()
 
 	//m_decreaseButton->setStyleSubControlName(tr::TypeInfo::getTypeInfo<UITrack>()->getName(), _LT("DecreaseButton"));
 	//m_increaseButton->setStyleSubControlName(tr::TypeInfo::getTypeInfo<UITrack>()->getName(), _LT("IncreaseButton"));
+
+	m_decreaseButton->addClass(u"UITrack-DecreaseButton");
+	m_thumb->addClass(u"UITrack-Thumb");
+	m_increaseButton->addClass(u"UITrack-IncreaseButton");
+
 	// TODO: styleseet
 	m_decreaseButton->setHorizontalAlignment(HAlignment::Stretch);
 	m_decreaseButton->setVerticalAlignment(VAlignment::Stretch);
