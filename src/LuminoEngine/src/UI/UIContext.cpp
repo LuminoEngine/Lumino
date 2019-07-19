@@ -95,7 +95,20 @@ void UIContext::setupDefaultStyle()
 				e->mainStyleClass()->addStateStyle(u"Pressed", s);
 			}
 		}
-
+		//--------------------------------
+		// UIToggleButton
+		{
+			if (auto s = sheet->obtainStyle(u"UIToggleButton")) {
+				s->backgroundColor = UIColors::get(UIColorHues::Grey, 2);
+			}
+			if (auto s = sheet->obtainStyle(u"UIToggleButton:MouseOver")) {
+			}
+			if (auto s = sheet->obtainStyle(u"UIToggleButton:Pressed")) {
+			}
+			if (auto s = sheet->obtainStyle(u"UIToggleButton:Checked")) {
+				s->backgroundColor = UIColors::get(UIColorHues::Blue, 4);
+			}
+		}
 		//--------------------------------
 		// UIThumb
 		{

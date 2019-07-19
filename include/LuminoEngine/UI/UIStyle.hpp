@@ -597,16 +597,15 @@ public:
                     if (g.activeStateIndex != i) {
                         g.activeStateIndex = i;
                         m_dirty = true;
-                        std::cout << g.stateNames[i] << std::endl;
                     }
                     stateFound = true;
                 }
             }
-            if (!stateFound) {
-                // use default
-                g.activeStateIndex = -1;
-                m_dirty = true;
-            }
+            //if (!stateFound) {
+            //    // use default
+            //    g.activeStateIndex = -1;
+            //    m_dirty = true;
+            //}
         }
     }
 
@@ -662,6 +661,27 @@ public:
 
     /** 色を取得します。*/
     static const Color& get(UIColorHues hue, int shades = 5);
+};
+
+
+class UIVisualStates
+{
+public:
+	// Group
+	static const String CommonStates;
+	static const String FocusStates;
+	static const String CheckStates;
+	static const String ValidationStates;
+
+	// CommonStates
+	static const String Normal;
+	static const String MouseOver;
+	static const String Pressed;
+	static const String Disabled;
+
+	// CheckStates
+	static const String CheckedState;
+	static const String UncheckedState;
 };
 
 } // namespace ln

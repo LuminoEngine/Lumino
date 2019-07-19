@@ -3,6 +3,9 @@
 #include <LuminoCore/Testing/TestHelper.hpp>
 #include <LuminoEngine/UI/UIButton.hpp>
 #include <LuminoEngine/UI/UIScrollView.hpp>
+#include <LuminoEngine/UI/UIItemsModel.hpp>
+#include <LuminoEngine/UI/UIItemsElement.hpp>
+#include <LuminoEngine/UI/UIStyle.hpp>
 using namespace ln;
 
 class UISandboxApp : public Application
@@ -10,13 +13,41 @@ class UISandboxApp : public Application
 public:
     virtual void onCreate()
     {
-  //      m_button1 = makeObject<UIButton>();
-  //      m_button1->setWidth(200);
-  //      m_button1->setHeight(100);
-  //      m_button1->setText(u"Lumino");
-		//m_button1->setVerticalAlignment(VAlignment::Center);
-		////m_button1->addClass(u"test");
-		//Engine::mainUIRoot()->addElement(m_button1);
+		//auto vm = makeObject<UIFileSystemItemsViewModel>();
+		//auto root = vm->setRootPath(u"C:/Proj/LN/Lumino");
+		//int count = vm->getRowCount(root);
+		//for (int i = 0; i < count; i++) {
+		//	auto index = vm->getIndex(i, 0, root);
+		//	auto data = vm->getData(index, u"");
+		//	std::cout << data << std::endl;
+
+		//	int count2 = vm->getRowCount(index);
+		//	for (int i2 = 0; i2 < count2; i2++) {
+		//		auto index2 = vm->getIndex(i2, 0, index);
+		//		auto data2 = vm->getData(index2, u"");
+		//		std::cout << "  " << data2 << std::endl;
+		//	}
+		//}
+		
+		//{
+		//	auto button1 = makeObject<UIButton>();
+		//	button1->setWidth(200);
+		//	button1->setHeight(32);
+		//	button1->setText(u"Push button");
+		//	button1->setHorizontalAlignment(HAlignment::Right);
+		//	Engine::mainUIRoot()->addElement(button1);
+		//}
+
+		{
+			auto button1 = makeObject<UIToggleButton>();
+			button1->setWidth(200);
+			button1->setHeight(32);
+			button1->setText(u"Toggle button");
+			button1->setHorizontalAlignment(HAlignment::Right);
+			button1->setVerticalAlignment(VAlignment::Center);
+			Engine::mainUIRoot()->addElement(button1);
+		}
+
 
 		//auto thumb1 = makeObject<UIThumb>();
 		//thumb1->setWidth(20);
@@ -38,17 +69,28 @@ public:
         //scrollbar->setViewportSize(10);
         //Engine::mainUIRoot()->addElement(scrollbar);
 
-        auto scrollview = makeObject<UIScrollViewer>();
-        scrollview->setWidth(200);
-        scrollview->setHeight(300);
-        Engine::mainUIRoot()->addElement(scrollview);
+        //auto scrollview = makeObject<UIScrollViewer>();
+        //scrollview->setWidth(200);
+        //scrollview->setHeight(300);
+        //Engine::mainUIRoot()->addElement(scrollview);
 
 
-        m_button1 = makeObject<UIButton>();
-        m_button1->setWidth(300);
-        m_button1->setHeight(400);
-        m_button1->setText(u"Lumino");
-        scrollview->addElement(m_button1);
+        //m_button1 = makeObject<UIButton>();
+        //m_button1->setWidth(300);
+        //m_button1->setHeight(400);
+        //m_button1->setText(u"Lumino");
+        //scrollview->addElement(m_button1);
+
+		{
+			auto treeView = makeObject<UITreeView>();
+			treeView->setWidth(200);
+			treeView->setHeight(300);
+			treeView->setBackgroundColor(UIColors::get(UIColorHues::Grey, 2));
+			Engine::mainUIRoot()->addElement(treeView);
+
+			//treeView->addElement(makeObject<UITreeViewItem>());
+		}
+
     }
 
 private:

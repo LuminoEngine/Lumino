@@ -1,7 +1,9 @@
 ﻿#pragma once
 #include "UIScrollView.hpp"
+#include "UIItemsModel.hpp"
 
 namespace ln {
+class UIToggleButton;
 
 class UIItemElement
 	: public UIElement
@@ -37,6 +39,36 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 private:
+};
+
+
+class UITreeViewItem
+	: public UIItemElement
+{
+protected:
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
+
+LN_CONSTRUCT_ACCESS:
+	UITreeViewItem();
+	void init();
+
+private:
+	Ref<UIToggleButton> m_expanderButton;
+};
+
+class UITreeView
+	: public UIItemContainerElement
+{
+public:
+	void setModel(UIItemsViewModel* model);
+
+LN_CONSTRUCT_ACCESS:
+	UITreeView();
+	void init();
+
+private:
+	Ref<UIItemsViewModel> m_model;
 };
 
 } // namespace ln

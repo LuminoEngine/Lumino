@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <functional>
 #include "Common.hpp"
+#include <LuminoCore/Base/Event.hpp>
 #include "../Platform/PlatformEvent.hpp"
 
 namespace ln {

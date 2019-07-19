@@ -1249,5 +1249,21 @@ const Color& UIColors::get(UIColorHues index, int depth)
 }
 
 
+//==============================================================================
+// UIVisualStates
+
+const String UIVisualStates::CommonStates = u"CommonGroup";
+const String UIVisualStates::FocusStates = u"FocusGroup";
+const String UIVisualStates::CheckStates = u"CheckStates";
+const String UIVisualStates::ValidationStates = u"ValidationStates";
+
+const String UIVisualStates::Normal = u"Normal";
+const String UIVisualStates::MouseOver = u"MouseOver";
+const String UIVisualStates::Pressed = u"Pressed";
+const String UIVisualStates::Disabled = u"Disabled";
+
+const String UIVisualStates::CheckedState = u"Checked";
+const String UIVisualStates::UncheckedState = u"Unchecked";
+
 } // namespace ln
 

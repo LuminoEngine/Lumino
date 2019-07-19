@@ -2,6 +2,7 @@
 #include "../Graphics/ColorStructs.hpp"
 #include "../Rendering/Drawing.hpp"
 #include "UILayoutElement.hpp"
+#include "UIEvents.hpp"
 
 namespace ln {
 class UIRenderingContext;
