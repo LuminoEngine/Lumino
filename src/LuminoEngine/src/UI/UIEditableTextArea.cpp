@@ -13,7 +13,7 @@ void TextRange::splitLineRanges(const String& str, List<TextRange>* outRanges)
 {
 	int lineBeginIndex = 0;
 
-	const Char* begin = str.data();
+	const Char* begin = str.c_str();
 	for (const Char* ch = begin; ch && *ch; ++ch)
 	{
 		bool isCRLF = (*ch == '\r' && *(ch + 1) == '\n');
@@ -21,7 +21,7 @@ void TextRange::splitLineRanges(const String& str, List<TextRange>* outRanges)
 		{
 			int lineEndIndex = (ch - begin);
 			assert(lineEndIndex >= lineBeginIndex);
-			outRanges->add(TextRange(lineBeginIndex, lineEndIndex));
+			outRanges->add(TextRange{ lineBeginIndex, lineEndIndex });
 
 			if(isCRLF) {
 				++ch;
@@ -30,9 +30,8 @@ void TextRange::splitLineRanges(const String& str, List<TextRange>* outRanges)
 		}
 	}
 
-	if (lineBeginIndex <= str.length())
-	{
-		outRanges->add(TextRange(lineBeginIndex, str.length()));
+	if (lineBeginIndex <= str.length()) {
+		outRanges->add(TextRange{ lineBeginIndex, str.length() });
 	}
 }
 

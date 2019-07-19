@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <LuminoEngine/UI/UIElement.hpp>
 
 namespace ln {
 namespace detail {
@@ -15,7 +16,7 @@ struct TextSelection
     TextLocation locationA;
     TextLocation locationB;
 
-    const TextSelection& getBegin() const
+    const TextLocation& getBegin() const
 	{
 		if (locationA.lineIndex == locationB.lineIndex) {
 			if (locationA.offset < locationB.offset) {
@@ -30,7 +31,7 @@ struct TextSelection
 		return locationB;
 	}
 
-	const TextSelection& getEnd() const
+	const TextLocation& getEnd() const
 	{
 		if (locationA.lineIndex == locationB.lineIndex) {
 			if (locationA.offset > locationB.offset) {
@@ -83,6 +84,8 @@ private:
 class UIEditableTextArea
     : public UIElement
 {
+public:
+	UIEditableTextArea();
 };
 
 } // namespace detail

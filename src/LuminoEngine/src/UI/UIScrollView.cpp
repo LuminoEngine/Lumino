@@ -233,20 +233,9 @@ void UITrack::init()
 	m_thumb = makeObject<UIThumb>();
 	m_increaseButton = makeObject<UIButton>();
 
-	//m_decreaseButton->setStyleSubControlName(tr::TypeInfo::getTypeInfo<UITrack>()->getName(), _LT("DecreaseButton"));
-	//m_increaseButton->setStyleSubControlName(tr::TypeInfo::getTypeInfo<UITrack>()->getName(), _LT("IncreaseButton"));
-
 	m_decreaseButton->addClass(u"UITrack-DecreaseButton");
 	m_thumb->addClass(u"UITrack-Thumb");
 	m_increaseButton->addClass(u"UITrack-IncreaseButton");
-
-	// TODO: styleseet
-	m_decreaseButton->setHorizontalAlignment(HAlignment::Stretch);
-	m_decreaseButton->setVerticalAlignment(VAlignment::Stretch);
-	m_thumb->setHorizontalAlignment(HAlignment::Stretch);
-	m_thumb->setVerticalAlignment(VAlignment::Stretch);
-	m_increaseButton->setHorizontalAlignment(HAlignment::Stretch);
-	m_increaseButton->setVerticalAlignment(VAlignment::Stretch);
 
 	addVisualChild(m_decreaseButton);
 	addVisualChild(m_thumb);
@@ -609,26 +598,12 @@ void UIScrollBar::onRoutedEvent(UIEventArgs* e)
         auto* e2 = static_cast<UIDragDeltaEventArgs*>(e);
         updateValue(e2->offsetX(), e2->offsetY());
 
-        auto args = UIScrollEventArgs::create(this, UIEvents::ScrollEvent, m_track->getValue(), ScrollEventType::ThumbTrack);
+        auto args = UIScrollEventArgs::create(this, UIEvents::ScrollEvent, Math::clamp(m_track->getValue(), getMinimum(), getMaximum()), ScrollEventType::ThumbTrack);
         raiseEvent(args);
-
-        //switch (m_track->getOrientation())
-        //{
-        //case Orientation::Horizontal:
-
-        //	break;
-        //case Orientation::Vertical:
-        //	break;
-        //case Orientation::ReverseHorizontal:
-        //case Orientation::ReverseVertical:
-        //default:
-        //	LN_NOTIMPLEMENTED();
-        //	break;
-        //}
     }
     else if (e->type() == UIEvents::ScrollDragCompletedEvent)
     {
-        auto args = UIScrollEventArgs::create(this, UIEvents::ScrollEvent, m_track->getValue(), ScrollEventType::EndScroll);
+        auto args = UIScrollEventArgs::create(this, UIEvents::ScrollEvent, Math::clamp(m_track->getValue(), getMinimum(), getMaximum()), ScrollEventType::EndScroll);
         raiseEvent(args);
     }
     UIElement::onRoutedEvent(e);
