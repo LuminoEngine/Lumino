@@ -4,11 +4,11 @@
 namespace ln {
 class UITextBlock;
 
-class UIButton
+class UIButtonBase
 	: public UIControl
 {
 public:
-    UIButton();
+	UIButtonBase();
 	void init();
 
     void setText(const StringRef& text);
@@ -20,6 +20,26 @@ protected:
 private:
     Ref<UITextBlock> m_textContent;
     bool m_isPressed;
+};
+
+class UIButton
+	: public UIButtonBase
+{
+public:
+	UIButton();
+	void init();
+
+protected:
+};
+
+class UIToggleButton
+	: public UIButtonBase
+{
+LN_CONSTRUCT_ACCESS:
+	UIToggleButton();
+	void init();
+
+private:
 };
 
 } // namespace ln

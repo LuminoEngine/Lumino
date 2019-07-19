@@ -8,14 +8,14 @@
 namespace ln {
 
 //==============================================================================
-// UIButton
+// UIButtonBase
 
-UIButton::UIButton()
+UIButtonBase::UIButtonBase()
     : m_isPressed(false)
 {
 }
 
-void UIButton::init()
+void UIButtonBase::init()
 {
     UIControl::init();
     auto vsm = getVisualStateManager();
@@ -23,7 +23,7 @@ void UIButton::init()
     vsm->registerState(u"Common", u"Pressed");
 }
 
-void UIButton::setText(const StringRef& text)
+void UIButtonBase::setText(const StringRef& text)
 {
     if (!m_textContent) {
         m_textContent = makeObject<UITextBlock>();
@@ -32,7 +32,7 @@ void UIButton::setText(const StringRef& text)
     m_textContent->setText(text);
 }
 
-void UIButton::onRoutedEvent(UIEventArgs* e)
+void UIButtonBase::onRoutedEvent(UIEventArgs* e)
 {
     if (e->type() == UIEvents::MouseDownEvent) {
 
@@ -70,6 +70,31 @@ void UIButton::onRoutedEvent(UIEventArgs* e)
     }
 
     UIControl::onRoutedEvent(e);
+}
+
+//==============================================================================
+// UIButton
+
+UIButton::UIButton()
+{
+}
+
+void UIButton::init()
+{
+	UIButtonBase::init();
+}
+
+
+//==============================================================================
+// UIToggleButton
+
+UIToggleButton::UIToggleButton()
+{
+}
+
+void UIToggleButton::init()
+{
+	UIButtonBase::init();
 }
 
 } // namespace ln
