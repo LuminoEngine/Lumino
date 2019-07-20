@@ -7,7 +7,12 @@ namespace ln {
 
 // TODO: GridLayout https://blog.qt.io/jp/2011/01/06/qml-layout/
 
-
+class IUIElementList
+{
+public:
+    virtual int getElementCount() const = 0;
+    virtual UIElement* getElement(int i) const = 0;
+};
 
 
 /**
@@ -118,11 +123,11 @@ public:
 
 
     // TODO: internal
-    void measureLayout(const List<Ref<UIElement>>& childElements, const Size& availableSize);
-    void arrangeLayout(const List<Ref<UIElement>>& childElements, const Rect& finalSlotRect);
+    void measureLayout(const IUIElementList* childElements, const Size& availableSize);
+    void arrangeLayout(const IUIElementList* childElements, const Rect& finalSlotRect);
 
-    virtual Size measureOverride(const List<Ref<UIElement>>& childElements, const Size& constraint) = 0;
-    virtual Size arrangeOverride(const List<Ref<UIElement>>& childElements, const Rect& finalSlotRect) = 0;
+    virtual Size measureOverride(const IUIElementList* childElements, const Size& constraint) = 0;
+    virtual Size arrangeOverride(const IUIElementList* childElements, const Rect& finalSlotRect) = 0;
 
 protected:
     // IScrollInfo interface
@@ -154,8 +159,8 @@ LN_CONSTRUCT_ACCESS:
     virtual ~UIFrameLayout2();
     void init();
 
-    virtual Size measureOverride(const List<Ref<UIElement>>& childElements, const Size& constraint) override;
-    virtual Size arrangeOverride(const List<Ref<UIElement>>& childElements, const Rect& finalSlotRect) override;
+    virtual Size measureOverride(const IUIElementList* childElements, const Size& constraint) override;
+    virtual Size arrangeOverride(const IUIElementList* childElements, const Rect& finalSlotRect) override;
 
 private:
 };
@@ -174,8 +179,8 @@ LN_CONSTRUCT_ACCESS:
     virtual ~UIStackLayout2();
     void init();
 
-    virtual Size measureOverride(const List<Ref<UIElement>>& childElements, const Size& constraint) override;
-    virtual Size arrangeOverride(const List<Ref<UIElement>>& childElements, const Rect& finalSlotRect) override;
+    virtual Size measureOverride(const IUIElementList* childElements, const Size& constraint) override;
+    virtual Size arrangeOverride(const IUIElementList* childElements, const Rect& finalSlotRect) override;
 
 private:
     Orientation m_orientation;

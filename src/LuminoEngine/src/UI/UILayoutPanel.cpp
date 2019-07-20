@@ -17,12 +17,12 @@ void UILayoutPanel2::init()
     Object::init();
 }
 
-void UILayoutPanel2::measureLayout(const List<Ref<UIElement>>& childElements, const Size& availableSize)
+void UILayoutPanel2::measureLayout(const IUIElementList* childElements, const Size& availableSize)
 {
     m_desiredSize = measureOverride(childElements, availableSize);
 }
 
-void UILayoutPanel2::arrangeLayout(const List<Ref<UIElement>>& childElements, const Rect& finalSlotRect)
+void UILayoutPanel2::arrangeLayout(const IUIElementList* childElements, const Rect& finalSlotRect)
 {
     Rect rect = finalSlotRect;
     rect.x -= m_scrollOffset.x;
@@ -60,13 +60,13 @@ void UIFrameLayout2::init()
     UILayoutPanel2::init();
 }
 
-Size UIFrameLayout2::measureOverride(const List<Ref<UIElement>>& childElements, const Size& constraint)
+Size UIFrameLayout2::measureOverride(const IUIElementList* childElements, const Size& constraint)
 {
-    int childrenCount = childElements.size();
+    int childrenCount = childElements->getElementCount();
     Size childMaxSize(0, 0);
     for (int i = 0; i < childrenCount; i++)
     {
-        UIElement* child = childElements[i];
+        UIElement* child = childElements->getElement(i);
         child->measureLayout(constraint);
         const Size& desiredSize = child->desiredSize();
         childMaxSize.width = std::max(childMaxSize.width, desiredSize.width);
@@ -75,14 +75,14 @@ Size UIFrameLayout2::measureOverride(const List<Ref<UIElement>>& childElements, 
     return childMaxSize;
 }
 
-Size UIFrameLayout2::arrangeOverride(const List<Ref<UIElement>>& childElements, const Rect& finalSlotRect)
+Size UIFrameLayout2::arrangeOverride(const IUIElementList* childElements, const Rect& finalSlotRect)
 {
     Rect bounds(finalSlotRect);
 
-    int childrenCount = childElements.size();
+    int childrenCount = childElements->getElementCount();
     for (int i = 0; i < childrenCount; i++)
     {
-        UIElement* child = childElements[i];
+        UIElement* child = childElements->getElement(i);
         child->arrangeLayout(bounds);
     }
 
@@ -112,7 +112,7 @@ void UIStackLayout2::init()
     UILayoutPanel2::init();
 }
 
-Size UIStackLayout2::measureOverride(const List<Ref<UIElement>>& childElements, const Size& constraint)
+Size UIStackLayout2::measureOverride(const IUIElementList* childElements, const Size& constraint)
 {
     Size size = constraint;
 
@@ -126,10 +126,10 @@ Size UIStackLayout2::measureOverride(const List<Ref<UIElement>>& childElements, 
     }
 
     Size desiredSize;
-    int childCount = childElements.size();
+    int childCount = childElements->getElementCount();
     for (int i = 0; i < childCount; i++)
     {
-        UIElement* child = childElements[i];
+        UIElement* child = childElements->getElement(i);
         child->measureLayout(size);
 
         const Size& childDesiredSize = child->getLayoutDesiredSize();
@@ -146,17 +146,17 @@ Size UIStackLayout2::measureOverride(const List<Ref<UIElement>>& childElements, 
     return desiredSize;
 }
 
-Size UIStackLayout2::arrangeOverride(const List<Ref<UIElement>>& childElements, const Rect& finalSlotRect)
+Size UIStackLayout2::arrangeOverride(const IUIElementList* childElements, const Rect& finalSlotRect)
 {
     Size childrenBoundSize(finalSlotRect.width, finalSlotRect.height);
 
     float prevChildSize = 0;
     float rPos = 0;
     Rect childRect(0, 0, 0, 0);
-    int childCount = childElements.size();
+    int childCount = childElements->getElementCount();
     for (int i = 0; i < childCount; i++)
     {
-        UIElement* child = childElements[i];
+        UIElement* child = childElements->getElement(i);
         const Size& childDesiredSize = child->getLayoutDesiredSize();
 
         switch (m_orientation)
@@ -192,7 +192,8 @@ Size UIStackLayout2::arrangeOverride(const List<Ref<UIElement>>& childElements, 
             break;
         }
 
-        child->arrangeLayout(childRect);
+        Rect actual(finalSlotRect.x + childRect.x, finalSlotRect.y + childRect.y, childRect.width, childRect.height);
+        child->arrangeLayout(actual);
     }
 
     return finalSlotRect.getSize();

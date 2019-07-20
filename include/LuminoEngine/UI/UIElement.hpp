@@ -284,6 +284,11 @@ public:	// TODO: internal protected
 		このメソッドはフレームワークから呼び出されます。直接呼び出しても正しい結果は得られません。
 		このメソッドの実装から子要素の measure を行う場合は measureLayout() を呼び出します。
 
+        複数の子要素を並べてレイアウトしたい場合、サイズの合計を返します。
+        例えば 2 つの UITextBlock を縦に並べる場合は、2つの measureLayout() の結果について、
+        - width は 大きい方を返す
+        - height は 2 つの合計を返す
+
         戻り値に対して、border の太さを加算した値が、最終的な要求サイズとなります。
     */
     virtual Size measureOverride(const Size& constraint);

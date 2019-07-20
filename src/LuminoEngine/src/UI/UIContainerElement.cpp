@@ -123,8 +123,15 @@ UILayoutPanel2* UIContainerElement::layoutPanel() const
 //
 Size UIContainerElement::measureOverride(const Size& constraint)
 {
+    struct ElementList : public IUIElementList {
+        List<Ref<UIElement>>* list;
+        virtual int getElementCount() const { return list->size(); }
+        virtual UIElement* getElement(int i) const { return list->at(i); }
+    } list;
+    list.list = &m_logicalChildren;
+
 	UILayoutPanel2* layout = layoutPanel();
-	layout->measureLayout(m_logicalChildren, constraint);
+	layout->measureLayout(&list, constraint);
     Size desiredSize = layout->desiredSize();
     Size localSize = UIElement::measureOverride(constraint);
     return Size::max(desiredSize, localSize);
@@ -150,8 +157,14 @@ Size UIContainerElement::arrangeOverride(const Size& finalSize)
     contentSlotRect = contentSlotRect.makeDeflate(m_finalStyle->padding);
     
 
+    struct ElementList : public IUIElementList {
+        List<Ref<UIElement>>* list;
+        virtual int getElementCount() const { return list->size(); }
+        virtual UIElement* getElement(int i) const { return list->at(i); }
+    } list;
+    list.list = &m_logicalChildren;
 
-	layout->arrangeLayout(m_logicalChildren, contentSlotRect);
+	layout->arrangeLayout(&list, contentSlotRect);
     return finalSize;
 
  //   Rect contentSlotRect(0, 0, finalSize);

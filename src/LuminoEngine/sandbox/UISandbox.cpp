@@ -8,6 +8,143 @@
 #include <LuminoEngine/UI/UIStyle.hpp>
 using namespace ln;
 
+class FileSystemTreeViewItem
+    : public UITreeViewItem
+{
+public:
+
+protected:
+    virtual void onExpanded() override;
+    virtual void onCollapsed() override;
+
+LN_CONSTRUCT_ACCESS:
+    FileSystemTreeViewItem();
+    void init();
+};
+
+
+
+class FileSystemTreeView
+    : public UITreeView
+{
+public:
+    void setRootPath(const Path& path);
+
+LN_CONSTRUCT_ACCESS:
+	FileSystemTreeView();
+	void init();
+
+private:
+    class FileSystemNode : public RefObject
+    {
+    public:
+        FileSystemNode(const ln::Path& p) : path(p) {}
+        Path path;
+        List<Ref<FileSystemNode>> children;
+        bool dirty = true;
+    };
+
+    FileSystemNode* getNode(UITreeViewItem* item) const;
+    void makeNode(UITreeViewItem* parent, const Path& path);
+    void constructChildNodes(FileSystemNode* node) const;
+
+    Ref<FileSystemNode> m_rootNode; // dummy
+
+    friend class FileSystemTreeViewItem;
+};
+
+FileSystemTreeView::FileSystemTreeView()
+{
+}
+
+void FileSystemTreeView::init()
+{
+    UITreeView::init();
+}
+
+void FileSystemTreeView::setRootPath(const Path& path)
+{
+    m_rootNode = makeRef<FileSystemNode>(path);
+    constructChildNodes(m_rootNode);
+    for (auto& node : m_rootNode->children) {
+        makeNode(nullptr, node->path);
+    }
+}
+
+FileSystemTreeView::FileSystemNode* FileSystemTreeView::getNode(UITreeViewItem* item) const
+{
+    assert(item);
+    return item->data()->getObject<FileSystemTreeView::FileSystemNode>();
+}
+
+void FileSystemTreeView::makeNode(UITreeViewItem* parent, const Path& path)
+{
+    auto node = makeRef<FileSystemNode>(path);
+    constructChildNodes(node);
+
+    auto text = makeObject<UITextBlock>();
+    text->setText(path.fileName());
+
+    auto item = makeObject<FileSystemTreeViewItem>();
+    item->setContent(text);
+    item->setData(makeVariant(node));
+
+    if (!parent) {
+        addElement(item);
+    }
+    else {
+        parent->addChild(item);
+    }
+}
+
+void FileSystemTreeView::constructChildNodes(FileSystemNode* node) const
+{
+    if (node->dirty) {
+        if (FileSystem::existsDirectory(node->path)) {
+            auto& path = node->path;
+            auto dirs = FileSystem::getDirectories(path, StringRef(), SearchOption::TopDirectoryOnly);
+            for (auto& dir : dirs) {
+                node->children.add(makeRef<FileSystemNode>(dir));
+            }
+            //auto files = FileSystem::getFiles(path, StringRef(), SearchOption::TopDirectoryOnly);
+            //for (auto& file : files) {
+            //    node->children.add(makeRef<FileSystemNode>(file));
+            //}
+        }
+        node->dirty = false;
+    }
+}
+
+
+
+
+
+FileSystemTreeViewItem::FileSystemTreeViewItem()
+{
+}
+
+void FileSystemTreeViewItem::init()
+{
+    UITreeViewItem::init();
+}
+
+void FileSystemTreeViewItem::onExpanded()
+{
+    auto node = static_cast<FileSystemTreeView*>(treeView())->getNode(this);
+    static_cast<FileSystemTreeView*>(treeView())->constructChildNodes(node);
+    for (auto& n : node->children) {
+        static_cast<FileSystemTreeView*>(treeView())->makeNode(this, n->path);
+    }
+}
+
+void FileSystemTreeViewItem::onCollapsed()
+{
+}
+
+
+
+
+
 class UISandboxApp : public Application
 {
 public:
@@ -82,7 +219,8 @@ public:
         //scrollview->addElement(m_button1);
 
 		{
-			auto treeView = makeObject<UITreeView>();
+			auto treeView = makeObject<FileSystemTreeView>();
+            treeView->setRootPath(u"D:/Proj/LN/Lumino");
 			treeView->setWidth(200);
 			treeView->setHeight(300);
 			treeView->setBackgroundColor(UIColors::get(UIColorHues::Grey, 2));
