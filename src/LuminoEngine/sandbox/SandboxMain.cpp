@@ -182,12 +182,12 @@ int main(int argc, char** argv)
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 	GlobalLogger::addStdErrAdapter();
-    EngineSettings::setEngineFeatures(EngineFeature::Experimental);
+    EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
+    EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
 	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
 	detail::EngineDomain::engineManager()->settings().standaloneFpsControl = true;
 
-
-	return UISandboxMain();
+	//return UISandboxMain();
 
 
 
@@ -200,11 +200,11 @@ int main(int argc, char** argv)
     GlobalLogger::addStdErrAdapter();
     EngineSettings::setMainWindowSize(640, 480);
     EngineSettings::setMainBackBufferSize(640, 480);
-    EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);//GraphicsAPI::Vulkan);//
-    EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
 
 
 	Engine::initialize();
+
+    //Engine::mainCamera()->addComponent(makeObject<CameraOrbitControlComponent>());
 	//Font::registerFontFromFile(u"C:/Users/hldc0061/Downloads/mplus-TESTFLIGHT-063/mplus-1c-regular.ttf");
 
 
@@ -217,22 +217,11 @@ int main(int argc, char** argv)
 
 
     Engine::mainCamera()->addComponent(makeObject<CameraOrbitControlComponent>());
-    Engine::mainCamera()->setBackgroundColor(Color::White);
+    Engine::mainCamera()->setBackgroundColor(Color::Gray);
 
 
-    //auto texture1 = makeObject<Texture2D>(u"D:/tmp/110220c_as019.png");
-    //auto sprite1 = Sprite::create(texture1, 3, 3);
-
-
-    auto button1 = makeObject<UIButton>();
-    button1->setWidth(200);
-    button1->setHeight(100);
-    //button1->setBackgroundColor(Color::Green);
-
-
-    //auto text1 = UITextBlock::create();
-    //text1->setText(u"ABCHIJabchij");
-    //text1->setTextColor(Color::Black);
+    auto texture1 = makeObject<Texture2D>(u"D:/tmp/110220c_as019.png");
+    auto sprite1 = Sprite::create(texture1, 3, 3);
 
 
 #if 0

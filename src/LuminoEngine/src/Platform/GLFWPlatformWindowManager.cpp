@@ -489,9 +489,14 @@ void GLFWPlatformWindowManager::destroyWindow(PlatformWindow* window)
 	static_cast<GLFWPlatformWindow*>(window)->dispose();
 }
 
-void GLFWPlatformWindowManager::processSystemEventQueue()
+void GLFWPlatformWindowManager::processSystemEventQueue(EventProcessingMode mode)
 {
-	glfwPollEvents();
+    if (mode == EventProcessingMode::Wait) {
+        glfwWaitEvents();
+    }
+    else {
+        glfwPollEvents();
+    }
 }
 
 //=============================================================================

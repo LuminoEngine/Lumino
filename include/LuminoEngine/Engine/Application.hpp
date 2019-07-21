@@ -8,7 +8,7 @@ class LN_API Application
 	: public Object
 {
 public:
-	virtual void onCreate();
+	virtual void onInit();
 
 	virtual void onStart();
 

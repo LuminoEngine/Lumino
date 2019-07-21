@@ -1283,6 +1283,7 @@ Result VulkanCommandBuffer::beginRecording()
     // もし前回 vkQueueSubmit したコマンドバッファが完了していなければ待つ
     LN_VK_CHECK(vkWaitForFences(m_deviceContext->vulkanDevice(), 1, &m_inFlightFence, VK_TRUE, std::numeric_limits<uint64_t>::max()));
 
+    LN_VK_CHECK(vkResetCommandBuffer(vulkanCommandBuffer(), VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT));
 
     m_linearAllocator->cleanup();
 

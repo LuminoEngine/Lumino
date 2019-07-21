@@ -16,7 +16,7 @@ Application::~Application()
 {
 }
 
-void Application::onCreate()
+void Application::onInit()
 {
 }
 
@@ -39,7 +39,7 @@ void Application::onDestroy()
 void Application::initInternal()
 {
 	detail::EngineDomain::engineManager()->init();
-	onCreate();
+	onInit();
 	onStart();
 }
 

@@ -54,7 +54,7 @@ public:
 	virtual void dispose() override;
 	virtual Ref<PlatformWindow> createWindow(const WindowCreationSettings& settings) override;
 	virtual void destroyWindow(PlatformWindow* window) override;
-	virtual void processSystemEventQueue() override;
+	virtual void processSystemEventQueue(EventProcessingMode mode) override;
 };
 
 } // namespace detail

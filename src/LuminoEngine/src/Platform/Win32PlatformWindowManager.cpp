@@ -619,15 +619,20 @@ void Win32PlatformWindowManager::destroyWindow(PlatformWindow* window)
     static_cast<AbstractWin32PlatformWindow*>(window)->dispose();
 }
 
-void Win32PlatformWindowManager::processSystemEventQueue()
+void Win32PlatformWindowManager::processSystemEventQueue(EventProcessingMode mode)
 {
-    MSG msg;
-    while (::PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE))
-    {
-        if (::GetMessage(&msg, NULL, 0, 0))
+    if (mode == EventProcessingMode::Wait) {
+        LN_NOTIMPLEMENTED();
+    }
+    else {
+        MSG msg;
+        while (::PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE))
         {
-            ::TranslateMessage(&msg);
-            ::DispatchMessage(&msg);
+            if (::GetMessage(&msg, NULL, 0, 0))
+            {
+                ::TranslateMessage(&msg);
+                ::DispatchMessage(&msg);
+            }
         }
     }
 }

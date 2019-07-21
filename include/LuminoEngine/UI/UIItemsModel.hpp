@@ -5,6 +5,14 @@
 namespace ln {
 class Material;
 
+
+class ViewModel
+{
+public:
+
+private:
+};
+
 // row, column, parent を使って、Model 内のデータを一意に識別するためのキー
 class UIModelIndex
 	: public Object
