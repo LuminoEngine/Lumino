@@ -17,6 +17,7 @@ public: // TODO: internal
     void addElement(UIElement* element);
 	const Ref<UIStyle>& defaultStyle() const { return m_defaultStyle; }
     const Ref<UIStyleContext>& styleContext() const { return m_styleContext; }
+    const Ref<detail::UIStyleInstance>& finalDefaultStyle() const { return m_finalDefaultStyle; }
 
 	// 各更新の起点。UIContext には複数の UIFrameWindow を追加することもできるので、UIFrameWindow をツリー更新のルートとするのはちょっと違う。
 	// GameEngine としてなら、メインループから。IDE としてなら、メッセージループから呼び出してもらうのが自然だろう。

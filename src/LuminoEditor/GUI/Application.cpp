@@ -2,6 +2,7 @@
 #include "../../LuminoEngine/src/Engine/EngineManager.hpp"
 #include "../../LuminoEngine/src/Engine/EngineDomain.hpp"
 #include "../../LuminoEngine/src/Platform/PlatformManager.hpp"
+#include "../../LuminoEngine/src/UI/UIManager.hpp"
 #include "Application.hpp"
 
 static EditorApplication* s_app = nullptr;
@@ -25,7 +26,7 @@ EditorApplication::~EditorApplication()
 
 ln::Result EditorApplication::init()
 {
-    ln::detail::EngineDomain::engineManager()->settings().defaultObjectsCreation = false;
+    //ln::detail::EngineDomain::engineManager()->settings().defaultObjectsCreation = false;
     ln::detail::EngineDomain::engineManager()->init();
     onInit();
     return true;
@@ -40,7 +41,9 @@ void EditorApplication::run()
 {
     while (!ln::detail::EngineDomain::engineManager()->isExitRequested())
     {
-        ln::detail::EngineDomain::engineManager()->platformManager()->windowManager()->processSystemEventQueue(ln::detail::EventProcessingMode::Wait);
+        ln::detail::EngineDomain::engineManager()->platformManager()->windowManager()->processSystemEventQueue(ln::detail::EventProcessingMode::Polling);
+        ln::detail::EngineDomain::engineManager()->uiManager()->dispatchPostedEvents();
+        ln::Thread::sleep(32);
     }
 }
 

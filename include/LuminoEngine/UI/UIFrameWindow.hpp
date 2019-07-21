@@ -95,6 +95,7 @@ LN_CONSTRUCT_ACCESS:
 
 protected:  // TODO: internal
 	virtual bool onPlatformEvent(const detail::PlatformEventArgs& e) override;
+    virtual void onRoutedEvent(UIEventArgs* e) override;
 
 	//detail::UIManager* m_manager;
 	Ref<detail::PlatformWindow>	m_platformWindow;
@@ -107,6 +108,9 @@ protected:  // TODO: internal
 
 	Event<UIEventHandler> m_onClosed;
 	bool m_autoDisposePlatformWindow;
+
+private:
+    virtual void invalidate(detail::UIElementDirtyFlags flags, bool toAncestor);
 };
 
 class LN_API UIMainWindow

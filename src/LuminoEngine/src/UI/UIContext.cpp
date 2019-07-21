@@ -34,6 +34,7 @@ void UIContext::init()
 void UIContext::setLayoutRootElement(UIElement* element)
 {
     m_layoutRootElement = element;
+    m_layoutRootElement->m_context = this;
 }
 
 void UIContext::addElement(UIElement* element)

@@ -31,6 +31,9 @@ const UIEventType	UIEvents::ScrollEvent = 18;
 const UIEventType	UIEvents::DragEnterEvent = 19;
 const UIEventType	UIEvents::DragDropEvent = 20;
 
+const UIEventType	UIEvents::RequestVisualUpdateEvent = 101;
+const UIEventType	UIEvents::RequestVisualRedrawEvent = 102;
+
 //==============================================================================
 // UIEventArgs
 

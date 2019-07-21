@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/SwapChain.hpp>
+#include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/UIRenderView.hpp>
@@ -209,6 +210,7 @@ void UIFrameWindow::init()
     m_manager = detail::EngineDomain::uiManager();
     specialElementFlags().set(detail::UISpecialElementFlags::FrameWindow);
     m_inputInjector = makeRef<detail::UIInputInjector>(this);
+    invalidate(detail::UIElementDirtyFlags::Style | detail::UIElementDirtyFlags::Layout, false);
 }
 
 void UIFrameWindow::init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize)
@@ -416,6 +418,33 @@ bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)
 		break;
 	}
 	return false;
+}
+
+void UIFrameWindow::onRoutedEvent(UIEventArgs* e)
+{
+    if (e->type() == UIEvents::RequestVisualUpdateEvent) {
+        if (m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Style)) {
+            UIContext* context = getContext();
+            updateStyleHierarchical(context->styleContext(), context->finalDefaultStyle());
+        }
+        if (m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Layout)) {
+            updateLayoutTree();
+        }
+        e->handled = true;
+        return;
+    }
+}
+
+void UIFrameWindow::invalidate(detail::UIElementDirtyFlags flags, bool toAncestor)
+{
+    if (!m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Style) && testFlag(flags, detail::UIElementDirtyFlags::Style)) {
+        postEvent(UIEventArgs::create(this, UIEvents::RequestVisualUpdateEvent));
+    }
+    if (!m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Layout) && testFlag(flags, detail::UIElementDirtyFlags::Layout)) {
+        postEvent(UIEventArgs::create(this, UIEvents::RequestVisualUpdateEvent));
+    }
+
+    UIContainerElement::invalidate(flags, toAncestor);
 }
 
 //==============================================================================

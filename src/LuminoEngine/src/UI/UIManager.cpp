@@ -132,6 +132,22 @@ void UIManager::releaseCapture(UIElement* element)
 	}
 }
 
+void UIManager::postEvent(UIElement* target, UIEventArgs* e)
+{
+    m_eventQueue.push_back({ target, e });
+}
+
+void UIManager::dispatchPostedEvents()
+{
+    int count = m_eventQueue.size();    // 以下で発行したイベント内からさらに postEvent されたものは次のフレームで処理したいので、今回フレームで処理する数を決める
+    while (count > 0) {
+        auto& item = m_eventQueue.front();
+        item.target->raiseEvent(item.args);
+        m_eventQueue.pop_front();
+        count--;
+    }
+}
+
 } // namespace detail
 } // namespace ln
 

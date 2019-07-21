@@ -28,6 +28,16 @@ class UIStyleInstance;
 //	float fontSize;
 //	UIFontStyle fontStyle;
 //};
+
+enum class UIElementDirtyFlags
+{
+    None = 0,
+    InitialLoading = 1 << 0,    // インスタンス作成後、最初の Loaded イベントまで
+    Style,
+    Layout,
+};
+LN_FLAGS_OPERATORS(UIElementDirtyFlags);
+
 }
 
 class UILayoutContext
@@ -247,7 +257,7 @@ public:
     // TODO: ↑の WorldObject 的なものは、派生クラスの UIVisual 的なクラスにユーティリティとして持っていく。
     // UIElement としては RenderTransform, Style 扱いにしたい。
 
-    //UIContext* context() const { return m_context; }
+    UIContext* getContext() const;
 
     void addClass(const StringRef& className);
 
@@ -259,6 +269,7 @@ public: // TODO: internal
     void setRenderPriority(int value);
     void updateFrame(float elapsedSeconds);
     void raiseEvent(UIEventArgs* e);
+    void postEvent(UIEventArgs* e);
     virtual UIElement* lookupMouseHoverElement(const Point& frameClientPosition);
 	const Ref<detail::UIStyleInstance>& finalStyle() const { return m_finalStyle; }
 	UIElement* getFrameWindow();
@@ -271,6 +282,7 @@ public:	// TODO: internal protected
 	void removeVisualChild(UIElement* element);
 
     virtual const String& elementName() const { return String::Empty; }
+    virtual void onLoaded();    // インスタンス作成後、UIツリーに追加されていない場合は呼ばれない
     virtual void onUpdateFrame(float elapsedSeconds);
 	virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle);
 
@@ -352,7 +364,7 @@ public: // TODO: internal
     detail::UIManager* m_manager;
 	Flags<detail::ObjectManagementFlags> m_objectManagementFlags;
 	Flags<detail::UISpecialElementFlags> m_specialElementFlags;
-    //UIContext* m_context;
+    UIContext* m_context;       // ルート要素 (ほとんどの場合は UIFrameWindow) が値を持つ。それ以外は基本的に null. もしウィンドウ内で別のコンテキストに属したい場合はセットする。
     UIElement* m_visualParent;
     UIContainerElement* m_logicalParent;
 	Ref<List<Ref<UIElement>>> m_visualChildren;
@@ -367,10 +379,14 @@ public: // TODO: internal
 
     friend class UIContext;
     friend class UIRenderView;
+    friend class UIFrameWindow;
 
 private:
 	int getVisualChildrenCount() const { return (m_visualChildren) ? m_visualChildren->size() : 0; }
 	UIElement* getVisualChild(int index) const { return (m_visualChildren) ? m_visualChildren->at(index) : nullptr; }
+    virtual void invalidate(detail::UIElementDirtyFlags flags, bool toAncestor);
+
+    Flags<detail::UIElementDirtyFlags> m_dirtyFlags;
 };
 
 } // namespace ln

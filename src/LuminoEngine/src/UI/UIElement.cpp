@@ -22,13 +22,14 @@ namespace ln {
 UIElement::UIElement()
     : m_manager(nullptr)
 	, m_objectManagementFlags(detail::ObjectManagementFlags::AutoAddToActiveScene)
-    //, m_context(nullptr)
+    , m_context(nullptr)
     , m_visualParent(nullptr)
     , m_logicalParent(nullptr)
     , m_localStyle(makeObject<UIStyle>()) // TODO: ふつうは static なオブジェクトのほうが多くなるので、必要なやつだけ遅延作成でいいと思う
     , m_finalStyle(makeRef<detail::UIStyleInstance>())
     , m_renderPriority(0)
     , m_isHitTestVisible(true)
+    , m_dirtyFlags(detail::UIElementDirtyFlags::None)
 {
 }
 
@@ -41,6 +42,8 @@ void UIElement::init()
 	UILayoutElement::init(m_finalStyle);
     m_manager = detail::EngineDomain::uiManager();
     if (LN_REQUIRE(m_manager->mainContext())) return;
+
+    m_dirtyFlags.set(detail::UIElementDirtyFlags::InitialLoading);
 
 	// TODO: Material も、実際に描画が必要な Element に限って作成した方がいいだろう
 	m_finalStyle->backgroundMaterial = makeObject<Material>();
@@ -333,6 +336,18 @@ const ColorTone & UIElement::tone() const
     return m_localStyle->tone.getOrDefault(detail::BuiltinEffectData::DefaultValue.tone);
 }
 
+UIContext* UIElement::getContext() const
+{
+    if (m_context) {
+        return m_context;
+    }
+    if (m_visualParent) {
+        return m_visualParent->getContext();
+    }
+    LN_ERROR();
+    return nullptr;
+}
+
 void UIElement::addClass(const StringRef& className)
 {
     if (!m_classList) {
@@ -360,6 +375,11 @@ void UIElement::updateFrame(float elapsedSeconds)
 void UIElement::raiseEvent(UIEventArgs* e)
 {
     raiseEventInternal(e);
+}
+
+void UIElement::postEvent(UIEventArgs* e)
+{
+    m_manager->postEvent(this, e);
 }
 
 UIElement* UIElement::getFrameWindow()
@@ -448,6 +468,8 @@ void UIElement::addVisualChild(UIElement* element)
 	//		int ri = rhs->readCoreFlag(detail::UICoreFlags_AdornerLayer) ? 1 : 0;
 	//		return li < ri;
 	//	});
+
+    element->invalidate(detail::UIElementDirtyFlags::Style | detail::UIElementDirtyFlags::Layout, true);
 }
 
 void UIElement::removeVisualChild(UIElement* element)
@@ -460,6 +482,9 @@ void UIElement::removeVisualChild(UIElement* element)
 	element->m_visualParent = nullptr;
 }
 
+void UIElement::onLoaded()
+{
+}
 
 void UIElement::onUpdateFrame(float elapsedSeconds)
 {
@@ -664,6 +689,14 @@ void UIElement::raiseEventInternal(UIEventArgs* e)
     // bubble
     if (m_visualParent) {
         m_visualParent->raiseEventInternal(e);
+    }
+}
+
+void UIElement::invalidate(detail::UIElementDirtyFlags flags, bool toAncestor)
+{
+    m_dirtyFlags.set(flags);
+    if (toAncestor && m_visualParent) {
+        m_visualParent->invalidate(flags, toAncestor);
     }
 }
 

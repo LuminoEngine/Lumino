@@ -43,10 +43,18 @@ public:
 	void releaseCapture(UIElement* element);
 	UIElement* capturedElement() const { return m_capturedElement; }
 
+    void postEvent(UIElement* target, UIEventArgs* e);
+    void dispatchPostedEvents();
 
 	//const Ref<UIFrameLayout2>& defaultLayout() const { return m_defaultLayout; }
 
 private:
+    struct EventQueueItem
+    {
+        Ref<UIElement> target;  // 送信待ち中の削除に備え、強参照で持つ
+        Ref<UIEventArgs> args;
+    };
+
 	GraphicsManager* m_graphicsManager;
 	//PlatformManager* platformManager;
     Ref<UIContainerElement> m_primaryElement;
@@ -55,6 +63,8 @@ private:
     UIElement* m_mouseHoverElement;
 	UIElement* m_capturedElement;
 	//Ref<UIFrameLayout2> m_defaultLayout;
+    std::deque<EventQueueItem> m_eventQueue;
+
 };
 
 } // namespace detail

@@ -94,6 +94,12 @@ public:
 
     /** DragDrop イベントの識別子 (UIDragDropEventArgs) */
     static const UIEventType	DragDropEvent;
+
+
+
+    static const UIEventType	RequestVisualUpdateEvent;
+    static const UIEventType	RequestVisualRedrawEvent;
+
 };
 
 /**
