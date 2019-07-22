@@ -33,8 +33,9 @@ enum class UIElementDirtyFlags
 {
     None = 0,
     InitialLoading = 1 << 0,    // インスタンス作成後、最初の Loaded イベントまで
-    Style,
-    Layout,
+    Style = 1 << 1,
+    Layout = 1 << 2,
+	Render = 1 << 3,
 };
 LN_FLAGS_OPERATORS(UIElementDirtyFlags);
 
@@ -282,6 +283,7 @@ public:	// TODO: internal protected
 	void removeVisualChild(UIElement* element);
 
     virtual const String& elementName() const { return String::Empty; }
+	
     virtual void onLoaded();    // インスタンス作成後、UIツリーに追加されていない場合は呼ばれない
     virtual void onUpdateFrame(float elapsedSeconds);
 	virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle);

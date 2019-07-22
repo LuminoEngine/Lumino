@@ -213,10 +213,8 @@ void UIFrameWindow::init()
     invalidate(detail::UIElementDirtyFlags::Style | detail::UIElementDirtyFlags::Layout, false);
 }
 
-void UIFrameWindow::init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize)
+void UIFrameWindow::setupPlatformWindow(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize)
 {
-    init();
-
     m_platformWindow = platformMainWindow;
 	m_autoDisposePlatformWindow = false;
 	m_swapChain = makeObject<SwapChain>(platformMainWindow, backbufferSize);
@@ -322,28 +320,43 @@ void UIFrameWindow::updateLayoutTree()
 // 強制的にウィンドウサイズとする
 Size UIFrameWindow::measureOverride(const Size& constraint)
 {
-	int childCount = logicalChildren().size();
-	for (int i = 0; i < childCount; i++)
-	{
-		UIElement* child = logicalChildren().at(i);
-		child->measureLayout(constraint);
-	}
+	UIContainerElement::measureOverride(constraint);
 
 	// TODO: DPI チェック
 	return m_clientSize;
+	//int childCount = logicalChildren().size();
+	//for (int i = 0; i < childCount; i++)
+	//{
+	//	UIElement* child = logicalChildren().at(i);
+	//	child->measureLayout(constraint);
+	//}
+
+	//// TODO: DPI チェック
+	//return m_clientSize;
 }
 
 // 強制的にウィンドウサイズとする
 Size UIFrameWindow::arrangeOverride(const Size& finalSize)
 {
-	int childCount = logicalChildren().size();
-	for (int i = 0; i < childCount; i++)
-	{
-		UIElement* child = logicalChildren().at(i);
-		child->arrangeLayout(Rect(0, 0, finalSize));	// TODO: padding
-	}
+	return UIContainerElement::arrangeOverride(desiredSize());
+	//int childCount = logicalChildren().size();
+	//for (int i = 0; i < childCount; i++)
+	//{
+	//	UIElement* child = logicalChildren().at(i);
+	//	child->arrangeLayout(Rect(0, 0, finalSize));	// TODO: padding
+	//}
 
-	return UIElement::arrangeOverride(desiredSize());
+	//return UIElement::arrangeOverride(desiredSize());
+}
+
+void UIFrameWindow::onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)
+{
+	UIContainerElement::onUpdateStyle(styleContext, finalStyle);
+}
+
+void UIFrameWindow::onUpdateLayout(const Rect& finalGlobalRect)
+{
+	UIContainerElement::onUpdateLayout(finalGlobalRect);
 }
 
 bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)
@@ -433,6 +446,12 @@ void UIFrameWindow::onRoutedEvent(UIEventArgs* e)
         e->handled = true;
         return;
     }
+	else if (e->type() == UIEvents::RequestVisualRedrawEvent) {
+		renderContents();
+		present();
+		e->handled = true;
+		return;
+	}
 }
 
 void UIFrameWindow::invalidate(detail::UIElementDirtyFlags flags, bool toAncestor)
@@ -443,6 +462,9 @@ void UIFrameWindow::invalidate(detail::UIElementDirtyFlags flags, bool toAncesto
     if (!m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Layout) && testFlag(flags, detail::UIElementDirtyFlags::Layout)) {
         postEvent(UIEventArgs::create(this, UIEvents::RequestVisualUpdateEvent));
     }
+	if (!m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Render) && testFlag(flags, detail::UIElementDirtyFlags::Render)) {
+		postEvent(UIEventArgs::create(this, UIEvents::RequestVisualRedrawEvent));
+	}
 
     UIContainerElement::invalidate(flags, toAncestor);
 }
@@ -458,9 +480,18 @@ UIMainWindow::~UIMainWindow()
 {
 }
 
+void UIMainWindow::init()
+{
+	UIFrameWindow::init();
+
+	// TODO: ここでいい？
+	onLoaded();
+}
+
 void UIMainWindow::init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize)
 {
-    UIFrameWindow::init(platformMainWindow, backbufferSize);
+    UIFrameWindow::init();
+	setupPlatformWindow(platformMainWindow, backbufferSize);
     m_graphicsContext = m_manager->graphicsManager()->mainWindowGraphicsContext();
 }
 

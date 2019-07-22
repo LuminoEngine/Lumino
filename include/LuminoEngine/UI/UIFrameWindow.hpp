@@ -79,10 +79,13 @@ public:
     const Ref<UIRenderView>& renderView() const { return m_renderView; }
     const Ref<GraphicsContext>& graphicsContext() const { return m_graphicsContext; }
     const Ref<detail::UIInputInjector>& inputInjector() const{ return m_inputInjector; }
+	void setupPlatformWindow(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
 
 protected:
 	virtual Size measureOverride(const Size& constraint) override;
 	virtual Size arrangeOverride(const Size& finalSize) override;
+	virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
+	virtual void onUpdateLayout(const Rect& finalGlobalRect) override;
 
     // TODO: internal
     void resetSize(const Size& size);
@@ -91,9 +94,8 @@ LN_CONSTRUCT_ACCESS:
 	UIFrameWindow();
 	virtual ~UIFrameWindow();
     void init();    // Swapchain 無し。外部制御用
-	void init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
 
-protected:  // TODO: internal
+public:  // TODO: internal
 	virtual bool onPlatformEvent(const detail::PlatformEventArgs& e) override;
     virtual void onRoutedEvent(UIEventArgs* e) override;
 
@@ -121,6 +123,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIMainWindow();
 	virtual ~UIMainWindow();
+	void init();	// for Editor
 	void init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
 
 private:

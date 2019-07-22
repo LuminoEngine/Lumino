@@ -3,6 +3,7 @@
 #include "../../LuminoEngine/src/Engine/EngineDomain.hpp"
 #include "../../LuminoEngine/src/Platform/PlatformManager.hpp"
 #include "../../LuminoEngine/src/UI/UIManager.hpp"
+#include "MainWindow.hpp"
 #include "Application.hpp"
 
 static EditorApplication* s_app = nullptr;
@@ -26,7 +27,7 @@ EditorApplication::~EditorApplication()
 
 ln::Result EditorApplication::init()
 {
-    //ln::detail::EngineDomain::engineManager()->settings().defaultObjectsCreation = false;
+    ln::detail::EngineDomain::engineManager()->settings().defaultObjectsCreation = false;
     ln::detail::EngineDomain::engineManager()->init();
     onInit();
     return true;
@@ -52,6 +53,16 @@ ln::UIMainWindow* EditorApplication::mainWindow() const
     return ln::detail::EngineDomain::engineManager()->mainWindow();
 }
 
+void EditorApplication::setMainWindow(ln::UIMainWindow* window)
+{
+	return ln::detail::EngineDomain::engineManager()->setMainWindow(window);
+}
+
 void EditorApplication::onInit()
 {
+	setMainWindow(ln::makeObject<MainWindow>());
+
+	// TODO:
+	mainWindow()->m_renderView->setClearMode(ln::RenderViewClearMode::ColorAndDepth);
+	mainWindow()->m_renderView->setBackgroundColor(ln::Color::White);
 }

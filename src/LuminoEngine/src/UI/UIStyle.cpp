@@ -86,7 +86,7 @@ namespace ln {
 // layout
 const Thickness UIStyle::DefaultMargin = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
 const Thickness UIStyle::DefaultPadding = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
-const HAlignment UIStyle::DefaultHorizontalAlignment = HAlignment::Left;
+const HAlignment UIStyle::DefaultHorizontalAlignment = HAlignment::Left;	// TODO: Stretch の方がいいかもしれない。Button とかは style 指定がしぜんだけど、UIElement とか、特にデフォルトスタイル持たないものがつぶれて表示されない
 const VAlignment UIStyle::DefaultVerticalAlignment = VAlignment::Top;
 const HAlignment UIStyle::DefaultHorizontalContentAlignment = HAlignment::Stretch;
 const VAlignment UIStyle::DefaultVerticalContentAlignment = VAlignment::Stretch;

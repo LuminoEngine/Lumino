@@ -558,6 +558,11 @@ void UIElement::updateStyleHierarchical(const UIStyleContext* styleContext, cons
 	for (int i = 0; i < count; i++) {
 		getVisualChild(i)->updateStyleHierarchical(styleContext, m_finalStyle);
 	}
+
+	m_dirtyFlags.unset(detail::UIElementDirtyFlags::Style);
+
+	// Re-layout
+	invalidate(detail::UIElementDirtyFlags::Layout, true);
 }
 
 void UIElement::updateFinalLayoutHierarchical(const Rect& parentFinalGlobalRect)
@@ -570,6 +575,10 @@ void UIElement::updateFinalLayoutHierarchical(const Rect& parentFinalGlobalRect)
         getVisualChild(i)->updateFinalLayoutHierarchical(m_finalGlobalRect);
     }
 
+	m_dirtyFlags.unset(detail::UIElementDirtyFlags::Layout);
+
+	// Re-draw
+	invalidate(detail::UIElementDirtyFlags::Render, true);
 }
 
 //void UIElement::updateLayoutHierarchical(const Rect& parentFinalGlobalRect)

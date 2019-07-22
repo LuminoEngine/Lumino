@@ -11,6 +11,7 @@ public:
     ln::Result init();
     void dispose();
     void run();
+	void setMainWindow(ln::UIMainWindow* window);	// onInit でのみ可
 
     ln::UIMainWindow* mainWindow() const;
 

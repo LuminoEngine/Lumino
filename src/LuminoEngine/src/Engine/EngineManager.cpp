@@ -124,11 +124,12 @@ void EngineManager::init()
     {
         if (m_uiManager) {
 
-            m_mainWindow = makeObject<UIMainWindow>(m_platformManager->mainWindow(), m_settings.mainBackBufferSize);
+            m_mainWindow = makeObject<UIMainWindow>();
+			m_mainWindow->setupPlatformWindow(m_platformManager->mainWindow(), m_settings.mainBackBufferSize);
+            m_mainUIContext->setLayoutRootElement(m_mainWindow);
+
             m_mainViewport = makeObject<UIViewport>();
             m_mainWindow->addElement(m_mainViewport);
-
-            m_mainUIContext->setLayoutRootElement(m_mainWindow);
         }
 
         if (m_sceneManager)
@@ -667,6 +668,18 @@ const Path& EngineManager::persistentDataPath() const
     LN_NOTIMPLEMENTED();
 #endif
     return m_persistentDataPath;
+}
+
+void EngineManager::setMainWindow(ln::UIMainWindow* window)
+{
+	if (LN_REQUIRE(window)) return;
+	if (LN_REQUIRE(!m_mainWindow)) return;
+	m_mainWindow = window;
+	m_mainWindow->setupPlatformWindow(m_platformManager->mainWindow(), m_settings.mainBackBufferSize);
+	m_mainUIContext->setLayoutRootElement(m_mainWindow);
+
+	// TODO: SwapChain だけでいいはず
+	m_mainWindow->m_graphicsContext = m_graphicsManager->mainWindowGraphicsContext();
 }
 
 bool EngineManager::onPlatformEvent(const PlatformEventArgs& e)

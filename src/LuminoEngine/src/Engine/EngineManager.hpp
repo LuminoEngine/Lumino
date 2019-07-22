@@ -129,6 +129,7 @@ public:
     const Path& persistentDataPath() const;
     void setTimeScale(float value) { m_timeScale = value; }
     void setShowDebugFpsEnabled(bool value) { m_showDebugFpsEnabled = value; }
+	void setMainWindow(ln::UIMainWindow* window);
 
     const Ref<UIContext>& mainUIContext() const { return m_mainUIContext; }
 	const Ref<UIMainWindow>& mainWindow() const { return m_mainWindow; }
