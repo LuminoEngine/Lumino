@@ -93,6 +93,7 @@ protected:
     virtual void onCollapsed();
 
     // UIElement interface
+    virtual const String& elementName() const  override { static String name = u"UITreeItem"; return name; }
 	virtual Size measureOverride(const Size& constraint) override;
 	virtual Size arrangeOverride(const Size& finalSize) override;
 

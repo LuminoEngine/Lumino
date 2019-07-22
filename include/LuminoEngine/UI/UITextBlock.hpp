@@ -11,6 +11,7 @@ class RTDocument;
 class UITextBlock
     : public UIElement
 {
+    LN_OBJECT;
 public:
     static Ref<UITextBlock> create();
 

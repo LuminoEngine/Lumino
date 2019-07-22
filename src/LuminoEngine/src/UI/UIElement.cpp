@@ -18,6 +18,7 @@ namespace ln {
 
 //==============================================================================
 // UIElement
+LN_OBJECT_IMPLEMENT(UIElement, UILayoutElement) {}
 
 UIElement::UIElement()
     : m_manager(nullptr)
@@ -562,6 +563,7 @@ void UIElement::updateStyleHierarchical(const UIStyleContext* styleContext, cons
 	m_dirtyFlags.unset(detail::UIElementDirtyFlags::Style);
 
 	// Re-layout
+    // TODO: 本当にレイアウトに影響するプロパティが変わったときだけにしたい
 	invalidate(detail::UIElementDirtyFlags::Layout, true);
 }
 
@@ -578,6 +580,7 @@ void UIElement::updateFinalLayoutHierarchical(const Rect& parentFinalGlobalRect)
 	m_dirtyFlags.unset(detail::UIElementDirtyFlags::Layout);
 
 	// Re-draw
+    // TODO: 本当に描画に影響するプロパティが変わったときだけにしたい
 	invalidate(detail::UIElementDirtyFlags::Render, true);
 }
 
@@ -647,14 +650,14 @@ void UIElement::render(UIRenderingContext* context)
 
         context->popState();	// TODO: scoped
 
-        //onRender(context);
-
         // child elements
         int count = getVisualChildrenCount();
         for (int i = 0; i < count; i++) {
             getVisualChild(i)->render(context);
         }
     }
+
+    m_dirtyFlags.unset(detail::UIElementDirtyFlags::Render);
 }
 
 void UIElement::onRoutedEvent(UIEventArgs* e)
@@ -712,7 +715,7 @@ void UIElement::invalidate(detail::UIElementDirtyFlags flags, bool toAncestor)
 UIVisualStateManager* UIElement::getVisualStateManager()
 {
     if (!m_visualStateManager) {
-        m_visualStateManager = makeObject<UIVisualStateManager>();
+        m_visualStateManager = makeObject<UIVisualStateManager>(this);
     }
     return m_visualStateManager;
 }

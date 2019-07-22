@@ -607,6 +607,10 @@ public:
             //    m_dirty = true;
             //}
         }
+
+        if (m_dirty) {
+            m_ownerElement->invalidate(detail::UIElementDirtyFlags::Style, true);
+        }
     }
 
     //UIStyle* combineStyle(const UIStyleContext* styleContext, const ln::String& elementName);
@@ -615,12 +619,13 @@ public:
 
 LN_CONSTRUCT_ACCESS:
     UIVisualStateManager();
-    void init();
+    void init(UIElement* ownerElement);
 
 private:
     bool isDirty() const { return m_dirty; }
     void clearDirty() { m_dirty = false; }
 
+    UIElement* m_ownerElement;
     List<Group> m_groups;
     Ref<UIStyle> m_combinedStyle;
     Ref<detail::UIStyleInstance> m_resolvedStyle;

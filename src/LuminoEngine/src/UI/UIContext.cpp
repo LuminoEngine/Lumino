@@ -107,7 +107,6 @@ void UIContext::setupDefaultStyle()
 			if (auto s = sheet->obtainStyle(u"UIToggleButton:Pressed")) {
 			}
 			if (auto s = sheet->obtainStyle(u"UIToggleButton:Checked")) {
-				s->backgroundColor = UIColors::get(UIColorHues::Blue, 4);
 			}
 		}
 		//--------------------------------
@@ -166,6 +165,29 @@ void UIContext::setupDefaultStyle()
 			}
 
 		}
+        //--------------------------------
+        // UITreeItem
+        {
+            if (auto s = sheet->obtainStyle(u"UITreeItem")) {
+                s->horizontalAlignment = HAlignment::Stretch;
+                s->verticalAlignment = VAlignment::Top;
+                s->backgroundColor = UIColors::get(UIColorHues::Amber);
+            }
+            if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander")) {
+                s->horizontalAlignment = HAlignment::Left;
+                s->verticalAlignment = VAlignment::Center;
+                s->backgroundColor = UIColors::get(UIColorHues::Red);
+            }
+            if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:MouseOver")) {
+                s->backgroundColor = UIColors::get(UIColorHues::Green);
+            }
+            if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:Pressed")) {
+                s->backgroundColor = UIColors::get(UIColorHues::Cyan);
+            }
+            if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:Checked")) {
+                s->backgroundColor = UIColors::get(UIColorHues::Blue);
+            }
+        }
     }
 
     m_styleContext->addStyleSheet(sheet);

@@ -49,12 +49,12 @@ void MainWindow::onLoaded()
 	layout1->setOrientation(ln::Orientation::Horizontal);
 	setLayoutPanel(layout1);
 
-	auto sidebar = ln::makeObject<NavigationBar>();
-	sidebar->setWidth(40);
-	sidebar->setBackgroundColor(ln::Color::Gray);
-	sidebar->setHorizontalAlignment(ln::HAlignment::Stretch);
-	sidebar->setVerticalAlignment(ln::VAlignment::Stretch);
-	addElement(sidebar);
+	//auto sidebar = ln::makeObject<NavigationBar>();
+	//sidebar->setWidth(40);
+	//sidebar->setBackgroundColor(ln::Color::Gray);
+	//sidebar->setHorizontalAlignment(ln::HAlignment::Stretch);
+	//sidebar->setVerticalAlignment(ln::VAlignment::Stretch);
+	//addElement(sidebar);
 
 
     auto model = ln::makeObject<ln::UIFileSystemCollectionModel>();
@@ -67,5 +67,5 @@ void MainWindow::onLoaded()
     treeView->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 2));
     addElement(treeView);
 
-	sidebar->addItem(u"A");
+	//sidebar->addItem(u"A");
 }

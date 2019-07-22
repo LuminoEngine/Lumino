@@ -19,6 +19,7 @@ namespace ln {
 
 //==============================================================================
 // UITextBlock
+LN_OBJECT_IMPLEMENT(UITextBlock, UIElement) {}
 
 Ref<UITextBlock> UITextBlock::create()
 {

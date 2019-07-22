@@ -7,6 +7,7 @@ namespace ln {
 
 //==============================================================================
 // UILayoutElement
+LN_OBJECT_IMPLEMENT(UILayoutElement, Object) {}
 
 UILayoutElement::UILayoutElement()
 	: m_layoutSize(Math::NaN, Math::NaN)
@@ -101,8 +102,8 @@ void UILayoutElement::arrangeLayout(const Rect& localSlotRect)
 
 	Size layoutSize = getLayoutSize();
 	Rect arrangeRect;
-	detail::LayoutHelper::adjustHorizontalAlignment(areaSize, ds, Math::isNaN(layoutSize.width), hAlign, &arrangeRect);
-	detail::LayoutHelper::adjustVerticalAlignment(areaSize, ds, Math::isNaN(layoutSize.height), vAlign, &arrangeRect);
+	detail::LayoutHelper::adjustHorizontalAlignment(areaSize, ds, layoutSize.width, hAlign, &arrangeRect);
+	detail::LayoutHelper::adjustVerticalAlignment(areaSize, ds, layoutSize.height, vAlign, &arrangeRect);
 
 
 	// Margin を考慮する (0 以下には出来ない)

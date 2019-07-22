@@ -86,8 +86,8 @@ namespace ln {
 // layout
 const Thickness UIStyle::DefaultMargin = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
 const Thickness UIStyle::DefaultPadding = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
-const HAlignment UIStyle::DefaultHorizontalAlignment = HAlignment::Left;	// TODO: Stretch の方がいいかもしれない。Button とかは style 指定がしぜんだけど、UIElement とか、特にデフォルトスタイル持たないものがつぶれて表示されない
-const VAlignment UIStyle::DefaultVerticalAlignment = VAlignment::Top;
+const HAlignment UIStyle::DefaultHorizontalAlignment = HAlignment::Stretch;	// WPF FrameworkElement default
+const VAlignment UIStyle::DefaultVerticalAlignment = VAlignment::Stretch;
 const HAlignment UIStyle::DefaultHorizontalContentAlignment = HAlignment::Stretch;
 const VAlignment UIStyle::DefaultVerticalContentAlignment = VAlignment::Stretch;
 const float UIStyle::DefaultMinWidth = std::numeric_limits<float>::quiet_NaN();
@@ -1130,15 +1130,18 @@ void UIStyleClassInstance::mergeFrom(const UIStyleSet* other)
 // UIVisualStateManager
 
 UIVisualStateManager::UIVisualStateManager()
-    : m_groups()
+    : m_ownerElement(nullptr)
+    , m_groups()
     , m_combinedStyle(makeObject<UIStyle>())
     , m_resolvedStyle(makeRef<detail::UIStyleInstance>())
     , m_dirty(true)
 {
 }
 
-void UIVisualStateManager::init()
+void UIVisualStateManager::init(UIElement* ownerElement)
 {
+    Object::init();
+    m_ownerElement = ownerElement;
 }
 
 //UIStyle* UIVisualStateManager::combineStyle(const UIStyleContext* styleContext, const ln::String& elementName)

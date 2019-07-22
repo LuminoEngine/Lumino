@@ -105,6 +105,7 @@ class UIStyleInstance;
 class UILayoutElement
 	: public Object
 {
+    LN_OBJECT;
 public:	// TODO: internal
 	// 基本的にルート要素のみ呼び出すべき
 	void updateLayout(const Rect& parentFinalGlobalRect);
@@ -196,7 +197,7 @@ public:
 	//}
 
 	// widthNan : ユーザーが希望するサイズを指定しているか
-	static void adjustHorizontalAlignment(const Size& areaSize, const Size& desiredSize, bool widthNan, HAlignment align, Rect* outRect)
+	static void adjustHorizontalAlignment(const Size& areaSize, const Size& desiredSize, float fixedSizeOrNaN, HAlignment align, Rect* outRect)
 	{
 		switch (align)
 		{
@@ -213,7 +214,7 @@ public:
 			outRect->width = desiredSize.width;
 			break;
 		case HAlignment::Stretch:
-			if (widthNan)
+			if (Math::isNaN(fixedSizeOrNaN))
 			{
 				outRect->x = 0;
 				outRect->width = areaSize.width;
@@ -221,7 +222,7 @@ public:
 			else
 			{
 				outRect->x = (areaSize.width - desiredSize.width) / 2;
-				outRect->width = desiredSize.width;
+				outRect->width = fixedSizeOrNaN;
 			}
 
 			//outRect->x = 0;
@@ -230,7 +231,7 @@ public:
 		}
 	}
 
-	static void adjustVerticalAlignment(const Size& areaSize, const Size& desiredSize, bool heightNan, VAlignment align, Rect* outRect)
+	static void adjustVerticalAlignment(const Size& areaSize, const Size& desiredSize, float fixedSizeOrNaN, VAlignment align, Rect* outRect)
 	{
 		switch (align)
 		{
@@ -247,7 +248,7 @@ public:
 			outRect->height = desiredSize.height;
 			break;
 		case VAlignment::Stretch:
-			if (heightNan)
+            if (Math::isNaN(fixedSizeOrNaN))
 			{
 				outRect->y = 0;
 				outRect->height = areaSize.height;

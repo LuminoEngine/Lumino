@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UILayoutPanel.hpp>
 #include <LuminoEngine/UI/UIButton.hpp>
 #include <LuminoEngine/UI/UITextBlock.hpp>
@@ -101,16 +102,20 @@ void UITreeItem::init()
 {
 	UIElement::init();
 
+    auto vsm = getVisualStateManager();
+    vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::Normal);
+    vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::MouseOver);
+    vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::Pressed);
+
 	m_expanderButton = makeObject<UIToggleButton>();
 
 	// TODO: style
 	m_expanderButton->setWidth(16);
 	m_expanderButton->setHeight(16);
-	setWidth(100);
+	//setWidth(100);
 	setHeight(20);
-	setBackgroundColor(Color::AliceBlue);
 
-	m_expanderButton->addClass(u"UIButton-TreeExpander");
+	m_expanderButton->addClass(u"UITreeItem-Expander");
     m_expanderButton->connectOnChecked(bind(this, &UITreeItem::expander_Checked));
     m_expanderButton->connectOnUnchecked(bind(this, &UITreeItem::expander_Unchecked));
 

@@ -51,6 +51,7 @@ public:
 class UIElement
 	: public UILayoutElement
 {
+    LN_OBJECT;
 public:
     /** 要素の margin 値 (外側の余白) を設定します。 */
     void setMargin(const Thickness& margin);
@@ -362,6 +363,7 @@ public:	// TODO: internal protected
 
 public: // TODO: internal
     void raiseEventInternal(UIEventArgs* e);
+    virtual void invalidate(detail::UIElementDirtyFlags flags, bool toAncestor);
 
     detail::UIManager* m_manager;
 	Flags<detail::ObjectManagementFlags> m_objectManagementFlags;
@@ -386,7 +388,6 @@ public: // TODO: internal
 private:
 	int getVisualChildrenCount() const { return (m_visualChildren) ? m_visualChildren->size() : 0; }
 	UIElement* getVisualChild(int index) const { return (m_visualChildren) ? m_visualChildren->at(index) : nullptr; }
-    virtual void invalidate(detail::UIElementDirtyFlags flags, bool toAncestor);
 
     Flags<detail::UIElementDirtyFlags> m_dirtyFlags;
 };
