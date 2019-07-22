@@ -124,9 +124,7 @@ void EngineManager::init()
     {
         if (m_uiManager) {
 
-            m_mainWindow = makeObject<UIMainWindow>();
-			m_mainWindow->setupPlatformWindow(m_platformManager->mainWindow(), m_settings.mainBackBufferSize);
-            m_mainUIContext->setLayoutRootElement(m_mainWindow);
+			setMainWindow(makeObject<UIMainWindow>());
 
             m_mainViewport = makeObject<UIViewport>();
             m_mainWindow->addElement(m_mainViewport);

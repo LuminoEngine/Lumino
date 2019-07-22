@@ -124,7 +124,7 @@ LN_CONSTRUCT_ACCESS:
 	UIMainWindow();
 	virtual ~UIMainWindow();
 	void init();	// for Editor
-	void init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
+	//void init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
 
 private:
 };

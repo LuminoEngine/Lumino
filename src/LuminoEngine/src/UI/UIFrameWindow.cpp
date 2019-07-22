@@ -488,12 +488,12 @@ void UIMainWindow::init()
 	onLoaded();
 }
 
-void UIMainWindow::init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize)
-{
-    UIFrameWindow::init();
-	setupPlatformWindow(platformMainWindow, backbufferSize);
-    m_graphicsContext = m_manager->graphicsManager()->mainWindowGraphicsContext();
-}
+//void UIMainWindow::init(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize)
+//{
+//    UIFrameWindow::init();
+//	setupPlatformWindow(platformMainWindow, backbufferSize);
+//    m_graphicsContext = m_manager->graphicsManager()->mainWindowGraphicsContext();
+//}
 
 //==============================================================================
 // UINativeFrameWindow
