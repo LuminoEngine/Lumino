@@ -6,70 +6,64 @@ namespace ln {
 class Material;
 
 
-class ViewModel
-{
-public:
-
-private:
-};
 
 // row, column, parent を使って、Model 内のデータを一意に識別するためのキー
-class UIModelIndex
+class UICollectionItemModel
 	: public Object
 {
 public:
 	int row() const { return m_row; }
 	int column() const { return m_column; }
-	UIModelIndex* parent() const { return m_parent; }
+	UICollectionItemModel* parent() const { return m_parent; }
 	Variant* data() const { return m_data; }
 
 	bool isRoot() const { return !m_parent; }
 
 LN_CONSTRUCT_ACCESS:
-	UIModelIndex();
+	UICollectionItemModel();
 	void init();
-	void init(int row, int column, UIModelIndex* parent = nullptr, Variant* data = nullptr);
+	void init(int row, int column, UICollectionItemModel* parent = nullptr, Variant* data = nullptr);
 
 private:
 	int m_row;
 	int m_column;
-	Ref<UIModelIndex> m_parent;
+	Ref<UICollectionItemModel> m_parent;
 	Ref<Variant> m_data;
 };
 
-class UIItemsViewModel	// TODO: naming, WPF の CollectionView や CollectionViewSource に近い
+class UICollectionModel	// TODO: naming, WPF の CollectionView や CollectionViewSource に近い
     : public Object
 {
 public:
 	// index が示すデータが持つ、子 row の数
-	virtual int getRowCount(UIModelIndex* index) = 0;
+	virtual int getRowCount(UICollectionItemModel* index) = 0;
 
-	virtual Ref<UIModelIndex> getIndex(int row, int column, UIModelIndex* parent) = 0;
+	virtual Ref<UICollectionItemModel> getIndex(int row, int column, UICollectionItemModel* parent) = 0;
 
 	// index が示すデータ
-	//virtual Ref<Variant> getData(const UIModelIndex* index, const String& role) const;
-	virtual String getData(UIModelIndex* index, const String& role) = 0;
+	//virtual Ref<Variant> getData(const UICollectionItemModel* index, const String& role) const;
+	virtual String getData(UICollectionItemModel* index, const String& role) = 0;
 
 LN_CONSTRUCT_ACCESS:
-	UIItemsViewModel();
+	UICollectionModel();
 	void init();
 
 
 private:
 };
 
-class UIFileSystemItemsViewModel
-	: public UIItemsViewModel
+class UIFileSystemCollectionModel
+	: public UICollectionModel
 {
 public:
-	Ref<UIModelIndex> setRootPath(const Path& path);
+	Ref<UICollectionItemModel> setRootPath(const Path& path);
 
-	virtual int getRowCount(UIModelIndex* index) override;
-	virtual Ref<UIModelIndex> getIndex(int row, int column, UIModelIndex* parent) override;
-	virtual String getData(UIModelIndex* index, const String& role) override;
+	virtual int getRowCount(UICollectionItemModel* index) override;
+	virtual Ref<UICollectionItemModel> getIndex(int row, int column, UICollectionItemModel* parent) override;
+	virtual String getData(UICollectionItemModel* index, const String& role) override;
 
 LN_CONSTRUCT_ACCESS:
-	UIFileSystemItemsViewModel();
+	UIFileSystemCollectionModel();
 	void init();
 
 protected:
@@ -84,11 +78,12 @@ private:
 		bool dirty = true;
 	};
 
-	FileSystemNode* getNode(UIModelIndex* index);
+	FileSystemNode* getNode(UICollectionItemModel* index);
 	Ref<FileSystemNode> makeNode(const Path& path) const;
 	void constructChildNodes(FileSystemNode* node) const;
 
 	Ref<FileSystemNode> m_rootNode;
+    Ref<UICollectionItemModel> m_rootModel;
 };
 
 // https://docs.microsoft.com/ja-jp/dotnet/api/system.windows.data.collectionview?view=netframework-4.8

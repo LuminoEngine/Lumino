@@ -5,9 +5,9 @@
 namespace ln {
 
 //==============================================================================
-// UIModelIndex
+// UICollectionItemModel
 
-UIModelIndex::UIModelIndex()
+UICollectionItemModel::UICollectionItemModel()
 	: m_row(0)
 	, m_column(0)
 	, m_parent(nullptr)
@@ -15,12 +15,12 @@ UIModelIndex::UIModelIndex()
 {
 }
 
-void UIModelIndex::init()
+void UICollectionItemModel::init()
 {
 	Object::init();
 }
 
-void UIModelIndex::init(int row, int column, UIModelIndex* parent, Variant* data)
+void UICollectionItemModel::init(int row, int column, UICollectionItemModel* parent, Variant* data)
 {
 	Object::init();
 	m_row = row;
@@ -30,69 +30,73 @@ void UIModelIndex::init(int row, int column, UIModelIndex* parent, Variant* data
 }
 
 //==============================================================================
-// UIItemsViewModel
+// UICollectionModel
 // https://doc.qt.io/qt-5/qabstractitemmodel.html#hasChildren
 
-UIItemsViewModel::UIItemsViewModel()
+UICollectionModel::UICollectionModel()
 {
 }
 
-void UIItemsViewModel::init()
+void UICollectionModel::init()
 {
 	Object::init();
 }
 
 //==============================================================================
-// UIFileSystemItemsViewModel
+// UIFileSystemCollectionModel
 
-UIFileSystemItemsViewModel::UIFileSystemItemsViewModel()
+UIFileSystemCollectionModel::UIFileSystemCollectionModel()
 {
 }
 
-void UIFileSystemItemsViewModel::init()
+void UIFileSystemCollectionModel::init()
 {
 	Object::init();
 }
 
-Ref<UIModelIndex> UIFileSystemItemsViewModel::setRootPath(const Path& path)
+Ref<UICollectionItemModel> UIFileSystemCollectionModel::setRootPath(const Path& path)
 {
 	m_rootNode = makeNode(path);
-	return makeObject<UIModelIndex>(0, 0, nullptr, makeVariant(m_rootNode));
+    m_rootModel = makeObject<UICollectionItemModel>(0, 0, nullptr, makeVariant(m_rootNode));
+    return m_rootModel;
 }
 
-int UIFileSystemItemsViewModel::getRowCount(UIModelIndex* index)
+int UIFileSystemCollectionModel::getRowCount(UICollectionItemModel* index)
 {
 	auto node = getNode(index);
 	return node->children.size();
 }
 
-Ref<UIModelIndex> UIFileSystemItemsViewModel::getIndex(int row, int column, UIModelIndex* parent)
+Ref<UICollectionItemModel> UIFileSystemCollectionModel::getIndex(int row, int column, UICollectionItemModel* parent)
 {
 	auto parentNode = getNode(parent);
-	return makeObject<UIModelIndex>(row, column, parent, makeVariant(parentNode->children[row]));
+	return makeObject<UICollectionItemModel>(row, column, parent, makeVariant(parentNode->children[row]));
 }
 
-String UIFileSystemItemsViewModel::getData(UIModelIndex* index, const String& role)
+String UIFileSystemCollectionModel::getData(UICollectionItemModel* index, const String& role)
 {
 	auto node = getNode(index);
 	return node->path.fileName();
 }
 
-UIFileSystemItemsViewModel::FileSystemNode* UIFileSystemItemsViewModel::getNode(UIModelIndex* index)
+UIFileSystemCollectionModel::FileSystemNode* UIFileSystemCollectionModel::getNode(UICollectionItemModel* index)
 {
+    if (!index) {
+        return m_rootNode;
+    }
 	auto node = index->data()->getObject<FileSystemNode>();
 	constructChildNodes(node);
 	return node;
 }
 
-Ref<UIFileSystemItemsViewModel::FileSystemNode> UIFileSystemItemsViewModel::makeNode(const Path& path) const
+Ref<UIFileSystemCollectionModel::FileSystemNode> UIFileSystemCollectionModel::makeNode(const Path& path) const
 {
 	auto node = makeRef<FileSystemNode>(path);
 	constructChildNodes(node);
 	return node;
 }
 
-void UIFileSystemItemsViewModel::constructChildNodes(FileSystemNode* node) const
+void UIFileSystemCollectionModel::constructChildNodes(FileSystemNode* node) const
 {
 	if (node->dirty)
 	{

@@ -123,13 +123,13 @@ const float UIStyle::DefaultShadowOffsetX = 0.0f;
 const float UIStyle::DefaultShadowOffsetY = 0.0f;
 const float UIStyle::DefaultShadowBlurRadius = 0.0f;
 const float UIStyle::DefaultShadowSpreadRadius = 0.0f;
-const Color UIStyle::DefaultShadowColor = Color(0, 0, 0, 0.25);
+const Color UIStyle::DefaultShadowColor = Color(0.0f, 0.0f, 0.0f, 0.25f);
 const bool UIStyle::DefaultShadowInset = false;
 
 // text
-const Color UIStyle::DefaultTextColor = Color::Black;
+const Color UIStyle::DefaultTextColor = Color(0.0f, 0.0f, 0.0f, 1.0f);
 const String UIStyle::DefaultFontFamily = String::Empty;
-const float UIStyle::DefaultFontSize = 20.0f;// WPF default は 12 だが、それだとデスクトップアプリ向けなので少し小さい。Lumino としては 20 をデフォルトとする。
+const float UIStyle::DefaultFontSize = 18.0f;// WPF default は 12 だが、それだとデスクトップアプリ向けなので少し小さい。Lumino としては 18 をデフォルトとする。
 const UIFontWeight UIStyle::DefaultFontWeight = UIFontWeight::Normal;
 const UIFontStyle UIStyle::DefaultFontStyle = UIFontStyle::Normal;
 

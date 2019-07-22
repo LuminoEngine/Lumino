@@ -1,10 +1,13 @@
 ﻿
 #include <LuminoEngine/UI/UIItemsElement.hpp>
+#include <LuminoEngine/UI/UIStyle.hpp>
 #include "MainWindow.hpp"
 
 class NavigationBar : public ln::UIItemsControl
 {
 public:
+    static const int ItemSize = 40;
+
 	void addItem(const ln::String& text);
 
 protected:
@@ -18,13 +21,18 @@ void NavigationBar::addItem(const ln::String& text)
 
 	auto textblock = ln::makeObject<ln::UITextBlock>();
 	textblock->setText(text);
+    textblock->setTextColor(ln::Color::White);
+    textblock->setHorizontalAlignment(ln::HAlignment::Center);
+    textblock->setVerticalAlignment(ln::VAlignment::Center);
 
 	auto item = ln::makeObject<ln::UICollectionItem>();
 	item->addElement(textblock);
-	item->setBackgroundColor(ln::Color::Blue);
+    item->setWidth(ItemSize);
+    item->setHeight(ItemSize);
+    item->setBorderThickness(ln::Thickness(4, 0, 0, 0));
+    item->setBorderColor(ln::UIColors::get(ln::UIColorHues::LightGreen));
 
-	addSelectionTarget(item);
-	addElement(item);
+	UIItemsControl::addItem(item);
 }
 
 
@@ -48,6 +56,16 @@ void MainWindow::onLoaded()
 	sidebar->setVerticalAlignment(ln::VAlignment::Stretch);
 	addElement(sidebar);
 
+
+    auto model = ln::makeObject<ln::UIFileSystemCollectionModel>();
+    model->setRootPath(u"D:/Proj/LN/Lumino");
+
+    auto treeView = ln::makeObject<ln::UITreeView>();
+    treeView->setModel(model);
+    treeView->setWidth(200);
+    treeView->setHeight(300);
+    treeView->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 2));
+    addElement(treeView);
 
 	sidebar->addItem(u"A");
 }

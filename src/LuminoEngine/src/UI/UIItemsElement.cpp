@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/UI/UILayoutPanel.hpp>
 #include <LuminoEngine/UI/UIButton.hpp>
+#include <LuminoEngine/UI/UITextBlock.hpp>
 #include <LuminoEngine/UI/UIItemsElement.hpp>
 
 namespace ln {
@@ -41,10 +42,11 @@ void UIItemsControl::init()
 	UIControl::init();
 }
 
-void UIItemsControl::addSelectionTarget(UICollectionItem* item)
+void UIItemsControl::addItem(UICollectionItem* item)
 {
 	if (LN_REQUIRE(item)) return;
 	m_selectionTargets.add(item);
+    addElement(item);
 }
 
 //void UIItemsControl::onRoutedEvent(UIEventArgs* e)
@@ -88,14 +90,14 @@ void UIItemContainerElement::init()
 }
 
 //==============================================================================
-// UITreeViewItem
+// UITreeItem
 
-UITreeViewItem::UITreeViewItem()
+UITreeItem::UITreeItem()
     : m_ownerTreeView(nullptr)
 {
 }
 
-void UITreeViewItem::init()
+void UITreeItem::init()
 {
 	UIElement::init();
 
@@ -109,8 +111,8 @@ void UITreeViewItem::init()
 	setBackgroundColor(Color::AliceBlue);
 
 	m_expanderButton->addClass(u"UIButton-TreeExpander");
-    m_expanderButton->connectOnChecked(bind(this, &UITreeViewItem::expander_Checked));
-    m_expanderButton->connectOnUnchecked(bind(this, &UITreeViewItem::expander_Unchecked));
+    m_expanderButton->connectOnChecked(bind(this, &UITreeItem::expander_Checked));
+    m_expanderButton->connectOnUnchecked(bind(this, &UITreeItem::expander_Unchecked));
 
 	addVisualChild(m_expanderButton);
 
@@ -119,32 +121,32 @@ void UITreeViewItem::init()
     m_itemsLayout = layout;
 }
 
-void UITreeViewItem::setContent(UIElement* value)
+void UITreeItem::setContent(UIElement* value)
 {
     assert(!m_headerContent);    // TODO
     m_headerContent = value;
     addVisualChild(m_headerContent);
 }
 
-void UITreeViewItem::addChild(UITreeViewItem* item)
+void UITreeItem::addChild(UITreeItem* item)
 {
     if (LN_REQUIRE(item)) return;
     m_items.add(item);
     addVisualChild(item);   // TODO: 多重追加対策
 }
 
-void UITreeViewItem::onExpanded()
+void UITreeItem::onExpanded()
 {
 }
 
-void UITreeViewItem::onCollapsed()
+void UITreeItem::onCollapsed()
 {
 }
 
-Size UITreeViewItem::measureOverride(const Size& constraint)
+Size UITreeItem::measureOverride(const Size& constraint)
 {
     struct ElementList : public IUIElementList {
-        List<Ref<UITreeViewItem>>* list;
+        List<Ref<UITreeItem>>* list;
         virtual int getElementCount() const { return list->size(); }
         virtual UIElement* getElement(int i) const { return list->at(i); }
     } list;
@@ -172,10 +174,10 @@ Size UITreeViewItem::measureOverride(const Size& constraint)
     return size;
 }
 
-Size UITreeViewItem::arrangeOverride(const Size& finalSize)
+Size UITreeItem::arrangeOverride(const Size& finalSize)
 {
     struct ElementList : public IUIElementList {
-        List<Ref<UITreeViewItem>>* list;
+        List<Ref<UITreeItem>>* list;
         virtual int getElementCount() const { return list->size(); }
         virtual UIElement* getElement(int i) const { return list->at(i); }
     } list;
@@ -200,14 +202,37 @@ Size UITreeViewItem::arrangeOverride(const Size& finalSize)
     return finalSize;
 }
 
-void UITreeViewItem::expander_Checked(UIEventArgs* e)
+void UITreeItem::expander_Checked(UIEventArgs* e)
 {
     onExpanded();
 }
 
-void UITreeViewItem::expander_Unchecked(UIEventArgs* e)
+void UITreeItem::expander_Unchecked(UIEventArgs* e)
 {
     onCollapsed();
+}
+
+//==============================================================================
+// UITreeControl
+
+UITreeControl::UITreeControl()
+{
+}
+
+void UITreeControl::init()
+{
+	UIItemContainerElement::init();
+
+    auto layout = makeObject<UIStackLayout2>();
+    layout->setOrientation(Orientation::Vertical);
+    setLayoutPanel(layout);
+}
+
+void UITreeControl::addItem(UITreeItem* item)
+{
+    if (LN_REQUIRE(item)) return;
+    item->m_ownerTreeView = this;
+    LN_NOTIMPLEMENTED();
 }
 
 //==============================================================================
@@ -219,23 +244,36 @@ UITreeView::UITreeView()
 
 void UITreeView::init()
 {
-	UIItemContainerElement::init();
+    UIItemsControl::init();
 
     auto layout = makeObject<UIStackLayout2>();
     layout->setOrientation(Orientation::Vertical);
     setLayoutPanel(layout);
 }
 
-void UITreeView::setModel(UIItemsViewModel* model)
+void UITreeView::setModel(UICollectionModel* model)
 {
-	m_model = model;
-}
+    m_model = model;
 
-void UITreeView::addItem(UITreeViewItem* item)
-{
-    if (LN_REQUIRE(item)) return;
-    item->m_ownerTreeView = this;
-    LN_NOTIMPLEMENTED();
+    int count = m_model->getRowCount(nullptr);
+    for (int i = 0; i < count; i++) {
+        auto itemModel = m_model->getIndex(i, 0, nullptr);
+        auto itemData = m_model->getData(itemModel, u"");
+
+        auto text = makeObject<UITextBlock>();
+        text->setText(itemData);
+
+        auto item = makeObject<UITreeItem>();
+        item->setContent(text);
+        item->setData(makeVariant(itemModel));
+
+        //if (!parent) {
+            addElement(item);
+        //}
+        //else {
+       //     parent->addChild(item);
+        //}
+    }
 }
 
 } // namespace ln

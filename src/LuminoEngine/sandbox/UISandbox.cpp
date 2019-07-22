@@ -9,7 +9,7 @@
 using namespace ln;
 
 class FileSystemTreeViewItem
-    : public UITreeViewItem
+    : public UITreeItem
 {
 public:
 
@@ -25,7 +25,7 @@ LN_CONSTRUCT_ACCESS:
 
 
 class FileSystemTreeView
-    : public UITreeView
+    : public UITreeControl
 {
 public:
     void setRootPath(const Path& path);
@@ -44,8 +44,8 @@ private:
         bool dirty = true;
     };
 
-    FileSystemNode* getNode(UITreeViewItem* item) const;
-    void makeNode(UITreeViewItem* parent, const Path& path);
+    FileSystemNode* getNode(UITreeItem* item) const;
+    void makeNode(UITreeItem* parent, const Path& path);
     void constructChildNodes(FileSystemNode* node) const;
 
     Ref<FileSystemNode> m_rootNode; // dummy
@@ -59,7 +59,7 @@ FileSystemTreeView::FileSystemTreeView()
 
 void FileSystemTreeView::init()
 {
-    UITreeView::init();
+    UITreeControl::init();
 }
 
 void FileSystemTreeView::setRootPath(const Path& path)
@@ -71,13 +71,13 @@ void FileSystemTreeView::setRootPath(const Path& path)
     }
 }
 
-FileSystemTreeView::FileSystemNode* FileSystemTreeView::getNode(UITreeViewItem* item) const
+FileSystemTreeView::FileSystemNode* FileSystemTreeView::getNode(UITreeItem* item) const
 {
     assert(item);
     return item->data()->getObject<FileSystemTreeView::FileSystemNode>();
 }
 
-void FileSystemTreeView::makeNode(UITreeViewItem* parent, const Path& path)
+void FileSystemTreeView::makeNode(UITreeItem* parent, const Path& path)
 {
     auto node = makeRef<FileSystemNode>(path);
     constructChildNodes(node);
@@ -125,7 +125,7 @@ FileSystemTreeViewItem::FileSystemTreeViewItem()
 
 void FileSystemTreeViewItem::init()
 {
-    UITreeViewItem::init();
+    UITreeItem::init();
 }
 
 void FileSystemTreeViewItem::onExpanded()
@@ -150,7 +150,7 @@ class UISandboxApp : public Application
 public:
     virtual void onCreate()
     {
-		//auto vm = makeObject<UIFileSystemItemsViewModel>();
+		//auto vm = makeObject<UIFileSystemCollectionModel>();
 		//auto root = vm->setRootPath(u"C:/Proj/LN/Lumino");
 		//int count = vm->getRowCount(root);
 		//for (int i = 0; i < count; i++) {
@@ -226,7 +226,7 @@ public:
 			treeView->setBackgroundColor(UIColors::get(UIColorHues::Grey, 2));
 			Engine::mainUIRoot()->addElement(treeView);
 
-			//treeView->addElement(makeObject<UITreeViewItem>());
+			//treeView->addElement(makeObject<UITreeItem>());
 		}
 
     }

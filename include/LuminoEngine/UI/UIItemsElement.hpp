@@ -5,7 +5,7 @@
 
 namespace ln {
 class UIToggleButton;
-class UITreeView;
+class UITreeControl;
 
 
 class UICollectionItem
@@ -29,7 +29,7 @@ class UIItemsControl
 protected:
 	//virtual UIControl* generateItem(UIElement* content) = 0;
 
-	void addSelectionTarget(UICollectionItem* item);
+	void addItem(UICollectionItem* item);
 
 	// base interfaces
 	//virtual void onRoutedEvent(UIEventArgs* e) override;
@@ -78,15 +78,15 @@ private:
 };
 
 
-class UITreeViewItem
+class UITreeItem
 	: public UIItemElement
 {
 public:
     void setContent(UIElement* value);  // TODO: TreeList ように column が必要かも
 
-    void addChild(UITreeViewItem* item);
+    void addChild(UITreeItem* item);
 
-    UITreeView* treeView() const { return m_ownerTreeView; }
+    UITreeControl* treeView() const { return m_ownerTreeView; }
 
 protected:
     virtual void onExpanded();
@@ -97,40 +97,55 @@ protected:
 	virtual Size arrangeOverride(const Size& finalSize) override;
 
 LN_CONSTRUCT_ACCESS:
-	UITreeViewItem();
+	UITreeItem();
 	void init();
 
 private:
     void expander_Checked(UIEventArgs* e);
     void expander_Unchecked(UIEventArgs* e);
 
-    UITreeView* m_ownerTreeView;
+    UITreeControl* m_ownerTreeView;
 	Ref<UIToggleButton> m_expanderButton;
     Ref<UIElement> m_headerContent;
-    List<Ref<UITreeViewItem>> m_items;
+    List<Ref<UITreeItem>> m_items;
     Ref<UILayoutPanel2> m_itemsLayout;
 
-    friend class UITreeView;
+    friend class UITreeControl;
 };
 
-class UITreeView
+// UITreeView : View-Model パターンで実装するときに使う
+// UITreeControl : 直接 Item を操作するのに使う
+class UITreeControl
 	: public UIItemContainerElement
 {
 public:
-	void setModel(UIItemsViewModel* model);
-
     // TODO: ベースクラスの addElement, addChild は TreeViewItem のヘッダの content とする。
-    // 直接 UITreeViewItem を使いたい場合はこのメソッドを使う必要がある。
-    void addItem(UITreeViewItem* item);
+    // 直接 UITreeItem を使いたい場合はこのメソッドを使う必要がある。
+    void addItem(UITreeItem* item);
 
 LN_CONSTRUCT_ACCESS:
-	UITreeView();
+	UITreeControl();
 	void init();
 
 private:
-    //UITreeViewItem* makeTreeViewItem();
+	Ref<UICollectionModel> m_model;
+};
 
-	Ref<UIItemsViewModel> m_model;
+class UITreeView
+    : public UIItemsControl
+{
+public:
+    void setModel(UICollectionModel* model);
+
+
+LN_CONSTRUCT_ACCESS:
+    UITreeView();
+    void init();
+
+private:
+    //UITreeItem* makeTreeViewItem();
+
+    Ref<UICollectionModel> m_model;
 };
 
 } // namespace ln
