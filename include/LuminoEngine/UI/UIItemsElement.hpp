@@ -1,10 +1,53 @@
 ﻿#pragma once
+#include "UIControl.hpp"
 #include "UIScrollView.hpp"
 #include "UIItemsModel.hpp"
 
 namespace ln {
 class UIToggleButton;
 class UITreeView;
+
+
+class UICollectionItem
+	: public UIControl
+{
+public:
+
+protected:
+	virtual void onRoutedEvent(UIEventArgs* e) override;
+
+LN_CONSTRUCT_ACCESS:
+	UICollectionItem();
+	void init();
+
+private:
+};
+
+class UIItemsControl
+	: public UIControl
+{
+protected:
+	//virtual UIControl* generateItem(UIElement* content) = 0;
+
+	void addSelectionTarget(UICollectionItem* item);
+
+	// base interfaces
+	//virtual void onRoutedEvent(UIEventArgs* e) override;
+
+LN_CONSTRUCT_ACCESS:
+	UIItemsControl();
+	void init();
+
+private:
+	List<Ref<UICollectionItem>> m_selectionTargets;
+};
+
+
+
+
+
+
+
 
 class UIItemElement
 	: public UIElement
@@ -29,19 +72,6 @@ class UIItemContainerElement
 {
 public:
 	UIItemContainerElement();
-	void init();
-
-private:
-};
-
-// 任意サイズの Item をリスト形式で扱う。
-// サイズがばらばらでもいいので、仮想化は非対応。少量のフレキシブルなリストに使う。
-// 固定サイズで仮想化対応するのは UIListView
-class UIListBox
-	: public UIItemContainerElement
-{
-LN_CONSTRUCT_ACCESS:
-	UIListBox();
 	void init();
 
 private:

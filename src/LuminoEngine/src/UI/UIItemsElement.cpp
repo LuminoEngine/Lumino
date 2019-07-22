@@ -7,6 +7,63 @@
 namespace ln {
 
 //==============================================================================
+// UICollectionItem
+
+UICollectionItem::UICollectionItem()
+{
+}
+
+void UICollectionItem::init()
+{
+	UIControl::init();
+}
+
+void UICollectionItem::onRoutedEvent(UIEventArgs* e)
+{
+	if (e->type() == UIEvents::MouseDownEvent) {
+		printf("");
+	}
+
+	UIControl::onRoutedEvent(e);
+}
+
+//==============================================================================
+// UIItemsControl
+//	ただ複数の Item を追加できる、っていうだけだと、UIControl と変わらない。
+//	WPF でいう Selector の機能も兼ねる。
+
+UIItemsControl::UIItemsControl()
+{
+}
+
+void UIItemsControl::init()
+{
+	UIControl::init();
+}
+
+void UIItemsControl::addSelectionTarget(UICollectionItem* item)
+{
+	if (LN_REQUIRE(item)) return;
+	m_selectionTargets.add(item);
+}
+
+//void UIItemsControl::onRoutedEvent(UIEventArgs* e)
+//{
+//	if (e->type() == UIEvents::MouseDownEvent) {
+//		
+//	}
+//
+//	UIControl::onRoutedEvent(e);
+//}
+
+
+
+
+
+
+
+
+//==============================================================================
 // UIItemElement
 
 UIItemElement::UIItemElement()
@@ -28,18 +85,6 @@ UIItemContainerElement::UIItemContainerElement()
 void UIItemContainerElement::init()
 {
 	UIScrollViewer::init();
-}
-
-//==============================================================================
-// UIListBox
-
-UIListBox::UIListBox()
-{
-}
-
-void UIListBox::init()
-{
-	UIItemContainerElement::init();
 }
 
 //==============================================================================

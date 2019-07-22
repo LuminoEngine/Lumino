@@ -61,8 +61,4 @@ void EditorApplication::setMainWindow(ln::UIMainWindow* window)
 void EditorApplication::onInit()
 {
 	setMainWindow(ln::makeObject<MainWindow>());
-
-	// TODO:
-	mainWindow()->m_renderView->setClearMode(ln::RenderViewClearMode::ColorAndDepth);
-	mainWindow()->m_renderView->setBackgroundColor(ln::Color::White);
 }
