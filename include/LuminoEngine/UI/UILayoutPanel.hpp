@@ -165,6 +165,8 @@ LN_CONSTRUCT_ACCESS:
 private:
 };
 
+// Orientation=H で大量アイテムを持つ ListView を配置すると、縦方向スクロールバーが表示される。
+// Orientation=V で大量アイテムを持つ ListView を配置すると、スクロールバーは表示されず、すべてのアイテムを包含するサイズが ListView の actualSize となる。（見切れる）
 class UIStackLayout2
     : public UILayoutPanel2
 {

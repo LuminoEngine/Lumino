@@ -33,6 +33,8 @@ UITextBlock::UITextBlock()
 void UITextBlock::init()
 {
     UIElement::init();
+    setHorizontalAlignment(HAlignment::Left);
+    setVerticalAlignment(VAlignment::Top);
     setBlendMode(BlendMode::Alpha);
 }
 

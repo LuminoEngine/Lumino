@@ -22,9 +22,6 @@ void UICollectionItem::init()
 
 void UICollectionItem::onRoutedEvent(UIEventArgs* e)
 {
-	if (e->type() == UIEvents::MouseDownEvent) {
-		printf("");
-	}
 
 	UIControl::onRoutedEvent(e);
 }
@@ -112,6 +109,8 @@ void UITreeItem::init()
 	// TODO: style
 	m_expanderButton->setWidth(16);
 	m_expanderButton->setHeight(16);
+    m_expanderButton->setHorizontalAlignment(HAlignment::Left);
+    m_expanderButton->setVerticalAlignment(VAlignment::Top);
 	//setWidth(100);
 	setHeight(20);
 
@@ -137,11 +136,13 @@ void UITreeItem::addChild(UITreeItem* item)
 {
     if (LN_REQUIRE(item)) return;
     m_items.add(item);
+    item->m_ownerTreeView = m_ownerTreeView;
     addVisualChild(item);   // TODO: 多重追加対策
 }
 
 void UITreeItem::onExpanded()
 {
+    m_ownerTreeView->makeChildItems(this);
 }
 
 void UITreeItem::onCollapsed()
@@ -218,30 +219,13 @@ void UITreeItem::expander_Unchecked(UIEventArgs* e)
 }
 
 //==============================================================================
-// UITreeControl
-
-UITreeControl::UITreeControl()
-{
-}
-
-void UITreeControl::init()
-{
-	UIItemContainerElement::init();
-
-    auto layout = makeObject<UIStackLayout2>();
-    layout->setOrientation(Orientation::Vertical);
-    setLayoutPanel(layout);
-}
-
-void UITreeControl::addItem(UITreeItem* item)
-{
-    if (LN_REQUIRE(item)) return;
-    item->m_ownerTreeView = this;
-    LN_NOTIMPLEMENTED();
-}
-
-//==============================================================================
 // UITreeView
+//  UITreeView : View-Model パターンで実装するときに使う
+//  UITreeControl : 直接 Item を操作するのに使う
+//  としていたが、UITreeControl は廃止する。やっぱり似たような名前の要素を増やしたくない。
+//  代わりに UITreeView で両方対応する。
+//  setModel() されたかどうかで、Virtialize モードかどうかを区別する。
+//  Virtialize モードON の時は addItem() 禁止とかにする。（末尾に追加とかでもよさそうだけど）
 
 UITreeView::UITreeView()
 {
@@ -259,26 +243,69 @@ void UITreeView::init()
 void UITreeView::setModel(UICollectionModel* model)
 {
     m_model = model;
+    makeChildItems(nullptr);
+    //int count = m_model->getRowCount(nullptr);
+    //for (int i = 0; i < count; i++) {
+    //    auto itemModel = m_model->getIndex(i, 0, nullptr);
+    //    auto itemData = m_model->getData(itemModel, u"");
 
-    int count = m_model->getRowCount(nullptr);
+    //    auto text = makeObject<UITextBlock>();
+    //    text->setText(itemData);
+
+    //    auto item = makeObject<UITreeItem>();
+    //    item->setContent(text);
+    //    item->setData(makeVariant(itemModel));
+
+    //    //if (!parent) {
+    //        addElement(item);
+    //    //}
+    //    //else {
+    //   //     parent->addChild(item);
+    //    //}
+    //}
+}
+
+Size UITreeView::arrangeOverride(const Size& finalSize)
+{
+    return UIItemsControl::arrangeOverride(finalSize);
+}
+
+void UITreeView::addItemInternal(UITreeItem* item)
+{
+    assert(item);
+    item->m_ownerTreeView = this;
+    addElement(item);
+}
+
+void UITreeView::makeChildItems(UITreeItem* item)
+{
+    assert(isVirtualize());
+
+    UICollectionItemModel* itemModel = nullptr; // null is root
+    if (item) {
+        itemModel = item->data()->getObject<UICollectionItemModel>();
+    }
+
+    int count = m_model->getRowCount(itemModel);
     for (int i = 0; i < count; i++) {
-        auto itemModel = m_model->getIndex(i, 0, nullptr);
-        auto itemData = m_model->getData(itemModel, u"");
+        auto childModel = m_model->getIndex(i, 0, nullptr);
+        auto itemData = m_model->getData(childModel, u"");
 
         auto text = makeObject<UITextBlock>();
         text->setText(itemData);
 
-        auto item = makeObject<UITreeItem>();
-        item->setContent(text);
-        item->setData(makeVariant(itemModel));
+        auto child = makeObject<UITreeItem>();
+        child->setContent(text);
+        child->setData(makeVariant(childModel));
 
-        //if (!parent) {
-            addElement(item);
-        //}
-        //else {
-       //     parent->addChild(item);
-        //}
+        if (!item) {
+            addItemInternal(child);
+        }
+        else {
+            item->addChild(child);
+        }
     }
+
 }
 
 } // namespace ln

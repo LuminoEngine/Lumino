@@ -5,7 +5,7 @@
 
 namespace ln {
 class UIToggleButton;
-class UITreeControl;
+class UITreeView;
 
 
 class UICollectionItem
@@ -86,7 +86,7 @@ public:
 
     void addChild(UITreeItem* item);
 
-    UITreeControl* treeView() const { return m_ownerTreeView; }
+    UITreeView* treeView() const { return m_ownerTreeView; }
 
 protected:
     virtual void onExpanded();
@@ -105,31 +105,13 @@ private:
     void expander_Checked(UIEventArgs* e);
     void expander_Unchecked(UIEventArgs* e);
 
-    UITreeControl* m_ownerTreeView;
+    UITreeView* m_ownerTreeView;
 	Ref<UIToggleButton> m_expanderButton;
     Ref<UIElement> m_headerContent;
     List<Ref<UITreeItem>> m_items;
     Ref<UILayoutPanel2> m_itemsLayout;
 
-    friend class UITreeControl;
-};
-
-// UITreeView : View-Model パターンで実装するときに使う
-// UITreeControl : 直接 Item を操作するのに使う
-class UITreeControl
-	: public UIItemContainerElement
-{
-public:
-    // TODO: ベースクラスの addElement, addChild は TreeViewItem のヘッダの content とする。
-    // 直接 UITreeItem を使いたい場合はこのメソッドを使う必要がある。
-    void addItem(UITreeItem* item);
-
-LN_CONSTRUCT_ACCESS:
-	UITreeControl();
-	void init();
-
-private:
-	Ref<UICollectionModel> m_model;
+    friend class UITreeView;
 };
 
 class UITreeView
@@ -138,15 +120,23 @@ class UITreeView
 public:
     void setModel(UICollectionModel* model);
 
+    bool isVirtualize() const { return m_model != nullptr; }
+
+protected:
+    virtual Size arrangeOverride(const Size& finalSize) override;
 
 LN_CONSTRUCT_ACCESS:
     UITreeView();
     void init();
 
 private:
+    void addItemInternal(UITreeItem* item);
+    void makeChildItems(UITreeItem* item);
     //UITreeItem* makeTreeViewItem();
 
     Ref<UICollectionModel> m_model;
+
+    friend class UITreeItem;
 };
 
 } // namespace ln
