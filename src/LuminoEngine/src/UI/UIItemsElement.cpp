@@ -6,6 +6,8 @@
 #include <LuminoEngine/UI/UITextBlock.hpp>
 #include <LuminoEngine/UI/UIItemsElement.hpp>
 
+#include <LuminoEngine/Audio/GameAudio.hpp>
+
 namespace ln {
 
 //==============================================================================
@@ -18,12 +20,6 @@ UICollectionItem::UICollectionItem()
 void UICollectionItem::init()
 {
 	UIControl::init();
-}
-
-void UICollectionItem::onRoutedEvent(UIEventArgs* e)
-{
-
-	UIControl::onRoutedEvent(e);
 }
 
 //==============================================================================
@@ -206,6 +202,15 @@ Size UITreeItem::arrangeOverride(const Size& finalSize)
     m_itemsLayout->arrangeLayout(&list, area);
 
     return finalSize;
+}
+
+void UITreeItem::onRoutedEvent(UIEventArgs* e)
+{
+    if (e->type() == UIEvents::MouseDownEvent) {
+        if (static_cast<UIMouseEventArgs*>(e)->getClickCount() == 2) {
+        }
+    }
+    UIItemElement::onRoutedEvent(e);
 }
 
 void UITreeItem::expander_Checked(UIEventArgs* e)
