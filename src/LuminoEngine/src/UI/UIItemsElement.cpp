@@ -33,7 +33,7 @@ UIItemsControl::UIItemsControl()
 
 void UIItemsControl::init()
 {
-	UIControl::init();
+    UIScrollViewer::init();
 }
 
 void UIItemsControl::addItem(UICollectionItem* item)

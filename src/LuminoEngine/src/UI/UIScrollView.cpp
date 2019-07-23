@@ -600,11 +600,13 @@ void UIScrollBar::onRoutedEvent(UIEventArgs* e)
 
         auto args = UIScrollEventArgs::create(this, UIEvents::ScrollEvent, Math::clamp(m_track->getValue(), getMinimum(), getMaximum()), ScrollEventType::ThumbTrack);
         raiseEvent(args);
+        m_track->invalidate(detail::UIElementDirtyFlags::Layout, true);
     }
     else if (e->type() == UIEvents::ScrollDragCompletedEvent)
     {
         auto args = UIScrollEventArgs::create(this, UIEvents::ScrollEvent, Math::clamp(m_track->getValue(), getMinimum(), getMaximum()), ScrollEventType::EndScroll);
         raiseEvent(args);
+        m_track->invalidate(detail::UIElementDirtyFlags::Layout, true);
     }
     UIElement::onRoutedEvent(e);
 }

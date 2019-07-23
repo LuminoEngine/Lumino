@@ -262,7 +262,7 @@ private:
     @brief
 */
 class UIScrollViewer
-    : public UIContainerElement
+    : public UIControl
 {
 public:
 

@@ -44,7 +44,7 @@ void EditorApplication::run()
     {
         ln::detail::EngineDomain::engineManager()->platformManager()->windowManager()->processSystemEventQueue(ln::detail::EventProcessingMode::Polling);
         ln::detail::EngineDomain::engineManager()->uiManager()->dispatchPostedEvents();
-        ln::Thread::sleep(32);
+        ln::Thread::sleep(1);
     }
 }
 

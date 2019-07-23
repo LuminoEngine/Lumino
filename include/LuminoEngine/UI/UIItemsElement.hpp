@@ -23,7 +23,7 @@ private:
 };
 
 class UIItemsControl
-	: public UIControl
+	: public UIScrollViewer
 {
 protected:
 	//virtual UIControl* generateItem(UIElement* content) = 0;
