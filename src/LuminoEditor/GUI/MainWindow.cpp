@@ -110,5 +110,5 @@ void MainWindow::onLoaded()
 
 
 
-	sidebar->addItem(u"A");
+	//sidebar->addItem(u"A");
 }

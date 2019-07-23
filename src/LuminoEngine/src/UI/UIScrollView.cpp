@@ -77,6 +77,7 @@ void UIThumb::onRoutedEvent(UIEventArgs* e)
 	}
 	else if (e->type() == UIEvents::MouseMoveEvent)
 	{
+        printf("MouseMoveEvent\n");
 		if (m_isDragging)
 		{
 			auto mouseEvent = static_cast<UIMouseEventArgs*>(e);

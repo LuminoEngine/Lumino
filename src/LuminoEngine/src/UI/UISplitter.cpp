@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/UI/UIScrollView.hpp> // for Thumb
 #include <LuminoEngine/UI/UISplitter.hpp>
 
 namespace ln {
@@ -24,6 +25,20 @@ void UISplitter::addCellDefinition(UILayoutLengthType type, float size, float mi
     data.minSize = minSize;
     data.maxSize = maxSize;
     m_cellDefinitions.add(data);
+}
+
+void UISplitter::onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)
+{
+    int thumbCount = logicalChildren().size() - 1;
+    int diff = thumbCount - m_thumbs.size();
+    for (int i = 0; i < diff; i++) {
+        auto thumb = makeObject<UIThumb>();
+        thumb->setBackgroundColor(Color::Blue);
+        addVisualChild(thumb);
+        m_thumbs.add(thumb);
+    }
+
+    return UIControl::onUpdateStyle(styleContext, finalStyle);
 }
 
 Size UISplitter::measureOverride(const Size& constraint)
@@ -55,6 +70,12 @@ Size UISplitter::measureOverride(const Size& constraint)
         else
             childrenSize.height += childDesiredSize.height;
     }
+
+    // bar area
+    if (m_orientation == Orientation::Horizontal)
+        childrenSize.width += m_thumbs.size() * ThumbWidth;
+    else
+        childrenSize.height += m_thumbs.size() * ThumbWidth;
 
     // 子要素のレイアウトは UIControl に任せず自分でやるので不要。そのベースを呼ぶ。
     Size selfSize = UIElement::measureOverride(constraint);
@@ -89,8 +110,10 @@ Size UISplitter::arrangeOverride(const Size& finalSize)
 
     // "*" 指定である Row/Column の最終サイズを確定させ、
     // 全セルのオフセット (位置) も確定させる
-    Point totalOffset;
-    for (auto& cell : m_cellDefinitions) {
+    float totalOffset = 0.0f;
+    //for (auto& cell : m_cellDefinitions) {
+    for (int i = 0; i < m_cellDefinitions.size(); i++) {
+        auto& cell = m_cellDefinitions[i];
         if (cell.type == UILayoutLengthType::Ratio) {
             cell.actualSize = ratioUnit * cell.getRatioSize();
         }
@@ -98,8 +121,13 @@ Size UISplitter::arrangeOverride(const Size& finalSize)
         cell.adjustActualSize();
 
         // 座標確定
-        cell.actualOffset = totalOffset.y;
-        totalOffset.y += cell.actualSize;
+        cell.actualOffset = totalOffset;
+        totalOffset += cell.actualSize;
+
+        // bar size
+        if (i > 0) {
+            totalOffset += ThumbWidth;
+        }
     }
 
     // 子要素の最終位置・サイズを確定させる
@@ -112,6 +140,13 @@ Size UISplitter::arrangeOverride(const Size& finalSize)
             auto& cell = m_cellDefinitions[cellIndex];
             Rect childRect(cell.actualOffset, 0, cell.actualSize, finalSize.height);
             child->arrangeLayout(childRect);
+
+            // bar
+            if (iChild < m_thumbs.size()) {
+                childRect.x = childRect.getRight();
+                childRect.width = ThumbWidth;
+                m_thumbs[iChild]->arrangeLayout(childRect);
+            }
         }
     }
     else {
@@ -122,12 +157,36 @@ Size UISplitter::arrangeOverride(const Size& finalSize)
             auto& cell = m_cellDefinitions[cellIndex];
             Rect childRect(0, cell.actualOffset, finalSize.width, cell.actualSize);
             child->arrangeLayout(childRect);
+
+            // bar
+            if (iChild < m_thumbs.size()) {
+                childRect.y = childRect.getBottom();
+                childRect.height = ThumbWidth;
+                m_thumbs[iChild]->arrangeLayout(childRect);
+            }
         }
     }
 
     // 子要素のレイアウトは UIControl に任せず自分でやるので不要。そのベースを呼ぶ。
     Size selfSize = UIElement::arrangeOverride(finalSize);
     return selfSize;
+}
+
+void UISplitter::onRoutedEvent(UIEventArgs* e)
+{
+    if (e->type() == UIEvents::ScrollDragStartedEvent)
+    {
+        e->handled = true;
+    }
+    else if (e->type() == UIEvents::ScrollDragDeltaEvent)
+    {
+        e->handled = true;
+    }
+    else if (e->type() == UIEvents::ScrollDragCompletedEvent)
+    {
+        e->handled = true;
+    }
+    UIElement::onRoutedEvent(e);
 }
 
 } // namespace ln

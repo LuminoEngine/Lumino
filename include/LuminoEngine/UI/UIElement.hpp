@@ -332,6 +332,8 @@ public:	// TODO: internal protected
 	virtual void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel);
     virtual void onLoaded();    // インスタンス作成後、UIツリーに追加されていない場合は呼ばれない
     virtual void onUpdateFrame(float elapsedSeconds);
+
+    // この中で addVisualChild することができる。関数を抜けた後に、それらのスタイルは更新される。
 	virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle);
 
     /**

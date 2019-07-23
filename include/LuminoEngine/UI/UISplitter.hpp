@@ -2,6 +2,7 @@
 #include "UIControl.hpp"
 
 namespace ln {
+class UIThumb;
 
 /** グリッドレイアウトのセルサイズを指定する値の種類です。*/
 enum class UILayoutLengthType
@@ -56,18 +57,23 @@ class UISplitter
 	: public UIControl
 {
 public:
+    static const int ThumbWidth = 5;
+
     UISplitter();
 	void init();
 
     void addCellDefinition(UILayoutLengthType type = UILayoutLengthType::Ratio, float size = 1.0f, float minSize = 0.0f, float maxSize = FLT_MAX);
 
 protected:
+    virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
     virtual Size measureOverride(const Size& constraint) override;
     virtual Size arrangeOverride(const Size& finalSize) override;
+    virtual void onRoutedEvent(UIEventArgs* e) override;
 
 private:
     Orientation m_orientation = Orientation::Horizontal;
     List<detail::GridDefinitionData> m_cellDefinitions;
+    List<Ref<UIThumb>> m_thumbs;
 };
 
 } // namespace ln
