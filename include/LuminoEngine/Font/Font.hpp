@@ -64,6 +64,7 @@ public:
 
     /** 指定した文字列を描画する際のピクセルサイズを計算します。*/
     Size measureRenderSize(const StringRef& text, float dpiScale = 1.0f);
+	Size measureRenderSize(uint32_t codePoint, float dpiScale = 1.0f);
 
 LN_CONSTRUCT_ACCESS:
     Font();

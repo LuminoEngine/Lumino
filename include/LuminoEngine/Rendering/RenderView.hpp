@@ -104,6 +104,7 @@ public:
 
     float		nearClip = 0;
     float		farClip = 0;
+	float		dpiScale = 1.0;
 };
 
 } // namespace ln

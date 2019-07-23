@@ -48,6 +48,30 @@ public:
 	float m_dpiScaleFactor;
 };
 
+
+
+class UIViewModel
+	: public Object
+{
+public:
+	virtual void notify(const StringRef& propertyName)
+	{
+		// TODO:
+	}
+
+	void subscribe(UIElement* observer)	// TODO: connection 返すようにした方がいいかも？
+	{
+		m_observers.add(observer);
+	}
+
+
+private:
+	List<WeakRefPtr<UIElement>> m_observers;
+};
+
+
+
+
 class UIElement
 	: public UILayoutElement
 {
@@ -262,6 +286,7 @@ public:
     UIContext* getContext() const;
 
     void addClass(const StringRef& className);
+	void setViewModel(UIViewModel* value);
 
     UIElement();
     virtual ~UIElement();
@@ -285,6 +310,7 @@ public:	// TODO: internal protected
 
     virtual const String& elementName() const { return String::Empty; }
 	
+	virtual void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel);
     virtual void onLoaded();    // インスタンス作成後、UIツリーに追加されていない場合は呼ばれない
     virtual void onUpdateFrame(float elapsedSeconds);
 	virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle);
@@ -373,6 +399,7 @@ public: // TODO: internal
     UIContainerElement* m_logicalParent;
 	Ref<List<Ref<UIElement>>> m_visualChildren;
     Ref<List<String>> m_classList;
+	Ref<UIViewModel> m_viewModel;
 
     Ref<UIVisualStateManager> m_visualStateManager;
     Ref<UIStyle> m_localStyle;

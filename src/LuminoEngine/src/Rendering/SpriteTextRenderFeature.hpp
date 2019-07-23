@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include "../Font/FontGlyphCache.hpp"
 #include "../Font/TextLayoutEngine.hpp"
@@ -83,6 +84,7 @@ public:
 	void init(RenderingManager* manager);
 
 	void drawText(GraphicsContext* context, const FormattedText* text, const Matrix& transform);
+	void drawChar(GraphicsContext* context, uint32_t codePoint, const Color& color, const Matrix& transform);
 	void drawFlexGlyphRun(GraphicsContext* context, const FlexGlyphRun* glyphRun, const Matrix& transform);
 
 protected:
@@ -92,6 +94,7 @@ protected:
     virtual bool drawElementTransformNegate() const override { return true; }
 
 private:
+	void addLayoutedGlyphItem(uint32_t codePoint, const Vector2& pos, const Color& color, const Matrix& transform);
 	void flushInternal(GraphicsContext* context, FontGlyphTextureCache* cache);
 
 	Ref<InternalSpriteTextRender> m_internal;
@@ -103,11 +106,27 @@ private:
 	std::vector<InternalSpriteTextRender::GlyphData> m_glyphLayoutDataList;
 };
 
-class DrawTextElement : public RenderDrawElement
+class AbstractSpriteTextDrawElement : public RenderDrawElement
+{
+public:
+	virtual FontCore* getFontCore(float dpiScale) = 0;
+};
+
+class DrawTextElement : public AbstractSpriteTextDrawElement
 {
 public:
     Ref<detail::FormattedText> formattedText;
 	detail::FlexGlyphRun* glyphRun = nullptr;	// TODO: RefObj
+
+	virtual FontCore* getFontCore(float dpiScale) override
+	{
+		if (glyphRun) {
+			return glyphRun->font;
+		}
+		else {
+			return FontHelper::resolveFontCore(formattedText->font, dpiScale);
+		}
+	}
 
     virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
     {
@@ -119,6 +138,25 @@ public:
 		}
     }
 };
+
+class DrawCharElement : public AbstractSpriteTextDrawElement
+{
+public:
+	uint32_t codePoint;
+	Ref<Font> font;
+	Color color;
+
+	virtual FontCore* getFontCore(float dpiScale) override
+	{
+		return FontHelper::resolveFontCore(font, dpiScale);
+	}
+
+	virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+	{
+		static_cast<detail::SpriteTextRenderFeature*>(renderFeatures)->drawChar(context, codePoint, color, combinedWorldMatrix());
+	}
+};
+
 
 //class DrawFlexGlyphRunElement : public RenderDrawElement
 //{

@@ -140,6 +140,14 @@ Size Font::measureRenderSize(const StringRef& text, float dpiScale)
     return measureLayout.areaSize;
 }
 
+Size Font::measureRenderSize(uint32_t codePoint, float dpiScale)
+{
+	auto core = resolveFontCore(dpiScale);
+	detail::FontGlyphMetrics metrics;
+	core->getGlyphMetrics(codePoint, &metrics);
+	return metrics.size;
+}
+
 detail::FontCore* Font::resolveFontCore(float dpiScale)
 {
     if (!m_rawFont) {

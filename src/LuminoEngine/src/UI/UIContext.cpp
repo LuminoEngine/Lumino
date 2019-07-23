@@ -176,17 +176,26 @@ void UIContext::setupDefaultStyle()
             if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander")) {
                 s->horizontalAlignment = HAlignment::Left;
                 s->verticalAlignment = VAlignment::Center;
-                s->backgroundColor = UIColors::get(UIColorHues::Red);
+                s->backgroundColor = UIColors::get(UIColorHues::Grey);
             }
             if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:MouseOver")) {
-                s->backgroundColor = UIColors::get(UIColorHues::Green);
             }
             if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:Pressed")) {
-                s->backgroundColor = UIColors::get(UIColorHues::Cyan);
             }
             if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:Checked")) {
                 s->backgroundColor = UIColors::get(UIColorHues::Blue);
+
+				auto icon = makeObject<UIStyleDecorator>();
+				icon->setIconName(u"angle-down", 10);
+				s->decorators.add(icon);
             }
+			if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:Unchecked")) {
+				s->backgroundColor = UIColors::get(UIColorHues::Red);
+
+				auto icon = makeObject<UIStyleDecorator>();
+				icon->setIconName(u"angle-right", 10);
+				s->decorators.add(icon);
+			}
         }
     }
 

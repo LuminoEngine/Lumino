@@ -535,12 +535,27 @@ Result FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
 
 	m_loadFlags = FT_LOAD_DEFAULT;
 
-	// lookupGlyphBitmap の結果を書き込むためのビットマップを作っておく。
-	// Antialias などが有効になると bbox のサイズでは収まらなくなることがあるため、サイズを余分に確保しておく。
-	int width = Math::nextPow2(std::ceil(FLValueToFloatPx(m_face->bbox.xMax) - FLValueToFloatPx(m_face->bbox.xMin)) + 2);
-	int height = Math::nextPow2(std::ceil(FLValueToFloatPx(m_face->bbox.yMax) - FLValueToFloatPx(m_face->bbox.yMin)) + 2);
-	m_internalCacheBitmap = makeObject<Bitmap2D>(width, height, PixelFormat::A8);
 
+	// lookupGlyphBitmap の結果を書き込むためのビットマップを作っておく
+	{
+		//float em_size = 1.0 * m_face->units_per_EM;
+		//float x_scale = m_face->size->metrics.x_ppem / em_size;
+		//float y_scale = m_face->size->metrics.y_ppem / em_size;
+		//float xMin = std::floor(x_scale * m_face->bbox.xMin);
+		//float yMin = std::floor(y_scale * m_face->bbox.yMin);
+		//float xMax = std::ceil(x_scale * m_face->bbox.xMax);
+		//float yMax = std::ceil(y_scale * m_face->bbox.yMax);
+
+		//
+		//int width = std::ceil(xMax - xMin) + 2;
+		//int height = std::ceil(yMax - yMin) + 2;
+
+		FontGlobalMetrics metrix;
+		getGlobalMetrics(&metrix);
+
+		m_internalCacheBitmap = makeObject<Bitmap2D>(metrix.bitmapMaxWidth, metrix.bitmapMaxHeight, PixelFormat::A8);
+	}
+	
 	return false;
 }
 
@@ -558,14 +573,25 @@ void FreeTypeFont::getGlobalMetrics(FontGlobalMetrics* outMetrics)
 {
 	if (LN_REQUIRE(outMetrics)) return;
 	if (LN_REQUIRE(m_face)) return;
-	outMetrics->ascender = FLValueToFloatPx(m_face->size->metrics.ascender);
-	outMetrics->descender = FLValueToFloatPx(m_face->size->metrics.descender);
+
+	float em_size = 1.0 * m_face->units_per_EM;
+	float x_scale = m_face->size->metrics.x_ppem / em_size;
+	float y_scale = m_face->size->metrics.y_ppem / em_size;
+	float xMin = std::floor(x_scale * m_face->bbox.xMin);
+	float yMin = std::floor(y_scale * m_face->bbox.yMin);
+	float xMax = std::ceil(x_scale * m_face->bbox.xMax);
+	float yMax = std::ceil(y_scale * m_face->bbox.yMax);
+
+	outMetrics->ascender = y_scale * (m_face->size->metrics.ascender);
+	outMetrics->descender = y_scale * (m_face->size->metrics.descender);
 	outMetrics->lineSpace = outMetrics->ascender - outMetrics->descender;
 	outMetrics->outlineSupported = FT_IS_SCALABLE(m_face);
-	outMetrics->boundingMinX = FLValueToFloatPx(m_face->bbox.xMin);
-	outMetrics->boundingMaxX = FLValueToFloatPx(m_face->bbox.xMax);
-	outMetrics->boundingMinY = FLValueToFloatPx(m_face->bbox.yMin);
-	outMetrics->boundingMaxY = FLValueToFloatPx(m_face->bbox.yMax);
+	outMetrics->boundingMinX = x_scale * (m_face->bbox.xMin);
+	outMetrics->boundingMaxX = x_scale * (m_face->bbox.xMax);
+	outMetrics->boundingMinY = y_scale * (m_face->bbox.yMin);
+	outMetrics->boundingMaxY = y_scale * (m_face->bbox.yMax);
+	outMetrics->bitmapMaxWidth = std::ceil(xMax - xMin) + 2;	// Antialias などが有効になると bbox のサイズでは収まらなくなることがあるため、サイズを余分に確保しておく
+	outMetrics->bitmapMaxHeight = std::ceil(yMax - yMin) + 2;
 	// FIXME: Bitmap font の場合の bbox は FT_Bitmap_Size を使うべきらしい。
 	// (FT_FaceRec_ のコメント)
 }
@@ -688,7 +714,13 @@ void FreeTypeFont::FTBitmapToBitmap2D(FT_Bitmap* ftBitmap, Bitmap2D* bitmap) con
 {
 	int width = ftBitmap->width;
 	int height = ftBitmap->rows;
-	if (LN_REQUIRE(bitmap->width() >= width && bitmap->height() >= height && bitmap->format() == PixelFormat::A8)) return;
+	if (LN_REQUIRE(bitmap->format() == PixelFormat::A8)) return;
+	if (LN_REQUIRE(bitmap->width() >= width && bitmap->height() >= height)) return;
+	//if (LN_REQUIRE(bitmap->width() < width || bitmap->height() < height)) {
+	//	bitmap->resize(std::max(bitmap->width(), width), std::max(bitmap->height(), height));
+	//}
+
+	//if (LN_REQUIRE(bitmap->width() >= width && bitmap->height() >= height && bitmap->format() == PixelFormat::A8)) return;
 
 	//// サイズ
 	//bitmap->m_size.width = width;

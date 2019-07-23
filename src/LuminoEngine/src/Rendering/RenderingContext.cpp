@@ -7,6 +7,7 @@
 #include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
+#include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/Mesh/Mesh.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include "../Font/FontManager.hpp"
@@ -62,6 +63,11 @@ void RenderingContext::setViewportRect(const RectI & value)
 void RenderingContext::setScissorRect(const RectI & value)
 {
 	m_builder->setScissorRect(value);
+}
+
+void RenderingContext::setTransfrom(const Matrix& value)
+{
+	m_builder->setTransfrom(value);
 }
 
 void RenderingContext::setBlendMode(Optional<BlendMode> value)
@@ -462,6 +468,29 @@ void RenderingContext::drawText(const StringRef& text, const Color& color, Font*
     //ptr->setLocalBoundingSphere(sphere);
 }
 
+void RenderingContext::drawChar(uint32_t codePoint, const Color& color, Font* font)
+{
+	auto* element = m_builder->addNewDrawElement<detail::DrawCharElement>(
+		m_manager->spriteTextRenderFeature(),
+		m_builder->spriteTextRenderFeatureStageParameters());
+	element->codePoint = codePoint;
+	element->color = color;
+
+	if (font)
+		element->font = font;
+	else
+		element->font = m_manager->fontManager()->defaultFont();
+
+
+	//element->flexText = makeRef<detail::FlexText>();	// TODO: cache
+	//element->flexText->copyFrom(text);
+
+	// TODO
+	//detail::Sphere sphere;
+	//detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &sphere);
+	//ptr->setLocalBoundingSphere(sphere);
+}
+
 void RenderingContext::drawFlexGlyphRun(detail::FlexGlyphRun* glyphRun)
 {
 	auto* element = m_builder->addNewDrawElement<detail::DrawTextElement>(
@@ -500,6 +529,20 @@ void RenderingContext::addPointLight(const Color& color, float intensity, const 
 void RenderingContext::addSpotLight(const Color& color, float intensity, const Vector3& position, const Vector3& direction, float range, float attenuation, float spotAngle, float spotPenumbra)
 {
 	m_builder->targetList()->addDynamicLightInfo(detail::DynamicLightInfo::makeSpotLightInfo(color, intensity, position, direction, range, attenuation, spotAngle, spotPenumbra));
+}
+
+Size RenderingContext::measureTextSize(Font* font, const StringRef& text) const
+{
+	if (LN_REQUIRE(font)) return Size::Zero;
+	if (text.isEmpty()) return Size::Zero;
+	return font->measureRenderSize(text, viewPoint()->dpiScale);
+}
+
+Size RenderingContext::measureTextSize(Font* font, uint32_t codePoint) const
+{
+	if (LN_REQUIRE(font)) return Size::Zero;
+	if (codePoint == 0) return Size::Zero;
+	return font->measureRenderSize(codePoint, viewPoint()->dpiScale);
 }
 
 RenderViewPoint* RenderingContext::viewPoint() const

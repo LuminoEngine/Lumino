@@ -5,7 +5,6 @@
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/Bitmap.hpp>
-#include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include "../Font/FontCore.hpp"
 #include "../Graphics/GraphicsDeviceContext.hpp"
@@ -177,6 +176,11 @@ void SpriteTextRenderFeature::drawText(GraphicsContext* context, const Formatted
 	m_drawingFormattedText = nullptr;
 }
 
+void SpriteTextRenderFeature::drawChar(GraphicsContext* context, uint32_t codePoint, const Color& color, const Matrix& transform)
+{
+	addLayoutedGlyphItem(codePoint, Vector2::Zero, color, transform);
+}
+
 void SpriteTextRenderFeature::drawFlexGlyphRun(GraphicsContext* context, const FlexGlyphRun* glyphRun, const Matrix& transform)
 {
 	for (int i = 0; i < glyphRun->glyphCount; i++) {
@@ -184,21 +188,7 @@ void SpriteTextRenderFeature::drawFlexGlyphRun(GraphicsContext* context, const F
 		Color color = glyphRun->color;
 		color.a *= glyph.opacity;
 		if (glyph.timeOffset <= glyphRun->owner->time() && color.a > 0.0f) {
-
-			CacheGlyphInfo info;
-			bool flush;
-			glyphRun->font->getFontGlyphTextureCache()->lookupGlyphInfo(glyph.codePoint, &info, &flush);
-			if (flush) {
-				flushInternal(m_drawingGraphicsContext, m_drawingFont->getFontGlyphTextureCache());
-			}
-
-			InternalSpriteTextRender::GlyphData data;
-			data.transform = m_drawingTransform;
-			data.position = glyph.pos.xy();
-			data.color = color;
-			data.srcRect = info.srcRect;
-			data.outlineOffset = info.outlineOffset;
-			m_glyphLayoutDataList.push_back(data);
+			addLayoutedGlyphItem(glyph.codePoint, glyph.pos.xy(), color, transform);
 		}
 	}
 }
@@ -210,14 +200,8 @@ void SpriteTextRenderFeature::flush(GraphicsContext* context)
 
 void SpriteTextRenderFeature::updateRenderParameters(detail::RenderDrawElement* element, ShaderTechnique* tech, const detail::CameraInfo& cameraInfo, const detail::ElementInfo& elementInfo, const detail::SubsetInfo& subsetInfo)
 {
-    auto* e = static_cast<DrawTextElement*>(element);
-	FontCore* fontCore = nullptr;
-	if (e->glyphRun) {
-		fontCore = e->glyphRun->font;
-	}
-	else {
-		fontCore = FontHelper::resolveFontCore(e->formattedText->font, cameraInfo.dpiScale);
-	}
+    auto* e = static_cast<AbstractSpriteTextDrawElement*>(element);
+	FontCore* fontCore = e->getFontCore(cameraInfo.dpiScale);
 
 	// validation. 一連の draw ~ flush までは同じフォントが使い続けられなければならない
 	if (m_drawingFont) {
@@ -237,20 +221,45 @@ void SpriteTextRenderFeature::updateRenderParameters(detail::RenderDrawElement* 
 
 void SpriteTextRenderFeature::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size)
 {
-	// 必要なグリフを探す。lookupGlyphInfo() の中で、テクスチャにグリフビットマップが blt される。
+	//// 必要なグリフを探す。lookupGlyphInfo() の中で、テクスチャにグリフビットマップが blt される。
+	//CacheGlyphInfo info;
+	//bool flush;
+	//m_drawingFont->getFontGlyphTextureCache()->lookupGlyphInfo(ch, &info, &flush);
+	//if (flush) {
+	//	flushInternal(m_drawingGraphicsContext, m_drawingFont->getFontGlyphTextureCache());
+	//}
+
+	//// TODO: Outline
+
+	//InternalSpriteTextRender::GlyphData data;
+ //   data.transform = m_drawingTransform;
+	//data.position = pos;
+	//data.color = m_drawingFormattedText->color;
+	//data.srcRect = info.srcRect;
+	//data.outlineOffset = info.outlineOffset;
+	//m_glyphLayoutDataList.push_back(data);
+
+
+	addLayoutedGlyphItem(ch, pos, m_drawingFormattedText->color, m_drawingTransform);
+}
+
+void SpriteTextRenderFeature::addLayoutedGlyphItem(uint32_t codePoint, const Vector2& pos, const Color& color, const Matrix& transform)
+{
+	assert(m_drawingFont);
+
 	CacheGlyphInfo info;
 	bool flush;
-	m_drawingFont->getFontGlyphTextureCache()->lookupGlyphInfo(ch, &info, &flush);
+	m_drawingFont->getFontGlyphTextureCache()->lookupGlyphInfo(codePoint, &info, &flush);
 	if (flush) {
 		flushInternal(m_drawingGraphicsContext, m_drawingFont->getFontGlyphTextureCache());
 	}
-
 	// TODO: Outline
 
+
 	InternalSpriteTextRender::GlyphData data;
-    data.transform = m_drawingTransform;
+	data.transform = transform;
 	data.position = pos;
-	data.color = m_drawingFormattedText->color;
+	data.color = color;
 	data.srcRect = info.srcRect;
 	data.outlineOffset = info.outlineOffset;
 	m_glyphLayoutDataList.push_back(data);

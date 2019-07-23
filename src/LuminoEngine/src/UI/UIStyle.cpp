@@ -77,8 +77,49 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
+#include "../Font/FontManager.hpp"
 
 namespace ln {
+
+//==============================================================================
+// UIStyleDecorator
+
+UIStyleDecorator::UIStyleDecorator()
+{
+}
+
+void UIStyleDecorator::init()
+{
+	Object::init();
+}
+
+void UIStyleDecorator::setIconName(const StringRef& value, int size)
+{
+	m_font = detail::EngineDomain::fontManager()->glyphIconFontManager()->getFontAwesomeFont(u"Reguler", size);
+	m_codePoint = detail::EngineDomain::fontManager()->glyphIconFontManager()->getFontAwesomeCodePoint(value);
+}
+
+void UIStyleDecorator::render(UIRenderingContext* context, const Size& slotRect)
+{
+	if (m_font && m_codePoint > 0) {
+		Size areaSize;
+		areaSize.width = slotRect.width - (m_margin.left + m_margin.right);
+		areaSize.height = slotRect.height - (m_margin.top + m_margin.bottom);
+
+		Size desiredSize = context->measureTextSize(m_font, m_codePoint);
+		//desiredSize.width = Math::isNaN(m_width) ? 0.0f : m_width;
+		//desiredSize.height = Math::isNaN(m_height) ? 0.0f : m_height;
+
+		Rect localRect;
+		detail::LayoutHelper::adjustHorizontalAlignment(areaSize, desiredSize, m_width, m_hAlignment, &localRect);
+		detail::LayoutHelper::adjustVerticalAlignment(areaSize, desiredSize, m_height, m_vAlignment, &localRect);
+
+		Matrix transform = Matrix::makeTranslation(localRect.x, localRect.y, 0);
+
+		context->setTransfrom(transform);
+		context->drawChar(m_codePoint, m_color, m_font);
+	}
+}
 
 //==============================================================================
 // UIStyle
@@ -213,6 +254,9 @@ void UIStyle::setupDefault()
 	colorScale = DefaultColorScale;
 	blendColor = DefaultBlendColor;
 	tone = DefaultTone;
+
+	// decorators
+	decorators.clear();
 }
 
 void UIStyle::reset()
@@ -274,6 +318,9 @@ void UIStyle::reset()
 	colorScale.reset();
 	blendColor.reset();
 	tone.reset();
+
+	// decorators
+	decorators.clear();
 }
 
 void UIStyle::mergeFrom(const UIStyle* other)
@@ -337,6 +384,11 @@ void UIStyle::mergeFrom(const UIStyle* other)
     if (other->colorScale.hasValue()) colorScale = other->colorScale.get();
     if (other->blendColor.hasValue()) blendColor = other->blendColor.get();
     if (other->tone.hasValue()) tone = other->tone.get();
+
+	// decorators
+	for (auto& d : other->decorators) {
+		decorators.add(d);
+	}
 }
 
 void UIStyle::copyFrom(const UIStyle* other)
@@ -400,6 +452,11 @@ void UIStyle::copyFrom(const UIStyle* other)
     colorScale = other->colorScale;
     blendColor = other->blendColor;
     tone = other->tone;
+
+	// decorators
+	for (auto& d : other->decorators) {
+		decorators.add(d);
+	}
 }
 
 //==============================================================================
@@ -855,6 +912,11 @@ void UIStyleInstance::mergeFrom(const UIStyle* other)
     if (other->colorScale.hasValue()) colorScale = other->colorScale.get();
     if (other->blendColor.hasValue()) blendColor = other->blendColor.get();
     if (other->tone.hasValue()) tone = other->tone.get();
+
+	// decorators
+	for (auto& d : other->decorators) {
+		decorators.add(d);
+	}
 }
 
 void UIStyleInstance::copyFrom(const UIStyleInstance* other)
@@ -918,6 +980,11 @@ void UIStyleInstance::copyFrom(const UIStyleInstance* other)
     colorScale = other->colorScale;
     blendColor = other->blendColor;
     tone = other->tone;
+
+	// decorators
+	for (auto& d : other->decorators) {
+		decorators.add(d);
+	}
 }
 
 void UIStyleInstance::makeRenderObjects()
@@ -1059,6 +1126,15 @@ void UIStyleInstance::updateStyleDataHelper(UIStyle* localStyle, const detail::U
 		outStyleData->colorScale = localStyle->colorScale.getOrDefault(combinedStyle->colorScale.getOrDefault(UIStyle::DefaultColorScale));
 		outStyleData->blendColor = localStyle->blendColor.getOrDefault(combinedStyle->blendColor.getOrDefault(UIStyle::DefaultBlendColor));
 		outStyleData->tone = localStyle->tone.getOrDefault(combinedStyle->tone.getOrDefault(UIStyle::DefaultTone));
+	}
+
+	// decorators
+	outStyleData->decorators.clear();
+	for (auto& d : localStyle->decorators) {
+		outStyleData->decorators.add(d);
+	}
+	for (auto& d : combinedStyle->decorators) {
+		outStyleData->decorators.add(d);
 	}
 }
 

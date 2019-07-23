@@ -194,6 +194,7 @@ public:
 	ColorI getPixel32(int x, int y) const;
 	void setPixel32(int x, int y, const ColorI& color);
     void clear(const ColorI& color);
+	void resize(int width, int height);
 
 	/** バッファの先頭へのポインタを取得します。 */
 	byte_t* data() LN_NOEXCEPT { return m_buffer->data(); }

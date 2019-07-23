@@ -8,25 +8,33 @@ namespace ln {
 // UICollectionItemModel
 
 UICollectionItemModel::UICollectionItemModel()
-	: m_row(0)
+	: m_owner(nullptr)
+	, m_row(0)
 	, m_column(0)
 	, m_parent(nullptr)
 	, m_data(nullptr)
 {
 }
 
-void UICollectionItemModel::init()
+void UICollectionItemModel::init(UICollectionModel* owner)
 {
 	Object::init();
+	m_owner = owner;
 }
 
-void UICollectionItemModel::init(int row, int column, UICollectionItemModel* parent, Variant* data)
+void UICollectionItemModel::init(UICollectionModel* owner, int row, int column, UICollectionItemModel* parent, Variant* data)
 {
 	Object::init();
+	m_owner = owner;
 	m_row = row;
 	m_column = column;
 	m_parent = parent;
 	m_data = data;
+}
+
+String UICollectionItemModel::getData(const String& role)
+{
+	return m_owner->getData(this, role);
 }
 
 //==============================================================================
@@ -57,7 +65,7 @@ void UIFileSystemCollectionModel::init()
 Ref<UICollectionItemModel> UIFileSystemCollectionModel::setRootPath(const Path& path)
 {
 	m_rootNode = makeNode(path);
-    m_rootModel = makeObject<UICollectionItemModel>(0, 0, nullptr, makeVariant(m_rootNode));
+    m_rootModel = makeObject<UICollectionItemModel>(this, 0, 0, nullptr, makeVariant(m_rootNode));
     return m_rootModel;
 }
 
@@ -70,7 +78,7 @@ int UIFileSystemCollectionModel::getRowCount(UICollectionItemModel* index)
 Ref<UICollectionItemModel> UIFileSystemCollectionModel::getIndex(int row, int column, UICollectionItemModel* parent)
 {
 	auto parentNode = getNode(parent);
-	return makeObject<UICollectionItemModel>(row, column, parent, makeVariant(parentNode->children[row]));
+	return makeObject<UICollectionItemModel>(this, row, column, parent, makeVariant(parentNode->children[row]));
 }
 
 String UIFileSystemCollectionModel::getData(UICollectionItemModel* index, const String& role)

@@ -1,6 +1,7 @@
 ﻿
 #include <LuminoEngine/UI/UIItemsElement.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
+#include <LuminoEngine/UI/UIIcon.hpp>
 #include "MainWindow.hpp"
 
 class NavigationBar : public ln::UIItemsControl
@@ -18,7 +19,6 @@ private:
 
 void NavigationBar::addItem(const ln::String& text)
 {
-
 	auto textblock = ln::makeObject<ln::UITextBlock>();
 	textblock->setText(text);
     textblock->setTextColor(ln::Color::White);
@@ -35,6 +35,22 @@ void NavigationBar::addItem(const ln::String& text)
 	UIItemsControl::addItem(item);
 }
 
+
+
+class FileSystemTreeViewItem
+	: public ln::UITreeItem
+{
+public:
+
+	//void onViewModelChanged(ln::UIViewModel* newViewModel, ln::UIViewModel* oldViewModel)
+	//{
+	//	if (oldViewModel) {
+	//		LN_NOTIMPLEMENTED();
+	//	}
+
+	//	
+	//}
+};
 
 
 MainWindow::MainWindow()
@@ -58,13 +74,24 @@ void MainWindow::onLoaded()
 
 
     auto model = ln::makeObject<ln::UIFileSystemCollectionModel>();
-    model->setRootPath(u"D:/Proj/LN/Lumino");
+    model->setRootPath(u"C:/Proj");
 
     auto treeView = ln::makeObject<ln::UITreeView>();
-    treeView->setModel(model);
+    treeView->setViewModel(model);
     treeView->setWidth(200);
     treeView->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 2));
-    addElement(treeView);
+	addElement(treeView);
+
+	//auto d = ln::makeObject<ln::UIStyleDecorator>();
+	//d->setIconName(u"file", 20);
+	//treeView->m_localStyle->decorators.add(d);
+
+
+	//auto icon = ln::makeObject<ln::UIIcon>();
+	//icon->setIconName(u"file");
+	//addElement(icon);
+
+
 
 	sidebar->addItem(u"A");
 }

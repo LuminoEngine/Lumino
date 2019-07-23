@@ -145,6 +145,18 @@ void UITreeItem::onCollapsed()
 {
 }
 
+void UITreeItem::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel)
+{
+	if (oldViewModel) {
+		LN_NOTIMPLEMENTED();
+	}
+
+	m_model = dynamic_cast<UICollectionItemModel*>(newViewModel);
+	if (!m_model) {
+		LN_NOTIMPLEMENTED();
+	}
+}
+
 Size UITreeItem::measureOverride(const Size& constraint)
 {
     struct ElementList : public IUIElementList {
@@ -191,14 +203,16 @@ Size UITreeItem::arrangeOverride(const Size& finalSize)
     m_expanderButton->arrangeLayout(area); // TODO: actualsize 返すようにしていいかも
 
     // header
+	float headerContentHeight = 0;
     if (m_headerContent) {
         area.x += m_expanderButton->m_actualSize.width;
         area.width -= m_expanderButton->m_actualSize.width;
         m_headerContent->arrangeLayout(area);
+		headerContentHeight = m_headerContent->m_actualSize.height;
     }
 
     // children
-    area.y = std::max(m_expanderButton->m_actualSize.height, m_headerContent->m_actualSize.height);
+    area.y = std::max(m_expanderButton->m_actualSize.height, headerContentHeight);
     m_itemsLayout->arrangeLayout(&list, area);
 
     return finalSize;
@@ -245,29 +259,42 @@ void UITreeView::init()
     setLayoutPanel(layout);
 }
 
-void UITreeView::setModel(UICollectionModel* model)
+//void UITreeView::setModel(UICollectionModel* model)
+//{
+//    m_model = model;
+//    //int count = m_model->getRowCount(nullptr);
+//    //for (int i = 0; i < count; i++) {
+//    //    auto itemModel = m_model->getIndex(i, 0, nullptr);
+//    //    auto itemData = m_model->getData(itemModel, u"");
+//
+//    //    auto text = makeObject<UITextBlock>();
+//    //    text->setText(itemData);
+//
+//    //    auto item = makeObject<UITreeItem>();
+//    //    item->setContent(text);
+//    //    item->setData(makeVariant(itemModel));
+//
+//    //    //if (!parent) {
+//    //        addElement(item);
+//    //    //}
+//    //    //else {
+//    //   //     parent->addChild(item);
+//    //    //}
+//    //}
+//}
+
+void UITreeView::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel)
 {
-    m_model = model;
-    makeChildItems(nullptr);
-    //int count = m_model->getRowCount(nullptr);
-    //for (int i = 0; i < count; i++) {
-    //    auto itemModel = m_model->getIndex(i, 0, nullptr);
-    //    auto itemData = m_model->getData(itemModel, u"");
+	if (oldViewModel) {
+		LN_NOTIMPLEMENTED();
+	}
 
-    //    auto text = makeObject<UITextBlock>();
-    //    text->setText(itemData);
+	m_model = dynamic_cast<UICollectionModel*>(newViewModel);
+	if (!m_model) {
+		LN_NOTIMPLEMENTED();
+	}
 
-    //    auto item = makeObject<UITreeItem>();
-    //    item->setContent(text);
-    //    item->setData(makeVariant(itemModel));
-
-    //    //if (!parent) {
-    //        addElement(item);
-    //    //}
-    //    //else {
-    //   //     parent->addChild(item);
-    //    //}
-    //}
+	makeChildItems(nullptr);
 }
 
 Size UITreeView::arrangeOverride(const Size& finalSize)
@@ -288,7 +315,7 @@ void UITreeView::makeChildItems(UITreeItem* item)
 
     UICollectionItemModel* itemModel = nullptr; // null is root
     if (item) {
-        itemModel = item->data()->getObject<UICollectionItemModel>();
+		itemModel = item->m_model;
     }
 
     int count = m_model->getRowCount(itemModel);
@@ -296,12 +323,13 @@ void UITreeView::makeChildItems(UITreeItem* item)
         auto childModel = m_model->getIndex(i, 0, nullptr);
         auto itemData = m_model->getData(childModel, u"");
 
-        auto text = makeObject<UITextBlock>();
-        text->setText(itemData);
+        //auto text = makeObject<UITextBlock>();
+        //text->setText(itemData);
 
         auto child = makeObject<UITreeItem>();
-        child->setContent(text);
-        child->setData(makeVariant(childModel));
+        //child->setContent(text);
+		child->setViewModel(childModel);
+        //child->setData(makeVariant(childModel));
 
         if (!item) {
             addItemInternal(child);

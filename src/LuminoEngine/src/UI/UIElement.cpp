@@ -357,6 +357,15 @@ void UIElement::addClass(const StringRef& className)
     m_classList->add(className);
 }
 
+void UIElement::setViewModel(UIViewModel* value)
+{
+	if (m_viewModel != value) {
+		auto old = m_viewModel;
+		m_viewModel = value;
+		onViewModelChanged(m_viewModel, old);
+	}
+}
+
 void UIElement::setRenderPriority(int value)
 {
     m_renderPriority = value;
@@ -481,6 +490,10 @@ void UIElement::removeVisualChild(UIElement* element)
 
 	m_visualChildren->remove(element);
 	element->m_visualParent = nullptr;
+}
+
+void UIElement::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel)
+{
 }
 
 void UIElement::onLoaded()
@@ -647,6 +660,10 @@ void UIElement::render(UIRenderingContext* context)
 
         // TODO: setMaterial
         onRender(context);
+
+		for (auto& d : m_finalStyle->decorators) {
+			d->render(context, m_actualSize);
+		}
 
         context->popState();	// TODO: scoped
 

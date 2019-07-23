@@ -269,10 +269,8 @@ void Bitmap2D::init()
 
 void Bitmap2D::init(int width, int height, PixelFormat format)
 {
-	m_size.width = width;
-	m_size.height = height;
 	m_format = format;
-	m_buffer->resize(getBitmapByteSize(m_size.width, m_size.height, 1, m_format));
+	resize(width, height);
 }
 
 ColorI Bitmap2D::getPixel32(int x, int y) const
@@ -348,6 +346,13 @@ void Bitmap2D::clear(const ColorI& color)
 
         LN_NOTIMPLEMENTED();
     }
+}
+
+void Bitmap2D::resize(int width, int height)
+{
+	m_size.width = width;
+	m_size.height = height;
+	m_buffer->resize(getBitmapByteSize(m_size.width, m_size.height, 1, m_format));
 }
 
 void Bitmap2D::flipVerticalFlow()

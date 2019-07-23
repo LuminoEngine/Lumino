@@ -144,6 +144,36 @@ public:
 
 } // namespace detail
 
+
+class UIStyleDecorator
+	: public Object
+{
+public:	// TODO: internal
+	float m_width = std::numeric_limits<float>::quiet_NaN();
+	float m_height = std::numeric_limits<float>::quiet_NaN();
+	Thickness m_margin;
+	HAlignment m_hAlignment = HAlignment::Center;
+	VAlignment m_vAlignment = VAlignment::Center;
+
+	// TODO: image
+
+	Color m_color = Color(0.0f, 0.0f, 0.0f, 1.0f);
+	Ref<Font> m_font;	// decorator の font は継承関係を作らない。そのためプロパティを分ける必要はない
+	uint32_t m_codePoint = 0;
+
+
+	void setIconName(const StringRef& value, int size);
+
+	void render(UIRenderingContext* context, const Size& slotRect);
+
+LN_CONSTRUCT_ACCESS:
+	UIStyleDecorator();
+	void init();
+
+
+private:
+};
+
 class UIStyle
     : public Object
 {
@@ -294,6 +324,10 @@ public:
 	static const Color DefaultColorScale;
 	static const Color DefaultBlendColor;
 	static const ColorTone DefaultTone;
+
+	// decorators
+	List<Ref<UIStyleDecorator>> decorators;
+
 
     void setBorderColor(const Color& color)
     {
@@ -510,6 +544,8 @@ public:
 	ColorTone tone;
 
 
+	// decorators
+	List<Ref<UIStyleDecorator>> decorators;
 
     // commited cache
     Ref<Font> font;

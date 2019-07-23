@@ -56,6 +56,8 @@ public:
 
 	/** @} */
 
+	void setTransfrom(const Matrix& value);
+
 	//--------------------------------------------------------------------------
 	/** @name render status */
 	/** @{ */
@@ -137,6 +139,7 @@ public:
 
     // font が nullptr の場合は defaultFont
     void drawText(const StringRef& text, const Color& color, Font* font = nullptr);
+	void drawChar(uint32_t codePoint, const Color& color, Font* font = nullptr);
 
 	void drawFlexGlyphRun(detail::FlexGlyphRun* glyphRun);
 
@@ -158,6 +161,13 @@ public:
 	void addSpotLight(const Color& color, float intensity, const Vector3& position, const Vector3& direction, float range, float attenuation, float spotAngle, float spotPenumbra);
 
 	/** @} */
+
+
+
+	/** 指定した文字列を描画する際のサイズを計算します。(unit: dp) */
+	Size measureTextSize(Font* font, const StringRef& text) const;
+	Size measureTextSize(Font* font, uint32_t codePoint) const;
+
 
     RenderViewPoint* viewPoint() const;
 

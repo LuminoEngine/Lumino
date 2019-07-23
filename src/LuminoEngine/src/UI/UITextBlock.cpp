@@ -40,6 +40,7 @@ void UITextBlock::init()
 
 Size UITextBlock::measureOverride(const Size& constraint)
 {
+	// TODO: LayoutContext みたいなのを作って、それから dpi scale うけとるようにしてみよう
 	float scale = 1.0f;
 	if (UIFrameWindow* w = static_cast<UIFrameWindow*>(getFrameWindow())) {
 		scale = w->platformWindow()->dpiFactor();

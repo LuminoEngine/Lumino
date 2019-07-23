@@ -4,12 +4,11 @@
 
 namespace ln {
 class Material;
-
-
+class UICollectionModel;
 
 // row, column, parent を使って、Model 内のデータを一意に識別するためのキー
 class UICollectionItemModel
-	: public Object
+	: public UIViewModel
 {
 public:
 	int row() const { return m_row; }
@@ -19,12 +18,15 @@ public:
 
 	bool isRoot() const { return !m_parent; }
 
+	String getData(const String& role);
+
 LN_CONSTRUCT_ACCESS:
 	UICollectionItemModel();
-	void init();
-	void init(int row, int column, UICollectionItemModel* parent = nullptr, Variant* data = nullptr);
+	void init(UICollectionModel* owner);
+	void init(UICollectionModel* owner, int row, int column, UICollectionItemModel* parent = nullptr, Variant* data = nullptr);
 
 private:
+	UICollectionModel* m_owner;
 	int m_row;
 	int m_column;
 	Ref<UICollectionItemModel> m_parent;
@@ -32,7 +34,7 @@ private:
 };
 
 class UICollectionModel	// TODO: naming, WPF の CollectionView や CollectionViewSource に近い
-    : public Object
+    : public UIViewModel
 {
 public:
 	// index が示すデータが持つ、子 row の数

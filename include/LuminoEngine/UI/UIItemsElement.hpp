@@ -93,6 +93,7 @@ protected:
 
     // UIElement interface
     virtual const String& elementName() const  override { static String name = u"UITreeItem"; return name; }
+	virtual void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel) override;
 	virtual Size measureOverride(const Size& constraint) override;
 	virtual Size arrangeOverride(const Size& finalSize) override;
     virtual void onRoutedEvent(UIEventArgs* e) override;
@@ -110,6 +111,7 @@ private:
     Ref<UIElement> m_headerContent;
     List<Ref<UITreeItem>> m_items;
     Ref<UILayoutPanel2> m_itemsLayout;
+	Ref<UICollectionItemModel> m_model;
 
     friend class UITreeView;
 };
@@ -118,11 +120,12 @@ class UITreeView
     : public UIItemsControl
 {
 public:
-    void setModel(UICollectionModel* model);
+    //void setModel(UICollectionModel* model);
 
     bool isVirtualize() const { return m_model != nullptr; }
 
 protected:
+	virtual void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel) override;
     virtual Size arrangeOverride(const Size& finalSize) override;
 
 LN_CONSTRUCT_ACCESS:

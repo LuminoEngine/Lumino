@@ -34,8 +34,8 @@ bool FontGlyphTextureCache::init(FontCore* font)
 	// すべてのグリフが収まるビットマップサイズ
 	FontGlobalMetrics metrix;
 	m_font->getGlobalMetrics(&metrix);
-	int mw = std::ceil(metrix.boundingMaxX - metrix.boundingMinX);
-	int mh = std::ceil(metrix.boundingMaxY - metrix.boundingMinY);
+	int mw = metrix.bitmapMaxWidth;
+	int mh = metrix.bitmapMaxHeight;
 
 	// 横方向に並べる数
 	// +1.0 は切り捨て対策。テクスチャサイズはmaxCharactersが収まる大きさであれば良い。(小さくなければOK)
@@ -107,6 +107,9 @@ void FontGlyphTextureCache::lookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, b
 		PointI pt(outInfo->srcRect.x + outInfo->outlineOffset, outInfo->srcRect.y + outInfo->outlineOffset);
 		Bitmap2D* dst = m_fillGlyphsTexture->map(MapMode::Write);
 		dst->blit(RectI(pt.x, pt.y, info.size), bitmapGlyphInfo.glyphBitmap, RectI(0, 0, info.size), ColorI::White, BitmapBlitOptions::None);
+
+		//dst->save(u"test.png");
+		//bitmapGlyphInfo.glyphBitmap->save(u"test2.png");
     }
 
 	// 今回、cacheIndex を使うことをマーク

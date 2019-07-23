@@ -130,6 +130,11 @@ void FontManager::init(const Settings& settings)
         m_defaultFont = makeObject<Font>(desc);
     }
 
+	m_glyphIconFontManager = makeRef<GlyphIconFontManager>();
+	if (!m_glyphIconFontManager->init(this)) {
+		return;
+	}
+
     LN_LOG_DEBUG << "FontManager Initialization ended.";
 }
 
@@ -174,6 +179,7 @@ void FontManager::registerFontFromStream(Stream* stream, bool defaultFamily)
     FT_Error err = 0;
     int numFaces = 0;
     String familyName;
+	String styleName;
 
     // Face 作成 (ファミリ名・Face 数を調べるため。すぐ削除する)
     {
@@ -187,6 +193,7 @@ void FontManager::registerFontFromStream(Stream* stream, bool defaultFamily)
         if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return;
         numFaces = face->num_faces;
         familyName = String::fromCString(face->family_name);
+		styleName = String::fromCString(face->style_name);
         FT_Done_Face(face);
     }
 
@@ -208,7 +215,7 @@ void FontManager::registerFontFromStream(Stream* stream, bool defaultFamily)
             //}
         }
 
-		m_famlyNameToFontFaceSourceMap[familyName] = { buffer, 0 };
+		m_famlyNameToFontFaceSourceMap.add({ familyName, styleName, buffer, 0 });
     }
     // Fase が複数 (.ttc)
     else if (numFaces > 1)
@@ -225,6 +232,7 @@ void FontManager::registerFontFromStream(Stream* stream, bool defaultFamily)
             if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return;
 
             familyName = String::fromCString(face->family_name);
+			styleName = String::fromCString(face->style_name);
             uint32_t key = CRCHash::compute(familyName.c_str());
             if (m_ttfDataEntryMap.find(key) == m_ttfDataEntryMap.end())
             {
@@ -240,7 +248,7 @@ void FontManager::registerFontFromStream(Stream* stream, bool defaultFamily)
                 //}
             }
 
-			m_famlyNameToFontFaceSourceMap[familyName] = { buffer, i };
+			m_famlyNameToFontFaceSourceMap.add({ familyName, styleName, buffer, i });
 
             FT_Done_Face(face);
         }
@@ -296,11 +304,17 @@ Font* FontManager::defaultFont() const
 
 const FontFaceSource* FontManager::lookupFontFaceSourceFromFamilyName(const String& name)
 {
-	auto itr = m_famlyNameToFontFaceSourceMap.find(name);
-	if (itr != m_famlyNameToFontFaceSourceMap.end())
-		return &itr->second;
+	int index = m_famlyNameToFontFaceSourceMap.indexOfIf([&](auto& x) { return String::compare(name, x.familyName, CaseSensitivity::CaseInsensitive) == 0; });
+	if (index >= 0)
+		return &m_famlyNameToFontFaceSourceMap[index];
 	else
 		return nullptr;
+
+	//auto itr = m_famlyNameToFontFaceSourceMap.find(name);
+	//if (itr != m_famlyNameToFontFaceSourceMap.end())
+	//	return &itr->second;
+	//else
+	//	return nullptr;
 }
 
 FT_Error FontManager::callbackFaceRequester(
@@ -408,6 +422,93 @@ FT_Error FontManager::faceRequester(
 #endif
     return -1;
 }
+
+//==============================================================================
+// GlyphIconFontManager
+
+GlyphIconFontManager::GlyphIconFontManager()
+	: m_fontManager(nullptr)
+	, m_fontAwesomeVariablesMap({
+#include "Resource/FontAwesome5Map.inl"
+	})
+{
+}
+
+GlyphIconFontManager::~GlyphIconFontManager()
+{
+}
+
+
+Result GlyphIconFontManager::init(FontManager* fontManager)
+{
+	m_fontManager = fontManager;
+
+//	{
+//		static const unsigned char data[] = {
+//#include "Resource/FontAwesome5Free-Regular-400.otf.inl"
+//		};
+//		static const size_t size = LN_ARRAY_SIZE_OF(data);
+//		MemoryStream stream(data, size);
+//		m_fontManager->registerFontFromStream(&stream, false);
+//	}
+	{
+		static const unsigned char data[] = {
+#include "Resource/FontAwesome5Free-Solid-900.otf.inl"
+		};
+		static const size_t size = LN_ARRAY_SIZE_OF(data);
+		MemoryStream stream(data, size);
+		m_fontManager->registerFontFromStream(&stream, false);
+	}
+
+	return true;
+}
+
+void GlyphIconFontManager::dispose()
+{
+	m_fontAwesomeFontMap_Regular.clear();
+	m_fontAwesomeFontMap_Solid.clear();
+}
+
+Font* GlyphIconFontManager::getFontAwesomeFont(const StringRef& style, int size)
+{
+	const Char* familyName;
+	std::unordered_map<int, Ref<Font>>* fontMap;
+	if (String::compare(style, u"Solid", CaseSensitivity::CaseInsensitive) == 0) {
+		familyName = u"Font Awesome 5 Free";	// TODO: style Solid
+		fontMap = &m_fontAwesomeFontMap_Solid;
+	}
+	else {
+		familyName = u"Font Awesome 5 Free";
+		fontMap = &m_fontAwesomeFontMap_Regular;
+	}
+
+	Font* font;
+	auto itr = fontMap->find(size);
+	if (itr != fontMap->end()) {
+		font = itr->second;
+	}
+	else {
+		auto newFont = makeObject<Font>(familyName, size);
+		fontMap->insert({size, newFont});
+		font = newFont;
+	}
+	return font;
+}
+
+uint32_t GlyphIconFontManager::getFontAwesomeCodePoint(const StringRef& glyphName)
+{
+	auto itr = m_fontAwesomeVariablesMap.find(glyphName);
+	if (itr != m_fontAwesomeVariablesMap.end())
+	{
+		return itr->second;
+	}
+	else
+	{
+		LN_ENSURE(0, "not found FontAwesomeCodePoint.");
+		return 0;
+	}
+}
+
 
 } // namespace detail
 } // namespace ln
