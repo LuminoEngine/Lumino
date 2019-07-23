@@ -110,11 +110,6 @@ public:	// TODO: internal
 	// 基本的にルート要素のみ呼び出すべき
 	void updateLayout(const Rect& parentFinalGlobalRect);
 
-	void setWidth(float value) { m_layoutSize.width = value; }
-	float width() const { return m_layoutSize.width; }
-
-	void setHeight(float value) { m_layoutSize.height = value; }
-	float height() const { return m_layoutSize.height; }
 
 
 	/** レイアウト処理の測定パスの実行中にこの要素が計算したサイズを取得します。この値は子要素が親要素へ要求する、子要素自身の最低サイズです。*/
@@ -141,7 +136,7 @@ public:	//TODO: internal
 	void arrangeLayout(const Rect& localSlotRect);
 	void updateFinalRects(const Rect& parentFinalGlobalRect);
 
-	const Size& getLayoutSize() const { return m_layoutSize; }
+	//const Size& getLayoutSize() const { return m_layoutSize; }
 	void setLayoutDesiredSize(const Size& size) { m_desiredSize = size; }
 	const Size& getLayoutDesiredSize() const { return m_desiredSize; }
 	const Thickness& getLayoutMargin() const;
@@ -154,7 +149,7 @@ public:	//TODO: internal
 	//const Rect& getLayoutFinalLocalRect() const { return m_finalLocalRect; }
 	void setLayoutFinalGlobalRect(const Rect& rect) { m_finalGlobalRect = rect; }
 
-	Size m_layoutSize;
+	//Size m_layoutSize;
 	const detail::UIStyleInstance* m_finalStyle;
 	Size m_desiredSize;
 

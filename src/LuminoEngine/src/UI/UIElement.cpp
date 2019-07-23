@@ -63,6 +63,26 @@ void UIElement::init()
     //}
 }
 
+void UIElement::setWidth(float value)
+{
+    m_localStyle->width = value;
+}
+
+float UIElement::width() const
+{
+    return m_localStyle->width.getOrDefault(UIStyle::DefaultWidth);
+}
+
+void UIElement::setHeight(float value)
+{
+    m_localStyle->height = value;
+}
+
+float UIElement::height() const
+{
+    return m_localStyle->height.getOrDefault(UIStyle::DefaultHeight);
+}
+
 void UIElement::setMargin(const Thickness& margin)
 {
     m_localStyle->margin = margin;

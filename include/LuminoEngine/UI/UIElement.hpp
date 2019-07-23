@@ -77,6 +77,13 @@ class UIElement
 {
     LN_OBJECT;
 public:
+    void setWidth(float value);
+    float width() const;
+
+    void setHeight(float value);
+    float height() const;
+
+
     /** 要素の margin 値 (外側の余白) を設定します。 */
     void setMargin(const Thickness& margin);
 

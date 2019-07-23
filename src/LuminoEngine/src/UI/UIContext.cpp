@@ -169,31 +169,34 @@ void UIContext::setupDefaultStyle()
         // UITreeItem
         {
             if (auto s = sheet->obtainStyle(u"UITreeItem")) {
+                s->minHeight = 30;
                 s->horizontalAlignment = HAlignment::Stretch;
                 s->verticalAlignment = VAlignment::Top;
                 s->backgroundColor = UIColors::get(UIColorHues::Amber);
             }
-            if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander")) {
-                s->horizontalAlignment = HAlignment::Left;
+            if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander")) {   // VisualState によらず常に有効。個別にしたければ:Normalを付ける。
+                s->width = 16;
+                s->height = 16;
+                s->horizontalAlignment = HAlignment::Center;
                 s->verticalAlignment = VAlignment::Center;
-                s->backgroundColor = UIColors::get(UIColorHues::Grey);
+                s->backgroundColor = Color::Transparency;
             }
             if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:MouseOver")) {
             }
             if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:Pressed")) {
             }
             if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:Checked")) {
-                s->backgroundColor = UIColors::get(UIColorHues::Blue);
+    //            s->backgroundColor = UIColors::get(UIColorHues::Blue);
 
 				auto icon = makeObject<UIStyleDecorator>();
-				icon->setIconName(u"angle-down", 10);
+				icon->setIconName(u"angle-down", 15);
 				s->decorators.add(icon);
             }
 			if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:Unchecked")) {
-				s->backgroundColor = UIColors::get(UIColorHues::Red);
+				//s->backgroundColor = UIColors::get(UIColorHues::Red);
 
 				auto icon = makeObject<UIStyleDecorator>();
-				icon->setIconName(u"angle-right", 10);
+				icon->setIconName(u"angle-right", 15);
 				s->decorators.add(icon);
 			}
         }

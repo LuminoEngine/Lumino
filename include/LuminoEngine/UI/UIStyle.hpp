@@ -215,6 +215,8 @@ public:
 
 
 	// layout
+    detail::UIStyleAttribute<float> width;
+    detail::UIStyleAttribute<float> height;
     detail::UIStyleAttribute<Thickness> margin;
     detail::UIStyleAttribute<Thickness> padding;
 	detail::UIStyleAttribute<HAlignment> horizontalAlignment;
@@ -226,6 +228,8 @@ public:
 	detail::UIStyleAttribute<float> maxWidth;
 	detail::UIStyleAttribute<float> maxHeight;
 
+    static const float DefaultWidth;
+    static const float DefaultHeight;
 	static const Thickness DefaultMargin;
 	static const Thickness DefaultPadding;
 	static const HAlignment DefaultHorizontalAlignment;
@@ -485,6 +489,8 @@ public:
     //UIStyle* sourceLocalStyle = nullptr;	// 以下のデータの生成元となったローカスのスタイル
 
     // layout
+    float width;
+    float height;
     Thickness margin;
     Thickness padding;
     HAlignment horizontalAlignment;

@@ -10,7 +10,7 @@ namespace ln {
 LN_OBJECT_IMPLEMENT(UILayoutElement, Object) {}
 
 UILayoutElement::UILayoutElement()
-	: m_layoutSize(Math::NaN, Math::NaN)
+	//: m_layoutSize(Math::NaN, Math::NaN)
 {
 }
 
@@ -27,7 +27,7 @@ void UILayoutElement::init(const detail::UIStyleInstance* finalStyle)
 
 void UILayoutElement::updateLayout(const Rect& parentFinalGlobalRect)
 {
-	Size itemSize = getLayoutSize();
+    Size itemSize(m_finalStyle->width, m_finalStyle->height);// = //getLayoutSize();
 	Size size(
 		Math::isNaNOrInf(itemSize.width) ? parentFinalGlobalRect.width : itemSize.width,
 		Math::isNaNOrInf(itemSize.height) ? parentFinalGlobalRect.height : itemSize.height);
@@ -100,7 +100,7 @@ void UILayoutElement::arrangeLayout(const Rect& localSlotRect)
 	float marginWidth = margin.left + margin.right;
 	float marginHeight = margin.top + margin.bottom;
 
-	Size layoutSize = getLayoutSize();
+    Size layoutSize(m_finalStyle->width, m_finalStyle->height);
 	Rect arrangeRect;
 	detail::LayoutHelper::adjustHorizontalAlignment(areaSize, ds, layoutSize.width, hAlign, &arrangeRect);
 	detail::LayoutHelper::adjustVerticalAlignment(areaSize, ds, layoutSize.height, vAlign, &arrangeRect);
@@ -253,7 +253,7 @@ namespace detail {
 
 Size LayoutHelper::measureElement(UILayoutElement* element, const Size& constraint)
 {
-	Size size = element->getLayoutSize();
+    Size size(element->m_finalStyle->width, element->m_finalStyle->height);
 	Size desiredSize;
 	// NaN の場合、この要素として必要な最小サイズは 0 となる。
 	desiredSize.width = Math::isNaNOrInf(size.width) ? 0.0f : size.width;

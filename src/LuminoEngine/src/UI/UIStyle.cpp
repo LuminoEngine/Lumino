@@ -125,6 +125,8 @@ void UIStyleDecorator::render(UIRenderingContext* context, const Size& slotRect)
 // UIStyle
 
 // layout
+const float UIStyle::DefaultWidth = std::numeric_limits<float>::quiet_NaN();
+const float UIStyle::DefaultHeight = std::numeric_limits<float>::quiet_NaN();
 const Thickness UIStyle::DefaultMargin = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
 const Thickness UIStyle::DefaultPadding = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
 const HAlignment UIStyle::DefaultHorizontalAlignment = HAlignment::Stretch;	// WPF FrameworkElement default
@@ -198,6 +200,8 @@ void UIStyle::init()
 void UIStyle::setupDefault()
 {
     // layout
+    width = DefaultWidth;
+    height = DefaultHeight;
 	margin = DefaultMargin;
 	padding = DefaultPadding;
 	horizontalAlignment = DefaultHorizontalAlignment;
@@ -262,6 +266,8 @@ void UIStyle::setupDefault()
 void UIStyle::reset()
 {
 	// layout
+    width.reset();
+    height.reset();
 	margin.reset();
 	padding.reset();
 	horizontalAlignment.reset();
@@ -328,6 +334,8 @@ void UIStyle::mergeFrom(const UIStyle* other)
     if (LN_REQUIRE(other)) return;
 
     // layout
+    if (other->width.hasValue()) width = other->width.get();
+    if (other->height.hasValue()) height = other->height.get();
     if (other->margin.hasValue()) margin = other->margin.get();
     if (other->padding.hasValue()) padding = other->padding.get();
     if (other->horizontalAlignment.hasValue()) horizontalAlignment = other->horizontalAlignment.get();
@@ -396,6 +404,8 @@ void UIStyle::copyFrom(const UIStyle* other)
     if (LN_REQUIRE(other)) return;
 
     // layout
+    width = other->width;
+    height = other->height;
     margin = other->margin;
     padding = other->padding;
     horizontalAlignment = other->horizontalAlignment;
@@ -856,6 +866,8 @@ void UIStyleInstance::mergeFrom(const UIStyle* other)
     if (LN_REQUIRE(other)) return;
     
     // layout
+    if (other->width.hasValue()) width = other->width.get();
+    if (other->height.hasValue()) height = other->height.get();
     if (other->margin.hasValue()) margin = other->margin.get();
     if (other->padding.hasValue()) padding = other->padding.get();
     if (other->horizontalAlignment.hasValue()) horizontalAlignment = other->horizontalAlignment.get();
@@ -924,6 +936,8 @@ void UIStyleInstance::copyFrom(const UIStyleInstance* other)
     if (LN_REQUIRE(other)) return;
 
     // layout
+    width = other->width;
+    height = other->height;
     margin = other->margin;
     padding = other->padding;
     horizontalAlignment = other->horizontalAlignment;
@@ -1032,6 +1046,8 @@ void UIStyleInstance::updateStyleDataHelper(UIStyle* localStyle, const detail::U
 
 	// layout
 	{
+        outStyleData->width = localStyle->width.getOrDefault(combinedStyle->width.getOrDefault(UIStyle::DefaultWidth));
+        outStyleData->height = localStyle->height.getOrDefault(combinedStyle->height.getOrDefault(UIStyle::DefaultHeight));
 		outStyleData->margin = localStyle->margin.getOrDefault(combinedStyle->margin.getOrDefault(UIStyle::DefaultMargin));
 		outStyleData->padding = localStyle->padding.getOrDefault(combinedStyle->padding.getOrDefault(UIStyle::DefaultPadding));
 		outStyleData->horizontalAlignment = localStyle->horizontalAlignment.getOrDefault(combinedStyle->horizontalAlignment.getOrDefault(UIStyle::DefaultHorizontalAlignment));

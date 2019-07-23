@@ -103,12 +103,10 @@ void UITreeItem::init()
 	m_expanderButton = makeObject<UIToggleButton>();
 
 	// TODO: style
-	m_expanderButton->setWidth(16);
-	m_expanderButton->setHeight(16);
-    m_expanderButton->setHorizontalAlignment(HAlignment::Left);
-    m_expanderButton->setVerticalAlignment(VAlignment::Top);
-	//setWidth(100);
-	setHeight(20);
+	//m_expanderButton->setWidth(16);
+	//m_expanderButton->setHeight(16);
+    //m_expanderButton->setHorizontalAlignment(HAlignment::Left);
+    //m_expanderButton->setVerticalAlignment(VAlignment::Top);
 
 	m_expanderButton->addClass(u"UITreeItem-Expander");
     m_expanderButton->connectOnChecked(bind(this, &UITreeItem::expander_Checked));
@@ -187,7 +185,9 @@ Size UITreeItem::measureOverride(const Size& constraint)
     size.width = std::max(size.width, m_itemsLayout->desiredSize().width);
     size.height += m_itemsLayout->desiredSize().height;
 
-    return size;
+    Size desiredSize = UIItemElement::measureOverride(constraint);
+
+    return Size::max(size, desiredSize);
 }
 
 Size UITreeItem::arrangeOverride(const Size& finalSize)
@@ -199,16 +199,19 @@ Size UITreeItem::arrangeOverride(const Size& finalSize)
     } list;
     list.list = &m_items;
 
-    Rect area = Rect(0, 0, finalSize);
 
     // expander
-    m_expanderButton->arrangeLayout(area); // TODO: actualsize 返すようにしていいかも
+    float headerHeight = m_finalStyle->minHeight;
+    Rect expanderSlot(0, 0, headerHeight, headerHeight);
+    m_expanderButton->arrangeLayout(expanderSlot); // TODO: actualsize 返すようにしていいかも
+
+    Rect area = Rect(expanderSlot.width, 0, finalSize.width - expanderSlot.width, expanderSlot.height);
 
     // header
 	float headerContentHeight = 0;
     if (m_headerContent) {
-        area.x += m_expanderButton->m_actualSize.width;
-        area.width -= m_expanderButton->m_actualSize.width;
+        //area.x += m_expanderButton->m_actualSize.width;
+        //area.width -= m_expanderButton->m_actualSize.width;
         m_headerContent->arrangeLayout(area);
 		headerContentHeight = m_headerContent->m_actualSize.height;
     }
