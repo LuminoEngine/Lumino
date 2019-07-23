@@ -149,6 +149,10 @@ Size UIStackLayout2::measureOverride(const IUIElementList* childElements, const 
 Size UIStackLayout2::arrangeOverride(const IUIElementList* childElements, const Rect& finalSlotRect)
 {
     Size childrenBoundSize(finalSlotRect.width, finalSlotRect.height);
+    //Size selfBounds(FLT_MAX, FLT_MAX);
+    //if (stretch) {
+    //    selfBounds = finalSlotRect.getSize();
+    //}
 
     float prevChildSize = 0;
     float rPos = 0;
@@ -193,6 +197,11 @@ Size UIStackLayout2::arrangeOverride(const IUIElementList* childElements, const 
         }
 
         Rect actual(finalSlotRect.x + childRect.x, finalSlotRect.y + childRect.y, childRect.width, childRect.height);
+        if (lastStretch && i == childCount - 1) {
+            actual.width = finalSlotRect.width - actual.x;
+            actual.height = finalSlotRect.height - actual.y;
+        }
+
         child->arrangeLayout(actual);
     }
 

@@ -774,6 +774,14 @@ void UIElement::invalidate(detail::UIElementDirtyFlags flags, bool toAncestor)
     }
 }
 
+detail::GridLayoutInfo* UIElement::getGridLayoutInfo()
+{
+    if (!m_gridLayoutInfo) {
+        m_gridLayoutInfo = std::make_unique<detail::GridLayoutInfo>();
+    }
+    return m_gridLayoutInfo.get();
+}
+
 UIVisualStateManager* UIElement::getVisualStateManager()
 {
     if (!m_visualStateManager) {

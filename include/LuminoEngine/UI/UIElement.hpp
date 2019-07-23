@@ -39,6 +39,14 @@ enum class UIElementDirtyFlags
 };
 LN_FLAGS_OPERATORS(UIElementDirtyFlags);
 
+struct GridLayoutInfo
+{
+    int		layoutRow = -1; // -1 は自動割り当て
+    int		layoutColumn = -1;
+    int		layoutRowSpan = 1;
+    int		layoutColumnSpan = 1;
+};
+
 }
 
 class UILayoutContext
@@ -401,6 +409,7 @@ public:	// TODO: internal protected
 public: // TODO: internal
     void raiseEventInternal(UIEventArgs* e);
     virtual void invalidate(detail::UIElementDirtyFlags flags, bool toAncestor);
+    detail::GridLayoutInfo* getGridLayoutInfo();
 
     detail::UIManager* m_manager;
 	Flags<detail::ObjectManagementFlags> m_objectManagementFlags;
@@ -411,6 +420,7 @@ public: // TODO: internal
 	Ref<List<Ref<UIElement>>> m_visualChildren;
     Ref<List<String>> m_classList;
 	Ref<UIViewModel> m_viewModel;
+    std::unique_ptr<detail::GridLayoutInfo> m_gridLayoutInfo;
 
     Ref<UIVisualStateManager> m_visualStateManager;
     Ref<UIStyle> m_localStyle;

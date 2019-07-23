@@ -176,6 +176,8 @@ public:
     void setOrientation(Orientation orientation) { m_orientation = orientation; }
     Orientation getOrientation() const { return m_orientation; }
 
+    bool lastStretch = false;
+
 LN_CONSTRUCT_ACCESS:
     UIStackLayout2();
     virtual ~UIStackLayout2();

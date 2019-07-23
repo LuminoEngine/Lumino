@@ -2,6 +2,7 @@
 #include <LuminoEngine/UI/UIItemsElement.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIIcon.hpp>
+#include <LuminoEngine/UI/UISplitter.hpp>
 #include "MainWindow.hpp"
 
 class NavigationBar : public ln::UIItemsControl
@@ -63,6 +64,7 @@ void MainWindow::onLoaded()
 
 	auto layout1 = ln::makeObject<ln::UIStackLayout2>();
 	layout1->setOrientation(ln::Orientation::Horizontal);
+    layout1->lastStretch = true;
 	setLayoutPanel(layout1);
 
 	auto sidebar = ln::makeObject<NavigationBar>();
@@ -73,14 +75,29 @@ void MainWindow::onLoaded()
 	addElement(sidebar);
 
 
-    auto model = ln::makeObject<ln::UIFileSystemCollectionModel>();
-    model->setRootPath(u"D:/Proj/LN/Lumino");
 
-    auto treeView = ln::makeObject<ln::UITreeView>();
-    treeView->setViewModel(model);
-    treeView->setWidth(200);
-    treeView->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 2));
-	addElement(treeView);
+
+    auto splitter = ln::makeObject<ln::UISplitter>();
+    splitter->addCellDefinition(ln::UILayoutLengthType::Direct, 200);
+    splitter->addCellDefinition();
+    addElement(splitter);
+
+    {
+        auto model = ln::makeObject<ln::UIFileSystemCollectionModel>();
+        model->setRootPath(u"D:/Proj/LN/Lumino");
+
+        auto treeView = ln::makeObject<ln::UITreeView>();
+        treeView->setViewModel(model);
+        treeView->setWidth(200);
+        treeView->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 2));
+        splitter->addElement(treeView);
+
+        //--------
+
+        auto test = ln::makeObject<UIElement>();
+        test->setBackgroundColor(ln::Color::Red);
+        splitter->addElement(test);
+    }
 
 	//auto d = ln::makeObject<ln::UIStyleDecorator>();
 	//d->setIconName(u"file", 20);
