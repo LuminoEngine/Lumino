@@ -74,7 +74,7 @@ void MainWindow::onLoaded()
 
 
     auto model = ln::makeObject<ln::UIFileSystemCollectionModel>();
-    model->setRootPath(u"C:/Proj");
+    model->setRootPath(u"D:/Proj/LN/Lumino");
 
     auto treeView = ln::makeObject<ln::UITreeView>();
     treeView->setViewModel(model);

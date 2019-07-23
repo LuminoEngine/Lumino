@@ -155,6 +155,8 @@ void UITreeItem::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldV
 	if (!m_model) {
 		LN_NOTIMPLEMENTED();
 	}
+
+    UIElement::setContent(m_model->getData(u""));
 }
 
 Size UITreeItem::measureOverride(const Size& constraint)

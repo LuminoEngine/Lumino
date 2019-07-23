@@ -287,6 +287,10 @@ public:
 
     void addClass(const StringRef& className);
 	void setViewModel(UIViewModel* value);
+    virtual void setContent(UIElement* content);
+    virtual void setContent(const String& content);
+    virtual void addChild(UIElement* child);
+    virtual void addChild(const String& child);
 
     UIElement();
     virtual ~UIElement();

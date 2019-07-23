@@ -11,6 +11,7 @@
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
 #include <LuminoEngine/UI/UIContainerElement.hpp>
+#include <LuminoEngine/UI/UITextBlock.hpp>
 #include "../Rendering/RenderStage.hpp"
 #include "UIManager.hpp"
 
@@ -364,6 +365,30 @@ void UIElement::setViewModel(UIViewModel* value)
 		m_viewModel = value;
 		onViewModelChanged(m_viewModel, old);
 	}
+}
+
+void UIElement::setContent(UIElement* content)
+{
+    LN_UNREACHABLE();
+}
+
+void UIElement::setContent(const String& content)
+{
+    auto textblock = makeObject<UITextBlock>();
+    textblock->setText(content);
+    setContent(textblock);
+}
+
+void UIElement::addChild(UIElement* child)
+{
+    LN_UNREACHABLE();
+}
+
+void UIElement::addChild(const String& child)
+{
+    auto textblock = makeObject<UITextBlock>();
+    textblock->setText(child);
+    addChild(textblock);
 }
 
 void UIElement::setRenderPriority(int value)

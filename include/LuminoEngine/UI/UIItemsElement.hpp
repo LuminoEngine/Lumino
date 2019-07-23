@@ -81,7 +81,7 @@ class UITreeItem
 	: public UIItemElement
 {
 public:
-    void setContent(UIElement* value);  // TODO: TreeList ように column が必要かも
+    virtual void setContent(UIElement* value) override;  // TODO: TreeList ように column が必要かも
 
     void addChild(UITreeItem* item);
 
