@@ -172,7 +172,8 @@ void UIContext::setupDefaultStyle()
                 s->minHeight = 30;
                 s->horizontalAlignment = HAlignment::Stretch;
                 s->verticalAlignment = VAlignment::Top;
-                s->backgroundColor = UIColors::get(UIColorHues::Amber);
+                s->borderThickness = 1;
+                s->setBorderColor(Color::Gray);
             }
             if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander")) {   // VisualState によらず常に有効。個別にしたければ:Normalを付ける。
                 s->width = 16;
@@ -181,20 +182,16 @@ void UIContext::setupDefaultStyle()
                 s->verticalAlignment = VAlignment::Center;
                 s->backgroundColor = Color::Transparency;
             }
-            if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:MouseOver")) {
-            }
-            if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:Pressed")) {
-            }
+            //if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:MouseOver")) {
+            //}
+            //if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:Pressed")) {
+            //}
             if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:Checked")) {
-    //            s->backgroundColor = UIColors::get(UIColorHues::Blue);
-
 				auto icon = makeObject<UIStyleDecorator>();
 				icon->setIconName(u"angle-down", 15);
 				s->decorators.add(icon);
             }
 			if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:Unchecked")) {
-				//s->backgroundColor = UIColors::get(UIColorHues::Red);
-
 				auto icon = makeObject<UIStyleDecorator>();
 				icon->setIconName(u"angle-right", 15);
 				s->decorators.add(icon);

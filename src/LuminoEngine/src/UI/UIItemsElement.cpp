@@ -102,12 +102,6 @@ void UITreeItem::init()
 
 	m_expanderButton = makeObject<UIToggleButton>();
 
-	// TODO: style
-	//m_expanderButton->setWidth(16);
-	//m_expanderButton->setHeight(16);
-    //m_expanderButton->setHorizontalAlignment(HAlignment::Left);
-    //m_expanderButton->setVerticalAlignment(VAlignment::Top);
-
 	m_expanderButton->addClass(u"UITreeItem-Expander");
     m_expanderButton->connectOnChecked(bind(this, &UITreeItem::expander_Checked));
     m_expanderButton->connectOnUnchecked(bind(this, &UITreeItem::expander_Unchecked));
@@ -325,7 +319,7 @@ void UITreeView::makeChildItems(UITreeItem* item)
 
     int count = m_model->getRowCount(itemModel);
     for (int i = 0; i < count; i++) {
-        auto childModel = m_model->getIndex(i, 0, nullptr);
+        auto childModel = m_model->getIndex(i, 0, itemModel);
         auto itemData = m_model->getData(childModel, u"");
 
         //auto text = makeObject<UITextBlock>();
