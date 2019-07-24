@@ -77,7 +77,6 @@ void UIThumb::onRoutedEvent(UIEventArgs* e)
 	}
 	else if (e->type() == UIEvents::MouseMoveEvent)
 	{
-        printf("MouseMoveEvent\n");
 		if (m_isDragging)
 		{
 			auto mouseEvent = static_cast<UIMouseEventArgs*>(e);
@@ -696,21 +695,59 @@ UIScrollViewer::~UIScrollViewer()
 {
 }
 
+void UIScrollViewer::setHScrollbarVisible(bool value)
+{
+	if (value) {
+		if (!m_horizontalScrollBar) {
+			m_horizontalScrollBar = makeObject<UIScrollBar>();
+			m_horizontalScrollBar->setOrientation(Orientation::Horizontal);
+			m_horizontalScrollBar->setWidth(16);	// TODO: style
+			m_horizontalScrollBar->setVerticalAlignment(VAlignment::Stretch);
+			addVisualChild(m_horizontalScrollBar);
+		}
+	}
+	else {
+		if (m_horizontalScrollBar) {
+			removeVisualChild(m_horizontalScrollBar);
+			m_horizontalScrollBar = nullptr;
+		}
+	}
+}
+
+void UIScrollViewer::setVScrollbarVisible(bool value)
+{
+	if (value) {
+		if (!m_verticalScrollBar) {
+			m_verticalScrollBar = makeObject<UIScrollBar>();
+			m_verticalScrollBar->setHeight(16);	// TODO: style
+			m_verticalScrollBar->setOrientation(Orientation::Vertical);
+			m_verticalScrollBar->setHorizontalAlignment(HAlignment::Stretch);
+			addVisualChild(m_verticalScrollBar);
+		}
+	}
+	else {
+		if (m_verticalScrollBar) {
+			removeVisualChild(m_verticalScrollBar);
+			m_verticalScrollBar = nullptr;
+		}
+	}
+}
+
 void UIScrollViewer::init()
 {
     UIContainerElement::init();
+	setHScrollbarVisible(true);
+	setVScrollbarVisible(true);
+    //m_horizontalScrollBar = makeObject<UIScrollBar>();
+    //m_horizontalScrollBar->setOrientation(Orientation::Horizontal);
+    //m_verticalScrollBar = makeObject<UIScrollBar>();
+    //m_verticalScrollBar->setOrientation(Orientation::Vertical);
+    //addVisualChild(m_horizontalScrollBar);
+    //addVisualChild(m_verticalScrollBar);
 
-    m_horizontalScrollBar = makeObject<UIScrollBar>();
-    m_horizontalScrollBar->setOrientation(Orientation::Horizontal);
-    m_verticalScrollBar = makeObject<UIScrollBar>();
-    m_verticalScrollBar->setOrientation(Orientation::Vertical);
-    addVisualChild(m_horizontalScrollBar);
-    addVisualChild(m_verticalScrollBar);
-
-    m_horizontalScrollBar->setWidth(16);
-    //m_verticalScrollBar->setHeight(16);
-    m_verticalScrollBar->setWidth(16);
-    m_verticalScrollBar->setVerticalAlignment(VAlignment::Stretch);
+    ////m_verticalScrollBar->setHeight(16);
+    //m_verticalScrollBar->setWidth(16);
+    //m_verticalScrollBar->setVerticalAlignment(VAlignment::Stretch);
 }
 
 Size UIScrollViewer::measureOverride(const Size& constraint)
@@ -731,45 +768,62 @@ Size UIScrollViewer::measureOverride(const Size& constraint)
 
 Size UIScrollViewer::arrangeOverride(const Size& finalSize)
 {
-    float barWidth = 16;// m_verticalScrollBar->width();
-    float barHeight = 16;//m_horizontalScrollBar->height();
+	Rect rc;
+	float barWidth = 0;
+	float barHeight = 0;
+
+	if (m_horizontalScrollBar) {
+		rc.width = finalSize.width - barWidth;
+		rc.height = barHeight;
+		rc.x = 0;
+		rc.y = finalSize.height - barHeight;
+		m_horizontalScrollBar->arrangeLayout(rc);
+		barWidth = m_horizontalScrollBar->m_actualSize.width;
+	}
+
+	if (m_verticalScrollBar) {
+		rc.width = barWidth;
+		rc.height = finalSize.height - barHeight;
+		rc.x = finalSize.width - barWidth;
+		rc.y = 0;
+		m_verticalScrollBar->arrangeLayout(rc);
+		barHeight = m_verticalScrollBar->m_actualSize.height;
+	}
+
+
 
 
     Size childArea(finalSize.width - barWidth, finalSize.height - barHeight);
     Size actualSize = UIContainerElement::arrangeOverride(childArea);
 
 
-    Rect rc;
 
-    rc.width = barWidth;
-    rc.height = finalSize.height - barHeight;
-    rc.x = finalSize.width - barWidth;
-    rc.y = 0;
-    m_verticalScrollBar->arrangeLayout(rc);
-
-    rc.width = finalSize.width - barWidth;
-    rc.height = barHeight;
-    rc.x = 0;
-    rc.y = finalSize.height - barHeight;
-    m_horizontalScrollBar->arrangeLayout(rc);
 
     if (m_scrollTarget != nullptr)
     {
-        m_horizontalScrollBar->setMinimum(0.0f);
-        m_horizontalScrollBar->setMaximum(m_scrollTarget->getExtentWidth());
-        m_horizontalScrollBar->setViewportSize(m_scrollTarget->getViewportWidth());
-        m_verticalScrollBar->setMinimum(0.0f);
-        m_verticalScrollBar->setMaximum(m_scrollTarget->getExtentHeight());
-        m_verticalScrollBar->setViewportSize(m_scrollTarget->getViewportHeight());
+		if (m_horizontalScrollBar) {
+			m_horizontalScrollBar->setMinimum(0.0f);
+			m_horizontalScrollBar->setMaximum(m_scrollTarget->getExtentWidth());
+			m_horizontalScrollBar->setViewportSize(m_scrollTarget->getViewportWidth());
+		}
+		if (m_verticalScrollBar) {
+			m_verticalScrollBar->setMinimum(0.0f);
+			m_verticalScrollBar->setMaximum(m_scrollTarget->getExtentHeight());
+			m_verticalScrollBar->setViewportSize(m_scrollTarget->getViewportHeight());
+		}
     }
     else
     {
-        m_horizontalScrollBar->setMinimum(0.0f);
-        m_horizontalScrollBar->setMaximum(0.0f);
-        m_horizontalScrollBar->setViewportSize(0.0f);
-        m_verticalScrollBar->setMinimum(0.0f);
-        m_verticalScrollBar->setMaximum(0.0f);
-        m_verticalScrollBar->setViewportSize(0.0f);
+		if (m_horizontalScrollBar) {
+			m_horizontalScrollBar->setMinimum(0.0f);
+			m_horizontalScrollBar->setMaximum(0.0f);
+			m_horizontalScrollBar->setViewportSize(0.0f);
+		}
+		if (m_verticalScrollBar) {
+			m_verticalScrollBar->setMinimum(0.0f);
+			m_verticalScrollBar->setMaximum(0.0f);
+			m_verticalScrollBar->setViewportSize(0.0f);
+		}
     }
 
     return actualSize;

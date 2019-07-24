@@ -33,6 +33,8 @@ protected:
 	// base interfaces
 	//virtual void onRoutedEvent(UIEventArgs* e) override;
 
+	virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
+
 LN_CONSTRUCT_ACCESS:
 	UIItemsControl();
 	void init();

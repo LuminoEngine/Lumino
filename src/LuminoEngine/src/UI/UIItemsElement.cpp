@@ -43,6 +43,24 @@ void UIItemsControl::addItem(UICollectionItem* item)
     addElement(item);
 }
 
+void UIItemsControl::onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)
+{
+	UIScrollViewer::onUpdateStyle(styleContext, finalStyle);
+
+	if (finalStyle->overflowX == UIOverflowBehavior::Scroll) {
+		setHScrollbarVisible(true);
+	}
+	else {
+		setHScrollbarVisible(false);
+	}
+	if (finalStyle->overflowY == UIOverflowBehavior::Scroll) {
+		setVScrollbarVisible(true);
+	}
+	else {
+		setVScrollbarVisible(false);
+	}
+}
+
 //void UIItemsControl::onRoutedEvent(UIEventArgs* e)
 //{
 //	if (e->type() == UIEvents::MouseDownEvent) {

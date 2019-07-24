@@ -42,7 +42,8 @@ void UILayoutElement::updateLayout(const Rect& parentFinalGlobalRect)
 
 void UILayoutElement::measureLayout(const Size& availableSize)
 {
-	// Margin と Padding を考慮する
+	// Margin と Padding を考慮する。
+	// これらが負値の場合、desiredSize は小さくなる。
 	const Thickness& margin = getLayoutMargin();
 	const Thickness& padding = getLayoutPadding();
 	float spaceWidth = (margin.left + margin.right) + (padding.left + padding.right);

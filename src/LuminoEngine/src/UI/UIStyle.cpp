@@ -137,6 +137,8 @@ const float UIStyle::DefaultMinWidth = std::numeric_limits<float>::quiet_NaN();
 const float UIStyle::DefaultMinHeight = std::numeric_limits<float>::quiet_NaN();
 const float UIStyle::DefaultMaxWidth = std::numeric_limits<float>::quiet_NaN();
 const float UIStyle::DefaultMaxHeight = std::numeric_limits<float>::quiet_NaN();
+const UIOverflowBehavior UIStyle::DefaultOverflowX = UIOverflowBehavior::Visible;
+const UIOverflowBehavior UIStyle::DefaultOverflowY = UIOverflowBehavior::Visible;
 
 // transform
 const Vector3 UIStyle::DefaultPosition = Vector3(0.0f, 0.0f, 0.0f);
@@ -212,6 +214,8 @@ void UIStyle::setupDefault()
 	minHeight = DefaultMinHeight;
 	maxWidth = DefaultMaxWidth;
 	maxHeight = DefaultMaxHeight;
+	overflowX = DefaultOverflowX;
+	overflowY = DefaultOverflowY;
 
     // transform
 	position = DefaultPosition;
@@ -278,6 +282,8 @@ void UIStyle::reset()
 	minHeight.reset();
 	maxWidth.reset();
 	maxHeight.reset();
+	overflowX.reset();
+	overflowY.reset();
 
 	// layout transform
 	position.reset();
@@ -346,6 +352,8 @@ void UIStyle::mergeFrom(const UIStyle* other)
     if (other->minHeight.hasValue()) minHeight = other->minHeight.get();
     if (other->maxWidth.hasValue()) maxWidth = other->maxWidth.get();
     if (other->maxHeight.hasValue()) maxHeight = other->maxHeight.get();
+	if (other->overflowX.hasValue()) overflowX = other->overflowX.get();
+	if (other->overflowY.hasValue()) overflowY = other->overflowY.get();
 
     // layout transform
     if (other->position.hasValue()) position = other->position.get();
@@ -416,6 +424,8 @@ void UIStyle::copyFrom(const UIStyle* other)
     minHeight = other->minHeight;
     maxWidth = other->maxWidth;
     maxHeight = other->maxHeight;
+	overflowX = other->overflowX;
+	overflowY = other->overflowY;
 
     // layout transform
     position = other->position;
@@ -819,18 +829,16 @@ void UIStyleInstance::setupDefault()
 {
     margin = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
     padding = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
-
-    // Alignment は HTML のデフォルトに合わせてみる
-    horizontalAlignment = HAlignment::Left;
-    verticalAlignment = VAlignment::Top;
-
+    horizontalAlignment = HAlignment::Stretch;	// Alignment は HTML のデフォルトに合わせてみる
+    verticalAlignment = VAlignment::Stretch;
     horizontalContentAlignment = HAlignment::Stretch;
     verticalContentAlignment = VAlignment::Stretch;
-
     minWidth = Math::NaN;
     minHeight = Math::NaN;
     maxWidth = Math::NaN;
     maxHeight = Math::NaN;
+	overflowX = UIOverflowBehavior::Visible;
+	overflowY = UIOverflowBehavior::Visible;
 
     position = Vector3::Zero;
     rotation = Quaternion::Identity;
@@ -878,6 +886,8 @@ void UIStyleInstance::mergeFrom(const UIStyle* other)
     if (other->minHeight.hasValue()) minHeight = other->minHeight.get();
     if (other->maxWidth.hasValue()) maxWidth = other->maxWidth.get();
     if (other->maxHeight.hasValue()) maxHeight = other->maxHeight.get();
+	if (other->overflowX.hasValue()) overflowX = other->overflowX.get();
+	if (other->overflowY.hasValue()) overflowY = other->overflowY.get();
 
     // layout transform
     if (other->position.hasValue()) position = other->position.get();
@@ -948,6 +958,8 @@ void UIStyleInstance::copyFrom(const UIStyleInstance* other)
     minHeight = other->minHeight;
     maxWidth = other->maxWidth;
     maxHeight = other->maxHeight;
+	overflowX = other->overflowX;
+	overflowY = other->overflowY;
 
     // layout transform
     position = other->position;
@@ -1058,6 +1070,8 @@ void UIStyleInstance::updateStyleDataHelper(UIStyle* localStyle, const detail::U
 		outStyleData->minHeight = localStyle->minHeight.getOrDefault(combinedStyle->minHeight.getOrDefault(UIStyle::DefaultMinHeight));
 		outStyleData->maxWidth = localStyle->maxWidth.getOrDefault(combinedStyle->maxWidth.getOrDefault(UIStyle::DefaultMaxWidth));
 		outStyleData->maxHeight = localStyle->maxHeight.getOrDefault(combinedStyle->maxHeight.getOrDefault(UIStyle::DefaultMaxHeight));
+		outStyleData->overflowX = localStyle->overflowX.getOrDefault(combinedStyle->overflowX.getOrDefault(UIStyle::DefaultOverflowX));
+		outStyleData->overflowY = localStyle->overflowY.getOrDefault(combinedStyle->overflowY.getOrDefault(UIStyle::DefaultOverflowY));
 	}
 
 	// layout transform

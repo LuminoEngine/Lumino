@@ -116,17 +116,24 @@ void UIContext::setupDefaultStyle()
 			// UIThumb
 			{
 				auto s = e->mainStyleClass()->mainStyle();
+			}
+			// UIThumb.UITrack-Thumb
+			{
+				auto s = makeObject<UIStyle>();
+
 				s->margin = Thickness(2);
 				s->backgroundColor = UIColors::get(UIColorHues::Grey, 4);
 				s->cornerRadius = CornerRadius(4);
 				s->horizontalAlignment = HAlignment::Stretch;
 				s->verticalAlignment = VAlignment::Stretch;
-			}
-			// UIThumb.UITrack-Thumb
-			{
-				auto s = makeObject<UIStyle>();
+
 				s->backgroundColor = UIColors::get(UIColorHues::Blue, 4);
 				e->mainStyleClass()->addStateStyle(u"UITrack-Thumb", s);
+			}
+			if (auto s = sheet->obtainStyle(u"UIThumb.SplitterBar"))
+			{
+				s->backgroundColor = Color(0, 1, 0, 0.2);//UIColors::get(UIColorHues::Grey, 4);
+				s->margin = Thickness(-2, 0, -2, 0);
 			}
 		}
 		//--------------------------------

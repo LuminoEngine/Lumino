@@ -145,6 +145,18 @@ public:
 } // namespace detail
 
 
+enum class UIOverflowBehavior
+{
+	/** 内容がボックスに収まらない場合、ボックスからはみ出して表示する。 */
+	Visible,
+	
+	/** 内容がボックスに収まらない場合、収まらない部分は非表示とする。(スクロールバーは表示されない) */
+	Hidden,
+	
+	/** 内容がボックスに収まらない場合、スクロールバーを表示する。 */
+	Scroll,
+};
+
 class UIStyleDecorator
 	: public Object
 {
@@ -227,6 +239,8 @@ public:
 	detail::UIStyleAttribute<float> minHeight;
 	detail::UIStyleAttribute<float> maxWidth;
 	detail::UIStyleAttribute<float> maxHeight;
+	detail::UIStyleAttribute<UIOverflowBehavior> overflowX;
+	detail::UIStyleAttribute<UIOverflowBehavior> overflowY;
 
     static const float DefaultWidth;
     static const float DefaultHeight;
@@ -240,7 +254,8 @@ public:
 	static const float DefaultMinHeight;
 	static const float DefaultMaxWidth;
 	static const float DefaultMaxHeight;
-	//static const float Default;
+	static const UIOverflowBehavior DefaultOverflowX;
+	static const UIOverflowBehavior DefaultOverflowY;
 
 	// transform
     detail::UIStyleAttribute<Vector3> position;
@@ -501,6 +516,8 @@ public:
     float minHeight;
     float maxWidth;
     float maxHeight;
+	UIOverflowBehavior overflowX;
+	UIOverflowBehavior overflowY;
 
     // layout transform
     Vector3 position;

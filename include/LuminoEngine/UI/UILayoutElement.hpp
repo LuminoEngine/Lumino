@@ -112,7 +112,13 @@ public:	// TODO: internal
 
 
 
-	/** レイアウト処理の測定パスの実行中にこの要素が計算したサイズを取得します。この値は子要素が親要素へ要求する、子要素自身の最低サイズです。*/
+	/**
+	 * レイアウト処理の測定パスの実行中にこの要素が計算したサイズを取得します。
+	 *
+	 * この値は子要素が親要素へ要求する、子要素自身の最低サイズです。
+	 * 必ずしも width,height プロパティや actual-size と一致するものではありません。
+	 * margin, padding, border を考慮した、要素を配置する領域の要求サイズです。
+	 */
 	const Size& desiredSize() const { return m_desiredSize; }
 
 	const Rect& finalGlobalRect() const { return m_finalGlobalRect; }

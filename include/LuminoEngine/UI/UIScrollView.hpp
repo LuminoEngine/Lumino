@@ -268,6 +268,9 @@ public:
 
     //static Ref<UIScrollViewer> create();
 
+	void setHScrollbarVisible(bool value);
+	void setVScrollbarVisible(bool value);
+
 LN_CONSTRUCT_ACCESS:
     UIScrollViewer();
     virtual ~UIScrollViewer();

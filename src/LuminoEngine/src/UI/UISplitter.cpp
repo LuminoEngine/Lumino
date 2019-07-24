@@ -33,7 +33,18 @@ void UISplitter::onUpdateStyle(const UIStyleContext* styleContext, const detail:
     int diff = thumbCount - m_thumbs.size();
     for (int i = 0; i < diff; i++) {
         auto thumb = makeObject<UIThumb>();
-        thumb->setBackgroundColor(Color::Blue);
+		thumb->addClass(u"SplitterBar");
+		if (m_orientation == Orientation::Horizontal) {
+			thumb->setWidth(ThumbWidth);
+			thumb->setHorizontalAlignment(HAlignment::Stretch);
+			thumb->setVerticalAlignment(VAlignment::Stretch);
+		}
+		else {
+			thumb->setHeight(ThumbWidth);
+			thumb->setHorizontalAlignment(HAlignment::Stretch);
+			thumb->setVerticalAlignment(VAlignment::Stretch);
+		}
+
         addVisualChild(thumb);
         m_thumbs.add(thumb);
     }
@@ -76,6 +87,9 @@ Size UISplitter::measureOverride(const Size& constraint)
         childrenSize.width += m_thumbs.size() * ThumbWidth;
     else
         childrenSize.height += m_thumbs.size() * ThumbWidth;
+	for (auto& thumb : m_thumbs) {
+		thumb->measureLayout(constraint);
+	}
 
     // 子要素のレイアウトは UIControl に任せず自分でやるので不要。そのベースを呼ぶ。
     Size selfSize = UIElement::measureOverride(constraint);
@@ -89,8 +103,10 @@ Size UISplitter::arrangeOverride(const Size& finalSize)
         boundSize = finalSize.width;
     else
         boundSize = finalSize.height;
+	boundSize -= m_thumbs.size() * ThumbWidth;
 
 
+	// Fix size of 'Auto' and 'Direct', and count 'Ratio'
     float totalActualSize = 0.0f;
     float ratioCellCount = 0.0f;
     for (auto& cell : m_cellDefinitions) {
@@ -125,9 +141,12 @@ Size UISplitter::arrangeOverride(const Size& finalSize)
         totalOffset += cell.actualSize;
 
         // bar size
-        if (i > 0) {
-            totalOffset += ThumbWidth;
-        }
+		if (i < m_thumbs.size()) {
+			if (m_orientation == Orientation::Horizontal)
+				totalOffset += m_thumbs[i]->desiredSize().width;
+			else
+				totalOffset += m_thumbs[i]->desiredSize().height;
+		}
     }
 
     // 子要素の最終位置・サイズを確定させる
@@ -144,7 +163,7 @@ Size UISplitter::arrangeOverride(const Size& finalSize)
             // bar
             if (iChild < m_thumbs.size()) {
                 childRect.x = childRect.getRight();
-                childRect.width = ThumbWidth;
+                childRect.width = m_thumbs[iChild]->desiredSize().width;
                 m_thumbs[iChild]->arrangeLayout(childRect);
             }
         }
@@ -161,7 +180,7 @@ Size UISplitter::arrangeOverride(const Size& finalSize)
             // bar
             if (iChild < m_thumbs.size()) {
                 childRect.y = childRect.getBottom();
-                childRect.height = ThumbWidth;
+                childRect.height = m_thumbs[iChild]->desiredSize().height;
                 m_thumbs[iChild]->arrangeLayout(childRect);
             }
         }
@@ -180,6 +199,21 @@ void UISplitter::onRoutedEvent(UIEventArgs* e)
     }
     else if (e->type() == UIEvents::ScrollDragDeltaEvent)
     {
+		auto* e2 = static_cast<UIDragDeltaEventArgs*>(e);
+
+		if (m_orientation == Orientation::Horizontal) {
+			int index = m_thumbs.indexOf(static_cast<UIThumb*>(e->sender()));
+			if (index >= 0) {
+				auto& prev = m_cellDefinitions[index];
+				auto& next = m_cellDefinitions[index + 1];
+				prev.type = UILayoutLengthType::Direct;
+				prev.size += e2->offsetX();
+				next.type = UILayoutLengthType::Direct;
+				next.size -= e2->offsetX();
+				invalidate(detail::UIElementDirtyFlags::Layout, true);
+			}
+		}
+
         e->handled = true;
     }
     else if (e->type() == UIEvents::ScrollDragCompletedEvent)
