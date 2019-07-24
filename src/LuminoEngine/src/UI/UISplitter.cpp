@@ -37,7 +37,7 @@ void UISplitter::onUpdateStyle(const UIStyleContext* styleContext, const detail:
     for (int i = 0; i < diff; i++) {
         auto thumb = makeObject<UIThumb>();
 		thumb->addClass(u"SplitterBar");
-		if (m_orientation == Orientation::Horizontal) {
+		if (isHorizontal()) {
 			thumb->setWidth(ThumbWidth);
 			thumb->setHorizontalAlignment(HAlignment::Stretch);
 			thumb->setVerticalAlignment(VAlignment::Stretch);
@@ -77,21 +77,21 @@ Size UISplitter::measureOverride(const Size& constraint)
 
         // セルサイズを子要素のサイズに合わせる場合
         if (cell.type == UILayoutLengthType::Auto) {
-            if (m_orientation == Orientation::Horizontal)
+            if (isHorizontal())
                 cell.desiredSize = std::max(cell.desiredSize, childDesiredSize.width);
             else
                 cell.desiredSize = std::max(cell.desiredSize, childDesiredSize.height);
         }
 
         // total size
-        if (m_orientation == Orientation::Horizontal)
+        if (isHorizontal())
             childrenSize.width += childDesiredSize.width;
         else
             childrenSize.height += childDesiredSize.height;
     }
 
     // bar area
-    if (m_orientation == Orientation::Horizontal)
+    if (isHorizontal())
         childrenSize.width += m_thumbs.size() * ThumbWidth;
     else
         childrenSize.height += m_thumbs.size() * ThumbWidth;
@@ -107,11 +107,21 @@ Size UISplitter::measureOverride(const Size& constraint)
 Size UISplitter::arrangeOverride(const Size& finalSize)
 {
     float boundSize = 0.0f;
-    if (m_orientation == Orientation::Horizontal)
+    if (isHorizontal())
         boundSize = finalSize.width;
     else
         boundSize = finalSize.height;
-	boundSize -= m_thumbs.size() * ThumbWidth;
+
+	float barTotalSize = 0.0f;
+	for (auto& thumb : m_thumbs) {
+		if (isHorizontal()) {
+			barTotalSize += thumb->desiredSize().width;
+		}
+		else {
+			barTotalSize += thumb->desiredSize().height;
+		}
+	}
+	boundSize -= barTotalSize;
 
 	// Fix size of 'Auto' and 'Direct', and count 'Ratio'
     float totalActualSize = 0.0f;
@@ -158,7 +168,7 @@ Size UISplitter::arrangeOverride(const Size& finalSize)
 
         // bar size
 		if (i < m_thumbs.size()) {
-			if (m_orientation == Orientation::Horizontal)
+			if (isHorizontal())
 				totalOffset += m_thumbs[i]->desiredSize().width;
 			else
 				totalOffset += m_thumbs[i]->desiredSize().height;
@@ -167,7 +177,7 @@ Size UISplitter::arrangeOverride(const Size& finalSize)
 
     // 子要素の最終位置・サイズを確定させる
     auto& children = logicalChildren();
-    if (m_orientation == Orientation::Horizontal) {
+    if (isHorizontal()) {
         for (int iChild = 0; iChild < children.size(); iChild++) {
             auto& child = children[iChild];
             int cellIndex = child->getGridLayoutInfo()->layoutRow;
@@ -230,26 +240,16 @@ void UISplitter::onRoutedEvent(UIEventArgs* e)
 			auto& prev = m_cellDefinitions[index];
 			auto& next = m_cellDefinitions[index + 1];
 
-			if (m_orientation == Orientation::Horizontal) {
+			if (isHorizontal()) {
 				prev.actualSize = m_dragStartSize1 + e2->offsetX();
-				next.actualSize = m_dragStartSize2 + e2->offsetX();
+				next.actualSize = m_dragStartSize2 - e2->offsetX();
 			}
 			else {
 				prev.actualSize = m_dragStartSize1 + e2->offsetY();
-				next.actualSize = m_dragStartSize2 + e2->offsetY();
+				next.actualSize = m_dragStartSize2 - e2->offsetY();
 			}
 			invalidate(detail::UIElementDirtyFlags::Layout, true);
 		}
-/*
-		if (m_orientation == Orientation::Horizontal) {
-			int index = m_thumbs.indexOf(static_cast<UIThumb*>(e->sender()));
-			if (index >= 0) {
-				auto& prev = m_cellDefinitions[index];
-				auto& next = m_cellDefinitions[index + 1];
-				prev.actualSize = m_dragStartSize1 + e2->offsetX();
-				next.actualSize = m_dragStartSize1 + e2->offsetX();
-			}
-		}*/
 
         e->handled = true;
     }

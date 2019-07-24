@@ -66,6 +66,8 @@ protected:
     virtual void onRoutedEvent(UIEventArgs* e) override;
 
 private:
+	bool isHorizontal() const { return m_orientation == Orientation::Horizontal || m_orientation == Orientation::ReverseHorizontal; }
+
 	struct CellDefinition
 	{
 		// input data (initial data)
