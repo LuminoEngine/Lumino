@@ -736,6 +736,7 @@ public:
 	static const String FocusStates;
 	static const String CheckStates;
 	static const String ValidationStates;
+	static const String SelectionStates;
 
 	// CommonStates
 	static const String Normal;
@@ -746,6 +747,10 @@ public:
 	// CheckStates
 	static const String CheckedState;
 	static const String UncheckedState;
+
+	// SelectionStates
+	static const String Unselected;
+	static const String Selected;
 };
 
 } // namespace ln

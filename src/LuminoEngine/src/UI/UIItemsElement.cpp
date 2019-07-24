@@ -14,12 +14,37 @@ namespace ln {
 // UICollectionItem
 
 UICollectionItem::UICollectionItem()
+	: m_ownerCollectionControl(nullptr)
 {
 }
 
 void UICollectionItem::init()
 {
 	UIControl::init();
+	auto vsm = getVisualStateManager();
+	vsm->registerState(UIVisualStates::SelectionStates, UIVisualStates::Unselected);
+	vsm->registerState(UIVisualStates::SelectionStates, UIVisualStates::Selected);
+}
+
+void UICollectionItem::onRoutedEvent(UIEventArgs* e)
+{
+	if (e->type() == UIEvents::MouseDownEvent) {
+		m_ownerCollectionControl->notifyItemClicked(this);
+		e->handled = true;
+		return;
+	}
+
+	UIControl::onRoutedEvent(e);
+}
+
+void UICollectionItem::setSelectedInternal(bool selected)
+{
+	if (selected) {
+		getVisualStateManager()->gotoState(UIVisualStates::Selected);
+	}
+	else {
+		getVisualStateManager()->gotoState(UIVisualStates::Unselected);
+	}
 }
 
 //==============================================================================
@@ -34,12 +59,16 @@ UIItemsControl::UIItemsControl()
 void UIItemsControl::init()
 {
     UIScrollViewer::init();
+
+	// dummy for single select mode
+	m_selectedItems.add(nullptr);
 }
 
 void UIItemsControl::addItem(UICollectionItem* item)
 {
 	if (LN_REQUIRE(item)) return;
 	m_selectionTargets.add(item);
+	item->m_ownerCollectionControl = this;
     addElement(item);
 }
 
@@ -60,6 +89,17 @@ void UIItemsControl::onUpdateStyle(const UIStyleContext* styleContext, const det
 		setVScrollbarVisible(false);
 	}
 }
+
+void UIItemsControl::notifyItemClicked(UICollectionItem* item)
+{
+	if (m_selectedItems[0]) {
+		m_selectedItems[0]->setSelectedInternal(false);
+	}
+
+	m_selectedItems[0] = item;
+	item->setSelectedInternal(true);
+}
+
 
 //void UIItemsControl::onRoutedEvent(UIEventArgs* e)
 //{

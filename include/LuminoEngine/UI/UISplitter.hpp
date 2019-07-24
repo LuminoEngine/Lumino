@@ -57,6 +57,7 @@ public:
     UISplitter();
 	void init();
 
+	void setOrientation(Orientation value);
     void setCellDefinition(int index, UILayoutLengthType type = UILayoutLengthType::Ratio, float size = 1.0f, float minSize = 0.0f, float maxSize = FLT_MAX);
 
 protected:

@@ -61,6 +61,9 @@ void UIContext::updateStyleTree()
 
 void UIContext::setupDefaultStyle()
 {
+	Color controlBackground = UIColors::get(UIColorHues::Grey, 3);
+	Color activeControlBackground = UIColors::get(UIColorHues::Grey, 0);
+
     auto sheet = makeObject<UIStyleSheet>();
 
     {
@@ -133,7 +136,7 @@ void UIContext::setupDefaultStyle()
 			if (auto s = sheet->obtainStyle(u"UIThumb.SplitterBar"))
 			{
 				s->backgroundColor = Color(0, 1, 0, 0.2);//UIColors::get(UIColorHues::Grey, 4);
-				s->margin = Thickness(-2, 0, -2, 0);
+				s->margin = Thickness(-2, -2, -2, -2);
 			}
 		}
 		//--------------------------------
@@ -204,6 +207,19 @@ void UIContext::setupDefaultStyle()
 				s->decorators.add(icon);
 			}
         }
+
+		//--------------------------------
+		// UITabItem
+		{
+			if (auto s = sheet->obtainStyle(u"UITabItem")) {
+				s->minWidth = 100;
+				s->minHeight = 30;
+				s->backgroundColor = controlBackground;
+			}
+			if (auto s = sheet->obtainStyle(u"UITabItem:Selected")) {
+				s->backgroundColor = activeControlBackground;
+			}
+		}
     }
 
     m_styleContext->addStyleSheet(sheet);

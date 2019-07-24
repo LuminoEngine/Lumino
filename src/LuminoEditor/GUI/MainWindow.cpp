@@ -3,6 +3,7 @@
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIIcon.hpp>
 #include <LuminoEngine/UI/UISplitter.hpp>
+#include <LuminoEngine/UI/UITabBar.hpp>
 #include "MainWindow.hpp"
 
 class NavigationBar : public ln::UIItemsControl
@@ -80,6 +81,7 @@ void MainWindow::onLoaded()
     auto splitter = ln::makeObject<ln::UISplitter>();
     splitter->setCellDefinition(0, ln::UILayoutLengthType::Direct, 200);
     splitter->setCellDefinition(1);
+	splitter->setCellDefinition(2, ln::UILayoutLengthType::Direct, 100);
     addElement(splitter);
 
     {
@@ -91,12 +93,54 @@ void MainWindow::onLoaded()
         treeView->setWidth(200);
         treeView->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 2));
         splitter->addElement(treeView);
+		treeView->getGridLayoutInfo()->layoutRow = 0;
 
         //--------
 
-        auto test = ln::makeObject<UIElement>();
-        test->setBackgroundColor(ln::Color::Red);
-        splitter->addElement(test);
+		auto splitter2 = ln::makeObject<ln::UISplitter>();
+		splitter2->setOrientation(ln::Orientation::Vertical);
+		splitter2->setCellDefinition(0);
+		splitter2->setCellDefinition(1, ln::UILayoutLengthType::Direct, 200);
+		splitter->addElement(splitter2);
+
+		{
+			auto documentArea = ln::makeObject<ln::UIControl>();
+			//documentArea->setHeight(300);
+			documentArea->setBackgroundColor(ln::Color::LightGray);
+			splitter2->addElement(documentArea);
+
+			auto documentTabs = ln::makeObject<ln::UITabBar>();
+			documentTabs->setVerticalAlignment(ln::VAlignment::Top);
+			documentTabs->setBackgroundColor(ln::Color::Azure);
+			documentTabs->setHeight(30);
+			documentArea->addElement(documentTabs);
+
+			// test
+			auto tab1 = ln::makeObject<ln::UITabItem>();
+			auto text1 = ln::makeObject<ln::UITextBlock>();
+			text1->setText(u"Tab1");
+			tab1->addElement(text1);
+			documentTabs->addTab(tab1);
+
+			auto tab2 = ln::makeObject<ln::UITabItem>();
+			auto text2 = ln::makeObject<ln::UITextBlock>();
+			text2->setText(u"Tab2");
+			tab2->addElement(text2);
+			documentTabs->addTab(tab2);
+
+
+			//--------
+
+			auto toolPaneArea = ln::makeObject<UIElement>();
+			toolPaneArea->setBackgroundColor(ln::Color::Green);
+			splitter2->addElement(toolPaneArea);
+		}
+
+		//--------
+
+		auto test2 = ln::makeObject<UIElement>();
+		test2->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::DeepOrange));
+		splitter->addElement(test2);
     }
 
 	//auto d = ln::makeObject<ln::UIStyleDecorator>();

@@ -17,6 +17,14 @@ void UISplitter::init()
     UIControl::init();
 }
 
+void UISplitter::setOrientation(Orientation value)
+{
+	if (m_cellDefinitions.size() > 0) {
+		LN_NOTIMPLEMENTED();
+	}
+	m_orientation = value;
+}
+
 void UISplitter::setCellDefinition(int index, UILayoutLengthType type, float size, float minSize, float maxSize)
 {
 	if (m_cellDefinitions.size() <= index) {
@@ -36,6 +44,8 @@ void UISplitter::onUpdateStyle(const UIStyleContext* styleContext, const detail:
     int diff = thumbCount - m_thumbs.size();
     for (int i = 0; i < diff; i++) {
         auto thumb = makeObject<UIThumb>();
+
+		// TODO: style (-H, -V とかで分ける。)
 		thumb->addClass(u"SplitterBar");
 		if (isHorizontal()) {
 			thumb->setWidth(ThumbWidth);
@@ -160,13 +170,11 @@ Size UISplitter::arrangeOverride(const Size& finalSize)
 			cell.actualSize = Math::clamp(cell.desiredSize, cell.minSize, cell.maxSize);
 		}
 
-        // 座標確定
-		//if (Math::isNaN(cell.actualOffset)) {
-			cell.actualOffset = totalOffset;
-		//}
+        // fix offset
+		cell.actualOffset = totalOffset;
         totalOffset += cell.actualSize;
 
-        // bar size
+        // calculate next offset
 		if (i < m_thumbs.size()) {
 			if (isHorizontal())
 				totalOffset += m_thumbs[i]->desiredSize().width;
@@ -185,13 +193,6 @@ Size UISplitter::arrangeOverride(const Size& finalSize)
             auto& cell = m_cellDefinitions[cellIndex];
             Rect childRect(cell.actualOffset, 0, cell.actualSize, finalSize.height);
             child->arrangeLayout(childRect);
-
-            // bar
-            if (iChild < m_thumbs.size()) {
-                childRect.x = childRect.getRight();
-                childRect.width = m_thumbs[iChild]->desiredSize().width;
-                m_thumbs[iChild]->arrangeLayout(childRect);
-            }
         }
     }
     else {
@@ -202,15 +203,21 @@ Size UISplitter::arrangeOverride(const Size& finalSize)
             auto& cell = m_cellDefinitions[cellIndex];
             Rect childRect(0, cell.actualOffset, finalSize.width, cell.actualSize);
             child->arrangeLayout(childRect);
-
-            // bar
-            if (iChild < m_thumbs.size()) {
-                childRect.y = childRect.getBottom();
-                childRect.height = m_thumbs[iChild]->desiredSize().height;
-                m_thumbs[iChild]->arrangeLayout(childRect);
-            }
         }
     }
+
+	for (int iThumb = 0; iThumb < m_thumbs.size(); iThumb++) {
+		auto& thumb = m_thumbs[iThumb];
+		auto& cell = m_cellDefinitions[iThumb];
+		Rect rect;
+		if (isHorizontal()) {
+			rect = Rect(cell.actualOffset + cell.actualSize, 0, thumb->desiredSize().width, finalSize.height);
+		}
+		else {
+			rect = Rect(0, cell.actualOffset + cell.actualSize, finalSize.width, thumb->desiredSize().height);
+		}
+		thumb->arrangeLayout(rect);
+	}
 
     // 子要素のレイアウトは UIControl に任せず自分でやるので不要。そのベースを呼ぶ。
     Size selfSize = UIElement::arrangeOverride(finalSize);

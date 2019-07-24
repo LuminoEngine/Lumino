@@ -803,6 +803,7 @@ void UIStyleContext::combineStyle(UIStyle* style, const StringRef& elementName, 
 {
 	auto set = findStyleSet(elementName);
 
+#if 1
 	style->mergeFrom(set->mainStyleClass()->mainStyle());
 
 	if (classList) {
@@ -813,6 +814,23 @@ void UIStyleContext::combineStyle(UIStyle* style, const StringRef& elementName, 
 			}
 		}
 	}
+#else
+	bool classFound = false;
+	if (classList) {
+		for (auto& name : *classList) {
+			auto cs = set->findStyleClass(name);
+			if (cs) {
+				style->mergeFrom(cs->mainStyle());
+				classFound = true;
+			}
+		}
+	}
+
+	// class 一致が無ければ elementName のみで識別されるスタイルを使う
+	if (!classFound) {
+		style->mergeFrom(set->mainStyleClass()->mainStyle());
+	}
+#endif
 }
 
 
@@ -1275,6 +1293,7 @@ void UIVisualStateManager::combineStyle(UIStyle* style, const UIStyleContext* st
 	// TODO: これキャッシュできると思う
 	auto set = styleContext->findStyleSet(elementName);
 
+#if 1
 	auto styleClass = set->mainStyleClass();
 	if (styleClass) {
 		for (auto& group : m_groups) {
@@ -1290,7 +1309,6 @@ void UIVisualStateManager::combineStyle(UIStyle* style, const UIStyleContext* st
 		for (auto& name : *classList) {
 			auto cs = set->findStyleClass(name);
 			if (cs) {
-				//std::cout << "ff:" << name << std::endl;
 				for (auto& group : m_groups) {
 					if (group.activeStateIndex >= 0) {
 						if (auto stateStyle = cs->findStateStyle(group.stateNames[group.activeStateIndex])) {
@@ -1306,6 +1324,44 @@ void UIVisualStateManager::combineStyle(UIStyle* style, const UIStyleContext* st
 			}
 		}
 	}
+
+#else
+	bool classFound = false;
+	if (classList) {
+		for (auto& name : *classList) {
+			auto cs = set->findStyleClass(name);
+			if (cs) {
+				classFound = true;
+				for (auto& group : m_groups) {
+					if (group.activeStateIndex >= 0) {
+						if (auto stateStyle = cs->findStateStyle(group.stateNames[group.activeStateIndex])) {
+
+							//if (group.stateNames[group.activeStateIndex] == u"Pressed") {
+							//	std::cout << group.stateNames[group.activeStateIndex] << std::endl;
+							//}
+							style->mergeFrom(stateStyle);
+
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// class 一致が無ければ elementName のみで識別されるスタイルを使う
+	if (!classFound) {
+		auto styleClass = set->mainStyleClass();
+		if (styleClass) {
+			for (auto& group : m_groups) {
+				if (group.activeStateIndex >= 0) {
+					if (auto stateStyle = styleClass->findStateStyle(group.stateNames[group.activeStateIndex])) {
+						style->mergeFrom(stateStyle);
+					}
+				}
+			}
+		}
+	}
+#endif
 }
 
 //detail::UIStyleInstance* UIVisualStateManager::resolveStyle(const UIStyleContext* styleContext, const ln::String& className)
@@ -1365,6 +1421,7 @@ const String UIVisualStates::CommonStates = u"CommonGroup";
 const String UIVisualStates::FocusStates = u"FocusGroup";
 const String UIVisualStates::CheckStates = u"CheckStates";
 const String UIVisualStates::ValidationStates = u"ValidationStates";
+const String UIVisualStates::SelectionStates = u"SelectionStates";
 
 const String UIVisualStates::Normal = u"Normal";
 const String UIVisualStates::MouseOver = u"MouseOver";
@@ -1373,6 +1430,9 @@ const String UIVisualStates::Disabled = u"Disabled";
 
 const String UIVisualStates::CheckedState = u"Checked";
 const String UIVisualStates::UncheckedState = u"Unchecked";
+
+const String UIVisualStates::Unselected = u"Unselected";
+const String UIVisualStates::Selected = u"Selected";
 
 } // namespace ln
 

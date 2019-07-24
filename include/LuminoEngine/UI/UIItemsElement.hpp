@@ -4,6 +4,7 @@
 #include "UIItemsModel.hpp"
 
 namespace ln {
+class UIItemsControl;
 class UIToggleButton;
 class UITreeView;
 
@@ -14,15 +15,21 @@ class UICollectionItem
 public:
 
 protected:
+	virtual void onRoutedEvent(UIEventArgs* e) override;
 
 LN_CONSTRUCT_ACCESS:
 	UICollectionItem();
 	void init();
 
 private:
+	void setSelectedInternal(bool selected);
+
+	UIItemsControl* m_ownerCollectionControl;
+
+	friend class UIItemsControl;
 };
 
-class UIItemsControl
+class UIItemsControl	// TODO: UICollectionItem がほかにいい名前思いつかなければ、CollectionControl かなぁ・・・
 	: public UIScrollViewer
 {
 protected:
@@ -40,7 +47,12 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 private:
+	void notifyItemClicked(UICollectionItem* item);
+
 	List<Ref<UICollectionItem>> m_selectionTargets;
+	List<UICollectionItem*> m_selectedItems;
+
+	friend class UICollectionItem;
 };
 
 
