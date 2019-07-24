@@ -17,14 +17,17 @@ void UISplitter::init()
     UIControl::init();
 }
 
-void UISplitter::addCellDefinition(UILayoutLengthType type, float size, float minSize, float maxSize)
+void UISplitter::setCellDefinition(int index, UILayoutLengthType type, float size, float minSize, float maxSize)
 {
-    detail::GridDefinitionData data;
-    data.type = type;
-    data.size = size;
-    data.minSize = minSize;
-    data.maxSize = maxSize;
-    m_cellDefinitions.add(data);
+	if (m_cellDefinitions.size() <= index) {
+		m_cellDefinitions.resize(index + 1);
+	}
+
+	CellDefinition& cell = m_cellDefinitions[index];
+	cell.type = type;
+	cell.size = size;
+	cell.minSize = minSize;
+	cell.maxSize = maxSize;
 }
 
 void UISplitter::onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)
@@ -54,9 +57,14 @@ void UISplitter::onUpdateStyle(const UIStyleContext* styleContext, const detail:
 
 Size UISplitter::measureOverride(const Size& constraint)
 {
-    // まずは子を measure
+	// Create missing cells.
+	auto& children = logicalChildren();
+	if (m_cellDefinitions.size() < children.size()) {
+		m_cellDefinitions.resize(children.size());
+	}
+
+    // first, measure. and total size.
     Size childrenSize;
-    auto& children = logicalChildren();
     for (int iChild = 0; iChild < children.size(); iChild++) {
         auto& child = children[iChild];
         child->measureLayout(constraint);
@@ -65,14 +73,14 @@ Size UISplitter::measureOverride(const Size& constraint)
         int cellIndex = getGridLayoutInfo()->layoutRow;
         if (cellIndex < 0) cellIndex = iChild;
 
-        detail::GridDefinitionData* cell = (0 <= cellIndex && cellIndex < m_cellDefinitions.size()) ? &m_cellDefinitions[cellIndex] : nullptr;
+		CellDefinition& cell = m_cellDefinitions[cellIndex];
 
         // セルサイズを子要素のサイズに合わせる場合
-        if (cell != nullptr && cell->type == UILayoutLengthType::Auto) {
+        if (cell.type == UILayoutLengthType::Auto) {
             if (m_orientation == Orientation::Horizontal)
-                cell->desiredSize = std::max(cell->desiredSize, childDesiredSize.width);
+                cell.desiredSize = std::max(cell.desiredSize, childDesiredSize.width);
             else
-                cell->desiredSize = std::max(cell->desiredSize, childDesiredSize.height);
+                cell.desiredSize = std::max(cell.desiredSize, childDesiredSize.height);
         }
 
         // total size
@@ -105,20 +113,23 @@ Size UISplitter::arrangeOverride(const Size& finalSize)
         boundSize = finalSize.height;
 	boundSize -= m_thumbs.size() * ThumbWidth;
 
-
 	// Fix size of 'Auto' and 'Direct', and count 'Ratio'
     float totalActualSize = 0.0f;
     float ratioCellCount = 0.0f;
     for (auto& cell : m_cellDefinitions) {
-        if (cell.type == UILayoutLengthType::Auto || cell.type == UILayoutLengthType::Direct) {
-            cell.actualSize = cell.getAvailableDesiredSize();
-            totalActualSize += cell.actualSize;
-        }
-        else {
-            ratioCellCount += cell.getRatioSize();
-        }
+		if (cell.type == UILayoutLengthType::Ratio) {
+			ratioCellCount += cell.size;
+		}
+		else {
+			if (cell.type == UILayoutLengthType::Auto) {
+				// measure で計算した desiredSize をそのまま使う
+			}
+			else if (cell.type == UILayoutLengthType::Direct) {
+				cell.desiredSize = cell.size;
+			}
+			totalActualSize += cell.desiredSize;
+		}
     }
-
 
     // "1*" 分のセルの領域を計算する
     float ratioUnit = (ratioCellCount != 0.0f) ? (boundSize - totalActualSize) / ratioCellCount : 0.0f;
@@ -131,13 +142,18 @@ Size UISplitter::arrangeOverride(const Size& finalSize)
     for (int i = 0; i < m_cellDefinitions.size(); i++) {
         auto& cell = m_cellDefinitions[i];
         if (cell.type == UILayoutLengthType::Ratio) {
-            cell.actualSize = ratioUnit * cell.getRatioSize();
+            cell.desiredSize = ratioUnit * cell.size;
         }
 
-        cell.adjustActualSize();
+		// adjust
+		if (Math::isNaN(cell.actualSize)) {
+			cell.actualSize = Math::clamp(cell.desiredSize, cell.minSize, cell.maxSize);
+		}
 
         // 座標確定
-        cell.actualOffset = totalOffset;
+		//if (Math::isNaN(cell.actualOffset)) {
+			cell.actualOffset = totalOffset;
+		//}
         totalOffset += cell.actualSize;
 
         // bar size
@@ -195,24 +211,45 @@ void UISplitter::onRoutedEvent(UIEventArgs* e)
 {
     if (e->type() == UIEvents::ScrollDragStartedEvent)
     {
+		int index = m_thumbs.indexOf(static_cast<UIThumb*>(e->sender()));
+		if (index >= 0) {
+			auto& prev = m_cellDefinitions[index];
+			auto& next = m_cellDefinitions[index + 1];
+			m_dragStartSize1 = prev.actualSize;
+			m_dragStartSize2 = next.actualSize;
+		}
+
         e->handled = true;
     }
     else if (e->type() == UIEvents::ScrollDragDeltaEvent)
     {
 		auto* e2 = static_cast<UIDragDeltaEventArgs*>(e);
 
+		int index = m_thumbs.indexOf(static_cast<UIThumb*>(e->sender()));
+		if (index >= 0) {
+			auto& prev = m_cellDefinitions[index];
+			auto& next = m_cellDefinitions[index + 1];
+
+			if (m_orientation == Orientation::Horizontal) {
+				prev.actualSize = m_dragStartSize1 + e2->offsetX();
+				next.actualSize = m_dragStartSize2 + e2->offsetX();
+			}
+			else {
+				prev.actualSize = m_dragStartSize1 + e2->offsetY();
+				next.actualSize = m_dragStartSize2 + e2->offsetY();
+			}
+			invalidate(detail::UIElementDirtyFlags::Layout, true);
+		}
+/*
 		if (m_orientation == Orientation::Horizontal) {
 			int index = m_thumbs.indexOf(static_cast<UIThumb*>(e->sender()));
 			if (index >= 0) {
 				auto& prev = m_cellDefinitions[index];
 				auto& next = m_cellDefinitions[index + 1];
-				prev.type = UILayoutLengthType::Direct;
-				prev.size += e2->offsetX();
-				next.type = UILayoutLengthType::Direct;
-				next.size -= e2->offsetX();
-				invalidate(detail::UIElementDirtyFlags::Layout, true);
+				prev.actualSize = m_dragStartSize1 + e2->offsetX();
+				next.actualSize = m_dragStartSize1 + e2->offsetX();
 			}
-		}
+		}*/
 
         e->handled = true;
     }

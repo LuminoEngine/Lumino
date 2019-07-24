@@ -78,8 +78,8 @@ void MainWindow::onLoaded()
 
 
     auto splitter = ln::makeObject<ln::UISplitter>();
-    splitter->addCellDefinition(ln::UILayoutLengthType::Direct, 200);
-    splitter->addCellDefinition();
+    splitter->setCellDefinition(0, ln::UILayoutLengthType::Direct, 200);
+    splitter->setCellDefinition(1);
     addElement(splitter);
 
     {

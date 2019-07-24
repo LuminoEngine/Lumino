@@ -43,11 +43,6 @@ struct GridDefinitionData
     {
         return (size == 0.0f) ? 1.0f : size;
     }
-
-    void adjustActualSize()
-    {
-        actualSize = Math::clamp(actualSize, minSize, maxSize);
-    }
 };
 
 } // namespace detail
@@ -62,7 +57,7 @@ public:
     UISplitter();
 	void init();
 
-    void addCellDefinition(UILayoutLengthType type = UILayoutLengthType::Ratio, float size = 1.0f, float minSize = 0.0f, float maxSize = FLT_MAX);
+    void setCellDefinition(int index, UILayoutLengthType type = UILayoutLengthType::Ratio, float size = 1.0f, float minSize = 0.0f, float maxSize = FLT_MAX);
 
 protected:
     virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
@@ -71,9 +66,25 @@ protected:
     virtual void onRoutedEvent(UIEventArgs* e) override;
 
 private:
+	struct CellDefinition
+	{
+		// input data (initial data)
+		UILayoutLengthType type = UILayoutLengthType::Ratio;
+		float size = 1.0f;
+		float minSize = 0.0f;
+		float maxSize = FLT_MAX;
+
+		// working data
+		float desiredSize = Math::NaN;
+		float actualOffset = Math::NaN;
+		float actualSize = Math::NaN;
+	};
+
     Orientation m_orientation = Orientation::Horizontal;
-    List<detail::GridDefinitionData> m_cellDefinitions;
+    List<CellDefinition> m_cellDefinitions;
     List<Ref<UIThumb>> m_thumbs;
+	float m_dragStartSize1;
+	float m_dragStartSize2;
 };
 
 } // namespace ln
