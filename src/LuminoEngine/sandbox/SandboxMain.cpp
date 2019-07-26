@@ -220,8 +220,7 @@ int main(int argc, char** argv)
     Engine::mainCamera()->setBackgroundColor(Color::Gray);
 
 
-    auto texture1 = makeObject<Texture2D>(u"D:/tmp/110220c_as019.png");
-    auto sprite1 = Sprite::create(texture1, 3, 3);
+    auto sprite1 = Sprite::create(Assets::loadTexture(u"Sprite1"), 3, 3);
 
 
 #if 0

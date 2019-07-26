@@ -27,6 +27,8 @@ EditorApplication::~EditorApplication()
 
 ln::Result EditorApplication::init()
 {
+	ln::EngineSettings::setMainWindowSize(1000, 600);
+	ln::EngineSettings::setMainBackBufferSize(1000, 600);
     ln::detail::EngineDomain::engineManager()->settings().defaultObjectsCreation = false;
     ln::detail::EngineDomain::engineManager()->init();
     onInit();

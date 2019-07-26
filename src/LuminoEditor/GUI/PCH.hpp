@@ -2,6 +2,11 @@
 
 #define LN_MSVC_DISABLE_LIBRARY_LINK
 #include <LuminoEngine.hpp>
+#include <LuminoEngine/UI/UIItemsElement.hpp>
+#include <LuminoEngine/UI/UIStyle.hpp>
+#include <LuminoEngine/UI/UIIcon.hpp>
+#include <LuminoEngine/UI/UISplitter.hpp>
+#include <LuminoEngine/UI/UITabBar.hpp>
 
 template<class T>
 using Ref = ln::Ref<T>;

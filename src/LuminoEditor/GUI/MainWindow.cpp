@@ -1,42 +1,44 @@
 ﻿
-#include <LuminoEngine/UI/UIItemsElement.hpp>
-#include <LuminoEngine/UI/UIStyle.hpp>
-#include <LuminoEngine/UI/UIIcon.hpp>
-#include <LuminoEngine/UI/UISplitter.hpp>
-#include <LuminoEngine/UI/UITabBar.hpp>
+
+#include "NavigatorManager.hpp"
+#include "DocumentManager.hpp"
+#include "ToolPanesArea.hpp"
+#include "OutputPane.hpp"
+#include "ProblemsPane.hpp"
+#include "InspectorPane.hpp"
 #include "MainWindow.hpp"
 
-class NavigationBar : public ln::UIItemsControl
-{
-public:
-    static const int ItemSize = 40;
-
-	void addItem(const ln::String& text);
-
-protected:
-	//virtual UIControl* generateItem(UIElement* content) override;
-
-private:
-};
-
-void NavigationBar::addItem(const ln::String& text)
-{
-	auto textblock = ln::makeObject<ln::UITextBlock>();
-	textblock->setText(text);
-    textblock->setTextColor(ln::Color::White);
-    textblock->setHorizontalAlignment(ln::HAlignment::Center);
-    textblock->setVerticalAlignment(ln::VAlignment::Center);
-
-	auto item = ln::makeObject<ln::UICollectionItem>();
-	item->addElement(textblock);
-    item->setWidth(ItemSize);
-    item->setHeight(ItemSize);
-    item->setBorderThickness(ln::Thickness(4, 0, 0, 0));
-    item->setBorderColor(ln::UIColors::get(ln::UIColorHues::LightGreen));
-
-	UIItemsControl::addItem(item);
-}
-
+//class NavigationBar : public ln::UIItemsControl
+//{
+//public:
+//    static const int ItemSize = 40;
+//
+//	void addItem(const ln::String& text);
+//
+//protected:
+//	//virtual UIControl* generateItem(UIElement* content) override;
+//
+//private:
+//};
+//
+//void NavigationBar::addItem(const ln::String& text)
+//{
+//	auto textblock = ln::makeObject<ln::UITextBlock>();
+//	textblock->setText(text);
+//    textblock->setTextColor(ln::Color::White);
+//    textblock->setHorizontalAlignment(ln::HAlignment::Center);
+//    textblock->setVerticalAlignment(ln::VAlignment::Center);
+//
+//	auto item = ln::makeObject<ln::UICollectionItem>();
+//	item->addElement(textblock);
+//    item->setWidth(ItemSize);
+//    item->setHeight(ItemSize);
+//    item->setBorderThickness(ln::Thickness(4, 0, 0, 0));
+//    item->setBorderColor(ln::UIColors::get(ln::UIColorHues::LightGreen));
+//
+//	UIItemsControl::addItem(item);
+//}
+//
 
 
 class FileSystemTreeViewItem
@@ -57,6 +59,7 @@ public:
 
 MainWindow::MainWindow()
 {
+	m_updateMode = ln::UIFrameWindowUpdateMode::EventDispatches;
 }
 
 void MainWindow::onLoaded()
@@ -68,12 +71,12 @@ void MainWindow::onLoaded()
     layout1->lastStretch = true;
 	setLayoutPanel(layout1);
 
-	auto sidebar = ln::makeObject<NavigationBar>();
-	sidebar->setWidth(40);
-	sidebar->setBackgroundColor(ln::Color::Gray);
-	sidebar->setHorizontalAlignment(ln::HAlignment::Stretch);
-	sidebar->setVerticalAlignment(ln::VAlignment::Stretch);
-	addElement(sidebar);
+	m_navigatorManager = ln::makeObject<NavigatorManager>();
+	m_navigatorManager->setWidth(40);
+	m_navigatorManager->setBackgroundColor(ln::Color::Gray);
+	m_navigatorManager->setHorizontalAlignment(ln::HAlignment::Stretch);
+	m_navigatorManager->setVerticalAlignment(ln::VAlignment::Stretch);
+	addElement(m_navigatorManager);
 
 
 
@@ -131,16 +134,19 @@ void MainWindow::onLoaded()
 
 			//--------
 
-			auto toolPaneArea = ln::makeObject<UIElement>();
-			toolPaneArea->setBackgroundColor(ln::Color::Green);
-			splitter2->addElement(toolPaneArea);
+			m_toolPanesArea = ln::makeObject<ToolPanesArea>();
+			m_toolPanesArea->setBackgroundColor(ln::Color::Green);
+			splitter2->addElement(m_toolPanesArea);
+
+			m_outputPane = ln::makeObject<OutputPane>();
+			m_toolPanesArea->addPane(m_outputPane);
 		}
 
 		//--------
 
-		auto test2 = ln::makeObject<UIElement>();
-		test2->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::DeepOrange));
-		splitter->addElement(test2);
+		m_inspectorPanesArea = ln::makeObject<ToolPanesArea>();
+		m_inspectorPanesArea->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::DeepOrange));
+		splitter->addElement(m_inspectorPanesArea);
     }
 
 	//auto d = ln::makeObject<ln::UIStyleDecorator>();

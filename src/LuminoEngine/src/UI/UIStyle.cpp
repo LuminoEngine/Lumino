@@ -174,7 +174,7 @@ const bool UIStyle::DefaultShadowInset = false;
 // text
 const Color UIStyle::DefaultTextColor = Color(0.0f, 0.0f, 0.0f, 1.0f);
 const String UIStyle::DefaultFontFamily = String::Empty;
-const float UIStyle::DefaultFontSize = 18.0f;// WPF default は 12 だが、それだとデスクトップアプリ向けなので少し小さい。Lumino としては 18 をデフォルトとする。
+const float UIStyle::DefaultFontSize = 15.0f;// WPF default は 12 だが、それだとデスクトップアプリ向けなので少し小さい。Lumino としては 18 をデフォルトとする。
 const UIFontWeight UIStyle::DefaultFontWeight = UIFontWeight::Normal;
 const UIFontStyle UIStyle::DefaultFontStyle = UIFontStyle::Normal;
 

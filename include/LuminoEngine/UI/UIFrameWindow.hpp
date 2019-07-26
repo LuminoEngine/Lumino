@@ -16,6 +16,12 @@ class UIRenderView;
 class UIViewport;
 class UIFrameWindow;
 
+enum class UIFrameWindowUpdateMode
+{
+	Polling,
+	EventDispatches,
+};
+
 namespace detail {
    
 // マウスキャプチャは inject する側でとっておくこと。UI モジュール内ではキャプチャの管理は行わない。
@@ -107,6 +113,7 @@ public:  // TODO: internal
 	Ref<DepthBuffer> m_depthBuffer;
 	Ref<UIRenderView> m_renderView;
     Size m_clientSize;
+	UIFrameWindowUpdateMode m_updateMode;
 
 	Event<UIEventHandler> m_onClosed;
 	bool m_autoDisposePlatformWindow;

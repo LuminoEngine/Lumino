@@ -197,6 +197,7 @@ UIElement* UIInputInjector::mouseHoveredElement()
 
 UIFrameWindow::UIFrameWindow()
 	: m_autoDisposePlatformWindow(true)
+	, m_updateMode(UIFrameWindowUpdateMode::Polling)
 {
 }
 
@@ -206,7 +207,7 @@ UIFrameWindow::~UIFrameWindow()
 
 void UIFrameWindow::init()
 {
-    UIElement::init();
+	UIContainerElement::init();
     m_manager = detail::EngineDomain::uiManager();
     specialElementFlags().set(detail::UISpecialElementFlags::FrameWindow);
     m_inputInjector = makeRef<detail::UIInputInjector>(this);
@@ -457,14 +458,17 @@ void UIFrameWindow::onRoutedEvent(UIEventArgs* e)
 
 void UIFrameWindow::invalidate(detail::UIElementDirtyFlags flags, bool toAncestor)
 {
-    if (!m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Style) && testFlag(flags, detail::UIElementDirtyFlags::Style)) {
-        postEvent(UIEventArgs::create(this, UIEvents::RequestVisualUpdateEvent));
-    }
-    if (!m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Layout) && testFlag(flags, detail::UIElementDirtyFlags::Layout)) {
-        postEvent(UIEventArgs::create(this, UIEvents::RequestVisualUpdateEvent));
-    }
-	if (!m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Render) && testFlag(flags, detail::UIElementDirtyFlags::Render)) {
-		postEvent(UIEventArgs::create(this, UIEvents::RequestVisualRedrawEvent));
+	if (m_updateMode == UIFrameWindowUpdateMode::EventDispatches)
+	{
+		if (!m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Style) && testFlag(flags, detail::UIElementDirtyFlags::Style)) {
+			postEvent(UIEventArgs::create(this, UIEvents::RequestVisualUpdateEvent));
+		}
+		if (!m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Layout) && testFlag(flags, detail::UIElementDirtyFlags::Layout)) {
+			postEvent(UIEventArgs::create(this, UIEvents::RequestVisualUpdateEvent));
+		}
+		if (!m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Render) && testFlag(flags, detail::UIElementDirtyFlags::Render)) {
+			postEvent(UIEventArgs::create(this, UIEvents::RequestVisualRedrawEvent));
+		}
 	}
 
     UIContainerElement::invalidate(flags, toAncestor);

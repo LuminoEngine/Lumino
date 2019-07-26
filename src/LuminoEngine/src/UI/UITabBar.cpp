@@ -26,6 +26,13 @@ void UITabItem::init()
 //	分ける用途としてはカスタマイズ性だが、例えば昨今のブラウザの TabBar と Content の間に AddressBar を入れたいようなときに使う。
 //
 //	クローズボタンは、CloseEvent を RoutedEvent で上に投げる。
+//
+//	- クローズボタン
+//	- ピン止めボタン
+//	- アイコン
+//	- 文字色変更
+//	- バッジアイコン (VSCodeの PROBLEMS 数)
+//
 
 UITabBar::UITabBar()
 {

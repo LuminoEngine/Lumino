@@ -562,6 +562,9 @@ void EngineManager::updateFrame()
 	if (m_platformManager) {
 		m_platformManager->windowManager()->processSystemEventQueue(EventProcessingMode::Polling);
 	}
+	if (m_uiManager) {
+		m_uiManager->dispatchPostedEvents();
+	}
 
 	if (m_mainUIContext) {
 		// onUpdate のユーザー処理として、2D <-> 3D 変換したいことがあるが、それには ViewPixelSize が必要になる。
