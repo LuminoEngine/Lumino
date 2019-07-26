@@ -179,6 +179,11 @@ Ref<IGraphicsContext> IGraphicsDevice::createGraphicsContext()
 	return onCreateGraphicsContext();
 }
 
+void IGraphicsDevice::flushCommandBuffer(IGraphicsContext* context, ITexture* affectRendreTarget)
+{
+	onFlushCommandBuffer(context, affectRendreTarget);
+}
+
 Ref<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const UnifiedShader* unifiedShader, UnifiedShader::PassId passId, DiagnosticsManager* diag)
 {
     LN_DCHECK(unifiedShader);
@@ -407,17 +412,6 @@ void IGraphicsContext::drawPrimitiveIndexed(int startIndex, int primitiveCount)
     commitStatus(GraphicsContextSubmitSource_Draw);
     onDrawPrimitiveIndexed(m_staging.pipelineState.topology, startIndex, primitiveCount);
     endCommit();
-}
-
-void IGraphicsContext::flushCommandBuffer(ITexture* affectRendreTarget)
-{
-    onFlushCommandBuffer(affectRendreTarget);
-}
-
-void IGraphicsContext::present(ISwapChain* swapChain)
-{
-    onPresent(swapChain);
-    m_device->collectGarbageObjects();
 }
 
 void IGraphicsContext::commitStatus(GraphicsContextSubmitSource submitSource)

@@ -168,6 +168,8 @@ public:
 	Ref<IShaderPass> createShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
 	Ref<IGraphicsContext> createGraphicsContext();
 
+	void flushCommandBuffer(IGraphicsContext* context, ITexture* affectRendreTarget);  // 呼ぶ前に end しておくこと
+
 	virtual IGraphicsContext* getGraphicsContext() const = 0;
 
     // utility
@@ -190,6 +192,7 @@ protected:
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) = 0;
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) = 0;
 	virtual Ref<IGraphicsContext> onCreateGraphicsContext() = 0;
+	virtual void onFlushCommandBuffer(IGraphicsContext* context, ITexture* affectRendreTarget) = 0;
 
 /////////
 	//virtual void onBeginCommandRecoding() = 0;
@@ -261,9 +264,6 @@ public:
     void clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil);
     void drawPrimitive(int startVertex, int primitiveCount);
     void drawPrimitiveIndexed(int startIndex, int primitiveCount);
-    void flushCommandBuffer(ITexture* affectRendreTarget);  // 呼ぶ前に end しておくこと
-
-    void present(ISwapChain* swapChain);
 
     /////////
 
@@ -294,9 +294,6 @@ public:	// TODO:
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
 	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) = 0;
 	virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount) = 0;
-	virtual void onFlushCommandBuffer(ITexture* affectRendreTarget) = 0;
-
-	virtual void onPresent(ISwapChain* swapChain) = 0;
 
 	uint32_t stagingStateDirtyFlags() const { return m_stateDirtyFlags; }
 	const GraphicsContextState& stagingState() const { return m_staging; }
@@ -325,6 +322,8 @@ public:
 
 
 	virtual Result resizeBackbuffer(uint32_t width, uint32_t height) = 0;
+
+	virtual void present() = 0;
 
 protected:
 	virtual ~ISwapChain() = default;

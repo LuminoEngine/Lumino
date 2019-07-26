@@ -209,7 +209,7 @@ void OpenGLDevice::init(const Settings& settings)
     {
 #ifdef LN_GLFW
 	    auto glfwContext = makeRef<GLFWContext>();
-	    glfwContext->init(settings.mainWindow);
+	    glfwContext->init(this, settings.mainWindow);
 	    m_glContext = glfwContext;
 #endif
     }
@@ -891,55 +891,6 @@ void GLGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int 
 	}
 }
 
-void GLGraphicsContext::onPresent(ISwapChain* swapChain)
-{
-	auto* s = static_cast<GLSwapChain*>(swapChain);
-
-	SizeI endpointSize;
-	s->getBackendBufferSize(&endpointSize);
-
-	SizeI bufferSize = s->getRenderTarget(0)->realSize();
-
-
-
-	// SwapChain の Framebuffer をウィンドウのバックバッファへ転送
-	{
-		GL_CHECK(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, s->defaultFBO()));
-		GL_CHECK(glBindFramebuffer(GL_READ_FRAMEBUFFER, s->fbo()));
-
-		//LN_LOG_INFO << endpointSize.width << ", " << endpointSize.height << ":" << bufferSize.width << ", " << bufferSize.height;
-
-		// FIXME:
-		// Viewport を転送元に合わせないと、転送先全体に拡大してBlitできなかった。
-		// ちょっと腑に落ちないが・・・。
-		GL_CHECK(glDisable(GL_SCISSOR_TEST));
-		GL_CHECK(glScissor(0, 0, bufferSize.width, bufferSize.height));
-		GL_CHECK(glViewport(0, 0, bufferSize.width, bufferSize.height));
-
-		//// 現在のフレームバッファにアタッチされているカラーバッファのレンダーバッファ名を取得
-		//GLint colorBufferName = 0;
-		//GL_CHECK(glGetFramebufferAttachmentParameteriv(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &colorBufferName));
-
-		//// レンダーバッファ(カラーバッファ)をバインド
-		//GL_CHECK(glBindRenderbuffer(GL_RENDERBUFFER, colorBufferName));
-
-		// カラーバッファの幅と高さを取得
-		//GLint endpointWidth;
-		//GLint endpointHeight;
-		//GL_CHECK(glGetRenderbufferParameteriv(GL_FRAMEBUFFER, GL_RENDERBUFFER_WIDTH, &endpointWidth));
-		//GL_CHECK(glGetRenderbufferParameteriv(GL_FRAMEBUFFER, GL_RENDERBUFFER_HEIGHT, &endpointHeight));
-
-		// Blit
-		// ※EAGL(iOS) は destination が FBO ではない場合失敗する。それ以外は RenderTarget でも成功していた。
-		// TODO: デュアルディスプレイで指しなおすと、次回起動時に失敗する。PC再起動で治る。
-		GL_CHECK(glBlitFramebuffer(0, 0, bufferSize.width, bufferSize.height, 0, 0, endpointSize.width, endpointSize.height, GL_COLOR_BUFFER_BIT, GL_NEAREST));
-
-		GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, s->defaultFBO()));
-	}
-
-	m_device->glContext()->swap(s);
-}
-
 void GLGraphicsContext::getPrimitiveInfo(PrimitiveTopology primitive, int primitiveCount, GLenum* gl_prim, int* vertexCount)
 {
 	switch (primitive)
@@ -984,8 +935,9 @@ GLContext::GLContext()
 //=============================================================================
 // GLSwapChain
 
-GLSwapChain::GLSwapChain()
-	: m_backbuffer(nullptr)
+GLSwapChain::GLSwapChain(OpenGLDevice* device)
+	: m_device(device)
+	, m_backbuffer(nullptr)
 	, m_fbo(0)
     , m_defaultFBO(0)
     , m_backengBufferWidth(0)
@@ -1058,12 +1010,59 @@ void GLSwapChain::setBackendBufferSize(int width, int height)
     m_backengBufferHeight = height;
 }
 
+void GLSwapChain::present()
+{
+	SizeI endpointSize;
+	getBackendBufferSize(&endpointSize);
+
+	SizeI bufferSize = getRenderTarget(0)->realSize();
+
+
+
+	// SwapChain の Framebuffer をウィンドウのバックバッファへ転送
+	{
+		GL_CHECK(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, defaultFBO()));
+		GL_CHECK(glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo()));
+
+		//LN_LOG_INFO << endpointSize.width << ", " << endpointSize.height << ":" << bufferSize.width << ", " << bufferSize.height;
+
+		// FIXME:
+		// Viewport を転送元に合わせないと、転送先全体に拡大してBlitできなかった。
+		// ちょっと腑に落ちないが・・・。
+		GL_CHECK(glDisable(GL_SCISSOR_TEST));
+		GL_CHECK(glScissor(0, 0, bufferSize.width, bufferSize.height));
+		GL_CHECK(glViewport(0, 0, bufferSize.width, bufferSize.height));
+
+		//// 現在のフレームバッファにアタッチされているカラーバッファのレンダーバッファ名を取得
+		//GLint colorBufferName = 0;
+		//GL_CHECK(glGetFramebufferAttachmentParameteriv(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &colorBufferName));
+
+		//// レンダーバッファ(カラーバッファ)をバインド
+		//GL_CHECK(glBindRenderbuffer(GL_RENDERBUFFER, colorBufferName));
+
+		// カラーバッファの幅と高さを取得
+		//GLint endpointWidth;
+		//GLint endpointHeight;
+		//GL_CHECK(glGetRenderbufferParameteriv(GL_FRAMEBUFFER, GL_RENDERBUFFER_WIDTH, &endpointWidth));
+		//GL_CHECK(glGetRenderbufferParameteriv(GL_FRAMEBUFFER, GL_RENDERBUFFER_HEIGHT, &endpointHeight));
+
+		// Blit
+		// ※EAGL(iOS) は destination が FBO ではない場合失敗する。それ以外は RenderTarget でも成功していた。
+		// TODO: デュアルディスプレイで指しなおすと、次回起動時に失敗する。PC再起動で治る。
+		GL_CHECK(glBlitFramebuffer(0, 0, bufferSize.width, bufferSize.height, 0, 0, endpointSize.width, endpointSize.height, GL_COLOR_BUFFER_BIT, GL_NEAREST));
+
+		GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, defaultFBO()));
+	}
+
+	m_device->glContext()->swap(this);
+}
+
 //=============================================================================
 // EmptyGLContext
 
 Ref<GLSwapChain> EmptyGLContext::createSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
 {
-	auto ptr = makeRef<EmptyGLSwapChain>();
+	auto ptr = makeRef<EmptyGLSwapChain>(nullptr);
     ptr->setBackendBufferSize(backbufferSize.width, backbufferSize.height);
 	ptr->genBackbuffer(backbufferSize.width, backbufferSize.height);
 	return ptr;

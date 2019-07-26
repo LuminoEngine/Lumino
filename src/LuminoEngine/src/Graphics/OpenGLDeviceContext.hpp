@@ -147,6 +147,7 @@ protected:
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
 	virtual Ref<IGraphicsContext> onCreateGraphicsContext() override;
+	virtual void onFlushCommandBuffer(IGraphicsContext* context, ITexture* affectRendreTarget) override {}
 
 private:
 	Ref<GLContext> m_glContext;
@@ -185,8 +186,6 @@ protected:
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
 	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) override;
 	virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount) override;
-	virtual void onFlushCommandBuffer(ITexture* affectRendreTarget) override {}
-	virtual void onPresent(ISwapChain* swapChain) override;
 
 private:
 	static void getPrimitiveInfo(PrimitiveTopology primitive, int primitiveCount, GLenum* gl_prim, int* vertexCount);
@@ -221,12 +220,13 @@ class GLSwapChain
 	: public ISwapChain
 {
 public:
-	GLSwapChain();
+	GLSwapChain(OpenGLDevice* device);
 	virtual ~GLSwapChain() = default;
 	virtual void dispose() override;
     virtual void acquireNextImage(int* outImageIndex) override { *outImageIndex = 0; }
     virtual ITexture* getRenderTarget(int imageIndex) const override;
 	virtual Result resizeBackbuffer(uint32_t width, uint32_t height) override;
+	virtual void present() override;
 
 	virtual void getBackendBufferSize(SizeI* outSize);
 
@@ -242,6 +242,7 @@ public:
 private:
 	void releaseBuffers();
 
+	OpenGLDevice* m_device;
 	Ref<GLRenderTargetTexture> m_backbuffer;
 	GLuint m_fbo;
 
@@ -672,7 +673,7 @@ class EmptyGLSwapChain
 	: public GLSwapChain
 {
 public:
-	EmptyGLSwapChain() {}
+	EmptyGLSwapChain(OpenGLDevice* device) : GLSwapChain(device) {}
 	virtual ~EmptyGLSwapChain() = default;
 
 private:
