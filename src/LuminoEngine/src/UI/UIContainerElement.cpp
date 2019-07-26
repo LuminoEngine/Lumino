@@ -20,7 +20,7 @@ void UIContainerElement::init()
 	//setHorizontalAlignment(HAlignment::Stretch);
 	//setVerticalAlignment(VAlignment::Stretch);
 
-    setLayoutPanel(makeObject<UIFrameLayout2>());
+    setLayoutPanel(makeObject<UIFrameLayout>());
 }
 
 void UIContainerElement::onDispose(bool explicitDisposing)
@@ -79,7 +79,7 @@ void UIContainerElement::setLayoutPanel(UILayoutPanel* panel)
 	if (m_layout != panel) {
 		m_layout = panel;
 		if (!m_layout) {
-			m_layout = makeObject<UIFrameLayout2>();
+			m_layout = makeObject<UIFrameLayout>();
 		}
 		onLayoutPanelChanged(m_layout);
 		//setLogicalChildrenHost(panel);

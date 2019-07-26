@@ -73,6 +73,9 @@ void UIContext::setupDefaultStyle()
 			auto e = sheet->addStyleSet(u"UIButton");
 			{
 				auto s = e->mainStyleClass()->mainStyle();
+                s->minWidth = 64;
+                s->minHeight = 36;
+                s->margin = Thickness(8);   // TODO: spacing?
 				s->horizontalContentAlignment = HAlignment::Center;
 				s->verticalContentAlignment = VAlignment::Center;
 				s->backgroundColor = UIColors::get(UIColorHues::Grey, 3);
@@ -89,14 +92,15 @@ void UIContext::setupDefaultStyle()
 			// UIButton:MouseOver
 			{
 				auto s = makeObject<UIStyle>();
-				s->backgroundColor = UIColors::get(UIColorHues::Red, 4);
+				s->backgroundColor = UIColors::get(UIColorHues::Grey, 4);
 				e->mainStyleClass()->addStateStyle(u"MouseOver", s);
 			}
-			// UIButton:Pressed
-			{
-				auto s = makeObject<UIStyle>();
-				s->backgroundColor = UIColors::get(UIColorHues::Green, 5);
+			// 
+            if (auto s = sheet->obtainStyle(u"UIButton:Pressed")) {
+				s->backgroundColor = UIColors::get(UIColorHues::Grey, 5);
 				e->mainStyleClass()->addStateStyle(u"Pressed", s);
+                s->shadowBlurRadius = 0;
+                s->shadowOffsetY = 0;
 			}
 		}
 		//--------------------------------

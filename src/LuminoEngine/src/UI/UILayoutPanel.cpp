@@ -40,27 +40,27 @@ void UILayoutPanel::setVerticalOffset(float offset) { m_scrollOffset.y = offset;
 float UILayoutPanel::getVerticalOffset() const { return m_scrollOffset.y; }
 
 //==============================================================================
-// UIFrameLayout2
+// UIFrameLayout
 
-Ref<UIFrameLayout2> UIFrameLayout2::create()
+Ref<UIFrameLayout> UIFrameLayout::create()
 {
-    return makeObject<UIFrameLayout2>();
+    return makeObject<UIFrameLayout>();
 }
 
-UIFrameLayout2::UIFrameLayout2()
-{
-}
-
-UIFrameLayout2::~UIFrameLayout2()
+UIFrameLayout::UIFrameLayout()
 {
 }
 
-void UIFrameLayout2::init()
+UIFrameLayout::~UIFrameLayout()
+{
+}
+
+void UIFrameLayout::init()
 {
     UILayoutPanel::init();
 }
 
-Size UIFrameLayout2::measureOverride(const IUIElementList* childElements, const Size& constraint)
+Size UIFrameLayout::measureOverride(const IUIElementList* childElements, const Size& constraint)
 {
     int childrenCount = childElements->getElementCount();
     Size childMaxSize(0, 0);
@@ -75,7 +75,7 @@ Size UIFrameLayout2::measureOverride(const IUIElementList* childElements, const 
     return childMaxSize;
 }
 
-Size UIFrameLayout2::arrangeOverride(const IUIElementList* childElements, const Rect& finalSlotRect)
+Size UIFrameLayout::arrangeOverride(const IUIElementList* childElements, const Rect& finalSlotRect)
 {
     Rect bounds(finalSlotRect);
 
@@ -91,28 +91,28 @@ Size UIFrameLayout2::arrangeOverride(const IUIElementList* childElements, const 
 
 
 //==============================================================================
-// UIStackLayout2
+// UIStackLayout
 
-Ref<UIStackLayout2> UIStackLayout2::create()
+Ref<UIStackLayout> UIStackLayout::create()
 {
-    return makeObject<UIStackLayout2>();
+    return makeObject<UIStackLayout>();
 }
 
-UIStackLayout2::UIStackLayout2()
+UIStackLayout::UIStackLayout()
     : m_orientation(Orientation::Vertical)
 {
 }
 
-UIStackLayout2::~UIStackLayout2()
+UIStackLayout::~UIStackLayout()
 {
 }
 
-void UIStackLayout2::init()
+void UIStackLayout::init()
 {
     UILayoutPanel::init();
 }
 
-Size UIStackLayout2::measureOverride(const IUIElementList* childElements, const Size& constraint)
+Size UIStackLayout::measureOverride(const IUIElementList* childElements, const Size& constraint)
 {
     Size size = constraint;
 
@@ -146,7 +146,7 @@ Size UIStackLayout2::measureOverride(const IUIElementList* childElements, const 
     return desiredSize;
 }
 
-Size UIStackLayout2::arrangeOverride(const IUIElementList* childElements, const Rect& finalSlotRect)
+Size UIStackLayout::arrangeOverride(const IUIElementList* childElements, const Rect& finalSlotRect)
 {
     Size childrenBoundSize(finalSlotRect.width, finalSlotRect.height);
     //Size selfBounds(FLT_MAX, FLT_MAX);
@@ -208,6 +208,14 @@ Size UIStackLayout2::arrangeOverride(const IUIElementList* childElements, const 
     return finalSlotRect.getSize();
 }
 
+//==============================================================================
+// UIVBoxLayout
+
+void UIVBoxLayout::init()
+{
+    UIStackLayout::init();
+    setOrientation(Orientation::Vertical);
+}
 
 } // namespace ln
 

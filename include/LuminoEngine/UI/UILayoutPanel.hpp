@@ -148,15 +148,15 @@ private:
     Vector2 m_scrollOffset;
 };
 
-class UIFrameLayout2	// TODO: BorderLayout の方がいいかも https://doc.qt.io/qt-5/qtwidgets-layouts-borderlayout-example.html
+class UIFrameLayout	// TODO: BorderLayout の方がいいかも https://doc.qt.io/qt-5/qtwidgets-layouts-borderlayout-example.html
     : public UILayoutPanel
 {
 public:
-    static Ref<UIFrameLayout2> create();
+    static Ref<UIFrameLayout> create();
 
 LN_CONSTRUCT_ACCESS:
-    UIFrameLayout2();
-    virtual ~UIFrameLayout2();
+    UIFrameLayout();
+    virtual ~UIFrameLayout();
     void init();
 
     virtual Size measureOverride(const IUIElementList* childElements, const Size& constraint) override;
@@ -167,11 +167,11 @@ private:
 
 // Orientation=H で大量アイテムを持つ ListView を配置すると、縦方向スクロールバーが表示される。
 // Orientation=V で大量アイテムを持つ ListView を配置すると、スクロールバーは表示されず、すべてのアイテムを包含するサイズが ListView の actualSize となる。（見切れる）
-class UIStackLayout2
+class UIStackLayout
     : public UILayoutPanel
 {
 public:
-    static Ref<UIStackLayout2> create();
+    static Ref<UIStackLayout> create();
 
     void setOrientation(Orientation orientation) { m_orientation = orientation; }
     Orientation getOrientation() const { return m_orientation; }
@@ -179,8 +179,8 @@ public:
     bool lastStretch = false;
 
 LN_CONSTRUCT_ACCESS:
-    UIStackLayout2();
-    virtual ~UIStackLayout2();
+    UIStackLayout();
+    virtual ~UIStackLayout();
     void init();
 
     virtual Size measureOverride(const IUIElementList* childElements, const Size& constraint) override;
@@ -188,6 +188,15 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     Orientation m_orientation;
+};
+
+class UIVBoxLayout
+    : public UIStackLayout
+{
+public:
+
+LN_CONSTRUCT_ACCESS:
+    void init();
 };
 
 } // namespace ln

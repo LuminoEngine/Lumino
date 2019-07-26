@@ -250,7 +250,7 @@ set(LN_SOURCES_Mesh
 
 set(LN_SOURCES_Rendering
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/CommandBuffer.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/CommandList.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/Drawing.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/Material.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/RenderFeature.hpp
@@ -262,7 +262,7 @@ set(LN_SOURCES_Rendering
     src/Rendering/BlitRenderFeature.hpp
     src/Rendering/ClusteredShadingSceneRenderer.cpp
     src/Rendering/ClusteredShadingSceneRenderer.hpp
-    src/Rendering/CommandBuffer.cpp
+    src/Rendering/CommandList.cpp
     src/Rendering/DrawElementListBuilder.cpp
     src/Rendering/DrawElementListBuilder.hpp
     src/Rendering/Drawing.cpp

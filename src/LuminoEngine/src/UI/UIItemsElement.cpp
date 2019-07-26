@@ -166,7 +166,7 @@ void UITreeItem::init()
 
 	addVisualChild(m_expanderButton);
 
-    auto layout = makeObject<UIStackLayout2>();
+    auto layout = makeObject<UIStackLayout>();
     layout->setOrientation(Orientation::Vertical);
     m_itemsLayout = layout;
 }
@@ -311,7 +311,7 @@ void UITreeView::init()
 {
     UIItemsControl::init();
 
-    auto layout = makeObject<UIStackLayout2>();
+    auto layout = makeObject<UIStackLayout>();
     layout->setOrientation(Orientation::Vertical);
     setLayoutPanel(layout);
 }

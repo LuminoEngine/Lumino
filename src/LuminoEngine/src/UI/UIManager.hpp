@@ -3,7 +3,7 @@
 namespace ln {
 class UIContext;
 class UIContainerElement;
-class UIFrameLayout2;
+class UIFrameLayout;
 namespace detail {
 class PlatformManager;
 class GraphicsManager;
@@ -46,7 +46,7 @@ public:
     void postEvent(UIElement* target, UIEventArgs* e);
     void dispatchPostedEvents();
 
-	//const Ref<UIFrameLayout2>& defaultLayout() const { return m_defaultLayout; }
+	//const Ref<UIFrameLayout>& defaultLayout() const { return m_defaultLayout; }
 
 private:
     struct EventQueueItem
@@ -62,7 +62,7 @@ private:
     Ref<UIContext> m_mainContext;
     UIElement* m_mouseHoverElement;
 	UIElement* m_capturedElement;
-	//Ref<UIFrameLayout2> m_defaultLayout;
+	//Ref<UIFrameLayout> m_defaultLayout;
     std::deque<EventQueueItem> m_eventQueue;
 
 };

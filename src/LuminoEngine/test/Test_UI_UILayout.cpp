@@ -30,7 +30,7 @@ TEST_F(Test_UI_UILayout, Basic)
         parent1->setHeight(60);
 		parent1->setHorizontalAlignment(HAlignment::Left);
 		parent1->setVerticalAlignment(VAlignment::Top);
-        parent1->setLayoutPanel(UIStackLayout2::create());
+        parent1->setLayoutPanel(UIStackLayout::create());
 		Engine::mainUIRoot()->addElement(parent1);
         
         auto child1 = makeObject<UIElement>();
@@ -179,7 +179,7 @@ TEST_F(Test_UI_UILayout, StackLayout)
 {
 	UIContainerElement* uiRoot = Engine::mainUIRoot();
 
-	auto l1 = UIStackLayout2::create();
+	auto l1 = UIStackLayout::create();
 	uiRoot->setLayoutPanel(l1);
 
 	auto e1 = makeObject<UIElement>();
@@ -214,7 +214,7 @@ TEST_F(Test_UI_UILayout, StackLayout)
 
 	//- [ ] Horizontal
 	{
-		auto layout = UIStackLayout2::create();
+		auto layout = UIStackLayout::create();
 		layout->setOrientation(Orientation::Horizontal);
 		uiRoot->setLayoutPanel(layout);
 
@@ -224,7 +224,7 @@ TEST_F(Test_UI_UILayout, StackLayout)
 
 	//- [ ] ReverseVertical
 	{
-		auto layout = UIStackLayout2::create();
+		auto layout = UIStackLayout::create();
 		layout->setOrientation(Orientation::ReverseVertical);
 		uiRoot->setLayoutPanel(layout);
 
@@ -234,7 +234,7 @@ TEST_F(Test_UI_UILayout, StackLayout)
 
 	//- [ ] ReverseHorizontal
 	{
-		auto layout = UIStackLayout2::create();
+		auto layout = UIStackLayout::create();
 		layout->setOrientation(Orientation::ReverseHorizontal);
 		uiRoot->setLayoutPanel(layout);
 

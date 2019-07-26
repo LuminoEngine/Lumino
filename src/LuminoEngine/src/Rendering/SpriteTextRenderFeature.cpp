@@ -131,6 +131,14 @@ void InternalSpriteTextRender::internalDrawRectangle(Vertex* buffer, const Matri
 	buffer[3].uv.set(ru, bv);	// 右下
     buffer[3].normal = Vector3::UnitZ;
 
+    // pixel snap
+    if (1) {
+        for (int i = 0; i < 4; i++) {
+            buffer[i].position.x = std::round(buffer[i].position.x);
+            buffer[i].position.y = std::round(buffer[i].position.y);
+        }
+    }
+
 	m_spriteCount++;
 }
 
