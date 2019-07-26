@@ -95,6 +95,9 @@ public:
     /** DragDrop イベントの識別子 (UIDragDropEventArgs) */
     static const UIEventType	DragDropEvent;
 
+    static const UIEventType	ExecuteCommandEvent;
+    static const UIEventType	CanExecuteCommandEvent;
+    static const UIEventType	CanExecuteChangedEvent;
 
 
     static const UIEventType	RequestVisualUpdateEvent;
@@ -296,6 +299,26 @@ public:
 	DragDropEffects	m_effect;
 };
 
+/** コマンド実行可否判定及び実行イベントの引数です。 */
+class UICommandEventArgs
+    : public UIEventArgs
+{
+    LN_OBJECT;
+public:
+    static Ref<UICommandEventArgs> create(UIElement* sender, UIEventType type, bool caching = true);
+
+    // default: true
+    bool canExecute() const { return m_canExecute; }
+    void setCanExecute(bool value) { m_canExecute = value; }
+
+LN_CONSTRUCT_ACCESS:
+    UICommandEventArgs();
+    virtual ~UICommandEventArgs() = default;
+    void init(UIElement* sender, UIEventType type);
+
+public:
+    bool m_canExecute;
+};
 
 /**
 	@brief		特定のイベントデータを持たない、UIイベントを処理するハンドラです。
@@ -317,6 +340,8 @@ using UIMouseEventHandler = std::function<void(UIMouseEventArgs* e)>;
 */
 LN_DELEGATE()
 using UIDragDropEventHandler = std::function<void(UIDragDropEventArgs* e)>;
+
+using UICommandEventHandler = std::function<void(UICommandEventArgs* e)>;
 
 } // namespace ln
 

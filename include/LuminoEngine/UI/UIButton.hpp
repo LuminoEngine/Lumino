@@ -20,6 +20,8 @@ public:
 
     void setText(const StringRef& text);
 
+    void setCommand(UICommand* command);
+
 protected:
 	virtual void onClick(UIEventArgs* e);
 
@@ -27,6 +29,7 @@ protected:
 
 private:
     Ref<UITextBlock> m_textContent;
+    Ref<UICommand> m_command;
     bool m_isPressed;
 };
 

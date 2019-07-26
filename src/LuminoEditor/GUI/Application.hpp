@@ -4,6 +4,10 @@ class EditorApplication
     : public ln::Application
 {
 public:
+    static Ref<ln::UICommand> NewCommand;
+    static Ref<ln::UICommand> OpenCommand;
+
+
     static EditorApplication* instance();
 
     EditorApplication();

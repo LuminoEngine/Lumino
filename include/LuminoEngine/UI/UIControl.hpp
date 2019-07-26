@@ -2,7 +2,7 @@
 #include "UIContainerElement.hpp"
 
 namespace ln {
-
+class UICommand;
 
 class UIControl
 	: public UIContainerElement

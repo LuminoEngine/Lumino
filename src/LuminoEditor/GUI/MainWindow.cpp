@@ -66,7 +66,7 @@ void MainWindow::onLoaded()
 {
 	UIMainWindow::onLoaded();
 
-	auto layout1 = ln::makeObject<ln::UIStackLayout2>();
+	auto layout1 = ln::makeObject<ln::UIStackLayout>();
 	layout1->setOrientation(ln::Orientation::Horizontal);
     layout1->lastStretch = true;
 	setLayoutPanel(layout1);
@@ -107,30 +107,32 @@ void MainWindow::onLoaded()
 		splitter->addElement(splitter2);
 
 		{
-			auto documentArea = ln::makeObject<ln::UIControl>();
-			//documentArea->setHeight(300);
-			documentArea->setBackgroundColor(ln::Color::LightGray);
-			splitter2->addElement(documentArea);
+			//auto documentArea = ln::makeObject<ln::UIControl>();
+			////documentArea->setHeight(300);
+			//documentArea->setBackgroundColor(ln::Color::LightGray);
+			//splitter2->addElement(documentArea);
 
-			auto documentTabs = ln::makeObject<ln::UITabBar>();
-			documentTabs->setVerticalAlignment(ln::VAlignment::Top);
-			documentTabs->setBackgroundColor(ln::Color::Azure);
-			documentTabs->setHeight(30);
-			documentArea->addElement(documentTabs);
+			//auto documentTabs = ln::makeObject<ln::UITabBar>();
+			//documentTabs->setVerticalAlignment(ln::VAlignment::Top);
+			//documentTabs->setBackgroundColor(ln::Color::Azure);
+			//documentTabs->setHeight(30);
+			//documentArea->addElement(documentTabs);
 
-			// test
-			auto tab1 = ln::makeObject<ln::UITabItem>();
-			auto text1 = ln::makeObject<ln::UITextBlock>();
-			text1->setText(u"Tab1");
-			tab1->addElement(text1);
-			documentTabs->addTab(tab1);
+			//// test
+			//auto tab1 = ln::makeObject<ln::UITabItem>();
+			//auto text1 = ln::makeObject<ln::UITextBlock>();
+			//text1->setText(u"Tab1");
+			//tab1->addElement(text1);
+			//documentTabs->addTab(tab1);
 
-			auto tab2 = ln::makeObject<ln::UITabItem>();
-			auto text2 = ln::makeObject<ln::UITextBlock>();
-			text2->setText(u"Tab2");
-			tab2->addElement(text2);
-			documentTabs->addTab(tab2);
+			//auto tab2 = ln::makeObject<ln::UITabItem>();
+			//auto text2 = ln::makeObject<ln::UITextBlock>();
+			//text2->setText(u"Tab2");
+			//tab2->addElement(text2);
+			//documentTabs->addTab(tab2);
 
+            m_documentManager = ln::makeObject<DocumentManager>();
+            splitter2->addElement(m_documentManager);
 
 			//--------
 

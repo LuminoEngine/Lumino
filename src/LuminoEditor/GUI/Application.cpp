@@ -6,6 +6,9 @@
 #include "MainWindow.hpp"
 #include "Application.hpp"
 
+Ref<ln::UICommand> EditorApplication::NewCommand;
+Ref<ln::UICommand> EditorApplication::OpenCommand;
+
 static EditorApplication* s_app = nullptr;
 
 EditorApplication* EditorApplication::instance()
@@ -18,6 +21,9 @@ EditorApplication::EditorApplication()
 {
     assert(!s_app);
     s_app = this;
+
+    NewCommand = ln::makeObject<ln::UICommand>();
+    OpenCommand = ln::makeObject<ln::UICommand>();
 }
 
 EditorApplication::~EditorApplication()

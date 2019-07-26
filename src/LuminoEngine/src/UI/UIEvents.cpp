@@ -31,6 +31,9 @@ const UIEventType	UIEvents::ScrollEvent = 18;
 const UIEventType	UIEvents::DragEnterEvent = 19;
 const UIEventType	UIEvents::DragDropEvent = 20;
 
+const UIEventType	UIEvents::ExecuteCommandEvent = 201;
+const UIEventType	UIEvents::CanExecuteCommandEvent = 202;
+const UIEventType	UIEvents::CanExecuteChangedEvent = 203;
 const UIEventType	UIEvents::RequestVisualUpdateEvent = 101;
 const UIEventType	UIEvents::RequestVisualRedrawEvent = 102;
 
@@ -310,6 +313,37 @@ void UIDragDropEventArgs::init(UIElement* sender, UIEventType type, DataObject* 
     if (LN_REQUIRE(data)) return;
     m_data = data;
     m_effect = effect;
+}
+
+//==============================================================================
+// UICommandEventArgs
+
+LN_OBJECT_IMPLEMENT(UICommandEventArgs, UIEventArgs) {}
+
+Ref<UICommandEventArgs> UICommandEventArgs::create(UIElement* sender, UIEventType type, bool caching)
+{
+    if (caching)
+    {
+        auto& pool = detail::EngineDomain::uiManager()->eventArgsPool();
+        Ref<UICommandEventArgs> ptr(pool->create<UICommandEventArgs>(sender, type), false);
+        return ptr;
+    }
+    else
+    {
+        LN_NOTIMPLEMENTED();
+        return nullptr;
+    }
+}
+
+UICommandEventArgs::UICommandEventArgs()
+    : m_canExecute(true)
+{
+}
+
+void UICommandEventArgs::init(UIElement* sender, UIEventType type)
+{
+    UIEventArgs::init(sender, type);
+    m_canExecute = true;
 }
 
 } // namespace ln

@@ -33,8 +33,16 @@ void UIButtonBase::setText(const StringRef& text)
     m_textContent->setText(text);
 }
 
+void UIButtonBase::setCommand(UICommand* command)
+{
+    m_command = command;
+}
+
 void UIButtonBase::onClick(UIEventArgs* e)
 {
+    if (m_command) {
+
+    }
 }
 
 void UIButtonBase::onRoutedEvent(UIEventArgs* e)
