@@ -13,6 +13,8 @@ namespace detail {
 class PlatformWindow;
 class IGraphicsContext;
 class ISwapChain;
+class ICommandList;
+class IRenderPass;
 class IVertexDeclaration;
 class IVertexBuffer;
 class IIndexBuffer;
@@ -23,9 +25,6 @@ class IShaderPass;
 class IShaderUniformBuffer;
 class IShaderUniform;
 class IShaderSamplerBuffer;
-
-//static const int MaxRenderTargets = 4;
-//static const int MaxVertexStreams = 4;
 
 enum class DeviceResourceType
 {
@@ -115,7 +114,6 @@ struct ShaderPassCreateInfo
     size_t psCodeLen;
     const char* vsEntryPointName;
     const char* psEntryPointName;
-    //const ShaderVertexInputAttributeTable* attributeTable;
     const DescriptorLayout* descriptorLayout;
 };
 
@@ -123,17 +121,14 @@ class IGraphicsDeviceObject
     : public RefObject
 {
 public:
+    virtual void dispose();	// Prepare for multiple calls
 
 protected:
     IGraphicsDeviceObject();
     virtual ~IGraphicsDeviceObject();
-    //virtual void finalize();
-public:
-    virtual void dispose();	// (複数回の呼び出しに備えること)
 
 private:
     bool m_disposed;
-	//friend class IGraphicsDevice;
 };
 
 class IGraphicsResource
@@ -150,8 +145,6 @@ class IGraphicsDevice
 	: public RefObject
 {
 public:
-
-
 	IGraphicsDevice();
 	virtual ~IGraphicsDevice() = default;
 
