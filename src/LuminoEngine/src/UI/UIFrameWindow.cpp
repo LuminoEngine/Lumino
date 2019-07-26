@@ -222,7 +222,7 @@ void UIFrameWindow::setupPlatformWindow(detail::PlatformWindow* platformMainWind
 
     if (detail::EngineDomain::renderingManager()) {
         m_renderView = makeObject<UIRenderView>();
-		m_renderView->setClearMode(RenderViewClearMode::ColorAndDepth);
+		//m_renderView->setClearMode(RenderViewClearMode::ColorAndDepth);
     }
 
 

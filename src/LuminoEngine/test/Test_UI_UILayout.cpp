@@ -11,6 +11,8 @@ TEST_F(Test_UI_UILayout, Basic)
 	//- [ ] Default
 	{
 		auto e1 = makeObject<UIElement>();
+		e1->setHorizontalAlignment(HAlignment::Left);
+		e1->setVerticalAlignment(VAlignment::Top);
 		e1->setBackgroundColor(Color::Red);
 		e1->setWidth(80);
 		e1->setHeight(60);
@@ -26,12 +28,15 @@ TEST_F(Test_UI_UILayout, Basic)
         parent1->setBackgroundColor(Color::Red);
         parent1->setWidth(80);
         parent1->setHeight(60);
+		parent1->setHorizontalAlignment(HAlignment::Left);
+		parent1->setVerticalAlignment(VAlignment::Top);
         parent1->setLayoutPanel(UIStackLayout2::create());
 		Engine::mainUIRoot()->addElement(parent1);
         
         auto child1 = makeObject<UIElement>();
         child1->setWidth(32);
         child1->setHeight(16);
+		child1->setHorizontalAlignment(HAlignment::Left);
         child1->setBackgroundColor(Color::Green);
 		Engine::mainUIRoot()->addElement(child1);
         parent1->addElement(child1);
@@ -39,6 +44,7 @@ TEST_F(Test_UI_UILayout, Basic)
         auto child2 = makeObject<UIElement>();
         child2->setWidth(32);
         child2->setHeight(16);
+		child1->setHorizontalAlignment(HAlignment::Left);
         child2->setBackgroundColor(Color::Blue);
 		Engine::mainUIRoot()->addElement(child2);
         parent1->addElement(child2);
@@ -56,6 +62,8 @@ TEST_F(Test_UI_UILayout, RenderTransform)
 	//- [ ] position
 	{
 		auto e1 = makeObject<UIElement>();
+		e1->setHorizontalAlignment(HAlignment::Left);
+		e1->setVerticalAlignment(VAlignment::Top);
 		e1->setBackgroundColor(Color::Red);
 		e1->setWidth(80);
 		e1->setHeight(60);
