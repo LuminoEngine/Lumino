@@ -689,6 +689,7 @@ VkCommandBuffer VulkanDevice::beginSingleTimeCommands()
     beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
     vkBeginCommandBuffer(commandBuffer, &beginInfo);
+	// https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#commandbuffers-lifecycle
 
     return commandBuffer;
 }

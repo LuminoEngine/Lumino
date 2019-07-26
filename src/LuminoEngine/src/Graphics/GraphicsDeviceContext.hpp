@@ -46,10 +46,10 @@ struct GraphicsDeviceCaps
 
 struct DevicePipelineState
 {
+	IVertexDeclaration* vertexDeclaration = nullptr;
 	BlendStateDesc blendState;
 	RasterizerStateDesc rasterizerState;
 	DepthStencilStateDesc depthStencilState;
-	IVertexDeclaration* vertexDeclaration = nullptr;
 	PrimitiveTopology topology = PrimitiveTopology::TriangleList;
 };
 
