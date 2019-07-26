@@ -13,8 +13,9 @@ namespace detail {
 //=============================================================================
 // GLFWSwapChain
 
-GLFWSwapChain::GLFWSwapChain(GLFWPlatformWindow* window)
-	: m_window(window)
+GLFWSwapChain::GLFWSwapChain(OpenGLDevice* device, GLFWPlatformWindow* window)
+	: GLSwapChain(device) 
+	, m_window(window)
 {
 }
 
@@ -26,8 +27,9 @@ void GLFWSwapChain::getBackendBufferSize(SizeI* outSize)
 //=============================================================================
 // GLFWContext
 
-void GLFWContext::init(PlatformWindow* window)
+void GLFWContext::init(OpenGLDevice* device, PlatformWindow* window)
 {
+	m_device = device;
 	auto* glfwWindow = dynamic_cast<GLFWPlatformWindow*>(window);
 	LN_CHECK(glfwWindow);
 	m_mainWindow = glfwWindow;
@@ -40,7 +42,7 @@ Ref<GLSwapChain> GLFWContext::createSwapChain(PlatformWindow* window, const Size
 	auto* glfwWindow = dynamic_cast<GLFWPlatformWindow*>(window);
 	LN_CHECK(glfwWindow);
 
-	auto ptr = makeRef<GLFWSwapChain>(glfwWindow);
+	auto ptr = makeRef<GLFWSwapChain>(m_device, glfwWindow);
 	ptr->genBackbuffer(backbufferSize.width, backbufferSize.height);
 	return ptr;
 }

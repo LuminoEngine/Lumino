@@ -13,6 +13,8 @@ namespace detail {
 class PlatformWindow;
 class IGraphicsContext;
 class ISwapChain;
+class ICommandList;
+class IRenderPass;
 class IVertexDeclaration;
 class IVertexBuffer;
 class IIndexBuffer;
@@ -23,9 +25,6 @@ class IShaderPass;
 class IShaderUniformBuffer;
 class IShaderUniform;
 class IShaderSamplerBuffer;
-
-//static const int MaxRenderTargets = 4;
-//static const int MaxVertexStreams = 4;
 
 enum class DeviceResourceType
 {
@@ -47,10 +46,10 @@ struct GraphicsDeviceCaps
 
 struct DevicePipelineState
 {
+	IVertexDeclaration* vertexDeclaration = nullptr;
 	BlendStateDesc blendState;
 	RasterizerStateDesc rasterizerState;
 	DepthStencilStateDesc depthStencilState;
-	IVertexDeclaration* vertexDeclaration = nullptr;
 	PrimitiveTopology topology = PrimitiveTopology::TriangleList;
 };
 
@@ -115,7 +114,6 @@ struct ShaderPassCreateInfo
     size_t psCodeLen;
     const char* vsEntryPointName;
     const char* psEntryPointName;
-    //const ShaderVertexInputAttributeTable* attributeTable;
     const DescriptorLayout* descriptorLayout;
 };
 
@@ -123,17 +121,14 @@ class IGraphicsDeviceObject
     : public RefObject
 {
 public:
+    virtual void dispose();	// Prepare for multiple calls
 
 protected:
     IGraphicsDeviceObject();
     virtual ~IGraphicsDeviceObject();
-    //virtual void finalize();
-public:
-    virtual void dispose();	// (複数回の呼び出しに備えること)
 
 private:
     bool m_disposed;
-	//friend class IGraphicsDevice;
 };
 
 class IGraphicsResource
@@ -150,8 +145,6 @@ class IGraphicsDevice
 	: public RefObject
 {
 public:
-
-
 	IGraphicsDevice();
 	virtual ~IGraphicsDevice() = default;
 
@@ -161,6 +154,8 @@ public:
 	void refreshCaps();
 
 	Ref<ISwapChain> createSwapChain(PlatformWindow* window, const SizeI& backbufferSize);
+	Ref<ICommandList> createCommandList();
+	Ref<IRenderPass> createRenderPass(ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearZ, uint8_t clearStencil);
 	Ref<IVertexDeclaration> createVertexDeclaration(const VertexElement* elements, int elementsCount);
 	Ref<IVertexBuffer> createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData = nullptr);
 	Ref<IIndexBuffer> createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData = nullptr);
@@ -173,6 +168,8 @@ public:
 	Ref<IShaderPass> createShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
 	Ref<IGraphicsContext> createGraphicsContext();
 
+	void flushCommandBuffer(IGraphicsContext* context, ITexture* affectRendreTarget);  // 呼ぶ前に end しておくこと
+
 	virtual IGraphicsContext* getGraphicsContext() const = 0;
 
     // utility
@@ -182,6 +179,8 @@ public:
 protected:
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) = 0;
 	virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) = 0;
+	virtual Ref<ICommandList> onCreateCommandList() = 0;
+	virtual Ref<IRenderPass> onCreateRenderPass(ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearZ, uint8_t clearStencil) = 0;
 	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) = 0;
 	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) = 0;
 	virtual Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) = 0;
@@ -193,6 +192,7 @@ protected:
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) = 0;
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) = 0;
 	virtual Ref<IGraphicsContext> onCreateGraphicsContext() = 0;
+	virtual void onFlushCommandBuffer(IGraphicsContext* context, ITexture* affectRendreTarget) = 0;
 
 /////////
 	//virtual void onBeginCommandRecoding() = 0;
@@ -264,9 +264,6 @@ public:
     void clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil);
     void drawPrimitive(int startVertex, int primitiveCount);
     void drawPrimitiveIndexed(int startIndex, int primitiveCount);
-    void flushCommandBuffer(ITexture* affectRendreTarget);  // 呼ぶ前に end しておくこと
-
-    void present(ISwapChain* swapChain);
 
     /////////
 
@@ -297,9 +294,6 @@ public:	// TODO:
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
 	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) = 0;
 	virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount) = 0;
-	virtual void onFlushCommandBuffer(ITexture* affectRendreTarget) = 0;
-
-	virtual void onPresent(ISwapChain* swapChain) = 0;
 
 	uint32_t stagingStateDirtyFlags() const { return m_stateDirtyFlags; }
 	const GraphicsContextState& stagingState() const { return m_staging; }
@@ -328,6 +322,8 @@ public:
 
 
 	virtual Result resizeBackbuffer(uint32_t width, uint32_t height) = 0;
+
+	virtual void present() = 0;
 
 protected:
 	virtual ~ISwapChain() = default;

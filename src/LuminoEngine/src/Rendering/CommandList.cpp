@@ -1,12 +1,12 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/Rendering/CommandBuffer.hpp>
+#include <LuminoEngine/Rendering/CommandList.hpp>
 
 namespace ln {
 namespace detail {
 
 //==============================================================================
-// CommandBuffer
+// CommandList
 
 	
 } // namespace detail

@@ -122,25 +122,25 @@ enum class StencilOp : uint8_t
 struct RenderTargetBlendDesc
 {
     /** ブレンディングの有無 (default:false) */
-    bool blendEnable;
+    bool blendEnable : 1;
 
     /** 入力元の RGB に対する係数 (default: One) */
-    BlendFactor sourceBlend;
+    BlendFactor sourceBlend : 4;
 
     /** 出力先の RGB に対する係数 (default: Zero) */
-    BlendFactor destinationBlend;
+    BlendFactor destinationBlend : 4;
 
     /** RGB のブレンディング操作 (default: Add) */
     BlendOp blendOp;
 
     /** 入力元のアルファ値に対する係数 (default: One) */
-    BlendFactor sourceBlendAlpha;
+    BlendFactor sourceBlendAlpha : 4;
 
     /** 出力先のアルファ値に対する係数 (default: Zero) */
-    BlendFactor destinationBlendAlpha;
+    BlendFactor destinationBlendAlpha : 4;
 
     /** アルファ値のブレンディング操作 (default: Add) */
-    BlendOp blendOpAlpha;
+    BlendOp blendOpAlpha : 4;
 
     RenderTargetBlendDesc();
 	static bool equals(const RenderTargetBlendDesc& lhs, const RenderTargetBlendDesc& rhs);
@@ -149,13 +149,13 @@ struct RenderTargetBlendDesc
 /** ブレンディングステート */
 struct BlendStateDesc
 {
-    static const int MaxRenderTargets = 8;
+    static const int MaxRenderTargets = 4;
 
     /** レンダーターゲットで独立したブレンディングを有効にするには、true に設定します。(default:false) */
     bool independentBlendEnable;
 
     /** レンダーターゲットごとのブレンドステートの配列です。 */
-    RenderTargetBlendDesc renderTargets[8];
+    RenderTargetBlendDesc renderTargets[MaxRenderTargets];
 
     BlendStateDesc();
 	static bool equals(const BlendStateDesc& lhs, const BlendStateDesc& rhs);
@@ -165,10 +165,10 @@ struct BlendStateDesc
 struct RasterizerStateDesc
 {
     /** 塗りつぶし方法 (default:Solid) */
-    FillMode fillMode;
+    FillMode fillMode : 4;
 
     /** カリング方法 (default:Back) */
-    CullMode cullMode;
+    CullMode cullMode : 4;
 
     RasterizerStateDesc();
 	static bool equals(const RasterizerStateDesc& lhs, const RasterizerStateDesc& rhs);
@@ -178,16 +178,16 @@ struct RasterizerStateDesc
 struct StencilOpDesc
 {
     /** ステンシルテストに失敗した場合のステンシル処理です。(default:Keep) */
-    StencilOp stencilFailOp;
+    StencilOp stencilFailOp : 4;
 
     /** ステンシルテストに合格で、深度テストが不合格の場合のステンシル処理です。(default:Keep) */
-    StencilOp stencilDepthFailOp;
+    StencilOp stencilDepthFailOp : 4;
 
     /** ステンシルテストと深度テストに合格した場合のステンシル処理です。(default:Keep) */
-    StencilOp stencilPassOp;
+    StencilOp stencilPassOp : 4;
 
     /** ステンシルテストの比較関数　(default:Always) */
-    ComparisonFunc stencilFunc;
+    ComparisonFunc stencilFunc : 4;
 
     StencilOpDesc();
 	static bool equals(const StencilOpDesc& lhs, const StencilOpDesc& rhs);
@@ -196,14 +196,14 @@ struct StencilOpDesc
 /** 深度ステンシルステート */
 struct DepthStencilStateDesc
 {
-    /** 深度テストの有効状態 (default:ComparisonFunc::LessEqual) */
-    ComparisonFunc depthTestFunc;
+    /** 深度テストの比較関数 (default:ComparisonFunc::LessEqual) */
+    ComparisonFunc depthTestFunc : 4;
 
     /** 深度書き込みの有効状態 (default:true) */
-    bool depthWriteEnabled;
+    bool depthWriteEnabled : 1;
 
     /** ステンシルテストの有効状態 (default:false) */
-    bool stencilEnabled;
+    bool stencilEnabled : 1;
 
     /** ステンシルテストの参照値 (default:0xFF) */
     uint8_t stencilReferenceValue;

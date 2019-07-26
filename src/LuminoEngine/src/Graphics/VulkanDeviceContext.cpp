@@ -183,6 +183,18 @@ Ref<ISwapChain> VulkanDevice::onCreateSwapChain(PlatformWindow* window, const Si
 	return ptr;
 }
 
+Ref<ICommandList> VulkanDevice::onCreateCommandList()
+{
+	LN_NOTIMPLEMENTED();
+	return nullptr;
+}
+
+Ref<IRenderPass> VulkanDevice::onCreateRenderPass(ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearZ, uint8_t clearStencil)
+{
+	LN_NOTIMPLEMENTED();
+	return nullptr;
+}
+
 Ref<IVertexDeclaration> VulkanDevice::onCreateVertexDeclaration(const VertexElement* elements, int elementsCount)
 {
     auto ptr = makeRef<VulkanVertexDeclaration>();
@@ -265,6 +277,24 @@ Ref<IGraphicsContext> VulkanDevice::onCreateGraphicsContext()
 {
 	LN_NOTIMPLEMENTED();
 	return nullptr;
+}
+
+// TODO: もし複数 swapchain へのレンダリングを1つの CommandBuffer でやる場合、flush 時には描画するすべての swapchain の image 準備を待たなければならない。
+// CommandBuffer 単位で、setRenderTarget された SwapChain の RenderTarget をすべて覚えておく仕組みが必要だろう。
+void VulkanDevice::onFlushCommandBuffer(IGraphicsContext* context, ITexture* affectRendreTarget)
+{
+	auto vulkanContext = static_cast<VulkanGraphicsContext*>(context);
+	auto* t = static_cast<VulkanRenderTarget*>(affectRendreTarget);
+	vulkanContext->recodingCommandBuffer()->submit(
+		t->imageAvailableSemaphore(),
+		t->renderFinishedSemaphore());
+
+	// [GeForce GTX 1060] 既にシグナル状態のセマフォを vkQueueSubmit で待つように指定すると、vkQueueSubmit が VK_ERROR_DEVICE_LOST を返す。
+	// 通常は vkAcquireNextImageKHR と vkQueueSubmit が交互に実行されるので問題ないが、
+	// RenderTarget の Read で一度 CommnadBuffer を vkQueueSubmit し、続けて CommnadBuffer の記録を再開 → vkQueueSubmit したときに問題になる。
+	// vkQueueSubmit で待ちたいのは vkAcquireNextImageKHR で準備開始された RenderTarget が本当に準備終わったかどうかなので、一度待てば十分。
+	// ということで、一度でも submit したら、↓ は null をセットして、次回の submit では何も待たないようにしておく。
+	t->setImageAvailableSemaphoreRef(nullptr);
 }
 
 Result VulkanDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType)
@@ -659,6 +689,7 @@ VkCommandBuffer VulkanDevice::beginSingleTimeCommands()
     beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
     vkBeginCommandBuffer(commandBuffer, &beginInfo);
+	// https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#commandbuffers-lifecycle
 
     return commandBuffer;
 }
@@ -1029,32 +1060,6 @@ void VulkanGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, 
 {
 	submitStatusInternal(GraphicsContextSubmitSource_Draw, ClearFlags::None, Color::White, 0, 0, nullptr);
 	vkCmdDrawIndexed(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startIndex, 0, 0);
-}
-
-// TODO: もし複数 swapchain へのレンダリングを1つの CommandBuffer でやる場合、flush 時には描画するすべての swapchain の image 準備を待たなければならない。
-// CommandBuffer 単位で、setRenderTarget された SwapChain の RenderTarget をすべて覚えておく仕組みが必要だろう。
-void VulkanGraphicsContext::onFlushCommandBuffer(ITexture* affectRendreTarget)
-{
-	auto* t = static_cast<VulkanRenderTarget*>(affectRendreTarget);
-	recodingCommandBuffer()->submit(
-		t->imageAvailableSemaphore(),
-		t->renderFinishedSemaphore());
-
-	// [GeForce GTX 1060] 既にシグナル状態のセマフォを vkQueueSubmit で待つように指定すると、vkQueueSubmit が VK_ERROR_DEVICE_LOST を返す。
-	// 通常は vkAcquireNextImageKHR と vkQueueSubmit が交互に実行されるので問題ないが、
-	// RenderTarget の Read で一度 CommnadBuffer を vkQueueSubmit し、続けて CommnadBuffer の記録を再開 → vkQueueSubmit したときに問題になる。
-	// vkQueueSubmit で待ちたいのは vkAcquireNextImageKHR で準備開始された RenderTarget が本当に準備終わったかどうかなので、一度待てば十分。
-	// ということで、一度でも submit したら、↓ は null をセットして、次回の submit では何も待たないようにしておく。
-	t->setImageAvailableSemaphoreRef(nullptr);
-}
-
-void VulkanGraphicsContext::onPresent(ISwapChain* swapChain)
-{
-	static_cast<VulkanSwapChain*>(swapChain)->present();
-
-	// TODO: あったほうがいい？
-	//vkDeviceWaitIdle(m_device->vulkanDevice());
-	//g_app.mainLoop();
 }
 
 Result VulkanGraphicsContext::submitStatusInternal(GraphicsContextSubmitSource submitSource, ClearFlags flags, const Color& color, float z, uint8_t stencil, bool* outSkipClear)

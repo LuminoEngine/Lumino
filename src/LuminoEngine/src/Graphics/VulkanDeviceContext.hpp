@@ -61,6 +61,8 @@ protected:
 	virtual IGraphicsContext* getGraphicsContext() const;
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) override;
 	virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
+	virtual Ref<ICommandList> onCreateCommandList() override;
+	virtual Ref<IRenderPass> onCreateRenderPass(ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearZ, uint8_t clearStencil) override;
 	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) override;
 	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) override;
 	virtual Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) override;
@@ -72,6 +74,7 @@ protected:
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
 	virtual Ref<IGraphicsContext> onCreateGraphicsContext() override;
+	virtual void onFlushCommandBuffer(IGraphicsContext* context, ITexture* affectRendreTarget) override;
 
 public: // TODO:
     struct PhysicalDeviceInfo
@@ -152,8 +155,6 @@ protected:
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
 	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) override;
 	virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount) override;
-	virtual void onFlushCommandBuffer(ITexture* affectRendreTarget) override;
-	virtual void onPresent(ISwapChain* swapChain) override;
 
 private:
 	//Result submitStatus(const State& state);
@@ -173,8 +174,8 @@ public:
     virtual void acquireNextImage(int* outImageIndex) override;
 	virtual ITexture* getRenderTarget(int imageIndex) const override;
 	virtual Result resizeBackbuffer(uint32_t width, uint32_t height) override;
+	virtual void present() override;
 
-    void present();
 
     VkSwapchainKHR vulkanSwapchain() const { return m_swapchain; }
     VkFormat vulkanSwapchainImageFormat() const { return m_swapchainImageFormat; }

@@ -245,7 +245,7 @@ enum class TextureAddressMode
 };
 
 /** 描画プリミティブの種類 */
-enum class PrimitiveTopology
+enum class PrimitiveTopology : uint8_t
 {
     /** 独立した三角形のリスト */
     TriangleList,

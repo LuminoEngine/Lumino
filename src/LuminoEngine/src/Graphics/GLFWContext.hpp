@@ -11,7 +11,7 @@ class GLFWSwapChain
 	: public GLSwapChain
 {
 public:
-	GLFWSwapChain(GLFWPlatformWindow* window);
+	GLFWSwapChain(OpenGLDevice* device, GLFWPlatformWindow* window);
 	virtual ~GLFWSwapChain() = default;
 
 	GLFWPlatformWindow* window() const { return m_window; }
@@ -28,13 +28,14 @@ class GLFWContext
 public:
 	GLFWContext() = default;
 	virtual ~GLFWContext() = default;
-	void init(PlatformWindow* window);
+	void init(OpenGLDevice* device, PlatformWindow* window);
 
 	virtual Ref<GLSwapChain> createSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
 	virtual void makeCurrent(GLSwapChain* swapChain) override;
 	virtual void swap(GLSwapChain* swapChain) override;
 
 private:
+	OpenGLDevice* m_device;
 	GLFWPlatformWindow* m_mainWindow;
 };
 

@@ -330,13 +330,15 @@ void GraphicsContext::flushCommandRecoding(RenderTargetTexture* affectRendreTarg
     if (m_recordingBegan) {
         endCommandRecodingIfNeeded();
 
+		auto device = m_manager->deviceContext();
         detail::ITexture* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(this, affectRendreTarget, nullptr);
-        LN_ENQUEUE_RENDER_COMMAND_2(
+        LN_ENQUEUE_RENDER_COMMAND_3(
             GraphicsContext_beginCommandRecodingIfNeeded, this,
+			detail::IGraphicsDevice*, device,
             detail::IGraphicsContext*, m_context,
             detail::ITexture*, rhiObject,
             {
-                m_context->flushCommandBuffer(rhiObject);
+				device->flushCommandBuffer(m_context, rhiObject);
             });
     }
 }

@@ -57,6 +57,8 @@ void SwapChain::resizeBackbuffer(int width, int height)
 
 void SwapChain::present(GraphicsContext* context)
 {
+	auto device = detail::GraphicsResourceInternal::manager(this)->deviceContext();
+
     //GraphicsContext* context = detail::GraphicsResourceInternal::manager(this)->graphicsContext();
     //detail::IGraphicsContext* nativeContext = detail::GraphicsResourceInternal::manager(this)->deviceContext()->getGraphicsContext();
     detail::IGraphicsContext* nativeContext = detail::GraphicsContextInternal::commitState(context);
@@ -66,12 +68,14 @@ void SwapChain::present(GraphicsContext* context)
     // TODO: threading
 	detail::ISwapChain* rhi = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(nullptr, this, nullptr);
 
+	
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		SwapChain_present, context,
-		detail::IGraphicsContext*, nativeContext,
+		detail::IGraphicsDevice*, device,
 		detail::ISwapChain*, rhi,
 		{
-			nativeContext->present(rhi);
+			rhi->present();
+			device->collectGarbageObjects();
 		});
 	
 

@@ -2,7 +2,7 @@
 
 namespace ln {
 
-class CommandBuffer
+class CommandList
 	: public Object
 {
 public:
