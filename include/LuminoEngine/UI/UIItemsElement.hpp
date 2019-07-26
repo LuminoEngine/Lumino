@@ -124,7 +124,7 @@ private:
 	Ref<UIToggleButton> m_expanderButton;
     Ref<UIElement> m_headerContent;
     List<Ref<UITreeItem>> m_items;
-    Ref<UILayoutPanel2> m_itemsLayout;
+    Ref<UILayoutPanel> m_itemsLayout;
 	Ref<UICollectionItemModel> m_model;
 
     friend class UITreeView;

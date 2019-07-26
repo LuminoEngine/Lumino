@@ -6,23 +6,23 @@
 namespace ln {
 
 //==============================================================================
-// UILayoutPanel2
+// UILayoutPanel
 
-UILayoutPanel2::UILayoutPanel2()
+UILayoutPanel::UILayoutPanel()
 {
 }
 
-void UILayoutPanel2::init()
+void UILayoutPanel::init()
 {
     Object::init();
 }
 
-void UILayoutPanel2::measureLayout(const IUIElementList* childElements, const Size& availableSize)
+void UILayoutPanel::measureLayout(const IUIElementList* childElements, const Size& availableSize)
 {
     m_desiredSize = measureOverride(childElements, availableSize);
 }
 
-void UILayoutPanel2::arrangeLayout(const IUIElementList* childElements, const Rect& finalSlotRect)
+void UILayoutPanel::arrangeLayout(const IUIElementList* childElements, const Rect& finalSlotRect)
 {
     Rect rect = finalSlotRect;
     rect.x -= m_scrollOffset.x;
@@ -30,14 +30,14 @@ void UILayoutPanel2::arrangeLayout(const IUIElementList* childElements, const Re
     m_actualSize = arrangeOverride(childElements, rect);
 }
 
-float UILayoutPanel2::getExtentWidth() const { return m_desiredSize.width; }
-float UILayoutPanel2::getExtentHeight() const { return m_desiredSize.height; }
-float UILayoutPanel2::getViewportWidth() const { return m_actualSize.width; }
-float UILayoutPanel2::getViewportHeight() const { return m_actualSize.height; }
-void UILayoutPanel2::setHorizontalOffset(float offset) { m_scrollOffset.x = offset; }
-float UILayoutPanel2::getHorizontalOffset() const { return m_scrollOffset.x; }
-void UILayoutPanel2::setVerticalOffset(float offset) { m_scrollOffset.y = offset; }
-float UILayoutPanel2::getVerticalOffset() const { return m_scrollOffset.y; }
+float UILayoutPanel::getExtentWidth() const { return m_desiredSize.width; }
+float UILayoutPanel::getExtentHeight() const { return m_desiredSize.height; }
+float UILayoutPanel::getViewportWidth() const { return m_actualSize.width; }
+float UILayoutPanel::getViewportHeight() const { return m_actualSize.height; }
+void UILayoutPanel::setHorizontalOffset(float offset) { m_scrollOffset.x = offset; }
+float UILayoutPanel::getHorizontalOffset() const { return m_scrollOffset.x; }
+void UILayoutPanel::setVerticalOffset(float offset) { m_scrollOffset.y = offset; }
+float UILayoutPanel::getVerticalOffset() const { return m_scrollOffset.y; }
 
 //==============================================================================
 // UIFrameLayout2
@@ -57,7 +57,7 @@ UIFrameLayout2::~UIFrameLayout2()
 
 void UIFrameLayout2::init()
 {
-    UILayoutPanel2::init();
+    UILayoutPanel::init();
 }
 
 Size UIFrameLayout2::measureOverride(const IUIElementList* childElements, const Size& constraint)
@@ -109,7 +109,7 @@ UIStackLayout2::~UIStackLayout2()
 
 void UIStackLayout2::init()
 {
-    UILayoutPanel2::init();
+    UILayoutPanel::init();
 }
 
 Size UIStackLayout2::measureOverride(const IUIElementList* childElements, const Size& constraint)

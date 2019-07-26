@@ -329,6 +329,7 @@ public:	// TODO: internal protected
 
     virtual const String& elementName() const { return String::Empty; }
 	
+    //virtual void onSetup(); // インスタンス構築直後。VisualTree や Style, Layout は構築されているとは限らない。初回 update 前に this のプロパティを設定するために使う。
 	virtual void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel);
     virtual void onLoaded();    // インスタンス作成後、UIツリーに追加されていない場合は呼ばれない
     virtual void onUpdateFrame(float elapsedSeconds);

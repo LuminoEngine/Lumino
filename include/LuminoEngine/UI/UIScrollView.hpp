@@ -285,7 +285,7 @@ protected:
     // UIControl interface
     //virtual void onLogicalChildrenPresenterChanged(UILayoutPanel* newPanel) override;
 
-    virtual void onLayoutPanelChanged(UILayoutPanel2* newPanel) override;
+    virtual void onLayoutPanelChanged(UILayoutPanel* newPanel) override;
 
 private:
     Ref<UIScrollBar>			m_horizontalScrollBar;

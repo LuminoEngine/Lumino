@@ -2,7 +2,7 @@
 #include "UIElement.hpp"
 
 namespace ln {
-class UILayoutPanel2;
+class UILayoutPanel;
 
 class UIContainerElement
 	: public UIElement
@@ -23,9 +23,9 @@ public:
 
 		デフォルトは nullptr です。
 	*/
-	void setLayoutPanel(UILayoutPanel2* panel);
+	void setLayoutPanel(UILayoutPanel* panel);
 
-	UILayoutPanel2* layoutPanel() const;
+	UILayoutPanel* layoutPanel() const;
 
 	const List<Ref<UIElement>>& logicalChildren() const { return m_logicalChildren; }
 
@@ -39,12 +39,12 @@ protected:
 	virtual Size measureOverride(const Size& constraint) override;
 	virtual Size arrangeOverride(const Size& finalSize) override;
 
-    virtual void onLayoutPanelChanged(UILayoutPanel2* newPanel);
+    virtual void onLayoutPanelChanged(UILayoutPanel* newPanel);
 
 private:
 
 	List<Ref<UIElement>> m_logicalChildren;
-    Ref<UILayoutPanel2> m_layout;
+    Ref<UILayoutPanel> m_layout;
 	//Size m_layoutDesiredSize;	// Layout is state-less
 };
 

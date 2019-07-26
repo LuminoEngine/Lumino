@@ -74,7 +74,7 @@ void UIContainerElement::removeAllChildren()
 	//}
 }
 
-void UIContainerElement::setLayoutPanel(UILayoutPanel2* panel)
+void UIContainerElement::setLayoutPanel(UILayoutPanel* panel)
 {
 	if (m_layout != panel) {
 		m_layout = panel;
@@ -86,7 +86,7 @@ void UIContainerElement::setLayoutPanel(UILayoutPanel2* panel)
 	}
 }
 
-UILayoutPanel2* UIContainerElement::layoutPanel() const
+UILayoutPanel* UIContainerElement::layoutPanel() const
 {
 	//if (m_layout)
 		return m_layout;
@@ -94,7 +94,7 @@ UILayoutPanel2* UIContainerElement::layoutPanel() const
 	//	return m_manager->defaultLayout();
 }
 //
-//UILayoutPanel2* UIContainerElement::layoutPanel() const
+//UILayoutPanel* UIContainerElement::layoutPanel() const
 //{
 //    return m_layout;
 //    //LN_UNREACHABLE();
@@ -130,7 +130,7 @@ Size UIContainerElement::measureOverride(const Size& constraint)
     } list;
     list.list = &m_logicalChildren;
 
-	UILayoutPanel2* layout = layoutPanel();
+	UILayoutPanel* layout = layoutPanel();
 	layout->measureLayout(&list, constraint);
     Size desiredSize = layout->desiredSize();
     Size localSize = UIElement::measureOverride(constraint);
@@ -149,7 +149,7 @@ Size UIContainerElement::measureOverride(const Size& constraint)
 
 Size UIContainerElement::arrangeOverride(const Size& finalSize)
 {
-	UILayoutPanel2* layout = layoutPanel();
+	UILayoutPanel* layout = layoutPanel();
 
     Rect contentSlotRect;
     detail::LayoutHelper::adjustAlignment(finalSize, layout->desiredSize(), m_finalStyle->horizontalContentAlignment, m_finalStyle->verticalContentAlignment, &contentSlotRect);
@@ -179,7 +179,7 @@ Size UIContainerElement::arrangeOverride(const Size& finalSize)
 	//}
 }
 
-void UIContainerElement::onLayoutPanelChanged(UILayoutPanel2* newPanel)
+void UIContainerElement::onLayoutPanelChanged(UILayoutPanel* newPanel)
 {
 }
 

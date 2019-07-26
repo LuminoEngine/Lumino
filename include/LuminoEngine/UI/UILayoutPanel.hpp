@@ -110,12 +110,12 @@ public:
 
 
 // TODO: ネスト
-class UILayoutPanel2
+class UILayoutPanel
     : public Object
     , public IScrollInfo
 {
 public:
-    UILayoutPanel2();
+    UILayoutPanel();
     void init();
 
     /** レイアウト処理の測定パスの実行中にこの要素が計算したサイズを取得します。この値は子要素が親要素へ要求する、子要素自身の最低サイズです。*/
@@ -149,7 +149,7 @@ private:
 };
 
 class UIFrameLayout2	// TODO: BorderLayout の方がいいかも https://doc.qt.io/qt-5/qtwidgets-layouts-borderlayout-example.html
-    : public UILayoutPanel2
+    : public UILayoutPanel
 {
 public:
     static Ref<UIFrameLayout2> create();
@@ -168,7 +168,7 @@ private:
 // Orientation=H で大量アイテムを持つ ListView を配置すると、縦方向スクロールバーが表示される。
 // Orientation=V で大量アイテムを持つ ListView を配置すると、スクロールバーは表示されず、すべてのアイテムを包含するサイズが ListView の actualSize となる。（見切れる）
 class UIStackLayout2
-    : public UILayoutPanel2
+    : public UILayoutPanel
 {
 public:
     static Ref<UIStackLayout2> create();

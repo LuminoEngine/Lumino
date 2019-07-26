@@ -61,6 +61,8 @@ void UIElement::init()
     //if (m_manager->mainContext()) {
         m_manager->mainContext()->addElement(this);
     //}
+
+    //onSetup();
 }
 
 void UIElement::setWidth(float value)
@@ -536,6 +538,10 @@ void UIElement::removeVisualChild(UIElement* element)
 	m_visualChildren->remove(element);
 	element->m_visualParent = nullptr;
 }
+
+//void UIElement::onSetup()
+//{
+//}
 
 void UIElement::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel)
 {
