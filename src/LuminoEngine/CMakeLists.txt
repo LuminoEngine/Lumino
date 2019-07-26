@@ -185,49 +185,7 @@ set(LN_SOURCES_Audio_Device
     src/Audio/SDLAudioDevice.hpp
 )
 
-set(LN_SOURCES_Graphics
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/Bitmap.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/ColorStructs.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/DepthBuffer.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/GeometryStructs.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/GraphicsContext.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/GraphicsResource.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/IndexBuffer.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/RenderState.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/SamplerState.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/SwapChain.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/Texture.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/VertexBuffer.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/VertexLayout.hpp
-    src/Graphics/Internal.hpp
-    src/Graphics/Bitmap.cpp
-    src/Graphics/BitmapEncoding.cpp
-    src/Graphics/BitmapEncoding.hpp
-    src/Graphics/ColorStructs.cpp
-    src/Graphics/DepthBuffer.cpp
-    src/Graphics/GeometryStructs.cpp
-    src/Graphics/GLFWContext.cpp
-    src/Graphics/GLFWContext.hpp
-    src/Graphics/GraphicsContext.cpp
-    src/Graphics/GraphicsDeviceContext.cpp
-    src/Graphics/GraphicsDeviceContext.hpp
-    src/Graphics/GraphicsManager.cpp
-    src/Graphics/GraphicsManager.hpp
-    src/Graphics/GraphicsResource.cpp
-    src/Graphics/IndexBuffer.cpp
-    src/Graphics/RenderState.cpp
-    src/Graphics/SamplerState.cpp
-    src/Graphics/SwapChain.cpp
-    src/Graphics/MixHash.hpp
-    src/Graphics/OpenGLDeviceContext.cpp
-    src/Graphics/OpenGLDeviceContext.hpp
-    src/Graphics/RenderTargetTextureCache.cpp
-    src/Graphics/RenderTargetTextureCache.hpp
-    src/Graphics/Texture.cpp
-    src/Graphics/VertexBuffer.cpp
-    src/Graphics/VertexLayout.cpp
-)
+file(GLOB LN_SOURCES_Graphics ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/*.hpp src/Graphics/*.cpp src/Graphics/*.hpp)
 
 set(LN_SOURCES_Shader
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/Common.hpp
