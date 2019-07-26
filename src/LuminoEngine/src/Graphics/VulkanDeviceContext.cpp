@@ -183,6 +183,18 @@ Ref<ISwapChain> VulkanDevice::onCreateSwapChain(PlatformWindow* window, const Si
 	return ptr;
 }
 
+Ref<ICommandList> VulkanDevice::onCreateCommandList()
+{
+	LN_NOTIMPLEMENTED();
+	return nullptr;
+}
+
+Ref<IRenderPass> VulkanDevice::onCreateRenderPass(ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearZ, uint8_t clearStencil)
+{
+	LN_NOTIMPLEMENTED();
+	return nullptr;
+}
+
 Ref<IVertexDeclaration> VulkanDevice::onCreateVertexDeclaration(const VertexElement* elements, int elementsCount)
 {
     auto ptr = makeRef<VulkanVertexDeclaration>();

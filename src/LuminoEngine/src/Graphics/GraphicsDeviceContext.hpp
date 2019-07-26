@@ -154,6 +154,8 @@ public:
 	void refreshCaps();
 
 	Ref<ISwapChain> createSwapChain(PlatformWindow* window, const SizeI& backbufferSize);
+	Ref<ICommandList> createCommandList();
+	Ref<IRenderPass> createRenderPass(ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearZ, uint8_t clearStencil);
 	Ref<IVertexDeclaration> createVertexDeclaration(const VertexElement* elements, int elementsCount);
 	Ref<IVertexBuffer> createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData = nullptr);
 	Ref<IIndexBuffer> createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData = nullptr);
@@ -175,6 +177,8 @@ public:
 protected:
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) = 0;
 	virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) = 0;
+	virtual Ref<ICommandList> onCreateCommandList() = 0;
+	virtual Ref<IRenderPass> onCreateRenderPass(ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearZ, uint8_t clearStencil) = 0;
 	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) = 0;
 	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) = 0;
 	virtual Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) = 0;

@@ -306,6 +306,18 @@ Ref<ISwapChain> OpenGLDevice::onCreateSwapChain(PlatformWindow* window, const Si
 	return m_glContext->createSwapChain(window, backbufferSize);
 }
 
+Ref<ICommandList> OpenGLDevice::onCreateCommandList()
+{
+	LN_NOTIMPLEMENTED();
+	return nullptr;
+}
+
+Ref<IRenderPass> OpenGLDevice::onCreateRenderPass(ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearZ, uint8_t clearStencil)
+{
+	LN_NOTIMPLEMENTED();
+	return nullptr;
+}
+
 Ref<IVertexDeclaration> OpenGLDevice::onCreateVertexDeclaration(const VertexElement* elements, int elementsCount)
 {
 	auto ptr = makeRef<GLVertexDeclaration>();
