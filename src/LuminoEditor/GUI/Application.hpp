@@ -1,4 +1,5 @@
-﻿
+﻿#pragma once
+#include <Workspace.hpp>
 
 class EditorApplication
     : public ln::Application
@@ -23,7 +24,11 @@ protected:
     virtual void onInit() override;
 
 private:
+    void closeProject();
+
     void onNewProject(ln::UICommandEventArgs* e);
     void onOpenProject(ln::UICommandEventArgs* e);
+
+    ln::Ref<lna::Workspace> m_workspace;
 };
 

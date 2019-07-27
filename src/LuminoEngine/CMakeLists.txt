@@ -48,6 +48,7 @@ set(LN_SOURCES_Engine
 set(LN_SOURCES_Platform
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/AndroidPlatformInterface.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/CocoaPlatformInterface.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/PlatformDialogs.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/PlatformEvent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/PlatformSupport.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/PlatformWindow.hpp
@@ -59,6 +60,7 @@ set(LN_SOURCES_Platform
     src/Platform/EmscriptenPlatformInterface.cpp
     src/Platform/GLFWPlatformWindowManager.cpp
     src/Platform/GLFWPlatformWindowManager.hpp
+    src/Platform/PlatformDialogs.cpp
     src/Platform/PlatformEvent.cpp
     src/Platform/PlatformManager.cpp
     src/Platform/PlatformManager.hpp
@@ -66,6 +68,7 @@ set(LN_SOURCES_Platform
     src/Platform/PlatformWindow.cpp
     src/Platform/PlatformWindowManager.cpp
     src/Platform/PlatformWindowManager.hpp
+	src/Platform/Win32PlatformDialogs.hpp
     src/Platform/Win32PlatformInterface.cpp
     src/Platform/Win32PlatformWindowManager.cpp
     src/Platform/Win32PlatformWindowManager.hpp
