@@ -23,6 +23,7 @@ protected:
     virtual void onInit() override;
 
 private:
-
+    void onNewProject(ln::UICommandEventArgs* e);
+    void onOpenProject(ln::UICommandEventArgs* e);
 };
 

@@ -5,6 +5,7 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/UI/UICommand.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIEvents.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
@@ -413,6 +414,14 @@ void UIElement::addChild(const String& child)
     addChild(textblock);
 }
 
+void UIElement::addAction(UIAction* action)
+{
+    if (!m_actions) {
+        m_actions = ln::makeList<Ref<UIAction>>();
+    }
+    m_actions->add(action);
+}
+
 void UIElement::setRenderPriority(int value)
 {
     m_renderPriority = value;
@@ -730,6 +739,9 @@ void UIElement::render(UIRenderingContext* context)
 
 void UIElement::onRoutedEvent(UIEventArgs* e)
 {
+    if (detail::UICommandInternal::handleCommandRoutedEvent(e, m_actions)) {
+        return;
+    }
 }
 
 bool UIElement::onHitTest(const Point& frameClientPosition)

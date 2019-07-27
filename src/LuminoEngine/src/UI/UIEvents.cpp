@@ -320,12 +320,12 @@ void UIDragDropEventArgs::init(UIElement* sender, UIEventType type, DataObject* 
 
 LN_OBJECT_IMPLEMENT(UICommandEventArgs, UIEventArgs) {}
 
-Ref<UICommandEventArgs> UICommandEventArgs::create(UIElement* sender, UIEventType type, bool caching)
+Ref<UICommandEventArgs> UICommandEventArgs::create(UIElement* sender, UIEventType type, UICommand* command, bool caching)
 {
     if (caching)
     {
         auto& pool = detail::EngineDomain::uiManager()->eventArgsPool();
-        Ref<UICommandEventArgs> ptr(pool->create<UICommandEventArgs>(sender, type), false);
+        Ref<UICommandEventArgs> ptr(pool->create<UICommandEventArgs>(sender, type, command), false);
         return ptr;
     }
     else
@@ -336,13 +336,15 @@ Ref<UICommandEventArgs> UICommandEventArgs::create(UIElement* sender, UIEventTyp
 }
 
 UICommandEventArgs::UICommandEventArgs()
-    : m_canExecute(true)
+    : m_command(nullptr)
+    , m_canExecute(true)
 {
 }
 
-void UICommandEventArgs::init(UIElement* sender, UIEventType type)
+void UICommandEventArgs::init(UIElement* sender, UIEventType type, UICommand* command)
 {
     UIEventArgs::init(sender, type);
+    m_command = command;
     m_canExecute = true;
 }
 

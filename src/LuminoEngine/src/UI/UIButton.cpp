@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/UI/UIEvents.hpp>
+#include <LuminoEngine/UI/UICommand.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UITextBlock.hpp>
 #include <LuminoEngine/UI/UIButton.hpp>
@@ -41,7 +42,8 @@ void UIButtonBase::setCommand(UICommand* command)
 void UIButtonBase::onClick(UIEventArgs* e)
 {
     if (m_command) {
-
+        auto args = UICommandEventArgs::create(this, UIEvents::ExecuteCommandEvent, m_command);
+        raiseEvent(args);
     }
 }
 

@@ -454,6 +454,8 @@ void UIFrameWindow::onRoutedEvent(UIEventArgs* e)
 		e->handled = true;
 		return;
 	}
+
+    m_manager->handleGlobalRoutedEvent(e);
 }
 
 void UIFrameWindow::invalidate(detail::UIElementDirtyFlags flags, bool toAncestor)

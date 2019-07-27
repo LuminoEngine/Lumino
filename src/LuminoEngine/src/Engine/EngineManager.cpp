@@ -70,6 +70,7 @@ EngineManager::EngineManager()
 	//, m_modelManager(nullptr)
 	//, m_uiManager(nullptr)
 	, m_assetManager(nullptr)
+    //, m_application(nullptr)
     , m_timeScale(1.0f)
 	, m_exitRequested(false)
     , m_showDebugFpsEnabled(false)
@@ -520,6 +521,7 @@ void EngineManager::initializeUIManager()
 
 		UIManager::Settings settings;
 		settings.graphicsManager = m_graphicsManager;
+        settings.application = m_settings.application;
 		
 		m_uiManager = makeRef<UIManager>();
 		m_uiManager->init(settings);

@@ -24,6 +24,9 @@ EditorApplication::EditorApplication()
 
     NewCommand = ln::makeObject<ln::UICommand>();
     OpenCommand = ln::makeObject<ln::UICommand>();
+
+    addAction(ln::makeObject<ln::UIAction>(NewCommand, [this](ln::UICommandEventArgs* x){ onNewProject(x); }));
+    addAction(ln::makeObject<ln::UIAction>(OpenCommand, [this](ln::UICommandEventArgs* x) { onOpenProject(x); }));
 }
 
 EditorApplication::~EditorApplication()
@@ -69,4 +72,12 @@ void EditorApplication::setMainWindow(ln::UIMainWindow* window)
 void EditorApplication::onInit()
 {
 	setMainWindow(ln::makeObject<MainWindow>());
+}
+
+void EditorApplication::onNewProject(ln::UICommandEventArgs* e)
+{
+}
+
+void EditorApplication::onOpenProject(ln::UICommandEventArgs* e)
+{
 }

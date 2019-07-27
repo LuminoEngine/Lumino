@@ -8,6 +8,7 @@
 
 namespace ln {
 class EngineContext;
+class Application;
 class UIContext;
 class UIMainWindow;
 class UIViewport;
@@ -47,6 +48,7 @@ struct EngineSettingsAssetArchiveEntry
 
 struct EngineSettings
 {
+    Application* application = nullptr;
     Flags<EngineFeature> features = EngineFeature::Experimental;
 	String bundleIdentifier = u"lumino";
 	SizeI mainWindowSize = SizeI(640, 480);
@@ -167,6 +169,7 @@ private:
 	Ref<RuntimeManager> m_runtimeManager;
 	FpsController m_fpsController;
 
+    //Application* m_application;
 	Path m_persistentDataPath;
 
     Ref<UIContext> m_mainUIContext;

@@ -68,18 +68,57 @@ EventConnection UIAction::connectOnExecute(UICommandEventHandler handler)
     return m_onExecuteEvent.connect(handler);
 }
 
+bool UIAction::canExecute()
+{
+    bool r = false;
+    onCanExecute(&r);
+    return r;
+}
+
+void UIAction::execute()
+{
+    onExecute();
+}
+
 void UIAction::onCanExecute(bool* canExecute)
 {
     assert(canExecute);
-    auto args = UICommandEventArgs::create(nullptr, UIEvents::CanExecuteCommandEvent);
+    auto args = UICommandEventArgs::create(nullptr, UIEvents::CanExecuteCommandEvent, m_command);
     m_onCanExecuteEvent.raise(args);
     *canExecute = args->canExecute();
 }
 
 void UIAction::onExecute()
 {
-    auto args = UICommandEventArgs::create(nullptr, UIEvents::ExecuteCommandEvent);
-    m_onCanExecuteEvent.raise(args);
+    auto args = UICommandEventArgs::create(nullptr, UIEvents::ExecuteCommandEvent, m_command);
+    m_onExecuteEvent.raise(args);
+}
+
+
+//==============================================================================
+// UICommandInternal
+
+bool detail::UICommandInternal::handleCommandRoutedEvent(UIEventArgs* e, const Ref<List<Ref<UIAction>>>& actions)
+{
+    if (actions)
+    {
+        if (e->type() == UIEvents::CanExecuteCommandEvent ||
+            e->type() == UIEvents::ExecuteCommandEvent) {
+            auto* ce = static_cast<UICommandEventArgs*>(e);
+            auto action = actions->findIf([&](auto& x) { return x->command() == ce->command(); });
+            if (action) {
+                if ((*action)->canExecute()) {
+                    ce->setCanExecute(true);
+                    if (e->type() == UIEvents::ExecuteCommandEvent) {
+                        (*action)->execute();
+                    }
+                }
+                e->handled = true;
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 } // namespace ln

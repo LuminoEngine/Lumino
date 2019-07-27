@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Engine/Application.hpp>
 #include <LuminoEngine/UI/UIContainerElement.hpp>
 #include <LuminoEngine/UI/UIEvents.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
@@ -18,6 +19,7 @@ const float UIManager::MouseButtonClickTimeout = 0.3f;
 
 UIManager::UIManager()
 	: m_graphicsManager(nullptr)
+    , m_application(nullptr)
     , m_primaryElement(nullptr)
     , m_mouseHoverElement(nullptr)
 	, m_capturedElement(nullptr)
@@ -29,6 +31,7 @@ void UIManager::init(const Settings& settings)
     LN_LOG_DEBUG << "UIManager Initialization started.";
 
 	m_graphicsManager = settings.graphicsManager;
+    m_application = settings.application;
     m_eventArgsPool = makeRef<EventArgsPool>();
     //m_mainContext = makeObject<UIContext>();
 
@@ -145,6 +148,13 @@ void UIManager::dispatchPostedEvents()
         item.target->raiseEvent(item.args);
         m_eventQueue.pop_front();
         count--;
+    }
+}
+
+void UIManager::handleGlobalRoutedEvent(UIEventArgs* e)
+{
+    if (m_application) {
+        ApplicationHelper::callOnRoutedEvent(m_application, e);
     }
 }
 

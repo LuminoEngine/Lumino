@@ -12,6 +12,7 @@ class UIEventArgs;
 class UIStyle;
 class UIStyleContext;
 class UIVisualStateManager;
+class UIAction;
 class UIContainerElement;
 class UIFrameWindow;
 enum class BlendMode : uint8_t;
@@ -307,6 +308,8 @@ public:
     virtual void addChild(UIElement* child);
     virtual void addChild(const String& child);
 
+    void addAction(UIAction* action);
+
     UIElement();
     virtual ~UIElement();
 	void init();
@@ -422,6 +425,7 @@ public: // TODO: internal
     UIContainerElement* m_logicalParent;
 	Ref<List<Ref<UIElement>>> m_visualChildren;
     Ref<List<String>> m_classList;
+    Ref<List<Ref<UIAction>>> m_actions;
 	Ref<UIViewModel> m_viewModel;
     std::unique_ptr<detail::GridLayoutInfo> m_gridLayoutInfo;
 

@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "EngineManager.hpp"
+#include <LuminoEngine/UI/UICommand.hpp>
 #include <LuminoEngine/Engine/Application.hpp>
 
 namespace ln {
@@ -10,6 +11,7 @@ namespace ln {
 
 Application::Application()
 {
+    detail::EngineDomain::engineManager()->settings().application = this;
 }
 
 Application::~Application()
@@ -34,6 +36,21 @@ void Application::onStop()
 
 void Application::onDestroy()
 {
+}
+
+void Application::addAction(UIAction* action)
+{
+    if (!m_actions) {
+        m_actions = ln::makeList<Ref<UIAction>>();
+    }
+    m_actions->add(action);
+}
+
+void Application::onRoutedEvent(UIEventArgs* e)
+{
+    if (detail::UICommandInternal::handleCommandRoutedEvent(e, m_actions)) {
+        return;
+    }
 }
 
 void Application::initInternal()

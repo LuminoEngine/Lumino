@@ -5,9 +5,9 @@
 #include "../Platform/PlatformEvent.hpp"
 
 namespace ln {
+class UICommand;
 class UIElement;
 class UIEventArgs;
-
 
 /** Scroll イベントの原因となった動作を表します。*/
 enum class ScrollEventType
@@ -305,7 +305,9 @@ class UICommandEventArgs
 {
     LN_OBJECT;
 public:
-    static Ref<UICommandEventArgs> create(UIElement* sender, UIEventType type, bool caching = true);
+    static Ref<UICommandEventArgs> create(UIElement* sender, UIEventType type, UICommand* command, bool caching = true);
+
+    UICommand* command() const { return m_command; }
 
     // default: true
     bool canExecute() const { return m_canExecute; }
@@ -314,9 +316,10 @@ public:
 LN_CONSTRUCT_ACCESS:
     UICommandEventArgs();
     virtual ~UICommandEventArgs() = default;
-    void init(UIElement* sender, UIEventType type);
+    void init(UIElement* sender, UIEventType type, UICommand* command);
 
 public:
+    UICommand* m_command;
     bool m_canExecute;
 };
 

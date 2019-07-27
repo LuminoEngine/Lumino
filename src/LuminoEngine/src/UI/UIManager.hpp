@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 namespace ln {
+class Application;
 class UIContext;
 class UIContainerElement;
 class UIFrameLayout;
@@ -16,6 +17,7 @@ public:
 	struct Settings
 	{
 		GraphicsManager* graphicsManager;
+        Application* application = nullptr;
 	};
 
     static const float MouseButtonClickTimeout;
@@ -27,6 +29,7 @@ public:
 	void dispose();
 
 	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
+    Application* application() const { return m_application; }
 
     void setPrimaryElement(UIContainerElement* element);
     UIContainerElement* primaryElement() const;
@@ -46,6 +49,8 @@ public:
     void postEvent(UIElement* target, UIEventArgs* e);
     void dispatchPostedEvents();
 
+    void handleGlobalRoutedEvent(UIEventArgs* e);
+
 	//const Ref<UIFrameLayout>& defaultLayout() const { return m_defaultLayout; }
 
 private:
@@ -56,6 +61,7 @@ private:
     };
 
 	GraphicsManager* m_graphicsManager;
+    Application* m_application;
 	//PlatformManager* platformManager;
     Ref<UIContainerElement> m_primaryElement;
     Ref<EventArgsPool> m_eventArgsPool;
