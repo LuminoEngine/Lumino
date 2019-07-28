@@ -4,6 +4,9 @@
 class AssetBrowserTreeView : public ln::UITreeView
 {
 public:
+
+protected:
+    virtual void onItemClick(ln::UITreeItem* item, ln::UIMouseEventArgs* e) override;
 };
 
 
@@ -16,6 +19,6 @@ public:
 
 private:
     Ref<ln::UIIcon> m_navbarItem;
-
+    Ref<AssetBrowserTreeView> m_treeView;
 };
 

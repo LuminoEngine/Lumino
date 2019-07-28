@@ -69,12 +69,19 @@ public:
     void setData(Variant* value) { m_data = value; }
     Variant* data() const { return m_data; }
 
+protected:
+    virtual void onClick(UIMouseEventArgs* e);
+
+    // base interface
+    virtual void onRoutedEvent(UIEventArgs* e) override;
+
 LN_CONSTRUCT_ACCESS:
 	UIItemElement();
 	void init();
 
 private:
     Ref<Variant> m_data;
+    bool m_isPressed;
 };
 
 // Item を ItemElement でラップして扱う。
@@ -104,6 +111,9 @@ public:
 protected:
     virtual void onExpanded();
     virtual void onCollapsed();
+
+    // base interface
+    virtual void onClick(UIMouseEventArgs* e) override;
 
     // UIElement interface
     virtual const String& elementName() const  override { static String name = u"UITreeItem"; return name; }
@@ -139,6 +149,9 @@ public:
     bool isVirtualize() const { return m_model != nullptr; }
 
 protected:
+    virtual void onItemClick(UITreeItem* item, UIMouseEventArgs* e);
+
+    // base interface
 	virtual void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel) override;
     virtual Size arrangeOverride(const Size& finalSize) override;
 

@@ -63,19 +63,7 @@ void NavigatorManager::resetNavigators()
 {
     m_assetBrowserNavigator = ln::makeObject<AssetBrowserNavigator>();
     m_navigationBar->addItem(m_assetBrowserNavigator->createNavigationBarItem());
-
-
-
-
-    auto model = ln::makeObject<ln::UIFileSystemCollectionModel>();
-    model->setRootPath(u"D:/Proj/LN/Lumino");
-
-    auto treeView = ln::makeObject<ln::UITreeView>();
-    treeView->setViewModel(model);
-    treeView->setWidth(200);
-    treeView->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 2));
-    addElement(treeView);
-    treeView->getGridLayoutInfo()->layoutRow = 0;
+    addElement(m_assetBrowserNavigator->createView());
 
     setCurrent(m_assetBrowserNavigator);
 }

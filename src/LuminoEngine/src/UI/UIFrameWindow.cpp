@@ -90,11 +90,13 @@ bool UIInputInjector::injectMouseButtonDown(MouseButtons button)
 
 bool UIInputInjector::injectMouseButtonUp(MouseButtons button)
 {
+    MouseClickTracker& tracker = m_mouseClickTrackers[(int)button];
+
     // キャプチャ中のUI要素があればそちらに送る
     UIElement* sender = capturedElement();
     if (sender)
     {
-        auto args = UIMouseEventArgs::create(sender, UIEvents::MouseUpEvent, button, m_mousePosition.x, m_mousePosition.y, 0, true);
+        auto args = UIMouseEventArgs::create(sender, UIEvents::MouseUpEvent, button, m_mousePosition.x, m_mousePosition.y, tracker.clickCount, true);
         sender->raiseEvent(args);
         return args->handled;
     }
@@ -102,7 +104,7 @@ bool UIInputInjector::injectMouseButtonUp(MouseButtons button)
     sender = mouseHoveredElement();
     if (sender)
     {
-        auto args = UIMouseEventArgs::create(sender, UIEvents::MouseUpEvent, button, m_mousePosition.x, m_mousePosition.y, 0, true);
+        auto args = UIMouseEventArgs::create(sender, UIEvents::MouseUpEvent, button, m_mousePosition.x, m_mousePosition.y, tracker.clickCount, true);
         sender->raiseEvent(args);
         return args->handled;
     }

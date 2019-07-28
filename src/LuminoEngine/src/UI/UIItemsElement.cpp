@@ -121,12 +121,39 @@ void UIItemsControl::notifyItemClicked(UICollectionItem* item)
 // UIItemElement
 
 UIItemElement::UIItemElement()
+    : m_isPressed(false)
 {
 }
 
 void UIItemElement::init()
 {
 	UIElement::init();
+}
+
+void UIItemElement::onClick(UIMouseEventArgs* e)
+{
+}
+
+void UIItemElement::onRoutedEvent(UIEventArgs* e)
+{
+    if (e->type() == UIEvents::MouseDownEvent) {
+        m_isPressed = true;
+        retainCapture();
+        e->handled = true;
+        return;
+    }
+    else if (e->type() == UIEvents::MouseUpEvent) {
+        if (m_isPressed) {
+            releaseCapture();
+            e->handled = true;
+            m_isPressed = false;
+
+            onClick(static_cast<UIMouseEventArgs*>(e));
+            return;
+        }
+    }
+
+    UIElement::onRoutedEvent(e);
 }
 
 //==============================================================================
@@ -193,6 +220,12 @@ void UITreeItem::onExpanded()
 
 void UITreeItem::onCollapsed()
 {
+}
+
+void UITreeItem::onClick(UIMouseEventArgs* e)
+{
+    UIItemElement::onClick(e);
+    m_ownerTreeView->onItemClick(this, e);
 }
 
 void UITreeItem::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel)
@@ -339,6 +372,10 @@ void UITreeView::init()
 //    //    //}
 //    //}
 //}
+
+void UITreeView::onItemClick(UITreeItem* item, UIMouseEventArgs* e)
+{
+}
 
 void UITreeView::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel)
 {
