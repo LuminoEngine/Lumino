@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include <Workspace.hpp>
 
+class MainWindow;
+
 class EditorApplication
     : public ln::Application
 {
@@ -18,7 +20,7 @@ public:
     void run();
 	void setMainWindow(ln::UIMainWindow* window);	// onInit でのみ可
 
-    ln::UIMainWindow* mainWindow() const;
+    MainWindow* mainWindow() const;
 
 protected:
     virtual void onInit() override;

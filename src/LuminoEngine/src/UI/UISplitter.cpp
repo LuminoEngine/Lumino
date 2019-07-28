@@ -30,13 +30,23 @@ void UISplitter::setCellDefinition(int index, UILayoutLengthType type, float siz
 	if (m_cellDefinitions.size() <= index) {
 		m_cellDefinitions.resize(index + 1);
 	}
-
 	CellDefinition& cell = m_cellDefinitions[index];
 	cell.type = type;
-	cell.size = size;
+    cell.size = size;
 	cell.minSize = minSize;
 	cell.maxSize = maxSize;
+
+    cell.actualSize = Math::NaN;    // re-layout
 }
+
+//void UISplitter::resetCellSize(int index)
+//{
+//    //if (m_cellDefinitions.size() <= index) {
+//    //    m_cellDefinitions.resize(index + 1);
+//    //}
+//    //CellDefinition& cell = m_cellDefinitions[index];
+//    //cell.actualSize = Math::NaN;
+//}
 
 void UISplitter::onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)
 {
@@ -87,6 +97,7 @@ Size UISplitter::measureOverride(const Size& constraint)
 
         // セルサイズを子要素のサイズに合わせる場合
         if (cell.type == UILayoutLengthType::Auto) {
+            if (Math::isNaN(cell.desiredSize)) cell.desiredSize = 0.0f; // initial
             if (isHorizontal())
                 cell.desiredSize = std::max(cell.desiredSize, childDesiredSize.width);
             else
@@ -165,7 +176,7 @@ Size UISplitter::arrangeOverride(const Size& finalSize)
             cell.desiredSize = ratioUnit * cell.size;
         }
 
-		// adjust
+		// initial
 		if (Math::isNaN(cell.actualSize)) {
 			cell.actualSize = Math::clamp(cell.desiredSize, cell.minSize, cell.maxSize);
 		}

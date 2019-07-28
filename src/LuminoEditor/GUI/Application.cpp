@@ -3,6 +3,7 @@
 #include "../../LuminoEngine/src/Engine/EngineDomain.hpp"
 #include "../../LuminoEngine/src/Platform/PlatformManager.hpp"
 #include "../../LuminoEngine/src/UI/UIManager.hpp"
+#include "NavigatorManager.hpp"
 #include "MainWindow.hpp"
 #include "Application.hpp"
 
@@ -62,9 +63,10 @@ void EditorApplication::run()
     }
 }
 
-ln::UIMainWindow* EditorApplication::mainWindow() const
+MainWindow* EditorApplication::mainWindow() const
 {
-    return ln::detail::EngineDomain::engineManager()->mainWindow();
+    auto ptr = ln::static_pointer_cast<MainWindow>(ln::detail::EngineDomain::engineManager()->mainWindow());
+    return ptr;
 }
 
 void EditorApplication::setMainWindow(ln::UIMainWindow* window)
@@ -94,6 +96,10 @@ void EditorApplication::onOpenProject(ln::UICommandEventArgs* e)
             closeProject();
 
             m_workspace->openProject2(filePath);
+
+            mainWindow()->navigatorManager()->resetNavigators();
+
+            //mainWindow()->mainHSplitter()->resetCellSize(0);
 
             //m_contentsViewManager->setup(m_workspace->project(), "ARPG-HC0");
 

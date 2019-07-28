@@ -59,6 +59,7 @@ public:
 
 	void setOrientation(Orientation value);
     void setCellDefinition(int index, UILayoutLengthType type = UILayoutLengthType::Ratio, float size = 1.0f, float minSize = 0.0f, float maxSize = FLT_MAX);
+    void resetCellSize(int index);
 
 protected:
     virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;

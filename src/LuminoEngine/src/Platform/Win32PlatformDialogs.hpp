@@ -26,6 +26,7 @@ public:
 		dispose();
 	}
 
+    // http://eternalwindows.jp/installer/originalinstall/originalinstall02.html
 	void init(Type type)
 	{
 		if (SUCCEEDED(CoInitializeEx(NULL, COINIT_APARTMENTTHREADED)))	// multi-threaded is not supported

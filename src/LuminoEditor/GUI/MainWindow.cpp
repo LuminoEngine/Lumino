@@ -8,37 +8,7 @@
 #include "InspectorPane.hpp"
 #include "MainWindow.hpp"
 
-//class NavigationBar : public ln::UIItemsControl
-//{
-//public:
-//    static const int ItemSize = 40;
-//
-//	void addItem(const ln::String& text);
-//
-//protected:
-//	//virtual UIControl* generateItem(UIElement* content) override;
-//
-//private:
-//};
-//
-//void NavigationBar::addItem(const ln::String& text)
-//{
-//	auto textblock = ln::makeObject<ln::UITextBlock>();
-//	textblock->setText(text);
-//    textblock->setTextColor(ln::Color::White);
-//    textblock->setHorizontalAlignment(ln::HAlignment::Center);
-//    textblock->setVerticalAlignment(ln::VAlignment::Center);
-//
-//	auto item = ln::makeObject<ln::UICollectionItem>();
-//	item->addElement(textblock);
-//    item->setWidth(ItemSize);
-//    item->setHeight(ItemSize);
-//    item->setBorderThickness(ln::Thickness(4, 0, 0, 0));
-//    item->setBorderColor(ln::UIColors::get(ln::UIColorHues::LightGreen));
-//
-//	UIItemsControl::addItem(item);
-//}
-//
+
 
 
 class FileSystemTreeViewItem
@@ -71,32 +41,31 @@ void MainWindow::onLoaded()
     layout1->lastStretch = true;
 	setLayoutPanel(layout1);
 
-	m_navigatorManager = ln::makeObject<NavigatorManager>();
-	m_navigatorManager->setWidth(40);
-	m_navigatorManager->setBackgroundColor(ln::Color::Gray);
-	m_navigatorManager->setHorizontalAlignment(ln::HAlignment::Stretch);
-	m_navigatorManager->setVerticalAlignment(ln::VAlignment::Stretch);
-	addElement(m_navigatorManager);
 
 
 
-
-    auto splitter = ln::makeObject<ln::UISplitter>();
-    splitter->setCellDefinition(0, ln::UILayoutLengthType::Direct, 200);
-    splitter->setCellDefinition(1);
-	splitter->setCellDefinition(2, ln::UILayoutLengthType::Direct, 100);
-    addElement(splitter);
+    m_mainHSplitter = ln::makeObject<ln::UISplitter>();
+    m_mainHSplitter->setCellDefinition(0, ln::UILayoutLengthType::Auto);
+    m_mainHSplitter->setCellDefinition(1);
+    m_mainHSplitter->setCellDefinition(2, ln::UILayoutLengthType::Direct, 100);
+    addElement(m_mainHSplitter);
 
     {
-        auto model = ln::makeObject<ln::UIFileSystemCollectionModel>();
-        model->setRootPath(u"D:/Proj/LN/Lumino");
 
-        auto treeView = ln::makeObject<ln::UITreeView>();
-        treeView->setViewModel(model);
-        treeView->setWidth(200);
-        treeView->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 2));
-        splitter->addElement(treeView);
-		treeView->getGridLayoutInfo()->layoutRow = 0;
+        m_navigatorManager = ln::makeObject<NavigatorManager>();
+        m_navigatorManager->navigationViewOpen = ln::bind(this, &MainWindow::onNavigationViewOpen);
+        m_navigatorManager->navigationViewClose = ln::bind(this, &MainWindow::onNavigationViewClose);
+        m_mainHSplitter->addElement(m_navigatorManager);
+
+        //auto model = ln::makeObject<ln::UIFileSystemCollectionModel>();
+        //model->setRootPath(u"D:/Proj/LN/Lumino");
+
+  //      auto treeView = ln::makeObject<ln::UITreeView>();
+  //      treeView->setViewModel(model);
+  //      treeView->setWidth(200);
+  //      treeView->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 2));
+  //      splitter->addElement(treeView);
+		//treeView->getGridLayoutInfo()->layoutRow = 0;
 
         //--------
 
@@ -104,7 +73,7 @@ void MainWindow::onLoaded()
 		splitter2->setOrientation(ln::Orientation::Vertical);
 		splitter2->setCellDefinition(0);
 		splitter2->setCellDefinition(1, ln::UILayoutLengthType::Direct, 200);
-		splitter->addElement(splitter2);
+        m_mainHSplitter->addElement(splitter2);
 
 		{
 			//auto documentArea = ln::makeObject<ln::UIControl>();
@@ -148,7 +117,7 @@ void MainWindow::onLoaded()
 
 		m_inspectorPanesArea = ln::makeObject<ToolPanesArea>();
 		m_inspectorPanesArea->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::DeepOrange));
-		splitter->addElement(m_inspectorPanesArea);
+        m_mainHSplitter->addElement(m_inspectorPanesArea);
     }
 
 	//auto d = ln::makeObject<ln::UIStyleDecorator>();
@@ -163,4 +132,13 @@ void MainWindow::onLoaded()
 
 
 	//sidebar->addItem(u"A");
+}
+
+void MainWindow::onNavigationViewOpen()
+{
+    m_mainHSplitter->setCellDefinition(0, ln::UILayoutLengthType::Direct, 240);
+}
+
+void MainWindow::onNavigationViewClose()
+{
 }
