@@ -26,15 +26,10 @@ public:
 		RectI srcRect;
 	};
 
-	struct BrushData
-	{
-		//Color color;
-	};
-
 	InternalSpriteTextRender();
     void init(RenderingManager* manager);
 	RenderingManager* manager() const { return m_manager; }
-	void render(IGraphicsContext* context, const GlyphData* dataList, uint32_t dataCount, ITexture* glyphsTexture, const BrushData& brushData);
+	void render(IGraphicsContext* context, const GlyphData* dataList, uint32_t dataCount, ITexture* glyphsTexture);
 
 private:
 	void prepareBuffers(int spriteCount);
@@ -45,12 +40,10 @@ private:
 	Ref<IVertexDeclaration> m_vertexDeclaration;
 	Ref<IVertexBuffer> m_vertexBuffer;
 	Ref<IIndexBuffer> m_indexBuffer;
-	//
 
 	uint32_t m_buffersReservedSpriteCount;
 	uint32_t m_stagingSpriteOffset;
 	uint32_t m_stagingSpriteCount;
-	//uint32_t m_usedSpriteCount;
 };
 
 // 特に state とかないので不要なのだが、実装を他と合わせてイメージを持ちやすいようにしている。

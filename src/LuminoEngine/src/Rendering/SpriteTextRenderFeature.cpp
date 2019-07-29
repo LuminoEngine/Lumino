@@ -23,7 +23,6 @@ InternalSpriteTextRender::InternalSpriteTextRender()
 	, m_vertexDeclaration(nullptr)
 	, m_vertexBuffer(nullptr)
 	, m_indexBuffer(nullptr)
-	//, m_spriteCount(0)
 	, m_buffersReservedSpriteCount(0)
 	, m_stagingSpriteOffset(0)
 	, m_stagingSpriteCount(0)
@@ -38,8 +37,13 @@ void InternalSpriteTextRender::init(RenderingManager* manager)
     prepareBuffers(512);
 }
 
-void InternalSpriteTextRender::render(IGraphicsContext* context, const GlyphData* dataList, uint32_t dataCount, ITexture* glyphsTexture, const BrushData& brushData)
+void InternalSpriteTextRender::render(IGraphicsContext* context, const GlyphData* dataList, uint32_t dataCount, ITexture* glyphsTexture)
 {
+	// GPU 最適化のため、できるだけ map 範囲が被らないように循環バッファを使った実装にする。
+	// 特に OpenGL (Radeon HD 8490) では、線形の実装 (flush のたびに先頭から書き直し) では平均 471usec, 循環バッファの実装では 5usec と、100 倍近い差が出た。
+
+	prepareBuffers(dataCount);
+
 	int32_t iData = 0;
 	while (iData < dataCount)
 	{
@@ -85,56 +89,6 @@ void InternalSpriteTextRender::render(IGraphicsContext* context, const GlyphData
 	flush(context, glyphsTexture, m_stagingSpriteOffset, m_stagingSpriteCount);
 	m_stagingSpriteOffset += m_stagingSpriteCount;
 	m_stagingSpriteCount = 0;
-
-
-	//if ()
-
-
-
-
-	////m_spriteCount = 0;
-	//prepareBuffers(dataCount);
-
-	//{
-
-	//	Vertex* buffer = nullptr;
-	//	{
-	//		if (m_nextVertexBufferOffset + consumedSize > m_vertexBuffer->getBytesSize()) {
-	//			LN_NOTIMPLEMENTED();
-	//			return;
-	//		}
-
-	//		ElapsedTimer t("map");
-	//		//buffer = reinterpret_cast<Vertex*>(context->map(m_vertexBuffer, m_nextVertexBufferOffset, consumedSize));
-	//		buffer = reinterpret_cast<Vertex*>(context->map(m_vertexBuffer, 0, m_vertexBuffer->getBytesSize()));
-	//	}
-
-	//	{
-	//		//ElapsedTimer t("write");
-	//		ITexture* srcTexture = glyphsTexture;
-	//		Size texSizeInv(1.0f / srcTexture->realSize().width, 1.0f / srcTexture->realSize().height);
-	//		for (int i = 0; i < dataCount; ++i)
-	//		{
-	//			const GlyphData& data = dataList[i];
-	//			Rect uvSrcRect((float)data.srcRect.x, (float)data.srcRect.y, (float)data.srcRect.width, (float)data.srcRect.height);
-	//			uvSrcRect.x *= texSizeInv.width;
-	//			uvSrcRect.width *= texSizeInv.width;
-	//			uvSrcRect.y *= texSizeInv.height;
-	//			uvSrcRect.height *= texSizeInv.height;
-
-	//			Rect dstRect(data.position, (float)data.srcRect.width, (float)data.srcRect.height);
-	//			putRectangle(buffer + (i * 4), data.transform, dstRect, uvSrcRect, data.color);
-	//		}
-	//	}
-
-
-	//	//ElapsedTimer t("unmap");
-	//	context->unmap(m_vertexBuffer);
-
-	//}
-
-	//flush(context, glyphsTexture);
-	//	//m_nextVertexBufferOffset += consumedSize;
 }
 
 void InternalSpriteTextRender::prepareBuffers(int spriteCount)
@@ -172,6 +126,8 @@ void InternalSpriteTextRender::prepareBuffers(int spriteCount)
 			spriteCount * 6, ib);
 
 		m_buffersReservedSpriteCount = spriteCount;
+		m_stagingSpriteOffset = 0;
+		m_stagingSpriteCount = 0;
 	}
 }
 
@@ -215,27 +171,15 @@ void InternalSpriteTextRender::putRectangle(Vertex* buffer, const Matrix& transf
             buffer[i].position.y = std::round(buffer[i].position.y);
         }
     }
-
-	//m_spriteCount++;
 }
-
-//void InternalSpriteTextRender::putRectangle(const Matrix& transform, const Rect& rect, const Rect& srcUVRect, const Color& color)
-//{
-//
-//}
 
 void InternalSpriteTextRender::flush(IGraphicsContext* context, ITexture* glyphsTexture, uint32_t startSprite, uint32_t spriteCount)
 {
-	//uint32_t offsetSprites = m_nextVertexBufferOffset / sizeof(Vertex) / 4;
-
 	context->setVertexDeclaration(m_vertexDeclaration);
 	context->setVertexBuffer(0, m_vertexBuffer);
 	context->setIndexBuffer(m_indexBuffer);
 	context->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-	//context->drawPrimitiveIndexed(offsetSprites * 6, m_spriteCount * 2);
-	context->drawPrimitiveIndexed(startSprite * 6, spriteCount * 2);//m_spriteCountXX * 2);
-
-    //m_spriteCount = 0;
+	context->drawPrimitiveIndexed(startSprite * 6, spriteCount * 2);
 }
 
 //==============================================================================
@@ -376,26 +320,22 @@ void SpriteTextRenderFeature::flushInternal(GraphicsContext* context, FontGlyphT
 		glyphsTexture = GraphicsResourceInternal::resolveRHIObject<ITexture>(context, cache->glyphsFillTexture(), nullptr);
 	}
 
-	InternalSpriteTextRender::BrushData brushData;
-	//brushData.color = Color::Blue;
 
 	GraphicsManager* manager = m_internal->manager()->graphicsManager();
     IGraphicsContext* c = GraphicsContextInternal::commitState(context);
-	LN_ENQUEUE_RENDER_COMMAND_6(
+	LN_ENQUEUE_RENDER_COMMAND_5(
 		SpriteTextRenderFeature_flushInternal, context,
 		InternalSpriteTextRender*, m_internal,
         IGraphicsContext*, c,
 		RenderBulkData, dataListData,
 		int, dataCount,
 		Ref<ITexture>, glyphsTexture,
-		InternalSpriteTextRender::BrushData, brushData,
 		{
 			m_internal->render(
 				c,
 				(InternalSpriteTextRender::GlyphData*)dataListData.data(),
 				dataCount,
-				glyphsTexture,
-				brushData);
+				glyphsTexture);
 		});
 
 	m_drawingFont->getFontGlyphTextureCache()->onFlush();
