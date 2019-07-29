@@ -787,7 +787,7 @@ UIStyleSet* UIStyleContext::findStyleSet(const StringRef& elementName) const
     if (itr != m_elementStyles.end())
         return itr->second;
     else
-        return m_globalStyle;
+        return nullptr;
 }
 
 //detail::UIStyleClassInstance* UIStyleContext::findResolvedStyleClass(const StringRef& elementName) const
@@ -802,7 +802,7 @@ UIStyleSet* UIStyleContext::findStyleSet(const StringRef& elementName) const
 void UIStyleContext::combineStyle(UIStyle* style, const StringRef& elementName, const List<String>* classList) const
 {
 	auto set = findStyleSet(elementName);
-
+    if (!set) return;   // global は parent に乗って降りてくるので、個々の element では結合不要
 #if 1
 	style->mergeFrom(set->mainStyleClass()->mainStyle());
 

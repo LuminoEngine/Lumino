@@ -467,12 +467,12 @@ class UIStyleContext
 {
 public:
     void addStyleSheet(UIStyleSheet* sheet);
-
+    UIStyleSet* globalStyle() const { return m_globalStyle; }
 
     // TODO: internal
 	// find を高速にするため、事前に確定できる継承関係を解決する。
     void build();
-    UIStyleSet* findStyleSet(const StringRef& elementName) const; // 無い場合は global
+    UIStyleSet* findStyleSet(const StringRef& elementName) const; // 無い場合は null
     //detail::UIStyleClassInstance* findResolvedStyleClass(const StringRef& elementName) const; // 無い場合は global
 	// VisualState 以外を結合 (mainStyle のみ結合)
 	void combineStyle(UIStyle* style, const StringRef& elementName, const List<String>* classList) const;
