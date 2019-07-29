@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Base/Regex.hpp>
 #include <LuminoEngine/UI/UIItemsModel.hpp>
 
 namespace ln {
@@ -69,6 +70,11 @@ Ref<UICollectionItemModel> UIFileSystemCollectionModel::setRootPath(const Path& 
     return m_rootModel;
 }
 
+void UIFileSystemCollectionModel::setExcludeFilters(List<String>* value)
+{
+    m_excludeFilters = value;
+}
+
 int UIFileSystemCollectionModel::getRowCount(UICollectionItemModel* index)
 {
 	auto node = getNode(index);
@@ -85,6 +91,12 @@ String UIFileSystemCollectionModel::getData(UICollectionItemModel* index, const 
 {
 	auto node = getNode(index);
 	return node->path.fileName();
+}
+
+Path UIFileSystemCollectionModel::filePath(UICollectionItemModel* itemModel)
+{
+    auto node = getNode(itemModel);
+    return node->path;
 }
 
 UIFileSystemCollectionModel::FileSystemNode* UIFileSystemCollectionModel::getNode(UICollectionItemModel* index)
@@ -116,11 +128,26 @@ void UIFileSystemCollectionModel::constructChildNodes(FileSystemNode* node) cons
 			}
 			auto files = FileSystem::getFiles(path, StringRef(), SearchOption::TopDirectoryOnly);
 			for (auto& file : files) {
-				node->children.add(makeRef<FileSystemNode>(file));
+               if (testFilter(file)) {
+                    node->children.add(makeRef<FileSystemNode>(file));
+                }
 			}
 		}
 		node->dirty = false;
 	}
+}
+
+bool UIFileSystemCollectionModel::testFilter(const Path& path) const
+{
+    if (m_excludeFilters) {
+        for (auto& f : m_excludeFilters) {
+            if (StringHelper::match(f.c_str(), path.c_str())) {
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 } // namespace ln

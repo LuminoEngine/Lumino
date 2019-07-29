@@ -59,10 +59,15 @@ class UIFileSystemCollectionModel
 {
 public:
 	Ref<UICollectionItemModel> setRootPath(const Path& path);
+    void setExcludeFilters(List<String>* value);
 
 	virtual int getRowCount(UICollectionItemModel* index) override;
 	virtual Ref<UICollectionItemModel> getIndex(int row, int column, UICollectionItemModel* parent) override;
 	virtual String getData(UICollectionItemModel* index, const String& role) override;
+
+    virtual Path filePath(UICollectionItemModel* itemModel);
+
+
 
 LN_CONSTRUCT_ACCESS:
 	UIFileSystemCollectionModel();
@@ -83,9 +88,11 @@ private:
 	FileSystemNode* getNode(UICollectionItemModel* index);
 	Ref<FileSystemNode> makeNode(const Path& path) const;
 	void constructChildNodes(FileSystemNode* node) const;
+    bool testFilter(const Path& path) const;
 
 	Ref<FileSystemNode> m_rootNode;
     Ref<UICollectionItemModel> m_rootModel;
+    Ref<List<String>> m_excludeFilters;
 };
 
 // https://docs.microsoft.com/ja-jp/dotnet/api/system.windows.data.collectionview?view=netframework-4.8

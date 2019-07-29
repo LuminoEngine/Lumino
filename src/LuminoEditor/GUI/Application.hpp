@@ -22,6 +22,8 @@ public:
 
     MainWindow* mainWindow() const;
 
+    void importFile(const ln::Path& filePath);
+
 protected:
     virtual void onInit() override;
 

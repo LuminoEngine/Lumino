@@ -4,9 +4,13 @@
 class AssetBrowserTreeView : public ln::UITreeView
 {
 public:
+    void init();
 
 protected:
     virtual void onItemClick(ln::UITreeItem* item, ln::UIMouseEventArgs* e) override;
+
+private:
+    Ref<ln::UIFileSystemCollectionModel> m_model;
 };
 
 

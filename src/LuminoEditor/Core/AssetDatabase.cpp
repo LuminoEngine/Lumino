@@ -26,6 +26,11 @@ Ref<ln::AssetModel> AssetDatabase::openAsset(const ln::Path& filePath)
     return asset;
 }
 
+bool AssetDatabase::isImportedAssetFile(const ln::Path& file) const
+{
+    return ln::FileSystem::existsFile(file.str() + ln::AssetModel::AssetFileExtension);
+}
+
 ln::Result AssetDatabase::init(Project* owner)
 {
     return true;

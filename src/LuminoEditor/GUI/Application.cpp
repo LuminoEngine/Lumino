@@ -3,6 +3,9 @@
 #include "../../LuminoEngine/src/Engine/EngineDomain.hpp"
 #include "../../LuminoEngine/src/Platform/PlatformManager.hpp"
 #include "../../LuminoEngine/src/UI/UIManager.hpp"
+#include <Workspace.hpp>
+#include <Project.hpp>
+#include <PluginManager.hpp>
 #include "NavigatorManager.hpp"
 #include "MainWindow.hpp"
 #include "Application.hpp"
@@ -72,6 +75,20 @@ MainWindow* EditorApplication::mainWindow() const
 void EditorApplication::setMainWindow(ln::UIMainWindow* window)
 {
 	return ln::detail::EngineDomain::engineManager()->setMainWindow(window);
+}
+
+void EditorApplication::importFile(const ln::Path& filePath)
+{
+    if (m_workspace->project())
+    {
+        auto exts = m_workspace->project()->pluginManager()->getAssetImporterExtensions(filePath);
+        if (exts.size() != 1) {
+            LN_NOTIMPLEMENTED();
+            return;
+        }
+
+        exts[0].second->import(filePath);
+    }
 }
 
 void EditorApplication::onInit()
