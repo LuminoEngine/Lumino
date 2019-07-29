@@ -368,9 +368,9 @@ void IGraphicsContext::setPrimitiveTopology(PrimitiveTopology value)
     m_staging.pipelineState.topology = value;
 }
 
-void* IGraphicsContext::map(IGraphicsResource* resource)
+void* IGraphicsContext::map(IGraphicsResource* resource, uint32_t offset, uint32_t size)
 {
-    return onMapResource(resource);
+    return onMapResource(resource, offset, size);
 }
 
 void IGraphicsContext::unmap(IGraphicsResource* resource)

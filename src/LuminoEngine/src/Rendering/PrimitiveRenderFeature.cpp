@@ -55,8 +55,8 @@ void InternalPrimitiveRenderer::flush(IGraphicsContext* context)
     prepareBuffers(m_manager->graphicsManager()->deviceContext(), vertexCount, indexCount);
 
     // Create Vertex and Index buffers
-    Vertex* vertexBuffer = (Vertex*)context->map(m_vertexBuffer);
-    uint16_t* indexBuffer = (uint16_t*)context->map(m_indexBuffer);
+    Vertex* vertexBuffer = (Vertex*)context->map(m_vertexBuffer, 0, m_vertexBuffer->getBytesSize());
+    uint16_t* indexBuffer = (uint16_t*)context->map(m_indexBuffer, 0, m_indexBuffer->getBytesSize());
     MeshGeneraterBuffer buffer;
     size_t vertexOffset = 0;
     size_t indexOffset = 0;

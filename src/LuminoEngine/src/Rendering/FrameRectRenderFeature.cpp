@@ -72,7 +72,7 @@ void InternalFrameRectRenderer::InternalFrameRectRenderer::flush(IGraphicsContex
 {
     prepareBuffers(m_vertices.size() / 4);
 
-    Vertex* vb = reinterpret_cast<Vertex*>(context->map(m_vertexBuffer));
+    Vertex* vb = reinterpret_cast<Vertex*>(context->map(m_vertexBuffer, 0, m_vertexBuffer->getBytesSize()));
     for (size_t i = 0; i < m_vertices.size(); i++) {
         vb[i] = *m_vertices[i];
     }

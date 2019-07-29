@@ -904,8 +904,13 @@ void VulkanGraphicsContext::onSubmitStatus(const GraphicsContextState& state, ui
 {
 }
 
-void* VulkanGraphicsContext::onMapResource(IGraphicsResource* resource)
+void* VulkanGraphicsContext::onMapResource(IGraphicsResource* resource, uint32_t offset, uint32_t size)
 {
+	if (offset != 0) {
+		LN_NOTIMPLEMENTED();
+		return 0;
+	}
+
 	// データ転送に使う vkCmdCopyBuffer() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
 	m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
 

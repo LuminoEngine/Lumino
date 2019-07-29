@@ -321,7 +321,7 @@ void InternalSpriteRenderer::flush(IGraphicsContext* context)
 	}
 
 	// Copy vertex data.
-	Vertex* vb = static_cast<Vertex*>(context->map(m_vertexBuffer));
+	Vertex* vb = static_cast<Vertex*>(context->map(m_vertexBuffer, 0, m_vertexBuffer->getBytesSize()));
 	for (int iSprite = 0, iVertex = 0; iSprite < spriteCount; iSprite++)
 	{
 		int iData = m_spriteIndexList[iSprite];

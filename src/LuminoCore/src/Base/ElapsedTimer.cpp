@@ -12,6 +12,19 @@
 
 namespace ln {
 
+ElapsedTimer::ElapsedTimer(const char* tag) LN_NOEXCEPT
+	: ElapsedTimer()
+{
+	m_tag = tag;
+}
+
+ElapsedTimer::~ElapsedTimer()
+{
+	if (m_tag) {
+		std::cout << m_tag << ": " << elapsedMicroseconds() << " [usec]" << std::endl;
+	}
+}
+
 uint64_t ElapsedTimer::elapsedMilliseconds() const LN_NOEXCEPT
 {
 	return elapsedNanoseconds() / 1000000;

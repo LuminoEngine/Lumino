@@ -255,7 +255,7 @@ public:
 	PrimitiveTopology primitiveTopology() const { return m_staging.pipelineState.topology; }
 
     // write only
-    void* map(IGraphicsResource* resource);
+    void* map(IGraphicsResource* resource, uint32_t offset, uint32_t size);
     void unmap(IGraphicsResource* resource);
     void setSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length);
     void setSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize);
@@ -285,7 +285,7 @@ public:	// TODO:
 	virtual void onUpdateShaderPass(IShaderPass* newPass) = 0;
 	virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource) = 0;
 
-	virtual void* onMapResource(IGraphicsResource* resource) = 0;
+	virtual void* onMapResource(IGraphicsResource* resource, uint32_t offset, uint32_t size) = 0;
 	virtual void onUnmapResource(IGraphicsResource* resource) = 0;
 	virtual void onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length) = 0;
 	virtual void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) = 0;

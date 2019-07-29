@@ -1,4 +1,5 @@
 ﻿
+#include <Workspace.hpp>
 #include <Project.hpp>
 #include "AssetBrowserNavigator.hpp"
 
@@ -9,7 +10,6 @@ void AssetBrowserTreeView::onItemClick(ln::UITreeItem* item, ln::UIMouseEventArg
 {
     UITreeView::onItemClick(item, e);
     if (e->getClickCount() == 2) {
-        ln::GameAudio::playBGM(u"D:/Music/momentum/02 - momentum.wav");
     }
 }
 
@@ -25,9 +25,11 @@ ln::UIElement* AssetBrowserNavigator::createNavigationBarItem()
 
 ln::UIElement* AssetBrowserNavigator::createView()
 {
+	auto project = lna::Workspace::instance()->project();
 
     auto model = ln::makeObject<ln::UIFileSystemCollectionModel>();
-    model->setRootPath(u"D:/Proj/LN/Lumino");
+    //model->setRootPath(project->assetsDir());
+	model->setRootPath(u"C:/Proj/LN/Lumino");
 
     m_treeView = ln::makeObject<AssetBrowserTreeView>();
     m_treeView->setViewModel(model);

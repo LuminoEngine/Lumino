@@ -292,7 +292,6 @@ void UIFrameWindow::present()
 
     detail::EngineDomain::effectManager()->testDraw();
 
-
 	detail::SwapChainInternal::present(m_swapChain, m_graphicsContext);
 	m_manager->graphicsManager()->renderingQueue()->submit(m_graphicsContext);
 }
@@ -451,8 +450,10 @@ void UIFrameWindow::onRoutedEvent(UIEventArgs* e)
         return;
     }
 	else if (e->type() == UIEvents::RequestVisualRedrawEvent) {
-		renderContents();
-		present();
+		if (m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Render)) {
+			renderContents();
+			present();
+		}
 		e->handled = true;
 		return;
 	}

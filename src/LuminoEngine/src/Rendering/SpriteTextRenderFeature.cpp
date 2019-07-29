@@ -23,8 +23,10 @@ InternalSpriteTextRender::InternalSpriteTextRender()
 	, m_vertexDeclaration(nullptr)
 	, m_vertexBuffer(nullptr)
 	, m_indexBuffer(nullptr)
-	, m_spriteCount(0)
+	//, m_spriteCount(0)
 	, m_buffersReservedSpriteCount(0)
+	, m_stagingSpriteOffset(0)
+	, m_stagingSpriteCount(0)
 {
 }
 
@@ -36,28 +38,103 @@ void InternalSpriteTextRender::init(RenderingManager* manager)
     prepareBuffers(512);
 }
 
-void InternalSpriteTextRender::render(IGraphicsContext* context, const GlyphData* dataList, int dataCount, ITexture* glyphsTexture, const BrushData& brushData)
+void InternalSpriteTextRender::render(IGraphicsContext* context, const GlyphData* dataList, uint32_t dataCount, ITexture* glyphsTexture, const BrushData& brushData)
 {
-	m_spriteCount = 0;
-	prepareBuffers(dataCount);
-
-	Vertex* buffer = reinterpret_cast<Vertex*>(context->map(m_vertexBuffer));
-	ITexture* srcTexture = glyphsTexture;
-	Size texSizeInv(1.0f / srcTexture->realSize().width, 1.0f / srcTexture->realSize().height);
-	for (int i = 0; i < dataCount; ++i)
+	int32_t iData = 0;
+	while (iData < dataCount)
 	{
-		const GlyphData& data = dataList[i];
-		Rect uvSrcRect((float)data.srcRect.x, (float)data.srcRect.y, (float)data.srcRect.width, (float)data.srcRect.height);
-		uvSrcRect.x *= texSizeInv.width;
-		uvSrcRect.width *= texSizeInv.width;
-		uvSrcRect.y *= texSizeInv.height;
-		uvSrcRect.height *= texSizeInv.height;
+		// 今回のループで描画できる最大数
+		uint32_t maxCount = m_buffersReservedSpriteCount - m_stagingSpriteOffset;
 
-		Rect dstRect(data.position, (float)data.srcRect.width, (float)data.srcRect.height);
-		internalDrawRectangle(buffer + (i * 4), data.transform, dstRect, uvSrcRect, data.color);
+		// 実際に描画する数
+		uint32_t count = std::min(dataCount, maxCount);
+
+		// map
+		uint32_t consumedSize = count * sizeof(Vertex) * 4;
+		uint32_t nextVertexBufferOffset = m_stagingSpriteOffset * sizeof(Vertex) * 4;
+		Vertex* buffer = reinterpret_cast<Vertex*>(context->map(m_vertexBuffer, nextVertexBufferOffset, consumedSize));
+
+		// write
+		ITexture* srcTexture = glyphsTexture;
+		Size texSizeInv(1.0f / srcTexture->realSize().width, 1.0f / srcTexture->realSize().height);
+		for (int i = 0; iData < dataCount; ++iData, ++i)
+		{
+			const GlyphData& data = dataList[iData];
+			Rect uvSrcRect((float)data.srcRect.x, (float)data.srcRect.y, (float)data.srcRect.width, (float)data.srcRect.height);
+			uvSrcRect.x *= texSizeInv.width;
+			uvSrcRect.width *= texSizeInv.width;
+			uvSrcRect.y *= texSizeInv.height;
+			uvSrcRect.height *= texSizeInv.height;
+
+			Rect dstRect(data.position, (float)data.srcRect.width, (float)data.srcRect.height);
+			putRectangle(buffer + (i * 4), data.transform, dstRect, uvSrcRect, data.color);
+		}
+
+		// unmap
+		context->unmap(m_vertexBuffer);
+		m_stagingSpriteCount += count;
+
+		// flush if buffer filling.
+		if (m_stagingSpriteOffset + m_stagingSpriteCount >= m_buffersReservedSpriteCount) {
+			flush(context, glyphsTexture, m_stagingSpriteOffset, m_stagingSpriteCount);
+			m_stagingSpriteOffset = 0;
+			m_stagingSpriteCount = 0;
+		}
 	}
-    context->unmap(m_vertexBuffer);
-	flush(context, glyphsTexture);
+
+	flush(context, glyphsTexture, m_stagingSpriteOffset, m_stagingSpriteCount);
+	m_stagingSpriteOffset += m_stagingSpriteCount;
+	m_stagingSpriteCount = 0;
+
+
+	//if ()
+
+
+
+
+	////m_spriteCount = 0;
+	//prepareBuffers(dataCount);
+
+	//{
+
+	//	Vertex* buffer = nullptr;
+	//	{
+	//		if (m_nextVertexBufferOffset + consumedSize > m_vertexBuffer->getBytesSize()) {
+	//			LN_NOTIMPLEMENTED();
+	//			return;
+	//		}
+
+	//		ElapsedTimer t("map");
+	//		//buffer = reinterpret_cast<Vertex*>(context->map(m_vertexBuffer, m_nextVertexBufferOffset, consumedSize));
+	//		buffer = reinterpret_cast<Vertex*>(context->map(m_vertexBuffer, 0, m_vertexBuffer->getBytesSize()));
+	//	}
+
+	//	{
+	//		//ElapsedTimer t("write");
+	//		ITexture* srcTexture = glyphsTexture;
+	//		Size texSizeInv(1.0f / srcTexture->realSize().width, 1.0f / srcTexture->realSize().height);
+	//		for (int i = 0; i < dataCount; ++i)
+	//		{
+	//			const GlyphData& data = dataList[i];
+	//			Rect uvSrcRect((float)data.srcRect.x, (float)data.srcRect.y, (float)data.srcRect.width, (float)data.srcRect.height);
+	//			uvSrcRect.x *= texSizeInv.width;
+	//			uvSrcRect.width *= texSizeInv.width;
+	//			uvSrcRect.y *= texSizeInv.height;
+	//			uvSrcRect.height *= texSizeInv.height;
+
+	//			Rect dstRect(data.position, (float)data.srcRect.width, (float)data.srcRect.height);
+	//			putRectangle(buffer + (i * 4), data.transform, dstRect, uvSrcRect, data.color);
+	//		}
+	//	}
+
+
+	//	//ElapsedTimer t("unmap");
+	//	context->unmap(m_vertexBuffer);
+
+	//}
+
+	//flush(context, glyphsTexture);
+	//	//m_nextVertexBufferOffset += consumedSize;
 }
 
 void InternalSpriteTextRender::prepareBuffers(int spriteCount)
@@ -98,7 +175,7 @@ void InternalSpriteTextRender::prepareBuffers(int spriteCount)
 	}
 }
 
-void InternalSpriteTextRender::internalDrawRectangle(Vertex* buffer, const Matrix& transform, const Rect& rect, const Rect& srcUVRect, const Color& color)
+void InternalSpriteTextRender::putRectangle(Vertex* buffer, const Matrix& transform, const Rect& rect, const Rect& srcUVRect, const Color& color)
 {
 	if (rect.isEmpty()) return;		// 矩形がつぶれているので書く必要はない
 
@@ -139,18 +216,26 @@ void InternalSpriteTextRender::internalDrawRectangle(Vertex* buffer, const Matri
         }
     }
 
-	m_spriteCount++;
+	//m_spriteCount++;
 }
 
-void InternalSpriteTextRender::flush(IGraphicsContext* context, ITexture* glyphsTexture)
+//void InternalSpriteTextRender::putRectangle(const Matrix& transform, const Rect& rect, const Rect& srcUVRect, const Color& color)
+//{
+//
+//}
+
+void InternalSpriteTextRender::flush(IGraphicsContext* context, ITexture* glyphsTexture, uint32_t startSprite, uint32_t spriteCount)
 {
+	//uint32_t offsetSprites = m_nextVertexBufferOffset / sizeof(Vertex) / 4;
+
 	context->setVertexDeclaration(m_vertexDeclaration);
 	context->setVertexBuffer(0, m_vertexBuffer);
 	context->setIndexBuffer(m_indexBuffer);
 	context->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-	context->drawPrimitiveIndexed(0, m_spriteCount * 2);
+	//context->drawPrimitiveIndexed(offsetSprites * 6, m_spriteCount * 2);
+	context->drawPrimitiveIndexed(startSprite * 6, spriteCount * 2);//m_spriteCountXX * 2);
 
-    m_spriteCount = 0;
+    //m_spriteCount = 0;
 }
 
 //==============================================================================
@@ -279,11 +364,17 @@ void SpriteTextRenderFeature::flushInternal(GraphicsContext* context, FontGlyphT
 	if (!cache) return;
 	if (m_glyphLayoutDataList.empty()) return;
 
+
+
 	size_t dataCount = m_glyphLayoutDataList.size();
 	RenderBulkData dataListData(&m_glyphLayoutDataList[0], sizeof(InternalSpriteTextRender::GlyphData) * dataCount);
 
 	// Texture::blit で転送されるものを Flush する
-	ITexture* glyphsTexture = GraphicsResourceInternal::resolveRHIObject<ITexture>(context, cache->glyphsFillTexture(), nullptr);
+	ITexture* glyphsTexture = nullptr;
+	{
+		// TODO: Debug ON でだが、新しい文字を作るときに 1ms くらいかかっているようだ。要調査
+		glyphsTexture = GraphicsResourceInternal::resolveRHIObject<ITexture>(context, cache->glyphsFillTexture(), nullptr);
+	}
 
 	InternalSpriteTextRender::BrushData brushData;
 	//brushData.color = Color::Blue;

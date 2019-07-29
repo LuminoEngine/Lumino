@@ -147,7 +147,7 @@ protected:
 	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) override;
 	virtual void onUpdateShaderPass(IShaderPass* newPass) override;
 	virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource) override;
-	virtual void* onMapResource(IGraphicsResource* resource) override;
+	virtual void* onMapResource(IGraphicsResource* resource, uint32_t offset, uint32_t size) override;
 	virtual void onUnmapResource(IGraphicsResource* resource) override;
 	virtual void onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length) override;
 	virtual void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) override;

@@ -9,6 +9,9 @@ public:
 	/** インスタンス構築と同時に、経過時間の計測を開始します。 */
 	ElapsedTimer() LN_NOEXCEPT;
 
+	ElapsedTimer(const char* tag) LN_NOEXCEPT;
+	~ElapsedTimer() LN_NOEXCEPT;
+
 	/** 経過時間をゼロにリセットして、経過時間の計測を開始します。 */
 	void start() LN_NOEXCEPT;
 
@@ -24,6 +27,7 @@ public:
 private:
 	uint64_t m_value1;
 	uint64_t m_value2;
+	const char* m_tag;
 };
 
 } // namespace ln

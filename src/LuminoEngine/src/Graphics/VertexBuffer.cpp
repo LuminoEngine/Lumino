@@ -107,7 +107,7 @@ void* VertexBuffer::map(MapMode mode)
         }
 
         if (m_rhiMappedBuffer == nullptr) {
-            m_rhiMappedBuffer = detail::GraphicsResourceInternal::manager(this)->deviceContext()->getGraphicsContext()->map(m_rhiObject);
+            m_rhiMappedBuffer = detail::GraphicsResourceInternal::manager(this)->deviceContext()->getGraphicsContext()->map(m_rhiObject, 0, size());
         }
 
         m_modified = true;

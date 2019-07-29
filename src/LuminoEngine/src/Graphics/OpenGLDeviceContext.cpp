@@ -771,14 +771,14 @@ void GLGraphicsContext::onUpdateShaderPass(IShaderPass* newPass)
 	}
 }
 
-void* GLGraphicsContext::onMapResource(IGraphicsResource* resource)
+void* GLGraphicsContext::onMapResource(IGraphicsResource* resource, uint32_t offset, uint32_t size)
 {
 	switch (resource->resourceType())
 	{
 	case DeviceResourceType::VertexBuffer:
-		return static_cast<GLVertexBuffer*>(resource)->map();
+		return static_cast<GLVertexBuffer*>(resource)->map(offset, size);
 	case DeviceResourceType::IndexBuffer:
-		return static_cast<GLIndexBuffer*>(resource)->map();
+		return static_cast<GLIndexBuffer*>(resource)->map(offset, size);
 	default:
 		LN_NOTIMPLEMENTED();
 		return nullptr;
@@ -1230,7 +1230,7 @@ void GLVertexBuffer::setSubData(size_t offset, const void* data, size_t length)
 	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
 }
 
-void* GLVertexBuffer::map()
+void* GLVertexBuffer::map(uint32_t offset, uint32_t size)
 {
 	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, m_glVertexBuffer));
 	void* buffer;
@@ -1240,7 +1240,7 @@ void* GLVertexBuffer::map()
 	// https://developer.apple.com/jp/documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/TechniquesforWorkingwithVertexData/TechniquesforWorkingwithVertexData.html
 
 
-	GL_CHECK(buffer = glMapBufferRange(GL_ARRAY_BUFFER, 0, m_size, GL_MAP_WRITE_BIT));
+	GL_CHECK(buffer = glMapBufferRange(GL_ARRAY_BUFFER, offset, size, GL_MAP_WRITE_BIT));
 
 
 	//GLbitfield flags = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
@@ -1340,12 +1340,12 @@ void GLIndexBuffer::setSubData(size_t offset, const void* data, size_t length)
 	GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 }
 
-void* GLIndexBuffer::map()
+void* GLIndexBuffer::map(uint32_t offset, uint32_t size)
 {
 	GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBufferId));
 	void* buffer;
 	//GL_CHECK(buffer = glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY));
-	GL_CHECK(buffer = glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, 0, m_size, GL_MAP_WRITE_BIT));
+	GL_CHECK(buffer = glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, offset, m_size, GL_MAP_WRITE_BIT));
 	return buffer;
 }
 

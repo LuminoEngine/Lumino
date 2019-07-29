@@ -17,6 +17,7 @@ static uint64_t ticksToNanoseconds(uint64_t tick)
 ElapsedTimer::ElapsedTimer() LN_NOEXCEPT
 	: m_value1(0)
 	, m_value2(0)
+	, m_tag(nullptr)
 {
 	start();
 }

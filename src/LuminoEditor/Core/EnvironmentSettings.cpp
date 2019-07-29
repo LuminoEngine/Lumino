@@ -126,7 +126,7 @@ void BuildEnvironment::setupPathes()
 #endif
 	}
 
-	// Find msbuild
+#if 0	// Find msbuild
 	{
 #ifdef LN_OS_WIN32
 		ln::String result;
@@ -149,6 +149,7 @@ void BuildEnvironment::setupPathes()
 		}
 #endif
 	}
+#endif
 }
 
 ln::Result BuildEnvironment::prepareEmscriptenSdk()

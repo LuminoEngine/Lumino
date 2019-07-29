@@ -34,19 +34,23 @@ public:
 	InternalSpriteTextRender();
     void init(RenderingManager* manager);
 	RenderingManager* manager() const { return m_manager; }
-	void render(IGraphicsContext* context, const GlyphData* dataList, int dataCount, ITexture* glyphsTexture, const BrushData& brushData);
+	void render(IGraphicsContext* context, const GlyphData* dataList, uint32_t dataCount, ITexture* glyphsTexture, const BrushData& brushData);
 
 private:
 	void prepareBuffers(int spriteCount);
-	void internalDrawRectangle(Vertex* buffer, const Matrix& transform, const Rect& rect, const Rect& srcUVRect, const Color& color);
-	void flush(IGraphicsContext* context, ITexture* glyphsTexture);
+	void putRectangle(Vertex* buffer, const Matrix& transform, const Rect& rect, const Rect& srcUVRect, const Color& color);
+	void flush(IGraphicsContext* context, ITexture* glyphsTexture, uint32_t startIndex, uint32_t primitiveCount);
 
 	RenderingManager* m_manager;
 	Ref<IVertexDeclaration> m_vertexDeclaration;
 	Ref<IVertexBuffer> m_vertexBuffer;
 	Ref<IIndexBuffer> m_indexBuffer;
-	size_t m_spriteCount;
-	size_t m_buffersReservedSpriteCount;
+	//
+
+	uint32_t m_buffersReservedSpriteCount;
+	uint32_t m_stagingSpriteOffset;
+	uint32_t m_stagingSpriteCount;
+	//uint32_t m_usedSpriteCount;
 };
 
 // 特に state とかないので不要なのだが、実装を他と合わせてイメージを持ちやすいようにしている。
