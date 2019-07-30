@@ -214,6 +214,11 @@ void UIFrameWindow::init()
     specialElementFlags().set(detail::UISpecialElementFlags::FrameWindow);
     m_inputInjector = makeRef<detail::UIInputInjector>(this);
     invalidate(detail::UIElementDirtyFlags::Style | detail::UIElementDirtyFlags::Layout, false);
+
+	if (detail::EngineDomain::renderingManager()) {
+		m_renderView = makeObject<UIRenderView>();
+		//m_renderView->setClearMode(RenderViewClearMode::ColorAndDepth);
+	}
 }
 
 void UIFrameWindow::setupPlatformWindow(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize)
@@ -221,11 +226,6 @@ void UIFrameWindow::setupPlatformWindow(detail::PlatformWindow* platformMainWind
     m_platformWindow = platformMainWindow;
 	m_autoDisposePlatformWindow = false;
 	m_swapChain = makeObject<SwapChain>(platformMainWindow, backbufferSize);
-
-    if (detail::EngineDomain::renderingManager()) {
-        m_renderView = makeObject<UIRenderView>();
-		//m_renderView->setClearMode(RenderViewClearMode::ColorAndDepth);
-    }
 
 
     m_platformWindow->attachEventListener(this);
@@ -515,7 +515,6 @@ UINativeFrameWindow::UINativeFrameWindow()
 void UINativeFrameWindow::init()
 {
     UIFrameWindow::init();
-    m_renderView = makeObject<UIRenderView>();
 }
 
 void UINativeFrameWindow::attachRenderingThread(RenderingType renderingType)

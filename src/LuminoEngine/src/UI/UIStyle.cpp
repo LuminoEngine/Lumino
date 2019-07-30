@@ -1292,6 +1292,7 @@ void UIVisualStateManager::combineStyle(UIStyle* style, const UIStyleContext* st
 {
 	// TODO: これキャッシュできると思う
 	auto set = styleContext->findStyleSet(elementName);
+	if (!set) return;
 
 #if 1
 	auto styleClass = set->mainStyleClass();

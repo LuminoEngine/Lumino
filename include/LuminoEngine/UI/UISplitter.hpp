@@ -52,7 +52,7 @@ class UISplitter
 	: public UIControl
 {
 public:
-    static const int ThumbWidth = 5;
+    static const int ThumbWidth = 4;
 
     UISplitter();
 	void init();

@@ -124,7 +124,10 @@ void UIViewport::onRoutedEvent(UIEventArgs* e)
     for (auto& view : m_renderViews)
     {
         view->onRoutedEvent(e);
-        if (e->handled) return;
+		if (e->handled) {
+			invalidateVisual();	// TODO: Editor Mode で、Scene 上を D&Dしたらカメラ動かしたいのでとりあえずここで処理してるが、無駄が多いかも
+			return;
+		}
     }
 
     UIContainerElement::onRoutedEvent(e);

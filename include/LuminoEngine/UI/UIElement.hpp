@@ -57,6 +57,18 @@ public:
 	float m_dpiScaleFactor;
 };
 
+/** UI要素の表示状態を指定します。 */
+enum class UIVisibility : uint8_t
+{
+	/** 要素を表示します。 */
+	Visible,
+
+	/** 要素を表示しませんが、その要素の領域をレイアウト内に予約します。 */
+	Hidden,
+
+	/** 要素を表示しません。また、その要素の領域もレイアウト内に予約しません。 */
+	Collapsed,
+};
 
 
 class UIViewModel
@@ -310,6 +322,8 @@ public:
 
     void addAction(UIAction* action);
 
+	void invalidateVisual() { invalidate(detail::UIElementDirtyFlags::Render, true); }
+
     UIElement();
     virtual ~UIElement();
 	void init();
@@ -433,6 +447,7 @@ public: // TODO: internal
     Ref<UIStyle> m_localStyle;
 	Ref<UIStyle> m_combinedStyle;
 	Ref<detail::UIStyleInstance> m_finalStyle;
+	UIVisibility m_internalVisibility;
     int m_renderPriority;
     bool m_isHitTestVisible;
 

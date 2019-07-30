@@ -30,6 +30,7 @@ UIElement::UIElement()
     , m_logicalParent(nullptr)
     , m_localStyle(makeObject<UIStyle>()) // TODO: ふつうは static なオブジェクトのほうが多くなるので、必要なやつだけ遅延作成でいいと思う
     , m_finalStyle(makeRef<detail::UIStyleInstance>())
+	, m_internalVisibility(UIVisibility::Visible)
     , m_renderPriority(0)
     , m_isHitTestVisible(true)
     , m_dirtyFlags(detail::UIElementDirtyFlags::None)
@@ -672,7 +673,7 @@ void UIElement::updateFinalLayoutHierarchical(const Rect& parentFinalGlobalRect)
 
 void UIElement::render(UIRenderingContext* context)
 {
-    if (isVisible())
+    if (isVisible() && (m_internalVisibility == UIVisibility::Visible))
     {
 
 

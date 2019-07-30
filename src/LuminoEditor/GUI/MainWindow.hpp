@@ -12,6 +12,7 @@ class MainWindow
 {
 public:
 	MainWindow();
+	void init();
 
     const Ref<ln::UISplitter>& mainHSplitter() const { return m_mainHSplitter; }
 

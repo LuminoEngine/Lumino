@@ -40,7 +40,8 @@ void InternalSpriteTextRender::init(RenderingManager* manager)
 void InternalSpriteTextRender::render(IGraphicsContext* context, const GlyphData* dataList, uint32_t dataCount, ITexture* glyphsTexture)
 {
 	// GPU 最適化のため、できるだけ map 範囲が被らないように循環バッファを使った実装にする。
-	// 特に OpenGL (Radeon HD 8490) では、線形の実装 (flush のたびに先頭から書き直し) では平均 471usec, 循環バッファの実装では 5usec と、100 倍近い差が出た。
+	// 特に OpenGL (Radeon HD 8490) では、次のネイティブコマンド実行 (glFlush など) までの間に
+	// 線形の実装 (flush のたびに先頭から書き直し=未送信の頂点バッファ領域を上書きする) では平均 471usec, 循環バッファの実装では 5usec と、100 倍近い差が出た。
 
 	prepareBuffers(dataCount);
 
@@ -61,7 +62,7 @@ void InternalSpriteTextRender::render(IGraphicsContext* context, const GlyphData
 		// write
 		ITexture* srcTexture = glyphsTexture;
 		Size texSizeInv(1.0f / srcTexture->realSize().width, 1.0f / srcTexture->realSize().height);
-		for (int i = 0; iData < dataCount; ++iData, ++i)
+		for (int i = 0; iData < count; ++iData, ++i)
 		{
 			const GlyphData& data = dataList[iData];
 			Rect uvSrcRect((float)data.srcRect.x, (float)data.srcRect.y, (float)data.srcRect.width, (float)data.srcRect.height);
