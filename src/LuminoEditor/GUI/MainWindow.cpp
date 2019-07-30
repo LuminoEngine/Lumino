@@ -82,7 +82,7 @@ void MainWindow::onLoaded()
 
 void MainWindow::onNavigationViewOpen()
 {
-    m_mainHSplitter->setCellDefinition(0, ln::UILayoutLengthType::Direct, 240);
+    m_mainHSplitter->setCellDefinition(0, ln::UILayoutLengthType::Direct, 200 + NavigationBar::ItemSize);
 }
 
 void MainWindow::onNavigationViewClose()
