@@ -15,6 +15,7 @@ void AssetBrowserTreeView::init()
     auto project = lna::Workspace::instance()->project();
 
     m_model = ln::makeObject<ln::UIFileSystemCollectionModel>();
+    m_model->setExcludeFilters(ln::makeList<ln::String>({u"*.lnasset"}));
     m_model->setRootPath(project->assetsDir());
     //model->setRootPath(u"D:/Proj/LN/Lumino");
     setViewModel(m_model);

@@ -12,6 +12,21 @@ public:
 	void init();
     virtual void onDispose(bool explicitDisposing) override;
 
+
+
+    /** コンテンツの横方向の配置方法を設定します。 */
+    void setHorizontalContentAlignment(HAlignment value);
+
+    /** コンテンツの横方向の配置方法を取得します。 */
+    HAlignment horizontalContentAlignment() const;
+
+    /** コンテンツの縦方向の配置方法を設定します。 */
+    void setVerticalContentAlignment(VAlignment value);
+
+    /** コンテンツの縦方向の配置方法を取得します。 */
+    VAlignment verticalContentAlignment() const;
+
+
 	void addElement(UIElement* element);
     void removeElement(UIElement* element);
 
@@ -40,6 +55,8 @@ protected:
 	virtual Size arrangeOverride(const Size& finalSize) override;
 
     virtual void onLayoutPanelChanged(UILayoutPanel* newPanel);
+
+    bool m_enabledDirectChildrenContentAlignment;
 
 private:
 

@@ -5,7 +5,7 @@ class AssetBrowserNavigator;
 class NavigationBar : public ln::UIItemsControl
 {
 public:
-    static const int ItemSize = 40;
+    static const int ItemSize = 60;
 
     void init();
 	void addItem(ln::UIElement* element);

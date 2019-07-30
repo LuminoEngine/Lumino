@@ -11,6 +11,7 @@ namespace ln {
 // UIContainerElement
 
 UIContainerElement::UIContainerElement()
+    : m_enabledDirectChildrenContentAlignment(true)
 {
 }
 
@@ -27,6 +28,26 @@ void UIContainerElement::onDispose(bool explicitDisposing)
 {
     removeAllChildren();
 	UIElement::onDispose(explicitDisposing);
+}
+
+void UIContainerElement::setHorizontalContentAlignment(HAlignment value)
+{
+    m_localStyle->horizontalContentAlignment = value;
+}
+
+HAlignment UIContainerElement::horizontalContentAlignment() const
+{
+    return m_localStyle->horizontalContentAlignment;
+}
+
+void UIContainerElement::setVerticalContentAlignment(VAlignment value)
+{
+    m_localStyle->verticalContentAlignment = value;
+}
+
+VAlignment UIContainerElement::verticalContentAlignment() const
+{
+    return m_localStyle->verticalContentAlignment;
 }
 
 void UIContainerElement::addElement(UIElement* element)
@@ -152,7 +173,12 @@ Size UIContainerElement::arrangeOverride(const Size& finalSize)
 	UILayoutPanel* layout = layoutPanel();
 
     Rect contentSlotRect;
-    detail::LayoutHelper::adjustAlignment(finalSize, layout->desiredSize(), m_finalStyle->horizontalContentAlignment, m_finalStyle->verticalContentAlignment, &contentSlotRect);
+    if (m_enabledDirectChildrenContentAlignment) {
+        detail::LayoutHelper::adjustAlignment(Rect(0, 0, finalSize), layout->desiredSize(), m_finalStyle->horizontalContentAlignment, m_finalStyle->verticalContentAlignment, &contentSlotRect);
+    }
+    else {
+        contentSlotRect = Rect(0, 0, finalSize);
+    }
 
     contentSlotRect = contentSlotRect.makeDeflate(m_finalStyle->padding);
     

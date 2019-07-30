@@ -17,6 +17,7 @@ class ToolPanesArea
 {
 public:
 	ToolPanesArea();
+    void init();
 
 	void addPane(ToolPane* pane);
 

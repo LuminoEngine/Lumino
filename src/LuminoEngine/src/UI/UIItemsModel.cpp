@@ -38,6 +38,11 @@ String UICollectionItemModel::getData(const String& role)
 	return m_owner->getData(this, role);
 }
 
+int UICollectionItemModel::getChildrenCount()
+{
+    return m_owner->getRowCount(this);
+}
+
 //==============================================================================
 // UICollectionModel
 // https://doc.qt.io/qt-5/qabstractitemmodel.html#hasChildren

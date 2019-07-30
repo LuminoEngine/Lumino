@@ -35,5 +35,10 @@ ln::Result StartupView::init()
 
 	m_mainCamera->addComponent(ln::makeObject<ln::CameraOrbitControlComponent>());
 
+    auto sprite = ln::Sprite::create(ln::Texture2D::create(u"D:/Documents/LuminoProjects/RinoTutorial/Assets/player.png"), 4,4);
+    sprite->setSourceRect(0, 0, 16, 16);
+    sprite->setPosition(0, 2, 0);
+    m_mainWorld->addObject(sprite);
+
     return true;
 }

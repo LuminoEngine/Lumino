@@ -189,8 +189,8 @@ void UIContext::setupDefaultStyle()
                 s->minHeight = 30;
                 s->horizontalAlignment = HAlignment::Stretch;
                 s->verticalAlignment = VAlignment::Top;
-                s->borderThickness = 1;
-                s->setBorderColor(Color::Gray);
+                //s->borderThickness = 1;
+                //s->setBorderColor(Color::Gray);
             }
             if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander")) {   // VisualState によらず常に有効。個別にしたければ:Normalを付ける。
                 s->width = 16;

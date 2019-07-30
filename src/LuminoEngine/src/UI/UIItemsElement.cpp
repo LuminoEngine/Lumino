@@ -26,6 +26,16 @@ void UICollectionItem::init()
 	vsm->registerState(UIVisualStates::SelectionStates, UIVisualStates::Selected);
 }
 
+Size UICollectionItem::measureOverride(const Size& constraint)
+{
+    return UIControl::measureOverride(constraint);
+}
+
+Size UICollectionItem::arrangeOverride(const Size& finalSize)
+{
+    return UIControl::arrangeOverride(finalSize);
+}
+
 void UICollectionItem::onRoutedEvent(UIEventArgs* e)
 {
 	if (e->type() == UIEvents::MouseDownEvent) {
@@ -54,6 +64,7 @@ void UICollectionItem::setSelectedInternal(bool selected)
 
 UIItemsControl::UIItemsControl()
 {
+    m_enabledDirectChildrenContentAlignment = false;
 }
 
 void UIItemsControl::init()
@@ -239,11 +250,25 @@ void UITreeItem::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldV
 		LN_NOTIMPLEMENTED();
 	}
 
+    // TODO: model の変更通知対応
+    if (m_model->getChildrenCount() > 0) {
+        m_expanderButton->m_internalVisibility = UIVisibility::Visible;
+    }
+    else {
+        m_expanderButton->m_internalVisibility = UIVisibility::Hidden;
+    }
+
     UIElement::setContent(m_model->getData(u""));
 }
 
 Size UITreeItem::measureOverride(const Size& constraint)
 {
+    //bool expanderVisible = false;
+    //if (m_model) {
+    //    //m_model
+    //}
+
+
     struct ElementList : public IUIElementList {
         List<Ref<UITreeItem>>* list;
         virtual int getElementCount() const { return list->size(); }
@@ -297,7 +322,14 @@ Size UITreeItem::arrangeOverride(const Size& finalSize)
     if (m_headerContent) {
         //area.x += m_expanderButton->m_actualSize.width;
         //area.width -= m_expanderButton->m_actualSize.width;
-        m_headerContent->arrangeLayout(area);
+
+        Rect contentSlotRect;
+        detail::LayoutHelper::adjustAlignment(
+            area, m_headerContent->desiredSize(),
+            m_ownerTreeView->m_finalStyle->horizontalContentAlignment, m_ownerTreeView->m_finalStyle->verticalContentAlignment, &contentSlotRect);
+
+
+        m_headerContent->arrangeLayout(contentSlotRect);
 		headerContentHeight = m_headerContent->m_actualSize.height;
     }
 
@@ -347,6 +379,9 @@ void UITreeView::init()
     auto layout = makeObject<UIStackLayout>();
     layout->setOrientation(Orientation::Vertical);
     setLayoutPanel(layout);
+
+    setHorizontalContentAlignment(HAlignment::Left);
+    setVerticalContentAlignment(VAlignment::Center);
 }
 
 //void UITreeView::setModel(UICollectionModel* model)

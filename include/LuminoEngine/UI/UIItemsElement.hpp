@@ -15,6 +15,9 @@ class UICollectionItem
 public:
 
 protected:
+    // base interface
+    virtual Size measureOverride(const Size& constraint) override;
+    virtual Size arrangeOverride(const Size& finalSize) override;
 	virtual void onRoutedEvent(UIEventArgs* e) override;
 
 LN_CONSTRUCT_ACCESS:

@@ -33,8 +33,11 @@ UITextBlock::UITextBlock()
 void UITextBlock::init()
 {
     UIElement::init();
+
+    // WPF default
     setHorizontalAlignment(HAlignment::Left);
     setVerticalAlignment(VAlignment::Top);
+
     setBlendMode(BlendMode::Alpha);
 }
 

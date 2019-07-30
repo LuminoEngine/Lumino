@@ -21,6 +21,7 @@ public:
 	void setMainWindow(ln::UIMainWindow* window);	// onInit でのみ可
 
     MainWindow* mainWindow() const;
+    const ln::Ref<lna::Workspace>& workspace() const { return m_workspace; }
 
     void importFile(const ln::Path& filePath);
 

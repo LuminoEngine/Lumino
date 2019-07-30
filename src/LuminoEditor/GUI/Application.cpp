@@ -44,9 +44,9 @@ ln::Result EditorApplication::init()
 	ln::EngineSettings::setMainBackBufferSize(1000, 600);
     ln::detail::EngineDomain::engineManager()->settings().defaultObjectsCreation = false;
     ln::detail::EngineDomain::engineManager()->init();
+    m_workspace = ln::makeObject<lna::Workspace>();
     onInit();
 
-    m_workspace = ln::makeObject<lna::Workspace>();
 
     return true;
 }

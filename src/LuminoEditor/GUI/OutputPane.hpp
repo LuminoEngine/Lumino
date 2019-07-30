@@ -6,6 +6,7 @@ class OutputPane
 {
 public:
 	OutputPane();
+    void init();
 
 protected:
 

@@ -1,4 +1,5 @@
 ﻿
+#include "Application.hpp"
 #include "NavigatorManager.hpp"
 #include "DocumentManager.hpp"
 #include "ToolPanesArea.hpp"
@@ -59,8 +60,7 @@ void MainWindow::onLoaded()
 			//--------
 
 			m_toolPanesArea = ln::makeObject<ToolPanesArea>();
-			//m_toolPanesArea->setBackgroundColor(ln::Color::Green);
-			m_toolPanesArea->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 1));
+			m_toolPanesArea->setBackgroundColor(ln::Color::Green);
 			splitter2->addElement(m_toolPanesArea);
 
 			m_outputPane = ln::makeObject<OutputPane>();
@@ -70,10 +70,14 @@ void MainWindow::onLoaded()
 		//--------
 
 		m_inspectorPanesArea = ln::makeObject<ToolPanesArea>();
-		//m_inspectorPanesArea->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::DeepOrange));
-		m_inspectorPanesArea->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 1));
+        m_inspectorPanesArea->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 1));
         m_mainHSplitter->addElement(m_inspectorPanesArea);
     }
+
+
+    // test
+    EditorApplication::instance()->workspace()->openProject2(u"D:/Proj/TH-10/TH-10.lnproj");
+    navigatorManager()->resetNavigators();
 }
 
 void MainWindow::onNavigationViewOpen()

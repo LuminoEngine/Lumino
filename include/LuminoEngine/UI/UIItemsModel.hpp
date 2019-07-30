@@ -19,6 +19,7 @@ public:
 	bool isRoot() const { return !m_parent; }
 
 	String getData(const String& role);
+    int getChildrenCount();
 
 LN_CONSTRUCT_ACCESS:
 	UICollectionItemModel();

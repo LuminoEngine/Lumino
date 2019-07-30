@@ -24,13 +24,15 @@ void UIIcon::init()
 
 void UIIcon::setIconName(const StringRef& value)
 {
-	m_font = detail::EngineDomain::fontManager()->glyphIconFontManager()->getFontAwesomeFont(u"Reguler", 20);
+    // TODO: size
+	m_font = detail::EngineDomain::fontManager()->glyphIconFontManager()->getFontAwesomeFont(u"Reguler", 25);
 	m_codePoint = detail::EngineDomain::fontManager()->glyphIconFontManager()->getFontAwesomeCodePoint(value);
 }
 
 Size UIIcon::measureOverride(const Size& constraint)
 {
-	return Size(20, 20);
+    // TODO:
+	return Size(27, 27);
 }
 
 void UIIcon::onRender(UIRenderingContext* context)
