@@ -75,6 +75,11 @@ void UIItemsControl::init()
 	m_selectedItems.add(nullptr);
 }
 
+void UIItemsControl::setItemsLayoutPanel(UILayoutPanel2* layout)
+{
+    LN_NOTIMPLEMENTED();
+}
+
 void UIItemsControl::addItem(UICollectionItem* item)
 {
 	if (LN_REQUIRE(item)) return;
@@ -376,9 +381,9 @@ void UITreeView::init()
 {
     UIItemsControl::init();
 
-    auto layout = makeObject<UIStackLayout>();
+    auto layout = makeObject<UIStackLayout2>();
     layout->setOrientation(Orientation::Vertical);
-    setLayoutPanel(layout);
+    setItemsLayoutPanel(layout);
 
     setHorizontalContentAlignment(HAlignment::Left);
     setVerticalContentAlignment(VAlignment::Center);

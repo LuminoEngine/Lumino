@@ -21,7 +21,7 @@ void UIContainerElement::init()
 	//setHorizontalAlignment(HAlignment::Stretch);
 	//setVerticalAlignment(VAlignment::Stretch);
 
-    setLayoutPanel(makeObject<UIFrameLayout>());
+    //setLayoutPanel(makeObject<UIFrameLayout>());
 }
 
 void UIContainerElement::onDispose(bool explicitDisposing)
@@ -95,25 +95,25 @@ void UIContainerElement::removeAllChildren()
 	//}
 }
 
-void UIContainerElement::setLayoutPanel(UILayoutPanel* panel)
-{
-	if (m_layout != panel) {
-		m_layout = panel;
-		if (!m_layout) {
-			m_layout = makeObject<UIFrameLayout>();
-		}
-		onLayoutPanelChanged(m_layout);
-		//setLogicalChildrenHost(panel);
-	}
-}
-
-UILayoutPanel* UIContainerElement::layoutPanel() const
-{
-	//if (m_layout)
-		return m_layout;
-	//else
-	//	return m_manager->defaultLayout();
-}
+//void UIContainerElement::setLayoutPanel(UILayoutPanel* panel)
+//{
+//	if (m_layout != panel) {
+//		m_layout = panel;
+//		if (!m_layout) {
+//			m_layout = makeObject<UIFrameLayout>();
+//		}
+//		onLayoutPanelChanged(m_layout);
+//		//setLogicalChildrenHost(panel);
+//	}
+//}
+//
+//UILayoutPanel* UIContainerElement::layoutPanel() const
+//{
+//	//if (m_layout)
+//		return m_layout;
+//	//else
+//	//	return m_manager->defaultLayout();
+//}
 //
 //UILayoutPanel* UIContainerElement::layoutPanel() const
 //{
@@ -144,18 +144,18 @@ UILayoutPanel* UIContainerElement::layoutPanel() const
 //
 Size UIContainerElement::measureOverride(const Size& constraint)
 {
-    struct ElementList : public IUIElementList {
-        List<Ref<UIElement>>* list;
-        virtual int getElementCount() const { return list->size(); }
-        virtual UIElement* getElement(int i) const { return list->at(i); }
-    } list;
-    list.list = &m_logicalChildren;
+ //   struct ElementList : public IUIElementList {
+ //       List<Ref<UIElement>>* list;
+ //       virtual int getElementCount() const { return list->size(); }
+ //       virtual UIElement* getElement(int i) const { return list->at(i); }
+ //   } list;
+ //   list.list = &m_logicalChildren;
 
-	UILayoutPanel* layout = layoutPanel();
-	layout->measureLayout(&list, constraint);
-    Size desiredSize = layout->desiredSize();
-    Size localSize = UIElement::measureOverride(constraint);
-    return Size::max(desiredSize, localSize);
+	//UILayoutPanel* layout = layoutPanel();
+	//layout->measureLayout(&list, constraint);
+ //   Size desiredSize = layout->desiredSize();
+ //   Size localSize = UIElement::measureOverride(constraint);
+ //   return Size::max(desiredSize, localSize);
 
 	//if (m_logicalChildrenHost) {
  //       m_logicalChildrenHost->measureLayout(constraint);
@@ -164,44 +164,44 @@ Size UIContainerElement::measureOverride(const Size& constraint)
  //       return Size::max(layoutSize, localSize);
 	//}
 	//else {
-	//	return UIFrameLayout::staticMeasureOverride(this, constraint);
+		return UIFrameLayout2::staticMeasureOverride(this, constraint);
 	//}
 }
 
 Size UIContainerElement::arrangeOverride(const Size& finalSize)
 {
-	UILayoutPanel* layout = layoutPanel();
+	//UILayoutPanel* layout = layoutPanel();
 
-    Rect contentSlotRect;
-    if (m_enabledDirectChildrenContentAlignment) {
-        detail::LayoutHelper::adjustAlignment(Rect(0, 0, finalSize), layout->desiredSize(), m_finalStyle->horizontalContentAlignment, m_finalStyle->verticalContentAlignment, &contentSlotRect);
-    }
-    else {
-        contentSlotRect = Rect(0, 0, finalSize);
-    }
+ //   Rect contentSlotRect;
+ //   if (m_enabledDirectChildrenContentAlignment) {
+ //       detail::LayoutHelper::adjustAlignment(Rect(0, 0, finalSize), layout->desiredSize(), m_finalStyle->horizontalContentAlignment, m_finalStyle->verticalContentAlignment, &contentSlotRect);
+ //   }
+ //   else {
+ //       contentSlotRect = Rect(0, 0, finalSize);
+ //   }
 
-    contentSlotRect = contentSlotRect.makeDeflate(m_finalStyle->padding);
-    
+ //   contentSlotRect = contentSlotRect.makeDeflate(m_finalStyle->padding);
+ //   
 
-    struct ElementList : public IUIElementList {
-        List<Ref<UIElement>>* list;
-        virtual int getElementCount() const { return list->size(); }
-        virtual UIElement* getElement(int i) const { return list->at(i); }
-    } list;
-    list.list = &m_logicalChildren;
+ //   struct ElementList : public IUIElementList {
+ //       List<Ref<UIElement>>* list;
+ //       virtual int getElementCount() const { return list->size(); }
+ //       virtual UIElement* getElement(int i) const { return list->at(i); }
+ //   } list;
+ //   list.list = &m_logicalChildren;
 
-	layout->arrangeLayout(&list, contentSlotRect);
-    return finalSize;
+	//layout->arrangeLayout(&list, contentSlotRect);
+ //   return finalSize;
 
- //   Rect contentSlotRect(0, 0, finalSize);
- //   //detail::LayoutHelper::adjustAlignment(finalSize, desiredSize(), HAlignment::Center, VAlignment::Center, &contentSlotRect);
+    Rect contentSlotRect(0, 0, finalSize);
+    detail::LayoutHelper::adjustAlignment(Rect(0, 0, finalSize), desiredSize(), m_finalStyle->horizontalContentAlignment, m_finalStyle->verticalContentAlignment, &contentSlotRect);
 
 	//if (m_logicalChildrenHost) {
  //       m_logicalChildrenHost->arrangeLayout(contentSlotRect.makeDeflate(finalStyle()->padding));
 	//	return finalSize;
 	//}
 	//else {
-	//	return UIFrameLayout::staticArrangeOverride(this, contentSlotRect);
+		return UIFrameLayout2::staticArrangeOverride(this, contentSlotRect.getSize());
 	//}
 }
 

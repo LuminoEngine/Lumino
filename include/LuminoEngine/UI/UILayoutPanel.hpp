@@ -116,6 +116,9 @@ public:
     UILayoutPanel2();
     void init();
 
+    virtual void addChild(UIElement* child) override;
+    void removeChild(UIElement* child);
+
 protected:
     // IScrollInfo interface
     virtual float getExtentWidth() const;
@@ -128,6 +131,7 @@ protected:
     virtual float getVerticalOffset() const;
 
 private:
+    List<Ref<UIElement>> m_logicalChildren;
     Vector2 m_scrollOffset;
 };
 
@@ -162,7 +166,7 @@ public:
     void setOrientation(Orientation orientation) { m_orientation = orientation; }
     Orientation getOrientation() const { return m_orientation; }
 
-LN_PROTECTED_INTERNAL_ACCESS:
+LN_CONSTRUCT_ACCESS:
     UIStackLayout2();
     void init();
 

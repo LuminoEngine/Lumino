@@ -38,6 +38,8 @@ class UIItemsControl	// TODO: UICollectionItem がほかにいい名前思いつ
 protected:
 	//virtual UIControl* generateItem(UIElement* content) = 0;
 
+    void setItemsLayoutPanel(UILayoutPanel2* layout);
+
 	void addItem(UICollectionItem* item);
 
 	// base interfaces

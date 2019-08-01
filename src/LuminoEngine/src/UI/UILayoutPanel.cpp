@@ -14,7 +14,21 @@ UILayoutPanel2::UILayoutPanel2()
 
 void UILayoutPanel2::init()
 {
-    Object::init();
+    UIElement::init();
+}
+
+void UILayoutPanel2::addChild(UIElement* child)
+{
+    if (LN_REQUIRE(child)) return;
+    m_logicalChildren.add(child);
+    addVisualChild(child);
+}
+
+void UILayoutPanel2::removeChild(UIElement* child)
+{
+    if (LN_REQUIRE(child)) return;
+    m_logicalChildren.remove(child);
+    removeVisualChild(child);
 }
 
 float UILayoutPanel2::getExtentWidth() const { return m_desiredSize.width; }
