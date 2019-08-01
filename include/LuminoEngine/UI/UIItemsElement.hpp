@@ -46,6 +46,8 @@ protected:
 	//virtual void onRoutedEvent(UIEventArgs* e) override;
 
 	virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
+    virtual Size measureOverride(const Size& constraint) override;
+    virtual Size arrangeOverride(const Size& finalSize) override;
 
 LN_CONSTRUCT_ACCESS:
 	UIItemsControl();
@@ -54,6 +56,7 @@ LN_CONSTRUCT_ACCESS:
 private:
 	void notifyItemClicked(UICollectionItem* item);
 
+    Ref<UILayoutPanel2> m_itemssHostLayout;
 	List<Ref<UICollectionItem>> m_selectionTargets;
 	List<UICollectionItem*> m_selectedItems;
 

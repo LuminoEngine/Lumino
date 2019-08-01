@@ -26,6 +26,7 @@ void MainWindow::onLoaded()
 
 	auto layout1 = ln::makeObject<ln::UIStackLayout2>();
 	layout1->setOrientation(ln::Orientation::Horizontal);
+    addElement(layout1);
     //layout1->lastStretch = true;
 	//setLayoutPanel(layout1);
 

@@ -3,7 +3,7 @@
 #include "UILayoutElement.hpp"
 
 namespace ln {
-
+class UIItemsControl;
 
 // TODO: GridLayout https://blog.qt.io/jp/2011/01/06/qml-layout/
 
@@ -133,6 +133,9 @@ protected:
 private:
     List<Ref<UIElement>> m_logicalChildren;
     Vector2 m_scrollOffset;
+    UIItemsControl* m_ownerItemsControl;
+
+    friend class UIItemsControl;
 };
 
 class UIFrameLayout2	// TODO: BorderLayout の方がいいかも https://doc.qt.io/qt-5/qtwidgets-layouts-borderlayout-example.html
@@ -178,6 +181,14 @@ private:
     Orientation m_orientation;
 };
 
+class UIVBoxLayout2
+    : public UIStackLayout2
+{
+public:
+
+LN_CONSTRUCT_ACCESS:
+    void init();
+};
 
 
 

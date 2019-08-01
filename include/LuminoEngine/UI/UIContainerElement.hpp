@@ -58,9 +58,9 @@ protected:
 
     bool m_enabledDirectChildrenContentAlignment;
 
+    List<Ref<UIElement>> m_logicalChildren;
 private:
 
-	List<Ref<UIElement>> m_logicalChildren;
     //Ref<UILayoutPanel> m_layout;
 	//Size m_layoutDesiredSize;	// Layout is state-less
 };

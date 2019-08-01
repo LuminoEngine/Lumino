@@ -9,6 +9,7 @@ namespace ln {
 // UILayoutPanel2
 
 UILayoutPanel2::UILayoutPanel2()
+    : m_ownerItemsControl(nullptr)
 {
 }
 
@@ -337,6 +338,16 @@ Size UIStackLayout2::arrangeOverride(const Size& finalSize)
 
     return finalSize;
 }
+
+//==============================================================================
+// UIVBoxLayout2
+
+void UIVBoxLayout2::init()
+{
+    UIStackLayout2::init();
+    setOrientation(Orientation::Vertical);
+}
+
 
 
 //==============================================================================

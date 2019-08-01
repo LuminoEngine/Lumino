@@ -8,7 +8,10 @@
 void NavigationBar::init()
 {
     UIItemsControl::init();
-    setLayoutPanel(ln::makeObject<ln::UIVBoxLayout>());
+    //m_layout = ln::makeObject<ln::UIVBoxLayout2>();
+    //addElement(m_layout);
+    //setLayoutPanel(ln::makeObject<ln::UIVBoxLayout>());
+    setItemsLayoutPanel(ln::makeObject<ln::UIVBoxLayout2>());
     setWidth(ItemSize);
     setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 8));
     setHorizontalAlignment(ln::HAlignment::Left);
@@ -72,20 +75,23 @@ void NavigatorManager::init()
 {
     UIControl::init();
 
-    m_layout = ln::makeObject<ln::UIStackLayout>();
+    m_layout = ln::makeObject<ln::UIStackLayout2>();
     m_layout->setOrientation(ln::Orientation::Horizontal);
-    m_layout->lastStretch = true;
-    setLayoutPanel(m_layout);
+    //m_layout->lastStretch = true;
+    //setLayoutPanel(m_layout);
+    addElement(m_layout);
 
     m_navigationBar = ln::makeObject<NavigationBar>();
-    addElement(m_navigationBar);
+    //addElement(m_navigationBar);
+    m_layout->addChild(m_navigationBar);
 }
 
 void NavigatorManager::resetNavigators()
 {
     m_assetBrowserNavigator = ln::makeObject<AssetBrowserNavigator>();
     m_navigationBar->addItem(m_assetBrowserNavigator->createNavigationBarItem());
-    addElement(m_assetBrowserNavigator->createView());
+    //addElement(m_assetBrowserNavigator->createView());
+    m_layout->addChild(m_assetBrowserNavigator->createView());
 
 
     // Test:

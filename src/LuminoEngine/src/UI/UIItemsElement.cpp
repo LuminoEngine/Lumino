@@ -77,7 +77,21 @@ void UIItemsControl::init()
 
 void UIItemsControl::setItemsLayoutPanel(UILayoutPanel2* layout)
 {
-    LN_NOTIMPLEMENTED();
+    if (LN_REQUIRE(layout)) return;
+
+    if (m_itemssHostLayout) {
+        for (auto& item : m_logicalChildren) {
+            m_itemssHostLayout->removeVisualChild(item);
+        }
+    }
+
+    m_itemssHostLayout = layout;
+    m_itemssHostLayout->m_ownerItemsControl = this;
+    addVisualChild(m_itemssHostLayout);
+
+    for (auto& item : m_logicalChildren) {
+        m_itemssHostLayout->addVisualChild(item);
+    }
 }
 
 void UIItemsControl::addItem(UICollectionItem* item)
@@ -86,6 +100,7 @@ void UIItemsControl::addItem(UICollectionItem* item)
 	m_selectionTargets.add(item);
 	item->m_ownerCollectionControl = this;
     addElement(item);
+    m_itemssHostLayout->addVisualChild(item);
 }
 
 void UIItemsControl::onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)
@@ -104,6 +119,33 @@ void UIItemsControl::onUpdateStyle(const UIStyleContext* styleContext, const det
 	else {
 		setVScrollbarVisible(false);
 	}
+}
+
+Size UIItemsControl::measureOverride(const Size& constraint)
+{
+    if (m_itemssHostLayout) {
+        m_itemssHostLayout->measureLayout(constraint);
+        Size layoutSize = m_itemssHostLayout->desiredSize();
+        Size localSize = UIElement::measureOverride(constraint);
+        return Size::max(layoutSize, localSize);
+    }
+    else {
+        return UIScrollViewer::measureOverride(constraint);
+    }
+}
+
+Size UIItemsControl::arrangeOverride(const Size& finalSize)
+{
+    Rect contentSlotRect(0, 0, finalSize);
+    contentSlotRect = contentSlotRect.makeDeflate(finalStyle()->padding);
+
+    if (m_itemssHostLayout) {
+        m_itemssHostLayout->arrangeLayout(contentSlotRect);
+    	return finalSize;
+    }
+    else {
+        return UIScrollViewer::arrangeOverride(finalSize);
+    }
 }
 
 void UIItemsControl::notifyItemClicked(UICollectionItem* item)
