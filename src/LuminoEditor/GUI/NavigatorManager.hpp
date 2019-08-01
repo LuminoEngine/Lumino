@@ -14,6 +14,7 @@ protected:
 	//virtual UIControl* generateItem(UIElement* content) override;
 
 private:
+    //Ref<ln::UIVBoxLayout2> m_layout;
 };
 
 class Navigator
@@ -49,7 +50,7 @@ protected:
 private:
     void setCurrent(Navigator* nav);
 
-    Ref<ln::UIStackLayout> m_layout;
+    Ref<ln::UIStackLayout2> m_layout;
     Ref<NavigationBar> m_navigationBar;
 
     // default navi

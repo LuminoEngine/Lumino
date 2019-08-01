@@ -24,10 +24,11 @@ void MainWindow::onLoaded()
 	//renderView()->setBackgroundColor(ln::Color::White);
 	//renderView()->setClearMode(ln::RenderViewClearMode::ColorAndDepth);
 
-	auto layout1 = ln::makeObject<ln::UIStackLayout>();
+	auto layout1 = ln::makeObject<ln::UIStackLayout2>();
 	layout1->setOrientation(ln::Orientation::Horizontal);
-    layout1->lastStretch = true;
-	setLayoutPanel(layout1);
+    addElement(layout1);
+    //layout1->lastStretch = true;
+	//setLayoutPanel(layout1);
 
 
 
@@ -36,7 +37,8 @@ void MainWindow::onLoaded()
     m_mainHSplitter->setCellDefinition(0, ln::UILayoutLengthType::Auto);
     m_mainHSplitter->setCellDefinition(1);
     m_mainHSplitter->setCellDefinition(2, ln::UILayoutLengthType::Direct, 100);
-    addElement(m_mainHSplitter);
+    //addElement(m_mainHSplitter);
+    layout1->addChild(m_mainHSplitter);
 
     {
 

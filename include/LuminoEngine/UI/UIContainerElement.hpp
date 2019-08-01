@@ -33,14 +33,14 @@ public:
 	void removeAllChildren();
 
 
-	/**
-		子要素をレイアウトするための UILayoutPanel を設定します。
+	///**
+	//	子要素をレイアウトするための UILayoutPanel を設定します。
 
-		デフォルトは nullptr です。
-	*/
-	void setLayoutPanel(UILayoutPanel* panel);
+	//	デフォルトは nullptr です。
+	//*/
+	//void setLayoutPanel(UILayoutPanel* panel);
 
-	UILayoutPanel* layoutPanel() const;
+	//UILayoutPanel* layoutPanel() const;
 
 	const List<Ref<UIElement>>& logicalChildren() const { return m_logicalChildren; }
 
@@ -58,10 +58,10 @@ protected:
 
     bool m_enabledDirectChildrenContentAlignment;
 
+    List<Ref<UIElement>> m_logicalChildren;
 private:
 
-	List<Ref<UIElement>> m_logicalChildren;
-    Ref<UILayoutPanel> m_layout;
+    //Ref<UILayoutPanel> m_layout;
 	//Size m_layoutDesiredSize;	// Layout is state-less
 };
 

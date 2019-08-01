@@ -42,9 +42,9 @@ void UITabBar::init()
 {
 	UIItemsControl::init();
 
-	auto layout = makeObject<UIStackLayout>();
+	auto layout = makeObject<UIStackLayout2>();
 	layout->setOrientation(Orientation::Horizontal);
-	setLayoutPanel(layout);
+    setItemsLayoutPanel(layout);
 }
 
 void UITabBar::addTab(UITabItem* item)

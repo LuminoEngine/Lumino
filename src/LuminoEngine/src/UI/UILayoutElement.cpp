@@ -1,4 +1,11 @@
 ﻿
+/*
+    Layout は UIElement の派生とするべきか？
+    一番困るのは、レイアウトをネストするとき、デザイナ上で他の UIElement と同じような処理で操作できなくなること。
+    意外と Element と Layout が独立してるのって Qt Widgets くらいなんだよな…。
+*/
+
+
 #include "Internal.hpp"
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UILayoutElement.hpp>
