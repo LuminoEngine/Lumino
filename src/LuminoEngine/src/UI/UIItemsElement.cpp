@@ -15,6 +15,7 @@ namespace ln {
 
 UICollectionItem::UICollectionItem()
 	: m_ownerCollectionControl(nullptr)
+    , m_isPressed(false)
 {
 }
 
@@ -24,6 +25,10 @@ void UICollectionItem::init()
 	auto vsm = getVisualStateManager();
 	vsm->registerState(UIVisualStates::SelectionStates, UIVisualStates::Unselected);
 	vsm->registerState(UIVisualStates::SelectionStates, UIVisualStates::Selected);
+}
+
+void UICollectionItem::onClick(UIMouseEventArgs* e)
+{
 }
 
 Size UICollectionItem::measureOverride(const Size& constraint)
@@ -41,8 +46,25 @@ void UICollectionItem::onRoutedEvent(UIEventArgs* e)
 	if (e->type() == UIEvents::MouseDownEvent) {
 		m_ownerCollectionControl->notifyItemClicked(this);
 		e->handled = true;
+
+
+        m_isPressed = true;
+        retainCapture();
+        e->handled = true;
+
 		return;
 	}
+
+    else if (e->type() == UIEvents::MouseUpEvent) {
+        if (m_isPressed) {
+            releaseCapture();
+            e->handled = true;
+            m_isPressed = false;
+
+            onClick(static_cast<UIMouseEventArgs*>(e));
+            return;
+        }
+    }
 
 	UIControl::onRoutedEvent(e);
 }
@@ -99,7 +121,11 @@ void UIItemsControl::addItem(UICollectionItem* item)
 	if (LN_REQUIRE(item)) return;
 	m_selectionTargets.add(item);
 	item->m_ownerCollectionControl = this;
-    addElement(item);
+    //addElement(item);
+
+    m_logicalChildren.add(item);
+    item->setLogicalParent(this);
+
     m_itemssHostLayout->addVisualChild(item);
 }
 
@@ -178,42 +204,42 @@ void UIItemsControl::notifyItemClicked(UICollectionItem* item)
 //==============================================================================
 // UIItemElement
 
-UIItemElement::UIItemElement()
-    : m_isPressed(false)
-{
-}
-
-void UIItemElement::init()
-{
-	UIElement::init();
-}
-
-void UIItemElement::onClick(UIMouseEventArgs* e)
-{
-}
-
-void UIItemElement::onRoutedEvent(UIEventArgs* e)
-{
-    if (e->type() == UIEvents::MouseDownEvent) {
-        m_isPressed = true;
-        retainCapture();
-        e->handled = true;
-        return;
-    }
-    else if (e->type() == UIEvents::MouseUpEvent) {
-        if (m_isPressed) {
-            releaseCapture();
-            e->handled = true;
-            m_isPressed = false;
-
-            onClick(static_cast<UIMouseEventArgs*>(e));
-            return;
-        }
-    }
-
-    UIElement::onRoutedEvent(e);
-}
-
+//UIItemElement::UIItemElement()
+//    : m_isPressed(false)
+//{
+//}
+//
+//void UIItemElement::init()
+//{
+//	UIElement::init();
+//}
+//
+//void UIItemElement::onClick(UIMouseEventArgs* e)
+//{
+//}
+//
+//void UIItemElement::onRoutedEvent(UIEventArgs* e)
+//{
+//    if (e->type() == UIEvents::MouseDownEvent) {
+//        m_isPressed = true;
+//        retainCapture();
+//        e->handled = true;
+//        return;
+//    }
+//    else if (e->type() == UIEvents::MouseUpEvent) {
+//        if (m_isPressed) {
+//            releaseCapture();
+//            e->handled = true;
+//            m_isPressed = false;
+//
+//            onClick(static_cast<UIMouseEventArgs*>(e));
+//            return;
+//        }
+//    }
+//
+//    UIElement::onRoutedEvent(e);
+//}
+//
 //==============================================================================
 // UIItemContainerElement
 
@@ -236,7 +262,7 @@ UITreeItem::UITreeItem()
 
 void UITreeItem::init()
 {
-	UIElement::init();
+    UICollectionItem::init();
 
     auto vsm = getVisualStateManager();
     vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::Normal);
@@ -282,7 +308,7 @@ void UITreeItem::onCollapsed()
 
 void UITreeItem::onClick(UIMouseEventArgs* e)
 {
-    UIItemElement::onClick(e);
+    UICollectionItem::onClick(e);
     m_ownerTreeView->onItemClick(this, e);
 }
 
@@ -342,7 +368,7 @@ Size UITreeItem::measureOverride(const Size& constraint)
     size.width = std::max(size.width, m_itemsLayout->desiredSize().width);
     size.height += m_itemsLayout->desiredSize().height;
 
-    Size desiredSize = UIItemElement::measureOverride(constraint);
+    Size desiredSize = UICollectionItem::measureOverride(constraint);
 
     return Size::max(size, desiredSize);
 }
@@ -393,7 +419,7 @@ void UITreeItem::onRoutedEvent(UIEventArgs* e)
         if (static_cast<UIMouseEventArgs*>(e)->getClickCount() == 2) {
         }
     }
-    UIItemElement::onRoutedEvent(e);
+    UICollectionItem::onRoutedEvent(e);
 }
 
 void UITreeItem::expander_Checked(UIEventArgs* e)
@@ -482,7 +508,7 @@ void UITreeView::addItemInternal(UITreeItem* item)
 {
     assert(item);
     item->m_ownerTreeView = this;
-    addElement(item);
+    addItem(item);
 }
 
 void UITreeView::makeChildItems(UITreeItem* item)

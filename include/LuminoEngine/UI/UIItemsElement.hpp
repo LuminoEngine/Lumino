@@ -13,8 +13,12 @@ class UICollectionItem
 	: public UIControl
 {
 public:
+    void setData(Variant* value) { m_data = value; }
+    Variant* data() const { return m_data; }
 
 protected:
+    virtual void onClick(UIMouseEventArgs* e);
+
     // base interface
     virtual Size measureOverride(const Size& constraint) override;
     virtual Size arrangeOverride(const Size& finalSize) override;
@@ -28,6 +32,8 @@ private:
 	void setSelectedInternal(bool selected);
 
 	UIItemsControl* m_ownerCollectionControl;
+    Ref<Variant> m_data;
+    bool m_isPressed;
 
 	friend class UIItemsControl;
 };
@@ -70,27 +76,27 @@ private:
 
 
 
-class UIItemElement
-	: public UIElement
-{
-public:
-    void setData(Variant* value) { m_data = value; }
-    Variant* data() const { return m_data; }
-
-protected:
-    virtual void onClick(UIMouseEventArgs* e);
-
-    // base interface
-    virtual void onRoutedEvent(UIEventArgs* e) override;
-
-LN_CONSTRUCT_ACCESS:
-	UIItemElement();
-	void init();
-
-private:
-    Ref<Variant> m_data;
-    bool m_isPressed;
-};
+//class UIItemElement
+//	: public UIElement
+//{
+//public:
+//    void setData(Variant* value) { m_data = value; }
+//    Variant* data() const { return m_data; }
+//
+//protected:
+//    virtual void onClick(UIMouseEventArgs* e);
+//
+//    // base interface
+//    virtual void onRoutedEvent(UIEventArgs* e) override;
+//
+//LN_CONSTRUCT_ACCESS:
+//	UIItemElement();
+//	void init();
+//
+//private:
+//    Ref<Variant> m_data;
+//    bool m_isPressed;
+//};
 
 // Item を ItemElement でラップして扱う。
 // ただ単に子要素を並べるだけであれば、ScrollView に addChild するだけでよいが、
@@ -107,7 +113,7 @@ private:
 
 
 class UITreeItem
-	: public UIItemElement
+	: public UICollectionItem
 {
 public:
     virtual void setContent(UIElement* value) override;  // TODO: TreeList ように column が必要かも
