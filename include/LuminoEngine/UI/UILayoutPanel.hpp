@@ -107,6 +107,76 @@ public:
 
 
 
+// TODO: ネスト
+class UILayoutPanel2
+    : public UIElement
+    , public IScrollInfo
+{
+public:
+    UILayoutPanel2();
+    void init();
+
+protected:
+    // IScrollInfo interface
+    virtual float getExtentWidth() const;
+    virtual float getExtentHeight() const;
+    virtual float getViewportWidth() const;
+    virtual float getViewportHeight() const;
+    virtual void setHorizontalOffset(float offset);
+    virtual float getHorizontalOffset() const;
+    virtual void setVerticalOffset(float offset);
+    virtual float getVerticalOffset() const;
+
+private:
+    Vector2 m_scrollOffset;
+};
+
+class UIFrameLayout2	// TODO: BorderLayout の方がいいかも https://doc.qt.io/qt-5/qtwidgets-layouts-borderlayout-example.html
+    : public UILayoutPanel2
+{
+public:
+    static Ref<UIFrameLayout2> create();
+
+    // TODO: internal
+    static Size staticMeasureOverride(UIElement* ownerElement, const Size& constraint);
+    static Size staticArrangeOverride(UIElement* ownerElement, const Size& finalSize);
+
+LN_PROTECTED_INTERNAL_ACCESS:
+    UIFrameLayout2();
+    void init();
+
+    // UIElement interface
+    virtual Size measureOverride(const Size& constraint) override;
+    virtual Size arrangeOverride(const Size& finalSize) override;
+
+private:
+};
+
+
+class UIStackLayout2
+    : public UILayoutPanel2
+{
+public:
+    static Ref<UIStackLayout2> create();
+
+    void setOrientation(Orientation orientation) { m_orientation = orientation; }
+    Orientation getOrientation() const { return m_orientation; }
+
+LN_PROTECTED_INTERNAL_ACCESS:
+    UIStackLayout2();
+    void init();
+
+    // UIElement interface
+    virtual Size measureOverride(const Size& constraint) override;
+    virtual Size arrangeOverride(const Size& finalSize) override;
+
+private:
+    Orientation m_orientation;
+};
+
+
+
+
 
 
 // TODO: ネスト

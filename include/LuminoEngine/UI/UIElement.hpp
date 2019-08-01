@@ -455,9 +455,9 @@ public: // TODO: internal
     friend class UIRenderView;
     friend class UIFrameWindow;
 
-private:
 	int getVisualChildrenCount() const { return (m_visualChildren) ? m_visualChildren->size() : 0; }
 	UIElement* getVisualChild(int index) const { return (m_visualChildren) ? m_visualChildren->at(index) : nullptr; }
+private:
 
     Flags<detail::UIElementDirtyFlags> m_dirtyFlags;
 };
