@@ -126,21 +126,26 @@ void RenderingQueue::dispose()
 void RenderingQueue::submit(GraphicsContext* context)
 {
 	if (LN_REQUIRE(context)) return;
-    if (context->renderingType() == RenderingType::Immediate) return;
+    if (context->renderingType() == RenderingType::Immediate) {
+        // 一時メモリのクリアはしておく
+        context->m_executingCommandList->clear();
+    }
+    else {
+        // もし前回発行した CommandList がまだ実行中であればここで待つ
+        context->m_executingCommandList->waitForExecutionEnd();
 
-	// もし前回発行した CommandList がまだ実行中であればここで待つ
-	context->m_executingCommandList->waitForExecutionEnd();
+        // m_executingCommandList は次に m_recordingCommandList となるので、ここで clear
+        context->m_executingCommandList->clear();
 
-	// m_executingCommandList は次に m_recordingCommandList となるので、ここで clear
-	context->m_executingCommandList->clear();
+        {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            m_commandListQueue.push_back(context->m_recordingCommandList);
+            std::swap(context->m_recordingCommandList, context->m_executingCommandList);
+        }
 
-	{
-		std::lock_guard<std::mutex> lock(m_mutex);
-		m_commandListQueue.push_back(context->m_recordingCommandList);
-		std::swap(context->m_recordingCommandList, context->m_executingCommandList);
-	}
+        //execute(); // TODO: test
+    }
 
-	//execute(); // TODO: test
 }
 
 void RenderingQueue::execute()

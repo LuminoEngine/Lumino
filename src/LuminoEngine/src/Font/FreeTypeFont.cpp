@@ -530,7 +530,9 @@ Result FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
 	FT_Error err = FT_New_Memory_Face(manager->ftLibrary(), (const FT_Byte*)faceSource->buffer->data(), faceSource->buffer->size(), faceSource->faceIndex, &m_face);
 	if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return false;
 
-	err = FT_Set_Char_Size(m_face, m_desc.Size << 6, m_desc.Size << 6, 72, 72);	// 72: https://docs.microsoft.com/ja-jp/windows/desktop/LearnWin32/dpi-and-device-independent-pixels
+    float size = static_cast<float>(m_desc.Size) * (72.0 / 96.0);
+    size *= 64;
+	err = FT_Set_Char_Size(m_face, size, size, 96, 96);	// 72: https://docs.microsoft.com/ja-jp/windows/desktop/LearnWin32/dpi-and-device-independent-pixels
 	if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return false;
 
 	m_loadFlags = FT_LOAD_DEFAULT;
@@ -574,6 +576,12 @@ void FreeTypeFont::getGlobalMetrics(FontGlobalMetrics* outMetrics)
 	if (LN_REQUIRE(outMetrics)) return;
 	if (LN_REQUIRE(m_face)) return;
 
+    auto rawHeight = m_face->size->metrics.height;
+    auto rawBBoxHeight = m_face->bbox.yMax - m_face->bbox.yMin;
+
+    float height = static_cast<float>(m_face->size->metrics.height) / 64.0f;
+    float bboxHeight = static_cast<float>(rawBBoxHeight) / 64.0f;
+
 	float em_size = 1.0 * m_face->units_per_EM;
 	float x_scale = m_face->size->metrics.x_ppem / em_size;
 	float y_scale = m_face->size->metrics.y_ppem / em_size;
@@ -592,6 +600,7 @@ void FreeTypeFont::getGlobalMetrics(FontGlobalMetrics* outMetrics)
 	outMetrics->boundingMaxY = y_scale * (m_face->bbox.yMax);
 	outMetrics->bitmapMaxWidth = std::ceil(xMax - xMin) + 2;	// Antialias などが有効になると bbox のサイズでは収まらなくなることがあるため、サイズを余分に確保しておく
 	outMetrics->bitmapMaxHeight = std::ceil(yMax - yMin) + 2;
+    //FT_Bitmap_Size()
 	// FIXME: Bitmap font の場合の bbox は FT_Bitmap_Size を使うべきらしい。
 	// (FT_FaceRec_ のコメント)
 }
