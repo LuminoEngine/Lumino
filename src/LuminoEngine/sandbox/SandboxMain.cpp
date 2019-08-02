@@ -198,6 +198,7 @@ int main(int argc, char** argv)
 
 
     GlobalLogger::addStdErrAdapter();
+	GlobalLogger::setLevel(LogLevel::Verbose);
     EngineSettings::setMainWindowSize(640, 480);
     EngineSettings::setMainBackBufferSize(640, 480);
 

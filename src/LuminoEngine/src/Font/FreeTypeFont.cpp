@@ -12,7 +12,7 @@
 #include "FontManager.hpp"
 #include "FreeTypeFont.hpp"
 
-#define FLValueToFloatPx(x) (0.015625f * (x))	// x >> 6
+#define FLValueToFloatPx(x) (0.015625f * static_cast<float>(x))	// x >> 6
 #define FloatPxToFLValue(x) ((x) * 64)			// x << 6
 
 namespace ln {
@@ -517,6 +517,28 @@ FreeTypeFont::FreeTypeFont()
 
 Result FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
 {
+	// 72 にすると、Windows (WPF) と同じ結果になる。(m_desc.Size=12 は FontSize=12 と等しい) https://docs.microsoft.com/ja-jp/windows/desktop/LearnWin32/dpi-and-device-independent-pixels
+	// 
+	// 96 にすると、chrome と同じ結果になる。(m_desc.Size=12 は 12pt と等しい) ちなみに UE4 は 96 固定。
+	static const int resolution = 96;
+
+	//
+	// FreeType の基準ポイントは 72. https://www.freetype.org/freetype2/docs/tutorial/step1.html
+	// これは CSS の pt と同じ。というか印刷的な文化はほぼ 72.
+	//
+	// フォントが 72 ベースで作られているなら、実際のディスプレイが 96 であればピクセル数は大きくするべき。
+	// そう考えると、WPF の方式は間違えているような気もする。（というか、古いOSと互換を取ろうとしている？）
+	// あるいは FT_Set_Char_Size() に 72 を指定すると、オリジナルが想定しているビットマップサイズになるので、そうしている？
+	//
+	// ちなみに Windows は User DPI は重要で、System DPI はおまけ的な感じがしている。
+	// System DPI 96 と 144 環境で Chrome でレンダリングしてみると、User DPI が 100% なら同じビットマップサイズとなった。
+	// おそらく Windows ではユーザー設定のスケール選択候補に「推奨」を表示するくらいしか大きな使い道ないのでは？と思う。
+	// 逆に System DPI に合わせてアプリが勝手にスケーリングしてしまうと、「ユーザーがこの見合わせてスケールを設定できる」という Windows の方針に反することになる。
+	//
+	// 確かWPFではDirectWrite 使われてたはず。https://docs.microsoft.com/ja-jp/windows/win32/learnwin32/dpi-and-device-independent-pixels#direct2d-and-dpi
+	// 「12ポイントフォントを作成するには、16 DIPを指定します。」なので chrome とは単位が違うのは正しい。
+	// 
+
 	if (LN_REQUIRE(manager)) return false;
 	FontCore::init(manager);
 	m_desc = desc;
@@ -530,12 +552,21 @@ Result FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
 	FT_Error err = FT_New_Memory_Face(manager->ftLibrary(), (const FT_Byte*)faceSource->buffer->data(), faceSource->buffer->size(), faceSource->faceIndex, &m_face);
 	if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return false;
 
-    float size = static_cast<float>(m_desc.Size) * (72.0 / 96.0);
-    size *= 64;
-	err = FT_Set_Char_Size(m_face, size, size, 96, 96);	// 72: https://docs.microsoft.com/ja-jp/windows/desktop/LearnWin32/dpi-and-device-independent-pixels
+	// FT_Set_Char_Size() はポイントサイズと解像度をもとに m_face->size->metrics を作成する
+	float size = static_cast<float>(m_desc.Size) * 64.0f;
+	err = FT_Set_Char_Size(m_face, size, size, resolution, resolution);
 	if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return false;
 
 	m_loadFlags = FT_LOAD_DEFAULT;
+
+	LN_LOG_VERBOSE << "    x scale : " << (m_face->size->metrics.x_scale / 65536.0);
+	LN_LOG_VERBOSE << "    y scale : " << (m_face->size->metrics.y_scale / 65536.0);
+	LN_LOG_VERBOSE << "   ascender : " << FLValueToFloatPx(m_face->size->metrics.ascender);
+	LN_LOG_VERBOSE << "  descender : " << FLValueToFloatPx(m_face->size->metrics.descender);
+	LN_LOG_VERBOSE << "     height : " << FLValueToFloatPx(m_face->size->metrics.height);
+	LN_LOG_VERBOSE << "max_advance : " << FLValueToFloatPx(m_face->size->metrics.max_advance);
+	LN_LOG_VERBOSE << "     x ppem : " << (m_face->size->metrics.x_ppem);
+	LN_LOG_VERBOSE << "     y ppem : " << (m_face->size->metrics.y_ppem);
 
 
 	// lookupGlyphBitmap の結果を書き込むためのビットマップを作っておく
@@ -590,9 +621,9 @@ void FreeTypeFont::getGlobalMetrics(FontGlobalMetrics* outMetrics)
 	float xMax = std::ceil(x_scale * m_face->bbox.xMax);
 	float yMax = std::ceil(y_scale * m_face->bbox.yMax);
 
-	outMetrics->ascender = y_scale * (m_face->size->metrics.ascender);
-	outMetrics->descender = y_scale * (m_face->size->metrics.descender);
-	outMetrics->lineSpace = outMetrics->ascender - outMetrics->descender;
+	outMetrics->ascender = FLValueToFloatPx(m_face->size->metrics.ascender);
+	outMetrics->descender = FLValueToFloatPx(m_face->size->metrics.descender);
+	outMetrics->lineSpace = FLValueToFloatPx(m_face->size->metrics.height);	// ascender - descender ではなく height を使う。FreeType 内部で端数が切り捨てられているので、1px足りないとかになる。
 	outMetrics->outlineSupported = FT_IS_SCALABLE(m_face);
 	outMetrics->boundingMinX = x_scale * (m_face->bbox.xMin);
 	outMetrics->boundingMaxX = x_scale * (m_face->bbox.xMax);
