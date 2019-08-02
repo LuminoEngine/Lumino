@@ -221,11 +221,23 @@ int main(int argc, char** argv)
     Engine::mainCamera()->setBackgroundColor(Color::Gray);
 
 
-    auto ft = Texture2D::create(256, 256);
-    Font::registerFontFromFile(u"C:/Windows/Fonts/Arial.ttf");
-    auto font1 = Font::create(u"Arial", 12);
+    auto ft = Texture2D::create(512, 256);
+    //Font::registerFontFromFile(u"meiryo.ttc");
+    //auto font1 = Font::create(u"Meiryo", 20);
+    //Font::registerFontFromFile(u"C:/Windows/Fonts/Arial.ttf");
+    //auto font1 = Font::create(u"Arial", 20);
+    //Font::registerFontFromFile(u"times.ttf");
+    //auto font1 = Font::create(u"Times New Roman", 20);
+    auto font1 = Font::create();
+    //Font::registerFontFromFile(u"mplus-1c-regular.ttf");
+    //auto font1 = Font::create(u"M+ 1c", 20);
+    //Font::registerFontFromFile(u"mplus-1m-regular.ttf");
+    //auto font1 = Font::create(u"M+ 1m", 20);
+
+
+    
     ft->clear(Color::White);
-    ft->drawText(u"ABCDEFGHIJKabcdefghijk", Rect(0, 0, 256, 256), font1, Color::Black);
+    ft->drawText(u"meiryo.ttc", Rect(0, 0, 512, 256), font1, Color::Black);
     ft->map(MapMode::Read)->save(u"test.png");
 
     auto sprite1 = Sprite::create(Assets::loadTexture(u"Sprite1"), 3, 3);

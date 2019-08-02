@@ -557,6 +557,8 @@ Result FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
 	err = FT_Set_Char_Size(m_face, size, size, resolution, resolution);
 	if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return false;
 
+    err = FT_Select_Charmap(m_face, FT_ENCODING_UNICODE);
+
 	m_loadFlags = FT_LOAD_DEFAULT;
 
 	LN_LOG_VERBOSE << "    x scale : " << (m_face->size->metrics.x_scale / 65536.0);
@@ -586,7 +588,7 @@ Result FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
 		FontGlobalMetrics metrix;
 		getGlobalMetrics(&metrix);
 
-		m_internalCacheBitmap = makeObject<Bitmap2D>(metrix.bitmapMaxWidth, metrix.bitmapMaxHeight, PixelFormat::A8);
+		m_internalCacheBitmap = makeObject<Bitmap2D>(metrix.lineSpace, metrix.lineSpace, PixelFormat::A8);
 	}
 	
 	return false;
@@ -614,13 +616,17 @@ void FreeTypeFont::getGlobalMetrics(FontGlobalMetrics* outMetrics)
     float bboxHeight = static_cast<float>(rawBBoxHeight) / 64.0f;
 
 	float em_size = 1.0 * m_face->units_per_EM;
-	float x_scale = m_face->size->metrics.x_ppem / em_size;
-	float y_scale = m_face->size->metrics.y_ppem / em_size;
-	float xMin = std::floor(x_scale * m_face->bbox.xMin);
-	float yMin = std::floor(y_scale * m_face->bbox.yMin);
-	float xMax = std::ceil(x_scale * m_face->bbox.xMax);
-	float yMax = std::ceil(y_scale * m_face->bbox.yMax);
-
+    float x_scale = 1.0f;//m_face->size->metrics.x_ppem / em_size;
+	float y_scale = 1.0f;//m_face->size->metrics.y_ppem / em_size;
+    float xMin = std::floor(FLValueToFloatPx(m_face->bbox.xMin));//std::floor(x_scale * m_face->bbox.xMin);
+	float yMin = std::floor(FLValueToFloatPx(m_face->bbox.yMin)); //std::floor(y_scale * m_face->bbox.yMin);
+	float xMax = std::ceil(FLValueToFloatPx(m_face->bbox.xMax)); //std::ceil(x_scale * m_face->bbox.xMax);
+	float yMax = std::ceil(FLValueToFloatPx(m_face->bbox.yMax));//std::ceil(y_scale * m_face->bbox.yMax);
+/*
+    FT_FL
+    FT_FloorFix;
+    FT_MulFix;
+*/
 	outMetrics->ascender = FLValueToFloatPx(m_face->size->metrics.ascender);
 	outMetrics->descender = FLValueToFloatPx(m_face->size->metrics.descender);
 	outMetrics->lineSpace = FLValueToFloatPx(m_face->size->metrics.height);	// ascender - descender ではなく height を使う。FreeType 内部で端数が切り捨てられているので、1px足りないとかになる。
@@ -644,7 +650,7 @@ void FreeTypeFont::getGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics
 		const FT_UInt glyphIndex = ::FT_Get_Char_Index(m_face, utf32Code);
 
 		// load glyph info to GlyphSlot(m_face->glyph), for access to metrix.
-		FT_Error err = FT_Load_Glyph(m_face, glyphIndex, m_loadFlags);
+		FT_Error err = FT_Load_Glyph(m_face, glyphIndex, FT_LOAD_DEFAULT);
 		if (LN_ENSURE(err == 0)) return;
 
 		if (m_desc.isBold) {
@@ -666,6 +672,7 @@ void FreeTypeFont::getGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics
 
 Vector2 FreeTypeFont::getKerning(UTF32 prev, UTF32 next)
 {
+    //FT_Set_Pixel_Sizes(m_face, 0, 12);
 	if (FT_HAS_KERNING(m_face))
 	{
 		const FT_UInt glyphIndex1 = ::FT_Get_Char_Index(m_face, prev);
@@ -676,7 +683,7 @@ Vector2 FreeTypeFont::getKerning(UTF32 prev, UTF32 next)
 		}
 		else {
 			FT_Vector delta;
-			FT_Error err = FT_Get_Kerning(m_face, glyphIndex1, glyphIndex2, ft_kerning_default, &delta);
+			FT_Error err = FT_Get_Kerning(m_face, glyphIndex1, glyphIndex2, FT_KERNING_DEFAULT, &delta);
 			if (LN_ENSURE(err == 0)) return Vector2::Zero;
 			return Vector2(FLValueToFloatPx(delta.x), FLValueToFloatPx(delta.y));
 		}
@@ -697,7 +704,7 @@ void FreeTypeFont::lookupGlyphBitmap(UTF32 utf32code, BitmapGlyphInfo* outInfo)
 		const FT_UInt glyphIndex = ::FT_Get_Char_Index(m_face, utf32code);
 
 		// load glyph info to GlyphSlot(m_face->glyph), for access to metrix.
-		err = FT_Load_Glyph(m_face, glyphIndex, m_loadFlags);
+		err = FT_Load_Glyph(m_face, glyphIndex, 0/*FT_LOAD_NO_BITMAP | FT_LOAD_NO_HINTING | FT_LOAD_NO_AUTOHINT | FT_LOAD_FORCE_AUTOHINT*/);
 		if (LN_ENSURE(err == 0)) return;
 
 		if (m_desc.isBold) {

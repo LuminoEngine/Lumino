@@ -12,6 +12,8 @@
 #include "FreeTypeFont.hpp"
 #include "FontManager.hpp"
 
+#define LN_DEFAULTFONT_PROPORTIONAL 1
+
 namespace ln {
 namespace detail {
 
@@ -116,6 +118,21 @@ void FontManager::init(const Settings& settings)
     }
 
     // Default font
+#ifdef LN_DEFAULTFONT_PROPORTIONAL
+    {
+        static const unsigned char data[] =
+        {
+#include "Resource/mplus-1c-regular-ascii-subset.ttf.inl"
+        };
+        static const size_t size = LN_ARRAY_SIZE_OF(data);
+        MemoryStream stream(data, size);
+        registerFontFromStream(&stream, false);
+
+        FontDesc desc;
+        desc.Family = u"mplus-1c-regular-ascii-subset";
+        m_defaultFont = makeObject<Font>(desc);
+    }
+#else
     {
         static const unsigned char data[] =
         {
@@ -129,6 +146,7 @@ void FontManager::init(const Settings& settings)
         desc.Family = u"mplus-1m-regular-ascii-subset";
         m_defaultFont = makeObject<Font>(desc);
     }
+#endif
 
 	m_glyphIconFontManager = makeRef<GlyphIconFontManager>();
 	if (!m_glyphIconFontManager->init(this)) {

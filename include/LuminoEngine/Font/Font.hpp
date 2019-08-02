@@ -19,7 +19,7 @@ public:
     /** デフォルトのスタイルに基づいてフォントを作成します。 */
     static Ref<Font> create();
 
-    /** 指定したフォントファミリとポイントサイズに基づいてフォントを作成します。 */
+    /** 指定したフォントファミリとポイントサイズ (dp) に基づいてフォントを作成します。 */
     static Ref<Font> create(const String& family, float size);
 
     /** デフォルトのフォントを設定します。 */

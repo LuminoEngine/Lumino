@@ -103,7 +103,7 @@ bool TextLayoutEngine::layoutLineHorizontal(float baselineY, LayoutMode mode)
         if (prev)
         {
             Vector2 delta = m_font->getKerning(prev, ch);
-            pos.x -= delta.x;
+            pos.x += delta.x;
         }
 
         FontGlyphMetrics metrics;
@@ -220,6 +220,7 @@ void BitmapTextRenderer::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Si
     BitmapGlyphInfo info;
     info.glyphBitmap = nullptr; // 内部ビットマップをもらう
     m_font->lookupGlyphBitmap(ch, &info);
+
 
     m_bitmap->blit(
         RectI(m_rect.x + pos.x, m_rect.y + pos.y, info.size),
