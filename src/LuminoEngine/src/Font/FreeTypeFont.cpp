@@ -517,27 +517,11 @@ FreeTypeFont::FreeTypeFont()
 
 Result FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
 {
-	// 72 にすると、Windows (WPF) と同じ結果になる。(m_desc.Size=12 は FontSize=12 と等しい) https://docs.microsoft.com/ja-jp/windows/desktop/LearnWin32/dpi-and-device-independent-pixels
-	// 
-	// 96 にすると、chrome と同じ結果になる。(m_desc.Size=12 は 12pt と等しい) ちなみに UE4 は 96 固定。
+    // CSS (Web) のフォントポイントサイズに合わせる。
+    // > なお、WPF と同じ結果にするには 72 を指定する。https://docs.microsoft.com/ja-jp/windows/desktop/LearnWin32/dpi-and-device-independent-pixels
+    // > WPF は活版印刷の文化に合わせるよりも、自身が基準としている DPI(96) と合わせることを選択している。
+    // > 先のリンクにもあるが、12pt に合わせるには FontSize=16 とする必要がある。
 	static const int resolution = 96;
-
-	//
-	// FreeType の基準ポイントは 72. https://www.freetype.org/freetype2/docs/tutorial/step1.html
-	// これは CSS の pt と同じ。というか印刷的な文化はほぼ 72.
-	//
-	// フォントが 72 ベースで作られているなら、実際のディスプレイが 96 であればピクセル数は大きくするべき。
-	// そう考えると、WPF の方式は間違えているような気もする。（というか、古いOSと互換を取ろうとしている？）
-	// あるいは FT_Set_Char_Size() に 72 を指定すると、オリジナルが想定しているビットマップサイズになるので、そうしている？
-	//
-	// ちなみに Windows は User DPI は重要で、System DPI はおまけ的な感じがしている。
-	// System DPI 96 と 144 環境で Chrome でレンダリングしてみると、User DPI が 100% なら同じビットマップサイズとなった。
-	// おそらく Windows ではユーザー設定のスケール選択候補に「推奨」を表示するくらいしか大きな使い道ないのでは？と思う。
-	// 逆に System DPI に合わせてアプリが勝手にスケーリングしてしまうと、「ユーザーがこの見合わせてスケールを設定できる」という Windows の方針に反することになる。
-	//
-	// 確かWPFではDirectWrite 使われてたはず。https://docs.microsoft.com/ja-jp/windows/win32/learnwin32/dpi-and-device-independent-pixels#direct2d-and-dpi
-	// 「12ポイントフォントを作成するには、16 DIPを指定します。」なので chrome とは単位が違うのは正しい。
-	// 
 
 	if (LN_REQUIRE(manager)) return false;
 	FontCore::init(manager);
@@ -557,8 +541,6 @@ Result FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
 	err = FT_Set_Char_Size(m_face, size, size, resolution, resolution);
 	if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return false;
 
-    err = FT_Select_Charmap(m_face, FT_ENCODING_UNICODE);
-
 	m_loadFlags = FT_LOAD_DEFAULT;
 
 	LN_LOG_VERBOSE << "    x scale : " << (m_face->size->metrics.x_scale / 65536.0);
@@ -573,18 +555,6 @@ Result FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
 
 	// lookupGlyphBitmap の結果を書き込むためのビットマップを作っておく
 	{
-		//float em_size = 1.0 * m_face->units_per_EM;
-		//float x_scale = m_face->size->metrics.x_ppem / em_size;
-		//float y_scale = m_face->size->metrics.y_ppem / em_size;
-		//float xMin = std::floor(x_scale * m_face->bbox.xMin);
-		//float yMin = std::floor(y_scale * m_face->bbox.yMin);
-		//float xMax = std::ceil(x_scale * m_face->bbox.xMax);
-		//float yMax = std::ceil(y_scale * m_face->bbox.yMax);
-
-		//
-		//int width = std::ceil(xMax - xMin) + 2;
-		//int height = std::ceil(yMax - yMin) + 2;
-
 		FontGlobalMetrics metrix;
 		getGlobalMetrics(&metrix);
 
@@ -646,11 +616,13 @@ void FreeTypeFont::getGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics
 {
 	if (LN_REQUIRE(outMetrics)) return;
 
+    FT_Int32 loadFlags = FT_LOAD_DEFAULT;// | FT_LOAD_NO_HINTING;// FT_LOAD_NO_SCALE;
+
 	{
 		const FT_UInt glyphIndex = ::FT_Get_Char_Index(m_face, utf32Code);
 
 		// load glyph info to GlyphSlot(m_face->glyph), for access to metrix.
-		FT_Error err = FT_Load_Glyph(m_face, glyphIndex, FT_LOAD_DEFAULT);
+		FT_Error err = FT_Load_Glyph(m_face, glyphIndex, loadFlags);
 		if (LN_ENSURE(err == 0)) return;
 
 		if (m_desc.isBold) {
@@ -662,12 +634,32 @@ void FreeTypeFont::getGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics
 		}
 	}
 
-	outMetrics->size.width = FLValueToFloatPx(m_face->glyph->metrics.width);
-	outMetrics->size.height = FLValueToFloatPx(m_face->glyph->metrics.height);
-	outMetrics->bearingX = FLValueToFloatPx(m_face->glyph->metrics.horiBearingX);
-	outMetrics->bearingY = FLValueToFloatPx(m_face->glyph->metrics.horiBearingY);
-	outMetrics->advance.x = FLValueToFloatPx(m_face->glyph->advance.x);
-	outMetrics->advance.y = FLValueToFloatPx(m_face->glyph->advance.y);
+    // ft_glyphslot_grid_fit_metrics で整数に切り上げられたりする
+
+    outMetrics->size.width = FLValueToFloatPx(m_face->glyph->metrics.width);
+    outMetrics->size.height = FLValueToFloatPx(m_face->glyph->metrics.height);
+    outMetrics->bearingX = FLValueToFloatPx(m_face->glyph->metrics.horiBearingX);
+    outMetrics->bearingY = FLValueToFloatPx(m_face->glyph->metrics.horiBearingY);
+    outMetrics->advance.x = FLValueToFloatPx(m_face->glyph->advance.x);
+    outMetrics->advance.y = FLValueToFloatPx(m_face->glyph->advance.y);
+
+    //outMetrics->bearingY = std::ceil(outMetrics->bearingY);
+    //outMetrics->advance.x = std::round(outMetrics->advance.x);
+
+    if (loadFlags & FT_LOAD_NO_SCALE)
+    {
+        float scale = static_cast<float>(m_face->size->metrics.y_scale) / 65536.0f;
+        outMetrics->size.width *= scale;
+        outMetrics->size.height *= scale;
+        outMetrics->bearingX *= scale;
+        outMetrics->bearingY *= scale;
+        outMetrics->advance.x *= scale;
+        outMetrics->advance.y *= scale;
+    }
+
+    
+
+
 }
 
 Vector2 FreeTypeFont::getKerning(UTF32 prev, UTF32 next)

@@ -111,6 +111,8 @@ bool TextLayoutEngine::layoutLineHorizontal(float baselineY, LayoutMode mode)
 
         pos.y = /*m_renderAreaOffset.y + */(baselineY - metrics.bearingY);
 
+        pos.x += metrics.bearingX;
+
 		//if (mode == LayoutMode::Measure) {
 			m_renderAreaSize.width = std::max(m_renderAreaSize.width, (pos.x + m_strokeSize * 2) + metrics.size.width);
 			m_renderAreaSize.height = std::max(m_renderAreaSize.height, (pos.y + m_strokeSize * 2) + metrics.size.height);

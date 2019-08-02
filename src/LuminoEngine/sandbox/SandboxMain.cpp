@@ -224,11 +224,12 @@ int main(int argc, char** argv)
     auto ft = Texture2D::create(512, 256);
     //Font::registerFontFromFile(u"meiryo.ttc");
     //auto font1 = Font::create(u"Meiryo", 20);
-    //Font::registerFontFromFile(u"C:/Windows/Fonts/Arial.ttf");
-    //auto font1 = Font::create(u"Arial", 20);
+    Font::registerFontFromFile(u"C:/Windows/Fonts/Arial.ttf");
+    auto font1 = Font::create(u"Arial", 20);
     //Font::registerFontFromFile(u"times.ttf");
     //auto font1 = Font::create(u"Times New Roman", 20);
-    auto font1 = Font::create();
+    //auto font1 = Font::create();
+    //font1->setSize(26);
     //Font::registerFontFromFile(u"mplus-1c-regular.ttf");
     //auto font1 = Font::create(u"M+ 1c", 20);
     //Font::registerFontFromFile(u"mplus-1m-regular.ttf");
@@ -237,7 +238,7 @@ int main(int argc, char** argv)
 
     
     ft->clear(Color::White);
-    ft->drawText(u"meiryo.ttc", Rect(0, 0, 512, 256), font1, Color::Black);
+    ft->drawText(u"Lorem ipsum dollor sit amet,", Rect(0, 0, 512, 256), font1, Color::Black);
     ft->map(MapMode::Read)->save(u"test.png");
 
     auto sprite1 = Sprite::create(Assets::loadTexture(u"Sprite1"), 3, 3);
