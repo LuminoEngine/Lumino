@@ -5,6 +5,7 @@
 #include <LuminoCore/Base/Event.hpp>
 #include <LuminoEngine/Platform/PlatformDialogs.hpp>
 #include <LuminoEngine/UI/UIItemsElement.hpp>
+#include <LuminoEngine/UI/UITreeView.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIButton.hpp>
 #include <LuminoEngine/UI/UIIcon.hpp>

@@ -12,12 +12,12 @@ struct FontGlobalMetrics
     float ascender;       // ベースラインから上側の距離
     float descender;      // ベースラインから下側の距離
     float lineSpace;		// 1行の最大高さ。次の行までの間隔。
-	float boundingMinX;	// Font face 内のすべてのグリフを囲むことができる矩形 (ピクセル単位。ただし、整数であるとは限らない。もしビットマップサイズが欲しい場合は bitmapMaxWidth, Height)
-	float boundingMaxX;
-	float boundingMinY;
-	float boundingMaxY;
-	int bitmapMaxWidth;
-	int bitmapMaxHeight;
+	//float boundingMinX;	// Font face 内のすべてのグリフを囲むことができる矩形 (ピクセル単位。ただし、整数であるとは限らない。もしビットマップサイズが欲しい場合は bitmapMaxWidth, Height)
+	//float boundingMaxX;
+	//float boundingMinY;
+	//float boundingMaxY;
+	//int bitmapMaxWidth;
+	//int bitmapMaxHeight;
 	bool outlineSupported;
 };
 

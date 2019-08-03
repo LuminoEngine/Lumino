@@ -27,7 +27,7 @@ class FontDesc
 {
 public:
     String Family;	// empty is default font
-    int Size;   // 1/72inch   , UI モジュールの dp と合わせている。  Web Base.
+    int Size;   // 1/72inch   Web Base.
     bool isBold;
     bool isItalic;
     bool isAntiAlias;

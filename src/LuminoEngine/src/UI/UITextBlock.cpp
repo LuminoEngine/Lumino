@@ -49,7 +49,14 @@ Size UITextBlock::measureOverride(const Size& constraint)
 		scale = w->platformWindow()->dpiFactor();
 	}
 
-	return finalStyle()->font->measureRenderSize(m_text, scale);
+    // TODO: LayoutContext
+    detail::FontGlobalMetrics gm;
+    auto fc = detail::FontHelper::resolveFontCore(finalStyle()->font, scale);
+    fc->getGlobalMetrics(&gm);
+
+    Size size = finalStyle()->font->measureRenderSize(m_text, scale);
+
+	return Size(size.width, gm.lineSpace);
 }
 
 void UITextBlock::onRender(UIRenderingContext* context)

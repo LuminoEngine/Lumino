@@ -243,12 +243,6 @@ void FreeTypeFontCached::getGlobalMetrics(FontGlobalMetrics* outMetrics)
 	outMetrics->descender = FLValueToFloatPx(m_ftFace->size->metrics.descender);
 	outMetrics->lineSpace = outMetrics->ascender - outMetrics->descender;
 	outMetrics->outlineSupported = FT_IS_SCALABLE(m_ftFace);
-	outMetrics->boundingMinX = FLValueToFloatPx(m_ftFace->bbox.xMin);
-	outMetrics->boundingMaxX = FLValueToFloatPx(m_ftFace->bbox.xMax);
-	outMetrics->boundingMinY = FLValueToFloatPx(m_ftFace->bbox.yMin);
-	outMetrics->boundingMaxY = FLValueToFloatPx(m_ftFace->bbox.yMax);
-	// FIXME: Bitmap font の場合の bbox は FT_Bitmap_Size を使うべきらしい。
-	// (FT_FaceRec_ のコメント)
 }
 
 void FreeTypeFontCached::getGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics)
@@ -521,7 +515,7 @@ Result FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
     // > なお、WPF と同じ結果にするには 72 を指定する。https://docs.microsoft.com/ja-jp/windows/desktop/LearnWin32/dpi-and-device-independent-pixels
     // > WPF は活版印刷の文化に合わせるよりも、自身が基準としている DPI(96) と合わせることを選択している。
     // > 先のリンクにもあるが、12pt に合わせるには FontSize=16 とする必要がある。
-	static const int resolution = 16;
+	static const int resolution = 96;
 
 	if (LN_REQUIRE(manager)) return false;
 	FontCore::init(manager);
@@ -537,17 +531,9 @@ Result FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
 	if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return false;
 
 	// FT_Set_Char_Size() はポイントサイズと解像度をもとに m_face->size->metrics を作成する
-    m_desc.Size = 16;
 	float size = static_cast<float>(m_desc.Size) * 64.0f;
 	err = FT_Set_Char_Size(m_face, size, size, resolution, resolution);
 	if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return false;
-
-    auto units_per_EM = FLValueToFloatPx(m_face->units_per_EM);
-    auto ascender = FLValueToFloatPx((m_face->ascender));
-    auto descender = FLValueToFloatPx((m_face->descender));
-    auto height = FLValueToFloatPx((m_face->height));
-    auto sss = ascender - descender;
-
 
 	m_loadFlags = FT_LOAD_DEFAULT;
 
@@ -609,15 +595,6 @@ void FreeTypeFont::getGlobalMetrics(FontGlobalMetrics* outMetrics)
 	outMetrics->descender = FLValueToFloatPx(m_face->size->metrics.descender);
 	outMetrics->lineSpace = FLValueToFloatPx(m_face->size->metrics.height);	// ascender - descender ではなく height を使う。FreeType 内部で端数が切り捨てられているので、1px足りないとかになる。
 	outMetrics->outlineSupported = FT_IS_SCALABLE(m_face);
-	outMetrics->boundingMinX = x_scale * (m_face->bbox.xMin);
-	outMetrics->boundingMaxX = x_scale * (m_face->bbox.xMax);
-	outMetrics->boundingMinY = y_scale * (m_face->bbox.yMin);
-	outMetrics->boundingMaxY = y_scale * (m_face->bbox.yMax);
-	outMetrics->bitmapMaxWidth = std::ceil(xMax - xMin) + 2;	// Antialias などが有効になると bbox のサイズでは収まらなくなることがあるため、サイズを余分に確保しておく
-	outMetrics->bitmapMaxHeight = std::ceil(yMax - yMin) + 2;
-    //FT_Bitmap_Size()
-	// FIXME: Bitmap font の場合の bbox は FT_Bitmap_Size を使うべきらしい。
-	// (FT_FaceRec_ のコメント)
 }
 
 void FreeTypeFont::getGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics)

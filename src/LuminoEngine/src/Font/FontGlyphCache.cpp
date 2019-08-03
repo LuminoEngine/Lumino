@@ -34,8 +34,8 @@ bool FontGlyphTextureCache::init(FontCore* font)
 	// すべてのグリフが収まるビットマップサイズ
 	FontGlobalMetrics metrix;
 	m_font->getGlobalMetrics(&metrix);
-	int mw = metrix.bitmapMaxWidth;
-	int mh = metrix.bitmapMaxHeight;
+	int mw = metrix.lineSpace;
+	int mh = metrix.lineSpace;
 
 	// 横方向に並べる数
 	// +1.0 は切り捨て対策。テクスチャサイズはmaxCharactersが収まる大きさであれば良い。(小さくなければOK)
