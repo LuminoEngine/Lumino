@@ -7,6 +7,51 @@ class UIItemsControl;
 
 // TODO: GridLayout https://blog.qt.io/jp/2011/01/06/qml-layout/
 
+
+
+/** グリッドレイアウトのセルサイズを指定する値の種類です。*/
+enum class UILayoutLengthType
+{
+    Auto,				/**< 子要素のサイズに合わせる */
+    Direct,				/**< サイズを直接指定する */
+    Ratio,				/**< レイアウト後、残りの領域を使う */
+};
+
+namespace detail {
+struct GridDefinitionData
+{
+    // input data
+    UILayoutLengthType	type = UILayoutLengthType::Ratio;
+    float			size = 0.0f;
+    float			minSize = 0.0f;
+    float			maxSize = FLT_MAX;
+
+    // working data
+    float			desiredSize = 0.0f;
+    float			actualOffset = 0.0f;	// 最終オフセット
+    float			actualSize = 0.0f;		// 最終サイズ
+
+    float getAvailableDesiredSize() const
+    {
+        if (type == UILayoutLengthType::Auto) {
+            return desiredSize;
+        }
+        else if (type == UILayoutLengthType::Direct) {
+            return Math::clamp(size, minSize, maxSize);
+        }
+        else {
+            return 0;
+        }
+    }
+
+    float getRatioSize() const
+    {
+        return (size == 0.0f) ? 1.0f : size;
+    }
+};
+
+} // namespace detail
+
 class IUIElementList
 {
 public:
@@ -159,7 +204,9 @@ LN_PROTECTED_INTERNAL_ACCESS:
 private:
 };
 
-
+// TODO: 一方向の GridLayout は BoxLayout (UE4) にする。これは、指定方向のレイアウト領域を inf にしない。
+// 一方、WPF の StackPanel のように、細かい配置の調整はせずただ並べるだけのものは LinearLayout(Andorid) にしてみる。これは指定方向のレイアウト領域が inf になる。
+// おもに ListView など用。
 class UIStackLayout2
     : public UILayoutPanel2
 {
@@ -168,6 +215,9 @@ public:
 
     void setOrientation(Orientation orientation) { m_orientation = orientation; }
     Orientation getOrientation() const { return m_orientation; }
+
+    void addChild(UIElement* element) { addChild(element, UILayoutLengthType::Auto); }
+    void addChild(UIElement* element, UILayoutLengthType type);
 
 LN_CONSTRUCT_ACCESS:
     UIStackLayout2();
@@ -178,7 +228,24 @@ LN_CONSTRUCT_ACCESS:
     virtual Size arrangeOverride(const Size& finalSize) override;
 
 private:
+    bool isHorizontal() const { return m_orientation == Orientation::Horizontal || m_orientation == Orientation::ReverseHorizontal; }
+
+    struct CellDefinition
+    {
+        // input data (initial data)
+        UILayoutLengthType type = UILayoutLengthType::Auto;
+        float size = 1.0f;
+        float minSize = 0.0f;
+        float maxSize = FLT_MAX;
+
+        // working data
+        float desiredSize = Math::NaN;
+        float actualOffset = Math::NaN;
+        float actualSize = Math::NaN;
+    };
+
     Orientation m_orientation;
+    List<CellDefinition> m_cellDefinitions;
 };
 
 class UIVBoxLayout2

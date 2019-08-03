@@ -82,7 +82,6 @@ void NavigatorManager::init()
     addElement(m_layout);
 
     m_navigationBar = ln::makeObject<NavigationBar>();
-    //addElement(m_navigationBar);
     m_layout->addChild(m_navigationBar);
 }
 
@@ -90,19 +89,18 @@ void NavigatorManager::resetNavigators()
 {
     m_assetBrowserNavigator = ln::makeObject<AssetBrowserNavigator>();
     m_navigationBar->addItem(m_assetBrowserNavigator->createNavigationBarItem());
-    //addElement(m_assetBrowserNavigator->createView());
     m_layout->addChild(m_assetBrowserNavigator->createView());
 
 
-    // Test:
-    {
-        auto icon = ln::makeObject<ln::UIIcon>();
-        icon->setIconName(u"music");
-        m_navigationBar->addItem(icon);
-        icon = ln::makeObject<ln::UIIcon>();
-        icon->setIconName(u"cog");
-        m_navigationBar->addItem(icon);
-    }
+    //// Test:
+    //{
+    //    auto icon = ln::makeObject<ln::UIIcon>();
+    //    icon->setIconName(u"music");
+    //    m_navigationBar->addItem(icon);
+    //    icon = ln::makeObject<ln::UIIcon>();
+    //    icon->setIconName(u"cog");
+    //    m_navigationBar->addItem(icon);
+    //}
 
     setCurrent(m_assetBrowserNavigator);
 }

@@ -27,10 +27,6 @@ void MainWindow::onLoaded()
 	auto layout1 = ln::makeObject<ln::UIStackLayout2>();
 	layout1->setOrientation(ln::Orientation::Horizontal);
     addElement(layout1);
-    //layout1->lastStretch = true;
-	//setLayoutPanel(layout1);
-
-
 
 
     m_mainHSplitter = ln::makeObject<ln::UISplitter>();
@@ -38,7 +34,7 @@ void MainWindow::onLoaded()
     m_mainHSplitter->setCellDefinition(1);
     m_mainHSplitter->setCellDefinition(2, ln::UILayoutLengthType::Direct, 100);
     //addElement(m_mainHSplitter);
-    layout1->addChild(m_mainHSplitter);
+    layout1->addChild(m_mainHSplitter, ln::UILayoutLengthType::Ratio);
 
     {
 
@@ -62,7 +58,6 @@ void MainWindow::onLoaded()
 			//--------
 
 			m_toolPanesArea = ln::makeObject<ToolPanesArea>();
-			m_toolPanesArea->setBackgroundColor(ln::Color::Green);
 			splitter2->addElement(m_toolPanesArea);
 
 			m_outputPane = ln::makeObject<OutputPane>();
