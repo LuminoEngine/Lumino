@@ -238,7 +238,7 @@ int main(int argc, char** argv)
 
     
     ft->clear(Color::White);
-    ft->drawText(u"Lorem ipsum dollor sit amet,", Rect(0, 0, 512, 256), font1, Color::Black);
+    ft->drawText(u"ABCDEFGHIJKabcdefghijk", Rect(0, 0, 512, 256), font1, Color::Black);
     ft->map(MapMode::Read)->save(u"test.png");
 
     auto sprite1 = Sprite::create(Assets::loadTexture(u"Sprite1"), 3, 3);

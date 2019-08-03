@@ -521,7 +521,7 @@ Result FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
     // > なお、WPF と同じ結果にするには 72 を指定する。https://docs.microsoft.com/ja-jp/windows/desktop/LearnWin32/dpi-and-device-independent-pixels
     // > WPF は活版印刷の文化に合わせるよりも、自身が基準としている DPI(96) と合わせることを選択している。
     // > 先のリンクにもあるが、12pt に合わせるには FontSize=16 とする必要がある。
-	static const int resolution = 96;
+	static const int resolution = 16;
 
 	if (LN_REQUIRE(manager)) return false;
 	FontCore::init(manager);
@@ -537,9 +537,17 @@ Result FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
 	if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return false;
 
 	// FT_Set_Char_Size() はポイントサイズと解像度をもとに m_face->size->metrics を作成する
+    m_desc.Size = 16;
 	float size = static_cast<float>(m_desc.Size) * 64.0f;
 	err = FT_Set_Char_Size(m_face, size, size, resolution, resolution);
 	if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return false;
+
+    auto units_per_EM = FLValueToFloatPx(m_face->units_per_EM);
+    auto ascender = FLValueToFloatPx((m_face->ascender));
+    auto descender = FLValueToFloatPx((m_face->descender));
+    auto height = FLValueToFloatPx((m_face->height));
+    auto sss = ascender - descender;
+
 
 	m_loadFlags = FT_LOAD_DEFAULT;
 
