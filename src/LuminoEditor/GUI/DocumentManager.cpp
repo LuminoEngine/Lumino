@@ -47,3 +47,17 @@ ln::Result DocumentManager::init()
 
     return true;
 }
+
+
+//==============================================================================
+// AssetEditorDocument
+
+AssetEditorDocument::AssetEditorDocument()
+{
+
+}
+
+ln::Result init(ln::AssetModel* asset, ln::AssetEditorViewModel* editorModel)
+{
+    return true;
+}

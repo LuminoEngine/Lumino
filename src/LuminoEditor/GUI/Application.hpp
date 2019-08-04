@@ -24,6 +24,7 @@ public:
     const ln::Ref<lna::Workspace>& workspace() const { return m_workspace; }
 
     void importFile(const ln::Path& filePath);
+    void openAssetFile(const ln::Path& filePath);
 
 protected:
     virtual void onInit() override;

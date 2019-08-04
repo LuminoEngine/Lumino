@@ -55,6 +55,7 @@ public:
 
 protected:
     virtual void onItemClick(UITreeItem* item, UIMouseEventArgs* e);
+    virtual Ref<UITreeItem> onRenderItem(UICollectionItemModel* viewModel);
 
     // base interface
 	virtual void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel) override;

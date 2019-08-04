@@ -5,8 +5,10 @@
 #include "../../LuminoEngine/src/UI/UIManager.hpp"
 #include <Workspace.hpp>
 #include <Project.hpp>
+#include <AssetDatabase.hpp>
 #include <PluginManager.hpp>
 #include "NavigatorManager.hpp"
+#include "DocumentManager.hpp"
 #include "MainWindow.hpp"
 #include "Application.hpp"
 
@@ -88,6 +90,22 @@ void EditorApplication::importFile(const ln::Path& filePath)
         }
 
         exts[0].second->import(filePath);
+    }
+}
+
+void EditorApplication::openAssetFile(const ln::Path& filePath)
+{
+    if (m_workspace->project())
+    {
+        auto asset = m_workspace->project()->assetDatabase()->openAsset(filePath);
+        auto exts = m_workspace->project()->pluginManager()->geAssetEditorExtensions(asset->assetType());
+        if (exts.size() != 1) {
+            LN_NOTIMPLEMENTED();
+            return;
+        }
+
+        auto editor = exts[0].second;
+        mainWindow()->documentManager()->addDocument(ln::makeObject<AssetEditorDocument>(asset, editor));
     }
 }
 

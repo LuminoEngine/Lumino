@@ -21,12 +21,34 @@ void AssetBrowserTreeView::init()
     setViewModel(m_model);
 }
 
+Ref<ln::UITreeItem> AssetBrowserTreeView::onRenderItem(ln::UICollectionItemModel* viewModel)
+{
+    auto item = UITreeView::onRenderItem(viewModel);
+
+    auto project = lna::Workspace::instance()->project();
+    if (project->assetDatabase()->isImportedAssetFile(m_model->filePath(viewModel))) {
+
+    }
+    else {
+        item->setTextColor(ln::Color::Gray);
+    }
+
+    return item;
+}
+
 void AssetBrowserTreeView::onItemClick(ln::UITreeItem* item, ln::UIMouseEventArgs* e)
 {
     UITreeView::onItemClick(item, e);
     if (e->getClickCount() == 2) {
+
         auto path = m_model->filePath(static_cast<ln::UICollectionItemModel*>(item->m_viewModel.get()));
-        EditorApplication::instance()->importFile(path);
+        auto project = lna::Workspace::instance()->project();
+        if (project->assetDatabase()->isImportedAssetFile(path)) {
+            EditorApplication::instance()->openAssetFile(path);
+        }
+        else {
+            EditorApplication::instance()->importFile(path);
+        }
     }
 }
 

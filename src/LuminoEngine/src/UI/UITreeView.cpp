@@ -241,6 +241,13 @@ void UITreeView::onItemClick(UITreeItem* item, UIMouseEventArgs* e)
 {
 }
 
+Ref<UITreeItem> UITreeView::onRenderItem(UICollectionItemModel* viewModel)
+{
+    auto item = makeObject<UITreeItem>();
+    item->setViewModel(viewModel);
+    return item;
+}
+
 void UITreeView::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel)
 {
 	if (oldViewModel) {
@@ -284,10 +291,11 @@ void UITreeView::makeChildItems(UITreeItem* item)
         //auto text = makeObject<UITextBlock>();
         //text->setText(itemData);
 
-        auto child = makeObject<UITreeItem>();
+        //auto child = makeObject<UITreeItem>();
         //child->setContent(text);
-		child->setViewModel(childModel);
+		//child->setViewModel(childModel);
         //child->setData(makeVariant(childModel));
+        auto child = onRenderItem(childModel);
 
         if (!item) {
             addItemInternal(child);

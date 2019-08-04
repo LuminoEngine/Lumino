@@ -8,6 +8,7 @@ public:
 
 protected:
     virtual void onItemClick(ln::UITreeItem* item, ln::UIMouseEventArgs* e) override;
+    virtual Ref<ln::UITreeItem> onRenderItem(ln::UICollectionItemModel* viewModel) override;
 
 private:
     Ref<ln::UIFileSystemCollectionModel> m_model;
