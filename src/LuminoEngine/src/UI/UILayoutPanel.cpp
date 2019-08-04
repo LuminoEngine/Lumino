@@ -206,10 +206,12 @@ Size UIFrameLayout2::staticMeasureOverride(UIElement* ownerElement, const Size& 
         childMaxSize.height = std::max(childMaxSize.height, desiredSize.height);
     }
 
-    Size size = Size(ownerElement->width(), ownerElement->height());
-    size.width = Math::isNaN(size.width) ? 0.0 : size.width;
-    size.height = Math::isNaN(size.height) ? 0.0 : size.height;
-    return Size::min(constraint, Size::max(size, childMaxSize));
+    return ownerElement->UIElement::measureOverride(constraint);
+
+    //Size size = Size(ownerElement->width(), ownerElement->height());
+    //size.width = Math::isNaN(size.width) ? 0.0 : size.width;
+    //size.height = Math::isNaN(size.height) ? 0.0 : size.height;
+    //return Size::min(constraint, Size::max(size, childMaxSize));
 }
 
 Size UIFrameLayout2::staticArrangeOverride(UIElement* ownerElement, const Size& finalSize)
@@ -224,7 +226,11 @@ Size UIFrameLayout2::staticArrangeOverride(UIElement* ownerElement, const Size& 
     for (int i = 0; i < childrenCount; i++)
     {
         UIElement* child = ownerElement->getVisualChild(i);
-        child->arrangeLayout(bounds);
+
+        Rect slotRect;
+        detail::LayoutHelper::adjustAlignment(bounds, child->desiredSize(), ownerElement->m_finalStyle->horizontalContentAlignment, ownerElement->m_finalStyle->verticalContentAlignment, &slotRect);
+
+        child->arrangeLayout(slotRect);
     }
 
     return finalSize;

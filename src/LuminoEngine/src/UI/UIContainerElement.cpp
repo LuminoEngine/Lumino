@@ -164,7 +164,8 @@ Size UIContainerElement::measureOverride(const Size& constraint)
  //       return Size::max(layoutSize, localSize);
 	//}
 	//else {
-		return UIFrameLayout2::staticMeasureOverride(this, constraint);
+    return UIFrameLayout2::staticMeasureOverride(this, constraint);
+
 	//}
 }
 
@@ -193,16 +194,17 @@ Size UIContainerElement::arrangeOverride(const Size& finalSize)
 	//layout->arrangeLayout(&list, contentSlotRect);
  //   return finalSize;
 
-    Rect contentSlotRect(0, 0, finalSize);
-    detail::LayoutHelper::adjustAlignment(Rect(0, 0, finalSize), desiredSize(), m_finalStyle->horizontalContentAlignment, m_finalStyle->verticalContentAlignment, &contentSlotRect);
+ //   Rect contentSlotRect(0, 0, finalSize);
+ //   detail::LayoutHelper::adjustAlignment(Rect(0, 0, finalSize), desiredSize(), m_finalStyle->horizontalContentAlignment, m_finalStyle->verticalContentAlignment, &contentSlotRect);
 
-	//if (m_logicalChildrenHost) {
- //       m_logicalChildrenHost->arrangeLayout(contentSlotRect.makeDeflate(finalStyle()->padding));
-	//	return finalSize;
-	//}
-	//else {
-		return UIFrameLayout2::staticArrangeOverride(this, contentSlotRect.getSize());
-	//}
+	////if (m_logicalChildrenHost) {
+ ////       m_logicalChildrenHost->arrangeLayout(contentSlotRect.makeDeflate(finalStyle()->padding));
+	////	return finalSize;
+	////}
+	////else {
+	//	return UIFrameLayout2::staticArrangeOverride(this, contentSlotRect.getSize());
+	////}
+    return UIFrameLayout2::staticArrangeOverride(this, finalSize);
 }
 
 void UIContainerElement::onLayoutPanelChanged(UILayoutPanel* newPanel)

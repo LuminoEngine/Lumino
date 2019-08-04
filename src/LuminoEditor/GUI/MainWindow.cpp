@@ -72,9 +72,9 @@ void MainWindow::onLoaded()
     }
 
 
-    // test
-    EditorApplication::instance()->workspace()->openProject2(u"D:/Proj/TH-10/TH-10.lnproj");
-    navigatorManager()->resetNavigators();
+    //// test
+    //EditorApplication::instance()->workspace()->openProject2(u"D:/Proj/TH-10/TH-10.lnproj");
+    //navigatorManager()->resetNavigators();
 }
 
 void MainWindow::onNavigationViewOpen()

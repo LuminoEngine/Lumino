@@ -157,7 +157,7 @@ public:	//TODO: internal
 
 	//Size m_layoutSize;
 	const detail::UIStyleInstance* m_finalStyle;
-	Size m_desiredSize;
+	Size m_desiredSize; // includes, margin, border
 
     Point m_localPosition;  // 親コンテナ内の相対座標
     Size m_actualSize;

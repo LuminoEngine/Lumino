@@ -105,10 +105,10 @@ void UILayoutElement::arrangeLayout(const Rect& localSlotRect)
 
 	// Alignment で調整する領域は、margin 領域も含む
 	const Thickness& margin = getLayoutMargin();
-	float marginWidth = margin.left + margin.right;
-	float marginHeight = margin.top + margin.bottom;
+	float marginWidth = margin.left + margin.right + m_finalStyle->borderThickness.width();
+	float marginHeight = margin.top + margin.bottom + m_finalStyle->borderThickness.height();
 
-    Size layoutSize(m_finalStyle->width, m_finalStyle->height);
+    Size layoutSize(m_finalStyle->width + marginWidth, m_finalStyle->height + marginHeight);
 	Rect arrangeRect;
 	detail::LayoutHelper::adjustHorizontalAlignment(areaSize, ds, layoutSize.width, hAlign, &arrangeRect);
 	detail::LayoutHelper::adjustVerticalAlignment(areaSize, ds, layoutSize.height, vAlign, &arrangeRect);
@@ -119,8 +119,8 @@ void UILayoutElement::arrangeLayout(const Rect& localSlotRect)
 	arrangeRect.height = std::max(arrangeRect.height - marginHeight, 0.0f);
 
     // apply border size
-    arrangeRect.width -= m_finalStyle->borderThickness.width();
-    arrangeRect.height -= m_finalStyle->borderThickness.height();
+    //arrangeRect.width -= m_finalStyle->borderThickness.width();
+    //arrangeRect.height -= m_finalStyle->borderThickness.height();
 
 	// Padding を考慮する
 	//const Thickness& padding = getLayoutPadding();
