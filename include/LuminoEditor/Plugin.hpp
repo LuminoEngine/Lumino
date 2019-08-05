@@ -26,6 +26,7 @@ class IPluginModule : public IModuleInterface
 public:
     virtual int getEditorExtensionCount() = 0;
     virtual IEditorExtension* getEditorExtension(int index) = 0;
+
 };
 
 class IEditorExtension
@@ -39,7 +40,19 @@ public:
 class IAssetImporterEditorExtension : public IEditorExtension
 {
 public:
+    static const int BasePriority = 100;
+
     virtual EditorExtensionType getExtensionType() const { return EditorExtensionType::AssetImporter; }
+
+    // 指定したファイルパスが、この PluginModule で扱える可能性があるかどうかを判断する。
+    // filePath : 相対パスの場合、プロジェクトの Assets フォルダの中のファイルである。Assets フォルダからの相対パス。
+    //             絶対パスの場合、プロジェクトの外側のファイルである。
+    // return: 扱えない場合は 0. 拡張子が全く違う場合など。
+    //          拡張子だけ一致している場合は BasePriority.
+    //          保存フォルダも一致している場合は BasePriority + 1
+    //          完全一致は BasePriority + 10、など。
+    virtual int matchFilePath(const Path& filePath) = 0;
+
     virtual Ref<AssetImporter> createImporter(const Char* assetSourceFilePath) = 0;
 };
 

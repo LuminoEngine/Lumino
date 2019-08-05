@@ -348,10 +348,7 @@ Size UIStackLayout2::arrangeOverride(const Size& finalSize)
             cell.desiredSize = ratioUnit * cell.size;
         }
 
-        // initial
-        if (Math::isNaN(cell.actualSize)) {
-            cell.actualSize = Math::clamp(cell.desiredSize, cell.minSize, cell.maxSize);
-        }
+        cell.actualSize = Math::clamp(cell.desiredSize, cell.minSize, cell.maxSize);
 
         // fix offset
         cell.actualOffset = totalOffset;

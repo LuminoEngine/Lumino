@@ -28,10 +28,13 @@ public:
 	DocumentManager();
     ln::Result init();
 
+    void addDocument(Document* doc);
+
 protected:
 
 private:
     Ref<StartupView> m_startupView;
+    ln::List<Ref<Document>> m_documents;
 };
 
 class AssetEditorDocument

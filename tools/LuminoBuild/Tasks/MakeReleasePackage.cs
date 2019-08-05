@@ -36,7 +36,7 @@ namespace LuminoBuild.Tasks
 
             // C++ Engine (common)
             {
-                string nativeEngineCMakeDir = Path.Combine(nativeEngineRoot, "lib", "cmake");
+                string nativeEngineCMakeDir = Path.Combine(nativeEngineRoot, "lib", "cmake", "Lumino");
                 Directory.CreateDirectory(nativeEngineCMakeDir);
 
                 File.Copy(

@@ -21,8 +21,8 @@ void MainWindow::init()
 void MainWindow::onLoaded()
 {
 	UIMainWindow::onLoaded();
-	//renderView()->setBackgroundColor(ln::Color::White);
-	//renderView()->setClearMode(ln::RenderViewClearMode::ColorAndDepth);
+	renderView()->setBackgroundColor(ln::Color::White);
+	renderView()->setClearMode(ln::RenderViewClearMode::ColorAndDepth);
 
 	auto layout1 = ln::makeObject<ln::UIStackLayout2>();
 	layout1->setOrientation(ln::Orientation::Horizontal);

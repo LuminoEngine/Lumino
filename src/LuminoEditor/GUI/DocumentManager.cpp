@@ -48,6 +48,15 @@ ln::Result DocumentManager::init()
     return true;
 }
 
+void DocumentManager::addDocument(Document* doc)
+{
+    if (m_documents.size() == 0) {
+        removeElement(m_startupView);
+    }
+
+    m_documents.add(doc);
+}
+
 
 //==============================================================================
 // AssetEditorDocument
@@ -57,7 +66,8 @@ AssetEditorDocument::AssetEditorDocument()
 
 }
 
-ln::Result init(ln::AssetModel* asset, ln::AssetEditorViewModel* editorModel)
+ln::Result AssetEditorDocument::init(ln::AssetModel* asset, ln::AssetEditorViewModel* editorModel)
 {
+    
     return true;
 }

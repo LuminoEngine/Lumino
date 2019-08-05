@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace LuminoBuild.Tasks
 {
+    // TODO: 廃止
     class MakeReleasePackage2 : BuildTask
     {
         public override string CommandName => "MakeReleasePackage2";
