@@ -1,4 +1,8 @@
 ﻿
+#include <Project.hpp>
+#include <PluginManager.hpp>
+#include <UIExtension.hpp>
+#include "Application.hpp"
 #include "AssetBrowserNavigator.hpp"
 #include "NavigatorManager.hpp"
 
@@ -91,6 +95,12 @@ void NavigatorManager::resetNavigators()
     m_navigationBar->addItem(m_assetBrowserNavigator->createNavigationBarItem());
     m_layout->addChild(m_assetBrowserNavigator->createView());
 
+
+    auto exts = EditorApplication::instance()->mainProject()->pluginManager()->getAssetNavigatorExtensions();
+    for (auto& ext : exts) {
+        ext->onAttached();
+        m_navigationBar->addItem(ext->getNavigationMenuItem());
+    }
 
     //// Test:
     //{

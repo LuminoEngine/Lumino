@@ -79,6 +79,11 @@ void EditorApplication::setMainWindow(ln::UIMainWindow* window)
 	return ln::detail::EngineDomain::engineManager()->setMainWindow(window);
 }
 
+lna::Project* EditorApplication::mainProject() const
+{
+    return m_workspace->project();
+}
+
 void EditorApplication::importFile(const ln::Path& filePath)
 {
     if (m_workspace->project())

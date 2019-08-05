@@ -248,5 +248,17 @@ void UIItemContainerElement::init()
 	UIScrollViewer::init();
 }
 
+//==============================================================================
+// UIMenuItem
+
+UIMenuItem::UIMenuItem()
+{
+}
+
+void UIMenuItem::init()
+{
+    UIControl::init();
+}
+
 } // namespace ln
 

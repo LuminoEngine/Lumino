@@ -2,12 +2,15 @@
 
 namespace ln {
 class UIFrame;
+class NavigationMenuItem;
 class AssetImporter;
 class AssetEditorViewModel;
 class IEditorExtension;
 
 enum class EditorExtensionType
 {
+    AssetNavigator,
+
     /** アセットをインポートするための拡張機能 */
     AssetImporter,
 
@@ -36,6 +39,17 @@ public:
     virtual const Char* displayName() const = 0;
     virtual EditorExtensionType getExtensionType() const = 0;
 };
+
+
+class IAssetNavigatorExtension : public IEditorExtension
+{
+public:
+    virtual EditorExtensionType getExtensionType() const { return EditorExtensionType::AssetNavigator; }
+    virtual void onAttached() = 0;
+    virtual void onDetached() = 0;
+    virtual NavigationMenuItem* getNavigationMenuItem() = 0;
+};
+
 
 class IAssetImporterEditorExtension : public IEditorExtension
 {
@@ -83,6 +97,11 @@ public:
 
     virtual void onOpened(AssetModel* asset, UIContainerElement* frame) {}
     virtual void onClosed() {}
+
+    // ドキュメントがアクティブになったりしたときに呼ばれる。
+    // AssetEditorViewModel は派生クラスのメンバ変数など内部 AssetEditorViewModel を持つことができるが、
+    // それをアクティブにしたい場合はこの実装で処理を行う。
+    virtual void onActivate() {}
 };
 
 using GetModuleClassFunc = ::ln::IPluginModule*();

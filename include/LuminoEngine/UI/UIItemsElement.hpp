@@ -111,5 +111,24 @@ public:
 private:
 };
 
+
+class UIMenuItem
+    : public UIControl  // TODO: HeaderdItemsControl
+{
+public:
+    void setIcon(UIElement* value) { m_icon = value; }
+    UIElement* icon() const { return m_icon; }
+
+    // TODO: measure, arrange
+    
+LN_CONSTRUCT_ACCESS:
+	UIMenuItem();
+	void init();
+
+private:
+    Ref<UIElement> m_icon;
+};
+
+
 } // namespace ln
 
