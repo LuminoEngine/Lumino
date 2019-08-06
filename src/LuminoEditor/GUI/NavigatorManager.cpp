@@ -45,17 +45,17 @@ void NavigationBar::addItem(ln::UIElement* element)
     //item->setVerticalAlignment(ln::VAlignment::Top);    // TODO: demo 臨時対応
 
 
-    // TODO: demo
-    static int count = 0;
-    if (count == 0) {
-        element->setTextColor(ln::Color::White);
-        item->setBorderThickness(ln::Thickness(4, 0, 0, 0));
-        item->setBorderColor(ln::UIColors::get(ln::UIColorHues::LightGreen));
-    }
-    else {
-        element->setTextColor(ln::UIColors::get(ln::UIColorHues::Grey, 4));
-    }
-    count++;
+    //// TODO: demo
+    //static int count = 0;
+    //if (count == 0) {
+    //    element->setTextColor(ln::Color::White);
+    //    item->setBorderThickness(ln::Thickness(4, 0, 0, 0));
+    //    item->setBorderColor(ln::UIColors::get(ln::UIColorHues::LightGreen));
+    //}
+    //else {
+    //    element->setTextColor(ln::UIColors::get(ln::UIColorHues::Grey, 4));
+    //}
+    //count++;
 
 
 	UIItemsControl::addItem(item);

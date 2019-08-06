@@ -21,6 +21,7 @@ void UICollectionItem::init()
 	auto vsm = getVisualStateManager();
 	vsm->registerState(UIVisualStates::SelectionStates, UIVisualStates::Unselected);
 	vsm->registerState(UIVisualStates::SelectionStates, UIVisualStates::Selected);
+    vsm->gotoState(UIVisualStates::Unselected);
 }
 
 void UICollectionItem::onClick(UIMouseEventArgs* e)
