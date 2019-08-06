@@ -142,7 +142,7 @@ void UIContext::setupDefaultStyle()
 			}
 			if (auto s = sheet->obtainStyle(u"UIThumb.SplitterBar"))
 			{
-				//s->backgroundColor = Color(0, 1, 0, 0.2); // debug
+				s->backgroundColor = Color(0, 1, 0, 0.2); // debug
 				s->margin = Thickness(-2, -2, -2, -2);
 			}
 		}

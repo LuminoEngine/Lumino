@@ -207,7 +207,8 @@ Size UIFrameLayout2::staticMeasureOverride(UIElement* ownerElement, const Size& 
         childMaxSize.height = std::max(childMaxSize.height, desiredSize.height);
     }
 
-    return ownerElement->UIElement::measureOverride(constraint);
+    auto selfSize = ownerElement->UIElement::measureOverride(constraint);
+    return Size::max(selfSize, childMaxSize);
 
     //Size size = Size(ownerElement->width(), ownerElement->height());
     //size.width = Math::isNaN(size.width) ? 0.0 : size.width;
