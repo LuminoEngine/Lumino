@@ -1,5 +1,6 @@
 ﻿#include "Project.hpp"
 #include "PluginManager.hpp"
+#include "StandardPlugin/AssetBrowserNavigator.hpp"
 #include "StandardPlugin/TilesetEditor.hpp"
 
 namespace lna {
@@ -35,6 +36,11 @@ StandardPluginModule::StandardPluginModule()
 {
     {
         auto obj = ln::makeObject<StandardTextureImporterExtension>();
+        m_editorExtensionInstances.add(obj);
+        m_editorExtensions.add(obj);
+    }
+    {
+        auto obj = ln::makeObject<AssetBrowserNavigatorExtension>();
         m_editorExtensionInstances.add(obj);
         m_editorExtensions.add(obj);
     }

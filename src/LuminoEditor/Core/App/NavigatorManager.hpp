@@ -64,5 +64,5 @@ private:
     Ref<NavigationBar> m_navigationBar;
 
     // default navi
-    Ref<AssetBrowserNavigator> m_assetBrowserNavigator;
+    //Ref<AssetBrowserNavigator> m_assetBrowserNavigator;
 };

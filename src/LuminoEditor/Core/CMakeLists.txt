@@ -12,11 +12,15 @@ source_group("Sources" FILES ${LN_SOURCES_EditorCore})
 file(GLOB LN_SOURCES_StandardPlugin StandardPlugin/*.hpp StandardPlugin/*.cpp)
 source_group("StandardPlugin" FILES ${LN_SOURCES_StandardPlugin})
 
+file(GLOB LN_SOURCES_App App/*.hpp App/*.cpp)
+source_group("App" FILES ${LN_SOURCES_App})
+
 set(
 	LOCAL_SOURCES
 	${LOCAL_HEADERS}
 	${LN_SOURCES_EditorCore}
 	${LN_SOURCES_StandardPlugin}
+	${LN_SOURCES_App}
 )
 
 add_library(${PROJECT_NAME} STATIC ${LOCAL_SOURCES})

@@ -2,7 +2,7 @@
 #include <Workspace.hpp>
 #include <Project.hpp>
 #include <AssetDatabase.hpp>
-#include "Application.hpp"
+#include "../App/Application.hpp"
 #include "AssetBrowserNavigator.hpp"
 
 //==============================================================================
@@ -53,23 +53,48 @@ void AssetBrowserTreeView::onItemClick(ln::UITreeItem* item, ln::UIMouseEventArg
 }
 
 //==============================================================================
-// AssetBrowserNavigator
+// AssetBrowserNavigatorExtension
 
-ln::UIElement* AssetBrowserNavigator::createNavigationBarItem()
+void AssetBrowserNavigatorExtension::init()
 {
-    m_navbarItem = ln::makeObject<ln::UIIcon>();
-    m_navbarItem->setIconName(u"file");
-    return m_navbarItem;
+    Object::init();
+    m_navbarItemContent = ln::makeObject<ln::NavigationMenuItem>();
+    m_navbarItemContent->setIconName(u"file");
 }
 
-ln::UIElement* AssetBrowserNavigator::createView()
+void AssetBrowserNavigatorExtension::onAttached()
 {
-
-
-    m_treeView = ln::makeObject<AssetBrowserTreeView>();
-    m_treeView->setWidth(200);
-    m_treeView->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 2));
-    m_treeView->getGridLayoutInfo()->layoutRow = 0;
-
-    return m_treeView;
 }
+
+void AssetBrowserNavigatorExtension::onDetached()
+{
+}
+
+ln::NavigationMenuItem* AssetBrowserNavigatorExtension::getNavigationMenuItem()
+{
+    return m_navbarItemContent;
+}
+
+
+//
+////==============================================================================
+//// AssetBrowserNavigator
+//
+//ln::UIElement* AssetBrowserNavigator::createNavigationBarItem()
+//{
+//    m_navbarItem = ln::makeObject<ln::UIIcon>();
+//    m_navbarItem->setIconName(u"file");
+//    return m_navbarItem;
+//}
+//
+//ln::UIElement* AssetBrowserNavigator::createView()
+//{
+//
+//
+//    m_treeView = ln::makeObject<AssetBrowserTreeView>();
+//    m_treeView->setWidth(200);
+//    m_treeView->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 2));
+//    m_treeView->getGridLayoutInfo()->layoutRow = 0;
+//
+//    return m_treeView;
+//}

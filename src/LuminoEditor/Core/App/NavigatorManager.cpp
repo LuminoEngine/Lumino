@@ -3,7 +3,7 @@
 #include <PluginManager.hpp>
 #include <UIExtension.hpp>
 #include "Application.hpp"
-#include "AssetBrowserNavigator.hpp"
+//#include "AssetBrowserNavigator.hpp"
 #include "NavigatorManager.hpp"
 
 //==============================================================================
@@ -26,13 +26,6 @@ void NavigationBar::init()
 
 void NavigationBar::addItem(ln::UIElement* element)
 {
-    
-	//auto textblock = ln::makeObject<ln::UITextBlock>();
-	//textblock->setText(text);
- //   textblock->setTextColor(ln::Color::White);
- //   textblock->setHorizontalAlignment(ln::HAlignment::Center);
- //   textblock->setVerticalAlignment(ln::VAlignment::Center);
-
     // TODO: ContentAlignment でカバーしたい
     element->setHorizontalAlignment(ln::HAlignment::Center);
     element->setVerticalAlignment(ln::VAlignment::Center);
@@ -42,21 +35,6 @@ void NavigationBar::addItem(ln::UIElement* element)
 	item->addElement(element);
     item->setWidth(ItemSize);
     item->setHeight(ItemSize);
-    //item->setVerticalAlignment(ln::VAlignment::Top);    // TODO: demo 臨時対応
-
-
-    //// TODO: demo
-    //static int count = 0;
-    //if (count == 0) {
-    //    element->setTextColor(ln::Color::White);
-    //    item->setBorderThickness(ln::Thickness(4, 0, 0, 0));
-    //    item->setBorderColor(ln::UIColors::get(ln::UIColorHues::LightGreen));
-    //}
-    //else {
-    //    element->setTextColor(ln::UIColors::get(ln::UIColorHues::Grey, 4));
-    //}
-    //count++;
-
 
 	UIItemsControl::addItem(item);
 }
@@ -91,9 +69,9 @@ void NavigatorManager::init()
 
 void NavigatorManager::resetNavigators()
 {
-    m_assetBrowserNavigator = ln::makeObject<AssetBrowserNavigator>();
-    m_navigationBar->addItem(m_assetBrowserNavigator->createNavigationBarItem());
-    m_layout->addChild(m_assetBrowserNavigator->createView());
+    //m_assetBrowserNavigator = ln::makeObject<AssetBrowserNavigator>();
+    //m_navigationBar->addItem(m_assetBrowserNavigator->createNavigationBarItem());
+    //m_layout->addChild(m_assetBrowserNavigator->createView());
 
 
     auto exts = EditorApplication::instance()->mainProject()->pluginManager()->getAssetNavigatorExtensions();
@@ -112,7 +90,7 @@ void NavigatorManager::resetNavigators()
     //    m_navigationBar->addItem(icon);
     //}
 
-    setCurrent(m_assetBrowserNavigator);
+    //setCurrent(m_assetBrowserNavigator);
 }
 
 void NavigatorManager::setCurrent(Navigator* nav)
