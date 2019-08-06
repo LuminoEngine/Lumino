@@ -38,7 +38,7 @@ void NavigationBar::addItem(ln::UIElement* element)
     element->setVerticalAlignment(ln::VAlignment::Center);
     element->setFontSize(24);
 
-	auto item = ln::makeObject<ln::UICollectionItem>();
+	auto item = ln::makeObject<NavigationBarItem>();
 	item->addElement(element);
     item->setWidth(ItemSize);
     item->setHeight(ItemSize);

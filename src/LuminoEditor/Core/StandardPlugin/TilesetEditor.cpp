@@ -4,7 +4,7 @@
 void TilesetNavigatorExtension::onAttached()
 {
     m_item = ln::makeObject<ln::NavigationMenuItem>();
-    m_item->setIconName(u"music");
+    m_item->setIconName(u"th");
 }
 
 ln::NavigationMenuItem* TilesetNavigatorExtension::getNavigationMenuItem()

@@ -748,6 +748,7 @@ void UIStyleContext::addStyleSheet(UIStyleSheet* sheet)
 {
     if (LN_REQUIRE(sheet)) return;
     m_styleSheets.add(sheet);
+    build();
 }
 
 void UIStyleContext::build()
@@ -1036,7 +1037,7 @@ void UIStyleInstance::makeRenderObjects()
 
 }
 
-void UIStyleInstance::updateStyleDataHelper(UIStyle* localStyle, const detail::UIStyleInstance* parentStyleData, const UIStyle* combinedStyle, detail::UIStyleInstance* outStyleData)
+void UIStyleInstance::updateStyleDataHelper(const detail::UIStyleInstance* parentStyleData, const UIStyle* combinedStyle, detail::UIStyleInstance* outStyleData)
 {
 	//const UIStyle* parentStyle = (parentStyleData) ? parentStyleData->sourceLocalStyle : nullptr;
 	//if (parentStyle)
@@ -1055,19 +1056,19 @@ void UIStyleInstance::updateStyleDataHelper(UIStyle* localStyle, const detail::U
             // 1. Local style
             // 2. Style sheet
             // 3. Parent
-            outStyleData->textColor = localStyle->textColor.getOrDefault(combinedStyle->textColor.getOrDefault(parentStyleData->textColor));
-            outStyleData->fontFamily = localStyle->fontFamily.getOrDefault(combinedStyle->fontFamily.getOrDefault(parentStyleData->fontFamily));
-            outStyleData->fontSize = localStyle->fontSize.getOrDefault(combinedStyle->fontSize.getOrDefault(parentStyleData->fontSize));
-            outStyleData->fontWeight = localStyle->fontWeight.getOrDefault(combinedStyle->fontWeight.getOrDefault(parentStyleData->fontWeight));
-            outStyleData->fontStyle = localStyle->fontStyle.getOrDefault(combinedStyle->fontStyle.getOrDefault(parentStyleData->fontStyle));
+            outStyleData->textColor = (combinedStyle->textColor.getOrDefault(parentStyleData->textColor));
+            outStyleData->fontFamily = (combinedStyle->fontFamily.getOrDefault(parentStyleData->fontFamily));
+            outStyleData->fontSize = (combinedStyle->fontSize.getOrDefault(parentStyleData->fontSize));
+            outStyleData->fontWeight = (combinedStyle->fontWeight.getOrDefault(parentStyleData->fontWeight));
+            outStyleData->fontStyle = (combinedStyle->fontStyle.getOrDefault(parentStyleData->fontStyle));
         }
         else {
             // for root default style
-            outStyleData->textColor = localStyle->textColor.getOrDefault(combinedStyle->textColor.getOrDefault(UIStyle::DefaultTextColor));
-            outStyleData->fontFamily = localStyle->fontFamily.getOrDefault(combinedStyle->fontFamily.getOrDefault(UIStyle::DefaultFontFamily));
-            outStyleData->fontSize = localStyle->fontSize.getOrDefault(combinedStyle->fontSize.getOrDefault(UIStyle::DefaultFontSize));
-            outStyleData->fontWeight = localStyle->fontWeight.getOrDefault(combinedStyle->fontWeight.getOrDefault(UIStyle::DefaultFontWeight));
-            outStyleData->fontStyle = localStyle->fontStyle.getOrDefault(combinedStyle->fontStyle.getOrDefault(UIStyle::DefaultFontStyle));
+            outStyleData->textColor = (combinedStyle->textColor.getOrDefault(UIStyle::DefaultTextColor));
+            outStyleData->fontFamily = (combinedStyle->fontFamily.getOrDefault(UIStyle::DefaultFontFamily));
+            outStyleData->fontSize = (combinedStyle->fontSize.getOrDefault(UIStyle::DefaultFontSize));
+            outStyleData->fontWeight = (combinedStyle->fontWeight.getOrDefault(UIStyle::DefaultFontWeight));
+            outStyleData->fontStyle = (combinedStyle->fontStyle.getOrDefault(UIStyle::DefaultFontStyle));
         }
     }
 
@@ -1076,60 +1077,60 @@ void UIStyleInstance::updateStyleDataHelper(UIStyle* localStyle, const detail::U
 
 	// layout
 	{
-        outStyleData->width = localStyle->width.getOrDefault(combinedStyle->width.getOrDefault(UIStyle::DefaultWidth));
-        outStyleData->height = localStyle->height.getOrDefault(combinedStyle->height.getOrDefault(UIStyle::DefaultHeight));
-		outStyleData->margin = localStyle->margin.getOrDefault(combinedStyle->margin.getOrDefault(UIStyle::DefaultMargin));
-		outStyleData->padding = localStyle->padding.getOrDefault(combinedStyle->padding.getOrDefault(UIStyle::DefaultPadding));
-		outStyleData->horizontalAlignment = localStyle->horizontalAlignment.getOrDefault(combinedStyle->horizontalAlignment.getOrDefault(UIStyle::DefaultHorizontalAlignment));
-		outStyleData->verticalAlignment = localStyle->verticalAlignment.getOrDefault(combinedStyle->verticalAlignment.getOrDefault(UIStyle::DefaultVerticalAlignment));
-        outStyleData->horizontalContentAlignment = localStyle->horizontalContentAlignment.getOrDefault(combinedStyle->horizontalContentAlignment.getOrDefault(UIStyle::DefaultHorizontalContentAlignment));
-        outStyleData->verticalContentAlignment = localStyle->verticalContentAlignment.getOrDefault(combinedStyle->verticalContentAlignment.getOrDefault(UIStyle::DefaultVerticalContentAlignment));
-		outStyleData->minWidth = localStyle->minWidth.getOrDefault(combinedStyle->minWidth.getOrDefault(UIStyle::DefaultMinWidth));
-		outStyleData->minHeight = localStyle->minHeight.getOrDefault(combinedStyle->minHeight.getOrDefault(UIStyle::DefaultMinHeight));
-		outStyleData->maxWidth = localStyle->maxWidth.getOrDefault(combinedStyle->maxWidth.getOrDefault(UIStyle::DefaultMaxWidth));
-		outStyleData->maxHeight = localStyle->maxHeight.getOrDefault(combinedStyle->maxHeight.getOrDefault(UIStyle::DefaultMaxHeight));
-		outStyleData->overflowX = localStyle->overflowX.getOrDefault(combinedStyle->overflowX.getOrDefault(UIStyle::DefaultOverflowX));
-		outStyleData->overflowY = localStyle->overflowY.getOrDefault(combinedStyle->overflowY.getOrDefault(UIStyle::DefaultOverflowY));
+        outStyleData->width = (combinedStyle->width.getOrDefault(UIStyle::DefaultWidth));
+        outStyleData->height = (combinedStyle->height.getOrDefault(UIStyle::DefaultHeight));
+		outStyleData->margin = (combinedStyle->margin.getOrDefault(UIStyle::DefaultMargin));
+		outStyleData->padding = (combinedStyle->padding.getOrDefault(UIStyle::DefaultPadding));
+		outStyleData->horizontalAlignment = (combinedStyle->horizontalAlignment.getOrDefault(UIStyle::DefaultHorizontalAlignment));
+		outStyleData->verticalAlignment = (combinedStyle->verticalAlignment.getOrDefault(UIStyle::DefaultVerticalAlignment));
+        outStyleData->horizontalContentAlignment = (combinedStyle->horizontalContentAlignment.getOrDefault(UIStyle::DefaultHorizontalContentAlignment));
+        outStyleData->verticalContentAlignment = (combinedStyle->verticalContentAlignment.getOrDefault(UIStyle::DefaultVerticalContentAlignment));
+		outStyleData->minWidth = (combinedStyle->minWidth.getOrDefault(UIStyle::DefaultMinWidth));
+		outStyleData->minHeight = (combinedStyle->minHeight.getOrDefault(UIStyle::DefaultMinHeight));
+		outStyleData->maxWidth = (combinedStyle->maxWidth.getOrDefault(UIStyle::DefaultMaxWidth));
+		outStyleData->maxHeight = (combinedStyle->maxHeight.getOrDefault(UIStyle::DefaultMaxHeight));
+		outStyleData->overflowX = (combinedStyle->overflowX.getOrDefault(UIStyle::DefaultOverflowX));
+		outStyleData->overflowY = (combinedStyle->overflowY.getOrDefault(UIStyle::DefaultOverflowY));
 	}
 
 	// layout transform
 	{
-		outStyleData->position = localStyle->position.getOrDefault(combinedStyle->position.getOrDefault(UIStyle::DefaultPosition));
-		outStyleData->rotation = localStyle->rotation.getOrDefault(combinedStyle->rotation.getOrDefault(UIStyle::DefaultRotation));
-		outStyleData->scale = localStyle->scale.getOrDefault(combinedStyle->scale.getOrDefault(UIStyle::DefaultScale));
-		outStyleData->centerPoint = localStyle->centerPoint.getOrDefault(combinedStyle->centerPoint.getOrDefault(UIStyle::DefaultCenterPoint));
+		outStyleData->position = (combinedStyle->position.getOrDefault(UIStyle::DefaultPosition));
+		outStyleData->rotation = (combinedStyle->rotation.getOrDefault(UIStyle::DefaultRotation));
+		outStyleData->scale = (combinedStyle->scale.getOrDefault(UIStyle::DefaultScale));
+		outStyleData->centerPoint = (combinedStyle->centerPoint.getOrDefault(UIStyle::DefaultCenterPoint));
 	}
 
 	// background
 	{
 		assert(outStyleData->backgroundMaterial);
-        outStyleData->backgroundDrawMode = localStyle->backgroundDrawMode.getOrDefault(combinedStyle->backgroundDrawMode.getOrDefault(UIStyle::DefaultBackgroundDrawMode));
-		outStyleData->backgroundColor = localStyle->backgroundColor.getOrDefault(combinedStyle->backgroundColor.getOrDefault(UIStyle::DefaultBackgroundColor));
-		outStyleData->backgroundMaterial->setMainTexture(localStyle->backgroundImage.getOrDefault(combinedStyle->backgroundImage.getOrDefault(UIStyle::DefaultBackgroundImage)));
-		outStyleData->backgroundMaterial->setShader(localStyle->backgroundShader.getOrDefault(combinedStyle->backgroundShader.getOrDefault(UIStyle::DefaultBackgroundShader)));
-        outStyleData->backgroundImageRect = localStyle->backgroundImageRect.getOrDefault(combinedStyle->backgroundImageRect.getOrDefault(UIStyle::DefaultBackgroundImageRect));
-        outStyleData->backgroundImageBorder = localStyle->backgroundImageBorder.getOrDefault(combinedStyle->backgroundImageBorder.getOrDefault(UIStyle::DefaultBackgroundImageBorder));
+        outStyleData->backgroundDrawMode = (combinedStyle->backgroundDrawMode.getOrDefault(UIStyle::DefaultBackgroundDrawMode));
+		outStyleData->backgroundColor = (combinedStyle->backgroundColor.getOrDefault(UIStyle::DefaultBackgroundColor));
+		outStyleData->backgroundMaterial->setMainTexture((combinedStyle->backgroundImage.getOrDefault(UIStyle::DefaultBackgroundImage)));
+		outStyleData->backgroundMaterial->setShader((combinedStyle->backgroundShader.getOrDefault(UIStyle::DefaultBackgroundShader)));
+        outStyleData->backgroundImageRect = (combinedStyle->backgroundImageRect.getOrDefault(UIStyle::DefaultBackgroundImageRect));
+        outStyleData->backgroundImageBorder = (combinedStyle->backgroundImageBorder.getOrDefault(UIStyle::DefaultBackgroundImageBorder));
 	}
 
     // border
     {
-        outStyleData->borderThickness = localStyle->borderThickness.getOrDefault(combinedStyle->borderThickness.getOrDefault(UIStyle::DefaultBorderThickness));
-        outStyleData->cornerRadius = localStyle->cornerRadius.getOrDefault(combinedStyle->cornerRadius.getOrDefault(UIStyle::DefaultCornerRadius));
-        outStyleData->leftBorderColor = localStyle->leftBorderColor.getOrDefault(combinedStyle->leftBorderColor.getOrDefault(UIStyle::DefaultLeftBorderColor));
-        outStyleData->topBorderColor = localStyle->topBorderColor.getOrDefault(combinedStyle->topBorderColor.getOrDefault(UIStyle::DefaultTopBorderColor));
-        outStyleData->rightBorderColor = localStyle->rightBorderColor.getOrDefault(combinedStyle->rightBorderColor.getOrDefault(UIStyle::DefaultRightBorderColor));
-        outStyleData->bottomBorderColor = localStyle->bottomBorderColor.getOrDefault(combinedStyle->bottomBorderColor.getOrDefault(UIStyle::DefaultBottomBorderColor));
-        outStyleData->borderDirection = localStyle->borderDirection.getOrDefault(combinedStyle->borderDirection.getOrDefault(UIStyle::DefaultBorderDirection));
+        outStyleData->borderThickness = (combinedStyle->borderThickness.getOrDefault(UIStyle::DefaultBorderThickness));
+        outStyleData->cornerRadius = (combinedStyle->cornerRadius.getOrDefault(UIStyle::DefaultCornerRadius));
+        outStyleData->leftBorderColor = (combinedStyle->leftBorderColor.getOrDefault(UIStyle::DefaultLeftBorderColor));
+        outStyleData->topBorderColor = (combinedStyle->topBorderColor.getOrDefault(UIStyle::DefaultTopBorderColor));
+        outStyleData->rightBorderColor = (combinedStyle->rightBorderColor.getOrDefault(UIStyle::DefaultRightBorderColor));
+        outStyleData->bottomBorderColor = (combinedStyle->bottomBorderColor.getOrDefault(UIStyle::DefaultBottomBorderColor));
+        outStyleData->borderDirection = (combinedStyle->borderDirection.getOrDefault(UIStyle::DefaultBorderDirection));
     }
 
 	// shadow
 	{
-		outStyleData->shadowOffsetX = localStyle->shadowOffsetX.getOrDefault(combinedStyle->shadowOffsetX.getOrDefault(UIStyle::DefaultShadowOffsetX));
-		outStyleData->shadowOffsetY = localStyle->shadowOffsetY.getOrDefault(combinedStyle->shadowOffsetY.getOrDefault(UIStyle::DefaultShadowOffsetY));
-		outStyleData->shadowBlurRadius = localStyle->shadowBlurRadius.getOrDefault(combinedStyle->shadowBlurRadius.getOrDefault(UIStyle::DefaultShadowBlurRadius));
-		outStyleData->shadowSpreadRadius = localStyle->shadowSpreadRadius.getOrDefault(combinedStyle->shadowSpreadRadius.getOrDefault(UIStyle::DefaultShadowSpreadRadius));
-		outStyleData->shadowColor = localStyle->shadowColor.getOrDefault(combinedStyle->shadowColor.getOrDefault(UIStyle::DefaultShadowColor));
-		outStyleData->shadowInset = localStyle->shadowInset.getOrDefault(combinedStyle->shadowInset.getOrDefault(UIStyle::DefaultShadowInset));
+		outStyleData->shadowOffsetX = (combinedStyle->shadowOffsetX.getOrDefault(UIStyle::DefaultShadowOffsetX));
+		outStyleData->shadowOffsetY = (combinedStyle->shadowOffsetY.getOrDefault(UIStyle::DefaultShadowOffsetY));
+		outStyleData->shadowBlurRadius = (combinedStyle->shadowBlurRadius.getOrDefault(UIStyle::DefaultShadowBlurRadius));
+		outStyleData->shadowSpreadRadius = (combinedStyle->shadowSpreadRadius.getOrDefault(UIStyle::DefaultShadowSpreadRadius));
+		outStyleData->shadowColor = (combinedStyle->shadowColor.getOrDefault(UIStyle::DefaultShadowColor));
+		outStyleData->shadowInset = (combinedStyle->shadowInset.getOrDefault(UIStyle::DefaultShadowInset));
 	}
 
 	// text
@@ -1168,19 +1169,19 @@ void UIStyleInstance::updateStyleDataHelper(UIStyle* localStyle, const detail::U
 
 	// render effects
 	{
-		outStyleData->visible = localStyle->visible.getOrDefault(combinedStyle->visible.getOrDefault(UIStyle::DefaultVisible));
-		outStyleData->blendMode = localStyle->blendMode.getOrDefault(combinedStyle->blendMode.getOrDefault(UIStyle::DefaultBlendMode));
-		outStyleData->opacity = localStyle->opacity.getOrDefault(combinedStyle->opacity.getOrDefault(UIStyle::DefaultOpacity));
-		outStyleData->colorScale = localStyle->colorScale.getOrDefault(combinedStyle->colorScale.getOrDefault(UIStyle::DefaultColorScale));
-		outStyleData->blendColor = localStyle->blendColor.getOrDefault(combinedStyle->blendColor.getOrDefault(UIStyle::DefaultBlendColor));
-		outStyleData->tone = localStyle->tone.getOrDefault(combinedStyle->tone.getOrDefault(UIStyle::DefaultTone));
+		outStyleData->visible = (combinedStyle->visible.getOrDefault(UIStyle::DefaultVisible));
+		outStyleData->blendMode = (combinedStyle->blendMode.getOrDefault(UIStyle::DefaultBlendMode));
+		outStyleData->opacity = (combinedStyle->opacity.getOrDefault(UIStyle::DefaultOpacity));
+		outStyleData->colorScale = (combinedStyle->colorScale.getOrDefault(UIStyle::DefaultColorScale));
+		outStyleData->blendColor = (combinedStyle->blendColor.getOrDefault(UIStyle::DefaultBlendColor));
+		outStyleData->tone = (combinedStyle->tone.getOrDefault(UIStyle::DefaultTone));
 	}
 
 	// decorators
 	outStyleData->decorators.clear();
-	for (auto& d : localStyle->decorators) {
-		outStyleData->decorators.add(d);
-	}
+	//for (auto& d : localStyle->decorators) {
+	//	outStyleData->decorators.add(d);
+	//}
 	for (auto& d : combinedStyle->decorators) {
 		outStyleData->decorators.add(d);
 	}
@@ -1297,13 +1298,14 @@ void UIVisualStateManager::combineStyle(UIStyle* style, const UIStyleContext* st
 #if 1
 	auto styleClass = set->mainStyleClass();
 	if (styleClass) {
-		for (auto& group : m_groups) {
-			if (group.activeStateIndex >= 0) {
-				if (auto stateStyle = styleClass->findStateStyle(group.stateNames[group.activeStateIndex])) {
-					style->mergeFrom(stateStyle);
-				}
-			}
-		}
+        combineStyle(style, styleClass);
+		//for (auto& group : m_groups) {
+		//	if (group.activeStateIndex >= 0) {
+		//		if (auto stateStyle = styleClass->findStateStyle(group.stateNames[group.activeStateIndex])) {
+		//			style->mergeFrom(stateStyle);
+		//		}
+		//	}
+		//}
 	}
 
 	if (classList) {
@@ -1363,6 +1365,19 @@ void UIVisualStateManager::combineStyle(UIStyle* style, const UIStyleContext* st
 		}
 	}
 #endif
+}
+
+void UIVisualStateManager::combineStyle(UIStyle* style, const UIStyleClass* styleClass)
+{
+    style->mergeFrom(styleClass->mainStyle());
+
+    for (auto& group : m_groups) {
+        if (group.activeStateIndex >= 0) {
+            if (auto stateStyle = styleClass->findStateStyle(group.stateNames[group.activeStateIndex])) {
+                style->mergeFrom(stateStyle);
+            }
+        }
+    }
 }
 
 //detail::UIStyleInstance* UIVisualStateManager::resolveStyle(const UIStyleContext* styleContext, const ln::String& className)

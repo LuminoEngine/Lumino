@@ -12,6 +12,8 @@
 #include <LuminoEngine/UI/UISplitter.hpp>
 #include <LuminoEngine/UI/UITabBar.hpp>
 #include <LuminoEngine/UI/UICommand.hpp>
+#include <LuminoEngine/UI/UIContext.hpp>
+
 
 template<class T>
 using Ref = ln::Ref<T>;

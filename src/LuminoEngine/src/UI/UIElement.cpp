@@ -28,13 +28,15 @@ UIElement::UIElement()
     , m_context(nullptr)
     , m_visualParent(nullptr)
     , m_logicalParent(nullptr)
-    , m_localStyle(makeObject<UIStyle>()) // TODO: ふつうは static なオブジェクトのほうが多くなるので、必要なやつだけ遅延作成でいいと思う
+    , m_localStyle(nullptr)
     , m_finalStyle(makeRef<detail::UIStyleInstance>())
 	, m_internalVisibility(UIVisibility::Visible)
     , m_renderPriority(0)
     , m_isHitTestVisible(true)
     , m_dirtyFlags(detail::UIElementDirtyFlags::None)
 {
+    m_localStyle = makeObject<UIStyleClass>(String::Empty); // TODO: ふつうは static なオブジェクトのほうが多くなるので、必要なやつだけ遅延作成でいいと思う
+    m_localStyle->setMainStyle(makeObject<UIStyle>());
 }
 
 UIElement::~UIElement()
@@ -69,297 +71,297 @@ void UIElement::init()
 
 void UIElement::setWidth(float value)
 {
-    m_localStyle->width = value;
+    m_localStyle->mainStyle()->width = value;
 }
 
 float UIElement::width() const
 {
-    return m_localStyle->width.getOrDefault(UIStyle::DefaultWidth);
+    return m_localStyle->mainStyle()->width.getOrDefault(UIStyle::DefaultWidth);
 }
 
 void UIElement::setHeight(float value)
 {
-    m_localStyle->height = value;
+    m_localStyle->mainStyle()->height = value;
 }
 
 float UIElement::height() const
 {
-    return m_localStyle->height.getOrDefault(UIStyle::DefaultHeight);
+    return m_localStyle->mainStyle()->height.getOrDefault(UIStyle::DefaultHeight);
 }
 
 void UIElement::setMargin(const Thickness& margin)
 {
-    m_localStyle->margin = margin;
+    m_localStyle->mainStyle()->margin = margin;
 }
 
 const Thickness& UIElement::margin() const
 {
-    return m_localStyle->margin;
+    return m_localStyle->mainStyle()->margin;
 }
 
 void UIElement::setPadding(const Thickness& padding)
 {
-    m_localStyle->padding = padding;
+    m_localStyle->mainStyle()->padding = padding;
 }
 
 const Thickness& UIElement::padding() const
 {
-    return m_localStyle->padding;
+    return m_localStyle->mainStyle()->padding;
 }
 
 void UIElement::setHorizontalAlignment(HAlignment value)
 {
-	m_localStyle->horizontalAlignment = value;
+	m_localStyle->mainStyle()->horizontalAlignment = value;
 }
 
 HAlignment UIElement::horizontalAlignment() const
 {
-	return m_localStyle->horizontalAlignment;
+	return m_localStyle->mainStyle()->horizontalAlignment;
 }
 
 void UIElement::setVerticalAlignment(VAlignment value)
 {
-	m_localStyle->verticalAlignment = value;
+	m_localStyle->mainStyle()->verticalAlignment = value;
 }
 
 VAlignment UIElement::verticalAlignment() const
 {
-	return m_localStyle->verticalAlignment;
+	return m_localStyle->mainStyle()->verticalAlignment;
 }
 
 void UIElement::setPosition(const Vector3 & pos)
 {
-    m_localStyle->position = pos;
+    m_localStyle->mainStyle()->position = pos;
 }
 
 const Vector3 & UIElement::position() const
 {
-    return m_localStyle->position.getOrDefault(Vector3::Zero);
+    return m_localStyle->mainStyle()->position.getOrDefault(Vector3::Zero);
 }
 
 void UIElement::setRotation(const Quaternion & rot)
 {
-    m_localStyle->rotation = rot;
+    m_localStyle->mainStyle()->rotation = rot;
 }
 
 const Quaternion & UIElement::rotation() const
 {
-    return m_localStyle->rotation.getOrDefault(Quaternion::Identity);
+    return m_localStyle->mainStyle()->rotation.getOrDefault(Quaternion::Identity);
 }
 
 void UIElement::setScale(const Vector3 & scale)
 {
-    m_localStyle->scale = scale;
+    m_localStyle->mainStyle()->scale = scale;
 }
 
 const Vector3 & UIElement::scale() const
 {
-    return m_localStyle->scale.getOrDefault(Vector3::Ones);
+    return m_localStyle->mainStyle()->scale.getOrDefault(Vector3::Ones);
 }
 
 void UIElement::setCenterPoint(const Vector3 & value)
 {
-    m_localStyle->centerPoint = value;
+    m_localStyle->mainStyle()->centerPoint = value;
 }
 
 const Vector3& UIElement::centerPoint() const
 {
-    return m_localStyle->centerPoint.getOrDefault(Vector3::Zero);
+    return m_localStyle->mainStyle()->centerPoint.getOrDefault(Vector3::Zero);
 }
 
 void UIElement::setBackgroundDrawMode(BrushImageDrawMode value)
 {
-    m_localStyle->backgroundDrawMode = value;
+    m_localStyle->mainStyle()->backgroundDrawMode = value;
 }
 
 BrushImageDrawMode UIElement::backgroundDrawMode() const
 {
-    return m_localStyle->backgroundDrawMode.getOrDefault(BrushImageDrawMode::Image);
+    return m_localStyle->mainStyle()->backgroundDrawMode.getOrDefault(BrushImageDrawMode::Image);
 }
 
 void UIElement::setBackgroundColor(const Color& value)
 {
-	m_localStyle->backgroundColor = value;
+	m_localStyle->mainStyle()->backgroundColor = value;
 }
 
 const Color& UIElement::backgroundColor() const
 {
-	return m_localStyle->backgroundColor;
+	return m_localStyle->mainStyle()->backgroundColor;
 }
 
 void UIElement::setBackgroundImage(Texture* value)
 {
-	m_localStyle->backgroundImage = value;
+	m_localStyle->mainStyle()->backgroundImage = value;
 }
 
 Texture* UIElement::backgroundImage() const
 {
-	return m_localStyle->backgroundImage.getOrDefault(nullptr);
+	return m_localStyle->mainStyle()->backgroundImage.getOrDefault(nullptr);
 }
 
 void UIElement::setBackgroundShader(Shader* value)
 {
-	m_localStyle->backgroundShader = value;
+	m_localStyle->mainStyle()->backgroundShader = value;
 }
 
 Shader* UIElement::backgroundShader() const
 {
-	return m_localStyle->backgroundShader.getOrDefault(nullptr);
+	return m_localStyle->mainStyle()->backgroundShader.getOrDefault(nullptr);
 }
 
 void UIElement::setBackgroundImageRect(const Rect& value)
 {
-    m_localStyle->backgroundImageRect = value;
+    m_localStyle->mainStyle()->backgroundImageRect = value;
 }
 
 const Rect& UIElement::backgroundImageRect() const
 {
-    return m_localStyle->backgroundImageRect.getOrDefault(Rect::Zero);
+    return m_localStyle->mainStyle()->backgroundImageRect.getOrDefault(Rect::Zero);
 }
 
 void UIElement::setBackgroundImageBorder(const Thickness& value)
 {
-    m_localStyle->backgroundImageBorder = value;
+    m_localStyle->mainStyle()->backgroundImageBorder = value;
 }
 
 const Thickness& UIElement::backgroundImageBorder() const
 {
-    return m_localStyle->backgroundImageBorder.getOrDefault(Thickness::Zero);
+    return m_localStyle->mainStyle()->backgroundImageBorder.getOrDefault(Thickness::Zero);
 }
 
 void UIElement::setBorderThickness(const Thickness& value)
 {
-	m_localStyle->borderThickness = value;
+	m_localStyle->mainStyle()->borderThickness = value;
 }
 
 const Thickness& UIElement::borderThickness() const
 {
-	return m_localStyle->borderThickness.getOrDefault(Thickness::Zero);
+	return m_localStyle->mainStyle()->borderThickness.getOrDefault(Thickness::Zero);
 }
 
 void UIElement::setBorderColor(const Color& value)
 {
-	m_localStyle->setBorderColor(value);
+	m_localStyle->mainStyle()->setBorderColor(value);
 }
 
 const Color& UIElement::borderColor() const
 {
-	return m_localStyle->backgroundColor;
+	return m_localStyle->mainStyle()->backgroundColor;
 }
 
 void UIElement::setTextColor(const Color& value)
 {
-	m_localStyle->textColor = value;
+	m_localStyle->mainStyle()->textColor = value;
 }
 
 const Color& UIElement::textColor() const
 {
-	return m_localStyle->textColor;
+	return m_localStyle->mainStyle()->textColor;
 }
 
 void UIElement::setFontFamily(const String& value)
 {
-	m_localStyle->fontFamily = value;
+	m_localStyle->mainStyle()->fontFamily = value;
 }
 
 const String& UIElement::fontFamily() const
 {
-	return m_localStyle->fontFamily.getOrDefault(String::Empty);
+	return m_localStyle->mainStyle()->fontFamily.getOrDefault(String::Empty);
 }
 
 void UIElement::setFontSize(float value)
 {
-	m_localStyle->fontSize = value;
+	m_localStyle->mainStyle()->fontSize = value;
 }
 
 float UIElement::fontSize() const
 {
-	return m_localStyle->fontSize.getOrDefault(0);
+	return m_localStyle->mainStyle()->fontSize.getOrDefault(0);
 }
 
 void UIElement::setFontWeight(UIFontWeight value)
 {
-	m_localStyle->fontWeight = value;
+	m_localStyle->mainStyle()->fontWeight = value;
 }
 
 UIFontWeight UIElement::fontWeight() const
 {
-	return m_localStyle->fontWeight.getOrDefault(UIFontWeight::Normal);
+	return m_localStyle->mainStyle()->fontWeight.getOrDefault(UIFontWeight::Normal);
 }
 
 void UIElement::setFontStyle(UIFontStyle value)
 {
-	m_localStyle->fontStyle = value;
+	m_localStyle->mainStyle()->fontStyle = value;
 }
 
 UIFontStyle UIElement::fontStyle() const
 {
-	return m_localStyle->fontStyle.getOrDefault(UIFontStyle::Normal);
+	return m_localStyle->mainStyle()->fontStyle.getOrDefault(UIFontStyle::Normal);
 }
 
 void UIElement::setVisible(bool value)
 {
-    m_localStyle->visible = value;
+    m_localStyle->mainStyle()->visible = value;
 }
 
 bool UIElement::isVisible() const
 {
-    return m_localStyle->visible.getOrDefault(true);
+    return m_localStyle->mainStyle()->visible.getOrDefault(true);
 }
 
 void UIElement::setBlendMode(const Optional<BlendMode>& value)
 {
     if (value.hasValue()) {
-        m_localStyle->blendMode = value.value();
+        m_localStyle->mainStyle()->blendMode = value.value();
     }
     else {
-        m_localStyle->blendMode.reset();
+        m_localStyle->mainStyle()->blendMode.reset();
     }
 }
 
 BlendMode UIElement::blendMode() const
 {
-    return m_localStyle->blendMode.getOrDefault(BlendMode::Alpha);
+    return m_localStyle->mainStyle()->blendMode.getOrDefault(BlendMode::Alpha);
 }
 
 void UIElement::setOpacity(float value)
 {
-    m_localStyle->opacity = value;
+    m_localStyle->mainStyle()->opacity = value;
 }
 
 float UIElement::opacity() const
 {
-    return m_localStyle->opacity.getOrDefault(detail::BuiltinEffectData::DefaultValue.opacity);
+    return m_localStyle->mainStyle()->opacity.getOrDefault(detail::BuiltinEffectData::DefaultValue.opacity);
 }
 
 void UIElement::setColorScale(const Color & value)
 {
-    m_localStyle->colorScale = value;
+    m_localStyle->mainStyle()->colorScale = value;
 }
 
 const Color & UIElement::colorScale() const
 {
-    return m_localStyle->colorScale.getOrDefault(detail::BuiltinEffectData::DefaultValue.colorScale);
+    return m_localStyle->mainStyle()->colorScale.getOrDefault(detail::BuiltinEffectData::DefaultValue.colorScale);
 }
 
 void UIElement::setBlendColor(const Color & value)
 {
-    m_localStyle->blendColor = value;
+    m_localStyle->mainStyle()->blendColor = value;
 }
 
 const Color & UIElement::blendColor() const
 {
-    return m_localStyle->blendColor.getOrDefault(detail::BuiltinEffectData::DefaultValue.blendColor);
+    return m_localStyle->mainStyle()->blendColor.getOrDefault(detail::BuiltinEffectData::DefaultValue.blendColor);
 }
 
 void UIElement::setTone(const ColorTone & value)
 {
-    m_localStyle->tone = value;
+    m_localStyle->mainStyle()->tone = value;
 }
 
 const ColorTone & UIElement::tone() const
 {
-    return m_localStyle->tone.getOrDefault(detail::BuiltinEffectData::DefaultValue.tone);
+    return m_localStyle->mainStyle()->tone.getOrDefault(detail::BuiltinEffectData::DefaultValue.tone);
 }
 
 UIContext* UIElement::getContext() const
@@ -610,7 +612,11 @@ void UIElement::updateStyleHierarchical(const UIStyleContext* styleContext, cons
 	styleContext->combineStyle(m_combinedStyle, elementName(), m_classList);
 	if (m_visualStateManager) {
 		m_visualStateManager->combineStyle(m_combinedStyle, styleContext, elementName(), m_classList);
+        m_visualStateManager->combineStyle(m_combinedStyle, m_localStyle);
 	}
+    else {
+        m_combinedStyle->mergeFrom(m_localStyle->mainStyle());
+    }
 
     //UIStyle* combinedStyle;
     //if (m_visualStateManager) {
@@ -624,7 +630,7 @@ void UIElement::updateStyleHierarchical(const UIStyleContext* styleContext, cons
     //    //resolvedStyle = sc->style();
     //}
 
-	detail::UIStyleInstance::updateStyleDataHelper(m_localStyle, parentFinalStyle, m_combinedStyle, m_finalStyle);
+	detail::UIStyleInstance::updateStyleDataHelper(/*m_localStyle, */parentFinalStyle, m_combinedStyle, m_finalStyle);
 
 	onUpdateStyle(styleContext, m_finalStyle);
 

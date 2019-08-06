@@ -10,6 +10,7 @@ class UIRenderView;
 class UIContext;
 class UIEventArgs;
 class UIStyle;
+class UIStyleClass;
 class UIStyleContext;
 class UIVisualStateManager;
 class UIAction;
@@ -444,7 +445,7 @@ public: // TODO: internal
     std::unique_ptr<detail::GridLayoutInfo> m_gridLayoutInfo;
 
     Ref<UIVisualStateManager> m_visualStateManager;
-    Ref<UIStyle> m_localStyle;
+    Ref<UIStyleClass> m_localStyle;
 	Ref<UIStyle> m_combinedStyle;
 	Ref<detail::UIStyleInstance> m_finalStyle;
 	UIVisibility m_internalVisibility;

@@ -583,7 +583,7 @@ public:
 
     void makeRenderObjects();
 
-    static void updateStyleDataHelper(UIStyle* localStyle, const detail::UIStyleInstance* parentStyleData, const UIStyle* combinedStyle, detail::UIStyleInstance* outStyleData);
+    static void updateStyleDataHelper(const detail::UIStyleInstance* parentStyleData, const UIStyle* combinedStyle, detail::UIStyleInstance* outStyleData);
 
 LN_CONSTRUCT_ACCESS:
 
@@ -674,6 +674,7 @@ public:
 
     //UIStyle* combineStyle(const UIStyleContext* styleContext, const ln::String& elementName);
 	void combineStyle(UIStyle* style, const UIStyleContext* styleContext, const ln::String& elementName, const List<String>* classList);
+    void combineStyle(UIStyle* style, const UIStyleClass* styleClass);
     //detail::UIStyleInstance* resolveStyle(const UIStyleContext* styleContext, const ln::String& className);
 
 LN_CONSTRUCT_ACCESS:

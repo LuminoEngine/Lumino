@@ -2,6 +2,16 @@
 
 class AssetBrowserNavigator;
 
+class NavigationBarItem : public ln::UICollectionItem
+{
+public:
+
+protected:
+    virtual const ln::String& elementName() const  override { static ln::String name = u"NavigationBarItem"; return name; }
+
+private:
+};
+
 class NavigationBar : public ln::UIItemsControl
 {
 public:

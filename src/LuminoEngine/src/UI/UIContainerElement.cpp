@@ -32,22 +32,22 @@ void UIContainerElement::onDispose(bool explicitDisposing)
 
 void UIContainerElement::setHorizontalContentAlignment(HAlignment value)
 {
-    m_localStyle->horizontalContentAlignment = value;
+    m_localStyle->mainStyle()->horizontalContentAlignment = value;
 }
 
 HAlignment UIContainerElement::horizontalContentAlignment() const
 {
-    return m_localStyle->horizontalContentAlignment;
+    return m_localStyle->mainStyle()->horizontalContentAlignment;
 }
 
 void UIContainerElement::setVerticalContentAlignment(VAlignment value)
 {
-    m_localStyle->verticalContentAlignment = value;
+    m_localStyle->mainStyle()->verticalContentAlignment = value;
 }
 
 VAlignment UIContainerElement::verticalContentAlignment() const
 {
-    return m_localStyle->verticalContentAlignment;
+    return m_localStyle->mainStyle()->verticalContentAlignment;
 }
 
 void UIContainerElement::addElement(UIElement* element)

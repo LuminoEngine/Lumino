@@ -117,6 +117,13 @@ void EditorApplication::openAssetFile(const ln::Path& filePath)
 void EditorApplication::onInit()
 {
 	setMainWindow(ln::makeObject<MainWindow>());
+
+    auto sheet = ln::makeObject<ln::UIStyleSheet>();
+    if (auto s = sheet->obtainStyle(u"NavigationBarItem")) {
+        s->backgroundColor = ln::Color::Red;
+    }
+
+    ln::Engine::mainUIContext()->styleContext()->addStyleSheet(sheet);
 }
 
 void EditorApplication::closeProject()

@@ -25,7 +25,7 @@ void UIContext::init()
 	m_defaultStyle->setupDefault();
     //m_finalDefaultStyle->setupDefault();
 	m_finalDefaultStyle->backgroundMaterial = makeObject<Material>();
-    detail::UIStyleInstance::updateStyleDataHelper(m_defaultStyle, nullptr, m_defaultStyle, m_finalDefaultStyle);
+    detail::UIStyleInstance::updateStyleDataHelper(nullptr, m_defaultStyle, m_finalDefaultStyle);
 
     m_styleContext = makeObject<UIStyleContext>();
     setupDefaultStyle();
@@ -230,7 +230,7 @@ void UIContext::setupDefaultStyle()
     }
 
     m_styleContext->addStyleSheet(sheet);
-    m_styleContext->build();
+    //m_styleContext->build();
 }
 
 } // namespace ln
