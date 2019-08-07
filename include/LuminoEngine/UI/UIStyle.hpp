@@ -292,6 +292,7 @@ public:
     detail::UIStyleAttribute<Color>				rightBorderColor;
     detail::UIStyleAttribute<Color>				bottomBorderColor;
     detail::UIStyleAttribute<BorderDirection>	borderDirection;
+	detail::UIStyleAttribute<bool> borderInset;
 
 	static const Thickness DefaultBorderThickness;
 	static const CornerRadius DefaultCornerRadius;
@@ -300,6 +301,7 @@ public:
 	static const Color DefaultRightBorderColor;
 	static const Color DefaultBottomBorderColor;
 	static const BorderDirection DefaultBorderDirection;
+	static const bool DefaultBorderInset;
 
 	// shadow
 	detail::UIStyleAttribute<float> shadowOffsetX;
@@ -541,6 +543,7 @@ public:
     Color 		rightBorderColor = Color::Gray;
     Color 		bottomBorderColor = Color::Gray;
     BorderDirection borderDirection = BorderDirection::Outside;
+	bool borderInset = false;
 
 	// shadow
 	float shadowOffsetX;
@@ -584,6 +587,19 @@ public:
     void makeRenderObjects();
 
     static void updateStyleDataHelper(const detail::UIStyleInstance* parentStyleData, const UIStyle* combinedStyle, detail::UIStyleInstance* outStyleData);
+
+	Size actualOuterSpace() const
+	{
+		return Size(margin.width(), margin.height());
+		//if (borderInset)
+		//	return Size(margin.width(), margin.height());
+		//else
+		//	return Size(margin.width() + borderThickness.width(), margin.height() + borderThickness.height());
+	}
+	Size actualOuterOffset() const
+	{
+		return Size(margin.left, margin.top);
+	}
 
 LN_CONSTRUCT_ACCESS:
 

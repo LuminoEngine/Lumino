@@ -39,6 +39,13 @@ void UISplitter::setCellDefinition(int index, UILayoutLengthType type, float siz
     cell.actualSize = Math::NaN;    // re-layout
 }
 
+void UISplitter::resetCellSizes()
+{
+	for (auto& cell : m_cellDefinitions) {
+		cell.actualSize = Math::NaN;
+	}
+}
+
 //void UISplitter::resetCellSize(int index)
 //{
 //    //if (m_cellDefinitions.size() <= index) {

@@ -370,6 +370,9 @@ public:	// TODO: internal protected
         - width は 大きい方を返す
         - height は 2 つの合計を返す
 
+		constraint に padding は含まれていません。
+		通常、padding を加算したサイズを返すように実装します。
+
         戻り値に対して、border の太さを加算した値が、最終的な要求サイズとなります。
     */
     virtual Size measureOverride(const Size& constraint);

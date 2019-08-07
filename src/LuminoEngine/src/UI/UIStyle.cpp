@@ -162,6 +162,7 @@ const Color UIStyle::DefaultTopBorderColor = Color::Black;
 const Color UIStyle::DefaultRightBorderColor = Color::Black;
 const Color UIStyle::DefaultBottomBorderColor = Color::Black;
 const BorderDirection UIStyle::DefaultBorderDirection = BorderDirection::Outside;
+const bool UIStyle::DefaultBorderInset = false;
 
 // shadow
 const float UIStyle::DefaultShadowOffsetX = 0.0f;
@@ -174,7 +175,7 @@ const bool UIStyle::DefaultShadowInset = false;
 // text
 const Color UIStyle::DefaultTextColor = Color(0.0f, 0.0f, 0.0f, 1.0f);
 const String UIStyle::DefaultFontFamily = String::Empty;
-const float UIStyle::DefaultFontSize = 15.0f;// WPF default は 12 だが、それだとデスクトップアプリ向けなので少し小さい。Lumino としては 18 をデフォルトとする。
+const float UIStyle::DefaultFontSize = 12.0f;
 const UIFontWeight UIStyle::DefaultFontWeight = UIFontWeight::Normal;
 const UIFontStyle UIStyle::DefaultFontStyle = UIFontStyle::Normal;
 
@@ -239,6 +240,7 @@ void UIStyle::setupDefault()
     rightBorderColor = DefaultRightBorderColor;
     bottomBorderColor = DefaultBottomBorderColor;
     borderDirection = DefaultBorderDirection;
+	borderInset = DefaultBorderInset;
 
 	// shadow
 	shadowOffsetX = DefaultShadowOffsetX;
@@ -307,6 +309,7 @@ void UIStyle::reset()
 	rightBorderColor.reset();
 	bottomBorderColor.reset();
 	borderDirection.reset();
+	borderInset.reset();
 
 	// shadow
 	shadowOffsetX.reset();
@@ -377,7 +380,8 @@ void UIStyle::mergeFrom(const UIStyle* other)
     if (other->rightBorderColor.hasValue()) rightBorderColor = other->rightBorderColor.get();
     if (other->bottomBorderColor.hasValue()) bottomBorderColor = other->bottomBorderColor.get();
     if (other->borderDirection.hasValue()) borderDirection = other->borderDirection.get();
-	
+	if (other->borderInset.hasValue()) borderInset = other->borderInset.get();
+
 	// shadow
 	if (other->shadowOffsetX.hasValue()) shadowOffsetX = other->shadowOffsetX.get();
 	if (other->shadowOffsetY.hasValue()) shadowOffsetY = other->shadowOffsetY.get();
@@ -449,6 +453,7 @@ void UIStyle::copyFrom(const UIStyle* other)
     rightBorderColor = other->rightBorderColor;
     bottomBorderColor = other->bottomBorderColor;
     borderDirection = other->borderDirection;
+	borderInset = other->borderInset;
 
 	// border
 	shadowOffsetX = other->shadowOffsetX;
@@ -930,6 +935,7 @@ void UIStyleInstance::mergeFrom(const UIStyle* other)
     if (other->rightBorderColor.hasValue()) rightBorderColor = other->rightBorderColor.get();
     if (other->bottomBorderColor.hasValue()) bottomBorderColor = other->bottomBorderColor.get();
     if (other->borderDirection.hasValue()) borderDirection = other->borderDirection.get();
+	if (other->borderInset.hasValue()) borderInset = other->borderInset.get();
 
 	// shadow
 	if (other->shadowOffsetX.hasValue()) shadowOffsetX = other->shadowOffsetX.get();
@@ -1002,6 +1008,7 @@ void UIStyleInstance::copyFrom(const UIStyleInstance* other)
     rightBorderColor = other->rightBorderColor;
     bottomBorderColor = other->bottomBorderColor;
     borderDirection = other->borderDirection;
+	borderInset = other->borderInset;
 
 	// shadow
 	shadowOffsetX = other->shadowOffsetX;
@@ -1121,7 +1128,8 @@ void UIStyleInstance::updateStyleDataHelper(const detail::UIStyleInstance* paren
         outStyleData->rightBorderColor = (combinedStyle->rightBorderColor.getOrDefault(UIStyle::DefaultRightBorderColor));
         outStyleData->bottomBorderColor = (combinedStyle->bottomBorderColor.getOrDefault(UIStyle::DefaultBottomBorderColor));
         outStyleData->borderDirection = (combinedStyle->borderDirection.getOrDefault(UIStyle::DefaultBorderDirection));
-    }
+		outStyleData->borderInset = (combinedStyle->borderInset.getOrDefault(UIStyle::DefaultBorderInset));
+	}
 
 	// shadow
 	{

@@ -22,7 +22,7 @@ namespace detail {
    
 FontDesc::FontDesc()
     : Family()
-    , Size(20)
+    , Size(12)
     , isBold(false)
     , isItalic(false)
     , isAntiAlias(true)

@@ -49,25 +49,13 @@ void UILayoutElement::updateLayout(const Rect& parentFinalGlobalRect)
 
 void UILayoutElement::measureLayout(const Size& availableSize)
 {
-	// Margin と Padding を考慮する。
-	// これらが負値の場合、desiredSize は小さくなる。
-	const Thickness& margin = getLayoutMargin();
-	const Thickness& padding = getLayoutPadding();
-	float spaceWidth = (margin.left + margin.right) + (padding.left + padding.right);
-	float spaceHeight = (margin.top + margin.bottom) + (padding.top + padding.bottom);
-	Size localAvailableSize(
-		std::max(availableSize.width - spaceWidth, 0.0f),
-		std::max(availableSize.height - spaceHeight, 0.0f));
-
+	Size outerSpace = m_finalStyle->actualOuterSpace();
+	Size localAvailableSize(std::max(availableSize.width - outerSpace.width, 0.0f), std::max(availableSize.height - outerSpace.height, 0.0f));
+	
 	Size desiredSize = measureOverride(localAvailableSize);
 
-    // apply border size
-    desiredSize.width += m_finalStyle->borderThickness.width();
-    desiredSize.height += m_finalStyle->borderThickness.height();
-
-	// Margin を考慮する
-	desiredSize.width += spaceWidth;
-	desiredSize.height += spaceHeight;
+	desiredSize.width += outerSpace.width;
+	desiredSize.height += outerSpace.height;
 
 	setLayoutDesiredSize(desiredSize);
 }
@@ -104,19 +92,18 @@ void UILayoutElement::arrangeLayout(const Rect& localSlotRect)
 	// DesiredSize は Margin 考慮済み
 
 	// Alignment で調整する領域は、margin 領域も含む
-	const Thickness& margin = getLayoutMargin();
-	float marginWidth = margin.left + margin.right + m_finalStyle->borderThickness.width();
-	float marginHeight = margin.top + margin.bottom + m_finalStyle->borderThickness.height();
-
-    Size layoutSize(m_finalStyle->width + marginWidth, m_finalStyle->height + marginHeight);
+	//float marginWidth = margin.left + margin.right + m_finalStyle->borderThickness.width();
+	//float marginHeight = margin.top + margin.bottom + m_finalStyle->borderThickness.height();
+	Size outerSpace = m_finalStyle->actualOuterSpace();
+    Size layoutSize(m_finalStyle->width + outerSpace.width, m_finalStyle->height + outerSpace.height);
 	Rect arrangeRect;
 	detail::LayoutHelper::adjustHorizontalAlignment(areaSize, ds, layoutSize.width, hAlign, &arrangeRect);
 	detail::LayoutHelper::adjustVerticalAlignment(areaSize, ds, layoutSize.height, vAlign, &arrangeRect);
 
 
 	// Margin を考慮する (0 以下には出来ない)
-	arrangeRect.width = std::max(arrangeRect.width - marginWidth, 0.0f);
-	arrangeRect.height = std::max(arrangeRect.height - marginHeight, 0.0f);
+	arrangeRect.width = std::max(arrangeRect.width - outerSpace.width, 0.0f);
+	arrangeRect.height = std::max(arrangeRect.height - outerSpace.height, 0.0f);
 
     // apply border size
     //arrangeRect.width -= m_finalStyle->borderThickness.width();
@@ -135,8 +122,9 @@ void UILayoutElement::arrangeLayout(const Rect& localSlotRect)
 
 	//Rect finalLocalRect;
 	//Rect finalContentRect;
-    m_localPosition.x = localSlotRect.x + /*finalLocalRect.x + */margin.left + arrangeRect.x + m_finalStyle->borderThickness.left;
-    m_localPosition.y = localSlotRect.y + /*finalLocalRect.y + */margin.top + arrangeRect.y + m_finalStyle->borderThickness.top;
+	const Thickness& margin = getLayoutMargin();
+	m_localPosition.x = localSlotRect.x + /*finalLocalRect.x + */margin.left + arrangeRect.x;// +m_finalStyle->borderThickness.left;
+	m_localPosition.y = localSlotRect.y + /*finalLocalRect.y + */margin.top + arrangeRect.y;// +m_finalStyle->borderThickness.top;
     m_actualSize.width = finalContentAreaSize.width;// +padding.getWidth();
     m_actualSize.height = finalContentAreaSize.height;// + padding.getHeight();
 	//finalContentRect.x = finalRenderRect.x + padding.left;

@@ -699,7 +699,7 @@ void FreeTypeFont::lookupGlyphBitmap(UTF32 utf32code, BitmapGlyphInfo* outInfo)
 
 	if (glyph->format == FT_GLYPH_FORMAT_BITMAP) {
 		// FT_LOAD_NO_BITMAP が OFF だとここに入ってくる
-		FTBitmapToBitmap2D(&glyph->bitmap, m_internalCacheBitmap);
+		FTBitmapToInternalCacheBitmap(&glyph->bitmap);
 		outInfo->size.width = glyph->bitmap.width;
 		outInfo->size.height = glyph->bitmap.rows;
 	}
@@ -709,7 +709,7 @@ void FreeTypeFont::lookupGlyphBitmap(UTF32 utf32code, BitmapGlyphInfo* outInfo)
 		if (LN_ENSURE(err == 0)) return;
 
 		//FT_Bitmap* bitmap = &((FT_BitmapGlyph)glyph)->bitmap;
-		FTBitmapToBitmap2D(&glyph->bitmap, m_internalCacheBitmap);
+		FTBitmapToInternalCacheBitmap(&glyph->bitmap);
 		outInfo->size.width = glyph->bitmap.width;
 		outInfo->size.height = glyph->bitmap.rows;
 
@@ -732,6 +732,14 @@ bool FreeTypeFont::getOutlineTextMetrix()
 bool FreeTypeFont::getBitmapTextMetrix()
 {
 	return true;
+}
+
+void FreeTypeFont::FTBitmapToInternalCacheBitmap(FT_Bitmap* ftBitmap)
+{
+	if (m_internalCacheBitmap->width() < ftBitmap->width || m_internalCacheBitmap->height() < ftBitmap->rows) {
+		m_internalCacheBitmap->resize(ftBitmap->width, ftBitmap->rows);
+	}
+	FTBitmapToBitmap2D(ftBitmap, m_internalCacheBitmap);
 }
 
 void FreeTypeFont::FTBitmapToBitmap2D(FT_Bitmap* ftBitmap, Bitmap2D* bitmap) const

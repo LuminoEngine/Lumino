@@ -12,6 +12,7 @@ namespace ln {
 UICollectionItem::UICollectionItem()
 	: m_ownerCollectionControl(nullptr)
     , m_isPressed(false)
+	, m_isSelected(false)
 {
 }
 
@@ -25,6 +26,14 @@ void UICollectionItem::init()
 }
 
 void UICollectionItem::onClick(UIMouseEventArgs* e)
+{
+}
+
+void UICollectionItem::onSelected(UIEventArgs* e)
+{
+}
+
+void UICollectionItem::onUnselected(UIEventArgs* e)
 {
 }
 
@@ -68,11 +77,17 @@ void UICollectionItem::onRoutedEvent(UIEventArgs* e)
 
 void UICollectionItem::setSelectedInternal(bool selected)
 {
-	if (selected) {
-		getVisualStateManager()->gotoState(UIVisualStates::Selected);
-	}
-	else {
-		getVisualStateManager()->gotoState(UIVisualStates::Unselected);
+	if (m_isSelected != selected) {
+		m_isSelected = selected;
+
+		if (m_isSelected) {
+			onSelected(UIEventArgs::create(this, UIEvents::Selected));
+			getVisualStateManager()->gotoState(UIVisualStates::Selected);
+		}
+		else {
+			onUnselected(UIEventArgs::create(this, UIEvents::Selected));
+			getVisualStateManager()->gotoState(UIVisualStates::Unselected);
+		}
 	}
 }
 

@@ -51,6 +51,7 @@ public:
 private:
 	bool getOutlineTextMetrix();
 	bool getBitmapTextMetrix();
+	void FTBitmapToInternalCacheBitmap(FT_Bitmap* ftBitmap);
 	void FTBitmapToBitmap2D(FT_Bitmap* ftBitmap, Bitmap2D* bitmap) const;
 
 	FontDesc m_desc;

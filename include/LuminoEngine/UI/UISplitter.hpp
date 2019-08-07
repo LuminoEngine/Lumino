@@ -17,8 +17,13 @@ public:
 	void init();
 
 	void setOrientation(Orientation value);
+
+	/** セルサイズを計算するための情報を設定します。 */
     void setCellDefinition(int index, UILayoutLengthType type = UILayoutLengthType::Ratio, float size = 1.0f, float minSize = 0.0f, float maxSize = FLT_MAX);
-    void resetCellSize(int index);
+
+	/** セルサイズの再計算を要求します。 */
+    void resetCellSizes();
+
 
 protected:
     virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;

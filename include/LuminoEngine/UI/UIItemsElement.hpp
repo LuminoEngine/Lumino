@@ -18,6 +18,8 @@ public:
 
 protected:
     virtual void onClick(UIMouseEventArgs* e);
+	virtual void onSelected(UIEventArgs* e);
+	virtual void onUnselected(UIEventArgs* e);
 
     // base interface
     virtual Size measureOverride(const Size& constraint) override;
@@ -34,6 +36,7 @@ private:
 	UIItemsControl* m_ownerCollectionControl;
     Ref<Variant> m_data;
     bool m_isPressed;
+	bool m_isSelected;
 
 	friend class UIItemsControl;
 };

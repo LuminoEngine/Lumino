@@ -7,11 +7,31 @@
 #include "NavigatorManager.hpp"
 
 //==============================================================================
+// NavigationBarItem
+
+void NavigationBarItem::init(NavigatorManager* manager, ln::IAssetNavigatorExtension* navigator)
+{
+	UICollectionItem::init();
+	m_navigatorManager = manager;
+	m_navigator = navigator;
+}
+
+void NavigationBarItem::onSelected(ln::UIEventArgs* e)
+{
+	m_navigatorManager->setCurrent(m_navigator);
+}
+
+void NavigationBarItem::onUnselected(ln::UIEventArgs* e)
+{
+}
+
+//==============================================================================
 // NavigationBar
 
-void NavigationBar::init()
+void NavigationBar::init(NavigatorManager* manager)
 {
     UIItemsControl::init();
+	m_navigatorManager = manager;
     //m_layout = ln::makeObject<ln::UIVBoxLayout2>();
     //addElement(m_layout);
     //setLayoutPanel(ln::makeObject<ln::UIVBoxLayout>());
@@ -24,14 +44,15 @@ void NavigationBar::init()
     //setVerticalContentAlignment(ln::VAlignment::Center);
 }
 
-void NavigationBar::addItem(ln::UIElement* element)
+void NavigationBar::addItem(ln::IAssetNavigatorExtension* ext)
 {
     // TODO: ContentAlignment でカバーしたい
+	ln::UIElement* element = ext->getNavigationMenuItem();
     element->setHorizontalAlignment(ln::HAlignment::Center);
     element->setVerticalAlignment(ln::VAlignment::Center);
     element->setFontSize(24);
 
-	auto item = ln::makeObject<NavigationBarItem>();
+	auto item = ln::makeObject<NavigationBarItem>(m_navigatorManager, ext);
 	item->addElement(element);
     item->setWidth(ItemSize);
     item->setHeight(ItemSize);
@@ -39,17 +60,18 @@ void NavigationBar::addItem(ln::UIElement* element)
 	UIItemsControl::addItem(item);
 }
 
-//==============================================================================
-// Navigator
-
-Navigator::Navigator()
-{
-}
-
+////==============================================================================
+//// Navigator
+//
+//Navigator::Navigator()
+//{
+//}
+//
 //==============================================================================
 // NavigatorManager
 
 NavigatorManager::NavigatorManager()
+	//: m_viewExpandingSize(200)
 {
 }
 
@@ -63,7 +85,7 @@ void NavigatorManager::init()
     //setLayoutPanel(m_layout);
     addElement(m_layout);
 
-    m_navigationBar = ln::makeObject<NavigationBar>();
+    m_navigationBar = ln::makeObject<NavigationBar>(this);
     m_layout->addChild(m_navigationBar);
 }
 
@@ -77,7 +99,7 @@ void NavigatorManager::resetNavigators()
     auto exts = EditorApplication::instance()->mainProject()->pluginManager()->getAssetNavigatorExtensions();
     for (auto& ext : exts) {
         ext->onAttached();
-        m_navigationBar->addItem(ext->getNavigationMenuItem());
+        m_navigationBar->addItem(ext);
     }
 
     //// Test:
@@ -93,7 +115,7 @@ void NavigatorManager::resetNavigators()
     //setCurrent(m_assetBrowserNavigator);
 }
 
-void NavigatorManager::setCurrent(Navigator* nav)
+void NavigatorManager::setCurrent(ln::IAssetNavigatorExtension* nav)
 {
     if (nav) {
         navigationViewOpen();

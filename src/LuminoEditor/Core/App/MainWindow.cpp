@@ -9,6 +9,7 @@
 #include "MainWindow.hpp"
 
 MainWindow::MainWindow()
+	: m_navigationViewExpandingSize(200)
 {
 	m_updateMode = ln::UIFrameWindowUpdateMode::EventDispatches;
 }
@@ -45,20 +46,20 @@ void MainWindow::onLoaded()
 
         //--------
 
-		auto splitter2 = ln::makeObject<ln::UISplitter>();
-		splitter2->setOrientation(ln::Orientation::Vertical);
-		splitter2->setCellDefinition(0);
-		splitter2->setCellDefinition(1, ln::UILayoutLengthType::Direct, 200);
-        m_mainHSplitter->addElement(splitter2);
+		m_mainVSplitter = ln::makeObject<ln::UISplitter>();
+		m_mainVSplitter->setOrientation(ln::Orientation::Vertical);
+		m_mainVSplitter->setCellDefinition(0);
+		m_mainVSplitter->setCellDefinition(1, ln::UILayoutLengthType::Direct, 200);
+        m_mainHSplitter->addElement(m_mainVSplitter);
 
 		{
             m_documentManager = ln::makeObject<DocumentManager>();
-            splitter2->addElement(m_documentManager);
+			m_mainVSplitter->addElement(m_documentManager);
 
 			//--------
 
 			m_toolPanesArea = ln::makeObject<ToolPanesArea>();
-			splitter2->addElement(m_toolPanesArea);
+			m_mainVSplitter->addElement(m_toolPanesArea);
 
 			m_outputPane = ln::makeObject<OutputPane>();
 			m_toolPanesArea->addPane(m_outputPane);
@@ -79,7 +80,9 @@ void MainWindow::onLoaded()
 
 void MainWindow::onNavigationViewOpen()
 {
-    m_mainHSplitter->setCellDefinition(0, ln::UILayoutLengthType::Direct, 200 + NavigationBar::ItemSize);
+    m_mainHSplitter->setCellDefinition(0, ln::UILayoutLengthType::Direct, m_navigationViewExpandingSize);
+	m_mainHSplitter->resetCellSizes();
+	m_mainVSplitter->resetCellSizes();
 }
 
 void MainWindow::onNavigationViewClose()

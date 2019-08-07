@@ -34,6 +34,7 @@ private:
     void onNavigationViewClose();
 
     Ref<ln::UISplitter> m_mainHSplitter;
+	Ref<ln::UISplitter> m_mainVSplitter;
 
 	Ref<NavigatorManager> m_navigatorManager;
 	Ref<DocumentManager> m_documentManager;
@@ -44,5 +45,7 @@ private:
 	Ref<OutputPane> m_outputPane;
 	Ref<ProblemsPane> m_problemsPane;
 	Ref<InspectorPane> m_inspectorPane;
+
+	float m_navigationViewExpandingSize;
 };
 

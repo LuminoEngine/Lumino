@@ -95,9 +95,15 @@ public:
     /** DragDrop イベントの識別子 (UIDragDropEventArgs) */
     static const UIEventType	DragDropEvent;
 
+	static const UIEventType	Selected;
+	static const UIEventType	Unselected;
+
+
     static const UIEventType	ExecuteCommandEvent;
     static const UIEventType	CanExecuteCommandEvent;
     static const UIEventType	CanExecuteChangedEvent;
+
+
 
 
     static const UIEventType	RequestVisualUpdateEvent;
