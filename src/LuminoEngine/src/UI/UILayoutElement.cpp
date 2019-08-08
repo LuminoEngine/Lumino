@@ -96,6 +96,11 @@ void UILayoutElement::arrangeLayout(const Rect& localSlotRect)
 	//float marginHeight = margin.top + margin.bottom + m_finalStyle->borderThickness.height();
 	Size outerSpace = m_finalStyle->actualOuterSpace();
     Size layoutSize(m_finalStyle->width + outerSpace.width, m_finalStyle->height + outerSpace.height);
+	if (!m_finalStyle->borderInset) {
+		layoutSize.width += m_finalStyle->borderThickness.width();
+		layoutSize.height += m_finalStyle->borderThickness.height();
+	}
+
 	Rect arrangeRect;
 	detail::LayoutHelper::adjustHorizontalAlignment(areaSize, ds, layoutSize.width, hAlign, &arrangeRect);
 	detail::LayoutHelper::adjustVerticalAlignment(areaSize, ds, layoutSize.height, vAlign, &arrangeRect);
@@ -251,6 +256,7 @@ Size LayoutHelper::measureElement(UILayoutElement* element, const Size& constrai
 {
     Size size(element->m_finalStyle->width, element->m_finalStyle->height);
 	Size desiredSize;
+
 	// NaN の場合、この要素として必要な最小サイズは 0 となる。
 	desiredSize.width = Math::isNaNOrInf(size.width) ? 0.0f : size.width;
 	desiredSize.height = Math::isNaNOrInf(size.height) ? 0.0f : size.height;
@@ -264,7 +270,30 @@ Size LayoutHelper::measureElement(UILayoutElement* element, const Size& constrai
 	if (!Math::isNaNOrInf(maxSize.width)) desiredSize.width = std::min(desiredSize.width, maxSize.width);
 	if (!Math::isNaNOrInf(maxSize.height)) desiredSize.height = std::min(desiredSize.height, maxSize.height);
 
+	desiredSize.width += element->m_finalStyle->padding.width();
+	desiredSize.height += element->m_finalStyle->padding.height();
+
+	if (!element->m_finalStyle->borderInset) {
+		desiredSize.width += element->m_finalStyle->borderThickness.width();
+		desiredSize.height += element->m_finalStyle->borderThickness.height();
+	}
+
 	return desiredSize;
+}
+
+Rect LayoutHelper::arrangeContentArea(UILayoutElement* element, const Size& finalSize)
+{
+	Rect area;
+
+	area.x = element->m_finalStyle->padding.left;
+	area.y = element->m_finalStyle->padding.top;
+	area.width = finalSize.width - element->m_finalStyle->padding.width();
+	area.height = finalSize.height - element->m_finalStyle->padding.height();
+
+	// arrange では inset に関わらず border が影響する (inset=true のとき、最終サイズが width,height 直接指定と矛盾すると見切れたりするが、それでよい (WPF))
+	area = area.makeDeflate(element->m_finalStyle->borderThickness);
+
+	return area;
 }
 
 } // namespace detail

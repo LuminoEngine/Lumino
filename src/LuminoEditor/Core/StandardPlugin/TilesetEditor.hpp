@@ -12,9 +12,11 @@ protected:
     virtual void onAttached() override;
     virtual void onDetached() override {}
     virtual ln::NavigationMenuItem* getNavigationMenuItem() override;
+	virtual ln::UIElement* getNavigationPane() override;
 
 private:
     Ref<ln::NavigationMenuItem> m_item;
+	Ref<ln::UIElement> m_tilesetList;
 };
 
 

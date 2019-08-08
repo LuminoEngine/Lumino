@@ -119,13 +119,15 @@ void EditorApplication::onInit()
 	setMainWindow(ln::makeObject<MainWindow>());
 
     auto sheet = ln::makeObject<ln::UIStyleSheet>();
+	if (auto s = sheet->obtainStyle(u"NavigationBarItem")) {
+		s->borderThickness = ln::Thickness(4, 0, 4, 0);
+		s->borderInset = true;
+	}
     if (auto s = sheet->obtainStyle(u"NavigationBarItem:Unselected")) {
-        s->borderThickness = ln::Thickness(4, 0, 4, 0);
         s->setBorderColor(ln::Color::Transparency);
         s->textColor = ln::UIColors::get(ln::UIColorHues::Grey, 4);
     }
     if (auto s = sheet->obtainStyle(u"NavigationBarItem:Selected")) {
-        s->borderThickness = ln::Thickness(4, 0, 4, 0);
         s->setBorderColor(ln::UIColors::get(ln::UIColorHues::LightGreen));
         s->textColor = ln::Color::White;
     }

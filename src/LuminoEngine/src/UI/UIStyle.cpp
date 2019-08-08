@@ -162,7 +162,7 @@ const Color UIStyle::DefaultTopBorderColor = Color::Black;
 const Color UIStyle::DefaultRightBorderColor = Color::Black;
 const Color UIStyle::DefaultBottomBorderColor = Color::Black;
 const BorderDirection UIStyle::DefaultBorderDirection = BorderDirection::Outside;
-const bool UIStyle::DefaultBorderInset = false;
+const bool UIStyle::DefaultBorderInset = false;	// Web:false, WPF:true. Web に合わせてみる.
 
 // shadow
 const float UIStyle::DefaultShadowOffsetX = 0.0f;

@@ -33,7 +33,6 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 
         for (int i = 0; i < 5; i++)
         {
-            printf("-----\n");
             auto ctx = Engine::graphicsContext();
             TestEnv::resetGraphicsContext(ctx);
             ctx->setVertexLayout(m_vertexDecl1);

@@ -60,6 +60,11 @@ void AssetBrowserNavigatorExtension::init()
     Object::init();
     m_navbarItemContent = ln::makeObject<ln::NavigationMenuItem>();
     m_navbarItemContent->setIconName(u"file");
+
+	m_treeView = ln::makeObject<AssetBrowserTreeView>();
+	m_treeView->setWidth(200);
+	m_treeView->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 2));
+	m_treeView->getGridLayoutInfo()->layoutRow = 0;
 }
 
 void AssetBrowserNavigatorExtension::onAttached()
@@ -75,6 +80,10 @@ ln::NavigationMenuItem* AssetBrowserNavigatorExtension::getNavigationMenuItem()
     return m_navbarItemContent;
 }
 
+ln::UIElement* AssetBrowserNavigatorExtension::getNavigationPane()
+{
+	return m_treeView;
+}
 
 //
 ////==============================================================================

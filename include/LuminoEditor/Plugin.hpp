@@ -48,6 +48,7 @@ public:
     virtual void onAttached() = 0;
     virtual void onDetached() = 0;
     virtual NavigationMenuItem* getNavigationMenuItem() = 0;
+	virtual UIElement* getNavigationPane() = 0;
 };
 
 

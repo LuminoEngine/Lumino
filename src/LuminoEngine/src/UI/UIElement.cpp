@@ -577,9 +577,19 @@ void UIElement::onUpdateStyle(const UIStyleContext* styleContext, const detail::
 
 Size UIElement::measureOverride(const Size& constraint)
 {
+	// Note: Web は padding が大きくなると、要素のサイズ自体も大きくなる。というより、
+	// Web: width,height はコンテンツエリアのサイズ。
+	// WPF: width,height は margin の内側のエリアのサイズ。
+
 	auto size = UILayoutElement::measureOverride(constraint);
     //size.width += m_finalStyle->borderThickness.width();
     //size.height += m_finalStyle->borderThickness.height();
+
+	//size.width += m_finalStyle->padding.width();
+	//size.height += m_finalStyle->padding.height();
+
+
+
     return size;
 }
 
@@ -712,15 +722,17 @@ void UIElement::render(UIRenderingContext* context)
 				context->drawBoxShadow(Rect(0, 0, m_finalGlobalRect.getSize()), m_finalStyle->cornerRadius, Vector2(m_finalStyle->shadowOffsetX, m_finalStyle->shadowOffsetY), m_finalStyle->shadowColor, m_finalStyle->shadowBlurRadius, m_finalStyle->shadowSpreadRadius, m_finalStyle->shadowInset);
 
 			}
+			Rect rect(0, 0, m_finalGlobalRect.getSize());
+			rect = rect.makeDeflate(m_finalStyle->borderThickness);
 			
 			if (m_finalStyle->backgroundColor.a > 0.0f) {
 				//auto tex = makeObject<Texture2D>(u"D:/Proj/LN/HC1/Assets/Windowskin/window.png");
 				//auto mat = Material::create(tex);
-                context->drawBoxBackground(Rect(0, 0, m_finalGlobalRect.getSize()), m_finalStyle->cornerRadius, m_finalStyle->backgroundDrawMode, m_finalStyle->backgroundImageRect, m_finalStyle->backgroundColor);
+                context->drawBoxBackground(rect, m_finalStyle->cornerRadius, m_finalStyle->backgroundDrawMode, m_finalStyle->backgroundImageRect, m_finalStyle->backgroundColor);
 				//context->drawBoxBackground(finalGlobalRect(), Thickness(16), CornerRadius(), BrushImageDrawMode::BorderFrame, Rect(64, 0, 64, 64), m_finalStyle->backgroundColor);
 			}
 			if (!m_finalStyle->borderThickness.isZero()) {
-				context->drawBoxBorderLine(Rect(0, 0, m_finalGlobalRect.getSize()), m_finalStyle->borderThickness, m_finalStyle->leftBorderColor, m_finalStyle->topBorderColor, m_finalStyle->rightBorderColor, m_finalStyle->bottomBorderColor, m_finalStyle->cornerRadius, false);
+				context->drawBoxBorderLine(rect, m_finalStyle->borderThickness, m_finalStyle->leftBorderColor, m_finalStyle->topBorderColor, m_finalStyle->rightBorderColor, m_finalStyle->bottomBorderColor, m_finalStyle->cornerRadius, false);
 			}
 		}
 

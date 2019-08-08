@@ -187,6 +187,7 @@ public:
 
 	// 単純に element のサイズによった measure を行う。measureOverride() の中で使用することを想定している。
 	static Size measureElement(UILayoutElement* element, const Size& constraint);
+	static Rect arrangeContentArea(UILayoutElement* element, const Size& finalSize);
 
 	//static void forEachVisualChildren(UIElement* element, std::function<void(UIElement* child)> func)
 	//{
@@ -321,6 +322,12 @@ public:
         outRect->x += area.x;
         outRect->y += area.y;
     }
+
+	//static Size measureInnerSpace(const Thickness& padding, const Thickness& border, bool borderInset)
+	//{
+	//	Size size = padding.size();
+	//	*outRect = area.makeDeflate(padding);
+	//}
 };
 
 } // namespace detail

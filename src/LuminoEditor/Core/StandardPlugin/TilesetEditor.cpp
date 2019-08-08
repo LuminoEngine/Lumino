@@ -5,11 +5,18 @@ void TilesetNavigatorExtension::onAttached()
 {
     m_item = ln::makeObject<ln::NavigationMenuItem>();
     m_item->setIconName(u"th");
+
+	m_tilesetList = ln::makeObject<ln::UIElement>();	// TODO: dummy
 }
 
 ln::NavigationMenuItem* TilesetNavigatorExtension::getNavigationMenuItem()
 {
     return m_item;
+}
+
+ln::UIElement* TilesetNavigatorExtension::getNavigationPane()
+{
+	return m_tilesetList;
 }
 
 //==============================================================================

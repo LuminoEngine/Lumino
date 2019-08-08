@@ -218,11 +218,12 @@ Size UIFrameLayout2::staticMeasureOverride(UIElement* ownerElement, const Size& 
 
 Size UIFrameLayout2::staticArrangeOverride(UIElement* ownerElement, const Size& finalSize)
 {
-    const Thickness& padding = ownerElement->finalStyle()->padding;
-    Point childrenOffset(padding.left, padding.top);
-    //Size childrenBoundSize = finalSize;//(finalSize.width - padding.right, finalSize.height - padding.bottom);
-    Size childrenBoundSize(finalSize.width - padding.width(), finalSize.height - padding.height());
-    Rect bounds(childrenOffset, childrenBoundSize);
+    //const Thickness& padding = ownerElement->finalStyle()->padding;
+    //Point childrenOffset(padding.left, padding.top);
+    ////Size childrenBoundSize = finalSize;//(finalSize.width - padding.right, finalSize.height - padding.bottom);
+    //Size childrenBoundSize(finalSize.width - padding.width(), finalSize.height - padding.height());
+    //Rect bounds(childrenOffset, childrenBoundSize);
+	Rect contentArea = detail::LayoutHelper::arrangeContentArea(ownerElement, finalSize);
 
     int childrenCount = ownerElement->getVisualChildrenCount();
     for (int i = 0; i < childrenCount; i++)
@@ -230,7 +231,7 @@ Size UIFrameLayout2::staticArrangeOverride(UIElement* ownerElement, const Size& 
         UIElement* child = ownerElement->getVisualChild(i);
 
         Rect slotRect;
-        detail::LayoutHelper::adjustAlignment(bounds, child->desiredSize(), ownerElement->m_finalStyle->horizontalContentAlignment, ownerElement->m_finalStyle->verticalContentAlignment, &slotRect);
+        detail::LayoutHelper::adjustAlignment(contentArea, child->desiredSize(), ownerElement->m_finalStyle->horizontalContentAlignment, ownerElement->m_finalStyle->verticalContentAlignment, &slotRect);
 
         child->arrangeLayout(slotRect);
     }

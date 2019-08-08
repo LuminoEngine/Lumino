@@ -353,6 +353,7 @@ public:
 
     float width() const { return left + right; }
     float height() const { return top + bottom; }
+	Size size() const { return Size(width(), height()); }
 
 public:
     bool operator==(const Thickness& rhs) const { return (left == rhs.left && top == rhs.top && right == rhs.right && bottom == rhs.bottom); }
