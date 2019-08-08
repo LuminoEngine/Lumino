@@ -1,3 +1,6 @@
+
+#include <Workspace.hpp>
+#include <Project.hpp>
 #include "../UIExtension.hpp"
 #include "TilesetEditor.hpp"
 
@@ -29,8 +32,14 @@ void TilesetList::init()
     m_listview = ln::makeObject<ln::UIListView>();
     m_listview->setBackgroundColor(ln::Color::Red);
     m_listview->getGridLayoutInfo()->layoutWeight = 1;
-    //m_listview->setVerticalAlignment(ln::VAlignment::Stretch);
     layout1->addChild(m_listview);
+
+
+    auto project = lna::Workspace::instance()->project();
+    auto model = ln::makeObject<ln::UIFileSystemCollectionModel>();
+    model->setExcludeFilters(ln::makeList<ln::String>({ u"*.lnasset" }));
+    model->setRootPath(project->assetsDir());
+    m_listview->setViewModel(model);
 }
 
 //==============================================================================
