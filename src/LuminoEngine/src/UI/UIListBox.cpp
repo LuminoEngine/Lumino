@@ -5,6 +5,18 @@
 namespace ln {
 
 //==============================================================================
+// UIListBoxItem
+
+UIListBoxItem::UIListBoxItem()
+{
+}
+
+void UIListBoxItem::init()
+{
+    UICollectionItem::init();
+}
+
+//==============================================================================
 // UIListBox
 
 UIListBox::UIListBox()
@@ -13,7 +25,7 @@ UIListBox::UIListBox()
 
 void UIListBox::init()
 {
-	UIControl::init();
+    UIItemContainerElement::init();
 }
 
 } // namespace ln

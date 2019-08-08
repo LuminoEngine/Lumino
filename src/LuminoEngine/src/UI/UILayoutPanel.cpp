@@ -357,10 +357,15 @@ Size UIStackLayout2::arrangeOverride(const Size& finalSize)
             cell.desiredSize = ratioUnit * cell.size;
         }
 
-        cell.actualSize = Math::clamp(cell.desiredSize, cell.minSize, cell.maxSize);
-
-        // fix offset
         cell.actualOffset = totalOffset;
+
+        //if (i == m_cellDefinitions.size() - 1 && cell.type == UILayoutLengthType::Auto) {
+        //    cell.actualSize = Math::clamp(boundSize - cell.actualOffset, cell.minSize, cell.maxSize);
+        //}
+        //else {
+            cell.actualSize = Math::clamp(cell.desiredSize, cell.minSize, cell.maxSize);
+        //}
+
         totalOffset += cell.actualSize;
     }
 

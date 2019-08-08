@@ -90,6 +90,16 @@ void UIButtonBase::onRoutedEvent(UIEventArgs* e)
 //==============================================================================
 // UIButton
 
+Ref<UIButton> UIButton::create()
+{
+    return makeObject<UIButton>();
+}
+
+Ref<UIButton> UIButton::create(const StringRef& text)
+{
+    return makeObject<UIButton>(text);
+}
+
 UIButton::UIButton()
 {
 }
@@ -99,6 +109,11 @@ void UIButton::init()
 	UIButtonBase::init();
 }
 
+void UIButton::init(const StringRef& text)
+{
+    init();
+    setText(text);
+}
 
 //==============================================================================
 // UIToggleButton

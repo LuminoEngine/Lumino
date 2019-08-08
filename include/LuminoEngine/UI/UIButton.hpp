@@ -37,8 +37,12 @@ class UIButton
 	: public UIButtonBase
 {
 public:
+    static Ref<UIButton> create();
+    static Ref<UIButton> create(const StringRef& text);
+
 	UIButton();
 	void init();
+    void init(const StringRef& text);
 
 protected:
     virtual const String& elementName() const  override { static String name = u"UIButton"; return name; }

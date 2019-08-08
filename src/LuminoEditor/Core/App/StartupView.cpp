@@ -12,6 +12,8 @@ ln::Result StartupView::init()
     //setLayoutPanel(ln::makeObject<ln::UIVBoxLayout>());
 
     auto layout = ln::makeObject<ln::UIVBoxLayout2>();
+
+    //layout->setVerticalAlignment(ln::VAlignment::Top);
     addElement(layout);
 
     m_newProjectButton = ln::makeObject<ln::UIButton>();

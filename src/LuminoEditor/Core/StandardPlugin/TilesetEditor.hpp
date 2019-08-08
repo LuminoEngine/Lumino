@@ -8,6 +8,7 @@ public:
 	void init();
 
 private:
+    Ref<ln::UIListView> m_listview;
 };
 
 

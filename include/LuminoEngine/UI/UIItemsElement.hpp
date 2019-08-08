@@ -7,7 +7,7 @@ namespace ln {
 class UIItemsControl;
 class UIToggleButton;
 class UITreeView;
-
+class UILayoutPanel2;
 
 class UICollectionItem
 	: public UIControl

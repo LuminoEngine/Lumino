@@ -9,7 +9,7 @@
 #include "MainWindow.hpp"
 
 MainWindow::MainWindow()
-	: m_navigationViewExpandingSize(200)
+	: m_navigationViewExpandingSize(300)
 {
 	m_updateMode = ln::UIFrameWindowUpdateMode::EventDispatches;
 }

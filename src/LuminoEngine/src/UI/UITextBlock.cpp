@@ -26,6 +26,11 @@ Ref<UITextBlock> UITextBlock::create()
     return makeObject<UITextBlock>();
 }
 
+Ref<UITextBlock> UITextBlock::create(const StringRef& text)
+{
+    return makeObject<UITextBlock>(text);
+}
+
 UITextBlock::UITextBlock()
 {
 }
@@ -39,6 +44,12 @@ void UITextBlock::init()
     setVerticalAlignment(VAlignment::Top);
 
     setBlendMode(BlendMode::Alpha);
+}
+
+void UITextBlock::init(const StringRef& text)
+{
+    init();
+    setText(text);
 }
 
 Size UITextBlock::measureOverride(const Size& constraint)

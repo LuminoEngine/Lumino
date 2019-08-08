@@ -1,12 +1,45 @@
 #include "../UIExtension.hpp"
 #include "TilesetEditor.hpp"
 
+//==============================================================================
+// TilesetList
+
+void TilesetList::init()
+{
+    UIControl::init();
+
+    auto layout1 = ln::makeObject<ln::UIVBoxLayout2>();
+    addElement(layout1);
+
+    auto layout2 = ln::makeObject<ln::UIHBoxLayout2>();
+    layout1->addChild(layout2);
+    {
+        auto caption = ln::UITextBlock::create(u"Tilesets");
+        caption->setVerticalAlignment(ln::VAlignment::Center);
+        layout2->addChild(caption);
+
+        auto addButton = ln::UIButton::create(u"Add");
+        layout2->addChild(addButton);
+
+        auto deleteButton = ln::UIButton::create(u"Delete");
+        layout2->addChild(deleteButton);
+    }
+
+    m_listview = ln::makeObject<ln::UIListView>();
+    m_listview->setBackgroundColor(ln::Color::Red);
+    //m_listview->setVerticalAlignment(ln::VAlignment::Stretch);
+    layout1->addChild(m_listview);
+}
+
+//==============================================================================
+// TilesetNavigatorExtension
+
 void TilesetNavigatorExtension::onAttached()
 {
     m_item = ln::makeObject<ln::NavigationMenuItem>();
     m_item->setIconName(u"th");
 
-	m_tilesetList = ln::makeObject<ln::UIElement>();	// TODO: dummy
+	m_tilesetList = ln::makeObject<TilesetList>();
 }
 
 ln::NavigationMenuItem* TilesetNavigatorExtension::getNavigationMenuItem()

@@ -112,16 +112,6 @@ void NavigatorManager::resetNavigators()
 		m_navigators.add(ext);
     }
 
-    //// Test:
-    //{
-    //    auto icon = ln::makeObject<ln::UIIcon>();
-    //    icon->setIconName(u"music");
-    //    m_navigationBar->addItem(icon);
-    //    icon = ln::makeObject<ln::UIIcon>();
-    //    icon->setIconName(u"cog");
-    //    m_navigationBar->addItem(icon);
-    //}
-
 	if (!m_navigators.isEmpty()) {
 		setCurrent(m_navigators[0]);
 	}
