@@ -175,7 +175,7 @@ protected:
     virtual void setVerticalOffset(float offset);
     virtual float getVerticalOffset() const;
 
-private:
+public:	// TODO:
     List<Ref<UIElement>> m_logicalChildren;
     Vector2 m_scrollOffset;
     UIItemsControl* m_ownerItemsControl;
@@ -257,7 +257,23 @@ LN_CONSTRUCT_ACCESS:
     void init();
 };
 
+class UISwitchLayout
+	: public UIFrameLayout2
+{
+public:
+	void setActiveIndex(int index);
 
+protected:
+	// base interface
+	virtual Size measureOverride(const Size& constraint) override;
+
+LN_CONSTRUCT_ACCESS:
+	UISwitchLayout();
+    void init();
+
+private:
+	int m_activeIndex;
+};
 
 
 

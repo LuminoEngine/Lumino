@@ -87,10 +87,18 @@ void NavigatorManager::init()
 
     m_navigationBar = ln::makeObject<NavigationBar>(this);
     m_layout->addChild(m_navigationBar);
+
+	m_switchLayout = ln::makeObject<ln::UISwitchLayout>();
+	m_switchLayout->setActiveIndex(-1);
+	m_layout->addChild(m_switchLayout);
 }
 
 void NavigatorManager::resetNavigators()
 {
+	if (!m_navigators.isEmpty()) {
+		LN_NOTIMPLEMENTED();
+	}
+
     //m_assetBrowserNavigator = ln::makeObject<AssetBrowserNavigator>();
     //m_navigationBar->addItem(m_assetBrowserNavigator->createNavigationBarItem());
     //m_layout->addChild(m_assetBrowserNavigator->createView());
@@ -100,6 +108,8 @@ void NavigatorManager::resetNavigators()
     for (auto& ext : exts) {
         ext->onAttached();
         m_navigationBar->addItem(ext);
+		m_switchLayout->addChild(ext->getNavigationPane());
+		m_navigators.add(ext);
     }
 
     //// Test:
@@ -112,12 +122,16 @@ void NavigatorManager::resetNavigators()
     //    m_navigationBar->addItem(icon);
     //}
 
-    //setCurrent(m_assetBrowserNavigator);
+	if (!m_navigators.isEmpty()) {
+		setCurrent(m_navigators[0]);
+	}
 }
 
 void NavigatorManager::setCurrent(ln::IAssetNavigatorExtension* nav)
 {
+	int index = m_navigators.indexOf(nav);
     if (nav) {
+		m_switchLayout->setActiveIndex(index);
         navigationViewOpen();
     }
     else {

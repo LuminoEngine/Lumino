@@ -46,6 +46,10 @@ float UILayoutPanel2::getVerticalOffset() const { return m_scrollOffset.y; }
 //==============================================================================
 // UIFrameLayout2
 
+UIFrameLayout2::UIFrameLayout2()
+{
+}
+
 void UIFrameLayout2::init()
 {
     UILayoutPanel2::init();
@@ -67,7 +71,8 @@ Size UIFrameLayout2::measureOverride(const Size& constraint)
     //}
 
     //return Size::min(constraint, Size::max(size, childMaxSize));
-    return UIElement::measureOverride(constraint);
+    //return UIElement::measureOverride(constraint);
+	return UIFrameLayout2::staticMeasureOverride(this, constraint);
 }
 
 Size UIFrameLayout2::arrangeOverride(const Size& finalSize)
@@ -191,7 +196,8 @@ Size UIFrameLayout2::arrangeOverride(const Size& finalSize)
     }
 #endif
 
-    return finalSize;
+	return UIFrameLayout2::staticArrangeOverride(this, finalSize);
+    //return finalSize;
 }
 
 Size UIFrameLayout2::staticMeasureOverride(UIElement* ownerElement, const Size& constraint)
@@ -240,7 +246,7 @@ Size UIFrameLayout2::staticArrangeOverride(UIElement* ownerElement, const Size& 
 }
 
 //==============================================================================
-// UIFrameLayout2
+// UIStackLayout2
 
 Ref<UIStackLayout2> UIStackLayout2::create()
 {
@@ -438,6 +444,38 @@ void UIVBoxLayout2::init()
 {
     UIStackLayout2::init();
     setOrientation(Orientation::Vertical);
+}
+
+
+//==============================================================================
+// UISwitchLayout
+
+UISwitchLayout::UISwitchLayout()
+	: m_activeIndex(0)
+{
+}
+
+void UISwitchLayout::setActiveIndex(int index)
+{
+	m_activeIndex = index;
+	invalidateLayout();
+}
+
+void UISwitchLayout::init()
+{
+	UIFrameLayout2::init();
+}
+
+Size UISwitchLayout::measureOverride(const Size& constraint)
+{
+	for (int i = 0; i < m_logicalChildren.size(); i++) {
+		if (i == m_activeIndex)
+			m_logicalChildren[i]->m_internalVisibility = UIVisibility::Visible;
+		else
+			m_logicalChildren[i]->m_internalVisibility = UIVisibility::Collapsed;
+	}
+
+	return UIFrameLayout2::measureOverride(constraint);
 }
 
 

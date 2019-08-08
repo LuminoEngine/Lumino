@@ -52,7 +52,7 @@ void InternalSpriteTextRender::render(IGraphicsContext* context, const GlyphData
 		uint32_t maxCount = m_buffersReservedSpriteCount - m_stagingSpriteOffset;
 
 		// 実際に描画する数
-		uint32_t count = std::min(dataCount, maxCount);
+		uint32_t count = std::min((dataCount - iData), maxCount);
 
 		// map
 		uint32_t consumedSize = count * sizeof(Vertex) * 4;
@@ -62,7 +62,7 @@ void InternalSpriteTextRender::render(IGraphicsContext* context, const GlyphData
 		// write
 		ITexture* srcTexture = glyphsTexture;
 		Size texSizeInv(1.0f / srcTexture->realSize().width, 1.0f / srcTexture->realSize().height);
-		for (int i = 0; iData < count; ++iData, ++i)
+		for (int i = 0; i < count; ++iData, ++i)
 		{
 			const GlyphData& data = dataList[iData];
 			Rect uvSrcRect((float)data.srcRect.x, (float)data.srcRect.y, (float)data.srcRect.width, (float)data.srcRect.height);

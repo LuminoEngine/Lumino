@@ -62,7 +62,6 @@ void AssetBrowserNavigatorExtension::init()
     m_navbarItemContent->setIconName(u"file");
 
 	m_treeView = ln::makeObject<AssetBrowserTreeView>();
-	m_treeView->setWidth(200);
 	m_treeView->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 2));
 	m_treeView->getGridLayoutInfo()->layoutRow = 0;
 }

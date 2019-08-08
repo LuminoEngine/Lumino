@@ -323,6 +323,7 @@ public:
 
     void addAction(UIAction* action);
 
+	void invalidateLayout() { invalidate(detail::UIElementDirtyFlags::Layout, true); }
 	void invalidateVisual() { invalidate(detail::UIElementDirtyFlags::Render, true); }
 
     UIElement();
