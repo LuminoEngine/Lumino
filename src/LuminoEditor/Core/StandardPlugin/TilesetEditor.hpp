@@ -1,6 +1,16 @@
 #pragma once
 #include <LuminoEditor/Plugin.hpp>
 
+class TilesetList
+	: public ln::UIControl
+{
+public:
+	void init();
+
+private:
+};
+
+
 class TilesetNavigatorExtension
     : public ln::Object
     , public ln::IAssetNavigatorExtension

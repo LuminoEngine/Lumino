@@ -446,6 +446,14 @@ void UIVBoxLayout2::init()
     setOrientation(Orientation::Vertical);
 }
 
+//==============================================================================
+// UIHBoxLayout2
+
+void UIHBoxLayout2::init()
+{
+	UIStackLayout2::init();
+	setOrientation(Orientation::Horizontal);
+}
 
 //==============================================================================
 // UISwitchLayout

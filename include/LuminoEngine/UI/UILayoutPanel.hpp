@@ -257,6 +257,15 @@ LN_CONSTRUCT_ACCESS:
     void init();
 };
 
+class UIHBoxLayout2
+	: public UIStackLayout2
+{
+public:
+
+LN_CONSTRUCT_ACCESS:
+	void init();
+};
+
 class UISwitchLayout
 	: public UIFrameLayout2
 {
