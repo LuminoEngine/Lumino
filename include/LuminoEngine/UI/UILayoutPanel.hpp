@@ -266,6 +266,53 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 };
 
+
+
+// 指定方向に無限のサイズを想定する StackLayout と異なり、こちらは有限サイズでレイアウトを行う。
+// 特に末尾の要素を下揃えしたり、指定方向への Stratch をできるようにしたりする。
+// このため ListBox などの HostPanel には向かない。
+class UIBoxLayout3
+    : public UILayoutPanel2
+{
+public:
+    void setOrientation(Orientation orientation) { m_orientation = orientation; }
+    Orientation getOrientation() const { return m_orientation; }
+
+LN_CONSTRUCT_ACCESS:
+    UIBoxLayout3();
+    void init();
+
+    // UIElement interface
+    virtual Size measureOverride(const Size& constraint) override;
+    virtual Size arrangeOverride(const Size& finalSize) override;
+
+private:
+    bool isHorizontal() const { return m_orientation == Orientation::Horizontal || m_orientation == Orientation::ReverseHorizontal; }
+    UILayoutLengthType layoutType(int index) const;
+    float layoutWeight(int index) const;
+    float layoutDirectSize(int index) const;
+    void getLayoutMinMaxSize(int index, float* minSize, float* maxSize) const;
+
+    struct CellDefinition
+    {
+        float desiredSize = Math::NaN;
+        float actualOffset = Math::NaN;
+        float actualSize = Math::NaN;
+    };
+
+    Orientation m_orientation;
+    List<CellDefinition> m_cellDefinitions;
+};
+
+
+
+
+
+
+
+
+
+
 class UISwitchLayout
 	: public UIFrameLayout2
 {

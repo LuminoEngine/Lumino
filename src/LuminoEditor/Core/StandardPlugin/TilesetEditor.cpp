@@ -8,7 +8,8 @@ void TilesetList::init()
 {
     UIControl::init();
 
-    auto layout1 = ln::makeObject<ln::UIVBoxLayout2>();
+    auto layout1 = ln::makeObject<ln::UIBoxLayout3>();
+    layout1->setOrientation(ln::Orientation::Vertical);
     addElement(layout1);
 
     auto layout2 = ln::makeObject<ln::UIHBoxLayout2>();
@@ -27,6 +28,7 @@ void TilesetList::init()
 
     m_listview = ln::makeObject<ln::UIListView>();
     m_listview->setBackgroundColor(ln::Color::Red);
+    m_listview->getGridLayoutInfo()->layoutWeight = 1;
     //m_listview->setVerticalAlignment(ln::VAlignment::Stretch);
     layout1->addChild(m_listview);
 }

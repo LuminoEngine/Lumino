@@ -47,6 +47,8 @@ struct GridLayoutInfo
     int		layoutColumn = -1;
     int		layoutRowSpan = 1;
     int		layoutColumnSpan = 1;
+
+    float   layoutWeight = 0;   // CSS FW (Materil-UI) や Android 参考。 0=Auto, 1~=star, finalStyle.width/height が nan でなければ direct 
 };
 
 }
