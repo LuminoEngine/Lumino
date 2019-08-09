@@ -33,6 +33,12 @@ ln::Result StartupView::init()
     layout->addChild(m_openProjectButton);
 
 
+	auto text = ln::makeObject<ln::UITextField>();
+	text->setWidth(200);
+	text->setHeight(30);
+	text->setText(u"ABCD");
+	layout->addChild(text);
+
 
 	//auto m_mainViewport = ln::makeObject<ln::UIViewport>();
 	//addElement(m_mainViewport);
