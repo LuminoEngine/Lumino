@@ -23,6 +23,7 @@ UIManager::UIManager()
     , m_primaryElement(nullptr)
     , m_mouseHoverElement(nullptr)
 	, m_capturedElement(nullptr)
+    , m_forcusedElement(nullptr)
 {
 }
 
@@ -133,6 +134,11 @@ void UIManager::releaseCapture(UIElement* element)
 	if (m_capturedElement == element) {
 		m_capturedElement = nullptr;
 	}
+}
+
+void UIManager::focus(UIElement* element)
+{
+    m_forcusedElement = element;
 }
 
 void UIManager::postEvent(UIElement* target, UIEventArgs* e)

@@ -3,6 +3,7 @@
 #include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
+#include "../../../LuminoCore/src/Text/UnicodeUtils.hpp"
 #include "../Font/FontCore.hpp"
 #include "UIEditableTextArea.hpp"
 #include "UIManager.hpp"
@@ -50,7 +51,16 @@ UILogicalRun::UILogicalRun(UILogicalLine* owner, const UITextRange& range)
 
 Vector2 UILogicalRun::measure(Font* defaultFont) const
 {
-    return defaultFont->measureRenderSize(m_ownerLine->m_text.substr(m_range.beginIndex, m_range.length()), 1.0f);  // TODO: dpi
+    // TODO: シングルラインであることを前提に計測を高速化する
+    Font* font = (m_font) ? m_font : defaultFont;
+    return font->measureRenderSize(m_ownerLine->m_text.substr(m_range.beginIndex, m_range.length()), 1.0f);  // TODO: dpi
+}
+
+Vector2 UILogicalRun::measure(const UITextRange& range) const
+{
+    // TODO: シングルラインであることを前提に計測を高速化する
+    Font* font = (m_font) ? m_font : m_ownerLine->m_ownerLayout->m_baseFont;
+    return font->measureRenderSize(substr(range), 1.0f);  // TODO: dpi
 }
 
 StringRef UILogicalRun::substr(const UITextRange& range) const
@@ -61,8 +71,9 @@ StringRef UILogicalRun::substr(const UITextRange& range) const
 //==============================================================================
 // UILogicalLine
 
-UILogicalLine::UILogicalLine(const String& text)
-    : m_text(text)
+UILogicalLine::UILogicalLine(UITextLayout* owner, const String& text)
+    : m_ownerLayout(owner)
+    , m_text(text)
 {
 }
 
@@ -75,6 +86,12 @@ UIPhysicalBlock::UIPhysicalBlock(UILogicalRun* run, const UITextRange& range, co
     , m_offset(offset)
     , m_size(size)
 {
+}
+
+float UIPhysicalBlock::getLocalOffsetAt(int charIndex) const
+{
+    auto size = m_run->measure(UITextRange(m_range.beginIndex, charIndex));
+    return (m_run->m_ownerLine->m_ownerLayout->isHorizontalFlow()) ? size.x : size.y;
 }
 
 //==============================================================================
@@ -97,7 +114,7 @@ void UITextLayout::setText(const StringRef& value)
 
     m_logicalLines.clear();
     for (auto& line : lines) {
-        auto logicalLine = makeRef<UILogicalLine>(text.substr(line.beginIndex, line.endIndex));
+        auto logicalLine = makeRef<UILogicalLine>(this, text.substr(line.beginIndex, line.endIndex));
         auto logicalRun = makeRef<UILogicalRun>(logicalLine, UITextRange(0, logicalLine->m_text.length()));
         logicalLine->m_runs.add(logicalRun);
         m_logicalLines.add(logicalLine);
@@ -144,11 +161,13 @@ void UITextLayout::arrange(const Size& area)
             physicalLine->size = lineSize;
             physicalLine->lineHeight = std::max(baseLineSpace, lineSize.height);
             physicalLine->logicalIndex = iLogicalLine;
-            physicalLine->range = UITextRange(0, logicalLine->m_text.length());
+            physicalLine->logicalRange = UITextRange(0, logicalLine->m_text.length());
             m_physicalLines.add(physicalLine);
 
             lineOffset += physicalLine->lineHeight;
         }
+
+        updatePreferredCursorScreenOffsetInLine();
 
         m_dirtyPhysicalLines = false;
     }
@@ -163,13 +182,156 @@ void UITextLayout::render(UIRenderingContext* context)
             context->drawText(block->str(), m_baseTextColor, m_baseFont);
         }
     }
+
+    context->setTransfrom(Matrix::Identity);
+    context->drawBoxBackground(Rect(m_cursorInfo.preferredCursorScreenOffsetInLine, 0, 2, 20), CornerRadius(), BrushImageDrawMode::Image, Rect(0, 0, 1, 1), Color::Black);
 }
 
-void UITextLayout::handleKeyDown(UIKeyEventArgs* e)
+bool UITextLayout::handleKeyDown(UIKeyEventArgs* e)
 {
+    if (e->getKey() == Keys::Left)
+    {
+        moveCursor(
+            UICursorMoveMethod::Cardinal,
+            testFlag(e->getModifierKeys(), ModifierKeys::Control) ? UICursorMoveGranularity::Word : UICursorMoveGranularity::Character,
+            Vector2(-1, 0),
+            testFlag(e->getModifierKeys(), ModifierKeys::Shift) ? UICursorAction::SelectText : UICursorAction::MoveCursor
+        );
+        return true;
+    }
+    else if (e->getKey() == Keys::Right)
+    {
+        moveCursor(
+            UICursorMoveMethod::Cardinal,
+            testFlag(e->getModifierKeys(), ModifierKeys::Control) ? UICursorMoveGranularity::Word : UICursorMoveGranularity::Character,
+            Vector2(1, 0),
+            testFlag(e->getModifierKeys(), ModifierKeys::Shift) ? UICursorAction::SelectText : UICursorAction::MoveCursor
+        );
+        return true;
+    }
 
+    return false;
 }
 
+void UITextLayout::updatePreferredCursorScreenOffsetInLine()
+{
+    auto offset = getLocalOffsetFromLogicalLocation(m_cursorInfo.position);
+    m_cursorInfo.preferredCursorScreenOffsetInLine = offset.x;
+}
+
+Vector2 UITextLayout::getLocalOffsetFromLogicalLocation(const UITextLocation& loc) const
+{
+    int physicalLineIndex = getPhysicalLineIndexFromLogicalLocation(loc);
+    if (m_logicalLines.isOutOfRange(loc.lineIndex)) return Vector2::Zero;
+
+    auto& physicalLine = m_physicalLines[physicalLineIndex];
+    for (auto& block : physicalLine->m_runBlocks) {
+        auto range = block->rangeInLogicalLine();
+        if (range.inclusiveContains(loc.offset)) {
+            float offset = block->getLocalOffsetAt(loc.offset - range.beginIndex);
+            return Vector2(offset, block->m_offset.y);
+        }
+    }
+
+    return Vector2::Zero;
+}
+
+int UITextLayout::getPhysicalLineIndexFromLogicalLocation(const UITextLocation& loc) const
+{
+    bool performInclusiveBoundsCheck = false; // TODO:
+
+    if (m_logicalLines.isOutOfRange(loc.lineIndex)) return -1;
+    auto& logicalLine = m_logicalLines[loc.lineIndex];
+
+    for (int i = 0; i < m_physicalLines.size(); i++) {
+        auto& physicalLine = m_physicalLines[i];
+        if (physicalLine->logicalIndex == loc.lineIndex) {
+            if (loc.offset == 0 || logicalLine->m_text.isEmpty() || physicalLine->logicalRange.contains(loc.offset)) {
+                return i;
+            }
+
+            // last line
+            bool isLastLineForModel = (i == (m_physicalLines.size() - 1) || m_physicalLines[i + 1]->logicalIndex != loc.lineIndex);
+            if ((isLastLineForModel || performInclusiveBoundsCheck) && physicalLine->logicalRange.endIndex == loc.offset) {
+                return i;
+            }
+        }
+    }
+
+    return -1;
+}
+
+void UITextLayout::moveCursor(UICursorMoveMethod method, UICursorMoveGranularity granularity, const Vector2& dirOrPos, UICursorAction action)
+{
+    UITextLocation newCursorPosition;
+
+    if (method == UICursorMoveMethod::Cardinal) {
+        if (granularity == UICursorMoveGranularity::Character) {
+            if (dirOrPos.x != 0.0f) {   // Horizontal movement
+                newCursorPosition = translateLocationToCharDirection(m_cursorInfo.position, dirOrPos.x);
+            }
+            else {  // Vertical movement
+                LN_NOTIMPLEMENTED();
+            }
+        }
+        else {
+            LN_NOTIMPLEMENTED();
+        }
+    }
+    else {
+        LN_NOTIMPLEMENTED();
+    }
+
+    m_cursorInfo.position = newCursorPosition;
+
+    updatePreferredCursorScreenOffsetInLine();
+}
+
+// 文字方向の移動 (行方向ではなく)
+UITextLocation UITextLayout::translateLocationToCharDirection(const UITextLocation& loc, int dir)
+{
+    auto& logicalLine = m_logicalLines[loc.lineIndex];
+    int newOffsetInLine = moveToCandidate(logicalLine->m_text, loc.offset, dir);
+    if (newOffsetInLine < 0) {
+        // move line
+        if (dir > 0) {   // to next line
+            if (loc.lineIndex < m_logicalLines.size() - 1) {
+                return UITextLocation(loc.lineIndex + 1, 0);
+            }
+        }
+        else if (loc.lineIndex > 0) {
+            int newLineIndex = loc.lineIndex - 1;
+            return UITextLocation(newLineIndex, m_logicalLines[newLineIndex]->m_text.length());
+        }
+
+        // not move
+        return loc;
+    }
+
+    assert(newOffsetInLine >= 0 && newOffsetInLine <= m_logicalLines[loc.lineIndex]->m_text.length());
+    return UITextLocation(loc.lineIndex, newOffsetInLine);
+}
+
+int UITextLayout::moveToCandidate(const StringRef& text, int begin, int offset)
+{
+    if (begin + offset < 0) return -1;
+    if (text.length() <= begin + offset) return -1;
+
+    UTF16 ch = static_cast<UTF16>(*(text.data() + begin + offset));
+    if (offset > 0) {
+        // forward
+        if (UnicodeUtils::checkUTF16LowSurrogate(ch)) {
+            offset++;
+        }
+    }
+    else {
+        // backword
+        if (UnicodeUtils::checkUTF16HighSurrogate(ch)) {
+            offset--;
+        }
+    }
+    return begin + offset;
+}
 
 
 } // namespace detail
@@ -187,11 +349,25 @@ void UITextArea::init()
 {
 	UIElement::init();
 	m_textLayout = makeObject<detail::UITextLayout>();
+    focus();    // TODO: test
 }
 
 void UITextArea::setText(const StringRef& value)
 {
 	m_textLayout->setText(value);
+}
+
+void UITextArea::onRoutedEvent(UIEventArgs* e)
+{
+    if (e->type() == UIEvents::KeyDownEvent) {
+        if (m_textLayout->handleKeyDown(static_cast<UIKeyEventArgs*>(e))) {
+            invalidateVisual();
+            e->handled = true;
+            return;
+        }
+    }
+
+    UIElement::onRoutedEvent(e);
 }
 
 Size UITextArea::measureOverride(const Size& constraint)

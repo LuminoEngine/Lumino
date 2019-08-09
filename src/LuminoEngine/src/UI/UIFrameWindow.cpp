@@ -183,8 +183,7 @@ UIElement* UIInputInjector::capturedElement()
 
 UIElement* UIInputInjector::forcusedElement()
 {
-    // TODO:
-    return nullptr;
+    return m_owner->m_manager->forcusedElement();
 }
 
 UIElement* UIInputInjector::mouseHoveredElement()

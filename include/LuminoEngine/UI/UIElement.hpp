@@ -342,7 +342,7 @@ public: // TODO: internal
 	UIElement* getFrameWindow();
 
 public:	// TODO: internal protected
-
+    void focus();
 	void retainCapture();
 	void releaseCapture();
 	void addVisualChild(UIElement* element);

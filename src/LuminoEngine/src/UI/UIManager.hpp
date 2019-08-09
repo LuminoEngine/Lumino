@@ -46,6 +46,9 @@ public:
 	void releaseCapture(UIElement* element);
 	UIElement* capturedElement() const { return m_capturedElement; }
 
+    void focus(UIElement* element);
+    UIElement* forcusedElement() const { return m_forcusedElement; }
+
     void postEvent(UIElement* target, UIEventArgs* e);
     void dispatchPostedEvents();
 
@@ -68,6 +71,7 @@ private:
     Ref<UIContext> m_mainContext;
     UIElement* m_mouseHoverElement;
 	UIElement* m_capturedElement;
+    UIElement* m_forcusedElement;
 	//Ref<UIFrameLayout> m_defaultLayout;
     std::deque<EventQueueItem> m_eventQueue;
 

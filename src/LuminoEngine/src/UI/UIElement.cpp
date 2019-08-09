@@ -490,6 +490,11 @@ UIElement* UIElement::lookupMouseHoverElement(const Point& frameClientPosition)
     return nullptr;
 }
 
+void UIElement::focus()
+{
+    m_manager->focus(this);
+}
+
 void UIElement::retainCapture()
 {
 	m_manager->retainCapture(this);
