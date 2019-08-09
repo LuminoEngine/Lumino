@@ -3,6 +3,7 @@
 
 namespace ln {
 namespace detail {
+class UILogicalLine;
 
 struct UITextLocation
 {
@@ -48,39 +49,59 @@ struct UITextSelection
 
 struct UITextRange
 {
-	static void splitLineRanges(const String& str, List<UITextRange>* outRanges);
+	static void splitLineRanges(const String& str, List<UITextRange>* outLines);
 
-	int beginIndex = 0; // (unit: Char)
-	int endIndex = 0;   // (unit: Char)
+    UITextRange() : beginIndex(0), endIndex(0) {}
+    UITextRange(int b, int e) : beginIndex(b), endIndex(e) {}
+
+    int length() const { return endIndex - beginIndex; }
+
+	int beginIndex; // (unit: Char)
+	int endIndex;   // (unit: Char)
 };
 
 // フォントスタイルが同じ一続きの文字列。１行の中に複数ある。
 class UILogicalRun : public RefObject
 {
 public:
+    UILogicalRun(UILogicalLine* owner, const UITextRange& range);
+    Vector2 measure(Font* defaultFont) const;
+
+    int length() const { return m_range.length(); }
+    StringRef substr(const UITextRange& range) const;
 
 public:	// TODO: private
-
+    UILogicalLine* m_ownerLine;
+    UITextRange m_range;    // m_ownerLine->m_text のどの範囲を示すか
+    Ref<Font> m_font;       // null の場合は UITextLayout のベースフォントを使う
 };
 
 // 論理行。入力文字列を改行で切ったもの。
 class UILogicalLine : public RefObject
 {
 public:
+    UILogicalLine(const String& text);
 
 public:	// TODO: private
 	String m_text;
 	List<Ref<UILogicalRun>> m_runs;
+    //List<UITextLineHighlight> highlights;
+
 };
 
 // UILogicalLine::m_runs の範囲。
-class UIRunBlock : public RefObject
+class UIPhysicalBlock : public RefObject
 {
 public:
+    UIPhysicalBlock(UILogicalRun* run, const UITextRange& range, const Vector2& offset, const Vector2& size);
 
+    StringRef str() const { return m_run->substr(m_range); }
 
 public:	// TODO: private
 	UILogicalRun* m_run;
+    UITextRange m_range; // m_run の中の範囲 (unit:Char)
+    Vector2 m_offset; // uint:dp
+    Vector2 m_size; // uint:dp
 };
 
 // 物理行。LogicalLine に対して、さらに折り返しなどを考慮したもの。
@@ -89,7 +110,15 @@ class UIPhysicalLine : public RefObject
 public:
 
 public:	// TODO: private
-	List<UIRunBlock> m_runBlocks;
+	List<Ref<UIPhysicalBlock>> m_runBlocks;
+
+    //List<UILineViewHighlight> UnderlayHighlights;
+    //List<UILineViewHighlight> OverlayHighlights;
+    Vector2 offset; // uint:dp
+    Vector2 size;   // unit:dp
+    float lineHeight;   // 行高さ (unit:dp)
+    int logicalIndex;   // 対応する UILogicalLine のインデックス
+    UITextRange range;   // ↑の中の文字列範囲 (unit: Char)
 };
 
 // テキストの配置・描画
@@ -103,6 +132,8 @@ public:
 	Size measure();
 	void arrange(const Size& area);
 	void render(UIRenderingContext* context);
+
+    void handleKeyDown(UIKeyEventArgs* e);
 
 public:	// TODO: private
 	Ref<Font> m_baseFont;
