@@ -36,7 +36,7 @@ ln::Result StartupView::init()
 	auto text = ln::makeObject<ln::UITextField>();
 	text->setWidth(200);
 	text->setHeight(30);
-	text->setText(u"ABCD");
+	text->setText(u"Hello\nLumino");
 	layout->addChild(text);
 
 
