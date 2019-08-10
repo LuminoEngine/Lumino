@@ -289,7 +289,8 @@ LRESULT AbstractWin32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam,
         case WM_CHAR:
         {
             // 文字のみ送る
-            if (0x20 <= wparam && wparam <= 0x7E)
+            //if (0x20 <= wparam && wparam <= 0x7E)
+            if (wparam > 0 && wparam < 0x10000)
             {
                 ModifierKeys mods =
                     ((::GetKeyState(VK_MENU) < 0) ? ModifierKeys::Alt : ModifierKeys::None) |

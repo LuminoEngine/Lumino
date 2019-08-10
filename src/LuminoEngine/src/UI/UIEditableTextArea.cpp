@@ -1,8 +1,12 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Platform/PlatformWindow.hpp>
+#include <LuminoEngine/Platform/PlatformSupport.hpp>
 #include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
+#include <LuminoEngine/UI/UIFrameWindow.hpp>
+#include "../Platform/TextInputMethodSystem.hpp"
 #include "../../../LuminoCore/src/Text/UnicodeUtils.hpp"
 #include "../Font/FontCore.hpp"
 #include "UIEditableTextArea.hpp"
@@ -213,6 +217,11 @@ bool UITextLayout::handleKeyDown(UIKeyEventArgs* e)
     return false;
 }
 
+bool UITextLayout::handleTyleChar(Char ch)
+{
+    return false;
+}
+
 void UITextLayout::updatePreferredCursorScreenOffsetInLine()
 {
     auto offset = getLocalOffsetFromLogicalLocation(m_cursorInfo.position);
@@ -362,6 +371,10 @@ void UITextArea::onRoutedEvent(UIEventArgs* e)
     if (e->type() == UIEvents::KeyDownEvent) {
         if (m_textLayout->handleKeyDown(static_cast<UIKeyEventArgs*>(e))) {
             invalidateVisual();
+
+            auto hwnd = PlatformSupport::getWin32WindowHandle(static_cast<UIFrameWindow*>(getFrameWindow())->platformWindow());
+            detail::TextInputMethodSystem::SetInputScreenPos((intptr_t)hwnd, m_textLayout->m_cursorInfo.preferredCursorScreenOffsetInLine, 100);
+
             e->handled = true;
             return;
         }

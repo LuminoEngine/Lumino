@@ -68,6 +68,8 @@ set(LN_SOURCES_Platform
     src/Platform/PlatformWindow.cpp
     src/Platform/PlatformWindowManager.cpp
     src/Platform/PlatformWindowManager.hpp
+    src/Platform/TextInputMethodSystem.cpp
+    src/Platform/TextInputMethodSystem.hpp
 	src/Platform/Win32PlatformDialogs.hpp
     src/Platform/Win32PlatformInterface.cpp
     src/Platform/Win32PlatformWindowManager.cpp

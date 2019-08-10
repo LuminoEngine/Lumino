@@ -211,6 +211,7 @@ public:
 	void render(UIRenderingContext* context);
 
     bool handleKeyDown(UIKeyEventArgs* e);
+    bool handleTyleChar(Char ch);
 
     bool isHorizontalFlow() const { return true; }
 
