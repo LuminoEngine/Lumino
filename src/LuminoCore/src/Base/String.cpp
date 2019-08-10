@@ -424,6 +424,30 @@ String String::replace(const StringRef& from, const StringRef& to, CaseSensitivi
     return result;
 }
 
+String String::insert(int startIndex, const StringRef& value) const
+{
+    if (value.isEmpty()) return *this;
+    if (startIndex < 0) startIndex = 0;
+    if (startIndex > length()) startIndex = length();
+
+    String result;
+    result.reserve(length() + value.length());
+
+    const Char* src = c_str();
+    int len = length();
+    if (0 < startIndex) {
+        result.append(src, startIndex);
+    }
+
+    result.append(value);
+
+    if (startIndex < len) {
+        result.append(src + startIndex, len - startIndex);
+    }
+
+    return result;
+}
+
 List<String> String::split(const StringRef& delim, StringSplitOptions option) const
 {
     List<String> result;

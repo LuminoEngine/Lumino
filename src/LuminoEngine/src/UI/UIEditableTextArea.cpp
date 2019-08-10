@@ -127,6 +127,47 @@ void UITextLayout::setText(const StringRef& value)
 	m_dirtyPhysicalLines = true;
 }
 
+void UITextLayout::insertAt(const UITextLocation& loc, const StringRef& text)
+{
+    if (m_logicalLines.isOutOfRange(loc.lineIndex)) return;
+    UILogicalLine* logicalLine = m_logicalLines[loc.lineIndex];
+    
+    logicalLine->m_text = logicalLine->m_text.insert(loc.offset, text);
+    // TODO: dirty All
+    
+    bool afterLoc = false;
+    for (int iRun = 0; iRun < logicalLine->m_runs.size(); iRun++) {
+        auto& run = logicalLine->m_runs[iRun];
+        auto& runRange = run->m_range;
+
+        bool lastRun = (iRun == logicalLine->m_runs.size() - 1);
+        if (runRange.contains(loc.offset) || (lastRun && !afterLoc))
+        {
+            LN_CHECK(!afterLoc);
+
+            if (true)   // TODO: 今は text 用の run だけ
+            {
+                run->m_range = UITextRange(runRange.beginIndex, runRange.endIndex + text.length());
+            }
+            else
+            {
+                // TODO: image run とかにテキストは入れられないので、新しく作る
+            }
+
+            // Adjust from here to the back
+            afterLoc = true;
+        }
+        else if (afterLoc)
+        {
+            UITextRange newRange = runRange;
+            newRange.offset(text.length());
+            run->m_range = newRange;
+        }
+    }
+
+    m_dirtyPhysicalLines = true;    // TODO: Layout
+}
+
 Size UITextLayout::measure()
 {
 	return Size::Zero;
@@ -217,8 +258,17 @@ bool UITextLayout::handleKeyDown(UIKeyEventArgs* e)
     return false;
 }
 
-bool UITextLayout::handleTyleChar(Char ch)
+bool UITextLayout::handleTypeChar(Char ch)
 {
+    if (true)   // TODO: readonly など
+    {
+        insertAt(m_cursorInfo.position, StringRef(&ch, 1));
+
+        m_cursorInfo.position = translateLocationToCharDirection(m_cursorInfo.position, 1);
+        updatePreferredCursorScreenOffsetInLine();
+
+        return true;
+    }
     return false;
 }
 
@@ -379,6 +429,14 @@ void UITextArea::onRoutedEvent(UIEventArgs* e)
             return;
         }
     }
+    else if (e->type() == UIEvents::TextInputEvent) {
+        if (m_textLayout->handleTypeChar(static_cast<UIKeyEventArgs*>(e)->getCharCode())) {
+            invalidateLayout();
+            e->handled = true;
+            return;
+        }
+    }
+    
 
     UIElement::onRoutedEvent(e);
 }

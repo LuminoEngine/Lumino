@@ -202,7 +202,7 @@ struct PlatformEventArgs
 		{
 			Keys				keyCode;		/** キーコード */
 			ModifierKeys	modifierKeys;	/** 修飾キー */
-			char			keyChar;		/** 文字 */
+            Char			keyChar;		/** 文字 */
 
 		} key;
 
@@ -240,7 +240,7 @@ public:
 	static PlatformEventArgs makeActivateChangedEvent(PlatformWindow* sender, bool active);
 	static PlatformEventArgs makeMouseButtonEvent(PlatformWindow* sender, PlatformEventType type, MouseButtons button/*, short screenX, short screenY*/, ModifierKeys modifierKeys);
 	static PlatformEventArgs makeMouseMoveEvent(PlatformWindow* sender, PlatformEventType type, short screenX, short screenY);
-	static PlatformEventArgs makeKeyEvent(PlatformWindow* sender, PlatformEventType type, Keys keyCode, ModifierKeys modifierKeys, char keyChar);
+	static PlatformEventArgs makeKeyEvent(PlatformWindow* sender, PlatformEventType type, Keys keyCode, ModifierKeys modifierKeys, Char keyChar);
 	static PlatformEventArgs makeMouseWheelEvent(PlatformWindow* sender, int delta);
 	static PlatformEventArgs makeDragDropEvent(PlatformWindow* sender, PlatformEventType type, DataObject* data, DragDropEffects* effect);
 };

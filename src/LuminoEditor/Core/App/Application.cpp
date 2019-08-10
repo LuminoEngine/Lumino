@@ -46,6 +46,9 @@ ln::Result EditorApplication::init()
 	ln::EngineSettings::setMainBackBufferSize(1000, 600);
     ln::detail::EngineDomain::engineManager()->settings().defaultObjectsCreation = false;
     ln::detail::EngineDomain::engineManager()->init();
+
+    ln::Font::registerFontFromFile(u"D:/Proj/LN/Lumino/tools/mplus-font/mplus-1c-regular.ttf");
+
     m_workspace = ln::makeObject<lna::Workspace>();
     onInit();
 

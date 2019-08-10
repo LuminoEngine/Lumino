@@ -205,8 +205,6 @@ int main(int argc, char** argv)
 
 	Engine::initialize();
 
-    //Engine::mainCamera()->addComponent(makeObject<CameraOrbitControlComponent>());
-	//Font::registerFontFromFile(u"C:/Users/hldc0061/Downloads/mplus-TESTFLIGHT-063/mplus-1c-regular.ttf");
 
 
 	//{

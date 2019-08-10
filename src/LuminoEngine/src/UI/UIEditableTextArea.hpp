@@ -102,6 +102,7 @@ struct UITextRange
     UITextRange(int b, int e) : beginIndex(b), endIndex(e) {}
 
     int length() const { return endIndex - beginIndex; }
+    void offset(int amount) { beginIndex += amount; beginIndex = std::max(0, beginIndex);  endIndex += amount; endIndex = std::max(0, endIndex); }
     bool contains(int index) const { return index >= beginIndex && index < endIndex; }
     bool inclusiveContains(int index) const { return index >= beginIndex && index <= endIndex; }
     UITextRange intersect(const UITextRange& other) const
@@ -202,6 +203,7 @@ class UITextLayout : public Object
 public:
 	void setBaseTextStyle(Font* font, const Color& textColor);	// PhysicalLine再構築
 	void setText(const StringRef& value);	// すべて再構築
+    void insertAt(const UITextLocation& loc, const StringRef& text);
 
     void updateCursorHighlight();
     void removeCursorHighlight();
@@ -211,7 +213,7 @@ public:
 	void render(UIRenderingContext* context);
 
     bool handleKeyDown(UIKeyEventArgs* e);
-    bool handleTyleChar(Char ch);
+    bool handleTypeChar(Char ch);
 
     bool isHorizontalFlow() const { return true; }
 
