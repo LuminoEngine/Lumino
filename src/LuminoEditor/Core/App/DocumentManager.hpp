@@ -47,4 +47,6 @@ public:
 protected:
 
 private:
+    Ref<ln::AssetModel> m_asset;
+    Ref<ln::AssetEditorViewModel> m_editor;
 };

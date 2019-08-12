@@ -16,6 +16,9 @@ enum class EditorExtensionType
 
     /** ある種類のファイル 1 つを編集するための拡張機能 */
     AssetEditor,
+
+    // 別の AssetEditor を拡張する
+    AssetSubEditor,
 };
 
 // Plugin に限らず、トランスパイらによって生成されたモジュールなども含む、DynamicLoad のルートインターフェイス。

@@ -63,11 +63,12 @@ void DocumentManager::addDocument(Document* doc)
 
 AssetEditorDocument::AssetEditorDocument()
 {
-
 }
 
 ln::Result AssetEditorDocument::init(ln::AssetModel* asset, ln::AssetEditorViewModel* editorModel)
 {
-    
+    Document::init();
+    m_asset = asset;
+    m_editor = editorModel;
     return true;
 }

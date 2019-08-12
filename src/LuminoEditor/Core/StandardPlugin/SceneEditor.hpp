@@ -17,6 +17,11 @@
     
     なので、SceneEditor というひとつの View の中に、別の View を Eclipse のパースペクティブ切り替えみたいに内包できるようにしたい。
     → WorldObject の編集は基本的に右側のインスペクタで行うが、Tilemap のようにインスペクタでは足りないものは別 View を開く、みたいな。
+
+    [2019/8/12]
+    そうすると、そういった Object 編集の Ext の位置づけは、任意の Editor に対する拡張、ということになる。
+    SceneEditor を拡張する TilemapEditor とか、あるいは Scene でなくても、Database のデフォルトの Editor を拡張するものとかも考えられる。
+    これ系の拡張は、何らかの Editor を開いたら Manager から検索して、その Editor にアタッチして、あとは必要なタイミングで動いてもらうみたいな動きになる。
 */
 class SceneEditor : public ln::AssetEditorViewModel
 {
