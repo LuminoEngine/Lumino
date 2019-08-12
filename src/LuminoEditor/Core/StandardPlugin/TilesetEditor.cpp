@@ -18,7 +18,7 @@ void TilesetList::init()
     auto layout2 = ln::makeObject<ln::UIHBoxLayout2>();
     layout1->addChild(layout2);
     {
-        auto caption = ln::UITextBlock::create(u"Tilesets");
+        auto caption = ln::UITextBlock::create(u"Tileset");
         caption->setVerticalAlignment(ln::VAlignment::Center);
         layout2->addChild(caption);
 
@@ -30,7 +30,6 @@ void TilesetList::init()
     }
 
     m_listview = ln::makeObject<ln::UIListView>();
-    m_listview->setBackgroundColor(ln::Color::Red);
     m_listview->getGridLayoutInfo()->layoutWeight = 1;
     layout1->addChild(m_listview);
 
@@ -38,7 +37,7 @@ void TilesetList::init()
     auto project = lna::Workspace::instance()->project();
     auto model = ln::makeObject<ln::UIFileSystemCollectionModel>();
     model->setExcludeFilters(ln::makeList<ln::String>({ u"*.lnasset" }));
-    model->setRootPath(project->assetsDir());
+    model->setRootPath(ln::Path(project->assetsDir(), u"Tileset"));
     m_listview->setViewModel(model);
 }
 

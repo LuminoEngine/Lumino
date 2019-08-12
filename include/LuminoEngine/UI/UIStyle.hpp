@@ -744,6 +744,22 @@ public:
     static const Color& get(UIColorHues hue, int shades = 5);
 };
 
+class UIColorPalette
+    : public Object
+{
+public:
+    void add(const StringRef& name, const Color& color);
+
+    // ない場合は透明 (0, 0, 0, 0)
+    const Color& get(const StringRef& name) const;
+    
+LN_CONSTRUCT_ACCESS:
+    UIColorPalette();
+	void init();
+
+private:
+    std::unordered_map<String, Color> m_colors;
+};
 
 class UIVisualStates
 {

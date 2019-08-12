@@ -1437,6 +1437,35 @@ const Color& UIColors::get(UIColorHues index, int depth)
     return g_colors[(int)index][depth];
 }
 
+//==============================================================================
+// UIColorPalette
+//      命名の基本は <目的>.<属性名>
+//      button.background
+//      inputValidation.errorBackground
+//      例:https://code.visualstudio.com/api/references/theme-color
+
+const Color& UIColorPalette::get(const StringRef& name) const
+{
+    auto itr = m_colors.find(name);
+    if (itr != m_colors.end())
+        return itr->second;
+    else
+        return Color::Transparency;
+}
+
+UIColorPalette::UIColorPalette()
+{
+}
+
+void UIColorPalette::add(const StringRef& name, const Color& color)
+{
+    m_colors[name] = color;
+}
+
+void UIColorPalette::init()
+{
+    Object::init();
+}
 
 //==============================================================================
 // UIVisualStates

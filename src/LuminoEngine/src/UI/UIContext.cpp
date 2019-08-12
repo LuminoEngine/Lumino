@@ -61,7 +61,9 @@ void UIContext::updateStyleTree()
 
 void UIContext::setupDefaultStyle()
 {
-	Color controlBackground = UIColors::get(UIColorHues::Grey, 3);
+    auto palette = makeObject<UIColorPalette>();
+    palette->add(u"control.background", UIColors::get(UIColorHues::Grey, 2));
+
 	Color activeControlBackground = UIColors::get(UIColorHues::Grey, 0);
 
 	//Color containerBackground = UIColors::get(UIColorHues::Grey, 3);
@@ -183,6 +185,13 @@ void UIContext::setupDefaultStyle()
 
 		}
         //--------------------------------
+        // UIListView
+        {
+            if (auto s = sheet->obtainStyle(u"UIListView")) {
+                s->backgroundColor = palette->get(u"control.background");
+            }
+        }
+        //--------------------------------
         // UITreeItem
         {
             if (auto s = sheet->obtainStyle(u"UITreeItem")) {
@@ -221,7 +230,7 @@ void UIContext::setupDefaultStyle()
 			if (auto s = sheet->obtainStyle(u"UITabItem")) {
 				s->minWidth = 100;
 				s->minHeight = 30;
-				s->backgroundColor = controlBackground;
+                s->backgroundColor = palette->get(u"control.background");
 			}
 			if (auto s = sheet->obtainStyle(u"UITabItem:Selected")) {
 				s->backgroundColor = activeControlBackground;
