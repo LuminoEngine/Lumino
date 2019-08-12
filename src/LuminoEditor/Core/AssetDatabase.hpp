@@ -8,6 +8,7 @@ class AssetDatabase
 	: public ln::Object
 {
 public:
+    // 拡張子不要
     Ref<ln::AssetModel> openAsset(const ln::Path& filePath);
 
     bool isImportedAssetFile(const ln::Path& file) const;

@@ -25,7 +25,7 @@ public:
     virtual void onClosed() override;
 };
 
-class SceneEditorPlugin : public ln::IDocumentEditorExtension
+class SceneEditorPlugin : public ln::IAssetEditorExtension
 {
 public:
     SceneEditorPlugin();

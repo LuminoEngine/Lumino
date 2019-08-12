@@ -15,7 +15,7 @@ enum class EditorExtensionType
     AssetImporter,
 
     /** ある種類のファイル 1 つを編集するための拡張機能 */
-    DocumentEditor,
+    AssetEditor,
 };
 
 // Plugin に限らず、トランスパイらによって生成されたモジュールなども含む、DynamicLoad のルートインターフェイス。
@@ -73,10 +73,10 @@ public:
 
 
 
-class IDocumentEditorExtension : public IEditorExtension
+class IAssetEditorExtension : public IEditorExtension
 {
 public:
-    virtual EditorExtensionType getExtensionType() const { return EditorExtensionType::DocumentEditor; }
+    virtual EditorExtensionType getExtensionType() const { return EditorExtensionType::AssetEditor; }
 
     /** この DocumentEditor が編集対象とするオブジェクトの種別。asset ファイルに埋め込まれる種類。 */
     virtual const Char* typeKeyword() const = 0;

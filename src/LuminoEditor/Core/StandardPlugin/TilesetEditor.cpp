@@ -120,24 +120,24 @@ Ref<ln::AssetImporter> TilesetImporterExtension::createImporter(const ln::Char* 
 }
 
 //==============================================================================
-// TilesetEditorModel
+// TilesetEditor
 
-void TilesetEditorModel::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
+void TilesetEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
 {
 }
 
-void TilesetEditorModel::onClosed()
+void TilesetEditor::onClosed()
 {
 }
 
 //==============================================================================
-// TilesetEditorPlugin
+// TilesetEditorExtension
 
-TilesetEditorPlugin::TilesetEditorPlugin()
+TilesetEditorExtension::TilesetEditorExtension()
 {
 }
 
-ln::Ref<ln::AssetEditorViewModel> TilesetEditorPlugin::createEditor()
+ln::Ref<ln::AssetEditorViewModel> TilesetEditorExtension::createEditor()
 {
-    return ln::makeObject<TilesetEditorModel>();
+    return ln::makeObject<TilesetEditor>();
 }

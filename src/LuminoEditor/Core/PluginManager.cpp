@@ -35,20 +35,26 @@ Ref<ln::AssetImporter> StandardTextureImporterExtension::createImporter(const ln
 StandardPluginModule::StandardPluginModule()
 {
     {
-        auto obj = ln::makeObject<StandardTextureImporterExtension>();
-        m_editorExtensionInstances.add(obj);
-        m_editorExtensions.add(obj);
+        auto ext = ln::makeObject<StandardTextureImporterExtension>();
+        m_editorExtensionInstances.add(ext);
+        m_editorExtensions.add(ext);
     }
     {
-        auto obj = ln::makeObject<AssetBrowserNavigatorExtension>();
-        m_editorExtensionInstances.add(obj);
-        m_editorExtensions.add(obj);
+        auto ext = ln::makeObject<AssetBrowserNavigatorExtension>();
+        m_editorExtensionInstances.add(ext);
+        m_editorExtensions.add(ext);
     }
     {
-        auto obj = ln::makeObject<TilesetNavigatorExtension>();
-        m_editorExtensionInstances.add(obj);
-        m_editorExtensions.add(obj);
+        auto ext = ln::makeObject<TilesetNavigatorExtension>();
+        m_editorExtensionInstances.add(ext);
+        m_editorExtensions.add(ext);
     }
+    {
+        auto ext = ln::makeObject<TilesetEditorExtension>();
+        m_editorExtensionInstances.add(ext);
+        m_editorExtensions.add(ext);
+    }
+    
 }
 
 //==============================================================================
@@ -127,15 +133,15 @@ ln::List<std::pair<ln::IAssetImporterEditorExtension*, Ref<ln::AssetImporter>>> 
     return result;
 } 
 
-ln::List<std::pair<ln::IDocumentEditorExtension*, Ref<ln::AssetEditorViewModel>>> PluginManager::geAssetEditorExtensions(const ln::String& assetType) const
+ln::List<std::pair<ln::IAssetEditorExtension*, Ref<ln::AssetEditorViewModel>>> PluginManager::geAssetEditorExtensions(const ln::String& assetType) const
 {
-    ln::List<std::pair<ln::IDocumentEditorExtension*, Ref<ln::AssetEditorViewModel>>> result;
+    ln::List<std::pair<ln::IAssetEditorExtension*, Ref<ln::AssetEditorViewModel>>> result;
     for (auto& module : m_pluginModules) {
         int count = module->getEditorExtensionCount();
         for (int i = 0; i < count; i++) {
             auto ext = module->getEditorExtension(i);
-            if (ext && ext->getExtensionType() == ln::EditorExtensionType::DocumentEditor) {
-                auto editorExt = static_cast<ln::IDocumentEditorExtension*>(ext);
+            if (ext && ext->getExtensionType() == ln::EditorExtensionType::AssetEditor) {
+                auto editorExt = static_cast<ln::IAssetEditorExtension*>(ext);
                 if (assetType == editorExt->typeKeyword()) {
                     if (auto editor = editorExt->createEditor()) {
                         result.add({ editorExt, editor });

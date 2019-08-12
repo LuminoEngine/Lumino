@@ -572,6 +572,7 @@ void UIElement::removeVisualChild(UIElement* element)
 
 	m_visualChildren->remove(element);
 	element->m_visualParent = nullptr;
+    invalidateLayout();
 }
 
 //void UIElement::onSetup()

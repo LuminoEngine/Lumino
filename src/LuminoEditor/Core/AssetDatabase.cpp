@@ -14,7 +14,11 @@ AssetDatabase::AssetDatabase()
 
 Ref<ln::AssetModel> AssetDatabase::openAsset(const ln::Path& filePath)
 {
-    auto assetFile = filePath.str() + ln::AssetModel::AssetFileExtension;
+    auto assetFile = filePath.str();
+    if (!filePath.hasExtension(ln::AssetModel::AssetFileExtension)) {
+        assetFile += ln::AssetModel::AssetFileExtension;
+    }
+    
     if (LN_REQUIRE(ln::FileSystem::existsFile(assetFile))) return nullptr;
 
     auto asset = ln::makeObject<ln::AssetModel>();

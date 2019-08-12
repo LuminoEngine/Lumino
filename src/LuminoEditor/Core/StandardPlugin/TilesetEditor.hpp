@@ -52,20 +52,22 @@ public:
 };
 
 
-class TilesetEditorModel : public ln::AssetEditorViewModel
+class TilesetEditor : public ln::AssetEditorViewModel
 {
 public:
     virtual void onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame) override;
     virtual void onClosed() override;
 };
 
-class TilesetEditorPlugin : public ln::IDocumentEditorExtension
+class TilesetEditorExtension
+    : public ln::Object
+    , public ln::IAssetEditorExtension
 {
 public:
-    TilesetEditorPlugin();
+    TilesetEditorExtension();
     virtual const ln::Char* id() const { return u"E27FD90C-AE45-45B4-BF53-B68FD144B611"; }
-    virtual const ln::Char* displayName() const { return u"TilesetEditorPlugin"; }
-    virtual const ln::Char* typeKeyword() const { return u"Tilemap"; }
+    virtual const ln::Char* displayName() const { return u"TilesetEditorExtension"; }
+    virtual const ln::Char* typeKeyword() const { return u"Tileset"; }
     virtual ln::Ref<ln::AssetEditorViewModel> createEditor() override;
 
 private:
