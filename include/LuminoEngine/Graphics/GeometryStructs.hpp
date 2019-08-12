@@ -130,6 +130,7 @@ public:
     }
 
 public:
+    Size& operator+=(const Size& v) noexcept { width += v.width; height += v.height; return *this; }
     bool operator==(const Size& obj) const { return (width == obj.width && height == obj.height); }
     bool operator!=(const Size& obj) const { return !operator==(obj); }
     operator const Vector2&() const { return *reinterpret_cast<const Vector2*>(this); }

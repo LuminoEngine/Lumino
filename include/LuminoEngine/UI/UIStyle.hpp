@@ -744,7 +744,7 @@ public:
     static const Color& get(UIColorHues hue, int shades = 5);
 };
 
-class UIColorPalette
+class UITheme
     : public Object
 {
 public:
@@ -752,13 +752,18 @@ public:
 
     // ない場合は透明 (0, 0, 0, 0)
     const Color& get(const StringRef& name) const;
+
+    void setSpacing(float value) { m_spacing = value; }
+
+    float spacing(float factor) const { return m_spacing * factor; }
     
 LN_CONSTRUCT_ACCESS:
-    UIColorPalette();
+    UITheme();
 	void init();
 
 private:
     std::unordered_map<String, Color> m_colors;
+    float m_spacing;
 };
 
 class UIVisualStates

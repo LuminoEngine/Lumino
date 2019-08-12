@@ -61,8 +61,10 @@ void UIContext::updateStyleTree()
 
 void UIContext::setupDefaultStyle()
 {
-    auto palette = makeObject<UIColorPalette>();
-    palette->add(u"control.background", UIColors::get(UIColorHues::Grey, 2));
+    auto theme = makeObject<UITheme>();
+    theme->setSpacing(8); // MUI default
+    theme->add(u"control.background", UIColors::get(UIColorHues::Grey, 2));
+    theme->add(u"collection.selectedBackground", UIColors::get(UIColorHues::LightGreen, 2));
 
 	Color activeControlBackground = UIColors::get(UIColorHues::Grey, 0);
 
@@ -188,7 +190,19 @@ void UIContext::setupDefaultStyle()
         // UIListView
         {
             if (auto s = sheet->obtainStyle(u"UIListView")) {
-                s->backgroundColor = palette->get(u"control.background");
+                s->backgroundColor = theme->get(u"control.background");
+                s->padding = Thickness(0, theme->spacing(1));
+            }
+        }
+        //--------------------------------
+        // UIListViewItem
+        {
+            if (auto s = sheet->obtainStyle(u"UIListViewItem")) {
+                s->minHeight = 30;
+                s->padding = theme->spacing(1);
+            }
+            if (auto s = sheet->obtainStyle(u"UIListViewItem:Selected")) {
+                s->backgroundColor = theme->get(u"collection.selectedBackground");
             }
         }
         //--------------------------------
@@ -230,7 +244,7 @@ void UIContext::setupDefaultStyle()
 			if (auto s = sheet->obtainStyle(u"UITabItem")) {
 				s->minWidth = 100;
 				s->minHeight = 30;
-                s->backgroundColor = palette->get(u"control.background");
+                s->backgroundColor = theme->get(u"control.background");
 			}
 			if (auto s = sheet->obtainStyle(u"UITabItem:Selected")) {
 				s->backgroundColor = activeControlBackground;

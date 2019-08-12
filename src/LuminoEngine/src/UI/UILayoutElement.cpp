@@ -252,33 +252,59 @@ ILayoutPanel::ILayoutPanel()
 
 namespace detail {
 
+Size LayoutHelper::measureElementSpacing(UILayoutElement* element)
+{
+    Size spacing;
+
+    spacing.width = element->m_finalStyle->padding.width();
+    spacing.height = element->m_finalStyle->padding.height();
+
+    if (!element->m_finalStyle->borderInset) {
+        spacing.width += element->m_finalStyle->borderThickness.width();
+        spacing.height += element->m_finalStyle->borderThickness.height();
+    }
+
+    return spacing;
+}
+
+Size LayoutHelper::measureElementBodySize(UILayoutElement* element)
+{
+    Size size(element->m_finalStyle->width, element->m_finalStyle->height);
+    Size bodySize;
+    bodySize.width = Math::isNaNOrInf(size.width) ? 0.0f : size.width;
+    bodySize.height = Math::isNaNOrInf(size.height) ? 0.0f : size.height;
+
+    Size minSize, maxSize;
+    element->getLayoutMinMaxInfo(&minSize, &maxSize);
+    if (!Math::isNaNOrInf(minSize.width)) bodySize.width = std::max(bodySize.width, minSize.width);
+    if (!Math::isNaNOrInf(minSize.height)) bodySize.height = std::max(bodySize.height, minSize.height);
+    if (!Math::isNaNOrInf(maxSize.width)) bodySize.width = std::min(bodySize.width, maxSize.width);
+    if (!Math::isNaNOrInf(maxSize.height)) bodySize.height = std::min(bodySize.height, maxSize.height);
+
+    return bodySize;
+}
+
 Size LayoutHelper::measureElement(UILayoutElement* element, const Size& constraint)
 {
     Size size(element->m_finalStyle->width, element->m_finalStyle->height);
-	Size desiredSize;
+	Size desiredSize = measureElementBodySize(element);
 
-	// NaN の場合、この要素として必要な最小サイズは 0 となる。
-	desiredSize.width = Math::isNaNOrInf(size.width) ? 0.0f : size.width;
-	desiredSize.height = Math::isNaNOrInf(size.height) ? 0.0f : size.height;
-	desiredSize.width = std::min(desiredSize.width, constraint.width);
-	desiredSize.height = std::min(desiredSize.height, constraint.height);
+	//// NaN の場合、この要素として必要な最小サイズは 0 となる。
+	//desiredSize.width = Math::isNaNOrInf(size.width) ? 0.0f : size.width;
+	//desiredSize.height = Math::isNaNOrInf(size.height) ? 0.0f : size.height;
+	//desiredSize.width = std::min(desiredSize.width, constraint.width);
+	//desiredSize.height = std::min(desiredSize.height, constraint.height);
 
-	Size minSize, maxSize;
-	element->getLayoutMinMaxInfo(&minSize, &maxSize);
-	if (!Math::isNaNOrInf(minSize.width)) desiredSize.width = std::max(desiredSize.width, minSize.width);
-	if (!Math::isNaNOrInf(minSize.height)) desiredSize.height = std::max(desiredSize.height, minSize.height);
-	if (!Math::isNaNOrInf(maxSize.width)) desiredSize.width = std::min(desiredSize.width, maxSize.width);
-	if (!Math::isNaNOrInf(maxSize.height)) desiredSize.height = std::min(desiredSize.height, maxSize.height);
+	//Size minSize, maxSize;
+	//element->getLayoutMinMaxInfo(&minSize, &maxSize);
+	//if (!Math::isNaNOrInf(minSize.width)) desiredSize.width = std::max(desiredSize.width, minSize.width);
+	//if (!Math::isNaNOrInf(minSize.height)) desiredSize.height = std::max(desiredSize.height, minSize.height);
+	//if (!Math::isNaNOrInf(maxSize.width)) desiredSize.width = std::min(desiredSize.width, maxSize.width);
+	//if (!Math::isNaNOrInf(maxSize.height)) desiredSize.height = std::min(desiredSize.height, maxSize.height);
 
-	desiredSize.width += element->m_finalStyle->padding.width();
-	desiredSize.height += element->m_finalStyle->padding.height();
+    desiredSize += measureElementSpacing(element);
 
-	if (!element->m_finalStyle->borderInset) {
-		desiredSize.width += element->m_finalStyle->borderThickness.width();
-		desiredSize.height += element->m_finalStyle->borderThickness.height();
-	}
-
-	return desiredSize;
+	return Size::min(desiredSize, constraint);
 }
 
 Rect LayoutHelper::arrangeContentArea(UILayoutElement* element, const Size& finalSize)

@@ -12,6 +12,7 @@ public:
 
 protected:
     // base interface
+    virtual const String& elementName() const  override { static String name = u"UIListViewItem"; return name; }
     virtual void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel) override;
 
 LN_CONSTRUCT_ACCESS:
