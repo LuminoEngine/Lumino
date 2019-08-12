@@ -11,6 +11,8 @@ namespace ln {
 //==============================================================================
 // Tileset
 
+LN_OBJECT_IMPLEMENT(Tileset, Object) {}
+
 Ref<Tileset> Tileset::create()
 {
     return makeObject<Tileset>();

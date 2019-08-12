@@ -14,6 +14,7 @@ class RenderingContext;
 class Tileset
 	: public Object
 {
+    LN_OBJECT;
 public:
     static Ref<Tileset> create();
 
