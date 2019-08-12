@@ -15,6 +15,7 @@ class UIStyleContext;
 class UIVisualStateManager;
 class UIAction;
 class UIContainerElement;
+class UIControl;
 class UIFrameWindow;
 enum class BlendMode : uint8_t;
 struct Color;
@@ -423,8 +424,8 @@ public:	// TODO: internal protected
 
 	Flags<detail::ObjectManagementFlags>& objectManagementFlags() { return m_objectManagementFlags; }
 	Flags<detail::UISpecialElementFlags>& specialElementFlags() { return m_specialElementFlags; }
-    void setLogicalParent(UIContainerElement* parent) { m_logicalParent = parent; }
-    UIContainerElement* logicalParent() const { return m_logicalParent; }
+    void setLogicalParent(UIControl* parent) { m_logicalParent = parent; }
+    UIControl* logicalParent() const { return m_logicalParent; }
     void removeFromLogicalParent();
 
 
@@ -440,7 +441,7 @@ public: // TODO: internal
 	Flags<detail::UISpecialElementFlags> m_specialElementFlags;
     UIContext* m_context;       // ルート要素 (ほとんどの場合は UIFrameWindow) が値を持つ。それ以外は基本的に null. もしウィンドウ内で別のコンテキストに属したい場合はセットする。
     UIElement* m_visualParent;
-    UIContainerElement* m_logicalParent;
+    UIControl* m_logicalParent;    // TODO: Layout も親となりえる。
 	Ref<List<Ref<UIElement>>> m_visualChildren;
     Ref<List<String>> m_classList;
     Ref<List<Ref<UIAction>>> m_actions;

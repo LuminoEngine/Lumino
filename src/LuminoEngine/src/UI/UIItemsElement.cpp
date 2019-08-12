@@ -103,7 +103,7 @@ UIItemsControl::UIItemsControl()
 
 void UIItemsControl::init()
 {
-    UIScrollViewer::init();
+    UIControl::init();
 
 	// dummy for single select mode
 	m_selectedItems.add(nullptr);
@@ -143,20 +143,20 @@ void UIItemsControl::addItem(UICollectionItem* item)
 
 void UIItemsControl::onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)
 {
-	UIScrollViewer::onUpdateStyle(styleContext, finalStyle);
+    UIControl::onUpdateStyle(styleContext, finalStyle);
 
-	if (finalStyle->overflowX == UIOverflowBehavior::Scroll) {
-		setHScrollbarVisible(true);
-	}
-	else {
-		setHScrollbarVisible(false);
-	}
-	if (finalStyle->overflowY == UIOverflowBehavior::Scroll) {
-		setVScrollbarVisible(true);
-	}
-	else {
-		setVScrollbarVisible(false);
-	}
+	//if (finalStyle->overflowX == UIOverflowBehavior::Scroll) {
+	//	setHScrollbarVisible(true);
+	//}
+	//else {
+	//	setHScrollbarVisible(false);
+	//}
+	//if (finalStyle->overflowY == UIOverflowBehavior::Scroll) {
+	//	setVScrollbarVisible(true);
+	//}
+	//else {
+	//	setVScrollbarVisible(false);
+	//}
 }
 
 Size UIItemsControl::measureOverride(const Size& constraint)
@@ -168,7 +168,7 @@ Size UIItemsControl::measureOverride(const Size& constraint)
         return Size::max(layoutSize, localSize);
     }
     else {
-        return UIScrollViewer::measureOverride(constraint);
+        return UIControl::measureOverride(constraint);
     }
 }
 
@@ -182,7 +182,7 @@ Size UIItemsControl::arrangeOverride(const Size& finalSize)
     	return finalSize;
     }
     else {
-        return UIScrollViewer::arrangeOverride(finalSize);
+        return UIControl::arrangeOverride(finalSize);
     }
 }
 

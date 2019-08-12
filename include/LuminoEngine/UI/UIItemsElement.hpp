@@ -42,7 +42,7 @@ private:
 };
 
 class UIItemsControl	// TODO: UICollectionItem がほかにいい名前思いつかなければ、CollectionControl かなぁ・・・
-	: public UIScrollViewer
+	: public UIControl
 {
 protected:
 	//virtual UIControl* generateItem(UIElement* content) = 0;

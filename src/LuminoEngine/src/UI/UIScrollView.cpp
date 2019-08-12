@@ -222,7 +222,7 @@ UITrack::~UITrack()
 
 void UITrack::init()
 {
-	UIContainerElement::init();
+    UIControl::init();
 
 	// register VisualState
 	auto* vsm = getVisualStateManager();
@@ -735,7 +735,7 @@ void UIScrollViewer::setVScrollbarVisible(bool value)
 
 void UIScrollViewer::init()
 {
-    UIContainerElement::init();
+    UIControl::init();
 	setHScrollbarVisible(true);
 	setVScrollbarVisible(true);
     //m_horizontalScrollBar = makeObject<UIScrollBar>();
@@ -752,7 +752,7 @@ void UIScrollViewer::init()
 
 Size UIScrollViewer::measureOverride(const Size& constraint)
 {
-    Size desiredSize = UIContainerElement::measureOverride(constraint);
+    Size desiredSize = UIControl::measureOverride(constraint);
 
     if (m_verticalScrollBar) {
         m_verticalScrollBar->measureLayout(constraint);
@@ -794,7 +794,7 @@ Size UIScrollViewer::arrangeOverride(const Size& finalSize)
 
 
     Size childArea(finalSize.width - barWidth, finalSize.height - barHeight);
-    Size actualSize = UIContainerElement::arrangeOverride(childArea);
+    Size actualSize = UIControl::arrangeOverride(childArea);
 
 
 
@@ -831,7 +831,7 @@ Size UIScrollViewer::arrangeOverride(const Size& finalSize)
 
 void UIScrollViewer::onRoutedEvent(UIEventArgs* e)
 {
-    UIContainerElement::onRoutedEvent(e);
+    UIControl::onRoutedEvent(e);
 
     if (e->type() == UIEvents::ScrollEvent)
     {

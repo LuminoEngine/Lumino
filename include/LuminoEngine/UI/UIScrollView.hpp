@@ -97,7 +97,7 @@ private:
 	@brief
 */
 class UITrack
-	: public UIContainerElement	// TODO: UIElement にしたい気持ち。今は init で addElement している個所を、addVisualChild とかにしたい。
+	: public UIControl	// TODO: UIElement にしたい気持ち。今は init で addElement している個所を、addVisualChild とかにしたい。
 								// ※VisualChild はその要素を表現するために深く紐づいた子要素。Window のクライアント領域外のボタンとかが相当する。
 {
 	//LN_OBJECT;
