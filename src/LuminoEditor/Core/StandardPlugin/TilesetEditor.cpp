@@ -39,9 +39,9 @@ void TilesetList::init()
     auto project = lna::Workspace::instance()->project();
     m_assetRootDir = ln::Path(project->assetsDir(), u"Tileset");
 
-    auto model = ln::makeObject<ln::UIFileSystemCollectionModel>();
-    model->setRootPath(m_assetRootDir);
-    m_listview->setViewModel(model);
+    m_model = ln::makeObject<ln::UIFileSystemCollectionModel>();
+    m_model->setRootPath(m_assetRootDir);
+    m_listview->setViewModel(m_model);
 }
 
 void TilesetList::addButton_Clicked(ln::UIEventArgs* e)
@@ -55,7 +55,8 @@ void TilesetList::addButton_Clicked(ln::UIEventArgs* e)
         
     asset->saveInternal(path);
 
-    m_listview->refresh();
+    m_model->refresh();
+    //m_listview->refresh();
 }
 
 //==============================================================================

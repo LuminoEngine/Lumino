@@ -10,6 +10,7 @@ public:
 private:
     void addButton_Clicked(ln::UIEventArgs* e);
 
+    Ref<ln::UIFileSystemCollectionModel> m_model;
     Ref<ln::UIListView> m_listview;
     ln::Path m_assetRootDir;
 };

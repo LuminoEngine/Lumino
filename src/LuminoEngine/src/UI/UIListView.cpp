@@ -103,6 +103,14 @@ void UIListView::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldV
     refresh();
 }
 
+void UIListView::onSourcePropertyChanged(const StringRef& name)
+{
+    UIItemsControl::onSourcePropertyChanged(name);
+    if (name.isEmpty()) {
+        refresh();
+    }
+}
+
 Size UIListView::measureOverride(const Size& constraint)
 {
     return UIItemsControl::measureOverride(constraint);

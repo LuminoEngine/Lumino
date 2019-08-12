@@ -68,6 +68,8 @@ public:
 
     virtual Path filePath(UICollectionItemModel* itemModel);
 
+    void refresh();
+
 
 
 LN_CONSTRUCT_ACCESS:
@@ -88,7 +90,8 @@ private:
 
 	FileSystemNode* getNode(UICollectionItemModel* index);
 	Ref<FileSystemNode> makeNode(const Path& path) const;
-	void constructChildNodes(FileSystemNode* node) const;
+	void constructChildNodes(FileSystemNode* node, bool reset) const;
+    void refreshHierarchical(UICollectionItemModel* model);
     bool testFilter(const Path& path) const;
 
 	Ref<FileSystemNode> m_rootNode;

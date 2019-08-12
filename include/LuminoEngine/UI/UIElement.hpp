@@ -79,19 +79,20 @@ class UIViewModel
 	: public Object
 {
 public:
-	virtual void notify(const StringRef& propertyName)
-	{
-		// TODO:
-	}
+    virtual void notify(const StringRef& propertyName = StringRef());
 
 	void subscribe(UIElement* observer)	// TODO: connection 返すようにした方がいいかも？
 	{
 		m_observers.add(observer);
 	}
 
+    void unsubscribe(UIElement* observer)
+    {
+        m_observers.remove(observer);
+    }
 
 private:
-	List<WeakRefPtr<UIElement>> m_observers;
+	List<UIElement*> m_observers;
 };
 
 
@@ -353,6 +354,7 @@ public:	// TODO: internal protected
 	
     //virtual void onSetup(); // インスタンス構築直後。VisualTree や Style, Layout は構築されているとは限らない。初回 update 前に this のプロパティを設定するために使う。
 	virtual void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel);
+    virtual void onSourcePropertyChanged(const StringRef& name);
     virtual void onLoaded();    // インスタンス作成後、UIツリーに追加されていない場合は呼ばれない
     virtual void onUpdateFrame(float elapsedSeconds);
 
@@ -459,6 +461,7 @@ public: // TODO: internal
     friend class UIContext;
     friend class UIRenderView;
     friend class UIFrameWindow;
+    friend class UIViewModel;
 
 	int getVisualChildrenCount() const { return (m_visualChildren) ? m_visualChildren->size() : 0; }
 	UIElement* getVisualChild(int index) const { return (m_visualChildren) ? m_visualChildren->at(index) : nullptr; }

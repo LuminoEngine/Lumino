@@ -104,27 +104,37 @@ Path UIFileSystemCollectionModel::filePath(UICollectionItemModel* itemModel)
     return node->path;
 }
 
+void UIFileSystemCollectionModel::refresh()
+{
+    if (m_rootModel) {
+        refreshHierarchical(m_rootModel);
+        notify();   // TODO: rootModel の分もここへ流すか・・・？いっそ rootModel 廃止した方がいいような気もする
+    }
+}
+
 UIFileSystemCollectionModel::FileSystemNode* UIFileSystemCollectionModel::getNode(UICollectionItemModel* index)
 {
     if (!index) {
         return m_rootNode;
     }
 	auto node = index->data()->getObject<FileSystemNode>();
-	constructChildNodes(node);
+	constructChildNodes(node, false);
 	return node;
 }
 
 Ref<UIFileSystemCollectionModel::FileSystemNode> UIFileSystemCollectionModel::makeNode(const Path& path) const
 {
 	auto node = makeRef<FileSystemNode>(path);
-	constructChildNodes(node);
+	constructChildNodes(node, false);
 	return node;
 }
 
-void UIFileSystemCollectionModel::constructChildNodes(FileSystemNode* node) const
+void UIFileSystemCollectionModel::constructChildNodes(FileSystemNode* node, bool reset) const
 {
-	if (node->dirty)
+	if (node->dirty || reset)
 	{
+        node->children.clear();
+
 		if (FileSystem::existsDirectory(node->path)) {
 			auto& path = node->path;
 			auto dirs = FileSystem::getDirectories(path, StringRef(), SearchOption::TopDirectoryOnly);
@@ -140,6 +150,19 @@ void UIFileSystemCollectionModel::constructChildNodes(FileSystemNode* node) cons
 		}
 		node->dirty = false;
 	}
+}
+
+// TODO: サブツリー全部捜査しようとする。ツリーで展開されている部分や、リストで表示されている部分に絞るなど、対策しておく。
+void UIFileSystemCollectionModel::refreshHierarchical(UICollectionItemModel* model)
+{
+    constructChildNodes(getNode(model), true);
+    model->notify();
+    
+    int childCount = model->getChildrenCount();
+    for (int i = 0; i < childCount; i++) {
+        auto child = getIndex(i, 0, model);
+        refreshHierarchical(child);
+    }
 }
 
 bool UIFileSystemCollectionModel::testFilter(const Path& path) const

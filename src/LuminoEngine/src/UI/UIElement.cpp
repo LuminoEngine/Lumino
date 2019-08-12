@@ -19,6 +19,16 @@
 namespace ln {
 
 //==============================================================================
+// UIViewModel
+
+void UIViewModel::notify(const StringRef& propertyName)
+{
+    for (auto& target : m_observers) {
+        target->onSourcePropertyChanged(propertyName);
+    }
+}
+
+//==============================================================================
 // UIElement
 LN_OBJECT_IMPLEMENT(UIElement, UILayoutElement) {}
 
@@ -41,6 +51,9 @@ UIElement::UIElement()
 
 UIElement::~UIElement()
 {
+    if (m_viewModel) {
+        m_viewModel->unsubscribe(this);
+    }
 }
 
 void UIElement::init()
@@ -388,7 +401,12 @@ void UIElement::setViewModel(UIViewModel* value)
 {
 	if (m_viewModel != value) {
 		auto old = m_viewModel;
+        if (old) {
+            old->unsubscribe(this);
+        }
+
 		m_viewModel = value;
+        m_viewModel->subscribe(this);
 		onViewModelChanged(m_viewModel, old);
 	}
 }
@@ -561,6 +579,15 @@ void UIElement::removeVisualChild(UIElement* element)
 //}
 
 void UIElement::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel)
+{
+    if (oldViewModel) {
+        LN_NOTIMPLEMENTED();
+    }
+
+    newViewModel->subscribe(this);
+}
+
+void UIElement::onSourcePropertyChanged(const StringRef& name)
 {
 }
 
