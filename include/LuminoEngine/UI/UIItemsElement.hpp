@@ -62,7 +62,7 @@ LN_CONSTRUCT_ACCESS:
 	UIItemsControl();
 	void init();
 
-private:
+public: // TODO: 
 	void notifyItemClicked(UICollectionItem* item);
 
     Ref<UILayoutPanel2> m_itemssHostLayout;

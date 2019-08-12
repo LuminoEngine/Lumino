@@ -98,6 +98,9 @@ public:
 	static const UIEventType	Selected;
 	static const UIEventType	Unselected;
 
+    static const UIEventType	Clicked;
+
+    
 
     static const UIEventType	ExecuteCommandEvent;
     static const UIEventType	CanExecuteCommandEvent;

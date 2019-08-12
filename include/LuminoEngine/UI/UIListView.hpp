@@ -30,6 +30,9 @@ private:
 class UIListView
 	: public UIItemsControl
 {
+public:
+    void refresh();
+
 protected:
     virtual Ref<UIListViewItem> onRenderItem(UICollectionItemModel* viewModel);
 

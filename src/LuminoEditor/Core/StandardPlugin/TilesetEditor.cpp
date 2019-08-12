@@ -1,6 +1,7 @@
 
 #include <Workspace.hpp>
 #include <Project.hpp>
+#include <AssetDatabase.hpp>
 #include "../UIExtension.hpp"
 #include "TilesetEditor.hpp"
 
@@ -23,6 +24,7 @@ void TilesetList::init()
         layout2->addChild(caption);
 
         auto addButton = ln::UIButton::create(u"Add");
+        addButton->connectOnClicked(ln::bind(this, &TilesetList::addButton_Clicked));
         layout2->addChild(addButton);
 
         auto deleteButton = ln::UIButton::create(u"Delete");
@@ -35,10 +37,25 @@ void TilesetList::init()
 
 
     auto project = lna::Workspace::instance()->project();
+    m_assetRootDir = ln::Path(project->assetsDir(), u"Tileset");
+
     auto model = ln::makeObject<ln::UIFileSystemCollectionModel>();
-    model->setExcludeFilters(ln::makeList<ln::String>({ u"*.lnasset" }));
-    model->setRootPath(ln::Path(project->assetsDir(), u"Tileset"));
+    model->setRootPath(m_assetRootDir);
     m_listview->setViewModel(model);
+}
+
+void TilesetList::addButton_Clicked(ln::UIEventArgs* e)
+{
+    auto tileset = ln::makeObject<ln::Tileset>();
+    auto asset = ln::makeObject<ln::AssetModel>(tileset);
+
+    auto project = lna::Workspace::instance()->project();
+
+    auto path = ln::Path::getUniqueFilePathInDirectory(m_assetRootDir, u"Tileset-", ln::AssetModel::AssetFileExtension.c_str());
+        
+    asset->saveInternal(path);
+
+    m_listview->refresh();
 }
 
 //==============================================================================

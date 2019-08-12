@@ -34,6 +34,8 @@ const UIEventType	UIEvents::DragDropEvent = 20;
 const UIEventType	UIEvents::Selected = 21;
 const UIEventType	UIEvents::Unselected = 22;
 
+const UIEventType	UIEvents::Clicked = 23;
+
 const UIEventType	UIEvents::ExecuteCommandEvent = 201;
 const UIEventType	UIEvents::CanExecuteCommandEvent = 202;
 const UIEventType	UIEvents::CanExecuteChangedEvent = 203;

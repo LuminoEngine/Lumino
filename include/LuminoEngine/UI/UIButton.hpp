@@ -44,8 +44,16 @@ public:
 	void init();
     void init(const StringRef& text);
 
+    /** Clicked イベントの通知を受け取るコールバックを登録します。*/
+    LN_METHOD(Event)
+    EventConnection connectOnClicked(UIEventHandler handler);
+
 protected:
     virtual const String& elementName() const  override { static String name = u"UIButton"; return name; }
+    virtual void onClick(UIEventArgs* e) override;
+
+private:
+    Event<UIEventHandler> m_onClicked;
 };
 
 class UIToggleButton

@@ -163,6 +163,7 @@ public:
 
     virtual void addChild(UIElement* child) override;
     void removeChild(UIElement* child);
+    void removeAllChildren();
 
 protected:
     // IScrollInfo interface

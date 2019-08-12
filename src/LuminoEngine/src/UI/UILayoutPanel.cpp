@@ -33,6 +33,14 @@ void UILayoutPanel2::removeChild(UIElement* child)
     removeVisualChild(child);
 }
 
+void UILayoutPanel2::removeAllChildren()
+{
+    for (auto& child : m_logicalChildren) {
+        removeVisualChild(child);
+    }
+    m_logicalChildren.clear();
+}
+
 float UILayoutPanel2::getExtentWidth() const { return m_desiredSize.width; }
 float UILayoutPanel2::getExtentHeight() const { return m_desiredSize.height; }
 float UILayoutPanel2::getViewportWidth() const { return m_actualSize.width; }

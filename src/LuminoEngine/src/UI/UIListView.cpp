@@ -45,7 +45,7 @@ UIListView::UIListView()
 
 void UIListView::init()
 {
-    UIItemsControl::init();;
+    UIItemsControl::init();
 
     auto layout = makeObject<UIStackLayout2>();
     layout->setOrientation(Orientation::Vertical);
@@ -53,6 +53,35 @@ void UIListView::init()
 
     setHorizontalContentAlignment(HAlignment::Left);
     setVerticalContentAlignment(VAlignment::Center);
+}
+
+void UIListView::refresh()
+{
+    for (auto& child : m_logicalChildren) {
+        m_itemssHostLayout->removeVisualChild(child);
+    }
+    removeAllChildren();
+
+
+
+    if (m_model) {
+        int count = m_model->getRowCount(nullptr);
+        for (int i = 0; i < count; i++) {
+            auto childModel = m_model->getIndex(i, 0, nullptr);
+            auto itemData = m_model->getData(childModel, u"");
+
+            //auto text = makeObject<UITextBlock>();
+            //text->setText(itemData);
+
+            //auto child = makeObject<UITreeItem>();
+            //child->setContent(text);
+            //child->setViewModel(childModel);
+            //child->setData(makeVariant(childModel));
+            auto child = onRenderItem(childModel);
+
+            addItemInternal(child);
+        }
+    }
 }
 
 Ref<UIListViewItem> UIListView::onRenderItem(UICollectionItemModel* viewModel)
@@ -71,23 +100,7 @@ void UIListView::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldV
         LN_NOTIMPLEMENTED();
     }
 
-
-    int count = m_model->getRowCount(nullptr);
-    for (int i = 0; i < count; i++) {
-        auto childModel = m_model->getIndex(i, 0, nullptr);
-        auto itemData = m_model->getData(childModel, u"");
-
-        //auto text = makeObject<UITextBlock>();
-        //text->setText(itemData);
-
-        //auto child = makeObject<UITreeItem>();
-        //child->setContent(text);
-        //child->setViewModel(childModel);
-        //child->setData(makeVariant(childModel));
-        auto child = onRenderItem(childModel);
-
-        addItemInternal(child);
-    }
+    refresh();
 }
 
 Size UIListView::measureOverride(const Size& constraint)

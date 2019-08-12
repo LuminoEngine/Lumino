@@ -8,7 +8,10 @@ public:
 	void init();
 
 private:
+    void addButton_Clicked(ln::UIEventArgs* e);
+
     Ref<ln::UIListView> m_listview;
+    ln::Path m_assetRootDir;
 };
 
 

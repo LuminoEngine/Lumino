@@ -115,6 +115,17 @@ void UIButton::init(const StringRef& text)
     setText(text);
 }
 
+EventConnection UIButton::connectOnClicked(UIEventHandler handler)
+{
+    return m_onClicked.connect(handler);
+}
+
+void UIButton::onClick(UIEventArgs* e)
+{
+    UIButtonBase::onClick(e);
+    m_onClicked.raise(UIEventArgs::create(this, UIEvents::UncheckedEvent, this));
+}
+
 //==============================================================================
 // UIToggleButton
 
