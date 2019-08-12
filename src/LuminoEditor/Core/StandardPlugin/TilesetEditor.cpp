@@ -3,6 +3,7 @@
 #include <Project.hpp>
 #include <AssetDatabase.hpp>
 #include "../UIExtension.hpp"
+#include "../App/Application.hpp"
 #include "TilesetEditor.hpp"
 
 //==============================================================================
@@ -24,7 +25,7 @@ void TilesetList::init()
         layout2->addChild(caption);
 
         auto addButton = ln::UIButton::create(u"Add");
-        addButton->connectOnClicked(ln::bind(this, &TilesetList::addButton_Clicked));
+        addButton->connectOnClicked(ln::bind(this, &TilesetList::addButton_onClick));
         layout2->addChild(addButton);
 
         auto deleteButton = ln::UIButton::create(u"Delete");
@@ -33,6 +34,7 @@ void TilesetList::init()
 
     m_listview = ln::makeObject<ln::UIListView>();
     m_listview->getGridLayoutInfo()->layoutWeight = 1;
+    m_listview->connectOnItemClick(ln::bind(this, &TilesetList::listView_onItemClick));
     layout1->addChild(m_listview);
 
 
@@ -44,7 +46,7 @@ void TilesetList::init()
     m_listview->setViewModel(m_model);
 }
 
-void TilesetList::addButton_Clicked(ln::UIEventArgs* e)
+void TilesetList::addButton_onClick(ln::UIEventArgs* e)
 {
     auto tileset = ln::makeObject<ln::Tileset>();
     auto asset = ln::makeObject<ln::AssetModel>(tileset);
@@ -56,7 +58,14 @@ void TilesetList::addButton_Clicked(ln::UIEventArgs* e)
     asset->saveInternal(path);
 
     m_model->refresh();
-    //m_listview->refresh();
+}
+
+void TilesetList::listView_onItemClick(ln::UIClickEventArgs* e)
+{
+    if (e->clickCount() == 2) {
+        auto path = m_model->filePath(ln::static_pointer_cast<ln::UICollectionItemModel>(e->sender()->m_viewModel));
+        EditorApplication::instance()->openAssetFile(path);
+    }
 }
 
 //==============================================================================

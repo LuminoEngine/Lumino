@@ -46,7 +46,7 @@ public:
 
     /** Clicked イベントの通知を受け取るコールバックを登録します。*/
     LN_METHOD(Event)
-    EventConnection connectOnClicked(UIEventHandler handler);
+    EventConnection connectOnClicked(UIEventHandler handler);   // TODO: Click
 
 protected:
     virtual const String& elementName() const  override { static String name = u"UIButton"; return name; }

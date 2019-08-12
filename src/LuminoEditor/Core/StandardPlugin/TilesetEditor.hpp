@@ -8,7 +8,8 @@ public:
 	void init();
 
 private:
-    void addButton_Clicked(ln::UIEventArgs* e);
+    void addButton_onClick(ln::UIEventArgs* e);
+    void listView_onItemClick(ln::UIClickEventArgs* e);
 
     Ref<ln::UIFileSystemCollectionModel> m_model;
     Ref<ln::UIListView> m_listview;

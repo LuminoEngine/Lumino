@@ -15,6 +15,10 @@ class UICollectionItem
 public:
     void setData(Variant* value) { m_data = value; }
     Variant* data() const { return m_data; }
+    
+    /** Click イベントの通知を受け取るコールバックを登録します。*/
+    LN_METHOD(Event)
+    EventConnection connectOnClick(UIClickEventHandler handler);
 
 protected:
     virtual void onClick(UIMouseEventArgs* e);
@@ -37,6 +41,7 @@ private:
     Ref<Variant> m_data;
     bool m_isPressed;
 	bool m_isSelected;
+    Event<UIClickEventHandler> m_onClick;
 
 	friend class UIItemsControl;
 };
@@ -44,6 +49,12 @@ private:
 class UIItemsControl	// TODO: UICollectionItem がほかにいい名前思いつかなければ、CollectionControl かなぁ・・・
 	: public UIControl
 {
+public:
+    
+    /** ItemClick イベントの通知を受け取るコールバックを登録します。*/
+    LN_METHOD(Event)
+    EventConnection connectOnItemClick(UIClickEventHandler handler);
+
 protected:
 	//virtual UIControl* generateItem(UIElement* content) = 0;
 
@@ -51,9 +62,9 @@ protected:
 
 	void addItem(UICollectionItem* item);
 
-	// base interfaces
-	//virtual void onRoutedEvent(UIEventArgs* e) override;
+    virtual void onItemClick(UICollectionItem* item, UIClickEventArgs* e);
 
+	// base interfaces
 	virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
     virtual Size measureOverride(const Size& constraint) override;
     virtual Size arrangeOverride(const Size& finalSize) override;
@@ -68,6 +79,7 @@ public: // TODO:
     Ref<UILayoutPanel2> m_itemssHostLayout;
 	List<Ref<UICollectionItem>> m_selectionTargets;
 	List<UICollectionItem*> m_selectedItems;
+    Event<UIClickEventHandler> m_onItemClick;
 
 	friend class UICollectionItem;
 };

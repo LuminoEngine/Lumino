@@ -25,8 +25,18 @@ void UICollectionItem::init()
     vsm->gotoState(UIVisualStates::Unselected);
 }
 
+EventConnection UICollectionItem::connectOnClick(UIClickEventHandler handler)
+{
+    return m_onClick.connect(handler);
+}
+
 void UICollectionItem::onClick(UIMouseEventArgs* e)
 {
+    auto args = UIClickEventArgs::create(this, UIEvents::Click, e->getClickCount());
+    m_onClick.raise(args);
+    if (m_ownerCollectionControl) {
+        m_ownerCollectionControl->onItemClick(this, args);
+    }
 }
 
 void UICollectionItem::onSelected(UIEventArgs* e)
@@ -139,6 +149,16 @@ void UIItemsControl::addItem(UICollectionItem* item)
     item->setLogicalParent(this);
 
     m_itemssHostLayout->addVisualChild(item);
+}
+
+EventConnection UIItemsControl::connectOnItemClick(UIClickEventHandler handler)
+{
+    return m_onItemClick.connect(handler);
+}
+
+void UIItemsControl::onItemClick(UICollectionItem* item, UIClickEventArgs* e)
+{
+    m_onItemClick.raise(e);
 }
 
 void UIItemsControl::onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)

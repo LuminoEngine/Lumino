@@ -98,7 +98,7 @@ public:
 	static const UIEventType	Selected;
 	static const UIEventType	Unselected;
 
-    static const UIEventType	Clicked;
+    static const UIEventType	Click;
 
     
 
@@ -308,6 +308,26 @@ public:
 	DragDropEffects	m_effect;
 };
 
+/** クリックイベントの引数です。 */
+class UIClickEventArgs
+    : public UIEventArgs
+{
+    LN_OBJECT;
+public:
+    /** UIClickEventArgs のインスタンスを作成します。*/
+    static Ref<UIClickEventArgs> create(UIElement* sender, UIEventType type, int clickCount, bool caching = true);
+
+    int clickCount() const { return m_clickCount; }
+
+LN_CONSTRUCT_ACCESS:
+    UIClickEventArgs();
+    virtual ~UIClickEventArgs();
+    void init(UIElement* sender, UIEventType type, int clickCount);
+
+private:
+    int m_clickCount;
+};
+
 /** コマンド実行可否判定及び実行イベントの引数です。 */
 class UICommandEventArgs
     : public UIEventArgs
@@ -352,6 +372,8 @@ using UIMouseEventHandler = std::function<void(UIMouseEventArgs* e)>;
 */
 LN_DELEGATE()
 using UIDragDropEventHandler = std::function<void(UIDragDropEventArgs* e)>;
+
+using UIClickEventHandler = std::function<void(UIClickEventArgs* e)>;
 
 using UICommandEventHandler = std::function<void(UICommandEventArgs* e)>;
 

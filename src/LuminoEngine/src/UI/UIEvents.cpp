@@ -34,7 +34,7 @@ const UIEventType	UIEvents::DragDropEvent = 20;
 const UIEventType	UIEvents::Selected = 21;
 const UIEventType	UIEvents::Unselected = 22;
 
-const UIEventType	UIEvents::Clicked = 23;
+const UIEventType	UIEvents::Click = 23;
 
 const UIEventType	UIEvents::ExecuteCommandEvent = 201;
 const UIEventType	UIEvents::CanExecuteCommandEvent = 202;
@@ -319,6 +319,42 @@ void UIDragDropEventArgs::init(UIElement* sender, UIEventType type, DataObject* 
     m_data = data;
     m_effect = effect;
 }
+
+//==============================================================================
+// UIClickEventArgs
+
+LN_OBJECT_IMPLEMENT(UIClickEventArgs, UIEventArgs) {}
+
+Ref<UIClickEventArgs> UIClickEventArgs::create(UIElement* sender, UIEventType type, int clickCount, bool caching)
+{
+    if (caching)
+    {
+        auto& pool = detail::EngineDomain::uiManager()->eventArgsPool();
+        Ref<UIClickEventArgs> ptr(pool->create<UIClickEventArgs>(sender, type, clickCount), false);
+        return ptr;
+    }
+    else
+    {
+        LN_NOTIMPLEMENTED();
+        return nullptr;
+    }
+}
+
+UIClickEventArgs::UIClickEventArgs()
+    : m_clickCount(0)
+{
+}
+
+UIClickEventArgs::~UIClickEventArgs()
+{
+}
+
+void UIClickEventArgs::init(UIElement* sender, UIEventType type, int clickCount)
+{
+    UIEventArgs::init(sender, type);
+    m_clickCount = clickCount;
+}
+
 
 //==============================================================================
 // UICommandEventArgs
