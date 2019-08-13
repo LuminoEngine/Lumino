@@ -36,6 +36,8 @@ const UIEventType	UIEvents::Unselected = 22;
 
 const UIEventType	UIEvents::Click = 23;
 
+const UIEventType   UIEvents::SelectionChanged = 24;
+
 const UIEventType	UIEvents::ExecuteCommandEvent = 201;
 const UIEventType	UIEvents::CanExecuteCommandEvent = 202;
 const UIEventType	UIEvents::CanExecuteChangedEvent = 203;
@@ -355,6 +357,35 @@ void UIClickEventArgs::init(UIElement* sender, UIEventType type, int clickCount)
     m_clickCount = clickCount;
 }
 
+
+//==============================================================================
+// UISelectionChangedEventArgs
+
+LN_OBJECT_IMPLEMENT(UISelectionChangedEventArgs, UIEventArgs) {}
+
+Ref<UISelectionChangedEventArgs> UISelectionChangedEventArgs::create(UIElement* sender, UIEventType type, bool caching)
+{
+    if (caching)
+    {
+        auto& pool = detail::EngineDomain::uiManager()->eventArgsPool();
+        Ref<UISelectionChangedEventArgs> ptr(pool->create<UISelectionChangedEventArgs>(sender, type), false);
+        return ptr;
+    }
+    else
+    {
+        LN_NOTIMPLEMENTED();
+        return nullptr;
+    }
+}
+
+UISelectionChangedEventArgs::UISelectionChangedEventArgs()
+{
+}
+
+void UISelectionChangedEventArgs::init(UIElement* sender, UIEventType type)
+{
+    UIEventArgs::init(sender, type);
+}
 
 //==============================================================================
 // UICommandEventArgs

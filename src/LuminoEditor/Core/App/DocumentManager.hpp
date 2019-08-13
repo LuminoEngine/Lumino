@@ -36,7 +36,11 @@ public:
 protected:
 
 private:
+    void documentTabs_SelectionChanged(ln::UISelectionChangedEventArgs* e);
+
     Ref<ln::UIBoxLayout3> m_mainLayout;
+    Ref<ln::UISwitchLayout> m_switchLayout;
+    Ref<ln::UITabBar> m_documentTabs;
     Ref<StartupView> m_startupView;
     ln::List<Ref<Document>> m_documents;
 };

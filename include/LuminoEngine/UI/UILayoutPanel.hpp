@@ -321,6 +321,7 @@ class UISwitchLayout
 {
 public:
 	void setActiveIndex(int index);
+    void setActive(UIElement* child);
 
 protected:
 	// base interface

@@ -14,7 +14,8 @@ ln::Result Document::init()
 {
     Object::init();
     m_mainFrame = ln::makeObject<ln::UIContainerElement>();
-    m_mainFrame->setBackgroundColor(ln::Color::Azure);
+    m_mainFrame->setBackgroundColor(ln::Color(ln::Random::randFloat(), ln::Random::randFloat(), ln::Random::randFloat(), 1));
+    //m_mainFrame->getGridLayoutInfo()->layoutWeight = 1; // fill in box layout
     return true;
 }
 
@@ -31,32 +32,39 @@ ln::Result DocumentManager::init()
     //setLayoutPanel(ln::makeObject<ln::UIVBoxLayout>());
 
     m_mainLayout = ln::makeObject<ln::UIBoxLayout3>();
-    addElement(m_mainLayout);
+    //addElement(m_mainLayout);
 
-    auto documentTabs = ln::makeObject<ln::UITabBar>();
-    documentTabs->setVerticalAlignment(ln::VAlignment::Top);
+    m_documentTabs = ln::makeObject<ln::UITabBar>();
+    m_documentTabs->setVerticalAlignment(ln::VAlignment::Top);
+    m_documentTabs->connectOnSelectionChanged(ln::bind(this, &DocumentManager::documentTabs_SelectionChanged));
     //documentTabs->setBackgroundColor(ln::Color::Azure);
     //documentTabs->setHeight(30);
     //documentTabs->setVisibility(ln::UIVisibility::Collapsed);
-    m_mainLayout->addChild(documentTabs);
+    m_mainLayout->addChild(m_documentTabs);
 
-    // test
-    auto tab1 = ln::makeObject<ln::UITabItem>();
-    auto text1 = ln::makeObject<ln::UITextBlock>();
-    text1->setText(u"Scene-1");
-    tab1->addElement(text1);
-    documentTabs->addTab(tab1);
+    m_switchLayout = ln::makeObject<ln::UISwitchLayout>();
+    m_switchLayout->setActiveIndex(-1);
+    m_switchLayout->getGridLayoutInfo()->layoutWeight = 1;  // fill in box layout
+    m_mainLayout->addChild(m_switchLayout);
 
-    auto tab2 = ln::makeObject<ln::UITabItem>();
-    auto text2 = ln::makeObject<ln::UITextBlock>();
-    text2->setText(u"Scene-2");
-    tab2->addElement(text2);
-    documentTabs->addTab(tab2);
+    //// test
+    //auto tab1 = ln::makeObject<ln::UITabItem>();
+    //auto text1 = ln::makeObject<ln::UITextBlock>();
+    //text1->setText(u"Scene-1");
+    //tab1->addElement(text1);
+    //m_documentTabs->addTab(tab1);
+
+    //auto tab2 = ln::makeObject<ln::UITabItem>();
+    //auto text2 = ln::makeObject<ln::UITextBlock>();
+    //text2->setText(u"Scene-2");
+    //tab2->addElement(text2);
+    //documentTabs->addTab(tab2);
 
 
     m_startupView = ln::makeObject<StartupView>();
+    addElement(m_startupView);
     //m_startupView->setHeight(300);
-    m_mainLayout->addChild(m_startupView);
+    //m_mainLayout->addChild(m_startupView);
 
     return true;
 }
@@ -64,11 +72,26 @@ ln::Result DocumentManager::init()
 void DocumentManager::addDocument(Document* doc)
 {
     if (m_documents.size() == 0) {
-        m_mainLayout->removeChild(m_startupView);
+        removeElement(m_startupView);
+        addElement(m_mainLayout);
     }
 
     m_documents.add(doc);
-    addElement(doc->mainFrame());
+    m_switchLayout->addChild(doc->mainFrame());
+
+    auto tab = ln::makeObject<ln::UITabItem>();
+    auto text = ln::makeObject<ln::UITextBlock>();
+    text->setText(u"Scene");
+    tab->addElement(text);
+    tab->setData(ln::makeVariant(doc));
+    m_documentTabs->addTab(tab);
+    m_documentTabs->setSelectedTab(tab);
+}
+
+void DocumentManager::documentTabs_SelectionChanged(ln::UISelectionChangedEventArgs* e)
+{
+    auto tab = m_documentTabs->selectedTab();
+    m_switchLayout->setActive(tab->data()->getObject<Document>()->mainFrame());
 }
 
 

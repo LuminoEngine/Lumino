@@ -100,6 +100,7 @@ public:
 
     static const UIEventType	Click;
 
+    static const UIEventType    SelectionChanged;
     
 
     static const UIEventType	ExecuteCommandEvent;
@@ -328,6 +329,26 @@ private:
     int m_clickCount;
 };
 
+/** SelectionChanged イベントの引数です。 */
+class UISelectionChangedEventArgs
+    : public UIEventArgs
+{
+    LN_OBJECT;
+public:
+    /** UIClickEventArgs のインスタンスを作成します。*/
+    static Ref<UISelectionChangedEventArgs> create(UIElement* sender, UIEventType type, bool caching = true);
+
+    // TODO: RemovedItems
+    // TODO: AddedItems
+
+LN_CONSTRUCT_ACCESS:
+    UISelectionChangedEventArgs();
+    void init(UIElement* sender, UIEventType type);
+
+private:
+};
+
+
 /** コマンド実行可否判定及び実行イベントの引数です。 */
 class UICommandEventArgs
     : public UIEventArgs
@@ -374,6 +395,7 @@ LN_DELEGATE()
 using UIDragDropEventHandler = std::function<void(UIDragDropEventArgs* e)>;
 
 using UIClickEventHandler = std::function<void(UIClickEventArgs* e)>;
+using UISelectionChangedEventHandler = std::function<void(UISelectionChangedEventArgs* e)>;
 
 using UICommandEventHandler = std::function<void(UICommandEventArgs* e)>;
 

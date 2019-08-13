@@ -536,7 +536,7 @@ Size UIBoxLayout3::arrangeOverride(const Size& finalSize)
 {
     const Thickness& padding = finalStyle()->padding;
     Size childrenBoundSize(finalSize.width - (padding.left + padding.right), finalSize.height - (padding.top + padding.bottom));
-
+    int actualCellCount = m_logicalChildren.size();
 
 
     float boundSize = 0.0f;
@@ -548,7 +548,7 @@ Size UIBoxLayout3::arrangeOverride(const Size& finalSize)
     // Fix size of 'Auto' and 'Direct', and count 'Ratio'
     float totalActualSize = 0.0f;
     float ratioCellCount = 0.0f;
-    for (int iCell = 0; iCell < m_cellDefinitions.size(); iCell++) {
+    for (int iCell = 0; iCell < actualCellCount; iCell++) {
         auto type = layoutType(iCell);
         if (type == UILayoutLengthType::Ratio) {
             ratioCellCount += layoutWeight(iCell);
@@ -571,7 +571,7 @@ Size UIBoxLayout3::arrangeOverride(const Size& finalSize)
     // "*" 指定である Row/Column の最終サイズを確定させ、
     // 全セルのオフセット (位置) も確定させる
     float totalOffset = 0.0f;
-    for (int iCell = 0; iCell < m_cellDefinitions.size(); iCell++) {
+    for (int iCell = 0; iCell < actualCellCount; iCell++) {
         auto& cell = m_cellDefinitions[iCell];
         if (layoutType(iCell) == UILayoutLengthType::Ratio) {
             cell.desiredSize = ratioUnit * layoutWeight(iCell);
@@ -690,6 +690,12 @@ void UISwitchLayout::setActiveIndex(int index)
 {
 	m_activeIndex = index;
 	invalidateLayout();
+}
+
+void UISwitchLayout::setActive(UIElement* child)
+{
+    m_activeIndex = m_logicalChildren.indexOf(child);
+    invalidateLayout();
 }
 
 void UISwitchLayout::init()

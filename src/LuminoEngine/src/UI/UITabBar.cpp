@@ -52,5 +52,15 @@ void UITabBar::addTab(UITabItem* item)
 	addItem(item);
 }
 
+void UITabBar::setSelectedTab(UITabItem* tab)
+{
+    selectItemExclusive(tab);
+}
+
+UITabItem* UITabBar::selectedTab() const
+{
+    return static_cast<UITabItem*>(m_selectedItems[0]);
+}
+
 } // namespace ln
 

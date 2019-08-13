@@ -156,9 +156,19 @@ EventConnection UIItemsControl::connectOnItemClick(UIClickEventHandler handler)
     return m_onItemClick.connect(handler);
 }
 
+EventConnection UIItemsControl::connectOnSelectionChanged(UISelectionChangedEventHandler handler)
+{
+    return m_onSelectionChanged.connect(handler);
+}
+
 void UIItemsControl::onItemClick(UICollectionItem* item, UIClickEventArgs* e)
 {
     m_onItemClick.raise(e);
+}
+
+void UIItemsControl::onSelectionChanged(UISelectionChangedEventArgs* e)
+{
+    m_onSelectionChanged.raise(e);
 }
 
 void UIItemsControl::onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)
@@ -206,14 +216,21 @@ Size UIItemsControl::arrangeOverride(const Size& finalSize)
     }
 }
 
+void UIItemsControl::selectItemExclusive(UICollectionItem* item)
+{
+    if (m_selectedItems[0]) {
+        m_selectedItems[0]->setSelectedInternal(false);
+    }
+
+    m_selectedItems[0] = item;
+    item->setSelectedInternal(true);
+
+    onSelectionChanged(UISelectionChangedEventArgs::create(this, UIEvents::SelectionChanged));
+}
+
 void UIItemsControl::notifyItemClicked(UICollectionItem* item)
 {
-	if (m_selectedItems[0]) {
-		m_selectedItems[0]->setSelectedInternal(false);
-	}
-
-	m_selectedItems[0] = item;
-	item->setSelectedInternal(true);
+    selectItemExclusive(item);
 }
 
 

@@ -19,6 +19,8 @@ class UITabBar
 {
 public:
 	void addTab(UITabItem* item);
+    void setSelectedTab(UITabItem* tab);
+    UITabItem* selectedTab() const;
 
 LN_CONSTRUCT_ACCESS:
 	UITabBar();

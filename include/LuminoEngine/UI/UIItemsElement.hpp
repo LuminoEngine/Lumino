@@ -54,6 +54,9 @@ public:
     /** ItemClick イベントの通知を受け取るコールバックを登録します。*/
     LN_METHOD(Event)
     EventConnection connectOnItemClick(UIClickEventHandler handler);
+    
+    LN_METHOD(Event)
+    EventConnection connectOnSelectionChanged(UISelectionChangedEventHandler handler);
 
 protected:
 	//virtual UIControl* generateItem(UIElement* content) = 0;
@@ -63,6 +66,7 @@ protected:
 	void addItem(UICollectionItem* item);
 
     virtual void onItemClick(UICollectionItem* item, UIClickEventArgs* e);
+    virtual void onSelectionChanged(UISelectionChangedEventArgs* e);
 
 	// base interfaces
 	virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
@@ -73,13 +77,15 @@ LN_CONSTRUCT_ACCESS:
 	UIItemsControl();
 	void init();
 
-public: // TODO: 
+public: // TODO:
+    void selectItemExclusive(UICollectionItem* item);
 	void notifyItemClicked(UICollectionItem* item);
 
     Ref<UILayoutPanel2> m_itemssHostLayout;
 	List<Ref<UICollectionItem>> m_selectionTargets;
 	List<UICollectionItem*> m_selectedItems;
     Event<UIClickEventHandler> m_onItemClick;
+    Event<UISelectionChangedEventHandler> m_onSelectionChanged;
 
 	friend class UICollectionItem;
 };
