@@ -192,6 +192,26 @@ ln::Result TilemapSceneEditor::init()
 
 void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
 {
+    auto m_mainViewport = ln::makeObject<ln::UIViewport>();
+    frame->addElement(m_mainViewport);
+    m_mainViewport->setBackgroundColor(ln::Color::Blue);// ln::Color(ln::Random::randFloat(), ln::Random::randFloat(), ln::Random::randFloat(), 1));
+
+
+    auto m_mainWorld = ln::makeObject<ln::World>();
+    auto m_mainCamera = ln::makeObject<ln::Camera>();
+    auto m_mainWorldRenderView = ln::makeObject<ln::WorldRenderView>();
+    m_mainWorldRenderView->setTargetWorld(m_mainWorld);
+    m_mainWorldRenderView->setCamera(m_mainCamera);
+    m_mainWorldRenderView->setClearMode(ln::RenderViewClearMode::ColorAndDepth);
+    m_mainWorldRenderView->setBackgroundColor(ln::Color::Gray);
+    m_mainViewport->addRenderView(m_mainWorldRenderView);
+
+    m_mainCamera->addComponent(ln::makeObject<ln::CameraOrbitControlComponent>());
+
+    auto sprite = ln::Sprite::create(ln::Texture2D::create(u"D:/Documents/LuminoProjects/RinoTutorial/Assets/player.png"), 4,4);
+    sprite->setSourceRect(0, 0, 16, 16);
+    sprite->setPosition(0, 2, 0);
+    m_mainWorld->addObject(sprite);
 }
 
 void TilemapSceneEditor::onClosed()

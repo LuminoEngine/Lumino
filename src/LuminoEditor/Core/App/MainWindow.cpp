@@ -74,11 +74,6 @@ void MainWindow::onLoaded()
 
         m_mainHSplitter->addElement(m_documentManager->inspectorPanesArea());
     }
-
-
-    //// test
-    //EditorApplication::instance()->workspace()->openProject2(u"D:/Proj/TH-10/TH-10.lnproj");
-    //navigatorManager()->resetNavigators();
 }
 
 void MainWindow::onNavigationViewOpen()

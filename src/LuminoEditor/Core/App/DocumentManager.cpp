@@ -15,7 +15,6 @@ ln::Result Document::init()
 {
     Object::init();
     m_mainFrame = ln::makeObject<ln::UIContainerElement>();
-    m_mainFrame->setBackgroundColor(ln::Color(ln::Random::randFloat(), ln::Random::randFloat(), ln::Random::randFloat(), 1));
     //m_mainFrame->getGridLayoutInfo()->layoutWeight = 1; // fill in box layout
     return true;
 }
@@ -122,5 +121,7 @@ ln::Result AssetEditorDocument::init(ln::AssetModel* asset, ln::AssetEditor* edi
     if (!Document::init()) return false;
     m_asset = asset;
     m_editor = editorModel;
+
+    m_editor->onOpened(m_asset, mainFrame());
     return true;
 }
