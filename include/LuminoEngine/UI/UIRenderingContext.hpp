@@ -20,6 +20,8 @@ public:
 
 	void drawBoxShadow(const Rect& rect, const CornerRadius& cornerRadius, const Vector2& offset, const Color& color, float blur, float width, bool inset);
 
+    void drawImage(const Rect& destinationRect, AbstractMaterial* material);
+
 public: // TODO: inernal
 	void resetForBeginRendering();
 

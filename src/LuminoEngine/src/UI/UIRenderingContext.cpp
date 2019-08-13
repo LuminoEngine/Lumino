@@ -77,6 +77,21 @@ void UIRenderingContext::drawBoxShadow(const Rect& rect, const CornerRadius& cor
 
 }
 
+void UIRenderingContext::drawImage(const Rect& destinationRect, AbstractMaterial* material)
+{
+    auto texture = material->mainTexture();
+    drawSprite(
+        Matrix::makeTranslation(destinationRect.x, destinationRect.y, 0),
+        destinationRect.getSize(),
+        Vector2::Zero,
+        Rect(0, 0, 1, 1),
+        Color::White,
+        SpriteBaseDirection::Basic2D,
+        BillboardType::None,
+        detail::SpriteFlipFlags::None,
+        material);
+}
+
 void UIRenderingContext::resetForBeginRendering()
 {
 	RenderingContext::resetForBeginRendering();

@@ -4,6 +4,7 @@
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIEvents.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 #include "../ImageEffect/ImageEffectRenderer.hpp"
@@ -30,6 +31,7 @@ void UIViewport::init()
 	setVerticalAlignment(VAlignment::Stretch);
 
     m_imageEffectRenderer = makeRef<detail::ImageEffectRenderer>();
+    m_blitMaterial = makeObject<Material>();
 }
 
 void UIViewport::onDispose(bool explicitDisposing)
@@ -106,6 +108,33 @@ Size UIViewport::arrangeOverride(const Size& finalSize)
 
 void UIViewport::onRender(UIRenderingContext* context)
 {
+    GraphicsContext* graphicsContext = context->m_frameWindowRenderingGraphicsContext;
+    auto* renderTarget = graphicsContext->renderTarget(0);
+
+    // TODO: dp -> px 変換
+    Size viewSize = m_finalGlobalRect.getSize();
+
+    Ref<RenderTargetTexture> primaryTarget = RenderTargetTexture::getTemporary(viewSize.width, viewSize.height, TextureFormat::RGBA8, false);
+    graphicsContext->setRenderTarget(0, primaryTarget);
+    graphicsContext->clear(ClearFlags::All, Color::Gray);
+
+    for (auto& view : m_renderViews) {
+        view->render(graphicsContext);
+    }
+    m_imageEffectRenderer->render(context, primaryTarget);
+
+
+    //context->blit(primaryTarget, renderTarget);
+
+    
+    m_blitMaterial->setMainTexture(primaryTarget);
+    context->drawImage(Rect(0, 0, viewSize), m_blitMaterial);
+
+    //RenderTargetTexture::releaseTemporary(primaryTarget);
+
+    graphicsContext->setRenderTarget(0, renderTarget);
+
+#if 0
     // TODO: ViewBoxTransform
 
     GraphicsContext* graphicsContext = context->m_frameWindowRenderingGraphicsContext;
@@ -117,6 +146,7 @@ void UIViewport::onRender(UIRenderingContext* context)
     }
 
     m_imageEffectRenderer->render(context, graphicsContext->renderTarget(0));
+#endif
 }
 
 void UIViewport::onRoutedEvent(UIEventArgs* e)

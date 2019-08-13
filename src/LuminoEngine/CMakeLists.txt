@@ -280,6 +280,7 @@ set(LN_SOURCES_Rendering
     src/Rendering/MeshRenderFeature.hpp
     src/Rendering/PrimitiveRenderFeature.cpp
     src/Rendering/PrimitiveRenderFeature.hpp
+    src/Rendering/Readme.md
     src/Rendering/RenderFeature.cpp
     src/Rendering/RenderingContext.cpp
     src/Rendering/RenderingManager.cpp

@@ -194,7 +194,7 @@ void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement*
 {
     auto m_mainViewport = ln::makeObject<ln::UIViewport>();
     frame->addElement(m_mainViewport);
-    m_mainViewport->setBackgroundColor(ln::Color::Blue);// ln::Color(ln::Random::randFloat(), ln::Random::randFloat(), ln::Random::randFloat(), 1));
+    //m_mainViewport->setBackgroundColor(ln::Color::Blue);// ln::Color(ln::Random::randFloat(), ln::Random::randFloat(), ln::Random::randFloat(), 1));
 
 
     auto m_mainWorld = ln::makeObject<ln::World>();

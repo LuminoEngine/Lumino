@@ -4,6 +4,7 @@
 namespace ln {
 class RenderView;
 class ImageEffect;
+class Material;
 namespace detail {
 class UIManager;
 class ImageEffectRenderer;
@@ -42,6 +43,7 @@ private:
     Ref<detail::ImageEffectRenderer> m_imageEffectRenderer;
     List<Ref<RenderView>> m_renderViews;
     Size m_actualViewboxSize;
+    Ref<Material> m_blitMaterial;
 };
 
 } // namespace ln
