@@ -14,6 +14,19 @@ enum class Orientation
 	ReverseVertical,	/**< 垂直方向（下から上）に配置します。*/
 };
 
+/** UI要素の表示状態を指定します。 */
+enum class UIVisibility : uint8_t
+{
+    /** 要素を表示します。 */
+    Visible,
+
+    /** 要素を表示しませんが、その要素の領域をレイアウト内に予約します。 */
+    Hidden,
+
+    /** 要素を表示しません。また、その要素の領域もレイアウト内に予約しません。 */
+    Collapsed,
+};
+
 namespace detail {
 
 // TODO: UI モジュールではなく共通の場所に持っていく。WorldObject も似たような管理を行う。

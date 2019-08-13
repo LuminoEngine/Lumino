@@ -41,6 +41,12 @@ void UILayoutPanel2::removeAllChildren()
     m_logicalChildren.clear();
 }
 
+void UILayoutPanel2::onDispose(bool explicitDisposing)
+{
+    removeAllChildren();
+    UIElement::onDispose(explicitDisposing);
+}
+
 float UILayoutPanel2::getExtentWidth() const { return m_desiredSize.width; }
 float UILayoutPanel2::getExtentHeight() const { return m_desiredSize.height; }
 float UILayoutPanel2::getViewportWidth() const { return m_actualSize.width; }
@@ -221,8 +227,10 @@ Size UIFrameLayout2::staticMeasureOverride(UIElement* ownerElement, const Size& 
         childMaxSize.height = std::max(childMaxSize.height, desiredSize.height);
     }
 
-    auto selfSize = ownerElement->UIElement::measureOverride(constraint);
-    return Size::max(selfSize, childMaxSize);
+    return detail::LayoutHelper::measureElement(ownerElement, constraint, childMaxSize);
+
+    //auto selfSize = ownerElement->UIElement::measureOverride(constraint);
+    //return Size::max(selfSize, childMaxSize);
 
     //Size size = Size(ownerElement->width(), ownerElement->height());
     //size.width = Math::isNaN(size.width) ? 0.0 : size.width;

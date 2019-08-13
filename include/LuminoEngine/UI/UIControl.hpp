@@ -23,6 +23,17 @@ Control
 LeafControl, ContentsControl, CollectionControl を分けようぜ、という方針。
 Leaf がベースでいいかな。これは普通の UIControl。
 
+
+    アイコンの標準プロパティ化について
+    ----------
+    やっぱりやっておきたい。
+    必要なのは Content を持つ各種コントロール。
+    HeaderdItemsControl
+    HeaderdContentContorl なんかもあてはまる。
+    子要素の配置領域を UIContentsArea みたいにクラス化しておいて、このクラスは領域の上下左右にアイコンなどビジュアル要素を任意に足せるようにしてみる。
+    で、各種 Control はこれをヘルパーとして使う。
+    こんな方針でいいかな。
+
 */
 class UIControl
 	: public UIElement

@@ -14,11 +14,14 @@ class Document
 {
 public:
 	Document();
+    ln::Result init();
 
+    const Ref<ln::UIContainerElement>& mainFrame() const { return m_mainFrame; }
 
 protected:
 
 private:
+    Ref<ln::UIContainerElement> m_mainFrame;
 };
 
 class DocumentManager
@@ -33,6 +36,7 @@ public:
 protected:
 
 private:
+    Ref<ln::UIBoxLayout3> m_mainLayout;
     Ref<StartupView> m_startupView;
     ln::List<Ref<Document>> m_documents;
 };

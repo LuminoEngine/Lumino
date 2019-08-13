@@ -61,19 +61,6 @@ public:
 	float m_dpiScaleFactor;
 };
 
-/** UI要素の表示状態を指定します。 */
-enum class UIVisibility : uint8_t
-{
-	/** 要素を表示します。 */
-	Visible,
-
-	/** 要素を表示しませんが、その要素の領域をレイアウト内に予約します。 */
-	Hidden,
-
-	/** 要素を表示しません。また、その要素の領域もレイアウト内に予約しません。 */
-	Collapsed,
-};
-
 
 class UIViewModel
 	: public Object
@@ -275,13 +262,13 @@ public:
 
 
     
-	/** 可視状態を設定します。false の場合、コンポーネントの描画は行われません。(default: true) */
+	/** 可視状態を設定します。(default: UIVisibility::Visible) */
     LN_METHOD(Property)
-    void setVisible(bool value);
+    void setVisibility(UIVisibility value);
 
 	/** 可視状態を取得します。*/
     LN_METHOD(Property)
-    bool isVisible() const;
+    UIVisibility isVisibility() const;
 
     /** 合成方法を設定します。(default: BlendMode::Normal) */
     void setBlendMode(const Optional<BlendMode>& value);
@@ -437,6 +424,7 @@ public: // TODO: internal
     void raiseEventInternal(UIEventArgs* e);
     virtual void invalidate(detail::UIElementDirtyFlags flags, bool toAncestor);
     detail::GridLayoutInfo* getGridLayoutInfo();
+    bool isRenderVisible() const;
 
     detail::UIManager* m_manager;
 	Flags<detail::ObjectManagementFlags> m_objectManagementFlags;

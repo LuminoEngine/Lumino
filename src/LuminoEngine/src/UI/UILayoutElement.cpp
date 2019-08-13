@@ -201,7 +201,7 @@ Size UILayoutElement::measureOverride(const Size& constraint)
 	// ユーザー指定のサイズがある場合はそれを返す。
 	// ただし、constraint を超えることはできない。
 
-	return detail::LayoutHelper::measureElement(this, constraint);
+	return detail::LayoutHelper::measureElement(this, constraint, Size::Zero);
 }
 
 Size UILayoutElement::arrangeOverride(const Size& finalSize)
@@ -284,10 +284,10 @@ Size LayoutHelper::measureElementBodySize(UILayoutElement* element)
     return bodySize;
 }
 
-Size LayoutHelper::measureElement(UILayoutElement* element, const Size& constraint)
+Size LayoutHelper::measureElement(UILayoutElement* element, const Size& constraint, const Size& childrenDesiredSize)
 {
     Size size(element->m_finalStyle->width, element->m_finalStyle->height);
-	Size desiredSize = measureElementBodySize(element);
+	Size desiredSize = Size::max(measureElementBodySize(element), childrenDesiredSize);
 
 	//// NaN の場合、この要素として必要な最小サイズは 0 となる。
 	//desiredSize.width = Math::isNaNOrInf(size.width) ? 0.0f : size.width;

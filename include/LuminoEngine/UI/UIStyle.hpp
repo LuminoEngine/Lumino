@@ -332,14 +332,14 @@ public:
 	static const UIFontStyle DefaultFontStyle;
 
 	// effects
-    detail::UIStyleAttribute<bool> visible;
+    detail::UIStyleAttribute<UIVisibility> visible;
     detail::UIStyleAttribute<BlendMode> blendMode;
     detail::UIStyleAttribute<float> opacity;
     detail::UIStyleAttribute<Color> colorScale;
     detail::UIStyleAttribute<Color> blendColor;
     detail::UIStyleAttribute<ColorTone> tone;
 
-	static const bool DefaultVisible;
+	static const UIVisibility DefaultVisible;
 	static const BlendMode DefaultBlendMode;
 	static const float DefaultOpacity;
 	static const Color DefaultColorScale;
@@ -561,7 +561,7 @@ public:
     UIFontStyle fontStyle;
 
     // render effects
-    bool visible;
+    UIVisibility visible;
     BlendMode blendMode;
 
     float opacity;

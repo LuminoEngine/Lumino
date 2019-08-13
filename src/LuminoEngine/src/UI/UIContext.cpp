@@ -65,6 +65,8 @@ void UIContext::setupDefaultStyle()
     theme->setSpacing(8); // MUI default
     theme->add(u"control.background", UIColors::get(UIColorHues::Grey, 2));
     theme->add(u"collection.selectedBackground", UIColors::get(UIColorHues::LightGreen, 2));
+    theme->add(u"tab.activeBackground", UIColors::get(UIColorHues::White));
+    theme->add(u"tab.inactiveBackground", UIColors::get(UIColorHues::Grey, 3));
 
 	Color activeControlBackground = UIColors::get(UIColorHues::Grey, 0);
 
@@ -237,17 +239,22 @@ void UIContext::setupDefaultStyle()
 				s->decorators.add(icon);
 			}
         }
-
+		//--------------------------------
+		// UITabBar
+        {
+            if (auto s = sheet->obtainStyle(u"UITabBar")) {
+                s->backgroundColor = theme->get(u"control.background");
+            }
+        }
 		//--------------------------------
 		// UITabItem
 		{
 			if (auto s = sheet->obtainStyle(u"UITabItem")) {
-				s->minWidth = 100;
-				s->minHeight = 30;
-                s->backgroundColor = theme->get(u"control.background");
+                s->padding = theme->spacing(1);
+                s->backgroundColor = theme->get(u"tab.inactiveBackground");
 			}
 			if (auto s = sheet->obtainStyle(u"UITabItem:Selected")) {
-				s->backgroundColor = activeControlBackground;
+                s->backgroundColor = theme->get(u"tab.activeBackground");
 			}
 		}
     }

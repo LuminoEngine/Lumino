@@ -185,10 +185,10 @@ class LayoutHelper
 {
 public:
 
-	// 単純に element のサイズによった measure を行う。measureOverride() の中で使用することを想定している。
     static Size measureElementSpacing(UILayoutElement* element);    // border + padding
     static Size measureElementBodySize(UILayoutElement* element);    // chrome デバッガの青い部分
-	static Size measureElement(UILayoutElement* element, const Size& constraint);
+	// 単純に element のサイズによった measure を行う。measureOverride() の中で使用することを想定している。
+	static Size measureElement(UILayoutElement* element, const Size& constraint, const Size& childrenDesiredSize);
 	static Rect arrangeContentArea(UILayoutElement* element, const Size& finalSize);
 
 	//static void forEachVisualChildren(UIElement* element, std::function<void(UIElement* child)> func)

@@ -312,14 +312,14 @@ UIFontStyle UIElement::fontStyle() const
 	return m_localStyle->mainStyle()->fontStyle.getOrDefault(UIFontStyle::Normal);
 }
 
-void UIElement::setVisible(bool value)
+void UIElement::setVisibility(UIVisibility value)
 {
     m_localStyle->mainStyle()->visible = value;
 }
 
-bool UIElement::isVisible() const
+UIVisibility UIElement::isVisibility() const
 {
-    return m_localStyle->mainStyle()->visible.getOrDefault(true);
+    return m_localStyle->mainStyle()->visible.getOrDefault(UIVisibility::Visible);
 }
 
 void UIElement::setBlendMode(const Optional<BlendMode>& value)
@@ -722,7 +722,7 @@ void UIElement::updateFinalLayoutHierarchical(const Rect& parentFinalGlobalRect)
 
 void UIElement::render(UIRenderingContext* context)
 {
-    if (isVisible() && (m_internalVisibility == UIVisibility::Visible))
+    if (isRenderVisible())
     {
 
 
@@ -850,6 +850,11 @@ detail::GridLayoutInfo* UIElement::getGridLayoutInfo()
         m_gridLayoutInfo = std::make_unique<detail::GridLayoutInfo>();
     }
     return m_gridLayoutInfo.get();
+}
+
+bool UIElement::isRenderVisible() const
+{
+    return m_finalStyle->visible == UIVisibility::Visible && m_internalVisibility == UIVisibility::Visible;
 }
 
 UIVisualStateManager* UIElement::getVisualStateManager()

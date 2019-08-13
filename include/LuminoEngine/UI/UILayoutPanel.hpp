@@ -166,6 +166,8 @@ public:
     void removeAllChildren();
 
 protected:
+    virtual void onDispose(bool explicitDisposing) override;
+
     // IScrollInfo interface
     virtual float getExtentWidth() const;
     virtual float getExtentHeight() const;

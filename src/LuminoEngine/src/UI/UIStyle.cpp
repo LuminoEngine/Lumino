@@ -180,7 +180,7 @@ const UIFontWeight UIStyle::DefaultFontWeight = UIFontWeight::Normal;
 const UIFontStyle UIStyle::DefaultFontStyle = UIFontStyle::Normal;
 
 // effects
-const bool UIStyle::DefaultVisible = true;
+const UIVisibility UIStyle::DefaultVisible = UIVisibility::Visible;
 const BlendMode UIStyle::DefaultBlendMode = BlendMode::Alpha;
 const float UIStyle::DefaultOpacity = 1.0f;
 const Color UIStyle::DefaultColorScale = Color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -879,7 +879,7 @@ void UIStyleInstance::setupDefault()
     fontWeight = UIFontWeight::Normal;
     fontStyle = UIFontStyle::Normal;
 
-    visible = true;
+    visible = UIVisibility::Visible;
     blendMode = BlendMode::Alpha;
 
     opacity = 1.0f;

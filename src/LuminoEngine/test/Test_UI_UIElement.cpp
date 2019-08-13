@@ -16,7 +16,7 @@ TEST_F(Test_UI_UIElement, RenderEffects)
         auto sprite1 = makeObject<UISprite>();
         sprite1->setTexture(tex1);
         sprite1->setPosition(0, 0, 0);
-        sprite1->setVisible(false);
+        sprite1->setVisibility(UIVisibility::Hidden);
 		Engine::mainUIRoot()->addElement(sprite1);
 
         //* [ ] BlendMode
