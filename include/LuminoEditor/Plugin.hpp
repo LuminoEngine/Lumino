@@ -4,7 +4,7 @@ namespace ln {
 class UIFrame;
 class NavigationMenuItem;
 class AssetImporter;
-class AssetEditorViewModel;
+class AssetEditor;
 class IEditorExtension;
 
 enum class EditorExtensionType
@@ -84,7 +84,7 @@ public:
     /** この DocumentEditor が編集対象とするオブジェクトの種別。asset ファイルに埋め込まれる種類。 */
     virtual const Char* typeKeyword() const = 0;
 
-    virtual Ref<AssetEditorViewModel> createEditor() = 0;
+    virtual Ref<AssetEditor> createEditor() = 0;
 };
 
 
@@ -93,7 +93,7 @@ enum class AssetEditorViewType
     Scene,
 };
 
-class AssetEditorViewModel
+class AssetEditor
     : public Object
 {
 public:
@@ -103,7 +103,7 @@ public:
     virtual void onClosed() {}
 
     // ドキュメントがアクティブになったりしたときに呼ばれる。
-    // AssetEditorViewModel は派生クラスのメンバ変数など内部 AssetEditorViewModel を持つことができるが、
+    // AssetEditor は派生クラスのメンバ変数など内部 AssetEditorViewModel を持つことができるが、
     // それをアクティブにしたい場合はこの実装で処理を行う。
     virtual void onActivate() {}
 };

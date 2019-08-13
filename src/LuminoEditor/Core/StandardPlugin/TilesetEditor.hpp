@@ -52,7 +52,7 @@ public:
 };
 
 
-class TilesetEditor : public ln::AssetEditorViewModel
+class TilesetEditor : public ln::AssetEditor
 {
 public:
     virtual void onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame) override;
@@ -68,7 +68,7 @@ public:
     virtual const ln::Char* id() const { return u"E27FD90C-AE45-45B4-BF53-B68FD144B611"; }
     virtual const ln::Char* displayName() const { return u"TilesetEditorExtension"; }
     virtual const ln::Char* typeKeyword() const { return u"Tileset"; }
-    virtual ln::Ref<ln::AssetEditorViewModel> createEditor() override;
+    virtual ln::Ref<ln::AssetEditor> createEditor() override;
 
 private:
 };

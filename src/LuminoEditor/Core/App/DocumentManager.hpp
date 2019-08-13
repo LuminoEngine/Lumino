@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-namespace ln { class AssetEditorViewModel; }
+namespace ln { class AssetEditor; }
 class StartupView;
 
 // Tab-Document だけではなく、Inspector や AssetBrowerToolPane など、複数の View から参照・編集されるデータを扱うクラス。
@@ -50,11 +50,11 @@ class AssetEditorDocument
 {
 public:
     AssetEditorDocument();
-    ln::Result init(ln::AssetModel* asset, ln::AssetEditorViewModel* editorModel);
+    ln::Result init(ln::AssetModel* asset, ln::AssetEditor* editorModel);
 
 protected:
 
 private:
     Ref<ln::AssetModel> m_asset;
-    Ref<ln::AssetEditorViewModel> m_editor;
+    Ref<ln::AssetEditor> m_editor;
 };

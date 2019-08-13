@@ -138,7 +138,7 @@ TilesetEditorExtension::TilesetEditorExtension()
 {
 }
 
-ln::Ref<ln::AssetEditorViewModel> TilesetEditorExtension::createEditor()
+ln::Ref<ln::AssetEditor> TilesetEditorExtension::createEditor()
 {
     return ln::makeObject<TilesetEditor>();
 }

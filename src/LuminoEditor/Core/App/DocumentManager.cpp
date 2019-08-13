@@ -88,7 +88,7 @@ AssetEditorDocument::AssetEditorDocument()
 {
 }
 
-ln::Result AssetEditorDocument::init(ln::AssetModel* asset, ln::AssetEditorViewModel* editorModel)
+ln::Result AssetEditorDocument::init(ln::AssetModel* asset, ln::AssetEditor* editorModel)
 {
     if (!Document::init()) return false;
     m_asset = asset;
