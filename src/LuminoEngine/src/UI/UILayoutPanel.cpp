@@ -11,7 +11,7 @@ namespace ln {
 UILayoutPanel2::UILayoutPanel2()
     : m_ownerItemsControl(nullptr)
 {
-    m_isHitTestVisible = false;
+    //m_isHitTestVisible = false;
 }
 
 void UILayoutPanel2::init()

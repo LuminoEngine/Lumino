@@ -425,6 +425,7 @@ public: // TODO: internal
     virtual void invalidate(detail::UIElementDirtyFlags flags, bool toAncestor);
     detail::GridLayoutInfo* getGridLayoutInfo();
     bool isRenderVisible() const;
+    bool isHitTestVisibleCore() const { return m_isHitTestVisible && isRenderVisible(); }
 
     detail::UIManager* m_manager;
 	Flags<detail::ObjectManagementFlags> m_objectManagementFlags;

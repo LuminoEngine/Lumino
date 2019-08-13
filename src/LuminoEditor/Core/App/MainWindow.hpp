@@ -39,6 +39,7 @@ private:
 	Ref<NavigatorManager> m_navigatorManager;
 	Ref<DocumentManager> m_documentManager;
 
+    Ref<ToolPanesArea> m_modePanesArea;
 	Ref<ToolPanesArea> m_toolPanesArea;
 	Ref<ToolPanesArea> m_inspectorPanesArea;
 

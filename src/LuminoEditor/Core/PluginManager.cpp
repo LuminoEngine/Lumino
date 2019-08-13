@@ -2,6 +2,7 @@
 #include "PluginManager.hpp"
 #include "StandardPlugin/AssetBrowserNavigator.hpp"
 #include "StandardPlugin/TilesetEditor.hpp"
+#include "StandardPlugin/TilemapSceneEditor.hpp"
 
 namespace lna {
 
@@ -41,6 +42,16 @@ StandardPluginModule::StandardPluginModule()
     }
     {
         auto ext = ln::makeObject<AssetBrowserNavigatorExtension>();
+        m_editorExtensionInstances.add(ext);
+        m_editorExtensions.add(ext);
+    }
+    {
+        auto ext = ln::makeObject<SceneNavigatorExtension>();
+        m_editorExtensionInstances.add(ext);
+        m_editorExtensions.add(ext);
+    }
+    {
+        auto ext = ln::makeObject<TilemapSceneEditorExtension>();
         m_editorExtensionInstances.add(ext);
         m_editorExtensions.add(ext);
     }

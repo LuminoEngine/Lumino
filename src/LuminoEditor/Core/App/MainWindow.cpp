@@ -32,8 +32,9 @@ void MainWindow::onLoaded()
 
     m_mainHSplitter = ln::makeObject<ln::UISplitter>();
     m_mainHSplitter->setCellDefinition(0, ln::UILayoutLengthType::Auto);
-    m_mainHSplitter->setCellDefinition(1);
-    m_mainHSplitter->setCellDefinition(2, ln::UILayoutLengthType::Direct, 100);
+    m_mainHSplitter->setCellDefinition(1, ln::UILayoutLengthType::Direct, 200);
+    m_mainHSplitter->setCellDefinition(2);
+    m_mainHSplitter->setCellDefinition(3, ln::UILayoutLengthType::Direct, 200);
     //addElement(m_mainHSplitter);
     layout1->addChild(m_mainHSplitter, ln::UILayoutLengthType::Ratio);
 
@@ -43,6 +44,11 @@ void MainWindow::onLoaded()
         m_navigatorManager->navigationViewOpen = ln::bind(this, &MainWindow::onNavigationViewOpen);
         m_navigatorManager->navigationViewClose = ln::bind(this, &MainWindow::onNavigationViewClose);
         m_mainHSplitter->addElement(m_navigatorManager);
+
+        //--------
+
+        m_modePanesArea = ln::makeObject<ToolPanesArea>();
+        m_mainHSplitter->addElement(m_modePanesArea);
 
         //--------
 

@@ -482,23 +482,16 @@ UIElement* UIElement::getFrameWindow()
 
 UIElement* UIElement::lookupMouseHoverElement(const Point& frameClientPosition)
 {
-    // 後ろからループする。後のモノが上に描画されるので、この方が自然。
-    // TODO: Zオーダーは別のリストにしたほうがいい気がする・・・
-    int count = getVisualChildrenCount();
-    for (int i = count - 1; i >= 0; i--)
+    if (isHitTestVisibleCore())
     {
-        UIElement* e = static_cast<UIElement*>(getVisualChild(i))->lookupMouseHoverElement(frameClientPosition);
-        if (e != nullptr) return e;
-    }
-
-    if (m_isHitTestVisible)
-    {
-        //Point localPoint = frameClientPosition;
-        //if (m_visualParent != nullptr)
-        //{
-        //    localPoint.x -= m_visualParent->finalGlobalRect().x;
-        //    localPoint.y -= m_visualParent->finalGlobalRect().y;
-        //}
+        // 後ろからループする。後のモノが上に描画されるので、この方が自然。
+        // TODO: Zオーダーは別のリストにしたほうがいい気がする・・・
+        int count = getVisualChildrenCount();
+        for (int i = count - 1; i >= 0; i--)
+        {
+            UIElement* e = static_cast<UIElement*>(getVisualChild(i))->lookupMouseHoverElement(frameClientPosition);
+            if (e != nullptr) return e;
+        }
 
         if (onHitTest(frameClientPosition)) {
             return this;
