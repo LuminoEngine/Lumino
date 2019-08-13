@@ -79,16 +79,19 @@ void NavigatorManager::init()
 {
     UIControl::init();
 
-    m_layout = ln::makeObject<ln::UIStackLayout2>();
+    m_layout = ln::makeObject<ln::UIBoxLayout3>();
     m_layout->setOrientation(ln::Orientation::Horizontal);
     //m_layout->lastStretch = true;
     //setLayoutPanel(m_layout);
     addElement(m_layout);
 
+    //m_layout->setBackgroundColor(ln::Color::Red);
+
     m_navigationBar = ln::makeObject<NavigationBar>(this);
     m_layout->addChild(m_navigationBar);
 
 	m_switchLayout = ln::makeObject<ln::UISwitchLayout>();
+    m_switchLayout->getGridLayoutInfo()->layoutWeight = 1;  // fill in box layout
 	m_switchLayout->setActiveIndex(-1);
 	m_layout->addChild(m_switchLayout);
 }

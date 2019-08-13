@@ -47,20 +47,6 @@ ln::Result DocumentManager::init()
     m_switchLayout->getGridLayoutInfo()->layoutWeight = 1;  // fill in box layout
     m_mainLayout->addChild(m_switchLayout);
 
-    //// test
-    //auto tab1 = ln::makeObject<ln::UITabItem>();
-    //auto text1 = ln::makeObject<ln::UITextBlock>();
-    //text1->setText(u"Scene-1");
-    //tab1->addElement(text1);
-    //m_documentTabs->addTab(tab1);
-
-    //auto tab2 = ln::makeObject<ln::UITabItem>();
-    //auto text2 = ln::makeObject<ln::UITextBlock>();
-    //text2->setText(u"Scene-2");
-    //tab2->addElement(text2);
-    //documentTabs->addTab(tab2);
-
-
     m_startupView = ln::makeObject<StartupView>();
     addElement(m_startupView);
     //m_startupView->setHeight(300);

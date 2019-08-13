@@ -21,6 +21,7 @@ void TilesetList::init()
     layout1->addChild(layout2);
     {
         auto caption = ln::UITextBlock::create(u"Tileset");
+        caption->setMargin(ln::Thickness(8, 0));    // TODO: theme ‚©‚ç‚Æ‚è‚½‚¢
         caption->setVerticalAlignment(ln::VAlignment::Center);
         layout2->addChild(caption);
 

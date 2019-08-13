@@ -68,7 +68,7 @@ protected:
 
 private:
 
-    Ref<ln::UIStackLayout2> m_layout;
+    Ref<ln::UIBoxLayout3> m_layout;
 	Ref<ln::UISwitchLayout> m_switchLayout;
     Ref<NavigationBar> m_navigationBar;
 	ln::List<ln::IAssetNavigatorExtension*> m_navigators;
